@@ -28,6 +28,10 @@
 # Visual Studio cache directory
 .vs/
 
+# JetBrains Rider / IntelliJ IDE 설정 (개인 환경, 자동 재생성)
+.idea/
+*.iml
+
 # Gradle cache directory
 .gradle/
 
