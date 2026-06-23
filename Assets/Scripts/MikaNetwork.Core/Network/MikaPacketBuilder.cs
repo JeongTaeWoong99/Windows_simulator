@@ -5,7 +5,7 @@ namespace MikaNetwork.Core.Network
     public static class MikaPacketBuilder
     {
         public const int HeaderSize = sizeof(ushort) + sizeof(ushort);
-        public const int MaxPacketSize = 64 * 1024;
+        public const ushort MaxPacketSize = ushort.MaxValue;
 
         static MikaPacketBuilder()
         {

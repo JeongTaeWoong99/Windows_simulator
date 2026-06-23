@@ -15,9 +15,9 @@ namespace MikaProtocol
     {
         public static void SendPacket<T>(this ISession session, T packet) where T : IPacket
         {
-            byte[] body = MemoryPackSerializer.Serialize(packet); // body 직렬화
-            byte[] framed = MikaPacketBuilder.MakePacket(PacketIdResolver.Get(typeof(T)), body); // [id][size][body]
-            session.Send(framed); // Core의 byte[] Send 재사용
+            byte[] body = MemoryPackSerializer.Serialize(packet);                                          // body 직렬화
+            byte[] framed = MikaPacketBuilder.MakePacket(MikaGenerated.GeneratedPacketIds.Get<T>(), body); // [id][size][body]
+            session.Send(framed);                                                                       // Core의 byte[] Send 재사용
         }
     }
 }

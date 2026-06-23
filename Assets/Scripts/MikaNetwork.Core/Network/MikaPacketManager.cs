@@ -11,28 +11,40 @@ namespace MikaNetwork.Core.Network
     /// </summary>
     public class MikaPacketManager
     {
-        private readonly Dictionary<ushort, Action<ISession, ReadOnlyMemory<byte>>> _handlers = new();
+        private readonly Dictionary<ushort, Func<ISession, ReadOnlyMemory<byte>, Action>> _handlers = new();
 
         public void Register<T>(ushort id, Action<ISession, T> handler)
         {
             _handlers[id] = (session, body) =>
             {
                 var packet = MemoryPackSerializer.Deserialize<T>(body.Span)!;
-                handler(session, packet);
+
+                return () => handler(session, packet); // 직렬화만 Network Thread가 하도록 고정
             };
         }
 
-        public void OnRecvPacket(ISession session, ReadOnlyMemory<byte> packet)
+        // OnRecvCallback : 보통 Unity에서 바로 처리하지않고 PacketQueue로 넘어갈일이 있으면 사용
+        public void OnRecvPacket(ISession session, ReadOnlyMemory<byte> data, Action<Action>? onRecvCallback = null)
         {
-            if (packet.Length < MikaPacketBuilder.HeaderSize) return;                       // 최소 헤더 크기
+            if (data.Length < MikaPacketBuilder.HeaderSize) return;                       // 최소 헤더 크기
 
-            ushort id   = MikaPacketBuilder.ReadId(packet.Span);    // [0..2) = id
-            var body = MikaPacketBuilder.ReadBody(packet);                 // [4..]  = body (헤더 제외)
-
+            ushort id   = MikaPacketBuilder.ReadId(data.Span);    // [0..2) = id
+            var body = MikaPacketBuilder.ReadBody(data);                 // [4..]  = body (헤더 제외)
+            
             if (_handlers.TryGetValue(id, out var handler))
             {
-                handler(session, body);
+                var job = handler(session, body);
+                if (onRecvCallback != null)
+                {
+                    onRecvCallback.Invoke(job); // 실행을 다른 스레드로 이양 
+                }
+                else
+                {
+                    job.Invoke(); // NetworkThread에서 직접 실행
+                }
             }
+            
+
         }
     }
 }
