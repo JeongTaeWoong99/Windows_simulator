@@ -1,8 +1,5 @@
 using System;
-using MikaProtocol.Interfaces;
 using MemoryPack;
-
-
 
 /// <summary>
 /// 1. 패킷은 반드시 ushort인 id, size를 포함해야 함.
@@ -12,7 +9,7 @@ using MemoryPack;
 /// </summary>
 ///
 
-namespace MikaProtocol
+namespace MikaNetwork
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class PacketAttribute : Attribute

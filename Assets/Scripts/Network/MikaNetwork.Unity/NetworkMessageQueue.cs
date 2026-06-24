@@ -2,7 +2,7 @@
 
 using System;
 using System.Collections.Concurrent;
-using MikaNetwork.Unity.Utils;
+using Utils;
 
 public class NetworkMessageQueue : Singleton<NetworkMessageQueue>
 {

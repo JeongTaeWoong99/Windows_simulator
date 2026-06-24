@@ -1,6 +1,6 @@
 using System;
 
-namespace MikaNetwork.Core.Network
+namespace MikaNetwork
 {
     public class MikaRecvBuffer
     {

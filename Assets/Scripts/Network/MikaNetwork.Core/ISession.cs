@@ -2,7 +2,7 @@ using System;
 using System.Net;
 using System.Threading.Tasks;
 
-namespace MikaNetwork.Core.Interfaces
+namespace MikaNetwork
 {
     public interface ISession : IDisposable
     {

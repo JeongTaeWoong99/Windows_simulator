@@ -3,10 +3,8 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading;
 using System.Threading.Tasks;
-using MikaNetwork.Core.Interfaces;
-using MikaNetwork.Core.Network;
 
-namespace MikaNetwork.Client
+namespace MikaNetwork
 {
     public class MikaClientSession : ISession
     {
