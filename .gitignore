@@ -77,3 +77,8 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
+
+# Claude Code (개인 설정만 제외, 스킬·공유 설정은 추적)
+.claude/settings.local.json
+**/.claude/settings.local.json
+.claude/CLAUDE.local.md
