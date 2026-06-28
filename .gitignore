@@ -82,3 +82,8 @@ crashlytics-build.properties
 .claude/settings.local.json
 **/.claude/settings.local.json
 .claude/CLAUDE.local.md
+
+
+# Server
+bin
+obj
