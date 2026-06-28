@@ -1,11 +1,13 @@
 <#
 .SYNOPSIS
-    MikaProtocol(서버) -> Unity 클라이언트로 .cs 정의를 단방향 미러링한다.
+    MikaProtocol(서버) -> Protocol(Unity) 로 .cs 정의를 단방향 미러링한다.
 
 .DESCRIPTION
     서버가 패킷의 단일 진실(source of truth)이다. 이 스크립트는 서버 쪽 공유
     프로젝트의 .cs 파일만 Unity Assets 아래로 복사한다.
 
+    - 소스 폴더명과 대상 폴더명이 다를 수 있다(예: MikaProtocol -> Protocol).
+      $FolderMap 에 "소스 = 대상" 형태로 매핑한다.
     - bin/obj 는 제외한다.
     - .meta 는 복사하지 않는다(Unity 가 경로 기준으로 알아서 생성/유지).
     - 내용이 같은 파일은 건너뛴다(불필요한 Unity 리임포트 방지).
@@ -27,9 +29,10 @@ param(
     # Unity 프로젝트의 스크립트 루트
     [string]$DestRoot = "C:\Users\wlsdn\workspace\Windows_simulator\Assets\Scripts",
 
-    # 미러링할 폴더 목록 (SourceRoot/DestRoot 기준 상대경로).
-    # 공유 코어도 동기화하려면 여기에 "MikaNetwork.Core" 를 추가하면 된다.
-    [string[]]$Folders = @("MikaProtocol")
+    # 미러링 매핑 ("소스 폴더" = "대상 폴더", SourceRoot/DestRoot 기준 상대경로).
+    # 소스와 대상 폴더명이 달라도 된다. 공유 코어도 동기화하려면
+    # 여기에 "MikaNetwork.Core" = "Core" 같은 항목을 추가하면 된다.
+    [hashtable]$FolderMap = @{ "MikaProtocol" = "Protocol" }
 )
 
 $ErrorActionPreference = "Stop"
@@ -52,9 +55,10 @@ $copied = 0
 $skipped = 0
 $removed = 0
 
-foreach ($folder in $Folders) {
-    $srcDir = Join-Path $SourceRoot $folder
-    $dstDir = Join-Path $DestRoot   $folder
+foreach ($srcFolder in $FolderMap.Keys) {
+    $dstFolder = $FolderMap[$srcFolder]
+    $srcDir = Join-Path $SourceRoot $srcFolder
+    $dstDir = Join-Path $DestRoot   $dstFolder
 
     if (-not (Test-Path -LiteralPath $srcDir)) {
         Write-Warning "소스 폴더 없음, 건너뜀: $srcDir"
@@ -83,7 +87,7 @@ foreach ($folder in $Folders) {
         }
 
         Copy-Item -LiteralPath $f.FullName -Destination $dst -Force
-        Write-Host "  copy : $folder\$rel" -ForegroundColor Green
+        Write-Host "  copy : $dstFolder\$rel" -ForegroundColor Green
         $copied++
     }
 
@@ -96,7 +100,7 @@ foreach ($folder in $Folders) {
             if (-not $expected.Contains($d.FullName)) {
                 Remove-Item -LiteralPath $d.FullName -Force
                 $rel = $d.FullName.Substring($dstDir.Length).TrimStart('\','/')
-                Write-Host "  del  : $folder\$rel" -ForegroundColor DarkYellow
+                Write-Host "  del  : $dstFolder\$rel" -ForegroundColor DarkYellow
                 $removed++
 
                 $meta = "$($d.FullName).meta"
