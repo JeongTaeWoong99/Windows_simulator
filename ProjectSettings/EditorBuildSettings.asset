@@ -6,7 +6,7 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/DesktopWindow_Control/DesktopWindow_Control.unity
+    path: Assets/Scenes/DesktopWindow_Control.unity
     guid: 6f3d855417fb4d84bb3c3cab7f924ca7
   - enabled: 0
     path: Assets/Scenes/SampleScene.unity
