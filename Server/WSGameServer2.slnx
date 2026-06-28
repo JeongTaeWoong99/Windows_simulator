@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="MikaNetwork.Core/MikaNetwork.Core.csproj" />
+  <Project Path="MikaNetwork.Server/MikaNetwork.Server.csproj" />
+  <Project Path="MikaProtocol/MikaProtocol.csproj" />
+  <Project Path="MikaSourceGen/MikaSourceGen/MikaSourceGen.csproj" />
+  <Project Path="MikaUtils/MikaUtils.csproj" />
+  <Project Path="WSGameServer/WSGameServer.csproj" />
+</Solution>
