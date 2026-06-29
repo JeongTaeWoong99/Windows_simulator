@@ -1,4 +1,5 @@
 using MemoryPack;
+using MikaNetwork;
 
 /// <summary>
 /// Core(MikaSession/MikaClient)는 byte[]만 다루는 순수 전송 계층이라 IPacket을 모른다.
@@ -6,7 +7,7 @@ using MemoryPack;
 /// 여기서 확장 메서드로 얹는다. (Protocol → Core 단방향 의존)
 /// </summary>
 
-namespace MikaNetwork
+namespace MikaProtocol
 {
     public static class MikaSessionPacketExtensions
     {

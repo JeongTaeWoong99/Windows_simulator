@@ -2,6 +2,7 @@
 
 using System;
 using UnityEngine;
+using MikaProtocol;
 using Utils;
 
 namespace MikaNetwork

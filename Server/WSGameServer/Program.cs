@@ -1,17 +1,17 @@
-using MikaDummyServer.Network;
 using MikaProtocol;
+using WSGameServer.Network;
 
-namespace MikaDummyServer
+namespace WSGameServer;
+
+class Program
 {
-    class Program
+    private static void Main(string[] args)
     {
-        private static void Main(string[] args)
-        {
-            NetworkManager.Instance.Initialize();
+        NetworkManager.Instance.Initialize();
 
-            Console.WriteLine("[Server] 10010 포트에서 대기 중...");
-            Console.WriteLine("[Server] 종료하려면 엔터를 누르세요.");
-            Console.ReadLine();
-        }
+        Console.WriteLine("[Server] 10010 포트에서 대기 중...");
+        Console.WriteLine("[Server] 종료하려면 엔터를 누르세요.");
+        Console.ReadLine();
     }
 }
+

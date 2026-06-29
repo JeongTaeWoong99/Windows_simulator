@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using MemoryPack;
-using MikaNetwork.Core.Interfaces;
 
-namespace MikaNetwork.Core.Network
+namespace MikaNetwork
 {
     /// <summary>
     /// 수신 디스패처. PacketId → "그 타입으로 역직렬화 후 핸들러 호출"하는 어댑터를 등록해둔다.

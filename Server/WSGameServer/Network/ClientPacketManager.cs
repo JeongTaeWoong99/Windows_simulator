@@ -1,6 +1,6 @@
-using MikaNetwork.Core.Network;
+using MikaNetwork;
 
-namespace MikaDummyServer.Network;
+namespace WSGameServer.Network;
 
 public class ClientPacketManager : MikaPacketManager
 {

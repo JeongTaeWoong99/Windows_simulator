@@ -1,4 +1,4 @@
-namespace MikaProtocol.Interfaces
+namespace MikaProtocol
 {
     public interface IPacket
     {

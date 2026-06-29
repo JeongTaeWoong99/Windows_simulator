@@ -1,4 +1,4 @@
-using MikaNetwork.Core.Interfaces;
+using MikaNetwork;
 using MikaProtocol;
 using WSGameServer.User;
 

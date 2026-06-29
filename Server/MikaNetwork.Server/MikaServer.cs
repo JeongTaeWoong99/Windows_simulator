@@ -1,6 +1,5 @@
 using System.Net;
-using MikaNetwork.Core.Interfaces;
-using MikaNetwork.Core.Network;
+using MikaNetwork;
 
 namespace MikaNetwork.Server;
 

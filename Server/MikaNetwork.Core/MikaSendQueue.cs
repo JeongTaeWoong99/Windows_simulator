@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace MikaNetwork.Core.Network
+namespace MikaNetwork
 {
     public sealed class MikaSendQueue
     {

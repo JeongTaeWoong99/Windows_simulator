@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-using MikaNetwork.Core.Interfaces;
+using MikaNetwork;
 using MikaUtils;
 
 namespace WSGameServer.User;

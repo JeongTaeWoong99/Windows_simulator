@@ -1,7 +1,5 @@
 using MemoryPack;
-using MikaNetwork.Core.Interfaces;
-using MikaNetwork.Core.Network;
-using MikaProtocol.Interfaces;
+using MikaNetwork;
 
 /// <summary>
 /// Core(MikaSession/MikaClient)는 byte[]만 다루는 순수 전송 계층이라 IPacket을 모른다.

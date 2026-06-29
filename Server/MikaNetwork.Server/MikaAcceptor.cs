@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
-using MikaNetwork.Core.Network;
+using MikaNetwork;
 
 namespace MikaNetwork.Server;
 

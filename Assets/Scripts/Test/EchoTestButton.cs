@@ -1,7 +1,8 @@
 #if UNITY_5_3_OR_NEWER
 
 using UnityEngine;
-using MikaNetwork; // NetworkManager, C_EchoRequest 참조용
+using MikaNetwork; 
+using MikaProtocol;
 
 namespace ServerTest
 {

@@ -2,7 +2,7 @@ using MikaUtils;
 using MikaNetwork.Server;
 using WSGameServer.User;
 
-namespace MikaDummyServer.Network;
+namespace WSGameServer.Network;
 
 public class NetworkManager : Singleton<NetworkManager>
 {

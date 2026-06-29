@@ -3,8 +3,7 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Channels;
-using MikaNetwork.Core.Interfaces;
-using MikaNetwork.Core.Network;
+using MikaNetwork;
 
 namespace MikaNetwork.Server;
 

@@ -1,8 +1,5 @@
 using System;
-using MikaProtocol.Interfaces;
 using MemoryPack;
-
-
 
 /// <summary>
 /// 1. 패킷은 반드시 ushort인 id, size를 포함해야 함.

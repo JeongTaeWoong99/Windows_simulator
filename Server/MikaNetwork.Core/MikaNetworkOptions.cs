@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace MikaNetwork.Core.Network
+namespace MikaNetwork
 {
     public sealed class MikaServerOptions
     {

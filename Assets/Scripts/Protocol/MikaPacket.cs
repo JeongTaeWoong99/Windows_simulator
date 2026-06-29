@@ -9,7 +9,7 @@ using MemoryPack;
 /// </summary>
 ///
 
-namespace MikaNetwork
+namespace MikaProtocol
 {
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class PacketAttribute : Attribute
@@ -29,7 +29,11 @@ namespace MikaNetwork
     {
         None = 0,
         C_EchoRequest = 1,
-        S_EchoResponse = 2
+        S_EchoResponse = 2,
+        C_PingRequest = 3,
+        S_PongResponse = 4,
+        C_LoginRequest = 5,
+        S_LoginResponse = 6
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -43,6 +47,31 @@ namespace MikaNetwork
     {
         public string Message { get; set; } = "";
     }
+
+    [MemoryPackable, Packet(PacketId.C_PingRequest)]
+    public partial class C_PingRequest : IPacket
+    {
+        
+    }
     
-    
+    [MemoryPackable, Packet(PacketId.S_PongResponse)]
+    public partial class S_PongRequest : IPacket
+    {
+
+    }
+
+    [MemoryPackable, Packet(PacketId.C_LoginRequest)]
+    public partial class C_LoginRequest : IPacket
+    {
+        public string Id { get; set; } = "";
+    }
+
+    [MemoryPackable, Packet(PacketId.S_LoginResponse)]
+    public partial class S_LoginResponse : IPacket
+    {
+        public bool Success { get; set; }
+        public long SessionId { get; set; }
+    }
+
+
 }
