@@ -55,7 +55,7 @@ namespace MikaProtocol
     }
     
     [MemoryPackable, Packet(PacketId.S_PongResponse)]
-    public partial class S_PongRequest : IPacket
+    public partial class S_PongResponse : IPacket
     {
 
     }
