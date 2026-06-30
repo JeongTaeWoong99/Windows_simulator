@@ -16,11 +16,11 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class InfoBarToggleUI : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
 {
-    [Header("References")]
+    [CenterHeader("References")]
     [SerializeField] private WindowController windowController; // 창 제어 본체
     [SerializeField] private GameObject       infoBarRoot;      // 표시/숨김을 토글할 정보바 UI 루트
 
-    [Header("State")]
+    [CenterHeader("State")]
     [SerializeField] private bool infoBarVisible = false; // 정보바 표시 여부(기본 꺼짐)
 
     void Start()

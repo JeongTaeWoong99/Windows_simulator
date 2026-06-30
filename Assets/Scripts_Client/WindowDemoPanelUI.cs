@@ -11,11 +11,11 @@ using UnityEngine;
 /// </summary>
 public class WindowDemoPanelUI : MonoBehaviour
 {
-    [Header("References")]
+    [CenterHeader("References")]
     [SerializeField] private WindowController windowController; // 창 제어 본체
     [SerializeField] private InfoBarToggleUI  infoBar;          // 정보바 토글 담당
 
-    [Header("Dock Settings - 작업표시줄 도킹 시 창 크기")]
+    [CenterHeader("Dock Settings - 작업표시줄 도킹 시 창 크기")]
     [SerializeField] private int dockWidth  = 600; // 도킹 시 가로(px)
     [SerializeField] private int dockHeight = 200; // 도킹 시 세로(px)
 

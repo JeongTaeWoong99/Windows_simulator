@@ -18,21 +18,21 @@ using UnityEngine.EventSystems;
 /// </summary>
 public class WindowController : MonoBehaviour
 {
-    [Header("Window Settings - 시작 시 적용할 창 상태")]
+    [CenterHeader("Window Settings - 시작 시 적용할 창 상태")]
     [SerializeField] private bool startTransparent  = true;  // 시작 시 투명 배경
     [SerializeField] private bool startBorderless   = true;  // 시작 시 보더리스(타이틀바 제거)
     [SerializeField] private bool startTopmost      = true;  // 시작 시 항상 위
     [SerializeField] private bool startClickThrough = true;  // 시작 시 클릭 스루 활성
 
-    [Header("Click-Through Settings - 동적 클릭 통과")]
+    [CenterHeader("Click-Through Settings - 동적 클릭 통과")]
     [SerializeField] private bool   dynamicClickThrough = true; // 마우스가 콘텐츠 위면 클릭 받기, 빈 영역이면 통과(자동 토글)
     [SerializeField] private Camera raycastCamera;              // 2D 스프라이트 판정용 카메라(미지정 시 Camera.main)
 
-    [Header("Window Size/Position - 시작 시 창 크기·위치 (데스크톱 컴패니언용)")]
+    [CenterHeader("Window Size/Position - 시작 시 창 크기·위치 (데스크톱 컴패니언용)")]
     [SerializeField] private bool       setStartSize = true;                       // 시작 시 창 크기/위치 지정 여부
     [SerializeField] private Vector2Int startSize    = new Vector2Int(360, 720);   // 시작 창 크기(px). 세로로 긴 작은 창.
 
-    [Header("Debug - 단계별 격리 테스트")]
+    [CenterHeader("Debug - 단계별 격리 테스트")]
     // 켜면 시작 시 어떤 창 효과도 적용하지 않고, 빌드에서 키로 하나씩 수동 적용한다.
     //   F1 보더리스 / F2 투명 / F3 항상위 / F4 클릭스루 / F5 창을 화면중앙 800x600 / ESC 종료
     // 어느 단계에서 창이 사라지는지 격리할 때 사용한다. (동적 클릭스루도 비활성)
