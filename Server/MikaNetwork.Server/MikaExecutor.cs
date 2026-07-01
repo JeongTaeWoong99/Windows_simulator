@@ -22,7 +22,7 @@ namespace MikaNetwork.Server
         public void Start(int channelCount = 0)
         {
             _channelCount = channelCount;
-
+            
             _dbChannels = new Channel<Func<Task>>[_channelCount];
 
             for (int i = 0; i < _channelCount; i++)
@@ -74,6 +74,11 @@ namespace MikaNetwork.Server
         public LogicExecutor()
         {
             _thread = new Thread(Run) { IsBackground = true, Name = "LogicThread" };
+        }
+
+
+        public void Start()
+        {
             _thread.Start();
         }
 

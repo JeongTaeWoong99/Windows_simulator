@@ -1,5 +1,7 @@
 using MikaNetwork;
 using WSGameServer.Common;
+using WSGameServer.DB;
+using WSGameServer.User.Repository;
 
 namespace WSGameServer.User;
 
@@ -23,8 +25,8 @@ public sealed class User : Entity
         LoggedInAt = DateTime.UtcNow;
     }
     
-    // public ValueTask PostDBTask<T>()
-    // {
-    //     
-    // }
+    public void PostDBTask(IRepository repository)
+    {
+        DBManager.Instance.Post(repository);
+    }
 }
