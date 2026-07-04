@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <RootNamespace>WSGameServer</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
+      <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" 
+                        OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+      <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
+    </ItemGroup>
+
+</Project>

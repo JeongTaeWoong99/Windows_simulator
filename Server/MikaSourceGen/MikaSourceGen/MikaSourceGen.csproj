@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>false</IsPackable>
+        <Nullable>enable</Nullable>
+        <!-- Unity가 쓰는 Roslyn 언어 버전과 맞춘다. C# 10 문법(record struct 등)이
+             섞여 들어가면 Unity에서 제너레이터가 동작하지 않으므로 9로 고정한다. -->
+        <LangVersion>9</LangVersion>
+
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <IsRoslynComponent>true</IsRoslynComponent>
+
+        <!-- 단일 내부 규칙(MIKA001)이라 analyzer release tracking 파일은 두지 않는다 -->
+        <NoWarn>$(NoWarn);RS2008</NoWarn>
+        
+        <RootNamespace>MikaSourceGen</RootNamespace>
+        <PackageId>MikaSourceGen</PackageId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.3.0"/>
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
+    </ItemGroup>
+
+
+</Project>
