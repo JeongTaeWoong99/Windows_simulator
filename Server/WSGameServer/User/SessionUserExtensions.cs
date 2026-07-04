@@ -9,5 +9,5 @@ namespace WSGameServer.User;
 public static class SessionUserExtensions
 {
     public static User? GetUser(this ISession session)
-        => UserManager.Instance.TryGet(session.SessionId, out var user) ? user : null;
+        => UserManager.Instance.TryGetUserBySessionId(session.SessionId, out var user) ? user : null;
 }

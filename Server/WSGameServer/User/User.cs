@@ -1,6 +1,8 @@
 using MikaNetwork;
+using MikaProtocol;
 using WSGameServer.Common;
 using WSGameServer.DB;
+using WSGameServer.Network;
 using WSGameServer.User.Repository;
 
 namespace WSGameServer.User;
@@ -13,16 +15,56 @@ namespace WSGameServer.User;
 public sealed class User : Entity
 {
     public long SessionId { get; }
+    public string Pid { get; }    
+    
     public ISession Session { get; }
-    public string Name { get; }           
+    public string NickName { get; set; }
     public DateTime LoggedInAt { get; }
+    
+    
+    public long Uid { get; set; }
+    public int AdminLevel { get; set; }
+    public bool IsNewbie { get; set; }
 
-    internal User(ISession session, string name)
+    internal User(ISession session, string pid, string nickname)
     {
         SessionId = session.SessionId;
+        Pid = pid;
         Session = session;
-        Name = name;
+        NickName = nickname;
         LoggedInAt = DateTime.UtcNow;
+    }
+
+    public void Login()
+    {
+        UserManager.Instance.JoinUser(this);
+        
+        Send(new S_LoginResponse {Success = true, SessionId = SessionId});
+    }
+
+    protected override void OnCreate()
+    {
+        PostDBTask(new AccountRepository(this));
+    }
+
+    protected override void OnDestroy()
+    {
+        UserManager.Instance.LeaveUser(this);
+    }
+
+    public void Initialize(long userId, string nickName, int adminLevel, bool isNewbie)
+    {
+        Uid = userId;
+        NickName = nickName;
+        AdminLevel = adminLevel;
+        IsNewbie = isNewbie;
+
+        PostDBTask(new LoginRepository(this));
+    }
+    
+    public void Send(IPacket packet)
+    {
+        Session.SendPacket(packet);
     }
     
     public void PostDBTask(IRepository repository)

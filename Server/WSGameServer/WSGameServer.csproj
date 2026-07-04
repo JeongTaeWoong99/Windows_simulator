@@ -13,9 +13,18 @@
       <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
       <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
-      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" 
-                        OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
+      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Dapper" Version="2.1.79" />
+      <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.9" />
+      <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="SQLite" Version="3.13.0" />
     </ItemGroup>
 
 </Project>

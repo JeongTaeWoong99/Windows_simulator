@@ -1,6 +1,8 @@
 using MikaNetwork;
 using MikaProtocol;
+using WSGameServer.DB;
 using WSGameServer.User;
+using WSGameServer.User.Repository;
 
 namespace WSGameServer.Network;
 
@@ -24,9 +26,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_LoginRequest(ISession session, C_LoginRequest req)
     {
-        var user = UserManager.Instance.CreateUser(session, req.Id);
-        Console.WriteLine($"[Server] Login: Id={req.Id}, Session={session.SessionId}, Success={user != null}");
+        // DB 스레드에서 조회/자동가입 → 로직 스레드에서 User 등록·응답 (LoginRepository.Apply)
+        Console.WriteLine($"[Server] Login 요청: Id={req.Id}, Session={session.SessionId}");
 
-        session.SendPacket(new S_LoginResponse { Success = user != null, SessionId = session.SessionId });
+        UserManager.Instance.CreateUser(session, req.Id, req.Id);
+        //DBManager.Instance.Post(new LoginRepository(session, req.Id));
     }
 }

@@ -19,7 +19,7 @@ public class NetworkManager : Singleton<NetworkManager>
         };
 
         // 접속 해제 시 해당 세션의 User 정리
-        _server.Disconnected += session => UserManager.Instance.TryRemove(session.SessionId, out _);
+        // _server.Disconnected += session => UserManager.Instance.TryRemove(session.SessionId, out _);
 
         _server.Listen();
     }

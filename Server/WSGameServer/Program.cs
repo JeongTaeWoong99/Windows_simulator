@@ -1,4 +1,6 @@
+using Dapper;
 using MikaProtocol;
+using WSGameServer.DB;
 using WSGameServer.Network;
 
 namespace WSGameServer;
@@ -7,6 +9,10 @@ class Program
 {
     private static void Main(string[] args)
     {
+        // Dapper 컬럼 매핑: snake_case(user_id) → PascalCase(UserId)
+        DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+        DBManager.Instance.Initialize("game.sqlite3");
         NetworkManager.Instance.Initialize();
 
         Console.WriteLine("[Server] 10010 포트에서 대기 중...");
