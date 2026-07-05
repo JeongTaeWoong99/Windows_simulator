@@ -46,7 +46,7 @@ public sealed class UserManager : Singleton<UserManager>
     public void CreateUser(ISession session, string pid, string nickname) // pid is token or ...
     {
         // pid 중복체크
-        if (!TryGetUserByPid(pid, out _))
+        if (TryGetUserByPid(pid, out _))
         {
             // Error Send
             // Log
@@ -54,9 +54,10 @@ public sealed class UserManager : Singleton<UserManager>
         }
         
         // 이미 존재하는 유저인지 확인
-        if (!TryGetUserBySessionId(session.SessionId, out _))
+        if (TryGetUserBySessionId(session.SessionId, out _))
         {
             // Log
+            return;
         }
 
         var user = new User(session, pid, nickname);

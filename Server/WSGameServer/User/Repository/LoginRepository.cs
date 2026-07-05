@@ -37,8 +37,12 @@ public sealed class LoginRepository : IRepository
         if (row is null)
         {
             _userId = await connection.ExecuteScalarAsync<long>(
-                "INSERT INTO t_user (user_name) VALUES (@name) RETURNING user_id",
-                new { name = User.NickName });
+                "INSERT INTO t_user (provider_id, nickname) VALUES (@pid, @name) RETURNING user_id",
+                new { pid = User.Pid, name = User.NickName });
+        }
+        else
+        {
+            _userId = row.UserId;
         }
         
         // 3. Data Fetch 

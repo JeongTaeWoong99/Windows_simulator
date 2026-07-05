@@ -20,8 +20,11 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_PingRequest(ISession session, C_PingRequest req)
     {
-        
+        Console.WriteLine("[Server] Recv Ping");
+
+        session.SendPacket(new S_PongResponse());
     }
+
     
     [PacketHandler]
     public static void Handle_C_LoginRequest(ISession session, C_LoginRequest req)

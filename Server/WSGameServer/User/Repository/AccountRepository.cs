@@ -6,7 +6,6 @@ namespace WSGameServer.User.Repository;
 
 public class AccountRepository : IRepository
 {
-    
     private long _userId;
     private bool _isNewbie;
     
@@ -36,6 +35,11 @@ public class AccountRepository : IRepository
 
             _isNewbie = true;
         }
+        else
+        {
+            _userId = row.UserId; // 있으면 _userId에 넣어주기
+        }
+        
         
         // 3) AccountResultRow 채워주기
         _resultRow = await connection.QueryFirstOrDefaultAsync<AccountResultRow>(

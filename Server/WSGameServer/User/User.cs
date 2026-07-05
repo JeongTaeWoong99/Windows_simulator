@@ -61,11 +61,8 @@ public sealed class User : Entity
 
         PostDBTask(new LoginRepository(this));
     }
-    
-    public void Send(IPacket packet)
-    {
-        Session.SendPacket(packet);
-    }
+
+    public void Send<T>(T packet) where T : IPacket => Session.SendPacket(packet);
     
     public void PostDBTask(IRepository repository)
     {

@@ -1,4 +1,6 @@
 <Solution>
+  <Project Path="MikaDummyClient/MikaDummyClient.csproj" />
+  <Project Path="MikaNetwork.Client/MikaNetwork.Client.csproj" />
   <Project Path="MikaNetwork.Core/MikaNetwork.Core.csproj" />
   <Project Path="MikaNetwork.Server/MikaNetwork.Server.csproj" />
   <Project Path="MikaProtocol/MikaProtocol.csproj" />
