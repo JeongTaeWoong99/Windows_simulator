@@ -20,6 +20,8 @@ namespace MikaDummyClient
                 new ClientAction("Echo (채팅)", SendEcho),
                 new ClientAction("Ping", SendPing),
                 new ClientAction("Login", SendLogin),
+                new ClientAction("AddItem", SendAddItem),
+                new ClientAction("GachaDraw", SendGachaDraw),
             };
         }
 
@@ -87,6 +89,41 @@ namespace MikaDummyClient
             Console.Write("로그인 Id > ");
             string id = Console.ReadLine() ?? "";
             NetworkManager.Instance.Send(new C_LoginRequest { Id = id });
+        }
+
+        private void SendAddItem()
+        {
+            Console.Write("ItemId > ");
+            if (!int.TryParse(Console.ReadLine(), out int itemId))
+            {
+                Console.WriteLine("[Client] ItemId는 숫자여야 합니다.");
+                return;
+            }
+
+            Console.Write("Count > ");
+            if (!int.TryParse(Console.ReadLine(), out int count))
+            {
+                Console.WriteLine("[Client] Count는 숫자여야 합니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_AddItemRequest { ItemId = itemId, Count = count });
+        }
+
+        private void SendGachaDraw()
+        {
+            Console.Write("GachaId (기본 1) > ");
+            string? gachaInput = Console.ReadLine();
+            int gachaId = string.IsNullOrWhiteSpace(gachaInput) ? 1 : int.Parse(gachaInput.Trim());
+
+            Console.Write("DrawCount (1 또는 10) > ");
+            if (!int.TryParse(Console.ReadLine(), out int drawCount))
+            {
+                Console.WriteLine("[Client] DrawCount는 숫자여야 합니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_GachaDrawRequest { GachaId = gachaId, DrawCount = drawCount });
         }
     }
 }

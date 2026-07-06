@@ -26,7 +26,7 @@ public sealed partial class User : Entity
     public bool IsNewbie { get; set; }
     
     // Inventory
-    public Inventory.Inventory Inventory { get; init; } = new();
+    private Inventory.Inventory Inventory { get; init; } = new();
 
     internal User(ISession session, string pid, string nickname)
     {
@@ -37,20 +37,42 @@ public sealed partial class User : Entity
         LoggedInAt = DateTime.UtcNow;
     }
 
+    // 주의: 소멸자(finalizer)는 GC가 객체를 수거할 때 비결정적으로 호출된다.
+    // Destroy() 호출과 무관하며, 결정적 정리·로그는 OnDestroy에서 처리한다.
+    // (여기는 GC 수거 여부 진단용으로만 남겨둠)
+    ~User()
+    {
+        Console.WriteLine($"[GC] User finalized SessionId: {SessionId}, Pid: {Pid}");
+    }
+
     public void Login()
     {
+        // 연결되지 않았으면 정리
+        if (!Session.IsConnected)
+        {
+            Destroy();
+            return;
+        }
+        
         UserManager.Instance.JoinUser(this);
         
         Send(new S_LoginResponse {Success = true, SessionId = SessionId});
+        
+        SendInventory(); // S_InventoryResponse
     }
 
     protected override void OnCreate()
     {
+        Console.WriteLine($"User created SessionId: {SessionId}, Pid: {Pid}");
+        
         PostDBTask(new AccountRepository(this));
     }
 
     protected override void OnDestroy()
     {
+        // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
+        Console.WriteLine($"User destroyed SessionId: {SessionId}, Pid: {Pid}");
+
         UserManager.Instance.LeaveUser(this);
     }
 
@@ -68,6 +90,6 @@ public sealed partial class User : Entity
     
     public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository 
     {
-        DBManager.Instance.Post<TRepository>(repository);
+        DBManager.Instance.Post(repository);
     }
 }

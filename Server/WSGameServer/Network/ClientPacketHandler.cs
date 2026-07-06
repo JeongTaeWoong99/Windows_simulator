@@ -1,6 +1,7 @@
 using MikaNetwork;
 using MikaProtocol;
 using WSGameServer.DB;
+using WSGameServer.Gacha;
 using WSGameServer.User;
 
 namespace WSGameServer.Network;
@@ -38,15 +39,19 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_AddItemRequest(ISession session, C_AddItemRequest req)
     {
-        // TODO: 인벤토리에 아이템 추가(UPSERT) 후 갱신 결과를 응답한다
         Console.WriteLine($"[Server] AddItem 요청: ItemId={req.ItemId}, Count={req.Count}, Session={session.SessionId}");
 
         var user = session.GetUser();
-        user.Inventory.AddItem(req.ItemId, req.Count);
-        
-        session.SendPacket(new S_UpdateItemResponse
-        {
-            Items = { new ItemInfo { ItemId = req.ItemId, Count = req.Count } }
-        });
+        user?.AddItem(req.ItemId, req.Count);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_GachaDrawRequest(ISession session, C_GachaDrawRequest req)
+    {
+        Console.WriteLine($"[Server] Gacha 요청: GachaId={req.GachaId}, DrawCount={req.DrawCount}, Session={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user != null)
+            GachaService.Instance.Draw(user, req.GachaId, req.DrawCount);
     }
 }

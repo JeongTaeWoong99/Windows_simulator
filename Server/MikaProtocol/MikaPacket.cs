@@ -37,6 +37,9 @@ namespace MikaProtocol
         S_LoginResponse = 6,
         C_AddItemRequest = 7,
         S_UpdateItemResponse = 8,
+        C_GachaDrawRequest = 9,
+        S_GachaDrawResponse = 10,
+        S_InventoryResponse = 11,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -86,7 +89,27 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_UpdateItemResponse)]
     public partial class S_UpdateItemResponse : IPacket
     {
-        public List<ItemInfo>? Items { get; set; }
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.C_GachaDrawRequest)]
+    public partial class C_GachaDrawRequest : IPacket
+    {
+        public int GachaId { get; set; }    // 뽑을 풀 ID
+        public int DrawCount { get; set; }  // 1(단차) 또는 10(10연차)
+    }
+
+    [MemoryPackable, Packet(PacketId.S_GachaDrawResponse)]
+    public partial class S_GachaDrawResponse : IPacket
+    {
+        public bool Success { get; set; }
+        public List<GachaRewardInfo>? Rewards { get; set; }  // 뽑힌 순서대로
+    }
+
+    [MemoryPackable, Packet(PacketId.S_InventoryResponse)]
+    public partial class S_InventoryResponse : IPacket
+    {
+        public List<ItemInfo>? Items { get; set; }  // 로그인 시 인벤토리 전체 스냅샷
     }
 
 

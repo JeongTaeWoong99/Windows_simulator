@@ -1,5 +1,6 @@
 using System.Data;
 using Dapper;
+using MikaProtocol;
 
 namespace WSGameServer.Repository;
 
@@ -12,6 +13,7 @@ public sealed class LoginRepository : IRepository
 
     // ExecuteAsync에서 채우고 Apply에서 사용하는 조회 결과
     private long _userId;
+    private List<ItemInfo> _items = new();
 
     // DBExecutor 파티션 키 — 같은 세션 작업은 직렬 처리
     public long Key => User.SessionId;
@@ -42,14 +44,23 @@ public sealed class LoginRepository : IRepository
         {
             _userId = row.UserId;
         }
-        
-        // 3. Data Fetch 
+
+        // 3. Data Fetch — 인벤토리 로드(AddItemRepository와 동일하게 account user_id = User.Uid 기준)
+        // DB는 InventoryRow로 받고, User에 넘길 때 네트워크/전달용 ItemInfo로 변환한다.
+        var inventoryRows = await connection.QueryAsync<InventoryRow>(
+            "SELECT item_id, count FROM t_inventory WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        _items = inventoryRows
+            .Select(r => new ItemInfo { ItemId = r.ItemId, Count = r.Count })
+            .ToList();
     }
 
     // === 로직 스레드에서 실행 ===
     public void Apply()
     {
-        User.Login();
+        User.LoadDB(_items);   // DB에서 읽어온 데이터 일괄 적재
+        User.Login();          // S_LoginResponse
     }
 
     // Dapper 매핑용 DTO (컬럼 snake_case → MatchNamesWithUnderscores로 매핑)
@@ -57,5 +68,12 @@ public sealed class LoginRepository : IRepository
     {
         public long UserId { get; set; }
         public long IsBanned { get; set; }
+    }
+
+    // t_inventory 조회 전용 Row (Protocol의 ItemInfo와 분리)
+    private sealed record InventoryRow
+    {
+        public int ItemId { get; set; }
+        public int Count { get; set; }
     }
 }

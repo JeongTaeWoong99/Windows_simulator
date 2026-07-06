@@ -19,7 +19,9 @@ public class NetworkManager : Singleton<NetworkManager>
         };
 
         // 접속 해제 시 해당 세션의 User 정리
-        // _server.Disconnected += session => UserManager.Instance.TryRemove(session.SessionId, out _);
+        // 네트워크 스레드에서 호출되지만, Destroy()가 OnDestroy를 LogicExecutor로 넘겨
+        // 실제 정리(UserManager.LeaveUser)는 로직 스레드에서 실행된다.
+        _server.Disconnected += session => session.GetUser()?.Destroy();
 
         _server.Listen();
     }

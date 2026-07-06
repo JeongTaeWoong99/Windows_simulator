@@ -13,6 +13,12 @@ public sealed class Inventory
             info => info.ItemId,
             info => new Item(info.ItemId, info.Count));
     }
+
+    // 현재 인벤토리 전체를 네트워크 전송용 ItemInfo 목록으로 변환한다.
+    public List<ItemInfo> Snapshot()
+        => _items.Values
+            .Select(item => new ItemInfo { ItemId = item.Id, Count = item.Count })
+            .ToList();
     
     public ItemChangeInfo AddItem(int itemId, int count)
     {

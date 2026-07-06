@@ -1,12 +1,30 @@
 using MikaProtocol;
+using WSGameServer.Repository;
 
 namespace WSGameServer.User;
 
 public partial class User
 {
-    public void AddItem(int itemId, int count)
+    // 현재 인벤토리 전체 스냅샷을 클라이언트로 전송한다.
+    public void SendInventory()
+    {
+        Send(new S_InventoryResponse { Items = Inventory.Snapshot() });
+    }
+
+    // 패킷 전송 없이 메모리 갱신 + DB 반영만 수행하고 변경분을 반환한다.
+    // 호출자(AddItem, GachaService 등)가 응답 구성을 담당한다.
+    public ItemChangeInfo GainItem(int itemId, int count)
     {
         var itemChangeInfo = Inventory.AddItem(itemId, count);
-        PostDBTask<ItemChangeInfo>(this, itemChangeInfo);
+
+        PostDBTask<AddItemRepository>(new (this, itemChangeInfo));
+        return itemChangeInfo;
+    }
+
+    public void AddItem(int itemId, int count)
+    {
+        var itemChangeInfo = GainItem(itemId, count);
+
+        Send(new S_UpdateItemResponse { ItemChangeInfos = [itemChangeInfo] });
     }
 }
