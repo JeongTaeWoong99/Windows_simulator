@@ -3,7 +3,7 @@ using MikaProtocol;
 using WSGameServer.Common;
 using WSGameServer.DB;
 using WSGameServer.Network;
-using WSGameServer.User.Repository;
+using WSGameServer.Repository;
 
 namespace WSGameServer.User;
 
@@ -12,7 +12,7 @@ namespace WSGameServer.User;
 /// 참조 방향은 User -> Session 단방향이며, Session은 User를 알지 못한다.
 /// 생성은 반드시 <see cref="UserManager.CreateUser"/>를 통해서만 이루어진다.
 /// </summary>
-public sealed class User : Entity
+public sealed partial class User : Entity
 {
     public long SessionId { get; }
     public string Pid { get; }    
@@ -21,10 +21,12 @@ public sealed class User : Entity
     public string NickName { get; set; }
     public DateTime LoggedInAt { get; }
     
-    
     public long Uid { get; set; }
     public int AdminLevel { get; set; }
     public bool IsNewbie { get; set; }
+    
+    // Inventory
+    public Inventory.Inventory Inventory { get; init; } = new();
 
     internal User(ISession session, string pid, string nickname)
     {
@@ -59,13 +61,13 @@ public sealed class User : Entity
         AdminLevel = adminLevel;
         IsNewbie = isNewbie;
 
-        PostDBTask(new LoginRepository(this));
+        PostDBTask<LoginRepository>(new (this));
     }
 
     public void Send<T>(T packet) where T : IPacket => Session.SendPacket(packet);
     
-    public void PostDBTask(IRepository repository)
+    public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository 
     {
-        DBManager.Instance.Post(repository);
+        DBManager.Instance.Post<TRepository>(repository);
     }
 }

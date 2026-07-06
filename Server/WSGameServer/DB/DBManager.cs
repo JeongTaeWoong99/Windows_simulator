@@ -1,8 +1,8 @@
 using Microsoft.Data.Sqlite;
 using MikaNetwork.Server;
 using MikaUtils;
+using WSGameServer.Repository;
 using WSGameServer.User;
-using WSGameServer.User.Repository;
 
 namespace WSGameServer.DB;
 
@@ -40,7 +40,7 @@ public class DBManager : Singleton<DBManager>
         throw new FileNotFoundException($"DB 파일을 찾을 수 없습니다: Shared/{dbFileName}");
     }
 
-    public void Post(IRepository repository)
+    public void Post<TRepository>(TRepository repository) where TRepository : IRepository
     {
         // 같은 Key(유저)는 직렬, 다른 Key는 병렬로 처리
         DBExecutor.Instance.Post(repository.Key, async () =>

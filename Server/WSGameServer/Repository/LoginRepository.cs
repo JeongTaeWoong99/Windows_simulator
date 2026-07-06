@@ -1,9 +1,7 @@
 using System.Data;
 using Dapper;
-using MikaNetwork;
-using MikaProtocol;
 
-namespace WSGameServer.User.Repository;
+namespace WSGameServer.Repository;
 
 /// <summary>
 /// 이름(user_name) 기반 로그인. t_user에 없으면 자동 가입 후 로그인한다.
@@ -18,9 +16,9 @@ public sealed class LoginRepository : IRepository
     // DBExecutor 파티션 키 — 같은 세션 작업은 직렬 처리
     public long Key => User.SessionId;
 
-    public User User { get; init; }
+    public User.User User { get; init; }
 
-    public LoginRepository(User user)
+    public LoginRepository(User.User user)
     {
         User = user;
     }

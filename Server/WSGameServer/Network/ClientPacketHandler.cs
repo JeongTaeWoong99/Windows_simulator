@@ -2,7 +2,6 @@ using MikaNetwork;
 using MikaProtocol;
 using WSGameServer.DB;
 using WSGameServer.User;
-using WSGameServer.User.Repository;
 
 namespace WSGameServer.Network;
 
@@ -34,5 +33,20 @@ public static class ClientPacketHandler
 
         UserManager.Instance.CreateUser(session, req.Id, req.Id);
         //DBManager.Instance.Post(new LoginRepository(session, req.Id));
+    }
+
+    [PacketHandler]
+    public static void Handle_C_AddItemRequest(ISession session, C_AddItemRequest req)
+    {
+        // TODO: 인벤토리에 아이템 추가(UPSERT) 후 갱신 결과를 응답한다
+        Console.WriteLine($"[Server] AddItem 요청: ItemId={req.ItemId}, Count={req.Count}, Session={session.SessionId}");
+
+        var user = session.GetUser();
+        user.Inventory.AddItem(req.ItemId, req.Count);
+        
+        session.SendPacket(new S_UpdateItemResponse
+        {
+            Items = { new ItemInfo { ItemId = req.ItemId, Count = req.Count } }
+        });
     }
 }

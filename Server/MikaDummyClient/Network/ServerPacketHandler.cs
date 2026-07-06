@@ -23,6 +23,14 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv Login: Success={res.Success}, SessionId={res.SessionId}");
         }
+
+        [PacketHandler]
+        public static void Handle_S_UpdateItemResponse(ISession session, S_UpdateItemResponse res)
+        {
+            Console.WriteLine($"[Client] Recv UpdateItem: Count={res.Items.Count}");
+            foreach (var item in res.Items)
+                Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}");
+        }
     }
 }
 

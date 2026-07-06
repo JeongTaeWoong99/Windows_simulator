@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using MemoryPack;
 
 /// <summary>
@@ -33,7 +34,9 @@ namespace MikaProtocol
         C_PingRequest = 3,
         S_PongResponse = 4,
         C_LoginRequest = 5,
-        S_LoginResponse = 6
+        S_LoginResponse = 6,
+        C_AddItemRequest = 7,
+        S_UpdateItemResponse = 8,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -72,6 +75,20 @@ namespace MikaProtocol
         public bool Success { get; set; }
         public long SessionId { get; set; }
     }
+
+    [MemoryPackable, Packet(PacketId.C_AddItemRequest)]
+    public partial class C_AddItemRequest : IPacket
+    {
+        public int ItemId { get; set; }
+        public int Count { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_UpdateItemResponse)]
+    public partial class S_UpdateItemResponse : IPacket
+    {
+        public List<ItemInfo>? Items { get; set; }
+    }
+
 
 
 }

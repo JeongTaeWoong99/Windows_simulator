@@ -1,8 +1,7 @@
 using System.Data;
 using Dapper;
-using MikaNetwork;
 
-namespace WSGameServer.User.Repository;
+namespace WSGameServer.Repository;
 
 public class AccountRepository : IRepository
 {
@@ -11,14 +10,14 @@ public class AccountRepository : IRepository
     
     private AccountResultRow? _resultRow;
     
-    public AccountRepository(User user)
+    public AccountRepository(User.User user)
     {
         User = user;
     }
 
     public long Key { get => User.SessionId; }
 
-    public User User { get; init; }
+    public User.User User { get; init; }
     
     public async Task ExecuteAsync(IDbConnection connection)
     {

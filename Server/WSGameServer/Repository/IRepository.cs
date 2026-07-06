@@ -1,6 +1,6 @@
 using System.Data;
 
-namespace WSGameServer.User.Repository;
+namespace WSGameServer.Repository;
 
 public interface IRepository
 {
