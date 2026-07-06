@@ -89,3 +89,7 @@ crashlytics-build.properties
 # Server
 bin
 obj
+.DS_Store
+
+# JetBrains Rider 생성 인덱스 (개인 환경, 자동 재생성)
+identifier.sqlite
