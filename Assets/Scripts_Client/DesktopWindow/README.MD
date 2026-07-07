@@ -1,6 +1,6 @@
 # Desktop Window Control (Task Bar Hero 스타일) — Built-in 성공 버전
 
-> ✅ **결론 먼저** : URP에서 투명 배경이 끝내 불가능함을 (재검증까지) 확인했고, **Built-in 렌더 파이프라인으로 이전하여 투명·보더리스·항상위·클릭스루·드래그·도킹을 모두 성공**시켰습니다. 
+> ✅ **결론 먼저** : URP에서 투명 배경이 끝내 불가능함을 (재검증까지) 확인했고, **Built-in 렌더 파이프라인으로 이전하여 투명·보더리스·항상위·클릭스루·드래그·위치/크기 제어를 모두 성공**시켰습니다. 
 > 이 문서는 그 이전 과정과 도중에 만난 함정·해결 방법을 정리한 문서입니다.
 
 ## 목차
@@ -39,7 +39,7 @@
 | 투명 배경 (바탕화면 비침) | ✅ | `DwmExtendFrameIntoClientArea(-1)` + 카메라 알파 0 |
 | 클릭 스루 (빈 영역 클릭 통과) | ✅ | `WS_EX_TRANSPARENT` + `GetCursorPos` 폴링 |
 | 창 이동 | ✅ | OS 타이틀바를 켜고 그 타이틀바를 잡아 드래그 |
-| 위치/크기 지정·도킹 | ✅ | `SetWindowPos(x, y, w, h)` |
+| 위치(9분할 앵커)·크기(프리셋) | ✅ | `SystemParametersInfo(SPI_GETWORKAREA)` + `SetWindowPos(x, y, w, h)` |
 
 각 기능이 무엇을 하고 어떻게 구현하는지:
 - **타이틀바 토글** — OS 타이틀바+테두리를 켜고 끈다. 켜면 `WS_CAPTION|WS_SYSMENU`(이 타이틀바로 창 이동, 단 리사이즈용 `WS_THICKFRAME`은 넣지 않아 크기 조절 불가), 끄면 캡션/프레임 비트를 제거하고 `WS_POPUP`을 더한 보더리스가 된다. 어느 쪽이든 프레임(`SWP_FRAMECHANGED`)을 갱신해 반영한다.
@@ -47,7 +47,7 @@
 - **투명 배경** — 바탕화면이 비치게 한다. `DwmExtendFrameIntoClientArea(MARGINS=-1)`로 DWM 유리 프레임을 창 전체로 확장하고, 카메라가 알파 0으로 그린 픽셀이 그대로 투명해진다.
 - **클릭 스루** — 빈 영역 클릭을 뒤 창으로 통과시킨다. 확장 스타일에 `WS_EX_TRANSPARENT`를 켜고, 통과 상태에선 입력이 안 오므로 `GetCursorPos`로 커서를 직접 폴링해 UI 위인지 판정한다.
 - **창 이동** — 커스텀 드래그 바 없이, 타이틀바 토글을 켜서 나타난 **OS 진짜 타이틀바**를 잡고 옮긴다(OS가 기본 처리). 타이틀바가 켜지면 그 바를 잡을 수 있도록 동적 클릭 스루를 잠시 해제한다.
-- **위치/크기·도킹** — 창을 원하는 좌표/크기로 옮긴다. `SetWindowPos`에 좌표·크기를 넘긴다(작업표시줄 위 우하단 도킹 등).
+- **위치·크기** — 위치는 9분할 앵커(좌상단~우하단) 드롭다운으로, 크기는 프리셋(작은 화면/큰 화면) 드롭다운으로 고른다. 크기는 고정 픽셀이 아니라 **주 모니터 세로 해상도 기준으로 런타임 계산**한다(작은=세로 1/3, 큰=세로 1/2, 1:2 비율 유지 → 세로 1/2 이하라 작업표시줄을 침범하지 않음). `SystemParametersInfo(SPI_GETWORKAREA)`로 작업표시줄을 제외한 작업 영역을 얻어, 창이 화면 밖으로 나가거나 작업표시줄에 가리지 않게 좌표를 계산한 뒤 `SetWindowPos`로 옮긴다. 크기를 바꾸면 현재 앵커 위치로 재정렬한다. 캔버스 기준 해상도는 360×720로 고정이라 창 크기에 맞춰 UI가 자동으로 비례 스케일된다.
 
 ---
 
@@ -77,8 +77,8 @@
 | 파일 | 위치 | 역할 |
 |------|------|------|
 | `Win32Native.cs` | `DesktopWindow/` | Win32 / DWM API의 P/Invoke(네이티브 함수·상수·구조체) 선언 모음 |
-| `WindowManager.cs` | `Managers/` | 창 제어 본체 (타이틀바·투명·항상위·클릭스루·위치/크기·도킹), 싱글턴 |
-| `WindowPanelUI.cs` | `UI/` | 창 기능 토글 5개(타이틀바·투명·항상위·동적클릭스루·도킹)를 WindowManager 설정과 동기화·배선하는 디버그 패널 |
+| `WindowManager.cs` | `Managers/` | 창 제어 본체 (타이틀바·투명·항상위·클릭스루·9분할 위치·크기 프리셋), 싱글턴 |
+| `WindowPanelUI.cs` | `UI/` | 창 기능 토글 4개(타이틀바·투명·항상위·동적클릭스루) + 위치·크기 드롭다운 2개를 WindowManager 설정과 동기화·배선하는 디버그 패널 |
 | `DesktopWindow_Control.unity` | `Assets/Scenes/` | 데모 씬 |
 
 > URP 시절의 `TransparentCameraOutput.cs`(RenderTexture→RawImage 우회용)는 Built-in에선 불필요하여 이전하지 않았습니다.
@@ -92,7 +92,8 @@ DesktopWindow_Control.unity
 ├─ WindowManager      (WindowManager 부착, Raycast Camera 자동 확보)
 └─ Canvas  (Screen Space - Overlay, CanvasScaler = Scale With Screen Size / Match Height)
    └─ DemoPanel Panel (WindowPanelUI)
-      └─ Toggle(타이틀바) / Toggle(투명) / Toggle(항상위) / Toggle(동적클릭스루) / Toggle(도킹)
+      ├─ Toggle(타이틀바) / Toggle(투명) / Toggle(항상위) / Toggle(동적클릭스루)
+      └─ Dropdown(위치 9분할) / Dropdown(크기 프리셋)
 ```
 
 ---
@@ -116,7 +117,7 @@ DesktopWindow_Control.unity
 | 항상 위 | `SetWindowPos(HWND_TOPMOST, …)` | user32 |
 | 클릭 스루 | `SetWindowLong(GWL_EXSTYLE, WS_EX_LAYERED \| WS_EX_TRANSPARENT)` | user32 |
 | 창 이동 | OS 타이틀바(`WS_CAPTION`)를 켜서 그 바를 잡고 드래그(OS 기본 처리) | user32 |
-| 위치/크기 | `SetWindowPos(x, y, w, h)` | user32 |
+| 위치/크기 | `SystemParametersInfo(SPI_GETWORKAREA)`로 작업 영역 조회 + `SetWindowPos(x, y, w, h)` | user32 |
 | 커서 위치 (클릭스루 중 판정) | `GetCursorPos()` + `GetWindowRect()` | user32 |
 
 ---
@@ -221,9 +222,9 @@ DesktopWindow_Control.unity
 
 **WindowManager (인스펙터)**
 - Set Start Title Bar = 켜기(첫 실행에서 타이틀바로 창 이동 가능) / Start Transparent / Start Topmost = 켜기
-- Start Click Through = 상황에 맞게 (동적 클릭스루 권장)
-- Set Start Size = 켜기, Start Size = 360×720 권장
-- Set Start Dock = 끄기(기본), Dock Size = 600×200 권장
+- Set Start Dynamic Click Through = 켜기 권장(빈 영역 클릭 통과 자동 판정)
+- Size Presets = 작은 화면(세로 1/3) / 큰 화면(세로 1/2) — 주 모니터 세로 기준 런타임 계산, Set Start Size = Small 권장
+- Set Start Anchor = 원하는 9분할 위치(예: Lower Right)
 
 **빌드**
 - Build Settings에 데모 씬을 **첫 번째 활성 씬**으로 → Windows x64 빌드

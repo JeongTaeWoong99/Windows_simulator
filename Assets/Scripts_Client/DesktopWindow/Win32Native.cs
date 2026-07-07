@@ -174,6 +174,27 @@ public static class Win32Native
     [DllImport("user32.dll")]
     public static extern bool GetCursorPos(out POINT lpPoint);
 
+    public const uint SPI_GETWORKAREA = 0x0030; // SystemParametersInfo 액션: 작업 영역(작업표시줄 제외) 조회
+
+    /// <summary>
+    /// 시스템 파라미터를 조회/설정한다. 여기선 SPI_GETWORKAREA 로 주 모니터의
+    /// "작업 영역"(작업표시줄을 제외한 사용 가능 화면 사각형)을 RECT 로 받는다.
+    /// → 창을 9분할 위치로 배치할 때 작업표시줄에 가려지지 않게 계산하는 데 사용.
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern bool SystemParametersInfo(uint uiAction, uint uiParam, ref RECT pvParam, uint fWinIni);
+
+    public const int SM_CXSCREEN = 0; // GetSystemMetrics: 주 모니터 전체 가로 픽셀(작업표시줄 포함)
+    public const int SM_CYSCREEN = 1; // GetSystemMetrics: 주 모니터 전체 세로 픽셀(작업표시줄 포함)
+
+    /// <summary>
+    /// 시스템 지표를 조회한다. SM_CXSCREEN/SM_CYSCREEN 으로 주 모니터의 "전체" 해상도를 얻는다.
+    /// → 창 크기를 "화면 세로의 1/3·1/2" 처럼 모니터 비례로 계산하는 데 사용.
+    /// (SPI_GETWORKAREA 와 같은 좌표계 — DPI 가상화 환경에서도 서로 일관된다.)
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern int GetSystemMetrics(int nIndex);
+
     // ──────────────────────────────────────────────────────────────
     // dwmapi.dll — 데스크톱 합성기(투명/유리 효과)
     // ──────────────────────────────────────────────────────────────
