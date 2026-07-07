@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 ///   [DllImport("user32.dll")] 처럼 어느 DLL의 어떤 함수인지 표시하고, C 함수 시그니처를
 ///   C#으로 그대로 옮겨 적으면 런타임이 호출을 연결해 준다. (using System.Runtime.InteropServices)
 ///
-/// ■ 이 클래스는 "선언"만 담당한다. 실제 호출 순서/조건은 WindowController 가 가진다.
+/// ■ 이 클래스는 "선언"만 담당한다. 실제 호출 순서/조건은 WindowManager 가 가진다.
 ///   Task Bar Hero 스타일의 창 제어(투명·보더리스·항상위·클릭스루·드래그)에 필요한
 ///   함수·상수·구조체를 한곳에 모았다.
 ///

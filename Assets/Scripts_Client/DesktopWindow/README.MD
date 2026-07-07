@@ -34,20 +34,20 @@
 
 | 기능 | 상태 | 핵심 API |
 |------|:----:|------|
-| 보더리스 (타이틀바·테두리 제거) | ✅ | `SetWindowLong(WS_POPUP)` |
+| 타이틀바 토글 (보더리스 On/Off) | ✅ | `SetWindowLong(WS_CAPTION ↔ WS_POPUP)` |
 | 항상 위 (Always On Top) | ✅ | `SetWindowPos(HWND_TOPMOST)` |
 | 투명 배경 (바탕화면 비침) | ✅ | `DwmExtendFrameIntoClientArea(-1)` + 카메라 알파 0 |
 | 클릭 스루 (빈 영역 클릭 통과) | ✅ | `WS_EX_TRANSPARENT` + `GetCursorPos` 폴링 |
-| 정보바 드래그 (OS 창 이동) | ✅ | `ReleaseCapture` + `SendMessage(WM_SYSCOMMAND)` |
+| 창 이동 | ✅ | OS 타이틀바를 켜고 그 타이틀바를 잡아 드래그 |
 | 위치/크기 지정·도킹 | ✅ | `SetWindowPos(x, y, w, h)` |
 
 각 기능이 무엇을 하고 어떻게 구현하는지:
-- **보더리스** — 창의 타이틀바·테두리를 없앤다. 창 스타일에서 캡션/프레임 비트를 제거하고 `WS_POPUP`을 더한 뒤 프레임을 갱신한다.
+- **타이틀바 토글** — OS 타이틀바+테두리를 켜고 끈다. 켜면 `WS_CAPTION|WS_SYSMENU`(이 타이틀바로 창 이동, 단 리사이즈용 `WS_THICKFRAME`은 넣지 않아 크기 조절 불가), 끄면 캡션/프레임 비트를 제거하고 `WS_POPUP`을 더한 보더리스가 된다. 어느 쪽이든 프레임(`SWP_FRAMECHANGED`)을 갱신해 반영한다.
 - **항상 위** — 다른 창들보다 항상 앞에 둔다. `SetWindowPos`의 Z순서 인자에 `HWND_TOPMOST`를 넘긴다.
 - **투명 배경** — 바탕화면이 비치게 한다. `DwmExtendFrameIntoClientArea(MARGINS=-1)`로 DWM 유리 프레임을 창 전체로 확장하고, 카메라가 알파 0으로 그린 픽셀이 그대로 투명해진다.
 - **클릭 스루** — 빈 영역 클릭을 뒤 창으로 통과시킨다. 확장 스타일에 `WS_EX_TRANSPARENT`를 켜고, 통과 상태에선 입력이 안 오므로 `GetCursorPos`로 커서를 직접 폴링해 UI 위인지 판정한다.
-- **정보바 드래그** — 보더리스라 타이틀바가 없어도 창을 끌 수 있게 한다. `ReleaseCapture` 후 `SendMessage(WM_SYSCOMMAND, SC_MOVE|HTCAPTION)`로 이동을 OS에 위임한다.
-- **위치/크기·도킹** — 창을 원하는 좌표/크기로 옮긴다. `SetWindowPos`에 좌표·크기를 넘긴다(작업표시줄 위 도킹 등).
+- **창 이동** — 커스텀 드래그 바 없이, 타이틀바 토글을 켜서 나타난 **OS 진짜 타이틀바**를 잡고 옮긴다(OS가 기본 처리). 타이틀바가 켜지면 그 바를 잡을 수 있도록 동적 클릭 스루를 잠시 해제한다.
+- **위치/크기·도킹** — 창을 원하는 좌표/크기로 옮긴다. `SetWindowPos`에 좌표·크기를 넘긴다(작업표시줄 위 우하단 도킹 등).
 
 ---
 
@@ -72,15 +72,14 @@
 
 *이 섹션 : 어떤 파일들로 이뤄졌고, 씬이 어떻게 구성됐는지.*
 
-`Assets/DesktopWindow_Control/`
+`Assets/Scripts_Client/` (역할별 폴더로 분리)
 
-| 파일 | 역할 |
-|------|------|
-| `Win32Native.cs` | Win32 / DWM API의 P/Invoke(네이티브 함수·상수·구조체) 선언 모음 |
-| `WindowController.cs` | 창 제어 본체 (투명·보더리스·항상위·클릭스루·드래그·위치/크기·디버그 키) |
-| `InfoBarToggleUI.cs` | 정보바 토글 + 정보바를 잡아 OS 창 드래그 |
-| `WindowDemoPanelUI.cs` | 각 기능을 런타임에 On/Off 하는 디버그 패널 (버튼/토글 연결용) |
-| `DesktopWindow_Control.unity` | 데모 씬 |
+| 파일 | 위치 | 역할 |
+|------|------|------|
+| `Win32Native.cs` | `DesktopWindow/` | Win32 / DWM API의 P/Invoke(네이티브 함수·상수·구조체) 선언 모음 |
+| `WindowManager.cs` | `Managers/` | 창 제어 본체 (타이틀바·투명·항상위·클릭스루·위치/크기·도킹), 싱글턴 |
+| `WindowPanelUI.cs` | `UI/` | 창 기능 토글 5개(타이틀바·투명·항상위·동적클릭스루·도킹)를 WindowManager 설정과 동기화·배선하는 디버그 패널 |
+| `DesktopWindow_Control.unity` | `Assets/Scenes/` | 데모 씬 |
 
 > URP 시절의 `TransparentCameraOutput.cs`(RenderTexture→RawImage 우회용)는 Built-in에선 불필요하여 이전하지 않았습니다.
 
@@ -90,12 +89,10 @@ DesktopWindow_Control.unity
 ├─ Main Camera        (Clear Flags = Solid Color, 배경 알파 0)
 ├─ Directional Light
 ├─ EventSystem        (InputSystemUIInputModule, 프로젝트 InputSystem_Actions 연결)
-├─ WindowManager      (WindowController 부착, Raycast Camera = Main Camera)
+├─ WindowManager      (WindowManager 부착, Raycast Camera 자동 확보)
 └─ Canvas  (Screen Space - Overlay, CanvasScaler = Scale With Screen Size / Match Height)
-   ├─ InfoBar Panel   (InfoBarToggleUI, 기본 꺼짐)
-   └─ DemoPanel Panel (WindowDemoPanelUI)
-      ├─ Toggle(투명) / Toggle(항상위) / Toggle(클릭스루)
-      └─ Button(정보바) / Button(도킹)
+   └─ DemoPanel Panel (WindowPanelUI)
+      └─ Toggle(타이틀바) / Toggle(투명) / Toggle(항상위) / Toggle(동적클릭스루) / Toggle(도킹)
 ```
 
 ---
@@ -113,11 +110,12 @@ DesktopWindow_Control.unity
 | 기능 | 핵심 호출 | DLL |
 |------|-----------|-----|
 | 창 핸들 확보 | `Process.MainWindowHandle` (폴백 `GetActiveWindow`) | kernel32 / user32 |
-| 보더리스 | `GetWindowLong` → 테두리 비트 제거 + `WS_POPUP` → `SetWindowLong` + `SetWindowPos(SWP_FRAMECHANGED)` | user32 |
+| 타이틀바 On | `GetWindowLong` → `WS_CAPTION\|WS_SYSMENU` (WS_THICKFRAME 제외) → `SetWindowLong` + `SetWindowPos(SWP_FRAMECHANGED)` | user32 |
+| 타이틀바 Off(보더리스) | `GetWindowLong` → 테두리 비트 제거 + `WS_POPUP` → `SetWindowLong` + `SetWindowPos(SWP_FRAMECHANGED)` | user32 |
 | 투명 배경 | `DwmExtendFrameIntoClientArea(MARGINS = -1)` + 카메라 알파 0 | dwmapi |
 | 항상 위 | `SetWindowPos(HWND_TOPMOST, …)` | user32 |
 | 클릭 스루 | `SetWindowLong(GWL_EXSTYLE, WS_EX_LAYERED \| WS_EX_TRANSPARENT)` | user32 |
-| 창 드래그 | `ReleaseCapture()` + `SendMessage(WM_SYSCOMMAND, 0xF012, 0)` | user32 |
+| 창 이동 | OS 타이틀바(`WS_CAPTION`)를 켜서 그 바를 잡고 드래그(OS 기본 처리) | user32 |
 | 위치/크기 | `SetWindowPos(x, y, w, h)` | user32 |
 | 커서 위치 (클릭스루 중 판정) | `GetCursorPos()` + `GetWindowRect()` | user32 |
 
@@ -147,7 +145,7 @@ DesktopWindow_Control.unity
 
 *이 섹션 : 실제로 무엇을 옮기고 무엇을 들어냈는지.*
 
-1. **스크립트 4개만 복사** (`Win32Native`, `WindowController`, `InfoBarToggleUI`, `WindowDemoPanelUI`).
+1. **창 제어 스크립트 복사** (`Win32Native`, `WindowManager`, `WindowPanelUI`).
    - `.meta`까지 복사해 GUID를 보존 → 씬의 컴포넌트 참조가 그대로 연결됨.
    - URP 시절의 `NewAssembly.asmdef`는 가져오지 않음 → 스크립트가 **Assembly-CSharp**에 포함되어 UGUI/InputSystem을 자동 참조(컴파일 안전). UnityEvent는 GUID로 바인딩되므로 어셈블리명이 달라도 무관.
 2. **씬 이전 + URP 잔재 제거.**
@@ -181,7 +179,7 @@ DesktopWindow_Control.unity
 
 ### 1. 클릭스루 ON 상태에선 Unity 입력이 죽는다
 `WS_EX_TRANSPARENT`가 걸리면 **OS가 마우스 메시지를 창에 보내지 않습니다.** 따라서 `Input.mousePosition` / `EventSystem.IsPointerOverGameObject()`가 동작하지 않아 클릭스루가 영영 안 풀립니다.
-→ **해결** : `GetCursorPos`로 전역 커서를 폴링하고, 그 좌표를 `EventSystem.RaycastAll`에 직접 넣어 UI 위인지 판정. (`WindowController.GetCursorScreenPosition()` / `IsPointerOverContent()`)
+→ **해결** : `GetCursorPos`로 전역 커서를 폴링하고, 그 좌표를 `EventSystem.RaycastAll`에 직접 넣어 UI 위인지 판정. (`WindowManager.GetCursorScreenPosition()` / `IsPointerOverContent()`)
 
 ### 2. WS_EX_LAYERED 는 단독으로 쓰면 안 된다
 `WS_EX_LAYERED`는 `SetLayeredWindowAttributes`(균일 알파/색상키) 또는 `UpdateLayeredWindow`(per-pixel)와 **짝으로** 써야 합니다. 다만 본 데모는 DWM per-pixel 투명을 쓰므로 **`SetLayeredWindowAttributes`를 일부러 호출하지 않습니다.** 호출하면 DWM 투명이 균일 알파 모드로 덮여 창이 검게 변합니다. (그래서 `Win32Native`엔 선언만 있고 미사용)
@@ -221,18 +219,18 @@ DesktopWindow_Control.unity
 - CanvasScaler = Scale With Screen Size, **Match = Height(1)**
 - UI는 화면 일부만 차지하게 (전체화면 불투명 패널 금지)
 
-**WindowController (인스펙터)**
-- Start Transparent / Borderless / Topmost = 켜기
+**WindowManager (인스펙터)**
+- Set Start Title Bar = 켜기(첫 실행에서 타이틀바로 창 이동 가능) / Start Transparent / Start Topmost = 켜기
 - Start Click Through = 상황에 맞게 (동적 클릭스루 권장)
 - Set Start Size = 켜기, Start Size = 360×720 권장
-- Debug Step Mode = **빌드 시 끄기** (격리 테스트 시에만 켬)
+- Set Start Dock = 끄기(기본), Dock Size = 600×200 권장
 
 **빌드**
 - Build Settings에 데모 씬을 **첫 번째 활성 씬**으로 → Windows x64 빌드
-- 확인 : ① 바탕화면 비침(투명) ② UI 표시 ③ 빈 영역 클릭 통과 / UI 위 클릭 먹힘 ④ 정보바 켜고 드래그 → 창 이동
+- 확인 : ① 바탕화면 비침(투명) ② UI 표시 ③ 빈 영역 클릭 통과 / UI 위 클릭 먹힘 ④ 타이틀바 토글 켜고 타이틀바 드래그 → 창 이동 ⑤ 타이틀바 켠 상태에서 가장자리 당겨도 리사이즈 안 됨
 
-**런타임 디버그 키** (`Debug Step Mode` ON 시)
-- `F1` 보더리스 / `F2` 투명 / `F3` 항상위 / `F4` 클릭스루 / `F5` 창을 화면중앙 800×600 / `ESC` 종료
+**런타임 키**
+- `ESC` 종료
 
 ---
 
