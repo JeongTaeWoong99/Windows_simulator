@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using MikaNetwork;
 using MikaProtocol;
-using Utils;
+using Client.Utils;
 
 /// <summary>
 /// 클라이언트 세션/요청 매니저 (싱글턴).
