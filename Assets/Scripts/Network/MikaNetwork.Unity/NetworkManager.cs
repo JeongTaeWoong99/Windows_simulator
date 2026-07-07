@@ -31,7 +31,7 @@ namespace MikaNetwork
                 return default;
             };
 
-            await _client.ConnectAsync("127.0.0.1", 10010);
+            await _client.ConnectAsync("127.0.0.1", 10050);
         }
 
         void Update()
