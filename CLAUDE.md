@@ -43,6 +43,8 @@
 - 패킷 정의는 `Server/MikaProtocol`에서만 수정한다. `Assets/Scripts/Protocol`은
   `sync-protocol-to-unity.ps1`이 덮어쓰는 사본이므로 직접 수정하지 않는다.
 - 커밋은 `commit-convention` 규칙을 따른다.
+- Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
+  `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
 - `.claude/settings.local.json`은 개인 설정이라 커밋하지 않는다(`.gitignore` 처리됨).
 - 코드는 한글 주석을 사용한다.
 
