@@ -93,3 +93,6 @@ obj
 
 # JetBrains Rider 생성 인덱스 (개인 환경, 자동 재생성)
 identifier.sqlite
+
+# Excel 임시 잠금 파일 (파일 열려 있을 때 생성됨)
+~$*.xlsx
