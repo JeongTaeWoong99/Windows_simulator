@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="ExcelGenerator/ExcelGenerator.csproj" />
   <Project Path="MikaDummyClient/MikaDummyClient.csproj" />
   <Project Path="MikaNetwork.Client/MikaNetwork.Client.csproj" />
   <Project Path="MikaNetwork.Core/MikaNetwork.Core.csproj" />
