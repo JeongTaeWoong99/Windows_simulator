@@ -27,7 +27,7 @@ param(
     [string]$SourceRoot,
 
     # Unity 프로젝트의 스크립트 루트
-    [string]$DestRoot = "C:\Users\wlsdn\workspace\Windows_simulator\Assets\Scripts",
+    [string]$DestRoot = "C:\Users\wlsdn\workspace\Windows_simulator\Assets\Scripts_Server",
 
     # 미러링 매핑 ("소스 폴더" = "대상 폴더", SourceRoot/DestRoot 기준 상대경로).
     # 소스와 대상 폴더명이 달라도 된다. 공유 코어도 동기화하려면
