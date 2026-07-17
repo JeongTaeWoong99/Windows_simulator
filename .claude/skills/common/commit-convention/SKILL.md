@@ -3,6 +3,8 @@ name: commit-convention
 description: Git 커밋 메시지 규칙. 커밋 작업 시 이 규칙을 따른다.
 ---
 
+> 최종 업데이트: 2026-07-17
+
 # Git 커밋 컨벤션
 
 ---

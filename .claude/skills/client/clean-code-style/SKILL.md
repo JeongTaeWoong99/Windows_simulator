@@ -3,6 +3,8 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
+> 최종 업데이트: 2026-07-17
+
 # Unity/C# 클린 코드 스타일
 
 ---
