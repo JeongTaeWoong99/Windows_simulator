@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using Client.Utils;
 
 /// <summary>
 /// 데스크톱 창 제어 핵심 클래스 (Task Bar Hero 스타일).
@@ -48,7 +47,7 @@ public enum WindowSize
     Big     // 큰 화면   (세로 1/1)
 }
 
-public class WindowManager : SingletonMonoBehaviour<WindowManager>
+public class WindowManager : MonoService<WindowManager>
 {
     // ─── static readonly 표 (WindowSize enum 순서와 1:1) ───
     private static readonly string[] SizeLabels         = { "작은 화면", "중간 화면", "큰 화면" }; // 드롭다운 표시 라벨
@@ -97,12 +96,7 @@ public class WindowManager : SingletonMonoBehaviour<WindowManager>
     // Unity 생명주기
     // ──────────────────────────────────────────────
 
-    // 싱글턴 등록 (Instance 확보) — 창 초기화는 Start에서 진행
-    protected override void Awake()
-    {
-        base.Awake();
-    }
-
+    // 서비스 등록은 MonoService.Awake가 담당 — 창 제어 초기화만 Start에서 진행
     private void Start()
     {
         if (_raycastCamera == null)
