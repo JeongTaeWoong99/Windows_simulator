@@ -2,6 +2,8 @@
 // 이 파일은 ExcelGenerator가 Excel(Enum.xlsx)로부터 생성했습니다. 직접 수정 금지.
 // </auto-generated>
 
+namespace GameData;
+
 public enum ItemType : byte
 {
     None    = 0,

@@ -9,7 +9,10 @@ public class Program
         // Excel 폴더는 프로젝트 루트(Program.cs가 있는 곳)의 하위에 있으므로
         // 실행 경로(bin/Debug/...)가 아니라 소스 위치 기준으로 잡는다.
         var enumFilePath = ResolvePath("Excel/Enum.xlsx");
-        var enumOutputPath = ResolvePath("Output/Code/Enum.cs");
+        // 공유 정의(Enum/Row/GameTable/TableSet)는 GameData 프로젝트로, 툴 전용 Packer는 로컬 Output으로 출력한다.
+        var gameDataDir = ResolvePath("../GameData");
+        var enumOutputPath = Path.Combine(gameDataDir, "Enum.cs");
+        var packerDir = ResolvePath("Output/Code/Packer");
 
         var excelDir = ResolvePath("Excel");
 
@@ -24,7 +27,10 @@ public class Program
         Console.WriteLine($"ItemType.NotExist 존재? {EnumGenerator.HasMember("ItemType", "NotExist")}");
         Console.WriteLine($"ItemRarity.Mythic 존재? {EnumGenerator.HasMember("ItemRarity", "Mythic")}");
 
+        // 데이터 테이블 파싱 → Row 클래스/Packer 코드 생성.
+        // 바이너리(.bytes) 생성은 생성된 코드를 컴파일하는 ExcelDataPacker가 담당한다(generate-tables.ps1 참고).
         ExcelGenerator.LoadExcel(excelDir);
+        ExcelGenerator.GenerateCode(gameDataDir, packerDir);
     }
     
 

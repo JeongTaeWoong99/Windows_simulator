@@ -1,0 +1,24 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <!--
+      엑셀에서 생성되는 "데이터 정의(계약)" 공유 프로젝트.
+      - Enum.cs / Tables/*.cs (Row) / GameTable.cs / TableSet.cs 만 포함한다(전부 자동 생성).
+      - MikaProtocol과 동일하게 netstandard2.1(Unity)·net9.0(서버)로 멀티타깃하고,
+        빌드되면 정의(.cs)를 Unity로 단방향 미러링한다(파이프라인 generate-tables.ps1 3단계).
+      - Packer/*.cs(툴 전용)와 *.bytes(런타임 데이터)는 여기에 포함하지 않는다.
+      - Unity(C# 9)로 미러링되므로 생성 코드는 C# 9 문법 범위를 벗어나지 않는다.
+    -->
+    <PropertyGroup>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <LangVersion>11</LangVersion>
+        <TargetFrameworks>netstandard2.1;net9.0</TargetFrameworks>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- MikaProtocol과 동일 버전 유지(Unity 측 MemoryPack과 호환) -->
+        <PackageReference Include="MemoryPack" Version="1.21.4" />
+    </ItemGroup>
+
+</Project>

@@ -20,28 +20,26 @@ public static class EnumGenerator
     {
         StringBuilder sb = new();
 
-        try
+        // 예외를 삼키지 않는다. 파일 잠금 등 실패는 OpenWorkbook이 명확한 메시지로 던지고,
+        // 그대로 위로 전파돼 파이프라인이 즉시 중단된다(뒤에서 "소스가 null"로 번지지 않도록).
+        using var workbook = ExcelGenerator.OpenWorkbook(enumFilePath);
+
+        // 생성 코드는 GameData 네임스페이스로 통일한다(서버/Unity에서 전역 오염 없이 참조).
+        sb.AppendLine("namespace GameData;");
+        sb.AppendLine();
+
+        var first = true;
+        foreach (var worksheet in workbook.Worksheets)
         {
-            using var workbook = new XLWorkbook(enumFilePath);
+            if (!first)
+                sb.AppendLine();
+            first = false;
 
-            var first = true;
-            foreach (var worksheet in workbook.Worksheets)
-            {
-                if (!first)
-                    sb.AppendLine();
-                first = false;
-
-                AppendEnum(sb, worksheet);
-            }
-
-            _enumSource = sb.ToString();
-            _enumAssembly = _enumCompiler.Compile(_enumSource, _enumAssemblyName);
-            
+            AppendEnum(sb, worksheet);
         }
-        catch(Exception ex)
-        {
-            Console.WriteLine(ex);
-        }
+
+        _enumSource = sb.ToString();
+        _enumAssembly = _enumCompiler.Compile(_enumSource, _enumAssemblyName);
     }
 
     public static bool HasMember(string enumName, string memberName)

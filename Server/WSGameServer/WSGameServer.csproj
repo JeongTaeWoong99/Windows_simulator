@@ -13,6 +13,8 @@
       <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
       <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <!-- 엑셀에서 생성된 게임 데이터 테이블(Row/Enum/GameTable) -->
+      <ProjectReference Include="..\GameData\GameData.csproj" />
       <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
       <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
@@ -25,6 +27,11 @@
 
     <ItemGroup>
       <PackageReference Include="SQLite" Version="3.13.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <!-- 엑셀에서 패킹된 테이블 바이너리를 실행 폴더(Data/)로 복사한다. GameTable.LoadAll이 여기서 읽는다. -->
+      <Content Include="..\Shared\Data\*.bytes" Link="Data\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

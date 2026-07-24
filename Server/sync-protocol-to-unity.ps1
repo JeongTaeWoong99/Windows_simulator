@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     MikaProtocol(서버) -> Protocol(Unity) 로 .cs 정의를 단방향 미러링한다.
 
