@@ -3,6 +3,8 @@ name: feature-design
 description: 기능 설계 규칙. 새 기능/클래스/시스템 구현 요청 시 이 규칙을 따른다.
 ---
 
+> 최종 업데이트: 2026-07-17
+
 # 기능 설계 가이드
 
 ---
@@ -79,7 +81,7 @@ public class EnemyAI
 |------|----------|------|
 | **Factory** | 객체 생성 로직 분리 | `if (type == "A") new A(); else new B();` 반복 |
 | **Object Pool** | 잦은 생성/파괴 오브젝트 | 총알, 이펙트, 파티클 |
-| **Singleton** | 전역 매니저 (남용 주의) | GameManager, AudioManager |
+| **Singleton** | 전역 매니저 — **하드 싱글톤(`X.Inst`) 대신 아래 서비스 로케이터를 쓴다** | GameManager, AudioManager |
 
 ### 행동 패턴
 
@@ -103,6 +105,92 @@ public class EnemyAI
 |------|----------|
 | **MVP** | UI 로직 분리 (uGUI 기반) |
 | **MVVM** | 데이터 바인딩 자동화 (UI Toolkit 기반) |
+| **Service Locator** | 전역 매니저 접근 창구 통일 — 하드 싱글톤 대체 (아래 절 참조) |
+
+---
+
+## 3-1. 서비스 로케이터 — 전역 접근의 기본 수단
+
+코드는 `<스크립트 루트>/Common/Service/` 에 있다 (`Services` 정적 클래스 + `MonoService<T>` 베이스).
+전역 매니저를 `X.Inst` 로 직접 물지 않고 **`Services.Get<T>()` 한 창구로 통일**한다.
+
+- 등록은 `MonoService<T>` 를 상속하면 `Awake` 에서 자동으로 된다 (`OnDestroy` 에서 자동 해제).
+  `X.Inst = this` 보일러플레이트가 사라진다.
+- **`Awake` 에서 다른 서비스를 `Get` 하지 않는다.** 모든 `Awake` 등록이 끝난 뒤인 `Start` 부터 쓴다.
+  등록 전에 `Get` 하면 예외가 나는데, 이는 초기화 순서 버그를 조용히 넘기지 않고 즉시 드러내려는 의도다.
+
+### 둘 중 무엇으로 등록할까
+
+| 방식 | 선언 | 쓰는 경우 |
+|------|------|----------|
+| **역할(인터페이스)로 등록** | `class ComputerOpponent : MonoService<IOpponent>, IOpponent` | 구현을 **교체할 가능성이 있을 때**. 호출부는 `Services.Get<IOpponent>()` 만 알아 어느 구현인지 모른다 (DIP) |
+| **자기 타입으로 등록** | `class CardManager : MonoService<CardManager>` | 교체 가능성이 없을 때. 호출 포맷을 통일해두는 것이 목적 |
+
+자기 타입으로 등록해도 호출 포맷이 같으므로, 나중에 인터페이스가 필요해지면
+**등록부만 바꾸면 된다** — 호출부는 `Get<T>` 의 `T` 만 갈아끼우면 끝이다. 처음부터 모든 매니저에
+인터페이스를 뽑는 오버엔지니어링을 피하고, 교체 필요가 실제로 생겼을 때 승격한다.
+
+### 구현 교체는 '등록되는 쪽'을 바꿔서 한다
+
+같은 역할을 구현한 둘을 모두 `MonoService<IOpponent>` 로 두고, **하나만 활성화**하면
+그쪽 `Awake` 가 자신을 등록한다. 호출부는 전혀 손대지 않는다.
+
+```csharp
+public interface IOpponent { void SetupPlace(); void Play(); }        // AI/Contracts/
+
+public class ComputerOpponent : MonoService<IOpponent>, IOpponent { } // 룰 기반 컴퓨터
+public class RemoteOpponent   : MonoService<IOpponent>, IOpponent { } // 원격 사람 (서버 연동 자리)
+
+// 선택자가 둘 중 하나만 SetActive(true) → 그쪽이 IOpponent 로 등록됨
+// 호출부는 어느 쪽이 등록됐는지 모른다
+Services.Get<IOpponent>().Play();
+```
+
+### 역할 이름에 구현 방식을 넣지 않는다
+
+위 역할이 `IOpponentAI` 가 아니라 `IOpponent` 인 데는 이유가 있다. 이 역할은 **컴퓨터도 사람도 수행**한다
+(`RemoteOpponent` 는 서버가 붙으면 실제 사람이 두는 자리다). 이름에 `AI` 를 박으면 사람 구현이
+들어오는 순간 이름이 거짓이 되고, 호출부는 `Get<IOpponentAI>()` 로 사람을 부르게 된다.
+
+- **역할 이름** = 무엇을 하는가 (`IOpponent`, `IDamageable`) — 구현 수단은 빼고 계약만 말한다.
+- **구현 이름** = 어떻게 하는가 (`ComputerOpponent`, `RemoteOpponent`) — 정체를 드러낸다.
+- 같은 역할의 구현끼리는 **접미사를 맞춘다** (`~Opponent`). 앞부분이 구현 간 차이를 설명한다.
+
+### 계약은 그것을 정의한 기능 폴더에 둔다
+
+`Services` 는 범용 메커니즘이라 `Common/Service/` 지만, 계약은 도메인이므로 `Common/` 에 두지 않는다.
+**그 계약을 정의한 기능 폴더 안 `Contracts/`** 에 두어 계약과 구현이 함께 움직이게 한다.
+
+```
+Gameplay/AI/
+├── Contracts/
+│   └── IOpponent.cs        계약
+├── ComputerOpponent.cs     구현
+├── RemoteOpponent.cs       구현
+└── OpponentSelector.cs     교체 담당
+```
+
+- 인터페이스가 하나뿐이어도 `Contracts/` 를 만든다 — 계약이 항상 같은 자리에 있어야 찾기 쉽다.
+- **계약 전용 최상위 폴더(`Core/Contracts/` 같은)는 두지 않는다.** 기능이 늘수록 구현과 멀어져
+  어느 구현이 이 계약을 지키는지 안 보이는 창고가 된다.
+
+**"누가 정의했나"는 호출하는 쪽(소비자)이 기준이다** — 인터페이스는 부르는 쪽이 "나는 이런 게 필요하다"고
+선언하는 것이지, 구현하는 쪽이 제공하는 게 아니다 (DIP). 여러 기능이 쓴다고 중앙으로 올리지 않는다.
+
+```
+Combat/
+├── Contracts/
+│   └── IDamageable.cs      '때릴 수 있는 것' 을 필요로 하는 건 Combat → Combat 이 정의
+└── CombatSystem.cs         Services.Get / 직접 호출로 IDamageable 을 부른다
+
+Gameplay/
+├── Entity.cs               : IDamageable   구현만 할 뿐, 계약의 주인이 아니다
+└── Card.cs                 : IDamageable
+```
+
+Gameplay·UI 가 나중에 `IDamageable` 을 같이 쓰게 돼도 파일은 그대로 `Combat/Contracts/` 에 있는다.
+**사용처 수가 늘었다고 계약을 옮기지 않는다** — 옮기는 기준을 '몇 개가 쓰나'로 두면 사용처가 바뀔 때마다
+파일이 이사를 다닌다. 소유자는 변하지 않으므로 자리도 변하지 않는다.
 
 ---
 

@@ -2,15 +2,14 @@ using System;
 using System.Collections.Generic;
 using MikaNetwork;
 using MikaProtocol;
-using Client.Utils;
 
 /// <summary>
-/// 클라이언트 세션/요청 매니저 (싱글턴).
+/// 클라이언트 세션/요청 매니저 (서비스 로케이터 등록).
 /// - 저수준 소켓(MikaNetwork.NetworkManager)과 수신 진입점(ServerPacketHandler) 위에
 ///   게임 로직용 요청 API·상태 캐시·가공 이벤트를 얹는 파사드.
 /// - UI는 서버 폴더의 ServerPacketHandler가 아니라 이 매니저만 바라본다(서버 의존을 한곳에 격리).
 /// </summary>
-public class SessionManager : SingletonMonoBehaviour<SessionManager>
+public class SessionManager : MonoService<SessionManager>
 {
     // ─── 상태 캐시 ───
     private readonly List<ItemInfo> _inventory = new List<ItemInfo>();
@@ -23,12 +22,6 @@ public class SessionManager : SingletonMonoBehaviour<SessionManager>
     public event Action<bool>?                  LoginCompleted;   // 로그인 완료 (성공 여부)
     public event Action?                        InventoryChanged; // 인벤토리 갱신됨 (스냅샷 반영 후)
     public event Action<List<GachaRewardInfo>>? GachaCompleted;   // 가챠 완료 (뽑힌 보상 목록)
-
-    // 싱글턴 등록 (Instance 확보)
-    protected override void Awake()
-    {
-        base.Awake();
-    }
 
     // 수신 이벤트 구독 (Unity 메시지)
     private void OnEnable()

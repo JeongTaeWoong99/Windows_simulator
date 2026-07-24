@@ -3,7 +3,6 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-using Client.Utils;
 
 /// <summary>
 /// 창 제어 디버그 패널.
@@ -41,7 +40,7 @@ public class WindowPanelUI : MonoBehaviour
         this.RequireRef(sizeDropdown,              nameof(sizeDropdown));
         this.RequireRef(positionDropdown,          nameof(positionDropdown));
 
-        var window = WindowManager.Instance;
+        var window = Services.Get<WindowManager>();
 
         // 토글 바인딩
         BindToggle(titleBarToggle,            window.StartTitleBar,            window.SetTitleBar);

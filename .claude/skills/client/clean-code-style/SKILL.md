@@ -3,6 +3,8 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
+> 최종 업데이트: 2026-07-18
+
 # Unity/C# 클린 코드 스타일
 
 ---
@@ -348,7 +350,9 @@ public static event Action<bool> OnTurnStarted;
 
 `[SerializeField]`(또는 직렬화되는 public) 필드가 3개 이상이면 역할별로 헤더를 붙여 가독성을 높인다.
 기본 `[Header]`는 좌측 정렬만 되어 구분이 약하므로, 이 프로젝트는 **가운데 정렬 커스텀 헤더 `[CenterHeader]`** 를 쓴다.
-(`Assets/Scripts_Client/Common/Attribute/CenterHeaderAttribute.cs` + `Assets/Scripts_Client/Editor/CenterHeaderDrawer.cs`)
+(`<스크립트 루트>/Common/Attribute/CenterHeaderAttribute.cs` + `<스크립트 루트>/Common/Editor/CenterHeaderDrawer.cs`.
+스크립트 루트는 1인 개발 `Assets/Scripts`, 협업(클라이언트) `Assets/Scripts_Client` —
+프로젝트별 실제 경로는 해당 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다)
 
 텍스트는 `< 참조 >` 처럼 양쪽을 꺾쇠로 감싸 구분을 더 또렷하게 한다.
 
@@ -363,8 +367,33 @@ public static event Action<bool> OnTurnStarted;
 ### 폴더 구성 — 역할별로 세분화
 
 스크립트가 늘어날 때 비슷한 것끼리 빨리 찾도록 역할별 폴더로 나눈다.
+**스크립트 루트**는 1인 개발 `Assets/Scripts/`, 협업(클라이언트 담당) `Assets/Scripts_Client/` 다.
 
-- **정적 유틸/도구**(static, 순수 계산) → 최상위 `Util/` (예: `Util/Utils.cs`, `Util/Layout/`)
-- **기능 보조**는 `Common/<범주>/` 로 세분 (예: `Common/Camera/`, `Common/Sorting/`, `Common/Attribute/`)
-- 에디터 전용 스크립트는 반드시 `Editor/` 폴더 안에 둔다.
+```
+<스크립트 루트>/
+├── Common/        범용 공통 코드 (마스터 templates/code/ 에서 설치됨)
+│   ├── Attribute/   런타임 어트리뷰트
+│   ├── Editor/      에디터 전용 — 드로어·툴 (빌드 제외)
+│   ├── Service/     서비스 로케이터 (Services · MonoService)
+│   └── Extensions/  확장 메서드 (MonoBehaviourExtensions 등)
+├── Gameplay/      도메인 스크립트
+│   └── AI/
+│       ├── Contracts/       이 기능이 정의한 계약 (예 : IOpponent)
+│       ├── ComputerOpponent.cs
+│       └── RemoteOpponent.cs
+├── Combat/
+│   ├── Contracts/           예 : IDamageable — 때리는 쪽이 정의하므로 여기
+│   └── CombatSystem.cs
+├── Managers/
+├── UI/
+└── SO/
+```
+
+- **범용 공통 코드**(프로젝트를 옮겨도 그대로 쓰는 것)는 `Common/` 아래 위 분류로 넣는다.
+  분류에 안 맞으면 `Common/<범주>/` 를 추가한다 (예 : `Common/Camera/`, `Common/Sorting/`).
+- **인터페이스는 그것을 정의한 기능 폴더 안 `Contracts/`** 에 둔다. 계약 전용 최상위 폴더는 두지 않는다
+  — 사용처가 늘었다고 계약을 옮기지 않는다. 자세한 규칙은 `feature-design` 3-1 참조.
+- **에디터 전용 스크립트는 반드시 `Editor/` 이름의 폴더 안에 둔다.** 빌드에서 제외된다.
+  반대로 런타임 코드를 여기 넣으면 빌드가 깨진다.
 - 도메인 스크립트는 기존대로 `Gameplay/` · `Managers/` · `UI/` · `SO/`.
+- 프로젝트가 이 표준과 다른 구조를 쓰면 해당 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다.
