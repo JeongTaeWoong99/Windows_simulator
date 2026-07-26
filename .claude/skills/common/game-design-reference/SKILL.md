@@ -55,7 +55,7 @@ description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·�
 | `GameDesign/기획/특성/README.md` | 특성·스킬·효율 배수 |
 | `GameDesign/기획/아이템/README.md` | 아이템·인벤토리·가챠·`ItemTable` |
 | `GameDesign/기획/거래/README.md` | 거래소·화폐·경제 |
-| `GameDesign/기획/진행및성장/README.md` | 성장 곡선·온보딩·후반 목표 |
+| `GameDesign/기획/진행 및 성장/README.md` | 성장 곡선·온보딩·후반 목표 |
 | `GameDesign/기획/게임UI/README.md` | 바탕화면 위젯·팝업 UI·알림 |
 | `GameDesign/기획/기획평가.md` | 리스크 확인·설계 판단 근거 |
 
