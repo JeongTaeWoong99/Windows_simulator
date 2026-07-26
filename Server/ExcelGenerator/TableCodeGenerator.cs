@@ -5,11 +5,11 @@ namespace ExcelGenerator;
 /// <summary>
 /// 파싱된 TableData로부터 테이블 코드를 생성한다.
 /// - Tables/{Table}.cs        : [MemoryPackable] Row 클래스 — 추후 서버/Unity 공유 대상 (MemoryPack 외 의존성 없음)
-/// - Packer/{Table}Packer.cs  : 셀 문자열 → 강타입 Row 변환 + 직렬화/검증 — ExcelDataPacker 전용
+/// - Packer/{Table}Packer.cs  : 셀 문자열 → 강타입 Row 변환 + 직렬화/검증 — 툴 전용(배포 대상 아님)
 /// - Packer/TableRegistry.cs  : 테이블명 → 패커 델리게이트 매핑
 /// - Packer/PackerUtil.cs     : 공용 셀 파싱/검증 헬퍼 (고정 내용)
 /// 생성 산출물은 이 프로젝트에서 컴파일하지 않으며(csproj Compile Remove),
-/// ExcelDataPacker가 Compile Include로 가져가 빌드한다 — 빌드 성공 자체가 생성 코드 검증이다.
+/// GenerateData가 런타임에 인메모리 컴파일(TableCompiler)해 .bytes를 만든다 — 컴파일 성공 자체가 생성 코드 검증이다.
 /// </summary>
 public static class TableCodeGenerator
 {
@@ -57,7 +57,7 @@ public static class TableCodeGenerator
             Console.WriteLine($"[코드 생성] {table.Name}: 컬럼 {columns.Count}개, {keyDesc} → GameData/Tables/{table.Name}.cs, Packer/{table.Name}Packer.cs");
         }
 
-        // 패커 전용(ExcelDataPacker에서만 컴파일 — 배포 대상 아님)
+        // 패커 전용(GenerateData가 런타임 컴파일할 때만 사용 — 배포 대상 아님)
         File.WriteAllText(Path.Combine(packerDir, "TableRegistry.cs"),
             Header + BuildRegistry(tables), Utf8NoBom);
         File.WriteAllText(Path.Combine(packerDir, "PackerUtil.cs"),
@@ -230,6 +230,19 @@ public static class TableCodeGenerator
             ? System.Text.Json.JsonSerializer.Serialize(list[0])
             : "(빈 테이블)";
     }
+
+    /// <summary>모든 행을 사람이 읽을 JSON으로 덤프한다(enum=이름, 들여쓰기, 한글 그대로). 엑셀 대조/리뷰용 사이드카.</summary>
+    public static string Dump(byte[] bytes)
+    {
+        var list = MemoryPackSerializer.Deserialize<List<{{tableName}}Row>>(bytes) ?? new();
+        var options = new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+        options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        return System.Text.Json.JsonSerializer.Serialize(list, options);
+    }
 }
 """);
         return sb.ToString();
@@ -351,19 +364,20 @@ public static class TableCodeGenerator
         var sb = new StringBuilder();
         sb.AppendLine("namespace GameData;");
         sb.AppendLine();
-        sb.AppendLine("/// <summary>테이블명 → 패커 델리게이트. ExcelDataPacker가 시트명으로 조회한다.</summary>");
+        sb.AppendLine("/// <summary>테이블명 → 패커 델리게이트. GenerateData가 시트명으로 조회해 .bytes를 만든다.</summary>");
         sb.AppendLine("public static class TableRegistry");
         sb.AppendLine("{");
-        sb.AppendLine("    /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 덤프</summary>");
+        sb.AppendLine("    /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 / Dump: 전체 행 JSON(리뷰용)</summary>");
         sb.AppendLine("    public sealed record Entry(");
         sb.AppendLine("        Func<IReadOnlyList<string[]>, byte[]> Pack,");
         sb.AppendLine("        Func<byte[], int>                     Verify,");
-        sb.AppendLine("        Func<byte[], string>                  Preview);");
+        sb.AppendLine("        Func<byte[], string>                  Preview,");
+        sb.AppendLine("        Func<byte[], string>                  Dump);");
         sb.AppendLine();
         sb.AppendLine("    public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>");
         sb.AppendLine("    {");
         foreach (var table in tables)
-            sb.AppendLine($"        [\"{table.Name}\"] = new({table.Name}Packer.Pack, {table.Name}Packer.Verify, {table.Name}Packer.Preview),");
+            sb.AppendLine($"        [\"{table.Name}\"] = new({table.Name}Packer.Pack, {table.Name}Packer.Verify, {table.Name}Packer.Preview, {table.Name}Packer.Dump),");
         sb.AppendLine("    };");
         sb.AppendLine("}");
         return sb.ToString();

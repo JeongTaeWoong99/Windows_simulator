@@ -16,6 +16,6 @@ public static class GameTable
     /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
     public static void LoadAll(Func<string, byte[]> read)
     {
-        ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.SkillTID);
+        ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
     }
 }

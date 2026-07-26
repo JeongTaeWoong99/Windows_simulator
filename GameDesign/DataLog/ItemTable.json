@@ -1,0 +1,50 @@
+[
+  {
+    "ItemTID": 1,
+    "Name": "A",
+    "ItemType": "Farming",
+    "ItemRarity": "Common",
+    "MaxStack": 1000,
+    "Desciption": "Military1"
+  },
+  {
+    "ItemTID": 2,
+    "Name": "B",
+    "ItemType": "Farming",
+    "ItemRarity": "Common",
+    "MaxStack": 2000,
+    "Desciption": "Military2"
+  },
+  {
+    "ItemTID": 3,
+    "Name": "C",
+    "ItemType": "Farming",
+    "ItemRarity": "Common",
+    "MaxStack": 3000,
+    "Desciption": "Military3"
+  },
+  {
+    "ItemTID": 4,
+    "Name": "D",
+    "ItemType": "Logging",
+    "ItemRarity": "Common",
+    "MaxStack": 100,
+    "Desciption": "Shaman1"
+  },
+  {
+    "ItemTID": 5,
+    "Name": "E",
+    "ItemType": "Logging",
+    "ItemRarity": "Common",
+    "MaxStack": 200,
+    "Desciption": "Shaman2"
+  },
+  {
+    "ItemTID": 6,
+    "Name": "F",
+    "ItemType": "Misc",
+    "ItemRarity": "Common",
+    "MaxStack": 304,
+    "Desciption": "Shaman3"
+  }
+]

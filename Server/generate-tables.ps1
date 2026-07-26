@@ -1,12 +1,12 @@
-﻿# 엑셀 → 코드(.cs) → MemoryPack 바이너리(.bytes) → 미러링 파이프라인
+﻿# 엑셀 → 코드(.cs) + MemoryPack 바이너리(.bytes) → 미러링 파이프라인
 #
-# 1단계: ExcelGenerator  — Enum.cs + Row(GameData/Tables) + GameTable/TableSet + Packer 코드 생성
-# 2단계: ExcelDataPacker — 생성 코드를 컴파일한 뒤 엑셀을 다시 파싱해 바이너리 패킹 (Shared/Data/*.bytes)
-# 3단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
-#                         (서버는 WSGameServer.csproj의 Content로 .bytes를 bin에 자동 복사)
+# 입력: GameDesign/Excel/*.xlsx  — 저장소 루트의 공용 기획 데이터(서버/클라 어느 쪽 폴더에도 속하지 않음)
 #
-# MemoryPack은 소스 제너레이터 기반이라 Row 클래스가 컴파일된 뒤에야 직렬화할 수 있으므로
-# 반드시 이 순서(코드 생성 → 패커 빌드+실행)로 실행해야 한다.
+# 1단계: ExcelGenerator — Enum/Row/GameTable/TableSet/Packer 코드 생성 + 그 코드를 런타임 컴파일해
+#                          .bytes까지 한 번에 생성 (Shared/Data/*.bytes). 구 ExcelDataPacker 흡수.
+#                          대조용 JSON 사이드카는 GameDesign/DataLog 에 기록.
+# 2단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
+#                          (서버는 WSGameServer.csproj의 Content로 .bytes를 bin에 자동 복사)
 
 $ErrorActionPreference = "Stop"
 
@@ -30,15 +30,11 @@ function Stop-OnFailure {
 }
 
 try {
-    Write-Host "[1/3] ExcelGenerator: 코드 생성" -ForegroundColor Cyan
+    Write-Host "[1/2] ExcelGenerator: 코드 + 바이너리 생성" -ForegroundColor Cyan
     dotnet run --project (Join-Path $PSScriptRoot "ExcelGenerator")
-    if ($LASTEXITCODE -ne 0) { Stop-OnFailure "코드 생성 단계에서 중단합니다." $LASTEXITCODE }
+    if ($LASTEXITCODE -ne 0) { Stop-OnFailure "코드/바이너리 생성 단계에서 중단합니다." $LASTEXITCODE }
 
-    Write-Host "[2/3] ExcelDataPacker: 바이너리 패킹" -ForegroundColor Cyan
-    dotnet run --project (Join-Path $PSScriptRoot "ExcelDataPacker")
-    if ($LASTEXITCODE -ne 0) { Stop-OnFailure "바이너리 패킹 단계에서 중단합니다." $LASTEXITCODE }
-
-    Write-Host "[3/3] 미러링: 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets" -ForegroundColor Cyan
+    Write-Host "[2/2] 미러링: 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets" -ForegroundColor Cyan
 
     # 3-1) GameData 정의(.cs) → Assets/Scripts_Server/GameData (기존 프로토콜 미러 스크립트 재사용)
     & (Join-Path $PSScriptRoot "sync-protocol-to-unity.ps1") -FolderMap @{ "GameData" = "GameData" }

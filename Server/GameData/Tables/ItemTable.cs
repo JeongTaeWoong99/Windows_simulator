@@ -10,7 +10,7 @@ namespace GameData;
 [MemoryPackable]
 public partial class ItemTableRow
 {
-    public int        SkillTID   { get; set; }        // int
+    public int        ItemTID    { get; set; }        // int
     public string     Name       { get; set; } = "";  // string
     public ItemType   ItemType   { get; set; }        // eItemType
     public ItemRarity ItemRarity { get; set; }        // eItemRarity

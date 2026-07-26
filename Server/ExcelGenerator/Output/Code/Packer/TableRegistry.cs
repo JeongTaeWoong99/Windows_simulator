@@ -4,17 +4,18 @@
 
 namespace GameData;
 
-/// <summary>테이블명 → 패커 델리게이트. ExcelDataPacker가 시트명으로 조회한다.</summary>
+/// <summary>테이블명 → 패커 델리게이트. GenerateData가 시트명으로 조회해 .bytes를 만든다.</summary>
 public static class TableRegistry
 {
-    /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 덤프</summary>
+    /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 / Dump: 전체 행 JSON(리뷰용)</summary>
     public sealed record Entry(
         Func<IReadOnlyList<string[]>, byte[]> Pack,
         Func<byte[], int>                     Verify,
-        Func<byte[], string>                  Preview);
+        Func<byte[], string>                  Preview,
+        Func<byte[], string>                  Dump);
 
     public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>
     {
-        ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview),
+        ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
     };
 }

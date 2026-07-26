@@ -14,7 +14,7 @@ public static class ItemTablePacker
     /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
     public static ItemTableRow Parse(string[] cells) => new()
     {
-        SkillTID   = PackerUtil.ParseInt(cells[0], Table, "SkillTID"),
+        ItemTID    = PackerUtil.ParseInt(cells[0], Table, "ItemTID"),
         Name       = PackerUtil.RequireString(cells[1], Table, "Name"),
         ItemType   = PackerUtil.ParseEnum<ItemType>(cells[2], Table, "ItemType"),
         ItemRarity = PackerUtil.ParseEnum<ItemRarity>(cells[3], Table, "ItemRarity"),
@@ -55,5 +55,18 @@ public static class ItemTablePacker
         return list is { Count: > 0 }
             ? System.Text.Json.JsonSerializer.Serialize(list[0])
             : "(빈 테이블)";
+    }
+
+    /// <summary>모든 행을 사람이 읽을 JSON으로 덤프한다(enum=이름, 들여쓰기, 한글 그대로). 엑셀 대조/리뷰용 사이드카.</summary>
+    public static string Dump(byte[] bytes)
+    {
+        var list = MemoryPackSerializer.Deserialize<List<ItemTableRow>>(bytes) ?? new();
+        var options = new System.Text.Json.JsonSerializerOptions
+        {
+            WriteIndented = true,
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+        };
+        options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+        return System.Text.Json.JsonSerializer.Serialize(list, options);
     }
 }

@@ -4,33 +4,50 @@ namespace ExcelGenerator;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
-        // Excel 폴더는 프로젝트 루트(Program.cs가 있는 곳)의 하위에 있으므로
-        // 실행 경로(bin/Debug/...)가 아니라 소스 위치 기준으로 잡는다.
-        var enumFilePath = ResolvePath("Excel/Enum.xlsx");
+        // 기획 데이터(엑셀)는 서버 툴 소스가 아니라 저장소 루트의 공용 폴더(GameDesign)에 둔다.
+        // 서버/클라이언트 어느 쪽 담당 폴더에도 속하지 않는 공용 입력이라 중립 위치가 맞다.
+        // 경로는 실행 경로(bin/Debug/...)가 아니라 소스 위치 기준으로 잡는다.
+        var excelDir = ResolvePath("../../GameDesign/Excel");
+        var enumFilePath = Path.Combine(excelDir, "Enum.xlsx");
         // 공유 정의(Enum/Row/GameTable/TableSet)는 GameData 프로젝트로, 툴 전용 Packer는 로컬 Output으로 출력한다.
         var gameDataDir = ResolvePath("../GameData");
         var enumOutputPath = Path.Combine(gameDataDir, "Enum.cs");
         var packerDir = ResolvePath("Output/Code/Packer");
 
-        var excelDir = ResolvePath("Excel");
+        // .bytes 출력 = Server/Shared/Data (서버는 Content로 bin에 복사, Unity는 파이프라인이 StreamingAssets로 복사)
+        var dataDir = ResolvePath("../Shared/Data");
+        // 사람이 읽는 JSON 사이드카(엑셀 대조/리뷰용)는 원본 엑셀 옆에 둔다 = GameDesign/DataLog
+        var logDir = ResolvePath("../../GameDesign/DataLog");
 
+        try
+        {
+            // 1) Enum 생성 (Enum.xlsx → GameData/Enum.cs)
+            EnumGenerator.GenerateEnumSource(enumFilePath);
+            EnumGenerator.MakeEnumCode(enumOutputPath);
 
-        EnumGenerator.GenerateEnumSource(enumFilePath);
-        //Console.OutputEncoding = System.Text.Encoding.UTF8;
+            Console.WriteLine($"ItemType.Farming 존재? {EnumGenerator.HasMember("ItemType", "Farming")}");
+            Console.WriteLine($"ItemRarity.Mythic 존재? {EnumGenerator.HasMember("ItemRarity", "Mythic")}");
 
-        // 생성된 enum 소스를 Output/Code/Enum.cs로 저장
-        EnumGenerator.MakeEnumCode(enumOutputPath);
+            // 2) 데이터 테이블 파싱 → Row/Packer 코드 생성
+            ExcelGenerator.LoadExcel(excelDir);
+            ExcelGenerator.GenerateCode(gameDataDir, packerDir);
 
-        Console.WriteLine($"ItemType.Farming 존재? {EnumGenerator.HasMember("ItemType", "Farming")}");
-        Console.WriteLine($"ItemType.NotExist 존재? {EnumGenerator.HasMember("ItemType", "NotExist")}");
-        Console.WriteLine($"ItemRarity.Mythic 존재? {EnumGenerator.HasMember("ItemRarity", "Mythic")}");
+            // 3) 생성 코드를 런타임 컴파일해 .bytes 생성 (구 ExcelDataPacker 역할 흡수) + JSON 사이드카(DataLog)
+            ExcelGenerator.GenerateData(gameDataDir, packerDir, dataDir, logDir);
 
-        // 데이터 테이블 파싱 → Row 클래스/Packer 코드 생성.
-        // 바이너리(.bytes) 생성은 생성된 코드를 컴파일하는 ExcelDataPacker가 담당한다(generate-tables.ps1 참고).
-        ExcelGenerator.LoadExcel(excelDir);
-        ExcelGenerator.GenerateCode(gameDataDir, packerDir);
+            Console.WriteLine("[완료] 코드(GameData) + 바이너리(Shared/Data) + 로그(DataLog) 생성 완료");
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            // 데이터 오류·파일 잠금 등은 여기서 원인 체인을 찍고 비0으로 종료한다(파이프라인이 멈추도록).
+            Console.Error.WriteLine($"[오류] {ex.Message}");
+            for (var inner = ex.InnerException; inner is not null; inner = inner.InnerException)
+                Console.Error.WriteLine($"       └ {inner.Message}");
+            return 1;
+        }
     }
     
 

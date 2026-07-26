@@ -6,7 +6,7 @@ public static class ExcelGenerator
 {
     private static List<TableData> _tables = new();
 
-    /// <summary>파싱된 테이블들. ExcelDataPacker가 재파싱 후 패킹할 때도 사용한다.</summary>
+    /// <summary>파싱된 테이블들. GenerateData가 .bytes 패킹 시 각 테이블의 Rows를 사용한다.</summary>
     public static IReadOnlyList<TableData> Tables => _tables;
 
     public static void LoadExcel(string excelDir)
@@ -46,15 +46,94 @@ public static class ExcelGenerator
         }
     }
 
-    // 데이터(바이너리) 생성은 ExcelDataPacker 소관이다.
-    // MemoryPack은 소스 제너레이터 기반이라 여기서 생성한 Row 클래스가 컴파일된 뒤에야
-    // 직렬화할 수 있으므로, "코드 생성(여기) → 패커 빌드+실행(ExcelDataPacker)" 2단계로 나눈다.
+    // MemoryPack은 소스 제너레이터 기반이라 생성한 Row 클래스가 컴파일된 뒤에야 직렬화할 수 있다.
+    // 예전엔 이 때문에 별도 ExcelDataPacker 프로젝트로 빌드했지만, 지금은 GenerateData가 생성 코드를
+    // 런타임에 인메모리 컴파일(TableCompiler)해 이 프로세스에서 .bytes까지 만든다.
 
     /// <summary>파싱된 테이블들로부터 공유 정의(Row/GameTable/TableSet)는 gameDataDir에,
     /// 툴 전용 Packer 코드는 packerDir에 생성한다.</summary>
     public static void GenerateCode(string gameDataDir, string packerDir)
     {
         TableCodeGenerator.Generate(_tables, gameDataDir, packerDir, ColumnInfo.Platform.ServerClient);
+    }
+
+    /// <summary>
+    /// GenerateCode가 만든 코드를 런타임에 인메모리 컴파일(MemoryPack 제너레이터 구동)하고,
+    /// TableRegistry를 리플렉션으로 호출해 각 테이블의 .bytes를 dataDir에 생성한다.
+    /// logDir에는 사람이 읽는 JSON 사이드카(enum=이름, 한글 그대로)를 함께 써서 엑셀 대조/리뷰를 돕는다.
+    /// (별도 ExcelDataPacker 없이 이 프로세스에서 코드+바이너리를 모두 만든다.)
+    /// </summary>
+    public static void GenerateData(string gameDataDir, string packerDir, string dataDir, string logDir)
+    {
+        var assembly = TableCompiler.Compile(CollectSources(gameDataDir, packerDir));
+
+        // TableRegistry.Tables는 static readonly '필드'(프로퍼티 아님)라 GetField로 접근한다.
+        var registryType = assembly.GetType("GameData.TableRegistry")
+            ?? throw new InvalidOperationException("생성 어셈블리에서 GameData.TableRegistry를 찾지 못했습니다.");
+        var tables = (System.Collections.IDictionary)registryType.GetField("Tables")!.GetValue(null)!;
+
+        Directory.CreateDirectory(dataDir);
+        Directory.CreateDirectory(logDir);
+
+        foreach (var table in _tables)
+        {
+            var entry = tables[table.Name]
+                ?? throw new InvalidOperationException($"'{table.Name}' 패커 엔트리가 없습니다. 코드 생성이 선행됐는지 확인하세요.");
+            var entryType = entry.GetType();
+            var pack    = (Delegate)entryType.GetProperty("Pack")!.GetValue(entry)!;
+            var verify  = (Delegate)entryType.GetProperty("Verify")!.GetValue(entry)!;
+            var preview = (Delegate)entryType.GetProperty("Preview")!.GetValue(entry)!;
+            var dump    = (Delegate)entryType.GetProperty("Dump")!.GetValue(entry)!;
+
+            byte[] bytes;
+            try
+            {
+                bytes = (byte[])pack.DynamicInvoke(table.Rows)!;
+            }
+            catch (System.Reflection.TargetInvocationException ex) when (ex.InnerException is not null)
+            {
+                // Pack 내부의 데이터 오류(테이블/컬럼/행 메시지)를 그대로 드러낸다(fail-fast).
+                throw ex.InnerException;
+            }
+
+            var outputPath = Path.Combine(dataDir, $"{table.Name}.bytes");
+            File.WriteAllBytes(outputPath, bytes);
+
+            // 기록 직후 역직렬화 라운드트립으로 자가검증한다.
+            var count = (int)verify.DynamicInvoke(bytes)!;
+
+            // 사람이 읽는 JSON 사이드카(전체 행) → 엑셀 대조/git diff 리뷰용.
+            var logPath = Path.Combine(logDir, $"{table.Name}.json");
+            File.WriteAllText(logPath, (string)dump.DynamicInvoke(bytes)!,
+                new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+
+            Console.WriteLine($"[데이터 생성] {table.Name}: {count}행, {bytes.Length:N0} bytes → {outputPath}");
+            Console.WriteLine($"    로그: {logPath}");
+            Console.WriteLine($"    첫 행: {(string)preview.DynamicInvoke(bytes)!}");
+        }
+    }
+
+    /// <summary>런타임 컴파일 대상 소스 목록: 공유 정의(GameData) + 툴 전용 Packer.</summary>
+    private static IReadOnlyList<string> CollectSources(string gameDataDir, string packerDir)
+    {
+        var sources = new List<string>();
+
+        void AddIfExists(string path)
+        {
+            if (File.Exists(path)) sources.Add(path);
+        }
+
+        AddIfExists(Path.Combine(gameDataDir, "Enum.cs"));
+        AddIfExists(Path.Combine(gameDataDir, "GameTable.cs"));
+        AddIfExists(Path.Combine(gameDataDir, "TableSet.cs"));
+
+        var tablesDir = Path.Combine(gameDataDir, "Tables");
+        if (Directory.Exists(tablesDir))
+            sources.AddRange(Directory.GetFiles(tablesDir, "*.cs"));
+        if (Directory.Exists(packerDir))
+            sources.AddRange(Directory.GetFiles(packerDir, "*.cs"));
+
+        return sources;
     }
 
 
