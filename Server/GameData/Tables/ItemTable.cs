@@ -4,16 +4,17 @@
 
 using MemoryPack;
 
-namespace GameData;
-
-/// <summary>ItemTable 테이블의 한 행. ItemTable.bytes = MemoryPackSerializer.Serialize(List&lt;ItemTableRow&gt;)</summary>
-[MemoryPackable]
-public partial class ItemTableRow
+namespace GameData
 {
-    public int        ItemTID    { get; set; }        // int
-    public string     Name       { get; set; } = "";  // string
-    public ItemType   ItemType   { get; set; }        // eItemType
-    public ItemRarity ItemRarity { get; set; }        // eItemRarity
-    public int        MaxStack   { get; set; }        // int
-    public string     Desciption { get; set; } = "";  // string
+    /// <summary>ItemTable 테이블의 한 행. ItemTable.bytes = MemoryPackSerializer.Serialize(List&lt;ItemTableRow&gt;)</summary>
+    [MemoryPackable]
+    public partial class ItemTableRow
+    {
+        public int        ItemTID    { get; set; }        // int
+        public string     Name       { get; set; } = "";  // string
+        public ItemType   ItemType   { get; set; }        // eItemType
+        public ItemRarity ItemRarity { get; set; }        // eItemRarity
+        public int        MaxStack   { get; set; }        // int
+        public string     Desciption { get; set; } = "";  // string
+    }
 }

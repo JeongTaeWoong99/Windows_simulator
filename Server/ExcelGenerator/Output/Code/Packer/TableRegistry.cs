@@ -2,20 +2,21 @@
 // 이 파일은 ExcelGenerator가 Excel 데이터 시트로부터 생성했습니다. 직접 수정 금지.
 // </auto-generated>
 
-namespace GameData;
-
-/// <summary>테이블명 → 패커 델리게이트. GenerateData가 시트명으로 조회해 .bytes를 만든다.</summary>
-public static class TableRegistry
+namespace GameData
 {
-    /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 / Dump: 전체 행 JSON(리뷰용)</summary>
-    public sealed record Entry(
-        Func<IReadOnlyList<string[]>, byte[]> Pack,
-        Func<byte[], int>                     Verify,
-        Func<byte[], string>                  Preview,
-        Func<byte[], string>                  Dump);
-
-    public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>
+    /// <summary>테이블명 → 패커 델리게이트. GenerateData가 시트명으로 조회해 .bytes를 만든다.</summary>
+    public static class TableRegistry
     {
-        ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
-    };
+        /// <summary>Pack: 셀 행들 → 바이너리 / Verify: 라운드트립 검증(행 수 반환) / Preview: 첫 행 / Dump: 전체 행 JSON(리뷰용)</summary>
+        public sealed record Entry(
+            Func<IReadOnlyList<string[]>, byte[]> Pack,
+            Func<byte[], int>                     Verify,
+            Func<byte[], string>                  Preview,
+            Func<byte[], string>                  Dump);
+
+        public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>
+        {
+            ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
+        };
+    }
 }

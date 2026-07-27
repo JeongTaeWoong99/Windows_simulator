@@ -24,10 +24,6 @@ public static class EnumGenerator
         // 그대로 위로 전파돼 파이프라인이 즉시 중단된다(뒤에서 "소스가 null"로 번지지 않도록).
         using var workbook = ExcelGenerator.OpenWorkbook(enumFilePath);
 
-        // 생성 코드는 GameData 네임스페이스로 통일한다(서버/Unity에서 전역 오염 없이 참조).
-        sb.AppendLine("namespace GameData;");
-        sb.AppendLine();
-
         var first = true;
         foreach (var worksheet in workbook.Worksheets)
         {
@@ -38,7 +34,9 @@ public static class EnumGenerator
             AppendEnum(sb, worksheet);
         }
 
-        _enumSource = sb.ToString();
+        // 생성 코드는 GameData 네임스페이스로 통일한다(서버/Unity에서 전역 오염 없이 참조).
+        // 블록 네임스페이스로 감싸는 이유는 CodeGenUtil 주석 참조(Unity = C# 9).
+        _enumSource = CodeGenUtil.BuildFile("GameData", Array.Empty<string>(), sb.ToString());
         _enumAssembly = _enumCompiler.Compile(_enumSource, _enumAssemblyName);
     }
 

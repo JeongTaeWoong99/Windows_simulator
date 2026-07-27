@@ -61,13 +61,13 @@ public static class TableCodeGenerator
         File.WriteAllText(Path.Combine(packerDir, "TableRegistry.cs"),
             Header + BuildRegistry(tables), Utf8NoBom);
         File.WriteAllText(Path.Combine(packerDir, "PackerUtil.cs"),
-            Header + PackerUtilSource, Utf8NoBom);
+            Header + CodeGenUtil.BuildFile("GameData", PackerUtilUsings, PackerUtilBody), Utf8NoBom);
 
         // 공유(서버·Unity) 로드/조회 진입점 + 헬퍼
         File.WriteAllText(Path.Combine(gameDataDir, "GameTable.cs"),
             Header + BuildGameTable(metas), Utf8NoBom);
         File.WriteAllText(Path.Combine(gameDataDir, "TableSet.cs"),
-            Header + TableSetSource, Utf8NoBom);
+            Header + CodeGenUtil.BuildFile("GameData", TableSetUsings, TableSetBody), Utf8NoBom);
     }
 
     /// <summary>GameTable 생성에 필요한 테이블 요약. Key가 null이면 리스트 전용 접근자로 생성한다.</summary>
@@ -125,10 +125,6 @@ public static class TableCodeGenerator
     private static string BuildRowClass(string tableName, List<(int CellIndex, ExcelGenerator.ColumnInfo Col)> columns)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("using MemoryPack;");
-        sb.AppendLine();
-        sb.AppendLine("namespace GameData;");
-        sb.AppendLine();
         sb.AppendLine($"/// <summary>{tableName} 테이블의 한 행. {tableName}.bytes = MemoryPackSerializer.Serialize(List&lt;{tableName}Row&gt;)</summary>");
         sb.AppendLine("[MemoryPackable]");
         sb.AppendLine($"public partial class {tableName}Row");
@@ -156,7 +152,7 @@ public static class TableCodeGenerator
             sb.AppendLine($"{body.PadRight(bodyWidth)}  // {comment}");
 
         sb.AppendLine("}");
-        return sb.ToString();
+        return CodeGenUtil.BuildFile("GameData", new[] { "MemoryPack" }, sb.ToString());
     }
 
     /// <summary>프로퍼티 뒤에 붙는 주석: 원본 타입 + 범위/기본값 정보.</summary>
@@ -175,10 +171,6 @@ public static class TableCodeGenerator
     private static string BuildPacker(string tableName, List<(int CellIndex, ExcelGenerator.ColumnInfo Col)> columns)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("using MemoryPack;");
-        sb.AppendLine();
-        sb.AppendLine("namespace GameData;");
-        sb.AppendLine();
         sb.AppendLine($"/// <summary>{tableName} 시트의 셀 문자열을 {tableName}Row로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>");
         sb.AppendLine($"public static class {tableName}Packer");
         sb.AppendLine("{");
@@ -245,7 +237,7 @@ public static class TableCodeGenerator
     }
 }
 """);
-        return sb.ToString();
+        return CodeGenUtil.BuildFile("GameData", new[] { "MemoryPack" }, sb.ToString());
     }
 
     /// <summary>컬럼 하나의 "셀 문자열 → 값" 변환 식을 만든다. 빈 셀은 Default가 있으면 리터럴로 대체, 없으면 헬퍼가 예외를 던진다(fail-fast).</summary>
@@ -362,8 +354,6 @@ public static class TableCodeGenerator
     private static string BuildRegistry(IReadOnlyList<ExcelGenerator.TableData> tables)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("namespace GameData;");
-        sb.AppendLine();
         sb.AppendLine("/// <summary>테이블명 → 패커 델리게이트. GenerateData가 시트명으로 조회해 .bytes를 만든다.</summary>");
         sb.AppendLine("public static class TableRegistry");
         sb.AppendLine("{");
@@ -380,7 +370,7 @@ public static class TableCodeGenerator
             sb.AppendLine($"        [\"{table.Name}\"] = new({table.Name}Packer.Pack, {table.Name}Packer.Verify, {table.Name}Packer.Preview, {table.Name}Packer.Dump),");
         sb.AppendLine("    };");
         sb.AppendLine("}");
-        return sb.ToString();
+        return CodeGenUtil.BuildFile("GameData", Array.Empty<string>(), sb.ToString());
     }
 
     // ─────────────────────────── GameTable (공유 접근자) ───────────────────────────
@@ -389,12 +379,6 @@ public static class TableCodeGenerator
     private static string BuildGameTable(IReadOnlyList<TableMeta> metas)
     {
         var sb = new StringBuilder();
-        sb.AppendLine("using System;");
-        sb.AppendLine("using System.Collections.Generic;");
-        sb.AppendLine("using MemoryPack;");
-        sb.AppendLine();
-        sb.AppendLine("namespace GameData;");
-        sb.AppendLine();
         sb.AppendLine("/// <summary>모든 데이터 테이블의 로드/조회 진입점. LoadAll에 파일 읽기 델리게이트를 주입한다(서버=File, Unity=StreamingAssets).</summary>");
         sb.AppendLine("public static class GameTable");
         sb.AppendLine("{");
@@ -420,18 +404,18 @@ public static class TableCodeGenerator
         }
         sb.AppendLine("    }");
         sb.AppendLine("}");
-        return sb.ToString();
+        return CodeGenUtil.BuildFile(
+            "GameData",
+            new[] { "System", "System.Collections.Generic", "MemoryPack" },
+            sb.ToString());
     }
 
     // ─────────────────────────── TableSet (고정 소스, 서버·Unity 공유) ───────────────────────────
     // Unity(C# 9 / netstandard2.1)에서도 컴파일되도록 컬렉션 표현식·기본 인터페이스 멤버 등 신문법을 쓰지 않는다.
-    private const string TableSetSource = """
-using System;
-using System.Collections.Generic;
-using MemoryPack;
+    // using·namespace는 CodeGenUtil.BuildFile이 붙인다(본문만 보관).
+    private static readonly string[] TableSetUsings = { "System", "System.Collections.Generic", "MemoryPack" };
 
-namespace GameData;
-
+    private const string TableSetBody = """
 /// <summary>키 → Row 매핑 테이블. .bytes를 역직렬화해 인덱싱하며, 로드 후 불변으로 사용한다.</summary>
 public sealed class TableSet<TKey, TRow> where TKey : notnull
 {
@@ -477,12 +461,10 @@ public sealed class TableSet<TKey, TRow> where TKey : notnull
 """;
 
     // ─────────────────────────── PackerUtil (고정 소스) ───────────────────────────
+    // using·namespace는 CodeGenUtil.BuildFile이 붙인다(본문만 보관).
+    private static readonly string[] PackerUtilUsings = { "System.Globalization" };
 
-    private const string PackerUtilSource = """
-using System.Globalization;
-
-namespace GameData;
-
+    private const string PackerUtilBody = """
 /// <summary>
 /// 생성된 Packer들이 공용으로 쓰는 셀 파싱/검증 헬퍼.
 /// 실패 시 테이블/컬럼명을 포함해 즉시 예외를 던진다(fail-fast) — 조용한 기본값 주입은 데이터 버그를 숨긴다.

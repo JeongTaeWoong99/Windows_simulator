@@ -5,7 +5,10 @@
 # 1단계: ExcelGenerator — Enum/Row/GameTable/TableSet/Packer 코드 생성 + 그 코드를 런타임 컴파일해
 #                          .bytes까지 한 번에 생성 (Shared/Data/*.bytes). 구 ExcelDataPacker 흡수.
 #                          대조용 JSON 사이드카는 GameDesign/DataLog 에 기록.
-# 2단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
+# 2단계: C# 9 규약 검사  — 미러 대상 생성물이 Unity(C# 9) 문법 범위를 벗어나지 않는지 확인.
+#                          GameData.csproj는 [MemoryPackable] 때문에 LangVersion 11을 쓸 수밖에 없어
+#                          서버 빌드가 이 위반을 잡지 못한다. Unity를 열지 않고 막는 유일한 지점이다.
+# 3단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
 #                          (서버는 WSGameServer.csproj의 Content로 .bytes를 bin에 자동 복사)
 
 $ErrorActionPreference = "Stop"
@@ -29,12 +32,62 @@ function Stop-OnFailure {
     exit $Code
 }
 
+# 미러 대상 생성물이 Unity(C# 9) 문법 범위를 지키는지 검사한다.
+#
+# 왜 여기서 검사하는가:
+#   GameData.csproj는 Row의 [MemoryPackable] 때문에 LangVersion 11이 강제된다
+#   (MemoryPack 생성기가 static abstract·scoped를 방출 → C# 9면 CS8703/CS8987).
+#   그래서 서버 빌드는 C# 9 위반을 통과시키고, Unity에서만 뒤늦게 깨진다.
+#   위반된 코드를 Unity로 내보내기 전에 여기서 끊는다.
+function Assert-CSharp9 {
+    param([string]$Dir)
+
+    # Unity(C# 9)에서 컴파일되지 않는 신문법. 생성기가 실수로 방출하면 걸린다.
+    $forbidden = @(
+        @{ Pattern = '^\s*namespace\s+[\w\.]+\s*;';                    Desc = 'file-scoped namespace (C# 10)' }
+        @{ Pattern = '^\s*global\s+using\s';                           Desc = 'global using (C# 10)' }
+        @{ Pattern = '\brecord\s+struct\b';                            Desc = 'record struct (C# 10)' }
+        @{ Pattern = '\b(public|internal|protected|private)\s+required\b'; Desc = 'required 멤버 (C# 11)' }
+        @{ Pattern = '=\s*\[';                                         Desc = '컬렉션 표현식 (C# 12)' }
+    )
+
+    # obj/·bin/은 제외한다. EmitCompilerGeneratedFiles=true 때문에 MemoryPack 생성기 산출물(.g.cs)이
+    # obj/ 아래에 쌓이는데, 이들은 file-scoped namespace를 쓰지만 Unity로 미러링되지 않는다
+    # (Unity는 자체 MemoryPack 패키지로 포매터를 다시 생성한다). 포함하면 오탐으로 파이프라인이 멈춘다.
+    $violations = @()
+    $targets = Get-ChildItem -LiteralPath $Dir -Filter *.cs -File -Recurse |
+               Where-Object { $_.FullName -notmatch '[\\/](obj|bin)[\\/]' }
+
+    foreach ($file in $targets) {
+        $lines = Get-Content -LiteralPath $file.FullName
+        for ($i = 0; $i -lt $lines.Count; $i++) {
+            foreach ($rule in $forbidden) {
+                if ($lines[$i] -match $rule.Pattern) {
+                    $violations += "  $($file.Name)($($i + 1)): $($rule.Desc)"
+                    $violations += "      $($lines[$i].Trim())"
+                }
+            }
+        }
+    }
+
+    if ($violations.Count -gt 0) {
+        Write-Host "  Unity(C# 9)에서 컴파일되지 않는 생성물이 있습니다:" -ForegroundColor Red
+        $violations | ForEach-Object { Write-Host $_ -ForegroundColor Red }
+        Stop-OnFailure "ExcelGenerator의 생성 문법을 C# 9 범위로 고치세요. (Server/ExcelGenerator/CodeGenUtil.cs 참조)"
+    }
+
+    Write-Host "  ok : C# 9 범위 준수" -ForegroundColor Green
+}
+
 try {
-    Write-Host "[1/2] ExcelGenerator: 코드 + 바이너리 생성" -ForegroundColor Cyan
+    Write-Host "[1/3] ExcelGenerator: 코드 + 바이너리 생성" -ForegroundColor Cyan
     dotnet run --project (Join-Path $PSScriptRoot "ExcelGenerator")
     if ($LASTEXITCODE -ne 0) { Stop-OnFailure "코드/바이너리 생성 단계에서 중단합니다." $LASTEXITCODE }
 
-    Write-Host "[2/2] 미러링: 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets" -ForegroundColor Cyan
+    Write-Host "[2/3] C# 9 규약 검사: 미러 대상 생성물" -ForegroundColor Cyan
+    Assert-CSharp9 (Join-Path $PSScriptRoot "GameData")
+
+    Write-Host "[3/3] 미러링: 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets" -ForegroundColor Cyan
 
     # 3-1) GameData 정의(.cs) → Assets/Scripts_Server/GameData (기존 프로토콜 미러 스크립트 재사용)
     & (Join-Path $PSScriptRoot "sync-protocol-to-unity.ps1") -FolderMap @{ "GameData" = "GameData" }

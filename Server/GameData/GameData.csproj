@@ -7,6 +7,14 @@
         빌드되면 정의(.cs)를 Unity로 단방향 미러링한다(파이프라인 generate-tables.ps1 3단계).
       - Packer/*.cs(툴 전용)와 *.bytes(런타임 데이터)는 여기에 포함하지 않는다.
       - Unity(C# 9)로 미러링되므로 생성 코드는 C# 9 문법 범위를 벗어나지 않는다.
+
+      ⚠️ LangVersion을 9로 낮출 수 없다: Row 클래스의 [MemoryPackable] 때문에 MemoryPack
+         소스 생성기가 static abstract 구현·scoped 수정자(C# 11)를 방출하고,
+         C# 9에서는 CS8703/CS8987이 발생한다. MikaProtocol도 동일한 이유로 11이다.
+         (생성기 산출물 obj/는 Unity로 가지 않는다. Unity는 자체 MemoryPack 패키지로 다시 생성한다.)
+
+         → 따라서 서버 빌드는 C# 9 규약 위반을 잡아주지 못한다.
+           대신 generate-tables.ps1이 미러 대상 .cs를 스캔해 신문법을 차단한다.
     -->
     <PropertyGroup>
         <ImplicitUsings>disable</ImplicitUsings>
