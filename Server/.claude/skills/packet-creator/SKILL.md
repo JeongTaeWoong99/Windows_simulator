@@ -125,7 +125,7 @@ session.SendPacket(new S_UpdateItemResponse { Items = items });
 
 ### 5. Build & sync
 Build `MikaProtocol`. The post-build `sync-protocol-to-unity.ps1` mirrors the definition into
-`Assets/Scripts/Protocol`. **Never edit the Unity copy directly** — it is overwritten.
+`Assets/Scripts_Server/Protocol`. **Never edit the Unity copy directly** — it is overwritten.
 
 ---
 

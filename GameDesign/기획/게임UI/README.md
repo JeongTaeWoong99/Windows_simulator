@@ -108,7 +108,7 @@
 | 영역 | 위치 |
 | --- | --- |
 | 클라이언트 코드 | `Assets/Scripts_Client/` |
-| 네트워크 연동 | `Assets/Scripts/Network/` |
+| 네트워크 연동 | `Assets/Scripts_Server/Network/` |
 | 코드 스타일 | `.claude/skills/client/clean-code-style` |
 | 기능 설계 | `.claude/skills/client/feature-design` |
 | 성능 | `.claude/skills/client/optimization` — 상시 실행이므로 특히 중요 |

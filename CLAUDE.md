@@ -7,7 +7,7 @@
 클라이언트와 서버를 한 저장소에서 영역을 나눠 협업한다.
 
 서버는 저장소 루트의 독립 .NET 솔루션(`Server/`)으로 존재하며,
-패킷 정의(`Server/MikaProtocol`)만 Unity(`Assets/Scripts/Protocol`)로 단방향 미러링된다.
+패킷 정의(`Server/MikaProtocol`)만 Unity(`Assets/Scripts_Server/Protocol`)로 단방향 미러링된다.
 
 ---
 
@@ -52,15 +52,15 @@
 | `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 패킷 정의 원본 = `Server/MikaProtocol` |
 | `Server/GameData/` | 서버(생성) | 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
 | `Server/Shared/Data/` | 서버(생성) | MemoryPack 바이너리 `*.bytes` |
-| `Assets/Scripts/Protocol/` | 서버(미러) | `Server/MikaProtocol`에서 자동 복사되는 사본 — **직접 수정 금지** |
+| `Assets/Scripts_Server/Protocol/` | 서버(미러) | `Server/MikaProtocol`에서 자동 복사되는 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | 서버(미러) | `Server/GameData`에서 자동 복사되는 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | 서버(미러) | `Server/Shared/Data`에서 복사되는 `*.bytes` |
-| `Assets/Scripts/` (`Network`·`Test`·`Utils`) | 서버 | Unity 측 네트워크/서버 연동 코드 |
+| `Assets/Scripts_Server/` (`Network`·`Test`·`Utils`) | 서버 | Unity 측 네트워크/서버 연동 코드 |
 | `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드 |
 | `Assets/Scenes/` | 공용 | 씬 파일 |
 
 > 패킷 정의는 `Server/MikaProtocol`에서 빌드되면 post-build로 `sync-protocol-to-unity.ps1`이
-> 실행되어 `Assets/Scripts/Protocol`로 단방향 미러링된다(소스 `MikaProtocol` → 대상 `Protocol`).
+> 실행되어 `Assets/Scripts_Server/Protocol`로 단방향 미러링된다(소스 `MikaProtocol` → 대상 `Protocol`).
 
 ---
 
@@ -84,8 +84,8 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 
 ## 협업 규칙
 
-- 각자 자기 담당 폴더(`Scripts_Client` / `Scripts`·`Server`)만 수정한다. 상대 폴더 변경은 합의 후.
-- 패킷 정의는 `Server/MikaProtocol`에서만 수정한다. `Assets/Scripts/Protocol`은
+- 각자 자기 담당 폴더(`Scripts_Client` / `Scripts_Server`·`Server`)만 수정한다. 상대 폴더 변경은 합의 후.
+- 패킷 정의는 `Server/MikaProtocol`에서만 수정한다. `Assets/Scripts_Server/Protocol`은
   `sync-protocol-to-unity.ps1`이 덮어쓰는 사본이므로 직접 수정하지 않는다.
 - 게임 시스템·콘텐츠 작업은 `GameDesign/기획/게임기획코어.md` → 해당 상세 기획안 순으로 먼저 읽는다.
   기획이 확정·변경되면 상세 기획안과 게임기획코어의 확정/미확정 현황을 함께 갱신한다.
@@ -154,7 +154,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 | `optimization` | [`.claude/skills/client/optimization/SKILL.md`](.claude/skills/client/optimization/SKILL.md) | 성능 최적화 판단 및 적용 가이드 |
 | `unity-handoff` | [`.claude/skills/client/unity-handoff/SKILL.md`](.claude/skills/client/unity-handoff/SKILL.md) | 유니티 에디터 작업 핸드오프 프롬프트 생성 |
 
-### 서버 (`server/`) — `Assets/Scripts` 작업 시
+### 서버 (`server/`) — `Assets/Scripts_Server` 작업 시
 
 | 스킬 | 경로 | 내용 |
 |------|------|------|
