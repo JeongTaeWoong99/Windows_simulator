@@ -193,7 +193,7 @@ None=0, Farming=1, Fishing=2, Mining=3, Logging=4, Misc=5, Special=6, Max
 1. `GameDesign/Excel/Enum.xlsx`의 `ItemType` 시트에 `Hunting`을 추가한다.
 2. **값은 `7`로 뒤에 붙인다.** 중간(예: 5)에 끼워 넣으면 `Misc`·`Special`의 값이
    밀려 기존 `.bytes`·DB에 저장된 값이 전부 어긋난다.
-3. `Server/generate-tables.ps1`을 실행해 생성물을 갱신한다.
+3. `GameDesign/generate-tables.ps1`을 실행해 생성물을 갱신한다.
 4. 엑셀 + 생성물(`Server/GameData`, `Server/Shared/Data`, `GameDesign/DataLog`, Unity 미러)을
    **같은 커밋**에 담는다.
 

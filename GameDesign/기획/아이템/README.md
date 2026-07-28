@@ -126,7 +126,7 @@
 
 ## 5. 데이터 설계
 
-기존 `Item.xlsx`를 확장한다. **컬럼 추가는 엑셀에서만** 하고 `Server/generate-tables.ps1`을 돌린다.
+기존 `Item.xlsx`를 확장한다. **컬럼 추가는 엑셀에서만** 하고 `GameDesign/generate-tables.ps1`을 돌린다.
 
 | 항목 | 조치 |
 | --- | --- |

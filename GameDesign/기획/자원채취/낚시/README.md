@@ -1,7 +1,7 @@
 # 1차 산업 — 낚시 (Fishing)
 
 > 상위: [`자원채취`](../README.md) · [`게임기획코어.md`](../../게임기획코어.md)
-> 최종 업데이트: 2026-07-27 · 상태: **루프 확정 · 확률값 미정**
+> 최종 업데이트: 2026-07-28 · 상태: **루프 확정 · 드롭 시트 생성(더미) · 확률값 미정**
 > enum: `ItemType.Fishing = 2` ✅ 존재
 
 ---
@@ -161,13 +161,43 @@ P1(주의를 뺏지 않는다)과도 가장 잘 맞는 산업이 된다.
 
 ---
 
-## 5. 데이터 설계 (제안)
+## 5. 데이터 설계
 
-| 테이블 | 컬럼 | 범위 |
+> `FishingBasicTable`·`FishingSpecialTable`은 **`GameDesign/Excel/Drop.xlsx`에 시트로 존재한다**
+> (2026-07-28). 현재 행은 구조 검증용 **더미**이며 실제 어종·가중치는 미정이다.
+
+| 테이블 | 컬럼 | 키 | 범위 |
+| --- | --- | --- | --- |
+| `FishingBasicTable` | `Rarity`, `ItemTID` | `Rarity` | 희귀도 → 어종 **매핑만**. 6행 ✅ |
+| `FishingSpecialTable` | `DropTID`, `SpotTID`, `ItemTID`, `Weight` | `DropTID` | 대물 ✅ |
+| `FishingSpotTable` | `SpotTID`, `Name`, `UnlockCondition` | `SpotTID` | 낚시터. **지금은 행 1개** ❌ 미생성 |
+
+### ⚠️ 드롭 시트는 첫 컬럼에 고유 `DropTID`를 둔다
+
+ExcelGenerator는 **단일 컬럼 키만** 지원한다 — `Type = ID`인 컬럼이 있으면 그것을,
+없으면 **첫 비배열 컬럼**을 자동으로 키로 잡고, 값이 중복되면 로드 시점에 예외를 던진다.
+
+따라서 원안대로 `FishingSpecialTable(SpotTID, ItemTID, Weight)`를 만들면
+`SpotTID`가 키가 되어 **대물이 2종 이상인 순간 깨진다.**
+가중치 롤 성격의 시트는 첫 컬럼에 `ID` 타입 `DropTID`를 두고,
+`SpotTID` 같은 그룹 축은 일반 컬럼으로 둔 뒤 서버가 로드 후 그룹 인덱스를 만든다.
+
+`FishingBasicTable`은 `(희귀도 → 아이템)` **1:1 매핑**이라 `Rarity`가 그대로 키가 된다.
+채굴처럼 축이 하나 더 붙는 산업(깊이 구간)은 Basic도 `DropTID` 방식이 필요하다.
+
+### `ItemTID` 참조 검사 (`Ref` 마커)
+
+드롭 시트의 `ItemTID`는 오타나 삭제된 아이템이어도 타입(int)은 멀쩡해서
+`.bytes`까지 그대로 만들어지고, **실제 드랍이 일어나는 런타임에야** 터진다.
+이를 막기 위해 엑셀 마커 행에 `Ref`를 추가했다.
+
+| 마커 | 값 | 의미 |
 | --- | --- | --- |
-| `FishingSpotTable` | `SpotTID`, `Name`, `UnlockCondition` | 낚시터. **지금은 행 1개** |
-| `FishingBasicTable` | `Rarity`, `ItemTID` | 희귀도 → 어종 **매핑만**. 6행 |
-| `FishingSpecialTable` | `SpotTID`, `ItemTID`, `Weight` | 대물 |
+| `Ref` | `ItemTable.ItemTID` | 이 컬럼 값이 대상 시트·컬럼에 실재해야 한다 |
+| `Ref` | `ItemTable.ItemTID?` | `?`를 붙이면 빈 셀·`0`(참조 없음)을 허용 |
+
+`GameDesign/generate-tables.ps1` 실행 시 **코드 생성 전에** 검사하고, 위반이 있으면
+전부 모아 출력한 뒤 파이프라인을 중단한다.
 
 **낚시 테이블에 두지 않는 것:**
 
@@ -180,7 +210,7 @@ P1(주의를 뺏지 않는다)과도 가장 잘 맞는 산업이 된다.
 | `Rarity` 중복 컬럼 | `ItemTable.ItemRarity`가 원본 |
 
 > 낚시터를 늘릴 때 `SpotTID` 행만 추가하면 되도록 **처음부터 `SpotTID`를 키에 넣어 둔다.**
-> 밸런스 수치는 `GameDesign/Excel/*.xlsx`가 원본. 수정 후 `Server/generate-tables.ps1` 실행.
+> 밸런스 수치는 `GameDesign/Excel/*.xlsx`가 원본. 수정 후 `GameDesign/generate-tables.ps1` 실행.
 
 ---
 
