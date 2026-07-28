@@ -42,6 +42,9 @@ public sealed class UserManager : Singleton<UserManager>
 
     public int Count => _userKeys.Count;
 
+    /// <summary>접속 중인 모든 유저. 주기 정산처럼 전체를 훑어야 할 때 쓴다.</summary>
+    public IEnumerable<User> All => _userKeys.Values;
+
     
     public void CreateUser(ISession session, string pid, string nickname) // pid is token or ...
     {

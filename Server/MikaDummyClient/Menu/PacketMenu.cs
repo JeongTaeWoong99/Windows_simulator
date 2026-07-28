@@ -22,6 +22,7 @@ namespace MikaDummyClient
                 new ClientAction("Login", SendLogin),
                 new ClientAction("AddItem", SendAddItem),
                 new ClientAction("GachaDraw", SendGachaDraw),
+                new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
             };
         }
 
@@ -108,6 +109,33 @@ namespace MikaDummyClient
             }
 
             NetworkManager.Instance.Send(new C_AddItemRequest { ItemId = itemId, Count = count });
+        }
+
+        private void SendWorkStationAssign()
+        {
+            Console.Write("SlotIndex (기본 0) > ");
+            string? slotInput = Console.ReadLine();
+            int slotIndex = string.IsNullOrWhiteSpace(slotInput) ? 0 : int.Parse(slotInput.Trim());
+
+            // GameData.ItemType — 1=농사 2=낚시 3=채굴 4=벌목 5=사냥 (0=해제)
+            Console.Write("Industry (2=낚시) > ");
+            if (!byte.TryParse(Console.ReadLine(), out byte industry))
+            {
+                Console.WriteLine("[Client] Industry는 숫자여야 합니다.");
+                return;
+            }
+
+            Console.Write("CharacterId (0=해제) > ");
+            if (!long.TryParse(Console.ReadLine(), out long characterId))
+            {
+                Console.WriteLine("[Client] CharacterId는 숫자여야 합니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_WorkStationAssignRequest
+            {
+                SlotIndex = slotIndex, Industry = industry, CharacterId = characterId,
+            });
         }
 
         private void SendGachaDraw()

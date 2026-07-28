@@ -40,6 +40,10 @@ namespace MikaProtocol
         C_GachaDrawRequest = 9,
         S_GachaDrawResponse = 10,
         S_InventoryResponse = 11,
+        C_WorkStationAssignRequest = 12,
+        S_WorkStationAssignResponse = 13,
+        S_WorkStationSlotsResponse = 14,
+        S_GatherResultResponse = 15,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -110,6 +114,41 @@ namespace MikaProtocol
     public partial class S_InventoryResponse : IPacket
     {
         public List<ItemInfo>? Items { get; set; }  // 로그인 시 인벤토리 전체 스냅샷
+    }
+
+    // ───────────────────── 작업슬롯 (WorkStationSlot) ─────────────────────
+
+    [MemoryPackable, Packet(PacketId.C_WorkStationAssignRequest)]
+    public partial class C_WorkStationAssignRequest : IPacket
+    {
+        public int  SlotIndex   { get; set; }  // 배치할 슬롯 번호
+        public byte Industry    { get; set; }  // 지정 산업 = GameData.ItemType (0=해제)
+        public long CharacterId { get; set; }  // 배치할 캐릭터 (0=해제)
+    }
+
+    [MemoryPackable, Packet(PacketId.S_WorkStationAssignResponse)]
+    public partial class S_WorkStationAssignResponse : IPacket
+    {
+        public bool                 Success { get; set; }
+        public WorkStationSlotInfo? Slot    { get; set; }  // 변경된 슬롯의 최신 상태
+    }
+
+    [MemoryPackable, Packet(PacketId.S_WorkStationSlotsResponse)]
+    public partial class S_WorkStationSlotsResponse : IPacket
+    {
+        public List<WorkStationSlotInfo>? Slots { get; set; }  // 로그인 시 슬롯 전체 스냅샷
+    }
+
+    /// <summary>
+    /// 채취 결과 푸시. 클라이언트 요청 없이 <b>서버가 판정 후 밀어 준다</b>(서버 권위).
+    /// 접속 중에는 30초 주기로, 로그인·슬롯 변경 시에는 밀린 구간을 한 번에 정산해 보낸다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_GatherResultResponse)]
+    public partial class S_GatherResultResponse : IPacket
+    {
+        public int                   SlotIndex   { get; set; }  // 어느 슬롯에서 나왔는지
+        public int                   JudgeCount  { get; set; }  // 이번에 정산된 판정 횟수(연출용)
+        public List<ItemChangeInfo>? ItemChanges { get; set; }  // 인벤토리 갱신분
     }
 
 

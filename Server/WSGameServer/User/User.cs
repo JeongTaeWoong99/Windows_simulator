@@ -57,8 +57,13 @@ public sealed partial class User : Entity
         UserManager.Instance.JoinUser(this);
         
         Send(new S_LoginResponse {Success = true, SessionId = SessionId});
-        
+
         SendInventory(); // S_InventoryResponse
+
+        // 비운 동안 쌓인 채취를 먼저 정산해 인벤토리에 반영한 뒤 슬롯 상태를 보낸다.
+        // 순서를 뒤집으면 클라가 정산 전 LastTickAt으로 카운트다운을 시작해 한 주기를 헛돈다.
+        SettleWorkStation(DateTime.UtcNow);
+        SendWorkStationSlots(); // S_WorkStationSlotsResponse
     }
 
     protected override void OnCreate()

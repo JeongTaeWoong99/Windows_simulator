@@ -54,4 +54,18 @@ public static class ClientPacketHandler
         if (user != null)
             GachaService.Instance.Draw(user, req.GachaId, req.DrawCount);
     }
+
+    /// <summary>
+    /// 작업슬롯에 산업·캐릭터를 배치한다.
+    /// <b>클라이언트가 요청하는 것은 "배치"뿐이고, 무엇이 몇 개 나오는지는 서버가 정한다.</b>
+    /// </summary>
+    [PacketHandler]
+    public static void Handle_C_WorkStationAssignRequest(ISession session, C_WorkStationAssignRequest req)
+    {
+        Console.WriteLine($"[Server] 슬롯 배치 요청: Slot={req.SlotIndex}, Industry={req.Industry}, " +
+                          $"Character={req.CharacterId}, Session={session.SessionId}");
+
+        var user = session.GetUser();
+        user?.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId);
+    }
 }

@@ -53,6 +53,37 @@ namespace MikaDummyClient
             foreach (var reward in res.Rewards!)
                 Console.WriteLine($"  - Rarity={reward.Rarity.ToString()}, ItemId={reward.ItemId}, Count={reward.Count}");
         }
+
+        [PacketHandler]
+        public static void Handle_S_WorkStationSlotsResponse(ISession session, S_WorkStationSlotsResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 작업슬롯: Count={res.Slots?.Count}");
+            foreach (var slot in res.Slots!)
+                Console.WriteLine($"  - Slot={slot.SlotIndex}, Industry={slot.Industry}, " +
+                                  $"Character={slot.CharacterId}, LastTick={slot.LastTickAtUnix}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_WorkStationAssignResponse(ISession session, S_WorkStationAssignResponse res)
+        {
+            if (!res.Success)
+            {
+                Console.WriteLine("[Client] Recv 슬롯 배치: 실패(없는 슬롯)");
+                return;
+            }
+
+            Console.WriteLine($"[Client] Recv 슬롯 배치: Slot={res.Slot?.SlotIndex}, " +
+                              $"Industry={res.Slot?.Industry}, Character={res.Slot?.CharacterId}");
+        }
+
+        // 서버가 요청 없이 밀어 주는 채취 결과. 클라이언트는 받기만 한다(서버 권위).
+        [PacketHandler]
+        public static void Handle_S_GatherResultResponse(ISession session, S_GatherResultResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 채취: Slot={res.SlotIndex}, 판정={res.JudgeCount}회");
+            foreach (var change in res.ItemChanges!)
+                Console.WriteLine($"  - ItemId={change.ItemId}, Count={change.Count}, Kind={change.Kind}");
+        }
     }
 }
 

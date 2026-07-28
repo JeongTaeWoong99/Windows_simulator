@@ -32,4 +32,18 @@ namespace MikaProtocol
         public int Count  { get; set; }        // 이번에 획득한 수량
         public EItemRarity Rarity { get; set; } // 연출용 등급
     }
+
+    /// <summary>
+    /// 작업슬롯 한 칸의 상태.
+    /// <c>LastTickAtUnix</c>는 클라이언트가 <b>다음 채취까지 남은 시간을 로컬에서 계산</b>하라고 준다.
+    /// 그 카운트다운은 연출일 뿐이고, 실제로 몇 개가 나왔는지는 서버가 정한다.
+    /// </summary>
+    [MemoryPackable]
+    public partial class WorkStationSlotInfo
+    {
+        public int  SlotIndex      { get; set; }
+        public byte Industry       { get; set; }  // GameData.ItemType (0=미지정)
+        public long CharacterId    { get; set; }  // 0=비어 있음 (채취하지 않는다)
+        public long LastTickAtUnix { get; set; }  // 마지막 정산 시각 (Unix epoch 초, UTC)
+    }
 }
