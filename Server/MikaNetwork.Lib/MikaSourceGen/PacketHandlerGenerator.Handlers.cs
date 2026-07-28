@@ -22,10 +22,18 @@ namespace MikaSourceGen
 
             if (pAttr is null || pAttr.ConstructorArguments.Length == 0) return null;
 
+            // 소스에 있는 선언만 위치로 쓴다(메타데이터 위치는 파일이 아니다).
+            Location? declLocation = null;
+            foreach (var l in m.Locations)
+            {
+                if (l.IsInSource) { declLocation = l; break; }
+            }
+
             return new HandlerInfo(
                 PacketType: packetType.ToDisplayString(),
                 IdRef: ResolveIdRef(pAttr.ConstructorArguments[0]),
-                MethodRef: $"{m.ContainingType.ToDisplayString()}.{m.Name}");
+                MethodRef: $"{m.ContainingType.ToDisplayString()}.{m.Name}",
+                DeclLocation: declLocation);
         }
 
         static void EmitHandlers(SourceProductionContext spc, ImmutableArray<HandlerInfo> handlers)
@@ -59,17 +67,27 @@ namespace MikaSourceGen
             public readonly string IdRef;
             public readonly string MethodRef;
 
-            public HandlerInfo(string PacketType, string IdRef, string MethodRef)
+            /// <summary>
+            /// 핸들러 메서드의 선언 위치. MIKA001 경고에서 <b>대체 위치</b>로 쓴다.
+            /// 패킷 정의가 참조 어셈블리에 있으면(서버 빌드) 패킷 쪽 위치를 잡을 수 없는데,
+            /// 위치 없는 진단은 "CSC : warning ..." 형태로 나와 Unity 콘솔에서 사라진다.
+            /// "핸들러를 여기에 추가하라"는 뜻이기도 해서 안내 위치로도 알맞다.
+            /// </summary>
+            public readonly Location? DeclLocation;
+
+            public HandlerInfo(string PacketType, string IdRef, string MethodRef, Location? DeclLocation)
             {
                 this.PacketType = PacketType;
                 this.IdRef = IdRef;
                 this.MethodRef = MethodRef;
+                this.DeclLocation = DeclLocation;
             }
 
             public bool Equals(HandlerInfo other) =>
                 PacketType == other.PacketType &&
                 IdRef == other.IdRef &&
-                MethodRef == other.MethodRef;
+                MethodRef == other.MethodRef &&
+                Equals(DeclLocation, other.DeclLocation);
 
             public override bool Equals(object? obj) => obj is HandlerInfo other && Equals(other);
 

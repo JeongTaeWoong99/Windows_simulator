@@ -17,10 +17,15 @@ namespace MikaSourceGen
             defaultSeverity: DiagnosticSeverity.Warning,
             isEnabledByDefault: true);
 
-        // 참조 어셈블리(MikaProtocol 등)까지 포함한 전체 [Packet] 타입의 FQN.
-        static ImmutableArray<string> GetAllPacketTypeNames(Compilation comp)
+        // 참조 어셈블리(MikaProtocol 등)까지 포함한 전체 [Packet] 타입의 FQN + 선언 위치.
+        //
+        // 위치를 함께 모으는 이유: 진단을 Location.None으로 내면 컴파일러 출력에 파일·줄이 빠지는데,
+        // Unity는 "파일(줄,열): warning ..." 형식만 파싱해 콘솔에 올린다.
+        // 그래서 위치 없는 경고는 Unity에서 조용히 사라진다(dotnet build는 그대로 출력한다).
+        // Unity에서는 패킷 정의가 소스(Assets/Scripts_Server/Protocol)에 있으므로 실제 위치가 잡힌다.
+        static ImmutableArray<PacketRef> GetAllPacketTypeNames(Compilation comp)
         {
-            var results = ImmutableArray.CreateBuilder<string>();
+            var results = ImmutableArray.CreateBuilder<PacketRef>();
 
             void Inspect(INamedTypeSymbol t)
             {
@@ -28,7 +33,14 @@ namespace MikaSourceGen
                 {
                     if (a.AttributeClass?.ToDisplayString() == PacketAttr)
                     {
-                        results.Add(t.ToDisplayString());
+                        // 소스에 있는 선언만 위치로 쓴다. 참조 어셈블리(메타데이터) 위치는 파일이 아니다.
+                        Location? loc = null;
+                        foreach (var l in t.Locations)
+                        {
+                            if (l.IsInSource) { loc = l; break; }
+                        }
+
+                        results.Add(new PacketRef(t.ToDisplayString(), loc));
                         break;
                     }
                 }
@@ -58,7 +70,7 @@ namespace MikaSourceGen
 
         static void ReportMissingHandlers(
             SourceProductionContext spc,
-            (ImmutableArray<HandlerInfo> Handlers, ImmutableArray<string> Packets) input)
+            (ImmutableArray<HandlerInfo> Handlers, ImmutableArray<PacketRef> Packets) input)
         {
             // 핸들러가 하나도 없는 프로젝트(MikaProtocol 등)는 측 추론 불가 -> skip
             if (input.Handlers.IsDefaultOrEmpty) return;
@@ -66,24 +78,53 @@ namespace MikaSourceGen
             var handled = new HashSet<string>();
             var inboundPrefixes = new HashSet<string>();
 
+            // 패킷 정의가 참조 어셈블리에 있을 때 쓸 대체 위치(기존 핸들러 중 첫 번째).
+            Location? fallback = null;
+
             foreach (var h in input.Handlers)
             {
                 handled.Add(h.PacketType);
                 var pfx = Prefix(h.PacketType);
                 if (pfx != null) inboundPrefixes.Add(pfx);
+
+                if (fallback is null && h.DeclLocation is not null)
+                    fallback = h.DeclLocation;
             }
 
             if (inboundPrefixes.Count == 0) return;
 
             foreach (var pkt in input.Packets)
             {
-                var pfx = Prefix(pkt);
+                var pfx = Prefix(pkt.Name);
                 if (pfx == null || !inboundPrefixes.Contains(pfx)) continue;
-                if (handled.Contains(pkt)) continue;
+                if (handled.Contains(pkt.Name)) continue;
 
+                // 위치는 ① 패킷 선언(Unity: 소스에 있음) ② 기존 핸들러(서버: 패킷이 참조 어셈블리) 순으로 고른다.
+                // 둘 다 없으면 Location.None이 되고, 그 경고는 Unity 콘솔에 뜨지 않는다.
                 spc.ReportDiagnostic(
-                    Diagnostic.Create(MissingHandlerRule, Location.None, SimpleName(pkt)));
+                    Diagnostic.Create(MissingHandlerRule, pkt.Location ?? fallback ?? Location.None, SimpleName(pkt.Name)));
             }
+        }
+
+        /// <summary>[Packet] 타입 하나의 FQN과 선언 위치. 위치는 소스에 있을 때만 채워진다.</summary>
+        private readonly struct PacketRef : System.IEquatable<PacketRef>
+        {
+            public readonly string Name;
+            public readonly Location? Location;
+
+            public PacketRef(string name, Location? location)
+            {
+                Name = name;
+                Location = location;
+            }
+
+            public bool Equals(PacketRef other)
+                => Name == other.Name && Equals(Location, other.Location);
+
+            public override bool Equals(object? obj) => obj is PacketRef o && Equals(o);
+
+            public override int GetHashCode()
+                => Name.GetHashCode() ^ (Location?.GetHashCode() ?? 0);
         }
 
         // "MikaProtocol.C_EchoRequest" -> "C_EchoRequest"

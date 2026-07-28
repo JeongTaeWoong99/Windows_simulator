@@ -27,5 +27,22 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.3.0"/>
     </ItemGroup>
 
+    <!--
+      빌드된 분석기 DLL을 Unity로 복사한다(MikaProtocol의 정의 미러링과 같은 취지).
+
+      Unity는 이 DLL을 RoslynAnalyzer 라벨로 로드해 MIKA001(핸들러 누락) 경고를 낸다.
+      수동 복사로 두면 서버 쪽 제너레이터만 갱신되고 Unity는 옛 DLL을 계속 쓰게 되는데,
+      그 상태는 "서버 빌드에선 경고가 뜨는데 Unity에선 안 뜬다"로 나타나 원인을 찾기 어렵다.
+
+      Unity 에디터가 켜져 있으면 DLL이 잠겨 복사에 실패할 수 있다.
+      빌드까지 깨뜨릴 이유는 없으므로 ContinueOnError로 넘어간다(Unity를 닫고 다시 빌드하면 된다).
+      .meta는 Unity가 GUID를 유지하며 관리하므로 복사하지 않는다.
+    -->
+    <Target Name="SyncAnalyzerToUnity" AfterTargets="Build">
+        <Copy SourceFiles="$(TargetPath)"
+              DestinationFolder="$(MSBuildProjectDirectory)\..\..\..\Assets\Plugins\Analyzers\"
+              SkipUnchangedFiles="true"
+              ContinueOnError="true" />
+    </Target>
 
 </Project>
