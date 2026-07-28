@@ -26,8 +26,8 @@ param(
     # 서버 솔루션 루트 (기본값: 이 스크립트가 있는 폴더)
     [string]$SourceRoot,
 
-    # Unity 프로젝트의 스크립트 루트
-    [string]$DestRoot = "C:\Users\wlsdn\workspace\Windows_simulator\Assets\Scripts_Server",
+    # Unity 프로젝트의 스크립트 루트 (기본값: 저장소 루트 기준 Assets\Scripts_Server)
+    [string]$DestRoot,
 
     # 미러링 매핑 ("소스 폴더" = "대상 폴더", SourceRoot/DestRoot 기준 상대경로).
     # 소스와 대상 폴더명이 달라도 된다. 공유 코어도 동기화하려면
@@ -44,6 +44,11 @@ if ([string]::IsNullOrWhiteSpace($SourceRoot)) {
     } else {
         $SourceRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
     }
+}
+
+# 대상 루트도 절대경로를 박지 않고 위치에서 유도한다(SourceRoot = Server/ → 부모가 저장소 루트).
+if ([string]::IsNullOrWhiteSpace($DestRoot)) {
+    $DestRoot = Join-Path (Split-Path -Parent $SourceRoot) "Assets\Scripts_Server"
 }
 
 function Get-FileHashSafe([string]$path) {

@@ -4,25 +4,43 @@ namespace ExcelGenerator;
 
 public class Program
 {
+    // 저장소 루트 기준 경로. 폴더를 옮기면 여기만 고치면 된다.
+    // 프로젝트 폴더 상대("../GameData")로 두면 이 프로젝트를 옮기는 순간
+    // 컴파일은 그대로 통과하면서 엉뚱한 위치에 파일을 쓰는 사고가 난다.
+    private const string ExcelDirRel   = "GameDesign/Excel";     // 사람이 편집하는 원본
+    private const string DataLogDirRel = "GameDesign/DataLog";   // 대조용 JSON 사이드카
+    private const string GameDataRel   = "Server/GameData";      // 생성된 정의(.cs)
+    private const string BytesDirRel   = "Server/Shared/Data";   // MemoryPack 바이너리
+
+    /// <summary>저장소 루트 표식. 소스 위치에서 위로 올라가며 이 중 하나를 찾는다.</summary>
+    private static readonly string[] RepoRootMarkers = { ".git", "GameDesign" };
+
     public static int Main(string[] args)
     {
-        // 기획 데이터(엑셀)는 서버 툴 소스가 아니라 저장소 루트의 공용 폴더(GameDesign)에 둔다.
-        // 서버/클라이언트 어느 쪽 담당 폴더에도 속하지 않는 공용 입력이라 중립 위치가 맞다.
-        // 경로는 실행 경로(bin/Debug/...)가 아니라 소스 위치 기준으로 잡는다.
-        var excelDir = ResolvePath("../../GameDesign/Excel");
-        var enumFilePath = Path.Combine(excelDir, "Enum.xlsx");
-        // 공유 정의(Enum/Row/GameTable/TableSet)는 GameData 프로젝트로, 툴 전용 Packer는 로컬 Output으로 출력한다.
-        var gameDataDir = ResolvePath("../GameData");
-        var enumOutputPath = Path.Combine(gameDataDir, "Enum.cs");
-        var packerDir = ResolvePath("Output/Code/Packer");
-
-        // .bytes 출력 = Server/Shared/Data (서버는 Content로 bin에 복사, Unity는 파이프라인이 StreamingAssets로 복사)
-        var dataDir = ResolvePath("../Shared/Data");
-        // 사람이 읽는 JSON 사이드카(엑셀 대조/리뷰용)는 원본 엑셀 옆에 둔다 = GameDesign/DataLog
-        var logDir = ResolvePath("../../GameDesign/DataLog");
-
         try
         {
+            // 루트는 인자로 받는 것이 우선이고(파이프라인이 넘긴다), 없으면 소스 위치에서 거슬러 올라가 찾는다.
+            // 실행 경로(bin/Debug/...)를 쓰지 않으므로 어디서 실행하든 결과가 같다.
+            var repoRoot = args.Length > 0 && args[0].Length > 0
+                ? Path.GetFullPath(args[0])
+                : FindRepoRoot();
+
+            Console.WriteLine($"[경로] 저장소 루트 = {repoRoot}");
+
+            // GetFullPath로 구분자를 플랫폼 표기로 통일한다(로그에 '/'와 '\'가 섞이지 않도록).
+            var excelDir    = Path.GetFullPath(Path.Combine(repoRoot, ExcelDirRel));
+            var logDir      = Path.GetFullPath(Path.Combine(repoRoot, DataLogDirRel));
+            var gameDataDir = Path.GetFullPath(Path.Combine(repoRoot, GameDataRel));
+            var dataDir     = Path.GetFullPath(Path.Combine(repoRoot, BytesDirRel));
+
+            // Packer는 이 툴 전용 중간 산출물이라 프로젝트 안에 둔다 — 프로젝트를 옮기면 함께 따라간다.
+            var packerDir = ResolvePath("Output/Code/Packer");
+
+            var enumFilePath   = Path.Combine(excelDir, "Enum.xlsx");
+            var enumOutputPath = Path.Combine(gameDataDir, "Enum.cs");
+
+            AssertExists(excelDir, "엑셀 원본 폴더");
+
             // 1) Enum 생성 (Enum.xlsx → GameData/Enum.cs)
             EnumGenerator.GenerateEnumSource(enumFilePath);
             EnumGenerator.MakeEnumCode(enumOutputPath);
@@ -30,8 +48,11 @@ public class Program
             Console.WriteLine($"ItemType.Farming 존재? {EnumGenerator.HasMember("ItemType", "Farming")}");
             Console.WriteLine($"ItemRarity.Mythic 존재? {EnumGenerator.HasMember("ItemRarity", "Mythic")}");
 
-            // 2) 데이터 테이블 파싱 → Row/Packer 코드 생성
+            // 2) 데이터 테이블 파싱 → 참조 무결성 검사 → Row/Packer 코드 생성
+            //    참조 검사는 코드 생성 전에 둔다. 끊어진 TID로 만들어진 .bytes가 서버에 배포되면
+            //    실제 드랍이 일어나는 순간에야 KeyNotFoundException으로 드러나기 때문이다.
             ExcelGenerator.LoadExcel(excelDir);
+            ReferenceValidator.Validate(ExcelGenerator.Tables);
             ExcelGenerator.GenerateCode(gameDataDir, packerDir);
 
             // 3) 생성 코드를 런타임 컴파일해 .bytes 생성 (구 ExcelDataPacker 역할 흡수) + JSON 사이드카(DataLog)
@@ -49,11 +70,42 @@ public class Program
             return 1;
         }
     }
-    
 
     /// <summary>
-    /// 프로젝트 루트(이 소스 파일이 있는 디렉터리) 기준 상대 경로를 절대 경로로 변환한다.
-    /// bin/obj 어디서 실행하든 컴파일 시점의 소스 위치를 사용하므로 안전하다.
+    /// 소스 파일 위치에서 위로 올라가며 저장소 루트를 찾는다.
+    /// bin/obj 어디서 실행하든 컴파일 시점의 소스 위치를 기준으로 삼으므로 실행 경로에 흔들리지 않는다.
+    /// </summary>
+    private static string FindRepoRoot([CallerFilePath] string sourceFilePath = "")
+    {
+        var start = Path.GetDirectoryName(sourceFilePath);
+        if (string.IsNullOrEmpty(start))
+            throw new DirectoryNotFoundException("소스 경로를 알 수 없습니다. 저장소 루트를 첫 인자로 넘기세요.");
+
+        for (var dir = new DirectoryInfo(start); dir is not null; dir = dir.Parent)
+        {
+            foreach (var marker in RepoRootMarkers)
+            {
+                var probe = Path.Combine(dir.FullName, marker);
+                if (Directory.Exists(probe) || File.Exists(probe))   // .git은 워크트리에서 파일일 수 있다
+                    return dir.FullName;
+            }
+        }
+
+        throw new DirectoryNotFoundException(
+            $"'{start}' 위쪽에서 저장소 루트({string.Join("·", RepoRootMarkers)})를 찾지 못했습니다. " +
+            "저장소 루트를 첫 인자로 넘기세요.");
+    }
+
+    /// <summary>필수 입력 폴더가 없으면 즉시 멈춘다. 없는 채로 진행하면 "테이블 0개"로 조용히 성공한다.</summary>
+    private static void AssertExists(string dir, string what)
+    {
+        if (!Directory.Exists(dir))
+            throw new DirectoryNotFoundException($"{what}가 없습니다: {dir}");
+    }
+
+    /// <summary>
+    /// 이 소스 파일이 있는 디렉터리(=프로젝트 루트) 기준 상대 경로를 절대 경로로 변환한다.
+    /// 프로젝트와 함께 움직여야 하는 산출물에만 쓴다. 저장소 공용 경로에는 쓰지 않는다.
     /// </summary>
     public static string ResolvePath(string relativePath, [CallerFilePath] string sourceFilePath = "")
     {

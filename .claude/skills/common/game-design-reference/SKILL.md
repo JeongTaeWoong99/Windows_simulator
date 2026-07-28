@@ -78,7 +78,7 @@ description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·�
 ### 밸런스 수치는 코드에 넣지 않는다
 
 수치·테이블은 `GameDesign/Excel/*.xlsx`가 원본이다.
-엑셀 수정 후 `Server/generate-tables.ps1`을 돌려 생성물까지 같은 커밋에 담는다.
+엑셀 수정 후 `GameDesign/generate-tables.ps1`을 돌려 생성물까지 같은 커밋에 담는다.
 생성물(`Server/GameData`, `Server/Shared/Data`, `GameDesign/DataLog`, Unity 미러)은 직접 수정하지 않는다.
 
 ### 기획을 바꿨으면 문서도 바꾼다
