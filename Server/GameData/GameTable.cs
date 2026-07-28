@@ -11,11 +11,13 @@ namespace GameData
     /// <summary>모든 데이터 테이블의 로드/조회 진입점. LoadAll에 파일 읽기 델리게이트를 주입한다(서버=File, Unity=StreamingAssets).</summary>
     public static class GameTable
     {
+        public static TableSet<int, FishingBasicTableRow> FishingBasicTable { get; private set; } = null!;
         public static TableSet<int, ItemTableRow> ItemTable { get; private set; } = null!;
 
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
         public static void LoadAll(Func<string, byte[]> read)
         {
+            FishingBasicTable = TableSet<int, FishingBasicTableRow>.From(read("FishingBasicTable.bytes"), r => r.DropTID);
             ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
         }
     }

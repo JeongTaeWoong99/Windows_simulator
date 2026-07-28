@@ -155,6 +155,13 @@ public static class TableCodeGenerator
         return CodeGenUtil.BuildFile("GameData", new[] { "MemoryPack" }, sb.ToString());
     }
 
+    /// <summary>
+    /// 기획자가 시트에 메모를 남기는 예약 컬럼명.
+    /// 이 컬럼은 <b>게임 로직에 아무 영향을 주지 않는다</b> — 사람이 읽는 설명일 뿐이다.
+    /// 값을 바꿔도, 비워도 동작이 달라지지 않으므로 코드에서 참조하지 않는다.
+    /// </summary>
+    private const string MemoColumnName = "Description";
+
     /// <summary>프로퍼티 뒤에 붙는 주석: 원본 타입 + 범위/기본값 정보.</summary>
     private static string BuildColumnComment(ExcelGenerator.ColumnInfo col)
     {
@@ -163,6 +170,11 @@ public static class TableCodeGenerator
             comment += $" [{col.Min?.ToString() ?? "-"}..{col.Max?.ToString() ?? "-"}]";
         if (col.DefaultValue is not null)
             comment += $" 기본={col.DefaultValue}";
+
+        // 메모 컬럼임을 생성물에 남긴다. 이 주석이 없으면 다음 사람이 로직에서 끌어다 쓴다.
+        if (string.Equals(col.Name, MemoColumnName, StringComparison.Ordinal))
+            comment += " [기획 메모 — 로직에서 읽지 않는다]";
+
         return comment;
     }
 
@@ -292,10 +304,26 @@ public static class TableCodeGenerator
         {
             ExcelGenerator.ColumnInfo.RecordType.Float    => d.EndsWith("f") ? d : d + "f",
             ExcelGenerator.ColumnInfo.RecordType.Bool     => d.ToLowerInvariant(),
-            ExcelGenerator.ColumnInfo.RecordType.String   => $"\"{d.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"",
+            ExcelGenerator.ColumnInfo.RecordType.String   => BuildStringDefaultLiteral(d),
             ExcelGenerator.ColumnInfo.RecordType.EnumType => $"{CSharpType(col)}.{d}",
             _                                             => d,   // Int/ID/Long
         };
+    }
+
+    /// <summary>
+    /// string 컬럼의 Default(Null)을 C# 리터럴로 바꾼다.
+    ///
+    /// Default(Null) 셀 자체가 비어 있으면 "기본값 없음"(= 빈 데이터 셀은 오류)으로 읽히므로,
+    /// **빈 문자열을 기본값으로 두고 싶다는 의도**를 표현할 방법이 없었다.
+    /// 설명·비고처럼 비워 두는 게 정상인 컬럼을 위해 <c>""</c>(따옴표 두 개)를 그 표기로 정한다.
+    /// 이렇게 두면 "빈 셀은 오류"라는 fail-fast 기본값은 그대로 유지된다.
+    /// </summary>
+    private static string BuildStringDefaultLiteral(string d)
+    {
+        if (d is "\"\"" or "''")
+            return "\"\"";
+
+        return $"\"{d.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
     }
 
     /// <summary>배열 컬럼의 Default(Null)을 "new T[]{ ... }" 리터럴로 바꾼다. ',' 구분, 빈 토큰 제외.</summary>

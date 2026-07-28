@@ -1,0 +1,38 @@
+[
+  {
+    "DropTID": 10001,
+    "ItemTID": 1001,
+    "Weight": 6590,
+    "Description": "0.659"
+  },
+  {
+    "DropTID": 10002,
+    "ItemTID": 1002,
+    "Weight": 2000,
+    "Description": "0.2"
+  },
+  {
+    "DropTID": 10003,
+    "ItemTID": 1003,
+    "Weight": 1000,
+    "Description": "0.1"
+  },
+  {
+    "DropTID": 10004,
+    "ItemTID": 1004,
+    "Weight": 300,
+    "Description": "0.03"
+  },
+  {
+    "DropTID": 10005,
+    "ItemTID": 1005,
+    "Weight": 100,
+    "Description": "0.01"
+  },
+  {
+    "DropTID": 10006,
+    "ItemTID": 1006,
+    "Weight": 10,
+    "Description": "0.001"
+  }
+]

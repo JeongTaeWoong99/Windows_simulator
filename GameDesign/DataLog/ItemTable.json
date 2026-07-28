@@ -5,7 +5,7 @@
     "ItemType": "Farming",
     "ItemRarity": "Common",
     "MaxStack": 1000,
-    "Desciption": "Military1"
+    "Description": "Military1"
   },
   {
     "ItemTID": 2,
@@ -13,7 +13,7 @@
     "ItemType": "Farming",
     "ItemRarity": "Common",
     "MaxStack": 2000,
-    "Desciption": "Military2"
+    "Description": "Military2"
   },
   {
     "ItemTID": 3,
@@ -21,7 +21,7 @@
     "ItemType": "Farming",
     "ItemRarity": "Common",
     "MaxStack": 3000,
-    "Desciption": "Military3"
+    "Description": "Military3"
   },
   {
     "ItemTID": 4,
@@ -29,7 +29,7 @@
     "ItemType": "Logging",
     "ItemRarity": "Common",
     "MaxStack": 100,
-    "Desciption": "Shaman1"
+    "Description": "Shaman1"
   },
   {
     "ItemTID": 5,
@@ -37,7 +37,7 @@
     "ItemType": "Logging",
     "ItemRarity": "Common",
     "MaxStack": 200,
-    "Desciption": "Shaman2"
+    "Description": "Shaman2"
   },
   {
     "ItemTID": 6,
@@ -45,6 +45,54 @@
     "ItemType": "Misc",
     "ItemRarity": "Common",
     "MaxStack": 304,
-    "Desciption": "Shaman3"
+    "Description": "Shaman3"
+  },
+  {
+    "ItemTID": 1001,
+    "Name": "일반 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Common",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 1002,
+    "Name": "고급 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 1003,
+    "Name": "희귀 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 1004,
+    "Name": "영웅 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 1005,
+    "Name": "전설 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 1006,
+    "Name": "희귀 생선",
+    "ItemType": "Fishing",
+    "ItemRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": ""
   }
 ]

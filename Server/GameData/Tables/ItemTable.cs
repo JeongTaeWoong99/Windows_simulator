@@ -10,11 +10,11 @@ namespace GameData
     [MemoryPackable]
     public partial class ItemTableRow
     {
-        public int        ItemTID    { get; set; }        // int
-        public string     Name       { get; set; } = "";  // string
-        public ItemType   ItemType   { get; set; }        // eItemType
-        public ItemRarity ItemRarity { get; set; }        // eItemRarity
-        public int        MaxStack   { get; set; }        // int
-        public string     Desciption { get; set; } = "";  // string
+        public int        ItemTID     { get; set; }        // int
+        public string     Name        { get; set; } = "";  // string
+        public ItemType   ItemType    { get; set; }        // eItemType
+        public ItemRarity ItemRarity  { get; set; }        // eItemRarity
+        public int        MaxStack    { get; set; }        // int
+        public string     Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

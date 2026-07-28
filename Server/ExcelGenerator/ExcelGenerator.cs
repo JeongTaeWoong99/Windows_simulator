@@ -111,6 +111,27 @@ public static class ExcelGenerator
             Console.WriteLine($"    로그: {logPath}");
             Console.WriteLine($"    첫 행: {(string)preview.DynamicInvoke(bytes)!}");
         }
+
+        // 시트를 지워도 옛 .bytes/.json은 그대로 남는다. 미러링은 "소스에 있는 파일"을 옮길 뿐이라
+        // 그 고아가 서버 실행 폴더(Content 복사)와 Unity StreamingAssets까지 계속 따라간다.
+        // Row/Packer(.cs)는 TableCodeGenerator가 매번 폴더를 비워 해결하므로 여기선 데이터만 정리한다.
+        var alive = _tables.Select(t => t.Name).ToHashSet(StringComparer.Ordinal);
+        RemoveOrphans(dataDir, "*.bytes", alive);
+        RemoveOrphans(logDir,  "*.json",  alive);
+    }
+
+    /// <summary>현재 테이블 목록에 없는 생성물을 지운다(파일명 = 테이블명 규칙).</summary>
+    private static void RemoveOrphans(string dir, string pattern, HashSet<string> aliveTableNames)
+    {
+        // 열거 도중 삭제하지 않도록 먼저 스냅샷을 뜬다.
+        foreach (var path in Directory.EnumerateFiles(dir, pattern).ToList())
+        {
+            if (aliveTableNames.Contains(Path.GetFileNameWithoutExtension(path)))
+                continue;
+
+            File.Delete(path);
+            Console.WriteLine($"[정리] 사라진 테이블의 생성물 삭제: {path}");
+        }
     }
 
     /// <summary>런타임 컴파일 대상 소스 목록: 공유 정의(GameData) + 툴 전용 Packer.</summary>
@@ -144,7 +165,8 @@ public static class ExcelGenerator
         ColumnInfo.Platform     CS,
         int?                    Min,           //
         int?                    Max,
-        string?                 DefaultValue
+        string?                 DefaultValue,
+        string?                 Ref            // "ItemTable.ItemTID" 형식. 값이 대상 테이블에 실재하는지 검사한다(null이면 검사 없음)
         )
     {
         public enum RecordType : byte
@@ -241,7 +263,8 @@ public static class ExcelGenerator
                 CS:             ParsePlatform(Cell(Row("C&S"), col)),   // "a"/"c"/"s" → Platform
                 Min:            ParseIntOrNull(Cell(Row("Min"), col)),
                 Max:            ParseIntOrNull(Cell(Row("Max"), col)),
-                DefaultValue:   Cell(Row("Default(Null)"), col) is { Length: > 0 } d ? d : null));
+                DefaultValue:   Cell(Row("Default(Null)"), col) is { Length: > 0 } d ? d : null,
+                Ref:            Cell(Row("Ref"), col) is { Length: > 0 } r ? r : null));
         }
         
         // 4) 데이터 행 읽기 (스키마 순서대로 셀 수집)

@@ -16,6 +16,7 @@ namespace GameData
 
         public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>
         {
+            ["FishingBasicTable"] = new(FishingBasicTablePacker.Pack, FishingBasicTablePacker.Verify, FishingBasicTablePacker.Preview, FishingBasicTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
         };
     }

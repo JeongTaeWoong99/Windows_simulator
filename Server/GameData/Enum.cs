@@ -12,8 +12,9 @@ namespace GameData
         Fishing = 2,  // 낚시
         Mining  = 3,  // 채광
         Logging = 4,  // 벌목
-        Misc    = 5,  // 기타
-        Special = 6,  // 특수
+        Hunting = 5,  // 사냥
+        Misc    = 6,  // 기타
+        Special = 7,  // 특수
 
         Max    ,
     };
