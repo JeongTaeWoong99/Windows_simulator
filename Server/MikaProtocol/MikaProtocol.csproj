@@ -21,10 +21,10 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
-      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj"
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaSourceGen\MikaSourceGen.csproj"
                         OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-      <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
 
     <!-- 빌드되면 패킷 정의(.cs)를 Unity 클라이언트로 단방향 미러링한다.

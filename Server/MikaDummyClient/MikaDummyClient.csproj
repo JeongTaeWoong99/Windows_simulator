@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MikaNetwork.Client\MikaNetwork.Client.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Client\MikaNetwork.Client.csproj" />
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
-      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
-      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj"
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaSourceGen\MikaSourceGen.csproj"
                         OutputItemType="Analyzer" ReferenceOutputAssembly="false"/>
     </ItemGroup>
 

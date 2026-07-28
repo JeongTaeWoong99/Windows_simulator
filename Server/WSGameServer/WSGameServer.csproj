@@ -10,13 +10,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\MikaNetwork.Server\MikaNetwork.Server.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Server\MikaNetwork.Server.csproj" />
       <ProjectReference Include="..\MikaProtocol\MikaProtocol.csproj" />
-      <ProjectReference Include="..\MikaNetwork.Core\MikaNetwork.Core.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Core\MikaNetwork.Core.csproj" />
       <!-- 엑셀에서 생성된 게임 데이터 테이블(Row/Enum/GameTable) -->
       <ProjectReference Include="..\GameData\GameData.csproj" />
-      <ProjectReference Include="..\MikaSourceGen\MikaSourceGen\MikaSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
-      <ProjectReference Include="..\MikaUtils\MikaUtils.csproj" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaSourceGen\MikaSourceGen.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+      <ProjectReference Include="..\MikaNetwork.Lib\MikaUtils\MikaUtils.csproj" />
     </ItemGroup>
 
     <ItemGroup>
