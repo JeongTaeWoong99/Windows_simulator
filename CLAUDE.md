@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-07-27
+> 최종 업데이트: 2026-07-29
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -49,9 +49,12 @@
 | `GameDesign/기획/` | 공용 | **게임 기획 단일 진실** — 게임기획코어 + 시스템별 상세 기획안(`<시스템>/README.md`) + 1차 산업(`자원채취/<산업>/README.md`) + 설계 평가(`기획평가.md`) |
 | `GameDesign/Excel/` | 공용 | **게임 데이터 단일 진실** — 기획 데이터 엑셀(`Enum.xlsx`·`Item.xlsx` …). 서버/클라 어느 쪽 폴더에도 속하지 않는 공용 입력 |
 | `GameDesign/DataLog/` | 공용(생성) | 생성된 `.bytes`를 되읽어 덤프한 JSON. 엑셀 대조·diff 리뷰용 — **직접 수정 금지** |
+| `GameDesign/generate-tables.ps1` | 공용 | **데이터 파이프라인 실행 스크립트.** 입력(엑셀) 옆에 두어 기획자가 그 자리에서 돌린다 |
 | `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 패킷 정의 원본 = `Server/MikaProtocol` |
+| `Server/MikaNetwork.Lib/` | 서버 | **게임과 무관한 재사용 네트워크 프레임워크** — `MikaNetwork.Core`·`.Client`·`.Server`·`MikaUtils`·`MikaSourceGen` |
 | `Server/GameData/` | 서버(생성) | 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
 | `Server/Shared/Data/` | 서버(생성) | MemoryPack 바이너리 `*.bytes` |
+| `Server/WSGameServer.Tests/` | 서버 | 서버 유닛 테스트 — **xUnit + Shouldly + Moq** |
 | `Assets/Scripts_Server/Protocol/` | 서버(미러) | `Server/MikaProtocol`에서 자동 복사되는 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | 서버(미러) | `Server/GameData`에서 자동 복사되는 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | 서버(미러) | `Server/Shared/Data`에서 복사되는 `*.bytes` |
@@ -62,11 +65,20 @@
 > 패킷 정의는 `Server/MikaProtocol`에서 빌드되면 post-build로 `sync-protocol-to-unity.ps1`이
 > 실행되어 `Assets/Scripts_Server/Protocol`로 단방향 미러링된다(소스 `MikaProtocol` → 대상 `Protocol`).
 
+> **Roslyn 분석기(`MikaSourceGen`)도 빌드 시 `Assets/Plugins/Analyzers/`로 자동 복사된다.**
+> Unity는 이 DLL을 `RoslynAnalyzer` 라벨로 로드해 핸들러 누락 경고(MIKA001)를 낸다.
+> Unity 에디터가 켜져 있으면 파일이 잠겨 복사가 실패할 수 있다(빌드는 통과) — Unity를 닫고 다시 빌드한다.
+
+**`MikaNetwork.Lib` 안팎의 경계는 "게임을 아는가"다.** 프레임워크는 게임 타입을 모른다 —
+`MikaProtocol`(게임 패킷)·`GameData`(게임 테이블)를 Lib 안으로 넣지 않는다.
+`MikaProtocol`·`GameData`·`ExcelGenerator`·`Shared`는 **미러링·파이프라인 경로가 위치에 묶여 있어**
+옮기면 `ExcelGenerator/Program.cs`의 소스 상대경로가 조용히 어긋난다. 위치를 유지한다.
+
 ---
 
 ## 게임 데이터 파이프라인
 
-엑셀 하나를 고치고 `Server/generate-tables.ps1`을 돌리면 서버·Unity 양쪽 산출물이 한 번에 갱신된다.
+엑셀 하나를 고치고 `GameDesign/generate-tables.ps1`을 돌리면 서버·Unity 양쪽 산출물이 한 번에 갱신된다.
 
 ```
 GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
@@ -79,6 +91,49 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 - 서버는 `GameData` 프로젝트를 참조하고 `.bytes`를 Content로 bin에 복사받는다.
 - Unity는 미러된 `.cs` + StreamingAssets의 `.bytes`를 읽는다. 양쪽 MemoryPack 와이어 포맷이 동일하다.
 - 엑셀을 Excel에서 열어 둔 채로 실행하면 파일 잠금으로 즉시 실패한다. 닫고 다시 실행한다.
+- **경로는 전부 저장소 루트에서 유도한다.** 어디에 체크아웃하든 동작하도록 절대경로를 박지 않는다.
+  ps1은 `$RepoRoot`/`$ServerRoot`/`$UnityRoot`에서, `ExcelGenerator`는 `Program.cs` 상단의
+  루트 상대 상수(`ExcelDirRel` 등)에서 조합한다. **프로젝트 폴더 상대(`../GameData`)로 두지 않는다** —
+  프로젝트를 옮기면 컴파일은 통과하면서 엉뚱한 위치에 파일을 쓴다.
+- **시트를 지우면 그 테이블의 `.bytes`·`.json`도 자동 삭제된다**(Unity 미러까지 전파).
+  생성물을 손으로 지울 필요가 없다.
+
+### 엑셀 마커 행 (A열)
+
+| 마커 | 의미 |
+|------|------|
+| `Type` | `int`·`long`·`float`·`string`·`bool`·`ID`·`eEnum` (+ `[]` 배열은 `,` 구분) |
+| `Min`·`Max` | 값 범위 |
+| `Default(Null)` | 빈 셀일 때 쓸 값. **비워 두면 "빈 셀 = 오류"**(fail-fast) |
+| `Ref` | `대상시트.대상컬럼` — 값이 실재하는지 검사. `?`를 붙이면 빈 셀·`0` 허용 |
+
+> `Default(Null)`에 **`""`(따옴표 두 개)** 를 적으면 빈 문자열이 기본값이 된다.
+> 설명·비고처럼 비워 두는 게 정상인 string 컬럼에 쓴다. 이 표기가 없으면 빈 셀은 오류다.
+
+### 예약 컬럼 — `Description`
+
+**`Description` 컬럼은 게임 로직에 아무 영향을 주지 않는다.** 기획자가 시트에 남기는 메모다.
+
+- 값을 바꿔도, 통째로 비워도 **동작이 달라지지 않는다.** 서버·클라 어느 쪽도 읽지 않는다.
+- 그래서 `Default(Null)`에 `""`를 지정해 **빈 셀을 정상으로 둔다.**
+- 생성된 Row 클래스에 `[기획 메모 — 로직에서 읽지 않는다]` 주석이 자동으로 붙는다.
+
+> ⚠️ **로직에 쓰는 수치를 `Description`에 적지 않는다.** 확률·배수 같은 값을 메모로 적어 두면
+> 실제 컬럼(`Weight` 등)과 따로 놀다가 조용히 어긋난다. 계산에 쓸 값은 반드시 자기 컬럼을 갖는다.
+
+---
+
+## 서버 테스트
+
+`Server/WSGameServer.Tests`(솔루션 포함). **xUnit** + **Shouldly**(단언) + **Moq**(목).
+세 네임스페이스는 csproj의 `<Using>`으로 전역 등록돼 있어 테스트 파일에 `using`을 적지 않는다.
+
+```powershell
+dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+```
+
+- 테스트 이름은 한글로 **동작을 서술**한다 (예: `만료된_티켓은_소모되지_않는다`).
+- `SmokeTest.cs`는 프레임워크 연결 확인용이다. 실제 테스트는 새 파일로 나눈다.
 
 ---
 
@@ -91,7 +146,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
   기획이 확정·변경되면 상세 기획안과 게임기획코어의 확정/미확정 현황을 함께 갱신한다.
 - 게임 데이터는 `GameDesign/Excel`의 엑셀에서만 수정한다. 여긴 **공용**이라 서버·클라 모두 편집해도 된다.
   생성물(`Server/GameData`, `Server/Shared/Data`, `GameDesign/DataLog`, Unity 미러)은 직접 고치지 않는다.
-- 엑셀을 수정했으면 `Server/generate-tables.ps1`을 돌려 **엑셀과 생성물을 같은 커밋에** 담는다.
+- 엑셀을 수정했으면 `GameDesign/generate-tables.ps1`을 돌려 **엑셀과 생성물을 같은 커밋에** 담는다.
   `GameDesign/DataLog/*.json`의 diff가 데이터 변경 내역 리뷰 수단이므로 함께 커밋한다.
 - 커밋은 `commit-convention` 규칙을 따른다.
 - Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
