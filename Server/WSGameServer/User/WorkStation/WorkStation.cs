@@ -11,8 +11,9 @@ public sealed record SlotHarvest(int SlotIndex, int JudgeCount, Dictionary<int, 
 /// 플레이어가 가진 작업슬롯 전체. 슬롯 목록을 들고 <b>정산을 모아서 수행</b>한다.
 ///
 /// <para>
-/// 정산은 <b>로그인 · 슬롯 변경 · 상태 조회 · 30초 주기 푸시</b> 네 시점에서 같은 함수로 이루어진다.
-/// 온라인/오프라인 경로가 갈리지 않는 이유는 진행도가 시각 하나로 표현되기 때문이다.
+/// 정산은 <b>슬롯 변경 · 상태 조회 · 주기 푸시 · 접속 종료</b> 시점에서 같은 함수로 이루어진다.
+/// 시점이 갈리지 않는 이유는 진행도가 시각 하나로 표현되기 때문이다 —
+/// 언제 부르든 결과가 같고, 자주 부른다고 손해도 이득도 없다.
 /// </para>
 /// </summary>
 public sealed class WorkStation
@@ -40,7 +41,7 @@ public sealed class WorkStation
         if (_slots.TryGetValue(slotIndex, out var existing))
             return existing;
 
-        var slot = new WorkStationSlot(slotIndex, ItemType.None, characterId: 0, lastTickAt: now);
+        var slot = new WorkStationSlot(slotIndex, ItemType.None, characterId: 0, startedAt: now);
         _slots[slotIndex] = slot;
         return slot;
     }
@@ -68,12 +69,13 @@ public sealed class WorkStation
             // 여기서 예외를 던지면 다른 슬롯의 정산까지 함께 죽는다.
             if (!catalog.TryGet(slot.Industry, out var table))
             {
-                Console.WriteLine($"[채취] 드롭 테이블 없음, 건너뜀: {slot.Industry} (슬롯 {slot.SlotIndex})");
+                ServerLog.Warn("채취", $"드롭 테이블 없음, 건너뜀: {slot.Industry} (슬롯 {slot.SlotIndex})");
                 continue;
             }
 
             // 회당 산출은 1개 고정이다. 늘어나면 여기서 judgeCount에 곱한다.
-            // 효율배수(캐릭터 스탯)도 확정되면 이 자리에 들어간다.
+            // 캐릭터 스탯은 "얼마나 많이"가 아니라 "얼마나 빨리"로 들어간다 —
+            // 슬롯의 SpeedPermille이 판정 횟수 자체를 늘리므로 여기에 배수가 붙지 않는다.
             var rollCount = judgeCount * WorkStationSlot.YieldPerJudge;
             harvests.Add(new SlotHarvest(slot.SlotIndex, judgeCount, table.RollMany(rollCount)));
         }

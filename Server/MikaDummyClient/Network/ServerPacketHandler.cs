@@ -84,6 +84,16 @@ namespace MikaDummyClient
             foreach (var change in res.ItemChanges!)
                 Console.WriteLine($"  - ItemId={change.ItemId}, Count={change.Count}, Kind={change.Kind}");
         }
+
+        // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
+        // Amount가 증감이 아니라 확정 잔액이라 두 경우 모두 덮어쓰기로 처리하면 된다.
+        [PacketHandler]
+        public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 재화: Count={res.Currencies?.Count}");
+            foreach (var currency in res.Currencies!)
+                Console.WriteLine($"  - Type={currency.CurrencyType}, Amount={currency.Amount}");
+        }
     }
 }
 

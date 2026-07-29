@@ -44,6 +44,7 @@ namespace MikaProtocol
         S_WorkStationAssignResponse = 13,
         S_WorkStationSlotsResponse = 14,
         S_GatherResultResponse = 15,
+        S_CurrencyResponse = 16,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -141,7 +142,12 @@ namespace MikaProtocol
 
     /// <summary>
     /// 채취 결과 푸시. 클라이언트 요청 없이 <b>서버가 판정 후 밀어 준다</b>(서버 권위).
-    /// 접속 중에는 30초 주기로, 로그인·슬롯 변경 시에는 밀린 구간을 한 번에 정산해 보낸다.
+    ///
+    /// <para>
+    /// 도착 간격은 <b>슬롯마다 다르다</b> — 캐릭터 적성·버프가 슬롯별 채취 속도를 정하기 때문이다.
+    /// 서버는 1초 해상도로 깨어나 그 시점까지 완성된 판정만 담아 보내므로, 이 패킷이 안 온다고
+    /// 진행이 멈춘 것은 아니다. 슬롯 변경 시에는 그때까지의 구간을 한 번에 정산해 보낸다.
+    /// </para>
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_GatherResultResponse)]
     public partial class S_GatherResultResponse : IPacket
@@ -149,6 +155,23 @@ namespace MikaProtocol
         public int                   SlotIndex   { get; set; }  // 어느 슬롯에서 나왔는지
         public int                   JudgeCount  { get; set; }  // 이번에 정산된 판정 횟수(연출용)
         public List<ItemChangeInfo>? ItemChanges { get; set; }  // 인벤토리 갱신분
+    }
+
+    // ───────────────────────── 재화 (Currency) ─────────────────────────
+
+    /// <summary>
+    /// 재화 보유량 통지. <b>로그인 스냅샷과 변경 푸시가 같은 패킷을 쓴다.</b>
+    ///
+    /// <para>
+    /// 아이템처럼 스냅샷/델타 패킷을 나누지 않는 이유는 <see cref="CurrencyInfo.Amount"/>가
+    /// 증감이 아니라 <b>확정된 잔액</b>이기 때문이다. 클라이언트는 두 경우 모두
+    /// <b>재화 종류로 덮어쓰기</b>만 하면 되므로 처리 경로가 하나로 끝난다.
+    /// </para>
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_CurrencyResponse)]
+    public partial class S_CurrencyResponse : IPacket
+    {
+        public List<CurrencyInfo>? Currencies { get; set; }
     }
 
 

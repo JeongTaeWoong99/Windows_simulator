@@ -7,38 +7,101 @@ namespace WSGameServer.User.WorkStation;
 /// 작업슬롯 한 칸. <b>산업 1개 + 캐릭터 1명</b>이 배치되면 독립적으로 채취를 돌린다.
 ///
 /// <para>
-/// 진행도는 <see cref="LastTickAt"/> <b>하나로만</b> 표현한다.
-/// 방치형의 진행은 시각의 함수(<c>누적 = f(지금 - 마지막 정산 시각)</c>)이므로,
-/// 이 값 하나면 <b>온라인·오프라인을 같은 계산으로 처리</b>할 수 있다.
-/// 별도 카운터를 두면 온라인용/오프라인용 두 경로가 생기고, 둘이 어긋나는 순간 재화가 새거나 사라진다.
+/// <b>진행도는 접속 중에만 쌓이고 세션과 함께 사라진다.</b> 오프라인 진행이 폐지됐으므로
+/// (게임기획코어 P2 재정의) 이 객체의 <see cref="LastTickAt"/>·<see cref="ProgressUnits"/>는
+/// <b>세션 지역 상태</b>다. DB에 저장하지 않으며, 로그인할 때 항상 0에서 시작한다.
+/// 슬롯 행이 DB에 남기는 것은 "어떤 산업에 누구를 배치했는가"라는 <b>설정</b>뿐이다.
+/// </para>
+///
+/// <para>
+/// <b>주기(period)가 아니라 속도(rate)를 가변으로 둔다.</b> 캐릭터 스탯·버프로 채취가 빨라지는데
+/// <c>floor(경과 / 주기)</c> 형태를 유지하면 두 가지가 깨진다.
+/// ① 세션 중 버프를 켜고 끄면 "이 구간은 몇 초 주기였나"를 표현할 수 없다.
+/// ② 자투리가 초 단위라 주기가 바뀌면 그 자투리가 몇 판정어치인지 정해지지 않는다
+///    (30초 주기의 15초는 0.5판정, 20초 주기에서는 0.75판정 — 주기를 흔들어 이득을 볼 수 있다).
+/// 속도는 더할 수 있고 구간별로 쪼갤 수 있지만 주기는 그렇지 않다. 그래서 진행도의 단위를
+/// 시간이 아닌 <b>작업량</b>으로 두고, 각 구간의 속도로 누적한다.
 /// </para>
 /// </summary>
 public sealed class WorkStationSlot
 {
-    /// <summary>채취 판정 주기. 전 산업 공통 30초(게임기획코어 확정).</summary>
-    public const int CycleSeconds = 30;
+    /// <summary>기준 채취 주기(초). 속도 배수가 1.0배일 때 판정 1회에 걸리는 시간이다.</summary>
+    public const int BaseCycleSeconds = 30;
+
+    /// <summary>속도 배수의 정수 표현 단위. 1000 = 1.0배(천분율).</summary>
+    public const int SpeedScale = 1000;
+
+    /// <summary>기준 속도(1.0배). 캐릭터 보정이 없을 때의 값.</summary>
+    public const int BaseSpeedPermille = SpeedScale;
+
+    /// <summary>
+    /// 속도 하한. 0이면 <see cref="TimeUntilNextJudge"/>에서 0으로 나누게 되고,
+    /// "채취 정지"는 속도 0이 아니라 <b>배치를 비우는 것</b>으로 표현한다.
+    /// </summary>
+    public const int MinSpeedPermille = 1;
+
+    /// <summary>
+    /// 판정 1회에 필요한 작업량. <c>기준주기(초) × 1000ms × 1000천분율</c>.
+    ///
+    /// <para>
+    /// 이 단위를 쓰면 누적이 <c>경과ms × 속도천분율</c>로 <b>나눗셈 없이</b> 끝난다.
+    /// 나눗셈을 끼우면 정산할 때마다 1 미만이 잘려 나가고, 푸시 주기가 짧을수록 손실이 커진다.
+    /// </para>
+    /// </summary>
+    public const long JudgeCost = (long)BaseCycleSeconds * 1000 * SpeedScale;
 
     /// <summary>판정 1회당 산출 개수. 현재 1개 고정이다(회당 산출 수치 미확정).</summary>
     public const int YieldPerJudge = 1;
 
-    public WorkStationSlot(int slotIndex, ItemType industry, long characterId, DateTime lastTickAt)
+    public WorkStationSlot(
+        int slotIndex,
+        ItemType industry,
+        long characterId,
+        DateTime startedAt,
+        int speedPermille = BaseSpeedPermille)
     {
-        SlotIndex   = slotIndex;
-        Industry    = industry;
-        CharacterId = characterId;
-        LastTickAt  = lastTickAt;
+        SlotIndex     = slotIndex;
+        Industry      = industry;
+        CharacterId   = characterId;
+        LastTickAt    = startedAt;
+        SpeedPermille = Math.Max(MinSpeedPermille, speedPermille);
     }
 
     public int SlotIndex { get; }
 
-    /// <summary>지정된 산업. <see cref="ItemType.None"/>이면 미지정.</summary>
+    /// <summary>지정된 산업. <see cref="ItemType.None"/>이면 미지정. <b>DB에 저장된다.</b></summary>
     public ItemType Industry { get; private set; }
 
-    /// <summary>배치된 캐릭터. 0이면 비어 있다.</summary>
+    /// <summary>배치된 캐릭터. 0이면 비어 있다. <b>DB에 저장된다.</b></summary>
     public long CharacterId { get; private set; }
 
-    /// <summary>마지막으로 정산이 끝난 시각(UTC). 진행도의 단일 원본.</summary>
+    /// <summary>
+    /// 마지막으로 정산이 끝난 시각(UTC). 이 시각부터 다음 정산까지가 한 구간이다.
+    /// <b>세션 지역 상태로 저장하지 않는다</b> — 로그인 시 접속 시각으로 시작한다.
+    /// </summary>
     public DateTime LastTickAt { get; private set; }
+
+    /// <summary>
+    /// 판정에 못 미친 <b>남은 작업량</b>(0 이상 <see cref="JudgeCost"/> 미만).
+    ///
+    /// <para>
+    /// 자투리를 초가 아니라 작업량으로 들고 있는 것이 요점이다. 초로 두면 속도가 바뀔 때
+    /// "이 자투리는 몇 판정어치인가"가 달라져 재환산이 필요하고, 그 틈이 곧 익스플로잇이 된다.
+    /// </para>
+    ///
+    /// <para><b>세션 지역 상태로 저장하지 않는다</b> — 접속이 끊기면 진행 조각은 버려진다.</para>
+    /// </summary>
+    public long ProgressUnits { get; private set; }
+
+    /// <summary>
+    /// 채취 속도(천분율). 캐릭터 스탯·특성·버프를 모두 곱한 최종값이며 <b>저장하지 않는다</b>.
+    /// 접속할 때마다 다시 계산한다.
+    /// </summary>
+    public int SpeedPermille { get; private set; }
+
+    /// <summary>이 슬롯의 실효 채취 주기. 표시·로그용이며 계산에는 쓰지 않는다.</summary>
+    public TimeSpan EffectiveCycle
+        => TimeSpan.FromMilliseconds((double)JudgeCost / SpeedPermille);
 
     /// <summary>산업이 지정되고 캐릭터가 배치돼야 돌아간다. 둘 중 하나라도 비면 채취하지 않는다.</summary>
     public bool IsActive => Industry != ItemType.None && CharacterId != 0;
@@ -52,16 +115,38 @@ public sealed class WorkStationSlot
         Industry    = industry;
         CharacterId = characterId;
 
-        // 배치를 바꾸면 진행 중이던 30초 조각은 버린다.
+        // 배치를 바꾸면 진행 중이던 조각은 버린다.
         // 이월하면 "산업을 계속 갈아타며 조각을 모으는" 악용이 가능해진다.
-        LastTickAt = now;
+        LastTickAt    = now;
+        ProgressUnits = 0;
     }
 
     /// <summary>
-    /// 지금까지 쌓인 판정 횟수를 꺼내고 <see cref="LastTickAt"/>을 그만큼 전진시킨다.
-    /// <b>남은 자투리 시간은 이월된다</b>(29초 경과 후 정산해도 손해가 없다).
+    /// 채취 속도를 바꾼다(캐릭터 교체·스탯 상승·버프 적용/만료).
+    ///
+    /// <para>
+    /// ⚠️ <b>호출 전에 반드시 정산해야 한다.</b> 정산하지 않고 바꾸면 아직 정산되지 않은
+    /// 이전 구간까지 새 속도로 계산된다. 정산 → 속도 변경 순서를 지키면 각 구간이 항상
+    /// 단일 속도로 계산되고 소급이 원천적으로 불가능해진다.
+    /// </para>
     /// </summary>
-    /// <returns>정산할 판정 횟수. 비활성 슬롯이거나 주기가 안 찼으면 0.</returns>
+    /// <returns>값이 실제로 바뀌었으면 true.</returns>
+    public bool ApplySpeed(int speedPermille)
+    {
+        var clamped = Math.Max(MinSpeedPermille, speedPermille);
+        if (clamped == SpeedPermille)
+            return false;
+
+        SpeedPermille = clamped;
+        return true;
+    }
+
+    /// <summary>
+    /// 지난 구간의 작업량을 누적하고, 완성된 판정 횟수를 꺼낸다.
+    /// <b>못 채운 자투리는 <see cref="ProgressUnits"/>에 남아 이월된다</b>
+    /// (29초 경과 후 정산해도 손해가 없다).
+    /// </summary>
+    /// <returns>정산할 판정 횟수. 비활성 슬롯이거나 아직 1회를 못 채웠으면 0.</returns>
     public int ConsumeJudgeCount(DateTime now)
     {
         if (!IsActive)
@@ -71,23 +156,41 @@ public sealed class WorkStationSlot
             return 0;
         }
 
-        var elapsed = now - LastTickAt;
-        if (elapsed <= TimeSpan.Zero)
+        var elapsedMs = (long)(now - LastTickAt).TotalMilliseconds;
+        if (elapsedMs <= 0)
             return 0;
 
-        var judgeCount = (int)(elapsed.TotalSeconds / CycleSeconds);
+        // 구간 전체를 현재 속도로 누적한다. 속도가 바뀌는 지점에서는 호출자가 먼저 정산하므로
+        // (ApplySpeed 주석 참조) 한 구간 안에서 속도는 항상 하나다.
+        LastTickAt     = now;
+        ProgressUnits += elapsedMs * SpeedPermille;
+
+        var judgeCount = ProgressUnits / JudgeCost;
         if (judgeCount <= 0)
             return 0;
 
-        LastTickAt = LastTickAt.AddSeconds((double)judgeCount * CycleSeconds);
-        return judgeCount;
+        ProgressUnits -= judgeCount * JudgeCost;
+        return (int)judgeCount;
     }
 
-    /// <summary>다음 판정까지 남은 시간. 클라이언트 카운트다운을 맞출 때 쓴다.</summary>
+    /// <summary>
+    /// 다음 판정까지 남은 시간. 클라이언트 카운트다운을 맞출 때 쓴다.
+    /// 비활성 슬롯은 판정이 오지 않으므로 <see cref="TimeSpan.Zero"/>를 돌려준다.
+    /// </summary>
     public TimeSpan TimeUntilNextJudge(DateTime now)
     {
-        var remain = LastTickAt.AddSeconds(CycleSeconds) - now;
-        return remain > TimeSpan.Zero ? remain : TimeSpan.Zero;
+        if (!IsActive)
+            return TimeSpan.Zero;
+
+        // ProgressUnits는 마지막 정산 시점의 값이므로, 그 뒤로 흐른 시간을 얹어야 지금 값이 된다.
+        var elapsedMs = (long)(now - LastTickAt).TotalMilliseconds;
+        if (elapsedMs < 0)
+            elapsedMs = 0;
+
+        var remain = JudgeCost - (ProgressUnits + elapsedMs * SpeedPermille);
+        return remain > 0
+            ? TimeSpan.FromMilliseconds((double)remain / SpeedPermille)
+            : TimeSpan.Zero;
     }
 
     public WorkStationSlotInfo ToInfo() => new()
@@ -96,5 +199,8 @@ public sealed class WorkStationSlot
         Industry       = (byte)Industry,
         CharacterId    = CharacterId,
         LastTickAtUnix = new DateTimeOffset(LastTickAt, TimeSpan.Zero).ToUnixTimeSeconds(),
+        ProgressUnits  = ProgressUnits,
+        SpeedPermille  = SpeedPermille,
+        JudgeCostUnits = JudgeCost,
     };
 }

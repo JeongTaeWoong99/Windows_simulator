@@ -1,0 +1,12 @@
+[
+  {
+    "CharacterTID": 1,
+    "Name": "유저 캐릭터",
+    "Farming": 1,
+    "Fishing": 1,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 1,
+    "Description": "기본 지급. 2~1000번은 예약 대역, 일반 캐릭터는 1001부터"
+  }
+]

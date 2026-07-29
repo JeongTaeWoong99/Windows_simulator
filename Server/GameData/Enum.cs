@@ -32,4 +32,13 @@ namespace GameData
 
         Max      ,
     };
+
+    public enum CurrencyType : byte
+    {
+        None = 0,
+
+        Gold = 1,  // 골드
+
+        Max ,
+    };
 }

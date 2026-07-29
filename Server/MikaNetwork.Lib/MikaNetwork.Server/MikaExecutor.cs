@@ -90,12 +90,13 @@ namespace MikaNetwork.Server
             {
                 try
                 {
-                    Console.WriteLine($"[Current Thread]: {Thread.CurrentThread.ManagedThreadId:D6}");
+                    // 잡마다 스레드 번호를 찍던 줄은 제거했다. 이제 패킷 로그가 시각·스레드·패킷명을
+                    // 함께 남기므로(MikaPacketManager.Dispatching 훅), 여기서는 아무것도 찍지 않는다.
                     job.Invoke();
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine(e);
+                    Console.WriteLine($"[LogicExecutor] job 예외: {e}");
                 }
             }
         }

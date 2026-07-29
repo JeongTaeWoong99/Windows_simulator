@@ -1,16 +1,16 @@
 using System.Data;
-using System.Globalization;
 using Dapper;
 using WSGameServer.User.WorkStation;
 
 namespace WSGameServer.Repository;
 
 /// <summary>
-/// 슬롯 상태를 DB에 반영한다. 정산으로 <c>LastTickAt</c>이 전진했거나 배치가 바뀌었을 때 부른다.
+/// 슬롯의 <b>배치 설정</b>을 DB에 반영한다. 산업·캐릭터가 바뀌었을 때만 부르면 된다.
 ///
 /// <para>
-/// <b>정산 후 저장을 빠뜨리면 재화가 복제된다</b> — 재시작 시 같은 구간을 다시 정산하기 때문이다.
-/// 진행도의 단일 원본이 <c>last_tick_at</c>이라 이 컬럼만 정확하면 나머지는 복구 가능하다.
+/// <b>진행도는 저장하지 않는다.</b> 오프라인 진행이 폐지되면서 진행도가 세션 지역 상태가 됐고
+/// (접속마다 0에서 시작한다), 그래서 정산 결과로 이 테이블이 바뀔 일이 없어졌다.
+/// 정산으로 생긴 아이템은 <c>GainItem</c>이 각자 저장하므로 여기서 신경 쓸 것이 없다.
 /// </para>
 /// </summary>
 public sealed class SaveWorkStationSlotRepository : IRepository
@@ -32,22 +32,19 @@ public sealed class SaveWorkStationSlotRepository : IRepository
         // 슬롯 여러 개를 한 번의 왕복으로 처리한다. Dapper는 배열을 넘기면 문장을 반복 실행한다.
         var rows = _slots.Select(s => new
         {
-            // user_id 기준은 t_account.user_id(User.Uid)다. 로드(LoginRepository)와 반드시 같아야 한다.
+            // user_id 기준은 t_user.user_id(User.Uid)다. 로드(LoginRepository)와 반드시 같아야 한다.
             userId      = User.Uid,
             slotIndex   = s.SlotIndex,
             industry    = (int)s.Industry,
             characterId = s.CharacterId,
-            // SQLite datetime() 포맷(UTC). 문화권에 흔들리지 않게 InvariantCulture로 고정한다.
-            lastTickAt  = s.LastTickAt.ToString(LoginRepository.SqliteDateTimeFormat, CultureInfo.InvariantCulture),
         }).ToList();
 
         await connection.ExecuteAsync(
-            @"INSERT INTO t_workstation_slot (user_id, slot_index, industry, character_id, last_tick_at)
-              VALUES (@userId, @slotIndex, @industry, @characterId, @lastTickAt)
+            @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, character_id)
+              VALUES (@userId, @slotIndex, @industry, @characterId)
               ON CONFLICT (user_id, slot_index) DO UPDATE SET
                   industry     = excluded.industry,
-                  character_id = excluded.character_id,
-                  last_tick_at = excluded.last_tick_at;",
+                  character_id = excluded.character_id;",
             rows);
     }
 

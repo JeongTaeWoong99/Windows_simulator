@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-07-29
+> 최종 업데이트: 2026-07-30
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -148,6 +148,10 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
   생성물(`Server/GameData`, `Server/Shared/Data`, `GameDesign/DataLog`, Unity 미러)은 직접 고치지 않는다.
 - 엑셀을 수정했으면 `GameDesign/generate-tables.ps1`을 돌려 **엑셀과 생성물을 같은 커밋에** 담는다.
   `GameDesign/DataLog/*.json`의 diff가 데이터 변경 내역 리뷰 수단이므로 함께 커밋한다.
+- **서버 로그는 `Console.WriteLine`이 아니라 `ServerLog`(`Server/WSGameServer/Common/ServerLog.cs`)를 쓴다.**
+  시각·레벨·스레드·분류가 함께 남아야 로그를 읽을 수 있다.
+  `MikaNetwork.Lib`은 로그 정책을 갖지 않는다 — 훅(`MikaPacketManager.Dispatching`,
+  `MikaSessionPacketExtensions.Sent`, `MikaServer.Connected`)만 뚫고 호스트가 채운다.
 - 커밋은 `commit-convention` 규칙을 따른다.
 - Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
   `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
@@ -196,6 +200,7 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 | 스킬 | 경로 | 내용 |
 |------|------|------|
 | `game-design-reference` | [`.claude/skills/common/game-design-reference/SKILL.md`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 작업 **착수 전** `게임기획코어.md` + 상세 기획안 필독 |
+| `excel-table-creator` | [`.claude/skills/common/excel-table-creator/SKILL.md`](.claude/skills/common/excel-table-creator/SKILL.md) | 게임 데이터 엑셀 시트·컬럼 작성 규칙 (TID 필수·마커 행·`Ref`) |
 | `commit-convention` | [`.claude/skills/common/commit-convention/SKILL.md`](.claude/skills/common/commit-convention/SKILL.md) | Git 커밋 메시지 규칙 |
 | `agent-log-reader` | [`.claude/skills/common/agent-log-reader/SKILL.md`](.claude/skills/common/agent-log-reader/SKILL.md) | 코드 작업 **착수 전** `.claude/Agent/` 로그 필독 |
 | `agent-log-writer` | [`.claude/skills/common/agent-log-writer/SKILL.md`](.claude/skills/common/agent-log-writer/SKILL.md) | 코드 작업 **종료 후** `.claude/Agent/`에 로그 기록 |

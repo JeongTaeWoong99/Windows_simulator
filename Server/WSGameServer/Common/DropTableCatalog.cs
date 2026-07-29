@@ -50,7 +50,7 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
 
         // 농사·벌목·채굴·사냥은 아직 시트가 없다. 만들어지는 대로 위와 같은 형태로 한 줄씩 추가한다.
 
-        Console.WriteLine($"[드롭 테이블] {Count}개 등록 완료");
+        ServerLog.Info("데이터", $"드롭 테이블 {Count}개 등록 완료");
     }
 
     /// <summary>테이블 Row 목록으로 만들어 등록한다.</summary>

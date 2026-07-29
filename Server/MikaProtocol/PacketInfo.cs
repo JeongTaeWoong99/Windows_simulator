@@ -24,6 +24,17 @@ namespace MikaProtocol
         public EItemChangeKind Kind { get; set; }
     }
 
+    /// <summary>
+    /// 재화 한 종류의 보유량.
+    /// <c>Amount</c>는 증감이 아니라 <b>확정된 잔액</b>이라 받는 쪽은 덮어쓰기만 하면 된다.
+    /// </summary>
+    [MemoryPackable]
+    public partial class CurrencyInfo
+    {
+        public byte CurrencyType { get; set; }  // GameData.CurrencyType (1=Gold)
+        public long Amount       { get; set; }  // 보유량. int로 받지 말 것 — 거래 경제에서 21억을 넘길 수 있다
+    }
+
     // 가챠로 뽑힌 결과 1건 (인벤토리 누적 수량이 아닌 "이번에 획득한 것")
     [MemoryPackable]
     public partial class GachaRewardInfo
@@ -35,8 +46,15 @@ namespace MikaProtocol
 
     /// <summary>
     /// 작업슬롯 한 칸의 상태.
-    /// <c>LastTickAtUnix</c>는 클라이언트가 <b>다음 채취까지 남은 시간을 로컬에서 계산</b>하라고 준다.
+    /// 뒤쪽 세 값은 클라이언트가 <b>다음 채취까지 남은 시간을 로컬에서 계산</b>하라고 준다.
     /// 그 카운트다운은 연출일 뿐이고, 실제로 몇 개가 나왔는지는 서버가 정한다.
+    ///
+    /// <para>
+    /// <b>주기를 초로 내려보내지 않는 이유:</b> 캐릭터 스탯·버프로 슬롯마다 주기가 달라져서
+    /// "30초"라는 고정값이 없다. 대신 진행도·속도·1회 비용을 그대로 주면 클라이언트가
+    /// <c>남은시간 = (비용 - 진행도 - 경과 × 속도) / 속도</c>로 직접 구할 수 있고,
+    /// 나중에 주기 규칙이 바뀌어도 클라이언트를 고치지 않아도 된다.
+    /// </para>
     /// </summary>
     [MemoryPackable]
     public partial class WorkStationSlotInfo
@@ -45,5 +63,8 @@ namespace MikaProtocol
         public byte Industry       { get; set; }  // GameData.ItemType (0=미지정)
         public long CharacterId    { get; set; }  // 0=비어 있음 (채취하지 않는다)
         public long LastTickAtUnix { get; set; }  // 마지막 정산 시각 (Unix epoch 초, UTC)
+        public long ProgressUnits  { get; set; }  // 마지막 정산 시점의 누적 작업량 (판정에 못 미친 자투리)
+        public int  SpeedPermille  { get; set; }  // 채취 속도 (1000 = 기준 1.0배)
+        public long JudgeCostUnits { get; set; }  // 판정 1회에 필요한 작업량
     }
 }

@@ -22,14 +22,14 @@ public class AccountRepository : IRepository
     public async Task ExecuteAsync(IDbConnection connection)
     {
         var row = await connection.QueryFirstOrDefaultAsync<AccountQueryRow>(
-            "SELECT user_id FROM t_account WHERE provider_id = @pid",
+            "SELECT user_id FROM t_user WHERE provider_id = @pid",
         new {pid = User.Pid});
 
         // 2) 없으면 자동 가입 
         if (row is null)
         {
             _userId = await connection.ExecuteScalarAsync<long>(
-                "INSERT INTO t_account (provider_id, nickname) VALUES (@pid, @nickname) RETURNING user_id",
+                "INSERT INTO t_user (provider_id, nickname) VALUES (@pid, @nickname) RETURNING user_id",
                 new { pid = User.Pid, nickname = User.NickName });
 
             _isNewbie = true;
@@ -42,7 +42,7 @@ public class AccountRepository : IRepository
         
         // 3) AccountResultRow 채워주기
         _resultRow = await connection.QueryFirstOrDefaultAsync<AccountResultRow>(
-            "SELECT user_id, nickname, admin_level, is_deleted, is_banned FROM t_account WHERE user_id = @userId",
+            "SELECT user_id, nickname, admin_level, is_deleted, is_banned FROM t_user WHERE user_id = @userId",
             new {userId = _userId});
     }
     

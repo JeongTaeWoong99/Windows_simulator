@@ -42,7 +42,8 @@ public sealed partial class User : Entity
     // (여기는 GC 수거 여부 진단용으로만 남겨둠)
     ~User()
     {
-        Console.WriteLine($"[GC] User finalized SessionId: {SessionId}, Pid: {Pid}");
+        // GC 수거 여부 진단용이라 평소에는 보이지 않는 Trace로 둔다.
+        ServerLog.Trace("유저", $"GC 수거 SessionId={SessionId} Pid={Pid}");
     }
 
     public void Login()
@@ -58,17 +59,17 @@ public sealed partial class User : Entity
         
         Send(new S_LoginResponse {Success = true, SessionId = SessionId});
 
-        SendInventory(); // S_InventoryResponse
+        SendInventory();   // S_InventoryResponse
+        SendCurrencies();  // S_CurrencyResponse
 
-        // 비운 동안 쌓인 채취를 먼저 정산해 인벤토리에 반영한 뒤 슬롯 상태를 보낸다.
-        // 순서를 뒤집으면 클라가 정산 전 LastTickAt으로 카운트다운을 시작해 한 주기를 헛돈다.
-        SettleWorkStation(DateTime.UtcNow);
+        // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
+        // 슬롯은 LoginRepository에서 이미 "지금부터" 시작하도록 만들어져 있다.
         SendWorkStationSlots(); // S_WorkStationSlotsResponse
     }
 
     protected override void OnCreate()
     {
-        Console.WriteLine($"User created SessionId: {SessionId}, Pid: {Pid}");
+        ServerLog.Info("유저", $"생성 SessionId={SessionId} Pid={Pid}");
         
         PostDBTask(new AccountRepository(this));
     }
@@ -76,7 +77,20 @@ public sealed partial class User : Entity
     protected override void OnDestroy()
     {
         // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
-        Console.WriteLine($"User destroyed SessionId: {SessionId}, Pid: {Pid}");
+        ServerLog.Info("유저", $"소멸 SessionId={SessionId} Pid={Pid}");
+
+        // 마지막 정산. 접속 중 완성된 판정은 정당하게 번 것이므로 끊겼다고 버리지 않는다.
+        // 세션이 이미 닫혔으므로 푸시는 하지 않고(notify: false) 지급·저장만 한다.
+        // 판정에 못 미친 조각은 여기서 함께 사라진다 — 진행도는 세션과 수명을 같이한다.
+        try
+        {
+            SettleWorkStation(DateTime.UtcNow, notify: false);
+        }
+        catch (Exception e)
+        {
+            // 정산이 실패해도 세션 정리는 반드시 진행해야 한다(User가 남으면 누수다).
+            ServerLog.Error("채취", $"종료 정산 실패 SessionId={SessionId}", e);
+        }
 
         UserManager.Instance.LeaveUser(this);
     }
