@@ -130,10 +130,11 @@ public class PacketTestPanelUI : MonoBehaviour
             Debug.Log($"    itemId={reward.ItemId}, count={reward.Count}, rarity={reward.Rarity}");
     }
 
-    // 작업슬롯 배치 결과 (WorkStationAssignCompleted 구독)
-    private void OnWorkStationAssignCompleted(bool success)
+    // 작업슬롯 변경 결과 (WorkStationAssignCompleted 구독)
+    // 배치와 해제가 같은 패킷이라 "성공"만 찍으면 둘을 구분할 수 없다.
+    private void OnWorkStationAssignCompleted(bool success, bool wasAssign)
     {
-        Debug.Log($"[Client] 작업슬롯 배치 {(success ? "성공" : "실패")}");
+        Debug.Log($"[Client] 작업슬롯 {(wasAssign ? "배치" : "해제")} {(success ? "성공" : "실패")}");
     }
 
     // 작업슬롯 갱신 (WorkStationSlotsChanged 구독)

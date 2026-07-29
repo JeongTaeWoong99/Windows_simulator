@@ -26,6 +26,10 @@ public class SessionManager : MonoService<SessionManager>
     private readonly List<ItemInfo>            _inventory        = new List<ItemInfo>();
     private readonly List<WorkStationSlotInfo> _workStationSlots = new List<WorkStationSlotInfo>();
 
+    // 마지막으로 보낸 작업슬롯 요청이 배치였는지(true) 해제였는지(false).
+    // 실패 응답에 슬롯이 없어 그때만 쓰는 보조값이다 — 성공하면 서버가 준 슬롯 상태를 믿는다.
+    private bool _lastRequestWasAssign;
+
     public long SessionId  { get; private set; }
     public bool IsLoggedIn { get; private set; }
     public IReadOnlyList<ItemInfo>            Inventory        => _inventory;
@@ -36,7 +40,7 @@ public class SessionManager : MonoService<SessionManager>
     public event Action?                        InventoryChanged; // 인벤토리 갱신됨 (스냅샷 반영 후)
     public event Action<List<GachaRewardInfo>>? GachaCompleted;   // 가챠 완료 (뽑힌 보상 목록)
 
-    public event Action<bool>?                   WorkStationAssignCompleted; // 슬롯 배치 완료 (성공 여부)
+    public event Action<bool, bool>?             WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부, 배치=true/해제=false)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
 
@@ -85,6 +89,10 @@ public class SessionManager : MonoService<SessionManager>
     // 배치된 슬롯만 채취 판정을 받으므로, 이 요청을 보내야 서버의 채취 결과 푸시가 시작된다.
     public void AssignWorkStation(int slotIndex, byte industry, long characterId)
     {
+        // 실패 응답에는 슬롯이 실려 오지 않아(Slot=null) 무엇을 시도했는지 알 수 없다.
+        // 배치/해제를 구분해 알리려면 보낸 쪽에서 기억해 두는 수밖에 없다.
+        _lastRequestWasAssign = industry != 0 && characterId != 0;
+
         NetworkManager.Instance.Send(new C_WorkStationAssignRequest
         {
             SlotIndex   = slotIndex,
@@ -154,7 +162,13 @@ public class SessionManager : MonoService<SessionManager>
             WorkStationSlotsChanged?.Invoke();
         }
 
-        WorkStationAssignCompleted?.Invoke(res.Success);
+        // 성공했으면 서버가 돌려준 슬롯 상태가 진실이다(산업·캐릭터가 둘 다 차 있으면 배치).
+        // 실패해서 슬롯이 없을 때만 보낸 요청을 근거로 삼는다.
+        bool wasAssign = changed != null
+            ? changed.Industry != 0 && changed.CharacterId != 0 // 조건으로 true or false 판단
+            : _lastRequestWasAssign;                            // 이전 기록으로 판단
+
+        WorkStationAssignCompleted?.Invoke(res.Success, wasAssign);
     }
 
     // 채취 결과 푸시 — 요청 없이 30초 주기로 도착한다. 지금은 가공 없이 그대로 전달
