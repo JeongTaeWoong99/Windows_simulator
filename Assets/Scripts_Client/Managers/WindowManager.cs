@@ -445,7 +445,7 @@ public class WindowManager : MonoService<WindowManager>
 
             Vector2 refRes = scaler.referenceResolution;
             float expectedScale = refRes.y > 0f ? size.y / refRes.y : 1f; // Match=Height 기준 예상 배율
-            Debug.Log($"[WindowManager] 창 크기 → {size.x}x{size.y} | Canvas '{scaler.name}' ref {refRes.x}x{refRes.y} 고정 → 예상 스케일 x{expectedScale:0.##}");
+            // Debug.Log($"[WindowManager] 창 크기 → {size.x}x{size.y} | Canvas '{scaler.name}' ref {refRes.x}x{refRes.y} 고정 → 예상 스케일 x{expectedScale:0.##}");
         }
     }
 
