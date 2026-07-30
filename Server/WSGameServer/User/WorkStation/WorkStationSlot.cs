@@ -28,17 +28,20 @@ public sealed class WorkStationSlot
     /// <summary>기준 채취 주기(초). 속도 배수가 1.0배일 때 판정 1회에 걸리는 시간이다.</summary>
     public const int BaseCycleSeconds = 30;
 
-    /// <summary>속도 배수의 정수 표현 단위. 1000 = 1.0배(천분율).</summary>
-    public const int SpeedScale = 1000;
+    /// <summary>
+    /// 작업속도의 정수 표현 단위. <b>1000 = 1.0배(천분율)</b>.
+    /// 이 프로젝트에서 "작업속도"라고 적힌 정수는 전부 이 단위다.
+    /// </summary>
+    public const int WorkSpeedScale = 1000;
 
-    /// <summary>기준 속도(1.0배). 캐릭터 보정이 없을 때의 값.</summary>
-    public const int BaseSpeedPermille = SpeedScale;
+    /// <summary>기준 작업속도(1.0배). 보정이 하나도 없을 때의 값.</summary>
+    public const int DefaultWorkSpeed = WorkSpeedScale;
 
     /// <summary>
-    /// 속도 하한. 0이면 <see cref="TimeUntilNextJudge"/>에서 0으로 나누게 되고,
+    /// 작업속도 하한. 0이면 <see cref="TimeUntilNextJudge"/>에서 0으로 나누게 되고,
     /// "채취 정지"는 속도 0이 아니라 <b>배치를 비우는 것</b>으로 표현한다.
     /// </summary>
-    public const int MinSpeedPermille = 1;
+    public const int MinWorkSpeed = 1;
 
     /// <summary>
     /// 판정 1회에 필요한 작업량. <c>기준주기(초) × 1000ms × 1000천분율</c>.
@@ -48,7 +51,7 @@ public sealed class WorkStationSlot
     /// 나눗셈을 끼우면 정산할 때마다 1 미만이 잘려 나가고, 푸시 주기가 짧을수록 손실이 커진다.
     /// </para>
     /// </summary>
-    public const long JudgeCost = (long)BaseCycleSeconds * 1000 * SpeedScale;
+    public const long JudgeCost = (long)BaseCycleSeconds * 1000 * WorkSpeedScale;
 
     /// <summary>판정 1회당 산출 개수. 현재 1개 고정이다(회당 산출 수치 미확정).</summary>
     public const int YieldPerJudge = 1;
@@ -58,13 +61,13 @@ public sealed class WorkStationSlot
         ItemType industry,
         long characterId,
         DateTime startedAt,
-        int speedPermille = BaseSpeedPermille)
+        int currentWorkSpeed = DefaultWorkSpeed)
     {
-        SlotIndex     = slotIndex;
-        Industry      = industry;
-        CharacterId   = characterId;
-        LastTickAt    = startedAt;
-        SpeedPermille = Math.Max(MinSpeedPermille, speedPermille);
+        SlotIndex        = slotIndex;
+        Industry         = industry;
+        CharacterId      = characterId;
+        LastTickAt       = startedAt;
+        CurrentWorkSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed);
     }
 
     public int SlotIndex { get; }
@@ -94,14 +97,19 @@ public sealed class WorkStationSlot
     public long ProgressUnits { get; private set; }
 
     /// <summary>
-    /// 채취 속도(천분율). 캐릭터 스탯·특성·버프를 모두 곱한 최종값이며 <b>저장하지 않는다</b>.
-    /// 접속할 때마다 다시 계산한다.
+    /// <b>현재 작업속도</b>(천분율, 1000 = 1.0배). 적성 기본값에 가산·승산 보정을 모두 적용한
+    /// <b>확정값</b>이며(<see cref="WorkSpeed"/>) <b>저장하지 않는다</b> — 접속할 때마다 다시 계산한다.
+    ///
+    /// <para>
+    /// 적성별 기본값(<c>WorkSpeedTable.BaseWorkSpeedPermille</c>)과 혼동하지 않는다.
+    /// 그쪽은 계산의 <b>입력</b>이고 이 값은 <b>결과</b>다.
+    /// </para>
     /// </summary>
-    public int SpeedPermille { get; private set; }
+    public int CurrentWorkSpeed { get; private set; }
 
     /// <summary>이 슬롯의 실효 채취 주기. 표시·로그용이며 계산에는 쓰지 않는다.</summary>
     public TimeSpan EffectiveCycle
-        => TimeSpan.FromMilliseconds((double)JudgeCost / SpeedPermille);
+        => TimeSpan.FromMilliseconds((double)JudgeCost / CurrentWorkSpeed);
 
     /// <summary>산업이 지정되고 캐릭터가 배치돼야 돌아간다. 둘 중 하나라도 비면 채취하지 않는다.</summary>
     public bool IsActive => Industry != ItemType.None && CharacterId != 0;
@@ -131,13 +139,13 @@ public sealed class WorkStationSlot
     /// </para>
     /// </summary>
     /// <returns>값이 실제로 바뀌었으면 true.</returns>
-    public bool ApplySpeed(int speedPermille)
+    public bool ApplyWorkSpeed(int currentWorkSpeed)
     {
-        var clamped = Math.Max(MinSpeedPermille, speedPermille);
-        if (clamped == SpeedPermille)
+        var clamped = Math.Max(MinWorkSpeed, currentWorkSpeed);
+        if (clamped == CurrentWorkSpeed)
             return false;
 
-        SpeedPermille = clamped;
+        CurrentWorkSpeed = clamped;
         return true;
     }
 
@@ -161,9 +169,9 @@ public sealed class WorkStationSlot
             return 0;
 
         // 구간 전체를 현재 속도로 누적한다. 속도가 바뀌는 지점에서는 호출자가 먼저 정산하므로
-        // (ApplySpeed 주석 참조) 한 구간 안에서 속도는 항상 하나다.
+        // (ApplyWorkSpeed 주석 참조) 한 구간 안에서 속도는 항상 하나다.
         LastTickAt     = now;
-        ProgressUnits += elapsedMs * SpeedPermille;
+        ProgressUnits += elapsedMs * CurrentWorkSpeed;
 
         var judgeCount = ProgressUnits / JudgeCost;
         if (judgeCount <= 0)
@@ -187,20 +195,20 @@ public sealed class WorkStationSlot
         if (elapsedMs < 0)
             elapsedMs = 0;
 
-        var remain = JudgeCost - (ProgressUnits + elapsedMs * SpeedPermille);
+        var remain = JudgeCost - (ProgressUnits + elapsedMs * CurrentWorkSpeed);
         return remain > 0
-            ? TimeSpan.FromMilliseconds((double)remain / SpeedPermille)
+            ? TimeSpan.FromMilliseconds((double)remain / CurrentWorkSpeed)
             : TimeSpan.Zero;
     }
 
     public WorkStationSlotInfo ToInfo() => new()
     {
-        SlotIndex      = SlotIndex,
-        Industry       = (byte)Industry,
-        CharacterId    = CharacterId,
-        LastTickAtUnix = new DateTimeOffset(LastTickAt, TimeSpan.Zero).ToUnixTimeSeconds(),
-        ProgressUnits  = ProgressUnits,
-        SpeedPermille  = SpeedPermille,
-        JudgeCostUnits = JudgeCost,
+        SlotIndex        = SlotIndex,
+        Industry         = (byte)Industry,
+        CharacterId      = CharacterId,
+        LastTickAtUnix   = new DateTimeOffset(LastTickAt, TimeSpan.Zero).ToUnixTimeSeconds(),
+        ProgressUnits    = ProgressUnits,
+        CurrentWorkSpeed = CurrentWorkSpeed,
+        JudgeCostUnits   = JudgeCost,
     };
 }

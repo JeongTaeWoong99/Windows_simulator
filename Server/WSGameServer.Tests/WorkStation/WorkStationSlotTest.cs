@@ -17,8 +17,8 @@ public class WorkStationSlotTest
 
     private static WorkStationSlot ActiveSlot(
         DateTime startedAt,
-        int speedPermille = WorkStationSlot.BaseSpeedPermille)
-        => new(slotIndex: 0, ItemType.Fishing, characterId: 100, startedAt, speedPermille);
+        int currentWorkSpeed = WorkStationSlot.DefaultWorkSpeed)
+        => new(slotIndex: 0, ItemType.Fishing, characterId: 100, startedAt, currentWorkSpeed);
 
     [Fact]
     public void 주기가_안_찼으면_판정하지_않는다()
@@ -28,7 +28,7 @@ public class WorkStationSlotTest
         slot.ConsumeJudgeCount(Base.AddSeconds(29)).ShouldBe(0);
 
         // 판정은 없지만 29초어치 작업량은 남아 있어야 한다(이월).
-        slot.ProgressUnits.ShouldBe(29L * 1000 * WorkStationSlot.BaseSpeedPermille);
+        slot.ProgressUnits.ShouldBe(29L * 1000 * WorkStationSlot.DefaultWorkSpeed);
     }
 
     [Theory]
@@ -50,7 +50,7 @@ public class WorkStationSlotTest
 
         // 89초 = 2회 판정 + 29초 남음
         slot.ConsumeJudgeCount(Base.AddSeconds(89)).ShouldBe(2);
-        slot.ProgressUnits.ShouldBe(29L * 1000 * WorkStationSlot.BaseSpeedPermille);
+        slot.ProgressUnits.ShouldBe(29L * 1000 * WorkStationSlot.DefaultWorkSpeed);
 
         // 남은 29초 + 1초 = 30초 → 곧바로 1회 더
         slot.ConsumeJudgeCount(Base.AddSeconds(90)).ShouldBe(1);
@@ -95,7 +95,7 @@ public class WorkStationSlotTest
     public void 속도가_2배면_같은_시간에_판정도_2배다()
     {
         var normal = ActiveSlot(Base);
-        var fast   = ActiveSlot(Base, WorkStationSlot.BaseSpeedPermille * 2);
+        var fast   = ActiveSlot(Base, WorkStationSlot.DefaultWorkSpeed * 2);
 
         normal.ConsumeJudgeCount(Base.AddSeconds(300)).ShouldBe(10);
         fast.ConsumeJudgeCount(Base.AddSeconds(300)).ShouldBe(20);
@@ -112,7 +112,7 @@ public class WorkStationSlotTest
         slot.ConsumeJudgeCount(Base.AddSeconds(15)).ShouldBe(0);   // 정확히 절반
         slot.ProgressUnits.ShouldBe(WorkStationSlot.JudgeCost / 2);
 
-        slot.ApplySpeed(WorkStationSlot.BaseSpeedPermille * 2).ShouldBeTrue();
+        slot.ApplyWorkSpeed(WorkStationSlot.DefaultWorkSpeed * 2).ShouldBeTrue();
         slot.ProgressUnits.ShouldBe(WorkStationSlot.JudgeCost / 2);  // 속도를 바꿔도 그대로
 
         // 남은 절반을 2배 속도로 채우면 7.5초. 7.4초에는 아직 아니다.
@@ -127,7 +127,7 @@ public class WorkStationSlotTest
 
         // 정산 → 속도 변경 순서를 지키면 이전 구간은 이전 속도로 확정된다.
         slot.ConsumeJudgeCount(Base.AddSeconds(60)).ShouldBe(2);
-        slot.ApplySpeed(WorkStationSlot.BaseSpeedPermille * 4);
+        slot.ApplyWorkSpeed(WorkStationSlot.DefaultWorkSpeed * 4);
 
         // 이후 30초는 4배 속도로만 계산된다.
         slot.ConsumeJudgeCount(Base.AddSeconds(90)).ShouldBe(4);
@@ -139,11 +139,11 @@ public class WorkStationSlotTest
         // 0이면 남은 시간 계산에서 0으로 나눈다. "정지"는 배치를 비우는 것으로 표현한다.
         var slot = ActiveSlot(Base);
 
-        slot.ApplySpeed(0);
-        slot.SpeedPermille.ShouldBe(WorkStationSlot.MinSpeedPermille);
+        slot.ApplyWorkSpeed(0);
+        slot.CurrentWorkSpeed.ShouldBe(WorkStationSlot.MinWorkSpeed);
 
-        slot.ApplySpeed(-500);
-        slot.SpeedPermille.ShouldBe(WorkStationSlot.MinSpeedPermille);
+        slot.ApplyWorkSpeed(-500);
+        slot.CurrentWorkSpeed.ShouldBe(WorkStationSlot.MinWorkSpeed);
     }
 
     [Fact]
@@ -151,14 +151,14 @@ public class WorkStationSlotTest
     {
         var slot = ActiveSlot(Base);
 
-        slot.ApplySpeed(WorkStationSlot.BaseSpeedPermille).ShouldBeFalse();
+        slot.ApplyWorkSpeed(WorkStationSlot.DefaultWorkSpeed).ShouldBeFalse();
     }
 
     [Fact]
     public void 실효_주기는_속도에_반비례한다()
     {
         ActiveSlot(Base).EffectiveCycle.ShouldBe(TimeSpan.FromSeconds(30));
-        ActiveSlot(Base, WorkStationSlot.BaseSpeedPermille * 2).EffectiveCycle
+        ActiveSlot(Base, WorkStationSlot.DefaultWorkSpeed * 2).EffectiveCycle
             .ShouldBe(TimeSpan.FromSeconds(15));
     }
 
@@ -228,7 +228,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 남은_시간은_속도를_반영한다()
     {
-        var fast = ActiveSlot(Base, WorkStationSlot.BaseSpeedPermille * 2);
+        var fast = ActiveSlot(Base, WorkStationSlot.DefaultWorkSpeed * 2);
 
         fast.TimeUntilNextJudge(Base).ShouldBe(TimeSpan.FromSeconds(15));
         fast.TimeUntilNextJudge(Base.AddSeconds(10)).ShouldBe(TimeSpan.FromSeconds(5));
@@ -281,8 +281,8 @@ public class WorkStationSlotTest
         var station = new global::WSGameServer.User.WorkStation.WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, 100, Base, WorkStationSlot.BaseSpeedPermille),
-            new WorkStationSlot(1, ItemType.Fishing, 200, Base, WorkStationSlot.BaseSpeedPermille * 3),
+            new WorkStationSlot(0, ItemType.Fishing, 100, Base, WorkStationSlot.DefaultWorkSpeed),
+            new WorkStationSlot(1, ItemType.Fishing, 200, Base, WorkStationSlot.DefaultWorkSpeed * 3),
         });
 
         var harvests = station.Settle(Base.AddSeconds(300), BuildCatalog());

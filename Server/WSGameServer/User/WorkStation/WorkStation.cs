@@ -75,7 +75,7 @@ public sealed class WorkStation
 
             // 회당 산출은 1개 고정이다. 늘어나면 여기서 judgeCount에 곱한다.
             // 캐릭터 스탯은 "얼마나 많이"가 아니라 "얼마나 빨리"로 들어간다 —
-            // 슬롯의 SpeedPermille이 판정 횟수 자체를 늘리므로 여기에 배수가 붙지 않는다.
+            // 슬롯의 CurrentWorkSpeed가 판정 횟수 자체를 늘리므로 여기에 배수가 붙지 않는다.
             var rollCount = judgeCount * WorkStationSlot.YieldPerJudge;
             harvests.Add(new SlotHarvest(slot.SlotIndex, judgeCount, table.RollMany(rollCount)));
         }

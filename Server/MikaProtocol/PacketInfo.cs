@@ -64,7 +64,7 @@ namespace MikaProtocol
         public long CharacterId    { get; set; }  // 0=비어 있음 (채취하지 않는다)
         public long LastTickAtUnix { get; set; }  // 마지막 정산 시각 (Unix epoch 초, UTC)
         public long ProgressUnits  { get; set; }  // 마지막 정산 시점의 누적 작업량 (판정에 못 미친 자투리)
-        public int  SpeedPermille  { get; set; }  // 채취 속도 (1000 = 기준 1.0배)
+        public int  CurrentWorkSpeed { get; set; }  // 현재 작업속도 — 보정 전부 적용된 확정값 (1000 = 기준 1.0배)
         public long JudgeCostUnits { get; set; }  // 판정 1회에 필요한 작업량
     }
 }

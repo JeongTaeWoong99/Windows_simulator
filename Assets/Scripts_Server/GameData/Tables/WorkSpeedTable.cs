@@ -10,8 +10,8 @@ namespace GameData
     [MemoryPackable]
     public partial class WorkSpeedTableRow
     {
-        public int    WorkSpeedTID  { get; set; }        // int [0..-]
-        public int    SpeedPermille { get; set; }        // int [0..-]
-        public string Description   { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int    WorkSpeedTID          { get; set; }        // int [0..-]
+        public int    BaseWorkSpeedPermille { get; set; }        // int [0..-]
+        public string Description           { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

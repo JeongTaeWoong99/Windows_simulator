@@ -55,19 +55,24 @@ public sealed class Character
     public bool CanWork(ItemType industry) => GetAptitude(industry) > 0;
 
     /// <summary>
-    /// 이 산업에서의 채취 속도(천분율). 적성을 <c>WorkSpeedTable</c>로 변환한다.
+    /// 이 산업에서의 <b>기본 작업속도</b>(천분율). 적성을 <c>WorkSpeedTable</c>로 변환한다.
+    ///
+    /// <para>
+    /// 특성·부스트·장비 보정이 붙기 <b>전</b>의 값이며, 슬롯의 최종 확정값
+    /// (<c>WorkStationSlot.CurrentWorkSpeed</c>)과 구분한다.
+    /// </para>
     ///
     /// <para>
     /// 변환식을 코드에 두지 않는 이유는 이 값이 <b>재화 생성량에 직접 곱해지기</b> 때문이다.
     /// 테이블에 두면 밸런스 조정이 엑셀 수정만으로 끝난다.
     /// </para>
     /// </summary>
-    public int GetWorkSpeedPermille(ItemType industry)
+    public int GetBaseWorkSpeed(ItemType industry)
     {
         var aptitude = GetAptitude(industry);
 
         // Ref 검사가 CharacterTable의 적성을 WorkSpeedTable.WorkSpeedTID와 대조하므로
         // 정상 데이터에서는 반드시 찾아진다. 못 찾으면 데이터가 깨진 것이니 0으로 막는다.
-        return GameTable.WorkSpeedTable.TryGet(aptitude, out var row) ? row.SpeedPermille : 0;
+        return GameTable.WorkSpeedTable.TryGet(aptitude, out var row) ? row.BaseWorkSpeedPermille : 0;
     }
 }
