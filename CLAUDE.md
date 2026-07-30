@@ -45,6 +45,7 @@
 
 | 경로 | 담당 | 내용 |
 |------|------|------|
+| `일감/` | 공용 | **할 일의 단일 목록** — 일감 1개 = 파일 1개, `README.md`가 전체 현황 표. 담당(클라/서버/공용)·상태·우선순위·마감·관련 커밋 |
 | `GameDesign/기획/게임기획코어.md` | 공용 | **게임 기획 최상위 문서** — 게임 작업 착수 전 필독. 정체성·설계 원칙·코어 루프·시스템 지도·확정/미확정 현황 |
 | `GameDesign/기획/` | 공용 | **게임 기획 단일 진실** — 게임기획코어 + 시스템별 상세 기획안(`<시스템>/README.md`) + 1차 산업(`자원채취/<산업>/README.md`) + 설계 평가(`기획평가.md`) |
 | `GameDesign/Excel/` | 공용 | **게임 데이터 단일 진실** — 기획 데이터 엑셀(`Enum.xlsx`·`Item.xlsx` …). 서버/클라 어느 쪽 폴더에도 속하지 않는 공용 입력 |
@@ -159,6 +160,9 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 - 코드는 한글 주석을 사용한다.
 - **문서(`.md`)와 문서 폴더는 항상 한글 이름으로 만든다.** 상세는 아래 "이름 규칙" 참조.
 - CLAUDE.md·스킬 문서를 수정하면 문서 상단의 `최종 업데이트` 날짜를 그날 날짜로 갱신한다.
+- **사용자가 특별한 요구를 하지 않는 한, 간단하고 명료하게 설명한다.**
+  물은 것에 답하고 끝낸다. 배경·대안·파생 논점을 묻지 않았는데 늘어놓지 않는다.
+  중요한 위험이나 결정 사항이 있으면 **한두 줄로 짚고** 넘어간다.
 
 ---
 
@@ -204,6 +208,8 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 | `commit-convention` | [`.claude/skills/common/commit-convention/SKILL.md`](.claude/skills/common/commit-convention/SKILL.md) | Git 커밋 메시지 규칙 |
 | `agent-log-reader` | [`.claude/skills/common/agent-log-reader/SKILL.md`](.claude/skills/common/agent-log-reader/SKILL.md) | 코드 작업 **착수 전** `.claude/Agent/` 로그 필독 |
 | `agent-log-writer` | [`.claude/skills/common/agent-log-writer/SKILL.md`](.claude/skills/common/agent-log-writer/SKILL.md) | 코드 작업 **종료 후** `.claude/Agent/`에 로그 기록 |
+| `task-reader` | [`.claude/skills/common/task-reader/SKILL.md`](.claude/skills/common/task-reader/SKILL.md) | `일감/`에서 현재 할 일·상태 확인 |
+| `task-writer` | [`.claude/skills/common/task-writer/SKILL.md`](.claude/skills/common/task-writer/SKILL.md) | `일감/`에 일감 등록·상태 갱신 |
 
 ### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
 
