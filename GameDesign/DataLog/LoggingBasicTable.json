@@ -1,0 +1,38 @@
+[
+  {
+    "DropTID": 301,
+    "ItemTID": 30001,
+    "Weight": 6590,
+    "Description": "잡목"
+  },
+  {
+    "DropTID": 302,
+    "ItemTID": 30002,
+    "Weight": 2000,
+    "Description": "소나무 목재"
+  },
+  {
+    "DropTID": 303,
+    "ItemTID": 30003,
+    "Weight": 1000,
+    "Description": "참나무 목재"
+  },
+  {
+    "DropTID": 304,
+    "ItemTID": 30004,
+    "Weight": 300,
+    "Description": "흑단 목재"
+  },
+  {
+    "DropTID": 305,
+    "ItemTID": 30005,
+    "Weight": 100,
+    "Description": "고급 원목"
+  },
+  {
+    "DropTID": 306,
+    "ItemTID": 30006,
+    "Weight": 10,
+    "Description": "세계수 가지"
+  }
+]

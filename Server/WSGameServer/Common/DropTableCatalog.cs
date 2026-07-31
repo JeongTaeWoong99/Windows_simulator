@@ -19,8 +19,12 @@ namespace WSGameServer.Common;
 /// </para>
 /// </summary>
 /// <remarks>
-/// <b>지금은 산업당 테이블 1개다.</b> 기획(자원채취 2.4)은 기본 90% : 특별 10% + 공통 보상의
-/// 3층 구조를 그리고 있지만, 확률값과 희귀도 분포가 미확정이라 시트가 아직 하나뿐이다.
+/// <b>산업당 테이블 1개다.</b> 특별보상 층은 폐지됐고(2026-07-30), 공통 보상(티켓·고유 아이템)은
+/// 채취 보상과 무관한 별도 롤이라 이 보관소에 들어오지 않는다.
+/// <para>
+/// <b>희귀도 가중치는 각 산업 시트가 직접 갖는다.</b> 공통 <c>RarityWeightTable</c>을 두지 않으므로
+/// 분포를 산업마다 다르게 잡을 수 있다 — 대신 확률을 손볼 때 <b>5개 시트를 함께</b> 봐야 한다.
+/// </para>
 /// 층이 생기면 키에 축을 하나 더하고 <c>Get(industry)</c>은 기본 층을 가리키게 두면 된다.
 /// <para>
 /// 산업 축에 <see cref="ItemType"/>을 그대로 쓴다. 기획이 "산업 = ItemType"으로 잡고 있어서인데,
@@ -48,7 +52,19 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
         Register(ItemType.Fishing, nameof(GameTable.FishingBasicTable),
                  GameTable.FishingBasicTable.All, r => r.ItemTID, r => r.Weight);
 
-        // 농사·벌목·채굴·사냥은 아직 시트가 없다. 만들어지는 대로 위와 같은 형태로 한 줄씩 추가한다.
+        Register(ItemType.Farming, nameof(GameTable.FarmingBasicTable),
+                 GameTable.FarmingBasicTable.All, r => r.ItemTID, r => r.Weight);
+
+        Register(ItemType.Logging, nameof(GameTable.LoggingBasicTable),
+                 GameTable.LoggingBasicTable.All, r => r.ItemTID, r => r.Weight);
+
+        Register(ItemType.Mining, nameof(GameTable.MiningBasicTable),
+                 GameTable.MiningBasicTable.All, r => r.ItemTID, r => r.Weight);
+
+        Register(ItemType.Hunting, nameof(GameTable.HuntingBasicTable),
+                 GameTable.HuntingBasicTable.All, r => r.ItemTID, r => r.Weight);
+
+        // 1차 산업 5종이 모두 등록됐다. 산업이 늘면 위와 같은 형태로 한 줄씩 추가한다.
 
         ServerLog.Info("데이터", $"드롭 테이블 {Count}개 등록 완료");
     }

@@ -1,0 +1,38 @@
+[
+  {
+    "DropTID": 401,
+    "ItemTID": 40001,
+    "Weight": 6590,
+    "Description": "돌덩어리"
+  },
+  {
+    "DropTID": 402,
+    "ItemTID": 40002,
+    "Weight": 2000,
+    "Description": "구리 광석"
+  },
+  {
+    "DropTID": 403,
+    "ItemTID": 40003,
+    "Weight": 1000,
+    "Description": "은광석"
+  },
+  {
+    "DropTID": 404,
+    "ItemTID": 40004,
+    "Weight": 300,
+    "Description": "금광석"
+  },
+  {
+    "DropTID": 405,
+    "ItemTID": 40005,
+    "Weight": 100,
+    "Description": "보석 원석"
+  },
+  {
+    "DropTID": 406,
+    "ItemTID": 40006,
+    "Weight": 10,
+    "Description": "심연의 원석"
+  }
+]

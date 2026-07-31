@@ -1,0 +1,38 @@
+[
+  {
+    "DropTID": 201,
+    "ItemTID": 20001,
+    "Weight": 6590,
+    "Description": "밀"
+  },
+  {
+    "DropTID": 202,
+    "ItemTID": 20002,
+    "Weight": 2000,
+    "Description": "감자"
+  },
+  {
+    "DropTID": 203,
+    "ItemTID": 20003,
+    "Weight": 1000,
+    "Description": "옥수수"
+  },
+  {
+    "DropTID": 204,
+    "ItemTID": 20004,
+    "Weight": 300,
+    "Description": "인삼"
+  },
+  {
+    "DropTID": 205,
+    "ItemTID": 20005,
+    "Weight": 100,
+    "Description": "변종 인삼"
+  },
+  {
+    "DropTID": 206,
+    "ItemTID": 20006,
+    "Weight": 10,
+    "Description": "태초의 씨앗"
+  }
+]

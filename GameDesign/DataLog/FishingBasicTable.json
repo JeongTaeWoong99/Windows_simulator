@@ -1,38 +1,38 @@
 [
   {
-    "DropTID": 10001,
-    "ItemTID": 1001,
+    "DropTID": 101,
+    "ItemTID": 10001,
     "Weight": 6590,
-    "Description": "0.659"
+    "Description": "붕어"
   },
   {
-    "DropTID": 10002,
-    "ItemTID": 1002,
+    "DropTID": 102,
+    "ItemTID": 10002,
     "Weight": 2000,
-    "Description": "0.2"
+    "Description": "잉어"
   },
   {
-    "DropTID": 10003,
-    "ItemTID": 1003,
+    "DropTID": 103,
+    "ItemTID": 10003,
     "Weight": 1000,
-    "Description": "0.1"
+    "Description": "월척 붕어"
   },
   {
-    "DropTID": 10004,
-    "ItemTID": 1004,
+    "DropTID": 104,
+    "ItemTID": 10004,
     "Weight": 300,
-    "Description": "0.03"
+    "Description": "향어"
   },
   {
-    "DropTID": 10005,
-    "ItemTID": 1005,
+    "DropTID": 105,
+    "ItemTID": 10005,
     "Weight": 100,
-    "Description": "0.01"
+    "Description": "대물 잉어"
   },
   {
-    "DropTID": 10006,
-    "ItemTID": 1006,
+    "DropTID": 106,
+    "ItemTID": 10006,
     "Weight": 10,
-    "Description": "0.001"
+    "Description": "전설의 잉어"
   }
 ]

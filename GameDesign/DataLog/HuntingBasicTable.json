@@ -1,0 +1,38 @@
+[
+  {
+    "DropTID": 501,
+    "ItemTID": 50001,
+    "Weight": 6590,
+    "Description": "질긴 고기"
+  },
+  {
+    "DropTID": 502,
+    "ItemTID": 50002,
+    "Weight": 2000,
+    "Description": "토끼 가죽"
+  },
+  {
+    "DropTID": 503,
+    "ItemTID": 50003,
+    "Weight": 1000,
+    "Description": "늑대 가죽"
+  },
+  {
+    "DropTID": 504,
+    "ItemTID": 50004,
+    "Weight": 300,
+    "Description": "곰 모피"
+  },
+  {
+    "DropTID": 505,
+    "ItemTID": 50005,
+    "Weight": 100,
+    "Description": "거대한 뿔"
+  },
+  {
+    "DropTID": 506,
+    "ItemTID": 50006,
+    "Weight": 10,
+    "Description": "마수의 심장"
+  }
+]

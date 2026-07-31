@@ -1,96 +1,240 @@
 [
   {
-    "ItemTID": 1,
-    "Name": "A",
-    "ItemType": "Farming",
-    "ItemRarity": "Common",
-    "MaxStack": 1000,
-    "Description": "Military1"
-  },
-  {
-    "ItemTID": 2,
-    "Name": "B",
-    "ItemType": "Farming",
-    "ItemRarity": "Common",
-    "MaxStack": 2000,
-    "Description": "Military2"
-  },
-  {
-    "ItemTID": 3,
-    "Name": "C",
-    "ItemType": "Farming",
-    "ItemRarity": "Common",
-    "MaxStack": 3000,
-    "Description": "Military3"
-  },
-  {
-    "ItemTID": 4,
-    "Name": "D",
-    "ItemType": "Logging",
-    "ItemRarity": "Common",
-    "MaxStack": 100,
-    "Description": "Shaman1"
-  },
-  {
-    "ItemTID": 5,
-    "Name": "E",
-    "ItemType": "Logging",
-    "ItemRarity": "Common",
-    "MaxStack": 200,
-    "Description": "Shaman2"
-  },
-  {
-    "ItemTID": 6,
-    "Name": "F",
-    "ItemType": "Misc",
-    "ItemRarity": "Common",
-    "MaxStack": 304,
-    "Description": "Shaman3"
-  },
-  {
-    "ItemTID": 1001,
-    "Name": "일반 생선",
+    "ItemTID": 10001,
+    "Name": "붕어",
     "ItemType": "Fishing",
     "ItemRarity": "Common",
     "MaxStack": 9999,
     "Description": ""
   },
   {
-    "ItemTID": 1002,
-    "Name": "고급 생선",
+    "ItemTID": 10002,
+    "Name": "잉어",
     "ItemType": "Fishing",
     "ItemRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": ""
   },
   {
-    "ItemTID": 1003,
-    "Name": "희귀 생선",
+    "ItemTID": 10003,
+    "Name": "월척 붕어",
     "ItemType": "Fishing",
     "ItemRarity": "Rare",
     "MaxStack": 9999,
     "Description": ""
   },
   {
-    "ItemTID": 1004,
-    "Name": "영웅 생선",
+    "ItemTID": 10004,
+    "Name": "향어",
     "ItemType": "Fishing",
     "ItemRarity": "Epic",
     "MaxStack": 9999,
     "Description": ""
   },
   {
-    "ItemTID": 1005,
-    "Name": "전설 생선",
+    "ItemTID": 10005,
+    "Name": "대물 잉어",
     "ItemType": "Fishing",
     "ItemRarity": "Legendary",
     "MaxStack": 9999,
     "Description": ""
   },
   {
-    "ItemTID": 1006,
-    "Name": "희귀 생선",
+    "ItemTID": 10006,
+    "Name": "전설의 잉어",
     "ItemType": "Fishing",
+    "ItemRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20001,
+    "Name": "밀",
+    "ItemType": "Farming",
+    "ItemRarity": "Common",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20002,
+    "Name": "감자",
+    "ItemType": "Farming",
+    "ItemRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20003,
+    "Name": "옥수수",
+    "ItemType": "Farming",
+    "ItemRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20004,
+    "Name": "인삼",
+    "ItemType": "Farming",
+    "ItemRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20005,
+    "Name": "변종 인삼",
+    "ItemType": "Farming",
+    "ItemRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 20006,
+    "Name": "태초의 씨앗",
+    "ItemType": "Farming",
+    "ItemRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30001,
+    "Name": "잡목",
+    "ItemType": "Logging",
+    "ItemRarity": "Common",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30002,
+    "Name": "소나무 목재",
+    "ItemType": "Logging",
+    "ItemRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30003,
+    "Name": "참나무 목재",
+    "ItemType": "Logging",
+    "ItemRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30004,
+    "Name": "흑단 목재",
+    "ItemType": "Logging",
+    "ItemRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30005,
+    "Name": "고급 원목",
+    "ItemType": "Logging",
+    "ItemRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 30006,
+    "Name": "세계수 가지",
+    "ItemType": "Logging",
+    "ItemRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40001,
+    "Name": "돌덩어리",
+    "ItemType": "Mining",
+    "ItemRarity": "Common",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40002,
+    "Name": "구리 광석",
+    "ItemType": "Mining",
+    "ItemRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40003,
+    "Name": "은광석",
+    "ItemType": "Mining",
+    "ItemRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40004,
+    "Name": "금광석",
+    "ItemType": "Mining",
+    "ItemRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40005,
+    "Name": "보석 원석",
+    "ItemType": "Mining",
+    "ItemRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 40006,
+    "Name": "심연의 원석",
+    "ItemType": "Mining",
+    "ItemRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50001,
+    "Name": "질긴 고기",
+    "ItemType": "Hunting",
+    "ItemRarity": "Common",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50002,
+    "Name": "토끼 가죽",
+    "ItemType": "Hunting",
+    "ItemRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50003,
+    "Name": "늑대 가죽",
+    "ItemType": "Hunting",
+    "ItemRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50004,
+    "Name": "곰 모피",
+    "ItemType": "Hunting",
+    "ItemRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50005,
+    "Name": "거대한 뿔",
+    "ItemType": "Hunting",
+    "ItemRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": ""
+  },
+  {
+    "ItemTID": 50006,
+    "Name": "마수의 심장",
+    "ItemType": "Hunting",
     "ItemRarity": "Mythic",
     "MaxStack": 9999,
     "Description": ""
