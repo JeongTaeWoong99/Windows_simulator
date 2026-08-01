@@ -96,3 +96,6 @@ identifier.sqlite
 
 # Excel 임시 잠금 파일 (파일 열려 있을 때 생성됨)
 ~$*.xlsx
+
+# Claude Code 임시파일
+bash.exe.stackdump

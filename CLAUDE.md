@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-07-30
+> 최종 업데이트: 2026-08-01
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -135,6 +135,7 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 
 - 테스트 이름은 한글로 **동작을 서술**한다 (예: `만료된_티켓은_소모되지_않는다`).
 - `SmokeTest.cs`는 프레임워크 연결 확인용이다. 실제 테스트는 새 파일로 나눈다.
+- 작성 규칙·red-green 절차는 [`server-tdd`](Server/.claude/skills/server-tdd/SKILL.md) 스킬 참조.
 
 ---
 
@@ -220,8 +221,13 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 | `optimization` | [`.claude/skills/client/optimization/SKILL.md`](.claude/skills/client/optimization/SKILL.md) | 성능 최적화 판단 및 적용 가이드 |
 | `unity-handoff` | [`.claude/skills/client/unity-handoff/SKILL.md`](.claude/skills/client/unity-handoff/SKILL.md) | 유니티 에디터 작업 핸드오프 프롬프트 생성 |
 
-### 서버 (`server/`) — `Assets/Scripts_Server` 작업 시
+### 서버 (`Server/.claude/skills/`) — `Server/` · `Assets/Scripts_Server` 작업 시
+
+서버 스킬은 `.claude/skills/server/`가 아니라 **`Server/.claude/skills/`** 에 있다
+(디렉터리 스코프 — `Server/` 아래 파일을 다룰 때 적용된다).
 
 | 스킬 | 경로 | 내용 |
 |------|------|------|
-| (없음) | — | 필요 시 서버 담당이 추가 |
+| `packet-creator` | [`Server/.claude/skills/packet-creator/SKILL.md`](Server/.claude/skills/packet-creator/SKILL.md) | MikaProtocol 패킷 추가 절차 (PacketId·MemoryPackable·핸들러) |
+| `sqlite-sql-creator` | [`Server/.claude/skills/sqlite-sql-creator/SKILL.md`](Server/.claude/skills/sqlite-sql-creator/SKILL.md) | SQLite DDL·쿼리 규칙 (STRICT·주석 필수·인덱스 근거) |
+| `server-tdd` | [`Server/.claude/skills/server-tdd/SKILL.md`](Server/.claude/skills/server-tdd/SKILL.md) | 서버 테스트 작성 규칙 + red-green 루프 (한글 테스트명·기대값 리터럴·목은 경계에서만) |
