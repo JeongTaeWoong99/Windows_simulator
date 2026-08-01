@@ -185,9 +185,10 @@
     background:#1d1512;border:1px solid #3a2c22;border-radius:2px;color:var(--dim);cursor:pointer}
   .sysicons span:hover{color:var(--gold-l);border-color:var(--gold-d)}
 
+  /* 하단 버튼 줄 — 창 바깥이 아니라 본체 안쪽 아래에 붙는다 */
   .hexrow{flex:none;display:flex;gap:5px;justify-content:center;padding:6px 8px 5px;
-    background:linear-gradient(180deg,#0d0a09,#191310);border:2px solid var(--gold-d);
-    border-top:0;border-radius:0 0 4px 4px}
+    margin-top:6px;background:linear-gradient(180deg,#0d0a09,#191310);
+    border:1px solid #3a2c22;border-radius:3px}
   .hex{width:44px;padding:4px 0 3px;text-align:center;cursor:pointer;
     background:linear-gradient(180deg,#4a2c1c,#2a1a12);border:1px solid var(--gold-d);
     clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
@@ -360,7 +361,7 @@
     </div>
 
     <!-- ═══════════ 왼쪽: 창고 (캐릭터 · 장비 · 자원 · 특성) ═══════════ -->
-    <div class="win solo" id="wStore" style="left:18px;top:12px;width:302px;height:560px">
+    <div class="win solo" id="wStore" style="left:18px;top:54px;width:302px;height:560px">
       <div class="banner">Storage <span class="x" data-close="wStore">✕</span></div>
       <div class="tabs">
         <div class="tab on" data-t="char">캐릭터</div>
@@ -419,13 +420,23 @@
         </div>
       </div>
 
-      <!-- 본체 높이 = 좌·우 창과 동일(560). 상단바·하단 버튼은 여기에 더 붙는다 -->
+      <!-- 본체 높이 = 좌·우 창과 동일(560). 배너 줄이 좌·우 창과 같은 높이에 온다
+           (상단바 42px만 창 위로 더 붙는다 → 좌·우 창 top = 12 + 42 = 54) -->
       <div class="win" style="height:560px">
         <div class="banner">Workstation <span class="x" data-close="wWork">✕</span></div>
         <div class="body">
           <div class="miniban">작업슬롯
             <span class="r">가동 <b id="kOpen">0</b>/<b>8</b></span></div>
           <div class="scroll" style="flex:1"><div class="wsgrid" id="wsgrid"></div></div>
+
+          <!-- 7. 본체 안쪽 아래에 붙는 버튼 줄 -->
+          <div class="hexrow">
+            <div class="hex" data-w="wStore" title="창고 — 왼쪽 창 열기"><i>🧰</i><span>창고</span></div>
+            <div class="hex" data-w="wMarket" title="거래 — 오른쪽 창 열기"><i>⚖</i><span>거래</span></div>
+            <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
+            <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
+            <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
+          </div>
 
           <!-- 5. 슬롯 상세 (중앙 창 안 오버레이) -->
           <div class="detail" id="detail">
@@ -450,19 +461,10 @@
           </div>
         </div>
       </div>
-
-      <!-- 7. 창 아래 붙는 버튼 줄 -->
-      <div class="hexrow">
-        <div class="hex" data-w="wStore" title="창고 — 왼쪽 창 열기"><i>🧰</i><span>창고</span></div>
-        <div class="hex" data-w="wMarket" title="거래 — 오른쪽 창 열기"><i>⚖</i><span>거래</span></div>
-        <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
-        <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
-        <div class="hex off" title="추후 결정"><i>❓</i><span>미정</span></div>
-      </div>
     </div>
 
     <!-- ═══════════ 오른쪽: 거래소 / 상점 ═══════════ -->
-    <div class="win solo" id="wMarket" style="left:740px;top:12px;width:300px;height:560px">
+    <div class="win solo" id="wMarket" style="left:740px;top:54px;width:300px;height:560px">
       <div class="banner">Market <span class="x" data-close="wMarket">✕</span></div>
       <div class="tabs">
         <div class="tab on" data-t="ex">거래소</div>
@@ -569,15 +571,17 @@
       <tr><td><b>상단바</b></td><td>없음 (위젯에만 골드)</td>
         <td><b>창 위에 붙는 한 줄</b> — 섬주인 원형(계정 Lv·경험치 링) · 골드 · 시스템 아이콘</td></tr>
       <tr><td><b>하단</b></td><td>없음</td>
-        <td><b>버튼 5개</b> — 창고(왼쪽 열기) · 거래(오른쪽 열기) · 미정 ×3</td></tr>
+        <td><b>버튼 5개</b> — 창고(왼쪽 열기) · 거래(오른쪽 열기) · 미정 ×3.
+            창 밖이 아니라 <b>본체 안쪽 아래</b>에 들어간다</td></tr>
       <tr><td><b>위젯</b></td><td>골드 + 지표 + 스트립(텍스트 라벨)</td>
         <td><b>미니 슬롯 — 캐릭터 + 수확 표시 + 게이지만.</b> 텍스트 라벨 제거.
             + <b>4시 방향 ↑ 버튼</b>(중앙 UI 열고/닫기)</td></tr>
       <tr><td><b>UI 내 설명 문구</b></td><td>패널 안에 기획 주석·경고 박스</td>
         <td><b>전부 제거.</b> 설명은 이 기획 메모에만 둔다</td></tr>
-      <tr><td><b>중앙 창 높이</b></td><td>상단바 + 본체 + 하단 = 좌·우 창 높이</td>
-        <td><b>본체만 좌·우와 같다(560).</b> 상단바·하단 버튼은 그 위아래로 더 붙어
-            전체가 좌·우보다 길다</td></tr>
+      <tr><td><b>세 창 정렬</b></td><td>상단바 + 본체 + 하단 = 좌·우 창 높이</td>
+        <td><b>세 창의 배너 줄(STORAGE · WORKSTATION · MARKET)이 같은 높이에 온다.</b>
+            본체 높이도 셋 다 560이라 아래쪽도 맞는다.
+            <b>상단바(42px)만</b> 중앙 창 위로 더 붙는다 → 좌·우 창 <code>top:54</code></td></tr>
       <tr><td><b>캐릭터</b></td><td><code>TID 1 '유저 캐릭터'</code> 포함</td>
         <td><b>제거.</b> 1001~ 일반 캐릭터 + <b>종족(인간·몬스터)</b> → 제안서 3.2 · 7장</td></tr>
       <tr><td><b>골드</b></td><td>표시만</td>
