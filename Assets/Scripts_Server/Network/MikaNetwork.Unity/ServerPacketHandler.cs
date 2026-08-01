@@ -45,6 +45,12 @@ namespace MikaNetwork
         // 채취 결과 도착 — 서버가 주기적으로 밀어줌 (Handle_S_GatherResultResponse에서 발행)
         public static event Action<S_GatherResultResponse>? GatherResultReceived;
 
+        // 재화 보유량 도착 — 로그인 스냅샷과 변경 푸시가 같은 패킷이다 (Handle_S_CurrencyResponse에서 발행)
+        public static event Action<S_CurrencyResponse>? CurrencyReceived;
+
+        // 아이템 증감 도착 (Handle_S_UpdateItemResponse에서 발행)
+        public static event Action<S_UpdateItemResponse>? ItemUpdated;
+
         // 로그인 응답 — 성공 여부·세션ID를 이벤트로 전달 (S_LoginResponse 수신 시 자동 호출)
         // ※ 이 응답이 끝이 아니다. 뒤이어 인벤토리·(오프라인 채취분)·작업슬롯이 자동으로 따라온다.
         [PacketHandler]
@@ -104,6 +110,27 @@ namespace MikaNetwork
             int changeCount = res.ItemChanges?.Count ?? 0;
             Debug.Log($"[Client] Recv Gather: slot={res.SlotIndex}, judge={res.JudgeCount}, {changeCount} changes");
             GatherResultReceived?.Invoke(res);
+        }
+
+        // 재화 보유량 (S_CurrencyResponse 수신 시 자동 호출)
+        // ★ 로그인 시 자동으로 1회 온다. 스냅샷과 변경 푸시가 같은 패킷이라 처리 경로가 하나다.
+        // ※ Amount는 증감이 아니라 확정 잔액이다 — 재화 종류로 덮어쓰기만 하면 된다.
+        [PacketHandler]
+        public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
+        {
+            int currencyCount = res.Currencies?.Count ?? 0;
+            Debug.Log($"[Client] Recv Currency: {currencyCount} kinds");
+            CurrencyReceived?.Invoke(res);
+        }
+
+        // 아이템 증감 (S_UpdateItemResponse 수신 시 자동 호출)
+        // ※ S_GatherResultResponse의 ItemChanges와 같은 규칙 — Count는 갱신 후 누적 총량이다.
+        [PacketHandler]
+        public static void Handle_S_UpdateItemResponse(ISession session, S_UpdateItemResponse res)
+        {
+            int changeCount = res.ItemChangeInfos?.Count ?? 0;
+            Debug.Log($"[Client] Recv UpdateItem: {changeCount} changes");
+            ItemUpdated?.Invoke(res);
         }
 
         #region 테스트용 (연결 확인) — 추후 필요 없어지면 삭제
