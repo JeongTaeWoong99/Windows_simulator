@@ -34,24 +34,34 @@ public enum ScreenAnchor
 }
 
 /// <summary>
-/// 창 크기 프리셋. 실제 픽셀은 고정값이 아니라 "주 모니터 세로 해상도의 비율"로 런타임에 계산한다.
-/// (1:2(가로:세로) 비율 유지 — WindowManager.GetSize 참조)
-///   Small = 화면 세로의 1/3, Middle = 화면 세로의 1/2, Big = 화면 세로의 1/1.
-///   단, Big(1/1)은 화면 전체 높이라 작업표시줄을 덮으므로, GetSize 에서 세로를
-///   작업 영역 높이(전체 세로 − 작업표시줄)로 상한 처리해 침범을 막는다.
+/// 창 크기 배율 프리셋. 기준 960x540(16:9)에 배율을 곱한 <b>절대 픽셀</b>이다 — 모니터 해상도에 비례시키지 않는다.
+///   X1 = 960x540, X1_25 = 1200x675, X1_5 = 1440x810, X2 = 1920x1080.
+///
+/// ■ 왜 절대 픽셀인가
+///   어느 기기에서든 UI 픽셀 크기가 똑같아야 디자인 검증과 버그 재현이 된다.
+///   모니터 비례로 두면 같은 배율이라도 실제 픽셀 수가 달라져 재현이 어려워진다.
+///
+/// ■ 16:9는 어떤 경우에도 유지한다
+///   배율이 모니터보다 크면 작업 영역 안으로 줄이는데, 이때도 가로·세로를 같은 비율로 줄인다
+///   (WindowManager.ClampToWorkArea 참조). 한 축만 줄이면 UI가 찌그러진다.
 /// </summary>
-public enum WindowSize
+public enum WindowScale
 {
-    Small,  // 작은 화면 (세로 1/3)
-    Middle, // 중간 화면 (세로 1/2)
-    Big     // 큰 화면   (세로 1/1)
+    X1,    // 960x540
+    X1_25, // 1200x675
+    X1_5,  // 1440x810
+    X2     // 1920x1080
 }
 
 public class WindowManager : MonoService<WindowManager>
 {
-    // ─── static readonly 표 (WindowSize enum 순서와 1:1) ───
-    private static readonly string[] SizeLabels         = { "작은 화면", "중간 화면", "큰 화면" }; // 드롭다운 표시 라벨
-    private static readonly int[]    SizeHeightDivisors = { 3        , 2         , 1       }; // 화면 세로를 나눌 분모 (Small=1/3, Middle=1/2, Big=1/1)
+    // ─── 창 크기 기준값 (16:9) ───
+    private const int BaseWidth  = 960; // 배율 1x 일 때의 가로
+    private const int BaseHeight = 540; // 배율 1x 일 때의 세로
+
+    // ─── static readonly 표 (WindowScale enum 순서와 1:1) ───
+    private static readonly string[] SizeLabels   = { "1x", "1.25x", "1.5x", "2x" }; // 드롭다운 표시 라벨
+    private static readonly float[]  ScaleFactors = { 1f  , 1.25f  , 1.5f  , 2f   }; // 기준 960x540에 곱할 배율
 
     // ─── 시작 설정 (인스펙터) ───
     [CenterHeader("Window Settings - 시작 시 적용할 상태")]
@@ -59,7 +69,7 @@ public class WindowManager : MonoService<WindowManager>
     [SerializeField] private bool         setStartTransparent         = true;                    // 시작 시, 투명 배경 상태
     [SerializeField] private bool         setStartTopmost             = true;                    // 시작 시, 항상 위
     [SerializeField] private bool         setStartDynamicClickThrough = true;                    // 시작 시, 동적 클릭 스루: 매 프레임 커서로 자동 On/Off(콘텐츠 위=클릭, 빈 영역=통과)
-    [SerializeField] private WindowSize   setStartSize                = WindowSize.Small;        // 시작 창 크기(프리셋 1개 선택)
+    [SerializeField] private WindowScale  setStartScale               = WindowScale.X1;          // 시작 창 크기 배율(프리셋 1개 선택)
     [SerializeField] private ScreenAnchor setStartAnchor              = ScreenAnchor.LowerRight; // 시작 창 위치(9분할 앵커 1개 선택)
 
     // ─── 내부 상태 ───
@@ -69,7 +79,7 @@ public class WindowManager : MonoService<WindowManager>
     private bool           _isTopmost           = false;                    // 현재 항상 위 상태(MoveWindow/ResizeWindow 시 Z순서 유지에 사용)
     private bool           _initialized         = false;                    // 초기화 완료 여부
     private bool           _dynamicClickThrough = false;                    // 동적 클릭 스루 런타임 상태(시작 설정 필드와 분리 — 런타임에 토글로 변경)
-    private WindowSize     _currentSize         = WindowSize.Small;         // 현재 적용된 크기 프리셋
+    private WindowScale    _currentScale        = WindowScale.X1;           // 현재 적용된 크기 배율 프리셋
     private ScreenAnchor   _currentAnchor       = ScreenAnchor.LowerRight;  // 현재 적용된 위치 앵커
     private CanvasScaler[]? _canvasScalers;                                 // 씬의 CanvasScaler 전부(크기 변경 시 스케일 로그용, Start에서 자동 확보 — 채우기 전엔 null)
 
@@ -85,7 +95,7 @@ public class WindowManager : MonoService<WindowManager>
     public bool StartTransparent         => setStartTransparent;
     public bool StartTopmost             => setStartTopmost;
     public bool StartDynamicClickThrough => setStartDynamicClickThrough;
-    public int  StartSizeIndex           => (int)setStartSize;
+    public int  StartSizeIndex           => (int)setStartScale;
     public int  StartAnchorIndex         => (int)setStartAnchor;
 
     // 현재 상태 게터 (외부 디버그 패널에서 읽기 전용으로 조회)
@@ -167,7 +177,7 @@ public class WindowManager : MonoService<WindowManager>
         SetTitleBar(setStartTitleBar);
 #endif
         // 시작 크기 적용(캔버스 기준 해상도 반영은 에디터에서도 실행, 창 리사이즈/이동은 빌드에서만).
-        SetWindowSizeByIndex((int)setStartSize);
+        SetWindowSizeByIndex((int)setStartScale);
 #if !UNITY_EDITOR
         if (setStartTransparent)
             SetTransparent(true);
@@ -292,7 +302,7 @@ public class WindowManager : MonoService<WindowManager>
 
     #region 위치 · 크기
 
-    /// <summary>크기 드롭다운 옵션 라벨("작은 화면"/"중간 화면"/"큰 화면")을 WindowSize enum 순서대로 만든다.</summary>
+    /// <summary>크기 드롭다운 옵션 라벨("1x"/"1.25x"/"1.5x"/"2x")을 WindowScale enum 순서대로 만든다.</summary>
     public List<string> GetSizeLabels() => new List<string>(SizeLabels);
 
     /// <summary>위치 드롭다운 옵션 라벨(9분할)을 ScreenAnchor enum 순서대로 만든다.</summary>
@@ -315,12 +325,12 @@ public class WindowManager : MonoService<WindowManager>
     /// </summary>
     public void SetWindowSizeByIndex(int index)
     {
-        _currentSize = (WindowSize)Mathf.Clamp(index, 0, SizeHeightDivisors.Length - 1);
-        Vector2Int s = GetSize(_currentSize);
+        _currentScale = (WindowScale)Mathf.Clamp(index, 0, ScaleFactors.Length - 1);
+        Vector2Int windowSize = GetSize(_currentScale);
 
-        LogCanvasScaleInfo(s); // 캔버스는 건드리지 않고, 크기 변경에 따른 예상 스케일만 로그로 확인
+        LogCanvasScaleInfo(windowSize); // 캔버스는 건드리지 않고, 크기 변경에 따른 예상 스케일만 로그로 확인
 #if !UNITY_EDITOR
-        ResizeWindow(s.x, s.y);
+        ResizeWindow(windowSize.x, windowSize.y);
         ApplyPosition(_currentAnchor); // 크기가 바뀌면 위치도 다시 맞춘다
 #endif
     }
@@ -370,7 +380,7 @@ public class WindowManager : MonoService<WindowManager>
 
         int waW = wa.right  - wa.left;
         int waH = wa.bottom - wa.top;
-        Vector2Int s = GetSize(_currentSize);
+        Vector2Int s = GetSize(_currentScale);
 
         int hi = (int)anchor % 3; // 0=Left 1=Center 2=Right
         int vi = (int)anchor / 3; // 0=Upper 1=Middle 2=Lower
@@ -387,46 +397,49 @@ public class WindowManager : MonoService<WindowManager>
     }
 
     /// <summary>
-    /// 프리셋 크기를 "주 모니터 세로 해상도" 기준으로 계산한다.
-    /// 세로 = 화면세로 / 분모(1/3·1/2·1/1), 가로 = 세로/2(1:2 비율 유지).
-    /// 단, 세로가 작업 영역(작업표시줄 제외)을 넘으면 작업 영역 높이로 상한 처리한다.
-    /// → 큰 화면(1/1)이 화면 전체 높이라 작업표시줄을 덮는 것을 막는다(작은/중간은 영향 없음).
+    /// 배율 프리셋의 실제 창 픽셀 크기를 구한다. 기준 960x540(16:9)에 배율을 곱한 절대 픽셀이며,
+    /// 모니터 해상도에 비례시키지 않는다(WindowScale 주석 참조).
+    /// 계산 결과가 작업 영역을 넘으면 16:9를 유지한 채 줄인다.
     /// </summary>
-    private Vector2Int GetSize(WindowSize size)
+    private Vector2Int GetSize(WindowScale scale)
     {
-        int screenH = GetPrimaryScreenHeight();                // 주 모니터 전체 세로
-        int h       = screenH / SizeHeightDivisors[(int)size]; // 비율로 계산한 세로
-        h           = Mathf.Min(h, GetWorkAreaHeight());       // 작업표시줄 침범 방지: 작업 영역 높이로 상한
-        int w       = h / 2;                                   // 1:2(가로:세로)
+        float factor = ScaleFactors[(int)scale];
+        int   width  = Mathf.RoundToInt(BaseWidth  * factor);
+        int   height = Mathf.RoundToInt(BaseHeight * factor);
 
-        return new Vector2Int(w, h);
-    }
-
-    /// <summary>주 모니터의 전체 세로 픽셀을 얻는다(빌드=Win32, 에디터/폴백=주 디스플레이 실제 해상도).</summary>
-    private int GetPrimaryScreenHeight()
-    {
-#if !UNITY_EDITOR
-        int h = Win32Native.GetSystemMetrics(Win32Native.SM_CYSCREEN);
-
-        if (h > 0)
-            return h;
-#endif
-        return Display.main.systemHeight; // 에디터/폴백: 주 디스플레이의 실제 세로 픽셀
+        return ClampToWorkArea(width, height);
     }
 
     /// <summary>
-    /// 주 모니터의 작업 영역(작업표시줄 제외) 세로 픽셀을 얻는다.
-    /// 전체 세로 − 작업표시줄 높이 = 작업 영역 높이. 조회 실패 시 전체 세로로 폴백(상한 없음과 동일).
+    /// 창이 작업 영역(작업표시줄 제외)을 넘으면 <b>16:9를 유지한 채</b> 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
+    /// 가로·세로 중 더 많이 넘치는 쪽 비율 하나로 양쪽을 함께 줄여야 비율이 보존된다
+    /// — 축마다 따로 상한을 걸면 UI가 찌그러진다.
     /// </summary>
-    private int GetWorkAreaHeight()
+    private Vector2Int ClampToWorkArea(int width, int height)
+    {
+        Vector2Int workArea = GetWorkAreaSize();
+
+        if (workArea.x <= 0 || workArea.y <= 0)
+            return new Vector2Int(width, height); // 작업 영역 조회 실패 — 줄이지 않는다
+
+        float fitRatio = Mathf.Min(1f, (float)workArea.x / width, (float)workArea.y / height);
+
+        return new Vector2Int(Mathf.RoundToInt(width * fitRatio), Mathf.RoundToInt(height * fitRatio));
+    }
+
+    /// <summary>
+    /// 주 모니터의 작업 영역(작업표시줄 제외) 픽셀 크기를 얻는다.
+    /// 조회 실패 시 주 디스플레이의 전체 해상도로 폴백한다(작업표시줄만큼 관대해질 뿐 동작은 유지).
+    /// </summary>
+    private Vector2Int GetWorkAreaSize()
     {
 #if !UNITY_EDITOR
-        Win32Native.RECT wa = new Win32Native.RECT();
+        Win32Native.RECT workArea = new Win32Native.RECT();
 
-        if (Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref wa, 0))
-            return wa.bottom - wa.top;
+        if (Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref workArea, 0))
+            return new Vector2Int(workArea.right - workArea.left, workArea.bottom - workArea.top);
 #endif
-        return GetPrimaryScreenHeight(); // 에디터/폴백
+        return new Vector2Int(Display.main.systemWidth, Display.main.systemHeight); // 에디터/폴백
     }
 
     /// <summary>
