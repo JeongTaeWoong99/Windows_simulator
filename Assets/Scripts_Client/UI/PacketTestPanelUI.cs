@@ -30,15 +30,48 @@ public class PacketTestPanelUI : MonoBehaviour
     [SerializeField, Tooltip("배치할 캐릭터 Id. 캐릭터 시스템 전이라 서버는 0인지 아닌지만 본다")]
     private long _characterId = 1;
 
-    // 세션 매니저(서비스 로케이터로 획득) — OnEnable에서 한 번 확보해 캐시한다.
-    // 모든 MonoService의 Awake 등록이 끝난 뒤 OnEnable이 돌므로 이 시점엔 조회가 안전하다.
+    // 세션 매니저(서비스 로케이터로 획득) — Start에서 한 번 확보해 캐시한다.
+    //
+    // ⚠️ OnEnable에서 Get 하면 안 된다.
+    //   Unity는 씬을 열 때 오브젝트마다 Awake → OnEnable 을 <b>이어서</b> 부른다. 모든 Awake가
+    //   먼저 끝나는 게 아니다. 이 패널이 SessionManager보다 먼저 초기화되면 아직 Register 전이라
+    //   Services.Get이 KeyNotFoundException을 던지고, _session이 null로 남아 버튼을 누를 때
+    //   NullReferenceException으로 다시 터진다.
+    //   모든 Awake 등록이 끝난 것이 보장되는 시점은 Start다 — MonoService 주석의 규칙 그대로다.
     private SessionManager _session = null!;
 
-    // 결과 로그용 이벤트 구독 (Unity 메시지)
-    private void OnEnable()
+    // 구독 상태 — Start와 OnEnable 양쪽에서 구독을 시도하므로 중복 구독을 막는다.
+    private bool _isSubscribed;
+
+    // 서비스 확보 후 최초 구독 (Unity 메시지)
+    private void Start()
     {
         _session = Services.Get<SessionManager>();
-        
+        Subscribe();
+    }
+
+    // 껐다 켠 경우의 재구독 (Unity 메시지)
+    private void OnEnable()
+    {
+        // Start 전이면 _session이 아직 없다. 최초 구독은 Start가 맡는다.
+        if (_session != null)
+            Subscribe();
+    }
+
+    // 구독 해제 (Unity 메시지)
+    private void OnDisable()
+    {
+        Unsubscribe();
+    }
+
+    // 결과 로그용 이벤트 구독 (Start · OnEnable에서 호출)
+    private void Subscribe()
+    {
+        if (_isSubscribed)
+            return;
+
+        _isSubscribed = true;
+
         _session.LoginCompleted             += OnLoginCompleted;
         _session.InventoryChanged           += OnInventoryChanged;
         _session.GachaCompleted             += OnGachaCompleted;
@@ -47,9 +80,14 @@ public class PacketTestPanelUI : MonoBehaviour
         _session.GatherResultReceived       += OnGatherResultReceived;
     }
 
-    // 결과 로그용 이벤트 구독 해제 (Unity 메시지)
-    private void OnDisable()
+    // 결과 로그용 이벤트 구독 해제 (OnDisable에서 호출)
+    private void Unsubscribe()
     {
+        if (!_isSubscribed)
+            return;
+
+        _isSubscribed = false;
+
         _session.LoginCompleted             -= OnLoginCompleted;
         _session.InventoryChanged           -= OnInventoryChanged;
         _session.GachaCompleted             -= OnGachaCompleted;
