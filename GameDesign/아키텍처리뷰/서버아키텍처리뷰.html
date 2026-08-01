@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<title>아키텍처 리뷰 — WSGameServer</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script type="module">
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+  mermaid.initialize({ startOnLoad: true, theme: "neutral", securityLevel: "loose" });
+</script>
+<style>
+  .seam { stroke-dasharray: 4 4; }
+  .mono { font-family: ui-monospace, 'Cascadia Code', Consolas, monospace; }
+</style>
+</head>
+<body class="bg-stone-50 text-slate-900 font-sans">
+<main class="max-w-5xl mx-auto px-6 py-12 space-y-14">
+
+<header class="space-y-3">
+  <h1 class="text-3xl font-serif font-bold">아키텍처 리뷰 — Windows_simulator <span class="text-slate-500">/ Server</span></h1>
+  <p class="text-sm text-slate-500">2026-08-01 · WSGameServer + MikaNetwork.Lib + Repository (~8.6k LOC)</p>
+  <div class="flex flex-wrap gap-4 text-xs text-slate-600 pt-2">
+    <span class="flex items-center gap-1.5"><span class="inline-block w-4 h-3 border-2 border-slate-700 rounded-sm"></span> 모듈</span>
+    <span class="flex items-center gap-1.5"><svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="#334155" stroke-width="2" stroke-dasharray="4 3"/></svg> seam</span>
+    <span class="flex items-center gap-1.5"><svg width="24" height="8"><line x1="0" y1="4" x2="24" y2="4" stroke="#dc2626" stroke-width="2.5"/></svg> seam을 새는 의존</span>
+    <span class="flex items-center gap-1.5"><span class="inline-block w-4 h-3 rounded-sm" style="background:linear-gradient(135deg,#0f172a,#1e293b)"></span> 깊은 모듈</span>
+  </div>
+  <div class="rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900 mt-3">
+    <strong>현재 위치 요약</strong> — 순수 코어(<span class="mono">WorkStationSlot · WorkSpeed · WeightedPicker · DropTable · TableSet</span>)는
+    이미 깊은 모듈이고 테스트 46건이 전부 여기에 있다. 문제는 정확히 <strong>한 단계 위</strong>다:
+    <span class="mono">User</span>(441줄) · 리포지토리 · 스케줄러가 <span class="mono">ISession</span> / <span class="mono">DateTime.UtcNow</span> /
+    <span class="mono">*.Instance</span> 싱글턴에 직결되어, <strong>재화가 실제로 생성되는 모든 경로의 테스트가 0건</strong>이다.
+  </div>
+</header>
+
+<!-- ═══════════════ 후보 1 ═══════════════ -->
+<section id="candidates" class="space-y-12">
+
+<article id="c1" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">1 · User 모듈을 세션·시계·DB 큐에서 떼어낸다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1">Strong</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">ports &amp; adapters</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    User/User.cs · User/User.WorkStation.cs · User/User.Inventory.cs · User/User.Currency.cs<br/>
+    Common/GatheringScheduler.cs · WSGameServer.Tests/SmokeTest.cs (IDummyClock 스케치)
+  </div>
+
+  <!-- mass diagram: before/after -->
+  <div class="grid grid-cols-2 gap-6">
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">Before — 인터페이스가 구현만큼 넓다</p>
+      <div class="space-y-1">
+        <div class="border-2 border-red-400 bg-red-50 rounded px-3 py-2 text-xs mono">
+          인터페이스: ISession 필수 · UserManager.Instance · DBManager.Instance ·<br/>
+          DateTime.UtcNow ×4 · const GatherSpeedMultiplier · GameTable 정적
+        </div>
+        <div class="border-2 border-slate-300 bg-white rounded px-3 py-2 text-xs mono h-16 flex items-center">
+          구현: 정산 + 지급 + 저장 + 푸시 (441줄, 6 partial)
+        </div>
+      </div>
+      <p class="text-xs text-red-600 mt-3">호출자가 알아야 할 것 = 프로세스 전역 전부.<br/>생성자가 <span class="mono">internal + ISession</span>이라 테스트에서 인스턴스화 자체가 불가.</p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">After — 인터페이스가 좁아지고 구현이 깊어진다</p>
+      <div class="space-y-1">
+        <div class="border-2 border-emerald-500 bg-emerald-50 rounded px-3 py-2 text-xs mono">
+          인터페이스: User(clock, sender, dbQueue) + Settle(now) / Assign(now, …)
+        </div>
+        <div class="rounded px-3 py-2 text-xs mono h-24 flex items-center text-slate-100" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+          구현: 정산·지급·저장·푸시 전부 안으로.<br/>어댑터 2벌 — 실제 세션·DB / 테스트 고정 시계·수집기
+        </div>
+      </div>
+      <p class="text-xs text-emerald-700 mt-3">seam이 생기는 곳: 시계 · 패킷 송신 · DB 큐. 셋 다 두 번째 어댑터(테스트)가 이미 필요하다.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600">순수 코어가 받는 <span class="mono">now</span> 주입이 <span class="mono">User</span>에서 끊긴다 —
+      <span class="mono">AssignWorkStation</span>·<span class="mono">RefreshWorkStationSpeed</span>는 <span class="mono">DateTime.UtcNow</span>를 내부 생성하고,
+      생성자는 <span class="mono">ISession</span>을 요구한다. 그래서 재화 생성 경로(<span class="mono">SettleWorkStation → GainItem</span>) 전체가 테스트 불가.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600"><span class="mono">IClock</span>(스케치가 <span class="mono">SmokeTest.cs:11</span>에 이미 있다) ·
+      패킷 송신 · DB 큐를 생성자 주입으로 바꾸고, <span class="mono">now</span>를 못 받던 두 메서드에 인자를 뚫는다.
+      <span class="mono">GatheringScheduler.Tick</span>도 clock·유저 소스를 받으면 같은 seam에 얹힌다.</p>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">레버리지: seam 3개로 441줄이 열린다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">지역성: 시각 버그가 User 안에 갇힌다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">테스트: 재화 생성 경로 최초 커버</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">기획 규칙 "속도 변경 직전 정산" 검증 가능</li>
+  </ul>
+</article>
+
+<!-- ═══════════════ 후보 2 ═══════════════ -->
+<article id="c2" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">2 · 로그인 플로우를 리포지토리에서 회수한다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1">Strong</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">local-substitutable</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    Repository/LoginRepository.cs · Repository/AccountRepository.cs · User/User.DB.cs
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div class="rounded-lg border border-slate-200 bg-white p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">Before — DB 계층이 게임 플로우를 지휘</p>
+      <pre class="mermaid">
+flowchart TB
+  H[Handle_C_LoginRequest] --> A[AccountRepository]
+  A --> L[LoginRepository]
+  subgraph DB스레드
+    L1["SELECT 인벤·재화·캐릭터·슬롯"]
+    L2["신규 캐릭터 지급 INSERT"]
+    L3["기본 슬롯 개설 INSERT"]
+    L4["채취 시작 시각 = UtcNow 결정"]
+  end
+  L --> L1 & L2 & L3 & L4
+  L -.->|"Apply()가 직접 호출"| U["User.LoadDB + User.Login()"]
+  U --> S[S_LoginResponse 전송]
+  classDef leak stroke:#dc2626,stroke-width:2px;
+  class L2,L3,L4,U leak
+      </pre>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-white p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">After — 리포지토리는 데이터만, 플로우는 User가</p>
+      <pre class="mermaid">
+flowchart TB
+  H[Handle_C_LoginRequest] --> F["User.LoginFlow (로직 스레드)"]
+  F -->|요청| R["LoginRepository → LoginData 반환"]
+  R -->|결과 객체| F
+  F --> P["신규 지급·슬롯 개설·시작 시각 결정"]
+  F --> U["LoadDB + Login + 응답 전송"]
+  classDef deep fill:#0f172a,color:#f1f5f9,stroke:#0f172a;
+  class F,P deep
+      </pre>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600">신규 유저 정책(기본 캐릭터·<span class="mono">DefaultSlotCount</span>)·채취 시작 시각·응답 전송이 전부 SQL 옆에 있고,
+      <span class="mono">Apply()</span>가 <span class="mono">User.Login()</span>을 직접 불러 seam이 무너졌다.
+      도메인 메서드 <span class="mono">WorkStation.Unlock</span>이 있는데 리포지토리가 <span class="mono">new WorkStationSlot</span>으로 우회한다.
+      밴/삭제 계정은 판정만 하고 응답을 안 보내 클라이언트가 무한 대기한다.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600">리포지토리는 <span class="mono">LoginData</span> 결과 객체를 반환하는 데서 멈춘다.
+      신규 지급·슬롯 개설·시작 시각·다음 단계 호출은 로직 스레드의 User 쪽 플로우가 맡는다.
+      정책이 순수 코드가 되므로 DB 없이 테스트된다.</p>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">지역성: 신규 유저 정책이 한 곳에 모인다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">리포지토리 인터페이스가 "데이터 왕복"으로 좁아진다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">밴 응답 누락 같은 침묵 실패가 드러난다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">테스트: 지급 규칙을 DB 없이 검증</li>
+  </ul>
+</article>
+
+<!-- ═══════════════ 후보 3 ═══════════════ -->
+<article id="c3" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">3 · 가챠를 WeightedPicker 위로 접는다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-emerald-100 text-emerald-800 text-xs font-semibold px-3 py-1">Strong</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">in-process</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    Gacha/GachaTable.cs · Gacha/GachaService.cs · Common/WeightedPicker.cs · User/User.Inventory.cs
+  </div>
+
+  <!-- hand-built: two implementations collapsing into one -->
+  <div class="grid grid-cols-2 gap-6">
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">Before — 같은 알고리즘 2벌</p>
+      <div class="flex gap-3">
+        <div class="flex-1 border-2 border-slate-700 rounded p-2">
+          <p class="text-xs uppercase tracking-wider font-semibold">WeightedPicker</p>
+          <p class="text-[11px] text-slate-600 mt-1">누적합+이진탐색 · 난수 주입 ·<br/>가중치 검증 · 테스트 200줄</p>
+        </div>
+        <div class="flex-1 border-2 border-red-400 rounded p-2 bg-red-50">
+          <p class="text-xs uppercase tracking-wider font-semibold text-red-700">GachaTable.PickOne</p>
+          <p class="text-[11px] text-red-600 mt-1">선형 스캔 · Random.Shared 고정 ·<br/>검증 없음 · 테스트 0줄</p>
+        </div>
+      </div>
+      <div class="flex gap-3 mt-2">
+        <div class="flex-1 border border-red-300 rounded p-2 bg-red-50">
+          <p class="text-[11px] text-red-600 mono">"itemId별 합산 → GainItem" 루프도<br/>GachaService · User.WorkStation 2벌</p>
+        </div>
+      </div>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">After — 추첨 모듈 하나, 지급 모듈 하나</p>
+      <div class="rounded p-3 text-slate-100" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+        <p class="text-xs uppercase tracking-wider font-semibold">WeightedPicker</p>
+        <p class="text-[11px] text-slate-300 mt-1">드롭 · 희귀도 · <strong>가챠</strong>가 같은 인터페이스를 쓴다<br/><span class="opacity-60">GachaTable.PickOne 삭제 — 내부로 흡수</span></p>
+      </div>
+      <div class="rounded p-3 text-slate-100 mt-2" style="background:linear-gradient(135deg,#0f172a,#1e293b)">
+        <p class="text-xs uppercase tracking-wider font-semibold">User.GainItems(dict)</p>
+        <p class="text-[11px] text-slate-300 mt-1">"여러 획득을 아이템당 1회 UPSERT로 접는다"가 한 곳</p>
+      </div>
+      <p class="text-xs text-emerald-700 mt-3">삭제 테스트 통과: <span class="mono">PickOne</span>을 지우면 복잡도가 WeightedPicker 한 곳으로 집중된다 — pass-through가 아니라 진짜 중복이었다는 증거.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600">가중치 0 제외·음수 거부·합 오버플로 검사가 채취 드롭에는 적용되고 가챠에는 적용되지 않는다.
+      난수원이 하드코딩이라 시드 고정 테스트도 불가. 덤: <span class="mono">TrySpend</span> 호출자가 프로덕션에 없어 가챠에 재화 소모가 없다(재화 모듈 전체가 dead code).</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600"><span class="mono">GachaEntry</span>는 이미 <span class="mono">Weight</span>를 가지므로 <span class="mono">WeightedPicker.From(pool, e => e.Weight)</span> 한 줄로 대체.
+      합산-지급 루프는 <span class="mono">User.GainItems</span>로 통합. 재화 소모는 기획 확정(가챠 비용) 후 <span class="mono">TrySpend</span>를 같은 자리에 붙인다.</p>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">레버리지: 추첨 인터페이스 1개, 소비자 3곳</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">가챠가 기존 테스트 200줄을 공짜로 얻는다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">중복 구현 2벌 삭제</li>
+  </ul>
+</article>
+
+<!-- ═══════════════ 후보 4 ═══════════════ -->
+<article id="c4" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">4 · Executor를 MikaNetwork.Lib에서 꺼낸다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1">Worth exploring</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">ports &amp; adapters</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    MikaNetwork.Lib/MikaNetwork.Server/MikaExecutor.cs · DB/DBManager.cs · Common/Entity.cs
+  </div>
+
+  <div class="grid grid-cols-2 gap-6">
+    <div class="rounded-lg border border-slate-200 bg-white p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">Before — 네트워크 lib이 DB 실행기를 소유</p>
+      <pre class="mermaid">
+flowchart TB
+  subgraph Lib["MikaNetwork.Lib — '게임을 모른다'는 경계"]
+    N[MikaServer / Session]
+    E["DBExecutor + LogicExecutor"]
+  end
+  G1[Entity] -.-> E
+  G2[DBManager] -.-> E
+  G3[GatheringScheduler] -.-> E
+  classDef leak stroke:#dc2626,stroke-width:2px;
+  class E,G1,G2,G3 leak
+      </pre>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-white p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-2">After — 스레딩 정책은 게임이 소유</p>
+      <pre class="mermaid">
+flowchart TB
+  subgraph Lib["MikaNetwork.Lib"]
+    N["MikaServer — onRecvCallback만 받는다 (이미 있음)"]
+  end
+  subgraph Game[WSGameServer]
+    S["IJobScheduler seam"]
+    A1["어댑터: 실제 스레드"]
+    A2["어댑터: 인라인 실행 (테스트)"]
+  end
+  N --> S
+  S --- A1 & A2
+  classDef deep fill:#0f172a,color:#f1f5f9,stroke:#0f172a;
+  class S deep
+      </pre>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600">"프레임워크는 게임을 모른다"(CLAUDE.md의 경계 규칙)를 스스로 어긴다 — DB 실행 정책이 네트워크 lib 안에 있어
+      게임 코드 3곳이 lib을 using한다. <span class="mono">Entity.Post</span>가 <span class="mono">LogicExecutor.Instance</span>에 못 박혀
+      어떤 Entity 생명주기도 동기 검증이 안 된다. 실행기 예외는 <span class="mono">Console.WriteLine</span> 후 삼켜져
+      <span class="mono">Apply</span>가 영영 안 불린다 — 로그인 무한 대기의 근원.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600"><span class="mono">DBExecutor</span>·<span class="mono">LogicExecutor</span>를 WSGameServer로 옮기고
+      <span class="mono">IJobScheduler</span> seam을 게임 쪽에 둔다. Lib은 이미 <span class="mono">onRecvCallback</span>을 받으므로 Lib 쪽 변경은 거의 없다.
+      옮기는 김에 실패 훅(<span class="mono">OnError</span>)을 뚫어 침묵 실패를 없앤다. 어댑터 2벌(실제 스레드/인라인)이 seam을 정당화한다.</p>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">Lib 경계 규칙 회복</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">테스트: Entity 생명주기를 인라인으로 검증</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">DB 침묵 실패 제거의 발판</li>
+  </ul>
+</article>
+
+<!-- ═══════════════ 후보 5 ═══════════════ -->
+<article id="c5" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">5 · ServerLog·패킷 훅에 어댑터 seam을 연다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1">Worth exploring</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">local-substitutable</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    Common/ServerLog.cs · MikaNetwork.Core/MikaPacketManager.cs · MikaProtocol/MikaSessionPacketExtensions.cs
+  </div>
+
+  <!-- cross-section -->
+  <div class="grid grid-cols-2 gap-6">
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">Before — 정적 전역, 어댑터 1개 고정</p>
+      <div class="space-y-1 text-xs mono">
+        <div class="h-10 border-l-4 border-red-400 bg-white rounded-r px-3 flex items-center">ServerLog (static) → Console 직결</div>
+        <div class="h-10 border-l-4 border-red-400 bg-white rounded-r px-3 flex items-center">Dispatching · Sent · UnknownReceived = static mutable 훅</div>
+        <div class="h-10 border-l-4 border-slate-300 bg-white rounded-r px-3 flex items-center text-slate-400">주석에만 존재: "Unity에선 Console이 안 뜬다"</div>
+      </div>
+      <p class="text-xs text-red-600 mt-3">두 번째 어댑터(Unity Debug.Log · 인프로세스 테스트 수집기)가 이미 문서화돼 있는데 인터페이스가 없다 — 훅이 정적이라 프로세스당 1개만 배선된다.</p>
+    </div>
+    <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+      <p class="text-xs uppercase tracking-wider text-slate-500 mb-3">After — 실재하는 어댑터 2벌이 seam을 정당화</p>
+      <div class="space-y-1 text-xs mono">
+        <div class="h-12 rounded px-3 flex items-center text-slate-100" style="background:linear-gradient(135deg,#0f172a,#1e293b)">ILogSink — 콘솔 / Unity / 테스트 수집기</div>
+        <div class="h-12 rounded px-3 flex items-center text-slate-100" style="background:linear-gradient(135deg,#0f172a,#1e293b)">MikaPacketManager 인스턴스 훅 (이미 인스턴스 클래스 — 비용 ≈ 0)</div>
+      </div>
+      <p class="text-xs text-emerald-700 mt-3">"한 어댑터 = 가설상의 seam, 두 어댑터 = 진짜 seam" — 여긴 이미 둘이다.</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600"><span class="mono">ServerLog</span>는 static + <span class="mono">Console</span> 직결 + 정적 생성자의 프로세스 전역 부작용(<span class="mono">OutputEncoding</span>).
+      로그를 남기는 모든 코드가 테스트에서 콘솔을 오염시킨다. 패킷 훅 3개는 정적이라 서버/더미클라를 한 프로세스에 띄우는 통합 테스트가 불가능하다.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600"><span class="mono">ILogSink</span> 인터페이스를 두고 콘솔 어댑터를 기본으로. 패킷 훅은 <span class="mono">MikaPacketManager</span> 인스턴스 프로퍼티로 내린다.
+      호출부 시그니처는 유지되므로 변경 반경이 작다.</p>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">Unity 측 로그 어댑터 자리가 생긴다</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">인프로세스 통합 테스트 가능</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">지역성: 로그 정책이 한 모듈에</li>
+  </ul>
+</article>
+
+<!-- ═══════════════ 후보 6 ═══════════════ -->
+<article id="c6" class="rounded-xl border border-slate-200 bg-white p-8 space-y-6 shadow-sm">
+  <div class="flex items-start justify-between gap-4">
+    <h2 class="text-xl font-serif font-bold">6 · "정산 → 속도 변경" 불변식을 타입으로 만든다</h2>
+    <div class="flex gap-2 shrink-0">
+      <span class="rounded-full bg-slate-200 text-slate-700 text-xs font-semibold px-3 py-1">Speculative</span>
+      <span class="rounded-full bg-slate-100 text-slate-600 text-xs px-3 py-1">in-process</span>
+    </div>
+  </div>
+
+  <div class="mono text-sm text-slate-600 leading-6">
+    User/WorkStation/WorkStationSlot.cs · User/WorkStation/WorkStation.cs · User/User.WorkStation.cs
+  </div>
+
+  <div class="grid grid-cols-2 gap-6 text-sm">
+    <div>
+      <p class="font-semibold text-slate-700">문제</p>
+      <p class="text-slate-600">"속도를 바꾸기 직전에 반드시 정산한다"(소급 지급 방지 — 게임기획코어 6장에도 있는 규칙)가
+      주석과 호출 순서로만 지켜진다. <span class="mono">ApplyWorkSpeed</span>를 먼저 부르는 새 호출자가 생기면 컴파일은 통과하고 재화만 샌다.</p>
+    </div>
+    <div>
+      <p class="font-semibold text-slate-700">해결</p>
+      <p class="text-slate-600"><span class="mono">ApplyWorkSpeed</span>를 공개 인터페이스에서 내리고
+      <span class="mono">WorkStation.SettleAndApplySpeed(now, resolver)</span> 원자 연산 하나로 접는다.
+      인터페이스에서 메서드가 하나 줄고, 불변식이 구현 안으로 들어간다 — 전형적 깊어지기.</p>
+    </div>
+  </div>
+
+  <div class="rounded-lg border border-slate-200 bg-stone-50 p-4">
+    <div class="grid grid-cols-2 gap-6 text-xs mono">
+      <div>
+        <p class="text-slate-500 uppercase tracking-wider mb-2">Before — 호출자가 순서를 안다</p>
+        <div class="space-y-1">
+          <div class="border border-slate-300 bg-white rounded px-2 py-1">slot.ConsumeJudgeCount(now)  // ① 먼저</div>
+          <div class="border border-red-300 bg-red-50 rounded px-2 py-1">slot.ApplyWorkSpeed(speed)   // ② 반드시 뒤에 — 주석만이 지킨다</div>
+        </div>
+      </div>
+      <div>
+        <p class="text-slate-500 uppercase tracking-wider mb-2">After — 모듈이 순서를 안다</p>
+        <div class="rounded px-2 py-2 text-slate-100" style="background:linear-gradient(135deg,#0f172a,#1e293b)">ws.SettleAndApplySpeed(now, slot => resolver(slot))<br/><span class="opacity-60">// 정산과 적용이 한 호출 — 어길 방법이 없다</span></div>
+      </div>
+    </div>
+  </div>
+
+  <ul class="flex flex-wrap gap-2 text-xs">
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">인터페이스 축소: 메서드 −1</li>
+    <li class="rounded bg-emerald-50 text-emerald-800 px-2 py-1">소급 지급 버그 계급 제거</li>
+    <li class="rounded bg-slate-100 text-slate-600 px-2 py-1">현재 호출자 2곳뿐 — 급하지 않다</li>
+  </ul>
+</article>
+</section>
+
+<!-- ═══════════════ 버그급 부수 발견 ═══════════════ -->
+<section class="rounded-xl border border-red-200 bg-red-50 p-8 space-y-3">
+  <h2 class="text-lg font-serif font-bold text-red-900">부수 발견 — 아키텍처 이전에 고칠 것들</h2>
+  <p class="text-sm text-red-800">리뷰 중 나온 버그급 항목. 위 후보들과 별개로 우선 처리 대상.</p>
+  <ul class="text-sm text-red-900 space-y-2 list-disc pl-5">
+    <li><span class="mono">AddItemRepository.Key</span>가 대입되지 않아 영구 0 — 모든 아이템 저장이 DB 채널 0으로 몰리고 같은 유저의 다른 작업과 <strong>직렬화가 깨진다</strong> (<span class="mono">InventoryRepository.cs:10</span>).</li>
+    <li>DB 실행기가 예외를 삼켜 <span class="mono">Apply</span> 미도달 — 실패 시 <strong>로그인 무한 대기</strong>, 실패 패킷 없음 (<span class="mono">MikaExecutor.cs:47-55</span>).</li>
+    <li>트랜잭션 0건 — 동시 접속 시 중복 계정 가능, 신규 지급 INSERT 부분 실패 시 반쪽 유저 (<span class="mono">AccountRepository.cs:24-46</span>, <span class="mono">LoginRepository.cs:66-114</span>).</li>
+    <li><span class="mono">Disconnect()</span> check-then-act 경합 → <span class="mono">OnDestroy</span> 2회 = <strong>종료 정산 중복</strong> 가능 (<span class="mono">MikaServerSession.cs:56-61</span>, <span class="mono">Entity.cs:27-30</span> 멱등 가드 없음).</li>
+    <li>가챠에 재화 소모가 없다 — <span class="mono">TrySpend</span> 호출자 0. 기획(가챠 비용) 확정 필요 항목이라 임의 구현 금지 대상.</li>
+    <li>드롭 테이블 없는 산업은 판정 횟수를 <strong>소진한 뒤</strong> 스킵 — 그 판정분 보상이 영구 소실 (<span class="mono">WorkStation.cs:64,70-74</span>).</li>
+    <li><span class="mono">const GatherSpeedMultiplier = 6.0</span> — 재화 6배 배수가 컴파일 타임 상수. 되돌리려면 재컴파일 (<span class="mono">Global.cs:26</span>).</li>
+    <li>밴/삭제 계정 응답 미전송 — 조용히 무한 대기 (<span class="mono">AccountRepository.cs:57-68</span>).</li>
+  </ul>
+</section>
+
+<!-- ═══════════════ Top recommendation ═══════════════ -->
+<section id="top-recommendation" class="rounded-xl border-2 border-emerald-500 bg-white p-8 space-y-3">
+  <p class="text-xs uppercase tracking-wider text-emerald-700 font-semibold">Top recommendation</p>
+  <h2 class="text-2xl font-serif font-bold"><a href="#c1" class="hover:underline">1 · User 모듈을 세션·시계·DB 큐에서 떼어낸다</a></h2>
+  <p class="text-sm text-slate-700 max-w-3xl">
+    테스트 0%인 코드의 경계선이 정확히 <span class="mono">ISession</span> / <span class="mono">DateTime.UtcNow</span> / <span class="mono">*.Instance</span>가
+    처음 등장하는 지점과 일치한다 — seam 3개를 열면 재화가 생성되는 모든 경로(정산·지급·배치·속도)가 한꺼번에 테스트 가능해진다.
+    레버리지가 가장 크고, 후보 2(로그인 플로우 회수)와 후보 6(불변식 타입화)의 선행 조건이기도 하다.
+    <span class="mono">IDummyClock</span> 스케치가 테스트 프로젝트에 이미 있어 방향도 합의돼 있다.
+  </p>
+</section>
+
+<footer class="text-xs text-slate-400 pt-4">Windows_simulator · 서버 아키텍처 리뷰 · 2026-08-01</footer>
+</main>
+</body>
+</html>
