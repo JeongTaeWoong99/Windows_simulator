@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 /// <summary>
@@ -123,7 +124,7 @@ public class WindowManager : MonoService<WindowManager>
     {
 #if !UNITY_EDITOR
         // 안전장치 : 투명/보더리스 상태라 창을 닫기 어려우므로 ESC 로 강제 종료.
-        if (Input.GetKeyDown(KeyCode.Escape))
+        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
             Application.Quit();
 #endif
 
@@ -467,7 +468,7 @@ public class WindowManager : MonoService<WindowManager>
     #region 콘텐츠 위 판정 (클릭 스루용)
 
     // ★ 클릭 스루 ON 상태에선 OS가 마우스 메시지를 창에 안 보내므로,
-    //   Unity의 Input.mousePosition / EventSystem.IsPointerOverGameObject 는 동작하지 않는다.
+    //   Unity의 Mouse.current / EventSystem.IsPointerOverGameObject 는 동작하지 않는다.
     //   → Win32 GetCursorPos 로 전역 커서를 직접 폴링해서 판정한다.
 
     /// <summary>마우스가 콘텐츠(uGUI UI / 2D 스프라이트) 위에 있는지 판정한다. (Update 의 동적 클릭스루에서 호출)</summary>
@@ -517,7 +518,8 @@ public class WindowManager : MonoService<WindowManager>
             return new Vector2(localX, Screen.height - localY);
         }
 #endif
-        return Input.mousePosition; // 에디터 / 폴백 (레거시 Input — Active Input Handling = Both 필요)
+        // 에디터 / 폴백. 마우스가 없는 환경(원격·터치 전용)이면 Mouse.current 가 null 이라 0을 돌려준다.
+        return Mouse.current != null ? Mouse.current.position.ReadValue() : Vector2.zero;
     }
 
     #endregion
