@@ -10,9 +10,10 @@ namespace GameData
     [MemoryPackable]
     public partial class HuntingBasicTableRow
     {
-        public int    DropTID     { get; set; }        // int
-        public int    ItemTID     { get; set; }        // int
-        public int    Weight      { get; set; }        // int
-        public string Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int    DropTID       { get; set; }        // int
+        public int    IndustryLevel { get; set; }        // int [1..5]
+        public int    ItemTID       { get; set; }        // int
+        public int    Weight        { get; set; }        // int
+        public string Description   { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

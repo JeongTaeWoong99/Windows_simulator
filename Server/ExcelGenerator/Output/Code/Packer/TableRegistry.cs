@@ -23,6 +23,7 @@ namespace GameData
             ["LoggingBasicTable"] = new(LoggingBasicTablePacker.Pack, LoggingBasicTablePacker.Verify, LoggingBasicTablePacker.Preview, LoggingBasicTablePacker.Dump),
             ["MiningBasicTable"] = new(MiningBasicTablePacker.Pack, MiningBasicTablePacker.Verify, MiningBasicTablePacker.Preview, MiningBasicTablePacker.Dump),
             ["HuntingBasicTable"] = new(HuntingBasicTablePacker.Pack, HuntingBasicTablePacker.Verify, HuntingBasicTablePacker.Preview, HuntingBasicTablePacker.Dump),
+            ["IndustryLevelTable"] = new(IndustryLevelTablePacker.Pack, IndustryLevelTablePacker.Verify, IndustryLevelTablePacker.Preview, IndustryLevelTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
         };
     }

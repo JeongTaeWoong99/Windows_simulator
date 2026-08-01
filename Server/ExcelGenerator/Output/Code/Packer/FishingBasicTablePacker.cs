@@ -14,10 +14,11 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static FishingBasicTableRow Parse(string[] cells) => new()
         {
-            DropTID     = PackerUtil.ParseInt(cells[0], Table, "DropTID"),
-            ItemTID     = PackerUtil.ParseInt(cells[1], Table, "ItemTID"),
-            Weight      = PackerUtil.ParseInt(cells[2], Table, "Weight"),
-            Description = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
+            DropTID       = PackerUtil.ParseInt(cells[0], Table, "DropTID"),
+            IndustryLevel = PackerUtil.ParseInt(cells[1], Table, "IndustryLevel", 1, 5),
+            ItemTID       = PackerUtil.ParseInt(cells[2], Table, "ItemTID"),
+            Weight        = PackerUtil.ParseInt(cells[3], Table, "Weight"),
+            Description   = cells[4].Length > 0 ? PackerUtil.RequireString(cells[4], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
