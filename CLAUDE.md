@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-01
+> 최종 업데이트: 2026-08-02
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -231,3 +231,4 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 | `packet-creator` | [`Server/.claude/skills/packet-creator/SKILL.md`](Server/.claude/skills/packet-creator/SKILL.md) | MikaProtocol 패킷 추가 절차 (PacketId·MemoryPackable·핸들러) |
 | `sqlite-sql-creator` | [`Server/.claude/skills/sqlite-sql-creator/SKILL.md`](Server/.claude/skills/sqlite-sql-creator/SKILL.md) | SQLite DDL·쿼리 규칙 (STRICT·주석 필수·인덱스 근거) |
 | `server-tdd` | [`Server/.claude/skills/server-tdd/SKILL.md`](Server/.claude/skills/server-tdd/SKILL.md) | 서버 테스트 작성 규칙 + red-green 루프 (한글 테스트명·기대값 리터럴·목은 경계에서만) |
+| `server-code-style` | [`Server/.claude/skills/server-code-style/SKILL.md`](Server/.claude/skills/server-code-style/SKILL.md) | 서버 코드 작성 스타일 (주석은 꼭 필요한 곳에만·한글 주석) |
