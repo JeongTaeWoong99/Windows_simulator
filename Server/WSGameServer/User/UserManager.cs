@@ -2,7 +2,7 @@ using System.Collections.Concurrent;
 using MikaNetwork;
 using MikaUtils;
 
-namespace WSGameServer.User;
+namespace WSGameServer;
 
 /// <summary>
 /// 로그인한 User들을 SessionId 단위로 보관/조회/정리하는 게임 로직 레이어 매니저.

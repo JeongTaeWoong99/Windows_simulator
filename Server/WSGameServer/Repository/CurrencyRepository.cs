@@ -1,8 +1,6 @@
-using System.Data;
-using Dapper;
 using GameData;
 
-namespace WSGameServer.Repository;
+namespace WSGameServer;
 
 /// <summary>
 /// 유저의 재화 보유량을 DB에 반영한다.
@@ -17,7 +15,7 @@ public sealed class SaveCurrencyRepository : IRepository
     private readonly CurrencyType _type;
     private readonly long _amount;
 
-    public SaveCurrencyRepository(User.User user, CurrencyType type, long amount)
+    public SaveCurrencyRepository(User user, CurrencyType type, long amount)
     {
         User    = user;
         _type   = type;
@@ -26,9 +24,9 @@ public sealed class SaveCurrencyRepository : IRepository
 
     public long Key => User.SessionId;
 
-    public User.User User { get; }
+    public User User { get; }
 
-    public async Task ExecuteAsync(IDbConnection connection)
+    public async Task ExecuteAsync(DbConnection connection)
     {
         await connection.ExecuteAsync(
             @"INSERT INTO t_user_currency (user_id, currency_type, amount)

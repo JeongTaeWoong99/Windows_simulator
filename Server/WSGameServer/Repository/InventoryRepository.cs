@@ -1,24 +1,22 @@
-using System.Data;
-using Dapper;
 using MikaProtocol;
-using WSGameServer.User.Inventory;
 
-namespace WSGameServer.Repository;
+namespace WSGameServer;
 
 public class AddItemRepository : IRepository
 {
-    public long Key { get; }
-    
-    public User.User User { get; init; }
+    // DBExecutor 파티션 키 — 같은 유저의 DB 작업(로그인 로드 등)과 직렬로 처리돼야 한다.
+    public long Key => User.SessionId;
+
+    public User User { get; init; }
     public ItemChangeInfo ItemChangeInfo { get; init; }
 
-    public AddItemRepository(User.User user, ItemChangeInfo itemChangeInfo)
+    public AddItemRepository(User user, ItemChangeInfo itemChangeInfo)
     {
         User = user;
         ItemChangeInfo = itemChangeInfo;
     }
-    
-    public async Task ExecuteAsync(IDbConnection connection)
+
+    public async Task ExecuteAsync(DbConnection connection)
     {
         await connection.ExecuteAsync(
             @"INSERT INTO t_user_inventory (user_id, item_id, count)
@@ -29,6 +27,6 @@ public class AddItemRepository : IRepository
 
     public void Apply()
     {
-        
+
     }
 }

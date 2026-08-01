@@ -1,4 +1,4 @@
-namespace WSGameServer.Tests;
+namespace WSGameServer;
 
 /// <summary>
 /// 테스트 인프라 자체가 살아 있는지 확인하는 스모크 테스트.

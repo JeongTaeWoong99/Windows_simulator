@@ -1,6 +1,6 @@
 using MikaNetwork;
 
-namespace WSGameServer.Network;
+namespace WSGameServer;
 
 public class ClientPacketManager : MikaPacketManager
 {

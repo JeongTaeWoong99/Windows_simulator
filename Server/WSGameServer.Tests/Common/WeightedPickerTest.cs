@@ -1,6 +1,6 @@
-using WSGameServer.Common;
+using WSGameServer;
 
-namespace WSGameServer.Tests.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// <see cref="WeightedPicker{T}"/> 검증.

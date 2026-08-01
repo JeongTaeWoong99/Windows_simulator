@@ -1,17 +1,16 @@
 using MikaProtocol;
 
-namespace WSGameServer.User.Inventory;
+namespace WSGameServer;
 
 public sealed class Inventory
 {
     private Dictionary<int, Item> _items = new();
 
-    // 로그인 시 DB에서 읽은 ItemInfo(네트워크/DTO)를 도메인 모델 Item으로 변환해 적재
-    public void Load(IEnumerable<ItemInfo> itemInfos)
+    // 로그인 시 아이템을 적재한다. Row → Item 변환은 호출자(User.OnLoginDataLoaded)가 끝냈다 —
+    // 인벤토리는 Repository의 Row도 네트워크 DTO도 모른다.
+    public void Load(IEnumerable<Item> items)
     {
-        _items = itemInfos.ToDictionary(
-            info => info.ItemId,
-            info => new Item(info.ItemId, info.Count));
+        _items = items.ToDictionary(item => item.Id);
     }
 
     // 현재 인벤토리 전체를 네트워크 전송용 ItemInfo 목록으로 변환한다.

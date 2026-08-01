@@ -1,11 +1,11 @@
-using System.Data;
+using WSGameServer;
 
-namespace WSGameServer.Repository;
+namespace WSGameServer;
 
 public interface IRepository
 {
     public long Key { get;  }
     
-    public Task ExecuteAsync(IDbConnection connection);
+    public Task ExecuteAsync(DbConnection connection);
     public void Apply();
 }

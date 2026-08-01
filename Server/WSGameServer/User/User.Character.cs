@@ -1,6 +1,6 @@
 using GameData;
 
-namespace WSGameServer.User;
+namespace WSGameServer;
 
 public partial class User
 {
@@ -11,19 +11,28 @@ public partial class User
     /// 유저가 소유한 캐릭터 개체들. 키는 <b>개체 PK</b>(<c>t_character.character_id</c>)이며 TID가 아니다.
     /// 같은 캐릭터를 여러 장 가질 수 있으므로 TID로는 유일하게 못 찾는다.
     /// </summary>
-    private readonly Dictionary<long, Character.Character> _characters = new();
+    private readonly Dictionary<long, Character> _characters = new();
 
-    public IReadOnlyCollection<Character.Character> Characters => _characters.Values;
+    public IReadOnlyCollection<Character> Characters => _characters.Values;
 
-    /// <summary>DB에서 읽은 캐릭터를 적재한다(로그인 시 1회).</summary>
-    public void LoadCharacters(IEnumerable<Character.Character> characters)
+    /// <summary>DB에서 읽은 캐릭터 Row를 도메인으로 변환해 적재한다(로그인 시 1회).</summary>
+    public void LoadCharacters(IReadOnlyList<CharacterRow> rows)
     {
         _characters.Clear();
-        foreach (var character in characters)
-            _characters[character.Id] = character;
+        foreach (var r in rows)
+        {
+            // 테이블에 없는 TID는 건너뛴다. 여기서 예외를 던지면 데이터 한 줄 때문에 로그인이 막힌다.
+            if (!GameTable.CharacterTable.TryGet(r.CharacterTid, out var row))
+            {
+                ServerLog.Warn("로그인", $"CharacterTable에 없는 TID, 건너뜀: {r.CharacterTid} (개체 {r.CharacterId})");
+                continue;
+            }
+
+            _characters[r.CharacterId] = new Character(r.CharacterId, row, r.Level, r.Exp);
+        }
     }
 
-    public bool TryGetCharacter(long characterId, out Character.Character character)
+    public bool TryGetCharacter(long characterId, out Character character)
         => _characters.TryGetValue(characterId, out character!);
 
     /// <summary>

@@ -1,4 +1,4 @@
-namespace WSGameServer.User.WorkStation;
+namespace WSGameServer;
 
 /// <summary>
 /// 작업속도 보정치를 <b>가산(add)과 승산(mul)으로 분류해 모아 두는</b> 누산기.

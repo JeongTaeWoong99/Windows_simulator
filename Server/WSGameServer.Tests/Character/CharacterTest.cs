@@ -1,6 +1,6 @@
 using GameData;
 
-namespace WSGameServer.Tests.Character;
+namespace WSGameServer;
 
 /// <summary>
 /// 캐릭터 적성 검증.
@@ -24,7 +24,7 @@ public class CharacterTest
             Hunting      = hunting,
         };
 
-    private static global::WSGameServer.User.Character.Character Make(
+    private static Character Make(
         CharacterTableRow row, long id = 1, int level = 1, int exp = 0)
         => new(id, row, level, exp);
 
@@ -78,6 +78,6 @@ public class CharacterTest
     public void 기본_캐릭터_TID는_1이다()
     {
         // 2~1000번은 예약 대역이고 일반 캐릭터는 1001부터다.
-        global::WSGameServer.User.User.DefaultCharacterTid.ShouldBe(1);
+        User.DefaultCharacterTid.ShouldBe(1);
     }
 }

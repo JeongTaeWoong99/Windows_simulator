@@ -1,1 +1,1 @@
-global using static WSGameServer.Common.Global;
+global using static WSGameServer.Global;

@@ -1,4 +1,4 @@
-namespace WSGameServer.User.Inventory;
+namespace WSGameServer;
 
 public sealed class Item(int itemId, int count)
 {

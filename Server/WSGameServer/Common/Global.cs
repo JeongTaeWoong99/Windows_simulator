@@ -1,4 +1,4 @@
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 public static class Global
 {

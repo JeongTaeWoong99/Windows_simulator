@@ -1,6 +1,6 @@
-using WSGameServer.User.WorkStation;
+using WSGameServer;
 
-namespace WSGameServer.Tests.WorkStation;
+namespace WSGameServer;
 
 /// <summary>
 /// 작업속도 보정 합성 검증 — <b>속도 = 기본값 × (1 + Σ가산) × Π승산</b>.

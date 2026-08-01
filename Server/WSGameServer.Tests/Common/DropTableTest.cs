@@ -1,7 +1,7 @@
 using GameData;
-using WSGameServer.Common;
+using WSGameServer;
 
-namespace WSGameServer.Tests.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// <see cref="DropTable"/>·<see cref="DropTableCatalog"/> 검증.

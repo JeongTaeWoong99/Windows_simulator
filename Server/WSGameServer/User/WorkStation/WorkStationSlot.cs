@@ -1,7 +1,7 @@
 using GameData;
 using MikaProtocol;
 
-namespace WSGameServer.User.WorkStation;
+namespace WSGameServer;
 
 /// <summary>
 /// 작업슬롯 한 칸. <b>산업 1개 + 캐릭터 1명</b>이 배치되면 독립적으로 채취를 돌린다.

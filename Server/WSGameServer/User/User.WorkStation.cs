@@ -1,17 +1,19 @@
 using GameData;
 using MikaProtocol;
-using WSGameServer.Repository;
 
-// 클래스 안에 WorkStation 프로퍼티가 있어 같은 이름의 네임스페이스가 가려진다. 별칭으로 우회한다.
-using Slot = WSGameServer.User.WorkStation.WorkStationSlot;
-using WorkSpeed = WSGameServer.User.WorkStation.WorkSpeed;
-
-namespace WSGameServer.User;
+namespace WSGameServer;
 
 public partial class User
 {
     /// <summary>플레이어의 작업슬롯 전체. 채취는 여기서 시작된다.</summary>
-    public WorkStation.WorkStation WorkStation { get; } = new();
+    public WorkStation WorkStation { get; } = new();
+
+    /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회).</summary>
+    private void LoadWorkStation(IReadOnlyList<WorkStationSlotRow> rows, DateTime startedAt)
+    {
+        WorkStation.Load(rows.Select(r =>
+            new WorkStationSlot(r.SlotIndex, (ItemType)r.Industry, r.CharacterId, startedAt)));
+    }
 
     /// <summary>슬롯 전체 스냅샷을 보낸다(로그인 직후).</summary>
     public void SendWorkStationSlots()
@@ -138,11 +140,11 @@ public partial class User
     /// 순서를 타는 유일한 경로라, 여기서 곱하면 소급이 원천적으로 불가능하다.
     /// </para>
     /// </summary>
-    private int ResolveSlotSpeed(Slot slot)
+    private int ResolveSlotSpeed(WorkStationSlot slot)
     {
         // 비어 있는 슬롯은 어차피 돌지 않는다(IsActive=false). 값은 의미가 없으므로 기준값을 둔다.
         var baseSpeed = !slot.IsActive || !TryGetCharacter(slot.CharacterId, out var character)
-            ? Slot.DefaultWorkSpeed
+            ? WorkStationSlot.DefaultWorkSpeed
             : character.GetBaseWorkSpeed(slot.Industry);
 
         return WorkSpeed.From(baseSpeed)

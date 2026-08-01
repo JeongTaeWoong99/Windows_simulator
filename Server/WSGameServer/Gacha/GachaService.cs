@@ -1,12 +1,12 @@
 using MikaProtocol;
 using MikaUtils;
 
-namespace WSGameServer.Gacha;
+namespace WSGameServer;
 
 /// <summary>
 /// 가챠 뽑기 흐름을 조립하는 서비스 계층(Singleton).
 /// 추첨은 <see cref="GachaTable"/>(순수 데이터)에 위임하고, 인벤토리/DB 부수효과는
-/// <see cref="User.User"/>에 위임한다. 여기서는 검증·조립·응답만 담당한다.
+/// <see cref="User"/>에 위임한다. 여기서는 검증·조립·응답만 담당한다.
 /// </summary>
 public sealed class GachaService : Singleton<GachaService>
 {
@@ -14,7 +14,7 @@ public sealed class GachaService : Singleton<GachaService>
     private const int SingleDraw = 1;
     private const int MultiDraw = 10;
 
-    public void Draw(User.User user, int gachaId, int drawCount)
+    public void Draw(User user, int gachaId, int drawCount)
     {
         // 1) 검증: 뽑기 횟수와 풀 존재 여부
         if ((drawCount != SingleDraw && drawCount != MultiDraw)

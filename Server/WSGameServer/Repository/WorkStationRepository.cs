@@ -1,8 +1,4 @@
-using System.Data;
-using Dapper;
-using WSGameServer.User.WorkStation;
-
-namespace WSGameServer.Repository;
+namespace WSGameServer;
 
 /// <summary>
 /// 슬롯의 <b>배치 설정</b>을 DB에 반영한다. 산업·캐릭터가 바뀌었을 때만 부르면 된다.
@@ -17,7 +13,7 @@ public sealed class SaveWorkStationSlotRepository : IRepository
 {
     private readonly IReadOnlyList<WorkStationSlot> _slots;
 
-    public SaveWorkStationSlotRepository(User.User user, IReadOnlyList<WorkStationSlot> slots)
+    public SaveWorkStationSlotRepository(User user, IReadOnlyList<WorkStationSlot> slots)
     {
         User   = user;
         _slots = slots;
@@ -25,9 +21,9 @@ public sealed class SaveWorkStationSlotRepository : IRepository
 
     public long Key => User.SessionId;
 
-    public User.User User { get; }
+    public User User { get; }
 
-    public async Task ExecuteAsync(IDbConnection connection)
+    public async Task ExecuteAsync(DbConnection connection)
     {
         // 슬롯 여러 개를 한 번의 왕복으로 처리한다. Dapper는 배열을 넘기면 문장을 반복 실행한다.
         var rows = _slots.Select(s => new

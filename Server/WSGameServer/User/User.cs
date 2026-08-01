@@ -1,11 +1,11 @@
 using MikaNetwork;
 using MikaProtocol;
-using WSGameServer.Common;
-using WSGameServer.DB;
-using WSGameServer.Network;
-using WSGameServer.Repository;
+using WSGameServer;
+using WSGameServer;
+using WSGameServer;
+using WSGameServer;
 
-namespace WSGameServer.User;
+namespace WSGameServer;
 
 /// <summary>
 /// Session 접속 후 로그인하면 생성되는 게임 로직 단위 객체.
@@ -26,7 +26,7 @@ public sealed partial class User : Entity
     public bool IsNewbie { get; set; }
     
     // Inventory
-    private Inventory.Inventory Inventory { get; init; } = new();
+    private Inventory Inventory { get; init; } = new();
 
     internal User(ISession session, string pid, string nickname)
     {

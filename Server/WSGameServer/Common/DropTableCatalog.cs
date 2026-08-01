@@ -1,7 +1,7 @@
 using GameData;
 using MikaUtils;
 
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// 드롭 테이블 보관소. <b>산업별로</b> 테이블을 찾아 준다.

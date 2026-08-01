@@ -1,14 +1,24 @@
+using System.Data;
 using Microsoft.Data.Sqlite;
 using MikaNetwork.Server;
 using MikaUtils;
-using WSGameServer.Repository;
-using WSGameServer.User;
+using WSGameServer;
 
-namespace WSGameServer.DB;
+using System.Data.Common;
+using WSGameServer;
+
+namespace WSGameServer;
 
 public class DBManager : Singleton<DBManager>
 {
-    private string _connectionString = "";
+    // 커넥션을 만드는 방법만 안다 — 파일 DB냐 :memory:냐는 주입하는 쪽이 정한다.
+    private Func<SqliteConnection>? _connectionFactory;
+
+    /// <summary>커넥션 팩토리를 직접 주입한다. 테스트는 <c>:memory:</c> 커넥션을 넘긴다.</summary>
+    public void Initialize(Func<SqliteConnection> connectionFactory)
+    {
+        _connectionFactory = connectionFactory;
+    }
 
     // DB 파일명을 받아 연결 문자열을 구성한다 (서버 시작 시 1회 호출)
     public void Initialize(string dbFileName)
@@ -16,11 +26,13 @@ public class DBManager : Singleton<DBManager>
         string dbPath = ResolveDbPath(dbFileName);
 
         // 문자열 직접 조립 대신 빌더 사용 → 경로에 공백/특수문자가 있어도 안전
-        _connectionString = new SqliteConnectionStringBuilder
+        var connectionString = new SqliteConnectionStringBuilder
         {
             DataSource = dbPath,
             Mode = SqliteOpenMode.ReadWrite,
         }.ToString();
+
+        _connectionFactory = () => new SqliteConnection(connectionString);
     }
 
     // 실행 위치(bin/publish)와 무관하게 소스의 Shared/<dbFileName>을 찾는다.
@@ -46,10 +58,10 @@ public class DBManager : Singleton<DBManager>
         DBExecutor.Instance.Post(repository.Key, async () =>
         {
             // 작업마다 커넥션을 열어 Repository로 넘겨준다
-            await using var conn = new SqliteConnection(_connectionString);
+            await using var conn = _connectionFactory!();
             await conn.OpenAsync();
 
-            await repository.ExecuteAsync(conn); // SP 실행 -- 다른 스레드가 작업 이어서 할 수 있음 (순서는 보장)
+            await repository.ExecuteAsync(new DbConnection(conn)); // SP 실행 -- 다른 스레드가 작업 이어서 할 수 있음 (순서는 보장)
 
             LogicExecutor.Instance.Post(repository.Apply);
         });

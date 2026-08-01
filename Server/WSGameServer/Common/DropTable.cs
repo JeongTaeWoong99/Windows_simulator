@@ -1,4 +1,4 @@
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// 드롭 후보 한 줄. 테이블 Row가 산업마다 다른 타입이라(<c>FishingBasicTableRow</c>,

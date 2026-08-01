@@ -1,8 +1,8 @@
 using GameData;
 using MikaProtocol;
-using WSGameServer.Common;
+using WSGameServer;
 
-namespace WSGameServer.User.WorkStation;
+namespace WSGameServer;
 
 /// <summary>한 슬롯의 정산 결과. 무엇이 몇 개 나왔는지와 몇 번 판정했는지를 담는다.</summary>
 public sealed record SlotHarvest(int SlotIndex, int JudgeCount, Dictionary<int, int> Gained);

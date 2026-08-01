@@ -1,6 +1,6 @@
 using MikaProtocol;
 
-namespace WSGameServer.Gacha;
+namespace WSGameServer;
 
 /// <summary>
 /// 가챠 풀(확률표)을 코드 상수로 정의하고, 가중치 기반 추첨을 수행하는 정적 설정.

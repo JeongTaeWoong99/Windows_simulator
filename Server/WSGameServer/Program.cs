@@ -1,15 +1,13 @@
 using Dapper;
 using MikaNetwork.Server;
-using MikaProtocol;
-using WSGameServer.Common;
-using WSGameServer.DB;
-using WSGameServer.Network;
 using GameData;
 
 namespace WSGameServer;
 
 class Program
 {
+    private const string SQL_CONNECTION_STRING = "game.sqlite3";
+    
     private static void Main(string[] args)
     {
         // Dapper 컬럼 매핑: snake_case(user_id) → PascalCase(UserId)
@@ -23,7 +21,8 @@ class Program
         DBExecutor.Instance.Start(8);
         LogicExecutor.Instance.Start();
         
-        DBManager.Instance.Initialize("game.sqlite3");
+        // 파일명 → Shared/<file> 경로 탐색 → 커넥션 팩토리 구성. 테스트는 팩토리 오버로드로 :memory:를 넣는다.
+        DBManager.Instance.Initialize(SQL_CONNECTION_STRING);
         NetworkManager.Instance.Initialize();
 
         // 접속 중인 플레이어의 채취를 주기적으로 정산해 밀어 준다(서버 권위).
@@ -42,7 +41,7 @@ class Program
     /// </summary>
     private static void WarnIfTuned()
     {
-        const double baseCycle = global::WSGameServer.User.WorkStation.WorkStationSlot.BaseCycleSeconds;
+        const double baseCycle = WorkStationSlot.BaseCycleSeconds;
 
         if (Math.Abs(GatherSpeedMultiplier - 1.0) < 0.0001)
         {

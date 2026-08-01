@@ -1,13 +1,19 @@
 using GameData;
 using MikaProtocol;
-using WSGameServer.Repository;
+using WSGameServer;
 
-namespace WSGameServer.User;
+namespace WSGameServer;
 
 public partial class User
 {
     /// <summary>유저가 가진 재화. <b>캐릭터가 아니라 유저 소유다.</b></summary>
-    private Currency.CurrencyWallet Wallet { get; } = new();
+    private CurrencyWallet Wallet { get; } = new();
+
+    /// <summary>DB에서 읽은 재화 Row를 적재한다(로그인 시 1회). 행이 없는 재화는 0으로 본다.</summary>
+    private void LoadCurrencies(IReadOnlyList<CurrencyRow> rows)
+    {
+        Wallet.Load(rows.ToDictionary(r => (CurrencyType)r.CurrencyType, r => r.Amount));
+    }
 
     /// <summary>보유량 조회. 가진 적이 없으면 0.</summary>
     public long GetCurrency(CurrencyType type) => Wallet.Get(type);

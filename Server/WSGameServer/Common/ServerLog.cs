@@ -1,4 +1,4 @@
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// 로그 심각도. 값이 클수록 심각하며 <see cref="ServerLog.MinLevel"/>과 크기로 비교한다.

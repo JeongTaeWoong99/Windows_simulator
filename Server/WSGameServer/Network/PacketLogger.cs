@@ -1,9 +1,9 @@
 using System.Diagnostics;
 using MikaNetwork;
 using MikaProtocol;
-using WSGameServer.Common;
+using WSGameServer;
 
-namespace WSGameServer.Network;
+namespace WSGameServer;
 
 /// <summary>
 /// 프레임워크·프로토콜 계층이 뚫어 둔 패킷 훅을 <see cref="ServerLog"/>에 연결한다.

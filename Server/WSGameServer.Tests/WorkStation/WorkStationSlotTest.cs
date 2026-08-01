@@ -1,8 +1,7 @@
 using GameData;
-using WSGameServer.Common;
-using WSGameServer.User.WorkStation;
+using WSGameServer;
 
-namespace WSGameServer.Tests.WorkStation;
+namespace WSGameServer;
 
 /// <summary>
 /// 작업슬롯 정산 검증.
@@ -258,7 +257,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 슬롯마다_독립적으로_정산한다()
     {
-        var station = new global::WSGameServer.User.WorkStation.WorkStation();
+        var station = new WorkStation();
         station.Load(new[]
         {
             new WorkStationSlot(0, ItemType.Fishing, 100, Base),                  // 5분 경과 → 10회
@@ -278,7 +277,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 슬롯마다_속도가_달라도_서로_간섭하지_않는다()
     {
-        var station = new global::WSGameServer.User.WorkStation.WorkStation();
+        var station = new WorkStation();
         station.Load(new[]
         {
             new WorkStationSlot(0, ItemType.Fishing, 100, Base, WorkStationSlot.DefaultWorkSpeed),
@@ -294,7 +293,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 수확이_없는_슬롯은_결과에_담기지_않는다()
     {
-        var station = new global::WSGameServer.User.WorkStation.WorkStation();
+        var station = new WorkStation();
         station.Load(new[]
         {
             new WorkStationSlot(0, ItemType.Fishing, 100, Base),
@@ -310,7 +309,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 드롭_테이블이_없는_산업은_건너뛴다()
     {
-        var station = new global::WSGameServer.User.WorkStation.WorkStation();
+        var station = new WorkStation();
         station.Load(new[]
         {
             new WorkStationSlot(0, ItemType.Fishing, 100, Base),
@@ -327,7 +326,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 슬롯을_해금하면_현재_시각부터_시작한다()
     {
-        var station = new global::WSGameServer.User.WorkStation.WorkStation();
+        var station = new WorkStation();
 
         var slot = station.Unlock(3, Base);
 

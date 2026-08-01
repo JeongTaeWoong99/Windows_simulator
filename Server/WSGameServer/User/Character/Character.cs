@@ -1,6 +1,6 @@
 using GameData;
 
-namespace WSGameServer.User.Character;
+namespace WSGameServer;
 
 /// <summary>
 /// 유저가 소유한 캐릭터 <b>개체</b>. 같은 캐릭터(TID)를 여러 장 가질 수 있으므로

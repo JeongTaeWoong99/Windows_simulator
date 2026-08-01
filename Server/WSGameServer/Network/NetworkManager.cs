@@ -1,9 +1,9 @@
 using MikaUtils;
 using MikaNetwork.Server;
-using WSGameServer.Common;
-using WSGameServer.User;
+using WSGameServer;
+using WSGameServer;
 
-namespace WSGameServer.Network;
+namespace WSGameServer;
 
 public class NetworkManager : Singleton<NetworkManager>
 {

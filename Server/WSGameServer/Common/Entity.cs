@@ -1,6 +1,6 @@
 using MikaNetwork.Server;
 
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 public abstract class Entity
 {

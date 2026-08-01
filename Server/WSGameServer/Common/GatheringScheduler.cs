@@ -1,7 +1,7 @@
 using MikaNetwork.Server;
 using MikaUtils;
 
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// 접속 중인 플레이어의 채취를 <b>주기적으로 정산해 밀어 주는</b> 스케줄러.
@@ -54,7 +54,7 @@ public sealed class GatheringScheduler : Singleton<GatheringScheduler>
     {
         var now = DateTime.UtcNow;
 
-        foreach (var user in User.UserManager.Instance.All)
+        foreach (var user in UserManager.Instance.All)
         {
             // 한 유저의 예외가 나머지 유저의 정산을 막지 않게 한다.
             try

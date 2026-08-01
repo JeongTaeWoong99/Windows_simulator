@@ -1,6 +1,6 @@
 using GameData;
 
-namespace WSGameServer.User.Currency;
+namespace WSGameServer;
 
 /// <summary>
 /// 유저가 가진 재화 전부. <b>재화는 유저 소유</b>다(캐릭터가 아니라).

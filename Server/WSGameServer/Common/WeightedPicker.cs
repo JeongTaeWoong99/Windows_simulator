@@ -1,4 +1,4 @@
-namespace WSGameServer.Common;
+namespace WSGameServer;
 
 /// <summary>
 /// 가중치 기반 추첨기. "여러 후보 중 하나를 확률로 고르는" 모든 곳에서 쓴다
