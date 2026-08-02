@@ -109,7 +109,8 @@ namespace MikaProtocol
     public partial class S_GachaDrawResponse : IPacket
     {
         public bool Success { get; set; }
-        public List<GachaRewardInfo>? Rewards { get; set; }  // 뽑힌 순서대로
+        public List<GachaRewardInfo>? Rewards { get; set; }  // 연출용 — 뽑힌 순서대로 (델타)
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 인벤토리 반영용 — 갱신 후 누적 총량
     }
 
     [MemoryPackable, Packet(PacketId.S_InventoryResponse)]

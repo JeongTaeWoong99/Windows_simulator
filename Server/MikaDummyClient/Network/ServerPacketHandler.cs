@@ -52,6 +52,10 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv Gacha: Count={res.Rewards?.Count}");
             foreach (var reward in res.Rewards!)
                 Console.WriteLine($"  - Rarity={reward.Rarity.ToString()}, ItemId={reward.ItemId}, Count={reward.Count}");
+
+            Console.WriteLine($"[Client] Recv Gacha 인벤토리 변경: Count={res.ItemChangeInfos?.Count}");
+            foreach (var change in res.ItemChangeInfos!)
+                Console.WriteLine($"  - Kind={change.Kind.ToString()}, ItemId={change.ItemId}, Count={change.Count} (누적 총량)");
         }
 
         [PacketHandler]

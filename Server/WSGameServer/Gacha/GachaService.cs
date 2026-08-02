@@ -42,10 +42,16 @@ public sealed class GachaService : Singleton<GachaService>
         foreach (var entry in entries)
             gained[entry.ItemId] = gained.GetValueOrDefault(entry.ItemId) + entry.Count;
 
+        var changes = new List<ItemChangeInfo>(gained.Count);
         foreach (var (itemId, count) in gained)
-            user.GainItem(itemId, count);
+            changes.Add(user.GainItem(itemId, count));
 
-        // 5) 뽑기 결과 응답(인벤토리 갱신 패킷은 별도로 보내지 않음)
-        user.Send(new S_GachaDrawResponse { Success = true, Rewards = rewards });
+        // 5) 뽑기 결과 응답 — Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
+        user.Send(new S_GachaDrawResponse
+        {
+            Success = true,
+            Rewards = rewards,
+            ItemChangeInfos = changes,
+        });
     }
 }

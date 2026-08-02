@@ -17,7 +17,7 @@ namespace MikaProtocol
     }
     
     [MemoryPackable]
-    public partial class ItemChangeInfo   // 변경(델타) 전용
+    public partial class ItemChangeInfo   // Count는 델타가 아니라 갱신 후 누적 총량 — 클라는 덮어쓴다
     {
         public int ItemId { get; set; }
         public int Count  { get; set; }
