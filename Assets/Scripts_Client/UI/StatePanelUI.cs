@@ -23,6 +23,10 @@ public class StatePanelUI : MonoBehaviour
     // ※ OnEnable에서 Get 하지 않는다 — MonoService 주석의 초기화 순서 규칙 참조.
     private void Start()
     {
+        // 필수 참조 검증 — 미연결이면 여기서 멈춘다(WindowPanelUI와 같은 규칙).
+        this.RequireRef(nickNameText, nameof(nickNameText));
+        this.RequireRef(goldText,     nameof(goldText));
+
         _session = Services.Get<SessionManager>();
         Subscribe();
         Refresh(); // 이미 통지를 받은 뒤에 켜졌을 수 있다

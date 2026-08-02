@@ -15,6 +15,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약 -->
 
+- [2026-08-03 클라 로그 체계 정리 · 하트비트 · 가챠 갱신 통일 — 이슈 #8·#10](2026-08-03-client-log-and-heartbeat.md) — `ClientLog` 신설(`[↑송신]`/`[↓수신]` 태그 + 송신 훅) · `HeartbeatManager` 5초/15초 · 가챠를 `ApplyItemChanges` 하나로 통일 · ⚠️ **#10 서버 파트(세션 정리·pid kick)는 미착수** · `characterId` 기본값 1→1001(TID 1 폐기)
 - [2026-08-02 기획 문서·엑셀·코드 불일치 전수 정리](2026-08-02-doc-data-code-sync.md) — 아이템 30→156종 · `Hunting` enum · `ItemRarity` 개명 · 낚시의 오프라인/요일 잔존 정정 (문서 12개) · 🔴 **드롭 롤이 레벨을 무시해 Lv1에서 Lv5가 나온다**(T-017 최우선) · 코드는 미수정
 - [2026-08-02 기획 문서 의존 그래프 도입 — 재귀 전파 규칙과 검사기](2026-08-02-doc-graph-propagation.md) — `문서관계도.md`(그래프 단일 원본) + `check-doc-graph.ps1`(깨진 링크·**갱신일 역전**) · 문서 17개 헤더에 `바뀌면 갱신` 블록 · ⚠️ 블록은 그래프 계산에서 제외해야 한다(안 하면 간선이 양방향으로 번진다)
 - [2026-08-02 가챠 풀 엑셀 이관 + ItemRarity → GlobalRarity 개명 — 이슈 #9](2026-08-02-gacha-excel-migration.md) — `Gacha.xlsx → GachaTable`(Ref 검사) · 가챠 전용 아이템 6종(100001~) · 하드코딩 `GachaTable.cs` 폐기 → `GachaPoolCatalog` · ⚠️ `EGlobalRarity` 와이어 값 재정렬(서버·클라 동시 빌드 필수)

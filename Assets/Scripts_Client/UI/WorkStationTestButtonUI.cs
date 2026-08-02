@@ -32,8 +32,9 @@ public class WorkStationTestButtonUI : MonoBehaviour
     [SerializeField, Tooltip("이 버튼이 담당할 슬롯 번호 (0부터)")]
     private int slotIndex = 0;
 
-    [SerializeField, Tooltip("배치할 캐릭터 Id. 캐릭터가 TID 1 하나뿐이라 지금은 고정이다")]
-    private long characterId = 1;
+    // ⚠️ 배치에 넣는 캐릭터 값은 인스펙터에 적을 수 없다 — 서버가 발급한 개체 번호라 계정마다 다르다.
+    //    로그인 때 받은 보유 목록(SessionManager.Characters)에서 꺼내 쓴다.
+    //    캐릭터 선택 UI가 생기기 전까지는 첫 번째 캐릭터로 고정한다.
 
     // 드롭다운 항목 순서와 1:1로 대응하는 산업 목록. enum 값을 직접 인덱스로 쓰면
     // Misc·Special이 끼어 있어 어긋나므로 별도 목록으로 들고 있는다.
@@ -46,6 +47,11 @@ public class WorkStationTestButtonUI : MonoBehaviour
     // ※ OnEnable에서 Get 하지 않는다 — MonoService 주석의 초기화 순서 규칙 참조.
     private void Start()
     {
+        // 필수 참조 검증 — 미연결이면 여기서 멈춘다(WindowPanelUI와 같은 규칙).
+        this.RequireRef(assignButton,     nameof(assignButton));
+        this.RequireRef(buttonLabel,      nameof(buttonLabel));
+        this.RequireRef(industryDropdown, nameof(industryDropdown));
+
         _session = Services.Get<SessionManager>();
 
         BuildIndustryOptions();
@@ -123,7 +129,7 @@ public class WorkStationTestButtonUI : MonoBehaviour
         // 버튼이 8개라 라벨만 보고는 어느 슬롯인지 알 수 없다. 슬롯 번호를 항상 붙이고,
         // 배치 중일 때는 실제로 들어가 있는 캐릭터까지 보여 준다(인스펙터 값이 아니라 서버 값).
         buttonLabel.text = isAssigned
-            ? $"{slotIndex}슬롯 {slot!.CharacterId}캐릭 해제"
+            ? $"{slotIndex}슬롯 {_session.GetCharacterName(slot!.CharacterId)} 해제"
             : $"{slotIndex}슬롯 배치";
 
         industryDropdown.interactable = !isAssigned; // 배치된 슬롯은 산업을 바꿀 수 없다
@@ -152,16 +158,38 @@ public class WorkStationTestButtonUI : MonoBehaviour
     // 배치 또는 해제 요청 (assignButton OnClick에 코드로 연결)
     private void OnAssignButtonClicked()
     {
+        // 이미 배치돼 있으면 이 클릭은 해제다
         if (IsAssigned(FindSlot()))
         {
             _session.AssignWorkStation(slotIndex, 0, 0); // 산업·캐릭터 0 = 해제
-            Debug.Log($"[Client] Send WorkStationClear: slotIndex={slotIndex}");
+            ClientLog.Info(ClientLog.Send, $"작업슬롯 해제 요청 — 슬롯={slotIndex}");
             return;
         }
 
-        ItemType industry = _industries[industryDropdown.value];
+        // 비어 있으면 배치
+        // 드롭다운 항목은 BuildIndustryOptions가 채운다. 인스펙터에서 항목을 손으로 넣었거나
+        // 산업 enum이 바뀌면 개수가 어긋날 수 있어, 인덱스로 꺼내기 전에 확인한다.
+        int selected = industryDropdown.value;
+        if (selected < 0 || selected >= _industries.Count)
+        {
+            ClientLog.Error(ClientLog.UI,
+                $"산업 드롭다운 선택({selected})이 목록 범위(0~{_industries.Count - 1})를 벗어났다. " +
+                $"드롭다운 항목을 코드가 채우도록 비워 둘 것.", this);
+            return;
+        }
+
+        // 서버는 캐릭터 종류(TID)가 아니라 개체 번호를 받는다. 보유 목록에서 꺼낸다.
+        long characterId = _session.FirstCharacterId;
+        if (characterId == 0)
+        {
+            ClientLog.Error(ClientLog.UI,
+                "보유 캐릭터가 없어 배치할 수 없다 — 로그인이 끝났는지, 서버가 시작 캐릭터를 지급했는지 확인할 것.", this);
+            return;
+        }
+
+        ItemType industry = _industries[selected];
         _session.AssignWorkStation(slotIndex, (byte)industry, characterId);
-        Debug.Log($"[Client] Send WorkStationAssign: slotIndex={slotIndex}, industry={industry}, characterId={characterId}");
+        ClientLog.Info(ClientLog.Send, $"작업슬롯 배치 요청 — 슬롯={slotIndex}, 산업={industry}, 캐릭터개체={characterId}");
     }
 
     #endregion

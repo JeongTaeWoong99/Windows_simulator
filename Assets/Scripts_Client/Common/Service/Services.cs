@@ -23,8 +23,19 @@ public static class Services
     }
 
     // 역할 T의 구현을 가져온다 (미등록 시 예외 — 초기화 순서 버그를 즉시 드러낸다)
+    //
+    // 예외 메시지에 T와 흔한 원인을 적어 둔다. 기본 KeyNotFoundException은
+    // "주어진 키가 사전에 없습니다"만 말해서, 어떤 서비스가 없는지도 왜 없는지도 알려 주지 않는다.
     public static T Get<T>() where T : class
     {
-        return (T)_services[typeof(T)];
+        if (!_services.TryGetValue(typeof(T), out object service))
+        {
+            throw new KeyNotFoundException(
+                $"{typeof(T).Name}이(가) Services에 등록돼 있지 않다. " +
+                $"씬에 해당 오브젝트가 있는지, 그리고 조회를 Awake·OnEnable이 아니라 Start에서 하는지 확인할 것 " +
+                $"(등록 순서는 MonoService 주석 참조).");
+        }
+
+        return (T)service;
     }
 }

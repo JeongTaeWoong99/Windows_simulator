@@ -136,7 +136,7 @@ public class WidgetPositionLayout : MonoBehaviour
 
         // 일부만 연결된 상태만 경고한다 — 전부 비어 있으면 컴포넌트를 막 붙여 배선 전인 정상 상황이다.
         if (linked > 0 && linked < references.Length)
-            Debug.LogWarning($"[{nameof(WidgetPositionLayout)}] 인스펙터 참조가 일부만 연결돼 배치를 건너뛴다.", this);
+            ClientLog.Warn(ClientLog.UI, "인스펙터 참조가 일부만 연결돼 배치를 건너뛴다.", this);
 
         return linked == references.Length;
     }

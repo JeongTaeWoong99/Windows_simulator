@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using MikaProtocol;
 
@@ -27,8 +28,8 @@ public class PacketTestPanelUI : MonoBehaviour
     [SerializeField, Tooltip("배치할 산업. 현재 드롭 테이블이 있는 산업은 낚시(Fishing)뿐이다")]
     private GameData.ItemType _industry = GameData.ItemType.Fishing;
 
-    [SerializeField, Tooltip("배치할 캐릭터 Id. 캐릭터 시스템 전이라 서버는 0인지 아닌지만 본다")]
-    private long _characterId = 1;
+    // ⚠️ 배치에 넣는 캐릭터 값은 인스펙터에 적을 수 없다 — 서버가 발급한 개체 번호라 계정마다 다르다.
+    //    로그인 때 받은 보유 목록에서 꺼낸다(SessionManager.FirstCharacterId).
 
     // 세션 매니저(서비스 로케이터로 획득) — Start에서 한 번 확보해 캐시한다.
     //
@@ -102,29 +103,37 @@ public class PacketTestPanelUI : MonoBehaviour
     public void SendLogin()
     {
         _session.Login(_loginId);
-        Debug.Log($"[Client] Send Login: id={_loginId}");
+        ClientLog.Info(ClientLog.Send, $"로그인 요청 — Id={_loginId}");
     }
 
     // 단차(1회) 가챠 요청 (GachaSingleBtn OnClick에 할당)
     public void SendGachaSingle()
     {
         _session.DrawGacha(_gachaId, 1);
-        Debug.Log($"[Client] Send Gacha: gachaId={_gachaId}, drawCount=1");
+        ClientLog.Info(ClientLog.Send, $"가챠 요청 — 풀={_gachaId}, 1회");
     }
 
     // 10연차 가챠 요청 (GachaTenBtn OnClick에 할당)
     public void SendGachaTen()
     {
         _session.DrawGacha(_gachaId, 10);
-        Debug.Log($"[Client] Send Gacha: gachaId={_gachaId}, drawCount=10");
+        ClientLog.Info(ClientLog.Send, $"가챠 요청 — 풀={_gachaId}, 10회");
     }
 
     // 작업슬롯 배치 요청 (WorkStationAssignBtn OnClick에 할당)
     // 이걸 눌러야 서버가 해당 슬롯을 판정 대상으로 잡고 30초마다 채취 결과를 밀어 준다.
     public void SendWorkStationAssign()
     {
-        _session.AssignWorkStation(_slotIndex, (byte)_industry, _characterId);
-        Debug.Log($"[Client] Send WorkStationAssign: slotIndex={_slotIndex}, industry={_industry}, characterId={_characterId}");
+        // 서버는 캐릭터 종류(TID)가 아니라 개체 번호를 받는다. 보유 목록에서 꺼낸다.
+        long characterId = _session.FirstCharacterId;
+        if (characterId == 0)
+        {
+            ClientLog.Error(ClientLog.UI, "보유 캐릭터가 없어 배치할 수 없다 — 로그인부터 할 것.", this);
+            return;
+        }
+
+        _session.AssignWorkStation(_slotIndex, (byte)_industry, characterId);
+        ClientLog.Info(ClientLog.Send, $"작업슬롯 배치 요청 — 슬롯={_slotIndex}, 산업={_industry}, 캐릭터개체={characterId}");
     }
 
     // 작업슬롯 해제 요청 (WorkStationClearBtn OnClick에 할당)
@@ -132,7 +141,7 @@ public class PacketTestPanelUI : MonoBehaviour
     public void SendWorkStationClear()
     {
         _session.AssignWorkStation(_slotIndex, 0, 0);
-        Debug.Log($"[Client] Send WorkStationClear: slotIndex={_slotIndex}");
+        ClientLog.Info(ClientLog.Send, $"작업슬롯 해제 요청 — 슬롯={_slotIndex}");
     }
 
     #endregion
@@ -142,7 +151,13 @@ public class PacketTestPanelUI : MonoBehaviour
     // 로그인 결과 (LoginCompleted 구독)
     private void OnLoginCompleted(bool success)
     {
-        Debug.Log($"[Client] 로그인 {(success ? "성공" : "실패")} — sessionId={_session.SessionId}");
+        if (!success)
+        {
+            ClientLog.Warn(ClientLog.UI, "로그인 실패 — 이후 가챠·작업슬롯 요청은 서버가 처리하지 않는다");
+            return;
+        }
+
+        ClientLog.Info(ClientLog.UI, $"로그인 성공 — 세션ID={_session.SessionId}");
     }
 
     // 인벤토리 갱신 (InventoryChanged 구독)
@@ -151,28 +166,49 @@ public class PacketTestPanelUI : MonoBehaviour
         var inventory = _session.Inventory;
         if (inventory.Count == 0)
         {
-            Debug.Log("[Client] 인벤토리 비어있음");
+            ClientLog.Info(ClientLog.UI, "인벤토리 비어 있음");
             return;
         }
 
-        Debug.Log($"[Client] 인벤토리 {inventory.Count}종:");
+        var lines = new StringBuilder($"인벤토리 {inventory.Count}종");
         foreach (var item in inventory)
-            Debug.Log($"    itemId={item.ItemId}, count={item.Count}");
+            lines.Append($"\n    {GameDataLoader.GetItemName(item.ItemId)}(#{item.ItemId}) × {item.Count}");
+
+        ClientLog.Info(ClientLog.UI, lines.ToString());
     }
 
     // 가챠 결과 (GachaCompleted 구독)
+    // ※ 여기 오는 Rewards는 연출용(이번에 뽑힌 것)이다. 인벤토리 수량은 SessionManager가
+    //   같은 패킷의 ItemChangeInfos(누적 총량)로 이미 반영했다 — 이 값을 더하면 두 배가 된다.
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
-        Debug.Log($"[Client] 가챠 결과 {rewards.Count}개:");
+        if (rewards.Count == 0)
+        {
+            ClientLog.Warn(ClientLog.UI, "가챠 성공 응답인데 보상이 비어 있다 — 서버 가챠 풀을 확인할 것");
+            return;
+        }
+
+        var lines = new StringBuilder($"가챠 결과 {rewards.Count}개");
         foreach (var reward in rewards)
-            Debug.Log($"    itemId={reward.ItemId}, count={reward.Count}, rarity={reward.Rarity}");
+            lines.Append($"\n    [{reward.Rarity}] {GameDataLoader.GetItemName(reward.ItemId)}(#{reward.ItemId}) × {reward.Count}");
+
+        ClientLog.Info(ClientLog.UI, lines.ToString());
     }
 
     // 작업슬롯 변경 결과 (WorkStationAssignCompleted 구독)
     // 배치와 해제가 같은 패킷이라 "성공"만 찍으면 둘을 구분할 수 없다.
     private void OnWorkStationAssignCompleted(bool success, bool wasAssign)
     {
-        Debug.Log($"[Client] 작업슬롯 {(wasAssign ? "배치" : "해제")} {(success ? "성공" : "실패")}");
+        string action = wasAssign ? "배치" : "해제";
+
+        if (!success)
+        {
+            // 실패 사유(결과 코드)는 SessionManager가 수신 시점에 이미 남긴다. 여기선 무엇을 하려 했는지만.
+            ClientLog.Warn(ClientLog.UI, $"작업슬롯 {action} 실패");
+            return;
+        }
+
+        ClientLog.Info(ClientLog.UI, $"작업슬롯 {action} 성공");
     }
 
     // 작업슬롯 갱신 (WorkStationSlotsChanged 구독)
@@ -181,27 +217,41 @@ public class PacketTestPanelUI : MonoBehaviour
         var slots = _session.WorkStationSlots;
         if (slots.Count == 0)
         {
-            Debug.Log("[Client] 작업슬롯 없음");
+            ClientLog.Info(ClientLog.UI, "작업슬롯 없음");
             return;
         }
 
-        Debug.Log($"[Client] 작업슬롯 {slots.Count}칸:");
+        var lines = new StringBuilder($"작업슬롯 {slots.Count}칸");
         foreach (var slot in slots)
-            Debug.Log($"    slotIndex={slot.SlotIndex}, industry={(GameData.ItemType)slot.Industry}, characterId={slot.CharacterId}, lastTickAtUnix={slot.LastTickAtUnix}");
+        {
+            // 빈 슬롯은 캐릭터가 0이다. 이름을 조회하면 ?#0이 나오므로 "비어 있음"으로 적는다.
+            string character = slot.CharacterId != 0
+                ? $"{_session.GetCharacterName(slot.CharacterId)}(개체 {slot.CharacterId})"
+                : "없음";
+
+            lines.Append($"\n    {slot.SlotIndex}번 — 산업={(GameData.ItemType)slot.Industry}, " +
+                         $"캐릭터={character}, 마지막판정={slot.LastTickAtUnix}");
+        }
+
+        ClientLog.Info(ClientLog.UI, lines.ToString());
     }
 
     // 채취 결과 푸시 (GatherResultReceived 구독)
-    // 30초 주기가 실제로 도는지는 로그의 시각 간격으로 확인한다.
+    // 주기가 실제로 도는지는 로그의 시각 간격으로 확인한다.
     private void OnGatherResultReceived(S_GatherResultResponse res)
     {
         var changes = res.ItemChanges;
-        Debug.Log($"[Client] [{System.DateTime.Now:HH:mm:ss}] 채취 결과 — slotIndex={res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changes?.Count ?? 0}건:");
 
-        if (changes == null)
-            return;
+        var lines = new StringBuilder(
+            $"[{System.DateTime.Now:HH:mm:ss}] 채취 결과 — 슬롯 {res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changes?.Count ?? 0}건");
 
-        foreach (var change in changes)
-            Debug.Log($"    itemId={change.ItemId}, count={change.Count}, kind={change.Kind}");
+        if (changes != null)
+        {
+            foreach (var change in changes)
+                lines.Append($"\n    {GameDataLoader.GetItemName(change.ItemId)}(#{change.ItemId}) → 총 {change.Count} ({change.Kind})");
+        }
+
+        ClientLog.Info(ClientLog.UI, lines.ToString());
     }
 
     #endregion
