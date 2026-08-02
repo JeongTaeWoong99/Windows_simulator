@@ -75,9 +75,10 @@ public class CharacterTest
     }
 
     [Fact]
-    public void 기본_캐릭터_TID는_1이다()
+    public void 시작_캐릭터_TID는_1001이다()
     {
         // 2~1000번은 예약 대역이고 일반 캐릭터는 1001부터다.
-        User.DefaultCharacterTid.ShouldBe(1);
+        // 구 TID 1('기본 캐릭터')은 폐기 예정이라 시작 지급이 1001로 옮겨졌다.
+        User.DefaultCharacterTid.ShouldBe(1001);
     }
 }

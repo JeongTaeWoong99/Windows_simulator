@@ -5,8 +5,12 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>신규 유저에게 지급하는 기본 캐릭터. 2~1000번은 예약 대역이고 일반 캐릭터는 1001부터다.</summary>
-    public const int DefaultCharacterTid = 1;
+    /// <summary>
+    /// 신규 유저에게 지급하는 시작 캐릭터. 2~1000번은 예약 대역이고 일반 캐릭터는 1001부터다.
+    /// <b>전 산업 적성이 1 이상인 캐릭터여야 한다</b> — 적성 0인 산업은 배치가 막히므로,
+    /// 시작 캐릭터에 0이 섞이면 신규 유저는 그 산업을 아예 시작하지 못한다.
+    /// </summary>
+    public const int DefaultCharacterTid = 1001;
 
     /// <summary>
     /// 유저가 소유한 캐릭터 개체들. 키는 <b>개체 PK</b>(<c>t_character.character_id</c>)이며 TID가 아니다.
