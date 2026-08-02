@@ -46,7 +46,7 @@ public class Program
             EnumGenerator.MakeEnumCode(enumOutputPath);
 
             Console.WriteLine($"ItemType.Farming 존재? {EnumGenerator.HasMember("ItemType", "Farming")}");
-            Console.WriteLine($"ItemRarity.Mythic 존재? {EnumGenerator.HasMember("ItemRarity", "Mythic")}");
+            Console.WriteLine($"GlobalRarity.Mythic 존재? {EnumGenerator.HasMember("GlobalRarity", "Mythic")}");
 
             // 2) 데이터 테이블 파싱 → 참조 무결성 검사 → Row/Packer 코드 생성
             //    참조 검사는 코드 생성 전에 둔다. 끊어진 TID로 만들어진 .bytes가 서버에 배포되면

@@ -3,7 +3,7 @@
     "ItemTID": 10001,
     "Name": "붕어",
     "ItemType": "Fishing",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -11,7 +11,7 @@
     "ItemTID": 10002,
     "Name": "잉어",
     "ItemType": "Fishing",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -19,7 +19,7 @@
     "ItemTID": 10003,
     "Name": "월척 붕어",
     "ItemType": "Fishing",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -27,7 +27,7 @@
     "ItemTID": 10004,
     "Name": "향어",
     "ItemType": "Fishing",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -35,7 +35,7 @@
     "ItemTID": 10005,
     "Name": "대물 잉어",
     "ItemType": "Fishing",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -43,7 +43,7 @@
     "ItemTID": 10006,
     "Name": "전설의 잉어",
     "ItemType": "Fishing",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "개울(Lv1)"
   },
@@ -51,7 +51,7 @@
     "ItemTID": 20001,
     "Name": "밀",
     "ItemType": "Farming",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -59,7 +59,7 @@
     "ItemTID": 20002,
     "Name": "감자",
     "ItemType": "Farming",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -67,7 +67,7 @@
     "ItemTID": 20003,
     "Name": "옥수수",
     "ItemType": "Farming",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -75,7 +75,7 @@
     "ItemTID": 20004,
     "Name": "인삼",
     "ItemType": "Farming",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -83,7 +83,7 @@
     "ItemTID": 20005,
     "Name": "변종 인삼",
     "ItemType": "Farming",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -91,7 +91,7 @@
     "ItemTID": 20006,
     "Name": "태초의 씨앗",
     "ItemType": "Farming",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "텃밭(Lv1)"
   },
@@ -99,7 +99,7 @@
     "ItemTID": 30001,
     "Name": "잡목",
     "ItemType": "Logging",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -107,7 +107,7 @@
     "ItemTID": 30002,
     "Name": "소나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -115,7 +115,7 @@
     "ItemTID": 30003,
     "Name": "참나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -123,7 +123,7 @@
     "ItemTID": 30004,
     "Name": "흑단 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -131,7 +131,7 @@
     "ItemTID": 30005,
     "Name": "고급 원목",
     "ItemType": "Logging",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -139,7 +139,7 @@
     "ItemTID": 30006,
     "Name": "세계수 가지",
     "ItemType": "Logging",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "잡목림(Lv1)"
   },
@@ -147,7 +147,7 @@
     "ItemTID": 40001,
     "Name": "돌덩어리",
     "ItemType": "Mining",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -155,7 +155,7 @@
     "ItemTID": 40002,
     "Name": "구리 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -163,7 +163,7 @@
     "ItemTID": 40003,
     "Name": "은광석",
     "ItemType": "Mining",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -171,7 +171,7 @@
     "ItemTID": 40004,
     "Name": "금광석",
     "ItemType": "Mining",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -179,7 +179,7 @@
     "ItemTID": 40005,
     "Name": "보석 원석",
     "ItemType": "Mining",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -187,7 +187,7 @@
     "ItemTID": 40006,
     "Name": "심연의 원석",
     "ItemType": "Mining",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "노천 광산(Lv1)"
   },
@@ -195,7 +195,7 @@
     "ItemTID": 50001,
     "Name": "질긴 고기",
     "ItemType": "Hunting",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -203,7 +203,7 @@
     "ItemTID": 50002,
     "Name": "토끼 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -211,7 +211,7 @@
     "ItemTID": 50003,
     "Name": "늑대 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -219,7 +219,7 @@
     "ItemTID": 50004,
     "Name": "곰 모피",
     "ItemType": "Hunting",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -227,7 +227,7 @@
     "ItemTID": 50005,
     "Name": "거대한 뿔",
     "ItemType": "Hunting",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -235,7 +235,7 @@
     "ItemTID": 50006,
     "Name": "마수의 심장",
     "ItemType": "Hunting",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "들판(Lv1)"
   },
@@ -243,7 +243,7 @@
     "ItemTID": 10011,
     "Name": "피라미",
     "ItemType": "Fishing",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -251,7 +251,7 @@
     "ItemTID": 10012,
     "Name": "메기",
     "ItemType": "Fishing",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -259,7 +259,7 @@
     "ItemTID": 10013,
     "Name": "가물치",
     "ItemType": "Fishing",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -267,7 +267,7 @@
     "ItemTID": 10014,
     "Name": "백년 메기",
     "ItemType": "Fishing",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -275,7 +275,7 @@
     "ItemTID": 10015,
     "Name": "저수지의 주인",
     "ItemType": "Fishing",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -283,7 +283,7 @@
     "ItemTID": 10016,
     "Name": "용왕의 사자",
     "ItemType": "Fishing",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "저수지(Lv2)"
   },
@@ -291,7 +291,7 @@
     "ItemTID": 10021,
     "Name": "모래무지",
     "ItemType": "Fishing",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -299,7 +299,7 @@
     "ItemTID": 10022,
     "Name": "쏘가리",
     "ItemType": "Fishing",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -307,7 +307,7 @@
     "ItemTID": 10023,
     "Name": "황금 잉어",
     "ItemType": "Fishing",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -315,7 +315,7 @@
     "ItemTID": 10024,
     "Name": "강의 수호자",
     "ItemType": "Fishing",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -323,7 +323,7 @@
     "ItemTID": 10025,
     "Name": "천년 쏘가리",
     "ItemType": "Fishing",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -331,7 +331,7 @@
     "ItemTID": 10026,
     "Name": "강신의 비늘",
     "ItemType": "Fishing",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "강 하류(Lv3)"
   },
@@ -339,7 +339,7 @@
     "ItemTID": 10031,
     "Name": "빙어",
     "ItemType": "Fishing",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -347,7 +347,7 @@
     "ItemTID": 10032,
     "Name": "송어",
     "ItemType": "Fishing",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -355,7 +355,7 @@
     "ItemTID": 10033,
     "Name": "무지개 송어",
     "ItemType": "Fishing",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -363,7 +363,7 @@
     "ItemTID": 10034,
     "Name": "호수의 눈",
     "ItemType": "Fishing",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -371,7 +371,7 @@
     "ItemTID": 10035,
     "Name": "심층 대어",
     "ItemType": "Fishing",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -379,7 +379,7 @@
     "ItemTID": 10036,
     "Name": "호수의 심장",
     "ItemType": "Fishing",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "호수(Lv4)"
   },
@@ -387,7 +387,7 @@
     "ItemTID": 10041,
     "Name": "심해 새우",
     "ItemType": "Fishing",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -395,7 +395,7 @@
     "ItemTID": 10042,
     "Name": "아귀",
     "ItemType": "Fishing",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -403,7 +403,7 @@
     "ItemTID": 10043,
     "Name": "심해 등불고기",
     "ItemType": "Fishing",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -411,7 +411,7 @@
     "ItemTID": 10044,
     "Name": "대왕오징어",
     "ItemType": "Fishing",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -419,7 +419,7 @@
     "ItemTID": 10045,
     "Name": "해구의 지배자",
     "ItemType": "Fishing",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -427,7 +427,7 @@
     "ItemTID": 10046,
     "Name": "리바이어던의 조각",
     "ItemType": "Fishing",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "심해(Lv5)"
   },
@@ -435,7 +435,7 @@
     "ItemTID": 20011,
     "Name": "보리",
     "ItemType": "Farming",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -443,7 +443,7 @@
     "ItemTID": 20012,
     "Name": "고구마",
     "ItemType": "Farming",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -451,7 +451,7 @@
     "ItemTID": 20013,
     "Name": "호박",
     "ItemType": "Farming",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -459,7 +459,7 @@
     "ItemTID": 20014,
     "Name": "백년초",
     "ItemType": "Farming",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -467,7 +467,7 @@
     "ItemTID": 20015,
     "Name": "황금 호박",
     "ItemType": "Farming",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -475,7 +475,7 @@
     "ItemTID": 20016,
     "Name": "불멸의 뿌리",
     "ItemType": "Farming",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "밭(Lv2)"
   },
@@ -483,7 +483,7 @@
     "ItemTID": 20021,
     "Name": "벼",
     "ItemType": "Farming",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -491,7 +491,7 @@
     "ItemTID": 20022,
     "Name": "콩",
     "ItemType": "Farming",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -499,7 +499,7 @@
     "ItemTID": 20023,
     "Name": "딸기",
     "ItemType": "Farming",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -507,7 +507,7 @@
     "ItemTID": 20024,
     "Name": "산삼",
     "ItemType": "Farming",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -515,7 +515,7 @@
     "ItemTID": 20025,
     "Name": "천년 산삼",
     "ItemType": "Farming",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -523,7 +523,7 @@
     "ItemTID": 20026,
     "Name": "생명의 열매",
     "ItemType": "Farming",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "농장(Lv3)"
   },
@@ -531,7 +531,7 @@
     "ItemTID": 20031,
     "Name": "목화",
     "ItemType": "Farming",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -539,7 +539,7 @@
     "ItemTID": 20032,
     "Name": "사탕수수",
     "ItemType": "Farming",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -547,7 +547,7 @@
     "ItemTID": 20033,
     "Name": "커피 열매",
     "ItemType": "Farming",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -555,7 +555,7 @@
     "ItemTID": 20034,
     "Name": "흑진주 포도",
     "ItemType": "Farming",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -563,7 +563,7 @@
     "ItemTID": 20035,
     "Name": "무지개 밀",
     "ItemType": "Farming",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -571,7 +571,7 @@
     "ItemTID": 20036,
     "Name": "세계수의 씨앗",
     "ItemType": "Farming",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "대농장(Lv4)"
   },
@@ -579,7 +579,7 @@
     "ItemTID": 20041,
     "Name": "정화된 흙",
     "ItemType": "Farming",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -587,7 +587,7 @@
     "ItemTID": 20042,
     "Name": "성스러운 이삭",
     "ItemType": "Farming",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -595,7 +595,7 @@
     "ItemTID": 20043,
     "Name": "영약초",
     "ItemType": "Farming",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -603,7 +603,7 @@
     "ItemTID": 20044,
     "Name": "신월초",
     "ItemType": "Farming",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -611,7 +611,7 @@
     "ItemTID": 20045,
     "Name": "신들의 곡식",
     "ItemType": "Farming",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -619,7 +619,7 @@
     "ItemTID": 20046,
     "Name": "창세의 열매",
     "ItemType": "Farming",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "신성한 대지(Lv5)"
   },
@@ -627,7 +627,7 @@
     "ItemTID": 30011,
     "Name": "잔가지",
     "ItemType": "Logging",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -635,7 +635,7 @@
     "ItemTID": 30012,
     "Name": "삼나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -643,7 +643,7 @@
     "ItemTID": 30013,
     "Name": "편백나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -651,7 +651,7 @@
     "ItemTID": 30014,
     "Name": "홍송 원목",
     "ItemType": "Logging",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -659,7 +659,7 @@
     "ItemTID": 30015,
     "Name": "천년 소나무",
     "ItemType": "Logging",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -667,7 +667,7 @@
     "ItemTID": 30016,
     "Name": "숲의 정령목",
     "ItemType": "Logging",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "소나무 숲(Lv2)"
   },
@@ -675,7 +675,7 @@
     "ItemTID": 30021,
     "Name": "도토리 가지",
     "ItemType": "Logging",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -683,7 +683,7 @@
     "ItemTID": 30022,
     "Name": "너도밤나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -691,7 +691,7 @@
     "ItemTID": 30023,
     "Name": "단풍나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -699,7 +699,7 @@
     "ItemTID": 30024,
     "Name": "고목의 심재",
     "ItemType": "Logging",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -707,7 +707,7 @@
     "ItemTID": 30025,
     "Name": "백년 참나무",
     "ItemType": "Logging",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -715,7 +715,7 @@
     "ItemTID": 30026,
     "Name": "대지의 뿌리",
     "ItemType": "Logging",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "참나무 숲(Lv3)"
   },
@@ -723,7 +723,7 @@
     "ItemTID": 30031,
     "Name": "그을린 통나무",
     "ItemType": "Logging",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -731,7 +731,7 @@
     "ItemTID": 30032,
     "Name": "흑참나무 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -739,7 +739,7 @@
     "ItemTID": 30033,
     "Name": "자단 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -747,7 +747,7 @@
     "ItemTID": 30034,
     "Name": "마력 깃든 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -755,7 +755,7 @@
     "ItemTID": 30035,
     "Name": "흑림의 고목",
     "ItemType": "Logging",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -763,7 +763,7 @@
     "ItemTID": 30036,
     "Name": "어둠나무의 핵",
     "ItemType": "Logging",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "흑림(Lv4)"
   },
@@ -771,7 +771,7 @@
     "ItemTID": 30041,
     "Name": "세계수 껍질",
     "ItemType": "Logging",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -779,7 +779,7 @@
     "ItemTID": 30042,
     "Name": "빛나는 수액",
     "ItemType": "Logging",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -787,7 +787,7 @@
     "ItemTID": 30043,
     "Name": "신목 목재",
     "ItemType": "Logging",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -795,7 +795,7 @@
     "ItemTID": 30044,
     "Name": "영원의 나이테",
     "ItemType": "Logging",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -803,7 +803,7 @@
     "ItemTID": 30045,
     "Name": "세계수 심재",
     "ItemType": "Logging",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -811,7 +811,7 @@
     "ItemTID": 30046,
     "Name": "창세목의 조각",
     "ItemType": "Logging",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "세계수 뿌리(Lv5)"
   },
@@ -819,7 +819,7 @@
     "ItemTID": 40011,
     "Name": "석회암",
     "ItemType": "Mining",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -827,7 +827,7 @@
     "ItemTID": 40012,
     "Name": "주석 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -835,7 +835,7 @@
     "ItemTID": 40013,
     "Name": "철광석",
     "ItemType": "Mining",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -843,7 +843,7 @@
     "ItemTID": 40014,
     "Name": "백금 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -851,7 +851,7 @@
     "ItemTID": 40015,
     "Name": "청옥 원석",
     "ItemType": "Mining",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -859,7 +859,7 @@
     "ItemTID": 40016,
     "Name": "지맥의 결정",
     "ItemType": "Mining",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "갱도(Lv2)"
   },
@@ -867,7 +867,7 @@
     "ItemTID": 40021,
     "Name": "현무암",
     "ItemType": "Mining",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -875,7 +875,7 @@
     "ItemTID": 40022,
     "Name": "아연 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -883,7 +883,7 @@
     "ItemTID": 40023,
     "Name": "미스릴 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -891,7 +891,7 @@
     "ItemTID": 40024,
     "Name": "홍옥 원석",
     "ItemType": "Mining",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -899,7 +899,7 @@
     "ItemTID": 40025,
     "Name": "흑요석 결정",
     "ItemType": "Mining",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -907,7 +907,7 @@
     "ItemTID": 40026,
     "Name": "대지의 핵",
     "ItemType": "Mining",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "심층 갱도(Lv3)"
   },
@@ -915,7 +915,7 @@
     "ItemTID": 40031,
     "Name": "수정 파편",
     "ItemType": "Mining",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -923,7 +923,7 @@
     "ItemTID": 40032,
     "Name": "코발트 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -931,7 +931,7 @@
     "ItemTID": 40033,
     "Name": "오리하르콘 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -939,7 +939,7 @@
     "ItemTID": 40034,
     "Name": "자수정 원석",
     "ItemType": "Mining",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -947,7 +947,7 @@
     "ItemTID": 40035,
     "Name": "별빛 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -955,7 +955,7 @@
     "ItemTID": 40036,
     "Name": "공동의 심장",
     "ItemType": "Mining",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "지하 대공동(Lv4)"
   },
@@ -963,7 +963,7 @@
     "ItemTID": 40041,
     "Name": "심연의 파편",
     "ItemType": "Mining",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -971,7 +971,7 @@
     "ItemTID": 40042,
     "Name": "암흑 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -979,7 +979,7 @@
     "ItemTID": 40043,
     "Name": "아다만트 광석",
     "ItemType": "Mining",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -987,7 +987,7 @@
     "ItemTID": 40044,
     "Name": "심연의 수정",
     "ItemType": "Mining",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -995,7 +995,7 @@
     "ItemTID": 40045,
     "Name": "용해된 별의 조각",
     "ItemType": "Mining",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -1003,7 +1003,7 @@
     "ItemTID": 40046,
     "Name": "세계의 축",
     "ItemType": "Mining",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "심연(Lv5)"
   },
@@ -1011,7 +1011,7 @@
     "ItemTID": 50011,
     "Name": "여우 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1019,7 +1019,7 @@
     "ItemTID": 50012,
     "Name": "멧돼지 엄니",
     "ItemType": "Hunting",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1027,7 +1027,7 @@
     "ItemTID": 50013,
     "Name": "사슴뿔",
     "ItemType": "Hunting",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1035,7 +1035,7 @@
     "ItemTID": 50014,
     "Name": "산군의 발톱",
     "ItemType": "Hunting",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1043,7 +1043,7 @@
     "ItemTID": 50015,
     "Name": "백호의 털",
     "ItemType": "Hunting",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1051,7 +1051,7 @@
     "ItemTID": 50016,
     "Name": "산신의 인장",
     "ItemType": "Hunting",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "야산(Lv2)"
   },
@@ -1059,7 +1059,7 @@
     "ItemTID": 50021,
     "Name": "표범 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1067,7 +1067,7 @@
     "ItemTID": 50022,
     "Name": "큰뿔 사슴뿔",
     "ItemType": "Hunting",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1075,7 +1075,7 @@
     "ItemTID": 50023,
     "Name": "곰의 이빨",
     "ItemType": "Hunting",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1083,7 +1083,7 @@
     "ItemTID": 50024,
     "Name": "숲괴수의 발톱",
     "ItemType": "Hunting",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1091,7 +1091,7 @@
     "ItemTID": 50025,
     "Name": "고대 짐승의 뼈",
     "ItemType": "Hunting",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1099,7 +1099,7 @@
     "ItemTID": 50026,
     "Name": "숲 지배자의 눈",
     "ItemType": "Hunting",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "깊은 숲(Lv3)"
   },
@@ -1107,7 +1107,7 @@
     "ItemTID": 50031,
     "Name": "설표 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1115,7 +1115,7 @@
     "ItemTID": 50032,
     "Name": "얼음늑대 송곳니",
     "ItemType": "Hunting",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1123,7 +1123,7 @@
     "ItemTID": 50033,
     "Name": "서리곰 모피",
     "ItemType": "Hunting",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1131,7 +1131,7 @@
     "ItemTID": 50034,
     "Name": "빙룡의 비늘",
     "ItemType": "Hunting",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1139,7 +1139,7 @@
     "ItemTID": 50035,
     "Name": "설산 주인의 뿔",
     "ItemType": "Hunting",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1147,7 +1147,7 @@
     "ItemTID": 50036,
     "Name": "영구동토의 심장",
     "ItemType": "Hunting",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "설산(Lv4)"
   },
@@ -1155,7 +1155,7 @@
     "ItemTID": 50041,
     "Name": "마수의 가죽",
     "ItemType": "Hunting",
-    "ItemRarity": "Common",
+    "GlobalRarity": "Common",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
   },
@@ -1163,7 +1163,7 @@
     "ItemTID": 50042,
     "Name": "마물의 뿔",
     "ItemType": "Hunting",
-    "ItemRarity": "Uncommon",
+    "GlobalRarity": "Uncommon",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
   },
@@ -1171,7 +1171,7 @@
     "ItemTID": 50043,
     "Name": "흉수의 송곳니",
     "ItemType": "Hunting",
-    "ItemRarity": "Rare",
+    "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
   },
@@ -1179,7 +1179,7 @@
     "ItemTID": 50044,
     "Name": "마수왕의 갈기",
     "ItemType": "Hunting",
-    "ItemRarity": "Epic",
+    "GlobalRarity": "Epic",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
   },
@@ -1187,7 +1187,7 @@
     "ItemTID": 50045,
     "Name": "심연수의 눈",
     "ItemType": "Hunting",
-    "ItemRarity": "Legendary",
+    "GlobalRarity": "Legendary",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
   },
@@ -1195,8 +1195,56 @@
     "ItemTID": 50046,
     "Name": "마신의 파편",
     "ItemType": "Hunting",
-    "ItemRarity": "Mythic",
+    "GlobalRarity": "Mythic",
     "MaxStack": 9999,
     "Description": "마수의 영역(Lv5)"
+  },
+  {
+    "ItemTID": 100001,
+    "Name": "유리 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Common",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
+  },
+  {
+    "ItemTID": 100002,
+    "Name": "호박 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
+  },
+  {
+    "ItemTID": 100003,
+    "Name": "진주 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
+  },
+  {
+    "ItemTID": 100004,
+    "Name": "오팔 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Epic",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
+  },
+  {
+    "ItemTID": 100005,
+    "Name": "용안 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Legendary",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
+  },
+  {
+    "ItemTID": 100006,
+    "Name": "창세의 구슬",
+    "ItemType": "Special",
+    "GlobalRarity": "Mythic",
+    "MaxStack": 9999,
+    "Description": "가챠 전용(테스트)"
   }
 ]

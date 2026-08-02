@@ -8,13 +8,16 @@ namespace MikaProtocol
         Remove = 3,
     }
 
-    // 가챠 결과 아이템의 등급(뽑기 연출용)
-    public enum EItemRarity : byte
+    // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —
+    // 서버가 테이블 값을 byte 캐스팅으로 그대로 실어 보내기 때문이다.
+    public enum EGlobalRarity : byte
     {
         None = 0,
         Common = 1,
-        Rare = 2,
-        Epic = 3,
-        Legendary = 4,
+        Uncommon = 2,
+        Rare = 3,
+        Epic = 4,
+        Legendary = 5,
+        Mythic = 6,
     }
 }

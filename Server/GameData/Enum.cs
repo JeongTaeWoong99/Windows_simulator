@@ -19,7 +19,7 @@ namespace GameData
         Max    ,
     };
 
-    public enum ItemRarity : byte
+    public enum GlobalRarity : byte
     {
         None      = 0,
 

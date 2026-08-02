@@ -15,6 +15,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약 -->
 
+- [2026-08-02 가챠 풀 엑셀 이관 + ItemRarity → GlobalRarity 개명 — 이슈 #9](2026-08-02-gacha-excel-migration.md) — `Gacha.xlsx → GachaTable`(Ref 검사) · 가챠 전용 아이템 6종(100001~) · 하드코딩 `GachaTable.cs` 폐기 → `GachaPoolCatalog` · ⚠️ `EGlobalRarity` 와이어 값 재정렬(서버·클라 동시 빌드 필수)
 - [2026-08-02 가챠 응답에 인벤토리 변경분(누적 총량) 포함 — 이슈 #8](2026-08-02-gacha-item-change-notify.md) — `S_GachaDrawResponse.ItemChangeInfos` 추가 · `ItemChangeInfo` 주석 정정(값은 원래 총량) · 클라 `AddGachaRewards` 제거는 클라 담당 몫 · Inventory 회귀 테스트 3건
 - [2026-08-02 로그인 Load 경로를 Row 기반으로 리팩토링](2026-08-02-login-load-row-refactor.md) — Row 계약(`PlayerLoginData`) + 영역별 `Load*` 분리 · Dapper 래퍼 `DbConnection` · **Row는 프로퍼티 record + 컬럼명 그대로(snake_case), 매핑 옵션 OFF** · 신규 지급은 로직 스레드로 이동(`Login`은 지급 후)
 - [2026-08-01 게임 UI 캔버스 골격 확정 — 16:9 배율 창 · 3열 정렬 · 렌더 모드](2026-08-01-ui-canvas-skeleton.md) — 캔버스 4→3개(위젯은 패널) · **LayoutGroup은 root Canvas를 못 움직인다 → nested Canvas** · Overlay→Screen Space-Camera · `WindowManager` 1:2 세로 → 16:9 절대 배율

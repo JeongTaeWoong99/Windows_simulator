@@ -41,7 +41,7 @@ namespace MikaProtocol
     {
         public int ItemId { get; set; }
         public int Count  { get; set; }        // 이번에 획득한 수량
-        public EItemRarity Rarity { get; set; } // 연출용 등급
+        public EGlobalRarity Rarity { get; set; } // 연출용 등급
     }
 
     /// <summary>
