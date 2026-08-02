@@ -45,6 +45,21 @@ namespace MikaProtocol
     }
 
     /// <summary>
+    /// 보유 캐릭터 개체 하나.
+    /// <c>CharacterId</c>는 DB 발급 개체 PK, <c>CharacterTid</c>는 테이블 정의 —
+    /// 같은 캐릭터(TID)를 여러 장 가질 수 있으므로 배치·식별은 반드시 <c>CharacterId</c>로 한다.
+    /// 이름·적성 같은 고정값은 내려보내지 않는다 — 클라이언트가 <c>CharacterTable</c>에서 TID로 읽는다.
+    /// </summary>
+    [MemoryPackable]
+    public partial class CharacterInfo
+    {
+        public long CharacterId  { get; set; }
+        public int  CharacterTid { get; set; }
+        public int  Level        { get; set; }
+        public int  Exp          { get; set; }
+    }
+
+    /// <summary>
     /// 작업슬롯 한 칸의 상태.
     /// 뒤쪽 세 값은 클라이언트가 <b>다음 채취까지 남은 시간을 로컬에서 계산</b>하라고 준다.
     /// 그 카운트다운은 연출일 뿐이고, 실제로 몇 개가 나왔는지는 서버가 정한다.

@@ -45,6 +45,7 @@ namespace MikaProtocol
         S_WorkStationSlotsResponse = 14,
         S_GatherResultResponse = 15,
         S_CurrencyResponse = 16,
+        S_CharacterListResponse = 17,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -172,6 +173,19 @@ namespace MikaProtocol
     public partial class S_CurrencyResponse : IPacket
     {
         public List<CurrencyInfo>? Currencies { get; set; }
+    }
+
+    // ───────────────────────── 캐릭터 (Character) ─────────────────────────
+
+    /// <summary>
+    /// 보유 캐릭터 전체 스냅샷(로그인 시). 클라이언트는 여기서 받은 <c>CharacterId</c>로
+    /// <see cref="C_WorkStationAssignRequest"/>의 배치 대상을 지정한다 —
+    /// 이 패킷 없이는 클라이언트가 자기 캐릭터의 개체 PK를 알 방법이 없다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_CharacterListResponse)]
+    public partial class S_CharacterListResponse : IPacket
+    {
+        public List<CharacterInfo>? Characters { get; set; }
     }
 
 
