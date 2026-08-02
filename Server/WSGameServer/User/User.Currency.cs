@@ -12,7 +12,7 @@ public partial class User
     /// <summary>DB에서 읽은 재화 Row를 적재한다(로그인 시 1회). 행이 없는 재화는 0으로 본다.</summary>
     private void LoadCurrencies(IReadOnlyList<CurrencyRow> rows)
     {
-        Wallet.Load(rows.ToDictionary(r => (CurrencyType)r.CurrencyType, r => r.Amount));
+        Wallet.Load(rows.ToDictionary(r => (CurrencyType)r.currency_type, r => r.amount));
     }
 
     /// <summary>보유량 조회. 가진 적이 없으면 0.</summary>

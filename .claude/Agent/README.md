@@ -15,7 +15,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약 -->
 
-- [2026-08-02 로그인 Load 경로를 Row 기반으로 리팩토링](2026-08-02-login-load-row-refactor.md) — Row 계약(`PlayerLoginData`) + 영역별 `Load*` 분리 · Dapper 래퍼 `DbConnection` · **위치 record는 SQL `AS` 별칭 필수** · 신규 지급은 아직 리포지토리에
+- [2026-08-02 로그인 Load 경로를 Row 기반으로 리팩토링](2026-08-02-login-load-row-refactor.md) — Row 계약(`PlayerLoginData`) + 영역별 `Load*` 분리 · Dapper 래퍼 `DbConnection` · **Row는 프로퍼티 record + 컬럼명 그대로(snake_case), 매핑 옵션 OFF** · 신규 지급은 로직 스레드로 이동(`Login`은 지급 후)
 - [2026-08-01 게임 UI 캔버스 골격 확정 — 16:9 배율 창 · 3열 정렬 · 렌더 모드](2026-08-01-ui-canvas-skeleton.md) — 캔버스 4→3개(위젯은 패널) · **LayoutGroup은 root Canvas를 못 움직인다 → nested Canvas** · Overlay→Screen Space-Camera · `WindowManager` 1:2 세로 → 16:9 절대 배율
 - [2026-08-01 mattpocock-skills 각색 — 프로젝트 스킬 갱신 2건 + server-tdd 신설](2026-08-01-skill-updates-from-mattpocock.md) — task-writer(일감 쪼개기 절차) · agent-log-writer(압축 기준) · **server-tdd 신설** · CLAUDE.md 서버 스킬 표 정정
 - [2026-08-01 산업 레벨 시스템 기획 — 배치가 (산업, 레벨, 캐릭터) 세 칸이 된다](2026-08-01-industry-level.md) — 경험치 없이 조건 해금 · 효과는 드롭 테이블 확장 · **낚시터·사냥터·수종이 `IndustryLevel`로 통합** · 해금 조건은 미정(T-016)

@@ -58,12 +58,16 @@ public sealed partial class User : Entity
         UserManager.Instance.JoinUser(this);
         
         Send(new S_LoginResponse {Success = true, SessionId = SessionId});
-
+        
         SendInventory();   // S_InventoryResponse
         SendCurrencies();  // S_CurrencyResponse
 
+        // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
+        // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.
+        SendCharacters();  // S_CharacterListResponse
+
         // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
-        // 슬롯은 LoginRepository에서 이미 "지금부터" 시작하도록 만들어져 있다.
+        // 슬롯은 로그인 흐름에서 이미 "지금부터" 시작하도록 만들어져 있다.
         SendWorkStationSlots(); // S_WorkStationSlotsResponse
     }
 

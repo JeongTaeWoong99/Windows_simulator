@@ -33,7 +33,7 @@ public class AccountRepository : IRepository
         }
         else
         {
-            _userId = row.UserId; // 있으면 _userId에 넣어주기
+            _userId = row.user_id; // 있으면 _userId에 넣어주기
         }
 
 
@@ -51,35 +51,35 @@ public class AccountRepository : IRepository
         }
 
         // 밴
-        if (_resultRow.IsBanned == 1)
+        if (_resultRow.is_banned == 1)
         {
             // Log
             return;
         }
 
         // 삭제
-        if (_resultRow.IsDeleted == 1)
+        if (_resultRow.is_deleted == 1)
         {
             //Log
             return;
         }
 
-        User.Initialize(_userId, _resultRow.NickName, _resultRow.AdminLevel, _isNewbie);
+        User.Initialize(_userId, _resultRow.nickname, _resultRow.admin_level, _isNewbie);
 
     }
 
+    // Row 프로퍼티 = DB 컬럼명 그대로 — RepositoryContracts.cs 상단 주석 참조
     private sealed record AccountQueryRow
     {
-        public long UserId { get; init; }
+        public long user_id { get; init; }
     }
 
     private sealed record AccountResultRow
     {
-        public long UserId { get; init; }
-        public required string NickName { get; init; }
-        public int AdminLevel { get; init; }
-        public int IsDeleted { get; init; }
-        public int IsBanned { get; init; }
-        //public int IsNewBie { get; init; }
+        public long user_id { get; init; }
+        public required string nickname { get; init; }
+        public int admin_level { get; init; }
+        public int is_deleted { get; init; }
+        public int is_banned { get; init; }
     }
 }

@@ -8,7 +8,7 @@ public partial class User
     /// <summary>DB에서 읽은 인벤토리 Row를 도메인(Item)으로 변환해 적재한다(로그인 시 1회).</summary>
     private void LoadInventory(IReadOnlyList<InventoryRow> rows)
     {
-        Inventory.Load(rows.Select(r => new Item(r.ItemId, r.Count)));
+        Inventory.Load(rows.Select(r => new Item(r.item_id, r.count)));
     }
 
     // 현재 인벤토리 전체 스냅샷을 클라이언트로 전송한다.

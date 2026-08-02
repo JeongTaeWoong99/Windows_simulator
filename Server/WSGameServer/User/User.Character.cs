@@ -1,4 +1,5 @@
 using GameData;
+using MikaProtocol;
 
 namespace WSGameServer;
 
@@ -22,14 +23,34 @@ public partial class User
         foreach (var r in rows)
         {
             // 테이블에 없는 TID는 건너뛴다. 여기서 예외를 던지면 데이터 한 줄 때문에 로그인이 막힌다.
-            if (!GameTable.CharacterTable.TryGet(r.CharacterTid, out var row))
+            if (!GameTable.CharacterTable.TryGet(r.character_tid, out var row))
             {
-                ServerLog.Warn("로그인", $"CharacterTable에 없는 TID, 건너뜀: {r.CharacterTid} (개체 {r.CharacterId})");
+                ServerLog.Warn("로그인", $"CharacterTable에 없는 TID, 건너뜀: {r.character_tid} (개체 {r.character_id})");
                 continue;
             }
 
-            _characters[r.CharacterId] = new Character(r.CharacterId, row, r.Level, r.Exp);
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp);
         }
+    }
+
+    /// <summary>
+    /// 보유 캐릭터 전체 스냅샷을 보낸다(로그인 직후).
+    /// 클라이언트는 여기서 받은 CharacterId로 슬롯 배치를 요청한다.
+    /// </summary>
+    public void SendCharacters()
+    {
+        Send(new S_CharacterListResponse
+        {
+            Characters = _characters.Values
+                .Select(c => new CharacterInfo
+                {
+                    CharacterId  = c.Id,
+                    CharacterTid = c.Tid,
+                    Level        = c.Level,
+                    Exp          = c.Exp,
+                })
+                .ToList(),
+        });
     }
 
     public bool TryGetCharacter(long characterId, out Character character)

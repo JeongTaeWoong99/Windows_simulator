@@ -1,4 +1,3 @@
-using Dapper;
 using MikaNetwork.Server;
 using GameData;
 
@@ -10,9 +9,7 @@ class Program
     
     private static void Main(string[] args)
     {
-        // Dapper 컬럼 매핑: snake_case(user_id) → PascalCase(UserId)
-        DefaultTypeMap.MatchNamesWithUnderscores = true;
-        
+        // Dapper 컬럼 매핑 옵션은 쓰지 않는다 — Row 프로퍼티가 DB 컬럼명(snake_case)과 1:1이다.
         GameTable.LoadAll(name => File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Data", name)));
 
         // 드롭 테이블 추첨기를 미리 만들어 둔다. 반드시 GameTable.LoadAll 뒤에 온다.

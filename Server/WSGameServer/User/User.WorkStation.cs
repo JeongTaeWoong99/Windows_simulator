@@ -5,14 +5,26 @@ namespace WSGameServer;
 
 public partial class User
 {
+    /// <summary>신규 유저에게 기본으로 열어 주는 작업슬롯 수. 시작 슬롯 수가 미확정이라 1개로 둔다.</summary>
+    public const int DefaultSlotCount = 1;
+
     /// <summary>플레이어의 작업슬롯 전체. 채취는 여기서 시작된다.</summary>
     public WorkStation WorkStation { get; } = new();
 
-    /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회).</summary>
+    /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회). 캐릭터 적재가 먼저다.</summary>
     private void LoadWorkStation(IReadOnlyList<WorkStationSlotRow> rows, DateTime startedAt)
     {
+        // 보유하지 않은 캐릭터를 물고 있는 슬롯은 데이터 이상이다(방출·삭제 경로가 생기면 정상 발생 가능).
+        // 배치는 유지하되 흔적을 남긴다 — 이런 슬롯은 기본 속도로 돌게 되어 조용히 어긋난다.
+        foreach (var r in rows)
+        {
+            if (r.character_id != 0 && !TryGetCharacter(r.character_id, out _))
+                ServerLog.Warn("작업슬롯",
+                    $"슬롯이 미보유 캐릭터를 참조. Uid={Uid} Slot={r.slot_index} Character={r.character_id}");
+        }
+
         WorkStation.Load(rows.Select(r =>
-            new WorkStationSlot(r.SlotIndex, (ItemType)r.Industry, r.CharacterId, startedAt)));
+            new WorkStationSlot(r.slot_index, (ItemType)r.industry, r.character_id, startedAt)));
     }
 
     /// <summary>슬롯 전체 스냅샷을 보낸다(로그인 직후).</summary>
@@ -74,6 +86,8 @@ public partial class User
 
         if (!WorkStation.TryGet(slotIndex, out var slot))
         {
+            ServerLog.Warn("작업슬롯",
+                $"배치 거절 — 없는 슬롯. Uid={Uid} Slot={slotIndex} Industry={industry} Character={characterId}");
             Send(new S_WorkStationAssignResponse { Success = false });
             return;
         }
@@ -81,6 +95,10 @@ public partial class User
         // 적성 0인 산업에는 배치할 수 없다. 정산보다 먼저 막아야 상태를 건드리지 않고 끝난다.
         if (!CanAssignCharacter(characterId, industry))
         {
+            // 미보유와 적성 0은 클라 조치가 다르다(id 오류 vs 기획상 불가). 로그에서 구분해 준다.
+            var reason = TryGetCharacter(characterId, out _) ? "적성 0" : "미보유 캐릭터";
+            ServerLog.Warn("작업슬롯",
+                $"배치 거절 — {reason}. Uid={Uid} Slot={slotIndex} Industry={industry} Character={characterId}");
             Send(new S_WorkStationAssignResponse { Success = false });
             return;
         }
