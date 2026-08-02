@@ -57,7 +57,7 @@ public sealed partial class User : Entity
         
         UserManager.Instance.JoinUser(this);
         
-        Send(new S_LoginResponse {Success = true, SessionId = SessionId});
+        Send(new S_LoginResponse { Result = EResultCode.Ok, SessionId = SessionId });
         
         SendInventory();   // S_InventoryResponse
         SendCurrencies();  // S_CurrencyResponse

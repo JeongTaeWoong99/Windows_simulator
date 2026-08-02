@@ -17,11 +17,16 @@ public sealed class GachaService : Singleton<GachaService>
 
     public void Draw(User user, int gachaId, int drawCount)
     {
-        // 1) 검증: 뽑기 횟수와 풀 존재 여부
-        if ((drawCount != SingleDraw && drawCount != MultiDraw)
-            || !GachaPoolCatalog.Instance.TryGet(gachaId, out var pool))
+        // 1) 검증: 뽑기 횟수와 풀 존재 여부 — 실패해도 반드시 응답한다(코드로 이유를 구분)
+        if (drawCount != SingleDraw && drawCount != MultiDraw)
         {
-            user.Send(new S_GachaDrawResponse { Success = false });
+            user.Send(new S_GachaDrawResponse { Result = EResultCode.InvalidDrawCount });
+            return;
+        }
+
+        if (!GachaPoolCatalog.Instance.TryGet(gachaId, out var pool))
+        {
+            user.Send(new S_GachaDrawResponse { Result = EResultCode.InvalidGachaId });
             return;
         }
 
@@ -50,7 +55,7 @@ public sealed class GachaService : Singleton<GachaService>
         // 5) 뽑기 결과 응답 — Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
         user.Send(new S_GachaDrawResponse
         {
-            Success = true,
+            Result = EResultCode.Ok,
             Rewards = rewards,
             ItemChangeInfos = changes,
         });

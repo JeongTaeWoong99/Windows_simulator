@@ -56,7 +56,7 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_LoginResponse(ISession session, S_LoginResponse res)
         {
-            Debug.Log($"[Client] Recv Login: success={res.Success}, sessionId={res.SessionId}");
+            Debug.Log($"[Client] Recv Login: result={res.Result}, sessionId={res.SessionId}");
             LoginResponded?.Invoke(res);
         }
 
@@ -77,7 +77,7 @@ namespace MikaNetwork
         public static void Handle_S_GachaDrawResponse(ISession session, S_GachaDrawResponse res)
         {
             int rewardCount = res.Rewards?.Count ?? 0;
-            Debug.Log($"[Client] Recv Gacha: success={res.Success}, {rewardCount} rewards");
+            Debug.Log($"[Client] Recv Gacha: result={res.Result}, {rewardCount} rewards");
             GachaDrawn?.Invoke(res);
         }
 
@@ -85,7 +85,7 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_WorkStationAssignResponse(ISession session, S_WorkStationAssignResponse res)
         {
-            Debug.Log($"[Client] Recv WorkStationAssign: success={res.Success}");
+            Debug.Log($"[Client] Recv WorkStationAssign: result={res.Result}");
             WorkStationAssigned?.Invoke(res);
         }
 

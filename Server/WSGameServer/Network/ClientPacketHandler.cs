@@ -48,7 +48,13 @@ public static class ClientPacketHandler
         ServerLog.Debug("아이템", $"지급 요청 ItemId={req.ItemId} 개수={req.Count} sid={session.SessionId}");
 
         var user = session.GetUser();
-        user?.AddItem(req.ItemId, req.Count);
+        if (user == null)
+        {
+            session.SendPacket(new S_UpdateItemResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.AddItem(req.ItemId, req.Count);
     }
 
     [PacketHandler]
@@ -57,8 +63,13 @@ public static class ClientPacketHandler
         ServerLog.Debug("가챠", $"뽑기 요청 GachaId={req.GachaId} 횟수={req.DrawCount} sid={session.SessionId}");
 
         var user = session.GetUser();
-        if (user != null)
-            GachaService.Instance.Draw(user, req.GachaId, req.DrawCount);
+        if (user == null)
+        {
+            session.SendPacket(new S_GachaDrawResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        GachaService.Instance.Draw(user, req.GachaId, req.DrawCount);
     }
 
     /// <summary>
@@ -73,6 +84,12 @@ public static class ClientPacketHandler
             $"캐릭터={req.CharacterId} sid={session.SessionId}");
 
         var user = session.GetUser();
-        user?.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId);
+        if (user == null)
+        {
+            session.SendPacket(new S_WorkStationAssignResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId);
     }
 }

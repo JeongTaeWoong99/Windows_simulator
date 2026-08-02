@@ -21,7 +21,7 @@ namespace MikaDummyClient
         [PacketHandler]
         public static void Handle_S_LoginResponse(ISession session, S_LoginResponse res)
         {
-            Console.WriteLine($"[Client] Recv Login: Success={res.Success}, SessionId={res.SessionId}");
+            Console.WriteLine($"[Client] Recv Login: Result={res.Result}, SessionId={res.SessionId}");
         }
 
         [PacketHandler]
@@ -43,9 +43,9 @@ namespace MikaDummyClient
         [PacketHandler]
         public static void Handle_S_GachaDrawResponse(ISession session, S_GachaDrawResponse res)
         {
-            if (!res.Success)
+            if (res.Result != EResultCode.Ok)
             {
-                Console.WriteLine("[Client] Recv Gacha: 실패(잘못된 GachaId 또는 DrawCount)");
+                Console.WriteLine($"[Client] Recv Gacha: 실패 Result={res.Result}");
                 return;
             }
 
@@ -70,9 +70,9 @@ namespace MikaDummyClient
         [PacketHandler]
         public static void Handle_S_WorkStationAssignResponse(ISession session, S_WorkStationAssignResponse res)
         {
-            if (!res.Success)
+            if (res.Result != EResultCode.Ok)
             {
-                Console.WriteLine("[Client] Recv 슬롯 배치: 실패(없는 슬롯)");
+                Console.WriteLine($"[Client] Recv 슬롯 배치: 실패 Result={res.Result}");
                 return;
             }
 

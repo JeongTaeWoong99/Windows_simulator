@@ -123,9 +123,9 @@ public class SessionManager : MonoService<SessionManager>
     // 로그인 응답 — 세션 상태 갱신 후 이벤트 발행
     private void OnLoginResponded(S_LoginResponse res)
     {
-        IsLoggedIn = res.Success;
+        IsLoggedIn = res.Result == EResultCode.Ok;
         SessionId  = res.SessionId;
-        LoginCompleted?.Invoke(res.Success);
+        LoginCompleted?.Invoke(IsLoggedIn);
     }
 
     // 인벤토리 스냅샷 — 캐시 교체 후 이벤트 발행
@@ -146,7 +146,7 @@ public class SessionManager : MonoService<SessionManager>
     //   이 패킷이 유일한 통지라 여기서 반영하지 않으면 재접속 전까지 인벤토리가 갱신되지 않는다.
     private void OnGachaDrawn(S_GachaDrawResponse res)
     {
-        if (!res.Success)
+        if (res.Result != EResultCode.Ok)
             return;
 
         var rewards = res.Rewards ?? new List<GachaRewardInfo>();
@@ -172,7 +172,8 @@ public class SessionManager : MonoService<SessionManager>
     private void OnWorkStationAssigned(S_WorkStationAssignResponse res)
     {
         var changed = res.Slot;
-        if (res.Success && changed != null)
+        bool success = res.Result == EResultCode.Ok;
+        if (success && changed != null)
         {
             int index = _workStationSlots.FindIndex(slot => slot.SlotIndex == changed.SlotIndex);
             if (index >= 0)
@@ -189,7 +190,7 @@ public class SessionManager : MonoService<SessionManager>
             ? changed.Industry != 0 && changed.CharacterId != 0 // 조건으로 true or false 판단
             : _lastRequestWasAssign;                            // 이전 기록으로 판단
 
-        WorkStationAssignCompleted?.Invoke(res.Success, wasAssign);
+        WorkStationAssignCompleted?.Invoke(success, wasAssign);
     }
 
     // 채취 결과 푸시 — 요청 없이 주기적으로 도착한다.

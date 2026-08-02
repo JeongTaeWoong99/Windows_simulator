@@ -81,7 +81,7 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_LoginResponse)]
     public partial class S_LoginResponse : IPacket
     {
-        public bool Success { get; set; }
+        public EResultCode Result { get; set; }
         public long SessionId { get; set; }
     }
 
@@ -95,6 +95,7 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_UpdateItemResponse)]
     public partial class S_UpdateItemResponse : IPacket
     {
+        public EResultCode Result { get; set; }
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
     }
 
@@ -108,7 +109,7 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_GachaDrawResponse)]
     public partial class S_GachaDrawResponse : IPacket
     {
-        public bool Success { get; set; }
+        public EResultCode Result { get; set; }
         public List<GachaRewardInfo>? Rewards { get; set; }  // 연출용 — 뽑힌 순서대로 (델타)
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 인벤토리 반영용 — 갱신 후 누적 총량
     }
@@ -132,8 +133,8 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_WorkStationAssignResponse)]
     public partial class S_WorkStationAssignResponse : IPacket
     {
-        public bool                 Success { get; set; }
-        public WorkStationSlotInfo? Slot    { get; set; }  // 변경된 슬롯의 최신 상태
+        public EResultCode          Result { get; set; }
+        public WorkStationSlotInfo? Slot   { get; set; }  // 변경된 슬롯의 최신 상태
     }
 
     [MemoryPackable, Packet(PacketId.S_WorkStationSlotsResponse)]

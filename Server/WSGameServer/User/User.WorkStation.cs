@@ -88,18 +88,21 @@ public partial class User
         {
             ServerLog.Warn("작업슬롯",
                 $"배치 거절 — 없는 슬롯. Uid={Uid} Slot={slotIndex} Industry={industry} Character={characterId}");
-            Send(new S_WorkStationAssignResponse { Success = false });
+            Send(new S_WorkStationAssignResponse { Result = EResultCode.InvalidSlotIndex });
             return;
         }
 
         // 적성 0인 산업에는 배치할 수 없다. 정산보다 먼저 막아야 상태를 건드리지 않고 끝난다.
         if (!CanAssignCharacter(characterId, industry))
         {
-            // 미보유와 적성 0은 클라 조치가 다르다(id 오류 vs 기획상 불가). 로그에서 구분해 준다.
-            var reason = TryGetCharacter(characterId, out _) ? "적성 0" : "미보유 캐릭터";
+            // 미보유와 적성 0은 클라 조치가 다르다(id 오류 vs 기획상 불가). 결과 코드로도 구분해 준다.
+            var owned = TryGetCharacter(characterId, out _);
             ServerLog.Warn("작업슬롯",
-                $"배치 거절 — {reason}. Uid={Uid} Slot={slotIndex} Industry={industry} Character={characterId}");
-            Send(new S_WorkStationAssignResponse { Success = false });
+                $"배치 거절 — {(owned ? "적성 0" : "미보유 캐릭터")}. Uid={Uid} Slot={slotIndex} Industry={industry} Character={characterId}");
+            Send(new S_WorkStationAssignResponse
+            {
+                Result = owned ? EResultCode.NoAptitude : EResultCode.CharacterNotOwned,
+            });
             return;
         }
 
@@ -114,7 +117,7 @@ public partial class User
 
         SaveWorkStationSlots(new[] { slotIndex });
 
-        Send(new S_WorkStationAssignResponse { Success = true, Slot = slot.ToInfo() });
+        Send(new S_WorkStationAssignResponse { Result = EResultCode.Ok, Slot = slot.ToInfo() });
     }
 
     /// <summary>

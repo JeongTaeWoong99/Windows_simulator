@@ -31,6 +31,6 @@ public partial class User
     {
         var itemChangeInfo = GainItem(itemId, count);
 
-        Send(new S_UpdateItemResponse { ItemChangeInfos = [itemChangeInfo] });
+        Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = [itemChangeInfo] });
     }
 }
