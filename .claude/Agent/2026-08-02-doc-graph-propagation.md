@@ -43,6 +43,9 @@ tags: [docs, design, tooling, powershell]
   `A→B`가 생길 때마다 `B→A`가 따라 생겨 **모든 간선이 양방향으로 번진다.**
   스크립트가 `$BlockPattern`으로 본문에서 잘라낸 뒤 파싱하는 이유다. 이 처리를 지우면
   검사가 오류 31건을 뱉으며 자기 자신을 오염시킨다(한 번 밟았다).
+- ⚠️ **날짜 파싱 — `최종 업데이트`를 `작성일`보다 먼저 찾아야 한다.**
+  기획평가는 `> 작성일: A · 최종 업데이트: B`로 한 줄에 둘 다 있어서,
+  정규식 하나로 훑으면 앞의 작성일이 잡혀 **그 문서가 영원히 낡아 보인다.**
 - ⚠️ **PowerShell 5.1 함정 둘.** `Set-Content -Encoding UTF8`은 BOM을 붙인다
   (기획 문서는 BOM 없는 UTF-8이라 `[IO.File]::WriteAllText` + `UTF8Encoding($false)`를 쓴다).
   `.Split('\','/')`는 `Split(string,count)`로 잡혀 터진다 — `-split '[\\/]'`를 쓴다.

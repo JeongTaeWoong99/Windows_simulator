@@ -132,9 +132,14 @@ Get-ChildItem -Path $DesignRoot -Filter *.md -Recurse | ForEach-Object {
 
     $text = Get-Content -Path $_.FullName -Raw -Encoding UTF8
 
-    # "> 최종 업데이트: 2026-08-01" / 없으면 "> 작성일: ..."
+    # "최종 업데이트"를 먼저 찾고, 없을 때만 "작성일"로 떨어진다.
+    # 기획평가처럼 `> 작성일: A · 최종 업데이트: B` 한 줄에 둘 다 있는 문서가 있어
+    # 하나의 정규식으로 훑으면 앞에 적힌 작성일이 잡힌다(= 문서가 영원히 낡아 보인다).
     $updated = $null
-    $m = [regex]::Match($text, '(?m)^>\s*(?:최종 업데이트|작성일)\s*:\s*(\d{4}-\d{2}-\d{2})')
+    $m = [regex]::Match($text, '(?m)^>.*최종 업데이트\s*:\s*(\d{4}-\d{2}-\d{2})')
+    if (-not $m.Success) {
+        $m = [regex]::Match($text, '(?m)^>\s*작성일\s*:\s*(\d{4}-\d{2}-\d{2})')
+    }
     if ($m.Success) { $updated = $m.Groups[1].Value }
 
     $docs[$_.FullName] = [pscustomobject]@{
