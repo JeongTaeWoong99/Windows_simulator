@@ -42,12 +42,18 @@ tags: [gamedata, character, excel, design]
   테스트용 임의값이라 종족과 이어지지 않는다. 외형 리소스 + 적성 수작업 설계 시 함께 넣는다.
 - 적성값은 스크립트에 **리터럴로 박았다** — 재실행해도 같은 값이 나와야 diff가 의미를 갖는다.
 
-## 후속 작업 / 주의사항
+## `CharacterTID 1` 폐기 (같은 날 이어서 실행)
 
-- **`CharacterTID 1` 폐기가 이제 실행 가능하다**(전제 조건이던 "일반 캐릭터 입력" 충족).
-  ⚠️ 다만 **기존 DB `t_character`에 TID 1 개체를 가진 계정이 남아 있다.** 지우면 그 계정은
-  캐릭터를 잃는다(로그인은 막히지 않는다 — `LoadCharacters`가 경고 후 건너뛴다).
-  **삭제는 사용자 확인 후 별도로 한다.**
+사용자 승인 후 `CharacterTable`에서 TID 1 행을 삭제했다. **현재 테이블은 `1001~1006` 6행.**
+
+- **기존 계정은 자동 복구된다.** `LoadCharacters`가 없는 TID를 경고 후 건너뛰어 보유 캐릭터가
+  0이 되고, `OnLoginDataLoaded`의 `if (_characters.Count == 0) GrantDefaultCharacter()`가
+  그때 `1001`을 지급한다. 신규 유저 전용 경로가 아니라 **"0명이면 지급"** 이라 이관이 자동이다.
+- ⚠️ **고아가 된 `t_character` 행(TID 1, 1건)은 남겨 뒀다.** 지우려 했으나 DB 행 삭제가
+  권한 정책에 막혔다. 동작에는 지장이 없고 로그인마다 경고 한 줄이 남을 뿐이다.
+  정리하려면 `DELETE FROM t_character WHERE character_tid = 1`.
+
+## 후속 작업 / 주의사항
 - 적성 수치는 **테스트용 임의값**이다. 밸런스 설계 시 전면 재작성 대상.
 - 엑셀 편집은 `python + openpyxl`로 했다(저장소에 스크립트를 남기지 않았다.
   ExcelGenerator는 ClosedXML을 쓰지만 읽기 전용 파이프라인이다).
