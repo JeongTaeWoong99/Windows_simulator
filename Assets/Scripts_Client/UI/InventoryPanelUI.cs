@@ -39,6 +39,11 @@ public class InventoryPanelUI : MonoBehaviour
     // ※ OnEnable에서 Get 하지 않는다 — MonoService 주석의 초기화 순서 규칙 참조.
     private void Start()
     {
+        // 필수 참조 검증 — 미연결이면 여기서 멈춘다. 안 그러면 아이템이 처음 들어오는 순간
+        // Instantiate에서 NRE가 나는데, 그때는 원인이 인스펙터라는 게 드러나지 않는다.
+        this.RequireRef(slotPrefab, nameof(slotPrefab));
+        this.RequireRef(slotParent, nameof(slotParent));
+
         _session = Services.Get<SessionManager>();
         Subscribe();
         Refresh(); // 이미 스냅샷을 받은 뒤에 켜졌을 수 있다
@@ -111,7 +116,7 @@ public class InventoryPanelUI : MonoBehaviour
         Transform? frame = FindEmptyFrame();
         if (frame == null)
         {
-            Debug.LogWarning($"[{nameof(InventoryPanelUI)}] 빈 칸이 없어 아이템 {itemId}를 표시하지 못했다. 프레임을 늘려야 한다.", this);
+            ClientLog.Warn(ClientLog.UI, $"빈 칸이 없어 아이템 {itemId}를 표시하지 못했다. 프레임을 늘려야 한다.", this);
             return null;
         }
 

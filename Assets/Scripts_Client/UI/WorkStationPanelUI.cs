@@ -39,6 +39,10 @@ public class WorkStationPanelUI : MonoBehaviour
     // ※ OnEnable에서 Get 하지 않는다 — MonoService 주석의 초기화 순서 규칙 참조.
     private void Start()
     {
+        // 필수 참조 검증 — 미연결이면 여기서 멈춘다(WindowPanelUI와 같은 규칙).
+        this.RequireRef(slotPrefab, nameof(slotPrefab));
+        this.RequireRef(slotParent, nameof(slotParent));
+
         _session = Services.Get<SessionManager>();
         Subscribe();
         Rebuild(); // 이미 스냅샷을 받은 뒤에 켜졌을 수 있다
@@ -111,7 +115,7 @@ public class WorkStationPanelUI : MonoBehaviour
             {
                 if (slot.SlotIndex < 0 || slot.SlotIndex >= slotParent.childCount)
                 {
-                    Debug.LogWarning($"[{nameof(WorkStationPanelUI)}] 슬롯 {slot.SlotIndex}에 해당하는 칸 프레임이 없다. 프레임을 늘려야 한다.", this);
+                    ClientLog.Warn(ClientLog.UI, $"슬롯 {slot.SlotIndex}에 해당하는 칸 프레임이 없다. 프레임을 늘려야 한다.", this);
                     continue;
                 }
 
@@ -124,7 +128,7 @@ public class WorkStationPanelUI : MonoBehaviour
                 _views.Add(slot.SlotIndex, view);
             }
 
-            view.Bind(slot);
+            view.Bind(slot, _session.GetCharacterName(slot.CharacterId));
         }
     }
 

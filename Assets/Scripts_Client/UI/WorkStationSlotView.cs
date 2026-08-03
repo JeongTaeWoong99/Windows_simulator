@@ -34,12 +34,17 @@ public class WorkStationSlotView : MonoBehaviour
     public bool IsRunning => _slot != null && _slot.CharacterId != 0 && _slot.CurrentWorkSpeed > 0;
 
     /// <summary>슬롯 스냅샷을 반영한다 (WorkStationPanelUI가 호출).</summary>
-    public void Bind(WorkStationSlotInfo slot)
+    /// <param name="characterName">
+    /// 배치된 캐릭터의 표시 이름. <b>뷰가 직접 조회하지 않는다</b> —
+    /// <c>slot.CharacterId</c>는 개체 번호라 테이블에서 이름이 안 나오고, 보유 목록을 거쳐야 한다.
+    /// 그 변환은 세션을 아는 패널의 몫이다.
+    /// </param>
+    public void Bind(WorkStationSlotInfo slot, string characterName)
     {
         _slot = slot;
 
         string industry  = ((GameData.ItemType)slot.Industry).ToString();
-        string character = slot.CharacterId != 0 ? GameDataLoader.GetCharacterName(slot.CharacterId) : "-";
+        string character = slot.CharacterId != 0 ? characterName : "-";
 
         if (!IsRunning)
         {
