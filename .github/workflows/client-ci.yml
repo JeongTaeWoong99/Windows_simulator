@@ -1,0 +1,100 @@
+# 클라이언트 CI — Unity 빌드가 통과하는지만 본다.
+#
+# 목적은 "컴파일이 깨졌는지 일찍 아는 것"이다. 산출물을 배포하지 않는다.
+# Unity 테스트는 돌리지 않는다 — 저장소에 .asmdef가 하나도 없어 테스트 어셈블리를
+# 만들 수 없기 때문이다(아키텍처 리뷰 후보 4). 경계가 생기면 그때 붙인다.
+#
+# ⚠️ 선행 조건: 시크릿 3개가 등록돼 있어야 한다.
+#      UNITY_LICENSE · UNITY_EMAIL · UNITY_PASSWORD
+#    절차는 .github/workflows/unity-activation.yml 주석 참조.
+#    없으면 경고만 남기고 건너뛴다 — 시크릿을 넣기 전까지 PR마다 빨간 X가 뜨면
+#    CI 신호가 무의미해지기 때문이다.
+name: 클라이언트 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+      - '.github/workflows/client-ci.yml'
+  pull_request:
+    paths:
+      - 'Assets/**'
+      - 'Packages/**'
+      - 'ProjectSettings/**'
+      - '.github/workflows/client-ci.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Unity 빌드 (StandaloneWindows64)
+    runs-on: ubuntu-latest
+
+    steps:
+      # 시크릿을 run에 직접 펼치지 않는다(로그 노출). env로 넘겨 길이만 본다.
+      - name: 라이선스 시크릿 확인
+        id: guard
+        env:
+          LICENSE: ${{ secrets.UNITY_LICENSE }}
+        run: |
+          if [ -z "$LICENSE" ]; then
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "::warning::UNITY_LICENSE 시크릿이 없어 클라이언트 빌드를 건너뜁니다. unity-activation.yml 주석의 절차를 따르세요."
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Unity 에디터 이미지가 크다(수 GB). 러너 기본 디스크로는 모자랄 때가 있어
+      # 쓰지 않는 사전 설치 도구를 먼저 지운다.
+      - name: 디스크 공간 확보
+        if: steps.guard.outputs.ready == 'true'
+        uses: jlumbroso/free-disk-space@54081f138730dfa15788a46383842cd2f914a1be   # v1.3.1
+        with:
+          tool-cache: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: false
+          swap-storage: false
+
+      - uses: actions/checkout@v4
+        if: steps.guard.outputs.ready == 'true'
+        with:
+          lfs: false
+
+      # Library를 캐시하지 않으면 매번 전체 임포트가 돌아 빌드가 몇 배로 길어진다.
+      - name: Library 캐시
+        if: steps.guard.outputs.ready == 'true'
+        uses: actions/cache@v4
+        with:
+          path: Library
+          key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
+          restore-keys: |
+            Library-
+
+      - name: 빌드
+        if: steps.guard.outputs.ready == 'true'
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE:  ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL:    ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          # ProjectSettings/ProjectVersion.txt 와 반드시 같아야 한다.
+          unityVersion: 6000.3.10f1
+          # 스크립팅 백엔드가 Mono라 리눅스 러너에서 Windows 빌드가 된다.
+          # IL2CPP로 바꾸면 runs-on을 windows-latest로 옮겨야 한다.
+          targetPlatform: StandaloneWindows64
+          buildName: WindowsSimulator
+          allowDirtyBuild: true
+
+      # 배포하지 않는다. 빌드가 실제로 나왔는지 확인용으로만 짧게 남긴다.
+      - name: 산출물 보관
+        if: success() && steps.guard.outputs.ready == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: client-build
+          path: build
+          retention-days: 3

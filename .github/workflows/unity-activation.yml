@@ -1,0 +1,36 @@
+# Unity 라이선스 활성화 파일(.alf) 요청 — 최초 1회만 수동 실행한다.
+#
+# Personal 라이선스는 GitHub Actions에서 바로 쓸 수 없고, 활성화 절차를 한 번 거쳐야 한다.
+#
+#   1. Actions 탭에서 이 워크플로를 수동 실행(Run workflow)
+#   2. 실행이 끝나면 아티팩트 `Unity_v6000.x.alf` 를 내려받는다
+#   3. https://license.unity3d.com/manual 에 .alf 를 올리고 .ulf 를 받는다
+#      (Unity Personal Edition 선택)
+#   4. 받은 .ulf 파일의 **내용 전체**를 저장소 시크릿 `UNITY_LICENSE` 에 붙여 넣는다
+#   5. `UNITY_EMAIL` · `UNITY_PASSWORD` 시크릿도 함께 등록한다
+#   6. 이 워크플로는 그 뒤로 쓸 일이 없다 (라이선스가 만료되면 다시 돌린다)
+#
+# ⚠️ .alf/.ulf 파일 자체를 저장소에 커밋하지 않는다. 계정 자격이다.
+name: Unity 라이선스 활성화 요청
+
+on:
+  workflow_dispatch:
+
+jobs:
+  request-activation:
+    name: 활성화 파일 요청
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 활성화 파일 생성
+        id: request
+        uses: game-ci/unity-request-activation-file@v2
+        with:
+          # ProjectSettings/ProjectVersion.txt 와 같은 버전이어야 한다.
+          unityVersion: 6000.3.10f1
+
+      - name: 아티팩트로 올리기
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.request.outputs.filePath }}
+          path: ${{ steps.request.outputs.filePath }}
