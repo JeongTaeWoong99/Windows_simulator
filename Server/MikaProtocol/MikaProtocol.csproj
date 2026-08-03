@@ -28,8 +28,10 @@
     </ItemGroup>
 
     <!-- 빌드되면 패킷 정의(.cs)를 Unity 클라이언트로 단방향 미러링한다.
-         멀티 타깃이라 net9.0 한 번만 실행해 중복을 막는다. -->
-    <Target Name="SyncProtocolToUnity" AfterTargets="Build" Condition="'$(TargetFramework)' == 'net9.0'">
+         멀티 타깃이라 net9.0 한 번만 실행해 중복을 막는다.
+         CI 러너에는 갱신할 Unity 프로젝트가 없고 powershell.exe도 없으므로 건너뛴다. -->
+    <Target Name="SyncProtocolToUnity" AfterTargets="Build"
+            Condition="'$(TargetFramework)' == 'net9.0' AND '$(ContinuousIntegrationBuild)' != 'true'">
         <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildProjectDirectory)\..\sync-protocol-to-unity.ps1&quot;"
               ContinueOnError="true" />
     </Target>

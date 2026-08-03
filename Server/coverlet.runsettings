@@ -32,10 +32,12 @@
                               섞이면 "게임 로직이 얼마나 덮였나"가 흐려진다.
                               (유휴 세션 스윕처럼 게임 규칙에 걸린 부분은
                                WSGameServer 쪽 테스트가 이미 잡는다)
+            - MikaUtils      : 같은 Lib 소속인데 어셈블리 이름에 MikaNetwork가
+                               없어 위 패턴에 걸리지 않는다. 따로 적는다.
             - MikaProtocol   : 패킷 DTO. 프로퍼티 선언뿐이라 덮을 로직이 없다.
             - GameData       : 엑셀에서 생성된 테이블 정의. 사람이 쓰지 않는다.
           -->
-          <Exclude>[MikaNetwork.*]*,[MikaProtocol]*,[GameData]*</Exclude>
+          <Exclude>[MikaNetwork.*]*,[MikaUtils]*,[MikaProtocol]*,[GameData]*</Exclude>
 
           <ExcludeByAttribute>Obsolete,GeneratedCodeAttribute,CompilerGeneratedAttribute</ExcludeByAttribute>
 

@@ -170,9 +170,12 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 ```
 
 **필터 없이 `--collect`만 쓰면 숫자가 쓸모없다.** MemoryPack 생성물(`*.g.cs`)이 전체 라인의
-절반을 넘어 손으로 쓴 코드가 그 안에 묻힌다(필터 전 17.5% → 후 45.6%).
-제외 규칙은 `Server/coverlet.runsettings`에 있고, 측정 대상은 **`WSGameServer`뿐**이다
-(`MikaNetwork.*`는 게임을 모르는 프레임워크라 관심사가 다르다).
+절반을 넘어 손으로 쓴 코드가 그 안에 묻힌다(필터 전 17.5% → 후 45.4%).
+제외 규칙은 `Server/coverlet.runsettings`에 있고, 측정 대상은 **`WSGameServer`뿐**이다.
+
+⚠️ **커버리지를 목표로 삼지 않는다.** 단언 없는 테스트로도 숫자는 올라간다 —
+빨강만 믿을 만하고 초록은 못 믿는다. 상세는
+[`Server/문서/테스트커버리지.md`](Server/문서/테스트커버리지.md) 참조.
 
 ---
 

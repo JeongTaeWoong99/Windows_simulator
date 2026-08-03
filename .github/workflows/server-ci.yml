@@ -1,0 +1,97 @@
+# 서버 CI — 빌드 · 테스트 · 커버리지
+#
+# 클라이언트(Unity) 빌드는 여기에 넣지 않는다. 라이선스 시크릿과 캐시 설정이
+# 서버 쪽과 성격이 전혀 달라 한 워크플로에 섞으면 둘 다 읽기 어려워진다.
+#
+# ⚠️ 커버리지 수치로는 실패시키지 않는다. 보여주기만 한다.
+#    → Server/문서/테스트커버리지.md 4장
+name: 서버 CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'Server/**'
+      - '.github/workflows/server-ci.yml'
+  pull_request:
+    paths:
+      - 'Server/**'
+      - '.github/workflows/server-ci.yml'
+  workflow_dispatch:   # 수동 실행
+
+jobs:
+  build-test:
+    name: 빌드 · 테스트 · 커버리지
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: .NET 설치
+        uses: actions/setup-dotnet@v4
+        with:
+          # MikaProtocol·GameData가 net9.0을 함께 타깃해 둘 다 필요하다.
+          dotnet-version: |
+            9.0.x
+            10.0.x
+
+      - name: NuGet 캐시
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: nuget-${{ runner.os }}-${{ hashFiles('Server/**/*.csproj') }}
+          restore-keys: nuget-${{ runner.os }}-
+
+      - name: 복원
+        run: dotnet restore Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+
+      # ContinuousIntegrationBuild=true를 주면 Unity 미러 동기화 타깃이 꺼진다
+      # (러너에는 갱신할 Unity 프로젝트도 powershell.exe도 없다).
+      - name: 빌드
+        run: >
+          dotnet build Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+          --no-restore -c Release
+          -p:ContinuousIntegrationBuild=true
+
+      - name: 테스트 · 커버리지
+        run: >
+          dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+          --no-build -c Release --nologo
+          --logger "trx;LogFileName=test-results.trx"
+          --collect:"XPlat Code Coverage"
+          --settings Server/coverlet.runsettings
+
+      # 필터가 걸린 값이라 손으로 쓴 코드 기준이다(생성물 제외).
+      - name: 커버리지 요약
+        if: always()
+        uses: irongut/CodeCoverageSummary@v1.3.0
+        with:
+          filename: Server/WSGameServer.Tests/TestResults/**/coverage.cobertura.xml
+          badge: true
+          format: markdown
+          output: both
+          # 색만 바꾼다 — fail_below_min을 켜지 않으므로 CI를 떨어뜨리지 않는다.
+          thresholds: '40 70'
+
+      - name: 실행 화면에 커버리지 붙이기
+        if: always()
+        run: |
+          echo "## 커버리지" >> $GITHUB_STEP_SUMMARY
+          cat code-coverage-results.md >> $GITHUB_STEP_SUMMARY
+
+      - name: PR에 커버리지 코멘트
+        if: always() && github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          recreate: true
+          path: code-coverage-results.md
+
+      - name: 결과물 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: |
+            Server/WSGameServer.Tests/TestResults/**/*.trx
+            Server/WSGameServer.Tests/TestResults/**/coverage.cobertura.xml
+          retention-days: 14
