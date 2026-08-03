@@ -1,7 +1,5 @@
 using MikaUtils;
 using MikaNetwork.Server;
-using WSGameServer;
-using WSGameServer;
 
 namespace WSGameServer;
 
@@ -35,5 +33,8 @@ public class NetworkManager : Singleton<NetworkManager>
         };
 
         _server.Listen();
+
+        // 리슨 이후에 건다. FIN/RST 없이 사라지는 클라이언트를 여기서 정리한다.
+        SessionWatchdog.Instance.Start(_server);
     }
 }

@@ -24,5 +24,21 @@ public static class Global
     /// </para>
     /// </summary>
     public const double GatherSpeedMultiplier = 6.0;
+
+    /// <summary>
+    /// <b>무응답 판정 시간.</b> 이만큼 아무 바이트도 못 받은 세션은 끊는다.
+    ///
+    /// <para>
+    /// 클라이언트는 5초마다 <c>C_PingRequest</c>를 보낸다 — 세 번 연속 놓쳐야 끊기는 값이다.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>이 값이 곧 "공짜로 얻는 최대 오프라인 시간"이다.</b> 접속 판정이 재화 생성 조건이라
+    /// (게임기획코어 P2), 끊긴 걸 서버가 모르는 구간만큼 부당 적립이 생긴다.
+    /// 채취 기준 주기(<see cref="WorkStationSlot.BaseCycleSeconds"/> = 30초)보다 짧게 두어
+    /// <b>부당 구간이 판정 1회를 못 채우게</b> 했다.
+    /// </para>
+    /// </summary>
+    public static readonly TimeSpan SessionIdleTimeout = TimeSpan.FromSeconds(15);
 }
 

@@ -11,7 +11,8 @@ namespace MikaProtocol
         Ok = 0,
 
         // ── 1~99: 공통 ──
-        NotLoggedIn = 1,        // 로그인(User 생성) 전에 보낸 요청
+        NotLoggedIn     = 1,    // 로그인(User 생성) 전에 보낸 요청
+        AlreadyLoggedIn = 2,    // 이미 로그인된 세션이 로그인을 다시 요청
 
         // ── 100~: 가챠 ──
         InvalidDrawCount = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)

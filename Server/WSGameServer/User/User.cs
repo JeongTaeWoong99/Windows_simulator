@@ -146,6 +146,12 @@ public sealed partial class User : Entity
 
     public void Send<T>(T packet) where T : IPacket => _channel.Send(packet);
 
+    /// <summary>
+    /// 클라이언트와의 통로를 닫는다. <see cref="Destroy"/>는 게임 상태만 정리하므로
+    /// 소켓까지 끊으려면 이쪽을 함께 부른다(중복 로그인으로 밀려나는 세션).
+    /// </summary>
+    public void CloseChannel() => _channel.Disconnect();
+
     public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository
     {
         _db.Post(repository);

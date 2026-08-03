@@ -30,6 +30,12 @@ public interface IClientChannel
     bool IsConnected { get; }
 
     void Send<T>(T packet) where T : IPacket;
+
+    /// <summary>
+    /// 통로를 닫는다. 중복 로그인으로 밀려나는 세션을 정리할 때 쓴다 —
+    /// <c>User.Destroy()</c>는 게임 상태만 정리할 뿐 소켓을 닫지 않는다.
+    /// </summary>
+    void Disconnect();
 }
 
 /// <summary>
@@ -50,4 +56,6 @@ public sealed class SessionClientChannel : IClientChannel
     public bool IsConnected => _session.IsConnected;
 
     public void Send<T>(T packet) where T : IPacket => _session.SendPacket(packet);
+
+    public void Disconnect() => _session.Disconnect();
 }

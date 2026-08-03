@@ -59,6 +59,50 @@ public class MikaServer : IDisposable
         serverSession.Send(data);    
     }
 
+    /// <summary>
+    /// 일정 시간 아무것도 받지 못한 세션을 끊는다.
+    ///
+    /// <para>
+    /// TCP는 끊김을 알려 주지 않는다. FIN/RST가 나가지 않는 종류의 단절
+    /// (Unity 에디터 플레이 중지·절전·랜선 뽑기)에서는 <c>ReceiveAsync</c>가 영원히 대기하고
+    /// <c>IsConnected</c>가 참으로 남는다. 그동안 호스트는 그 세션을 접속 중으로 본다.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>주기와 임계값은 이 라이브러리가 정하지 않는다.</b> 얼마나 빨리 끊어야 하는지는
+    /// 게임 규칙(이 프로젝트에서는 "끊김 구간이 곧 부당 적립 구간")이 정하므로 호스트가 넘긴다.
+    /// 로그 정책을 훅으로만 뚫어 두는 것과 같은 이유다.
+    /// </para>
+    /// </summary>
+    /// <returns>끊은 세션 수.</returns>
+    public int SweepIdle(DateTime now, TimeSpan timeout)
+        => DisconnectIdle(SessionManager.Sessions.Values, now, timeout);
+
+    /// <summary>
+    /// <see cref="SweepIdle"/>의 본체. 세션 목록·시각·임계값을 전부 인자로 받아
+    /// <b>실제 연결 없이 검증된다</b>(<see cref="IHeartbeatSession"/>은 소켓을 요구하지 않는다).
+    /// </summary>
+    public static int DisconnectIdle(
+        IEnumerable<IHeartbeatSession> sessions, DateTime now, TimeSpan timeout)
+    {
+        var closed = 0;
+
+        // 순회 중 Disconnect가 세션 목록을 건드리므로 먼저 확정한다.
+        foreach (var session in sessions.ToList())
+        {
+            if (!session.IsConnected)
+                continue;
+
+            if (now - session.LastReceivedAt < timeout)
+                continue;
+
+            session.Disconnect();
+            closed++;
+        }
+
+        return closed;
+    }
+
     public void Stop()
     {
         Dispose();

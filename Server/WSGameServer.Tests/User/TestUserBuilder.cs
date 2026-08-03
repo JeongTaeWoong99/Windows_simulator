@@ -19,7 +19,16 @@ internal sealed class FakeClientChannel : IClientChannel
     public long SessionId   { get; init; } = 1;
     public bool IsConnected { get; set; }  = true;
 
+    /// <summary>통로가 닫힌 횟수. 중복 로그인으로 밀려나는 세션을 검증할 때 본다.</summary>
+    public int DisconnectCount { get; private set; }
+
     public void Send<T>(T packet) where T : IPacket => Sent.Add(packet);
+
+    public void Disconnect()
+    {
+        DisconnectCount++;
+        IsConnected = false;
+    }
 
     /// <summary>보낸 패킷 중 해당 타입만 순서대로 꺼낸다.</summary>
     public List<T> SentOf<T>() where T : IPacket => Sent.OfType<T>().ToList();
