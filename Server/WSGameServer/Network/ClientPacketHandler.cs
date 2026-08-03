@@ -90,6 +90,6 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId);
+        user.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId, DateTime.UtcNow);
     }
 }

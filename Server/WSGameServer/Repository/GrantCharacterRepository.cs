@@ -31,6 +31,6 @@ public sealed class GrantCharacterRepository : IRepository
     // === 로직 스레드에서 실행 ===
     public void Apply()
     {
-        User.OnDefaultCharacterGranted(_characterId);
+        User.OnDefaultCharacterGranted(_characterId, DateTime.UtcNow);
     }
 }

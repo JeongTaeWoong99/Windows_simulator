@@ -9,7 +9,7 @@ using WSGameServer;
 
 namespace WSGameServer;
 
-public class DBManager : Singleton<DBManager>
+public class DBManager : Singleton<DBManager>, IDBQueue
 {
     // 커넥션을 만드는 방법만 안다 — 파일 DB냐 :memory:냐는 주입하는 쪽이 정한다.
     private Func<SqliteConnection>? _connectionFactory;

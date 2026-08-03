@@ -49,7 +49,7 @@ public partial class User
     /// <returns>정산된 슬롯 수.</returns>
     public int SettleWorkStation(DateTime now, bool notify = true)
     {
-        var harvests = WorkStation.Settle(now);
+        var harvests = WorkStation.Settle(now, _dropTables);
         if (harvests.Count == 0)
             return 0;
 
@@ -80,10 +80,8 @@ public partial class User
     /// 슬롯에 산업과 캐릭터를 배치한다.
     /// <b>바꾸기 전에 먼저 정산한다</b> — 이전 구간은 이전 설정으로 계산돼야 한다.
     /// </summary>
-    public void AssignWorkStation(int slotIndex, ItemType industry, long characterId)
+    public void AssignWorkStation(int slotIndex, ItemType industry, long characterId, DateTime now)
     {
-        var now = DateTime.UtcNow;
-
         if (!WorkStation.TryGet(slotIndex, out var slot))
         {
             ServerLog.Warn("작업슬롯",
@@ -128,9 +126,9 @@ public partial class User
     /// 바뀌었을 때 슬롯 스냅샷을 보낼지. 로그인 적재 중에는 false로 준다 —
     /// 아직 <c>S_LoginResponse</c>도 나가기 전이라, 직후 <c>SendWorkStationSlots</c>가 어차피 보낸다.
     /// </param>
-    public void RefreshWorkStationSpeed(bool notify = true)
+    public void RefreshWorkStationSpeed(DateTime now, bool notify = true)
     {
-        SettleWorkStation(DateTime.UtcNow);
+        SettleWorkStation(now);
 
         var changed = false;
         foreach (var slot in WorkStation.Slots)

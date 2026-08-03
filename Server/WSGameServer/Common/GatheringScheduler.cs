@@ -39,7 +39,10 @@ public sealed class GatheringScheduler : Singleton<GatheringScheduler>
             return;
 
         // 타이머 스레드에서 게임 상태를 직접 만지면 안 된다. 로직 스레드로 넘긴다.
-        _timer = new Timer(_ => LogicExecutor.Instance.Post(Tick), null, Interval, Interval);
+        // 시각과 대상 목록은 여기서 만들어 넣는다 — Tick 자신은 전역을 보지 않는다.
+        _timer = new Timer(
+            _ => LogicExecutor.Instance.Post(() => Tick(DateTime.UtcNow, UserManager.Instance.All)),
+            null, Interval, Interval);
         ServerLog.Info("채취", $"스케줄러 시작 — 푸시 해상도 {Interval.TotalSeconds}초");
     }
 
@@ -49,12 +52,13 @@ public sealed class GatheringScheduler : Singleton<GatheringScheduler>
         _timer = null;
     }
 
-    /// <summary>로직 스레드에서 실행된다.</summary>
-    private static void Tick()
+    /// <summary>
+    /// 로직 스레드에서 실행된다. <b>시각과 대상을 인자로 받는다</b> —
+    /// 재화가 실제로 생기는 권위 루프라 밖에서 부를 수 있어야 검증이 된다.
+    /// </summary>
+    public static void Tick(DateTime now, IEnumerable<User> users)
     {
-        var now = DateTime.UtcNow;
-
-        foreach (var user in UserManager.Instance.All)
+        foreach (var user in users)
         {
             // 한 유저의 예외가 나머지 유저의 정산을 막지 않게 한다.
             try

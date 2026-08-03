@@ -14,27 +14,55 @@ namespace WSGameServer;
 /// </summary>
 public sealed partial class User : Entity
 {
+    /// <summary>클라이언트로 나가는 통로. 전송 계층(ISession)은 이 뒤에만 있다.</summary>
+    private readonly IClientChannel _channel;
+
+    /// <summary>DB 작업 큐. 운영에서는 <see cref="DBManager"/>, 테스트에서는 기록만 하는 가짜가 들어온다.</summary>
+    private readonly IDBQueue _db;
+
+    /// <summary>
+    /// 채취 판정에 쓸 드롭 테이블. 생략하면 전역 인스턴스를 쓴다 —
+    /// <see cref="WorkStation.Settle"/>이 이미 같은 규약이라 맞춘다.
+    /// </summary>
+    private readonly DropTableCatalog _dropTables;
+
     public long SessionId { get; }
-    public string Pid { get; }    
-    
-    public ISession Session { get; }
+    public string Pid { get; }
+
     public string NickName { get; set; }
     public DateTime LoggedInAt { get; }
-    
+
     public long Uid { get; set; }
     public int AdminLevel { get; set; }
     public bool IsNewbie { get; set; }
-    
+
     // Inventory
     private Inventory Inventory { get; init; } = new();
 
-    internal User(ISession session, string pid, string nickname)
+    /// <summary>
+    /// <b>시각을 인자로 받는다</b> — 이 저장소는 순수 코어(<see cref="WorkStationSlot"/>·
+    /// <see cref="WorkStation"/>)가 전부 그렇게 되어 있고, 시계를 필드로 들면 같은 문제에
+    /// 두 번째 관례가 생긴다. 시각을 만드는 곳은 진입점(핸들러·타이머·Repository)이다.
+    /// </summary>
+    internal User(
+        IClientChannel    channel,
+        IDBQueue          db,
+        string            pid,
+        string            nickname,
+        DateTime          loggedInAt,
+        DropTableCatalog? dropTables = null)
     {
-        SessionId = session.SessionId;
-        Pid = pid;
-        Session = session;
-        NickName = nickname;
-        LoggedInAt = DateTime.UtcNow;
+        ArgumentNullException.ThrowIfNull(channel);
+        ArgumentNullException.ThrowIfNull(db);
+
+        _channel    = channel;
+        _db         = db;
+        _dropTables = dropTables ?? DropTableCatalog.Instance;
+
+        SessionId  = channel.SessionId;
+        Pid        = pid;
+        NickName   = nickname;
+        LoggedInAt = loggedInAt;
     }
 
     // 주의: 소멸자(finalizer)는 GC가 객체를 수거할 때 비결정적으로 호출된다.
@@ -49,7 +77,7 @@ public sealed partial class User : Entity
     public void Login()
     {
         // 연결되지 않았으면 정리
-        if (!Session.IsConnected)
+        if (!_channel.IsConnected)
         {
             Destroy();
             return;
@@ -78,17 +106,21 @@ public sealed partial class User : Entity
         PostDBTask(new AccountRepository(this));
     }
 
-    protected override void OnDestroy()
+    /// <summary>
+    /// 접속 종료 정리. <b>시각을 받는 이쪽이 본체고 <see cref="OnDestroy"/>는 배선만 한다</b> —
+    /// base 시그니처가 고정이라 인자를 뚫을 수 없어 한 겹을 가른 것이다.
+    ///
+    /// <para>
+    /// 마지막 정산을 한다. 접속 중 완성된 판정은 정당하게 번 것이므로 끊겼다고 버리지 않는다.
+    /// 세션이 이미 닫혔으므로 푸시는 하지 않고(notify: false) 지급·저장만 한다.
+    /// 판정에 못 미친 조각은 여기서 함께 사라진다 — 진행도는 세션과 수명을 같이한다.
+    /// </para>
+    /// </summary>
+    public void Disconnect(DateTime now)
     {
-        // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
-        ServerLog.Info("유저", $"소멸 SessionId={SessionId} Pid={Pid}");
-
-        // 마지막 정산. 접속 중 완성된 판정은 정당하게 번 것이므로 끊겼다고 버리지 않는다.
-        // 세션이 이미 닫혔으므로 푸시는 하지 않고(notify: false) 지급·저장만 한다.
-        // 판정에 못 미친 조각은 여기서 함께 사라진다 — 진행도는 세션과 수명을 같이한다.
         try
         {
-            SettleWorkStation(DateTime.UtcNow, notify: false);
+            SettleWorkStation(now, notify: false);
         }
         catch (Exception e)
         {
@@ -97,6 +129,14 @@ public sealed partial class User : Entity
         }
 
         UserManager.Instance.LeaveUser(this);
+    }
+
+    protected override void OnDestroy()
+    {
+        // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
+        ServerLog.Info("유저", $"소멸 SessionId={SessionId} Pid={Pid}");
+
+        Disconnect(DateTime.UtcNow);
     }
 
     public void Initialize(long userId, string nickName, int adminLevel, bool isNewbie)
@@ -109,10 +149,10 @@ public sealed partial class User : Entity
         PostDBTask<LoginRepository>(new (this));
     }
 
-    public void Send<T>(T packet) where T : IPacket => Session.SendPacket(packet);
-    
-    public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository 
+    public void Send<T>(T packet) where T : IPacket => _channel.Send(packet);
+
+    public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository
     {
-        DBManager.Instance.Post(repository);
+        _db.Post(repository);
     }
 }

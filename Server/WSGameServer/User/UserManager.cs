@@ -63,7 +63,14 @@ public sealed class UserManager : Singleton<UserManager>
             return;
         }
 
-        var user = new User(session, pid, nickname);
+        // 여기가 조립 지점이다 — 전송 통로·DB 큐·시각을 운영 구현으로 묶어 User에 넘긴다.
+        // User 자신은 ISession도 DBManager도 모른다.
+        var user = new User(
+            new SessionClientChannel(session),
+            DBManager.Instance,
+            pid,
+            nickname,
+            DateTime.UtcNow);
 
         if (!user.Create())
         {
@@ -82,7 +89,7 @@ public sealed class UserManager : Singleton<UserManager>
 
         _userKeys.TryAdd(user.Key, user);
         _pids.TryAdd(user.Pid, user.Key);
-        _sessionKeys.TryAdd(user.Session.SessionId, user.Key);
+        _sessionKeys.TryAdd(user.SessionId, user.Key);
 
         return true;
     }
@@ -95,7 +102,7 @@ public sealed class UserManager : Singleton<UserManager>
             return false;
         }
 
-        _sessionKeys.TryRemove(user.Session.SessionId, out _);
+        _sessionKeys.TryRemove(user.SessionId, out _);
         _pids.TryRemove(user.Pid, out _);
         _userKeys.TryRemove(user.Key, out _);
 

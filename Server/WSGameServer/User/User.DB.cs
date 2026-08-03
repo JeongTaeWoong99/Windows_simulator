@@ -5,22 +5,26 @@ namespace WSGameServer;
 public partial class User
 {
 
-    public void OnLoginDataLoaded(PlayerLoginData data)
+    /// <param name="now">
+    /// 적재 기준 시각. 슬롯 진행도가 여기서부터 시작한다 —
+    /// 호출자(<see cref="LoginRepository.Apply"/>)가 넘긴다.
+    /// </param>
+    public void OnLoginDataLoaded(PlayerLoginData data, DateTime now)
     {
-        var startedAt = DateTime.UtcNow; 
+        LoadPlayerData(data, now);
 
-        LoadPlayerData(data, startedAt);
-        
-        EnsureDefaultSlots(startedAt);
+        EnsureDefaultSlots(now);
 
         if (_characters.Count == 0)
         {
             // 만약 캐릭터가 없을 경우, 발급 후 마무리를 이어감.
+            // 마무리 시각은 지급이 끝난 뒤 GrantCharacterRepository가 새로 넘긴다 —
+            // DB 왕복을 건너므로 여기 시각을 끌고 가면 낡은 값이 된다.
             GrantDefaultCharacter();
             return;
         }
 
-        FinishLogin();
+        FinishLogin(now);
     }
 
     /// <summary>
@@ -63,7 +67,7 @@ public partial class User
     }
 
     /// <summary>기본 캐릭터 지급이 끝나면 불린다(로직 스레드). 적재 후 로그인을 마무리한다.</summary>
-    public void OnDefaultCharacterGranted(long characterId)
+    public void OnDefaultCharacterGranted(long characterId, DateTime now)
     {
         // 테이블 검증은 LoadCharacters와 같은 정책이다 — 없다고 로그인을 막지 않는다.
         if (GameTable.CharacterTable.TryGet(DefaultCharacterTid, out var row))
@@ -75,15 +79,15 @@ public partial class User
             ServerLog.Warn("로그인", $"CharacterTable에 기본 캐릭터 TID가 없음: {DefaultCharacterTid}");
         }
 
-        FinishLogin();
+        FinishLogin(now);
     }
 
     /// <summary>적재·지급이 모두 끝난 뒤 속도를 확정하고 응답을 보낸다.</summary>
-    private void FinishLogin()
+    private void FinishLogin(DateTime now)
     {
         // 배치된 캐릭터의 적성으로 각 슬롯의 속도를 맞춘다.
         // 접속마다 다시 계산하므로 그동안 밸런스가 바뀌었어도 반영된다.
-        RefreshWorkStationSpeed(notify: false);
+        RefreshWorkStationSpeed(now, notify: false);
 
         Login();   // S_LoginResponse + 인벤·재화·슬롯 스냅샷 전송
     }

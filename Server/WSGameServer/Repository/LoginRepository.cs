@@ -60,8 +60,13 @@ public sealed class LoginRepository : IRepository
     }
 
     // === 로직 스레드에서 실행 ===
+    //
+    // 시각은 여기서 만든다. Apply()는 인자를 받을 수 없는 인프라 경계이고,
+    // User 쪽은 시각을 전부 인자로 받도록 되어 있어 "만드는 곳"이 진입점으로 밀려난 결과다.
     public void Apply()
     {
-        User.OnLoginDataLoaded(new PlayerLoginData(_inventoryRows, _currencyRows, _characterRows, _workStationSlotRows));
+        User.OnLoginDataLoaded(
+            new PlayerLoginData(_inventoryRows, _currencyRows, _characterRows, _workStationSlotRows),
+            DateTime.UtcNow);
     }
 }
