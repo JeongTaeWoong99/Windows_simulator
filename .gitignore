@@ -99,3 +99,8 @@ identifier.sqlite
 
 # Claude Code 임시파일
 bash.exe.stackdump
+
+# 테스트 결과·커버리지 (실행할 때마다 새 GUID 폴더가 생긴다)
+TestResults/
+**/TestResults/
+coverage.cobertura.xml

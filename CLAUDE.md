@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-02 (기획 문서 재귀 전파 규칙 추가)
+> 최종 업데이트: 2026-08-04 (서버 커버리지 측정 절차 추가)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -158,6 +158,21 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 - 테스트 이름은 한글로 **동작을 서술**한다 (예: `만료된_티켓은_소모되지_않는다`).
 - `SmokeTest.cs`는 프레임워크 연결 확인용이다. 실제 테스트는 새 파일로 나눈다.
 - 작성 규칙·red-green 절차는 [`server-tdd`](Server/.claude/skills/server-tdd/SKILL.md) 스킬 참조.
+- **실행 중인 `WSGameServer.exe`가 있으면 DLL 잠금(MSB3021)으로 빌드가 실패한다.** 종료하고 돌린다.
+  (Unity 에디터는 분석기 DLL 복사만 막으므로 테스트에는 영향이 없다)
+
+### 커버리지
+
+```powershell
+powershell -File Server/run-coverage.ps1          # 낮은 순 25개 + 전체 수치
+powershell -File Server/run-coverage.ps1 -Top 0   # 전부
+powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerator 필요)
+```
+
+**필터 없이 `--collect`만 쓰면 숫자가 쓸모없다.** MemoryPack 생성물(`*.g.cs`)이 전체 라인의
+절반을 넘어 손으로 쓴 코드가 그 안에 묻힌다(필터 전 17.5% → 후 45.6%).
+제외 규칙은 `Server/coverlet.runsettings`에 있고, 측정 대상은 **`WSGameServer`뿐**이다
+(`MikaNetwork.*`는 게임을 모르는 프레임워크라 관심사가 다르다).
 
 ---
 
