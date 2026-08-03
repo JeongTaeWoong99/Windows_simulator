@@ -54,15 +54,26 @@ Unity는 라이선스 없이 CI에서 돌지 않는다. **아래는 사람이 �
 3. <https://license.unity3d.com/manual> 에 `.alf` 를 올리고 **Unity Personal Edition**을 골라 `.ulf` 를 받는다
 4. 저장소 **Settings → Secrets and variables → Actions** 에 등록한다
 
-   | 시크릿 | 값 |
-   | --- | --- |
-   | `UNITY_LICENSE` | 받은 `.ulf` 파일의 **내용 전체** (XML) |
-   | `UNITY_EMAIL` | Unity 계정 이메일 |
-   | `UNITY_PASSWORD` | Unity 계정 비밀번호 |
+   | 시크릿 | 필수 | 값 |
+   | --- | --- | --- |
+   | `UNITY_LICENSE` | **필수** | 받은 `.ulf` 파일의 **내용 전체** (XML) |
+   | `UNITY_EMAIL` | 선택 | Unity 계정 이메일 |
+   | `UNITY_PASSWORD` | 선택 | Unity 계정 비밀번호 |
 
 5. 끝. `unity-activation.yml`은 그 뒤로 쓸 일이 없다(라이선스 만료 시 다시).
 
 > ⚠️ `.alf`·`.ulf` 파일을 **저장소에 커밋하지 않는다.** 계정 자격이다.
+
+### Google 계정으로 가입해 비밀번호가 없다면
+
+**Personal 라이선스는 `.ulf` 파일 기반이라 `UNITY_LICENSE` 하나로 동작하도록 설계돼 있다.**
+`UNITY_EMAIL`·`UNITY_PASSWORD`는 방어적으로 넣어 둔 것이고(Professional은 계정+시리얼이 필요하다),
+활성화 절차 자체는 브라우저에서 하므로 Google 로그인으로 끝난다.
+
+**먼저 `UNITY_LICENSE`만 넣고 돌려 본다.** 그래도 계정 인증을 요구하면,
+<https://id.unity.com> 로그인 화면의 **Forgot password**에 Google 이메일을 넣어
+비밀번호를 새로 만든다. Google OAuth 계정도 비밀번호를 **추가**할 수 있고,
+그 뒤로는 두 방식 다 쓸 수 있다.
 
 ### 시크릿이 없으면 조용히 건너뛴다
 
