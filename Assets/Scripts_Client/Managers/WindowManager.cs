@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
-using UnityEngine.UI;
 
 /// <summary>
 /// 데스크톱 창 제어 핵심 클래스 (Task Bar Hero 스타일).
@@ -64,25 +63,31 @@ public class WindowManager : MonoService<WindowManager>
     private static readonly string[] SizeLabels   = { "1x", "1.25x", "1.5x", "2x" }; // 드롭다운 표시 라벨
     private static readonly float[]  ScaleFactors = { 1f  , 1.25f  , 1.5f  , 2f   }; // 기준 960x540에 곱할 배율
 
-    // ─── 시작 설정 (인스펙터) ───
-    [CenterHeader("Window Settings - 시작 시 적용할 상태")]
-    [SerializeField] private bool         setStartTitleBar            = true;                    // 시작 시, OS 타이틀바+테두리 표시(켜면 이 바로 창 드래그, 끄면 보더리스)
-    [SerializeField] private bool         setStartTransparent         = true;                    // 시작 시, 투명 배경 상태
-    [SerializeField] private bool         setStartTopmost             = true;                    // 시작 시, 항상 위
-    [SerializeField] private bool         setStartDynamicClickThrough = true;                    // 시작 시, 동적 클릭 스루: 매 프레임 커서로 자동 On/Off(콘텐츠 위=클릭, 빈 영역=통과)
-    [SerializeField] private WindowScale  setStartScale               = WindowScale.X1;          // 시작 창 크기 배율(프리셋 1개 선택)
-    [SerializeField] private ScreenAnchor setStartAnchor              = ScreenAnchor.LowerRight; // 시작 창 위치(9분할 앵커 1개 선택)
+    // ─── 공장 초기값 (인스펙터) ───
+    // ⚠️ 여기 적은 값은 "저장된 설정이 없을 때"만 쓰인다. 사용자가 한 번이라도 토글·드롭다운을
+    //   만지면 그 값이 PlayerPrefs에 저장되고, 다음 실행부터는 저장값이 이긴다(WindowSettings 참조).
+    [CenterHeader("Window Settings - 저장값이 없을 때 쓸 초기 상태")]
+    [SerializeField] private bool         setStartTitleBar            = true;                    // OS 타이틀바+테두리 표시(켜면 이 바로 창 드래그, 끄면 보더리스)
+    [SerializeField] private bool         setStartTransparent         = true;                    // 투명 배경 상태
+    [SerializeField] private bool         setStartTopmost             = true;                    // 항상 위
+    [SerializeField] private bool         setStartDynamicClickThrough = true;                    // 동적 클릭 스루: 매 프레임 커서로 자동 On/Off(콘텐츠 위=클릭, 빈 영역=통과)
+    [SerializeField] private WindowScale  setStartScale               = WindowScale.X1;          // 창 크기 배율(프리셋 1개 선택)
+    [SerializeField] private ScreenAnchor setStartAnchor              = ScreenAnchor.LowerRight; // 창 위치(9분할 앵커 1개 선택)
+
+    // ─── 런타임 상태 ───
+    // 6개 설정 전부가 여기 짝을 갖는다. 인스펙터 필드를 직접 읽으면 사용자가 바꾼 값이 무시된다.
+    private bool         _isTitleBar;                              // 현재 타이틀바 표시 상태
+    private bool         _isTransparent;                           // 현재 투명 배경 상태
+    private bool         _isTopmost;                               // 현재 항상 위 상태(MoveWindow/ResizeWindow 시 Z순서 유지에 사용)
+    private bool         _dynamicClickThrough;                     // 현재 동적 클릭 스루 상태
+    private WindowScale  _currentScale  = WindowScale.X1;          // 현재 적용된 크기 배율 프리셋
+    private ScreenAnchor _currentAnchor = ScreenAnchor.LowerRight; // 현재 적용된 위치 앵커
 
     // ─── 내부 상태 ───
-    private Camera?        _raycastCamera;                                  // 2D 스프라이트 판정용 카메라(Start에서 Camera.main 자동 확보 — 없을 수 있어 nullable)
-    private IntPtr         _hWnd                = IntPtr.Zero;              // 제어 대상 창 핸들(HWND). 모든 Win32 호출의 첫 인자.
-    private bool           _isClickThrough      = false;                    // 현재 클릭 스루 상태(중복 호출 방지용 캐시)
-    private bool           _isTopmost           = false;                    // 현재 항상 위 상태(MoveWindow/ResizeWindow 시 Z순서 유지에 사용)
-    private bool           _initialized         = false;                    // 초기화 완료 여부
-    private bool           _dynamicClickThrough = false;                    // 동적 클릭 스루 런타임 상태(시작 설정 필드와 분리 — 런타임에 토글로 변경)
-    private WindowScale    _currentScale        = WindowScale.X1;           // 현재 적용된 크기 배율 프리셋
-    private ScreenAnchor   _currentAnchor       = ScreenAnchor.LowerRight;  // 현재 적용된 위치 앵커
-    private CanvasScaler[]? _canvasScalers;                                 // 씬의 CanvasScaler 전부(크기 변경 시 스케일 로그용, Start에서 자동 확보 — 채우기 전엔 null)
+    private Camera? _raycastCamera;                 // 2D 스프라이트 판정용 카메라(Start에서 Camera.main 자동 확보 — 없을 수 있어 nullable)
+    private IntPtr  _hWnd           = IntPtr.Zero;  // 제어 대상 창 핸들(HWND). 모든 Win32 호출의 첫 인자.
+    private bool    _isClickThrough = false;        // 현재 클릭 스루 상태(중복 호출 방지용 캐시). 매 프레임 바뀌므로 저장하지 않는다.
+    private bool    _initialized    = false;        // 초기화 완료 여부
 
     // 타이틀바 등 "항상 클릭을 받아야 하는" 상황에서 동적 클릭 스루를 잠시 풀도록 하는 내부 플래그
     private bool _forceInteractive = false;
@@ -91,30 +96,41 @@ public class WindowManager : MonoService<WindowManager>
     private readonly List<RaycastResult> _raycastResults = new List<RaycastResult>();
 
     // ─── 프로퍼티 ───
-    // 시작 설정 게터 (DemoPanel 토글/드롭다운 초기 상태 동기화용)
-    public bool StartTitleBar            => setStartTitleBar;
-    public bool StartTransparent         => setStartTransparent;
-    public bool StartTopmost             => setStartTopmost;
-    public bool StartDynamicClickThrough => setStartDynamicClickThrough;
-    public int  StartSizeIndex           => (int)setStartScale;
-    public int  StartAnchorIndex         => (int)setStartAnchor;
-
-    // 현재 상태 게터 (외부 디버그 패널에서 읽기 전용으로 조회)
-    public bool IsClickThrough => _isClickThrough;
-    public bool IsTopmost      => _isTopmost;
+    // 현재 설정 게터 — 창 제어 패널이 토글/드롭다운 초기 상태를 맞추는 데 쓴다.
+    // 저장에서 복원된 값이므로 "시작값"이 아니라 "지금 값"이다.
+    public bool TitleBar            => _isTitleBar;
+    public bool Transparent         => _isTransparent;
+    public bool Topmost             => _isTopmost;
+    public bool DynamicClickThrough => _dynamicClickThrough;
+    public int  SizeIndex           => (int)_currentScale;
+    public int  AnchorIndex         => (int)_currentAnchor;
 
     // ──────────────────────────────────────────────
     // Unity 생명주기
     // ──────────────────────────────────────────────
 
-    // 서비스 등록은 MonoService.Awake가 담당 — 창 제어 초기화만 Start에서 진행
+    /// <summary>
+    /// 서비스 등록(<c>base.Awake</c>) 후 저장된 설정을 런타임 상태로 읽어 온다.
+    ///
+    /// <para>
+    /// ⚠️ <b>이 매니저만 Awake를 쓴다.</b> 다른 매니저는 전부 Start에서 초기화하는데,
+    /// 여기서만 앞당기는 이유는 <c>SettingsPanelUI.Start()</c>가 이 값들을 읽어 토글·드롭다운을
+    /// 맞추기 때문이다. Unity는 Start 순서를 보장하지 않으므로 Start에 두면 패널이 먼저 돌 때
+    /// 아직 안 읽은 값을 가져간다. <b>다른 서비스는 건드리지 않는다</b> — 순수 값 로드뿐이라
+    /// Awake 시점의 등록 순서 문제와 무관하다.
+    /// </para>
+    /// </summary>
+    protected override void Awake()
+    {
+        base.Awake();
+        LoadSettings();
+    }
+
+    // 창 제어 초기화 (Unity 메시지)
     private void Start()
     {
         if (_raycastCamera == null)
             _raycastCamera = Camera.main;
-
-        // 크기 변경 시 기준 해상도를 반영할 캔버스들을 자동 확보(비활성 포함).
-        _canvasScalers = FindObjectsByType<CanvasScaler>(FindObjectsInactive.Include, FindObjectsSortMode.None);
 
         // 창 핸들 확보는 타이밍이 중요하므로 코루틴에서 대기 후 초기화한다.
         StartCoroutine(InitializeWhenReady());
@@ -138,6 +154,25 @@ public class WindowManager : MonoService<WindowManager>
     }
 
     #region 초기화
+
+    /// <summary>
+    /// 저장된 설정을 런타임 상태로 읽어 온다. 없으면 인스펙터의 공장 초기값을 쓴다 (Awake에서 호출).
+    /// 값만 채우고 Win32는 건드리지 않는다 — 실제 적용은 <see cref="InitializeWindow"/>다.
+    /// </summary>
+    private void LoadSettings()
+    {
+        _isTitleBar          = WindowSettings.LoadBool(WindowSettings.TitleBarKey,            setStartTitleBar);
+        _isTransparent       = WindowSettings.LoadBool(WindowSettings.TransparentKey,         setStartTransparent);
+        _isTopmost           = WindowSettings.LoadBool(WindowSettings.TopmostKey,             setStartTopmost);
+        _dynamicClickThrough = WindowSettings.LoadBool(WindowSettings.DynamicClickThroughKey, setStartDynamicClickThrough);
+
+        // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
+        int scale  = WindowSettings.LoadInt(WindowSettings.ScaleKey,  (int)setStartScale);
+        int anchor = WindowSettings.LoadInt(WindowSettings.AnchorKey, (int)setStartAnchor);
+
+        _currentScale  = (WindowScale)Mathf.Clamp(scale,   0, (int)WindowScale.X2);
+        _currentAnchor = (ScreenAnchor)Mathf.Clamp(anchor, 0, (int)ScreenAnchor.LowerRight);
+    }
 
     /// <summary>
     /// Unity 메인 창이 실제로 생성될 때까지 기다린 뒤 창 제어를 적용한다.
@@ -168,22 +203,21 @@ public class WindowManager : MonoService<WindowManager>
         yield break;
     }
 
-    /// <summary>확보된 창 핸들에 시작 상태(타이틀바 → 크기/위치 → 투명 → 항상위 → 클릭스루)를 적용한다.</summary>
+    /// <summary>
+    /// 확보된 창 핸들에 현재 상태(타이틀바 → 크기/위치 → 투명 → 항상위 → 클릭스루)를 적용한다.
+    /// 값은 <see cref="LoadSettings"/>가 이미 채워 뒀다 — 여기선 Win32에 반영만 한다.
+    /// </summary>
     private void InitializeWindow()
     {
-        _currentAnchor       = setStartAnchor;              // 런타임 위치 상태를 시작 설정으로 초기화
-        _dynamicClickThrough = setStartDynamicClickThrough; // 런타임 클릭스루 상태를 시작 설정으로 초기화
 #if !UNITY_EDITOR
         // 타이틀바(+테두리) 표시 여부를 먼저 적용한다(프레임 스타일이 이후 크기 적용에 영향).
-        SetTitleBar(setStartTitleBar);
+        SetTitleBar(_isTitleBar);
 #endif
-        // 시작 크기 적용(캔버스 기준 해상도 반영은 에디터에서도 실행, 창 리사이즈/이동은 빌드에서만).
-        SetWindowSizeByIndex((int)setStartScale);
+        // 크기 적용(에디터에서도 실행되지만 창 리사이즈/이동은 빌드에서만 일어난다).
+        SetWindowSizeByIndex((int)_currentScale);
 #if !UNITY_EDITOR
-        if (setStartTransparent)
-            SetTransparent(true);
-
-        SetTopmost(setStartTopmost);
+        SetTransparent(_isTransparent);
+        SetTopmost(_isTopmost);
         SetClickThrough(false); // 정적 클릭스루 시작값은 동적 클릭스루가 있으면 무의미 → 클릭 받는 상태로 시작(동적ON이면 Update가 관리)
 #endif
         _initialized = true;
@@ -201,6 +235,9 @@ public class WindowManager : MonoService<WindowManager>
     /// </summary>
     public void SetTitleBar(bool show)
     {
+        _isTitleBar = show;
+        WindowSettings.SaveBool(WindowSettings.TitleBarKey, show);
+
         // 타이틀바가 켜지면 그 바를 잡아야 하므로 동적 클릭 스루를 잠시 풀도록 강제한다.
         _forceInteractive = show;
 #if !UNITY_EDITOR
@@ -228,7 +265,9 @@ public class WindowManager : MonoService<WindowManager>
         Win32Native.SetWindowPos(_hWnd, IntPtr.Zero, 0, 0, 0, 0, flags);
 
         // 프레임 재계산으로 DWM 투명 확장이 풀릴 수 있어, 투명 상태면 다시 적용한다.
-        if (setStartTransparent)
+        // ⚠️ 인스펙터의 공장 초기값이 아니라 <b>현재</b> 상태를 봐야 한다 — 사용자가 투명을 끈 뒤
+        //   타이틀바를 토글하면 껐던 투명이 되살아난다.
+        if (_isTransparent)
             SetTransparent(true);
 #endif
     }
@@ -236,6 +275,8 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>투명 배경 On/Off — DWM 프레임(유리)을 클라이언트 영역 전체로 확장/해제한다.</summary>
     public void SetTransparent(bool enable)
     {
+        _isTransparent = enable;
+        WindowSettings.SaveBool(WindowSettings.TransparentKey, enable);
 #if !UNITY_EDITOR
         // 각 변 -1 : DWM 프레임(유리 영역)을 창 전체로 확장한다.
         //   → 카메라가 알파 0으로 클리어한 영역이 그대로 투명해져 바탕화면이 비친다.
@@ -255,6 +296,7 @@ public class WindowManager : MonoService<WindowManager>
     public void SetTopmost(bool enable)
     {
         _isTopmost = enable; // MoveWindow/ResizeWindow 가 Z순서를 유지하도록 상태 저장
+        WindowSettings.SaveBool(WindowSettings.TopmostKey, enable);
 #if !UNITY_EDITOR
         // hWndInsertAfter 에 HWND_TOPMOST/HWND_NOTOPMOST 를 주어 Z순서만 바꾼다.
         //   SWP_NOMOVE|SWP_NOSIZE 로 위치·크기는 건드리지 않는다.
@@ -264,7 +306,11 @@ public class WindowManager : MonoService<WindowManager>
 #endif
     }
 
-    /// <summary>클릭 스루 On/Off — WS_EX_TRANSPARENT 로 빈 영역 입력을 뒤 창으로 통과시킨다.</summary>
+    /// <summary>
+    /// 클릭 스루 On/Off — WS_EX_TRANSPARENT 로 빈 영역 입력을 뒤 창으로 통과시킨다.
+    /// ⚠️ <b>저장하지 않는다.</b> 동적 클릭 스루가 켜져 있으면 Update가 커서 위치에 따라
+    /// 매 프레임 이 값을 뒤집는다 — 저장할 "사용자 설정"이 아니라 순간 상태다.
+    /// </summary>
     public void SetClickThrough(bool enable)
     {
         if (enable == _isClickThrough)
@@ -297,6 +343,7 @@ public class WindowManager : MonoService<WindowManager>
     public void SetDynamicClickThrough(bool value)
     {
         _dynamicClickThrough = value;
+        WindowSettings.SaveBool(WindowSettings.DynamicClickThroughKey, value);
     }
 
     #endregion
@@ -327,10 +374,10 @@ public class WindowManager : MonoService<WindowManager>
     public void SetWindowSizeByIndex(int index)
     {
         _currentScale = (WindowScale)Mathf.Clamp(index, 0, ScaleFactors.Length - 1);
+        WindowSettings.SaveInt(WindowSettings.ScaleKey, (int)_currentScale);
+#if !UNITY_EDITOR
         Vector2Int windowSize = GetSize(_currentScale);
 
-        LogCanvasScaleInfo(windowSize); // 캔버스는 건드리지 않고, 크기 변경에 따른 예상 스케일만 로그로 확인
-#if !UNITY_EDITOR
         ResizeWindow(windowSize.x, windowSize.y);
         ApplyPosition(_currentAnchor); // 크기가 바뀌면 위치도 다시 맞춘다
 #endif
@@ -341,6 +388,7 @@ public class WindowManager : MonoService<WindowManager>
     {
         // 마지막 앵커(LowerRight)를 상한으로 클램프 — 매직 넘버(8) 대신 enum 값 사용
         _currentAnchor = (ScreenAnchor)Mathf.Clamp(index, 0, (int)ScreenAnchor.LowerRight);
+        WindowSettings.SaveInt(WindowSettings.AnchorKey, (int)_currentAnchor);
 #if !UNITY_EDITOR
         ApplyPosition(_currentAnchor);
 #endif
@@ -441,26 +489,6 @@ public class WindowManager : MonoService<WindowManager>
             return new Vector2Int(workArea.right - workArea.left, workArea.bottom - workArea.top);
 #endif
         return new Vector2Int(Display.main.systemWidth, Display.main.systemHeight); // 에디터/폴백
-    }
-
-    /// <summary>
-    /// 크기 변경 시 각 CanvasScaler의 (고정) 기준 해상도와, 그로 인해 예상되는 스케일 배율을 로그로 남긴다.
-    /// 기준 해상도는 바꾸지 않는다 — CanvasScaler가 Screen 크기 변화에 맞춰 자동으로 비례 스케일한다.
-    /// </summary>
-    private void LogCanvasScaleInfo(Vector2Int size)
-    {
-        if (_canvasScalers == null)
-            return;
-
-        foreach (var scaler in _canvasScalers)
-        {
-            if (scaler == null)
-                continue;
-
-            Vector2 refRes = scaler.referenceResolution;
-            float expectedScale = refRes.y > 0f ? size.y / refRes.y : 1f; // Match=Height 기준 예상 배율
-            // Debug.Log($"[WindowManager] 창 크기 → {size.x}x{size.y} | Canvas '{scaler.name}' ref {refRes.x}x{refRes.y} 고정 → 예상 스케일 x{expectedScale:0.##}");
-        }
     }
 
     #endregion
