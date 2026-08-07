@@ -17,7 +17,7 @@ namespace WSGameServer;
 /// 이 타이머는 "언제 계산할지"만 정하고 "얼마나 나올지"에는 관여하지 않는다.
 /// </para>
 /// </summary>
-public sealed class GatheringScheduler : Singleton<GatheringScheduler>
+public sealed class GatheringScheduler
 {
     private Timer? _timer;
 
@@ -33,6 +33,12 @@ public sealed class GatheringScheduler : Singleton<GatheringScheduler>
     /// </summary>
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(1);
 
+    private readonly ILogicExecutor _logicExecutor;
+    public GatheringScheduler(ILogicExecutor logicExecutor)
+    {
+        _logicExecutor = logicExecutor;
+    }
+    
     public void Start()
     {
         if (_timer is not null)
@@ -40,8 +46,7 @@ public sealed class GatheringScheduler : Singleton<GatheringScheduler>
 
         // 타이머 스레드에서 게임 상태를 직접 만지면 안 된다. 로직 스레드로 넘긴다.
         // 시각과 대상 목록은 여기서 만들어 넣는다 — Tick 자신은 전역을 보지 않는다.
-        _timer = new Timer(
-            _ => LogicExecutor.Instance.Post(() => Tick(DateTime.UtcNow, UserManager.Instance.All)),
+        _timer = new Timer(_ => _logicExecutor.Post(() => Tick(DateTime.UtcNow, UserManager.Instance.All)),
             null, Interval, Interval);
         ServerLog.Info("채취", $"스케줄러 시작 — 푸시 해상도 {Interval.TotalSeconds}초");
     }

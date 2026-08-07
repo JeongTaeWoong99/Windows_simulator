@@ -3,7 +3,17 @@ using MikaNetwork;
 
 namespace MikaNetwork.Server;
 
-public class MikaServer : IDisposable
+public interface IServer
+{
+    public event Action<ISession>? Connected;
+    public event Action<ISession>? Disconnected;
+
+    public EndPoint EndPoint { get; }
+    public void Listen();
+    
+}
+
+public class MikaServer : IServer, IDisposable
 {
     private readonly MikaAcceptor _acceptor;
     public SessionManager SessionManager { get; init; } = new();

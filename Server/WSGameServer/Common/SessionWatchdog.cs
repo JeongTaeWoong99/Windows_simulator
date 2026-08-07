@@ -1,3 +1,4 @@
+using MikaNetwork;
 using MikaNetwork.Server;
 using MikaUtils;
 
@@ -23,7 +24,12 @@ namespace WSGameServer;
 /// 서로 다른 관심사이고, 주기도 다르다(1초 vs 5초).
 /// </para>
 /// </summary>
-public sealed class SessionWatchdog : Singleton<SessionWatchdog>
+public interface ISessionWatchdog
+{
+    void Start(MikaServer server);
+    void Stop();
+}
+public sealed class SessionWatchdog : ISessionWatchdog 
 {
     private Timer? _timer;
     private MikaServer? _server;
@@ -34,6 +40,13 @@ public sealed class SessionWatchdog : Singleton<SessionWatchdog>
     /// </summary>
     private static readonly TimeSpan Interval = TimeSpan.FromSeconds(5);
 
+    private readonly ILogicExecutor _logicExecutor;
+    
+    public SessionWatchdog(ILogicExecutor logicExecutor)
+    {
+        _logicExecutor = logicExecutor;
+    }
+    
     public void Start(MikaServer server)
     {
         ArgumentNullException.ThrowIfNull(server);
@@ -45,7 +58,7 @@ public sealed class SessionWatchdog : Singleton<SessionWatchdog>
 
         // 타이머 스레드에서 게임 상태를 만지면 안 된다. 로직 스레드로 넘긴다 —
         // 세션을 끊으면 Disconnected가 발화해 User.Destroy로 이어진다.
-        _timer = new Timer(_ => LogicExecutor.Instance.Post(() => Sweep(DateTime.UtcNow)),
+        _timer = new Timer(_ => _logicExecutor.Post(() => Sweep(DateTime.UtcNow)),
                            null, Interval, Interval);
 
         ServerLog.Info("세션",
@@ -59,7 +72,7 @@ public sealed class SessionWatchdog : Singleton<SessionWatchdog>
     }
 
     /// <summary>로직 스레드에서 실행된다.</summary>
-    private void Sweep(DateTime now)
+    public void Sweep(DateTime now)
     {
         if (_server is null)
             return;

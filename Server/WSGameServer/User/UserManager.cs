@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using MikaNetwork;
+using MikaNetwork.Server;
 using MikaProtocol;
 using MikaUtils;
 
@@ -16,6 +17,14 @@ public sealed class UserManager : Singleton<UserManager>
     private readonly ConcurrentDictionary<long, ulong>   _sessionKeys = new(); // sessId -> uid  
     //private readonly ConcurrentDictionary<long, long>   _uids        = new(); // 
 
+    private DBManager? _dbManager;
+    private ILogicExecutor? _logicExecutor;
+    public void Initialize(DBManager dbManager, ILogicExecutor logicExecutor)
+    {
+        _dbManager = dbManager;
+        _logicExecutor = logicExecutor;
+    }
+    
     public bool TryGetUserBySessionId(long sessionId, out User? user)
     {
         if (!_sessionKeys.TryGetValue(sessionId, out var uid))
@@ -86,7 +95,8 @@ public sealed class UserManager : Singleton<UserManager>
         // User 자신은 ISession도 DBManager도 모른다.
         var user = new User(
             new SessionClientChannel(session),
-            DBManager.Instance,
+            _dbManager!,
+            _logicExecutor!,
             pid,
             nickname,
             DateTime.UtcNow);
