@@ -6,7 +6,7 @@ tags: [server, refactor, architecture, di, executor]
 
 # 싱글턴 제거 · `GameServer` 조립 지점 — 아키텍처 리뷰 후보 4 + 후보 2의 꼬리
 
-> ⚠️ **이 로그는 진행 중인 작업의 중간 기록이다.** 커밋 전이고 **테스트 프로젝트가 컴파일되지 않는다**(아래 "남은 것").
+> ⚠️ 본문은 리팩터링 커밋(`6c6e6e8`) 시점의 기록이다. **테스트 복구는 아래 [업데이트](#업데이트-2026-08-07--테스트-복구)를 본다.**
 
 ## 목적 / 배경
 
@@ -93,10 +93,74 @@ LogicExecutor ──┬─→ SessionWatchdog ──→ NetworkManager
 
 - `GatheringScheduler.Start`는 여전히 `UserManager.Instance.All`을 직접 본다 — 전역 의존이 하나 남았다.
 - `Assets/Plugins/Analyzers/MikaSourceGen.dll` 변경분은 빌드 산출물 재복사(크기 동일)다. 내용 변경 없음.
-- 검증 못 함: 이번 세션 환경에 `dotnet`이 없어 **빌드/테스트를 돌리지 못했다.** 정적 판독 결과다.
 
 ## 참고
 
 - `GameDesign/아키텍처리뷰/2026-08-01-서버아키텍처리뷰.md` — 후보 4(Executor·`Entity.Post`), 버그 #2·#4
 - `GameDesign/아키텍처리뷰/2026-08-03-아키텍처리뷰.md` — 1장 지표(`*.Instance` 21곳), 후보 6
 - `.claude/Agent/2026-08-03-user-testability-seam.md` — 이 작업의 직전 판
+
+---
+
+## 업데이트 (2026-08-07) — 테스트 복구
+
+**119건 전부 통과.** 실제로 깨진 건 **한 곳뿐이었다** — `Dummy : Entity`(CS0246).
+본문에서 "인자 누락으로 컴파일 실패"로 적은 `new User(...)` 2곳은 오진이었다.
+C# **비후행 명명 인수**(non-trailing named arguments) 규칙 덕에 `pid:` 이후가
+전부 이름으로 붙어 있어 그대로 통과한다. 인자는 그래도 명시적으로 넣었다(가독성).
+
+### 신규 — `WSGameServer.Tests/Common/FakeLogicExecutor.cs`
+
+**모드가 둘인 게 핵심이다.** 어느 쪽을 쓸지는 *검증 대상이 예약이냐 결과냐* 로 갈린다.
+
+| 모드 | 쓰는 곳 |
+|---|---|
+| **기록**(기본) — 큐에 쌓기만 | "몇 번 예약됐는가". **작업이 실제로 돌면 전역을 만지는 경우도 이쪽** |
+| **즉시 실행** — `Post`가 그 자리에서 실행 | `Create()` 이후 흐름 전체 |
+
+`Drain()`은 실행 중 새로 예약된 작업도 이어서 돈다 — 단일 스레드 실행기와 같은 동작.
+
+### 🔴 밟은 지뢰 — `Destroy()`를 즉시 실행 모드로 돌리면 안 된다
+
+`OnDestroy` → `Disconnect` → **`UserManager.Instance.LeaveUser`**(`User.cs:173`)가
+프로세스 전역 싱글턴을 만진다. xUnit은 테스트 클래스를 병렬로 돌리므로 **다른 테스트로 샌다.**
+그래서 멱등 가드 테스트는 기록 모드로 두고 **"큐에 한 번만 실렸는가"** 를 센다.
+`TestUserBuilder.WithInlineExecutor()` XML 주석에 이 금지를 박아 뒀다.
+
+### `Dummy : Entity` 2건 → 진짜 `User` 위로
+
+되살리지 않고 올렸다. 예전 테스트는 `Destroy()`의 **반환값**만 봤는데,
+실제 계약은 *"OnDestroy가 한 번만 큐에 실린다"* 다. 이제 그걸 직접 단언한다.
+
+### red 확인 — 두 번 했다
+
+1. 가드를 통째로 제거 → `Destroy().ShouldBeFalse()`에서 먼저 걸렸다.
+   **새로 넣은 `Posted.Count` 줄이 값을 하는지 증명되지 않는다.**
+2. 그래서 **반환값은 맞는데 예약만 새는 형태**로 다시 뚫었다(`Post`를 가드 앞으로).
+   → `builder.Executor.Posted.Count`만 정확히 실패. 그 줄이 독립적으로 잡는다.
+
+> 단언 한 줄을 추가할 때는 **그 줄만 잡는 실패**를 따로 만들어 본다. 안 그러면
+> 앞 단언에 가려 죽은 줄인지 알 수 없다.
+
+### 정정 — `dotnet`은 있다
+
+본문의 "환경에 `dotnet`이 없다"는 틀렸다. **PATH에 없을 뿐 `~/.dotnet/dotnet`에 SDK 10.0.203**이 있다.
+
+```bash
+export DOTNET_ROOT=$HOME/.dotnet; export PATH=$DOTNET_ROOT:$PATH
+dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+→ Passed!  Failed: 0, Passed: 119
+```
+
+빌드 중 `MikaProtocol.csproj`의 post-build가 `powershell` 부재로 MSB3073(경고)을 낸다 —
+**macOS에서는 Unity 미러링이 안 돈다.** 빌드·테스트 자체는 영향 없다.
+
+### 아직 안 한 것 (본문 "남은 것"에서 이월)
+
+- **`Program.cs:12`의 `Run()` await 누락**(CS4014) — 예외가 조용히 삼켜진다.
+  리뷰 버그 #2와 같은 종류를 새로 만드는 자리다.
+- `Create()`/`Login()` 흐름 테스트 — 즉시 실행 모드가 준비됐으니 이제 짤 수 있다.
+  `OnCreate`가 `AccountRepository`를 예약하는지, `Login()`이 *"캐릭터를 슬롯보다 먼저"*
+  (`User.cs:135-137`) 순서를 지키는지. **이 규칙은 지금 주석으로만 지켜진다.**
+- `SessionWatchdog.Sweep`을 `public`으로 열어 뒀지만 테스트 0건.
+- `ISessionWatchdog`·`IServer`는 어댑터가 운영 구현 1개뿐 — 아직 가설상의 seam.
