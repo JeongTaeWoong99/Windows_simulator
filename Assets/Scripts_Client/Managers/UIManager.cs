@@ -31,7 +31,7 @@ public class UIManager : MonoService<UIManager>
     // ※ 여닫는 대상은 전부 Canvas다 — Column이 아니다.
     //   Column을 끄면 남은 열들이 Horizental Columns 안에서 가운데로 다시 몰려 위젯 가로 칸이 어긋난다.
     //   Canvas만 끄면 Column 3개와 (Layout) 스페이서가 남아 폭이 그대로라 위젯이 제자리에 있는다.
-    [CenterHeader("< 3열 >")]
+    [CenterHeader("<메인 3개 캔버스 >")]
     [SerializeField, Tooltip("창고 열의 본체 — 3 Storage Column 안의 Storage Canvas")]
     private StorageCanvasUI storageCanvas = null!;
 
@@ -41,8 +41,8 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("거래 열의 본체 — 3 Market Column 안의 Market Canvas")]
     private MarketCanvasUI marketCanvas = null!;
 
-    [CenterHeader("< 작업슬롯 열의 나머지 2칸 >")]
-    [SerializeField, Tooltip("상태 패널 — 위젯의 반대편 슬롯. 작업슬롯과 함께 여닫힌다")]
+    [CenterHeader("< 사이드 2개 캔버스 >")]
+    [SerializeField, Tooltip("상태 캔버스 — 위젯의 반대편. 작업슬롯과 함께 여닫힌다")]
     private StateCanvasUI stateCanvas = null!;
 
     [SerializeField, Tooltip("바탕화면에 항상 떠 있는 위젯. 여닫지 않고 참조만 들고 있는다")]
