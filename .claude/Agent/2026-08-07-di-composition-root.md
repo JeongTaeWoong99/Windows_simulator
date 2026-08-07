@@ -159,8 +159,7 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 
 - **`Program.cs:12`의 `Run()` await 누락**(CS4014) — 예외가 조용히 삼켜진다.
   리뷰 버그 #2와 같은 종류를 새로 만드는 자리다.
-- `Create()`/`Login()` 흐름 테스트 — 즉시 실행 모드가 준비됐으니 이제 짤 수 있다.
-  `OnCreate`가 `AccountRepository`를 예약하는지, `Login()`이 *"캐릭터를 슬롯보다 먼저"*
-  (`User.cs:135-137`) 순서를 지키는지. **이 규칙은 지금 주석으로만 지켜진다.**
-- `SessionWatchdog.Sweep`을 `public`으로 열어 뒀지만 테스트 0건.
+- `Create()`/`Login()` 흐름 테스트와 `SessionWatchdog.Sweep` 테스트 → **일감 [T-020](../../일감/T-020-로그인생명주기테스트.md)** 으로 등록.
+  즉시 실행 모드는 준비됐지만 `Login()`·`Destroy()`가 전역 `UserManager.Instance`를 만져
+  **처리 방침을 먼저 골라야 한다** — 일감에 선택지 3개를 적어 뒀다.
 - `ISessionWatchdog`·`IServer`는 어댑터가 운영 구현 1개뿐 — 아직 가설상의 seam.
