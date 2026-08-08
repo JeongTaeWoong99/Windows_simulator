@@ -17,14 +17,77 @@ public static class ExcelGenerator
             .Where(path => !Path.GetFileName(path).StartsWith("~$"))
             .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase));
 
+        // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 낚시 …)이고
+        // 베이스 이름이 같은 시트들은 한 테이블로 병합된다. '.' 없는 시트는 그대로 시트=테이블.
+        var sheets = new List<(string File, string Sheet, TableData Data)>();
         foreach (var excel in excels)
         {
             using var workbook = OpenWorkbook(excel);
 
             foreach (var worksheet in workbook.Worksheets)
             {
-                _tables.Add(ParseSheet(worksheet));
+                sheets.Add((Path.GetFileName(excel), worksheet.Name, ParseSheet(worksheet)));
             }
+        }
+
+        // GroupBy는 등장 순서를 보존하므로 행 순서 = 파일 열거 순 → 워크북 탭 순.
+        foreach (var group in sheets.GroupBy(s => BaseTableName(s.File, s.Sheet), StringComparer.Ordinal))
+        {
+            _tables.Add(MergeSheets(group.Key, group.ToList()));
+        }
+    }
+
+    /// <summary>시트 이름에서 첫 '.' 앞부분을 테이블명으로 삼는다. 비어 있으면 fail-fast.</summary>
+    private static string BaseTableName(string file, string sheet)
+    {
+        var baseName = sheet.Split('.', 2)[0].Trim();
+        if (string.IsNullOrEmpty(baseName))
+            throw new InvalidDataException($"'{file}'의 시트 '{sheet}': '.' 앞의 테이블명이 비어 있습니다.");
+
+        return baseName;
+    }
+
+    /// <summary>
+    /// 베이스 이름이 같은 시트들을 한 테이블로 이어 붙인다. 스키마(마커 행 전체)가 완전히 같아야 하며,
+    /// 한 시트만 고치고 나머지를 빠뜨리는 드리프트는 여기서 어긋난 컬럼을 짚어 fail-fast 한다.
+    /// (키 중복은 뒤의 TableSet.From이 잡는다)
+    /// </summary>
+    private static TableData MergeSheets(string name, IReadOnlyList<(string File, string Sheet, TableData Data)> parts)
+    {
+        var first = parts[0];
+        if (parts.Count == 1)
+        {
+            return first.Data with { Name = name };
+        }
+
+        foreach (var part in parts.Skip(1))
+        {
+            AssertSameSchema(name, first, part);
+        }
+
+        var rows = parts.SelectMany(p => p.Data.Rows).ToList();
+        return new TableData(name, first.Data.columnInfos, rows);
+    }
+
+    /// <summary>병합 대상 시트의 스키마를 기준 시트와 비교하고, 다르면 어긋난 지점을 담아 던진다.</summary>
+    private static void AssertSameSchema(
+        string name,
+        (string File, string Sheet, TableData Data) baseline,
+        (string File, string Sheet, TableData Data) target)
+    {
+        var a = baseline.Data.columnInfos;
+        var b = target.Data.columnInfos;
+
+        string Where() => $"'{name}' 병합 실패 — 기준 '{baseline.File}/{baseline.Sheet}' vs '{target.File}/{target.Sheet}'";
+
+        if (a.Count != b.Count)
+            throw new InvalidDataException($"{Where()}: 컬럼 수가 다릅니다 ({a.Count} vs {b.Count}).");
+
+        for (var i = 0; i < a.Count; i++)
+        {
+            if (!a[i].Equals(b[i]))
+                throw new InvalidDataException(
+                    $"{Where()}: 컬럼 '{a[i].Name}'의 정의가 다릅니다.\n  기준: {a[i]}\n  대상: {b[i]}");
         }
     }
 
