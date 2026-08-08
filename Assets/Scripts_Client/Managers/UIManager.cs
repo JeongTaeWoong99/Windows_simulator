@@ -31,7 +31,7 @@ public class UIManager : MonoService<UIManager>
     // ※ 여닫는 대상은 전부 Canvas다 — Column이 아니다.
     //   Column을 끄면 남은 열들이 Horizental Columns 안에서 가운데로 다시 몰려 위젯 가로 칸이 어긋난다.
     //   Canvas만 끄면 Column 3개와 (Layout) 스페이서가 남아 폭이 그대로라 위젯이 제자리에 있는다.
-    [CenterHeader("< 3열 >")]
+    [CenterHeader("<메인 3개 캔버스 >")]
     [SerializeField, Tooltip("창고 열의 본체 — 3 Storage Column 안의 Storage Canvas")]
     private StorageCanvasUI storageCanvas = null!;
 
@@ -41,12 +41,18 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("거래 열의 본체 — 3 Market Column 안의 Market Canvas")]
     private MarketCanvasUI marketCanvas = null!;
 
-    [CenterHeader("< 작업슬롯 열의 나머지 2칸 >")]
-    [SerializeField, Tooltip("상태 패널 — 위젯의 반대편 슬롯. 작업슬롯과 함께 여닫힌다")]
+    [CenterHeader("< 사이드 2개 캔버스 >")]
+    [SerializeField, Tooltip("상태 캔버스 — 위젯의 반대편. 작업슬롯과 함께 여닫힌다")]
     private StateCanvasUI stateCanvas = null!;
 
     [SerializeField, Tooltip("바탕화면에 항상 떠 있는 위젯. 여닫지 않고 참조만 들고 있는다")]
     private WidgetCanvasUI widgetCanvas = null!;
+
+    // ※ 로그인은 3열·위젯과 다른 축이다 — 게임에 들어오기 전까지 이것만 보이고, 성공하면 다시 안 나온다.
+    //   그래서 ToggleAll·CloseAllExceptWidget의 대상에 넣지 않는다.
+    [CenterHeader("< 로그인 캔버스 >")]
+    [SerializeField, Tooltip("로그인 열. 다른 UI보다 앞에 오도록 Override Sorting을 켜고 Sorting Order를 크게 준다")]
+    private LoginCanvasUI loginCanvas = null!;
 
     // ─── 참조 ───
     public StorageCanvasUI     Storage     => storageCanvas;
@@ -72,6 +78,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(stateCanvas,       nameof(stateCanvas));
         this.RequireRef(marketCanvas,      nameof(marketCanvas));
         this.RequireRef(widgetCanvas,      nameof(widgetCanvas));
+        this.RequireRef(loginCanvas,       nameof(loginCanvas));
     }
 
     /// <summary>
@@ -117,4 +124,15 @@ public class UIManager : MonoService<UIManager>
 
     /// <summary>거래 열을 뒤집는다 (작업슬롯 하단 버튼).</summary>
     public void ToggleMarket() => ShowMarket(!marketCanvas.gameObject.activeSelf);
+
+    /// <summary>
+    /// 로그인 열을 열고 닫는다 (<c>LoginPanelUI</c>가 로그인 성공 응답을 받고 부른다).
+    ///
+    /// <para>
+    /// ⚠️ <b>버튼을 누른 시점이 아니라 성공 응답이 온 시점에 닫는다.</b> 서버는 같은 Id가 이미
+    /// 접속 중이면 응답도 로그도 없이 요청을 버린다(이슈 #10). 누르자마자 닫으면 그때
+    /// 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
+    /// </para>
+    /// </summary>
+    public void ShowLogin(bool on) => loginCanvas.Show(on);
 }
