@@ -17,10 +17,10 @@ tags: [design, gathering, reward]
 ## 변경 내용 (문서 9개)
 
 - `게임기획코어.md` — 4장 보상 구조를 한 층으로, 5장 확정 현황 6줄 갱신
-- `자원채취/README.md` — 1장 요약 · 1-1 차별화 표 · **2.4 전면** · 3장 데이터 설계 · 5장 논점
-- `자원채취/낚시/README.md` — 확정 표 · 판정 루프 · 하루 실측 · 3장 정체성 · 4장 산출물 · 5장 테이블 · 6장 롤 횟수 · 7장 논점
-- `자원채취/{사냥,농사,벌목,채굴}/README.md` — 특별보상 행과 `<산업>SpecialTable` 폐지 표기
-- `아이템/README.md` · `진행 및 성장/README.md` — 참조 갱신
+- `gathering/README.md` — 1장 요약 · 1-1 차별화 표 · **2.4 전면** · 3장 데이터 설계 · 5장 논점
+- `gathering/fishing/README.md` — 확정 표 · 판정 루프 · 하루 실측 · 3장 정체성 · 4장 산출물 · 5장 테이블 · 6장 롤 횟수 · 7장 논점
+- `gathering/{사냥,농사,벌목,채굴}/README.md` — 특별보상 행과 `<산업>SpecialTable` 폐지 표기
+- `item/README.md` · `progression/README.md` — 참조 갱신
 - `기획평가.md` — **5차 평가 절 신규**(과거 평가는 고치지 않았다)
 
 ## 주요 결정 / 근거

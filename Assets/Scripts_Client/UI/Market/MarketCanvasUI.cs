@@ -12,7 +12,7 @@ using UnityEngine;
 /// <para>
 /// ⚠️ <b>거래소·상점은 기획 수치가 전부 미정이다.</b> 골드 상점이라는 방향만 잡혀 있고
 /// 수수료·한도·품목·가격은 정해지지 않았다 — 임의로 정하지 않는다.
-/// → GameDesign/기획/거래/README.md 3.2
+/// → GameDesign/design/trade/README.md 3.2
 /// </para>
 /// </summary>
 public class MarketCanvasUI : MonoBehaviour

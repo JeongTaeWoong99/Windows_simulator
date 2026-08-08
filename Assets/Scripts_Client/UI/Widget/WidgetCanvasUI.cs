@@ -22,7 +22,7 @@ using UnityEngine.UI;
 /// ⚠️ <b>연출을 여기서 돌리지 않는다.</b> 배경·캐릭터 모션은 큰 창 전용이다.
 /// 상시 실행 앱에서 리소스는 기능이 아니라 <b>생존 조건</b>이고, 급격한 애니메이션은
 /// P1(주의를 뺏지 않는다)을 정면으로 어긴다.
-/// → GameDesign/기획/게임UI/README.md 2.1
+/// → GameDesign/design/ui/README.md 2.1
 /// </para>
 /// </summary>
 public class WidgetCanvasUI : MonoBehaviour

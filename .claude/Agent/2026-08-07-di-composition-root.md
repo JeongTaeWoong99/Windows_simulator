@@ -14,8 +14,8 @@ tags: [server, refactor, architecture, di, executor]
   거기서 `IClientChannel`·`IDBQueue`로 `User`를 열었지만 `Login()` 전체 흐름은 여전히 테스트 불가였다 —
   `Entity.Create()`/`Destroy()`가 `LogicExecutor.Instance.Post`로 던지는 비동기라 `OnCreate`가 그 자리에서 돌지 않는다.
   **실행기와 매니저 싱글턴을 열지 않으면 그 위는 못 연다.**
-- 아키텍처 리뷰([2026-08-03](../../GameDesign/아키텍처리뷰/2026-08-03-아키텍처리뷰.md) 후보 6 →
-  [2026-08-01](../../GameDesign/아키텍처리뷰/2026-08-01-서버아키텍처리뷰.md) **후보 4**)가 지적한
+- 아키텍처 리뷰([2026-08-03](../../GameDesign/architecture-review/2026-08-03-아키텍처리뷰.md) 후보 6 →
+  [2026-08-01](../../GameDesign/architecture-review/2026-08-01-서버아키텍처리뷰.md) **후보 4**)가 지적한
   두 가지를 함께 친다.
   - `Entity.Post`가 `LogicExecutor.Instance`에 못 박혀 **어떤 Entity 생명주기도 동기 검증이 안 된다**.
   - "프레임워크는 게임을 모른다"는 경계 규칙(CLAUDE.md)을 `MikaExecutor.cs`가 스스로 어긴다.
@@ -96,8 +96,8 @@ LogicExecutor ──┬─→ SessionWatchdog ──→ NetworkManager
 
 ## 참고
 
-- `GameDesign/아키텍처리뷰/2026-08-01-서버아키텍처리뷰.md` — 후보 4(Executor·`Entity.Post`), 버그 #2·#4
-- `GameDesign/아키텍처리뷰/2026-08-03-아키텍처리뷰.md` — 1장 지표(`*.Instance` 21곳), 후보 6
+- `GameDesign/architecture-review/2026-08-01-서버아키텍처리뷰.md` — 후보 4(Executor·`Entity.Post`), 버그 #2·#4
+- `GameDesign/architecture-review/2026-08-03-아키텍처리뷰.md` — 1장 지표(`*.Instance` 21곳), 후보 6
 - `.claude/Agent/2026-08-03-user-testability-seam.md` — 이 작업의 직전 판
 
 ---
@@ -159,7 +159,7 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 
 - **`Program.cs:12`의 `Run()` await 누락**(CS4014) — 예외가 조용히 삼켜진다.
   리뷰 버그 #2와 같은 종류를 새로 만드는 자리다.
-- `Create()`/`Login()` 흐름 테스트와 `SessionWatchdog.Sweep` 테스트 → **일감 [T-020](../../일감/T-020-로그인생명주기테스트.md)** 으로 등록.
+- `Create()`/`Login()` 흐름 테스트와 `SessionWatchdog.Sweep` 테스트 → **일감 [T-020](../../tasks/T-020-로그인생명주기테스트.md)** 으로 등록.
   즉시 실행 모드는 준비됐지만 `Login()`·`Destroy()`가 전역 `UserManager.Instance`를 만져
   **처리 방침을 먼저 골라야 한다** — 일감에 선택지 3개를 적어 뒀다.
 - `ISessionWatchdog`·`IServer`는 어댑터가 운영 구현 1개뿐 — 아직 가설상의 seam.

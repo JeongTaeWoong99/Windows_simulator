@@ -29,7 +29,7 @@ tags: [gamedata, character, excel, design]
 - 생성물 갱신(`generate-tables.ps1`) — `CharacterTable` 7행. `Ref` 검사 통과.
 - `Server/WSGameServer/User/User.Character.cs` — `DefaultCharacterTid` **1 → 1001**.
 - `Server/WSGameServer.Tests/Character/CharacterTest.cs` — 테스트명·기대값을 1001로.
-- 기획 문서 — `캐릭터/README.md` 3.3·4장·5장·6장, `게임기획코어.md` 5장 확정 현황.
+- 기획 문서 — `character/README.md` 3.3·4장·5장·6장, `게임기획코어.md` 5장 확정 현황.
 
 ## 주요 결정 / 근거
 

@@ -8,7 +8,7 @@ tags: [server, excelgenerator, data, gathering, fishing]
 
 ## 목적 / 배경
 
-- 채취 보상 3층 구조(→ [자원채취](../../GameDesign/기획/자원채취/README.md) 2.4)를
+- 채취 보상 3층 구조(→ [자원채취](../../GameDesign/design/gathering/README.md) 2.4)를
   실제 데이터로 옮기는 첫 작업. 사용자 요청은 **"드롭 테이블마다 엑셀 시트를 만들고,
   `ItemTID` reference check를 하고 싶다"** 였다.
 - 기존 파이프라인에는 참조 무결성 개념이 없었다. 드롭 시트의 `ItemTID`는 오타이거나
@@ -39,8 +39,8 @@ tags: [server, excelgenerator, data, gathering, fishing]
 
 **기획 문서**
 
-- `자원채취/낚시/README.md` 5장 — 시트 존재 사실, `DropTID` 선두 규칙, `Ref` 마커 표 추가.
-- `자원채취/README.md` 3장 — 제너레이터 단일키 제약 절 신설, `<산업>SpecialTable`에 `DropTID` 반영.
+- `gathering/fishing/README.md` 5장 — 시트 존재 사실, `DropTID` 선두 규칙, `Ref` 마커 표 추가.
+- `gathering/README.md` 3장 — 제너레이터 단일키 제약 절 신설, `<산업>SpecialTable`에 `DropTID` 반영.
 
 ## 주요 결정 / 근거
 
@@ -73,7 +73,7 @@ tags: [server, excelgenerator, data, gathering, fishing]
 - **아직 만들지 않은 시트** — `RarityWeightTable`·`CommonRewardTable`(전 산업 공통),
   `FishingSpotTable`, 그리고 농사·벌목·채굴·사냥의 Basic/Special.
   나머지 산업의 `SpecialTable`은 **고유 컬럼(파종 작물·잔여 자원량·깊이 구간)이 기획 미결**이라
-  의도적으로 보류했다. → [자원채취](../../GameDesign/기획/자원채취/README.md) 5장
+  의도적으로 보류했다. → [자원채취](../../GameDesign/design/gathering/README.md) 5장
 - `ItemType.Hunting` 미추가 건은 그대로다. 사냥 시트는 `Enum.xlsx` 수정이 선행돼야 한다.
 - **확률·가중치 수치는 전부 미확정이다.** 게임기획코어 5장에서 "희귀도 분포 확률값"이
   최우선 미작성 항목이며, 임의로 채우지 않았다.

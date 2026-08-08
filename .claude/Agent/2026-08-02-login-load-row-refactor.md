@@ -6,7 +6,7 @@ tags: [server, repository, login, refactor]
 
 # 로그인 Load 경로를 Row 기반으로 리팩토링
 
-선행 문서: [아키텍처 리뷰](../../GameDesign/아키텍처리뷰/2026-08-01-서버아키텍처리뷰.md) 후보 2의 **Load 부분만** 실행.
+선행 문서: [아키텍처 리뷰](../../GameDesign/architecture-review/2026-08-01-서버아키텍처리뷰.md) 후보 2의 **Load 부분만** 실행.
 사용자가 namespace 평탄화·`DbConnection` 래퍼·`RepositoryContracts.cs`를 먼저 만들어 두었고, 그 WIP를 이어받아 완성했다.
 
 ## 변경 내용

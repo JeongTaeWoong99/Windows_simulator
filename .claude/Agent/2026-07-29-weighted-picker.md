@@ -10,7 +10,7 @@ tags: [server, gathering, drop, gacha, test]
 
 - 사용자 요청: **"앞으로 모든 DropTable에 사용할 (아마 가챠에서도 쓸) 확률 계산 클래스를
   기존 Gacha와는 별개로 만들어 달라."**
-- 채취 보상은 3층 구조(→ [자원채취](../../GameDesign/기획/자원채취/README.md) 2.4)라
+- 채취 보상은 3층 구조(→ [자원채취](../../GameDesign/design/gathering/README.md) 2.4)라
   판정 1회에 롤이 **3번** 돈다(기본/특별 분기 → 희귀도 or 특별 → 공통보상).
   여기에 산업 5종·가챠까지 같은 계산을 각자 구현하면 확률 버그가 흩어진다.
 - 기존 `Gacha/GachaTable.cs`는 풀이 **코드에 하드코딩**돼 있고
@@ -87,7 +87,7 @@ tags: [server, gathering, drop, gacha, test]
 
 - **아직 드롭을 굴리는 게임 로직은 없다.** 카탈로그에 등록까지만 돼 있다.
   채취 정산(판정 횟수 × 산출량)은 기획 미확정 항목이 많아
-  (→ [자원채취](../../GameDesign/기획/자원채취/README.md) 5장) 만들지 않았다.
+  (→ [자원채취](../../GameDesign/design/gathering/README.md) 5장) 만들지 않았다.
 - 사용 예:
   ```csharp
   // 서버 시작 시 한 번 (Program.cs)

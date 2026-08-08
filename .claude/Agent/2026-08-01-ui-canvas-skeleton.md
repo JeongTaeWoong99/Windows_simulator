@@ -27,7 +27,7 @@ T-006(작업슬롯 UI)·T-007(인벤토리 UI) 착수 전, 확정된 UI 배치�
   - `GetSize()` — 화면 비례 1:2 세로 → **기준 `960×540`(상수 `BaseWidth`/`BaseHeight`)에 배율을 곱한 절대 픽셀**
   - `ClampToWorkArea()` 신설 — 넘칠 때 **16:9를 유지한 채** 축소
   - `GetPrimaryScreenHeight()` · `GetWorkAreaHeight()` 제거 → **`GetWorkAreaSize()`** 하나로 통합(가로도 필요해짐)
-- `GameDesign/기획/게임UI/README.md` — 2장 재작성(창 축 3개 분리 · 캔버스 3개 · 3단 슬롯 정렬), 6장 Q13 신규
+- `GameDesign/design/ui/README.md` — 2장 재작성(창 축 3개 분리 · 캔버스 3개 · 3단 슬롯 정렬), 6장 Q13 신규
 
 ## 주요 결정 / 근거
 

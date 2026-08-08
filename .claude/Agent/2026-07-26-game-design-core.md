@@ -97,7 +97,7 @@ tags: [design, docs, skills, claude-md]
 
 ### 변경 내용
 
-- `GameDesign/GameDesignCore.md` → `GameDesign/기획/GameDesignCore.md` 로 이동.
+- `GameDesign/GameDesignCore.md` → `GameDesign/design/GameDesignCore.md` 로 이동.
   Core가 기획 문서 트리의 최상위이자 유일한 진입점이 됐다.
 - **`Window Simulator GDD.md` 삭제.** 내용은 Core에 전부 흡수돼 있었다.
 - 기획 문서 폴더를 한글로 변경:
@@ -144,7 +144,7 @@ tags: [design, docs, skills, claude-md]
   (`Core를`·`Core의`처럼 조사가 붙은 형태는 `\bCore\b` 정규식에 안 잡혀 2차로 처리했다)
 - `README.md`는 **바꾸지 않았다.** CLAUDE.md "이름 규칙"의 관례 예외이고,
   GitHub·에디터가 폴더 인덱스로 자동 렌더링하는 기능을 잃는다.
-  각 폴더명이 이미 한글이라 `자원채취/README.md` 형태로 충분히 읽힌다.
+  각 폴더명이 이미 한글이라 `gathering/README.md` 형태로 충분히 읽힌다.
 - 링크 전수 재검증 완료 (broken 0).
 
 ### 시스템 명칭 변경 (같은 날 추가 요청)

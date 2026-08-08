@@ -3,7 +3,7 @@
     기획 문서 참조 그래프를 검사한다.
 
 .DESCRIPTION
-    GameDesign/기획 아래 기획 문서들의 상호 링크를 읽어 그래프를 만들고,
+    GameDesign/design 아래 기획 문서들의 상호 링크를 읽어 그래프를 만들고,
     각 문서 헤더의 "바뀌면 갱신" 블록이 실제 역참조와 맞는지 대조한다.
 
     검사 항목:
@@ -42,12 +42,12 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # 경로는 스크립트 위치에서 유도한다 — 어디에 체크아웃하든 동작해야 한다.
-$DesignRoot = Join-Path $PSScriptRoot '기획'
+$DesignRoot = Join-Path $PSScriptRoot 'design'
 
 # 그래프에서 빼는 것.
 #   리서치·방향제안 — 특정 시점의 조사·제안을 남긴 아카이브다. 갱신 전파 대상이 아니다.
 #   문서관계도      — 그래프를 서술하는 메타 문서라 자기 자신을 노드로 세면 순환한다.
-$ExcludeDirs = @('리서치', '방향제안')
+$ExcludeDirs = @('research', 'proposals')
 $ExcludeDocs = @('문서관계도')
 
 # 헤더 블록의 표식. 이 줄이 있어야 파싱 대상이 된다.

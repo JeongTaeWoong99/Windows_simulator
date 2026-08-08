@@ -26,7 +26,7 @@ tags: [server, gacha, data, protocol, excel]
   `GachaPoolCatalog.cs` 신규(엑셀 로드, `GachaId`별 `WeightedPicker`).
 - `GachaService.cs` — 카탈로그 추첨으로 교체, 등급은 `GameTable.ItemTable`에서 조회.
 - `Server/WSGameServer.Tests/Gacha/GachaPoolCatalogTest.cs` — 정규화·풀 분리 테스트 4건.
-- 기획 문서 갱신: `게임기획코어.md` 4장 희귀도·식별자 표, `아이템/README.md` 1·4장.
+- 기획 문서 갱신: `게임기획코어.md` 4장 희귀도·식별자 표, `item/README.md` 1·4장.
 
 ## 주요 결정 / 근거
 
@@ -47,6 +47,6 @@ tags: [server, gacha, data, protocol, excel]
 - **클라(`PacketTestPanelUI` 등)는 재빌드만 하면 된다** — `Rarity` 필드명은 그대로,
   타입만 `EGlobalRarity`로 미러됐다.
 - 가챠 아이템 이름·가중치·풀 구성은 **테스트값**이다. 가챠 결과물의 정체(캐릭터?)는
-  여전히 기획 미정 → `아이템/README.md` 4장.
+  여전히 기획 미정 → `item/README.md` 4장.
 - 이슈 #9 잔여: 캐릭터 테이블 확충(4-2), `DefaultSlotCount`·`BaseCycleSeconds` 등
   상수 선 긋기(4-1)는 이번 작업에 포함하지 않았다.

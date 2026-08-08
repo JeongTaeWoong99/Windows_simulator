@@ -17,7 +17,7 @@ tags: [docs, design, tooling, powershell]
 
 ## 변경 내용
 
-- `GameDesign/기획/문서관계도.md` — **신설.** 그래프의 단일 원본.
+- `GameDesign/design/문서관계도.md` — **신설.** 그래프의 단일 원본.
   층위 · mermaid · 정/역참조 표 · 재귀 전파 의사코드 · **엑셀/코드 대응표**(4장)
 - `GameDesign/check-doc-graph.ps1` — **신설.** 링크에서 그래프를 만들어 검사한다.
   `-Changed`(커밋 전) · `-Graph`(덤프) · `-Fix`(헤더 블록 생성)

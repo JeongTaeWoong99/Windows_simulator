@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-06 (클라 구조 재편 · Arca 툴킷 위치 명시)
+> 최종 업데이트: 2026-08-09 (문서 사이트 `GameDesign/web/` 추가)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -14,11 +14,11 @@
 ## ⚠️ 게임 작업 전 필독 — 게임기획코어.md
 
 **게임 시스템·콘텐츠에 닿는 작업은 착수 전에
-[`GameDesign/기획/게임기획코어.md`](GameDesign/기획/게임기획코어.md)를 반드시 먼저 읽는다.**
+[`GameDesign/design/게임기획코어.md`](GameDesign/design/게임기획코어.md)를 반드시 먼저 읽는다.**
 
 - 이 문서가 게임의 **단일 진입점**이다. 정체성·설계 원칙(P1~P4)·코어 루프·시스템 지도·
   **확정/미확정 현황**을 담는다.
-- 게임기획코어를 읽은 뒤, 해당 영역의 **상세 기획안**(`GameDesign/기획/<시스템>/README.md`)을 이어서 읽는다.
+- 게임기획코어를 읽은 뒤, 해당 영역의 **상세 기획안**(`GameDesign/design/<시스템>/README.md`)을 이어서 읽는다.
 - **게임기획코어 5장의 "미확정" 항목은 임의로 결정하지 않는다.** 필요하면 사용자에게 먼저 확인한다.
 - 절차·예외·문서 갱신 규칙은 [`game-design-reference`](.claude/skills/common/game-design-reference/SKILL.md) 스킬 참조.
 
@@ -31,7 +31,7 @@
 1. 고친 문서 헤더의 **`> **바뀌면 갱신:**`** 블록에 적힌 문서를 **전부 열어 본다.**
 2. 고친 문서가 생기면 **그 문서의 블록을 따라 또 퍼진다** (순환은 방문 표시로 멈춘다).
 3. 전체 그래프·전파 규칙·엑셀/코드 대응표는
-   [`GameDesign/기획/문서관계도.md`](GameDesign/기획/문서관계도.md)에 있다.
+   [`GameDesign/design/문서관계도.md`](GameDesign/design/문서관계도.md)에 있다.
 4. 커밋 전에 검사한다:
 
 ```powershell
@@ -40,7 +40,7 @@ powershell -File GameDesign/check-doc-graph.ps1 -Changed
 
 > **엑셀만 앞서 나가면 "미구현"이 아니라 "오동작"이 된다.** 엑셀 구조를 바꿀 때는
 > 그 시트를 읽는 서버 코드를 **같은 작업 단위로** 본다. 코드가 못 따라가면
-> `일감/`에 등록하고 문서에 `❌ 미구현 (일감 T-0XX)`를 적는다.
+> `tasks/`에 등록하고 문서에 `❌ 미구현 (일감 T-0XX)`를 적는다.
 
 대상 작업: 채취·퀘스트·특성·아이템·거래·성장곡선·위젯 UI 로직, `GameDesign/Excel` 데이터 변경,
 게임 데이터 테이블/패킷/DB 스키마 설계, 기획 문서 수정.
@@ -65,17 +65,19 @@ powershell -File GameDesign/check-doc-graph.ps1 -Changed
 
 | 경로 | 담당 | 내용 |
 |------|------|------|
-| `일감/` | 공용 | **할 일의 단일 목록** — 일감 1개 = 파일 1개, `README.md`가 전체 현황 표. 담당(클라/서버/공용)·상태·우선순위·마감·관련 커밋 |
-| `문서/` | 공용 | **개발 인프라 문서** — 서버·클라 양쪽에 걸치는 것. 현재 [`CI.md`](문서/CI.md) |
+| `tasks/` | 공용 | **할 일의 단일 목록** — 일감 1개 = 파일 1개, `README.md`가 현황 표. 담당(클라/서버/공용)·상태·우선순위·마감·관련 커밋 |
+| `tasks/archive/` | 공용 | **끝난 일감** — 완료되면 여기로 내려간다. INDEX에는 굴러가는 것만 남는다. 평소 탐색하지 않는다 |
+| `docs/` | 공용 | **개발 인프라 문서** — 서버·클라 양쪽에 걸치는 것. 현재 [`CI.md`](docs/CI.md) |
 | `.github/workflows/` | 공용 | GitHub Actions — 서버 CI · 클라 CI · Unity 라이선스 활성화 |
-| `Server/문서/` | 서버 | 서버 전용 문서 — [`테스트커버리지.md`](Server/문서/테스트커버리지.md) |
-| `GameDesign/기획/게임기획코어.md` | 공용 | **게임 기획 최상위 문서** — 게임 작업 착수 전 필독. 정체성·설계 원칙·코어 루프·시스템 지도·확정/미확정 현황 |
-| `GameDesign/기획/문서관계도.md` | 공용 | **기획 문서 의존 그래프** — 무엇을 함께 읽고 함께 고치는가. 전파 규칙 + 엑셀·코드 대응표 |
+| `Server/docs/` | 서버 | 서버 전용 문서 — [`테스트커버리지.md`](Server/docs/테스트커버리지.md) |
+| `GameDesign/design/게임기획코어.md` | 공용 | **게임 기획 최상위 문서** — 게임 작업 착수 전 필독. 정체성·설계 원칙·코어 루프·시스템 지도·확정/미확정 현황 |
+| `GameDesign/design/문서관계도.md` | 공용 | **기획 문서 의존 그래프** — 무엇을 함께 읽고 함께 고치는가. 전파 규칙 + 엑셀·코드 대응표 |
 | `GameDesign/check-doc-graph.ps1` | 공용 | **문서 그래프 검사기.** 깨진 링크·헤더 블록 불일치·**갱신일 역전**(전파 누락)을 잡는다 |
-| `GameDesign/기획/` | 공용 | **게임 기획 단일 진실** — 게임기획코어 + 시스템별 상세 기획안(`<시스템>/README.md`) + 1차 산업(`자원채취/<산업>/README.md`) + 설계 평가(`기획평가.md`) |
+| `GameDesign/design/` | 공용 | **게임 기획 단일 진실** — 게임기획코어 + 시스템별 상세 기획안(`<시스템>/README.md`) + 1차 산업(`gathering/<산업>/README.md`) + 설계 평가(`기획평가.md`) |
 | `GameDesign/Excel/` | 공용 | **게임 데이터 단일 진실** — 기획 데이터 엑셀(`Enum.xlsx`·`Item.xlsx` …). 서버/클라 어느 쪽 폴더에도 속하지 않는 공용 입력 |
 | `GameDesign/DataLog/` | 공용(생성) | 생성된 `.bytes`를 되읽어 덤프한 JSON. 엑셀 대조·diff 리뷰용 — **직접 수정 금지** |
 | `GameDesign/generate-tables.ps1` | 공용 | **데이터 파이프라인 실행 스크립트.** 입력(엑셀) 옆에 두어 기획자가 그 자리에서 돌린다 |
+| `GameDesign/web/` | 공용 | **문서 사이트(Astro).** `tasks/`·`GameDesign/design/`을 그대로 읽어 정적 사이트로 만든다 — 문서를 복사하지 않는다. 사용법은 [`사이트.md`](GameDesign/web/사이트.md) |
 | `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 패킷 정의 원본 = `Server/MikaProtocol` |
 | `Server/MikaNetwork.Lib/` | 서버 | **게임과 무관한 재사용 네트워크 프레임워크** — `MikaNetwork.Core`·`.Client`·`.Server`·`MikaUtils`·`MikaSourceGen` |
 | `Server/GameData/` | 서버(생성) | 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
@@ -122,6 +124,9 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
   ps1은 `$RepoRoot`/`$ServerRoot`/`$UnityRoot`에서, `ExcelGenerator`는 `Program.cs` 상단의
   루트 상대 상수(`ExcelDirRel` 등)에서 조합한다. **프로젝트 폴더 상대(`../GameData`)로 두지 않는다** —
   프로젝트를 옮기면 컴파일은 통과하면서 엉뚱한 위치에 파일을 쓴다.
+- **시트 이름 `<테이블명>.<접미사>`는 병합 규약이다** — 베이스 이름이 같은 시트들이
+  한 테이블로 합쳐진다(예: `FishingBasicTable.Lv1`~`.Lv5` → `FishingBasicTable`).
+  상세는 [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) 스킬 참조.
 - **시트를 지우면 그 테이블의 `.bytes`·`.json`도 자동 삭제된다**(Unity 미러까지 전파).
   생성물을 손으로 지울 필요가 없다.
 
@@ -179,7 +184,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 
 ⚠️ **커버리지를 목표로 삼지 않는다.** 단언 없는 테스트로도 숫자는 올라간다 —
 빨강만 믿을 만하고 초록은 못 믿는다. 상세는
-[`Server/문서/테스트커버리지.md`](Server/문서/테스트커버리지.md) 참조.
+[`Server/docs/테스트커버리지.md`](Server/docs/테스트커버리지.md) 참조.
 
 ---
 
@@ -188,7 +193,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 - 각자 자기 담당 폴더(`Scripts_Client` / `Scripts_Server`·`Server`)만 수정한다. 상대 폴더 변경은 합의 후.
 - 패킷 정의는 `Server/MikaProtocol`에서만 수정한다. `Assets/Scripts_Server/Protocol`은
   `sync-protocol-to-unity.ps1`이 덮어쓰는 사본이므로 직접 수정하지 않는다.
-- 게임 시스템·콘텐츠 작업은 `GameDesign/기획/게임기획코어.md` → 해당 상세 기획안 순으로 먼저 읽는다.
+- 게임 시스템·콘텐츠 작업은 `GameDesign/design/게임기획코어.md` → 해당 상세 기획안 순으로 먼저 읽는다.
   기획이 확정·변경되면 상세 기획안과 게임기획코어의 확정/미확정 현황을 함께 갱신하고,
   **`문서관계도.md`의 역참조를 따라 재귀적으로 전파한 뒤 `check-doc-graph.ps1 -Changed`로 검사한다.**
 - 게임 데이터는 `GameDesign/Excel`의 엑셀에서만 수정한다. 여긴 **공용**이라 서버·클라 모두 편집해도 된다.
@@ -204,7 +209,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
 - `.claude/settings.local.json`은 개인 설정이라 커밋하지 않는다(`.gitignore` 처리됨).
 - 코드는 한글 주석을 사용한다.
-- **문서(`.md`)와 문서 폴더는 항상 한글 이름으로 만든다.** 상세는 아래 "이름 규칙" 참조.
+- **폴더는 영문, 문서(`.md`) 파일명은 한글이다.** 상세는 아래 "이름 규칙" 참조.
 - CLAUDE.md·스킬 문서를 수정하면 문서 상단의 `최종 업데이트` 날짜를 그날 날짜로 갱신한다.
 - **사용자가 특별한 요구를 하지 않는 한, 간단하고 명료하게 설명한다.**
   물은 것에 답하고 끝낸다. 배경·대안·파생 논점을 묻지 않았는데 늘어놓지 않는다.
@@ -214,17 +219,33 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 
 ## 이름 규칙 (문서·폴더)
 
-**새 `.md` 문서나 폴더를 만들 때는 한글 이름을 쓴다.** 영문으로 만들지 않는다.
+**폴더는 영문, 문서(`.md`) 파일명은 한글이다.** (2026-08-08 변경 — 이전 규칙은 폴더도 한글이었다)
 
 | 대상 | 규칙 | 예 |
 |------|------|-----|
-| 기획·설계 문서 폴더 | **한글** | `GameDesign/기획/자원채취/농사/` |
-| 기획·설계 `.md` 파일 | **한글** | `요일로테이션.md`, `밸런스표.md` |
-| 문서 안의 링크·경로 | 실제 한글 경로 그대로 | `[자원채취](자원채취/README.md)` 형태 |
+| **모든 폴더** | **영문 소문자 · kebab-case** | `GameDesign/design/gathering/farming/`, `tasks/archive/` |
+| 기획·설계 `.md` 파일 | **한글** | `게임기획코어.md`, `산업레벨.md`, `요일로테이션.md` |
+| 일감 파일 | `T-<3자리>-<한글슬러그>.md` | `T-005-드롭테이블.md` |
+| 문서 안의 링크·경로 | 실제 경로 그대로 (영문 폴더 + 한글 파일) | `[자원채취](gathering/README.md)` |
 
-### 예외 — 영문을 유지하는 것
+**폴더를 영문으로 되돌린 이유:** 문서를 웹으로 배포할 때 한글 폴더가
+percent-encoding(`진행%20및%20성장`)으로 깨지고, 공백이 섞이면 URL·스크립트 양쪽에서 사고가 난다.
+파일명은 사람이 목록에서 찾는 이름이라 한글을 유지한다.
 
-이름을 바꾸면 **동작이 깨지거나 관례를 벗어나는** 대상은 영문 그대로 둔다.
+### 폴더 이름 대응 (2026-08-08 개명)
+
+| 옛 이름 | 새 이름 | | 옛 이름 | 새 이름 |
+|---------|---------|---|---------|---------|
+| `일감/` | `tasks/` | | `자원채취/` | `gathering/` |
+| `일감/보관/` | `tasks/archive/` | | `낚시/` `농사/` `벌목/` | `fishing/` `farming/` `logging/` |
+| `문서/` | `docs/` | | `사냥/` `채굴/` | `hunting/` `mining/` |
+| `Server/문서/` | `Server/docs/` | | `작업슬롯/` | `workslot/` |
+| `GameDesign/기획/` | `GameDesign/design/` | | `진행 및 성장/` | `progression/` |
+| `아키텍처리뷰/` | `architecture-review/` | | `캐릭터/` `퀘스트/` `특성/` | `character/` `quest/` `trait/` |
+| `거래/` `아이템/` | `trade/` `item/` | | `게임UI/` (+`참고 사진/`) | `ui/` (+`references/`) |
+| `리서치/` `방향제안/` | `research/` `proposals/` | | | |
+
+### 그대로 두는 것
 
 | 대상 | 이유 |
 |------|------|
@@ -232,10 +253,11 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 | 모든 코드 폴더·소스 파일 (`Assets/`, `Server/`, `.cs` 등) | 빌드·네임스페이스·Unity 규약 |
 | `.claude/` 하위 (스킬명·`SKILL.md`·`Agent` 로그) | 스킬 이름은 kebab-case 영문, 로그 파일명은 `YYYY-MM-DD-<kebab-slug>.md` |
 | 관례적 파일명 (`README.md`, `CLAUDE.md`) | 표준 관례 |
-| 이미 영문으로 자리 잡은 기존 문서 | 임의로 바꾸지 않는다. 바꿀 땐 참조 경로를 전부 함께 고친다 |
+| **한글 `.md` 파일명** | 개명 대상이 아니다. 문서는 계속 한글로 만든다 |
 
 > 폴더명을 바꾸면 **참조하는 모든 문서의 상대 링크가 깨진다.**
-> 이름을 변경했으면 링크를 전수 확인하고, `CLAUDE.md`와 관련 스킬 문서의 경로도 함께 고친다.
+> 이름을 변경했으면 링크를 전수 확인하고(`check-doc-graph.ps1`), `CLAUDE.md`와 관련 스킬 문서의
+> 경로도 함께 고친다. 검사기의 `$DesignRoot`·`$ExcludeDirs`처럼 **폴더 이름이 코드에 박힌 곳**도 본다.
 
 ---
 
@@ -254,8 +276,8 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 | `commit-convention` | [`.claude/skills/common/commit-convention/SKILL.md`](.claude/skills/common/commit-convention/SKILL.md) | Git 커밋 메시지 규칙 |
 | `agent-log-reader` | [`.claude/skills/common/agent-log-reader/SKILL.md`](.claude/skills/common/agent-log-reader/SKILL.md) | 코드 작업 **착수 전** `.claude/Agent/` 로그 필독 |
 | `agent-log-writer` | [`.claude/skills/common/agent-log-writer/SKILL.md`](.claude/skills/common/agent-log-writer/SKILL.md) | 코드 작업 **종료 후** `.claude/Agent/`에 로그 기록 |
-| `task-reader` | [`.claude/skills/common/task-reader/SKILL.md`](.claude/skills/common/task-reader/SKILL.md) | `일감/`에서 현재 할 일·상태 확인 |
-| `task-writer` | [`.claude/skills/common/task-writer/SKILL.md`](.claude/skills/common/task-writer/SKILL.md) | `일감/`에 일감 등록·상태 갱신 |
+| `task-reader` | [`.claude/skills/common/task-reader/SKILL.md`](.claude/skills/common/task-reader/SKILL.md) | `tasks/`에서 현재 할 일·상태 확인 |
+| `task-writer` | [`.claude/skills/common/task-writer/SKILL.md`](.claude/skills/common/task-writer/SKILL.md) | `tasks/`에 일감 등록·상태 갱신 |
 
 ### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
 

@@ -14,7 +14,7 @@ using UnityEngine;
 /// ■ 왜 작업슬롯 옆에 붙어 있는가<br/>
 /// 창고는 작업슬롯에 <b>끌어다 넣는 재료</b>라 드래그 거리가 곧 조작 비용이다.
 /// 그래서 <c>WidgetPositionLayout</c>이 위젯 위치와 무관하게 창고를 항상 작업슬롯 옆에 둔다.
-/// → GameDesign/기획/게임UI/README.md 2.1
+/// → GameDesign/design/ui/README.md 2.1
 /// </para>
 /// </summary>
 public class StorageCanvasUI : MonoBehaviour

@@ -23,7 +23,7 @@ using UnityEngine;
 /// 위젯 [열기/닫기] 다시 ──→ 위젯만 남기고 전부 닫힘
 /// </code>
 /// 창고·거래는 <b>위젯에서 직접 열지 않는다.</b> 작업슬롯을 거쳐야 재료→작업→시장 동선이 유지된다.
-/// → GameDesign/기획/게임UI/README.md 2.0
+/// → GameDesign/design/ui/README.md 2.0
 /// </para>
 /// </summary>
 public class UIManager : MonoService<UIManager>

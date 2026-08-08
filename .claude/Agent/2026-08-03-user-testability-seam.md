@@ -113,6 +113,6 @@ dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 
 ## 참고
 
-- `GameDesign/아키텍처리뷰/2026-08-03-아키텍처리뷰.md` 후보 2 · 신규 발견 A·B·C
+- `GameDesign/architecture-review/2026-08-03-아키텍처리뷰.md` 후보 2 · 신규 발견 A·B·C
 - 빌드 잠금: 실행 중인 `WSGameServer.exe`가 `MikaUtils.dll` 복사를 막아 MSB3021이 났다.
   프로세스를 종료해야 `dotnet test`가 시작된다(Unity 에디터는 분석기 DLL만 막는다).

@@ -34,7 +34,7 @@ public enum WidgetPosition
 ///   거래를 작업슬롯에서 <b>가장 먼 끝</b>에 두면 창고가 자동으로 사이에 남는다.
 ///   창고는 작업슬롯에 끌어다 넣는 재료라 드래그 거리가 곧 조작 비용이고,
 ///   거래는 한 번 갔다 오면 되는 곳이라 멀어도 손해가 적다.
-///   → GameDesign/기획/게임UI/README.md 2.1
+///   → GameDesign/design/ui/README.md 2.1
 ///
 /// ■ ExecuteAlways
 ///   재생하지 않고 인스펙터에서 6칸을 바꿔 보며 확인하려고 에디터에서도 돈다.

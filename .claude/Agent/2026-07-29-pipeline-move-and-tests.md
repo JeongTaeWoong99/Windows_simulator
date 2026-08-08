@@ -41,8 +41,8 @@ tags: [server, pipeline, powershell, test, xunit]
 - `CLAUDE.md` — 폴더 구조에 `GameDesign/generate-tables.ps1`·`Server/WSGameServer.Tests/` 추가,
   **"서버 테스트"** 절 신설, 파이프라인 절에 절대경로 금지 규칙 추가.
 - 스크립트 경로 표기를 `Server/…` → `GameDesign/…`으로 일괄 갱신:
-  `게임기획코어.md`, `아이템/README.md`, `자원채취/README.md`,
-  `자원채취/낚시/README.md`, `자원채취/사냥/README.md`,
+  `게임기획코어.md`, `item/README.md`, `gathering/README.md`,
+  `gathering/fishing/README.md`, `gathering/hunting/README.md`,
   `game-design-reference/SKILL.md`, `GameData.csproj` 주석.
 
 ## 주요 결정 / 근거
@@ -137,6 +137,6 @@ tags: [server, pipeline, powershell, test, xunit]
 ### 주의 — `FishingSpecialTable`은 임시로 빠져 있다
 
 사용자가 시트를 **임시로 지운 것이며 나중에 다시 추가한다.**
-[낚시 기획서](../../GameDesign/기획/자원채취/낚시/README.md) 5장의 스키마
+[낚시 기획서](../../GameDesign/design/gathering/fishing/README.md) 5장의 스키마
 (`DropTID`·`SpotTID`·`ItemTID`·`Weight`)는 **유효하므로 문서를 고치지 않았다.**
 시트를 되살리면 `RemoveOrphans`가 지운 `.bytes`·`.json`도 자동으로 다시 생성된다.

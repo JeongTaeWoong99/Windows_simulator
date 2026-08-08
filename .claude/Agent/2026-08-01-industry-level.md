@@ -20,27 +20,27 @@ tags: [design, gathering, workstation, industry-level]
 
 **신규 문서**
 
-- `GameDesign/기획/자원채취/산업레벨.md` — 이 시스템의 단일 문서
+- `GameDesign/design/gathering/산업레벨.md` — 이 시스템의 단일 문서
 
 **갱신**
 
-- `GameDesign/기획/게임기획코어.md` — 4장에 "산업 레벨" 절 신설,
+- `GameDesign/design/게임기획코어.md` — 4장에 "산업 레벨" 절 신설,
   5장 확정/미확정에 6행 추가(확정 5 + 미정 4), 7장 문서 지도
-- `GameDesign/기획/자원채취/README.md` — 1장 확정 사항, **1-2절 신설**,
+- `GameDesign/design/gathering/README.md` — 1장 확정 사항, **1-2절 신설**,
   3장 데이터 설계 표, 산업 고유 축 표에 "레벨 도입 후" 열 추가, Open Q 2건
-- `GameDesign/기획/작업슬롯/README.md` — 1장 `2-1` 행, 2장 구조에
+- `GameDesign/design/workslot/README.md` — 1장 `2-1` 행, 2장 구조에
   `Player.IndustryLevel[]`·`Slot.IndustryLevel` 추가, 3.1 정산 시점, 6장 Open Q
-- `GameDesign/기획/자원채취/낚시|사냥|채굴|농사|벌목/README.md` — 각 산업의
+- `GameDesign/design/gathering/fishing|사냥|채굴|농사|벌목/README.md` — 각 산업의
   기존 축이 레벨과 어떻게 되는지
-- `GameDesign/기획/게임UI/README.md` — 목업이 레벨을 반영하지 않았다는 경고, Open Q 10번
+- `GameDesign/design/ui/README.md` — 목업이 레벨을 반영하지 않았다는 경고, Open Q 10번
 
 **일감**
 
-- `일감/T-016-산업레벨해금조건.md` (신규 · 대기 · 높음)
-- `일감/T-017-산업레벨구현.md` (신규 · 보류 · T-016에 막힘)
-- `일감/T-006-작업슬롯UI.md` — 배치에 레벨 칸 추가
-- `일감/T-014-농사파종.md` — T-016과 같은 결정을 공유한다는 경고
-- `일감/README.md` — INDEX 2행, 막힌 것, 순서 메모
+- `tasks/T-016-산업레벨해금조건.md` (신규 · 대기 · 높음)
+- `tasks/T-017-산업레벨구현.md` (신규 · 보류 · T-016에 막힘)
+- `tasks/T-006-작업슬롯UI.md` — 배치에 레벨 칸 추가
+- `tasks/T-014-농사파종.md` — T-016과 같은 결정을 공유한다는 경고
+- `tasks/README.md` — INDEX 2행, 막힌 것, 순서 메모
 
 ## 주요 결정 / 근거
 

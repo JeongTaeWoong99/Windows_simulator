@@ -26,10 +26,10 @@ tags: [server, workstation, balance, design]
 - `Server/WSGameServer/User/User.WorkStation.cs` — `ResolveSlotSpeed`가 `WorkSpeed`를 쓴다.
   전역 배수는 `.Multiply()`(승산)로 분류. 특성·부스트·장비가 붙을 자리를 주석으로 표시.
 - `Server/WSGameServer.Tests/WorkStation/WorkSpeedTest.cs` — **신규 13개.** 전체 83개 통과.
-- `GameDesign/기획/작업슬롯/README.md` — 1장 확정 표에 항목 10 추가, 3장 속도 행 갱신,
+- `GameDesign/design/workslot/README.md` — 1장 확정 표에 항목 10 추가, 3장 속도 행 갱신,
   **3.4 속도 보정 합성** 절 신규(곱셈 대비 표 포함).
-- `GameDesign/기획/게임기획코어.md` — 5장 확정 현황에 2줄 추가.
-- `일감/T-002-장비슬롯.md` · `일감/README.md` — `EquipSlot` 부위 목록 확정으로 **보류 해제**.
+- `GameDesign/design/게임기획코어.md` — 5장 확정 현황에 2줄 추가.
+- `tasks/T-002-장비슬롯.md` · `tasks/README.md` — `EquipSlot` 부위 목록 확정으로 **보류 해제**.
 
 ## 주요 결정 / 근거
 
@@ -78,4 +78,4 @@ tags: [server, workstation, balance, design]
   하드 상한은 없다. `JudgeCost`가 3천만이라 오버플로 여유는 충분하나 밸런스 상한은 별도 결정.
 - **산출량 축이 없다.** `YieldPerJudge = 1` 고정이라 모든 성장이 "빨라진다" 한 방향뿐 → T-009.
 - 총량 = 접속시간 × 슬롯수 × 속도 로 **세 항이 곱셈**이라는 게임기획코어 경고는 그대로다.
-- 보석이 독립 부위인지 무기 소켓인지 미확인 → `일감/T-002-장비슬롯.md` "남은 질문".
+- 보석이 독립 부위인지 무기 소켓인지 미확인 → `tasks/T-002-장비슬롯.md` "남은 질문".

@@ -1,17 +1,17 @@
 ---
 name: game-design-reference
-description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·거래·성장곡선·위젯 UI 등)를 설계하거나 구현하기 전에 GameDesign/기획/게임기획코어.md를 반드시 먼저 읽고, 해당 영역의 상세 기획안(GameDesign/기획/<시스템>/README.md)을 이어서 읽는다. 기획 문서를 고친 뒤에는 문서관계도.md의 역참조를 따라 재귀적으로 전파한다. 게임 로직·게임 데이터·기획 관련 작업 착수 시 항상 적용한다.
+description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·거래·성장곡선·위젯 UI 등)를 설계하거나 구현하기 전에 GameDesign/design/게임기획코어.md를 반드시 먼저 읽고, 해당 영역의 상세 기획안(GameDesign/design/<시스템>/README.md)을 이어서 읽는다. 기획 문서를 고친 뒤에는 문서관계도.md의 역참조를 따라 재귀적으로 전파한다. 게임 로직·게임 데이터·기획 관련 작업 착수 시 항상 적용한다.
 ---
 
 # 게임 기획 참조 (게임 작업 전 필독)
 
 > 최종 업데이트: 2026-08-02
 >
-> 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/기획/게임기획코어.md`](../../../../GameDesign/기획/게임기획코어.md)** 를
+> 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md)** 를
 > 먼저 읽고, 그 다음 해당 영역의 **상세 기획안**을 읽는다.
 > 게임기획코어는 "무엇을 왜 만드는가", 상세 기획안은 "어떻게 만드는가"를 담는다.
 >
-> **기획 문서를 고쳤으면 [`문서관계도.md`](../../../../GameDesign/기획/문서관계도.md)의
+> **기획 문서를 고쳤으면 [`문서관계도.md`](../../../../GameDesign/design/문서관계도.md)의
 > 역참조를 따라 재귀적으로 전파한다** (아래 "기획을 바꿨으면 어디까지 바꾸는가").
 
 ---
@@ -36,17 +36,17 @@ description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·�
 
 ## 절차
 
-1. **[`GameDesign/기획/게임기획코어.md`](../../../../GameDesign/기획/게임기획코어.md) 를 읽는다.** (항상, 예외 없이)
+1. **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md) 를 읽는다.** (항상, 예외 없이)
    - 특히 **5장 "확정 / 미확정 현황"** 을 확인한다.
    - **6장 "개발 시 지켜야 할 접점"** 의 고정 규칙을 지킨다.
 2. 게임기획코어의 **3장 시스템 지도**에서 이번 작업에 해당하는 시스템을 찾아,
-   그 **상세 기획안**(`GameDesign/기획/<시스템>/README.md`)을 읽는다.
+   그 **상세 기획안**(`GameDesign/design/<시스템>/README.md`)을 읽는다.
    - 여러 시스템에 걸치면 관련된 것을 전부 읽는다.
    - 각 문서 말미의 **"결정 필요 (Open Questions)"** 를 반드시 확인한다.
-3. **[`문서관계도.md`](../../../../GameDesign/기획/문서관계도.md) 2.2에서 그 문서의 정참조를 본다.**
+3. **[`문서관계도.md`](../../../../GameDesign/design/문서관계도.md) 2.2에서 그 문서의 정참조를 본다.**
    함께 읽어야 할 문서가 거기 있다. 각 문서 헤더의 `상위`/`전제` 줄도 같은 정보를 준다.
 4. 설계 판단이 갈리면 게임기획코어 1장의 **설계 원칙(P1~P4)** 을 기준으로 결정한다.
-5. 리스크가 걸리는 작업이면 [`GameDesign/기획/기획평가.md`](../../../../GameDesign/기획/기획평가.md)
+5. 리스크가 걸리는 작업이면 [`GameDesign/design/기획평가.md`](../../../../GameDesign/design/기획평가.md)
    의 리스크 등급표를 함께 본다.
 
 ---
@@ -55,20 +55,20 @@ description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·�
 
 | 문서 | 언제 |
 | --- | --- |
-| `GameDesign/기획/게임기획코어.md` | **항상** |
-| `GameDesign/기획/문서관계도.md` | **기획 문서를 고치기 전·후 항상** — 무엇을 함께 읽고 함께 고치는가 |
-| `GameDesign/기획/작업슬롯/README.md` | 슬롯 배치·채취 판정·속도 보정 |
-| `GameDesign/기획/자원채취/산업레벨.md` | 산업 레벨·판정 필요 점수·레벨별 드롭 |
-| `GameDesign/기획/캐릭터/README.md` | 캐릭터 적성·장비·계정 레벨 |
-| `GameDesign/기획/자원채취/README.md` | 자원 채취·요일 로테이션·오프라인 정산 |
-| `GameDesign/기획/자원채취/<산업>/README.md` | 1차 산업 5종 — `농사`·`벌목`·`낚시`·`채굴`·`사냥` |
-| `GameDesign/기획/퀘스트/README.md` | 퀘스트·리셋·보상 |
-| `GameDesign/기획/특성/README.md` | 특성·스킬·효율 배수 |
-| `GameDesign/기획/아이템/README.md` | 아이템·인벤토리·가챠·`ItemTable` |
-| `GameDesign/기획/거래/README.md` | 거래소·화폐·경제 |
-| `GameDesign/기획/진행 및 성장/README.md` | 성장 곡선·온보딩·후반 목표 |
-| `GameDesign/기획/게임UI/README.md` | 바탕화면 위젯·팝업 UI·알림 |
-| `GameDesign/기획/기획평가.md` | 리스크 확인·설계 판단 근거 |
+| `GameDesign/design/게임기획코어.md` | **항상** |
+| `GameDesign/design/문서관계도.md` | **기획 문서를 고치기 전·후 항상** — 무엇을 함께 읽고 함께 고치는가 |
+| `GameDesign/design/workslot/README.md` | 슬롯 배치·채취 판정·속도 보정 |
+| `GameDesign/design/gathering/산업레벨.md` | 산업 레벨·판정 필요 점수·레벨별 드롭 |
+| `GameDesign/design/character/README.md` | 캐릭터 적성·장비·계정 레벨 |
+| `GameDesign/design/gathering/README.md` | 자원 채취·요일 로테이션·오프라인 정산 |
+| `GameDesign/design/gathering/<산업>/README.md` | 1차 산업 5종 — `농사`·`벌목`·`낚시`·`채굴`·`사냥` |
+| `GameDesign/design/quest/README.md` | 퀘스트·리셋·보상 |
+| `GameDesign/design/trait/README.md` | 특성·스킬·효율 배수 |
+| `GameDesign/design/item/README.md` | 아이템·인벤토리·가챠·`ItemTable` |
+| `GameDesign/design/trade/README.md` | 거래소·화폐·경제 |
+| `GameDesign/design/progression/README.md` | 성장 곡선·온보딩·후반 목표 |
+| `GameDesign/design/ui/README.md` | 바탕화면 위젯·팝업 UI·알림 |
+| `GameDesign/design/기획평가.md` | 리스크 확인·설계 판단 근거 |
 
 ---
 
@@ -99,7 +99,7 @@ description: 게임 시스템·콘텐츠(채취·퀘스트·특성·아이템·�
 (`Hunting` enum · 아이템 30종 → 150종 · `ItemRarity` → `GlobalRarity` — 2026-08-02 확인).
 
 문서를 고쳤으면 **그 문서 헤더의 `바뀌면 갱신` 블록**(또는
-[`문서관계도.md`](../../../../GameDesign/기획/문서관계도.md) 2.1)에 적힌 문서를
+[`문서관계도.md`](../../../../GameDesign/design/문서관계도.md) 2.1)에 적힌 문서를
 **전부 열어 본다.** 고친 문서가 생기면 **그 문서에서 또 퍼진다.**
 
 ```
@@ -139,14 +139,14 @@ while 큐:
 ### 전파는 문서에서 끝나지 않는다 — 엑셀·코드까지
 
 확정된 기획은 **엑셀 → 생성물 → 서버 코드** 순으로 흐른다.
-대응표는 [`문서관계도.md`](../../../../GameDesign/기획/문서관계도.md) 4장에 있다.
+대응표는 [`문서관계도.md`](../../../../GameDesign/design/문서관계도.md) 4장에 있다.
 
 > ⚠️ **엑셀만 앞서 나가면 "미구현"이 아니라 "오동작"이 된다.**
 > 2026-08-01에 드롭 시트가 레벨별로 갈라졌는데 `DropTableCatalog`가 `IndustryLevel`을
 > 읽지 않아 **Lv1 슬롯에서 Lv5 아이템이 나오는 상태**가 됐다.
 > 엑셀 구조를 바꿀 때는 **그 시트를 읽는 서버 코드를 같은 작업 단위로** 본다.
 
-코드가 못 따라가면 [`일감/`](../../../../일감/README.md)에 등록하고,
+코드가 못 따라가면 [`tasks/`](../../../../tasks/README.md)에 등록하고,
 문서에 `❌ 미구현 (일감 T-0XX)`를 **반드시** 적는다 — 안 적으면 다음 사람이 "구현됐다"고 읽는다.
 
 ### 고쳤으면 검사한다
@@ -169,15 +169,15 @@ powershell -File GameDesign/check-doc-graph.ps1 -Fix       # 헤더 블록을 �
 
 ## 새 시스템·산업을 추가할 때
 
-1. `GameDesign/기획/<시스템>/README.md` 를 만든다.
+1. `GameDesign/design/<시스템>/README.md` 를 만든다.
    **폴더명·문서명은 반드시 한글로 짓는다.** (`Gathering` ❌ / `자원채취` ⭕)
-   1차 산업이면 `GameDesign/기획/자원채취/<산업>/README.md`.
+   1차 산업이면 `GameDesign/design/gathering/<산업>/README.md`.
 2. 기존 문서와 같은 구성을 따른다:
    `확정 사항` → `설계(제안)` → `데이터 설계` → `서버/클라 책임` → `결정 필요`
    헤더에는 `> 상위 문서:` · `> 최종 업데이트:` 두 줄을 반드시 둔다
    (검사 스크립트가 이 형식을 읽는다).
 3. `게임기획코어.md` **3장 시스템 지도**(산업이면 **4장 콘텐츠 지도**)에 행을 추가한다.
-4. **[`문서관계도.md`](../../../../GameDesign/기획/문서관계도.md) 1·2장에 행을 추가**하고,
+4. **[`문서관계도.md`](../../../../GameDesign/design/문서관계도.md) 1·2장에 행을 추가**하고,
    `check-doc-graph.ps1 -Fix`로 헤더의 `바뀌면 갱신` 블록을 생성한다.
 5. 이 스킬의 **문서 지도** 표에도 행을 추가한다.
 

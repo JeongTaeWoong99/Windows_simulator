@@ -15,6 +15,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약 -->
 
+- [2026-08-08 Drop 엑셀 산업별 파일 분리 + 시트 병합 규약](2026-08-08-drop-excel-split-sheet-merge.md) — 시트 이름 `<테이블명>.<접미사>` 병합 규약 신설(ExcelGenerator) · `Drop.xlsx`→산업별 5파일(레벨별 시트) · `Industry.xlsx` 산업별 시트 분리 · DropTID `산업×100000+레벨×100+순번` 재채번(산업 자리=`ItemType` enum — ⚠️ ItemTID 대역과 어긋남) · 테스트 119건 통과 · 서버 오동작(T-017)은 범위 밖
 - [2026-08-07 싱글턴 제거 · `GameServer` 조립 지점 — 리뷰 후보 4](2026-08-07-di-composition-root.md) — `ILogicExecutor`/`IServer` seam 신설 · `GatheringScheduler`·`SessionWatchdog`·`DBManager`·`NetworkManager` 탈싱글턴(생성자 주입) · `Entity` 폐기 후 `User`로 인라인 · `*.Instance` 21→14곳 · `FakeLogicExecutor`(기록/즉시 두 모드)로 테스트 복구 **119건 통과** · ⚠️ `Destroy()`를 즉시 실행 모드로 돌리면 `UserManager.Instance`가 오염된다 · **`Program.cs`의 `Run()` await 누락은 미해결**
 - [2026-08-05 클라이언트 구조 재정비 — 송신을 UI로, 매니저는 수신 전담](2026-08-05-client-structure-refactor.md) — `SessionManager`→`PlayerDataManager`(수신 전담) · 송신 3종을 각 UI로 이관 · `HeartbeatManager`→`PingManager` · `UI/`를 패널별 폴더로 · 창 설정 `PlayerPrefs` 영속화 · ⚠️ **씬 배선 미완 — 로그인·가챠 버튼 3개가 죽어 있다**
 - [2026-08-04 하트비트 무응답 세션 정리 · 중복 로그인 kick — 이슈 #10 / T-001](2026-08-04-heartbeat-idle-session.md) — 무응답 세션을 15초에 정리 · 중복 로그인은 기존 세션을 끊는다

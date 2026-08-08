@@ -8,7 +8,7 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 
 ## 목적 / 배경
 
-- 낚시 기획안이 전부 "제안" 상태여서 [낚시](../../GameDesign/기획/자원채취/낚시/README.md)
+- 낚시 기획안이 전부 "제안" 상태여서 [낚시](../../GameDesign/design/gathering/fishing/README.md)
   5장 결정 필요 항목을 사용자와 확정했다.
 - 확정 과정에서 사용자가 **"특정 요일은 효율이 좋아지는 식으로 설계"** 방침을 제시했고,
   이것이 기존 "1일 1산업(나머지 정지)" 확정안을 뒤집는 변경이라 상위 문서까지 전파했다.
@@ -28,19 +28,19 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 
 **파일별 변경**
 
-- `GameDesign/기획/자원채취/낚시/README.md` — 전면 재작성.
+- `GameDesign/design/gathering/fishing/README.md` — 전면 재작성.
   확정 사항 표 신설, 정체성을 "개체 변량" 축으로 재정의, 실패 처리 가이드(3.1),
   물고기 크기 설계(4장) + 스택 충돌 3안, 낚시 전용 테이블 3종 설계.
-- `GameDesign/기획/자원채취/README.md` — 1장 확정 사항 갱신,
+- `GameDesign/design/gathering/README.md` — 1장 확정 사항 갱신,
   2.1 요일배수 설명, 2.2 오프라인 정산 5배 부담 추가,
   **2.3 요일 로테이션 전면 재작성(효율 보너스 방식)**, 3장 드랍 테이블 산업별 분리 구조,
   5장 결정 필요 재정리.
-- `GameDesign/기획/게임기획코어.md` — P3 정의 수정, 4장 요일 로테이션·낚시 행,
+- `GameDesign/design/게임기획코어.md` — P3 정의 수정, 4장 요일 로테이션·낚시 행,
   5장 확정/미확정 현황에 확정 6건 반영.
-- `GameDesign/기획/아이템/README.md` — 티켓 공통 확정 명시(`CommonRewardTable`),
+- `GameDesign/design/item/README.md` — 티켓 공통 확정 명시(`CommonRewardTable`),
   개체 변량 ↔ `MaxStack` 충돌 논점 추가.
-- `GameDesign/기획/자원채취/채굴/README.md` — "주 1회라 깊이 진행 정체" 우려 해소 표기.
-- `GameDesign/기획/기획평가.md` — R11 해소 처리, **R12(개체 변량 ↔ 스택) 신규 등록**,
+- `GameDesign/design/gathering/mining/README.md` — "주 1회라 깊이 진행 정체" 우려 해소 표기.
+- `GameDesign/design/기획평가.md` — R11 해소 처리, **R12(개체 변량 ↔ 스택) 신규 등록**,
   2026-07-27 업데이트 섹션 추가.
 
 ## 주요 결정 / 근거
@@ -62,7 +62,7 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 ## 후속 작업 / 주의사항
 
 - **물고기 크기 저장 방식이 미결(R12).** A(등급 이산화)/B(개체 인스턴스)/C(혼합) 중
-  **C 권장.** 이 결정은 [아이템](../../GameDesign/기획/아이템/README.md) 3장
+  **C 권장.** 이 결정은 [아이템](../../GameDesign/design/item/README.md) 3장
   인벤토리 용량 정책과 **반드시 같이** 내려야 한다. 낚시 구현 전 선행 필수.
 - 미확정 수치: 평일 보너스 배수 `N`, 낚시 실패율, 채취주기·회당 산출,
   크기 배수 곡선, 오프라인 누적 상한.
@@ -71,7 +71,7 @@ tags: [game-design, gathering, fishing, weekday-rotation]
   `FishingSpotTable`·`FishingDropTable`·`FishSizeTable`·`CommonRewardTable`은
   전부 제안 단계이며 `GameDesign/Excel`에 존재하지 않는다.
 - `ItemType.Hunting` 미추가 건은 이번 작업과 무관하게 그대로 남아 있다.
-  → [사냥](../../GameDesign/기획/자원채취/사냥/README.md) 6장
+  → [사냥](../../GameDesign/design/gathering/hunting/README.md) 6장
 
 ---
 
@@ -90,17 +90,17 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 
 ### 파일별 변경
 
-- `자원채취/낚시/README.md` — 2차 전면 재작성. 크기 시스템(4장)·`FishSizeTable` 삭제,
+- `gathering/fishing/README.md` — 2차 전면 재작성. 크기 시스템(4장)·`FishSizeTable` 삭제,
   판정 절차를 롤 2회로 정리, 정체성을 "희귀도 분포"로 재정의.
-- `자원채취/README.md` — 2.1에 30초·판정 횟수 표·위젯 위상 경고 추가,
+- `gathering/README.md` — 2.1에 30초·판정 횟수 표·위젯 위상 경고 추가,
   1-1에 **차별화 축 축소 경고표** 신설, 2.4를 "희귀도 별도 롤 금지"로 재작성,
   `CycleSec` 컬럼 제거 명시.
-- `자원채취/농사/README.md` — **파종 구조 A/B/C안 신설** (30초와 `GrowSec` 충돌).
-- `자원채취/사냥/README.md` — "드물게"를 실패율 85%로 재정의,
+- `gathering/farming/README.md` — **파종 구조 A/B/C안 신설** (30초와 `GrowSec` 충돌).
+- `gathering/hunting/README.md` — "드물게"를 실패율 85%로 재정의,
   **소모품 소진 경고**(하루 2,448회 실패) 추가, 고유 아이템 몰아주기 폐기 반영.
-- `자원채취/벌목/README.md` · `채굴/README.md` — 고갈량·하강 속도를 30초 기준 재계산 경고.
+- `gathering/logging/README.md` · `mining/README.md` — 고갈량·하강 속도를 30초 기준 재계산 경고.
 - `게임기획코어.md` — 4장에 주기 30초·희귀도 단일 등급축 명시, 5장 현황 갱신.
-- `아이템/README.md` — 개체 변량 논점을 **해소**로 전환, 얻은 것 정리.
+- `item/README.md` — 개체 변량 논점을 **해소**로 전환, 얻은 것 정리.
 - `기획평가.md` — R12 해소, **R13(차별화 축 축소)·R14(농사 충돌)** 신규 등록, 2차 업데이트 섹션.
 
 ### 주요 결정 / 근거
@@ -146,17 +146,17 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 
 ### 파일별 변경
 
-- `자원채취/README.md` — **2.0 산업 선택 신설**, 2.2 오프라인 감쇠 확정,
+- `gathering/README.md` — **2.0 산업 선택 신설**, 2.2 오프라인 감쇠 확정,
   2.3 요일을 "권장"으로 재정의(+`N` 크기가 성패를 가름), **2.4 보상 3층 구조 전면 재작성**,
   3장 테이블을 `RarityWeightTable` + `<산업>Basic/Special`로 재편.
-- `자원채취/낚시/README.md` — 3차 재작성. **2장에 낚시 루프 다이어그램**(판정/체감/하루 실측),
+- `gathering/fishing/README.md` — 3차 재작성. **2장에 낚시 루프 다이어그램**(판정/체감/하루 실측),
   3장에 "개입 지점 없음" 경고.
-- `자원채취/채굴/README.md` — **"깊이가 희귀도를 올린다" 폐기**,
+- `gathering/mining/README.md` — **"깊이가 희귀도를 올린다" 폐기**,
   대안으로 **깊이별 아이템 매핑 교체** 제시.
-- `자원채취/농사·벌목·사냥/README.md` — 희귀도 분포 서술을 "전 산업 동일"로 교체,
+- `gathering/farming·벌목·사냥/README.md` — 희귀도 분포 서술을 "전 산업 동일"로 교체,
   차별점을 산출량·실패율·특별보상으로 재기술, 테이블을 Basic/Special로 분리.
 - `게임기획코어.md` — 4장에 산업 택1·오프라인·보상 3층 절 신설, 5장 현황 대폭 갱신.
-- `아이템/README.md` — **1.4 보상 3층 구조** 신설, 기본 자원 최소 30종 필요 명시.
+- `item/README.md` — **1.4 보상 3층 구조** 신설, 기본 자원 최소 30종 필요 명시.
 - `기획평가.md` — **R9 해소**, R13 🟠→🔴 승격, **R15·R16 신규**, 3차 업데이트 섹션.
 
 ### 주요 결정 / 근거
@@ -210,17 +210,17 @@ tags: [game-design, gathering, fishing, weekday-rotation]
 
 ### 파일별 변경
 
-- `자원채취/README.md` — 1-1을 **심리 정의 표**로 재편, 차별화 축 축소 이력 표,
+- `gathering/README.md` — 1-1을 **심리 정의 표**로 재편, 차별화 축 축소 이력 표,
   2.4에서 실패 롤 제거 + 보스 티켓 명시, `FailRate` 컬럼 전면 삭제.
-- `자원채취/사냥/README.md` — **전면 재작성.** 실패율 85% 폐기로 비워진 정체성을
+- `gathering/hunting/README.md` — **전면 재작성.** 실패율 85% 폐기로 비워진 정체성을
   사냥터 분리 + **4장 보스 절 신설**로 재구성. 소모품 A/B/C안(**C 권장**),
   `PreyTable` → `HuntingFieldTable` 교체.
-- `자원채취/낚시/README.md` — 실패 폐기 반영, 도파민 정의가 요구하는 조건 표,
+- `gathering/fishing/README.md` — 실패 폐기 반영, 도파민 정의가 요구하는 조건 표,
   특별보상 비율 인상 제안(10%→20%), 하루 실측 9:1 vs 8:2 비교.
-- `자원채취/농사·벌목·채굴/README.md` — 심리 정의 행 추가.
+- `gathering/farming·벌목·채굴/README.md` — 심리 정의 행 추가.
 - `게임기획코어.md` — 4장 산업 표를 심리 정의 기준으로 교체, **보스 절 신설**, 5장 현황 갱신.
-- `아이템/README.md` — 역할 분류에 **입장권(보스 티켓)** 축 추가, 거래 가능 여부 논점.
-- `진행 및 성장/README.md` — 2.3에 **보스를 후반 목표 첫 후보**로 기록(소진형 한계 명시).
+- `item/README.md` — 역할 분류에 **입장권(보스 티켓)** 축 추가, 거래 가능 여부 논점.
+- `progression/README.md` — 2.3에 **보스를 후반 목표 첫 후보**로 기록(소진형 한계 명시).
 - `기획평가.md` — **R13 🔴→🟠 하향**, **R17(보스↔P1) 신규**, 4차 업데이트 섹션.
 
 ### 주요 결정 / 근거
@@ -249,6 +249,6 @@ tags: [game-design, gathering, fishing, weekday-rotation]
   실패를 다른 형태로 되살리는 셈.
 - **다음 과제는 정의를 수치로 번역하는 일.** 심리 정의가 생긴 지금
   수치는 취향이 아니라 정의로부터 도출된다.
-- 보스가 구체화되면 `GameDesign/기획/보스/README.md`로 분리하고
+- 보스가 구체화되면 `GameDesign/design/보스/README.md`로 분리하고
   게임기획코어 3장 시스템 지도에 행을 추가할 것.
 - 여전히 **엑셀·코드는 손대지 않았다.** 기획 문서만 변경.

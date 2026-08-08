@@ -42,7 +42,7 @@ tags: [client, log, heartbeat, gacha, inventory]
 
 - **이슈 #10의 서버 파트가 남아 있다** — 무응답 세션 정리, pid 중복 kick
   (`UserManager.cs:52-57`이 아직 `// Error Send` 주석 스텁), `Disconnect()` `Interlocked` 보강.
-  클라 판정값은 5초/15초이고, 서버가 같은 값을 쓰면 그대로 맞물린다. → `일감/T-001`
+  클라 판정값은 5초/15초이고, 서버가 같은 값을 쓰면 그대로 맞물린다. → `tasks/T-001`
 - **`characterId` 기본값을 1 → 1001로 고쳤다.** TID 1은 폐기(영구 결번)라 서버가
   `CharacterNotOwned`로 거절한다. **씬에 이미 저장된 값은 그대로이므로** 배치 테스트 버튼이
   실패하면 인스펙터의 `characterId`부터 볼 것.
