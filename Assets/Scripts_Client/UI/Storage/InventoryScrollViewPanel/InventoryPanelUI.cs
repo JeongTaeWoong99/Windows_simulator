@@ -24,7 +24,7 @@ public class InventoryPanelUI : MonoBehaviour
     [SerializeField, Tooltip("아이템 한 칸 프리팹 (InventorySlotView 포함). 빈 프레임 안에 생성된다")]
     private InventorySlotView slotPrefab = null!;
 
-    [SerializeField, Tooltip("칸 프레임(Slot)들이 들어 있는 부모 — Slot Scroll View > Viewport > Content")]
+    [SerializeField, Tooltip("칸 프레임(Slot)들이 들어 있는 부모 — Inventory Scroll View Panel > Viewport > Content")]
     private Transform slotParent = null!;
 
     // ItemId → 그 아이템을 그리고 있는 뷰. 매 갱신마다 전체를 훑지 않으려고 둔다.

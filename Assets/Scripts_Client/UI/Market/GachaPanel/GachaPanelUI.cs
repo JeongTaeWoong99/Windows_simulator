@@ -4,21 +4,22 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 가챠 요청 테스트 버튼 묶음 (1회 · 10연차).
+/// 가챠 패널 — 거래 열의 뽑기 화면. 지금은 요청 버튼 두 개(1회 · 10연차)뿐이다.
 ///
 /// <para>
-/// ■ 정식 UI가 아니다<br/>
-/// 가챠는 기획상 <b>상점</b>에 붙는다(가챠 티켓 = 골드 상점 품목).
-/// 상점 화면이 생기면 이 클래스는 사라지고 거래 열로 옮겨 간다 — 그때까지의 임시 통로다.
+/// ■ 왜 거래 열인가<br/>
+/// 가챠는 기획상 <b>상점</b>에 속한다 — 가챠 티켓이 골드 상점 품목이다.
+/// → GameDesign/기획/거래/README.md 3.2
 /// </para>
 ///
 /// <para>
 /// ■ 결과는 여기서 보지 않는다<br/>
 /// 뽑힌 보상·인벤토리 반영은 <see cref="PlayerDataManager"/>가 처리하고
 /// <c>PlayerDataLogger</c>가 콘솔에 풀어 준다. 이 클래스는 보내는 일만 한다.
+/// <b>결과 팝업이 생기면 그것이 이 패널의 자식으로 붙는다</b> — 일감 "가챠 결과 팝업".
 /// </para>
 /// </summary>
-public class GachaTestButtonUI : MonoBehaviour
+public class GachaPanelUI : MonoBehaviour
 {
     [CenterHeader("< 참조 >")]
     [SerializeField, Tooltip("단차(1회) 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]

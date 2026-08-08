@@ -12,7 +12,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 /// - 수신 진입점(<c>ServerPacketHandler</c>)을 구독해 캐시를 채우고, 가공된 변경 이벤트를 발행한다.
 ///   UI는 서버 폴더가 아니라 이 매니저만 구독하면 된다(서버 의존을 한곳에 격리).
 /// - <b>송신은 하지 않는다.</b> 요청은 그 요청을 일으킨 UI가 직접 보낸다
-///   (예: <c>LoginPanelUI</c> · <c>WorkStationTestButtonUI</c>).
+///   (예: <c>LoginPanelUI</c> · <c>WorkStationSelectPanelUI</c>).
 ///   버튼과 패킷이 한자리에 있어야 "이 화면이 무엇을 보내는가"가 코드에서 바로 보인다.
 ///
 /// <para>
