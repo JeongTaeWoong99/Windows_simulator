@@ -3,7 +3,7 @@ name: server-code-style
 description: 서버(C#/.NET) 코드 작성 스타일 규칙. 서버 코드를 새로 쓰거나 수정할 때 적용한다.
 ---
 
-> 최종 업데이트: 2026-08-02
+> 최종 업데이트: 2026-08-08
 
 # server-code-style — 서버 코드 작성 스타일
 
@@ -29,12 +29,57 @@ description: 서버(C#/.NET) 코드 작성 스타일 규칙. 서버 코드를 �
 - **변경 이력·작업자 메모** — "~에서 옮겨옴", "리뷰 반영". git과 `.claude/Agent/` 로그가 기록한다.
 - **주석 처리된 죽은 코드** — 지운다. 되살릴 일이 있으면 git에 있다.
 - **빈 주석 자리표시** — `// Log`, `// TODO` 만 덜렁 남기지 않는다. 지금 처리하지 않을 거면
-  무엇을 왜 미루는지까지 적거나, 일감(`일감/`)으로 올린다.
+  무엇을 왜 미루는지까지 적거나, 일감(`tasks/`)으로 올린다.
+
+### 길이 — 1~2줄로 끝낸다
+
+주석은 **1줄, 길어도 2줄**이다. 형태는 길이에 따라 갈린다.
+
+| 길이 | 형태 |
+|------|------|
+| 1줄 | 한 줄짜리 XML 문서 주석 — `/// <summary>티켓을 소모하고 잔량을 반환한다</summary>` |
+| 2줄 | `//` 두 줄 (여러 줄 `/// <summary>` 블록으로 늘리지 않는다) |
+
+```csharp
+/// <summary>만료된 티켓은 소모하지 않고 false를 돌려준다</summary>
+public bool TryConsume(Ticket ticket)
+
+// 델타가 아니라 확정 잔액을 쓴다 — 재시도가 곧 재화 복제가 된다.
+// 호출 전에 반드시 정산해야 한다.
+public void ApplyBalance(long amount)
+```
+
+3줄이 필요해 보이면 주석을 늘릴 게 아니라 **이름·구조를 고칠 신호**다.
 
 ### XML 문서 주석 (`///`)
 
 - public API에 **호출자가 알아야 할 계약**(불변식·순서·오류 모드·단위)이 있을 때만 단다.
 - 시그니처가 전부 말해 주면 생략한다 — `public int Count => _items.Count;`에 summary를 달지 않는다.
+- 여러 줄로 쓸 일이 생기면 XML 블록 대신 위의 `//` 2줄 형태로 간다.
+
+## 중괄호 — `if`·`foreach`는 항상 붙인다
+
+본문이 한 줄이어도 **중괄호를 생략하지 않는다.** `if`·`else`·`for`·`foreach`·`while` 전부.
+
+```csharp
+// 이렇게
+if (session == null)
+{
+    return;
+}
+
+foreach (var item in items)
+{
+    Apply(item);
+}
+
+// 이렇게 쓰지 않는다
+if (session == null) return;
+foreach (var item in items) Apply(item);
+```
+
+한 줄 형태는 나중에 줄을 하나 더 넣을 때 조용히 범위를 벗어난다.
+diff도 한 줄 추가가 아니라 블록 전체 재작성으로 번진다.
 
 ## 언어
 
