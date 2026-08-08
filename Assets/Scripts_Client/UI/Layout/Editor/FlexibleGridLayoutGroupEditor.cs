@@ -16,7 +16,8 @@ using UnityEditor.UI;
 [CanEditMultipleObjects]
 public class FlexibleGridLayoutGroupEditor : GridLayoutGroupEditor
 {
-    private SerializedProperty _cellAspectRatioProperty;
+    // OnEnable에서 채운다. 그 전에 쓰이는 경로가 없어 non-null로 둔다(CS8618 회피).
+    private SerializedProperty _cellAspectRatioProperty = null!;
 
     // 인스펙터가 열릴 때 (Unity 에디터가 호출)
     protected override void OnEnable()
