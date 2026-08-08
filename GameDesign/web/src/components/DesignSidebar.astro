@@ -1,0 +1,57 @@
+---
+import { getCollection } from 'astro:content';
+import { SECTION_LABELS, SECTION_ORDER } from '../lib/labels';
+
+interface Props {
+  activeSlug?: string;
+}
+const { activeSlug } = Astro.props;
+
+const docs = await getCollection('design');
+
+const bySection = new Map<string, typeof docs>();
+for (const d of docs) {
+  const s = d.data.section;
+  if (!bySection.has(s)) bySection.set(s, [] as unknown as typeof docs);
+  bySection.get(s)!.push(d);
+}
+
+const sections = [...bySection.keys()].sort((a, b) => {
+  const ia = SECTION_ORDER.indexOf(a);
+  const ib = SECTION_ORDER.indexOf(b);
+  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+});
+---
+
+<aside class="sidebar shrink-0 bg-white border border-slate-200 rounded-lg p-4 h-fit lg:sticky lg:top-20">
+  <a href="/design" class="block text-xs font-bold text-slate-500 mb-3">기획 문서</a>
+  {
+    sections.map((s) => {
+      const list = bySection.get(s)!.sort((a, b) => a.data.title.localeCompare(b.data.title));
+      return (
+        <div class="mb-4">
+          <div class="text-[11px] font-bold uppercase tracking-wide text-slate-400 mb-1">
+            {SECTION_LABELS[s] ?? s}
+          </div>
+          <ul class="space-y-0.5">
+            {list.map((d) => (
+              <li>
+                <a
+                  href={`/design/${d.data.slug}`}
+                  class="block text-[13px] leading-snug py-1 px-2 rounded"
+                  style={
+                    d.data.slug === activeSlug
+                      ? 'background:#eff6ff;color:var(--brand);font-weight:700'
+                      : 'color:#475569'
+                  }
+                >
+                  {d.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      );
+    })
+  }
+</aside>

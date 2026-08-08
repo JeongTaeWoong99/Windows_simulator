@@ -1,0 +1,23 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DesignSidebar from '../../components/DesignSidebar.astro';
+import { getCollection } from 'astro:content';
+
+export async function getStaticPaths() {
+  const docs = await getCollection('design');
+  return docs.map((d) => ({ params: { slug: d.data.slug }, props: { doc: d.data } }));
+}
+
+const { doc } = Astro.props;
+---
+
+<Layout title={doc.title} withSidebar>
+  <DesignSidebar slot="sidebar" activeSlug={doc.slug} />
+
+  <div class="flex items-center justify-between gap-4 mb-4 text-xs text-slate-400">
+    <span class="font-mono">GameDesign/design/{doc.relPath}</span>
+    {doc.updated && <span>최종 업데이트 {doc.updated}</span>}
+  </div>
+
+  <article class="doc" set:html={doc.bodyHtml} />
+</Layout>

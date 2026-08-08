@@ -1,0 +1,74 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { STATUS_STYLE, OWNER_STYLE, PRIORITY_STYLE, PRIORITY_ORDER, STATUS_ORDER } from '../../lib/labels';
+
+const all = await getCollection('tasks');
+
+// INDEX와 같은 기준 — 상태(진행중 > 보류 > 대기) 다음 우선순위.
+const open = all
+  .filter((t) => !t.data.done)
+  .sort(
+    (a, b) =>
+      (STATUS_ORDER[a.data.status] ?? 9) - (STATUS_ORDER[b.data.status] ?? 9) ||
+      (PRIORITY_ORDER[a.data.priority] ?? 9) - (PRIORITY_ORDER[b.data.priority] ?? 9) ||
+      a.data.taskId.localeCompare(b.data.taskId)
+  );
+const done = all.filter((t) => t.data.done).sort((a, b) => a.data.taskId.localeCompare(b.data.taskId));
+---
+
+<Layout title="일감">
+  <h1 class="text-xl font-extrabold mb-1">일감</h1>
+  <p class="text-sm text-slate-500 mb-6">
+    남은 일 {open.length}건. 끝난 일감 {done.length}건은 아래 보관 목록에 있다.
+  </p>
+
+  <div class="table-scroll doc">
+    <table>
+      <thead>
+        <tr><th>ID</th><th>제목</th><th>담당</th><th>상태</th><th>우선순위</th><th>마감</th></tr>
+      </thead>
+      <tbody>
+        {
+          open.map((t) => (
+            <tr>
+              <td class="font-mono text-xs text-slate-400">{t.data.taskId}</td>
+              <td>
+                <a href={`/tasks/${t.data.slug}`} class="font-semibold">{t.data.title}</a>
+              </td>
+              <td>
+                <span class={`text-[11px] px-2 py-0.5 rounded-full ${OWNER_STYLE[t.data.owner] ?? ''}`}>
+                  {t.data.owner}
+                </span>
+              </td>
+              <td>
+                <span class={`text-[11px] px-2 py-0.5 rounded-full ${STATUS_STYLE[t.data.status]?.cls ?? ''}`}>
+                  {t.data.status}
+                </span>
+              </td>
+              <td class={`text-xs ${PRIORITY_STYLE[t.data.priority] ?? ''}`}>{t.data.priority}</td>
+              <td class="text-xs text-slate-400">{t.data.due}</td>
+            </tr>
+          ))
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <h2 class="text-sm font-bold text-slate-500 mt-10 mb-3">보관 — 끝난 일감</h2>
+  <ul class="flex flex-wrap gap-2">
+    {
+      done.map((t) => (
+        <li>
+          <a
+            href={`/tasks/${t.data.slug}`}
+            class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs text-slate-500"
+          >
+            <span class="font-mono text-slate-400">{t.data.taskId}</span>
+            {t.data.title}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

@@ -1,0 +1,89 @@
+---
+import '../styles/global.css';
+import { APP_VERSION } from '../lib/labels';
+
+interface Props {
+  title: string;
+  /** 사이드바를 붙일지. 문서 페이지만 true. */
+  withSidebar?: boolean;
+}
+const { title, withSidebar = false } = Astro.props;
+const path = Astro.url.pathname;
+
+const links = [
+  { label: '홈', href: '/', active: path === '/' },
+  { label: '일감', href: '/tasks', active: path.startsWith('/tasks') },
+  { label: '기획', href: '/design', active: path.startsWith('/design') },
+];
+---
+
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="description" content="Windows_simulator 기획 문서와 일감." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css"
+    />
+    <title>{title} · Windows_simulator</title>
+  </head>
+  <body class="min-h-[100dvh] flex flex-col break-keep">
+    <nav class="nav">
+      <div class="max-w-7xl mx-auto px-4 h-14 flex items-center gap-2">
+        <button
+          id="nav-toggle"
+          class="lg:hidden inline-flex items-center justify-center w-10 h-10 -ml-1 rounded-lg text-slate-600"
+          aria-label="메뉴 열기"
+          aria-expanded="false"
+        >
+          <span class="text-xl leading-none">☰</span>
+        </button>
+
+        <a href="/" class="flex items-center gap-2 font-extrabold text-[15px] mr-3">
+          <span
+            class="inline-grid place-items-center w-6 h-6 rounded-md text-white text-xs"
+            style="background: var(--brand)">W</span
+          >
+          <span>Windows<span style="color: var(--brand)">_simulator</span></span>
+        </a>
+
+        <div class="flex items-center gap-1">
+          {links.map((l) => <a href={l.href} class="navlink" data-active={l.active}>{l.label}</a>)}
+        </div>
+      </div>
+    </nav>
+
+    <div class="flex-1 w-full max-w-7xl mx-auto flex gap-8 px-4 py-6">
+      {withSidebar && <slot name="sidebar" />}
+      <main class="flex-1 min-w-0">
+        <slot />
+      </main>
+    </div>
+
+    <footer class="border-t border-slate-200 bg-white">
+      <div
+        class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-slate-400"
+      >
+        <span>기획 문서와 일감은 저장소가 원본이다 — 이 사이트는 읽기 전용 사본이다.</span>
+        <span class="font-mono font-semibold text-slate-500">v{APP_VERSION}</span>
+      </div>
+    </footer>
+
+    <script>
+      const toggle = document.getElementById('nav-toggle');
+      toggle?.addEventListener('click', () => {
+        const open = document.body.classList.toggle('nav-open');
+        toggle.setAttribute('aria-expanded', String(open));
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          document.body.classList.remove('nav-open');
+          toggle?.setAttribute('aria-expanded', 'false');
+        }
+      });
+    </script>
+  </body>
+</html>

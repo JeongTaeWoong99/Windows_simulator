@@ -1,0 +1,16 @@
+# build output
+dist/
+# generated types
+.astro/
+# dependencies
+node_modules/
+# sync-assets.mjs가 만드는 것 — 원본은 GameDesign/design 옆의 .html·이미지다
+public/assets/
+src/generated/
+# logs
+npm-debug.log*
+# environment
+.env
+.env.production
+# macOS
+.DS_Store

@@ -1,0 +1,88 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import DesignSidebar from '../../components/DesignSidebar.astro';
+import { getCollection } from 'astro:content';
+import { SECTION_LABELS, SECTION_ORDER } from '../../lib/labels';
+import assets from '../../generated/assets.json';
+
+const docs = await getCollection('design');
+
+const bySection = new Map<string, typeof docs>();
+for (const d of docs) {
+  const s = d.data.section;
+  if (!bySection.has(s)) bySection.set(s, [] as unknown as typeof docs);
+  bySection.get(s)!.push(d);
+}
+const sections = [...bySection.keys()].sort((a, b) => {
+  const ia = SECTION_ORDER.indexOf(a);
+  const ib = SECTION_ORDER.indexOf(b);
+  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || a.localeCompare(b);
+});
+
+// 목업(.html)만 따로 모아 둔다 — 문서 안에서도 열리지만, 여기서 바로도 열 수 있게.
+const mockups = Object.entries(assets as Record<string, string>).filter(([src]) =>
+  src.toLowerCase().endsWith('.html')
+);
+---
+
+<Layout title="기획 문서" withSidebar>
+  <DesignSidebar slot="sidebar" />
+
+  <h1 class="text-xl font-extrabold mb-1">기획 문서</h1>
+  <p class="text-sm text-slate-500 mb-6">
+    {docs.length}개. <a href="/design/core" class="text-blue-600 underline">게임기획코어</a>가 단일 진입점이다.
+  </p>
+
+  {
+    sections.map((s) => (
+      <section class="mb-8">
+        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">
+          {SECTION_LABELS[s] ?? s}
+        </h2>
+        <ul class="grid gap-2 sm:grid-cols-2">
+          {bySection
+            .get(s)!
+            .sort((a, b) => a.data.title.localeCompare(b.data.title))
+            .map((d) => (
+              <li>
+                <a
+                  href={`/design/${d.data.slug}`}
+                  class="block bg-white border border-slate-200 rounded-lg px-4 py-3 hover:border-blue-400"
+                >
+                  <div class="font-semibold text-sm">{d.data.title}</div>
+                  <div class="text-[11px] text-slate-400 mt-0.5">
+                    {d.data.relPath}
+                    {d.data.updated && <span> · {d.data.updated}</span>}
+                  </div>
+                </a>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  {
+    mockups.length > 0 && (
+      <section class="mt-10 pt-6 border-t border-slate-200">
+        <h2 class="text-xs font-bold uppercase tracking-wide text-slate-400 mb-2">UI 목업 (HTML)</h2>
+        <ul class="flex flex-wrap gap-2">
+          {mockups.map(([src, route]) => (
+            <li>
+              <a
+                href={route}
+                target="_blank"
+                rel="noopener"
+                class="inline-flex items-center gap-1.5 bg-white border border-slate-200 rounded-full px-3 py-1.5 text-xs hover:border-blue-400"
+              >
+                <span>🖼</span>
+                {src}
+                <span class="text-slate-300">↗</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+</Layout>

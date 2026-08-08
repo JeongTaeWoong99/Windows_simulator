@@ -1,0 +1,113 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+:root {
+  --font-sans: "Pretendard Variable", "Pretendard", -apple-system, BlinkMacSystemFont,
+    system-ui, "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+  --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, Menlo, monospace;
+
+  --bg: #f6f7f9;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --text: #1f2937;
+  --muted: #6b7280;
+  --brand: #2563eb;
+}
+
+html {
+  font-family: var(--font-sans);
+  background: var(--bg);
+  color: var(--text);
+  scroll-behavior: smooth;
+}
+body { margin: 0; line-height: 1.7; }
+
+.nav {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--border);
+}
+.navlink {
+  padding: 0.4rem 0.7rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.navlink[data-active="true"] { color: var(--brand); background: #eff6ff; }
+
+/* 사이드바 — 모바일에선 접힌다 */
+.sidebar { width: 16rem; }
+@media (max-width: 900px) {
+  .sidebar { display: none; }
+  body.nav-open .sidebar {
+    display: block;
+    position: fixed;
+    inset: 3.5rem 0 0 0;
+    width: 100%;
+    z-index: 20;
+    overflow-y: auto;
+  }
+}
+
+/* ── 본문 (markdown-it가 뱉은 HTML) ─────────────────────────────── */
+.doc { max-width: 100%; }
+.doc h1 { font-size: 1.6rem; font-weight: 800; margin: 0 0 1rem; }
+.doc h2 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 2.2rem 0 0.8rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid var(--border);
+}
+.doc h3 { font-size: 1.02rem; font-weight: 700; margin: 1.5rem 0 0.5rem; }
+.doc p, .doc li { word-break: keep-all; }
+.doc ul, .doc ol { padding-left: 1.3rem; margin: 0.6rem 0; }
+.doc ul { list-style: disc; }
+.doc ol { list-style: decimal; }
+.doc li { margin: 0.25rem 0; }
+.doc a { color: var(--brand); text-decoration: underline; text-underline-offset: 2px; }
+.doc strong { font-weight: 700; }
+.doc code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background: #f1f5f9;
+  padding: 0.1rem 0.32rem;
+  border-radius: 0.25rem;
+}
+.doc pre {
+  background: #0f172a;
+  color: #e2e8f0;
+  padding: 0.9rem 1rem;
+  border-radius: 0.6rem;
+  overflow-x: auto;
+  margin: 0.9rem 0;
+}
+.doc pre code { background: none; color: inherit; font-size: 0.82rem; }
+.doc blockquote {
+  border-left: 3px solid #cbd5e1;
+  background: #f8fafc;
+  margin: 0.9rem 0;
+  padding: 0.6rem 0.9rem;
+  color: #475569;
+  border-radius: 0 0.4rem 0.4rem 0;
+}
+.doc blockquote > :first-child { margin-top: 0; }
+.doc blockquote > :last-child { margin-bottom: 0; }
+
+/* 표는 넓다 — 페이지가 아니라 표 자신이 가로로 스크롤한다 */
+.doc .table-scroll { overflow-x: auto; margin: 1rem 0; }
+.doc table { border-collapse: collapse; font-size: 0.86rem; min-width: 100%; }
+.doc th, .doc td {
+  border: 1px solid var(--border);
+  padding: 0.45rem 0.7rem;
+  text-align: left;
+  vertical-align: top;
+}
+.doc th { background: #f8fafc; font-weight: 700; white-space: nowrap; }
+.doc hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+.doc img { max-width: 100%; height: auto; border-radius: 0.4rem; }
+.doc del { color: #9ca3af; }

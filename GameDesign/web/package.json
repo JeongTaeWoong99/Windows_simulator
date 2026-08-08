@@ -1,0 +1,27 @@
+{
+  "name": "windows-simulator-docs",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "predev": "node scripts/sync-assets.mjs",
+    "dev": "astro dev",
+    "prebuild": "node scripts/sync-assets.mjs",
+    "build": "astro build",
+    "preview": "astro preview",
+    "precheck": "node scripts/sync-assets.mjs",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "astro": "^5.7.0",
+    "markdown-it": "^14.1.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@tailwindcss/typography": "^0.5.16",
+    "@tailwindcss/vite": "^4.1.0",
+    "@types/markdown-it": "^14.1.2",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.8.0"
+  }
+}
