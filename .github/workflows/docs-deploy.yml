@@ -32,7 +32,7 @@ permissions:
   contents: read
 
 env:
-  PROJECT_NAME: windows-simulator
+  PROJECT_NAME: wsdocs
   WEB_DIR: GameDesign/web
 
 jobs:
