@@ -55,7 +55,7 @@ public static class GameDataLoader
             // 예외는 그대로 올린다(fail-fast). 다만 원인 지점을 먼저 말해 준다 —
             // 스택만 보면 "파일이 없다"까지는 알아도 어느 폴더를 봐야 하는지, 무엇이 그 폴더를
             // 채우는지가 안 나온다.
-            ClientLog.Error(ClientLog.Data,
+            ClientLogger.Error(ClientLogger.Data,
                 $"테이블 적재 실패 — {dataPath}\n" +
                 $"    StreamingAssets에 .bytes가 없거나 깨졌다. GameDesign/generate-tables.ps1을 실행해 생성물을 갱신할 것.\n" +
                 $"    {e.GetType().Name}: {e.Message}");
@@ -63,7 +63,7 @@ public static class GameDataLoader
         }
 
         _isLoaded = true;
-        ClientLog.Info(ClientLog.Data, $"테이블 적재 완료 — 아이템 {GameTable.ItemTable.Count}종, 캐릭터 {GameTable.CharacterTable.Count}종");
+        ClientLogger.Info(ClientLogger.Data, $"테이블 적재 완료 — 아이템 {GameTable.ItemTable.Count}종, 캐릭터 {GameTable.CharacterTable.Count}종");
     }
 
     // 이미 경고한 Id. 매 프레임 갱신되는 UI에서 같은 경고가 쏟아지는 것을 막는다.
@@ -100,7 +100,7 @@ public static class GameDataLoader
         if (!warned.Add(id))
             return;
 
-        ClientLog.Warn(ClientLog.Data, $"{kind} 테이블에 없는 Id {id}가 들어왔다. " +
+        ClientLogger.Warn(ClientLogger.Data, $"{kind} 테이블에 없는 Id {id}가 들어왔다. " +
                                        $"서버가 보내는 Id와 엑셀 데이터가 어긋났는지 확인할 것.");
     }
 }

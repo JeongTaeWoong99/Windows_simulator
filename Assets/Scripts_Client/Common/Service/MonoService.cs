@@ -7,15 +7,22 @@ using UnityEngine;
 //    Unity는 씬을 열 때 오브젝트마다 Awake → OnEnable 을 이어서 부른다. 모든 Awake가 먼저
 //    끝나는 것이 아니므로, OnEnable 시점엔 다른 서비스가 아직 등록 전일 수 있다.
 //    "모든 Awake가 끝났음"이 보장되는 첫 시점은 Start다.
-//    (이 규칙을 어겨 PacketTestPanelUI가 KeyNotFoundException을 낸 적이 있다)
+//    어기면 Services.Get이 KeyNotFoundException을 던지고, 캐시 필드가 null로 남아
+//    한참 뒤 사용 지점에서 NullReferenceException으로 다시 터진다.
+//
+//    구독을 OnEnable/OnDisable에 두고 싶다면 조회만 Start로 분리한다:
+//      Start    → Get + 최초 구독
+//      OnEnable → 캐시가 있을 때만 재구독 (껐다 켜는 경로)
+//      OnDisable→ 구독 해제
+//    (Start와 OnEnable이 모두 구독을 시도하므로 중복 구독 플래그로 막는다)
 //
 // ─────────── T에 무엇을 넣는가 ───────────
 // T는 "이 객체를 무엇으로 찾을 것인가"를 정하는 키다. Services가 typeof(T)를 키로 쓰기 때문에,
 // 여기 적은 타입으로만 꺼낼 수 있다. 두 가지 쓰임을 모두 허용한다.
 //
 //   1) 자기 자신으로 등록 — 교체할 일 없는 매니저. 싱글톤 대체 용도.
-//        class SessionManager : MonoService<SessionManager>
-//        → Services.Get<SessionManager>()
+//        class XxxManager : MonoService<XxxManager>
+//        → Services.Get<XxxManager>()
 //
 //   2) 역할 인터페이스로 등록 — 구현을 갈아끼울 수 있는 AI·시스템.
 //        class Person : MonoService<IWalk>     // Person이 IWalk를 구현

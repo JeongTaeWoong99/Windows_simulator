@@ -15,6 +15,9 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약 -->
 
+- [2026-08-07 싱글턴 제거 · `GameServer` 조립 지점 — 리뷰 후보 4](2026-08-07-di-composition-root.md) — `ILogicExecutor`/`IServer` seam 신설 · `GatheringScheduler`·`SessionWatchdog`·`DBManager`·`NetworkManager` 탈싱글턴(생성자 주입) · `Entity` 폐기 후 `User`로 인라인 · `*.Instance` 21→14곳 · `FakeLogicExecutor`(기록/즉시 두 모드)로 테스트 복구 **119건 통과** · ⚠️ `Destroy()`를 즉시 실행 모드로 돌리면 `UserManager.Instance`가 오염된다 · **`Program.cs`의 `Run()` await 누락은 미해결**
+- [2026-08-05 클라이언트 구조 재정비 — 송신을 UI로, 매니저는 수신 전담](2026-08-05-client-structure-refactor.md) — `SessionManager`→`PlayerDataManager`(수신 전담) · 송신 3종을 각 UI로 이관 · `HeartbeatManager`→`PingManager` · `UI/`를 패널별 폴더로 · 창 설정 `PlayerPrefs` 영속화 · ⚠️ **씬 배선 미완 — 로그인·가챠 버튼 3개가 죽어 있다**
+- [2026-08-04 하트비트 무응답 세션 정리 · 중복 로그인 kick — 이슈 #10 / T-001](2026-08-04-heartbeat-idle-session.md) — 무응답 세션을 15초에 정리 · 중복 로그인은 기존 세션을 끊는다
 - [2026-08-03 클라 로그 체계 정리 · 하트비트 · 가챠 갱신 통일 — 이슈 #8·#10](2026-08-03-client-log-and-heartbeat.md) — `ClientLog` 신설(`[↑송신]`/`[↓수신]` 태그 + 송신 훅) · `HeartbeatManager` 5초/15초 · 가챠를 `ApplyItemChanges` 하나로 통일 · ⚠️ **#10 서버 파트(세션 정리·pid kick)는 미착수** · `characterId` 기본값 1→1001(TID 1 폐기)
 - [2026-08-02 기획 문서·엑셀·코드 불일치 전수 정리](2026-08-02-doc-data-code-sync.md) — 아이템 30→156종 · `Hunting` enum · `ItemRarity` 개명 · 낚시의 오프라인/요일 잔존 정정 (문서 12개) · 🔴 **드롭 롤이 레벨을 무시해 Lv1에서 Lv5가 나온다**(T-017 최우선) · 코드는 미수정
 - [2026-08-02 기획 문서 의존 그래프 도입 — 재귀 전파 규칙과 검사기](2026-08-02-doc-graph-propagation.md) — `문서관계도.md`(그래프 단일 원본) + `check-doc-graph.ps1`(깨진 링크·**갱신일 역전**) · 문서 17개 헤더에 `바뀌면 갱신` 블록 · ⚠️ 블록은 그래프 계산에서 제외해야 한다(안 하면 간선이 양방향으로 번진다)

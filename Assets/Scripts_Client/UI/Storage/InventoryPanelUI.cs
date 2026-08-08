@@ -2,7 +2,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 인벤토리 목록 화면. <see cref="SessionManager.InventoryChanged"/>를 구독해 갱신한다.
+/// 인벤토리 목록 화면. <see cref="PlayerDataManager.InventoryChanged"/>를 구독해 갱신한다.
+/// 창고 열의 <b>자원 탭</b>에 해당한다 — 캐릭터·장비·특성 탭이 붙으면 그 옆에 나란히 선다.
 ///
 /// ■ 칸 프레임은 씬에 미리 깔려 있다
 ///   <c>Content</c> 아래의 <c>Slot (N)</c> 들이 프레임이고, 아이템 프리팹은 <b>그 프레임의 자식</b>으로
@@ -32,11 +33,12 @@ public class InventoryPanelUI : MonoBehaviour
     // 뷰가 들어가 있는 프레임. 아이템이 사라질 때 프레임을 비우려고 짝을 기억한다.
     private readonly Dictionary<int, Transform> _frameByItemId = new Dictionary<int, Transform>();
 
-    private SessionManager _session = null!;
-    private bool           _isSubscribed;
+    private PlayerDataManager _data = null!;
+    private bool              _isSubscribed;
+    private bool              _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
-    // 서비스 확보 후 최초 구독 (Unity 메시지)
-    // ※ OnEnable에서 Get 하지 않는다 — MonoService 주석의 초기화 순서 규칙 참조.
+    // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
+    // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다. 안 그러면 아이템이 처음 들어오는 순간
@@ -44,16 +46,24 @@ public class InventoryPanelUI : MonoBehaviour
         this.RequireRef(slotPrefab, nameof(slotPrefab));
         this.RequireRef(slotParent, nameof(slotParent));
 
-        _session = Services.Get<SessionManager>();
+        _data = Services.Get<PlayerDataManager>();
         Subscribe();
         Refresh(); // 이미 스냅샷을 받은 뒤에 켜졌을 수 있다
+
+        _isReady = true;
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
+    //
+    // ★ 재구독만으로는 부족하다 — 창고를 닫아 둔 사이 채취·가챠로 수량이 바뀌었을 수 있다.
+    //   캐시는 계속 살아 있으므로 다시 그리기만 하면 즉시 맞는다.
     private void OnEnable()
     {
-        if (_session != null)
-            Subscribe();
+        if (!_isReady)
+            return;
+
+        Subscribe();
+        Refresh();
     }
 
     // 구독 해제 (Unity 메시지)
@@ -70,8 +80,8 @@ public class InventoryPanelUI : MonoBehaviour
         if (_isSubscribed)
             return;
 
-        _isSubscribed             = true;
-        _session.InventoryChanged += Refresh;
+        _isSubscribed          = true;
+        _data.InventoryChanged += Refresh;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -80,8 +90,8 @@ public class InventoryPanelUI : MonoBehaviour
         if (!_isSubscribed)
             return;
 
-        _isSubscribed             = false;
-        _session.InventoryChanged -= Refresh;
+        _isSubscribed          = false;
+        _data.InventoryChanged -= Refresh;
     }
 
     #endregion
@@ -91,7 +101,7 @@ public class InventoryPanelUI : MonoBehaviour
     // 인벤토리 캐시를 화면에 반영한다 (InventoryChanged 구독)
     private void Refresh()
     {
-        foreach (var item in _session.Inventory)
+        foreach (var item in _data.Inventory)
         {
             if (item.Count <= 0)
             {
@@ -116,7 +126,7 @@ public class InventoryPanelUI : MonoBehaviour
         Transform? frame = FindEmptyFrame();
         if (frame == null)
         {
-            ClientLog.Warn(ClientLog.UI, $"빈 칸이 없어 아이템 {itemId}를 표시하지 못했다. 프레임을 늘려야 한다.", this);
+            ClientLogger.Warn(ClientLogger.UI, $"빈 칸이 없어 아이템 {itemId}를 표시하지 못했다. 프레임을 늘려야 한다.", this);
             return null;
         }
 

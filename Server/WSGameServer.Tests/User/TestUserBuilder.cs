@@ -78,9 +78,10 @@ internal static class GameTableFixture
 /// 테스트용 <see cref="User"/> 조립기.
 ///
 /// <para>
-/// <b><c>Create()</c>를 거치지 않는다.</b> <c>Entity.Create()</c>는 <c>LogicExecutor</c>로
-/// 작업을 던지는 비동기라 <c>OnCreate</c>가 그 자리에서 돌지 않는다 —
-/// 로그인 전체 흐름 검증은 그 실행기까지 열어야 가능하다(이번 범위 밖).
+/// <b>기본은 <c>Create()</c>를 거치지 않는다.</b> 기록 모드 실행기가 들어가므로
+/// <c>Create()</c>/<c>Destroy()</c>는 <b>예약만</b> 되고 <c>OnCreate</c>/<c>OnDestroy</c>는 돌지 않는다.
+/// 예약 자체를 보려면 <see cref="Executor"/>의 <c>Posted</c>를,
+/// 흐름 전체를 보려면 <see cref="WithInlineExecutor"/>를 쓴다.
 /// </para>
 /// </summary>
 internal sealed class TestUserBuilder
@@ -88,9 +89,21 @@ internal sealed class TestUserBuilder
     /// <summary>모든 테스트가 공유하는 기준 시각. 실제 시계를 쓰지 않는다.</summary>
     public static readonly DateTime Base = new(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc);
 
-    public FakeClientChannel  Channel { get; } = new();
-    public FakeDBQueue        DB      { get; } = new();
-    public DropTableCatalog   Drops   { get; } = new();
+    public FakeClientChannel  Channel  { get; } = new();
+    public FakeDBQueue        DB       { get; } = new();
+    public DropTableCatalog   Drops    { get; } = new();
+    public FakeLogicExecutor  Executor { get; private set; } = new();
+
+    /// <summary>
+    /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
+    /// <b><c>Destroy()</c> 검증에는 쓰지 않는다</b>: <c>OnDestroy</c>가
+    /// <c>UserManager.Instance</c>(프로세스 전역)를 만져 다른 테스트로 샌다.
+    /// </summary>
+    public TestUserBuilder WithInlineExecutor()
+    {
+        Executor = new FakeLogicExecutor { RunImmediately = true };
+        return this;
+    }
 
     /// <summary>
     /// 낚시 드롭 테이블 하나만 등록한다. 후보가 1종이라 <b>어떤 아이템이 나올지 확정</b>되고,
@@ -110,7 +123,8 @@ internal sealed class TestUserBuilder
 
     public User Build(long uid = 1)
     {
-        var user = new User(Channel, DB, pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops);
+        var user = new User(Channel, DB, Executor,
+                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops);
         user.Uid = uid;
         return user;
     }

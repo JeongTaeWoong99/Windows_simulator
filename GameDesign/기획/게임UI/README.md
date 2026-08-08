@@ -1,7 +1,7 @@
 # 07. 게임 UI
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-08-02 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
+> 최종 업데이트: 2026-08-06 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
 > **바뀌면 갱신:** [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../자원채취/산업레벨.md) · [`퀘스트`](../퀘스트/README.md)
 
 이 게임이 다른 방치형과 구분되는 **유일한 차별점**이다.
@@ -268,7 +268,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 
 | 제약 | 논점 | 상태 |
 | --- | --- | --- |
-| 해상도·DPI 변경 | 위치·크기 보존 | ✅ **해소.** 창이 16:9 고정 배율이라 `CanvasScaler`가 UI를 비례시키고, 위젯은 창 안 6칸 프리셋이라 좌표를 저장하지 않는다 (2장) |
+| 해상도·DPI 변경 | 위치·크기 보존 | ✅ **해소.** 창이 16:9 고정 배율이라 `CanvasScaler`가 UI를 비례시키고, 위젯은 창 안 6칸 프리셋이라 좌표를 저장하지 않는다 (2장). 고른 **배율·9분할 앵커·창 상태 토글은 `PlayerPrefs`에 저장**돼 재실행 시 그대로 복원된다 |
 | 멀티 모니터 | 어느 모니터에 뜨는가? | ⏸ **창 위치는 9분할 앵커로 정해졌고 모니터 선택만 남았다** |
 | 전체화면 앱 | 게임·영상 실행 중 자동 숨김? | ❌ 미결 |
 | 절전·최대 절전 | 복귀 시 경과 시간 정산 → [자원채취](../자원채취/README.md) 2.2 | ❌ 미결 |
@@ -310,9 +310,15 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 영역 | 위치 |
 | --- | --- |
 | 씬 · UI 골격 | `Assets/Scenes/DesktopWindow_Control.unity` — `UI Root` → `Columns` → 세 열(`Slot Up`/본체/`Slot Dn`) |
-| 위젯 6칸 배치 | `Assets/Scripts_Client/UI/WidgetPositionLayout.cs` — 좌표가 아니라 **형제 순서**만 바꾼다 |
+| 위젯 6칸 배치 | `Assets/Scripts_Client/UI/Layout/WidgetPositionLayout.cs` — 좌표가 아니라 **형제 순서 + 3열의 자식 정렬**만 바꾼다. 위 칸이면 열 정렬을 `LowerCenter`, 아래 칸이면 `UpperCenter`로 뒤집어 위젯이 창 가장자리에 붙는다 |
 | 창 제어 (크기 배율 · 9분할 · 투명 · 클릭스루) | `Assets/Scripts_Client/Managers/WindowManager.cs` |
-| 클라이언트 코드 | `Assets/Scripts_Client/` |
+| 설정 입력 | `Assets/Scripts_Client/UI/Settings/SettingsPanelUI.cs` — 창 제어(Win32)와 일반 설정(위젯 6칸)을 한 패널에서 받아 각 담당자에게 넘긴다 |
+| 설정 저장 | `Assets/Scripts_Client/Settings/WindowSettings.cs` — 창 설정 6종 + 위젯 위치를 `PlayerPrefs`에 보존 |
+| 화면 골격 조율 (3열 + 위젯 여닫기) | `Assets/Scripts_Client/Managers/UIManager.cs` — 2.0의 진입 순서를 `ToggleAll`/`OpenWorkStation`/`ToggleStorage`/`ToggleMarket`로 구현. **여닫는 대상은 Column이 아니라 그 안의 Canvas** — 열 폭이 유지돼야 위젯이 6칸 자리에서 안 움직인다 |
+| 각 열·칸의 화면 | `UI/Storage/StorageCanvasUI` · `UI/WorkStation/WorkStationCanvasUI`·`StateCanvasUI` · `UI/Market/MarketCanvasUI` · `UI/Widget/WidgetCanvasUI` |
+| 로그 | `Log/ClientLogger.cs`(출력 창구·태그) + `Log/PlayerDataLogger.cs`(수신 변경을 콘솔로 — **임시**, 가챠 팝업·실패 토스트·위젯 수확 표시가 생기면 삭제) |
+| 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataManager.cs` — **수신 전담.** 요청은 각 UI가 직접 보낸다 |
+| 클라이언트 코드 | `Assets/Scripts_Client/` — `UI/`는 패널별 폴더(`Storage`·`WorkStation`·`Market`·`Widget`·`Layout`·`Login`·`Debug`) |
 | 네트워크 연동 | `Assets/Scripts_Server/Network/` |
 | 코드 스타일 | `.claude/skills/client/clean-code-style` |
 | 기능 설계 | `.claude/skills/client/feature-design` |

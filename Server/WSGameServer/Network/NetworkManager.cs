@@ -3,10 +3,17 @@ using MikaNetwork.Server;
 
 namespace WSGameServer;
 
-public class NetworkManager : Singleton<NetworkManager>
+public class NetworkManager
 {
     private readonly MikaServer _server = new(10050);
     private readonly ClientPacketManager _packetManager = new();
+    private readonly ILogicExecutor _logicExecutor;
+    private readonly SessionWatchdog _sessionWatchdog;
+    public NetworkManager(ILogicExecutor logicExecutor, SessionWatchdog sessionWatchdog)
+    {
+        _logicExecutor = logicExecutor;
+        _sessionWatchdog = sessionWatchdog;
+    }
 
     public void Initialize()
     {
@@ -15,7 +22,7 @@ public class NetworkManager : Singleton<NetworkManager>
 
         _server.PacketReceived += (session, data) =>
         {
-            _packetManager.OnRecvPacket(session, data, LogicExecutor.Instance.Post);
+            _packetManager.OnRecvPacket(session, data, _logicExecutor.Post);
             
             return ValueTask.CompletedTask;
         };
@@ -35,6 +42,6 @@ public class NetworkManager : Singleton<NetworkManager>
         _server.Listen();
 
         // 리슨 이후에 건다. FIN/RST 없이 사라지는 클라이언트를 여기서 정리한다.
-        SessionWatchdog.Instance.Start(_server);
+        _sessionWatchdog.Start(_server);
     }
 }

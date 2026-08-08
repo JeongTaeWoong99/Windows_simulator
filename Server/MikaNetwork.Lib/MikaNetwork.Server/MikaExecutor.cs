@@ -4,9 +4,11 @@ using MikaUtils;
 
 namespace MikaNetwork.Server
 {
-    public class MikaExecutor
+    public interface ILogicExecutor
     {
-        
+        public void Start();
+        public void Stop();
+        public void Post(Action job);
     }
 
     /// <summary>
@@ -66,7 +68,7 @@ namespace MikaNetwork.Server
     }
 
     // SingleThread LogicExecutor 
-    public sealed class LogicExecutor : Singleton<LogicExecutor>
+    public sealed class LogicExecutor : ILogicExecutor
     {
         private readonly Channel<Action> _queue = Channel.CreateUnbounded<Action>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }); // MultiProducer-SingleConsumer
         private readonly Thread _thread;

@@ -1,3 +1,4 @@
+using MikaNetwork.Server;
 using MikaProtocol;
 
 namespace WSGameServer;
@@ -7,13 +8,15 @@ namespace WSGameServer;
 /// 참조 방향은 User -> Session 단방향이며, Session은 User를 알지 못한다.
 /// 생성은 반드시 <see cref="UserManager.CreateUser"/>를 통해서만 이루어진다.
 /// </summary>
-public sealed partial class User : Entity
+public sealed partial class User
 {
     /// <summary>클라이언트로 나가는 통로. 전송 계층(ISession)은 이 뒤에만 있다.</summary>
     private readonly IClientChannel _channel;
 
     /// <summary>DB 작업 큐. 운영에서는 <see cref="DBManager"/>, 테스트에서는 기록만 하는 가짜가 들어온다.</summary>
     private readonly IDBQueue _db;
+    
+    private readonly ILogicExecutor _logicExecutor;
 
     /// <summary>
     /// 채취 판정에 쓸 드롭 테이블. 생략하면 전역 인스턴스를 쓴다 —
@@ -30,6 +33,48 @@ public sealed partial class User : Entity
     public long Uid { get; set; }
     public int AdminLevel { get; set; }
     public bool IsNewbie { get; set; }
+    
+    private bool _created;
+
+    // Destroy는 여러 곳에서 들어온다(소켓 해제·유휴 스윕·중복 로그인 정리).
+    // 가드가 없으면 OnDestroy가 여러 번 큐에 실려 종료 정산이 중복된다.
+    private int _destroyed;
+    
+    public ulong Key { get; } = AllocKey64();
+    public ulong GetJobId() { return Key; }
+    
+    public bool Create()
+    {
+        if (_created) return false;
+        
+        _created = true;
+        
+        Post(OnCreate);
+
+        return true;
+    }
+    
+    public bool Destroy()
+    {
+        if (Interlocked.Exchange(ref _destroyed, 1) == 1)
+            return false;
+
+        Post(OnDestroy);
+        return true;
+    }
+    
+    /// <summary>정리가 이미 예약됐는지. 좀비 판정처럼 "이 객체를 아직 살아 있다고 볼지"에 쓴다.</summary>
+    public bool IsDestroyed => Volatile.Read(ref _destroyed) == 1;
+    
+    public void Post(ulong id, Action job)
+    {
+        _logicExecutor.Post(job);
+    }
+
+    public void Post(Action job)
+    {
+        Post(Key, job);
+    }
 
     // Inventory
     private Inventory Inventory { get; init; } = new();
@@ -42,6 +87,7 @@ public sealed partial class User : Entity
     internal User(
         IClientChannel    channel,
         IDBQueue          db,
+        ILogicExecutor    logicExecutor,
         string            pid,
         string            nickname,
         DateTime          loggedInAt,
@@ -52,6 +98,7 @@ public sealed partial class User : Entity
 
         _channel    = channel;
         _db         = db;
+        _logicExecutor = logicExecutor;
         _dropTables = dropTables ?? DropTableCatalog.Instance;
 
         SessionId  = channel.SessionId;
@@ -94,7 +141,7 @@ public sealed partial class User : Entity
         SendWorkStationSlots(); // S_WorkStationSlotsResponse
     }
 
-    protected override void OnCreate()
+    public void OnCreate()
     {
         ServerLog.Info("유저", $"생성 SessionId={SessionId} Pid={Pid}");
         
@@ -126,7 +173,7 @@ public sealed partial class User : Entity
         UserManager.Instance.LeaveUser(this);
     }
 
-    protected override void OnDestroy()
+    public void OnDestroy()
     {
         // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
         ServerLog.Info("유저", $"소멸 SessionId={SessionId} Pid={Pid}");

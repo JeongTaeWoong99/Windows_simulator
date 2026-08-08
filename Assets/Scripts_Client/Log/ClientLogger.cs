@@ -7,6 +7,16 @@ using UnityEngine;
 /// 클라이언트 로그의 <b>단일 창구</b>. 태그 규약을 한곳에 모아 콘솔을 읽을 수 있게 유지한다.
 ///
 /// <para>
+/// ■ <c>PlayerDataLogger</c>와 무엇이 다른가 — <b>"어떻게 쓰는가" vs "무엇을 쓰는가"</b><br/>
+/// 이 클래스는 <b>출력 창구</b>다. 태그를 붙이고 <c>Debug.Log</c>로 내보내는 방법만 안다.
+/// 무엇을 남길지는 모른다 — 프로젝트 전체가 여기로 로그를 낸다.<br/>
+/// <see cref="PlayerDataLogger"/>는 반대로 <b>관찰자</b>다. 서버 응답 중 무엇이 볼 가치가 있는지 골라
+/// 사람이 읽을 문장으로 만든 뒤, 결국 <b>이 클래스를 통해</b> 내보낸다.<br/>
+/// <b>수명도 다르다.</b> 이 클래스는 게임이 완성돼도 남는 인프라고,
+/// <c>PlayerDataLogger</c>는 화면 UI가 갖춰지면 지워질 임시 발판이다.
+/// </para>
+///
+/// <para>
 /// ■ 왜 <c>Common/</c>이 아니라 여기인가<br/>
 /// <c>Common/</c>은 <c>Services</c>·<c>MonoService</c>처럼 <b>어느 프로젝트에 옮겨도 그대로 쓰는</b> 토대다.
 /// 이 로거는 <see cref="PacketId"/>와 이 게임의 태그 약속을 안다 — 성격이 달라 자리를 나눴다.
@@ -20,7 +30,7 @@ using UnityEngine;
 /// 방향 개념이 없는 태그에는 붙이지 않는다.
 /// </para>
 /// </summary>
-public static class ClientLog
+public static class ClientLogger
 {
     public const string Send    = "↑송신";
     public const string Recv    = "↓수신";
@@ -33,7 +43,7 @@ public static class ClientLog
     ///
     /// <para>
     /// 하트비트는 5초마다 왕복하므로 그대로 찍으면 <b>콘솔이 Ping/Pong으로 덮여</b>
-    /// 정작 봐야 할 로그가 밀려난다. 대신 <c>HeartbeatManager</c>가 <b>상태가 바뀔 때만</b>
+    /// 정작 봐야 할 로그가 밀려난다. 대신 <c>PingManager</c>가 <b>상태가 바뀔 때만</b>
     /// (끊김 감지·복구) <c>[연결]</c>로 남긴다 — 조용하면 정상이라는 뜻이다.
     /// </para>
     /// </summary>

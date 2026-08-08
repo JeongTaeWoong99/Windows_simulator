@@ -13,33 +13,33 @@ public class UserManagerTest
 {
     private static readonly DateTime Base = TestUserBuilder.Base;
 
-    /// <summary>Entity 정리 가드만 보기 위한 최소 하위 타입. 게임 상태를 갖지 않는다.</summary>
-    private sealed class Dummy : Entity
-    {
-        public int DestroyedCount;
-
-        protected override void OnDestroy() => DestroyedCount++;
-    }
+    // 가드는 Entity 기반 클래스에 있었고, 그때는 스텁 하위 타입으로만 볼 수 있었다.
+    // 실행기가 주입 가능해진 뒤로는 진짜 User에 대고 "몇 번 예약됐는가"를 직접 센다.
+    // 실행기는 기록 모드다 — OnDestroy를 실제로 돌리면 UserManager.Instance(전역)가 오염된다.
 
     [Fact]
     public void Destroy를_여러_번_불러도_정리는_한_번만_예약된다()
     {
         // 종료 정산이 OnDestroy에 들어 있어, 두 번 돌면 같은 구간을 두 번 지급하게 된다.
-        var entity = new Dummy();
+        var builder = new TestUserBuilder();
+        var user    = builder.Build();
 
-        entity.Destroy().ShouldBeTrue();
-        entity.Destroy().ShouldBeFalse();
-        entity.Destroy().ShouldBeFalse();
+        user.Destroy().ShouldBeTrue();
+        user.Destroy().ShouldBeFalse();
+        user.Destroy().ShouldBeFalse();
+
+        // 반환값이 아니라 실제 계약을 본다 — OnDestroy가 큐에 한 번만 실렸는가.
+        builder.Executor.Posted.Count.ShouldBe(1);
     }
 
     [Fact]
     public void Destroy_이후에는_정리됨으로_표시된다()
     {
-        var entity = new Dummy();
+        var user = new TestUserBuilder().Build();
 
-        entity.IsDestroyed.ShouldBeFalse();
-        entity.Destroy();
-        entity.IsDestroyed.ShouldBeTrue();
+        user.IsDestroyed.ShouldBeFalse();
+        user.Destroy();
+        user.IsDestroyed.ShouldBeTrue();
     }
 
     // ─────────────────── 중복 로그인 매핑 정합성 ───────────────────
@@ -49,7 +49,8 @@ public class UserManagerTest
         var ch = new FakeClientChannel { SessionId = sessionId };
         channel = ch;
 
-        var user = new User(ch, new FakeDBQueue(), pid, nickname: "테스터", loggedInAt: Base);
+        var user = new User(ch, new FakeDBQueue(), new FakeLogicExecutor(),
+                            pid, nickname: "테스터", loggedInAt: Base);
         manager.JoinUser(user);
         return user;
     }

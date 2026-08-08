@@ -5,11 +5,16 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-public class DBManager : Singleton<DBManager>, IDBQueue
+public class DBManager : IDBQueue
 {
     // 커넥션을 만드는 방법만 안다 — 파일 DB냐 :memory:냐는 주입하는 쪽이 정한다.
     private Func<SqliteConnection>? _connectionFactory;
-
+    private readonly ILogicExecutor _logicExecutor;
+    
+    public DBManager(ILogicExecutor logicExecutor)
+    {
+        _logicExecutor = logicExecutor;
+    }
     /// <summary>커넥션 팩토리를 직접 주입한다. 테스트는 <c>:memory:</c> 커넥션을 넘긴다.</summary>
     public void Initialize(Func<SqliteConnection> connectionFactory)
     {
@@ -59,7 +64,7 @@ public class DBManager : Singleton<DBManager>, IDBQueue
 
             await repository.ExecuteAsync(new DbConnection(conn)); // SP 실행 -- 다른 스레드가 작업 이어서 할 수 있음 (순서는 보장)
 
-            LogicExecutor.Instance.Post(repository.Apply);
+            _logicExecutor.Post(repository.Apply);
         });
     }
 }

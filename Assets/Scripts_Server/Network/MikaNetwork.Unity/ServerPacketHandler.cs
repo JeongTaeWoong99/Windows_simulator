@@ -61,7 +61,7 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_LoginResponse(ISession session, S_LoginResponse res)
         {
-            ClientLog.Info(ClientLog.Recv, $"로그인 결과={res.Result}, 세션ID={res.SessionId}");
+            ClientLogger.Info(ClientLogger.Recv, $"로그인 결과={res.Result}, 세션ID={res.SessionId}");
             LoginResponded?.Invoke(res);
         }
 
@@ -73,7 +73,7 @@ namespace MikaNetwork
         public static void Handle_S_InventoryResponse(ISession session, S_InventoryResponse res)
         {
             int itemCount = res.Items?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"인벤토리 스냅샷 — 아이템 {itemCount}종");
+            ClientLogger.Info(ClientLogger.Recv, $"인벤토리 스냅샷 — 아이템 {itemCount}종");
             InventoryReceived?.Invoke(res);
         }
 
@@ -83,7 +83,7 @@ namespace MikaNetwork
         {
             int rewardCount = res.Rewards?.Count ?? 0;
             int changeCount = res.ItemChangeInfos?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"가챠 결과={res.Result}, 보상 {rewardCount}건, 인벤토리 변경 {changeCount}건");
+            ClientLogger.Info(ClientLogger.Recv, $"가챠 결과={res.Result}, 보상 {rewardCount}건, 인벤토리 변경 {changeCount}건");
             GachaDrawn?.Invoke(res);
         }
 
@@ -92,7 +92,7 @@ namespace MikaNetwork
         public static void Handle_S_WorkStationAssignResponse(ISession session, S_WorkStationAssignResponse res)
         {
             // 배치와 해제가 같은 패킷이라 "배치 결과"로 적으면 해제했을 때 말이 어긋난다.
-            ClientLog.Info(ClientLog.Recv, $"작업슬롯 변경 결과={res.Result}");
+            ClientLogger.Info(ClientLogger.Recv, $"작업슬롯 변경 결과={res.Result}");
             WorkStationAssigned?.Invoke(res);
         }
 
@@ -103,7 +103,7 @@ namespace MikaNetwork
         public static void Handle_S_WorkStationSlotsResponse(ISession session, S_WorkStationSlotsResponse res)
         {
             int slotCount = res.Slots?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"작업슬롯 스냅샷 — {slotCount}칸");
+            ClientLogger.Info(ClientLogger.Recv, $"작업슬롯 스냅샷 — {slotCount}칸");
             WorkStationSlotsReceived?.Invoke(res);
         }
 
@@ -115,7 +115,7 @@ namespace MikaNetwork
         public static void Handle_S_GatherResultResponse(ISession session, S_GatherResultResponse res)
         {
             int changeCount = res.ItemChanges?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"채취 정산 — 슬롯 {res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changeCount}건");
+            ClientLogger.Info(ClientLogger.Recv, $"채취 정산 — 슬롯 {res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changeCount}건");
             GatherResultReceived?.Invoke(res);
         }
 
@@ -126,7 +126,7 @@ namespace MikaNetwork
         public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
         {
             int currencyCount = res.Currencies?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"재화 — {currencyCount}종");
+            ClientLogger.Info(ClientLogger.Recv, $"재화 — {currencyCount}종");
             CurrencyReceived?.Invoke(res);
         }
 
@@ -136,25 +136,25 @@ namespace MikaNetwork
         public static void Handle_S_UpdateItemResponse(ISession session, S_UpdateItemResponse res)
         {
             int changeCount = res.ItemChangeInfos?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"아이템 증감 — 변경 {changeCount}건");
+            ClientLogger.Info(ClientLogger.Recv, $"아이템 증감 — 변경 {changeCount}건");
             ItemUpdated?.Invoke(res);
         }
 
         // 보유 캐릭터 전체 스냅샷 (S_CharacterListResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다. 조회 요청 패킷은 없다.
         // ※ CharacterId는 캐릭터 종류(TID)가 아니라 내가 가진 그 한 마리의 개체 번호다.
-        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 SessionManager.Characters 주석 참조.
+        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 PlayerDataManager.Characters 주석 참조.
         [PacketHandler]
         public static void Handle_S_CharacterListResponse(ISession session, S_CharacterListResponse res)
         {
             int characterCount = res.Characters?.Count ?? 0;
-            ClientLog.Info(ClientLog.Recv, $"보유 캐릭터 — {characterCount}마리");
+            ClientLogger.Info(ClientLogger.Recv, $"보유 캐릭터 — {characterCount}마리");
             CharacterListReceived?.Invoke(res);
         }
 
         // 하트비트 응답 (S_PongResponse 수신 시 자동 호출)
         // ※ 로그를 남기지 않는다 — 5초마다 오므로 찍으면 콘솔이 Pong으로 덮인다.
-        //   판정과 로그는 HeartbeatManager가 상태가 바뀔 때만 담당한다.
+        //   판정과 로그는 PingManager가 상태가 바뀔 때만 담당한다.
         [PacketHandler]
         public static void Handle_S_PongResponse(ISession session, S_PongResponse res)
         {
@@ -167,7 +167,7 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_EchoResponse(ISession session, S_EchoResponse res)
         {
-            ClientLog.Info(ClientLog.Recv, $"에코 — {res.Message}");
+            ClientLogger.Info(ClientLogger.Recv, $"에코 — {res.Message}");
         }
 
         #endregion
