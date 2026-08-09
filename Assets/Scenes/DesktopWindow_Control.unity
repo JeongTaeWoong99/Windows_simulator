@@ -11368,7 +11368,7 @@ GameObject:
   - component: {fileID: 609627471}
   - component: {fileID: 609627470}
   m_Layer: 0
-  m_Name: Log Manager
+  m_Name: Player Data Logger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -25836,7 +25836,7 @@ GameObject:
   - component: {fileID: 1241944587}
   - component: {fileID: 1241944586}
   m_Layer: 0
-  m_Name: Main Storage Column
+  m_Name: '@Main Storage Column'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -26359,7 +26359,7 @@ GameObject:
   - component: {fileID: 1294280244}
   - component: {fileID: 1294280246}
   m_Layer: 0
-  m_Name: Login Canvas
+  m_Name: '!Login Canvas'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -30983,7 +30983,7 @@ GameObject:
   - component: {fileID: 1479551844}
   - component: {fileID: 1479551845}
   m_Layer: 0
-  m_Name: Horizental Columns
+  m_Name: '!Horizental Columns'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -32011,7 +32011,7 @@ GameObject:
   - component: {fileID: 1526194781}
   - component: {fileID: 1526194780}
   m_Layer: 0
-  m_Name: Main WorkStation Column
+  m_Name: '@Main WorkStation Column'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -35717,7 +35717,7 @@ GameObject:
   m_Layer: 5
   m_Name: Storage Canvas
   m_TagString: Untagged
-  m_Icon: {fileID: 0}
+  m_Icon: {fileID: 7250588514170254948, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
@@ -36630,7 +36630,7 @@ GameObject:
   - component: {fileID: 1753843047}
   - component: {fileID: 1753843046}
   m_Layer: 0
-  m_Name: "Main Market Column(\uCD94\uD6C4, \uC138\uD305 UI\uB4E4\uC774 \uC0DD\uAE30\uBA74,
+  m_Name: "@Main Market Column(\uCD94\uD6C4, \uC138\uD305 UI\uB4E4\uC774 \uC0DD\uAE30\uBA74,
     \uC704\uCE58 \uC774\uC804)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
