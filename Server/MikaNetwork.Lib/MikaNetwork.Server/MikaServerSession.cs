@@ -61,7 +61,9 @@ public sealed class MikaServerSession : ISession, IHeartbeatSession
     public void Send(ReadOnlyMemory<byte> data)
     {
         if(!_sendQueue.Writer.TryWrite(data)) // 송신 Queue에 넣는데 실패하면, 연결 끊음 
+        {
             Disconnect(); 
+        }
     }
 
 
@@ -70,7 +72,9 @@ public sealed class MikaServerSession : ISession, IHeartbeatSession
         // 정확히 한 번만 통과한다. 이 가드가 없으면 Disconnected 이벤트가 두 번 발화해
         // 호스트의 세션 정리(종료 정산 포함)가 중복된다.
         if (Interlocked.Exchange(ref _disconnected, 1) == 1)
+        {
             return;
+        }
 
         IsConnected = false;
 
@@ -100,7 +104,9 @@ public sealed class MikaServerSession : ISession, IHeartbeatSession
     public async Task StartAsync()
     {
         if (IsConnected)
+        {
             return;
+        }
         
         IsConnected = true;
         Connected?.Invoke(this);
@@ -119,7 +125,10 @@ public sealed class MikaServerSession : ISession, IHeartbeatSession
     {
         var handler = Received;
 
-        if (handler is null) return;
+        if (handler is null)
+        {
+            return;
+        }
         
         await handler(this, data);
     }
@@ -186,7 +195,10 @@ public sealed class MikaServerSession : ISession, IHeartbeatSession
             {
                 while (_sendQueue.Reader.TryRead(out var data))
                 {
-                    if (!IsConnected) return;
+                    if (!IsConnected)
+                    {
+                        return;
+                    }
 
                     await _socket.SendAsync(data, SocketFlags.None);
                 }

@@ -101,10 +101,14 @@ public class MikaServer : IServer, IDisposable
         foreach (var session in sessions.ToList())
         {
             if (!session.IsConnected)
+            {
                 continue;
+            }
 
             if (now - session.LastReceivedAt < timeout)
+            {
                 continue;
+            }
 
             session.Disconnect();
             closed++;

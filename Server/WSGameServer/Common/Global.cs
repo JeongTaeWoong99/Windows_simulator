@@ -10,7 +10,7 @@ public static class Global
     }
 
     /// <summary>
-    /// <b>채취 전역 속도 배수.</b> 2.0이면 모든 슬롯이 2배 빨리 캔다.
+    /// <b>채취 전역 속도 배수.</b> 2.0ㄸ이면 모든 슬롯이 2배 빨리 캔다.
     ///
     /// <para>
     /// 기획 수치(<c>WorkStationSlot.BaseCycleSeconds</c> = 30초, <c>WorkSpeedTable</c>)는 그대로 두고
@@ -39,6 +39,6 @@ public static class Global
     /// <b>부당 구간이 판정 1회를 못 채우게</b> 했다.
     /// </para>
     /// </summary>
-    public static readonly TimeSpan SessionIdleTimeout = TimeSpan.FromSeconds(15);
+    public static readonly TimeSpan SessionIdleTimeout = TimeSpan.FromSeconds(5);
 }
 

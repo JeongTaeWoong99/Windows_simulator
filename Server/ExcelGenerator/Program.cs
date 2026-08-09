@@ -66,7 +66,9 @@ public class Program
             // 데이터 오류·파일 잠금 등은 여기서 원인 체인을 찍고 비0으로 종료한다(파이프라인이 멈추도록).
             Console.Error.WriteLine($"[오류] {ex.Message}");
             for (var inner = ex.InnerException; inner is not null; inner = inner.InnerException)
+            {
                 Console.Error.WriteLine($"       └ {inner.Message}");
+            }
             return 1;
         }
     }
@@ -79,7 +81,9 @@ public class Program
     {
         var start = Path.GetDirectoryName(sourceFilePath);
         if (string.IsNullOrEmpty(start))
+        {
             throw new DirectoryNotFoundException("소스 경로를 알 수 없습니다. 저장소 루트를 첫 인자로 넘기세요.");
+        }
 
         for (var dir = new DirectoryInfo(start); dir is not null; dir = dir.Parent)
         {
@@ -87,7 +91,9 @@ public class Program
             {
                 var probe = Path.Combine(dir.FullName, marker);
                 if (Directory.Exists(probe) || File.Exists(probe))   // .git은 워크트리에서 파일일 수 있다
+                {
                     return dir.FullName;
+                }
             }
         }
 
@@ -100,7 +106,9 @@ public class Program
     private static void AssertExists(string dir, string what)
     {
         if (!Directory.Exists(dir))
+        {
             throw new DirectoryNotFoundException($"{what}가 없습니다: {dir}");
+        }
     }
 
     /// <summary>

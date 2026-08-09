@@ -19,6 +19,19 @@ namespace GameData
         Max    ,
     };
 
+    public enum IndustryType : byte
+    {
+        None    = 0,
+
+        Farming = 1,  // 농사
+        Fishing = 2,  // 낚시
+        Mining  = 3,  // 채광
+        Logging = 4,  // 벌목
+        Hunting = 5,  // 사냥
+
+        Max    ,
+    };
+
     public enum GlobalRarity : byte
     {
         None      = 0,

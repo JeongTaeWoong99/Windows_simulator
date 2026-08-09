@@ -24,6 +24,9 @@ public sealed partial class User
     /// </summary>
     private readonly DropTableCatalog _dropTables;
 
+    /// <summary>산업 레벨 테이블 인덱스. 배치·적재 시 판정 비용을 여기서 가져온다. 규약은 위와 같다.</summary>
+    private readonly IndustryLevelCatalog _industryLevels;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -45,7 +48,10 @@ public sealed partial class User
     
     public bool Create()
     {
-        if (_created) return false;
+        if (_created)
+        {
+            return false;
+        }
         
         _created = true;
         
@@ -57,7 +63,9 @@ public sealed partial class User
     public bool Destroy()
     {
         if (Interlocked.Exchange(ref _destroyed, 1) == 1)
+        {
             return false;
+        }
 
         Post(OnDestroy);
         return true;
@@ -91,7 +99,8 @@ public sealed partial class User
         string            pid,
         string            nickname,
         DateTime          loggedInAt,
-        DropTableCatalog? dropTables = null)
+        DropTableCatalog? dropTables = null,
+        IndustryLevelCatalog? industryLevels = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -100,6 +109,7 @@ public sealed partial class User
         _db         = db;
         _logicExecutor = logicExecutor;
         _dropTables = dropTables ?? DropTableCatalog.Instance;
+        _industryLevels = industryLevels ?? IndustryLevelCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

@@ -64,8 +64,10 @@ global using System.Threading.Tasks;
 
         var genErrors = genDiagnostics.Where(d => d.Severity == DiagnosticSeverity.Error).ToArray();
         if (genErrors.Length > 0)
+        {
             throw new InvalidOperationException(
                 "MemoryPack 제너레이터 구동 실패:\n" + string.Join("\n", genErrors.Select(d => d.ToString())));
+        }
 
         using var ms = new MemoryStream();
         var result = updated.Emit(ms);
@@ -100,8 +102,10 @@ global using System.Threading.Tasks;
     {
         var dllPath = Path.Combine(AppContext.BaseDirectory, GeneratorDllName);
         if (!File.Exists(dllPath))
+        {
             throw new FileNotFoundException(
                 $"MemoryPack 제너레이터 DLL을 찾을 수 없습니다: {dllPath} (ExcelGenerator.csproj의 복사 설정 확인)");
+        }
 
         var asm = Assembly.LoadFrom(dllPath);
 
@@ -113,7 +117,9 @@ global using System.Threading.Tasks;
             .ToArray();
 
         if (generators.Length == 0)
+        {
             throw new InvalidOperationException("MemoryPack.Generator.dll에서 소스 제너레이터를 찾지 못했습니다.");
+        }
 
         return generators;
     }

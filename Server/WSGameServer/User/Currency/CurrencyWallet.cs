@@ -25,7 +25,9 @@ public sealed class CurrencyWallet
     {
         _amounts.Clear();
         foreach (var (type, amount) in amounts)
+        {
             _amounts[type] = amount;
+        }
     }
 
     /// <summary>보유량. 가진 적이 없으면 0.</summary>
@@ -41,7 +43,9 @@ public sealed class CurrencyWallet
     public long Gain(CurrencyType type, long amount)
     {
         if (type == CurrencyType.None)
+        {
             throw new ArgumentException("재화 종류가 지정되지 않았습니다.", nameof(type));
+        }
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
 
         var current = Get(type);
@@ -59,7 +63,9 @@ public sealed class CurrencyWallet
     public bool TrySpend(CurrencyType type, long amount, out long remain)
     {
         if (type == CurrencyType.None)
+        {
             throw new ArgumentException("재화 종류가 지정되지 않았습니다.", nameof(type));
+        }
         ArgumentOutOfRangeException.ThrowIfNegativeOrZero(amount);
 
         var current = Get(type);

@@ -45,7 +45,9 @@ public partial class User
     public bool TrySpendCurrency(CurrencyType type, long amount)
     {
         if (!Wallet.TrySpend(type, amount, out var remain))
+        {
             return false;
+        }
 
         SaveAndNotifyCurrency(type, remain);
         return true;

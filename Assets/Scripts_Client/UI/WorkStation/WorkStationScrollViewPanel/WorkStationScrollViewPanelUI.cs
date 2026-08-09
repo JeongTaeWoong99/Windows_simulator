@@ -298,12 +298,11 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
     /// <summary>슬롯 스냅샷의 원본 값을 한 번 찍는다 — 단위가 계약과 맞는지 눈으로 보려고 (뷰를 만들 때 호출).</summary>
     private void LogSnapshot(WorkStationSlotInfo slot)
     {
-        double nowUnix   = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
-        double elapsedSec = nowUnix - slot.LastTickAtUnix;
+        double elapsedSec = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs) / 1000.0;
         double cycleSec   = (double)slot.JudgeCostUnits / slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
 
         ClientLogger.Info(ClientLogger.Data,
-            $"[A-2] 슬롯 {slot.SlotIndex} 스냅샷 — LastTickAtUnix={slot.LastTickAtUnix} (지금보다 {elapsedSec:0.00}초 전), " +
+            $"[A-2] 슬롯 {slot.SlotIndex} 스냅샷 — LastTickAtUnixMs={slot.LastTickAtUnixMs} (지금보다 {elapsedSec:0.00}초 전), " +
             $"ProgressUnits={slot.ProgressUnits}, speed={slot.CurrentWorkSpeed}, JudgeCost={slot.JudgeCostUnits}, " +
             $"한 주기={cycleSec:0.00}초, 지금 남은={CalculateRemainSeconds(slot):0.00}초");
     }
@@ -318,7 +317,7 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
     /// </summary>
     private static long GetPendingUnits(WorkStationSlotInfo slot)
     {
-        double elapsedMs   = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnix * 1000L);
+        double elapsedMs   = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs);
         double accumulated = slot.ProgressUnits + elapsedMs * slot.CurrentWorkSpeed;
 
         return (long)(accumulated % slot.JudgeCostUnits);

@@ -48,7 +48,9 @@ public sealed class EnumCompiler
     {
         var type = assembly.GetTypes().FirstOrDefault(t => t.IsEnum && t.Name == enumName);
         if (type is null)
+        {
             return false;
+        }
 
         return Enum.GetNames(type).Contains(memberName);
     }

@@ -3,7 +3,7 @@ name: excel-table-creator
 description: GameDesign/Excel의 게임 데이터 엑셀에 시트·컬럼을 새로 만들거나 고칠 때의 규칙. 마커 행 구조, TID 필수 규칙, Ref 무결성 검사, Description 예약 컬럼, 파이프라인 실행 절차를 담는다. 게임 데이터 테이블을 추가·변경하는 작업에 적용한다.
 ---
 
-> 최종 업데이트: 2026-08-08
+> 최종 업데이트: 2026-08-09
 
 # 게임 데이터 엑셀 시트 작성
 
@@ -19,6 +19,10 @@ description: GameDesign/Excel의 게임 데이터 엑셀에 시트·컬럼을 �
 
 시트명은 곧 생성되는 클래스명(`<시트명>Row`)이고 `.bytes` 파일명이며 Unity 미러 경로다.
 한 번 박히면 되돌리는 비용이 크다.
+
+**엑셀 파일명은 영문 PascalCase다** (2026-08-09 확정 — `Drop낚시.xlsx` 등 한글 5개를
+`DropFishing.xlsx` 등으로 개명). 새 엑셀 파일을 만들 때 한글 이름을 쓰지 않는다.
+시트의 사람용 라벨(`IndustryLevelTable.농사` 같은 `.` 뒷부분)은 한글이어도 된다.
 
 ---
 
@@ -105,7 +109,7 @@ DB에 저장되는 식별자는 **한 번 쓰이면 의미를 바꿀 수 없다.
 레벨·산업 단위 시트로 갈라 두는 용도다. `.` 없는 시트는 지금처럼 시트 = 테이블.
 
 ```
-Drop낚시.xlsx
+DropFishing.xlsx
 ├─ FishingBasicTable.Lv1  ─┐
 ├─ FishingBasicTable.Lv2   ├─→ FishingBasicTable 한 테이블로 병합
 └─ FishingBasicTable.Lv3  ─┘

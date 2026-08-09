@@ -17,7 +17,9 @@ namespace MikaNetwork
         public bool TryWrite(ReadOnlyMemory<byte> data)
         {
             if (Volatile.Read(ref _count) >= _capacity) 
+            {
                 return false; // 백프레셔
+            }
             
             _queue.Enqueue(data);
             Interlocked.Increment(ref _count);

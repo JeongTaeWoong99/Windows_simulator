@@ -10,13 +10,13 @@ namespace GameData
     [MemoryPackable]
     public partial class IndustryLevelTableRow
     {
-        public int      IndustryLevelTID     { get; set; }        // int
-        public ItemType IndustryType         { get; set; }        // eItemType
-        public int      Level                { get; set; }        // int [1..5]
-        public string   Name                 { get; set; } = "";  // string
-        public int      RequiredScore        { get; set; }        // int [1..-]
-        public int      RequiredAptitude     { get; set; }        // int [0..10]
-        public int      RequiredAccountLevel { get; set; }        // int [0..-]
-        public string   Description          { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int          IndustryLevelTID     { get; set; }        // int
+        public IndustryType IndustryType         { get; set; }        // eIndustryType
+        public int          Level                { get; set; }        // int [1..5]
+        public string       Name                 { get; set; } = "";  // string
+        public int          RequiredScore        { get; set; }        // int [1..-]
+        public int          RequiredAptitude     { get; set; }        // int [0..10]
+        public int          RequiredAccountLevel { get; set; }        // int [0..-]
+        public string       Description          { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

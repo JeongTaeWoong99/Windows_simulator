@@ -13,7 +13,8 @@ public class CharacterTest
     private static CharacterTableRow Row(
         int tid = 1001,
         int farming = 0, int fishing = 0, int mining = 0, int logging = 0, int hunting = 0)
-        => new()
+    {
+        return new()
         {
             CharacterTID = tid,
             Name         = "테스트",
@@ -23,6 +24,7 @@ public class CharacterTest
             Logging      = logging,
             Hunting      = hunting,
         };
+    }
 
     private static Character Make(
         CharacterTableRow row, long id = 1, int level = 1, int exp = 0)
@@ -33,22 +35,20 @@ public class CharacterTest
     {
         var character = Make(Row(farming: 3, fishing: 7, mining: 0, logging: 1, hunting: 10));
 
-        character.GetAptitude(ItemType.Farming).ShouldBe(3);
-        character.GetAptitude(ItemType.Fishing).ShouldBe(7);
-        character.GetAptitude(ItemType.Mining).ShouldBe(0);
-        character.GetAptitude(ItemType.Logging).ShouldBe(1);
-        character.GetAptitude(ItemType.Hunting).ShouldBe(10);
+        character.GetAptitude(IndustryType.Farming).ShouldBe(3);
+        character.GetAptitude(IndustryType.Fishing).ShouldBe(7);
+        character.GetAptitude(IndustryType.Mining).ShouldBe(0);
+        character.GetAptitude(IndustryType.Logging).ShouldBe(1);
+        character.GetAptitude(IndustryType.Hunting).ShouldBe(10);
     }
 
-    [Theory]
-    [InlineData(ItemType.None)]
-    [InlineData(ItemType.Misc)]
-    [InlineData(ItemType.Special)]
-    public void 채취_산업이_아니면_적성이_0이다(ItemType type)
+    [Fact]
+    public void 산업_미지정이면_적성이_0이다()
     {
-        // Misc·Special은 아이템 분류일 뿐 배치 가능한 산업이 아니다.
+        // 아이템 분류(Misc·Special)는 IndustryType에 아예 없어 여기 넘길 수조차 없다 —
+        // 예전엔 ItemType 하나를 공유해서 런타임에만 걸러졌다(T-023).
         Make(Row(farming: 10, fishing: 10, mining: 10, logging: 10, hunting: 10))
-            .GetAptitude(type).ShouldBe(0);
+            .GetAptitude(IndustryType.None).ShouldBe(0);
     }
 
     [Fact]
@@ -56,8 +56,18 @@ public class CharacterTest
     {
         var character = Make(Row(fishing: 5, mining: 0));
 
-        character.CanWork(ItemType.Fishing).ShouldBeTrue();
-        character.CanWork(ItemType.Mining).ShouldBeFalse();
+        character.CanWork(IndustryType.Fishing).ShouldBeTrue();
+        character.CanWork(IndustryType.Mining).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 산업_목록은_1차_산업_5종이다()
+    {
+        // 클라에 내려보내는 적성 목록의 기준이다. 아이템 분류(Misc·Special)가 섞이면 배치 UI에 뜬다.
+        Character.Industries.ShouldBe(new[]
+        {
+            IndustryType.Farming, IndustryType.Fishing, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting,
+        });
     }
 
     [Fact]

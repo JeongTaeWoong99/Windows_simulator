@@ -65,7 +65,7 @@ public sealed class DropTable
 
     /// <summary>
     /// count회 굴려 <c>ItemTID</c>별 개수를 집계한다.
-    /// 오프라인 정산이 쓰는 경로다 — 판정 수천 회의 결과를 리스트로 쌓지 않고 바로 센다.
+    /// 한 번에 여러 판정을 정산할 때 낱개 결과를 리스트로 쌓지 않고 바로 센다.
     /// </summary>
     public Dictionary<int, int> RollMany(int count, Random? random = null)
     {

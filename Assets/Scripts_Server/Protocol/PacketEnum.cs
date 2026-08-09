@@ -19,9 +19,10 @@ namespace MikaProtocol
         InvalidGachaId   = 101, // 존재하지 않는 가챠 풀
 
         // ── 200~: 작업슬롯 ──
-        InvalidSlotIndex  = 200, // 보유하지 않은 슬롯 번호
-        CharacterNotOwned = 201, // 미보유 캐릭터 배치 시도
-        NoAptitude        = 202, // 해당 산업 적성이 0인 캐릭터 배치 시도
+        InvalidSlotIndex    = 200, // 보유하지 않은 슬롯 번호
+        CharacterNotOwned   = 201, // 미보유 캐릭터 배치 시도
+        NoAptitude          = 202, // 해당 산업 적성이 0인 캐릭터 배치 시도
+        IndustryLevelLocked = 203, // 해금하지 않은(또는 범위 밖) 산업 레벨 배치 시도
     }
 
     public enum EItemChangeKind : byte
@@ -30,6 +31,19 @@ namespace MikaProtocol
         Add = 1,
         Update = 2,
         Remove = 3,
+    }
+
+    // 배치·적성의 대상이 되는 1차 산업. GameData.IndustryType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
+    // 서버가 byte 캐스팅으로 그대로 실어 보낸다(PacketEnumTest가 어긋남을 잡는다).
+    public enum EIndustryType : byte
+    {
+        None = 0,   // 미지정 — 빈 슬롯·배치 해제
+
+        Farming = 1,
+        Fishing = 2,
+        Mining  = 3,
+        Logging = 4,
+        Hunting = 5,
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —

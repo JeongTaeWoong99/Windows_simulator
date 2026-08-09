@@ -30,7 +30,9 @@ public sealed class WorkStation
     {
         _slots.Clear();
         foreach (var slot in slots)
+        {
             _slots[slot.SlotIndex] = slot;
+        }
     }
 
     public bool TryGet(int slotIndex, out WorkStationSlot slot) => _slots.TryGetValue(slotIndex, out slot!);
@@ -39,9 +41,11 @@ public sealed class WorkStation
     public WorkStationSlot Unlock(int slotIndex, DateTime now)
     {
         if (_slots.TryGetValue(slotIndex, out var existing))
+        {
             return existing;
+        }
 
-        var slot = new WorkStationSlot(slotIndex, ItemType.None, characterId: 0, startedAt: now);
+        var slot = new WorkStationSlot(slotIndex, IndustryType.None, characterId: 0, startedAt: now);
         _slots[slotIndex] = slot;
         return slot;
     }
@@ -63,13 +67,16 @@ public sealed class WorkStation
         {
             var judgeCount = slot.ConsumeJudgeCount(now);
             if (judgeCount <= 0)
-                continue;
-
-            // 산업별 드롭 테이블이 아직 없을 수 있다(시트 미작성). 그때는 조용히 건너뛴다 —
-            // 여기서 예외를 던지면 다른 슬롯의 정산까지 함께 죽는다.
-            if (!catalog.TryGet(slot.Industry, out var table))
             {
-                ServerLog.Warn("채취", $"드롭 테이블 없음, 건너뜀: {slot.Industry} (슬롯 {slot.SlotIndex})");
+                continue;
+            }
+
+            // (산업, 레벨)의 드롭 테이블이 아직 없을 수 있다(시트 미작성). 그때는 조용히 건너뛴다 —
+            // 여기서 예외를 던지면 다른 슬롯의 정산까지 함께 죽는다.
+            if (!catalog.TryGet(slot.Industry, slot.IndustryLevel, out var table))
+            {
+                ServerLog.Warn("채취",
+                    $"드롭 테이블 없음, 건너뜀: {slot.Industry} Lv{slot.IndustryLevel} (슬롯 {slot.SlotIndex})");
                 continue;
             }
 

@@ -42,7 +42,9 @@ public static class ExcelGenerator
     {
         var baseName = sheet.Split('.', 2)[0].Trim();
         if (string.IsNullOrEmpty(baseName))
+        {
             throw new InvalidDataException($"'{file}'의 시트 '{sheet}': '.' 앞의 테이블명이 비어 있습니다.");
+        }
 
         return baseName;
     }
@@ -81,13 +83,17 @@ public static class ExcelGenerator
         string Where() => $"'{name}' 병합 실패 — 기준 '{baseline.File}/{baseline.Sheet}' vs '{target.File}/{target.Sheet}'";
 
         if (a.Count != b.Count)
+        {
             throw new InvalidDataException($"{Where()}: 컬럼 수가 다릅니다 ({a.Count} vs {b.Count}).");
+        }
 
         for (var i = 0; i < a.Count; i++)
         {
             if (!a[i].Equals(b[i]))
+            {
                 throw new InvalidDataException(
                     $"{Where()}: 컬럼 '{a[i].Name}'의 정의가 다릅니다.\n  기준: {a[i]}\n  대상: {b[i]}");
+            }
         }
     }
 
@@ -190,7 +196,9 @@ public static class ExcelGenerator
         foreach (var path in Directory.EnumerateFiles(dir, pattern).ToList())
         {
             if (aliveTableNames.Contains(Path.GetFileNameWithoutExtension(path)))
+            {
                 continue;
+            }
 
             File.Delete(path);
             Console.WriteLine($"[정리] 사라진 테이블의 생성물 삭제: {path}");
@@ -204,7 +212,10 @@ public static class ExcelGenerator
 
         void AddIfExists(string path)
         {
-            if (File.Exists(path)) sources.Add(path);
+            if (File.Exists(path))
+            {
+                sources.Add(path);
+            }
         }
 
         AddIfExists(Path.Combine(gameDataDir, "Enum.cs"));
@@ -213,9 +224,13 @@ public static class ExcelGenerator
 
         var tablesDir = Path.Combine(gameDataDir, "Tables");
         if (Directory.Exists(tablesDir))
+        {
             sources.AddRange(Directory.GetFiles(tablesDir, "*.cs"));
+        }
         if (Directory.Exists(packerDir))
+        {
             sources.AddRange(Directory.GetFiles(packerDir, "*.cs"));
+        }
 
         return sources;
     }
@@ -257,18 +272,21 @@ public static class ExcelGenerator
         }
     }
     
-    private static ColumnInfo.RecordType MapRecordType(string rawType) => rawType switch
+    private static ColumnInfo.RecordType MapRecordType(string rawType)
     {
-        "int"                           => ColumnInfo.RecordType.Int,
-        "long"                          => ColumnInfo.RecordType.Long,
-        "float"                         => ColumnInfo.RecordType.Float,
-        "string"                        => ColumnInfo.RecordType.String,
-        "bool"                          => ColumnInfo.RecordType.Bool,
-        "ID"                            => ColumnInfo.RecordType.ID,
-        _ when rawType.EndsWith("[]")   => MapArrayType(rawType),           // int[]/long[]/float[]/string[]/eXxx[]
-        _ when rawType.StartsWith("e")  => ColumnInfo.RecordType.EnumType,  // eItemType, eItemRarity
-        _                               => ColumnInfo.RecordType.Ignore,
-    };
+        return rawType switch
+        {
+            "int"                           => ColumnInfo.RecordType.Int,
+            "long"                          => ColumnInfo.RecordType.Long,
+            "float"                         => ColumnInfo.RecordType.Float,
+            "string"                        => ColumnInfo.RecordType.String,
+            "bool"                          => ColumnInfo.RecordType.Bool,
+            "ID"                            => ColumnInfo.RecordType.ID,
+            _ when rawType.EndsWith("[]")   => MapArrayType(rawType),           // int[]/long[]/float[]/string[]/eXxx[]
+            _ when rawType.StartsWith("e")  => ColumnInfo.RecordType.EnumType,  // eItemType, eItemRarity
+            _                               => ColumnInfo.RecordType.Ignore,
+        };
+    }
 
     /// <summary>배열 표기 "element[]"의 원소 타입으로 Array 계열 RecordType을 고른다.</summary>
     private static ColumnInfo.RecordType MapArrayType(string rawType)
@@ -297,7 +315,9 @@ public static class ExcelGenerator
         {
             var marker = ws.Cell(row, 1).GetString().Trim();
             if (!string.IsNullOrEmpty(marker))
+            {
                 markerRows[marker] = row;
+            }
         }
 
         // 2) 필드명 행 / 데이터 시작 행
@@ -315,7 +335,10 @@ public static class ExcelGenerator
         for (var col = 2; col <= lastCol; col++)
         {
             var name = Cell(fieldNameRow, col);
-            if (string.IsNullOrEmpty(name)) continue;   // 빈 열 스킵
+            if (string.IsNullOrEmpty(name))
+            {
+                continue;   // 빈 열 스킵
+            }
 
             var rawType = Cell(Row("Type"), col);
             colNumbers.Add(col);
@@ -335,23 +358,38 @@ public static class ExcelGenerator
         for (var row = dataStartRow; row <= lastRow; row++)
         {
             if (string.IsNullOrEmpty(ws.Cell(row, colNumbers[0]).GetString().Trim()))
+            {
                 continue;   // 첫 필드(TID) 비면 빈 행
+            }
 
             var cells = new string[columnInfos.Count];
             for (var i = 0; i < columnInfos.Count; i++)
+            {
                 cells[i] = ws.Cell(row, colNumbers[i]).GetString().Trim();
+            }
             rows.Add(cells);
         }
 
         return new TableData(ws.Name, columnInfos, rows);
     }
     
-    static ColumnInfo.Platform ParsePlatform(string s) => s.ToLower() switch
+    static ColumnInfo.Platform ParsePlatform(string s)
     {
-        "c" => ColumnInfo.Platform.Client,
-        "s" => ColumnInfo.Platform.Server,
-        _   => ColumnInfo.Platform.ServerClient,   // "a"/공백 = 양쪽
-    };
+        return s.ToLower() switch
+        {
+            "c" => ColumnInfo.Platform.Client,
+            "s" => ColumnInfo.Platform.Server,
+            _   => ColumnInfo.Platform.ServerClient,   // "a"/공백 = 양쪽
+        };
+    }
 
-    static int? ParseIntOrNull(string s) => int.TryParse(s, out var n) ? n : null;
+    static int? ParseIntOrNull(string s)
+    {
+        if (!int.TryParse(s, out var n))
+        {
+            return null;
+        }
+
+        return n;
+    }
 }

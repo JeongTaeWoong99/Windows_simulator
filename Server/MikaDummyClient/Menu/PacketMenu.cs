@@ -39,7 +39,9 @@ namespace MikaDummyClient
                 string? input = Console.ReadLine();
 
                 if (string.IsNullOrWhiteSpace(input))
+                {
                     continue;
+                }
 
                 if (!int.TryParse(input.Trim(), out int choice))
                 {
@@ -48,7 +50,9 @@ namespace MikaDummyClient
                 }
 
                 if (choice == 0)
+                {
                     break;
+                }
 
                 if (choice < 1 || choice > _actions.Count)
                 {
@@ -67,7 +71,9 @@ namespace MikaDummyClient
         {
             Console.WriteLine("=== 보낼 패킷 선택 ===");
             for (int i = 0; i < _actions.Count; i++)
+            {
                 Console.WriteLine($"{i + 1}) {_actions[i].Label}");
+            }
             Console.WriteLine("0) 종료");
         }
 
@@ -134,7 +140,7 @@ namespace MikaDummyClient
 
             NetworkManager.Instance.Send(new C_WorkStationAssignRequest
             {
-                SlotIndex = slotIndex, Industry = industry, CharacterId = characterId,
+                SlotIndex = slotIndex, Industry = (EIndustryType)industry, CharacterId = characterId,
             });
         }
 

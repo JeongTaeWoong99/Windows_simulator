@@ -185,7 +185,7 @@ public class PlayerDataLogger : MonoBehaviour
                 : "없음";
 
             lines.Append($"\n    {slot.SlotIndex}번 — 산업={(GameData.ItemType)slot.Industry}, " +
-                         $"캐릭터={character}, 마지막판정={slot.LastTickAtUnix}");
+                         $"캐릭터={character}, 마지막판정={slot.LastTickAtUnixMs}");
         }
 
         ClientLogger.Info(ClientLogger.UI, lines.ToString());

@@ -10,7 +10,7 @@ namespace WSGameServer;
 /// <para>
 /// TCP는 끊김을 알려 주지 않는다. FIN/RST 없이 사라지는 종료(Unity 에디터 플레이 중지·
 /// 절전·랜선 뽑기)에서는 <c>ReceiveAsync</c>가 영원히 대기하고 세션이 접속 중으로 남는다.
-/// 그동안 <see cref="GatheringScheduler"/>가 매초 정산·지급을 계속하므로,
+/// 그동안 <see cref="GatheringScheduler"/>가 정산·지급을 계속하므로,
 /// <b>좀비 유저는 폐지한 오프라인 적립을 되살린다</b>(이슈 #10).
 /// </para>
 ///
@@ -21,7 +21,7 @@ namespace WSGameServer;
 ///
 /// <para>
 /// <see cref="GatheringScheduler"/>와 타이머를 합치지 않았다. 채취 정산과 세션 정리는
-/// 서로 다른 관심사이고, 주기도 다르다(1초 vs 5초).
+/// 서로 다른 관심사이고, 주기도 다르다(0.1초 vs 5초).
 /// </para>
 /// </summary>
 public interface ISessionWatchdog
@@ -52,7 +52,9 @@ public sealed class SessionWatchdog : ISessionWatchdog
         ArgumentNullException.ThrowIfNull(server);
 
         if (_timer is not null)
+        {
             return;
+        }
 
         _server = server;
 
@@ -75,13 +77,17 @@ public sealed class SessionWatchdog : ISessionWatchdog
     public void Sweep(DateTime now)
     {
         if (_server is null)
+        {
             return;
+        }
 
         try
         {
             var closed = _server.SweepIdle(now, Global.SessionIdleTimeout);
             if (closed > 0)
+            {
                 ServerLog.Warn("세션", $"무응답으로 {closed}개 세션을 끊었다 (판정 {Global.SessionIdleTimeout.TotalSeconds}초)");
+            }
         }
         catch (Exception e)
         {

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-09 (문서 사이트 `GameDesign/web/` 추가)
+> 최종 업데이트: 2026-08-09 (엑셀 파일명 영문 규칙 추가 · 문서 사이트 `GameDesign/web/` 추가)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -226,6 +226,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
 | **모든 폴더** | **영문 소문자 · kebab-case** | `GameDesign/design/gathering/farming/`, `tasks/archive/` |
 | 기획·설계 `.md` 파일 | **한글** | `게임기획코어.md`, `산업레벨.md`, `요일로테이션.md` |
 | 일감 파일 | `T-<3자리>-<한글슬러그>.md` | `T-005-드롭테이블.md` |
+| **엑셀 파일 (`.xlsx`)** | **영문 PascalCase** (2026-08-09 변경 — `Drop낚시` 등 한글 5개를 개명) | `Item.xlsx`, `DropFishing.xlsx` |
 | 문서 안의 링크·경로 | 실제 경로 그대로 (영문 폴더 + 한글 파일) | `[자원채취](gathering/README.md)` |
 
 **폴더를 영문으로 되돌린 이유:** 문서를 웹으로 배포할 때 한글 폴더가

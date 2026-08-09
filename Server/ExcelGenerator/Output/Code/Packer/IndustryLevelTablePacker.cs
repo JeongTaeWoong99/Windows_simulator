@@ -15,7 +15,7 @@ namespace GameData
         public static IndustryLevelTableRow Parse(string[] cells) => new()
         {
             IndustryLevelTID     = PackerUtil.ParseInt(cells[0], Table, "IndustryLevelTID"),
-            IndustryType         = PackerUtil.ParseEnum<ItemType>(cells[1], Table, "IndustryType"),
+            IndustryType         = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
             Level                = PackerUtil.ParseInt(cells[2], Table, "Level", 1, 5),
             Name                 = PackerUtil.RequireString(cells[3], Table, "Name"),
             RequiredScore        = PackerUtil.ParseInt(cells[4], Table, "RequiredScore", 1, null),

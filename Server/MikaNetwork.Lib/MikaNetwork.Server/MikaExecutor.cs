@@ -59,7 +59,10 @@ namespace MikaNetwork.Server
 
         public void Stop()
         {
-            if (_dbChannels == null) return;
+            if (_dbChannels == null)
+            {
+                return;
+            }
             foreach (var channel in _dbChannels)
             {
                 channel.Writer.TryComplete();

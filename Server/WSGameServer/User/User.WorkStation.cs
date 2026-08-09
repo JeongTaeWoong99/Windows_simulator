@@ -11,6 +11,29 @@ public partial class User
     /// <summary>플레이어의 작업슬롯 전체. 채취는 여기서 시작된다.</summary>
     public WorkStation WorkStation { get; } = new();
 
+    /// <summary>
+    /// 산업별 <b>최대 해금 레벨</b>. 행이 없는 산업은 기본 레벨까지만 열린 것으로 본다.
+    /// <b>해금은 계정 단위·영구다</b> — 캐릭터를 방출해도 내려가지 않는다(산업레벨.md 3.2).
+    /// </summary>
+    private readonly Dictionary<IndustryType, int> _industryUnlocks = new();
+
+    /// <summary>DB에서 읽은 산업별 해금 레벨을 적재한다(로그인 시 1회).</summary>
+    public void LoadIndustryLevels(IReadOnlyList<UserIndustryLevelRow> rows)
+    {
+        _industryUnlocks.Clear();
+
+        foreach (var r in rows)
+        {
+            _industryUnlocks[(IndustryType)r.industry] = r.unlocked_level;
+        }
+    }
+
+    /// <summary>이 산업에서 열려 있는 최대 레벨. 기록이 없으면 기본 레벨(Lv1)이다.</summary>
+    public int GetUnlockedIndustryLevel(IndustryType industry)
+        => _industryUnlocks.TryGetValue(industry, out var level)
+            ? level
+            : WorkStationSlot.DefaultIndustryLevel;
+
     /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회). 캐릭터 적재가 먼저다.</summary>
     private void LoadWorkStation(IReadOnlyList<WorkStationSlotRow> rows, DateTime startedAt)
     {
@@ -19,12 +42,40 @@ public partial class User
         foreach (var r in rows)
         {
             if (r.character_id != 0 && !TryGetCharacter(r.character_id, out _))
+            {
                 ServerLog.Warn("작업슬롯",
                     $"슬롯이 미보유 캐릭터를 참조. Uid={Uid} Slot={r.slot_index} Character={r.character_id}");
+            }
         }
 
         WorkStation.Load(rows.Select(r =>
-            new WorkStationSlot(r.slot_index, (ItemType)r.industry, r.character_id, startedAt)));
+        {
+            var industry = (IndustryType)r.industry;
+            var level    = r.industry_level;
+            return new WorkStationSlot(r.slot_index, industry, r.character_id, startedAt,
+                                       industryLevel: level,
+                                       judgeCostUnits: ResolveJudgeCost(industry, level));
+        }));
+    }
+
+    /// <summary>
+    /// 이 (산업, 레벨)의 판정 비용. 미지정 산업이거나 테이블 행이 없으면 기본(30초)으로 두고 경고만 남긴다 —
+    /// 여기서 예외를 던지면 데이터 한 줄 누락에 로그인·배치가 통째로 죽는다 (드롭 테이블 누락과 같은 규약).
+    /// </summary>
+    private long ResolveJudgeCost(IndustryType industry, int level)
+    {
+        if (industry == IndustryType.None)
+        {
+            return WorkStationSlot.JudgeCost;
+        }
+
+        if (!_industryLevels.TryGet(industry, level, out _))
+        {
+            ServerLog.Warn("작업슬롯", $"IndustryLevelTable 행 없음, 기본 판정 비용(30초) 사용: {industry} Lv{level}");
+            return WorkStationSlot.JudgeCost;
+        }
+
+        return _industryLevels.GetJudgeCostUnits(industry, level);
     }
 
     /// <summary>슬롯 전체 스냅샷을 보낸다(로그인 직후).</summary>
@@ -51,17 +102,23 @@ public partial class User
     {
         var harvests = WorkStation.Settle(now, _dropTables);
         if (harvests.Count == 0)
+        {
             return 0;
+        }
 
         foreach (var harvest in harvests)
         {
             // 아이템별로 한 번씩만 인벤토리를 갱신한다(판정 횟수만큼 UPSERT하지 않는다).
             var changes = new List<ItemChangeInfo>(harvest.Gained.Count);
             foreach (var (itemTid, count) in harvest.Gained)
+            {
                 changes.Add(GainItem(itemTid, count));
+            }
 
             if (!notify)
+            {
                 continue;
+            }
 
             Send(new S_GatherResultResponse
             {
@@ -77,10 +134,19 @@ public partial class User
     }
 
     /// <summary>
-    /// 슬롯에 산업과 캐릭터를 배치한다.
+    /// 슬롯에 산업·레벨·캐릭터를 배치한다.
     /// <b>바꾸기 전에 먼저 정산한다</b> — 이전 구간은 이전 설정으로 계산돼야 한다.
     /// </summary>
-    public void AssignWorkStation(int slotIndex, ItemType industry, long characterId, DateTime now)
+    /// <param name="industryLevel">
+    /// 돌릴 산업 레벨. <b>클라이언트가 보낸 값이라 반드시 해금 여부를 검증한다</b> —
+    /// 채취는 재화가 생성되는 지점이다(게임기획코어 P4).
+    /// </param>
+    public void AssignWorkStation(
+        int slotIndex,
+        IndustryType industry,
+        long characterId,
+        DateTime now,
+        int industryLevel = WorkStationSlot.DefaultIndustryLevel)
     {
         if (!WorkStation.TryGet(slotIndex, out var slot))
         {
@@ -104,10 +170,22 @@ public partial class User
             return;
         }
 
+        // 해금하지 않은 레벨은 거절한다. 하한(1 미만)을 따로 막는 이유는 0·음수가
+        // "열린 레벨 이하" 비교를 그냥 통과해 버리기 때문이다.
+        if (industryLevel < WorkStationSlot.DefaultIndustryLevel ||
+            industryLevel > GetUnlockedIndustryLevel(industry))
+        {
+            ServerLog.Warn("작업슬롯",
+                $"배치 거절 — 미해금 레벨. Uid={Uid} Slot={slotIndex} Industry={industry} " +
+                $"Level={industryLevel} Unlocked={GetUnlockedIndustryLevel(industry)}");
+            Send(new S_WorkStationAssignResponse { Result = EResultCode.IndustryLevelLocked });
+            return;
+        }
+
         // 배치 변경 전 구간 정산 (해당 슬롯뿐 아니라 전체를 정리해 둔다)
         SettleWorkStation(now);
 
-        slot.Assign(industry, characterId, now);
+        slot.Assign(industry, characterId, now, industryLevel, ResolveJudgeCost(industry, industryLevel));
 
         // 배치가 바뀌면 그 캐릭터의 속도로 갈아탄다. Assign이 방금 구간을 끊었으므로
         // 여기서 바꾸는 것은 소급되지 않는다.
@@ -132,11 +210,15 @@ public partial class User
 
         var changed = false;
         foreach (var slot in WorkStation.Slots)
+        {
             changed |= slot.ApplyWorkSpeed(ResolveSlotSpeed(slot));
+        }
 
         // 주기가 달라졌으면 클라이언트 카운트다운도 다시 맞춰야 한다.
         if (changed && notify)
+        {
             SendWorkStationSlots();
+        }
     }
 
     /// <summary>
@@ -182,6 +264,8 @@ public partial class User
             .ToList();
 
         if (targets.Count > 0)
+        {
             PostDBTask(new SaveWorkStationSlotRepository(this, targets));
+        }
     }
 }

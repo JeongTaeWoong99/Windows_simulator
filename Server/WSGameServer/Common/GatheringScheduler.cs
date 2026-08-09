@@ -30,8 +30,19 @@ public sealed class GatheringScheduler
     /// 얼마로 잡든 나오는 개수는 같고, 다만 "잡혔다"가 최대 이만큼 늦게 도착한다.
     /// 가장 빠른 슬롯의 주기보다 짧게 두면 몰아서 도착하는 일이 없다.
     /// </para>
+    ///
+    /// <para>
+    /// <b>0.1초인 이유</b> — 1초로 두면 클라이언트 카운트다운이 0에 닿고도 결과가 최대 1초 늦게 와서
+    /// "슬라이더가 다 찼는데 아무 일도 없는" 구간이 보인다(이슈 #11). 0.1초면 눈에 띄지 않는다.
+    /// 30초 주기에 그보다 촘촘한 정밀도는 의미가 없다.
+    /// </para>
+    ///
+    /// <para>
+    /// ⚠️ 더 줄이려면 <see cref="WorkStationSlot.ConsumeJudgeCount"/>가 밀리초 자투리를 이월하는 것이
+    /// 전제다. 시계를 <c>now</c>까지 밀어 버리면 손실이 <b>틱 수에 비례해</b> 커진다.
+    /// </para>
     /// </summary>
-    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(0.1);
 
     private readonly ILogicExecutor _logicExecutor;
     public GatheringScheduler(ILogicExecutor logicExecutor)
@@ -42,7 +53,9 @@ public sealed class GatheringScheduler
     public void Start()
     {
         if (_timer is not null)
+        {
             return;
+        }
 
         // 타이머 스레드에서 게임 상태를 직접 만지면 안 된다. 로직 스레드로 넘긴다.
         // 시각과 대상 목록은 여기서 만들어 넣는다 — Tick 자신은 전역을 보지 않는다.

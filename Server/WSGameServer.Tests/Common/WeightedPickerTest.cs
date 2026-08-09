@@ -147,7 +147,7 @@ public class WeightedPickerTest
         var picker = BuildPicker();
         var counts = new Dictionary<string, int>();
 
-        // 콜백 버전 — 오프라인 정산이 쓰는 경로다. 중간 리스트를 만들지 않는다.
+        // 콜백 버전 — 채취 정산이 쓰는 경로다. 중간 리스트를 만들지 않는다.
         picker.PickMany(trials, e => counts[e.Name] = counts.GetValueOrDefault(e.Name) + 1,
                         new Random(20260729));
 

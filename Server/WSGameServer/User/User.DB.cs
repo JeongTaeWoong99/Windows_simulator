@@ -42,6 +42,7 @@ public partial class User
 
         // 캐릭터가 슬롯 속도의 근거이므로 슬롯보다 먼저 적재한다.
         LoadCharacters(data.CharacterRows);
+        LoadIndustryLevels(data.IndustryLevelRows);
         LoadWorkStation(data.WorkStationSlotRows, startedAt);
     }
 
@@ -52,10 +53,14 @@ public partial class User
     private void EnsureDefaultSlots(DateTime now)
     {
         if (WorkStation.Count > 0)
+        {
             return;
+        }
 
         for (var i = 0; i < DefaultSlotCount; i++)
+        {
             WorkStation.Unlock(i, now);
+        }
 
         SaveWorkStationSlots(Enumerable.Range(0, DefaultSlotCount));
     }

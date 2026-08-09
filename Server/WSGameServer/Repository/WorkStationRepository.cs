@@ -29,18 +29,20 @@ public sealed class SaveWorkStationSlotRepository : IRepository
         var rows = _slots.Select(s => new
         {
             // user_id 기준은 t_user.user_id(User.Uid)다. 로드(LoginRepository)와 반드시 같아야 한다.
-            userId      = User.Uid,
-            slotIndex   = s.SlotIndex,
-            industry    = (int)s.Industry,
-            characterId = s.CharacterId,
+            userId        = User.Uid,
+            slotIndex     = s.SlotIndex,
+            industry      = (int)s.Industry,
+            industryLevel = s.IndustryLevel,
+            characterId   = s.CharacterId,
         }).ToList();
 
         await connection.ExecuteAsync(
-            @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, character_id)
-              VALUES (@userId, @slotIndex, @industry, @characterId)
+            @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, industry_level, character_id)
+              VALUES (@userId, @slotIndex, @industry, @industryLevel, @characterId)
               ON CONFLICT (user_id, slot_index) DO UPDATE SET
-                  industry     = excluded.industry,
-                  character_id = excluded.character_id;",
+                  industry       = excluded.industry,
+                  industry_level = excluded.industry_level,
+                  character_id   = excluded.character_id;",
             rows);
     }
 

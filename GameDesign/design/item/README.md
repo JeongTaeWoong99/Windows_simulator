@@ -1,7 +1,7 @@
 # 04. 아이템 (Item)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-08-02 · 상태: **실 데이터 156종 입력 · `BasePrice` 필수 확정 · 분류 정책 미정**
+> 최종 업데이트: 2026-08-10 · 상태: **실 데이터 156종 입력 · `BasePrice` 필수 확정 · 분류 정책 미정**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`농사`](../gathering/farming/README.md) · [`벌목`](../gathering/logging/README.md) · [`사냥`](../gathering/hunting/README.md)
 >   [`자원채취`](../gathering/README.md)
 
@@ -19,14 +19,17 @@
 | --- | --- | --- |
 | `ItemTID` | `int` | 아이템 고유 ID |
 | `Name` | `string` | |
-| `ItemType` | `ItemType` | 산업 분류 |
+| `ItemType` | `ItemType` | **아이템 분류** (산업 축은 `IndustryType`으로 갈라졌다 — 1.2) |
 | `GlobalRarity` | `GlobalRarity` | 희귀도 (구 `ItemRarity` — 2026-08-02 개명) |
 | `MaxStack` | `int` | 스택 상한. 현재 전 아이템 `9999` |
 | `Description` | `string` | 기획 메모 — 로직에서 읽지 않는다 (오타 수정됨) |
 
 ### 1.2 확정 enum
 
-- `ItemType` — `Farming=1` / `Fishing=2` / `Mining=3` / `Logging=4` / **`Hunting=5`** / `Misc=6` / `Special=7`
+- `ItemType` — `Farming=1` / `Fishing=2` / `Mining=3` / `Logging=4` / **`Hunting=5`** / `Misc=6` / `Special=7`.
+  **아이템 분류 전용이다** — 배치·적성·드롭 같은 *산업* 자리에는 `IndustryType`(1차 산업 5종)을 쓴다.
+  두 축은 2026-08-10에 갈라졌고 **값은 1:1**이다 (`DropTID`·DB 컬럼이 그 숫자에 묶여 있다)
+  → [기획평가](../기획평가.md) 2.7
 - `GlobalRarity` — `Common` / `Uncommon` / `Rare` / `Epic` / `Legendary` / `Mythic` (색상 정의 포함).
   구 `ItemRarity`. 아이템 전용이 아니라 가챠 등 전역 등급 축이라 **2026-08-02 개명**
   (프로토콜 `EGlobalRarity`도 같은 값으로 정렬됨)
@@ -120,7 +123,7 @@
 
 ## 2. 아이템 역할 분류 (제안)
 
-> ⚠️ 제안이다. 현재 `ItemType`은 **산업 출처**만 나타내고 **용도**를 나타내지 않는다.
+> ⚠️ 제안이다. 현재 `ItemType`은 **어느 산업에서 나왔는가**만 나타내고 **용도**를 나타내지 않는다.
 
 | 역할 | 설명 | 예 |
 | --- | --- | --- |

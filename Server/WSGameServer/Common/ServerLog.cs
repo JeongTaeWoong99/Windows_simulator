@@ -73,12 +73,17 @@ public static class ServerLog
 
     /// <summary>실패 기록. 예외를 넘기면 스택까지 다음 줄에 이어 붙인다.</summary>
     public static void Error(string category, string message, Exception? e = null)
-        => Write(LogLevel.Error, category, e is null ? message : $"{message}{Environment.NewLine}{e}");
+    {
+        var body = e is null ? message : $"{message}{Environment.NewLine}{e}";
+        Write(LogLevel.Error, category, body);
+    }
 
     private static void Write(LogLevel level, string category, string message)
     {
         if (level < MinLevel)
+        {
             return;
+        }
 
         // 시각은 로컬시각이다. 게임 로직은 UTC로 계산하지만, 로그는 사람이 손목시계와 대조하는 물건이라
         // UTC로 찍으면 "몇 초 지났나"를 볼 때마다 시차를 빼야 한다.
@@ -91,33 +96,43 @@ public static class ServerLog
             var color = Color(level);
 
             if (color is not null)
+            {
                 Console.ForegroundColor = color.Value;
+            }
 
             Console.WriteLine(line);
 
             if (color is not null)
+            {
                 Console.ForegroundColor = previous;
+            }
         }
     }
 
-    private static string Tag(LogLevel level) => level switch
+    private static string Tag(LogLevel level)
     {
-        LogLevel.Trace => "TRC",
-        LogLevel.Debug => "DBG",
-        LogLevel.Info  => "INF",
-        LogLevel.Warn  => "WRN",
-        LogLevel.Error => "ERR",
-        _              => "???",
-    };
+        return level switch
+        {
+            LogLevel.Trace => "TRC",
+            LogLevel.Debug => "DBG",
+            LogLevel.Info  => "INF",
+            LogLevel.Warn  => "WRN",
+            LogLevel.Error => "ERR",
+            _              => "???",
+        };
+    }
 
-    private static ConsoleColor? Color(LogLevel level) => level switch
+    private static ConsoleColor? Color(LogLevel level)
     {
-        LogLevel.Trace => ConsoleColor.DarkGray,
-        LogLevel.Debug => ConsoleColor.Gray,
-        LogLevel.Warn  => ConsoleColor.Yellow,
-        LogLevel.Error => ConsoleColor.Red,
-        _              => null,   // Info는 기본색 그대로 둔다
-    };
+        return level switch
+        {
+            LogLevel.Trace => ConsoleColor.DarkGray,
+            LogLevel.Debug => ConsoleColor.Gray,
+            LogLevel.Warn  => ConsoleColor.Yellow,
+            LogLevel.Error => ConsoleColor.Red,
+            _              => null,   // Info는 기본색 그대로 둔다
+        };
+    }
 
     /// <summary>
     /// 지금 스레드를 사람이 읽을 수 있는 이름으로.
@@ -133,7 +148,9 @@ public static class ServerLog
         var thread = Thread.CurrentThread;
 
         if (thread.IsThreadPoolThread)
+        {
             return $"Pool#{thread.ManagedThreadId}";
+        }
 
         return string.IsNullOrEmpty(thread.Name)
             ? $"T#{thread.ManagedThreadId}"

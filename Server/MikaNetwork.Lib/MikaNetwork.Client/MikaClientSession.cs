@@ -36,13 +36,17 @@ namespace MikaNetwork
         public void Send(ReadOnlyMemory<byte> data)
         {
             if(!_sendQueue.TryWrite(data))
+            {
                 Disconnect();
+            }
         }
 
         public void Disconnect()
         {
             if (!IsConnected)
+            {
                 return;
+            }
 
             IsConnected = false;
 
@@ -72,7 +76,9 @@ namespace MikaNetwork
         public async Task StartAsync()
         {
             if (IsConnected)
+            {
                 return;
+            }
             
             IsConnected = true;
             Connected?.Invoke(this);
@@ -91,7 +97,10 @@ namespace MikaNetwork
         {
             var handler = Received;
 
-            if (handler is null) return;
+            if (handler is null)
+            {
+                return;
+            }
             
             await handler(this, data);
         }
@@ -147,7 +156,10 @@ namespace MikaNetwork
                     await _sendQueue.WaitToReadAsync(_cts.Token);
                     while (_sendQueue.TryRead(out var data))
                     {
-                        if (!IsConnected) return;
+                        if (!IsConnected)
+                        {
+                            return;
+                        }
 
                         await _socket.SendAsync(data, SocketFlags.None);
                     }

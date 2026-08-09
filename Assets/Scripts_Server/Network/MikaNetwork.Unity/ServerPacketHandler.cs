@@ -18,10 +18,9 @@ namespace MikaNetwork
     /// <code>
     /// S_LoginResponse          로그인 결과
     /// S_InventoryResponse      인벤토리 전체 스냅샷
-    /// S_GatherResultResponse   오프라인 누적 채취분 (있을 때만, 활성 슬롯당 1개)
     /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷
     /// </code>
-    /// UI 초기화는 이 네 개가 다 도착한 뒤를 기준으로 잡아야 한다.
+    /// UI 초기화는 이 세 개가 다 도착한 뒤를 기준으로 잡아야 한다.
     /// </para>
     /// </summary>
     public static class ServerPacketHandler
@@ -57,7 +56,7 @@ namespace MikaNetwork
         public static event Action<S_CharacterListResponse>? CharacterListReceived;
 
         // 로그인 응답 — 성공 여부·세션ID를 이벤트로 전달 (S_LoginResponse 수신 시 자동 호출)
-        // ※ 이 응답이 끝이 아니다. 뒤이어 인벤토리·(오프라인 채취분)·작업슬롯이 자동으로 따라온다.
+        // ※ 이 응답이 끝이 아니다. 뒤이어 인벤토리·작업슬롯이 자동으로 따라온다.
         [PacketHandler]
         public static void Handle_S_LoginResponse(ISession session, S_LoginResponse res)
         {
@@ -67,8 +66,6 @@ namespace MikaNetwork
 
         // 인벤토리 전체 스냅샷 (S_InventoryResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다 — 요청 패킷 없이 서버가 S_LoginResponse 직후 밀어준다.
-        //   단, 이 스냅샷은 오프라인 채취 정산 "전" 값이다. 뒤따라오는 S_GatherResultResponse의
-        //   ItemChanges로 보정해야 실제 수량과 맞는다.
         [PacketHandler]
         public static void Handle_S_InventoryResponse(ISession session, S_InventoryResponse res)
         {
@@ -107,9 +104,8 @@ namespace MikaNetwork
             WorkStationSlotsReceived?.Invoke(res);
         }
 
-        // 채취 결과 — 서버가 요청 없이 30초 주기로 밀어 준다(서버 권위).
-        // ★ 로그인 시에도 1회 올 수 있다 — 오프라인 동안 밀린 구간을 한 번에 정산해 보내므로
-        //   그때는 JudgeCount가 2 이상이다(30초 × N). 수확이 없으면 아예 오지 않는다.
+        // 채취 결과 — 판정이 완성될 때마다 서버가 요청 없이 밀어 준다(서버 권위).
+        //   슬롯마다 주기가 달라 도착 간격은 일정하지 않고, 수확이 없으면 아예 오지 않는다.
         // ※ ItemChanges의 Count는 델타가 아니라 "갱신 후 누적 총량"이다. 더하지 말고 덮어쓸 것.
         [PacketHandler]
         public static void Handle_S_GatherResultResponse(ISession session, S_GatherResultResponse res)

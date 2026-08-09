@@ -76,7 +76,7 @@ public static class ClientPacketHandler
     public static void Handle_C_WorkStationAssignRequest(ISession session, C_WorkStationAssignRequest req)
     {
         ServerLog.Debug("작업슬롯",
-            $"배치 요청 슬롯={req.SlotIndex} 산업={(GameData.ItemType)req.Industry} " +
+            $"배치 요청 슬롯={req.SlotIndex} 산업={(GameData.IndustryType)req.Industry} Lv{req.IndustryLevel} " +
             $"캐릭터={req.CharacterId} sid={session.SessionId}");
 
         var user = session.GetUser();
@@ -86,6 +86,13 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.AssignWorkStation(req.SlotIndex, (GameData.ItemType)req.Industry, req.CharacterId, DateTime.UtcNow);
+        // 레벨 필드를 채우지 않는 구 클라이언트는 0을 보낸다. 0은 "미지정"으로 보고 기본 레벨로 돌린다 —
+        // 우회가 아니다(기본 레벨은 항상 열려 있다). 그 위의 값은 User가 해금 여부를 검증한다.
+        var industryLevel = req.IndustryLevel == 0
+            ? WorkStationSlot.DefaultIndustryLevel
+            : req.IndustryLevel;
+
+        user.AssignWorkStation(req.SlotIndex, (GameData.IndustryType)req.Industry, req.CharacterId,
+                               DateTime.UtcNow, industryLevel);
     }
 }

@@ -16,6 +16,7 @@ public sealed class LoginRepository : IRepository
     private List<CurrencyRow>        _currencyRows        = new();
     private List<CharacterRow>       _characterRows       = new();
     private List<WorkStationSlotRow> _workStationSlotRows = new();
+    private List<UserIndustryLevelRow> _industryLevelRows = new();
 
     // DBExecutor 파티션 키 — 같은 세션 작업은 직렬 처리
     public long Key => User.SessionId;
@@ -54,8 +55,15 @@ public sealed class LoginRepository : IRepository
         //    오프라인 진행이 폐지돼 비운 동안의 누적이 없으므로 저장할 진행도 자체가 없다.
         //    기본 슬롯 개설도 로직 스레드가 한다.
         _workStationSlotRows = await connection.QueryAsync<WorkStationSlotRow>(
-            @"SELECT slot_index, industry, character_id
+            @"SELECT slot_index, industry, industry_level, character_id
               FROM t_user_workstation_slot WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        // 5) 산업별 최대 해금 레벨. 행이 없는 산업은 기본 레벨(Lv1)만 열린 것으로 본다
+        //    (가입 시 5종 행을 만들지 않는다 — 재화와 같은 규약이다).
+        _industryLevelRows = await connection.QueryAsync<UserIndustryLevelRow>(
+            @"SELECT industry, unlocked_level
+              FROM t_user_industry_level WHERE user_id = @userId",
             new { userId = User.Uid });
     }
 
@@ -66,7 +74,8 @@ public sealed class LoginRepository : IRepository
     public void Apply()
     {
         User.OnLoginDataLoaded(
-            new PlayerLoginData(_inventoryRows, _currencyRows, _characterRows, _workStationSlotRows),
+            new PlayerLoginData(_inventoryRows, _currencyRows, _characterRows,
+                                _workStationSlotRows, _industryLevelRows),
             DateTime.UtcNow);
     }
 }

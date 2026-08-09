@@ -27,7 +27,9 @@ internal static class CodeGenUtil
         if (usings.Length > 0)
         {
             foreach (var u in usings)
+            {
                 sb.AppendLine($"using {u};");
+            }
             sb.AppendLine();
         }
 
@@ -45,6 +47,8 @@ internal static class CodeGenUtil
         // 개행을 \n으로 통일한 뒤 끝쪽 빈 줄을 떼어낸다(닫는 중괄호 앞에 빈 줄이 남지 않도록).
         var lines = body.Replace("\r\n", "\n").TrimEnd('\n').Split('\n');
         foreach (var line in lines)
+        {
             sb.AppendLine(line.Length == 0 ? string.Empty : Indent + line);
+        }
     }
 }

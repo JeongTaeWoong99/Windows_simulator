@@ -45,7 +45,9 @@ public class DBManager : IDBQueue
         {
             string candidate = Path.Combine(dir.FullName, "Shared", dbFileName);
             if (File.Exists(candidate))
+            {
                 return candidate;
+            }
 
             dir = dir.Parent;
         }

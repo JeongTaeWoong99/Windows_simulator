@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MemoryPack;
 
 /// <summary>
@@ -44,11 +45,20 @@ namespace MikaProtocol
         public EGlobalRarity Rarity { get; set; } // 연출용 등급
     }
 
+    // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.
+    // 장비·특성 보정이 생기면 보정까지 적용된 값이 여기 실린다.
+    [MemoryPackable]
+    public partial struct AptitudeInfo
+    {
+        public EIndustryType Industry { get; set; }
+        public byte          Value    { get; set; }   // 0~10. 0이면 그 산업을 다루지 못한다(배치 거절)
+    }
+
     /// <summary>
     /// 보유 캐릭터 개체 하나.
     /// <c>CharacterId</c>는 DB 발급 개체 PK, <c>CharacterTid</c>는 테이블 정의 —
     /// 같은 캐릭터(TID)를 여러 장 가질 수 있으므로 배치·식별은 반드시 <c>CharacterId</c>로 한다.
-    /// 이름·적성 같은 고정값은 내려보내지 않는다 — 클라이언트가 <c>CharacterTable</c>에서 TID로 읽는다.
+    /// 이름처럼 TID로 고정된 값은 내려보내지 않는다 — 클라이언트가 <c>CharacterTable</c>에서 읽는다.
     /// </summary>
     [MemoryPackable]
     public partial class CharacterInfo
@@ -57,6 +67,9 @@ namespace MikaProtocol
         public int  CharacterTid { get; set; }
         public int  Level        { get; set; }
         public int  Exp          { get; set; }
+
+        // 1차 산업 5종이 값 0까지 포함해 전부 들어온다 — 배치 UI가 '적성 0 = 잠금'을 그려야 하기 때문이다.
+        public List<AptitudeInfo> Aptitudes { get; set; } = new();
     }
 
     /// <summary>
@@ -70,14 +83,22 @@ namespace MikaProtocol
     /// <c>남은시간 = (비용 - 진행도 - 경과 × 속도) / 속도</c>로 직접 구할 수 있고,
     /// 나중에 주기 규칙이 바뀌어도 클라이언트를 고치지 않아도 된다.
     /// </para>
+    ///
+    /// <para>
+    /// <b><see cref="WorkStationSlotInfo.LastTickAtUnixMs"/>와 <see cref="WorkStationSlotInfo.ProgressUnits"/>는
+    /// 같은 순간을 가리켜야 한다.</b> 진행도는 "그 시각의" 값이라, 시각만 초 단위로 내려 보내면
+    /// 클라이언트가 그 소수부만큼 일을 더 한 것으로 계산해 카운트다운이 먼저 0에 닿는다(이슈 #11).
+    /// 그래서 밀리초로 보낸다.
+    /// </para>
     /// </summary>
     [MemoryPackable]
     public partial class WorkStationSlotInfo
     {
         public int  SlotIndex      { get; set; }
-        public byte Industry       { get; set; }  // GameData.ItemType (0=미지정)
+        public EIndustryType Industry { get; set; }  // None=비어 있음
+        public byte IndustryLevel  { get; set; }  // 이 슬롯이 돌고 있는 산업 레벨 (1~)
         public long CharacterId    { get; set; }  // 0=비어 있음 (채취하지 않는다)
-        public long LastTickAtUnix { get; set; }  // 마지막 정산 시각 (Unix epoch 초, UTC)
+        public long LastTickAtUnixMs { get; set; }  // 마지막 정산 시각 (Unix epoch 밀리초, UTC)
         public long ProgressUnits  { get; set; }  // 마지막 정산 시점의 누적 작업량 (판정에 못 미친 자투리)
         public int  CurrentWorkSpeed { get; set; }  // 현재 작업속도 — 보정 전부 적용된 확정값 (1000 = 기준 1.0배)
         public long JudgeCostUnits { get; set; }  // 판정 1회에 필요한 작업량

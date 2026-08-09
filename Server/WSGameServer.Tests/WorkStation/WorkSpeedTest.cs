@@ -126,7 +126,7 @@ public class WorkSpeedTest
         var speed = WorkSpeed.From(Aptitude4).Add(250).Add(1000).Resolve();
         var slot  = new WorkStationSlot(
             slotIndex: 0,
-            GameData.ItemType.Fishing,
+            GameData.IndustryType.Fishing,
             characterId: 100,
             new DateTime(2026, 7, 30, 12, 0, 0, DateTimeKind.Utc),
             speed);

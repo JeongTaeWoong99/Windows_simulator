@@ -27,7 +27,6 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 /// <code>
 /// LoginCompleted            ← S_LoginResponse
 /// InventoryChanged          ← S_InventoryResponse         (인벤토리 스냅샷)
-/// GatherResultReceived      ← S_GatherResultResponse      (오프라인 누적분, 있을 때만)
 /// WorkStationSlotsChanged   ← S_WorkStationSlotsResponse  (슬롯 스냅샷)
 /// </code>
 /// </para>
@@ -199,8 +198,7 @@ public class PlayerDataManager : MonoService<PlayerDataManager>
     }
 
     // 인벤토리 스냅샷 — 캐시 교체 후 이벤트 발행
-    // ★ 로그인 시 자동으로 1회 수신. 단 오프라인 정산 "전" 값이므로,
-    //   뒤따라오는 채취 결과(ItemChanges)를 반영해야 실제 수량과 맞는다.
+    // ★ 로그인 시 자동으로 1회 수신.
     private void OnInventoryReceived(S_InventoryResponse res)
     {
         _inventory.Clear();
@@ -281,9 +279,7 @@ public class PlayerDataManager : MonoService<PlayerDataManager>
         WorkStationAssignCompleted?.Invoke(success);
     }
 
-    // 채취 결과 푸시 — 요청 없이 주기적으로 도착한다.
-    // ★ 로그인 시에도 1회 올 수 있다(오프라인 누적분. 수확이 없으면 오지 않는다).
-    //   로그인 인벤토리 스냅샷은 이 정산 "전" 값이라, 여기서 반영해야 실제 수량과 맞는다.
+    // 채취 결과 푸시 — 판정이 완성될 때마다 요청 없이 도착한다(수확이 없으면 오지 않는다).
     private void OnGatherResultReceived(S_GatherResultResponse res)
     {
         ApplyItemChanges(res.ItemChanges);

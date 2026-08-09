@@ -64,7 +64,9 @@ internal static class GameTableFixture
         lock (Gate)
         {
             if (_loaded)
+            {
                 return;
+            }
 
             GameTable.LoadAll(name =>
                 File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Data", name)));
@@ -89,10 +91,11 @@ internal sealed class TestUserBuilder
     /// <summary>모든 테스트가 공유하는 기준 시각. 실제 시계를 쓰지 않는다.</summary>
     public static readonly DateTime Base = new(2026, 8, 3, 0, 0, 0, DateTimeKind.Utc);
 
-    public FakeClientChannel  Channel  { get; } = new();
-    public FakeDBQueue        DB       { get; } = new();
-    public DropTableCatalog   Drops    { get; } = new();
-    public FakeLogicExecutor  Executor { get; private set; } = new();
+    public FakeClientChannel     Channel  { get; } = new();
+    public FakeDBQueue           DB       { get; } = new();
+    public DropTableCatalog      Drops    { get; } = new();
+    public IndustryLevelCatalog  Levels   { get; } = new();
+    public FakeLogicExecutor     Executor { get; private set; } = new();
 
     /// <summary>
     /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
@@ -113,7 +116,8 @@ internal sealed class TestUserBuilder
 
     public TestUserBuilder WithFishingDrops()
     {
-        Drops.Register(ItemType.Fishing, DropTable.From(
+        // 슬롯이 레벨 미지정으로 만들어지면 DefaultIndustryLevel로 배치되므로, 같은 레벨에 등록한다.
+        Drops.Register(IndustryType.Fishing, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
             "FishingBasicTable",
             new[] { (ItemTID: FishItemTid, Weight: 100) },
             r => r.ItemTID, r => r.Weight));
@@ -124,7 +128,7 @@ internal sealed class TestUserBuilder
     public User Build(long uid = 1)
     {
         var user = new User(Channel, DB, Executor,
-                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops);
+                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels);
         user.Uid = uid;
         return user;
     }

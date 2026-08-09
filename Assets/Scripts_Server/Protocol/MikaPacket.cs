@@ -125,9 +125,10 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.C_WorkStationAssignRequest)]
     public partial class C_WorkStationAssignRequest : IPacket
     {
-        public int  SlotIndex   { get; set; }  // 배치할 슬롯 번호
-        public byte Industry    { get; set; }  // 지정 산업 = GameData.ItemType (0=해제)
-        public long CharacterId { get; set; }  // 배치할 캐릭터 (0=해제)
+        public int  SlotIndex     { get; set; }  // 배치할 슬롯 번호
+        public EIndustryType Industry { get; set; }  // 지정 산업 (None=해제)
+        public byte IndustryLevel { get; set; }  // 지정 산업 레벨 (1~). 서버가 해금 여부를 검증한다
+        public long CharacterId   { get; set; }  // 배치할 캐릭터 (0=해제)
     }
 
     [MemoryPackable, Packet(PacketId.S_WorkStationAssignResponse)]

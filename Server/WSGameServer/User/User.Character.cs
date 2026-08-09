@@ -52,9 +52,23 @@ public partial class User
                     CharacterTid = c.Tid,
                     Level        = c.Level,
                     Exp          = c.Exp,
+                    Aptitudes    = ToAptitudeInfos(c),
                 })
                 .ToList(),
         });
+    }
+
+    // 적성을 산업과 짝지어 내려보낸다 — 클라가 CharacterTable을 직접 읽지 않게 하려는 것이다.
+    // 보정이 생겨도 GetAptitude 한 곳만 바뀌고 이 변환은 그대로다.
+    private static List<AptitudeInfo> ToAptitudeInfos(Character character)
+    {
+        return Character.Industries
+            .Select(industry => new AptitudeInfo
+            {
+                Industry = (EIndustryType)industry,
+                Value    = (byte)character.GetAptitude(industry),
+            })
+            .ToList();
     }
 
     public bool TryGetCharacter(long characterId, out Character character)
@@ -65,10 +79,12 @@ public partial class User
     /// 배치 자체를 막아야 "이 캐릭터는 낚시를 못 한다"가 규칙으로 성립한다 —
     /// 허용하고 아주 느리게 두면 슬롯이 남을 때 아무나 꽂게 되어 배치에 선택이 사라진다.
     /// </summary>
-    public bool CanAssignCharacter(long characterId, ItemType industry)
+    public bool CanAssignCharacter(long characterId, IndustryType industry)
     {
-        if (industry == ItemType.None || characterId == 0)
+        if (industry == IndustryType.None || characterId == 0)
+        {
             return true;   // 배치 해제는 언제나 허용한다
+        }
 
         return TryGetCharacter(characterId, out var character) && character.CanWork(industry);
     }

@@ -43,7 +43,10 @@ namespace MikaNetwork
         // OnRecvCallback : 보통 Unity에서 바로 처리하지않고 PacketQueue로 넘어갈일이 있으면 사용
         public void OnRecvPacket(ISession session, ReadOnlyMemory<byte> data, Action<Action>? onRecvCallback = null)
         {
-            if (data.Length < MikaPacketBuilder.HeaderSize) return;                       // 최소 헤더 크기
+            if (data.Length < MikaPacketBuilder.HeaderSize)
+            {
+                return;                       // 최소 헤더 크기
+            }
 
             ushort id   = MikaPacketBuilder.ReadId(data.Span);    // [0..2) = id
             var body = MikaPacketBuilder.ReadBody(data);                 // [4..]  = body (헤더 제외)

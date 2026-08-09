@@ -79,7 +79,9 @@ public readonly struct WorkSpeed
     public WorkSpeed Multiply(double rate)
     {
         if (rate <= 0)
+        {
             return this;
+        }
 
         return new(_baseWorkSpeed, _addPermille, _mulRate == 0 ? rate : _mulRate * rate);
     }
@@ -101,7 +103,9 @@ public readonly struct WorkSpeed
 
         // 승산은 소수 배수라 마지막에 한 번만 곱한다.
         if (_mulRate != 0)
+        {
             speed = (long)(speed * _mulRate);
+        }
 
         return (int)Math.Clamp(speed, WorkStationSlot.MinWorkSpeed, int.MaxValue);
     }

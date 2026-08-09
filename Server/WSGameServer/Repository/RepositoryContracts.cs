@@ -37,9 +37,17 @@ public sealed record InventoryRow
 // t_user_workstation_slot 조회 전용 Row (배치 설정만 — 진행도는 저장하지 않는다)
 public sealed record WorkStationSlotRow
 {
-    public int  slot_index   { get; init; }
-    public int  industry     { get; init; }
-    public long character_id { get; init; }
+    public int  slot_index     { get; init; }
+    public int  industry       { get; init; }
+    public int  industry_level { get; init; }
+    public long character_id   { get; init; }
+}
+
+// t_user_industry_level 조회 전용 Row (산업별 최대 해금 레벨 — 해금은 영구다)
+public sealed record UserIndustryLevelRow
+{
+    public int industry       { get; init; }
+    public int unlocked_level { get; init; }
 }
 
 /// <summary>
@@ -50,4 +58,5 @@ public sealed record PlayerLoginData(
     List<InventoryRow> InventoryRows,
     List<CurrencyRow> CurrencyRows,
     List<CharacterRow> CharacterRows,
-    List<WorkStationSlotRow> WorkStationSlotRows);
+    List<WorkStationSlotRow> WorkStationSlotRows,
+    List<UserIndustryLevelRow> IndustryLevelRows);

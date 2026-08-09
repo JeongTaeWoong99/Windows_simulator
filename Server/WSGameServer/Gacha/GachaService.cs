@@ -36,21 +36,27 @@ public sealed class GachaService : Singleton<GachaService>
         // 3) 연출용 결과: 뽑힌 순서/개별 항목 그대로. 등급은 ItemTable에서 읽는다(단일 원본)
         var rewards = new List<GachaRewardInfo>(entries.Count);
         foreach (var entry in entries)
+        {
             rewards.Add(new GachaRewardInfo
             {
                 ItemId = entry.ItemTID,
                 Count = entry.Count,
                 Rarity = RarityOf(entry.ItemTID),
             });
+        }
 
         // 4) 인벤토리 반영: itemId별 수량을 합산해 아이템당 한 번만 갱신(UPSERT 최소화)
         var gained = new Dictionary<int, int>();
         foreach (var entry in entries)
+        {
             gained[entry.ItemTID] = gained.GetValueOrDefault(entry.ItemTID) + entry.Count;
+        }
 
         var changes = new List<ItemChangeInfo>(gained.Count);
         foreach (var (itemId, count) in gained)
+        {
             changes.Add(user.GainItem(itemId, count));
+        }
 
         // 5) 뽑기 결과 응답 — Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
         user.Send(new S_GachaDrawResponse
@@ -64,7 +70,12 @@ public sealed class GachaService : Singleton<GachaService>
     // GameData.GlobalRarity와 프로토콜 EGlobalRarity는 값이 1:1이라 byte 캐스팅으로 옮긴다.
     // 풀의 ItemTID는 시트 Ref 검사로 실재가 보장되므로 None은 실제로는 나오지 않는다.
     private static EGlobalRarity RarityOf(int itemTid)
-        => GameTable.ItemTable.TryGet(itemTid, out var item)
-            ? (EGlobalRarity)(byte)item.GlobalRarity
-            : EGlobalRarity.None;
+    {
+        if (!GameTable.ItemTable.TryGet(itemTid, out var item))
+        {
+            return EGlobalRarity.None;
+        }
+
+        return (EGlobalRarity)(byte)item.GlobalRarity;
+    }
 }

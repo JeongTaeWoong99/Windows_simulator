@@ -37,22 +37,30 @@ public sealed class Character
 
     public int Exp { get; private set; }
 
-    /// <summary>
-    /// 이 산업에 대한 적성(0~10). <b>캐릭터 스탯이 곧 산업 적성이다.</b>
-    /// 1차 산업이 아닌 값(<c>Misc</c>·<c>Special</c>·<c>None</c>)은 0이다.
-    /// </summary>
-    public int GetAptitude(ItemType industry) => industry switch
+    /// <summary>이 산업에 대한 적성(0~10). <b>캐릭터 스탯이 곧 산업 적성이다.</b> 미지정(<c>None</c>)은 0이다.</summary>
+    public int GetAptitude(IndustryType industry)
     {
-        ItemType.Farming => Row.Farming,
-        ItemType.Fishing => Row.Fishing,
-        ItemType.Mining  => Row.Mining,
-        ItemType.Logging => Row.Logging,
-        ItemType.Hunting => Row.Hunting,
-        _                => 0,
-    };
+        return industry switch
+        {
+            IndustryType.Farming => Row.Farming,
+            IndustryType.Fishing => Row.Fishing,
+            IndustryType.Mining  => Row.Mining,
+            IndustryType.Logging => Row.Logging,
+            IndustryType.Hunting => Row.Hunting,
+            _                    => 0,
+        };
+    }
 
     /// <summary>적성 0 = 그 산업을 다루지 못한다. 배치를 거절하는 기준이다.</summary>
-    public bool CanWork(ItemType industry) => GetAptitude(industry) > 0;
+    public bool CanWork(IndustryType industry) => GetAptitude(industry) > 0;
+
+    // 적성이 정의되는 1차 산업 5종. 클라에 내려보내는 적성 목록도 이 순서를 그대로 따른다.
+    // 미지정(None)만 빠진다 — 아이템 분류는 IndustryType에 애초에 없다.
+    public static readonly IndustryType[] Industries =
+    {
+        IndustryType.Farming, IndustryType.Fishing,
+        IndustryType.Mining,  IndustryType.Logging, IndustryType.Hunting,
+    };
 
     /// <summary>
     /// 이 산업에서의 <b>기본 작업속도</b>(천분율). 적성을 <c>WorkSpeedTable</c>로 변환한다.
@@ -67,7 +75,7 @@ public sealed class Character
     /// 테이블에 두면 밸런스 조정이 엑셀 수정만으로 끝난다.
     /// </para>
     /// </summary>
-    public int GetBaseWorkSpeed(ItemType industry)
+    public int GetBaseWorkSpeed(IndustryType industry)
     {
         var aptitude = GetAptitude(industry);
 

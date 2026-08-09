@@ -47,7 +47,9 @@ namespace MikaNetwork
         private void EnsureWritableSpace(int required)
         {
             if (WritableBytes >= required)
+            {
                 return;
+            }
 
             int readableBytes = ReadableBytes;
             int requiredBufferSize = readableBytes + required; // 남아있는 사이즈 + 들어가야할 Max 사이즈

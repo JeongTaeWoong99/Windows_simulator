@@ -46,15 +46,21 @@ namespace MikaSourceGen
                 }
 
                 foreach (var nested in t.GetTypeMembers())
+                {
                     Inspect(nested);
+                }
             }
 
             void Visit(INamespaceSymbol ns)
             {
                 foreach (var t in ns.GetTypeMembers())
+                {
                     Inspect(t);
+                }
                 foreach (var child in ns.GetNamespaceMembers())
+                {
                     Visit(child);
+                }
             }
 
             // System/MemoryPack 등 대형 어셈블리는 제외하고 Mika* 만 스캔한다.
@@ -62,7 +68,9 @@ namespace MikaSourceGen
             foreach (var refAsm in comp.SourceModule.ReferencedAssemblySymbols)
             {
                 if (refAsm.Name.StartsWith("Mika", System.StringComparison.Ordinal))
+                {
                     Visit(refAsm.GlobalNamespace);
+                }
             }
 
             return results.ToImmutable();
@@ -73,7 +81,10 @@ namespace MikaSourceGen
             (ImmutableArray<HandlerInfo> Handlers, ImmutableArray<PacketRef> Packets) input)
         {
             // 핸들러가 하나도 없는 프로젝트(MikaProtocol 등)는 측 추론 불가 -> skip
-            if (input.Handlers.IsDefaultOrEmpty) return;
+            if (input.Handlers.IsDefaultOrEmpty)
+            {
+                return;
+            }
 
             var handled = new HashSet<string>();
             var inboundPrefixes = new HashSet<string>();
@@ -85,19 +96,33 @@ namespace MikaSourceGen
             {
                 handled.Add(h.PacketType);
                 var pfx = Prefix(h.PacketType);
-                if (pfx != null) inboundPrefixes.Add(pfx);
+                if (pfx != null)
+                {
+                    inboundPrefixes.Add(pfx);
+                }
 
                 if (fallback is null && h.DeclLocation is not null)
+                {
                     fallback = h.DeclLocation;
+                }
             }
 
-            if (inboundPrefixes.Count == 0) return;
+            if (inboundPrefixes.Count == 0)
+            {
+                return;
+            }
 
             foreach (var pkt in input.Packets)
             {
                 var pfx = Prefix(pkt.Name);
-                if (pfx == null || !inboundPrefixes.Contains(pfx)) continue;
-                if (handled.Contains(pkt.Name)) continue;
+                if (pfx == null || !inboundPrefixes.Contains(pfx))
+                {
+                    continue;
+                }
+                if (handled.Contains(pkt.Name))
+                {
+                    continue;
+                }
 
                 // 위치는 ① 패킷 선언(Unity: 소스에 있음) ② 기존 핸들러(서버: 패킷이 참조 어셈블리) 순으로 고른다.
                 // 둘 다 없으면 Location.None이 되고, 그 경고는 Unity 콘솔에 뜨지 않는다.

@@ -17,7 +17,7 @@ public class WorkStationSlotTest
     private static WorkStationSlot ActiveSlot(
         DateTime startedAt,
         int currentWorkSpeed = WorkStationSlot.DefaultWorkSpeed)
-        => new(slotIndex: 0, ItemType.Fishing, characterId: 100, startedAt, currentWorkSpeed);
+        => new(slotIndex: 0, IndustryType.Fishing, characterId: 100, startedAt, currentWorkSpeed);
 
     [Fact]
     public void 주기가_안_찼으면_판정하지_않는다()
@@ -64,7 +64,9 @@ public class WorkStationSlotTest
         var stepwise = ActiveSlot(Base);
         var total = 0;
         for (var i = 1; i <= 300; i++)
+        {
             total += stepwise.ConsumeJudgeCount(Base.AddSeconds(i));
+        }
 
         var atOnce = ActiveSlot(Base).ConsumeJudgeCount(Base.AddSeconds(300));
 
@@ -81,7 +83,9 @@ public class WorkStationSlotTest
         var stepwise = ActiveSlot(Base, speed);
         var total = 0;
         for (var i = 1; i <= 300; i++)
+        {
             total += stepwise.ConsumeJudgeCount(Base.AddSeconds(i));
+        }
 
         var atOnce = ActiveSlot(Base, speed).ConsumeJudgeCount(Base.AddSeconds(300));
 
@@ -161,12 +165,41 @@ public class WorkStationSlotTest
             .ShouldBe(TimeSpan.FromSeconds(15));
     }
 
+    // ─────────────────────── 판정 비용 (산업 레벨) ───────────────────────
+
+    [Fact]
+    public void 판정_비용이_큰_레벨은_같은_시간에_판정이_적다()
+    {
+        // Lv2 = 90초어치 작업량. 30초 상수가 어딘가 남아 있으면 여기서 3회가 나온다.
+        var slot = new WorkStationSlot(0, IndustryType.Fishing, characterId: 100, Base,
+                                       WorkStationSlot.DefaultWorkSpeed,
+                                       industryLevel: 2, judgeCostUnits: 90_000_000L);
+
+        slot.TimeUntilNextJudge(Base).ShouldBe(TimeSpan.FromSeconds(90));
+        slot.ConsumeJudgeCount(Base.AddSeconds(89)).ShouldBe(0);
+        slot.ConsumeJudgeCount(Base.AddSeconds(90)).ShouldBe(1);
+    }
+
+    [Fact]
+    public void 배치를_바꾸면_판정_비용도_함께_바뀐다()
+    {
+        var slot = ActiveSlot(Base);   // 기본 = Lv1 · 30초
+
+        slot.Assign(IndustryType.Fishing, characterId: 100, Base,
+                    industryLevel: 2, judgeCostUnits: 90_000_000L);
+
+        slot.IndustryLevel.ShouldBe(2);
+        slot.JudgeCostUnits.ShouldBe(90_000_000L);
+        slot.ConsumeJudgeCount(Base.AddSeconds(30)).ShouldBe(0);   // 옛 30초 비용이면 여기서 1이 나온다
+        slot.ConsumeJudgeCount(Base.AddSeconds(90)).ShouldBe(1);
+    }
+
     // ─────────────────────── 비활성·경계 ───────────────────────
 
     [Fact]
     public void 캐릭터가_없으면_시간이_쌓이지_않는다()
     {
-        var empty = new WorkStationSlot(0, ItemType.Fishing, characterId: 0, Base);
+        var empty = new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base);
 
         empty.IsActive.ShouldBeFalse();
 
@@ -181,7 +214,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 산업이_미지정이면_돌지_않는다()
     {
-        var slot = new WorkStationSlot(0, ItemType.None, characterId: 100, Base);
+        var slot = new WorkStationSlot(0, IndustryType.None, characterId: 100, Base);
 
         slot.IsActive.ShouldBeFalse();
         slot.ConsumeJudgeCount(Base.AddHours(1)).ShouldBe(0);
@@ -193,9 +226,9 @@ public class WorkStationSlotTest
         var slot = ActiveSlot(Base);
         var now  = Base.AddSeconds(29);   // 29초 진행 중
 
-        slot.Assign(ItemType.Mining, characterId: 200, now);
+        slot.Assign(IndustryType.Mining, characterId: 200, now);
 
-        slot.Industry.ShouldBe(ItemType.Mining);
+        slot.Industry.ShouldBe(IndustryType.Mining);
         slot.CharacterId.ShouldBe(200);
         slot.LastTickAt.ShouldBe(now);
         slot.ProgressUnits.ShouldBe(0);
@@ -236,18 +269,63 @@ public class WorkStationSlotTest
     [Fact]
     public void 비활성_슬롯은_남은_시간이_없다()
     {
-        var empty = new WorkStationSlot(0, ItemType.Fishing, characterId: 0, Base);
+        var empty = new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base);
 
         empty.TimeUntilNextJudge(Base.AddSeconds(10)).ShouldBe(TimeSpan.Zero);
     }
 
+    // ─────────────────────── 밀리초 정밀도 (이슈 #11) ───────────────────────
+
+    [Fact]
+    public void 소비하지_않은_밀리초_미만은_시계를_전진시키지_않는다()
+    {
+        var slot = ActiveSlot(Base);
+
+        slot.ConsumeJudgeCount(Base.AddTicks(15_000));   // 1.5ms
+
+        // 1ms만 진행도로 바꿨으므로 시계도 1ms만 간다. 남은 0.5ms는 다음 구간의 몫이다.
+        slot.LastTickAt.ShouldBe(Base.AddMilliseconds(1));
+    }
+
+    [Fact]
+    public void 밀리초_미만_자투리가_쌓여도_판정_시점이_밀리지_않는다()
+    {
+        var slot   = ActiveSlot(Base);
+        var now    = Base;
+        var judged = 0;
+
+        // 1.5ms × 20,000 = 정확히 30초 = 판정 1회.
+        // 시계를 now까지 밀면 매 틱 0.5ms가 사라져 20초어치밖에 안 쌓이고 판정이 아예 안 나온다.
+        for (var i = 0; i < 20_000; i++)
+        {
+            now     = now.AddTicks(15_000);
+            judged += slot.ConsumeJudgeCount(now);
+        }
+
+        judged.ShouldBe(1);
+        slot.ProgressUnits.ShouldBe(0);
+    }
+
+    [Fact]
+    public void 슬롯_정보는_정산_시각을_밀리초까지_보낸다()
+    {
+        var startedAt = Base.AddMilliseconds(910);
+
+        var info = ActiveSlot(startedAt).ToInfo();
+
+        // 초로 자르면 ProgressUnits와 가리키는 순간이 910ms 어긋나고,
+        // 클라이언트 카운트다운이 그만큼 먼저 0에 닿는다.
+        info.LastTickAtUnixMs.ShouldBe(
+            new DateTimeOffset(startedAt, TimeSpan.Zero).ToUnixTimeMilliseconds());
+    }
+
     // ─────────────────────────── WorkStation ───────────────────────────
 
-    /// <summary>낚시 테이블 하나만 등록된 독립 카탈로그.</summary>
+    /// <summary>낚시 기본 레벨 테이블 하나만 등록된 독립 카탈로그.</summary>
     private static DropTableCatalog BuildCatalog()
     {
         var catalog = new DropTableCatalog();
-        catalog.Register(ItemType.Fishing, DropTable.From(
+        catalog.Register(IndustryType.Fishing, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
             "FishingBasicTable",
             new[] { (ItemTID: 1001, Weight: 100) },
             r => r.ItemTID, r => r.Weight));
@@ -260,8 +338,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, 100, Base),                  // 5분 경과 → 10회
-            new WorkStationSlot(1, ItemType.Fishing, 200, Base.AddSeconds(240)),  // 1분 경과 → 2회
+            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),                  // 5분 경과 → 10회
+            new WorkStationSlot(1, IndustryType.Fishing, 200, Base.AddSeconds(240)),  // 1분 경과 → 2회
         });
 
         var harvests = station.Settle(Base.AddSeconds(300), BuildCatalog());
@@ -280,8 +358,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, 100, Base, WorkStationSlot.DefaultWorkSpeed),
-            new WorkStationSlot(1, ItemType.Fishing, 200, Base, WorkStationSlot.DefaultWorkSpeed * 3),
+            new WorkStationSlot(0, IndustryType.Fishing, 100, Base, WorkStationSlot.DefaultWorkSpeed),
+            new WorkStationSlot(1, IndustryType.Fishing, 200, Base, WorkStationSlot.DefaultWorkSpeed * 3),
         });
 
         var harvests = station.Settle(Base.AddSeconds(300), BuildCatalog());
@@ -296,8 +374,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, 100, Base),
-            new WorkStationSlot(1, ItemType.Fishing, 0,   Base),   // 캐릭터 없음
+            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),
+            new WorkStationSlot(1, IndustryType.Fishing, 0,   Base),   // 캐릭터 없음
         });
 
         var harvests = station.Settle(Base.AddSeconds(60), BuildCatalog());
@@ -312,8 +390,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, 100, Base),
-            new WorkStationSlot(1, ItemType.Mining,  200, Base),   // 시트 미작성
+            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),
+            new WorkStationSlot(1, IndustryType.Mining,  200, Base),   // 시트 미작성
         });
 
         // 예외로 죽지 않고, 등록된 슬롯만 정산된다.

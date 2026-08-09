@@ -3,7 +3,7 @@ name: server-code-style
 description: 서버(C#/.NET) 코드 작성 스타일 규칙. 서버 코드를 새로 쓰거나 수정할 때 적용한다.
 ---
 
-> 최종 업데이트: 2026-08-08
+> 최종 업데이트: 2026-08-09
 
 # server-code-style — 서버 코드 작성 스타일
 
@@ -80,6 +80,46 @@ foreach (var item in items) Apply(item);
 
 한 줄 형태는 나중에 줄을 하나 더 넣을 때 조용히 범위를 벗어난다.
 diff도 한 줄 추가가 아니라 블록 전체 재작성으로 번진다.
+
+## 함수 형태 — early-return 블록이 기본이다
+
+함수는 **early-return 형태의 블록 본문**으로 쓴다. 실패·예외 조건을 위에서 걸러내고
+정상 경로를 아래에 평평하게 둔다. 조건과 결과를 한 식에 욱여넣지 않는다.
+
+```csharp
+// 이렇게
+public DropTable Get(ItemType industry)
+{
+    if (!_byIndustry.TryGetValue(industry, out var table))
+    {
+        throw new KeyNotFoundException($"[{industry}] 드롭 테이블이 없습니다.");
+    }
+
+    return table;
+}
+
+// 이렇게 쓰지 않는다 — 삼항 + throw를 한 식으로 접은 expression-bodied
+public DropTable Get(ItemType industry)
+    => _byIndustry.TryGetValue(industry, out var table)
+        ? table
+        : throw new KeyNotFoundException(...);
+```
+
+### expression-bodied(`=>`)는 정말 짧을 때만
+
+**한 줄로 끝나는 단순 위임·프로퍼티 getter**에만 허용한다. 그 외에는 블록 본문으로 쓴다.
+
+```csharp
+// 허용 — 한 줄짜리 getter·위임
+public int Count => _items.Count;
+public bool TryGet(ItemType industry, out DropTable table)
+    => _byIndustry.TryGetValue(industry, out table!);
+
+// 금지 — 분기(삼항·throw 식·switch 식)가 들어가는 순간 블록으로 푼다
+```
+
+분기가 있는데 `=>`로 접으면 조건 하나만 늘어도 식 전체를 다시 짜야 하고, 중간 값을
+로그로 찍을 자리도 없다.
 
 ## 언어
 

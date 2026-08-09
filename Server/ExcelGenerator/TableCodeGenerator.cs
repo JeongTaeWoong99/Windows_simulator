@@ -78,11 +78,15 @@ public static class TableCodeGenerator
     {
         var candidates = columns.Where(c => !IsArray(c.Col.Type)).ToList();
         if (candidates.Count == 0)
+        {
             return null;
+        }
 
         var chosen = candidates.FirstOrDefault(c => c.Col.Type == ExcelGenerator.ColumnInfo.RecordType.ID);
         if (chosen.Col is null)   // ID 타입 없음 → 첫 비배열 컬럼
+        {
             chosen = candidates[0];
+        }
 
         return (chosen.Col.Name, CSharpType(chosen.Col));
     }
@@ -91,7 +95,9 @@ public static class TableCodeGenerator
     {
         Directory.CreateDirectory(dir);
         foreach (var file in Directory.EnumerateFiles(dir, "*.cs"))
+        {
             File.Delete(file);
+        }
     }
 
     /// <summary>
@@ -113,7 +119,9 @@ public static class TableCodeGenerator
                 continue;
             }
             if ((col.CS & target) == 0)
+            {
                 continue;   // 대상 플랫폼에 포함되지 않는 컬럼
+            }
 
             result.Add((i, col));
         }
@@ -149,7 +157,9 @@ public static class TableCodeGenerator
 
         var bodyWidth = bodies.Max(b => b.Body.Length);
         foreach (var (body, comment) in bodies)
+        {
             sb.AppendLine($"{body.PadRight(bodyWidth)}  // {comment}");
+        }
 
         sb.AppendLine("}");
         return CodeGenUtil.BuildFile("GameData", new[] { "MemoryPack" }, sb.ToString());
@@ -167,13 +177,19 @@ public static class TableCodeGenerator
     {
         var comment = col.RawType;
         if (col.Min is not null || col.Max is not null)
+        {
             comment += $" [{col.Min?.ToString() ?? "-"}..{col.Max?.ToString() ?? "-"}]";
+        }
         if (col.DefaultValue is not null)
+        {
             comment += $" 기본={col.DefaultValue}";
+        }
 
         // 메모 컬럼임을 생성물에 남긴다. 이 주석이 없으면 다음 사람이 로직에서 끌어다 쓴다.
         if (string.Equals(col.Name, MemoColumnName, StringComparison.Ordinal))
+        {
             comment += " [기획 메모 — 로직에서 읽지 않는다]";
+        }
 
         return comment;
     }
@@ -195,7 +211,9 @@ public static class TableCodeGenerator
         sb.AppendLine("    {");
         var nameWidth = columns.Max(c => c.Col.Name.Length);
         foreach (var (cellIndex, col) in columns)
+        {
             sb.AppendLine($"        {col.Name.PadRight(nameWidth)} = {BuildParseExpression(col, cellIndex)},");
+        }
         sb.AppendLine("    };");
         sb.AppendLine();
 
@@ -259,7 +277,9 @@ public static class TableCodeGenerator
         var core = BuildCoreExpression(col, cell);
 
         if (col.DefaultValue is null)
+        {
             return core;
+        }
 
         return $"{cell}.Length > 0 ? {core} : {BuildDefaultLiteral(col)}";
     }
@@ -297,7 +317,9 @@ public static class TableCodeGenerator
     private static string BuildDefaultLiteral(ExcelGenerator.ColumnInfo col)
     {
         if (IsArray(col.Type))
+        {
             return BuildArrayDefaultLiteral(col);
+        }
 
         var d = col.DefaultValue!;
         return col.Type switch
@@ -321,7 +343,9 @@ public static class TableCodeGenerator
     private static string BuildStringDefaultLiteral(string d)
     {
         if (d is "\"\"" or "''")
+        {
             return "\"\"";
+        }
 
         return $"\"{d.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"";
     }
@@ -337,31 +361,37 @@ public static class TableCodeGenerator
     }
 
     /// <summary>배열 원소 하나를 C# 리터럴로 포맷한다(스칼라 규칙 재사용).</summary>
-    private static string FormatElementLiteral(ExcelGenerator.ColumnInfo.RecordType arrayType, string element, string value) => arrayType switch
+    private static string FormatElementLiteral(ExcelGenerator.ColumnInfo.RecordType arrayType, string element, string value)
     {
-        ExcelGenerator.ColumnInfo.RecordType.ArrayFloat  => value.EndsWith("f") ? value : value + "f",
-        ExcelGenerator.ColumnInfo.RecordType.ArrayString => $"\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"",
-        ExcelGenerator.ColumnInfo.RecordType.ArrayEnum   => $"{element}.{value}",
-        _                                                => value,   // ArrayNumber(int/long)
-    };
+        return arrayType switch
+        {
+            ExcelGenerator.ColumnInfo.RecordType.ArrayFloat  => value.EndsWith("f") ? value : value + "f",
+            ExcelGenerator.ColumnInfo.RecordType.ArrayString => $"\"{value.Replace("\\", "\\\\").Replace("\"", "\\\"")}\"",
+            ExcelGenerator.ColumnInfo.RecordType.ArrayEnum   => $"{element}.{value}",
+            _                                                => value,   // ArrayNumber(int/long)
+        };
+    }
 
     /// <summary>RecordType → C# 타입. enum은 e접두사를 벗겨 Enum.xlsx 시트명과 매칭한다(eItemType → ItemType).</summary>
-    private static string CSharpType(ExcelGenerator.ColumnInfo col) => col.Type switch
+    private static string CSharpType(ExcelGenerator.ColumnInfo col)
     {
-        ExcelGenerator.ColumnInfo.RecordType.Int      => "int",
-        ExcelGenerator.ColumnInfo.RecordType.Long     => "long",
-        ExcelGenerator.ColumnInfo.RecordType.Float    => "float",
-        ExcelGenerator.ColumnInfo.RecordType.String   => "string",
-        ExcelGenerator.ColumnInfo.RecordType.Bool     => "bool",
-        ExcelGenerator.ColumnInfo.RecordType.ID       => "int",
-        ExcelGenerator.ColumnInfo.RecordType.EnumType => col.RawType[1..],
-        // 배열: int[]/long[]/float[]/string[]은 원본 표기가 그대로 유효, enum만 e접두사 제거(eItemType[] → ItemType[]).
-        ExcelGenerator.ColumnInfo.RecordType.ArrayNumber => col.RawType,
-        ExcelGenerator.ColumnInfo.RecordType.ArrayFloat  => col.RawType,
-        ExcelGenerator.ColumnInfo.RecordType.ArrayString => col.RawType,
-        ExcelGenerator.ColumnInfo.RecordType.ArrayEnum   => col.RawType[1..],
-        _ => throw new NotSupportedException($"{col.Name}: RecordType.{col.Type}는 코드 생성 미지원"),
-    };
+        return col.Type switch
+        {
+            ExcelGenerator.ColumnInfo.RecordType.Int      => "int",
+            ExcelGenerator.ColumnInfo.RecordType.Long     => "long",
+            ExcelGenerator.ColumnInfo.RecordType.Float    => "float",
+            ExcelGenerator.ColumnInfo.RecordType.String   => "string",
+            ExcelGenerator.ColumnInfo.RecordType.Bool     => "bool",
+            ExcelGenerator.ColumnInfo.RecordType.ID       => "int",
+            ExcelGenerator.ColumnInfo.RecordType.EnumType => col.RawType[1..],
+            // 배열: int[]/long[]/float[]/string[]은 원본 표기가 그대로 유효, enum만 e접두사 제거(eItemType[] → ItemType[]).
+            ExcelGenerator.ColumnInfo.RecordType.ArrayNumber => col.RawType,
+            ExcelGenerator.ColumnInfo.RecordType.ArrayFloat  => col.RawType,
+            ExcelGenerator.ColumnInfo.RecordType.ArrayString => col.RawType,
+            ExcelGenerator.ColumnInfo.RecordType.ArrayEnum   => col.RawType[1..],
+            _ => throw new NotSupportedException($"{col.Name}: RecordType.{col.Type}는 코드 생성 미지원"),
+        };
+    }
 
     /// <summary>배열 컬럼의 원소 C# 타입(끝의 "[]" 제거). int[]→int, eItemType[]→ItemType</summary>
     private static string ElementType(ExcelGenerator.ColumnInfo col)
@@ -371,11 +401,13 @@ public static class TableCodeGenerator
     }
 
     /// <summary>Array 계열 RecordType 여부.</summary>
-    private static bool IsArray(ExcelGenerator.ColumnInfo.RecordType t) =>
-        t is ExcelGenerator.ColumnInfo.RecordType.ArrayString
-          or ExcelGenerator.ColumnInfo.RecordType.ArrayNumber
-          or ExcelGenerator.ColumnInfo.RecordType.ArrayFloat
-          or ExcelGenerator.ColumnInfo.RecordType.ArrayEnum;
+    private static bool IsArray(ExcelGenerator.ColumnInfo.RecordType t)
+    {
+        return t is ExcelGenerator.ColumnInfo.RecordType.ArrayString
+               or ExcelGenerator.ColumnInfo.RecordType.ArrayNumber
+               or ExcelGenerator.ColumnInfo.RecordType.ArrayFloat
+               or ExcelGenerator.ColumnInfo.RecordType.ArrayEnum;
+    }
 
     // ─────────────────────────── TableRegistry ───────────────────────────
 
@@ -395,7 +427,9 @@ public static class TableCodeGenerator
         sb.AppendLine("    public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>");
         sb.AppendLine("    {");
         foreach (var table in tables)
+        {
             sb.AppendLine($"        [\"{table.Name}\"] = new({table.Name}Packer.Pack, {table.Name}Packer.Verify, {table.Name}Packer.Preview, {table.Name}Packer.Dump),");
+        }
         sb.AppendLine("    };");
         sb.AppendLine("}");
         return CodeGenUtil.BuildFile("GameData", Array.Empty<string>(), sb.ToString());
@@ -414,9 +448,13 @@ public static class TableCodeGenerator
         foreach (var m in metas)
         {
             if (m.Key is not null)
+            {
                 sb.AppendLine($"    public static TableSet<{m.Key.Value.Type}, {m.Name}Row> {m.Name} {{ get; private set; }} = null!;");
+            }
             else
+            {
                 sb.AppendLine($"    public static IReadOnlyList<{m.Name}Row> {m.Name} {{ get; private set; }} = Array.Empty<{m.Name}Row>();");
+            }
         }
 
         sb.AppendLine();
@@ -426,9 +464,13 @@ public static class TableCodeGenerator
         foreach (var m in metas)
         {
             if (m.Key is not null)
+            {
                 sb.AppendLine($"        {m.Name} = TableSet<{m.Key.Value.Type}, {m.Name}Row>.From(read(\"{m.Name}.bytes\"), r => r.{m.Key.Value.Name});");
+            }
             else
+            {
                 sb.AppendLine($"        {m.Name} = MemoryPackSerializer.Deserialize<List<{m.Name}Row>>(read(\"{m.Name}.bytes\")) ?? new List<{m.Name}Row>();");
+            }
         }
         sb.AppendLine("    }");
         sb.AppendLine("}");

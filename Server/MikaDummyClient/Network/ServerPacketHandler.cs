@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using MikaNetwork;
 using MikaProtocol;
 
@@ -29,7 +30,9 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv UpdateItem: Count={res.ItemChangeInfos?.Count}");
             foreach (var item in res.ItemChangeInfos!)
+            {
                 Console.WriteLine($"  - Kind={item.Kind.ToString()}, ItemId={item.ItemId}, Count={item.Count}");
+            }
         }
 
         [PacketHandler]
@@ -37,7 +40,9 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv Inventory: Count={res.Items?.Count}");
             foreach (var item in res.Items!)
+            {
                 Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}");
+            }
         }
 
         [PacketHandler]
@@ -51,11 +56,15 @@ namespace MikaDummyClient
 
             Console.WriteLine($"[Client] Recv Gacha: Count={res.Rewards?.Count}");
             foreach (var reward in res.Rewards!)
+            {
                 Console.WriteLine($"  - Rarity={reward.Rarity.ToString()}, ItemId={reward.ItemId}, Count={reward.Count}");
+            }
 
             Console.WriteLine($"[Client] Recv Gacha 인벤토리 변경: Count={res.ItemChangeInfos?.Count}");
             foreach (var change in res.ItemChangeInfos!)
+            {
                 Console.WriteLine($"  - Kind={change.Kind.ToString()}, ItemId={change.ItemId}, Count={change.Count} (누적 총량)");
+            }
         }
 
         [PacketHandler]
@@ -63,8 +72,10 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 작업슬롯: Count={res.Slots?.Count}");
             foreach (var slot in res.Slots!)
+            {
                 Console.WriteLine($"  - Slot={slot.SlotIndex}, Industry={slot.Industry}, " +
-                                  $"Character={slot.CharacterId}, LastTick={slot.LastTickAtUnix}");
+                                  $"Character={slot.CharacterId}, LastTick={slot.LastTickAtUnixMs}");
+            }
         }
 
         [PacketHandler]
@@ -86,7 +97,9 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 채취: Slot={res.SlotIndex}, 판정={res.JudgeCount}회");
             foreach (var change in res.ItemChanges!)
+            {
                 Console.WriteLine($"  - ItemId={change.ItemId}, Count={change.Count}, Kind={change.Kind}");
+            }
         }
 
         [PacketHandler]
@@ -94,8 +107,11 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 캐릭터: Count={res.Characters?.Count}");
             foreach (var character in res.Characters!)
+            {
+                var aptitudes = string.Join(" ", character.Aptitudes.Select(a => $"{a.Industry}={a.Value}"));
                 Console.WriteLine($"  - Id={character.CharacterId}, Tid={character.CharacterTid}, " +
-                                  $"Lv={character.Level}, Exp={character.Exp}");
+                                  $"Lv={character.Level}, Exp={character.Exp}, 적성: {aptitudes}");
+            }
         }
 
         // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
@@ -105,7 +121,9 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 재화: Count={res.Currencies?.Count}");
             foreach (var currency in res.Currencies!)
+            {
                 Console.WriteLine($"  - Type={currency.CurrencyType}, Amount={currency.Amount}");
+            }
         }
     }
 }

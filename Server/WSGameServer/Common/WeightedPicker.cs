@@ -6,8 +6,8 @@ namespace WSGameServer;
 ///
 /// <para>
 /// <b>후보 목록이 고정되면 한 번 만들어 두고 재사용한다.</b> 생성 시 누적 가중치를 미리 쌓아 두고
-/// 추첨은 이진 탐색 O(log n)으로 끝낸다. 채취 오프라인 정산은 접속 한 번에 판정을
-/// 수천 회(24시간 = 2,880회) 몰아서 돌리므로, 매 추첨마다 가중치 합을 다시 더하면 그게 그대로 비용이 된다.
+/// 추첨은 이진 탐색 O(log n)으로 끝낸다. 가챠 다연차나 드롭 분포 검증처럼 <b>같은 풀을 수천~수백만 회</b>
+/// 굴리는 경로가 있어, 매 추첨마다 가중치 합을 다시 더하면 그게 그대로 비용이 된다.
 /// </para>
 ///
 /// <para>
@@ -65,21 +65,29 @@ public sealed class WeightedPicker<T>
         {
             var weight = weightSelector(item);
             if (weight < 0)
+            {
                 throw new ArgumentException($"[{typeof(T).Name}] 가중치가 음수입니다: {weight}", nameof(items));
+            }
             if (weight == 0)
+            {
                 continue;   // 뽑히지 않는 항목 — 후보에서 제외한다
+            }
 
             running += weight;
             if (running > int.MaxValue)
+            {
                 throw new ArgumentException($"[{typeof(T).Name}] 가중치 합이 int 범위를 넘습니다.", nameof(items));
+            }
 
             picked.Add(item);
             cumulative.Add((int)running);
         }
 
         if (picked.Count == 0)
+        {
             throw new ArgumentException(
                 $"[{typeof(T).Name}] 뽑을 수 있는 후보가 없습니다(비었거나 가중치가 전부 0).", nameof(items));
+        }
 
         return new WeightedPicker<T>(picked.ToArray(), cumulative.ToArray());
     }
@@ -105,14 +113,16 @@ public sealed class WeightedPicker<T>
         var rng     = random ?? Random.Shared;
         var results = new List<T>(count);
         for (var i = 0; i < count; i++)
+        {
             results.Add(Pick(rng));
+        }
 
         return results;
     }
 
     /// <summary>
     /// count회 독립 추첨하되 결과를 모아 두지 않고 그때그때 넘긴다.
-    /// 오프라인 정산처럼 <b>수천 회를 돌려 개수만 집계</b>하는 경우, 중간 리스트를 만들지 않으려고 쓴다.
+    /// <b>여러 번 돌려 개수만 집계</b>하는 경우, 중간 리스트를 만들지 않으려고 쓴다.
     /// </summary>
     public void PickMany(int count, Action<T> onPicked, Random? random = null)
     {
@@ -121,7 +131,9 @@ public sealed class WeightedPicker<T>
 
         var rng = random ?? Random.Shared;
         for (var i = 0; i < count; i++)
+        {
             onPicked(Pick(rng));
+        }
     }
 
     /// <summary>
@@ -171,13 +183,17 @@ public static class WeightedPicker
         {
             var group = groupSelector(item);
             if (!buckets.TryGetValue(group, out var bucket))
+            {
                 buckets[group] = bucket = new List<T>();
+            }
             bucket.Add(item);
         }
 
         var result = new Dictionary<TGroup, WeightedPicker<T>>(buckets.Count);
         foreach (var (group, bucket) in buckets)
+        {
             result[group] = WeightedPicker<T>.From(bucket, weightSelector);
+        }
 
         return result;
     }

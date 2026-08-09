@@ -46,11 +46,13 @@ public class UserWorkStationTest
         DateTime startedAt,
         long characterId = CharacterId,
         int workSpeed = WorkStationSlot.DefaultWorkSpeed,
-        ItemType industry = ItemType.Fishing)
-        => user.WorkStation.Load(new[]
+        IndustryType industry = IndustryType.Fishing)
+    {
+        user.WorkStation.Load(new[]
         {
             new WorkStationSlot(0, industry, characterId, startedAt, workSpeed),
         });
+    }
 
     // ─────────────────────── 데이터 전제 ───────────────────────
 
@@ -73,7 +75,7 @@ public class UserWorkStationTest
     {
         var (user, b) = UserWith(AllRounderTid);
 
-        user.AssignWorkStation(slotIndex: 7, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(slotIndex: 7, IndustryType.Fishing, CharacterId, Base);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidSlotIndex);
@@ -85,7 +87,7 @@ public class UserWorkStationTest
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
 
-        user.AssignWorkStation(0, ItemType.Fishing, characterId: 999, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, characterId: 999, Base);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.CharacterNotOwned);
@@ -98,10 +100,32 @@ public class UserWorkStationTest
         var (user, b) = UserWith(NoFishingTid);
         GiveSlot(user, Base);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.NoAptitude);
+    }
+
+    [Fact]
+    public void 배치하면_판정_비용이_산업_레벨_테이블_값이_된다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+
+        // 기본 상수(30초)와 다른 값을 넣는다 — 테이블을 안 읽고 상수를 쓰면 여기서 드러난다.
+        b.Levels.Load(new[]
+        {
+            new IndustryLevelTableRow
+            {
+                IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1,
+                Name = "개울", RequiredScore = 60_000,
+            },
+        });
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
+
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.JudgeCostUnits.ShouldBe(60_000_000L);   // 60,000점 × 1000(초→ms 환산)
     }
 
     [Fact]
@@ -111,7 +135,7 @@ public class UserWorkStationTest
         var (user, b) = UserWith(NoFishingTid);
         GiveSlot(user, Base);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
 
         b.DB.PostedOf<SaveWorkStationSlotRepository>().ShouldBeEmpty();
     }
@@ -120,12 +144,177 @@ public class UserWorkStationTest
     public void 거절된_배치는_슬롯_상태를_건드리지_않는다()
     {
         var (user, b) = UserWith(NoFishingTid);
-        GiveSlot(user, Base, industry: ItemType.Mining);
+        GiveSlot(user, Base, industry: IndustryType.Mining);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
-        slot.Industry.ShouldBe(ItemType.Mining);
+        slot.Industry.ShouldBe(IndustryType.Mining);
+    }
+
+    // ─────────────────────── 산업 레벨 ───────────────────────
+    //
+    // 채취는 재화가 생성되는 지점이라 레벨은 클라가 말한 값을 그대로 믿으면 안 된다(게임기획코어 P4).
+    // 서버가 보관한 해금 레벨과 대조하는 것이 이 묶음의 전부다.
+
+    [Fact]
+    public void 해금하지_않은_레벨_배치는_IndustryLevelLocked로_거절한다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+
+        // 해금 기록이 없으면 기본 레벨(Lv1)까지만 열려 있다.
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 3);
+
+        b.Channel.SentOf<S_WorkStationAssignResponse>()
+            .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.IndustryLevelLocked);
+    }
+
+    [Fact]
+    public void 해금하지_않은_레벨_배치는_슬롯을_건드리지_않는다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base, industry: IndustryType.Mining);
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 3);
+
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.Industry.ShouldBe(IndustryType.Mining);
+        slot.IndustryLevel.ShouldBe(WorkStationSlot.DefaultIndustryLevel);
+        b.DB.PostedOf<SaveWorkStationSlotRepository>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 해금한_레벨은_배치되고_슬롯에_남는다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+        user.LoadIndustryLevels(new[]
+        {
+            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 3 },
+        });
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 3);
+
+        var res = b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem();
+        res.Result.ShouldBe(EResultCode.Ok);
+        res.Slot!.IndustryLevel.ShouldBe((byte)3);
+
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.IndustryLevel.ShouldBe(3);
+    }
+
+    [Fact]
+    public void 해금한_레벨보다_낮은_레벨도_고를_수_있다()
+    {
+        // 하향 선택 — 상위를 열어도 하위가 죽지 않는다(산업레벨.md 1장 #7).
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+        user.LoadIndustryLevels(new[]
+        {
+            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 5 },
+        });
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 2);
+
+        b.Channel.SentOf<S_WorkStationAssignResponse>()
+            .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+    }
+
+    [Fact]
+    public void 해금은_산업마다_따로다()
+    {
+        // 낚시를 5까지 열어도 채굴은 여전히 Lv1이다 (산업레벨.md 1장 #1).
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+        user.LoadIndustryLevels(new[]
+        {
+            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 5 },
+        });
+
+        user.AssignWorkStation(0, IndustryType.Mining, CharacterId, Base, industryLevel: 5);
+
+        b.Channel.SentOf<S_WorkStationAssignResponse>()
+            .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.IndustryLevelLocked);
+    }
+
+    [Fact]
+    public void 레벨이_1_미만이면_거절한다()
+    {
+        // 0 이하는 해금 비교(level <= 열린 레벨)를 그냥 통과해 버린다. 하한을 따로 막아야 한다.
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 0);
+
+        b.Channel.SentOf<S_WorkStationAssignResponse>()
+            .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.IndustryLevelLocked);
+    }
+
+    [Fact]
+    public void 레벨을_바꾸기_전_구간은_이전_레벨의_비용으로_정산된다()
+    {
+        // 산업레벨.md 2.3 — 정산을 빼먹으면 싸게 쌓은 점수가 비싼 판정에 쓰인다.
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+        user.LoadIndustryLevels(new[]
+        {
+            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 2 },
+        });
+        b.Levels.Load(new[]
+        {
+            new IndustryLevelTableRow
+            {
+                IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1,
+                Name = "개울", RequiredScore = 30_000,      // 30초
+            },
+            new IndustryLevelTableRow
+            {
+                IndustryLevelTID = 202, IndustryType = IndustryType.Fishing, Level = 2,
+                Name = "저수지", RequiredScore = 90_000,     // 90초
+            },
+        });
+
+        // 60초 경과 후 Lv2로 변경. Lv1 비용(30초)으로 정산하면 2회,
+        // 새 Lv2 비용(90초)으로 계산해 버리면 0회가 된다.
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base.AddSeconds(60), industryLevel: 2);
+
+        b.Channel.SentOf<S_GatherResultResponse>()
+            .ShouldHaveSingleItem().JudgeCount.ShouldBe(2);
+
+        // 바뀐 뒤에는 새 레벨의 비용으로 돈다.
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.JudgeCostUnits.ShouldBe(90_000_000L);
+    }
+
+    [Fact]
+    public void 저장된_슬롯_레벨과_해금_레벨은_로그인_때_되살아난다()
+    {
+        var user = new TestUserBuilder().WithFishingDrops().Build();
+
+        // 실제 로그인 경로로 넣는다 — DB에서 온 값이 도메인까지 도달하는지가 이 테스트의 전부다.
+        user.OnLoginDataLoaded(new PlayerLoginData(
+            new List<InventoryRow>(),
+            new List<CurrencyRow>(),
+            new List<CharacterRow>
+            {
+                new() { character_id = CharacterId, character_tid = AllRounderTid, level = 1, exp = 0 },
+            },
+            new List<WorkStationSlotRow>
+            {
+                new() { slot_index = 0, industry = (int)IndustryType.Fishing, character_id = CharacterId, industry_level = 4 },
+            },
+            new List<UserIndustryLevelRow>
+            {
+                new() { industry = (int)IndustryType.Fishing, unlocked_level = 4 },
+            }), Base);
+
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.IndustryLevel.ShouldBe(4);
+        user.GetUnlockedIndustryLevel(IndustryType.Fishing).ShouldBe(4);
+
+        // 기록이 없는 산업은 기본 레벨까지만 열려 있다.
+        user.GetUnlockedIndustryLevel(IndustryType.Mining).ShouldBe(WorkStationSlot.DefaultIndustryLevel);
     }
 
     // ─────────────────────── 배치 성공 경로 ───────────────────────
@@ -134,14 +323,14 @@ public class UserWorkStationTest
     public void 배치에_성공하면_Ok와_슬롯_스냅샷을_함께_보낸다()
     {
         var (user, b) = UserWith(AllRounderTid);
-        GiveSlot(user, Base, characterId: 0, industry: ItemType.None);
+        GiveSlot(user, Base, characterId: 0, industry: IndustryType.None);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
 
         var res = b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem();
         res.Result.ShouldBe(EResultCode.Ok);
         res.Slot.ShouldNotBeNull();
-        res.Slot!.Industry.ShouldBe((byte)ItemType.Fishing);
+        res.Slot!.Industry.ShouldBe(EIndustryType.Fishing);
         res.Slot!.CharacterId.ShouldBe(CharacterId);
     }
 
@@ -149,9 +338,9 @@ public class UserWorkStationTest
     public void 배치에_성공하면_그_슬롯을_저장한다()
     {
         var (user, b) = UserWith(AllRounderTid);
-        GiveSlot(user, Base, characterId: 0, industry: ItemType.None);
+        GiveSlot(user, Base, characterId: 0, industry: IndustryType.None);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
 
         b.DB.PostedOf<SaveWorkStationSlotRepository>().ShouldHaveSingleItem();
     }
@@ -182,7 +371,7 @@ public class UserWorkStationTest
         // 기본 속도(1.0배) = 30초에 1판정. 10분이면 정확히 20판정이다.
         GiveSlot(user, Base, workSpeed: WorkStationSlot.DefaultWorkSpeed);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base.AddMinutes(10));
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base.AddMinutes(10));
 
         b.Channel.SentOf<S_GatherResultResponse>()
             .ShouldHaveSingleItem().JudgeCount.ShouldBe(20);
@@ -195,7 +384,7 @@ public class UserWorkStationTest
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
 
-        user.AssignWorkStation(0, ItemType.Fishing, CharacterId, Base.AddMinutes(10));
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base.AddMinutes(10));
 
         var kinds = b.Channel.Sent.Select(p => p.GetType()).ToList();
         kinds.IndexOf(typeof(S_GatherResultResponse))
@@ -265,8 +454,8 @@ public class UserWorkStationTest
         var (user, b) = UserWith(AllRounderTid);
         user.WorkStation.Load(new[]
         {
-            new WorkStationSlot(0, ItemType.Fishing, CharacterId, Base),
-            new WorkStationSlot(1, ItemType.Fishing, CharacterId, Base.AddMinutes(4)),
+            new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base),
+            new WorkStationSlot(1, IndustryType.Fishing, CharacterId, Base.AddMinutes(4)),
         });
 
         user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(2);
