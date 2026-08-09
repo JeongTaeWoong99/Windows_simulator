@@ -43,7 +43,7 @@ public class WorkStationSlotView : MonoBehaviour
     {
         _slot = slot;
 
-        string industry  = ((GameData.ItemType)slot.Industry).ToString();
+        string industry  = slot.Industry.ToString();
         string character = slot.CharacterId != 0 ? characterName : "-";
 
         if (!IsRunning)

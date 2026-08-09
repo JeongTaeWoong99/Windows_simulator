@@ -92,6 +92,39 @@ public class PlayerDataManager : MonoService<PlayerDataManager>
         return $"?#{characterId}"; // 아직 목록을 못 받았거나 서버가 모르는 개체
     }
 
+    /// <summary>
+    /// 캐릭터 <b>개체 번호</b>로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0.
+    ///
+    /// <para>
+    /// <b>0은 "그 산업을 다루지 못한다"</b>는 뜻이고 서버가 배치를 <c>NoAptitude</c>로 거절한다.
+    /// 그래서 배치 화면은 이 값이 0인 줄을 <b>잠금 표시</b>한다(숨기지 않는다).
+    /// </para>
+    ///
+    /// <para>
+    /// ⚠️ <b><c>CharacterTable</c>을 직접 읽지 않는다.</b> 지금은 테이블값과 같지만, 장비 보정이 붙으면
+    /// 개체마다 갈라진다 — 특히 <b>적성 0 → 1 승격</b>이 생기면 테이블만 본 화면은
+    /// 실제로는 배치할 수 있는 캐릭터를 잠가 버린다. 값의 주인은 서버다(이슈 #13).
+    /// </para>
+    /// </summary>
+    public byte GetAptitude(long characterId, EIndustryType industry)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId != characterId)
+                continue;
+
+            foreach (var aptitude in character.Aptitudes)
+            {
+                if (aptitude.Industry == industry)
+                    return aptitude.Value;
+            }
+
+            return 0; // 1차 산업 5종이 전부 실려 오므로 여기 오면 산업 쪽이 이상한 것이다
+        }
+
+        return 0;
+    }
+
     /// <summary>재화 보유량을 조회한다. 아직 통지받지 못한 종류는 0이다.</summary>
     public long GetCurrency(byte currencyType) => _currencies.TryGetValue(currencyType, out long amount) ? amount : 0L;
 

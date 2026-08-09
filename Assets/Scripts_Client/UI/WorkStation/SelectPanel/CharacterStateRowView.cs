@@ -43,6 +43,9 @@ public class CharacterStateRowView : MonoBehaviour
     /// <summary>이 줄이 그리고 있는 캐릭터 개체 번호. 미바인딩이면 0.</summary>
     public long CharacterId { get; private set; }
 
+    // 지금 고른 산업에 대한 이 캐릭터의 적성. 0이면 배치할 수 없다(서버가 NoAptitude로 거절한다).
+    private byte _aptitude;
+
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 패널의 Start가 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
@@ -59,22 +62,32 @@ public class CharacterStateRowView : MonoBehaviour
     ///
     /// <para>
     /// ※ 이 줄은 <b>배치만</b> 한다 — 해제는 3단계 <c>Character Setting Panel</c>의 몫이라
-    /// 라벨이 "해제"로 바뀌는 경우가 없다. 라벨을 코드가 쥐고 있는 건 곧 붙을
-    /// "적성이 없어 배치 불가" 표시 때문이다 → 일감 B-2.
+    /// 라벨이 "해제"로 바뀌는 경우가 없다. 대신 <b>적성 0이면 "적성 없음"으로 바뀌고 잠긴다.</b>
     /// </para>
     /// </summary>
     /// <param name="characterId">서버가 발급한 개체 번호. 배치 요청에 그대로 실린다</param>
-    /// <param name="info">이름·레벨·적성처럼 이미 완성된 표시 문구</param>
-    public void Bind(long characterId, string info)
+    /// <param name="info">이름·적성처럼 이미 완성된 표시 문구</param>
+    /// <param name="aptitude">지금 고른 산업에 대한 적성(0~10). 0이면 버튼이 잠긴다</param>
+    public void Bind(long characterId, string info, byte aptitude)
     {
         CharacterId      = characterId;
+        _aptitude        = aptitude;
         infoText.text    = info;
-        assignLabel.text = "배치";
+        assignLabel.text = aptitude > 0 ? "배치" : "적성 없음";
+
+        // 잠금 여부는 부르는 쪽이 이어서 정한다 — 여기서 현재값을 되읽으면 직전 바인딩의 적성이 남는다.
     }
 
-    /// <summary>버튼을 잠그거나 푼다 (다른 슬롯에 이미 배치된 캐릭터 등).</summary>
+    /// <summary>
+    /// 버튼을 잠그거나 푼다 (응답 대기 중 등).
+    ///
+    /// <para>
+    /// <b>적성 0은 여기서 풀리지 않는다.</b> 패널이 대기 잠금을 일괄로 풀어도 못 하는 산업은 잠긴 채로 남아야 한다 —
+    /// 눌러 봐야 서버가 <c>NoAptitude</c>로 거절한다.
+    /// </para>
+    /// </summary>
     public void SetAssignable(bool on)
     {
-        assignButton.interactable = on;
+        assignButton.interactable = on && _aptitude > 0;
     }
 }

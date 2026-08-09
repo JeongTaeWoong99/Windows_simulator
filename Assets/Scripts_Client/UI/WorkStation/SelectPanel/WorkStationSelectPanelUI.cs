@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -61,9 +60,15 @@ using UnityEngine.UI;
 /// </para>
 ///
 /// <para>
-/// ⚠️ <b>산업 버튼은 아직 캐릭터를 걸러 내지 않는다.</b> 고른 산업이 배치 요청에 실릴 뿐,
-/// 그 산업을 못 다루는 캐릭터도 목록에 그대로 뜬다. 세팅에서 산업을 바꿔도 아직 요청이 안 나간다
-/// → 일감 "작업슬롯 선택 패널".
+/// ■ 못 하는 캐릭터는 <b>숨기지 않고 잠근다</b><br/>
+/// 고른 산업의 적성이 0이면 버튼만 잠기고 줄은 그대로 남는다 — 목록에서 빼면
+/// "이 캐릭터가 왜 안 보이지"가 되고, 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
+/// 적성은 <b>패킷(<c>CharacterInfo.Aptitudes</c>)에서 온다</b> — 테이블을 직접 읽지 않는다(이슈 #13).
+/// </para>
+///
+/// <para>
+/// ⚠️ <b>아직 안 된 것</b> — 다른 슬롯에 이미 배치된 캐릭터를 표시하지 않고,
+/// 세팅에서 산업을 바꿔도 교체 요청이 나가지 않는다 → 일감 "작업슬롯 선택 패널".
 /// </para>
 /// </summary>
 public class WorkStationSelectPanelUI : MonoBehaviour
@@ -110,9 +115,9 @@ public class WorkStationSelectPanelUI : MonoBehaviour
         Unassign,
     }
 
-    // 버튼 순서와 1:1로 대응하는 산업 목록. enum 값을 직접 인덱스로 쓰면
-    // None·Misc·Special이 끼어 있어 어긋나므로 별도 목록으로 들고 있는다.
-    private readonly List<ItemType> _industries = new List<ItemType>();
+    // 버튼 순서와 1:1로 대응하는 산업 목록. enum 값을 인덱스로 직접 쓰면 None(0) 한 칸이 밀리므로
+    // 별도 목록으로 들고 있는다.
+    private readonly List<EIndustryType> _industries = new List<EIndustryType>();
 
     // 씬에 깔아 둔 줄들. 보유 캐릭터 수만큼만 켠다.
     private readonly List<CharacterStateRowView> _rows = new List<CharacterStateRowView>();
@@ -264,14 +269,16 @@ public class WorkStationSelectPanelUI : MonoBehaviour
     #region 산업 선택
 
     // 채취 가능한 1차 산업만 목록에 담는다 (Start에서 호출)
+    //
+    // ※ EIndustryType은 1차 산업 5종만 담는 타입이라 범위 필터가 필요 없다 —
+    //   아이템 분류(Misc·Special)가 섞여 있던 ItemType과 다르다(이슈 #13).
     private void BuildIndustryList()
     {
         _industries.Clear();
 
-        // None·Misc·Special·Max는 배치 대상이 아니다. 채취하는 5종만 남긴다.
-        foreach (ItemType industry in Enum.GetValues(typeof(ItemType)))
+        foreach (EIndustryType industry in Enum.GetValues(typeof(EIndustryType)))
         {
-            if (industry >= ItemType.Farming && industry <= ItemType.Hunting)
+            if (industry != EIndustryType.None) // None은 "배치 해제"라 고를 대상이 아니다
                 _industries.Add(industry);
         }
     }
@@ -301,11 +308,22 @@ public class WorkStationSelectPanelUI : MonoBehaviour
     }
 
     // 산업을 고른다 (산업 버튼 OnClick에 코드로 연결)
+    //
+    // ※ 색만 바꾸고 끝내지 않는다 — 산업이 바뀌면 각 캐릭터의 적성도 달라져서 잠금 상태가 뒤집힌다.
     private void SelectIndustry(int index)
     {
         _selectedIndustry = index;
         RefreshIndustryButtons();
+
+        if (assignPanel.activeSelf)
+            RefreshRows();
     }
+
+    /// <summary>지금 고른 산업. 목록 범위를 벗어났으면 <c>None</c> (표시·송신에서 호출).</summary>
+    private EIndustryType SelectedIndustry
+        => _selectedIndustry >= 0 && _selectedIndustry < _industries.Count
+            ? _industries[_selectedIndustry]
+            : EIndustryType.None;
 
     /// <summary>
     /// 고른 산업만 밝게 칠한다 (표시 갱신 때 호출).
@@ -351,11 +369,17 @@ public class WorkStationSelectPanelUI : MonoBehaviour
 
     /// <summary>
     /// 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 (<see cref="Refresh"/>에서 호출).
-    /// 이 목록은 <b>빈 슬롯일 때만 보이므로</b> 모든 줄이 배치 가능이다 — 해제는 세팅 쪽 일이다.
+    /// 이 목록은 <b>빈 슬롯일 때만 보이므로</b> 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
+    ///
+    /// <para>
+    /// <b>고른 산업의 적성이 0인 줄은 잠긴다.</b> 그래도 목록에는 남는다 —
+    /// 가진 캐릭터가 왜 안 보이는지 알 수 없게 만들지 않는다.
+    /// </para>
     /// </summary>
     private void RefreshRows()
     {
         var characters = _data.Characters;
+        var industry   = SelectedIndustry;
 
         for (int i = 0; i < _rows.Count; i++)
         {
@@ -368,9 +392,10 @@ public class WorkStationSelectPanelUI : MonoBehaviour
             }
 
             long characterId = characters[i].CharacterId;
+            byte aptitude    = _data.GetAptitude(characterId, industry);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, _data.GetCharacterName(characterId));
+            row.Bind(characterId, $"{_data.GetCharacterName(characterId)} · 적성 {aptitude}", aptitude);
             row.SetAssignable(!IsWaiting);
         }
 
@@ -416,7 +441,7 @@ public class WorkStationSelectPanelUI : MonoBehaviour
 
     // 슬롯이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다 (단계 판정·클릭 처리에서 호출)
     private static bool IsAssigned(WorkStationSlotInfo? slot)
-        => slot != null && slot.Industry != 0 && slot.CharacterId != 0;
+        => slot != null && slot.Industry != EIndustryType.None && slot.CharacterId != 0;
 
     #endregion
 
@@ -428,7 +453,8 @@ public class WorkStationSelectPanelUI : MonoBehaviour
         if (!CanSend())
             return;
 
-        if (_selectedIndustry < 0 || _selectedIndustry >= _industries.Count)
+        var industry = SelectedIndustry;
+        if (industry == EIndustryType.None)
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"고른 산업({_selectedIndustry})이 목록 범위(0~{_industries.Count - 1})를 벗어났다.", this);
@@ -442,8 +468,7 @@ public class WorkStationSelectPanelUI : MonoBehaviour
             return;
         }
 
-        ItemType industry = _industries[_selectedIndustry];
-        Send((byte)industry, row.CharacterId);
+        Send(industry, row.CharacterId);
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 배치 요청 — 슬롯={_slotIndex}, 산업={industry}, 캐릭터개체={row.CharacterId}");
 
         BeginWaiting(PendingRequest.Assign); // 넘어갈지 물러날지는 응답이 정한다
@@ -455,7 +480,7 @@ public class WorkStationSelectPanelUI : MonoBehaviour
         if (!CanSend())
             return;
 
-        Send(0, 0); // 산업·캐릭터 0 = 해제
+        Send(EIndustryType.None, 0); // 산업 None·캐릭터 0 = 해제
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 해제 요청 — 슬롯={_slotIndex}");
 
         BeginWaiting(PendingRequest.Unassign);
@@ -536,8 +561,8 @@ public class WorkStationSelectPanelUI : MonoBehaviour
         return true;
     }
 
-    // 담당 슬롯의 배치 요청을 보낸다. 산업·캐릭터를 0으로 주면 해제다 (클릭 처리에서 호출)
-    private void Send(byte industry, long characterId)
+    // 담당 슬롯의 배치 요청을 보낸다. 산업 None·캐릭터 0으로 주면 해제다 (클릭 처리에서 호출)
+    private void Send(EIndustryType industry, long characterId)
     {
         _network.Send(new C_WorkStationAssignRequest
         {

@@ -1,7 +1,7 @@
 # 07. 게임 UI
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-08-06 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
+> 최종 업데이트: 2026-08-10 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
 > **바뀌면 갱신:** [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`퀘스트`](../quest/README.md)
 
 이 게임이 다른 방치형과 구분되는 **유일한 차별점**이다.
@@ -317,7 +317,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 설정 저장 | `Assets/Scripts_Client/Settings/WindowSettings.cs` — 창 설정 6종 + 위젯 위치를 `PlayerPrefs`에 보존 |
 | 화면 골격 조율 (3열 + 위젯 여닫기) | `Assets/Scripts_Client/Managers/UIManager.cs` — 2.0의 진입 순서를 `ToggleAll`/`OpenWorkStation`/`ToggleStorage`/`ToggleMarket`로 구현. **여닫는 대상은 Column이 아니라 그 안의 Canvas** — 열 폭이 유지돼야 위젯이 6칸 자리에서 안 움직인다 |
 | 각 열·칸의 화면 | `UI/Storage/StorageCanvasUI` · `UI/WorkStation/WorkStationCanvasUI` · `UI/State/StateCanvasUI` · `UI/Market/MarketCanvasUI` · `UI/Widget/WidgetCanvasUI` · `UI/Login/LoginCanvasUI` |
-| 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | `UI/WorkStation/WorkStationCanvasUI`가 두 패널을 갈아 끼운다 — `WorkStationScrollViewPanel/WorkStationScrollViewPanelUI`(칸 8개·카운트다운) ↔ `SelectPanel/WorkStationSelectPanelUI`(배치·해제). 캐릭터 줄은 `SelectPanel/CharacterStateRowView`. **패널끼리 서로를 참조하지 않고 이벤트만 쏜다** |
+| 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | `UI/WorkStation/WorkStationCanvasUI`가 두 패널을 갈아 끼운다 — `WorkStationScrollViewPanel/WorkStationScrollViewPanelUI`(칸 8개·카운트다운) ↔ `SelectPanel/WorkStationSelectPanelUI`(배치·해제). 캐릭터 줄은 `SelectPanel/CharacterStateRowView`. **패널끼리 서로를 참조하지 않고 이벤트만 쏜다**. 고른 산업의 **적성 0이면 줄을 남긴 채 버튼만 잠근다**(6장 #11) — 적성은 `PlayerDataManager.GetAptitude`로 **패킷**에서 읽는다 |
 | 로그 | `Log/ClientLogger.cs`(출력 창구·태그) + `Log/PlayerDataLogger.cs`(수신 변경을 콘솔로 — **임시**, 가챠 팝업·실패 토스트·위젯 수확 표시가 생기면 삭제) |
 | 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataManager.cs` — **수신 전담.** 요청은 각 UI가 직접 보낸다 |
 | 클라이언트 코드 | `Assets/Scripts_Client/` — `UI/`는 **캔버스 폴더 / 패널 폴더** 두 겹이다. 이름·부착 위치·폴더 규칙은 [`UI 스크립트 규칙`](../../../Assets/Scripts_Client/UI/UI%20스크립트%20규칙.md)에 있다 |
@@ -352,11 +352,13 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
     2.4에서 잠긴 칸을 숨기기로 한 것과 **정확히 같은 성격의 판단**이다.
     다만 배치 UI는 슬롯을 눌렀을 때만 열리므로 상시 노출이 아니다.
     여기서는 보여 줘도 P1과 충돌하지 않을 수 있다. → [산업 레벨](../gathering/산업레벨.md)
-11. **적성 0 캐릭터를 배치 선택창에 보여 주는가?** (2026-08-01 신규)
-    ⚠️ **v2 목업이 확정 사항과 어긋난다고 스스로 적어 둔 지점이다.**
-    [작업슬롯](../workslot/README.md) 3.4는 *"적성 0도 배치 가능(느림) · 배치 UI에서 전부 선택 가능"* 인데,
-    목업은 선택창에서 **제외**한다. 어느 쪽이 맞는지 기획 확인이 필요하다.
-    → 확정 전까지 [T-006](../../../tasks/archive/T-006-작업슬롯UI.md)의 배치 UI를 못 박지 않는다.
+11. ~~**적성 0 캐릭터를 배치 선택창에 보여 주는가?**~~ ✅ **해소 (2026-08-10) — 보여 주되 잠근다.**
+    질문이 남아 있던 근거(*"[작업슬롯](../workslot/README.md) 3.4는 적성 0도 배치 가능이라는데 목업은 제외한다"*)가
+    **이미 낡은 서술이었다.** 3.4는 2026-08-01에 **적성 0 = 배치 불가**로 재확정되면서
+    표에 *"배치 UI: 적성 0 캐릭터를 **잠금 표시**"* 를 함께 못 박았다 — 즉 **제외(숨김)가 아니다.**
+    **목록에는 남기고 버튼만 잠근다.** 숨기면 "내 캐릭터가 왜 안 보이지"가 되고,
+    장비 등으로 적성 0 → 1 승격이 생겼을 때 화면이 조용히 틀린다.
+    → 구현 완료 (`WorkStationSelectPanelUI` · 이슈 [#13](https://github.com/JeongTaeWoong99/Windows_simulator/issues/13)).
 12. **작업슬롯 캔버스 하단 버튼 3~5번에 무엇이 들어가는가?** (2026-08-01 신규)
     2.4의 "특별 이벤트 자리"와 같은 칸인지, 별개의 층인지부터 정해야 한다.
 13. ~~**위젯이 좌·우 끝일 때 3열을 어떻게 두는가?**~~ ✅ **해소 (2026-08-01).**

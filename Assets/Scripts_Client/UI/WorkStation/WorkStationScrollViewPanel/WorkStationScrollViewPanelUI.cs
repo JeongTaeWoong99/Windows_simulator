@@ -96,11 +96,7 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
             if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.IsRunning)
                 continue;
 
-            float remainSeconds = CalculateRemainSeconds(slot);
-
-            WatchCycleWrap(slot.SlotIndex, remainSeconds); // 진단 (임시)
-
-            view.Tick(CalculateProgress(slot), remainSeconds);
+            view.Tick(CalculateProgress(slot), CalculateRemainSeconds(slot));
         }
     }
 
@@ -114,7 +110,6 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
 
         _isSubscribed                 = true;
         _data.WorkStationSlotsChanged += Rebuild;
-        _data.GatherResultReceived    += OnGatherResultReceived; // 진단 (임시)
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -125,7 +120,6 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
 
         _isSubscribed                 = false;
         _data.WorkStationSlotsChanged -= Rebuild;
-        _data.GatherResultReceived    -= OnGatherResultReceived; // 진단 (임시)
     }
 
     #endregion
@@ -199,8 +193,6 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
                 SnapToFrame(view.transform as RectTransform);
 
                 _views.Add(slot.SlotIndex, view);
-
-                LogSnapshot(slot); // 진단 (임시) — 뷰를 처음 만들 때 한 번
             }
 
             view.Bind(slot, _data.GetCharacterName(slot.CharacterId));
@@ -224,7 +216,7 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
     /// <c>IsRunning</c>과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
     /// </summary>
     private static bool IsAssigned(WorkStationSlotInfo slot)
-        => slot.Industry != 0 && slot.CharacterId != 0;
+        => slot.Industry != EIndustryType.None && slot.CharacterId != 0;
 
     /// <summary>
     /// 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
@@ -238,73 +230,6 @@ public class WorkStationScrollViewPanelUI : MonoBehaviour
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;
         rect.localRotation      = Quaternion.identity;
-    }
-
-    #endregion
-
-    #region A-2 진단 (임시 — 원인이 확정되면 이 구역을 통째로 지운다)
-
-    // 슬롯별 직전 프레임의 남은 시간. 되감기는 순간을 잡으려고 들고 있는다.
-    private readonly Dictionary<int, float> _lastRemainSeconds = new Dictionary<int, float>();
-
-    // 슬라이더가 한 바퀴를 돈 시각(Time.realtimeSinceStartupAsDouble). 결과가 오면 지운다.
-    private readonly Dictionary<int, double> _cycleEndedAt = new Dictionary<int, double>();
-
-    /// <summary>
-    /// 카운트다운이 <b>되감긴 순간</b>을 잡는다 (<see cref="Update"/>에서 호출).
-    ///
-    /// <para>
-    /// 남은 시간은 정확히 0을 찍지 않는다 — <c>% JudgeCostUnits</c>가 0에 닿는 즉시
-    /// 한 주기를 통째로 되돌려 놓기 때문이다. 그래서 "0 이하"가 아니라
-    /// <b>값이 갑자기 커진 것</b>으로 한 바퀴를 판정한다.
-    /// </para>
-    /// </summary>
-    private void WatchCycleWrap(int slotIndex, float remainSeconds)
-    {
-        if (_lastRemainSeconds.TryGetValue(slotIndex, out float previous)
-            && remainSeconds > previous + 1f)
-        {
-            _cycleEndedAt[slotIndex] = Time.realtimeSinceStartupAsDouble;
-            ClientLogger.Info(ClientLogger.Data, $"[A-2] 슬롯 {slotIndex} — 카운트다운이 0을 지나 되감겼다");
-        }
-
-        _lastRemainSeconds[slotIndex] = remainSeconds;
-    }
-
-    /// <summary>
-    /// 채취 결과가 도착한 시각을 되감긴 시각과 견준다 (GatherResultReceived 구독).
-    /// <b>이 차이가 A-2의 정체다.</b>
-    /// </summary>
-    private void OnGatherResultReceived(S_GatherResultResponse res)
-    {
-        if (_cycleEndedAt.TryGetValue(res.SlotIndex, out double endedAt))
-        {
-            double lateSeconds = Time.realtimeSinceStartupAsDouble - endedAt;
-            _cycleEndedAt.Remove(res.SlotIndex);
-
-            ClientLogger.Info(ClientLogger.Data,
-                $"[A-2] 슬롯 {res.SlotIndex} — 되감긴 뒤 {lateSeconds:0.00}초 만에 결과 도착 (판정 {res.JudgeCount}회). " +
-                $"양수면 서버가 느리다");
-            return;
-        }
-
-        // 아직 한 바퀴를 안 돌았는데 결과가 왔다 = 서버가 클라보다 앞선다
-        float remain = _lastRemainSeconds.TryGetValue(res.SlotIndex, out float r) ? r : -1f;
-        ClientLogger.Info(ClientLogger.Data,
-            $"[A-2] 슬롯 {res.SlotIndex} — 카운트다운이 아직 {remain:0.00}초 남았는데 결과가 왔다 (판정 {res.JudgeCount}회). " +
-            $"서버가 그만큼 앞선다");
-    }
-
-    /// <summary>슬롯 스냅샷의 원본 값을 한 번 찍는다 — 단위가 계약과 맞는지 눈으로 보려고 (뷰를 만들 때 호출).</summary>
-    private void LogSnapshot(WorkStationSlotInfo slot)
-    {
-        double elapsedSec = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs) / 1000.0;
-        double cycleSec   = (double)slot.JudgeCostUnits / slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
-
-        ClientLogger.Info(ClientLogger.Data,
-            $"[A-2] 슬롯 {slot.SlotIndex} 스냅샷 — LastTickAtUnixMs={slot.LastTickAtUnixMs} (지금보다 {elapsedSec:0.00}초 전), " +
-            $"ProgressUnits={slot.ProgressUnits}, speed={slot.CurrentWorkSpeed}, JudgeCost={slot.JudgeCostUnits}, " +
-            $"한 주기={cycleSec:0.00}초, 지금 남은={CalculateRemainSeconds(slot):0.00}초");
     }
 
     #endregion

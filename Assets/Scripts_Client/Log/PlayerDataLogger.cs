@@ -184,7 +184,7 @@ public class PlayerDataLogger : MonoBehaviour
                 ? $"{_data.GetCharacterName(slot.CharacterId)}(개체 {slot.CharacterId})"
                 : "없음";
 
-            lines.Append($"\n    {slot.SlotIndex}번 — 산업={(GameData.ItemType)slot.Industry}, " +
+            lines.Append($"\n    {slot.SlotIndex}번 — 산업={slot.Industry}, " +
                          $"캐릭터={character}, 마지막판정={slot.LastTickAtUnixMs}");
         }
 
