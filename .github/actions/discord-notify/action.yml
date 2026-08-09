@@ -1,0 +1,76 @@
+# CI 실패를 Discord로 알린다.
+#
+# 각 워크플로 마지막에 `if: failure()` 로 붙여 쓴다 — 성공·취소에는 울리지 않는다.
+#
+#     - name: 실패 알림
+#       if: failure()
+#       uses: ./.github/actions/discord-notify
+#       with:
+#         webhook: ${{ secrets.DISCORD_WEBHOOK }}
+#
+# ⚠️ 선행 조건: 시크릿 DISCORD_WEBHOOK 이 등록돼 있어야 한다.
+#    (Discord 채널 → 설정 → 연동 → 웹후크 → 웹후크 URL 복사)
+#    없으면 경고만 남기고 조용히 끝난다.
+#
+# ⚠️ `uses: ./` 는 체크아웃된 파일을 쓴다. 호출하는 워크플로가 actions/checkout 을
+#    먼저 돌려야 한다.
+#
+# 워크플로마다 알림 스텝을 복제하지 않으려고 여기 한 곳에 모았다.
+# 메시지 형식을 바꿀 일이 생기면 이 파일만 고친다.
+name: Discord 실패 알림
+description: CI가 실패했을 때 Discord 웹후크로 알린다
+
+inputs:
+  webhook:
+    description: Discord 웹후크 URL — secrets.DISCORD_WEBHOOK 을 넘긴다
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Discord 전송
+      shell: bash
+      env:
+        # 시크릿을 run 스크립트에 직접 펼치지 않는다(로그 노출). env로만 넘긴다.
+        WEBHOOK:  ${{ inputs.webhook }}
+        WORKFLOW: ${{ github.workflow }}
+        RUN_URL:  ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        BRANCH:   ${{ github.ref_name }}
+        EVENT:    ${{ github.event_name }}
+        ACTOR:    ${{ github.actor }}
+        SHA:      ${{ github.sha }}
+        # push면 커밋 제목, PR이면 PR 제목. 둘 다 없으면 빈 값으로 둔다.
+        SUBJECT:  ${{ github.event.head_commit.message || github.event.pull_request.title || '' }}
+      run: |
+        set -euo pipefail
+
+        # 시크릿이 없다고 CI를 두 번 실패시키지 않는다. 이미 본체가 깨진 상태다.
+        if [ -z "$WEBHOOK" ]; then
+          echo "::warning::DISCORD_WEBHOOK 시크릿이 없어 알림을 건너뜁니다."
+          exit 0
+        fi
+
+        subject="${SUBJECT%%$'\n'*}"                 # 여러 줄이면 첫 줄만
+        [ -n "$subject" ] || subject="(커밋 정보 없음)"
+
+        payload=$(jq -n \
+          --arg title  "❌ 실패 — ${WORKFLOW}" \
+          --arg url    "$RUN_URL" \
+          --arg desc   "\`${SHA:0:7}\` ${subject}" \
+          --arg branch "$BRANCH" \
+          --arg event  "$EVENT" \
+          --arg actor  "$ACTOR" \
+          '{embeds: [{
+              title:       $title,
+              url:         $url,
+              color:       14692657,
+              description: $desc,
+              fields: [
+                {name: "브랜치", value: $branch, inline: true},
+                {name: "실행",   value: $event,  inline: true},
+                {name: "작성자", value: $actor,  inline: true}
+              ]
+            }]}')
+
+        # 전송 실패를 삼키면 "알림이 안 온 게 정상인지 고장인지"를 구분할 수 없게 된다.
+        curl -sS -f -X POST -H 'content-type: application/json' -d "$payload" "$WEBHOOK"

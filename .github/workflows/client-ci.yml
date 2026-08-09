@@ -36,6 +36,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 맨 앞에서 조건 없이 받는다. 뒤 스텝이 어디서 깨지든 실패 알림 스텝이
+      # .github/actions/discord-notify 를 찾을 수 있어야 하기 때문이다(uses: ./ 는 체크아웃 산출물을 쓴다).
+      - uses: actions/checkout@v4
+        with:
+          lfs: false
+
       # 시크릿을 run에 직접 펼치지 않는다(로그 노출). env로 넘겨 길이만 본다.
       - name: 라이선스 시크릿 확인
         id: guard
@@ -61,11 +67,6 @@ jobs:
           haskell: true
           large-packages: false
           swap-storage: false
-
-      - uses: actions/checkout@v4
-        if: steps.guard.outputs.ready == 'true'
-        with:
-          lfs: false
 
       # Library를 캐시하지 않으면 매번 전체 임포트가 돌아 빌드가 몇 배로 길어진다.
       - name: Library 캐시
@@ -101,3 +102,11 @@ jobs:
           name: client-build
           path: build
           retention-days: 3
+
+      # 깨졌을 때만 알린다. 통과·취소에는 울리지 않는다.
+      # 시크릿이 없어 빌드를 건너뛴 경우는 실패가 아니므로 여기도 울리지 않는다.
+      - name: 실패 알림
+        if: failure()
+        uses: ./.github/actions/discord-notify
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}

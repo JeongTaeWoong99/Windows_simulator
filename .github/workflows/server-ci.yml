@@ -95,3 +95,10 @@ jobs:
             Server/WSGameServer.Tests/TestResults/**/*.trx
             Server/WSGameServer.Tests/TestResults/**/coverage.cobertura.xml
           retention-days: 14
+
+      # 깨졌을 때만 알린다. 통과·취소에는 울리지 않는다.
+      - name: 실패 알림
+        if: failure()
+        uses: ./.github/actions/discord-notify
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}

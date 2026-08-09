@@ -1,14 +1,15 @@
 # CI (GitHub Actions)
 
-> 최종 업데이트: 2026-08-04
+> 최종 업데이트: 2026-08-10
 > 관련: [`Server/docs/테스트커버리지.md`](../Server/docs/테스트커버리지.md) · [`CLAUDE.md`](../CLAUDE.md)
 
-`.github/workflows/` 아래 워크플로 3개가 있다.
+`.github/workflows/` 아래 워크플로 4개가 있다.
 
 | 파일 | 언제 도나 | 하는 일 |
 | --- | --- | --- |
 | `server-ci.yml` | `Server/**` 변경 시 push·PR | 빌드 → 테스트 → 커버리지 요약 |
 | `client-ci.yml` | `Assets/**`·`Packages/**`·`ProjectSettings/**` 변경 시 push·PR | Unity 빌드 |
+| `docs-deploy.yml` | `GameDesign/web/**`·`GameDesign/design/**`·`tasks/**` 변경 시 push | 문서 사이트 빌드 → Cloudflare Pages 배포 |
 | `unity-activation.yml` | **수동만** | Unity 라이선스 활성화 파일(.alf) 요청 — 1회용 |
 
 **경로 필터로 갈라 뒀다.** 서버만 고쳤는데 Unity 빌드가 20분 도는 일은 없다.
@@ -109,7 +110,45 @@ Unity Test Framework는 어셈블리 경계를 요구한다 — 클라 테스트
 
 ---
 
-## 4. 배포(CD)는 없다
+## 4. Discord 알림 — 깨졌을 때만
+
+**CI 3종이 각자 마지막에 알림 스텝을 갖는다.** 통과하거나 취소되면 울리지 않는다.
+
+```yaml
+      - name: 실패 알림
+        if: failure()
+        uses: ./.github/actions/discord-notify
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
+```
+
+메시지 만드는 로직은 [`.github/actions/discord-notify/action.yml`](../.github/actions/discord-notify/action.yml)
+한 곳에 있다. 워크플로 3개에 같은 코드를 복제하지 않으려는 것이고, 형식을 바꿀 일이 생기면
+그 파일만 고친다.
+
+| 항목 | 값 |
+| --- | --- |
+| 필요한 시크릿 | `DISCORD_WEBHOOK` (Discord 채널 → 설정 → 연동 → 웹후크) |
+| 시크릿이 없으면 | 경고만 남기고 건너뛴다. CI를 두 번 실패시키지 않는다 |
+| 울리는 조건 | `failure()` — 실패한 실행마다 1건 |
+| 안 울리는 경우 | 성공 · 취소 · 시크릿이 없어 빌드를 건너뛴 경우 |
+
+> ⚠️ **`uses: ./` 는 체크아웃된 파일을 쓴다.** 그래서 client-ci는 체크아웃을 조건 없이
+> 맨 앞에서 돌린다 — 뒤 스텝이 어디서 깨지든 액션을 찾을 수 있어야 하기 때문이다.
+
+> ⚠️ **연속 실패는 매번 알린다.** 깨진 채로 계속 push하면 그때마다 울린다.
+> 소음이 심해지면 상태 변화(실패 전환 · 복구)만 알리는 방식으로 되돌린다 — 아래 참조.
+
+### 이전 방식 (2026-08-10 교체)
+
+`discord-notify.yml` 하나가 `workflow_run`으로 CI 3종을 뒤에서 듣고, **상태가 바뀔 때만**
+(실패로 전환 · 복구) 보냈다. CI 파일에 알림 코드가 안 섞이고 연속 실패 소음도 없었지만,
+`workflow_run`은 **기본 브랜치에 있는 파일만 실행돼** 브랜치에서 고치면 머지 전까지
+동작을 확인할 수 없었다. 알림을 각 CI 안으로 옮기면서 걷어냈다.
+
+---
+
+## 5. 배포(CD)는 없다
 
 지금은 **CI만** 있다. 서버 배포처가 정해지지 않았고, 대상 없이 배포 파이프라인을 만들면
 쓰지 않는 설정만 남는다. 클라 산출물도 3일만 보관하고 버린다.
