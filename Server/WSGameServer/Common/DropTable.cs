@@ -31,6 +31,9 @@ public sealed class DropTable
     /// <summary>후보 수. 가중치 0이라 빠진 항목은 세지 않는다.</summary>
     public int Count => _picker.Count;
 
+    /// <summary>후보 목록. 진단·로그에서 가중치를 나란히 볼 때 쓴다.</summary>
+    public IReadOnlyList<DropEntry> Entries => _picker.Items;
+
     /// <summary>전체 가중치 합.</summary>
     public int TotalWeight => _picker.TotalWeight;
 

@@ -1,3 +1,4 @@
+using System.Text;
 using GameData;
 using MikaUtils;
 
@@ -67,6 +68,32 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
         // 1차 산업 5종이 모두 등록됐다. 산업이 늘면 위와 같은 형태로 한 줄씩 추가한다.
 
         ServerLog.Info("데이터", $"드롭 테이블 {Count}개 등록 완료 (산업 5종 × 레벨별)");
+        LogDistributions();
+    }
+
+    /// <summary>
+    /// 산업×레벨별 가중치 분포를 로그로 찍는다 (R18 진단).
+    /// 5개 시트의 분포가 조용히 어긋나도 서버 시작 로그에서 바로 잡을 수 있다.
+    /// </summary>
+    private void LogDistributions()
+    {
+        var sb = new StringBuilder();
+        sb.AppendLine("드롭 분포 요약 (R18 진단)");
+
+        foreach (var (industry, level, table) in All.OrderBy(x => x.Industry).ThenBy(x => x.Level))
+        {
+            sb.Append($"  {industry} Lv{level}: ");
+            foreach (var entry in table.Entries)
+            {
+                var pct = table.TotalWeight > 0
+                    ? entry.Weight * 100.0 / table.TotalWeight
+                    : 0;
+                sb.Append($"TID {entry.ItemTID}={entry.Weight}({pct:F1}%)  ");
+            }
+            sb.AppendLine();
+        }
+
+        ServerLog.Debug("데이터", sb.ToString());
     }
 
     /// <summary>
