@@ -104,3 +104,9 @@ bash.exe.stackdump
 TestResults/
 **/TestResults/
 coverage.cobertura.xml
+# Performance Testing 패키지가 빌드할 때 Assets/Resources 에 쓰는 임시 파일.
+# 빌드가 끝나면 스스로 지우지만, 빌드를 중단하면 남는다 (com.unity.test-framework.performance)
+Assets/Resources/PerformanceTestRunInfo.json
+Assets/Resources/PerformanceTestRunInfo.json.meta
+Assets/Resources/PerformanceTestRunSettings.json
+Assets/Resources/PerformanceTestRunSettings.json.meta
