@@ -3,7 +3,7 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-07-18
+> 최종 업데이트: 2026-08-10 (CenterHeader 표기 정정 · 배열 필드 주의)
 
 # Unity/C# 클린 코드 스타일
 
@@ -354,15 +354,32 @@ public static event Action<bool> OnTurnStarted;
 스크립트 루트는 1인 개발 `Assets/Scripts`, 협업(클라이언트) `Assets/Scripts_Client` —
 프로젝트별 실제 경로는 해당 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다)
 
-텍스트는 `< 참조 >` 처럼 양쪽을 꺾쇠로 감싸 구분을 더 또렷하게 한다.
+**문구에 `< >` 를 직접 넣지 않는다.** 꺾쇠는 `CenterHeaderDrawer` 가 그릴 때
+`$"< {text} >"` 로 감싸므로, 문구에 또 넣으면 인스펙터에 **`< < 참조 > >`** 가 나온다.
+(2026-08-10 정정 — 이전 예시가 `"< 참조 >"` 였고, 이 프로젝트에서 30곳이 그 상태였다)
 
 ```csharp
-[CenterHeader("< 참조 >")]
+[CenterHeader("참조")]                  // 인스펙터에는 < 참조 > 로 그려진다
 [SerializeField] private ItemSO _itemSO;
 
-[CenterHeader("< 상태 >")]
+[CenterHeader("상태")]
 [SerializeField] private ECardState _cardState;
 ```
+
+**배열·리스트 필드 위에 붙일 때는 `[NonReorderable]` 을 같이 단다.**
+배열은 기본이 reorderable list 로 그려지는데, 그 경로가 데코레이터를 건너뛰어
+**헤더가 통째로 안 보인다** — 에러도 경고도 없어서 원인을 찾기 어렵다.
+
+```csharp
+[CenterHeader("버튼")]
+[SerializeField, NonReorderable] private Button[] _buttons;
+```
+
+> 덤으로 **드래그로 순서가 뒤바뀌는 사고**도 막는다 — 배열 순서가 곧 의미인 경우가 많다.
+> 순서를 정말 바꿔야 하는 배열이면, 헤더를 배열이 아닌 필드 위로 옮기는 방법도 있다.
+
+**인스펙터 필드는 화면에 나오는 순서로 둔다.** 코드 순서와 사용자가 보는 순서가 어긋나면
+읽는 사람이 매번 다시 짜맞춰야 한다.
 
 ### 폴더 구성 — 역할별로 세분화
 

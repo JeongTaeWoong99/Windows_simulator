@@ -310,17 +310,18 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 
 | 영역 | 위치 |
 | --- | --- |
-| 씬 · UI 골격 | `Assets/Scenes/DesktopWindow_Control.unity` — `Root Canvas` → `Horizental Columns` → 세 열(`Main Storage/WorkStation/Market Column`). 로그인 화면은 열 밖에 `Login Canvas`로 따로 선다 |
+| 씬 · UI 골격 | `Assets/Scenes/DesktopWindow_Control.unity` — `Root Canvas` → `!Horizental Columns` → 세 열(`@Storage/@Main/@Market Column`). 로그인 화면은 열 밖에 `!Login Canvas`로 따로 선다. 오브젝트 이름은 **접두사로 계층(`!`·`@`·`#`), 표기로 MVP 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)** 을 나타낸다 |
 | 위젯 6칸 배치 | `Assets/Scripts_Client/UI/Layout/WidgetPositionLayout.cs` — 좌표가 아니라 **형제 순서 + 3열의 자식 정렬**만 바꾼다. 위 칸이면 열 정렬을 `LowerCenter`, 아래 칸이면 `UpperCenter`로 뒤집어 위젯이 창 가장자리에 붙는다 |
 | 창 제어 (크기 배율 · 9분할 · 투명 · 클릭스루) | `Assets/Scripts_Client/Managers/WindowManager.cs` |
-| 설정 입력 | `Assets/Scripts_Client/UI/Settings/SettingsPanelUI.cs` — 창 제어(Win32)와 일반 설정(위젯 6칸)을 한 패널에서 받아 각 담당자에게 넘긴다 |
+| 설정 입력 | `Assets/Scripts_Client/UI/Main/SettingPresenter/SettingPresenter.cs` — 창 제어(Win32)와 일반 설정(위젯 6칸)을 한 패널에서 받아 각 담당자에게 넘긴다. **거래 열에 얹혀 있던 패널이 `#Main Canvas` 안으로 옮겨져 작업슬롯과 자리를 나눠 쓴다** |
 | 설정 저장 | `Assets/Scripts_Client/Settings/WindowSettings.cs` — 창 설정 6종 + 위젯 위치를 `PlayerPrefs`에 보존 |
 | 화면 골격 조율 (3열 + 위젯 여닫기) | `Assets/Scripts_Client/Managers/UIManager.cs` — 2.0의 진입 순서를 `ToggleAll`/`OpenWorkStation`/`ToggleStorage`/`ToggleMarket`로 구현. **여닫는 대상은 Column이 아니라 그 안의 Canvas** — 열 폭이 유지돼야 위젯이 6칸 자리에서 안 움직인다 |
-| 각 열·칸의 화면 | `UI/Storage/StorageCanvasUI` · `UI/WorkStation/WorkStationCanvasUI` · `UI/State/StateCanvasUI` · `UI/Market/MarketCanvasUI` · `UI/Widget/WidgetCanvasUI` · `UI/Login/LoginCanvasUI` |
-| 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | `UI/WorkStation/WorkStationCanvasUI`가 두 패널을 갈아 끼운다 — `WorkStationScrollViewPanel/WorkStationScrollViewPanelUI`(칸 8개·카운트다운) ↔ `SelectPanel/WorkStationSelectPanelUI`(배치·해제). 캐릭터 줄은 `SelectPanel/CharacterStateRowView`. **패널끼리 서로를 참조하지 않고 이벤트만 쏜다**. 고른 산업의 **적성 0이면 줄을 남긴 채 버튼만 잠근다**(6장 #11) — 적성은 `PlayerDataManager.GetAptitude`로 **패킷**에서 읽는다 |
+| 메인 화면 전환 (슬롯 목록 ↔ 슬롯 선택 ↔ 설정 ↔ …) | `UIManager`의 `MainScreen` enum + `ShowMainScreen`/`ToggleMainScreen`. `#Main Canvas` 안에서 **`Title`과 `Menu Presenter` 사이의 한 칸을 나눠 쓰는 화면들**을 갈아 끼운다. 여는 입구는 둘 — 상태 패널의 버튼, 그리고 슬롯 목록의 칸 클릭. 같은 버튼을 다시 누르면 기본(슬롯 목록)으로 돌아오고, 전체를 접으면 다음에 열 화면도 슬롯 목록으로 리셋된다. **캔버스 머리의 제목도 화면마다 바뀐다**(`MainCanvasView.SetTitle`, 문구는 인스펙터) |
+| 각 열·칸의 화면 | 캔버스는 전부 `...CanvasView`(여닫기만), 내용은 그 아래 `...Presenter`가 그린다 — `UI/Storage/StorageCanvasView` + `StorageTabPresenter`·`InventoryPresenter`·`StorageInformationPresenter` · `UI/Main/MainCanvasView` + `WorkStationListPresenter`·`WorkStationSelectPresenter`·`SettingPresenter`·`MenuPresenter` · `UI/State/StateCanvasView` + `StatePresenter` · `UI/Market/MarketCanvasView` + `GachaPresenter` · `UI/Widget/WidgetCanvasView` + `WidgetPresenter` · `UI/Login/LoginCanvasView` + `LoginPresenter` |
+| 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | 목록과 선택은 **`#Main Canvas`의 형제 화면**이라 전환을 `UIManager`가 한다 — `WorkStationListPresenter`(칸 8개·카운트다운) ↔ `WorkStationSelectPresenter`(배치·해제). 캐릭터 줄은 `CharacterStateRowView`. 하단 창고·거래 버튼은 `MenuPresenter`. **참조는 목록→선택 한 방향뿐**이다(슬롯 번호를 넘기려고). 고른 산업의 **적성 0이면 줄을 남긴 채 버튼만 잠근다**(6장 #11) — 적성은 `PlayerDataModel.GetAptitude`로 **패킷**에서 읽는다 |
 | 로그 | `Log/ClientLogger.cs`(출력 창구·태그) + `Log/PlayerDataLogger.cs`(수신 변경을 콘솔로 — **임시**, 가챠 팝업·실패 토스트·위젯 수확 표시가 생기면 삭제) |
-| 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataManager.cs` — **수신 전담.** 요청은 각 UI가 직접 보낸다 |
-| 클라이언트 코드 | `Assets/Scripts_Client/` — `UI/`는 **캔버스 폴더 / 패널 폴더** 두 겹이다. 이름·부착 위치·폴더 규칙은 [`UI 스크립트 규칙`](../../../Assets/Scripts_Client/UI/UI%20스크립트%20규칙.md)에 있다 |
+| 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataModel.cs` — MVP의 **Model**. 수신 전담이고 요청은 각 Presenter가 직접 보낸다 |
+| 클라이언트 코드 | `Assets/Scripts_Client/` — **UI Toolkit을 쓰지 않는 MVP(Legacy)**. `UI/`는 **`<캔버스>/<Presenter>/`** 두 단 구조이고, 접미사는 MVP 역할(`...Model`·`...Presenter`·`...CanvasView`·`...View`)을 따른다. 하이어라키는 접두사로 계층(`!`·`@`·`#`), 표기로 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)을 나타내고, **오브젝트 이름의 `Presenter`/`Panel`이 "화면"과 "그 안의 정렬 상자"를 가른다.** 규칙은 [`UI 스크립트 규칙`](../../../Assets/Scripts_Client/UI/UI%20스크립트%20규칙.md) |
 | 네트워크 연동 | `Assets/Scripts_Server/Network/` |
 | 코드 스타일 | `.claude/skills/client/clean-code-style` |
 | 기능 설계 | `.claude/skills/client/feature-design` |
@@ -358,7 +359,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
     표에 *"배치 UI: 적성 0 캐릭터를 **잠금 표시**"* 를 함께 못 박았다 — 즉 **제외(숨김)가 아니다.**
     **목록에는 남기고 버튼만 잠근다.** 숨기면 "내 캐릭터가 왜 안 보이지"가 되고,
     장비 등으로 적성 0 → 1 승격이 생겼을 때 화면이 조용히 틀린다.
-    → 구현 완료 (`WorkStationSelectPanelUI` · 이슈 [#13](https://github.com/JeongTaeWoong99/Windows_simulator/issues/13)).
+    → 구현 완료 (`WorkStationSelectPresenter` · 이슈 [#13](https://github.com/JeongTaeWoong99/Windows_simulator/issues/13)).
 12. **작업슬롯 캔버스 하단 버튼 3~5번에 무엇이 들어가는가?** (2026-08-01 신규)
     2.4의 "특별 이벤트 자리"와 같은 칸인지, 별개의 층인지부터 정해야 한다.
 13. ~~**위젯이 좌·우 끝일 때 3열을 어떻게 두는가?**~~ ✅ **해소 (2026-08-01).**
