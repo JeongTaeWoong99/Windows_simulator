@@ -13,56 +13,66 @@ namespace MikaNetwork
     /// - 이 클래스는 "얇게" 유지하고, 실제 처리는 이벤트를 구독하는 클라이언트 코드에서 한다.
     ///
     /// <para>
+    /// <b>[구역 구분]</b> — 기능 단위로 <c>#region</c>을 나누고, 각 구역 안에
+    /// <b>이벤트 선언 → 그 이벤트를 쏘는 핸들러</b> 순으로 넣는다.
+    /// 패킷 하나를 볼 때 이벤트와 핸들러가 떨어져 있지 않고, 새 패킷을 어디에 넣을지도 자명해진다.
+    /// </para>
+    ///
+    /// <para>
     /// <b>[로그인 1회 수신 세트]</b> — C_LoginRequest 하나를 보내면 서버가 아래를 <b>연달아 1회씩</b> 밀어준다.
     /// 클라가 따로 조회 요청을 보낼 패킷은 없다.
     /// <code>
-    /// S_LoginResponse          로그인 결과
-    /// S_InventoryResponse      인벤토리 전체 스냅샷
+    /// S_LoginResponse             로그인 결과
+    /// S_CurrencyResponse          재화 잔액
+    /// S_InventoryResponse         인벤토리 전체 스냅샷
+    /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
+    /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
     /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷
     /// </code>
-    /// UI 초기화는 이 세 개가 다 도착한 뒤를 기준으로 잡아야 한다.
+    /// UI 초기화는 이것들이 다 도착한 뒤를 기준으로 잡아야 한다.
     /// </para>
     /// </summary>
     public static class ServerPacketHandler
     {
-        // 로그인 응답 도착 (Handle_S_LoginResponse에서 발행)
-        public static event Action<S_LoginResponse>? LoginResponded;
-
-        // 인벤토리 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_InventoryResponse에서 발행)
-        public static event Action<S_InventoryResponse>? InventoryReceived;
-
-        // 가챠 결과 도착 (Handle_S_GachaDrawResponse에서 발행)
-        public static event Action<S_GachaDrawResponse>? GachaDrawn;
-
-        // 작업슬롯 배치 결과 도착 (Handle_S_WorkStationAssignResponse에서 발행)
-        public static event Action<S_WorkStationAssignResponse>? WorkStationAssigned;
-
-        // 작업슬롯 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_WorkStationSlotsResponse에서 발행)
-        public static event Action<S_WorkStationSlotsResponse>? WorkStationSlotsReceived;
-
-        // 채취 결과 도착 — 서버가 주기적으로 밀어줌 (Handle_S_GatherResultResponse에서 발행)
-        public static event Action<S_GatherResultResponse>? GatherResultReceived;
-
-        // 재화 보유량 도착 — 로그인 스냅샷과 변경 푸시가 같은 패킷이다 (Handle_S_CurrencyResponse에서 발행)
-        public static event Action<S_CurrencyResponse>? CurrencyReceived;
-
-        // 아이템 증감 도착 (Handle_S_UpdateItemResponse에서 발행)
-        public static event Action<S_UpdateItemResponse>? ItemUpdated;
+        #region 연결 · 하트비트
 
         // 하트비트 응답 도착 — 연결이 살아 있다는 유일한 증거 (Handle_S_PongResponse에서 발행)
         public static event Action? PongReceived;
 
-        // 보유 캐릭터 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_CharacterListResponse에서 발행)
-        public static event Action<S_CharacterListResponse>? CharacterListReceived;
+        // 하트비트 응답 (S_PongResponse 수신 시 자동 호출)
+        // ※ 로그를 남기지 않는다 — 5초마다 오므로 찍으면 콘솔이 Pong으로 덮인다.
+        //   판정과 로그는 PingManager가 상태가 바뀔 때만 담당한다.
+        [PacketHandler]
+        public static void Handle_S_PongResponse(ISession session, S_PongResponse res)
+        {
+            PongReceived?.Invoke();
+        }
+
+        #endregion
+
+        #region 로그인
+
+        // 로그인 응답 도착 (Handle_S_LoginResponse에서 발행)
+        public static event Action<S_LoginResponse>? LoginResponded;
 
         // 로그인 응답 — 성공 여부·세션ID를 이벤트로 전달 (S_LoginResponse 수신 시 자동 호출)
-        // ※ 이 응답이 끝이 아니다. 뒤이어 인벤토리·작업슬롯이 자동으로 따라온다.
+        // ※ 이 응답이 끝이 아니다. 뒤이어 재화·인벤토리·캐릭터·작업슬롯이 자동으로 따라온다.
         [PacketHandler]
         public static void Handle_S_LoginResponse(ISession session, S_LoginResponse res)
         {
             ClientLogger.Info(ClientLogger.Recv, $"로그인 결과={res.Result}, 세션ID={res.SessionId}");
             LoginResponded?.Invoke(res);
         }
+
+        #endregion
+
+        #region 인벤토리 · 아이템
+
+        // 인벤토리 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_InventoryResponse에서 발행)
+        public static event Action<S_InventoryResponse>? InventoryReceived;
+
+        // 아이템 증감 도착 (Handle_S_UpdateItemResponse에서 발행)
+        public static event Action<S_UpdateItemResponse>? ItemUpdated;
 
         // 인벤토리 전체 스냅샷 (S_InventoryResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다 — 요청 패킷 없이 서버가 S_LoginResponse 직후 밀어준다.
@@ -74,6 +84,23 @@ namespace MikaNetwork
             InventoryReceived?.Invoke(res);
         }
 
+        // 아이템 증감 (S_UpdateItemResponse 수신 시 자동 호출)
+        // ※ S_GatherResultResponse의 ItemChanges와 같은 규칙 — Count는 갱신 후 누적 총량이다.
+        [PacketHandler]
+        public static void Handle_S_UpdateItemResponse(ISession session, S_UpdateItemResponse res)
+        {
+            int changeCount = res.ItemChangeInfos?.Count ?? 0;
+            ClientLogger.Info(ClientLogger.Recv, $"아이템 증감 — 변경 {changeCount}건");
+            ItemUpdated?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 가챠
+
+        // 가챠 결과 도착 (Handle_S_GachaDrawResponse에서 발행)
+        public static event Action<S_GachaDrawResponse>? GachaDrawn;
+
         // 가챠 결과 — 뽑힌 보상 목록 (S_GachaDrawResponse 수신 시 자동 호출)
         [PacketHandler]
         public static void Handle_S_GachaDrawResponse(ISession session, S_GachaDrawResponse res)
@@ -83,6 +110,59 @@ namespace MikaNetwork
             ClientLogger.Info(ClientLogger.Recv, $"가챠 결과={res.Result}, 보상 {rewardCount}건, 인벤토리 변경 {changeCount}건");
             GachaDrawn?.Invoke(res);
         }
+
+        #endregion
+
+        #region 재화
+
+        // 재화 보유량 도착 — 로그인 스냅샷과 변경 푸시가 같은 패킷이다 (Handle_S_CurrencyResponse에서 발행)
+        public static event Action<S_CurrencyResponse>? CurrencyReceived;
+
+        // 재화 보유량 (S_CurrencyResponse 수신 시 자동 호출)
+        // ★ 로그인 시 자동으로 1회 온다. 스냅샷과 변경 푸시가 같은 패킷이라 처리 경로가 하나다.
+        // ※ Amount는 증감이 아니라 확정 잔액이다 — 재화 종류로 덮어쓰기만 하면 된다.
+        [PacketHandler]
+        public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
+        {
+            int currencyCount = res.Currencies?.Count ?? 0;
+            ClientLogger.Info(ClientLogger.Recv, $"재화 — {currencyCount}종");
+            CurrencyReceived?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 캐릭터
+
+        // 보유 캐릭터 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_CharacterListResponse에서 발행)
+        public static event Action<S_CharacterListResponse>? CharacterListReceived;
+
+        // 보유 캐릭터 전체 스냅샷 (S_CharacterListResponse 수신 시 자동 호출)
+        // ★ 로그인 시 자동으로 1회 온다. 조회 요청 패킷은 없다.
+        // ※ CharacterId는 캐릭터 종류(TID)가 아니라 내가 가진 그 한 마리의 개체 번호다.
+        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 PlayerDataModel.Characters 주석 참조.
+        [PacketHandler]
+        public static void Handle_S_CharacterListResponse(ISession session, S_CharacterListResponse res)
+        {
+            int characterCount = res.Characters?.Count ?? 0;
+            ClientLogger.Info(ClientLogger.Recv, $"보유 캐릭터 — {characterCount}마리");
+            CharacterListReceived?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 작업슬롯 · 채취
+
+        // 작업슬롯 배치 결과 도착 (Handle_S_WorkStationAssignResponse에서 발행)
+        public static event Action<S_WorkStationAssignResponse>? WorkStationAssigned;
+
+        // 작업슬롯 스냅샷 도착 — 로그인 직후 서버가 밀어줌 (Handle_S_WorkStationSlotsResponse에서 발행)
+        public static event Action<S_WorkStationSlotsResponse>? WorkStationSlotsReceived;
+
+        // 슬롯 1칸 동기화 도착 — 정산·속도 변경 후 서버가 밀어줌 (Handle_S_WorkStationSlotSyncResponse에서 발행)
+        public static event Action<S_WorkStationSlotSyncResponse>? WorkStationSlotSynced;
+
+        // 채취 결과 도착 — 서버가 주기적으로 밀어줌 (Handle_S_GatherResultResponse에서 발행)
+        public static event Action<S_GatherResultResponse>? GatherResultReceived;
 
         // 작업슬롯 배치 결과 — 변경된 슬롯의 최신 상태 (S_WorkStationAssignResponse 수신 시 자동 호출)
         [PacketHandler]
@@ -104,6 +184,16 @@ namespace MikaNetwork
             WorkStationSlotsReceived?.Invoke(res);
         }
 
+        // 슬롯 1칸 동기화 — 정산·속도 변경 후 서버가 밀어 준다.
+        // 카운트다운 기준점이 매번 교정되므로 오차가 누적되지 않는다.
+        [PacketHandler]
+        public static void Handle_S_WorkStationSlotSyncResponse(ISession session, S_WorkStationSlotSyncResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"슬롯 동기화 — 슬롯 {res.Slot?.SlotIndex}, 속도={res.Slot?.CurrentWorkSpeed}");
+            WorkStationSlotSynced?.Invoke(res);
+        }
+
         // 채취 결과 — 판정이 완성될 때마다 서버가 요청 없이 밀어 준다(서버 권위).
         //   슬롯마다 주기가 달라 도착 간격은 일정하지 않고, 수확이 없으면 아예 오지 않는다.
         // ※ ItemChanges의 Count는 델타가 아니라 "갱신 후 누적 총량"이다. 더하지 말고 덮어쓸 것.
@@ -115,59 +205,7 @@ namespace MikaNetwork
             GatherResultReceived?.Invoke(res);
         }
 
-        // 재화 보유량 (S_CurrencyResponse 수신 시 자동 호출)
-        // ★ 로그인 시 자동으로 1회 온다. 스냅샷과 변경 푸시가 같은 패킷이라 처리 경로가 하나다.
-        // ※ Amount는 증감이 아니라 확정 잔액이다 — 재화 종류로 덮어쓰기만 하면 된다.
-        [PacketHandler]
-        public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
-        {
-            int currencyCount = res.Currencies?.Count ?? 0;
-            ClientLogger.Info(ClientLogger.Recv, $"재화 — {currencyCount}종");
-            CurrencyReceived?.Invoke(res);
-        }
-
-        // 아이템 증감 (S_UpdateItemResponse 수신 시 자동 호출)
-        // ※ S_GatherResultResponse의 ItemChanges와 같은 규칙 — Count는 갱신 후 누적 총량이다.
-        [PacketHandler]
-        public static void Handle_S_UpdateItemResponse(ISession session, S_UpdateItemResponse res)
-        {
-            int changeCount = res.ItemChangeInfos?.Count ?? 0;
-            ClientLogger.Info(ClientLogger.Recv, $"아이템 증감 — 변경 {changeCount}건");
-            ItemUpdated?.Invoke(res);
-        }
-
-        // 슬롯 1칸 동기화 — 정산·속도 변경 후 서버가 밀어 준다.
-        // 카운트다운 기준점이 매번 교정되므로 오차가 누적되지 않는다.
-        public static event Action<S_WorkStationSlotSyncResponse>? WorkStationSlotSynced;
-
-        [PacketHandler]
-        public static void Handle_S_WorkStationSlotSyncResponse(ISession session, S_WorkStationSlotSyncResponse res)
-        {
-            ClientLogger.Info(ClientLogger.Recv,
-                $"슬롯 동기화 — 슬롯 {res.Slot?.SlotIndex}, 속도={res.Slot?.CurrentWorkSpeed}");
-            WorkStationSlotSynced?.Invoke(res);
-        }
-
-        // 보유 캐릭터 전체 스냅샷 (S_CharacterListResponse 수신 시 자동 호출)
-        // ★ 로그인 시 자동으로 1회 온다. 조회 요청 패킷은 없다.
-        // ※ CharacterId는 캐릭터 종류(TID)가 아니라 내가 가진 그 한 마리의 개체 번호다.
-        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 PlayerDataModel.Characters 주석 참조.
-        [PacketHandler]
-        public static void Handle_S_CharacterListResponse(ISession session, S_CharacterListResponse res)
-        {
-            int characterCount = res.Characters?.Count ?? 0;
-            ClientLogger.Info(ClientLogger.Recv, $"보유 캐릭터 — {characterCount}마리");
-            CharacterListReceived?.Invoke(res);
-        }
-
-        // 하트비트 응답 (S_PongResponse 수신 시 자동 호출)
-        // ※ 로그를 남기지 않는다 — 5초마다 오므로 찍으면 콘솔이 Pong으로 덮인다.
-        //   판정과 로그는 PingManager가 상태가 바뀔 때만 담당한다.
-        [PacketHandler]
-        public static void Handle_S_PongResponse(ISession session, S_PongResponse res)
-        {
-            PongReceived?.Invoke();
-        }
+        #endregion
 
         #region 테스트용 (연결 확인) — 추후 필요 없어지면 삭제
 
