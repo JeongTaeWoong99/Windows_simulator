@@ -139,7 +139,7 @@ namespace MikaNetwork
         // 보유 캐릭터 전체 스냅샷 (S_CharacterListResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다. 조회 요청 패킷은 없다.
         // ※ CharacterId는 캐릭터 종류(TID)가 아니라 내가 가진 그 한 마리의 개체 번호다.
-        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 PlayerDataManager.Characters 주석 참조.
+        //   슬롯 배치에 넣어야 하는 값이 이것이다 — 자세한 건 PlayerDataModel.Characters 주석 참조.
         [PacketHandler]
         public static void Handle_S_CharacterListResponse(ISession session, S_CharacterListResponse res)
         {

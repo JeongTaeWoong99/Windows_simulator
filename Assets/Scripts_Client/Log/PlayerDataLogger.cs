@@ -5,7 +5,7 @@ using MikaProtocol;
 
 /// <summary>
 /// 서버가 밀어준 변경을 사람이 읽을 문장으로 풀어 콘솔에 남기는 <b>관찰자</b>.
-/// <see cref="PlayerDataManager"/>의 이벤트만 구독하고, 출력은 <see cref="ClientLogger"/>에 맡긴다.
+/// <see cref="PlayerDataModel"/>의 이벤트만 구독하고, 출력은 <see cref="ClientLogger"/>에 맡긴다.
 ///
 /// <para>
 /// ■ <b>UI가 아니다</b><br/>
@@ -34,7 +34,7 @@ using MikaProtocol;
 /// </summary>
 public class PlayerDataLogger : MonoBehaviour
 {
-    private PlayerDataManager _data = null!;
+    private PlayerDataModel _data = null!;
     private bool              _isSubscribed;
     private bool              _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -42,12 +42,12 @@ public class PlayerDataLogger : MonoBehaviour
     //
     // ⚠️ OnEnable에서 Get 하지 않는다.
     //   Unity는 씬을 열 때 오브젝트마다 Awake → OnEnable 을 <b>이어서</b> 부른다. 모든 Awake가
-    //   먼저 끝나는 게 아니다. 이 패널이 PlayerDataManager보다 먼저 초기화되면 아직 Register 전이라
+    //   먼저 끝나는 게 아니다. 이 패널이 PlayerDataModel보다 먼저 초기화되면 아직 Register 전이라
     //   Services.Get이 KeyNotFoundException을 던진다.
     //   모든 Awake 등록이 끝난 것이 보장되는 시점은 Start다 — MonoService 주석의 규칙 그대로다.
     private void Start()
     {
-        _data = Services.Get<PlayerDataManager>();
+        _data = Services.Get<PlayerDataModel>();
         Subscribe();
 
         _isReady = true;
@@ -102,7 +102,7 @@ public class PlayerDataLogger : MonoBehaviour
 
     #endregion
 
-    #region 결과 로그 (PlayerDataManager 이벤트 구독)
+    #region 결과 로그 (PlayerDataModel 이벤트 구독)
 
     // 로그인 결과 (LoginCompleted 구독)
     private void OnLoginCompleted(bool success)
@@ -134,7 +134,7 @@ public class PlayerDataLogger : MonoBehaviour
     }
 
     // 가챠 결과 (GachaCompleted 구독)
-    // ※ 여기 오는 Rewards는 연출용(이번에 뽑힌 것)이다. 인벤토리 수량은 PlayerDataManager가
+    // ※ 여기 오는 Rewards는 연출용(이번에 뽑힌 것)이다. 인벤토리 수량은 PlayerDataModel가
     //   같은 패킷의 ItemChangeInfos(누적 총량)로 이미 반영했다 — 이 값을 더하면 두 배가 된다.
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
@@ -158,7 +158,7 @@ public class PlayerDataLogger : MonoBehaviour
     {
         if (!success)
         {
-            // 실패 사유(결과 코드)는 PlayerDataManager가 수신 시점에 이미 남긴다.
+            // 실패 사유(결과 코드)는 PlayerDataModel가 수신 시점에 이미 남긴다.
             ClientLogger.Warn(ClientLogger.UI, "작업슬롯 변경 실패");
             return;
         }

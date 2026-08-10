@@ -10,9 +10,13 @@ using UnityEngine;
 //         (그리는 로직은 짝꿍 CenterHeaderDrawer 담당 / 둘은 [CustomPropertyDrawer]로 묶임)
 //
 // ※ 기본 [Header]는 좌측 정렬만 되므로, 가운데 정렬용으로 따로 만든 것.
+//
+// ⚠️ 문구에 < > 를 직접 넣지 않는다. CenterHeaderDrawer 가 그릴 때 $"< {text} >" 로 감싸므로
+//    [CenterHeader("< 참조 >")] 로 쓰면 인스펙터에 "< < 참조 > >" 가 나온다.
+//    맞는 표기: [CenterHeader("참조")]
 public class CenterHeaderAttribute : PropertyAttribute
 {
-    public readonly string text; // 헤더에 표시할 문구
+    public readonly string text; // 헤더에 표시할 문구 (< > 는 Drawer 가 붙인다)
 
     // 생성자(이름은 클래스명과 반드시 일치).
     // [CenterHeader("...")]를 다는 순간 1회 자동 호출되어 동작.

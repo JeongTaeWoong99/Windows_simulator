@@ -38,29 +38,34 @@ public enum WidgetPosition
 ///
 /// ■ ExecuteAlways
 ///   재생하지 않고 인스펙터에서 6칸을 바꿔 보며 확인하려고 에디터에서도 돈다.
+///
+/// ⚠️ <b>항상 켜져 있는 오브젝트에 붙인다</b> (<c>!Horizental Columns</c>).
+///   배치를 <c>OnEnable</c>에서 적용하므로, 여닫히는 캔버스에 붙이면 그게 꺼져 있는 동안
+///   3열 순서와 위젯 위치가 아예 반영되지 않는다. 기본 상태로 꺼져 있는 캔버스라면 한 번도 안 돈다.
+///   (실제로 <c>#Setting Canvas</c>에 붙어 있다가 그 캔버스가 토글 대상이 되면서 드러난 문제다)
 /// </summary>
 [ExecuteAlways]
 public class WidgetPositionLayout : MonoBehaviour
 {
     // ※ 전부 인스펙터 필수 참조다. nullable 경고를 피하려 = null! 로 두고, 미연결은 Apply 에서 경고로 드러낸다.
-    //   (SettingsPanelUI 처럼 예외를 던지지 않는 이유 — 이 컴포넌트는 배선 도중인 에디터에서도 돌기 때문이다)
-    [CenterHeader("< 열 참조 >")]
+    //   (SettingPresenter 처럼 예외를 던지지 않는 이유 — 이 컴포넌트는 배선 도중인 에디터에서도 돌기 때문이다)
+    [CenterHeader("열 참조")]
     [SerializeField] private RectTransform columns           = null!; // HorizontalLayoutGroup 을 가진 3열의 부모
     [SerializeField] private RectTransform storageColumn     = null!; // 창고 열
     [SerializeField] private RectTransform workstationColumn = null!; // 작업슬롯 열 — 위젯의 가로 칸을 따라간다
     [SerializeField] private RectTransform marketColumn      = null!; // 거래 열
 
-    [CenterHeader("< 작업슬롯 열의 위·아래 슬롯 >")]
+    [CenterHeader("작업슬롯 열의 위·아래 슬롯")]
     [SerializeField] private RectTransform widgetPanel = null!; // 위젯 — 6칸의 세로가 이 패널의 슬롯을 정한다
     [SerializeField] private RectTransform statePanel  = null!; // 상태 패널(계정 레벨·골드·시스템 아이콘) — 항상 위젯의 반대편 슬롯
 
-    [CenterHeader("< 위젯 위치 >")]
+    [CenterHeader("위젯 위치")]
     [SerializeField] private WidgetPosition position = WidgetPosition.LowerCenter;
 
     // ※ 정렬을 바꿀 대상은 따로 배선하지 않는다 — 위 열 참조 3개에서 VerticalLayoutGroup을 직접 꺼낸다.
     //   예전엔 배열로 따로 받았는데, 인스펙터를 비워 두면 아무 일도 안 일어나면서 원인이 안 보였다.
     //   같은 오브젝트를 두 번 배선할 이유가 없다.
-    [CenterHeader("< 위·아래에 따라 바꿀 열의 자식 정렬 >")]
+    [CenterHeader("위·아래에 따라 바꿀 열의 자식 정렬")]
     [SerializeField, Tooltip("위젯이 '위' 칸일 때 열의 자식 정렬 — 내용을 위로 붙여 위젯이 창 위 가장자리에 온다")]
     private TextAnchor upperAlignment = TextAnchor.UpperCenter;
 

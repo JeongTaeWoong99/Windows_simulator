@@ -37,7 +37,7 @@ public class PingManager : MonoService<PingManager>
     private const float ResponseTimeoutSeconds = 15f;
 
     // ─── 참조 캐시 ───
-    private PlayerDataManager _playerData = null!; // 없으면 게임이 성립하지 않는다
+    private PlayerDataModel _playerData = null!; // 없으면 게임이 성립하지 않는다
     private NetworkManager    _network    = null!;
 
     // ─── 내부 상태 ───
@@ -102,7 +102,7 @@ public class PingManager : MonoService<PingManager>
     // 다른 서비스를 확보해 캐시한다 (Start에서 호출)
     private void CacheReferences()
     {
-        _playerData = Services.Get<PlayerDataManager>();
+        _playerData = Services.Get<PlayerDataModel>();
         _network    = NetworkManager.Instance;
     }
 
@@ -134,7 +134,7 @@ public class PingManager : MonoService<PingManager>
 
     #region 하트비트 진행
 
-    // 로그인 결과 도착 — 성공했을 때만 하트비트를 시작한다 (PlayerDataManager.LoginCompleted 구독)
+    // 로그인 결과 도착 — 성공했을 때만 하트비트를 시작한다 (PlayerDataModel.LoginCompleted 구독)
     // 로그인 전에는 서버에 User가 없어 감시할 대상 자체가 없다.
     private void OnLoginCompleted(bool isSuccess)
     {

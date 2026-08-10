@@ -114,7 +114,7 @@ public class WindowManager : MonoService<WindowManager>
     ///
     /// <para>
     /// ⚠️ <b>이 매니저만 Awake를 쓴다.</b> 다른 매니저는 전부 Start에서 초기화하는데,
-    /// 여기서만 앞당기는 이유는 <c>SettingsPanelUI.Start()</c>가 이 값들을 읽어 토글·드롭다운을
+    /// 여기서만 앞당기는 이유는 <c>SettingPresenter.Start()</c>가 이 값들을 읽어 토글·드롭다운을
     /// 맞추기 때문이다. Unity는 Start 순서를 보장하지 않으므로 Start에 두면 패널이 먼저 돌 때
     /// 아직 안 읽은 값을 가져간다. <b>다른 서비스는 건드리지 않는다</b> — 순수 값 로드뿐이라
     /// Awake 시점의 등록 순서 문제와 무관하다.
