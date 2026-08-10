@@ -29,6 +29,8 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 /// InventoryChanged          ← S_InventoryResponse         (인벤토리 스냅샷)
 /// WorkStationSlotsChanged   ← S_WorkStationSlotsResponse  (슬롯 스냅샷)
 /// </code>
+/// 이후 슬롯 상태는 <c>S_WorkStationAssignResponse</c>(배치 변경)·
+/// <c>S_WorkStationSlotSyncResponse</c>(정산·속도 변경)로 1칸씩 갱신된다.
 /// </para>
 /// </summary>
 public class PlayerDataModel : MonoService<PlayerDataModel>
@@ -191,6 +193,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
+        ServerPacketHandler.WorkStationSlotSynced    += OnWorkStationSlotSynced;
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
     }
@@ -210,6 +213,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
+        ServerPacketHandler.WorkStationSlotSynced    -= OnWorkStationSlotSynced;
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
     }
@@ -317,6 +321,22 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         ApplyItemChanges(res.ItemChanges);
         GatherResultReceived?.Invoke(res);
+    }
+
+    // 슬롯 1칸 동기화 — 정산·속도 변경 후 도착한다. 카운트다운 기준점이 매번 교정된다.
+    private void OnWorkStationSlotSynced(S_WorkStationSlotSyncResponse res)
+    {
+        var synced = res.Slot;
+        if (synced == null)
+            return;
+
+        int index = _workStationSlots.FindIndex(slot => slot.SlotIndex == synced.SlotIndex);
+        if (index >= 0)
+            _workStationSlots[index] = synced;
+        else
+            _workStationSlots.Add(synced);
+
+        WorkStationSlotsChanged?.Invoke();
     }
 
     // 아이템 증감 푸시 (가챠·즉시 지급 등)

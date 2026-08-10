@@ -95,7 +95,7 @@ namespace MikaNetwork
 
         // 작업슬롯 전체 스냅샷 (S_WorkStationSlotsResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다 — 슬롯 조회 요청 패킷은 아예 없고, 이게 유일한 전체 스냅샷이다.
-        //   이후 슬롯 상태는 S_WorkStationAssignResponse로 한 칸씩만 갱신된다.
+        //   이후 슬롯 상태는 S_WorkStationAssignResponse·S_WorkStationSlotSyncResponse로 한 칸씩 갱신된다.
         [PacketHandler]
         public static void Handle_S_WorkStationSlotsResponse(ISession session, S_WorkStationSlotsResponse res)
         {
@@ -134,6 +134,18 @@ namespace MikaNetwork
             int changeCount = res.ItemChangeInfos?.Count ?? 0;
             ClientLogger.Info(ClientLogger.Recv, $"아이템 증감 — 변경 {changeCount}건");
             ItemUpdated?.Invoke(res);
+        }
+
+        // 슬롯 1칸 동기화 — 정산·속도 변경 후 서버가 밀어 준다.
+        // 카운트다운 기준점이 매번 교정되므로 오차가 누적되지 않는다.
+        public static event Action<S_WorkStationSlotSyncResponse>? WorkStationSlotSynced;
+
+        [PacketHandler]
+        public static void Handle_S_WorkStationSlotSyncResponse(ISession session, S_WorkStationSlotSyncResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"슬롯 동기화 — 슬롯 {res.Slot?.SlotIndex}, 속도={res.Slot?.CurrentWorkSpeed}");
+            WorkStationSlotSynced?.Invoke(res);
         }
 
         // 보유 캐릭터 전체 스냅샷 (S_CharacterListResponse 수신 시 자동 호출)

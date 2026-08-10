@@ -46,6 +46,7 @@ namespace MikaProtocol
         S_GatherResultResponse = 15,
         S_CurrencyResponse = 16,
         S_CharacterListResponse = 17,
+        S_WorkStationSlotSyncResponse = 18,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -149,7 +150,7 @@ namespace MikaProtocol
     ///
     /// <para>
     /// 도착 간격은 <b>슬롯마다 다르다</b> — 캐릭터 적성·버프가 슬롯별 채취 속도를 정하기 때문이다.
-    /// 서버는 1초 해상도로 깨어나 그 시점까지 완성된 판정만 담아 보내므로, 이 패킷이 안 온다고
+    /// 서버는 0.1초 해상도로 깨어나 그 시점까지 완성된 판정만 담아 보내므로, 이 패킷이 안 온다고
     /// 진행이 멈춘 것은 아니다. 슬롯 변경 시에는 그때까지의 구간을 한 번에 정산해 보낸다.
     /// </para>
     /// </summary>
@@ -159,6 +160,16 @@ namespace MikaProtocol
         public int                   SlotIndex   { get; set; }  // 어느 슬롯에서 나왔는지
         public int                   JudgeCount  { get; set; }  // 이번에 정산된 판정 횟수(연출용)
         public List<ItemChangeInfo>? ItemChanges { get; set; }  // 인벤토리 갱신분
+    }
+
+    /// <summary>
+    /// 슬롯 1칸의 최신 상태를 밀어 준다. 정산·속도 변경 등 <b>슬롯 상태가 바뀔 때마다</b> 보낸다.
+    /// 클라이언트는 이 패킷으로 카운트다운 기준점을 매번 교정한다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_WorkStationSlotSyncResponse)]
+    public partial class S_WorkStationSlotSyncResponse : IPacket
+    {
+        public WorkStationSlotInfo? Slot { get; set; }
     }
 
     // ───────────────────────── 재화 (Currency) ─────────────────────────

@@ -126,6 +126,11 @@ public partial class User
                 JudgeCount  = harvest.JudgeCount,
                 ItemChanges = changes,
             });
+
+            if (WorkStation.TryGet(harvest.SlotIndex, out var settledSlot))
+            {
+                Send(new S_WorkStationSlotSyncResponse { Slot = settledSlot.ToInfo() });
+            }
         }
 
         // 슬롯 자체는 저장하지 않는다. 진행도(LastTickAt·ProgressUnits)가 세션 지역 상태가 되면서
@@ -208,16 +213,12 @@ public partial class User
     {
         SettleWorkStation(now);
 
-        var changed = false;
         foreach (var slot in WorkStation.Slots)
         {
-            changed |= slot.ApplyWorkSpeed(ResolveSlotSpeed(slot));
-        }
-
-        // 주기가 달라졌으면 클라이언트 카운트다운도 다시 맞춰야 한다.
-        if (changed && notify)
-        {
-            SendWorkStationSlots();
+            if (slot.ApplyWorkSpeed(ResolveSlotSpeed(slot)) && notify)
+            {
+                Send(new S_WorkStationSlotSyncResponse { Slot = slot.ToInfo() });
+            }
         }
     }
 
