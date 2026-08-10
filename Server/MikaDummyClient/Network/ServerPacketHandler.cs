@@ -103,6 +103,13 @@ namespace MikaDummyClient
         }
 
         [PacketHandler]
+        public static void Handle_S_WorkStationSlotSyncResponse(ISession session, S_WorkStationSlotSyncResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 슬롯 동기화: Slot={res.Slot?.SlotIndex}, " +
+                              $"Speed={res.Slot?.CurrentWorkSpeed}, LastTick={res.Slot?.LastTickAtUnixMs}");
+        }
+
+        [PacketHandler]
         public static void Handle_S_CharacterListResponse(ISession session, S_CharacterListResponse res)
         {
             Console.WriteLine($"[Client] Recv 캐릭터: Count={res.Characters?.Count}");
