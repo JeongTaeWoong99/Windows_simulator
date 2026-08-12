@@ -321,7 +321,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | 목록과 선택은 **`#Main Canvas`의 형제 화면**이라 전환을 `UIManager`가 한다 — `WorkStationListPresenter`(칸 8개·카운트다운) ↔ `WorkStationSelectPresenter`(배치·해제). 캐릭터 줄은 `CharacterStateRowView`. 하단 창고·거래 버튼은 `MenuPresenter`. **참조는 목록→선택 한 방향뿐**이다(슬롯 번호를 넘기려고). 고른 산업의 **적성 0이면 줄을 남긴 채 버튼만 잠근다**(6장 #11) — 적성은 `PlayerDataModel.GetAptitude`로 **패킷**에서 읽는다 |
 | 로그 | `Log/ClientLogger.cs`(출력 창구·태그) + `Log/PlayerDataLogger.cs`(수신 변경을 콘솔로 — **임시**, 가챠 팝업·실패 토스트·위젯 수확 표시가 생기면 삭제) |
 | 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataModel.cs` — MVP의 **Model**. 수신 전담이고 요청은 각 Presenter가 직접 보낸다 |
-| 클라이언트 코드 | `Assets/Scripts_Client/` — **UI Toolkit을 쓰지 않는 MVP(Legacy)**. `UI/`는 **`<캔버스>/<Presenter>/`** 두 단 구조이고, 접미사는 MVP 역할(`...Model`·`...Presenter`·`...CanvasView`·`...View`)을 따른다. 하이어라키는 접두사로 계층(`!`·`@`·`#`), 표기로 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)을 나타내고, **오브젝트 이름의 `Presenter`/`Panel`이 "화면"과 "그 안의 정렬 상자"를 가른다.** 규칙은 [`UI 스크립트 규칙`](../../../Assets/Scripts_Client/UI/UI%20스크립트%20규칙.md) |
+| 클라이언트 코드 | `Assets/Scripts_Client/` — **UI Toolkit을 쓰지 않는 MVP(Legacy)**. `UI/`는 **`<캔버스>/<Presenter>/`** 두 단 구조이고, 접미사는 MVP 역할(`...Model`·`...Presenter`·`...CanvasView`·`...View`)을 따른다. 하이어라키는 접두사로 계층(`!`·`@`·`#`), 표기로 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)을 나타내고, **오브젝트 이름의 `Presenter`/`Panel`이 "화면"과 "그 안의 정렬 상자"를 가른다.** 규칙은 [`UI 규칙`](../../../Assets/Scripts_Client/UI/UI%20규칙.md) |
 | 네트워크 연동 | `Assets/Scripts_Server/Network/` |
 | 코드 스타일 | `.claude/skills/client/clean-code-style` |
 | 기능 설계 | `.claude/skills/client/feature-design` |

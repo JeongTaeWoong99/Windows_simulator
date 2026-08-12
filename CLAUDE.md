@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-09 (엑셀 파일명 영문 규칙 추가 · 문서 사이트 `GameDesign/web/` 추가)
+> 최종 업데이트: 2026-08-12 (클라 내부 구조 설명을 `Assets/Scripts_Client/폴더 구조.md`로 분리)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -87,7 +87,7 @@ powershell -File GameDesign/check-doc-graph.ps1 -Changed
 | `Assets/Scripts_Server/GameData/` | 서버(미러) | `Server/GameData`에서 자동 복사되는 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | 서버(미러) | `Server/Shared/Data`에서 복사되는 `*.bytes` |
 | `Assets/Scripts_Server/` (`Network`·`Test`·`Utils`) | 서버 | Unity 측 네트워크/서버 연동 코드 |
-| `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드 |
+| `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드. **폴더 구성·클라 코딩 규약은 [`폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md)** — 폴더마다 `<폴더명> 규칙.md`가 있다 |
 | `Assets/Scripts_Client/Common/` | 클라이언트 | **Arca Unity Toolkit의 사본** — 게임을 모르는 범용 코드. 마스터는 `~/.claude/skills`(저장소)이고, 여기서 고쳤으면 `/unity-skill-sync`로 되돌린다. 특정 프로젝트 이름을 주석에 남기지 않는다 |
 | `Assets/Scenes/` | 공용 | 씬 파일 |
 

@@ -1,6 +1,6 @@
-# UI 스크립트 규칙
+# UI 규칙
 
-> 최종 업데이트: 2026-08-10 · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-12 (종속 View 규약에 `Awake` + `RequireRef` 명시) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -373,7 +373,7 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 
 ```
 UI/
-├─ UI 스크립트 규칙.md          ← 이 문서
+├─ UI 규칙.md          ← 이 문서
 ├─ Login/
 │   ├─ LoginCanvasView.cs
 │   └─ LoginPresenter/
@@ -477,6 +477,8 @@ public class XxxPresenter : MonoBehaviour
 | **`onClick`은 코드로 연결한다.** 인스펙터에서 연결하지 않는다 | 씬 파일에 묻혀 검색이 안 되고, 메서드 이름을 바꾸면 조용히 끊긴다 |
 | **`Services.Get<T>()`는 반드시 `Start()`** 에서 | `Awake`·`OnEnable`은 등록 순서가 보장되지 않는다 |
 | **필수 참조는 `= null!` + `RequireRef`** | `?`로 두면 미연결이 조용히 무시돼 "왜 안 되지"가 된다. 선택 참조만 `?` |
+| **`RequireRef`는 Presenter가 `Start`, 종속 View가 `Awake`** | View는 상위 Presenter의 `Start`가 `Bind`를 부르기 전에 검증이 끝나 있어야 한다. 서비스를 조회하지 않으므로 `Awake`로 충분하다 (§6 종속 View 규약) |
+| **Unity 객체(`GameObject`·`Component`)에 `?.`·`??`를 쓰지 않는다** | 이 둘은 Unity의 `==` 오버로드를 건너뛰어 **"가짜 null"**(파괴된 오브젝트)을 통과시킨다. `== null`/`!= null`로 검사한다. `?.`는 순수 C#(이벤트·컬렉션)에만 (`MonoBehaviourExtensions` 주석) |
 | **`OnEnable`에서 재구독하고 다시 그린다** | 꺼져 있는 동안 도착한 이벤트를 놓쳤다. 재구독만으론 화면이 낡은 채 남는다 |
 | **`OnDisable`에서 반드시 구독 해제** | 안 하면 꺼진 UI가 계속 반응한다 |
 | **반복 변수를 람다에 그대로 넘기지 않는다** | 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다 |
@@ -511,10 +513,21 @@ public class XxxSlotView : MonoBehaviour
 
     public event Action<XxxSlotView>? Clicked;   // 입력은 위로 던지기만
 
+    // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
+    // 그래야 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
+    private void Awake()
+    {
+        this.RequireRef(nameText, nameof(nameText));
+    }
+
     public void Bind(int id, string displayName) { ... }   // 완성된 값을 받아 그린다
 }
 ```
 
+- **필수 참조 검증은 `Start`가 아니라 `Awake`에서 한다.** 상위 Presenter의 `Start`가 `Bind`를
+  부르는 순간에는 이미 검증이 끝나 있어야 한다. 서비스를 조회하지 않으므로 `Awake`로 충분하다.
+  **`= null!`만 쓰고 `RequireRef`를 빼면 안 된다** — 미연결이 `Bind` 첫 호출에서
+  `NullReferenceException`으로 터지는데, 그때는 **어느 필드인지가 안 찍힌다.**
 - **서버도 세션도 조회하지 않는다.** 이름처럼 변환이 필요한 값은 **Presenter가 만들어 넘긴다** —
   `CharacterId`는 개체 번호라 테이블에서 이름이 안 나오고 보유 목록을 거쳐야 하는데,
   그 변환은 세션을 아는 쪽의 몫이다.
