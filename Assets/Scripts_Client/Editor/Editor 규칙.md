@@ -15,7 +15,7 @@
 
 | 파일 | 하는 일 |
 |------|---------|
-| `OriginalSceneCopier.cs` | `Scenes/Original`의 씬을 `Scenes/Test Copy`로 최신본 복사 + README에 이력 기록. 메뉴 `Tools/오리지널 씬 복사`(단축키 `Ctrl+Shift+C`) |
+| `OriginalSceneCopier.cs` | `Scenes/Original`의 씬을 `Scenes/Test Copy`로 최신본 복사 + README에 이력 기록 (동작만, UI 없음) |
 | `OriginalSceneCopyToolbarButton.cs` | 위 동작을 상단 메인 툴바 오른쪽(클라우드 아이콘 옆)에 '오리지널 씬 복사' 버튼으로 얹는다 (공식 `[MainToolbarElement]` API) |
 
 ### 왜 씬을 복사해서 쓰나
@@ -28,4 +28,4 @@
   `.meta`를 파일로 그대로 복사하면 원본과 GUID가 겹쳐 충돌한다.
 - 상단 버튼은 Unity 6.1+ 공식 API `[MainToolbarElement]`로 붙인다.
   리플렉션으로 내부 툴바에 끼우면 **Unity 6.3부터 '지원되지 않는 요소'로 감지돼 숨겨진다.**
-  버튼이 안 보이면 메뉴 `Tools/오리지널 씬 복사`·단축키로도 동작한다.
+  진입점은 이 툴바 버튼 하나뿐이다 — 메뉴 항목·단축키는 두지 않는다.

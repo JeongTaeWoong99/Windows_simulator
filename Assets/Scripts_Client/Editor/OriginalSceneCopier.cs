@@ -21,9 +21,6 @@ namespace DesktopWindowControl.EditorTools
 		private const string DestDir    = "Assets/Scenes/Test Copy";
 		private const string ReadmeName = "README.md";
 
-		[MenuItem("Tools/오리지널 씬 복사 %#c")]
-		public static void CopyFromMenu() => Copy();
-
 		/// <summary>
 		/// 'Original'의 모든 '.unity'를 'Test Copy'로 덮어써 최신화하고 README에 이력을 남긴다.
 		/// 사본은 '.gitignore'로 커밋에서 제외되므로 충돌이 나지 않는다.
