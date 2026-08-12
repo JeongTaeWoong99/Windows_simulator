@@ -3,7 +3,7 @@ name: optimization
 description: 성능 최적화 판단 규칙. 최적화/성능 개선 요청 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-07-17
+> 최종 업데이트: 2026-08-12 (GetComponent 캐싱 예시에 `null!` 반영)
 
 # 최적화 가이드
 
@@ -91,8 +91,8 @@ private void Update()
     GetComponent<Rigidbody2D>().AddForce(Vector2.up);
 }
 
-// Good — Awake에서 캐싱
-private Rigidbody2D _rigidbody;
+// Good — Awake에서 캐싱 (Awake가 채우므로 = null! — clean-code-style 9장)
+private Rigidbody2D _rigidbody = null!;
 private void Awake() { _rigidbody = GetComponent<Rigidbody2D>(); }
 private void Update() { _rigidbody.AddForce(Vector2.up); }
 ```

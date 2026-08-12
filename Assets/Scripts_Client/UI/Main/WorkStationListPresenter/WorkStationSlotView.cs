@@ -7,7 +7,7 @@ using UnityEngine.UI;
 /// 작업슬롯 한 칸의 표시. 프리팹에 붙는다.
 ///
 /// ■ 스스로 시간을 세지 않는다
-///   Update·코루틴을 두지 않고 <see cref="WorkStationListPresenter"/>가 계산해 넘겨 준 값만 그린다.
+///   Update·코루틴을 두지 않고 'WorkStationListPresenter'가 계산해 넘겨 준 값만 그린다.
 ///   상시 실행 앱이라 칸마다 루프를 돌리면 슬롯 수만큼 낭비가 곱해진다.
 ///
 /// ■ 표시는 값의 진실이 아니다
@@ -33,10 +33,19 @@ public class WorkStationSlotView : MonoBehaviour
     /// <summary>배치돼 있고 속도가 0이 아니어서 카운트다운을 돌릴 수 있는가.</summary>
     public bool IsRunning => _slot != null && _slot.CharacterId != 0 && _slot.CurrentWorkSpeed > 0;
 
+    // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
+    // 그래야 WorkStationListPresenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
+    private void Awake()
+    {
+        this.RequireRef(slotText,       nameof(slotText));
+        this.RequireRef(remainText,     nameof(remainText));
+        this.RequireRef(progressSlider, nameof(progressSlider));
+    }
+
     /// <summary>슬롯 스냅샷을 반영한다 (WorkStationListPresenter가 호출).</summary>
     /// <param name="characterName">
-    /// 배치된 캐릭터의 표시 이름. <b>뷰가 직접 조회하지 않는다</b> —
-    /// <c>slot.CharacterId</c>는 개체 번호라 테이블에서 이름이 안 나오고, 보유 목록을 거쳐야 한다.
+    /// 배치된 캐릭터의 표시 이름. 뷰가 직접 조회하지 않는다 —
+    /// 'slot.CharacterId'는 개체 번호라 테이블에서 이름이 안 나오고, 보유 목록을 거쳐야 한다.
     /// 그 변환은 세션을 아는 패널의 몫이다.
     /// </param>
     public void Bind(WorkStationSlotInfo slot, string characterName)
