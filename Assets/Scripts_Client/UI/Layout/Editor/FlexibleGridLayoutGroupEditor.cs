@@ -7,7 +7,7 @@ using UnityEditor.UI;
 /// ■ 왜 필요한가
 ///   UnityEditor.UI.GridLayoutGroupEditor 는 [CustomEditor(typeof(GridLayoutGroup), true)] 로 등록돼 있다.
 ///   두 번째 인자 true 가 "자식 클래스까지 이 에디터가 그린다"는 뜻이라, 상속만 해도 그쪽 인스펙터가 잡힌다.
-///   그런데 그 에디터는 <b>자기가 아는 항목(패딩·셀 크기·간격·제약 등)만 골라 그리므로</b>,
+///   그런데 그 에디터는 자기가 아는 항목(패딩·셀 크기·간격·제약 등)만 골라 그리므로,
 ///   상속하며 추가한 필드는 [SerializeField] 를 붙여도 인스펙터에서 통째로 사라진다.
 ///   ([Tooltip]·[CenterHeader] 도 필드가 그려지지 않으니 함께 묻힌다)
 ///   그래서 더 구체적인 이 에디터를 등록해 추가 항목을 직접 덧그린다.

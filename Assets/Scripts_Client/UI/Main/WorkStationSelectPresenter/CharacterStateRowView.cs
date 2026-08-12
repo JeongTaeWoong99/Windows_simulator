@@ -6,24 +6,9 @@ using UnityEngine.UI;
 /// <summary>
 /// 캐릭터 목록의 한 줄. 캐릭터 하나의 상태를 보여 주고 배치/해제 버튼을 갖는다.
 ///
-/// <para>
-/// ■ 왜 줄마다 스크립트인가<br/>
-/// <b>같은 것이 N개 반복되고 각 줄이 서로 다른 캐릭터에 묶이기 때문</b>이다.
-/// <see cref="InventorySlotView"/>·<see cref="WorkStationSlotView"/>와 같은 자리다 —
-/// 패널이 버튼 N개를 전부 들고 있으면 캐릭터가 늘 때마다 패널을 고쳐야 한다.
-/// </para>
-///
-/// <para>
-/// ■ 스스로 보내지 않는다<br/>
-/// 눌렸다고 <see cref="AssignClicked"/>만 쏜다. 슬롯 번호도, 고른 산업도, 로그인 여부도
-/// 이 줄은 모른다 — 그건 <see cref="WorkStationSelectPresenter"/>가 아는 것들이다.
-/// </para>
-///
-/// <para>
-/// ■ 표시할 값은 받아서 그린다<br/>
-/// 캐릭터 이름은 개체 번호로 테이블을 찾아선 안 나오고 보유 목록을 거쳐야 한다.
-/// 그 변환은 세션을 아는 패널의 몫이라 <see cref="Bind"/>로 완성된 문구를 받는다.
-/// </para>
+/// 눌리면 'AssignClicked'만 쏜다 — 슬롯 번호도 고른 산업도 로그인 여부도 이 줄은 모른다.
+/// 이름처럼 변환이 필요한 값은 'Bind'로 완성된 문구를 받는다.
+/// (종속 View 규약은 'UI 규칙.md' 6장)
 /// </summary>
 public class CharacterStateRowView : MonoBehaviour
 {
@@ -37,7 +22,7 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("배치 버튼 라벨 — '배치' / '해제'로 바뀐다")]
     private TMP_Text assignLabel = null!;
 
-    /// <summary>이 줄의 배치/해제를 눌렀다 (<see cref="WorkStationSelectPresenter"/>가 구독).</summary>
+    /// <summary>이 줄의 배치/해제를 눌렀다 ('WorkStationSelectPresenter'가 구독).</summary>
     public event Action<CharacterStateRowView>? AssignClicked;
 
     /// <summary>이 줄이 그리고 있는 캐릭터 개체 번호. 미바인딩이면 0.</summary>
@@ -58,12 +43,10 @@ public class CharacterStateRowView : MonoBehaviour
     }
 
     /// <summary>
-    /// 이 줄이 그릴 캐릭터를 정한다 (<see cref="WorkStationSelectPresenter"/>가 호출).
+    /// 이 줄이 그릴 캐릭터를 정한다 ('WorkStationSelectPresenter'가 호출).
     ///
-    /// <para>
-    /// ※ 이 줄은 <b>배치만</b> 한다 — 해제는 3단계 <c>Character Setting Panel</c>의 몫이라
-    /// 라벨이 "해제"로 바뀌는 경우가 없다. 대신 <b>적성 0이면 "적성 없음"으로 바뀌고 잠긴다.</b>
-    /// </para>
+    /// ※ 이 줄은 배치만 한다 — 해제는 3단계 'Character Setting Panel'의 몫이라
+    /// 라벨이 "해제"로 바뀌는 경우가 없다. 대신 적성 0이면 "적성 없음"으로 바뀌고 잠긴다.
     /// </summary>
     /// <param name="characterId">서버가 발급한 개체 번호. 배치 요청에 그대로 실린다</param>
     /// <param name="info">이름·적성처럼 이미 완성된 표시 문구</param>
@@ -81,10 +64,8 @@ public class CharacterStateRowView : MonoBehaviour
     /// <summary>
     /// 버튼을 잠그거나 푼다 (응답 대기 중 등).
     ///
-    /// <para>
-    /// <b>적성 0은 여기서 풀리지 않는다.</b> 패널이 대기 잠금을 일괄로 풀어도 못 하는 산업은 잠긴 채로 남아야 한다 —
-    /// 눌러 봐야 서버가 <c>NoAptitude</c>로 거절한다.
-    /// </para>
+    /// 적성 0은 여기서 풀리지 않는다. 패널이 대기 잠금을 일괄로 풀어도 못 하는 산업은 잠긴 채로 남아야 한다 —
+    /// 눌러 봐야 서버가 'NoAptitude'로 거절한다.
     /// </summary>
     public void SetAssignable(bool on)
     {

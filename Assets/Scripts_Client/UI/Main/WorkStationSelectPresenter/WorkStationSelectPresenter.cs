@@ -9,67 +9,22 @@ using UnityEngine.UI;
 /// <summary>
 /// 작업슬롯 한 칸의 설정 화면. 목록에서 칸을 누르면 목록 대신 이 화면이 열린다.
 ///
-/// <para>
-/// ■ 머리 둘은 늘 보이고, 몸통 둘이 갈아 끼워진다<br/>
-/// <code>
-/// Header Panel     슬롯 번호 + 뒤로가기          ← 항상
-/// Industry Panel   산업 5개                      ← 항상 (전부 누를 수 있다)
-/// ───────────────────────────────────────────────
-/// Character Assign Scroll View Panel   캐릭터를 고른다   ┐ 둘 중
-/// Character Setting Panel              배치된 것을 만진다 ┘ 하나만
-/// </code>
-/// </para>
+/// 머리 둘(Header · Industry)은 늘 보이고, 몸통 둘(배치 목록 ↔ 세팅)이 갈아 끼워진다.
 ///
-/// <para>
-/// ■ 세 단계를 오간다<br/>
-/// <code>
-/// 슬롯 목록 ─── 빈 칸 ──→ 배치 목록 ── [배치] 성공 ──→ 세팅
-///     ▲          찬 칸 ─────────────────────────────→ 세팅
-///     │                    배치 목록 ←─ 성공 [해제] ── 세팅
-///     └──────────── [뒤로] 또는 <b>요청 실패</b> ───────────┘
-/// </code>
-/// <b>배치와 해제가 성공하면 슬롯 목록으로 튕기지 않는다.</b> 배치했으면 이어서 세팅할 것이고,
-/// 해제했으면 이어서 다른 캐릭터를 고를 것이기 때문이다.
-/// </para>
-///
-/// <para>
-/// ■ 응답을 보고 단계를 정한다<br/>
-/// 누르자마자 넘어가면 <b>서버가 거절해도 넘어간다</b> — 아직 열리지 않은 슬롯에 배치를 걸면
-/// 실제로는 아무 일도 없는데 세팅 화면이 뜬다. 그래서 <c>WorkStationAssignCompleted</c>를 기다렸다가
-/// 성공하면 다음 단계로, <b>실패하면 슬롯 목록으로 물러난다.</b>
-/// 기다리는 동안에는 배치·해제 버튼을 잠근다 — 다만 <b>뒤로가기는 잠그지 않는다</b>,
-/// 응답이 영영 안 와도 나갈 길은 있어야 한다.
-/// </para>
-///
-/// <para>
-/// ■ 산업 버튼은 잠그지 않는다<br/>
-/// 배치 목록에서는 <b>캐릭터를 걸러 보는 수단</b>이고, 세팅에서는 <b>다른 산업으로 갈아 끼우는 수단</b>이다.
-/// 어느 쪽이든 늘 누를 수 있어야 해서 <c>interactable</c>은 건드리지 않고 <b>색으로만</b> 고른 것을 표시한다.
-/// </para>
-///
-/// <para>
-/// ■ 화면이 상태를 기억하지 않는다<br/>
-/// "지금 배치돼 있는가"는 서버 스냅샷(<c>PlayerDataModel.WorkStationSlots</c>)에서 읽는다.
+/// ■ 화면이 상태를 기억하지 않는다
+/// "지금 배치돼 있는가"는 서버 스냅샷('PlayerDataModel.WorkStationSlots')에서 읽는다.
 /// 자체 플래그를 들면 실패 응답이 왔을 때 화면과 서버가 어긋난다.
-/// <b>고른 산업만</b>은 아직 서버에 없는 값이라 여기서 들고 있는다.
-/// </para>
+/// 고른 산업만은 아직 서버에 없는 값이라 여기서 들고 있는다.
 ///
-/// <para>
-/// ⚠️ <b>줄은 씬에 미리 깔아 둔 것을 재사용한다(풀).</b> 보유 캐릭터 수만큼만 켜고 나머지는 끈다.
-/// 캐릭터가 깔아 둔 줄 수보다 많아지면 그때 줄을 프리팹으로 빼면 된다.
-/// </para>
+/// ⚠️ 못 하는 캐릭터는 숨기지 않고 잠근다 — 목록에서 빼면 "이 캐릭터가 왜 안 보이지"가 되고,
+/// 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
+/// 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 ///
-/// <para>
-/// ■ 못 하는 캐릭터는 <b>숨기지 않고 잠근다</b><br/>
-/// 고른 산업의 적성이 0이면 버튼만 잠기고 줄은 그대로 남는다 — 목록에서 빼면
-/// "이 캐릭터가 왜 안 보이지"가 되고, 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
-/// 적성은 <b>패킷(<c>CharacterInfo.Aptitudes</c>)에서 온다</b> — 테이블을 직접 읽지 않는다(이슈 #13).
-/// </para>
-///
-/// <para>
-/// ⚠️ <b>아직 안 된 것</b> — 다른 슬롯에 이미 배치된 캐릭터를 표시하지 않고,
+/// ⚠️ 아직 안 된 것 — 다른 슬롯에 이미 배치된 캐릭터를 표시하지 않고,
 /// 세팅에서 산업을 바꿔도 교체 요청이 나가지 않는다 → 일감 "작업슬롯 선택 패널".
-/// </para>
+///
+/// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙 · 산업 버튼을 잠그지 않는 이유 ·
+/// 줄 풀(21줄)은 'UI 규칙.md' 8장 참조.
 /// </summary>
 public class WorkStationSelectPresenter : MonoBehaviour
 {
@@ -82,7 +37,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // ※ NonReorderable 두 가지를 동시에 얻는다 —
     //   [1] 순서가 곧 산업이라 드래그로 뒤바뀌면 조용히 엉뚱한 산업이 나간다. 아예 못 끌게 막는다.
-    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 (UI 스크립트 규칙 §6)
+    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 (UI 규칙 §6)
     [CenterHeader("공통 Industry Panel (항상 보인다)")]
     [SerializeField, Tooltip("고른 산업 버튼의 바탕색")]
     private Color selectedIndustryColor = Color.white;
@@ -188,17 +143,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
     }
 
     /// <summary>
-    /// 이 슬롯을 다루도록 열린다 (<c>WorkStationListPresenter</c>가 칸 클릭에서 호출).
+    /// 이 슬롯을 다루도록 열린다 ('WorkStationListPresenter'가 칸 클릭에서 호출).
     ///
-    /// <para>
-    /// ※ 켜기 전에 번호부터 넣는다. 꺼져 있던 화면은 <see cref="Start"/>가 아직 안 돌았을 수 있는데,
+    /// ※ 켜기 전에 번호부터 넣는다. 꺼져 있던 화면은 'Start'가 아직 안 돌았을 수 있는데,
     /// 그때는 Start가 이어서 단계를 정한다. 이미 돌았으면 여기서 바로 정한다.
-    /// </para>
     ///
-    /// <para>
-    /// ※ 여기서 켜고, 부른 쪽이 이어서 <c>UIManager.ShowMainScreen</c>으로 나머지 화면을 끈다.
-    /// <b>자리를 뺏는 일은 여기서 하지 않는다</b> — 이 화면은 자기 형제가 몇인지 모른다.
-    /// </para>
+    /// ※ 여기서 켜고, 부른 쪽이 이어서 'UIManager.ShowMainScreen'으로 나머지 화면을 끈다.
+    /// 자리를 뺏는 일은 여기서 하지 않는다 — 이 화면은 자기 형제가 몇인지 모른다.
     /// </summary>
     public void Open(int slotIndex)
     {
@@ -216,8 +167,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
     #region 단계 전환
 
     /// <summary>
-    /// 슬롯 상태가 첫 단계를 정한다 — <b>빈 칸이면 캐릭터를 고르러, 찬 칸이면 세팅으로.</b>
-    /// (<see cref="Start"/> · <see cref="Open"/>에서 호출)
+    /// 슬롯 상태가 첫 단계를 정한다 — 빈 칸이면 캐릭터를 고르러, 찬 칸이면 세팅으로.
+    /// ('Start' · 'Open'에서 호출)
     /// </summary>
     private void OpenStageForSlot()
     {
@@ -246,10 +197,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
     /// <summary>
     /// 슬롯 목록으로 물러난다 (뒤로가기 버튼 · 요청 실패).
     ///
-    /// <para>
-    /// 이 화면을 직접 끄지 않는다 — <c>UIManager</c>가 목록을 켜면서 <b>같은 자리에 있는 이 화면을 끈다.</b>
+    /// 이 화면을 직접 끄지 않는다 — 'UIManager'가 목록을 켜면서 같은 자리에 있는 이 화면을 끈다.
     /// 스스로 끄면 목록이 안 켜진 빈 칸이 남는 순간이 생긴다.
-    /// </para>
     /// </summary>
     private void BackToSlotList()
     {
@@ -305,7 +254,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     /// <summary>
     /// 산업 버튼을 목록 순서와 묶는다 (Start에서 호출).
-    /// <b>버튼 개수와 산업 개수가 다르면 조용히 어긋난다</b> — 그래서 여기서 먼저 알린다.
+    /// 버튼 개수와 산업 개수가 다르면 조용히 어긋난다 — 그래서 여기서 먼저 알린다.
     /// </summary>
     private void BindIndustryButtons()
     {
@@ -339,7 +288,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             RefreshRows();
     }
 
-    /// <summary>지금 고른 산업. 목록 범위를 벗어났으면 <c>None</c> (표시·송신에서 호출).</summary>
+    /// <summary>지금 고른 산업. 목록 범위를 벗어났으면 'None' (표시·송신에서 호출).</summary>
     private EIndustryType SelectedIndustry
         => _selectedIndustry >= 0 && _selectedIndustry < _industries.Count
             ? _industries[_selectedIndustry]
@@ -348,11 +297,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     /// <summary>
     /// 고른 산업만 밝게 칠한다 (표시 갱신 때 호출).
     ///
-    /// <para>
-    /// <b>잠그지 않고 색만 바꾼다</b> — 배치 목록에서는 걸러 보는 수단, 세팅에서는 갈아 끼우는 수단이라
-    /// 어느 단계에서도 눌릴 수 있어야 한다. <c>Selectable</c>은 실행 중 <c>colors.normalColor</c>로
-    /// 바탕을 덮어쓰므로 <c>Image.color</c>가 아니라 이쪽을 바꾼다.
-    /// </para>
+    /// 잠그지 않고 색만 바꾼다 — 배치 목록에서는 걸러 보는 수단, 세팅에서는 갈아 끼우는 수단이라
+    /// 어느 단계에서도 눌릴 수 있어야 한다. 'Selectable'은 실행 중 'colors.normalColor'로
+    /// 바탕을 덮어쓰므로 'Image.color'가 아니라 이쪽을 바꾼다.
     /// </summary>
     private void RefreshIndustryButtons()
     {
@@ -388,13 +335,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
     }
 
     /// <summary>
-    /// 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 (<see cref="Refresh"/>에서 호출).
-    /// 이 목록은 <b>빈 슬롯일 때만 보이므로</b> 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
+    /// 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 ('Refresh'에서 호출).
+    /// 이 목록은 빈 슬롯일 때만 보이므로 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
     ///
-    /// <para>
-    /// <b>고른 산업의 적성이 0인 줄은 잠긴다.</b> 그래도 목록에는 남는다 —
+    /// 고른 산업의 적성이 0인 줄은 잠긴다. 그래도 목록에는 남는다 —
     /// 가진 캐릭터가 왜 안 보이는지 알 수 없게 만들지 않는다.
-    /// </para>
     /// </summary>
     private void RefreshRows()
     {
@@ -514,14 +459,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
     }
 
     /// <summary>
-    /// 응답이 왔다 — 성공이면 다음 단계로, <b>실패면 슬롯 목록으로 물러난다</b>
+    /// 응답이 왔다 — 성공이면 다음 단계로, 실패면 슬롯 목록으로 물러난다
     /// (PlayerDataModel.WorkStationAssignCompleted 구독).
     ///
-    /// <para>
-    /// 실패는 대개 <b>아직 열리지 않은 슬롯</b>이다. 그 칸에서는 배치도 해제도 할 수 없으니
-    /// 화면에 남겨 둘 이유가 없다. 사유(<c>EResultCode</c>)는 아직 이벤트에 안 실려서
+    /// 실패는 대개 아직 열리지 않은 슬롯이다. 그 칸에서는 배치도 해제도 할 수 없으니
+    /// 화면에 남겨 둘 이유가 없다. 사유('EResultCode')는 아직 이벤트에 안 실려서
     /// 사용자에게 못 보여 준다 → 일감 "실패 알림 토스트".
-    /// </para>
     /// </summary>
     private void OnAssignCompleted(bool success)
     {

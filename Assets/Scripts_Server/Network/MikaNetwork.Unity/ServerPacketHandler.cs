@@ -12,25 +12,21 @@ namespace MikaNetwork
     ///   여기서 이벤트 발행·UI 갱신을 그대로 해도 안전하다.
     /// - 이 클래스는 "얇게" 유지하고, 실제 처리는 이벤트를 구독하는 클라이언트 코드에서 한다.
     ///
-    /// <para>
-    /// <b>[구역 구분]</b> — 기능 단위로 <c>#region</c>을 나누고, 각 구역 안에
-    /// <b>이벤트 선언 → 그 이벤트를 쏘는 핸들러</b> 순으로 넣는다.
+    /// [구역 구분] — 기능 단위로 '#region'을 나누고, 각 구역 안에
+    /// 이벤트 선언 → 그 이벤트를 쏘는 핸들러 순으로 넣는다.
     /// 패킷 하나를 볼 때 이벤트와 핸들러가 떨어져 있지 않고, 새 패킷을 어디에 넣을지도 자명해진다.
-    /// </para>
     ///
-    /// <para>
-    /// <b>[로그인 1회 수신 세트]</b> — C_LoginRequest 하나를 보내면 서버가 아래를 <b>연달아 1회씩</b> 밀어준다.
+    /// [로그인 1회 수신 세트] — C_LoginRequest 하나를 보내면 서버가 아래를 연달아 1회씩 밀어준다.
     /// 클라가 따로 조회 요청을 보낼 패킷은 없다.
-    /// <code>
+    ///
     /// S_LoginResponse             로그인 결과
     /// S_CurrencyResponse          재화 잔액
     /// S_InventoryResponse         인벤토리 전체 스냅샷
     /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
     /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
     /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷
-    /// </code>
+    ///
     /// UI 초기화는 이것들이 다 도착한 뒤를 기준으로 잡아야 한다.
-    /// </para>
     /// </summary>
     public static class ServerPacketHandler
     {

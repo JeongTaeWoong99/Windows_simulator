@@ -4,34 +4,15 @@ using UnityEngine;
 using MikaProtocol;
 
 /// <summary>
-/// 서버가 밀어준 변경을 사람이 읽을 문장으로 풀어 콘솔에 남기는 <b>관찰자</b>.
-/// <see cref="PlayerDataModel"/>의 이벤트만 구독하고, 출력은 <see cref="ClientLogger"/>에 맡긴다.
-///
-/// <para>
-/// ■ <b>UI가 아니다</b><br/>
-/// 이름에 Panel/UI가 없는 이유다. 직렬화 필드가 하나도 없고 화면에 아무것도 그리지 않는다.
-/// 그래서 <c>UI/</c>가 아니라 <c>Log/</c>에 있고, 씬에서도 캔버스 밑이 아니라
-/// <c>Log Manager</c> 루트에 붙는다 — <b>패널을 닫아도 로그는 계속 나와야</b> 하기 때문이다.
-/// </para>
-///
-/// <para>
-/// ■ <c>ClientLogger</c>와의 분담 — <b>무엇을 쓸지 / 어떻게 쓸지</b><br/>
-/// 여기서는 볼 가치가 있는 변경을 <b>고르고 문장으로 만드는</b> 일만 한다.
-/// 태그를 붙여 실제로 내보내는 건 <c>ClientLogger</c>다.
-/// </para>
-///
-/// <para>
-/// ■ 수신만 맡는다<br/>
-/// 송신 로그는 <c>ClientLogger</c>가 <c>MikaSessionPacketExtensions.Sent</c> 훅으로 이미 자동 기록한다.
-/// 여기서 또 찍으면 같은 줄이 두 번 나온다.
-/// </para>
-///
-/// <para>
-/// ⏸ <b>임시 발판이다.</b> 지금은 인벤토리·작업슬롯만 화면이 있고 가챠 결과·실패 사유·채취 푸시는
-/// 오직 이 로그로만 보인다. <b>가챠 결과 팝업 · 실패 토스트 · 위젯 수확 표시</b>가 생기면 지운다.
-/// (채취 결과는 서버가 30초 주기로 밀어 주지만, 슬롯을 배치해야 판정이 시작된다)
-/// </para>
+/// 서버가 밀어준 변경을 사람이 읽을 문장으로 풀어 콘솔에 남기는 관찰자.
+/// 'PlayerDataModel'의 이벤트만 구독하고, 출력은 'ClientLogger'에 맡긴다.
 /// </summary>
+/// <remarks>
+/// ⏸ 임시 발판이다 — 가챠 결과 팝업 · 실패 토스트 · 위젯 수확 표시가 생기면 지운다.
+/// ⚠️ 수신만 맡는다 — 송신은 'ClientLogger'가 훅으로 자동 기록하므로
+/// 여기서 또 찍으면 같은 줄이 두 번 나온다.
+/// 분담과 이 클래스가 'UI/'가 아닌 이유는 'Log 규칙.md' 참조.
+/// </remarks>
 public class PlayerDataLogger : MonoBehaviour
 {
     private PlayerDataModel _data = null!;
@@ -39,12 +20,7 @@ public class PlayerDataLogger : MonoBehaviour
     private bool              _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // 참조 확보 → 구독 순서로 진행한다 (클라 공통 규약)
-    //
-    // ⚠️ OnEnable에서 Get 하지 않는다.
-    //   Unity는 씬을 열 때 오브젝트마다 Awake → OnEnable 을 <b>이어서</b> 부른다. 모든 Awake가
-    //   먼저 끝나는 게 아니다. 이 패널이 PlayerDataModel보다 먼저 초기화되면 아직 Register 전이라
-    //   Services.Get이 KeyNotFoundException을 던진다.
-    //   모든 Awake 등록이 끝난 것이 보장되는 시점은 Start다 — MonoService 주석의 규칙 그대로다.
+    // ⚠️ 서비스 조회는 반드시 Start — OnEnable 시점엔 아직 등록 전일 수 있다 (Managers 규칙.md 3장)
     private void Start()
     {
         _data = Services.Get<PlayerDataModel>();

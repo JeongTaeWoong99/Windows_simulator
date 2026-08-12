@@ -4,25 +4,19 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 상태 패널 — 계정 이름과 골드를 표시하고, <b>메인 화면을 갈아 끼우는 버튼들</b>을 갖는다.
+/// 상태 패널 — 계정 이름과 골드를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
 ///
-/// <para>
-/// ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다<br/>
-/// 버튼은 이 패널의 위젯이라 여기가 쥐지만, <b>어느 캔버스가 열리는지는 모른다.</b>
-/// <see cref="MainScreen"/> 값만 <c>UIManager</c>에 넘긴다 — 그래야 화면이 늘어도
+/// ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다
+/// 버튼은 이 패널의 위젯이라 여기가 쥐지만, 어느 캔버스가 열리는지는 모른다.
+/// 'MainScreen' 값만 'UIManager'에 넘긴다 — 그래야 화면이 늘어도
 /// 이 패널이 캔버스 참조를 하나씩 더 들고 있지 않아도 된다.
-/// </para>
 ///
-/// <para>
-/// ■ 화면 버튼을 하나 더 붙이려면<br/>
-/// <see cref="MainScreen"/>에 값을 추가하고, 인스펙터의 <c>Screen Buttons</c>에 한 줄,
-/// <c>UI Manager</c>의 <c>Main Screens</c>에 한 줄 넣는다. 이 클래스는 고치지 않는다.
-/// </para>
+/// ■ 화면 버튼을 하나 더 붙이려면
+/// 'MainScreen'에 값을 추가하고, 인스펙터의 'Screen Buttons'에 한 줄,
+/// 'UI Manager'의 'Main Screens'에 한 줄 넣는다. 이 클래스는 고치지 않는다.
 ///
-/// <para>
-/// 닉네임은 아직 서버가 돌려주지 않는다. 로그인에 쓴 Id(<see cref="PlayerDataModel.LoginId"/>)를
+/// 닉네임은 아직 서버가 돌려주지 않는다. 로그인에 쓴 Id('PlayerDataModel.LoginId')를
 /// 그대로 보여 주고, 닉네임 패킷이 생기면 그때 바꾼다.
-/// </para>
 /// </summary>
 public class StatePresenter : MonoBehaviour
 {
@@ -45,7 +39,7 @@ public class StatePresenter : MonoBehaviour
     private TMP_Text goldText = null!;
 
     // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
-    //   (UI 스크립트 규칙 §6). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
+    //   (UI 규칙 §6). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
     [CenterHeader("화면 버튼")]
     [SerializeField, NonReorderable, Tooltip("누르면 그 화면으로 갈아 끼운다. 같은 화면이 열려 있으면 작업슬롯으로 돌아간다")]
     private ScreenButton[] screenButtons = new ScreenButton[0];
@@ -121,12 +115,10 @@ public class StatePresenter : MonoBehaviour
     #region 화면 버튼
 
     /// <summary>
-    /// 화면 버튼을 <c>UIManager</c>에 묶는다 (Start에서 한 번).
+    /// 화면 버튼을 'UIManager'에 묶는다 (Start에서 한 번).
     ///
-    /// <para>
-    /// ⚠️ 반복 변수를 람다에 그대로 넘기면 <b>모든 콜백이 마지막 값을 본다.</b> 복사본을 캡처한다
-    /// (<c>WorkStationSelectPresenter.BindIndustryButtons</c>와 같은 이유).
-    /// </para>
+    /// ⚠️ 반복 변수를 람다에 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다
+    /// ('WorkStationSelectPresenter.BindIndustryButtons'와 같은 이유).
     /// </summary>
     private void BindScreenButtons()
     {

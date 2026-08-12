@@ -6,18 +6,14 @@ using UnityEngine.UI;
 /// <summary>
 /// 가챠 패널 — 거래 열의 뽑기 화면. 지금은 요청 버튼 두 개(1회 · 10연차)뿐이다.
 ///
-/// <para>
-/// ■ 왜 거래 열인가<br/>
-/// 가챠는 기획상 <b>상점</b>에 속한다 — 가챠 티켓이 골드 상점 품목이다.
+/// ■ 왜 거래 열인가
+/// 가챠는 기획상 상점에 속한다 — 가챠 티켓이 골드 상점 품목이다.
 /// → GameDesign/기획/거래/README.md 3.2
-/// </para>
 ///
-/// <para>
-/// ■ 결과는 여기서 보지 않는다<br/>
-/// 뽑힌 보상·인벤토리 반영은 <see cref="PlayerDataModel"/>가 처리하고
-/// <c>PlayerDataLogger</c>가 콘솔에 풀어 준다. 이 클래스는 보내는 일만 한다.
-/// <b>결과 팝업이 생기면 그것이 이 패널의 자식으로 붙는다</b> — 일감 "가챠 결과 팝업".
-/// </para>
+/// ■ 결과는 여기서 보지 않는다
+/// 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고
+/// 'PlayerDataLogger'가 콘솔에 풀어 준다. 이 클래스는 보내는 일만 한다.
+/// 결과 팝업이 생기면 그것이 이 패널의 자식으로 붙는다 — 일감 "가챠 결과 팝업".
 /// </summary>
 public class GachaPresenter : MonoBehaviour
 {
@@ -50,12 +46,10 @@ public class GachaPresenter : MonoBehaviour
     }
 
     /// <summary>
-    /// 가챠를 <paramref name="drawCount"/>회 요청한다 (버튼 OnClick에 코드로 연결).
+    /// 가챠를 'drawCount'회 요청한다 (버튼 OnClick에 코드로 연결).
     ///
-    /// <para>
-    /// 로그인 전에 보내면 <b>서버가 User를 못 찾아 조용히 버린다</b> — 클라 입장에선 응답도 오류도
+    /// 로그인 전에 보내면 서버가 User를 못 찾아 조용히 버린다 — 클라 입장에선 응답도 오류도
     /// 없어서 "눌렀는데 아무 일도 안 일어난다"로만 보인다. 보내기 전에 여기서 끊고 이유를 남긴다.
-    /// </para>
     /// </summary>
     private void Draw(int drawCount)
     {

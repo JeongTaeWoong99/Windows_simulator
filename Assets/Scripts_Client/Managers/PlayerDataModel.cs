@@ -8,31 +8,15 @@ using UnityEngine;
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
 /// <summary>
-/// 서버가 밀어준 <b>내 계정 상태</b>를 들고 있는 수신 전담 매니저 (서비스 로케이터 등록).
-/// - 수신 진입점(<c>ServerPacketHandler</c>)을 구독해 캐시를 채우고, 가공된 변경 이벤트를 발행한다.
-///   UI는 서버 폴더가 아니라 이 매니저만 구독하면 된다(서버 의존을 한곳에 격리).
-/// - <b>송신은 하지 않는다.</b> 요청은 그 요청을 일으킨 UI가 직접 보낸다
-///   (예: <c>LoginPresenter</c> · <c>WorkStationSelectPresenter</c>).
-///   버튼과 패킷이 한자리에 있어야 "이 화면이 무엇을 보내는가"가 코드에서 바로 보인다.
-///
-/// <para>
-/// <b>[짝을 이루는 클래스]</b><br/>
-/// <c>GameDataLoader</c> = 엑셀에서 나온 <b>고정 테이블</b>(아이템명·캐릭터명 — 누구에게나 같다)<br/>
-/// <c>PlayerDataModel</c> = 서버가 준 <b>내 계정 상태</b>(인벤토리·슬롯·캐릭터·재화 — 나에게만 해당)
-/// </para>
-///
-/// <para>
-/// <b>[로그인 1회 수신 세트]</b> — 로그인 요청 한 번이면 서버가 아래를 연달아 밀어준다.
-/// 인벤토리·작업슬롯을 따로 요청할 방법은 없다(서버에 조회 패킷 자체가 없다).
-/// <code>
-/// LoginCompleted            ← S_LoginResponse
-/// InventoryChanged          ← S_InventoryResponse         (인벤토리 스냅샷)
-/// WorkStationSlotsChanged   ← S_WorkStationSlotsResponse  (슬롯 스냅샷)
-/// </code>
-/// 이후 슬롯 상태는 <c>S_WorkStationAssignResponse</c>(배치 변경)·
-/// <c>S_WorkStationSlotSyncResponse</c>(정산·속도 변경)로 1칸씩 갱신된다.
-/// </para>
+/// 서버가 밀어준 내 계정 상태를 들고 있는 수신 전담 매니저 (서비스 로케이터 등록).
+/// 수신 진입점('ServerPacketHandler')을 구독해 캐시를 채우고 가공된 변경 이벤트를 발행한다 —
+/// UI는 서버 폴더가 아니라 이 매니저만 구독하면 된다.
 /// </summary>
+/// <remarks>
+/// ⚠️ 송신은 하지 않는다 — 요청은 그 요청을 일으킨 Presenter가 직접 보낸다.
+/// 'GameDataLoader'와의 역할 구분(고정 테이블 ↔ 내 계정 상태)은 'Managers 규칙.md' 2장,
+/// 로그인 1회 수신 세트와 패킷별 수량 규약은 '서버 동작 이해.md' 참조.
+/// </remarks>
 public class PlayerDataModel : MonoService<PlayerDataModel>
 {
     // ─── 상태 캐시 ───
@@ -49,8 +33,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public bool IsLoggedIn { get; private set; }
 
     /// <summary>
-    /// 로그인에 쓴 Id. 서버가 닉네임을 돌려주지 않아 표시에 대신 쓰는 <b>임시값</b>이다
-    /// — 닉네임 패킷이 생기면 이 값과 <see cref="SetLoginId"/>는 함께 사라진다.
+    /// 로그인에 쓴 Id. 서버가 닉네임을 돌려주지 않아 표시에 대신 쓰는 임시값이다
+    /// — 닉네임 패킷이 생기면 이 값과 'SetLoginId'는 함께 사라진다.
     /// </summary>
     public string LoginId { get; private set; } = "";
 
@@ -60,28 +44,24 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     /// <summary>
     /// 내가 가진 캐릭터들.
     ///
-    /// <para>
-    /// ⚠️ <b><see cref="CharacterInfo.CharacterId"/>는 개체 번호이고, <see cref="CharacterInfo.CharacterTid"/>가
-    /// 캐릭터 종류다.</b> 같은 캐릭터를 여러 마리 가질 수 있어서 종류로는 하나를 특정하지 못한다.
-    /// <b>슬롯 배치에 넣을 값은 개체 번호(CharacterId)다</b> — 종류(1001 같은 TID)를 보내면
-    /// 서버가 <c>CharacterNotOwned</c>로 거절한다. 이름·적성은 TID로 테이블에서 읽는다.
-    /// </para>
+    /// ⚠️ 'CharacterInfo.CharacterId'는 개체 번호이고, 'CharacterInfo.CharacterTid'가
+    /// 캐릭터 종류다. 같은 캐릭터를 여러 마리 가질 수 있어서 종류로는 하나를 특정하지 못한다.
+    /// 슬롯 배치에 넣을 값은 개체 번호(CharacterId)다 — 종류(1001 같은 TID)를 보내면
+    /// 서버가 'CharacterNotOwned'로 거절한다. 이름·적성은 TID로 테이블에서 읽는다.
     /// </summary>
     public IReadOnlyList<CharacterInfo> Characters => _characters;
 
     /// <summary>
-    /// 첫 번째 보유 캐릭터의 <b>개체 번호</b>. 없으면 0(= 서버에선 배치 해제로 읽힌다).
+    /// 첫 번째 보유 캐릭터의 개체 번호. 없으면 0(= 서버에선 배치 해제로 읽힌다).
     /// 캐릭터 선택 UI가 생기기 전까지 테스트 버튼들이 쓰는 임시 통로다.
     /// </summary>
     public long FirstCharacterId => _characters.Count > 0 ? _characters[0].CharacterId : 0L;
 
     /// <summary>
-    /// 캐릭터 <b>개체 번호</b>로 표시 이름을 얻는다.
+    /// 캐릭터 개체 번호로 표시 이름을 얻는다.
     ///
-    /// <para>
     /// 이름은 종류(TID)에 달린 값이라 개체 번호만으로는 못 찾는다 — 보유 목록에서 TID를 거쳐 간다.
-    /// <c>GameDataLoader.GetCharacterName</c>에 개체 번호를 그대로 넣으면 <c>?#2</c>가 나온다.
-    /// </para>
+    /// 'GameDataLoader.GetCharacterName'에 개체 번호를 그대로 넣으면 '?#2'가 나온다.
     /// </summary>
     public string GetCharacterName(long characterId)
     {
@@ -95,18 +75,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     /// <summary>
-    /// 캐릭터 <b>개체 번호</b>로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0.
-    ///
-    /// <para>
-    /// <b>0은 "그 산업을 다루지 못한다"</b>는 뜻이고 서버가 배치를 <c>NoAptitude</c>로 거절한다.
-    /// 그래서 배치 화면은 이 값이 0인 줄을 <b>잠금 표시</b>한다(숨기지 않는다).
-    /// </para>
-    ///
-    /// <para>
-    /// ⚠️ <b><c>CharacterTable</c>을 직접 읽지 않는다.</b> 지금은 테이블값과 같지만, 장비 보정이 붙으면
-    /// 개체마다 갈라진다 — 특히 <b>적성 0 → 1 승격</b>이 생기면 테이블만 본 화면은
-    /// 실제로는 배치할 수 있는 캐릭터를 잠가 버린다. 값의 주인은 서버다(이슈 #13).
-    /// </para>
+    /// 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
+    /// (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
+    /// ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
+    /// (근거는 '서버 동작 이해.md' 적성 절).
     /// </summary>
     public byte GetAptitude(long characterId, EIndustryType industry)
     {
@@ -136,10 +108,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     /// <summary>
     /// 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
     ///
-    /// <para>
     /// 이 매니저는 송신을 모르므로 "무엇으로 로그인했는가"를 스스로 알 수 없다.
-    /// 서버가 닉네임을 돌려주기 시작하면 <see cref="LoginId"/>와 함께 지운다.
-    /// </para>
+    /// 서버가 닉네임을 돌려주기 시작하면 'LoginId'와 함께 지운다.
     /// </summary>
     public void SetLoginId(string id) => LoginId = id;
 
@@ -362,14 +332,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     #region 인벤토리 반영
 
     /// <summary>
-    /// 아이템 변경분을 인벤토리 캐시에 반영하고 <see cref="InventoryChanged"/>를 발행한다.
-    /// <b>Count는 델타가 아니라 갱신 후 누적 총량이다</b> — 더하지 말고 덮어쓴다
-    /// (<c>PacketInfo.ItemChangeInfo</c> 주석).
+    /// 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
+    /// Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다
+    /// ('PacketInfo.ItemChangeInfo' 주석).
     ///
-    /// <para>
-    /// <b>아이템이 늘어나는 모든 경로가 이 하나를 쓴다</b>(채취·즉시 지급·가챠).
+    /// 아이템이 늘어나는 모든 경로가 이 하나를 쓴다(채취·즉시 지급·가챠).
     /// 수량은 전부 서버가 정한 값이고 클라는 계산하지 않는다 — 경로가 늘어도 규칙은 그대로다.
-    /// </para>
     /// </summary>
     private void ApplyItemChanges(List<ItemChangeInfo>? changes)
     {

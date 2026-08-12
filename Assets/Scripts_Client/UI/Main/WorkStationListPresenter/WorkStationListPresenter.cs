@@ -5,37 +5,22 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 작업슬롯 목록 패널. 서버 스냅샷만큼 <see cref="WorkStationSlotView"/>를 만들고,
-/// 카운트다운을 <b>여기 한 곳에서</b> 계산해 각 뷰에 넘긴다.
+/// 작업슬롯 목록 패널. 서버 스냅샷만큼 'WorkStationSlotView'를 만들고,
+/// 카운트다운을 여기 한 곳에서 계산해 각 뷰에 넘긴다.
 ///
-/// <para>
-/// ■ 두 축을 섞지 않는다<br/>
-/// <b>데이터 갱신</b>은 이벤트(옵저버) — <c>PlayerDataModel.WorkStationSlotsChanged</c>.
-/// <b>시간 진행</b>은 이 클래스의 <see cref="Update"/> 하나.
+/// ■ 두 축을 섞지 않는다
+/// 데이터 갱신은 이벤트(옵저버) — 'PlayerDataModel.WorkStationSlotsChanged'.
+/// 시간 진행은 이 클래스의 'Update' 하나.
 /// 슬롯마다 Update를 두면 상시 실행 앱에서 비용이 슬롯 수만큼 곱해진다.
-/// </para>
 ///
-/// <para>
-/// ■ 서버는 주기(초)를 보내지 않는다<br/>
-/// 슬롯마다 속도가 다르고 버프로 바뀌기 때문이다. 대신 진행도·속도·1회 비용을 주므로
-/// 클라가 직접 계산한다. 나중에 주기 규칙이 바뀌어도 이 계산은 그대로다.
-/// </para>
+/// ⚠️ 칸을 누를 때는 번호를 먼저 넣고 자리를 넘긴다 — 선택 화면은 평소 꺼져 있어
+/// 이 목록을 구독할 수 없다. 살아 있는 쪽이 넘긴다.
 ///
-/// <para>
-/// ■ 칸을 누르면 선택 화면에 자리를 넘긴다<br/>
-/// <code>
 /// selectPresenter.Open(slotIndex)                    번호를 먼저 넣는다
 /// ui.ShowMainScreen(MainScreen.WorkStationSelect)    자리를 넘긴다 (이 패널은 여기서 꺼진다)
-/// </code>
-/// <b>여기가 선택 화면을 참조하는 유일한 방향이다.</b> 반대로 선택 화면이 이 목록을 구독하면
-/// 안 된다 — 선택 화면은 평소 꺼져 있어서 클릭 신호를 못 받는다. <b>살아 있는 쪽이 넘긴다.</b>
-/// </para>
 ///
-/// <para>
-/// ※ 예전엔 <c>SlotClicked</c> 이벤트만 쏘고 상위 <c>WorkStationPresenter</c>가 받아서 갈아 끼웠다.
-/// 세 화면(목록·선택·설정)이 <c>#Main Canvas</c>의 형제로 눕혀지면서 그 층이 사라졌다 —
-/// 전환은 <c>UIManager</c> 한 곳이 한다.
-/// </para>
+/// 카운트다운 계산식(서버는 주기를 보내지 않는다)은 '서버 동작 이해.md',
+/// 화면 전환 흐름은 'UI 규칙.md' 8장 참조.
 /// </summary>
 public class WorkStationListPresenter : MonoBehaviour
 {
@@ -142,10 +127,8 @@ public class WorkStationListPresenter : MonoBehaviour
     /// <summary>
     /// 칸 프레임의 버튼을 슬롯 번호와 묶는다 (Start에서 한 번).
     ///
-    /// <para>
-    /// <b>버튼은 프레임에 붙어 있어야 한다 — 안에 생기는 뷰가 아니라.</b>
+    /// 버튼은 프레임에 붙어 있어야 한다 — 안에 생기는 뷰가 아니라.
     /// 비어 있는 슬롯에는 뷰가 만들어지지 않는데, 빈 칸이야말로 눌러서 배치할 대상이다.
-    /// </para>
     /// </summary>
     private void BindFrameButtons()
     {
@@ -167,12 +150,10 @@ public class WorkStationListPresenter : MonoBehaviour
 
     /// <summary>
     /// 그 칸의 배치/해제 화면으로 갈아 끼운다 (칸 프레임 OnClick에 코드로 연결).
-    /// <b>배치 여부와 상관없이 열린다</b> — 빈 칸이면 배치, 찬 칸이면 해제가 뜬다.
+    /// 배치 여부와 상관없이 열린다 — 빈 칸이면 배치, 찬 칸이면 해제가 뜬다.
     ///
-    /// <para>
-    /// ⚠️ <b>번호를 먼저 넣고 화면을 넘긴다.</b> 꺼져 있던 화면은 <c>Start()</c>가 아직 안 돌았을 수
+    /// ⚠️ 번호를 먼저 넣고 화면을 넘긴다. 꺼져 있던 화면은 'Start()'가 아직 안 돌았을 수
     /// 있어, 켠 뒤에 번호를 넣으면 초기화가 덮어쓴다.
-    /// </para>
     /// </summary>
     private void OpenSelect(int slotIndex)
     {
@@ -186,14 +167,12 @@ public class WorkStationListPresenter : MonoBehaviour
 
     /// <summary>
     /// 스냅샷대로 슬롯 뷰를 만들고 갱신한다 (WorkStationSlotsChanged 구독).
-    /// 슬롯 번호가 곧 프레임 순서다 — 슬롯 0은 <c>Content</c>의 첫 자식 프레임 안에 들어간다.
+    /// 슬롯 번호가 곧 프레임 순서다 — 슬롯 0은 'Content'의 첫 자식 프레임 안에 들어간다.
     /// 인벤토리와 달리 번호가 고정이라 "빈 프레임 찾기"가 아니라 자리를 직접 고른다.
     ///
-    /// <para>
-    /// ■ 배치된 칸에만 뷰를 둔다<br/>
-    /// 배치가 풀리면 뷰를 <b>지운다.</b> 남겨 두고 "대기"라고 적으면 빈 칸과 구분이 안 되고,
-    /// 무엇보다 뷰가 프레임 위를 덮어 <b>칸을 눌러 배치 화면으로 들어가는 길을 막는다.</b>
-    /// </para>
+    /// ■ 배치된 칸에만 뷰를 둔다
+    /// 배치가 풀리면 뷰를 지운다. 남겨 두고 "대기"라고 적으면 빈 칸과 구분이 안 되고,
+    /// 무엇보다 뷰가 프레임 위를 덮어 칸을 눌러 배치 화면으로 들어가는 길을 막는다.
     /// </summary>
     private void Rebuild()
     {
@@ -227,7 +206,7 @@ public class WorkStationListPresenter : MonoBehaviour
         }
     }
 
-    /// <summary>배치가 풀린 칸의 뷰를 지운다 (<see cref="Rebuild"/>에서 호출).</summary>
+    /// <summary>배치가 풀린 칸의 뷰를 지운다 ('Rebuild'에서 호출).</summary>
     private void RemoveView(int slotIndex)
     {
         if (!_views.TryGetValue(slotIndex, out var view))
@@ -241,7 +220,7 @@ public class WorkStationListPresenter : MonoBehaviour
 
     /// <summary>
     /// 칸이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다.
-    /// <c>IsRunning</c>과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
+    /// 'IsRunning'과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
     /// </summary>
     private static bool IsAssigned(WorkStationSlotInfo slot)
         => slot.Industry != EIndustryType.None && slot.CharacterId != 0;
@@ -265,7 +244,7 @@ public class WorkStationListPresenter : MonoBehaviour
     #region 카운트다운 계산 (서버 식 그대로)
 
     /// <summary>
-    /// 마지막 정산 이후 쌓인 작업량 중 <b>이번 판정에 해당하는 몫</b>을 구한다.
+    /// 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
     /// 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
     /// </summary>
     private static long GetPendingUnits(WorkStationSlotInfo slot)

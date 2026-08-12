@@ -5,22 +5,15 @@ using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
 
 /// <summary>
-/// 데스크톱 창 제어 핵심 클래스 (Task Bar Hero 스타일).
-/// 타이틀바(+테두리) 표시 · 투명 배경 · 항상 위 · 클릭 스루 · 위치/크기 지정을 담당한다.
-///
-/// ■ #if !UNITY_EDITOR 가드
-///   실제 Win32 호출은 모두 빌드(.exe)에서만 실행한다. 에디터에서 메인 윈도우 핸들을
-///   건드리면 Unity 에디터 창 자체가 영향을 받아 불안정해지기 때문이다.
-///   (UNITY_EDITOR 는 Unity가 정의하는 플랫폼 심볼 — 에디터에서 컴파일될 때만 참)
-///
-/// ■ 창 이동 방식
-///   커스텀 드래그 바(인포바)를 두지 않는다. 대신 OS 타이틀바를 토글로 켜서
-///   그 진짜 타이틀바를 잡고 창을 옮긴다. 타이틀바를 끄면 보더리스(깔끔한 창)가 된다.
-///
-/// ■ 좌표계 주의
-///   Win32 데스크톱 좌표는 좌상단(0,0)·아래로 +Y, Unity 화면 좌표는 좌하단(0,0)·위로 +Y.
-///   둘을 오갈 때 Y축을 뒤집어야 한다(GetCursorScreenPosition 참조).
+/// 데스크톱 창 제어 핵심 클래스. 타이틀바(+테두리) 표시 · 투명 배경 · 항상 위 · 클릭 스루 ·
+/// 위치/크기 지정을 담당한다 — Win32 선언은 'DesktopWindow/Win32Native'에 있다.
 /// </summary>
+/// <remarks>
+/// ⚠️ 실제 Win32 호출은 '#if !UNITY_EDITOR'로 빌드에서만 돈다 — 에디터에서는 값만 바뀌고
+/// 창은 그대로다.
+/// 창 정책(크기 프리셋·캔버스 기준 해상도)은 'Managers 규칙.md' 5장,
+/// Win32 함정(좌표계 뒤집힘·스타일 교체·클릭스루)은 'DesktopWindow 규칙.md' 5장 참조.
+/// </remarks>
 
 /// <summary>
 /// 창을 배치할 9분할 앵커(위치). Unity 자식 정렬(Upper/Middle/Lower × Left/Center/Right) 순서와 동일하게
@@ -34,17 +27,12 @@ public enum ScreenAnchor
 }
 
 /// <summary>
-/// 창 크기 배율 프리셋. 기준 960x540(16:9)에 배율을 곱한 <b>절대 픽셀</b>이다 — 모니터 해상도에 비례시키지 않는다.
+/// 창 크기 배율 프리셋. 기준 960x540(16:9)에 배율을 곱한 절대 픽셀이다.
 ///   X1 = 960x540, X1_25 = 1200x675, X1_5 = 1440x810, X2 = 1920x1080.
-///
-/// ■ 왜 절대 픽셀인가
-///   어느 기기에서든 UI 픽셀 크기가 똑같아야 디자인 검증과 버그 재현이 된다.
-///   모니터 비례로 두면 같은 배율이라도 실제 픽셀 수가 달라져 재현이 어려워진다.
-///
-/// ■ 16:9는 어떤 경우에도 유지한다
-///   배율이 모니터보다 크면 작업 영역 안으로 줄이는데, 이때도 가로·세로를 같은 비율로 줄인다
-///   (WindowManager.ClampToWorkArea 참조). 한 축만 줄이면 UI가 찌그러진다.
 /// </summary>
+/// <remarks>
+/// 모니터 비례가 아닌 이유와 16:9 유지 규칙은 'Managers 규칙.md' 5장 참조.
+/// </remarks>
 public enum WindowScale
 {
     X1,    // 960x540
@@ -110,15 +98,10 @@ public class WindowManager : MonoService<WindowManager>
     // ──────────────────────────────────────────────
 
     /// <summary>
-    /// 서비스 등록(<c>base.Awake</c>) 후 저장된 설정을 런타임 상태로 읽어 온다.
-    ///
-    /// <para>
-    /// ⚠️ <b>이 매니저만 Awake를 쓴다.</b> 다른 매니저는 전부 Start에서 초기화하는데,
-    /// 여기서만 앞당기는 이유는 <c>SettingPresenter.Start()</c>가 이 값들을 읽어 토글·드롭다운을
-    /// 맞추기 때문이다. Unity는 Start 순서를 보장하지 않으므로 Start에 두면 패널이 먼저 돌 때
-    /// 아직 안 읽은 값을 가져간다. <b>다른 서비스는 건드리지 않는다</b> — 순수 값 로드뿐이라
-    /// Awake 시점의 등록 순서 문제와 무관하다.
-    /// </para>
+    /// 서비스 등록('base.Awake') 후 저장된 설정을 런타임 상태로 읽어 온다.
+    /// ⚠️ 매니저 중 유일하게 'Awake'에서 초기화한다 — 'SettingPresenter.Start()'가
+    /// 이 값을 읽기 때문이다. 다른 서비스를 건드리지 않는 순수 값 로드라 안전하다
+    /// ('Managers 규칙.md' 3장).
     /// </summary>
     protected override void Awake()
     {
@@ -157,7 +140,7 @@ public class WindowManager : MonoService<WindowManager>
 
     /// <summary>
     /// 저장된 설정을 런타임 상태로 읽어 온다. 없으면 인스펙터의 공장 초기값을 쓴다 (Awake에서 호출).
-    /// 값만 채우고 Win32는 건드리지 않는다 — 실제 적용은 <see cref="InitializeWindow"/>다.
+    /// 값만 채우고 Win32는 건드리지 않는다 — 실제 적용은 'InitializeWindow'다.
     /// </summary>
     private void LoadSettings()
     {
@@ -205,7 +188,7 @@ public class WindowManager : MonoService<WindowManager>
 
     /// <summary>
     /// 확보된 창 핸들에 현재 상태(타이틀바 → 크기/위치 → 투명 → 항상위 → 클릭스루)를 적용한다.
-    /// 값은 <see cref="LoadSettings"/>가 이미 채워 뒀다 — 여기선 Win32에 반영만 한다.
+    /// 값은 'LoadSettings'가 이미 채워 뒀다 — 여기선 Win32에 반영만 한다.
     /// </summary>
     private void InitializeWindow()
     {
@@ -265,7 +248,7 @@ public class WindowManager : MonoService<WindowManager>
         Win32Native.SetWindowPos(_hWnd, IntPtr.Zero, 0, 0, 0, 0, flags);
 
         // 프레임 재계산으로 DWM 투명 확장이 풀릴 수 있어, 투명 상태면 다시 적용한다.
-        // ⚠️ 인스펙터의 공장 초기값이 아니라 <b>현재</b> 상태를 봐야 한다 — 사용자가 투명을 끈 뒤
+        // ⚠️ 인스펙터의 공장 초기값이 아니라 현재 상태를 봐야 한다 — 사용자가 투명을 끈 뒤
         //   타이틀바를 토글하면 껐던 투명이 되살아난다.
         if (_isTransparent)
             SetTransparent(true);
@@ -308,7 +291,7 @@ public class WindowManager : MonoService<WindowManager>
 
     /// <summary>
     /// 클릭 스루 On/Off — WS_EX_TRANSPARENT 로 빈 영역 입력을 뒤 창으로 통과시킨다.
-    /// ⚠️ <b>저장하지 않는다.</b> 동적 클릭 스루가 켜져 있으면 Update가 커서 위치에 따라
+    /// ⚠️ 저장하지 않는다. 동적 클릭 스루가 켜져 있으면 Update가 커서 위치에 따라
     /// 매 프레임 이 값을 뒤집는다 — 저장할 "사용자 설정"이 아니라 순간 상태다.
     /// </summary>
     public void SetClickThrough(bool enable)
@@ -364,12 +347,8 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>
     /// 크기 프리셋을 인덱스로 적용한다(드롭다운 onValueChanged / 시작 초기화에서 호출).
     /// 창 크기 변경 후 현재 앵커 위치로 재정렬한다.
-    /// ※ 캔버스 기준 해상도(referenceResolution)는 고정으로 두어야 창이 커질 때
-    ///   CanvasScaler(Match=Height)가 UI를 비례 확대한다. 기준 해상도를 창 크기로 바꾸면
-    ///   스케일이 1로 고정돼 UI가 확대되지 않고 좌상단에 몰리는 버그가 생긴다.
-    /// ※ 렌더 해상도 강제(Screen.SetResolution)는 쓰지 않는다 — 윈도우 모드에서 이걸 호출하면
-    ///   Unity가 창 스타일/위치/Z순서를 기본값으로 되돌려(타이틀바 재생성·항상위 해제·중앙 리셋)
-    ///   Win32 창 제어를 전부 덮어쓴다. 백버퍼는 SetWindowPos 리사이즈에 맞춰 Unity가 갱신한다.
+    /// ⚠️ 'Screen.SetResolution'과 캔버스 기준 해상도 변경을 쓰지 않는다 —
+    /// 둘 다 창 제어를 망가뜨린다 ('Managers 규칙.md' 5장).
     /// </summary>
     public void SetWindowSizeByIndex(int index)
     {
@@ -460,7 +439,7 @@ public class WindowManager : MonoService<WindowManager>
     }
 
     /// <summary>
-    /// 창이 작업 영역(작업표시줄 제외)을 넘으면 <b>16:9를 유지한 채</b> 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
+    /// 창이 작업 영역(작업표시줄 제외)을 넘으면 16:9를 유지한 채 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
     /// 가로·세로 중 더 많이 넘치는 쪽 비율 하나로 양쪽을 함께 줄여야 비율이 보존된다
     /// — 축마다 따로 상한을 걸면 UI가 찌그러진다.
     /// </summary>

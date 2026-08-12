@@ -2,11 +2,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// 인벤토리 목록 화면. <see cref="PlayerDataModel.InventoryChanged"/>를 구독해 갱신한다.
-/// 창고 열의 <b>자원 탭</b>에 해당한다 — 캐릭터·장비·특성 탭이 붙으면 그 옆에 나란히 선다.
+/// 인벤토리 목록 화면. 'PlayerDataModel.InventoryChanged'를 구독해 갱신한다.
+/// 창고 열의 자원 탭에 해당한다 — 캐릭터·장비·특성 탭이 붙으면 그 옆에 나란히 선다.
 ///
 /// ■ 칸 프레임은 씬에 미리 깔려 있다
-///   <c>Content</c> 아래의 <c>Slot (N)</c> 들이 프레임이고, 아이템 프리팹은 <b>그 프레임의 자식</b>으로
+///   'Content' 아래의 'Slot (N)' 들이 프레임이고, 아이템 프리팹은 그 프레임의 자식으로
 ///   들어간다. Content 직속으로 만들면 프레임을 벗어나 레이아웃이 무너진다.
 ///   프레임은 코드가 만들지도 지우지도 않는다.
 ///

@@ -3,20 +3,11 @@ using System.Runtime.InteropServices;
 
 /// <summary>
 /// Win32 / DWM 네이티브 API의 P/Invoke 선언 모음.
-///
-/// ■ P/Invoke 란?
-///   C#(관리 코드)에서 운영체제의 C 기반 DLL 함수(비관리 코드)를 직접 호출하는 기능.
-///   [DllImport("user32.dll")] 처럼 어느 DLL의 어떤 함수인지 표시하고, C 함수 시그니처를
-///   C#으로 그대로 옮겨 적으면 런타임이 호출을 연결해 준다. (using System.Runtime.InteropServices)
-///
-/// ■ 이 클래스는 "선언"만 담당한다. 실제 호출 순서/조건은 WindowManager 가 가진다.
-///   Task Bar Hero 스타일의 창 제어(투명·보더리스·항상위·클릭스루·드래그)에 필요한
-///   함수·상수·구조체를 한곳에 모았다.
-///
-/// ■ 사용 DLL
-///   - user32.dll : 창 스타일·위치·메시지·커서 등 일반 윈도우 관리 API
-///   - dwmapi.dll : DWM(Desktop Window Manager, 데스크톱 합성기) — 투명/유리 효과 담당
+/// 실제 호출 순서·조건은 'WindowManager'가 가진다.
 /// </summary>
+/// <remarks>
+/// P/Invoke 개념 · 사용 DLL · 기능↔호출 매핑 · 함정은 'DesktopWindow 규칙.md' 참조.
+/// </remarks>
 public static class Win32Native
 {
     // ──────────────────────────────────────────────────────────────
@@ -73,8 +64,8 @@ public static class Win32Native
 
     // ──────────────────────────────────────────────────────────────
     // 상수 : SetLayeredWindowAttributes 의 dwFlags
-    //   ※ 본 데모는 DWM per-pixel 투명을 쓰므로 이 함수를 호출하지 않는다(선언만 보존).
-    //     호출하면 DWM 투명이 균일 알파/색상키 모드로 덮여 창이 검게 변할 수 있다.
+    //   ⚠️ 이 함수는 호출하지 않는다 — 부르면 DWM per-pixel 투명이 덮여 창이 검게 변한다.
+    //      선언만 보존한다. 지우지 말 것 (DesktopWindow 규칙.md 5-3)
     // ──────────────────────────────────────────────────────────────
     public const uint LWA_ALPHA    = 0x00000002; // 창 전체에 균일 알파값 적용
     public const uint LWA_COLORKEY = 0x00000001; // 특정 색을 투명색(색상키)으로 처리
@@ -138,7 +129,7 @@ public static class Win32Native
     public static extern uint GetWindowLong(IntPtr hWnd, int nIndex);
 
     /// <summary>
-    /// 레이어드 창의 균일 알파/색상키 설정. ※ 본 데모는 호출하지 않음(DWM 투명과 충돌 우려).
+    /// 레이어드 창의 균일 알파/색상키 설정. ⚠️ 호출하지 않는다 — DWM 투명과 충돌한다.
     /// crKey: 색상키, bAlpha: 0~255 알파, dwFlags: LWA_ALPHA / LWA_COLORKEY.
     /// </summary>
     [DllImport("user32.dll")]
@@ -189,7 +180,8 @@ public static class Win32Native
 
     /// <summary>
     /// 시스템 지표를 조회한다. SM_CXSCREEN/SM_CYSCREEN 으로 주 모니터의 "전체" 해상도를 얻는다.
-    /// → 창 크기를 "화면 세로의 1/3·1/2" 처럼 모니터 비례로 계산하는 데 사용.
+    /// → 프리셋 크기가 모니터를 넘는지 판정하는 데 쓴다
+    ///   (창 크기 자체는 16:9 절대 픽셀이다 — 'Managers 규칙.md' 5장).
     /// (SPI_GETWORKAREA 와 같은 좌표계 — DPI 가상화 환경에서도 서로 일관된다.)
     /// </summary>
     [DllImport("user32.dll")]

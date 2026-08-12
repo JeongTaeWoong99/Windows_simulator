@@ -5,39 +5,15 @@ using UnityEngine.Events;
 using UnityEngine.UI;
 
 /// <summary>
-/// 설정 패널 — 사용자가 바꿀 수 있는 값을 <b>입력받아 넘기는 곳</b>. 여기 모아 둔다.
+/// 설정 패널 — 사용자가 바꿀 수 있는 값을 입력받아 넘기는 곳.
+/// 창 제어(Win32 창 자체)와 일반 설정(위젯 위치)은 넘기는 대상이 달라서
+/// ('WindowManager' vs 'WidgetPositionLayout') 인스펙터를 헤더로 갈랐다.
 ///
-/// <para>
-/// ■ 두 종류를 한 화면에 담되 안에서는 나눈다<br/>
-/// <b>창 제어</b>는 Win32 네이티브 창 자체를 건드린다(타이틀바·투명·항상위·클릭스루·크기·9분할 위치).
-/// <b>일반 설정</b>은 게임 UI 안의 값이다(위젯 6칸 위치). 사용자에겐 한 화면이지만
-/// 넘기는 대상이 달라서(<c>WindowManager</c> vs <c>WidgetPositionLayout</c>) 인스펙터를 헤더로 갈랐다.
-/// </para>
-///
-/// <para>
-/// ■ 여기는 "입력"만 한다<br/>
-/// 값을 저장하지도, 레이아웃을 계산하지도 않는다. 저장은 <c>WindowManager</c>·
-/// <c>WidgetPositionLayout</c>이 각자 <c>WindowSettings</c>로 하고, 배치 계산은 레이아웃이 한다.
-/// <b>이 패널이 꺼져도 그것들은 계속 동작해야 하므로</b> 로직을 여기 두지 않는다.
-/// </para>
-///
-/// <para>
-/// ■ 드롭다운 옵션은 코드가 채운다<br/>
+/// ■ 드롭다운 옵션은 코드가 채운다
 /// 라벨을 인스펙터에 손으로 넣으면 enum이 바뀔 때 조용히 어긋난다.
-/// </para>
 ///
-/// <para>
-/// ■ 어디에 있나<br/>
-/// <c>#Main Canvas</c> 안에서 작업슬롯 목록·선택과 <b>같은 자리를 나눠 쓴다</b>(<see cref="MainScreen"/>).
-/// 들어오는 길은 상태 패널의 <c>Setting Button</c>, 나가는 길은 이 화면의 뒤로가기 —
-/// <c>WorkStationSelectPresenter</c>의 <c>Header Panel</c>과 같은 규격이다.
-/// 거래 열에 얹혀 있던 시절과 달리 이제 자기 화면이다.
-/// </para>
-///
-/// <para>
-/// ⚠️ 창 관련 변화는 <b>빌드(.exe)에서만</b> 실제로 일어난다(<c>WindowManager</c>가 <c>#if !UNITY_EDITOR</c> 가드).
-/// 에디터에서는 값만 바뀌고 창은 그대로다.
-/// </para>
+/// ⚠️ 창 관련 변화는 빌드(.exe)에서만 실제로 일어난다 — 에디터에서는 값만 바뀌고 창은 그대로다
+/// ('DesktopWindow 규칙.md' 5-1).
 /// </summary>
 public class SettingPresenter : MonoBehaviour
 {
@@ -90,7 +66,7 @@ public class SettingPresenter : MonoBehaviour
 
         // ─── 헤더 ───
         // 이 화면을 직접 끄지 않는다 — UIManager 가 목록을 켜면서 같은 자리의 이 화면을 끈다.
-        // 스스로 끄면 목록이 켜지기 전 빈 칸이 남는다 (UI 스크립트 규칙 §3).
+        // 스스로 끄면 목록이 켜지기 전 빈 칸이 남는다 (UI 규칙 §3).
         backButton.onClick.AddListener(() => ui.ShowMainScreen(MainScreen.WorkStationList));
 
         // ─── 창 제어 ───

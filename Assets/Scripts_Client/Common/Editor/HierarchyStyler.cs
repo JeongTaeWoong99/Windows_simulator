@@ -33,7 +33,7 @@ public static class HierarchyStyler
         EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
     }
 
-    /// <summary>프로젝트에서 팔레트를 찾는다 (처음 그릴 때 한 번). 없으면 <c>null</c>.</summary>
+    /// <summary>프로젝트에서 팔레트를 찾는다 (처음 그릴 때 한 번). 없으면 'null'.</summary>
     private static HierarchyPalette? Palette
     {
         get

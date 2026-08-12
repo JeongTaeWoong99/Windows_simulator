@@ -3,27 +3,21 @@ using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
-/// 부모의 높이에 맞춰 <b>정사각형이 되는 가로 길이</b>를 레이아웃에 알려 줍니다.
+/// 부모의 높이에 맞춰 정사각형이 되는 가로 길이를 레이아웃에 알려 줍니다.
 /// 가로 줄(HorizontalLayoutGroup) 안의 아이콘 버튼처럼 "높이만큼 넓으면 되는" 칸에 붙입니다.
 ///
-/// <para>
-/// ■ 왜 컴포넌트가 필요한가<br/>
-/// UGUI는 <b>가로를 먼저 다 정하고 세로를 정한다</b>(CalculateLayoutInputHorizontal → SetLayoutHorizontal
+/// ■ 왜 컴포넌트가 필요한가
+/// UGUI는 가로를 먼저 다 정하고 세로를 정한다(CalculateLayoutInputHorizontal → SetLayoutHorizontal
 /// → CalculateLayoutInputVertical → SetLayoutVertical). 그래서 "내 높이만큼 넓게"를 기본 컴포넌트로는
 /// 표현할 수 없다 — 가로를 정할 시점에 자기 높이가 아직 없다.
-/// </para>
 ///
-/// <para>
-/// ■ 그래서 부모에게 묻는다<br/>
-/// 자기 높이 대신 <b>부모의 높이</b>를 본다. 부모가 <see cref="LayoutElement.preferredHeight"/>로
+/// ■ 그래서 부모에게 묻는다
+/// 자기 높이 대신 부모의 높이를 본다. 부모가 'LayoutElement.preferredHeight'로
 /// 높이를 못박아 뒀으면 그 값을 쓴다 — 이건 가로 패스에서도 이미 확정된 값이라 흔들리지 않는다.
 /// 못박지 않았으면 부모의 현재 rect 높이를 쓴다(창 크기가 바뀐 직후 한 프레임 늦을 수 있다).
-/// </para>
 ///
-/// <para>
-/// ※ 같은 오브젝트에 <see cref="LayoutElement"/>를 함께 두지 않는다. 둘 다 가로를 주장해
-/// 어느 쪽이 이기는지가 <c>layoutPriority</c>에 좌우된다.
-/// </para>
+/// ※ 같은 오브젝트에 'LayoutElement'를 함께 두지 않는다. 둘 다 가로를 주장해
+/// 어느 쪽이 이기는지가 'layoutPriority'에 좌우된다.
 /// </summary>
 [AddComponentMenu("Layout/Square Layout Element")]
 [RequireComponent(typeof(RectTransform))]
