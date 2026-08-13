@@ -16,8 +16,8 @@ using MikaProtocol;
 public class PlayerDataLogger : MonoBehaviour
 {
     private PlayerDataModel _data = null!;
-    private bool              _isSubscribed;
-    private bool              _isReady; // Start 완료 여부 — OnEnable 재구독 가드
+    private bool            _isSubscribed;
+    private bool            _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // 참조 확보 → 구독 순서로 진행한다 (클라 공통 규약)
     // ⚠️ 서비스 조회는 반드시 Start — OnEnable 시점엔 아직 등록 전일 수 있다 (Managers 규칙.md 3장)
