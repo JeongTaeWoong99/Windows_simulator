@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using UnityEditor;
@@ -17,9 +16,28 @@ namespace DesktopWindowControl.EditorTools
 	public static class OriginalSceneCopier
 	{
 		// 프로젝트 루트 기준 경로. 자리를 옮기면 함께 고친다.
-		private const string SourceDir  = "Assets/Scenes/Original";
-		private const string DestDir    = "Assets/Scenes/Test Copy";
-		private const string ReadmeName = "README.md";
+		internal const string SourceDir  = "Assets/Scenes/Original";
+		internal const string DestDir    = "Assets/Scenes/Test Copy";
+		private  const string ReadmeName = "README.md";
+		
+		// 씬별 최신 커밋 해시를 담는 로컬 상태 파일. '.'로 시작해 Unity 애셋 파이프라인이 무시('.meta' 안 생김).
+		// 최신성 검사기('SceneCopyFreshnessChecker')가 이 파일을 읽어 오리지널과 비교한다.
+		internal const string StateName  = ".copy-state";
+
+		/// <summary>
+		/// 툴바 버튼용 진입점. 바로 복사하지 않고 '[지금 복사]/[나중에]' 확인을 거친다.
+		/// (검사기 팝업의 '지금 복사'는 이미 확인했으므로 계속 Copy()를 직접 부른다 — 이중 확인 방지.)
+		/// </summary>
+		public static void CopyWithConfirm()
+		{
+			if (EditorUtility.DisplayDialog
+			    ("오리지널 씬 복사",
+				 $"오리지널 씬을 로컬 사본으로 복사한다.\n\n원본: {SourceDir}\n대상: {DestDir}",
+				 "지금 복사", "나중에"))
+			{
+				Copy();
+			}
+		}
 
 		/// <summary>
 		/// 'Original'의 모든 '.unity'를 'Test Copy'로 덮어써 최신화하고 README에 이력을 남긴다.
@@ -30,6 +48,7 @@ namespace DesktopWindowControl.EditorTools
 			if (!AssetDatabase.IsValidFolder(SourceDir))
 			{
 				EditorUtility.DisplayDialog("오리지널 씬 복사", $"원본 폴더가 없다:\n{SourceDir}", "확인");
+				
 				return;
 			}
 
@@ -40,37 +59,47 @@ namespace DesktopWindowControl.EditorTools
 				AssetDatabase.DeleteAsset(ToAssetPath(stale));
 
 			var copied = new List<string>();
+			
 			foreach (var srcAbs in Directory.GetFiles(SourceDir, "*.unity"))
 			{
 				var src  = ToAssetPath(srcAbs);
 				var dst  = $"{DestDir}/{Path.GetFileName(srcAbs)}";
+				
 				// CopyAsset은 사본에 새 GUID를 부여한다 — '.meta'를 그대로 복사하면 원본과 GUID가 겹쳐 충돌한다.
 				if (AssetDatabase.CopyAsset(src, dst))
+				{
 					copied.Add(Path.GetFileName(srcAbs));
+				}
 				else
+				{
 					Debug.LogError($"[오리지널 씬 복사] 복사 실패: {src} → {dst}");
+				}
 			}
 
 			WriteReadme(copied);
+			WriteCopyState(copied);
 			AssetDatabase.Refresh();
 
 			if (copied.Count == 0)
 			{
 				EditorUtility.DisplayDialog("오리지널 씬 복사", $"복사할 '.unity'가 없다:\n{SourceDir}", "확인");
+				
 				return;
 			}
 
 			var msg = $"{copied.Count}개 씬을 최신본으로 복사했다.\n\n대상: {DestDir}\n시각: {Now()}";
 			EditorUtility.DisplayDialog("오리지널 씬 복사 완료", msg, "확인");
+			
 			Debug.Log($"[오리지널 씬 복사] {copied.Count}개 복사 완료 → {DestDir} ({Now()})");
 		}
 
 		private static void WriteReadme(List<string> copied)
 		{
-			var branch = RunGit("rev-parse", "--abbrev-ref", "HEAD");
-			var head   = RunGit("log", "-1", "--format=%h  %cd  %s", "--date=format:%Y-%m-%d %H:%M");
+			var branch = EditorGit.Run("rev-parse", "--abbrev-ref", "HEAD");
+			var head   = EditorGit.Run("log", "-1", "--format=%h  %cd  %s", "--date=format:%Y-%m-%d %H:%M");
 
 			var sb = new StringBuilder();
+			
 			sb.AppendLine("# Test Copy — 오리지널 씬 복사본 (로컬 전용)");
 			sb.AppendLine();
 			sb.AppendLine("> 이 폴더는 상단 툴바 '오리지널 씬 복사' 버튼이 자동으로 채운다. 손으로 고치지 않는다.");
@@ -84,6 +113,7 @@ namespace DesktopWindowControl.EditorTools
 			sb.AppendLine($"- 프로젝트 버전(git 브랜치): {branch ?? "정보 없음"}");
 			sb.AppendLine($"- 프로젝트 버전(git HEAD): {head ?? "정보 없음"}");
 			sb.AppendLine("- 복사한 씬:");
+			
 			foreach (var name in copied)
 			{
 				var mtime = File.GetLastWriteTime(Path.Combine(SourceDir, name)).ToString("yyyy-MM-dd HH:mm:ss");
@@ -91,6 +121,28 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			File.WriteAllText(Path.Combine(DestDir, ReadmeName), sb.ToString(), new UTF8Encoding(false));
+		}
+
+		/// <summary>
+		/// 복사한 씬마다 '그 씬을 마지막으로 건드린 커밋 해시'를 상태 파일에 남긴다.
+		/// 한 줄 = "씬파일명\t커밋해시". 검사기가 나중에 오리지널의 현재 해시와 비교해 낡음을 판단한다.
+		/// 해시를 못 구한 씬(git 없음 등)은 줄을 생략한다 — 검사기가 오탐하지 않도록.
+		/// </summary>
+		private static void WriteCopyState(List<string> copied)
+		{
+			var sb = new StringBuilder();
+			
+			foreach (var name in copied)
+			{
+				var hash = EditorGit.LatestCommitOf($"{SourceDir}/{name}");
+				
+				if (hash != null)
+				{
+					sb.Append(name).Append('\t').Append(hash).Append('\n');
+				}
+			}
+			
+			File.WriteAllText(Path.Combine(DestDir, StateName), sb.ToString(), new UTF8Encoding(false));
 		}
 
 		// ── 유틸 ──
@@ -103,38 +155,13 @@ namespace DesktopWindowControl.EditorTools
 		private static void EnsureFolder(string assetFolder)
 		{
 			if (AssetDatabase.IsValidFolder(assetFolder))
+			{
 				return;
-			var parent = Path.GetDirectoryName(assetFolder)!.Replace('\\', '/');
-			AssetDatabase.CreateFolder(parent, Path.GetFileName(assetFolder));
-		}
+			}
 
-		/// <summary>git을 실행해 표준출력을 돌려준다. git이 없거나 저장소가 아니면 'null'.</summary>
-		private static string? RunGit(params string[] args)
-		{
-			try
-			{
-				var projectRoot = Directory.GetParent(Application.dataPath)!.FullName;
-				var psi = new ProcessStartInfo("git")
-				{
-					WorkingDirectory       = projectRoot,
-					RedirectStandardOutput = true,
-					RedirectStandardError  = true,
-					UseShellExecute        = false,
-					CreateNoWindow         = true,
-				};
-				foreach (var a in args) // ArgumentList로 넘겨 공백 있는 인자('--date=format:...')가 쪼개지지 않게 한다
-					psi.ArgumentList.Add(a);
-				using var proc = Process.Start(psi);
-				if (proc == null)
-					return null;
-				var output = proc.StandardOutput.ReadToEnd().Trim();
-				proc.WaitForExit(3000);
-				return proc.ExitCode == 0 && output.Length > 0 ? output : null;
-			}
-			catch
-			{
-				return null; // git 미설치 등 — 버전 정보 없이도 복사는 진행한다
-			}
+			var parent = Path.GetDirectoryName(assetFolder)!.Replace('\\', '/');
+			
+			AssetDatabase.CreateFolder(parent, Path.GetFileName(assetFolder));
 		}
 	}
 }

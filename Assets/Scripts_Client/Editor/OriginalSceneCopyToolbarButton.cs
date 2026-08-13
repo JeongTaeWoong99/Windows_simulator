@@ -14,9 +14,10 @@ namespace DesktopWindowControl.EditorTools
 		// 경로의 마지막 조각이 툴바 커스터마이즈 메뉴에 뜨는 이름이다. Right 도크의 앞(클라우드 근처)에 둔다.
 		[MainToolbarElement("DesktopWindowControl/오리지널 씬 복사",
 			defaultDockPosition = MainToolbarDockPosition.Right, defaultDockIndex = 0)]
+		
 		private static MainToolbarElement Create() =>
-			new MainToolbarButton(
-				new MainToolbarContent("오리지널 씬 복사", "Scenes/Original → Scenes/Test Copy 로 최신본 복사"),
-				OriginalSceneCopier.Copy);
+			new MainToolbarButton
+				(new MainToolbarContent("오리지널 씬 복사", "Scenes/Original → Scenes/Test Copy 로 최신본 복사"),
+				 OriginalSceneCopier.CopyWithConfirm);
 	}
 }
