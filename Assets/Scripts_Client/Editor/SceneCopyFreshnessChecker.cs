@@ -37,6 +37,13 @@ namespace DesktopWindowControl.EditorTools
 				return;
 			}
 
+			// 개인 설정으로 꺼 뒀으면 여기서 끝낸다 — git 프로세스조차 돌지 않게 가장 이른 자리에서 막는다.
+			// (구독 자체는 유지한다. 설정을 다시 켤 때 에디터 재시작이 필요 없도록.)
+			if (!SceneCopySettings.AutoCheckEnabled)
+			{
+				return;
+			}
+
 			var now = EditorApplication.timeSinceStartup;
 
 			if (now - _lastCheck < ThrottleSeconds)
@@ -150,9 +157,24 @@ namespace DesktopWindowControl.EditorTools
 				msg.AppendLine($"  · {name}");
 			}
 
-			if (EditorUtility.DisplayDialog("복사본이 낡음.", msg.ToString(), "지금 복사", "나중에"))
+			// DisplayDialogComplex의 인자 순서는 'ok / cancel / alt'이고 반환값은 0 / 1 / 2다.
+			// 버튼이 화면에 놓이는 순서는 플랫폼마다 다르지만, 반환값으로 분기하므로 동작은 같다.
+			switch (EditorUtility.DisplayDialogComplex
+			        ("복사본이 낡음.", msg.ToString(), "지금 복사", "나중에", "다시 알리지 않기"))
 			{
-				OriginalSceneCopier.Copy();
+				case 0:
+					OriginalSceneCopier.Copy();
+					break;
+
+				case 2:
+					SceneCopySettings.AutoCheckEnabled = false;
+
+					EditorUtility.DisplayDialog
+						("자동 알림 끔",
+						 $"복사본 최신성 자동 알림을 껐다.\n{SceneCopySettings.ReEnableHint}\n\n" +
+						 "상단 툴바의 '오리지널 씬 복사' 버튼은 그대로 쓸 수 있다.",
+						 "확인");
+					break;
 			}
 		}
 
