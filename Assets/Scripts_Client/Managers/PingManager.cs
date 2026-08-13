@@ -9,6 +9,11 @@ using UnityEngine;
 /// <remarks>
 /// 하트비트가 필요한 이유(TCP는 끊김을 즉시 알려주지 않는다)와
 /// ⚠️ Ping만 매니저가 송신하는 예외인 근거는 'Managers 규칙.md' 2장 참조.
+///
+/// ★ 핑은 <b>로그인 전, 연결 시점부터</b> 보낸다. 서버는 유휴 세션(마지막 수신 후 일정 시간
+///   아무 바이트도 못 받은 세션)을 로그인 여부와 무관하게 끊는데, 로그인 전에 아무것도 안 보내면
+///   그 사이 연결만 되어 있어도 유휴로 판정돼 끊긴다. 서버의 Ping 핸들러는 로그인 없이도 Pong을
+///   돌려주므로(<c>Handle_C_PingRequest</c>), 연결 즉시 핑을 시작해 소켓을 살려 둔다.
 /// </remarks>
 public class PingManager : MonoService<PingManager>
 {
@@ -21,8 +26,7 @@ public class PingManager : MonoService<PingManager>
     private const float ResponseTimeoutSeconds = 15f;
 
     // ─── 참조 캐시 ───
-    private PlayerDataModel _playerData = null!; // 없으면 게임이 성립하지 않는다
-    private NetworkManager    _network    = null!;
+    private NetworkManager _network = null!; // 없으면 게임이 성립하지 않는다
 
     // ─── 내부 상태 ───
     private float _nextPingTime;
@@ -40,20 +44,24 @@ public class PingManager : MonoService<PingManager>
 
     // ─── Unity 메시지 ───
 
-    // 참조 확보 → 구독 순서로 진행한다 (매니저 공통 규약)
+    // 참조 확보 → 구독 → 하트비트 시작 순서로 진행한다 (매니저 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
         CacheReferences();
         Subscribe();
+        BeginHeartbeat();
         _isReady = true;
     }
 
-    // 껐다 켠 경우의 재구독 (Unity 메시지)
+    // 껐다 켠 경우의 재구독 + 재기동 (Unity 메시지)
     private void OnEnable()
     {
-        if (_isReady)
-            Subscribe();
+        if (!_isReady)
+            return;
+
+        Subscribe();
+        BeginHeartbeat(); // 꺼져 있던 동안 무응답으로 오판하지 않도록 기준 시각을 다시 지금으로 잡는다
     }
 
     // 구독 해제 (Unity 메시지)
@@ -74,6 +82,7 @@ public class PingManager : MonoService<PingManager>
 
         if (now >= _nextPingTime)
         {
+            // 연결 전(Session이 아직 null)에는 안전하게 무시되고, 연결되면 그때부터 실제로 나간다.
             _network.Send(new C_PingRequest());
             _nextPingTime = now + PingIntervalSeconds;
         }
@@ -86,11 +95,10 @@ public class PingManager : MonoService<PingManager>
     // 다른 서비스를 확보해 캐시한다 (Start에서 호출)
     private void CacheReferences()
     {
-        _playerData = Services.Get<PlayerDataModel>();
-        _network    = NetworkManager.Instance;
+        _network = NetworkManager.Instance;
     }
 
-    // Pong 수신 + 로그인 완료 구독 (Start · OnEnable에서 호출)
+    // Pong 수신 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -99,7 +107,6 @@ public class PingManager : MonoService<PingManager>
         _isSubscribed = true;
 
         ServerPacketHandler.PongReceived += OnPongReceived;
-        _playerData.LoginCompleted       += OnLoginCompleted;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -111,20 +118,16 @@ public class PingManager : MonoService<PingManager>
         _isSubscribed = false;
 
         ServerPacketHandler.PongReceived -= OnPongReceived;
-        _playerData.LoginCompleted       -= OnLoginCompleted;
     }
 
     #endregion
 
     #region 하트비트 진행
 
-    // 로그인 결과 도착 — 성공했을 때만 하트비트를 시작한다 (PlayerDataModel.LoginCompleted 구독)
-    // 로그인 전에는 서버에 User가 없어 감시할 대상 자체가 없다.
-    private void OnLoginCompleted(bool isSuccess)
+    // 하트비트를 시작(또는 재기동)한다 (Start · OnEnable에서 호출)
+    // 로그인 전이라도 연결만 되면 핑을 보내야 서버의 유휴 세션 정리에 끊기지 않는다.
+    private void BeginHeartbeat()
     {
-        if (!isSuccess)
-            return;
-
         float now = Time.unscaledTime;
 
         _lastPongTime = now; // 시작하자마자 무응답으로 판정되지 않도록 기준을 지금으로 잡는다
