@@ -3,7 +3,7 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-08-12 (9장 nullable 참조 형식 추가 · 참조 타입 예시를 `null!`/`?` 기준으로 갱신)
+> 최종 업데이트: 2026-08-15 (8·9장을 요지 표로 축약 · 상세를 같은 폴더의 별도 md로 분리)
 
 # Unity/C# 클린 코드 스타일
 
@@ -222,7 +222,7 @@ public bool ApplyDamage(float damage) { }
 | 코드 실행 이유, 알고리즘 설명 | `//` 주석 |
 | Public 메서드/클래스 API 문서 | XML `///` |
 
-### 메서드 1줄 요약 + 바인딩 표기 (이 프로젝트 기준)
+### 메서드 1줄 요약 + 바인딩 표기
 
 **모든 메서드 위에 1줄 요약 주석**을 단다(자명한 한 줄 getter 제외). 특히 **호출 경로가 코드만으론 안 보이는** 메서드는
 어디서 불리는지를 괄호로 명시한다 — 구독/버튼/엔진 메시지 구분이 핵심.
@@ -255,255 +255,40 @@ _titlePanel.Active(true);           // 타이틀 패널 켜기
 
 ---
 
-## 8. 나의 코드 스타일 (개인 취향)
+## 8. 코드 스타일 (선택 규약)
 
-> 이 프로젝트는 개인 작업이므로, 아래 스타일을 위 규칙과 함께 적용한다.
-> 가독성을 높이기 위한 선택으로, 널리 사용되는 스타일이다.
+> 위 규칙과 함께 적용한다. 가독성을 높이기 위한 선택으로, 널리 쓰이는 스타일이다.
 
-### 필드 열 정렬 (Column Alignment)
+| 규칙 | 요지 |
+|------|------|
+| **필드 열 정렬** | 같은 modifier 그룹 안에서 타입명 뒤 공백으로 **변수명 열을 맞춘다.** 그룹(`[SerializeField] private` / `private` / `private readonly` / `const`)이 바뀌면 빈 줄로 끊고 정렬 기준도 리셋 |
+| **상수는 최상단** | `const` · `static readonly` 는 멤버 필드보다 위, 클래스 선언 직후에 모은다 |
+| **열이 어긋나면 그룹을 나눈다** | `readonly` 유무로 타입 열이 깨지면 **변수를 하나 더 만들어서라도** 같은 그룹으로 묶고, 가변 1개만 분리 |
+| **event vs Action** | 외부에서도 `Invoke` 해야 하면 `Action`, 내부 전용이면 `event Action`. **왜 그렇게 골랐는지 주석으로 남긴다** |
+| **`[CenterHeader]`** | 직렬화 필드 3개 이상이면 역할별 헤더를 붙인다. ⚠️ **문구에 `< >` 를 넣지 않는다**(Drawer 가 붙인다). ⚠️ **배열 위에는 `[NonReorderable]` 을 같이** 달지 않으면 헤더가 안 보인다 |
+| **폴더 구성** | 역할별로 나눈다. 범용 코드는 `Common/`, 계약은 **그것을 정의한 기능 폴더 안 `Contracts/`**, 에디터 전용은 **반드시 `Editor/`**. 프로젝트가 다른 구조를 쓰면 그 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다 |
 
-같은 modifier 그룹 내에서 타입명을 공백으로 맞춰 **변수명 열을 정렬**한다.
-
-```csharp
-// Good — 타입명 뒤 공백으로 변수명 열 맞춤 (대입 기호까지 맞으면 더 좋다)
-[SerializeField] private GridPool               _gridPool     = null!;
-[SerializeField] private CameraScrollController _cameraScroll = null!;
-[SerializeField] private FloorGrid              _startGrid    = null!;
-[SerializeField] private float                  _gridHeight   = 10f;
-[SerializeField] private int                    _totalFloors  = 10;
-
-private int  _currentFloor = 1;
-private bool _isTransitioning;
-
-// Bad — 열 정렬 없이 나열
-[SerializeField] private GridPool _gridPool = null!;
-[SerializeField] private CameraScrollController _cameraScroll = null!;
-[SerializeField] private float _gridHeight = 10f;
-
-private int _currentFloor = 1;
-private bool _isTransitioning;
-```
-
-**규칙:**
-- 정렬 단위는 **같은 modifier 그룹** (`[SerializeField] private` / `private` / `private readonly` 등)
-- 그룹이 달라지면 정렬 기준 리셋 (빈 줄로 구분)
-- `const`, `readonly` 등 키워드가 다르면 별도 그룹으로 분리
-
-```csharp
-// 그룹별 정렬 예시
-private readonly Dictionary<int, FloorGrid> _floorGridMap = new();
-
-private int  _currentFloor = 1;
-private bool _isTransitioning;
-
-private const int PreloadCount = 2;
-```
-
-### const / static readonly 는 클래스 최상단
-
-상수는 멤버 필드보다 위, 클래스 선언 직후(`Inst`·enum 다음)에 모아 둔다.
-
-```csharp
-public class Order : MonoBehaviour
-{
-    private const int OrderMultiplier = 10;
-    private const int MostFrontOrder  = 100;
-
-    [SerializeField] private Renderer[] _backRenderers = null!;
-}
-```
-
-### modifier가 다르면 그룹을 나누고, 필요하면 변수를 추가해 타입 열을 맞춘다
-
-`readonly` 같은 키워드 때문에 타입 열이 어긋나면, **변수를 하나 더 만들어서라도**
-같은 modifier 그룹으로 묶어 타입 열을 정렬한다. (가변 1개만 별도 그룹으로 분리)
-
-```csharp
-// Bad — readonly 유무가 섞여 WaitForSeconds 열이 어긋남
-private WaitForSeconds _delay05 = new WaitForSeconds(0.5f);
-private readonly WaitForSeconds _delay07 = new WaitForSeconds(0.7f);
-
-// Good — readonly 그룹으로 타입 열을 맞추고, 가변 선택 필드만 분리
-private readonly WaitForSeconds _addCardDelay     = new WaitForSeconds(0.5f);
-private readonly WaitForSeconds _fastAddCardDelay = new WaitForSeconds(0.05f);
-private readonly WaitForSeconds _turnDelay        = new WaitForSeconds(0.7f);
-
-private WaitForSeconds? _currentAddCardDelay; // 조건에 따라 선택되는 현재 딜레이 — 정해지기 전엔 비어 있으므로 ?
-```
-
-### event vs Action — 의도를 주석으로 남긴다
-
-- **`event Action<T>`**: 선언 클래스 내부에서만 `Invoke` 가능 → 순수 발행-구독.
-- **`Action<T>`(event 없이)**: 외부 클래스에서도 `Invoke` 해야 할 때(치트, 디버그 등).
-
-둘을 의도적으로 구분해 쓸 때는 **왜 그렇게 했는지** 주석으로 남긴다.
-
-```csharp
-// 외부(치트·디버그 등)에서도 Invoke 해야 하므로 event가 아닌 Action으로 둔다
-public static Action<bool>? OnAddCard;
-
-// 내부에서만 발행하는 순수 발행-구독 이벤트 (외부 Invoke 차단)
-public static event Action<bool>? OnTurnStarted;
-```
-
-### 인스펙터 섹션은 [CenterHeader] 로 구분
-
-`[SerializeField]`(또는 직렬화되는 public) 필드가 3개 이상이면 역할별로 헤더를 붙여 가독성을 높인다.
-기본 `[Header]`는 좌측 정렬만 되어 구분이 약하므로, 이 프로젝트는 **가운데 정렬 커스텀 헤더 `[CenterHeader]`** 를 쓴다.
-(`<스크립트 루트>/Common/Attribute/CenterHeaderAttribute.cs` + `<스크립트 루트>/Common/Editor/CenterHeaderDrawer.cs`.
-스크립트 루트는 1인 개발 `Assets/Scripts`, 협업(클라이언트) `Assets/Scripts_Client` —
-프로젝트별 실제 경로는 해당 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다)
-
-**문구에 `< >` 를 직접 넣지 않는다.** 꺾쇠는 `CenterHeaderDrawer` 가 그릴 때
-`$"< {text} >"` 로 감싸므로, 문구에 또 넣으면 인스펙터에 **`< < 참조 > >`** 가 나온다.
-(2026-08-10 정정 — 이전 예시가 `"< 참조 >"` 였고, 이 프로젝트에서 30곳이 그 상태였다)
-
-```csharp
-[CenterHeader("참조")]                  // 인스펙터에는 < 참조 > 로 그려진다
-[SerializeField] private ItemSO _itemSO = null!;
-
-[CenterHeader("상태")]
-[SerializeField] private ECardState _cardState;   // enum 은 값 타입이라 null! 이 붙지 않는다
-```
-
-**배열·리스트 필드 위에 붙일 때는 `[NonReorderable]` 을 같이 단다.**
-배열은 기본이 reorderable list 로 그려지는데, 그 경로가 데코레이터를 건너뛰어
-**헤더가 통째로 안 보인다** — 에러도 경고도 없어서 원인을 찾기 어렵다.
-
-```csharp
-[CenterHeader("버튼")]
-[SerializeField, NonReorderable] private Button[] _buttons = null!;
-```
-
-> 덤으로 **드래그로 순서가 뒤바뀌는 사고**도 막는다 — 배열 순서가 곧 의미인 경우가 많다.
-> 순서를 정말 바꿔야 하는 배열이면, 헤더를 배열이 아닌 필드 위로 옮기는 방법도 있다.
-
-**인스펙터 필드는 화면에 나오는 순서로 둔다.** 코드 순서와 사용자가 보는 순서가 어긋나면
-읽는 사람이 매번 다시 짜맞춰야 한다.
-
-### 폴더 구성 — 역할별로 세분화
-
-스크립트가 늘어날 때 비슷한 것끼리 빨리 찾도록 역할별 폴더로 나눈다.
-**스크립트 루트**는 1인 개발 `Assets/Scripts/`, 협업(클라이언트 담당) `Assets/Scripts_Client/` 다.
-
-```
-<스크립트 루트>/
-├── Common/        범용 공통 코드 (마스터 templates/code/ 에서 설치됨)
-│   ├── Attribute/   런타임 어트리뷰트
-│   ├── Editor/      에디터 전용 — 드로어·툴 (빌드 제외)
-│   ├── Service/     서비스 로케이터 (Services · MonoService)
-│   └── Extensions/  확장 메서드 (MonoBehaviourExtensions 등)
-├── Gameplay/      도메인 스크립트
-│   └── AI/
-│       ├── Contracts/       이 기능이 정의한 계약 (예 : IOpponent)
-│       ├── ComputerOpponent.cs
-│       └── RemoteOpponent.cs
-├── Combat/
-│   ├── Contracts/           예 : IDamageable — 때리는 쪽이 정의하므로 여기
-│   └── CombatSystem.cs
-├── Managers/
-├── UI/
-└── SO/
-```
-
-- **범용 공통 코드**(프로젝트를 옮겨도 그대로 쓰는 것)는 `Common/` 아래 위 분류로 넣는다.
-  분류에 안 맞으면 `Common/<범주>/` 를 추가한다 (예 : `Common/Camera/`, `Common/Sorting/`).
-- **인터페이스는 그것을 정의한 기능 폴더 안 `Contracts/`** 에 둔다. 계약 전용 최상위 폴더는 두지 않는다
-  — 사용처가 늘었다고 계약을 옮기지 않는다. 자세한 규칙은 `feature-design` 3-1 참조.
-- **에디터 전용 스크립트는 반드시 `Editor/` 이름의 폴더 안에 둔다.** 빌드에서 제외된다.
-  반대로 런타임 코드를 여기 넣으면 빌드가 깨진다.
-- 도메인 스크립트는 기존대로 `Gameplay/` · `Managers/` · `UI/` · `SO/`.
-- 프로젝트가 이 표준과 다른 구조를 쓰면 해당 프로젝트 `CLAUDE.md` 의 폴더 구조 표를 따른다.
+> 📖 예시·근거·함정은 **[`스타일 상세.md`](<스타일 상세.md>)** 에 있다 — 위 표로 판단이 서면 열지 않아도 된다.
 
 ---
 
 ## 9. nullable 참조 형식 (`?` · `null!`)
 
-> **전제 — `Assets/csc.rsp` 에 `-nullable:enable` 이 있어야 한다.**
-> Unity 는 기본으로 꺼져 있다. 이 스위치가 없으면 이 절 전체가 무의미하고,
-> `Common/Extensions/MonoBehaviourExtensions.cs` 의 `Object?` 가 **CS8632 경고**를 낸다.
-> (`/unity-project-setup` 3단계가 이 파일을 만든다)
+> **전제 — `Assets/csc.rsp` 에 `-nullable:enable` 이 있어야 한다.** 없으면 이 절은 무의미하다.
 
-`?` 와 `!` 는 **C# 8.0 의 정식 언어 기능**이다. Unity 전용 문법이 아니다.
-
-| 기호 | 이름 | 런타임 동작 |
-|------|------|------|
-| `Type?` | nullable 참조 형식 — "비어 있을 수 있다"는 **선언** | 없음 (컴파일러용 표시) |
-| `?.` | null 조건부 연산자 — 앞이 null 이면 전체가 null | 있음 |
-| `??` | null 병합 연산자 — 왼쪽이 null 이면 오른쪽 | 있음 |
-| `x!` · `= null!` | null 용서 연산자 — **경고만 끈다. 검사가 아니다** | **없음** (컴파일하면 사라진다) |
-
-### 9-1. 필수 참조 vs 선택 참조
-
-**`?` 는 안전장치가 아니라 "비어도 정상"이라는 팻말이다.** 전부 `?` 로 두면 미연결이
-조용히 무시돼 "왜 안 되지?"가 된다. 실제 안전은 `RequireRef` 가 만든다.
+**`?` 는 안전장치가 아니라 "비어도 정상"이라는 팻말이다.** 실제 안전은 `RequireRef` 가 만든다.
 
 | | 필수 참조 (없으면 성립 불가) | 선택 참조 (없어도 정상) |
 |---|---|---|
 | 선언 | `private Button okButton = null!;` | `private Button? hintButton;` |
 | 검증 | `RequireRef` → **즉시 예외** (fail-fast) | `if (x != null)` → 조용히 건너뜀 |
-| 의도 | 미연결을 실행 즉시 드러낸다 | 없는 게 정상인 상황 |
 
-```csharp
-// 필수 — 인스펙터가 나중에 채우므로 컴파일러는 CS8618 을 낸다.
-//        = null! 로 경고를 끄고, 진짜 검사는 RequireRef 가 한다
-[SerializeField] private Button okButton = null!;
-this.RequireRef(okButton, nameof(okButton));
-// → MissingReferenceException: [XxxPresenter] 'okButton' 참조가 인스펙터에 연결되지 않았습니다.
+- ⚠️ **Unity 객체에 `?.` · `??` 를 쓰지 않는다.** `Destroy` 된 오브젝트의 **"가짜 null"** 을
+  그대로 통과시킨다. `== null` 로 검사한다. `?.` 는 순수 C#(이벤트·컬렉션)에만.
+- **검증 위치** — Presenter · Manager 는 `Start()`, 종속 View 는 `Awake()`.
+- **서비스 필드는 `RequireRef` 가 필요 없다** — `Services.Get<T>()` 가 미등록 시 예외를 던진다.
+- **값 타입(`float`·`int`·`bool`·enum)은 대상이 아니다.** `= null!` 을 붙이지 않는다.
+- **이벤트는 `?` 선언 + `?.Invoke`** — 구독자가 0명이면 진짜 null 이다.
 
-// 선택 — 비어 있어도 넘어간다
-[SerializeField] private Button? hintButton;
-if (hintButton != null)
-{
-    hintButton.onClick.AddListener(OnHintClicked);
-}
-```
-
-**값 타입(`float`·`int`·`bool`·enum)은 대상이 아니다.** `= null!` 을 붙이지 않는다.
-
-### 9-2. ⚠️ Unity 객체에 `?.` · `??` 를 쓰지 않는다
-
-Unity 는 `Destroy` 된 오브젝트를 **"가짜 null"** 로 만든다 — C# 메모리상으로는 살아 있는데
-`UnityEngine.Object` 의 `==` 오버로드가 `true` 를 돌려주는 상태다.
-**`?.` 와 `??` 는 그 오버로드를 무시하고 참조 동등성만 본다.**
-
-```csharp
-Destroy(target);
-
-if (target == null) { }   // true — Unity 의 == 오버로드가 동작한다
-target?.DoSomething();    // 통과해 버린다! → 파괴된 오브젝트를 건드려 터진다
-```
-
-| 대상 | 검사 방법 |
-|------|------|
-| Unity 객체 (`GameObject`·`Component`·`ScriptableObject`) | **반드시 `== null` / `!= null`** |
-| 순수 C# (이벤트·컬렉션·문자열·DTO) | `?.` · `??` 자유롭게 |
-
-같은 이유로 `RequireRef` 의 파라미터가 제네릭 `T` 가 아니라 `UnityEngine.Object` 다
-(`MonoBehaviourExtensions` 주석 참조).
-
-### 9-3. 검증 위치 — Presenter 는 `Start`, 종속 View 는 `Awake`
-
-| 대상 | 위치 | 이유 |
-|------|------|------|
-| Presenter · Manager | `Start()` | `Services.Get<T>()` 가 `Start` 여야 하므로 함께 둔다 |
-| 종속 View (프리팹 한 칸) | `Awake()` | 상위가 `Start` 에서 `Bind` 를 부르기 전에 검증이 끝나 있어야 한다. 서비스를 조회하지 않으므로 `Awake` 로 충분 |
-
-**서비스 필드는 `RequireRef` 가 필요 없다.** `Services.Get<T>()` 가 미등록 시 예외를 던지므로
-그 자체로 fail-fast 다.
-
-```csharp
-private XxxModel _model = null!;   // Start 의 Services.Get 이 채운다 — RequireRef 불필요
-```
-
-### 9-4. 이벤트는 `?` 선언 + `?.Invoke`
-
-구독자가 0명이면 이벤트 필드는 **진짜 null** 이다. `?.` 없이 `Invoke` 하면 터진다.
-
-```csharp
-public event Action<int>? PointsScored;   // 선언에 ?
-PointsScored?.Invoke(score);              // 호출에 ?.
-```
-
-`?.` 는 검사를 **생략하는 게 아니라 하는 것**이라 성능 이득이 아니다 —
-`if (x != null) x.Invoke(...)` 와 같고, 덤으로 스레드 안전하다(임시 복사).
+> 📖 `x!` 가 왜 검사가 아닌지, 가짜 null 의 동작, 각 규칙의 예시는
+> **[`nullable 상세.md`](<nullable 상세.md>)** 에 있다 — 위 규칙만으로 판단이 서면 열지 않아도 된다.
