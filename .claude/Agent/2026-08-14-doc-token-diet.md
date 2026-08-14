@@ -19,7 +19,8 @@ tags: [docs, client, infra]
 - 분할: `UI 규칙.md` → `+ UI 배치 현황.md` / `서버 동작 이해.md` → `+ 패킷 레퍼런스.md`
 - 압축: `.claude/Agent/README.md` (20.8 → 10.7KB)
 - 전역 마스터(`~/.claude/skills`): `clean-code-style` 분할 + `unity-skill-sync` 비교 범위 확장 — 커밋 `4ae2c00`·`6f89c7d`·`d3a0944`·`cc19826` (push 안 함)
-- 권고: `docs/문서 토큰 효율화 권고.md` 신설 — 서버·기획 폴더는 **한 줄도 수정하지 않았다**
+- 서버·기획 폴더는 **한 줄도 수정하지 않았다** — 권고안을 문서로 썼다가 저장소에 두지 않기로 하고
+  삭제했다. 사용자가 그 내용을 이슈로 옮긴다.
 
 ## 주요 결정 / 근거
 
@@ -52,5 +53,6 @@ tags: [docs, client, infra]
 - **분할하면 총량은 오히려 는다** (19.6→23.5KB, 21.1→23.9KB). 줄이는 건 한 번에 읽는 양이다.
   디스크가 아니라 컨텍스트를 아끼는 작업이라는 걸 다음 사람이 오해하지 않도록.
 - 전역 툴킷 저장소 커밋 4건은 **push하지 않았다** — 사용자가 직접 한다.
-- 이 프로젝트 저장소 커밋도 사용자가 한다. `Server/Shared/game.sqlite3`는 항상 제외.
-- 권고안 원문 → `docs/문서 토큰 효율화 권고.md`
+- 서버·기획 쪽 권고 대상(실측): `game-design-reference` 11.9KB · `excel-table-creator` 9.7KB ·
+  `GameDesign/design/` 대형 문서(기획평가 47.8KB 등) · `tasks/README.md` 9.2KB.
+  **서버 스킬 4종은 이미 조건부 `description`이라 손댈 것이 없다.**
