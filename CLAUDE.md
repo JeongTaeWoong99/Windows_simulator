@@ -1,16 +1,19 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-13 (서버 파트를 `Server/CLAUDE.md`, 기획 파트를 `GameDesign/CLAUDE.md`로 분리)
+> 최종 업데이트: 2026-08-14 (문서·스킬 트리거를 "무조건 읽기"에서 "필요할 때 읽기"로 개정)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
 클라이언트와 서버를 한 저장소에서 영역을 나눠 협업한다.
 
-## 영역별 문서 — 작업 전에 해당 문서를 먼저 읽는다
+## 영역별 진입점
 
-| 작업 영역 | 문서 |
-|-----------|------|
-| **게임 시스템·콘텐츠·데이터** (채취·퀘스트·특성·아이템·거래·성장곡선·위젯 UI 로직, 엑셀 변경, 테이블/패킷/DB 스키마 설계, 기획 문서 수정) | [`GameDesign/CLAUDE.md`](GameDesign/CLAUDE.md) — **착수 전 [`게임기획코어.md`](GameDesign/design/게임기획코어.md) 필독** |
+**이 표는 지도다** — 전부 읽는 곳이 아니라, 지금 만지는 영역의 문을 찾는 곳이다.
+해당 영역에 손댈 때 그 문서를 연다.
+
+| 작업 영역 | 진입점 |
+|-----------|--------|
+| **게임 시스템·콘텐츠·데이터** (채취·퀘스트·특성·아이템·거래·성장곡선 로직, 엑셀 변경, 테이블/패킷/DB 스키마 설계, 기획 문서 수정) | [`GameDesign/CLAUDE.md`](GameDesign/CLAUDE.md) — 게임 **규칙·수치가 바뀔 때** [`게임기획코어.md`](GameDesign/design/게임기획코어.md)를 먼저 읽는다 |
 | **서버** (`Server/`, `Assets/Scripts_Server/`) | [`Server/CLAUDE.md`](Server/CLAUDE.md) |
 | **클라이언트** (`Assets/Scripts_Client/`) | [`Assets/Scripts_Client/폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md) — 폴더마다 `<폴더명> 규칙.md`가 있다 |
 
@@ -61,6 +64,10 @@
 - **폴더는 영문 소문자 kebab-case, 문서(`.md`) 파일명은 한글이다.**
   상세 규칙·개명 대응표는 [`GameDesign/CLAUDE.md`](GameDesign/CLAUDE.md#이름-규칙-문서폴더).
 - CLAUDE.md·스킬 문서를 수정하면 문서 상단의 `최종 업데이트` 날짜를 그날 날짜로 갱신한다.
+- **문서·스킬에 "필독·반드시·항상·모든"을 쓸 때는 그것이 정말 예외 없는지 확인한다.**
+  조건이 있으면 조건을 적고, **읽지 않아도 되는 경우를 함께 명시한다.**
+  강한 단어 한 줄이 "필요할 때만"이라는 완화 문장을 덮어써서, 매 작업이 문서를 통째로
+  읽는 비용을 물게 된다. 특히 스킬 `description`은 발동 조건 자체이므로 더 엄격히 본다.
 - **사용자가 특별한 요구를 하지 않는 한, 간단하고 명료하게 설명한다.**
   물은 것에 답하고 끝낸다. 배경·대안·파생 논점을 묻지 않았는데 늘어놓지 않는다.
   중요한 위험이나 결정 사항이 있으면 **한두 줄로 짚고** 넘어간다.
@@ -69,30 +76,31 @@
 
 ## Skills 참조
 
-스킬은 항상 적용하는 게 아니라, **작업 내용에 따라 필요한 경우에만** 참고한다.
+**스킬은 항상 적용하는 게 아니라, 아래 "언제" 칸에 해당할 때만 연다.**
+이 표는 무엇을 담았는지가 아니라 **언제 발동하는지**의 명세다.
 작업하는 폴더에 맞춰 해당 그룹과 **공용** 스킬을 함께 본다.
 (클라이언트 작업 = 공용 + 클라이언트 / 서버 작업 = 공용 + 서버)
 
-### 공용 (`common/`) — 모든 작업
+### 공용 (`common/`)
 
-| 스킬 | 경로 | 내용 |
-|------|------|------|
-| `game-design-reference` | [`.claude/skills/common/game-design-reference/SKILL.md`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 작업 **착수 전** `게임기획코어.md` + 상세 기획안 필독 |
-| `excel-table-creator` | [`.claude/skills/common/excel-table-creator/SKILL.md`](.claude/skills/common/excel-table-creator/SKILL.md) | 게임 데이터 엑셀 시트·컬럼 작성 규칙 (TID 필수·마커 행·`Ref`) |
-| `commit-convention` | [`.claude/skills/common/commit-convention/SKILL.md`](.claude/skills/common/commit-convention/SKILL.md) | Git 커밋 메시지 규칙 |
-| `agent-log-reader` | [`.claude/skills/common/agent-log-reader/SKILL.md`](.claude/skills/common/agent-log-reader/SKILL.md) | 코드 작업 **착수 전** `.claude/Agent/` 로그 필독 |
-| `agent-log-writer` | [`.claude/skills/common/agent-log-writer/SKILL.md`](.claude/skills/common/agent-log-writer/SKILL.md) | 코드 작업 **종료 후** `.claude/Agent/`에 로그 기록 |
-| `task-reader` | [`.claude/skills/common/task-reader/SKILL.md`](.claude/skills/common/task-reader/SKILL.md) | `tasks/`에서 현재 할 일·상태 확인 |
-| `task-writer` | [`.claude/skills/common/task-writer/SKILL.md`](.claude/skills/common/task-writer/SKILL.md) | `tasks/`에 일감 등록·상태 갱신 |
+| 스킬 | 언제 | 무엇을 |
+|------|------|--------|
+| [`agent-log-writer`](.claude/skills/common/agent-log-writer/SKILL.md) | **코드 작업 종료 후 — 조건 없이 항상** | `.claude/Agent/`에 로그 기록 |
+| [`agent-log-reader`](.claude/skills/common/agent-log-reader/SKILL.md) | 기존 결정을 뒤집을 때 · 원인 불명 버그 · "예전에 왜?" 의문이 생겼을 때 · 미완 작업을 이어받을 때 — **일반 작업엔 열지 않는다** | `.claude/Agent/`에서 과거 경위 확인 |
+| [`game-design-reference`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 **규칙·수치가 바뀔 때** — 화면 배치·배선만 바꾸면 해당 없음 | `게임기획코어.md` + 상세 기획안 |
+| [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx` 시트·컬럼을 만들거나 고칠 때 | TID 필수·마커 행·`Ref` 규칙 |
+| [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
+| [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
+| [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
 
 ### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
 
-| 스킬 | 경로 | 내용 |
-|------|------|------|
-| `clean-code-style` | [`.claude/skills/client/clean-code-style/SKILL.md`](.claude/skills/client/clean-code-style/SKILL.md) | Unity/C# 클린 코드 스타일 규칙 |
-| `feature-design` | [`.claude/skills/client/feature-design/SKILL.md`](.claude/skills/client/feature-design/SKILL.md) | OOP·SOLID·디자인 패턴 기반 기능 설계 |
-| `optimization` | [`.claude/skills/client/optimization/SKILL.md`](.claude/skills/client/optimization/SKILL.md) | 성능 최적화 판단 및 적용 가이드 |
-| `unity-handoff` | [`.claude/skills/client/unity-handoff/SKILL.md`](.claude/skills/client/unity-handoff/SKILL.md) | 유니티 에디터 작업 핸드오프 프롬프트 생성 |
+| 스킬 | 언제 | 무엇을 |
+|------|------|--------|
+| [`clean-code-style`](.claude/skills/client/clean-code-style/SKILL.md) | C# 코드를 쓰거나 리뷰할 때 | 명명·포맷·주석 스타일 규칙 |
+| [`feature-design`](.claude/skills/client/feature-design/SKILL.md) | 새 기능·클래스·시스템을 **설계**할 때 | OOP·SOLID·디자인 패턴 |
+| [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
+| [`unity-handoff`](.claude/skills/client/unity-handoff/SKILL.md) | 답변 후 에디터 수작업이 남을 때 | 유니티 어시스턴트용 프롬프트 생성 |
 
 ### 서버 — `Server/.claude/skills/`
 
