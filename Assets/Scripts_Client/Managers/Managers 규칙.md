@@ -173,7 +173,8 @@ UI를 비례 확대한다. 기준 해상도를 창 크기에 맞춰 바꾸면 �
 | 주제 | 문서 |
 |------|------|
 | 화면 전환 흐름 · `MainScreen` enum · 캔버스 배치 | [`UI 규칙.md`](<../UI/UI 규칙.md>) |
-| 패킷이 언제 오는가 · 값의 뜻 | [`서버 동작 이해.md`](<../서버 동작 이해.md>) |
+| 패킷이 어떤 길로 오는가 · ⭐수량 값의 뜻 | [`서버 동작 이해.md`](<../서버 동작 이해.md>) |
+| 어떤 기능이 무엇을 주고받는가 (로그인 세트·채취·적성) | [`패킷 레퍼런스.md`](<../패킷 레퍼런스.md>) |
 | 창 제어 Win32 선언 | [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWindow 규칙.md>) |
 | 창 설정 저장 | [`Settings 규칙.md`](<../Settings/Settings 규칙.md>) |
 | `Services`·`MonoService` 자체 | [`Common 규칙.md`](<../Common/Common 규칙.md>) |
