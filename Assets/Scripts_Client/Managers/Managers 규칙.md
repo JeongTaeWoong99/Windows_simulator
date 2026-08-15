@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-12 · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-15 · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -152,6 +152,28 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 
 **16:9는 어떤 경우에도 유지한다** — 배율이 모니터보다 크면 작업 영역 안으로 줄이는데,
 이때도 **가로·세로를 같은 비율로** 줄인다(`ClampToWorkArea`). 한 축만 줄이면 UI가 찌그러진다.
+
+### ⚠️ 창 크기는 언제나 "클라이언트 영역" 기준이다
+
+`SetWindowPos`가 받는 건 **외곽(테두리 포함) 크기**다. 원하는 렌더 해상도를 그대로 넘기면
+타이틀바·테두리 두께만큼 **렌더 영역이 줄어 16:9가 깨진다** — 그러면 `Match = Height`인 캔버스의
+기준 폭이 1920이 아니게 되어 열 폭이 전부 어긋난다.
+
+`ResizeWindow`는 그래서 스타일(`GWL_STYLE`/`GWL_EXSTYLE`)과 창의 DPI를 읽어
+`AdjustWindowRectExForDpi`로 프레임 두께를 더한 뒤 넘기고, `GetClientRect`로 결과를 다시 재
+어긋나면 그 차이만큼 한 번 보정한다.
+
+**스타일을 바꾼 뒤에는 크기를 반드시 재적용한다.** `SetTitleBar`의 `SWP_NOSIZE`는 외곽을 유지한 채
+프레임만 벗기므로, 그 순간 클라이언트 영역이 커진다.
+
+### ⚠️ 작업 영역은 "주 모니터"가 아니라 "창이 놓인 모니터"다
+
+`SPI_GETWORKAREA`는 **주 모니터 값만** 돌려준다. 듀얼 모니터에서 창을 보조 모니터로 옮기면
+위치·클램프 계산이 전부 어긋난다. `MonitorFromWindow(MONITOR_DEFAULTTONEAREST)` +
+`GetMonitorInfo().rcWork`를 쓰고, 그게 실패할 때만 `SPI_GETWORKAREA`로 폴백한다.
+
+앵커 좌표 계산에는 **외곽 크기**를 쓴다 — `SetWindowPos`가 옮기는 게 외곽 사각형이라,
+클라이언트 크기로 계산하면 타이틀바가 켜졌을 때 오른쪽·아래 앵커가 프레임 두께만큼 넘친다.
 
 ### ⚠️ 캔버스 기준 해상도를 창 크기로 바꾸지 않는다
 

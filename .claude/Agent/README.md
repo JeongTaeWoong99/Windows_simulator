@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-15 빌드에서 3열 폭이 어긋나는 문제 — 해결](2026-08-15-build-ui-layout-mismatch.md) — `#client` `#ui` `#window` 범인은 `FlexibleGridLayoutGroup`의 `min = 자기 폭` 순환(한 번 넓어지면 못 줄어듦) · 창·열 가설은 둘 다 반증 · 넘침 상시 가드 추가 · ✅ 빌드 검증 완료
 - [2026-08-14 문서·스킬 토큰 효율화 + 구조 점검 (Phase 1~8)](2026-08-14-doc-token-diet.md) — `#docs` `#client` `#infra` 트리거 조건화 + 대형 문서·스킬 하이브리드 분할 · 서버·기획은 권고안만
 - [2026-08-14 에디터 서버 콘솔 — 버튼으로 WSGameServer 토글 실행](2026-08-14-editor-server-console.md) — `#editor` `#client` 툴바 버튼 → 서버 시작/정지 + 로그 실시간 tail · `Editor/`를 기능별 하위 폴더로 재편 · ⛔ Unity 실구동·`.meta` 미검증
 - [2026-08-12 Scripts_Client 문서 구조 재편 — 폴더별 규칙 md 신설과 주석 걷기](2026-08-12-client-doc-restructure.md) — `#client` `#docs` 구조 설명 주석 36%를 md로 이관 · `폴더 구조.md` + 폴더별 `<폴더명> 규칙.md` 6개 신설 · `Common/`만 주석 유지

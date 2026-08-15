@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices; // MONITORINFO.cbSize 를 채우는 Marshal.SizeOf
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -247,6 +248,14 @@ public class WindowManager : MonoService<WindowManager>
                    | Win32Native.SWP_FRAMECHANGED | Win32Native.SWP_SHOWWINDOW;
         Win32Native.SetWindowPos(_hWnd, IntPtr.Zero, 0, 0, 0, 0, flags);
 
+        // ⚠️ 위 호출은 'SWP_NOSIZE'라 외곽 크기를 그대로 둔다 — 프레임 두께만 바뀌므로
+        //   그만큼 클라이언트(렌더) 영역이 늘거나 줄어 16:9가 깨진다. 캔버스가 그 폭으로
+        //   레이아웃을 한 번 계산하면 3열 폭이 어긋난 채 굳는다 (A-1 버그).
+        //   → 스타일이 바뀐 직후 크기를 다시 적용해 렌더 영역을 되돌린다.
+        Vector2Int size = GetSize(_currentScale);
+        ResizeWindow(size.x, size.y);
+        ApplyPosition(_currentAnchor); // 외곽 크기가 바뀌었으므로 앵커 위치도 다시 맞춘다
+
         // 프레임 재계산으로 DWM 투명 확장이 풀릴 수 있어, 투명 상태면 다시 적용한다.
         // ⚠️ 인스펙터의 공장 초기값이 아니라 현재 상태를 봐야 한다 — 사용자가 투명을 끈 뒤
         //   타이틀바를 토글하면 껐던 투명이 되살아난다.
@@ -384,15 +393,72 @@ public class WindowManager : MonoService<WindowManager>
 #endif
     }
 
-    /// <summary>창 크기를 (width, height)로 변경. 위치는 유지(SWP_NOMOVE).</summary>
+    /// <summary>
+    /// 창의 <b>클라이언트 영역</b>(= Unity가 실제로 그리는 렌더 영역)을 (width, height)로 변경한다.
+    /// 위치는 유지(SWP_NOMOVE).
+    ///
+    /// ⚠️ 'SetWindowPos'는 클라이언트가 아니라 <b>외곽</b> 크기를 받는다. 원하는 렌더 해상도를
+    /// 그대로 넘기면 타이틀바·테두리 두께만큼 렌더 영역이 줄어 <b>화면비가 16:9에서 벗어난다.</b>
+    /// 그러면 'Match = Height'인 캔버스의 기준 폭이 1920이 아니게 되고, 3열 레이아웃이 어긋난다
+    /// (A-1 버그). 그래서 여기서 프레임 두께를 더해 준다.
+    /// </summary>
     public void ResizeWindow(int width, int height)
     {
 #if !UNITY_EDITOR
-        uint flags = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOACTIVATE | Win32Native.SWP_SHOWWINDOW;
+        Vector2Int outer = ClientSizeToOuterSize(width, height);
+
+        uint   flags = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOACTIVATE | Win32Native.SWP_SHOWWINDOW;
         IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
-        Win32Native.SetWindowPos(_hWnd, after, 0, 0, width, height, flags);
+        Win32Native.SetWindowPos(_hWnd, after, 0, 0, outer.x, outer.y, flags);
+
+        // 결과를 실제로 재서 어긋나면 그 차이만큼 한 번 보정한다.
+        // 프레임 두께 계산이 빗나가는 환경(DPI 가상화 등)에서도 렌더 영역이 정확히 16:9가 되도록
+        // 하는 마지막 방어선이다. 한 번만 돌므로 반복 보정으로 진동할 일은 없다.
+        if (Win32Native.GetClientRect(_hWnd, out Win32Native.RECT client))
+        {
+            int dx = width  - (client.right  - client.left);
+            int dy = height - (client.bottom - client.top);
+
+            if (dx != 0 || dy != 0)
+                Win32Native.SetWindowPos(_hWnd, after, 0, 0, outer.x + dx, outer.y + dy, flags);
+        }
 #endif
     }
+
+#if !UNITY_EDITOR
+    /// <summary>
+    /// 원하는 클라이언트 크기를, 그 크기를 얻는 데 필요한 외곽 크기로 바꾼다 ('ResizeWindow'에서 호출).
+    /// 현재 스타일과 창이 놓인 모니터의 DPI를 OS에 그대로 물어보므로,
+    /// 타이틀바 On/Off·배율 100/125/150% 어디서든 렌더 영역이 정확히 요청한 값이 된다.
+    /// 보더리스(WS_POPUP)면 프레임이 없어 결과가 입력과 같다.
+    /// </summary>
+    private Vector2Int ClientSizeToOuterSize(int width, int height)
+    {
+        var rect = new Win32Native.RECT { left = 0, top = 0, right = width, bottom = height };
+
+        uint style   = Win32Native.GetWindowLong(_hWnd, Win32Native.GWL_STYLE);
+        uint exStyle = Win32Native.GetWindowLong(_hWnd, Win32Native.GWL_EXSTYLE);
+
+        try
+        {
+            // Windows 10 1607+ : 모니터별 DPI를 반영해 프레임 두께를 계산한다.
+            uint dpi = Win32Native.GetDpiForWindow(_hWnd);
+            if (dpi == 0)
+                dpi = 96; // 조회 실패 — 100% 로 간주
+
+            if (!Win32Native.AdjustWindowRectExForDpi(ref rect, style, false, exStyle, dpi))
+                return new Vector2Int(width, height);
+        }
+        catch (EntryPointNotFoundException)
+        {
+            // 구형 Windows 폴백 — 주 모니터 DPI 기준이라 배율이 섞인 환경에선 약간 어긋날 수 있다.
+            if (!Win32Native.AdjustWindowRectEx(ref rect, style, false, exStyle))
+                return new Vector2Int(width, height);
+        }
+
+        return new Vector2Int(rect.right - rect.left, rect.bottom - rect.top);
+    }
+#endif
 
     /// <summary>
     /// 현재 크기와 작업 영역(작업표시줄 제외)을 기준으로 9분할 앵커 위치의 좌표를 계산해 창을 옮긴다.
@@ -401,14 +467,17 @@ public class WindowManager : MonoService<WindowManager>
     private void ApplyPosition(ScreenAnchor anchor)
     {
 #if !UNITY_EDITOR
-        // 작업 영역(작업표시줄 제외 사각형)을 얻는다. 실패하면 위치 조정을 건너뛴다.
-        Win32Native.RECT wa = new Win32Native.RECT();
-        if (!Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref wa, 0))
+        // 창이 실제로 올라가 있는 모니터의 작업 영역. 실패하면 위치 조정을 건너뛴다.
+        if (!TryGetWorkArea(out Win32Native.RECT wa))
             return;
 
         int waW = wa.right  - wa.left;
         int waH = wa.bottom - wa.top;
-        Vector2Int s = GetSize(_currentScale);
+
+        // ⚠️ 앵커 좌표는 "외곽" 기준이다 — SetWindowPos 가 외곽 사각형을 옮기기 때문이다.
+        //   클라이언트 크기로 계산하면 타이틀바가 켜져 있을 때 오른쪽·아래 앵커가 프레임 두께만큼 넘친다.
+        Vector2Int client = GetSize(_currentScale);
+        Vector2Int s      = ClientSizeToOuterSize(client.x, client.y);
 
         int hi = (int)anchor % 3; // 0=Left 1=Center 2=Right
         int vi = (int)anchor / 3; // 0=Upper 1=Middle 2=Lower
@@ -456,19 +525,44 @@ public class WindowManager : MonoService<WindowManager>
     }
 
     /// <summary>
-    /// 주 모니터의 작업 영역(작업표시줄 제외) 픽셀 크기를 얻는다.
+    /// 창이 놓인 모니터의 작업 영역(작업표시줄 제외) 픽셀 크기를 얻는다.
     /// 조회 실패 시 주 디스플레이의 전체 해상도로 폴백한다(작업표시줄만큼 관대해질 뿐 동작은 유지).
     /// </summary>
     private Vector2Int GetWorkAreaSize()
     {
 #if !UNITY_EDITOR
-        Win32Native.RECT workArea = new Win32Native.RECT();
-
-        if (Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref workArea, 0))
-            return new Vector2Int(workArea.right - workArea.left, workArea.bottom - workArea.top);
+        if (TryGetWorkArea(out Win32Native.RECT wa))
+            return new Vector2Int(wa.right - wa.left, wa.bottom - wa.top);
 #endif
         return new Vector2Int(Display.main.systemWidth, Display.main.systemHeight); // 에디터/폴백
     }
+
+#if !UNITY_EDITOR
+    /// <summary>
+    /// 창이 <b>실제로 올라가 있는 모니터</b>의 작업 영역 사각형을 얻는다.
+    ///
+    /// ⚠️ 'SPI_GETWORKAREA'는 <b>주 모니터</b>의 값만 돌려준다 — 듀얼 모니터에서 창을 보조
+    /// 모니터로 옮기면 위치·클램프 계산이 전부 어긋난다. 그래서 'MonitorFromWindow'로
+    /// 현재 모니터를 먼저 찾고, 그게 실패할 때만 'SPI_GETWORKAREA'로 폴백한다.
+    /// </summary>
+    private bool TryGetWorkArea(out Win32Native.RECT workArea)
+    {
+        IntPtr monitor = Win32Native.MonitorFromWindow(_hWnd, Win32Native.MONITOR_DEFAULTTONEAREST);
+        if (monitor != IntPtr.Zero)
+        {
+            // cbSize 를 구조체 크기로 채워야 호출이 성공한다 — Win32 규약.
+            var info = new Win32Native.MONITORINFO { cbSize = Marshal.SizeOf(typeof(Win32Native.MONITORINFO)) };
+            if (Win32Native.GetMonitorInfo(monitor, ref info))
+            {
+                workArea = info.rcWork;
+                return true;
+            }
+        }
+
+        workArea = new Win32Native.RECT();
+        return Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref workArea, 0);
+    }
+#endif
 
     #endregion
 
