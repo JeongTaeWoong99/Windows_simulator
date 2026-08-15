@@ -644,6 +644,8 @@ UGUI가 자식에게 주는 폭은 `Clamp(부모 폭, min, flexible > 0 ? 부모
 
 `WidgetPositionLayout.VerifyNoOverflow`가 이 부류를 상시 감시한다 —
 자식이 부모보다 넓으면 어느 노드가 무슨 `min`을 요구했는지까지 경고로 남긴다.
+단 **부모에 레이아웃 그룹이 있는 곳만** 본다. 앵커·`sizeDelta`로 직접 배치한 부모는
+자식이 자기보다 넓은 게 정상일 수 있다 — 유니티 기본 `Scrollbar`의 `Sliding Area`(폭 0)가 그 예다.
 
 ### 스크롤 뷰의 정석
 

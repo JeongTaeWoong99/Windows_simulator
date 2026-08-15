@@ -399,9 +399,20 @@ public class WidgetPositionLayout : MonoBehaviour
         ClientLogger.Warn(ClientLogger.UI, $"자식이 부모보다 넓다 — columns={columns.rect.width:F1}{dump}", this);
     }
 
-    // 부모보다 1px 넘게 넓은 자손을 재귀로 모은다 (VerifyNoOverflow 에서 호출)
+    /// <summary>
+    /// 부모보다 1px 넘게 넓은 자손을 재귀로 모은다 (VerifyNoOverflow 에서 호출).
+    ///
+    /// ⚠️ <b>부모에 'LayoutGroup'이 있을 때만 넘침으로 친다.</b> 그 경우에만 "부모 폭이 자식의
+    ///   상한"이라는 전제가 성립하기 때문이다. 앵커·sizeDelta 로 직접 배치한 부모는 자식이
+    ///   자기보다 넓은 게 정상일 수 있다 — 유니티 기본 'Scrollbar'가 그렇다.
+    ///   'Sliding Area'는 핸들 크기만큼 일부러 줄여(폭 0) 핸들의 이동 범위를 만들고,
+    ///   'Handle'이 그만큼 다시 더해 원래 폭으로 돌아간다. 이걸 넘침으로 찍으면
+    ///   <b>고칠 것이 없는 경고가 상시로 뜬다</b> (실제로 그랬다).
+    /// </summary>
     private static void CollectOverflow(RectTransform node, System.Text.StringBuilder found)
     {
+        bool governsChildren = node.GetComponent<LayoutGroup>() != null;
+
         for (int i = 0; i < node.childCount; i++)
         {
             var child = node.GetChild(i) as RectTransform;
@@ -410,7 +421,7 @@ public class WidgetPositionLayout : MonoBehaviour
             if (child == null || !child.gameObject.activeInHierarchy)
                 continue;
 
-            float excess = child.rect.width - node.rect.width;
+            float excess = governsChildren ? child.rect.width - node.rect.width : 0f;
             if (excess > 1f)
                 found.Append($"\n  {NodePath(child)} w={child.rect.width:F1} > 부모 {node.rect.width:F1} " +
                              $"({excess:F1}px 초과) {Claims(child)}");
