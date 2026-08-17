@@ -72,4 +72,4 @@ StreamingAssets를 파일로 직접 읽을 수 없는 플랫폼은 Android·WebG
 슬롯·패킷에 실려 오는 `CharacterId`는 **개체 번호**다 — `GameDataLoader`에 그대로 넣으면 `?#2`가 나온다.
 
 > 적성도 마찬가지다. `CharacterTable`에 적성 열이 있지만 **값의 주인은 서버**다 —
-> 패킷의 `CharacterInfo.Aptitudes`를 쓴다. 자세한 건 [`서버 동작 이해.md`](<../서버 동작 이해.md>).
+> 패킷의 `CharacterInfo.Aptitudes`를 쓴다. 자세한 건 [`패킷 레퍼런스.md`](<../패킷 레퍼런스.md>)의 「적성은 패킷에 실려 온다」.

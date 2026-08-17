@@ -89,6 +89,11 @@ tags: [영역, 키워드]   # 예: [server, excelgenerator, data]
 ## 마무리 절차 (필수)
 
 1. 위 규칙으로 `.claude/Agent/YYYY-MM-DD-<slug>.md` 를 작성한다.
-2. `.claude/Agent/README.md`의 `INDEX`에 한 줄을 **최신순(위)** 으로 추가한다.
-   - 형식: `- [YYYY-MM-DD 제목](파일명.md) — 한 줄 요약`
+2. `.claude/Agent/README.md`의 `INDEX`에 **한 줄**을 **최신순(위)** 으로 추가한다.
+   - 형식: `- [YYYY-MM-DD 제목](파일명.md) — \`#태그\` 한 줄 요약`
+   - 태그: `#client` `#server` `#ui` `#design` `#data` `#test` `#editor` `#docs` `#infra` (복수 가능)
+   - ⚠️ **정말 한 줄이다.** ⚠️ 경고·설계 근거·함정 목록은 **본문에만** 둔다.
+     INDEX에 늘어놓으면 이 파일을 여는 모든 작업이 그 비용을 문다.
+     INDEX의 역할은 **"어느 로그를 열지 고르는 것"** 뿐이다.
+   - 요약은 "무엇을 했나" 한 가지. 여러 개면 가장 중요한 것만 남긴다.
 3. 답변 말미에 "작업 로그를 남겼다: `.claude/Agent/<파일명>`" 한 줄로 알린다.

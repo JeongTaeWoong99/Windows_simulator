@@ -15,7 +15,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 /// <remarks>
 /// ⚠️ 송신은 하지 않는다 — 요청은 그 요청을 일으킨 Presenter가 직접 보낸다.
 /// 'GameDataLoader'와의 역할 구분(고정 테이블 ↔ 내 계정 상태)은 'Managers 규칙.md' 2장,
-/// 로그인 1회 수신 세트와 패킷별 수량 규약은 '서버 동작 이해.md' 참조.
+/// 패킷별 수량 규약은 '서버 동작 이해.md', 로그인 1회 수신 세트는 '패킷 레퍼런스.md' 참조.
 /// </remarks>
 public class PlayerDataModel : MonoService<PlayerDataModel>
 {
@@ -78,7 +78,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     /// 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
     /// (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
     /// ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
-    /// (근거는 '서버 동작 이해.md' 적성 절).
+    /// (근거는 '패킷 레퍼런스.md' 적성 절).
     /// </summary>
     public byte GetAptitude(long characterId, EIndustryType industry)
     {

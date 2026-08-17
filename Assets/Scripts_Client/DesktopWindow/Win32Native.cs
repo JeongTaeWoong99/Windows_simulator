@@ -187,6 +187,65 @@ public static class Win32Native
     [DllImport("user32.dll")]
     public static extern int GetSystemMetrics(int nIndex);
 
+    /// <summary>
+    /// 창의 "클라이언트 영역"(실제 렌더 영역) 크기를 가져온다. left/top 은 항상 0이고
+    /// right/bottom 이 곧 가로/세로다 — GetWindowRect(외곽)와 다르다는 점이 핵심.
+    /// → 창 크기를 적용한 뒤 렌더 영역이 정말 의도한 값인지 검증하는 데 쓴다.
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern bool GetClientRect(IntPtr hWnd, out RECT lpRect);
+
+    /// <summary>
+    /// 창이 올라가 있는 모니터의 DPI를 반환한다(96 = 100%, 120 = 125%, 144 = 150%).
+    /// AdjustWindowRectExForDpi 에 넘길 값이다.
+    /// ⚠️ Windows 10 1607 미만에는 없다 — 호출부에서 EntryPointNotFoundException 을 잡아 96으로 폴백한다.
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern uint GetDpiForWindow(IntPtr hWnd);
+
+    /// <summary>
+    /// 원하는 "클라이언트 영역" 사각형을, 그 영역을 얻기 위해 필요한 "외곽" 사각형으로 부풀린다.
+    /// 타이틀바·테두리 두께를 OS가 현재 스타일과 dpi 기준으로 직접 계산해 주므로,
+    /// 캡션 높이를 코드에 상수로 박을 필요가 없다.
+    ///
+    /// ⚠️ SetWindowPos 는 "외곽" 크기를 받는다. 원하는 렌더 해상도를 그대로 넘기면
+    ///   프레임 두께만큼 렌더 영역이 줄어 화면비가 깨진다 — 이 함수는 그걸 막으려고 있다.
+    /// ⚠️ Windows 10 1607 미만에는 없다 → AdjustWindowRectEx 폴백.
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern bool AdjustWindowRectExForDpi(ref RECT lpRect, uint dwStyle, bool bMenu, uint dwExStyle, uint dpi);
+
+    /// <summary>AdjustWindowRectExForDpi 의 dpi 없는 구형 버전. 폴백 전용.</summary>
+    [DllImport("user32.dll")]
+    public static extern bool AdjustWindowRectEx(ref RECT lpRect, uint dwStyle, bool bMenu, uint dwExStyle);
+
+    public const uint MONITOR_DEFAULTTONEAREST = 0x00000002; // MonitorFromWindow: 겹치는 모니터가 없으면 가장 가까운 것
+
+    /// <summary>
+    /// 모니터 정보 구조체 (GetMonitorInfo 의 out 인자).
+    /// cbSize 를 sizeof(MONITORINFO) 로 채워 넣어야 호출이 성공한다 — Win32 규약.
+    /// </summary>
+    [StructLayout(LayoutKind.Sequential)]
+    public struct MONITORINFO
+    {
+        public int  cbSize;    // 구조체 크기(바이트). 호출 전에 반드시 채운다
+        public RECT rcMonitor; // 모니터 전체 사각형
+        public RECT rcWork;    // 작업 영역(작업표시줄 제외) 사각형
+        public uint dwFlags;   // MONITORINFOF_PRIMARY 등
+    }
+
+    /// <summary>
+    /// 창이 실제로 올라가 있는 모니터의 핸들을 반환한다.
+    /// ⚠️ SPI_GETWORKAREA 는 "주 모니터"만 알려 준다 — 듀얼 모니터에서 창이 보조 모니터에 있으면
+    ///   그 값으로 계산한 위치·크기가 전부 어긋난다. 그래서 이 쪽을 쓴다.
+    /// </summary>
+    [DllImport("user32.dll")]
+    public static extern IntPtr MonitorFromWindow(IntPtr hWnd, uint dwFlags);
+
+    /// <summary>모니터 핸들로 그 모니터의 전체/작업 영역 사각형을 가져온다.</summary>
+    [DllImport("user32.dll")]
+    public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
+
     // ──────────────────────────────────────────────────────────────
     // dwmapi.dll — 데스크톱 합성기(투명/유리 효과)
     // ──────────────────────────────────────────────────────────────

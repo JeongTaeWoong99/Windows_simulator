@@ -1,9 +1,25 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-12 (종속 View 규약에 `Awake` + `RequireRef` 명시) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-16 (`min`을 자기 폭에서 파생시키지 않는다 — 함정 추가) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
+
+**지금 씬에 무엇이 놓여 있는지**는 여기가 아니라 [`UI 배치 현황.md`](<UI 배치 현황.md>)에 있다.
+이 문서는 **변하지 않는 규칙**만 담는다.
+
+## 필요한 절만 읽는다
+
+| 무엇을 알고 싶나 | 절 |
+|---|---|
+| 왜 MVP인가 · 세 역할은 무엇인가 | 0~1 |
+| 클래스·오브젝트 **이름**을 뭐라고 붙이나 | 2 |
+| 스크립트를 **어느 오브젝트**에 붙이나 · 여백·컴포넌트 순서 | 3 |
+| 위젯·화면을 **추가**하려면 | 4 |
+| **어느 폴더**에 넣나 | 5 |
+| 코드 작성 규약 (캔버스 View · 종속 View) | 6 |
+| ⚠️ Canvas · 레이아웃 그룹의 **함정** | 7 · 7-2 |
+| 지금 씬에 무엇이 있나 | → [`UI 배치 현황.md`](<UI 배치 현황.md>) |
 
 ---
 
@@ -227,6 +243,40 @@ Model을 구독하지 않고 **위에서 밀어 넣은 값만 그리므로** 역
 `OnEnable`에서 일하는 컴포넌트(`WidgetPositionLayout`)를 토글 대상에 붙이면,
 **그게 꺼져 있는 동안 아무 일도 하지 않는다.** 기본 상태로 꺼져 있으면 한 번도 안 돈다.
 `!Horizental Columns`처럼 상주하는 오브젝트에 둔다.
+
+### 배치 컴포넌트는 화면 크기 변화에 스스로 반응한다
+
+`WidgetPositionLayout`은 `OnRectTransformDimensionsChange()`로 **캔버스(=창의 렌더 영역) 크기가
+바뀔 때마다 배치를 다시 태운다.** 창 크기 프리셋 변경 · 타이틀바 토글 · 배율이 다른 모니터로
+드래그가 전부 이 콜백으로 모인다.
+
+- **`WindowManager`를 참조하지 않는다.** Unity 콜백만으로 자립하므로 Managers → UI 역방향
+  의존이 생기지 않는다.
+- **콜백은 플래그만 세우고, 실제 배치는 `LateUpdate`에서 한다.** 이유는 바로 아래 함정 참고.
+
+### ⚠️ 레이아웃 콜백 안에서 즉시 리빌드하지 않는다
+
+`OnRectTransformDimensionsChange`는 UGUI가 **레이아웃 패스를 도는 도중에도** 날아온다
+(`CanvasUpdateRegistry.PerformUpdate` → `HorizontalLayoutGroup.SetLayoutHorizontal` → 자식 크기 변경).
+그 안에서 `LayoutRebuilder.ForceRebuildLayoutImmediate`를 부르면 **같은 서브트리를 재진입 재빌드**하게
+되고, 바깥 패스가 자식을 순회하던 중에 폭이 갈아엎어져 **일부만 새 값, 일부는 옛 값**으로 남는다.
+
+```csharp
+// ✗ 열끼리 침범한다 — 패스 도중 재진입
+private void OnRectTransformDimensionsChange() => Apply();   // Apply 안에서 ForceRebuild...
+
+// ✓ 패스 밖으로 미룬다
+private void OnRectTransformDimensionsChange() => _pendingApply = true;
+private void LateUpdate() { if (_pendingApply) { _pendingApply = false; Apply(); } }
+// Apply 안에서는 LayoutRebuilder.MarkLayoutForRebuild
+```
+
+- 자기 클래스에 재진입 빗장(`_applying`)을 둬도 **소용없다.** 막아야 할 바깥 패스가 UGUI 것이다.
+- `LateUpdate`는 `Canvas.willRenderCanvases`보다 먼저 돌아, 예약해도 **같은 프레임에** 반영된다.
+- 형제 순서 변경(`SetSiblingIndex`)은 UGUI가 알아서 dirty 처리하므로 예약으로 충분하다.
+
+> 2026-08-15. 실제로 `ForceRebuild`로 바꿨다가 열 침범 회귀를 만들었다
+> (`.claude/Agent/2026-08-15-build-ui-layout-mismatch.md`).
 
 ### 전환 층은 하나다 — 화면은 자기를 끄지 않는다
 
@@ -566,6 +616,36 @@ public class XxxSlotView : MonoBehaviour
 | **"높이만큼 정사각형"이 안 된다** | UGUI는 **가로를 먼저 다 정하고 세로를 정한다.** 가로를 정할 때 자기 높이가 아직 없다 | `SquareLayoutElement` (`UI/Layout/`) — 부모 높이를 보고 가로를 주장한다 |
 | **내용이 늘어도 스크롤이 안 늘어난다** | `Viewport`에 직접 자식을 넣었다. Viewport는 **크기가 고정**이라 내용이 늘어도 커지지 않는다. `ScrollRect.content`도 비어 있으면 스크롤은 아예 동작하지 않는다 | 아래 "스크롤 뷰의 정석" |
 | **내용이 스크롤바 밑으로 깔린다** | 자식이 자기 폭(패널 전체폭)을 주장한다. Viewport는 스크롤바만큼 좁다 | `Content`의 레이아웃 그룹에서 `Child Control Width`를 켜 폭을 넘겨받게 한다 |
+| **한 번 넓어진 패널이 다시 안 줄어든다 (에디터는 멀쩡, 빌드만 깨진다)** | 그 노드의 **`min`이 자기 `rect.width`에서 파생**된다 → 아래 함정 참고 | 그 컴포넌트가 부모에게 폭을 **요구하지 않게** 한다 |
+
+### ⚠️ `min`을 자기 폭에서 파생시키면 그 폭이 하한으로 굳는다
+
+UGUI가 자식에게 주는 폭은 `Clamp(부모 폭, min, flexible > 0 ? 부모 폭 : preferred)`다.
+**`flexible > 0`일 때 부모 폭보다 넓어질 수 있는 통로는 `min` 하나뿐**이라는 뜻이다.
+
+그래서 **자기 현재 폭을 보고 `min`을 계산하는 컴포넌트는 순환에 빠진다.**
+
+```
+현재 폭 → min 계산 → min이 곧 하한 → 폭이 그대로 유지 → 다시 min …
+```
+
+창이 **한 프레임이라도** 넓었으면 그 폭이 최소 폭으로 남아 **다시는 줄어들지 않는다**.
+에디터 Game 뷰는 계속 다시 그려 수렴하므로 티가 안 나고, **빌드는 굳은 값 그대로 간다.**
+
+실제 사고(A-1) — `FlexibleGridLayoutGroup`이 `cellSize.x`를 자기 폭에서 역산하는데,
+`GridLayoutGroup`이 그 셀 크기로 `min = padding + (cellSize.x + spacing) × 열수 − spacing`을
+발표해 **`min == 현재 폭`**이 됐다. 거래 열 패널이 열보다 넓어져 옆 열을 침범했다.
+
+**같은 계열의 함정** — `Child Control Width`를 끄면 UGUI가 그 자식의 min·preferred를
+**자식의 현재 `sizeDelta`**로 잡는다. 역시 "현재 크기 = 하한"이다.
+
+> 배치 컴포넌트를 새로 만들 때는 **"부모에게 무엇을 요구하는가"를 자기 크기와 무관하게** 정한다.
+> 주어진 폭에 맞추는 것이 목적인 컴포넌트라면 가로로 요구할 것은 **패딩뿐**이다.
+
+`WidgetPositionLayout.VerifyNoOverflow`가 이 부류를 상시 감시한다 —
+자식이 부모보다 넓으면 어느 노드가 무슨 `min`을 요구했는지까지 경고로 남긴다.
+단 **부모에 레이아웃 그룹이 있는 곳만** 본다. 앵커·`sizeDelta`로 직접 배치한 부모는
+자식이 자기보다 넓은 게 정상일 수 있다 — 유니티 기본 `Scrollbar`의 `Sliding Area`(폭 0)가 그 예다.
 
 ### 스크롤 뷰의 정석
 
@@ -601,153 +681,3 @@ Scroll View Panel   ScrollRect   content = Content · viewport = Viewport   ← 
 하나라도 `flexibleHeight = 1`이면 **형제가 꺼질 때 그 자리를 혼자 빨아들인다.**
 
 ---
-
-## 8. 지금 배치 (2026-08-10)
-
-위젯은 생략했다. **캔버스 = `(MAIN VIEW)`, 그 자식 = `Xxx Presenter (↓ …)`** 가 예외 없이 지켜진다.
-`Panel`이라는 이름은 **Presenter 안쪽에서 서브 뷰를 줄 세우는 상자**에만 남아 있다.
-
-```
-Root Canvas
-├─ !Login Canvas (MAIN VIEW)                      LoginCanvasView      ← 게임의 시작점
-│  └─ Login Presenter (↓ SUB VIEW)                LoginPresenter
-├─ !Horizental Columns                            WidgetPositionLayout ← 항상 켜져 있어야 한다
-│  ├─ @Storage Column
-│  │  └─ #Storage Canvas (MAIN VIEW)              StorageCanvasView
-│  │     ├─ Title                                 (정적 요소 — 표기 없음)
-│  │     ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   탭 4개 (자원만 실재)
-│  │     ├─ Inventory Presenter (↓ SUB VIEW)      InventoryPresenter
-│  │     │  └─ Content > Slot (1..201)            빈 프레임. 그 안에 런타임 생성:
-│  │     │     └─ InventorySlotView 프리팹
-│  │     └─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter
-│  ├─ @Main Column                                 세 칸 전부 높이 고정 (90+900+90 = 1080)
-│  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 90 · flexH 0
-│  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter
-│  │  │     └─ 이름 · 골드 · Setting Button · xxx Button (1..4)
-│  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 900 · flexH 0
-│  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
-│  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
-│  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
-│  │  │  │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
-│  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
-│  │  │  │  ├─ Header Panel · Industry Panel      (정렬용 — 스크립트 없음)
-│  │  │  │  ├─ Character Assign Scroll View Panel
-│  │  │  │  │  └─ Content > Character State Row ×21
-│  │  │  │  └─ Character Setting Panel
-│  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
-│  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
-│  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
-│  │  │  │  └─ Dropdown Panel                     드롭다운 3          pref 0 · flexH 1
-│  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    창고·거래 버튼  pref 100
-│  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref 90 · flexH 0 · 상주
-│  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter       열기/닫기 버튼
-│  └─ @Market Column
-│     └─ #Market Canvas (MAIN VIEW)               MarketCanvasView
-│        ├─ Title                                 (정적 요소 — 표기 없음)
-│        └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter
-│
-(캔버스 밖)
-Window Manager · UI Manager · Ping Manager · Network Manager
-PlayerData (MODEL)                                PlayerDataModel
-Player Data Logger                                PlayerDataLogger
-```
-
-### 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
-
-```
-                    ┌──────────────── #Main Canvas ────────────────┐
-                    │  Title                       (문구가 바뀐다) │
-                    │  ┌────────────────────────────────────────┐  │
-   State Presenter  │  │  WorkStation List Presenter   [기본]   │  │
-   [Setting] ──────►│  │  WorkStation Select Presenter          │  │  ← 셋 중 하나
-   List 의 칸 ─────►│  │  Setting Presenter                     │  │
-                    │  └────────────────────────────────────────┘  │
-                    │  Menu Presenter              (항상 켜져 있다)│
-                    └──────────────────────────────────────────────┘
-
-[Setting] 을 누른다        ToggleMainScreen(Setting)      → Setting 켜짐 · 제목 "Setting"
-같은 버튼을 다시 누른다     이미 Setting 이므로 기본으로   → List 켜짐 · 제목 "WorkStation List"
-칸을 누른다                 Open(i) → ShowMainScreen(Select) → Select 켜짐 · 제목 "WorkStation Select"
-[뒤로] · 요청 실패          ShowMainScreen(List)           → List 켜짐
-```
-
-**나가는 길은 `Header Panel`의 뒤로가기로 통일했다.** `WorkStation Select`와 `Setting`이 같은 규격의
-헤더(높이 50 · 버튼 오른쪽)를 쓴다. `Setting`엔 제목을 두지 않는다 — 캔버스 `Title`이 이미 "Setting"이다.
-
-```
-
-위젯 [열기/닫기] 로 전부 접었다 다시 열면
-       │ CloseAllExceptWidget 이 #Main Canvas 까지 끄고 ResetMainScreen 을 돌려 놨다
-       ▼
-  언제나 WorkStation List
-
-게임을 처음 시작하면
-       │ UIManager.Start > ResetMainScreen  — 씬에 무엇이 켜진 채 저장됐든 무시한다
-       ▼
-  언제나 WorkStation List
-```
-
-마지막 두 줄이 중요하다 — 안 되돌리면 위젯 버튼이 "게임을 연다"가 아니라
-**"마지막에 보던 걸 연다"**가 되고, 작업하다 설정을 켜 둔 채 저장한 씬은
-**설정 화면으로 게임이 시작한다.**
-
-> ⚠️ `ResetMainScreen`은 **캔버스를 켜지 않는다.** 여기서 `mainCanvas.Show(true)`를 하면
-> 로그인 전에 게임 화면이 비친다. 안쪽만 정리해 두면 나중에 캔버스가 켜지는 순간
-> 이미 올바른 화면이 떠 있다.
-
-**제목은 `UI Manager > Main Screens`의 각 줄에 적혀 있다** — 코드에 없다(§3).
-
-### 작업슬롯 화면 흐름
-
-```
-1  WorkStation List Presenter        칸 8개
-       │ 칸을 누른다 → Open(slotIndex) → ShowMainScreen(WorkStationSelect)
-       │
-       ├── 빈 칸 ──────────────→ 2
-       └── 이미 배치된 칸 ──────→ 3
-
-   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) 는 2·3 모두에서 보인다 ─┐
-   │                                                                                             │
-2  │  Character Assign Scroll View Panel    캐릭터 줄 목록                                       │
-   │      │ 줄의 [배치] → 배치 요청 → 응답 성공 ──→ 3                                            │
-   │      │                                                                                      │
-3  │  Character Setting Panel               배치된 캐릭터 세팅                                   │
-   │      │ [해제] → 해제 요청 → 응답 성공 ──────→ 2                                             │
-   └──────┴─ [뒤로가기] 또는 응답 실패 ───────────→ 1 ───────────────────────────────────────────┘
-```
-
-2·3은 **한 Presenter 안의 단계**다(정렬용 패널을 켜고 끈다). 1↔2·3 은 **화면 전환**이라
-`UIManager`를 거친다 — **경계가 어디인지가 이름에 드러난다.**
-
-**요청이 성공한 뒤에 슬롯 목록으로 튕기지 않는다.** 배치했으면 이어서 세팅할 것이고, 해제했으면
-이어서 다른 캐릭터를 고를 것이기 때문이다.
-
-**단계는 응답을 보고 정한다.** 누르자마자 넘어가면 서버가 거절해도 넘어간다 — 아직 열리지 않은
-슬롯에 배치를 걸면 실제로는 아무 일도 없는데 세팅 화면이 뜬다. 그래서 `WorkStationAssignCompleted`를
-기다렸다가 성공이면 다음 단계로, **실패면 슬롯 목록으로 물러난다.**
-
-> 기다리는 동안 배치·해제 버튼은 잠그되 **뒤로가기는 잠그지 않는다.** 응답이 영영 안 와도
-> 나갈 길은 있어야 한다.
-
-산업 버튼은 두 단계 모두에서 **잠기지 않는다.** 2에서는 캐릭터를 걸러 보는 수단이고,
-3에서는 다른 산업으로 갈아 끼우는 수단이라서다. 고른 것은 `interactable`이 아니라
-**`colors.normalColor`로만** 표시한다 — `Selectable`이 실행 중 `Image.color`를 덮어쓰기 때문이다.
-
-### 알려진 임시 상태
-
-- **`Character State Row`를 씬에 21줄 깔아 두고 풀처럼 쓴다.** 보유 캐릭터 수만큼만 켜고
-  나머지는 끈다. 캐릭터가 21을 넘으면 그때 줄을 프리팹으로 뺀다.
-- **산업 버튼 5개는 고를 뿐 캐릭터를 걸러 내지 않는다.** 고른 산업이 배치 요청에 실릴 뿐,
-  그 산업을 못 다루는 캐릭터도 목록에 그대로 뜬다.
-- **창고 탭 4개 중 자원 하나만 실재한다.** `StorageTabPresenter`가 나머지를 로그로만 알린다.
-- **`xxx Button (1)`~`(4)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았다.
-- **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
-  (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
-- **`Information Presenter`는 고를 수단(칸 클릭)이 아직 없어** 안내 문구만 띄운다.
-  `InventorySlotView`에 `Clicked`가 붙으면 이어진다.
-- **`WorkStation Select Presenter`는 상태 패널 버튼으로 못 연다.** 슬롯 번호가 있어야 열리는
-  화면이라 `Screen Buttons`에 넣을 수 없다 — 목록의 칸 클릭만이 입구다.
-- **`WorkStationListPresenter`에 `#region A-2 진단 (임시)`가 남아 있다.** 원인이 확정되면 통째로 지운다.
-
-> 씬의 `m_EditorClassIdentifier`에 옛 클래스 이름이 남아 있어도 **문제 없다.**
-> 스크립트 연결은 GUID로 이뤄지고, 그 문자열은 다음 씬 저장 때 Unity가 갱신한다.

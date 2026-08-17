@@ -87,8 +87,8 @@ public static class HierarchyStyler
 
             // ★ 이름을 대문자로 바꾸지 않는다.
             //   원래 이 도구는 ToUpper() 로 전부 대문자로 그렸는데, 그러면 하이어라키에 보이는 이름과
-            //   씬·코드에 있는 실제 이름이 달라진다. 검색해도 안 맞고, 대소문자로 구분하던 것
-            //   (WorkStation 의 S)이 뭉개진다.
+            //   씬·코드에 있는 실제 이름이 달라진다. 검색해도 안 맞고, 대문자로 단어를 끊어 읽던
+            //   파스칼 표기의 경계가 뭉개진다.
             EditorGUI.LabelField(rect, go.name.Substring(rule.prefix.Length), new GUIStyle
             {
                 alignment = rule.textAlignment,
