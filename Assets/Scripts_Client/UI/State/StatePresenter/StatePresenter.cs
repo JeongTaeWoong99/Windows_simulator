@@ -44,6 +44,12 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("누르면 그 화면으로 갈아 끼운다. 같은 화면이 열려 있으면 작업슬롯으로 돌아간다")]
     private ScreenButton[] screenButtons = new ScreenButton[0];
 
+    // ※ 화면 전환 버튼(위)과 역할이 다르다 — 화면을 여는 게 아니라 앱을 즉시 끈다. 그래서 배열이 아니라
+    //   전용 필드로 가른다. 타이틀바를 끄면 창 'X'가 없어져 명시적 종료 출구가 필요하다.
+    [CenterHeader("시스템")]
+    [SerializeField, Tooltip("누르면 앱을 종료한다. OnClick은 코드가 연결한다")]
+    private Button quitButton = null!;
+
     private PlayerDataModel _data = null!;
     private UIManager       _ui   = null!;
     private bool            _isSubscribed;
@@ -56,12 +62,14 @@ public class StatePresenter : MonoBehaviour
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다(SettingPresenter와 같은 규칙).
         this.RequireRef(nickNameText, nameof(nickNameText));
         this.RequireRef(goldText,     nameof(goldText));
+        this.RequireRef(quitButton,   nameof(quitButton));
 
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
 
         Subscribe();
         BindScreenButtons();
+        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로(ESC와 공유)
         Refresh(); // 이미 통지를 받은 뒤에 켜졌을 수 있다
 
         _isReady = true;

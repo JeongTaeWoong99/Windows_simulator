@@ -1,6 +1,6 @@
 # DesktopWindow 규칙
 
-> 최종 업데이트: 2026-08-12 (초기 검증 문서 `README.MD`에서 제약·함정 흡수) · 대상: `Assets/Scripts_Client/DesktopWindow/`
+> 최종 업데이트: 2026-08-17 (창 이동을 캔버스 드래그 + SC_MOVE 위임으로 개정 — §4·§5-7) · 대상: `Assets/Scripts_Client/DesktopWindow/`
 
 **Win32 / DWM 네이티브 API의 P/Invoke 선언만** 두는 곳. 이 게임이 데스크톱 위의 투명 창으로
 동작하기 위해 필요한 OS 함수들이다.
@@ -82,7 +82,7 @@ DWM의 투명은 **창 백버퍼(최종 출력)의 알파 채널을 읽어** 판
 | 투명 배경 | `DwmExtendFrameIntoClientArea(MARGINS = -1)` + 카메라 알파 0 | dwmapi |
 | 항상 위 | `SetWindowPos(HWND_TOPMOST, …)` | user32 |
 | 클릭 스루 | `SetWindowLong(GWL_EXSTYLE, WS_EX_LAYERED \| WS_EX_TRANSPARENT)` | user32 |
-| 창 이동 | OS 타이틀바(`WS_CAPTION`)를 켜고 그 바를 잡아 드래그 (OS 기본 처리) | user32 |
+| 창 이동 | 캔버스를 잡아 끌면 `ReleaseCapture` + `SendMessage(WM_SYSCOMMAND, SC_MOVE_HTCAPTION)` 로 OS 이동 루프에 위임 | user32 |
 | 위치 / 크기 | `SystemParametersInfo(SPI_GETWORKAREA)` + `SetWindowPos(x, y, w, h)` | user32 |
 | 커서 위치 (클릭스루 중 판정) | `GetCursorPos` + `GetWindowRect` | user32 |
 
@@ -143,14 +143,19 @@ UI 위인지 판정한다. (`WindowManager.GetCursorScreenPosition` / `IsPointer
 
 둘을 오갈 때 **Y축을 뒤집어야 한다.** (`WindowManager.GetCursorScreenPosition` 참조)
 
-### 5-7. 창 이동은 OS 타이틀바로 한다
+### 5-7. 창 이동은 캔버스 드래그로 하되, 이동 자체는 OS에 위임한다
 
-커스텀 드래그 바(인포바)를 두지 않는다. 대신 **OS 타이틀바를 토글로 켜서** 그 진짜 타이틀바를 잡고
-창을 옮긴다. 타이틀바를 끄면 보더리스(깔끔한 창)가 된다.
+기본이 보더리스(타이틀바 off)라 OS 타이틀바가 없다. 대신 **메인 뷰 캔버스에 타이틀바 역할**을
+주어(`WindowDragArea`) 잡아 끌면 창이 움직인다.
 
-직접 드래그를 구현하면 OS가 주는 것(스냅·더블클릭 최대화·모니터 간 이동)을 전부 다시 만들어야 한다.
+⚠️ **직접 좌표를 옮기지 않는다.** `ReleaseCapture` 후 `WM_SYSCOMMAND(SC_MOVE_HTCAPTION)`을 보내
+**OS 이동 루프에 위임**한다 — 그래야 스냅·더블클릭 최대화·모니터 간 이동을 다시 만들지 않는다.
+"직접 드래그 구현"의 함정을 피하면서 타이틀바 없이도 이동이 된다.
 
-> 타이틀바를 켜면 그 바를 잡을 수 있도록 **동적 클릭 스루를 잠시 해제**한다.
+- 클릭/드래그 구분은 `IBeginDragHandler`(EventSystem 이동 임계값)가 공짜로 해 준다 — 단순 클릭은
+  아래 버튼으로 가고, 끌기 시작할 때만 이동이 걸린다.
+- 콘텐츠(캔버스 Graphic) 위에서만 발화한다 — 빈 영역은 동적 클릭 스루로 통과하므로 잡히지 않는다.
+- ⚠️ OS 모달 이동 루프가 도는 동안 마우스를 놓을 때까지 Unity가 잠깐 멈춘다(정상).
 
 ---
 

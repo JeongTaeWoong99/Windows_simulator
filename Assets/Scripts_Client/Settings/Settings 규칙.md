@@ -1,6 +1,6 @@
 # Settings 규칙
 
-> 최종 업데이트: 2026-08-12 · 대상: `Assets/Scripts_Client/Settings/`
+> 최종 업데이트: 2026-08-17 (토글 3개 고정 예외 · 위치 6칸 통합 반영) · 대상: `Assets/Scripts_Client/Settings/`
 
 **창 설정을 `PlayerPrefs`에 저장하고 되읽는 곳.** 키 상수와 읽기·쓰기 헬퍼만 둔다 —
 설정을 **적용**하는 일은 [`Managers/WindowManager`](<../Managers/Managers 규칙.md>)가 한다.
@@ -22,6 +22,10 @@
 
 > 인스펙터 값을 다시 시험하려면 저장을 지워야 한다 — `PlayerPrefs.DeleteAll()` 또는
 > 해당 키만 삭제. 레지스트리에 남으므로 빌드를 지워도 초기화되지 않는다.
+
+> ⚠️ **예외 — TitleBar·Transparent·DynamicClickThrough는 저장값을 읽지 않는다.** 이 세 토글을
+> UI에서 걷어내(오브젝트 비활성) 되돌릴 방법이 없으므로, `LoadSettings`가 저장값을 무시하고
+> `setStart*`를 항상 고정한다. 이들은 저장은 되지만 로드에서 쓰이지 않는다.
 
 ---
 
@@ -50,11 +54,25 @@ Unity는 **정상 종료 시에만** 자동 저장하는데, 상주 앱은 작�
 | **키는 `const`로 한곳에** | 문자열을 호출부에 흩뿌리면 오타가 조용히 새 키를 만든다 |
 | **`bool`은 0/1 `int`로** | `PlayerPrefs`에 `bool` 타입이 없다 (`SaveBool`/`LoadBool`이 감싼다) |
 
-### 두 개의 위치 축을 헷갈리지 않는다
+### 두 위치 키는 같은 6칸이고, 드롭다운 하나가 함께 정한다
 
 | 키 | 무엇 | 값 |
 |---|---|---|
-| `Window.Anchor` | **창**을 데스크톱 어디에 두는가 | 9분할 (`ScreenAnchor`) |
-| `Widget.Position` | **위젯**이 창 안 어느 칸에 놓이는가 | 6칸 |
+| `Window.Anchor` | **창**을 데스크톱 어디에 두는가 | 6칸 (`ScreenAnchor`) |
+| `Widget.Position` | **위젯**이 창 안 어느 칸에 놓이는가 | 6칸 (`WidgetPosition`) |
 
-이름이 비슷하지만 다른 축이다. 그래서 `Widget.Position`만 접두사가 다르다.
+두 enum이 같은 나열 순서·같은 칸 수라 인덱스가 1:1이다. 설정의 위치 드롭다운 하나가
+두 값을 같은 인덱스로 함께 저장한다(짝이 맞는 모서리 조합만 유효). 키는 여전히 둘로 나뉘어 있다
+(`Widget.Position`만 접두사가 다르다).
+
+**첫 실행(저장 없음)에는 두 값이 각자 공장 기본값으로 뜬다** — 그래서 창 기본값(`setStartAnchor`)과
+위젯 기본값(`WidgetPositionLayout.position`)을 **둘 다 LowerRight로 맞춰** 두 모서리가 일치하게 한다.
+한 번이라도 드롭다운을 만지면 둘이 같은 인덱스로 함께 저장돼 이후로도 일치한다.
+
+> ⚠️ 정렬 시점 주의 — `SettingPresenter.Start`는 부팅이 아니라 **설정 패널을 처음 열 때** 실행된다
+> (`UIManager.ResetMainScreen`이 시작 시 Setting 패널을 꺼 둠). 즉 옛 저장값이 서로 어긋나 있으면
+> 부팅 직후가 아니라 **설정을 처음 여는 순간** 위젯이 창 앵커에 맞춰 정렬된다. 레거시 "짝 맞는"
+> 저장값은 마이그레이션 후에도 그대로 일치하므로(옛 Lower행 6,7,8 → 3,4,5 = 위젯 Lower 인코딩과 동일)
+> 실제로 어긋나는 건 옛 Middle 앵커뿐이고, 그건 이 정렬로 흡수된다.
+
+레거시 9분할 `Window.Anchor` 저장값은 `WindowManager.MigrateAnchor`가 6칸으로 접는다.

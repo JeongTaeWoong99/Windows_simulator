@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-15 · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-17 (원자 적용 `ApplySizeAndPosition` + 토글 3개 고정·위치 6칸 통합·캔버스 드래그 이동 — A-1) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -159,12 +159,26 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 타이틀바·테두리 두께만큼 **렌더 영역이 줄어 16:9가 깨진다** — 그러면 `Match = Height`인 캔버스의
 기준 폭이 1920이 아니게 되어 열 폭이 전부 어긋난다.
 
-`ResizeWindow`는 그래서 스타일(`GWL_STYLE`/`GWL_EXSTYLE`)과 창의 DPI를 읽어
-`AdjustWindowRectExForDpi`로 프레임 두께를 더한 뒤 넘기고, `GetClientRect`로 결과를 다시 재
-어긋나면 그 차이만큼 한 번 보정한다.
+`ClientSizeToOuterSize`가 스타일(`GWL_STYLE`/`GWL_EXSTYLE`)과 창의 DPI를 읽어
+`AdjustWindowRectExForDpi`로 프레임 두께를 더한다.
 
 **스타일을 바꾼 뒤에는 크기를 반드시 재적용한다.** `SetTitleBar`의 `SWP_NOSIZE`는 외곽을 유지한 채
 프레임만 벗기므로, 그 순간 클라이언트 영역이 커진다.
+
+### ⚠️ 크기·위치는 한 기준으로 원자 적용한다 (`ApplySizeAndPosition` — A-1)
+
+크기와 위치를 **따로** 적용하지 않는다. 예전엔 리사이즈(`SWP_NOMOVE`)와 이동(`SWP_NOSIZE`)을
+나눠 불렀는데, 그 사이 과도 상태에서 두 가지가 어긋났다:
+
+- **모니터 판정 오염** — 리사이즈가 좌상단을 고정한 채 창을 키우면, 그 커진 사각형으로
+  `MonitorFromWindow`가 다른 모니터를 잡아 클램프·앵커가 서로 다른 작업 영역 기준으로 계산됐다.
+- **외곽 재추정 불일치** — 위치 계산이 외곽 크기를 다시 추정해, 리사이즈의 실측 보정(dx/dy)과
+  어긋나 오른쪽·아래 앵커가 프레임 두께만큼 넘쳤다.
+
+그래서 `ApplySizeAndPosition`은 ① 작업 영역을 **한 번만** 고정하고(클램프·앵커가 같은 `wa`를 씀),
+② `ClientSizeToOuterSize`로 외곽을 만들어 앵커 좌표를 계산한 뒤 **단일 `SetWindowPos`로 이동+크기 동시** 적용,
+③ `GetClientRect`로 실측해 어긋나면 외곽을 그 차이만큼 보정하되 **앵커 좌표도 보정된 외곽으로 재계산**한다
+(한 번만). 크기·위치가 항상 같은 외곽 값을 공유하므로 스냅이 어긋나지 않는다.
 
 ### ⚠️ 작업 영역은 "주 모니터"가 아니라 "창이 놓인 모니터"다
 
@@ -174,6 +188,26 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 
 앵커 좌표 계산에는 **외곽 크기**를 쓴다 — `SetWindowPos`가 옮기는 게 외곽 사각형이라,
 클라이언트 크기로 계산하면 타이틀바가 켜졌을 때 오른쪽·아래 앵커가 프레임 두께만큼 넘친다.
+
+### 타이틀바·투명·동적 클릭스루는 고정값이다 (토글을 걷어냈다)
+
+설정 UI에서 이 세 토글을 제거하고 오브젝트를 비활성화했다. 그래서 `LoadSettings`는 이 셋을
+**저장값에서 읽지 않고 인스펙터 `setStart*`를 그대로 고정**한다 — 저장값을 읽으면 옛 실행에서
+남은 상태가 되살아나는데 되돌릴 UI가 없기 때문이다. 기본값은 타이틀바 off · 투명 on · 동적 클릭스루 on.
+`Set*` 기능 코드는 남겨 둔다(재활성화 여지). `Topmost`·크기·위치는 토글/드롭다운이 남아 저장값을 계속 쓴다.
+
+### 위치는 6칸이고, 드롭다운 하나가 창·위젯을 함께 정한다
+
+`ScreenAnchor`는 6칸(가로 3 × 세로 2, Middle 행 없음)이라 `WidgetPosition`과 인덱스가 1:1이다.
+`SettingPresenter`의 위치 드롭다운 하나가 창 앵커(`SetAnchorByIndex`)와 위젯 위치
+(`WidgetPositionLayout.SetPosition`)를 **같은 인덱스로** 몰이한다 — 짝이 맞는 모서리 조합만 유효.
+레거시 9분할 저장값은 `LoadSettings`의 `MigrateAnchor`가 6칸으로 접는다(Upper 유지, Middle/Lower → Lower, 멱등).
+
+### 창 이동은 캔버스 드래그로 OS에 위임한다
+
+보더리스가 기본이라 OS 타이틀바가 없다. 메인 뷰 캔버스에 `WindowDragArea`를 붙여 잡아 끌면
+`BeginWindowDrag`가 `ReleaseCapture` + `WM_SYSCOMMAND(SC_MOVE_HTCAPTION)`으로 **OS 이동 루프에 위임**한다
+— 스냅·모니터 간 이동을 다시 구현하지 않는다. 상세는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWindow 규칙.md>) 5-7.
 
 ### ⚠️ 캔버스 기준 해상도를 창 크기로 바꾸지 않는다
 

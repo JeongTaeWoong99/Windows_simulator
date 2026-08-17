@@ -25,6 +25,9 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-17 항상 위가 작업표시줄에 가려지던 문제 — 주기·포커스 재확정](2026-08-17-topmost-above-taskbar.md) — `#client` `#window` topmost는 한 번만 확정하면 작업표시줄(그 자체 topmost)에 밀린다 → 0.5초 주기 + 포커스 상실 시 `HWND_TOPMOST` 재확정(`SWP_NOACTIVATE`)
+- [2026-08-17 타이틀바 제거 동반 UI 개편 — 토글 고정·캔버스 드래그·종료·위치 통합 (A-1 (3))](2026-08-17-titlebar-removal-ui-overhaul.md) — `#client` `#ui` `#window` 토글 3개 저장값 무시 고정 · 캔버스 `IBeginDragHandler`로 창 이동(SC_MOVE 위임) · 종료 버튼 · 위치 드롭다운 6칸 1개로 통합(Middle 제거·레거시 마이그레이션)
+- [2026-08-17 창 스냅 어긋남 수정 — 크기·위치 원자 적용 (A-1)](2026-08-17-window-snap-atomic-apply.md) — `#client` `#window` 크기·위치를 따로 적용하던 걸 `ApplySizeAndPosition` 단일 SetWindowPos로 통합 (모니터 오판정·DPI 앵커 오차 제거)
 - [2026-08-15 빌드에서 3열 폭이 어긋나는 문제 — 해결](2026-08-15-build-ui-layout-mismatch.md) — `#client` `#ui` `#window` 범인은 `FlexibleGridLayoutGroup`의 `min = 자기 폭` 순환(한 번 넓어지면 못 줄어듦) · 창·열 가설은 둘 다 반증 · 넘침 상시 가드 추가 · ✅ 빌드 검증 완료
 - [2026-08-14 문서·스킬 토큰 효율화 + 구조 점검 (Phase 1~8)](2026-08-14-doc-token-diet.md) — `#docs` `#client` `#infra` 트리거 조건화 + 대형 문서·스킬 하이브리드 분할 · 서버·기획은 권고안만
 - [2026-08-14 에디터 서버 콘솔 — 버튼으로 WSGameServer 토글 실행](2026-08-14-editor-server-console.md) — `#editor` `#client` 툴바 버튼 → 서버 시작/정지 + 로그 실시간 tail · `Editor/`를 기능별 하위 폴더로 재편 · ⛔ Unity 실구동·`.meta` 미검증

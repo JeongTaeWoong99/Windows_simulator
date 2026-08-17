@@ -6,8 +6,10 @@ using UnityEngine.UI;
 
 /// <summary>
 /// 설정 패널 — 사용자가 바꿀 수 있는 값을 입력받아 넘기는 곳.
-/// 창 제어(Win32 창 자체)와 일반 설정(위젯 위치)은 넘기는 대상이 달라서
-/// ('WindowManager' vs 'WidgetPositionLayout') 인스펙터를 헤더로 갈랐다.
+///
+/// ■ 위치 드롭다운은 하나로 창·위젯을 함께 정한다
+/// 창의 데스크톱 위치(앵커)와 위젯의 창 안 위치는 같은 6칸이라, 드롭다운 하나가
+/// 'WindowManager'와 'WidgetPositionLayout' 양쪽을 같은 인덱스로 몰이한다.
 ///
 /// ■ 드롭다운 옵션은 코드가 채운다
 /// 라벨을 인스펙터에 손으로 넣으면 enum이 바뀔 때 조용히 어긋난다.
@@ -28,16 +30,15 @@ public class SettingPresenter : MonoBehaviour
     private Button backButton = null!;
 
     [CenterHeader("창 제어 (Win32 네이티브)")]
+    [SerializeField] private Toggle topmostToggle             = null!; // 항상 위 토글
     [SerializeField] private Toggle titleBarToggle            = null!; // OS 타이틀바+테두리 표시 토글(이 바로 창 드래그)
     [SerializeField] private Toggle transparentToggle         = null!; // 투명 배경 토글
-    [SerializeField] private Toggle topmostToggle             = null!; // 항상 위 토글
     [SerializeField] private Toggle dynamicClickThroughToggle = null!; // 동적 클릭 통과 토글
 
     [SerializeField] private TMP_Dropdown sizeDropdown           = null!; // 창 크기 배율 프리셋
-    [SerializeField] private TMP_Dropdown windowPositionDropdown = null!; // 창의 데스크톱 위치 (9분할 앵커)
-
-    [CenterHeader("일반 설정")]
-    [SerializeField] private TMP_Dropdown widgetPositionDropdown = null!; // 위젯의 창 안 위치 (6칸)
+    // 위치 드롭다운 하나가 창의 데스크톱 위치(앵커)와 위젯의 창 안 위치(6칸)를 함께 정한다.
+    // 둘은 같은 6칸 나열 순서라 인덱스가 1:1이다 — 짝이 맞는 모서리 조합만 유효.
+    [SerializeField] private TMP_Dropdown windowPositionDropdown = null!; // 창+위젯 위치 (6칸)
 
     // ※ WidgetPositionLayout은 Services에 등록되지 않는다([ExecuteAlways] 레이아웃 컴포넌트라
     //   에디터에서도 돌아야 해서 서비스 로케이터에 묶지 않았다). 그래서 인스펙터로 직접 받는다.
@@ -58,7 +59,6 @@ public class SettingPresenter : MonoBehaviour
         this.RequireRef(dynamicClickThroughToggle, nameof(dynamicClickThroughToggle));
         this.RequireRef(sizeDropdown,              nameof(sizeDropdown));
         this.RequireRef(windowPositionDropdown,    nameof(windowPositionDropdown));
-        this.RequireRef(widgetPositionDropdown,    nameof(widgetPositionDropdown));
         this.RequireRef(widgetLayout,              nameof(widgetLayout));
 
         var window = Services.Get<WindowManager>();
@@ -76,21 +76,20 @@ public class SettingPresenter : MonoBehaviour
         BindToggle(topmostToggle,             window.Topmost,             window.SetTopmost);
         BindToggle(dynamicClickThroughToggle, window.DynamicClickThrough, window.SetDynamicClickThrough);
 
-        BindDropdown(sizeDropdown,           window.GetSizeLabels(),   window.SizeIndex,   window.SetWindowSizeByIndex);
-        BindDropdown(windowPositionDropdown, window.GetAnchorLabels(), window.AnchorIndex, window.SetAnchorByIndex);
+        BindDropdown(sizeDropdown, window.GetSizeLabels(), window.SizeIndex, window.SetWindowSizeByIndex);
 
-        // ─── 일반 설정 ───
-        BindDropdown(widgetPositionDropdown, GetWidgetPositionLabels(), (int)widgetLayout.Position,
-                     index => widgetLayout.SetPosition((WidgetPosition)index));
+        // 위치 드롭다운 하나가 창 앵커와 위젯 위치를 함께 몰이한다. 시작 인덱스는 창 앵커를 권위 소스로 삼는다.
+        // ※ 이 Start는 부팅이 아니라 "설정 패널을 처음 열 때" 돈다(UIManager가 시작 시 Setting 패널을 꺼 둠).
+        //   그래서 아래 SetPosition은 부팅 정렬이 아니라, 옛 저장값이 서로 어긋나 있으면 설정을 여는 이 순간
+        //   위젯을 창 앵커에 맞춰 흡수하는 역할이다. 부팅 직후 일치는 두 공장 기본값을 같은 모서리로 맞춰 보장한다.
+        int startPosition = window.AnchorIndex;
+        widgetLayout.SetPosition((WidgetPosition)startPosition);
+        BindDropdown(windowPositionDropdown, window.GetAnchorLabels(), startPosition, index =>
+        {
+            window.SetAnchorByIndex(index);
+            widgetLayout.SetPosition((WidgetPosition)index);
+        });
     }
-
-    // 위젯 6칸 라벨을 WidgetPosition enum 순서 그대로 만든다 (Start에서 호출)
-    // ※ 창의 9분할 앵커와 나열 규칙이 같다 — index%3 = 가로, index/3 = 세로.
-    private static List<string> GetWidgetPositionLabels() => new List<string>
-    {
-        "Upper Left", "Upper Center", "Upper Right",
-        "Lower Left", "Lower Center", "Lower Right",
-    };
 
     // 토글을 시작값으로 세팅(알림 없이)하고, 값 변경 시 창 제어 메서드를 호출하도록 연결
     private void BindToggle(Toggle toggle, bool startValue, UnityAction<bool> onChanged)

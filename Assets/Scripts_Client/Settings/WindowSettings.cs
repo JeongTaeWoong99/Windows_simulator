@@ -2,8 +2,10 @@ using UnityEngine;
 
 /// <summary>창 설정을 'PlayerPrefs'에 저장하고 되읽는다.</summary>
 /// <remarks>
-/// ⚠️ 'WindowManager'의 'setStart*' 필드는 "저장값이 없을 때 쓰는 공장 초기값"이다 —
-/// 한 번 조작하면 저장값이 이긴다. 저장 정책과 그 이유는 'Settings 규칙.md' 참조.
+/// ⚠️ 'WindowManager'의 'setStart*' 필드는 대개 "저장값이 없을 때 쓰는 공장 초기값"이다 —
+/// 한 번 조작하면 저장값이 이긴다(Topmost·Scale·Anchor).
+/// ⚠️ 단 TitleBar·Transparent·DynamicClickThrough는 예외 — 토글을 UI에서 걷어내 저장값을 읽지 않고
+/// 'setStart*'를 항상 고정한다('WindowManager.LoadSettings'). 저장 정책은 'Settings 규칙.md' 참조.
 /// </remarks>
 public static class WindowSettings
 {

@@ -2,10 +2,11 @@ using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// 위젯이 놓일 창 안 6칸(가로 3 × 세로 2). ScreenAnchor 와 같은 나열 순서를 써서
+/// 위젯이 놓일 창 안 6칸(가로 3 × 세로 2). 'ScreenAnchor'와 같은 나열 순서·같은 칸 수를 써서
 /// index % 3 = 가로(0=왼쪽,1=가운데,2=오른쪽), index / 3 = 세로(0=위,1=아래)로 계산할 수 있다.
 ///
-/// ※ 창을 데스크톱 어디에 두는가(ScreenAnchor 9분할)와는 다른 축이다. 둘을 섞지 않는다.
+/// ※ 인덱스가 'ScreenAnchor'와 1:1이라, 설정의 위치 드롭다운 하나가 창 앵커와 이 위젯 위치를
+///   같은 값으로 함께 정한다('SettingPresenter').
 /// </summary>
 public enum WidgetPosition
 {
@@ -53,8 +54,10 @@ public class WidgetPositionLayout : MonoBehaviour
     [SerializeField] private RectTransform widgetPanel = null!; // 위젯 — 6칸의 세로가 이 패널의 슬롯을 정한다
     [SerializeField] private RectTransform statePanel  = null!; // 상태 패널(계정 레벨·골드·시스템 아이콘) — 항상 위젯의 반대편 슬롯
 
+    // 기본값은 창 앵커 기본값('WindowManager.setStartAnchor' = LowerRight)과 맞춘다 — 저장이 없는
+    // 첫 실행에서 창·위젯이 같은 모서리로 뜨게. 이후엔 설정 드롭다운이 둘을 같은 값으로 함께 저장한다.
     [CenterHeader("위젯 위치")]
-    [SerializeField] private WidgetPosition position = WidgetPosition.LowerCenter;
+    [SerializeField] private WidgetPosition position = WidgetPosition.LowerRight;
 
     // ※ 정렬을 바꿀 대상은 따로 배선하지 않는다 — 위 열 참조 3개에서 VerticalLayoutGroup을 직접 꺼낸다.
     //   예전엔 배열로 따로 받았는데, 인스펙터를 비워 두면 아무 일도 안 일어나면서 원인이 안 보였다.

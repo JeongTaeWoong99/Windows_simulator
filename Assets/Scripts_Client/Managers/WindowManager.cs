@@ -17,14 +17,14 @@ using UnityEngine.InputSystem;
 /// </remarks>
 
 /// <summary>
-/// 창을 배치할 9분할 앵커(위치). Unity 자식 정렬(Upper/Middle/Lower × Left/Center/Right) 순서와 동일하게
-/// 나열해, index/3 = 세로(0=위,1=중,2=아래), index%3 = 가로(0=좌,1=중,2=우)로 계산할 수 있다.
+/// 창을 배치할 6칸 앵커(위치). 'WidgetPosition'과 같은 나열 순서(가로 3 × 세로 2)를 써서
+/// index%3 = 가로(0=좌,1=중,2=우), index/3 = 세로(0=위,1=아래)로 계산할 수 있다.
+/// 위젯 위치와 인덱스가 1:1이라 설정에서 드롭다운 하나가 창·위젯 위치를 함께 정한다.
 /// </summary>
 public enum ScreenAnchor
 {
-    UpperLeft,  UpperCenter,  UpperRight,
-    MiddleLeft, MiddleCenter, MiddleRight,
-    LowerLeft,  LowerCenter,  LowerRight,
+    UpperLeft, UpperCenter, UpperRight,
+    LowerLeft, LowerCenter, LowerRight,
 }
 
 /// <summary>
@@ -56,7 +56,7 @@ public class WindowManager : MonoService<WindowManager>
     // ⚠️ 여기 적은 값은 "저장된 설정이 없을 때"만 쓰인다. 사용자가 한 번이라도 토글·드롭다운을
     //   만지면 그 값이 PlayerPrefs에 저장되고, 다음 실행부터는 저장값이 이긴다(WindowSettings 참조).
     [CenterHeader("Window Settings - 저장값이 없을 때 쓸 초기 상태")]
-    [SerializeField] private bool         setStartTitleBar            = true;                    // OS 타이틀바+테두리 표시(켜면 이 바로 창 드래그, 끄면 보더리스)
+    [SerializeField] private bool         setStartTitleBar            = false;                   // OS 타이틀바+테두리 표시(끄면 보더리스 — 창 이동은 캔버스 드래그로). 토글 제거로 이제 이 값이 고정값이다
     [SerializeField] private bool         setStartTransparent         = true;                    // 투명 배경 상태
     [SerializeField] private bool         setStartTopmost             = true;                    // 항상 위
     [SerializeField] private bool         setStartDynamicClickThrough = true;                    // 동적 클릭 스루: 매 프레임 커서로 자동 On/Off(콘텐츠 위=클릭, 빈 영역=통과)
@@ -67,7 +67,7 @@ public class WindowManager : MonoService<WindowManager>
     // 6개 설정 전부가 여기 짝을 갖는다. 인스펙터 필드를 직접 읽으면 사용자가 바꾼 값이 무시된다.
     private bool         _isTitleBar;                              // 현재 타이틀바 표시 상태
     private bool         _isTransparent;                           // 현재 투명 배경 상태
-    private bool         _isTopmost;                               // 현재 항상 위 상태(MoveWindow/ResizeWindow 시 Z순서 유지에 사용)
+    private bool         _isTopmost;                               // 현재 항상 위 상태(창 이동·리사이즈 시 Z순서 유지에 사용)
     private bool         _dynamicClickThrough;                     // 현재 동적 클릭 스루 상태
     private WindowScale  _currentScale  = WindowScale.X1;          // 현재 적용된 크기 배율 프리셋
     private ScreenAnchor _currentAnchor = ScreenAnchor.LowerRight; // 현재 적용된 위치 앵커
@@ -80,6 +80,11 @@ public class WindowManager : MonoService<WindowManager>
 
     // 타이틀바 등 "항상 클릭을 받아야 하는" 상황에서 동적 클릭 스루를 잠시 풀도록 하는 내부 플래그
     private bool _forceInteractive = false;
+
+    // 항상 위 재확정 : 작업표시줄(그 자체가 topmost)이 앞으로 오면 우리 창이 topmost 밴드 안에서
+    //   뒤로 밀린다. 켜져 있는 동안 주기적으로 맨 앞으로 되돌리기 위한 누적 시간.
+    private       float _topmostReassertTimer;
+    private const float TopmostReassertInterval = 0.5f; // 초. 짧을수록 즉각적이지만 SetWindowPos 호출이 잦아진다
 
     // RaycastAll 결과 재사용 버퍼(매 프레임 new 방지 → GC 부담 감소)
     private readonly List<RaycastResult> _raycastResults = new List<RaycastResult>();
@@ -122,11 +127,21 @@ public class WindowManager : MonoService<WindowManager>
 
     private void Update()
     {
-#if !UNITY_EDITOR
-        // 안전장치 : 투명/보더리스 상태라 창을 닫기 어려우므로 ESC 로 강제 종료.
+        // 안전장치 : 투명/보더리스 상태라 창을 닫기 어려우므로 ESC 로 강제 종료(종료 버튼과 같은 경로).
         if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-            Application.Quit();
-#endif
+            QuitApplication();
+
+        // 항상 위 유지 : 작업표시줄 등 다른 topmost 창이 앞으로 오면 밴드 안에서 밀리므로 주기적으로 재확정.
+        //   (동적 클릭 스루와 무관하게 돌아야 하니 아래 early-return 앞에 둔다)
+        if (_isTopmost && _initialized)
+        {
+            _topmostReassertTimer += Time.unscaledDeltaTime;
+            if (_topmostReassertTimer >= TopmostReassertInterval)
+            {
+                _topmostReassertTimer = 0f;
+                ReassertTopmost();
+            }
+        }
 
         // 동적 클릭 스루 : 마우스가 콘텐츠(UI/스프라이트) 위면 클릭을 받고, 빈 영역이면 통과시킨다.
         if (!_dynamicClickThrough || !_initialized)
@@ -145,17 +160,33 @@ public class WindowManager : MonoService<WindowManager>
     /// </summary>
     private void LoadSettings()
     {
-        _isTitleBar          = WindowSettings.LoadBool(WindowSettings.TitleBarKey,            setStartTitleBar);
-        _isTransparent       = WindowSettings.LoadBool(WindowSettings.TransparentKey,         setStartTransparent);
-        _isTopmost           = WindowSettings.LoadBool(WindowSettings.TopmostKey,             setStartTopmost);
-        _dynamicClickThrough = WindowSettings.LoadBool(WindowSettings.DynamicClickThroughKey, setStartDynamicClickThrough);
+        // ⚠️ 타이틀바·투명·동적 클릭스루는 설정 UI에서 토글을 걷어냈다 — 이제 저장값을 읽지 않고
+        //   인스펙터 공장값을 그대로 고정한다. 저장값을 읽으면 옛 실행에서 남은 상태가 되살아나
+        //   UI로는 되돌릴 방법이 없어진다(토글이 없으므로).
+        _isTitleBar          = setStartTitleBar;
+        _isTransparent       = setStartTransparent;
+        _dynamicClickThrough = setStartDynamicClickThrough;
+
+        // Topmost·크기·위치는 토글/드롭다운이 남아 있어 저장값을 계속 쓴다.
+        _isTopmost = WindowSettings.LoadBool(WindowSettings.TopmostKey, setStartTopmost);
 
         // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
         int scale  = WindowSettings.LoadInt(WindowSettings.ScaleKey,  (int)setStartScale);
         int anchor = WindowSettings.LoadInt(WindowSettings.AnchorKey, (int)setStartAnchor);
 
-        _currentScale  = (WindowScale)Mathf.Clamp(scale,   0, (int)WindowScale.X2);
-        _currentAnchor = (ScreenAnchor)Mathf.Clamp(anchor, 0, (int)ScreenAnchor.LowerRight);
+        _currentScale  = (WindowScale)Mathf.Clamp(scale, 0, (int)WindowScale.X2);
+        _currentAnchor = (ScreenAnchor)MigrateAnchor(anchor);
+    }
+
+    /// <summary>
+    /// 레거시 9분할 앵커 저장값(0~8)을 현재 6칸(0~5)으로 옮긴다. Upper 행(0~2)은 그대로,
+    /// 옛 Middle(3~5)·Lower(6~8) 행은 모두 새 Lower 행(3~5)으로 접는다.
+    /// 새 6칸 값에 대해서는 자기 자신을 돌려주므로(멱등) 여러 번 실행해도 안전하다.
+    /// </summary>
+    private static int MigrateAnchor(int saved)
+    {
+        int mapped = saved <= 2 ? saved : saved >= 6 ? saved - 3 : saved;
+        return Mathf.Clamp(mapped, 0, (int)ScreenAnchor.LowerRight);
     }
 
     /// <summary>
@@ -251,10 +282,8 @@ public class WindowManager : MonoService<WindowManager>
         // ⚠️ 위 호출은 'SWP_NOSIZE'라 외곽 크기를 그대로 둔다 — 프레임 두께만 바뀌므로
         //   그만큼 클라이언트(렌더) 영역이 늘거나 줄어 16:9가 깨진다. 캔버스가 그 폭으로
         //   레이아웃을 한 번 계산하면 3열 폭이 어긋난 채 굳는다 (A-1 버그).
-        //   → 스타일이 바뀐 직후 크기를 다시 적용해 렌더 영역을 되돌린다.
-        Vector2Int size = GetSize(_currentScale);
-        ResizeWindow(size.x, size.y);
-        ApplyPosition(_currentAnchor); // 외곽 크기가 바뀌었으므로 앵커 위치도 다시 맞춘다
+        //   → 스타일이 바뀐 직후 크기·위치를 다시 적용해 렌더 영역과 앵커를 되돌린다.
+        ApplySizeAndPosition(_currentScale, _currentAnchor);
 
         // 프레임 재계산으로 DWM 투명 확장이 풀릴 수 있어, 투명 상태면 다시 적용한다.
         // ⚠️ 인스펙터의 공장 초기값이 아니라 현재 상태를 봐야 한다 — 사용자가 투명을 끈 뒤
@@ -287,7 +316,8 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>항상 위 On/Off — Z순서를 HWND_TOPMOST/HWND_NOTOPMOST 로 바꾼다(위치·크기는 유지).</summary>
     public void SetTopmost(bool enable)
     {
-        _isTopmost = enable; // MoveWindow/ResizeWindow 가 Z순서를 유지하도록 상태 저장
+        _isTopmost            = enable; // 창 이동·리사이즈가 Z순서를 유지하도록 상태 저장
+        _topmostReassertTimer = 0f;     // 방금 확정했으니 재확정 주기를 처음부터
         WindowSettings.SaveBool(WindowSettings.TopmostKey, enable);
 #if !UNITY_EDITOR
         // hWndInsertAfter 에 HWND_TOPMOST/HWND_NOTOPMOST 를 주어 Z순서만 바꾼다.
@@ -296,6 +326,32 @@ public class WindowManager : MonoService<WindowManager>
         uint   flags       = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOSIZE | Win32Native.SWP_SHOWWINDOW;
         Win32Native.SetWindowPos(_hWnd, insertAfter, 0, 0, 0, 0, flags);
 #endif
+    }
+
+    /// <summary>
+    /// 항상 위를 다시 확정한다 — Z순서만 topmost 밴드 맨 앞으로 되돌린다(작업표시줄에 가려지지 않게).
+    /// 위치·크기·포커스는 건드리지 않는다('SWP_NOACTIVATE' 로 활성 창을 뺏지 않음).
+    /// Update 의 주기 재확정과 포커스 상실 시 호출된다.
+    /// </summary>
+    private void ReassertTopmost()
+    {
+#if !UNITY_EDITOR
+        if (_hWnd == IntPtr.Zero)
+            return;
+
+        uint flags = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOSIZE | Win32Native.SWP_NOACTIVATE;
+        Win32Native.SetWindowPos(_hWnd, Win32Native.HWND_TOPMOST, 0, 0, 0, 0, flags);
+#endif
+    }
+
+    /// <summary>
+    /// 포커스를 잃는 순간(다른 창이 앞으로 옴) 항상 위면 즉시 재확정한다 — 주기(0.5초)를 기다리지 않고
+    /// 바로 작업표시줄·다른 창 위로 되돌린다. 'NOACTIVATE' 라 포커스를 도로 뺏지는 않는다. (Unity 메시지)
+    /// </summary>
+    private void OnApplicationFocus(bool hasFocus)
+    {
+        if (!hasFocus && _isTopmost && _initialized)
+            ReassertTopmost();
     }
 
     /// <summary>
@@ -345,17 +401,16 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>크기 드롭다운 옵션 라벨("1x"/"1.25x"/"1.5x"/"2x")을 WindowScale enum 순서대로 만든다.</summary>
     public List<string> GetSizeLabels() => new List<string>(SizeLabels);
 
-    /// <summary>위치 드롭다운 옵션 라벨(9분할)을 ScreenAnchor enum 순서대로 만든다.</summary>
+    /// <summary>위치 드롭다운 옵션 라벨(6칸)을 ScreenAnchor enum 순서대로 만든다.</summary>
     public List<string> GetAnchorLabels() => new List<string>
     {
-        "Upper Left",  "Upper Center",  "Upper Right",
-        "Middle Left", "Middle Center", "Middle Right",
-        "Lower Left",  "Lower Center",  "Lower Right",
+        "Upper Left", "Upper Center", "Upper Right",
+        "Lower Left", "Lower Center", "Lower Right",
     };
 
     /// <summary>
     /// 크기 프리셋을 인덱스로 적용한다(드롭다운 onValueChanged / 시작 초기화에서 호출).
-    /// 창 크기 변경 후 현재 앵커 위치로 재정렬한다.
+    /// 크기·위치를 하나의 기준 모니터로 원자 적용한다('ApplySizeAndPosition').
     /// ⚠️ 'Screen.SetResolution'과 캔버스 기준 해상도 변경을 쓰지 않는다 —
     /// 둘 다 창 제어를 망가뜨린다 ('Managers 규칙.md' 5장).
     /// </summary>
@@ -364,70 +419,96 @@ public class WindowManager : MonoService<WindowManager>
         _currentScale = (WindowScale)Mathf.Clamp(index, 0, ScaleFactors.Length - 1);
         WindowSettings.SaveInt(WindowSettings.ScaleKey, (int)_currentScale);
 #if !UNITY_EDITOR
-        Vector2Int windowSize = GetSize(_currentScale);
-
-        ResizeWindow(windowSize.x, windowSize.y);
-        ApplyPosition(_currentAnchor); // 크기가 바뀌면 위치도 다시 맞춘다
+        ApplySizeAndPosition(_currentScale, _currentAnchor);
 #endif
     }
 
-    /// <summary>위치 앵커를 인덱스로 적용한다(드롭다운 onValueChanged에서 호출). 현재 크기 기준으로 이동.</summary>
+    /// <summary>
+    /// 위치 앵커를 인덱스로 적용한다(드롭다운 onValueChanged에서 호출).
+    /// 크기·위치를 함께 재적용한다 — 위치만 따로 옮기면 이전 크기 적용이 남긴 외곽 오차가
+    /// 그대로 위치에 실려 어긋날 수 있어, 매번 같은 기준으로 원자 적용한다.
+    /// </summary>
     public void SetAnchorByIndex(int index)
     {
         // 마지막 앵커(LowerRight)를 상한으로 클램프 — 매직 넘버(8) 대신 enum 값 사용
         _currentAnchor = (ScreenAnchor)Mathf.Clamp(index, 0, (int)ScreenAnchor.LowerRight);
         WindowSettings.SaveInt(WindowSettings.AnchorKey, (int)_currentAnchor);
 #if !UNITY_EDITOR
-        ApplyPosition(_currentAnchor);
+        ApplySizeAndPosition(_currentScale, _currentAnchor);
 #endif
     }
 
-    /// <summary>창을 데스크톱 좌표 (x, y)로 이동. 크기는 유지(SWP_NOSIZE).</summary>
-    public void MoveWindow(int x, int y)
-    {
 #if !UNITY_EDITOR
-        uint flags = Win32Native.SWP_NOSIZE | Win32Native.SWP_NOACTIVATE | Win32Native.SWP_SHOWWINDOW;
-        // 현재 항상위 상태를 유지하도록 적절한 Z순서 핸들을 넘긴다.
-        IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
-        Win32Native.SetWindowPos(_hWnd, after, x, y, 0, 0, flags);
-#endif
-    }
-
     /// <summary>
-    /// 창의 <b>클라이언트 영역</b>(= Unity가 실제로 그리는 렌더 영역)을 (width, height)로 변경한다.
-    /// 위치는 유지(SWP_NOMOVE).
+    /// 크기와 위치를 <b>하나의 기준 모니터·단일 SetWindowPos</b>로 원자 적용한다(A-1 근본 수정).
     ///
-    /// ⚠️ 'SetWindowPos'는 클라이언트가 아니라 <b>외곽</b> 크기를 받는다. 원하는 렌더 해상도를
-    /// 그대로 넘기면 타이틀바·테두리 두께만큼 렌더 영역이 줄어 <b>화면비가 16:9에서 벗어난다.</b>
-    /// 그러면 'Match = Height'인 캔버스의 기준 폭이 1920이 아니게 되고, 3열 레이아웃이 어긋난다
-    /// (A-1 버그). 그래서 여기서 프레임 두께를 더해 준다.
+    /// 왜 통합했나 — 예전엔 리사이즈(SWP_NOMOVE)와 이동(SWP_NOSIZE)을 따로 불렀는데,
+    ///   ① 리사이즈가 좌상단을 고정한 채 창을 키우면 그 과도 상태에서 'MonitorFromWindow' 판정이
+    ///      다른 모니터로 넘어가 클램프·앵커가 서로 다른 작업 영역을 기준으로 계산됐고,
+    ///   ② 위치 계산이 외곽 크기를 <b>다시 추정</b>해, 리사이즈의 실측 보정(dx/dy)과 어긋나
+    ///      오른쪽·아래 앵커가 프레임 두께만큼 넘쳤다.
+    /// → 작업 영역을 <b>한 번만</b> 고정하고, 실측 보정 시 <b>위치까지 같은 외곽으로 재계산</b>한다.
+    ///
+    /// ⚠️ 'SetWindowPos'는 클라이언트가 아니라 외곽 크기를 받는다 — 그대로 넘기면 렌더 영역이
+    /// 프레임 두께만큼 줄어 16:9가 깨진다('Managers 규칙.md' 5장). 'ClientSizeToOuterSize'로 부풀린다.
     /// </summary>
-    public void ResizeWindow(int width, int height)
+    private void ApplySizeAndPosition(WindowScale scale, ScreenAnchor anchor)
     {
-#if !UNITY_EDITOR
-        Vector2Int outer = ClientSizeToOuterSize(width, height);
+        // ① 기준 모니터를 한 번만 고정 — 크기 클램프와 앵커 계산이 같은 작업 영역(wa)을 쓰게 해
+        //    리사이즈 도중 모니터 판정이 바뀌는 것을 막는다. 실패하면 조정을 건너뛴다.
+        if (!TryGetWorkArea(out Win32Native.RECT wa))
+            return;
 
-        uint   flags = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOACTIVATE | Win32Native.SWP_SHOWWINDOW;
         IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
-        Win32Native.SetWindowPos(_hWnd, after, 0, 0, outer.x, outer.y, flags);
+        uint   flags = Win32Native.SWP_NOACTIVATE | Win32Native.SWP_SHOWWINDOW; // 이동+크기 동시(NOMOVE/NOSIZE 없음)
 
-        // 결과를 실제로 재서 어긋나면 그 차이만큼 한 번 보정한다.
-        // 프레임 두께 계산이 빗나가는 환경(DPI 가상화 등)에서도 렌더 영역이 정확히 16:9가 되도록
-        // 하는 마지막 방어선이다. 한 번만 돌므로 반복 보정으로 진동할 일은 없다.
-        if (Win32Native.GetClientRect(_hWnd, out Win32Native.RECT client))
+        // ② 렌더 크기를 기준 작업 영역에 맞춰 16:9 유지 클램프 → ③ 외곽 크기·앵커 좌표 계산 → 원자 적용.
+        Vector2Int client = ClampToWorkArea(BaseSize(scale), wa);
+        Vector2Int outer  = ClientSizeToOuterSize(client.x, client.y);
+        Vector2Int pos    = AnchorPosition(anchor, outer, wa);
+        Win32Native.SetWindowPos(_hWnd, after, pos.x, pos.y, outer.x, outer.y, flags);
+
+        // ④ 실측 보정 — 프레임 두께 추정이 빗나가는 환경(DPI 가상화 등)에서도 렌더 영역이 정확히
+        //    client가 되도록 외곽 크기를 실측 차이만큼 보정하고, 앵커 좌표도 보정된 외곽으로 재계산한다.
+        //    크기와 위치가 항상 같은 외곽 값을 공유하므로 오른쪽·아래 앵커가 어긋나지 않는다.
+        //    한 번만 돌므로 반복 보정으로 진동할 일은 없다.
+        if (Win32Native.GetClientRect(_hWnd, out Win32Native.RECT actual))
         {
-            int dx = width  - (client.right  - client.left);
-            int dy = height - (client.bottom - client.top);
+            int dx = client.x - (actual.right  - actual.left);
+            int dy = client.y - (actual.bottom - actual.top);
 
             if (dx != 0 || dy != 0)
-                Win32Native.SetWindowPos(_hWnd, after, 0, 0, outer.x + dx, outer.y + dy, flags);
+            {
+                outer = new Vector2Int(outer.x + dx, outer.y + dy);
+                pos   = AnchorPosition(anchor, outer, wa);
+                Win32Native.SetWindowPos(_hWnd, after, pos.x, pos.y, outer.x, outer.y, flags);
+            }
         }
-#endif
     }
+
+    /// <summary>
+    /// 9분할 앵커의 <b>외곽</b> 좌상단 좌표를 작업 영역(wa)과 외곽 크기로 계산한다.
+    /// ⚠️ 클라이언트가 아니라 외곽 크기로 계산한다 — 'SetWindowPos'가 옮기는 게 외곽 사각형이라,
+    /// 클라이언트 크기로 계산하면 타이틀바가 켜졌을 때 오른쪽·아래 앵커가 프레임 두께만큼 넘친다.
+    /// 창이 작업 영역보다 커도 좌상단(타이틀바)은 보이도록 안쪽으로 클램프한다.
+    /// </summary>
+    private static Vector2Int AnchorPosition(ScreenAnchor anchor, Vector2Int outer, Win32Native.RECT wa)
+    {
+        int waW = wa.right - wa.left;
+
+        int hi = (int)anchor % 3; // 0=Left 1=Center 2=Right
+        int vi = (int)anchor / 3; // 0=Upper 1=Lower
+
+        int x = hi == 0 ? wa.left : hi == 1 ? wa.left + (waW - outer.x) / 2 : wa.right - outer.x;
+        int y = vi == 0 ? wa.top  : wa.bottom - outer.y;
+
+        return new Vector2Int(Mathf.Max(wa.left, x), Mathf.Max(wa.top, y));
+    }
+#endif
 
 #if !UNITY_EDITOR
     /// <summary>
-    /// 원하는 클라이언트 크기를, 그 크기를 얻는 데 필요한 외곽 크기로 바꾼다 ('ResizeWindow'에서 호출).
+    /// 원하는 클라이언트 크기를, 그 크기를 얻는 데 필요한 외곽 크기로 바꾼다 ('ApplySizeAndPosition'에서 호출).
     /// 현재 스타일과 창이 놓인 모니터의 DPI를 OS에 그대로 물어보므로,
     /// 타이틀바 On/Off·배율 100/125/150% 어디서든 렌더 영역이 정확히 요청한 값이 된다.
     /// 보더리스(WS_POPUP)면 프레임이 없어 결과가 입력과 같다.
@@ -461,80 +542,31 @@ public class WindowManager : MonoService<WindowManager>
 #endif
 
     /// <summary>
-    /// 현재 크기와 작업 영역(작업표시줄 제외)을 기준으로 9분할 앵커 위치의 좌표를 계산해 창을 옮긴다.
-    /// 창이 작업 영역보다 커도 좌상단이 잘리지 않도록 좌표를 클램프한다.
+    /// 배율 프리셋의 실제 렌더(클라이언트) 픽셀 크기를 구한다. 기준 960x540(16:9)에 배율을 곱한 절대
+    /// 픽셀이며, 모니터 해상도에 비례시키지 않는다(WindowScale 주석 참조). 작업 영역 클램프는 'ClampToWorkArea'가 따로 한다.
     /// </summary>
-    private void ApplyPosition(ScreenAnchor anchor)
-    {
-#if !UNITY_EDITOR
-        // 창이 실제로 올라가 있는 모니터의 작업 영역. 실패하면 위치 조정을 건너뛴다.
-        if (!TryGetWorkArea(out Win32Native.RECT wa))
-            return;
-
-        int waW = wa.right  - wa.left;
-        int waH = wa.bottom - wa.top;
-
-        // ⚠️ 앵커 좌표는 "외곽" 기준이다 — SetWindowPos 가 외곽 사각형을 옮기기 때문이다.
-        //   클라이언트 크기로 계산하면 타이틀바가 켜져 있을 때 오른쪽·아래 앵커가 프레임 두께만큼 넘친다.
-        Vector2Int client = GetSize(_currentScale);
-        Vector2Int s      = ClientSizeToOuterSize(client.x, client.y);
-
-        int hi = (int)anchor % 3; // 0=Left 1=Center 2=Right
-        int vi = (int)anchor / 3; // 0=Upper 1=Middle 2=Lower
-
-        int x = hi == 0 ? wa.left : hi == 1 ? wa.left + (waW - s.x) / 2 : wa.right  - s.x;
-        int y = vi == 0 ? wa.top  : vi == 1 ? wa.top  + (waH - s.y) / 2 : wa.bottom - s.y;
-
-        // 창이 화면보다 커도 좌상단(타이틀바)은 보이도록 작업 영역 안쪽으로 클램프.
-        x = Mathf.Max(wa.left, x);
-        y = Mathf.Max(wa.top,  y);
-
-        MoveWindow(x, y);
-#endif
-    }
-
-    /// <summary>
-    /// 배율 프리셋의 실제 창 픽셀 크기를 구한다. 기준 960x540(16:9)에 배율을 곱한 절대 픽셀이며,
-    /// 모니터 해상도에 비례시키지 않는다(WindowScale 주석 참조).
-    /// 계산 결과가 작업 영역을 넘으면 16:9를 유지한 채 줄인다.
-    /// </summary>
-    private Vector2Int GetSize(WindowScale scale)
+    private static Vector2Int BaseSize(WindowScale scale)
     {
         float factor = ScaleFactors[(int)scale];
-        int   width  = Mathf.RoundToInt(BaseWidth  * factor);
-        int   height = Mathf.RoundToInt(BaseHeight * factor);
-
-        return ClampToWorkArea(width, height);
+        return new Vector2Int(Mathf.RoundToInt(BaseWidth * factor), Mathf.RoundToInt(BaseHeight * factor));
     }
 
     /// <summary>
     /// 창이 작업 영역(작업표시줄 제외)을 넘으면 16:9를 유지한 채 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
     /// 가로·세로 중 더 많이 넘치는 쪽 비율 하나로 양쪽을 함께 줄여야 비율이 보존된다
-    /// — 축마다 따로 상한을 걸면 UI가 찌그러진다.
+    /// — 축마다 따로 상한을 걸면 UI가 찌그러진다. 기준 작업 영역(wa)은 호출부가 한 번 고정해 넘긴다.
     /// </summary>
-    private Vector2Int ClampToWorkArea(int width, int height)
+    private static Vector2Int ClampToWorkArea(Vector2Int size, Win32Native.RECT wa)
     {
-        Vector2Int workArea = GetWorkAreaSize();
+        int waW = wa.right  - wa.left;
+        int waH = wa.bottom - wa.top;
 
-        if (workArea.x <= 0 || workArea.y <= 0)
-            return new Vector2Int(width, height); // 작업 영역 조회 실패 — 줄이지 않는다
+        if (waW <= 0 || waH <= 0)
+            return size; // 작업 영역이 비정상 — 줄이지 않는다
 
-        float fitRatio = Mathf.Min(1f, (float)workArea.x / width, (float)workArea.y / height);
+        float fitRatio = Mathf.Min(1f, (float)waW / size.x, (float)waH / size.y);
 
-        return new Vector2Int(Mathf.RoundToInt(width * fitRatio), Mathf.RoundToInt(height * fitRatio));
-    }
-
-    /// <summary>
-    /// 창이 놓인 모니터의 작업 영역(작업표시줄 제외) 픽셀 크기를 얻는다.
-    /// 조회 실패 시 주 디스플레이의 전체 해상도로 폴백한다(작업표시줄만큼 관대해질 뿐 동작은 유지).
-    /// </summary>
-    private Vector2Int GetWorkAreaSize()
-    {
-#if !UNITY_EDITOR
-        if (TryGetWorkArea(out Win32Native.RECT wa))
-            return new Vector2Int(wa.right - wa.left, wa.bottom - wa.top);
-#endif
-        return new Vector2Int(Display.main.systemWidth, Display.main.systemHeight); // 에디터/폴백
+        return new Vector2Int(Mathf.RoundToInt(size.x * fitRatio), Mathf.RoundToInt(size.y * fitRatio));
     }
 
 #if !UNITY_EDITOR
@@ -563,6 +595,41 @@ public class WindowManager : MonoService<WindowManager>
         return Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref workArea, 0);
     }
 #endif
+
+    #endregion
+
+    #region 창 이동 · 종료
+
+    /// <summary>
+    /// 캔버스(타이틀바 역할)를 잡아 끌 때 창 이동을 시작한다('WindowDragArea'의 드래그 시작에서 호출).
+    /// 직접 좌표를 옮기지 않고 OS 이동 루프에 위임한다 — 'ReleaseCapture'로 캡처를 푼 뒤
+    /// 'WM_SYSCOMMAND(SC_MOVE_HTCAPTION)'을 보내면 "타이틀바를 잡은 것"처럼 동작해
+    /// 스냅·모니터 간 이동을 OS가 그대로 처리한다(보더리스라도 됨).
+    /// ⚠️ 이 호출 동안 OS 모달 이동 루프가 돌아 마우스를 놓을 때까지 Unity가 잠깐 멈춘다(정상).
+    /// </summary>
+    public void BeginWindowDrag()
+    {
+#if !UNITY_EDITOR
+        if (_hWnd == IntPtr.Zero)
+            return;
+
+        Win32Native.ReleaseCapture();
+        Win32Native.SendMessage(_hWnd, Win32Native.WM_SYSCOMMAND, Win32Native.SC_MOVE_HTCAPTION, 0);
+#endif
+    }
+
+    /// <summary>
+    /// 앱을 종료한다(종료 버튼·ESC에서 호출). 보더리스라 창 'X'가 없어 명시적 출구가 필요하다.
+    /// 에디터에서는 Application.Quit이 동작하지 않으므로 플레이 모드를 멈춘다.
+    /// </summary>
+    public void QuitApplication()
+    {
+#if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+#else
+        Application.Quit();
+#endif
+    }
 
     #endregion
 
