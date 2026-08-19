@@ -17,7 +17,8 @@ namespace DesktopWindowControl.EditorTools
 		
 		private static MainToolbarElement Create() =>
 			new MainToolbarButton
-				(new MainToolbarContent("오리지널 씬 복사", "Scenes/Original → Scenes/Test Copy 로 최신본 복사"),
+				(new MainToolbarContent("오리지널 씬 복사", EditorIcons.Get(EditorIcons.Duplicate),
+				                        "Scenes/Original → Scenes/Test Copy 로 최신본 복사"),
 				 OriginalSceneCopier.CopyWithConfirm);
 	}
 }

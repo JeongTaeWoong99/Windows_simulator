@@ -15,7 +15,8 @@ namespace DesktopWindowControl.EditorTools
 
 		private static MainToolbarElement Create() =>
 			new MainToolbarButton
-				(new MainToolbarContent("서버 콘솔", "WSGameServer 실행/종료 및 로그"),
+				(new MainToolbarContent("서버 콘솔", EditorIcons.Get(EditorIcons.Console),
+				                        "WSGameServer 실행/종료 및 로그"),
 				 ServerConsoleWindow.Open);
 	}
 }
