@@ -114,12 +114,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public void SetLoginId(string id) => LoginId = id;
 
     // ─── 가공 이벤트 (UI가 구독) ───
-    public event Action<bool>?                  LoginCompleted;   // 로그인 완료 (성공 여부)
+    // ※ 완료 이벤트에는 성공 여부와 함께 결과 코드를 싣는다 — 실패 사유를 화면에 보여 주려면
+    //   "실패했다"만으로는 부족하고 왜인지(EResultCode)가 필요하다(일감 "실패 알림 토스트").
+    public event Action<bool, EResultCode>?     LoginCompleted;   // 로그인 완료 (성공 여부·결과 코드)
     public event Action?                        InventoryChanged; // 인벤토리 갱신됨 (스냅샷 반영 후)
-    public event Action<List<GachaRewardInfo>>? GachaCompleted;   // 가챠 완료 (뽑힌 보상 목록)
+    public event Action<List<GachaRewardInfo>>? GachaCompleted;   // 가챠 성공 (뽑힌 보상 목록)
+    public event Action<EResultCode>?           GachaFailed;      // 가챠 실패 (거절 사유)
 
     public event Action?                         CharactersChanged;          // 보유 캐릭터 캐시 갱신됨
-    public event Action<bool>?                   WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부)
+    public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
@@ -201,7 +204,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (!IsLoggedIn)
             ClientLogger.Warn(ClientLogger.Recv, $"로그인 실패 — 결과={res.Result}");
 
-        LoginCompleted?.Invoke(IsLoggedIn);
+        LoginCompleted?.Invoke(IsLoggedIn, res.Result);
     }
 
     // 인벤토리 스냅샷 — 캐시 교체 후 이벤트 발행
@@ -224,6 +227,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (res.Result != EResultCode.Ok)
         {
             ClientLogger.Warn(ClientLogger.Recv, $"가챠 실패 — 결과={res.Result}");
+            GachaFailed?.Invoke(res.Result);
             return;
         }
 
@@ -283,7 +287,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             WorkStationSlotsChanged?.Invoke();
         }
 
-        WorkStationAssignCompleted?.Invoke(success);
+        WorkStationAssignCompleted?.Invoke(success, res.Result);
     }
 
     // 채취 결과 푸시 — 판정이 완성될 때마다 요청 없이 도착한다(수확이 없으면 오지 않는다).

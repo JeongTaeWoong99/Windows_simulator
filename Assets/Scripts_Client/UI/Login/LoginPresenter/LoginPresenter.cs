@@ -1,4 +1,3 @@
-using System.Collections;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -10,21 +9,19 @@ using UnityEngine.UI;
 /// (비밀번호도 계정 DB도 아직 없다) 입력창도 하나뿐이고 검사는 비었는가가 전부다.
 /// 이 요청 하나면 인벤토리·슬롯·캐릭터·재화가 연달아 따라온다 — '패킷 레퍼런스.md' 참조.
 ///
-/// ■ 무응답 감시가 여기 있는 이유
+/// ■ 무응답·실패는 'ServerWaitManager'에 맡긴다
 /// 서버는 실패해도 응답을 안 보내는 경우가 있다. 같은 Id가 이미 접속 중이면
 /// (끊겼는데 서버가 아직 모르는 좀비 세션 포함) 응답도 로그도 없이 요청을 버린다
 /// — 깃허브 이슈 #10, 'UserManager.CreateUser'의 pid 중복 분기.
 /// 그러면 클라 화면에서는 아무 일도 일어나지 않은 것과 구분되지 않는다.
-/// "응답이 없다"를 사용자에게 알릴 주체가 로그인 화면이므로 감시도 여기서 돈다.
+/// 이 "응답이 없다"의 감시·알림은 'ServerWaitManager'가 공통으로 처리한다 — 여기서는
+/// 요청 직후 대기를 열고('Begin'), 응답 이벤트에서 결과만 보고한다('Succeed'/'Fail').
 ///
 /// ⚠️ 화면을 닫는 시점은 "버튼을 누른 때"가 아니라 "성공 응답이 온 때"다.
 /// 누르자마자 닫으면 위의 무응답 상황에서 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
 /// </summary>
 public class LoginPresenter : MonoBehaviour
 {
-    // 로그인 응답을 이만큼 기다려 본다. 넘기면 경고를 남긴다.
-    private const float ResponseTimeoutSeconds = 5f;
-
     [CenterHeader("참조")]
     [SerializeField, Tooltip("아이디 입력창. 엔터로도 로그인되도록 코드가 연결한다")]
     private TMP_InputField idInput = null!;
@@ -32,15 +29,16 @@ public class LoginPresenter : MonoBehaviour
     [SerializeField, Tooltip("로그인 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button loginButton = null!;
 
-    private PlayerDataModel _data    = null!;
+    private PlayerDataModel   _data    = null!;
     private NetworkManager    _network = null!;
     private UIManager         _ui      = null!;
+    private ServerWaitManager _wait    = null!;
 
-    // 진행 중인 무응답 감시. 응답이 오거나 다시 로그인하면 취소한다.
-    private Coroutine? _timeoutWatch;
+    // 진행 중인 로그인 대기의 손잡이. 응답이 오면 결과를 보고하고 버린다.
+    private ServerWaitHandle? _waitHandle;
 
-    // 마지막으로 보낸 Id. 무응답 로그에 쓴다 — 그 사이 입력창이 바뀌었을 수 있어 따로 들고 있는다.
-    private string _sentId = string.Empty;
+    // 응답을 기다리는 중인가 — 버튼 잠금·중복 요청 방지에 쓴다.
+    private bool _isWaiting;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -55,6 +53,7 @@ public class LoginPresenter : MonoBehaviour
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
         _ui      = Services.Get<UIManager>();
+        _wait    = Services.Get<ServerWaitManager>();
 
         Subscribe();
 
@@ -71,11 +70,11 @@ public class LoginPresenter : MonoBehaviour
     }
 
     // 보낼 수 있을 때만 버튼을 연다 (Start · 입력 변경 시 호출)
-    // ※ 요청을 보낸 뒤에는 응답이 오거나 감시가 끝날 때까지 잠가 둔다 — 연타로 중복 요청이 나가면
+    // ※ 요청을 보낸 뒤에는 대기가 끝날 때까지 잠가 둔다 — 연타로 중복 요청이 나가면
     //   서버가 같은 Id의 두 번째 접속을 응답 없이 버려(이슈 #10) 스스로 무응답을 만든다.
     private void RefreshButton()
     {
-        loginButton.interactable = _timeoutWatch == null && !string.IsNullOrWhiteSpace(idInput.text);
+        loginButton.interactable = !_isWaiting && !string.IsNullOrWhiteSpace(idInput.text);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
@@ -92,7 +91,6 @@ public class LoginPresenter : MonoBehaviour
     private void OnDisable()
     {
         Unsubscribe();
-        StopTimeoutWatch(); // 꺼진 오브젝트의 코루틴은 Unity가 멈추므로 핸들만 버린다
     }
 
     #region 구독
@@ -136,8 +134,6 @@ public class LoginPresenter : MonoBehaviour
             return;
         }
 
-        _sentId = id;
-
         // 서버가 닉네임을 돌려주지 않으므로 보낸 Id를 표시용으로 넘겨 둔다.
         // 수신 전담 매니저는 무엇을 보냈는지 모르기 때문에 보낸 쪽이 알려 줘야 한다.
         _data.SetLoginId(id);
@@ -145,62 +141,39 @@ public class LoginPresenter : MonoBehaviour
         _network.Send(new C_LoginRequest { Id = id });
         ClientLogger.Info(ClientLogger.Send, $"로그인 요청 — Id={id}");
 
-        StartTimeoutWatch();
+        // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
+        // 성공·실패·타임아웃 어느 쪽이든 onClosed(OnWaitClosed)로 잠금이 풀린다.
+        _isWaiting  = true;
+        _waitHandle = _wait.Begin("로그인", onClosed: OnWaitClosed);
         RefreshButton(); // 응답을 기다리는 동안 잠근다
+    }
+
+    // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼을 다시 연다 (ServerWaitManager.Begin의 onClosed)
+    private void OnWaitClosed()
+    {
+        _isWaiting  = false;
+        _waitHandle = null;
+        RefreshButton();
     }
 
     #endregion
 
-    #region 무응답 감시
+    #region 응답 처리
 
-    // 감시 시작 — 이전 감시가 있으면 갈아탄다 (로그인 요청 시 호출)
-    private void StartTimeoutWatch()
-    {
-        StopTimeoutWatch();
-        _timeoutWatch = StartCoroutine(WatchResponse());
-    }
-
-    // 감시 중단 (응답 도착·재요청·비활성화 시 호출)
-    private void StopTimeoutWatch()
-    {
-        if (_timeoutWatch == null)
-            return;
-
-        StopCoroutine(_timeoutWatch);
-        _timeoutWatch = null;
-    }
-
-    // 제한 시간까지 응답이 없으면 경고를 남긴다 (StartTimeoutWatch가 시작)
-    private IEnumerator WatchResponse()
-    {
-        yield return new WaitForSecondsRealtime(ResponseTimeoutSeconds);
-
-        _timeoutWatch = null;
-
-        ClientLogger.Warn(ClientLogger.Network,
-            $"로그인 응답이 {ResponseTimeoutSeconds:F0}초 동안 없다 (Id={_sentId}). " +
-            $"서버가 안 떠 있거나, 같은 Id가 이미 접속 중일 수 있다(서버 pid 중복 — 이슈 #10).");
-
-        RefreshButton(); // 다시 시도할 수 있게 풀어 준다
-    }
-
-    // 응답이 왔으니 감시를 끝낸다. 성공이면 이 화면을 접는다 (PlayerDataModel.LoginCompleted 구독)
+    // 응답이 왔으니 대기에 결과를 보고한다. 성공이면 이 화면을 접는다 (PlayerDataModel.LoginCompleted 구독)
     //
     // ※ 닫는 일은 UIManager가 한다 — 여닫는 곳이 흩어지면 화면이 늘어날 때마다 참조가 얽힌다.
-    private void OnLoginCompleted(bool success)
+    private void OnLoginCompleted(bool success, EResultCode code)
     {
-        StopTimeoutWatch();
-
-        if (!success)
+        if (success)
         {
-            // 실패 사유는 아직 이벤트에 실리지 않는다(EResultCode를 매니저가 로그로만 남기고 버린다).
-            // 사유를 화면에 띄우려면 이벤트부터 넓혀야 한다 → 일감 "실패 알림 토스트".
-            ClientLogger.Warn(ClientLogger.Network, $"로그인 실패 — Id={_sentId}");
-            RefreshButton();
+            _waitHandle?.Succeed();
+            _ui.ShowLogin(false);
             return;
         }
 
-        _ui.ShowLogin(false);
+        // 실패 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다(콘솔 로그는 PlayerDataLogger가 별도로 남긴다).
+        _waitHandle?.Fail(ResultMessages.ToText(code));
     }
 
     #endregion

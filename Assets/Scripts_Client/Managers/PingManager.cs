@@ -26,13 +26,15 @@ public class PingManager : MonoService<PingManager>
     private const float ResponseTimeoutSeconds = 15f;
 
     // ─── 참조 캐시 ───
-    private NetworkManager _network = null!; // 없으면 게임이 성립하지 않는다
+    private NetworkManager    _network = null!; // 없으면 게임이 성립하지 않는다
+    private ServerWaitManager _wait    = null!; // 치명 오류 알림 창구(연결 끊김 → 종료)
 
     // ─── 내부 상태 ───
     private float _nextPingTime;
     private float _lastPongTime;
     private bool  _isRunning;
     private bool  _isTimedOut;   // 무응답 로그를 1회만 남기기 위한 상태 (매 프레임 도배 방지)
+    private bool  _everConnected; // Pong을 한 번이라도 받았는가 — 최초 접속 실패와 도중 끊김을 가른다
     private bool  _isSubscribed;
     private bool  _isReady;      // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -96,6 +98,7 @@ public class PingManager : MonoService<PingManager>
     private void CacheReferences()
     {
         _network = NetworkManager.Instance;
+        _wait    = Services.Get<ServerWaitManager>();
     }
 
     // Pong 수신 구독 (Start · OnEnable에서 호출)
@@ -152,7 +155,8 @@ public class PingManager : MonoService<PingManager>
             _isTimedOut = false;
         }
 
-        _lastPongTime = now;
+        _everConnected = true; // 한 번이라도 응답을 받았다 — 이후 무응답은 "도중 끊김"이다
+        _lastPongTime  = now;
     }
 
     // 무응답이 판정 시간을 넘겼는지 검사한다 (Update에서 호출)
@@ -170,6 +174,12 @@ public class PingManager : MonoService<PingManager>
         ClientLogger.Error(ClientLogger.Network,
             $"서버 무응답 {silentSeconds:F0}초 — 연결이 끊긴 것으로 본다. " +
             $"지금 화면의 인벤토리·슬롯은 서버 상태와 다를 수 있다(재접속 필요).");
+
+        // 치명 알림을 띄운다 — 사용자가 확인하면 앱이 종료된다(에디터에서는 플레이가 멈춘다).
+        // 한 번이라도 연결됐었는지로 "도중 끊김"과 "최초 접속 실패"를 갈라 문구를 고른다.
+        _wait.RaiseFatal(_everConnected
+            ? "서버와의 연결이 끊어졌습니다. 앱을 종료합니다."
+            : "서버에 접속하지 못했습니다. 서버 상태를 확인한 뒤 다시 실행해 주세요.");
     }
 
     #endregion

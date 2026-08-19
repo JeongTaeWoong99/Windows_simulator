@@ -81,11 +81,11 @@ public class PlayerDataLogger : MonoBehaviour
     #region 결과 로그 (PlayerDataModel 이벤트 구독)
 
     // 로그인 결과 (LoginCompleted 구독)
-    private void OnLoginCompleted(bool success)
+    private void OnLoginCompleted(bool success, EResultCode code)
     {
         if (!success)
         {
-            ClientLogger.Warn(ClientLogger.UI, "로그인 실패 — 이후 가챠·작업슬롯 요청은 서버가 처리하지 않는다");
+            ClientLogger.Warn(ClientLogger.UI, $"로그인 실패(결과={code}) — 이후 가챠·작업슬롯 요청은 서버가 처리하지 않는다");
             return;
         }
 
@@ -130,12 +130,12 @@ public class PlayerDataLogger : MonoBehaviour
     // 작업슬롯 변경 결과 (WorkStationAssignCompleted 구독)
     // ※ 배치였는지 해제였는지는 수신만으로 알 수 없다(실패 응답에 슬롯이 없다). 그건 버튼이 알고
     //   자기 로그에 남긴다 — 여기서는 서버가 받아들였는지만 본다.
-    private void OnWorkStationAssignCompleted(bool success)
+    private void OnWorkStationAssignCompleted(bool success, EResultCode code)
     {
         if (!success)
         {
             // 실패 사유(결과 코드)는 PlayerDataModel가 수신 시점에 이미 남긴다.
-            ClientLogger.Warn(ClientLogger.UI, "작업슬롯 변경 실패");
+            ClientLogger.Warn(ClientLogger.UI, $"작업슬롯 변경 실패(결과={code})");
             return;
         }
 

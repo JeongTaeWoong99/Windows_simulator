@@ -86,14 +86,18 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 응답을 기다리는 중인 요청. 없으면 None.
     private PendingRequest _pending = PendingRequest.None;
 
+    // 진행 중인 대기의 손잡이. 응답이 오면 결과를 보고하고, 무응답이면 스스로 타임아웃돼 잠금을 푼다.
+    private ServerWaitHandle? _waitHandle;
+
     /// <summary>응답을 기다리는 중인가. 그동안 배치·해제 버튼을 잠근다.</summary>
     private bool IsWaiting => _pending != PendingRequest.None;
 
-    private PlayerDataModel _data    = null!;
-    private NetworkManager  _network = null!;
-    private UIManager       _ui      = null!;
-    private bool            _isSubscribed;
-    private bool            _isReady; // Start 완료 여부 — OnEnable 재구독 가드
+    private PlayerDataModel   _data    = null!;
+    private NetworkManager    _network = null!;
+    private UIManager         _ui      = null!;
+    private ServerWaitManager _wait    = null!;
+    private bool              _isSubscribed;
+    private bool              _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
@@ -109,6 +113,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
         _ui      = Services.Get<UIManager>();
+        _wait    = Services.Get<ServerWaitManager>();
 
         Subscribe();
 
@@ -156,7 +161,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _slotIndex = slotIndex;
 
         // 닫히는 동안 구독이 끊겨 지난 응답을 놓쳤을 수 있다. 잠금을 들고 들어가지 않는다.
-        _pending = PendingRequest.None;
+        _pending    = PendingRequest.None;
+        _waitHandle = null; // 지난 대기 손잡이는 버린다(남아 있어도 매니저가 타임아웃으로 정리한다)
 
         gameObject.SetActive(true);
 
@@ -451,38 +457,50 @@ public class WorkStationSelectPresenter : MonoBehaviour
         BeginWaiting(PendingRequest.Unassign);
     }
 
-    // 응답이 올 때까지 배치·해제 버튼을 잠근다 (요청을 보낸 뒤 호출)
+    // 응답이 올 때까지 배치·해제 버튼을 잠그고 대기를 연다 (요청을 보낸 뒤 호출)
+    // ※ 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다. 무응답이면 5초 뒤
+    //   타임아웃돼 onClosed(OnWaitClosed)가 잠금을 푼다 — 예전의 "무응답 시 영구 잠김"이 사라진다.
     private void BeginWaiting(PendingRequest request)
     {
-        _pending = request;
+        _pending    = request;
+        _waitHandle = _wait.Begin(request == PendingRequest.Assign ? "작업슬롯 배치" : "작업슬롯 해제",
+                                  onClosed: OnWaitClosed);
+        ApplyWaitingLock();
+    }
+
+    // 대기가 끝났다(성공·실패·타임아웃 공통) — 잠금을 푼다 (ServerWaitManager.Begin의 onClosed)
+    private void OnWaitClosed()
+    {
+        _pending    = PendingRequest.None;
+        _waitHandle = null;
         ApplyWaitingLock();
     }
 
     /// <summary>
-    /// 응답이 왔다 — 성공이면 다음 단계로, 실패면 슬롯 목록으로 물러난다
+    /// 응답이 왔다 — 성공이면 다음 단계로, 실패면 사유를 알리고 슬롯 목록으로 물러난다
     /// (PlayerDataModel.WorkStationAssignCompleted 구독).
     ///
     /// 실패는 대개 아직 열리지 않은 슬롯이다. 그 칸에서는 배치도 해제도 할 수 없으니
-    /// 화면에 남겨 둘 이유가 없다. 사유('EResultCode')는 아직 이벤트에 안 실려서
-    /// 사용자에게 못 보여 준다 → 일감 "실패 알림 토스트".
+    /// 화면에 남겨 둘 이유가 없다. 사유('EResultCode')는 'ResultMessages'로 문구를 만들어 알림에 띄운다.
     /// </summary>
-    private void OnAssignCompleted(bool success)
+    private void OnAssignCompleted(bool success, EResultCode code)
     {
+        // Succeed/Fail이 onClosed(OnWaitClosed)를 통해 _pending을 지우므로, 그 전에 종류를 붙잡는다.
         var requested = _pending;
 
-        _pending = PendingRequest.None;
-        ApplyWaitingLock();
-
         if (requested == PendingRequest.None)
-            return; // 이 화면이 보낸 요청이 아니다
+            return; // 이 화면이 보낸 요청이 아니다(타임아웃으로 이미 닫혔거나 남의 응답)
 
         if (!success)
         {
             ClientLogger.Warn(ClientLogger.UI,
                 $"슬롯 {_slotIndex} 변경이 거절돼 슬롯 목록으로 돌아간다 (열리지 않은 슬롯일 수 있다).", this);
+            _waitHandle?.Fail(ResultMessages.ToText(code));
             BackToSlotList();
             return;
         }
+
+        _waitHandle?.Succeed();
 
         if (requested == PendingRequest.Assign)
             ShowSetting();

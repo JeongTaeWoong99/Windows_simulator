@@ -1,4 +1,5 @@
 using System;
+using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -149,7 +150,7 @@ public class StatePresenter : MonoBehaviour
     #region 표시
 
     // 로그인 결과 도착 — 성공했을 때만 이름을 갱신한다 (LoginCompleted 구독)
-    private void OnLoginCompleted(bool success)
+    private void OnLoginCompleted(bool success, EResultCode code)
     {
         if (success)
             Refresh();
