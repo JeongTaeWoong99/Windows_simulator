@@ -1,6 +1,6 @@
 # Editor 폴더 규칙
 
-> 최종 업데이트: 2026-08-14 · 대상: `Assets/Scripts_Client/Editor/`
+> 최종 업데이트: 2026-08-20 · 대상: `Assets/Scripts_Client/Editor/`
 
 **이 프로젝트 전용 에디터 툴을 두는 곳.** 폴더 이름이 `Editor`라서 유니티가
 자동으로 `Assembly-CSharp-Editor`로 컴파일하고 **런타임 빌드에서 제외**한다.
@@ -21,6 +21,7 @@ Editor/
   shared/           여러 기능이 공유하는 헬퍼·인프라
   scene-copy/       오리지널 씬 복사 기능
   server-console/   에디터에서 서버 실행/종료 + 로그 보기
+  memory-meter/     에디터 메모리 사용량을 상단 툴바에 실시간 표시
 ```
 
 ---
@@ -33,6 +34,7 @@ Editor/
 |------|---------|
 | `EditorGit.cs` | 에디터 툴 공용 git 실행 헬퍼(`Run`·`LatestCommitOf`). 씬 복사기·최신성 검사기가 함께 쓴다 |
 | `ProjectPreferences.cs` | 환경 설정 목록 **맨 위**에 오는 이 프로젝트 전용 설정 그룹의 뿌리(경로 접두사 `RootPath` + 그룹 페이지) |
+| `EditorIcons.cs` | 유니티 내장 아이콘을 이름으로 찾아 캐시한다(`Get`). 툴바 버튼 3개가 함께 쓰며, 이름 상수도 여기 모은다 |
 
 ### `scene-copy/` — 오리지널 씬 복사
 
@@ -50,6 +52,13 @@ Editor/
 | `ServerRunner.cs` | WSGameServer를 백그라운드로 켜고/끄는 프로세스 제어기(UI 없음). PID는 `SessionState`, 로그는 `Temp/WSGameServer.log`로 리다이렉트 |
 | `ServerConsoleWindow.cs` | 실행/종료 토글 + 로그 파일을 tail 해 터미널처럼 보여주는 `EditorWindow` |
 | `ServerConsoleToolbarButton.cs` | 위 창을 여는 상단 메인 툴바 '서버 콘솔' 버튼 (`[MainToolbarElement]`) |
+
+### `memory-meter/` — 메모리 사용량 표시
+
+| 파일 | 하는 일 |
+|------|---------|
+| `EditorMemoryMeter.cs` | 지금 쓰는 메모리를 읽고(`Snapshot`) 정리(`Cleanup`)한다 (동작만, UI 없음) |
+| `EditorMemoryToolbarButton.cs` | 위 수치를 상단 메인 툴바 오른쪽에 1초마다 갱신해 표시한다 (`[MainToolbarElement]`) |
 
 ### 왜 씬을 복사해서 쓰나
 
@@ -106,6 +115,31 @@ Editor/
   (cmd→dotnet→WSGameServer)를 내린다. Unity 종료 시(`EditorApplication.quitting`) 실행 중이면 정리한다.
 - `Temp/`는 `.gitignore`라 로그 파일은 커밋되지 않는다. 서버 실행 중 서버 측 재빌드는 DLL 잠금(MSB3021)을
   유발하므로, 이 툴은 실행/종료만 하고 빌드에는 관여하지 않는다.
+
+## 메모리 사용량 표시 (`memory-meter/`)
+
+유니티에는 **메모리를 상시로 보여 주는 내장 설정이 없다** — Profiler 창이나 Memory Profiler
+패키지를 열어야만 보인다. 그래서 상단 툴바에 숫자 하나를 얹어 곁눈질로 확인할 수 있게 했다.
+(하단 상태 표시줄에 얹는 공식 API는 없다. 내부 API뿐이라 쓰지 않는다.)
+
+- **버튼에 보이는 값은 프로세스의 워킹셋** — 작업 관리자의 `Unity Editor` 행과 같은 값이라 가장 직관적이다.
+  ⚠️ **`System.Diagnostics.Process.WorkingSet64`는 유니티의 Mono에서 현재 프로세스에 대해 0을 준다**(실측).
+  그래서 `psapi.dll`의 `GetProcessMemoryInfo`를 P/Invoke로 직접 부른다. Windows 전용이며,
+  실패하면 경고 한 번을 남기고 0으로 표시한다.
+- **툴팁은 세 갈래로 쪼개 보여 준다** — 네이티브(에셋·씬) · Mono 힙(C# 스크립트) · 그래픽 드라이버.
+  각각 `실제 사용량 / 예약(Reserved)`으로 적는다.
+  **이 셋의 합은 전체보다 작다** — 에디터 UI·플러그인·DLL 등 프로파일러가 세지 않는 몫이 있어서다.
+- **예약(Reserved)은 줄일 수 없다.** 유니티의 GC는 Boehm 기반이라 **비압축(non-compacting)** —
+  객체를 회수해도 힙을 압축해 OS에 반납하지 못한다. 정리 버튼이 줄이는 건 '실제 사용량'뿐이고,
+  예약을 되돌리려면 **에디터를 재시작**해야 한다. 툴팁에도 이 문장을 적어 뒀다.
+- ⚠️ **`EditorGUIUtility.FindTexture`는 공백이 든 아이콘 이름을 못 찾는다**(`SceneAsset Icon` → null).
+  아이콘 상수는 점으로 이어진 이름(`Profiler.Memory` 꼴)만 쓴다.
+- **갱신은 `EditorApplication.update`에서 1초에 한 번**만 한다. 값을 바꾼 뒤
+  `MainToolbar.Refresh(path)`로 툴바에 알리는 게 공식 갱신 경로다.
+  도메인 리로드마다 팩토리 메서드가 다시 불리므로 구독은 `-=` 후 `+=`로 건다.
+- **클릭하면** `EditorUtility.UnloadUnusedAssetsImmediate()` + `GC.Collect()`로 정리하고
+  `[메모리] 전 → 후 (차이)`를 콘솔에 남긴다. 확인 팝업은 없다(되돌릴 게 없는 안전한 동작).
+  에디터에서 `Resources.UnloadUnusedAssets()`는 비동기라 결과를 바로 못 재므로 즉시판을 쓴다.
 
 ### 환경 설정에 새 항목 추가하기
 

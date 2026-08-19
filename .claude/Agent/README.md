@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-20 에디터 메모리 사용량 상단 툴바 표시기](2026-08-20-editor-memory-toolbar.md) — `#client` `#editor` 프로세스 메모리를 메인 툴바에 1초마다 표시하고 클릭 시 언로드+GC로 정리
 - [2026-08-19 죽은 저장 쓰기·미사용 API 정리 (P3)](2026-08-19-window-settings-deadcode-cleanup.md) — `#client` `#window` 고정 설정 3개의 죽은 SaveBool 제거·키 예약 표기, SystemCanvasView.Show 예약 문서화, SettingPresenter 토글은 의도적 비활성이라 유지
 
 - [2026-08-19 System 오버레이 2단 구조 통일 + CanvasGroup 토글·로딩 지연 표시 (P2)](2026-08-19-system-overlay-flatten-canvasgroup.md) — `#client` `#ui` Presenter→Panel→Box 3단을 (↓ SUB VIEW) 2단으로 평탄화, SetActive→CanvasGroup 토글, 로딩 0.15s grace로 깜빡임 제거
