@@ -25,6 +25,14 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-19 죽은 저장 쓰기·미사용 API 정리 (P3)](2026-08-19-window-settings-deadcode-cleanup.md) — `#client` `#window` 고정 설정 3개의 죽은 SaveBool 제거·키 예약 표기, SystemCanvasView.Show 예약 문서화, SettingPresenter 토글은 의도적 비활성이라 유지
+
+- [2026-08-19 System 오버레이 2단 구조 통일 + CanvasGroup 토글·로딩 지연 표시 (P2)](2026-08-19-system-overlay-flatten-canvasgroup.md) — `#client` `#ui` Presenter→Panel→Box 3단을 (↓ SUB VIEW) 2단으로 평탄화, SetActive→CanvasGroup 토글, 로딩 0.15s grace로 깜빡임 제거
+
+- [2026-08-19 WindowManager 시작 설정 권위 소스 = 에디터=인스펙터/빌드=저장값 (P1)](2026-08-19-windowmanager-setting-sync.md) — `#client` `#window` LoadSettings를 #if UNITY_EDITOR로 분기 + OnValidate로 위젯 미러, WidgetPositionLayout도 같은 규칙 정렬
+
+- [2026-08-18 서버 왕복 대기 로딩·실패 알림·연결 끊김 종료 (A-2 + A-5)](2026-08-18-server-wait-loading-notice.md) — `#client` `#ui` `#network` `ServerWaitManager` 단일 창구 + `UI/System` 오버레이(로딩·알림)로 요청 대기·실패 사유·연결 끊김 종료를 화면에 노출
+
 - [2026-08-17 항상 위가 작업표시줄에 가려지던 문제 — 주기·포커스 재확정](2026-08-17-topmost-above-taskbar.md) — `#client` `#window` topmost는 한 번만 확정하면 작업표시줄(그 자체 topmost)에 밀린다 → 0.5초 주기 + 포커스 상실 시 `HWND_TOPMOST` 재확정(`SWP_NOACTIVATE`)
 - [2026-08-17 타이틀바 제거 동반 UI 개편 — 토글 고정·캔버스 드래그·종료·위치 통합 (A-1 (3))](2026-08-17-titlebar-removal-ui-overhaul.md) — `#client` `#ui` `#window` 토글 3개 저장값 무시 고정 · 캔버스 `IBeginDragHandler`로 창 이동(SC_MOVE 위임) · 종료 버튼 · 위치 드롭다운 6칸 1개로 통합(Middle 제거·레거시 마이그레이션)
 - [2026-08-17 창 스냅 어긋남 수정 — 크기·위치 원자 적용 (A-1)](2026-08-17-window-snap-atomic-apply.md) — `#client` `#window` 크기·위치를 따로 적용하던 걸 `ApplySizeAndPosition` 단일 SetWindowPos로 통합 (모니터 오판정·DPI 앵커 오차 제거)
