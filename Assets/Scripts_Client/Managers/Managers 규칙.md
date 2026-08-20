@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-17 (원자 적용 `ApplySizeAndPosition` + 토글 3개 고정·위치 6칸 통합·캔버스 드래그 이동 — A-1) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-19 (Topmost·크기·위치 권위 소스 = 에디터=인스펙터/빌드=저장값 + OnValidate 위젯 미러) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -192,9 +192,17 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 ### 타이틀바·투명·동적 클릭스루는 고정값이다 (토글을 걷어냈다)
 
 설정 UI에서 이 세 토글을 제거하고 오브젝트를 비활성화했다. 그래서 `LoadSettings`는 이 셋을
-**저장값에서 읽지 않고 인스펙터 `setStart*`를 그대로 고정**한다 — 저장값을 읽으면 옛 실행에서
-남은 상태가 되살아나는데 되돌릴 UI가 없기 때문이다. 기본값은 타이틀바 off · 투명 on · 동적 클릭스루 on.
-`Set*` 기능 코드는 남겨 둔다(재활성화 여지). `Topmost`·크기·위치는 토글/드롭다운이 남아 저장값을 계속 쓴다.
+**저장값에서 읽지 않고 인스펙터 `setStart*`를 그대로 고정**한다(에디터·빌드 공통) — 저장값을 읽으면
+옛 실행에서 남은 상태가 되살아나는데 되돌릴 UI가 없기 때문이다. 기본값은 타이틀바 off · 투명 on · 동적 클릭스루 on.
+`Set*` 기능 코드는 남겨 둔다(재활성화 여지).
+
+### Topmost·크기·위치의 권위 소스 — 에디터=인스펙터 / 빌드=저장값
+
+이 셋은 **어디서 실행하느냐**로 진실이 갈린다. `LoadSettings`가 `#if UNITY_EDITOR`에선 인스펙터
+`setStart*`를, 빌드에선 저장값(`WindowSettings`)을 읽는다 — 위젯 위치(`WidgetPositionLayout.LoadSavedPosition`)도
+같은 규칙이라 창·위젯이 에디터 전 구간에서 같은 소스를 따른다. 편집 중 인스펙터를 바꾸면
+`WindowManager.OnValidate`가 위젯에 거울질해 미리보기가 즉시 따라온다(창 자체는 빌드에서만 움직인다).
+자세한 근거·트레이드오프는 [`Settings 규칙.md`](<../Settings/Settings 규칙.md>) §1.
 
 ### 위치는 6칸이고, 드롭다운 하나가 창·위젯을 함께 정한다
 
@@ -202,6 +210,7 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 `SettingPresenter`의 위치 드롭다운 하나가 창 앵커(`SetAnchorByIndex`)와 위젯 위치
 (`WidgetPositionLayout.SetPosition`)를 **같은 인덱스로** 몰이한다 — 짝이 맞는 모서리 조합만 유효.
 레거시 9분할 저장값은 `LoadSettings`의 `MigrateAnchor`가 6칸으로 접는다(Upper 유지, Middle/Lower → Lower, 멱등).
+저장값을 읽는 **빌드에서만** 필요해 `MigrateAnchor`는 `#if !UNITY_EDITOR`로 가둔다(에디터는 인스펙터 값을 그대로 쓴다).
 
 ### 창 이동은 캔버스 드래그로 OS에 위임한다
 

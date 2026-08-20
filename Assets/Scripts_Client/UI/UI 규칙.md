@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-16 (`min`을 자기 폭에서 파생시키지 않는다 — 함정 추가) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-19 (`!System Canvas` 2단 구조 통일 + CanvasGroup 토글·로딩 지연 표시) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -596,7 +596,24 @@ public class XxxSlotView : MonoBehaviour
 | 열을 껐더니 다른 열들이 가운데로 몰린다 | Column을 껐다 | Column이 아니라 **그 안의 Canvas만** 끈다 (`UIManager` 주석) |
 | **화면을 다 껐는데 빈 판이 남는다** | 배경 `Image`가 캔버스에 있는데 자식이 전부 꺼질 수 있다 | 배경을 자식으로 내린다. **늘 켜진 자식이 있는 캔버스면 그냥 둬도 된다** (§3) |
 
-**Sorting Order는 띄엄띄엄 준다** — `Login = 100`, `Log = 200`. 사이에 끼워 넣을 일이 반드시 생긴다.
+**Sorting Order는 띄엄띄엄 준다** — `Login = 100`, `Log = 200`, `!System = 300`. 사이에 끼워 넣을 일이 반드시 생긴다.
+
+`!System Canvas`(`SystemCanvasView`)는 **로딩 표시·실패 알림·연결 끊김 종료**를 담는 최상단 오버레이라
+가장 큰 값을 준다 — 로딩·알림은 무엇 위에든 떠야 하고, 다른 화면이 그 위를 덮으면 안 된다.
+`Override Sorting` + 자기 `GraphicRaycaster`는 여기도 그대로 적용된다. 이 캔버스는 **상주**한다(항상 켜짐).
+
+계층은 다른 캔버스와 같은 2단이다 — `(MAIN VIEW)` → `(↓ SUB VIEW)` → 내용.
+`Loading Presenter (↓ SUB VIEW)`(`LoadingPresenter`, `ServerWaitManager.BusyChanged` 구독)와
+`Notice Presenter (↓ SUB VIEW)`(`NoticePresenter`, `NoticeRaised`·`FatalRaised` 구독)가 각자
+`(↓ SUB VIEW)` 오브젝트에 스크립트·`CanvasGroup`·전체화면 `Image`(raycast blocker)를 함께 갖는다.
+Notice가 Loading보다 위에 그려지도록 형제 순서에서 아래(나중)에 둔다.
+
+### ⚠️ 오버레이는 `SetActive`가 아니라 `CanvasGroup`으로 여닫는다
+이 두 프레젠터는 **이벤트를 구독**하므로 자기 오브젝트를 끄면 다시 켤 이벤트를 못 받는다(꺼진
+오브젝트엔 콜백이 안 온다). 그래서 오브젝트는 **항상 활성**으로 두고 `CanvasGroup`의
+`alpha`(0/1)·`blocksRaycasts`·`interactable`로 표시/숨김한다. `blocksRaycasts`가 대기·알림 중 뒤 UI
+클릭을 막는다(전체화면 blocker Image는 alpha 0이어도 `raycastTarget`이 켜져 있으면 계속 막는다).
+로딩은 여기에 더해 **약 0.15초 지연 표시**한다 — 그 안에 응답이 오면 아예 안 떠서 빠른 왕복의 깜빡임이 없다.
 
 ---
 

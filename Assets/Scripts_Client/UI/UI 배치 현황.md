@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-14 (`UI 규칙.md` 8장에서 분리) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-08-19 (`!System Canvas` 오버레이 2단 구조 추가) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -61,11 +61,20 @@ Root Canvas
 │        ├─ Title                                 (정적 요소 — 표기 없음)
 │        └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter
 │
+└─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 300 · 상주 오버레이
+   ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   CanvasGroup 토글 · 0.15s 지연 표시
+   └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
+      └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
+
 (캔버스 밖)
-Window Manager · UI Manager · Ping Manager · Network Manager
+Window Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
 PlayerData (MODEL)                                PlayerDataModel
 Player Data Logger                                PlayerDataLogger
 ```
+
+> ⚠️ `!System Canvas`의 두 SUB VIEW는 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
+> 여닫는다(이벤트 구독 유지). 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker
+> `Image`(alpha 0, raycastTarget)를 함께 갖는다 — 근거는 [`UI 규칙.md`](<UI 규칙.md>) §7.
 
 ## 2. 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
 
