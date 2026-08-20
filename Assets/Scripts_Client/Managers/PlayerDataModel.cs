@@ -115,7 +115,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // ─── 가공 이벤트 (UI가 구독) ───
     // ※ 완료 이벤트에는 성공 여부와 함께 결과 코드를 싣는다 — 실패 사유를 화면에 보여 주려면
-    //   "실패했다"만으로는 부족하고 왜인지(EResultCode)가 필요하다(일감 "실패 알림 토스트").
+    //   "실패했다"만으로는 부족하고 왜인지(EResultCode)가 필요하다.
+    //   받은 Presenter가 'ResultMessages'로 문구를 만들어 'ServerWaitManager'에 넘긴다.
     public event Action<bool, EResultCode>?     LoginCompleted;   // 로그인 완료 (성공 여부·결과 코드)
     public event Action?                        InventoryChanged; // 인벤토리 갱신됨 (스냅샷 반영 후)
     public event Action<List<GachaRewardInfo>>? GachaCompleted;   // 가챠 성공 (뽑힌 보상 목록)
