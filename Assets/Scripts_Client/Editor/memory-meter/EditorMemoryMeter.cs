@@ -15,7 +15,7 @@ namespace DesktopWindowControl.EditorTools
 		/// <summary>한 시점의 메모리 수치 묶음.</summary>
 		internal readonly struct Snapshot
 		{
-			/// <summary>에디터 프로세스가 실제로 물고 있는 물리 메모리 — 작업 관리자의 'Unity Editor'와 같은 값.</summary>
+			/// <summary>에디터 프로세스가 지금 물리 메모리에 올려 둔 양(워킹셋) — 아래 항목들을 더한 값이 아니다.</summary>
 			public readonly long ProcessBytes;
 
 			/// <summary>Unity 네이티브가 지금 데이터를 담고 있는 양(에셋·씬 등).</summary>

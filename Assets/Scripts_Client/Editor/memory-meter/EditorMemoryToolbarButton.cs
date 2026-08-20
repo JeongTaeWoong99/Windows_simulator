@@ -70,21 +70,26 @@ namespace DesktopWindowControl.EditorTools
 		{
 			return
 				$"■ 유니티 에디터 전체: {EditorMemoryMeter.Format(memory.ProcessBytes)}\n"                +
-				"   작업 관리자의 'Unity Editor'와 같은 값이다.\n"                                        +
-				"\n"                                                                                     +
-				"■ 그중 유니티가 세는 몫 (실제 사용량 / 예약 Reserved)\n"                                 +
+				"   OS가 재는 값 — 이 프로세스가 지금 물리 메모리에 올려 둔 양이다.\n"                    +
+				"   아래 항목을 더한 값이 아니다.\n"                                                       +
+				"\n"                                                                                       +
+				"■ 유니티가 따로 세는 몫 (실제 사용량 / 예약 Reserved)\n"                                 +
 				$"   · 에셋 · 씬 등 (네이티브): {EditorMemoryMeter.Format(memory.UnityAllocated)}"        +
-				$" / {EditorMemoryMeter.Format(memory.UnityReserved)}\n"                                 +
-				$"   · C# 스크립트 (Mono 힙): {EditorMemoryMeter.Format(memory.MonoUsed)}"                +
-				$" / {EditorMemoryMeter.Format(memory.MonoHeap)}\n"                                      +
+				$" / {EditorMemoryMeter.Format(memory.UnityReserved)}\n"                                   +
+				$"   · C# 스크립트 (Mono 힙): {EditorMemoryMeter.Format(memory.MonoUsed)}"                 +
+				$" / {EditorMemoryMeter.Format(memory.MonoHeap)}\n"                                        +
 				$"   · 그래픽 드라이버 (텍스처 · 메시): {EditorMemoryMeter.Format(memory.GraphicsDriver)}\n" +
-				"\n"                                                                                     +
+				"\n"                                                                                       +
 				"뒤의 값은 예약(Reserved) — 유니티가 OS에서 미리 확보해 둔 힙이다.\n"                     +
-				"사용량은 이 안에서 오르내리고, 한 번 늘어난 예약은 반납되지 않는다\n"                    +
+				"사용량은 이 안에서 오르내리고, 한 번 늘어난 예약은 반납되지 않는다\n"                     +
 				"(Mono의 GC가 비압축식이라 힙을 줄일 수 없다 — 에디터 재시작이 유일한 방법).\n"           +
-				"세 항목의 합이 전체보다 작은 건 에디터 UI · 플러그인 · DLL 등\n"                         +
-				"유니티가 세지 않는 몫이 있어서다.\n"                                                     +
-				"\n"                                                                                     +
+				"\n"                                                                                       +
+				"세 항목의 합은 전체와 맞지 않는다. 재는 대상이 서로 달라서다 —\n"                        +
+				"전체에만 있는 몫: 에디터 UI · 플러그인 · DLL 등 유니티가 세지 않는 것.\n"                +
+				"전체에서 빠지는 몫: 예약분 중 물리에 안 올라간 것, 그래픽 드라이버의 VRAM 몫.\n"          +
+				"작업 관리자의 메모리 열(프라이빗 작업 집합)보다는 공유 DLL 몫만큼 크게 나온다.\n"         +
+				"OS가 워킹셋을 정리하면(창 최소화 등) 값이 떨어지지만 반납한 건 아니다.\n"                 +
+				"\n"                                                                                       +
 				"클릭하면 미사용 에셋 언로드 + GC로 정리한다(예약은 그대로 남는다).";
 		}
 	}

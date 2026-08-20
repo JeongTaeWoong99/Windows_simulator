@@ -62,3 +62,23 @@ tags: [client, editor]
 - ⚠️ **`EditorGUIUtility.FindTexture`는 공백이 든 아이콘 이름을 못 찾는다**(실측 — `SceneAsset Icon`이
   조용히 null이라 씬 복사 버튼에만 아이콘이 안 떴다). 점으로 이어진 이름(`TreeEditor.Duplicate`,
   `UnityEditor.ConsoleWindow`, `Profiler.Memory`)은 정상. **아이콘 상수를 추가할 때 공백 이름을 쓰지 말 것.**
+
+## 업데이트 3 (2026-08-20)
+
+**툴팁이 '전체' 값의 정체를 틀리게 설명하고 있었다.** 사용자 질문("전체는 무엇과 무엇을 더한 값이냐")에서
+드러난 문제 — 애초에 **더한 값이 아니다.** `GetProcessMemoryInfo`의 `workingSetSize` 단일 측정값이고,
+아래 세 항목(네이티브·Mono·그래픽)과는 **부분 겹침이지 포함 관계가 아니다.** 두 군데를 고쳤다.
+
+- ⚠️ **"세 항목의 합이 전체보다 작다"는 틀렸다 — 합이 더 클 수도 있다.**
+  `GetAllocatedMemoryForGraphicsDriver()`는 VRAM 몫을 포함할 수 있어 프로세스 워킹셋 **밖**이고,
+  네이티브 예약분 중 물리에 안 올라간 페이지도 워킹셋에서 빠진다. 반대로 워킹셋에만 있는 몫
+  (에디터 UI·플러그인·DLL 코드 이미지)도 있다. **어느 쪽이 크다고 단정하지 말 것.**
+- ⚠️ **"작업 관리자의 `Unity Editor`와 같은 값"도 틀렸다.** 작업 관리자 프로세스 탭의 메모리 열은
+  **프라이빗 작업 집합**(공유 페이지 제외)이다. `workingSetSize`는 공유 DLL을 포함한 전체 워킹셋이라
+  보통 더 크게 나온다. 값을 정확히 맞추려면 `QueryWorkingSetEx`나 성능 카운터가 필요한데,
+  **곁눈질 도구에 그만한 값어치가 없다고 보고 문구를 완화하는 쪽을 택했다.**
+- 구조체에 이미 읽히고 있는 `peakWorkingSetSize`(최고치)·`privateUsage`(커밋 크기)를 툴팁에 노출하는
+  안이 있었으나 **기각** — 사용자가 문구 교정만 원했다. 필요해지면 `Snapshot`에 필드만 더하면 된다.
+- 검증: Unity 재컴파일 통과 + 콘솔 에러 0. **툴팁 문자열 자체는 눈으로 확인하지 못했다** —
+  MCP `Unity_RunCommand`가 `System.Reflection` 사용을 차단해 `BuildTooltip()`을 직접 못 부른다.
+  1초마다 호출되는 경로라 예외가 있었으면 콘솔에 떴을 것이라는 근거로 갈음했다.
