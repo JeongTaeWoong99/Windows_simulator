@@ -56,9 +56,9 @@ public class WindowManager : MonoService<WindowManager>
     // ⚠️ 여기 적은 값은 "저장된 설정이 없을 때"만 쓰인다. 사용자가 한 번이라도 토글·드롭다운을
     //   만지면 그 값이 PlayerPrefs에 저장되고, 다음 실행부터는 저장값이 이긴다(WindowSettings 참조).
     [CenterHeader("Window Settings - 저장값이 없을 때 쓸 초기 상태")]
+    [SerializeField] private bool         setStartTopmost             = true;                    // 항상 위
     [SerializeField] private bool         setStartTitleBar            = false;                   // OS 타이틀바+테두리 표시(끄면 보더리스 — 창 이동은 캔버스 드래그로). 토글 제거로 이제 이 값이 고정값이다
     [SerializeField] private bool         setStartTransparent         = true;                    // 투명 배경 상태
-    [SerializeField] private bool         setStartTopmost             = true;                    // 항상 위
     [SerializeField] private bool         setStartDynamicClickThrough = true;                    // 동적 클릭 스루: 매 프레임 커서로 자동 On/Off(콘텐츠 위=클릭, 빈 영역=통과)
     [SerializeField] private WindowScale  setStartScale               = WindowScale.X1;          // 창 크기 배율(프리셋 1개 선택)
     [SerializeField] private ScreenAnchor setStartAnchor              = ScreenAnchor.LowerRight; // 창 위치(9분할 앵커 1개 선택)
@@ -155,19 +155,31 @@ public class WindowManager : MonoService<WindowManager>
     #region 초기화
 
     /// <summary>
-    /// 저장된 설정을 런타임 상태로 읽어 온다. 없으면 인스펙터의 공장 초기값을 쓴다 (Awake에서 호출).
-    /// 값만 채우고 Win32는 건드리지 않는다 — 실제 적용은 'InitializeWindow'다.
+    /// 시작 상태를 런타임 상태로 읽어 온다 (Awake에서 호출). 값만 채우고 Win32는 건드리지 않는다 —
+    /// 실제 적용은 'InitializeWindow'다.
+    ///
+    /// ■ 권위 소스 — 에디터=인스펙터 / 빌드=저장값
+    /// Topmost·크기·위치는 <b>에디터(편집·플레이)에선 인스펙터('setStart*')가 진실</b>이라 저장값을
+    /// 읽지 않는다. 값을 바꿔 바로 테스트할 수 있고, 옛 실행이 남긴 저장값이 인스펙터를 덮어써
+    /// "왜 안 바뀌지?"가 되는 것을 막는다('WidgetPositionLayout'과 같은 철학).
+    /// <b>빌드(.exe)에선 사용자 저장값('PlayerPrefs')이 진실</b>이라 실행 간 유지된다(없으면 인스펙터 공장값).
+    /// ⚠️ 트레이드오프: 에디터 플레이 중 UI로 바꾼 값은 종료 시 인스펙터로 리셋된다(공장 기본값 보존) —
+    ///    지속은 빌드에서만 일어난다.
     /// </summary>
     private void LoadSettings()
     {
-        // ⚠️ 타이틀바·투명·동적 클릭스루는 설정 UI에서 토글을 걷어냈다 — 이제 저장값을 읽지 않고
-        //   인스펙터 공장값을 그대로 고정한다. 저장값을 읽으면 옛 실행에서 남은 상태가 되살아나
-        //   UI로는 되돌릴 방법이 없어진다(토글이 없으므로).
+        // 타이틀바·투명·동적 클릭스루는 설정 UI에서 토글을 걷어내 저장값을 읽지 않고 인스펙터 공장값을 고정한다.
         _isTitleBar          = setStartTitleBar;
         _isTransparent       = setStartTransparent;
         _dynamicClickThrough = setStartDynamicClickThrough;
 
-        // Topmost·크기·위치는 토글/드롭다운이 남아 있어 저장값을 계속 쓴다.
+#if UNITY_EDITOR
+        // 에디터: 인스펙터가 진실 — 저장값을 읽지 않는다.
+        _isTopmost     = setStartTopmost;
+        _currentScale  = setStartScale;
+        _currentAnchor = setStartAnchor;
+#else
+        // 빌드: 사용자 저장값이 진실. 없으면(첫 실행) 인스펙터 공장값을 fallback으로 쓴다.
         _isTopmost = WindowSettings.LoadBool(WindowSettings.TopmostKey, setStartTopmost);
 
         // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
@@ -176,18 +188,22 @@ public class WindowManager : MonoService<WindowManager>
 
         _currentScale  = (WindowScale)Mathf.Clamp(scale, 0, (int)WindowScale.X2);
         _currentAnchor = (ScreenAnchor)MigrateAnchor(anchor);
+#endif
     }
 
+#if !UNITY_EDITOR
     /// <summary>
     /// 레거시 9분할 앵커 저장값(0~8)을 현재 6칸(0~5)으로 옮긴다. Upper 행(0~2)은 그대로,
     /// 옛 Middle(3~5)·Lower(6~8) 행은 모두 새 Lower 행(3~5)으로 접는다.
     /// 새 6칸 값에 대해서는 자기 자신을 돌려주므로(멱등) 여러 번 실행해도 안전하다.
+    /// ※ 저장값을 읽는 빌드에서만 필요하다 — 에디터는 인스펙터 값을 그대로 써서 마이그레이션이 없다('LoadSettings').
     /// </summary>
     private static int MigrateAnchor(int saved)
     {
         int mapped = saved <= 2 ? saved : saved >= 6 ? saved - 3 : saved;
         return Mathf.Clamp(mapped, 0, (int)ScreenAnchor.LowerRight);
     }
+#endif
 
     /// <summary>
     /// Unity 메인 창이 실제로 생성될 때까지 기다린 뒤 창 제어를 적용한다.
@@ -251,7 +267,9 @@ public class WindowManager : MonoService<WindowManager>
     public void SetTitleBar(bool show)
     {
         _isTitleBar = show;
-        WindowSettings.SaveBool(WindowSettings.TitleBarKey, show);
+        // ※ 저장하지 않는다 — 타이틀바·투명·동적 클릭스루는 UI 토글을 걷어낸 고정 설정이라 'LoadSettings'가
+        //   저장값을 읽지 않는다(인스펙터 'setStart*' 고정). 쓰기만 남기면 읽히지 않는 죽은 값이 된다.
+        //   재활성화하려면 여기 저장('SaveBool')과 'LoadSettings' 읽기를 함께 되살린다.
 
         // 타이틀바가 켜지면 그 바를 잡아야 하므로 동적 클릭 스루를 잠시 풀도록 강제한다.
         _forceInteractive = show;
@@ -296,8 +314,7 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>투명 배경 On/Off — DWM 프레임(유리)을 클라이언트 영역 전체로 확장/해제한다.</summary>
     public void SetTransparent(bool enable)
     {
-        _isTransparent = enable;
-        WindowSettings.SaveBool(WindowSettings.TransparentKey, enable);
+        _isTransparent = enable; // 저장하지 않는다 — 고정 설정(SetTitleBar 주석 참조)
 #if !UNITY_EDITOR
         // 각 변 -1 : DWM 프레임(유리 영역)을 창 전체로 확장한다.
         //   → 카메라가 알파 0으로 클리어한 영역이 그대로 투명해져 바탕화면이 비친다.
@@ -390,8 +407,7 @@ public class WindowManager : MonoService<WindowManager>
     /// <summary>동적 클릭 스루(마우스 위치 자동 판정)를 켜고 끈다.(디버그 패널 토글에서 호출)</summary>
     public void SetDynamicClickThrough(bool value)
     {
-        _dynamicClickThrough = value;
-        WindowSettings.SaveBool(WindowSettings.DynamicClickThroughKey, value);
+        _dynamicClickThrough = value; // 저장하지 않는다 — 고정 설정(SetTitleBar 주석 참조)
     }
 
     #endregion
@@ -691,4 +707,41 @@ public class WindowManager : MonoService<WindowManager>
     }
 
     #endregion
+
+#if UNITY_EDITOR
+    #region 에디터 미리보기 (편집 중 위젯 동기화)
+
+    /// <summary>
+    /// 인스펙터에서 창 설정을 바꾸면 편집 중에도 미리보기를 맞춘다 (Unity 메시지, 에디터 전용).
+    ///
+    /// 창 자체는 빌드에서만 움직이므로(클래스 remarks) 편집 모드에서 미리볼 수 있는 건 위젯 위치뿐이다 —
+    /// 'setStartAnchor'를 씬의 'WidgetPositionLayout'에 거울질해 위젯이 즉시 같은 6칸으로 따라오게 한다.
+    /// 설정 드롭다운 하나가 창·위젯을 함께 몰이하는 런타임 규칙('SettingPresenter')을 편집 모드에서도 재현한다.
+    ///
+    /// ⚠️ 순수 에디터 미리보기 글루다 — 런타임 의존이 아니라 'UNITY_EDITOR'로 격리해 Managers→UI 실행
+    ///    의존을 만들지 않는다. 플레이 중엔 'SettingPresenter'가 몰이하므로 여기선 편집 모드에서만 반영한다.
+    /// </summary>
+    private void OnValidate()
+    {
+        // OnValidate 안에서 다른 오브젝트의 계층을 바꾸면 경고가 나므로 다음 에디터 틱으로 미룬다.
+        UnityEditor.EditorApplication.delayCall += MirrorAnchorToWidgetIfAlive;
+    }
+
+    // 'setStartAnchor'를 씬의 'WidgetPositionLayout'에 반영한다 (OnValidate의 지연 콜백, 에디터 전용).
+    private void MirrorAnchorToWidgetIfAlive()
+    {
+        // delayCall 사이에 이 오브젝트가 사라졌거나, 플레이가 시작됐으면 하지 않는다.
+        if (this == null || Application.isPlaying)
+            return;
+
+        var widget = FindFirstObjectByType<WidgetPositionLayout>(FindObjectsInactive.Include);
+        if (widget == null)
+            return;
+
+        widget.SetPosition((WidgetPosition)(int)setStartAnchor); // 편집 모드 SetPosition은 Apply만, 저장은 안 한다
+        UnityEditor.EditorUtility.SetDirty(widget);              // 바뀐 위젯 position이 씬에 남도록 더티 표시
+    }
+
+    #endregion
+#endif
 }

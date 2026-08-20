@@ -2,20 +2,26 @@ using UnityEngine;
 
 /// <summary>창 설정을 'PlayerPrefs'에 저장하고 되읽는다.</summary>
 /// <remarks>
-/// ⚠️ 'WindowManager'의 'setStart*' 필드는 대개 "저장값이 없을 때 쓰는 공장 초기값"이다 —
-/// 한 번 조작하면 저장값이 이긴다(Topmost·Scale·Anchor).
-/// ⚠️ 단 TitleBar·Transparent·DynamicClickThrough는 예외 — 토글을 UI에서 걷어내 저장값을 읽지 않고
-/// 'setStart*'를 항상 고정한다('WindowManager.LoadSettings'). 저장 정책은 'Settings 규칙.md' 참조.
+/// ⚠️ Topmost·Scale·Anchor의 권위 소스는 <b>실행 환경에 따라 다르다</b> —
+/// <b>에디터(편집·플레이)=인스펙터('setStart*'), 빌드(.exe)=저장값</b>('WindowManager.LoadSettings',
+/// 'WidgetPositionLayout.LoadSavedPosition'도 같은 규칙). 그래서 이 저장값은 <b>빌드에서만 로드에 쓰인다</b> —
+/// 에디터에서 오간 저장 쓰기는 로드가 무시한다(에디터/빌드 PlayerPrefs는 저장 위치도 다르다).
+/// ⚠️ TitleBar·Transparent·DynamicClickThrough는 별개 — 토글을 UI에서 걷어내 저장값을 읽지 않고
+/// 'setStart*'를 항상 고정한다. 저장 정책은 'Settings 규칙.md' 참조.
 /// </remarks>
 public static class WindowSettings
 {
     // 키에 접두사를 붙여 다른 설정(사운드 등)이 생겨도 섞이지 않게 한다.
     private const string Prefix = "Window.";
 
+    // ⚠️ 예약(현재 미기록) — 타이틀바·투명·동적 클릭스루는 UI 토글을 걷어낸 고정 설정이라
+    //   지금은 저장·로드 어느 쪽도 쓰지 않는다. 재활성화 시 키 이름을 위해 남겨 둔다('WindowManager' 주석).
     public const string TitleBarKey            = Prefix + "TitleBar";
     public const string TransparentKey         = Prefix + "Transparent";
-    public const string TopmostKey             = Prefix + "Topmost";
     public const string DynamicClickThroughKey = Prefix + "DynamicClickThrough";
+
+    // 실제로 저장·로드에 쓰는 키 — 빌드에서 실행 간 유지된다(Topmost·Scale·Anchor).
+    public const string TopmostKey             = Prefix + "Topmost";
     public const string ScaleKey               = Prefix + "Scale";
     public const string AnchorKey              = Prefix + "Anchor";
 

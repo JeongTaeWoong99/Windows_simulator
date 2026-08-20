@@ -120,17 +120,19 @@ public class WidgetPositionLayout : MonoBehaviour
     /// <summary>
     /// 저장된 위치를 읽어 온다. 없으면 인스펙터 값을 그대로 쓴다 (공장 초기값).
     ///
-    /// ⚠️ 재생 중일 때만 읽는다. 이 컴포넌트는 '[ExecuteAlways]'라 에디터에서도 도는데,
-    /// 거기서 'PlayerPrefs'를 읽으면 인스펙터로 6칸을 바꿔 보는 순간 저장값이 그것을 덮어써
-    /// 미리보기가 망가진다. 에디터에서는 인스펙터가 진실이고, 빌드에서는 저장값이 진실이다.
+    /// ⚠️ <b>에디터(편집·플레이)에선 읽지 않는다 — 인스펙터가 진실</b>이다. 창 앵커('WindowManager')와
+    /// 같은 규칙이라 에디터 전 구간에서 창·위젯이 같은 소스(인스펙터)를 따른다. 에디터에서 'PlayerPrefs'를
+    /// 읽으면 인스펙터로 6칸을 바꿔 보는 순간 저장값이 그것을 덮어써 미리보기가 망가지고, 에디터 플레이가
+    /// 인스펙터 앵커와 어긋난다. <b>빌드에서만 저장값이 진실</b>이다.
     /// </summary>
     private void LoadSavedPosition()
     {
-        if (!Application.isPlaying)
-            return;
-
+#if UNITY_EDITOR
+        return;
+#else
         int saved = WindowSettings.LoadInt(WindowSettings.WidgetPositionKey, (int)position);
         position  = (WidgetPosition)Mathf.Clamp(saved, 0, (int)WidgetPosition.LowerRight);
+#endif
     }
 
 #if UNITY_EDITOR
