@@ -65,32 +65,50 @@ namespace DesktopWindowControl.EditorTools
 			return new MainToolbarContent(label, EditorIcons.Get(EditorIcons.Memory), BuildTooltip(memory));
 		}
 
-		// 수치가 각각 무엇인지 풀어서 적는다 (UI Toolkit 라벨이라 탭으로는 열이 맞지 않아 '이름: 값' 줄로 쓴다)
+		// 수치가 각각 무엇인지 풀어서 적는다.
+		// ★ 유니티 내장 툴팁은 네이티브가 그려서 폭 상한이 고정이다 — USS·공개 API로 넓힐 수 없다.
+		//   그래서 문장 중간에서 꺾이지 않게 한 줄을 한글 24자 이내로 직접 끊는다.
+		//   가변폭 폰트라 공백 패딩으로는 열이 안 맞으므로, 수치는 '이름 줄 / 값 줄'로 나눠 세로로 세운다.
+		//
+		// ★ 용어를 '할당 / 확보'로 적는다. 프로파일러의 Reserved를 '예약'으로 옮기면 Win32의
+		//   예약(Reserve — 주소만 찜해 접근하면 죽는 상태)으로 오해된다. 실제로는 이미 커밋된 풀이다.
+		//   용어 정의와 포함 관계는 'Editor 규칙.md'의 메모리 사용량 표시 절에 표로 있다.
 		private static string BuildTooltip(EditorMemoryMeter.Snapshot memory)
 		{
 			return
-				$"■ 유니티 에디터 전체: {EditorMemoryMeter.Format(memory.ProcessBytes)}\n"                +
-				"   OS가 재는 값 — 이 프로세스가 지금 물리 메모리에 올려 둔 양이다.\n"                    +
-				"   아래 항목을 더한 값이 아니다.\n"                                                       +
-				"\n"                                                                                       +
-				"■ 유니티가 따로 세는 몫 (실제 사용량 / 예약 Reserved)\n"                                 +
-				$"   · 에셋 · 씬 등 (네이티브): {EditorMemoryMeter.Format(memory.UnityAllocated)}"        +
-				$" / {EditorMemoryMeter.Format(memory.UnityReserved)}\n"                                   +
-				$"   · C# 스크립트 (Mono 힙): {EditorMemoryMeter.Format(memory.MonoUsed)}"                 +
-				$" / {EditorMemoryMeter.Format(memory.MonoHeap)}\n"                                        +
-				$"   · 그래픽 드라이버 (텍스처 · 메시): {EditorMemoryMeter.Format(memory.GraphicsDriver)}\n" +
-				"\n"                                                                                       +
-				"뒤의 값은 예약(Reserved) — 유니티가 OS에서 미리 확보해 둔 힙이다.\n"                     +
-				"사용량은 이 안에서 오르내리고, 한 번 늘어난 예약은 반납되지 않는다\n"                     +
-				"(Mono의 GC가 비압축식이라 힙을 줄일 수 없다 — 에디터 재시작이 유일한 방법).\n"           +
-				"\n"                                                                                       +
-				"세 항목의 합은 전체와 맞지 않는다. 재는 대상이 서로 달라서다 —\n"                        +
-				"전체에만 있는 몫: 에디터 UI · 플러그인 · DLL 등 유니티가 세지 않는 것.\n"                +
-				"전체에서 빠지는 몫: 예약분 중 물리에 안 올라간 것, 그래픽 드라이버의 VRAM 몫.\n"          +
-				"작업 관리자의 메모리 열(프라이빗 작업 집합)보다는 공유 DLL 몫만큼 크게 나온다.\n"         +
-				"OS가 워킹셋을 정리하면(창 최소화 등) 값이 떨어지지만 반납한 건 아니다.\n"                 +
-				"\n"                                                                                       +
-				"클릭하면 미사용 에셋 언로드 + GC로 정리한다(예약은 그대로 남는다).";
+				$"■ 버튼 값 = 워킹셋 : {EditorMemoryMeter.Format(memory.ProcessBytes)}\n" +
+				"   지금 물리 RAM에 올라온 양.\n"                                           +
+				"   OS가 잰다. 아래와 겹친다.\n"                                            +
+				"\n"                                                                        +
+				"■ 유니티 할당자 (할당 / 확보)\n"                                           +
+				"   에셋 · 씬 등 네이티브\n"                                                +
+				$"      {EditorMemoryMeter.Format(memory.UnityAllocated)}"                  +
+				$" / {EditorMemoryMeter.Format(memory.UnityReserved)}\n"                    +
+				"   C# 스크립트 (Mono 힙)\n"                                                +
+				$"      {EditorMemoryMeter.Format(memory.MonoUsed)}"                        +
+				$" / {EditorMemoryMeter.Format(memory.MonoHeap)}\n"                         +
+				"   그래픽 드라이버 (VRAM)\n"                                               +
+				$"      {EditorMemoryMeter.Format(memory.GraphicsDriver)}\n"                +
+				"\n"                                                                        +
+				"   확보 = OS에서 커밋해 받은 풀\n"                                         +
+				"   할당 = 그 풀에서 실제 쓰는 양\n"                                        +
+				"   할당 ≤ 확보\n"                                                          +
+				"\n"                                                                        +
+				"■ 왜 위아래가 안 맞나\n"                                                   +
+				"   위는 'RAM에 있나',\n"                                                   +
+				"   아래는 '얼마나 확보했나'다.\n"                                          +
+				"   안 쓰는 페이지는 OS가 빼내므로\n"                                       +
+				"   위에서만 빠진다. 그래서\n"                                              +
+				"   아래가 더 클 수 있다.\n"                                                +
+				"\n"                                                                        +
+				"   확보분은 반납되지 않는다\n"                                             +
+				"   (Mono GC가 비압축식이라 그렇다).\n"                                     +
+				"\n"                                                                        +
+				"   작업 관리자 → '자세히' 탭 →\n"                                          +
+				"   열 머리글 우클릭 → 열 선택 →\n"                                        +
+				"   '커밋 크기'를 켜서 견준다.\n"                                           +
+				"\n"                                                                        +
+				"클릭 = 미사용 에셋 언로드 + GC";
 		}
 	}
 }

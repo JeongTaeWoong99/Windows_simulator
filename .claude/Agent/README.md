@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-22 메모리 미터 툴팁 조판 정리 + 커밋/워킹셋 설명 정정](2026-08-22-memory-tooltip-layout.md) — `#client` `#editor` `#docs` 툴팁 폭은 못 늘리므로 줄을 24자로 끊고, 긴 설명은 Editor 규칙.md로 이관
 - [2026-08-22 열의 남는 높이를 위젯 2 : 상태 1로 나누기](2026-08-22-column-side-height-ratio.md) — `#client` `#ui` WidgetPositionLayout이 사이드 칸 높이를 비율로 계산해 preferredHeight에 못박는다
 - [2026-08-20 서버 대기 로딩·실패 알림 이후 낡은 문서·주석 정정](2026-08-20-server-wait-docs-followup.md) — `#docs` `#client` `#ui` 8975b28이 .md를 안 담아 남은 구현 이전 서술을 문서 5·주석 3에서 정정
 - [2026-08-20 에디터 메모리 사용량 상단 툴바 표시기](2026-08-20-editor-memory-toolbar.md) — `#client` `#editor` 프로세스 메모리를 메인 툴바에 1초마다 표시하고 클릭 시 언로드+GC로 정리

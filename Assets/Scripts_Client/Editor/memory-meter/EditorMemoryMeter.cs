@@ -12,25 +12,31 @@ namespace DesktopWindowControl.EditorTools
 	/// </summary>
 	internal static class EditorMemoryMeter
 	{
-		/// <summary>한 시점의 메모리 수치 묶음.</summary>
+		/// <summary>
+		/// 한 시점의 메모리 수치 묶음.
+		/// ★ 용어 — '확보(Reserved)'는 Win32의 예약(Reserve)이 아니라 유니티 할당자가 OS에서 커밋해 받아 둔 풀이고,
+		///   '할당(Allocated)'은 그 풀에서 실제로 나눠 준 양이다. 둘 다 물리 RAM 적재 여부와는 무관하다.
+		///   'ProcessBytes'(워킹셋)와는 배타 관계가 아니라 서로 겹친다.
+		///   정의·포함 관계는 'Editor 규칙.md'의 용어 절에 표로 있다.
+		/// </summary>
 		internal readonly struct Snapshot
 		{
-			/// <summary>에디터 프로세스가 지금 물리 메모리에 올려 둔 양(워킹셋) — 아래 항목들을 더한 값이 아니다.</summary>
+			/// <summary>에디터 프로세스가 지금 물리 RAM에 올려 둔 양(워킹셋) — 아래 항목들을 더한 값이 아니다.</summary>
 			public readonly long ProcessBytes;
 
-			/// <summary>Unity 네이티브가 지금 데이터를 담고 있는 양(에셋·씬 등).</summary>
+			/// <summary>Unity 네이티브 풀에서 실제로 나눠 준 양(에셋·씬 등) — 할당.</summary>
 			public readonly long UnityAllocated;
 
-			/// <summary>Unity 네이티브가 OS에서 미리 받아 둔 자리(할당보다 크거나 같다).</summary>
+			/// <summary>Unity 네이티브가 OS에서 커밋해 받아 둔 풀 — 확보(할당보다 크거나 같다).</summary>
 			public readonly long UnityReserved;
 
-			/// <summary>C# 스크립트(Mono) 힙에서 실제로 쓰는 양.</summary>
+			/// <summary>C# 스크립트(Mono) 힙에서 실제로 나눠 준 양 — 할당.</summary>
 			public readonly long MonoUsed;
 
-			/// <summary>C# 스크립트(Mono) 힙 전체 크기.</summary>
+			/// <summary>C# 스크립트(Mono) 힙 전체 크기 — 확보.</summary>
 			public readonly long MonoHeap;
 
-			/// <summary>그래픽 드라이버가 잡고 있는 양(텍스처·메시 등).</summary>
+			/// <summary>그래픽 드라이버가 잡고 있는 양(텍스처·메시 등) — VRAM 쪽이라 워킹셋엔 아예 안 잡힌다.</summary>
 			public readonly long GraphicsDriver;
 
 			public Snapshot(long processBytes, long unityAllocated, long unityReserved,
