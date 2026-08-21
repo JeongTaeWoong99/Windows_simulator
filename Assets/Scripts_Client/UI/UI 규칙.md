@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-19 (`!System Canvas` 2단 구조 통일 + CanvasGroup 토글·로딩 지연 표시) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-22 (열 여백을 위젯 위치에 따라 2:1로 나누는 규칙 추가) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -621,7 +621,8 @@ Notice가 Loading보다 위에 그려지도록 형제 순서에서 아래(나중
 
 | 증상 | 원인 | 해결 |
 |---|---|---|
-| **형제를 껐더니 남은 칸이 화면 전체로 늘어난다** | 그 칸의 `LayoutElement.flexibleHeight = 1`. flexible은 **"남는 높이를 가져간다"** 라서, 형제가 꺼져 자리가 통째로 비면 **혼자 다 빨아들인다** | 크기가 고정이어야 하는 칸은 **`preferredHeight = 실제 높이` · `flexibleHeight = 0`**. `@Main Column`은 90 + 900 + 90 = 1080 = 컬럼 높이라 **남는 높이 자체가 없다** — 나눌 것이 없으면 사고도 없다 |
+| **형제를 껐더니 남은 칸이 화면 전체로 늘어난다** | 그 칸의 `LayoutElement.flexibleHeight = 1`. flexible은 **"남는 높이를 가져간다"** 라서, 형제가 꺼져 자리가 통째로 비면 **혼자 다 빨아들인다** | 크기가 고정이어야 하는 칸은 **`preferredHeight = 실제 높이` · `flexibleHeight = 0`**. `@Main Column`은 60 + 900 + 120 = 1080 = 컬럼 높이라 **남는 높이 자체가 없다** — 나눌 것이 없으면 사고도 없다. 비율이 필요하면 flexible이 아니라 **숫자를 계산해 써 넣는다**(아래 "비율은 flexible이 아니라 숫자로") |
+| **`preferredHeight`를 줬는데 더 큰 값으로 계산된다** | UGUI가 쓰는 값은 preferred가 아니라 **`max(minHeight, preferredHeight)`** 다. `minHeight`가 남아 있으면 그게 이긴다 | 높이를 못박을 때는 **`minHeight`도 함께 0으로** 내린다. `WidgetPositionLayout.SetFixedHeight`가 그렇게 한다 |
 | **전부 닫았는데 위젯이 화면 가장자리에서 밀린다** | 내용이 꺼진 캔버스의 `LayoutElement`가 컬럼 안에서 높이를 계속 차지한다 | 화면만 끄지 말고 **캔버스까지 끈다** (`UIManager.CloseAllExceptWidget`) |
 | **`LayoutElement`를 고쳐도 높이가 안 변한다** | 부모가 **`Child Control Height = off`**. 그러면 `LayoutElement.preferredHeight`는 **부모가 자기 총높이를 셀 때만** 읽히고, 실제 높이는 `RectTransform`의 `Height`가 그대로 쓰인다 | 부모의 `Child Control Height`를 **켠다**(지금 컬럼들은 켜져 있다). 끈 채로 두려면 `RectTransform.Height`와 `preferredHeight`를 **둘 다** 맞춰야 한다 — 두 곳을 손으로 동기화하는 셈이라 반드시 어긋난다 |
 | **화면을 갈아 끼웠더니 크기·위치가 달라진다** | 같은 자리를 나눠 쓰는 화면들의 `LayoutElement` 값이 서로 다르다 | 셋 다 `preferredHeight 0` · `flexibleHeight 1`로 **똑같이** 준다. 겹쳐 놓을 필요는 없다 — 꺼진 오브젝트는 레이아웃에서 빠진다 |
@@ -694,7 +695,23 @@ Scroll View Panel   ScrollRect   content = Content · viewport = Viewport   ← 
 (`Setting Presenter`의 토글 4개 · 드롭다운 3개가 실제로 355/305로 갈렸다).
 
 **칸 전체가 고정이어야 하는 열이면 `flexibleHeight`를 전부 0으로 둔다.**
-`@Main Column`이 그렇다 — 90 + 900 + 90 = 1080 = 컬럼 높이라 남는 높이 자체가 없다.
+`@Main Column`이 그렇다 — 60 + 900 + 120 = 1080 = 컬럼 높이라 남는 높이 자체가 없다.
 하나라도 `flexibleHeight = 1`이면 **형제가 꺼질 때 그 자리를 혼자 빨아들인다.**
+
+### 비율은 flexible이 아니라 숫자로
+
+세 열의 위·아래 칸은 **가운데를 뺀 나머지를 위젯 쪽 2 : 상태 쪽 1**로 나눈다.
+비율의 자연스러운 도구는 `flexibleHeight`지만 **여기서는 쓸 수 없다** — flexible은
+"남는 높이를 가져간다"라서 `CloseAllExceptWidget`으로 가운데를 끄면 위젯이 열 전체를 빨아들인다.
+
+→ **`WidgetPositionLayout`이 `column.rect.height - 가운데 preferredHeight`를 비율로 나눠
+`preferredHeight`에 숫자로 써 넣는다.** `flexibleHeight`는 계속 0이다.
+
+| 지키는 것 | 왜 |
+|---|---|
+| 사이드 칸의 `minHeight`도 0으로 내린다 | UGUI가 쓰는 값은 `max(min, preferred)`다 |
+| 한쪽만 반올림하고 나머지는 빼서 채운다 | 둘 다 반올림하면 합이 1px 어긋나 가운데가 밀린다 |
+| 가운데 높이는 `LayoutUtility`가 아니라 `GetComponent<LayoutElement>()`로 읽는다 | `LayoutUtility`는 **꺼진 오브젝트를 건너뛰어 0**을 돌려준다. 닫힌 상태에서 읽으면 위 사고를 flexible 없이 재현한다 |
+| **사람이 정하는 건 가운데 900 하나뿐** | 사이드를 인스펙터에서 고쳐도 다음 배치에서 덮어써진다 |
 
 ---

@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-22 열의 남는 높이를 위젯 2 : 상태 1로 나누기](2026-08-22-column-side-height-ratio.md) — `#client` `#ui` WidgetPositionLayout이 사이드 칸 높이를 비율로 계산해 preferredHeight에 못박는다
 - [2026-08-20 서버 대기 로딩·실패 알림 이후 낡은 문서·주석 정정](2026-08-20-server-wait-docs-followup.md) — `#docs` `#client` `#ui` 8975b28이 .md를 안 담아 남은 구현 이전 서술을 문서 5·주석 3에서 정정
 - [2026-08-20 에디터 메모리 사용량 상단 툴바 표시기](2026-08-20-editor-memory-toolbar.md) — `#client` `#editor` 프로세스 메모리를 메인 툴바에 1초마다 표시하고 클릭 시 언로드+GC로 정리
 - [2026-08-19 죽은 저장 쓰기·미사용 API 정리 (P3)](2026-08-19-window-settings-deadcode-cleanup.md) — `#client` `#window` 고정 설정 3개의 죽은 SaveBool 제거·키 예약 표기, SystemCanvasView.Show 예약 문서화, SettingPresenter 토글은 의도적 비활성이라 유지
