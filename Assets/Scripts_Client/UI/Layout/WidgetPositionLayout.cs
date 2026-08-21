@@ -65,19 +65,21 @@ public class WidgetPositionLayout : MonoBehaviour
     [CenterHeader("위젯 위치")]
     [SerializeField] private WidgetPosition position = WidgetPosition.LowerRight;
 
+    // 위젯이 '위' 칸일 때 / '아래' 칸일 때 세 열에 줄 자식 정렬.
+    //
+    // ※ 인스펙터에 내놓지 않는다 — 고르는 값이 아니라 'position'에서 따라 나오는 값이다.
+    //   위젯은 창 가장자리에 붙어야 하므로 위 칸이면 Upper, 아래 칸이면 Lower 말고 답이 없다.
+    //   드롭다운으로 내놓으면 9개 중 8개가 배치를 깨는 선택지가 된다.
+    //   가로가 Center 인 이유는 클래스 주석 "가로 정렬은 건드리지 않는다" 참조.
+    private const TextAnchor UpperAlignment = TextAnchor.UpperCenter;
+    private const TextAnchor LowerAlignment = TextAnchor.LowerCenter;
+
     // ※ 정렬을 바꿀 대상은 따로 배선하지 않는다 — 위 열 참조 3개에서 VerticalLayoutGroup을 직접 꺼낸다.
     //   예전엔 배열로 따로 받았는데, 인스펙터를 비워 두면 아무 일도 안 일어나면서 원인이 안 보였다.
     //   같은 오브젝트를 두 번 배선할 이유가 없다.
-    [CenterHeader("위·아래에 따라 바꿀 열의 자식 정렬")]
-    [SerializeField, Tooltip("위젯이 '위' 칸일 때 열의 자식 정렬 — 내용을 위로 붙여 위젯이 창 위 가장자리에 온다")]
-    private TextAnchor upperAlignment = TextAnchor.UpperCenter;
 
-    [SerializeField, Tooltip("위젯이 '아래' 칸일 때 열의 자식 정렬 — 내용을 아래로 붙인다")]
-    private TextAnchor lowerAlignment = TextAnchor.LowerCenter;
-
-    // ※ 비율을 코드 상수로 박지 않는 이유 — 열 구성이 달라지면 원하는 몫도 달라진다.
-    //   정렬 값(upperAlignment·lowerAlignment)과 같은 성격이라 같은 방식으로 인스펙터에 둔다.
-    //   ExecuteAlways 라 재생하지 않고도 여기서 돌려 보며 정할 수 있다.
+    // ※ 비율은 정렬과 달리 인스펙터에 둔다 — 양수면 무엇이든 성립하는 조절값이라
+    //   틀린 선택지가 없고, ExecuteAlways 로 재생 없이 돌려 보는 것이 이 값의 결정 방법이다.
     [CenterHeader("사이드 칸의 높이 비율")]
     [SerializeField, Tooltip("위젯 쪽 칸이 나머지 높이에서 가져갈 몫 — 상태 패널보다 커야 한다")]
     private float widgetWeight = 2f;
@@ -319,14 +321,14 @@ public class WidgetPositionLayout : MonoBehaviour
     ///
     /// 내용이 열 높이를 다 채우지 않을 때 남는 공간이 어디로 가는지를 정하는 값이다.
     /// 위젯이 위 칸이면 내용을 위로 붙여 위젯이 창 위 가장자리에 오고, 아래 칸이면 반대다.
-    /// 값 자체는 인스펙터에서 바꿀 수 있다 — 열 구성이 달라지면 원하는 조합도 달라진다.
+    /// 조합은 'position'이 정한다 — 고를 여지가 없어 상수로 둔다(UpperAlignment · LowerAlignment).
     ///
     /// 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 창고·거래의 배너 줄 높이가 어긋난다
     /// (기획 2장 "세 창의 정렬 규칙": 세 배너 줄이 같은 높이에 와야 한다).
     /// </summary>
     private void ApplyChildAlignment(bool isUpper)
     {
-        TextAnchor alignment = isUpper ? upperAlignment : lowerAlignment;
+        TextAnchor alignment = isUpper ? UpperAlignment : LowerAlignment;
 
         SetColumnAlignment(storageColumn,     alignment);
         SetColumnAlignment(workstationColumn, alignment);

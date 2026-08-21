@@ -1,7 +1,7 @@
 # 07. 게임 UI
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-08-20 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
+> 최종 업데이트: 2026-08-22 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
 > **바뀌면 갱신:** [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`퀘스트`](../quest/README.md)
 
 이 게임이 다른 방치형과 구분되는 **유일한 차별점**이다.
@@ -311,7 +311,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 영역 | 위치 |
 | --- | --- |
 | 씬 · UI 골격 | `Assets/Scenes/DesktopWindow_Control.unity` — `Root Canvas` → `!Horizental Columns` → 세 열(`@Storage/@Main/@Market Column`). 로그인 화면은 열 밖에 `!Login Canvas`로, 로딩·알림은 그보다 위 `!System Canvas`로 따로 선다. 오브젝트 이름은 **접두사로 계층(`!`·`@`·`#`), 표기로 MVP 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)** 을 나타낸다 |
-| 위젯 6칸 배치 | `Assets/Scripts_Client/UI/Layout/WidgetPositionLayout.cs` — 좌표가 아니라 **형제 순서 + 3열의 자식 정렬**만 바꾼다. 위 칸이면 열 정렬을 `LowerCenter`, 아래 칸이면 `UpperCenter`로 뒤집어 위젯이 창 가장자리에 붙는다 |
+| 위젯 6칸 배치 | `Assets/Scripts_Client/UI/Layout/WidgetPositionLayout.cs` — 좌표를 계산하지 않는다 — **형제 순서 + 3열의 자식 정렬**을 바꾸고, 사이드 칸의 **높이만** 계산한다. 위 칸이면 열 정렬을 `UpperCenter`, 아래 칸이면 `LowerCenter`로 뒤집어 위젯이 창 가장자리에 붙는다(정렬 조합은 코드 상수 — 위치에서 따라 나오므로 고를 여지가 없다). 가운데를 뺀 나머지 높이는 **위젯 쪽 2 : 상태 쪽 1**로 나눠 `preferredHeight`에 숫자로 써 넣는다 |
 | 창 제어 (크기 배율 · 9분할 · 투명 · 클릭스루) | `Assets/Scripts_Client/Managers/WindowManager.cs` |
 | 설정 입력 | `Assets/Scripts_Client/UI/Main/SettingPresenter/SettingPresenter.cs` — 창 제어(Win32)와 일반 설정(위젯 6칸)을 한 패널에서 받아 각 담당자에게 넘긴다. **거래 열에 얹혀 있던 패널이 `#Main Canvas` 안으로 옮겨져 작업슬롯과 자리를 나눠 쓴다** |
 | 설정 저장 | `Assets/Scripts_Client/Settings/WindowSettings.cs` — 창 설정 6종 + 위젯 위치를 `PlayerPrefs`에 보존 |

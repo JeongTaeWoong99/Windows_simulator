@@ -44,3 +44,22 @@ tags: [client, ui, layout]
   `GetComponent<LayoutElement>().preferredHeight`로 직렬화 값을 직접 읽는다.
 - 사이드 6칸을 인스펙터에서 고쳐도 다음 배치에서 덮어써진다. **사람이 정하는 건 가운데 900 하나다.**
 - `ExecuteAlways`의 쓰기는 씬을 dirty로 만들지 않는다 — 값이 바뀌어도 저장하지 않으면 안 남는다.
+
+---
+
+## 후속 — 인스펙터 노출 정리 (같은 날)
+
+- `upperAlignment`·`lowerAlignment`를 **`private const`로 내렸다.** 이 둘은 고르는 값이 아니라
+  `position`에서 따라 나오는 값이다 — 위젯은 창 가장자리에 붙어야 하므로 위 칸이면 Upper,
+  아래 칸이면 Lower 말고 답이 없다. `TextAnchor` 드롭다운은 9개 중 8개가 배치를 깨는 선택지였다.
+  씬에 저장돼 있던 값도 기본값 그대로였다(`upperAlignment: 1` · `lowerAlignment: 7`).
+- 씬 YAML에는 두 키가 다음 저장까지 남는다 — Unity가 다시 저장할 때 사라진다.
+- **유지한 것과 이유**
+  - `position` — 유일한 실제 입력. 에디터에서는 인스펙터가 진실이고(`LoadSavedPosition`이
+    `UNITY_EDITOR`에서 저장값을 읽지 않는다) 빌드 첫 실행의 기본값이 된다.
+  - `widgetWeight`·`stateWeight` — 양수면 무엇이든 성립하는 연속값이라 틀린 선택지가 없고,
+    `ExecuteAlways`로 돌려 보는 것이 이 값의 결정 방법이다. 다만 2:1이 문서에 규칙으로
+    적혀 있으므로 인스펙터에서 바꾸면 문서와 어긋난다는 점은 남는다.
+  - UI 폴더의 나머지 값 필드(`SquareLayoutElement.sizeAdjust`,
+    `FlexibleGridLayoutGroup._cellAspectRatio`, `WorkStationSelectPresenter`의 색 2개,
+    `GachaPresenter.gachaId`)는 인스턴스마다 달라지는 값이라 그대로 둔다.
