@@ -5188,7 +5188,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 950
+  m_PreferredHeight: 900
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
@@ -5467,11 +5467,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 45
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 45
+  m_PreferredHeight: 60
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 0
 --- !u!1 &359449245
 GameObject:
@@ -10266,7 +10266,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 55
+  m_fontSize: 50
   m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11833,7 +11833,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 55
+  m_fontSize: 50
   m_fontSizeBase: 40
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12265,7 +12265,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 45
+  m_fontSize: 72
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -12842,7 +12842,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 950
+  m_PreferredHeight: 900
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
@@ -14567,9 +14567,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 65
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 65
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 0
@@ -21040,11 +21040,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 45
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 45
+  m_PreferredHeight: 60
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 0
 --- !u!1 &1223487993
 GameObject:
@@ -25608,8 +25608,8 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 1
   m_Children:
-  - {fileID: 1241944585}
   - {fileID: 1526194779}
+  - {fileID: 1241944585}
   - {fileID: 1753843045}
   m_Father: {fileID: 112850262}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -25662,9 +25662,11 @@ MonoBehaviour:
   marketColumn: {fileID: 1753843045}
   widgetPanel: {fileID: 877804413}
   statePanel: {fileID: 2079193702}
-  position: 4
+  position: 3
   upperAlignment: 1
   lowerAlignment: 7
+  widgetWeight: 2
+  stateWeight: 1
 --- !u!1 &1480106113
 GameObject:
   m_ObjectHideFlags: 0
@@ -29744,7 +29746,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 950
+  m_PreferredHeight: 900
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
@@ -31877,11 +31879,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 45
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 45
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 0
 --- !u!1 &1873221839
 GameObject:
@@ -32980,11 +32982,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 45
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 45
+  m_PreferredHeight: 120
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
+  m_FlexibleHeight: 0
   m_LayoutPriority: 0
 --- !u!1 &1913831071
 GameObject:
@@ -33772,7 +33774,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 924431470}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.08565792
+  m_Size: 0.080466524
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -35935,9 +35937,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.LayoutElement
   m_IgnoreLayout: 0
   m_MinWidth: -1
-  m_MinHeight: 65
+  m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 65
+  m_PreferredHeight: 60
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 0
@@ -37193,7 +37195,7 @@ MonoBehaviour:
   setStartTransparent: 1
   setStartDynamicClickThrough: 1
   setStartScale: 3
-  setStartAnchor: 4
+  setStartAnchor: 3
 --- !u!4 &2135379297
 Transform:
   m_ObjectHideFlags: 0

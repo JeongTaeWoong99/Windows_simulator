@@ -17,10 +17,16 @@ public enum WidgetPosition
 /// <summary>
 /// 위젯 위치(6칸)에 맞춰 3열 순서와 위젯/상태 패널의 위·아래 슬롯을 배치한다.
 ///
-/// ■ 좌표를 계산하지 않는다
+/// ■ 좌표를 계산하지 않는다 — 다만 사이드 칸의 '높이'는 계산한다
 ///   위치를 anchoredPosition 으로 옮기지 않고 형제 순서(sibling index)와 자식 정렬만 바꾼다.
 ///   실제 배치는 HorizontalLayoutGroup·VerticalLayoutGroup 이 계산하므로,
 ///   창 배율이 바뀌어도 좌표를 다시 잡을 필요가 없다.
+///
+///   높이만은 예외다. 열의 가운데 칸을 뺀 나머지를 위젯 쪽 : 상태 쪽 = 2 : 1 로 나누는데,
+///   그 자연스러운 도구인 flexibleHeight 를 쓸 수 없다 — flexible 은 "남는 높이를 가져간다"라서
+///   'UIManager.CloseAllExceptWidget' 으로 가운데를 끄면 위젯이 열 전체를 빨아들인다.
+///   그래서 여기서 비율을 계산해 preferredHeight 에 '숫자로' 써 넣고 flexibleHeight 는 0 으로 둔다
+///   ('ApplySideHeights').
 ///
 /// ■ 가로 정렬은 건드리지 않는다
 ///   여닫을 때 Column 이 아니라 그 안의 Canvas 만 끄기 때문이다. 열 3개와 (Layout) 스페이서가
@@ -68,6 +74,16 @@ public class WidgetPositionLayout : MonoBehaviour
 
     [SerializeField, Tooltip("위젯이 '아래' 칸일 때 열의 자식 정렬 — 내용을 아래로 붙인다")]
     private TextAnchor lowerAlignment = TextAnchor.LowerCenter;
+
+    // ※ 비율을 코드 상수로 박지 않는 이유 — 열 구성이 달라지면 원하는 몫도 달라진다.
+    //   정렬 값(upperAlignment·lowerAlignment)과 같은 성격이라 같은 방식으로 인스펙터에 둔다.
+    //   ExecuteAlways 라 재생하지 않고도 여기서 돌려 보며 정할 수 있다.
+    [CenterHeader("사이드 칸의 높이 비율")]
+    [SerializeField, Tooltip("위젯 쪽 칸이 나머지 높이에서 가져갈 몫 — 상태 패널보다 커야 한다")]
+    private float widgetWeight = 2f;
+
+    [SerializeField, Tooltip("상태 패널 쪽 칸이 가져갈 몫. 사이드 열에서는 위젯 반대쪽 -(Layout) 이 이 몫을 쓴다")]
+    private float stateWeight = 1f;
 
     public WidgetPosition Position => position;
 
@@ -206,6 +222,7 @@ public class WidgetPositionLayout : MonoBehaviour
         {
             ApplyColumnOrder();
             ApplyVerticalSlot();
+            ApplySideHeights(); // ⚠️ ApplyVerticalSlot 뒤여야 한다 — 그게 위·아래를 뒤집는다
 
             LayoutRebuilder.MarkLayoutForRebuild(columns);
         }
@@ -325,6 +342,170 @@ public class WidgetPositionLayout : MonoBehaviour
         var group = column.GetComponent<VerticalLayoutGroup>();
         if (group != null)
             group.childAlignment = alignment;
+    }
+
+    // 열 하나가 갖는 칸 수 — 위 · 가운데 · 아래. 이 전제로 자식에서 스페이서를 꺼낸다
+    private const int ColumnSlotCount = 3;
+
+    // 마지막으로 남긴 높이 배분 문제 — 같은 상태가 이어지면 다시 찍지 않는다 (로그 폭주 방지)
+    private string _lastHeightProblems = "";
+
+    /// <summary>
+    /// 세 열의 위·아래 칸 높이를 <b>가운데 칸의 나머지에서 비율로 나눠</b> 써 넣는다 ('Apply'에서 호출).
+    ///
+    /// ⚠️ <b>'ApplyVerticalSlot' 뒤에 불러야 한다.</b> 작업슬롯 열은 그 메서드가 위젯·상태 패널의
+    ///   형제 순서를 뒤집으므로, 먼저 돌면 위·아래가 뒤바뀐 채 계산된다.
+    ///
+    /// ■ 열마다 자기 가운데를 본다
+    ///   한 열의 값을 나머지에 복사하지 않는다. 대신 세 가운데 높이가 서로 다르면 알린다
+    ///   ('AppendCenterMismatch') — 기획 2장 "세 창의 정렬 규칙"이 깨지는 순간이다.
+    /// </summary>
+    private void ApplySideHeights()
+    {
+        bool isUpper = (int)position / 3 == 0;
+
+        var problems = new System.Text.StringBuilder();
+
+        float storage     = ApplyColumnHeights(storageColumn,     isUpper, problems);
+        float workstation = ApplyColumnHeights(workstationColumn, isUpper, problems);
+        float market      = ApplyColumnHeights(marketColumn,      isUpper, problems);
+
+        AppendCenterMismatch(storage, workstation, market, problems);
+        ReportHeightProblems(problems);
+    }
+
+    /// <summary>
+    /// 한 열의 위·아래 칸에 높이를 써 넣고 <b>그 열의 가운데 높이</b>를 돌려준다.
+    /// 나눌 수 없으면 'problems'에 이유를 적고 NaN 을 돌려준다 (ApplySideHeights 에서 호출).
+    /// </summary>
+    private float ApplyColumnHeights(RectTransform column, bool isUpper, System.Text.StringBuilder problems)
+    {
+        // 위·가운데·아래 셋이라는 전제로 자식에서 꺼낸다 — 열 참조를 이미 받았는데
+        // 스페이서까지 또 배선할 이유가 없다(자식 정렬 대상과 같은 판단).
+        if (column.childCount != ColumnSlotCount)
+        {
+            problems.Append($"\n  '{column.name}'의 자식이 {column.childCount}개다 (위·가운데·아래 3개여야 한다).");
+            return float.NaN;
+        }
+
+        var   center       = column.GetChild(1) as RectTransform;
+        float centerHeight = FixedHeightOf(center);
+
+        if (centerHeight < 0f)
+        {
+            problems.Append($"\n  '{column.name}'의 가운데 칸에 고정 높이가 없다 — LayoutElement 의 Preferred Height 를 넣을 것.");
+            return float.NaN;
+        }
+
+        float leftover = column.rect.height - centerHeight;
+        if (leftover <= 0f)
+        {
+            problems.Append($"\n  '{column.name}'의 가운데 {centerHeight:F0}가 열 높이 {column.rect.height:F0} 이상이라 나눌 여백이 없다.");
+            return centerHeight;
+        }
+
+        // ※ 한쪽만 반올림하고 나머지는 빼서 채운다. 둘 다 반올림하면 합이 1px 어긋나
+        //   열이 넘치거나 가운데 칸이 1px 밀린다.
+        float total        = widgetWeight + stateWeight;
+        float widgetHeight = total > 0f ? Mathf.Round(leftover * widgetWeight / total) : Mathf.Round(leftover * 0.5f);
+        float stateHeight  = leftover - widgetHeight;
+
+        var top    = column.GetChild(0) as RectTransform;
+        var bottom = column.GetChild(ColumnSlotCount - 1) as RectTransform;
+
+        SetFixedHeight(isUpper ? top : bottom, widgetHeight);
+        SetFixedHeight(isUpper ? bottom : top, stateHeight);
+
+        return centerHeight;
+    }
+
+    /// <summary>
+    /// 그 칸이 'LayoutElement'로 주장하는 고정 높이. 없으면 -1 (ApplyColumnHeights 에서 호출).
+    ///
+    /// ⚠️ <b>'LayoutUtility.GetPreferredHeight'를 쓰지 않는다.</b> 그건 꺼진 오브젝트의
+    ///   'LayoutElement'를 건너뛰어 <b>0</b>을 돌려준다. 'CloseAllExceptWidget'으로 가운데 캔버스를
+    ///   끈 상태에서 읽으면 나머지가 열 전체가 되어 <b>위젯이 화면을 채운다</b> — flexible 없이도
+    ///   2026-08-10 사고를 그대로 재현하는 길이다.
+    ///   직렬화된 값은 꺼져 있어도 그대로 읽히므로 컴포넌트에서 직접 꺼낸다.
+    /// </summary>
+    private static float FixedHeightOf(RectTransform? slot)
+    {
+        if (slot == null)
+            return -1f;
+
+        var element = slot.GetComponent<LayoutElement>();
+        return element != null ? element.preferredHeight : -1f;
+    }
+
+    /// <summary>
+    /// 그 칸을 <b>딱 이 높이</b>로 못박는다 (ApplyColumnHeights 에서 호출).
+    ///
+    /// ⚠️ <b>'minHeight'까지 0으로 눌러야 한다.</b> UGUI 가 쓰는 값은 preferred 가 아니라
+    ///   <b>max(min, preferred)</b>다. '#State Canvas'는 min 65, '-(Layout)'은 min 45 로 저장돼 있어
+    ///   그대로 두면 계산한 60을 써 넣어도 65·45 가 이겨 열이 넘친다.
+    ///
+    /// ⚠️ 'flexibleHeight'는 0 이다. 1 이면 형제가 꺼질 때 그 자리를 혼자 빨아들인다
+    ///   (→ 'UI 규칙.md' 7-2).
+    /// </summary>
+    private static void SetFixedHeight(RectTransform? slot, float height)
+    {
+        if (slot == null)
+            return;
+
+        var element = slot.GetComponent<LayoutElement>();
+        if (element == null)
+        {
+            ClientLogger.Warn(ClientLogger.UI, $"'{slot.name}'에 LayoutElement 가 없어 높이를 못박지 못한다.", slot);
+            return;
+        }
+
+        // 값이 이미 같으면 쓰지 않는다 — LayoutElement 는 값이 바뀔 때마다 리빌드를 예약한다
+        if (Mathf.Approximately(element.preferredHeight, height) &&
+            Mathf.Approximately(element.minHeight,       0f)     &&
+            Mathf.Approximately(element.flexibleHeight,  0f))
+            return;
+
+        element.minHeight       = 0f;
+        element.preferredHeight = height;
+        element.flexibleHeight  = 0f;
+    }
+
+    /// <summary>
+    /// 세 열의 가운데 높이가 서로 다르면 문제 목록에 적는다 (ApplySideHeights 에서 호출).
+    ///
+    /// 다르면 세 배너 줄이 가로로 어긋난다 (기획 2장 "세 창의 정렬 규칙").
+    /// <b>고치지 않고 알리기만 한다</b> — 어느 값이 맞는지는 이 컴포넌트가 알 수 없다.
+    /// 한 열의 값을 나머지에 복사하면 사람이 인스펙터에 넣은 숫자가 조용히 사라진다.
+    /// </summary>
+    private static void AppendCenterMismatch(float storage, float workstation, float market,
+                                             System.Text.StringBuilder problems)
+    {
+        // 하나라도 못 읽었으면 그 이유가 이미 적혀 있다 — 여기서 또 말할 것이 없다
+        if (float.IsNaN(storage) || float.IsNaN(workstation) || float.IsNaN(market))
+            return;
+
+        float max = Mathf.Max(storage, Mathf.Max(workstation, market));
+        float min = Mathf.Min(storage, Mathf.Min(workstation, market));
+
+        if (max - min <= 1f)
+            return;
+
+        problems.Append($"\n  가운데 칸 높이가 열마다 다르다 — 창고 {storage:F0} · 작업 {workstation:F0} · 거래 {market:F0}. " +
+                        "세 배너 줄이 가로로 어긋난다.");
+    }
+
+    // 높이 배분에서 걸린 것을 남긴다. 같은 상태가 이어지면 다시 찍지 않는다 (ApplySideHeights 에서 호출)
+    private void ReportHeightProblems(System.Text.StringBuilder problems)
+    {
+        string dump = problems.ToString();
+        if (dump == _lastHeightProblems)
+            return;
+
+        bool recovered      = dump.Length == 0;
+        _lastHeightProblems = dump;
+
+        ClientLogger.Warn(ClientLogger.UI,
+            recovered ? "사이드 높이 배분이 정상으로 돌아왔다." : $"사이드 높이를 나누지 못했다 —{dump}", this);
     }
 
     // 필수 참조가 전부 연결됐는지 확인한다 (Apply 진입 가드)
