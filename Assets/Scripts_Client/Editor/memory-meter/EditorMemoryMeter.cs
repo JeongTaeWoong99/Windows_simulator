@@ -21,7 +21,12 @@ namespace DesktopWindowControl.EditorTools
 		/// </summary>
 		internal readonly struct Snapshot
 		{
-			/// <summary>에디터 프로세스가 지금 물리 RAM에 올려 둔 양(워킹셋) — 아래 항목들을 더한 값이 아니다.</summary>
+			/// <summary>
+			/// 에디터 프로세스가 지금 물리 RAM에 올려 둔 양(워킹셋) — 아래 항목들을 더한 값이 아니다.
+			/// ★ 이 값은 **해제가 없어도 크게 오르내린다.** 메모리 압박·창 최소화 때 OS가 안 쓰는
+			///   페이지를 워킹셋에서 빼내(트림) 대기(Standby) 리스트로 돌리기 때문이다. 그 페이지는
+			///   RAM에 그대로 남아 있어 다시 건드리면 곧바로 돌아온다 — 줄었다고 회수된 게 아니다.
+			/// </summary>
 			public readonly long ProcessBytes;
 
 			/// <summary>Unity 네이티브 풀에서 실제로 나눠 준 양(에셋·씬 등) — 할당.</summary>
@@ -66,7 +71,12 @@ namespace DesktopWindowControl.EditorTools
 		/// <summary>바이트 수를 유니티 표기('1.4 GB')로 바꾼다.</summary>
 		public static string Format(long bytes) => EditorUtility.FormatBytes(bytes);
 
-		/// <summary>미사용 에셋 언로드 + GC 수집으로 메모리를 정리하고 줄어든 양을 콘솔에 남긴다 (툴바 버튼 클릭).</summary>
+		/// <summary>
+		/// 미사용 에셋 언로드 + GC 수집으로 메모리를 정리하고 줄어든 양을 콘솔에 남긴다 (툴바 버튼 클릭).
+		/// ★ 전후를 워킹셋으로 재므로 **델타가 '+'(증가)로 찍힐 수 있다** — 오류가 아니다.
+		///   GC가 회수한 자리는 Mono의 free list로 갈 뿐이고, 물리에서 빠지는 건 나중에 OS가
+		///   트림할 때다. 반면 정리하느라 훑은 페이지는 그 자리에서 워킹셋에 올라온다.
+		/// </summary>
 		public static void Cleanup()
 		{
 			long before = ReadProcessBytes();

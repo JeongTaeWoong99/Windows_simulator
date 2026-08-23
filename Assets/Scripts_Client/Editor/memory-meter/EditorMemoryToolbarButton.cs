@@ -100,6 +100,8 @@ namespace DesktopWindowControl.EditorTools
 				"   안 쓰는 페이지는 OS가 빼내므로\n"                                       +
 				"   위에서만 빠진다. 그래서\n"                                              +
 				"   아래가 더 클 수 있다.\n"                                                +
+				"   빼낸 페이지도 RAM에 남아(대기)\n"                                       +
+				"   다시 쓰면 즉시 돌아온다.\n"                                             +
 				"\n"                                                                        +
 				"   확보분은 반납되지 않는다\n"                                             +
 				"   (Mono GC가 비압축식이라 그렇다).\n"                                     +
