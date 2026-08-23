@@ -7,13 +7,13 @@ using UnityEngine;
 /// (서비스 로케이터 등록).
 /// </summary>
 /// <remarks>
-/// 콜백 수집기가 아니다 — 서버 패킷은 받지 않는다. 요청을 보낸 Presenter가 <c>Begin</c>으로 대기를 열고,
-/// 자기 응답 이벤트에서 <c>Succeed</c>/<c>Fail</c>로 결과만 보고한다. 아무 보고도 없는 무응답만 이 창구가
+/// 콜백 수집기가 아니다 — 서버 패킷은 받지 않는다. 요청을 보낸 Presenter가 'Begin'으로 대기를 열고,
+/// 자기 응답 이벤트에서 'Succeed'/'Fail'로 결과만 보고한다. 아무 보고도 없는 무응답만 이 창구가
 /// 타이머로 잡는다.
 ///
 /// ⚠️ 연결이 살아 있는지(주기적 하트비트)는 'PingManager'가 본다 — 축이 다르다.
 /// 여기는 "방금 보낸 요청 한 건이 돌아왔나"만 다룬다. 둘이 만나는 곳은 하나뿐이다 —
-/// 'PingManager'가 연결 끊김을 판정하면 그 알림을 띄울 창구로 <c>RaiseFatal</c>을 빌려 쓴다.
+/// 'PingManager'가 연결 끊김을 판정하면 그 알림을 띄울 창구로 'RaiseFatal'을 빌려 쓴다.
 /// </remarks>
 public class ServerWaitManager : MonoService<ServerWaitManager>
 {
@@ -30,12 +30,12 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
     /// <summary>요청이 실패했거나 응답이 없었다 — 사용자에게 보일 문구 ('NoticePresenter'가 구독).</summary>
     public event Action<string>? NoticeRaised;
 
-    /// <summary>연결 계층 치명 오류 — 알림 확인 후 종료로 이어진다 ('NoticePresenter'가 구독).</summary>
+    /// <summary>연결 계층 치명 오류 — 알림 확인< 후 종료로 이어진다 ('NoticePresenter'가 구독).</summary>
     public event Action<string>? FatalRaised;
 
     /// <summary>
     /// 서버 요청 하나의 대기를 시작한다 — 로딩을 띄우고 응답까지 감시한다 (요청을 보낸 직후 호출).
-    /// 돌려준 핸들에 응답이 오면 <c>Succeed</c>/<c>Fail</c>을 부른다.
+    /// 돌려준 핸들에 응답이 오면 'Succeed'/'Fail'을 부른다.
     /// </summary>
     /// <param name="label">타임아웃 문구에 쓸 요청 이름 (예: "로그인").</param>
     /// <param name="onClosed">대기가 끝날 때(성공·실패·타임아웃 공통) 호출 — 호출부의 버튼 잠금 해제에 쓴다.</param>
@@ -96,7 +96,7 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
 
 /// <summary>
 /// 'ServerWaitManager.Begin'이 돌려주는 대기 한 건의 손잡이. 응답을 받은 Presenter가
-/// <c>Succeed</c>/<c>Fail</c>로 결과를 보고한다. 한 번 닫히면 이후 호출은 무시된다
+/// 'Succeed'/'Fail'로 결과를 보고한다. 한 번 닫히면 이후 호출은 무시된다
 /// (타임아웃이 먼저 닫은 뒤 늦게 온 응답을 안전하게 흘려보낸다).
 /// </summary>
 public sealed class ServerWaitHandle

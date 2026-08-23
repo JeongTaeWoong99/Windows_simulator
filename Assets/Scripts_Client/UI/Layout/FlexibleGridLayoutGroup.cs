@@ -33,18 +33,18 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
     /// <summary>
     /// 가로 배치 입력 계산 (UGUI 레이아웃 시스템이 호출).
     ///
-    /// ⚠️ <b>부모에게 가로 폭을 요구하지 않는다.</b> 'GridLayoutGroup'은 최소 폭을
-    /// <c>padding + (cellSize.x + spacing) × 열수 - spacing</c>으로 계산하는데,
-    /// 이 그리드는 그 'cellSize.x'를 <b>자기 현재 폭에서 역산</b>한다.
-    /// 그대로 두면 <b>"내 최소 폭 = 내 현재 폭"이라는 순환</b>이 되어,
-    /// 부모가 한 번 넓게 잡아 준 폭이 그대로 하한으로 굳어 <b>다시는 줄어들지 않는다</b>.
+    /// ⚠️ 부모에게 가로 폭을 요구하지 않는다. 'GridLayoutGroup'은 최소 폭을
+    /// 'padding + (cellSize.x + spacing) × 열수 - spacing'으로 계산하는데,
+    /// 이 그리드는 그 'cellSize.x'를 자기 현재 폭에서 역산한다.
+    /// 그대로 두면 "내 최소 폭 = 내 현재 폭"이라는 순환이 되어,
+    /// 부모가 한 번 넓게 잡아 준 폭이 그대로 하한으로 굳어 다시는 줄어들지 않는다.
     ///
     /// 실제로 이것 때문에 빌드에서 거래 열의 패널만 열보다 넓어져 옆 열을 침범했다 (A-1).
     /// 창이 잠깐이라도 넓었던 프레임이 있으면 그 폭이 최소 폭으로 남는다 —
     /// 에디터 Game 뷰는 계속 다시 그려 티가 안 나고, 빌드에서는 그대로 굳는다.
     ///
     /// 주어진 폭에 셀을 맞추는 것이 이 컴포넌트의 존재 이유이므로,
-    /// 가로로 필요한 것은 <b>좌우 패딩뿐</b>이다. 세로는 base 가 셀 크기로 계산한다.
+    /// 가로로 필요한 것은 좌우 패딩뿐이다. 세로는 base 가 셀 크기로 계산한다.
     /// </summary>
     public override void CalculateLayoutInputHorizontal()
     {

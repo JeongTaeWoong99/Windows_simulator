@@ -118,15 +118,15 @@ public class WidgetPositionLayout : MonoBehaviour
     /// ■ 왜 필요한가
     ///   렌더 영역이 잠깐이라도 16:9가 아니면 그 폭으로 계산된 열 폭이 남을 수 있다.
     ///   'WindowManager' 쪽에서 그 과도 상태를 없앴지만, 여기서 한 번 더 다시 계산해
-    ///   <b>어떤 모니터·배율·창 크기에서도 열 폭이 스스로 복구되게</b> 한다.
+    ///   어떤 모니터·배율·창 크기에서도 열 폭이 스스로 복구되게 한다.
     ///
     /// ■ 'WindowManager'를 참조하지 않는다
     ///   Unity 콜백만으로 자립하므로 Managers ↔ UI 역방향 의존이 생기지 않는다.
     ///
-    /// ⚠️ <b>여기서 'Apply()'를 직접 부르면 안 된다.</b> 이 콜백은 UGUI 가 레이아웃 패스를
+    /// ⚠️ 여기서 'Apply()'를 직접 부르면 안 된다. 이 콜백은 UGUI 가 레이아웃 패스를
     ///   도는 도중(HorizontalLayoutGroup 이 자식 크기를 바꾸는 순간)에도 날아온다.
     ///   그 안에서 같은 서브트리를 다시 태우면 바깥 패스가 자식을 순회하던 중에 폭이 갈아엎어져
-    ///   <b>일부 열만 새 값, 나머지는 옛 값</b>으로 남는다 — 실제로 열이 서로 침범했다 (A-1 회귀).
+    ///   일부 열만 새 값, 나머지는 옛 값으로 남는다 — 실제로 열이 서로 침범했다 (A-1 회귀).
     ///   그래서 예약만 하고 실제 적용은 'LateUpdate'(레이아웃 패스 밖)에서 한다.
     /// </summary>
     private void OnRectTransformDimensionsChange()
@@ -138,10 +138,10 @@ public class WidgetPositionLayout : MonoBehaviour
     /// <summary>
     /// 저장된 위치를 읽어 온다. 없으면 인스펙터 값을 그대로 쓴다 (공장 초기값).
     ///
-    /// ⚠️ <b>에디터(편집·플레이)에선 읽지 않는다 — 인스펙터가 진실</b>이다. 창 앵커('WindowManager')와
+    /// ⚠️ 에디터(편집·플레이)에선 읽지 않는다 — 인스펙터가 진실이다. 창 앵커('WindowManager')와
     /// 같은 규칙이라 에디터 전 구간에서 창·위젯이 같은 소스(인스펙터)를 따른다. 에디터에서 'PlayerPrefs'를
     /// 읽으면 인스펙터로 6칸을 바꿔 보는 순간 저장값이 그것을 덮어써 미리보기가 망가지고, 에디터 플레이가
-    /// 인스펙터 앵커와 어긋난다. <b>빌드에서만 저장값이 진실</b>이다.
+    /// 인스펙터 앵커와 어긋난다. 빌드에서만 저장값이 진실이다.
     /// </summary>
     private void LoadSavedPosition()
     {
@@ -181,13 +181,13 @@ public class WidgetPositionLayout : MonoBehaviour
     private bool _guardRetried;
 
     /// <summary>
-    /// 예약된 배치 적용과 두 가드를 <b>레이아웃 패스 밖에서</b> 처리한다 (Unity 메시지).
+    /// 예약된 배치 적용과 두 가드를 레이아웃 패스 밖에서 처리한다 (Unity 메시지).
     ///
     /// 'LateUpdate' 는 UGUI 의 캔버스 갱신('Canvas.willRenderCanvases')보다 앞이므로,
     /// 여기서 dirty 를 찍어 두면 같은 프레임 안에 정상적으로 한 번 리빌드된다.
     ///
-    /// ⚠️ 가드는 <b>주기적으로</b> 돈다. 예전엔 'Apply()' 다음 프레임에만 검사했는데,
-    ///   그러면 초기화·설정 변경 때만 돌아 <b>나중에 어긋나는 사고를 통째로 놓친다</b>.
+    /// ⚠️ 가드는 주기적으로 돈다. 예전엔 'Apply()' 다음 프레임에만 검사했는데,
+    ///   그러면 초기화·설정 변경 때만 돌아 나중에 어긋나는 사고를 통째로 놓친다.
     ///   실제로 A-1 이 그렇게 새어 나갔다 — 로그에는 정상값만 남고 화면만 깨져 있었다.
     /// </summary>
     private void LateUpdate()
@@ -208,7 +208,7 @@ public class WidgetPositionLayout : MonoBehaviour
     /// <summary>
     /// 현재 'position'을 3열 순서와 위·아래 슬롯에 반영한다.
     ///
-    /// ⚠️ 리빌드는 <b>예약</b>한다('ForceRebuildLayoutImmediate'가 아니다).
+    /// ⚠️ 리빌드는 예약한다('ForceRebuildLayoutImmediate'가 아니다).
     /// 즉시 리빌드는 이 메서드가 레이아웃 패스 안에서 불릴 때 재진입이 되어 열 폭이 반쯤만
     /// 갱신된다 — 'OnRectTransformDimensionsChange' 주석 참조. 형제 순서 변경
     /// ('SetSiblingIndex')은 UGUI 가 알아서 부모를 dirty 로 만들지만, 정렬만 바뀐 경우까지
@@ -235,10 +235,10 @@ public class WidgetPositionLayout : MonoBehaviour
     }
 
     /// <summary>
-    /// 세 열의 폭이 서로 같은지 검사하고, 어긋났으면 경고를 남긴 뒤 <b>한 번만</b> 다시 태운다.
+    /// 세 열의 폭이 서로 같은지 검사하고, 어긋났으면 경고를 남긴 뒤 한 번만 다시 태운다.
     ///
     /// ■ 넘침 가드('VerifyNoOverflow')와 보는 것이 다르다
-    ///   열 셋이 서로 다른 폭이어도 <b>합이 부모 안에 들어가면 넘침으로는 안 잡힌다.</b>
+    ///   열 셋이 서로 다른 폭이어도 합이 부모 안에 들어가면 넘침으로는 안 잡힌다.
     ///   반대로 넘침은 열이 균등해도 그 아래에서 난다. 두 가드는 겹치지 않는다.
     ///
     /// ■ 폭·순서를 하나도 못박지 않는다
@@ -353,9 +353,9 @@ public class WidgetPositionLayout : MonoBehaviour
     private string _lastHeightProblems = "";
 
     /// <summary>
-    /// 세 열의 위·아래 칸 높이를 <b>가운데 칸의 나머지에서 비율로 나눠</b> 써 넣는다 ('Apply'에서 호출).
+    /// 세 열의 위·아래 칸 높이를 가운데 칸의 나머지에서 비율로 나눠 써 넣는다 ('Apply'에서 호출).
     ///
-    /// ⚠️ <b>'ApplyVerticalSlot' 뒤에 불러야 한다.</b> 작업슬롯 열은 그 메서드가 위젯·상태 패널의
+    /// ⚠️ 'ApplyVerticalSlot' 뒤에 불러야 한다. 작업슬롯 열은 그 메서드가 위젯·상태 패널의
     ///   형제 순서를 뒤집으므로, 먼저 돌면 위·아래가 뒤바뀐 채 계산된다.
     ///
     /// ■ 열마다 자기 가운데를 본다
@@ -377,7 +377,7 @@ public class WidgetPositionLayout : MonoBehaviour
     }
 
     /// <summary>
-    /// 한 열의 위·아래 칸에 높이를 써 넣고 <b>그 열의 가운데 높이</b>를 돌려준다.
+    /// 한 열의 위·아래 칸에 높이를 써 넣고 그 열의 가운데 높이를 돌려준다.
     /// 나눌 수 없으면 'problems'에 이유를 적고 NaN 을 돌려준다 (ApplySideHeights 에서 호출).
     /// </summary>
     private float ApplyColumnHeights(RectTransform column, bool isUpper, System.Text.StringBuilder problems)
@@ -424,9 +424,9 @@ public class WidgetPositionLayout : MonoBehaviour
     /// <summary>
     /// 그 칸이 'LayoutElement'로 주장하는 고정 높이. 없으면 -1 (ApplyColumnHeights 에서 호출).
     ///
-    /// ⚠️ <b>'LayoutUtility.GetPreferredHeight'를 쓰지 않는다.</b> 그건 꺼진 오브젝트의
-    ///   'LayoutElement'를 건너뛰어 <b>0</b>을 돌려준다. 'CloseAllExceptWidget'으로 가운데 캔버스를
-    ///   끈 상태에서 읽으면 나머지가 열 전체가 되어 <b>위젯이 화면을 채운다</b> — flexible 없이도
+    /// ⚠️ 'LayoutUtility.GetPreferredHeight'를 쓰지 않는다. 그건 꺼진 오브젝트의
+    ///   'LayoutElement'를 건너뛰어 0을 돌려준다. 'CloseAllExceptWidget'으로 가운데 캔버스를
+    ///   끈 상태에서 읽으면 나머지가 열 전체가 되어 위젯이 화면을 채운다 — flexible 없이도
     ///   2026-08-10 사고를 그대로 재현하는 길이다.
     ///   직렬화된 값은 꺼져 있어도 그대로 읽히므로 컴포넌트에서 직접 꺼낸다.
     /// </summary>
@@ -440,10 +440,10 @@ public class WidgetPositionLayout : MonoBehaviour
     }
 
     /// <summary>
-    /// 그 칸을 <b>딱 이 높이</b>로 못박는다 (ApplyColumnHeights 에서 호출).
+    /// 그 칸을 딱 이 높이로 못박는다 (ApplyColumnHeights 에서 호출).
     ///
-    /// ⚠️ <b>'minHeight'까지 0으로 눌러야 한다.</b> UGUI 가 쓰는 값은 preferred 가 아니라
-    ///   <b>max(min, preferred)</b>다. '#State Canvas'는 min 65, '-(Layout)'은 min 45 로 저장돼 있어
+    /// ⚠️ 'minHeight'까지 0으로 눌러야 한다. UGUI 가 쓰는 값은 preferred 가 아니라
+    ///   max(min, preferred)다. '#State Canvas'는 min 65, '-(Layout)'은 min 45 로 저장돼 있어
     ///   그대로 두면 계산한 60을 써 넣어도 65·45 가 이겨 열이 넘친다.
     ///
     /// ⚠️ 'flexibleHeight'는 0 이다. 1 이면 형제가 꺼질 때 그 자리를 혼자 빨아들인다
@@ -476,7 +476,7 @@ public class WidgetPositionLayout : MonoBehaviour
     /// 세 열의 가운데 높이가 서로 다르면 문제 목록에 적는다 (ApplySideHeights 에서 호출).
     ///
     /// 다르면 세 배너 줄이 가로로 어긋난다 (기획 2장 "세 창의 정렬 규칙").
-    /// <b>고치지 않고 알리기만 한다</b> — 어느 값이 맞는지는 이 컴포넌트가 알 수 없다.
+    /// 고치지 않고 알리기만 한다 — 어느 값이 맞는지는 이 컴포넌트가 알 수 없다.
     /// 한 열의 값을 나머지에 복사하면 사람이 인스펙터에 넣은 숫자가 조용히 사라진다.
     /// </summary>
     private static void AppendCenterMismatch(float storage, float workstation, float market,
@@ -536,10 +536,10 @@ public class WidgetPositionLayout : MonoBehaviour
     private string _lastOverflowDump = "";
 
     /// <summary>
-    /// 3열과 그 자손을 훑어 <b>부모보다 넓은 노드</b>가 있으면 경고한다 ('LateUpdate'가 주기 호출).
+    /// 3열과 그 자손을 훑어 부모보다 넓은 노드가 있으면 경고한다 ('LateUpdate'가 주기 호출).
     ///
     /// ■ 왜 열만 보면 부족한가
-    ///   A-1 은 열 3개는 멀쩡한데 <b>그 아래 한 노드</b>가 넘쳐서 난 사고였다.
+    ///   A-1 은 열 3개는 멀쩡한데 그 아래 한 노드가 넘쳐서 난 사고였다.
     ///   열만 보는 가드는 끝까지 아무 말도 하지 못했고, 로그에는 정상값만 남았다.
     ///
     /// ■ 기대값을 계산하지 않는다
@@ -547,7 +547,7 @@ public class WidgetPositionLayout : MonoBehaviour
     ///
     /// ■ 고치지 않고 알리기만 한다
     ///   넘침의 원인은 대개 그 노드가 부모보다 큰 min 을 요구하는 것이라 여기서 다시 태워 봐야
-    ///   같은 결과가 나온다. 대신 <b>어느 노드가 무엇을 요구해서</b> 넘쳤는지를 남겨 진단의 입구가 된다.
+    ///   같은 결과가 나온다. 대신 어느 노드가 무엇을 요구해서 넘쳤는지를 남겨 진단의 입구가 된다.
     /// </summary>
     private void VerifyNoOverflow()
     {
@@ -590,12 +590,12 @@ public class WidgetPositionLayout : MonoBehaviour
     /// <summary>
     /// 부모보다 1px 넘게 넓은 자손을 재귀로 모은다 (VerifyNoOverflow 에서 호출).
     ///
-    /// ⚠️ <b>부모에 'LayoutGroup'이 있을 때만 넘침으로 친다.</b> 그 경우에만 "부모 폭이 자식의
+    /// ⚠️ 부모에 'LayoutGroup'이 있을 때만 넘침으로 친다. 그 경우에만 "부모 폭이 자식의
     ///   상한"이라는 전제가 성립하기 때문이다. 앵커·sizeDelta 로 직접 배치한 부모는 자식이
     ///   자기보다 넓은 게 정상일 수 있다 — 유니티 기본 'Scrollbar'가 그렇다.
     ///   'Sliding Area'는 핸들 크기만큼 일부러 줄여(폭 0) 핸들의 이동 범위를 만들고,
     ///   'Handle'이 그만큼 다시 더해 원래 폭으로 돌아간다. 이걸 넘침으로 찍으면
-    ///   <b>고칠 것이 없는 경고가 상시로 뜬다</b> (실제로 그랬다).
+    ///   고칠 것이 없는 경고가 상시로 뜬다 (실제로 그랬다).
     /// </summary>
     private static void CollectOverflow(RectTransform node, System.Text.StringBuilder found)
     {
