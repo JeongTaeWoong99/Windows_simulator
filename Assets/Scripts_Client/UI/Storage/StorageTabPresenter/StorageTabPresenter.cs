@@ -9,13 +9,13 @@ using UnityEngine.UI;
 /// 안 잡아 두면 눌러도 아무 일이 없어 버튼이 고장 난 것과 구분되지 않는다.
 ///
 /// 탭이 생기면 'UIManager'가 '#Main Canvas'에 하는 것과 같은 방식으로 여기서 갈아 끼운다 —
-/// 탭 enum 하나를 seam으로 두고 켜는 곳을 여기 한 곳으로 모은다 ('UI 규칙.md' 4장).
+/// 탭 enum 하나를 seam으로 두고 켜는 곳을 여기 한 곳으로 모은다 ('Storage 규칙.md'의 "탭 전환도 층은 하나다").
 /// </summary>
 public class StorageTabPresenter : MonoBehaviour
 {
     // ※ NonReorderable 두 가지를 동시에 얻는다 —
     //   [1] 순서가 곧 탭이라 드래그로 뒤바뀌면 조용히 엉뚱한 탭이 열린다. 아예 못 끌게 막는다.
-    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 (UI 규칙 §6)
+    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
     [CenterHeader("참조")]
     [SerializeField, NonReorderable, Tooltip("탭 버튼들. 인스펙터에 넣은 순서가 곧 탭 순서다(캐릭터·장비·자원·특성)")]
     private Button[] tabButtons = new Button[0];

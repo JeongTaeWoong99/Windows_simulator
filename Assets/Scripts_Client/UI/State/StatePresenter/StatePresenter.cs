@@ -40,7 +40,7 @@ public class StatePresenter : MonoBehaviour
     private TMP_Text goldText = null!;
 
     // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
-    //   (UI 규칙 §6). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
+    //   ('UI 규칙.md'의 "공통 작성 규약"). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
     [CenterHeader("화면 버튼")]
     [SerializeField, NonReorderable, Tooltip("누르면 그 화면으로 갈아 끼운다. 같은 화면이 열려 있으면 작업슬롯으로 돌아간다")]
     private ScreenButton[] screenButtons = new ScreenButton[0];

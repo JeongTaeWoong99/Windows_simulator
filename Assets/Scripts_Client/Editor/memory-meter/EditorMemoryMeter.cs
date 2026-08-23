@@ -17,7 +17,7 @@ namespace DesktopWindowControl.EditorTools
 		/// ★ 용어 — '확보(Reserved)'는 Win32의 예약(Reserve)이 아니라 유니티 할당자가 OS에서 커밋해 받아 둔 풀이고,
 		///   '할당(Allocated)'은 그 풀에서 실제로 나눠 준 양이다. 둘 다 물리 RAM 적재 여부와는 무관하다.
 		///   'ProcessBytes'(워킹셋)와는 배타 관계가 아니라 서로 겹친다.
-		///   정의·포함 관계는 'Editor 규칙.md'의 용어 절에 표로 있다.
+		///   정의·포함 관계는 'memory-meter 규칙.md'의 "용어" 절에 표로 있다.
 		/// </summary>
 		internal readonly struct Snapshot
 		{

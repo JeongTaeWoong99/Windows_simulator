@@ -72,7 +72,7 @@ namespace DesktopWindowControl.EditorTools
 		//
 		// ★ 용어를 '할당 / 확보'로 적는다. 프로파일러의 Reserved를 '예약'으로 옮기면 Win32의
 		//   예약(Reserve — 주소만 찜해 접근하면 죽는 상태)으로 오해된다. 실제로는 이미 커밋된 풀이다.
-		//   용어 정의와 포함 관계는 'Editor 규칙.md'의 메모리 사용량 표시 절에 표로 있다.
+		//   용어 정의와 포함 관계는 'memory-meter 규칙.md'의 "용어" 절에 표로 있다.
 		private static string BuildTooltip(EditorMemoryMeter.Snapshot memory)
 		{
 			return

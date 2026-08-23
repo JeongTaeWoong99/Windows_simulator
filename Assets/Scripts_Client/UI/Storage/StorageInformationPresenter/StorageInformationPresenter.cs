@@ -13,7 +13,7 @@ using UnityEngine;
 /// [3] 그 ItemId 를 여기로 넘긴다 → Show(itemId)
 ///
 /// ⚠️ [3]에서 이 클래스를 직접 참조하지 않는다 — 패널끼리 서로를 알면 참조가 그물이 된다
-/// ('UI 규칙.md' 3장).
+/// ('UI 규칙.md'의 "어디에 붙이나").
 /// </summary>
 public class StorageInformationPresenter : MonoBehaviour
 {

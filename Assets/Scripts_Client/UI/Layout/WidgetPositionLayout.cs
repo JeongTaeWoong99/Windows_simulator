@@ -447,7 +447,7 @@ public class WidgetPositionLayout : MonoBehaviour
     ///   그대로 두면 계산한 60을 써 넣어도 65·45 가 이겨 열이 넘친다.
     ///
     /// ⚠️ 'flexibleHeight'는 0 이다. 1 이면 형제가 꺼질 때 그 자리를 혼자 빨아들인다
-    ///   (→ 'UI 규칙.md' 7-2).
+    ///   (→ 'Layout 규칙.md'의 "min을 자기 폭에서 파생시키면 그 폭이 하한으로 굳는다").
     /// </summary>
     private static void SetFixedHeight(RectTransform? slot, float height)
     {

@@ -66,7 +66,7 @@ public class SettingPresenter : MonoBehaviour
 
         // ─── 헤더 ───
         // 이 화면을 직접 끄지 않는다 — UIManager 가 목록을 켜면서 같은 자리의 이 화면을 끈다.
-        // 스스로 끄면 목록이 켜지기 전 빈 칸이 남는다 (UI 규칙 §3).
+        // 스스로 끄면 목록이 켜지기 전 빈 칸이 남는다 ('Main 규칙.md'의 "전환 층은 하나다").
         backButton.onClick.AddListener(() => ui.ShowMainScreen(MainScreen.WorkStationList));
 
         // ─── 창 제어 ───

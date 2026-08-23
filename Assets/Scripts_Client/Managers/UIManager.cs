@@ -9,7 +9,7 @@ using UnityEngine;
 /// ⚠️ 값을 중간에 끼우지 않는다 — 씬에 int로 저장돼 있어 순서가 밀리면
 /// 'Main Screens'·'Screen Buttons' 배선이 조용히 어긋난다(컴파일도 경고도 통과한다).
 /// 끝에 추가하거나, 순서를 바꿨으면 두 배열을 전수 확인한다.
-/// 이 enum이 seam인 이유와 화면 추가 절차는 'UI 규칙.md' 4장 참조.
+/// 이 enum이 seam인 이유와 화면 추가 절차는 'Main 규칙.md'의 "메인 화면 추가" 절 참조.
 /// </remarks>
 public enum MainScreen
 {
@@ -31,7 +31,8 @@ public enum MainScreen
 /// <remarks>
 /// ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
 /// 안쪽 메인 화면만 기본값으로 맞춰 두면 나중에 캔버스가 켜지는 순간 이미 올바른 화면이 떠 있다.
-/// 전환 흐름 · 진입 순서 · 이 클래스가 Presenter가 아닌 이유는 'UI 규칙.md' 1·8장,
+/// 이 클래스가 Presenter가 아닌 이유는 'UI 규칙.md'의 "세 역할 + 조정자",
+/// 전환 흐름 · 진입 순서는 'Main 규칙.md'의 "전환 층은 하나다",
 /// 화면 동선 기획은 'GameDesign/design/ui/README.md' 2.0 참조.
 /// </remarks>
 public class UIManager : MonoService<UIManager>
@@ -169,7 +170,7 @@ public class UIManager : MonoService<UIManager>
     /// 메인 화면을 기본값 하나만 켜진 상태로 되돌린다 (Start · 'CloseAllExceptWidget').
     /// ★ 캔버스는 건드리지 않는다 — 여기서 켜면 로그인 전에 게임 화면이 비친다.
     /// 씬에 무엇이 켜진 채 저장됐든 무시하고 언제나 'DefaultMainScreen'으로 간다
-    /// (근거는 'UI 규칙.md' 8장).
+    /// (근거는 'Main 규칙.md'의 "전환 층은 하나다").
     /// </summary>
     private void ResetMainScreen()
     {
@@ -253,7 +254,7 @@ public class UIManager : MonoService<UIManager>
     /// ★ 패널만 끄는 게 아니라 '#Main Canvas'까지 끈다. 캔버스를 켜 둔 채 두면
     /// 'LayoutElement'가 열 안에서 900px를 계속 차지해 위젯이 창 가장자리에서 밀린다.
     ///
-    /// ★ 메인 화면도 기본으로 되돌린다 — 이유는 'UI 규칙.md' 8장.
+    /// ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다".
     /// </summary>
     public void CloseAllExceptWidget()
     {

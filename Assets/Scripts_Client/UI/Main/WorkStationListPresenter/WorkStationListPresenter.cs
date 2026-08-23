@@ -20,7 +20,7 @@ using UnityEngine.UI;
 /// ui.ShowMainScreen(MainScreen.WorkStationSelect)    자리를 넘긴다 (이 패널은 여기서 꺼진다)
 ///
 /// 카운트다운 계산식(서버는 주기를 보내지 않는다)은 '패킷 레퍼런스.md',
-/// 화면 전환 흐름은 'UI 규칙.md' 8장 참조.
+/// 화면 전환 흐름은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 /// </summary>
 public class WorkStationListPresenter : MonoBehaviour
 {

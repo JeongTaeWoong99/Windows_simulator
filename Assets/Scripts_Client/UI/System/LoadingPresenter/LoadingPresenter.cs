@@ -22,7 +22,7 @@ using UnityEngine;
 /// 'SetActive'로는 해결되지 않는다 —
 /// [1] 자기 자신을 끄면 다시 켤 이벤트를 받지 못한다(꺼진 오브젝트는 콜백이 오지 않는다).
 /// [2] "안 보이는데 클릭은 막는다"를 만들 수단이 사라진다 — 오브젝트를 끄면 blocker Image도 함께 꺼진다.
-/// 판별 기준은 'UI 규칙.md' 7장 참조.
+/// 판별 기준은 'System 규칙.md'의 "무엇으로 여닫는가 — SetActive인가 CanvasGroup인가" 절 참조.
 /// </remarks>
 public class LoadingPresenter : MonoBehaviour
 {

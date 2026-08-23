@@ -8,7 +8,7 @@ using UnityEngine.UI;
 ///
 /// 눌리면 'AssignClicked'만 쏜다 — 슬롯 번호도 고른 산업도 로그인 여부도 이 줄은 모른다.
 /// 이름처럼 변환이 필요한 값은 'Bind'로 완성된 문구를 받는다.
-/// (종속 View 규약은 'UI 규칙.md' 6장)
+/// (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 /// </summary>
 public class CharacterStateRowView : MonoBehaviour
 {

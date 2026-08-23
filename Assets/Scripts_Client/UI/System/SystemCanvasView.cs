@@ -5,7 +5,7 @@ using UnityEngine;
 /// 로그인·게임 화면보다 앞에 떠야 해서 모든 메인 뷰보다 큰 Sorting Order를 준다.
 ///
 /// ⚠️ 이 캔버스는 다른 UI보다 앞에 나와야 해서 'Override Sorting'과
-/// 자기 'GraphicRaycaster'가 필요하다 (근거는 'UI 규칙.md' 7장).
+/// 자기 'GraphicRaycaster'가 필요하다 (근거는 'Layout 규칙.md'의 "Canvas를 다룰 때의 함정").
 ///
 /// 로딩/알림의 실제 표시·숨김은 자식의 'LoadingPresenter'·'NoticePresenter'가
 /// 'ServerWaitManager' 이벤트를 구독해 스스로 한다 — 이 껍데기는 자리만 잡는다.

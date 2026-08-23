@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-23 (로딩 오버레이 — 차단은 즉시, 표시만 0.15초 지연으로 분리) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-08-23 (UI 규칙 분할에 맞춰 참조 갱신) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -79,13 +79,13 @@ Player Data Logger                                PlayerDataLogger
 > **"← 계산됨" 칸은 인스펙터에서 고쳐도 소용없다.** `WidgetPositionLayout`이 열 높이(1080)에서
 > 가운데 900을 뺀 나머지를 **위젯 쪽 2 : 상태 쪽 1**로 나눠 매번 덮어쓴다. 위젯이 위 칸이면
 > 위쪽이 120, 아래 칸이면 아래쪽이 120이다. **사람이 정하는 건 가운데 900 하나뿐이다**
-> — 근거는 [`UI 규칙.md`](<UI 규칙.md>) §7-2 "비율은 flexible이 아니라 숫자로".
+> — 근거는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>)의 "비율은 flexible이 아니라 숫자로".
 
 > ⚠️ `!System Canvas`의 두 SUB VIEW는 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
 > 여닫는다 — **자기 이벤트로 스스로 뜨는 오버레이**라 자기를 끄면 다시 켤 이벤트를 못 받는다.
 > 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(alpha 0, raycastTarget)를
 > 함께 갖는다. **여기만 다른 게 아니라 기준이 있다** — 판별 기준("나를 다시 켜 줄 주체가 밖에
-> 있는가")과 전부 통일하면 안 되는 이유는 [`UI 규칙.md`](<UI 규칙.md>) §7.
+> 있는가")과 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
 
 ## 2. 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
 
@@ -131,7 +131,7 @@ Player Data Logger                                PlayerDataLogger
 > 이미 올바른 화면이 떠 있다.
 
 **제목은 `UI Manager > Main Screens`의 각 줄에 적혀 있다** — 코드에 없다
-([`UI 규칙.md` 3장](<UI 규칙.md>)).
+([`Main 규칙.md`](<Main/Main 규칙.md>)의 "캔버스 머리의 제목은 UIManager가 밀어 넣는다").
 
 ## 3. 작업슬롯 화면 흐름
 
@@ -164,7 +164,7 @@ Player Data Logger                                PlayerDataLogger
 
 > 기다리는 동안 `ApplyWaitingLock`이 잠그는 것은 **해제 버튼과 캐릭터 줄**뿐이다 — 뒤로가기는
 > 코드로 잠그지 않는다. 다만 **요청을 보낸 순간부터** 로딩 오버레이가 클릭을 막으므로
-> (보이기 전에도 막는다 — `UI 규칙.md` §7) 그동안은 뒤로가기도 실제로는 누를 수 없다.
+> (보이기 전에도 막는다 — [`System 규칙.md`](<System/System 규칙.md>)의 "로딩은 두 축을 나눠 쓴다") 그동안은 뒤로가기도 실제로는 누를 수 없다.
 > **응답이 영영 안 와도 갇히지 않는 근거는 5초 타임아웃이다** — `ServerWaitManager`가 대기를
 > 스스로 닫고(`onClosed`) 잠금을 풀면서 무응답 알림을 띄운다.
 

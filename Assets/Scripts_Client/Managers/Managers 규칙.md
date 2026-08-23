@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-20 (`ServerWaitManager` 추가 — 서버 왕복 대기 창구) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-23 (UI 규칙 분할에 맞춰 관련 문서 링크 갱신) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -55,7 +55,7 @@ Presenter          요청 전송 직후  Begin("로그인", onClosed) → Server
 
 > 화면 쪽은 `UI/System/`의 `LoadingPresenter`(`BusyChanged` 구독)와
 > `NoticePresenter`(`NoticeRaised`·`FatalRaised` 구독)가 맡는다 →
-> [`UI 규칙.md`](<../UI/UI 규칙.md>) §7.
+> [`System 규칙.md`](<../UI/System/System 규칙.md>).
 
 ### 짝을 이루는 두 데이터 창구
 
@@ -266,7 +266,9 @@ UI를 비례 확대한다. 기준 해상도를 창 크기에 맞춰 바꾸면 �
 
 | 주제 | 문서 |
 |------|------|
-| 화면 전환 흐름 · `MainScreen` enum · 캔버스 배치 | [`UI 규칙.md`](<../UI/UI 규칙.md>) |
+| UI 이름·부착·폴더 규칙 (전체 공통) | [`UI 규칙.md`](<../UI/UI 규칙.md>) |
+| 화면 전환 흐름 · `MainScreen` enum · 캔버스 배치 | [`Main 규칙.md`](<../UI/Main/Main 규칙.md>) |
+| 로딩·알림 오버레이 | [`System 규칙.md`](<../UI/System/System 규칙.md>) |
 | 패킷이 어떤 길로 오는가 · ⭐수량 값의 뜻 | [`서버 동작 이해.md`](<../서버 동작 이해.md>) |
 | 어떤 기능이 무엇을 주고받는가 (로그인 세트·채취·적성) | [`패킷 레퍼런스.md`](<../패킷 레퍼런스.md>) |
 | 창 제어 Win32 선언 | [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWindow 규칙.md>) |

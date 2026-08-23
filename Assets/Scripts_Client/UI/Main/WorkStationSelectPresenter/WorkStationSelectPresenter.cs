@@ -24,7 +24,7 @@ using UnityEngine.UI;
 /// 세팅에서 산업을 바꿔도 교체 요청이 나가지 않는다 → 일감 "작업슬롯 선택 패널".
 ///
 /// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙 · 산업 버튼을 잠그지 않는 이유 ·
-/// 줄 풀(21줄)은 'UI 규칙.md' 8장 참조.
+/// 줄 풀(21줄)은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 /// </summary>
 public class WorkStationSelectPresenter : MonoBehaviour
 {
@@ -37,7 +37,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // ※ NonReorderable 두 가지를 동시에 얻는다 —
     //   [1] 순서가 곧 산업이라 드래그로 뒤바뀌면 조용히 엉뚱한 산업이 나간다. 아예 못 끌게 막는다.
-    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 (UI 규칙 §6)
+    //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
     [CenterHeader("공통 Industry Panel (항상 보인다)")]
     [SerializeField, Tooltip("고른 산업 버튼의 바탕색")]
     private Color selectedIndustryColor = Color.white;
