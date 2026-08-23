@@ -11,10 +11,18 @@ using UnityEngine;
 /// ■ 빠른 응답은 아예 안 띄운다 (깜빡임 제거)
 /// 켜라는 신호가 와도 곧바로 띄우지 않고 'ShowDelaySeconds'만큼 미룬다. 그 안에 응답이 와서
 /// 끄라는 신호가 오면 코루틴을 취소해 <b>한 번도 뜨지 않는다</b>. 느린 왕복만 실제로 표시된다.
+///
+/// ■ 미루는 것은 표시뿐이다 — 차단은 즉시 건다
+/// 두 축을 함께 미루면 그 사이 뒤 UI가 열려 있다. 요청을 보낸 화면을 사용자가 그때 닫아 버리면
+/// 'OnDisable'이 구독을 끊어 응답을 놓치고, 실제로는 성공한 요청에 5초 뒤 무응답 알림이 뜬다.
+/// 그래서 <b>클릭 차단은 대기가 시작되는 순간</b>, 표시만 grace 뒤로 미룬다.
 /// </summary>
 /// <remarks>
-/// ⚠️ 오브젝트를 끄지 않고 'CanvasGroup'으로 표시/숨김한다 — 자기 자신을 끄면 다시 켤 이벤트를
-/// 받지 못한다(꺼진 오브젝트는 콜백이 오지 않는다). alpha로 보이고, blocksRaycasts로 대기 중 뒤 UI를 막는다.
+/// ⚠️ 오브젝트를 끄지 않고 'CanvasGroup'으로 표시/숨김한다. 두 가지 이유가 있고, 둘 다
+/// 'SetActive'로는 해결되지 않는다 —
+/// [1] 자기 자신을 끄면 다시 켤 이벤트를 받지 못한다(꺼진 오브젝트는 콜백이 오지 않는다).
+/// [2] "안 보이는데 클릭은 막는다"를 만들 수단이 사라진다 — 오브젝트를 끄면 blocker Image도 함께 꺼진다.
+/// 판별 기준은 'UI 규칙.md' 7장 참조.
 /// </remarks>
 public class LoadingPresenter : MonoBehaviour
 {
@@ -22,7 +30,7 @@ public class LoadingPresenter : MonoBehaviour
     private const float ShowDelaySeconds = 0.15f;
 
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("로딩 표시 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
+    [SerializeField, Tooltip("로딩 표시 몸통의 CanvasGroup. blocksRaycasts=차단(즉시)·alpha=표시(0.15초 뒤). 오브젝트는 끄지 않는다")]
     private CanvasGroup group = null!;
 
     private ServerWaitManager _wait = null!;
@@ -41,7 +49,10 @@ public class LoadingPresenter : MonoBehaviour
         _wait = Services.Get<ServerWaitManager>();
         Subscribe();
 
-        SetVisible(false); // 시작은 숨김 — 요청이 뜨면 켜진다
+        // 시작은 숨김이자 차단 없음 — 요청이 뜨면 둘 다 켜진다
+        SetShown(false);
+        SetBlocking(false);
+
         _isReady = true;
     }
 
@@ -77,11 +88,13 @@ public class LoadingPresenter : MonoBehaviour
     }
 
     // 대기 유무가 바뀌었다 (ServerWaitManager.BusyChanged 구독)
-    // 켤 때는 grace만큼 미루고, 끌 때는 즉시 내리며 대기 중이던 표시도 취소한다.
+    // 켤 때는 차단만 즉시 걸고 표시는 grace만큼 미루며, 끌 때는 둘 다 즉시 내린다.
     private void OnBusyChanged(bool busy)
     {
         if (busy)
         {
+            SetBlocking(true); // 아직 아무것도 안 보이지만 클릭은 이 순간부터 막힌다
+
             if (_showDelay == null)
                 _showDelay = StartCoroutine(ShowAfterDelay());
         }
@@ -93,25 +106,36 @@ public class LoadingPresenter : MonoBehaviour
                 _showDelay = null;
             }
 
-            SetVisible(false);
+            SetShown(false);
+            SetBlocking(false);
         }
     }
 
     // grace가 지나도록 대기가 이어지면 그제야 표시한다 (OnBusyChanged가 시작).
+    // 차단은 이미 걸려 있다 — 여기서는 보이게만 한다.
     // 타임스케일이 0이어도(일시정지 연출 등) 실제 시간으로 흐른다.
     private IEnumerator ShowAfterDelay()
     {
         yield return new WaitForSecondsRealtime(ShowDelaySeconds);
 
         _showDelay = null;
-        SetVisible(true);
+        SetShown(true);
     }
 
-    // 몸통을 켜고 끈다 — 오브젝트는 항상 활성이라 이벤트를 계속 받는다(자기를 끄지 않는다).
-    private void SetVisible(bool on)
+    // 차단 축 — 뒤 UI 클릭을 막는다(모달). 대기가 시작되는 즉시 걸고, 끝나면 푼다.
+    //
+    // ※ 실제로 막는 것은 'blocksRaycasts'와 전체화면 blocker Image다(alpha 0이어도
+    //   raycastTarget이 켜져 있으면 계속 막는다). 'interactable'은 이 CanvasGroup '안쪽'의
+    //   Selectable만 잠그는데 로딩 몸통엔 버튼이 없어 차단에 기여하지 않는다 — 그래서 표시 축에 둔다.
+    private void SetBlocking(bool on)
     {
-        group.alpha          = on ? 1f : 0f;
-        group.blocksRaycasts = on; // 대기 중 뒤 UI 클릭 차단(모달)
-        group.interactable   = on;
+        group.blocksRaycasts = on;
+    }
+
+    // 표시 축 — 몸통이 보이는가. 오브젝트는 항상 활성이라 이벤트를 계속 받는다(자기를 끄지 않는다).
+    private void SetShown(bool on)
+    {
+        group.alpha        = on ? 1f : 0f;
+        group.interactable = on;
     }
 }

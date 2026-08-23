@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-22 (열 여백을 2:1로 나누며 가운데 900 · 사이드 60/120으로 변경) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-08-23 (로딩 오버레이 — 차단은 즉시, 표시만 0.15초 지연으로 분리) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -66,7 +66,7 @@ Root Canvas
 │     └─ -(Layout)                                 아래 스페이서          pref 120/60 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 300 · 상주 오버레이
-   ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   CanvasGroup 토글 · 0.15s 지연 표시
+   ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
    └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
@@ -82,8 +82,10 @@ Player Data Logger                                PlayerDataLogger
 > — 근거는 [`UI 규칙.md`](<UI 규칙.md>) §7-2 "비율은 flexible이 아니라 숫자로".
 
 > ⚠️ `!System Canvas`의 두 SUB VIEW는 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
-> 여닫는다(이벤트 구독 유지). 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker
-> `Image`(alpha 0, raycastTarget)를 함께 갖는다 — 근거는 [`UI 규칙.md`](<UI 규칙.md>) §7.
+> 여닫는다 — **자기 이벤트로 스스로 뜨는 오버레이**라 자기를 끄면 다시 켤 이벤트를 못 받는다.
+> 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(alpha 0, raycastTarget)를
+> 함께 갖는다. **여기만 다른 게 아니라 기준이 있다** — 판별 기준("나를 다시 켜 줄 주체가 밖에
+> 있는가")과 전부 통일하면 안 되는 이유는 [`UI 규칙.md`](<UI 규칙.md>) §7.
 
 ## 2. 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
 
@@ -161,8 +163,8 @@ Player Data Logger                                PlayerDataLogger
 기다렸다가 성공이면 다음 단계로, **실패면 슬롯 목록으로 물러난다.**
 
 > 기다리는 동안 `ApplyWaitingLock`이 잠그는 것은 **해제 버튼과 캐릭터 줄**뿐이다 — 뒤로가기는
-> 코드로 잠그지 않는다. 다만 대기가 0.15초를 넘기면 **로딩 오버레이가 화면 전체를 덮으므로**
-> 그동안은 뒤로가기도 실제로는 누를 수 없다.
+> 코드로 잠그지 않는다. 다만 **요청을 보낸 순간부터** 로딩 오버레이가 클릭을 막으므로
+> (보이기 전에도 막는다 — `UI 규칙.md` §7) 그동안은 뒤로가기도 실제로는 누를 수 없다.
 > **응답이 영영 안 와도 갇히지 않는 근거는 5초 타임아웃이다** — `ServerWaitManager`가 대기를
 > 스스로 닫고(`onClosed`) 잠금을 풀면서 무응답 알림을 띄운다.
 
