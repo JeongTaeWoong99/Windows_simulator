@@ -3,13 +3,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 캐릭터 목록의 한 줄. 캐릭터 하나의 상태를 보여 주고 배치/해제 버튼을 갖는다.
-///
-/// 눌리면 'AssignClicked'만 쏜다 — 슬롯 번호도 고른 산업도 로그인 여부도 이 줄은 모른다.
-/// 이름처럼 변환이 필요한 값은 'Bind'로 완성된 문구를 받는다.
-/// (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
-/// </summary>
+// 캐릭터 목록의 한 줄. 캐릭터 하나의 상태를 보여 주고 배치/해제 버튼을 갖는다.
+//
+// 눌리면 'AssignClicked'만 쏜다 — 슬롯 번호도 고른 산업도 로그인 여부도 이 줄은 모른다.
+// 이름처럼 변환이 필요한 값은 'Bind'로 완성된 문구를 받는다.
+// (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 public class CharacterStateRowView : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -22,10 +20,10 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("배치 버튼 라벨 — '배치' / '해제'로 바뀐다")]
     private TMP_Text assignLabel = null!;
 
-    /// <summary>이 줄의 배치/해제를 눌렀다 ('WorkStationSelectPresenter'가 구독).</summary>
+    // 이 줄의 배치/해제를 눌렀다 ('WorkStationSelectPresenter'가 구독).
     public event Action<CharacterStateRowView>? AssignClicked;
 
-    /// <summary>이 줄이 그리고 있는 캐릭터 개체 번호. 미바인딩이면 0.</summary>
+    // 이 줄이 그리고 있는 캐릭터 개체 번호. 미바인딩이면 0.
     public long CharacterId { get; private set; }
 
     // 지금 고른 산업에 대한 이 캐릭터의 적성. 0이면 배치할 수 없다(서버가 NoAptitude로 거절한다).
@@ -42,15 +40,13 @@ public class CharacterStateRowView : MonoBehaviour
         assignButton.onClick.AddListener(() => AssignClicked?.Invoke(this));
     }
 
-    /// <summary>
-    /// 이 줄이 그릴 캐릭터를 정한다 ('WorkStationSelectPresenter'가 호출).
-    ///
-    /// ※ 이 줄은 배치만 한다 — 해제는 3단계 'Character Setting Panel'의 몫이라
-    /// 라벨이 "해제"로 바뀌는 경우가 없다. 대신 적성 0이면 "적성 없음"으로 바뀌고 잠긴다.
-    /// </summary>
-    /// <param name="characterId">서버가 발급한 개체 번호. 배치 요청에 그대로 실린다</param>
-    /// <param name="info">이름·적성처럼 이미 완성된 표시 문구</param>
-    /// <param name="aptitude">지금 고른 산업에 대한 적성(0~10). 0이면 버튼이 잠긴다</param>
+    // 이 줄이 그릴 캐릭터를 정한다 ('WorkStationSelectPresenter'가 호출).
+    //
+    // ※ 이 줄은 배치만 한다 — 해제는 3단계 'Character Setting Panel'의 몫이라
+    // 라벨이 "해제"로 바뀌는 경우가 없다. 대신 적성 0이면 "적성 없음"으로 바뀌고 잠긴다.
+    //   characterId : 서버가 발급한 개체 번호. 배치 요청에 그대로 실린다
+    //   info        : 이름·적성처럼 이미 완성된 표시 문구
+    //   aptitude    : 지금 고른 산업에 대한 적성(0~10). 0이면 버튼이 잠긴다
     public void Bind(long characterId, string info, byte aptitude)
     {
         CharacterId      = characterId;
@@ -61,12 +57,10 @@ public class CharacterStateRowView : MonoBehaviour
         // 잠금 여부는 부르는 쪽이 이어서 정한다 — 여기서 현재값을 되읽으면 직전 바인딩의 적성이 남는다.
     }
 
-    /// <summary>
-    /// 버튼을 잠그거나 푼다 (응답 대기 중 등).
-    ///
-    /// 적성 0은 여기서 풀리지 않는다. 패널이 대기 잠금을 일괄로 풀어도 못 하는 산업은 잠긴 채로 남아야 한다 —
-    /// 눌러 봐야 서버가 'NoAptitude'로 거절한다.
-    /// </summary>
+    // 버튼을 잠그거나 푼다 (응답 대기 중 등).
+    //
+    // 적성 0은 여기서 풀리지 않는다. 패널이 대기 잠금을 일괄로 풀어도 못 하는 산업은 잠긴 채로 남아야 한다 —
+    // 눌러 봐야 서버가 'NoAptitude'로 거절한다.
     public void SetAssignable(bool on)
     {
         assignButton.interactable = on && _aptitude > 0;

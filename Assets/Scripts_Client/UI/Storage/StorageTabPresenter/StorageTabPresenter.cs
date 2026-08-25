@@ -1,16 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 창고 열의 탭 줄 — 캐릭터 · 장비 · 자원 · 특성 4탭. (기획 2.2)
-///
-/// ⚠️ 지금은 자원 탭 하나만 실재한다. 나머지 셋은 화면이 아직 없다.
-/// 이 클래스는 버튼을 잡아 두고 "아직 없다"를 알리는 것까지만 한다 —
-/// 안 잡아 두면 눌러도 아무 일이 없어 버튼이 고장 난 것과 구분되지 않는다.
-///
-/// 탭이 생기면 'UIManager'가 '#Main Canvas'에 하는 것과 같은 방식으로 여기서 갈아 끼운다 —
-/// 탭 enum 하나를 seam으로 두고 켜는 곳을 여기 한 곳으로 모은다 ('Storage 규칙.md'의 "탭 전환도 층은 하나다").
-/// </summary>
+// 창고 열의 탭 줄 — 캐릭터 · 장비 · 자원 · 특성 4탭. (기획 2.2)
+//
+// ⚠️ 지금은 자원 탭 하나만 실재한다. 나머지 셋은 화면이 아직 없다.
+// 이 클래스는 버튼을 잡아 두고 "아직 없다"를 알리는 것까지만 한다 —
+// 안 잡아 두면 눌러도 아무 일이 없어 버튼이 고장 난 것과 구분되지 않는다.
+//
+// 탭이 생기면 'UIManager'가 '#Main Canvas'에 하는 것과 같은 방식으로 여기서 갈아 끼운다 —
+// 탭 enum 하나를 seam으로 두고 켜는 곳을 여기 한 곳으로 모은다 ('Storage 규칙.md'의 "탭 전환도 층은 하나다").
 public class StorageTabPresenter : MonoBehaviour
 {
     // ※ NonReorderable 두 가지를 동시에 얻는다 —
@@ -26,7 +24,9 @@ public class StorageTabPresenter : MonoBehaviour
         for (int i = 0; i < tabButtons.Length; i++)
         {
             if (tabButtons[i] == null)
+            {
                 continue;
+            }
 
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;

@@ -4,24 +4,22 @@ using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 작업슬롯 목록 패널. 서버 스냅샷만큼 'WorkStationSlotView'를 만들고,
-/// 카운트다운을 여기 한 곳에서 계산해 각 뷰에 넘긴다.
-///
-/// ■ 두 축을 섞지 않는다
-/// 데이터 갱신은 이벤트(옵저버) — 'PlayerDataModel.WorkStationSlotsChanged'.
-/// 시간 진행은 이 클래스의 'Update' 하나.
-/// 슬롯마다 Update를 두면 상시 실행 앱에서 비용이 슬롯 수만큼 곱해진다.
-///
-/// ⚠️ 칸을 누를 때는 번호를 먼저 넣고 자리를 넘긴다 — 선택 화면은 평소 꺼져 있어
-/// 이 목록을 구독할 수 없다. 살아 있는 쪽이 넘긴다.
-///
-/// selectPresenter.Open(slotIndex)                    번호를 먼저 넣는다
-/// ui.ShowMainScreen(MainScreen.WorkStationSelect)    자리를 넘긴다 (이 패널은 여기서 꺼진다)
-///
-/// 카운트다운 계산식(서버는 주기를 보내지 않는다)은 '패킷 레퍼런스.md',
-/// 화면 전환 흐름은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
-/// </summary>
+// 작업슬롯 목록 패널. 서버 스냅샷만큼 'WorkStationSlotView'를 만들고,
+// 카운트다운을 여기 한 곳에서 계산해 각 뷰에 넘긴다.
+//
+// ■ 두 축을 섞지 않는다
+// 데이터 갱신은 이벤트(옵저버) — 'PlayerDataModel.WorkStationSlotsChanged'.
+// 시간 진행은 이 클래스의 'Update' 하나.
+// 슬롯마다 Update를 두면 상시 실행 앱에서 비용이 슬롯 수만큼 곱해진다.
+//
+// ⚠️ 칸을 누를 때는 번호를 먼저 넣고 자리를 넘긴다 — 선택 화면은 평소 꺼져 있어
+// 이 목록을 구독할 수 없다. 살아 있는 쪽이 넘긴다.
+//
+// selectPresenter.Open(slotIndex)                    번호를 먼저 넣는다
+// ui.ShowMainScreen(MainScreen.WorkStationSelect)    자리를 넘긴다 (이 패널은 여기서 꺼진다)
+//
+// 카운트다운 계산식(서버는 주기를 보내지 않는다)은 '패킷 레퍼런스.md',
+// 화면 전환 흐름은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationListPresenter : MonoBehaviour
 {
     // 작업량 단위는 "밀리초 × 천분율 속도"다. 1초 × 1.0배 = 1000ms × 1000 = 1,000,000 단위.
@@ -71,7 +69,9 @@ public class WorkStationListPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         Rebuild();
@@ -87,12 +87,16 @@ public class WorkStationListPresenter : MonoBehaviour
     private void Update()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         foreach (var slot in _data.WorkStationSlots)
         {
             if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.IsRunning)
+            {
                 continue;
+            }
 
             view.Tick(CalculateProgress(slot), CalculateRemainSeconds(slot));
         }
@@ -104,7 +108,9 @@ public class WorkStationListPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed                 = true;
         _data.WorkStationSlotsChanged += Rebuild;
@@ -114,7 +120,9 @@ public class WorkStationListPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed                 = false;
         _data.WorkStationSlotsChanged -= Rebuild;
@@ -124,21 +132,21 @@ public class WorkStationListPresenter : MonoBehaviour
 
     #region 칸 클릭
 
-    /// <summary>
-    /// 칸 프레임의 버튼을 슬롯 번호와 묶는다 (Start에서 한 번).
-    ///
-    /// 버튼은 프레임에 붙어 있어야 한다 — 안에 생기는 뷰가 아니라.
-    /// 비어 있는 슬롯에는 뷰가 만들어지지 않는데, 빈 칸이야말로 눌러서 배치할 대상이다.
-    /// </summary>
+    // 칸 프레임의 버튼을 슬롯 번호와 묶는다 (Start에서 한 번).
+    //
+    // 버튼은 프레임에 붙어 있어야 한다 — 안에 생기는 뷰가 아니라.
+    // 비어 있는 슬롯에는 뷰가 만들어지지 않는데, 빈 칸이야말로 눌러서 배치할 대상이다.
     private void BindFrameButtons()
     {
         for (int i = 0; i < slotParent.childCount; i++)
         {
             var button = slotParent.GetChild(i).GetComponent<Button>();
+
             if (button == null)
             {
                 ClientLogger.Warn(ClientLogger.UI,
                     $"칸 프레임 {slotParent.GetChild(i).name}에 Button이 없어 클릭을 받을 수 없다.", this);
+
                 continue;
             }
 
@@ -148,13 +156,11 @@ public class WorkStationListPresenter : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 그 칸의 배치/해제 화면으로 갈아 끼운다 (칸 프레임 OnClick에 코드로 연결).
-    /// 배치 여부와 상관없이 열린다 — 빈 칸이면 배치, 찬 칸이면 해제가 뜬다.
-    ///
-    /// ⚠️ 번호를 먼저 넣고 화면을 넘긴다. 꺼져 있던 화면은 'Start()'가 아직 안 돌았을 수
-    /// 있어, 켠 뒤에 번호를 넣으면 초기화가 덮어쓴다.
-    /// </summary>
+    // 그 칸의 배치/해제 화면으로 갈아 끼운다 (칸 프레임 OnClick에 코드로 연결).
+    // 배치 여부와 상관없이 열린다 — 빈 칸이면 배치, 찬 칸이면 해제가 뜬다.
+    //
+    // ⚠️ 번호를 먼저 넣고 화면을 넘긴다. 꺼져 있던 화면은 'Start()'가 아직 안 돌았을 수
+    // 있어, 켠 뒤에 번호를 넣으면 초기화가 덮어쓴다.
     private void OpenSelect(int slotIndex)
     {
         selectPresenter.Open(slotIndex);
@@ -165,15 +171,13 @@ public class WorkStationListPresenter : MonoBehaviour
 
     #region 목록 구성
 
-    /// <summary>
-    /// 스냅샷대로 슬롯 뷰를 만들고 갱신한다 (WorkStationSlotsChanged 구독).
-    /// 슬롯 번호가 곧 프레임 순서다 — 슬롯 0은 'Content'의 첫 자식 프레임 안에 들어간다.
-    /// 인벤토리와 달리 번호가 고정이라 "빈 프레임 찾기"가 아니라 자리를 직접 고른다.
-    ///
-    /// ■ 배치된 칸에만 뷰를 둔다
-    /// 배치가 풀리면 뷰를 지운다. 남겨 두고 "대기"라고 적으면 빈 칸과 구분이 안 되고,
-    /// 무엇보다 뷰가 프레임 위를 덮어 칸을 눌러 배치 화면으로 들어가는 길을 막는다.
-    /// </summary>
+    // 스냅샷대로 슬롯 뷰를 만들고 갱신한다 (WorkStationSlotsChanged 구독).
+    // 슬롯 번호가 곧 프레임 순서다 — 슬롯 0은 'Content'의 첫 자식 프레임 안에 들어간다.
+    // 인벤토리와 달리 번호가 고정이라 "빈 프레임 찾기"가 아니라 자리를 직접 고른다.
+    //
+    // ■ 배치된 칸에만 뷰를 둔다
+    // 배치가 풀리면 뷰를 지운다. 남겨 두고 "대기"라고 적으면 빈 칸과 구분이 안 되고,
+    // 무엇보다 뷰가 프레임 위를 덮어 칸을 눌러 배치 화면으로 들어가는 길을 막는다.
     private void Rebuild()
     {
         foreach (var slot in _data.WorkStationSlots)
@@ -182,6 +186,7 @@ public class WorkStationListPresenter : MonoBehaviour
             if (!IsAssigned(slot))
             {
                 RemoveView(slot.SlotIndex);
+
                 continue;
             }
 
@@ -190,6 +195,7 @@ public class WorkStationListPresenter : MonoBehaviour
                 if (slot.SlotIndex < 0 || slot.SlotIndex >= slotParent.childCount)
                 {
                     ClientLogger.Warn(ClientLogger.UI, $"슬롯 {slot.SlotIndex}에 해당하는 칸 프레임이 없다. 프레임을 늘려야 한다.", this);
+
                     continue;
                 }
 
@@ -206,33 +212,35 @@ public class WorkStationListPresenter : MonoBehaviour
         }
     }
 
-    /// <summary>배치가 풀린 칸의 뷰를 지운다 ('Rebuild'에서 호출).</summary>
+    // 배치가 풀린 칸의 뷰를 지운다 ('Rebuild'에서 호출).
     private void RemoveView(int slotIndex)
     {
         if (!_views.TryGetValue(slotIndex, out var view))
+        {
             return;
+        }
 
         _views.Remove(slotIndex); // Update가 죽은 뷰를 만지지 않도록 먼저 뺀다
 
         if (view != null)
+        {
             Destroy(view.gameObject);
+        }
     }
 
-    /// <summary>
-    /// 칸이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다.
-    /// 'IsRunning'과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
-    /// </summary>
+    // 칸이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다.
+    // 'IsRunning'과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
     private static bool IsAssigned(WorkStationSlotInfo slot)
         => slot.Industry != EIndustryType.None && slot.CharacterId != 0;
 
-    /// <summary>
-    /// 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
-    /// Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 온다.
-    /// </summary>
+    // 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
+    // Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 온다.
     private static void SnapToFrame(RectTransform? rect)
     {
         if (rect == null)
+        {
             return;
+        }
 
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;
@@ -243,10 +251,8 @@ public class WorkStationListPresenter : MonoBehaviour
 
     #region 카운트다운 계산 (서버 식 그대로)
 
-    /// <summary>
-    /// 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
-    /// 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
-    /// </summary>
+    // 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
+    // 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
     private static long GetPendingUnits(WorkStationSlotInfo slot)
     {
         double elapsedMs   = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs);
@@ -268,7 +274,9 @@ public class WorkStationListPresenter : MonoBehaviour
 
         // IsRunning이 CurrentWorkSpeed > 0을 보장하지만, 계산식만 떼어 봐도 안전하도록 가드를 남긴다.
         if (slot.CurrentWorkSpeed <= 0)
+        {
             return 0f;
+        }
 
         return remainUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
     }

@@ -2,20 +2,17 @@ using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
 
-/// <summary>
-/// 서버와의 연결이 살아 있는지를 주기적으로 확인한다 (Ping/Pong).
-/// 5초마다 보내고 15초 넘게 무응답이면 로그를 남긴 뒤 'ServerWaitManager.RaiseFatal'로
-/// 치명 알림을 띄운다 — 사용자가 확인하면 앱이 종료된다. 소켓 자체를 끊지는 않는다.
-/// </summary>
-/// <remarks>
-/// 하트비트가 필요한 이유(TCP는 끊김을 즉시 알려주지 않는다)와
-/// ⚠️ Ping만 매니저가 송신하는 예외인 근거는 'Managers 규칙.md' 2장 참조.
-///
-/// ★ 핑은 로그인 전, 연결되는 순간부터 보낸다. 서버는 유휴 세션(마지막 수신 후 일정 시간
-///   아무 바이트도 못 받은 세션)을 로그인 여부와 무관하게 끊는데, 로그인 전에 아무것도 안 보내면
-///   그 사이 연결만 되어 있어도 유휴로 판정돼 끊긴다. 서버의 Ping 핸들러는 로그인 없이도 Pong을
-///   돌려주므로('Handle_C_PingRequest'), 연결 즉시 핑을 시작해 소켓을 살려 둔다.
-/// </remarks>
+// 서버와의 연결이 살아 있는지를 주기적으로 확인한다 (Ping/Pong).
+// 5초마다 보내고 15초 넘게 무응답이면 로그를 남긴 뒤 'ServerWaitManager.RaiseFatal'로
+// 치명 알림을 띄운다 — 사용자가 확인하면 앱이 종료된다. 소켓 자체를 끊지는 않는다.
+//
+// 하트비트가 필요한 이유(TCP는 끊김을 즉시 알려주지 않는다)와
+// ⚠️ Ping만 매니저가 송신하는 예외인 근거는 'Managers 규칙.md' 2장 참조.
+//
+// ★ 핑은 로그인 전, 연결되는 순간부터 보낸다. 서버는 유휴 세션(마지막 수신 후 일정 시간
+//   아무 바이트도 못 받은 세션)을 로그인 여부와 무관하게 끊는데, 로그인 전에 아무것도 안 보내면
+//   그 사이 연결만 되어 있어도 유휴로 판정돼 끊긴다. 서버의 Ping 핸들러는 로그인 없이도 Pong을
+//   돌려주므로('Handle_C_PingRequest'), 연결 즉시 핑을 시작해 소켓을 살려 둔다.
 public class PingManager : MonoService<PingManager>
 {
     // Ping 주기. 짧을수록 끊김을 빨리 알지만 그만큼 패킷이 늘어난다.
@@ -39,10 +36,8 @@ public class PingManager : MonoService<PingManager>
     private bool  _isSubscribed;
     private bool  _isReady;      // Start 완료 여부 — OnEnable 재구독 가드
 
-    /// <summary>
-    /// 서버가 하트비트에 응답하고 있는가.
-    /// ⏸ 아직 읽는 곳이 없다 — 연결 상태를 표시하는 위젯이 붙을 자리다.
-    /// </summary>
+    // 서버가 하트비트에 응답하고 있는가.
+    // ⏸ 아직 읽는 곳이 없다 — 연결 상태를 표시하는 위젯이 붙을 자리다.
     public bool IsServerResponding => !_isTimedOut;
 
     // ─── Unity 메시지 ───
@@ -61,7 +56,9 @@ public class PingManager : MonoService<PingManager>
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         BeginHeartbeat(); // 꺼져 있던 동안 무응답으로 오판하지 않도록 기준 시각을 다시 지금으로 잡는다
@@ -78,7 +75,9 @@ public class PingManager : MonoService<PingManager>
     private void Update()
     {
         if (!_isRunning)
+        {
             return;
+        }
 
         // 타임스케일을 0으로 만들어도(일시정지 연출 등) 연결은 계속 살아 있어야 한다.
         float now = Time.unscaledTime;
@@ -106,7 +105,9 @@ public class PingManager : MonoService<PingManager>
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = true;
 
@@ -117,7 +118,9 @@ public class PingManager : MonoService<PingManager>
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = false;
 
@@ -164,11 +167,16 @@ public class PingManager : MonoService<PingManager>
     private void WarnIfSilentTooLong(float now)
     {
         if (_isTimedOut)
+        {
             return;
+        }
 
         float silentSeconds = now - _lastPongTime;
+
         if (silentSeconds < ResponseTimeoutSeconds)
+        {
             return;
+        }
 
         _isTimedOut = true;
 

@@ -18,7 +18,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "Hierarchy Palette", menuName = "Arca/Hierarchy Palette")]
 public class HierarchyPalette : ScriptableObject
 {
-    /// <summary>접두 문자 하나에 대한 색칠 규칙.</summary>
+    // 접두 문자 하나에 대한 색칠 규칙.
     [Serializable]
     public class Rule
     {

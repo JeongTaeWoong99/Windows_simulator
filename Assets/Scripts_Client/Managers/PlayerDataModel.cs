@@ -7,16 +7,13 @@ using UnityEngine;
 // UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
-/// <summary>
-/// 서버가 밀어준 내 계정 상태를 들고 있는 수신 전담 매니저 (서비스 로케이터 등록).
-/// 수신 진입점('ServerPacketHandler')을 구독해 캐시를 채우고 가공된 변경 이벤트를 발행한다 —
-/// UI는 서버 폴더가 아니라 이 매니저만 구독하면 된다.
-/// </summary>
-/// <remarks>
-/// ⚠️ 송신은 하지 않는다 — 요청은 그 요청을 일으킨 Presenter가 직접 보낸다.
-/// 'GameDataLoader'와의 역할 구분(고정 테이블 ↔ 내 계정 상태)은 'Managers 규칙.md' 2장,
-/// 패킷별 수량 규약은 '서버 동작 이해.md', 로그인 1회 수신 세트는 '패킷 레퍼런스.md' 참조.
-/// </remarks>
+// 서버가 밀어준 내 계정 상태를 들고 있는 수신 전담 매니저 (서비스 로케이터 등록).
+// 수신 진입점('ServerPacketHandler')을 구독해 캐시를 채우고 가공된 변경 이벤트를 발행한다 —
+// UI는 서버 폴더가 아니라 이 매니저만 구독하면 된다.
+//
+// ⚠️ 송신은 하지 않는다 — 요청은 그 요청을 일으킨 Presenter가 직접 보낸다.
+// 'GameDataLoader'와의 역할 구분(고정 테이블 ↔ 내 계정 상태)은 'Managers 규칙.md' 2장,
+// 패킷별 수량 규약은 '서버 동작 이해.md', 로그인 1회 수신 세트는 '패킷 레퍼런스.md' 참조.
 public class PlayerDataModel : MonoService<PlayerDataModel>
 {
     // ─── 상태 캐시 ───
@@ -32,65 +29,61 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public long SessionId  { get; private set; }
     public bool IsLoggedIn { get; private set; }
 
-    /// <summary>
-    /// 로그인에 쓴 Id. 서버가 닉네임을 돌려주지 않아 표시에 대신 쓰는 임시값이다
-    /// — 닉네임 패킷이 생기면 이 값과 'SetLoginId'는 함께 사라진다.
-    /// </summary>
+    // 로그인에 쓴 Id. 서버가 닉네임을 돌려주지 않아 표시에 대신 쓰는 임시값이다
+    // — 닉네임 패킷이 생기면 이 값과 'SetLoginId'는 함께 사라진다.
     public string LoginId { get; private set; } = "";
 
     public IReadOnlyList<ItemInfo>            Inventory        => _inventory;
     public IReadOnlyList<WorkStationSlotInfo> WorkStationSlots => _workStationSlots;
 
-    /// <summary>
-    /// 내가 가진 캐릭터들.
-    ///
-    /// ⚠️ 'CharacterInfo.CharacterId'는 개체 번호이고, 'CharacterInfo.CharacterTid'가
-    /// 캐릭터 종류다. 같은 캐릭터를 여러 마리 가질 수 있어서 종류로는 하나를 특정하지 못한다.
-    /// 슬롯 배치에 넣을 값은 개체 번호(CharacterId)다 — 종류(1001 같은 TID)를 보내면
-    /// 서버가 'CharacterNotOwned'로 거절한다. 이름·적성은 TID로 테이블에서 읽는다.
-    /// </summary>
+    // 내가 가진 캐릭터들.
+    //
+    // ⚠️ 'CharacterInfo.CharacterId'는 개체 번호이고, 'CharacterInfo.CharacterTid'가
+    // 캐릭터 종류다. 같은 캐릭터를 여러 마리 가질 수 있어서 종류로는 하나를 특정하지 못한다.
+    // 슬롯 배치에 넣을 값은 개체 번호(CharacterId)다 — 종류(1001 같은 TID)를 보내면
+    // 서버가 'CharacterNotOwned'로 거절한다. 이름·적성은 TID로 테이블에서 읽는다.
     public IReadOnlyList<CharacterInfo> Characters => _characters;
 
-    /// <summary>
-    /// 첫 번째 보유 캐릭터의 개체 번호. 없으면 0(= 서버에선 배치 해제로 읽힌다).
-    /// 캐릭터 선택 UI가 생기기 전까지 테스트 버튼들이 쓰는 임시 통로다.
-    /// </summary>
+    // 첫 번째 보유 캐릭터의 개체 번호. 없으면 0(= 서버에선 배치 해제로 읽힌다).
+    // 캐릭터 선택 UI가 생기기 전까지 테스트 버튼들이 쓰는 임시 통로다.
     public long FirstCharacterId => _characters.Count > 0 ? _characters[0].CharacterId : 0L;
 
-    /// <summary>
-    /// 캐릭터 개체 번호로 표시 이름을 얻는다.
-    ///
-    /// 이름은 종류(TID)에 달린 값이라 개체 번호만으로는 못 찾는다 — 보유 목록에서 TID를 거쳐 간다.
-    /// 'GameDataLoader.GetCharacterName'에 개체 번호를 그대로 넣으면 '?#2'가 나온다.
-    /// </summary>
+    // 캐릭터 개체 번호로 표시 이름을 얻는다.
+    //
+    // 이름은 종류(TID)에 달린 값이라 개체 번호만으로는 못 찾는다 — 보유 목록에서 TID를 거쳐 간다.
+    // 'GameDataLoader.GetCharacterName'에 개체 번호를 그대로 넣으면 '?#2'가 나온다.
     public string GetCharacterName(long characterId)
     {
         foreach (var character in _characters)
         {
             if (character.CharacterId == characterId)
+            {
                 return GameDataLoader.GetCharacterName(character.CharacterTid);
+            }
         }
 
         return $"?#{characterId}"; // 아직 목록을 못 받았거나 서버가 모르는 개체
     }
 
-    /// <summary>
-    /// 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
-    /// (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
-    /// ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
-    /// (근거는 '패킷 레퍼런스.md' 적성 절).
-    /// </summary>
+    // 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
+    // (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
+    // ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
+    // (근거는 '패킷 레퍼런스.md' 적성 절).
     public byte GetAptitude(long characterId, EIndustryType industry)
     {
         foreach (var character in _characters)
         {
             if (character.CharacterId != characterId)
+            {
                 continue;
+            }
 
             foreach (var aptitude in character.Aptitudes)
             {
                 if (aptitude.Industry == industry)
+                {
                     return aptitude.Value;
+                }
             }
 
             return 0; // 1차 산업 5종이 전부 실려 오므로 여기 오면 산업 쪽이 이상한 것이다
@@ -99,18 +92,16 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
-    /// <summary>재화 보유량을 조회한다. 아직 통지받지 못한 종류는 0이다.</summary>
+    // 재화 보유량을 조회한다. 아직 통지받지 못한 종류는 0이다.
     public long GetCurrency(byte currencyType) => _currencies.TryGetValue(currencyType, out long amount) ? amount : 0L;
 
-    /// <summary>골드 보유량 (GameData.CurrencyType.Gold = 1).</summary>
+    // 골드 보유량 (GameData.CurrencyType.Gold = 1).
     public long Gold => GetCurrency((byte)GameData.CurrencyType.Gold);
 
-    /// <summary>
-    /// 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
-    ///
-    /// 이 매니저는 송신을 모르므로 "무엇으로 로그인했는가"를 스스로 알 수 없다.
-    /// 서버가 닉네임을 돌려주기 시작하면 'LoginId'와 함께 지운다.
-    /// </summary>
+    // 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
+    //
+    // 이 매니저는 송신을 모르므로 "무엇으로 로그인했는가"를 스스로 알 수 없다.
+    // 서버가 닉네임을 돌려주기 시작하면 'LoginId'와 함께 지운다.
     public void SetLoginId(string id) => LoginId = id;
 
     // ─── 가공 이벤트 (UI가 구독) ───
@@ -141,7 +132,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnEnable()
     {
         if (_isReady)
+        {
             Subscribe();
+        }
     }
 
     // 구독 해제 (Unity 메시지)
@@ -156,7 +149,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = true;
 
@@ -176,7 +171,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = false;
 
@@ -203,7 +200,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         SessionId  = res.SessionId;
 
         if (!IsLoggedIn)
+        {
             ClientLogger.Warn(ClientLogger.Recv, $"로그인 실패 — 결과={res.Result}");
+        }
 
         LoginCompleted?.Invoke(IsLoggedIn, res.Result);
     }
@@ -214,7 +213,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         _inventory.Clear();
         if (res.Items != null)
+        {
             _inventory.AddRange(res.Items);
+        }
 
         InventoryChanged?.Invoke();
     }
@@ -229,6 +230,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         {
             ClientLogger.Warn(ClientLogger.Recv, $"가챠 실패 — 결과={res.Result}");
             GachaFailed?.Invoke(res.Result);
+
             return;
         }
 
@@ -242,10 +244,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         _characters.Clear();
         if (res.Characters != null)
+        {
             _characters.AddRange(res.Characters);
+        }
 
         if (_characters.Count == 0)
+        {
             ClientLogger.Warn(ClientLogger.Recv, "보유 캐릭터가 0마리다 — 작업슬롯 배치가 전부 거절된다(서버 지급 로직 확인)");
+        }
 
         CharactersChanged?.Invoke();
     }
@@ -257,7 +263,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         _workStationSlots.Clear();
         if (res.Slots != null)
+        {
             _workStationSlots.AddRange(res.Slots);
+        }
 
         WorkStationSlotsChanged?.Invoke();
     }
@@ -275,15 +283,22 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         // 실패 사유는 결과 코드에만 들어 있다(미보유 캐릭터·적성 0·없는 슬롯…).
         // 여기서 남기지 않으면 UI는 "실패했다"까지만 알고 왜인지는 서버 콘솔을 봐야 안다.
         if (!success)
+        {
             ClientLogger.Warn(ClientLogger.Recv, $"작업슬롯 변경 실패 — 결과={res.Result}");
+        }
 
         if (success && changed != null)
         {
             int index = _workStationSlots.FindIndex(slot => slot.SlotIndex == changed.SlotIndex);
+
             if (index >= 0)
+            {
                 _workStationSlots[index] = changed;
+            }
             else
+            {
                 _workStationSlots.Add(changed);
+            }
 
             WorkStationSlotsChanged?.Invoke();
         }
@@ -302,14 +317,22 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnWorkStationSlotSynced(S_WorkStationSlotSyncResponse res)
     {
         var synced = res.Slot;
+
         if (synced == null)
+        {
             return;
+        }
 
         int index = _workStationSlots.FindIndex(slot => slot.SlotIndex == synced.SlotIndex);
+
         if (index >= 0)
+        {
             _workStationSlots[index] = synced;
+        }
         else
+        {
             _workStationSlots.Add(synced);
+        }
 
         WorkStationSlotsChanged?.Invoke();
     }
@@ -324,10 +347,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnCurrencyReceived(S_CurrencyResponse res)
     {
         if (res.Currencies == null)
+        {
             return;
+        }
 
         foreach (var currency in res.Currencies)
+        {
             _currencies[currency.CurrencyType] = currency.Amount;
+        }
 
         CurrencyChanged?.Invoke();
     }
@@ -336,27 +363,31 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     
     #region 인벤토리 반영
 
-    /// <summary>
-    /// 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
-    /// Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다
-    /// ('PacketInfo.ItemChangeInfo' 주석).
-    ///
-    /// 아이템이 늘어나는 모든 경로가 이 하나를 쓴다(채취·즉시 지급·가챠).
-    /// 수량은 전부 서버가 정한 값이고 클라는 계산하지 않는다 — 경로가 늘어도 규칙은 그대로다.
-    /// </summary>
+    // 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
+    // Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다
+    // ('PacketInfo.ItemChangeInfo' 주석).
+    //
+    // 아이템이 늘어나는 모든 경로가 이 하나를 쓴다(채취·즉시 지급·가챠).
+    // 수량은 전부 서버가 정한 값이고 클라는 계산하지 않는다 — 경로가 늘어도 규칙은 그대로다.
     private void ApplyItemChanges(List<ItemChangeInfo>? changes)
     {
         if (changes == null || changes.Count == 0)
+        {
             return;
+        }
 
         foreach (var change in changes)
         {
             int index = _inventory.FindIndex(item => item.ItemId == change.ItemId);
 
             if (index >= 0)
+            {
                 _inventory[index].Count = change.Count;
+            }
             else
+            {
                 _inventory.Add(new ItemInfo { ItemId = change.ItemId, Count = change.Count });
+            }
         }
 
         InventoryChanged?.Invoke();

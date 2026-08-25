@@ -57,6 +57,7 @@ public abstract class MonoService<T> : MonoBehaviour where T : class
             Debug.LogError($"[MonoService] {GetType().Name}은(는) {typeof(T).Name}이(가) 아니라서 등록할 수 없다. " +
                            $"MonoService<{typeof(T).Name}>을 상속하려면 자기 자신이거나 그 타입을 구현해야 한다.", this);
             enabled = false;
+
             return;
         }
 
@@ -67,6 +68,8 @@ public abstract class MonoService<T> : MonoBehaviour where T : class
     {
         // 등록에 실패했으면 해제할 것도 없다.
         if (this is T service)
+        {
             Services.Unregister(service);
+        }
     }
 }

@@ -1,19 +1,17 @@
 using TMPro;
 using UnityEngine;
 
-/// <summary>
-/// 메인 캔버스 — '@Main Column'의 가운데 칸. 여러 화면(목록·선택·설정)이 이 안에서 자리를 나눠 쓰고
-/// 'Title'과 'Menu Presenter'는 항상 남는다. 무엇을 띄울지는 'UIManager'가 'MainScreen'으로 정한다.
-///
-/// ⚠️ '@Main Column'의 세 칸은 전부 높이가 숫자로 못박혀 있다 — 60 · 900 · 120 = 1080 = 컬럼 높이.
-/// 하나라도 'flexibleHeight = 1'이면 형제가 꺼질 때 그 자리를 혼자 빨아들여,
-/// 전부 닫아 위젯만 남겼을 때 위젯이 화면 전체로 늘어난다.
-///
-/// ★ 여기(가운데)의 900만 사람이 정한다. 위·아래 60·120은 'WidgetPositionLayout'이
-/// 나머지를 2:1로 나눠 써 넣는 값이다 — 이 값을 바꾸면 사이드 둘이 알아서 따라온다.
-/// 사이드를 인스펙터에서 직접 고쳐 봐야 다음 배치에서 덮어써진다.
-/// → 계층·전환 규격은 'Main 규칙.md', 레이아웃 함정은 'Layout 규칙.md'
-/// </summary>
+// 메인 캔버스 — '@Main Column'의 가운데 칸. 여러 화면(목록·선택·설정)이 이 안에서 자리를 나눠 쓰고
+// 'Title'과 'Menu Presenter'는 항상 남는다. 무엇을 띄울지는 'UIManager'가 'MainScreen'으로 정한다.
+//
+// ⚠️ '@Main Column'의 세 칸은 전부 높이가 숫자로 못박혀 있다 — 60 · 900 · 120 = 1080 = 컬럼 높이.
+// 하나라도 'flexibleHeight = 1'이면 형제가 꺼질 때 그 자리를 혼자 빨아들여,
+// 전부 닫아 위젯만 남겼을 때 위젯이 화면 전체로 늘어난다.
+//
+// ★ 여기(가운데)의 900만 사람이 정한다. 위·아래 60·120은 'WidgetPositionLayout'이
+// 나머지를 2:1로 나눠 써 넣는 값이다 — 이 값을 바꾸면 사이드 둘이 알아서 따라온다.
+// 사이드를 인스펙터에서 직접 고쳐 봐야 다음 배치에서 덮어써진다.
+// → 계층·전환 규격은 'Main 규칙.md', 레이아웃 함정은 'Layout 규칙.md'
 public class MainCanvasView : MonoBehaviour
 {
     // ※ 캔버스 View가 위젯을 쥐는 유일한 예외다 ('UI 규칙.md'의 "캔버스 View 쪽 규약").
@@ -29,18 +27,14 @@ public class MainCanvasView : MonoBehaviour
         this.RequireRef(titleText, nameof(titleText));
     }
 
-    /// <summary>
-    /// 이 캔버스를 통째로 열고 닫는다. 안의 화면을 고르는 건 'UIManager.ShowMainScreen'이다.
-    /// </summary>
+    // 이 캔버스를 통째로 열고 닫는다. 안의 화면을 고르는 건 'UIManager.ShowMainScreen'이다.
     public void Show(bool on)
     {
         gameObject.SetActive(on);
     }
 
-    /// <summary>
-    /// 머리의 제목을 바꾼다 ('UIManager.ShowMainScreen'이 화면을 갈아 끼울 때 호출).
-    /// 문구는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.
-    /// </summary>
+    // 머리의 제목을 바꾼다 ('UIManager.ShowMainScreen'이 화면을 갈아 끼울 때 호출).
+    // 문구는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.
     public void SetTitle(string title)
     {
         titleText.text = title;

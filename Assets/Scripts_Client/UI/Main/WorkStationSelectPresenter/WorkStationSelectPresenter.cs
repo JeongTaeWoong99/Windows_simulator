@@ -6,26 +6,24 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 작업슬롯 한 칸의 설정 화면. 목록에서 칸을 누르면 목록 대신 이 화면이 열린다.
-///
-/// 머리 둘(Header · Industry)은 늘 보이고, 몸통 둘(배치 목록 ↔ 세팅)이 갈아 끼워진다.
-///
-/// ■ 화면이 상태를 기억하지 않는다
-/// "지금 배치돼 있는가"는 서버 스냅샷('PlayerDataModel.WorkStationSlots')에서 읽는다.
-/// 자체 플래그를 들면 실패 응답이 왔을 때 화면과 서버가 어긋난다.
-/// 고른 산업만은 아직 서버에 없는 값이라 여기서 들고 있는다.
-///
-/// ⚠️ 못 하는 캐릭터는 숨기지 않고 잠근다 — 목록에서 빼면 "이 캐릭터가 왜 안 보이지"가 되고,
-/// 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
-/// 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
-///
-/// ⚠️ 아직 안 된 것 — 다른 슬롯에 이미 배치된 캐릭터를 표시하지 않고,
-/// 세팅에서 산업을 바꿔도 교체 요청이 나가지 않는다 → 일감 "작업슬롯 선택 패널".
-///
-/// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙 · 산업 버튼을 잠그지 않는 이유 ·
-/// 줄 풀(21줄)은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
-/// </summary>
+// 작업슬롯 한 칸의 설정 화면. 목록에서 칸을 누르면 목록 대신 이 화면이 열린다.
+//
+// 머리 둘(Header · Industry)은 늘 보이고, 몸통 둘(배치 목록 ↔ 세팅)이 갈아 끼워진다.
+//
+// ■ 화면이 상태를 기억하지 않는다
+// "지금 배치돼 있는가"는 서버 스냅샷('PlayerDataModel.WorkStationSlots')에서 읽는다.
+// 자체 플래그를 들면 실패 응답이 왔을 때 화면과 서버가 어긋난다.
+// 고른 산업만은 아직 서버에 없는 값이라 여기서 들고 있는다.
+//
+// ⚠️ 못 하는 캐릭터는 숨기지 않고 잠근다 — 목록에서 빼면 "이 캐릭터가 왜 안 보이지"가 되고,
+// 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
+// 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
+//
+// ⚠️ 아직 안 된 것 — 다른 슬롯에 이미 배치된 캐릭터를 표시하지 않고,
+// 세팅에서 산업을 바꿔도 교체 요청이 나가지 않는다 → 일감 "작업슬롯 선택 패널".
+//
+// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙 · 산업 버튼을 잠그지 않는 이유 ·
+// 줄 풀(21줄)은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationSelectPresenter : MonoBehaviour
 {
     [CenterHeader("공통 Header Panel (항상 보인다)")]
@@ -62,7 +60,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("해제 버튼. 배치 버튼과 역할을 나눈다 — 여긴 해제만 한다")]
     private Button unassignButton = null!;
 
-    /// <summary>보낸 요청의 종류. 응답에는 배치였는지 해제였는지가 안 실려 와서 보낸 쪽이 기억한다.</summary>
+    // 보낸 요청의 종류. 응답에는 배치였는지 해제였는지가 안 실려 와서 보낸 쪽이 기억한다.
     private enum PendingRequest
     {
         None,
@@ -89,7 +87,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 진행 중인 대기의 손잡이. 응답이 오면 결과를 보고하고, 무응답이면 스스로 타임아웃돼 잠금을 푼다.
     private ServerWaitHandle? _waitHandle;
 
-    /// <summary>응답을 기다리는 중인가. 그동안 배치·해제 버튼을 잠근다.</summary>
+    // 응답을 기다리는 중인가. 그동안 배치·해제 버튼을 잠근다.
     private bool IsWaiting => _pending != PendingRequest.None;
 
     private PlayerDataModel   _data    = null!;
@@ -135,7 +133,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         Refresh();
@@ -147,15 +147,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
         Unsubscribe();
     }
 
-    /// <summary>
-    /// 이 슬롯을 다루도록 열린다 ('WorkStationListPresenter'가 칸 클릭에서 호출).
-    ///
-    /// ※ 켜기 전에 번호부터 넣는다. 꺼져 있던 화면은 'Start'가 아직 안 돌았을 수 있는데,
-    /// 그때는 Start가 이어서 단계를 정한다. 이미 돌았으면 여기서 바로 정한다.
-    ///
-    /// ※ 여기서 켜고, 부른 쪽이 이어서 'UIManager.ShowMainScreen'으로 나머지 화면을 끈다.
-    /// 자리를 뺏는 일은 여기서 하지 않는다 — 이 화면은 자기 형제가 몇인지 모른다.
-    /// </summary>
+    // 이 슬롯을 다루도록 열린다 ('WorkStationListPresenter'가 칸 클릭에서 호출).
+    //
+    // ※ 켜기 전에 번호부터 넣는다. 꺼져 있던 화면은 'Start'가 아직 안 돌았을 수 있는데,
+    // 그때는 Start가 이어서 단계를 정한다. 이미 돌았으면 여기서 바로 정한다.
+    //
+    // ※ 여기서 켜고, 부른 쪽이 이어서 'UIManager.ShowMainScreen'으로 나머지 화면을 끈다.
+    // 자리를 뺏는 일은 여기서 하지 않는다 — 이 화면은 자기 형제가 몇인지 모른다.
     public void Open(int slotIndex)
     {
         _slotIndex = slotIndex;
@@ -167,24 +165,28 @@ public class WorkStationSelectPresenter : MonoBehaviour
         gameObject.SetActive(true);
 
         if (_isReady)
+        {
             OpenStageForSlot();
+        }
     }
 
     #region 단계 전환
 
-    /// <summary>
-    /// 슬롯 상태가 첫 단계를 정한다 — 빈 칸이면 캐릭터를 고르러, 찬 칸이면 세팅으로.
-    /// ('Start' · 'Open'에서 호출)
-    /// </summary>
+    // 슬롯 상태가 첫 단계를 정한다 — 빈 칸이면 캐릭터를 고르러, 찬 칸이면 세팅으로.
+    // ('Start' · 'Open'에서 호출)
     private void OpenStageForSlot()
     {
         if (IsAssigned(FindSlot()))
+        {
             ShowSetting();
+        }
         else
+        {
             ShowAssignList();
+        }
     }
 
-    /// <summary>2단계 — 캐릭터 목록을 보여 준다.</summary>
+    // 2단계 — 캐릭터 목록을 보여 준다.
     private void ShowAssignList()
     {
         assignPanel.SetActive(true);
@@ -192,7 +194,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         Refresh();
     }
 
-    /// <summary>3단계 — 배치된 캐릭터의 세팅을 보여 준다.</summary>
+    // 3단계 — 배치된 캐릭터의 세팅을 보여 준다.
     private void ShowSetting()
     {
         assignPanel.SetActive(false);
@@ -200,12 +202,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
         Refresh();
     }
 
-    /// <summary>
-    /// 슬롯 목록으로 물러난다 (뒤로가기 버튼 · 요청 실패).
-    ///
-    /// 이 화면을 직접 끄지 않는다 — 'UIManager'가 목록을 켜면서 같은 자리에 있는 이 화면을 끈다.
-    /// 스스로 끄면 목록이 안 켜진 빈 칸이 남는 순간이 생긴다.
-    /// </summary>
+    // 슬롯 목록으로 물러난다 (뒤로가기 버튼 · 요청 실패).
+    //
+    // 이 화면을 직접 끄지 않는다 — 'UIManager'가 목록을 켜면서 같은 자리에 있는 이 화면을 끈다.
+    // 스스로 끄면 목록이 안 켜진 빈 칸이 남는 순간이 생긴다.
     private void BackToSlotList()
     {
         _ui.ShowMainScreen(MainScreen.WorkStationList);
@@ -219,7 +219,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed                    = true;
         _data.WorkStationSlotsChanged   += Refresh;
@@ -231,7 +233,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed                    = false;
         _data.WorkStationSlotsChanged   -= Refresh;
@@ -258,10 +262,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// 산업 버튼을 목록 순서와 묶는다 (Start에서 호출).
-    /// 버튼 개수와 산업 개수가 다르면 조용히 어긋난다 — 그래서 여기서 먼저 알린다.
-    /// </summary>
+    // 산업 버튼을 목록 순서와 묶는다 (Start에서 호출).
+    // 버튼 개수와 산업 개수가 다르면 조용히 어긋난다 — 그래서 여기서 먼저 알린다.
     private void BindIndustryButtons()
     {
         if (industryButtons.Length != _industries.Count)
@@ -274,7 +276,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
         for (int i = 0; i < industryButtons.Length; i++)
         {
             if (industryButtons[i] == null)
+            {
                 continue;
+            }
 
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
@@ -291,29 +295,32 @@ public class WorkStationSelectPresenter : MonoBehaviour
         RefreshIndustryButtons();
 
         if (assignPanel.activeSelf)
+        {
             RefreshRows();
+        }
     }
 
-    /// <summary>지금 고른 산업. 목록 범위를 벗어났으면 'None' (표시·송신에서 호출).</summary>
+    // 지금 고른 산업. 목록 범위를 벗어났으면 'None' (표시·송신에서 호출).
     private EIndustryType SelectedIndustry
         => _selectedIndustry >= 0 && _selectedIndustry < _industries.Count
             ? _industries[_selectedIndustry]
             : EIndustryType.None;
 
-    /// <summary>
-    /// 고른 산업만 밝게 칠한다 (표시 갱신 때 호출).
-    ///
-    /// 잠그지 않고 색만 바꾼다 — 배치 목록에서는 걸러 보는 수단, 세팅에서는 갈아 끼우는 수단이라
-    /// 어느 단계에서도 눌릴 수 있어야 한다. 'Selectable'은 실행 중 'colors.normalColor'로
-    /// 바탕을 덮어쓰므로 'Image.color'가 아니라 이쪽을 바꾼다.
-    /// </summary>
+    // 고른 산업만 밝게 칠한다 (표시 갱신 때 호출).
+    //
+    // 잠그지 않고 색만 바꾼다 — 배치 목록에서는 걸러 보는 수단, 세팅에서는 갈아 끼우는 수단이라
+    // 어느 단계에서도 눌릴 수 있어야 한다. 'Selectable'은 실행 중 'colors.normalColor'로
+    // 바탕을 덮어쓰므로 'Image.color'가 아니라 이쪽을 바꾼다.
     private void RefreshIndustryButtons()
     {
         for (int i = 0; i < industryButtons.Length; i++)
         {
             var button = industryButtons[i];
+
             if (button == null)
+            {
                 continue;
+            }
 
             button.interactable = true;
 
@@ -334,19 +341,21 @@ public class WorkStationSelectPresenter : MonoBehaviour
         rowParent.GetComponentsInChildren(true, _rows);
 
         foreach (var row in _rows)
+        {
             row.AssignClicked += OnRowAssignClicked;
+        }
 
         if (_rows.Count == 0)
+        {
             ClientLogger.Warn(ClientLogger.UI, "캐릭터 줄이 하나도 없다 — Content 아래에 CharacterStateRowView를 둘 것.", this);
+        }
     }
 
-    /// <summary>
-    /// 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 ('Refresh'에서 호출).
-    /// 이 목록은 빈 슬롯일 때만 보이므로 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
-    ///
-    /// 고른 산업의 적성이 0인 줄은 잠긴다. 그래도 목록에는 남는다 —
-    /// 가진 캐릭터가 왜 안 보이는지 알 수 없게 만들지 않는다.
-    /// </summary>
+    // 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 ('Refresh'에서 호출).
+    // 이 목록은 빈 슬롯일 때만 보이므로 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
+    //
+    // 고른 산업의 적성이 0인 줄은 잠긴다. 그래도 목록에는 남는다 —
+    // 가진 캐릭터가 왜 안 보이는지 알 수 없게 만들지 않는다.
     private void RefreshRows()
     {
         var characters = _data.Characters;
@@ -359,6 +368,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             if (i >= characters.Count)
             {
                 row.gameObject.SetActive(false);
+
                 continue;
             }
 
@@ -393,7 +403,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
         RefreshIndustryButtons();
 
         if (assignPanel.activeSelf)
+        {
             RefreshRows();
+        }
 
         ApplyWaitingLock();
     }
@@ -404,7 +416,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
         foreach (var slot in _data.WorkStationSlots)
         {
             if (slot.SlotIndex == _slotIndex)
+            {
                 return slot;
+            }
         }
 
         return null; // 눌러 보면 실패 응답이 온다
@@ -422,13 +436,17 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void OnRowAssignClicked(CharacterStateRowView row)
     {
         if (!CanSend())
+        {
             return;
+        }
 
         var industry = SelectedIndustry;
+
         if (industry == EIndustryType.None)
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"고른 산업({_selectedIndustry})이 목록 범위(0~{_industries.Count - 1})를 벗어났다.", this);
+
             return;
         }
 
@@ -436,6 +454,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         if (row.CharacterId == 0)
         {
             ClientLogger.Error(ClientLogger.UI, "누른 줄에 캐릭터가 묶여 있지 않다 — Bind를 거치지 않았다.", this);
+
             return;
         }
 
@@ -449,7 +468,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void OnUnassignButtonClicked()
     {
         if (!CanSend())
+        {
             return;
+        }
 
         Send(EIndustryType.None, 0); // 산업 None·캐릭터 0 = 해제
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 해제 요청 — 슬롯={_slotIndex}");
@@ -476,20 +497,20 @@ public class WorkStationSelectPresenter : MonoBehaviour
         ApplyWaitingLock();
     }
 
-    /// <summary>
-    /// 응답이 왔다 — 성공이면 다음 단계로, 실패면 사유를 알리고 슬롯 목록으로 물러난다
-    /// (PlayerDataModel.WorkStationAssignCompleted 구독).
-    ///
-    /// 실패는 대개 아직 열리지 않은 슬롯이다. 그 칸에서는 배치도 해제도 할 수 없으니
-    /// 화면에 남겨 둘 이유가 없다. 사유('EResultCode')는 'ResultMessages'로 문구를 만들어 알림에 띄운다.
-    /// </summary>
+    // 응답이 왔다 — 성공이면 다음 단계로, 실패면 사유를 알리고 슬롯 목록으로 물러난다
+    // (PlayerDataModel.WorkStationAssignCompleted 구독).
+    //
+    // 실패는 대개 아직 열리지 않은 슬롯이다. 그 칸에서는 배치도 해제도 할 수 없으니
+    // 화면에 남겨 둘 이유가 없다. 사유('EResultCode')는 'ResultMessages'로 문구를 만들어 알림에 띄운다.
     private void OnAssignCompleted(bool success, EResultCode code)
     {
         // Succeed/Fail이 onClosed(OnWaitClosed)를 통해 _pending을 지우므로, 그 전에 종류를 붙잡는다.
         var requested = _pending;
 
         if (requested == PendingRequest.None)
+        {
             return; // 이 화면이 보낸 요청이 아니다(타임아웃으로 이미 닫혔거나 남의 응답)
+        }
 
         if (!success)
         {
@@ -497,15 +518,20 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 $"슬롯 {_slotIndex} 변경이 거절돼 슬롯 목록으로 돌아간다 (열리지 않은 슬롯일 수 있다).", this);
             _waitHandle?.Fail(ResultMessages.ToText(code));
             BackToSlotList();
+
             return;
         }
 
         _waitHandle?.Succeed();
 
         if (requested == PendingRequest.Assign)
+        {
             ShowSetting();
+        }
         else
+        {
             ShowAssignList();
+        }
     }
 
     // 기다리는 동안 배치·해제만 잠근다. 뒤로가기는 잠그지 않는다 — 나갈 길은 늘 열려 있어야 한다
@@ -514,7 +540,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
         unassignButton.interactable = !IsWaiting;
 
         foreach (var row in _rows)
+        {
             row.SetAssignable(!IsWaiting);
+        }
     }
 
     // 보낼 수 있는 상태인가 (배치·해제 클릭에서 호출)
@@ -523,11 +551,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // 버튼을 잠가 두지만 잠금이 늦게 반영되는 경로가 있을 수 있어 여기서 한 번 더 막는다.
         // 같은 슬롯에 두 번 보내면 응답도 두 번 와서 단계가 엉뚱하게 튄다.
         if (IsWaiting)
+        {
             return false;
+        }
 
         if (_slotIndex < 0)
         {
             ClientLogger.Error(ClientLogger.UI, "다룰 슬롯이 정해지지 않았다 — Open()을 거치지 않고 열렸다.", this);
+
             return false;
         }
 
@@ -536,6 +567,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         if (!_data.IsLoggedIn)
         {
             ClientLogger.Warn(ClientLogger.Send, "작업슬롯 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
             return false;
         }
 

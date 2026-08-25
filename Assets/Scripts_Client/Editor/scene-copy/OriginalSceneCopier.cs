@@ -8,11 +8,9 @@ using Debug = UnityEngine.Debug;
 
 namespace DesktopWindowControl.EditorTools
 {
-	/// <summary>
-	/// 'Scenes/Original'의 씬을 'Scenes/Test Copy'로 복사하는 에디터 툴.
-	/// 원본을 직접 열지 않고 각자 로컬 사본에서 테스트하기 위한 것이다 (이슈 #14).
-	/// 실제 버튼은 'OriginalSceneCopyToolbarButton'이 상단 툴바에 얹고, 여기는 동작만 갖는다.
-	/// </summary>
+	// 'Scenes/Original'의 씬을 'Scenes/Test Copy'로 복사하는 에디터 툴.
+	// 원본을 직접 열지 않고 각자 로컬 사본에서 테스트하기 위한 것이다 (이슈 #14).
+	// 실제 버튼은 'OriginalSceneCopyToolbarButton'이 상단 툴바에 얹고, 여기는 동작만 갖는다.
 	public static class OriginalSceneCopier
 	{
 		// 프로젝트 루트 기준 경로. 자리를 옮기면 함께 고친다.
@@ -24,10 +22,8 @@ namespace DesktopWindowControl.EditorTools
 		// 최신성 검사기('SceneCopyFreshnessChecker')가 이 파일을 읽어 오리지널과 비교한다.
 		internal const string StateName  = ".copy-state";
 
-		/// <summary>
-		/// 툴바 버튼용 진입점. 바로 복사하지 않고 '[지금 복사]/[나중에]' 확인을 거친다.
-		/// (검사기 팝업의 '지금 복사'는 이미 확인했으므로 계속 Copy()를 직접 부른다 — 이중 확인 방지.)
-		/// </summary>
+		// 툴바 버튼용 진입점. 바로 복사하지 않고 '[지금 복사]/[나중에]' 확인을 거친다.
+		// (검사기 팝업의 '지금 복사'는 이미 확인했으므로 계속 Copy()를 직접 부른다 — 이중 확인 방지.)
 		public static void CopyWithConfirm()
 		{
 			if (EditorUtility.DisplayDialog
@@ -39,10 +35,8 @@ namespace DesktopWindowControl.EditorTools
 			}
 		}
 
-		/// <summary>
-		/// 'Original'의 모든 '.unity'를 'Test Copy'로 덮어써 최신화하고 README에 이력을 남긴다.
-		/// 사본은 '.gitignore'로 커밋에서 제외되므로 충돌이 나지 않는다.
-		/// </summary>
+		// 'Original'의 모든 '.unity'를 'Test Copy'로 덮어써 최신화하고 README에 이력을 남긴다.
+		// 사본은 '.gitignore'로 커밋에서 제외되므로 충돌이 나지 않는다.
 		public static void Copy()
 		{
 			if (!AssetDatabase.IsValidFolder(SourceDir))
@@ -56,7 +50,9 @@ namespace DesktopWindowControl.EditorTools
 
 			// 최신화 — 목적지의 기존 씬을 먼저 비운다. 원본에서 지워지거나 이름이 바뀐 씬이 남지 않도록.
 			foreach (var stale in Directory.GetFiles(DestDir, "*.unity"))
+			{
 				AssetDatabase.DeleteAsset(ToAssetPath(stale));
+			}
 
 			var copied = new List<string>();
 			
@@ -123,11 +119,9 @@ namespace DesktopWindowControl.EditorTools
 			File.WriteAllText(Path.Combine(DestDir, ReadmeName), sb.ToString(), new UTF8Encoding(false));
 		}
 
-		/// <summary>
-		/// 복사한 씬마다 '그 씬을 마지막으로 건드린 커밋 해시'를 상태 파일에 남긴다.
-		/// 한 줄 = "씬파일명\t커밋해시". 검사기가 나중에 오리지널의 현재 해시와 비교해 낡음을 판단한다.
-		/// 해시를 못 구한 씬(git 없음 등)은 줄을 생략한다 — 검사기가 오탐하지 않도록.
-		/// </summary>
+		// 복사한 씬마다 '그 씬을 마지막으로 건드린 커밋 해시'를 상태 파일에 남긴다.
+		// 한 줄 = "씬파일명\t커밋해시". 검사기가 나중에 오리지널의 현재 해시와 비교해 낡음을 판단한다.
+		// 해시를 못 구한 씬(git 없음 등)은 줄을 생략한다 — 검사기가 오탐하지 않도록.
 		private static void WriteCopyState(List<string> copied)
 		{
 			var sb = new StringBuilder();

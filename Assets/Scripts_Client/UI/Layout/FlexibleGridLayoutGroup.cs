@@ -1,9 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 그리드 셀의 가로 : 세로 비율. 가로 길이는 열 개수에 맞춰 자동으로 정해지고, 세로는 이 비율을 따라온다.
-/// </summary>
+// 그리드 셀의 가로 : 세로 비율. 가로 길이는 열 개수에 맞춰 자동으로 정해지고, 세로는 이 비율을 따라온다.
 public enum CellAspectRatio
 {
     [InspectorName("1 : 1 (정사각형)")]       OneToOne,
@@ -15,14 +13,12 @@ public enum CellAspectRatio
     [InspectorName("1 : 3 (세로가 3배)")]     OneToThree,
 }
 
-/// <summary>
-/// 열 개수를 고정한 채, 자기 너비에 맞춰 셀 크기를 자동으로 역산하는 그리드 레이아웃입니다.
-/// Cell Size 는 레이아웃마다 덮어쓰므로 인스펙터 값은 사용되지 않습니다.
-/// Constraint 가 Fixed Column Count 일 때만 동작하며, 그 외 모드에서는 GridLayoutGroup 과 동일합니다.
-///
-/// ※ 인스펙터는 FlexibleGridLayoutGroupEditor 가 그린다. 기본 에디터를 그대로 두면
-///   여기서 추가한 필드가 인스펙터에 아예 나오지 않기 때문이다(그쪽 주석 참조).
-/// </summary>
+// 열 개수를 고정한 채, 자기 너비에 맞춰 셀 크기를 자동으로 역산하는 그리드 레이아웃입니다.
+// Cell Size 는 레이아웃마다 덮어쓰므로 인스펙터 값은 사용되지 않습니다.
+// Constraint 가 Fixed Column Count 일 때만 동작하며, 그 외 모드에서는 GridLayoutGroup 과 동일합니다.
+//
+// ※ 인스펙터는 FlexibleGridLayoutGroupEditor 가 그린다. 기본 에디터를 그대로 두면
+//   여기서 추가한 필드가 인스펙터에 아예 나오지 않기 때문이다(그쪽 주석 참조).
 [AddComponentMenu("Layout/Flexible Grid Layout Group")]
 public class FlexibleGridLayoutGroup : GridLayoutGroup
 {
@@ -30,22 +26,20 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
     [SerializeField, Tooltip("셀의 가로 : 세로 비율입니다. 가로는 열 개수에 맞춰 자동 계산되고, 세로가 이 비율로 정해집니다.")]
     private CellAspectRatio _cellAspectRatio = CellAspectRatio.OneToOne;
 
-    /// <summary>
-    /// 가로 배치 입력 계산 (UGUI 레이아웃 시스템이 호출).
-    ///
-    /// ⚠️ 부모에게 가로 폭을 요구하지 않는다. 'GridLayoutGroup'은 최소 폭을
-    /// 'padding + (cellSize.x + spacing) × 열수 - spacing'으로 계산하는데,
-    /// 이 그리드는 그 'cellSize.x'를 자기 현재 폭에서 역산한다.
-    /// 그대로 두면 "내 최소 폭 = 내 현재 폭"이라는 순환이 되어,
-    /// 부모가 한 번 넓게 잡아 준 폭이 그대로 하한으로 굳어 다시는 줄어들지 않는다.
-    ///
-    /// 실제로 이것 때문에 빌드에서 거래 열의 패널만 열보다 넓어져 옆 열을 침범했다 (A-1).
-    /// 창이 잠깐이라도 넓었던 프레임이 있으면 그 폭이 최소 폭으로 남는다 —
-    /// 에디터 Game 뷰는 계속 다시 그려 티가 안 나고, 빌드에서는 그대로 굳는다.
-    ///
-    /// 주어진 폭에 셀을 맞추는 것이 이 컴포넌트의 존재 이유이므로,
-    /// 가로로 필요한 것은 좌우 패딩뿐이다. 세로는 base 가 셀 크기로 계산한다.
-    /// </summary>
+    // 가로 배치 입력 계산 (UGUI 레이아웃 시스템이 호출).
+    //
+    // ⚠️ 부모에게 가로 폭을 요구하지 않는다. 'GridLayoutGroup'은 최소 폭을
+    // 'padding + (cellSize.x + spacing) × 열수 - spacing'으로 계산하는데,
+    // 이 그리드는 그 'cellSize.x'를 자기 현재 폭에서 역산한다.
+    // 그대로 두면 "내 최소 폭 = 내 현재 폭"이라는 순환이 되어,
+    // 부모가 한 번 넓게 잡아 준 폭이 그대로 하한으로 굳어 다시는 줄어들지 않는다.
+    //
+    // 실제로 이것 때문에 빌드에서 거래 열의 패널만 열보다 넓어져 옆 열을 침범했다 (A-1).
+    // 창이 잠깐이라도 넓었던 프레임이 있으면 그 폭이 최소 폭으로 남는다 —
+    // 에디터 Game 뷰는 계속 다시 그려 티가 안 나고, 빌드에서는 그대로 굳는다.
+    //
+    // 주어진 폭에 셀을 맞추는 것이 이 컴포넌트의 존재 이유이므로,
+    // 가로로 필요한 것은 좌우 패딩뿐이다. 세로는 base 가 셀 크기로 계산한다.
     public override void CalculateLayoutInputHorizontal()
     {
         ResizeCellToFitWidth();
@@ -67,10 +61,8 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
         base.SetLayoutHorizontal();
     }
 
-    /// <summary>
-    /// 현재 너비에서 좌우 패딩과 열 사이 간격을 뺀 나머지를 열 수로 나눠 셀 가로 길이를 정하고,
-    /// 세로는 지정한 비율로 맞춥니다.
-    /// </summary>
+    // 현재 너비에서 좌우 패딩과 열 사이 간격을 뺀 나머지를 열 수로 나눠 셀 가로 길이를 정하고,
+    // 세로는 지정한 비율로 맞춥니다.
     private void ResizeCellToFitWidth()
     {
         // 열 수가 고정되지 않은 모드는 셀 크기가 배치의 입력이므로 건드리지 않는다
@@ -88,7 +80,7 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
         m_CellSize = new Vector2(cellWidth, cellWidth * GetHeightPerWidth());
     }
 
-    /// <summary>가로 1 에 대한 세로 배수를 돌려줍니다.</summary>
+    // 가로 1 에 대한 세로 배수를 돌려줍니다.
     private float GetHeightPerWidth()
     {
         return _cellAspectRatio switch

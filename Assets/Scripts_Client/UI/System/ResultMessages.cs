@@ -1,16 +1,13 @@
 using MikaProtocol;
 
-/// <summary>
-/// 서버 결과 코드('EResultCode')를 사용자에게 보일 우리말 문구로 바꾼다.
-/// 서버 enum을 화면에 그대로 노출하지 않기 위한 표다 — 결과 코드가 늘면 여기 한 줄을 더한다.
-/// </summary>
-/// <remarks>
-/// 'ServerWaitManager'는 문구(문자열)만 다루고 결과 코드를 모른다 — 코드→문구 변환은
-/// 요청을 보낸 Presenter가 이 표로 마친 뒤 넘긴다(계층 의존 방향 규약).
-/// </remarks>
+// 서버 결과 코드('EResultCode')를 사용자에게 보일 우리말 문구로 바꾼다.
+// 서버 enum을 화면에 그대로 노출하지 않기 위한 표다 — 결과 코드가 늘면 여기 한 줄을 더한다.
+//
+// 'ServerWaitManager'는 문구(문자열)만 다루고 결과 코드를 모른다 — 코드→문구 변환은
+// 요청을 보낸 Presenter가 이 표로 마친 뒤 넘긴다(계층 의존 방향 규약).
 public static class ResultMessages
 {
-    /// <summary>결과 코드를 사용자용 문구로 바꾼다. 모르는 코드는 코드 번호를 붙여 표시한다.</summary>
+    // 결과 코드를 사용자용 문구로 바꾼다. 모르는 코드는 코드 번호를 붙여 표시한다.
     public static string ToText(EResultCode code) => code switch
     {
         EResultCode.Ok                  => "정상 처리되었습니다.",

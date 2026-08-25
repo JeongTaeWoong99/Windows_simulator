@@ -1,23 +1,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// 인벤토리 목록 화면. 'PlayerDataModel.InventoryChanged'를 구독해 갱신한다.
-/// 창고 열의 자원 탭에 해당한다 — 캐릭터·장비·특성 탭이 붙으면 그 옆에 나란히 선다.
-///
-/// ■ 칸 프레임은 씬에 미리 깔려 있다
-///   'Content' 아래의 'Slot (N)' 들이 프레임이고, 아이템 프리팹은 그 프레임의 자식으로
-///   들어간다. Content 직속으로 만들면 프레임을 벗어나 레이아웃이 무너진다.
-///   프레임은 코드가 만들지도 지우지도 않는다.
-///
-/// ■ 로그인 전에는 아무것도 만들지 않는다
-///   아이템이 실제로 들어왔을 때만 프리팹을 생성한다. 미리 채워 두면 빈 칸에 빈 프리팹이
-///   쌓여 하이어라키가 지저분해지고, 화면에도 빈 텍스트가 200개 뜬다.
-///
-/// ■ 키는 이름이 아니라 ItemId 다
-///   이름은 표시용이고 중복될 수 있다. 이름으로 칸을 찾으면 같은 이름의 다른 아이템이
-///   생기는 순간 조용히 엉뚱한 칸을 갱신한다.
-/// </summary>
+// 인벤토리 목록 화면. 'PlayerDataModel.InventoryChanged'를 구독해 갱신한다.
+// 창고 열의 자원 탭에 해당한다 — 캐릭터·장비·특성 탭이 붙으면 그 옆에 나란히 선다.
+//
+// ■ 칸 프레임은 씬에 미리 깔려 있다
+//   'Content' 아래의 'Slot (N)' 들이 프레임이고, 아이템 프리팹은 그 프레임의 자식으로
+//   들어간다. Content 직속으로 만들면 프레임을 벗어나 레이아웃이 무너진다.
+//   프레임은 코드가 만들지도 지우지도 않는다.
+//
+// ■ 로그인 전에는 아무것도 만들지 않는다
+//   아이템이 실제로 들어왔을 때만 프리팹을 생성한다. 미리 채워 두면 빈 칸에 빈 프리팹이
+//   쌓여 하이어라키가 지저분해지고, 화면에도 빈 텍스트가 200개 뜬다.
+//
+// ■ 키는 이름이 아니라 ItemId 다
+//   이름은 표시용이고 중복될 수 있다. 이름으로 칸을 찾으면 같은 이름의 다른 아이템이
+//   생기는 순간 조용히 엉뚱한 칸을 갱신한다.
 public class InventoryPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -60,7 +58,9 @@ public class InventoryPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         Refresh();
@@ -78,7 +78,9 @@ public class InventoryPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed          = true;
         _data.InventoryChanged += Refresh;
@@ -88,7 +90,9 @@ public class InventoryPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed          = false;
         _data.InventoryChanged -= Refresh;
@@ -106,6 +110,7 @@ public class InventoryPresenter : MonoBehaviour
             if (item.Count <= 0)
             {
                 RemoveItem(item.ItemId);
+
                 continue;
             }
 
@@ -113,20 +118,24 @@ public class InventoryPresenter : MonoBehaviour
             {
                 view = CreateInEmptyFrame(item.ItemId);
                 if (view == null)
+                {
                     continue; // 빈 프레임이 없다 — 경고는 CreateInEmptyFrame이 남긴다
+                }
             }
 
             view.Bind(item.ItemId, item.Count);
         }
     }
 
-    /// <summary>비어 있는 프레임을 찾아 그 안에 아이템 프리팹을 만든다. 프레임이 없으면 null.</summary>
+    // 비어 있는 프레임을 찾아 그 안에 아이템 프리팹을 만든다. 프레임이 없으면 null.
     private InventorySlotView? CreateInEmptyFrame(int itemId)
     {
         Transform? frame = FindEmptyFrame();
+
         if (frame == null)
         {
             ClientLogger.Warn(ClientLogger.UI, $"빈 칸이 없어 아이템 {itemId}를 표시하지 못했다. 프레임을 늘려야 한다.", this);
+
             return null;
         }
 
@@ -145,7 +154,9 @@ public class InventoryPresenter : MonoBehaviour
         foreach (Transform frame in slotParent)
         {
             if (frame.childCount == 0)
+            {
                 return frame;
+            }
         }
 
         return null;
@@ -155,22 +166,24 @@ public class InventoryPresenter : MonoBehaviour
     private void RemoveItem(int itemId)
     {
         if (!_viewByItemId.TryGetValue(itemId, out var view))
+        {
             return;
+        }
 
         Destroy(view.gameObject);
         _viewByItemId.Remove(itemId);
         _frameByItemId.Remove(itemId);
     }
 
-    /// <summary>
-    /// 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
-    /// Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 오므로,
-    /// 이걸 하지 않으면 프레임 밖으로 삐져나간다.
-    /// </summary>
+    // 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
+    // Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 오므로,
+    // 이걸 하지 않으면 프레임 밖으로 삐져나간다.
     private static void SnapToFrame(RectTransform? rect)
     {
         if (rect == null)
+        {
             return;
+        }
 
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;

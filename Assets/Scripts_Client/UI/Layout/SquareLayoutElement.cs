@@ -2,23 +2,21 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-/// <summary>
-/// 부모의 높이에 맞춰 정사각형이 되는 가로 길이를 레이아웃에 알려 줍니다.
-/// 가로 줄(HorizontalLayoutGroup) 안의 아이콘 버튼처럼 "높이만큼 넓으면 되는" 칸에 붙입니다.
-///
-/// ■ 왜 컴포넌트가 필요한가
-/// UGUI는 가로를 먼저 다 정하고 세로를 정한다(CalculateLayoutInputHorizontal → SetLayoutHorizontal
-/// → CalculateLayoutInputVertical → SetLayoutVertical). 그래서 "내 높이만큼 넓게"를 기본 컴포넌트로는
-/// 표현할 수 없다 — 가로를 정할 시점에 자기 높이가 아직 없다.
-///
-/// ■ 그래서 부모에게 묻는다
-/// 자기 높이 대신 부모의 높이를 본다. 부모가 'LayoutElement.preferredHeight'로
-/// 높이를 못박아 뒀으면 그 값을 쓴다 — 이건 가로 패스에서도 이미 확정된 값이라 흔들리지 않는다.
-/// 못박지 않았으면 부모의 현재 rect 높이를 쓴다(창 크기가 바뀐 직후 한 프레임 늦을 수 있다).
-///
-/// ※ 같은 오브젝트에 'LayoutElement'를 함께 두지 않는다. 둘 다 가로를 주장해
-/// 어느 쪽이 이기는지가 'layoutPriority'에 좌우된다.
-/// </summary>
+// 부모의 높이에 맞춰 정사각형이 되는 가로 길이를 레이아웃에 알려 줍니다.
+// 가로 줄(HorizontalLayoutGroup) 안의 아이콘 버튼처럼 "높이만큼 넓으면 되는" 칸에 붙입니다.
+//
+// ■ 왜 컴포넌트가 필요한가
+// UGUI는 가로를 먼저 다 정하고 세로를 정한다(CalculateLayoutInputHorizontal → SetLayoutHorizontal
+// → CalculateLayoutInputVertical → SetLayoutVertical). 그래서 "내 높이만큼 넓게"를 기본 컴포넌트로는
+// 표현할 수 없다 — 가로를 정할 시점에 자기 높이가 아직 없다.
+//
+// ■ 그래서 부모에게 묻는다
+// 자기 높이 대신 부모의 높이를 본다. 부모가 'LayoutElement.preferredHeight'로
+// 높이를 못박아 뒀으면 그 값을 쓴다 — 이건 가로 패스에서도 이미 확정된 값이라 흔들리지 않는다.
+// 못박지 않았으면 부모의 현재 rect 높이를 쓴다(창 크기가 바뀐 직후 한 프레임 늦을 수 있다).
+//
+// ※ 같은 오브젝트에 'LayoutElement'를 함께 두지 않는다. 둘 다 가로를 주장해
+// 어느 쪽이 이기는지가 'layoutPriority'에 좌우된다.
 [AddComponentMenu("Layout/Square Layout Element")]
 [RequireComponent(typeof(RectTransform))]
 public class SquareLayoutElement : UIBehaviour, ILayoutElement
@@ -43,24 +41,33 @@ public class SquareLayoutElement : UIBehaviour, ILayoutElement
     public void CalculateLayoutInputHorizontal() { }
     public void CalculateLayoutInputVertical() { }
 
-    /// <summary>한 변의 길이 — 부모 높이에서 부모의 위아래 패딩을 뺀 값.</summary>
+    // 한 변의 길이 — 부모 높이에서 부모의 위아래 패딩을 뺀 값.
     private float CalculateSide()
     {
         var parent = transform.parent as RectTransform;
+
         if (parent == null)
+        {
             return -1f; // 부모가 없으면 주장하지 않는다
+        }
 
         float height = parent.rect.height;
 
         // 부모가 높이를 못박아 뒀으면 그 값이 더 믿을 만하다 — 가로 패스에서 이미 확정돼 있다.
         var parentElement = parent.GetComponent<LayoutElement>();
+
         if (parentElement != null && parentElement.preferredHeight >= 0f)
+        {
             height = parentElement.preferredHeight;
+        }
 
         // 부모가 가로/세로 레이아웃 그룹이면 위아래 패딩만큼은 내 몫이 아니다
         var group = parent.GetComponent<HorizontalOrVerticalLayoutGroup>();
+
         if (group != null)
+        {
             height -= group.padding.vertical;
+        }
 
         return Mathf.Max(0f, height + sizeAdjust);
     }
@@ -83,7 +90,9 @@ public class SquareLayoutElement : UIBehaviour, ILayoutElement
     private void MarkDirty()
     {
         if (!IsActive())
+        {
             return;
+        }
 
         // 내가 아니라 부모 줄이 다시 계산돼야 내 폭이 반영된다
         var parent = transform.parent as RectTransform;

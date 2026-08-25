@@ -4,22 +4,20 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 로그인 요청을 보내는 패널. 서버는 'C_LoginRequest'에 Id 하나만 받으므로
-/// (비밀번호도 계정 DB도 아직 없다) 입력창도 하나뿐이고 검사는 비었는가가 전부다.
-/// 이 요청 하나면 인벤토리·슬롯·캐릭터·재화가 연달아 따라온다 — '패킷 레퍼런스.md' 참조.
-///
-/// ■ 무응답·실패는 'ServerWaitManager'에 맡긴다
-/// 서버는 실패해도 응답을 안 보내는 경우가 있다. 같은 Id가 이미 접속 중이면
-/// (끊겼는데 서버가 아직 모르는 좀비 세션 포함) 응답도 로그도 없이 요청을 버린다
-/// — 깃허브 이슈 #10, 'UserManager.CreateUser'의 pid 중복 분기.
-/// 그러면 클라 화면에서는 아무 일도 일어나지 않은 것과 구분되지 않는다.
-/// 이 "응답이 없다"의 감시·알림은 'ServerWaitManager'가 공통으로 처리한다 — 여기서는
-/// 요청 직후 대기를 열고('Begin'), 응답 이벤트에서 결과만 보고한다('Succeed'/'Fail').
-///
-/// ⚠️ 화면을 닫는 시점은 "버튼을 누른 때"가 아니라 "성공 응답이 온 때"다.
-/// 누르자마자 닫으면 위의 무응답 상황에서 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
-/// </summary>
+// 로그인 요청을 보내는 패널. 서버는 'C_LoginRequest'에 Id 하나만 받으므로
+// (비밀번호도 계정 DB도 아직 없다) 입력창도 하나뿐이고 검사는 비었는가가 전부다.
+// 이 요청 하나면 인벤토리·슬롯·캐릭터·재화가 연달아 따라온다 — '패킷 레퍼런스.md' 참조.
+//
+// ■ 무응답·실패는 'ServerWaitManager'에 맡긴다
+// 서버는 실패해도 응답을 안 보내는 경우가 있다. 같은 Id가 이미 접속 중이면
+// (끊겼는데 서버가 아직 모르는 좀비 세션 포함) 응답도 로그도 없이 요청을 버린다
+// — 깃허브 이슈 #10, 'UserManager.CreateUser'의 pid 중복 분기.
+// 그러면 클라 화면에서는 아무 일도 일어나지 않은 것과 구분되지 않는다.
+// 이 "응답이 없다"의 감시·알림은 'ServerWaitManager'가 공통으로 처리한다 — 여기서는
+// 요청 직후 대기를 열고('Begin'), 응답 이벤트에서 결과만 보고한다('Succeed'/'Fail').
+//
+// ⚠️ 화면을 닫는 시점은 "버튼을 누른 때"가 아니라 "성공 응답이 온 때"다.
+// 누르자마자 닫으면 위의 무응답 상황에서 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
 public class LoginPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -81,7 +79,9 @@ public class LoginPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         RefreshButton(); // 꺼져 있는 동안 감시가 끊겼을 수 있다 — 입력 상태로 다시 맞춘다
@@ -99,7 +99,9 @@ public class LoginPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed         = true;
         _data.LoginCompleted += OnLoginCompleted;
@@ -109,7 +111,9 @@ public class LoginPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed         = false;
         _data.LoginCompleted -= OnLoginCompleted;
@@ -124,13 +128,17 @@ public class LoginPresenter : MonoBehaviour
     {
         // 엔터는 버튼 잠금을 지나쳐 들어오므로 여기서 한 번 더 막는다.
         if (!loginButton.interactable)
+        {
             return;
+        }
 
         // 앞뒤 공백은 사용자가 의도한 글자가 아니다. 서버에는 다듬은 값을 보낸다.
         string id = idInput.text.Trim();
+
         if (id.Length == 0)
         {
             ClientLogger.Warn(ClientLogger.UI, "아이디가 비어 있어 로그인 요청을 보내지 않았다.", this);
+
             return;
         }
 
@@ -169,6 +177,7 @@ public class LoginPresenter : MonoBehaviour
         {
             _waitHandle?.Succeed();
             _ui.ShowLogin(false);
+
             return;
         }
 

@@ -8,13 +8,11 @@ using Debug = UnityEngine.Debug;
 
 namespace DesktopWindowControl.EditorTools
 {
-	/// <summary>
-	/// WSGameServer를 에디터에서 백그라운드로 켜고/끄는 프로세스 제어기. UI는 없다(창은 'ServerConsoleWindow').
-	/// ★ stdout/stderr를 cmd의 '>' 리다이렉트로 로그 파일에 직접 흘려 담는다 —
-	///    에디터가 스크립트를 재컴파일(도메인 리로드)해 static·콜백이 소멸해도 로그가 계속 쌓이고, 서버도 안 끊긴다.
-	/// ★ 실행 중 프로세스 PID는 'SessionState'에 둔다 — 도메인 리로드를 넘어 살아남고 Unity 재시작 때 비워지므로 재부착에 맞다.
-	/// ★ 'dotnet run'은 실제 서버를 자식으로 띄우므로 종료는 트리 전체를 'taskkill /T'로 내린다.
-	/// </summary>
+	// WSGameServer를 에디터에서 백그라운드로 켜고/끄는 프로세스 제어기. UI는 없다(창은 'ServerConsoleWindow').
+	// ★ stdout/stderr를 cmd의 '>' 리다이렉트로 로그 파일에 직접 흘려 담는다 —
+	//    에디터가 스크립트를 재컴파일(도메인 리로드)해 static·콜백이 소멸해도 로그가 계속 쌓이고, 서버도 안 끊긴다.
+	// ★ 실행 중 프로세스 PID는 'SessionState'에 둔다 — 도메인 리로드를 넘어 살아남고 Unity 재시작 때 비워지므로 재부착에 맞다.
+	// ★ 'dotnet run'은 실제 서버를 자식으로 띄우므로 종료는 트리 전체를 'taskkill /T'로 내린다.
 	internal static class ServerRunner
 	{
 		// 서버 프로젝트(.csproj) — 프로젝트 루트 기준 상대 경로
@@ -34,45 +32,53 @@ namespace DesktopWindowControl.EditorTools
 			EditorApplication.quitting += StopIfRunning;
 		}
 
-		/// <summary>서버 로그 파일의 절대 경로. 창이 이 파일을 읽어 표시한다.</summary>
+		// 서버 로그 파일의 절대 경로. 창이 이 파일을 읽어 표시한다.
 		public static string LogFilePath => Path.Combine(ProjectRoot, LogFileRelPath);
 
 		private static string ProjectRoot => Directory.GetParent(Application.dataPath)!.FullName;
 
-		/// <summary>저장된 PID의 프로세스가 살아있으면 true. 죽었으면 PID를 청소한다.</summary>
+		// 저장된 PID의 프로세스가 살아있으면 true. 죽었으면 PID를 청소한다.
 		public static bool IsRunning
 		{
 			get
 			{
 				var pid = SessionState.GetInt(PidSessionKey, 0);
+
 				if (pid == 0)
+				{
 					return false;
+				}
 
 				try
 				{
 					var proc = Process.GetProcessById(pid);
+
 					if (proc.HasExited)
 					{
 						SessionState.EraseInt(PidSessionKey);
+
 						return false;
 					}
+
 					return true;
 				}
 				catch (ArgumentException)
 				{
 					// 그 PID의 프로세스가 이미 없다(서버가 스스로 종료됐거나 Unity 재시작 등)
 					SessionState.EraseInt(PidSessionKey);
+
 					return false;
 				}
 			}
 		}
 
-		/// <summary>서버를 백그라운드로 켠다. 이미 켜져 있으면 아무 것도 하지 않는다.</summary>
+		// 서버를 백그라운드로 켠다. 이미 켜져 있으면 아무 것도 하지 않는다.
 		public static void Start()
 		{
 			if (IsRunning)
 			{
 				Debug.LogWarning("[서버 콘솔] 이미 서버가 실행 중이다.");
+
 				return;
 			}
 
@@ -91,6 +97,7 @@ namespace DesktopWindowControl.EditorTools
 				if (!cleanup)
 				{
 					Debug.LogWarning($"[서버 콘솔] 포트 {ServerPort} 사용 중 — 시작을 취소했다.");
+
 					return;
 				}
 
@@ -104,6 +111,7 @@ namespace DesktopWindowControl.EditorTools
 			if (!File.Exists(csproj))
 			{
 				Debug.LogError($"[서버 콘솔] 서버 프로젝트를 찾을 수 없다: {csproj}");
+
 				return;
 			}
 
@@ -131,9 +139,11 @@ namespace DesktopWindowControl.EditorTools
 				};
 
 				var proc = Process.Start(psi);
+
 				if (proc == null)
 				{
 					Debug.LogError("[서버 콘솔] 서버 프로세스를 시작하지 못했다.");
+
 					return;
 				}
 
@@ -146,13 +156,15 @@ namespace DesktopWindowControl.EditorTools
 			}
 		}
 
-		/// <summary>실행 중인 서버 프로세스 트리를 종료한다.</summary>
+		// 실행 중인 서버 프로세스 트리를 종료한다.
 		public static void Stop()
 		{
 			var pid = SessionState.GetInt(PidSessionKey, 0);
+
 			if (pid == 0)
 			{
 				Debug.LogWarning("[서버 콘솔] 종료할 서버가 없다.");
+
 				return;
 			}
 
@@ -192,7 +204,9 @@ namespace DesktopWindowControl.EditorTools
 			var userExe = Path.Combine(userRoot, "dotnet.exe");
 
 			if (File.Exists(userExe) && HasRequiredSdk(Path.Combine(userRoot, "sdk")))
+			{
 				return userExe;
+			}
 
 			return "dotnet"; // PATH에 맡긴다(Program Files에 최신 SDK가 있는 환경)
 		}
@@ -201,16 +215,22 @@ namespace DesktopWindowControl.EditorTools
 		private static bool HasRequiredSdk(string sdkDir)
 		{
 			if (!Directory.Exists(sdkDir))
+			{
 				return false;
+			}
 
 			foreach (var dir in Directory.GetDirectories(sdkDir))
 			{
 				var name = Path.GetFileName(dir);
 				var dot  = name.IndexOf('.');
 				var majorStr = dot > 0 ? name.Substring(0, dot) : name;
+
 				if (int.TryParse(majorStr, out var major) && major >= RequiredSdkMajor)
+				{
 					return true;
+				}
 			}
+
 			return false;
 		}
 
@@ -222,13 +242,18 @@ namespace DesktopWindowControl.EditorTools
 				var listeners = System.Net.NetworkInformation.IPGlobalProperties
 					.GetIPGlobalProperties().GetActiveTcpListeners();
 				foreach (var ep in listeners)
+				{
 					if (ep.Port == ServerPort)
+					{
 						return true;
+					}
+				}
 			}
 			catch (Exception e)
 			{
 				Debug.LogWarning($"[서버 콘솔] 포트 사용 여부 확인 실패(무시): {e.Message}");
 			}
+
 			return false;
 		}
 
@@ -236,13 +261,16 @@ namespace DesktopWindowControl.EditorTools
 		private static void KillByPort(int port)
 		{
 			foreach (var pid in FindListeningPids(port))
+			{
 				KillTree(pid);
+			}
 		}
 
 		// 'netstat -ano'를 파싱해 해당 포트를 LISTENING 중인 PID들을 모은다.
 		private static IEnumerable<int> FindListeningPids(int port)
 		{
 			var pids = new HashSet<int>();
+
 			try
 			{
 				var psi = new ProcessStartInfo("netstat")
@@ -255,7 +283,9 @@ namespace DesktopWindowControl.EditorTools
 
 				using var p = Process.Start(psi);
 				if (p == null)
+				{
 					return pids;
+				}
 
 				var output = p.StandardOutput.ReadToEnd();
 				p.WaitForExit(3000);
@@ -265,26 +295,36 @@ namespace DesktopWindowControl.EditorTools
 				foreach (var line in output.Split('\n'))
 				{
 					if (line.IndexOf("LISTENING", StringComparison.OrdinalIgnoreCase) < 0)
+					{
 						continue;
+					}
 					if (!line.Contains($":{port}"))
+					{
 						continue;
+					}
 
 					var parts = line.Split(new[] { ' ', '\t', '\r' }, StringSplitOptions.RemoveEmptyEntries);
+
 					if (parts.Length > 0 && int.TryParse(parts[^1], out var pid) && pid > 0)
+					{
 						pids.Add(pid);
+					}
 				}
 			}
 			catch (Exception e)
 			{
 				Debug.LogError($"[서버 콘솔] 포트 점유 프로세스 조회 실패: {e.Message}");
 			}
+
 			return pids;
 		}
 
 		private static void StopIfRunning()
 		{
 			if (IsRunning)
+			{
 				Stop();
+			}
 		}
 	}
 }

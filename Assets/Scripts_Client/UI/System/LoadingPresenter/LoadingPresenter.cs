@@ -1,29 +1,26 @@
 using System.Collections;
 using UnityEngine;
 
-/// <summary>
-/// 로딩 표시 — 서버 요청이 진행 중일 때만 뜬다. 'ServerWaitManager.BusyChanged'만 구독해
-/// 몸통을 켜고 끈다. 직접 판단하지 않는다(무엇을 기다리는지 모른다).
-///
-/// ⚠️ 수동 닫기는 없다 — 정상 응답·타임아웃 어느 쪽이든 'ServerWaitManager'가 자동으로 내린다.
-/// 실패·오류면 로딩은 사라지고 대신 'NoticePresenter'가 뜬다.
-///
-/// ■ 빠른 응답은 아예 안 띄운다 (깜빡임 제거)
-/// 켜라는 신호가 와도 곧바로 띄우지 않고 'ShowDelaySeconds'만큼 미룬다. 그 안에 응답이 와서
-/// 끄라는 신호가 오면 코루틴을 취소해 한 번도 뜨지 않는다. 느린 왕복만 실제로 표시된다.
-///
-/// ■ 미루는 것은 표시뿐이다 — 차단은 즉시 건다
-/// 두 축을 함께 미루면 그 사이 뒤 UI가 열려 있다. 요청을 보낸 화면을 사용자가 그때 닫아 버리면
-/// 'OnDisable'이 구독을 끊어 응답을 놓치고, 실제로는 성공한 요청에 5초 뒤 무응답 알림이 뜬다.
-/// 그래서 클릭 차단은 대기가 시작되는 순간, 표시만 grace 뒤로 미룬다.
-/// </summary>
-/// <remarks>
-/// ⚠️ 오브젝트를 끄지 않고 'CanvasGroup'으로 표시/숨김한다. 두 가지 이유가 있고, 둘 다
-/// 'SetActive'로는 해결되지 않는다 —
-/// [1] 자기 자신을 끄면 다시 켤 이벤트를 받지 못한다(꺼진 오브젝트는 콜백이 오지 않는다).
-/// [2] "안 보이는데 클릭은 막는다"를 만들 수단이 사라진다 — 오브젝트를 끄면 blocker Image도 함께 꺼진다.
-/// 판별 기준은 'System 규칙.md'의 "무엇으로 여닫는가 — SetActive인가 CanvasGroup인가" 절 참조.
-/// </remarks>
+// 로딩 표시 — 서버 요청이 진행 중일 때만 뜬다. 'ServerWaitManager.BusyChanged'만 구독해
+// 몸통을 켜고 끈다. 직접 판단하지 않는다(무엇을 기다리는지 모른다).
+//
+// ⚠️ 수동 닫기는 없다 — 정상 응답·타임아웃 어느 쪽이든 'ServerWaitManager'가 자동으로 내린다.
+// 실패·오류면 로딩은 사라지고 대신 'NoticePresenter'가 뜬다.
+//
+// ■ 빠른 응답은 아예 안 띄운다 (깜빡임 제거)
+// 켜라는 신호가 와도 곧바로 띄우지 않고 'ShowDelaySeconds'만큼 미룬다. 그 안에 응답이 와서
+// 끄라는 신호가 오면 코루틴을 취소해 한 번도 뜨지 않는다. 느린 왕복만 실제로 표시된다.
+//
+// ■ 미루는 것은 표시뿐이다 — 차단은 즉시 건다
+// 두 축을 함께 미루면 그 사이 뒤 UI가 열려 있다. 요청을 보낸 화면을 사용자가 그때 닫아 버리면
+// 'OnDisable'이 구독을 끊어 응답을 놓치고, 실제로는 성공한 요청에 5초 뒤 무응답 알림이 뜬다.
+// 그래서 클릭 차단은 대기가 시작되는 순간, 표시만 grace 뒤로 미룬다.
+//
+// ⚠️ 오브젝트를 끄지 않고 'CanvasGroup'으로 표시/숨김한다. 두 가지 이유가 있고, 둘 다
+// 'SetActive'로는 해결되지 않는다 —
+// [1] 자기 자신을 끄면 다시 켤 이벤트를 받지 못한다(꺼진 오브젝트는 콜백이 오지 않는다).
+// [2] "안 보이는데 클릭은 막는다"를 만들 수단이 사라진다 — 오브젝트를 끄면 blocker Image도 함께 꺼진다.
+// 판별 기준은 'System 규칙.md'의 "무엇으로 여닫는가 — SetActive인가 CanvasGroup인가" 절 참조.
 public class LoadingPresenter : MonoBehaviour
 {
     // 요청이 이 시간 안에 끝나면 로딩을 아예 띄우지 않는다 — 빠른 왕복의 깜빡임을 없앤다.
@@ -60,7 +57,9 @@ public class LoadingPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (_isReady)
+        {
             Subscribe();
+        }
     }
 
     // 구독 해제 (Unity 메시지)
@@ -72,7 +71,9 @@ public class LoadingPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed     = true;
         _wait.BusyChanged += OnBusyChanged;
@@ -81,7 +82,9 @@ public class LoadingPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed     = false;
         _wait.BusyChanged -= OnBusyChanged;
@@ -96,7 +99,9 @@ public class LoadingPresenter : MonoBehaviour
             SetBlocking(true); // 아직 아무것도 안 보이지만 클릭은 이 순간부터 막힌다
 
             if (_showDelay == null)
+            {
                 _showDelay = StartCoroutine(ShowAfterDelay());
+            }
         }
         else
         {

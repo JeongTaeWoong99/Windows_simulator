@@ -4,18 +4,16 @@ using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 가챠 패널 — 거래 열의 뽑기 화면. 지금은 요청 버튼 두 개(1회 · 10연차)뿐이다.
-///
-/// ■ 왜 거래 열인가
-/// 가챠는 기획상 상점에 속한다 — 가챠 티켓이 골드 상점 품목이다.
-/// → GameDesign/기획/거래/README.md 3.2
-///
-/// ■ 결과 내용은 여기서 보지 않는다
-/// 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고
-/// 'PlayerDataLogger'가 콘솔에 풀어 준다. 결과 팝업이 생기면 이 패널의 자식으로 붙는다 — 일감 "가챠 결과 팝업".
-/// 다만 성공/실패 도착 여부는 여기서 구독한다 — 요청 중 로딩·버튼 잠금·실패 알림을 위해서다.
-/// </summary>
+// 가챠 패널 — 거래 열의 뽑기 화면. 지금은 요청 버튼 두 개(1회 · 10연차)뿐이다.
+//
+// ■ 왜 거래 열인가
+// 가챠는 기획상 상점에 속한다 — 가챠 티켓이 골드 상점 품목이다.
+// → GameDesign/기획/거래/README.md 3.2
+//
+// ■ 결과 내용은 여기서 보지 않는다
+// 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고
+// 'PlayerDataLogger'가 콘솔에 풀어 준다. 결과 팝업이 생기면 이 패널의 자식으로 붙는다 — 일감 "가챠 결과 팝업".
+// 다만 성공/실패 도착 여부는 여기서 구독한다 — 요청 중 로딩·버튼 잠금·실패 알림을 위해서다.
 public class GachaPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -65,7 +63,9 @@ public class GachaPresenter : MonoBehaviour
     private void OnEnable()
     {
         if (_isReady)
+        {
             Subscribe();
+        }
     }
 
     // 구독 해제 (Unity 메시지)
@@ -80,7 +80,9 @@ public class GachaPresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed        = true;
         _data.GachaCompleted += OnGachaCompleted;
@@ -91,7 +93,9 @@ public class GachaPresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed        = false;
         _data.GachaCompleted -= OnGachaCompleted;
@@ -100,20 +104,21 @@ public class GachaPresenter : MonoBehaviour
 
     #endregion
 
-    /// <summary>
-    /// 가챠를 'drawCount'회 요청한다 (버튼 OnClick에 코드로 연결).
-    ///
-    /// 로그인 전에 보내면 서버가 User를 못 찾아 조용히 버린다 — 클라 입장에선 응답도 오류도
-    /// 없어서 "눌렀는데 아무 일도 안 일어난다"로만 보인다. 보내기 전에 여기서 끊고 이유를 남긴다.
-    /// </summary>
+    // 가챠를 'drawCount'회 요청한다 (버튼 OnClick에 코드로 연결).
+    //
+    // 로그인 전에 보내면 서버가 User를 못 찾아 조용히 버린다 — 클라 입장에선 응답도 오류도
+    // 없어서 "눌렀는데 아무 일도 안 일어난다"로만 보인다. 보내기 전에 여기서 끊고 이유를 남긴다.
     private void Draw(int drawCount)
     {
         if (_isWaiting)
+        {
             return; // 앞 요청의 응답을 기다리는 중 — 연타 방지
+        }
 
         if (!_data.IsLoggedIn)
         {
             ClientLogger.Warn(ClientLogger.Send, "가챠 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
             return;
         }
 

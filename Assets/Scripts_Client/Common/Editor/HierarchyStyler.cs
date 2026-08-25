@@ -33,20 +33,25 @@ public static class HierarchyStyler
         EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyItem;
     }
 
-    /// <summary>프로젝트에서 팔레트를 찾는다 (처음 그릴 때 한 번). 없으면 'null'.</summary>
+    // 프로젝트에서 팔레트를 찾는다 (처음 그릴 때 한 번). 없으면 'null'.
     private static HierarchyPalette? Palette
     {
         get
         {
             if (_palette != null)
+            {
                 return _palette;
+            }
 
             // ※ 경로가 아니라 타입으로 찾는다 — 팔레트를 어디로 옮겨도 계속 동작한다.
             string[] guids = AssetDatabase.FindAssets("t:" + nameof(HierarchyPalette));
             if (guids.Length == 0)
+            {
                 return null;
+            }
 
             _palette = AssetDatabase.LoadAssetAtPath<HierarchyPalette>(AssetDatabase.GUIDToAssetPath(guids[0]));
+
             return _palette;
         }
     }
@@ -55,20 +60,27 @@ public static class HierarchyStyler
     private static void OnHierarchyItem(int instanceID, Rect rect)
     {
         var palette = Palette;
+
         if (palette == null)
+        {
             return;
+        }
 
 #pragma warning disable CS0618 // hierarchyWindowItemOnGUI 가 주는 건 instanceID 뿐이라 이 조회를 대체할 수 없다
         var go = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
 #pragma warning restore CS0618
 
         if (go == null)
+        {
             return;
+        }
 
         foreach (var rule in palette.rules)
         {
             if (string.IsNullOrEmpty(rule.prefix) || !go.name.StartsWith(rule.prefix))
+            {
                 continue;
+            }
 
             // 부모가 꺼져 있으면 이 오브젝트도 화면에 없다 — activeSelf 가 아니라 activeInHierarchy 다.
             // Unity 의 흐리게 표시와 같은 기준이어야 눈으로 본 것과 실제가 어긋나지 않는다.

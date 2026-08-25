@@ -7,12 +7,10 @@ using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
-	/// <summary>
-	/// 'Test Copy' 복사본이 오리지널 씬의 최신 커밋보다 낡았는지 검사해 팝업으로 알린다.
-	/// 검사 시점은 '유니티로 포커스가 돌아올 때'다 — 터미널에서 'git pull' 하고 창을 눌러 돌아오는
-	/// 순간을 자동으로 잡는다(이슈 #14의 '무조건 버튼을 눌러야 하는' 불편 해소).
-	/// 낡음을 감지하면 '[지금 복사]'로 그 자리에서 'OriginalSceneCopier.Copy()'를 부를 수 있다.
-	/// </summary>
+	// 'Test Copy' 복사본이 오리지널 씬의 최신 커밋보다 낡았는지 검사해 팝업으로 알린다.
+	// 검사 시점은 '유니티로 포커스가 돌아올 때'다 — 터미널에서 'git pull' 하고 창을 눌러 돌아오는
+	// 순간을 자동으로 잡는다(이슈 #14의 '무조건 버튼을 눌러야 하는' 불편 해소).
+	// 낡음을 감지하면 '[지금 복사]'로 그 자리에서 'OriginalSceneCopier.Copy()'를 부를 수 있다.
 	[InitializeOnLoad]
 	internal static class SceneCopyFreshnessChecker
 	{
@@ -164,6 +162,7 @@ namespace DesktopWindowControl.EditorTools
 			{
 				case 0:
 					OriginalSceneCopier.Copy();
+
 					break;
 
 				case 2:
@@ -174,11 +173,12 @@ namespace DesktopWindowControl.EditorTools
 						 $"복사본 최신성 자동 알림을 껐다.\n{SceneCopySettings.ReEnableHint}\n\n" +
 						 "상단 툴바의 '오리지널 씬 복사' 버튼은 그대로 쓸 수 있다.",
 						 "확인");
+
 					break;
 			}
 		}
 
-		/// <summary>상태 파일을 "씬파일명 → 커밋해시" 사전으로 읽는다. 한 줄 = "이름\t해시".</summary>
+		// 상태 파일을 "씬파일명 → 커밋해시" 사전으로 읽는다. 한 줄 = "이름\t해시".
 		private static Dictionary<string, string> ReadState()
 		{
 			var map = new Dictionary<string, string>();
@@ -198,7 +198,7 @@ namespace DesktopWindowControl.EditorTools
 			return map;
 		}
 
-		/// <summary>현재 커밋 상태를 한 문자열로. 동일 상태 재경고를 막는 데만 쓴다.</summary>
+		// 현재 커밋 상태를 한 문자열로. 동일 상태 재경고를 막는 데만 쓴다.
 		private static string Signature(Dictionary<string, string> current)
 		{
 			var keys = new List<string>(current.Keys);

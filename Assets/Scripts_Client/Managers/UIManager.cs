@@ -1,49 +1,41 @@
 using System;
 using UnityEngine;
 
-/// <summary>
-/// '#Main Canvas' 안에서 같은 자리를 나눠 쓰는 화면들.
-/// 'Title'과 'Menu Presenter' 사이의 한 칸을 이 중 하나가 차지한다.
-/// </summary>
-/// <remarks>
-/// ⚠️ 값을 중간에 끼우지 않는다 — 씬에 int로 저장돼 있어 순서가 밀리면
-/// 'Main Screens'·'Screen Buttons' 배선이 조용히 어긋난다(컴파일도 경고도 통과한다).
-/// 끝에 추가하거나, 순서를 바꿨으면 두 배열을 전수 확인한다.
-/// 이 enum이 seam인 이유와 화면 추가 절차는 'Main 규칙.md'의 "메인 화면 추가" 절 참조.
-/// </remarks>
+// '#Main Canvas' 안에서 같은 자리를 나눠 쓰는 화면들.
+// 'Title'과 'Menu Presenter' 사이의 한 칸을 이 중 하나가 차지한다.
+//
+// ⚠️ 값을 중간에 끼우지 않는다 — 씬에 int로 저장돼 있어 순서가 밀리면
+// 'Main Screens'·'Screen Buttons' 배선이 조용히 어긋난다(컴파일도 경고도 통과한다).
+// 끝에 추가하거나, 순서를 바꿨으면 두 배열을 전수 확인한다.
+// 이 enum이 seam인 이유와 화면 추가 절차는 'Main 규칙.md'의 "메인 화면 추가" 절 참조.
 public enum MainScreen
 {
-    /// <summary>작업슬롯 목록 — 기본 화면. 다른 화면을 닫으면 언제나 여기로 돌아온다.</summary>
+    // 작업슬롯 목록 — 기본 화면. 다른 화면을 닫으면 언제나 여기로 돌아온다.
     WorkStationList,
 
-    /// <summary>작업슬롯 한 칸의 배치·해제. 목록에서 칸을 눌러야 들어온다(버튼으로 직접 열지 않는다).</summary>
+    // 작업슬롯 한 칸의 배치·해제. 목록에서 칸을 눌러야 들어온다(버튼으로 직접 열지 않는다).
     WorkStationSelect,
 
-    /// <summary>설정 — 창 제어와 위젯 위치.</summary>
+    // 설정 — 창 제어와 위젯 위치.
     Setting,
 }
 
-/// <summary>
-/// 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
-/// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Storage·#Market·!Login)와
-/// 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
-/// </summary>
-/// <remarks>
-/// ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
-/// 안쪽 메인 화면만 기본값으로 맞춰 두면 나중에 캔버스가 켜지는 순간 이미 올바른 화면이 떠 있다.
-/// 이 클래스가 Presenter가 아닌 이유는 'UI 규칙.md'의 "세 역할 + 조정자",
-/// 전환 흐름 · 진입 순서는 'Main 규칙.md'의 "전환 층은 하나다",
-/// 화면 동선 기획은 'GameDesign/design/ui/README.md' 2.0 참조.
-/// </remarks>
+// 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
+// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Storage·#Market·!Login)와
+// 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
+//
+// ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
+// 안쪽 메인 화면만 기본값으로 맞춰 두면 나중에 캔버스가 켜지는 순간 이미 올바른 화면이 떠 있다.
+// 이 클래스가 Presenter가 아닌 이유는 'UI 규칙.md'의 "세 역할 + 조정자",
+// 전환 흐름 · 진입 순서는 'Main 규칙.md'의 "전환 층은 하나다",
+// 화면 동선 기획은 'GameDesign/design/ui/README.md' 2.0 참조.
 public class UIManager : MonoService<UIManager>
 {
-    /// <summary>
-    /// 아무 조작도 없을 때의 메인 화면. 시작할 때 · 전부 접었다 열 때 · 같은 버튼을 다시 누를 때
-    /// 모두 여기로 돌아온다. 세 곳이 같은 값을 봐야 해서 상수로 둔다.
-    /// </summary>
+    // 아무 조작도 없을 때의 메인 화면. 시작할 때 · 전부 접었다 열 때 · 같은 버튼을 다시 누를 때
+    // 모두 여기로 돌아온다. 세 곳이 같은 값을 봐야 해서 상수로 둔다.
     private const MainScreen DefaultMainScreen = MainScreen.WorkStationList;
 
-    /// <summary>'#Main Canvas'의 한 자리를 차지하는 화면 하나. 인스펙터에서 짝지어 넣는다.</summary>
+    // '#Main Canvas'의 한 자리를 차지하는 화면 하나. 인스펙터에서 짝지어 넣는다.
     [Serializable]
     private struct MainScreenEntry
     {
@@ -97,13 +89,11 @@ public class UIManager : MonoService<UIManager>
     public MarketCanvasView  Market  => marketCanvas;
     public WidgetCanvasView  Widget  => widgetCanvas;
 
-    /// <summary>
-    /// 지금 '#Main Canvas'에 떠 있는 화면. 전부 닫힌 상태에서도 "다음에 열면 이것"을 뜻한다
-    /// — 그래서 'CloseAllExceptWidget'이 이 값을 기본으로 되돌린다.
-    /// </summary>
+    // 지금 '#Main Canvas'에 떠 있는 화면. 전부 닫힌 상태에서도 "다음에 열면 이것"을 뜻한다
+    // — 그래서 'CloseAllExceptWidget'이 이 값을 기본으로 되돌린다.
     public MainScreen CurrentMainScreen { get; private set; } = DefaultMainScreen;
 
-    /// <summary>위젯 말고 하나라도 열려 있는가. 'ToggleAll'의 방향을 정한다.</summary>
+    // 위젯 말고 하나라도 열려 있는가. 'ToggleAll'의 방향을 정한다.
     public bool IsOpen =>
         mainCanvas.gameObject.activeSelf     ||
         stateCanvas.gameObject.activeSelf    ||
@@ -127,34 +117,33 @@ public class UIManager : MonoService<UIManager>
 
     #region 로그인 — 게임의 시작점
 
-    /// <summary>
-    /// 로그인 열을 열고 닫는다 ('LoginPresenter'가 로그인 성공 응답을 받고 부른다).
-    ///
-    /// ⚠️ 버튼을 누른 시점이 아니라 성공 응답이 온 시점에 닫는다. 서버는 같은 Id가 이미
-    /// 접속 중이면 응답도 로그도 없이 요청을 버린다(이슈 #10). 누르자마자 닫으면 그때
-    /// 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
-    /// </summary>
+    // 로그인 열을 열고 닫는다 ('LoginPresenter'가 로그인 성공 응답을 받고 부른다).
+    //
+    // ⚠️ 버튼을 누른 시점이 아니라 성공 응답이 온 시점에 닫는다. 서버는 같은 Id가 이미
+    // 접속 중이면 응답도 로그도 없이 요청을 버린다(이슈 #10). 누르자마자 닫으면 그때
+    // 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
     public void ShowLogin(bool on) => loginCanvas.Show(on);
 
     #endregion
 
     #region 메인 화면
 
-    /// <summary>
-    /// 인스펙터 배선이 'MainScreen'과 맞는지 본다 (Start에서 한 번).
-    ///
-    /// 빠진 화면은 조용히 안 열린다 — 버튼을 눌러도 아무 일이 없어서 버튼이 고장 난 것처럼 보인다.
-    /// 원인이 인스펙터라는 걸 드러내려고 여기서 먼저 알린다.
-    /// </summary>
+    // 인스펙터 배선이 'MainScreen'과 맞는지 본다 (Start에서 한 번).
+    //
+    // 빠진 화면은 조용히 안 열린다 — 버튼을 눌러도 아무 일이 없어서 버튼이 고장 난 것처럼 보인다.
+    // 원인이 인스펙터라는 걸 드러내려고 여기서 먼저 알린다.
     private void ValidateMainScreens()
     {
         foreach (MainScreen screen in Enum.GetValues(typeof(MainScreen)))
         {
             int count = 0;
+
             foreach (var entry in mainScreens)
             {
                 if (entry.screen == screen && entry.panel != null)
+                {
                     count++;
+                }
             }
 
             if (count != 1)
@@ -166,12 +155,10 @@ public class UIManager : MonoService<UIManager>
         }
     }
 
-    /// <summary>
-    /// 메인 화면을 기본값 하나만 켜진 상태로 되돌린다 (Start · 'CloseAllExceptWidget').
-    /// ★ 캔버스는 건드리지 않는다 — 여기서 켜면 로그인 전에 게임 화면이 비친다.
-    /// 씬에 무엇이 켜진 채 저장됐든 무시하고 언제나 'DefaultMainScreen'으로 간다
-    /// (근거는 'Main 규칙.md'의 "전환 층은 하나다").
-    /// </summary>
+    // 메인 화면을 기본값 하나만 켜진 상태로 되돌린다 (Start · 'CloseAllExceptWidget').
+    // ★ 캔버스는 건드리지 않는다 — 여기서 켜면 로그인 전에 게임 화면이 비친다.
+    // 씬에 무엇이 켜진 채 저장됐든 무시하고 언제나 'DefaultMainScreen'으로 간다
+    // (근거는 'Main 규칙.md'의 "전환 층은 하나다").
     private void ResetMainScreen()
     {
         CurrentMainScreen = DefaultMainScreen;
@@ -179,25 +166,27 @@ public class UIManager : MonoService<UIManager>
         foreach (var entry in mainScreens)
         {
             if (entry.panel == null)
+            {
                 continue;
+            }
 
             bool on = entry.screen == DefaultMainScreen;
             entry.panel.SetActive(on);
 
             // 제목도 함께 맞춘다 — 씬에 저장된 문구가 실제로 켜진 화면과 다를 수 있다
             if (on)
+            {
                 mainCanvas.SetTitle(entry.title);
+            }
         }
     }
 
-    /// <summary>
-    /// 그 화면만 켜고 나머지 메인 화면은 끈다. 메인 캔버스가 꺼져 있었으면 함께 켜고,
-    /// 캔버스 머리의 제목도 그 화면 것으로 바꾼다.
-    ///
-    /// ※ 꺼져 있던 패널에 넘길 값이 있으면 이걸 부르기 전에 넣는다
-    /// ('WorkStationListPresenter'가 'Open(slotIndex)'를 먼저 부르는 이유).
-    /// 꺼진 오브젝트는 'Start()'가 아직 안 돌았을 수 있어, 켠 뒤에 넣으면 초기화가 덮어쓴다.
-    /// </summary>
+    // 그 화면만 켜고 나머지 메인 화면은 끈다. 메인 캔버스가 꺼져 있었으면 함께 켜고,
+    // 캔버스 머리의 제목도 그 화면 것으로 바꾼다.
+    //
+    // ※ 꺼져 있던 패널에 넘길 값이 있으면 이걸 부르기 전에 넣는다
+    // ('WorkStationListPresenter'가 'Open(slotIndex)'를 먼저 부르는 이유).
+    // 꺼진 오브젝트는 'Start()'가 아직 안 돌았을 수 있어, 켠 뒤에 넣으면 초기화가 덮어쓴다.
     public void ShowMainScreen(MainScreen screen)
     {
         CurrentMainScreen = screen;
@@ -206,22 +195,24 @@ public class UIManager : MonoService<UIManager>
         foreach (var entry in mainScreens)
         {
             if (entry.panel == null)
+            {
                 continue;
+            }
 
             bool on = entry.screen == screen;
             entry.panel.SetActive(on);
 
             if (on)
+            {
                 mainCanvas.SetTitle(entry.title);
+            }
         }
     }
 
-    /// <summary>
-    /// 상태 패널의 화면 버튼이 부른다 — 이미 그 화면이면 기본(작업슬롯 목록)으로 되돌린다.
-    ///
-    /// 여는 일만 하면 이미 열려 있을 때 눌러도 변화가 없어 버튼이 고장 난 것처럼 보인다.
-    /// 닫는 버튼을 따로 두지 않아도 되는 것은 'ToggleStorage'와 같은 이유다.
-    /// </summary>
+    // 상태 패널의 화면 버튼이 부른다 — 이미 그 화면이면 기본(작업슬롯 목록)으로 되돌린다.
+    //
+    // 여는 일만 하면 이미 열려 있을 때 눌러도 변화가 없어 버튼이 고장 난 것처럼 보인다.
+    // 닫는 버튼을 따로 두지 않아도 되는 것은 'ToggleStorage'와 같은 이유다.
     public void ToggleMainScreen(MainScreen screen)
         => ShowMainScreen(CurrentMainScreen == screen ? DefaultMainScreen : screen);
 
@@ -229,33 +220,33 @@ public class UIManager : MonoService<UIManager>
 
     #region 전체 여닫기
 
-    /// <summary>
-    /// 위젯의 열기/닫기 버튼이 부른다 — 열려 있으면 전부 접고, 닫혀 있으면 작업슬롯을 연다.
-    /// 진입 순서(위젯 → 작업슬롯 → 창고·거래)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
-    /// </summary>
+    // 위젯의 열기/닫기 버튼이 부른다 — 열려 있으면 전부 접고, 닫혀 있으면 작업슬롯을 연다.
+    // 진입 순서(위젯 → 작업슬롯 → 창고·거래)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
     public void ToggleAll()
     {
         if (IsOpen)
+        {
             CloseAllExceptWidget();
+        }
         else
+        {
             OpenWorkStation();
+        }
     }
 
-    /// <summary>작업슬롯 목록과 상태 캔버스를 연다. 창고·거래는 작업슬롯의 하단 버튼으로 연다.</summary>
+    // 작업슬롯 목록과 상태 캔버스를 연다. 창고·거래는 작업슬롯의 하단 버튼으로 연다.
     public void OpenWorkStation()
     {
         ShowMainScreen(DefaultMainScreen);
         stateCanvas.Show(true);
     }
 
-    /// <summary>
-    /// 위젯을 뺀 전부를 닫는다. 위젯은 상주가 존재 이유라 건드리지 않는다.
-    ///
-    /// ★ 패널만 끄는 게 아니라 '#Main Canvas'까지 끈다. 캔버스를 켜 둔 채 두면
-    /// 'LayoutElement'가 열 안에서 900px를 계속 차지해 위젯이 창 가장자리에서 밀린다.
-    ///
-    /// ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다".
-    /// </summary>
+    // 위젯을 뺀 전부를 닫는다. 위젯은 상주가 존재 이유라 건드리지 않는다.
+    //
+    // ★ 패널만 끄는 게 아니라 '#Main Canvas'까지 끈다. 캔버스를 켜 둔 채 두면
+    // 'LayoutElement'가 열 안에서 900px를 계속 차지해 위젯이 창 가장자리에서 밀린다.
+    //
+    // ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다".
     public void CloseAllExceptWidget()
     {
         storageCanvas.Show(false);
@@ -270,20 +261,18 @@ public class UIManager : MonoService<UIManager>
 
     #region 좌우 열
 
-    /// <summary>창고 열을 열고 닫는다.</summary>
+    // 창고 열을 열고 닫는다.
     public void ShowStorage(bool on) => storageCanvas.Show(on);
 
-    /// <summary>거래 열을 열고 닫는다.</summary>
+    // 거래 열을 열고 닫는다.
     public void ShowMarket(bool on) => marketCanvas.Show(on);
 
-    /// <summary>
-    /// 창고 열을 뒤집는다 (작업슬롯 하단 버튼).
-    /// 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
-    /// 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
-    /// </summary>
+    // 창고 열을 뒤집는다 (작업슬롯 하단 버튼).
+    // 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
+    // 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
     public void ToggleStorage() => ShowStorage(!storageCanvas.gameObject.activeSelf);
 
-    /// <summary>거래 열을 뒤집는다 (작업슬롯 하단 버튼).</summary>
+    // 거래 열을 뒤집는다 (작업슬롯 하단 버튼).
     public void ToggleMarket() => ShowMarket(!marketCanvas.gameObject.activeSelf);
 
     #endregion

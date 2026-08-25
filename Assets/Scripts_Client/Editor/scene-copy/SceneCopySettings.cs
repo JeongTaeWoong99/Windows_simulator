@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
-	/// <summary>
-	/// 씬 복사 툴의 개인 설정. 'EditorPrefs'에 담아 **머신 로컬**로 둔다 — 커밋되지 않으므로
-	/// 협업자끼리 서로의 설정에 영향을 주지 않는다(서버 담당은 켜고, 클라 담당은 끄는 식).
-	/// 환경 설정의 프로젝트 전용 그룹('ProjectPreferences') 아래에 토글을 띄운다.
-	/// </summary>
+	// 씬 복사 툴의 개인 설정. 'EditorPrefs'에 담아 **머신 로컬**로 둔다 — 커밋되지 않으므로
+	// 협업자끼리 서로의 설정에 영향을 주지 않는다(서버 담당은 켜고, 클라 담당은 끄는 식).
+	// 환경 설정의 프로젝트 전용 그룹('ProjectPreferences') 아래에 토글을 띄운다.
 	internal static class SceneCopySettings
 	{
 		// EditorPrefs는 프로젝트가 아니라 머신 전역이라, 다른 툴과 겹치지 않게 'DWC.' 프리픽스를 붙인다.
@@ -17,14 +15,14 @@ namespace DesktopWindowControl.EditorTools
 		private const string SettingsPath  = ProjectPreferences.RootPath + "/SceneCopy";
 		private const string SettingsLabel = "오리지널 씬 복사";
 
-		/// <summary>복사본 최신성 자동 검사·팝업을 켤지. 기본은 '켜짐'(설정을 만진 적 없는 사람은 지금까지대로).</summary>
+		// 복사본 최신성 자동 검사·팝업을 켤지. 기본은 '켜짐'(설정을 만진 적 없는 사람은 지금까지대로).
 		public static bool AutoCheckEnabled
 		{
 			get => EditorPrefs.GetBool(AutoCheckKey, true);
 			set => EditorPrefs.SetBool(AutoCheckKey, value);
 		}
 
-		/// <summary>다시 켜는 위치 안내 — 팝업에서 끈 직후에도 같은 문구를 쓴다.</summary>
+		// 다시 켜는 위치 안내 — 팝업에서 끈 직후에도 같은 문구를 쓴다.
 		public const string ReEnableHint =
 			ProjectPreferences.MenuHint + " > " + SettingsLabel + " 에서 다시 켤 수 있다.";
 

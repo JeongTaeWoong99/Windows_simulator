@@ -4,24 +4,22 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-/// <summary>
-/// 상태 패널 — 계정 이름과 골드를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
-///
-/// ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다
-/// 버튼은 이 패널의 위젯이라 여기가 쥐지만, 어느 캔버스가 열리는지는 모른다.
-/// 'MainScreen' 값만 'UIManager'에 넘긴다 — 그래야 화면이 늘어도
-/// 이 패널이 캔버스 참조를 하나씩 더 들고 있지 않아도 된다.
-///
-/// ■ 화면 버튼을 하나 더 붙이려면
-/// 'MainScreen'에 값을 추가하고, 인스펙터의 'Screen Buttons'에 한 줄,
-/// 'UI Manager'의 'Main Screens'에 한 줄 넣는다. 이 클래스는 고치지 않는다.
-///
-/// 닉네임은 아직 서버가 돌려주지 않는다. 로그인에 쓴 Id('PlayerDataModel.LoginId')를
-/// 그대로 보여 주고, 닉네임 패킷이 생기면 그때 바꾼다.
-/// </summary>
+// 상태 패널 — 계정 이름과 골드를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
+//
+// ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다
+// 버튼은 이 패널의 위젯이라 여기가 쥐지만, 어느 캔버스가 열리는지는 모른다.
+// 'MainScreen' 값만 'UIManager'에 넘긴다 — 그래야 화면이 늘어도
+// 이 패널이 캔버스 참조를 하나씩 더 들고 있지 않아도 된다.
+//
+// ■ 화면 버튼을 하나 더 붙이려면
+// 'MainScreen'에 값을 추가하고, 인스펙터의 'Screen Buttons'에 한 줄,
+// 'UI Manager'의 'Main Screens'에 한 줄 넣는다. 이 클래스는 고치지 않는다.
+//
+// 닉네임은 아직 서버가 돌려주지 않는다. 로그인에 쓴 Id('PlayerDataModel.LoginId')를
+// 그대로 보여 주고, 닉네임 패킷이 생기면 그때 바꾼다.
 public class StatePresenter : MonoBehaviour
 {
-    /// <summary>화면 버튼 하나와 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.</summary>
+    // 화면 버튼 하나와 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.
     [Serializable]
     private struct ScreenButton
     {
@@ -83,7 +81,9 @@ public class StatePresenter : MonoBehaviour
     private void OnEnable()
     {
         if (!_isReady)
+        {
             return;
+        }
 
         Subscribe();
         Refresh();
@@ -101,7 +101,9 @@ public class StatePresenter : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed         = true;
         _data.CurrencyChanged += Refresh;
@@ -112,7 +114,9 @@ public class StatePresenter : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed         = false;
         _data.CurrencyChanged -= Refresh;
@@ -123,12 +127,10 @@ public class StatePresenter : MonoBehaviour
 
     #region 화면 버튼
 
-    /// <summary>
-    /// 화면 버튼을 'UIManager'에 묶는다 (Start에서 한 번).
-    ///
-    /// ⚠️ 반복 변수를 람다에 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다
-    /// ('WorkStationSelectPresenter.BindIndustryButtons'와 같은 이유).
-    /// </summary>
+    // 화면 버튼을 'UIManager'에 묶는다 (Start에서 한 번).
+    //
+    // ⚠️ 반복 변수를 람다에 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다
+    // ('WorkStationSelectPresenter.BindIndustryButtons'와 같은 이유).
     private void BindScreenButtons()
     {
         foreach (var entry in screenButtons)
@@ -137,6 +139,7 @@ public class StatePresenter : MonoBehaviour
             {
                 ClientLogger.Warn(ClientLogger.UI,
                     $"화면 버튼 줄에 Button이 비어 있다 (화면={entry.screen}). 인스펙터를 확인할 것.", this);
+
                 continue;
             }
 
@@ -153,7 +156,9 @@ public class StatePresenter : MonoBehaviour
     private void OnLoginCompleted(bool success, EResultCode code)
     {
         if (success)
+        {
             Refresh();
+        }
     }
 
     // 이름·골드를 현재 값으로 갱신한다 (CurrencyChanged 구독 · 로그인 시)

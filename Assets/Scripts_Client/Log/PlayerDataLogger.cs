@@ -3,17 +3,14 @@ using System.Text;
 using UnityEngine;
 using MikaProtocol;
 
-/// <summary>
-/// 서버가 밀어준 변경을 사람이 읽을 문장으로 풀어 콘솔에 남기는 관찰자.
-/// 'PlayerDataModel'의 이벤트만 구독하고, 출력은 'ClientLogger'에 맡긴다.
-/// </summary>
-/// <remarks>
-/// ⏸ 임시 발판이다 — 가챠 결과 팝업 · 위젯 수확 표시가 생기면 지운다.
-/// (실패 사유는 'NoticePresenter'가 화면에 띄우므로 더 이상 여기 몫이 아니다.)
-/// ⚠️ 수신만 맡는다 — 송신은 'ClientLogger'가 훅으로 자동 기록하므로
-/// 여기서 또 찍으면 같은 줄이 두 번 나온다.
-/// 분담과 이 클래스가 'UI/'가 아닌 이유는 'Log 규칙.md' 참조.
-/// </remarks>
+// 서버가 밀어준 변경을 사람이 읽을 문장으로 풀어 콘솔에 남기는 관찰자.
+// 'PlayerDataModel'의 이벤트만 구독하고, 출력은 'ClientLogger'에 맡긴다.
+//
+// ⏸ 임시 발판이다 — 가챠 결과 팝업 · 위젯 수확 표시가 생기면 지운다.
+// (실패 사유는 'NoticePresenter'가 화면에 띄우므로 더 이상 여기 몫이 아니다.)
+// ⚠️ 수신만 맡는다 — 송신은 'ClientLogger'가 훅으로 자동 기록하므로
+// 여기서 또 찍으면 같은 줄이 두 번 나온다.
+// 분담과 이 클래스가 'UI/'가 아닌 이유는 'Log 규칙.md' 참조.
 public class PlayerDataLogger : MonoBehaviour
 {
     private PlayerDataModel _data = null!;
@@ -34,7 +31,9 @@ public class PlayerDataLogger : MonoBehaviour
     private void OnEnable()
     {
         if (_isReady)
+        {
             Subscribe();
+        }
     }
 
     // 구독 해제 (Unity 메시지)
@@ -49,7 +48,9 @@ public class PlayerDataLogger : MonoBehaviour
     private void Subscribe()
     {
         if (_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = true;
 
@@ -65,7 +66,9 @@ public class PlayerDataLogger : MonoBehaviour
     private void Unsubscribe()
     {
         if (!_isSubscribed)
+        {
             return;
+        }
 
         _isSubscribed = false;
 
@@ -87,6 +90,7 @@ public class PlayerDataLogger : MonoBehaviour
         if (!success)
         {
             ClientLogger.Warn(ClientLogger.UI, $"로그인 실패(결과={code}) — 이후 가챠·작업슬롯 요청은 서버가 처리하지 않는다");
+
             return;
         }
 
@@ -97,15 +101,20 @@ public class PlayerDataLogger : MonoBehaviour
     private void OnInventoryChanged()
     {
         var inventory = _data.Inventory;
+
         if (inventory.Count == 0)
         {
             ClientLogger.Info(ClientLogger.UI, "인벤토리 비어 있음");
+
             return;
         }
 
         var lines = new StringBuilder($"인벤토리 {inventory.Count}종");
+
         foreach (var item in inventory)
+        {
             lines.Append($"\n    {GameDataLoader.GetItemName(item.ItemId)}(#{item.ItemId}) × {item.Count}");
+        }
 
         ClientLogger.Info(ClientLogger.UI, lines.ToString());
     }
@@ -118,12 +127,16 @@ public class PlayerDataLogger : MonoBehaviour
         if (rewards.Count == 0)
         {
             ClientLogger.Warn(ClientLogger.UI, "가챠 성공 응답인데 보상이 비어 있다 — 서버 가챠 풀을 확인할 것");
+
             return;
         }
 
         var lines = new StringBuilder($"가챠 결과 {rewards.Count}개");
+
         foreach (var reward in rewards)
+        {
             lines.Append($"\n    [{reward.Rarity}] {GameDataLoader.GetItemName(reward.ItemId)}(#{reward.ItemId}) × {reward.Count}");
+        }
 
         ClientLogger.Info(ClientLogger.UI, lines.ToString());
     }
@@ -137,6 +150,7 @@ public class PlayerDataLogger : MonoBehaviour
         {
             // 실패 사유(결과 코드)는 PlayerDataModel가 수신 시점에 이미 남긴다.
             ClientLogger.Warn(ClientLogger.UI, $"작업슬롯 변경 실패(결과={code})");
+
             return;
         }
 
@@ -147,13 +161,16 @@ public class PlayerDataLogger : MonoBehaviour
     private void OnWorkStationSlotsChanged()
     {
         var slots = _data.WorkStationSlots;
+
         if (slots.Count == 0)
         {
             ClientLogger.Info(ClientLogger.UI, "작업슬롯 없음");
+
             return;
         }
 
         var lines = new StringBuilder($"작업슬롯 {slots.Count}칸");
+
         foreach (var slot in slots)
         {
             // 빈 슬롯은 캐릭터가 0이다. 이름을 조회하면 ?#0이 나오므로 "비어 있음"으로 적는다.
@@ -180,7 +197,9 @@ public class PlayerDataLogger : MonoBehaviour
         if (changes != null)
         {
             foreach (var change in changes)
+            {
                 lines.Append($"\n    {GameDataLoader.GetItemName(change.ItemId)}(#{change.ItemId}) → 총 {change.Count} ({change.Kind})");
+            }
         }
 
         ClientLogger.Info(ClientLogger.UI, lines.ToString());

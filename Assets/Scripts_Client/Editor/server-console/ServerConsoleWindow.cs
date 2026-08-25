@@ -6,12 +6,10 @@ using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
-	/// <summary>
-	/// WSGameServer를 켜고/끄고(토글), 서버 로그를 터미널처럼 실시간으로 보여주는 에디터 창.
-	/// 실행/종료 자체는 'ServerRunner'가 하고, 이 창은 상태 표시 + 로그 파일 tail만 담당한다.
-	/// ★ 로그는 'ServerRunner'가 남기는 파일을 주기적으로 읽어 붙인다 —
-	///    도메인 리로드로 이 창이 다시 만들어져도 파일을 이어 읽어 로그 연속성이 유지된다.
-	/// </summary>
+	// WSGameServer를 켜고/끄고(토글), 서버 로그를 터미널처럼 실시간으로 보여주는 에디터 창.
+	// 실행/종료 자체는 'ServerRunner'가 하고, 이 창은 상태 표시 + 로그 파일 tail만 담당한다.
+	// ★ 로그는 'ServerRunner'가 남기는 파일을 주기적으로 읽어 붙인다 —
+	//    도메인 리로드로 이 창이 다시 만들어져도 파일을 이어 읽어 로그 연속성이 유지된다.
 	internal sealed class ServerConsoleWindow : EditorWindow
 	{
 		private const int    MaxLines     = 5000;   // 로그가 무한히 쌓이지 않게 최근 N줄만 유지
@@ -42,7 +40,7 @@ namespace DesktopWindowControl.EditorTools
 		private GUIStyle? _logStyle;
 		private bool      _fontWarned;   // 폰트 미탐 경고를 1회만 남기기 위한 상태
 
-		/// <summary>서버 콘솔 창을 연다(툴바 버튼이 부른다).</summary>
+		// 서버 콘솔 창을 연다(툴바 버튼이 부른다).
 		public static void Open()
 		{
 			var window = GetWindow<ServerConsoleWindow>("서버 콘솔");
@@ -70,7 +68,9 @@ namespace DesktopWindowControl.EditorTools
 		private void OnUpdate()
 		{
 			if (EditorApplication.timeSinceStartup < _nextPoll)
+			{
 				return;
+			}
 			_nextPoll = EditorApplication.timeSinceStartup + PollInterval;
 
 			var before = _lines.Count;
@@ -81,7 +81,9 @@ namespace DesktopWindowControl.EditorTools
 			if (_lines.Count != before || _running != wasRunning)
 			{
 				if (_autoScroll && _lines.Count != before)
+				{
 					_scrollToBottom = true;
+				}
 				Repaint();
 			}
 		}
@@ -90,8 +92,11 @@ namespace DesktopWindowControl.EditorTools
 		private void PollLog()
 		{
 			var path = ServerRunner.LogFilePath;
+
 			if (!File.Exists(path))
+			{
 				return;
+			}
 
 			try
 			{
@@ -109,7 +114,9 @@ namespace DesktopWindowControl.EditorTools
 				}
 
 				if (fs.Length == _readOffset)
+				{
 					return;
+				}
 
 				fs.Seek(_readOffset, SeekOrigin.Begin);
 				using var reader = new StreamReader(fs, Encoding.UTF8);
@@ -135,7 +142,9 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			if (_lines.Count > MaxLines)
+			{
 				_lines.RemoveRange(0, _lines.Count - MaxLines);
+			}
 
 			_cacheDirty = true;
 		}
@@ -143,13 +152,20 @@ namespace DesktopWindowControl.EditorTools
 		private void RebuildCacheIfNeeded()
 		{
 			if (!_cacheDirty)
+			{
 				return;
+			}
 
 			var sb = new StringBuilder();
+
 			foreach (var line in _lines)
+			{
 				sb.Append(line).Append('\n');
+			}
 			if (_pending.Length > 0)
+			{
 				sb.Append(_pending);
+			}
 			_cachedText = sb.ToString();
 			_cacheDirty = false;
 		}
@@ -166,7 +182,9 @@ namespace DesktopWindowControl.EditorTools
 		{
 			// 이미 폰트까지 정상적으로 붙었으면 그대로 쓴다.
 			if (_logStyle is { font: not null })
+			{
 				return;
+			}
 
 			var font = LoadLogFont();
 
@@ -241,7 +259,9 @@ namespace DesktopWindowControl.EditorTools
 				}
 
 				if (GUILayout.Button("파일 열기", EditorStyles.toolbarButton, GUILayout.Width(65)))
+				{
 					EditorUtility.RevealInFinder(ServerRunner.LogFilePath);
+				}
 			}
 		}
 
@@ -271,6 +291,7 @@ namespace DesktopWindowControl.EditorTools
 			try
 			{
 				var path = ServerRunner.LogFilePath;
+
 				return File.Exists(path) ? new FileInfo(path).Length : 0;
 			}
 			catch
