@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-23 (캔버스 폴더별 규칙 문서로 분할) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-25 (예시 주석을 `//` 로 교체) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -432,7 +432,7 @@ public class XxxPresenter : MonoBehaviour
 ```csharp
 public class XxxCanvasView : MonoBehaviour
 {
-    /// <summary>이 캔버스를 열고 닫는다 (UIManager가 호출).</summary>
+    // 이 캔버스를 열고 닫는다 (UIManager가 호출).
     public void Show(bool on) => gameObject.SetActive(on);
 }
 ```

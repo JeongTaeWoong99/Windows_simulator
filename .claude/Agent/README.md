@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-25 Scripts_Client 전량 스타일 정리](2026-08-25-comment-brace-spacing-style.md) — `#client` `#docs` XML 문서 주석 제거·제어문 중괄호 강제·수직 간격 규칙 적용
 - [2026-08-23 Editor·UI 규칙 문서를 하위 폴더별로 분할](2026-08-23-rule-doc-split.md) — `#docs` `#client` `#ui` `#editor` 하위 폴더 규칙.md 12개 신설하고 참조를 절 제목 방식으로 전환
 - [2026-08-23 로딩 오버레이 — 차단은 즉시, 표시만 0.15초 지연](2026-08-23-loading-block-immediate.md) — `#client` `#ui` 대기 중 화면이 꺼져 응답을 놓치던 거짓 무응답 알림을 즉시 차단으로 없앰
 - [2026-08-22 메모리 미터 툴팁 조판 정리 + 커밋/워킹셋 설명 정정](2026-08-22-memory-tooltip-layout.md) — `#client` `#editor` `#docs` 툴팁 폭은 못 늘리므로 줄을 24자로 끊고, 긴 설명은 Editor 규칙.md로 이관

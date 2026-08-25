@@ -3,7 +3,7 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-08-15 (8·9장을 요지 표로 축약 · 상세를 같은 폴더의 별도 md로 분리)
+> 최종 업데이트: 2026-08-25 (XML 주석 금지 · 중괄호 생략 금지 · 수직 간격 규칙 확정)
 
 # Unity/C# 클린 코드 스타일
 
@@ -63,6 +63,7 @@ public class PlayerController : MonoBehaviour
     public event Action?      OnDied;
 
     // 6. MonoBehaviour 생명주기 (Awake → OnEnable → Start → Update → OnDisable → OnDestroy)
+    //    ※ 아래 { } 는 지면상 빈 골격 표기다 — 실제 본문은 3장 Allman 규칙을 따른다
     private void Awake() { }
     private void Start() { }
     private void Update() { }
@@ -94,6 +95,9 @@ public class PlayerController : MonoBehaviour
 
 ### Allman 스타일 — 중괄호 항상 별도 줄
 
+**본문이 한 줄이어도 중괄호를 생략하지 않는다.** 나중에 한 줄을 더 넣을 때
+조용히 블록 밖으로 새는 사고가 여기서 나온다.
+
 ```csharp
 // Good
 if (!showMouse)
@@ -101,10 +105,20 @@ if (!showMouse)
     Cursor.lockState = CursorLockMode.Locked;
 }
 
-// Bad
+// Bad — 한 줄에 붙이기
 if (!showMouse) Cursor.lockState = CursorLockMode.Locked;
 if (!showMouse) { Cursor.lockState = CursorLockMode.Locked; }
+
+// Bad — 중괄호 생략 (한 줄짜리 return·continue도 예외가 아니다)
+if (!showMouse)
+    Cursor.lockState = CursorLockMode.Locked;
+
+if (_isDead)
+    return;
 ```
+
+`else if` 는 체인을 유지한다 — `else { if ... }` 로 중첩시키지 않는다.
+`switch` 의 `case` 레이블, 람다 본문, 표현식 본문 멤버(`=> ...`)는 대상이 아니다.
 
 ### 수평 간격
 
@@ -118,10 +132,52 @@ float result=a+b*c;
 Vector3 position=new Vector3(0f,1f,0f);
 ```
 
-### 수직 간격
+### 수직 간격 — 변수 / 조건부 / 실행부 / 종료부를 가른다
+
+**논리 단위 사이에 빈 줄 1개.** 특히 아래 두 자리는 빈 줄을 **반드시** 넣는다 —
+읽는 눈이 "무엇을 준비했나 / 무엇을 따지나 / 무엇을 했나 / 어떻게 빠져나가나"를
+한 번에 가르게 하는 것이 목적이다.
+
+**① 지역 변수 선언 다음에 제어문(`if`·`for`·`foreach`·`while`·`switch`·`try`)이 오면**
 
 ```csharp
-// Good — 관련 있는 코드는 묶고, 논리 단위 사이에 빈 줄 1개
+// Bad — 준비와 판단이 한 덩어리로 붙어 있다
+var enemies = _spawner.ActiveEnemies;
+if (enemies.Count == 0)
+{
+    ...
+}
+
+// Good
+var enemies = _spawner.ActiveEnemies;
+
+if (enemies.Count == 0)
+{
+    ...
+}
+```
+
+**② 흐름을 끊는 문장(`return`·`break`·`continue`·`throw`·`yield break`) 앞에**
+단 그 문장이 블록의 **첫 문장이거나 유일한 문장이면 넣지 않는다** — 가드절은 붙여 둔다.
+
+```csharp
+// Good — 실행부를 끝내고 빠져나간다는 게 눈에 보인다
+if (!isAlive)
+{
+    Debug.LogWarning("이미 죽은 대상에 데미지가 들어왔다");
+
+    return;
+}
+
+// Good — 유일한 문장이라 붙여 둔다 (가드절)
+if (_isDead)
+{
+    return;
+}
+```
+
+```csharp
+// Good — 그 외 일반적인 논리 단위 구분
 private void Update()
 {
     HandleInput();
@@ -203,16 +259,30 @@ int count = 0; // 카운트를 0으로 초기화
 private IEnumerator CheckGroundNextFrame() { }
 ```
 
-### Public API — XML 문서 주석
+### XML 문서 주석(`///`)을 쓰지 않는다
+
+`///` 는 Rider·VS 툴팁에 렌더링되지만, **게임 코드에서는 그 이득이 비용을 못 넘는다.**
+외부에 배포하는 라이브러리가 아니라 문서 XML 산출물을 만들지 않고, 자기가 쓴 API를
+호버로 확인할 일도 드물다. 반면 태그 줄(`<summary>` · `</summary>`)이 본문을 밀어내
+3줄 설명이 5~6줄이 되는 비용은 매번 치른다. **주석은 전부 `//` 로 통일한다.**
 
 ```csharp
+// Bad — 태그가 본문보다 자리를 많이 먹는다
 /// <summary>
-/// 플레이어에게 데미지를 적용하고 사망 여부를 반환합니다.
+/// 플레이어에게 데미지를 적용하고 사망 여부를 반환한다.
 /// </summary>
 /// <param name="damage">적용할 데미지 양 (0 이상)</param>
 /// <returns>이 데미지로 사망했으면 true</returns>
 public bool ApplyDamage(float damage) { }
+
+// Good — 파라미터 설명이 필요하면 본문 아래에 이름 열을 맞춰 적는다
+// 플레이어에게 데미지를 적용하고 사망 여부를 반환한다 (이 데미지로 죽었으면 true).
+//   damage : 적용할 데미지 양 (0 이상)
+public bool ApplyDamage(float damage) { }
 ```
+
+- 파라미터 설명은 **꼭 필요할 때만** 단다 — 이름만으로 알 수 있으면 적지 않는다
+- 문단이 갈리면 빈 주석 줄(`//`) 하나로 끊는다
 
 ### [Tooltip] vs 주석 선택 기준
 
@@ -220,7 +290,7 @@ public bool ApplyDamage(float damage) { }
 |------|------|
 | Inspector에 보이는 필드 설명 | `[Tooltip]` |
 | 코드 실행 이유, 알고리즘 설명 | `//` 주석 |
-| Public 메서드/클래스 API 문서 | XML `///` |
+| 메서드·클래스 요약 | `//` 주석 (XML `///` 금지) |
 
 ### 메서드 1줄 요약 + 바인딩 표기
 
