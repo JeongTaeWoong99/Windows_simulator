@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (Presenter 아래 Panel 한 겹의 근거 추가) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-08-26 (`WorkStationProgress` 추가 · 정적 변환표를 별도 표로 분리) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -12,8 +12,15 @@
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`를 구독해 뽑힌 보상을 5열로 표시 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
+
+**캔버스에 붙지 않는 정적 변환표도 여기 산다** — 어느 캔버스에서나 쓰이고
+어디에도 속하지 않는 것들이라, 한 화면 폴더에 두면 다른 화면이 그걸 참조하게 된다.
+
+| 파일 | 하는 일 |
+|------|---------|
 | `ResultMessages.cs` | 결과 코드 → 사용자 문구 |
 | `RarityPalette.cs` | 등급 → 표시 색 |
+| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초. **큰 창의 슬롯 목록과 상주 위젯이 함께 쓴다** — 복사하면 서버 판정식이 두 벌이 된다 |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 캔버스·레이아웃 함정은
 [`Layout 규칙.md`](<../Layout/Layout 규칙.md>)에 있다.

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using MikaProtocol;
 using UnityEngine;
@@ -18,14 +17,11 @@ using UnityEngine.UI;
 // selectPresenter.Open(slotIndex)                    번호를 먼저 넣는다
 // ui.ShowMainScreen(MainScreen.WorkStationSelect)    자리를 넘긴다 (이 패널은 여기서 꺼진다)
 //
-// 카운트다운 계산식(서버는 주기를 보내지 않는다)은 '패킷 레퍼런스.md',
+// 카운트다운 계산은 'WorkStationProgress'가 한다 — 상주 위젯의 스트립이 같은 값을 그려서,
+// 계산식이 두 벌이 되면 한쪽만 고쳐진다. 계산식의 근거는 '패킷 레퍼런스.md',
 // 화면 전환 흐름은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationListPresenter : MonoBehaviour
 {
-    // 작업량 단위는 "밀리초 × 천분율 속도"다. 1초 × 1.0배 = 1000ms × 1000 = 1,000,000 단위.
-    // 남은 시간을 초로 되돌릴 때 이 값으로 나눈다.
-    private const float UnitsPerSecondAtBaseSpeed = 1000f;
-
     [CenterHeader("참조")]
     [SerializeField, Tooltip("슬롯 한 칸 프리팹 (WorkStationSlotView 포함). 빈 프레임 안에 생성된다")]
     private WorkStationSlotView slotPrefab = null!;
@@ -98,7 +94,7 @@ public class WorkStationListPresenter : MonoBehaviour
                 continue;
             }
 
-            view.Tick(CalculateProgress(slot), CalculateRemainSeconds(slot));
+            view.Tick(WorkStationProgress.CalculateProgress(slot), WorkStationProgress.CalculateRemainSeconds(slot));
         }
     }
 
@@ -183,7 +179,7 @@ public class WorkStationListPresenter : MonoBehaviour
         foreach (var slot in _data.WorkStationSlots)
         {
             // 비어 있는 칸은 프레임만 남긴다 — 그래야 눌러서 배치할 수 있다
-            if (!IsAssigned(slot))
+            if (!WorkStationProgress.IsAssigned(slot))
             {
                 RemoveView(slot.SlotIndex);
 
@@ -228,11 +224,6 @@ public class WorkStationListPresenter : MonoBehaviour
         }
     }
 
-    // 칸이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다.
-    // 'IsRunning'과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
-    private static bool IsAssigned(WorkStationSlotInfo slot)
-        => slot.Industry != EIndustryType.None && slot.CharacterId != 0;
-
     // 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
     // Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 온다.
     private static void SnapToFrame(RectTransform? rect)
@@ -245,40 +236,6 @@ public class WorkStationListPresenter : MonoBehaviour
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;
         rect.localRotation      = Quaternion.identity;
-    }
-
-    #endregion
-
-    #region 카운트다운 계산 (서버 식 그대로)
-
-    // 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
-    // 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
-    private static long GetPendingUnits(WorkStationSlotInfo slot)
-    {
-        double elapsedMs   = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs);
-        double accumulated = slot.ProgressUnits + elapsedMs * slot.CurrentWorkSpeed;
-
-        return (long)(accumulated % slot.JudgeCostUnits);
-    }
-
-    // 판정 진행도 0~1 (Update에서 호출)
-    private static float CalculateProgress(WorkStationSlotInfo slot)
-    {
-        return Mathf.Clamp01((float)GetPendingUnits(slot) / slot.JudgeCostUnits);
-    }
-
-    // 다음 수확까지 남은 초 (Update에서 호출)
-    private static float CalculateRemainSeconds(WorkStationSlotInfo slot)
-    {
-        long remainUnits = slot.JudgeCostUnits - GetPendingUnits(slot);
-
-        // IsRunning이 CurrentWorkSpeed > 0을 보장하지만, 계산식만 떼어 봐도 안전하도록 가드를 남긴다.
-        if (slot.CurrentWorkSpeed <= 0)
-        {
-            return 0f;
-        }
-
-        return remainUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
     }
 
     #endregion

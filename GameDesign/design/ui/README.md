@@ -1,7 +1,7 @@
 # 07. 게임 UI
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-08-25 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치 확정 / 목업 1종(v2)**
+> 최종 업데이트: 2026-08-26 · 상태: **3열 배치 · 연출 2레이어 · 위젯 배치·스트립 방향 확정 / 목업 1종(v2)**
 > **바뀌면 갱신:** [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`퀘스트`](../quest/README.md)
 
 이 게임이 다른 방치형과 구분되는 **유일한 차별점**이다.
@@ -319,8 +319,9 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 메인 화면 전환 (슬롯 목록 ↔ 슬롯 선택 ↔ 설정 ↔ …) | `UIManager`의 `MainScreen` enum + `ShowMainScreen`/`ToggleMainScreen`. `#Main Canvas` 안에서 **`Title`과 `Menu Presenter` 사이의 한 칸을 나눠 쓰는 화면들**을 갈아 끼운다. 여는 입구는 둘 — 상태 패널의 버튼, 그리고 슬롯 목록의 칸 클릭. 같은 버튼을 다시 누르면 기본(슬롯 목록)으로 돌아오고, 전체를 접으면 다음에 열 화면도 슬롯 목록으로 리셋된다. **캔버스 머리의 제목도 화면마다 바뀐다**(`MainCanvasView.SetTitle`, 문구는 인스펙터) |
 | 각 열·칸의 화면 | 캔버스는 전부 `...CanvasView`(여닫기만), 내용은 그 아래 `...Presenter`가 그린다 — `UI/Storage/StorageCanvasView` + `StorageTabPresenter`·`InventoryPresenter`·`StorageInformationPresenter` · `UI/Main/MainCanvasView` + `WorkStationListPresenter`·`WorkStationSelectPresenter`·`SettingPresenter`·`MenuPresenter` · `UI/State/StateCanvasView` + `StatePresenter` · `UI/Market/MarketCanvasView` + `GachaPresenter` · `UI/Widget/WidgetCanvasView` + `WidgetPresenter` · `UI/Login/LoginCanvasView` + `LoginPresenter` |
 | 작업슬롯 3단계 (목록 → 캐릭터 고르기 → 세팅) | 목록과 선택은 **`#Main Canvas`의 형제 화면**이라 전환을 `UIManager`가 한다 — `WorkStationListPresenter`(칸 8개·카운트다운) ↔ `WorkStationSelectPresenter`(배치·해제). 캐릭터 줄은 `CharacterStateRowView`. 하단 창고·거래 버튼은 `MenuPresenter`. **참조는 목록→선택 한 방향뿐**이다(슬롯 번호를 넘기려고). 고른 산업의 **적성 0이면 줄을 남긴 채 버튼만 잠근다**(6장 #11) — 적성은 `PlayerDataModel.GetAptitude`로 **패킷**에서 읽는다 |
+| 상주 위젯의 표시 (골드 · 가동 슬롯 · 수확 스트립) | `Assets/Scripts_Client/UI/Widget/WidgetPresenter/` — 상단 줄은 `PlayerDataModel`의 `CurrencyChanged`·`WorkStationSlotsChanged`를 구독하고, 아래 스트립은 **배치된 칸만 왼쪽부터** `WidgetMiniSlotView`로 만든다(빈 칸 없음 — 위젯은 눌러 배치하는 화면이 아니다). 카운트다운은 큰 창의 목록과 **같은 계산표**를 쓴다(`UI/System/WorkStationProgress.cs`) — 복사하면 서버 판정식이 두 벌이 된다. ⏸ 지금 도는 것은 게이지뿐이고 캐릭터 그림·수확 표시·`시간당 산출`·`누적 수확`은 자리만 잡혀 있다(산출 정의는 6장 미결) |
 | 대기·알림·결과 오버레이 | `!System Canvas`(`UI/System/SystemCanvasView`) — 최상단 상주 오버레이 **셋**. `LoadingPresenter`(서버 응답 대기 표시, 0.15초 안에 끝나면 아예 안 뜬다) + `GachaResultPresenter`(가챠로 뽑힌 목록을 5열 × n행으로, 닫기 전까지 유지 — 칸마다 수량은 끈다) + `NoticePresenter`(실패·무응답 사유, 연결 끊김은 확인 후 앱 종료). 판단은 `Managers/ServerWaitManager.cs`가 하고(요청당 5초 타임아웃), 서버 결과 코드→문구는 `UI/System/ResultMessages.cs`, 등급→표시색은 `UI/System/RarityPalette.cs`. **가챠 결과가 거래 열이 아니라 여기 있는 이유** — 요청을 보낸 뒤 사용자가 거래 열을 닫아도 결과가 떠야 한다 |
-| 로그 | `Log/ClientLogger.cs`(출력 창구·태그) + `Log/PlayerDataLogger.cs`(수신 변경을 콘솔로 — **임시**, 삭제 조건 둘 중 **가챠 결과 팝업은 2026-08-25에 생겼다**. 남은 것은 위젯 수확 표시) |
+| 로그 | `Log/ClientLogger.cs` — 출력 창구·태그 규약. **무엇을 남길지는 부르는 쪽이 정한다.** 서버 수신을 콘솔에 풀어 주던 임시 관찰자는 대체 화면(가챠 결과 팝업 · 위젯 수확 스트립)이 갖춰져 없앴다 |
 | 서버 상태 캐시 (인벤토리 · 슬롯 · 캐릭터 · 재화) | `Assets/Scripts_Client/Managers/PlayerDataModel.cs` — MVP의 **Model**. 수신 전담이고 요청은 각 Presenter가 직접 보낸다 |
 | 클라이언트 코드 | `Assets/Scripts_Client/` — **UI Toolkit을 쓰지 않는 MVP(Legacy)**. `UI/`는 **`<캔버스>/<Presenter>/`** 두 단 구조이고, 접미사는 MVP 역할(`...Model`·`...Presenter`·`...CanvasView`·`...View`)을 따른다. 하이어라키는 접두사로 계층(`!`·`@`·`#`), 표기로 역할(`(MODEL)`·`(MAIN VIEW)`·`(↓ SUB VIEW)`)을 나타내고, **오브젝트 이름의 `Presenter`/`Panel`이 "화면"과 "그 안의 정렬 상자"를 가른다.** 규칙은 [`UI 규칙`](../../../Assets/Scripts_Client/UI/UI%20규칙.md) |
 | 네트워크 연동 | `Assets/Scripts_Server/Network/` |
@@ -340,8 +341,11 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 4. 트레이 상주를 지원하는가?
 5. 사운드를 넣는가? 넣으면 기본 꺼짐인가?
 6. 목표 리소스 사용량 상한은? (CPU %, 메모리 MB)
-7. **상시 스트립의 방향은?** 탑뷰 / 가로 / 세로 — 슬롯이 8개까지 늘어나므로
-   세로안만 폭이 늘지 않는다.
+7. ~~**상시 스트립의 방향은?**~~ ✅ **해소 (2026-08-26) — 가로.**
+   위젯이 창 안 6칸 중 한 칸을 **가로로 길게**(폭 633 × 높이 87) 차지하므로,
+   같은 자리에 세로 스트립을 세우면 칸 크기가 87px 안에 갇힌다.
+   ⚠️ **폭이 늘어나는 단점은 그대로 안고 간다** — 슬롯 8개면 칸(49) + 간격(4)으로 약 420px를 쓴다.
+   위젯 폭(633)에는 들어가지만 **슬롯이 8을 넘으면 다시 봐야 한다.**
    → [v2 목업](게임UI목업%282026-07-30%20업데이트%29.html) 상단의 **위젯 스트립 토글**에서 3안을 비교할 수 있다.
 8. ~~**3열 패널을 동시에 띄우는가?**~~ ✅ **해소 (2026-08-01) — 상주하는 것은 위젯뿐이다.**
    3열은 필요할 때 여는 큰 창이고, 진입점은 작업슬롯 캔버스다 (1장 · 2.0).

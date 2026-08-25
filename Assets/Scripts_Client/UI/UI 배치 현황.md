@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-25 (가챠 결과 팝업 추가 · Sorting Order 실제값 정정) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-08-26 (위젯 상단 줄·수확 스트립 추가 · 열 높이 실측값 정정 · `PlayerDataLogger` 삭제) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -18,8 +18,8 @@
 
 ---
 
-## 1. 오브젝트 트리 (2026-08-25)
-위젯은 생략했다. **캔버스 = `(MAIN VIEW)`, 그 자식 = `Xxx Presenter (↓ …)`** 가 예외 없이 지켜진다.
+## 1. 오브젝트 트리 (2026-08-26)
+**캔버스 = `(MAIN VIEW)`, 그 자식 = `Xxx Presenter (↓ …)`** 가 예외 없이 지켜진다.
 `Panel`이라는 이름은 **Presenter 안쪽에서 서브 뷰를 줄 세우는 상자**에만 남아 있다.
 
 > Root Canvas 바로 아래의 **형제 순서는 씬에서 `!System` → `!Login` → `!Horizental Columns`** 다.
@@ -33,20 +33,20 @@ Root Canvas
 │  └─ Login Presenter (↓ SUB VIEW)                LoginPresenter
 ├─ !Horizental Columns                            WidgetPositionLayout ← 항상 켜져 있어야 한다
 │  ├─ @Storage Column                              -(Layout) · 캔버스 · -(Layout) 세 칸
-│  │  ├─ -(Layout)                                 위 스페이서            pref 60/120 ← 계산됨
-│  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 900 · flexH 0
+│  │  ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
+│  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   탭 4개 (자원만 실재)
 │  │  │  ├─ Inventory Presenter (↓ SUB VIEW)      InventoryPresenter
 │  │  │  │  └─ Content > Slot (1..201)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ InventorySlotView 프리팹
 │  │  │  └─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter
-│  │  └─ -(Layout)                                 아래 스페이서          pref 120/60 ← 계산됨
-│  ├─ @Main Column                                 세 칸 전부 높이 고정 (60+900+120 = 1080)
-│  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 60 · flexH 0 ← 계산됨
+│  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
+│  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
+│  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
 │  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter
 │  │  │     └─ 이름 · 골드 · Setting Button · xxx Button (1..4)
-│  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 900 · flexH 0 ← 사람이 정함
+│  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 950 · flexH 0 ← 사람이 정함
 │  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
 │  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
 │  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
@@ -61,14 +61,19 @@ Root Canvas
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
 │  │  │  │  └─ Dropdown Panel                     드롭다운 3          pref 0 · flexH 1
 │  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    창고·거래 버튼  pref 100
-│  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref 120 · flexH 0 · 상주
-│  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter       열기/닫기 버튼
+│  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
+│  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
+│  │        ├─ Top Panel                          (정렬용 — 스크립트 없음)       pref  26
+│  │        │  └─ Gold · Active Slot · Per Hour · Total  뒤의 둘은 더미 문구(미연결)
+│  │        ├─ Strip Panel                        (정렬용) 왼쪽 정렬 · flexH 1
+│  │        │  └─ WidgetMiniSlotView 프리팹 (배치된 칸만 런타임 생성)
+│  │        └─ Open/Close Button                  ignoreLayout · 우하단 40×40
 │  └─ @Market Column                               창고 열과 같은 세 칸 구성
-│     ├─ -(Layout)                                 위 스페이서            pref 60/120 ← 계산됨
-│     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 900 · flexH 0
+│     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
+│     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 950 · flexH 0
 │     │  ├─ Title                                 (정적 요소 — 표기 없음)
 │     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter
-│     └─ -(Layout)                                 아래 스페이서          pref 120/60 ← 계산됨
+│     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
@@ -80,12 +85,11 @@ Root Canvas
 (캔버스 밖)
 Window Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
 PlayerData (MODEL)                                PlayerDataModel
-Player Data Logger                                PlayerDataLogger
 ```
 
 > **"← 계산됨" 칸은 인스펙터에서 고쳐도 소용없다.** `WidgetPositionLayout`이 열 높이(1080)에서
-> 가운데 900을 뺀 나머지를 **위젯 쪽 2 : 상태 쪽 1**로 나눠 매번 덮어쓴다. 위젯이 위 칸이면
-> 위쪽이 120, 아래 칸이면 아래쪽이 120이다. **사람이 정하는 건 가운데 900 하나뿐이다**
+> 가운데 950을 뺀 나머지를 **위젯 쪽 2 : 상태 쪽 1**로 나눠 매번 덮어쓴다. 위젯이 위 칸이면
+> 위쪽이 87, 아래 칸이면 아래쪽이 87이다. **사람이 정하는 건 가운데 950 하나뿐이다**
 > — 근거는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>)의 "비율은 flexible이 아니라 숫자로".
 
 > ⚠️ `!System Canvas`의 SUB VIEW 셋은 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
@@ -197,6 +201,10 @@ Player Data Logger                                PlayerDataLogger
 - **`WorkStation Select Presenter`는 상태 패널 버튼으로 못 연다.** 슬롯 번호가 있어야 열리는
   화면이라 `Screen Buttons`에 넣을 수 없다 — 목록의 칸 클릭만이 입구다.
 - **`WorkStationListPresenter`에 `#region A-2 진단 (임시)`가 남아 있다.** 원인이 확정되면 통째로 지운다.
+- **위젯 상단의 `Per Hour Text`·`Total Text`는 씬의 더미 문구가 그대로 보인다.** 산출 정의가
+  기획에서 안 정해져 코드가 손대지 않는다 — 참조만 잡혀 있다. 정해지면 `WidgetPresenter`에 연결한다.
+- **`WidgetMiniSlotView`의 `Character Image`는 회색 네모다.** 캐릭터 스프라이트가 없어 자리만
+  잡아 뒀고, `Harvest Text (TMP)`도 빈 문자열이다. 지금 실제로 도는 것은 게이지 하나다.
 
 > 씬의 `m_EditorClassIdentifier`에 옛 클래스 이름이 남아 있어도 **문제 없다.**
 > 스크립트 연결은 GUID로 이뤄지고, 그 문자열은 다음 씬 저장 때 Unity가 갱신한다.
