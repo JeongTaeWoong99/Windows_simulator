@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-23 (UI 규칙 분할에 맞춰 참조 갱신) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-08-25 (가챠 결과 팝업 추가 · Sorting Order 실제값 정정) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -18,9 +18,14 @@
 
 ---
 
-## 1. 오브젝트 트리 (2026-08-22)
+## 1. 오브젝트 트리 (2026-08-25)
 위젯은 생략했다. **캔버스 = `(MAIN VIEW)`, 그 자식 = `Xxx Presenter (↓ …)`** 가 예외 없이 지켜진다.
 `Panel`이라는 이름은 **Presenter 안쪽에서 서브 뷰를 줄 세우는 상자**에만 남아 있다.
+
+> Root Canvas 바로 아래의 **형제 순서는 씬에서 `!System` → `!Login` → `!Horizental Columns`** 다.
+> 아래 트리는 읽기 좋게 위에서부터 늘어놓았을 뿐이다 — 이 셋은 각자 `Override Sorting`을 켜고
+> Sorting Order로 앞뒤가 정해지므로 **형제 순서가 그림 순서를 바꾸지 않는다**.
+> 형제 순서가 곧 앞뒤인 것은 `!System Canvas` **안쪽의 오버레이 셋**이다(아래 주석).
 
 ```
 Root Canvas
@@ -65,8 +70,10 @@ Root Canvas
 │     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter
 │     └─ -(Layout)                                 아래 스페이서          pref 120/60 ← 계산됨
 │
-└─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 300 · 상주 오버레이
+└─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
+   ├─ GachaResult Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
+   │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
    └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
@@ -81,11 +88,14 @@ Player Data Logger                                PlayerDataLogger
 > 위쪽이 120, 아래 칸이면 아래쪽이 120이다. **사람이 정하는 건 가운데 900 하나뿐이다**
 > — 근거는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>)의 "비율은 flexible이 아니라 숫자로".
 
-> ⚠️ `!System Canvas`의 두 SUB VIEW는 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
+> ⚠️ `!System Canvas`의 SUB VIEW 셋은 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
 > 여닫는다 — **자기 이벤트로 스스로 뜨는 오버레이**라 자기를 끄면 다시 켤 이벤트를 못 받는다.
 > 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(alpha 0, raycastTarget)를
 > 함께 갖는다. **여기만 다른 게 아니라 기준이 있다** — 판별 기준("나를 다시 켜 줄 주체가 밖에
 > 있는가")과 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
+>
+> **`Notice Presenter`는 형제 순서에서 항상 마지막이다** — 나중에 올수록 위에 그려지고,
+> 알림은 무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
 
 ## 2. 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
 
