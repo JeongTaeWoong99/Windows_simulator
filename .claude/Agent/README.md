@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-26 위젯 수확 스트립 + `PlayerDataLogger` 삭제](2026-08-26-widget-harvest-strip.md) — `#client` `#ui` `#editor` `#docs` 위젯이 배치된 슬롯을 게이지로 그리게 하고, 대체 화면이 갖춰진 임시 로그 관찰자를 걷어냄
 - [2026-08-25 가챠 결과 팝업 신설](2026-08-25-gacha-result-popup.md) — `#client` `#ui` `#editor` `!System Canvas`에 `GachaResultPresenter` 추가, 칸은 `InventorySlotView` 프리팹 재사용
 - [2026-08-25 Scripts_Client 전량 스타일 정리](2026-08-25-comment-brace-spacing-style.md) — `#client` `#docs` XML 문서 주석 제거·제어문 중괄호 강제·수직 간격 규칙 적용
 - [2026-08-23 Editor·UI 규칙 문서를 하위 폴더별로 분할](2026-08-23-rule-doc-split.md) — `#docs` `#client` `#ui` `#editor` 하위 폴더 규칙.md 12개 신설하고 참조를 절 제목 방식으로 전환

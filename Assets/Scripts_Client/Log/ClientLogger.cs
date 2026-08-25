@@ -6,7 +6,7 @@ using UnityEngine;
 // 클라이언트 로그의 단일 창구. 태그를 붙여 내보내는 방법만 알고,
 // 무엇을 남길지는 모른다 — 프로젝트 전체가 여기로 로그를 낸다.
 //
-// 'PlayerDataLogger'와의 분담 · 태그 규약 · 레벨 기준은 'Log 규칙.md' 참조.
+// 태그 규약 · 레벨 기준은 'Log 규칙.md' 참조.
 public static class ClientLogger
 {
     public const string Send    = "↑송신";

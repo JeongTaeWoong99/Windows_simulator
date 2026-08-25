@@ -181,7 +181,7 @@ public class LoginPresenter : MonoBehaviour
             return;
         }
 
-        // 실패 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다(콘솔 로그는 PlayerDataLogger가 별도로 남긴다).
+        // 실패 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다.
         _waitHandle?.Fail(ResultMessages.ToText(code));
     }
 
