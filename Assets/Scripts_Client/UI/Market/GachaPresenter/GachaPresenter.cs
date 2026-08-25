@@ -11,8 +11,8 @@ using UnityEngine.UI;
 // → GameDesign/기획/거래/README.md 3.2
 //
 // ■ 결과 내용은 여기서 보지 않는다
-// 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고
-// 'PlayerDataLogger'가 콘솔에 풀어 준다. 결과 팝업이 생기면 이 패널의 자식으로 붙는다 — 일감 "가챠 결과 팝업".
+// 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고, 결과 팝업은 최상단의
+// 'GachaResultPresenter'('!System Canvas')가 스스로 구독해서 띄운다 — 여기 자식으로 두지 않는다.
 // 다만 성공/실패 도착 여부는 여기서 구독한다 — 요청 중 로딩·버튼 잠금·실패 알림을 위해서다.
 public class GachaPresenter : MonoBehaviour
 {
@@ -144,7 +144,7 @@ public class GachaPresenter : MonoBehaviour
         SetButtons(true);
     }
 
-    // 가챠 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 다른 곳이 맡는다 (PlayerDataModel.GachaCompleted 구독)
+    // 가챠 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다 (PlayerDataModel.GachaCompleted 구독)
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
         _waitHandle?.Succeed();

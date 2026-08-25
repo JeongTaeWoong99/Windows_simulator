@@ -123,7 +123,7 @@ public class InventoryPresenter : MonoBehaviour
                 }
             }
 
-            view.Bind(item.ItemId, item.Count);
+            view.Bind(item.ItemId, item.Count, GameDataLoader.GetItemRarity(item.ItemId));
         }
     }
 

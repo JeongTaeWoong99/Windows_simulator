@@ -74,6 +74,22 @@ public static class GameDataLoader
         return $"?#{itemId}";
     }
 
+    // 아이템 등급을 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
+    //
+    // ※ 가챠 보상은 이 함수를 쓰지 않는다 — 패킷('GachaRewardInfo.Rarity')이 등급을 실어 오므로
+    //   그 값을 그대로 쓴다. 테이블을 다시 뒤지면 두 값이 어긋났을 때 조용히 패킷 쪽을 무시하게 된다.
+    public static GlobalRarity GetItemRarity(int itemId)
+    {
+        if (GameTable.ItemTable.TryGet(itemId, out var row))
+        {
+            return row.GlobalRarity;
+        }
+
+        WarnUnknownId("아이템", itemId, _warnedItemIds);
+
+        return GlobalRarity.None;
+    }
+
     // 캐릭터 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     public static string GetCharacterName(long characterId)
     {
