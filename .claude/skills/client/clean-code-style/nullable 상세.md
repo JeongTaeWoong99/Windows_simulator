@@ -1,6 +1,6 @@
 # nullable 참조 형식 상세 (9장 부록)
 
-> 최종 업데이트: 2026-08-14 (`SKILL.md` 9장에서 분리)
+> 최종 업데이트: 2026-08-26 (Common 자산별 경로 반영) · `SKILL.md` 9장에서 분리
 
 `SKILL.md` **9장의 요지 표**에 적힌 규칙들의 **예시·근거·함정**이다.
 규칙 자체는 `SKILL.md`에 있다 — 여기는 **"왜 그런지"가 궁금할 때만** 연다.
@@ -14,7 +14,7 @@
 
 > **전제 — `Assets/csc.rsp` 에 `-nullable:enable` 이 있어야 한다.**
 > Unity 는 기본으로 꺼져 있다. 이 스위치가 없으면 이 문서 전체가 무의미하고,
-> `Common/Extensions/MonoBehaviourExtensions.cs` 의 `Object?` 가 **CS8632 경고**를 낸다.
+> `Common/mono-extensions/MonoBehaviourExtensions.cs` 의 `Object?` 가 **CS8632 경고**를 낸다.
 > (`/unity-project-setup` 3단계가 이 파일을 만든다)
 
 `?` 와 `!` 는 **C# 8.0 의 정식 언어 기능**이다. Unity 전용 문법이 아니다.

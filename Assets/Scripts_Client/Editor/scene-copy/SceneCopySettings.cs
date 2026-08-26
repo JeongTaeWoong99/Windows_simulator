@@ -12,7 +12,9 @@ namespace DesktopWindowControl.EditorTools
 		// EditorPrefs는 프로젝트가 아니라 머신 전역이라, 다른 툴과 겹치지 않게 'DWC.' 프리픽스를 붙인다.
 		private const string AutoCheckKey = "DWC.SceneCopy.AutoCheck";
 
-		private const string SettingsPath  = ProjectPreferences.RootPath + "/SceneCopy";
+		// ★ 'const'이 아니라 'static readonly'다 — 'ProjectPreferences.RootPath'가 'Application.productName'에서
+		//   오는 런타임 값이라 컴파일 타임 상수가 될 수 없다(CS0133).
+		private static readonly string SettingsPath = ProjectPreferences.RootPath + "/SceneCopy";
 		private const string SettingsLabel = "오리지널 씬 복사";
 
 		// 복사본 최신성 자동 검사·팝업을 켤지. 기본은 '켜짐'(설정을 만진 적 없는 사람은 지금까지대로).
@@ -23,7 +25,8 @@ namespace DesktopWindowControl.EditorTools
 		}
 
 		// 다시 켜는 위치 안내 — 팝업에서 끈 직후에도 같은 문구를 쓴다.
-		public const string ReEnableHint =
+		// 위와 같은 이유로 'static readonly'다.
+		public static readonly string ReEnableHint =
 			ProjectPreferences.MenuHint + " > " + SettingsLabel + " 에서 다시 켤 수 있다.";
 
 		[SettingsProvider]

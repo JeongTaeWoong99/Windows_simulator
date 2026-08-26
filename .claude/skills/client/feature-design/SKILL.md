@@ -3,7 +3,7 @@ name: feature-design
 description: 기능 설계 규칙. 새 기능/클래스/시스템 구현 요청 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-07-17
+> 최종 업데이트: 2026-08-26 (Common 자산별 경로 반영)
 
 # 기능 설계 가이드
 
@@ -111,7 +111,7 @@ public class EnemyAI
 
 ## 3-1. 서비스 로케이터 — 전역 접근의 기본 수단
 
-코드는 `<스크립트 루트>/Common/Service/` 에 있다 (`Services` 정적 클래스 + `MonoService<T>` 베이스).
+코드는 `<스크립트 루트>/Common/service-locator/` 에 있다 (`Services` 정적 클래스 + `MonoService<T>` 베이스).
 전역 매니저를 `X.Inst` 로 직접 물지 않고 **`Services.Get<T>()` 한 창구로 통일**한다.
 
 - 등록은 `MonoService<T>` 를 상속하면 `Awake` 에서 자동으로 된다 (`OnDestroy` 에서 자동 해제).
@@ -158,7 +158,7 @@ Services.Get<IOpponent>().Play();
 
 ### 계약은 그것을 정의한 기능 폴더에 둔다
 
-`Services` 는 범용 메커니즘이라 `Common/Service/` 지만, 계약은 도메인이므로 `Common/` 에 두지 않는다.
+`Services` 는 범용 메커니즘이라 `Common/service-locator/` 지만, 계약은 도메인이므로 `Common/` 에 두지 않는다.
 **그 계약을 정의한 기능 폴더 안 `Contracts/`** 에 두어 계약과 구현이 함께 움직이게 한다.
 
 ```
