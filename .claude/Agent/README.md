@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-26 Common 자산별 재편 + 툴킷 승격](2026-08-26-toolkit-common-restructure.md) — `#client` `#editor` `#infra` Common을 자산 하나=폴더 하나로 재편하고, 범용 코드 3종·클라 스킬 2종·작업관리 스킬 4종을 Arca Unity Toolkit 마스터로 올렸다
 - [2026-08-26 위젯 수확 스트립 + `PlayerDataLogger` 삭제](2026-08-26-widget-harvest-strip.md) — `#client` `#ui` `#editor` `#docs` 위젯이 배치된 슬롯을 게이지로 그리게 하고, 대체 화면이 갖춰진 임시 로그 관찰자를 걷어냄
 - [2026-08-25 가챠 결과 팝업 신설](2026-08-25-gacha-result-popup.md) — `#client` `#ui` `#editor` `!System Canvas`에 `GachaResultPresenter` 추가, 칸은 `InventorySlotView` 프리팹 재사용
 - [2026-08-25 Scripts_Client 전량 스타일 정리](2026-08-25-comment-brace-spacing-style.md) — `#client` `#docs` XML 문서 주석 제거·제어문 중괄호 강제·수직 간격 규칙 적용

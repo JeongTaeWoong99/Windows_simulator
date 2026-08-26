@@ -1,12 +1,17 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-25 (예시 주석을 `//` 로 교체) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-08-26 (범용 골격을 `ugui-mvp` 스킬로 승격) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
 
 이 문서는 `UI/` **전체에 걸리는 규칙**만 담는다. 특정 캔버스의 사정과 함정은
 그 폴더의 규칙 문서에 있다.
+
+> **§0~§6의 범용 골격은 [`ugui-mvp` 스킬](<../../../.claude/skills/client/ugui-mvp/SKILL.md>)로 승격했다**(2026-08-26).
+> MVP 세 역할 · 이름 규칙 · 부착 위치 · 폴더 규칙 · Presenter 뼈대는 거기가 원본이고,
+> 여기는 **이 프로젝트의 실제 캔버스·오브젝트로 그 규칙을 구체화한 것**이다. 둘이 어긋나면 스킬이 기준이다.
+
 
 ## 어디를 읽나
 
@@ -18,7 +23,7 @@
 | 위젯·화면을 **추가**하려면 | 이 문서 §4 |
 | **어느 폴더**에 넣나 | 이 문서 §5 |
 | 코드 작성 규약 (Presenter · 캔버스 View · 종속 View) | 이 문서 §6 |
-| ⚠️ Canvas · 레이아웃 그룹의 **함정** | [`Layout 규칙.md`](<Layout/Layout 규칙.md>) |
+| ⚠️ Canvas · 레이아웃 그룹의 **함정** | [`ugui-layout` 스킬](<../../../.claude/skills/client/ugui-layout/SKILL.md>) — 이 프로젝트 고유 배치는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>) |
 | 로딩·알림 오버레이 · `SetActive` vs `CanvasGroup` | [`System 규칙.md`](<System/System 규칙.md>) |
 | 메인 화면을 갈아 끼우는 규칙 · 화면 추가 절차 | [`Main 규칙.md`](<Main/Main 규칙.md>) |
 | 창고 탭 · 로그인 · 거래 · 상태 · 위젯 | 각 폴더의 `<폴더명> 규칙.md` |
@@ -348,12 +353,11 @@ UI/
 │       └─ NoticePresenter.cs
 └─ Layout/                                ← 예외. 화면이 아니라 배치 계산
     ├─ Layout 규칙.md
-    ├─ FlexibleGridLayoutGroup.cs
-    ├─ SquareLayoutElement.cs
     ├─ WidgetPositionLayout.cs
-    ├─ WindowDragArea.cs
-    └─ Editor/
-        └─ FlexibleGridLayoutGroupEditor.cs
+    └─ WindowDragArea.cs
+
+       ※ 범용 배치 컴포넌트(FlexibleGridLayoutGroup · SquareLayoutElement)는
+         2026-08-26에 Common/ugui-layout/ 으로 내려갔다
 ```
 
 - **폴더 이름 = 그 안에 사는 Presenter의 클래스 이름.** 오브젝트 이름이 아니다

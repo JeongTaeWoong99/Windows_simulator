@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-23 (규칙 md 파일명 예외 명시)
+> 최종 업데이트: 2026-08-26 (Common 자산별 구조 · 신규 클라 스킬 2종 · 공동 소유 안전장치)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -42,7 +42,7 @@
 | `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 상세는 [`Server/CLAUDE.md`](Server/CLAUDE.md) |
 | `Assets/Scripts_Server/` | 서버 | Unity 측 네트워크/서버 연동 코드 + `Server/`에서 자동 복사되는 미러(`Protocol`·`GameData`) |
 | `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드. **폴더 구성·클라 코딩 규약은 [`폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md)** |
-| `Assets/Scripts_Client/Common/` | 클라이언트 | **Arca Unity Toolkit의 사본** — 게임을 모르는 범용 코드. 마스터는 `~/.claude/skills`(저장소)이고, 여기서 고쳤으면 `/unity-skill-sync`로 되돌린다. 특정 프로젝트 이름을 주석에 남기지 않는다 |
+| `Assets/Scripts_Client/Common/` | 클라이언트 | **Arca Unity Toolkit의 사본** — 게임을 모르는 범용 코드. **자산 하나 = 폴더 하나**(에디터 전용 파일만 각 자산 안 `Editor/`에 — ⚠️ 펴면 빌드가 깨진다). 마스터는 `~/.claude/skills`(저장소)이고, 여기서 고쳤으면 `/unity-skill-sync`로 되돌린다. 특정 프로젝트 이름을 주석에 남기지 않는다 |
 | `Assets/Scenes/` | 공용 | 씬 파일 |
 
 > 서버 → Unity 미러링(패킷 정의·GameData·`.bytes`·Roslyn 분석기)과
@@ -60,6 +60,10 @@
 - Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
   `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
 - `.claude/settings.local.json`은 개인 설정이라 커밋하지 않는다(`.gitignore` 처리됨).
+- **`Common/`과 `.claude/skills/`는 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)의 사본이다.**
+  여러 프로젝트·여러 사람이 함께 쓰는 물건이라 **양방향으로 어긋날 수 있다.** 여기서 고쳤으면
+  `/unity-skill-sync`로 되돌리되 **마스터 반영은 확인을 받는다.** 프로젝트 고유 경로·고유명사가
+  섞인 수정은 마스터로 올리지 않는다.
 - 코드는 한글 주석을 사용한다.
 - **폴더는 영문 소문자 kebab-case, 문서(`.md`) 파일명은 한글이다.**
   상세 규칙·개명 대응표는 [`GameDesign/CLAUDE.md`](GameDesign/CLAUDE.md#이름-규칙-문서폴더).
@@ -101,6 +105,8 @@
 |------|------|--------|
 | [`clean-code-style`](.claude/skills/client/clean-code-style/SKILL.md) | C# 코드를 쓰거나 리뷰할 때 | 명명·포맷·주석 스타일 규칙 |
 | [`feature-design`](.claude/skills/client/feature-design/SKILL.md) | 새 기능·클래스·시스템을 **설계**할 때 | OOP·SOLID·디자인 패턴 |
+| [`ugui-mvp`](.claude/skills/client/ugui-mvp/SKILL.md) | 화면·위젯을 **새로 만들** 때 · 이름/부착 위치/폴더를 정할 때 | MVP 역할 분담 · 이름 규칙 · Presenter 뼈대 |
+| [`ugui-layout`](.claude/skills/client/ugui-layout/SKILL.md) | 배치를 짜거나, **배치가 의도대로 안 나올 때** | Canvas·LayoutGroup 함정과 정석 구조 |
 | [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
 | [`unity-handoff`](.claude/skills/client/unity-handoff/SKILL.md) | 답변 후 에디터 수작업이 남을 때 | 유니티 어시스턴트용 프롬프트 생성 |
 
