@@ -723,6 +723,10 @@ public class WindowManager : MonoService<WindowManager>
     //    의존을 만들지 않는다. 플레이 중엔 'SettingPresenter'가 몰이하므로 여기선 편집 모드에서만 반영한다.
     private void OnValidate()
     {
+        // ⚠️ 걸기 전에 먼저 뗀다. 'OnValidate'는 사람이 인스펙터를 만졌을 때만 오는 콜백이 아니라
+        //    씬 로드·도메인 리로드(스크립트 컴파일)·Undo 에도 오므로, 떼지 않으면 큐에 콜백이 쌓인다.
+        UnityEditor.EditorApplication.delayCall -= MirrorAnchorToWidgetIfAlive;
+
         // OnValidate 안에서 다른 오브젝트의 계층을 바꾸면 경고가 나므로 다음 에디터 틱으로 미룬다.
         UnityEditor.EditorApplication.delayCall += MirrorAnchorToWidgetIfAlive;
     }
@@ -743,8 +747,19 @@ public class WindowManager : MonoService<WindowManager>
             return;
         }
 
-        widget.SetPosition((WidgetPosition)(int)setStartAnchor); // 편집 모드 SetPosition은 Apply만, 저장은 안 한다
-        UnityEditor.EditorUtility.SetDirty(widget);              // 바뀐 위젯 position이 씬에 남도록 더티 표시
+        var target = (WidgetPosition)(int)setStartAnchor;
+
+        // ⚠️ 값이 같으면 아무것도 하지 않는다. 'SetDirty'는 값이 정말 바뀌었는지 보지 않고
+        //    씬을 더티로 만든다. 무조건 부르면 'OnValidate'가 오는 모든 순간 — 즉 씬을 열거나
+        //    스크립트를 고치기만 해도 — 씬에 '*'가 붙는다. 내용은 안 바뀌어 저장해도 diff 가 0이라
+        //    원인을 찾기가 특히 어렵다 (2026-08-28에 이걸로 헤맸다).
+        if (widget.Position == target)
+        {
+            return;
+        }
+
+        widget.SetPosition(target);                 // 편집 모드 SetPosition은 Apply만, 저장은 안 한다
+        UnityEditor.EditorUtility.SetDirty(widget); // 바뀐 위젯 position이 씬에 남도록 더티 표시
     }
 
     #endregion

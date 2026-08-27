@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-23 (UI 규칙 분할에 맞춰 관련 문서 링크 갱신) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-28 (OnValidate 거울질의 씬 더티 주의 추가) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -232,6 +232,13 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 같은 규칙이라 창·위젯이 에디터 전 구간에서 같은 소스를 따른다. 편집 중 인스펙터를 바꾸면
 `WindowManager.OnValidate`가 위젯에 거울질해 미리보기가 즉시 따라온다(창 자체는 빌드에서만 움직인다).
 자세한 근거·트레이드오프는 [`Settings 규칙.md`](<../Settings/Settings 규칙.md>) §1.
+
+⚠️ **거울질은 앵커가 실제로 달라졌을 때만 한다.** `OnValidate`는 사람이 인스펙터를 만졌을 때만
+오는 콜백이 아니라 **씬 로드·도메인 리로드(스크립트 컴파일)·Undo에도 온다.** 그때마다
+`EditorUtility.SetDirty`를 부르면 — 그건 값이 정말 바뀌었는지 보지 않으므로 —
+**씬을 열거나 스크립트를 고치기만 해도 씬에 `*`가 붙는다.** 내용은 그대로라 저장해도 diff가 0이라
+원인이 보이지 않는다. 2026-08-28에 이걸로 헤맸고, 그때 진단 도구
+[`scene-dirty-tracer`](<../Common/scene-dirty-tracer/scene-dirty-tracer 규칙.md>)를 만들었다.
 
 ### 위치는 6칸이고, 드롭다운 하나가 창·위젯을 함께 정한다
 

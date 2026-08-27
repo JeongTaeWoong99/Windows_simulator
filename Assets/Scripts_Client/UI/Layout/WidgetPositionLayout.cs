@@ -205,6 +205,14 @@ public class WidgetPositionLayout : MonoBehaviour
     // 갱신된다 — 'OnRectTransformDimensionsChange' 주석 참조. 형제 순서 변경
     // ('SetSiblingIndex')은 UGUI 가 알아서 부모를 dirty 로 만들지만, 정렬만 바뀐 경우까지
     // 확실히 덮으려고 명시적으로 한 번 더 찍는다.
+    //
+    // ■ 아무것도 안 바뀌었으면 편집 모드에서는 리빌드도 예약하지 않는다
+    //   아래 세 메서드는 '내가 실제로 뭘 바꿨는가'를 돌려준다. 이 컴포넌트는 [ExecuteAlways]라
+    //   편집 중에도 창 크기가 흔들릴 때마다 도는데, 리빌드가 돌면 LayoutGroup 아래 RectTransform
+    //   값이 다시 쓰여 씬이 더티가 된다. 씬을 하나도 안 만졌는데 '*'가 붙던 원인이다 (2026-08-28).
+    //
+    //   ⚠️ 재생 중엔 기존대로 항상 태운다. 열 폭이 반쯤만 갱신된 A-1 회귀가 났던 자리라,
+    //     더티를 줄이자고 런타임 동작까지 바꾸지 않는다. 편집 모드에는 그 위험이 없다.
     public void Apply()
     {
         if (_applying || !HasAllReferences())
@@ -215,11 +223,15 @@ public class WidgetPositionLayout : MonoBehaviour
         _applying = true;
         try
         {
-            ApplyColumnOrder();
-            ApplyVerticalSlot();
-            ApplySideHeights(); // ⚠️ ApplyVerticalSlot 뒤여야 한다 — 그게 위·아래를 뒤집는다
+            // ⚠️ '|='다. '||'로 쓰면 앞이 참인 순간 뒤 배치가 통째로 건너뛰어진다.
+            bool changed = ApplyColumnOrder();
+            changed     |= ApplyVerticalSlot();
+            changed     |= ApplySideHeights(); // ⚠️ ApplyVerticalSlot 뒤여야 한다 — 그게 위·아래를 뒤집는다
 
-            LayoutRebuilder.MarkLayoutForRebuild(columns);
+            if (changed || Application.isPlaying)
+            {
+                LayoutRebuilder.MarkLayoutForRebuild(columns);
+            }
         }
         finally
         {
@@ -277,8 +289,8 @@ public class WidgetPositionLayout : MonoBehaviour
         ClientLogger.Warn(ClientLogger.UI, $"열 폭이 어긋나 다시 배치한다 — {detail}", this);
     }
 
-    // 가로 칸(왼쪽·가운데·오른쪽)에 맞춰 세 열의 순서를 정한다
-    private void ApplyColumnOrder()
+    // 가로 칸(왼쪽·가운데·오른쪽)에 맞춰 세 열의 순서를 정한다. 실제로 순서가 바뀌었으면 true
+    private bool ApplyColumnOrder()
     {
         int workstationIndex = (int)position % 3;                  // 작업슬롯은 위젯의 가로 칸 그대로
         int marketIndex      = workstationIndex == 2 ? 0 : 2;      // 거래는 작업슬롯에서 가장 먼 끝
@@ -295,22 +307,46 @@ public class WidgetPositionLayout : MonoBehaviour
             }
         }
 
+        bool changed = false;
+
         for (int i = 0; i < order.Length; i++)
         {
-            order[i].SetSiblingIndex(i);
+            changed |= MoveToSibling(order[i], i);
         }
+
+        return changed;
     }
 
-    // 세로 칸(위·아래)에 맞춰 위젯과 상태 패널을 서로 반대편 슬롯에 넣는다
-    private void ApplyVerticalSlot()
+    // 이미 그 자리면 건드리지 않는다. 실제로 옮겼을 때만 true (ApplyColumnOrder·ApplyVerticalSlot 에서 호출).
+    //
+    // ⚠️ 같은 인덱스여도 'SetSiblingIndex'를 부르면 유니티는 계층을 건드린 것으로 보고 씬을 더티로 만든다.
+    //   'Apply'는 [ExecuteAlways]라 편집 중에도 창 크기가 흔들릴 때마다 도는데, 그때마다 같은 자리에
+    //   다시 꽂으면 아무것도 안 바뀌었는데 씬에 '*'가 붙는다 — 저장해도 내용이 같아 diff 는 0이라
+    //   원인이 보이지 않는다 (2026-08-28).
+    private static bool MoveToSibling(RectTransform target, int index)
+    {
+        if (target == null || target.GetSiblingIndex() == index)
+        {
+            return false;
+        }
+
+        target.SetSiblingIndex(index);
+
+        return true;
+    }
+
+    // 세로 칸(위·아래)에 맞춰 위젯과 상태 패널을 서로 반대편 슬롯에 넣는다.
+    // 실제로 자리나 정렬이 바뀌었으면 true
+    private bool ApplyVerticalSlot()
     {
         bool isUpper   = (int)position / 3 == 0;
         int  lastIndex = workstationColumn.childCount - 1;
 
-        widgetPanel.SetSiblingIndex(isUpper ? 0 : lastIndex);
-        statePanel.SetSiblingIndex(isUpper ? lastIndex : 0);
+        bool changed = MoveToSibling(widgetPanel, isUpper ? 0 : lastIndex);
+        changed     |= MoveToSibling(statePanel,  isUpper ? lastIndex : 0);
+        changed     |= ApplyChildAlignment(isUpper);
 
-        ApplyChildAlignment(isUpper);
+        return changed;
     }
 
     // 위젯이 어느 칸이냐에 따라 3열의 자식 정렬을 뒤집는다 ('ApplyVerticalSlot'에서 호출).
@@ -321,29 +357,37 @@ public class WidgetPositionLayout : MonoBehaviour
     //
     // 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 창고·거래의 배너 줄 높이가 어긋난다
     // (기획 2장 "세 창의 정렬 규칙": 세 배너 줄이 같은 높이에 와야 한다).
-    private void ApplyChildAlignment(bool isUpper)
+    private bool ApplyChildAlignment(bool isUpper)
     {
         TextAnchor alignment = isUpper ? UpperAlignment : LowerAlignment;
 
-        SetColumnAlignment(storageColumn,     alignment);
-        SetColumnAlignment(workstationColumn, alignment);
-        SetColumnAlignment(marketColumn,      alignment);
+        // ⚠️ '|='다. '||'로 쓰면 앞 열이 바뀐 순간 나머지 열의 정렬을 안 고친다.
+        bool changed = SetColumnAlignment(storageColumn,     alignment);
+        changed     |= SetColumnAlignment(workstationColumn, alignment);
+        changed     |= SetColumnAlignment(marketColumn,      alignment);
+
+        return changed;
     }
 
-    // 열의 VerticalLayoutGroup 정렬을 바꾼다. 그룹이 없는 열은 건너뛴다 (ApplyChildAlignment에서 호출)
-    private static void SetColumnAlignment(RectTransform column, TextAnchor alignment)
+    // 열의 VerticalLayoutGroup 정렬을 바꾼다. 실제로 바뀌었으면 true.
+    // 그룹이 없는 열은 건너뛴다 (ApplyChildAlignment에서 호출)
+    private static bool SetColumnAlignment(RectTransform column, TextAnchor alignment)
     {
         if (column == null)
         {
-            return;
+            return false;
         }
 
         var group = column.GetComponent<VerticalLayoutGroup>();
 
-        if (group != null)
+        if (group == null || group.childAlignment == alignment)
         {
-            group.childAlignment = alignment;
+            return false;
         }
+
+        group.childAlignment = alignment;
+
+        return true;
     }
 
     // 열 하나가 갖는 칸 수 — 위 · 가운데 · 아래. 이 전제로 자식에서 스페이서를 꺼낸다
@@ -360,24 +404,31 @@ public class WidgetPositionLayout : MonoBehaviour
     // ■ 열마다 자기 가운데를 본다
     //   한 열의 값을 나머지에 복사하지 않는다. 대신 세 가운데 높이가 서로 다르면 알린다
     //   ('AppendCenterMismatch') — 기획 2장 "세 창의 정렬 규칙"이 깨지는 순간이다.
-    private void ApplySideHeights()
+    private bool ApplySideHeights()
     {
         bool isUpper = (int)position / 3 == 0;
 
         var problems = new System.Text.StringBuilder();
 
-        float storage     = ApplyColumnHeights(storageColumn,     isUpper, problems);
-        float workstation = ApplyColumnHeights(workstationColumn, isUpper, problems);
-        float market      = ApplyColumnHeights(marketColumn,      isUpper, problems);
+        float storage     = ApplyColumnHeights(storageColumn,     isUpper, problems, out bool storageChanged);
+        float workstation = ApplyColumnHeights(workstationColumn, isUpper, problems, out bool workstationChanged);
+        float market      = ApplyColumnHeights(marketColumn,      isUpper, problems, out bool marketChanged);
 
         AppendCenterMismatch(storage, workstation, market, problems);
         ReportHeightProblems(problems);
+
+        return storageChanged || workstationChanged || marketChanged;
     }
 
     // 한 열의 위·아래 칸에 높이를 써 넣고 그 열의 가운데 높이를 돌려준다.
     // 나눌 수 없으면 'problems'에 이유를 적고 NaN 을 돌려준다 (ApplySideHeights 에서 호출).
-    private float ApplyColumnHeights(RectTransform column, bool isUpper, System.Text.StringBuilder problems)
+    //
+    // 'changed'는 실제로 높이를 고쳐 쓴 칸이 있었는지다 — 'Apply'가 리빌드 여부를 이걸로 정한다.
+    private float ApplyColumnHeights(RectTransform column, bool isUpper, System.Text.StringBuilder problems,
+                                     out bool changed)
     {
+        changed = false;
+
         // 위·가운데·아래 셋이라는 전제로 자식에서 꺼낸다 — 열 참조를 이미 받았는데
         // 스페이서까지 또 배선할 이유가 없다(자식 정렬 대상과 같은 판단).
         if (column.childCount != ColumnSlotCount)
@@ -415,8 +466,9 @@ public class WidgetPositionLayout : MonoBehaviour
         var top    = column.GetChild(0) as RectTransform;
         var bottom = column.GetChild(ColumnSlotCount - 1) as RectTransform;
 
-        SetFixedHeight(isUpper ? top : bottom, widgetHeight);
-        SetFixedHeight(isUpper ? bottom : top, stateHeight);
+        // ⚠️ '|='다. '||'로 쓰면 앞 칸이 바뀐 순간 뒤 칸의 높이를 아예 안 쓴다.
+        changed  = SetFixedHeight(isUpper ? top : bottom, widgetHeight);
+        changed |= SetFixedHeight(isUpper ? bottom : top, stateHeight);
 
         return centerHeight;
     }
@@ -440,7 +492,7 @@ public class WidgetPositionLayout : MonoBehaviour
         return element != null ? element.preferredHeight : -1f;
     }
 
-    // 그 칸을 딱 이 높이로 못박는다 (ApplyColumnHeights 에서 호출).
+    // 그 칸을 딱 이 높이로 못박는다. 실제로 값을 바꿨으면 true (ApplyColumnHeights 에서 호출).
     //
     // ⚠️ 'minHeight'까지 0으로 눌러야 한다. UGUI 가 쓰는 값은 preferred 가 아니라
     //   max(min, preferred)다. '#State Canvas'는 min 65, '-(Layout)'은 min 45 로 저장돼 있어
@@ -448,11 +500,11 @@ public class WidgetPositionLayout : MonoBehaviour
     //
     // ⚠️ 'flexibleHeight'는 0 이다. 1 이면 형제가 꺼질 때 그 자리를 혼자 빨아들인다
     //   (→ 'Layout 규칙.md'의 "min을 자기 폭에서 파생시키면 그 폭이 하한으로 굳는다").
-    private static void SetFixedHeight(RectTransform? slot, float height)
+    private static bool SetFixedHeight(RectTransform? slot, float height)
     {
         if (slot == null)
         {
-            return;
+            return false;
         }
 
         var element = slot.GetComponent<LayoutElement>();
@@ -461,19 +513,22 @@ public class WidgetPositionLayout : MonoBehaviour
         {
             ClientLogger.Warn(ClientLogger.UI, $"'{slot.name}'에 LayoutElement 가 없어 높이를 못박지 못한다.", slot);
 
-            return;
+            return false;
         }
 
         // 값이 이미 같으면 쓰지 않는다 — LayoutElement 는 값이 바뀔 때마다 리빌드를 예약한다
         if (Mathf.Approximately(element.preferredHeight, height) &&
             Mathf.Approximately(element.minHeight,       0f)     &&
             Mathf.Approximately(element.flexibleHeight,  0f))
-
-            return;
+        {
+            return false;
+        }
 
         element.minHeight       = 0f;
         element.preferredHeight = height;
         element.flexibleHeight  = 0f;
+
+        return true;
     }
 
     // 세 열의 가운데 높이가 서로 다르면 문제 목록에 적는다 (ApplySideHeights 에서 호출).
