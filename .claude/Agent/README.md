@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-28 씬이 저절로 더티가 되는 원인 제거](2026-08-28-scene-dirty-flag.md) — `#client` `#ui` `#editor` `OnValidate`의 무조건 `SetDirty`와 `[ExecuteAlways]`의 무변경 쓰기를 막고, 진단 도구 `scene-dirty-tracer`를 추가
 - [2026-08-27 클라 일감 4건 점검 · T-034 등록](2026-08-27-client-task-audit.md) — `#client` `#docs` 미체크 항목을 ⏸(기획·서버 대기)와 🎨(연출·리소스 후순위)로 가르고, 순서 메모를 서버·기획 요청 목록으로 재작성
 - [2026-08-26 Common 자산별 재편 + 툴킷 승격](2026-08-26-toolkit-common-restructure.md) — `#client` `#editor` `#infra` Common을 자산 하나=폴더 하나로 재편하고, 범용 코드 3종·클라 스킬 2종·작업관리 스킬 4종을 Arca Unity Toolkit 마스터로 올렸다
 - [2026-08-26 위젯 수확 스트립 + `PlayerDataLogger` 삭제](2026-08-26-widget-harvest-strip.md) — `#client` `#ui` `#editor` `#docs` 위젯이 배치된 슬롯을 게이지로 그리게 하고, 대체 화면이 갖춰진 임시 로그 관찰자를 걷어냄

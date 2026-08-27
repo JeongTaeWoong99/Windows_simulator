@@ -1,6 +1,6 @@
 # Common 규칙
 
-> 최종 업데이트: 2026-08-26 (자산별 폴더 구조로 개편 · 자산 3종 이관 · 자산 문서가 따라간다) · 대상: `Assets/Scripts_Client/Common/`
+> 최종 업데이트: 2026-08-28 (`scene-dirty-tracer` 추가) · 대상: `Assets/Scripts_Client/Common/`
 
 **이 폴더는 이 프로젝트의 것이 아니다.** [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)이라는
 별도 저장소에서 관리하는 범용 코드의 **사본**이고, 스킬 두 개가 심고 되돌린다.
@@ -63,7 +63,8 @@ Common/
 ├── ugui-layout/        FlexibleGridLayoutGroup.cs · SquareLayoutElement.cs
 │   └── Editor/         FlexibleGridLayoutGroupEditor.cs
 ├── editor-shared/      Editor/  EditorGit.cs · EditorIcons.cs · ProjectPreferences.cs
-└── memory-meter/       Editor/  EditorMemoryMeter.cs · EditorMemoryToolbarButton.cs
+├── memory-meter/       Editor/  EditorMemoryMeter.cs · EditorMemoryToolbarButton.cs
+└── scene-dirty-tracer/ Editor/  SceneDirtyTracer.cs · SceneDirtyTracerSettings.cs
 ```
 
 - 자산 폴더명은 **영문 소문자 kebab-case**. `Editor`만 Unity 예약어라 PascalCase 그대로다.
@@ -90,6 +91,7 @@ Common/
 | **uGUI Layout** | `ugui-layout/` | 폭에 맞춰 셀을 역산하는 그리드 · "높이만큼 정사각형". [`ugui-layout 규칙.md`](<ugui-layout/ugui-layout 규칙.md>) |
 | **EditorShared** | `editor-shared/` | 에디터 툴 공용 — git 실행 · 아이콘 캐시 · 환경 설정 뿌리. [`editor-shared 규칙.md`](<editor-shared/editor-shared 규칙.md>) |
 | **MemoryMeter** | `memory-meter/` | 상단 툴바 메모리 표시 + 정리. [`memory-meter 규칙.md`](<memory-meter/memory-meter 규칙.md>) |
+| **SceneDirtyTracer** | `scene-dirty-tracer/` | 씬이 저절로 더티가 될 때 범인 추적(기본 꺼짐). [`scene-dirty-tracer 규칙.md`](<scene-dirty-tracer/scene-dirty-tracer 규칙.md>) |
 
 ---
 
