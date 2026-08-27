@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-28 "이유 없이 연결이 끊긴다" 원인 규명](2026-08-28-ping-disconnect-cause.md) — `#client` `#docs` 서버 무응답 판정과 핑 주기의 여유가 0이었고 창 드래그가 메인 루프를 멈췄다 — 핑을 2초·백그라운드 타이머로 옮김
 - [2026-08-28 씬이 저절로 더티가 되는 원인 제거](2026-08-28-scene-dirty-flag.md) — `#client` `#ui` `#editor` `OnValidate`의 무조건 `SetDirty`와 `[ExecuteAlways]`의 무변경 쓰기를 막고, 진단 도구 `scene-dirty-tracer`를 추가
 - [2026-08-27 클라 일감 4건 점검 · T-034 등록](2026-08-27-client-task-audit.md) — `#client` `#docs` 미체크 항목을 ⏸(기획·서버 대기)와 🎨(연출·리소스 후순위)로 가르고, 순서 메모를 서버·기획 요청 목록으로 재작성
 - [2026-08-26 Common 자산별 재편 + 툴킷 승격](2026-08-26-toolkit-common-restructure.md) — `#client` `#editor` `#infra` Common을 자산 하나=폴더 하나로 재편하고, 범용 코드 3종·클라 스킬 2종·작업관리 스킬 4종을 Arca Unity Toolkit 마스터로 올렸다
