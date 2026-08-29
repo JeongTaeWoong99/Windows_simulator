@@ -1,6 +1,6 @@
 # DesktopWindow 규칙
 
-> 최종 업데이트: 2026-08-28 (OS 위임의 대가 — 메인 스레드 정지가 하트비트를 끊은 사고 기록, §5-7) · 대상: `Assets/Scripts_Client/DesktopWindow/`
+> 최종 업데이트: 2026-08-30 (드래그 후 화면 밖 보정 — 아래로 묻힌 창을 되올린다, §5-7) · 대상: `Assets/Scripts_Client/DesktopWindow/`
 
 **Win32 / DWM 네이티브 API의 P/Invoke 선언만** 두는 곳. 이 게임이 데스크톱 위의 투명 창으로
 동작하기 위해 필요한 OS 함수들이다.
@@ -159,6 +159,10 @@ UI 위인지 판정한다. (`WindowManager.GetCursorScreenPosition` / `IsPointer
 - 클릭/드래그 구분은 `IBeginDragHandler`(EventSystem 이동 임계값)가 공짜로 해 준다 — 단순 클릭은
   아래 버튼으로 가고, 끌기 시작할 때만 이동이 걸린다.
 - 콘텐츠(캔버스 Graphic) 위에서만 발화한다 — 빈 영역은 동적 클릭 스루로 통과하므로 잡히지 않는다.
+- ⚠️ **아래로 묻힌 창은 OS가 되돌려 주지 않는다** — 이동 루프가 막는 건 위쪽뿐이다. 그래서 마우스를
+  놓은 직후 `WindowManager.ClampIntoMonitor`가 **세로만** 모니터 안으로 되올린다. 기준은 작업
+  영역이 아니라 **모니터 전체**라 작업표시줄 위에 겹쳐 두는 배치는 그대로 유지된다. 상세는
+  [`Managers 규칙.md`](<../Managers/Managers 규칙.md>) 5장.
 - 🔴 **OS 모달 이동 루프가 도는 동안 Unity 메인 스레드가 통째로 멈춘다** — 마우스를 놓을 때까지.
   **다른 스레드는 멀쩡하다.** 이것 자체는 위임의 정상 동작이지만, **메인 스레드에 얹힌 것은 전부
   같이 멈춘다**는 뜻이다.

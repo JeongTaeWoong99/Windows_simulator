@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-28 (하트비트 끊김 2건 — 이슈 #19 판단 대기 경고 추가) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-08-30 (드래그 후 화면 밖 보정 `ClampIntoMonitor` — 클램프 기준이 앵커와 다르다) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -275,6 +275,24 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 보더리스가 기본이라 OS 타이틀바가 없다. 메인 뷰 캔버스에 `WindowDragArea`를 붙여 잡아 끌면
 `BeginWindowDrag`가 `ReleaseCapture` + `WM_SYSCOMMAND(SC_MOVE_HTCAPTION)`으로 **OS 이동 루프에 위임**한다
 — 스냅·모니터 간 이동을 다시 구현하지 않는다. 상세는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWindow 규칙.md>) 5-7.
+
+#### 드래그가 끝나면 화면 밖으로 나간 만큼 되올린다 (`ClampIntoMonitor`)
+
+**위쪽은 OS가 막아 주지만 아래쪽은 막지 않는다.** 이동 루프는 캡션이 화면 위로 넘어가는 것만
+막으므로, 아래로 끌면 창이 그대로 묻히고 **되올릴 손잡이(드래그 영역)까지 같이 묻힌다.**
+그래서 `BeginWindowDrag`가 `SendMessage`에서 돌아온 직후 — 즉 마우스를 놓은 뒤 —
+`ClampIntoMonitor`로 세로 위치만 안으로 되돌린다.
+
+⚠️ **기준이 앵커와 다르다.** 앵커 배치는 **작업 영역**(작업표시줄을 피해 정돈되게), 드래그 클램프는
+**모니터 전체**(`rcMonitor`)다. 작업표시줄 **위에 겹쳐 두는 배치는 의도된 사용**이라 막지 않고,
+화면 **밖으로** 나가는 것만 되돌린다 — 대충 끌어 놓아도 바닥에 딱 맞게 붙으므로 높이를
+손으로 맞출 필요가 없다. 두 사각형은 `TryGetMonitorRects`가 한 번의 조회로 함께 돌려준다.
+
+⚠️ **가로는 건드리지 않는다** — 좌우로 걸쳐 두는 것도 의도된 배치다.
+
+한계 — 타이틀바를 켜서(`setStartTitleBar = true`) **OS 타이틀바로 끄는 경로는
+`BeginWindowDrag`를 지나지 않아 보정되지 않는다.** 현재 타이틀바는 고정 off라 실사용 경로가 아니다.
+드래그가 아닌 이동(해상도 변경·작업표시줄 위치 변경)도 대상이 아니다.
 
 ### ⚠️ 캔버스 기준 해상도를 창 크기로 바꾸지 않는다
 

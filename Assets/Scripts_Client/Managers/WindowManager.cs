@@ -583,12 +583,22 @@ public class WindowManager : MonoService<WindowManager>
     }
 
 #if !UNITY_EDITOR
-    // 창이 실제로 올라가 있는 모니터의 작업 영역 사각형을 얻는다.
+    // 창이 실제로 올라가 있는 모니터의 작업 영역(작업표시줄 제외) 사각형을 얻는다.
+    private bool TryGetWorkArea(out Win32Native.RECT workArea) => TryGetMonitorRects(out workArea, out _);
+
+    // 같은 모니터의 '전체'(작업표시줄 포함) 사각형을 얻는다 — 드래그 클램프('ClampIntoMonitor')용.
+    private bool TryGetMonitorBounds(out Win32Native.RECT full) => TryGetMonitorRects(out _, out full);
+
+    // 창이 놓인 모니터의 작업 영역과 전체 사각형을 한 번의 조회로 함께 얻는다
+    // ('MONITORINFO'가 둘을 같이 담아 오므로 나눠 부를 이유가 없다).
+    //
+    // ⚠️ 두 값은 쓰임이 다르다 — 앵커 배치는 '작업 영역'(작업표시줄을 피해 정돈되게),
+    // 드래그 클램프는 '전체'(작업표시줄 위에 겹쳐 두는 배치를 손으로 만들 수 있게).
     //
     // ⚠️ 'SPI_GETWORKAREA'는 주 모니터의 값만 돌려준다 — 듀얼 모니터에서 창을 보조
     // 모니터로 옮기면 위치·클램프 계산이 전부 어긋난다. 그래서 'MonitorFromWindow'로
-    // 현재 모니터를 먼저 찾고, 그게 실패할 때만 'SPI_GETWORKAREA'로 폴백한다.
-    private bool TryGetWorkArea(out Win32Native.RECT workArea)
+    // 현재 모니터를 먼저 찾고, 그게 실패할 때만 주 모니터 값으로 폴백한다.
+    private bool TryGetMonitorRects(out Win32Native.RECT work, out Win32Native.RECT full)
     {
         IntPtr monitor = Win32Native.MonitorFromWindow(_hWnd, Win32Native.MONITOR_DEFAULTTONEAREST);
 
@@ -599,15 +609,25 @@ public class WindowManager : MonoService<WindowManager>
 
             if (Win32Native.GetMonitorInfo(monitor, ref info))
             {
-                workArea = info.rcWork;
+                work = info.rcWork;
+                full = info.rcMonitor;
 
                 return true;
             }
         }
 
-        workArea = new Win32Native.RECT();
+        // 폴백 — 주 모니터 기준. 전체 사각형은 좌상단이 (0,0)이라 크기만 물어보면 된다.
+        full = new Win32Native.RECT
+        {
+            left   = 0,
+            top    = 0,
+            right  = Win32Native.GetSystemMetrics(Win32Native.SM_CXSCREEN),
+            bottom = Win32Native.GetSystemMetrics(Win32Native.SM_CYSCREEN)
+        };
+        work = new Win32Native.RECT();
 
-        return Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref workArea, 0);
+        // 여기서 작업 영역 조회마저 실패하면 두 값 다 신뢰할 수 없다.
+        return Win32Native.SystemParametersInfo(Win32Native.SPI_GETWORKAREA, 0, ref work, 0);
     }
 #endif
 
@@ -630,8 +650,50 @@ public class WindowManager : MonoService<WindowManager>
 
         Win32Native.ReleaseCapture();
         Win32Native.SendMessage(_hWnd, Win32Native.WM_SYSCOMMAND, Win32Native.SC_MOVE_HTCAPTION, 0);
+
+        // 'SendMessage'는 OS 이동 루프가 끝날 때까지 돌아오지 않는다 — 즉 여기는 마우스를 놓은 뒤다.
+        // 창이 화면 아래로 묻힌 채 끝났으면 되올린다.
+        ClampIntoMonitor();
 #endif
     }
+
+#if !UNITY_EDITOR
+    // 드래그가 끝난 창이 화면 위아래를 벗어나 있으면 세로만 안으로 되돌린다 ('BeginWindowDrag'에서 호출).
+    //
+    // 왜 필요한가 — 위쪽은 OS 이동 루프가 알아서 막아 준다(캡션이 화면 위로 못 넘어간다). 하지만
+    // 아래쪽은 막지 않아 창이 그대로 묻히고, 되올릴 손잡이까지 같이 묻혀 곤란해진다.
+    //
+    // ⚠️ 기준은 작업 영역이 아니라 '모니터 전체'다 — 작업표시줄 위에 창을 겹쳐 두는 배치는
+    //   의도된 사용이라 막지 않는다. 화면 밖으로 나가는 것만 되돌린다.
+    //   앵커 배치('AnchorPosition')는 그대로 작업 영역 기준이다 — 둘은 목적이 다르다.
+    // ⚠️ 가로는 건드리지 않는다 — 좌우로 걸쳐 두는 것도 의도된 배치다.
+    private void ClampIntoMonitor()
+    {
+        // 'GetWindowRect'는 외곽 사각형이라 'SetWindowPos'가 옮기는 대상과 좌표계가 같다
+        // → 프레임 두께를 따로 보정할 필요가 없다.
+        if (_hWnd == IntPtr.Zero
+            || !Win32Native.GetWindowRect(_hWnd, out Win32Native.RECT rect)
+            || !TryGetMonitorBounds(out Win32Native.RECT full))
+        {
+            return;
+        }
+
+        int height = rect.bottom - rect.top;
+
+        // 창이 모니터보다 크면 아래를 맞추다 위가 잘린다 → 그럴 땐 위를 우선한다(maxTop이 full.top으로 접힘).
+        int maxTop = Mathf.Max(full.top, full.bottom - height);
+        int y      = Mathf.Clamp(rect.top, full.top, maxTop);
+
+        if (y == rect.top)
+        {
+            return; // 이미 안에 있다 — 불필요한 SetWindowPos로 Z순서·프레임을 흔들지 않는다
+        }
+
+        IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
+        uint   flags = Win32Native.SWP_NOSIZE | Win32Native.SWP_NOACTIVATE;
+        Win32Native.SetWindowPos(_hWnd, after, rect.left, y, 0, 0, flags);
+    }
+#endif
 
     // 앱을 종료한다(종료 버튼·ESC에서 호출). 보더리스라 창 'X'가 없어 명시적 출구가 필요하다.
     // 에디터에서는 Application.Quit이 동작하지 않으므로 플레이 모드를 멈춘다.
