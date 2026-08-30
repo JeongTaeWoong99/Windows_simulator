@@ -1,6 +1,6 @@
 # Layout 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (범용 컴포넌트 2종·함정 표를 `Common/`과 스킬로 이관) · 대상: `Assets/Scripts_Client/UI/Layout/`
+> 최종 업데이트: 2026-08-30 (위젯 칸 높이가 창 배율 역산의 근거가 됐다) · 대상: `Assets/Scripts_Client/UI/Layout/`
 
 **화면이 아니라 배치를 계산하는 컴포넌트를 두는 곳.** 어느 캔버스에도 속하지 않아
 `UI/` 아래에서 유일하게 캔버스 폴더가 아니다.
@@ -71,3 +71,18 @@
 
 > 2026-08-15. 실제로 `ForceRebuild`로 바꿨다가 열 침범 회귀를 만들었다
 > (`.claude/Agent/2026-08-15-build-ui-layout-mismatch.md`).
+
+## 위젯 칸 높이는 창 배율을 역산하는 근거다
+
+`WidgetPositionLayout.WidgetSlotHeight`(= 위젯 칸의 `LayoutElement.preferredHeight`)를
+`SettingPresenter`가 읽어 `WindowManager.SetWidgetSlotHeight`로 넘긴다. 창 크기 드롭다운의
+**'작업표시줄 맞춤'** 항목이 이 값으로 배율을 역산한다 — 캔버스가 기준 해상도(1080) 좌표라
+이 숫자는 창 배율과 무관하게 일정하고, 화면 픽셀 높이만 캔버스 스케일만큼 커지기 때문이다.
+
+⚠️ **이 값을 상수로 베껴 두지 않는다.** `widgetWeight`/`stateWeight`를 조정하거나 가운데 칸
+높이를 바꾸면 여기가 따라 움직이는데, 베껴 둔 쪽은 안 움직여 **맞춤이 조용히 어긋난다.**
+
+⚠️ **위젯 비중을 줄이면 맞춤이 성립하지 않을 수 있다.** 위젯이 창에서 차지하는 비율이 작아질수록
+같은 작업표시줄 높이를 얻는 데 필요한 창이 커진다(비율이 절반이면 창이 두 배). 화면을 넘으면
+`WindowManager.RecalculateFitScale`이 계산 실패로 두고 경고를 남긴 뒤 프리셋으로 떨어뜨린다.
+자세한 근거는 [`Managers 규칙.md`](<../../Managers/Managers 규칙.md>) 5장.

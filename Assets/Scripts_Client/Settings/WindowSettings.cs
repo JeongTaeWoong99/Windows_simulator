@@ -27,6 +27,19 @@ public static class WindowSettings
     // 위젯이 창 안 어느 칸(6칸)에 놓이는가. 창을 데스크톱 어디에 두는가(AnchorKey, 9분할)와는 다른 축이다.
     public const string WidgetPositionKey      = "Widget.Position";
 
+    // 위젯 칸이 캔버스(기준 해상도 1080) 좌표에서 차지하는 높이. '작업표시줄 맞춤' 배율의 분모다.
+    // ⚠️ 창 크기가 아니라 씬 레이아웃에서 나오는 값이라 창 설정과 함께 저장해 둔다 —
+    //   그래야 부팅 직후, 설정 패널을 한 번도 열지 않은 상태에서도 작업표시줄을 새로 재서
+    //   맞춤 배율을 계산할 수 있다(모니터·DPI가 바뀌어도 따라간다).
+    public const string WidgetSlotHeightKey    = Prefix + "WidgetSlotHeight";
+
+    // 사용자가 드래그로 만든 창의 좌상단 좌표(데스크톱 절대 좌표).
+    // ⚠️ 앵커(`AnchorKey`)와 배타다 — 이 키가 있으면 앵커 배치를 무시하고 이 좌표로 복원한다.
+    //   위치·크기 드롭다운을 만지면 지운다('WindowManager.ClearCustomPosition').
+    // ⚠️ 0도 음수도(보조 모니터) 유효한 좌표라 "값 없음"을 sentinel 로 못 만든다 → 키 존재로 판단('HasKey').
+    public const string PositionXKey           = Prefix + "PosX";
+    public const string PositionYKey           = Prefix + "PosY";
+
     // 저장된 bool을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
     public static bool LoadBool(string key, bool fallback)
     {
@@ -37,6 +50,12 @@ public static class WindowSettings
     public static int LoadInt(string key, int fallback)
     {
         return PlayerPrefs.GetInt(key, fallback);
+    }
+
+    // 저장된 float을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
+    public static float LoadFloat(string key, float fallback)
+    {
+        return PlayerPrefs.GetFloat(key, fallback);
     }
 
     // bool을 저장한다. PlayerPrefs에 bool 타입이 없어 0/1 int로 넣는다.
@@ -55,6 +74,36 @@ public static class WindowSettings
         }
 
         PlayerPrefs.SetInt(key, value);
+        PlayerPrefs.Save();
+    }
+
+    // float을 저장한다. 값이 그대로면 기록하지 않는다('SaveInt'와 같은 이유).
+    public static void SaveFloat(string key, float value)
+    {
+        if (PlayerPrefs.HasKey(key) && Mathf.Approximately(PlayerPrefs.GetFloat(key), value))
+        {
+            return;
+        }
+
+        PlayerPrefs.SetFloat(key, value);
+        PlayerPrefs.Save();
+    }
+
+    // 그 키가 저장돼 있는지. "값이 없다"와 "0이 저장됐다"를 구분해야 할 때 쓴다(창 좌표).
+    public static bool HasKey(string key)
+    {
+        return PlayerPrefs.HasKey(key);
+    }
+
+    // 저장을 지운다. 없는 키를 지워도 안전하다.
+    public static void DeleteKey(string key)
+    {
+        if (!PlayerPrefs.HasKey(key))
+        {
+            return;
+        }
+
+        PlayerPrefs.DeleteKey(key);
         PlayerPrefs.Save();
     }
 }
