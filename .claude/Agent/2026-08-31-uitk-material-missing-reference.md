@@ -59,7 +59,12 @@ UITK 텍스트 메시를 다시 만들고 있었다. 우리 프로젝트에서 U
 | 에디터 로그 | `%LOCALAPPDATA%\Unity\Editor\Editor.log` (직전 세션 `Editor-prev.log`) |
 | 플레이 종료 표식 | `Loaded scene 'Temp/__Backupscenes/0.backup'` — 이 횟수와 예외 횟수를 견주면 상시/간헐이 갈린다 |
 
-## 후속
+## 후속 — 마스터 반영 완료
 
-`memory-meter`는 [Arca Unity Toolkit] 사본이다. **마스터 반영은 사용자가 `/unity-skill-sync`를
-직접 돌려야 한다** — 이 스킬은 모델이 호출할 수 없다.
+`memory-meter`는 [Arca Unity Toolkit] 사본이라 `/unity-skill-sync`로 마스터에
+push했다(`templates/code/Common/memory-meter/`). 충돌 없음 — 마스터는 2026-08-26에
+멈춰 있었고 이번 변경만 얹혔다. **마스터 저장소 커밋은 사용자가 직접 한다.**
+
+⚠️ 같은 자리에 "이 스킬은 모델이 호출할 수 없다"고 적었다가 고쳤다.
+   2026-08-31에 `disable-model-invocation`을 걷어내, **사용자가 요청하면 모델이 실행한다.**
+   요청 없이 스스로 여는 것은 여전히 하지 않는다 — 마스터는 공동 소유라 시작 판단이 사용자 몫이다.
