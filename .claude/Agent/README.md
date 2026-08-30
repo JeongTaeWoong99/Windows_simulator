@@ -25,6 +25,7 @@
 
 <!-- 최신 작업이 위로. 형식: - [YYYY-MM-DD 제목](파일명.md) — `#태그` 한 줄 요약 -->
 
+- [2026-08-31 플레이 종료 때 뜨던 UITK Material 예외](2026-08-31-uitk-material-missing-reference.md) — `#editor` 유니티 내부 레이스(18회 중 2회). 메모리 미터가 매초 툴바를 갱신해 창을 열어 두고 있었다
 - [2026-08-30 로그인 화면에 종료 버튼 연결](2026-08-30-login-exit-button.md) — `#client` `#ui` 로그인 중엔 상태 패널 종료 버튼이 가려져 ESC뿐이었다. 씬 커밋 시 m_IsActive 확인 교훈
 - [2026-08-30 창 크기를 유니티가 늦게 덮어쓰던 문제](2026-08-30-window-size-instrumentation.md) — `#client` 우리 적용 0.5초 뒤 유니티가 저장 해상도로 덮어 두 증상이 났다. 계측으로 확정 · 부팅 8초 감시로 차단
 - [2026-08-30 보더리스 창이 프레임 두께만큼 부풀던 문제](2026-08-30-borderless-frame-inflation.md) — `#client` `GetWindowLong`이 교체 직후 옛 스타일을 줘 렌더 영역이 47px 커지고, 창 밀림·맞춤 깨짐 두 증상이 함께 났다

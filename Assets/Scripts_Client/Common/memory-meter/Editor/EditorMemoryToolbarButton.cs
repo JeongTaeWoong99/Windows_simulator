@@ -13,6 +13,9 @@ internal static class EditorMemoryToolbarButton
 	private static MainToolbarElement? _element;
 	private static double              _nextRefreshTime;
 
+	// 마지막으로 툴바에 올린 라벨. 같은 값이면 갱신을 건너뛴다('Tick' 주석).
+	private static string _lastLabel = string.Empty;
+
 	// 어트리뷰트가 붙은 정적 메서드가 요소를 만들어 돌려주면 유니티가 툴바에 등록한다.
 	// 기존 버튼들이 Right 도크 0·1을 쓰므로 그 뒤(2)에 붙인다.
 	[MainToolbarElement(ElementPath,
@@ -20,7 +23,7 @@ internal static class EditorMemoryToolbarButton
 
 	private static MainToolbarElement Create()
 	{
-		_element = new MainToolbarButton(BuildContent(), EditorMemoryMeter.Cleanup);
+		_element = new MainToolbarButton(BuildContent(out _lastLabel), EditorMemoryMeter.Cleanup);
 
 		// 도메인 리로드(스크립트 재컴파일)마다 static이 날아가고 이 메서드가 다시 불린다.
 		// 툴바 갱신 요청으로도 다시 불릴 수 있으므로, 빼고 다시 걸어 중복 구독을 막는다.
@@ -31,6 +34,17 @@ internal static class EditorMemoryToolbarButton
 	}
 
 	// 1초에 한 번 라벨·툴팁을 새 수치로 바꾼다 (EditorApplication.update 구독)
+	//
+	// ★ 라벨이 그대로면 툴바를 건드리지 않는다. 'MainToolbar.Refresh'는 UI Toolkit에게
+	//   버튼 텍스트 메시를 다시 만들게 하는데, 그 생성은 지연 실행이라 그 사이에 유니티가
+	//   폰트 아틀라스 Material을 언로드하면(플레이 모드를 빠져나올 때 자동으로 돈다)
+	//   에디터 콘솔에 'MissingReferenceException: ... Material ... has been destroyed'가 뜬다.
+	//   유니티 내부의 레이스라 우리가 막을 수는 없지만, 바뀐 것도 없이 매초 다시 만들며
+	//   그 창을 계속 열어 둘 이유도 없다 (2026-08-30, 플레이 종료 18회 중 2회 관측).
+	//
+	// ※ 트레이드오프 — 라벨(워킹셋)이 같은 동안에는 툴팁의 세부 수치도 갱신되지 않는다.
+	//   툴팁은 네이티브가 그려 이 문제와 무관하고, 라벨이 같다는 건 메모리가 MB 단위로
+	//   그대로라는 뜻이라 감수한다.
 	private static void Tick()
 	{
 		if (EditorApplication.timeSinceStartup < _nextRefreshTime)
@@ -46,17 +60,27 @@ internal static class EditorMemoryToolbarButton
 			return;
 		}
 
-		_element.content = BuildContent();
+		MainToolbarContent content = BuildContent(out string label);
+
+		if (label == _lastLabel)
+		{
+			return;
+		}
+
+		_lastLabel       = label;
+		_element.content = content;
 		MainToolbar.Refresh(ElementPath);   // 내용이 바뀌었음을 툴바에 알리는 공식 경로
 	}
 
-	// 지금 수치로 버튼에 보일 라벨·툴팁·아이콘을 만든다
-	private static MainToolbarContent BuildContent()
+	// 지금 수치로 버튼에 보일 라벨·툴팁·아이콘을 만든다.
+	// 라벨을 따로 돌려주는 이유 — 호출부가 '바뀌었나'를 판정해야 하는데, 'MainToolbarContent'는
+	// 그 비교를 위한 공개 접근을 보장하지 않는다.
+	private static MainToolbarContent BuildContent(out string label)
 	{
 		EditorMemoryMeter.Snapshot memory = EditorMemoryMeter.Take();
 
 		// 버튼에는 '에디터가 지금 쓰는 전체'만 크게 보이고, 쪼갠 내역은 툴팁에서 본다.
-		string label = EditorMemoryMeter.Format(memory.ProcessBytes);
+		label = EditorMemoryMeter.Format(memory.ProcessBytes);
 
 		return new MainToolbarContent(label, EditorIcons.Get(EditorIcons.Memory), BuildTooltip(memory));
 	}
