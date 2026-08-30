@@ -27,6 +27,13 @@ public class LoginPresenter : MonoBehaviour
     [SerializeField, Tooltip("로그인 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button loginButton = null!;
 
+    // ※ 화면 안의 버튼이 아니라 앱을 끄는 버튼이라 헤더로 가른다('StatePresenter'와 같은 규칙).
+    //   로그인 화면에도 종료 출구가 필요하다 — 이 화면이 떠 있는 동안 상태 패널의 종료 버튼은
+    //   가려져 손이 닿지 않고, 타이틀바를 끄면 창 'X'도 없다.
+    [CenterHeader("시스템")]
+    [SerializeField, Tooltip("누르면 앱을 종료한다. OnClick은 코드가 연결한다")]
+    private Button quitButton = null!;
+
     private PlayerDataModel   _data    = null!;
     private NetworkManager    _network = null!;
     private UIManager         _ui      = null!;
@@ -47,6 +54,7 @@ public class LoginPresenter : MonoBehaviour
     {
         this.RequireRef(idInput,     nameof(idInput));
         this.RequireRef(loginButton, nameof(loginButton));
+        this.RequireRef(quitButton,  nameof(quitButton));
 
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
@@ -56,6 +64,7 @@ public class LoginPresenter : MonoBehaviour
         Subscribe();
 
         loginButton.onClick.AddListener(OnLoginButtonClicked);
+        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로(ESC와 공유)
 
         // 입력창에서 엔터를 쳐도 눌린 것으로 친다. 아이디 한 줄짜리 화면이라 마우스로 옮겨 갈 이유가 없다.
         idInput.onSubmit.AddListener(_ => OnLoginButtonClicked());
