@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-08-27 (`Character State Row` 여백 근거 · 창고 탭 일감 연결) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-02 (창고 탭 전환 · 격자 개명 `Grid Presenter`) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -36,9 +36,9 @@ Root Canvas
 │  │  ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
-│  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   탭 4개 (자원만 실재)
-│  │  │  ├─ Inventory Presenter (↓ SUB VIEW)      InventoryPresenter
-│  │  │  │  └─ Content > Slot (1..201)            빈 프레임. 그 안에 런타임 생성:
+│  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
+│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
+│  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ InventorySlotView 프리팹
 │  │  │  └─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter
 │  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
@@ -195,13 +195,20 @@ PlayerData (MODEL)                                PlayerDataModel
   나머지는 끈다. 캐릭터가 21을 넘으면 그때 줄을 프리팹으로 뺀다.
 - **산업 버튼 5개는 고를 뿐 캐릭터를 걸러 내지 않는다.** 고른 산업이 배치 요청에 실릴 뿐,
   그 산업을 못 다루는 캐릭터도 목록에 그대로 뜬다.
-- **창고 탭 4개 중 자원 하나만 실재한다.** `StorageTabPresenter`가 나머지를 로그로만 알린다.
-  **탭 전환 seam 자체가 아직 없다** — 무엇을 기다리는지는 `tasks/T-036-창고탭전환.md`.
+- **창고 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이다** — `StorageTab` enum 순서
+  (`Character`가 먼저)와 **다르다.** `TabEntry`가 탭↔버튼을 짝지으므로 어긋나도 되고,
+  **배열 순서를 화면에 맞추려고 enum을 건드리지 않는다**(씬에 int로 저장된다).
+- **자원·캐릭터 둘이 실재한다** (기본 탭은 자원). 장비·특성은 **버튼이 잠겨 있다** —
+  데이터가 없어서고, 잠금은 `StorageGridPresenter.HasSource`에서 파생된다(탭 줄이 따로 적지 않는다).
+  무엇을 기다리는지는 `tasks/T-041-창고장비특성탭.md`.
+- **탭이 달라도 격자는 하나다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만 갈아 끼운다 —
+  구조와 "탭 하나를 채우는 절차"는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
 - **`xxx Button (1)`~`(4)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
   (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
 - **`Information Presenter`는 고를 수단(칸 클릭)이 아직 없어** 안내 문구만 띄운다.
-  `InventorySlotView`에 `Clicked`가 붙으면 이어진다.
+  `InventorySlotView`에 `Clicked`가 붙으면 이어진다. ⚠️ 칸은 이제 자원만이 아니라
+  **어느 탭의 칸인지까지 함께 받아야 한다** — 캐릭터 탭의 `Key`는 개체 번호다.
 - **`WorkStation Select Presenter`는 상태 패널 버튼으로 못 연다.** 슬롯 번호가 있어야 열리는
   화면이라 `Screen Buttons`에 넣을 수 없다 — 목록의 칸 클릭만이 입구다.
 - **`WorkStationListPresenter`에 `#region A-2 진단 (임시)`가 남아 있다.** 원인이 확정되면 통째로 지운다.

@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-08-30 (보더리스 프레임 부풀림 차단 · 드래그 좌표 저장·복원 — 5장) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-09-02 (조회 헬퍼를 화면끼리 공유하는 근거 — 2장) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -70,6 +70,11 @@ Presenter          요청 전송 직후  Begin("로그인", onClosed) → Server
 ⚠️ **이름 조회에서 자주 틀린다.** `GameDataLoader.GetCharacterName`은 **TID**(캐릭터 종류)를 받고,
 `PlayerDataModel.GetCharacterName`은 **개체 번호**(내가 가진 그 한 장)를 받는다.
 바꿔 넣으면 `?#2` 같은 값이 나온다. 자세한 건 [`Data 규칙.md`](<../Data/Data 규칙.md>).
+
+> **같은 것을 두 화면이 물으면 조회 헬퍼로 뺀다.** `GetCharacterName`·`GetAptitude`·
+> `FindSlotIndexOf`가 그 자리다 — 화면마다 캐시를 직접 훑으면 **한쪽만 고쳐졌을 때
+> 두 화면이 다른 말을 한다.** `FindSlotIndexOf`(배치된 슬롯 번호, 없으면 `-1`)를
+> 창고 캐릭터 탭과 작업슬롯 선택 화면이 함께 쓴다.
 
 ### 하트비트(`PingManager`)가 필요한 이유
 
