@@ -23,6 +23,7 @@ namespace MikaDummyClient
                 new ClientAction("AddItem", SendAddItem),
                 new ClientAction("GachaDraw", SendGachaDraw),
                 new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
+                new ClientAction("ItemSell (즉시 판매)", SendItemSell),
             };
         }
 
@@ -158,6 +159,36 @@ namespace MikaDummyClient
             }
 
             NetworkManager.Instance.Send(new C_GachaDrawRequest { GachaId = gachaId, DrawCount = drawCount });
+        }
+
+        private void SendItemSell()
+        {
+            // 일괄 판매가 기본 동선이라 목록으로 받는다 — "10001:5, 10002:3"
+            Console.Write("판매 목록 (ItemId:Count, 쉼표 구분) > ");
+            string? input = Console.ReadLine();
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                Console.WriteLine("[Client] 판매 목록이 비어 있습니다.");
+                return;
+            }
+
+            var items = new List<ItemInfo>();
+            foreach (string pair in input.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            {
+                string[] parts = pair.Split(':');
+                if (parts.Length != 2
+                    || !int.TryParse(parts[0].Trim(), out int itemId)
+                    || !int.TryParse(parts[1].Trim(), out int count))
+                {
+                    Console.WriteLine($"[Client] 형식이 잘못됐습니다: {pair} (ItemId:Count)");
+                    return;
+                }
+
+                items.Add(new ItemInfo { ItemId = itemId, Count = count });
+            }
+
+            NetworkManager.Instance.Send(new C_ItemSellRequest { Items = items });
         }
     }
 }

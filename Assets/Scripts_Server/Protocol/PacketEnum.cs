@@ -4,7 +4,7 @@ namespace MikaProtocol
     /// 요청 1:1 응답 패킷의 처리 결과. 응답 패킷의 <b>첫 프로퍼티</b>로 들어간다.
     /// <b>Ok가 아니면 그 응답의 payload는 전부 null</b>이다 — 클라이언트는 읽지 않는다.
     /// 서버 푸시 패킷(스냅샷·채취 결과 등)에는 넣지 않는다(실패 개념이 없다).
-    /// 값 대역: 1~99 공통 / 100~ 가챠 / 200~ 작업슬롯. 도메인이 늘면 대역을 이어서 판다.
+    /// 값 대역: 1~99 공통 / 100~ 가챠 / 200~ 작업슬롯 / 300~ 상점. 도메인이 늘면 대역을 이어서 판다.
     /// </summary>
     public enum EResultCode : ushort
     {
@@ -23,6 +23,10 @@ namespace MikaProtocol
         CharacterNotOwned   = 201, // 미보유 캐릭터 배치 시도
         NoAptitude          = 202, // 해당 산업 적성이 0인 캐릭터 배치 시도
         IndustryLevelLocked = 203, // 해금하지 않은(또는 범위 밖) 산업 레벨 배치 시도
+
+        // ── 300~: 상점 ──
+        InvalidSellRequest = 300, // 빈 목록·수량 0 이하·존재하지 않는 아이템
+        NotEnoughItem      = 301, // 보유량보다 많이 팔려는 시도
     }
 
     public enum EItemChangeKind : byte

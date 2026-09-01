@@ -47,6 +47,8 @@ namespace MikaProtocol
         S_CurrencyResponse = 16,
         S_CharacterListResponse = 17,
         S_WorkStationSlotSyncResponse = 18,
+        C_ItemSellRequest = 19,
+        S_ItemSellResponse = 20,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -210,6 +212,28 @@ namespace MikaProtocol
         public List<CharacterInfo>? Characters { get; set; }
     }
 
+    // ───────────────────────── 상점 (Shop) ─────────────────────────
 
+    /// <summary>
+    /// 아이템 즉시 판매 요청. <b>종류 하나가 아니라 목록으로 받는다</b> —
+    /// 방치형이라 인벤토리가 저절로 차므로, 일괄 판매가 기본 동선이고 낱개 판매가 그 특수한 경우다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_ItemSellRequest)]
+    public partial class C_ItemSellRequest : IPacket
+    {
+        public List<ItemInfo>? Items { get; set; }  // 팔 종류와 수량. Count는 델타(파는 개수)다
+    }
 
+    /// <summary>
+    /// 판매 결과. <b>전부 성공하거나 전부 실패한다</b> — 한 종류라도 보유량이 모자라면
+    /// 아무것도 팔리지 않는다(<see cref="EResultCode.NotEnoughItem"/>).
+    /// 갱신된 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 내려간다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ItemSellResponse)]
+    public partial class S_ItemSellResponse : IPacket
+    {
+        public EResultCode Result { get; set; }
+        public long GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 갱신 후 누적 총량. 0개는 Kind=Remove
+    }
 }

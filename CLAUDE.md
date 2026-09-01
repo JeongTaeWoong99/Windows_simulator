@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-08-26 (Common 자산별 구조 · 신규 클라 스킬 2종 · 공동 소유 안전장치)
+> 최종 업데이트: 2026-09-02 (워크트리 규칙 추가 — 기본은 만들지 않음 · 이름 형식 고정)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -57,6 +57,12 @@
   `Server/GameData`, `Server/Shared/Data`, `Assets/StreamingAssets/Data`, `GameDesign/DataLog`.
   원본(`Server/MikaProtocol`, `GameDesign/Excel`)에서 고치고 파이프라인을 돌린다.
 - 커밋은 `commit-convention` 규칙을 따른다.
+- **워크트리는 기본적으로 만들지 않는다.** 사용자가 "워크트리"를 명시했을 때만 만든다.
+  만들 때 이름은 **`worktree-T-0XX-<영문-kebab-슬러그>`** 로 고정한다 (예: `worktree-T-028-baseprice-shop`).
+  `git worktree list`에서 일감 ID가 보여야 어느 작업의 것인지 알 수 있다 —
+  해당 일감이 없으면 `tasks/`에 먼저 등록하고 그 ID를 쓴다.
+  ⚠️ `EnterWorktree`의 `name`에는 **접두 없이 `T-0XX-<슬러그>`만** 넣는다.
+  도구가 `worktree-`를 붙여 위 이름을 만든다 — 직접 넣으면 `worktree-worktree-…`가 된다.
 - Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
   `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
 - `.claude/settings.local.json`은 개인 설정이라 커밋하지 않는다(`.gitignore` 처리됨).

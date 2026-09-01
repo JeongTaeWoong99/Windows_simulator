@@ -95,4 +95,22 @@ public static class ClientPacketHandler
         user.AssignWorkStation(req.SlotIndex, (GameData.IndustryType)req.Industry, req.CharacterId,
                                DateTime.UtcNow, industryLevel);
     }
+
+    /// <summary>
+    /// 아이템을 즉시 판매한다. <b>가격은 서버가 정한다</b> — 클라이언트는 무엇을 몇 개 팔지만 보낸다.
+    /// </summary>
+    [PacketHandler]
+    public static void Handle_C_ItemSellRequest(ISession session, C_ItemSellRequest req)
+    {
+        ServerLog.Debug("상점", $"판매 요청 종류={req.Items?.Count ?? 0} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ItemSellResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        ShopService.Instance.Sell(user, req.Items);
+    }
 }
