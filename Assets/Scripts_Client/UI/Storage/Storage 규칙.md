@@ -28,18 +28,26 @@ Grid Presenter  ─ 프레임 200칸 · 칸 풀 · "받은 목록을 앞 칸부�
       ↑ ShowTab(tab)
 Tab Presenter   ─ 탭 버튼 4개를 쥔다. 전환은 여기 한 곳
       │
+      ├ Resource  → ResourceSlotSource  : PlayerDataModel.Inventory   [기본 탭]
       ├ Character → CharacterSlotSource : PlayerDataModel.Characters
       ├ Equipment → 없음 (버튼이 잠긴다)
-      ├ Resource  → ResourceSlotSource  : PlayerDataModel.Inventory   [기본 탭]
       └ Trait     → 없음 (버튼이 잠긴다)
 ```
 
 `StorageSlotSource`는 **"칸 N개, 각 칸에 무엇을 그리는가"만** 답한다.
 격자는 그것이 자원인지 캐릭터인지 모른다.
 
-> ⚠️ **`StorageTab` enum에 값을 중간에 끼우지 않는다.** 씬에 int로 저장되므로 순서가 밀리면
-> **배선이 조용히 어긋난다** — `MainScreen`에서 실제로 겪었다([`UIManager.cs`](../../Managers/UIManager.cs) 주석).
-> 늘릴 때는 **뒤에만 붙인다.**
+### 세 순서를 나란히 맞춘다
+
+**화면의 탭 순서 · `StorageTab` enum · 인스펙터 `Tabs` 배열이 모두 같다**
+— 자원 · 캐릭터 · 장비 · 특성. `TabEntry`가 탭↔버튼을 짝짓기 때문에 **어긋나도 동작은 하지만**,
+셋이 나란해야 코드만 읽어도 화면이 그려지고 배선을 눈으로 대조할 수 있다.
+
+> ⚠️ **enum 값을 중간에 끼우거나 재정렬하면 씬 배선을 반드시 함께 고친다.**
+> 씬에 int로 저장돼 있어 **코드만 바꾸면 같은 숫자가 다른 탭으로 읽힌다** —
+> 컴파일도 경고도 통과하고 배선만 조용히 어긋난다
+> (`MainScreen`에서 실제로 겪었다 → [`UIManager.cs`](../../Managers/UIManager.cs) 주석).
+> **그냥 늘리기만 할 때는 끝에 붙이면** 씬을 안 건드려도 된다.
 
 ### 탭 하나를 채우는 절차
 

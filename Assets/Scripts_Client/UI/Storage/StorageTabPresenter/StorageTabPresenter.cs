@@ -4,20 +4,24 @@ using UnityEngine.UI;
 
 // 창고 열의 탭. 인스펙터에 넣은 버튼과 짝지어 무엇을 그릴지 정한다.
 //
-// ⚠️ 값을 중간에 끼우지 않는다 — 씬에 int로 저장돼 있어 순서가 밀리면 'Tabs' 배선이
-// 조용히 어긋난다(컴파일도 경고도 통과한다). 늘릴 때는 끝에 붙인다.
+// 값의 순서는 **화면의 탭 순서와 같게 유지한다** — 코드만 읽어도 화면이 그려져야 한다.
+//
+// ⚠️ 값을 중간에 끼우거나 재정렬하면 **씬 배선을 반드시 함께 고친다.**
+// 씬에는 이 enum이 int로 저장돼 있어, 코드만 바꾸면 같은 숫자가 다른 탭으로 읽힌다
+// — 컴파일도 경고도 통과하고 배선만 조용히 어긋난다.
+// 그냥 늘리기만 할 때는 **끝에 붙이면** 씬을 안 건드려도 된다.
 // 이 enum이 seam인 이유와 탭을 채우는 절차는 'Storage 규칙.md' 참조.
 public enum StorageTab
 {
+    // 채취로 모은 자원. 창고의 기본 탭이라 화면에서도 맨 왼쪽이다.
+    Resource,
+
     // 보유 캐릭터. 배치 중인지 아닌지를 함께 보여 준다.
     Character,
 
     // 장비 — ⏸ 아직 화면이 없다. 데이터가 없을 뿐 아니라 'ItemTable.ItemType'이 산업 축이라
     // 장비를 담을 칸이 테이블에 없다. 컬럼 축부터 정해야 한다 (T-041 · T-002).
     Equipment,
-
-    // 채취로 모은 자원. 창고의 기본 탭이다.
-    Resource,
 
     // 특성 — ⏸ 기획은 있으나 서버 구현·패킷이 없다 (T-041).
     Trait,
@@ -45,18 +49,16 @@ public class StorageTabPresenter : MonoBehaviour
         [Tooltip("이 줄이 어느 탭인가")]
         public StorageTab tab;
 
-        // ※ 배열 순서는 화면의 버튼 순서와 달라도 된다 — 짝만 맞으면 된다.
-        //   실제로 씬은 왼쪽부터 자원·캐릭터·장비·특성이고, enum 순서(Character 먼저)와 다르다.
-        [Tooltip("그 탭의 버튼")]
+        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 자원·캐릭터·장비·특성)")]
         public Button button;
     }
 
     // ※ NonReorderable로 두 가지를 동시에 얻는다 —
-    //   [1] 드래그로 순서가 뒤바뀌어도 tab 값이 함께 따라가니 의미는 안 깨지지만,
-    //       화면의 버튼 순서와 목록 순서가 어긋나면 사람이 배선을 확인하기 어려워진다.
+    //   [1] 드래그로 순서가 뒤바뀌어도 tab 값이 함께 따라가니 배선은 안 깨지지만,
+    //       목록 순서를 화면·enum과 나란히 두어야 사람이 한눈에 대조할 수 있다.
     //   [2] reorderable list로 그려지면 Unity가 그 위의 [CenterHeader]를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
     [CenterHeader("참조")]
-    [SerializeField, NonReorderable, Tooltip("탭 버튼들. StorageTab 값마다 정확히 한 줄씩 넣는다")]
+    [SerializeField, NonReorderable, Tooltip("탭 버튼들. StorageTab 값마다 정확히 한 줄씩, 화면과 같은 순서로 넣는다")]
     private TabEntry[] tabs = new TabEntry[0];
 
     [SerializeField, Tooltip("탭 내용을 그리는 격자. 같은 캔버스의 Grid Presenter")]
