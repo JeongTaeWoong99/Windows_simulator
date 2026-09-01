@@ -8,7 +8,7 @@ tags: [server, economy, packet, excel, transaction]
 
 ## 목적 / 배경
 
-- **골드를 버는 길이 하나도 없어 지갑이 항상 0이었다.** `CurrencyWallet`·`S_CurrencyResponse`는
+- **골드를 버는 길이 하나도 없어 지갑이 항상 0이었다.** `User.Currency`·`S_CurrencyResponse`는
   이미 있었지만 잔액을 늘리는 경로가 없었다. 그래서 가챠 비용(T-027)도 슬롯 확장(T-038)도
   실제로 검증할 수 없는 상태였다.
 - 클라(T-032)는 **판매 패킷이 없어 한 줄도 쓰지 못하고** 있었다 — 클라가 서버에 기다리던 것 중 가장 급한 항목.
@@ -45,7 +45,7 @@ tags: [server, economy, packet, excel, transaction]
   거래소가 붙어 수수료·가격 밴드가 함께 생길 때 그때 옮긴다.
 - **DB 작업을 하나로 묶었다.** 기존 패턴(`AddItemRepository` + `SaveCurrencyRepository`를 각각 Post)을
   그대로 따르면 **DB 작업이 둘로 갈라져** 차감만 커밋되고 지급이 실패하는 창이 열린다.
-  그래서 `GainCurrency`를 쓰지 않고 `Wallet.Gain`만 부른 뒤 통합 Repository에 저장을 맡겼다.
+  그래서 `GainGold`(저장까지 한다)를 쓰지 않고 `_gold`를 직접 올린 뒤 통합 Repository에 저장을 맡겼다.
   `ShopServiceTest.판매는_DB작업을_하나만_예약한다`가 이 결정을 지킨다.
 - **전부 되거나 전혀 안 된다.** 목록 중 한 종류라도 모자라면 아무것도 팔지 않는다.
   부분 성공을 허용하면 클라가 "무엇이 팔렸는지"를 다시 물어야 한다.
@@ -65,3 +65,5 @@ tags: [server, economy, packet, excel, transaction]
 - `BasePrice` 값 확정은 T-018 — 지금 5산업이 같은 배율이라 시간당 수익이 갈릴 수 있다(T-008·T-009와 한 세트).
 - 데이터 파이프라인을 돌리면 `Server/GameData`·`ExcelGenerator/Output` 아래 파일 30여 개가
   **개행(LF→CRLF)만 바뀐 채로** 수정됨 표시가 뜬다. 내용 변화가 없어 `git add`하면 자동으로 빠진다.
+- 병합 시 main의 재화 구조 변경(CurrencyWallet·CurrencyType 폐지 → User._gold/_dia, S_CurrencyResponse{Gold,Dia})에
+  맞춰 User.Shop·SellItemsRepository·테스트를 고쳤다. t_user_currency도 (user_id, gold, dia) 단일 행이다.

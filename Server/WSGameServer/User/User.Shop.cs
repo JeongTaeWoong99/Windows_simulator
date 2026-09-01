@@ -1,4 +1,3 @@
-using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
@@ -17,23 +16,13 @@ public partial class User
             return false;
         }
 
-        // 총액이 0이면 지갑을 건드리지 않는다 — Gain은 0을 거부한다(지급 경로로 차감이 새는 것을 막는 규약).
-        var remain = GetCurrency(CurrencyType.Gold);
-        if (gold > 0)
-        {
-            remain = Wallet.Gain(CurrencyType.Gold, gold);
-        }
+        // GainGold를 쓰지 않고 잔액을 직접 올린다 — 그쪽은 저장까지 해서 DB 작업이 인벤 차감과 둘로 갈라진다.
+        // 대금은 BasePrice × 수량이라 음수가 될 수 없고, 0원 판매(BasePrice=0)도 그대로 통과시킨다.
+        _gold = checked(_gold + gold);
 
-        // 저장은 SellItemsRepository 하나가 맡는다 — GainCurrency를 쓰면 DB 작업이 둘로 갈라진다.
-        PostDBTask(new SellItemsRepository(this, changes, CurrencyType.Gold, remain));
+        PostDBTask(new SellItemsRepository(this, changes, _gold, _dia));
 
-        Send(new S_CurrencyResponse
-        {
-            Currencies = new List<CurrencyInfo>
-            {
-                new() { CurrencyType = (byte)CurrencyType.Gold, Amount = remain },
-            },
-        });
+        Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
 
         return true;
     }

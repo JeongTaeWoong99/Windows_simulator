@@ -1,4 +1,4 @@
-using GameData;
+
 using MikaProtocol;
 
 namespace WSGameServer;
@@ -48,7 +48,7 @@ public class ShopServiceTest
         ShopService.Instance.Sell(user, Request((CarpTid, 5)));
 
         // 붕어 10골드 × 5개 = 50 (즉시 판매가는 BasePrice의 100%)
-        user.GetCurrency(CurrencyType.Gold).ShouldBe(50);
+        user.Gold.ShouldBe(50);
         b.Channel.SentOf<S_ItemSellResponse>().Single().GainedGold.ShouldBe(50);
     }
 
@@ -60,7 +60,7 @@ public class ShopServiceTest
         ShopService.Instance.Sell(user, Request((CarpTid, 5), (LegendTid, 2)));
 
         // 10 × 5 + 1000 × 2 = 2050
-        user.GetCurrency(CurrencyType.Gold).ShouldBe(2050);
+        user.Gold.ShouldBe(2050);
     }
 
     [Fact]
@@ -70,9 +70,7 @@ public class ShopServiceTest
 
         ShopService.Instance.Sell(user, Request((CarpTid, 5)));
 
-        var currency = b.Channel.SentOf<S_CurrencyResponse>().Last().Currencies!.Single();
-        currency.CurrencyType.ShouldBe((byte)CurrencyType.Gold);
-        currency.Amount.ShouldBe(50);
+        b.Channel.SentOf<S_CurrencyResponse>().Last().Gold.ShouldBe(50);
     }
 
     [Fact]
@@ -95,7 +93,7 @@ public class ShopServiceTest
         ShopService.Instance.Sell(user, Request((CarpTid, 4)));
 
         b.Channel.SentOf<S_ItemSellResponse>().Single().Result.ShouldBe(EResultCode.NotEnoughItem);
-        user.GetCurrency(CurrencyType.Gold).ShouldBe(0);
+        user.Gold.ShouldBe(0);
 
         user.SendInventory();
         b.Channel.SentOf<S_InventoryResponse>().Single().Items!.Single().Count.ShouldBe(3);
@@ -110,7 +108,7 @@ public class ShopServiceTest
         ShopService.Instance.Sell(user, Request((CarpTid, 5), (LegendTid, 2)));
 
         b.Channel.SentOf<S_ItemSellResponse>().Single().Result.ShouldBe(EResultCode.NotEnoughItem);
-        user.GetCurrency(CurrencyType.Gold).ShouldBe(0);
+        user.Gold.ShouldBe(0);
         b.DB.Posted.ShouldBeEmpty();
     }
 

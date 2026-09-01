@@ -1,4 +1,3 @@
-using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
@@ -10,15 +9,15 @@ namespace WSGameServer;
 public sealed class SellItemsRepository : IRepository
 {
     private readonly List<ItemChangeInfo> _itemChanges;
-    private readonly CurrencyType _currencyType;
-    private readonly long _remain;
+    private readonly long _gold;
+    private readonly long _dia;
 
-    public SellItemsRepository(User user, List<ItemChangeInfo> itemChanges, CurrencyType currencyType, long remain)
+    public SellItemsRepository(User user, List<ItemChangeInfo> itemChanges, long gold, long dia)
     {
-        User          = user;
-        _itemChanges  = itemChanges;
-        _currencyType = currencyType;
-        _remain       = remain;
+        User         = user;
+        _itemChanges = itemChanges;
+        _gold        = gold;
+        _dia         = dia;
     }
 
     // DBExecutor 파티션 키 — 같은 유저의 DB 작업(로그인 로드 등)과 직렬로 처리돼야 한다.
@@ -49,11 +48,12 @@ public sealed class SellItemsRepository : IRepository
             }
 
             // 델타가 아니라 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 된다.
+            // 바뀌는 건 골드뿐이지만 두 재화를 함께 쓴다 — SaveCurrencyRepository와 같은 이유다.
             await tx.ExecuteAsync(
-                @"INSERT INTO t_user_currency (user_id, currency_type, amount)
-                  VALUES (@userId, @currencyType, @amount)
-                  ON CONFLICT (user_id, currency_type) DO UPDATE SET amount = excluded.amount;",
-                new { userId = User.Uid, currencyType = (int)_currencyType, amount = _remain });
+                @"INSERT INTO t_user_currency (user_id, gold, dia)
+                  VALUES (@userId, @gold, @dia)
+                  ON CONFLICT (user_id) DO UPDATE SET gold = excluded.gold, dia = excluded.dia;",
+                new { userId = User.Uid, gold = _gold, dia = _dia });
         });
     }
 
