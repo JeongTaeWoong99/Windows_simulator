@@ -16,14 +16,14 @@ namespace MikaNetwork
 
         public async Task<MikaClientSession> ConnectAsync(string ipAddress, int port)
         {
-            await _connectSocket.ConnectAsync(ipAddress, port);
+            await _connectSocket.ConnectAsync(ipAddress, port).ConfigureAwait(false);
 
             return new MikaClientSession(_connectSocket);
         }
 
         public async Task<MikaClientSession> ConnectAsync(IPAddress ipAddress, int port)
         {
-            await _connectSocket.ConnectAsync(ipAddress, port);
+            await _connectSocket.ConnectAsync(ipAddress, port).ConfigureAwait(false);
 
             return new MikaClientSession(_connectSocket);
         }

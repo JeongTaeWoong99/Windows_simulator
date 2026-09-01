@@ -38,7 +38,7 @@ public sealed class SessionWatchdog : ISessionWatchdog
     /// 검사 주기. <b>판정 시간이 아니다</b> — 얼마나 자주 들여다볼지일 뿐이다.
     /// 실제 끊김 시점은 최대 이만큼 늦어지므로 <see cref="Global.SessionIdleTimeout"/>보다 충분히 짧게 둔다.
     /// </summary>
-    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
 
     private readonly ILogicExecutor _logicExecutor;
     
