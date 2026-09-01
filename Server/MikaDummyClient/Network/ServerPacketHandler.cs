@@ -57,7 +57,9 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv Gacha: Count={res.Rewards?.Count}");
             foreach (var reward in res.Rewards!)
             {
-                Console.WriteLine($"  - Rarity={reward.Rarity.ToString()}, ItemId={reward.ItemId}, Count={reward.Count}");
+                // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다.
+                var tid = reward.RewardType == EGachaRewardType.Character ? reward.CharacterTid : reward.ItemId;
+                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity.ToString()}, Tid={tid}, Count={reward.Count}");
             }
 
             Console.WriteLine($"[Client] Recv Gacha 인벤토리 변경: Count={res.ItemChangeInfos?.Count}");

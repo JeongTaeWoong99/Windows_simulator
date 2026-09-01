@@ -38,6 +38,45 @@ public partial class User
     }
 
     /// <summary>
+    /// 가챠로 뽑은 캐릭터를 지급한다. 개체 PK는 DB가 발급하므로 결과는
+    /// <see cref="OnGachaCharactersGranted"/>로 돌아온다. <b>같은 TID가 여러 번 들어와도 된다</b> —
+    /// 중복은 개체를 늘리는 것으로 처리한다(캐릭터 기획 1.1).
+    /// </summary>
+    public void GrantGachaCharacters(IReadOnlyList<int> characterTids)
+    {
+        PostDBTask(new GrantCharacterRepository(this, characterTids, CharacterGrantReason.Gacha));
+    }
+
+    /// <summary>
+    /// 가챠 지급이 끝나면 불린다(로직 스레드). 적재 후 목록을 다시 내려보낸다 —
+    /// 클라이언트가 <b>재로그인 없이</b> 뽑은 캐릭터를 배치할 수 있어야 한다.
+    /// </summary>
+    public void OnGachaCharactersGranted(IReadOnlyList<(long Id, int Tid)> granted)
+    {
+        foreach (var (characterId, characterTid) in granted)
+        {
+            AddCharacter(characterId, characterTid);
+        }
+
+        SendCharacters();
+    }
+
+    /// <summary>
+    /// 지급받은 캐릭터 하나를 메모리에 올린다.
+    /// 테이블에 없는 TID는 <see cref="LoadCharacters"/>와 같은 정책으로 경고만 남기고 건너뛴다.
+    /// </summary>
+    private void AddCharacter(long characterId, int characterTid)
+    {
+        if (!GameTable.CharacterTable.TryGet(characterTid, out var row))
+        {
+            ServerLog.Warn("캐릭터", $"CharacterTable에 없는 TID, 지급 건너뜀: {characterTid} (개체 {characterId})");
+            return;
+        }
+
+        _characters[characterId] = new Character(characterId, row, level: 1, exp: 0);
+    }
+
+    /// <summary>
     /// 보유 캐릭터 전체 스냅샷을 보낸다(로그인 직후).
     /// 클라이언트는 여기서 받은 CharacterId로 슬롯 배치를 요청한다.
     /// </summary>

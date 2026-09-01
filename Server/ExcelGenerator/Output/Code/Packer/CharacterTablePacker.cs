@@ -16,12 +16,13 @@ namespace GameData
         {
             CharacterTID = PackerUtil.ParseInt(cells[0], Table, "CharacterTID"),
             Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
-            Farming      = PackerUtil.ParseInt(cells[2], Table, "Farming"),
-            Fishing      = PackerUtil.ParseInt(cells[3], Table, "Fishing"),
-            Mining       = PackerUtil.ParseInt(cells[4], Table, "Mining"),
-            Logging      = PackerUtil.ParseInt(cells[5], Table, "Logging"),
-            Hunting      = PackerUtil.ParseInt(cells[6], Table, "Hunting"),
-            Description  = cells[7].Length > 0 ? PackerUtil.RequireString(cells[7], Table, "Description") : "",
+            GlobalRarity = PackerUtil.ParseEnum<GlobalRarity>(cells[2], Table, "GlobalRarity"),
+            Farming      = PackerUtil.ParseInt(cells[3], Table, "Farming"),
+            Fishing      = PackerUtil.ParseInt(cells[4], Table, "Fishing"),
+            Mining       = PackerUtil.ParseInt(cells[5], Table, "Mining"),
+            Logging      = PackerUtil.ParseInt(cells[6], Table, "Logging"),
+            Hunting      = PackerUtil.ParseInt(cells[7], Table, "Hunting"),
+            Description  = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

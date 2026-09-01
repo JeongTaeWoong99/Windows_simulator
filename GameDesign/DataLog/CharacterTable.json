@@ -2,6 +2,7 @@
   {
     "CharacterTID": 1001,
     "Name": "램볼",
+    "GlobalRarity": "Common",
     "Farming": 1,
     "Fishing": 1,
     "Mining": 1,
@@ -12,6 +13,7 @@
   {
     "CharacterTID": 1002,
     "Name": "치키피",
+    "GlobalRarity": "Uncommon",
     "Farming": 3,
     "Fishing": 0,
     "Mining": 1,
@@ -22,6 +24,7 @@
   {
     "CharacterTID": 1003,
     "Name": "펭구렛",
+    "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Fishing": 3,
     "Mining": 0,
@@ -32,6 +35,7 @@
   {
     "CharacterTID": 1004,
     "Name": "캐티바",
+    "GlobalRarity": "Uncommon",
     "Farming": 2,
     "Fishing": 0,
     "Mining": 3,
@@ -42,6 +46,7 @@
   {
     "CharacterTID": 1005,
     "Name": "리프몽",
+    "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Fishing": 1,
     "Mining": 0,
@@ -52,11 +57,276 @@
   {
     "CharacterTID": 1006,
     "Name": "폭스파크스",
+    "GlobalRarity": "Uncommon",
     "Farming": 0,
     "Fishing": 2,
     "Mining": 1,
     "Logging": 0,
     "Hunting": 3,
     "Description": "사냥 담당"
+  },
+  {
+    "CharacterTID": 1007,
+    "Name": "밀개비",
+    "GlobalRarity": "Common",
+    "Farming": 2,
+    "Fishing": 1,
+    "Mining": 0,
+    "Logging": 1,
+    "Hunting": 0,
+    "Description": "농사 입문"
+  },
+  {
+    "CharacterTID": 1008,
+    "Name": "물방개미",
+    "GlobalRarity": "Common",
+    "Farming": 0,
+    "Fishing": 2,
+    "Mining": 1,
+    "Logging": 0,
+    "Hunting": 1,
+    "Description": "낚시 입문"
+  },
+  {
+    "CharacterTID": 1009,
+    "Name": "두더삽",
+    "GlobalRarity": "Common",
+    "Farming": 0,
+    "Fishing": 0,
+    "Mining": 2,
+    "Logging": 1,
+    "Hunting": 1,
+    "Description": "채굴 입문"
+  },
+  {
+    "CharacterTID": 1010,
+    "Name": "톱니쥐",
+    "GlobalRarity": "Common",
+    "Farming": 1,
+    "Fishing": 0,
+    "Mining": 1,
+    "Logging": 2,
+    "Hunting": 0,
+    "Description": "벌목 입문"
+  },
+  {
+    "CharacterTID": 1011,
+    "Name": "살쾡이",
+    "GlobalRarity": "Common",
+    "Farming": 0,
+    "Fishing": 1,
+    "Mining": 0,
+    "Logging": 1,
+    "Hunting": 2,
+    "Description": "사냥 입문"
+  },
+  {
+    "CharacterTID": 1012,
+    "Name": "갈대오리",
+    "GlobalRarity": "Uncommon",
+    "Farming": 1,
+    "Fishing": 4,
+    "Mining": 0,
+    "Logging": 1,
+    "Hunting": 1,
+    "Description": "낚시 담당"
+  },
+  {
+    "CharacterTID": 1013,
+    "Name": "뿔사슴이",
+    "GlobalRarity": "Uncommon",
+    "Farming": 1,
+    "Fishing": 0,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 4,
+    "Description": "사냥 담당"
+  },
+  {
+    "CharacterTID": 1014,
+    "Name": "솔방울곰",
+    "GlobalRarity": "Uncommon",
+    "Farming": 1,
+    "Fishing": 0,
+    "Mining": 1,
+    "Logging": 4,
+    "Hunting": 1,
+    "Description": "벌목 담당"
+  },
+  {
+    "CharacterTID": 1015,
+    "Name": "해달수",
+    "GlobalRarity": "Rare",
+    "Farming": 1,
+    "Fishing": 5,
+    "Mining": 0,
+    "Logging": 1,
+    "Hunting": 1,
+    "Description": "낚시 특화"
+  },
+  {
+    "CharacterTID": 1016,
+    "Name": "흙두꺼비",
+    "GlobalRarity": "Rare",
+    "Farming": 5,
+    "Fishing": 1,
+    "Mining": 2,
+    "Logging": 0,
+    "Hunting": 0,
+    "Description": "농사 특화"
+  },
+  {
+    "CharacterTID": 1017,
+    "Name": "광부오소리",
+    "GlobalRarity": "Rare",
+    "Farming": 0,
+    "Fishing": 0,
+    "Mining": 5,
+    "Logging": 2,
+    "Hunting": 2,
+    "Description": "채굴 특화"
+  },
+  {
+    "CharacterTID": 1018,
+    "Name": "도끼늑대",
+    "GlobalRarity": "Rare",
+    "Farming": 1,
+    "Fishing": 0,
+    "Mining": 2,
+    "Logging": 5,
+    "Hunting": 1,
+    "Description": "벌목 특화"
+  },
+  {
+    "CharacterTID": 1019,
+    "Name": "창날매",
+    "GlobalRarity": "Rare",
+    "Farming": 0,
+    "Fishing": 2,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 5,
+    "Description": "사냥 특화"
+  },
+  {
+    "CharacterTID": 1020,
+    "Name": "이삭토끼",
+    "GlobalRarity": "Rare",
+    "Farming": 6,
+    "Fishing": 1,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 0,
+    "Description": "농사 특화"
+  },
+  {
+    "CharacterTID": 1021,
+    "Name": "산호게",
+    "GlobalRarity": "Rare",
+    "Farming": 1,
+    "Fishing": 6,
+    "Mining": 2,
+    "Logging": 0,
+    "Hunting": 1,
+    "Description": "낚시 특화"
+  },
+  {
+    "CharacterTID": 1022,
+    "Name": "화산도롱뇽",
+    "GlobalRarity": "Epic",
+    "Farming": 1,
+    "Fishing": 0,
+    "Mining": 7,
+    "Logging": 2,
+    "Hunting": 2,
+    "Description": "채굴 정예"
+  },
+  {
+    "CharacterTID": 1023,
+    "Name": "파도고래",
+    "GlobalRarity": "Epic",
+    "Farming": 2,
+    "Fishing": 7,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 1,
+    "Description": "낚시 정예"
+  },
+  {
+    "CharacterTID": 1024,
+    "Name": "대지곰",
+    "GlobalRarity": "Epic",
+    "Farming": 7,
+    "Fishing": 1,
+    "Mining": 2,
+    "Logging": 2,
+    "Hunting": 1,
+    "Description": "농사 정예"
+  },
+  {
+    "CharacterTID": 1025,
+    "Name": "강철사마귀",
+    "GlobalRarity": "Epic",
+    "Farming": 0,
+    "Fishing": 2,
+    "Mining": 3,
+    "Logging": 2,
+    "Hunting": 7,
+    "Description": "사냥 정예"
+  },
+  {
+    "CharacterTID": 1026,
+    "Name": "거목정령",
+    "GlobalRarity": "Epic",
+    "Farming": 3,
+    "Fishing": 1,
+    "Mining": 1,
+    "Logging": 7,
+    "Hunting": 1,
+    "Description": "벌목 정예"
+  },
+  {
+    "CharacterTID": 1027,
+    "Name": "황금기린",
+    "GlobalRarity": "Legendary",
+    "Farming": 9,
+    "Fishing": 2,
+    "Mining": 2,
+    "Logging": 3,
+    "Hunting": 2,
+    "Description": "농사 최상위"
+  },
+  {
+    "CharacterTID": 1028,
+    "Name": "심연이무기",
+    "GlobalRarity": "Legendary",
+    "Farming": 1,
+    "Fishing": 9,
+    "Mining": 3,
+    "Logging": 1,
+    "Hunting": 3,
+    "Description": "낚시 최상위"
+  },
+  {
+    "CharacterTID": 1029,
+    "Name": "흑요석골렘",
+    "GlobalRarity": "Legendary",
+    "Farming": 1,
+    "Fishing": 1,
+    "Mining": 9,
+    "Logging": 4,
+    "Hunting": 2,
+    "Description": "채굴 최상위"
+  },
+  {
+    "CharacterTID": 1030,
+    "Name": "별빛드래곤",
+    "GlobalRarity": "Mythic",
+    "Farming": 7,
+    "Fishing": 7,
+    "Mining": 7,
+    "Logging": 7,
+    "Hunting": 7,
+    "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다"
   }
 ]

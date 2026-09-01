@@ -23,7 +23,9 @@ namespace GameData
             ["HuntingBasicTable"] = new(HuntingBasicTablePacker.Pack, HuntingBasicTablePacker.Verify, HuntingBasicTablePacker.Preview, HuntingBasicTablePacker.Dump),
             ["LoggingBasicTable"] = new(LoggingBasicTablePacker.Pack, LoggingBasicTablePacker.Verify, LoggingBasicTablePacker.Preview, LoggingBasicTablePacker.Dump),
             ["MiningBasicTable"] = new(MiningBasicTablePacker.Pack, MiningBasicTablePacker.Verify, MiningBasicTablePacker.Preview, MiningBasicTablePacker.Dump),
-            ["GachaTable"] = new(GachaTablePacker.Pack, GachaTablePacker.Verify, GachaTablePacker.Preview, GachaTablePacker.Dump),
+            ["GachaItemTable"] = new(GachaItemTablePacker.Pack, GachaItemTablePacker.Verify, GachaItemTablePacker.Preview, GachaItemTablePacker.Dump),
+            ["GachaInfoTable"] = new(GachaInfoTablePacker.Pack, GachaInfoTablePacker.Verify, GachaInfoTablePacker.Preview, GachaInfoTablePacker.Dump),
+            ["GachaCharacterTable"] = new(GachaCharacterTablePacker.Pack, GachaCharacterTablePacker.Verify, GachaCharacterTablePacker.Preview, GachaCharacterTablePacker.Dump),
             ["IndustryLevelTable"] = new(IndustryLevelTablePacker.Pack, IndustryLevelTablePacker.Verify, IndustryLevelTablePacker.Preview, IndustryLevelTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
         };

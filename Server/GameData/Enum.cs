@@ -54,4 +54,14 @@ namespace GameData
 
         Max ,
     };
+
+    public enum GachaRewardType : byte
+    {
+        None      = 0,
+
+        Item      = 1,  // 아이템 — GachaItemTable
+        Character = 2,  // 캐릭터 — GachaCharacterTable
+
+        Max      ,
+    };
 }

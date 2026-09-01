@@ -10,13 +10,14 @@ namespace GameData
     [MemoryPackable]
     public partial class CharacterTableRow
     {
-        public int    CharacterTID { get; set; }        // int
-        public string Name         { get; set; } = "";  // string
-        public int    Farming      { get; set; }        // int
-        public int    Fishing      { get; set; }        // int
-        public int    Mining       { get; set; }        // int
-        public int    Logging      { get; set; }        // int
-        public int    Hunting      { get; set; }        // int
-        public string Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int          CharacterTID { get; set; }        // int
+        public string       Name         { get; set; } = "";  // string
+        public GlobalRarity GlobalRarity { get; set; }        // eGlobalRarity
+        public int          Farming      { get; set; }        // int
+        public int          Fishing      { get; set; }        // int
+        public int          Mining       { get; set; }        // int
+        public int          Logging      { get; set; }        // int
+        public int          Hunting      { get; set; }        // int
+        public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

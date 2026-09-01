@@ -147,7 +147,7 @@ namespace MikaDummyClient
 
         private void SendGachaDraw()
         {
-            Console.Write("GachaId (기본 1) > ");
+            Console.Write("GachaId (1=아이템 · 2=캐릭터) > ");
             string? gachaInput = Console.ReadLine();
             int gachaId = string.IsNullOrWhiteSpace(gachaInput) ? 1 : int.Parse(gachaInput.Trim());
 
