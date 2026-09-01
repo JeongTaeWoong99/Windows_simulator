@@ -295,7 +295,7 @@ public class UserWorkStationTest
         // 실제 로그인 경로로 넣는다 — DB에서 온 값이 도메인까지 도달하는지가 이 테스트의 전부다.
         user.OnLoginDataLoaded(new PlayerLoginData(
             new List<InventoryRow>(),
-            new List<CurrencyRow>(),
+            null,
             new List<CharacterRow>
             {
                 new() { character_id = CharacterId, character_tid = AllRounderTid, level = 1, exp = 0 },

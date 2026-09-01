@@ -27,6 +27,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\WSGameServer\WSGameServer.csproj" />
+    <!-- 클라 세션(MikaClientSession)은 WSGameServer가 참조하지 않아 여기서 직접 건다. -->
+    <ProjectReference Include="..\MikaNetwork.Lib\MikaNetwork.Client\MikaNetwork.Client.csproj" />
   </ItemGroup>
 
 </Project>

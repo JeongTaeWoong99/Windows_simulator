@@ -11,16 +11,18 @@ namespace MikaNetwork
         public MikaClientSession? Session { get; private set; }
         public event Func<ISession, ReadOnlyMemory<byte>, ValueTask>? PacketReceived;
 
-        public async Task ConnectAsync(string ip, int port) => await ConnectAsync(IPAddress.Parse(ip), port);
+        public async Task ConnectAsync(string ip, int port) => await ConnectAsync(IPAddress.Parse(ip), port).ConfigureAwait(false);
         public async Task ConnectAsync(IPAddress ipAddress, int port)
         {
-            Session = await _connector.ConnectAsync(ipAddress, port);
+            Session = await _connector.ConnectAsync(ipAddress, port).ConfigureAwait(false);
 
             Session.Received += OnSessionPacketReceived;
             Session.Connected += OnConnected;
             Session.Disconnected += OnDisconnected;
 
-            _ = Session.StartAsync();
+            // 스레드풀에서 시작한다. 호출자의 SynchronizationContext 위에서 그냥 부르면
+            // 두 루프의 await가 그 컨텍스트를 캡처해, 호출자의 메시지 루프가 멈추면 소켓도 함께 멈춘다.
+            _ = Task.Run(() => Session.StartAsync());
         }
 
         public void Disconnect()

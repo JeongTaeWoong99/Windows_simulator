@@ -25,17 +25,6 @@ namespace MikaProtocol
         public EItemChangeKind Kind { get; set; }
     }
 
-    /// <summary>
-    /// 재화 한 종류의 보유량.
-    /// <c>Amount</c>는 증감이 아니라 <b>확정된 잔액</b>이라 받는 쪽은 덮어쓰기만 하면 된다.
-    /// </summary>
-    [MemoryPackable]
-    public partial class CurrencyInfo
-    {
-        public byte CurrencyType { get; set; }  // GameData.CurrencyType (1=Gold)
-        public long Amount       { get; set; }  // 보유량. int로 받지 말 것 — 거래 경제에서 21억을 넘길 수 있다
-    }
-
     // 가챠로 뽑힌 결과 1건 (인벤토리 누적 수량이 아닌 "이번에 획득한 것")
     [MemoryPackable]
     public partial class GachaRewardInfo

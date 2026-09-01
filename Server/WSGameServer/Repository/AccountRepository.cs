@@ -35,8 +35,7 @@ public class AccountRepository : IRepository
         {
             _userId = row.user_id; // 있으면 _userId에 넣어주기
         }
-
-
+        
         // 3) AccountResultRow 채워주기
         _resultRow = await connection.QueryFirstOrDefaultAsync<AccountResultRow>(
             "SELECT user_id, nickname, admin_level, is_deleted, is_banned FROM t_user WHERE user_id = @userId",

@@ -19,12 +19,12 @@ public sealed record CharacterRow
     public int  exp           { get; init; }
 }
 
-// t_user_currency 조회 전용 Row. amount는 반드시 long이다 —
-// 거래 경제가 붙으면 누적 골드가 int 상한(약 21억)을 넘길 수 있다.
+// t_user_currency 조회 전용 Row. 재화가 늘면 행이 아니라 컬럼이 는다.
+// 전부 long이다 — 거래 경제가 붙으면 누적 골드가 int 상한(약 21억)을 넘길 수 있다.
 public sealed record CurrencyRow
 {
-    public int  currency_type { get; init; }
-    public long amount        { get; init; }
+    public long gold { get; init; }
+    public long dia  { get; init; }
 }
 
 // t_user_inventory 조회 전용 Row
@@ -52,11 +52,16 @@ public sealed record UserIndustryLevelRow
 
 /// <summary>
 /// 로그인 시 리포지토리가 로직 스레드로 넘기는 조회 결과 묶음.
-/// Row가 리포지토리 밖으로 나가는 유일한 통로다 — 순수 코어(Inventory·Wallet·WorkStation)에는 넘기지 않는다.
+/// Row가 리포지토리 밖으로 나가는 유일한 통로다 — 순수 코어(Inventory·WorkStation)에는 넘기지 않는다.
+///
+/// <para>
+/// <paramref name="Currency"/>만 목록이 아니라 단건이고 <b>null이 될 수 있다</b> —
+/// 한 번도 재화를 번 적이 없으면 행 자체가 없다. 0으로 보는 판단은 로직 스레드가 한다.
+/// </para>
 /// </summary>
 public sealed record PlayerLoginData(
     List<InventoryRow> InventoryRows,
-    List<CurrencyRow> CurrencyRows,
+    CurrencyRow? Currency,
     List<CharacterRow> CharacterRows,
     List<WorkStationSlotRow> WorkStationSlotRows,
     List<UserIndustryLevelRow> IndustryLevelRows);
