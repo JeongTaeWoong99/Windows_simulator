@@ -40,6 +40,20 @@ public class PacketEnumTest
     }
 
     [Fact]
+    public void 프로토콜_가챠보상타입은_GameData_가챠보상타입과_이름_값이_1대1이다()
+    {
+        // 보상이 아이템인지 캐릭터인지가 어긋나면 클라가 반대쪽 TID 필드를 읽어 엉뚱한 것을 그린다.
+        var protocol = Enum.GetValues<EGachaRewardType>()
+            .Select(v => $"{v}={(byte)v}");
+
+        var gameData = Enum.GetValues<GachaRewardType>()
+            .Where(v => v != GachaRewardType.Max)
+            .Select(v => $"{v}={(byte)v}");
+
+        protocol.ShouldBe(gameData);
+    }
+
+    [Fact]
     public void 산업타입_값은_ItemType의_산업_구간과_같다()
     {
         // DropTID(산업×100000+…)와 DB(t_workstation_slot.industry 등)가 ItemType 숫자로 저장돼 있다.

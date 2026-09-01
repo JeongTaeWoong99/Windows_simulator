@@ -6,29 +6,26 @@ using MemoryPack;
 
 namespace GameData
 {
-    /// <summary>CharacterTable 시트의 셀 문자열을 CharacterTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
-    public static class CharacterTablePacker
+    /// <summary>GachaCharacterTable 시트의 셀 문자열을 GachaCharacterTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
+    public static class GachaCharacterTablePacker
     {
-        private const string Table = "CharacterTable";
+        private const string Table = "GachaCharacterTable";
 
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
-        public static CharacterTableRow Parse(string[] cells) => new()
+        public static GachaCharacterTableRow Parse(string[] cells) => new()
         {
-            CharacterTID = PackerUtil.ParseInt(cells[0], Table, "CharacterTID"),
-            Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
-            GlobalRarity = PackerUtil.ParseEnum<GlobalRarity>(cells[2], Table, "GlobalRarity"),
-            Farming      = PackerUtil.ParseInt(cells[3], Table, "Farming"),
-            Fishing      = PackerUtil.ParseInt(cells[4], Table, "Fishing"),
-            Mining       = PackerUtil.ParseInt(cells[5], Table, "Mining"),
-            Logging      = PackerUtil.ParseInt(cells[6], Table, "Logging"),
-            Hunting      = PackerUtil.ParseInt(cells[7], Table, "Hunting"),
-            Description  = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Description") : "",
+            GachaCharacterTID = PackerUtil.ParseInt(cells[0], Table, "GachaCharacterTID"),
+            GachaId           = PackerUtil.ParseInt(cells[1], Table, "GachaId", 1, null),
+            CharacterTID      = PackerUtil.ParseInt(cells[2], Table, "CharacterTID"),
+            Count             = PackerUtil.ParseInt(cells[3], Table, "Count", 1, null),
+            Weight            = PackerUtil.ParseInt(cells[4], Table, "Weight"),
+            Description       = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
         public static byte[] Pack(IReadOnlyList<string[]> rows)
         {
-            var list = new List<CharacterTableRow>(rows.Count);
+            var list = new List<GachaCharacterTableRow>(rows.Count);
             for (var i = 0; i < rows.Count; i++)
             {
                 try { list.Add(Parse(rows[i])); }
@@ -43,7 +40,7 @@ namespace GameData
         /// <summary>바이너리를 역직렬화해 행 수를 확인하고, 재직렬화 결과가 원본과 같은지 검증한다(라운드트립).</summary>
         public static int Verify(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<CharacterTableRow>>(bytes)
+            var list = MemoryPackSerializer.Deserialize<List<GachaCharacterTableRow>>(bytes)
                        ?? throw new InvalidDataException($"[{Table}] 역직렬화 결과가 null입니다.");
             var again = MemoryPackSerializer.Serialize(list);
             if (!again.AsSpan().SequenceEqual(bytes))
@@ -54,7 +51,7 @@ namespace GameData
         /// <summary>첫 행을 사람이 읽을 수 있는 형태로 덤프한다(콘솔 검증용).</summary>
         public static string Preview(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<CharacterTableRow>>(bytes);
+            var list = MemoryPackSerializer.Deserialize<List<GachaCharacterTableRow>>(bytes);
             return list is { Count: > 0 }
                 ? System.Text.Json.JsonSerializer.Serialize(list[0])
                 : "(빈 테이블)";
@@ -63,7 +60,7 @@ namespace GameData
         /// <summary>모든 행을 사람이 읽을 JSON으로 덤프한다(enum=이름, 들여쓰기, 한글 그대로). 엑셀 대조/리뷰용 사이드카.</summary>
         public static string Dump(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<CharacterTableRow>>(bytes) ?? new();
+            var list = MemoryPackSerializer.Deserialize<List<GachaCharacterTableRow>>(bytes) ?? new();
             var options = new System.Text.Json.JsonSerializerOptions
             {
                 WriteIndented = true,

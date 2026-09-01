@@ -1,0 +1,18 @@
+[
+  {
+    "GachaInfoTID": 1,
+    "Name": "구슬 상자",
+    "CostCurrency": "Gold",
+    "CostSingle": 500,
+    "CostMulti": 5000,
+    "Description": "아이템 풀(테스트용 구슬 6종)"
+  },
+  {
+    "GachaInfoTID": 2,
+    "Name": "캐릭터 소환",
+    "CostCurrency": "Gold",
+    "CostSingle": 1000,
+    "CostMulti": 10000,
+    "Description": "캐릭터 풀 30종"
+  }
+]

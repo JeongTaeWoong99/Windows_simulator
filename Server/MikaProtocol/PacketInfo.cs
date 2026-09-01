@@ -25,12 +25,28 @@ namespace MikaProtocol
         public EItemChangeKind Kind { get; set; }
     }
 
-    // 가챠로 뽑힌 결과 1건 (인벤토리 누적 수량이 아닌 "이번에 획득한 것")
+    /// <summary>
+    /// 가챠로 뽑힌 결과 1건 (인벤토리 누적 수량이 아닌 "이번에 획득한 것").
+    ///
+    /// <para>
+    /// <b><see cref="RewardType"/>이 어느 TID 필드를 읽을지 정한다</b> — 아이템이면 <c>ItemId</c>,
+    /// 캐릭터면 <c>CharacterTid</c>이고 나머지 하나는 0이다. 한 필드에 둘을 겹쳐 담지 않는 이유는
+    /// 아이템 TID와 캐릭터 TID가 같은 숫자 대역을 쓸 수 있어, 종류를 잘못 읽으면
+    /// <b>조용히 엉뚱한 것을 그리기</b> 때문이다.
+    /// </para>
+    ///
+    /// <para>
+    /// <b>캐릭터 개체 PK는 여기 실리지 않는다.</b> DB가 발급하는 값이라 이 응답보다 늦게 나온다 —
+    /// 배치에 쓸 <c>CharacterId</c>는 뒤이어 오는 <see cref="S_CharacterListResponse"/>에서 받는다.
+    /// </para>
+    /// </summary>
     [MemoryPackable]
     public partial class GachaRewardInfo
     {
-        public int ItemId { get; set; }
-        public int Count  { get; set; }        // 이번에 획득한 수량
+        public EGachaRewardType RewardType { get; set; }
+        public int ItemId       { get; set; }     // RewardType=Item일 때만 유효
+        public int CharacterTid { get; set; }     // RewardType=Character일 때만 유효
+        public int Count  { get; set; }           // 이번에 획득한 수량
         public EGlobalRarity Rarity { get; set; } // 연출용 등급
     }
 

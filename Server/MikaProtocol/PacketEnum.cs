@@ -15,8 +15,9 @@ namespace MikaProtocol
         AlreadyLoggedIn = 2,    // 이미 로그인된 세션이 로그인을 다시 요청
 
         // ── 100~: 가챠 ──
-        InvalidDrawCount = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)
-        InvalidGachaId   = 101, // 존재하지 않는 가챠 풀
+        InvalidDrawCount   = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)
+        InvalidGachaId     = 101, // 존재하지 않는 가챠 풀
+        NotEnoughCurrency  = 102, // 비용을 낼 재화가 모자람 — 아무것도 지급하지 않는다
 
         // ── 200~: 작업슬롯 ──
         InvalidSlotIndex    = 200, // 보유하지 않은 슬롯 번호
@@ -44,6 +45,16 @@ namespace MikaProtocol
         Mining  = 3,
         Logging = 4,
         Hunting = 5,
+    }
+
+    // 가챠 보상이 무엇인지. GameData.GachaRewardType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
+    // 서버가 byte 캐스팅으로 그대로 실어 보낸다(PacketEnumTest가 어긋남을 잡는다).
+    public enum EGachaRewardType : byte
+    {
+        None = 0,
+
+        Item      = 1,   // GachaRewardInfo.ItemId를 읽는다
+        Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —

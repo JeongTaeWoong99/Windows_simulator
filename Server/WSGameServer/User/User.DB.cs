@@ -68,21 +68,14 @@ public partial class User
     /// <summary>기본 캐릭터 지급을 요청한다. 완료는 <see cref="OnDefaultCharacterGranted"/>로 돌아온다.</summary>
     private void GrantDefaultCharacter()
     {
-        PostDBTask(new GrantCharacterRepository(this, DefaultCharacterTid));
+        PostDBTask(new GrantCharacterRepository(this, DefaultCharacterTid, CharacterGrantReason.Login));
     }
 
     /// <summary>기본 캐릭터 지급이 끝나면 불린다(로직 스레드). 적재 후 로그인을 마무리한다.</summary>
     public void OnDefaultCharacterGranted(long characterId, DateTime now)
     {
-        // 테이블 검증은 LoadCharacters와 같은 정책이다 — 없다고 로그인을 막지 않는다.
-        if (GameTable.CharacterTable.TryGet(DefaultCharacterTid, out var row))
-        {
-            _characters[characterId] = new Character(characterId, row, level: 1, exp: 0);
-        }
-        else
-        {
-            ServerLog.Warn("로그인", $"CharacterTable에 기본 캐릭터 TID가 없음: {DefaultCharacterTid}");
-        }
+        // 테이블에 없으면 AddCharacter가 경고만 남긴다 — 없다고 로그인을 막지 않는다.
+        AddCharacter(characterId, DefaultCharacterTid);
 
         FinishLogin(now);
     }
