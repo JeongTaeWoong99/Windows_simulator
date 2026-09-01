@@ -200,7 +200,7 @@ PlayerData (MODEL)                                PlayerDataModel
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).
 - **자원·캐릭터 둘이 실재한다** (기본 탭은 자원). 장비·특성은 **버튼이 잠겨 있다** —
   데이터가 없어서고, 잠금은 `StorageGridPresenter.HasSource`에서 파생된다(탭 줄이 따로 적지 않는다).
-  무엇을 기다리는지는 `tasks/T-041-창고장비특성탭.md`.
+  무엇을 기다리는지는 `tasks/T-043-창고장비특성탭.md`.
 - **탭이 달라도 격자는 하나다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만 갈아 끼운다 —
   구조와 "탭 하나를 채우는 절차"는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
 - **`xxx Button (1)`~`(4)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았다.

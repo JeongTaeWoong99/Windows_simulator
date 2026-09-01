@@ -84,8 +84,8 @@ public class StorageGridPresenter : MonoBehaviour
         //   전환·잠금·격자는 그대로다 ('Storage 규칙.md'의 "탭 하나를 채우는 절차").
         //
         // ⏸ Equipment — 장비 데이터가 없다. 게다가 'ItemTable.ItemType'은 산업 축(농사·낚시…)이라
-        //    장비를 담을 칸이 테이블에 없다. 컬럼 축부터 정해야 한다 (T-041 · T-002).
-        // ⏸ Trait      — 기획은 있으나 서버 구현·패킷이 없다 (T-041).
+        //    장비를 담을 칸이 테이블에 없다. 컬럼 축부터 정해야 한다 (T-043 · T-002).
+        // ⏸ Trait      — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
         _sources.Add(StorageTab.Resource,  new ResourceSlotSource(data));
         _sources.Add(StorageTab.Character, new CharacterSlotSource(data));
 
