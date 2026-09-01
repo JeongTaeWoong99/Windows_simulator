@@ -1,6 +1,6 @@
 # memory-meter 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (`Editor/memory-meter/` → `Common/memory-meter/` 이관) · 대상: `Common/memory-meter/`
+> 최종 업데이트: 2026-08-31 (라벨이 바뀔 때만 툴바 갱신) · 대상: `Common/memory-meter/`
 
 **에디터 메모리 사용량을 상단 툴바에 실시간으로 표시하는 툴.** 게임을 전혀 모르는 범용 툴이라
 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit) 사본인 `Common/` 아래에 있다.
@@ -49,9 +49,19 @@
   그래서 **툴팁 문구는 한 줄을 한글 24자 이내로 직접 끊는다** — 그래야 문장 중간에서 꺾이지 않는다.
   수치는 가변폭 폰트라 공백 패딩으로 열을 못 맞추므로 **`이름 줄` / `값 줄`로 나눠** 세로로 세운다.
   (내부 툴팁 요소를 리플렉션으로 손대는 건 [`editor-shared 규칙.md`](<../editor-shared/editor-shared 규칙.md>)의 "툴바 버튼은 공식 API로만 붙인다"와 같은 부류라 하지 않는다.)
-- **갱신은 `EditorApplication.update`에서 1초에 한 번**만 한다. 값을 바꾼 뒤
-  `MainToolbar.Refresh(path)`로 툴바에 알리는 게 공식 갱신 경로다.
+- **갱신은 `EditorApplication.update`에서 1초에 한 번**, 그중에서도 **라벨이 실제로 바뀐
+  경우에만** 한다. 값을 바꾼 뒤 `MainToolbar.Refresh(path)`로 툴바에 알리는 게 공식 갱신 경로다.
   도메인 리로드마다 팩토리 메서드가 다시 불리므로 구독은 `-=` 후 `+=`로 건다.
+- 🔴 **바뀐 게 없으면 `Refresh`를 부르지 않는다.** `Refresh`는 UI Toolkit에게 버튼 텍스트
+  메시를 다시 만들게 하는데, 그 생성이 **지연 실행**이라 그 사이 유니티가 폰트 아틀라스
+  `Material`을 언로드하면(플레이 모드를 빠져나올 때 자동으로 돈다) 콘솔에
+  `MissingReferenceException: ... Material ... has been destroyed`가 뜬다.
+  뒤이어 `MeshGenerationContext ... Did you forget to call 'End'?`가 따라오는데 **같은 사건의
+  후유증**이다 — 예외가 그리기 도중에 던져져 `End()`가 불리지 못한 것이지 별개 문제가 아니다.
+  유니티 내부의 레이스라 우리가 없앨 수는 없다. 다만 바뀐 것도 없이 매초 다시 만들며 그 창을
+  열어 둘 이유가 없어 라벨 비교를 둔다 (2026-08-30 실측: 플레이 종료 18회 중 2회).
+  ※ 대신 라벨(워킹셋)이 같은 동안은 **툴팁 수치도 멈춘다.** 툴팁은 네이티브가 그려 이 문제와
+    무관하고, 라벨이 같다는 건 MB 단위로 그대로라는 뜻이라 감수한다.
 - **클릭하면** `EditorUtility.UnloadUnusedAssetsImmediate()` + `GC.Collect()`로 정리하고
   `[메모리] 전 → 후 (차이)`를 콘솔에 남긴다. 확인 팝업은 없다(되돌릴 게 없는 안전한 동작).
   에디터에서 `Resources.UnloadUnusedAssets()`는 비동기라 결과를 바로 못 재므로 즉시판을 쓴다.

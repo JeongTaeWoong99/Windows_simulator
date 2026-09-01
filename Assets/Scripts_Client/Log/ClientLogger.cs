@@ -14,6 +14,7 @@ public static class ClientLogger
     public const string Network = "연결";
     public const string Data    = "데이터";
     public const string UI      = "UI";
+    public const string Window  = "창";
 
     // 평시에 로그를 남기지 않는 패킷.
     // ⚠️ 주기적으로 오가는 것만 넣는다 — 드물게 오는 패킷을 숨기면

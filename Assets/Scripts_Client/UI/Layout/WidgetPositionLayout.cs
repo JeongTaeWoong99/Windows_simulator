@@ -85,6 +85,18 @@ public class WidgetPositionLayout : MonoBehaviour
 
     public WidgetPosition Position => position;
 
+    // 위젯 칸이 캔버스 좌표에서 차지하는 높이 — '작업표시줄 맞춤' 창 배율의 근거다
+    // ('SettingPresenter'가 읽어 'WindowManager.SetWidgetSlotHeight'로 넘긴다).
+    //
+    // ■ 왜 이 값 하나로 창 크기를 역산할 수 있나
+    //   캔버스가 기준 해상도(1080) 좌표로 돌아가고 Match=Height 라, 창이 커져도 이 숫자는
+    //   그대로고 화면 픽셀 높이만 캔버스 스케일만큼 커진다. 그래서
+    //   "위젯을 작업표시줄 높이로 만들려면 창이 얼마여야 하는가"가 나눗셈 하나로 나온다.
+    //
+    // ⚠️ 이 값을 상수로 베껴 두지 말 것. 'widgetWeight'/'stateWeight'를 조정하거나 가운데 칸
+    //   높이를 바꾸면 여기가 따라 움직이는데, 베껴 둔 쪽은 안 움직여 맞춤이 조용히 어긋난다.
+    public float WidgetSlotHeight => FixedHeightOf(widgetPanel);
+
     // 위젯 위치를 바꾸고 즉시 반영한다 (설정 드롭다운이 호출). 재생 중이면 저장까지 한다.
     public void SetPosition(WidgetPosition value)
     {

@@ -74,6 +74,13 @@ public class SettingPresenter : MonoBehaviour
         BindToggle(topmostToggle,             window.Topmost,             window.SetTopmost);
         BindToggle(dynamicClickThroughToggle, window.DynamicClickThrough, window.SetDynamicClickThrough);
 
+        // ⚠️ 크기 드롭다운을 채우기 전에 알려야 한다 — '작업표시줄 맞춤' 항목의 라벨(계산된 배율)이
+        //   이 값에서 나오기 때문이다. 순서가 뒤바뀌면 배율 없이 이름만 있는 라벨이 굳는다.
+        //
+        // 위젯 칸 높이는 씬 레이아웃(3열 구조 · widgetWeight)에서 파생되는 값이라 창 쪽에서 알 수 없다.
+        // 여기서 건네야 'WindowManager'가 "위젯을 작업표시줄 높이로 만들 창 크기"를 역산할 수 있다.
+        window.SetWidgetSlotHeight(widgetLayout.WidgetSlotHeight);
+
         BindDropdown(sizeDropdown, window.GetSizeLabels(), window.SizeIndex, window.SetWindowSizeByIndex);
 
         // 위치 드롭다운 하나가 창 앵커와 위젯 위치를 함께 몰이한다. 시작 인덱스는 창 앵커를 권위 소스로 삼는다.
