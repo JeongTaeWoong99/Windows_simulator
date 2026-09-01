@@ -71,8 +71,6 @@ public class StorageGridPresenter : MonoBehaviour
             return;
         }
 
-        _isReady = true;
-
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다. 안 그러면 아이템이 처음 들어오는 순간
         // Instantiate에서 NRE가 나는데, 그때는 원인이 인스펙터라는 게 드러나지 않는다.
         this.RequireRef(slotPrefab, nameof(slotPrefab));
@@ -90,6 +88,11 @@ public class StorageGridPresenter : MonoBehaviour
         // ⏸ Trait      — 기획은 있으나 서버 구현·패킷이 없다 (T-041).
         _sources.Add(StorageTab.Resource,  new ResourceSlotSource(data));
         _sources.Add(StorageTab.Character, new CharacterSlotSource(data));
+
+        // ★ 끝까지 왔을 때만 세운다 — 위에서 예외가 나면(참조 미연결·서비스 미등록) 플래그가
+        //   안 켜져 다음 호출이 다시 시도하고, 원인도 매번 같은 예외로 드러난다.
+        //   먼저 세우면 초기화가 중단됐는데도 격자가 조용히 빈 채로 굳는다.
+        _isReady = true;
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
@@ -232,9 +235,14 @@ public class StorageGridPresenter : MonoBehaviour
 
     #region 보조
 
-    // 씬에 깔린 프레임을 한 번만 모아 둔다 (Start에서 호출).
+    // 씬에 깔린 프레임을 모아 둔다 (EnsureInitialized에서 호출).
+    //
+    // ※ 앞서 예외로 초기화가 끊겼으면 다시 불릴 수 있다 — 비우고 시작해야 중복으로 쌓이지 않는다.
     private void CacheFrames()
     {
+        _frames.Clear();
+        _views.Clear();
+
         foreach (Transform frame in slotParent)
         {
             _frames.Add(frame);
