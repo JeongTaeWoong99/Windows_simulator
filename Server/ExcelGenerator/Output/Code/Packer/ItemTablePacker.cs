@@ -19,7 +19,8 @@ namespace GameData
             ItemType     = PackerUtil.ParseEnum<ItemType>(cells[2], Table, "ItemType"),
             GlobalRarity = PackerUtil.ParseEnum<GlobalRarity>(cells[3], Table, "GlobalRarity"),
             MaxStack     = PackerUtil.ParseInt(cells[4], Table, "MaxStack"),
-            Description  = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
+            BasePrice    = PackerUtil.ParseInt(cells[5], Table, "BasePrice", 0, null),
+            Description  = cells[6].Length > 0 ? PackerUtil.RequireString(cells[6], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

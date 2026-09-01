@@ -132,6 +132,23 @@ namespace MikaDummyClient
                 Console.WriteLine($"  - Type={currency.CurrencyType}, Amount={currency.Amount}");
             }
         }
+
+        // 잔액은 이 패킷이 아니라 뒤따르는 S_CurrencyResponse가 들고 온다(GainedGold는 이번에 번 금액).
+        [PacketHandler]
+        public static void Handle_S_ItemSellResponse(ISession session, S_ItemSellResponse res)
+        {
+            if (res.Result != EResultCode.Ok)
+            {
+                Console.WriteLine($"[Client] Recv 판매: 실패 Result={res.Result}");
+                return;
+            }
+
+            Console.WriteLine($"[Client] Recv 판매: 획득 골드={res.GainedGold}, 변경={res.ItemChangeInfos?.Count}");
+            foreach (var item in res.ItemChangeInfos!)
+            {
+                Console.WriteLine($"  - Kind={item.Kind.ToString()}, ItemId={item.ItemId}, Count={item.Count}");
+            }
+        }
     }
 }
 
