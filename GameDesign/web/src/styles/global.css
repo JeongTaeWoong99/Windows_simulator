@@ -111,3 +111,60 @@ body { margin: 0; line-height: 1.7; }
 .doc hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
 .doc img { max-width: 100%; height: auto; border-radius: 0.4rem; }
 .doc del { color: #9ca3af; }
+
+/* ── 일감 보드 · 현황 ──────────────────────────────────────────── */
+
+/* 담당 필터. 열을 지우지 않고 항목만 걸러낸다 */
+.tagbtn {
+  padding: 0.25rem 0.7rem;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+}
+.tagbtn[data-on="true"] {
+  border-color: var(--brand);
+  background: #eff6ff;
+  color: var(--brand);
+}
+
+/* 일감 한 장. 보드와 현황이 같은 카드를 쓴다 */
+.taskcard {
+  display: block;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.6rem 0.8rem;
+}
+.taskcard:hover { border-color: var(--brand); }
+
+/* 기획 확정 현황의 접이식 묶음 */
+.statebox {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  margin-bottom: 0.6rem;
+}
+.statebox > summary {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 0.9rem;
+  cursor: pointer;
+  list-style: none;
+}
+.statebox > summary::-webkit-details-marker { display: none; }
+.statebox > summary::after {
+  content: "▾";
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+.statebox[open] > summary::after { content: "▴"; }
+.statebox > .table-scroll { border-top: 1px solid var(--border); }
+
+/* 필터로 숨긴 열·항목 — hidden 속성이 flex/grid에 먹히도록 */
+[data-owner][hidden] { display: none !important; }

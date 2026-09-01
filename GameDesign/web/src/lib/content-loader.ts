@@ -63,6 +63,11 @@ function renderMd(text: string, fileDir: string): string {
     .replace(/<\/table>/g, '</table></div>');
 }
 
+/// <summary>표 칸처럼 블록 태그 없이 한 줄만 렌더한다. 링크 리라이트는 본문과 같은 규칙</summary>
+export function renderInline(text: string, fileDir: string): string {
+  return md.renderInline(rewriteLinks(text, fileDir));
+}
+
 function firstHeading(body: string): string {
   const m = body.match(/^#\s+(.+)$/m);
   return m ? m[1].trim() : '';

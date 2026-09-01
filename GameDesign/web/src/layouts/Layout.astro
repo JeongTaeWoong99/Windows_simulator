@@ -12,6 +12,7 @@ const path = Astro.url.pathname;
 
 const links = [
   { label: '홈', href: '/', active: path === '/' },
+  { label: '현황', href: '/status', active: path.startsWith('/status') },
   { label: '일감', href: '/tasks', active: path.startsWith('/tasks') },
   { label: '기획', href: '/design', active: path.startsWith('/design') },
 ];

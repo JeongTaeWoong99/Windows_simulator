@@ -1,0 +1,167 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { getCollection } from 'astro:content';
+import { OWNER_STYLE, STATUS_STYLE, PRIORITY_ORDER, STATUS_ORDER } from '../lib/labels';
+import { loadDesignStatus, DESIGN_STATE_LABEL, DESIGN_STATE_STYLE, type DesignState } from '../lib/status';
+
+const tasks = await getCollection('tasks');
+
+const byRank = (a: any, b: any) =>
+  (STATUS_ORDER[a.data.status] ?? 9) - (STATUS_ORDER[b.data.status] ?? 9) ||
+  (PRIORITY_ORDER[a.data.priority] ?? 9) - (PRIORITY_ORDER[b.data.priority] ?? 9) ||
+  a.data.taskId.localeCompare(b.data.taskId);
+
+const shipped = tasks.filter((t) => t.data.done).sort((a, b) => a.data.taskId.localeCompare(b.data.taskId));
+const remaining = tasks.filter((t) => !t.data.done).sort(byRank);
+
+const OWNERS = ['클라', '서버', '공용'] as const;
+const countBy = (list: typeof tasks, owner: string) => list.filter((t) => t.data.owner === owner).length;
+
+// 기획 확정 현황 — 게임기획코어 5장 표를 그대로 읽는다
+const designRows = loadDesignStatus();
+const STATES: DesignState[] = ['done', 'review', 'open'];
+const designBy = (s: DesignState) => designRows.filter((r) => r.state === s);
+
+const total = shipped.length + remaining.length;
+const pct = total > 0 ? Math.round((shipped.length / total) * 100) : 0;
+---
+
+<Layout title="현황">
+  <h1 class="text-xl font-extrabold mb-1">현황 — 된 것과 안 된 것</h1>
+  <p class="text-sm text-slate-500 mb-2">
+    저장소가 원본이다. 이 페이지는 <code class="text-xs bg-slate-100 px-1 rounded">tasks/</code>와
+    <code class="text-xs bg-slate-100 px-1 rounded">게임기획코어.md</code> 5장을 그대로 집계한다.
+  </p>
+  <p class="text-xs text-slate-400 mb-8">
+    ⚠️ <strong class="text-slate-500">두 축은 다른 것이다</strong> — 아래 <em>구현</em>은 “코드가 들어갔는가”,
+    <em>기획 확정</em>은 “정해졌는가”다. 정해졌지만 구현이 없는 것도, 그 반대도 있다.
+  </p>
+
+  <!-- ── 1. 구현 현황 (일감 기준) ────────────────────────────── -->
+  <section class="mb-12">
+    <h2 class="text-base font-bold mb-3">1. 구현 현황 <span class="text-slate-400 font-normal text-sm">— 일감 기준</span></h2>
+
+    <div class="bg-white border border-slate-200 rounded-lg p-5 mb-5">
+      <div class="flex items-baseline justify-between mb-2">
+        <span class="text-sm font-semibold">끝난 일감 {shipped.length} / 전체 {total}</span>
+        <span class="text-2xl font-extrabold" style="color: var(--brand)">{pct}%</span>
+      </div>
+      <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+        <div class="h-full rounded-full" style={`width:${pct}%; background: var(--brand)`}></div>
+      </div>
+      <div class="grid grid-cols-3 gap-3 mt-4 text-center">
+        {
+          OWNERS.map((o) => (
+            <div class="border border-slate-100 rounded-lg py-2">
+              <div class={`inline-block text-[11px] px-2 py-0.5 rounded-full mb-1 ${OWNER_STYLE[o]}`}>{o}</div>
+              <div class="text-sm">
+                <span class="font-bold">{countBy(shipped, o)}</span>
+                <span class="text-slate-400"> / {countBy(shipped, o) + countBy(remaining, o)}</span>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+
+    <div class="grid gap-5 md:grid-cols-2">
+      <div>
+        <h3 class="text-sm font-bold text-emerald-700 mb-2">✅ 구현된 것 <span class="text-slate-400 font-normal">{shipped.length}건</span></h3>
+        <ul class="space-y-1.5">
+          {
+            shipped.map((t) => (
+              <li>
+                <a href={`/tasks/${t.data.slug}`} class="taskcard">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-[11px] text-slate-400">{t.data.taskId}</span>
+                    <span class={`text-[10px] px-1.5 py-0.5 rounded-full ${OWNER_STYLE[t.data.owner] ?? ''}`}>
+                      {t.data.owner}
+                    </span>
+                  </div>
+                  <div class="text-sm font-semibold leading-snug mt-1">{t.data.title}</div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div>
+        <h3 class="text-sm font-bold text-rose-700 mb-2">❌ 아직 안 된 것 <span class="text-slate-400 font-normal">{remaining.length}건</span></h3>
+        <ul class="space-y-1.5">
+          {
+            remaining.map((t) => (
+              <li>
+                <a href={`/tasks/${t.data.slug}`} class="taskcard">
+                  <div class="flex items-center gap-2">
+                    <span class="font-mono text-[11px] text-slate-400">{t.data.taskId}</span>
+                    <span class={`text-[10px] px-1.5 py-0.5 rounded-full ${OWNER_STYLE[t.data.owner] ?? ''}`}>
+                      {t.data.owner}
+                    </span>
+                    <span class={`text-[10px] px-1.5 py-0.5 rounded-full ${STATUS_STYLE[t.data.status]?.cls ?? ''}`}>
+                      {t.data.status}
+                    </span>
+                  </div>
+                  <div class="text-sm font-semibold leading-snug mt-1">{t.data.title}</div>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 2. 기획 확정 현황 ──────────────────────────────────── -->
+  <section>
+    <h2 class="text-base font-bold mb-1">
+      2. 기획 확정 현황 <span class="text-slate-400 font-normal text-sm">— 게임기획코어 5장</span>
+    </h2>
+    <p class="text-xs text-slate-400 mb-4">
+      분류는 문서가 쓰는 마커(✅ · ⚠️ · ❌)를 그대로 따른다. 여기서 다시 판단하지 않는다 —
+      <a href="/design/core#5-확정--미확정-현황" class="underline" style="color: var(--brand)">원문 보기</a>
+    </p>
+
+    <div class="grid grid-cols-3 gap-3 mb-5">
+      {
+        STATES.map((s) => (
+          <div class="bg-white border border-slate-200 rounded-lg py-3 text-center">
+            <div class={`inline-block text-[11px] px-2 py-0.5 rounded-full mb-1 ${DESIGN_STATE_STYLE[s]}`}>
+              {DESIGN_STATE_LABEL[s]}
+            </div>
+            <div class="text-lg font-extrabold">{designBy(s).length}</div>
+          </div>
+        ))
+      }
+    </div>
+
+    {
+      STATES.map((s) => (
+        <details class="statebox" open={s !== 'done'}>
+          <summary>
+            <span class={`text-[11px] px-2 py-0.5 rounded-full ${DESIGN_STATE_STYLE[s]}`}>
+              {DESIGN_STATE_LABEL[s]}
+            </span>
+            <span class="text-sm font-semibold">{designBy(s).length}개 항목</span>
+          </summary>
+          <div class="table-scroll doc">
+            <table>
+              <thead>
+                <tr><th>항목</th><th>상태</th><th>비고</th></tr>
+              </thead>
+              <tbody>
+                {designBy(s).map((r) => (
+                  <tr>
+                    <td set:html={r.areaHtml} />
+                    <td class="whitespace-nowrap text-xs">{r.stateText}</td>
+                    <td class="text-xs text-slate-500" set:html={r.noteHtml} />
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </details>
+      ))
+    }
+  </section>
+</Layout>
