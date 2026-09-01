@@ -92,6 +92,29 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
+    // 이 캐릭터가 배치된 작업슬롯 번호. 배치돼 있지 않으면 -1.
+    //
+    // 창고 캐릭터 탭과 작업슬롯 선택 화면이 **같은 판정을 봐야 한다** — 각자 'WorkStationSlots'를
+    // 훑으면 한쪽만 고쳐졌을 때 두 화면이 다른 말을 한다. 그래서 여기 한 번 두고 양쪽이 부른다.
+    // ⚠️ 리스트 순번이 아니라 'SlotIndex'를 돌려준다 — 열린 슬롯만 실려 오므로 둘이 어긋난다.
+    public int FindSlotIndexOf(long characterId)
+    {
+        if (characterId == 0L)
+        {
+            return -1; // 0은 '비어 있음'이라 빈 슬롯 전부와 맞아 버린다
+        }
+
+        foreach (var slot in _workStationSlots)
+        {
+            if (slot.CharacterId == characterId)
+            {
+                return slot.SlotIndex;
+            }
+        }
+
+        return -1;
+    }
+
     // 재화 보유량을 조회한다. 아직 통지받지 못한 종류는 0이다.
     public long GetCurrency(byte currencyType) => _currencies.TryGetValue(currencyType, out long amount) ? amount : 0L;
 

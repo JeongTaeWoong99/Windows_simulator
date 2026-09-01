@@ -139,7 +139,7 @@ public class GachaResultPresenter : MonoBehaviour
         {
             InventorySlotView slot = Instantiate(slotPrefab, slotParent);
 
-            slot.SetCountVisible(false);
+            slot.SetSubVisible(false);
             _slots.Add(slot);
         }
 
