@@ -1,0 +1,242 @@
+[
+  {
+    "GachaCharacterTID": 2001,
+    "GachaId": 2,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 램볼"
+  },
+  {
+    "GachaCharacterTID": 2002,
+    "GachaId": 2,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 밀개비"
+  },
+  {
+    "GachaCharacterTID": 2003,
+    "GachaId": 2,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 물방개미"
+  },
+  {
+    "GachaCharacterTID": 2004,
+    "GachaId": 2,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 두더삽"
+  },
+  {
+    "GachaCharacterTID": 2005,
+    "GachaId": 2,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 톱니쥐"
+  },
+  {
+    "GachaCharacterTID": 2006,
+    "GachaId": 2,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 50,
+    "Description": "Common 살쾡이"
+  },
+  {
+    "GachaCharacterTID": 2007,
+    "GachaId": 2,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 치키피"
+  },
+  {
+    "GachaCharacterTID": 2008,
+    "GachaId": 2,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 펭구렛"
+  },
+  {
+    "GachaCharacterTID": 2009,
+    "GachaId": 2,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 캐티바"
+  },
+  {
+    "GachaCharacterTID": 2010,
+    "GachaId": 2,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 리프몽"
+  },
+  {
+    "GachaCharacterTID": 2011,
+    "GachaId": 2,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 폭스파크스"
+  },
+  {
+    "GachaCharacterTID": 2012,
+    "GachaId": 2,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 갈대오리"
+  },
+  {
+    "GachaCharacterTID": 2013,
+    "GachaId": 2,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 뿔사슴이"
+  },
+  {
+    "GachaCharacterTID": 2014,
+    "GachaId": 2,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 45,
+    "Description": "Uncommon 솔방울곰"
+  },
+  {
+    "GachaCharacterTID": 2015,
+    "GachaId": 2,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 해달수"
+  },
+  {
+    "GachaCharacterTID": 2016,
+    "GachaId": 2,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 흙두꺼비"
+  },
+  {
+    "GachaCharacterTID": 2017,
+    "GachaId": 2,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 광부오소리"
+  },
+  {
+    "GachaCharacterTID": 2018,
+    "GachaId": 2,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 도끼늑대"
+  },
+  {
+    "GachaCharacterTID": 2019,
+    "GachaId": 2,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 창날매"
+  },
+  {
+    "GachaCharacterTID": 2020,
+    "GachaId": 2,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 이삭토끼"
+  },
+  {
+    "GachaCharacterTID": 2021,
+    "GachaId": 2,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "Rare 산호게"
+  },
+  {
+    "GachaCharacterTID": 2022,
+    "GachaId": 2,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "Epic 화산도롱뇽"
+  },
+  {
+    "GachaCharacterTID": 2023,
+    "GachaId": 2,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "Epic 파도고래"
+  },
+  {
+    "GachaCharacterTID": 2024,
+    "GachaId": 2,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "Epic 대지곰"
+  },
+  {
+    "GachaCharacterTID": 2025,
+    "GachaId": 2,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "Epic 강철사마귀"
+  },
+  {
+    "GachaCharacterTID": 2026,
+    "GachaId": 2,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "Epic 거목정령"
+  },
+  {
+    "GachaCharacterTID": 2027,
+    "GachaId": 2,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 9,
+    "Description": "Legendary 황금기린"
+  },
+  {
+    "GachaCharacterTID": 2028,
+    "GachaId": 2,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 9,
+    "Description": "Legendary 심연이무기"
+  },
+  {
+    "GachaCharacterTID": 2029,
+    "GachaId": 2,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 9,
+    "Description": "Legendary 흑요석골렘"
+  },
+  {
+    "GachaCharacterTID": 2030,
+    "GachaId": 2,
+    "CharacterTID": 1030,
+    "Count": 1,
+    "Weight": 3,
+    "Description": "Mythic 별빛드래곤"
+  }
+]
