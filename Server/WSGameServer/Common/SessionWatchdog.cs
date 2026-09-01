@@ -37,8 +37,14 @@ public sealed class SessionWatchdog : ISessionWatchdog
     /// <summary>
     /// 검사 주기. <b>판정 시간이 아니다</b> — 얼마나 자주 들여다볼지일 뿐이다.
     /// 실제 끊김 시점은 최대 이만큼 늦어지므로 <see cref="Global.SessionIdleTimeout"/>보다 충분히 짧게 둔다.
+    ///
+    /// <para>
+    /// ⚠️ <b>여기를 늘려 무응답 끊김을 줄이려 하지 않는다.</b> 검사가 드물어지면 증상의 빈도만 낮아지고
+    /// <b>좀비 세션의 수명은 오히려 길어진다</b>(판정 시간 + 검사 지연). 여유를 만드는 값은
+    /// <see cref="Global.SessionIdleTimeout"/>이다 — 이슈 #19에서 실제로 한 번 헛짚은 자리다.
+    /// </para>
     /// </summary>
-    private static readonly TimeSpan Interval = TimeSpan.FromSeconds(15);
+    internal static readonly TimeSpan Interval = TimeSpan.FromSeconds(5);
 
     private readonly ILogicExecutor _logicExecutor;
     

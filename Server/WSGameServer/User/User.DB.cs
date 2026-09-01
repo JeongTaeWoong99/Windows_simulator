@@ -31,14 +31,14 @@ public partial class User
     /// 조회 결과(Row)를 도메인으로 변환해 적재한다 — 적재만 하고 아무것도 판단하지 않는다.
     ///
     /// <para>
-    /// <b>Row가 들어오는 것은 여기(User의 partial)까지다.</b> 순수 코어(Inventory·Wallet·WorkStation)에는
+    /// <b>Row가 들어오는 것은 여기(User의 partial)까지다.</b> 순수 코어(Inventory·WorkStation)에는
     /// 도메인 객체만 넘긴다 — 코어가 Repository 타입을 참조하면 의존 방향이 뒤집힌다.
     /// </para>
     /// </summary>
     private void LoadPlayerData(PlayerLoginData data, DateTime startedAt)
     {
         LoadInventory(data.InventoryRows);
-        LoadCurrencies(data.CurrencyRows);
+        LoadCurrency(data.Currency);
 
         // 캐릭터가 슬롯 속도의 근거이므로 슬롯보다 먼저 적재한다.
         LoadCharacters(data.CharacterRows);

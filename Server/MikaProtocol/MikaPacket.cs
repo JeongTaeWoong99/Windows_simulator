@@ -178,15 +178,23 @@ namespace MikaProtocol
     /// 재화 보유량 통지. <b>로그인 스냅샷과 변경 푸시가 같은 패킷을 쓴다.</b>
     ///
     /// <para>
-    /// 아이템처럼 스냅샷/델타 패킷을 나누지 않는 이유는 <see cref="CurrencyInfo.Amount"/>가
-    /// 증감이 아니라 <b>확정된 잔액</b>이기 때문이다. 클라이언트는 두 경우 모두
-    /// <b>재화 종류로 덮어쓰기</b>만 하면 되므로 처리 경로가 하나로 끝난다.
+    /// 아이템처럼 스냅샷/델타 패킷을 나누지 않는 이유는 값이 증감이 아니라
+    /// <b>확정된 잔액</b>이기 때문이다. 클라이언트는 두 경우 모두 <b>덮어쓰기</b>만 하면 되므로
+    /// 처리 경로가 하나로 끝난다. <b>한쪽만 바뀌어도 둘 다 실어 보낸다</b> — 덮어쓰기라 안전하고,
+    /// 재화마다 패킷을 나누면 "무엇을 보내야 하는가"를 호출부가 매번 판단해야 한다.
+    /// </para>
+    ///
+    /// <para>
+    /// 재화가 늘면 <b>패킷이 아니라 필드를 추가한다</b> — DB(t_user_currency)도 행이 아니라
+    /// 컬럼으로 늘리는 구조라 축을 맞춘 것이다.
     /// </para>
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_CurrencyResponse)]
     public partial class S_CurrencyResponse : IPacket
     {
-        public List<CurrencyInfo>? Currencies { get; set; }
+        // 보유량. int로 받지 말 것 — 거래 경제에서 21억을 넘길 수 있다
+        public long Gold { get; set; }  // 무료 재화
+        public long Dia  { get; set; }  // 유료 재화
     }
 
     // ───────────────────────── 캐릭터 (Character) ─────────────────────────

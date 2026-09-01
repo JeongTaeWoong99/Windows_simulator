@@ -140,7 +140,7 @@ public sealed partial class User
         Send(new S_LoginResponse { Result = EResultCode.Ok, SessionId = SessionId });
         
         SendInventory();   // S_InventoryResponse
-        SendCurrencies();  // S_CurrencyResponse
+        SendCurrency();    // S_CurrencyResponse
 
         // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
         // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.

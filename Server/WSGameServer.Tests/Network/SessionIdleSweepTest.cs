@@ -83,4 +83,12 @@ public class SessionIdleSweepTest
         Global.SessionIdleTimeout
             .ShouldBeLessThan(TimeSpan.FromSeconds(WorkStationSlot.BaseCycleSeconds));
     }
+
+    [Fact]
+    public void 검사_주기는_판정_시간보다_짧다()
+    {
+        // 좀비가 실제로 사는 시간은 판정 시간이 아니라 "판정 시간 + 검사 지연"이다.
+        // 검사를 판정보다 길게 두면 판정 시간을 줄여도 소용이 없다 — 이슈 #19에서 한 번 헛짚었다.
+        SessionWatchdog.Interval.ShouldBeLessThan(Global.SessionIdleTimeout);
+    }
 }

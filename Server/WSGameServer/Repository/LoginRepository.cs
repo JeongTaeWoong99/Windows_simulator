@@ -13,7 +13,7 @@ public sealed class LoginRepository : IRepository
 {
     // ExecuteAsync에서 채우고 Apply에서 넘기는 조회 결과 (전부 Row — 변환하지 않는다)
     private List<InventoryRow>       _inventoryRows       = new();
-    private List<CurrencyRow>        _currencyRows        = new();
+    private CurrencyRow?             _currency;
     private List<CharacterRow>       _characterRows       = new();
     private List<WorkStationSlotRow> _workStationSlotRows = new();
     private List<UserIndustryLevelRow> _industryLevelRows = new();
@@ -39,10 +39,10 @@ public sealed class LoginRepository : IRepository
             "SELECT item_id, count FROM t_user_inventory WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 2) 재화. 보유하지 않은 재화는 행이 없고, 그건 0으로 본다
-        //    (가입 시 0짜리 행을 만들지 않는다 — 재화 종류가 늘 때마다 백필이 필요해진다).
-        _currencyRows = await connection.QueryAsync<CurrencyRow>(
-            "SELECT currency_type, amount FROM t_user_currency WHERE user_id = @userId",
+        // 2) 재화. 한 번도 벌지 않았으면 행 자체가 없고, 그건 0으로 본다
+        //    (가입 시 0짜리 행을 만들지 않는다 — 재화 컬럼이 늘 때마다 백필이 필요해진다).
+        _currency = await connection.QueryFirstOrDefaultAsync<CurrencyRow>(
+            "SELECT gold, dia FROM t_user_currency WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 3) 캐릭터. 하나도 없으면(신규 유저) 지급 판단은 로직 스레드가 한다.
@@ -74,7 +74,7 @@ public sealed class LoginRepository : IRepository
     public void Apply()
     {
         User.OnLoginDataLoaded(
-            new PlayerLoginData(_inventoryRows, _currencyRows, _characterRows,
+            new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _industryLevelRows),
             DateTime.UtcNow);
     }
