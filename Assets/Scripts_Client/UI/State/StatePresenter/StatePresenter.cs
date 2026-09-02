@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 상태 패널 — 계정 이름과 골드를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
+// 상태 패널 — 계정 이름과 재화(골드·다이아)를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
 //
 // ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다
 // 버튼은 이 패널의 위젯이라 여기가 쥐지만, 어느 캔버스가 열리는지는 모른다.
@@ -37,6 +37,9 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, Tooltip("골드 보유량")]
     private TMP_Text goldText = null!;
 
+    [SerializeField, Tooltip("다이아 보유량. ⏸ 지급·차감 경로가 없어 늘 0이다")]
+    private TMP_Text diaText = null!;
+
     // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
     //   ('UI 규칙.md'의 "공통 작성 규약"). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
     [CenterHeader("화면 버튼")]
@@ -61,6 +64,7 @@ public class StatePresenter : MonoBehaviour
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다(SettingPresenter와 같은 규칙).
         this.RequireRef(nickNameText, nameof(nickNameText));
         this.RequireRef(goldText,     nameof(goldText));
+        this.RequireRef(diaText,      nameof(diaText));
         this.RequireRef(quitButton,   nameof(quitButton));
 
         _data = Services.Get<PlayerDataModel>();
@@ -161,11 +165,12 @@ public class StatePresenter : MonoBehaviour
         }
     }
 
-    // 이름·골드를 현재 값으로 갱신한다 (CurrencyChanged 구독 · 로그인 시)
+    // 이름·재화를 현재 값으로 갱신한다 (CurrencyChanged 구독 · 로그인 시)
     private void Refresh()
     {
         nickNameText.text = string.IsNullOrEmpty(_data.LoginId) ? "-" : _data.LoginId;
         goldText.text     = _data.Gold.ToString("N0"); // 천 단위 구분
+        diaText.text      = _data.Dia.ToString("N0");
     }
 
     #endregion
