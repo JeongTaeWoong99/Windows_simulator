@@ -20,7 +20,6 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<ItemInfo>            _inventory        = new List<ItemInfo>();
     private readonly List<WorkStationSlotInfo> _workStationSlots = new List<WorkStationSlotInfo>();
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
-    private readonly Dictionary<byte, long>    _currencies       = new Dictionary<byte, long>();
 
     // ─── 내부 상태 ───
     private bool _isSubscribed;
@@ -115,11 +114,13 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return -1;
     }
 
-    // 재화 보유량을 조회한다. 아직 통지받지 못한 종류는 0이다.
-    public long GetCurrency(byte currencyType) => _currencies.TryGetValue(currencyType, out long amount) ? amount : 0L;
-
-    // 골드 보유량 (GameData.CurrencyType.Gold = 1).
-    public long Gold => GetCurrency((byte)GameData.CurrencyType.Gold);
+    // 재화 보유량. 종류마다 필드다 — 서버가 행이 아니라 컬럼으로 싣기 때문이다
+    // (DB 't_user_currency'도 같은 축이다). 재화가 늘면 패킷에 필드가 하나 늘고 여기도 하나 는다.
+    //
+    // ※ 예전에는 'Dictionary<byte, long>'에 'CurrencyType'을 키로 담았다. 그 축이 없어졌는데
+    //   사전만 채우는 식으로 두면 패킷과 캐시가 다시 어긋난다 — 사전째 걷어냈다.
+    public long Gold { get; private set; }  // 무료 재화
+    public long Dia  { get; private set; }  // 유료 재화. ⏸ 지급·차감 경로가 아직 없어 늘 0이다
 
     // 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
     //
@@ -366,18 +367,13 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ApplyItemChanges(res.ItemChangeInfos);
     }
 
-    // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 종류별로 덮어쓰기만 하면 된다.
+    // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.
+    //
+    // ★ 한쪽만 바뀌어도 서버는 둘 다 실어 보낸다. 값이 델타가 아니라 확정 잔액이라 안전하다.
     private void OnCurrencyReceived(S_CurrencyResponse res)
     {
-        if (res.Currencies == null)
-        {
-            return;
-        }
-
-        foreach (var currency in res.Currencies)
-        {
-            _currencies[currency.CurrencyType] = currency.Amount;
-        }
+        Gold = res.Gold;
+        Dia  = res.Dia;
 
         CurrencyChanged?.Invoke();
     }

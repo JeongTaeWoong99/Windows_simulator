@@ -116,12 +116,11 @@ namespace MikaNetwork
 
         // 재화 보유량 (S_CurrencyResponse 수신 시 자동 호출)
         // ★ 로그인 시 자동으로 1회 온다. 스냅샷과 변경 푸시가 같은 패킷이라 처리 경로가 하나다.
-        // ※ Amount는 증감이 아니라 확정 잔액이다 — 재화 종류로 덮어쓰기만 하면 된다.
+        // ※ 값은 증감이 아니라 확정 잔액이다 — 덮어쓰기만 하면 된다.
         [PacketHandler]
         public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
         {
-            int currencyCount = res.Currencies?.Count ?? 0;
-            ClientLogger.Info(ClientLogger.Recv, $"재화 — {currencyCount}종");
+            ClientLogger.Info(ClientLogger.Recv, $"재화 — 골드 {res.Gold:N0} · 다이아 {res.Dia:N0}");
             CurrencyReceived?.Invoke(res);
         }
 
