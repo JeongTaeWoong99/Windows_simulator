@@ -45,7 +45,8 @@ Root Canvas
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
 │  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter
-│  │  │     └─ 이름 · 골드 · Setting Button · xxx Button (1..4)
+│  │  │     ├─ Nick / Gold / Dia Panel               정렬 상자 (아이콘 + 텍스트)  flex 4씩
+│  │  │     └─ Setting Button · xxx Button (1..3) · Exit Button      flex 1씩
 │  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 950 · flexH 0 ← 사람이 정함
 │  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
 │  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
