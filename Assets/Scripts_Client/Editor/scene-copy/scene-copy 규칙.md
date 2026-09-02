@@ -1,6 +1,6 @@
 # scene-copy 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (환경 설정 그룹 이름이 `Application.productName` 기반으로 바뀜) · 대상: `Assets/Scripts_Client/Editor/scene-copy/`
+> 최종 업데이트: 2026-09-03 (빌드 씬 목록 규칙 추가) · 대상: `Assets/Scripts_Client/Editor/scene-copy/`
 
 **오리지널 씬을 테스트용으로 복사하는 툴.** 폴더 전체에 걸리는 규칙(네임스페이스·툴바 버튼
 공식 API)은 [`Editor 규칙.md`](<../Editor 규칙.md>)에 있다.
@@ -27,6 +27,30 @@
 - 진입점은 상단 툴바 버튼 하나뿐이다 — 메뉴 항목·단축키는 두지 않는다.
 - 버튼을 누르면 바로 복사하지 않고 **`[지금 복사]/[나중에]` 확인 팝업**을 거친다
   (실수로 눌러도 되돌릴 수 있게). 검사기 팝업의 '지금 복사'는 이미 확인했으므로 `Copy()`를 바로 부른다.
+
+---
+
+## ⚠️ 복사본을 빌드 씬 목록에 넣지 않는다
+
+**`빌드 프로필 > 씬 목록`(`ProjectSettings/EditorBuildSettings.asset`)에는 커밋되는 씬만 둔다.**
+현재 빌드 대상은 `Scenes/Original/DesktopWindow_Control` **하나**다.
+
+`Test Copy`는 `.gitignore`로 제외된 로컬 전용 사본이라 **CI 러너에는 존재하지 않는다.**
+클라이언트 CI는 이 파일의 켜진 씬을 그대로 빌드하므로, 사본을 켜둔 채 커밋하면
+**모두의 빌드가 깨진다** — 정작 내 로컬에는 파일이 있어 **에디터에는 아무 오류도 안 뜬다.**
+
+```
+##[error]'Assets/Scenes/Test Copy/DesktopWindow_Control.unity' is an incorrect path
+for a scene file. BuildPlayer expects paths relative to the project folder.
+```
+
+- **체크만 끄지 말고 목록에서 지운다.** 복사는 매번 **새 GUID**를 부여하므로(위 참조),
+  줄이 남아 있으면 복사할 때마다 `EditorBuildSettings.asset`에 diff가 생긴다.
+  그 diff를 무심코 커밋하면 체크 상태까지 같이 실린다.
+- **존재하지 않는 씬 줄도 지운다** — 씬 목록에 `Deleted`로 표시되는 것들.
+- 로컬에서 사본을 빌드해 볼 일이 있으면 그때만 추가하고, **커밋 전에 되돌린다.**
+
+> 2026-09-02에 이 사고로 클라이언트 CI가 3연속 실패했다(`e7b127b`에서 복구).
 
 ## 복사본이 낡았는지 어떻게 아나
 
