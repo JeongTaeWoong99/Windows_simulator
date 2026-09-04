@@ -28,8 +28,9 @@ public class CharacterSlotSource : StorageSlotSource
     // 보유 캐릭터를 칸으로 옮긴다 (Rebuild에서 호출).
     //
     // ⚠️ 이름은 종류(TID)로 읽는다 — 개체 번호를 'GetCharacterName'에 넣으면 '?#2'가 나온다.
-    // ⚠️ 등급은 'None'이다 — 'CharacterTable'에 등급 컬럼이 없다(기획 미정).
-    //    등급이 생기면 여기서 그 값을 넘기면 되고 칸은 고치지 않는다.
+    // 🔴 등급을 'None'으로 못박고 있어 캐릭터 칸이 전부 회색으로 그려진다 — 아직 안 고친 자리다.
+    //    'CharacterTable'에 등급 컬럼은 이미 있다(30종 전부 채워져 있다). 여기서 그 값을 넘기면
+    //    되고 칸은 고치지 않는다 → tasks/T-045.
     protected override void Fill(List<StorageSlotData> into)
     {
         foreach (CharacterInfo character in _data.Characters)

@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (`WorkStationProgress` 추가 · 정적 변환표를 별도 표로 분리) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-05 (수량 팝업을 여기로 옮김 — 판별 축이 둘이다) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -11,6 +11,7 @@
 | `SystemCanvasView.cs` | 캔버스 껍데기 |
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`를 구독해 뽑힌 보상을 5열로 표시 |
+| `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
 
 **캔버스에 붙지 않는 정적 변환표도 여기 산다** — 어느 캔버스에서나 쓰이고
@@ -44,32 +45,78 @@
 `Override Sorting` + 자기 `GraphicRaycaster`는 여기도 그대로 적용된다.
 
 계층은 다른 캔버스와 같은 2단이다 — `(MAIN VIEW)` → `(↓ SUB VIEW)` → 내용.
-`Loading Presenter` · `GachaResult Presenter` · `Notice Presenter`가 각자 그 `(↓ SUB VIEW)`
-오브젝트에 스크립트·`CanvasGroup`·전체화면 `Image`(raycast blocker)를 함께 갖는다.
+넷이 각자 그 `(↓ SUB VIEW)` 오브젝트에
+스크립트·`CanvasGroup`·전체화면 `Image`(raycast blocker)를 함께 갖는다.
 
-> 그 아래에 `Panel`이 한 겹 더 있는 둘이 있다 — 근거는 아래 "왜 여기만 `Presenter` 아래에
+> 그 아래에 `Panel`이 한 겹 더 있는 셋이 있다 — 근거는 아래 "왜 여기만 `Presenter` 아래에
 > `Panel`이 한 겹 더 있는가"에 있다. 없어도 되는 겹이 아니다.
 
 **형제 순서가 곧 위아래다 — 나중에 올수록 위에 그려진다.**
 
 ```
 !System Canvas (MAIN VIEW)
-├─ [0] Loading Presenter   (↓ SUB VIEW)
+├─ [0] Loading Presenter     (↓ SUB VIEW)
 ├─ [1] GachaResult Presenter (↓ SUB VIEW)
-└─ [2] Notice Presenter    (↓ SUB VIEW)   ← 항상 마지막
+├─ [2] AmountInput Presenter (↓ SUB VIEW)
+└─ [3] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
 ```
 
 **`Notice Presenter`는 언제나 맨 아래(마지막)다.** 알림은 실패·종료를 알리는 마지막 출구라
 무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
 
-## ⚠️ 무엇으로 여닫는가 — `SetActive`인가 `CanvasGroup`인가
+### 차단막 색 — 넷이 같은 값을 쓴다
 
-**가르는 기준은 "보이냐"가 아니라 "나를 다시 켜 줄 주체가 밖에 있는가"다.**
+전체화면 blocker `Image`는 `sprite = null`(각진 네모) · `raycastTarget` 켬이 공통이고,
+**색만 축이 갈린다.**
+
+| 오버레이 | 색 | 왜 |
+|---|---|---|
+| `GachaResult` · `AmountInput` · `Notice` | **검정 a 0.35** | 떠 있는 창에 눈을 모은다. 같은 알림·확인류라 농도가 다르면 생김새가 갈린다 |
+| `Loading` | **흰색 a 0.851** | 이건 "무언가 떴다"가 아니라 **"지금은 아무것도 만질 수 없다"** 를 말한다. 뒤를 거의 덮는 것이 목적이라 다른 축이다 |
+
+> ⚠️ **알파가 0이어도 `raycastTarget`이 켜져 있으면 계속 막는다.** 안 어둡던 시절(a 0.000)에도
+> 차단은 정상으로 돌고 있었다 — **어두워졌는지로 차단 여부를 판단하면 안 된다.**
+
+## ⚠️ 판별 축은 둘이다 — 순서를 지켜 묻는다
+
+새 화면·팝업의 자리를 정할 때 **두 가지를 따로 묻는다. 하나로 묶으면 틀린다.**
+
+| | 무엇을 정하나 | 질문 |
+|---|---|---|
+| **① 차단 범위** | **어느 캔버스에 사는가** | 이게 떠 있는 동안 **화면 전체**를 막아야 하나? |
+| **② 생명주기** | `SetActive`인가 `CanvasGroup`인가 | 나를 **다시 켜 줄 주체가 밖에** 있는가? |
+
+**①을 먼저 묻는다.** ①의 답이 "화면 전체"면 자리가 `!System Canvas`로 정해지고,
+그 순간 ②의 답은 **`CanvasGroup`으로 강제된다** — 상주 캔버스에서 자기를 끈 채 시작하면
+`Start`가 돌지 않아 배선이 끊기기 때문이다. 즉 ②는 ①에 종속될 수 있고, 그 반대는 없다.
+
+### ① 차단 범위 — 열 안의 차단막은 다른 열에 닿지 않는다
+
+| 캔버스 | Sorting Order |
+|---|---|
+| `!System Canvas` | **2** |
+| `!Login Canvas` | 1 |
+| `#Widget` · `#Storage` · `#Market` · `#Main` · `#State` | **0 — 전부 형제** |
+
+열 캔버스는 전부 order 0인 **형제**다. 그 안에 전체화면 차단막을 깔아도 **자기 열만 막고**
+상태바·메인·다른 열은 그대로 눌린다. 화면 전체를 막을 수 있는 것은 order 2인 이 캔버스뿐이다.
+
+> 🔴 **여기서 한 번 틀렸다.** 수량 입력 팝업(당시 `SellAmountPresenter`)을 ②만 보고
+> "격자가 켜 주니 `SetActive`" → `#Storage Canvas` 자식으로 뒀다. ②의 판단 자체는 맞았지만
+> ①을 묻지 않았다. **증상은 "확인을 누르기 전인데 다른 열 버튼이 눌린다"로만 보여**
+> 알파·`raycastTarget`·`blocksRaycasts`를 먼저 의심하게 되는데, 원인은 전부 그쪽이 아니라
+> **캔버스 order**였다. 2026-09-05에 `!System Canvas`로 옮겼다.
+
+### ② 생명주기 — 나를 다시 켜 줄 손이 밖에 있는가
 
 | 종류 | 여닫는 법 | 무엇이 | 왜 |
 |---|---|---|---|
 | **밖에서 켜 주는 화면** | `SetActive` | 캔버스 · 메인 화면 셋 · 좌우 열 · 로그인 — **나머지 전부** | `UIManager`나 형제 Presenter가 켜 준다. 꺼져도 켜 줄 손이 살아 있고, `OnEnable` 재구독 + `Refresh`([`UI 규칙.md`](<../UI 규칙.md>)의 "공통 작성 규약")가 꺼진 동안 놓친 것을 따라잡는다 |
-| **자기 이벤트로 뜨는 상주 오버레이** | `CanvasGroup` | `LoadingPresenter` · `GachaResultPresenter` · `NoticePresenter` | 스스로 이벤트를 받아 뜨는 게 **유일한 입구**다. 자기를 끄면 다시 켤 이벤트를 못 받아 **영구 잠김**이 된다(꺼진 오브젝트엔 콜백이 안 온다) |
+| **상주 오버레이** | `CanvasGroup` | 이 캔버스의 넷 전부 | 오브젝트를 끄면 `Start`가 돌지 않거나(배선이 끊긴다) 다시 켤 이벤트를 못 받아 **영구 잠김**이 된다(꺼진 오브젝트엔 콜백이 안 온다) |
+
+⚠️ **`SetActive`로 못 여닫는다고 해서 "자기 이벤트로 뜨는 것"인 건 아니다.**
+`AmountInputPresenter`는 밖(`UIManager.AskAmount`)에서 열어 주는데도 `CanvasGroup`을 쓴다 —
+①이 자리를 정했고 자리가 여닫는 법을 정했을 뿐이다.
 
 오버레이는 오브젝트를 **항상 활성**으로 두고 `alpha`(0/1)·`blocksRaycasts`로 여닫는다.
 `blocksRaycasts`가 대기·알림 중 뒤 UI 클릭을 막는다(전체화면 blocker Image는 alpha 0이어도
@@ -114,7 +161,7 @@
 
 ## 왜 여기만 `Presenter` 아래에 `Panel`이 한 겹 더 있는가
 
-다른 캔버스는 `(↓ SUB VIEW)` 아래에 내용이 바로 온다. 여기 셋 중 둘만 그 사이에 `Panel`이 있다.
+다른 캔버스는 `(↓ SUB VIEW)` 아래에 내용이 바로 온다. 여기 넷 중 셋만 그 사이에 `Panel`이 있다.
 **멋이 아니라 차단막과 창을 한 사각형에 담을 수 없어서 생긴 겹이다.**
 
 `!Login Canvas`와 나란히 놓고 보면 갈라지는 지점이 보인다.
@@ -130,7 +177,7 @@
 
 1. **`!System Canvas`는 상주한다.** 여기에 전체화면 Image를 달면 아무것도 안 떠 있는 평상시에도
    화면 전체가 영원히 막힌다. 로그인은 캔버스가 통째로 꺼지므로 차단막을 캔버스에 올려도 된다.
-2. **그래서 차단막이 Presenter로 내려온다.** 셋이 각자 자기 이벤트로 뜨고 지므로 차단도 각자
+2. **그래서 차단막이 Presenter로 내려온다.** 넷이 각자 뜨고 지므로 차단도 각자
    해야 한다 → 각 Presenter가 자기 몫의 전체화면 Image(`blocksRaycasts`로 여닫는 그것)를 갖고,
    **오브젝트가 화면 전체로 늘어난다.**
 3. **늘어난 사각형은 창이 될 수 없다.** 한 `RectTransform`이 "화면 전체로 stretch"와
@@ -160,3 +207,31 @@
 
 > 칸은 인벤토리와 같은 `InventorySlotView` 프리팹을 쓴다 — 같아야 할 생김새를 두 벌로 두면
 > 한쪽만 고쳐진다. 자세한 건 [`Storage 규칙.md`](<../Storage/Storage 규칙.md>).
+
+## 왜 이것만 `UIManager`를 거치는가 — 넷 중 하나는 왕복이다
+
+**여기 사는 오버레이는 원칙적으로 밖에서 참조당하지 않는다.** 매니저가 이벤트를 쏘고
+Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버스를 **들고 있지 않고**,
+`SystemCanvasView.Show()`는 지금 호출처가 0이다(상주라 여닫을 일이 없다).
+
+| 오버레이 | 무엇을 구독하나 |
+|---|---|
+| `LoadingPresenter` | `ServerWaitManager.BusyChanged` |
+| `NoticePresenter` | `ServerWaitManager.NoticeRaised` · `FatalRaised` |
+| `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` |
+| `AmountInputPresenter` | **없다 — 구독형이 아니다** |
+
+셋은 단방향이다. "이런 일이 생겼다"를 듣고 뜨면 끝이라 부르는 쪽이 답을 기다리지 않는다.
+**수량 팝업만 답을 돌려줘야 한다** — `Open(itemId, max, onConfirm)`의 `onConfirm`이 그것이라
+이벤트만으로는 성립하지 않는다.
+
+그렇다고 부르는 쪽(창고 격자)이 직접 들면 **캔버스를 넘어 남의 패널을 붙드는** 모양이 되고,
+같은 팝업을 쓰는 화면이 늘 때마다 그 화면 수만큼 배선이 늘어난다.
+→ 참조를 `UIManager` 한 곳에 모으고 **`AskAmount(itemId, max, onConfirm)`** 로 중개한다.
+
+> ⚠️ **`UIManager`가 든 것은 캔버스가 아니라 팝업 하나다.** 여기 오버레이를 새로 넣을 때
+> 기본값은 여전히 **구독형(참조 없음)** 이고, 중개는 **답을 돌려줘야 할 때만** 더한다.
+
+> ⚠️ **팝업이 뜬 채로 부른 화면이 닫히는 경로를 막아야 한다.** 상주라 `OnDisable`이 오지 않아
+> 스스로 정리할 손이 없다 — `UIManager.CloseAllExceptWidget()`이 `Close()`를 부른다.
+> 빠뜨리면 증상이 "가끔 아무것도 없는 바탕에 팝업만 떠 있다"로만 보인다.

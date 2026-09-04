@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-02 (창고 탭 전환 · 격자 개명 `Grid Presenter`) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-05 (수량 팝업이 !System Canvas로 이사 · 차단막 색 통일) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -39,8 +39,12 @@ Root Canvas
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
-│  │  │  │     └─ InventorySlotView 프리팹
-│  │  │  └─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter
+│  │  │  │     └─ InventorySlotView 프리팹        Sell Mark 는 담겼을 때만 켜진다
+│  │  │  ├─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter  ← 지금은 판매 목록
+│  │  │  │  ├─ Sell Scroll View Panel             Content 에 SellCartRowView 프리팹이 쌓인다
+│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
+│  │  │  │  ├─ Summary Panel                      High Rarity Warning(평소 꺼짐) · Total Text
+│  │  │  │  └─ Sell Button                        [판매]
 │  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
@@ -73,19 +77,24 @@ Root Canvas
 │     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 950 · flexH 0
 │     │  ├─ Title                                 (정적 요소 — 표기 없음)
-│     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter
+│     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   Draws 4줄 (풀 2종 x 1회·10회)
+│     │     └─ Gacha Send Button (0..3)           자원 1·10회 · 캐릭터 1·10회 순.
+│     │                                           이름·비용 문구는 Start 가 테이블에서 채운다
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
    ├─ GachaResult Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
+   ├─ AmountInput Presenter (↓ SUB VIEW)          AmountInputPresenter  UIManager.AskAmount 가 연다
+   │  └─ Panel                                    440x240 (제목 · 수량 입력 · 확인/취소)
    └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
 (캔버스 밖)
 Window Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
 PlayerData (MODEL)                                PlayerDataModel
+SellCart (MODEL)                                  SellCartModel   판매 목록. 서버 상태가 아니다
 ```
 
 > **"← 계산됨" 칸은 인스펙터에서 고쳐도 소용없다.** `WidgetPositionLayout`이 열 높이(1080)에서
@@ -93,11 +102,12 @@ PlayerData (MODEL)                                PlayerDataModel
 > 위쪽이 87, 아래 칸이면 아래쪽이 87이다. **사람이 정하는 건 가운데 950 하나뿐이다**
 > — 근거는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>)의 "비율은 flexible이 아니라 숫자로".
 
-> ⚠️ `!System Canvas`의 SUB VIEW 셋은 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
-> 여닫는다 — **자기 이벤트로 스스로 뜨는 오버레이**라 자기를 끄면 다시 켤 이벤트를 못 받는다.
-> 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(alpha 0, raycastTarget)를
-> 함께 갖는다. **여기만 다른 게 아니라 기준이 있다** — 판별 기준("나를 다시 켜 줄 주체가 밖에
-> 있는가")과 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
+> ⚠️ `!System Canvas`의 SUB VIEW 넷은 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
+> 여닫는다 — 상주 캔버스라 자기를 끄면 `Start`가 돌지 않거나 다시 켤 이벤트를 못 받는다.
+> 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(raycastTarget 켬)를
+> 함께 갖는다. 차단막 색은 셋이 **검정 a 0.35**, `Loading`만 **흰색 a 0.851**(축이 다르다).
+> **여기만 다른 게 아니라 기준이 있다** — 판별 축이 둘(차단 범위 / 생명주기)이라는 것과
+> 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
 >
 > **`Notice Presenter`는 형제 순서에서 항상 마지막이다** — 나중에 올수록 위에 그려지고,
 > 알림은 무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
@@ -189,9 +199,9 @@ PlayerData (MODEL)                                PlayerDataModel
 
 ## 4. 알려진 임시 상태
 
-- ⚠️ **`Character State Row`의 레이아웃 여백만 `1`이다** (다른 곳은 전부 `5`로 통일).
-  높이 30 남짓인 줄에 위아래 5씩 넣으면 **내용이 눌린다** — 통일값으로 되돌리지 말 것.
-  **섹션 사이 여백과 위젯 안쪽 여백은 다른 문제다.**
+- **`Character State Row`의 여백은 `5 5 5 5`다.** 예전에 "여기만 `1`이다"라고 적혀 있었는데
+  **씬은 이미 5로 돌아와 있다** — 낡은 메모라 지웠다(2026-09-04 실측).
+  줄이 눌리면 여백이 아니라 **줄 높이**를 본다.
 - **`Character State Row`를 씬에 21줄 깔아 두고 풀처럼 쓴다.** 보유 캐릭터 수만큼만 켜고
   나머지는 끈다. 캐릭터가 21을 넘으면 그때 줄을 프리팹으로 뺀다.
 - **산업 버튼 5개는 고를 뿐 캐릭터를 걸러 내지 않는다.** 고른 산업이 배치 요청에 실릴 뿐,
@@ -207,9 +217,20 @@ PlayerData (MODEL)                                PlayerDataModel
 - **`xxx Button (1)`~`(4)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
   (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
-- **`Information Presenter`는 고를 수단(칸 클릭)이 아직 없어** 안내 문구만 띄운다.
-  `InventorySlotView`에 `Clicked`가 붙으면 이어진다. ⚠️ 칸은 이제 자원만이 아니라
-  **어느 탭의 칸인지까지 함께 받아야 한다** — 캐릭터 탭의 `Key`는 개체 번호다.
+- ⚠️ **`Information Presenter`는 이름과 역할이 어긋나 있다.** 지금 그리는 것은 아이템 상세가
+  아니라 **판매 목록**이라 `SellCartPresenter`가 맞다 — 씬 오브젝트 이름·문서가 함께 가는
+  개명이라 미뤘다. **좌클릭 상세 표시는 그 자리를 내주고 사라진 상태**이고, 되살릴지는 정하지 않았다.
+- **판매는 자원 탭에서만 된다.** 서버 판매 패킷이 아이템 TID 축이라 캐릭터를 담을 수 없어서,
+  격자가 다른 탭의 우클릭을 무시한다 — 근거는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
+- 🔴 **수량 팝업은 `#Storage Canvas`에 있다가 `!System Canvas`로 옮겼다 (2026-09-05).**
+  열 캔버스는 넷 다 Sorting Order가 **0인 형제**라, 창고 안에 깐 차단막이 다른 열에 닿지 않아
+  **확인을 누르기 전인데 상태바·메인·거래 버튼이 눌렸다.** 옮기면서 이름도
+  `AmountInput Presenter`로 바꾸고(판매 전용이 아니다) 차단막 겹 하나를 걷어냈다.
+  창고는 `UIManager.AskAmount(...)` 한 줄로 부르므로 팝업 참조를 들지 않는다.
+- **`Sell Mark`는 임시 표시다** (주황 배지 + "판"). 아이콘 리소스가 생기면 갈아 끼운다.
+- **스프라이트·여백을 씬 전체에서 한 번 맞췄다 (2026-09-04).** `Tab`·`Menu`·`Setting`·`Gacha`
+  Presenter의 배경이 `null` → `Background`로, `Setting Presenter`의 여백이 `5` → `0`(패널을
+  쌓기만 하는 자리)으로 바뀌었다. 기준은 [`UI 규칙.md`](<UI 규칙.md>) 3장의 여백·스프라이트 표다.
 - **`WorkStation Select Presenter`는 상태 패널 버튼으로 못 연다.** 슬롯 번호가 있어야 열리는
   화면이라 `Screen Buttons`에 넣을 수 없다 — 목록의 칸 클릭만이 입구다.
 - **`WorkStationListPresenter`에 `#region A-2 진단 (임시)`가 남아 있다.** 원인이 확정되면 통째로 지운다.

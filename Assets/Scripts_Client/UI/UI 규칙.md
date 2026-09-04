@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-08-26 (범용 골격을 `ugui-mvp` 스킬로 승격) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-09-05 (수량 팝업 폴더 이동) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -133,7 +133,7 @@ topmostToggle.onValueChanged.AddListener(on => {
 
 | 표기 | 무엇인가 |
 |---|---|
-| `(MODEL)` | 서버 상태를 들고 이벤트를 쏘는 오브젝트 |
+| `(MODEL)` | **상태를 들고 이벤트를 쏘는** 오브젝트. 서버 상태(`PlayerData`)뿐 아니라 여러 화면이 함께 보는 선택 상태(`SellCart`)도 여기다 |
 | `(MAIN VIEW)` | **캔버스** — 화면 단위로 켜고 끄는 껍데기 |
 | `(↓ SUB VIEW)` | **Presenter** — 아래가 전부 위젯이다 |
 | 표기 없음 | 컬럼 · 정렬용 패널 · 위젯 · 정적 요소 |
@@ -242,22 +242,96 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 없는 것은 건너뛴다. 예: `#Main Canvas (MAIN VIEW)`는
 `LayoutElement / CanvasRenderer / Canvas / Image / GraphicRaycaster / VerticalLayoutGroup / MainCanvasView`.
 
-**여백** — 계층에 따라 두 값뿐이다.
+**여백** — **"안에 무엇이 들어가는가"로 가른다.** 깊이로 가르지 않는다.
 
 | 어디 | padding | spacing |
 |---|---|---|
 | `!Horizental Columns` | 0 | **10** (열 사이) |
 | `@Xxx Column` | 0 | 0 |
-| **캔버스 이하 전부** | **5 5 5 5** | **5** |
-| 위젯 속살 (반복 줄 · Unity 토글 내부) | 건드리지 않는다 | — |
+| 캔버스 | **5 5 5 5** | 5 |
+| **위젯이 직접 들어가는 상자** — 버튼 줄 · 스크롤 `Content` · 반복 줄 · 팝업 창 | **5 5 5 5** | 5 |
+| **상자를 쌓기만 하는 자리** — Presenter가 하위 패널을 세로로 세우는 곳 | **0** | 5 |
+| **스크롤 패널** | LayoutGroup을 두지 않는다 (아래) | — |
+| 이미 여백을 준 상자 **안**의 정렬 전용 상자 | 0 | 5 |
 
-마지막 줄이 예외인 이유 — `Character State Row`는 높이 30 남짓인데 위아래 5씩 넣으면
-**내용이 눌린다.** 섹션의 여백과 위젯 안쪽 여백은 다른 문제다.
+**스크롤 패널에 여백을 주지 않는 이유** — 뷰포트에 여백이 붙으면 스크롤바가 안쪽으로
+밀려 들어와 목록과 어긋난다. **여백 대신 뷰포트 `sizeDelta`로 바 자리를 비운다**
+(`Grid Presenter`·`Sell Scroll View Panel` 둘 다 `(-17, 0)`). 여백이 필요하면
+바깥이 아니라 **안쪽 `Content`에** 준다 — 그래야 바가 제자리에 남는다.
+
+마지막 줄의 예 — `Window Panel`이 이미 5를 줬으므로 그 안의 `Button Panel`은 0이다.
+둘 다 주면 10이 된다.
+
+**스프라이트** — 역할이 곧 스프라이트다.
+
+| 역할 | 스프라이트 | 왜 |
+|---|---|---|
+| **맨 뒤 베이스** — 캔버스 본체 · 전체화면 차단막 | **`null`** (각진 네모) | 화면을 꽉 채우는 것에 둥근 모서리를 주면 구석이 비어 보인다 |
+| **격자에 빈틈없이 붙는 반복 칸** — `Slot` · `Work Slot` · `Character State Row` · 판매 줄 | **`null`** | 둥글면 칸 사이에 틈이 생긴 것처럼 보인다 |
+| **그 위에 얹히는 영역 상자** — `Title` · Presenter 배경 · `Xxx Panel` · 스크롤 패널 · 스크롤바 트랙 · 팝업 창 | **`Background`** (Sliced) | 얹힌 것은 경계가 보여야 한다 |
+| **누르는 것** — Button · Toggle · Dropdown · Scrollbar `Handle` | `UISprite` (Sliced) | 누를 수 있음이 생김새로 드러난다 |
+| 뷰포트 | `UIMask` (Sliced) | ⚠️ `Simple`이면 마스크가 통째로 둥글어진다 (아래) |
+| 입력칸 | `InputFieldBackground` (Sliced) | — |
+
+⚠️ **`Background`·`UISprite`·`UIMask`는 반드시 `Sliced`다.** `Simple`이면 9-slice가 풀려
+모서리가 크기에 비례해 늘어난다.
 
 > Unity 에디터를 스크립트로 만질 때: **컴포넌트 순서는 `ComponentUtility.MoveComponentUp`으로만 바꾼다.**
 > `m_Component`를 `SerializedObject`로 직접 건드리면 Unity가 거부하고
 > (`It is not allowed to modify the m_Component property`),
 > `MoveComponentRelativeToComponent`는 대화상자를 띄워 MCP에서 실행이 끊긴다.
+
+### 스크롤은 이미 서 있는 것을 그대로 베낀다
+
+`Grid Presenter`가 기준이다. 손으로 만들면 **눈에 안 띄는 두 값이 빠진다.**
+
+| 어디 | 값 | 빠뜨리면 |
+|---|---|---|
+| `Viewport > Image` | 스프라이트 `UIMask` + **`type = Sliced`** | Simple이면 32×32 스프라이트의 둥근 모서리가 뷰포트 크기로 늘어나, **마스크가 목록을 거대한 둥근 사각형으로 잘라낸다** |
+| `Viewport > RectTransform` | 앵커 전체 늘림 · pivot `(0, 1)` · **sizeDelta `(-17, 0)`** | 바(20)에서 겹침(3)을 뺀 값이다. 안 맞추면 목록과 스크롤바 사이에 틈이 남거나 바 밑으로 들어간다 |
+
+**둘 다 조용히 틀린다** — 에러도 경고도 없고 화면만 이상하다.
+
+**스크롤바 표시는 목록 길이가 변하는지로 가른다.**
+
+| | `ScrollRect` | 왜 |
+|---|---|---|
+| 창고 격자 | `AutoHideAndExpandViewport` · spacing **-3** | 칸 200개라 **늘 넘친다.** 자동이든 상시든 결과가 같다 |
+| 판매 목록 | **`Permanent`** | 담고 빼기로 길이가 계속 변한다. 자동이면 바가 나타났다 사라질 때마다 **뷰포트 폭이 바뀌어 줄이 다시 흐른다** |
+
+> ⚠️ **`Permanent`는 뷰포트 폭을 `ScrollRect`가 더 이상 건드리지 않는다는 뜻이다.**
+> `AutoHide`에서 바꿔 오면 그때 써 둔 값이 그대로 굳으므로 **`sizeDelta`를 직접 못박는다.**
+
+**휠 감도(`Scroll Sensitivity`)는 목록 스크롤 전부 `20`이다.** 유니티 기본값 `1`은 한 번 굴려
+1픽셀이라 목록이 안 움직이는 것처럼 보인다. 화면마다 다르면 같은 손짓에 다른 거리가 나가
+"이 화면만 뻑뻑하다"가 된다 — **새 스크롤을 만들면 여기도 맞춘다.**
+※ 드롭다운 안의 `Template`은 예외다 — Unity 기본 위젯의 속살이라 건드리지 않는다(여백과 같은 이유).
+
+### `LayoutGroup`이 배치하는 프리팹은 만든 자리에서 바로 태운다
+
+```csharp
+Instantiate(rowPrefab, rowParent);   // ← 아직 프리팹에 저장된 크기 그대로다
+...
+LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);   // 다 만든 뒤 한 번
+```
+
+uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanvases`)에 돈다.
+그 사이 `WidgetPositionLayout.VerifyNoOverflow`가 `LateUpdate`에서 훑고 지나가
+**"자식이 부모보다 넓다" → 다음 검사에서 "넘침이 해소됐다"** 가 왕복으로 찍힌다.
+고칠 것이 없는 경고라 진짜 넘침을 덮는다.
+
+> ⚠️ **프리팹 크기를 부모보다 작게 저장해 피하려 들지 말 것.** 실제로 그렇게 해 봤는데
+> **자식 하나(TMP 기본 200×50)가 남아 경고가 한 단계 아래로 옮겨 갔을 뿐이다.**
+> 크기를 맞추는 방식은 노드 수만큼 손이 가고, 프리팹을 고칠 때마다 다시 깨진다.
+>
+> `InventorySlotView`가 이 경고를 안 내는 것은 크기를 맞춰서가 아니라
+> **`Slot` 프레임이 `LayoutGroup`이 아니라 앵커로 배치**해서 즉시 자리가 잡히기 때문이다.
+
+### 폰트에 없는 글자를 씬에 적지 않는다
+
+`neodgm_pro SDF`는 **Static 아틀라스**라 실행 중에 글리프가 추가되지 않는다.
+`⚠` 같은 기호는 `□`로 바뀌고 매 프레임 경고가 뜬다 — **기호 대신 `!`·`[!]`처럼 ASCII를 쓴다.**
+확인은 코드에서 `font.HasCharacter(c)`로 한다.
 
 ---
 
@@ -310,11 +384,13 @@ UI/
 │   ├─ StorageCanvasView.cs
 │   ├─ StorageTabPresenter/
 │   │   └─ StorageTabPresenter.cs
-│   ├─ InventoryPresenter/
-│   │   ├─ InventoryPresenter.cs
-│   │   └─ InventorySlotView.cs          ← 종속 View
+│   ├─ StorageGridPresenter/
+│   │   ├─ StorageGridPresenter.cs
+│   │   ├─ InventorySlotView.cs          ← 종속 View
+│   │   └─ XxxSlotSource.cs              ← 탭별 공급자 (화면이 아니라 데이터)
 │   └─ StorageInformationPresenter/
-│       └─ StorageInformationPresenter.cs
+│       ├─ StorageInformationPresenter.cs
+│       └─ SellCartRowView.cs            ← 종속 View
 ├─ Main/
 │   ├─ Main 규칙.md
 │   ├─ MainCanvasView.cs
@@ -343,12 +419,16 @@ UI/
 │   ├─ WidgetCanvasView.cs
 │   └─ WidgetPresenter/
 │       └─ WidgetPresenter.cs
-├─ System/                                ← 캔버스 하나에 오버레이 둘
+├─ System/                                ← 캔버스 하나에 오버레이 넷
 │   ├─ System 규칙.md
 │   ├─ SystemCanvasView.cs
 │   ├─ ResultMessages.cs
 │   ├─ LoadingPresenter/
 │   │   └─ LoadingPresenter.cs
+│   ├─ GachaResultPresenter/
+│   │   └─ GachaResultPresenter.cs
+│   ├─ AmountInputPresenter/             ← 화면 전체를 막아야 해서 여기 산다
+│   │   └─ AmountInputPresenter.cs
 │   └─ NoticePresenter/
 │       └─ NoticePresenter.cs
 └─ Layout/                                ← 예외. 화면이 아니라 배치 계산
