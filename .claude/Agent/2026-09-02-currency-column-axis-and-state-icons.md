@@ -75,7 +75,7 @@ tags: [client, ui, packet, state]
 - ⚠️ **`GameData.CurrencyType`이 쓰이지 않게 됐다.** `Assets/Scripts_Server/GameData/Enum.cs`는
   **서버 미러라 손대지 않았다.** `Dia`도 이 enum에 없다 — 정리 여부는 서버 판단이다.
 - ⚠️ **새 분석기 경고 1건** — `MIKA001: S_ItemSellResponse에 [PacketHandler]가 없습니다`.
-  이번 작업과 무관하고 **[T-032](../../tasks/T-032-클라판매UI.md)(클라 판매 UI)의 몫**이다.
+  이번 작업과 무관하고 **[T-032](../../tasks/archive/T-032-클라판매UI.md)(클라 판매 UI)의 몫**이다.
 - **커밋하지 않았다** (요청 없음).
 
 ## 업데이트 (2026-09-02) — 아이콘 폭에 적은 `33`을 걷어냈다
