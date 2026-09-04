@@ -84,6 +84,13 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("바탕화면에 항상 떠 있는 위젯. 여닫지 않고 참조만 들고 있는다")]
     private WidgetCanvasView widgetCanvas = null!;
 
+    // ※ '!System Canvas' 자체는 여기 들지 않는다 — 상주라 여닫을 일이 없다('SystemCanvasView').
+    //   여기 드는 것은 캔버스가 아니라 **답을 돌려줘야 해서 중개가 필요한 팝업 하나**다.
+    //   로딩·알림·가챠 결과는 매니저 이벤트를 스스로 구독해 뜨므로 참조가 필요 없다.
+    [CenterHeader("시스템 오버레이 — 중개가 필요한 것만")]
+    [SerializeField, Tooltip("수량 입력 팝업. !System Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
+    private AmountInputPresenter amountInput = null!;
+
     // ─── 참조 ───
     public StorageCanvasView Storage => storageCanvas;
     public MarketCanvasView  Market  => marketCanvas;
@@ -110,6 +117,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
         this.RequireRef(marketCanvas,  nameof(marketCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
+        this.RequireRef(amountInput,   nameof(amountInput));
 
         ValidateMainScreens();
         ResetMainScreen();
@@ -254,6 +262,10 @@ public class UIManager : MonoService<UIManager>
         stateCanvas.Show(false);
         mainCanvas.Show(false);
 
+        // ★ 팝업은 상주 캔버스에 살아 'OnDisable'이 오지 않는다 — 여기서 안 닫으면
+        //   아무 화면도 없는 바탕에 홀로 떠 있게 되고, 그때 들고 있던 콜백은 이미 의미가 없다.
+        amountInput.Close();
+
         ResetMainScreen(); // 캔버스를 끈 뒤라 안쪽을 정리해도 화면에는 아무 변화가 없다
     }
 
@@ -274,6 +286,24 @@ public class UIManager : MonoService<UIManager>
 
     // 거래 열을 뒤집는다 (작업슬롯 하단 버튼).
     public void ToggleMarket() => ShowMarket(!marketCanvas.gameObject.activeSelf);
+
+    #endregion
+
+    #region 시스템 오버레이 중개
+
+    // 수량을 묻고, 확인을 누르면 그 수를 'onConfirm'으로 돌려준다 (취소면 부르지 않는다).
+    //
+    // ★ 왜 부르는 쪽이 팝업을 직접 알지 않는가
+    //   팝업은 '!System Canvas'에 산다 — 화면 전체를 막아야 해서다(열 캔버스는 Sorting Order가
+    //   전부 0인 형제라 열 안의 차단막이 다른 열에 닿지 않는다). 그런데 그렇게 두면 창고 격자가
+    //   **캔버스를 넘어 남의 패널을 인스펙터로 붙드는** 모양이 된다. 그 참조를 여기로 모은다.
+    //
+    // ※ 로딩·알림·가챠 결과에는 이런 중개가 없다 — 매니저 이벤트를 스스로 구독해 뜨는 단방향이라서다.
+    //   이 팝업만 **답을 돌려주는 왕복**이라 구독형으로 만들 수 없다('System 규칙.md').
+    public void AskAmount(int itemId, int maxCount, Action<int> onConfirm)
+    {
+        amountInput.Open(itemId, maxCount, onConfirm);
+    }
 
     #endregion
 }

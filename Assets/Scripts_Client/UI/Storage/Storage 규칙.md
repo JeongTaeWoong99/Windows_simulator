@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-02 (격자 하나 + 탭별 공급자로 전환 · 탭을 채우는 절차 신설) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-05 (수량 팝업이 `!System Canvas`로 이사) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -9,7 +9,11 @@
 | `StorageCanvasView.cs` | 캔버스 껍데기 |
 | `StorageTabPresenter/` | 탭 4개를 쥐고 **어느 탭인가**를 정한다 (+ `StorageTab` enum) |
 | `StorageGridPresenter/` | **탭이 무엇이든 칸을 그리는 격자 하나** (+ 종속 View `InventorySlotView` · 공급자들) |
-| `StorageInformationPresenter/` | 창고 정보 |
+| `StorageInformationPresenter/` | **판매 목록**을 그린다 (+ 종속 View `SellCartRowView`) |
+
+> ⚠️ **`StorageInformationPresenter`는 이름과 역할이 어긋나 있다.** 원래는 고른 항목의 상세를
+> 띄우는 자리였는데 2026-09-04에 판매 목록이 그 자리를 차지했다. `SellCartPresenter`가 맞는
+> 이름이지만 씬 오브젝트 이름·문서가 함께 가는 개명이라 따로 다룬다.
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 스크롤·레이아웃 함정은
 [`Layout 규칙.md`](<../Layout/Layout 규칙.md>)에 있다.
@@ -74,6 +78,70 @@ Disabled 색으로 흐려져 "지금은 없는 것"이 그대로 보인다.
 > ⚠️ `tabs` 배열 위의 `[CenterHeader]`에는 `[NonReorderable]`을 같이 단다 —
 > reorderable list 경로에서는 헤더가 통째로 안 보인다([`UI 규칙.md`](<../UI 규칙.md>)의 "공통 작성 규약").
 
+## 판매는 우클릭으로 담고, 아래 칸에서 한 번에 판다
+
+**방치형은 인벤토리가 저절로 찬다.** 하나씩 골라 파는 UI면 매일 수십 번 클릭하게 되므로
+**일괄 판매가 기본 동선**이고, 서버도 목록 단위로 받는다(`C_ItemSellRequest { List<ItemInfo> }`).
+
+```
+자원 칸 우클릭
+   ├─ 이미 담김 ────────────────→ 카트에서 뺀다 (토글)
+   ├─ 보유 1개 ─────────────────→ 바로 담는다
+   └─ 보유 2개 이상 ─── 수량 팝업(기본값=전량) ─ 확인 → 담는다
+
+Grid Presenter          우클릭을 판매로 읽고, 칸에 담김 표시를 켠다
+      ↕ (둘 다 구독)
+SellCartModel (MODEL)   담긴 목록 · 합계 골드 · 상위 등급 포함 여부
+      ↕
+Information Presenter   줄 목록 · 합계 · [판매] → C_ItemSellRequest
+```
+
+### 자원 탭에서만 담긴다
+
+서버 판매 패킷이 **아이템 TID 축**(`ItemInfo { ItemId, Count }`)이라 캐릭터를 담을 수 없다 —
+캐릭터는 개체 PK(`long CharacterId`)로 식별되는데 그걸 받는 패킷이 없다.
+그래서 격자가 `StorageTab.Resource`가 아니면 **우클릭을 무시한다.**
+
+> 캐릭터·장비 판매가 필요해지면 **서버 패킷이 먼저**다. 카트는 종류 축만 하나 늘리면 된다.
+
+### 카트를 왜 매니저에 두는가
+
+격자는 **어느 칸에 담김 표시를 켤지**, 정보 칸은 **목록과 합계**를 알아야 한다.
+둘 중 하나가 들고 있으면 패널끼리 직접 참조하게 되고, 그게 쌓이면 참조가 그물이 된다.
+→ 상태는 [`Managers/SellCartModel`](<../../Managers/Managers 규칙.md>)에 두고 양쪽이 각자 구독한다.
+
+> **수량 팝업도 격자가 직접 들지 않는다.** 이건 그물을 피하려는 게 아니라 **팝업이 이 캔버스에
+> 살지 않아서**다 — 아래 "수량 팝업은 창고 것이 아니다" 참조.
+
+### ⚠️ 인벤토리가 줄면 담긴 수량도 함께 줄여야 한다
+
+**서버 판매는 전부 되거나 전혀 안 된다.** 목록 중 한 종류라도 보유량이 모자라면
+`NotEnoughItem`으로 거절되고 **아무것도 팔리지 않는다.** 방치형이라 담아 둔 사이에도 채취·판매로
+인벤토리가 계속 바뀌므로, `SellCartModel`이 `InventoryChanged`를 구독해 초과분을 깎는다.
+이게 없으면 담아 두기만 해도 판매가 통째로 막힌다.
+
+### 확인 모달을 두지 않는다
+
+**담기 → [판매]** 두 단계가 이미 확인 절차다. 매번 화면 중앙 팝업을 띄우면 P1(주의를 뺏지 않는다)을
+어긴다. 대신 **Rare 이상이 담기면 합계 옆에 경고**를 띄운다 — 목록에서 빼지는 않는다.
+빼 버리면 "왜 안 담기지"가 되고, 파는 자유는 남겨 둔다.
+
+### 수량 팝업은 창고 것이 아니다
+
+**`AmountInputPresenter`는 `!System Canvas`에 산다** — 이 폴더에 없다
+([`System 규칙.md`](<../System/System 규칙.md>)). 창고는 그것을 **부르기만** 한다:
+
+```csharp
+_ui.AskAmount(itemId, owned, amount => _cart.Add(itemId, amount));
+```
+
+> 🔴 **처음엔 `#Storage Canvas` 자식으로 뒀다가 옮겼다(2026-09-05).** 열 캔버스는 넷 다
+> Sorting Order가 **0인 형제**라 창고 안에 깐 전체화면 차단막이 다른 열에 닿지 않는다 —
+> 확인을 누르기 전인데 상태바·메인·거래 버튼이 그대로 눌렸다.
+> **증상만 보면 알파나 `raycastTarget`을 의심하게 되는데 원인은 캔버스 order다.**
+
+한 줄로 부르므로 창고에는 팝업 참조도, 여닫는 코드도 남지 않는다.
+
 ## i번째 항목이 i번째 프레임에 들어간다
 
 예전 `InventoryPresenter`는 `ItemId → 프레임`을 고정해 두고 빈 프레임을 앞에서부터 찾았다.
@@ -109,15 +177,20 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 - **칸은 완성된 값을 받아 그린다.** 이름도 등급도 칸이 조회하지 않는다 — **출처가 탭마다 다르다.**
   자원은 `ItemTable`, 캐릭터는 `CharacterTable`, 가챠 보상은 패킷(`GachaRewardInfo.Rarity`)이
   실어 온다. 칸이 한쪽을 골라 버리면 다른 쪽이 조용히 무시된다.
-- `Bind`는 **`Bind(in StorageSlotData)`** 가 본체이고, `Bind(int itemId, int count, GlobalRarity)`는
-  가챠가 쓰는 **얇은 래퍼**다. 표시 항목을 늘릴 때는 `StorageSlotData`에 넣는다.
-- `Clear()`는 `Rarity Image` 색을 `RarityPalette.Unknown`으로 되돌린다. **풀에서 재사용되는
-  칸이라** 안 되돌리면 이전 등급색이 남는다.
+- `Bind`는 **`Bind(in StorageSlotData)`** 하나다. 표시 항목을 늘릴 때는 `StorageSlotData`에 넣는다.
+  ※ 예전에 가챠가 쓰던 `Bind(int itemId, int count, GlobalRarity)` 래퍼는 2026-09-04에 걷어냈다 —
+  가챠 보상이 아이템·캐릭터로 갈리면서 **`ItemId`만 읽는 그 형태가 성립하지 않게 됐다.**
+- `Clear()`는 `Rarity Image` 색을 `RarityPalette.Unknown`으로 되돌리고 **판매 담김 표시도 끈다.**
+  **풀에서 재사용되는 칸이라** 안 되돌리면 이전 칸의 흔적이 남는다.
 - 프리팹에 참조를 더하면 **양쪽 화면이 다 영향을 받는다.** 지금 잡아 둔 것은
-  `Rarity Image`·`Item Image`·`Name Text`·`Sub Text` 넷이다.
+  `Rarity Image`·`Item Image`·`Name Text`·`Sub Text`·`Sell Mark` 다섯이다.
 - **칸이 화면을 알아보고 분기하지 않는다.** 화면마다 달라야 하는 것은 `SetSubVisible`처럼
   **부르는 쪽이 한 번 정해 주는 스위치**로 뺀다 — 창고는 보조 문구를 켜 두고, 가챠 결과는 끈다
   (거기서는 개수가 칸이 아니라 목록의 길이로 드러난다). `Clear()`는 이 결정을 되돌리지 않는다.
+- **우클릭도 마찬가지다.** 칸은 `RightClicked`를 던지기만 하고 그게 판매인지 모른다 —
+  가챠 결과 팝업은 구독하지 않아 아무 일도 일어나지 않고, `Sell Mark`도 거기서는 늘 꺼져 있다
+  (`Bind`가 켜지 않고 격자만 `SetSellMark`를 부른다).
+  ⚠️ 이벤트를 받으려면 칸에 **raycast target인 Graphic**이 있어야 한다 — `Rarity Image`가 그 역할이다.
 
 ### `Sub Text` — 이름 아래 한 줄은 탭마다 다른 것이 온다
 
@@ -129,7 +202,9 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 
 > `Item Image`는 참조만 잡혀 있고 **아직 채우지 않는다** — 아이템 아이콘 컬럼이 테이블에 없다.
 > 등급도 스프라이트가 없어 색으로만 표시한다(`RarityPalette`의 TODO).
-> **캐릭터는 등급 자체가 없다** — `CharacterTable`에 컬럼이 없어 `GlobalRarity.None`(회색)으로 그린다.
+> 🔴 **캐릭터 칸이 전부 회색인 것은 등급이 없어서가 아니다.** `CharacterSlotSource.Fill`이
+> `GlobalRarity.None`을 못박아 넘기고 있을 뿐이고, `CharacterTable`에는 **등급 컬럼이 이미 있다**
+> (30종 전부 채워져 있고 미러에도 들어와 있다). "컬럼이 없다"는 낡은 전제다 → [T-045](../../../../tasks/T-045-캐릭터등급표시.md).
 
 ## ⚠️ `Start` 순서에 기대지 않는다
 

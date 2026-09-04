@@ -35,6 +35,24 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public IReadOnlyList<ItemInfo>            Inventory        => _inventory;
     public IReadOnlyList<WorkStationSlotInfo> WorkStationSlots => _workStationSlots;
 
+    // 아이템 하나의 보유 수량. 없으면 0이다.
+    //
+    // 서버가 0개가 된 아이템도 목록에 실어 보내므로(감소도 같은 경로로 온다) 캐시에 남아 있다.
+    // 판매 카트와 창고 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
+    // 한쪽만 고쳐졌을 때 화면과 요청이 다른 수량을 말한다.
+    public int GetItemCount(int itemId)
+    {
+        foreach (var item in _inventory)
+        {
+            if (item.ItemId == itemId)
+            {
+                return item.Count;
+            }
+        }
+
+        return 0;
+    }
+
     // 내가 가진 캐릭터들.
     //
     // ⚠️ 'CharacterInfo.CharacterId'는 개체 번호이고, 'CharacterInfo.CharacterTid'가
@@ -143,6 +161,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
 
+    public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
+    public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
+
     // ─── Unity 메시지 ───
 
     // 구독 → 초기화 순서로 진행한다 (매니저 공통 규약 — 이 매니저는 확보할 참조가 없다)
@@ -189,6 +210,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WorkStationSlotSynced    += OnWorkStationSlotSynced;
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
+        ServerPacketHandler.ItemSold                 += OnItemSold;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -211,6 +233,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WorkStationSlotSynced    -= OnWorkStationSlotSynced;
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
+        ServerPacketHandler.ItemSold                 -= OnItemSold;
     }
 
     #endregion
@@ -365,6 +388,25 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnItemUpdated(S_UpdateItemResponse res)
     {
         ApplyItemChanges(res.ItemChangeInfos);
+    }
+
+    // 판매 응답 — 인벤토리 반영 후 결과 이벤트 발행. 'OnGachaDrawn'과 같은 모양이다.
+    //
+    // ★ 골드를 여기서 건드리지 않는다 — 'GainedGold'는 이번에 번 금액이고,
+    //   확정 잔액은 뒤이어 오는 'S_CurrencyResponse'가 내려준다. 여기서 더하면 두 번 오른다.
+    // ★ 전부 되거나 전혀 안 된다 — 실패면 인벤토리도 그대로다.
+    private void OnItemSold(S_ItemSellResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"판매 실패 — 결과={res.Result}");
+            ItemSellFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+        ItemSellCompleted?.Invoke(res.GainedGold);
     }
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.

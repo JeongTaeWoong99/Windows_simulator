@@ -90,6 +90,22 @@ public static class GameDataLoader
         return GlobalRarity.None;
     }
 
+    // 아이템 판매가를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 0으로 떨어지고 처음 한 번만 경고한다.
+    //
+    // ※ 판매 합계 미리보기가 쓰는 값이다. 실제로 얼마를 받을지는 서버가 정하며
+    //   ('S_ItemSellResponse.GainedGold'), 지금은 판매율이 100%라 둘이 같다.
+    public static int GetItemPrice(int itemId)
+    {
+        if (GameTable.ItemTable.TryGet(itemId, out var row))
+        {
+            return row.BasePrice;
+        }
+
+        WarnUnknownId("아이템", itemId, _warnedItemIds);
+
+        return 0;
+    }
+
     // 캐릭터 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     public static string GetCharacterName(long characterId)
     {

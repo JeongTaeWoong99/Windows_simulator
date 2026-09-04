@@ -202,6 +202,28 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 상점
+
+        // 아이템 판매 결과 도착 (Handle_S_ItemSellResponse에서 발행)
+        public static event Action<S_ItemSellResponse>? ItemSold;
+
+        // 아이템 판매 결과 (S_ItemSellResponse 수신 시 자동 호출)
+        // ★ 전부 되거나 전혀 안 된다 — 목록 중 한 종류라도 보유량이 모자라면 NotEnoughItem으로
+        //   거절되고 아무것도 팔리지 않는다. 부분 성공 응답은 오지 않는다.
+        // ※ GainedGold는 잔액이 아니라 "이번에 번 금액"이다. 갱신된 잔액은 뒤이어 오는
+        //   S_CurrencyResponse가 확정 값으로 내려준다.
+        // ※ ItemChangeInfos의 Count는 델타가 아니라 "갱신 후 누적 총량"이다. 다 팔아 0개가 된
+        //   아이템은 Kind = Remove로 온다.
+        [PacketHandler]
+        public static void Handle_S_ItemSellResponse(ISession session, S_ItemSellResponse res)
+        {
+            int changeCount = res.ItemChangeInfos?.Count ?? 0;
+            ClientLogger.Info(ClientLogger.Recv, $"판매 결과={res.Result}, 획득 골드 {res.GainedGold:N0}, 변경 {changeCount}건");
+            ItemSold?.Invoke(res);
+        }
+
+        #endregion
+
         #region 테스트용 (연결 확인) — 추후 필요 없어지면 삭제
 
         // 에코 응답 — 왕복 연결 테스트용 (S_EchoResponse 수신 시 자동 호출)

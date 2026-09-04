@@ -19,6 +19,8 @@ public static class ResultMessages
         EResultCode.CharacterNotOwned   => "보유하지 않은 캐릭터입니다.",
         EResultCode.NoAptitude          => "이 캐릭터는 해당 산업 적성이 없습니다.",
         EResultCode.IndustryLevelLocked => "아직 해금하지 않은 산업입니다.",
+        EResultCode.InvalidSellRequest  => "판매 요청이 올바르지 않습니다.",
+        EResultCode.NotEnoughItem       => "보유량이 부족합니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }
