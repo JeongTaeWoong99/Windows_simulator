@@ -1,17 +1,48 @@
 # Market 폴더 규칙
 
-> 최종 업데이트: 2026-08-25 (결과 팝업 자리 확정) · 대상: `Assets/Scripts_Client/UI/Market/`
+> 최종 업데이트: 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
 
 **`#Market Canvas` — 거래 열. 지금은 가챠 화면 하나뿐이다.**
 
 | 폴더 | 무엇 |
 |------|------|
 | `MarketCanvasView.cs` | 캔버스 껍데기 |
-| `GachaPresenter/` | 뽑기 요청 버튼 두 개(1회 · 10연차) |
+| `GachaPresenter/` | 뽑기 요청 버튼 **4개** — 풀 2종 x (1회 · 10연차) |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
 
 ---
+
+## 풀이 둘이다 — 버튼은 인스펙터에 줄로 넣는다
+
+`GachaInfoTable`(`Gacha.xlsx`)에 풀이 둘 있고, `GachaId`가 곧 `GachaInfoTID`다.
+
+| GachaId | 이름 | 무엇이 나오나 |
+|---|---|---|
+| 1 | 구슬 상자 | 아이템 (`GachaItemTable`) |
+| 2 | 캐릭터 소환 | 캐릭터 (`GachaCharacterTable`) |
+
+`GachaPresenter`의 `Draws` 배열에 `{ gachaId, drawCount, 버튼, 이름 텍스트, 비용 텍스트 }`를
+**화면과 같은 순서로** 넣는다(`StorageTabPresenter`의 `Tabs`와 같은 패턴).
+배선이 비었거나 테이블에 없는 풀을 가리키면 `ValidateDraws`가 콘솔로 알린다 —
+안 그러면 버튼이 고장 난 것처럼 보인다.
+
+### ⚠️ 이름과 비용을 코드에 박지 않는다
+
+`Name`·`CostSingle`·`CostMulti`를 테이블에서 읽어 `Start`에서 채운다.
+**10연차가 단차 x 10이라는 보장이 없다** — 컬럼이 따로다. 곱해서 만들면 기획이 할인율을
+넣는 순간 화면과 서버가 다른 값을 말한다.
+
+### 골드가 모자란 버튼만 잠근다
+
+`PlayerDataModel.CurrencyChanged`를 구독해 `Gold >= 비용`인 줄만 연다.
+**두 축을 함께 본다** — 대기 중이면 전부 잠기고, 대기가 풀려도 모자란 줄은 잠긴 채로 남아야 한다.
+한 축만 보면 응답이 온 순간 살 수 없는 버튼까지 함께 열린다.
+
+> **클라 판단은 표시용일 뿐이다.** 실제 거절은 서버가 하고(`NotEnoughCurrency`),
+> 그 사유는 `ResultMessages`를 거쳐 알림으로 뜬다.
+> 지금 재화 축은 골드뿐이라 `CostCurrency`가 골드가 아니면 경고만 남긴다 —
+> 다이아 비용이 생기면 잔액 비교도 함께 갈라야 한다.
 
 ## 지금 있는 규칙
 

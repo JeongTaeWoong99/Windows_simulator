@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData;
 using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
@@ -122,11 +123,38 @@ public class GachaResultPresenter : MonoBehaviour
             InventorySlotView slot = GetOrCreateSlot(i);
 
             slot.gameObject.SetActive(true);
-            slot.Bind(reward.ItemId, reward.Count, RarityPalette.ToTableRarity(reward.Rarity));
+            slot.Bind(ToSlotData(reward));
         }
 
         HideSlotsFrom(rewards.Count);
         SetVisible(true);
+    }
+
+    // 보상 하나를 칸에 그릴 값으로 옮긴다 (OnGachaCompleted에서 호출).
+    //
+    // ⚠️ 'RewardType'이 어느 TID 필드를 읽을지 정한다 — 아이템이면 'ItemId', 캐릭터면 'CharacterTid'이고
+    //   나머지 하나는 0이다. 분기하지 않고 'ItemId'만 읽으면 캐릭터 보상이 빈 칸으로 그려지는데,
+    //   필드가 추가만 된 형태라 컴파일도 경고도 통과한다.
+    // ※ 등급은 테이블을 다시 뒤지지 않고 패킷 값을 쓴다 — 두 값이 어긋났을 때 조용히 패킷 쪽을
+    //   무시하게 된다. 캐릭터도 아이템과 같은 등급 축이다.
+    // ※ 캐릭터 이름은 **종류(TID)** 로 읽는다. 개체 번호가 아니다 — 개체 PK는 DB가 늦게 발급해서
+    //   이 응답에 실리지 않고, 뒤이어 오는 'S_CharacterListResponse'로 온다.
+    private static StorageSlotData ToSlotData(GachaRewardInfo reward)
+    {
+        GlobalRarity rarity = RarityPalette.ToTableRarity(reward.Rarity);
+
+        if (reward.RewardType == EGachaRewardType.Character)
+        {
+            return new StorageSlotData(reward.CharacterTid,
+                                       GameDataLoader.GetCharacterName(reward.CharacterTid),
+                                       reward.Count.ToString(),
+                                       rarity);
+        }
+
+        return new StorageSlotData(reward.ItemId,
+                                   GameDataLoader.GetItemName(reward.ItemId),
+                                   reward.Count.ToString(),
+                                   rarity);
     }
 
     // 'index'번째 칸을 돌려준다. 아직 없으면 그때 만든다 (OnGachaCompleted에서 호출)

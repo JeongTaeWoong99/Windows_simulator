@@ -106,6 +106,15 @@ public static class GameDataLoader
         return 0;
     }
 
+    // 가챠 풀의 메타(이름·비용)를 조회한다. 'GachaId'는 'GachaInfoTID'와 같은 값이다.
+    //
+    // ※ 여기만 이름·등급 조회와 달리 실패를 그대로 돌려준다 — 값이 없으면 대체할 표시가 없고,
+    //   버튼을 만들지 말지를 부르는 쪽이 정해야 하기 때문이다('GachaPresenter'가 배선 오류로 알린다).
+    public static bool TryGetGachaInfo(int gachaId, out GachaInfoTableRow row)
+    {
+        return GameTable.GachaInfoTable.TryGet(gachaId, out row);
+    }
+
     // 캐릭터 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     public static string GetCharacterName(long characterId)
     {

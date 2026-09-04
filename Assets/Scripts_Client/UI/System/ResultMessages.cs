@@ -15,6 +15,7 @@ public static class ResultMessages
         EResultCode.AlreadyLoggedIn     => "이미 접속 중인 계정입니다. 다른 창을 닫고 다시 시도해 주세요.",
         EResultCode.InvalidDrawCount    => "뽑기 횟수가 올바르지 않습니다.",
         EResultCode.InvalidGachaId      => "존재하지 않는 뽑기입니다.",
+        EResultCode.NotEnoughCurrency   => "골드가 부족합니다.",
         EResultCode.InvalidSlotIndex    => "아직 열리지 않은 작업 슬롯입니다.",
         EResultCode.CharacterNotOwned   => "보유하지 않은 캐릭터입니다.",
         EResultCode.NoAptitude          => "이 캐릭터는 해당 산업 적성이 없습니다.",
