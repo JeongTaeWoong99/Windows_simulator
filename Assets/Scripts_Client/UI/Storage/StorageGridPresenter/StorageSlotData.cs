@@ -19,8 +19,8 @@ public readonly struct StorageSlotData
     // 칸 위젯 이름이 'Sub Text'인 것도 이 자리를 가리키기 위해서다.
     public readonly string Sub;
 
-    // 등급 배경색의 근거. 등급이 없는 종류(캐릭터)는 'GlobalRarity.None'을 넘긴다
-    // — 'RarityPalette.Get'이 'Unknown' 색으로 떨어뜨린다.
+    // 등급 배경색의 근거. 자원도 캐릭터도 같은 축('GlobalRarity')을 쓴다.
+    // 조회가 빗나가면 'GlobalRarity.None'이 오고 — 'RarityPalette.Get'이 'Unknown' 색으로 떨어뜨린다.
     public readonly GlobalRarity Rarity;
 
     public StorageSlotData(long key, string name, string sub, GlobalRarity rarity)

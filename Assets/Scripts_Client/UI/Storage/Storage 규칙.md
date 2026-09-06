@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-05 (수량 팝업이 `!System Canvas`로 이사) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-06 (캐릭터 칸 등급 색 표시) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -202,9 +202,9 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 
 > `Item Image`는 참조만 잡혀 있고 **아직 채우지 않는다** — 아이템 아이콘 컬럼이 테이블에 없다.
 > 등급도 스프라이트가 없어 색으로만 표시한다(`RarityPalette`의 TODO).
-> 🔴 **캐릭터 칸이 전부 회색인 것은 등급이 없어서가 아니다.** `CharacterSlotSource.Fill`이
-> `GlobalRarity.None`을 못박아 넘기고 있을 뿐이고, `CharacterTable`에는 **등급 컬럼이 이미 있다**
-> (30종 전부 채워져 있고 미러에도 들어와 있다). "컬럼이 없다"는 낡은 전제다 → [T-045](../../../../tasks/T-045-캐릭터등급표시.md).
+> **캐릭터 칸도 등급 색으로 갈린다 (2026-09-06).** 자원이 `ItemTable`을 읽듯 캐릭터는
+> `GameDataLoader.GetCharacterRarity`로 `CharacterTable`을 읽는다 —
+> ⚠️ **종류(TID)로 읽는다.** 개체 번호를 넣으면 조회가 빗나가 다시 회색이 된다.
 
 ## ⚠️ `Start` 순서에 기대지 않는다
 

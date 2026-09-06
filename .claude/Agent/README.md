@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-06 창고 캐릭터 칸에 등급 색 표시](2026-09-06-character-slot-rarity-color.md) — `#client` `#ui` `#data` 공급자가 `CharacterTable` 등급을 칸에 넘긴다(TID로 읽는다)
 - [2026-09-04 인벤토리 판매 UI + 가챠 4버튼 · 캐릭터 보상 분기](2026-09-04-sell-ui-and-gacha-buttons.md) — `#client` `#ui` `#packet` 우클릭으로 담고 한 번에 판다 · 결과창이 `ItemId`만 읽던 잠복 결함을 닫았다 · 🔴 팝업 자리를 한 번 틀렸다(캔버스 order)
 - [2026-09-02 캐릭터 가챠 — 시트 3분할 · 캐릭터 30종 · 골드 비용](2026-09-02-character-gacha.md) — `#server` `#data` `#design` 보상 종류를 컬럼이 아니라 시트로 갈랐다 (T-026·T-027)
 - [2026-09-02 하트비트 — A-1 적용 정정 (클라분은 롤백)](2026-09-02-heartbeat-a1-fix-and-ping-timer.md) — `#server` `#design` 늘린 것이 판정이 아니라 검사 주기였다 · 핑 주기 ≤ 판정 ÷ 3 규칙화 · 클라 타이머는 T-041로
