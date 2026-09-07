@@ -13,9 +13,17 @@ using UnityEngine;
 //   아무 바이트도 못 받은 세션)을 로그인 여부와 무관하게 끊는데, 로그인 전에 아무것도 안 보내면
 //   그 사이 연결만 되어 있어도 유휴로 판정돼 끊긴다. 서버의 Ping 핸들러는 로그인 없이도 Pong을
 //   돌려주므로('Handle_C_PingRequest'), 연결 즉시 핑을 시작해 소켓을 살려 둔다.
+//
+// ⚠️ 송신은 'Update'가 아니라 백그라운드 타이머가 한다 — 아래 '송신 타이머' 구역 참조.
+//    판정·알림만 'Update'에 남는다.
 public class PingManager : MonoService<PingManager>
 {
     // Ping 주기. 짧을수록 끊김을 빨리 알지만 그만큼 패킷이 늘어난다.
+    //
+    // ★ 이 값은 취향이 아니라 제약이다 — 서버 무응답 판정('Global.SessionIdleTimeout' = 15초)의
+    //   1/3 이하로 둔다. 두 번 놓쳐도 살아남는 여유가 그것뿐이다.
+    //   판정과 주기를 같은 값(둘 다 5초)으로 두었더니 여유가 0이 되어, 프레임 오버슈트 몇 ms
+    //   때문에 멀쩡한 세션이 수십 분에 한 번씩 무작위로 끊겼다 (2026-08-28, 이슈 #19).
     private const float PingIntervalSeconds = 5f;
 
     // 이 시간을 넘겨 Pong이 없으면 끊긴 것으로 본다.
@@ -23,22 +31,35 @@ public class PingManager : MonoService<PingManager>
     //   채취 1주기(30초)보다 짧게 잡아 손실 구간이 생기지 않게 했다.
     private const float ResponseTimeoutSeconds = 15f;
 
+    // 프레임이 이만큼 넘게 끊겼으면 "메인 루프가 멈춰 있었다"로 보고 판정을 건너뛴다.
+    // 창 드래그(OS 모달 이동 루프)·절전·긴 GC 뒤의 첫 프레임에서 오탐 알림을 막는 값이다.
+    private const float FrameStallSeconds = 1f;
+
     // ─── 참조 캐시 ───
     private NetworkManager    _network = null!; // 없으면 게임이 성립하지 않는다
     private ServerWaitManager _wait    = null!; // 치명 오류 알림 창구(연결 끊김 → 종료)
 
     // ─── 내부 상태 ───
-    private float _nextPingTime;
-    private float _lastPongTime;
-    private bool  _isRunning;
-    private bool  _isTimedOut;   // 무응답 로그를 1회만 남기기 위한 상태 (매 프레임 도배 방지)
-    private bool  _everConnected; // Pong을 한 번이라도 받았는가 — 최초 접속 실패와 도중 끊김을 가른다
-    private bool  _isSubscribed;
-    private bool  _isReady;      // Start 완료 여부 — OnEnable 재구독 가드
+    private System.Threading.Timer? _pingTimer;  // 송신 전용. 메인 루프가 멈춰도 계속 돈다
+    private volatile string?        _timerError; // 타이머 스레드의 예외 — 메인 스레드가 대신 로그한다
+
+    private double _lastPongTime;
+    private double _lastUpdateTime; // 직전 Update 시각 — 메인 루프 정지 구간을 알아내는 데 쓴다
+    private bool   _isRunning;
+    private bool   _isTimedOut;    // 무응답 로그를 1회만 남기기 위한 상태 (매 프레임 도배 방지)
+    private bool   _everConnected; // Pong을 한 번이라도 받았는가 — 최초 접속 실패와 도중 끊김을 가른다
+    private bool   _isSubscribed;
+    private bool   _isReady;       // Start 완료 여부 — OnEnable 재구독 가드
 
     // 서버가 하트비트에 응답하고 있는가.
     // ⏸ 아직 읽는 곳이 없다 — 연결 상태를 표시하는 위젯이 붙을 자리다.
     public bool IsServerResponding => !_isTimedOut;
+
+    // 단조 시계(초). 타이머 스레드와 메인 스레드가 같은 시각을 읽어야 해서 'Time.unscaledTime'을
+    // 쓸 수 없다 — Unity 시간 API는 메인 스레드 전용이다. 'DateTime.UtcNow'도 아니다.
+    // 시스템 시각이 보정되면 판정이 함께 흔들린다.
+    private static double NowSeconds =>
+        (double)System.Diagnostics.Stopwatch.GetTimestamp() / System.Diagnostics.Stopwatch.Frequency;
 
     // ─── Unity 메시지 ───
 
@@ -64,14 +85,24 @@ public class PingManager : MonoService<PingManager>
         BeginHeartbeat(); // 꺼져 있던 동안 무응답으로 오판하지 않도록 기준 시각을 다시 지금으로 잡는다
     }
 
-    // 구독 해제 (Unity 메시지)
+    // 구독 해제 + 타이머 정지 (Unity 메시지)
     private void OnDisable()
     {
         Unsubscribe();
+        StopPingTimer();
         _isRunning = false;
     }
 
-    // 하트비트 주기 검사 (Unity 메시지)
+    // 타이머 정리 (Unity 메시지 — 이어서 MonoService가 서비스 등록을 해제한다)
+    // ★ 이게 없으면 에디터에서 플레이를 멈춰도 타이머 스레드가 살아남아 도메인 리로드 너머까지 간다.
+    protected override void OnDestroy()
+    {
+        StopPingTimer();
+
+        base.OnDestroy();
+    }
+
+    // 무응답 검사 (Unity 메시지). 송신은 여기서 하지 않는다 — 타이머의 몫이다.
     private void Update()
     {
         if (!_isRunning)
@@ -79,14 +110,24 @@ public class PingManager : MonoService<PingManager>
             return;
         }
 
-        // 타임스케일을 0으로 만들어도(일시정지 연출 등) 연결은 계속 살아 있어야 한다.
-        float now = Time.unscaledTime;
+        LogTimerErrorIfAny();
 
-        if (now >= _nextPingTime)
+        double now      = NowSeconds;
+        double frameGap = now - _lastUpdateTime;
+
+        _lastUpdateTime = now;
+
+        // 메인 루프가 멈춰 있었다면 그 구간은 "서버가 응답하지 않은 시간"이 아니다.
+        // 판정을 건너뛰고 기준을 지금으로 다시 잡는다 — 진짜 끊김이면 다음 판정 시간 안에 다시 잡힌다.
+        //
+        // ★ 밀려 있던 Pong은 'NetworkManager.Update'의 'Flush'가 처리하는데
+        //   스크립트 실행 순서가 보장되지 않아 이 Update가 먼저 돌 수 있다.
+        //   그대로 판정하면 멀쩡한 연결에 종료 알림이 뜬다 — 드래그 직후가 정확히 그 상황이다.
+        if (frameGap >= FrameStallSeconds)
         {
-            // 연결 전(Session이 아직 null)에는 안전하게 무시되고, 연결되면 그때부터 실제로 나간다.
-            _network.Send(new C_PingRequest());
-            _nextPingTime = now + PingIntervalSeconds;
+            _lastPongTime = now;
+
+            return;
         }
 
         WarnIfSilentTooLong(now);
@@ -135,22 +176,25 @@ public class PingManager : MonoService<PingManager>
     // 로그인 전이라도 연결만 되면 핑을 보내야 서버의 유휴 세션 정리에 끊기지 않는다.
     private void BeginHeartbeat()
     {
-        float now = Time.unscaledTime;
+        double now = NowSeconds;
 
-        _lastPongTime = now; // 시작하자마자 무응답으로 판정되지 않도록 기준을 지금으로 잡는다
-        _nextPingTime = now;
-        _isTimedOut   = false;
-        _isRunning    = true;
+        _lastPongTime   = now; // 시작하자마자 무응답으로 판정되지 않도록 기준을 지금으로 잡는다
+        _lastUpdateTime = now;
+        _isTimedOut     = false;
+        _isRunning      = true;
+
+        StartPingTimer();
 
         ClientLogger.Info(ClientLogger.Network,
             $"하트비트 시작 — {PingIntervalSeconds:F0}초마다 확인, {ResponseTimeoutSeconds:F0}초 무응답이면 경고");
     }
 
     // Pong 도착 — 마지막 응답 시각을 갱신한다 (ServerPacketHandler.PongReceived 구독)
+    // ※ 이 콜백은 메인 스레드에서 온다 — 수신 패킷은 'NetworkMessageQueue'를 거친다.
     // 평시엔 로그를 남기지 않는다. 5초마다 찍으면 정작 봐야 할 로그가 밀려난다.
     private void OnPongReceived()
     {
-        float now = Time.unscaledTime;
+        double now = NowSeconds;
 
         // 끊겼다고 알렸던 연결이 돌아왔을 때만 말한다 — 상태가 바뀐 순간이 유일하게 알릴 가치가 있다.
         if (_isTimedOut)
@@ -164,14 +208,14 @@ public class PingManager : MonoService<PingManager>
     }
 
     // 무응답이 판정 시간을 넘겼는지 검사한다 (Update에서 호출)
-    private void WarnIfSilentTooLong(float now)
+    private void WarnIfSilentTooLong(double now)
     {
         if (_isTimedOut)
         {
             return;
         }
 
-        float silentSeconds = now - _lastPongTime;
+        double silentSeconds = now - _lastPongTime;
 
         if (silentSeconds < ResponseTimeoutSeconds)
         {
@@ -189,6 +233,76 @@ public class PingManager : MonoService<PingManager>
         _wait.RaiseFatal(_everConnected
             ? "서버와의 연결이 끊어졌습니다. 앱을 종료합니다."
             : "서버에 접속하지 못했습니다. 서버 상태를 확인한 뒤 다시 실행해 주세요.");
+    }
+
+    #endregion
+
+    #region 송신 타이머
+
+    // ■ 왜 'Update'가 아니라 타이머인가
+    //
+    // 창을 잡아 끄는 동안 'WindowManager.BeginWindowDrag'가 창 이동을 OS 모달 루프에 위임한다.
+    // 마우스를 놓을 때까지 Unity 메인 루프가 통째로 멈추므로, 'Update'에서 보내면 그동안
+    // 핑이 한 개도 나가지 않는다 — 서버는 그것을 유휴 세션으로 보고 끊는다.
+    // 절전·긴 GC 히치도 같은 경로다.
+    //
+    // ⚠️ 이 타이머는 혼자서는 듣지 않는다. 서버 담당이 넣은 짝(이슈 #19의 B-1, 'add9b9f')과
+    //    한 쌍이다 — 'MikaClient'가 세션 루프를 'Task.Run'으로 띄우고 'ConfigureAwait(false)'로
+    //    호출자 컨텍스트를 잡지 않아야 실제 송신 루프('MikaClientSession.SendLoop')가
+    //    메인 스레드 밖에서 돈다. 그게 되돌아가면 큐에 넣기만 하고 나가지 않으므로
+    //    이 타이머도 함께 무력해진다. 실제로 2026-08-28에 그 상태로 한 번 헛짚었다.
+    //
+    //    넣는 쪽(이 타이머) · 비우는 쪽(B-1) 둘 다 메인 스레드 밖에 있어야 증상이 사라진다.
+
+    // 송신 타이머를 켠다(재기동 포함) (BeginHeartbeat에서 호출)
+    private void StartPingTimer()
+    {
+        StopPingTimer();
+
+        int periodMs = (int)(PingIntervalSeconds * 1000f);
+
+        _pingTimer = new System.Threading.Timer(SendPing, null, 0, periodMs);
+    }
+
+    // 송신 타이머를 끈다 (OnDisable · OnDestroy · 재기동에서 호출)
+    private void StopPingTimer()
+    {
+        _pingTimer?.Dispose();
+        _pingTimer = null;
+    }
+
+    // Ping 한 발 (타이머 스레드에서 호출)
+    //
+    // ⚠️ 여기는 메인 스레드가 아니다. Unity API·ClientLogger를 부르지 않는다 —
+    //    로그는 UnityEngine.Object 컨텍스트를 만지므로 다른 스레드에서 부르면 터진다.
+    //    타이머 콜백의 미처리 예외는 프로세스를 내리므로 반드시 삼키고, 문구만 남겨
+    //    'LogTimerErrorIfAny'가 메인 스레드에서 대신 찍게 한다.
+    private void SendPing(object? state)
+    {
+        try
+        {
+            // 연결 전(Session이 아직 null)에는 안전하게 무시되고, 연결되면 그때부터 실제로 나간다.
+            _network.Send(new C_PingRequest());
+        }
+        catch (System.Exception e)
+        {
+            _timerError = e.Message;
+        }
+    }
+
+    // 타이머 스레드에서 난 예외를 메인 스레드에서 찍는다 (Update에서 호출)
+    private void LogTimerErrorIfAny()
+    {
+        string? error = _timerError;
+
+        if (error == null)
+        {
+            return;
+        }
+
+        _timerError = null; // 같은 오류로 콘솔을 덮지 않는다 — 다음 예외가 오면 다시 찍힌다
+
+        ClientLogger.Error(ClientLogger.Network, $"Ping 송신 실패 — {error}", this);
     }
 
     #endregion
