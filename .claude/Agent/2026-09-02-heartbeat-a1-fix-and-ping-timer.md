@@ -7,10 +7,10 @@ tags: [server, client, infra, design]
 # 하트비트 — A-1 적용 정정 (클라 타이머분은 롤백)
 
 > **결론부터**: 서버 값(A-1)과 공용 규칙까지 들어갔다.
-> **클라 타이머분은 같은 날 롤백해 [T-041](../../tasks/T-041-클라핑타이머.md)로 뗐다** — 아래 업데이트 참조.
+> **클라 타이머분은 같은 날 롤백해 [T-041](../../tasks/archive/T-041-클라핑타이머.md)로 뗐다** — 아래 업데이트 참조.
 > 경위는 [`2026-08-28-ping-disconnect-cause.md`](2026-08-28-ping-disconnect-cause.md) ·
 > B-1 서버 몫은 [`2026-08-29-client-session-threadpool.md`](2026-08-29-client-session-threadpool.md) ·
-> 일감은 [T-040](../../tasks/T-040-하트비트해결방향.md).
+> 일감은 [T-040](../../tasks/archive/T-040-하트비트해결방향.md).
 
 ## 목적 / 배경
 
@@ -90,5 +90,22 @@ tags: [server, client, infra, design]
 
 > ⚠️ **드래그 증상(B)은 다시 재현되는 상태다.** B-1(서버, 큐를 비우는 쪽)만 남아 있고
 > **큐에 넣는 쪽이 여전히 `Update()`** 다. 되살릴 조각과 **가져오면 안 되는 것**
-> (핑 주기 2초 = A-2 · `45b55c6`의 틀린 주석)은 [T-041](../../tasks/T-041-클라핑타이머.md)과
+> (핑 주기 2초 = A-2 · `45b55c6`의 틀린 주석)은 [T-041](../../tasks/archive/T-041-클라핑타이머.md)과
 > **[GitHub 이슈 #21](https://github.com/JeongTaeWoong99/Windows_simulator/issues/21)** 에 정리했다.
+
+---
+
+## 업데이트 (2026-09-08) — 전부 닫혔다
+
+위 ⚠️ 경고는 **해소됐다.** 클라 몫이 들어가고 A·B 둘 다 실측을 통과했다.
+
+| | 무엇 | 실측 |
+|---|---|---|
+| **B** 드래그 | 핑 송신을 `System.Threading.Timer`로 + 오탐 가드 ([T-041](../../tasks/archive/T-041-클라핑타이머.md)) | ✅ 20초 드래그 (2026-09-07) |
+| **A** 무작위 | 판정 15초 / 핑 5초 — 여유 0 → 10초 | ✅ 1시간 방치 (2026-09-08) |
+
+- 경위·결정 근거는 [2026-09-07 로그](2026-09-07-ping-timer-client.md)에 있다.
+- 이슈 [#19](https://github.com/JeongTaeWoong99/Windows_simulator/issues/19) ·
+  [#21](https://github.com/JeongTaeWoong99/Windows_simulator/issues/21) 닫힘 ·
+  [T-040](../../tasks/archive/T-040-하트비트해결방향.md) 보관.
+- 📌 **[T-004](../../tasks/T-004-전역배수복귀.md)만 배포 전 게이트로 남는다.**

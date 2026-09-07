@@ -8,7 +8,7 @@ tags: [server, network, test]
 
 > 경위·후보 비교는 [`2026-08-28-ping-disconnect-cause.md`](2026-08-28-ping-disconnect-cause.md)와
 > [이슈 #19](https://github.com/JeongTaeWoong99/Windows_simulator/issues/19)에 있다. 여기는 **결정 이후 실제로 넣은 것**만 적는다.
-> 일감: [T-040](../../tasks/T-040-하트비트해결방향.md)
+> 일감: [T-040](../../tasks/archive/T-040-하트비트해결방향.md)
 
 ## 목적 / 배경
 

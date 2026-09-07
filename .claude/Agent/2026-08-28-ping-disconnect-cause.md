@@ -9,7 +9,7 @@ tags: [client, server, infra, docs]
 > **결론부터**: 원인 두 겹을 모두 찾아 고쳤고 빌드 실측으로 증상이 사라지는 것까지 확인했지만,
 > **효과를 낸 수정이 서버 담당 폴더라 전부 되돌렸다.** 지금 `main`은 수정 전 상태다.
 > 방향 결정은 [이슈 #19](https://github.com/JeongTaeWoong99/Windows_simulator/issues/19) ·
-> 일감은 [T-040](../../tasks/T-040-하트비트해결방향.md)(보류).
+> 일감은 [T-040](../../tasks/archive/T-040-하트비트해결방향.md)(보류).
 
 ## 목적 / 배경
 
