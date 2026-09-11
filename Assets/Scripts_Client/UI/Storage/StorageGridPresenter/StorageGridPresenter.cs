@@ -61,6 +61,9 @@ public class StorageGridPresenter : MonoBehaviour
     // 이 탭의 칸을 팔 수 있나. 서버 판매 패킷이 아이템 TID 축이라 자원만 담긴다.
     private bool IsSellableTab => _currentTab == StorageTab.Resource;
 
+    // 이 탭의 칸이 캐릭터인가. 배치 표시는 여기서만 켜진다 — 자원 칸에는 배치라는 개념이 없다.
+    private bool IsCharacterTab => _currentTab == StorageTab.Character;
+
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
     private void Start()
     {
@@ -258,6 +261,10 @@ public class StorageGridPresenter : MonoBehaviour
 
                 // 담김 표시의 주인은 카트다 — 자원 탭이 아니면 담길 수 없으므로 항상 꺼진다.
                 view.SetSellMark(IsSellableTab && _cart.Contains((int)data.Key));
+
+                // 배치 표시의 주인은 슬롯 스냅샷이다. 판정은 'FindSlotIndexOf' 하나로 읽는다 —
+                // 작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
+                view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0);
 
                 continue;
             }

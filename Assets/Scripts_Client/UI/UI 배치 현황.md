@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-10 (3단계 산업 교체 — 제자리에서 돌고 실패해도 물러나지 않는다) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-11 (배치 목록 — 줄 프리팹 · 산업 필터 · 빈 안내 · 산업 버튼 3색 — T-046) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -39,7 +39,7 @@ Root Canvas
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
-│  │  │  │     └─ InventorySlotView 프리팹        Sell Mark 는 담겼을 때만 켜진다
+│  │  │  │     └─ InventorySlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
 │  │  │  ├─ Information Presenter (↓ SUB VIEW)    StorageInformationPresenter  ← 지금은 판매 목록
 │  │  │  │  ├─ Sell Scroll View Panel             Content 에 SellCartRowView 프리팹이 쌓인다
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
@@ -59,7 +59,8 @@ Root Canvas
 │  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
 │  │  │  │  ├─ Header Panel · Industry Panel      (정렬용 — 스크립트 없음)
 │  │  │  │  ├─ Character Assign Scroll View Panel
-│  │  │  │  │  └─ Content > Character State Row ×21
+│  │  │  │  │  ├─ Content > CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (고를 것이 없을 때만)
 │  │  │  │  └─ Character Setting Panel
 │  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
@@ -198,9 +199,25 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > **응답이 영영 안 와도 갇히지 않는 근거는 5초 타임아웃이다** — `ServerWaitManager`가 대기를
 > 스스로 닫고(`onClosed`) 잠금을 풀면서 무응답 알림을 띄운다.
 
-산업 버튼은 두 단계 모두에서 **잠기지 않는다.** 2에서는 캐릭터를 걸러 보는 수단이고,
-3에서는 다른 산업으로 갈아 끼우는 수단이라서다. 고른 것은 `interactable`이 아니라
-**`colors.normalColor`로만** 표시한다 — `Selectable`이 실행 중 `Image.color`를 덮어쓰기 때문이다.
+**2의 산업 버튼은 잠기지 않는다** — 캐릭터를 걸러 보는 수단이라, 못 하는 산업도 눌러 봐야
+"이 산업을 다루는 캐릭터가 없다"를 볼 수 있다. **3은 배치된 캐릭터의 적성으로 잠근다**(2026-09-11).
+
+**색이 셋이고 상태도 셋이다** (2026-09-11).
+
+| 상태 | 색 | 어디서 칠하나 |
+|------|-----|--------------|
+| 눌림(고른 산업) | 노랑 `(0.839, 0.682, 0.067)` — 화면 테두리에 쓰는 금색 | `normal`·`highlighted`·`pressed`·`selected` **넷 다** |
+| 안 눌림 + 고를 수 있음 | 하양 | `normal`·`highlighted`·`pressed`·`selected` **넷 다** |
+| 잠김(적성 0 · 3단계만) | 회색 | **`colors.disabledColor`** |
+
+⚠️ **네 상태를 같은 색으로 덮는다.** 기본값(`highlighted`·`selected` = 0.961 흰색)을 두면
+**마우스를 올렸다는 이유로, 마지막에 눌렀다는 이유로** 색이 바뀐다 — 특히 `selected`는
+EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉뚱한 버튼에 남는다.**
+이 버튼의 색은 "고른 산업인가" 하나만 말해야 한다.
+
+⚠️ **잠긴 버튼만은 `disabledColor`로 칠해진다** — 회색을 `normalColor`에 넣으면
+잠근 순간 그 값이 무시되고 직전 색이 남는다.
+`Image.color`가 아니라 `colors`를 바꾸는 이유는 `Selectable`이 실행 중 `Image.color`를 덮어쓰기 때문이다.
 
 **같은 버튼인데 누른 결과가 단계마다 다르다.** 2에서는 화면이 값만 바꿔 캐릭터 줄을 다시 그리고,
 3에서는 **배치 요청을 한 번 보내 산업을 갈아 끼운다**(`C_WorkStationAssignRequest` — 캐릭터는 배치된
@@ -210,18 +227,22 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > **3에서 켜진 불빛은 화면이 기억한 값이 아니라 슬롯에서 파생된다**
 > (`SyncSelectedIndustryToSlot`). 눌러도 값을 미리 바꾸지 않으므로 **성공하면 슬롯 갱신이 새 산업을
 > 켜고, 실패하면 원래 산업이 그대로 남는다** — 되돌리는 코드가 없다.
-> 3의 산업 버튼은 **배치된 캐릭터의 적성을 보지 않는다**(2의 줄만 적성 0을 잠근다).
-> 못 하는 산업은 눌리고 서버가 `NoAptitude`로 거절한다 — 사전 차단은 아직 없다.
+> 3의 산업 버튼은 **배치된 캐릭터가 적성 0인 산업을 잠근다**(`CanSelectIndustry` · 2026-09-11).
+> 2가 적성 0인 캐릭터를 아예 걸러 내므로, 3만 열어 두면 같은 화면이 두 말을 하게 된다.
 
 ## 4. 알려진 임시 상태
 
 - **`Character State Row`의 여백은 `5 5 5 5`다.** 예전에 "여기만 `1`이다"라고 적혀 있었는데
   **씬은 이미 5로 돌아와 있다** — 낡은 메모라 지웠다(2026-09-04 실측).
   줄이 눌리면 여백이 아니라 **줄 높이**를 본다.
-- **`Character State Row`를 씬에 21줄 깔아 두고 풀처럼 쓴다.** 보유 캐릭터 수만큼만 켜고
-  나머지는 끈다. 캐릭터가 21을 넘으면 그때 줄을 프리팹으로 뺀다.
-- **산업 버튼 5개는 고를 뿐 캐릭터를 걸러 내지 않는다.** 고른 산업이 배치 요청에 실릴 뿐,
-  그 산업을 못 다루는 캐릭터도 목록에 그대로 뜬다.
+- ✅ **줄은 씬에 깔지 않는다 — 코드가 프리팹을 찍어 풀로 쓴다**(2026-09-11 · T-046).
+  예전에는 "21줄 깔아 뒀다"고 적혀 있었는데 **씬에는 1줄뿐이라 16마리가 안 보였다.**
+  프레임을 깔지 않는 이유는 **보유 수가 곧 줄 수**라 프레임 개수가 그대로 상한이 되기 때문이다
+  (창고 격자와 다른 점 — 거기는 칸 200개가 고정이다).
+- ✅ **산업 버튼을 누르면 목록이 걸러진다**(2026-09-11 · T-046). 그 산업의 적성이 0이거나
+  **다른 슬롯에서 일하는 중**인 캐릭터는 빠진다. 고를 것이 하나도 없으면 `Empty Text (TMP)`가
+  *"해당 적성을 가진 캐릭터가 없습니다."* 로 뜬다 — **판매 목록의 빈 안내와 같은 자리·같은 방식**이다.
+  숨긴 캐릭터의 적성은 **창고 캐릭터 탭**이 보여 준다(칸 보조 문구 = 적성 요약).
 - **창고 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
   `StorageTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).
@@ -243,7 +264,8 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
   **확인을 누르기 전인데 상태바·메인·거래 버튼이 눌렸다.** 옮기면서 이름도
   `AmountInput Presenter`로 바꾸고(판매 전용이 아니다) 차단막 겹 하나를 걷어냈다.
   창고는 `UIManager.AskAmount(...)` 한 줄로 부르므로 팝업 참조를 들지 않는다.
-- **`Sell Mark`는 임시 표시다** (주황 배지 + "판"). 아이콘 리소스가 생기면 갈아 끼운다.
+- **`Sell Mark`·`Assign Mark`는 임시 표시다** (배지 + "판"/"배"). 아이콘 리소스가 생기면 갈아 끼운다.
+  자리는 같지만 **자원 탭과 캐릭터 탭에서 따로 켜져** 겹치지 않는다.
 - **스프라이트·여백을 씬 전체에서 한 번 맞췄다 (2026-09-04).** `Tab`·`Menu`·`Setting`·`Gacha`
   Presenter의 배경이 `null` → `Background`로, `Setting Presenter`의 여백이 `5` → `0`(패널을
   쌓기만 하는 자리)으로 바뀌었다. 기준은 [`UI 규칙.md`](<UI 규칙.md>) 3장의 여백·스프라이트 표다.

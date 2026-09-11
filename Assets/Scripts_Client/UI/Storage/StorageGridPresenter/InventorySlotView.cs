@@ -38,6 +38,10 @@ public class InventorySlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
+    // ※ 판매 표시와 자리가 같아도 겹치지 않는다 — 담기는 자원 탭에서만, 배치는 캐릭터 탭에서만 켜진다.
+    [SerializeField, Tooltip("이 캐릭터가 작업슬롯에서 일하는 중임을 알리는 표시. 평소에는 꺼져 있다")]
+    private GameObject assignMark = null!;
+
     // 이 칸이 그리고 있는 대상. 자원은 ItemId, 캐릭터는 개체 번호. 비어 있으면 0.
     public long Key { get; private set; }
 
@@ -56,8 +60,10 @@ public class InventorySlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(nameText,    nameof(nameText));
         this.RequireRef(subText,     nameof(subText));
         this.RequireRef(sellMark,    nameof(sellMark));
+        this.RequireRef(assignMark,  nameof(assignMark));
 
         sellMark.SetActive(false);
+        assignMark.SetActive(false);
     }
 
     // 칸을 클릭했다 — 우클릭만 위로 던진다 (EventSystem 클릭 콜백).
@@ -108,8 +114,17 @@ public class InventorySlotView : MonoBehaviour, IPointerClickHandler
         sellMark.SetActive(on);
     }
 
+    // 이 캐릭터가 작업슬롯에서 일하는 중임을 표시한다 (창고 격자가 매번 그릴 때 호출).
+    //
+    // 'SetSellMark'와 같은 성격이다 — 배치·해제로 계속 바뀐다.
+    // 가챠 결과 팝업은 이걸 부르지 않으므로 거기서는 늘 꺼져 있다.
+    public void SetAssignMark(bool on)
+    {
+        assignMark.SetActive(on);
+    }
+
     // 칸을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
-    // ※ 등급색과 판매 표시도 되돌린다 — 안 그러면 다음에 이 칸을 쓸 때 이전 칸의 흔적이 남는다.
+    // ※ 등급색과 마크도 되돌린다 — 안 그러면 다음에 이 칸을 쓸 때 이전 칸의 흔적이 남는다.
     public void Clear()
     {
         Key               = 0;
@@ -118,5 +133,6 @@ public class InventorySlotView : MonoBehaviour, IPointerClickHandler
         subText.text      = "";
 
         sellMark.SetActive(false);
+        assignMark.SetActive(false);
     }
 }

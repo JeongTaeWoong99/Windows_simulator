@@ -6,6 +6,9 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
+// UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
+using CharacterInfo = MikaProtocol.CharacterInfo;
+
 // 작업슬롯 한 칸의 설정 화면. 목록에서 칸을 누르면 목록 대신 이 화면이 열린다.
 //
 // 머리 둘(Header · Industry)은 늘 보이고, 몸통 둘(배치 목록 ↔ 세팅)이 갈아 끼워진다.
@@ -17,15 +20,17 @@ using UnityEngine.UI;
 // 캐릭터 목록에선 화면이 소유한 '걸러 보는 값'이고, 세팅에선 슬롯의 실제 산업에서 '파생'된다
 // ('SyncSelectedIndustryToSlot').
 //
-// ⚠️ 못 하는 캐릭터는 숨기지 않고 잠근다 — 목록에서 빼면 "이 캐릭터가 왜 안 보이지"가 되고,
-// 적성이 오르는 수단이 붙었을 때 화면이 조용히 틀린다.
+// ⚠️ 지금 고를 수 없는 캐릭터는 목록에서 뺀다 — 적성 0이거나 다른 슬롯에서 일하는 중이면 걸러진다.
+// 예전에는 "숨기지 않고 잠근다"였다. 16마리를 기르면 낚시를 눌러도 16줄이 그대로 남아
+// **누를 수 있는 것을 골라내는 일을 사람이 하게 되기 때문에** 뒤집었다(T-046).
+// 목록이 통째로 비면 안내 문구 하나만 뜨고(빈 목록은 고장과 구분되지 않는다),
+// "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 요약과 '배' 마크가 있다.
 // 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 //
-// ⚠️ 아직 안 된 것 — 다른 슬롯에 이미 배치된 캐릭터를 목록에서 구분하지 않고, 3단계 세팅에
-// 배치된 캐릭터 정보가 없다 → 일감 'T-035'. 요청이 아니라 '표시'의 문제다.
+// ⚠️ 아직 안 된 것 — 3단계 세팅에 배치된 캐릭터 정보가 없다 → 일감 'T-035'.
+// 요청이 아니라 '표시'의 문제다.
 //
-// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙 · 산업 버튼을 잠그지 않는 이유 ·
-// 줄 풀(21줄)은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
+// 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationSelectPresenter : MonoBehaviour
 {
     [CenterHeader("공통 Header Panel (항상 보인다)")]
@@ -38,13 +43,18 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ NonReorderable 두 가지를 동시에 얻는다 —
     //   [1] 순서가 곧 산업이라 드래그로 뒤바뀌면 조용히 엉뚱한 산업이 나간다. 아예 못 끌게 막는다.
     //   [2] reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
+    // 세 색이 세 상태와 1:1이다 — 고름 / 고르지 않음 / 못 고름.
+    // 못 고르는 것은 색만 흐린 게 아니라 실제로 잠긴다('CanSelectIndustry').
     [CenterHeader("공통 Industry Panel (항상 보인다)")]
-    [SerializeField, Tooltip("고른 산업 버튼의 바탕색")]
-    private Color selectedIndustryColor = Color.white;
+    [SerializeField, Tooltip("고른 산업 버튼의 바탕색 (노랑)")]
+    private Color selectedIndustryColor = new Color(0.839f, 0.682f, 0.067f, 1f);
 
-    [SerializeField, Tooltip("고르지 않은 산업 버튼의 바탕색. 잠그는 게 아니라 흐리게만 한다")]
-    private Color unselectedIndustryColor = new Color(0.55f, 0.55f, 0.55f, 1f);
-    
+    [SerializeField, Tooltip("고르지 않았지만 고를 수 있는 산업 버튼의 바탕색 (하양)")]
+    private Color unselectedIndustryColor = Color.white;
+
+    [SerializeField, Tooltip("잠긴 산업 버튼의 바탕색 (회색). 'Selectable'이 disabledColor로 따로 칠한다")]
+    private Color disabledIndustryColor = new Color(0.55f, 0.55f, 0.55f, 1f);
+
     [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·낚시·채굴·벌목·사냥)")]
     private Button[] industryButtons = new Button[0];
 
@@ -52,8 +62,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("Character Assign Scroll View Panel 오브젝트")]
     private GameObject assignPanel = null!;
 
-    [SerializeField, Tooltip("캐릭터 줄들이 들어 있는 부모 — Viewport > Content")]
-    private Transform rowParent = null!;
+    [SerializeField, Tooltip("캐릭터 줄 프리팹 (CharacterStateRowView 포함). 보일 수만큼 만들어 재사용한다")]
+    private CharacterStateRowView rowPrefab = null!;
+
+    [SerializeField, Tooltip("캐릭터 줄이 쌓이는 부모 — Viewport > Content")]
+    private RectTransform rowParent = null!;
+
+    [SerializeField, Tooltip("고를 캐릭터가 하나도 없을 때만 켜지는 안내. 빈 목록은 고장과 구분되지 않는다")]
+    private TMP_Text emptyText = null!;
 
     [CenterHeader("2단계 캐릭터 세팅 패널 (전환)")]
     [SerializeField, Tooltip("Character Setting Panel 오브젝트")]
@@ -75,8 +91,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 별도 목록으로 들고 있는다.
     private readonly List<EIndustryType> _industries = new List<EIndustryType>();
 
-    // 씬에 깔아 둔 줄들. 보유 캐릭터 수만큼만 켠다.
+    // 만들어 둔 줄. 산업을 바꿀 때마다 수가 오르내리므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<CharacterStateRowView> _rows = new List<CharacterStateRowView>();
+
+    // 이번에 보일 캐릭터. 걸러 낸 결과라 'Characters'와 순번이 다르다 —
+    // 매번 새로 만들지 않으려고 필드로 들고 재사용한다(상주 앱이라 GC가 쌓인다).
+    private readonly List<CharacterInfo> _visible = new List<CharacterInfo>();
 
     // 지금 다루는 슬롯 번호. Open이 정한다 — 아직 안 열렸으면 -1.
     private int _slotIndex = -1;
@@ -104,12 +124,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
-        this.RequireRef(titleText,      nameof(titleText));
-        this.RequireRef(backButton,     nameof(backButton));
-        this.RequireRef(assignPanel,    nameof(assignPanel));
-        this.RequireRef(rowParent,      nameof(rowParent));
-        this.RequireRef(settingPanel,   nameof(settingPanel));
-        this.RequireRef(unassignButton, nameof(unassignButton));
+        this.RequireRef(titleText,        nameof(titleText));
+        this.RequireRef(backButton,       nameof(backButton));
+        this.RequireRef(assignPanel,      nameof(assignPanel));
+        this.RequireRef(rowPrefab,        nameof(rowPrefab));
+        this.RequireRef(rowParent,        nameof(rowParent));
+        this.RequireRef(emptyText,        nameof(emptyText));
+        this.RequireRef(settingPanel,     nameof(settingPanel));
+        this.RequireRef(unassignButton,   nameof(unassignButton));
 
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
@@ -120,7 +142,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         BuildIndustryList();
         BindIndustryButtons();
-        CollectRows();
 
         backButton.onClick.AddListener(BackToSlotList);
         unassignButton.onClick.AddListener(OnUnassignButtonClicked);
@@ -344,13 +365,23 @@ public class WorkStationSelectPresenter : MonoBehaviour
             ? _industries[_selectedIndustry]
             : EIndustryType.None;
 
-    // 고른 산업만 밝게 칠한다 (표시 갱신 때 호출).
+    // 고른 산업만 밝게 칠하고, 못 하는 산업은 잠근다 (표시 갱신 때 호출).
     //
-    // 잠그지 않고 색만 바꾼다 — 배치 목록에서는 걸러 보는 수단, 세팅에서는 갈아 끼우는 수단이라
-    // 어느 단계에서도 눌릴 수 있어야 한다. 'Selectable'은 실행 중 'colors.normalColor'로
-    // 바탕을 덮어쓰므로 'Image.color'가 아니라 이쪽을 바꾼다.
+    // ■ 잠그는 단계가 하나뿐이다
+    // 배치 목록에서는 **걸러 보는 수단**이라 늘 눌려야 한다 — 못 하는 산업을 눌러야
+    // "이 산업을 다루는 캐릭터가 없다"를 볼 수 있다.
+    // 세팅에서는 **갈아 끼우는 수단**이라 배치된 캐릭터의 적성이 0인 산업은 잠근다.
+    // 안 잠그면 눌리고 서버가 'NoAptitude'로 거절하는데, 목록 쪽은 이미 걸러 내고 있어
+    // 같은 화면이 두 말을 하게 된다.
+    //
+    // ※ 'Selectable'은 실행 중 'colors.normalColor'로 바탕을 덮어쓰므로
+    //   'Image.color'가 아니라 이쪽을 바꾼다.
+    //   ⚠️ 잠긴 버튼은 'normalColor'가 아니라 **'disabledColor'로 칠해진다** —
+    //   회색을 normalColor에 넣으면 잠근 순간 그 색이 무시되고 직전 색이 남는다.
     private void RefreshIndustryButtons()
     {
+        var slot = settingPanel.activeSelf ? FindSlot() : null;
+
         for (int i = 0; i < industryButtons.Length; i++)
         {
             var button = industryButtons[i];
@@ -360,69 +391,122 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            button.interactable = true;
+            button.interactable = CanSelectIndustry(slot, i);
+
+            // 네 상태를 같은 색으로 덮는다 — 이 버튼의 색은 '고른 산업인가'만 말해야 한다.
+            // 기본값(highlighted·selected = 0.961 흰색)을 그대로 두면 **마우스를 올리거나 마지막으로
+            // 누른 버튼이라는 이유로** 색이 바뀐다. 특히 'selected'는 EventSystem이 클릭한 버튼을
+            // 계속 잡고 있어 **고른 표시가 엉뚱한 버튼에 남는다.**
+            var tint = i == _selectedIndustry ? selectedIndustryColor : unselectedIndustryColor;
 
             var colors = button.colors;
-            colors.normalColor = i == _selectedIndustry ? selectedIndustryColor : unselectedIndustryColor;
-            button.colors      = colors;
+            colors.normalColor      = tint;
+            colors.highlightedColor = tint;
+            colors.pressedColor     = tint;
+            colors.selectedColor    = tint;
+            colors.disabledColor    = disabledIndustryColor;
+            button.colors           = colors;
         }
+    }
+
+    // 이 산업 버튼을 누를 수 있나 ('RefreshIndustryButtons'에서 호출).
+    //   slot : 세팅 단계면 다루는 슬롯, 배치 목록 단계면 null(= 늘 누를 수 있다)
+    private bool CanSelectIndustry(WorkStationSlotInfo? slot, int index)
+    {
+        if (slot == null || !IsAssigned(slot))
+        {
+            return true;
+        }
+
+        if (index < 0 || index >= _industries.Count)
+        {
+            return true; // 버튼과 산업 수가 어긋난 상태다 — 'BindIndustryButtons'가 이미 알렸다
+        }
+
+        return _data.GetAptitude(slot.CharacterId, _industries[index]) > 0;
     }
 
     #endregion
 
     #region 캐릭터 줄
 
-    // 씬에 깔아 둔 줄을 모아 클릭을 받는다 (Start에서 한 번)
-    private void CollectRows()
-    {
-        _rows.Clear();
-        rowParent.GetComponentsInChildren(true, _rows);
-
-        foreach (var row in _rows)
-        {
-            row.AssignClicked += OnRowAssignClicked;
-        }
-
-        if (_rows.Count == 0)
-        {
-            ClientLogger.Warn(ClientLogger.UI, "캐릭터 줄이 하나도 없다 — Content 아래에 CharacterStateRowView를 둘 것.", this);
-        }
-    }
-
-    // 보유 캐릭터 수만큼 줄을 켜고 나머지는 끈다 ('Refresh'에서 호출).
+    // 지금 고를 수 있는 캐릭터만 줄로 그린다 ('Refresh'에서 호출).
     // 이 목록은 빈 슬롯일 때만 보이므로 해제 줄은 없다 — 해제는 세팅 쪽 일이다.
     //
-    // 고른 산업의 적성이 0인 줄은 잠긴다. 그래도 목록에는 남는다 —
-    // 가진 캐릭터가 왜 안 보이는지 알 수 없게 만들지 않는다.
+    // ⚠️ 걸러 낸 목록을 먼저 만들고 그것을 태운다. 'Characters'를 인덱스 그대로 태우면
+    //   걸러 낸 만큼 줄과 캐릭터가 어긋난다.
     private void RefreshRows()
     {
         var characters = _data.Characters;
         var industry   = SelectedIndustry;
 
-        for (int i = 0; i < _rows.Count; i++)
+        _visible.Clear();
+
+        foreach (CharacterInfo character in characters)
         {
-            var row = _rows[i];
-
-            if (i >= characters.Count)
+            if (_data.GetAptitude(character.CharacterId, industry) == 0)
             {
-                row.gameObject.SetActive(false);
-
                 continue;
             }
 
-            long characterId = characters[i].CharacterId;
+            // 이미 다른 슬롯에서 일하는 중이면 고를 수 없다 — 판정은 창고 캐릭터 탭과 같은 곳에서 읽는다.
+            if (_data.FindSlotIndexOf(character.CharacterId) >= 0)
+            {
+                continue;
+            }
+
+            _visible.Add(character);
+        }
+
+        for (int i = 0; i < _visible.Count; i++)
+        {
+            long characterId = _visible[i].CharacterId;
             byte aptitude    = _data.GetAptitude(characterId, industry);
+            var  row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, $"{_data.GetCharacterName(characterId)} · 적성 {aptitude}", aptitude);
+            row.Bind(characterId, $"{_data.GetCharacterName(characterId)} · 적성 {aptitude}");
             row.SetAssignable(!IsWaiting);
         }
 
-        if (characters.Count > _rows.Count)
+        HideRowsFrom(_visible.Count);
+
+        // 빈 목록은 고장과 구분되지 않는다 — 왜 비었는지만 알린다.
+        // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 창고 캐릭터 탭(적성 요약·'배' 마크)에 있다.
+        emptyText.gameObject.SetActive(_visible.Count == 0);
+
+        // 방금 만든 줄은 아직 프리팹에 저장된 크기 그대로다 — uGUI의 레이아웃 계산은 이 프레임
+        // **맨 끝**(Canvas.willRenderCanvases)에 돌기 때문이다. 그 사이 'WidgetPositionLayout.VerifyNoOverflow'가
+        // 'LateUpdate'에서 훑고 지나가 "자식이 부모보다 넓다" → "해소됐다"가 왕복으로 찍힌다
+        // (판매 목록에서 겪은 그대로 — 'StorageInformationPresenter.Refresh').
+        LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
+    }
+
+    // 'index'번째 줄을 돌려준다. 아직 없으면 그때 만든다 (RefreshRows에서 호출).
+    private CharacterStateRowView GetOrCreateRow(int index)
+    {
+        if (index < _rows.Count)
         {
-            ClientLogger.Warn(ClientLogger.UI,
-                $"보유 캐릭터가 {characters.Count}인데 깔아 둔 줄은 {_rows.Count}개뿐이다. " +
-                $"줄을 늘리거나 프리팹으로 빼서 만들 것.", this);
+            return _rows[index];
+        }
+
+        CharacterStateRowView row = Instantiate(rowPrefab, rowParent);
+
+        // 줄은 파괴하지 않고 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
+        row.AssignClicked += OnRowAssignClicked;
+
+        _rows.Add(row);
+
+        return row;
+    }
+
+    // 이번에 쓰이지 않은 줄을 비우고 꺼 둔다 (RefreshRows에서 호출).
+    private void HideRowsFrom(int startIndex)
+    {
+        for (int i = startIndex; i < _rows.Count; i++)
+        {
+            _rows[i].Clear();
+            _rows[i].gameObject.SetActive(false);
         }
     }
 

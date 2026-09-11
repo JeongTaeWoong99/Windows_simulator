@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-06 (캐릭터 칸 등급 색 표시) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-11 (칸의 마크가 둘이 됐다 — 판매 담김 · 배치 중) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -180,10 +180,10 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 - `Bind`는 **`Bind(in StorageSlotData)`** 하나다. 표시 항목을 늘릴 때는 `StorageSlotData`에 넣는다.
   ※ 예전에 가챠가 쓰던 `Bind(int itemId, int count, GlobalRarity)` 래퍼는 2026-09-04에 걷어냈다 —
   가챠 보상이 아이템·캐릭터로 갈리면서 **`ItemId`만 읽는 그 형태가 성립하지 않게 됐다.**
-- `Clear()`는 `Rarity Image` 색을 `RarityPalette.Unknown`으로 되돌리고 **판매 담김 표시도 끈다.**
+- `Clear()`는 `Rarity Image` 색을 `RarityPalette.Unknown`으로 되돌리고 **마크 둘을 다 끈다.**
   **풀에서 재사용되는 칸이라** 안 되돌리면 이전 칸의 흔적이 남는다.
 - 프리팹에 참조를 더하면 **양쪽 화면이 다 영향을 받는다.** 지금 잡아 둔 것은
-  `Rarity Image`·`Item Image`·`Name Text`·`Sub Text`·`Sell Mark` 다섯이다.
+  `Rarity Image`·`Item Image`·`Name Text`·`Sub Text`·`Sell Mark`·`Assign Mark` 여섯이다.
 - **칸이 화면을 알아보고 분기하지 않는다.** 화면마다 달라야 하는 것은 `SetSubVisible`처럼
   **부르는 쪽이 한 번 정해 주는 스위치**로 뺀다 — 창고는 보조 문구를 켜 두고, 가챠 결과는 끈다
   (거기서는 개수가 칸이 아니라 목록의 길이로 드러난다). `Clear()`는 이 결정을 되돌리지 않는다.
@@ -192,10 +192,24 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
   (`Bind`가 켜지 않고 격자만 `SetSellMark`를 부른다).
   ⚠️ 이벤트를 받으려면 칸에 **raycast target인 Graphic**이 있어야 한다 — `Rarity Image`가 그 역할이다.
 
+### 마크는 둘이고, 탭이 가른다
+
+칸 오른쪽 위의 배지는 **`Sell Mark`(판매 담김)와 `Assign Mark`(배치 중)** 둘이다.
+자리가 같아도 겹치지 않는다 — **담기는 자원 탭에서만, 배치는 캐릭터 탭에서만** 켜진다
+(`IsSellableTab` · `IsCharacterTab`). 둘 다 **칸이 아니라 격자가 매번 그릴 때** 켜고 끈다.
+
+> ⚠️ **배치 판정은 `PlayerDataModel.FindSlotIndexOf` 하나로 읽는다.** 작업슬롯 화면도 같은 것을
+> 보므로, 각자 `WorkStationSlots`를 훑으면 한쪽만 고쳐졌을 때 두 화면이 다른 말을 한다.
+
 ### `Sub Text` — 이름 아래 한 줄은 탭마다 다른 것이 온다
 
-`Count Text`에서 이름이 바뀐 자리다(2026-09-02). **자원은 수량, 캐릭터는 배치 상태**가 들어와
-더 이상 수량 칸이 아니다.
+`Count Text`에서 이름이 바뀐 자리다(2026-09-02). **자원은 수량, 캐릭터는 적성 요약**(`농사7·낚시2`)이
+들어와 더 이상 수량 칸이 아니다.
+
+> **캐릭터 칸은 원래 `배치 중`/`배치 가능`이었다 (→ 2026-09-11 · T-046).** 배치 여부를
+> `Assign Mark`가 말하게 되면서 한 칸이 같은 말을 두 번 하게 돼 자리를 적성에 넘겼다.
+> 작업슬롯 배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"이 캐릭터가 뭘 다루나"의 답이 여기뿐이다.**
+> 한글 산업 이름은 [`IndustryLabel`](<../System/IndustryLabel.cs>) 한 벌에서 온다.
 
 **용도를 나열한 이름(`Count + State`)을 쓰지 않는다** — 세 번째 용도가 생기면 또 바뀐다.
 무엇이 오든 **"이름 아래 보조 문구 한 줄"이라는 자리**를 가리키는 이름으로 둔다.
