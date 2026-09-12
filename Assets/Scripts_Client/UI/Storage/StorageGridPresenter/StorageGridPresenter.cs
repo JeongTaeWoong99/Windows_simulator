@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MikaProtocol;
 using UnityEngine;
 
 // 창고의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
@@ -23,15 +24,20 @@ using UnityEngine;
 //   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
+// ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
+//   '배' 마크(배치 중) · 적성 스트립은 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   칸은 이 판단을 모른다 — 공급자가 만드는 완성값(`SlotData`)에 캐릭터 전용 필드를 끼우면
+//   자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자가 읽어서 넘긴다.
+//
 // ■ 우클릭 = 판매 목록에 담기 · 빼기 (자원 탭에서만)
-//   칸('InventorySlotView')은 우클릭을 이벤트로 던지기만 하고 무슨 뜻인지 모른다.
+//   칸('SlotView')은 우클릭을 이벤트로 던지기만 하고 무슨 뜻인지 모른다.
 //   그것을 판매로 읽는 것이 여기다 — 서버 판매 패킷이 아이템 TID 축이라 캐릭터는 담을 수 없어서
 //   자원 탭이 아니면 무시한다 (동선은 'Storage 규칙.md').
 public class StorageGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("아이템 한 칸 프리팹 (InventorySlotView 포함). 빈 프레임 안에 생성된다")]
-    private InventorySlotView slotPrefab = null!;
+    [SerializeField, Tooltip("칸 프리팹 (SlotView 포함) — 자원·캐릭터 어느 탭이든 같은 칸이다. 빈 프레임 안에 생성된다")]
+    private SlotView slotPrefab = null!;
 
     [SerializeField, Tooltip("칸 프레임(Slot)들이 들어 있는 부모 — Inventory Scroll View Panel > Viewport > Content")]
     private Transform slotParent = null!;
@@ -40,7 +46,22 @@ public class StorageGridPresenter : MonoBehaviour
     private readonly List<Transform> _frames = new List<Transform>();
 
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
-    private readonly List<InventorySlotView?> _views = new List<InventorySlotView?>();
+    private readonly List<SlotView?> _views = new List<SlotView?>();
+
+    // 캐릭터 칸에 넘길 적성 5종. 칸마다 새 배열을 만들지 않으려고 하나를 들고 재사용한다
+    // — 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있는 쪽이 하나여도 된다.
+    private readonly byte[] _aptitudes = new byte[SlotView.AptitudeCount];
+
+    // 적성 칸의 순서 = 산업. 'EIndustryType'의 None 제외 순서와 같고, 배치 화면의 산업 버튼도
+    // 같은 순서로 만들어진다('WorkStationSelectPresenter.BuildIndustryList') — 두 화면이 맞아야 한다.
+    private static readonly EIndustryType[] StripIndustries =
+    {
+        EIndustryType.Farming,
+        EIndustryType.Fishing,
+        EIndustryType.Mining,
+        EIndustryType.Logging,
+        EIndustryType.Hunting,
+    };
 
     // 탭별 공급자. 여기 없는 탭은 "아직 데이터가 없는 탭"이고, 탭 줄이 그 버튼을 잠근다.
     private readonly Dictionary<StorageTab, StorageSlotSource> _sources =
@@ -247,14 +268,14 @@ public class StorageGridPresenter : MonoBehaviour
         {
             if (i < count)
             {
-                InventorySlotView? view = GetOrCreateView(i);
+                SlotView? view = GetOrCreateView(i);
 
                 if (view == null)
                 {
                     continue;
                 }
 
-                StorageSlotData data = _current!.Get(i);
+                SlotData data = _current!.Get(i);
 
                 view.gameObject.SetActive(true);
                 view.Bind(data);
@@ -265,6 +286,10 @@ public class StorageGridPresenter : MonoBehaviour
                 // 배치 표시의 주인은 슬롯 스냅샷이다. 판정은 'FindSlotIndexOf' 하나로 읽는다 —
                 // 작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
                 view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0);
+
+                // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
+                // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
+                view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
 
                 continue;
             }
@@ -279,10 +304,25 @@ public class StorageGridPresenter : MonoBehaviour
         }
     }
 
-    // i번째 프레임의 칸을 얻는다. 아직 없으면 그 프레임 안에 만든다 (Redraw에서 호출).
-    private InventorySlotView? GetOrCreateView(int index)
+    // 이 캐릭터의 적성 5종을 스트립 순서대로 담아 돌려준다 (Redraw에서 호출).
+    //
+    // 값의 주인은 서버다 — 'CharacterTable'을 직접 읽지 않는다('PlayerDataModel.GetAptitude' 주석).
+    // ※ 돌려주는 배열은 재사용되는 하나다. 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있어도 된다 —
+    //   나중에 보관해 두는 쪽이 생기면 그때는 복사해야 한다.
+    private byte[] ReadAptitudes(long characterId)
     {
-        InventorySlotView? view = _views[index];
+        for (int i = 0; i < _aptitudes.Length; i++)
+        {
+            _aptitudes[i] = _data.GetAptitude(characterId, StripIndustries[i]);
+        }
+
+        return _aptitudes;
+    }
+
+    // i번째 프레임의 칸을 얻는다. 아직 없으면 그 프레임 안에 만든다 (Redraw에서 호출).
+    private SlotView? GetOrCreateView(int index)
+    {
+        SlotView? view = _views[index];
 
         if (view != null)
         {
@@ -303,7 +343,7 @@ public class StorageGridPresenter : MonoBehaviour
     // i번째 칸을 비우고 꺼 둔다 — 파괴하지 않고 풀로 되돌린다 (Redraw에서 호출).
     private void HideView(int index)
     {
-        InventorySlotView? view = _views[index];
+        SlotView? view = _views[index];
 
         if (view == null)
         {
@@ -318,11 +358,11 @@ public class StorageGridPresenter : MonoBehaviour
 
     #region 판매 담기
 
-    // 칸을 우클릭했다 — 자원이면 판매 목록에 담거나 뺀다 (InventorySlotView.RightClicked 구독)
+    // 칸을 우클릭했다 — 자원이면 판매 목록에 담거나 뺀다 (SlotView.RightClicked 구독)
     //
     // 이미 담긴 칸을 다시 누르면 뺀다(토글). 수량을 고치려면 뺐다가 다시 담는다 —
     // 한 조작에 '담기'와 '수량 바꾸기'를 겹쳐 두면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
-    private void OnSlotRightClicked(InventorySlotView view)
+    private void OnSlotRightClicked(SlotView view)
     {
         if (!IsSellableTab || view.IsEmpty)
         {

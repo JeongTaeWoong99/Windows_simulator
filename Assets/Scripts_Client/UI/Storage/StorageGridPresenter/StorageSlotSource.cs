@@ -14,7 +14,7 @@ using System.Collections.Generic;
 public abstract class StorageSlotSource
 {
     // 이번에 그릴 칸들. 'Rebuild'만 갈아 끼운다.
-    private readonly List<StorageSlotData> _slots = new List<StorageSlotData>();
+    private readonly List<SlotData> _slots = new List<SlotData>();
 
     private bool _isSubscribed;
 
@@ -25,7 +25,7 @@ public abstract class StorageSlotSource
     public event Action? Changed;
 
     // i번째 칸에 그릴 완성값 (격자가 호출).
-    public StorageSlotData Get(int index) => _slots[index];
+    public SlotData Get(int index) => _slots[index];
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //
@@ -65,7 +65,7 @@ public abstract class StorageSlotSource
 
     // 이 탭이 그릴 칸들을 순서대로 채운다 (Rebuild에서 호출).
     // 여기 담기는 순서가 곧 화면의 칸 순서다.
-    protected abstract void Fill(List<StorageSlotData> into);
+    protected abstract void Fill(List<SlotData> into);
 
     // 데이터 변경 이벤트를 구독한다 (Subscribe에서 호출).
     protected abstract void OnSubscribe();

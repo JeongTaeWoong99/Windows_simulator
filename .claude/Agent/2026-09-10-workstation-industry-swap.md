@@ -50,7 +50,7 @@ tags: [client, ui, workstation]
 
 실측 중 **보유 캐릭터 16마리 중 1마리만 보이는 것**이 드러났다(씬에 `Character State Row`가
 1줄뿐이라 `RefreshRows`가 경고로 막고 있었다). 이걸 포함해 배치 목록을 손보는 일감을
-**[T-046](../../tasks/T-046-배치목록필터.md)** 으로 세웠다.
+**[T-046](../../tasks/archive/T-046-배치목록필터.md)** 으로 세웠다.
 
 🔴 **T-046은 이 화면의 기존 원칙을 뒤집는다 — 사용자 결정이다.**
 `WorkStationSelectPresenter` 클래스 주석의 *"못 하는 캐릭터는 숨기지 않고 잠근다"* 와

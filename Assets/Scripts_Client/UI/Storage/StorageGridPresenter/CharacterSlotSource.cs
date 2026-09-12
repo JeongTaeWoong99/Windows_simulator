@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text;
 
 // UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
 using CharacterInfo = MikaProtocol.CharacterInfo;
@@ -13,19 +12,18 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // ★ 슬롯 변경도 함께 구독한다 — 배치·해제가 일어나면 칸의 '배' 마크가 바뀐다.
 //   캐릭터 목록만 구독하면 배치를 바꿔도 마크가 낡은 채로 남는다.
 //
-// ■ 보조 문구는 적성 요약이다 (T-046)
-// 예전에는 '배치 중'·'배치 가능'이었는데, 배치 여부는 마크가 말하게 되면서 한 칸이 같은 말을
-// 두 번 하게 됐다. 그 자리를 적성에 넘긴다 — 배치 목록이 적성 0인 캐릭터를 걸러 내므로
-// **"낚시를 눌렀더니 내 캐릭터가 없다"의 답이 여기밖에 없다.**
+// ■ 보조 문구를 쓰지 않는다 — 그 자리는 적성 스트립이 쓴다 (T-048)
+// 배치 여부는 '배' 마크가 말하고(T-046), 적성은 하단 5칸 스트립이 말한다.
+// 한때 이 자리에서 '농사7·낚시2' 같은 문구를 지었는데, 5종을 다 가진 캐릭터는 19자가 되어
+// **100px 칸에서 글자가 5px까지 줄었다.** 문구를 짓는 쪽을 남겨 두면 다음에 보는 사람이
+// 어느 표시가 진짜인지 알 수 없으므로 함께 걷어냈다.
+//
+// ※ 적성은 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw') — '배' 마크와 같은 방식이다.
+//   배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"낚시를 눌렀더니 내 캐릭터가 없다"의 답이
+//   창고 칸밖에 없다** — 그래서 표시 자체는 빠질 수 없다.
 public class CharacterSlotSource : StorageSlotSource
 {
-    // 어느 산업도 못 다루는 캐릭터의 보조 문구. 빈 줄로 두면 고장과 구분되지 않는다.
-    private const string NoAptitudeText = "적성 없음";
-
     private readonly PlayerDataModel _data;
-
-    // 적성 요약을 짓는 자리. 칸마다 새로 만들지 않으려고 들고 재사용한다.
-    private readonly StringBuilder _aptitudeText = new StringBuilder();
 
     public CharacterSlotSource(PlayerDataModel data)
     {
@@ -36,42 +34,17 @@ public class CharacterSlotSource : StorageSlotSource
     //
     // ⚠️ 이름도 등급도 종류(TID)로 읽는다 — 개체 번호를 넣으면 이름은 '?#2'가 되고 등급은 회색('None')이 된다.
     //    칸에 실어 보내는 'Key'만 개체 번호('CharacterId')다.
-    protected override void Fill(List<StorageSlotData> into)
+    // ※ 보조 문구는 빈 문자열이다 — 그 자리를 적성 스트립이 쓴다(위 주석).
+    protected override void Fill(List<SlotData> into)
     {
         foreach (CharacterInfo character in _data.Characters)
         {
-            into.Add(new StorageSlotData(
+            into.Add(new SlotData(
                 character.CharacterId,
                 GameDataLoader.GetCharacterName(character.CharacterTid),
-                BuildAptitudeText(character),
+                "",
                 GameDataLoader.GetCharacterRarity(character.CharacterTid)));
         }
-    }
-
-    // 다룰 수 있는 산업만 이어 붙인다 — "농사7·낚시2" (Fill에서 호출).
-    //
-    // 적성 0인 산업은 뺀다. 5종을 다 적으면 칸 한 줄에 들어가지 않고,
-    // 0은 "못 한다"라 알려 줄 값이 아니라 알려 줄 것이 없다는 뜻이다.
-    private string BuildAptitudeText(CharacterInfo character)
-    {
-        _aptitudeText.Clear();
-
-        foreach (var aptitude in character.Aptitudes)
-        {
-            if (aptitude.Value == 0)
-            {
-                continue;
-            }
-
-            if (_aptitudeText.Length > 0)
-            {
-                _aptitudeText.Append('·');
-            }
-
-            _aptitudeText.Append(IndustryLabel.Get(aptitude.Industry)).Append(aptitude.Value);
-        }
-
-        return _aptitudeText.Length > 0 ? _aptitudeText.ToString() : NoAptitudeText;
     }
 
     // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)

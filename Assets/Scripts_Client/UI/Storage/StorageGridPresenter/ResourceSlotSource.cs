@@ -18,7 +18,7 @@ public class ResourceSlotSource : StorageSlotSource
     // ★ 산업별 걸러 내기·정렬이 붙을 자리가 여기다 (T-015).
     //   'ItemTable.ItemType'이 이미 산업 축이라 조건 몇 줄이면 되고,
     //   격자는 받은 순서대로 그리므로 격자 쪽은 고치지 않는다.
-    protected override void Fill(List<StorageSlotData> into)
+    protected override void Fill(List<SlotData> into)
     {
         foreach (ItemInfo item in _data.Inventory)
         {
@@ -28,10 +28,10 @@ public class ResourceSlotSource : StorageSlotSource
                 continue;
             }
 
-            into.Add(new StorageSlotData(
+            into.Add(new SlotData(
                 item.ItemId,
                 GameDataLoader.GetItemName(item.ItemId),
-                item.Count.ToString(),
+                $"{item.Count} 개", // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
                 GameDataLoader.GetItemRarity(item.ItemId)));
         }
     }
