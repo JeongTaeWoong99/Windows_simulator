@@ -15,6 +15,7 @@ namespace GameData
         public int          Level                { get; set; }        // int [1..5]
         public string       Name                 { get; set; } = "";  // string
         public int          RequiredScore        { get; set; }        // int [1..-]
+        public int          ExpPerJudge          { get; set; }        // int [0..-]
         public int          RequiredAptitude     { get; set; }        // int [0..10]
         public int          RequiredAccountLevel { get; set; }        // int [0..-]
         public string       Description          { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]

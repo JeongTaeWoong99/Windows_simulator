@@ -6,29 +6,23 @@ using MemoryPack;
 
 namespace GameData
 {
-    /// <summary>IndustryLevelTable 시트의 셀 문자열을 IndustryLevelTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
-    public static class IndustryLevelTablePacker
+    /// <summary>CharacterLevelTable 시트의 셀 문자열을 CharacterLevelTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
+    public static class CharacterLevelTablePacker
     {
-        private const string Table = "IndustryLevelTable";
+        private const string Table = "CharacterLevelTable";
 
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
-        public static IndustryLevelTableRow Parse(string[] cells) => new()
+        public static CharacterLevelTableRow Parse(string[] cells) => new()
         {
-            IndustryLevelTID     = PackerUtil.ParseInt(cells[0], Table, "IndustryLevelTID"),
-            IndustryType         = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
-            Level                = PackerUtil.ParseInt(cells[2], Table, "Level", 1, 5),
-            Name                 = PackerUtil.RequireString(cells[3], Table, "Name"),
-            RequiredScore        = PackerUtil.ParseInt(cells[4], Table, "RequiredScore", 1, null),
-            ExpPerJudge          = PackerUtil.ParseInt(cells[5], Table, "ExpPerJudge", 0, null),
-            RequiredAptitude     = PackerUtil.ParseInt(cells[6], Table, "RequiredAptitude", 0, 10),
-            RequiredAccountLevel = PackerUtil.ParseInt(cells[7], Table, "RequiredAccountLevel", 0, null),
-            Description          = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Description") : "",
+            CharacterLevelTID = PackerUtil.ParseInt(cells[0], Table, "CharacterLevelTID", 1, null),
+            RequiredExp       = PackerUtil.ParseInt(cells[1], Table, "RequiredExp", 0, null),
+            Description       = cells[2].Length > 0 ? PackerUtil.RequireString(cells[2], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
         public static byte[] Pack(IReadOnlyList<string[]> rows)
         {
-            var list = new List<IndustryLevelTableRow>(rows.Count);
+            var list = new List<CharacterLevelTableRow>(rows.Count);
             for (var i = 0; i < rows.Count; i++)
             {
                 try { list.Add(Parse(rows[i])); }
@@ -43,7 +37,7 @@ namespace GameData
         /// <summary>바이너리를 역직렬화해 행 수를 확인하고, 재직렬화 결과가 원본과 같은지 검증한다(라운드트립).</summary>
         public static int Verify(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<IndustryLevelTableRow>>(bytes)
+            var list = MemoryPackSerializer.Deserialize<List<CharacterLevelTableRow>>(bytes)
                        ?? throw new InvalidDataException($"[{Table}] 역직렬화 결과가 null입니다.");
             var again = MemoryPackSerializer.Serialize(list);
             if (!again.AsSpan().SequenceEqual(bytes))
@@ -54,7 +48,7 @@ namespace GameData
         /// <summary>첫 행을 사람이 읽을 수 있는 형태로 덤프한다(콘솔 검증용).</summary>
         public static string Preview(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<IndustryLevelTableRow>>(bytes);
+            var list = MemoryPackSerializer.Deserialize<List<CharacterLevelTableRow>>(bytes);
             return list is { Count: > 0 }
                 ? System.Text.Json.JsonSerializer.Serialize(list[0])
                 : "(빈 테이블)";
@@ -63,7 +57,7 @@ namespace GameData
         /// <summary>모든 행을 사람이 읽을 JSON으로 덤프한다(enum=이름, 들여쓰기, 한글 그대로). 엑셀 대조/리뷰용 사이드카.</summary>
         public static string Dump(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<IndustryLevelTableRow>>(bytes) ?? new();
+            var list = MemoryPackSerializer.Deserialize<List<CharacterLevelTableRow>>(bytes) ?? new();
             var options = new System.Text.Json.JsonSerializerOptions
             {
                 WriteIndented = true,
