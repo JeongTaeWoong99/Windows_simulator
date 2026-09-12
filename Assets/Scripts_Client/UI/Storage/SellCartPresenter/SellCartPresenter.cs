@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 창고 하단의 정보 칸 — 지금은 **판매 목록**을 그린다.
+// 창고 오른쪽의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다.
 //
 // ■ 무엇을 보여 주나
 // 자원 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
@@ -17,9 +17,11 @@ using UnityEngine.UI;
 // 들고 있으면 패널끼리 서로를 참조하게 되므로, 상태는 'SellCartModel'에 두고 양쪽이 구독한다
 // ('Storage 규칙.md').
 //
-// ⚠️ 클래스 이름이 역할과 어긋나 있다 — 원래는 고른 항목의 상세를 띄우는 자리였다.
-//   'SellCartPresenter'가 맞지만 씬 오브젝트 이름·문서가 함께 가는 개명이라 따로 다룬다.
-public class StorageInformationPresenter : MonoBehaviour
+// ※ 이 자리는 원래 "고른 항목의 상세"였다. 2026-09-04에 판매 목록이 들어오면서 역할이 바뀌었고,
+//   이름도 2026-09-12에 'StorageInformationPresenter' → 'SellCartPresenter'로 맞췄다
+//   ('SellCartModel'과 짝이 된다). 칸의 상세 정보는 이 패널로 돌아오지 않는다 —
+//   커서 옆 호버 UI로 간다(일감 'T-050').
+public class SellCartPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
     [SerializeField, Tooltip("판매 줄 프리팹 (SellCartRowView 포함). 담긴 수만큼 만들어 재사용한다")]

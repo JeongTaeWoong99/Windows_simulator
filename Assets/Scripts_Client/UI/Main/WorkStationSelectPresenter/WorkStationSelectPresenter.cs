@@ -24,7 +24,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // 예전에는 "숨기지 않고 잠근다"였다. 16마리를 기르면 낚시를 눌러도 16줄이 그대로 남아
 // **누를 수 있는 것을 골라내는 일을 사람이 하게 되기 때문에** 뒤집었다(T-046).
 // 목록이 통째로 비면 안내 문구 하나만 뜨고(빈 목록은 고장과 구분되지 않는다),
-// "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 요약과 '배' 마크가 있다.
+// "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
 // 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 //
 // ⚠️ 아직 안 된 것 — 3단계 세팅에 배치된 캐릭터 정보가 없다 → 일감 'T-035'.
@@ -472,13 +472,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
         HideRowsFrom(_visible.Count);
 
         // 빈 목록은 고장과 구분되지 않는다 — 왜 비었는지만 알린다.
-        // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 창고 캐릭터 탭(적성 요약·'배' 마크)에 있다.
+        // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 창고 캐릭터 탭(적성 스트립·'배' 마크)에 있다.
         emptyText.gameObject.SetActive(_visible.Count == 0);
 
         // 방금 만든 줄은 아직 프리팹에 저장된 크기 그대로다 — uGUI의 레이아웃 계산은 이 프레임
         // **맨 끝**(Canvas.willRenderCanvases)에 돌기 때문이다. 그 사이 'WidgetPositionLayout.VerifyNoOverflow'가
         // 'LateUpdate'에서 훑고 지나가 "자식이 부모보다 넓다" → "해소됐다"가 왕복으로 찍힌다
-        // (판매 목록에서 겪은 그대로 — 'StorageInformationPresenter.Refresh').
+        // (판매 목록에서 겪은 그대로 — 'SellCartPresenter.Refresh').
         LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
     }
 

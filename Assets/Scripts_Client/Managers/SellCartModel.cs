@@ -8,7 +8,7 @@ using UnityEngine;
 //
 // ■ 왜 매니저인가
 // 창고 격자('StorageGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
-// 정보 칸('StorageInformationPresenter')은 목록·합계·판매 버튼을 그려야 한다.
+// 정보 칸('SellCartPresenter')은 목록·합계·판매 버튼을 그려야 한다.
 // 두 화면이 같은 것을 봐야 하는데 서로를 직접 참조하면 패널 사이 참조가 그물이 된다
 // ('Storage 규칙.md'). 그래서 상태를 여기 한 곳에 두고 양쪽이 각자 구독한다.
 //

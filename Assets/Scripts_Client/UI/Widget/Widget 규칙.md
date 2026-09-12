@@ -36,7 +36,7 @@ Widget Presenter        VerticalLayoutGroup
 
 ### 카운트다운 계산식은 여기 없다
 
-`WorkStationProgress`(`UI/System/`)가 갖고 있고, 큰 창의 목록과 **같은 것을 쓴다.**
+`WorkStationProgress`(`UI/Shared/`)가 갖고 있고, 큰 창의 목록과 **같은 것을 쓴다.**
 복사하면 서버 판정식이 두 벌이 되어 한쪽만 고쳐진다.
 
 > ⏸ **아직 자리만 잡아 둔 것** — 미니 슬롯의 `Character Image`는 회색 네모이고

@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-09-05 (수량 팝업 폴더 이동) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-09-12 (`Shared/` 신설 — 캔버스에 속하지 않는 공용 표현 부품 · T-049) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -24,6 +24,7 @@
 | **어느 폴더**에 넣나 | 이 문서 §5 |
 | 코드 작성 규약 (Presenter · 캔버스 View · 종속 View) | 이 문서 §6 |
 | ⚠️ Canvas · 레이아웃 그룹의 **함정** | [`ugui-layout` 스킬](<../../../.claude/skills/client/ugui-layout/SKILL.md>) — 이 프로젝트 고유 배치는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>) |
+| **여러 캔버스가 함께 쓰는 칸·변환표**를 어디 두나 | [`Shared 규칙.md`](<Shared/Shared 규칙.md>) |
 | 로딩·알림 오버레이 · `SetActive` vs `CanvasGroup` | [`System 규칙.md`](<System/System 규칙.md>) |
 | 메인 화면을 갈아 끼우는 규칙 · 화면 추가 절차 | [`Main 규칙.md`](<Main/Main 규칙.md>) |
 | 창고 탭 · 로그인 · 거래 · 상태 · 위젯 | 각 폴더의 `<폴더명> 규칙.md` |
@@ -44,7 +45,7 @@ Prefabs/View.prefab (스크립트 없음)      씬의 위젯들 (TMP_Text · But
 **레퍼런스의 `HealthPresenter`는 `[SerializeField] Slider m_HealthSlider`로 위젯을 직접 쥔다.
 화면마다 View 클래스를 두지 않는다.** 우리도 같다 — Presenter가 자기 화면의 위젯을 직접 들고 그린다.
 
-> **그럼 `InventorySlotView` 같은 건 왜 있나?** 레퍼런스에는 **반복되는 칸이 없어서** 그 사례가
+> **그럼 `SlotView` 같은 건 왜 있나?** 레퍼런스에는 **반복되는 칸이 없어서** 그 사례가
 > 없었을 뿐이다. 같은 것이 N개 복제되고 각자 다른 데이터에 묶이면 위젯을 Presenter가 다 들고 있을 수
 > 없다. 그래서 **반복 칸만** View 클래스를 갖는다(§2).
 
@@ -115,8 +116,12 @@ topmostToggle.onValueChanged.AddListener(on => {
 | 상태를 들고 이벤트를 쏜다 | `...Model` | `PlayerDataModel` |
 | 구독해서 그리고, 입력을 넘긴다 | `...Presenter` | `LoginPresenter` · `WorkStationListPresenter` · `StatePresenter` |
 | **캔버스 껍데기** — `Show(bool)`만 | `...CanvasView` | `StorageCanvasView` · `MainCanvasView` · `MarketCanvasView` |
-| **반복되는 한 칸** — Presenter가 `Bind`한다 | `...View` | `InventorySlotView` · `WorkStationSlotView` · `CharacterStateRowView` |
+| **반복되는 한 칸** — Presenter가 `Bind`한다 | `...View` | `SlotView` · `WorkStationSlotView` · `CharacterStateRowView` |
 | 배치를 계산하는 컴포넌트 | `...Layout` / `...LayoutGroup` | `WidgetPositionLayout` · `FlexibleGridLayoutGroup` |
+
+> ⚠️ **반복 칸 중에도 "주인이 하나가 아닌 것"이 있다.** `WorkStationSlotView`·`CharacterStateRowView`는
+> 한 Presenter만 쓰므로 그 폴더에 살지만, `SlotView`는 **창고 격자와 가챠 결과 팝업이 함께**
+> 쓴다 — 그래서 자리가 [`Shared/`](<Shared/Shared 규칙.md>)다. **이름 규칙은 같고, 자리만 다르다.**
 
 > **캔버스는 언제나 `...CanvasView`다.** 예전엔 자기 안의 화면을 갈아 끼우는 캔버스를
 > `...CanvasPresenter`라고 불렀는데, 그러면 한 컬럼 안에 View 캔버스와 Presenter 캔버스가 섞인다.
@@ -164,9 +169,16 @@ WorkStation Select Presenter (↓ SUB VIEW)   ← 화면.  WorkStationSelectPres
 └─ Character Setting Panel
 ```
 
-**오브젝트 이름에 캔버스 이름을 되풀이하지 않는다.** 클래스는 어셈블리 전체에서 유일해야 해서
-`StorageTabPresenter`·`StorageInformationPresenter`처럼 캔버스 이름을 앞에 달지만, 오브젝트는
-이미 그 캔버스 안에 들어 있어 문맥이 붙는다 — `Tab Presenter`·`Information Presenter`면 충분하다.
+**클래스 이름은 어셈블리 전체에서 유일해야 한다.** 그래서 `StorageTabPresenter`·`StorageGridPresenter`처럼
+캔버스 이름을 앞에 다는 것이 많다 — 하지만 **접두는 규칙이 아니라 수단이다.**
+바른 이름이 이미 유일하면 붙이지 않는다: `MenuPresenter`·`GachaPresenter`·`WorkStationListPresenter`가 그렇고,
+`SellCartPresenter`는 `SellCartModel`과 짝이 맞는 고유한 이름이라 `Storage` 접두를 달지 않는다(2026-09-12 · T-049).
+⚠️ **접두를 붙였다가 역할이 바뀌면 이름이 거짓이 된다** — `StorageInformationPresenter`가 그래서 개명됐다.
+
+**오브젝트 이름에는 캔버스 이름을 되풀이하지 않는다.** 오브젝트는
+이미 그 캔버스 안에 들어 있어 문맥이 붙는다 — `Tab Presenter`·`Grid Presenter`면 충분하다.
+**낱말은 띄운다** — 클래스 `AmountInputPresenter`는 오브젝트 `Amount Input Presenter`다
+(`WorkStation`처럼 한 낱말인 도메인 용어는 붙여 둔다).
 
 ```
 #State Canvas (MAIN VIEW)                       ← 캔버스: 켜고 끈다
@@ -324,7 +336,7 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
 > **자식 하나(TMP 기본 200×50)가 남아 경고가 한 단계 아래로 옮겨 갔을 뿐이다.**
 > 크기를 맞추는 방식은 노드 수만큼 손이 가고, 프리팹을 고칠 때마다 다시 깨진다.
 >
-> `InventorySlotView`가 이 경고를 안 내는 것은 크기를 맞춰서가 아니라
+> `SlotView`가 이 경고를 안 내는 것은 크기를 맞춰서가 아니라
 > **`Slot` 프레임이 `LayoutGroup`이 아니라 앵커로 배치**해서 즉시 자리가 잡히기 때문이다.
 
 ### 폰트에 없는 글자를 씬에 적지 않는다
@@ -386,10 +398,10 @@ UI/
 │   │   └─ StorageTabPresenter.cs
 │   ├─ StorageGridPresenter/
 │   │   ├─ StorageGridPresenter.cs
-│   │   ├─ InventorySlotView.cs          ← 종속 View
 │   │   └─ XxxSlotSource.cs              ← 탭별 공급자 (화면이 아니라 데이터)
-│   └─ StorageInformationPresenter/
-│       ├─ StorageInformationPresenter.cs
+│   │                                      ※ 칸은 캔버스를 넘어 공유돼 Shared/ 에 있다
+│   └─ SellCartPresenter/
+│       ├─ SellCartPresenter.cs
 │       └─ SellCartRowView.cs            ← 종속 View
 ├─ Main/
 │   ├─ Main 규칙.md
@@ -422,7 +434,6 @@ UI/
 ├─ System/                                ← 캔버스 하나에 오버레이 넷
 │   ├─ System 규칙.md
 │   ├─ SystemCanvasView.cs
-│   ├─ ResultMessages.cs
 │   ├─ LoadingPresenter/
 │   │   └─ LoadingPresenter.cs
 │   ├─ GachaResultPresenter/
@@ -431,6 +442,12 @@ UI/
 │   │   └─ AmountInputPresenter.cs
 │   └─ NoticePresenter/
 │       └─ NoticePresenter.cs
+├─ Shared/                                ← 예외. 캔버스에 속하지 않는 공용 표현 부품
+│   ├─ Shared 규칙.md
+│   ├─ SlotView.cs              ← 창고 격자와 가챠 결과가 함께 쓰는 칸
+│   ├─ SlotData.cs                ← 그 칸에 넘기는 완성값
+│   ├─ ResultMessages.cs · RarityPalette.cs
+│   └─ WorkStationProgress.cs · IndustryLabel.cs
 └─ Layout/                                ← 예외. 화면이 아니라 배치 계산
     ├─ Layout 규칙.md
     ├─ WidgetPositionLayout.cs
@@ -449,7 +466,11 @@ UI/
 - **빈 폴더는 만들지 않는다.** Presenter 스크립트가 생길 때 그 폴더를 만든다.
 - 에디터 전용 스크립트는 반드시 `Editor/` 하위에 둔다. 안 그러면 빌드에 포함돼 컴파일이 깨진다.
 - Model·조정자는 이 폴더에 두지 않는다 → `Assets/Scripts_Client/Managers/`
-- **`Layout/`만 예외다.** 화면이 아니라 **배치 계산**이고, 어느 캔버스에도 속하지 않는다.
+- **예외는 둘이다.** `Layout/`은 화면이 아니라 **배치 계산**이고,
+  `Shared/`는 **캔버스를 넘어 공유되는 표현 부품**이다 — 둘 다 어느 캔버스에도 속하지 않는다.
+  ⚠️ **폴더가 하이어라키의 거울이면 씬에 붙지 않는 파일은 비칠 대상이 없다.** 자리를 정해 두지
+  않으면 *처음 쓴 화면*의 폴더에 놓이고, 그 순간 **위치가 소유권을 거짓으로 주장한다**
+  (→ [`Shared 규칙.md`](<Shared/Shared 규칙.md>)의 들어올 자격·배제 기준).
 
 ### enum 은 소유자 파일 안에 둔다
 

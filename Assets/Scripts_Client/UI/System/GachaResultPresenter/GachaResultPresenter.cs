@@ -5,7 +5,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 가챠 결과 팝업 — 이번에 뽑힌 보상을 5열로 늘어놓고, 닫기를 누르면 사라진다.
-// 칸은 인벤토리와 같은 프리팹('InventorySlotView')을 쓴다.
+// 칸은 창고와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
+// ⚠️ 그래서 창고 쪽을 고치면 이 팝업도 함께 바뀐다.
 //
 // ■ 왜 거래 열이 아니라 '!System Canvas'인가
 // 이 팝업은 'PlayerDataModel.GachaCompleted'를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
@@ -27,14 +28,14 @@ public class GachaResultPresenter : MonoBehaviour
     [SerializeField, Tooltip("보상 칸이 들어갈 부모 — GridLayoutGroup(5열)이 붙어 있다")]
     private Transform slotParent = null!;
 
-    [SerializeField, Tooltip("보상 한 칸 프리팹 (InventorySlotView 포함). 인벤토리와 같은 프리팹이다")]
-    private InventorySlotView slotPrefab = null!;
+    [SerializeField, Tooltip("보상 한 칸 프리팹 (SlotView 포함). 창고 격자와 공유하는 칸이다")]
+    private SlotView slotPrefab = null!;
 
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
     // 만들어 둔 칸들. 뽑기 횟수가 1회와 10회를 오가므로 파괴하지 않고 켜고 끄며 돌려쓴다.
-    private readonly List<InventorySlotView> _slots = new List<InventorySlotView>();
+    private readonly List<SlotView> _slots = new List<SlotView>();
 
     private PlayerDataModel _data = null!;
 
@@ -120,7 +121,7 @@ public class GachaResultPresenter : MonoBehaviour
         for (int i = 0; i < rewards.Count; i++)
         {
             GachaRewardInfo reward = rewards[i];
-            InventorySlotView slot = GetOrCreateSlot(i);
+            SlotView slot = GetOrCreateSlot(i);
 
             slot.gameObject.SetActive(true);
             slot.Bind(ToSlotData(reward));
@@ -139,19 +140,19 @@ public class GachaResultPresenter : MonoBehaviour
     //   무시하게 된다. 캐릭터도 아이템과 같은 등급 축이다.
     // ※ 캐릭터 이름은 **종류(TID)** 로 읽는다. 개체 번호가 아니다 — 개체 PK는 DB가 늦게 발급해서
     //   이 응답에 실리지 않고, 뒤이어 오는 'S_CharacterListResponse'로 온다.
-    private static StorageSlotData ToSlotData(GachaRewardInfo reward)
+    private static SlotData ToSlotData(GachaRewardInfo reward)
     {
         GlobalRarity rarity = RarityPalette.ToTableRarity(reward.Rarity);
 
         if (reward.RewardType == EGachaRewardType.Character)
         {
-            return new StorageSlotData(reward.CharacterTid,
+            return new SlotData(reward.CharacterTid,
                                        GameDataLoader.GetCharacterName(reward.CharacterTid),
                                        reward.Count.ToString(),
                                        rarity);
         }
 
-        return new StorageSlotData(reward.ItemId,
+        return new SlotData(reward.ItemId,
                                    GameDataLoader.GetItemName(reward.ItemId),
                                    reward.Count.ToString(),
                                    rarity);
@@ -161,11 +162,11 @@ public class GachaResultPresenter : MonoBehaviour
     //
     // ※ 만드는 순간 수량 표시를 끈다 — 여기서는 뽑힌 것을 그대로 늘어놓으므로 개수가
     //   칸이 아니라 목록의 길이로 드러난다. 만들 때 한 번이면 되고, 'Clear'는 이 결정을 되돌리지 않는다.
-    private InventorySlotView GetOrCreateSlot(int index)
+    private SlotView GetOrCreateSlot(int index)
     {
         while (_slots.Count <= index)
         {
-            InventorySlotView slot = Instantiate(slotPrefab, slotParent);
+            SlotView slot = Instantiate(slotPrefab, slotParent);
 
             slot.SetSubVisible(false);
             _slots.Add(slot);

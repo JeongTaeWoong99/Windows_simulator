@@ -23,7 +23,7 @@ public class SellCartRowView : MonoBehaviour
     [SerializeField, Tooltip("이 줄을 목록에서 빼는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button removeButton = null!;
 
-    // 이 줄의 빼기를 눌렀다 ('StorageInformationPresenter'가 구독).
+    // 이 줄의 빼기를 눌렀다 ('SellCartPresenter'가 구독).
     public event Action<SellCartRowView>? RemoveClicked;
 
     // 이 줄이 그리고 있는 아이템. 미바인딩이면 0.
@@ -41,7 +41,7 @@ public class SellCartRowView : MonoBehaviour
         removeButton.onClick.AddListener(() => RemoveClicked?.Invoke(this));
     }
 
-    // 이 줄이 그릴 항목을 정한다 ('StorageInformationPresenter'가 호출).
+    // 이 줄이 그릴 항목을 정한다 ('SellCartPresenter'가 호출).
     //   itemId      : 빼기 요청에 그대로 실린다
     //   displayName : 이미 완성된 이름 문구
     //   count       : 팔 개수(보유량이 아니다)

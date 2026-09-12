@@ -1203,7 +1203,7 @@ GameObject:
   - component: {fileID: 104975700}
   - component: {fileID: 104975699}
   m_Layer: 5
-  m_Name: "Information Presenter (\u2193 SUB VIEW)"
+  m_Name: "Sell Cart Presenter (\u2193 SUB VIEW)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1300,7 +1300,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f7ac66a13aa3d894aaf9a88e4273a54c, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::StorageInformationPresenter
+  m_EditorClassIdentifier: Assembly-CSharp::SellCartPresenter
   rowPrefab: {fileID: 1595540116266789547, guid: a5264f16a6060bd47b07e188c2bc5908, type: 3}
   rowParent: {fileID: 1900802501}
   emptyText: {fileID: 1254522945}
@@ -2497,7 +2497,7 @@ GameObject:
   - component: {fileID: 158576456}
   - component: {fileID: 158576455}
   m_Layer: 0
-  m_Name: "AmountInput Presenter (\u2193 SUB VIEW)"
+  m_Name: "Amount Input Presenter (\u2193 SUB VIEW)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -37649,7 +37649,7 @@ GameObject:
   - component: {fileID: 1940461230}
   - component: {fileID: 1940461229}
   m_Layer: 0
-  m_Name: "GachaResult Presenter (\u2193 SUB VIEW)"
+  m_Name: "Gacha Result Presenter (\u2193 SUB VIEW)"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

@@ -3,7 +3,7 @@ name: ugui-mvp
 description: uGUI 화면을 MVP로 짤 때의 역할 분담·이름 규칙·부착 위치·폴더 구조·Presenter 뼈대. 화면이나 위젯을 새로 만들거나, 클래스/오브젝트 이름을 정하거나, 스크립트를 어느 오브젝트에 붙일지 정할 때 적용한다. 이미 있는 화면의 값만 고치는 작업이나 배치 문제(→ ugui-layout)에는 적용하지 않는다.
 ---
 
-> 최종 업데이트: 2026-08-26
+> 최종 업데이트: 2026-09-12 (`UI/Shared/` — 캔버스에 속하지 않는 공용 표현 부품의 자리)
 
 # uGUI MVP 골격
 
@@ -69,9 +69,9 @@ someToggle.onValueChanged.AddListener(on => { /* 조건 분기·저장·부수�
 | 역할 | 접미사 | 예 |
 |---|---|---|
 | 상태를 들고 이벤트를 쏜다 | `...Model` | `PlayerDataModel` |
-| 구독해서 그리고, 입력을 넘긴다 | `...Presenter` | `LoginPresenter` · `InventoryPresenter` |
+| 구독해서 그리고, 입력을 넘긴다 | `...Presenter` | `LoginPresenter` · `ItemGridPresenter` |
 | **캔버스 껍데기** — `Show(bool)`만 | `...CanvasView` | `MainCanvasView` |
-| **반복되는 한 칸** — Presenter가 `Bind`한다 | `...View` | `InventorySlotView` |
+| **반복되는 한 칸** — Presenter가 `Bind`한다 | `...View` | `ItemSlotView` |
 | 배치를 계산하는 컴포넌트 | `...Layout` / `...LayoutGroup` | `FlexibleGridLayoutGroup` |
 
 > **캔버스는 언제나 `...CanvasView`다.** 자기 안의 화면을 갈아 끼우는 캔버스를 `...CanvasPresenter`라
@@ -198,13 +198,18 @@ UI/
 │   ├─ LoginCanvasView.cs
 │   └─ LoginPresenter/
 │       └─ LoginPresenter.cs
-└─ Storage/
-    ├─ StorageCanvasView.cs
-    ├─ StorageTabPresenter/
-    │   └─ StorageTabPresenter.cs
-    └─ InventoryPresenter/
-        ├─ InventoryPresenter.cs
-        └─ InventorySlotView.cs          ← 종속 View
+├─ Storage/
+│   ├─ StorageCanvasView.cs
+│   ├─ StorageTabPresenter/
+│   │   └─ StorageTabPresenter.cs
+│   ├─ ItemGridPresenter/
+│   │   ├─ ItemGridPresenter.cs
+│   │   └─ ItemRowView.cs             ← 종속 View (이 Presenter만 쓴다)
+│   └─ ItemDetailPresenter/
+│       └─ ItemDetailPresenter.cs
+└─ Shared/                            ← 캔버스에 속하지 않는 공용 표현 부품
+    ├─ Shared 규칙.md
+    └─ ItemSlotView.cs                ← 여러 캔버스가 함께 쓰는 칸
 ```
 
 - **폴더 이름 = 그 안에 사는 Presenter의 클래스 이름.** 오브젝트 이름이 아니다.
@@ -214,6 +219,22 @@ UI/
 - **빈 폴더는 만들지 않는다.** Presenter 스크립트가 생길 때 그 폴더를 만든다.
 - 에디터 전용 스크립트는 반드시 `Editor/` 하위에. 안 그러면 빌드에 포함돼 컴파일이 깨진다.
 - Model·조정자는 이 폴더에 두지 않는다 → `Managers/`
+- **씬에 붙지 않는 파일에는 비칠 대상이 없다 — 자리를 따로 만든다.**
+  폴더가 하이어라키의 거울이면, **여러 캔버스가 함께 쓰는 표현 부품**(반복 칸·색/문구 변환표·
+  값 struct)은 어느 캔버스에도 속하지 않는다. 자리를 정해 두지 않으면 *처음 쓴 화면*의 폴더에
+  놓이고, 그 순간 **위치가 소유권을 거짓으로 주장한다** — 그 화면을 고치다 다른 화면을 조용히
+  바꾸게 되고, 이름에도 그 화면 이름이 붙어 함께 거짓이 된다.
+  → **`UI/Shared/`에 두고 `Shared 규칙.md`에 자격과 배제 기준을 못박는다.**
+
+  | 들어온다 | 들어오지 않는다 |
+  |---|---|
+  | 두 캔버스 이상이 쓰는 반복 칸·완성값 struct | 한 캔버스만 쓰는 종속 View → 그 Presenter 폴더 |
+  | 화면과 무관한 표시용 변환표(코드→문구, 등급→색) | 상태를 들고 있는 서비스 → `Managers/` |
+  | 이 게임의 개념을 아는 표현 헬퍼 | 게임을 모르는 범용 코드 → `Common/`(툴킷) |
+
+  ⚠️ **"두 곳에서 쓰니까"만으로는 부족하다.** 한 캔버스의 두 Presenter가 함께 쓰는 것은
+  아직 소유자가 하나라서 **그 캔버스 폴더**에 둔다. 반대로 **한 캔버스만 쓰게 줄어들면 내린다** —
+  공용 폴더는 지금의 사실을 적는 자리다.
 
 ### enum은 소유자 파일 안에 둔다
 

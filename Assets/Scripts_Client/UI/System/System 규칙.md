@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-11 (`IndustryLabel` 추가 — 산업 한글 이름) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-12 (정적 변환표 4개를 `UI/Shared/`로 내렸다 — T-049) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -14,15 +14,10 @@
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
 
-**캔버스에 붙지 않는 정적 변환표도 여기 산다** — 어느 캔버스에서나 쓰이고
-어디에도 속하지 않는 것들이라, 한 화면 폴더에 두면 다른 화면이 그걸 참조하게 된다.
-
-| 파일 | 하는 일 |
-|------|---------|
-| `ResultMessages.cs` | 결과 코드 → 사용자 문구 |
-| `RarityPalette.cs` | 등급 → 표시 색 |
-| `IndustryLabel.cs` | 산업 → 한글 이름. 작업슬롯 칸과 창고 칸이 함께 쓴다. ⚠️ **출처가 아니라 사본이다** — 진짜 출처(`Enum.xlsx`)의 이름이 `Enum.cs`에 주석으로만 나와 런타임에서 못 읽는다. [`T-047`](../../../../tasks/T-047-산업이름출처.md)이 끝나면 **이 파일은 지운다** |
-| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초. **큰 창의 슬롯 목록과 상주 위젯이 함께 쓴다** — 복사하면 서버 판정식이 두 벌이 된다 |
+> **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
+> `ResultMessages`·`RarityPalette`·`IndustryLabel`·`WorkStationProgress`는
+> [`Shared 규칙.md`](<../Shared/Shared 규칙.md>)로 내려갔다 — **`#System Canvas`와 무관한데
+> 이 폴더에 있어서 위치가 소유권을 거짓으로 주장했다.**
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 캔버스·레이아웃 함정은
 [`Layout 규칙.md`](<../Layout/Layout 규칙.md>)에 있다.
@@ -57,8 +52,8 @@
 ```
 !System Canvas (MAIN VIEW)
 ├─ [0] Loading Presenter     (↓ SUB VIEW)
-├─ [1] GachaResult Presenter (↓ SUB VIEW)
-├─ [2] AmountInput Presenter (↓ SUB VIEW)
+├─ [1] Gacha Result Presenter (↓ SUB VIEW)
+├─ [2] Amount Input Presenter (↓ SUB VIEW)
 └─ [3] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
 ```
 
@@ -212,7 +207,7 @@
 
 최상단 상주 오버레이로 두면 어느 열이 열려 있든, 심지어 다 닫혀 있어도 결과가 뜬다.
 
-> 칸은 인벤토리와 같은 `InventorySlotView` 프리팹을 쓴다 — 같아야 할 생김새를 두 벌로 두면
+> 칸은 인벤토리와 같은 `SlotView` 프리팹을 쓴다 — 같아야 할 생김새를 두 벌로 두면
 > 한쪽만 고쳐진다. 자세한 건 [`Storage 규칙.md`](<../Storage/Storage 규칙.md>).
 
 ## 왜 이것만 `UIManager`를 거치는가 — 넷 중 하나는 왕복이다
