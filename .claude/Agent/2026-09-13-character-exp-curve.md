@@ -43,8 +43,24 @@ tags: [data, design, character, excel]
 
 ## 후속 작업 / 주의사항
 
-- **Unity `.meta` 없음** — `Assets/Scripts_Server/GameData/Tables/CharacterLevelTable.cs`,
-  `Assets/StreamingAssets/Data/CharacterLevelTable.bytes`. 에디터를 한 번 열어 생성한 뒤 함께 커밋한다.
-- 서버 구현은 `tasks/T-003` 할 일에 적었다 — `SettleWorkStation`에서 `JudgeCount × ExpPerJudge` 가산,
-  `CharacterLevelTable`로 레벨업, `t_character` 갱신. `Character.Level/Exp`가 `private set`이라 변경 메서드가 필요하다.
 - 엑셀 입력 스크립트는 저장소에 남기지 않았다(선례와 동일). 값은 리터럴이라 문서 5.2 표로 재현 가능하다.
+
+## 업데이트 (2026-09-13) — 서버 구현
+
+데이터·문서는 다른 세션이 `5b8939e`로 커밋했고, 이어서 **경험치 누적·레벨업·저장·푸시**를 서버에 붙였다.
+구성은 `tasks/T-003`의 "2026-09-13 구현" 표를 본다. 여기엔 결정과 지뢰만 남긴다.
+
+### 결정
+- **`CharacterLevelCatalog`를 따로 뒀다** (`IndustryLevelCatalog`와 같은 모양). `GameTable.CharacterLevelTable`을
+  `Character`가 직접 읽게 하면 테스트가 엑셀 값에 묶인다 — 카탈로그를 `User` 생성자로 주입해 테스트가 리터럴 곡선을 넣는다.
+- **만렙 = 카탈로그의 최대 TID.** 센티널(RequiredExp 0) 없음. 행이 하나도 없으면 만렙 1 = 아무도 안 자란다(무한 레벨업보다 낫다).
+- **`ExpPerJudge` 행이 없으면 0** — 판정 비용(`ResolveJudgeCost`)과 같은 규약. 정산 전체를 죽이지 않는다.
+  덕분에 `Levels`가 비어 있는 기존 `UserWorkStationTest`들이 그대로 초록이다(저장·푸시가 안 생긴다).
+- **변화가 없으면(만렙·0) 저장도 푸시도 안 한다.** `GrantWorkExp`가 전후를 비교한다.
+- 정산 → 배치 변경 순서 덕에 **이전 구간 경험치는 이전 캐릭터에게 간다**(테스트로 잠갔다).
+
+### 지뢰
+- **실행 중인 `WSGameServer.exe`가 있으면 `dotnet test`가 DLL 복사에서 죽는다.** 죽이지 않으려면
+  `-p:BaseOutputPath=<임시폴더>/`로 출력만 분리하면 된다 — 컴파일·테스트 전부 정상이고 미러(프로토콜)도 돈다.
+- 빌드가 `Assets/Plugins/Analyzers/MikaSourceGen.dll`을 다시 써서 `M`으로 뜬다. 소스 변화가 없으면 `git checkout`으로 되돌린다.
+- **클라 `PlayerDataModel`은 `CharacterSynced`를 아직 안 받는다.** 서버가 밀어도 화면 레벨은 로그인 스냅샷 값이다 → T-003 클라 항목.

@@ -123,6 +123,13 @@ namespace MikaDummyClient
             }
         }
 
+        [PacketHandler]
+        public static void Handle_S_CharacterSyncResponse(ISession session, S_CharacterSyncResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 캐릭터 동기화: Id={res.Character?.CharacterId}, " +
+                              $"Lv={res.Character?.Level}, Exp={res.Character?.Exp}");
+        }
+
         // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
         // 증감이 아니라 확정 잔액이라 두 경우 모두 덮어쓰기로 처리하면 된다.
         [PacketHandler]

@@ -84,17 +84,44 @@ public partial class User
     {
         Send(new S_CharacterListResponse
         {
-            Characters = _characters.Values
-                .Select(c => new CharacterInfo
-                {
-                    CharacterId  = c.Id,
-                    CharacterTid = c.Tid,
-                    Level        = c.Level,
-                    Exp          = c.Exp,
-                    Aptitudes    = ToAptitudeInfos(c),
-                })
-                .ToList(),
+            Characters = _characters.Values.Select(ToCharacterInfo).ToList(),
         });
+    }
+
+    /// <summary>
+    /// 작업(판정)으로 번 경험치를 캐릭터에 더한다. 바뀐 것이 있으면 <b>확정값을 저장하고 개체를 밀어 준다.</b>
+    /// 만렙이라 아무것도 안 바뀌면 저장도 푸시도 하지 않는다.
+    /// </summary>
+    private void GrantWorkExp(Character character, int amount, bool notify)
+    {
+        var levelBefore = character.Level;
+        var expBefore   = character.Exp;
+
+        character.GainExp(amount, _characterLevels);
+
+        if (character.Level == levelBefore && character.Exp == expBefore)
+        {
+            return;
+        }
+
+        PostDBTask(new SaveCharacterGrowthRepository(this, character));
+
+        if (notify)
+        {
+            Send(new S_CharacterSyncResponse { Character = ToCharacterInfo(character) });
+        }
+    }
+
+    private static CharacterInfo ToCharacterInfo(Character c)
+    {
+        return new CharacterInfo
+        {
+            CharacterId  = c.Id,
+            CharacterTid = c.Tid,
+            Level        = c.Level,
+            Exp          = c.Exp,
+            Aptitudes    = ToAptitudeInfos(c),
+        };
     }
 
     // 적성을 산업과 짝지어 내려보낸다 — 클라가 CharacterTable을 직접 읽지 않게 하려는 것이다.

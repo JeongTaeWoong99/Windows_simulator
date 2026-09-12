@@ -95,6 +95,7 @@ internal sealed class TestUserBuilder
     public FakeDBQueue           DB       { get; } = new();
     public DropTableCatalog      Drops    { get; } = new();
     public IndustryLevelCatalog  Levels   { get; } = new();
+    public CharacterLevelCatalog Growth   { get; } = new();
     public FakeLogicExecutor     Executor { get; private set; } = new();
 
     /// <summary>
@@ -128,7 +129,7 @@ internal sealed class TestUserBuilder
     public User Build(long uid = 1)
     {
         var user = new User(Channel, DB, Executor,
-                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels);
+                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth);
         user.Uid = uid;
         return user;
     }

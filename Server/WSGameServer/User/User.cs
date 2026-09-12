@@ -27,6 +27,9 @@ public sealed partial class User
     /// <summary>산업 레벨 테이블 인덱스. 배치·적재 시 판정 비용을 여기서 가져온다. 규약은 위와 같다.</summary>
     private readonly IndustryLevelCatalog _industryLevels;
 
+    /// <summary>캐릭터 레벨 곡선. 정산 시 경험치 가산·레벨업 판정에 쓴다. 규약은 위와 같다.</summary>
+    private readonly CharacterLevelCatalog _characterLevels;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -100,7 +103,8 @@ public sealed partial class User
         string            nickname,
         DateTime          loggedInAt,
         DropTableCatalog? dropTables = null,
-        IndustryLevelCatalog? industryLevels = null)
+        IndustryLevelCatalog? industryLevels = null,
+        CharacterLevelCatalog? characterLevels = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -110,6 +114,7 @@ public sealed partial class User
         _logicExecutor = logicExecutor;
         _dropTables = dropTables ?? DropTableCatalog.Instance;
         _industryLevels = industryLevels ?? IndustryLevelCatalog.Instance;
+        _characterLevels = characterLevels ?? CharacterLevelCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

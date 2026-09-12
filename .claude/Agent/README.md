@@ -24,7 +24,7 @@
 ## INDEX
 
 - [2026-09-13 문서 토큰 효율화 — 이슈 #18 서버·기획 쪽 적용](2026-09-13-doc-token-diet-server-side.md) — `#docs` `#design` INDEX·공용 스킬 2개·게임기획코어 목차. 공유 트리 동시 작업 지뢰 기록
-- [2026-09-13 캐릭터 경험치 곡선 — 판정 1회당 `ExpPerJudge` · `CharacterLevelTable` 만렙 100](2026-09-13-character-exp-curve.md) — `#data` `#design` T-003의 획득식·곡선을 엑셀로 확정, 서버 누적은 미구현
+- [2026-09-13 캐릭터 경험치 곡선 — 판정 1회당 `ExpPerJudge` · `CharacterLevelTable` 만렙 100](2026-09-13-character-exp-curve.md) — `#data` `#design` T-003의 획득식·곡선을 엑셀로 확정하고 서버 누적·레벨업·저장·푸시까지 구현
 - [2026-09-12 씬에 붙지 않는 UI 부품에 자리를 만들었다 — `UI/Shared/` 와 거짓 이름 3건 개명](2026-09-12-ui-shared-folder.md) — `#client` `#ui` `#editor` `#docs` 폴더가 하이어라키의 거울이라 씬에 안 붙는 파일은 갈 곳이 없었다 · `SlotView`/`SlotData`/`SellCartPresenter`
 - [2026-09-12 창고 칸의 적성 표시를 문구에서 5칸 스트립으로](2026-09-12-storage-aptitude-strip.md) — `#client` `#ui` `#editor` 19자가 100px 칸에서 5px로 줄던 것을 20×20 다섯 칸(위치=산업·숫자만)으로 바꿔 14px 확보
 - [2026-09-11 배치 목록을 걸러 내는 쪽으로 뒤집고 줄을 프리팹 풀로 전환](2026-09-11-assign-list-filter-and-row-prefab.md) — `#client` `#ui` 산업·배치로 목록을 거르고 줄은 프리팹 풀 · 창고 칸에 '배' 마크와 적성 요약

@@ -78,6 +78,17 @@ public partial class User
         return _industryLevels.GetJudgeCostUnits(industry, level);
     }
 
+    /// <summary>이 (산업, 레벨)의 판정 1회당 캐릭터 경험치. 행이 없으면 0 — 판정 비용과 같은 규약으로 정산을 죽이지 않는다.</summary>
+    private int ResolveExpPerJudge(IndustryType industry, int level)
+    {
+        if (!_industryLevels.TryGet(industry, level, out var row))
+        {
+            return 0;
+        }
+
+        return row.ExpPerJudge;
+    }
+
     /// <summary>슬롯 전체 스냅샷을 보낸다(로그인 직후).</summary>
     public void SendWorkStationSlots()
     {
@@ -113,6 +124,13 @@ public partial class User
             foreach (var (itemTid, count) in harvest.Gained)
             {
                 changes.Add(GainItem(itemTid, count));
+            }
+
+            // 판정 1회마다 배치된 캐릭터가 (산업, 레벨)의 ExpPerJudge만큼 경험치를 번다 (캐릭터 기획 5.2).
+            if (WorkStation.TryGet(harvest.SlotIndex, out var slot) &&
+                TryGetCharacter(slot.CharacterId, out var worker))
+            {
+                GrantWorkExp(worker, harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel), notify);
             }
 
             if (!notify)

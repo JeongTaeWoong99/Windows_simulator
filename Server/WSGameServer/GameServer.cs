@@ -39,6 +39,7 @@ public class GameServer : IDisposable
             DropTableCatalog.Instance.LoadAll();
             GachaPoolCatalog.Instance.LoadAll();
             IndustryLevelCatalog.Instance.LoadAll();
+            CharacterLevelCatalog.Instance.LoadAll();
 
             DBExecutor.Instance.Start(8);
             _logicExecutor.Start();

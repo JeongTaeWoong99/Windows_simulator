@@ -256,9 +256,9 @@ enum은 **뒤에만 추가한다**.
 > 누적값은 int 범위를 넘지만 **저장·비교는 레벨별 `RequiredExp`(최대 5.75억)로만 하므로** int로 충분하다.
 > ⚠️ **수치는 전부 테스트용이다.** 성장 페이스([진행 및 성장](../progression/README.md) 2.2)가 잡히면 다시 잡는다.
 
-> ❌ **미구현 (일감 T-003).** 서버는 판정을 정산할 때 아직 경험치를 더하지 않는다 —
-> `t_character.level`·`exp`는 읽어 올 뿐 아무도 바꾸지 않는다.
-> 누적·레벨업 판정은 **레벨 효과(5.3 #1)와 독립적으로 지금 구현할 수 있다.**
+> ✅ **서버 구현 (2026-09-13).** `SettleWorkStation`이 판정 횟수 × `ExpPerJudge`를 배치 캐릭터에 더하고
+> (`Character.GainExp` · `CharacterLevelCatalog`), 확정값을 `t_character`에 저장한 뒤 `S_CharacterSyncResponse`로 그 개체를 밀어 준다.
+> ⏸ **클라이언트는 아직 이 푸시를 화면에 반영하지 않는다** — `PlayerDataModel` 배선은 클라 몫이다(T-003).
 
 ### 5.3 ❌ 미정 — 이 문서에서 결정하지 않은 것
 
@@ -289,8 +289,8 @@ enum은 **뒤에만 추가한다**.
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
 | `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) |
-| 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value}` 목록 → 7.1 |
-| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` · `SettleWorkStation` — 경험치 가산은 ❌ 미구현 T-003) · `Gacha/GachaService.cs`(지급) |
+| 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value}` 목록 → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 |
+| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) |
 
 > 밸런스 수치는 코드 상수가 아니라 엑셀에 둔다. 수정 후 `GameDesign/generate-tables.ps1` 실행.
 
@@ -303,7 +303,7 @@ enum은 **뒤에만 추가한다**.
 | 적성 조회 · 배치 가능 판정(`CanWork`) | **서버** |
 | **적성 값 산출 · 전달** (`CharacterInfo.Aptitudes`) | **서버** |
 | 기본 작업속도 변환 · 보정 합성 | **서버** |
-| 경험치 누적 · 레벨업 판정 | **서버** — ❌ 미구현 (T-003) |
+| 경험치 누적 · 레벨업 판정 | **서버** ✅ (2026-09-13) |
 | 캐릭터 목록·적성 표시, 배치 UI | 클라이언트 |
 
 > 클라이언트는 `CurrentWorkSpeed`(결과값)만 받는다. 보정 내역을 받지 않으므로 계산할 것이 없다.

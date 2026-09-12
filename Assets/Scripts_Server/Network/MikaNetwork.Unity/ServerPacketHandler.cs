@@ -143,6 +143,19 @@ namespace MikaNetwork
             CharacterListReceived?.Invoke(res);
         }
 
+        // 캐릭터 1개체 동기화 도착 — 판정 정산으로 레벨·경험치가 바뀌면 서버가 밀어줌 (Handle_S_CharacterSyncResponse에서 발행)
+        public static event Action<S_CharacterSyncResponse>? CharacterSynced;
+
+        // 캐릭터 1개체의 최신 상태 (S_CharacterSyncResponse 수신 시 자동 호출)
+        // ※ 목록 스냅샷과 같은 CharacterInfo다. CharacterId로 찾아 덮어쓴다 — 증감이 아니라 확정값이다.
+        [PacketHandler]
+        public static void Handle_S_CharacterSyncResponse(ISession session, S_CharacterSyncResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"캐릭터 동기화 — Id={res.Character?.CharacterId}, Lv={res.Character?.Level}, Exp={res.Character?.Exp}");
+            CharacterSynced?.Invoke(res);
+        }
+
         #endregion
 
         #region 작업슬롯 · 채취

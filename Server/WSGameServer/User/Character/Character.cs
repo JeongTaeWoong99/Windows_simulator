@@ -35,7 +35,37 @@ public sealed class Character
 
     public int Level { get; private set; }
 
+    /// <summary>현재 레벨에서 쌓은 경험치(누적이 아니다). 레벨업하면 필요치를 뺀 나머지가 이월된다.</summary>
     public int Exp { get; private set; }
+
+    public bool IsMaxLevel(CharacterLevelCatalog curve) => Level >= curve.MaxLevel;
+
+    /// <summary>경험치를 더하고 필요치를 채운 만큼 레벨을 올린다. 만렙에서는 쌓지 않는다. 오른 레벨 수를 돌려준다.</summary>
+    public int GainExp(int amount, CharacterLevelCatalog curve)
+    {
+        if (amount <= 0 || IsMaxLevel(curve))
+        {
+            return 0;
+        }
+
+        Exp += amount;
+
+        var gained = 0;
+        while (!IsMaxLevel(curve) && curve.TryGetRequiredExp(Level + 1, out var required) && Exp >= required)
+        {
+            Exp -= required;
+            Level++;
+            gained++;
+        }
+
+        // 만렙에 닿으면 남은 조각은 버린다 — 상한 위로 쌓이는 값은 아무 의미가 없다.
+        if (IsMaxLevel(curve))
+        {
+            Exp = 0;
+        }
+
+        return gained;
+    }
 
     /// <summary>이 산업에 대한 적성(0~10). <b>캐릭터 스탯이 곧 산업 적성이다.</b> 미지정(<c>None</c>)은 0이다.</summary>
     public int GetAptitude(IndustryType industry)

@@ -49,6 +49,7 @@ namespace MikaProtocol
         S_WorkStationSlotSyncResponse = 18,
         C_ItemSellRequest = 19,
         S_ItemSellResponse = 20,
+        S_CharacterSyncResponse = 21,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -210,6 +211,16 @@ namespace MikaProtocol
     public partial class S_CharacterListResponse : IPacket
     {
         public List<CharacterInfo>? Characters { get; set; }
+    }
+
+    /// <summary>
+    /// 캐릭터 1개체의 최신 상태를 밀어 준다. 판정 정산으로 레벨·경험치가 바뀔 때마다 보낸다.
+    /// 목록 스냅샷과 같은 <c>CharacterInfo</c>라 클라이언트는 <c>CharacterId</c>로 찾아 덮어쓰면 된다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_CharacterSyncResponse)]
+    public partial class S_CharacterSyncResponse : IPacket
+    {
+        public CharacterInfo? Character { get; set; }
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────
