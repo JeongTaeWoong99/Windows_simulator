@@ -353,6 +353,12 @@ public static class TableCodeGenerator
     /// <summary>배열 컬럼의 Default(Null)을 "new T[]{ ... }" 리터럴로 바꾼다. ',' 구분, 빈 토큰 제외.</summary>
     private static string BuildArrayDefaultLiteral(ExcelGenerator.ColumnInfo col)
     {
+        // string 컬럼의 `""`(빈 문자열)와 같은 표기 — 배열에서는 "빈 배열이 정상"이라는 뜻이다.
+        if (col.DefaultValue == "\"\"")
+        {
+            return $"System.Array.Empty<{ElementType(col)}>()";
+        }
+
         var element = ElementType(col);
         var items = col.DefaultValue!
             .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)

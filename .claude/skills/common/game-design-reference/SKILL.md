@@ -5,7 +5,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 
 # 게임 기획 참조
 
-> 최종 업데이트: 2026-09-13 (하이브리드 분할 — 전파 알고리즘·사고 사례·검사 옵션·새 시스템 절차를 `전파 상세.md`로)
+> 최종 업데이트: 2026-09-14 (해금 문서 추가 · 하이브리드 분할 — 전파 알고리즘·사고 사례·검사 옵션·새 시스템 절차를 `전파 상세.md`로)
 >
 > 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md)** 를
 > 먼저 읽고, 그 다음 해당 영역의 **상세 기획안**을 읽는다.
@@ -63,6 +63,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 | `GameDesign/design/workslot/README.md` | 슬롯 배치·채취 판정·속도 보정 |
 | `GameDesign/design/gathering/산업레벨.md` | 산업 레벨·판정 필요 점수·레벨별 드롭 |
 | `GameDesign/design/character/README.md` | 캐릭터 적성·장비·계정 레벨 |
+| `GameDesign/design/unlock/README.md` | 해금 — `UnlockTable`·해금 행동·잠긴 것의 표시 |
 | `GameDesign/design/gathering/README.md` | 자원 채취·요일 로테이션·오프라인 정산 |
 | `GameDesign/design/gathering/<산업>/README.md` | 1차 산업 5종 — `농사`·`벌목`·`낚시`·`채굴`·`사냥` |
 | `GameDesign/design/quest/README.md` | 퀘스트·리셋·보상 |

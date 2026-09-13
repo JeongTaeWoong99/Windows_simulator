@@ -24,6 +24,8 @@ namespace GameData
         public static TableSet<int, GachaCharacterTableRow> GachaCharacterTable { get; private set; } = null!;
         public static TableSet<int, IndustryLevelTableRow> IndustryLevelTable { get; private set; } = null!;
         public static TableSet<int, ItemTableRow> ItemTable { get; private set; } = null!;
+        public static TableSet<int, UnlockTableRow> UnlockTable { get; private set; } = null!;
+        public static TableSet<int, WorkSlotTableRow> WorkSlotTable { get; private set; } = null!;
 
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
         public static void LoadAll(Func<string, byte[]> read)
@@ -41,6 +43,8 @@ namespace GameData
             GachaCharacterTable = TableSet<int, GachaCharacterTableRow>.From(read("GachaCharacterTable.bytes"), r => r.GachaCharacterTID);
             IndustryLevelTable = TableSet<int, IndustryLevelTableRow>.From(read("IndustryLevelTable.bytes"), r => r.IndustryLevelTID);
             ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
+            UnlockTable = TableSet<int, UnlockTableRow>.From(read("UnlockTable.bytes"), r => r.UnlockTID);
+            WorkSlotTable = TableSet<int, WorkSlotTableRow>.From(read("WorkSlotTable.bytes"), r => r.WorkSlotTID);
         }
     }
 }

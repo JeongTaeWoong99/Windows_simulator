@@ -1,0 +1,42 @@
+[
+  {
+    "WorkSlotTID": 0,
+    "UnlockTID": 0,
+    "Description": "시작 칸"
+  },
+  {
+    "WorkSlotTID": 1,
+    "UnlockTID": 0,
+    "Description": "시작 칸"
+  },
+  {
+    "WorkSlotTID": 2,
+    "UnlockTID": 1002,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 3,
+    "UnlockTID": 1003,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 4,
+    "UnlockTID": 1004,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 5,
+    "UnlockTID": 1005,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 6,
+    "UnlockTID": 1006,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 7,
+    "UnlockTID": 1007,
+    "Description": "상한"
+  }
+]

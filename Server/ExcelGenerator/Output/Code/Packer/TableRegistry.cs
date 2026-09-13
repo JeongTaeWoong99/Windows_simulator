@@ -29,6 +29,8 @@ namespace GameData
             ["GachaCharacterTable"] = new(GachaCharacterTablePacker.Pack, GachaCharacterTablePacker.Verify, GachaCharacterTablePacker.Preview, GachaCharacterTablePacker.Dump),
             ["IndustryLevelTable"] = new(IndustryLevelTablePacker.Pack, IndustryLevelTablePacker.Verify, IndustryLevelTablePacker.Preview, IndustryLevelTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
+            ["UnlockTable"] = new(UnlockTablePacker.Pack, UnlockTablePacker.Verify, UnlockTablePacker.Preview, UnlockTablePacker.Dump),
+            ["WorkSlotTable"] = new(WorkSlotTablePacker.Pack, WorkSlotTablePacker.Verify, WorkSlotTablePacker.Preview, WorkSlotTablePacker.Dump),
         };
     }
 }
