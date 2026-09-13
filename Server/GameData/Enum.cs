@@ -51,6 +51,7 @@ namespace GameData
         None = 0,
 
         Gold = 1,  // 골드
+        Dia  = 2,  // 다이아
 
         Max ,
     };
