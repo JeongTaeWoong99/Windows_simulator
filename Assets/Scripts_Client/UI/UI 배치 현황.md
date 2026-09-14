@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-12 (적성 스트립 · `Sell Cart`/`Amount Input`/`Gacha Result` 표기 통일 — T-048 · T-049) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-14 (세팅 패널에 배치된 캐릭터 정보 — T-035) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -63,6 +63,8 @@ Root Canvas
 │  │  │  │  │  ├─ Content > CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (고를 것이 없을 때만)
 │  │  │  │  └─ Character Setting Panel
+│  │  │  │     ├─ Assigned Info Text (TMP)        배치된 캐릭터 이름 · 산업 적성   flexH 1
+│  │  │  │     └─ Button Row > Unassign Button    오른쪽 정렬 [해제]               pref 48
 │  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1

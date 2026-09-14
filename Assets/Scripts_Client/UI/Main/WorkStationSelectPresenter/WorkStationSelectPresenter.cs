@@ -27,9 +27,6 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
 // 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 //
-// ⚠️ 아직 안 된 것 — 3단계 세팅에 배치된 캐릭터 정보가 없다 → 일감 'T-035'.
-// 요청이 아니라 '표시'의 문제다.
-//
 // 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationSelectPresenter : MonoBehaviour
 {
@@ -74,6 +71,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [CenterHeader("2단계 캐릭터 세팅 패널 (전환)")]
     [SerializeField, Tooltip("Character Setting Panel 오브젝트")]
     private GameObject settingPanel = null!;
+
+    [SerializeField, Tooltip("배치된 캐릭터의 이름·적성. 헤더의 슬롯 번호만으로는 누가 일하는지 알 수 없다")]
+    private TMP_Text assignedInfoText = null!;
 
     [SerializeField, Tooltip("해제 버튼. 배치 버튼과 역할을 나눈다 — 여긴 해제만 한다")]
     private Button unassignButton = null!;
@@ -131,6 +131,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         this.RequireRef(rowParent,        nameof(rowParent));
         this.RequireRef(emptyText,        nameof(emptyText));
         this.RequireRef(settingPanel,     nameof(settingPanel));
+        this.RequireRef(assignedInfoText, nameof(assignedInfoText));
         this.RequireRef(unassignButton,   nameof(unassignButton));
 
         _data    = Services.Get<PlayerDataModel>();
@@ -526,6 +527,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         if (settingPanel.activeSelf)
         {
             SyncSelectedIndustryToSlot();
+            RefreshAssignedInfo();
         }
 
         RefreshIndustryButtons();
@@ -536,6 +538,28 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         ApplyWaitingLock();
+    }
+
+    // 세팅 단계에서 누가 무슨 적성으로 일하는지 적는다 ('Refresh'가 세팅 단계에서 호출).
+    //
+    // ※ 산업 교체는 'WorkStationSlotsChanged', 캐릭터 값 변경은 'CharactersChanged'가 'Refresh'를
+    //   부르므로 여기서 따로 구독하지 않는다.
+    private void RefreshAssignedInfo()
+    {
+        var slot = FindSlot();
+
+        if (slot == null || !IsAssigned(slot))
+        {
+            assignedInfoText.text = "배치된 캐릭터가 없습니다.";
+
+            return;
+        }
+
+        string name     = _data.GetCharacterName(slot.CharacterId);
+        string industry = IndustryLabel.Get(slot.Industry);
+        byte   aptitude = _data.GetAptitude(slot.CharacterId, slot.Industry);
+
+        assignedInfoText.text = $"{name}\n{industry} 적성 {aptitude}";
     }
 
     // 담당 슬롯의 현재 상태를 찾는다. 서버가 주지 않은 번호면 null (단계 판정·클릭 처리에서 호출)
