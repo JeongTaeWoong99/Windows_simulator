@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-15 서버 콘솔 창 프레임 드랍 — 가상 스크롤로 교체](2026-09-15-server-console-virtual-scroll.md) — `#editor` `#client` 로그 전체 재레이아웃이 원인 · 보이는 줄만 그리고 줄 단위 복사
 - [2026-09-14 작업슬롯 선택 화면을 목업 구조로](2026-09-14-workstation-select-mockup-layout.md) — `#client` `#ui` `#editor` 산업 아이콘 · 캐릭터 카드 · 장비 자리 · 효율 계산 스크롤 (T-053)
 - [2026-09-14 작업슬롯 세팅 패널에 배치된 캐릭터 이름·적성 표시](2026-09-14-workstation-setting-assigned-info.md) — `#client` `#ui` `#editor` 해제 버튼만 있던 3단계에 두 줄 표시 · 패널 VLG 정석화 (T-035)
 - [2026-09-13 문서 토큰 효율화 — 이슈 #18 서버·기획 쪽 적용](2026-09-13-doc-token-diet-server-side.md) — `#docs` `#design` INDEX·공용 스킬 2개·게임기획코어 목차. 공유 트리 동시 작업 지뢰 기록

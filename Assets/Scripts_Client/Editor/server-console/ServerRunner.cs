@@ -51,7 +51,8 @@ namespace DesktopWindowControl.EditorTools
 
 				try
 				{
-					var proc = Process.GetProcessById(pid);
+					// 0.5초마다 불리므로 핸들을 GC에 맡기지 않고 바로 닫는다.
+					using var proc = Process.GetProcessById(pid);
 
 					if (proc.HasExited)
 					{
