@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-14 작업슬롯 선택 화면을 목업 구조로](2026-09-14-workstation-select-mockup-layout.md) — `#client` `#ui` `#editor` 산업 아이콘 · 캐릭터 카드 · 장비 자리 · 효율 계산 스크롤 (T-053)
 - [2026-09-14 작업슬롯 세팅 패널에 배치된 캐릭터 이름·적성 표시](2026-09-14-workstation-setting-assigned-info.md) — `#client` `#ui` `#editor` 해제 버튼만 있던 3단계에 두 줄 표시 · 패널 VLG 정석화 (T-035)
 - [2026-09-13 문서 토큰 효율화 — 이슈 #18 서버·기획 쪽 적용](2026-09-13-doc-token-diet-server-side.md) — `#docs` `#design` INDEX·공용 스킬 2개·게임기획코어 목차. 공유 트리 동시 작업 지뢰 기록
 - [2026-09-14 해금 시스템 기획 — `UnlockTable` 한 표 · 해금 행동 · 첫 적용은 작업슬롯](2026-09-14-unlock-system-design.md) — `#design` `#data` 세 곳의 해금을 한 표로 모으고 산업 레벨 조건에서 적성을 뺐다 · `Unlock.xlsx` 신설
