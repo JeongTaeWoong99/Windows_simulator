@@ -27,6 +27,13 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
 // 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 //
+// ■ 세팅 단계의 구성 (목업 'GameDesign/design/ui/게임UI목업(2026-07-30 업데이트).html'의 슬롯 상세)
+// 캐릭터 카드 · 장비 4칸 · 효율 계산. 카드는 목록 줄과 **같은 프리팹**이다('CharacterStateRowView').
+// 임시로 둔 자리 — 데이터·리소스가 없어 흰 네모와 "추가 예정"만 있고, 코드는 건드리지 않는다.
+//   · 산업 탭 아이콘 · 캐릭터 초상화 · 종족 → 엑셀 · 기획 · 리소스가 나오면 추가 예정 (일감 'T-054')
+//   · 장비 4칸(무기 · 장신구 2 · 보석)    → 장비 시스템이 나오면 추가 예정 (일감 'T-002')
+//   · 효율 계산의 가산 항목(장비 · 특성 · 액티브) → 서버가 내역을 주면 추가 예정 (일감 'T-055')
+//
 // 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationSelectPresenter : MonoBehaviour
 {
@@ -52,6 +59,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("잠긴 산업 버튼의 바탕색 (회색). 'Selectable'이 disabledColor로 따로 칠한다")]
     private Color disabledIndustryColor = new Color(0.55f, 0.55f, 0.55f, 1f);
 
+    // ※ 버튼마다 위 'Icon (임시)' · 아래 텍스트다. 아이콘은 흰 네모 — 산업 아이콘 스프라이트가 나오면
+    //   각 버튼의 Icon Image에 넣는다(일감 'T-054'). 코드는 버튼 바탕색만 칠하므로 고칠 곳이 없다.
     [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·낚시·채굴·벌목·사냥)")]
     private Button[] industryButtons = new Button[0];
 
@@ -72,11 +81,22 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("Character Setting Panel 오브젝트")]
     private GameObject settingPanel = null!;
 
-    [SerializeField, Tooltip("배치된 캐릭터의 이름·적성. 헤더의 슬롯 번호만으로는 누가 일하는지 알 수 없다")]
-    private TMP_Text assignedInfoText = null!;
+    // ※ 목록 줄과 같은 프리팹의 인스턴스다 — 버튼 라벨만 "해제"로 바꿔 쓴다.
+    [SerializeField, Tooltip("배치된 캐릭터 카드 (CharacterStateRowView). 버튼은 해제만 한다")]
+    private CharacterStateRowView assignedCard = null!;
 
-    [SerializeField, Tooltip("해제 버튼. 배치 버튼과 역할을 나눈다 — 여긴 해제만 한다")]
-    private Button unassignButton = null!;
+    // ※ 장비 4칸은 필드가 없다 — 임시 자리라 코드가 그릴 것이 없다(머리 주석 참조).
+    [SerializeField, Tooltip("효율 계산 줄 프리팹 (EfficiencyRowView 포함). 그릴 항목 수만큼 만들어 재사용한다")]
+    private EfficiencyRowView efficiencyRowPrefab = null!;
+
+    [SerializeField, Tooltip("효율 계산 줄이 쌓이는 부모 — Efficiency Scroll View Panel > Viewport > Content")]
+    private RectTransform efficiencyRowParent = null!;
+
+    // 효율 계산 줄 수 — 적성 기본값 · 현재 작업속도 · 실효 주기.
+    private const int EfficiencyRowCount = 3;
+
+    // 현재 ÷ 기본값이 1에서 이만큼 벗어나야 전역 배수로 본다 — 서버의 천분율 반올림 오차를 흡수한다.
+    private const float GlobalMultiplierTolerance = 0.005f;
 
     // 보낸 요청의 종류. 응답에는 배치였는지 교체였는지 해제였는지가 안 실려 와서 보낸 쪽이 기억한다.
     private enum PendingRequest
@@ -97,6 +117,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 이번에 보일 캐릭터. 걸러 낸 결과라 'Characters'와 순번이 다르다 —
     // 매번 새로 만들지 않으려고 필드로 들고 재사용한다(상주 앱이라 GC가 쌓인다).
     private readonly List<CharacterInfo> _visible = new List<CharacterInfo>();
+
+    // 줄에 넘길 적성 5칸. 산업 목록 순서 그대로 담는다 — 줄마다 새로 만들지 않고 이 배열을 재사용한다.
+    // ※ 줄이 받아 그리는 즉시 쓰임이 끝나므로 공유해도 된다('StorageGridPresenter.ReadAptitudes'와 같다).
+    private byte[] _aptitudes = new byte[0];
+
+    // 만들어 둔 효율 계산 줄. 캐릭터 줄과 같은 풀 규칙이다.
+    private readonly List<EfficiencyRowView> _efficiencyRows = new List<EfficiencyRowView>();
 
     // 지금 다루는 슬롯 번호. Open이 정한다 — 아직 안 열렸으면 -1.
     private int _slotIndex = -1;
@@ -124,15 +151,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
-        this.RequireRef(titleText,        nameof(titleText));
-        this.RequireRef(backButton,       nameof(backButton));
-        this.RequireRef(assignPanel,      nameof(assignPanel));
-        this.RequireRef(rowPrefab,        nameof(rowPrefab));
-        this.RequireRef(rowParent,        nameof(rowParent));
-        this.RequireRef(emptyText,        nameof(emptyText));
-        this.RequireRef(settingPanel,     nameof(settingPanel));
-        this.RequireRef(assignedInfoText, nameof(assignedInfoText));
-        this.RequireRef(unassignButton,   nameof(unassignButton));
+        this.RequireRef(titleText,           nameof(titleText));
+        this.RequireRef(backButton,          nameof(backButton));
+        this.RequireRef(assignPanel,         nameof(assignPanel));
+        this.RequireRef(rowPrefab,           nameof(rowPrefab));
+        this.RequireRef(rowParent,           nameof(rowParent));
+        this.RequireRef(emptyText,           nameof(emptyText));
+        this.RequireRef(settingPanel,        nameof(settingPanel));
+        this.RequireRef(assignedCard,        nameof(assignedCard));
+        this.RequireRef(efficiencyRowPrefab, nameof(efficiencyRowPrefab));
+        this.RequireRef(efficiencyRowParent, nameof(efficiencyRowParent));
 
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
@@ -145,7 +173,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         BindIndustryButtons();
 
         backButton.onClick.AddListener(BackToSlotList);
-        unassignButton.onClick.AddListener(OnUnassignButtonClicked);
+        assignedCard.SetButtonLabel("해제");
+        assignedCard.AssignClicked += OnAssignedCardClicked;
 
         OpenStageForSlot();
 
@@ -285,6 +314,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
             if (industry != EIndustryType.None) // None은 "배치 해제"라 고를 대상이 아니다
                 _industries.Add(industry);
         }
+
+        _aptitudes = new byte[_industries.Count];
     }
 
     // 산업 버튼을 목록 순서와 묶는다 (Start에서 호출).
@@ -462,11 +493,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
         for (int i = 0; i < _visible.Count; i++)
         {
             long characterId = _visible[i].CharacterId;
-            byte aptitude    = _data.GetAptitude(characterId, industry);
             var  row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, $"{_data.GetCharacterName(characterId)} · 적성 {aptitude}");
+            row.Bind(characterId, _data.GetCharacterName(characterId));
+            row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
         }
 
@@ -494,11 +525,24 @@ public class WorkStationSelectPresenter : MonoBehaviour
         CharacterStateRowView row = Instantiate(rowPrefab, rowParent);
 
         // 줄은 파괴하지 않고 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
+        row.SetButtonLabel("배치");
         row.AssignClicked += OnRowAssignClicked;
 
         _rows.Add(row);
 
         return row;
+    }
+
+    // 이 캐릭터의 적성 5종을 산업 목록 순서대로 담아 돌려준다 (줄·카드를 그릴 때 호출).
+    // ※ 돌려주는 배열은 재사용되는 하나다 — 받은 쪽이 들고 있으면 안 된다.
+    private byte[] ReadAptitudes(long characterId)
+    {
+        for (int i = 0; i < _aptitudes.Length; i++)
+        {
+            _aptitudes[i] = _data.GetAptitude(characterId, _industries[i]);
+        }
+
+        return _aptitudes;
     }
 
     // 이번에 쓰이지 않은 줄을 비우고 꺼 둔다 (RefreshRows에서 호출).
@@ -527,7 +571,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         if (settingPanel.activeSelf)
         {
             SyncSelectedIndustryToSlot();
-            RefreshAssignedInfo();
+            RefreshAssignedCard();
+            RefreshEfficiency();
         }
 
         RefreshIndustryButtons();
@@ -540,26 +585,101 @@ public class WorkStationSelectPresenter : MonoBehaviour
         ApplyWaitingLock();
     }
 
-    // 세팅 단계에서 누가 무슨 적성으로 일하는지 적는다 ('Refresh'가 세팅 단계에서 호출).
+    // 세팅 단계의 캐릭터 카드를 그린다 ('Refresh'가 세팅 단계에서 호출).
     //
     // ※ 산업 교체는 'WorkStationSlotsChanged', 캐릭터 값 변경은 'CharactersChanged'가 'Refresh'를
-    //   부르므로 여기서 따로 구독하지 않는다.
-    private void RefreshAssignedInfo()
+    //   부르므로 여기서 따로 구독하지 않는다. 강조 칸은 'SyncSelectedIndustryToSlot'이 맞춘 산업이다.
+    private void RefreshAssignedCard()
     {
         var slot = FindSlot();
 
         if (slot == null || !IsAssigned(slot))
         {
-            assignedInfoText.text = "배치된 캐릭터가 없습니다.";
+            assignedCard.Clear(); // 세팅 단계인데 비었다 — 해제 응답 직전 한 순간뿐이다
 
             return;
         }
 
-        string name     = _data.GetCharacterName(slot.CharacterId);
-        string industry = IndustryLabel.Get(slot.Industry);
-        byte   aptitude = _data.GetAptitude(slot.CharacterId, slot.Industry);
+        assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId));
+        assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
+    }
 
-        assignedInfoText.text = $"{name}\n{industry} 적성 {aptitude}";
+    // 효율 계산 줄을 채운다 ('Refresh'가 세팅 단계에서 호출).
+    //
+    // ■ 서버가 주는 것은 확정 속도 하나다
+    // 'CurrentWorkSpeed'는 보정이 전부 적용된 값이고 내역은 오지 않는다. 그래서 지금 그릴 수 있는 것은
+    // 적성 기본값(정적 곡선) · 현재 속도 · 실효 주기 셋이다. 가산 항목은 일감 'T-055' 뒤에 줄로 늘어난다.
+    //
+    // ■ 개발용 전역 배수를 역산한다
+    // 서버 식은 '기본값 × (1 + Σ가산) × 전역배수'인데 가산이 아직 하나도 없어서 '현재 ÷ 기본값'이 곧 전역 배수다.
+    // 1이 아니면 값 아래에 알리고, 1이면(배포 설정, 일감 'T-004') 문구가 저절로 사라진다.
+    // ⚠️ **가산이 하나라도 붙으면 이 역산은 틀린다** — 장비 +35%까지 "전역 배수"로 보인다.
+    //   그 전에 서버가 배수를 명시 필드로 주도록 바꾼다(일감 'T-055').
+    private void RefreshEfficiency()
+    {
+        var slot = FindSlot();
+
+        if (slot == null || !IsAssigned(slot))
+        {
+            HideEfficiencyRowsFrom(0);
+
+            return;
+        }
+
+        byte  aptitude  = _data.GetAptitude(slot.CharacterId, slot.Industry);
+        int   baseSpeed = GameDataLoader.GetBaseWorkSpeed(aptitude);
+        float cycle     = WorkStationProgress.CalculateCycleSeconds(slot);
+
+        GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(baseSpeed));
+
+        var speedRow = GetOrCreateEfficiencyRow(1);
+        speedRow.Bind("현재 작업속도", FormatSpeed(slot.CurrentWorkSpeed));
+
+        if (baseSpeed > 0)
+        {
+            float multiplier = slot.CurrentWorkSpeed / (float)baseSpeed;
+
+            // 서버가 천분율 정수로 반올림하므로 딱 1.0이 아닐 수 있다 — 반올림 오차는 배수로 치지 않는다.
+            if (Mathf.Abs(multiplier - 1f) > GlobalMultiplierTolerance)
+            {
+                speedRow.SetNote($"개발용 전역 배수 ×{multiplier:0.00} 적용 중");
+            }
+        }
+
+        GetOrCreateEfficiencyRow(2).Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" : "—");
+
+        HideEfficiencyRowsFrom(EfficiencyRowCount);
+
+        // 캐릭터 줄과 같은 이유 — 방금 켠 줄은 이 프레임 끝까지 프리팹 크기 그대로다('RefreshRows' 끝 주석).
+        LayoutRebuilder.ForceRebuildLayoutImmediate(efficiencyRowParent);
+    }
+
+    // 천분율 속도를 "2.45배"로 적는다. 0이면 모르는 값이라 "—" (효율 계산에서 호출)
+    private static string FormatSpeed(int permille)
+        => permille > 0 ? $"{permille / 1000f:0.00}배" : "—";
+
+    // 'index'번째 효율 계산 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEfficiency에서 호출).
+    private EfficiencyRowView GetOrCreateEfficiencyRow(int index)
+    {
+        if (index >= _efficiencyRows.Count)
+        {
+            _efficiencyRows.Add(Instantiate(efficiencyRowPrefab, efficiencyRowParent));
+        }
+
+        var row = _efficiencyRows[index];
+        row.gameObject.SetActive(true);
+
+        return row;
+    }
+
+    // 이번에 쓰이지 않은 효율 계산 줄을 비우고 꺼 둔다 (RefreshEfficiency에서 호출).
+    private void HideEfficiencyRowsFrom(int startIndex)
+    {
+        for (int i = startIndex; i < _efficiencyRows.Count; i++)
+        {
+            _efficiencyRows[i].Clear();
+            _efficiencyRows[i].gameObject.SetActive(false);
+        }
     }
 
     // 담당 슬롯의 현재 상태를 찾는다. 서버가 주지 않은 번호면 null (단계 판정·클릭 처리에서 호출)
@@ -660,8 +780,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         BeginWaiting(PendingRequest.Replace);
     }
 
-    // 해제를 눌렀다 (unassignButton OnClick에 코드로 연결)
-    private void OnUnassignButtonClicked()
+    // 카드의 해제를 눌렀다 (assignedCard.AssignClicked 구독)
+    private void OnAssignedCardClicked(CharacterStateRowView card)
     {
         if (!CanSend())
         {
@@ -756,7 +876,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 기다리는 동안 배치·해제만 잠근다. 뒤로가기는 잠그지 않는다 — 나갈 길은 늘 열려 있어야 한다
     private void ApplyWaitingLock()
     {
-        unassignButton.interactable = !IsWaiting;
+        assignedCard.SetAssignable(!IsWaiting);
 
         foreach (var row in _rows)
         {

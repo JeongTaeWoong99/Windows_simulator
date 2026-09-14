@@ -55,18 +55,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("이 캐릭터가 작업슬롯에서 일하는 중임을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
-    // 적성 칸 수 = 1차 산업 5종. 'EIndustryType'의 None 제외 개수와 같아야 한다.
-    public const int AptitudeCount = 5;
-
-    // 적성은 0~10이라 미리 만들어 둔다 — 200칸 × 5개를 매번 그리므로
-    // 'ToString()'을 그때그때 부르면 Redraw마다 문자열 1000개가 버려진다(상주 앱이라 쌓인다).
-    // ※ 0번은 'X'다 — **빈 칸으로 두면 배선이 빠진 칸과 구분되지 않는다.**
-    //   "못 다루는 산업"은 알려 줄 값이 없는 게 아니라 알려 줄 것이 있는 상태다.
-    private static readonly string[] ValueTexts = { "X", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-
-    // 적성 0은 흐리게 — 'X'가 숫자와 같은 세기로 보이면 눈이 먼저 X를 읽는다.
-    private static readonly Color ValueColor = Color.white;
-    private static readonly Color ZeroColor  = new Color(0.62f, 0.62f, 0.62f, 1f);
+    // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
+    // 작업슬롯 선택 화면의 캐릭터 줄도 같은 5칸을 그린다.
+    public const int AptitudeCount = AptitudeLabel.Count;
 
     // 이 칸이 그리고 있는 대상. 자원은 ItemId, 캐릭터는 개체 번호. 비어 있으면 0.
     public long Key { get; private set; }
@@ -184,8 +175,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
             byte value = i < values!.Length ? values[i] : (byte)0;
 
-            text.text  = value < ValueTexts.Length ? ValueTexts[value] : value.ToString();
-            text.color = value == 0 ? ZeroColor : ValueColor;
+            text.text  = AptitudeLabel.GetText(value);
+            text.color = AptitudeLabel.GetColor(value);
         }
     }
 

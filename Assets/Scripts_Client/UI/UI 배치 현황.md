@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-14 (세팅 패널에 배치된 캐릭터 정보 — T-035) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-14 (선택 화면 목업 구조 — 산업 아이콘 · 캐릭터 카드 · 장비 자리 · 효율 계산 — T-053) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -58,13 +58,21 @@ Root Canvas
 │  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
 │  │  │  │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
 │  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
-│  │  │  │  ├─ Header Panel · Industry Panel      (정렬용 — 스크립트 없음)
+│  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50
+│  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90
+│  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)
 │  │  │  │  ├─ Character Assign Scroll View Panel
 │  │  │  │  │  ├─ Content > CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │  │  │  │    Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]      pref 90
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (고를 것이 없을 때만)
-│  │  │  │  └─ Character Setting Panel
-│  │  │  │     ├─ Assigned Info Text (TMP)        배치된 캐릭터 이름 · 산업 적성   flexH 1
-│  │  │  │     └─ Button Row > Unassign Button    오른쪽 정렬 [해제]               pref 48
+│  │  │  │  └─ Character Setting Panel            VLG ctrl on · exp off → 자식 모두 flexW 1
+│  │  │  │     ├─ Character Label                 "캐릭터"                         pref 30
+│  │  │  │     ├─ Assigned Character Card         CharacterStateRowView 프리팹 · [해제]  pref 90
+│  │  │  │     ├─ Equipment Label                 "장비"                           pref 30
+│  │  │  │     ├─ Equipment Panel                 무기 · 장신구 1·2 · 보석 (임시 — T-002)  pref 110
+│  │  │  │     ├─ Efficiency Label                "효율 계산"                      pref 30
+│  │  │  │     └─ Efficiency Scroll View Panel    위 스크롤 뷰와 같은 설정 · 스크롤바 Permanent  flexH 1
+│  │  │  │        └─ Content > EfficiencyRowView 프리팹 (줄 수만큼 런타임 생성)
 │  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
@@ -176,8 +184,8 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 2  │  Character Assign Scroll View Panel    캐릭터 줄 목록                                       │
    │      │ 줄의 [배치] → 배치 요청 → 응답 성공 ──→ 3                                            │
    │      │                                                                                      │
-3  │  Character Setting Panel               배치된 캐릭터 세팅                                   │
-   │      │ [해제] → 해제 요청 → 응답 성공 ──────→ 2                                             │
+3  │  Character Setting Panel               배치된 캐릭터 카드 · 장비 · 효율 계산               │
+   │      │ 카드의 [해제] → 해제 요청 → 응답 성공 ──────→ 2                                             │
    └──────┴─ [뒤로가기] 또는 응답 실패 ───────────→ 1 ───────────────────────────────────────────┘
 ```
 

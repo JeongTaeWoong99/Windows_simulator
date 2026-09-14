@@ -1,6 +1,6 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-09-12 (신설 — 캔버스에 속하지 않는 표현 부품의 자리 · T-049) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-09-14 (`AptitudeLabel` 추가 — 창고 칸과 캐릭터 줄이 적성 표기를 함께 쓴다 · T-053) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
 (`#Storage Canvas` → `Storage/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
@@ -27,7 +27,8 @@
 | `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
 | `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Storage + `PlayerDataModel` |
 | `RarityPalette.cs` | 등급 → 표시 색 | Storage · System |
-| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
+| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
+| `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Storage(칸 스트립) · Main(캐릭터 줄·카드) |
 | `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-047`](../../../../tasks/T-047-산업이름출처.md)이 끝나면 **이 파일은 지운다** | Main |
 
 ## 들어올 자격
