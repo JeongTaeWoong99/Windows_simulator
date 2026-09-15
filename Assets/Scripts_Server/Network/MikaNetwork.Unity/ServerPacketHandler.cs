@@ -158,6 +158,21 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 치트
+
+        // 치트 결과 도착 (Handle_S_CheatResponse에서 발행). 상태 변화 자체는 재화·인벤·캐릭터·슬롯의 기존 동기화 패킷으로 온다.
+        public static event Action<S_CheatResponse>? CheatResponded;
+
+        // 치트 응답 — admin_level ≥ 1인 계정만 Ok가 온다. Message는 로그용 한 줄이다 (Server/docs/치트.md)
+        [PacketHandler]
+        public static void Handle_S_CheatResponse(ISession session, S_CheatResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"치트 {res.Command} → {res.Result} {res.Message}");
+            CheatResponded?.Invoke(res);
+        }
+
+        #endregion
+
         #region 작업슬롯 · 채취
 
         // 작업슬롯 배치 결과 도착 (Handle_S_WorkStationAssignResponse에서 발행)

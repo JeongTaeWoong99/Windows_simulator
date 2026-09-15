@@ -28,6 +28,26 @@ namespace MikaProtocol
         // ── 300~: 상점 ──
         InvalidSellRequest = 300, // 빈 목록·수량 0 이하·존재하지 않는 아이템
         NotEnoughItem      = 301, // 보유량보다 많이 팔려는 시도
+
+        // ── 400~: 치트 ──
+        NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
+        InvalidCheatCommand = 401, // 정의되지 않은 명령
+        InvalidCheatArgs    = 402, // 인자 범위·존재 검사 실패 (없는 TID, 0 이하 수량 등)
+    }
+
+    /// <summary>
+    /// 치트 명령. 문자열 파싱 대신 enum이다 — 오타가 컴파일에서 잡힌다. <b>뒤에만 추가한다.</b>
+    /// 인자 의미와 거절 조건은 <c>Server/docs/치트.md</c> 2장.
+    /// </summary>
+    public enum ECheatCommand : byte
+    {
+        None             = 0,
+        GiveGold         = 1,  // Arg1 = 금액 (음수면 차감)
+        GiveDia          = 2,  // Arg1 = 금액 (음수면 차감)
+        GiveItem         = 3,  // Arg1 = ItemTID · Arg2 = 개수
+        GiveCharacter    = 4,  // Arg1 = CharacterTID · Arg2 = 장수 (1~10)
+        GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
+        Settle           = 6,  // 지금 시각으로 작업슬롯 정산
     }
 
     public enum EItemChangeKind : byte

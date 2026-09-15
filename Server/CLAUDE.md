@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-08-13 (루트 `CLAUDE.md`에서 서버 파트를 분리)
+> 최종 업데이트: 2026-09-16 (치트 문서 추가 · 루트 `CLAUDE.md`에서 서버 파트를 분리)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -29,7 +29,7 @@
 | `Server/GameData/` | (생성) 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
 | `Server/Shared/Data/` | (생성) MemoryPack 바이너리 `*.bytes` |
 | `Server/WSGameServer.Tests/` | 서버 유닛 테스트 — **xUnit + Shouldly + Moq** |
-| `Server/docs/` | 서버 전용 문서 — [`테스트커버리지.md`](docs/테스트커버리지.md) |
+| `Server/docs/` | 서버 전용 문서 — [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) |
 | `Assets/Scripts_Server/Protocol/` | (미러) `Server/MikaProtocol` 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | (미러) `Server/GameData` 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | (미러) `Server/Shared/Data`의 `*.bytes` |

@@ -130,6 +130,12 @@ namespace MikaDummyClient
                               $"Lv={res.Character?.Level}, Exp={res.Character?.Exp}");
         }
 
+        [PacketHandler]
+        public static void Handle_S_CheatResponse(ISession session, S_CheatResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 치트: {res.Command} → {res.Result} {res.Message}");
+        }
+
         // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
         // 증감이 아니라 확정 잔액이라 두 경우 모두 덮어쓰기로 처리하면 된다.
         [PacketHandler]

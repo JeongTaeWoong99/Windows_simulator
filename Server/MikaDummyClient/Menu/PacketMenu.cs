@@ -24,6 +24,7 @@ namespace MikaDummyClient
                 new ClientAction("GachaDraw", SendGachaDraw),
                 new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
                 new ClientAction("ItemSell (즉시 판매)", SendItemSell),
+                new ClientAction("Cheat (admin 전용 — 지급·정산)", SendCheat),
             };
         }
 
@@ -143,6 +144,25 @@ namespace MikaDummyClient
             {
                 SlotIndex = slotIndex, Industry = (EIndustryType)industry, CharacterId = characterId,
             });
+        }
+
+        private void SendCheat()
+        {
+            Console.WriteLine("명령: 1=GiveGold(Arg1=금액, 음수면 차감) 2=GiveDia 3=GiveItem(TID, 개수) " +
+                              "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle");
+            Console.Write("Command > ");
+            if (!byte.TryParse(Console.ReadLine(), out byte command))
+            {
+                Console.WriteLine("[Client] Command는 숫자여야 합니다.");
+                return;
+            }
+
+            Console.Write("Arg1 (없으면 빈칸) > ");
+            long.TryParse(Console.ReadLine(), out long arg1);
+            Console.Write("Arg2 (없으면 빈칸) > ");
+            long.TryParse(Console.ReadLine(), out long arg2);
+
+            NetworkManager.Instance.Send(new C_CheatRequest { Command = (ECheatCommand)command, Arg1 = arg1, Arg2 = arg2 });
         }
 
         private void SendGachaDraw()

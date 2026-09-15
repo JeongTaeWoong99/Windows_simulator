@@ -50,6 +50,8 @@ namespace MikaProtocol
         C_ItemSellRequest = 19,
         S_ItemSellResponse = 20,
         S_CharacterSyncResponse = 21,
+        C_CheatRequest = 22,
+        S_CheatResponse = 23,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -221,6 +223,28 @@ namespace MikaProtocol
     public partial class S_CharacterSyncResponse : IPacket
     {
         public CharacterInfo? Character { get; set; }
+    }
+
+    // ───────────────────────── 치트 (Cheat) ─────────────────────────
+
+    /// <summary>
+    /// 개발·운영 명령. <b>admin_level ≥ 1인 유저만</b> 통과한다.
+    /// 명령별 인자 의미·거절 조건은 <c>Server/docs/치트.md</c> 2장. 결과는 기존 동기화 패킷(재화·인벤·캐릭터·슬롯)으로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_CheatRequest)]
+    public partial class C_CheatRequest : IPacket
+    {
+        public ECheatCommand Command { get; set; }
+        public long          Arg1    { get; set; }
+        public long          Arg2    { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_CheatResponse)]
+    public partial class S_CheatResponse : IPacket
+    {
+        public EResultCode   Result  { get; set; }
+        public ECheatCommand Command { get; set; }
+        public string        Message { get; set; } = "";   // 로그용 한 줄. 클라 로직이 읽지 않는다
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────

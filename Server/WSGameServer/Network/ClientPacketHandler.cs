@@ -68,6 +68,20 @@ public static class ClientPacketHandler
         GachaService.Instance.Draw(user, req.GachaId, req.DrawCount);
     }
 
+    /// <summary>치트 — 권한 검사와 실행은 User가 한다. 여기서는 로그인 여부만 본다.</summary>
+    [PacketHandler]
+    public static void Handle_C_CheatRequest(ISession session, C_CheatRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_CheatResponse { Result = EResultCode.NotLoggedIn, Command = req.Command });
+            return;
+        }
+
+        user.ExecuteCheat(req, DateTime.UtcNow);
+    }
+
     /// <summary>
     /// 작업슬롯에 산업·캐릭터를 배치한다.
     /// <b>클라이언트가 요청하는 것은 "배치"뿐이고, 무엇이 몇 개 나오는지는 서버가 정한다.</b>

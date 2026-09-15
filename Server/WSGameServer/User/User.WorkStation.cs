@@ -130,7 +130,7 @@ public partial class User
             if (WorkStation.TryGet(harvest.SlotIndex, out var slot) &&
                 TryGetCharacter(slot.CharacterId, out var worker))
             {
-                GrantWorkExp(worker, harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel), notify);
+                GrantCharacterExp(worker, harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel), notify);
             }
 
             if (!notify)

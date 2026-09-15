@@ -89,10 +89,10 @@ public partial class User
     }
 
     /// <summary>
-    /// 작업(판정)으로 번 경험치를 캐릭터에 더한다. 바뀐 것이 있으면 <b>확정값을 저장하고 개체를 밀어 준다.</b>
+    /// 경험치를 캐릭터에 더한다(판정 정산·치트가 같은 경로를 쓴다). 바뀐 것이 있으면 <b>확정값을 저장하고 개체를 밀어 준다.</b>
     /// 만렙이라 아무것도 안 바뀌면 저장도 푸시도 하지 않는다.
     /// </summary>
-    private void GrantWorkExp(Character character, int amount, bool notify)
+    public void GrantCharacterExp(Character character, int amount, bool notify)
     {
         var levelBefore = character.Level;
         var expBefore   = character.Exp;
