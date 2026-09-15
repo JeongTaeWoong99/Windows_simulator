@@ -1,6 +1,7 @@
 [
   {
     "UnlockTID": 1002,
+    "Name": "작업슬롯 2번",
     "Gold": 500,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [],
@@ -8,6 +9,7 @@
   },
   {
     "UnlockTID": 1003,
+    "Name": "작업슬롯 3번",
     "Gold": 1500,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
@@ -17,6 +19,7 @@
   },
   {
     "UnlockTID": 1004,
+    "Name": "작업슬롯 4번",
     "Gold": 4000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
@@ -26,6 +29,7 @@
   },
   {
     "UnlockTID": 1005,
+    "Name": "작업슬롯 5번",
     "Gold": 10000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
@@ -35,6 +39,7 @@
   },
   {
     "UnlockTID": 1006,
+    "Name": "작업슬롯 6번",
     "Gold": 25000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
@@ -44,6 +49,7 @@
   },
   {
     "UnlockTID": 1007,
+    "Name": "작업슬롯 7번",
     "Gold": 60000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [

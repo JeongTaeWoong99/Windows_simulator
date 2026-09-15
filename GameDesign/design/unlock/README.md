@@ -1,7 +1,7 @@
 # 09. 해금 (Unlock)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-09-14 · 상태: **골격·데이터 확정 · 첫 구현(작업슬롯) 미착수 · 계정 레벨 획득식 보류**
+> 최종 업데이트: 2026-09-16 · 상태: **골격·데이터 확정(재검토 반영) · 첫 구현(작업슬롯) 미착수 · 계정 레벨 획득식 보류**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
 >   [`캐릭터`](../character/README.md) · [`특성`](../trait/README.md)
 
@@ -26,6 +26,12 @@
 | 10 | **TID 대역** | 작업슬롯 `1xxx` · 산업 레벨 `2xxx` · 특성 `3xxx`. 번호는 재사용하지 않는다 |
 | 11 | **첫 구현 = 작업슬롯** | 조건은 골드 + 선행. 계정 레벨 조건은 값이 생기면 켠다 → 4장 |
 | 12 | **산업 레벨 조건 = 계정 레벨만** | 적성 조건은 폐지한다. 이관은 계정 레벨이 서버에 생긴 뒤 → 4장 |
+| 13 | **표시명은 `UnlockTable.Name`** | 선행 해금을 이름으로 보여 준다. 클라가 콘텐츠 테이블을 역색인하지 않는다 (2026-09-16) |
+| 14 | **서버 지급 경로 `GrantUnlock`** | 퀘스트 보상·튜토리얼·운영이 조건 없이 연다. 통지는 유저 행동과 같다 (2026-09-16) → 2.4 |
+| 15 | **로드 시 검증 3종** | 선행 순환·자기 참조 → 기동 실패 · 한 `UnlockTID`를 두 콘텐츠가 참조 → 기동 실패 · 미참조 → 경고 (2026-09-16) → 2.5 |
+| 16 | **지불 컬럼끼리는 OR** | `Gold`·`Dia`가 둘 다 있으면 유저가 하나를 골라 낸다. 나머지 조건과는 AND (2026-09-16) → 3장 |
+| 17 | **계정 레벨은 `S_AccountLevelResponse`** | 재화처럼 스냅샷·푸시가 같은 패킷. 구현은 획득식 뒤 (2026-09-16) → 6장 |
+| 18 | **잠긴 칸의 배치 행은 경고 후 무시** | "열렸다"의 원본은 `t_user_unlock` 하나 (2026-09-16) → 4.1 |
 
 > **왜 한 표인가** — 해금이 "엄청 많이 쓰일" 것이라서다. 콘텐츠마다 조건 컬럼과 판정 코드를 파면
 > 콘텐츠 수만큼 규칙이 생기고, 클라도 잠긴 칸을 콘텐츠마다 다르게 그려야 한다.
@@ -40,13 +46,13 @@
 
 ```
 UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
-┌──────────┬──────┬──────────────┬─────────────────────┐   ┌────────────┬───────────┐
-│ UnlockTID│ Gold │ AccountLevel │ RequiredUnlockTIDs  │ ← │ WorkSlotTID│ UnlockTID │
-│ 1003     │ 1500 │ 0            │ 1002                │   │ 2          │ 1003      │
-└──────────┴──────┴──────────────┴─────────────────────┘   └────────────┴───────────┘
+┌──────────┬──────────────┬──────┬──────────────┬─────────────────────┐   ┌────────────┬───────────┐
+│ UnlockTID│ Name         │ Gold │ AccountLevel │ RequiredUnlockTIDs  │ ← │ WorkSlotTID│ UnlockTID │
+│ 1003     │ 작업슬롯 3번 │ 1500 │ 0            │ 1002                │   │ 2          │ 1003      │
+└──────────┴──────────────┴──────┴──────────────┴─────────────────────┘   └────────────┴───────────┘
 
-유저 → C_UnlockRequest{1003}
-서버 → RequiredUnlockTIDs 전부 열렸나? → AccountLevel 이상인가? → TrySpendGold(1500)?
+유저 → C_UnlockRequest{1003, Gold}
+서버 → RequiredUnlockTIDs 전부 열렸나? → AccountLevel 이상인가? → 고른 재화가 이 해금에 있나? → TrySpendGold(1500)?
       → t_user_unlock에 (user, 1003) 기록 → S_UnlockResponse{Ok, 1003}
       → 콘텐츠가 이어서 반응 (슬롯이면 S_WorkStationSlotSyncResponse로 새 칸)
 ```
@@ -67,8 +73,9 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 2. 이미 열렸다 → `AlreadyUnlocked`
 3. `RequiredUnlockTIDs` 중 안 열린 것이 있다 → `UnlockLocked`
 4. 계정 레벨 < `AccountLevel` → `UnlockLocked`
-5. `TrySpendGold(Gold)` 실패 → `NotEnoughCurrency`
-6. 기록 · 응답 · 콘텐츠 후속
+5. 요청의 `Currency`가 이 해금의 지불 컬럼에 없다(값 0) → `InvalidUnlockTID`와 구분해 `UnlockLocked`
+6. 그 재화로 `TrySpend…` 실패 → `NotEnoughCurrency`
+7. 기록 · 응답 · 콘텐츠 후속
 
 > **차감은 새로 만들지 않는다.** 가챠·상점이 이미 쓰는 `User.TrySpendGold`를 그대로 부른다.
 > 해금이 재화를 다루는 방식이 다른 곳과 달라지지 않는다.
@@ -85,16 +92,43 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 
 서버는 `S_UnlockResponse` 뒤에 **콘텐츠별 기존 패킷**으로 상태를 밀어 준다. 해금 패킷에 콘텐츠 정보를 싣지 않는다.
 
+### 2.4 서버가 직접 여는 경로 — `GrantUnlock` (2026-09-16)
+
+유저 행동 없이 여는 길이 하나 더 있다. 퀘스트 보상·튜토리얼·운영 지급·치트가 쓴다.
+
+| | `TryUnlock` | `GrantUnlock` |
+| --- | --- | --- |
+| 부르는 쪽 | `C_UnlockRequest` 핸들러 | 서버 내부 (퀘스트·튜토리얼·치트) |
+| 조건 검사 · 차감 | **한다** | **하지 않는다** — 이미 열렸으면 아무것도 안 한다 |
+| 기록 · 통지 · 콘텐츠 후속 | 같다 — `t_user_unlock` + `S_UnlockResponse` + 콘텐츠 패킷 | 같다 |
+
+> 이 길이 없으면 퀘스트가 "보상으로 골드를 주고 유저가 사게" 같은 우회를 만들게 된다.
+
+### 2.5 로드 시 검증 (2026-09-16)
+
+`UnlockCatalog`가 서버 시작 때 검사한다. 위반은 데이터 오류이므로 **기동을 막는다** — 조용히 돌면 영영 못 여는 해금이 생긴다.
+
+| 검사 | 결과 |
+| --- | --- |
+| `RequiredUnlockTIDs` 순환(A→B→A) · 자기 참조 | **기동 실패** |
+| 한 `UnlockTID`를 두 콘텐츠 행이 참조 (1:1 위반) | **기동 실패** — "슬롯 하나 열었는데 산업 레벨도 열림"을 막는다 |
+| 어느 콘텐츠도 참조하지 않는 `UnlockTID` | 경고 — 오타로 죽은 행 |
+
+**묶음 해금(하나 사면 여러 개 열림)은 두지 않는다.** 필요하면 선행으로 표현한다 — B가 A를 선행으로 두면 A를 연 뒤 B는 공짜(조건 없음)로 열 수 있다.
+
 ---
 
 ## 3. 조건 컬럼
 
 | 컬럼 | 타입 | 뜻 | 없음 |
 | --- | --- | --- | --- |
-| `Gold` | int | 이 골드를 **낸다** (차감) | `0` |
+| `Gold` | int | 이 골드를 **낸다** (차감) — 지불 컬럼 | `0` |
+| (`Dia`) | int | 다이아 해금이 생기면 추가 — 지불 컬럼 | `0` |
 | `AccountLevel` | int | 계정 레벨이 **이 이상**이다 (차감 없음) | `0` |
 | `RequiredUnlockTIDs` | int[] | 이 해금들이 **전부 열려 있다** — 선행. 쉼표 구분 | 빈 셀 |
 
+- **지불 컬럼끼리는 OR, 나머지와는 AND (2026-09-16).** `Gold`·`Dia`가 둘 다 적혀 있으면 유저가 **하나를 골라** 낸다.
+  그래서 요청에 재화 선택이 실린다: `C_UnlockRequest{UnlockTID, Currency}`. 지불 컬럼이 하나뿐이면 그것만 유효하고, 값이 0인 재화를 고르면 거절한다.
 - **여러 선행**은 `1002,1003`처럼 나열한다. 전부 열려야 한다(AND).
 - **OR("둘 중 하나")은 두지 않는다.** 필요해지면 그때 그룹 컬럼을 더한다 → 8장.
 - **새 조건 종류**는 컬럼 하나 + 서버 검사 한 줄이다. 후보: `QuestTID`(퀘스트 완료), 누적 판정 횟수 같은 실적.
@@ -133,6 +167,11 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 > ⚠️ **골드는 테스트값이다.** 슬롯이 곧 재화 총량의 배수이므로([거래](../trade/README.md) 3.3) 경제와 함께 다시 잡는다.
 > `AccountLevel 0`은 "이중 게이트를 버렸다"가 아니라 **계정 레벨이 아직 없어서 비워 둔 것**이다 → 8장.
 
+> **재로그인 때 잠긴 칸의 배치 행이 DB에 남아 있으면 경고만 남기고 무시한다** (2026-09-16). 열린 칸은 `WorkSlotTable` + `t_user_unlock`으로만 만든다.
+> 미보유 캐릭터를 문 슬롯을 경고만 남기는 기존 규칙과 같은 태도다. 행은 지우지 않는다.
+
+> **상점의 "작업슬롯 확장권" 품목은 없다** (2026-09-16). 슬롯은 잠긴 칸에서 직접 연다 — 같은 것을 두 곳에서 팔지 않는다. sink로서의 골드 유출은 그대로다 → [거래](../trade/README.md) 3.2.
+
 ### 4.2 산업 레벨 — 조건이 바뀌었다
 
 2026-08-01의 "적성 N AND 계정 레벨 M"에서 **적성 조건을 뺀다.** 해금이 유저의 행동이 되면서
@@ -152,6 +191,7 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | 컬럼 | 타입 | 내용 |
 | --- | --- | --- |
 | `UnlockTID` | int (키) | 대역: 작업슬롯 `1xxx` · 산업 레벨 `2xxx` · 특성 `3xxx`. **재사용 금지** |
+| `Name` | string | **표시명** — 조건 문구("작업슬롯 3번 먼저")에 쓴다. 콘텐츠 이름과 같게 적는다 |
 | `Gold` | int (Min 0) | 지불 골드. `0` = 없음 |
 | `AccountLevel` | int (Min 0) | 계정 레벨 요구치. `0` = 없음 |
 | `RequiredUnlockTIDs` | int[] (`Ref UnlockTable.UnlockTID?`) | 선행 해금. 빈 셀 = 없음 |
@@ -175,15 +215,17 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | 대상 | 내용 |
 | --- | --- |
 | `t_user_unlock` | `(user_id, unlock_tid, unlocked_at)`. PK `(user_id, unlock_tid)`. 열린 것만 행이 있다 |
-| `C_UnlockRequest` | `{ int UnlockTID }` |
+| `C_UnlockRequest` | `{ int UnlockTID, ECurrencyType Currency }` — 지불 컬럼이 없는 해금은 `Currency`를 무시한다 |
 | `S_UnlockResponse` | `{ EResultCode Result, int UnlockTID }` |
 | `S_UnlockListResponse` | `{ List<int> UnlockTIDs }` — 로그인 직후 열린 목록 전체 |
-| 결과 코드 | `InvalidUnlockTID` · `AlreadyUnlocked` · `UnlockLocked`(선행·레벨 미충족) · `NotEnoughCurrency`(있음) |
-| 서버 | `UnlockCatalog`(테이블 인덱스) · `User.Unlock.cs`(판정·기록) · `SaveUnlockRepository` |
+| `S_AccountLevelResponse` | `{ int Level, int Exp }` — 계정 레벨 스냅샷·푸시 (재화와 같은 관례). **구현은 획득식 뒤** |
+| 결과 코드 | `InvalidUnlockTID` · `AlreadyUnlocked` · `UnlockLocked`(선행·레벨 미충족 · 이 해금에 없는 재화 선택) · `NotEnoughCurrency`(있음) |
+| 서버 | `UnlockCatalog`(테이블 인덱스 + 로드 검증 2.5) · `User.Unlock.cs`(`TryUnlock` · `GrantUnlock` · `IsUnlocked`) · `SaveUnlockRepository` |
 
 - **로그인 시 열린 목록을 먼저 보낸다** — 슬롯 스냅샷보다 앞. 클라가 잠긴 칸을 그릴 때 이미 알고 있어야 한다.
 - **콘텐츠는 "내 `UnlockTID`가 열렸나"만 묻는다.** `User.IsUnlocked(unlockTid)` 하나로 끝난다.
   `UnlockTID = 0`은 항상 true다.
+- **골드 차감과 해금 기록은 Repository가 둘이라 원자적이지 않다.** 기존 재화 저장과 같은 수준으로 두고, 같은 세션 키로 직렬이라 순서만 보장한다.
 
 ---
 

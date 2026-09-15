@@ -11,6 +11,7 @@ namespace GameData
     public partial class UnlockTableRow
     {
         public int    UnlockTID          { get; set; }                               // int [1..-]
+        public string Name               { get; set; } = "";                         // string
         public int    Gold               { get; set; }                               // int [0..-]
         public int    AccountLevel       { get; set; }                               // int [0..-]
         public int[]  RequiredUnlockTIDs { get; set; } = System.Array.Empty<int>();  // int[] 기본=""

@@ -15,10 +15,11 @@ namespace GameData
         public static UnlockTableRow Parse(string[] cells) => new()
         {
             UnlockTID          = PackerUtil.ParseInt(cells[0], Table, "UnlockTID", 1, null),
-            Gold               = PackerUtil.ParseInt(cells[1], Table, "Gold", 0, null),
-            AccountLevel       = PackerUtil.ParseInt(cells[2], Table, "AccountLevel", 0, null),
-            RequiredUnlockTIDs = cells[3].Length > 0 ? PackerUtil.ParseIntArray(cells[3], Table, "RequiredUnlockTIDs") : System.Array.Empty<int>(),
-            Description        = cells[4].Length > 0 ? PackerUtil.RequireString(cells[4], Table, "Description") : "",
+            Name               = PackerUtil.RequireString(cells[1], Table, "Name"),
+            Gold               = PackerUtil.ParseInt(cells[2], Table, "Gold", 0, null),
+            AccountLevel       = PackerUtil.ParseInt(cells[3], Table, "AccountLevel", 0, null),
+            RequiredUnlockTIDs = cells[4].Length > 0 ? PackerUtil.ParseIntArray(cells[4], Table, "RequiredUnlockTIDs") : System.Array.Empty<int>(),
+            Description        = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
