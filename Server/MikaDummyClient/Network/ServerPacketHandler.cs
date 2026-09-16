@@ -137,6 +137,13 @@ namespace MikaDummyClient
         }
 
         [PacketHandler]
+        public static void Handle_S_AptitudeUpResponse(ISession session, S_AptitudeUpResponse res)
+        {
+            var c = res.Character;
+            Console.WriteLine($"[Client] Recv 적성 찍기: {res.Result} Id={c?.CharacterId} 남은 포인트={c?.AptitudePoints}");
+        }
+
+        [PacketHandler]
         public static void Handle_S_UnlockResponse(ISession session, S_UnlockResponse res)
         {
             Console.WriteLine($"[Client] Recv 해금: UnlockTID={res.UnlockTID} → {res.Result}");

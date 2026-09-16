@@ -47,4 +47,23 @@ public class CharacterLevelCatalogTest
 
         Should.Throw<InvalidOperationException>(() => catalog.Load(new[] { Row(2, 10), Row(2, 99) }));
     }
+
+    [Fact]
+    public void 그_레벨까지_번_적성_포인트를_합산한다()
+    {
+        var catalog = new CharacterLevelCatalog();
+        catalog.Load(new[]
+        {
+            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0,  AptitudePoint = 0 },
+            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 10, AptitudePoint = 1 },
+            new CharacterLevelTableRow { CharacterLevelTID = 3, RequiredExp = 12, AptitudePoint = 0 },
+            new CharacterLevelTableRow { CharacterLevelTID = 4, RequiredExp = 14, AptitudePoint = 2 },
+        });
+
+        // Lv3까지 1, Lv4에서 2가 더해져 3. 테이블 밖 레벨은 마지막 값을 유지한다.
+        catalog.PointsEarnedBy(1).ShouldBe(0);
+        catalog.PointsEarnedBy(3).ShouldBe(1);
+        catalog.PointsEarnedBy(4).ShouldBe(3);
+        catalog.PointsEarnedBy(99).ShouldBe(3);
+    }
 }

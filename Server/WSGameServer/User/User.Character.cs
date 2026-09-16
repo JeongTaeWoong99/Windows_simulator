@@ -33,7 +33,8 @@ public partial class User
                 continue;
             }
 
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp);
+            var bonus = new AptitudeBonus(r.farming_bonus, r.fishing_bonus, r.mining_bonus, r.logging_bonus, r.hunting_bonus);
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, bonus);
         }
     }
 
@@ -112,15 +113,16 @@ public partial class User
         }
     }
 
-    private static CharacterInfo ToCharacterInfo(Character c)
+    private CharacterInfo ToCharacterInfo(Character c)
     {
         return new CharacterInfo
         {
-            CharacterId  = c.Id,
-            CharacterTid = c.Tid,
-            Level        = c.Level,
-            Exp          = c.Exp,
-            Aptitudes    = ToAptitudeInfos(c),
+            CharacterId    = c.Id,
+            CharacterTid   = c.Tid,
+            Level          = c.Level,
+            Exp            = c.Exp,
+            AptitudePoints = c.RemainingPoints(_characterLevels),
+            Aptitudes      = ToAptitudeInfos(c),
         };
     }
 
@@ -133,8 +135,44 @@ public partial class User
             {
                 Industry = (EIndustryType)industry,
                 Value    = (byte)character.GetAptitude(industry),
+                Cap      = (byte)character.GetAptitudeCap(industry),
             })
             .ToList();
+    }
+
+    // 적성 포인트 찍기. 검증 → 저장 → 정산·속도 갱신 → 응답 (캐릭터 기획 5.4). 거절이면 아무것도 바꾸지 않는다.
+    // 속도 갱신이 정산을 먼저 하므로 오른 적성이 정산 전 구간에 소급되지 않는다.
+    public void RaiseAptitude(long characterId, IndustryType industry, DateTime now)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+        {
+            Reject(EResultCode.CharacterNotOwned, "미보유 캐릭터");
+            return;
+        }
+
+        var result = character.TryRaiseAptitude(industry, _characterLevels);
+        if (result != AptitudeRaiseResult.Ok)
+        {
+            Reject(result == AptitudeRaiseResult.NoPoint ? EResultCode.NoAptitudePoint : EResultCode.AptitudeAtCap,
+                   result == AptitudeRaiseResult.NoPoint ? "남은 포인트 없음" : "상한");
+            return;
+        }
+
+        PostDBTask(new SaveCharacterAptitudeRepository(this, character));
+
+        ServerLog.Info("캐릭터", $"적성 +1 Uid={Uid} Character={characterId} {industry} → {character.GetAptitude(industry)}");
+
+        // 배치된 슬롯이 있으면 새 적성의 속도로 갈아탄다. 바뀐 슬롯만 싱크가 나간다.
+        RefreshWorkStationSpeed(now);
+
+        Send(new S_AptitudeUpResponse { Result = EResultCode.Ok, Character = ToCharacterInfo(character) });
+        return;
+
+        void Reject(EResultCode code, string reason)
+        {
+            ServerLog.Warn("캐릭터", $"적성 찍기 거절 — {reason}. Uid={Uid} Character={characterId} Industry={industry}");
+            Send(new S_AptitudeUpResponse { Result = code });
+        }
     }
 
     public bool TryGetCharacter(long characterId, out Character character)

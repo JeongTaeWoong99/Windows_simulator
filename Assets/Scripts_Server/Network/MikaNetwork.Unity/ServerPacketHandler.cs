@@ -157,6 +157,20 @@ namespace MikaNetwork
             CharacterSynced?.Invoke(res);
         }
 
+        // 적성 포인트 찍기 결과 도착 (Handle_S_AptitudeUpResponse에서 발행)
+        public static event Action<S_AptitudeUpResponse>? AptitudeUpResponded;
+
+        // 적성 찍기 응답 (S_AptitudeUpResponse 수신 시 자동 호출)
+        // ※ Ok면 Character에 갱신된 개체가 실린다 — CharacterSynced와 같은 CharacterInfo라 CharacterId로 덮어쓴다.
+        //   배치 중인 슬롯의 속도 변화는 WorkStationSlotSynced로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_AptitudeUpResponse(ISession session, S_AptitudeUpResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"적성 찍기 — {res.Result}, Id={res.Character?.CharacterId}, 남은 포인트={res.Character?.AptitudePoints}");
+            AptitudeUpResponded?.Invoke(res);
+        }
+
         #endregion
 
         #region 치트

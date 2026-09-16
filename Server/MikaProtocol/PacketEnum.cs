@@ -41,6 +41,10 @@ namespace MikaProtocol
         InvalidUnlockTID = 500, // UnlockTable에 없는 TID
         AlreadyUnlocked  = 501, // 이미 열린 해금을 다시 요청
         UnlockLocked     = 502, // 선행 미충족 · 계정 레벨 미달 · 이 해금에 없는 재화 선택. 골드 부족은 NotEnoughCurrency
+
+        // ── 600~: 캐릭터 ──
+        NoAptitudePoint = 600, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
+        AptitudeAtCap   = 601, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —

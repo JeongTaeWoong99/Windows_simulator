@@ -55,6 +55,8 @@ namespace MikaProtocol
         C_UnlockRequest = 24,
         S_UnlockResponse = 25,
         S_UnlockListResponse = 26,
+        C_AptitudeUpRequest = 27,
+        S_AptitudeUpResponse = 28,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -282,6 +284,27 @@ namespace MikaProtocol
     public partial class S_UnlockListResponse : IPacket
     {
         public List<int> UnlockTIDs { get; set; } = new();
+    }
+
+    // ───────────────────────── 캐릭터 성장 (Aptitude) ─────────────────────────
+
+    /// <summary>적성 포인트 1개를 그 캐릭터의 산업 하나에 찍는다. 포인트·상한 검증은 서버가 한다.</summary>
+    [MemoryPackable, Packet(PacketId.C_AptitudeUpRequest)]
+    public partial class C_AptitudeUpRequest : IPacket
+    {
+        public long          CharacterId { get; set; }   // 개체 PK. TID가 아니다
+        public EIndustryType Industry    { get; set; }
+    }
+
+    /// <summary>
+    /// 찍기 결과. Ok면 갱신된 개체 1건(<c>CharacterInfo</c>)이 실린다 — 목록·동기화와 같은 형태라 CharacterId로 덮어쓴다.
+    /// 배치 중인 슬롯의 속도 변화는 <see cref="S_WorkStationSlotSyncResponse"/>가 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_AptitudeUpResponse)]
+    public partial class S_AptitudeUpResponse : IPacket
+    {
+        public EResultCode    Result    { get; set; }
+        public CharacterInfo? Character { get; set; }
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────

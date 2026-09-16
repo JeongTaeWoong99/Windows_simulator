@@ -30,6 +30,56 @@ internal sealed class SqliteFixture : IDisposable
             ) STRICT;");
     }
 
+    /// <summary>로그인 조회(<c>LoginRepository</c>)가 읽는 유저 데이터 테이블 전부.</summary>
+    public void CreatePlayerTables()
+    {
+        Execute(@"
+            CREATE TABLE t_character (
+                character_id  INTEGER PRIMARY KEY,
+                user_id       INTEGER NOT NULL,
+                character_tid INTEGER NOT NULL,
+                level         INTEGER NOT NULL DEFAULT 1,
+                exp           INTEGER NOT NULL DEFAULT 0,
+                created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+                farming_bonus INTEGER NOT NULL DEFAULT 0,
+                fishing_bonus INTEGER NOT NULL DEFAULT 0,
+                mining_bonus  INTEGER NOT NULL DEFAULT 0,
+                logging_bonus INTEGER NOT NULL DEFAULT 0,
+                hunting_bonus INTEGER NOT NULL DEFAULT 0
+            ) STRICT;
+            CREATE TABLE t_user_currency (
+                user_id INTEGER PRIMARY KEY,
+                gold    INTEGER NOT NULL DEFAULT 0,
+                dia     INTEGER NOT NULL DEFAULT 0
+            ) STRICT;
+            CREATE TABLE t_user_inventory (
+                user_id INTEGER NOT NULL,
+                item_id INTEGER NOT NULL,
+                count   INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, item_id)
+            ) STRICT;
+            CREATE TABLE t_user_workstation_slot (
+                user_id        INTEGER NOT NULL,
+                slot_index     INTEGER NOT NULL,
+                industry       INTEGER NOT NULL DEFAULT 0,
+                industry_level INTEGER NOT NULL DEFAULT 1,
+                character_id   INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, slot_index)
+            ) STRICT;
+            CREATE TABLE t_user_industry_level (
+                user_id        INTEGER NOT NULL,
+                industry       INTEGER NOT NULL,
+                unlocked_level INTEGER NOT NULL DEFAULT 1,
+                PRIMARY KEY (user_id, industry)
+            ) STRICT;
+            CREATE TABLE t_user_unlock (
+                user_id     INTEGER NOT NULL,
+                unlock_tid  INTEGER NOT NULL,
+                unlocked_at TEXT    NOT NULL DEFAULT (datetime('now')),
+                PRIMARY KEY (user_id, unlock_tid)
+            ) STRICT;");
+    }
+
     public void Execute(string sql)
     {
         using var cmd = Connection.CreateCommand();

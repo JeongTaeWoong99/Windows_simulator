@@ -48,7 +48,8 @@ public sealed class LoginRepository : IRepository
 
         // 3) 캐릭터. 하나도 없으면(신규 유저) 지급 판단은 로직 스레드가 한다.
         _characterRows = await connection.QueryAsync<CharacterRow>(
-            @"SELECT character_id, character_tid, level, exp 
+            @"SELECT character_id, character_tid, level, exp,
+                     farming_bonus, fishing_bonus, mining_bonus, logging_bonus, hunting_bonus
               FROM t_character WHERE user_id = @userId",
             new { userId = User.Uid });
 

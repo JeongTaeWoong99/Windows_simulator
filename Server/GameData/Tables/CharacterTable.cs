@@ -18,6 +18,11 @@ namespace GameData
         public int          Mining       { get; set; }        // int
         public int          Logging      { get; set; }        // int
         public int          Hunting      { get; set; }        // int
+        public int          FarmingCap   { get; set; }        // int
+        public int          FishingCap   { get; set; }        // int
+        public int          MiningCap    { get; set; }        // int
+        public int          LoggingCap   { get; set; }        // int
+        public int          HuntingCap   { get; set; }        // int
         public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

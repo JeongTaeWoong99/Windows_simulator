@@ -2,501 +2,601 @@
   {
     "CharacterLevelTID": 1,
     "RequiredExp": 0,
+    "AptitudePoint": 0,
     "Description": "시작 레벨"
   },
   {
     "CharacterLevelTID": 2,
     "RequiredExp": 10,
+    "AptitudePoint": 0,
     "Description": "누적 10"
   },
   {
     "CharacterLevelTID": 3,
     "RequiredExp": 12,
+    "AptitudePoint": 0,
     "Description": "누적 22"
   },
   {
     "CharacterLevelTID": 4,
     "RequiredExp": 14,
+    "AptitudePoint": 0,
     "Description": "누적 36"
   },
   {
     "CharacterLevelTID": 5,
     "RequiredExp": 17,
+    "AptitudePoint": 0,
     "Description": "누적 53"
   },
   {
     "CharacterLevelTID": 6,
     "RequiredExp": 20,
+    "AptitudePoint": 0,
     "Description": "누적 73"
   },
   {
     "CharacterLevelTID": 7,
     "RequiredExp": 24,
+    "AptitudePoint": 0,
     "Description": "누적 97"
   },
   {
     "CharacterLevelTID": 8,
     "RequiredExp": 29,
+    "AptitudePoint": 0,
     "Description": "누적 126"
   },
   {
     "CharacterLevelTID": 9,
     "RequiredExp": 35,
+    "AptitudePoint": 0,
     "Description": "누적 161"
   },
   {
     "CharacterLevelTID": 10,
     "RequiredExp": 42,
+    "AptitudePoint": 1,
     "Description": "누적 203"
   },
   {
     "CharacterLevelTID": 11,
     "RequiredExp": 51,
+    "AptitudePoint": 0,
     "Description": "누적 254"
   },
   {
     "CharacterLevelTID": 12,
     "RequiredExp": 61,
+    "AptitudePoint": 0,
     "Description": "누적 315"
   },
   {
     "CharacterLevelTID": 13,
     "RequiredExp": 74,
+    "AptitudePoint": 0,
     "Description": "누적 389"
   },
   {
     "CharacterLevelTID": 14,
     "RequiredExp": 89,
+    "AptitudePoint": 0,
     "Description": "누적 478"
   },
   {
     "CharacterLevelTID": 15,
     "RequiredExp": 106,
+    "AptitudePoint": 0,
     "Description": "누적 584"
   },
   {
     "CharacterLevelTID": 16,
     "RequiredExp": 128,
+    "AptitudePoint": 0,
     "Description": "누적 712"
   },
   {
     "CharacterLevelTID": 17,
     "RequiredExp": 154,
+    "AptitudePoint": 0,
     "Description": "누적 866"
   },
   {
     "CharacterLevelTID": 18,
     "RequiredExp": 184,
+    "AptitudePoint": 0,
     "Description": "누적 1,050"
   },
   {
     "CharacterLevelTID": 19,
     "RequiredExp": 221,
+    "AptitudePoint": 0,
     "Description": "누적 1,271"
   },
   {
     "CharacterLevelTID": 20,
     "RequiredExp": 266,
+    "AptitudePoint": 1,
     "Description": "누적 1,537"
   },
   {
     "CharacterLevelTID": 21,
     "RequiredExp": 319,
+    "AptitudePoint": 0,
     "Description": "누적 1,856"
   },
   {
     "CharacterLevelTID": 22,
     "RequiredExp": 383,
+    "AptitudePoint": 0,
     "Description": "누적 2,239"
   },
   {
     "CharacterLevelTID": 23,
     "RequiredExp": 460,
+    "AptitudePoint": 0,
     "Description": "누적 2,699"
   },
   {
     "CharacterLevelTID": 24,
     "RequiredExp": 552,
+    "AptitudePoint": 0,
     "Description": "누적 3,251"
   },
   {
     "CharacterLevelTID": 25,
     "RequiredExp": 662,
+    "AptitudePoint": 0,
     "Description": "누적 3,913"
   },
   {
     "CharacterLevelTID": 26,
     "RequiredExp": 794,
+    "AptitudePoint": 0,
     "Description": "누적 4,707"
   },
   {
     "CharacterLevelTID": 27,
     "RequiredExp": 953,
+    "AptitudePoint": 0,
     "Description": "누적 5,660"
   },
   {
     "CharacterLevelTID": 28,
     "RequiredExp": 1144,
+    "AptitudePoint": 0,
     "Description": "누적 6,804"
   },
   {
     "CharacterLevelTID": 29,
     "RequiredExp": 1373,
+    "AptitudePoint": 0,
     "Description": "누적 8,177"
   },
   {
     "CharacterLevelTID": 30,
     "RequiredExp": 1648,
+    "AptitudePoint": 1,
     "Description": "누적 9,825"
   },
   {
     "CharacterLevelTID": 31,
     "RequiredExp": 1978,
+    "AptitudePoint": 0,
     "Description": "누적 11,803"
   },
   {
     "CharacterLevelTID": 32,
     "RequiredExp": 2373,
+    "AptitudePoint": 0,
     "Description": "누적 14,176"
   },
   {
     "CharacterLevelTID": 33,
     "RequiredExp": 2848,
+    "AptitudePoint": 0,
     "Description": "누적 17,024"
   },
   {
     "CharacterLevelTID": 34,
     "RequiredExp": 3418,
+    "AptitudePoint": 0,
     "Description": "누적 20,442"
   },
   {
     "CharacterLevelTID": 35,
     "RequiredExp": 4101,
+    "AptitudePoint": 0,
     "Description": "누적 24,543"
   },
   {
     "CharacterLevelTID": 36,
     "RequiredExp": 4922,
+    "AptitudePoint": 0,
     "Description": "누적 29,465"
   },
   {
     "CharacterLevelTID": 37,
     "RequiredExp": 5906,
+    "AptitudePoint": 0,
     "Description": "누적 35,371"
   },
   {
     "CharacterLevelTID": 38,
     "RequiredExp": 7088,
+    "AptitudePoint": 0,
     "Description": "누적 42,459"
   },
   {
     "CharacterLevelTID": 39,
     "RequiredExp": 8505,
+    "AptitudePoint": 0,
     "Description": "누적 50,964"
   },
   {
     "CharacterLevelTID": 40,
     "RequiredExp": 10206,
+    "AptitudePoint": 1,
     "Description": "누적 61,170"
   },
   {
     "CharacterLevelTID": 41,
     "RequiredExp": 12248,
+    "AptitudePoint": 0,
     "Description": "누적 73,418"
   },
   {
     "CharacterLevelTID": 42,
     "RequiredExp": 14697,
+    "AptitudePoint": 0,
     "Description": "누적 88,115"
   },
   {
     "CharacterLevelTID": 43,
     "RequiredExp": 17637,
+    "AptitudePoint": 0,
     "Description": "누적 105,752"
   },
   {
     "CharacterLevelTID": 44,
     "RequiredExp": 21164,
+    "AptitudePoint": 0,
     "Description": "누적 126,916"
   },
   {
     "CharacterLevelTID": 45,
     "RequiredExp": 25397,
+    "AptitudePoint": 0,
     "Description": "누적 152,313"
   },
   {
     "CharacterLevelTID": 46,
     "RequiredExp": 30477,
+    "AptitudePoint": 0,
     "Description": "누적 182,790"
   },
   {
     "CharacterLevelTID": 47,
     "RequiredExp": 36572,
+    "AptitudePoint": 0,
     "Description": "누적 219,362"
   },
   {
     "CharacterLevelTID": 48,
     "RequiredExp": 43887,
+    "AptitudePoint": 0,
     "Description": "누적 263,249"
   },
   {
     "CharacterLevelTID": 49,
     "RequiredExp": 52664,
+    "AptitudePoint": 0,
     "Description": "누적 315,913"
   },
   {
     "CharacterLevelTID": 50,
     "RequiredExp": 63197,
+    "AptitudePoint": 1,
     "Description": "누적 379,110"
   },
   {
     "CharacterLevelTID": 51,
     "RequiredExp": 75836,
+    "AptitudePoint": 0,
     "Description": "누적 454,946"
   },
   {
     "CharacterLevelTID": 52,
     "RequiredExp": 91004,
+    "AptitudePoint": 0,
     "Description": "누적 545,950"
   },
   {
     "CharacterLevelTID": 53,
     "RequiredExp": 109205,
+    "AptitudePoint": 0,
     "Description": "누적 655,155"
   },
   {
     "CharacterLevelTID": 54,
     "RequiredExp": 131046,
+    "AptitudePoint": 0,
     "Description": "누적 786,201"
   },
   {
     "CharacterLevelTID": 55,
     "RequiredExp": 157255,
+    "AptitudePoint": 0,
     "Description": "누적 943,456"
   },
   {
     "CharacterLevelTID": 56,
     "RequiredExp": 188706,
+    "AptitudePoint": 0,
     "Description": "누적 1,132,162"
   },
   {
     "CharacterLevelTID": 57,
     "RequiredExp": 226448,
+    "AptitudePoint": 0,
     "Description": "누적 1,358,610"
   },
   {
     "CharacterLevelTID": 58,
     "RequiredExp": 271737,
+    "AptitudePoint": 0,
     "Description": "누적 1,630,347"
   },
   {
     "CharacterLevelTID": 59,
     "RequiredExp": 326085,
+    "AptitudePoint": 0,
     "Description": "누적 1,956,432"
   },
   {
     "CharacterLevelTID": 60,
     "RequiredExp": 391302,
+    "AptitudePoint": 1,
     "Description": "누적 2,347,734"
   },
   {
     "CharacterLevelTID": 61,
     "RequiredExp": 469562,
+    "AptitudePoint": 0,
     "Description": "누적 2,817,296"
   },
   {
     "CharacterLevelTID": 62,
     "RequiredExp": 563475,
+    "AptitudePoint": 0,
     "Description": "누적 3,380,771"
   },
   {
     "CharacterLevelTID": 63,
     "RequiredExp": 676170,
+    "AptitudePoint": 0,
     "Description": "누적 4,056,941"
   },
   {
     "CharacterLevelTID": 64,
     "RequiredExp": 811404,
+    "AptitudePoint": 0,
     "Description": "누적 4,868,345"
   },
   {
     "CharacterLevelTID": 65,
     "RequiredExp": 973685,
+    "AptitudePoint": 0,
     "Description": "누적 5,842,030"
   },
   {
     "CharacterLevelTID": 66,
     "RequiredExp": 1168422,
+    "AptitudePoint": 0,
     "Description": "누적 7,010,452"
   },
   {
     "CharacterLevelTID": 67,
     "RequiredExp": 1402106,
+    "AptitudePoint": 0,
     "Description": "누적 8,412,558"
   },
   {
     "CharacterLevelTID": 68,
     "RequiredExp": 1682527,
+    "AptitudePoint": 0,
     "Description": "누적 10,095,085"
   },
   {
     "CharacterLevelTID": 69,
     "RequiredExp": 2019033,
+    "AptitudePoint": 0,
     "Description": "누적 12,114,118"
   },
   {
     "CharacterLevelTID": 70,
     "RequiredExp": 2422839,
+    "AptitudePoint": 1,
     "Description": "누적 14,536,957"
   },
   {
     "CharacterLevelTID": 71,
     "RequiredExp": 2907407,
+    "AptitudePoint": 0,
     "Description": "누적 17,444,364"
   },
   {
     "CharacterLevelTID": 72,
     "RequiredExp": 3488889,
+    "AptitudePoint": 0,
     "Description": "누적 20,933,253"
   },
   {
     "CharacterLevelTID": 73,
     "RequiredExp": 4186667,
+    "AptitudePoint": 0,
     "Description": "누적 25,119,920"
   },
   {
     "CharacterLevelTID": 74,
     "RequiredExp": 5024000,
+    "AptitudePoint": 0,
     "Description": "누적 30,143,920"
   },
   {
     "CharacterLevelTID": 75,
     "RequiredExp": 6028801,
+    "AptitudePoint": 0,
     "Description": "누적 36,172,721"
   },
   {
     "CharacterLevelTID": 76,
     "RequiredExp": 7234561,
+    "AptitudePoint": 0,
     "Description": "누적 43,407,282"
   },
   {
     "CharacterLevelTID": 77,
     "RequiredExp": 8681473,
+    "AptitudePoint": 0,
     "Description": "누적 52,088,755"
   },
   {
     "CharacterLevelTID": 78,
     "RequiredExp": 10417768,
+    "AptitudePoint": 0,
     "Description": "누적 62,506,523"
   },
   {
     "CharacterLevelTID": 79,
     "RequiredExp": 12501322,
+    "AptitudePoint": 0,
     "Description": "누적 75,007,845"
   },
   {
     "CharacterLevelTID": 80,
     "RequiredExp": 15001586,
+    "AptitudePoint": 1,
     "Description": "누적 90,009,431"
   },
   {
     "CharacterLevelTID": 81,
     "RequiredExp": 18001903,
+    "AptitudePoint": 0,
     "Description": "누적 108,011,334"
   },
   {
     "CharacterLevelTID": 82,
     "RequiredExp": 21602284,
+    "AptitudePoint": 0,
     "Description": "누적 129,613,618"
   },
   {
     "CharacterLevelTID": 83,
     "RequiredExp": 25922741,
+    "AptitudePoint": 0,
     "Description": "누적 155,536,359"
   },
   {
     "CharacterLevelTID": 84,
     "RequiredExp": 31107289,
+    "AptitudePoint": 0,
     "Description": "누적 186,643,648"
   },
   {
     "CharacterLevelTID": 85,
     "RequiredExp": 37328747,
+    "AptitudePoint": 0,
     "Description": "누적 223,972,395"
   },
   {
     "CharacterLevelTID": 86,
     "RequiredExp": 44794497,
+    "AptitudePoint": 0,
     "Description": "누적 268,766,892"
   },
   {
     "CharacterLevelTID": 87,
     "RequiredExp": 53753396,
+    "AptitudePoint": 0,
     "Description": "누적 322,520,288"
   },
   {
     "CharacterLevelTID": 88,
     "RequiredExp": 64504076,
+    "AptitudePoint": 0,
     "Description": "누적 387,024,364"
   },
   {
     "CharacterLevelTID": 89,
     "RequiredExp": 77404891,
+    "AptitudePoint": 0,
     "Description": "누적 464,429,255"
   },
   {
     "CharacterLevelTID": 90,
     "RequiredExp": 92885869,
+    "AptitudePoint": 1,
     "Description": "누적 557,315,124"
   },
   {
     "CharacterLevelTID": 91,
     "RequiredExp": 111463043,
+    "AptitudePoint": 0,
     "Description": "누적 668,778,167"
   },
   {
     "CharacterLevelTID": 92,
     "RequiredExp": 133755652,
+    "AptitudePoint": 0,
     "Description": "누적 802,533,819"
   },
   {
     "CharacterLevelTID": 93,
     "RequiredExp": 160506782,
+    "AptitudePoint": 0,
     "Description": "누적 963,040,601"
   },
   {
     "CharacterLevelTID": 94,
     "RequiredExp": 192608139,
+    "AptitudePoint": 0,
     "Description": "누적 1,155,648,740"
   },
   {
     "CharacterLevelTID": 95,
     "RequiredExp": 231129767,
+    "AptitudePoint": 0,
     "Description": "누적 1,386,778,507"
   },
   {
     "CharacterLevelTID": 96,
     "RequiredExp": 277355721,
+    "AptitudePoint": 0,
     "Description": "누적 1,664,134,228"
   },
   {
     "CharacterLevelTID": 97,
     "RequiredExp": 332826865,
+    "AptitudePoint": 0,
     "Description": "누적 1,996,961,093"
   },
   {
     "CharacterLevelTID": 98,
     "RequiredExp": 399392238,
+    "AptitudePoint": 0,
     "Description": "누적 2,396,353,331"
   },
   {
     "CharacterLevelTID": 99,
     "RequiredExp": 479270685,
+    "AptitudePoint": 0,
     "Description": "누적 2,875,624,016"
   },
   {
     "CharacterLevelTID": 100,
     "RequiredExp": 575124823,
+    "AptitudePoint": 1,
     "Description": "만렙. 누적 3,450,748,839 (Lv1 판정 3,450,748,839회)"
   }
 ]

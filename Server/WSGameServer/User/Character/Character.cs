@@ -7,12 +7,13 @@ namespace WSGameServer;
 public sealed class Character
 {
     /// <summary>테이블 정의를 생성자로 받는다 — 정적 조회에 묶이지 않아 테스트에서 바로 만들 수 있다.</summary>
-    public Character(long id, CharacterTableRow row, int level, int exp)
+    public Character(long id, CharacterTableRow row, int level, int exp, AptitudeBonus bonus = default)
     {
         Id    = id;
         Row   = row;
         Level = level;
         Exp   = exp;
+        Bonus = bonus;
     }
 
     /// <summary>캐릭터 개체 PK (<c>t_character.character_id</c>). DB가 발급한다.</summary>
@@ -29,6 +30,29 @@ public sealed class Character
 
     /// <summary>현재 레벨에서 쌓은 경험치(누적이 아니다). 레벨업하면 필요치를 뺀 나머지가 이월된다.</summary>
     public int Exp { get; private set; }
+
+    /// <summary>적성 포인트로 찍은 보너스(산업별). DB에 저장되는 성장 상태는 레벨·경험치와 이것뿐이다.</summary>
+    public AptitudeBonus Bonus { get; private set; }
+
+    /// <summary>남은 적성 포인트 = 레벨로 번 총합 − 찍은 합. 저장하지 않고 늘 계산한다 — 둘을 따로 두면 어긋난다.</summary>
+    public int RemainingPoints(CharacterLevelCatalog curve) => curve.PointsEarnedBy(Level) - Bonus.Total;
+
+    // 포인트 1개로 산업 하나를 +1. 거절이면 아무것도 바꾸지 않는다. 되돌리기는 없다(캐릭터 기획 5.4).
+    public AptitudeRaiseResult TryRaiseAptitude(IndustryType industry, CharacterLevelCatalog curve)
+    {
+        if (RemainingPoints(curve) <= 0)
+        {
+            return AptitudeRaiseResult.NoPoint;
+        }
+
+        if (GetAptitude(industry) >= GetAptitudeCap(industry))
+        {
+            return AptitudeRaiseResult.AtCap;
+        }
+
+        Bonus = Bonus.Plus(industry);
+        return AptitudeRaiseResult.Ok;
+    }
 
     public bool IsMaxLevel(CharacterLevelCatalog curve) => Level >= curve.MaxLevel;
 
@@ -59,16 +83,32 @@ public sealed class Character
         return gained;
     }
 
-    /// <summary>이 산업에 대한 적성(0~10). <b>캐릭터 스탯이 곧 산업 적성이다.</b> 미지정(<c>None</c>)은 0이다.</summary>
+    /// <summary>이 산업의 실효 적성(0~10) = 테이블 기본값 + 찍은 보너스. 미지정(<c>None</c>)은 0이다.</summary>
     public int GetAptitude(IndustryType industry)
     {
-        return industry switch
+        var baseAptitude = industry switch
         {
             IndustryType.Farming => Row.Farming,
             IndustryType.Fishing => Row.Fishing,
             IndustryType.Mining  => Row.Mining,
             IndustryType.Logging => Row.Logging,
             IndustryType.Hunting => Row.Hunting,
+            _                    => 0,
+        };
+
+        return baseAptitude + Bonus.Get(industry);
+    }
+
+    /// <summary>이 산업에서 포인트로 오를 수 있는 최댓값. 캐릭터·산업마다 엑셀에 적힌 값이다.</summary>
+    public int GetAptitudeCap(IndustryType industry)
+    {
+        return industry switch
+        {
+            IndustryType.Farming => Row.FarmingCap,
+            IndustryType.Fishing => Row.FishingCap,
+            IndustryType.Mining  => Row.MiningCap,
+            IndustryType.Logging => Row.LoggingCap,
+            IndustryType.Hunting => Row.HuntingCap,
             _                    => 0,
         };
     }

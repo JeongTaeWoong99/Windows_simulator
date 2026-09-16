@@ -11,6 +11,9 @@ public sealed class CharacterLevelCatalog : Singleton<CharacterLevelCatalog>
 {
     private readonly Dictionary<int, int> _requiredExpByLevel = new();
 
+    // 레벨 → 그 레벨까지 번 적성 포인트 누적. 조회마다 합산하지 않으려고 로드 때 한 번 만든다.
+    private readonly Dictionary<int, int> _pointsEarnedByLevel = new();
+
     /// <summary>등록된 최고 레벨. 행이 없으면 1 — 그 레벨에서는 경험치가 쌓이지 않는다.</summary>
     public int MaxLevel { get; private set; } = 1;
 
@@ -29,8 +32,10 @@ public sealed class CharacterLevelCatalog : Singleton<CharacterLevelCatalog>
         ArgumentNullException.ThrowIfNull(rows);
 
         _requiredExpByLevel.Clear();
+        _pointsEarnedByLevel.Clear();
         MaxLevel = 1;
 
+        var pointByLevel = new Dictionary<int, int>();
         foreach (var row in rows)
         {
             if (!_requiredExpByLevel.TryAdd(row.CharacterLevelTID, row.RequiredExp))
@@ -39,8 +44,27 @@ public sealed class CharacterLevelCatalog : Singleton<CharacterLevelCatalog>
                     $"CharacterLevelTable에 레벨이 중복됐습니다: Lv{row.CharacterLevelTID}");
             }
 
+            pointByLevel[row.CharacterLevelTID] = row.AptitudePoint;
             MaxLevel = Math.Max(MaxLevel, row.CharacterLevelTID);
         }
+
+        var earned = 0;
+        foreach (var level in pointByLevel.Keys.Order())
+        {
+            earned += pointByLevel[level];
+            _pointsEarnedByLevel[level] = earned;
+        }
+    }
+
+    /// <summary>이 레벨까지 번 적성 포인트 총합. 테이블 밖 레벨은 마지막 행의 값이다.</summary>
+    public int PointsEarnedBy(int level)
+    {
+        if (_pointsEarnedByLevel.TryGetValue(level, out var earned))
+        {
+            return earned;
+        }
+
+        return level > MaxLevel && _pointsEarnedByLevel.TryGetValue(MaxLevel, out var atMax) ? atMax : 0;
     }
 
     /// <summary>이 레벨에 <b>도달하는 데</b> 직전 레벨에서 필요한 경험치. 행이 없으면 false.</summary>

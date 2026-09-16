@@ -16,7 +16,8 @@ namespace GameData
         {
             CharacterLevelTID = PackerUtil.ParseInt(cells[0], Table, "CharacterLevelTID", 1, null),
             RequiredExp       = PackerUtil.ParseInt(cells[1], Table, "RequiredExp", 0, null),
-            Description       = cells[2].Length > 0 ? PackerUtil.RequireString(cells[2], Table, "Description") : "",
+            AptitudePoint     = PackerUtil.ParseInt(cells[2], Table, "AptitudePoint", 0, null),
+            Description       = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

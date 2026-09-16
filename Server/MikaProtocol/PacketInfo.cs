@@ -38,12 +38,13 @@ namespace MikaProtocol
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.
-    // 장비·특성 보정이 생기면 보정까지 적용된 값이 여기 실린다.
+    // Value는 기본값에 찍은 적성 포인트를 더한 실효값이고, 장비·특성 보정이 생기면 그것도 여기 실린다.
     [MemoryPackable]
     public partial struct AptitudeInfo
     {
         public EIndustryType Industry { get; set; }
         public byte          Value    { get; set; }   // 0~10. 0이면 그 산업을 다루지 못한다(배치 거절)
+        public byte          Cap      { get; set; }   // 적성 포인트로 오를 수 있는 최댓값. Value < Cap이면 더 찍을 수 있다
     }
 
     /// <summary>
@@ -59,6 +60,7 @@ namespace MikaProtocol
         public int  CharacterTid { get; set; }
         public int  Level        { get; set; }
         public int  Exp          { get; set; }
+        public int  AptitudePoints { get; set; }   // 남은 적성 포인트. 서버가 레벨·찍은 양에서 계산한다
 
         // 1차 산업 5종이 값 0까지 포함해 전부 들어온다 — 배치 UI가 '적성 0 = 잠금'을 그려야 하기 때문이다.
         public List<AptitudeInfo> Aptitudes { get; set; } = new();

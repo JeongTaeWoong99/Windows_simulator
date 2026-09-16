@@ -8,6 +8,11 @@
     "Mining": 1,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "시작 지급. 전 산업 1 — 어떤 산업이든 시작할 수 있어야 한다"
   },
   {
@@ -19,6 +24,11 @@
     "Mining": 1,
     "Logging": 2,
     "Hunting": 0,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "농사 담당"
   },
   {
@@ -30,6 +40,11 @@
     "Mining": 0,
     "Logging": 0,
     "Hunting": 2,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "낚시 담당"
   },
   {
@@ -41,6 +56,11 @@
     "Mining": 3,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "채굴 담당"
   },
   {
@@ -52,6 +72,11 @@
     "Mining": 0,
     "Logging": 3,
     "Hunting": 0,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "벌목 담당"
   },
   {
@@ -63,6 +88,11 @@
     "Mining": 1,
     "Logging": 0,
     "Hunting": 3,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "사냥 담당"
   },
   {
@@ -74,6 +104,11 @@
     "Mining": 0,
     "Logging": 1,
     "Hunting": 0,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "농사 입문"
   },
   {
@@ -85,6 +120,11 @@
     "Mining": 1,
     "Logging": 0,
     "Hunting": 1,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "낚시 입문"
   },
   {
@@ -96,6 +136,11 @@
     "Mining": 2,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "채굴 입문"
   },
   {
@@ -107,6 +152,11 @@
     "Mining": 1,
     "Logging": 2,
     "Hunting": 0,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "벌목 입문"
   },
   {
@@ -118,6 +168,11 @@
     "Mining": 0,
     "Logging": 1,
     "Hunting": 2,
+    "FarmingCap": 2,
+    "FishingCap": 2,
+    "MiningCap": 2,
+    "LoggingCap": 2,
+    "HuntingCap": 2,
     "Description": "사냥 입문"
   },
   {
@@ -129,6 +184,11 @@
     "Mining": 0,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "낚시 담당"
   },
   {
@@ -140,6 +200,11 @@
     "Mining": 1,
     "Logging": 1,
     "Hunting": 4,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "사냥 담당"
   },
   {
@@ -151,6 +216,11 @@
     "Mining": 1,
     "Logging": 4,
     "Hunting": 1,
+    "FarmingCap": 4,
+    "FishingCap": 4,
+    "MiningCap": 4,
+    "LoggingCap": 4,
+    "HuntingCap": 4,
     "Description": "벌목 담당"
   },
   {
@@ -162,6 +232,11 @@
     "Mining": 0,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "낚시 특화"
   },
   {
@@ -173,6 +248,11 @@
     "Mining": 2,
     "Logging": 0,
     "Hunting": 0,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "농사 특화"
   },
   {
@@ -184,6 +264,11 @@
     "Mining": 5,
     "Logging": 2,
     "Hunting": 2,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "채굴 특화"
   },
   {
@@ -195,6 +280,11 @@
     "Mining": 2,
     "Logging": 5,
     "Hunting": 1,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "벌목 특화"
   },
   {
@@ -206,6 +296,11 @@
     "Mining": 1,
     "Logging": 1,
     "Hunting": 5,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "사냥 특화"
   },
   {
@@ -217,6 +312,11 @@
     "Mining": 1,
     "Logging": 1,
     "Hunting": 0,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "농사 특화"
   },
   {
@@ -228,6 +328,11 @@
     "Mining": 2,
     "Logging": 0,
     "Hunting": 1,
+    "FarmingCap": 6,
+    "FishingCap": 6,
+    "MiningCap": 6,
+    "LoggingCap": 6,
+    "HuntingCap": 6,
     "Description": "낚시 특화"
   },
   {
@@ -239,6 +344,11 @@
     "Mining": 7,
     "Logging": 2,
     "Hunting": 2,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "채굴 정예"
   },
   {
@@ -250,6 +360,11 @@
     "Mining": 1,
     "Logging": 1,
     "Hunting": 1,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "낚시 정예"
   },
   {
@@ -261,6 +376,11 @@
     "Mining": 2,
     "Logging": 2,
     "Hunting": 1,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "농사 정예"
   },
   {
@@ -272,6 +392,11 @@
     "Mining": 3,
     "Logging": 2,
     "Hunting": 7,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "사냥 정예"
   },
   {
@@ -283,6 +408,11 @@
     "Mining": 1,
     "Logging": 7,
     "Hunting": 1,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "벌목 정예"
   },
   {
@@ -294,6 +424,11 @@
     "Mining": 2,
     "Logging": 3,
     "Hunting": 2,
+    "FarmingCap": 9,
+    "FishingCap": 9,
+    "MiningCap": 9,
+    "LoggingCap": 9,
+    "HuntingCap": 9,
     "Description": "농사 최상위"
   },
   {
@@ -305,6 +440,11 @@
     "Mining": 3,
     "Logging": 1,
     "Hunting": 3,
+    "FarmingCap": 9,
+    "FishingCap": 9,
+    "MiningCap": 9,
+    "LoggingCap": 9,
+    "HuntingCap": 9,
     "Description": "낚시 최상위"
   },
   {
@@ -316,6 +456,11 @@
     "Mining": 9,
     "Logging": 4,
     "Hunting": 2,
+    "FarmingCap": 9,
+    "FishingCap": 9,
+    "MiningCap": 9,
+    "LoggingCap": 9,
+    "HuntingCap": 9,
     "Description": "채굴 최상위"
   },
   {
@@ -327,6 +472,11 @@
     "Mining": 7,
     "Logging": 7,
     "Hunting": 7,
+    "FarmingCap": 7,
+    "FishingCap": 7,
+    "MiningCap": 7,
+    "LoggingCap": 7,
+    "HuntingCap": 7,
     "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다"
   }
 ]
