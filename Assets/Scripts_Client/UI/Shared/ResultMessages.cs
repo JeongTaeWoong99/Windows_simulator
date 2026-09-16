@@ -22,6 +22,9 @@ public static class ResultMessages
         EResultCode.IndustryLevelLocked => "아직 해금하지 않은 산업입니다.",
         EResultCode.InvalidSellRequest  => "판매 요청이 올바르지 않습니다.",
         EResultCode.NotEnoughItem       => "보유량이 부족합니다.",
+        EResultCode.InvalidUnlockTID    => "존재하지 않는 해금입니다.",
+        EResultCode.AlreadyUnlocked     => "이미 해금되었습니다.",
+        EResultCode.UnlockLocked        => "해금 조건을 만족하지 않습니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

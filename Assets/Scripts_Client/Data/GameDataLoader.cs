@@ -197,6 +197,20 @@ public static class GameDataLoader
         return false;
     }
 
+    // 작업슬롯 한 칸을 여는 해금 TID. 'WorkSlotTable'에 없는 칸이거나 조건 없는 칸이면 0.
+    //
+    // ※ 해금 조건은 클라가 테이블에서 만든다 — 서버는 열린 목록만 준다(기획 unlock 1장 #9).
+    public static int GetWorkSlotUnlockTid(int slotIndex)
+    {
+        return GameTable.WorkSlotTable.TryGet(slotIndex, out var row) ? row.UnlockTID : 0;
+    }
+
+    // 해금 한 줄(골드·계정 레벨·선행)을 조회한다. 0이거나 없는 TID면 false.
+    public static bool TryGetUnlock(int unlockTid, out UnlockTableRow row)
+    {
+        return GameTable.UnlockTable.TryGet(unlockTid, out row);
+    }
+
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
     private static void WarnUnknownId(string kind, int id, HashSet<int> warned)
     {

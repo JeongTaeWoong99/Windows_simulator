@@ -20,6 +20,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<ItemInfo>            _inventory        = new List<ItemInfo>();
     private readonly List<WorkStationSlotInfo> _workStationSlots = new List<WorkStationSlotInfo>();
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
+    private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
 
     // ─── 내부 상태 ───
     private bool _isSubscribed;
@@ -188,6 +189,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return -1;
     }
 
+    // 해금('UnlockTable')이 열렸는가. 'UnlockTID = 0'은 조건이 없는 것이라 항상 열려 있다.
+    // 서버 'User.IsUnlocked'와 같은 모양이다 — 콘텐츠는 "내 UnlockTID가 열렸나"만 묻는다.
+    // 조건(골드·선행·레벨)을 여기서 다시 보지 않는다 — 목록에 있다는 것이 서버가 판정해 열어 줬다는 뜻이다.
+    public bool IsUnlocked(int unlockTid)
+    {
+        return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
+    }
+
     // 재화 보유량. 종류마다 필드다 — 서버가 행이 아니라 컬럼으로 싣기 때문이다
     // (DB 't_user_currency'도 같은 축이다). 재화가 늘면 패킷에 필드가 하나 늘고 여기도 하나 는다.
     //
@@ -219,6 +228,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
     public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
+
+    public event Action?                   UnlocksChanged;  // 열린 해금 목록 갱신됨 (로그인 목록 · 해금 성공 후)
+    public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
 
     // ─── Unity 메시지 ───
 
@@ -268,6 +280,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
         ServerPacketHandler.ItemSold                 += OnItemSold;
+        ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
+        ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -292,6 +306,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
         ServerPacketHandler.ItemSold                 -= OnItemSold;
+        ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
+        ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
     }
 
     #endregion
@@ -515,6 +531,39 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         Dia  = res.Dia;
 
         CurrencyChanged?.Invoke();
+    }
+
+    // 열린 해금 전체 — 로그인 직후 1회. 스냅샷이라 비우고 채운다.
+    // 서버가 슬롯 스냅샷보다 **먼저** 보내므로 목록 화면이 칸을 그릴 때는 이미 채워져 있다.
+    private void OnUnlockListReceived(S_UnlockListResponse res)
+    {
+        _unlockedTids.Clear();
+        _unlockedTids.UnionWith(res.UnlockTIDs);
+
+        UnlocksChanged?.Invoke();
+    }
+
+    // 해금 결과 — 성공이면 목록에 더하고 알린다.
+    //
+    // ★ 내가 보낸 요청이 아니어도 온다(치트·퀘스트로 서버가 직접 연 경우). 그래서 목록 갱신은 요청 여부와
+    //   상관없이 하고, "내 요청의 결과인가"는 받는 Presenter가 대기 핸들로 가린다.
+    // ★ 골드·슬롯은 여기서 건드리지 않는다 — 차감 잔액은 'S_CurrencyResponse',
+    //   새 칸은 'S_WorkStationSlotSyncResponse'가 뒤이어 온다('OnItemSold'와 같은 이유).
+    private void OnUnlockResponded(S_UnlockResponse res)
+    {
+        bool success = res.Result == EResultCode.Ok;
+
+        if (success)
+        {
+            _unlockedTids.Add(res.UnlockTID);
+            UnlocksChanged?.Invoke();
+        }
+        else
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"해금 실패 — {res.UnlockTID}, 결과={res.Result}");
+        }
+
+        UnlockCompleted?.Invoke(success, res.Result);
     }
 
     #endregion
