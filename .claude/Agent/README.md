@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-16 해금 시스템 서버 구현 — `UnlockCatalog` · `t_user_unlock` · 해금 패킷, 첫 적용은 작업슬롯](2026-09-16-unlock-server.md) — `#server` `#protocol` `#test` T-038 완료 · Unity CLI eval로 실서버 왕복 검증
 - [2026-09-13 문서 토큰 효율화 — 이슈 #18 서버·기획 쪽 적용](2026-09-13-doc-token-diet-server-side.md) — `#docs` `#design` INDEX·공용 스킬 2개·게임기획코어 목차. 공유 트리 동시 작업 지뢰 기록
 - [2026-09-16 치트 명령 — admin 전용 지급·정산 패킷](2026-09-16-cheat-system.md) — `#server` `#protocol` enum 명령 + 기존 지급 함수 재사용, 테스트 13건 · 해금 재검토 7건은 09-14 로그 업데이트 절
 - [2026-09-14 해금 시스템 기획 — `UnlockTable` 한 표 · 해금 행동 · 첫 적용은 작업슬롯](2026-09-14-unlock-system-design.md) — `#design` `#data` 세 곳의 해금을 한 표로 모으고 산업 레벨 조건에서 적성을 뺐다 · `Unlock.xlsx` 신설
