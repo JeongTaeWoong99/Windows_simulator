@@ -42,6 +42,10 @@ public class GameServer : IDisposable
             CharacterLevelCatalog.Instance.LoadAll();
             UnlockCatalog.Instance.LoadAll();   // 데이터 오류(선행 순환·1:1 위반)면 여기서 기동이 멈춘다
 
+            // 실행기 예외 훅. Lib은 로그 정책이 없다 — 여기서 채우지 않으면 예외가 조용히 사라진다.
+            DBExecutor.JobFailed    = e => ServerLog.Error("DB", "DB 작업 예외", e);
+            LogicExecutor.JobFailed = e => ServerLog.Error("로직", "로직 작업 예외", e);
+
             DBExecutor.Instance.Start(8);
             _logicExecutor.Start();
 

@@ -20,8 +20,7 @@ public sealed class SellItemsRepository : IRepository
         _dia         = dia;
     }
 
-    // DBExecutor 파티션 키 — 같은 유저의 DB 작업(로그인 로드 등)과 직렬로 처리돼야 한다.
-    public long Key => User.SessionId;
+    public long Key => User.DbKey;
 
     public User User { get; }
 

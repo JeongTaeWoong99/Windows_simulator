@@ -19,7 +19,7 @@ public sealed class SaveWorkStationSlotRepository : IRepository
         _slots = slots;
     }
 
-    public long Key => User.SessionId;
+    public long Key => User.DbKey;
 
     public User User { get; }
 

@@ -28,7 +28,7 @@ public sealed class GrantCharacterRepository : IRepository
     private readonly CharacterGrantReason _reason;
     private readonly List<(long Id, int Tid)> _granted = new();
 
-    public long Key => User.SessionId;
+    public long Key => User.DbKey;
 
     public User User { get; }
 

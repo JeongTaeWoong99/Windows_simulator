@@ -18,7 +18,7 @@ public sealed class SaveCharacterGrowthRepository : IRepository
         _exp         = character.Exp;
     }
 
-    public long Key => User.SessionId;
+    public long Key => User.DbKey;
 
     public User User { get; }
 

@@ -19,8 +19,8 @@ public sealed class LoginRepository : IRepository
     private List<UserIndustryLevelRow> _industryLevelRows = new();
     private List<UserUnlockRow>        _unlockRows        = new();
 
-    // DBExecutor 파티션 키 — 같은 세션 작업은 직렬 처리
-    public long Key => User.SessionId;
+    // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
+    public long Key => User.DbKey;
 
     public User User { get; init; }
 

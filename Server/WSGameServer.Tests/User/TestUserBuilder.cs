@@ -43,8 +43,18 @@ internal sealed class FakeDBQueue : IDBQueue
 {
     public List<IRepository> Posted { get; } = new();
 
+    /// <summary>설정하면 이후 모든 Post가 기록 직후 이 예외로 실패해 돌아온다 — DB 실패 경로를 볼 때 쓴다.</summary>
+    public Exception? FailWith { get; set; }
+
     public void Post<TRepository>(TRepository repository) where TRepository : IRepository
-        => Posted.Add(repository);
+    {
+        Posted.Add(repository);
+
+        if (FailWith is not null)
+        {
+            repository.OnFailed(FailWith);
+        }
+    }
 
     public List<T> PostedOf<T>() where T : IRepository => Posted.OfType<T>().ToList();
 }
@@ -132,6 +142,14 @@ internal sealed class TestUserBuilder
         return this;
     }
 
+    private string _pid = "test-pid";
+
+    public TestUserBuilder WithPid(string pid)
+    {
+        _pid = pid;
+        return this;
+    }
+
     public User Build(long uid = 1)
     {
         if (Unlocks.Count == 0)
@@ -141,7 +159,7 @@ internal sealed class TestUserBuilder
         }
 
         var user = new User(Channel, DB, Executor,
-                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks);
+                            pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks);
         user.Uid = uid;
         return user;
     }

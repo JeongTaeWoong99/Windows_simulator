@@ -60,11 +60,20 @@ public class DBManager : IDBQueue
         // 같은 Key(유저)는 직렬, 다른 Key는 병렬로 처리
         DBExecutor.Instance.Post(repository.Key, async () =>
         {
-            // 작업마다 커넥션을 열어 Repository로 넘겨준다
-            await using var conn = _connectionFactory!();
-            await conn.OpenAsync();
+            try
+            {
+                // 작업마다 커넥션을 열어 Repository로 넘겨준다
+                await using var conn = _connectionFactory!();
+                await conn.OpenAsync();
 
-            await repository.ExecuteAsync(new DbConnection(conn)); // SP 실행 -- 다른 스레드가 작업 이어서 할 수 있음 (순서는 보장)
+                await repository.ExecuteAsync(new DbConnection(conn));
+            }
+            catch (Exception e)
+            {
+                // 성공이든 실패든 반드시 로직 스레드로 돌아간다 — 안 그러면 로그인이 무응답으로 멈춘다.
+                _logicExecutor.Post(() => repository.OnFailed(e));
+                return;
+            }
 
             _logicExecutor.Post(repository.Apply);
         });

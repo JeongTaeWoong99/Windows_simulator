@@ -36,12 +36,19 @@ public sealed partial class User
     public long SessionId { get; }
     public string Pid { get; }
 
+    // DB 작업 파티션 키. 접속(SessionId)이 아니라 계정(Pid)에 붙인다 —
+    // 재접속한 유저의 마지막 쓰기와 새 접속의 첫 읽기가 같은 채널에서 순서대로 돌아야 한다.
+    public long DbKey { get; }
+
     public string NickName { get; set; }
     public DateTime LoggedInAt { get; }
 
     public long Uid { get; set; }
     public int AdminLevel { get; set; }
     public bool IsNewbie { get; set; }
+
+    /// <summary>로그인 응답이 나갔는가. DB 실패 응답을 로그인 중에만 보내기 위한 표시다.</summary>
+    public bool IsLoggedIn { get; private set; }
     
     private bool _created;
 
@@ -123,8 +130,24 @@ public sealed partial class User
 
         SessionId  = channel.SessionId;
         Pid        = pid;
+        DbKey      = ComputeDbKey(pid);
         NickName   = nickname;
         LoggedInAt = loggedInAt;
+    }
+
+    // FNV-1a 64비트. string.GetHashCode()는 프로세스마다 달라 로그로 채널을 추적할 수 없다.
+    private static long ComputeDbKey(string pid)
+    {
+        const ulong offset = 14695981039346656037;
+        const ulong prime  = 1099511628211;
+
+        var hash = offset;
+        foreach (var b in System.Text.Encoding.UTF8.GetBytes(pid))
+        {
+            hash = (hash ^ b) * prime;
+        }
+
+        return (long)hash;
     }
 
     // 주의: 소멸자(finalizer)는 GC가 객체를 수거할 때 비결정적으로 호출된다.
@@ -146,7 +169,8 @@ public sealed partial class User
         }
         
         UserManager.Instance.JoinUser(this);
-        
+
+        IsLoggedIn = true;
         Send(new S_LoginResponse { Result = EResultCode.Ok, SessionId = SessionId });
         
         SendInventory();   // S_InventoryResponse
@@ -225,5 +249,20 @@ public sealed partial class User
     public void PostDBTask<TRepository>(TRepository repository) where TRepository : IRepository
     {
         _db.Post(repository);
+    }
+
+    // DB 작업 실패(로직 스레드). 로그인 중이면 응답부터 보낸다 — 클라가 무한 대기하지 않게.
+    // 그 뒤 세션을 끊는다. 메모리를 버리고 재접속 때 DB를 다시 읽는 편이 갈라진 채 두는 것보다 낫다.
+    public void OnDbFailed(string repositoryName, Exception e)
+    {
+        ServerLog.Error("DB", $"{repositoryName} 실패 — 세션을 끊는다. Uid={Uid} Pid={Pid} sid={SessionId}", e);
+
+        if (!IsLoggedIn)
+        {
+            Send(new S_LoginResponse { Result = EResultCode.DbError, SessionId = SessionId });
+        }
+
+        Destroy();
+        CloseChannel();
     }
 }

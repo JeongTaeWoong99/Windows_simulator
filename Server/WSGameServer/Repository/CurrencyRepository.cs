@@ -1,18 +1,7 @@
 namespace WSGameServer;
 
-/// <summary>
-/// 유저의 재화 보유량을 DB에 반영한다.
-///
-/// <para>
-/// <b>델타가 아니라 확정된 잔액을 쓴다.</b> 잔액 계산은 로직 스레드의 <see cref="User"/>가
-/// 이미 끝냈고, 델타를 DB에서 다시 더하면 재시도·중복 전송이 곧 재화 복제가 된다.
-/// </para>
-///
-/// <para>
-/// 한쪽만 바뀌어도 <b>두 재화를 함께 쓴다.</b> 둘 다 확정 잔액이라 덮어써도 안전하고,
-/// 바뀐 것만 골라 쓰려면 컬럼별 SQL이 재화 수만큼 늘어난다.
-/// </para>
-/// </summary>
+// 유저의 재화 보유량을 DB에 반영한다. 델타가 아니라 확정 잔액을 쓴다 — 델타를 DB에서 더하면 재시도·중복 전송이 곧 재화 복제다.
+// 한쪽만 바뀌어도 두 재화를 함께 쓴다(둘 다 확정 잔액이라 덮어써도 안전하고, 컬럼별 SQL이 늘지 않는다).
 public sealed class SaveCurrencyRepository : IRepository
 {
     private readonly long _gold;
@@ -25,7 +14,7 @@ public sealed class SaveCurrencyRepository : IRepository
         _dia  = dia;
     }
 
-    public long Key => User.SessionId;
+    public long Key => User.DbKey;
 
     public User User { get; }
 

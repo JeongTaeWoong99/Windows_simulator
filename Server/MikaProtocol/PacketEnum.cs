@@ -13,6 +13,9 @@ namespace MikaProtocol
         // ── 1~99: 공통 ──
         NotLoggedIn     = 1,    // 로그인(User 생성) 전에 보낸 요청
         AlreadyLoggedIn = 2,    // 이미 로그인된 세션이 로그인을 다시 요청
+        Banned          = 3,    // 밴된 계정 — 서버가 세션을 끊는다
+        Deleted         = 4,    // 삭제된 계정 — 서버가 세션을 끊는다
+        DbError         = 5,    // 로그인 중 DB 작업 실패 — 서버가 세션을 끊는다. 재접속하면 된다
 
         // ── 100~: 가챠 ──
         InvalidDrawCount   = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)

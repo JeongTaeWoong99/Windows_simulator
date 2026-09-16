@@ -12,12 +12,15 @@ namespace MikaNetwork.Server
     }
 
     /// <summary>
-    /// DB 작업 전용 실행기. sessionId로 파티션을 고정해
-    /// "같은 유저는 직렬, 다른 유저는 병렬"로 처리한다.
+    /// DB 작업 전용 실행기. 호스트가 넘긴 Key로 파티션을 고정해
+    /// "같은 Key는 직렬, 다른 Key는 병렬"로 처리한다. Key를 무엇에 붙일지는 호스트가 정한다.
     /// 게임 상태 변경은 하지 않는다 — 결과는 LogicExecutor로 되돌린다.
     /// </summary>
     public sealed class DBExecutor : Singleton<DBExecutor>
     {
+        /// <summary>잡이 예외로 끝났을 때. 어디에 어떻게 남길지는 호스트가 정한다 — 채우지 않으면 조용히 삼켜진다.</summary>
+        public static Action<Exception>? JobFailed;
+
         private Channel<Func<Task>>[]? _dbChannels;
         private int _channelCount;
 
@@ -52,7 +55,7 @@ namespace MikaNetwork.Server
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"[DBExecutor] job 예외: {e}");
+                    JobFailed?.Invoke(e);
                 }
             }
         }
@@ -73,6 +76,9 @@ namespace MikaNetwork.Server
     // SingleThread LogicExecutor 
     public sealed class LogicExecutor : ILogicExecutor
     {
+        /// <summary>잡이 예외로 끝났을 때. 어디에 어떻게 남길지는 호스트가 정한다 — 채우지 않으면 조용히 삼켜진다.</summary>
+        public static Action<Exception>? JobFailed;
+
         private readonly Channel<Action> _queue = Channel.CreateUnbounded<Action>(new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }); // MultiProducer-SingleConsumer
         private readonly Thread _thread;
 
@@ -101,7 +107,7 @@ namespace MikaNetwork.Server
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"[LogicExecutor] job 예외: {e}");
+                    JobFailed?.Invoke(e);
                 }
             }
         }
