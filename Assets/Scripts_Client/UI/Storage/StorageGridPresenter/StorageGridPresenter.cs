@@ -18,7 +18,7 @@ using UnityEngine;
 // ■ i번째 항목이 i번째 프레임에 들어간다
 //   예전에는 'ItemId → 프레임'을 고정해 두고 빈 프레임을 앞에서부터 찾았다. 그러면 아이템이
 //   처음 들어온 순서로 칸이 영구히 고정돼 **정렬을 넣을 자리가 없다.**
-//   순서의 주인을 공급자로 옮겼기 때문에, 정렬·걸러 내기는 공급자만 고치면 된다(T-015).
+//   순서의 주인을 공급자로 옮겼기 때문에, [정렬]도 공급자 안에서 끝나고 격자는 받은 순서만 그린다.
 //
 // ■ 칸은 파괴하지 않고 풀로 되돌린다
 //   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
@@ -138,6 +138,9 @@ public class StorageGridPresenter : MonoBehaviour
         //   먼저 세우면 초기화가 중단됐는데도 격자가 조용히 빈 채로 굳는다.
         _isReady = true;
 
+        // ※ 로그인은 창고가 닫혀 있어도 알아야 해서 켜고 끌 때 풀지 않는다 — 파괴될 때만 푼다.
+        _data.LoginCompleted += OnLoginCompleted;
+
         // ※ 카트 구독은 여기서 시작한다 — 'OnEnable'은 'EnsureInitialized'보다 먼저 돌 수 있어
         //   (탭 줄의 Start가 우리를 깨우는 경로) 거기에만 두면 첫 판이 구독을 놓친다.
         SubscribeCart();
@@ -176,6 +179,17 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         _current.Unsubscribe();
+    }
+
+    // 로그인 구독 해제 (Unity 메시지)
+    private void OnDestroy()
+    {
+        if (!_isReady)
+        {
+            return;
+        }
+
+        _data.LoginCompleted -= OnLoginCompleted;
     }
 
     #region 구독
@@ -253,6 +267,42 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         Redraw();
+    }
+
+    #endregion
+
+    #region 정렬
+
+    // 지금 탭을 규칙대로 줄 세운다 ('StorageToolPresenter'의 화살표 버튼이 호출).
+    //
+    // 규칙과 기억은 공급자가 쥔다 — 격자는 공급자가 알리는 'Changed'로 다시 그리기만 한다.
+    public void SortCurrent(StorageSortOrder order)
+    {
+        EnsureInitialized();
+
+        if (_current == null)
+        {
+            return; // 공급자가 없는 탭 — 그릴 것이 없으니 방향만 바뀐 채 다음 탭에서 반영된다
+        }
+
+        _current.Sort(order);
+    }
+
+    // 로그인했다 — 지난 세션에 기억한 정렬 자리를 버린다 (PlayerDataModel.LoginCompleted 구독)
+    //
+    // 목록이 서버 순서로 새로 오므로, 들고 있던 자리가 다른 상태를 덮지 않게 한다.
+    // ⚠️ 칸 위치가 서버로 옮겨 가면(T-058 · T-044) 이 기억과 함께 걷어낸다.
+    private void OnLoginCompleted(bool success, EResultCode code)
+    {
+        if (!success)
+        {
+            return;
+        }
+
+        foreach (StorageSlotSource source in _sources.Values)
+        {
+            source.ClearOrder();
+        }
     }
 
     #endregion

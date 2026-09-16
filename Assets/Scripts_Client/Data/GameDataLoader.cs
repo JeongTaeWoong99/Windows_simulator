@@ -91,6 +91,21 @@ public static class GameDataLoader
         return GlobalRarity.None;
     }
 
+    // 아이템 분류(산업 · 기타 · 특수)를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
+    //
+    // ※ 창고 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
+    public static ItemType GetItemType(int itemId)
+    {
+        if (GameTable.ItemTable.TryGet(itemId, out var row))
+        {
+            return row.ItemType;
+        }
+
+        WarnUnknownId("아이템", itemId, _warnedItemIds);
+
+        return ItemType.None;
+    }
+
     // 아이템 판매가를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 0으로 떨어지고 처음 한 번만 경고한다.
     //
     // ※ 판매 합계 미리보기가 쓰는 값이다. 실제로 얼마를 받을지는 서버가 정하며

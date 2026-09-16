@@ -47,6 +47,29 @@ public class CharacterSlotSource : StorageSlotSource
         }
     }
 
+    // 캐릭터 [정렬] 규칙 — 등급 높은 순 → 종류(TID) 순 → 개체 번호 순 (Sort에서 호출).
+    //
+    // 같은 종류를 여러 마리 가질 수 있어 개체 번호까지 가야 동점이 없다.
+    // ※ 칸의 'Key'는 개체 번호라 TID는 보유 목록에서 찾아온다.
+    protected override int CompareForSort(SlotData a, SlotData b)
+    {
+        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
+
+        if (byRarity != 0)
+        {
+            return byRarity;
+        }
+
+        int byTid = _data.GetCharacterTid(a.Key).CompareTo(_data.GetCharacterTid(b.Key));
+
+        if (byTid != 0)
+        {
+            return byTid;
+        }
+
+        return a.Key.CompareTo(b.Key);
+    }
+
     // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)
     protected override void OnSubscribe()
     {

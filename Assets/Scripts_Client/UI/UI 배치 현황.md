@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-14 (선택 화면 목업 구조 — 산업 아이콘 · 캐릭터 카드 · 장비 자리 · 효율 계산 — T-053) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-16 (창고 도구 줄 — 정렬 화살표 · 일괄 담기 — T-015 · T-056) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -37,6 +37,8 @@ Root Canvas
 │  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
+│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 40 — 정렬 화살표 · -(Layout) · 등급 범위 드롭다운 · [판매]
+│  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ SlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)

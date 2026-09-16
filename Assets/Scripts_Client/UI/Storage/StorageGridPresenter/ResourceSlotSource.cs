@@ -15,9 +15,8 @@ public class ResourceSlotSource : StorageSlotSource
 
     // 보유 아이템을 칸으로 옮긴다 (Rebuild에서 호출).
     //
-    // ★ 산업별 걸러 내기·정렬이 붙을 자리가 여기다 (T-015).
-    //   'ItemTable.ItemType'이 이미 산업 축이라 조건 몇 줄이면 되고,
-    //   격자는 받은 순서대로 그리므로 격자 쪽은 고치지 않는다.
+    // ※ 산업별로 걸러 내지 않는다 — 칸 200개를 탭이 함께 쓰는 격자에서 일부만 보이면 빈 칸이 "사라진 아이템"처럼 읽힌다.
+    //   정리는 [정렬] 한 번으로 한다('CompareForSort').
     protected override void Fill(List<SlotData> into)
     {
         foreach (ItemInfo item in _data.Inventory)
@@ -34,6 +33,33 @@ public class ResourceSlotSource : StorageSlotSource
                 $"{item.Count} 개", // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
                 GameDataLoader.GetItemRarity(item.ItemId)));
         }
+    }
+
+    // 자원 [정렬] 규칙 — 등급 높은 순 → 산업 순 → TID 순 (Sort에서 호출).
+    //
+    // 산업 순은 'ItemType' 값 순서다 — 농사·낚시·채광·벌목·사냥·기타·특수로, 배치 화면의 산업 버튼·적성 스트립과 같다.
+    // TID 대역(낚시 1xxxx · 농사 2xxxx)으로 바로 줄 세우면 낚시가 농사보다 앞에 와서 두 화면의 순서가 어긋난다.
+    // ※ enum끼리 'CompareTo'를 부르면 박싱이 일어나 숫자로 바꿔 비교한다.
+    protected override int CompareForSort(SlotData a, SlotData b)
+    {
+        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
+
+        if (byRarity != 0)
+        {
+            return byRarity;
+        }
+
+        int itemA = (int)a.Key;
+        int itemB = (int)b.Key;
+
+        int byType = ((byte)GameDataLoader.GetItemType(itemA)).CompareTo((byte)GameDataLoader.GetItemType(itemB));
+
+        if (byType != 0)
+        {
+            return byType;
+        }
+
+        return itemA.CompareTo(itemB);
     }
 
     // 인벤토리 변경 구독 (Subscribe에서 호출)
