@@ -156,6 +156,28 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv 열린 해금: {string.Join(", ", res.UnlockTIDs)}");
         }
 
+        // 로그인 직후 캐릭터 목록 뒤·슬롯 스냅샷 앞. EquippedCharacterId=0이면 창고.
+        [PacketHandler]
+        public static void Handle_S_EquipListResponse(ISession session, S_EquipListResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 보유 장비 {res.Equips.Count}개: " +
+                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}")));
+        }
+
+        // 바뀐 개체만 온다 — 지급·장착·해제·자동 이동. EquipId로 덮어쓴다.
+        [PacketHandler]
+        public static void Handle_S_EquipSyncResponse(ISession session, S_EquipSyncResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 장비 동기화: " +
+                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}")));
+        }
+
+        [PacketHandler]
+        public static void Handle_S_EquipResponse(ISession session, S_EquipResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 장비 {res.Slot} @캐릭터 {res.CharacterId} → {res.Result}");
+        }
+
         // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
         // 증감이 아니라 확정 잔액이라 두 경우 모두 덮어쓰기로 처리하면 된다.
         [PacketHandler]

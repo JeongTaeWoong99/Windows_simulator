@@ -228,4 +228,28 @@ public class UserCheatTest
 
         b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatCommand);
     }
+
+    // ─────────────────────── GiveEquip ───────────────────────
+
+    [Fact]
+    public void GiveEquip은_지급을_요청한다()
+    {
+        var (user, b) = Admin();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveEquip, 1001), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        b.DB.PostedOf<GrantEquipRepository>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
+    public void GiveEquip은_없는_TID를_거절한다()
+    {
+        var (user, b) = Admin();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveEquip, 9999), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatArgs);
+        b.DB.Posted.ShouldBeEmpty();
+    }
 }

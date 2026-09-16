@@ -32,6 +32,7 @@ public partial class User
             ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
             ECheatCommand.Settle           => CheatSettle(now),
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
+            ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -138,5 +139,17 @@ public partial class User
         // 퀘스트·튜토리얼과 같은 지급 경로 — 조건·차감 없이 기록·통지·콘텐츠 후속까지 동일하다.
         GrantUnlock((int)unlockTid, now);
         return (EResultCode.Ok, $"해금 {unlockTid} 지급");
+    }
+
+    private (EResultCode, string) CheatGiveEquip(long equipTid)
+    {
+        if (equipTid <= 0 || equipTid > int.MaxValue || !_equipCatalog.TryGet((int)equipTid, out _))
+        {
+            return (EResultCode.InvalidCheatArgs, $"EquipTable에 없는 TID {equipTid}");
+        }
+
+        // 앞으로 생길 획득 경로와 같은 지급 함수 — PK 발급 후 S_EquipSyncResponse까지 동일하다.
+        GrantEquip((int)equipTid);
+        return (EResultCode.Ok, $"장비 {equipTid} 지급 요청");
     }
 }

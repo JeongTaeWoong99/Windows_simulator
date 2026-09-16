@@ -142,6 +142,38 @@ public static class ClientPacketHandler
         user.TryUnlock(req.UnlockTID, (GameData.CurrencyType)req.Currency, DateTime.UtcNow);
     }
 
+    /// <summary>장비 장착. 보유·칸·종류 검증과 정산 순서는 User가 맡는다.</summary>
+    [PacketHandler]
+    public static void Handle_C_EquipRequest(ISession session, C_EquipRequest req)
+    {
+        ServerLog.Debug("장비", $"장착 요청 캐릭터={req.CharacterId} 장비={req.EquipId} 칸={req.Slot} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_EquipResponse { Result = EResultCode.NotLoggedIn, CharacterId = req.CharacterId, Slot = req.Slot });
+            return;
+        }
+
+        user.TryEquip(req.CharacterId, req.EquipId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
+    }
+
+    /// <summary>장비 해제.</summary>
+    [PacketHandler]
+    public static void Handle_C_UnequipRequest(ISession session, C_UnequipRequest req)
+    {
+        ServerLog.Debug("장비", $"해제 요청 캐릭터={req.CharacterId} 칸={req.Slot} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_EquipResponse { Result = EResultCode.NotLoggedIn, CharacterId = req.CharacterId, Slot = req.Slot });
+            return;
+        }
+
+        user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
+    }
+
     /// <summary>
     /// 아이템을 즉시 판매한다. <b>가격은 서버가 정한다</b> — 클라이언트는 무엇을 몇 개 팔지만 보낸다.
     /// </summary>

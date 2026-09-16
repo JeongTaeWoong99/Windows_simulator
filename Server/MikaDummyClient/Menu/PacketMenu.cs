@@ -26,6 +26,8 @@ namespace MikaDummyClient
                 new ClientAction("ItemSell (즉시 판매)", SendItemSell),
                 new ClientAction("Cheat (admin 전용 — 지급·정산)", SendCheat),
                 new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
+                new ClientAction("Equip (장착 — 캐릭터ID 장비ID 칸1~4)", SendEquip),
+                new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
             };
         }
 
@@ -162,6 +164,32 @@ namespace MikaDummyClient
             byte currency = string.IsNullOrWhiteSpace(currencyInput) ? (byte)1 : byte.Parse(currencyInput.Trim());
 
             NetworkManager.Instance.Send(new C_UnlockRequest { UnlockTID = unlockTid, Currency = (ECurrencyType)currency });
+        }
+
+        private void SendEquip()
+        {
+            Console.Write("CharacterId EquipId Slot(1무기 2·3장신구 4보석) > ");
+            var parts = (Console.ReadLine() ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 3 || !long.TryParse(parts[0], out var characterId) || !long.TryParse(parts[1], out var equipId) || !byte.TryParse(parts[2], out var slot))
+            {
+                Console.WriteLine("[Client] 숫자 세 개를 띄어 적습니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_EquipRequest { CharacterId = characterId, EquipId = equipId, Slot = (EEquipSlot)slot });
+        }
+
+        private void SendUnequip()
+        {
+            Console.Write("CharacterId Slot(1~4) > ");
+            var parts = (Console.ReadLine() ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2 || !long.TryParse(parts[0], out var characterId) || !byte.TryParse(parts[1], out var slot))
+            {
+                Console.WriteLine("[Client] 숫자 두 개를 띄어 적습니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_UnequipRequest { CharacterId = characterId, Slot = (EEquipSlot)slot });
         }
 
         private void SendCheat()
