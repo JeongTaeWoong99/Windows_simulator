@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-17 치트 에디터 창 · 안전장치 팝업 · 씬 복사 알림 툴바 토글](2026-09-17-cheat-editor-window.md) — `#client` `#editor` 치트를 한 창에 모아 보내기 (T-059)
 - [2026-09-16 잠긴 작업슬롯 표시 · 해금 요청](2026-09-16-workslot-locked-display.md) — `#client` `#ui` 열린 목록 기반 잠김 판정 · `ConfirmPresenter` · `C_UnlockRequest` 연결 (T-039)
 - [2026-09-16 해금 시스템 서버 구현 — `UnlockCatalog` · `t_user_unlock` · 해금 패킷, 첫 적용은 작업슬롯](2026-09-16-unlock-server.md) — `#server` `#protocol` `#test` T-038 완료 · Unity CLI eval로 실서버 왕복 검증
 - [2026-09-16 창고 캐릭터 칸 — 레벨 배지 · 경험치 세로 게이지 · 칸이 프레임을 채움](2026-09-16-character-level-exp-gauge.md) — `#client` `#ui` `#editor` 아이콘 모서리 레벨 배지 · 왼쪽 벽 Slider 게이지 · 여백 예외 (T-052)
