@@ -80,6 +80,41 @@ internal sealed class SqliteFixture : IDisposable
             ) STRICT;");
     }
 
+    /// <summary>장비 개체·착용 매핑 + 매핑이 가리키는 캐릭터 테이블. 운영 DDL과 같아야 한다.</summary>
+    public void CreateEquipTables()
+    {
+        Execute(@"
+            CREATE TABLE t_character (
+                character_id  INTEGER PRIMARY KEY,
+                user_id       INTEGER NOT NULL,
+                character_tid INTEGER NOT NULL,
+                level         INTEGER NOT NULL DEFAULT 1,
+                exp           INTEGER NOT NULL DEFAULT 0,
+                created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+            ) STRICT;
+            CREATE TABLE t_user_equip (
+                equip_id      INTEGER PRIMARY KEY,
+                user_id       INTEGER NOT NULL,
+                equip_tid     INTEGER NOT NULL,
+                slot_position INTEGER NOT NULL DEFAULT 0,
+                created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+            ) STRICT;
+            CREATE TABLE t_character_equip (
+                character_id INTEGER NOT NULL,
+                slot         INTEGER NOT NULL,
+                equip_id     INTEGER NOT NULL UNIQUE,
+                PRIMARY KEY (character_id, slot)
+            ) STRICT;");
+    }
+
+    /// <summary>단일 값 조회. 검증용.</summary>
+    public object? Query(string sql)
+    {
+        using var cmd = Connection.CreateCommand();
+        cmd.CommandText = sql;
+        return cmd.ExecuteScalar();
+    }
+
     public void Execute(string sql)
     {
         using var cmd = Connection.CreateCommand();
