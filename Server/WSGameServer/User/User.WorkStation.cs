@@ -263,7 +263,8 @@ public partial class User
             : character.GetBaseWorkSpeed(slot.Industry);
 
         return WorkSpeed.From(baseSpeed)
-            // 특성·부스트·장비는 여기에 .Add(천분율)로 붙는다 — 개수가 늘어도 각 보정의 몫은 그대로다.
+            // 착용 장비 가산(전 산업 + 슬롯 산업). 특성·부스트도 여기에 .Add(천분율)로 붙는다 — 개수가 늘어도 각 보정의 몫은 그대로다.
+            .Add(GetEquipSpeedAdd(slot.CharacterId, slot.Industry))
             .Multiply(GatherSpeedMultiplier)
             .Resolve();
     }

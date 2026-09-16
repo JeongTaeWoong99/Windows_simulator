@@ -114,6 +114,9 @@ internal sealed class TestUserBuilder
     /// </summary>
     public UnlockCatalog Unlocks { get; } = new();
 
+    /// <summary>장비 표. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다. 기대값을 고정하려면 먼저 <c>Load</c>한다.</summary>
+    public EquipCatalog Equips { get; } = new();
+
     /// <summary>
     /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
     /// <b><c>Destroy()</c> 검증에는 쓰지 않는다</b>: <c>OnDestroy</c>가
@@ -158,8 +161,14 @@ internal sealed class TestUserBuilder
             Unlocks.LoadAll();
         }
 
+        if (Equips.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            Equips.LoadAll();
+        }
+
         var user = new User(Channel, DB, Executor,
-                            pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks);
+                            pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips);
         user.Uid = uid;
         return user;
     }

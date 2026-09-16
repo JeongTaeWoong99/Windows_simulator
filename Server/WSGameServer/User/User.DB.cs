@@ -44,6 +44,9 @@ public partial class User
         LoadCharacters(data.CharacterRows);
         LoadIndustryLevels(data.IndustryLevelRows);
 
+        // 착용 장비가 슬롯 속도의 근거라 캐릭터 뒤·슬롯 앞에 적재한다.
+        LoadEquips(data.EquipRows, data.CharacterEquipRows);
+
         // 열린 해금이 곧 열린 칸의 근거라 슬롯보다 먼저 적재한다 — 잠긴 칸의 배치 행을 걸러야 한다.
         LoadUnlocks(data.UnlockRows);
         LoadWorkStation(data.WorkStationSlotRows, startedAt);

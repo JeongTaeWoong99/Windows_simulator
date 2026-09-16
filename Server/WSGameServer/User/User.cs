@@ -33,6 +33,9 @@ public sealed partial class User
     /// <summary>해금 조건·작업슬롯 칸 인덱스. 해금 판정과 로그인 시 열린 칸 구성에 쓴다. 규약은 위와 같다.</summary>
     private readonly UnlockCatalog _unlockCatalog;
 
+    /// <summary>장비 정의 인덱스. 적재·지급·장착 검증에 쓴다. 규약은 위와 같다.</summary>
+    private readonly EquipCatalog _equipCatalog;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -115,7 +118,8 @@ public sealed partial class User
         DropTableCatalog? dropTables = null,
         IndustryLevelCatalog? industryLevels = null,
         CharacterLevelCatalog? characterLevels = null,
-        UnlockCatalog?        unlocks = null)
+        UnlockCatalog?        unlocks = null,
+        EquipCatalog?         equips = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -127,6 +131,7 @@ public sealed partial class User
         _industryLevels = industryLevels ?? IndustryLevelCatalog.Instance;
         _characterLevels = characterLevels ?? CharacterLevelCatalog.Instance;
         _unlockCatalog = unlocks ?? UnlockCatalog.Instance;
+        _equipCatalog = equips ?? EquipCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -179,6 +184,9 @@ public sealed partial class User
         // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
         // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.
         SendCharacters();  // S_CharacterListResponse
+
+        // 장비를 캐릭터 뒤·슬롯 앞에 보낸다 — EquippedCharacterId가 캐릭터를, 슬롯 속도가 장비를 전제한다.
+        SendEquipList();   // S_EquipListResponse
 
         // 열린 해금을 슬롯보다 먼저 보낸다 — 클라가 8칸 중 어느 칸이 잠겼는지 그릴 때 이미 알고 있어야 한다.
         SendUnlockList();  // S_UnlockListResponse
