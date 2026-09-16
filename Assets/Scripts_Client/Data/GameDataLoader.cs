@@ -177,6 +177,26 @@ public static class GameDataLoader
         return 0;
     }
 
+    // 레벨 L에 **도달하는 데** 직전 레벨에서 필요한 경험치를 조회한다. 행이 없으면 false.
+    //
+    // ※ 경고하지 않는다 — 행이 없는 것은 오류가 아니라 **만렙**이라는 뜻이다(마지막 행 = 만렙).
+    //   그래서 'Level + 1'로 물어 false면 만렙으로 읽는다. 진행 바의 분모도 'Level + 1'의 값이다.
+    // ※ 적성 → 속도처럼 **개체마다 갈라지지 않는 정적 곡선**이라 클라가 읽어도 된다.
+    //   레벨·경험치 값 자체는 서버가 준 것('CharacterInfo.Level'·'Exp')을 쓴다.
+    public static bool TryGetRequiredExp(int level, out int requiredExp)
+    {
+        if (GameTable.CharacterLevelTable.TryGet(level, out var row))
+        {
+            requiredExp = row.RequiredExp;
+
+            return true;
+        }
+
+        requiredExp = 0;
+
+        return false;
+    }
+
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
     private static void WarnUnknownId(string kind, int id, HashSet<int> warned)
     {

@@ -25,7 +25,7 @@ using UnityEngine;
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
 // ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
-//   '배' 마크(배치 중) · 적성 스트립은 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   '배' 마크(배치 중) · 적성 스트립 · 경험치 게이지는 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
 //   칸은 이 판단을 모른다 — 공급자가 만드는 완성값(`SlotData`)에 캐릭터 전용 필드를 끼우면
 //   자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자가 읽어서 넘긴다.
 //
@@ -341,6 +341,10 @@ public class StorageGridPresenter : MonoBehaviour
                 // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
                 view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
 
+                // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다.
+                view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
+                view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
+
                 continue;
             }
 
@@ -367,6 +371,18 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         return _aptitudes;
+    }
+
+    // 이 캐릭터의 레벨 배지 문구 — 'LV.19', 만렙이면 'LV.MAX' (Redraw에서 호출).
+    //
+    // ※ 'LV.' 접두를 뗄 수 없다 — 초상화 형태가 제각각이라 숫자만 두면 '2'가 무엇인지 드러나지 않는다.
+    //   글자가 줄던 문제는 이름 줄에서 배지로 떼어 내 풀었다(한때 'LV.19 폭스파스크'로 이름 줄에 붙였다).
+    // 만렙 = 곡선 테이블에 다음 레벨 행이 없다('GameDataLoader.TryGetRequiredExp').
+    private string ReadLevelLabel(long characterId)
+    {
+        int level = _data.GetCharacterLevel(characterId);
+
+        return GameDataLoader.TryGetRequiredExp(level + 1, out _) ? $"LV.{level}" : "LV.MAX";
     }
 
     // i번째 프레임의 칸을 얻는다. 아직 없으면 그 프레임 안에 만든다 (Redraw에서 호출).
@@ -474,9 +490,13 @@ public class StorageGridPresenter : MonoBehaviour
         }
     }
 
-    // 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
+    // 프리팹을 프레임 안에 안착시킨다 — 프레임을 **꽉 채운다**.
     // Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 오므로,
     // 이걸 하지 않으면 프레임 밖으로 삐져나간다.
+    //
+    // ★ 크기도 프레임을 따른다 — 프레임은 'FlexibleGridLayoutGroup'이 창 폭에 맞춰 늘리는데(예: 115px)
+    //   프리팹은 100×100 고정이라, 위치만 맞추면 사방에 빈 테두리가 생겼다(2026-09-16).
+    //   프리팹 루트를 스트레치로 바꾸지 않는 이유 — 가챠 결과 팝업이 같은 프리팹을 레이아웃에 넣어 쓴다.
     private static void SnapToFrame(RectTransform? rect)
     {
         if (rect == null)
@@ -484,6 +504,10 @@ public class StorageGridPresenter : MonoBehaviour
             return;
         }
 
+        rect.anchorMin          = Vector2.zero;
+        rect.anchorMax          = Vector2.one;
+        rect.pivot              = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta          = Vector2.zero;
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;
         rect.localRotation      = Quaternion.identity;

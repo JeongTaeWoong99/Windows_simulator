@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-16 창고 캐릭터 칸 — 레벨 배지 · 경험치 세로 게이지 · 칸이 프레임을 채움](2026-09-16-character-level-exp-gauge.md) — `#client` `#ui` `#editor` 아이콘 모서리 레벨 배지 · 왼쪽 벽 Slider 게이지 · 여백 예외 (T-052)
 - [2026-09-16 창고 [정렬] 버튼 · 배치 목록 적성순 · 캐릭터 줄 등급 색](2026-09-16-storage-sort-and-select-order.md) — `#client` `#ui` 필터 대신 정렬 버튼(세션 한정 기억) · 배치 목록 적성순 (T-015 · T-057)
 - [2026-09-15 memory-meter 플레이 중 갱신 정지 · Material 예외 원인 재조사](2026-09-15-memory-meter-playmode-pause.md) — `#editor` `#client` 플레이 중 정지는 예방 조치 · memory-meter 원인설은 재현 실패로 미확인
 - [2026-09-15 서버 콘솔 창 프레임 드랍 — 가상 스크롤로 교체](2026-09-15-server-console-virtual-scroll.md) — `#editor` `#client` 로그 전체 재레이아웃이 원인 · 보이는 줄만 그리고 줄 단위 복사
