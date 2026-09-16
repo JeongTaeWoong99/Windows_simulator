@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-09-16 (배치 목록 순서 · 줄 등급 색 · 하단 메뉴 줄 = 특별 이벤트 자리 — T-057 · T-015) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-09-16 (작업슬롯 칸 세 상태 · 잠긴 칸 해금 흐름 — T-039) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -79,6 +79,22 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 
 > 꺼져 있는 화면을 열 때는 **인자를 먼저 넣고 켠다**(`Open(slotIndex)` 안에서 `SetActive(true)`).
 > 꺼진 오브젝트는 `Start()`가 아직 안 돌았을 수 있어, 켠 직후 값을 넣으면 초기화가 덮어쓴다.
+
+## 작업슬롯 칸은 세 상태다 — 잠김 · 열린 빈 칸 · 배치됨
+
+| 상태 | 판정 | 프레임 라벨 | 클릭 |
+|---|---|---|---|
+| 잠김 | `WorkSlotTable`의 `UnlockTID`를 `PlayerDataModel.IsUnlocked`가 false | 해금 조건(골드 · 계정 레벨 · 안 열린 선행 칸) | 해금 흐름 |
+| 열린 빈 칸 | 열림 + 배치 없음 | "비어있음." | 선택 화면 |
+| 배치됨 | 열림 + 배치 있음 | 슬롯 뷰가 덮는다 | 선택 화면 |
+
+- **해금 흐름은 서버 판정 순서를 따른다** — 선행 미충족 알림 → 골드 부족 알림 → 확인 팝업(`UIManager.AskConfirm`).
+  클라 판정은 안내일 뿐이고 서버가 다시 검사한다.
+- 조건 문구는 **클라가 테이블에서 만든다** — 서버는 열린 목록만 준다([해금 기획](<../../../../GameDesign/design/unlock/README.md>) 1장).
+- 열린 목록은 로그인 때 `S_UnlockListResponse`로 오고(슬롯 스냅샷보다 앞), 확인을 누르면 `C_UnlockRequest`를 보낸다.
+  성공하면 `UnlocksChanged`가 라벨을, 뒤따르는 `S_WorkStationSlotSyncResponse`가 새 칸을 그린다.
+- **해금 결과는 내 요청이 아니어도 온다**(치트·퀘스트). 목록 갱신은 항상 하고, 결과 문구는 대기 핸들이 있을 때만 띄운다.
+- 선행은 `UnlockTable.Name`으로 적는다 — 콘텐츠 테이블을 거꾸로 찾지 않는다(기획 unlock #13).
 
 ## 배치 목록 — 산업 버튼이 곧 정렬 기준이다
 

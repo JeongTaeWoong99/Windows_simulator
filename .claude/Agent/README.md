@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-16 잠긴 작업슬롯 표시 · 해금 요청](2026-09-16-workslot-locked-display.md) — `#client` `#ui` 열린 목록 기반 잠김 판정 · `ConfirmPresenter` · `C_UnlockRequest` 연결 (T-039)
 - [2026-09-16 해금 시스템 서버 구현 — `UnlockCatalog` · `t_user_unlock` · 해금 패킷, 첫 적용은 작업슬롯](2026-09-16-unlock-server.md) — `#server` `#protocol` `#test` T-038 완료 · Unity CLI eval로 실서버 왕복 검증
 - [2026-09-16 창고 캐릭터 칸 — 레벨 배지 · 경험치 세로 게이지 · 칸이 프레임을 채움](2026-09-16-character-level-exp-gauge.md) — `#client` `#ui` `#editor` 아이콘 모서리 레벨 배지 · 왼쪽 벽 Slider 게이지 · 여백 예외 (T-052)
 - [2026-09-16 창고 [정렬] 버튼 · 배치 목록 적성순 · 캐릭터 줄 등급 색](2026-09-16-storage-sort-and-select-order.md) — `#client` `#ui` 필터 대신 정렬 버튼(세션 한정 기억) · 배치 목록 적성순 (T-015 · T-057)

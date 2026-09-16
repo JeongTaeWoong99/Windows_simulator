@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-12 (정적 변환표 4개를 `UI/Shared/`로 내렸다 — T-049) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-16 (확인 팝업 `ConfirmPresenter` 추가 — T-039) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -12,6 +12,7 @@
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`를 구독해 뽑힌 보상을 5열로 표시 |
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
+| `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
@@ -54,7 +55,8 @@
 ├─ [0] Loading Presenter     (↓ SUB VIEW)
 ├─ [1] Gacha Result Presenter (↓ SUB VIEW)
 ├─ [2] Amount Input Presenter (↓ SUB VIEW)
-└─ [3] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
+├─ [3] Confirm Presenter      (↓ SUB VIEW)
+└─ [4] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
 ```
 
 **`Notice Presenter`는 언제나 맨 아래(마지막)다.** 알림은 실패·종료를 알리는 마지막 출구라
@@ -67,7 +69,7 @@
 
 | 오버레이 | 색 | 왜 |
 |---|---|---|
-| `GachaResult` · `AmountInput` · `Notice` | **검정 a 0.35** | 떠 있는 창에 눈을 모은다. 같은 알림·확인류라 농도가 다르면 생김새가 갈린다 |
+| `GachaResult` · `AmountInput` · `Confirm` · `Notice` | **검정 a 0.35** | 떠 있는 창에 눈을 모은다. 같은 알림·확인류라 농도가 다르면 생김새가 갈린다 |
 | `Loading` | **흰색 a 0.851** | 이건 "무언가 떴다"가 아니라 **"지금은 아무것도 만질 수 없다"** 를 말한다. 뒤를 거의 덮는 것이 목적이라 다른 축이다 |
 
 > ⚠️ **알파가 0이어도 `raycastTarget`이 켜져 있으면 계속 막는다.** 안 어둡던 시절(a 0.000)에도
@@ -222,6 +224,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 | `NoticePresenter` | `ServerWaitManager.NoticeRaised` · `FatalRaised` |
 | `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` |
 | `AmountInputPresenter` | **없다 — 구독형이 아니다** |
+| `ConfirmPresenter` | **없다 — 같은 왕복형이다** (`UIManager.AskConfirm`) |
 
 셋은 단방향이다. "이런 일이 생겼다"를 듣고 뜨면 끝이라 부르는 쪽이 답을 기다리지 않는다.
 **수량 팝업만 답을 돌려줘야 한다** — `Open(itemId, max, onConfirm)`의 `onConfirm`이 그것이라
