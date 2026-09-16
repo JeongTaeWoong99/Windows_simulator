@@ -61,6 +61,22 @@ public sealed record UserUnlockRow
     public int unlock_tid { get; init; }
 }
 
+// t_user_equip 조회 전용 Row. equip_id는 개체 PK(long), equip_tid는 테이블 정의(int).
+public sealed record UserEquipRow
+{
+    public long equip_id      { get; init; }
+    public int  equip_tid     { get; init; }
+    public int  slot_position { get; init; }
+}
+
+// t_character_equip 조회 전용 Row. slot은 GameData.EquipSlot 정수값.
+public sealed record CharacterEquipRow
+{
+    public long character_id { get; init; }
+    public int  slot         { get; init; }
+    public long equip_id     { get; init; }
+}
+
 /// <summary>
 /// 로그인 시 리포지토리가 로직 스레드로 넘기는 조회 결과 묶음.
 /// Row가 리포지토리 밖으로 나가는 유일한 통로다 — 순수 코어(Inventory·WorkStation)에는 넘기지 않는다.
@@ -76,4 +92,6 @@ public sealed record PlayerLoginData(
     List<CharacterRow> CharacterRows,
     List<WorkStationSlotRow> WorkStationSlotRows,
     List<UserIndustryLevelRow> IndustryLevelRows,
-    List<UserUnlockRow> UnlockRows);
+    List<UserUnlockRow> UnlockRows,
+    List<UserEquipRow> EquipRows,
+    List<CharacterEquipRow> CharacterEquipRows);

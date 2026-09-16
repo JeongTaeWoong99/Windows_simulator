@@ -308,7 +308,9 @@ public class UserWorkStationTest
             {
                 new() { industry = (int)IndustryType.Fishing, unlocked_level = 4 },
             },
-            new List<UserUnlockRow>()), Base);
+            new List<UserUnlockRow>(),
+            new List<UserEquipRow>(),
+            new List<CharacterEquipRow>()), Base);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         slot.IndustryLevel.ShouldBe(4);

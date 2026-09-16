@@ -18,6 +18,8 @@ public sealed class LoginRepository : IRepository
     private List<WorkStationSlotRow> _workStationSlotRows = new();
     private List<UserIndustryLevelRow> _industryLevelRows = new();
     private List<UserUnlockRow>        _unlockRows        = new();
+    private List<UserEquipRow>         _equipRows          = new();
+    private List<CharacterEquipRow>    _characterEquipRows = new();
 
     // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
     public long Key => User.DbKey;
@@ -72,6 +74,18 @@ public sealed class LoginRepository : IRepository
         _unlockRows = await connection.QueryAsync<UserUnlockRow>(
             "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
             new { userId = User.Uid });
+
+        // 7) 장비 개체(유저 소유 전부)와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
+        _equipRows = await connection.QueryAsync<UserEquipRow>(
+            "SELECT equip_id, equip_tid, slot_position FROM t_user_equip WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        _characterEquipRows = await connection.QueryAsync<CharacterEquipRow>(
+            @"SELECT ce.character_id, ce.slot, ce.equip_id
+              FROM t_character_equip ce
+              JOIN t_user_equip ue ON ue.equip_id = ce.equip_id
+              WHERE ue.user_id = @userId",
+            new { userId = User.Uid });
     }
 
     // === 로직 스레드에서 실행 ===
@@ -82,7 +96,8 @@ public sealed class LoginRepository : IRepository
     {
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
-                                _workStationSlotRows, _industryLevelRows, _unlockRows),
+                                _workStationSlotRows, _industryLevelRows, _unlockRows,
+                                _equipRows, _characterEquipRows),
             DateTime.UtcNow);
     }
 }

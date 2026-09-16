@@ -78,20 +78,14 @@ internal sealed class SqliteFixture : IDisposable
                 unlocked_at TEXT    NOT NULL DEFAULT (datetime('now')),
                 PRIMARY KEY (user_id, unlock_tid)
             ) STRICT;");
+
+        CreateEquipTables();
     }
 
-    /// <summary>장비 개체·착용 매핑 + 매핑이 가리키는 캐릭터 테이블. 운영 DDL과 같아야 한다.</summary>
+    /// <summary>장비 개체·착용 매핑. 운영 DDL과 같아야 한다. 로그인 조회에도 필요해 <see cref="CreatePlayerTables"/>가 함께 만든다.</summary>
     public void CreateEquipTables()
     {
         Execute(@"
-            CREATE TABLE t_character (
-                character_id  INTEGER PRIMARY KEY,
-                user_id       INTEGER NOT NULL,
-                character_tid INTEGER NOT NULL,
-                level         INTEGER NOT NULL DEFAULT 1,
-                exp           INTEGER NOT NULL DEFAULT 0,
-                created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
-            ) STRICT;
             CREATE TABLE t_user_equip (
                 equip_id      INTEGER PRIMARY KEY,
                 user_id       INTEGER NOT NULL,

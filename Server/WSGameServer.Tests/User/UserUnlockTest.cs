@@ -66,7 +66,9 @@ public class UserUnlockTest
         },
         (slotRows ?? Array.Empty<WorkStationSlotRow>()).ToList(),
         new List<UserIndustryLevelRow>(),
-        (unlocked ?? Array.Empty<int>()).Select(t => new UserUnlockRow { unlock_tid = t }).ToList());
+        (unlocked ?? Array.Empty<int>()).Select(t => new UserUnlockRow { unlock_tid = t }).ToList(),
+        new List<UserEquipRow>(),
+        new List<CharacterEquipRow>());
 
     // ─────────────────────── 거절 경로 ───────────────────────
 

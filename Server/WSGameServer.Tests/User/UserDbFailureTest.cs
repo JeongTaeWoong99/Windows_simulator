@@ -56,6 +56,8 @@ public class UserDbFailureTest
             new List<CharacterRow> { new() { character_id = 1, character_tid = User.DefaultCharacterTid, level = 1, exp = 0 } },
             new List<WorkStationSlotRow>(),
             new List<UserIndustryLevelRow>(),
-            new List<UserUnlockRow>()), TestUserBuilder.Base);
+            new List<UserUnlockRow>(),
+            new List<UserEquipRow>(),
+            new List<CharacterEquipRow>()), TestUserBuilder.Base);
     }
 }
