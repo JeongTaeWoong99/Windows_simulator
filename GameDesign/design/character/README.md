@@ -22,7 +22,7 @@
 | 3 | **적성 0 = 배치 불가** | 그 산업을 다루지 못한다. 배치 요청을 서버가 거절한다 → 2.2 |
 | 4 | **적성 = 기본값 + 찍은 포인트** | 기본값은 TID별 고정(`CharacterTable`), 개체는 **찍은 보너스만** 든다. **클라이언트에 내려가는 값은 서버가 합산한다** → 5.4 · 7장 |
 | 5 | **슬롯당 1명** | 여러 명을 한 슬롯에 넣지 않는다 |
-| 6 | **장비 부위 = 무기1 · 장신구2 · 보석1** | 4칸. 효과는 속도식의 **가산** 항으로 붙는다 (일감 T-002) |
+| 6 | **장비 부위 = 무기1 · 장신구2 · 보석1** | 4칸. 효과는 속도식의 **가산** 항 — **대상 산업 지정(None=전 산업) + 가산 천분율.** 장비는 적성을 바꾸지 않는다. 서버 구현 완료(2026-09-17 · T-002). 획득 경로는 미정(치트만) |
 | 7 | **계정(섬주인)과 분리** | 섬주인은 캐릭터가 아니다. 배치되지 않는다 → 3장 |
 | 8 | **종족을 여러 개 둔다** | 사람·몬스터 등. **외형과 적성 분포의 차이로만** 표현한다 → 4장 |
 | 9 | **획득 경로 = 가챠** | 골드를 내고 캐릭터 풀을 뽑는다 → 5.1 |
@@ -365,8 +365,9 @@ Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 �
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
 | `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) · **산업별 보너스 5열**(찍은 포인트 → 5.4) |
+| `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(창고 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
 | 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value, Cap}` 목록 · `CharacterInfo.AptitudePoints` → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 · **`C_AptitudeUpRequest` / `S_AptitudeUpResponse`** → 5.4 |
-| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) |
+| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비 가산 · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) |
 
 > 밸런스 수치는 코드 상수가 아니라 엑셀에 둔다. 수정 후 `GameDesign/generate-tables.ps1` 실행.
 
@@ -427,6 +428,5 @@ public partial struct AptitudeInfo
 >
 > 이는 `CurrentWorkSpeed`와 같은 원칙이다 — **보정이 붙는 값은 서버가 결과만 내려준다.**
 
-> ⚠️ **장비가 적성을 올리는가는 아직 확정이 아니다.** 현재 확정은
-> "장비 효과 = **속도** 가산"([작업슬롯](../workslot/README.md) 3.4)이고, 적성은 그 식의 입력이다.
-> 위 결정은 **전달 경로**만 정한 것이지 장비의 작용점을 바꾼 것이 아니다 → 5장 #1.
+> ✅ **장비는 적성을 바꾸지 않는다 (2026-09-17 확정 · T-002).** 장비 효과는 **속도 가산**뿐이며
+> ([작업슬롯](../workslot/README.md) 3.4), 적성은 그 식의 입력으로 남는다. 장비 때문에 적성 푸시가 필요해질 일은 없어졌다 — 일감 T-022의 사유가 소멸했다.
