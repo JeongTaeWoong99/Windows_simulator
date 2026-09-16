@@ -65,4 +65,27 @@ namespace GameData
 
         Max      ,
     };
+
+    public enum EquipKind : byte
+    {
+        None      = 0,
+
+        Weapon    = 1,  // 무기
+        Accessory = 2,  // 장신구
+        Gem       = 3,  // 보석
+
+        Max      ,
+    };
+
+    public enum EquipSlot : byte
+    {
+        None       = 0,
+
+        Weapon     = 1,  // 무기 칸
+        Accessory1 = 2,  // 장신구 칸 1
+        Accessory2 = 3,  // 장신구 칸 2
+        Gem        = 4,  // 보석 칸
+
+        Max       ,
+    };
 }

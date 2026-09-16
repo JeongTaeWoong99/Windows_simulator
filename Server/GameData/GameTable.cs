@@ -19,6 +19,7 @@ namespace GameData
         public static TableSet<int, HuntingBasicTableRow> HuntingBasicTable { get; private set; } = null!;
         public static TableSet<int, LoggingBasicTableRow> LoggingBasicTable { get; private set; } = null!;
         public static TableSet<int, MiningBasicTableRow> MiningBasicTable { get; private set; } = null!;
+        public static TableSet<int, EquipTableRow> EquipTable { get; private set; } = null!;
         public static TableSet<int, GachaItemTableRow> GachaItemTable { get; private set; } = null!;
         public static TableSet<int, GachaInfoTableRow> GachaInfoTable { get; private set; } = null!;
         public static TableSet<int, GachaCharacterTableRow> GachaCharacterTable { get; private set; } = null!;
@@ -38,6 +39,7 @@ namespace GameData
             HuntingBasicTable = TableSet<int, HuntingBasicTableRow>.From(read("HuntingBasicTable.bytes"), r => r.DropTID);
             LoggingBasicTable = TableSet<int, LoggingBasicTableRow>.From(read("LoggingBasicTable.bytes"), r => r.DropTID);
             MiningBasicTable = TableSet<int, MiningBasicTableRow>.From(read("MiningBasicTable.bytes"), r => r.DropTID);
+            EquipTable = TableSet<int, EquipTableRow>.From(read("EquipTable.bytes"), r => r.EquipTID);
             GachaItemTable = TableSet<int, GachaItemTableRow>.From(read("GachaItemTable.bytes"), r => r.GachaItemTID);
             GachaInfoTable = TableSet<int, GachaInfoTableRow>.From(read("GachaInfoTable.bytes"), r => r.GachaInfoTID);
             GachaCharacterTable = TableSet<int, GachaCharacterTableRow>.From(read("GachaCharacterTable.bytes"), r => r.GachaCharacterTID);

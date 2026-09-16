@@ -1,0 +1,52 @@
+[
+  {
+    "EquipTID": 1001,
+    "Name": "목검",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "None",
+    "SpeedAddPermille": 100,
+    "BasePrice": 50,
+    "Description": "전 산업 +10% · 테스트값"
+  },
+  {
+    "EquipTID": 1002,
+    "Name": "낚싯대",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 300,
+    "BasePrice": 120,
+    "Description": "낚시 +30% · 테스트값"
+  },
+  {
+    "EquipTID": 2001,
+    "Name": "구리 반지",
+    "GlobalRarity": "Common",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 50,
+    "BasePrice": 40,
+    "Description": "전 산업 +5% · 테스트값"
+  },
+  {
+    "EquipTID": 2002,
+    "Name": "어부의 목걸이",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Accessory",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 200,
+    "BasePrice": 80,
+    "Description": "낚시 +20% · 테스트값"
+  },
+  {
+    "EquipTID": 3001,
+    "Name": "원석",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "None",
+    "SpeedAddPermille": 30,
+    "BasePrice": 20,
+    "Description": "전 산업 +3% · 테스트값"
+  }
+]
