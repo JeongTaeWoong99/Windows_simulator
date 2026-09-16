@@ -4,36 +4,8 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-/// <summary>
-/// 드롭 테이블 보관소. <b>(산업, 산업 레벨)별로</b> 테이블을 찾아 준다.
-///
-/// <para>
-/// 드롭 시트는 산업마다 하나지만 행이 레벨별로 갈라져 있다(<c>IndustryLevel</c> 컬럼 — 산업레벨.md 6.2).
-/// 시트 전체를 한 테이블로 등록하면 모든 레벨의 아이템이 한 통에 섞여 나오므로,
-/// 로드 시 레벨로 갈라 <b>레벨마다 독립 테이블</b>로 등록한다.
-/// </para>
-///
-/// <para>
-/// 호출부가 각자 <see cref="DropTable.From{TRow}"/>를 부르고 캐시를 따로 들고 있으면
-/// 캐시 위치가 흩어지고 "판정마다 새로 만드는" 실수가 섞여 든다.
-/// 그래서 <b>만드는 곳을 <see cref="LoadAll"/> 한 군데로 모은다</b> — 시트를 추가하면 여기에 한 줄을 더한다.
-/// </para>
-///
-/// <para>
-/// 서버 시작 시 <c>GameTable.LoadAll</c> 다음에 <see cref="LoadAll"/>을 한 번 부르고,
-/// 이후에는 조회만 한다. 등록이 끝나면 사실상 불변이라 여러 스레드가 동시에 읽어도 안전하다.
-/// </para>
-/// </summary>
-/// <remarks>
-/// <b>희귀도 가중치는 각 산업 시트가 직접 갖는다.</b> 공통 <c>RarityWeightTable</c>을 두지 않으므로
-/// 분포를 산업마다 다르게 잡을 수 있다 — 대신 확률을 손볼 때 <b>5개 시트를 함께</b> 봐야 한다.
-/// <para>
-/// 산업 축에 <see cref="IndustryType"/>을 그대로 쓴다. 기획이 "산업 = IndustryType"으로 잡고 있어서인데,
-/// <b>이 enum은 아이템 분류(<c>Misc</c>·<c>Special</c>)도 겸하고 있어 의미가 둘로 갈려 있다.</b>
-/// 갈라지기 시작하면 <c>IndustryType</c>을 분리한다(→ GameDesign 기획평가.md).
-/// 그때 고칠 곳이 여기로 모이도록 키를 이 클래스 안에 가둬 뒀다.
-/// </para>
-/// </remarks>
+// 드롭 테이블 보관소. 시트는 산업마다 하나지만 로드 시 레벨로 갈라 (산업, 레벨)마다 독립 테이블로 둔다.
+// 만드는 곳은 LoadAll 한 군데 — 시트를 추가하면 여기에 한 줄 → Server/docs/데이터-카탈로그.md 1장
 public sealed class DropTableCatalog : Singleton<DropTableCatalog>
 {
     private readonly Dictionary<(IndustryType Industry, int Level), DropTable> _byIndustryLevel = new();
@@ -41,11 +13,7 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
     /// <summary>등록된 테이블 수. (산업, 레벨) 조합 하나가 테이블 하나다.</summary>
     public int Count => _byIndustryLevel.Count;
 
-    /// <summary>
-    /// 모든 드롭 테이블을 <c>GameTable</c>에서 읽어 등록한다.
-    /// <b>드롭 시트를 추가하면 여기에 한 줄을 더한다.</b>
-    /// </summary>
-    /// <remarks>반드시 <c>GameTable.LoadAll</c> 이후에 부른다. 테이블 데이터가 없으면 여기서 터진다.</remarks>
+    /// <summary>모든 드롭 테이블을 GameTable에서 읽어 등록한다. GameTable.LoadAll 이후에 부른다. 시트를 추가하면 여기에 한 줄.</summary>
     public void LoadAll()
     {
         _byIndustryLevel.Clear();
@@ -65,16 +33,11 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
         Register(IndustryType.Hunting, nameof(GameTable.HuntingBasicTable),
                  GameTable.HuntingBasicTable.All, r => r.IndustryLevel, r => r.ItemTID, r => r.Weight);
 
-        // 1차 산업 5종이 모두 등록됐다. 산업이 늘면 위와 같은 형태로 한 줄씩 추가한다.
-
         ServerLog.Info("데이터", $"드롭 테이블 {Count}개 등록 완료 (산업 5종 × 레벨별)");
         LogDistributions();
     }
 
-    /// <summary>
-    /// 산업×레벨별 가중치 분포를 로그로 찍는다 (R18 진단).
-    /// 5개 시트의 분포가 조용히 어긋나도 서버 시작 로그에서 바로 잡을 수 있다.
-    /// </summary>
+    /// <summary>산업×레벨별 가중치 분포를 로그로 찍는다(R18 진단). 5개 시트의 분포가 어긋나면 시작 로그에서 잡힌다.</summary>
     private void LogDistributions()
     {
         var sb = new StringBuilder();
@@ -96,10 +59,7 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
         ServerLog.Debug("데이터", sb.ToString());
     }
 
-    /// <summary>
-    /// 시트 행 목록을 <b>레벨로 갈라</b> 레벨마다 독립 테이블로 등록한다.
-    /// 테이블 이름은 엑셀의 레벨별 시트명과 같은 꼴(<c>이름.Lv레벨</c>)로 남긴다.
-    /// </summary>
+    /// <summary>시트 행을 레벨로 갈라 레벨마다 독립 테이블로 등록한다. 이름은 엑셀 시트명 꼴(이름.Lv레벨).</summary>
     public void Register<TRow>(
         IndustryType          industry,
         string            name,

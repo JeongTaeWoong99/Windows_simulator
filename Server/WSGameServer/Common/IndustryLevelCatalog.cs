@@ -3,22 +3,8 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-/// <summary>
-/// <c>IndustryLevelTable</c> 보관소. <b>(산업, 산업 레벨)로</b> 행을 찾아 준다.
-///
-/// <para>
-/// 시트의 키는 단일 컬럼 제약 때문에 <c>IndustryLevelTID</c>(산업×100+레벨)지만,
-/// 서버가 실제로 묻는 것은 언제나 <b>(산업, 레벨)</b>이다. 채번식 산수를 호출부마다
-/// 반복하지 않도록 로드 시 한 번 인덱스를 만들어 둔다 (산업레벨.md 6.1).
-/// </para>
-///
-/// <para>
-/// 서버 시작 시 <c>GameTable.LoadAll</c> 다음에 <see cref="LoadAll"/>을 한 번 부르고,
-/// 이후에는 조회만 한다. 등록이 끝나면 사실상 불변이라 여러 스레드가 동시에 읽어도 안전하다.
-/// 판정 비용 외에 해금 요구치(<c>RequiredAptitude</c>·<c>RequiredAccountLevel</c>) 조회도
-/// 구현되면 여기로 모은다.
-/// </para>
-/// </summary>
+// IndustryLevelTable 보관소. 시트 키는 IndustryLevelTID(산업×100+레벨)지만 서버는 (산업, 레벨)로 묻는다.
+// GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md 2장
 public sealed class IndustryLevelCatalog : Singleton<IndustryLevelCatalog>
 {
     private readonly Dictionary<(IndustryType Industry, int Level), IndustryLevelTableRow> _byIndustryLevel = new();
@@ -26,8 +12,7 @@ public sealed class IndustryLevelCatalog : Singleton<IndustryLevelCatalog>
     /// <summary>등록된 행 수. 산업 5 × 레벨 5 = 25가 정상이다.</summary>
     public int Count => _byIndustryLevel.Count;
 
-    /// <summary>모든 행을 <c>GameTable</c>에서 읽어 등록한다.</summary>
-    /// <remarks>반드시 <c>GameTable.LoadAll</c> 이후에 부른다. 테이블 데이터가 없으면 여기서 터진다.</remarks>
+    /// <summary>모든 행을 GameTable에서 읽어 등록한다. GameTable.LoadAll 이후에 부른다.</summary>
     public void LoadAll()
     {
         Load(GameTable.IndustryLevelTable.All);
@@ -66,10 +51,7 @@ public sealed class IndustryLevelCatalog : Singleton<IndustryLevelCatalog>
     public bool TryGet(IndustryType industry, int level, out IndustryLevelTableRow row)
         => _byIndustryLevel.TryGetValue((industry, level), out row!);
 
-    /// <summary>
-    /// 판정 1회 비용(밀리초×천분율). 엑셀 <c>RequiredScore</c>는 초×천분율이라 <b>×1000은 단위 환산</b>이다.
-    /// 엑셀에 밀리초 값을 직접 넣으면 Lv5(24억)가 int를 넘겨 깨진다 — 환산은 반드시 서버 몫이다 (산업레벨.md 2.4).
-    /// </summary>
+    /// <summary>판정 1회 비용(밀리초×천분율). ×1000은 단위 환산이며 반드시 서버 몫 — 엑셀에 넣으면 Lv5가 int를 넘긴다.</summary>
     public long GetJudgeCostUnits(IndustryType industry, int level)
         => Get(industry, level).RequiredScore * 1000L;
 }

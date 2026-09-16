@@ -2,16 +2,8 @@ using GameData;
 
 namespace WSGameServer;
 
-/// <summary>
-/// 유저가 소유한 캐릭터 <b>개체</b>. 같은 캐릭터(TID)를 여러 장 가질 수 있으므로
-/// <see cref="Id"/>(DB 발급 PK)와 <see cref="Tid"/>(테이블 정의)는 반드시 구분한다.
-///
-/// <para>
-/// <b>스탯을 들고 있지 않다.</b> 캐릭터 스탯 = 산업 적성이고, 적성은 TID별 고정값이라
-/// <see cref="CharacterTableRow"/>에서 읽는다. 저장해 두면 엑셀에서 밸런스를 조정해도
-/// DB가 낡은 값을 붙들게 된다. 개체가 들고 있는 것은 성장의 <b>입력</b>(레벨·경험치)뿐이다.
-/// </para>
-/// </summary>
+// 유저가 소유한 캐릭터 개체. 같은 TID를 여러 장 가질 수 있어 Id(DB PK)와 Tid(테이블 정의)를 반드시 구분한다.
+// 스탯(적성)은 TID별 고정값이라 들고 있지 않고 CharacterTableRow에서 읽는다 — 저장하면 DB가 낡은 밸런스를 붙든다.
 public sealed class Character
 {
     /// <summary>테이블 정의를 생성자로 받는다 — 정적 조회에 묶이지 않아 테스트에서 바로 만들 수 있다.</summary>
@@ -92,19 +84,8 @@ public sealed class Character
         IndustryType.Mining,  IndustryType.Logging, IndustryType.Hunting,
     };
 
-    /// <summary>
-    /// 이 산업에서의 <b>기본 작업속도</b>(천분율). 적성을 <c>WorkSpeedTable</c>로 변환한다.
-    ///
-    /// <para>
-    /// 특성·부스트·장비 보정이 붙기 <b>전</b>의 값이며, 슬롯의 최종 확정값
-    /// (<c>WorkStationSlot.CurrentWorkSpeed</c>)과 구분한다.
-    /// </para>
-    ///
-    /// <para>
-    /// 변환식을 코드에 두지 않는 이유는 이 값이 <b>재화 생성량에 직접 곱해지기</b> 때문이다.
-    /// 테이블에 두면 밸런스 조정이 엑셀 수정만으로 끝난다.
-    /// </para>
-    /// </summary>
+    // 이 산업의 기본 작업속도(천분율). 보정이 붙기 전의 값이며 슬롯 확정값(CurrentWorkSpeed)과 구분한다.
+    // 변환식을 코드에 두지 않는 이유: 재화 생성량에 직접 곱해지는 값이라 테이블에 둬야 엑셀만으로 밸런스가 끝난다.
     public int GetBaseWorkSpeed(IndustryType industry)
     {
         var aptitude = GetAptitude(industry);

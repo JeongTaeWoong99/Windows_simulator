@@ -1,26 +1,7 @@
 namespace WSGameServer;
 
-/// <summary>
-/// 가중치 기반 추첨기. "여러 후보 중 하나를 확률로 고르는" 모든 곳에서 쓴다
-/// (채취 드롭 테이블, 희귀도 롤, 가챠 풀 …).
-///
-/// <para>
-/// <b>후보 목록이 고정되면 한 번 만들어 두고 재사용한다.</b> 생성 시 누적 가중치를 미리 쌓아 두고
-/// 추첨은 이진 탐색 O(log n)으로 끝낸다. 가챠 다연차나 드롭 분포 검증처럼 <b>같은 풀을 수천~수백만 회</b>
-/// 굴리는 경로가 있어, 매 추첨마다 가중치 합을 다시 더하면 그게 그대로 비용이 된다.
-/// </para>
-///
-/// <para>
-/// 생성 후 <b>불변</b>이라 여러 스레드가 동시에 <see cref="Pick(Random?)"/>해도 안전하다.
-/// 난수원만 주의하면 된다 — 기본값 <see cref="Random.Shared"/>는 스레드 안전하고,
-/// <see cref="Random"/>을 직접 넘길 때는 그 인스턴스를 공유하지 않아야 한다.
-/// </para>
-///
-/// <para>
-/// 재화가 생성되는 지점이므로 <b>추첨은 서버에서만</b> 돈다(게임기획코어 P4).
-/// </para>
-/// </summary>
-/// <typeparam name="T">후보 항목. 테이블 Row든 무엇이든 상관없다 — 이 클래스는 항목의 내용을 모른다.</typeparam>
+// 가중치 추첨기(드롭·희귀도·가챠). 생성 시 누적 가중치를 쌓아 두고 이진 탐색으로 뽑는다 — 한 번 만들어 재사용한다.
+// 생성 후 불변이라 스레드 안전. 추첨은 서버에서만(P4) → Server/docs/데이터-카탈로그.md 4장
 public sealed class WeightedPicker<T>
 {
     private readonly T[] _items;
@@ -43,15 +24,7 @@ public sealed class WeightedPicker<T>
     /// <summary>원본 순서를 유지한 후보 목록(가중치 0 항목 제외).</summary>
     public IReadOnlyList<T> Items => _items;
 
-    /// <summary>
-    /// 후보와 가중치 선택자로 추첨기를 만든다.
-    /// </summary>
-    /// <remarks>
-    /// <b>가중치 0인 항목은 후보에서 빼고, 음수는 예외로 막는다.</b>
-    /// 0은 "당분간 안 나오게 막아 둔다"는 흔한 기획 의도라 정상 입력으로 받아들이지만,
-    /// 음수는 어떤 의도로도 해석되지 않으므로 데이터 오류로 본다.
-    /// </remarks>
-    /// <exception cref="ArgumentException">후보가 없거나, 가중치가 전부 0이거나, 합이 int를 넘을 때.</exception>
+    /// <summary>후보와 가중치 선택자로 만든다. 가중치 0은 후보에서 빼고(기획상 "막아 둠"), 음수·전부 0·int 초과는 예외.</summary>
     public static WeightedPicker<T> From(IEnumerable<T> items, Func<T, int> weightSelector)
     {
         ArgumentNullException.ThrowIfNull(items);
@@ -120,10 +93,7 @@ public sealed class WeightedPicker<T>
         return results;
     }
 
-    /// <summary>
-    /// count회 독립 추첨하되 결과를 모아 두지 않고 그때그때 넘긴다.
-    /// <b>여러 번 돌려 개수만 집계</b>하는 경우, 중간 리스트를 만들지 않으려고 쓴다.
-    /// </summary>
+    /// <summary>count회 독립 추첨하되 결과를 모으지 않고 그때그때 넘긴다. 개수만 집계할 때 중간 리스트를 피한다.</summary>
     public void PickMany(int count, Action<T> onPicked, Random? random = null)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(count);
@@ -136,9 +106,7 @@ public sealed class WeightedPicker<T>
         }
     }
 
-    /// <summary>
-    /// 후보 <paramref name="index"/>가 뽑힐 확률(0~1). 밸런스 검증·테스트용이며 추첨 경로에서는 쓰지 않는다.
-    /// </summary>
+    /// <summary>후보 index가 뽑힐 확률(0~1). 밸런스 검증·테스트용이며 추첨 경로에서는 쓰지 않는다.</summary>
     public double ProbabilityOf(int index)
     {
         ArgumentOutOfRangeException.ThrowIfNegative(index);
@@ -149,26 +117,15 @@ public sealed class WeightedPicker<T>
     }
 }
 
-/// <summary>
-/// <see cref="WeightedPicker{T}"/> 생성 헬퍼.
-/// 제네릭 인자를 적지 않아도 되도록 타입 추론이 되는 진입점을 제공한다.
-/// </summary>
+/// <summary>WeightedPicker{T} 생성 헬퍼. 제네릭 인자를 적지 않아도 되도록 타입 추론 진입점을 둔다.</summary>
 public static class WeightedPicker
 {
     /// <summary>후보 목록으로 추첨기를 만든다. <c>WeightedPicker.From(rows, r =&gt; r.Weight)</c></summary>
     public static WeightedPicker<T> From<T>(IEnumerable<T> items, Func<T, int> weightSelector)
         => WeightedPicker<T>.From(items, weightSelector);
 
-    /// <summary>
-    /// 그룹 축이 있는 테이블을 <c>(그룹 키 → 추첨기)</c>로 나눠 만든다.
-    ///
-    /// <para>
-    /// 드롭 시트는 제너레이터 제약(단일 컬럼 키) 때문에 첫 컬럼에 고유 <c>DropTID</c>를 두고
-    /// 실제 그룹 축(<c>SpotTID</c>·<c>FieldTID</c>·깊이 구간)은 일반 컬럼으로 둔다.
-    /// 그래서 <b>로드 후 서버가 그룹 인덱스를 만들어야</b> 하는데, 그 작업이 이것이다.
-    /// 테이블 로드 시 한 번 만들어 캐시해 두고 재사용한다.
-    /// </para>
-    /// </summary>
+    // 그룹 축이 있는 테이블을 (그룹 키 → 추첨기)로 나눈다. 시트 키가 단일 컬럼이라 로드 후 서버가 그룹 인덱스를 만든다.
+    // 테이블 로드 시 한 번 만들어 캐시한다 → Server/docs/데이터-카탈로그.md 4장
     public static Dictionary<TGroup, WeightedPicker<T>> GroupBy<T, TGroup>(
         IEnumerable<T>   items,
         Func<T, TGroup>  groupSelector,

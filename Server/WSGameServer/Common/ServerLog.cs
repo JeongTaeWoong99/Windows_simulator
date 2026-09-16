@@ -25,20 +25,8 @@ public enum LogLevel
     None,
 }
 
-/// <summary>
-/// 서버 로그. <b>시각 · 레벨 · 스레드 · 분류</b>를 한 줄에 담는다.
-///
-/// <para>
-/// 프레임워크(<c>MikaNetwork.Lib</c>)가 아니라 서버 쪽에 두는 이유는, Lib이 Unity로 손복사되는
-/// 계층이라 <c>Console.WriteLine</c>이 Unity 콘솔에 뜨지 않기 때문이다. 프레임워크·프로토콜 계층은
-/// 로그 훅만 뚫어 두고(<c>MikaPacketManager.Dispatching</c> 등) 어디에 어떻게 찍을지는 호스트가 정한다.
-/// </para>
-///
-/// <para>
-/// <b>스레드가 핵심 정보다.</b> 게임 로직은 단일 <c>LogicThread</c>에서만 돌아야 하고, DB는 스레드풀에서
-/// 돌아야 한다. 로그에 스레드가 찍혀 있으면 그 규칙이 깨진 순간을 바로 알아볼 수 있다.
-/// </para>
-/// </summary>
+// 서버 로그(시각·레벨·스레드·분류). Lib이 아니라 서버에 두는 이유는 Lib이 Unity로 복사되는 계층이라 Console이 안 뜨기 때문 —
+// 프레임워크는 로그 훅만 뚫고 호스트가 찍는다. 스레드가 핵심 정보다: 로직은 LogicThread, DB는 풀 — 깨진 순간이 로그에 드러난다.
 public static class ServerLog
 {
     /// <summary>출력 하한. 이 레벨 미만은 찍지 않는다. 개발 중이라 패킷까지 보이는 Debug로 둔다.</summary>
@@ -134,15 +122,8 @@ public static class ServerLog
         };
     }
 
-    /// <summary>
-    /// 지금 스레드를 사람이 읽을 수 있는 이름으로.
-    ///
-    /// <para>
-    /// <b>스레드풀은 이름보다 번호를 먼저 본다.</b> .NET은 풀 스레드에 전부 <c>.NET TP Worker</c>라는
-    /// 같은 이름을 붙여 두는데, 그대로 찍으면 여러 DB 스레드가 한 스레드처럼 보여 오히려 오해를 부른다.
-    /// 이름이 뜻을 갖는 것은 우리가 직접 붙인 스레드(<c>LogicThread</c>)뿐이다.
-    /// </para>
-    /// </summary>
+    // 지금 스레드의 표시 이름. 풀 스레드는 전부 ".NET TP Worker"라 이름보다 번호를 먼저 본다 —
+    // 이름이 뜻을 갖는 것은 우리가 직접 붙인 LogicThread뿐이다.
     private static string ThreadLabel()
     {
         var thread = Thread.CurrentThread;

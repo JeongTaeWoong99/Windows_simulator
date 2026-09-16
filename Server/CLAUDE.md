@@ -29,7 +29,7 @@
 | `Server/GameData/` | (생성) 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
 | `Server/Shared/Data/` | (생성) MemoryPack 바이너리 `*.bytes` |
 | `Server/WSGameServer.Tests/` | 서버 유닛 테스트 — **xUnit + Shouldly + Moq** |
-| `Server/docs/` | 서버 전용 문서 — [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) |
+| `Server/docs/` | 서버 전용 문서 — [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) |
 | `Assets/Scripts_Server/Protocol/` | (미러) `Server/MikaProtocol` 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | (미러) `Server/GameData` 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | (미러) `Server/Shared/Data`의 `*.bytes` |

@@ -25,21 +25,8 @@ namespace MikaProtocol
         public EItemChangeKind Kind { get; set; }
     }
 
-    /// <summary>
-    /// 가챠로 뽑힌 결과 1건 (인벤토리 누적 수량이 아닌 "이번에 획득한 것").
-    ///
-    /// <para>
-    /// <b><see cref="RewardType"/>이 어느 TID 필드를 읽을지 정한다</b> — 아이템이면 <c>ItemId</c>,
-    /// 캐릭터면 <c>CharacterTid</c>이고 나머지 하나는 0이다. 한 필드에 둘을 겹쳐 담지 않는 이유는
-    /// 아이템 TID와 캐릭터 TID가 같은 숫자 대역을 쓸 수 있어, 종류를 잘못 읽으면
-    /// <b>조용히 엉뚱한 것을 그리기</b> 때문이다.
-    /// </para>
-    ///
-    /// <para>
-    /// <b>캐릭터 개체 PK는 여기 실리지 않는다.</b> DB가 발급하는 값이라 이 응답보다 늦게 나온다 —
-    /// 배치에 쓸 <c>CharacterId</c>는 뒤이어 오는 <see cref="S_CharacterListResponse"/>에서 받는다.
-    /// </para>
-    /// </summary>
+    // 가챠로 뽑힌 결과 1건(이번에 획득한 것). RewardType이 ItemId·CharacterTid 중 어느 것을 읽을지 정한다 — 겹쳐 담으면
+    // 종류를 잘못 읽어도 조용히 지나간다. 개체 PK는 뒤따르는 S_CharacterListResponse에서 → Server/docs/데이터-카탈로그.md 3장
     [MemoryPackable]
     public partial class GachaRewardInfo
     {
@@ -77,25 +64,8 @@ namespace MikaProtocol
         public List<AptitudeInfo> Aptitudes { get; set; } = new();
     }
 
-    /// <summary>
-    /// 작업슬롯 한 칸의 상태.
-    /// 뒤쪽 세 값은 클라이언트가 <b>다음 채취까지 남은 시간을 로컬에서 계산</b>하라고 준다.
-    /// 그 카운트다운은 연출일 뿐이고, 실제로 몇 개가 나왔는지는 서버가 정한다.
-    ///
-    /// <para>
-    /// <b>주기를 초로 내려보내지 않는 이유:</b> 캐릭터 스탯·버프로 슬롯마다 주기가 달라져서
-    /// "30초"라는 고정값이 없다. 대신 진행도·속도·1회 비용을 그대로 주면 클라이언트가
-    /// <c>남은시간 = (비용 - 진행도 - 경과 × 속도) / 속도</c>로 직접 구할 수 있고,
-    /// 나중에 주기 규칙이 바뀌어도 클라이언트를 고치지 않아도 된다.
-    /// </para>
-    ///
-    /// <para>
-    /// <b><see cref="WorkStationSlotInfo.LastTickAtUnixMs"/>와 <see cref="WorkStationSlotInfo.ProgressUnits"/>는
-    /// 같은 순간을 가리켜야 한다.</b> 진행도는 "그 시각의" 값이라, 시각만 초 단위로 내려 보내면
-    /// 클라이언트가 그 소수부만큼 일을 더 한 것으로 계산해 카운트다운이 먼저 0에 닿는다(이슈 #11).
-    /// 그래서 밀리초로 보낸다.
-    /// </para>
-    /// </summary>
+    // 작업슬롯 한 칸의 상태. 주기 대신 진행도·속도·비용을 주어 클라가 카운트다운을 직접 구한다(연출일 뿐, 개수는 서버가 정한다).
+    // LastTickAtUnixMs와 ProgressUnits는 같은 순간을 가리켜야 해 밀리초로 보낸다(이슈 #11) → Server/docs/채취-정산.md 7장
     [MemoryPackable]
     public partial class WorkStationSlotInfo
     {

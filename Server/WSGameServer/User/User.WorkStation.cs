@@ -132,19 +132,8 @@ public partial class User
         Send(new S_WorkStationSlotsResponse { Slots = WorkStation.Snapshot() });
     }
 
-    /// <summary>
-    /// 모든 슬롯을 정산하고, 수확이 있으면 인벤토리에 넣은 뒤 <b>슬롯별로 결과를 밀어 준다.</b>
-    ///
-    /// <para>
-    /// 슬롯 변경 · 주기 푸시 · 접속 종료가 전부 이 함수를 부른다.
-    /// <b>로그인은 부르지 않는다</b> — 오프라인 진행이 없으므로 정산할 구간이 없다.
-    /// </para>
-    /// </summary>
-    /// <param name="notify">
-    /// 결과 패킷을 보낼지 여부. 접속 종료 정산에서는 false로 준다 —
-    /// 세션이 이미 끊겨 보낼 곳이 없다. <b>아이템 지급과 DB 저장은 그대로 수행된다</b>
-    /// (접속 중에 완성된 판정은 정당하게 번 것이므로 버리지 않는다).
-    /// </param>
+    /// <summary>모든 슬롯을 정산하고 수확을 인벤토리에 넣은 뒤 슬롯별로 밀어 준다. 로그인은 부르지 않는다(정산할 구간이 없다).</summary>
+    /// <param name="notify">접속 종료 정산에서는 false — 보낼 곳이 없다. 지급·저장은 그대로 한다 → Server/docs/채취-정산.md 3장</param>
     /// <returns>정산된 슬롯 수.</returns>
     public int SettleWorkStation(DateTime now, bool notify = true)
     {
@@ -193,14 +182,7 @@ public partial class User
         return harvests.Count;
     }
 
-    /// <summary>
-    /// 슬롯에 산업·레벨·캐릭터를 배치한다.
-    /// <b>바꾸기 전에 먼저 정산한다</b> — 이전 구간은 이전 설정으로 계산돼야 한다.
-    /// </summary>
-    /// <param name="industryLevel">
-    /// 돌릴 산업 레벨. <b>클라이언트가 보낸 값이라 반드시 해금 여부를 검증한다</b> —
-    /// 채취는 재화가 생성되는 지점이다(게임기획코어 P4).
-    /// </param>
+    /// <summary>슬롯에 산업·레벨·캐릭터를 배치한다. 바꾸기 전에 먼저 정산한다. 레벨은 클라가 보낸 값이라 해금 여부를 서버가 검증한다(P4).</summary>
     public void AssignWorkStation(
         int slotIndex,
         IndustryType industry,
@@ -256,14 +238,8 @@ public partial class User
         Send(new S_WorkStationAssignResponse { Result = EResultCode.Ok, Slot = slot.ToInfo() });
     }
 
-    /// <summary>
-    /// 슬롯의 채취 속도를 다시 계산해 반영한다(버프 적용·만료, 캐릭터 스탯 상승 등).
-    /// <b>반드시 정산을 먼저 한다</b> — 안 그러면 아직 정산되지 않은 구간까지 새 속도로 계산된다.
-    /// </summary>
-    /// <param name="notify">
-    /// 바뀌었을 때 슬롯 스냅샷을 보낼지. 로그인 적재 중에는 false로 준다 —
-    /// 아직 <c>S_LoginResponse</c>도 나가기 전이라, 직후 <c>SendWorkStationSlots</c>가 어차피 보낸다.
-    /// </param>
+    /// <summary>슬롯 속도를 다시 계산해 반영한다(버프·스탯 변화). 반드시 정산을 먼저 한다.</summary>
+    /// <param name="notify">로그인 적재 중에는 false — 직후 SendWorkStationSlots가 어차피 보낸다.</param>
     public void RefreshWorkStationSpeed(DateTime now, bool notify = true)
     {
         SettleWorkStation(now);
@@ -277,26 +253,8 @@ public partial class User
         }
     }
 
-    /// <summary>
-    /// 이 슬롯의 채취 속도(천분율)를 구한다. <b>보정을 가산·승산으로 분류해 모은 뒤 한 번에 적용한다</b>
-    /// (<see cref="WorkSpeed"/>).
-    ///
-    /// <para>
-    /// <b>속도 = 적성기본값 × (1 + Σ가산) × Π승산</b>
-    /// </para>
-    ///
-    /// <list type="bullet">
-    /// <item><b>기본값</b> — 배치된 캐릭터의 해당 산업 적성을 <c>WorkSpeedTable</c>로 변환한 값</item>
-    /// <item><b>가산</b> — 특성 패시브 · 액티브 부스트 · 장비. 전부 <b>기본값 기준 비율</b>로 더한다. 아직 미작성</item>
-    /// <item><b>승산</b> — 결과 전체에 얹히는 배수. 현재는 <see cref="Global.GatherSpeedMultiplier"/> 하나뿐</item>
-    /// </list>
-    ///
-    /// <para>
-    /// <b>속도에 관여하는 것은 전부 여기로 모은다.</b> 누적식(<c>ConsumeJudgeCount</c>)에 배수를 곱하면
-    /// 정산할 때마다 배수가 <b>아직 정산되지 않은 구간에까지 소급</b>된다. 이 함수는 "정산 → ApplyWorkSpeed"
-    /// 순서를 타는 유일한 경로라, 여기서 곱하면 소급이 원천적으로 불가능하다.
-    /// </para>
-    /// </summary>
+    // 이 슬롯의 채취 속도(천분율). 속도에 관여하는 것은 전부 여기로 모은다 — 정산 → ApplyWorkSpeed 순서를 타는 유일한 경로라
+    // 여기서 곱하면 소급이 불가능하다. 합성 규칙은 WorkSpeed → Server/docs/채취-정산.md 5장
     private int ResolveSlotSpeed(WorkStationSlot slot)
     {
         // 비어 있는 슬롯은 어차피 돌지 않는다(IsActive=false). 값은 의미가 없으므로 기준값을 둔다.
