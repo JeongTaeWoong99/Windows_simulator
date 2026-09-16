@@ -1,7 +1,7 @@
 # 00. 작업슬롯 (WorkStationSlot)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-09-16 · 상태: **골격 확정 · 서버 해금 구현(T-038) · 수치 미정**
+> 상태: **골격 확정 · 서버 해금 구현(T-038) · 수치 미정**
 > **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`낚시`](../gathering/fishing/README.md) · [`산업레벨`](../gathering/산업레벨.md) · [`자원채취`](../gathering/README.md) · [`캐릭터`](../character/README.md)
 >   [`특성`](../trait/README.md) · [`해금`](../unlock/README.md)
 

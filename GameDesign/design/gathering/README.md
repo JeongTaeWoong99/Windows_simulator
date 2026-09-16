@@ -1,7 +1,7 @@
 # 01. 자원 채취 (Gathering)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md) · 전제: [`작업슬롯`](../workslot/README.md)
-> 최종 업데이트: 2026-09-14 · 상태: **산업 5종 확정 · 산업 레벨 5단계 데이터 생성 완료 · 확률값 미정 · ⚠️ 서버 미구현**
+> 상태: **산업 5종 확정 · 산업 레벨 5단계 데이터 생성 완료 · 확률값 미정 · ⚠️ 서버 미구현**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`낚시`](fishing/README.md) · [`농사`](farming/README.md)
 >   [`벌목`](logging/README.md) · [`사냥`](hunting/README.md) · [`산업레벨`](산업레벨.md) · [`아이템`](../item/README.md) · [`작업슬롯`](../workslot/README.md) · [`진행 및 성장`](../progression/README.md)
 >   [`채굴`](mining/README.md) · [`특성`](../trait/README.md)

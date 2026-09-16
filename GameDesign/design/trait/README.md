@@ -1,7 +1,7 @@
 # 03. 특성 (Trait)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-09-14 · 상태: **구조 확정 · 수치 미정 · 액티브 해금은 해금 시스템으로**
+> 상태: **구조 확정 · 수치 미정 · 액티브 해금은 해금 시스템으로**
 > **바뀌면 갱신:** [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`산업레벨`](../gathering/산업레벨.md) · [`아이템`](../item/README.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
 >   [`진행 및 성장`](../progression/README.md) · [`채굴`](../gathering/mining/README.md) · [`캐릭터`](../character/README.md) · [`퀘스트`](../quest/README.md)
 

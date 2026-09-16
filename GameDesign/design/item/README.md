@@ -1,7 +1,7 @@
 # 04. 아이템 (Item)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 최종 업데이트: 2026-09-02 · 상태: **실 데이터 156종 입력 · `BasePrice` 필수 확정 · 분류 정책 미정**
+> 상태: **실 데이터 156종 입력 · `BasePrice` 필수 확정 · 분류 정책 미정**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`농사`](../gathering/farming/README.md) · [`벌목`](../gathering/logging/README.md) · [`사냥`](../gathering/hunting/README.md)
 >   [`자원채취`](../gathering/README.md)
 
