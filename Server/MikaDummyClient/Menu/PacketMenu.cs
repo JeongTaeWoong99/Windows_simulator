@@ -25,6 +25,7 @@ namespace MikaDummyClient
                 new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
                 new ClientAction("ItemSell (즉시 판매)", SendItemSell),
                 new ClientAction("Cheat (admin 전용 — 지급·정산)", SendCheat),
+                new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
             };
         }
 
@@ -146,10 +147,27 @@ namespace MikaDummyClient
             });
         }
 
+        private void SendUnlock()
+        {
+            Console.Write("UnlockTID (작업슬롯 2~7번 칸 = 1002~1007) > ");
+            if (!int.TryParse(Console.ReadLine(), out int unlockTid))
+            {
+                Console.WriteLine("[Client] UnlockTID는 숫자여야 합니다.");
+                return;
+            }
+
+            // 지불 컬럼이 없는 해금은 서버가 재화를 무시한다. 빈칸이면 골드.
+            Console.Write("Currency (1=골드 2=다이아, 기본 1) > ");
+            string? currencyInput = Console.ReadLine();
+            byte currency = string.IsNullOrWhiteSpace(currencyInput) ? (byte)1 : byte.Parse(currencyInput.Trim());
+
+            NetworkManager.Instance.Send(new C_UnlockRequest { UnlockTID = unlockTid, Currency = (ECurrencyType)currency });
+        }
+
         private void SendCheat()
         {
             Console.WriteLine("명령: 1=GiveGold(Arg1=금액, 음수면 차감) 2=GiveDia 3=GiveItem(TID, 개수) " +
-                              "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle");
+                              "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle 7=Unlock(UnlockTID)");
             Console.Write("Command > ");
             if (!byte.TryParse(Console.ReadLine(), out byte command))
             {

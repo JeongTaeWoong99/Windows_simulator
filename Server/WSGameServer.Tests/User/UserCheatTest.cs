@@ -183,6 +183,43 @@ public class UserCheatTest
     }
 
     [Fact]
+    public void 해금을_지급하면_조건_없이_열리고_칸이_생긴다()
+    {
+        // 실데이터 1003(3번 칸)은 1500골드 + 선행 1002가 조건이다. 골드 0·선행 없음에도 열려야 GrantUnlock 경로다.
+        var (user, b) = Admin();
+
+        user.ExecuteCheat(Req(ECheatCommand.Unlock, 1003), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        user.IsUnlocked(1003).ShouldBeTrue();
+        user.Gold.ShouldBe(0);
+        b.DB.PostedOf<SaveUnlockRepository>().ShouldHaveSingleItem();
+        user.WorkStation.TryGet(3, out _).ShouldBeTrue();
+    }
+
+    [Fact]
+    public void 이미_열린_해금_지급은_AlreadyUnlocked다()
+    {
+        var (user, b) = Admin();
+        user.GrantUnlock(1002, Base);
+
+        user.ExecuteCheat(Req(ECheatCommand.Unlock, 1002), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.AlreadyUnlocked);
+    }
+
+    [Fact]
+    public void 없는_해금_지급은_InvalidCheatArgs다()
+    {
+        var (user, b) = Admin();
+
+        user.ExecuteCheat(Req(ECheatCommand.Unlock, 9999), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatArgs);
+        b.DB.Posted.ShouldBeEmpty();
+    }
+
+    [Fact]
     public void 없는_명령은_InvalidCheatCommand다()
     {
         var (user, b) = Admin();

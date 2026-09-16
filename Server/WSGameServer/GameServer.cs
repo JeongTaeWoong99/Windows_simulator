@@ -40,6 +40,7 @@ public class GameServer : IDisposable
             GachaPoolCatalog.Instance.LoadAll();
             IndustryLevelCatalog.Instance.LoadAll();
             CharacterLevelCatalog.Instance.LoadAll();
+            UnlockCatalog.Instance.LoadAll();   // 데이터 오류(선행 순환·1:1 위반)면 여기서 기동이 멈춘다
 
             DBExecutor.Instance.Start(8);
             _logicExecutor.Start();

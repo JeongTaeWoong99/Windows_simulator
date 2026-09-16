@@ -50,6 +50,12 @@ public sealed record UserIndustryLevelRow
     public int unlocked_level { get; init; }
 }
 
+// t_user_unlock 조회 전용 Row (열린 해금만 행이 있다 — 해금은 영구다)
+public sealed record UserUnlockRow
+{
+    public int unlock_tid { get; init; }
+}
+
 /// <summary>
 /// 로그인 시 리포지토리가 로직 스레드로 넘기는 조회 결과 묶음.
 /// Row가 리포지토리 밖으로 나가는 유일한 통로다 — 순수 코어(Inventory·WorkStation)에는 넘기지 않는다.
@@ -64,4 +70,5 @@ public sealed record PlayerLoginData(
     CurrencyRow? Currency,
     List<CharacterRow> CharacterRows,
     List<WorkStationSlotRow> WorkStationSlotRows,
-    List<UserIndustryLevelRow> IndustryLevelRows);
+    List<UserIndustryLevelRow> IndustryLevelRows,
+    List<UserUnlockRow> UnlockRows);

@@ -24,7 +24,8 @@ namespace MikaNetwork
     /// S_InventoryResponse         인벤토리 전체 스냅샷
     /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
     /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
-    /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷
+    /// S_UnlockListResponse        열린 해금 목록 (슬롯보다 먼저 온다 — 잠긴 칸을 그리는 근거)
+    /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷 (열린 칸만 담긴다)
     ///
     /// UI 초기화는 이것들이 다 도착한 뒤를 기준으로 잡아야 한다.
     /// </summary>
@@ -169,6 +170,35 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"치트 {res.Command} → {res.Result} {res.Message}");
             CheatResponded?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 해금
+
+        // 열린 해금 목록 도착 — 로그인 직후, 작업슬롯 스냅샷보다 먼저 온다 (Handle_S_UnlockListResponse에서 발행)
+        public static event Action<S_UnlockListResponse>? UnlockListReceived;
+
+        // 해금 결과 도착 (Handle_S_UnlockResponse에서 발행). 칸이 생기는 것은 S_WorkStationSlotSyncResponse가 뒤따라 알린다
+        public static event Action<S_UnlockResponse>? UnlockResponded;
+
+        // 열린 해금 전체 (S_UnlockListResponse 수신 시 자동 호출)
+        // ★ 로그인 시 자동으로 1회 온다. 잠긴 칸과 조건 문구는 이 목록 + UnlockTable로 클라가 만든다.
+        [PacketHandler]
+        public static void Handle_S_UnlockListResponse(ISession session, S_UnlockListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"열린 해금 — {res.UnlockTIDs.Count}개 [{string.Join(", ", res.UnlockTIDs)}]");
+            UnlockListReceived?.Invoke(res);
+        }
+
+        // 해금 결과 (S_UnlockResponse 수신 시 자동 호출)
+        // ※ 유저 요청뿐 아니라 서버가 직접 연 경우(퀘스트·치트)에도 같은 패킷이 온다.
+        //   차감된 골드는 S_CurrencyResponse가, 새 칸은 S_WorkStationSlotSyncResponse가 따로 내려온다.
+        [PacketHandler]
+        public static void Handle_S_UnlockResponse(ISession session, S_UnlockResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"해금 {res.UnlockTID} → {res.Result}");
+            UnlockResponded?.Invoke(res);
         }
 
         #endregion

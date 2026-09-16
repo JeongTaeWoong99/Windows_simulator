@@ -17,6 +17,7 @@ public sealed class LoginRepository : IRepository
     private List<CharacterRow>       _characterRows       = new();
     private List<WorkStationSlotRow> _workStationSlotRows = new();
     private List<UserIndustryLevelRow> _industryLevelRows = new();
+    private List<UserUnlockRow>        _unlockRows        = new();
 
     // DBExecutor 파티션 키 — 같은 세션 작업은 직렬 처리
     public long Key => User.SessionId;
@@ -65,6 +66,11 @@ public sealed class LoginRepository : IRepository
             @"SELECT industry, unlocked_level
               FROM t_user_industry_level WHERE user_id = @userId",
             new { userId = User.Uid });
+
+        // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸은 이 목록 + WorkSlotTable로만 만든다.
+        _unlockRows = await connection.QueryAsync<UserUnlockRow>(
+            "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
+            new { userId = User.Uid });
     }
 
     // === 로직 스레드에서 실행 ===
@@ -75,7 +81,7 @@ public sealed class LoginRepository : IRepository
     {
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
-                                _workStationSlotRows, _industryLevelRows),
+                                _workStationSlotRows, _industryLevelRows, _unlockRows),
             DateTime.UtcNow);
     }
 }

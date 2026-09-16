@@ -52,6 +52,9 @@ namespace MikaProtocol
         S_CharacterSyncResponse = 21,
         C_CheatRequest = 22,
         S_CheatResponse = 23,
+        C_UnlockRequest = 24,
+        S_UnlockResponse = 25,
+        S_UnlockListResponse = 26,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -245,6 +248,40 @@ namespace MikaProtocol
         public EResultCode   Result  { get; set; }
         public ECheatCommand Command { get; set; }
         public string        Message { get; set; } = "";   // 로그용 한 줄. 클라 로직이 읽지 않는다
+    }
+
+    // ───────────────────────── 해금 (Unlock) ─────────────────────────
+
+    /// <summary>
+    /// 해금 요청. <b>조건을 채웠어도 이 요청을 보내야 열린다</b> — 해금은 유저의 행동이다.
+    /// 판정 순서·조건은 <c>GameDesign/design/unlock/README.md</c> 2.1. 조건 검사는 서버가 다시 한다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_UnlockRequest)]
+    public partial class C_UnlockRequest : IPacket
+    {
+        public int           UnlockTID { get; set; }  // UnlockTable 행
+        public ECurrencyType Currency  { get; set; }  // 지불 재화. 지불 컬럼이 없는 해금은 무시한다
+    }
+
+    /// <summary>
+    /// 해금 결과. 열린 뒤 무엇이 달라지는가는 <b>콘텐츠별 기존 패킷</b>이 따로 밀어 준다
+    /// (작업슬롯이면 <see cref="S_WorkStationSlotSyncResponse"/>). 서버가 직접 연 경우(퀘스트·치트)도 같은 패킷이 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_UnlockResponse)]
+    public partial class S_UnlockResponse : IPacket
+    {
+        public EResultCode Result    { get; set; }
+        public int         UnlockTID { get; set; }
+    }
+
+    /// <summary>
+    /// 열린 해금 전체 목록(로그인 시). <b>작업슬롯 스냅샷보다 먼저 온다</b> —
+    /// 클라가 잠긴 칸을 그릴 때 이미 알고 있어야 한다. 조건 문구는 클라가 <c>UnlockTable</c>로 만든다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_UnlockListResponse)]
+    public partial class S_UnlockListResponse : IPacket
+    {
+        public List<int> UnlockTIDs { get; set; } = new();
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────

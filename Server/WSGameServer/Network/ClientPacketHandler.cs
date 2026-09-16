@@ -110,6 +110,22 @@ public static class ClientPacketHandler
                                DateTime.UtcNow, industryLevel);
     }
 
+    /// <summary>해금 요청. 조건 판정·차감은 User가 한다 — 클라가 "열 수 있다"고 그렸어도 여기서 다시 검사한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_UnlockRequest(ISession session, C_UnlockRequest req)
+    {
+        ServerLog.Debug("해금", $"요청 UnlockTID={req.UnlockTID} 재화={req.Currency} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_UnlockResponse { Result = EResultCode.NotLoggedIn, UnlockTID = req.UnlockTID });
+            return;
+        }
+
+        user.TryUnlock(req.UnlockTID, (GameData.CurrencyType)req.Currency, DateTime.UtcNow);
+    }
+
     /// <summary>
     /// 아이템을 즉시 판매한다. <b>가격은 서버가 정한다</b> — 클라이언트는 무엇을 몇 개 팔지만 보낸다.
     /// </summary>

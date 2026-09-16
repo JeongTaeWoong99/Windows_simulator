@@ -99,6 +99,12 @@ internal sealed class TestUserBuilder
     public FakeLogicExecutor     Executor { get; private set; } = new();
 
     /// <summary>
+    /// 해금·작업슬롯 표. <b>비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다</b> —
+    /// 빈 표면 열린 칸이 하나도 없어 로그인 경로의 슬롯이 전부 사라진다. 기대값을 고정하려면 먼저 <c>Load</c>한다.
+    /// </summary>
+    public UnlockCatalog Unlocks { get; } = new();
+
+    /// <summary>
     /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
     /// <b><c>Destroy()</c> 검증에는 쓰지 않는다</b>: <c>OnDestroy</c>가
     /// <c>UserManager.Instance</c>(프로세스 전역)를 만져 다른 테스트로 샌다.
@@ -128,8 +134,14 @@ internal sealed class TestUserBuilder
 
     public User Build(long uid = 1)
     {
+        if (Unlocks.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            Unlocks.LoadAll();
+        }
+
         var user = new User(Channel, DB, Executor,
-                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth);
+                            pid: "test-pid", nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks);
         user.Uid = uid;
         return user;
     }

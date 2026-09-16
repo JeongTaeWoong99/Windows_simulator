@@ -54,6 +54,20 @@ public class PacketEnumTest
     }
 
     [Fact]
+    public void 프로토콜_재화타입은_GameData_재화타입과_이름_값이_1대1이다()
+    {
+        // 해금 요청의 Currency를 서버가 byte 캐스팅으로 옮긴다. 어긋나면 골드를 골랐는데 다이아 검사를 탄다.
+        var protocol = Enum.GetValues<ECurrencyType>()
+            .Select(v => $"{v}={(byte)v}");
+
+        var gameData = Enum.GetValues<CurrencyType>()
+            .Where(v => v != CurrencyType.Max)
+            .Select(v => $"{v}={(byte)v}");
+
+        protocol.ShouldBe(gameData);
+    }
+
+    [Fact]
     public void 산업타입_값은_ItemType의_산업_구간과_같다()
     {
         // DropTID(산업×100000+…)와 DB(t_workstation_slot.industry 등)가 ItemType 숫자로 저장돼 있다.

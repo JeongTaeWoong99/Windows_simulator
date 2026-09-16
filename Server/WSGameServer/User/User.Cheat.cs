@@ -31,6 +31,7 @@ public partial class User
             ECheatCommand.GiveCharacter    => CheatGiveCharacter(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
             ECheatCommand.Settle           => CheatSettle(now),
+            ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -120,5 +121,22 @@ public partial class User
     {
         var settled = SettleWorkStation(now);
         return (EResultCode.Ok, $"정산 슬롯 {settled}개");
+    }
+
+    private (EResultCode, string) CheatUnlock(long unlockTid, DateTime now)
+    {
+        if (unlockTid <= 0 || unlockTid > int.MaxValue || !_unlockCatalog.TryGetUnlock((int)unlockTid, out _))
+        {
+            return (EResultCode.InvalidCheatArgs, $"UnlockTable에 없는 TID {unlockTid}");
+        }
+
+        if (IsUnlocked((int)unlockTid))
+        {
+            return (EResultCode.AlreadyUnlocked, $"이미 열린 해금 {unlockTid}");
+        }
+
+        // 퀘스트·튜토리얼과 같은 지급 경로 — 조건·차감 없이 기록·통지·콘텐츠 후속까지 동일하다.
+        GrantUnlock((int)unlockTid, now);
+        return (EResultCode.Ok, $"해금 {unlockTid} 지급");
     }
 }

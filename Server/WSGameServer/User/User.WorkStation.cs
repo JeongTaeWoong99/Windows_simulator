@@ -5,10 +5,7 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>신규 유저에게 기본으로 열어 주는 작업슬롯 수. 시작 슬롯 수가 미확정이라 1개로 둔다.</summary>
-    public const int DefaultSlotCount = 1;
-
-    /// <summary>플레이어의 작업슬롯 전체. 채취는 여기서 시작된다.</summary>
+    /// <summary>플레이어의 작업슬롯 전체. 채취는 여기서 시작된다. 칸 수·상한은 <c>WorkSlotTable</c>과 해금이 정한다.</summary>
     public WorkStation WorkStation { get; } = new();
 
     /// <summary>
@@ -34,12 +31,52 @@ public partial class User
             ? level
             : WorkStationSlot.DefaultIndustryLevel;
 
-    /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회). 캐릭터 적재가 먼저다.</summary>
+    /// <summary>이 칸이 열려 있는가. <c>WorkSlotTable</c>에 없는 번호는 없는 칸이라 false다.</summary>
+    private bool IsWorkSlotOpen(int slotIndex)
+    {
+        foreach (var slot in _unlockCatalog.WorkSlots)
+        {
+            if (slot.WorkSlotTID == slotIndex)
+            {
+                return IsUnlocked(slot.UnlockTID);
+            }
+        }
+
+        return false;
+    }
+
+    /// <summary>해금이 작업슬롯 칸이면 그 칸을 만들고 스냅샷을 밀어 준다. 슬롯이 아닌 해금이면 아무것도 안 한다.</summary>
+    private void OnWorkSlotUnlocked(int unlockTid, DateTime now)
+    {
+        if (!_unlockCatalog.TryGetWorkSlotOf(unlockTid, out var slotIndex))
+        {
+            return;
+        }
+
+        var slot = WorkStation.Unlock(slotIndex, now);
+        Send(new S_WorkStationSlotSyncResponse { Slot = slot.ToInfo() });
+    }
+
+    /// <summary>DB에서 읽은 슬롯 Row를 도메인으로 변환해 적재한다(로그인 시 1회). 캐릭터·해금 적재가 먼저다.</summary>
     private void LoadWorkStation(IReadOnlyList<WorkStationSlotRow> rows, DateTime startedAt)
     {
+        // 잠긴(또는 없는) 칸의 배치 행은 만들지 않는다 — "열렸다"의 원본은 t_user_unlock 하나다(해금 #18).
+        // 행은 지우지 않는다. 미보유 캐릭터 경고와 같은 태도다.
+        var openRows = new List<WorkStationSlotRow>(rows.Count);
+        foreach (var r in rows)
+        {
+            if (!IsWorkSlotOpen(r.slot_index))
+            {
+                ServerLog.Warn("작업슬롯", $"잠긴 칸의 배치 행을 무시. Uid={Uid} Slot={r.slot_index}");
+                continue;
+            }
+
+            openRows.Add(r);
+        }
+
         // 보유하지 않은 캐릭터를 물고 있는 슬롯은 데이터 이상이다(방출·삭제 경로가 생기면 정상 발생 가능).
         // 배치는 유지하되 흔적을 남긴다 — 이런 슬롯은 기본 속도로 돌게 되어 조용히 어긋난다.
-        foreach (var r in rows)
+        foreach (var r in openRows)
         {
             if (r.character_id != 0 && !TryGetCharacter(r.character_id, out _))
             {
@@ -48,7 +85,7 @@ public partial class User
             }
         }
 
-        WorkStation.Load(rows.Select(r =>
+        WorkStation.Load(openRows.Select(r =>
         {
             var industry = (IndustryType)r.industry;
             var level    = r.industry_level;

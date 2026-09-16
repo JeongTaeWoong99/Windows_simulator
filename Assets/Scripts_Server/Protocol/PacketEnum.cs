@@ -33,6 +33,21 @@ namespace MikaProtocol
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
         InvalidCheatCommand = 401, // 정의되지 않은 명령
         InvalidCheatArgs    = 402, // 인자 범위·존재 검사 실패 (없는 TID, 0 이하 수량 등)
+
+        // ── 500~: 해금 ──
+        InvalidUnlockTID = 500, // UnlockTable에 없는 TID
+        AlreadyUnlocked  = 501, // 이미 열린 해금을 다시 요청
+        UnlockLocked     = 502, // 선행 미충족 · 계정 레벨 미달 · 이 해금에 없는 재화 선택. 골드 부족은 NotEnoughCurrency
+    }
+
+    // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
+    // 서버가 byte 캐스팅으로 그대로 옮긴다(PacketEnumTest가 어긋남을 잡는다).
+    public enum ECurrencyType : byte
+    {
+        None = 0,
+
+        Gold = 1,
+        Dia  = 2,
     }
 
     /// <summary>
@@ -48,6 +63,7 @@ namespace MikaProtocol
         GiveCharacter    = 4,  // Arg1 = CharacterTID · Arg2 = 장수 (1~10)
         GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
         Settle           = 6,  // 지금 시각으로 작업슬롯 정산
+        Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
     }
 
     public enum EItemChangeKind : byte

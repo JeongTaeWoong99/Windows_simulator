@@ -136,6 +136,19 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv 치트: {res.Command} → {res.Result} {res.Message}");
         }
 
+        [PacketHandler]
+        public static void Handle_S_UnlockResponse(ISession session, S_UnlockResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 해금: UnlockTID={res.UnlockTID} → {res.Result}");
+        }
+
+        // 로그인 직후 슬롯 스냅샷보다 먼저 온다. 잠긴 칸의 조건 문구는 UnlockTable로 클라가 만든다.
+        [PacketHandler]
+        public static void Handle_S_UnlockListResponse(ISession session, S_UnlockListResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 열린 해금: {string.Join(", ", res.UnlockTIDs)}");
+        }
+
         // 로그인 스냅샷과 변경 푸시가 같은 패킷으로 온다.
         // 증감이 아니라 확정 잔액이라 두 경우 모두 덮어쓰기로 처리하면 된다.
         [PacketHandler]

@@ -13,7 +13,7 @@ public partial class User
     {
         LoadPlayerData(data, now);
 
-        EnsureDefaultSlots(now);
+        EnsureUnlockedSlots(now);
 
         if (_characters.Count == 0)
         {
@@ -43,26 +43,25 @@ public partial class User
         // 캐릭터가 슬롯 속도의 근거이므로 슬롯보다 먼저 적재한다.
         LoadCharacters(data.CharacterRows);
         LoadIndustryLevels(data.IndustryLevelRows);
+
+        // 열린 해금이 곧 열린 칸의 근거라 슬롯보다 먼저 적재한다 — 잠긴 칸의 배치 행을 걸러야 한다.
+        LoadUnlocks(data.UnlockRows);
         LoadWorkStation(data.WorkStationSlotRows, startedAt);
     }
 
     /// <summary>
-    /// 기본 슬롯이 없으면 연다. 메모리에서 먼저 열고 저장은 흘려보낸다 —
-    /// 같은 세션 키로 직렬이라 순서가 어긋나지 않는다.
+    /// <c>WorkSlotTable</c>을 돌며 열린 칸을 전부 만든다. 시작 2칸(해금 0)과 열어 둔 칸이 여기서 생긴다.
+    /// 배치 행이 있던 칸은 이미 있으므로 그대로 둔다. 빈 칸은 저장하지 않는다 — "열렸다"의 원본은 <c>t_user_unlock</c>이다.
     /// </summary>
-    private void EnsureDefaultSlots(DateTime now)
+    private void EnsureUnlockedSlots(DateTime now)
     {
-        if (WorkStation.Count > 0)
+        foreach (var slot in _unlockCatalog.WorkSlots)
         {
-            return;
+            if (IsUnlocked(slot.UnlockTID))
+            {
+                WorkStation.Unlock(slot.WorkSlotTID, now);
+            }
         }
-
-        for (var i = 0; i < DefaultSlotCount; i++)
-        {
-            WorkStation.Unlock(i, now);
-        }
-
-        SaveWorkStationSlots(Enumerable.Range(0, DefaultSlotCount));
     }
 
     /// <summary>기본 캐릭터 지급을 요청한다. 완료는 <see cref="OnDefaultCharacterGranted"/>로 돌아온다.</summary>

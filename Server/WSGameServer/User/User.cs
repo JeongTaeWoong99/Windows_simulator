@@ -30,6 +30,9 @@ public sealed partial class User
     /// <summary>캐릭터 레벨 곡선. 정산 시 경험치 가산·레벨업 판정에 쓴다. 규약은 위와 같다.</summary>
     private readonly CharacterLevelCatalog _characterLevels;
 
+    /// <summary>해금 조건·작업슬롯 칸 인덱스. 해금 판정과 로그인 시 열린 칸 구성에 쓴다. 규약은 위와 같다.</summary>
+    private readonly UnlockCatalog _unlockCatalog;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -104,7 +107,8 @@ public sealed partial class User
         DateTime          loggedInAt,
         DropTableCatalog? dropTables = null,
         IndustryLevelCatalog? industryLevels = null,
-        CharacterLevelCatalog? characterLevels = null)
+        CharacterLevelCatalog? characterLevels = null,
+        UnlockCatalog?        unlocks = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -115,6 +119,7 @@ public sealed partial class User
         _dropTables = dropTables ?? DropTableCatalog.Instance;
         _industryLevels = industryLevels ?? IndustryLevelCatalog.Instance;
         _characterLevels = characterLevels ?? CharacterLevelCatalog.Instance;
+        _unlockCatalog = unlocks ?? UnlockCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -150,6 +155,9 @@ public sealed partial class User
         // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
         // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.
         SendCharacters();  // S_CharacterListResponse
+
+        // 열린 해금을 슬롯보다 먼저 보낸다 — 클라가 8칸 중 어느 칸이 잠겼는지 그릴 때 이미 알고 있어야 한다.
+        SendUnlockList();  // S_UnlockListResponse
 
         // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
         // 슬롯은 로그인 흐름에서 이미 "지금부터" 시작하도록 만들어져 있다.
