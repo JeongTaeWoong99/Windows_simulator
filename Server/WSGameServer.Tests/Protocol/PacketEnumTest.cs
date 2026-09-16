@@ -68,6 +68,20 @@ public class PacketEnumTest
     }
 
     [Fact]
+    public void 프로토콜_장비칸은_GameData_장비칸과_이름_값이_1대1이다()
+    {
+        // 장착 요청의 Slot을 서버가 byte 캐스팅으로 옮기고 DB(t_character_equip.slot)에 그 정수를 저장한다.
+        var protocol = Enum.GetValues<EEquipSlot>()
+            .Select(v => $"{v}={(byte)v}");
+
+        var gameData = Enum.GetValues<EquipSlot>()
+            .Where(v => v != EquipSlot.Max)
+            .Select(v => $"{v}={(byte)v}");
+
+        protocol.ShouldBe(gameData);
+    }
+
+    [Fact]
     public void 산업타입_값은_ItemType의_산업_구간과_같다()
     {
         // DropTID(산업×100000+…)와 DB(t_workstation_slot.industry 등)가 ItemType 숫자로 저장돼 있다.

@@ -55,6 +55,11 @@ namespace MikaProtocol
         C_UnlockRequest = 24,
         S_UnlockResponse = 25,
         S_UnlockListResponse = 26,
+        S_EquipListResponse = 27,
+        S_EquipSyncResponse = 28,
+        C_EquipRequest = 29,
+        C_UnequipRequest = 30,
+        S_EquipResponse = 31,
         C_AptitudeUpRequest = 27,
         S_AptitudeUpResponse = 28,
     }
@@ -305,6 +310,48 @@ namespace MikaProtocol
     {
         public EResultCode    Result    { get; set; }
         public CharacterInfo? Character { get; set; }
+    }
+
+    // ───────────────────────── 장비 (Equip) ─────────────────────────
+
+    /// <summary>보유 장비 전체(로그인 시). 캐릭터 목록 뒤 · 작업슬롯 스냅샷 앞에 온다.</summary>
+    [MemoryPackable, Packet(PacketId.S_EquipListResponse)]
+    public partial class S_EquipListResponse : IPacket
+    {
+        public List<EquipInfo> Equips { get; set; } = new();
+    }
+
+    /// <summary>바뀐 장비 개체들. 지급·장착·해제·자동 이동(최대 3개)에서 온다. EquipId로 찾아 덮어쓴다 — 확정값이다.</summary>
+    [MemoryPackable, Packet(PacketId.S_EquipSyncResponse)]
+    public partial class S_EquipSyncResponse : IPacket
+    {
+        public List<EquipInfo> Equips { get; set; } = new();
+    }
+
+    /// <summary>장착 요청. 칸은 클라가 고른다(장신구는 Accessory1·2 어디든). 이미 다른 캐릭터가 착용 중이면 서버가 옮긴다.</summary>
+    [MemoryPackable, Packet(PacketId.C_EquipRequest)]
+    public partial class C_EquipRequest : IPacket
+    {
+        public long       CharacterId { get; set; }  // 개체 PK
+        public long       EquipId     { get; set; }  // 개체 PK
+        public EEquipSlot Slot        { get; set; }
+    }
+
+    /// <summary>해제 요청. 그 칸이 비어 있으면 EquipSlotEmpty.</summary>
+    [MemoryPackable, Packet(PacketId.C_UnequipRequest)]
+    public partial class C_UnequipRequest : IPacket
+    {
+        public long       CharacterId { get; set; }
+        public EEquipSlot Slot        { get; set; }
+    }
+
+    /// <summary>장착·해제 결과. 바뀐 개체는 S_EquipSyncResponse가, 속도 변화는 S_WorkStationSlotSyncResponse가 따로 온다.</summary>
+    [MemoryPackable, Packet(PacketId.S_EquipResponse)]
+    public partial class S_EquipResponse : IPacket
+    {
+        public EResultCode Result      { get; set; }
+        public long        CharacterId { get; set; }
+        public EEquipSlot  Slot        { get; set; }
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────

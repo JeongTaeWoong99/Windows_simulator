@@ -1,6 +1,7 @@
 #if UNITY_5_3_OR_NEWER
 
 using System;
+using System.Linq;
 using MikaProtocol;
 
 namespace MikaNetwork
@@ -24,6 +25,7 @@ namespace MikaNetwork
     /// S_InventoryResponse         인벤토리 전체 스냅샷
     /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
     /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
+    /// S_EquipListResponse         보유 장비 (캐릭터 뒤 · 슬롯 앞 — EquippedCharacterId가 캐릭터를 가리킨다)
     /// S_UnlockListResponse        열린 해금 목록 (슬롯보다 먼저 온다 — 잠긴 칸을 그리는 근거)
     /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷 (열린 칸만 담긴다)
     ///
@@ -213,6 +215,47 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"해금 {res.UnlockTID} → {res.Result}");
             UnlockResponded?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 장비
+
+        // 보유 장비 전체 도착 — 로그인 직후, 캐릭터 목록 뒤·작업슬롯 스냅샷 앞 (Handle_S_EquipListResponse에서 발행)
+        public static event Action<S_EquipListResponse>? EquipListReceived;
+
+        // 바뀐 장비 개체 도착 — 지급·장착·해제·자동 이동 (Handle_S_EquipSyncResponse에서 발행)
+        public static event Action<S_EquipSyncResponse>? EquipSynced;
+
+        // 장착·해제 결과 도착 (Handle_S_EquipResponse에서 발행)
+        public static event Action<S_EquipResponse>? EquipResponded;
+
+        // 보유 장비 전체 (S_EquipListResponse 수신 시 자동 호출)
+        // ★ 로그인 시 자동으로 1회 온다. EquippedCharacterId=0이면 창고, SlotPosition이 창고 장비 탭의 칸이다.
+        [PacketHandler]
+        public static void Handle_S_EquipListResponse(ISession session, S_EquipListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"보유 장비 — {res.Equips.Count}개");
+            EquipListReceived?.Invoke(res);
+        }
+
+        // 바뀐 장비 개체들 (S_EquipSyncResponse 수신 시 자동 호출)
+        // ※ 스냅샷과 같은 EquipInfo다. EquipId로 찾아 덮어쓴다 — 확정값이다. 없던 Id면 새로 지급된 것이다.
+        [PacketHandler]
+        public static void Handle_S_EquipSyncResponse(ISession session, S_EquipSyncResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"장비 동기화 — {string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→캐릭터 {e.EquippedCharacterId} {e.EquippedSlot} 칸 {e.SlotPosition}"))}");
+            EquipSynced?.Invoke(res);
+        }
+
+        // 장착·해제 결과 (S_EquipResponse 수신 시 자동 호출)
+        // ※ 성공이면 S_EquipSyncResponse(바뀐 개체)와 S_WorkStationSlotSyncResponse(속도)가 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_EquipResponse(ISession session, S_EquipResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"장비 {res.Slot} @캐릭터 {res.CharacterId} → {res.Result}");
+            EquipResponded?.Invoke(res);
         }
 
         #endregion

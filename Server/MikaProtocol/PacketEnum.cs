@@ -42,6 +42,12 @@ namespace MikaProtocol
         AlreadyUnlocked  = 501, // 이미 열린 해금을 다시 요청
         UnlockLocked     = 502, // 선행 미충족 · 계정 레벨 미달 · 이 해금에 없는 재화 선택. 골드 부족은 NotEnoughCurrency
 
+        // ── 600~: 장비 ──
+        EquipNotOwned      = 600, // 미보유 장비 개체
+        InvalidEquipSlot   = 601, // None·범위 밖 칸
+        EquipKindMismatch  = 602, // 종류가 칸에 맞지 않음 (무기를 보석 칸에 등)
+        EquipSlotEmpty     = 603, // 해제할 장비가 없는 칸
+
         // ── 600~: 캐릭터 ──
         NoAptitudePoint = 600, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
         AptitudeAtCap   = 601, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
@@ -55,6 +61,17 @@ namespace MikaProtocol
 
         Gold = 1,
         Dia  = 2,
+    }
+
+    // 장비 칸. GameData.EquipSlot(Enum.xlsx)과 이름·값이 1:1이어야 한다 — 서버가 byte 캐스팅으로 옮기고 DB에 저장한다.
+    public enum EEquipSlot : byte
+    {
+        None       = 0,
+
+        Weapon     = 1,
+        Accessory1 = 2,
+        Accessory2 = 3,
+        Gem        = 4,
     }
 
     /// <summary>
@@ -71,6 +88,7 @@ namespace MikaProtocol
         GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
         Settle           = 6,  // 지금 시각으로 작업슬롯 정산
         Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
+        GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
     }
 
     public enum EItemChangeKind : byte

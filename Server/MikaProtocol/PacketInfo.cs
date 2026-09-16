@@ -80,4 +80,16 @@ namespace MikaProtocol
         public int  CurrentWorkSpeed { get; set; }  // 현재 작업속도 — 보정 전부 적용된 확정값 (1000 = 기준 1.0배)
         public long JudgeCostUnits { get; set; }  // 판정 1회에 필요한 작업량
     }
+
+    // 장비 개체 하나. 유저 소유이며 EquippedCharacterId가 0이면 창고에 있다. SlotPosition은 창고 장비 탭의 칸 번호(0부터).
+    // 스탯(종류·산업·가산)은 EquipTid로 EquipTable에서 읽는다 — 개체는 위치만 나른다.
+    [MemoryPackable]
+    public partial class EquipInfo
+    {
+        public long       EquipId             { get; set; }
+        public int        EquipTid            { get; set; }
+        public long       EquippedCharacterId { get; set; }  // 0=창고
+        public EEquipSlot EquippedSlot        { get; set; }  // 창고면 None
+        public int        SlotPosition        { get; set; }
+    }
 }
