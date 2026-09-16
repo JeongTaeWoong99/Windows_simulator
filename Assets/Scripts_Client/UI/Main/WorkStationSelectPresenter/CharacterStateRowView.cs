@@ -1,4 +1,5 @@
 using System;
+using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -23,6 +24,11 @@ using UnityEngine.UI;
 public class CharacterStateRowView : MonoBehaviour
 {
     [CenterHeader("캐릭터")]
+    // 줄 바탕을 등급 색으로 칠한다('SetRarity'). 창고 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
+    // 🎨 등급 테두리 스프라이트가 나오면 색 대신 여기에 스프라이트를 넣는다.
+    [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
+    private Image backgroundImage = null!;
+
     // 임시 — 초상화 스프라이트가 없어 흰 네모만 둔다. 엑셀(CharacterTable) · 기획 · 리소스가 나오면
     // 여기에 캐릭터별 sprite를 넣는다(일감 'T-054'). 그때까지 코드는 이 필드를 건드리지 않는다.
     [SerializeField, Tooltip("캐릭터 초상화 (임시 — 흰 네모)")]
@@ -68,6 +74,7 @@ public class CharacterStateRowView : MonoBehaviour
     // 그래야 패널이 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
     {
+        this.RequireRef(backgroundImage, nameof(backgroundImage));
         this.RequireRef(portraitImage, nameof(portraitImage));
         this.RequireRef(nameText,      nameof(nameText));
         this.RequireRef(raceText,      nameof(raceText));
@@ -91,6 +98,13 @@ public class CharacterStateRowView : MonoBehaviour
     {
         CharacterId   = characterId;
         nameText.text = displayName;
+    }
+
+    // 줄 바탕을 이 캐릭터의 등급 색으로 칠한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
+    //   rarity : 종류(TID)로 읽은 등급. 개체 번호로 읽으면 'None'이 되어 회색으로 칠해진다
+    public void SetRarity(GlobalRarity rarity)
+    {
+        backgroundImage.color = RarityPalette.Get(rarity);
     }
 
     // 적성 5칸을 그린다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
@@ -131,9 +145,11 @@ public class CharacterStateRowView : MonoBehaviour
     }
 
     // 줄을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
+    // 바탕색도 되돌린다 — 풀에서 다시 쓰일 때 이전 캐릭터의 등급 색이 남지 않게.
     public void Clear()
     {
-        CharacterId   = 0;
-        nameText.text = "";
+        CharacterId           = 0;
+        nameText.text         = "";
+        backgroundImage.color = RarityPalette.Unknown;
     }
 }

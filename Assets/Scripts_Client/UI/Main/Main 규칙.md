@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-09-14 (선택 화면에 `EfficiencyRowView` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-09-16 (배치 목록 순서 · 줄 등급 색 — T-057) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -70,6 +70,24 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 
 > 꺼져 있는 화면을 열 때는 **인자를 먼저 넣고 켠다**(`Open(slotIndex)` 안에서 `SetActive(true)`).
 > 꺼진 오브젝트는 `Start()`가 아직 안 돌았을 수 있어, 켠 직후 값을 넣으면 초기화가 덮어쓴다.
+
+## 배치 목록 — 산업 버튼이 곧 정렬 기준이다
+
+선택 화면의 캐릭터 줄은 **고른 산업의 적성 높은 순 → 등급 높은 순 → 개체 번호 순**이다
+(`WorkStationSelectPresenter.CompareRows`). 산업 버튼을 누르면 걸러 내기와 정렬이 함께 바뀌므로
+**정렬 UI를 따로 두지 않는다** — 목록 순서가 곧 "이 산업에 누구를 넣을까"의 추천이다.
+
+- 개체 번호까지 가서 **동점을 없앤다.** `List.Sort`는 안정 정렬이 아니라 동점이면 다시 그릴 때마다 줄이 바뀐다.
+- 다시 그리는 시점은 따로 두지 않았다 — 화면을 열 때(`OnEnable`)와 캐릭터가 늘 때(`CharactersChanged`) 이미 `Refresh`가 돈다.
+
+### 줄 바탕은 등급 색이다
+
+`CharacterStateRowView`의 루트 Image를 **`RarityPalette`의 등급 색**으로 칠한다(`SetRarity`) — 창고 칸과 같은 표다.
+목록 줄과 세팅 카드가 같은 프리팹이라 둘 다 칠해진다.
+
+- 등급은 **종류(TID)로 읽는다.** 세팅 카드는 슬롯이 개체 번호만 주므로 `PlayerDataModel.GetCharacterTid`를 거친다.
+- `Clear()`가 `RarityPalette.Unknown`으로 되돌린다 — 풀에서 재사용되는 줄이라 안 되돌리면 이전 색이 남는다.
+- 🎨 등급 테두리 스프라이트가 오면 **색 대신 스프라이트로 바꾼다.** 자리는 같은 `backgroundImage`다.
 
 ## 캔버스 머리의 제목은 `UIManager`가 밀어 넣는다
 

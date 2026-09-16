@@ -118,6 +118,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 매번 새로 만들지 않으려고 필드로 들고 재사용한다(상주 앱이라 GC가 쌓인다).
     private readonly List<CharacterInfo> _visible = new List<CharacterInfo>();
 
+    // 캐릭터 줄의 순서 규칙('CompareRows'). 메서드 그룹을 매번 넘기면 호출마다 대리자가 새로 생겨 Start에서 한 번만 만든다.
+    private Comparison<CharacterInfo> _rowOrder = null!;
+
     // 줄에 넘길 적성 5칸. 산업 목록 순서 그대로 담는다 — 줄마다 새로 만들지 않고 이 배열을 재사용한다.
     // ※ 줄이 받아 그리는 즉시 쓰임이 끝나므로 공유해도 된다('StorageGridPresenter.ReadAptitudes'와 같다).
     private byte[] _aptitudes = new byte[0];
@@ -166,6 +169,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _network = NetworkManager.Instance;
         _ui      = Services.Get<UIManager>();
         _wait    = Services.Get<ServerWaitManager>();
+
+        _rowOrder = CompareRows;
 
         Subscribe();
 
@@ -490,13 +495,18 @@ public class WorkStationSelectPresenter : MonoBehaviour
             _visible.Add(character);
         }
 
+        // 고른 산업을 가장 잘하는 캐릭터가 위로 온다 — 순서가 곧 추천이다('CompareRows').
+        _visible.Sort(_rowOrder);
+
         for (int i = 0; i < _visible.Count; i++)
         {
-            long characterId = _visible[i].CharacterId;
-            var  row         = GetOrCreateRow(i);
+            CharacterInfo character   = _visible[i];
+            long          characterId = character.CharacterId;
+            var           row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
             row.Bind(characterId, _data.GetCharacterName(characterId));
+            row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
         }
@@ -512,6 +522,33 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // 'LateUpdate'에서 훑고 지나가 "자식이 부모보다 넓다" → "해소됐다"가 왕복으로 찍힌다
         // (판매 목록에서 겪은 그대로 — 'SellCartPresenter.Refresh').
         LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
+    }
+
+    // 캐릭터 줄의 순서 — 고른 산업의 적성 높은 순 → 등급 높은 순 → 개체 번호 순 (RefreshRows의 정렬 비교자).
+    //
+    // 산업 버튼이 곧 정렬 기준이라 따로 정렬 UI를 두지 않는다. 버튼을 바꾸면 'SelectIndustry'가 다시 그린다.
+    // ※ 개체 번호까지 가서 동점을 없앤다 — 'List.Sort'는 안정 정렬이 아니라 동점이면 다시 그릴 때마다 줄이 바뀐다.
+    //   등급은 종류(TID)로 읽는다. enum 'CompareTo'는 박싱이 일어나 숫자로 바꿔 비교한다.
+    private int CompareRows(CharacterInfo a, CharacterInfo b)
+    {
+        EIndustryType industry = SelectedIndustry;
+
+        int byAptitude = _data.GetAptitude(b.CharacterId, industry).CompareTo(_data.GetAptitude(a.CharacterId, industry));
+
+        if (byAptitude != 0)
+        {
+            return byAptitude;
+        }
+
+        int byRarity = ((byte)GameDataLoader.GetCharacterRarity(b.CharacterTid))
+            .CompareTo((byte)GameDataLoader.GetCharacterRarity(a.CharacterTid));
+
+        if (byRarity != 0)
+        {
+            return byRarity;
+        }
+
+        return a.CharacterId.CompareTo(b.CharacterId);
     }
 
     // 'index'번째 줄을 돌려준다. 아직 없으면 그때 만든다 (RefreshRows에서 호출).
@@ -601,6 +638,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId));
+        assignedCard.SetRarity(GameDataLoader.GetCharacterRarity(_data.GetCharacterTid(slot.CharacterId)));
         assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
     }
 

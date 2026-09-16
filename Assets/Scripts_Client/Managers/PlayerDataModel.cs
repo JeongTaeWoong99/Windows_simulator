@@ -82,6 +82,22 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return $"?#{characterId}"; // 아직 목록을 못 받았거나 서버가 모르는 개체
     }
 
+    // 캐릭터 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
+    //
+    // 등급처럼 종류에 달린 값을 개체 번호만 들고 있는 화면이 찾을 때 거쳐 간다('GetCharacterName'과 같은 이유).
+    public int GetCharacterTid(long characterId)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId == characterId)
+            {
+                return character.CharacterTid;
+            }
+        }
+
+        return 0;
+    }
+
     // 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
     // (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
     // ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
