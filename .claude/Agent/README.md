@@ -24,6 +24,12 @@
 ## INDEX
 
 - [2026-09-16 해금 시스템 서버 구현 — `UnlockCatalog` · `t_user_unlock` · 해금 패킷, 첫 적용은 작업슬롯](2026-09-16-unlock-server.md) — `#server` `#protocol` `#test` T-038 완료 · Unity CLI eval로 실서버 왕복 검증
+- [2026-09-16 창고 캐릭터 칸 — 레벨 배지 · 경험치 세로 게이지 · 칸이 프레임을 채움](2026-09-16-character-level-exp-gauge.md) — `#client` `#ui` `#editor` 아이콘 모서리 레벨 배지 · 왼쪽 벽 Slider 게이지 · 여백 예외 (T-052)
+- [2026-09-16 창고 [정렬] 버튼 · 배치 목록 적성순 · 캐릭터 줄 등급 색](2026-09-16-storage-sort-and-select-order.md) — `#client` `#ui` 필터 대신 정렬 버튼(세션 한정 기억) · 배치 목록 적성순 (T-015 · T-057)
+- [2026-09-15 memory-meter 플레이 중 갱신 정지 · Material 예외 원인 재조사](2026-09-15-memory-meter-playmode-pause.md) — `#editor` `#client` 플레이 중 정지는 예방 조치 · memory-meter 원인설은 재현 실패로 미확인
+- [2026-09-15 서버 콘솔 창 프레임 드랍 — 가상 스크롤로 교체](2026-09-15-server-console-virtual-scroll.md) — `#editor` `#client` 로그 전체 재레이아웃이 원인 · 보이는 줄만 그리고 줄 단위 복사
+- [2026-09-14 작업슬롯 선택 화면을 목업 구조로](2026-09-14-workstation-select-mockup-layout.md) — `#client` `#ui` `#editor` 산업 아이콘 · 캐릭터 카드 · 장비 자리 · 효율 계산 스크롤 (T-053)
+- [2026-09-14 작업슬롯 세팅 패널에 배치된 캐릭터 이름·적성 표시](2026-09-14-workstation-setting-assigned-info.md) — `#client` `#ui` `#editor` 해제 버튼만 있던 3단계에 두 줄 표시 · 패널 VLG 정석화 (T-035)
 - [2026-09-13 문서 토큰 효율화 — 이슈 #18 서버·기획 쪽 적용](2026-09-13-doc-token-diet-server-side.md) — `#docs` `#design` INDEX·공용 스킬 2개·게임기획코어 목차. 공유 트리 동시 작업 지뢰 기록
 - [2026-09-16 치트 명령 — admin 전용 지급·정산 패킷](2026-09-16-cheat-system.md) — `#server` `#protocol` enum 명령 + 기존 지급 함수 재사용, 테스트 13건 · 해금 재검토 7건은 09-14 로그 업데이트 절
 - [2026-09-14 해금 시스템 기획 — `UnlockTable` 한 표 · 해금 행동 · 첫 적용은 작업슬롯](2026-09-14-unlock-system-design.md) — `#design` `#data` 세 곳의 해금을 한 표로 모으고 산업 레벨 조건에서 적성을 뺐다 · `Unlock.xlsx` 신설

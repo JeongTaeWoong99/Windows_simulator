@@ -82,6 +82,62 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return $"?#{characterId}"; // 아직 목록을 못 받았거나 서버가 모르는 개체
     }
 
+    // 캐릭터 개체 번호로 레벨을 얻는다. 모르는 개체면 0.
+    public int GetCharacterLevel(long characterId)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId == characterId)
+            {
+                return character.Level;
+            }
+        }
+
+        return 0;
+    }
+
+    // 캐릭터 개체 번호로 경험치 진행률(0~1)을 얻는다. 만렙이면 1, 모르는 개체면 0.
+    //
+    // 분모는 **다음 레벨의 필요치**('RequiredExp(Level + 1)')다 — 'Exp'가 누적이 아니라
+    // 현재 레벨에서 쌓은 양이라서다(레벨업하면 서버가 필요치를 뺀 나머지로 줄여 보낸다).
+    public float GetExpProgress(long characterId)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId != characterId)
+            {
+                continue;
+            }
+
+            bool hasNext = GameDataLoader.TryGetRequiredExp(character.Level + 1, out int required);
+
+            if (!hasNext || required <= 0)
+            {
+                return 1f; // 만렙 — 다음 행이 없다
+            }
+
+            return Mathf.Clamp01((float)character.Exp / required);
+        }
+
+        return 0f;
+    }
+
+    // 캐릭터 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
+    //
+    // 등급처럼 종류에 달린 값을 개체 번호만 들고 있는 화면이 찾을 때 거쳐 간다('GetCharacterName'과 같은 이유).
+    public int GetCharacterTid(long characterId)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId == characterId)
+            {
+                return character.CharacterTid;
+            }
+        }
+
+        return 0;
+    }
+
     // 캐릭터 개체 번호로 그 산업의 적성(0~10)을 얻는다. 모르는 개체·산업이면 0
     // (= 그 산업을 다루지 못한다. 서버가 배치를 'NoAptitude'로 거절한다).
     // ⚠️ 'CharacterTable'을 직접 읽지 않는다 — 값의 주인은 서버다
@@ -204,6 +260,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.InventoryReceived        += OnInventoryReceived;
         ServerPacketHandler.GachaDrawn               += OnGachaDrawn;
         ServerPacketHandler.CharacterListReceived    += OnCharacterListReceived;
+        ServerPacketHandler.CharacterSynced          += OnCharacterSynced;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -227,6 +284,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.InventoryReceived        -= OnInventoryReceived;
         ServerPacketHandler.GachaDrawn               -= OnGachaDrawn;
         ServerPacketHandler.CharacterListReceived    -= OnCharacterListReceived;
+        ServerPacketHandler.CharacterSynced          -= OnCharacterSynced;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -298,6 +356,45 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (_characters.Count == 0)
         {
             ClientLogger.Warn(ClientLogger.Recv, "보유 캐릭터가 0마리다 — 작업슬롯 배치가 전부 거절된다(서버 지급 로직 확인)");
+        }
+
+        CharactersChanged?.Invoke();
+    }
+
+    // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌면 요청 없이 도착한다.
+    //
+    // ★ 증감이 아니라 확정값이라 통째로 **교체**한다 (레벨업하면 'Exp'가 줄어드는 것도 그대로 받는다).
+    // ⚠️ 목록에 없는 개체는 추가하지 않는다 — 보유 목록의 원본은 로그인 스냅샷이다.
+    //   여기서 넣기 시작하면 스냅샷과 푸시 중 무엇이 진실인지 흐려진다.
+    private void OnCharacterSynced(S_CharacterSyncResponse res)
+    {
+        var synced = res.Character;
+
+        if (synced == null)
+        {
+            return;
+        }
+
+        int index = _characters.FindIndex(character => character.CharacterId == synced.CharacterId);
+
+        if (index < 0)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"보유 목록에 없는 캐릭터 동기화 — 개체={synced.CharacterId} (무시)");
+
+            return;
+        }
+
+        CharacterInfo previous = _characters[index];
+
+        _characters[index] = synced;
+
+        if (synced.Level > previous.Level)
+        {
+            // TODO: 레벨업 연출 — 연출 리소스가 오면 여기서 알린다 (T-052 🎨).
+            //       이벤트(예: 'CharacterLeveledUp(long characterId, int level)')를 열고
+            //       창고 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
+            ClientLogger.Info(ClientLogger.Recv,
+                $"캐릭터 레벨업 — 개체={synced.CharacterId} Lv.{previous.Level} → Lv.{synced.Level}");
         }
 
         CharactersChanged?.Invoke();

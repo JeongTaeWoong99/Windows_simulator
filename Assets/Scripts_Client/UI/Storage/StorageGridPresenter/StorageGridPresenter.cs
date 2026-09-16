@@ -18,14 +18,14 @@ using UnityEngine;
 // ■ i번째 항목이 i번째 프레임에 들어간다
 //   예전에는 'ItemId → 프레임'을 고정해 두고 빈 프레임을 앞에서부터 찾았다. 그러면 아이템이
 //   처음 들어온 순서로 칸이 영구히 고정돼 **정렬을 넣을 자리가 없다.**
-//   순서의 주인을 공급자로 옮겼기 때문에, 정렬·걸러 내기는 공급자만 고치면 된다(T-015).
+//   순서의 주인을 공급자로 옮겼기 때문에, [정렬]도 공급자 안에서 끝나고 격자는 받은 순서만 그린다.
 //
 // ■ 칸은 파괴하지 않고 풀로 되돌린다
 //   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
 // ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
-//   '배' 마크(배치 중) · 적성 스트립은 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   '배' 마크(배치 중) · 적성 스트립 · 경험치 게이지는 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
 //   칸은 이 판단을 모른다 — 공급자가 만드는 완성값(`SlotData`)에 캐릭터 전용 필드를 끼우면
 //   자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자가 읽어서 넘긴다.
 //
@@ -138,6 +138,9 @@ public class StorageGridPresenter : MonoBehaviour
         //   먼저 세우면 초기화가 중단됐는데도 격자가 조용히 빈 채로 굳는다.
         _isReady = true;
 
+        // ※ 로그인은 창고가 닫혀 있어도 알아야 해서 켜고 끌 때 풀지 않는다 — 파괴될 때만 푼다.
+        _data.LoginCompleted += OnLoginCompleted;
+
         // ※ 카트 구독은 여기서 시작한다 — 'OnEnable'은 'EnsureInitialized'보다 먼저 돌 수 있어
         //   (탭 줄의 Start가 우리를 깨우는 경로) 거기에만 두면 첫 판이 구독을 놓친다.
         SubscribeCart();
@@ -176,6 +179,17 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         _current.Unsubscribe();
+    }
+
+    // 로그인 구독 해제 (Unity 메시지)
+    private void OnDestroy()
+    {
+        if (!_isReady)
+        {
+            return;
+        }
+
+        _data.LoginCompleted -= OnLoginCompleted;
     }
 
     #region 구독
@@ -257,6 +271,42 @@ public class StorageGridPresenter : MonoBehaviour
 
     #endregion
 
+    #region 정렬
+
+    // 지금 탭을 규칙대로 줄 세운다 ('StorageToolPresenter'의 화살표 버튼이 호출).
+    //
+    // 규칙과 기억은 공급자가 쥔다 — 격자는 공급자가 알리는 'Changed'로 다시 그리기만 한다.
+    public void SortCurrent(StorageSortOrder order)
+    {
+        EnsureInitialized();
+
+        if (_current == null)
+        {
+            return; // 공급자가 없는 탭 — 그릴 것이 없으니 방향만 바뀐 채 다음 탭에서 반영된다
+        }
+
+        _current.Sort(order);
+    }
+
+    // 로그인했다 — 지난 세션에 기억한 정렬 자리를 버린다 (PlayerDataModel.LoginCompleted 구독)
+    //
+    // 목록이 서버 순서로 새로 오므로, 들고 있던 자리가 다른 상태를 덮지 않게 한다.
+    // ⚠️ 칸 위치가 서버로 옮겨 가면(T-058 · T-044) 이 기억과 함께 걷어낸다.
+    private void OnLoginCompleted(bool success, EResultCode code)
+    {
+        if (!success)
+        {
+            return;
+        }
+
+        foreach (StorageSlotSource source in _sources.Values)
+        {
+            source.ClearOrder();
+        }
+    }
+
+    #endregion
+
     #region 칸 그리기
 
     // 지금 탭의 목록을 칸에 반영한다 (공급자 Changed 구독 · 탭 전환 · OnEnable).
@@ -291,6 +341,10 @@ public class StorageGridPresenter : MonoBehaviour
                 // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
                 view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
 
+                // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다.
+                view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
+                view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
+
                 continue;
             }
 
@@ -317,6 +371,18 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         return _aptitudes;
+    }
+
+    // 이 캐릭터의 레벨 배지 문구 — 'LV.19', 만렙이면 'LV.MAX' (Redraw에서 호출).
+    //
+    // ※ 'LV.' 접두를 뗄 수 없다 — 초상화 형태가 제각각이라 숫자만 두면 '2'가 무엇인지 드러나지 않는다.
+    //   글자가 줄던 문제는 이름 줄에서 배지로 떼어 내 풀었다(한때 'LV.19 폭스파스크'로 이름 줄에 붙였다).
+    // 만렙 = 곡선 테이블에 다음 레벨 행이 없다('GameDataLoader.TryGetRequiredExp').
+    private string ReadLevelLabel(long characterId)
+    {
+        int level = _data.GetCharacterLevel(characterId);
+
+        return GameDataLoader.TryGetRequiredExp(level + 1, out _) ? $"LV.{level}" : "LV.MAX";
     }
 
     // i번째 프레임의 칸을 얻는다. 아직 없으면 그 프레임 안에 만든다 (Redraw에서 호출).
@@ -424,9 +490,13 @@ public class StorageGridPresenter : MonoBehaviour
         }
     }
 
-    // 프리팹을 프레임 안에 안착시킨다 — 위치를 0으로 맞춰 프레임 정중앙에 놓는다.
+    // 프리팹을 프레임 안에 안착시킨다 — 프레임을 **꽉 채운다**.
     // Instantiate 직후의 RectTransform은 프리팹에 저장된 좌표를 그대로 들고 오므로,
     // 이걸 하지 않으면 프레임 밖으로 삐져나간다.
+    //
+    // ★ 크기도 프레임을 따른다 — 프레임은 'FlexibleGridLayoutGroup'이 창 폭에 맞춰 늘리는데(예: 115px)
+    //   프리팹은 100×100 고정이라, 위치만 맞추면 사방에 빈 테두리가 생겼다(2026-09-16).
+    //   프리팹 루트를 스트레치로 바꾸지 않는 이유 — 가챠 결과 팝업이 같은 프리팹을 레이아웃에 넣어 쓴다.
     private static void SnapToFrame(RectTransform? rect)
     {
         if (rect == null)
@@ -434,6 +504,10 @@ public class StorageGridPresenter : MonoBehaviour
             return;
         }
 
+        rect.anchorMin          = Vector2.zero;
+        rect.anchorMax          = Vector2.one;
+        rect.pivot              = new Vector2(0.5f, 0.5f);
+        rect.sizeDelta          = Vector2.zero;
         rect.anchoredPosition3D = Vector3.zero;
         rect.localScale         = Vector3.one;
         rect.localRotation      = Quaternion.identity;

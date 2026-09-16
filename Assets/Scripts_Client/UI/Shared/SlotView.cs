@@ -48,6 +48,21 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, NonReorderable, Tooltip("적성 값 칸 5개. 순서 = 농사·낚시·채굴·벌목·사냥")]
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
+    // ※ 아이콘 왼쪽 여백(20px)에 세로로 선다 — 아이콘과 높이를 같게 두고, 아래에서 위로 찬다.
+    //   높이는 고정값이 아니라 위아래 20px 안쪽 스트레치다 — 창고 격자가 칸을 프레임 크기로 늘려도 아이콘과 함께 늘어난다.
+    //   조작하는 슬라이더가 아니라 표시 전용이다(interactable 꺼짐 · 핸들 없음 · raycast 끔 — 우클릭을 가로채지 않는다).
+    [CenterHeader("레벨 · 경험치 (캐릭터 탭)")]
+    [SerializeField, Tooltip("현재 레벨의 경험치 진행. 왼쪽 벽 세로 막대 · 아래→위. 자원 탭·가챠 결과에서는 꺼진다")]
+    private Slider expGauge = null!;
+
+    // ※ 경험치 게이지의 **오른쪽 아래에 붙는다** — 게이지 바닥과 높이를 맞춘다.
+    //   아이콘 모서리에 두면 초상화 형태(얼굴·전신…)에 따라 배지만 붕 뜬다. 게이지에 붙이면 둘이 한 덩어리로 읽힌다.
+    [SerializeField, Tooltip("레벨 배지(바탕 포함). 게이지 오른쪽 아래 · 자원 탭·가챠 결과에서는 꺼진다")]
+    private GameObject levelBadge = null!;
+
+    [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
+    private TMP_Text levelText = null!;
+
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
@@ -55,18 +70,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("이 캐릭터가 작업슬롯에서 일하는 중임을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
-    // 적성 칸 수 = 1차 산업 5종. 'EIndustryType'의 None 제외 개수와 같아야 한다.
-    public const int AptitudeCount = 5;
-
-    // 적성은 0~10이라 미리 만들어 둔다 — 200칸 × 5개를 매번 그리므로
-    // 'ToString()'을 그때그때 부르면 Redraw마다 문자열 1000개가 버려진다(상주 앱이라 쌓인다).
-    // ※ 0번은 'X'다 — **빈 칸으로 두면 배선이 빠진 칸과 구분되지 않는다.**
-    //   "못 다루는 산업"은 알려 줄 값이 없는 게 아니라 알려 줄 것이 있는 상태다.
-    private static readonly string[] ValueTexts = { "X", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
-
-    // 적성 0은 흐리게 — 'X'가 숫자와 같은 세기로 보이면 눈이 먼저 X를 읽는다.
-    private static readonly Color ValueColor = Color.white;
-    private static readonly Color ZeroColor  = new Color(0.62f, 0.62f, 0.62f, 1f);
+    // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
+    // 작업슬롯 선택 화면의 캐릭터 줄도 같은 5칸을 그린다.
+    public const int AptitudeCount = AptitudeLabel.Count;
 
     // 이 칸이 그리고 있는 대상. 자원은 ItemId, 캐릭터는 개체 번호. 비어 있으면 0.
     public long Key { get; private set; }
@@ -90,6 +96,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(nameText,       nameof(nameText));
         this.RequireRef(subText,        nameof(subText));
         this.RequireRef(aptitudeStrip,  nameof(aptitudeStrip));
+        this.RequireRef(expGauge,       nameof(expGauge));
+        this.RequireRef(levelBadge,     nameof(levelBadge));
+        this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(sellMark,       nameof(sellMark));
         this.RequireRef(assignMark,     nameof(assignMark));
 
@@ -101,6 +110,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
 
         aptitudeStrip.SetActive(false);
+        expGauge.gameObject.SetActive(false);
+        levelBadge.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
     }
@@ -184,9 +195,44 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
             byte value = i < values!.Length ? values[i] : (byte)0;
 
-            text.text  = value < ValueTexts.Length ? ValueTexts[value] : value.ToString();
-            text.color = value == 0 ? ZeroColor : ValueColor;
+            text.text  = AptitudeLabel.GetText(value);
+            text.color = AptitudeLabel.GetColor(value);
         }
+    }
+
+    // 레벨 배지를 그린다. 'null'이면 배지를 끈다 (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    // 문구('LV.19' · 'LV.MAX')는 격자가 짓는다 — 이 칸은 만렙이 몇인지 모른다.
+    public void SetLevelBadge(string? label)
+    {
+        bool on = label != null;
+
+        levelBadge.SetActive(on);
+
+        if (!on)
+        {
+            return;
+        }
+
+        levelText.text = label!;
+    }
+
+    // 경험치 진행(0~1)을 세로 게이지에 그린다. 'null'이면 게이지를 끈다
+    // (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    //
+    // 적성 스트립과 같은 이유로 값을 받아 온다 — 이 칸은 캐릭터를 모르고,
+    // 진행률 계산(레벨 곡선 조회)은 'PlayerDataModel.GetExpProgress'가 한다.
+    public void SetExpGauge(float? progress)
+    {
+        bool on = progress.HasValue;
+
+        expGauge.gameObject.SetActive(on);
+
+        if (!on)
+        {
+            return;
+        }
+
+        expGauge.SetValueWithoutNotify(progress!.Value);
     }
 
     // 판매 목록에 담겼음을 표시한다 (창고 격자가 매번 그릴 때 호출).
@@ -217,6 +263,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         subText.text      = "";
 
         SetAptitudes(null); // 스트립을 끄고 보조 문구 자리를 원래대로 돌려준다
+        SetExpGauge(null);
+        SetLevelBadge(null);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
     }

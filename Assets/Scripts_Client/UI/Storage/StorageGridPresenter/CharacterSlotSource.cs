@@ -5,9 +5,12 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 캐릭터 탭 — 보유 캐릭터를 칸으로 내놓는다.
 //
-// ⏸ 증분 패킷이 없다 — 캐릭터 목록은 로그인 스냅샷('S_CharacterListResponse') 한 번이 전부다.
-//   그런데도 지금 성립하는 이유는 캐릭터가 늘어날 경로 자체가 없기 때문이다(가챠는 아이템 전용).
-//   T-026(캐릭터 가챠)이 붙어 'CharactersChanged'가 다시 오기만 하면 이 클래스는 고치지 않아도 된다.
+// ※ 목록은 로그인 스냅샷('S_CharacterListResponse')이 원본이고, 레벨·경험치는 정산마다
+//   개체 1건씩 푸시('S_CharacterSyncResponse')로 교체된다 — 둘 다 'CharactersChanged' 하나로 온다(T-052).
+//
+// ■ 레벨은 이름 줄에 넣지 않는다 — 아이콘 왼쪽 위 배지가 말한다
+//   한때 'LV.19 폭스파스크'로 이름 줄에 붙였더니 100px 칸에서 글자가 크게 줄었다(2026-09-16).
+//   레벨 배지·경험치 게이지는 적성 스트립처럼 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
 //
 // ★ 슬롯 변경도 함께 구독한다 — 배치·해제가 일어나면 칸의 '배' 마크가 바뀐다.
 //   캐릭터 목록만 구독하면 배치를 바꿔도 마크가 낡은 채로 남는다.
@@ -45,6 +48,29 @@ public class CharacterSlotSource : StorageSlotSource
                 "",
                 GameDataLoader.GetCharacterRarity(character.CharacterTid)));
         }
+    }
+
+    // 캐릭터 [정렬] 규칙 — 등급 높은 순 → 종류(TID) 순 → 개체 번호 순 (Sort에서 호출).
+    //
+    // 같은 종류를 여러 마리 가질 수 있어 개체 번호까지 가야 동점이 없다.
+    // ※ 칸의 'Key'는 개체 번호라 TID는 보유 목록에서 찾아온다.
+    protected override int CompareForSort(SlotData a, SlotData b)
+    {
+        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
+
+        if (byRarity != 0)
+        {
+            return byRarity;
+        }
+
+        int byTid = _data.GetCharacterTid(a.Key).CompareTo(_data.GetCharacterTid(b.Key));
+
+        if (byTid != 0)
+        {
+            return byTid;
+        }
+
+        return a.Key.CompareTo(b.Key);
     }
 
     // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)

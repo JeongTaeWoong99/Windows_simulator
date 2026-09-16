@@ -66,5 +66,11 @@ push했다(`templates/code/Common/memory-meter/`). 충돌 없음 — 마스터�
 멈춰 있었고 이번 변경만 얹혔다. **마스터 저장소 커밋은 사용자가 직접 한다.**
 
 ⚠️ 같은 자리에 "이 스킬은 모델이 호출할 수 없다"고 적었다가 고쳤다.
+
+## 업데이트 (2026-09-15)
+
+🔴 **이 로그의 원인 서술은 실험으로 뒷받침되지 않았다.** memory-meter의 `Refresh`를 매 프레임 강제해도
+재현되지 않았고, 종료 때 파괴되는 Material은 언로드 대상이 아닌 UITK 내부용·UGUI 스텐실 Material이었다.
+→ [2026-09-15-memory-meter-playmode-pause.md](2026-09-15-memory-meter-playmode-pause.md)
    2026-08-31에 `disable-model-invocation`을 걷어내, **사용자가 요청하면 모델이 실행한다.**
    요청 없이 스스로 여는 것은 여전히 하지 않는다 — 마스터는 공동 소유라 시작 판단이 사용자 몫이다.

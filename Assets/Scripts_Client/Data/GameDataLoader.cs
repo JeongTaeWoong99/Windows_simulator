@@ -60,6 +60,7 @@ public static class GameDataLoader
     // 이미 경고한 Id. 매 프레임 갱신되는 UI에서 같은 경고가 쏟아지는 것을 막는다.
     private static readonly HashSet<int> _warnedItemIds      = new HashSet<int>();
     private static readonly HashSet<int> _warnedCharacterIds = new HashSet<int>();
+    private static readonly HashSet<int> _warnedAptitudes    = new HashSet<int>();
 
     // 아이템 이름을 조회한다. 표시용이라 예외 없이 '?#Id'로 떨어지고, 처음 한 번만 경고한다.
     public static string GetItemName(int itemId)
@@ -88,6 +89,21 @@ public static class GameDataLoader
         WarnUnknownId("아이템", itemId, _warnedItemIds);
 
         return GlobalRarity.None;
+    }
+
+    // 아이템 분류(산업 · 기타 · 특수)를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
+    //
+    // ※ 창고 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
+    public static ItemType GetItemType(int itemId)
+    {
+        if (GameTable.ItemTable.TryGet(itemId, out var row))
+        {
+            return row.ItemType;
+        }
+
+        WarnUnknownId("아이템", itemId, _warnedItemIds);
+
+        return ItemType.None;
     }
 
     // 아이템 판매가를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 0으로 떨어지고 처음 한 번만 경고한다.
@@ -143,6 +159,42 @@ public static class GameDataLoader
         WarnUnknownId("캐릭터", characterTid, _warnedCharacterIds);
 
         return GlobalRarity.None;
+    }
+
+    // 적성(0~10)의 기본 작업속도(천분율, 1000 = 1.0배). 없는 적성이면 0이고 처음 한 번만 경고한다.
+    //
+    // ※ 캐릭터 적성과 달리 클라가 테이블을 읽어도 된다 — 적성 → 속도는 **개체마다 갈라지지 않는 정적 곡선**이다.
+    //   서버도 같은 표를 쓴다('Character.GetBaseWorkSpeed'). 적성 값 자체는 서버가 준 것('PlayerDataModel.GetAptitude')을 넣는다.
+    public static int GetBaseWorkSpeed(byte aptitude)
+    {
+        if (GameTable.WorkSpeedTable.TryGet(aptitude, out var row))
+        {
+            return row.BaseWorkSpeedPermille;
+        }
+
+        WarnUnknownId("작업속도", aptitude, _warnedAptitudes);
+
+        return 0;
+    }
+
+    // 레벨 L에 **도달하는 데** 직전 레벨에서 필요한 경험치를 조회한다. 행이 없으면 false.
+    //
+    // ※ 경고하지 않는다 — 행이 없는 것은 오류가 아니라 **만렙**이라는 뜻이다(마지막 행 = 만렙).
+    //   그래서 'Level + 1'로 물어 false면 만렙으로 읽는다. 진행 바의 분모도 'Level + 1'의 값이다.
+    // ※ 적성 → 속도처럼 **개체마다 갈라지지 않는 정적 곡선**이라 클라가 읽어도 된다.
+    //   레벨·경험치 값 자체는 서버가 준 것('CharacterInfo.Level'·'Exp')을 쓴다.
+    public static bool TryGetRequiredExp(int level, out int requiredExp)
+    {
+        if (GameTable.CharacterLevelTable.TryGet(level, out var row))
+        {
+            requiredExp = row.RequiredExp;
+
+            return true;
+        }
+
+        requiredExp = 0;
+
+        return false;
     }
 
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)

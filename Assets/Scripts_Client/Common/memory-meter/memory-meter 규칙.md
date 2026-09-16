@@ -1,6 +1,6 @@
 # memory-meter 폴더 규칙
 
-> 최종 업데이트: 2026-08-31 (라벨이 바뀔 때만 툴바 갱신) · 대상: `Common/memory-meter/`
+> 최종 업데이트: 2026-09-15 (플레이 모드 중 갱신 정지 · Material 예외 원인 서술 정정) · 대상: `Common/memory-meter/`
 
 **에디터 메모리 사용량을 상단 툴바에 실시간으로 표시하는 툴.** 게임을 전혀 모르는 범용 툴이라
 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit) 사본인 `Common/` 아래에 있다.
@@ -14,7 +14,7 @@
 | 파일 | 하는 일 |
 |------|---------|
 | `EditorMemoryMeter.cs` | 지금 쓰는 메모리를 읽고(`Snapshot`) 정리(`Cleanup`)한다 (동작만, UI 없음) |
-| `EditorMemoryToolbarButton.cs` | 위 수치를 상단 메인 툴바 오른쪽에 1초마다 갱신해 표시한다 |
+| `EditorMemoryToolbarButton.cs` | 위 수치를 상단 메인 툴바 오른쪽에 1초마다 갱신해 표시한다. 플레이 모드 중에는 `플레이 중`으로 멈춘다 |
 
 ---
 
@@ -51,17 +51,44 @@
   (내부 툴팁 요소를 리플렉션으로 손대는 건 [`editor-shared 규칙.md`](<../editor-shared/editor-shared 규칙.md>)의 "툴바 버튼은 공식 API로만 붙인다"와 같은 부류라 하지 않는다.)
 - **갱신은 `EditorApplication.update`에서 1초에 한 번**, 그중에서도 **라벨이 실제로 바뀐
   경우에만** 한다. 값을 바꾼 뒤 `MainToolbar.Refresh(path)`로 툴바에 알리는 게 공식 갱신 경로다.
-  도메인 리로드마다 팩토리 메서드가 다시 불리므로 구독은 `-=` 후 `+=`로 건다.
-- 🔴 **바뀐 게 없으면 `Refresh`를 부르지 않는다.** `Refresh`는 UI Toolkit에게 버튼 텍스트
-  메시를 다시 만들게 하는데, 그 생성이 **지연 실행**이라 그 사이 유니티가 폰트 아틀라스
-  `Material`을 언로드하면(플레이 모드를 빠져나올 때 자동으로 돈다) 콘솔에
-  `MissingReferenceException: ... Material ... has been destroyed`가 뜬다.
-  뒤이어 `MeshGenerationContext ... Did you forget to call 'End'?`가 따라오는데 **같은 사건의
-  후유증**이다 — 예외가 그리기 도중에 던져져 `End()`가 불리지 못한 것이지 별개 문제가 아니다.
-  유니티 내부의 레이스라 우리가 없앨 수는 없다. 다만 바뀐 것도 없이 매초 다시 만들며 그 창을
-  열어 둘 이유가 없어 라벨 비교를 둔다 (2026-08-30 실측: 플레이 종료 18회 중 2회).
-  ※ 대신 라벨(워킹셋)이 같은 동안은 **툴팁 수치도 멈춘다.** 툴팁은 네이티브가 그려 이 문제와
-    무관하고, 라벨이 같다는 건 MB 단위로 그대로라는 뜻이라 감수한다.
+  도메인 리로드마다 팩토리 메서드가 다시 불리므로 구독(`update`·`playModeStateChanged`)은 `-=` 후 `+=`로 건다.
+- **플레이 모드 중에는 갱신을 멈춘다.** 플레이 중엔 메모리가 계속 변해 라벨이 거의 매초 바뀌므로,
+  그대로 두면 `Refresh`(UI Toolkit 텍스트 메시 재생성)가 플레이 내내, 종료 과정까지 불린다.
+  - ① 플레이 중(진입·종료 과정 포함)에는 수치를 읽지 않고 **`플레이 중` 라벨로 고정**한다 → `Refresh` 없음.
+    도메인 리로드가 켜진 프로젝트는 진입 때 팩토리가 다시 불리며 처음부터 이 라벨로 만들어지고,
+    끈 프로젝트는 진입 때 한 번만 `Refresh`한다.
+  - ② `ExitingPlayMode`·`EnteredEditMode`에서 다음 갱신을 **3초 미룬다** — 종료 직후의
+    씬 복원 → 오브젝트 파괴 → 미사용 에셋 언로드가 끝난 뒤에 첫 `Refresh`가 오게 한다.
+  - ※ 라벨이 같으면 `Refresh`를 부르지 않는 비교도 남겨 둔다. 대신 라벨(워킹셋)이 같은 동안은
+    **툴팁 수치도 멈춘다.** 툴팁은 네이티브가 그려 `Refresh`와 무관하고, 라벨이 같다는 건 MB 단위로
+    그대로라는 뜻이라 감수한다.
+- ⚠️ **플레이 종료 때의 `Material` 예외 — 이 툴이 원인이라는 증거는 없다.**
+  플레이 종료 때 에디터 콘솔에 가끔
+  `MissingReferenceException: ... 'UnityEngine.Material' has been destroyed`(스택: `MeshGenerator.DrawText`
+  ← `UITKTextJobSystem`)가 뜨고, 뒤이어 `MeshGenerationContext ... Did you forget to call 'End'?`가
+  따라온다. 둘째 줄은 **같은 사건의 후유증**이다 — 예외가 그리기 도중에 던져져 `End()`가 불리지 못한 것이다.
+  이 툴이 UI Toolkit 텍스트를 상시 다시 그리는 곳이라 한때 원인으로 지목했지만(2026-08-31),
+  2026-09-15 실험에서 **인과가 확인되지 않았다.** 위의 플레이 중 정지는 예방 조치일 뿐이다.
+
+  | 조건 (2026-09-15, 한 에디터 세션) | 플레이 종료 | 예외 |
+  |---|---|---|
+  | 수정 전 동작 (자연 발생) | 17회 | 1회 |
+  | 갱신 끔 | 10회 | 0회 |
+  | 매 프레임 `Refresh` 강제 + 종료 순간 `Refresh` | 5회 | 0회 |
+  | 플레이 중 스크립트 변경 → 컴파일 도는 중 종료 | 3회 | 0회 |
+
+  - 발생 빈도는 세션마다 크게 다르다 — 전날 세션은 **4회 중 3회**였다. 무엇이 달랐는지는 모른다.
+    그날 유일하게 난 1회는 **플레이 중 스크립트가 바뀌어 컴파일이 걸린 채 종료한 판**이었지만,
+    같은 조건을 만들어도 재현되지 않았다.
+  - 종료 때 파괴되는 `Material`을 전수 추적하면 매번 **UI Toolkit 내부용(`Internal-UIRDefault`·
+    `UIRAtlasBlitCopy`)과 UGUI 마스크용 스텐실 Material**이었고, 글자용(TextCore 폰트 아틀라스)
+    Material은 한 번도 없었다. 이들은 `HideFlags`에 `DontUnloadUnusedAsset`이 들어 있어
+    미사용 에셋 언로드가 아니라 **주인이 직접 파괴**한 것이다.
+  - 다시 조사한다면 — `Editor.log`(`%LOCALAPPDATA%\Unity\Editor\`)에서 플레이 종료는
+    `Loaded scene 'Temp/__Backupscenes/0.backup'` **바로 뒤의 `Unloading N unused Assets`** 로 센다.
+    복원 표식만 세면 진입·종료에 두 번씩 찍혀 횟수가 두 배가 된다.
+    예외가 **실제로 뜬 판**에서 `Application.logMessageReceived`로 그 순간 사라진 `Material`을 찍어야
+    범인이 보인다 — 안 뜨는 판을 아무리 모아도 비교가 안 된다.
 - **클릭하면** `EditorUtility.UnloadUnusedAssetsImmediate()` + `GC.Collect()`로 정리하고
   `[메모리] 전 → 후 (차이)`를 콘솔에 남긴다. 확인 팝업은 없다(되돌릴 게 없는 안전한 동작).
   에디터에서 `Resources.UnloadUnusedAssets()`는 비동기라 결과를 바로 못 재므로 즉시판을 쓴다.

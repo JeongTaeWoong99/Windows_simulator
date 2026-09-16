@@ -47,6 +47,18 @@ public static class WorkStationProgress
         return remainUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
     }
 
+    // 판정 1회에 걸리는 초 = 실효 주기 (작업슬롯 선택 화면의 효율 계산에서 호출)
+    // ※ 남은 초와 같은 식에서 진행도만 뺀 것이다 — 서버 판정식을 여기 한 곳에만 둔다.
+    public static float CalculateCycleSeconds(WorkStationSlotInfo slot)
+    {
+        if (slot.CurrentWorkSpeed <= 0)
+        {
+            return 0f;
+        }
+
+        return slot.JudgeCostUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
+    }
+
     // 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
     // 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
     private static long GetPendingUnits(WorkStationSlotInfo slot)

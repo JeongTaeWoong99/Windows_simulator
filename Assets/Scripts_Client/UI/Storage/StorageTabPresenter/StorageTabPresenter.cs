@@ -64,6 +64,7 @@ public class StorageTabPresenter : MonoBehaviour
     [SerializeField, Tooltip("탭 내용을 그리는 격자. 같은 캔버스의 Grid Presenter")]
     private StorageGridPresenter grid = null!;
 
+
     [CenterHeader("선택 표시")]
     [SerializeField, Tooltip("지금 열려 있는 탭의 버튼 색")]
     private Color selectedColor = new Color(0.62f, 0.78f, 1f, 1f);
@@ -73,6 +74,12 @@ public class StorageTabPresenter : MonoBehaviour
 
     // 지금 열려 있는 탭. 창고를 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     public StorageTab CurrentTab { get; private set; } = DefaultTab;
+
+    // 탭이 바뀌었다 ('StorageToolPresenter'가 구독 — 특성 탭에서는 도구 줄이 숨는다).
+    //
+    // ※ 격자에게는 이 이벤트로 알리지 않는다 — 여기서 직접 'ShowTab'을 부른다.
+    //   내용을 갈아 끼우는 일은 전환의 본체라 구독으로 돌리면 순서가 흐려진다.
+    public event Action<StorageTab>? TabChanged;
 
     // 참조 확보 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
@@ -150,6 +157,8 @@ public class StorageTabPresenter : MonoBehaviour
 
         grid.ShowTab(tab);
         RefreshSelection();
+
+        TabChanged?.Invoke(tab);
     }
 
     // 지금 열린 탭의 버튼만 선택 색으로 칠한다 (ShowTab에서 호출).

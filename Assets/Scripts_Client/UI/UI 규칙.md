@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-09-12 (`Shared/` 신설 — 캔버스에 속하지 않는 공용 표현 부품 · T-049) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -274,6 +274,11 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 마지막 줄의 예 — `Window Panel`이 이미 5를 줬으므로 그 안의 `Button Panel`은 0이다.
 둘 다 주면 10이 된다.
 
+**예외 — 격자 프레임 안의 칸은 여백 0으로 꽉 채운다** (2026-09-16). 창고 `Slot (N)` 프레임에 들어가는
+`SlotView`가 그렇다 — 프레임이 곧 칸의 테두리이고 칸 사이 간격은 바깥 `Content`의 격자가 이미 준다.
+이런 **특수한 경우는 괜찮다.** 대신 예외를 둔 자리의 폴더 규칙에 이유를 적는다
+→ [`Storage 규칙.md`](<Storage/Storage 규칙.md>) "칸은 프레임을 꽉 채운다".
+
 **스프라이트** — 역할이 곧 스프라이트다.
 
 | 역할 | 스프라이트 | 왜 |
@@ -411,7 +416,8 @@ UI/
 │   │   └─ WorkStationSlotView.cs        ← 종속 View
 │   ├─ WorkStationSelectPresenter/
 │   │   ├─ WorkStationSelectPresenter.cs
-│   │   └─ CharacterStateRowView.cs      ← 종속 View
+│   │   ├─ CharacterStateRowView.cs      ← 종속 View (목록 줄 · 세팅 카드)
+│   │   └─ EfficiencyRowView.cs          ← 종속 View (효율 계산 한 줄)
 │   ├─ SettingPresenter/
 │   │   └─ SettingPresenter.cs
 │   └─ MenuPresenter/
@@ -447,7 +453,7 @@ UI/
 │   ├─ SlotView.cs              ← 창고 격자와 가챠 결과가 함께 쓰는 칸
 │   ├─ SlotData.cs                ← 그 칸에 넘기는 완성값
 │   ├─ ResultMessages.cs · RarityPalette.cs
-│   └─ WorkStationProgress.cs · IndustryLabel.cs
+│   └─ WorkStationProgress.cs · IndustryLabel.cs · AptitudeLabel.cs
 └─ Layout/                                ← 예외. 화면이 아니라 배치 계산
     ├─ Layout 규칙.md
     ├─ WidgetPositionLayout.cs

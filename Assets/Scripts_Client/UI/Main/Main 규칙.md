@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-08-23 (`UI 규칙.md`에서 분리) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-09-16 (배치 목록 순서 · 줄 등급 색 · 하단 메뉴 줄 = 특별 이벤트 자리 — T-057 · T-015) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -9,7 +9,7 @@
 |------|------|
 | `MainCanvasView.cs` | 캔버스 껍데기 + **`SetTitle(string)`** (아래 "캔버스 머리의 제목") |
 | `WorkStationListPresenter/` | 작업슬롯 목록 (+ 종속 View `WorkStationSlotView`) |
-| `WorkStationSelectPresenter/` | 작업슬롯 선택 (+ 종속 View `CharacterStateRowView`) |
+| `WorkStationSelectPresenter/` | 작업슬롯 선택 (+ 종속 View `CharacterStateRowView` — 목록 줄과 세팅 카드가 함께 쓴다 · `EfficiencyRowView` — 효율 계산 한 줄) |
 | `SettingPresenter/` | 창 설정 |
 | `MenuPresenter/` | 하단 메뉴 — **항상 켜져 있다** |
 
@@ -39,6 +39,15 @@
   **배경을 자식으로 내린다** — 안 그러면 다 껐는데 빈 판만 남는다.
 - 화면마다 캔버스를 두면 **화면을 하나 붙일 때마다 `Canvas`·`GraphicRaycaster`·`LayoutElement` 높이를
   따로 맞춰야 하고, 하나만 어긋나도 크기가 틀어진다**([`Layout 규칙.md`](<../Layout/Layout 규칙.md>)).
+
+### 하단 메뉴 줄이 특별 이벤트 자리다
+
+`Menu Presenter` 줄이 기획 2.4의 **특별 이벤트 자리**다(2026-09-16 · 기획 6장 Q12 해소). 별도 층을 두지 않는다.
+보스 · 대형 작업물처럼 채취 루프 밖의 콘텐츠가 오면 **이 줄에 버튼이 는다.**
+
+- 줄이 `pref 100 · flexH 0`이고 갈아 끼워지는 화면이 `flexH 1`이라 **버튼이 늘어도 슬롯 영역은 밀리지 않는다** —
+  줄 안의 `HorizontalLayoutGroup`(폭 확장)이 버튼 폭만 나눈다.
+- 아직 없는 콘텐츠의 **빈 칸·잠긴 버튼을 미리 두지 않는다**. 버튼에 **배지·타이머·"오늘까지"를 붙이지 않는다**(P1).
 
 ## 전환 층은 하나다 — 화면은 자기를 끄지 않는다
 
@@ -70,6 +79,24 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 
 > 꺼져 있는 화면을 열 때는 **인자를 먼저 넣고 켠다**(`Open(slotIndex)` 안에서 `SetActive(true)`).
 > 꺼진 오브젝트는 `Start()`가 아직 안 돌았을 수 있어, 켠 직후 값을 넣으면 초기화가 덮어쓴다.
+
+## 배치 목록 — 산업 버튼이 곧 정렬 기준이다
+
+선택 화면의 캐릭터 줄은 **고른 산업의 적성 높은 순 → 등급 높은 순 → 개체 번호 순**이다
+(`WorkStationSelectPresenter.CompareRows`). 산업 버튼을 누르면 걸러 내기와 정렬이 함께 바뀌므로
+**정렬 UI를 따로 두지 않는다** — 목록 순서가 곧 "이 산업에 누구를 넣을까"의 추천이다.
+
+- 개체 번호까지 가서 **동점을 없앤다.** `List.Sort`는 안정 정렬이 아니라 동점이면 다시 그릴 때마다 줄이 바뀐다.
+- 다시 그리는 시점은 따로 두지 않았다 — 화면을 열 때(`OnEnable`)와 캐릭터가 늘 때(`CharactersChanged`) 이미 `Refresh`가 돈다.
+
+### 줄 바탕은 등급 색이다
+
+`CharacterStateRowView`의 루트 Image를 **`RarityPalette`의 등급 색**으로 칠한다(`SetRarity`) — 창고 칸과 같은 표다.
+목록 줄과 세팅 카드가 같은 프리팹이라 둘 다 칠해진다.
+
+- 등급은 **종류(TID)로 읽는다.** 세팅 카드는 슬롯이 개체 번호만 주므로 `PlayerDataModel.GetCharacterTid`를 거친다.
+- `Clear()`가 `RarityPalette.Unknown`으로 되돌린다 — 풀에서 재사용되는 줄이라 안 되돌리면 이전 색이 남는다.
+- 🎨 등급 테두리 스프라이트가 오면 **색 대신 스프라이트로 바꾼다.** 자리는 같은 `backgroundImage`다.
 
 ## 캔버스 머리의 제목은 `UIManager`가 밀어 넣는다
 
