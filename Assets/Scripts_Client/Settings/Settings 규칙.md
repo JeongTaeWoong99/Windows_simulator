@@ -3,7 +3,8 @@
 > 최종 업데이트: 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
 
 **창·표시 설정을 `PlayerPrefs`에 저장하고 되읽는 곳.** 키 상수와 읽기·쓰기 헬퍼만 둔다 —
-설정을 **적용**하는 일은 [`Managers/`](<../Managers/Managers 규칙.md>)의 `WindowManager`(창)·`FrameRateManager`(프레임·FPS 표시)가 한다.
+설정을 **적용**하는 일은 [`Managers/`](<../Managers/Managers 규칙.md>)의 `WindowManager`(창)·`DisplayManager`(표시·성능)가 한다.
+**설정마다 매니저를 만들지 않는다** — 설정이 무엇을 조작하느냐로 주인을 가른다(창 모양 → `WindowManager`, 표시·성능 → `DisplayManager`).
 
 ---
 
@@ -29,7 +30,7 @@ Topmost·Scale·Anchor의 진실은 **어디서 실행하느냐**로 갈린다.
 
 > ⚠️ **예외 — `Display.*`(프레임 제한 · FPS 텍스트 위치)는 에디터에서도 저장값이 진실이다.**
 > 창 모양은 에디터에서 실제로 안 움직여 인스펙터가 진실인 편이 낫지만, 프레임은 **에디터에서도 실제로 먹는다.**
-> 그래서 마지막 선택이 플레이를 멈췄다 켜도 유지되는 편이 테스트에 맞다. 인스펙터(`FrameRateManager.setStart*`)는
+> 그래서 마지막 선택이 플레이를 멈췄다 켜도 유지되는 편이 테스트에 맞다. 인스펙터(`DisplayManager.setStart*`)는
 > **저장이 없을 때의 기본값**일 뿐이다(프레임 60 · FPS 텍스트 숨김). 설정 UI에서 고르면 즉시 저장·즉시 반영된다.
 >
 > ⚠️ **에디터 한계 — `모니터 동기화`는 Game 뷰의 VSync 토글이 덮을 수 있다.** 에디터에서 안 먹는 것처럼 보이면

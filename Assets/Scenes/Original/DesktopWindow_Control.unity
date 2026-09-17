@@ -16882,7 +16882,7 @@ GameObject:
   - component: {fileID: 760072737}
   - component: {fileID: 760072736}
   m_Layer: 0
-  m_Name: Frame Rate Manager
+  m_Name: Display Manager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -16899,7 +16899,7 @@ MonoBehaviour:
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 453184ce6281a584f8a8a005ada14f71, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::FrameRateManager
+  m_EditorClassIdentifier: Assembly-CSharp::DisplayManager
   setStartFrameRate: 1
   setStartFpsTextPosition: 0
 --- !u!4 &760072737

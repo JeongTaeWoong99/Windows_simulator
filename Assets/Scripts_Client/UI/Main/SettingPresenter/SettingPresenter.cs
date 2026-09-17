@@ -67,7 +67,7 @@ public class SettingPresenter : MonoBehaviour
 
         var window    = Services.Get<WindowManager>();
         var ui        = Services.Get<UIManager>();
-        var frameRate = Services.Get<FrameRateManager>();
+        var display   = Services.Get<DisplayManager>();
 
         // ─── 헤더 ───
         // 이 화면을 직접 끄지 않는다 — UIManager 가 목록을 켜면서 같은 자리의 이 화면을 끈다.
@@ -103,9 +103,9 @@ public class SettingPresenter : MonoBehaviour
         });
 
         // ─── 표시 ───
-        // 창 설정과 달리 에디터에서도 저장값이 시작값이고, 고르는 즉시 저장·반영된다('FrameRateManager').
-        BindDropdown(frameRateDropdown,       frameRate.GetFrameRateLabels(),       frameRate.FrameRateIndex,       frameRate.SetFrameRateByIndex);
-        BindDropdown(fpsTextPositionDropdown, frameRate.GetFpsTextPositionLabels(), frameRate.FpsTextPositionIndex, frameRate.SetFpsTextPositionByIndex);
+        // 창 설정과 달리 에디터에서도 저장값이 시작값이고, 고르는 즉시 저장·반영된다('DisplayManager').
+        BindDropdown(frameRateDropdown,       display.GetFrameRateLabels(),       display.FrameRateIndex,       display.SetFrameRateByIndex);
+        BindDropdown(fpsTextPositionDropdown, display.GetFpsTextPositionLabels(), display.FpsTextPositionIndex, display.SetFpsTextPositionByIndex);
     }
 
     // 토글을 시작값으로 세팅(알림 없이)하고, 값 변경 시 창 제어 메서드를 호출하도록 연결

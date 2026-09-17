@@ -29,3 +29,10 @@ tags: [client, ui]
 
 ## 업데이트 (2026-09-18)
 - 사용자가 에디터·빌드 확인 통과 → T-062 완료 보관 (`70e458d`)
+
+## 업데이트 (2026-09-18) — `FrameRateManager` → `DisplayManager` 개명
+- **설정마다 매니저를 만들지 않는다** — 주인은 설정이 무엇을 조작하느냐로 가른다(창 모양 → `WindowManager`, 표시·성능 → `DisplayManager`). 해상도·품질 같은 설정이 생기면 새 매니저가 아니라 여기로 온다
+- 이름을 `Display.*` 키 접두사와 맞췄다. `.cs`·`.meta`를 함께 `git mv`해 GUID를 유지 → 씬 참조는 그대로
+- 씬의 `m_EditorClassIdentifier`는 유니티가 다시 써 주지 않아 파일을 직접 고쳤다(오브젝트 이름도 `Display Manager`)
+- 보류: `WindowSettings`가 `Display.*` 키까지 들고 있어 이름이 좁다 — 설정 축이 하나 더 생길 때 개명·분리한다
+- 보류: partial 분할은 하지 않기로 했다 — 역할 이름(`Base`/`Api`)이 아니라 기능 단위 클래스 추출이 먼저

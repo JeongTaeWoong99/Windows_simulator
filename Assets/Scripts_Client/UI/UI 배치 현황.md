@@ -110,7 +110,7 @@ Root Canvas
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
 (캔버스 밖)
-Window Manager · Frame Rate Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
+Window Manager · Display Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
 PlayerData (MODEL)                                PlayerDataModel
 SellCart (MODEL)                                  SellCartModel   판매 목록. 서버 상태가 아니다
 ```

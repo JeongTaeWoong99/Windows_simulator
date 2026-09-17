@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 
 // FPS 텍스트 — 창 네 구석 중 한 곳에 회색 작은 글씨로 현재 프레임을 띄운다.
-// 위치는 'FrameRateManager.FpsTextPositionChanged'를 구독해 따라간다('Hidden'이면 안 보인다).
+// 위치는 'DisplayManager.FpsTextPositionChanged'를 구독해 따라간다('Hidden'이면 안 보인다).
 //
 // ⚠️ 오브젝트를 끄지 않고 텍스트만 끈다 — 자기를 끄면 다시 켤 이벤트를 받지 못한다.
 // ⚠️ 텍스트의 'raycastTarget'은 꺼 둔다 — 켜면 동적 클릭스루가 그 구석을 콘텐츠로 보고 클릭을 안 통과시킨다.
@@ -19,7 +19,7 @@ public class FpsTextPresenter : MonoBehaviour
     [SerializeField, Tooltip("창 구석에서 떨어뜨릴 거리 (캔버스 좌표)")]
     private Vector2 margin = new Vector2(8f, 6f);
 
-    private FrameRateManager _frameRate = null!;
+    private DisplayManager _display = null!;
 
     private float _elapsed;
     private int   _frames;
@@ -35,10 +35,10 @@ public class FpsTextPresenter : MonoBehaviour
 
         fpsText.raycastTarget = false;
 
-        _frameRate = Services.Get<FrameRateManager>();
+        _display = Services.Get<DisplayManager>();
         Subscribe();
 
-        OnPositionChanged(_frameRate.FpsTextPosition);
+        OnPositionChanged(_display.FpsTextPosition);
 
         _isReady = true;
     }
@@ -95,8 +95,8 @@ public class FpsTextPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed                      = true;
-        _frameRate.FpsTextPositionChanged += OnPositionChanged;
+        _isSubscribed                    = true;
+        _display.FpsTextPositionChanged += OnPositionChanged;
     }
 
     private void Unsubscribe()
@@ -106,11 +106,11 @@ public class FpsTextPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed                      = false;
-        _frameRate.FpsTextPositionChanged -= OnPositionChanged;
+        _isSubscribed                    = false;
+        _display.FpsTextPositionChanged -= OnPositionChanged;
     }
 
-    // 위치가 바뀌었다 (FrameRateManager.FpsTextPositionChanged 구독 · Start 초기화)
+    // 위치가 바뀌었다 (DisplayManager.FpsTextPositionChanged 구독 · Start 초기화)
     // 텍스트의 앵커·피벗·정렬을 그 구석으로 옮긴다.
     private void OnPositionChanged(FpsTextPosition position)
     {

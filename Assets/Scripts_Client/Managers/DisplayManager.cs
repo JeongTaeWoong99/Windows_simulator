@@ -22,14 +22,18 @@ public enum FpsTextPosition
     LowerRight,
 }
 
-// 프레임 제한과 FPS 텍스트 위치를 정하고 적용한다 — 설정 화면이 고르고, 저장은 'WindowSettings'가 한다.
+// 표시·성능 설정의 주인 — 지금은 프레임 제한과 FPS 텍스트 위치를 정하고 적용한다.
+// 설정 화면이 고르고, 저장은 'WindowSettings'('Display.*' 키)가 한다.
+//
+// ■ 설정마다 매니저를 만들지 않는다
+// 창 모양은 'WindowManager', 표시·성능(해상도·품질 등이 생기면 함께)은 여기다 — 설정이 무엇을 조작하느냐로 가른다.
 //
 // ■ 권위 소스 — 에디터·빌드 모두 저장값
 // 창 설정('WindowManager')과 달리 에디터에서도 저장값을 읽는다. 프레임은 에디터에서도 실제로
 // 먹는 값이라 마지막 선택이 유지되는 편이 테스트에 맞다. 인스펙터 'setStart*'는 첫 실행 기본값뿐이다.
 //
 // ⚠️ 모니터 동기화는 에디터에서 Game 뷰의 VSync 토글이 덮을 수 있다('Settings 규칙.md' 1장).
-public class FrameRateManager : MonoService<FrameRateManager>
+public class DisplayManager : MonoService<DisplayManager>
 {
     // 숫자 항목의 목표 프레임. 'FrameRateOption' 순서와 같다(VSync는 숫자가 없다).
     private static readonly int[] TargetFrameRates = { 30, 60, 90, 144 };
