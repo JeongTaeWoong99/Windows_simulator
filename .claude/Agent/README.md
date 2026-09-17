@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-18 설정에 프레임 제한 · FPS 텍스트 위치 드롭다운](2026-09-18-frame-rate-fps-text.md) — `#client` `#ui` `FrameRateManager` · `FpsTextPresenter` 신설 (T-062)
 - [2026-09-17 작업슬롯 칸 바탕을 캐릭터 등급 색으로](2026-09-17-workslot-rarity-color.md) — `#client` `#ui` 목록·위젯 미니 칸에 `SetRarity` (T-061)
 - [2026-09-17 치트 에디터 창 · 안전장치 팝업 · 씬 복사 알림 툴바 토글](2026-09-17-cheat-editor-window.md) — `#client` `#editor` 치트를 한 창에 모아 보내기 (T-059)
 - [2026-09-16 잠긴 작업슬롯 표시 · 해금 요청](2026-09-16-workslot-locked-display.md) — `#client` `#ui` 열린 목록 기반 잠김 판정 · `ConfirmPresenter` · `C_UnlockRequest` 연결 (T-039)
