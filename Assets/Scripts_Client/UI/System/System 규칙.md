@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-16 (확인 팝업 `ConfirmPresenter` 추가 — T-039) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-18 (FPS 텍스트 `FpsTextPresenter` 추가 — T-062) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -13,6 +13,7 @@
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`를 구독해 뽑힌 보상을 5열로 표시 |
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
+| `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `FrameRateManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
@@ -52,11 +53,12 @@
 
 ```
 !System Canvas (MAIN VIEW)
-├─ [0] Loading Presenter     (↓ SUB VIEW)
-├─ [1] Gacha Result Presenter (↓ SUB VIEW)
-├─ [2] Amount Input Presenter (↓ SUB VIEW)
-├─ [3] Confirm Presenter      (↓ SUB VIEW)
-└─ [4] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
+├─ [0] Fps Text Presenter    (↓ SUB VIEW)   ← 오버레이가 아니라 맨 밑
+├─ [1] Loading Presenter     (↓ SUB VIEW)
+├─ [2] Gacha Result Presenter (↓ SUB VIEW)
+├─ [3] Amount Input Presenter (↓ SUB VIEW)
+├─ [4] Confirm Presenter      (↓ SUB VIEW)
+└─ [5] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
 ```
 
 **`Notice Presenter`는 언제나 맨 아래(마지막)다.** 알림은 실패·종료를 알리는 마지막 출구라

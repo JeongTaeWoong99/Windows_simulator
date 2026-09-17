@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-09-07 (하트비트 — 송신을 백그라운드 타이머로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-09-18 (`FrameRateManager` 추가 — T-062) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -23,7 +23,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 
 ---
 
-## 2. 현재 매니저 6개
+## 2. 현재 매니저 7개
 
 | 클래스 | 역할 | 경계 — 하지 않는 것 |
 |--------|------|--------------------|
@@ -37,6 +37,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 > 뜨므로 참조가 없다. 근거는 [`System 규칙.md`](<../UI/System/System 규칙.md>)의
 > "왜 이것만 `UIManager`를 거치는가".
 | **`WindowManager`** | 데스크톱 창 제어(투명·항상 위·클릭 스루·크기·위치) | Win32 **선언**은 갖지 않는다 → `DesktopWindow/Win32Native` |
+| **`FrameRateManager`** | 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 위치를 정해 `FpsTextPositionChanged` 발행. **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/System/FpsTextPresenter` |
 | **`PingManager`** | 연결 생존 확인(5초 Ping / 15초 무응답 감지). **송신은 백그라운드 타이머, 판정은 `Update`** | **소켓을 끊지 않는다.** 알리고 앱을 내릴 뿐 — 세션 정리는 서버 폴더의 것 |
 | **`SellCartModel`** | **판매하려고 담아 둔 목록.** 담긴 종류·수량, 합계 골드, 상위 등급 포함 여부를 들고 `Changed`를 발행. 창고 격자(담김 표시)와 `SellCartPresenter`(목록·합계)가 같은 것을 보게 하는 자리다 | **송신하지 않는다** — 판매 요청은 버튼을 누른 Presenter가 보낸다. **보유량의 주인도 아니다** — `PlayerDataModel.InventoryChanged`를 구독해 초과분만 깎는다 |
 | **`ServerWaitManager`** | **서버 왕복 한 건의 대기 창구.** 로딩 표시 on/off · 5초 무응답 감시 · 실패/치명 알림 발행 | **패킷을 받지 않는다.** 요청을 보낸 Presenter가 `Begin` 후 `Succeed`/`Fail`로 보고한다. `EResultCode`도 모른다 — 문구 변환은 Presenter가 `ResultMessages`로 마쳐 넘긴다 |
@@ -219,7 +220,7 @@ OnDisable → 구독 해제
 ⚠️ **둘은 같은 게 아니다.** `MonoService<Person>`으로 등록하면 `Person`이 `IWalk`를 구현했더라도
 `Get<IWalk>()`는 키가 없어 실패한다.
 
-**현재 이 폴더의 6개는 전부 1번(자기 자신)** 이다 — 교체 대상이 아니기 때문이다.
+**현재 이 폴더의 7개는 전부 1번(자기 자신)** 이다 — 교체 대상이 아니기 때문이다.
 
 ---
 

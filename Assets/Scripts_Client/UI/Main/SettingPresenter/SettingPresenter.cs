@@ -46,6 +46,10 @@ public class SettingPresenter : MonoBehaviour
     [SerializeField, Tooltip("위젯 위치를 실제로 반영할 레이아웃 컴포넌트 — !Horizental Columns 에 있다")]
     private WidgetPositionLayout widgetLayout = null!;
 
+    [CenterHeader("표시")]
+    [SerializeField] private TMP_Dropdown frameRateDropdown       = null!; // 프레임 제한 (30·60·90·144·모니터 동기화)
+    [SerializeField] private TMP_Dropdown fpsTextPositionDropdown = null!; // FPS 텍스트 위치 (숨김·네 구석)
+
     // 토글/드롭다운을 현재 값으로 맞추고, 조작을 각 담당자에게 연결한다 (Unity 메시지)
     private void Start()
     {
@@ -58,9 +62,12 @@ public class SettingPresenter : MonoBehaviour
         this.RequireRef(sizeDropdown,              nameof(sizeDropdown));
         this.RequireRef(windowPositionDropdown,    nameof(windowPositionDropdown));
         this.RequireRef(widgetLayout,              nameof(widgetLayout));
+        this.RequireRef(frameRateDropdown,         nameof(frameRateDropdown));
+        this.RequireRef(fpsTextPositionDropdown,   nameof(fpsTextPositionDropdown));
 
-        var window = Services.Get<WindowManager>();
-        var ui     = Services.Get<UIManager>();
+        var window    = Services.Get<WindowManager>();
+        var ui        = Services.Get<UIManager>();
+        var frameRate = Services.Get<FrameRateManager>();
 
         // ─── 헤더 ───
         // 이 화면을 직접 끄지 않는다 — UIManager 가 목록을 켜면서 같은 자리의 이 화면을 끈다.
@@ -94,6 +101,11 @@ public class SettingPresenter : MonoBehaviour
             window.SetAnchorByIndex(index);
             widgetLayout.SetPosition((WidgetPosition)index);
         });
+
+        // ─── 표시 ───
+        // 창 설정과 달리 에디터에서도 저장값이 시작값이고, 고르는 즉시 저장·반영된다('FrameRateManager').
+        BindDropdown(frameRateDropdown,       frameRate.GetFrameRateLabels(),       frameRate.FrameRateIndex,       frameRate.SetFrameRateByIndex);
+        BindDropdown(fpsTextPositionDropdown, frameRate.GetFpsTextPositionLabels(), frameRate.FpsTextPositionIndex, frameRate.SetFpsTextPositionByIndex);
     }
 
     // 토글을 시작값으로 세팅(알림 없이)하고, 값 변경 시 창 제어 메서드를 호출하도록 연결

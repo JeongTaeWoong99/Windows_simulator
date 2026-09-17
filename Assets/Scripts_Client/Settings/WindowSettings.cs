@@ -40,6 +40,11 @@ public static class WindowSettings
     public const string PositionXKey           = Prefix + "PosX";
     public const string PositionYKey           = Prefix + "PosY";
 
+    // 프레임 제한 · FPS 텍스트 위치 — 창 모양이 아니라 표시 축이라 접두사를 따로 둔다('FrameRateManager').
+    // ⚠️ 이 둘은 에디터에서도 저장값을 읽는다(창 설정의 "에디터=인스펙터" 규칙의 예외 — 'Settings 규칙.md' 1장).
+    public const string FrameRateKey           = "Display.FrameRate";
+    public const string FpsTextPositionKey     = "Display.FpsTextPosition";
+
     // 저장된 bool을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
     public static bool LoadBool(string key, bool fallback)
     {

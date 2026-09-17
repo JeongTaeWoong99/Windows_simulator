@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-16 (확인 팝업 Confirm Presenter 추가 — T-039) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-18 (FPS 텍스트 · 설정 표시 드롭다운 추가 — T-062) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -78,7 +78,7 @@ Root Canvas
 │  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
-│  │  │  │  └─ Dropdown Panel                     드롭다운 3          pref 0 · flexH 1
+│  │  │  │  └─ Dropdown Panel                     드롭다운 5 (크기·위치·프레임·FPS 위치 + 미사용 1)          pref 0 · flexH 1
 │  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    창고·거래 버튼  pref 100
 │  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
 │  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
@@ -97,6 +97,8 @@ Root Canvas
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
+   ├─ Fps Text Presenter (↓ SUB VIEW)             FpsTextPresenter   구석 FPS 표시 · 차단막·CanvasGroup 없음
+   │  └─ Text (TMP)                               회색 22 · raycastTarget 끔(클릭스루)
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
@@ -108,7 +110,7 @@ Root Canvas
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
 (캔버스 밖)
-Window Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
+Window Manager · Frame Rate Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
 PlayerData (MODEL)                                PlayerDataModel
 SellCart (MODEL)                                  SellCartModel   판매 목록. 서버 상태가 아니다
 ```
