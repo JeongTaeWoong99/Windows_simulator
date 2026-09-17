@@ -462,6 +462,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 07761cc4e8c6bb44a84db91e6f2d86c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WidgetMiniSlotView
+  backgroundImage: {fileID: 1352256165293028013}
   characterImage: {fileID: 3292163645557315778}
   harvestText: {fileID: 2472931416502404810}
   progressSlider: {fileID: 9116991798078815453}

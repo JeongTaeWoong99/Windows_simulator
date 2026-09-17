@@ -334,6 +334,7 @@ public class WorkStationListPresenter : MonoBehaviour
             }
 
             view.Bind(slot, _data.GetCharacterName(slot.CharacterId));
+            view.SetRarity(GameDataLoader.GetCharacterRarity(_data.GetCharacterTid(slot.CharacterId)));
         }
     }
 

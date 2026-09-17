@@ -1,3 +1,4 @@
+using GameData;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
@@ -17,6 +18,12 @@ using UnityEngine.UI;
 public class WidgetMiniSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
+    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 캐릭터 그림('characterImage')과 다른 이미지다 —
+    // 그림 자리에 색을 입히면 나중에 들어올 스프라이트가 물든다.
+    // 🎨 등급 이미지가 나오면 색 대신 여기에 스프라이트를 넣는다.
+    [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
+    private Image backgroundImage = null!;
+
     [SerializeField, Tooltip("캐릭터 그림 자리. 스프라이트는 아직 비어 있고 나중에 교체한다")]
     private Image characterImage = null!;
 
@@ -35,6 +42,7 @@ public class WidgetMiniSlotView : MonoBehaviour
     // 그래야 WidgetPresenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
     {
+        this.RequireRef(backgroundImage, nameof(backgroundImage));
         this.RequireRef(characterImage, nameof(characterImage));
         this.RequireRef(harvestText,    nameof(harvestText));
         this.RequireRef(progressSlider, nameof(progressSlider));
@@ -51,6 +59,13 @@ public class WidgetMiniSlotView : MonoBehaviour
         _slot = slot;
 
         progressSlider.value = WorkStationProgress.CalculateProgress(slot);
+    }
+
+    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WidgetPresenter가 Bind 뒤에 호출).
+    //   rarity : 종류(TID)로 읽은 등급. 모르는 개체면 'None' → 회색('Unknown')
+    public void SetRarity(GlobalRarity rarity)
+    {
+        backgroundImage.color = RarityPalette.Get(rarity);
     }
 
     // 진행도를 갱신한다 (WidgetPresenter의 Update가 매 프레임 호출).

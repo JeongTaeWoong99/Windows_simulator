@@ -177,6 +177,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c342d40fac225ac4bb974c9f05f3fe0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::WorkStationSlotView
+  backgroundImage: {fileID: 3737357419468821787}
   slotText: {fileID: 2635945914803179432}
   remainText: {fileID: 6150595748935389424}
   progressSlider: {fileID: 647758233822417899}
