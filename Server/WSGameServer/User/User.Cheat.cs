@@ -46,7 +46,7 @@ public partial class User
         void Reply(EResultCode code, string text)
         {
             // 성공·실패 전부 남긴다 — 운영에서 누가 무엇을 했는지가 이 한 줄뿐이다.
-            ServerLog.Warn("치트", $"Uid={Uid} {req.Command}({req.Arg1}, {req.Arg2}) → {code} {text}");
+            ServerLog.Warn("치트", $"Uid={Uid} {req.Command}(Arg1:{req.Arg1}, Arg2:{req.Arg2}) → {code} {text}");
             Send(new S_CheatResponse { Result = code, Command = req.Command, Message = text });
         }
     }
