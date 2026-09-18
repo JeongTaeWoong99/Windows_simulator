@@ -20,7 +20,7 @@ namespace DesktopWindowControl.EditorTools
 		// 서버가 요구하는 .NET SDK 최소 메이저 버전 (= WSGameServer.csproj의 net10.0). TFM을 올리면 같이 올린다.
 		private const int RequiredSdkMajor = 10;
 		// 서버가 여는 포트(WSGameServer 하드코딩). 크래시로 추적 PID를 잃은 orphan 서버 탐지에 쓴다.
-		private const int ServerPort = 10050;
+		public const int ServerPort = 10050;
 		// 서버 stdout/stderr를 담는 로그 파일 — 창이 tail 한다. 'Temp/'는 git 무시라 커밋되지 않는다.
 		private const string LogFileRelPath = "Temp/WSGameServer.log";
 		// 실행 중 프로세스(cmd) PID를 담는 세션 키

@@ -10,7 +10,7 @@ namespace DesktopWindowControl.EditorTools
 {
 	// 'Scenes/Original'의 씬을 'Scenes/Test Copy'로 복사하는 에디터 툴.
 	// 원본을 직접 열지 않고 각자 로컬 사본에서 테스트하기 위한 것이다 (이슈 #14).
-	// 실제 버튼은 'OriginalSceneCopyToolbarButton'이 상단 툴바에 얹고, 여기는 동작만 갖는다.
+	// 버튼은 치트 창('CheatWindow') 도구 줄에 있고, 여기는 동작만 갖는다.
 	public static class OriginalSceneCopier
 	{
 		// 프로젝트 루트 기준 경로. 자리를 옮기면 함께 고친다.
@@ -22,7 +22,7 @@ namespace DesktopWindowControl.EditorTools
 		// 최신성 검사기('SceneCopyFreshnessChecker')가 이 파일을 읽어 오리지널과 비교한다.
 		internal const string StateName  = ".copy-state";
 
-		// 툴바 버튼용 진입점. 바로 복사하지 않고 '[지금 복사]/[나중에]' 확인을 거친다.
+		// 버튼용 진입점. 바로 복사하지 않고 '[지금 복사]/[나중에]' 확인을 거친다.
 		// (검사기 팝업의 '지금 복사'는 이미 확인했으므로 계속 Copy()를 직접 부른다 — 이중 확인 방지.)
 		public static void CopyWithConfirm()
 		{
@@ -98,7 +98,7 @@ namespace DesktopWindowControl.EditorTools
 			
 			sb.AppendLine("# Test Copy — 오리지널 씬 복사본 (로컬 전용)");
 			sb.AppendLine();
-			sb.AppendLine("> 이 폴더는 상단 툴바 '오리지널 씬 복사' 버튼이 자동으로 채운다. 손으로 고치지 않는다.");
+			sb.AppendLine("> 이 폴더는 치트 창의 '오리지널 씬 복사' 버튼이 자동으로 채운다. 손으로 고치지 않는다.");
 			sb.AppendLine("> `.gitignore`에 걸려 **커밋되지 않는다** — 각자 로컬에서만 테스트한다 (이슈 #14).");
 			sb.AppendLine("> 원본이 갱신되면 버튼을 다시 눌러 최신화한다.");
 			sb.AppendLine();

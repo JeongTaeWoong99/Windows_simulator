@@ -1,6 +1,6 @@
 # Editor 폴더 규칙
 
-> 최종 업데이트: 2026-08-26 (`shared/`·`memory-meter/`가 `Common/`으로 이관) · 대상: `Assets/Scripts_Client/Editor/`
+> 최종 업데이트: 2026-09-17 (`cheat-console/` 추가) · 대상: `Assets/Scripts_Client/Editor/`
 
 **이 프로젝트 전용 에디터 툴을 두는 곳.** 폴더 이름이 `Editor`라서 유니티가
 자동으로 `Assembly-CSharp-Editor`로 컴파일하고 **런타임 빌드에서 제외**한다.
@@ -24,8 +24,11 @@
 
 | 하위 폴더 | 무엇을 | 문서 |
 |-----------|--------|------|
-| `scene-copy/` | 오리지널 씬을 `Test Copy`로 복사 + 낡음 알림 | [`scene-copy 규칙.md`](<scene-copy/scene-copy 규칙.md>) |
-| `server-console/` | 에디터에서 서버 실행/종료 + 로그 보기 | [`server-console 규칙.md`](<server-console/server-console 규칙.md>) |
+| `scene-copy/` | 오리지널 씬을 `Test Copy`로 복사 + 낡음 알림 (동작만 — 버튼은 치트 창 도구 줄) | [`scene-copy 규칙.md`](<scene-copy/scene-copy 규칙.md>) |
+| `server-console/` | 에디터에서 서버 실행/종료 + 로그 보기 (여는 버튼은 치트 창 도구 줄) | [`server-console 규칙.md`](<server-console/server-console 규칙.md>) |
+| `cheat-console/` | 서버 치트를 한 창에 모아 보내기 + 안전장치 팝업. **프로젝트 전용 버튼(씬 복사·서버 콘솔)도 이 창 도구 줄에 모은다** | [`cheat-console 규칙.md`](<cheat-console/cheat-console 규칙.md>) |
+
+**메인 툴바에 올리는 프로젝트 전용 요소는 '치트' 버튼 하나다.** 새 툴이 버튼을 원하면 툴바가 아니라 치트 창 도구 줄에 붙인다.
 
 **공용 헬퍼는 `Common/editor-shared/`에 있다** — git 실행(`EditorGit`) · 내장 아이콘 캐시(`EditorIcons`) ·
 환경 설정 뿌리(`ProjectPreferences`). 툴바 버튼·아이콘·환경 설정 항목을 붙이는 절차는
@@ -42,3 +45,6 @@
   설정(씬 복사 자동 알림 토글 등)이 초기화된다.** 새로 만드는 키만 `PrefsPrefix`를 쓴다.
 - 툴바 요소 경로의 첫 조각은 툴킷 브랜드 **`Arca/`**로 통일한다 —
   `[MainToolbarElement]`는 어트리뷰트라 컴파일 타임 상수만 받아 `productName`을 쓸 수 없다.
+- ⚠️ **툴바 요소를 새로 추가하면 기존 사용자 화면에는 숨겨진 채로 들어온다**(2026-09-17 실측 — 추가한 토글·치트 버튼이
+  렌더링되지 않았다). 툴바 빈 곳 **우클릭**(또는 `⋮`) → 목록에서 이름(`치트`)을 체크해야 보인다. 코드로 켜는 공개 API는 없다.
+  못 찾으면 메뉴 `Window > DesktopWindowControl > 치트`로도 연다.

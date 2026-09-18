@@ -198,6 +198,7 @@ public class WidgetPresenter : MonoBehaviour
             //   그 보장은 캐시 쪽에서 해야 한다 — 여기서 다시 정렬하지 않는다.
             view.transform.SetSiblingIndex(activeCount - 1);
             view.Bind(slot);
+            view.SetRarity(GameDataLoader.GetCharacterRarity(_data.GetCharacterTid(slot.CharacterId)));
         }
 
         activeSlotText.text = $"가동 {activeCount}/{_data.WorkStationSlots.Count}";

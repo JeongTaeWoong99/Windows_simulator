@@ -1,3 +1,4 @@
+using GameData;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
@@ -14,6 +15,11 @@ using UnityEngine.UI;
 public class WorkStationSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
+    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 창고 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
+    // 🎨 등급 이미지가 나오면 색 대신 여기에 스프라이트를 넣는다.
+    [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
+    private Image backgroundImage = null!;
+
     [SerializeField, Tooltip("슬롯 번호·산업·캐릭터·속도")]
     private TMP_Text slotText = null!;
 
@@ -35,6 +41,7 @@ public class WorkStationSlotView : MonoBehaviour
     // 그래야 WorkStationListPresenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
     {
+        this.RequireRef(backgroundImage, nameof(backgroundImage));
         this.RequireRef(slotText,       nameof(slotText));
         this.RequireRef(remainText,     nameof(remainText));
         this.RequireRef(progressSlider, nameof(progressSlider));
@@ -63,6 +70,13 @@ public class WorkStationSlotView : MonoBehaviour
         // 천분율 → 배율 (1000 = 1.0배)
         float speedMultiplier = slot.CurrentWorkSpeed / 1000f;
         slotText.text = $"슬롯 {slot.SlotIndex} · {industry} · {character} · {speedMultiplier:0.00}배";
+    }
+
+    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
+    //   rarity : 종류(TID)로 읽은 등급. 모르는 개체면 'None' → 회색('Unknown')
+    public void SetRarity(GlobalRarity rarity)
+    {
+        backgroundImage.color = RarityPalette.Get(rarity);
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

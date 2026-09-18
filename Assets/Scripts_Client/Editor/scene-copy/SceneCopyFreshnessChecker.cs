@@ -170,8 +170,9 @@ namespace DesktopWindowControl.EditorTools
 
 					EditorUtility.DisplayDialog
 						("자동 알림 끔",
-						 $"복사본 최신성 자동 알림을 껐다.\n{SceneCopySettings.ReEnableHint}\n\n" +
-						 "상단 툴바의 '오리지널 씬 복사' 버튼은 그대로 쓸 수 있다.",
+						 $"복사본 최신성 자동 알림을 껐다.\n{SceneCopySettings.ReEnableHint}\n" +
+						 "치트 창 도구 줄에서 '오리지널 씬 복사' 앞의 [○]를 눌러 다시 켤 수도 있다.\n\n" +
+						 "치트 창의 '오리지널 씬 복사' 버튼은 그대로 쓸 수 있다.",
 						 "확인");
 
 					break;

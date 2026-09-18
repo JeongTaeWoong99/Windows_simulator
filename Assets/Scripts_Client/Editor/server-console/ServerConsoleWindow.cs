@@ -57,7 +57,7 @@ namespace DesktopWindowControl.EditorTools
 
 		private bool HasSelection => _selectionAnchor >= 0;
 
-		// 서버 콘솔 창을 연다(툴바 버튼이 부른다).
+		// 서버 콘솔 창을 연다(치트 창 도구 줄 · 치트 안전장치 팝업이 부른다).
 		public static void Open()
 		{
 			var window = GetWindow<ServerConsoleWindow>("서버 콘솔");

@@ -28,6 +28,10 @@
 - [2026-09-17 적성 포인트 — 엑셀 상한·DB·패킷·서버 구현 (T-003)](2026-09-17-aptitude-point-server.md) — `#server` `#data` `#protocol` `#db` `#test` 10레벨마다 1포인트로 산업 적성 +1, 캐릭터·산업별 상한, 남은 포인트는 저장하지 않고 계산
 - [2026-09-16 DB 작업 실패 경로 — OnFailed로 되돌리고 세션을 끊는다 · 밴/삭제 응답](2026-09-16-db-failure-path.md) — `#server` `#db` `#protocol` `#test` DB 실패·밴·삭제가 무응답으로 멈추던 로그인 경로 · 첫 `:memory:` SQLite 테스트
 - [2026-09-16 DB 작업 파티션 키를 SessionId에서 계정(Pid 해시)으로](2026-09-16-db-partition-key-by-account.md) — `#server` `#db` `#test` 재접속 시 마지막 쓰기와 첫 읽기가 다른 채널에서 병렬로 돌아 수확이 사라지던 문제
+- [2026-09-18 설정에 프레임 제한 · FPS 텍스트 위치 드롭다운](2026-09-18-frame-rate-fps-text.md) — `#client` `#ui` `DisplayManager`(구 `FrameRateManager`) · `FpsTextPresenter` 신설 (T-062)
+- [2026-09-17 작업슬롯 칸 바탕을 캐릭터 등급 색으로](2026-09-17-workslot-rarity-color.md) — `#client` `#ui` 목록·위젯 미니 칸에 `SetRarity` (T-061)
+- [2026-09-17 치트 에디터 창 · 안전장치 팝업 · 씬 복사 알림 툴바 토글](2026-09-17-cheat-editor-window.md) — `#client` `#editor` 치트를 한 창에 모아 보내기 (T-059)
+- [2026-09-16 잠긴 작업슬롯 표시 · 해금 요청](2026-09-16-workslot-locked-display.md) — `#client` `#ui` 열린 목록 기반 잠김 판정 · `ConfirmPresenter` · `C_UnlockRequest` 연결 (T-039)
 - [2026-09-16 해금 시스템 서버 구현 — `UnlockCatalog` · `t_user_unlock` · 해금 패킷, 첫 적용은 작업슬롯](2026-09-16-unlock-server.md) — `#server` `#protocol` `#test` T-038 완료 · Unity CLI eval로 실서버 왕복 검증
 - [2026-09-16 창고 캐릭터 칸 — 레벨 배지 · 경험치 세로 게이지 · 칸이 프레임을 채움](2026-09-16-character-level-exp-gauge.md) — `#client` `#ui` `#editor` 아이콘 모서리 레벨 배지 · 왼쪽 벽 Slider 게이지 · 여백 예외 (T-052)
 - [2026-09-16 창고 [정렬] 버튼 · 배치 목록 적성순 · 캐릭터 줄 등급 색](2026-09-16-storage-sort-and-select-order.md) — `#client` `#ui` 필터 대신 정렬 버튼(세션 한정 기억) · 배치 목록 적성순 (T-015 · T-057)

@@ -18,6 +18,7 @@ namespace DesktopWindowControl.EditorTools
 		private const string SettingsLabel = "오리지널 씬 복사";
 
 		// 복사본 최신성 자동 검사·팝업을 켤지. 기본은 '켜짐'(설정을 만진 적 없는 사람은 지금까지대로).
+		// 바꾸는 곳은 셋(치트 창 도구 줄·환경 설정·낡음 팝업)이다. 치트 창은 그릴 때마다 이 값을 읽어 따로 알릴 필요가 없다.
 		public static bool AutoCheckEnabled
 		{
 			get => EditorPrefs.GetBool(AutoCheckKey, true);
@@ -61,7 +62,8 @@ namespace DesktopWindowControl.EditorTools
 					EditorGUILayout.HelpBox
 						("오리지널 씬을 받아 쓰는 쪽(서버 작업)에는 최신 복사본을 유지하도록 알림이 필요하지만,\n" +
 						 "씬을 직접 만드는 쪽(클라 작업)에는 자기 커밋에 대한 잔소리가 된다.\n\n" +
-						 "꺼도 상단 툴바의 '오리지널 씬 복사' 버튼은 그대로 남아 언제든 수동 복사할 수 있다.\n" +
+						 "치트 창 도구 줄에서 '오리지널 씬 복사' 앞의 [●]/[○]로도 켜고 끌 수 있다.\n" +
+						 "꺼도 치트 창의 '오리지널 씬 복사' 버튼은 그대로 남아 언제든 수동 복사할 수 있다.\n" +
 						 "이 설정은 이 컴퓨터에만 저장되며 커밋되지 않는다.",
 						 MessageType.Info);
 				},

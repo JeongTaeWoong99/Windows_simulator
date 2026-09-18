@@ -91,6 +91,9 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("수량 입력 팝업. !System Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
     private AmountInputPresenter amountInput = null!;
 
+    [SerializeField, Tooltip("확인 팝업(예/아니오). !System Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
+    private ConfirmPresenter confirm = null!;
+
     // ─── 참조 ───
     public StorageCanvasView Storage => storageCanvas;
     public MarketCanvasView  Market  => marketCanvas;
@@ -118,6 +121,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(marketCanvas,  nameof(marketCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
         this.RequireRef(amountInput,   nameof(amountInput));
+        this.RequireRef(confirm,       nameof(confirm));
 
         ValidateMainScreens();
         ResetMainScreen();
@@ -265,6 +269,7 @@ public class UIManager : MonoService<UIManager>
         // ★ 팝업은 상주 캔버스에 살아 'OnDisable'이 오지 않는다 — 여기서 안 닫으면
         //   아무 화면도 없는 바탕에 홀로 떠 있게 되고, 그때 들고 있던 콜백은 이미 의미가 없다.
         amountInput.Close();
+        confirm.Close();
 
         ResetMainScreen(); // 캔버스를 끈 뒤라 안쪽을 정리해도 화면에는 아무 변화가 없다
     }
@@ -303,6 +308,13 @@ public class UIManager : MonoService<UIManager>
     public void AskAmount(int itemId, int maxCount, Action<int> onConfirm)
     {
         amountInput.Open(itemId, maxCount, onConfirm);
+    }
+
+    // 예/아니오를 묻고, 확인을 누르면 'onConfirm'을 부른다 (취소면 부르지 않는다).
+    // 중개하는 이유는 'AskAmount'와 같다.
+    public void AskConfirm(string message, Action onConfirm)
+    {
+        confirm.Open(message, onConfirm);
     }
 
     #endregion

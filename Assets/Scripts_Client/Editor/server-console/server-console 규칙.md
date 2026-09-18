@@ -1,6 +1,6 @@
 # server-console 폴더 규칙
 
-> 최종 업데이트: 2026-09-15 (로그 표시를 가상 스크롤로 교체 — 에디터 프레임 드랍 원인) · 대상: `Assets/Scripts_Client/Editor/server-console/`
+> 최종 업데이트: 2026-09-17 (여는 버튼을 메인 툴바에서 치트 창 도구 줄로 이동) · 대상: `Assets/Scripts_Client/Editor/server-console/`
 
 **에디터에서 서버를 켜고 끄고 로그를 보는 툴.** 폴더 전체에 걸리는 규칙(네임스페이스·툴바 버튼
 공식 API)은 [`Editor 규칙.md`](<../Editor 규칙.md>)에 있다.
@@ -11,13 +11,12 @@
 |------|---------|
 | `ServerRunner.cs` | WSGameServer를 백그라운드로 켜고/끄는 프로세스 제어기(UI 없음). PID는 `SessionState`, 로그는 `Temp/WSGameServer.log`로 리다이렉트 |
 | `ServerConsoleWindow.cs` | 실행/종료 토글 + 로그 파일을 tail 해 터미널처럼 보여주는 `EditorWindow`(보이는 줄만 그리는 가상 스크롤·줄 단위 복사) |
-| `ServerConsoleToolbarButton.cs` | 위 창을 여는 상단 메인 툴바 '서버 콘솔' 버튼 |
 
 ---
 
 ## 왜 이렇게 만들었나
 
-클라 작업 중 서버를 확인하려고 매번 터미널에서 `dotnet run`을 치던 걸, **상단 '서버 콘솔' 버튼 →
+클라 작업 중 서버를 확인하려고 매번 터미널에서 `dotnet run`을 치던 걸, **치트 창 도구 줄의 '서버 콘솔' 버튼 →
 창의 시작/정지 토글**로 대체한다. 로그는 창 안에서 터미널처럼 실시간으로 본다.
 
 - **실행 방식**: `ServerRunner`가 `cmd /S /C "chcp 65001 && dotnet run --project ...\WSGameServer.csproj > Temp\WSGameServer.log 2>&1"`
