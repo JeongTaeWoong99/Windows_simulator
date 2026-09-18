@@ -25,15 +25,18 @@ THIN = Side(style="thin", color=Color(indexed=64))
 BOX = Border(left=THIN, right=THIN, top=THIN, bottom=THIN)
 NO_FILL = PatternFill(fill_type=None)
 
-# 테이블 시트: 설명 행·컬럼명 행 = 주황(테마 accent6). 글자는 전부 검정(테마 dk1)
-ORANGE = PatternFill("solid", fgColor=Color(theme=9))
-BLACK = Color(theme=1)
+# 색은 테마가 아니라 RGB로 박는다 — 워크북마다 테마가 달라 같은 테마 번호가 초록·주황으로 갈린다.
+BLACK = Color(rgb="FF000000")
+WHITE = Color(rgb="FFFFFFFF")
+
+# 테이블 시트: 설명 행·컬럼명 행 = 주황. 글자는 전부 검정
+ORANGE = PatternFill("solid", fgColor=Color(rgb="FFF79646"))
 
 # Enum 시트 머리 세 줄: 검정 / 회색 / 옅은 회색
 ENUM_HEAD = [
-    (PatternFill("solid", fgColor=Color(theme=1)), Color(theme=0), True),
-    (PatternFill("solid", fgColor=Color(theme=1, tint=0.35)), Color(theme=0), False),
-    (PatternFill("solid", fgColor=Color(theme=2, tint=-0.1)), Color(theme=1), False),
+    (PatternFill("solid", fgColor=BLACK), WHITE, True),
+    (PatternFill("solid", fgColor=Color(rgb="FF595959")), WHITE, False),
+    (PatternFill("solid", fgColor=Color(rgb="FFD0D0D0")), BLACK, False),
 ]
 
 MIN_WIDTH = 6
@@ -89,6 +92,12 @@ def format_table(ws):
         return
 
     last_col = max(c for c in range(2, ws.max_column + 1) if ws.cell(header_row, c).value is not None)
+
+    # 기준에 없는 칠·테두리(A열 회색, 표 밖 테두리 등)가 남지 않게 시트 전체를 먼저 비운다.
+    for row in ws.iter_rows():
+        for cell in row:
+            cell.border = Border()
+            cell.fill = NO_FILL
 
     for name, r in markers.items():
         style(ws.cell(r, 1), horizontal="center", bold=False, color=BLACK)
