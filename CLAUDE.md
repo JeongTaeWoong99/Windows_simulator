@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-09-16 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
+> 최종 업데이트: 2026-09-19 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -110,7 +110,7 @@
 | [`agent-log-writer`](.claude/skills/common/agent-log-writer/SKILL.md) | **코드 작업 종료 후 — 조건 없이 항상** | `.claude/Agent/`에 로그 기록 |
 | [`agent-log-reader`](.claude/skills/common/agent-log-reader/SKILL.md) | 기존 결정을 뒤집을 때 · 원인 불명 버그 · "예전에 왜?" 의문이 생겼을 때 · 미완 작업을 이어받을 때 — **일반 작업엔 열지 않는다** | `.claude/Agent/`에서 과거 경위 확인 |
 | [`game-design-reference`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 **규칙·수치가 바뀔 때** — 화면 배치·배선만 바꾸면 해당 없음 | `게임기획코어.md` + 상세 기획안 |
-| [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx` 시트·컬럼을 만들거나 고칠 때 | TID 필수·마커 행·`Ref` 규칙 |
+| [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx`에 행을 추가·수정하거나 시트·컬럼을 만들 때 (주로 클라·기획) | 행 추가 절차·서식 기준·TID·`Ref` 규칙 |
 | [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
 | [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
 | [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
