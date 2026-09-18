@@ -120,16 +120,15 @@ public sealed class WorkStationSlot
             return 0;
         }
 
+        // 경과가 0이어도 판정은 꺼낸다 — AdvanceJudges가 얹은 작업량이 있을 수 있다.
         var elapsedMs = (long)(now - LastTickAt).TotalMilliseconds;
-        if (elapsedMs <= 0)
+        if (elapsedMs > 0)
         {
-            return 0;
+            // 시계는 now가 아니라 정산한 만큼만 전진한다. now까지 밀면 버림된 1ms 미만이 매 틱 사라진다(이슈 #11).
+            // 한 구간의 속도는 항상 하나다 — 속도가 바뀌는 지점에서 호출자가 먼저 정산하기 때문.
+            LastTickAt     = LastTickAt.AddMilliseconds(elapsedMs);
+            ProgressUnits += elapsedMs * CurrentWorkSpeed;
         }
-
-        // 시계는 now가 아니라 정산한 만큼만 전진한다. now까지 밀면 버림된 1ms 미만이 매 틱 사라진다(이슈 #11).
-        // 한 구간의 속도는 항상 하나다 — 속도가 바뀌는 지점에서 호출자가 먼저 정산하기 때문.
-        LastTickAt     = LastTickAt.AddMilliseconds(elapsedMs);
-        ProgressUnits += elapsedMs * CurrentWorkSpeed;
 
         var judgeCount = ProgressUnits / JudgeCostUnits;
         if (judgeCount <= 0)
@@ -139,6 +138,19 @@ public sealed class WorkStationSlot
 
         ProgressUnits -= judgeCount * JudgeCostUnits;
         return (int)judgeCount;
+    }
+
+    /// <summary>판정 count회분의 작업량을 진행도에 얹는다(치트 전용). 다음 정산이 꺼내 간다.</summary>
+    /// <returns>얹었으면 true. 비활성 슬롯은 건너뛴다 — 배치하는 순간 한꺼번에 터지기 때문.</returns>
+    public bool AdvanceJudges(int count)
+    {
+        if (!IsActive || count <= 0)
+        {
+            return false;
+        }
+
+        ProgressUnits += count * JudgeCostUnits;
+        return true;
     }
 
     /// <summary>다음 판정까지 남은 시간(클라이언트 카운트다운용). 비활성 슬롯은 Zero.</summary>

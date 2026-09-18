@@ -86,7 +86,7 @@ namespace MikaProtocol
         GiveItem         = 3,  // Arg1 = ItemTID · Arg2 = 개수
         GiveCharacter    = 4,  // Arg1 = CharacterTID · Arg2 = 장수 (1~10)
         GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
-        Settle           = 6,  // 지금 시각으로 작업슬롯 정산
+        Settle           = 6,  // 작업슬롯 판정을 Arg1회 앞당겨 정산 (0이면 1회)
         Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
         GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
     }
