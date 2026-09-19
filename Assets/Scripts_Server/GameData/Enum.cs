@@ -63,6 +63,7 @@ namespace GameData
         Item      = 1,  // 아이템 — GachaItemTable
         Character = 2,  // 캐릭터 — GachaCharacterTable
         Equip     = 3,  // 장비 — GachaEquipTable
+        Gold      = 4,  // 골드 — GachaGoldTable (구간 MinAmount~MaxAmount)
 
         Max      ,
     };

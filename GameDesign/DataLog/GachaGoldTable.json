@@ -1,0 +1,50 @@
+[
+  {
+    "GachaGoldTID": 6201,
+    "GachaId": 6,
+    "MinAmount": 50,
+    "MaxAmount": 100,
+    "Weight": 300,
+    "Description": "골드 50~100"
+  },
+  {
+    "GachaGoldTID": 6202,
+    "GachaId": 6,
+    "MinAmount": 100,
+    "MaxAmount": 300,
+    "Weight": 100,
+    "Description": "골드 100~300"
+  },
+  {
+    "GachaGoldTID": 7201,
+    "GachaId": 7,
+    "MinAmount": 300,
+    "MaxAmount": 600,
+    "Weight": 300,
+    "Description": "골드 300~600"
+  },
+  {
+    "GachaGoldTID": 7202,
+    "GachaId": 7,
+    "MinAmount": 600,
+    "MaxAmount": 1500,
+    "Weight": 100,
+    "Description": "골드 600~1500"
+  },
+  {
+    "GachaGoldTID": 8201,
+    "GachaId": 8,
+    "MinAmount": 1500,
+    "MaxAmount": 3000,
+    "Weight": 300,
+    "Description": "골드 1500~3000"
+  },
+  {
+    "GachaGoldTID": 8202,
+    "GachaId": 8,
+    "MinAmount": 3000,
+    "MaxAmount": 8000,
+    "Weight": 100,
+    "Description": "골드 3000~8000"
+  }
+]

@@ -550,5 +550,117 @@
     "Count": 1,
     "Weight": 5,
     "Description": "Mythic 월광 성석"
+  },
+  {
+    "GachaEquipTID": 6101,
+    "GachaId": 6,
+    "EquipTID": 1001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 6102,
+    "GachaId": 6,
+    "EquipTID": 2001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 6103,
+    "GachaId": 6,
+    "EquipTID": 3001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7101,
+    "GachaId": 7,
+    "EquipTID": 1102,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7102,
+    "GachaId": 7,
+    "EquipTID": 1302,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7103,
+    "GachaId": 7,
+    "EquipTID": 1402,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7104,
+    "GachaId": 7,
+    "EquipTID": 1502,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7105,
+    "GachaId": 7,
+    "EquipTID": 2003,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8101,
+    "GachaId": 8,
+    "EquipTID": 1103,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8102,
+    "GachaId": 8,
+    "EquipTID": 1203,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8103,
+    "GachaId": 8,
+    "EquipTID": 1303,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8104,
+    "GachaId": 8,
+    "EquipTID": 1403,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8105,
+    "GachaId": 8,
+    "EquipTID": 1503,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8106,
+    "GachaId": 8,
+    "EquipTID": 2004,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
   }
 ]

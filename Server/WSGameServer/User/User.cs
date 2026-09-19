@@ -42,6 +42,9 @@ public sealed partial class User
     /// <summary>특성 트리(노드 비용·효과). 특성 찍기와 슬롯 속도 가산에 쓴다. 규약은 위와 같다.</summary>
     private readonly UserTraitCatalog _traitCatalog;
 
+    /// <summary>채취 공통 보상(판정 1회마다 굴리는 상자). 정산에 쓴다. 규약은 위와 같다.</summary>
+    private readonly CommonRewardCatalog _commonRewards;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -127,7 +130,8 @@ public sealed partial class User
         UnlockCatalog?        unlocks = null,
         EquipCatalog?         equips = null,
         AccountLevelCatalog?  accountLevels = null,
-        UserTraitCatalog?     traits = null)
+        UserTraitCatalog?     traits = null,
+        CommonRewardCatalog?  commonRewards = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -142,6 +146,7 @@ public sealed partial class User
         _equipCatalog = equips ?? EquipCatalog.Instance;
         _accountLevels = accountLevels ?? AccountLevelCatalog.Instance;
         _traitCatalog = traits ?? UserTraitCatalog.Instance;
+        _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

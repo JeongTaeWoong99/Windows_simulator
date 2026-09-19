@@ -27,6 +27,24 @@ public partial class User
         return itemChangeInfo;
     }
 
+    /// <summary>보유 수량. 없으면 0.</summary>
+    public int GetItemCount(int itemId) => Inventory.GetCount(itemId);
+
+    /// <summary>
+    /// 아이템을 한꺼번에 뺀다(상자 개봉 등). 하나라도 모자라면 아무것도 바꾸지 않고 false.
+    /// 통지는 호출자가 응답에 싣는다 — 여기서는 메모리 갱신과 저장만 한다.
+    /// </summary>
+    public bool TryConsumeItems(IReadOnlyDictionary<int, int> request, out List<ItemChangeInfo> changes)
+    {
+        if (!Inventory.TryRemoveItems(request, out changes))
+        {
+            return false;
+        }
+
+        PostDBTask(new SaveItemChangesRepository(this, changes));
+        return true;
+    }
+
     public void AddItem(int itemId, int count)
     {
         var itemChangeInfo = GainItem(itemId, count);

@@ -30,7 +30,9 @@ namespace MikaProtocol
 
         // ── 300~: 상점 ──
         InvalidSellRequest = 300, // 빈 목록·수량 0 이하·존재하지 않는 아이템
-        NotEnoughItem      = 301, // 보유량보다 많이 팔려는 시도
+        NotEnoughItem      = 301, // 보유량보다 많이 팔려는(열려는) 시도
+        ItemNotUsable      = 302, // 쓸 수 없는 아이템 (상자가 아님 · 테이블에 없음)
+        InvalidUseCount    = 303, // 한 번에 쓰는 개수가 1~99 밖
 
         // ── 400~: 치트 ──
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
@@ -127,6 +129,7 @@ namespace MikaProtocol
         Item      = 1,   // GachaRewardInfo.ItemId를 읽는다
         Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
         Equip     = 3,   // GachaRewardInfo.EquipTid를 읽는다
+        Gold      = 4,   // GachaRewardInfo.Count가 골드 양이다 (상자 전용)
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —

@@ -138,6 +138,12 @@ public partial class User
 
         foreach (var harvest in harvests)
         {
+            // 채취 공통 보상(상자) — 산업·레벨과 무관하게 판정 1회마다 굴려 이 슬롯의 수확에 얹는다(T-030).
+            foreach (var (itemTid, count) in _commonRewards.Roll(harvest.JudgeCount, Random.Shared))
+            {
+                harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
+            }
+
             // 아이템별로 한 번씩만 인벤토리를 갱신한다(판정 횟수만큼 UPSERT하지 않는다).
             var changes = new List<ItemChangeInfo>(harvest.Gained.Count);
             foreach (var (itemTid, count) in harvest.Gained)

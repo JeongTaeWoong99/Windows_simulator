@@ -6,26 +6,26 @@ using MemoryPack;
 
 namespace GameData
 {
-    /// <summary>GachaInfoTable 시트의 셀 문자열을 GachaInfoTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
-    public static class GachaInfoTablePacker
+    /// <summary>GachaGoldTable 시트의 셀 문자열을 GachaGoldTableRow로 변환하고 MemoryPack으로 직렬화한다. (패커 전용 — 클라/서버 배포 대상 아님)</summary>
+    public static class GachaGoldTablePacker
     {
-        private const string Table = "GachaInfoTable";
+        private const string Table = "GachaGoldTable";
 
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
-        public static GachaInfoTableRow Parse(string[] cells) => new()
+        public static GachaGoldTableRow Parse(string[] cells) => new()
         {
-            GachaInfoTID = PackerUtil.ParseInt(cells[0], Table, "GachaInfoTID"),
-            Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
-            CostCurrency = PackerUtil.ParseEnum<CurrencyType>(cells[2], Table, "CostCurrency"),
-            CostSingle   = PackerUtil.ParseLong(cells[3], Table, "CostSingle", 0, null),
-            CostMulti    = PackerUtil.ParseLong(cells[4], Table, "CostMulti", 0, null),
+            GachaGoldTID = PackerUtil.ParseInt(cells[0], Table, "GachaGoldTID"),
+            GachaId      = PackerUtil.ParseInt(cells[1], Table, "GachaId", 1, null),
+            MinAmount    = PackerUtil.ParseInt(cells[2], Table, "MinAmount", 1, null),
+            MaxAmount    = PackerUtil.ParseInt(cells[3], Table, "MaxAmount", 1, null),
+            Weight       = PackerUtil.ParseInt(cells[4], Table, "Weight"),
             Description  = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
         public static byte[] Pack(IReadOnlyList<string[]> rows)
         {
-            var list = new List<GachaInfoTableRow>(rows.Count);
+            var list = new List<GachaGoldTableRow>(rows.Count);
             for (var i = 0; i < rows.Count; i++)
             {
                 try { list.Add(Parse(rows[i])); }
@@ -40,7 +40,7 @@ namespace GameData
         /// <summary>바이너리를 역직렬화해 행 수를 확인하고, 재직렬화 결과가 원본과 같은지 검증한다(라운드트립).</summary>
         public static int Verify(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<GachaInfoTableRow>>(bytes)
+            var list = MemoryPackSerializer.Deserialize<List<GachaGoldTableRow>>(bytes)
                        ?? throw new InvalidDataException($"[{Table}] 역직렬화 결과가 null입니다.");
             var again = MemoryPackSerializer.Serialize(list);
             if (!again.AsSpan().SequenceEqual(bytes))
@@ -51,7 +51,7 @@ namespace GameData
         /// <summary>첫 행을 사람이 읽을 수 있는 형태로 덤프한다(콘솔 검증용).</summary>
         public static string Preview(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<GachaInfoTableRow>>(bytes);
+            var list = MemoryPackSerializer.Deserialize<List<GachaGoldTableRow>>(bytes);
             return list is { Count: > 0 }
                 ? System.Text.Json.JsonSerializer.Serialize(list[0])
                 : "(빈 테이블)";
@@ -60,7 +60,7 @@ namespace GameData
         /// <summary>모든 행을 사람이 읽을 JSON으로 덤프한다(enum=이름, 들여쓰기, 한글 그대로). 엑셀 대조/리뷰용 사이드카.</summary>
         public static string Dump(byte[] bytes)
         {
-            var list = MemoryPackSerializer.Deserialize<List<GachaInfoTableRow>>(bytes) ?? new();
+            var list = MemoryPackSerializer.Deserialize<List<GachaGoldTableRow>>(bytes) ?? new();
             var options = new System.Text.Json.JsonSerializerOptions
             {
                 WriteIndented = true,

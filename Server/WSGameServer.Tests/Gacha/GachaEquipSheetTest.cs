@@ -11,9 +11,11 @@ public class GachaEquipSheetTest
     public GachaEquipSheetTest() => GameTableFixture.EnsureLoaded();
 
     [Fact]
-    public void 장비_풀은_풀마다_장비_종류가_하나다()
+    public void 장비_뽑기_풀은_풀마다_장비_종류가_하나다()
     {
+        // 골드로 사는 풀만 본다 — 상자 풀(비용 재화 None)은 여러 종류를 섞어 준다(T-029).
         var kindsByPool = GameTable.GachaEquipTable.All
+            .Where(r => GameTable.GachaInfoTable.TryGet(r.GachaId, out var info) && info.CostCurrency != CurrencyType.None)
             .GroupBy(r => r.GachaId)
             .ToDictionary(g => g.Key, g => g.Select(r => KindOf(r.EquipTID)).Distinct().ToList());
 
@@ -25,6 +27,10 @@ public class GachaEquipSheetTest
     public void 무기_장신구_보석이_각자_풀을_갖는다()
     {
         var kinds = GameTable.GachaEquipTable.All
+            .Where(r => GameTable.GachaInfoTable.TryGet(r.GachaId, out var info) && info.CostCurrency != CurrencyType.None)
+            .GroupBy(r => r.GachaId)
+            .Where(g => g.Select(r => KindOf(r.EquipTID)).Distinct().Count() == 1)
+            .SelectMany(g => g)
             .Select(r => KindOf(r.EquipTID))
             .Distinct()
             .OrderBy(k => k);

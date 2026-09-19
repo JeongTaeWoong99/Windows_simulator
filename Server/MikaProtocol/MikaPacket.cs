@@ -65,6 +65,8 @@ namespace MikaProtocol
         C_UserTraitLearnRequest = 34,
         S_UserTraitLearnResponse = 35,
         S_AccountLevelResponse = 36,
+        C_ItemUseRequest = 37,
+        S_ItemUseResponse = 38,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -390,6 +392,27 @@ namespace MikaProtocol
     /// 아이템 즉시 판매 요청. <b>종류 하나가 아니라 목록으로 받는다</b> —
     /// 방치형이라 인벤토리가 저절로 차므로, 일괄 판매가 기본 동선이고 낱개 판매가 그 특수한 경우다.
     /// </summary>
+    /// <summary>아이템 사용 — 지금은 상자 개봉뿐이다. 상자의 <c>OpenGachaId</c> 풀을 개수만큼 비용 없이 돈다.</summary>
+    [MemoryPackable, Packet(PacketId.C_ItemUseRequest)]
+    public partial class C_ItemUseRequest : IPacket
+    {
+        public int ItemTID { get; set; }
+        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다
+    }
+
+    /// <summary>
+    /// 아이템 사용 결과. <c>Rewards</c>는 가챠와 같은 모양(연출용 · 뽑힌 순서) — 클라 연출을 한 벌로 쓴다.
+    /// <c>ItemChangeInfos</c>는 상자 차감과 보상 아이템의 누적 총량. 골드는 <see cref="S_CurrencyResponse"/>, 장비는 <see cref="S_EquipSyncResponse"/>로 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ItemUseResponse)]
+    public partial class S_ItemUseResponse : IPacket
+    {
+        public EResultCode            Result          { get; set; }
+        public int                    ItemTID         { get; set; }
+        public List<GachaRewardInfo>? Rewards         { get; set; }
+        public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
+    }
+
     [MemoryPackable, Packet(PacketId.C_ItemSellRequest)]
     public partial class C_ItemSellRequest : IPacket
     {

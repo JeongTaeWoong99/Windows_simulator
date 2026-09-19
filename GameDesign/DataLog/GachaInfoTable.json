@@ -38,5 +38,29 @@
     "CostSingle": 200,
     "CostMulti": 2000,
     "Description": "보석 31종"
+  },
+  {
+    "GachaInfoTID": 6,
+    "Name": "나무 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 7,
+    "Name": "은 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 8,
+    "Name": "황금 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
   }
 ]

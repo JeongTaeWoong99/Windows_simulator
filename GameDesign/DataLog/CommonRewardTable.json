@@ -1,0 +1,23 @@
+[
+  {
+    "CommonRewardTID": 1,
+    "ItemTID": 100007,
+    "Count": 1,
+    "ChancePerMillion": 2000,
+    "Description": "나무 상자 — 판정 1회당 0.2% (테스트값)"
+  },
+  {
+    "CommonRewardTID": 2,
+    "ItemTID": 100008,
+    "Count": 1,
+    "ChancePerMillion": 400,
+    "Description": "은 상자 — 판정 1회당 0.04% (테스트값)"
+  },
+  {
+    "CommonRewardTID": 3,
+    "ItemTID": 100009,
+    "Count": 1,
+    "ChancePerMillion": 100,
+    "Description": "황금 상자 — 판정 1회당 0.01% (테스트값)"
+  }
+]

@@ -44,6 +44,7 @@ public class GameServer : IDisposable
             EquipCatalog.Instance.LoadAll();
             AccountLevelCatalog.Instance.LoadAll();
             UserTraitCatalog.Instance.LoadAll();
+            CommonRewardCatalog.Instance.LoadAll();
             CharacterTableValidator.Validate(GameTable.CharacterTable.All);   // 기본 적성 > 상한이면 기동이 멈춘다
 
             // 실행기 예외 훅. Lib은 로그 정책이 없다 — 여기서 채우지 않으면 예외가 조용히 사라진다.

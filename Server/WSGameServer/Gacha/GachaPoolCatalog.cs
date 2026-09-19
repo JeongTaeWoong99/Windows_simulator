@@ -5,14 +5,16 @@ namespace WSGameServer;
 
 // 가챠 풀 항목 하나. RewardType이 RewardTID의 의미를 정한다(종류는 값이 아니라 출처가 정한다).
 // 등급은 여기 두지 않는다 — 원본은 각 정의 테이블 하나 → Server/docs/데이터-카탈로그.md 3장
+// MaxCount가 Count보다 크면 지급 수량은 Count~MaxCount에서 무작위다(골드 구간). 0이면 Count 고정.
 public readonly record struct GachaEntry(
     int              GachaId,
     GachaRewardType  RewardType,
     int              RewardTID,
     int              Count,
-    int              Weight);
+    int              Weight,
+    int              MaxCount = 0);
 
-// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터·장비 세 시트이며 같은 GachaId면 한 풀에 섞인다.
+// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터·장비·골드 네 시트이며 같은 GachaId면 한 풀에 섞인다.
 // GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md
 public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
 {
@@ -33,7 +35,11 @@ public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
         var equips = ToEntries(GameTable.GachaEquipTable.All, GachaRewardType.Equip,
                                r => r.GachaId, r => r.EquipTID, r => r.Count, r => r.Weight);
 
-        Load(items.Concat(characters).Concat(equips));
+        // 골드는 TID가 없다 — 구간(MinAmount~MaxAmount)이 곧 보상이다.
+        var golds = GameTable.GachaGoldTable.All.Select(r => new GachaEntry(
+            r.GachaId, GachaRewardType.Gold, 0, r.MinAmount, r.Weight, r.MaxAmount));
+
+        Load(items.Concat(characters).Concat(equips).Concat(golds));
 
         ServerLog.Info("데이터", $"가챠 풀 {Count}개 등록 완료");
     }

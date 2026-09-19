@@ -45,6 +45,37 @@ namespace MikaDummyClient
             }
         }
 
+        // 상자 개봉 결과. 보상 목록은 가챠와 같은 모양이다 — 골드는 S_CurrencyResponse, 장비는 S_EquipSyncResponse로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_ItemUseResponse(ISession session, S_ItemUseResponse res)
+        {
+            if (res.Result != EResultCode.Ok)
+            {
+                Console.WriteLine($"[Client] Recv 상자: ItemTID={res.ItemTID} 실패 Result={res.Result}");
+                return;
+            }
+
+            Console.WriteLine($"[Client] Recv 상자: ItemTID={res.ItemTID} 보상 {res.Rewards?.Count}개");
+            foreach (var reward in res.Rewards!)
+            {
+                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity}, Tid={RewardTid(reward)}, Count={reward.Count}");
+            }
+
+            foreach (var change in res.ItemChangeInfos!)
+            {
+                Console.WriteLine($"  · 인벤토리 {change.ItemId} → {change.Count} ({change.Kind})");
+            }
+        }
+
+        // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다. 골드는 TID가 없다.
+        private static int RewardTid(GachaRewardInfo reward) => reward.RewardType switch
+        {
+            EGachaRewardType.Character => reward.CharacterTid,
+            EGachaRewardType.Equip     => reward.EquipTid,
+            EGachaRewardType.Gold      => 0,
+            _                          => reward.ItemId,
+        };
+
         [PacketHandler]
         public static void Handle_S_GachaDrawResponse(ISession session, S_GachaDrawResponse res)
         {
@@ -58,8 +89,7 @@ namespace MikaDummyClient
             foreach (var reward in res.Rewards!)
             {
                 // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다.
-                var tid = reward.RewardType == EGachaRewardType.Character ? reward.CharacterTid : reward.ItemId;
-                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity.ToString()}, Tid={tid}, Count={reward.Count}");
+                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity.ToString()}, Tid={RewardTid(reward)}, Count={reward.Count}");
             }
 
             Console.WriteLine($"[Client] Recv Gacha 인벤토리 변경: Count={res.ItemChangeInfos?.Count}");
