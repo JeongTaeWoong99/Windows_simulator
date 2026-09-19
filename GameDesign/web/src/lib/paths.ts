@@ -14,4 +14,5 @@ export const DESIGN_DIR = path.join(REPO_ROOT, 'GameDesign', 'design');
 export const ASSET_ROUTE = '/assets';
 
 // 사이트에 없는 저장소 파일(CLAUDE.md·스킬·코드)은 죽은 링크로 두지 않고 GitHub으로 보낸다.
-export const GITHUB_BLOB = 'https://github.com/JeongTaeWoong99/Windows_simulator/blob/main';
+export const GITHUB_REPO = 'JeongTaeWoong99/Windows_simulator';
+export const GITHUB_BLOB = `https://github.com/${GITHUB_REPO}/blob/main`;
