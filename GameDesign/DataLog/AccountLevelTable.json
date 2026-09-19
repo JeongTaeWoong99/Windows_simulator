@@ -1,0 +1,602 @@
+[
+  {
+    "AccountLevelTID": 1,
+    "RequiredExp": 0,
+    "TraitPoint": 0,
+    "Description": "시작 레벨"
+  },
+  {
+    "AccountLevelTID": 2,
+    "RequiredExp": 80,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 3,
+    "RequiredExp": 96,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 4,
+    "RequiredExp": 112,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 5,
+    "RequiredExp": 136,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 6,
+    "RequiredExp": 160,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 7,
+    "RequiredExp": 192,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 8,
+    "RequiredExp": 232,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 9,
+    "RequiredExp": 280,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 10,
+    "RequiredExp": 336,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 11,
+    "RequiredExp": 408,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 12,
+    "RequiredExp": 488,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 13,
+    "RequiredExp": 592,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 14,
+    "RequiredExp": 712,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 15,
+    "RequiredExp": 848,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 16,
+    "RequiredExp": 1024,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 17,
+    "RequiredExp": 1232,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 18,
+    "RequiredExp": 1472,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 19,
+    "RequiredExp": 1768,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 20,
+    "RequiredExp": 2128,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 21,
+    "RequiredExp": 2552,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 22,
+    "RequiredExp": 3064,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 23,
+    "RequiredExp": 3680,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 24,
+    "RequiredExp": 4416,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 25,
+    "RequiredExp": 5296,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 26,
+    "RequiredExp": 6352,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 27,
+    "RequiredExp": 7624,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 28,
+    "RequiredExp": 9152,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 29,
+    "RequiredExp": 10984,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 30,
+    "RequiredExp": 13184,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 31,
+    "RequiredExp": 15824,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 32,
+    "RequiredExp": 18984,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 33,
+    "RequiredExp": 22784,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 34,
+    "RequiredExp": 27344,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 35,
+    "RequiredExp": 32808,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 36,
+    "RequiredExp": 39376,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 37,
+    "RequiredExp": 47248,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 38,
+    "RequiredExp": 56704,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 39,
+    "RequiredExp": 68040,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 40,
+    "RequiredExp": 81648,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 41,
+    "RequiredExp": 97984,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 42,
+    "RequiredExp": 117576,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 43,
+    "RequiredExp": 141096,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 44,
+    "RequiredExp": 169312,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 45,
+    "RequiredExp": 203176,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 46,
+    "RequiredExp": 243816,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 47,
+    "RequiredExp": 292576,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 48,
+    "RequiredExp": 351096,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 49,
+    "RequiredExp": 421312,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 50,
+    "RequiredExp": 505576,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 51,
+    "RequiredExp": 606688,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 52,
+    "RequiredExp": 728032,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 53,
+    "RequiredExp": 873640,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 54,
+    "RequiredExp": 1048368,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 55,
+    "RequiredExp": 1258040,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 56,
+    "RequiredExp": 1509648,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 57,
+    "RequiredExp": 1811584,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 58,
+    "RequiredExp": 2173896,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 59,
+    "RequiredExp": 2608680,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 60,
+    "RequiredExp": 3130416,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 61,
+    "RequiredExp": 3756496,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 62,
+    "RequiredExp": 4507800,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 63,
+    "RequiredExp": 5409360,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 64,
+    "RequiredExp": 6491232,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 65,
+    "RequiredExp": 7789480,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 66,
+    "RequiredExp": 9347376,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 67,
+    "RequiredExp": 11216848,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 68,
+    "RequiredExp": 13460216,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 69,
+    "RequiredExp": 16152264,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 70,
+    "RequiredExp": 19382712,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 71,
+    "RequiredExp": 23259256,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 72,
+    "RequiredExp": 27911112,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 73,
+    "RequiredExp": 33493336,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 74,
+    "RequiredExp": 40192000,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 75,
+    "RequiredExp": 48230408,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 76,
+    "RequiredExp": 57876488,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 77,
+    "RequiredExp": 69451784,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 78,
+    "RequiredExp": 83342144,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 79,
+    "RequiredExp": 100010576,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 80,
+    "RequiredExp": 120012688,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 81,
+    "RequiredExp": 144015224,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 82,
+    "RequiredExp": 172818272,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 83,
+    "RequiredExp": 207381928,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 84,
+    "RequiredExp": 248858312,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 85,
+    "RequiredExp": 298629976,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 86,
+    "RequiredExp": 358355976,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 87,
+    "RequiredExp": 430027168,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 88,
+    "RequiredExp": 516032608,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 89,
+    "RequiredExp": 619239128,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 90,
+    "RequiredExp": 743086952,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 91,
+    "RequiredExp": 891704344,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 92,
+    "RequiredExp": 1070045216,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 93,
+    "RequiredExp": 1284054256,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 94,
+    "RequiredExp": 1540865112,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 95,
+    "RequiredExp": 1849038136,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  },
+  {
+    "AccountLevelTID": 96,
+    "RequiredExp": 2218845768,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 97,
+    "RequiredExp": 2662614920,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 98,
+    "RequiredExp": 3195137904,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 99,
+    "RequiredExp": 3834165480,
+    "TraitPoint": 0,
+    "Description": ""
+  },
+  {
+    "AccountLevelTID": 100,
+    "RequiredExp": 4600998584,
+    "TraitPoint": 1,
+    "Description": "특성 포인트 +1"
+  }
+]

@@ -9,27 +9,20 @@ public partial class User
     public WorkStation WorkStation { get; } = new();
 
     /// <summary>
-    /// 산업별 <b>최대 해금 레벨</b>. 행이 없는 산업은 기본 레벨까지만 열린 것으로 본다.
-    /// <b>해금은 계정 단위·영구다</b> — 캐릭터를 방출해도 내려가지 않는다(산업레벨.md 3.2).
+    /// 이 산업 레벨이 열려 있는가. 원본은 <c>IndustryLevelTable.UnlockTID</c> → <c>t_user_unlock</c> 하나다(특성 노드로 연다).
+    /// 기본 레벨(Lv1)은 늘 열려 있고, 표에 없는 레벨은 닫혀 있다. <b>해금은 계정 단위·영구다</b>(산업레벨.md 3.2).
     /// </summary>
-    private readonly Dictionary<IndustryType, int> _industryUnlocks = new();
-
-    /// <summary>DB에서 읽은 산업별 해금 레벨을 적재한다(로그인 시 1회).</summary>
-    public void LoadIndustryLevels(IReadOnlyList<UserIndustryLevelRow> rows)
+    public bool IsIndustryLevelUnlocked(IndustryType industry, int level)
     {
-        _industryUnlocks.Clear();
-
-        foreach (var r in rows)
+        if (level == WorkStationSlot.DefaultIndustryLevel)
         {
-            _industryUnlocks[(IndustryType)r.industry] = r.unlocked_level;
+            return true;
         }
-    }
 
-    /// <summary>이 산업에서 열려 있는 최대 레벨. 기록이 없으면 기본 레벨(Lv1)이다.</summary>
-    public int GetUnlockedIndustryLevel(IndustryType industry)
-        => _industryUnlocks.TryGetValue(industry, out var level)
-            ? level
-            : WorkStationSlot.DefaultIndustryLevel;
+        return level > WorkStationSlot.DefaultIndustryLevel &&
+               _industryLevels.TryGet(industry, level, out var row) &&
+               IsUnlocked(row.UnlockTID);
+    }
 
     /// <summary>이 칸이 열려 있는가. <c>WorkSlotTable</c>에 없는 번호는 없는 칸이라 false다.</summary>
     private bool IsWorkSlotOpen(int slotIndex)
@@ -212,14 +205,11 @@ public partial class User
             return;
         }
 
-        // 해금하지 않은 레벨은 거절한다. 하한(1 미만)을 따로 막는 이유는 0·음수가
-        // "열린 레벨 이하" 비교를 그냥 통과해 버리기 때문이다.
-        if (industryLevel < WorkStationSlot.DefaultIndustryLevel ||
-            industryLevel > GetUnlockedIndustryLevel(industry))
+        // 해금하지 않은 레벨은 거절한다. 0·음수·표에 없는 레벨도 닫힌 것으로 본다.
+        if (!IsIndustryLevelUnlocked(industry, industryLevel))
         {
             ServerLog.Warn("작업슬롯",
-                $"배치 거절 — 미해금 레벨. Uid={Uid} Slot={slotIndex} Industry={industry} " +
-                $"Level={industryLevel} Unlocked={GetUnlockedIndustryLevel(industry)}");
+                $"배치 거절 — 미해금 레벨. Uid={Uid} Slot={slotIndex} Industry={industry} Level={industryLevel}");
             Send(new S_WorkStationAssignResponse { Result = EResultCode.IndustryLevelLocked });
             return;
         }
@@ -265,6 +255,7 @@ public partial class User
         return WorkSpeed.From(baseSpeed)
             // 착용 장비 가산(전 산업 + 슬롯 산업). 특성·부스트도 여기에 .Add(천분율)로 붙는다 — 개수가 늘어도 각 보정의 몫은 그대로다.
             .Add(GetEquipSpeedAdd(slot.CharacterId, slot.Industry))
+            .Add(GetTraitSpeedAdd(slot.Industry))
             .Multiply(GatherSpeedMultiplier)
             .Resolve();
     }

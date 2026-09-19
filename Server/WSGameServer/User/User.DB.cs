@@ -42,7 +42,7 @@ public partial class User
 
         // 캐릭터가 슬롯 속도의 근거이므로 슬롯보다 먼저 적재한다.
         LoadCharacters(data.CharacterRows);
-        LoadIndustryLevels(data.IndustryLevelRows);
+        LoadAccount(data.Account);
 
         // 착용 장비가 슬롯 속도의 근거라 캐릭터 뒤·슬롯 앞에 적재한다.
         LoadEquips(data.EquipRows, data.CharacterEquipRows);

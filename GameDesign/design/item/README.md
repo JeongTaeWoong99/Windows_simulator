@@ -188,10 +188,11 @@
 ## 4. 가챠 · 티켓
 
 - 티켓은 채취 중 **낮은 확률**로 획득한다.
-- **가챠 풀은 엑셀이 원본이다.** `Gacha.xlsx`가 시트 셋을 갖는다 (2026-09-02 개편) —
-  `GachaInfoTable`(풀 이름·비용) · `GachaItemTable`(아이템 풀) · `GachaCharacterTable`(캐릭터 풀).
+- **가챠 풀은 엑셀이 원본이다.** `Gacha.xlsx`가 시트 넷을 갖는다 —
+  `GachaInfoTable`(풀 이름·비용) · `GachaItemTable`(아이템 풀) · `GachaCharacterTable`(캐릭터 풀) ·
+  `GachaEquipTable`(장비 풀 — 무기·장신구·보석을 풀로 나눈다 → [캐릭터](../character/README.md) 5.1.1).
   각 시트가 자기 TID에 `Ref`를 걸어 실재하지 않는 보상은 생성 단계에서 막힌다.
-  등급은 풀에 두지 않고 정의 테이블(`ItemTable`·`CharacterTable`)에서 읽는다(단일 원본).
+  등급은 풀에 두지 않고 정의 테이블(`ItemTable`·`CharacterTable`·`EquipTable`)에서 읽는다(단일 원본).
 - **가챠 결과물 = 캐릭터로 확정 (2026-09-02).** 캐릭터 획득 경로가 가챠로 정해졌다
   → [캐릭터](../character/README.md) 5.1. 아이템 풀(1번)은 **테스트용 구슬 6종**(`100001~100006`)으로 남는다.
 - **비용은 골드 직접이다.** 가챠 티켓을 만들지 않는다 → [거래](../trade/README.md) 3.2.

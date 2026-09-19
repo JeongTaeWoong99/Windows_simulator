@@ -62,6 +62,7 @@ namespace GameData
 
         Item      = 1,  // 아이템 — GachaItemTable
         Character = 2,  // 캐릭터 — GachaCharacterTable
+        Equip     = 3,  // 장비 — GachaEquipTable
 
         Max      ,
     };
@@ -87,5 +88,14 @@ namespace GameData
         Gem        = 4,  // 보석 칸
 
         Max       ,
+    };
+
+    public enum UserTraitEffect : byte
+    {
+        None     = 0,
+
+        SpeedAdd = 1,  // 작업속도 가산 — EffectValue 천분율, Industry None=전 산업
+
+        Max     ,
     };
 }

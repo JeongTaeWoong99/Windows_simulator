@@ -112,13 +112,14 @@ public class UnlockCatalogTest
     }
 
     [Fact]
-    public void 실데이터는_해금_6개_작업슬롯_8칸이_등록된다()
+    public void 실데이터는_해금_51개_작업슬롯_8칸이_등록된다()
     {
         GameTableFixture.EnsureLoaded();
         var catalog = new UnlockCatalog();
         catalog.LoadAll();
 
-        catalog.Count.ShouldBe(6);
+        // 작업슬롯 6 + 특성 노드 45(산업 레벨 5×4 · 속도 5×5)
+        catalog.Count.ShouldBe(51);
         catalog.WorkSlots.Count.ShouldBe(8);
 
         // 상한 칸(7번)은 1007이 연다. 시작 2칸(0·1번)은 해금 0이다.

@@ -8,10 +8,6 @@ public partial class User
     /// <summary>열린 해금(<c>UnlockTID</c>). 영구라 지워지는 일이 없다. 0은 넣지 않는다 — 항상 열려 있다.</summary>
     private readonly HashSet<int> _unlocks = new();
 
-    // 계정 레벨은 아직 서버에 없다(획득식 보류 — 해금 기획 8장). 검사 자리만 두고 0으로 비교한다.
-    // 값이 생기면(T-012) 여기만 실제 레벨로 바꾼다.
-    public int AccountLevel => 0;
-
     /// <summary>DB에서 읽은 열린 해금을 적재한다(로그인 시 1회). 작업슬롯 적재보다 먼저다.</summary>
     public void LoadUnlocks(IReadOnlyList<UserUnlockRow> rows)
     {
@@ -44,24 +40,17 @@ public partial class User
             return;
         }
 
-        if (IsUnlocked(unlockTid))
+        // 특성 노드는 포인트를 내야 열린다. 여기로 오면 골드 컬럼만 보고 공짜로 열리므로 막는다.
+        if (_traitCatalog.IsTraitUnlock(unlockTid))
         {
-            Reject(EResultCode.AlreadyUnlocked, "이미 열림");
+            Reject(EResultCode.TraitOnlyUnlock, "특성 노드 — C_UserTraitLearnRequest로 연다");
             return;
         }
 
-        foreach (var required in row.RequiredUnlockTIDs)
+        var (code, reason) = CheckUnlockConditions(unlockTid, row);
+        if (code != EResultCode.Ok)
         {
-            if (!IsUnlocked(required))
-            {
-                Reject(EResultCode.UnlockLocked, $"선행 {required} 미충족");
-                return;
-            }
-        }
-
-        if (AccountLevel < row.AccountLevel)
-        {
-            Reject(EResultCode.UnlockLocked, $"계정 레벨 {AccountLevel} < {row.AccountLevel}");
+            Reject(code, reason);
             return;
         }
 
@@ -89,6 +78,33 @@ public partial class User
             ServerLog.Warn("해금", $"거절 — {reason}. Uid={Uid} UnlockTID={unlockTid} Currency={currency}");
             Send(new S_UnlockResponse { Result = code, UnlockTID = unlockTid });
         }
+    }
+
+    /// <summary>
+    /// 차감 없는 조건(이미 열림 · 선행 · 계정 레벨)을 본다. 해금 요청과 특성 찍기가 같은 판정을 쓴다 —
+    /// 조건은 <c>UnlockTable</c> 한 곳에 있고 컬럼끼리는 AND다(해금 2.1).
+    /// </summary>
+    private (EResultCode Code, string Reason) CheckUnlockConditions(int unlockTid, UnlockTableRow row)
+    {
+        if (IsUnlocked(unlockTid))
+        {
+            return (EResultCode.AlreadyUnlocked, "이미 열림");
+        }
+
+        foreach (var required in row.RequiredUnlockTIDs)
+        {
+            if (!IsUnlocked(required))
+            {
+                return (EResultCode.UnlockLocked, $"선행 {required} 미충족");
+            }
+        }
+
+        if (AccountLevel < row.AccountLevel)
+        {
+            return (EResultCode.UnlockLocked, $"계정 레벨 {AccountLevel} < {row.AccountLevel}");
+        }
+
+        return (EResultCode.Ok, "");
     }
 
     /// <summary>

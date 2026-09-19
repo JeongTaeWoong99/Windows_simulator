@@ -48,11 +48,12 @@ public sealed record WorkStationSlotRow
     public long character_id   { get; init; }
 }
 
-// t_user_industry_level 조회 전용 Row (산업별 최대 해금 레벨 — 해금은 영구다)
-public sealed record UserIndustryLevelRow
+// t_user_account 조회 전용 Row. 행이 없으면 레벨 1로 본다(재화와 같은 규약).
+public sealed record AccountRow
 {
-    public int industry       { get; init; }
-    public int unlocked_level { get; init; }
+    public int  level       { get; init; }
+    public long exp         { get; init; }
+    public int  trait_point { get; init; }
 }
 
 // t_user_unlock 조회 전용 Row (열린 해금만 행이 있다 — 해금은 영구다)
@@ -91,7 +92,7 @@ public sealed record PlayerLoginData(
     CurrencyRow? Currency,
     List<CharacterRow> CharacterRows,
     List<WorkStationSlotRow> WorkStationSlotRows,
-    List<UserIndustryLevelRow> IndustryLevelRows,
     List<UserUnlockRow> UnlockRows,
     List<UserEquipRow> EquipRows,
-    List<CharacterEquipRow> CharacterEquipRows);
+    List<CharacterEquipRow> CharacterEquipRows,
+    AccountRow? Account = null);

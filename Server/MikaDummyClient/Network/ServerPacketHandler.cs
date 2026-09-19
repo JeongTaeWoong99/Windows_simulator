@@ -149,6 +149,20 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv 해금: UnlockTID={res.UnlockTID} → {res.Result}");
         }
 
+        // 특성 찍기 결과. 성공이면 앞에 S_UnlockResponse가, 뒤에 S_AccountLevelResponse(남은 포인트)가 온다.
+        [PacketHandler]
+        public static void Handle_S_UserTraitLearnResponse(ISession session, S_UserTraitLearnResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 특성: UserTraitTID={res.UserTraitTID} → {res.Result}");
+        }
+
+        // 로그인 직후·경험치가 오를 때·포인트를 쓸 때 온다.
+        [PacketHandler]
+        public static void Handle_S_AccountLevelResponse(ISession session, S_AccountLevelResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 계정: Lv{res.Level} Exp={res.Exp} 특성포인트={res.TraitPoint}");
+        }
+
         // 로그인 직후 슬롯 스냅샷보다 먼저 온다. 잠긴 칸의 조건 문구는 UnlockTable로 클라가 만든다.
         [PacketHandler]
         public static void Handle_S_UnlockListResponse(ISession session, S_UnlockListResponse res)

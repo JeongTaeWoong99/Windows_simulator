@@ -95,6 +95,9 @@ public partial class User
     /// </summary>
     public void GrantCharacterExp(Character character, int amount, bool notify)
     {
+        // 캐릭터가 얻은 경험치는 그대로 계정 경험치가 된다(특성 3장). 캐릭터가 만렙이어도 계정은 자란다.
+        GainAccountExp(amount, notify);
+
         var levelBefore = character.Level;
         var expBefore   = character.Exp;
 

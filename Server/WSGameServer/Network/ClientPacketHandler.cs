@@ -126,6 +126,22 @@ public static class ClientPacketHandler
         user.RaiseAptitude(req.CharacterId, (GameData.IndustryType)req.Industry, DateTime.UtcNow);
     }
 
+    /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_UserTraitLearnRequest(ISession session, C_UserTraitLearnRequest req)
+    {
+        ServerLog.Debug("특성", $"요청 UserTraitTID={req.UserTraitTID} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_UserTraitLearnResponse { Result = EResultCode.NotLoggedIn, UserTraitTID = req.UserTraitTID });
+            return;
+        }
+
+        user.TryLearnTrait(req.UserTraitTID, DateTime.UtcNow);
+    }
+
     /// <summary>해금 요청. 조건 판정·차감은 User가 한다 — 클라가 "열 수 있다"고 그렸어도 여기서 다시 검사한다.</summary>
     [PacketHandler]
     public static void Handle_C_UnlockRequest(ISession session, C_UnlockRequest req)

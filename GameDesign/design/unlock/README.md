@@ -1,7 +1,7 @@
 # 09. 해금 (Unlock)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
-> 상태: **골격·데이터 확정 · 첫 구현(작업슬롯) 서버 완료(2026-09-16, T-038) · 클라 UI는 T-039 · 계정 레벨 획득식 보류**
+> 상태: **골격·데이터 확정 · 작업슬롯(T-038) · 특성 노드 = 산업 레벨·속도(2026-09-19, T-021) 서버 완료 · 계정 레벨 서버 완료**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
 >   [`캐릭터`](../character/README.md) · [`특성`](../trait/README.md)
 
@@ -23,14 +23,14 @@
 | 7 | **영구** | 한 번 열리면 되돌아가지 않는다. 재검사 없음 |
 | 8 | **잠긴 것은 전부 보인다** | 조건도 함께 보인다. 숨기는 콘텐츠를 두지 않는다 |
 | 9 | **조건 문구는 클라가 만든다** | 클라가 `UnlockTable`을 읽고 보유 골드·레벨과 대조한다. 서버는 열린 목록만 준다 |
-| 10 | **TID 대역** | 작업슬롯 `1xxx` · 산업 레벨 `2xxx` · 특성 `3xxx`. 번호는 재사용하지 않는다 |
+| 10 | **TID 대역** | 작업슬롯 `1xxx` · 산업 레벨 `2xxx` · 특성(속도 등) `3xxx`. 번호는 재사용하지 않는다 |
 | 11 | **첫 구현 = 작업슬롯** | 조건은 골드 + 선행. 계정 레벨 조건은 값이 생기면 켠다 → 4장 |
-| 12 | **산업 레벨 조건 = 계정 레벨만** | 적성 조건은 폐지한다. 이관은 계정 레벨이 서버에 생긴 뒤 → 4장 |
+| 12 | **특성 노드도 해금이다** (2026-09-19) | 노드 TID = `UnlockTID`. 조건은 이 표, 비용(특성 포인트)은 `UserTraitTable`. **`C_UnlockRequest`로는 열 수 없다**(`TraitOnlyUnlock`) — 특성 찍기로만 연다 → 4.2 · [특성](../trait/README.md) 2.1 |
 | 13 | **표시명은 `UnlockTable.Name`** | 선행 해금을 이름으로 보여 준다. 클라가 콘텐츠 테이블을 역색인하지 않는다 (2026-09-16) |
 | 14 | **서버 지급 경로 `GrantUnlock`** | 퀘스트 보상·튜토리얼·운영이 조건 없이 연다. 통지는 유저 행동과 같다 (2026-09-16) → 2.4 |
 | 15 | **로드 시 검증 3종** | 선행 순환·자기 참조 → 기동 실패 · 한 `UnlockTID`를 두 콘텐츠가 참조 → 기동 실패 · 미참조 → 경고 (2026-09-16) → 2.5 |
 | 16 | **지불 컬럼끼리는 OR** | `Gold`·`Dia`가 둘 다 있으면 유저가 하나를 골라 낸다. 나머지 조건과는 AND (2026-09-16) → 3장 |
-| 17 | **계정 레벨은 `S_AccountLevelResponse`** | 재화처럼 스냅샷·푸시가 같은 패킷. 구현은 획득식 뒤 (2026-09-16) → 6장 |
+| 17 | **계정 레벨은 `S_AccountLevelResponse`** | 재화처럼 스냅샷·푸시가 같은 패킷 `{Level, Exp, TraitPoint}` — 서버 구현 완료 (2026-09-19) → 6장 |
 | 18 | **잠긴 칸의 배치 행은 경고 후 무시** | "열렸다"의 원본은 `t_user_unlock` 하나 (2026-09-16) → 4.1 |
 
 > **왜 한 표인가** — 해금이 "엄청 많이 쓰일" 것이라서다. 콘텐츠마다 조건 컬럼과 판정 코드를 파면
@@ -145,8 +145,9 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | 콘텐츠 | 참조 컬럼 | 조건 | 상태 |
 | --- | --- | --- | --- |
 | **작업슬롯** | `WorkSlotTable.UnlockTID` | 골드 + 선행(앞 칸). 계정 레벨은 `0`으로 두고 곡선이 오면 켠다 | ✅ 데이터 · ✅ 서버 (2026-09-16, T-038) · ❌ 클라 UI (일감 T-039) |
-| **산업 레벨** | `IndustryLevelTable.UnlockTID` (이관 시 추가) | **계정 레벨만.** 적성 조건 폐지 | ⏸ 계정 레벨이 서버에 생긴 뒤 이관 (일감 T-021) |
-| **특성 액티브** | 특성 테이블 (미작성) | 계정 레벨 | ⏸ 특성 데이터와 함께 |
+| **산업 레벨** | `IndustryLevelTable.UnlockTID` · `UserTraitTable` | 특성 포인트 + 계정 레벨 + 앞 레벨 | ✅ 데이터 · ✅ 서버 (2026-09-19, T-021) · ❌ 클라 UI |
+| **특성 (속도 등)** | `UserTraitTable` | 특성 포인트 + 계정 레벨 + 앞 단 | ✅ 데이터 · ✅ 서버 (2026-09-19) · ❌ 클라 UI |
+| **특성 액티브** | `UserTraitTable` (미작성) | 계정 레벨 | ❌ 미착수 |
 | 거래소 · 상점 개방 · 보스 | — | 미정 | ❌ 기획 없음 |
 
 ### 4.1 작업슬롯 — 첫 구현
@@ -165,26 +166,29 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | 7 | 1007 | 60,000 | 0 | 1006 |
 
 > ⚠️ **골드는 테스트값이다.** 슬롯이 곧 재화 총량의 배수이므로([거래](../trade/README.md) 3.3) 경제와 함께 다시 잡는다.
-> `AccountLevel 0`은 "이중 게이트를 버렸다"가 아니라 **계정 레벨이 아직 없어서 비워 둔 것**이다 → 8장.
+> `AccountLevel 0`은 "이중 게이트를 버렸다"가 아니라 **값을 아직 안 정한 것**이다 — 계정 레벨은 이제 있다(2026-09-19) → 8장.
 
 > **재로그인 때 잠긴 칸의 배치 행이 DB에 남아 있으면 경고만 남기고 무시한다** (2026-09-16). 열린 칸은 `WorkSlotTable` + `t_user_unlock`으로만 만든다.
 > 미보유 캐릭터를 문 슬롯을 경고만 남기는 기존 규칙과 같은 태도다. 행은 지우지 않는다.
 
 > **상점의 "작업슬롯 확장권" 품목은 없다** (2026-09-16). 슬롯은 잠긴 칸에서 직접 연다 — 같은 것을 두 곳에서 팔지 않는다. sink로서의 골드 유출은 그대로다 → [거래](../trade/README.md) 3.2.
 
-### 4.2 산업 레벨 — 조건이 바뀌었다
+### 4.2 특성 노드 — 산업 레벨 · 산업 속도 (2026-09-19)
 
-2026-08-01의 "적성 N AND 계정 레벨 M"에서 **적성 조건을 뺀다.** 해금이 유저의 행동이 되면서
-"계정 레벨만이면 시간이 알아서 여는 자동 해금"이라는 당시 반대 근거가 사라졌고, 단순한 쪽을 택했다.
+특성 트리의 노드는 **전부 이 표의 행**이다. 노드 TID가 곧 `UnlockTID`이고, 조건은 여기 컬럼으로, 비용과 효과는 `UserTraitTable`로 나눈다.
 
-- **잃는 것** — "적성 N 캐릭터를 뽑아야 레벨이 열린다"는 가챠 동기. 남는 가챠 동기는 **적성 = 속도** 하나다.
-- **함께 사라지는 것** — 가챠 천장 없이는 레벨이 영영 안 열린다는 경고([캐릭터](../character/README.md) 5.1). 천장은 여전히 미정이지만 해금과는 무관해진다.
-- **이관 절차** — `IndustryLevelTable`에 `UnlockTID` 컬럼을 더하고 `RequiredAptitude`·`RequiredAccountLevel`을 지운다.
-  `t_user_industry_level`은 `t_user_unlock`으로 대체한다. **계정 레벨이 서버에 생긴 뒤** 한 번에 한다.
+| 가지 | `UnlockTID` | `AccountLevel` | 선행 | 비용 (`UserTraitTable`) |
+| --- | --- | --- | --- | --- |
+| 산업 레벨 Lv2~5 | `2000 + 산업×100 + 레벨` | 5 · 15 · 30 · 50 | 앞 레벨 | 특성 포인트 1 |
+| 산업 속도 1~5단 | `3000 + 산업×100 + 단` | 0 · 10 · 20 · 30 · 40 | 앞 단 | 특성 포인트 1 |
+
+- 값은 **테스트값**이다.
+- 적성 조건은 없다 — 2026-08-01의 "적성 N AND 계정 레벨 M"에서 적성을 뺐다(2026-09-14).
+- 산업별 최대 레벨을 저장하던 `t_user_industry_level`은 없앴다. 원본은 `t_user_unlock` 하나다.
 
 ---
 
-## 5. 데이터 설계 (`GameDesign/Excel/Unlock.xlsx`)
+## 5. 데이터 설계 (`GameDesign/Excel/Unlock.xlsx` · `WorkSlot.xlsx`)
 
 ### 5.1 `UnlockTable`
 
@@ -197,7 +201,7 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | `RequiredUnlockTIDs` | int[] (`Ref UnlockTable.UnlockTID?`) | 선행 해금. 빈 셀 = 없음 |
 | `Description` | string | 기획 메모 (로직 미사용) |
 
-### 5.2 `WorkSlotTable`
+### 5.2 `WorkSlotTable` (`WorkSlot.xlsx`)
 
 | 컬럼 | 타입 | 내용 |
 | --- | --- | --- |
@@ -218,8 +222,9 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | `C_UnlockRequest` | `{ int UnlockTID, ECurrencyType Currency }` — 지불 컬럼이 없는 해금은 `Currency`를 무시한다 |
 | `S_UnlockResponse` | `{ EResultCode Result, int UnlockTID }` |
 | `S_UnlockListResponse` | `{ List<int> UnlockTIDs }` — 로그인 직후 열린 목록 전체 |
-| `S_AccountLevelResponse` | `{ int Level, int Exp }` — 계정 레벨 스냅샷·푸시 (재화와 같은 관례). **구현은 획득식 뒤** |
-| 결과 코드 | `InvalidUnlockTID` · `AlreadyUnlocked` · `UnlockLocked`(선행·레벨 미충족 · 이 해금에 없는 재화 선택) · `NotEnoughCurrency`(있음) |
+| `S_AccountLevelResponse` | `{ int Level, long Exp, int TraitPoint }` — 계정 레벨 스냅샷·푸시 (재화와 같은 관례) |
+| `C_UserTraitLearnRequest` / `S_UserTraitLearnResponse` | 특성 노드 찍기 `{ int UserTraitTID }` / `{ EResultCode Result, int UserTraitTID }` → [특성](../trait/README.md) 2.1 |
+| 결과 코드 | `InvalidUnlockTID` · `AlreadyUnlocked` · `UnlockLocked`(선행·레벨 미충족 · 이 해금에 없는 재화 선택) · `NotEnoughCurrency`(있음) · `TraitOnlyUnlock`(특성 노드를 해금 요청으로 열려 함) |
 | 서버 | `UnlockCatalog`(테이블 인덱스 + 로드 검증 2.5) · `User.Unlock.cs`(`TryUnlock` · `GrantUnlock` · `IsUnlocked`) · `SaveUnlockRepository` |
 
 - **로그인 시 열린 목록을 먼저 보낸다** — 슬롯 스냅샷보다 앞. 클라가 잠긴 칸을 그릴 때 이미 알고 있어야 한다.
@@ -247,16 +252,14 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 
 ## 8. 결정 필요 (Open Questions)
 
-1. **계정 레벨은 어떻게 오르는가?** ❌ 보류 — 캐릭터 경험치의 전달 비율·곡선. `AccountLevel` 조건은 이 값이 생겨야 켜진다
-   → [캐릭터](../character/README.md) 3.1
-2. **슬롯의 계정 레벨 요구치** — 1번이 정해지면 4.1 표의 `AccountLevel`을 채운다 (일감 T-012)
-3. **산업 레벨 이관 시점** — 1번 뒤 (일감 T-021)
-4. **퀘스트 완료 조건** — 퀘스트가 생기면 `QuestTID` 컬럼
-5. **OR 조합** — 필요한 콘텐츠가 나오면 그룹 컬럼
+1. **슬롯의 계정 레벨 요구치** — 계정 레벨이 생겼다(2026-09-19). 4.1 표의 `AccountLevel`을 채운다 (일감 T-012)
+2. **퀘스트 완료 조건** — 퀘스트가 생기면 `QuestTID` 컬럼
+3. **OR 조합** — 필요한 콘텐츠가 나오면 그룹 컬럼
 
 > 이 문서가 답한 것:
 > - 해금의 형태 — 한 표 · 조건은 컬럼 · AND ✅
 > - 해금의 방식 — 유저의 행동 · 원자적 · 영구 ✅
 > - 대상 연결 — 콘텐츠가 `UnlockTID`를 참조 ✅
 > - 표시 — 전부 보임 · 문구는 클라 ✅
-> - 첫 구현 — 작업슬롯 ✅ · 산업 레벨 조건 = 계정 레벨만 ✅
+> - 첫 구현 — 작업슬롯 ✅ · 산업 레벨 = 특성 노드 ✅
+> - 계정 레벨 획득 — 캐릭터 경험치 전량 ✅ (2026-09-19) → [특성](../trait/README.md) 3장 · [캐릭터](../character/README.md) 3.1

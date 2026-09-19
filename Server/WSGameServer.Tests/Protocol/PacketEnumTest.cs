@@ -111,4 +111,28 @@ public class PacketEnumTest
             .Select(v => v.ToString())
             .ShouldBe(new[] { "None", "Farming", "Fishing", "Mining", "Logging", "Hunting", "Max" });
     }
+
+    [Fact]
+    public void 패킷_번호는_겹치지_않는다()
+    {
+        // 두 작업이 같은 번호를 따로 가져가면 컴파일은 통과한 채 한쪽 패킷이 다른 핸들러로 간다(2026-09-17 27·28 중복).
+        var duplicated = Enum.GetValues<PacketId>()
+            .GroupBy(v => (ushort)v)
+            .Where(g => g.Count() > 1)
+            .Select(g => $"{g.Key}: {string.Join(", ", Enum.GetNames<PacketId>().Where(n => (ushort)Enum.Parse<PacketId>(n) == g.Key))}");
+
+        duplicated.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 결과_코드는_겹치지_않는다()
+    {
+        // 같은 값이면 클라가 이름으로 문구를 고를 때 어느 쪽이 나올지 알 수 없다(2026-09-17 600 중복).
+        var duplicated = Enum.GetNames<EResultCode>()
+            .GroupBy(n => (int)Enum.Parse<EResultCode>(n))
+            .Where(g => g.Count() > 1)
+            .Select(g => $"{g.Key}: {string.Join(", ", g)}");
+
+        duplicated.ShouldBeEmpty();
+    }
 }

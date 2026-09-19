@@ -36,6 +36,12 @@ public sealed partial class User
     /// <summary>장비 정의 인덱스. 적재·지급·장착 검증에 쓴다. 규약은 위와 같다.</summary>
     private readonly EquipCatalog _equipCatalog;
 
+    /// <summary>계정 레벨 곡선. 캐릭터 경험치가 들어올 때 레벨업·특성 포인트를 판정한다. 규약은 위와 같다.</summary>
+    private readonly AccountLevelCatalog _accountLevels;
+
+    /// <summary>특성 트리(노드 비용·효과). 특성 찍기와 슬롯 속도 가산에 쓴다. 규약은 위와 같다.</summary>
+    private readonly UserTraitCatalog _traitCatalog;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -119,7 +125,9 @@ public sealed partial class User
         IndustryLevelCatalog? industryLevels = null,
         CharacterLevelCatalog? characterLevels = null,
         UnlockCatalog?        unlocks = null,
-        EquipCatalog?         equips = null)
+        EquipCatalog?         equips = null,
+        AccountLevelCatalog?  accountLevels = null,
+        UserTraitCatalog?     traits = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -132,6 +140,8 @@ public sealed partial class User
         _characterLevels = characterLevels ?? CharacterLevelCatalog.Instance;
         _unlockCatalog = unlocks ?? UnlockCatalog.Instance;
         _equipCatalog = equips ?? EquipCatalog.Instance;
+        _accountLevels = accountLevels ?? AccountLevelCatalog.Instance;
+        _traitCatalog = traits ?? UserTraitCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -180,6 +190,7 @@ public sealed partial class User
         
         SendInventory();   // S_InventoryResponse
         SendCurrency();    // S_CurrencyResponse
+        SendAccountLevel(); // S_AccountLevelResponse — 특성 트리 화면이 남은 포인트를 안다
 
         // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
         // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.

@@ -96,7 +96,16 @@ public sealed class GachaService : Singleton<GachaService>
             user.GrantGachaCharacters(characterTids);
         }
 
-        // 7) 뽑기 결과 응답 — Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
+        // 7) 장비 지급: 개체마다 창고 칸이 달라 1개씩 요청한다. 캐릭터처럼 개체는 S_EquipSyncResponse로 늦게 내려간다.
+        foreach (var entry in entries.Where(e => e.RewardType == GachaRewardType.Equip))
+        {
+            for (var i = 0; i < entry.Count; i++)
+            {
+                user.GrantEquip(entry.RewardTID);
+            }
+        }
+
+        // 8) 뽑기 결과 응답 — Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
         user.Send(new S_GachaDrawResponse
         {
             Result = EResultCode.Ok,
@@ -117,6 +126,17 @@ public sealed class GachaService : Singleton<GachaService>
 
     private static GachaRewardInfo ToRewardInfo(GachaEntry entry)
     {
+        if (entry.RewardType == GachaRewardType.Equip)
+        {
+            return new GachaRewardInfo
+            {
+                RewardType = EGachaRewardType.Equip,
+                EquipTid   = entry.RewardTID,
+                Count      = entry.Count,
+                Rarity     = EquipRarityOf(entry.RewardTID),
+            };
+        }
+
         if (entry.RewardType == GachaRewardType.Character)
         {
             return new GachaRewardInfo
@@ -147,6 +167,16 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         return (EGlobalRarity)(byte)item.GlobalRarity;
+    }
+
+    private static EGlobalRarity EquipRarityOf(int equipTid)
+    {
+        if (!GameTable.EquipTable.TryGet(equipTid, out var equip))
+        {
+            return EGlobalRarity.None;
+        }
+
+        return (EGlobalRarity)(byte)equip.GlobalRarity;
     }
 
     private static EGlobalRarity CharacterRarityOf(int characterTid)

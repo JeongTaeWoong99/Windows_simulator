@@ -12,7 +12,7 @@ public readonly record struct GachaEntry(
     int              Count,
     int              Weight);
 
-// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터 두 시트이며 같은 GachaId면 한 풀에 섞인다.
+// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터·장비 세 시트이며 같은 GachaId면 한 풀에 섞인다.
 // GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md
 public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
 {
@@ -21,7 +21,7 @@ public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
     /// <summary>등록된 풀 수.</summary>
     public int Count => _byPool.Count;
 
-    /// <summary>엑셀의 아이템·캐릭터 시트 전 행을 풀별 추첨기로 만든다. GameTable.LoadAll 이후에 부른다.</summary>
+    /// <summary>엑셀의 아이템·캐릭터·장비 시트 전 행을 풀별 추첨기로 만든다. GameTable.LoadAll 이후에 부른다.</summary>
     public void LoadAll()
     {
         var items = ToEntries(GameTable.GachaItemTable.All, GachaRewardType.Item,
@@ -30,7 +30,10 @@ public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
         var characters = ToEntries(GameTable.GachaCharacterTable.All, GachaRewardType.Character,
                                    r => r.GachaId, r => r.CharacterTID, r => r.Count, r => r.Weight);
 
-        Load(items.Concat(characters));
+        var equips = ToEntries(GameTable.GachaEquipTable.All, GachaRewardType.Equip,
+                               r => r.GachaId, r => r.EquipTID, r => r.Count, r => r.Weight);
+
+        Load(items.Concat(characters).Concat(equips));
 
         ServerLog.Info("데이터", $"가챠 풀 {Count}개 등록 완료");
     }

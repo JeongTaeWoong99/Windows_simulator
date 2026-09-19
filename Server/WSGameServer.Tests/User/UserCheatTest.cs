@@ -299,4 +299,18 @@ public class UserCheatTest
         b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatArgs);
         b.DB.Posted.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void 계정_경험치를_지급하면_레벨업과_특성_포인트가_실제_경로로_붙는다()
+    {
+        var (user, b) = Admin();
+        b.Channel.Sent.Clear();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveAccountExp, 1_000_000), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        user.AccountLevel.ShouldBeGreaterThan(1);
+        b.DB.PostedOf<SaveAccountRepository>().ShouldNotBeEmpty();
+        b.Channel.SentOf<S_AccountLevelResponse>().ShouldNotBeEmpty();
+    }
 }

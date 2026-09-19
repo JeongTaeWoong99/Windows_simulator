@@ -37,6 +37,7 @@ public partial class User
             ECheatCommand.Settle           => CheatSettle(req.Arg1, now),
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
+            ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -160,6 +161,18 @@ public partial class User
         // 퀘스트·튜토리얼과 같은 지급 경로 — 조건·차감 없이 기록·통지·콘텐츠 후속까지 동일하다.
         GrantUnlock((int)unlockTid, now);
         return (EResultCode.Ok, $"해금 {unlockTid} 지급");
+    }
+
+    private (EResultCode, string) CheatGiveAccountExp(long amount)
+    {
+        if (amount <= 0)
+        {
+            return (EResultCode.InvalidCheatArgs, "경험치 범위 밖");
+        }
+
+        // 캐릭터 경험치가 계정으로 흘러드는 것과 같은 함수 — 레벨업·포인트·저장·푸시가 같다.
+        GainAccountExp(amount, notify: true);
+        return (EResultCode.Ok, $"계정 Lv{AccountLevel} Exp{AccountExp} 특성포인트{TraitPoint}");
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

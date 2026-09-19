@@ -60,8 +60,11 @@ namespace MikaProtocol
         C_EquipRequest = 29,
         C_UnequipRequest = 30,
         S_EquipResponse = 31,
-        C_AptitudeUpRequest = 27,
-        S_AptitudeUpResponse = 28,
+        C_AptitudeUpRequest = 32,   // 27·28은 장비 패킷과 겹쳐 있었다(2026-09-17). PacketEnumTest가 중복을 막는다
+        S_AptitudeUpResponse = 33,
+        C_UserTraitLearnRequest = 34,
+        S_UserTraitLearnResponse = 35,
+        S_AccountLevelResponse = 36,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -274,6 +277,33 @@ namespace MikaProtocol
     /// 해금 결과. 열린 뒤 무엇이 달라지는가는 <b>콘텐츠별 기존 패킷</b>이 따로 밀어 준다
     /// (작업슬롯이면 <see cref="S_WorkStationSlotSyncResponse"/>). 서버가 직접 연 경우(퀘스트·치트)도 같은 패킷이 온다.
     /// </summary>
+    /// <summary>특성 노드 하나를 찍는다. 조건은 그 노드의 <c>UnlockTable</c> 행 + 특성 포인트다.</summary>
+    [MemoryPackable, Packet(PacketId.C_UserTraitLearnRequest)]
+    public partial class C_UserTraitLearnRequest : IPacket
+    {
+        public int UserTraitTID { get; set; }
+    }
+
+    /// <summary>
+    /// 특성 찍기 결과. 성공하면 이 앞에 <see cref="S_UnlockResponse"/>가, 뒤에 <see cref="S_AccountLevelResponse"/>(남은 포인트)가 온다.
+    /// 속도 특성이면 바뀐 슬롯이 <see cref="S_WorkStationSlotSyncResponse"/>로 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_UserTraitLearnResponse)]
+    public partial class S_UserTraitLearnResponse : IPacket
+    {
+        public EResultCode Result       { get; set; }
+        public int         UserTraitTID { get; set; }
+    }
+
+    /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>
+    [MemoryPackable, Packet(PacketId.S_AccountLevelResponse)]
+    public partial class S_AccountLevelResponse : IPacket
+    {
+        public int  Level      { get; set; }
+        public long Exp        { get; set; }   // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 int를 넘는다
+        public int  TraitPoint { get; set; }   // 남은(안 쓴) 특성 포인트
+    }
+
     [MemoryPackable, Packet(PacketId.S_UnlockResponse)]
     public partial class S_UnlockResponse : IPacket
     {
