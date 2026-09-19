@@ -5,9 +5,9 @@
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "None",
-    "SpeedAddPermille": 100,
-    "BasePrice": 50,
-    "Description": "전 산업 +10% · 테스트값"
+    "SpeedAddPermille": 50,
+    "BasePrice": 70,
+    "Description": "전 산업 +5% · 입문 무기"
   },
   {
     "EquipTID": 1002,
@@ -15,9 +15,9 @@
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Fishing",
-    "SpeedAddPermille": 300,
-    "BasePrice": 120,
-    "Description": "낚시 +30% · 테스트값"
+    "SpeedAddPermille": 180,
+    "BasePrice": 250,
+    "Description": "낚시 +18% · 구 번호(낚시 무기 Uncommon 자리 — 1202는 결번)"
   },
   {
     "EquipTID": 2001,
@@ -25,9 +25,9 @@
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
-    "SpeedAddPermille": 50,
-    "BasePrice": 40,
-    "Description": "전 산업 +5% · 테스트값"
+    "SpeedAddPermille": 30,
+    "BasePrice": 50,
+    "Description": "전 산업 +3% · 입문 장신구"
   },
   {
     "EquipTID": 2002,
@@ -35,9 +35,9 @@
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "Fishing",
-    "SpeedAddPermille": 200,
-    "BasePrice": 80,
-    "Description": "낚시 +20% · 테스트값"
+    "SpeedAddPermille": 180,
+    "BasePrice": 360,
+    "Description": "낚시 +18% · 구 번호(유일한 산업 전용 장신구)"
   },
   {
     "EquipTID": 3001,
@@ -45,8 +45,648 @@
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "None",
-    "SpeedAddPermille": 30,
-    "BasePrice": 20,
-    "Description": "전 산업 +3% · 테스트값"
+    "SpeedAddPermille": 20,
+    "BasePrice": 30,
+    "Description": "전 산업 +2% · 입문 보석"
+  },
+  {
+    "EquipTID": 1101,
+    "Name": "나무 호미",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 100,
+    "BasePrice": 100,
+    "Description": "농사 +10%"
+  },
+  {
+    "EquipTID": 1102,
+    "Name": "무쇠 호미",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 180,
+    "BasePrice": 250,
+    "Description": "농사 +18%"
+  },
+  {
+    "EquipTID": 1103,
+    "Name": "강철 낫",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 300,
+    "BasePrice": 600,
+    "Description": "농사 +30%"
+  },
+  {
+    "EquipTID": 1104,
+    "Name": "은빛 쟁기",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 480,
+    "BasePrice": 1500,
+    "Description": "농사 +48%"
+  },
+  {
+    "EquipTID": 1105,
+    "Name": "풍년의 괭이",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 720,
+    "BasePrice": 4000,
+    "Description": "농사 +72%"
+  },
+  {
+    "EquipTID": 1106,
+    "Name": "대지모의 호미",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Weapon",
+    "Industry": "Farming",
+    "SpeedAddPermille": 1000,
+    "BasePrice": 10000,
+    "Description": "농사 +100%"
+  },
+  {
+    "EquipTID": 1201,
+    "Name": "대나무 낚싯대",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 100,
+    "BasePrice": 100,
+    "Description": "낚시 +10%"
+  },
+  {
+    "EquipTID": 1203,
+    "Name": "은사 낚싯대",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 300,
+    "BasePrice": 600,
+    "Description": "낚시 +30%"
+  },
+  {
+    "EquipTID": 1204,
+    "Name": "심해 작살",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 480,
+    "BasePrice": 1500,
+    "Description": "낚시 +48%"
+  },
+  {
+    "EquipTID": 1205,
+    "Name": "용린 낚싯대",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 720,
+    "BasePrice": 4000,
+    "Description": "낚시 +72%"
+  },
+  {
+    "EquipTID": 1206,
+    "Name": "해신의 삼지창",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Weapon",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 1000,
+    "BasePrice": 10000,
+    "Description": "낚시 +100%"
+  },
+  {
+    "EquipTID": 1301,
+    "Name": "돌 곡괭이",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 100,
+    "BasePrice": 100,
+    "Description": "채굴 +10%"
+  },
+  {
+    "EquipTID": 1302,
+    "Name": "무쇠 곡괭이",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 180,
+    "BasePrice": 250,
+    "Description": "채굴 +18%"
+  },
+  {
+    "EquipTID": 1303,
+    "Name": "강철 곡괭이",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 300,
+    "BasePrice": 600,
+    "Description": "채굴 +30%"
+  },
+  {
+    "EquipTID": 1304,
+    "Name": "흑요석 곡괭이",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 480,
+    "BasePrice": 1500,
+    "Description": "채굴 +48%"
+  },
+  {
+    "EquipTID": 1305,
+    "Name": "미스릴 곡괭이",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 720,
+    "BasePrice": 4000,
+    "Description": "채굴 +72%"
+  },
+  {
+    "EquipTID": 1306,
+    "Name": "산신의 곡괭이",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Weapon",
+    "Industry": "Mining",
+    "SpeedAddPermille": 1000,
+    "BasePrice": 10000,
+    "Description": "채굴 +100%"
+  },
+  {
+    "EquipTID": 1401,
+    "Name": "손도끼",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 100,
+    "BasePrice": 100,
+    "Description": "벌목 +10%"
+  },
+  {
+    "EquipTID": 1402,
+    "Name": "무쇠 도끼",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 180,
+    "BasePrice": 250,
+    "Description": "벌목 +18%"
+  },
+  {
+    "EquipTID": 1403,
+    "Name": "양날 도끼",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 300,
+    "BasePrice": 600,
+    "Description": "벌목 +30%"
+  },
+  {
+    "EquipTID": 1404,
+    "Name": "백년목 도끼",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 480,
+    "BasePrice": 1500,
+    "Description": "벌목 +48%"
+  },
+  {
+    "EquipTID": 1405,
+    "Name": "서리강철 도끼",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 720,
+    "BasePrice": 4000,
+    "Description": "벌목 +72%"
+  },
+  {
+    "EquipTID": 1406,
+    "Name": "세계수의 도끼",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Weapon",
+    "Industry": "Logging",
+    "SpeedAddPermille": 1000,
+    "BasePrice": 10000,
+    "Description": "벌목 +100%"
+  },
+  {
+    "EquipTID": 1501,
+    "Name": "사냥용 활",
+    "GlobalRarity": "Common",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 100,
+    "BasePrice": 100,
+    "Description": "사냥 +10%"
+  },
+  {
+    "EquipTID": 1502,
+    "Name": "참나무 활",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 180,
+    "BasePrice": 250,
+    "Description": "사냥 +18%"
+  },
+  {
+    "EquipTID": 1503,
+    "Name": "강철 석궁",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 300,
+    "BasePrice": 600,
+    "Description": "사냥 +30%"
+  },
+  {
+    "EquipTID": 1504,
+    "Name": "은빛 장궁",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 480,
+    "BasePrice": 1500,
+    "Description": "사냥 +48%"
+  },
+  {
+    "EquipTID": 1505,
+    "Name": "폭풍의 장궁",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 720,
+    "BasePrice": 4000,
+    "Description": "사냥 +72%"
+  },
+  {
+    "EquipTID": 1506,
+    "Name": "월신의 활",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Weapon",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 1000,
+    "BasePrice": 10000,
+    "Description": "사냥 +100%"
+  },
+  {
+    "EquipTID": 2003,
+    "Name": "은 목걸이",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 55,
+    "BasePrice": 120,
+    "Description": "전 산업 +5.5%"
+  },
+  {
+    "EquipTID": 2004,
+    "Name": "노동자의 팔찌",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 90,
+    "BasePrice": 300,
+    "Description": "전 산업 +9%"
+  },
+  {
+    "EquipTID": 2005,
+    "Name": "장인의 인장",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 145,
+    "BasePrice": 750,
+    "Description": "전 산업 +14.5%"
+  },
+  {
+    "EquipTID": 2006,
+    "Name": "대장인의 훈장",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 215,
+    "BasePrice": 2000,
+    "Description": "전 산업 +21.5%"
+  },
+  {
+    "EquipTID": 2007,
+    "Name": "창세의 고리",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Accessory",
+    "Industry": "None",
+    "SpeedAddPermille": 300,
+    "BasePrice": 5000,
+    "Description": "전 산업 +30%"
+  },
+  {
+    "EquipTID": 3101,
+    "Name": "풍년석",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 40,
+    "BasePrice": 40,
+    "Description": "농사 +4%"
+  },
+  {
+    "EquipTID": 3102,
+    "Name": "새싹 수정",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 70,
+    "BasePrice": 100,
+    "Description": "농사 +7%"
+  },
+  {
+    "EquipTID": 3103,
+    "Name": "곡창의 비취",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 120,
+    "BasePrice": 240,
+    "Description": "농사 +12%"
+  },
+  {
+    "EquipTID": 3104,
+    "Name": "황금 이삭석",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 190,
+    "BasePrice": 600,
+    "Description": "농사 +19%"
+  },
+  {
+    "EquipTID": 3105,
+    "Name": "대지의 심장",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 290,
+    "BasePrice": 1600,
+    "Description": "농사 +29%"
+  },
+  {
+    "EquipTID": 3106,
+    "Name": "풍요의 성석",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Gem",
+    "Industry": "Farming",
+    "SpeedAddPermille": 400,
+    "BasePrice": 4000,
+    "Description": "농사 +40%"
+  },
+  {
+    "EquipTID": 3201,
+    "Name": "물방울석",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 40,
+    "BasePrice": 40,
+    "Description": "낚시 +4%"
+  },
+  {
+    "EquipTID": 3202,
+    "Name": "조류 수정",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 70,
+    "BasePrice": 100,
+    "Description": "낚시 +7%"
+  },
+  {
+    "EquipTID": 3203,
+    "Name": "심해의 청옥",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 120,
+    "BasePrice": 240,
+    "Description": "낚시 +12%"
+  },
+  {
+    "EquipTID": 3204,
+    "Name": "산호 진주",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 190,
+    "BasePrice": 600,
+    "Description": "낚시 +19%"
+  },
+  {
+    "EquipTID": 3205,
+    "Name": "바다의 심장",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 290,
+    "BasePrice": 1600,
+    "Description": "낚시 +29%"
+  },
+  {
+    "EquipTID": 3206,
+    "Name": "해원의 성석",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Gem",
+    "Industry": "Fishing",
+    "SpeedAddPermille": 400,
+    "BasePrice": 4000,
+    "Description": "낚시 +40%"
+  },
+  {
+    "EquipTID": 3301,
+    "Name": "철광석 조각",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 40,
+    "BasePrice": 40,
+    "Description": "채굴 +4%"
+  },
+  {
+    "EquipTID": 3302,
+    "Name": "광맥 수정",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 70,
+    "BasePrice": 100,
+    "Description": "채굴 +7%"
+  },
+  {
+    "EquipTID": 3303,
+    "Name": "지맥의 흑옥",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 120,
+    "BasePrice": 240,
+    "Description": "채굴 +12%"
+  },
+  {
+    "EquipTID": 3304,
+    "Name": "용암 결정",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 190,
+    "BasePrice": 600,
+    "Description": "채굴 +19%"
+  },
+  {
+    "EquipTID": 3305,
+    "Name": "대지핵 결정",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 290,
+    "BasePrice": 1600,
+    "Description": "채굴 +29%"
+  },
+  {
+    "EquipTID": 3306,
+    "Name": "광신의 성석",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Gem",
+    "Industry": "Mining",
+    "SpeedAddPermille": 400,
+    "BasePrice": 4000,
+    "Description": "채굴 +40%"
+  },
+  {
+    "EquipTID": 3401,
+    "Name": "나무옹이석",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 40,
+    "BasePrice": 40,
+    "Description": "벌목 +4%"
+  },
+  {
+    "EquipTID": 3402,
+    "Name": "수액 호박",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 70,
+    "BasePrice": 100,
+    "Description": "벌목 +7%"
+  },
+  {
+    "EquipTID": 3403,
+    "Name": "고목의 녹옥",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 120,
+    "BasePrice": 240,
+    "Description": "벌목 +12%"
+  },
+  {
+    "EquipTID": 3404,
+    "Name": "백년목 결정",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 190,
+    "BasePrice": 600,
+    "Description": "벌목 +19%"
+  },
+  {
+    "EquipTID": 3405,
+    "Name": "숲의 심장",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 290,
+    "BasePrice": 1600,
+    "Description": "벌목 +29%"
+  },
+  {
+    "EquipTID": 3406,
+    "Name": "세계수 성석",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Gem",
+    "Industry": "Logging",
+    "SpeedAddPermille": 400,
+    "BasePrice": 4000,
+    "Description": "벌목 +40%"
+  },
+  {
+    "EquipTID": 3501,
+    "Name": "짐승 이빨석",
+    "GlobalRarity": "Common",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 40,
+    "BasePrice": 40,
+    "Description": "사냥 +4%"
+  },
+  {
+    "EquipTID": 3502,
+    "Name": "추적자의 수정",
+    "GlobalRarity": "Uncommon",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 70,
+    "BasePrice": 100,
+    "Description": "사냥 +7%"
+  },
+  {
+    "EquipTID": 3503,
+    "Name": "맹수의 홍옥",
+    "GlobalRarity": "Rare",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 120,
+    "BasePrice": 240,
+    "Description": "사냥 +12%"
+  },
+  {
+    "EquipTID": 3504,
+    "Name": "사냥꾼의 별",
+    "GlobalRarity": "Epic",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 190,
+    "BasePrice": 600,
+    "Description": "사냥 +19%"
+  },
+  {
+    "EquipTID": 3505,
+    "Name": "야수의 심장",
+    "GlobalRarity": "Legendary",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 290,
+    "BasePrice": 1600,
+    "Description": "사냥 +29%"
+  },
+  {
+    "EquipTID": 3506,
+    "Name": "월광 성석",
+    "GlobalRarity": "Mythic",
+    "EquipKind": "Gem",
+    "Industry": "Hunting",
+    "SpeedAddPermille": 400,
+    "BasePrice": 4000,
+    "Description": "사냥 +40%"
   }
 ]

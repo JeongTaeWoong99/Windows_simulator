@@ -17,8 +17,8 @@ namespace GameData
             GachaInfoTID = PackerUtil.ParseInt(cells[0], Table, "GachaInfoTID"),
             Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
             CostCurrency = PackerUtil.ParseEnum<CurrencyType>(cells[2], Table, "CostCurrency"),
-            CostSingle   = PackerUtil.ParseLong(cells[3], Table, "CostSingle", 1, null),
-            CostMulti    = PackerUtil.ParseLong(cells[4], Table, "CostMulti", 1, null),
+            CostSingle   = PackerUtil.ParseLong(cells[3], Table, "CostSingle", 0, null),
+            CostMulti    = PackerUtil.ParseLong(cells[4], Table, "CostMulti", 0, null),
             Description  = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
         };
 

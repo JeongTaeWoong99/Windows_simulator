@@ -6,8 +6,7 @@
     "Name": "텃밭",
     "RequiredScore": 30000,
     "ExpPerJudge": 1,
-    "RequiredAptitude": 0,
-    "RequiredAccountLevel": 0,
+    "UnlockTID": 0,
     "Description": "판정 1회 — 적성1 30초 / 적성10 7.5초"
   },
   {
@@ -17,9 +16,8 @@
     "Name": "밭",
     "RequiredScore": 90000,
     "ExpPerJudge": 3,
-    "RequiredAptitude": 3,
-    "RequiredAccountLevel": 5,
-    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2102,
+    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초"
   },
   {
     "IndustryLevelTID": 103,
@@ -28,9 +26,8 @@
     "Name": "농장",
     "RequiredScore": 270000,
     "ExpPerJudge": 9,
-    "RequiredAptitude": 5,
-    "RequiredAccountLevel": 15,
-    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2103,
+    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초"
   },
   {
     "IndustryLevelTID": 104,
@@ -39,9 +36,8 @@
     "Name": "대농장",
     "RequiredScore": 810000,
     "ExpPerJudge": 27,
-    "RequiredAptitude": 7,
-    "RequiredAccountLevel": 30,
-    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2104,
+    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초"
   },
   {
     "IndustryLevelTID": 105,
@@ -50,9 +46,8 @@
     "Name": "신성한 대지",
     "RequiredScore": 2430000,
     "ExpPerJudge": 81,
-    "RequiredAptitude": 9,
-    "RequiredAccountLevel": 50,
-    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2105,
+    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초"
   },
   {
     "IndustryLevelTID": 201,
@@ -61,8 +56,7 @@
     "Name": "개울",
     "RequiredScore": 30000,
     "ExpPerJudge": 1,
-    "RequiredAptitude": 0,
-    "RequiredAccountLevel": 0,
+    "UnlockTID": 0,
     "Description": "판정 1회 — 적성1 30초 / 적성10 7.5초"
   },
   {
@@ -72,9 +66,8 @@
     "Name": "저수지",
     "RequiredScore": 90000,
     "ExpPerJudge": 3,
-    "RequiredAptitude": 3,
-    "RequiredAccountLevel": 5,
-    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2202,
+    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초"
   },
   {
     "IndustryLevelTID": 203,
@@ -83,9 +76,8 @@
     "Name": "강 하류",
     "RequiredScore": 270000,
     "ExpPerJudge": 9,
-    "RequiredAptitude": 5,
-    "RequiredAccountLevel": 15,
-    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2203,
+    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초"
   },
   {
     "IndustryLevelTID": 204,
@@ -94,9 +86,8 @@
     "Name": "호수",
     "RequiredScore": 810000,
     "ExpPerJudge": 27,
-    "RequiredAptitude": 7,
-    "RequiredAccountLevel": 30,
-    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2204,
+    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초"
   },
   {
     "IndustryLevelTID": 205,
@@ -105,9 +96,8 @@
     "Name": "심해",
     "RequiredScore": 2430000,
     "ExpPerJudge": 81,
-    "RequiredAptitude": 9,
-    "RequiredAccountLevel": 50,
-    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2205,
+    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초"
   },
   {
     "IndustryLevelTID": 301,
@@ -116,8 +106,7 @@
     "Name": "노천 광산",
     "RequiredScore": 30000,
     "ExpPerJudge": 1,
-    "RequiredAptitude": 0,
-    "RequiredAccountLevel": 0,
+    "UnlockTID": 0,
     "Description": "판정 1회 — 적성1 30초 / 적성10 7.5초"
   },
   {
@@ -127,9 +116,8 @@
     "Name": "갱도",
     "RequiredScore": 90000,
     "ExpPerJudge": 3,
-    "RequiredAptitude": 3,
-    "RequiredAccountLevel": 5,
-    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2302,
+    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초"
   },
   {
     "IndustryLevelTID": 303,
@@ -138,9 +126,8 @@
     "Name": "심층 갱도",
     "RequiredScore": 270000,
     "ExpPerJudge": 9,
-    "RequiredAptitude": 5,
-    "RequiredAccountLevel": 15,
-    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2303,
+    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초"
   },
   {
     "IndustryLevelTID": 304,
@@ -149,9 +136,8 @@
     "Name": "지하 대공동",
     "RequiredScore": 810000,
     "ExpPerJudge": 27,
-    "RequiredAptitude": 7,
-    "RequiredAccountLevel": 30,
-    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2304,
+    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초"
   },
   {
     "IndustryLevelTID": 305,
@@ -160,9 +146,8 @@
     "Name": "심연",
     "RequiredScore": 2430000,
     "ExpPerJudge": 81,
-    "RequiredAptitude": 9,
-    "RequiredAccountLevel": 50,
-    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2305,
+    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초"
   },
   {
     "IndustryLevelTID": 401,
@@ -171,8 +156,7 @@
     "Name": "잡목림",
     "RequiredScore": 30000,
     "ExpPerJudge": 1,
-    "RequiredAptitude": 0,
-    "RequiredAccountLevel": 0,
+    "UnlockTID": 0,
     "Description": "판정 1회 — 적성1 30초 / 적성10 7.5초"
   },
   {
@@ -182,9 +166,8 @@
     "Name": "소나무 숲",
     "RequiredScore": 90000,
     "ExpPerJudge": 3,
-    "RequiredAptitude": 3,
-    "RequiredAccountLevel": 5,
-    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2402,
+    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초"
   },
   {
     "IndustryLevelTID": 403,
@@ -193,9 +176,8 @@
     "Name": "참나무 숲",
     "RequiredScore": 270000,
     "ExpPerJudge": 9,
-    "RequiredAptitude": 5,
-    "RequiredAccountLevel": 15,
-    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2403,
+    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초"
   },
   {
     "IndustryLevelTID": 404,
@@ -204,9 +186,8 @@
     "Name": "흑림",
     "RequiredScore": 810000,
     "ExpPerJudge": 27,
-    "RequiredAptitude": 7,
-    "RequiredAccountLevel": 30,
-    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2404,
+    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초"
   },
   {
     "IndustryLevelTID": 405,
@@ -215,9 +196,8 @@
     "Name": "세계수 뿌리",
     "RequiredScore": 2430000,
     "ExpPerJudge": 81,
-    "RequiredAptitude": 9,
-    "RequiredAccountLevel": 50,
-    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2405,
+    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초"
   },
   {
     "IndustryLevelTID": 501,
@@ -226,8 +206,7 @@
     "Name": "들판",
     "RequiredScore": 30000,
     "ExpPerJudge": 1,
-    "RequiredAptitude": 0,
-    "RequiredAccountLevel": 0,
+    "UnlockTID": 0,
     "Description": "판정 1회 — 적성1 30초 / 적성10 7.5초"
   },
   {
@@ -237,9 +216,8 @@
     "Name": "야산",
     "RequiredScore": 90000,
     "ExpPerJudge": 3,
-    "RequiredAptitude": 3,
-    "RequiredAccountLevel": 5,
-    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2502,
+    "Description": "판정 1회 — 적성1 1분 30초 / 적성10 22.5초"
   },
   {
     "IndustryLevelTID": 503,
@@ -248,9 +226,8 @@
     "Name": "깊은 숲",
     "RequiredScore": 270000,
     "ExpPerJudge": 9,
-    "RequiredAptitude": 5,
-    "RequiredAccountLevel": 15,
-    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2503,
+    "Description": "판정 1회 — 적성1 4분 30초 / 적성10 1분 7.5초"
   },
   {
     "IndustryLevelTID": 504,
@@ -259,9 +236,8 @@
     "Name": "설산",
     "RequiredScore": 810000,
     "ExpPerJudge": 27,
-    "RequiredAptitude": 7,
-    "RequiredAccountLevel": 30,
-    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2504,
+    "Description": "판정 1회 — 적성1 13분 30초 / 적성10 3분 22.5초"
   },
   {
     "IndustryLevelTID": 505,
@@ -270,8 +246,7 @@
     "Name": "마수의 영역",
     "RequiredScore": 2430000,
     "ExpPerJudge": 81,
-    "RequiredAptitude": 9,
-    "RequiredAccountLevel": 50,
-    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초 · 해금 요구치는 임시값(T-016)"
+    "UnlockTID": 2505,
+    "Description": "판정 1회 — 적성1 40분 30초 / 적성10 10분 7.5초"
   }
 ]

@@ -14,15 +14,14 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static IndustryLevelTableRow Parse(string[] cells) => new()
         {
-            IndustryLevelTID     = PackerUtil.ParseInt(cells[0], Table, "IndustryLevelTID"),
-            IndustryType         = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
-            Level                = PackerUtil.ParseInt(cells[2], Table, "Level", 1, 5),
-            Name                 = PackerUtil.RequireString(cells[3], Table, "Name"),
-            RequiredScore        = PackerUtil.ParseInt(cells[4], Table, "RequiredScore", 1, null),
-            ExpPerJudge          = PackerUtil.ParseInt(cells[5], Table, "ExpPerJudge", 0, null),
-            RequiredAptitude     = PackerUtil.ParseInt(cells[6], Table, "RequiredAptitude", 0, 10),
-            RequiredAccountLevel = PackerUtil.ParseInt(cells[7], Table, "RequiredAccountLevel", 0, null),
-            Description          = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Description") : "",
+            IndustryLevelTID = PackerUtil.ParseInt(cells[0], Table, "IndustryLevelTID"),
+            IndustryType     = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
+            Level            = PackerUtil.ParseInt(cells[2], Table, "Level", 1, 5),
+            Name             = PackerUtil.RequireString(cells[3], Table, "Name"),
+            RequiredScore    = PackerUtil.ParseInt(cells[4], Table, "RequiredScore", 1, null),
+            ExpPerJudge      = PackerUtil.ParseInt(cells[5], Table, "ExpPerJudge", 0, null),
+            UnlockTID        = PackerUtil.ParseInt(cells[6], Table, "UnlockTID", 0, null),
+            Description      = cells[7].Length > 0 ? PackerUtil.RequireString(cells[7], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

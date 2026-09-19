@@ -19,6 +19,7 @@ namespace GameData
             ["CharacterTable"] = new(CharacterTablePacker.Pack, CharacterTablePacker.Verify, CharacterTablePacker.Preview, CharacterTablePacker.Dump),
             ["WorkSpeedTable"] = new(WorkSpeedTablePacker.Pack, WorkSpeedTablePacker.Verify, WorkSpeedTablePacker.Preview, WorkSpeedTablePacker.Dump),
             ["CharacterLevelTable"] = new(CharacterLevelTablePacker.Pack, CharacterLevelTablePacker.Verify, CharacterLevelTablePacker.Preview, CharacterLevelTablePacker.Dump),
+            ["CommonRewardTable"] = new(CommonRewardTablePacker.Pack, CommonRewardTablePacker.Verify, CommonRewardTablePacker.Preview, CommonRewardTablePacker.Dump),
             ["FarmingBasicTable"] = new(FarmingBasicTablePacker.Pack, FarmingBasicTablePacker.Verify, FarmingBasicTablePacker.Preview, FarmingBasicTablePacker.Dump),
             ["FishingBasicTable"] = new(FishingBasicTablePacker.Pack, FishingBasicTablePacker.Verify, FishingBasicTablePacker.Preview, FishingBasicTablePacker.Dump),
             ["HuntingBasicTable"] = new(HuntingBasicTablePacker.Pack, HuntingBasicTablePacker.Verify, HuntingBasicTablePacker.Preview, HuntingBasicTablePacker.Dump),
@@ -28,9 +29,13 @@ namespace GameData
             ["GachaItemTable"] = new(GachaItemTablePacker.Pack, GachaItemTablePacker.Verify, GachaItemTablePacker.Preview, GachaItemTablePacker.Dump),
             ["GachaInfoTable"] = new(GachaInfoTablePacker.Pack, GachaInfoTablePacker.Verify, GachaInfoTablePacker.Preview, GachaInfoTablePacker.Dump),
             ["GachaCharacterTable"] = new(GachaCharacterTablePacker.Pack, GachaCharacterTablePacker.Verify, GachaCharacterTablePacker.Preview, GachaCharacterTablePacker.Dump),
+            ["GachaEquipTable"] = new(GachaEquipTablePacker.Pack, GachaEquipTablePacker.Verify, GachaEquipTablePacker.Preview, GachaEquipTablePacker.Dump),
+            ["GachaGoldTable"] = new(GachaGoldTablePacker.Pack, GachaGoldTablePacker.Verify, GachaGoldTablePacker.Preview, GachaGoldTablePacker.Dump),
             ["IndustryLevelTable"] = new(IndustryLevelTablePacker.Pack, IndustryLevelTablePacker.Verify, IndustryLevelTablePacker.Preview, IndustryLevelTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
             ["UnlockTable"] = new(UnlockTablePacker.Pack, UnlockTablePacker.Verify, UnlockTablePacker.Preview, UnlockTablePacker.Dump),
+            ["AccountLevelTable"] = new(AccountLevelTablePacker.Pack, AccountLevelTablePacker.Verify, AccountLevelTablePacker.Preview, AccountLevelTablePacker.Dump),
+            ["UserTraitTable"] = new(UserTraitTablePacker.Pack, UserTraitTablePacker.Verify, UserTraitTablePacker.Preview, UserTraitTablePacker.Dump),
             ["WorkSlotTable"] = new(WorkSlotTablePacker.Pack, WorkSlotTablePacker.Verify, WorkSlotTablePacker.Preview, WorkSlotTablePacker.Dump),
         };
     }

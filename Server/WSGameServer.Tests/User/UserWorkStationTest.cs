@@ -24,7 +24,36 @@ public class UserWorkStationTest
 
     private const long CharacterId = 500;
 
+    /// <summary>낚시 Lv2를 여는 해금(특성 노드). Lv3·4·5는 +1씩 — 실데이터 대역 2000 + 산업×100 + 레벨.</summary>
+    private const int FishingLv2 = 2202;
+
     public UserWorkStationTest() => GameTableFixture.EnsureLoaded();
+
+    /// <summary>
+    /// 산업 레벨 1~5 행(판정 30초 고정 · 레벨별 UnlockTID)을 넣고 <paramref name="upTo"/>까지의 해금을 연다.
+    /// 산업 레벨은 해금으로만 열린다 — 열렸는지의 원본은 <c>t_user_unlock</c>이다.
+    /// </summary>
+    private static void OpenIndustryLevels(TestUserBuilder b, User user, IndustryType industry, int upTo)
+    {
+        var rows = new List<IndustryLevelTableRow>();
+        foreach (var ind in new[] { IndustryType.Farming, IndustryType.Fishing, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
+        {
+            for (var level = 1; level <= 5; level++)
+            {
+                rows.Add(new IndustryLevelTableRow
+                {
+                    IndustryLevelTID = (int)ind * 100 + level, IndustryType = ind, Level = level,
+                    Name = $"{ind} Lv{level}", RequiredScore = 30_000,
+                    UnlockTID = level == 1 ? 0 : 2000 + (int)ind * 100 + level,
+                });
+            }
+        }
+
+        b.Levels.Load(rows);
+        user.LoadUnlocks(Enumerable.Range(2, Math.Max(0, upTo - 1))
+            .Select(level => new UserUnlockRow { unlock_tid = 2000 + (int)industry * 100 + level })
+            .ToList());
+    }
 
     /// <summary>캐릭터 1장을 보유한 유저를 만든다.</summary>
     private static (User User, TestUserBuilder B) UserWith(int characterTid)
@@ -189,10 +218,7 @@ public class UserWorkStationTest
     {
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        user.LoadIndustryLevels(new[]
-        {
-            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 3 },
-        });
+        OpenIndustryLevels(b, user, IndustryType.Fishing, upTo: 3);
 
         user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 3);
 
@@ -210,10 +236,7 @@ public class UserWorkStationTest
         // 하향 선택 — 상위를 열어도 하위가 죽지 않는다(산업레벨.md 1장 #7).
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        user.LoadIndustryLevels(new[]
-        {
-            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 5 },
-        });
+        OpenIndustryLevels(b, user, IndustryType.Fishing, upTo: 5);
 
         user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base, industryLevel: 2);
 
@@ -227,10 +250,7 @@ public class UserWorkStationTest
         // 낚시를 5까지 열어도 채굴은 여전히 Lv1이다 (산업레벨.md 1장 #1).
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        user.LoadIndustryLevels(new[]
-        {
-            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 5 },
-        });
+        OpenIndustryLevels(b, user, IndustryType.Fishing, upTo: 5);
 
         user.AssignWorkStation(0, IndustryType.Mining, CharacterId, Base, industryLevel: 5);
 
@@ -257,10 +277,6 @@ public class UserWorkStationTest
         // 산업레벨.md 2.3 — 정산을 빼먹으면 싸게 쌓은 점수가 비싼 판정에 쓰인다.
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        user.LoadIndustryLevels(new[]
-        {
-            new UserIndustryLevelRow { industry = (int)IndustryType.Fishing, unlocked_level = 2 },
-        });
         b.Levels.Load(new[]
         {
             new IndustryLevelTableRow
@@ -272,8 +288,10 @@ public class UserWorkStationTest
             {
                 IndustryLevelTID = 202, IndustryType = IndustryType.Fishing, Level = 2,
                 Name = "저수지", RequiredScore = 90_000,     // 90초
+                UnlockTID = FishingLv2,
             },
         });
+        user.LoadUnlocks(new[] { new UserUnlockRow { unlock_tid = FishingLv2 } });
 
         // 60초 경과 후 Lv2로 변경. Lv1 비용(30초)으로 정산하면 2회,
         // 새 Lv2 비용(90초)으로 계산해 버리면 0회가 된다.
@@ -290,7 +308,9 @@ public class UserWorkStationTest
     [Fact]
     public void 저장된_슬롯_레벨과_해금_레벨은_로그인_때_되살아난다()
     {
-        var user = new TestUserBuilder().WithFishingDrops().Build();
+        var b    = new TestUserBuilder().WithFishingDrops();
+        b.Levels.LoadAll();
+        var user = b.Build();
 
         // 실제 로그인 경로로 넣는다 — DB에서 온 값이 도메인까지 도달하는지가 이 테스트의 전부다.
         user.OnLoginDataLoaded(new PlayerLoginData(
@@ -304,20 +324,19 @@ public class UserWorkStationTest
             {
                 new() { slot_index = 0, industry = (int)IndustryType.Fishing, character_id = CharacterId, industry_level = 4 },
             },
-            new List<UserIndustryLevelRow>
+            new List<UserUnlockRow>
             {
-                new() { industry = (int)IndustryType.Fishing, unlocked_level = 4 },
+                new() { unlock_tid = FishingLv2 }, new() { unlock_tid = FishingLv2 + 1 }, new() { unlock_tid = FishingLv2 + 2 },
             },
-            new List<UserUnlockRow>(),
             new List<UserEquipRow>(),
             new List<CharacterEquipRow>()), Base);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         slot.IndustryLevel.ShouldBe(4);
-        user.GetUnlockedIndustryLevel(IndustryType.Fishing).ShouldBe(4);
+        user.IsIndustryLevelUnlocked(IndustryType.Fishing, 4).ShouldBeTrue();
 
         // 기록이 없는 산업은 기본 레벨까지만 열려 있다.
-        user.GetUnlockedIndustryLevel(IndustryType.Mining).ShouldBe(WorkStationSlot.DefaultIndustryLevel);
+        user.IsIndustryLevelUnlocked(IndustryType.Mining, 2).ShouldBeFalse();
     }
 
     // ─────────────────────── 배치 성공 경로 ───────────────────────

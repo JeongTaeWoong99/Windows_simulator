@@ -1,4 +1,4 @@
-export const APP_VERSION = '0.1.0';
+export const APP_VERSION = '0.2.0';
 
 /// <summary>영문 폴더명을 사이드바에 보일 한글 라벨로 옮긴다</summary>
 export const SECTION_LABELS: Record<string, string> = {

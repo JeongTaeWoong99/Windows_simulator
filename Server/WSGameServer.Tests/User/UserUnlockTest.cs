@@ -65,7 +65,6 @@ public class UserUnlockTest
             new() { character_id = CharacterId, character_tid = AllRounderTid, level = 1, exp = 0 },
         },
         (slotRows ?? Array.Empty<WorkStationSlotRow>()).ToList(),
-        new List<UserIndustryLevelRow>(),
         (unlocked ?? Array.Empty<int>()).Select(t => new UserUnlockRow { unlock_tid = t }).ToList(),
         new List<UserEquipRow>(),
         new List<CharacterEquipRow>());

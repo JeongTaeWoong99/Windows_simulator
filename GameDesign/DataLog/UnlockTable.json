@@ -56,5 +56,435 @@
       1006
     ],
     "Description": "작업슬롯 7번 · 상한"
+  },
+  {
+    "UnlockTID": 2102,
+    "Name": "농사 Lv2",
+    "Gold": 0,
+    "AccountLevel": 5,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2103,
+    "Name": "농사 Lv3",
+    "Gold": 0,
+    "AccountLevel": 15,
+    "RequiredUnlockTIDs": [
+      2102
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2104,
+    "Name": "농사 Lv4",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      2103
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2105,
+    "Name": "농사 Lv5",
+    "Gold": 0,
+    "AccountLevel": 50,
+    "RequiredUnlockTIDs": [
+      2104
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2202,
+    "Name": "낚시 Lv2",
+    "Gold": 0,
+    "AccountLevel": 5,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2203,
+    "Name": "낚시 Lv3",
+    "Gold": 0,
+    "AccountLevel": 15,
+    "RequiredUnlockTIDs": [
+      2202
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2204,
+    "Name": "낚시 Lv4",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      2203
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2205,
+    "Name": "낚시 Lv5",
+    "Gold": 0,
+    "AccountLevel": 50,
+    "RequiredUnlockTIDs": [
+      2204
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2302,
+    "Name": "채굴 Lv2",
+    "Gold": 0,
+    "AccountLevel": 5,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2303,
+    "Name": "채굴 Lv3",
+    "Gold": 0,
+    "AccountLevel": 15,
+    "RequiredUnlockTIDs": [
+      2302
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2304,
+    "Name": "채굴 Lv4",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      2303
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2305,
+    "Name": "채굴 Lv5",
+    "Gold": 0,
+    "AccountLevel": 50,
+    "RequiredUnlockTIDs": [
+      2304
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2402,
+    "Name": "벌목 Lv2",
+    "Gold": 0,
+    "AccountLevel": 5,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2403,
+    "Name": "벌목 Lv3",
+    "Gold": 0,
+    "AccountLevel": 15,
+    "RequiredUnlockTIDs": [
+      2402
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2404,
+    "Name": "벌목 Lv4",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      2403
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2405,
+    "Name": "벌목 Lv5",
+    "Gold": 0,
+    "AccountLevel": 50,
+    "RequiredUnlockTIDs": [
+      2404
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2502,
+    "Name": "사냥 Lv2",
+    "Gold": 0,
+    "AccountLevel": 5,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2503,
+    "Name": "사냥 Lv3",
+    "Gold": 0,
+    "AccountLevel": 15,
+    "RequiredUnlockTIDs": [
+      2502
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2504,
+    "Name": "사냥 Lv4",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      2503
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 2505,
+    "Name": "사냥 Lv5",
+    "Gold": 0,
+    "AccountLevel": 50,
+    "RequiredUnlockTIDs": [
+      2504
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3101,
+    "Name": "농사 속도 10%",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3102,
+    "Name": "농사 속도 20%",
+    "Gold": 0,
+    "AccountLevel": 10,
+    "RequiredUnlockTIDs": [
+      3101
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3103,
+    "Name": "농사 속도 30%",
+    "Gold": 0,
+    "AccountLevel": 20,
+    "RequiredUnlockTIDs": [
+      3102
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3104,
+    "Name": "농사 속도 40%",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      3103
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3105,
+    "Name": "농사 속도 50%",
+    "Gold": 0,
+    "AccountLevel": 40,
+    "RequiredUnlockTIDs": [
+      3104
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3201,
+    "Name": "낚시 속도 10%",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3202,
+    "Name": "낚시 속도 20%",
+    "Gold": 0,
+    "AccountLevel": 10,
+    "RequiredUnlockTIDs": [
+      3201
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3203,
+    "Name": "낚시 속도 30%",
+    "Gold": 0,
+    "AccountLevel": 20,
+    "RequiredUnlockTIDs": [
+      3202
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3204,
+    "Name": "낚시 속도 40%",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      3203
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3205,
+    "Name": "낚시 속도 50%",
+    "Gold": 0,
+    "AccountLevel": 40,
+    "RequiredUnlockTIDs": [
+      3204
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3301,
+    "Name": "채굴 속도 10%",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3302,
+    "Name": "채굴 속도 20%",
+    "Gold": 0,
+    "AccountLevel": 10,
+    "RequiredUnlockTIDs": [
+      3301
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3303,
+    "Name": "채굴 속도 30%",
+    "Gold": 0,
+    "AccountLevel": 20,
+    "RequiredUnlockTIDs": [
+      3302
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3304,
+    "Name": "채굴 속도 40%",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      3303
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3305,
+    "Name": "채굴 속도 50%",
+    "Gold": 0,
+    "AccountLevel": 40,
+    "RequiredUnlockTIDs": [
+      3304
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3401,
+    "Name": "벌목 속도 10%",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3402,
+    "Name": "벌목 속도 20%",
+    "Gold": 0,
+    "AccountLevel": 10,
+    "RequiredUnlockTIDs": [
+      3401
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3403,
+    "Name": "벌목 속도 30%",
+    "Gold": 0,
+    "AccountLevel": 20,
+    "RequiredUnlockTIDs": [
+      3402
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3404,
+    "Name": "벌목 속도 40%",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      3403
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3405,
+    "Name": "벌목 속도 50%",
+    "Gold": 0,
+    "AccountLevel": 40,
+    "RequiredUnlockTIDs": [
+      3404
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3501,
+    "Name": "사냥 속도 10%",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3502,
+    "Name": "사냥 속도 20%",
+    "Gold": 0,
+    "AccountLevel": 10,
+    "RequiredUnlockTIDs": [
+      3501
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3503,
+    "Name": "사냥 속도 30%",
+    "Gold": 0,
+    "AccountLevel": 20,
+    "RequiredUnlockTIDs": [
+      3502
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3504,
+    "Name": "사냥 속도 40%",
+    "Gold": 0,
+    "AccountLevel": 30,
+    "RequiredUnlockTIDs": [
+      3503
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
+  },
+  {
+    "UnlockTID": 3505,
+    "Name": "사냥 속도 50%",
+    "Gold": 0,
+    "AccountLevel": 40,
+    "RequiredUnlockTIDs": [
+      3504
+    ],
+    "Description": "특성 노드 — 특성 포인트로만 연다"
   }
 ]

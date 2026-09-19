@@ -40,7 +40,7 @@ public class UserCheatTest
     private static C_CheatRequest Req(ECheatCommand command, long arg1 = 0, long arg2 = 0)
         => new() { Command = command, Arg1 = arg1, Arg2 = arg2 };
 
-    [Fact]
+    [Fact(Skip = "개발 기간 CheatAdminLevel = 0 — 모든 계정이 치트를 쓴다. 되돌리면 Skip을 뗀다")]
     public void 권한이_없으면_NoPermission으로_거절하고_아무것도_바꾸지_않는다()
     {
         var (user, b) = Admin();
@@ -171,15 +171,62 @@ public class UserCheatTest
     }
 
     [Fact]
-    public void Settle은_넘긴_시각으로_정산한다()
+    public void Settle은_시간이_흐르지_않아도_판정을_N회_앞당긴다()
     {
-        // 기본 속도 30초에 1판정. 5분이면 10판정 — SettleWorkStation과 같은 결과다.
+        // 배치 직후라 쌓인 진행도는 0이다. 스케줄러가 먼저 정산해 늘 0개였던 것이 이 경우다(T-060).
         var (user, b) = Admin();
         user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
 
-        user.ExecuteCheat(Req(ECheatCommand.Settle), Base.AddMinutes(5));
+        user.ExecuteCheat(Req(ECheatCommand.Settle, 3), Base);
 
-        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount.ShouldBe(10);
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount.ShouldBe(3);
+    }
+
+    [Fact]
+    public void Settle은_쌓인_진행도와_앞당긴_판정을_함께_정산한다()
+    {
+        // 기본 속도 30초에 1판정. 5분 = 10판정 + 앞당긴 2판정 = 12
+        var (user, b) = Admin();
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+
+        user.ExecuteCheat(Req(ECheatCommand.Settle, 2), Base.AddMinutes(5));
+
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount.ShouldBe(12);
+    }
+
+    [Fact]
+    public void Settle의_횟수를_비우면_1회_앞당긴다()
+    {
+        var (user, b) = Admin();
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+
+        user.ExecuteCheat(Req(ECheatCommand.Settle), Base);
+
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount.ShouldBe(1);
+    }
+
+    [Fact]
+    public void Settle은_비어_있는_슬롯을_앞당기지_않는다()
+    {
+        // 캐릭터가 없는 슬롯에 진행도가 들어가면 배치하는 순간 한꺼번에 터진다.
+        var (user, b) = Admin();
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base) });
+
+        user.ExecuteCheat(Req(ECheatCommand.Settle, 3), Base);
+
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void Settle의_횟수가_상한을_넘으면_InvalidCheatArgs다()
+    {
+        var (user, b) = Admin();
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+
+        user.ExecuteCheat(Req(ECheatCommand.Settle, User.CheatMaxSettleJudges + 1), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatArgs);
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldBeEmpty();
     }
 
     [Fact]
@@ -251,5 +298,19 @@ public class UserCheatTest
 
         b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidCheatArgs);
         b.DB.Posted.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 계정_경험치를_지급하면_레벨업과_특성_포인트가_실제_경로로_붙는다()
+    {
+        var (user, b) = Admin();
+        b.Channel.Sent.Clear();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveAccountExp, 1_000_000), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        user.AccountLevel.ShouldBeGreaterThan(1);
+        b.DB.PostedOf<SaveAccountRepository>().ShouldNotBeEmpty();
+        b.Channel.SentOf<S_AccountLevelResponse>().ShouldNotBeEmpty();
     }
 }

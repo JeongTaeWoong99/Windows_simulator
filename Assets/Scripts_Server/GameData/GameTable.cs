@@ -14,6 +14,7 @@ namespace GameData
         public static TableSet<int, CharacterTableRow> CharacterTable { get; private set; } = null!;
         public static TableSet<int, WorkSpeedTableRow> WorkSpeedTable { get; private set; } = null!;
         public static TableSet<int, CharacterLevelTableRow> CharacterLevelTable { get; private set; } = null!;
+        public static TableSet<int, CommonRewardTableRow> CommonRewardTable { get; private set; } = null!;
         public static TableSet<int, FarmingBasicTableRow> FarmingBasicTable { get; private set; } = null!;
         public static TableSet<int, FishingBasicTableRow> FishingBasicTable { get; private set; } = null!;
         public static TableSet<int, HuntingBasicTableRow> HuntingBasicTable { get; private set; } = null!;
@@ -23,9 +24,13 @@ namespace GameData
         public static TableSet<int, GachaItemTableRow> GachaItemTable { get; private set; } = null!;
         public static TableSet<int, GachaInfoTableRow> GachaInfoTable { get; private set; } = null!;
         public static TableSet<int, GachaCharacterTableRow> GachaCharacterTable { get; private set; } = null!;
+        public static TableSet<int, GachaEquipTableRow> GachaEquipTable { get; private set; } = null!;
+        public static TableSet<int, GachaGoldTableRow> GachaGoldTable { get; private set; } = null!;
         public static TableSet<int, IndustryLevelTableRow> IndustryLevelTable { get; private set; } = null!;
         public static TableSet<int, ItemTableRow> ItemTable { get; private set; } = null!;
         public static TableSet<int, UnlockTableRow> UnlockTable { get; private set; } = null!;
+        public static TableSet<int, AccountLevelTableRow> AccountLevelTable { get; private set; } = null!;
+        public static TableSet<int, UserTraitTableRow> UserTraitTable { get; private set; } = null!;
         public static TableSet<int, WorkSlotTableRow> WorkSlotTable { get; private set; } = null!;
 
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
@@ -34,6 +39,7 @@ namespace GameData
             CharacterTable = TableSet<int, CharacterTableRow>.From(read("CharacterTable.bytes"), r => r.CharacterTID);
             WorkSpeedTable = TableSet<int, WorkSpeedTableRow>.From(read("WorkSpeedTable.bytes"), r => r.WorkSpeedTID);
             CharacterLevelTable = TableSet<int, CharacterLevelTableRow>.From(read("CharacterLevelTable.bytes"), r => r.CharacterLevelTID);
+            CommonRewardTable = TableSet<int, CommonRewardTableRow>.From(read("CommonRewardTable.bytes"), r => r.CommonRewardTID);
             FarmingBasicTable = TableSet<int, FarmingBasicTableRow>.From(read("FarmingBasicTable.bytes"), r => r.DropTID);
             FishingBasicTable = TableSet<int, FishingBasicTableRow>.From(read("FishingBasicTable.bytes"), r => r.DropTID);
             HuntingBasicTable = TableSet<int, HuntingBasicTableRow>.From(read("HuntingBasicTable.bytes"), r => r.DropTID);
@@ -43,9 +49,13 @@ namespace GameData
             GachaItemTable = TableSet<int, GachaItemTableRow>.From(read("GachaItemTable.bytes"), r => r.GachaItemTID);
             GachaInfoTable = TableSet<int, GachaInfoTableRow>.From(read("GachaInfoTable.bytes"), r => r.GachaInfoTID);
             GachaCharacterTable = TableSet<int, GachaCharacterTableRow>.From(read("GachaCharacterTable.bytes"), r => r.GachaCharacterTID);
+            GachaEquipTable = TableSet<int, GachaEquipTableRow>.From(read("GachaEquipTable.bytes"), r => r.GachaEquipTID);
+            GachaGoldTable = TableSet<int, GachaGoldTableRow>.From(read("GachaGoldTable.bytes"), r => r.GachaGoldTID);
             IndustryLevelTable = TableSet<int, IndustryLevelTableRow>.From(read("IndustryLevelTable.bytes"), r => r.IndustryLevelTID);
             ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
             UnlockTable = TableSet<int, UnlockTableRow>.From(read("UnlockTable.bytes"), r => r.UnlockTID);
+            AccountLevelTable = TableSet<int, AccountLevelTableRow>.From(read("AccountLevelTable.bytes"), r => r.AccountLevelTID);
+            UserTraitTable = TableSet<int, UserTraitTableRow>.From(read("UserTraitTable.bytes"), r => r.UserTraitTID);
             WorkSlotTable = TableSet<int, WorkSlotTableRow>.From(read("WorkSlotTable.bytes"), r => r.WorkSlotTID);
         }
     }

@@ -6,10 +6,14 @@ namespace WSGameServer;
 public partial class User
 {
     /// <summary>치트를 쓸 수 있는 최소 admin_level. 0은 일반 유저다.</summary>
-    public const int CheatAdminLevel = 1;
+    /// 개발을 위해서 CheatAdminLevel은 없도록.
+    public const int CheatAdminLevel = 0;
 
     /// <summary>한 번에 지급할 수 있는 캐릭터 장수 상한. 10연차와 같다.</summary>
     public const int CheatMaxCharacterCount = 10;
+
+    /// <summary>정산 치트가 한 번에 앞당길 수 있는 판정 횟수 상한.</summary>
+    public const int CheatMaxSettleJudges = 100;
 
     /// <summary>
     /// 치트 명령을 실행하고 <c>S_CheatResponse</c>로 결과를 돌려준다.
@@ -30,9 +34,10 @@ public partial class User
             ECheatCommand.GiveItem         => CheatGiveItem(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacter    => CheatGiveCharacter(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
-            ECheatCommand.Settle           => CheatSettle(now),
+            ECheatCommand.Settle           => CheatSettle(req.Arg1, now),
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
+            ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -42,7 +47,7 @@ public partial class User
         void Reply(EResultCode code, string text)
         {
             // 성공·실패 전부 남긴다 — 운영에서 누가 무엇을 했는지가 이 한 줄뿐이다.
-            ServerLog.Warn("치트", $"Uid={Uid} {req.Command}({req.Arg1}, {req.Arg2}) → {code} {text}");
+            ServerLog.Warn("치트", $"Uid={Uid} {req.Command}(Arg1:{req.Arg1}, Arg2:{req.Arg2}) → {code} {text}");
             Send(new S_CheatResponse { Result = code, Command = req.Command, Message = text });
         }
     }
@@ -81,8 +86,8 @@ public partial class User
             return (EResultCode.InvalidCheatArgs, $"ItemTable에 없는 TID {itemTid}");
         }
 
-        var change = GainItem((int)itemTid, (int)count);
-        return (EResultCode.Ok, $"아이템 {itemTid} +{count} → {change.Count}");
+        AddItem((int)itemTid, (int)count);
+        return (EResultCode.Ok, $"아이템 {itemTid} +{count}");
     }
 
     private (EResultCode, string) CheatGiveCharacter(long characterTid, long count)
@@ -118,10 +123,27 @@ public partial class User
         return (EResultCode.Ok, $"캐릭터 {characterId} Lv{character.Level} Exp{character.Exp}");
     }
 
-    private (EResultCode, string) CheatSettle(DateTime now)
+    // 쌓인 진행도만 정산하면 스케줄러(0.1초)가 먼저 가져가 늘 0개다. 판정을 N회분 얹고 정산한다.
+    private (EResultCode, string) CheatSettle(long judges, DateTime now)
     {
+        if (judges <= 0)
+        {
+            judges = 1;
+        }
+
+        if (judges > CheatMaxSettleJudges)
+        {
+            return (EResultCode.InvalidCheatArgs, $"판정 횟수는 1~{CheatMaxSettleJudges}");
+        }
+
+        var advanced = WorkStation.Slots.Count(slot => slot.AdvanceJudges((int)judges));
+        if (advanced == 0)
+        {
+            return (EResultCode.Ok, "가동 중인 슬롯 없음");
+        }
+
         var settled = SettleWorkStation(now);
-        return (EResultCode.Ok, $"정산 슬롯 {settled}개");
+        return (EResultCode.Ok, $"슬롯 {advanced}개 × 판정 {judges}회 앞당김 · 정산 슬롯 {settled}개");
     }
 
     private (EResultCode, string) CheatUnlock(long unlockTid, DateTime now)
@@ -139,6 +161,18 @@ public partial class User
         // 퀘스트·튜토리얼과 같은 지급 경로 — 조건·차감 없이 기록·통지·콘텐츠 후속까지 동일하다.
         GrantUnlock((int)unlockTid, now);
         return (EResultCode.Ok, $"해금 {unlockTid} 지급");
+    }
+
+    private (EResultCode, string) CheatGiveAccountExp(long amount)
+    {
+        if (amount <= 0)
+        {
+            return (EResultCode.InvalidCheatArgs, "경험치 범위 밖");
+        }
+
+        // 캐릭터 경험치가 계정으로 흘러드는 것과 같은 함수 — 레벨업·포인트·저장·푸시가 같다.
+        GainAccountExp(amount, notify: true);
+        return (EResultCode.Ok, $"계정 Lv{AccountLevel} Exp{AccountExp} 특성포인트{TraitPoint}");
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

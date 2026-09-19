@@ -28,6 +28,8 @@ namespace MikaDummyClient
                 new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
                 new ClientAction("Equip (장착 — 캐릭터ID 장비ID 칸1~4)", SendEquip),
                 new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
+                new ClientAction("UserTraitLearn (특성 찍기 — 산업 레벨 2xxx · 속도 3xxx)", SendUserTraitLearn),
+                new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
             };
         }
 
@@ -143,9 +145,13 @@ namespace MikaDummyClient
                 return;
             }
 
+            // 빈칸이면 0 — 서버가 기본 레벨(Lv1)로 본다. 상위 레벨은 특성으로 열어야 통과한다.
+            Console.Write("IndustryLevel (1~5, 기본 1) > ");
+            byte.TryParse(Console.ReadLine(), out byte industryLevel);
+
             NetworkManager.Instance.Send(new C_WorkStationAssignRequest
             {
-                SlotIndex = slotIndex, Industry = (EIndustryType)industry, CharacterId = characterId,
+                SlotIndex = slotIndex, Industry = (EIndustryType)industry, CharacterId = characterId, IndustryLevel = industryLevel,
             });
         }
 
@@ -195,7 +201,8 @@ namespace MikaDummyClient
         private void SendCheat()
         {
             Console.WriteLine("명령: 1=GiveGold(Arg1=금액, 음수면 차감) 2=GiveDia 3=GiveItem(TID, 개수) " +
-                              "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle 7=Unlock(UnlockTID)");
+                              "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle(판정 횟수) 7=Unlock(UnlockTID) " +
+                              "8=GiveEquip(EquipTID) 9=GiveAccountExp(경험치)");
             Console.Write("Command > ");
             if (!byte.TryParse(Console.ReadLine(), out byte command))
             {
@@ -211,9 +218,34 @@ namespace MikaDummyClient
             NetworkManager.Instance.Send(new C_CheatRequest { Command = (ECheatCommand)command, Arg1 = arg1, Arg2 = arg2 });
         }
 
+        private void SendItemUse()
+        {
+            Console.Write("ItemTID Count(1~99) > ");
+            var parts = (Console.ReadLine() ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2 || !int.TryParse(parts[0], out var itemTid) || !int.TryParse(parts[1], out var count))
+            {
+                Console.WriteLine("[Client] 숫자 두 개를 띄어 적습니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_ItemUseRequest { ItemTID = itemTid, Count = count });
+        }
+
+        private void SendUserTraitLearn()
+        {
+            Console.Write("UserTraitTID (산업 레벨 = 2000+산업×100+레벨 · 속도 = 3000+산업×100+단) > ");
+            if (!int.TryParse(Console.ReadLine(), out int userTraitTid))
+            {
+                Console.WriteLine("[Client] UserTraitTID는 숫자여야 합니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_UserTraitLearnRequest { UserTraitTID = userTraitTid });
+        }
+
         private void SendGachaDraw()
         {
-            Console.Write("GachaId (1=아이템 · 2=캐릭터) > ");
+            Console.Write("GachaId (1=아이템 · 2=캐릭터 · 3=무기 · 4=장신구 · 5=보석) > ");
             string? gachaInput = Console.ReadLine();
             int gachaId = string.IsNullOrWhiteSpace(gachaInput) ? 1 : int.Parse(gachaInput.Trim());
 

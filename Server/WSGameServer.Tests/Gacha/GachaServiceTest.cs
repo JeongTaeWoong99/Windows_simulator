@@ -20,10 +20,12 @@ public class GachaServiceTest
 {
     private const int ItemPoolId      = 1;   // GachaInfoTable에 메타가 있는 아이템 풀
     private const int CharacterPoolId = 2;   // GachaInfoTable에 메타가 있는 캐릭터 풀
+    private const int EquipPoolId     = 3;   // GachaInfoTable에 메타가 있는 장비(무기) 풀
     private const int NoMetaPoolId    = 999; // 추첨 풀만 있고 메타가 없는 풀
 
     private const int RewardItemTid      = 100001;
     private const int RewardCharacterTid = 1002;
+    private const int RewardEquipTid     = 1101;   // 나무 호미 (Common 무기)
 
     public GachaServiceTest() => GameTableFixture.EnsureLoaded();
 
@@ -35,6 +37,7 @@ public class GachaServiceTest
         {
             new GachaEntry(ItemPoolId,      GachaRewardType.Item,      RewardItemTid,      1, 100),
             new GachaEntry(CharacterPoolId, GachaRewardType.Character, RewardCharacterTid, 1, 100),
+            new GachaEntry(EquipPoolId,     GachaRewardType.Equip,     RewardEquipTid,     1, 100),
             new GachaEntry(NoMetaPoolId,    GachaRewardType.Item,      RewardItemTid,      1, 100),
         });
 
@@ -100,6 +103,29 @@ public class GachaServiceTest
 
         // 캐릭터 풀은 인벤토리를 건드리지 않는다.
         res.ItemChangeInfos!.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 장비_풀은_뽑은_수만큼_장비_지급을_요청한다()
+    {
+        var (user, b) = RichUser();
+
+        BuildService().Draw(user, EquipPoolId, 10);
+
+        var res = LastDrawResponse(b);
+        res.Result.ShouldBe(EResultCode.Ok);
+        res.Rewards!.Count.ShouldBe(10);
+        res.Rewards.ShouldAllBe(r => r.RewardType == EGachaRewardType.Equip
+                                     && r.EquipTid == RewardEquipTid
+                                     && r.Rarity == EGlobalRarity.Common
+                                     && r.ItemId == 0);
+
+        // 장비는 개체마다 창고 칸이 달라 1개당 지급 요청 1건이다.
+        b.DB.PostedOf<GrantEquipRepository>().Count.ShouldBe(10);
+
+        // 장비 풀은 인벤토리·캐릭터를 건드리지 않는다.
+        res.ItemChangeInfos!.ShouldBeEmpty();
+        b.DB.PostedOf<GrantCharacterRepository>().ShouldBeEmpty();
     }
 
     [Fact]

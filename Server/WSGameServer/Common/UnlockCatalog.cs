@@ -27,11 +27,19 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     /// <summary>모든 행을 <c>GameTable</c>에서 읽어 등록한다. 반드시 <c>GameTable.LoadAll</c> 이후에 부른다.</summary>
     public void LoadAll()
     {
-        Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All);
+        // 작업슬롯 말고도 해금을 참조하는 콘텐츠 — 특성 노드(TID = UnlockTID)와 그 노드가 여는 산업 레벨.
+        var otherReferences = GameTable.UserTraitTable.All.Select(r => r.UserTraitTID)
+            .Concat(GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID));
+
+        Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All, otherReferences);
     }
 
     /// <summary>행 목록으로 인덱스를 만들고 검증한다. 데이터 오류면 예외 — 조용히 돌면 영영 못 여는 해금이 생긴다.</summary>
-    public void Load(IEnumerable<UnlockTableRow> unlockRows, IEnumerable<WorkSlotTableRow> workSlotRows)
+    /// <param name="otherReferences">작업슬롯 외 콘텐츠가 참조하는 UnlockTID — 미참조 경고에서 뺀다.</param>
+    public void Load(
+        IEnumerable<UnlockTableRow>   unlockRows,
+        IEnumerable<WorkSlotTableRow> workSlotRows,
+        IEnumerable<int>?             otherReferences = null)
     {
         ArgumentNullException.ThrowIfNull(unlockRows);
         ArgumentNullException.ThrowIfNull(workSlotRows);
@@ -52,7 +60,7 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
 
         ValidateRequirements();
         IndexWorkSlots();
-        WarnUnreferenced();
+        WarnUnreferenced(otherReferences?.ToHashSet() ?? new HashSet<int>());
     }
 
     public bool TryGetUnlock(int unlockTid, out UnlockTableRow row)
@@ -126,11 +134,11 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
         }
     }
 
-    private void WarnUnreferenced()
+    private void WarnUnreferenced(HashSet<int> otherReferences)
     {
         foreach (var tid in _unlocks.Keys)
         {
-            if (!_workSlotByUnlock.ContainsKey(tid))
+            if (!_workSlotByUnlock.ContainsKey(tid) && !otherReferences.Contains(tid))
             {
                 ServerLog.Warn("해금", $"어느 콘텐츠도 참조하지 않는 UnlockTID {tid} — 오타이거나 죽은 행일 수 있습니다");
             }

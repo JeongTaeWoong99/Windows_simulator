@@ -35,6 +35,7 @@ namespace MikaProtocol
         public int CharacterTid { get; set; }     // RewardType=Character일 때만 유효
         public int Count  { get; set; }           // 이번에 획득한 수량
         public EGlobalRarity Rarity { get; set; } // 연출용 등급
+        public int EquipTid     { get; set; }     // RewardType=Equip일 때만 유효. 필드 순서가 직렬화 순서라 끝에 붙인다
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.

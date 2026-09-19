@@ -126,6 +126,38 @@ public static class ClientPacketHandler
         user.RaiseAptitude(req.CharacterId, (GameData.IndustryType)req.Industry, DateTime.UtcNow);
     }
 
+    /// <summary>아이템 사용 — 지금은 상자 개봉뿐이다. 보유·개수 검증과 지급은 GachaService가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_ItemUseRequest(ISession session, C_ItemUseRequest req)
+    {
+        ServerLog.Debug("상자", $"요청 ItemTID={req.ItemTID} Count={req.Count} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ItemUseResponse { Result = EResultCode.NotLoggedIn, ItemTID = req.ItemTID });
+            return;
+        }
+
+        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count);
+    }
+
+    /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_UserTraitLearnRequest(ISession session, C_UserTraitLearnRequest req)
+    {
+        ServerLog.Debug("특성", $"요청 UserTraitTID={req.UserTraitTID} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_UserTraitLearnResponse { Result = EResultCode.NotLoggedIn, UserTraitTID = req.UserTraitTID });
+            return;
+        }
+
+        user.TryLearnTrait(req.UserTraitTID, DateTime.UtcNow);
+    }
+
     /// <summary>해금 요청. 조건 판정·차감은 User가 한다 — 클라가 "열 수 있다"고 그렸어도 여기서 다시 검사한다.</summary>
     [PacketHandler]
     public static void Handle_C_UnlockRequest(ISession session, C_UnlockRequest req)

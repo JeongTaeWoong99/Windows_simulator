@@ -117,6 +117,15 @@ internal sealed class TestUserBuilder
     /// <summary>장비 표. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다. 기대값을 고정하려면 먼저 <c>Load</c>한다.</summary>
     public EquipCatalog Equips { get; } = new();
 
+    /// <summary>계정 레벨 곡선. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다.</summary>
+    public AccountLevelCatalog Accounts { get; } = new();
+
+    /// <summary>특성 트리. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다 — 속도 가산은 찍은 노드에만 붙어 기존 테스트를 흔들지 않는다.</summary>
+    public UserTraitCatalog Traits { get; } = new();
+
+    /// <summary>채취 공통 보상. <b>비워 두면 아무것도 안 나온다</b>(실데이터를 넣지 않는다) — 난수 보상이 다른 정산 테스트를 흔들지 않게.</summary>
+    public CommonRewardCatalog CommonRewards { get; } = new();
+
     /// <summary>
     /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
     /// <b><c>Destroy()</c> 검증에는 쓰지 않는다</b>: <c>OnDestroy</c>가
@@ -167,8 +176,21 @@ internal sealed class TestUserBuilder
             Equips.LoadAll();
         }
 
+        if (Accounts.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            Accounts.LoadAll();
+        }
+
+        if (Traits.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            Traits.LoadAll();
+        }
+
         var user = new User(Channel, DB, Executor,
-                            pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips);
+                            pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
+                            Accounts, Traits, CommonRewards);
         user.Uid = uid;
         return user;
     }

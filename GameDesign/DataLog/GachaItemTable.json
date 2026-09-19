@@ -46,5 +46,149 @@
     "Count": 1,
     "Weight": 5,
     "Description": "신화"
+  },
+  {
+    "GachaItemTID": 6001,
+    "GachaId": 6,
+    "ItemTID": 10001,
+    "Count": 5,
+    "Weight": 80,
+    "Description": "자원 붕어 x5"
+  },
+  {
+    "GachaItemTID": 6002,
+    "GachaId": 6,
+    "ItemTID": 20001,
+    "Count": 5,
+    "Weight": 80,
+    "Description": "자원 밀 x5"
+  },
+  {
+    "GachaItemTID": 6003,
+    "GachaId": 6,
+    "ItemTID": 30001,
+    "Count": 5,
+    "Weight": 80,
+    "Description": "자원 잡목 x5"
+  },
+  {
+    "GachaItemTID": 6004,
+    "GachaId": 6,
+    "ItemTID": 40001,
+    "Count": 5,
+    "Weight": 80,
+    "Description": "자원 돌덩어리 x5"
+  },
+  {
+    "GachaItemTID": 6005,
+    "GachaId": 6,
+    "ItemTID": 50001,
+    "Count": 5,
+    "Weight": 80,
+    "Description": "자원 질긴 고기 x5"
+  },
+  {
+    "GachaItemTID": 6006,
+    "GachaId": 6,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "상자 전용 낡은 보물 지도"
+  },
+  {
+    "GachaItemTID": 7001,
+    "GachaId": 7,
+    "ItemTID": 10002,
+    "Count": 3,
+    "Weight": 80,
+    "Description": "자원 잉어 x3"
+  },
+  {
+    "GachaItemTID": 7002,
+    "GachaId": 7,
+    "ItemTID": 20002,
+    "Count": 3,
+    "Weight": 80,
+    "Description": "자원 감자 x3"
+  },
+  {
+    "GachaItemTID": 7003,
+    "GachaId": 7,
+    "ItemTID": 30002,
+    "Count": 3,
+    "Weight": 80,
+    "Description": "자원 소나무 목재 x3"
+  },
+  {
+    "GachaItemTID": 7004,
+    "GachaId": 7,
+    "ItemTID": 40002,
+    "Count": 3,
+    "Weight": 80,
+    "Description": "자원 구리 광석 x3"
+  },
+  {
+    "GachaItemTID": 7005,
+    "GachaId": 7,
+    "ItemTID": 50002,
+    "Count": 3,
+    "Weight": 80,
+    "Description": "자원 토끼 가죽 x3"
+  },
+  {
+    "GachaItemTID": 7006,
+    "GachaId": 7,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "상자 전용 은빛 나침반"
+  },
+  {
+    "GachaItemTID": 8001,
+    "GachaId": 8,
+    "ItemTID": 10003,
+    "Count": 2,
+    "Weight": 80,
+    "Description": "자원 월척 붕어 x2"
+  },
+  {
+    "GachaItemTID": 8002,
+    "GachaId": 8,
+    "ItemTID": 20003,
+    "Count": 2,
+    "Weight": 80,
+    "Description": "자원 옥수수 x2"
+  },
+  {
+    "GachaItemTID": 8003,
+    "GachaId": 8,
+    "ItemTID": 30003,
+    "Count": 2,
+    "Weight": 80,
+    "Description": "자원 참나무 목재 x2"
+  },
+  {
+    "GachaItemTID": 8004,
+    "GachaId": 8,
+    "ItemTID": 40003,
+    "Count": 2,
+    "Weight": 80,
+    "Description": "자원 은광석 x2"
+  },
+  {
+    "GachaItemTID": 8005,
+    "GachaId": 8,
+    "ItemTID": 50003,
+    "Count": 2,
+    "Weight": 80,
+    "Description": "자원 늑대 가죽 x2"
+  },
+  {
+    "GachaItemTID": 8006,
+    "GachaId": 8,
+    "ItemTID": 100012,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "상자 전용 황금 열쇠"
   }
 ]

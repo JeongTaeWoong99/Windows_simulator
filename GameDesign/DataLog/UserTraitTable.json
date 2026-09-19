@@ -1,0 +1,407 @@
+[
+  {
+    "UserTraitTID": 2102,
+    "Name": "농사 Lv2",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Farming",
+    "EffectValue": 0,
+    "Description": "농사 산업 레벨 2 해금"
+  },
+  {
+    "UserTraitTID": 2103,
+    "Name": "농사 Lv3",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Farming",
+    "EffectValue": 0,
+    "Description": "농사 산업 레벨 3 해금"
+  },
+  {
+    "UserTraitTID": 2104,
+    "Name": "농사 Lv4",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Farming",
+    "EffectValue": 0,
+    "Description": "농사 산업 레벨 4 해금"
+  },
+  {
+    "UserTraitTID": 2105,
+    "Name": "농사 Lv5",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Farming",
+    "EffectValue": 0,
+    "Description": "농사 산업 레벨 5 해금"
+  },
+  {
+    "UserTraitTID": 2202,
+    "Name": "낚시 Lv2",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Fishing",
+    "EffectValue": 0,
+    "Description": "낚시 산업 레벨 2 해금"
+  },
+  {
+    "UserTraitTID": 2203,
+    "Name": "낚시 Lv3",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Fishing",
+    "EffectValue": 0,
+    "Description": "낚시 산업 레벨 3 해금"
+  },
+  {
+    "UserTraitTID": 2204,
+    "Name": "낚시 Lv4",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Fishing",
+    "EffectValue": 0,
+    "Description": "낚시 산업 레벨 4 해금"
+  },
+  {
+    "UserTraitTID": 2205,
+    "Name": "낚시 Lv5",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Fishing",
+    "EffectValue": 0,
+    "Description": "낚시 산업 레벨 5 해금"
+  },
+  {
+    "UserTraitTID": 2302,
+    "Name": "채굴 Lv2",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Mining",
+    "EffectValue": 0,
+    "Description": "채굴 산업 레벨 2 해금"
+  },
+  {
+    "UserTraitTID": 2303,
+    "Name": "채굴 Lv3",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Mining",
+    "EffectValue": 0,
+    "Description": "채굴 산업 레벨 3 해금"
+  },
+  {
+    "UserTraitTID": 2304,
+    "Name": "채굴 Lv4",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Mining",
+    "EffectValue": 0,
+    "Description": "채굴 산업 레벨 4 해금"
+  },
+  {
+    "UserTraitTID": 2305,
+    "Name": "채굴 Lv5",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Mining",
+    "EffectValue": 0,
+    "Description": "채굴 산업 레벨 5 해금"
+  },
+  {
+    "UserTraitTID": 2402,
+    "Name": "벌목 Lv2",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Logging",
+    "EffectValue": 0,
+    "Description": "벌목 산업 레벨 2 해금"
+  },
+  {
+    "UserTraitTID": 2403,
+    "Name": "벌목 Lv3",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Logging",
+    "EffectValue": 0,
+    "Description": "벌목 산업 레벨 3 해금"
+  },
+  {
+    "UserTraitTID": 2404,
+    "Name": "벌목 Lv4",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Logging",
+    "EffectValue": 0,
+    "Description": "벌목 산업 레벨 4 해금"
+  },
+  {
+    "UserTraitTID": 2405,
+    "Name": "벌목 Lv5",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Logging",
+    "EffectValue": 0,
+    "Description": "벌목 산업 레벨 5 해금"
+  },
+  {
+    "UserTraitTID": 2502,
+    "Name": "사냥 Lv2",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Hunting",
+    "EffectValue": 0,
+    "Description": "사냥 산업 레벨 2 해금"
+  },
+  {
+    "UserTraitTID": 2503,
+    "Name": "사냥 Lv3",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Hunting",
+    "EffectValue": 0,
+    "Description": "사냥 산업 레벨 3 해금"
+  },
+  {
+    "UserTraitTID": 2504,
+    "Name": "사냥 Lv4",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Hunting",
+    "EffectValue": 0,
+    "Description": "사냥 산업 레벨 4 해금"
+  },
+  {
+    "UserTraitTID": 2505,
+    "Name": "사냥 Lv5",
+    "TraitPoint": 1,
+    "EffectType": "None",
+    "Industry": "Hunting",
+    "EffectValue": 0,
+    "Description": "사냥 산업 레벨 5 해금"
+  },
+  {
+    "UserTraitTID": 3101,
+    "Name": "농사 속도 10%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 100,
+    "Description": "농사 작업속도 +10% (누적 10%)"
+  },
+  {
+    "UserTraitTID": 3102,
+    "Name": "농사 속도 20%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 100,
+    "Description": "농사 작업속도 +10% (누적 20%)"
+  },
+  {
+    "UserTraitTID": 3103,
+    "Name": "농사 속도 30%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 100,
+    "Description": "농사 작업속도 +10% (누적 30%)"
+  },
+  {
+    "UserTraitTID": 3104,
+    "Name": "농사 속도 40%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 100,
+    "Description": "농사 작업속도 +10% (누적 40%)"
+  },
+  {
+    "UserTraitTID": 3105,
+    "Name": "농사 속도 50%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 100,
+    "Description": "농사 작업속도 +10% (누적 50%)"
+  },
+  {
+    "UserTraitTID": 3201,
+    "Name": "낚시 속도 10%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Fishing",
+    "EffectValue": 100,
+    "Description": "낚시 작업속도 +10% (누적 10%)"
+  },
+  {
+    "UserTraitTID": 3202,
+    "Name": "낚시 속도 20%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Fishing",
+    "EffectValue": 100,
+    "Description": "낚시 작업속도 +10% (누적 20%)"
+  },
+  {
+    "UserTraitTID": 3203,
+    "Name": "낚시 속도 30%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Fishing",
+    "EffectValue": 100,
+    "Description": "낚시 작업속도 +10% (누적 30%)"
+  },
+  {
+    "UserTraitTID": 3204,
+    "Name": "낚시 속도 40%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Fishing",
+    "EffectValue": 100,
+    "Description": "낚시 작업속도 +10% (누적 40%)"
+  },
+  {
+    "UserTraitTID": 3205,
+    "Name": "낚시 속도 50%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Fishing",
+    "EffectValue": 100,
+    "Description": "낚시 작업속도 +10% (누적 50%)"
+  },
+  {
+    "UserTraitTID": 3301,
+    "Name": "채굴 속도 10%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 100,
+    "Description": "채굴 작업속도 +10% (누적 10%)"
+  },
+  {
+    "UserTraitTID": 3302,
+    "Name": "채굴 속도 20%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 100,
+    "Description": "채굴 작업속도 +10% (누적 20%)"
+  },
+  {
+    "UserTraitTID": 3303,
+    "Name": "채굴 속도 30%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 100,
+    "Description": "채굴 작업속도 +10% (누적 30%)"
+  },
+  {
+    "UserTraitTID": 3304,
+    "Name": "채굴 속도 40%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 100,
+    "Description": "채굴 작업속도 +10% (누적 40%)"
+  },
+  {
+    "UserTraitTID": 3305,
+    "Name": "채굴 속도 50%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 100,
+    "Description": "채굴 작업속도 +10% (누적 50%)"
+  },
+  {
+    "UserTraitTID": 3401,
+    "Name": "벌목 속도 10%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 100,
+    "Description": "벌목 작업속도 +10% (누적 10%)"
+  },
+  {
+    "UserTraitTID": 3402,
+    "Name": "벌목 속도 20%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 100,
+    "Description": "벌목 작업속도 +10% (누적 20%)"
+  },
+  {
+    "UserTraitTID": 3403,
+    "Name": "벌목 속도 30%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 100,
+    "Description": "벌목 작업속도 +10% (누적 30%)"
+  },
+  {
+    "UserTraitTID": 3404,
+    "Name": "벌목 속도 40%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 100,
+    "Description": "벌목 작업속도 +10% (누적 40%)"
+  },
+  {
+    "UserTraitTID": 3405,
+    "Name": "벌목 속도 50%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 100,
+    "Description": "벌목 작업속도 +10% (누적 50%)"
+  },
+  {
+    "UserTraitTID": 3501,
+    "Name": "사냥 속도 10%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 100,
+    "Description": "사냥 작업속도 +10% (누적 10%)"
+  },
+  {
+    "UserTraitTID": 3502,
+    "Name": "사냥 속도 20%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 100,
+    "Description": "사냥 작업속도 +10% (누적 20%)"
+  },
+  {
+    "UserTraitTID": 3503,
+    "Name": "사냥 속도 30%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 100,
+    "Description": "사냥 작업속도 +10% (누적 30%)"
+  },
+  {
+    "UserTraitTID": 3504,
+    "Name": "사냥 속도 40%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 100,
+    "Description": "사냥 작업속도 +10% (누적 40%)"
+  },
+  {
+    "UserTraitTID": 3505,
+    "Name": "사냥 속도 50%",
+    "TraitPoint": 1,
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 100,
+    "Description": "사냥 작업속도 +10% (누적 50%)"
+  }
+]

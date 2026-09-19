@@ -23,6 +23,8 @@
 
 ## INDEX
 
+- [2026-09-19 장비 시트 밸런싱 — 5행 → 69종](2026-09-19-equip-table-balance.md) — `#data` `#design` 무기·보석은 산업 전용, 장신구는 전 산업 (Common~Mythic)
+- [2026-09-19 창고 장비 탭 · 치트 장비 지급·정산 횟수](2026-09-19-equip-storage-tab.md) — `#client` `#ui` `#editor` 장비가 화면에 보이는 첫 경로 (T-043 장비 몫 · T-059)
 - [2026-09-17 캐릭터 장비 시스템 서버 구현 — EquipTable · 장착/해제 · 속도 가산](2026-09-17-equip-server.md) — `#server` `#data` `#protocol` `#test` T-002 완료 · 종류/칸 분리 · 자동 이동 트랜잭션 · Unity CLI 실서버 검증
 - [2026-09-16 서버 긴 설계 근거 주석을 Server/docs/로 분리](2026-09-16-server-comments-to-docs.md) — `#server` `#docs` 채취-정산·세션-감시·데이터-카탈로그 문서 신설, 코드엔 1~2줄 + 링크만
 - [2026-09-17 적성 포인트 — 엑셀 상한·DB·패킷·서버 구현 (T-003)](2026-09-17-aptitude-point-server.md) — `#server` `#data` `#protocol` `#db` `#test` 10레벨마다 1포인트로 산업 적성 +1, 캐릭터·산업별 상한, 남은 포인트는 저장하지 않고 계산

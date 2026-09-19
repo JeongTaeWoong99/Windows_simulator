@@ -66,11 +66,11 @@ internal sealed class SqliteFixture : IDisposable
                 character_id   INTEGER NOT NULL DEFAULT 0,
                 PRIMARY KEY (user_id, slot_index)
             ) STRICT;
-            CREATE TABLE t_user_industry_level (
-                user_id        INTEGER NOT NULL,
-                industry       INTEGER NOT NULL,
-                unlocked_level INTEGER NOT NULL DEFAULT 1,
-                PRIMARY KEY (user_id, industry)
+            CREATE TABLE t_user_account (
+                user_id     INTEGER PRIMARY KEY,
+                level       INTEGER NOT NULL DEFAULT 1,
+                exp         INTEGER NOT NULL DEFAULT 0,
+                trait_point INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_user_unlock (
                 user_id     INTEGER NOT NULL,

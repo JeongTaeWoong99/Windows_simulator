@@ -25,7 +25,8 @@ using UnityEngine;
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
 // ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
-//   '배' 마크(배치 중) · 적성 스트립 · 경험치 게이지는 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   적성 스트립 · 레벨 배지 · 경험치 게이지는 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   '배' 마크는 캐릭터 탭에서 '배치 중', 장비 탭에서 '장착 중'으로 뜻이 갈린다 — 판정도 탭마다 다르다.
 //   칸은 이 판단을 모른다 — 공급자가 만드는 완성값(`SlotData`)에 캐릭터 전용 필드를 끼우면
 //   자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자가 읽어서 넘긴다.
 //
@@ -82,8 +83,11 @@ public class StorageGridPresenter : MonoBehaviour
     // 이 탭의 칸을 팔 수 있나. 서버 판매 패킷이 아이템 TID 축이라 자원만 담긴다.
     private bool IsSellableTab => _currentTab == StorageTab.Resource;
 
-    // 이 탭의 칸이 캐릭터인가. 배치 표시는 여기서만 켜진다 — 자원 칸에는 배치라는 개념이 없다.
+    // 이 탭의 칸이 캐릭터인가. 적성 스트립·레벨 배지·경험치 게이지는 여기서만 켜진다.
     private bool IsCharacterTab => _currentTab == StorageTab.Character;
+
+    // 이 탭의 칸이 장비인가. '배' 마크의 뜻이 여기서만 '장착 중'으로 바뀐다.
+    private bool IsEquipTab => _currentTab == StorageTab.Equipment;
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
     private void Start()
@@ -127,11 +131,10 @@ public class StorageGridPresenter : MonoBehaviour
         // ★ 탭을 하나 채우는 일은 여기 한 줄로 끝난다 — 공급자를 만들어 등록하면
         //   전환·잠금·격자는 그대로다 ('Storage 규칙.md'의 "탭 하나를 채우는 절차").
         //
-        // ⏸ Equipment — 장비 데이터가 없다. 게다가 'ItemTable.ItemType'은 산업 축(농사·낚시…)이라
-        //    장비를 담을 칸이 테이블에 없다. 컬럼 축부터 정해야 한다 (T-043 · T-002).
-        // ⏸ Trait      — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
+        // ⏸ Trait — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
         _sources.Add(StorageTab.Resource,  new ResourceSlotSource(data));
         _sources.Add(StorageTab.Character, new CharacterSlotSource(data));
+        _sources.Add(StorageTab.Equipment, new EquipSlotSource(data));
 
         // ★ 끝까지 왔을 때만 세운다 — 위에서 예외가 나면(참조 미연결·서비스 미등록) 플래그가
         //   안 켜져 다음 호출이 다시 시도하고, 원인도 매번 같은 예외로 드러난다.
@@ -335,7 +338,11 @@ public class StorageGridPresenter : MonoBehaviour
 
                 // 배치 표시의 주인은 슬롯 스냅샷이다. 판정은 'FindSlotIndexOf' 하나로 읽는다 —
                 // 작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
-                view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0);
+                //
+                // ★ 장비 탭에서는 같은 마크가 '장착 중'을 뜻한다 — 창고 칸을 차지한 채 캐릭터가
+                //   끼고 있는 상태라, 캐릭터가 작업슬롯에 나가 있는 것과 읽는 법이 같다.
+                view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0
+                                   || IsEquipTab && _data.IsEquipped(data.Key));
 
                 // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
                 // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.

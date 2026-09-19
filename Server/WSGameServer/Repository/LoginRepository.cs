@@ -16,7 +16,7 @@ public sealed class LoginRepository : IRepository
     private CurrencyRow?             _currency;
     private List<CharacterRow>       _characterRows       = new();
     private List<WorkStationSlotRow> _workStationSlotRows = new();
-    private List<UserIndustryLevelRow> _industryLevelRows = new();
+    private AccountRow?                _account;
     private List<UserUnlockRow>        _unlockRows        = new();
     private List<UserEquipRow>         _equipRows          = new();
     private List<CharacterEquipRow>    _characterEquipRows = new();
@@ -63,14 +63,12 @@ public sealed class LoginRepository : IRepository
               FROM t_user_workstation_slot WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 5) 산업별 최대 해금 레벨. 행이 없는 산업은 기본 레벨(Lv1)만 열린 것으로 본다
-        //    (가입 시 5종 행을 만들지 않는다 — 재화와 같은 규약이다).
-        _industryLevelRows = await connection.QueryAsync<UserIndustryLevelRow>(
-            @"SELECT industry, unlocked_level
-              FROM t_user_industry_level WHERE user_id = @userId",
+        // 5) 계정 레벨·특성 포인트. 한 번도 경험치를 번 적 없으면 행이 없고, 레벨 1로 본다(재화와 같은 규약).
+        _account = await connection.QueryFirstOrDefaultAsync<AccountRow>(
+            "SELECT level, exp, trait_point FROM t_user_account WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸은 이 목록 + WorkSlotTable로만 만든다.
+        // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸·산업 레벨·찍은 특성이 전부 이 목록으로 정해진다.
         _unlockRows = await connection.QueryAsync<UserUnlockRow>(
             "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
             new { userId = User.Uid });
@@ -96,8 +94,8 @@ public sealed class LoginRepository : IRepository
     {
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
-                                _workStationSlotRows, _industryLevelRows, _unlockRows,
-                                _equipRows, _characterEquipRows),
+                                _workStationSlotRows, _unlockRows,
+                                _equipRows, _characterEquipRows, _account),
             DateTime.UtcNow);
     }
 }

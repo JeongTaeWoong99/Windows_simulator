@@ -14,5 +14,53 @@
     "CostSingle": 1000,
     "CostMulti": 10000,
     "Description": "캐릭터 풀 30종"
+  },
+  {
+    "GachaInfoTID": 3,
+    "Name": "무기 뽑기",
+    "CostCurrency": "Gold",
+    "CostSingle": 500,
+    "CostMulti": 5000,
+    "Description": "무기 31종"
+  },
+  {
+    "GachaInfoTID": 4,
+    "Name": "장신구 뽑기",
+    "CostCurrency": "Gold",
+    "CostSingle": 300,
+    "CostMulti": 3000,
+    "Description": "장신구 7종"
+  },
+  {
+    "GachaInfoTID": 5,
+    "Name": "보석 뽑기",
+    "CostCurrency": "Gold",
+    "CostSingle": 200,
+    "CostMulti": 2000,
+    "Description": "보석 31종"
+  },
+  {
+    "GachaInfoTID": 6,
+    "Name": "나무 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 7,
+    "Name": "은 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 8,
+    "Name": "황금 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
   }
 ]

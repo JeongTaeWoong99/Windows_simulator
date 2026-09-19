@@ -30,7 +30,9 @@ namespace MikaProtocol
 
         // ── 300~: 상점 ──
         InvalidSellRequest = 300, // 빈 목록·수량 0 이하·존재하지 않는 아이템
-        NotEnoughItem      = 301, // 보유량보다 많이 팔려는 시도
+        NotEnoughItem      = 301, // 보유량보다 많이 팔려는(열려는) 시도
+        ItemNotUsable      = 302, // 쓸 수 없는 아이템 (상자가 아님 · 테이블에 없음)
+        InvalidUseCount    = 303, // 한 번에 쓰는 개수가 1~99 밖
 
         // ── 400~: 치트 ──
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
@@ -48,9 +50,14 @@ namespace MikaProtocol
         EquipKindMismatch  = 602, // 종류가 칸에 맞지 않음 (무기를 보석 칸에 등)
         EquipSlotEmpty     = 603, // 해제할 장비가 없는 칸
 
-        // ── 600~: 캐릭터 ──
-        NoAptitudePoint = 600, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
-        AptitudeAtCap   = 601, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
+        // ── 700~: 캐릭터 (600은 장비와 겹쳐 있었다 — 2026-09-17) ──
+        NoAptitudePoint = 700, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
+        AptitudeAtCap   = 701, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
+
+        // ── 800~: 특성 ──
+        InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 이미 찍음 → AlreadyUnlocked · 조건 미달 → UnlockLocked
+        NotEnoughTraitPoint = 801, // 남은 특성 포인트가 비용보다 적다 — 아무것도 바꾸지 않는다
+        TraitOnlyUnlock     = 802, // 특성 노드의 해금을 C_UnlockRequest로 열려 했다 — 특성으로만 연다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -86,9 +93,10 @@ namespace MikaProtocol
         GiveItem         = 3,  // Arg1 = ItemTID · Arg2 = 개수
         GiveCharacter    = 4,  // Arg1 = CharacterTID · Arg2 = 장수 (1~10)
         GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
-        Settle           = 6,  // 지금 시각으로 작업슬롯 정산
+        Settle           = 6,  // 작업슬롯 판정을 Arg1회 앞당겨 정산 (0이면 1회)
         Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
         GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
+        GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업·특성 포인트까지 실제 경로와 같다
     }
 
     public enum EItemChangeKind : byte
@@ -120,6 +128,8 @@ namespace MikaProtocol
 
         Item      = 1,   // GachaRewardInfo.ItemId를 읽는다
         Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
+        Equip     = 3,   // GachaRewardInfo.EquipTid를 읽는다
+        Gold      = 4,   // GachaRewardInfo.Count가 골드 양이다 (상자 전용)
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —

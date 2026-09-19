@@ -1,0 +1,666 @@
+[
+  {
+    "GachaEquipTID": 3001,
+    "GachaId": 3,
+    "EquipTID": 1001,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 목검"
+  },
+  {
+    "GachaEquipTID": 3002,
+    "GachaId": 3,
+    "EquipTID": 1101,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 나무 호미"
+  },
+  {
+    "GachaEquipTID": 3003,
+    "GachaId": 3,
+    "EquipTID": 1201,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 대나무 낚싯대"
+  },
+  {
+    "GachaEquipTID": 3004,
+    "GachaId": 3,
+    "EquipTID": 1301,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 돌 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3005,
+    "GachaId": 3,
+    "EquipTID": 1401,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 손도끼"
+  },
+  {
+    "GachaEquipTID": 3006,
+    "GachaId": 3,
+    "EquipTID": 1501,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 사냥용 활"
+  },
+  {
+    "GachaEquipTID": 3007,
+    "GachaId": 3,
+    "EquipTID": 1002,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 낚싯대"
+  },
+  {
+    "GachaEquipTID": 3008,
+    "GachaId": 3,
+    "EquipTID": 1102,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 무쇠 호미"
+  },
+  {
+    "GachaEquipTID": 3009,
+    "GachaId": 3,
+    "EquipTID": 1302,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3010,
+    "GachaId": 3,
+    "EquipTID": 1402,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 무쇠 도끼"
+  },
+  {
+    "GachaEquipTID": 3011,
+    "GachaId": 3,
+    "EquipTID": 1502,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 참나무 활"
+  },
+  {
+    "GachaEquipTID": 3012,
+    "GachaId": 3,
+    "EquipTID": 1103,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 강철 낫"
+  },
+  {
+    "GachaEquipTID": 3013,
+    "GachaId": 3,
+    "EquipTID": 1203,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 은사 낚싯대"
+  },
+  {
+    "GachaEquipTID": 3014,
+    "GachaId": 3,
+    "EquipTID": 1303,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3015,
+    "GachaId": 3,
+    "EquipTID": 1403,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 양날 도끼"
+  },
+  {
+    "GachaEquipTID": 3016,
+    "GachaId": 3,
+    "EquipTID": 1503,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 강철 석궁"
+  },
+  {
+    "GachaEquipTID": 3017,
+    "GachaId": 3,
+    "EquipTID": 1104,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 은빛 쟁기"
+  },
+  {
+    "GachaEquipTID": 3018,
+    "GachaId": 3,
+    "EquipTID": 1204,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 심해 작살"
+  },
+  {
+    "GachaEquipTID": 3019,
+    "GachaId": 3,
+    "EquipTID": 1304,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 흑요석 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3020,
+    "GachaId": 3,
+    "EquipTID": 1404,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 백년목 도끼"
+  },
+  {
+    "GachaEquipTID": 3021,
+    "GachaId": 3,
+    "EquipTID": 1504,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 은빛 장궁"
+  },
+  {
+    "GachaEquipTID": 3022,
+    "GachaId": 3,
+    "EquipTID": 1105,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 풍년의 괭이"
+  },
+  {
+    "GachaEquipTID": 3023,
+    "GachaId": 3,
+    "EquipTID": 1205,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 용린 낚싯대"
+  },
+  {
+    "GachaEquipTID": 3024,
+    "GachaId": 3,
+    "EquipTID": 1305,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3025,
+    "GachaId": 3,
+    "EquipTID": 1405,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 서리강철 도끼"
+  },
+  {
+    "GachaEquipTID": 3026,
+    "GachaId": 3,
+    "EquipTID": 1505,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 폭풍의 장궁"
+  },
+  {
+    "GachaEquipTID": 3027,
+    "GachaId": 3,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 대지모의 호미"
+  },
+  {
+    "GachaEquipTID": 3028,
+    "GachaId": 3,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 해신의 삼지창"
+  },
+  {
+    "GachaEquipTID": 3029,
+    "GachaId": 3,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 산신의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 3030,
+    "GachaId": 3,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 세계수의 도끼"
+  },
+  {
+    "GachaEquipTID": 3031,
+    "GachaId": 3,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 월신의 활"
+  },
+  {
+    "GachaEquipTID": 4001,
+    "GachaId": 4,
+    "EquipTID": 2001,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 구리 반지"
+  },
+  {
+    "GachaEquipTID": 4002,
+    "GachaId": 4,
+    "EquipTID": 2003,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 은 목걸이"
+  },
+  {
+    "GachaEquipTID": 4003,
+    "GachaId": 4,
+    "EquipTID": 2002,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 어부의 목걸이"
+  },
+  {
+    "GachaEquipTID": 4004,
+    "GachaId": 4,
+    "EquipTID": 2004,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 노동자의 팔찌"
+  },
+  {
+    "GachaEquipTID": 4005,
+    "GachaId": 4,
+    "EquipTID": 2005,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 장인의 인장"
+  },
+  {
+    "GachaEquipTID": 4006,
+    "GachaId": 4,
+    "EquipTID": 2006,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 대장인의 훈장"
+  },
+  {
+    "GachaEquipTID": 4007,
+    "GachaId": 4,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 창세의 고리"
+  },
+  {
+    "GachaEquipTID": 5001,
+    "GachaId": 5,
+    "EquipTID": 3001,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 원석"
+  },
+  {
+    "GachaEquipTID": 5002,
+    "GachaId": 5,
+    "EquipTID": 3101,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 풍년석"
+  },
+  {
+    "GachaEquipTID": 5003,
+    "GachaId": 5,
+    "EquipTID": 3201,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 물방울석"
+  },
+  {
+    "GachaEquipTID": 5004,
+    "GachaId": 5,
+    "EquipTID": 3301,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 철광석 조각"
+  },
+  {
+    "GachaEquipTID": 5005,
+    "GachaId": 5,
+    "EquipTID": 3401,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 나무옹이석"
+  },
+  {
+    "GachaEquipTID": 5006,
+    "GachaId": 5,
+    "EquipTID": 3501,
+    "Count": 1,
+    "Weight": 640,
+    "Description": "Common 짐승 이빨석"
+  },
+  {
+    "GachaEquipTID": 5007,
+    "GachaId": 5,
+    "EquipTID": 3102,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 새싹 수정"
+  },
+  {
+    "GachaEquipTID": 5008,
+    "GachaId": 5,
+    "EquipTID": 3202,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 조류 수정"
+  },
+  {
+    "GachaEquipTID": 5009,
+    "GachaId": 5,
+    "EquipTID": 3302,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 광맥 수정"
+  },
+  {
+    "GachaEquipTID": 5010,
+    "GachaId": 5,
+    "EquipTID": 3402,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 수액 호박"
+  },
+  {
+    "GachaEquipTID": 5011,
+    "GachaId": 5,
+    "EquipTID": 3502,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "Uncommon 추적자의 수정"
+  },
+  {
+    "GachaEquipTID": 5012,
+    "GachaId": 5,
+    "EquipTID": 3103,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 곡창의 비취"
+  },
+  {
+    "GachaEquipTID": 5013,
+    "GachaId": 5,
+    "EquipTID": 3203,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 심해의 청옥"
+  },
+  {
+    "GachaEquipTID": 5014,
+    "GachaId": 5,
+    "EquipTID": 3303,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 지맥의 흑옥"
+  },
+  {
+    "GachaEquipTID": 5015,
+    "GachaId": 5,
+    "EquipTID": 3403,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 고목의 녹옥"
+  },
+  {
+    "GachaEquipTID": 5016,
+    "GachaId": 5,
+    "EquipTID": 3503,
+    "Count": 1,
+    "Weight": 100,
+    "Description": "Rare 맹수의 홍옥"
+  },
+  {
+    "GachaEquipTID": 5017,
+    "GachaId": 5,
+    "EquipTID": 3104,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 황금 이삭석"
+  },
+  {
+    "GachaEquipTID": 5018,
+    "GachaId": 5,
+    "EquipTID": 3204,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 산호 진주"
+  },
+  {
+    "GachaEquipTID": 5019,
+    "GachaId": 5,
+    "EquipTID": 3304,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 용암 결정"
+  },
+  {
+    "GachaEquipTID": 5020,
+    "GachaId": 5,
+    "EquipTID": 3404,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 백년목 결정"
+  },
+  {
+    "GachaEquipTID": 5021,
+    "GachaId": 5,
+    "EquipTID": 3504,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "Epic 사냥꾼의 별"
+  },
+  {
+    "GachaEquipTID": 5022,
+    "GachaId": 5,
+    "EquipTID": 3105,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 대지의 심장"
+  },
+  {
+    "GachaEquipTID": 5023,
+    "GachaId": 5,
+    "EquipTID": 3205,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 바다의 심장"
+  },
+  {
+    "GachaEquipTID": 5024,
+    "GachaId": 5,
+    "EquipTID": 3305,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 대지핵 결정"
+  },
+  {
+    "GachaEquipTID": 5025,
+    "GachaId": 5,
+    "EquipTID": 3405,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 숲의 심장"
+  },
+  {
+    "GachaEquipTID": 5026,
+    "GachaId": 5,
+    "EquipTID": 3505,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "Legendary 야수의 심장"
+  },
+  {
+    "GachaEquipTID": 5027,
+    "GachaId": 5,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 풍요의 성석"
+  },
+  {
+    "GachaEquipTID": 5028,
+    "GachaId": 5,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 해원의 성석"
+  },
+  {
+    "GachaEquipTID": 5029,
+    "GachaId": 5,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 광신의 성석"
+  },
+  {
+    "GachaEquipTID": 5030,
+    "GachaId": 5,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 세계수 성석"
+  },
+  {
+    "GachaEquipTID": 5031,
+    "GachaId": 5,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 5,
+    "Description": "Mythic 월광 성석"
+  },
+  {
+    "GachaEquipTID": 6101,
+    "GachaId": 6,
+    "EquipTID": 1001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 6102,
+    "GachaId": 6,
+    "EquipTID": 2001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 6103,
+    "GachaId": 6,
+    "EquipTID": 3001,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7101,
+    "GachaId": 7,
+    "EquipTID": 1102,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7102,
+    "GachaId": 7,
+    "EquipTID": 1302,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7103,
+    "GachaId": 7,
+    "EquipTID": 1402,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7104,
+    "GachaId": 7,
+    "EquipTID": 1502,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 7105,
+    "GachaId": 7,
+    "EquipTID": 2003,
+    "Count": 1,
+    "Weight": 18,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8101,
+    "GachaId": 8,
+    "EquipTID": 1103,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8102,
+    "GachaId": 8,
+    "EquipTID": 1203,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8103,
+    "GachaId": 8,
+    "EquipTID": 1303,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8104,
+    "GachaId": 8,
+    "EquipTID": 1403,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8105,
+    "GachaId": 8,
+    "EquipTID": 1503,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  },
+  {
+    "GachaEquipTID": 8106,
+    "GachaId": 8,
+    "EquipTID": 2004,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "장비"
+  }
+]

@@ -60,8 +60,13 @@ namespace MikaProtocol
         C_EquipRequest = 29,
         C_UnequipRequest = 30,
         S_EquipResponse = 31,
-        C_AptitudeUpRequest = 27,
-        S_AptitudeUpResponse = 28,
+        C_AptitudeUpRequest = 32,   // 27·28은 장비 패킷과 겹쳐 있었다(2026-09-17). PacketEnumTest가 중복을 막는다
+        S_AptitudeUpResponse = 33,
+        C_UserTraitLearnRequest = 34,
+        S_UserTraitLearnResponse = 35,
+        S_AccountLevelResponse = 36,
+        C_ItemUseRequest = 37,
+        S_ItemUseResponse = 38,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -274,6 +279,33 @@ namespace MikaProtocol
     /// 해금 결과. 열린 뒤 무엇이 달라지는가는 <b>콘텐츠별 기존 패킷</b>이 따로 밀어 준다
     /// (작업슬롯이면 <see cref="S_WorkStationSlotSyncResponse"/>). 서버가 직접 연 경우(퀘스트·치트)도 같은 패킷이 온다.
     /// </summary>
+    /// <summary>특성 노드 하나를 찍는다. 조건은 그 노드의 <c>UnlockTable</c> 행 + 특성 포인트다.</summary>
+    [MemoryPackable, Packet(PacketId.C_UserTraitLearnRequest)]
+    public partial class C_UserTraitLearnRequest : IPacket
+    {
+        public int UserTraitTID { get; set; }
+    }
+
+    /// <summary>
+    /// 특성 찍기 결과. 성공하면 이 앞에 <see cref="S_UnlockResponse"/>가, 뒤에 <see cref="S_AccountLevelResponse"/>(남은 포인트)가 온다.
+    /// 속도 특성이면 바뀐 슬롯이 <see cref="S_WorkStationSlotSyncResponse"/>로 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_UserTraitLearnResponse)]
+    public partial class S_UserTraitLearnResponse : IPacket
+    {
+        public EResultCode Result       { get; set; }
+        public int         UserTraitTID { get; set; }
+    }
+
+    /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>
+    [MemoryPackable, Packet(PacketId.S_AccountLevelResponse)]
+    public partial class S_AccountLevelResponse : IPacket
+    {
+        public int  Level      { get; set; }
+        public long Exp        { get; set; }   // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 int를 넘는다
+        public int  TraitPoint { get; set; }   // 남은(안 쓴) 특성 포인트
+    }
+
     [MemoryPackable, Packet(PacketId.S_UnlockResponse)]
     public partial class S_UnlockResponse : IPacket
     {
@@ -360,6 +392,27 @@ namespace MikaProtocol
     /// 아이템 즉시 판매 요청. <b>종류 하나가 아니라 목록으로 받는다</b> —
     /// 방치형이라 인벤토리가 저절로 차므로, 일괄 판매가 기본 동선이고 낱개 판매가 그 특수한 경우다.
     /// </summary>
+    /// <summary>아이템 사용 — 지금은 상자 개봉뿐이다. 상자의 <c>OpenGachaId</c> 풀을 개수만큼 비용 없이 돈다.</summary>
+    [MemoryPackable, Packet(PacketId.C_ItemUseRequest)]
+    public partial class C_ItemUseRequest : IPacket
+    {
+        public int ItemTID { get; set; }
+        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다
+    }
+
+    /// <summary>
+    /// 아이템 사용 결과. <c>Rewards</c>는 가챠와 같은 모양(연출용 · 뽑힌 순서) — 클라 연출을 한 벌로 쓴다.
+    /// <c>ItemChangeInfos</c>는 상자 차감과 보상 아이템의 누적 총량. 골드는 <see cref="S_CurrencyResponse"/>, 장비는 <see cref="S_EquipSyncResponse"/>로 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ItemUseResponse)]
+    public partial class S_ItemUseResponse : IPacket
+    {
+        public EResultCode            Result          { get; set; }
+        public int                    ItemTID         { get; set; }
+        public List<GachaRewardInfo>? Rewards         { get; set; }
+        public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
+    }
+
     [MemoryPackable, Packet(PacketId.C_ItemSellRequest)]
     public partial class C_ItemSellRequest : IPacket
     {

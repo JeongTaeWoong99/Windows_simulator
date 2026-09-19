@@ -45,6 +45,37 @@ namespace MikaDummyClient
             }
         }
 
+        // 상자 개봉 결과. 보상 목록은 가챠와 같은 모양이다 — 골드는 S_CurrencyResponse, 장비는 S_EquipSyncResponse로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_ItemUseResponse(ISession session, S_ItemUseResponse res)
+        {
+            if (res.Result != EResultCode.Ok)
+            {
+                Console.WriteLine($"[Client] Recv 상자: ItemTID={res.ItemTID} 실패 Result={res.Result}");
+                return;
+            }
+
+            Console.WriteLine($"[Client] Recv 상자: ItemTID={res.ItemTID} 보상 {res.Rewards?.Count}개");
+            foreach (var reward in res.Rewards!)
+            {
+                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity}, Tid={RewardTid(reward)}, Count={reward.Count}");
+            }
+
+            foreach (var change in res.ItemChangeInfos!)
+            {
+                Console.WriteLine($"  · 인벤토리 {change.ItemId} → {change.Count} ({change.Kind})");
+            }
+        }
+
+        // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다. 골드는 TID가 없다.
+        private static int RewardTid(GachaRewardInfo reward) => reward.RewardType switch
+        {
+            EGachaRewardType.Character => reward.CharacterTid,
+            EGachaRewardType.Equip     => reward.EquipTid,
+            EGachaRewardType.Gold      => 0,
+            _                          => reward.ItemId,
+        };
+
         [PacketHandler]
         public static void Handle_S_GachaDrawResponse(ISession session, S_GachaDrawResponse res)
         {
@@ -58,8 +89,7 @@ namespace MikaDummyClient
             foreach (var reward in res.Rewards!)
             {
                 // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다.
-                var tid = reward.RewardType == EGachaRewardType.Character ? reward.CharacterTid : reward.ItemId;
-                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity.ToString()}, Tid={tid}, Count={reward.Count}");
+                Console.WriteLine($"  - {reward.RewardType} Rarity={reward.Rarity.ToString()}, Tid={RewardTid(reward)}, Count={reward.Count}");
             }
 
             Console.WriteLine($"[Client] Recv Gacha 인벤토리 변경: Count={res.ItemChangeInfos?.Count}");
@@ -147,6 +177,20 @@ namespace MikaDummyClient
         public static void Handle_S_UnlockResponse(ISession session, S_UnlockResponse res)
         {
             Console.WriteLine($"[Client] Recv 해금: UnlockTID={res.UnlockTID} → {res.Result}");
+        }
+
+        // 특성 찍기 결과. 성공이면 앞에 S_UnlockResponse가, 뒤에 S_AccountLevelResponse(남은 포인트)가 온다.
+        [PacketHandler]
+        public static void Handle_S_UserTraitLearnResponse(ISession session, S_UserTraitLearnResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 특성: UserTraitTID={res.UserTraitTID} → {res.Result}");
+        }
+
+        // 로그인 직후·경험치가 오를 때·포인트를 쓸 때 온다.
+        [PacketHandler]
+        public static void Handle_S_AccountLevelResponse(ISession session, S_AccountLevelResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 계정: Lv{res.Level} Exp={res.Exp} 특성포인트={res.TraitPoint}");
         }
 
         // 로그인 직후 슬롯 스냅샷보다 먼저 온다. 잠긴 칸의 조건 문구는 UnlockTable로 클라가 만든다.

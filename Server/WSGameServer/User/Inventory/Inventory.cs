@@ -21,6 +21,9 @@ public sealed class Inventory
             .ToList();
     }
     
+    /// <summary>보유 수량. 없으면 0.</summary>
+    public int GetCount(int itemId) => _items.TryGetValue(itemId, out var item) ? item.Count : 0;
+
     public ItemChangeInfo AddItem(int itemId, int count)
     {
         if (_items.TryGetValue(itemId, out var item))

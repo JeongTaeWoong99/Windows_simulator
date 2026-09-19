@@ -20,6 +20,7 @@ namespace DesktopWindowControl.EditorTools
 		private const float  ToolDividerWidth   = 2f;    // 도구 줄 구분선 두께(px)
 		private const float  ToolGapPadding     = 5f;    // 구분선 양옆 여백(px)
 		private const int    MaxCharacterCount  = 10;    // 서버 'User.CheatMaxCharacterCount'와 같다
+		private const int    MaxSettleJudges    = 100;   // 서버 'User.CheatMaxSettleJudges'와 같다 — 넘기면 InvalidCheatArgs
 
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
@@ -33,6 +34,7 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color ItemAccent      = new(0.40f, 0.80f, 0.45f);   // 자원 지급 — 초록
 		private static readonly Color CharacterAccent = new(0.35f, 0.65f, 1.00f);   // 캐릭터 지급 — 파랑
 		private static readonly Color ExpAccent       = new(0.70f, 0.50f, 0.95f);   // 경험치 — 보라
+		private static readonly Color EquipAccent     = new(0.90f, 0.45f, 0.70f);   // 장비 지급 — 분홍
 		private static readonly Color SettleAccent    = new(0.30f, 0.80f, 0.80f);   // 정산 — 청록
 		private static readonly Color UnlockAccent    = new(0.95f, 0.55f, 0.30f);   // 해금 — 주황
 
@@ -48,6 +50,8 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private int       _characterCount  = 1;
 		[SerializeField] private long      _expCharacterId;
 		[SerializeField] private int       _expAmount       = 100;
+		[SerializeField] private TidPicker _equipPicker     = new();
+		[SerializeField] private int       _settleJudges    = 1;
 		[SerializeField] private int       _unlockTid;
 
 		private Vector2 _scroll;
@@ -94,6 +98,7 @@ namespace DesktopWindowControl.EditorTools
 			DrawItem();
 			DrawCharacter();
 			DrawCharacterExp();
+			DrawEquip();
 			DrawSettle();
 			DrawUnlock();
 
@@ -426,13 +431,41 @@ namespace DesktopWindowControl.EditorTools
 			return characters[index].CharacterId;
 		}
 
+		// 장비는 개수 칸이 없다 — 서버 'CheatGiveEquip'이 한 번에 개체 1개만 만든다(창고 첫 빈 칸).
+		private void DrawEquip()
+		{
+			BeginSection("장비 지급", EquipAccent);
+
+			var rows = GameDataLoader.IsLoaded ? GameTable.EquipTable.All : null;
+			_equipPicker.Draw(rows, row => row.EquipTID, row => row.Name);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				GUILayout.FlexibleSpace();
+
+				if (GUILayout.Button("지급", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.GiveEquip, _equipPicker.Tid);
+				}
+			}
+
+			EndSection(EquipAccent);
+		}
+
+		// 판정 횟수만큼 작업량을 앞당겨 정산한다 — 쌓인 진행도만 정산하면 스케줄러(0.1초)가 먼저 가져가 늘 0개다.
 		private void DrawSettle()
 		{
 			BeginSection("정산", SettleAccent);
 
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("판정 횟수", GUILayout.Width(LabelWidth));
+				_settleJudges = EditorGUILayout.IntSlider(_settleJudges, 1, MaxSettleJudges);
+			}
+
 			if (GUILayout.Button("지금 정산 (작업슬롯 주기를 기다리지 않는다)"))
 			{
-				Request(ECheatCommand.Settle);
+				Request(ECheatCommand.Settle, _settleJudges);
 			}
 
 			EndSection(SettleAccent);

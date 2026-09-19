@@ -13,8 +13,8 @@ namespace GameData
         public int          GachaInfoTID { get; set; }        // int
         public string       Name         { get; set; } = "";  // string
         public CurrencyType CostCurrency { get; set; }        // eCurrencyType
-        public long         CostSingle   { get; set; }        // long [1..-]
-        public long         CostMulti    { get; set; }        // long [1..-]
+        public long         CostSingle   { get; set; }        // long [0..-]
+        public long         CostMulti    { get; set; }        // long [0..-]
         public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }
