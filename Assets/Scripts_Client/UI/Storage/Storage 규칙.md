@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-16 (캐릭터 칸 레벨 배지·경험치 게이지 — T-052 · 칸이 프레임을 꽉 채운다(여백 예외) · 도구 줄 — 정렬 방향 화살표 · 일괄 담기 — T-015 · T-056) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-19 (장비 탭 — T-043 장비 몫 · 칸의 탭별 표시 표 · '배' 마크의 두 뜻) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -9,7 +9,7 @@
 | `StorageCanvasView.cs` | 캔버스 껍데기 |
 | `StorageTabPresenter/` | 탭 4개를 쥐고 **어느 탭인가**를 정한다 (+ `StorageTab` enum · `TabChanged`) |
 | `StorageToolPresenter/` | 탭 아래 **도구 줄** — 정렬 방향 화살표 · 일괄 담기(범위 + 버튼) |
-| `StorageGridPresenter/` | **탭이 무엇이든 칸을 그리는 격자 하나** (+ 탭별 공급자 3개). 칸 자체는 캔버스를 넘어 공유되므로 [`UI/Shared/`](<../Shared/Shared 규칙.md>)에 있다 |
+| `StorageGridPresenter/` | **탭이 무엇이든 칸을 그리는 격자 하나** (+ 기반 `StorageSlotSource`와 탭별 공급자 3개 — 자원·캐릭터·장비). 칸 자체는 캔버스를 넘어 공유되므로 [`UI/Shared/`](<../Shared/Shared 규칙.md>)에 있다 |
 | `SellCartPresenter/` | **판매 목록**을 그린다 (+ 종속 View `SellCartRowView`) |
 
 > ※ **이 자리는 원래 "고른 항목의 상세"였다.** 2026-09-04에 판매 목록이 그 자리를 차지했고,
@@ -36,7 +36,7 @@ Tab Presenter   ─ 탭 버튼 4개를 쥔다. 전환은 여기 한 곳
       │
       ├ Resource  → ResourceSlotSource  : PlayerDataModel.Inventory   [기본 탭]
       ├ Character → CharacterSlotSource : PlayerDataModel.Characters
-      ├ Equipment → 없음 (버튼이 잠긴다)
+      ├ Equipment → EquipSlotSource     : PlayerDataModel.Equips
       └ Trait     → 없음 (버튼이 잠긴다)
 ```
 
@@ -69,11 +69,41 @@ Tab Presenter   ─ 탭 버튼 4개를 쥔다. 전환은 여기 한 곳
 > **④가 이 구조의 값이다.** 잠금 여부를 탭 줄에 적어 두지 않고 **격자에 공급자가 있는지**
 > (`HasSource`)로 판정하기 때문이다. 두 곳에 적으면 공급자를 붙이고도 버튼이 잠긴 채 남는다.
 
+**장비 탭(2026-09-19)이 이 절차로 열렸다** — `EquipSlotSource` 한 파일 + 등록 한 줄이었고,
+탭 줄·격자·전환은 한 줄도 고치지 않았다. 다만 칸의 **표시가 탭을 타면 격자도 한 줄 는다**:
+'배' 마크가 장비 탭에서는 '장착 중'을 뜻해 `Redraw`의 판정이 갈렸다(아래).
+
+### 칸의 표시 중 탭을 타는 것은 격자가 읽어 넘긴다
+
+공급자가 만드는 `SlotData`는 **이름·보조 문구·등급**뿐이다. 탭 전용 필드를 끼우면
+자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자(`StorageGridPresenter.Redraw`)가 읽어서 칸에 넘긴다.
+
+| 표시 | 켜지는 탭 | 판정 |
+|------|-----------|------|
+| 판매 담김 | 자원 | `SellCartModel.Contains` |
+| 적성 스트립 · 레벨 배지 · 경험치 게이지 | 캐릭터 | `PlayerDataModel` 조회 |
+| '배' 마크 | 캐릭터 = **배치 중** · 장비 = **장착 중** | `FindSlotIndexOf` / `IsEquipped` |
+
+> 마크 하나에 뜻이 둘인 것은 의도다 — 둘 다 "지금 다른 데 나가 있다"라서 사람이 읽는 법이 같고,
+> 프리팹에 표시를 하나 더 두면 칸이 두꺼워진다.
+
+### 장비 칸은 자원이 아니라 캐릭터를 닮았다
+
+- **개체가 키다.** 같은 장비를 여러 개 가질 수 있어 `Key`는 `EquipId`(개체)이고, 이름·등급·효과는
+  `EquipTid`로 `EquipTable`에서 읽는다. `ItemTable`이 아니다 — 장비는 자원과 다른 테이블·다른 패킷이다.
+- **보조 문구는 효과 한 줄이다** — `낚시 +30%` · 전 산업이면 `전산업 +10%`
+  (⚠️ 산업 `None`에 `IndustryLabel`을 쓰면 '미지정'이 나온다. 장비의 None은 **어디에나 붙는다**는 뜻이라 따로 쓴다).
+- **칸 순서의 주인은 서버다** — `EquipInfo.SlotPosition` 오름차순. 자원·캐릭터는 아직 서버 위치가 없어
+  도착 순서로 그리지만([T-058](../../../../tasks/T-058-창고칸위치서버.md) → [T-044](../../../../tasks/T-044-창고칸이동.md)),
+  장비는 이미 있어 재접속해도 자리가 유지된다.
+- **장착 중인 장비도 목록에 남는다** — 서버가 장착할 때 `SlotPosition`을 비우지 않는다. 빼면 "사라졌다"로 읽힌다.
+
 ### 아직 데이터가 없는 탭은 버튼을 잠근다
 
 눌러도 아무 일이 없으면 **고장 난 버튼과 구분되지 않는다.** 잠긴 버튼은 유니티 기본
 Disabled 색으로 흐려져 "지금은 없는 것"이 그대로 보인다.
 
+**지금 잠긴 것은 특성 탭 하나다**(서버 구현·패킷이 없다).
 **무엇을 기다리는지는 일감에 적혀 있다 → [`tasks/T-043`](../../../../tasks/T-043-창고장비특성탭.md).**
 여기 옮겨 적지 않는다 — 선행은 풀리면 바뀌는 값이라 두 곳에 두면 한쪽만 낡는다.
 

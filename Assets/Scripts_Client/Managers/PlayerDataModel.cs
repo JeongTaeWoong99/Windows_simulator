@@ -20,6 +20,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<ItemInfo>            _inventory        = new List<ItemInfo>();
     private readonly List<WorkStationSlotInfo> _workStationSlots = new List<WorkStationSlotInfo>();
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
+    private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
 
     // ─── 내부 상태 ───
@@ -189,6 +190,43 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return -1;
     }
 
+    // 내가 가진 장비들. 창고에 있든 캐릭터가 끼고 있든 전부 여기 있다.
+    //
+    // ⚠️ 캐릭터와 같은 모양이다 — 'EquipId'가 개체 번호이고 'EquipTid'가 종류다.
+    //   이름·등급·효과는 TID로 'EquipTable'에서 읽는다.
+    // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(창고 칸)을 그대로 두므로
+    //   창고에 남아 있고, 'IsEquipped'로 구분한다.
+    public IReadOnlyList<EquipInfo> Equips => _equips;
+
+    // 장비 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
+    public int GetEquipTid(long equipId)
+    {
+        foreach (var equip in _equips)
+        {
+            if (equip.EquipId == equipId)
+            {
+                return equip.EquipTid;
+            }
+        }
+
+        return 0;
+    }
+
+    // 이 장비를 캐릭터가 끼고 있는가. 창고에 있으면(또는 모르는 개체면) false.
+    // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 창고다.
+    public bool IsEquipped(long equipId)
+    {
+        foreach (var equip in _equips)
+        {
+            if (equip.EquipId == equipId)
+            {
+                return equip.EquippedCharacterId != 0L;
+            }
+        }
+
+        return false;
+    }
+
     // 해금('UnlockTable')이 열렸는가. 'UnlockTID = 0'은 조건이 없는 것이라 항상 열려 있다.
     // 서버 'User.IsUnlocked'와 같은 모양이다 — 콘텐츠는 "내 UnlockTID가 열렸나"만 묻는다.
     // 조건(골드·선행·레벨)을 여기서 다시 보지 않는다 — 목록에 있다는 것이 서버가 판정해 열어 줬다는 뜻이다.
@@ -221,6 +259,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<EResultCode>?           GachaFailed;      // 가챠 실패 (거절 사유)
 
     public event Action?                         CharactersChanged;          // 보유 캐릭터 캐시 갱신됨
+    public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
@@ -273,6 +312,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.GachaDrawn               += OnGachaDrawn;
         ServerPacketHandler.CharacterListReceived    += OnCharacterListReceived;
         ServerPacketHandler.CharacterSynced          += OnCharacterSynced;
+        ServerPacketHandler.EquipListReceived        += OnEquipListReceived;
+        ServerPacketHandler.EquipSynced              += OnEquipSynced;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -299,6 +340,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.GachaDrawn               -= OnGachaDrawn;
         ServerPacketHandler.CharacterListReceived    -= OnCharacterListReceived;
         ServerPacketHandler.CharacterSynced          -= OnCharacterSynced;
+        ServerPacketHandler.EquipListReceived        -= OnEquipListReceived;
+        ServerPacketHandler.EquipSynced              -= OnEquipSynced;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -414,6 +457,40 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         CharactersChanged?.Invoke();
+    }
+
+    // 보유 장비 스냅샷 — 캐시 교체 후 이벤트 발행
+    // ★ 로그인 시 자동으로 1회 수신(캐릭터 목록 뒤·작업슬롯 앞). 창고에 있든 끼고 있든 전부 실려 온다.
+    private void OnEquipListReceived(S_EquipListResponse res)
+    {
+        _equips.Clear();
+        _equips.AddRange(res.Equips);
+
+        EquipsChanged?.Invoke();
+    }
+
+    // 바뀐 장비 개체들 — 지급·장착·해제·자동 이동. 'EquipId'로 찾아 통째로 교체한다(확정값이다).
+    //
+    // ⚠️ 캐릭터('OnCharacterSynced')와 **반대로, 목록에 없는 개체는 추가한다.**
+    //   캐릭터는 보유 목록의 원본이 로그인 스냅샷 하나뿐이라 푸시로 늘리지 않지만,
+    //   장비는 이 패킷이 **지급 경로 그 자체**다(치트·가챠로 새 개체가 여기로 들어온다).
+    private void OnEquipSynced(S_EquipSyncResponse res)
+    {
+        foreach (var synced in res.Equips)
+        {
+            int index = _equips.FindIndex(equip => equip.EquipId == synced.EquipId);
+
+            if (index >= 0)
+            {
+                _equips[index] = synced;
+            }
+            else
+            {
+                _equips.Add(synced);
+            }
+        }
+
+        EquipsChanged?.Invoke();
     }
 
     // 작업슬롯 스냅샷 — 캐시 교체 후 이벤트 발행

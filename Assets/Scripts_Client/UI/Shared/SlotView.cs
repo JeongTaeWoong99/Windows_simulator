@@ -66,8 +66,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
-    // ※ 판매 표시와 자리가 같아도 겹치지 않는다 — 담기는 자원 탭에서만, 배치는 캐릭터 탭에서만 켜진다.
-    [SerializeField, Tooltip("이 캐릭터가 작업슬롯에서 일하는 중임을 알리는 표시. 평소에는 꺼져 있다")]
+    // ※ 판매 표시와 자리가 같아도 겹치지 않는다 — 담기는 자원 탭에서만, 이 표시는 캐릭터·장비 탭에서만 켜진다.
+    // ※ 뜻이 탭마다 다르다 — 캐릭터는 '작업슬롯에서 일하는 중', 장비는 '캐릭터가 끼고 있는 중'이다.
+    //   칸은 그 판단을 모른다. 무엇을 뜻하든 "지금 다른 데 나가 있다"라서 같은 표시를 쓴다.
+    [SerializeField, Tooltip("지금 쓰이고 있음을 알리는 표시 — 캐릭터는 작업 중, 장비는 장착 중. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
     // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
@@ -244,9 +246,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         sellMark.SetActive(on);
     }
 
-    // 이 캐릭터가 작업슬롯에서 일하는 중임을 표시한다 (창고 격자가 매번 그릴 때 호출).
+    // 이 칸이 지금 쓰이고 있음을 표시한다 (창고 격자가 매번 그릴 때 호출).
+    // 캐릭터는 작업슬롯에서 일하는 중, 장비는 캐릭터가 끼고 있는 중이다 — 무엇인지는 격자가 정한다.
     //
-    // 'SetSellMark'와 같은 성격이다 — 배치·해제로 계속 바뀐다.
+    // 'SetSellMark'와 같은 성격이다 — 배치·해제, 장착·해제로 계속 바뀐다.
     // 가챠 결과 팝업은 이걸 부르지 않으므로 거기서는 늘 꺼져 있다.
     public void SetAssignMark(bool on)
     {

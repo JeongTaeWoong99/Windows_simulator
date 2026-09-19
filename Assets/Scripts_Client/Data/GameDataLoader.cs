@@ -60,6 +60,7 @@ public static class GameDataLoader
     // 이미 경고한 Id. 매 프레임 갱신되는 UI에서 같은 경고가 쏟아지는 것을 막는다.
     private static readonly HashSet<int> _warnedItemIds      = new HashSet<int>();
     private static readonly HashSet<int> _warnedCharacterIds = new HashSet<int>();
+    private static readonly HashSet<int> _warnedEquipTids    = new HashSet<int>();
     private static readonly HashSet<int> _warnedAptitudes    = new HashSet<int>();
 
     // 아이템 이름을 조회한다. 표시용이라 예외 없이 '?#Id'로 떨어지고, 처음 한 번만 경고한다.
@@ -159,6 +160,42 @@ public static class GameDataLoader
         WarnUnknownId("캐릭터", characterTid, _warnedCharacterIds);
 
         return GlobalRarity.None;
+    }
+
+    // 장비 이름을 조회한다. 규칙은 'GetItemName'과 같다.
+    // ⚠️ 종류(TID)를 넣는다 — 개체 번호('EquipInfo.EquipId')를 넣으면 조회가 빗나간다.
+    public static string GetEquipName(int equipTid)
+    {
+        if (GameTable.EquipTable.TryGet(equipTid, out var row))
+        {
+            return row.Name;
+        }
+
+        WarnUnknownId("장비", equipTid, _warnedEquipTids);
+
+        return $"?#{equipTid}";
+    }
+
+    // 장비 등급을 조회한다. 규칙은 'GetItemRarity'와 같다 — 없는 TID는 'None'으로 떨어지고 처음 한 번만 경고한다.
+    public static GlobalRarity GetEquipRarity(int equipTid)
+    {
+        if (GameTable.EquipTable.TryGet(equipTid, out var row))
+        {
+            return row.GlobalRarity;
+        }
+
+        WarnUnknownId("장비", equipTid, _warnedEquipTids);
+
+        return GlobalRarity.None;
+    }
+
+    // 장비 정의 한 행. 부위·산업·속도 가산을 한꺼번에 봐야 하는 쪽이 쓴다(창고 장비 칸의 효과 문구·정렬).
+    //
+    // ※ 이름·등급과 달리 실패를 그대로 돌려준다 — 대체할 표시가 없고, 여러 값을 동시에 읽는 자리라
+    //   빗나갔을 때 무엇으로 떨어뜨릴지를 부르는 쪽이 정해야 한다('TryGetGachaInfo'와 같은 이유).
+    public static bool TryGetEquip(int equipTid, out EquipTableRow row)
+    {
+        return GameTable.EquipTable.TryGet(equipTid, out row);
     }
 
     // 적성(0~10)의 기본 작업속도(천분율, 1000 = 1.0배). 없는 적성이면 0이고 처음 한 번만 경고한다.
