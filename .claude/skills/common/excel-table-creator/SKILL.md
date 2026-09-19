@@ -3,7 +3,7 @@ name: excel-table-creator
 description: GameDesign/Excel의 게임 데이터 엑셀에 행(데이터)을 추가·수정하거나 시트·컬럼을 만들 때의 규칙. 클라·기획이 데이터를 넣을 때 주로 쓴다. 행 추가 절차, 서식 기준(정렬·칠·열 너비), TID 규칙, Ref 무결성, 파이프라인 실행을 담는다. 엑셀을 열지 않는 작업(코드만 수정)에는 해당 없음.
 ---
 
-> 최종 업데이트: 2026-09-19 (T-065 — 클라·기획 대상으로 재정리 · 행 추가 절차 · 서식 기준 · `format-excel.py`)
+> 최종 업데이트: 2026-09-19 (열린 엑셀은 그 파일만 저장 안 함으로 닫고 진행 · T-065 재정리)
 
 # 게임 데이터 엑셀 시트 작성
 
@@ -21,7 +21,7 @@ description: GameDesign/Excel의 게임 데이터 엑셀에 행(데이터)을 �
 1. **TID 대역을 확인한다.** 같은 시트의 기존 TID 규칙(예: 장비 `1xxx` 무기 · `2xxx` 장신구)을 따르고, 폐기된 번호를 다시 쓰지 않는다 (규칙 2)
 2. **행을 추가한다.** 컬럼명 행 아래 데이터 영역에만 쓴다. 비워도 되는 칸은 `Default(Null)`이 있는 칸뿐이다 (규칙 3)
 3. **`Ref`가 걸린 칸**은 대상 시트에 실제 있는 값만 넣는다 (예: `WorkSpeedTable.WorkSpeedTID`)
-4. 엑셀을 **닫고** `python GameDesign/format-excel.py <파일명>` → `GameDesign/generate-tables.ps1` 순으로 돌린다
+4. 엑셀이 열려 있으면 **그 파일만 닫고**(아래 "열린 엑셀 닫기") `python GameDesign/format-excel.py <파일명>` → `GameDesign/generate-tables.ps1` 순으로 돌린다
 5. `GameDesign/DataLog/*.json` diff에 **추가한 행만** 보이는지 확인하고, 엑셀·생성물과 함께 커밋한다
 
 > **시트·컬럼 신설 · 컬럼 이름 변경 · Enum 값 추가**는 여기서 멈추고 서버에 요청한다. 아래 규칙은 그때 서버가 따른다.
@@ -124,7 +124,19 @@ description: GameDesign/Excel의 게임 데이터 엑셀에 행(데이터)을 �
 GameDesign/generate-tables.ps1
 ```
 
-1. 엑셀을 **Excel에서 닫는다.** 열려 있으면 파일 잠금으로 즉시 실패한다.
+1. **고칠 엑셀이 열려 있으면 그 워크북만 저장하지 않고 닫는다.** 사용자에게 닫아 달라고 멈추지 않는다 (2026-09-19 사용자 지시).
+   열려 있으면 파일 잠금으로 저장·파이프라인이 즉시 실패한다.
+
+   ```powershell
+   # 열림 확인: GameDesign/Excel/~$<파일명>.xlsx (잠금 파일)이 있으면 열려 있다
+   $x = [Runtime.InteropServices.Marshal]::GetActiveObject('Excel.Application')
+   $x.Workbooks | Where-Object FullName -eq 'C:\...\GameDesign\Excel\Item.xlsx' | ForEach-Object { $_.Close($false) }
+   ```
+
+   - **닫는 것은 그 워크북 하나뿐이다.** Excel 프로세스를 끄거나 다른 워크북을 닫지 않는다.
+   - 저장하지 않고 닫으므로 **Excel에서 고치던 내용은 버려진다** — 닫았으면 어떤 파일을 닫았는지 사용자에게 한 줄로 알린다.
+   - 닫은 뒤 `~$` 잠금 파일이 사라졌는지 확인하고 진행한다.
+   - `GetActiveObject`가 `MK_E_UNAVAILABLE`로 실패하면 Excel이 꺼져 있는 것이다 — 닫을 것이 없으니 그대로 진행한다.
 2. `python GameDesign/format-excel.py`로 서식을 맞춘다.
 3. 파이프라인을 돌린다. `Ref` 검사 → 코드 생성 → `.bytes` 생성 → C# 9 검사 → Unity 미러.
 4. **엑셀과 생성물을 같은 커밋에 담는다.** `GameDesign/DataLog/*.json`의 diff가
@@ -147,5 +159,5 @@ GameDesign/generate-tables.ps1
 - [ ] 로직이 읽는 수치 컬럼에 `Default(Null)`을 두지 않았다 (빈 셀 = 오류)
 - [ ] `Description`에 `Default(Null) = ""` 를 지정했다
 - [ ] 설명 행 `//`을 짧게 썼다 (부연은 셀 메모로)
-- [ ] 엑셀을 닫고 `format-excel.py` → `generate-tables.ps1`을 돌렸다
+- [ ] 열려 있던 엑셀은 그 파일만 저장 안 함으로 닫고(닫았다고 알림) `format-excel.py` → `generate-tables.ps1`을 돌렸다
 - [ ] 엑셀 + 생성물 + `DataLog` diff를 같은 커밋에 담았다
