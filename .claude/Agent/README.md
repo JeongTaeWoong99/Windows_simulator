@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-20 0920 QA 피드백 답변 문서화 · 일감 반영](2026-09-20-qa-feedback-0920.md) — `#docs` `#client` 규빈님 피드백 8건에 답을 달고 일감 4건 신규 + T-058 확장
 - [2026-09-19 장비 시트 밸런싱 — 5행 → 69종](2026-09-19-equip-table-balance.md) — `#data` `#design` 무기·보석은 산업 전용, 장신구는 전 산업 (Common~Mythic)
 - [2026-09-19 창고 장비 탭 · 치트 장비 지급·정산 횟수](2026-09-19-equip-storage-tab.md) — `#client` `#ui` `#editor` 장비가 화면에 보이는 첫 경로 (T-043 장비 몫 · T-059)
 - [2026-09-17 캐릭터 장비 시스템 서버 구현 — EquipTable · 장착/해제 · 속도 가산](2026-09-17-equip-server.md) — `#server` `#data` `#protocol` `#test` T-002 완료 · 종류/칸 분리 · 자동 이동 트랜잭션 · Unity CLI 실서버 검증

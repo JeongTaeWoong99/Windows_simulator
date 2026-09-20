@@ -170,7 +170,7 @@ UI 위인지 판정한다. (`WindowManager.GetCursorScreenPosition` / `IsPointer
   > ⚠️ **실제로 사고가 났다** — 소켓 송수신 루프가 `UnitySynchronizationContext`를 캡처해
   > 메인 스레드에 묶여 있던 탓에, **창을 5초 이상 끌면 하트비트가 멈춰 서버가 세션을 끊었다.**
   > 판단 대기 중이다 → [이슈 #19](https://github.com/JeongTaeWoong99/Windows_simulator/issues/19) ·
-  > [T-040](../../../tasks/T-040-하트비트해결방향.md)
+  > [T-040](../../../tasks/archive/T-040-하트비트해결방향.md)
   >
   > **메인 스레드 정지에 취약한 것(하트비트·타임아웃·연결 유지)은 메인 루프에 얹지 않는다.**
   > 새로 붙일 때 이 함정을 먼저 확인한다.
