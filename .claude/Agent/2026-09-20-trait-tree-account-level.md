@@ -6,7 +6,7 @@ tags: [client, ui, storage, state, workstation]
 
 # 특성 트리 화면 · 계정 레벨 표시 · 산업 레벨 선택 칸
 
-→ 일감 `tasks/T-068` · `tasks/T-043` · 이슈 #29
+→ 일감 `tasks/archive/T-068` · `tasks/archive/T-043` · 이슈 #29
 → 화면 구조는 `Assets/Scripts_Client/UI/Storage/Storage 규칙.md`("특성 화면") ·
   `State 규칙.md`("계정 레벨") · `Main 규칙.md`("배치는 축이 둘이다")
 

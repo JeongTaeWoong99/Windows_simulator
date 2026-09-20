@@ -19,7 +19,7 @@ tags: [client, ui, refactor, mvp, scene]
 > 최종 `(MAIN VIEW)`/`(↓ SUB VIEW)`. 아래 "표기를 세 번 갈아엎었다" 참조.
 
 결과 구조와 규칙은 전부
-[`UI 스크립트 규칙.md`](../../Assets/Scripts_Client/UI/UI%20스크립트%20규칙.md)에 있다. 여기엔 결정과 지뢰만 남긴다.
+[`UI 규칙.md`](../../Assets/Scripts_Client/UI/UI%20규칙.md) (당시 이름은 `UI 스크립트 규칙.md`)에 있다. 여기엔 결정과 지뢰만 남긴다.
 
 ## 주요 결정 / 근거
 

@@ -116,4 +116,4 @@ private readonly Dictionary<ItemType, int> _industryUnlocks;
 - `GameDesign/Excel/Enum.xlsx` — `ItemType` 시트
 - `Server/MikaProtocol/PacketEnum.cs` — `EIndustryType`(이미 분리됨)
 - `Server/WSGameServer/User/Character/Character.cs` — `Industries`
-- [캐릭터](../GameDesign/design/character/README.md) 7.1
+- [캐릭터](../../GameDesign/design/character/README.md) 7.1

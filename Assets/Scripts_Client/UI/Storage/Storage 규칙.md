@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-20 (특성 탭이 열렸다 — 격자를 쓰지 않는 첫 탭 · T-068) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-21 (특성 탭이 열렸다 — 격자를 쓰지 않는 첫 탭 · T-068) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -82,8 +82,9 @@ Tab Presenter   ─ 탭 버튼 4개를 쥔다. 전환은 여기 한 곳
 3. `StorageGridPresenter.EnsureInitialized`의 공급자 등록에 **한 줄** 더한다
 4. **`StorageTabPresenter`는 고치지 않는다** — 공급자가 생기면 그 탭은 저절로 눌린다
 
-> **④가 이 구조의 값이다.** 잠금 여부를 탭 줄에 적어 두지 않고 **격자에 공급자가 있는지**
-> (`HasSource`)로 판정하기 때문이다. 두 곳에 적으면 공급자를 붙이고도 버튼이 잠긴 채 남는다.
+> **④가 이 구조의 값이다.** 잠금 여부를 탭 줄에 적어 두지 않고 **그릴 것이 있는지**
+> (`HasScreen` → 격자 탭이면 `HasSource`)로 판정하기 때문이다.
+> 두 곳에 적으면 공급자를 붙이고도 버튼이 잠긴 채 남는다.
 
 **장비 탭(2026-09-19)이 이 절차로 열렸다** — `EquipSlotSource` 한 파일 + 등록 한 줄이었고,
 탭 줄·격자·전환은 한 줄도 고치지 않았다. 다만 칸의 **표시가 탭을 타면 격자도 한 줄 는다**:
@@ -467,8 +468,8 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 
 ## ⚠️ `Start` 순서에 기대지 않는다
 
-`StorageTabPresenter.Start`가 격자에게 `HasSource`를 묻는데, **유니티는 두 `Start`의 순서를
-보장하지 않는다.** 격자가 나중에 돌면 공급자가 아직 비어 있어 **모든 탭이 잠긴 채로 굳는다.**
+`StorageTabPresenter.Start`가 `HasScreen`을 거쳐 격자에게 `HasSource`를 묻는데,
+**유니티는 두 `Start`의 순서를 보장하지 않는다.** 격자가 나중에 돌면 공급자가 아직 비어 있어 **모든 탭이 잠긴 채로 굳는다.**
 
 → `StorageGridPresenter.EnsureInitialized()`가 **양쪽에서 불릴 수 있고 두 번 불려도 한 번만 돈다.**
 격자에 무언가를 묻는 public 메서드를 새로 만들면 **그 앞에도 같은 호출을 둔다.**

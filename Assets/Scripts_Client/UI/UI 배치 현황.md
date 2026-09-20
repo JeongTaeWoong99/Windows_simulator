@@ -46,7 +46,7 @@ Root Canvas
 │  │  │  │           └─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
 │  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 40 — 정렬 화살표 · -(Layout) · 등급 범위 드롭다운 · [판매]
 │  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
-│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
+│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
 │  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ SlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
