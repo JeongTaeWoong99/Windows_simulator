@@ -128,7 +128,7 @@
 | [`ugui-mvp`](.claude/skills/client/ugui-mvp/SKILL.md) | 화면·위젯을 **새로 만들** 때 · 이름/부착 위치/폴더를 정할 때 | MVP 역할 분담 · 이름 규칙 · Presenter 뼈대 |
 | [`ugui-layout`](.claude/skills/client/ugui-layout/SKILL.md) | 배치를 짜거나, **배치가 의도대로 안 나올 때** | Canvas·LayoutGroup 함정과 정석 구조 |
 | [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
-| [`unity-handoff`](.claude/skills/client/unity-handoff/SKILL.md) | 답변 후 에디터 수작업이 남을 때 | 유니티 어시스턴트용 프롬프트 생성 |
+| [`unity-editor-ops`](.claude/skills/client/unity-editor-ops/SKILL.md) | 에디터를 조작할 때 — 씬·프리팹·인스펙터·SO·플레이 모드·테스트·빌드 · 코드 파일만 고치면 해당 없음 | 실행 경로(Unity CLI → MCP → 사람 인계) · 실행 전 확인받을 작업 · 핸드오프 프롬프트 |
 
 ### 서버 — `Server/.claude/skills/`
 

@@ -328,7 +328,7 @@ v2 목업에서 이 줄은 **버튼 5개**로 구체화됐다 — `창고` · `�
 | 코드 스타일 | `.claude/skills/client/clean-code-style` |
 | 기능 설계 | `.claude/skills/client/feature-design` |
 | 성능 | `.claude/skills/client/optimization` — 상시 실행이므로 특히 중요 |
-| 에디터 작업 | `.claude/skills/client/unity-handoff` |
+| 에디터 작업 | `.claude/skills/client/unity-editor-ops` |
 
 ---
 
