@@ -9,7 +9,7 @@ tags: [data, design]
 ## 목적 / 배경
 - 창고 장비 탭은 열었는데 **볼 장비가 5종(테스트값)뿐**이었다. 등급도 Common~Rare까지만 있어
   등급색·사다리를 확인할 수 없었다.
-- `Equip.xlsx`를 채워 **뽑기 풀([T-067](../../tasks/T-067-장비뽑기.md))이 곧바로 쓸 수 있는 상태**로 만들었다.
+- `Equip.xlsx`를 채워 **뽑기 풀([T-067](../../tasks/archive/T-067-장비뽑기.md))이 곧바로 쓸 수 있는 상태**로 만들었다.
 
 ## 변경 내용
 - `GameDesign/Excel/Equip.xlsx` — 69행 (+ 생성물 `.cs`·`.bytes`·`DataLog`)
