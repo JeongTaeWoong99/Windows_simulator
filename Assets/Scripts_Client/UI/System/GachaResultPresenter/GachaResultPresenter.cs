@@ -4,12 +4,17 @@ using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 가챠 결과 팝업 — 이번에 뽑힌 보상을 5열로 늘어놓고, 닫기를 누르면 사라진다.
+// 보상 결과 팝업 — 이번에 얻은 것을 5열로 늘어놓고, 닫기를 누르면 사라진다.
 // 칸은 창고와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
 // ⚠️ 그래서 창고 쪽을 고치면 이 팝업도 함께 바뀐다.
 //
+// ■ 가챠와 상자 개봉이 같은 팝업을 쓴다
+// 서버가 상자 개봉 결과를 가챠와 **같은 모양**('GachaRewardInfo')으로 내려주기 때문이다.
+// 연출을 두 벌 만들면 한쪽만 고쳐지므로 여기 하나로 둔다(T-033).
+// 늘어놓는 방식만 갈린다 — 가챠는 뽑힌 순서 그대로, 상자는 종류별 합계다('OnItemUseCompleted').
+//
 // ■ 왜 거래 열이 아니라 '!System Canvas'인가
-// 이 팝업은 'PlayerDataModel.GachaCompleted'를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
+// 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
 // 거래 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
 // 최상단 상주 오버레이로 두면 어느 열이 열려 있든 결과가 뜬다.
 //
@@ -56,7 +61,7 @@ public class GachaResultPresenter : MonoBehaviour
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
 
-        SetVisible(false); // 시작은 숨김 — 가챠 결과가 오면 켜진다
+        SetVisible(false); // 시작은 숨김 — 가챠·개봉 결과가 오면 켜진다
         _isReady = true;
     }
 
@@ -77,7 +82,7 @@ public class GachaResultPresenter : MonoBehaviour
 
     #region 구독
 
-    // 가챠 성공 도착 구독 (Start · OnEnable에서 호출)
+    // 가챠·상자 개봉 성공 도착 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -85,8 +90,9 @@ public class GachaResultPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed        = true;
-        _data.GachaCompleted += OnGachaCompleted;
+        _isSubscribed           = true;
+        _data.GachaCompleted   += OnGachaCompleted;
+        _data.ItemUseCompleted += OnItemUseCompleted;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -97,65 +103,148 @@ public class GachaResultPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed        = false;
-        _data.GachaCompleted -= OnGachaCompleted;
+        _isSubscribed           = false;
+        _data.GachaCompleted   -= OnGachaCompleted;
+        _data.ItemUseCompleted -= OnItemUseCompleted;
     }
 
     #endregion
 
     #region 결과 표시
 
-    // 뽑힌 보상을 그리고 팝업을 띄운다 (PlayerDataModel.GachaCompleted 구독)
+    // 가챠 결과 도착 — 뽑힌 순서 그대로 늘어놓는다 (PlayerDataModel.GachaCompleted 구독)
+    private void OnGachaCompleted(List<GachaRewardInfo> rewards)
+    {
+        Show(ToSlots(rewards), "가챠");
+    }
+
+    // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
+    //
+    // ■ 왜 가챠와 달리 합치는가
+    // 상자는 한 번에 99개까지 깐다 — 낱개로 늘어놓으면 칸이 수백 개가 되어 화면이 그동안 잠긴다.
+    // 사람이 알고 싶은 것도 "무엇을 얼마나 얻었나"이지 몇 번째로 무엇이 나왔는지가 아니다.
+    // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
+    // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
+    private void OnItemUseCompleted(List<GachaRewardInfo> rewards)
+    {
+        Show(Summarize(rewards), "상자 개봉");
+    }
+
+    // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
     //
     // 보상이 비어 있으면 띄우지 않는다 — 빈 창이 뜨면 사용자가 닫기를 누를 때까지 화면이 막힌다.
     // 성공 응답에 보상이 없는 건 서버 쪽 이상이므로 경고만 남기고 조용히 지나간다.
-    private void OnGachaCompleted(List<GachaRewardInfo> rewards)
+    //   source : 경고에 적을 출처. 두 경로가 같은 팝업을 쓰므로 어느 쪽이 비었는지 로그로 갈린다
+    private void Show(List<SlotData> slots, string source)
     {
-        if (rewards.Count == 0)
+        if (slots.Count == 0)
         {
-            ClientLogger.Warn(ClientLogger.UI, "가챠 성공 응답에 보상이 비어 있다 — 결과 팝업을 띄우지 않는다.", this);
+            ClientLogger.Warn(ClientLogger.UI, $"{source} 성공 응답에 보상이 비어 있다 — 결과 팝업을 띄우지 않는다.", this);
 
             return;
         }
 
-        for (int i = 0; i < rewards.Count; i++)
+        for (int i = 0; i < slots.Count; i++)
         {
-            GachaRewardInfo reward = rewards[i];
             SlotView slot = GetOrCreateSlot(i);
 
             slot.gameObject.SetActive(true);
-            slot.Bind(ToSlotData(reward));
+            slot.Bind(slots[i]);
         }
 
-        HideSlotsFrom(rewards.Count);
+        HideSlotsFrom(slots.Count);
         SetVisible(true);
     }
 
-    // 보상 하나를 칸에 그릴 값으로 옮긴다 (OnGachaCompleted에서 호출).
-    //
-    // ⚠️ 'RewardType'이 어느 TID 필드를 읽을지 정한다 — 아이템이면 'ItemId', 캐릭터면 'CharacterTid'이고
-    //   나머지 하나는 0이다. 분기하지 않고 'ItemId'만 읽으면 캐릭터 보상이 빈 칸으로 그려지는데,
-    //   필드가 추가만 된 형태라 컴파일도 경고도 통과한다.
-    // ※ 등급은 테이블을 다시 뒤지지 않고 패킷 값을 쓴다 — 두 값이 어긋났을 때 조용히 패킷 쪽을
-    //   무시하게 된다. 캐릭터도 아이템과 같은 등급 축이다.
-    // ※ 캐릭터 이름은 **종류(TID)** 로 읽는다. 개체 번호가 아니다 — 개체 PK는 DB가 늦게 발급해서
-    //   이 응답에 실리지 않고, 뒤이어 오는 'S_CharacterListResponse'로 온다.
-    private static SlotData ToSlotData(GachaRewardInfo reward)
+    // 보상 목록을 받은 순서 그대로 칸 값으로 옮긴다 (OnGachaCompleted에서 호출).
+    private static List<SlotData> ToSlots(List<GachaRewardInfo> rewards)
     {
-        GlobalRarity rarity = RarityPalette.ToTableRarity(reward.Rarity);
+        var slots = new List<SlotData>(rewards.Count);
 
-        if (reward.RewardType == EGachaRewardType.Character)
+        foreach (GachaRewardInfo reward in rewards)
         {
-            return new SlotData(reward.CharacterTid,
-                                       GameDataLoader.GetCharacterName(reward.CharacterTid),
-                                       reward.Count.ToString(),
-                                       rarity);
+            slots.Add(ToSlotData(reward, reward.Count));
         }
 
-        return new SlotData(reward.ItemId,
-                                   GameDataLoader.GetItemName(reward.ItemId),
-                                   reward.Count.ToString(),
-                                   rarity);
+        return slots;
+    }
+
+    // 같은 종류끼리 수량을 합쳐 칸 값으로 옮긴다 — 칸 수가 '뽑힌 건수'가 아니라 '종류 수'가 된다
+    // (OnItemUseCompleted에서 호출).
+    //
+    // ⚠️ 묶는 열쇠는 TID 하나가 아니라 **보상 종류 + TID**다. 아이템 1001과 장비 1001은 다른 물건이라
+    //   TID만으로 묶으면 조용히 한 칸으로 합쳐진다. 골드는 TID가 없어 종류 하나로 전부 모인다.
+    // ※ 순서는 처음 나온 순서를 지킨다 — 등급이나 이름으로 정렬하면 "무엇이 먼저 나왔나"가 사라진다.
+    //   받은 보상('GachaRewardInfo')은 고쳐 쓰지 않는다. 다른 구독자도 같은 객체를 보고 있다.
+    private static List<SlotData> Summarize(List<GachaRewardInfo> rewards)
+    {
+        // 종류마다 처음 나온 보상(이름·등급의 출처)과 그 종류의 합계 수량을 나란히 쌓는다.
+        var firsts  = new List<GachaRewardInfo>();
+        var totals  = new List<long>();
+        var indexOf = new Dictionary<(EGachaRewardType Type, int Tid), int>();
+
+        foreach (GachaRewardInfo reward in rewards)
+        {
+            (EGachaRewardType Type, int Tid) key = (reward.RewardType, TidOf(reward));
+
+            if (!indexOf.TryGetValue(key, out int index))
+            {
+                index = firsts.Count;
+
+                indexOf.Add(key, index);
+                firsts.Add(reward);
+                totals.Add(0L);
+            }
+
+            totals[index] += reward.Count;
+        }
+
+        var slots = new List<SlotData>(firsts.Count);
+
+        for (int i = 0; i < firsts.Count; i++)
+        {
+            slots.Add(ToSlotData(firsts[i], totals[i]));
+        }
+
+        return slots;
+    }
+
+    // 이 보상이 가리키는 **종류 번호**. 묶음 열쇠와 칸의 'Key'가 같은 값을 써야 해서 한곳에 모았다.
+    //
+    // ⚠️ 개체 번호가 아니다 — 개체 PK는 DB가 늦게 발급해서 이 응답에 실리지 않고,
+    //   뒤이어 오는 'S_CharacterListResponse'·'S_EquipSyncResponse'로 온다.
+    // ※ 골드는 TID가 없다. 0으로 떨어뜨려도 종류가 갈라 주므로 다른 보상과 섞이지 않는다.
+    private static int TidOf(GachaRewardInfo reward) => reward.RewardType switch
+    {
+        EGachaRewardType.Character => reward.CharacterTid,
+        EGachaRewardType.Equip     => reward.EquipTid,
+        EGachaRewardType.Gold      => 0,
+        _                          => reward.ItemId,
+    };
+
+    // 보상 하나를 칸에 그릴 값으로 옮긴다 (ToSlots · Summarize에서 호출).
+    //   count : 칸에 적을 수량. 가챠는 보상 한 건의 수량이고, 상자는 그 종류의 합계다
+    //
+    // ⚠️ 'RewardType'이 어느 필드를 읽을지 정한다 — 분기하지 않고 'ItemId'만 읽으면 그 보상이
+    //   빈 칸으로 그려지는데, 필드가 **추가만 된 형태라 컴파일도 경고도 통과한다.**
+    //   실제로 캐릭터 축이 들어왔을 때 이 사고가 한 번 났다.
+    // ※ 등급은 테이블을 다시 뒤지지 않고 패킷 값을 쓴다 — 두 값이 어긋났을 때 조용히 패킷 쪽을
+    //   무시하게 된다. 캐릭터·장비도 아이템과 같은 등급 축이다.
+    // ※ 골드는 등급이 'None'으로 와서 'RarityPalette'가 회색으로 떨어뜨린다 — 그대로 둔다.
+    private static SlotData ToSlotData(GachaRewardInfo reward, long count)
+    {
+        GlobalRarity rarity = RarityPalette.ToTableRarity(reward.Rarity);
+        int          tid    = TidOf(reward);
+
+        string name = reward.RewardType switch
+        {
+            EGachaRewardType.Character => GameDataLoader.GetCharacterName(tid),
+            EGachaRewardType.Equip     => GameDataLoader.GetEquipName(tid),
+            EGachaRewardType.Gold      => "골드",
+            _                          => GameDataLoader.GetItemName(tid),
+        };
+
+        return new SlotData(tid, name, count.ToString("N0"), rarity);
     }
 
     // 'index'번째 칸을 돌려준다. 아직 없으면 그때 만든다 (OnGachaCompleted에서 호출)

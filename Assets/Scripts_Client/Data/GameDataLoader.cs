@@ -123,6 +123,16 @@ public static class GameDataLoader
         return 0;
     }
 
+    // 이 아이템이 **열 수 있는 상자**인가. 서버와 같은 판정이다 — 'OpenGachaId'가 있으면 상자다.
+    //
+    // 상자만 따로 표시하는 분류('ItemType')가 없다 — 열었을 때 무엇이 나오는지가 상자의 정의라
+    // 서버도 이 컬럼 하나로 가른다. 여기서 분류를 하나 더 만들면 두 곳이 어긋날 수 있다.
+    // ※ 없는 Id는 '상자가 아니다'로 떨어진다 — 경고는 이름·등급 조회에서 이미 나므로 여기서 또 내지 않는다.
+    public static bool IsBox(int itemId)
+    {
+        return GameTable.ItemTable.TryGet(itemId, out var row) && row.OpenGachaId != 0;
+    }
+
     // 가챠 풀의 메타(이름·비용)를 조회한다. 'GachaId'는 'GachaInfoTID'와 같은 값이다.
     //
     // ※ 여기만 이름·등급 조회와 달리 실패를 그대로 돌려준다 — 값이 없으면 대체할 표시가 없고,

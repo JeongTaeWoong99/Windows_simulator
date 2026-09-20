@@ -14,9 +14,9 @@ using UnityEngine.UI;
 // 같아야 할 것을 여러 벌로 두면 한쪽만 고쳐지기 때문이다.
 // 그래서 이 뷰는 '어느 화면에 있는지'도 '무엇을 그리는지'도 모른다. 값은 부르는 쪽이 완성해서 넘긴다.
 //
-// ■ 우클릭도 마찬가지다 — 여기서는 '무슨 뜻인지' 모른다
-// 우클릭을 이벤트로 위에 던지기만 하고, 그것이 판매 담기인지는 격자가 정한다.
-// 가챠 결과 팝업은 이 이벤트를 구독하지 않아 아무 일도 일어나지 않는다.
+// ■ 클릭도 마찬가지다 — 여기서는 '무슨 뜻인지' 모른다
+// 좌·우클릭을 이벤트로 위에 던지기만 하고, 그것이 판매 담기인지 상자 개봉인지는 격자가 정한다.
+// 가챠 결과 팝업은 이 이벤트들을 구독하지 않아 아무 일도 일어나지 않는다.
 public class SlotView : MonoBehaviour, IPointerClickHandler
 {
     [CenterHeader("참조")]
@@ -85,6 +85,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 이 칸을 우클릭했다 — 무슨 뜻인지는 이 칸을 만든 화면이 정한다.
     public event Action<SlotView>? RightClicked;
 
+    // 이 칸을 좌클릭했다 — 위와 같다. 창고 격자가 '상자 개봉'으로 읽는다.
+    public event Action<SlotView>? LeftClicked;
+
     // 화면이 보조 문구를 쓰겠다고 했나('SetSubVisible'). 적성 스트립과 자리가 같아
     // 문구를 되돌릴 때 이 값이 필요하다 — 스트립을 끈다고 팝업에서 꺼 둔 문구가 살아나선 안 된다.
     private bool _isSubAllowed = true;
@@ -118,17 +121,22 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(false);
     }
 
-    // 칸을 클릭했다 — 우클릭만 위로 던진다 (EventSystem 클릭 콜백).
+    // 칸을 클릭했다 — 좌·우를 갈라 위로 던진다 (EventSystem 클릭 콜백).
     //
-    // 좌클릭은 아직 쓰지 않는다. 여기서 걸러 내지 않으면 판매 담기가 좌클릭에도 걸린다.
+    // 가운데 버튼은 버린다. 갈라 두지 않으면 판매 담기가 아무 버튼에나 걸린다.
     public void OnPointerClick(PointerEventData eventData)
     {
-        if (eventData.button != PointerEventData.InputButton.Right)
+        if (eventData.button == PointerEventData.InputButton.Right)
         {
+            RightClicked?.Invoke(this);
+
             return;
         }
 
-        RightClicked?.Invoke(this);
+        if (eventData.button == PointerEventData.InputButton.Left)
+        {
+            LeftClicked?.Invoke(this);
+        }
     }
 
     // 완성된 표시값을 그린다 ('StorageGridPresenter'·'GachaResultPresenter'가 호출).

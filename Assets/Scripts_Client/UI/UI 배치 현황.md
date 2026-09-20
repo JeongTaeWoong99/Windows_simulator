@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-18 (FPS 텍스트 · 설정 표시 드롭다운 추가 — T-062) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-20 (가챠 버튼 4 → 8줄 · 구슬 풀 제거 — T-067 · #30) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -91,9 +91,10 @@ Root Canvas
 │     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 950 · flexH 0
 │     │  ├─ Title                                 (정적 요소 — 표기 없음)
-│     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   Draws 4줄 (풀 2종 x 1회·10회)
-│     │     └─ Gacha Send Button (0..3)           자원 1·10회 · 캐릭터 1·10회 순.
+│     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   Draws 8줄 (풀 4종 x 1회·10회)
+│     │     └─ Gacha Send Button (0..7)           캐릭터 · 무기 · 장신구 · 보석 순, 각 1·10회.
 │     │                                           이름·비용 문구는 Start 가 테이블에서 채운다
+│     │                                           ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
@@ -101,6 +102,7 @@ Root Canvas
    │  └─ Text (TMP)                               회색 22 · raycastTarget 끔(클릭스루)
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
+   │                                               가챠·상자 개봉 공용 (T-033)
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
    ├─ Amount Input Presenter (↓ SUB VIEW)          AmountInputPresenter  UIManager.AskAmount 가 연다
    │  └─ Panel                                    440x240 (제목 · 수량 입력 · 확인/취소)

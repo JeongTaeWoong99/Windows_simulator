@@ -27,7 +27,7 @@ public class GachaPresenter : MonoBehaviour
     [Serializable]
     private struct DrawEntry
     {
-        [Tooltip("뽑을 풀 Id (= GachaInfoTable의 GachaInfoTID). 1=구슬 상자 · 2=캐릭터 소환")]
+        [Tooltip("뽑을 풀 Id (= GachaInfoTable의 GachaInfoTID). 2=캐릭터 · 3=무기 · 4=장신구 · 5=보석")]
         public int gachaId;
 
         [Tooltip("한 번에 뽑을 횟수. 서버가 1과 10만 받는다")]
@@ -47,7 +47,7 @@ public class GachaPresenter : MonoBehaviour
     //   [1] 목록 순서를 화면과 나란히 두어야 사람이 한눈에 대조할 수 있다.
     //   [2] reorderable list로 그려지면 Unity가 그 위의 [CenterHeader]를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
     [CenterHeader("참조")]
-    [SerializeField, NonReorderable, Tooltip("뽑기 버튼들. 화면과 같은 순서로 넣는다 (자원 1회·10회 · 캐릭터 1회·10회)")]
+    [SerializeField, NonReorderable, Tooltip("뽑기 버튼들. 화면과 같은 순서로 넣는다 (풀마다 1회·10회 두 줄)")]
     private DrawEntry[] draws = new DrawEntry[0];
 
     // draws[i]의 비용. 버튼 잠금 판정이 매 재화 변경마다 도므로 테이블을 다시 뒤지지 않는다.

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
 
@@ -34,6 +35,10 @@ using UnityEngine;
 //   칸('SlotView')은 우클릭을 이벤트로 던지기만 하고 무슨 뜻인지 모른다.
 //   그것을 판매로 읽는 것이 여기다 — 서버 판매 패킷이 아이템 TID 축이라 캐릭터는 담을 수 없어서
 //   자원 탭이 아니면 무시한다 (동선은 'Storage 규칙.md').
+//
+// ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸에서만)
+//   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
+//   한 조작에 두 뜻을 겹치면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
 public class StorageGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -73,10 +78,16 @@ public class StorageGridPresenter : MonoBehaviour
     // 지금 열린 탭. 우클릭을 판매로 읽어도 되는 탭인지 여기서 가른다.
     private StorageTab _currentTab = StorageTab.Resource;
 
-    private PlayerDataModel _data = null!;
-    private SellCartModel   _cart = null!;
-    private UIManager       _ui   = null!;
+    private PlayerDataModel   _data    = null!;
+    private SellCartModel     _cart    = null!;
+    private UIManager         _ui      = null!;
+    private NetworkManager    _network = null!;
+    private ServerWaitManager _wait    = null!;
 
+    // 진행 중인 개봉 대기의 손잡이. 응답이 오면 결과를 보고하고, 무응답이면 스스로 타임아웃된다.
+    private ServerWaitHandle? _waitHandle;
+
+    private bool _isOpeningBox;   // 개봉 응답을 기다리는 중인가 — 연타로 두 번 나가면 상자가 두 번 빠진다
     private bool _isCartSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -88,6 +99,13 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 이 탭의 칸이 장비인가. '배' 마크의 뜻이 여기서만 '장착 중'으로 바뀐다.
     private bool IsEquipTab => _currentTab == StorageTab.Equipment;
+
+    // 이 탭의 'Key'가 아이템 TID인가. 상자 개봉은 여기서만 연다.
+    //
+    // ⚠️ 지금 'IsSellableTab'과 값이 같지만 **합치지 않는다.** 판매 축이 캐릭터·장비로 넓어지면
+    //   ('C_ItemSellRequest'가 TID 축이라 서버 패킷이 먼저다) 그쪽이 true가 되면서 상자 개봉까지
+    //   따라 열린다. 캐릭터·장비 탭의 'Key'는 **개체 PK**라 상자 TID와 우연히 겹칠 수 있다.
+    private bool IsItemKeyTab => _currentTab == StorageTab.Resource;
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
     private void Start()
@@ -124,9 +142,11 @@ public class StorageGridPresenter : MonoBehaviour
 
         var data = Services.Get<PlayerDataModel>();
 
-        _data = data;
-        _cart = Services.Get<SellCartModel>();
-        _ui   = Services.Get<UIManager>();
+        _data    = data;
+        _cart    = Services.Get<SellCartModel>();
+        _ui      = Services.Get<UIManager>();
+        _network = NetworkManager.Instance;
+        _wait    = Services.Get<ServerWaitManager>();
 
         // ★ 탭을 하나 채우는 일은 여기 한 줄로 끝난다 — 공급자를 만들어 등록하면
         //   전환·잠금·격자는 그대로다 ('Storage 규칙.md'의 "탭 하나를 채우는 절차").
@@ -143,6 +163,11 @@ public class StorageGridPresenter : MonoBehaviour
 
         // ※ 로그인은 창고가 닫혀 있어도 알아야 해서 켜고 끌 때 풀지 않는다 — 파괴될 때만 푼다.
         _data.LoginCompleted += OnLoginCompleted;
+
+        // ※ 개봉 결과도 같은 이유로 켜고 끌 때 풀지 않는다 — 응답이 늦게 오는 사이 창고를 닫으면
+        //   대기 손잡이가 영영 안 닫혀 로딩이 남는다.
+        _data.ItemUseCompleted += OnItemUseCompleted;
+        _data.ItemUseFailed    += OnItemUseFailed;
 
         // ※ 카트 구독은 여기서 시작한다 — 'OnEnable'은 'EnsureInitialized'보다 먼저 돌 수 있어
         //   (탭 줄의 Start가 우리를 깨우는 경로) 거기에만 두면 첫 판이 구독을 놓친다.
@@ -192,7 +217,9 @@ public class StorageGridPresenter : MonoBehaviour
             return;
         }
 
-        _data.LoginCompleted -= OnLoginCompleted;
+        _data.LoginCompleted   -= OnLoginCompleted;
+        _data.ItemUseCompleted -= OnItemUseCompleted;
+        _data.ItemUseFailed    -= OnItemUseFailed;
     }
 
     #region 구독
@@ -407,6 +434,7 @@ public class StorageGridPresenter : MonoBehaviour
 
         // 칸은 파괴하지 않고 풀로 되돌리므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
         view.RightClicked += OnSlotRightClicked;
+        view.LeftClicked  += OnSlotLeftClicked;
 
         _views[index] = view;
 
@@ -470,6 +498,106 @@ public class StorageGridPresenter : MonoBehaviour
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   창고 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
         _ui.AskAmount(itemId, owned, amount => _cart.Add(itemId, amount));
+    }
+
+    #endregion
+
+    #region 상자 개봉
+
+    // 칸을 좌클릭했다 — 상자면 몇 개 열지 묻고 개봉을 요청한다 (SlotView.LeftClicked 구독)
+    //
+    // 상자가 아닌 칸은 아무 일도 하지 않는다. 좌클릭에 다른 뜻이 붙기 전까지는 그게 맞는 반응이다.
+    // 수량을 묻는 동선은 판매 담기와 **똑같이** 간다 — 1개면 묻지 않고, 2개 이상이면 팝업을 띄운다.
+    private void OnSlotLeftClicked(SlotView view)
+    {
+        if (!IsItemKeyTab || view.IsEmpty)
+        {
+            return;
+        }
+
+        int itemId = (int)view.Key;
+
+        if (!GameDataLoader.IsBox(itemId))
+        {
+            return;
+        }
+
+        if (_isOpeningBox)
+        {
+            return; // 앞 요청의 응답을 기다리는 중 — 연타 방지
+        }
+
+        int owned = _data.GetItemCount(itemId);
+
+        if (owned <= 0)
+        {
+            return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
+        }
+
+        // 1개짜리는 물어볼 것이 없다. 팝업을 띄워 봐야 확인을 한 번 더 누르게 할 뿐이다.
+        if (owned == 1)
+        {
+            OpenBox(itemId, 1);
+
+            return;
+        }
+
+        // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
+        _ui.AskAmount(itemId, owned, amount => OpenBox(itemId, amount));
+    }
+
+    // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).
+    //
+    // 로그인 전에 보내면 서버가 User를 못 찾아 조용히 버린다 — 클라 입장에선 응답도 오류도
+    // 없어서 "눌렀는데 아무 일도 안 일어난다"로만 보인다. 보내기 전에 여기서 끊고 이유를 남긴다.
+    //
+    // ⚠️ 수량 팝업이 뜬 사이 채취·판매로 보유량이 바뀔 수 있다 — 그 사이 모자라졌으면
+    //   서버가 'NotEnoughItem'으로 거절한다. **클라가 다시 재지 않는다**(거절은 서버가 한다).
+    private void OpenBox(int itemId, int count)
+    {
+        if (_isOpeningBox)
+        {
+            return;
+        }
+
+        if (!_data.IsLoggedIn)
+        {
+            ClientLogger.Warn(ClientLogger.Send, "상자 개봉 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
+            return;
+        }
+
+        _network.Send(new C_ItemUseRequest
+        {
+            ItemTID = itemId,
+            Count   = count
+        });
+
+        ClientLogger.Info(ClientLogger.Send, $"상자 개봉 요청 — TID={itemId}, {count}개");
+
+        // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
+        _isOpeningBox = true;
+        _waitHandle   = _wait.Begin($"상자 개봉 {count}개", onClosed: OnWaitClosed);
+    }
+
+    // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
+    // (PlayerDataModel.ItemUseCompleted 구독)
+    private void OnItemUseCompleted(List<GachaRewardInfo> rewards)
+    {
+        _waitHandle?.Succeed();
+    }
+
+    // 개봉 실패 도착 — 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다 (PlayerDataModel.ItemUseFailed 구독)
+    private void OnItemUseFailed(EResultCode code)
+    {
+        _waitHandle?.Fail(ResultMessages.ToText(code));
+    }
+
+    // 대기가 끝났다(성공·실패·타임아웃 공통) — 다시 열 수 있게 푼다 (ServerWaitManager.Begin의 onClosed)
+    private void OnWaitClosed()
+    {
+        _isOpeningBox = false;
+        _waitHandle   = null;
     }
 
     #endregion

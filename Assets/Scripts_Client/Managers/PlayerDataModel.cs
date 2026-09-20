@@ -268,6 +268,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
     public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
 
+    public event Action<List<GachaRewardInfo>>? ItemUseCompleted; // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐)
+    public event Action<EResultCode>?           ItemUseFailed;    // 아이템 사용 실패 (거절 사유)
+
     public event Action?                   UnlocksChanged;  // 열린 해금 목록 갱신됨 (로그인 목록 · 해금 성공 후)
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
 
@@ -321,6 +324,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
         ServerPacketHandler.ItemSold                 += OnItemSold;
+        ServerPacketHandler.ItemUsed                 += OnItemUsed;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
     }
@@ -349,6 +353,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
         ServerPacketHandler.ItemSold                 -= OnItemSold;
+        ServerPacketHandler.ItemUsed                 -= OnItemUsed;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
     }
@@ -597,6 +602,27 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         ApplyItemChanges(res.ItemChangeInfos);
         ItemSellCompleted?.Invoke(res.GainedGold);
+    }
+
+    // 아이템 사용 응답 — 인벤토리 반영 후 보상 이벤트 발행. 'OnGachaDrawn'과 같은 모양이다.
+    //
+    // ★ 한 패킷에 두 가지가 실려 오는 것도 가챠와 같다.
+    //   ItemChangeInfos = 갱신 후 누적 총량(쓴 상자의 차감과 받은 아이템) → 인벤토리 반영
+    //   Rewards         = 이번에 얻은 개별 항목(델타) → 연출 전용
+    // ★ 골드와 장비는 여기서 건드리지 않는다 — 골드는 'S_CurrencyResponse',
+    //   장비 개체는 'S_EquipSyncResponse'로 따로 온다. 보상 목록의 골드는 **보여 주기 위한 값**이다.
+    private void OnItemUsed(S_ItemUseResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"아이템 사용 실패 — TID={res.ItemTID}, 결과={res.Result}");
+            ItemUseFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+        ItemUseCompleted?.Invoke(res.Rewards ?? new List<GachaRewardInfo>());
     }
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-20 가챠 장비 풀 배선 · 구슬 풀 제거 · 상자 개봉](2026-09-20-gacha-equip-and-box-open.md) — `#client` `#ui` 보상 결과 팝업을 상자와 공유하고, 개봉은 비어 있던 좌클릭 축에 붙였다
 - [2026-09-20 github-issue-writer 스킬 신설 · 가챠 구슬 풀 제거 이슈](2026-09-20-github-issue-writer-skill.md) — `#docs` `#infra` 이슈 제목 꼬리표·assignee/label 필수 규칙을 스킬로 굳히고 마스터에 승격
 - [2026-09-20 0920 QA 피드백 답변 문서화 · 일감 반영](2026-09-20-qa-feedback-0920.md) — `#docs` `#client` 규빈님 피드백 8건에 답을 달고 일감 4건 신규 + T-058 확장
 - [2026-09-19 장비 시트 밸런싱 — 5행 → 69종](2026-09-19-equip-table-balance.md) — `#data` `#design` 무기·보석은 산업 전용, 장신구는 전 산업 (Common~Mythic)

@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-18 (FPS 텍스트 `FpsTextPresenter` 추가 — T-062) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -10,7 +10,7 @@
 |------|---------|
 | `SystemCanvasView.cs` | 캔버스 껍데기 |
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
-| `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`를 구독해 뽑힌 보상을 5열로 표시 |
+| `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`·`ItemUseCompleted`를 구독해 얻은 보상을 5열로 표시 (가챠·상자 개봉 공용) |
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
@@ -200,9 +200,9 @@
 > `#Main Canvas`의 `Panel`은 이것과 다른 물건이다 — 거긴 차단이 아니라 **한 자리를 나눠 쓰는
 > 화면들의 정렬 상자**다([`UI 규칙.md`](<../UI 규칙.md>)의 이름 규칙).
 
-## 왜 가챠 결과 팝업이 거래 열이 아니라 여기 있는가
+## 왜 보상 결과 팝업이 거래 열이 아니라 여기 있는가
 
-`GachaResultPresenter`는 `PlayerDataModel.GachaCompleted`를 **스스로 구독해서 뜬다** —
+`GachaResultPresenter`는 `PlayerDataModel`의 결과 이벤트를 **스스로 구독해서 뜬다** —
 위 표의 "자기 이벤트로 뜨는 상주 오버레이"에 그대로 해당한다.
 
 거래 열(`#Market Canvas`)의 자식으로 두면 **요청을 보낸 직후 열을 닫는 순간 결과가 통째로
@@ -214,6 +214,20 @@
 > 칸은 인벤토리와 같은 `SlotView` 프리팹을 쓴다 — 같아야 할 생김새를 두 벌로 두면
 > 한쪽만 고쳐진다. 자세한 건 [`Storage 규칙.md`](<../Storage/Storage 규칙.md>).
 
+### 가챠와 상자 개봉이 같은 팝업을 쓴다 (2026-09-20 · T-033)
+
+서버가 개봉 보상을 가챠와 **같은 모양**(`GachaRewardInfo`)으로 내려주기 때문이다 —
+연출을 두 벌 만들면 한쪽만 고쳐진다. 늘어놓는 방식만 갈린다:
+
+| | 칸 하나가 뜻하는 것 | 왜 |
+|---|---|---|
+| 가챠 | 뽑힌 **한 건** | 뽑힌 순서대로 하나씩 공개하는 연출이 들어올 자리다(T-031) |
+| 상자 개봉 | 한 **종류**의 합계 | 한 번에 99개까지 깐다 — 낱개면 칸이 수백 개가 되어 화면이 잠긴다 |
+
+보상 종류는 넷이다(`EGachaRewardType`) — 아이템 · 캐릭터 · 장비 · **골드**(상자 전용, `Count`가 금액).
+⚠️ 분기하지 않고 `ItemId`만 읽으면 그 보상이 **빈 칸**으로 그려지는데, 필드가 추가만 된 형태라
+컴파일도 경고도 통과한다 — 캐릭터 축이 들어왔을 때 실제로 난 사고다.
+
 ## 왜 이것만 `UIManager`를 거치는가 — 넷 중 하나는 왕복이다
 
 **여기 사는 오버레이는 원칙적으로 밖에서 참조당하지 않는다.** 매니저가 이벤트를 쏘고
@@ -224,7 +238,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 |---|---|
 | `LoadingPresenter` | `ServerWaitManager.BusyChanged` |
 | `NoticePresenter` | `ServerWaitManager.NoticeRaised` · `FatalRaised` |
-| `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` |
+| `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` · `ItemUseCompleted` |
 | `AmountInputPresenter` | **없다 — 구독형이 아니다** |
 | `ConfirmPresenter` | **없다 — 같은 왕복형이다** (`UIManager.AskConfirm`) |
 

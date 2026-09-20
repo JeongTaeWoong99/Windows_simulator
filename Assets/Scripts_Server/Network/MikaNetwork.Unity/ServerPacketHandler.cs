@@ -339,6 +339,28 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 아이템 사용
+
+        // 아이템 사용 결과 도착 (Handle_S_ItemUseResponse에서 발행)
+        public static event Action<S_ItemUseResponse>? ItemUsed;
+
+        // 아이템 사용 결과 — 지금은 상자 개봉뿐이다 (S_ItemUseResponse 수신 시 자동 호출)
+        // ※ Rewards는 가챠와 같은 모양(GachaRewardInfo)이다 — 연출을 한 벌로 쓰라고 서버가 맞춰 준 것이다.
+        //   보상 종류에 Gold가 있고, 그때는 Count가 금액이며 TID 필드가 전부 0이다.
+        // ※ ItemChangeInfos의 Count는 델타가 아니라 "갱신 후 누적 총량"이다. 다 쓴 상자는 Kind = Remove로 온다.
+        // ※ 골드는 S_CurrencyResponse, 장비 개체는 S_EquipSyncResponse로 **따로** 온다 — 여기에는 없다.
+        [PacketHandler]
+        public static void Handle_S_ItemUseResponse(ISession session, S_ItemUseResponse res)
+        {
+            int rewardCount = res.Rewards?.Count ?? 0;
+            int changeCount = res.ItemChangeInfos?.Count ?? 0;
+            ClientLogger.Info(ClientLogger.Recv,
+                $"아이템 사용 결과={res.Result}, TID={res.ItemTID}, 보상 {rewardCount}건, 변경 {changeCount}건");
+            ItemUsed?.Invoke(res);
+        }
+
+        #endregion
+
         #region 테스트용 (연결 확인) — 추후 필요 없어지면 삭제
 
         // 에코 응답 — 왕복 연결 테스트용 (S_EchoResponse 수신 시 자동 호출)
