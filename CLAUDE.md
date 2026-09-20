@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-09-19 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
+> 최종 업데이트: 2026-09-20 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -117,6 +117,7 @@
 | [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
 | [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
 | [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
+| [`github-issue-writer`](.claude/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 |
 
 ### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
 
