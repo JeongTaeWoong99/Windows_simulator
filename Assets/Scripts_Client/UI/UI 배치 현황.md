@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-20 (가챠 버튼 4 → 8줄 · 구슬 풀 제거 — T-067 · #30) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-21 (계정 경험치가 가로 띠 → 닉 아이콘 원형 진행도 — T-068) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -37,13 +37,22 @@ Root Canvas
 │  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
+│  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭)
+│  │  │  │  ├─ Trait Tab Panel                    [산업 속도] [산업 레벨]        pref 34
+│  │  │  │  ├─ Point Text (TMP)                   "특성 포인트 n"                pref 22
+│  │  │  │  └─ Scroll View Panel                  스크롤바 Permanent · flexH 1
+│  │  │  │     └─ Content                         GridLayoutGroup 5열 = 산업. cell 106x58 · spacing 8x20
+│  │  │  │        └─ TraitNodeView 프리팹 (노드 수만큼 런타임 생성 · 풀)
+│  │  │  │           └─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
 │  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 40 — 정렬 화살표 · -(Layout) · 등급 범위 드롭다운 · [판매]
 │  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  탭이 무엇이든 이 격자가 그린다
+│  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ SlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
 │  │  │  │        └─ Aptitude Strip               캐릭터 탭 전용 5칸. 보조 문구와 같은 밴드를 나눠 쓴다
 │  │  │  ├─ Sell Cart Presenter (↓ SUB VIEW)      SellCartPresenter            판매 목록 · 합계 · [판매]
+│  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
 │  │  │  │  ├─ Sell Scroll View Panel             Content 에 SellCartRowView 프리팹이 쌓인다
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
 │  │  │  │  ├─ Summary Panel                      High Rarity Warning(평소 꺼짐) · Total Text
@@ -51,9 +60,14 @@ Root Canvas
 │  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
-│  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter
+│  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter     가로 한 줄
 │  │  │     ├─ Nick / Gold / Dia Panel               정렬 상자 (아이콘 + 텍스트)  flex 4씩
-│  │  │     └─ Setting Button · xxx Button (1..3) · Exit Button      flex 1씩
+│  │  │     │  └─ Nick Image                      검은 원반(Knob). 계정 레벨이 여기 겹친다
+│  │  │     │     ├─ Exp Ring Fill                Filled · Radial360 — 계정 경험치
+│  │  │     │     ├─ Nick Icon (임시)             가운데를 덮어 원반을 고리로 만든다 (T-054 대기)
+│  │  │     │     ├─ Percent Text                 ⏸ 꺼 둔 상태 — 배선만 살아 있다
+│  │  │     │     └─ Lv Text                      "Lv.n" (가장 위)
+│  │  │     └─ Setting Button · xxx Button (1..3 ⏸) · Exit Button      flex 1씩
 │  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 950 · flexH 0 ← 사람이 정함
 │  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
 │  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
@@ -63,6 +77,8 @@ Root Canvas
 │  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50
 │  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90
 │  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)
+│  │  │  │  ├─ Industry Level Panel               레벨 5개                       pref 32
+│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭"). 안 연 레벨은 회색·비활성
 │  │  │  │  ├─ Character Assign Scroll View Panel
 │  │  │  │  │  ├─ Content > CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
 │  │  │  │  │  │    Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]      pref 90
@@ -187,7 +203,7 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
        ├── 빈 칸 ──────────────→ 2
        └── 이미 배치된 칸 ──────→ 3
 
-   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) 는 2·3 모두에서 보인다 ─┐
+   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) · Industry Level(1~5) 은 2·3 모두 ─┐
    │                                                                                             │
 2  │  Character Assign Scroll View Panel    캐릭터 줄 목록                                       │
    │      │ 줄의 [배치] → 배치 요청 → 응답 성공 ──→ 3                                            │
@@ -249,15 +265,33 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 > 3의 산업 버튼은 **배치된 캐릭터가 적성 0인 산업을 잠근다**(`CanSelectIndustry` · 2026-09-11).
 > 2가 적성 0인 캐릭터를 아예 걸러 내므로, 3만 열어 두면 같은 화면이 두 말을 하게 된다.
 
+**산업 아래에 레벨 축이 하나 더 있다** (2026-09-20 · T-068). 같은 산업이라도 레벨이 오르면
+판정 1회의 시간·경험치가 3배씩 늘고 **나오는 것이 통째로 바뀐다**(밀·감자 → 보리·고구마 → …).
+
+- **레벨은 슬롯마다 따로다.** 전역이 아니라 `t_user_workstation_slot.industry_level`에 저장된다 —
+  특성으로 Lv3을 열어도 **이미 배치된 칸은 그대로다.** 올리려면 그 칸에서 다시 고른다.
+- 잠금은 `IsUnlocked(GetIndustryLevelUnlockTid(산업, 레벨))`에서 파생된다.
+  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 창고 **특성 탭 → 산업 레벨**에서 한다.
+- **산업이 바뀌면 레벨 줄을 다시 그리고, 잠긴 레벨이 골라져 있으면 Lv1로 되돌린다.**
+  산업마다 열어 둔 레벨이 다르기 때문이다.
+- 3에서 레벨 버튼을 누르면 **산업 교체와 똑같이 재배치 요청 1회**다(같은 레벨이면 보내지 않는다).
+  실패해도 제자리고, 켜진 불빛은 슬롯의 `IndustryLevel`에서 파생된다 — 산업 버튼과 같은 축이다.
+- ⚠️ **해제 요청에는 레벨을 `1`로 실어 보낸다.** 해제는 산업이 `None`으로 가는데
+  `None`에는 Lv2 이상이 없어, 고른 레벨을 그대로 보내면 서버가 `IndustryLevelLocked`로 거절한다.
+
 ## 4. 알려진 임시 상태
 
 - **작업슬롯 선택 화면의 `(임시)` 자리는 데이터·리소스를 기다린다 (2026-09-14 · T-053).**
   산업 탭 `Icon (임시)`·줄의 `Portrait (임시)`는 흰 네모이고 종족은 "종족 추가 예정"이다
   → [`T-054`](../../../tasks/T-054-종족과초상화.md). 장비 4칸은 "추가 예정" 문구만 있다 → [`T-002`](../../../tasks/archive/T-002-장비슬롯.md).
   목업의 **색은 따르지 않았다** — 지금 게임 팔레트다.
-- ⚠️ **효율 계산의 "개발용 전역 배수" 안내는 역산이다** (`현재 작업속도 ÷ 적성 기본값`).
-  가산(장비·특성)이 아직 없어 맞는 값이지만, 붙는 순간 그 몫까지 배수로 보인다
-  → 서버가 배수를 명시해 주는 [`T-055`](../../../tasks/T-055-속도보정내역전달.md)가 먼저다.
+- 🔴 **효율 계산의 "개발용 전역 배수" 안내는 역산이라 이제 실제로 틀릴 수 있다** (`현재 작업속도 ÷ 적성 기본값`).
+  2026-09-20부터 **특성 속도 가산을 찍을 수 있게 되어**, 찍은 몫까지 전역 배수로 보인다.
+  클라에서 역산을 고칠 방법이 없다 — 서버가 배수를 명시해 주는
+  [`T-055`](../../../tasks/T-055-속도보정내역전달.md)가 먼저다.
+- **상태 패널의 `Nick Icon (임시)`도 회색 원이다** — 작업슬롯 줄과 같은 리소스를 기다린다
+  → [`T-054`](../../../tasks/T-054-종족과초상화.md). ⚠️ 다만 이건 **자리표시자이면서 동시에 고리를
+  만드는 부품**이라 비워 둘 수 없다 (위 항목).
 - **세팅 카드는 목록 줄과 같은 `CharacterStateRowView` 프리팹이다.** 줄 모양을 고치면 카드도 바뀐다 —
   의도한 것이다. 버튼 라벨("배치"/"해제")만 코드가 넣는다.
 - **선택 화면의 두 스크롤(캐릭터 목록·효율)은 스크롤바를 늘 보인다**(`Permanent` — 판매 목록과 같다).
@@ -277,15 +311,27 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **창고 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
   `StorageTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).
-- **자원·캐릭터·장비 셋이 실재한다** (기본 탭은 자원 · 장비는 2026-09-19 · T-043). 특성만 **버튼이 잠겨 있다** —
-  서버 구현·패킷이 없어서고, 잠금은 `StorageGridPresenter.HasSource`에서 파생된다(탭 줄이 따로 적지 않는다).
-  무엇을 기다리는지는 `tasks/T-043-창고장비특성탭.md`.
+- ✅ **네 탭이 모두 실재한다** (기본 탭은 자원 · 장비는 2026-09-19 · 특성은 2026-09-20 · T-043).
+  잠금 판정은 `StorageTabPresenter.HasScreen` **한 곳**에서 갈린다 —
+  셋은 격자가 공급자를 갖고 있는지로, **특성 하나는 전용 화면(`TraitPresenter`)이 배선돼 있는지로** 본다.
   - 장비 칸은 **이름 + 효과 한 줄**(`낚시 +30%`)이고, 캐릭터가 끼고 있으면 **'배' 마크**가 켜진다
     (캐릭터 탭의 배치 마크와 같은 표시다). 지금 장비를 넣는 경로는 **치트 창의 `장비 지급`뿐**이다 —
     뽑기는 서버·엑셀 선행(`tasks/archive/T-067-장비뽑기.md`).
-- **탭이 달라도 격자는 하나다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만 갈아 끼운다 —
+- **탭이 달라도 격자는 하나다 — 단 특성 탭은 예외다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만
+  갈아 끼우지만, 특성은 칸 목록이 아니라 선으로 이어진 트리라 `Trait Presenter`가 따로 그린다.
   구조와 "탭 하나를 채우는 절차"는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
-- **`xxx Button (1)`~`(4)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았다.
+- **특성 탭에서 꺼지는 것은 셋이다** — 도구 줄 · 격자 · 판매 목록. **각자 스스로 끈다**
+  (탭 줄이 목록을 들고 있지 않다). 셋 다 `TabChanged` 구독을 **`Start`/`OnDestroy`** 에 건다 —
+  `OnDisable`에서 풀면 자기를 끈 순간 **다시 켤 신호를 받을 길이 사라진다.**
+- **상태 패널의 계정 경험치는 `Nick Image`를 두르는 원형 진행도다**(2026-09-21 · `Image.fillAmount` · Slider가 아니다).
+  처음엔 줄 아래 가로 띠였는데 43px을 위아래로 나누니 재화 줄이 눌려서, **줄을 건드리지 않고 아이콘 안으로** 옮겼다.
+  🔴 **고리 스프라이트가 없어 원반 두 장 + 가운데를 덮는 `Nick Icon (임시)`으로 만든다** —
+  그 칸을 지우면 진행도가 고리가 아니라 파이 차트가 된다(근거는 [`State 규칙.md`](<State/State 규칙.md>)).
+  **남은 특성 포인트는 상태 패널이 아니라 특성 화면 머리**(`Point Text`)에 있다 — 43px에 더 넣으면 배치가 깨진다.
+- **특성 노드 45개를 씬에 깔지 않는다** — `TraitNodeView` 프리팹 하나를 찍어 풀로 쓴다(캐릭터 줄과 같은 판단).
+  **선은 노드가 들고 있다**(`Link Image`) — 각 열 첫 줄에서만 꺼진다. 선을 그리는 코드는 없다.
+- **`xxx Button (1)`~`(3)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았고
+  **씬에서도 꺼 두었다**(2026-09-21) — 빈 버튼이 줄의 가로 몫을 먹고 있었다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
   (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
 - ✅ **`Sell Cart Presenter`로 개명했다 (2026-09-12 · T-049).** 예전 `Information Presenter`는

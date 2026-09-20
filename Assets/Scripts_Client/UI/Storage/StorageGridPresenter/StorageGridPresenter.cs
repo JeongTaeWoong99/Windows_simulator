@@ -271,11 +271,17 @@ public class StorageGridPresenter : MonoBehaviour
     {
         EnsureInitialized();
 
-        // ★ 아래 조기 반환보다 먼저 기억한다 — 공급자가 없는 탭끼리(장비↔특성) 오가면
+        // ★ 아래 조기 반환보다 먼저 기억한다 — 공급자가 없는 탭끼리 오가면
         //   'next'가 둘 다 null이라 조기 반환에 걸리는데, 그때도 지금 탭은 바뀌어 있다.
         _currentTab = tab;
 
         _sources.TryGetValue(tab, out StorageSlotSource? next);
+
+        // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 그 자리는 전용 화면이 쓴다(특성 탭).
+        // ★ 조기 반환보다 먼저 한다. 그리고 칸 200개를 하나씩 끄지 않는다 —
+        //   프레임을 개별로 토글하면 탭을 옮길 때마다 레이아웃 리빌드가 200번 돈다
+        //   ('Storage 규칙.md'). 격자 오브젝트 하나만 끄면 리빌드는 다시 켤 때 한 번이다.
+        gameObject.SetActive(next != null);
 
         if (_current == next)
         {

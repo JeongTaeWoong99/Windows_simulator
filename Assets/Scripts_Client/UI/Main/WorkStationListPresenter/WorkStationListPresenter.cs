@@ -227,7 +227,14 @@ public class WorkStationListPresenter : MonoBehaviour
             }
         }
 
-        // TODO: 'AccountLevel' 검사 — 계정 레벨(S_AccountLevelResponse)이 생기면 여기서 막는다. 지금은 서버·데이터 모두 0이다.
+        // 계정 레벨 조건. 작업슬롯 행은 지금 모두 0이라 늘 통과하지만, 곡선이 정해지면(T-012)
+        // 시트만 채워도 여기서 막힌다 — 특성 노드가 같은 컬럼을 이미 쓰고 있다.
+        if (_data.AccountLevel < unlock.AccountLevel)
+        {
+            _wait.RaiseNotice($"계정 레벨 {unlock.AccountLevel}이(가) 필요합니다. (지금 {_data.AccountLevel})");
+
+            return;
+        }
 
         if (_data.Gold < unlock.Gold)
         {

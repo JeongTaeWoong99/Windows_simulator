@@ -22,6 +22,7 @@ namespace MikaNetwork
     ///
     /// S_LoginResponse             로그인 결과
     /// S_CurrencyResponse          재화 잔액
+    /// S_AccountLevelResponse      계정 레벨·경험치·남은 특성 포인트
     /// S_InventoryResponse         인벤토리 전체 스냅샷
     /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
     /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
@@ -215,6 +216,38 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"해금 {res.UnlockTID} → {res.Result}");
             UnlockResponded?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 계정 레벨 · 특성
+
+        // 계정 레벨 스냅샷 도착 (Handle_S_AccountLevelResponse에서 발행).
+        // 로그인 직후 1회 + 경험치가 오를 때 + 특성 포인트를 쓸 때 온다 (재화와 같은 관례)
+        public static event Action<S_AccountLevelResponse>? AccountLevelReceived;
+
+        // 특성 찍기 결과 도착 (Handle_S_UserTraitLearnResponse에서 발행)
+        public static event Action<S_UserTraitLearnResponse>? UserTraitLearnResponded;
+
+        // 계정 레벨 스냅샷 (S_AccountLevelResponse 수신 시 자동 호출)
+        // ★ 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다 — 캐릭터가 만렙이어도 계정은 자란다.
+        [PacketHandler]
+        public static void Handle_S_AccountLevelResponse(ISession session, S_AccountLevelResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"계정 레벨 — Lv{res.Level}, 경험치={res.Exp}, 남은 특성 포인트={res.TraitPoint}");
+            AccountLevelReceived?.Invoke(res);
+        }
+
+        // 특성 찍기 결과 (S_UserTraitLearnResponse 수신 시 자동 호출)
+        // ※ 성공이면 이 앞에 S_UnlockResponse(찍힌 기록), 뒤에 S_AccountLevelResponse(남은 포인트)가 온다.
+        //   그래서 "찍혔다"는 표시는 이 패킷이 아니라 열린 해금 목록이 바꾼다.
+        //   속도 특성이면 바뀐 슬롯이 S_WorkStationSlotSyncResponse로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_UserTraitLearnResponse(ISession session, S_UserTraitLearnResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"특성 찍기 {res.UserTraitTID} → {res.Result}");
+            UserTraitLearnResponded?.Invoke(res);
         }
 
         #endregion

@@ -17,6 +17,11 @@ using UnityEngine.UI;
 //
 // 닉네임은 아직 서버가 돌려주지 않는다. 로그인에 쓴 Id('PlayerDataModel.LoginId')를
 // 그대로 보여 주고, 닉네임 패킷이 생기면 그때 바꾼다.
+//
+// ■ 계정 레벨·경험치 바가 여기 사는 이유
+// 계정 축(레벨·경험치·재화)은 어느 화면을 보고 있든 늘 보여야 하는 값이고, 이 패널이
+// 그 축을 담는 유일한 상주 자리다. **남은 특성 포인트는 여기 두지 않는다** — 쓰는 곳이
+// 특성 화면 하나뿐이라 그 화면 머리에 있다('TraitPresenter').
 public class StatePresenter : MonoBehaviour
 {
     // 화면 버튼 하나와 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.
@@ -40,6 +45,16 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, Tooltip("다이아 보유량. ⏸ 지급·차감 경로가 없어 늘 0이다")]
     private TMP_Text diaText = null!;
 
+    [CenterHeader("계정 레벨")]
+    [SerializeField, Tooltip("닉 아이콘 아래쪽에 겹치는 레벨 배지 문구")]
+    private TMP_Text levelText = null!;
+
+    [SerializeField, Tooltip("닉 아이콘을 두르는 원형 진행도. Image Type을 Filled · Radial360으로 두고 fillAmount로 채운다")]
+    private Image expFill = null!;
+
+    [SerializeField, Tooltip("진행도 퍼센트 문구. ⏸ 씬에서 꺼 둔 상태다 — 배선만 살아 있어 켜면 바로 그려진다")]
+    private TMP_Text expPercentText = null!;
+
     // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
     //   ('UI 규칙.md'의 "공통 작성 규약"). 이 배열은 순서에 의미가 없지만 헤더는 보여야 한다.
     [CenterHeader("화면 버튼")]
@@ -62,10 +77,13 @@ public class StatePresenter : MonoBehaviour
     private void Start()
     {
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다(SettingPresenter와 같은 규칙).
-        this.RequireRef(nickNameText, nameof(nickNameText));
-        this.RequireRef(goldText,     nameof(goldText));
-        this.RequireRef(diaText,      nameof(diaText));
-        this.RequireRef(quitButton,   nameof(quitButton));
+        this.RequireRef(nickNameText,   nameof(nickNameText));
+        this.RequireRef(goldText,       nameof(goldText));
+        this.RequireRef(diaText,        nameof(diaText));
+        this.RequireRef(levelText,      nameof(levelText));
+        this.RequireRef(expFill,        nameof(expFill));
+        this.RequireRef(expPercentText, nameof(expPercentText));
+        this.RequireRef(quitButton,     nameof(quitButton));
 
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
@@ -109,9 +127,10 @@ public class StatePresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed         = true;
-        _data.CurrencyChanged += Refresh;
-        _data.LoginCompleted  += OnLoginCompleted;
+        _isSubscribed              = true;
+        _data.CurrencyChanged     += Refresh;
+        _data.AccountLevelChanged += Refresh;
+        _data.LoginCompleted      += OnLoginCompleted;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -122,9 +141,10 @@ public class StatePresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed         = false;
-        _data.CurrencyChanged -= Refresh;
-        _data.LoginCompleted  -= OnLoginCompleted;
+        _isSubscribed              = false;
+        _data.CurrencyChanged     -= Refresh;
+        _data.AccountLevelChanged -= Refresh;
+        _data.LoginCompleted      -= OnLoginCompleted;
     }
 
     #endregion
@@ -165,12 +185,40 @@ public class StatePresenter : MonoBehaviour
         }
     }
 
-    // 이름·재화를 현재 값으로 갱신한다 (CurrencyChanged 구독 · 로그인 시)
+    // 이름·재화·계정 레벨을 현재 값으로 갱신한다 (CurrencyChanged · AccountLevelChanged 구독 · 로그인 시)
     private void Refresh()
     {
         nickNameText.text = string.IsNullOrEmpty(_data.LoginId) ? "-" : _data.LoginId;
         goldText.text     = _data.Gold.ToString("N0"); // 천 단위 구분
         diaText.text      = _data.Dia.ToString("N0");
+
+        RefreshAccountLevel();
+    }
+
+    // 레벨 배지와 경험치 진행도를 그린다 (Refresh에서 호출).
+    //
+    // ※ 'expPercentText'는 씬에서 꺼 둔 오브젝트다 — 꺼진 오브젝트에 문구를 넣어도 문제없고,
+    //   켜는 순간 맞는 값이 이미 들어 있다. 여기서 켜짐 여부를 분기하지 않는다.
+    //
+    // ※ 분모는 **다음 레벨** 행의 'RequiredExp'다 — 'Exp'가 "현재 레벨에서 쌓은 양"이라
+    //   지금 레벨 행을 나누면 이미 지나온 구간으로 나누게 된다(캐릭터 게이지와 같은 축).
+    // ※ 행이 없으면 만렙이다 — 오류가 아니므로 경고하지 않고 바를 가득 채운다.
+    private void RefreshAccountLevel()
+    {
+        levelText.text = $"Lv.{_data.AccountLevel}";
+
+        if (!GameDataLoader.TryGetAccountRequiredExp(_data.AccountLevel + 1, out long required) || required <= 0L)
+        {
+            expFill.fillAmount  = 1f;
+            expPercentText.text = "MAX";
+
+            return;
+        }
+
+        float progress = Mathf.Clamp01((float)((double)_data.AccountExp / required));
+
+        expFill.fillAmount  = progress;
+        expPercentText.text = $"{progress * 100f:0.00}%";
     }
 
     #endregion

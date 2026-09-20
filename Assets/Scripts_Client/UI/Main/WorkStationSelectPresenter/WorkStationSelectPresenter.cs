@@ -64,6 +64,22 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·낚시·채굴·벌목·사냥)")]
     private Button[] industryButtons = new Button[0];
 
+    // 산업 레벨 버튼 하나 — 버튼과 그 라벨. 이름이 산업마다 달라('밭'·'저수지') 코드가 갈아 쓴다.
+    [Serializable]
+    private struct IndustryLevelButton
+    {
+        [Tooltip("레벨 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+        public Button button;
+
+        [Tooltip("그 버튼의 라벨. 산업이 바뀌면 코드가 'Lv2 밭'처럼 채운다")]
+        public TMP_Text label;
+    }
+
+    // ※ 산업 버튼 줄 바로 아래의 'Industry Level Panel'이다. 순서가 곧 레벨(1~)이라
+    //   인덱스 + 1이 레벨이 된다 — 산업 버튼이 인덱스로 산업을 가리키는 것과 같은 축이다.
+    [SerializeField, NonReorderable, Tooltip("산업 레벨 버튼들. 인스펙터에 넣은 순서가 곧 레벨(Lv1부터)이다")]
+    private IndustryLevelButton[] industryLevelButtons = new IndustryLevelButton[0];
+
     [CenterHeader("1단계 캐릭터 할당 패널 (전환)")]
     [SerializeField, Tooltip("Character Assign Scroll View Panel 오브젝트")]
     private GameObject assignPanel = null!;
@@ -134,6 +150,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 지금 고른 산업. 서버가 모르는 값이라 화면이 들고 있는다.
     private int _selectedIndustry;
 
+    // 지금 고른 산업 레벨(1~). **슬롯마다 따로 정하는 값이다** — 서버가 슬롯에 저장하고
+    // 판정 시간·드롭 테이블·판정당 경험치가 전부 이 값으로 갈린다('IndustryLevelTable').
+    // Lv1은 조건 없이 열려 있어 기본값이 된다.
+    private int _selectedIndustryLevel = DefaultIndustryLevel;
+
+    // 조건 없이 늘 열려 있는 기본 레벨. 서버의 'WorkStationSlot.DefaultIndustryLevel'과 같은 값이다.
+    private const int DefaultIndustryLevel = 1;
+
     // 응답을 기다리는 중인 요청. 없으면 None.
     private PendingRequest _pending = PendingRequest.None;
 
@@ -176,6 +200,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         BuildIndustryList();
         BindIndustryButtons();
+        BindIndustryLevelButtons();
 
         backButton.onClick.AddListener(BackToSlotList);
         assignedCard.SetButtonLabel("해제");
@@ -285,6 +310,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _isSubscribed                    = true;
         _data.WorkStationSlotsChanged   += Refresh;
         _data.CharactersChanged         += Refresh; // 보유 캐릭터가 늘면 줄도 늘어야 한다
+        _data.UnlocksChanged            += Refresh; // 특성으로 산업 레벨이 열리면 레벨 버튼이 켜져야 한다
         _data.WorkStationAssignCompleted += OnAssignCompleted;
     }
 
@@ -299,6 +325,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _isSubscribed                    = false;
         _data.WorkStationSlotsChanged   -= Refresh;
         _data.CharactersChanged         -= Refresh;
+        _data.UnlocksChanged            -= Refresh;
         _data.WorkStationAssignCompleted -= OnAssignCompleted;
     }
 
@@ -364,7 +391,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         _selectedIndustry = index;
+
+        // 산업이 바뀌면 레벨 잠금이 통째로 뒤집힌다 — 칠하기 전에 고른 레벨부터 맞춘다.
+        ClampSelectedIndustryLevel();
+
         RefreshIndustryButtons();
+        RefreshIndustryLevelButtons();
 
         if (assignPanel.activeSelf)
         {
@@ -461,6 +493,136 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         return _data.GetAptitude(slot.CharacterId, _industries[index]) > 0;
+    }
+
+    #endregion
+
+    #region 산업 레벨 선택
+
+    // 산업 레벨 버튼을 레벨 값과 묶는다 (Start에서 호출).
+    //
+    // ⚠️ 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다
+    //   ('BindIndustryButtons'와 같은 이유).
+    private void BindIndustryLevelButtons()
+    {
+        for (int i = 0; i < industryLevelButtons.Length; i++)
+        {
+            if (industryLevelButtons[i].button == null)
+            {
+                continue;
+            }
+
+            int level = i + 1; // 순서가 곧 레벨
+            industryLevelButtons[i].button.onClick.AddListener(() => SelectIndustryLevel(level));
+        }
+    }
+
+    // 산업 레벨을 고른다 (레벨 버튼 OnClick에 코드로 연결)
+    //
+    // ⚠️ 산업 버튼과 똑같이 **단계마다 뜻이 다르다.** 캐릭터를 고르는 중이면 배치 요청에 실을
+    // 값을 화면이 들고 있고, 세팅 중이면 이미 돌고 있는 슬롯이라 요청을 한 번 보낸다.
+    private void SelectIndustryLevel(int level)
+    {
+        if (settingPanel.activeSelf)
+        {
+            RequestIndustryLevelChange(level);
+
+            return;
+        }
+
+        _selectedIndustryLevel = level;
+        RefreshIndustryLevelButtons();
+    }
+
+    // 고른 레벨을 슬롯에 실제로 돌고 있는 레벨로 맞춘다 ('Refresh'가 세팅 단계에서 호출).
+    //
+    // 산업과 같은 축이다 — 켜진 불빛의 주인은 슬롯이고, 눌러도 값을 미리 바꾸지 않는다
+    // ('SyncSelectedIndustryToSlot' 참조).
+    private void SyncSelectedIndustryLevelToSlot()
+    {
+        var slot = FindSlot();
+
+        if (slot == null || slot.IndustryLevel == 0)
+        {
+            return; // 빈 칸이거나 레벨을 모르는 슬롯 — 직전 값을 그대로 둔다
+        }
+
+        _selectedIndustryLevel = slot.IndustryLevel;
+    }
+
+    // 레벨 버튼의 이름·잠금·색을 지금 산업에 맞춘다 (표시 갱신 때 호출).
+    //
+    // ■ 잠긴 레벨도 보인다
+    // 숨기면 "더 있다"는 사실이 사라져 특성 트리로 갈 이유를 알 수 없다(해금 규칙과 같다).
+    // 열렸는지는 'IndustryLevelTable.UnlockTID'가 열린 해금 목록에 있는가로 판정한다 —
+    // **그 TID가 곧 특성 노드**라, 트리에서 찍으면 여기 버튼이 켜진다.
+    //
+    // ※ 색 규칙은 산업 버튼과 같다(네 상태를 덮고, 잠김만 'disabledColor').
+    private void RefreshIndustryLevelButtons()
+    {
+        EIndustryType industry = SelectedIndustry;
+        int           maxLevel = industry == EIndustryType.None ? 0 : GameDataLoader.GetMaxIndustryLevel(industry);
+
+        for (int i = 0; i < industryLevelButtons.Length; i++)
+        {
+            var entry = industryLevelButtons[i];
+
+            if (entry.button == null)
+            {
+                continue;
+            }
+
+            int level = i + 1;
+
+            // 이 산업에 없는 레벨은 버튼째 치운다 — 산업마다 레벨 수가 달라질 수 있다.
+            entry.button.gameObject.SetActive(level <= maxLevel);
+
+            if (level > maxLevel)
+            {
+                continue;
+            }
+
+            bool unlocked = _data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, level));
+
+            entry.button.interactable = unlocked;
+
+            if (entry.label != null)
+            {
+                entry.label.text = GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
+                    ? $"Lv{level} {row.Name}"
+                    : $"Lv{level}";
+            }
+
+            var tint   = level == _selectedIndustryLevel ? selectedIndustryColor : unselectedIndustryColor;
+            var colors = entry.button.colors;
+
+            colors.normalColor      = tint;
+            colors.highlightedColor = tint;
+            colors.pressedColor     = tint;
+            colors.selectedColor    = tint;
+            colors.disabledColor    = disabledIndustryColor;
+            entry.button.colors     = colors;
+        }
+    }
+
+    // 고른 레벨이 지금 산업에서 열려 있지 않으면 기본 레벨로 되돌린다 ('Refresh'가 목록 단계에서 호출).
+    //
+    // **산업을 바꾸면 잠금이 통째로 뒤집힌다** — 낚시 Lv3을 고른 채 농사로 옮기면 잠긴 레벨을
+    // 든 채로 배치를 눌러 서버가 'IndustryLevelLocked'로 거절한다. 누르기 전에 여기서 맞춘다.
+    private void ClampSelectedIndustryLevel()
+    {
+        EIndustryType industry = SelectedIndustry;
+
+        if (industry == EIndustryType.None)
+        {
+            return;
+        }
+
+        if (_selectedIndustryLevel > GameDataLoader.GetMaxIndustryLevel(industry)
+            || !_data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, _selectedIndustryLevel)))
+        {
+            _selectedIndustryLevel = DefaultIndustryLevel;
+        }
     }
 
     #endregion
@@ -608,11 +770,18 @@ public class WorkStationSelectPresenter : MonoBehaviour
         if (settingPanel.activeSelf)
         {
             SyncSelectedIndustryToSlot();
+            SyncSelectedIndustryLevelToSlot();
             RefreshAssignedCard();
             RefreshEfficiency();
         }
+        else
+        {
+            // 목록 단계에서는 화면이 값을 들고 있으므로, 산업이 바뀌어 잠긴 레벨이 남지 않았는지 본다.
+            ClampSelectedIndustryLevel();
+        }
 
         RefreshIndustryButtons();
+        RefreshIndustryLevelButtons();
 
         if (assignPanel.activeSelf)
         {
@@ -649,10 +818,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 적성 기본값(정적 곡선) · 현재 속도 · 실효 주기 셋이다. 가산 항목은 일감 'T-055' 뒤에 줄로 늘어난다.
     //
     // ■ 개발용 전역 배수를 역산한다
-    // 서버 식은 '기본값 × (1 + Σ가산) × 전역배수'인데 가산이 아직 하나도 없어서 '현재 ÷ 기본값'이 곧 전역 배수다.
+    // 서버 식은 '기본값 × (1 + Σ가산) × 전역배수'인데, '현재 ÷ 기본값'으로 전역 배수를 되짚는다.
     // 1이 아니면 값 아래에 알리고, 1이면(배포 설정, 일감 'T-004') 문구가 저절로 사라진다.
-    // ⚠️ **가산이 하나라도 붙으면 이 역산은 틀린다** — 장비 +35%까지 "전역 배수"로 보인다.
-    //   그 전에 서버가 배수를 명시 필드로 주도록 바꾼다(일감 'T-055').
+    //
+    // 🔴 **이 역산은 이제 실제로 틀릴 수 있다 (2026-09-20)** — 특성 속도 가산(+10%씩 5단)을
+    //   화면에서 찍을 수 있게 되면서 Σ가산이 0이 아니게 됐다. 속도 특성을 찍은 산업에서는
+    //   그 몫까지 "전역 배수"로 읽힌다(장비도 붙으면 같은 문제).
+    //   ⚠️ 고칠 곳은 여기가 아니라 서버다 — 배수를 명시 필드로 받아야 한다(일감 'T-055').
     private void RefreshEfficiency()
     {
         var slot = FindSlot();
@@ -768,8 +940,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
-        Send(industry, row.CharacterId);
-        ClientLogger.Info(ClientLogger.Send, $"작업슬롯 배치 요청 — 슬롯={_slotIndex}, 산업={industry}, 캐릭터개체={row.CharacterId}");
+        Send(industry, row.CharacterId, _selectedIndustryLevel);
+        ClientLogger.Info(ClientLogger.Send,
+            $"작업슬롯 배치 요청 — 슬롯={_slotIndex}, 산업={industry} Lv{_selectedIndustryLevel}, 캐릭터개체={row.CharacterId}");
 
         BeginWaiting(PendingRequest.Assign); // 넘어갈지 물러날지는 응답이 정한다
     }
@@ -812,8 +985,46 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         // 캐릭터는 지금 배치된 그대로 싣는다. 바꾸는 것은 산업뿐이다.
-        Send(industry, slot.CharacterId);
+        //
+        // ⚠️ 레벨은 **기본값으로 되돌려 보낸다.** 산업이 달라지면 지금 슬롯의 레벨이 새 산업에서
+        //   열려 있다는 보장이 없어, 그대로 실으면 교체가 'IndustryLevelLocked'로 거절된다.
+        //   바꾼 뒤 원하는 레벨을 다시 고르면 된다(그때는 열린 것만 눌린다).
+        Send(industry, slot.CharacterId, DefaultIndustryLevel);
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 산업 교체 요청 — 슬롯={_slotIndex}, 산업={industry}, 캐릭터개체={slot.CharacterId}");
+
+        BeginWaiting(PendingRequest.Replace);
+    }
+
+    // 배치된 슬롯의 산업 레벨을 갈아 끼운다 ('SelectIndustryLevel'이 세팅 단계에서 호출)
+    //
+    // 산업 교체와 **같은 패킷·같은 판단**이다 — 요청 한 번이면 끝나고, 실패해도 제자리다
+    // (이미 열린 칸이라 화면이 튕기면 조작이 어렵다 → 'UI 배치 현황.md' 3장).
+    private void RequestIndustryLevelChange(int level)
+    {
+        if (!CanSend())
+        {
+            return;
+        }
+
+        var slot = FindSlot();
+
+        if (slot == null || !IsAssigned(slot))
+        {
+            ClientLogger.Error(ClientLogger.UI,
+                $"세팅 단계인데 슬롯 {_slotIndex}이 비어 있다 — 단계 판정이 어긋났다.", this);
+
+            return;
+        }
+
+        if (level == slot.IndustryLevel)
+        {
+            return; // 같은 레벨 — 보내 봐야 서버 정산만 한 번 더 돈다
+        }
+
+        // 산업·캐릭터는 지금 배치된 그대로 싣는다. 바꾸는 것은 레벨뿐이다.
+        Send(slot.Industry, slot.CharacterId, level);
+        ClientLogger.Info(ClientLogger.Send,
+            $"작업슬롯 레벨 교체 요청 — 슬롯={_slotIndex}, 산업={slot.Industry} Lv{level}, 캐릭터개체={slot.CharacterId}");
 
         BeginWaiting(PendingRequest.Replace);
     }
@@ -826,7 +1037,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
-        Send(EIndustryType.None, 0); // 산업 None·캐릭터 0 = 해제
+        Send(EIndustryType.None, 0, DefaultIndustryLevel); // 산업 None·캐릭터 0 = 해제 (레벨 주의 — 'Send' 주석)
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 해제 요청 — 슬롯={_slotIndex}");
 
         BeginWaiting(PendingRequest.Unassign);
@@ -952,13 +1163,18 @@ public class WorkStationSelectPresenter : MonoBehaviour
     }
 
     // 담당 슬롯의 배치 요청을 보낸다. 산업 None·캐릭터 0으로 주면 해제다 (클릭 처리에서 호출)
-    private void Send(EIndustryType industry, long characterId)
+    //
+    // ⚠️ **해제에는 기본 레벨을 싣는다.** 서버는 해제도 같은 경로로 받는데, 산업이 None이면
+    //   'IsIndustryLevelUnlocked(None, 3)'이 거짓이라 **해제가 'IndustryLevelLocked'로 거절된다.**
+    //   기본 레벨은 산업과 무관하게 늘 열려 있다('User.IsIndustryLevelUnlocked').
+    private void Send(EIndustryType industry, long characterId, int industryLevel)
     {
         _network.Send(new C_WorkStationAssignRequest
         {
-            SlotIndex   = _slotIndex,
-            Industry    = industry,
-            CharacterId = characterId
+            SlotIndex     = _slotIndex,
+            Industry      = industry,
+            CharacterId   = characterId,
+            IndustryLevel = (byte)industryLevel
         });
     }
 

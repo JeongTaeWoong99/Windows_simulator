@@ -19,7 +19,7 @@ public static class ResultMessages
         EResultCode.InvalidSlotIndex    => "아직 열리지 않은 작업 슬롯입니다.",
         EResultCode.CharacterNotOwned   => "보유하지 않은 캐릭터입니다.",
         EResultCode.NoAptitude          => "이 캐릭터는 해당 산업 적성이 없습니다.",
-        EResultCode.IndustryLevelLocked => "아직 해금하지 않은 산업입니다.",
+        EResultCode.IndustryLevelLocked => "아직 열지 않은 산업 레벨입니다.",
         EResultCode.InvalidSellRequest  => "판매 요청이 올바르지 않습니다.",
         EResultCode.NotEnoughItem       => "보유량이 부족합니다.",
         EResultCode.ItemNotUsable       => "사용할 수 없는 아이템입니다.",
@@ -27,6 +27,10 @@ public static class ResultMessages
         EResultCode.InvalidUnlockTID    => "존재하지 않는 해금입니다.",
         EResultCode.AlreadyUnlocked     => "이미 해금되었습니다.",
         EResultCode.UnlockLocked        => "해금 조건을 만족하지 않습니다.",
+        EResultCode.NotEnoughTraitPoint => "특성 포인트가 부족합니다.",
+        EResultCode.InvalidUserTraitTID => "존재하지 않는 특성입니다.",
+        // 특성 노드를 일반 해금 경로로 열려 할 때만 온다 — 정상 화면에서는 나오지 않는다(치트창 경로 · 이슈 #31).
+        EResultCode.TraitOnlyUnlock     => "특성 화면에서만 열 수 있습니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

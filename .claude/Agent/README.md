@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-20 특성 트리 화면 · 계정 레벨 표시 · 산업 레벨 선택 칸](2026-09-20-trait-tree-account-level.md) — `#client` `#ui` 창고 특성 탭만 격자를 쓰지 않는 예외로 두고, 트리 모양을 TID가 아니라 테이블에서 파생시켰다
 - [2026-09-20 unity-handoff → unity-editor-ops 개편](2026-09-20-unity-editor-ops-skill.md) — `#docs` `#infra` `#editor` 에디터를 직접 조작하는 전제로 다시 쓰고, auto 모드에서 작동하는 확인 수단은 `deny`뿐임을 실측
 - [2026-09-20 가챠 장비 풀 배선 · 구슬 풀 제거 · 상자 개봉](2026-09-20-gacha-equip-and-box-open.md) — `#client` `#ui` 보상 결과 팝업을 상자와 공유하고, 개봉은 비어 있던 좌클릭 축에 붙였다
 - [2026-09-20 github-issue-writer 스킬 신설 · 가챠 구슬 풀 제거 이슈](2026-09-20-github-issue-writer-skill.md) — `#docs` `#infra` 이슈 제목 꼬리표·assignee/label 필수 규칙을 스킬로 굳히고 마스터에 승격

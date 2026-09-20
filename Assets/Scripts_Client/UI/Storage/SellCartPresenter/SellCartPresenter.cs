@@ -42,6 +42,9 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
 
+    [SerializeField, Tooltip("창고 탭 줄. 자원 탭에서만 이 패널이 보인다")]
+    private StorageTabPresenter storageTabs = null!;
+
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<SellCartRowView> _rows = new List<SellCartRowView>();
 
@@ -69,17 +72,43 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(totalText,         nameof(totalText));
         this.RequireRef(highRarityWarning, nameof(highRarityWarning));
         this.RequireRef(sellButton,        nameof(sellButton));
+        this.RequireRef(storageTabs,       nameof(storageTabs));
 
         _data    = Services.Get<PlayerDataModel>();
         _cart    = Services.Get<SellCartModel>();
         _network = NetworkManager.Instance;
         _wait    = Services.Get<ServerWaitManager>();
 
+        // ⚠️ 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
+        //    'OnDisable'에서 풀면 다시 켤 신호를 받을 길이 사라져 자원 탭에 영영 못 돌아온다
+        //    (도구 줄이 같은 이유로 그렇게 한다 → 'Storage 규칙.md').
+        storageTabs.TabChanged += ApplyTab;
+
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
         Refresh(); // 창고를 닫아 둔 사이에 담긴 것이 있을 수 있다
 
         _isReady = true;
+
+        ApplyTab(storageTabs.CurrentTab); // 탭 줄이 먼저 돌아 통지가 지나갔을 수 있다
+    }
+
+    // 탭 구독 해제 (Unity 메시지). 자기 오브젝트를 끄므로 여기서만 푼다.
+    private void OnDestroy()
+    {
+        storageTabs.TabChanged -= ApplyTab;
+    }
+
+    // 이 탭에서 판매 목록을 보일지 정한다 (Start · TabChanged 구독).
+    //
+    // **특성 탭에서만 사라진다** — 도구 줄과 같은 판단이다. 거기는 격자 자체가 물러나고
+    // 트리가 그 자리를 쓰므로 팔 대상이 화면에 없다.
+    // ⚠️ 캐릭터·장비 탭에서는 **그대로 보인다** — 아직 못 파는 이유를 알려 주는 자리가 필요해서다
+    //   (일괄 담기 버튼도 잠그지 않고 이유를 알린다 → 'Storage 규칙.md').
+    // 담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
+    private void ApplyTab(StorageTab tab)
+    {
+        gameObject.SetActive(tab != StorageTab.Trait);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)

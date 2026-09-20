@@ -243,6 +243,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public long Gold { get; private set; }  // 무료 재화
     public long Dia  { get; private set; }  // 유료 재화. ⏸ 지급·차감 경로가 아직 없어 늘 0이다
 
+    // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
+    // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
+    //
+    // ※ 특성을 찍은 기록은 여기 없다 — 열린 해금 목록('IsUnlocked')으로 온다.
+    //   노드 TID = UnlockTID라 특성 전용 보유 목록이 따로 없다.
+    public int  AccountLevel { get; private set; } = 1;
+    public long AccountExp   { get; private set; }  // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 long이다
+    public int  TraitPoint   { get; private set; }  // 남은(안 쓴) 특성 포인트
+
     // 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
     //
     // 이 매니저는 송신을 모르므로 "무엇으로 로그인했는가"를 스스로 알 수 없다.
@@ -273,6 +282,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     public event Action?                   UnlocksChanged;  // 열린 해금 목록 갱신됨 (로그인 목록 · 해금 성공 후)
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
+
+    public event Action?                    AccountLevelChanged; // 계정 레벨·경험치·특성 포인트 갱신됨
+    public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 찍기 결과 (성공 여부·결과 코드)
 
     // ─── Unity 메시지 ───
 
@@ -327,6 +339,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ItemUsed                 += OnItemUsed;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
+        ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
+        ServerPacketHandler.UserTraitLearnResponded  += OnUserTraitLearnResponded;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -356,6 +370,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ItemUsed                 -= OnItemUsed;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
+        ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
+        ServerPacketHandler.UserTraitLearnResponded  -= OnUserTraitLearnResponded;
     }
 
     #endregion
@@ -669,8 +685,36 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         UnlockCompleted?.Invoke(success, res.Result);
     }
 
+    // 계정 레벨 스냅샷 — 재화와 같은 관례로 통째로 덮어쓴다(델타가 아니다).
+    // 로그인 직후 1회 + 경험치가 오를 때 + 특성 포인트를 쓸 때 온다.
+    private void OnAccountLevelReceived(S_AccountLevelResponse res)
+    {
+        AccountLevel = res.Level;
+        AccountExp   = res.Exp;
+        TraitPoint   = res.TraitPoint;
+
+        AccountLevelChanged?.Invoke();
+    }
+
+    // 특성 찍기 결과 — 결과 코드만 나른다.
+    //
+    // ★ 캐시를 여기서 건드리지 않는다. 찍힌 기록은 앞서 온 'S_UnlockResponse'가
+    //   열린 해금 목록에 넣었고, 남은 포인트는 뒤따라 오는 'S_AccountLevelResponse'가 채운다
+    //   ('OnUnlockResponded'가 골드를 건드리지 않는 것과 같은 이유).
+    private void OnUserTraitLearnResponded(S_UserTraitLearnResponse res)
+    {
+        bool success = res.Result == EResultCode.Ok;
+
+        if (!success)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"특성 찍기 실패 — {res.UserTraitTID}, 결과={res.Result}");
+        }
+
+        TraitLearnCompleted?.Invoke(success, res.Result);
+    }
+
     #endregion
-    
+
     #region 인벤토리 반영
 
     // 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.

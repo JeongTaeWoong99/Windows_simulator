@@ -23,7 +23,9 @@ public enum StorageTab
     // ※ 자원이 아니라 캐릭터와 같은 모양이다 — 개체마다 번호가 있고 정의는 'EquipTable'에 따로 있다.
     Equipment,
 
-    // 특성 — ⏸ 기획은 있으나 서버 구현·패킷이 없다 (T-043).
+    // 특성 — 계정 레벨로 얻은 포인트로 찍는 트리.
+    // ⚠️ **이 탭만 격자를 쓰지 않는다** — 칸 목록이 아니라 선으로 이어진 트리라
+    //    'TraitPresenter'가 따로 그린다 ('Storage 규칙.md'의 "탭이 달라도 격자는 하나다" 예외).
     Trait,
 }
 
@@ -34,9 +36,11 @@ public enum StorageTab
 // ('Storage 규칙.md'의 "탭 전환도 층은 하나다").
 //
 // ■ 아직 데이터가 없는 탭은 버튼을 잠근다
-//   잠금 여부를 여기 적어 두지 않고 **격자에 공급자가 있는지**로 판정한다.
+//   잠금 여부를 여기 적어 두지 않고 **그릴 것이 있는지**로 판정한다('HasScreen').
 //   두 곳에 적으면 공급자를 붙이고도 버튼이 잠긴 채 남는다 — 탭을 채우는 사람이
 //   이 파일을 안 열어도 되게 한다.
+//   ⚠️ 특성 탭만은 격자가 아니라 'TraitPresenter'가 그린다. 판정이 갈리는 곳은
+//   'HasScreen' 한 군데뿐이고, 화면을 여닫는 일은 각 Presenter가 스스로 한다.
 public class StorageTabPresenter : MonoBehaviour
 {
     // 창고를 열었을 때의 탭. 자원이 실제 내용물이 가장 많은 탭이라 여기서 시작한다.
@@ -63,6 +67,9 @@ public class StorageTabPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("탭 내용을 그리는 격자. 같은 캔버스의 Grid Presenter")]
     private StorageGridPresenter grid = null!;
+
+    [SerializeField, Tooltip("특성 탭을 그리는 화면. 같은 캔버스의 Trait Presenter (격자를 쓰지 않는 유일한 탭)")]
+    private TraitPresenter traitScreen = null!;
 
 
     [CenterHeader("선택 표시")]
@@ -136,8 +143,17 @@ public class StorageTabPresenter : MonoBehaviour
 
             // 화면이 준비되지 않은 탭은 누를 수 없게 둔다 — 눌러도 아무 일이 없으면
             // 고장과 구분되지 않고, 잠긴 버튼은 유니티 기본 Disabled 색으로 흐려진다.
-            entry.button.interactable = grid.HasSource(tab);
+            entry.button.interactable = HasScreen(tab);
         }
+    }
+
+    // 이 탭에 그릴 것이 있는가 (BindButtons에서 호출).
+    //
+    // 셋은 격자가 공급자를 갖고 있는지로, 특성 하나는 전용 화면이 배선돼 있는지로 갈린다.
+    // **판정이 갈리는 곳은 여기 하나뿐이다.**
+    private bool HasScreen(StorageTab tab)
+    {
+        return tab == StorageTab.Trait ? traitScreen != null : grid.HasSource(tab);
     }
 
     #endregion

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using GameData;
+using MikaProtocol; // EIndustryType — 화면이 쓰는 산업 축. 테이블의 GameData.IndustryType과 값이 같다
 using UnityEngine;
 
 // 엑셀에서 생성된 게임 테이블('GameTable')을 StreamingAssets에서 읽어 적재한다.
@@ -256,6 +257,121 @@ public static class GameDataLoader
     public static bool TryGetUnlock(int unlockTid, out UnlockTableRow row)
     {
         return GameTable.UnlockTable.TryGet(unlockTid, out row);
+    }
+
+    // 계정 레벨 L에 **도달하는 데** 직전 레벨에서 필요한 경험치. 행이 없으면 false(= 만렙).
+    //
+    // ※ 캐릭터용 'TryGetRequiredExp'와 **다른 함수다** — 곡선이 캐릭터의 8배라 값이 long이고,
+    //   읽는 테이블도 'AccountLevelTable'로 다르다. 하나로 합치면 형이 맞지 않는다.
+    public static bool TryGetAccountRequiredExp(int level, out long requiredExp)
+    {
+        if (GameTable.AccountLevelTable.TryGet(level, out var row))
+        {
+            requiredExp = row.RequiredExp;
+
+            return true;
+        }
+
+        requiredExp = 0;
+
+        return false;
+    }
+
+    // 특성 노드 전체 (엑셀 순서 그대로). 트리 화면이 산업·효과로 갈라 쓴다.
+    //
+    // ※ **TID 규칙을 클라에 베끼지 않는다.** 노드가 속도인지 산업 레벨인지는 'EffectType'으로,
+    //   어느 열인지는 'Industry'로 갈린다 — 시트에 단이 하나 늘면 트리도 저절로 한 줄 는다.
+    public static IReadOnlyList<UserTraitTableRow> UserTraits => GameTable.UserTraitTable.All;
+
+    // 특성 노드 한 줄(이름·비용·효과)을 조회한다. 없는 TID면 false.
+    //
+    // ※ 조건(계정 레벨·선행)은 여기 없다 — **같은 TID의 'UnlockTable' 행**에 있다
+    //   (노드 TID = UnlockTID). 그래서 트리 한 칸을 그리려면 두 테이블을 함께 읽는다.
+    public static bool TryGetUserTrait(int userTraitTid, out UserTraitTableRow row)
+    {
+        return GameTable.UserTraitTable.TryGet(userTraitTid, out row);
+    }
+
+    // 산업 레벨 한 줄(이름·요구 점수·판정당 경험치)을 (산업, 레벨)로 조회한다. 없으면 false.
+    //
+    // ※ 시트 키는 'IndustryLevelTID'지만 화면이 묻는 축은 (산업, 레벨)이라 여기서 한 번 뒤집는다
+    //   (서버 'IndustryLevelCatalog'와 같은 모양). 키 계산식을 화면마다 적지 않기 위해서다.
+    public static bool TryGetIndustryLevel(EIndustryType industry, int level, out IndustryLevelTableRow row)
+    {
+        return IndustryLevels.TryGetValue(((byte)industry, level), out row!);
+    }
+
+    // 이 산업 레벨을 여는 해금 TID. Lv1은 조건이 없어 **0**이고, 'PlayerDataModel.IsUnlocked'가 항상 참으로 읽는다.
+    //
+    // ※ 이 TID가 곧 특성 노드의 'UserTraitTID'다 — 트리에서 그 노드를 찍으면 이 레벨이 열린다.
+    public static int GetIndustryLevelUnlockTid(EIndustryType industry, int level)
+    {
+        return TryGetIndustryLevel(industry, level, out var row) ? row.UnlockTID : 0;
+    }
+
+    // 이 해금 TID가 여는 산업 레벨 행. 산업 레벨을 여는 TID가 아니면 false.
+    //
+    // ※ 특성 트리가 쓴다 — 노드 TID만 들고 "이게 무엇을 여는가"(예: '밭')를 물어야 하기 때문이다.
+    //   Lv1은 'UnlockTID = 0'이라 여기 걸리지 않는다(조건 없이 열려 있다).
+    public static bool TryGetIndustryLevelByUnlockTid(int unlockTid, out IndustryLevelTableRow row)
+    {
+        row = null!;
+
+        if (unlockTid == 0)
+        {
+            return false;
+        }
+
+        foreach (var candidate in GameTable.IndustryLevelTable.All)
+        {
+            if (candidate.UnlockTID == unlockTid)
+            {
+                row = candidate;
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 이 산업에 존재하는 가장 높은 레벨 (버튼을 몇 개 그릴지). 행이 하나도 없으면 0.
+    public static int GetMaxIndustryLevel(EIndustryType industry)
+    {
+        int max = 0;
+
+        foreach (var row in GameTable.IndustryLevelTable.All)
+        {
+            if ((byte)row.IndustryType == (byte)industry && row.Level > max)
+            {
+                max = row.Level;
+            }
+        }
+
+        return max;
+    }
+
+    // (산업, 레벨) → 산업 레벨 행. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static Dictionary<(byte Industry, int Level), IndustryLevelTableRow>? _industryLevels;
+
+    private static Dictionary<(byte Industry, int Level), IndustryLevelTableRow> IndustryLevels
+    {
+        get
+        {
+            if (_industryLevels != null)
+            {
+                return _industryLevels;
+            }
+
+            _industryLevels = new Dictionary<(byte, int), IndustryLevelTableRow>();
+
+            foreach (var row in GameTable.IndustryLevelTable.All)
+            {
+                _industryLevels[((byte)row.IndustryType, row.Level)] = row;
+            }
+
+            return _industryLevels;
+        }
     }
 
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
