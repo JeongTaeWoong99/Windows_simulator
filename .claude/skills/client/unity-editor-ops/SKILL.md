@@ -3,7 +3,7 @@ name: unity-editor-ops
 description: 유니티 에디터를 조작해야 할 때 연다 — 씬·프리팹·인스펙터·컴포넌트 변경, SO 생성, 플레이 모드·테스트·빌드, 콘솔 확인. 어떤 경로로 실행할지(Unity CLI → MCP → 사람 인계)와 실행 전 사용자 확인이 필요한 작업을 정한다. 코드 파일만 고치고 끝나면 해당 없음.
 ---
 
-> 최종 업데이트: 2026-09-20
+> 최종 업데이트: 2026-09-22
 
 # 유니티 에디터 작업
 
@@ -57,7 +57,7 @@ unity cmd set_component_properties  →  save_prefab_contents / save_scene
 | 테스트 실행 | `unity test` · `run_tests` | 오래 돌고, 결과를 같이 봐야 한다 |
 | 빌드·빌드 타깃 변경 | `unity build` · `build` · `switch_build_target` | 길게 돈다 |
 | 베이크 | `bake_lighting` · `bake_navmesh` · `bake_occlusion_culling` | 길게 돌고 결과물이 커밋에 섞인다 |
-| 임의 C# 실행 | `eval` · `run_script` · `Unity_RunCommand` | 무엇을 할지 규칙으로 못 막는다 |
+| **되돌릴 수 없는** C# 실행 | `eval` · `run_script` · `Unity_RunCommand` 안에서 삭제·파괴를 할 때 | 아래 삭제 행과 같다 — 단순 생성·수정은 해당 없다 |
 | 에셋·오브젝트 삭제 | `delete_*` · `clear_*` · `remove_*` · `package_remove` | git으로 되돌릴 수 있지만 되돌릴 일을 만들지 않는다 |
 | AI 에셋 생성 | `Unity_AssetGeneration_GenerateAsset` | **되돌릴 수 없다** — 크레딧을 쓴다 (3절) |
 
@@ -68,6 +68,22 @@ unity cmd set_component_properties  →  save_prefab_contents / save_scene
 **이 목록 밖은 묻지 않고 진행한다** — 조회(`get_*`·`find_*`·`console`·`*_status`),
 생성·수정(`create_*`·`add_component`·`set_component_properties`·`attach_script`),
 리컴파일, 저장, 단일 캡처. 전부 Undo 스택에 들어가거나 git으로 되돌릴 수 있다.
+
+### `eval`·`run_script`는 그 자체로는 묻지 않는다
+
+**기준은 실행 수단이 아니라 안에서 무엇을 하느냐다.** 등록된 명령으로 안 되는
+씬·프리팹 편집은 대부분 임의 C#으로 가게 되는데, 여기에 확인을 걸면
+**씬을 한 번 만질 때마다 멈추게 된다.**
+
+| 안에서 하는 일 | 판단 |
+|----------------|------|
+| 오브젝트·컴포넌트 생성·수정, 프로퍼티 설정, 계층 조회, 저장 | **묻지 않는다** — Undo·git이 받는다 |
+| `DestroyImmediate` · `AssetDatabase.Delete*` · `File`/`Directory.Delete` · 씬 전체 교체 | **묻는다** — 위 삭제 행과 같다 |
+| 플레이 모드 진입·빌드·베이크를 코드로 부르는 것 | **묻는다** — 수단을 바꿔도 위 표가 적용된다 |
+
+> 📌 2026-09-22에 이 조건을 좁혔다. `eval`·`run_script` 전체가 확인 대상이던 동안
+> **일상적인 씬 작업마다 확인 요청이 붙어** 작업이 계속 끊겼다.
+> 확인은 **되돌릴 수 없는 것**에만 건다.
 
 ### 이 절은 설정으로 강제되지 않는다
 
