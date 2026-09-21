@@ -95,6 +95,7 @@ public class StorageTabPresenter : MonoBehaviour
 
         ValidateTabs();
         BindButtons();
+        WakeTabScreens();
         ShowTab(DefaultTab);
     }
 
@@ -154,6 +155,43 @@ public class StorageTabPresenter : MonoBehaviour
     private bool HasScreen(StorageTab tab)
     {
         return tab == StorageTab.Trait ? traitScreen != null : grid.HasSource(tab);
+    }
+
+    // 탭을 타는 화면들을 일단 켠다 (Start에서 'ShowTab'보다 먼저).
+    //
+    // ■ 왜 켜 놓고 시작하나
+    //   이 화면들은 자기 탭이 아니면 **스스로 꺼진다.** 그래서 꺼진 채로 씬에 저장되기 쉬운데,
+    //   꺼진 오브젝트는 'Start'가 돌지 않아 'TabChanged'를 **구독하지 못한다.**
+    //   그 상태로는 자기 탭을 눌러도 켜 줄 사람이 없어 영영 안 돌아온다
+    //   (2026-09-22: 특성 화면이 꺼진 채 저장돼 특성 탭이 빈 화면이 됐다).
+    //
+    // ■ 그래서 최초 진입도 탭 전환과 같은 경로를 탄다
+    //   켜 둔 뒤 'ShowTab'을 부르면 각 화면이 자기 'Start'에서 현재 탭을 보고 스스로 물러난다.
+    //   이 지점엔 아직 아무도 구독하기 전이라 방금 켠 화면이 'TabChanged'로 다시 꺼지지 않는다
+    //   — 꺼지면 'Start'가 또 안 돌아 같은 덫에 빠진다.
+    //   그 'Start'는 첫 'Update' 전 같은 프레임 안에서 돌므로 화면이 깜빡이지 않는다.
+    //
+    // ※ 격자는 여기 없다 — 구독이 아니라 'ShowTab'이 직접 부르고 초기화도 지연이라,
+    //   꺼진 채로 저장돼도 스스로 깨어난다('StorageGridPresenter.EnsureInitialized').
+    private void WakeTabScreens()
+    {
+        // 탭 줄과 화면들은 모두 캔버스 직속 형제다. 부모가 없으면(테스트 등) 자기를 기준으로 본다.
+        Transform root = transform.parent != null ? transform.parent : transform;
+
+        WakeScreen(traitScreen);
+        WakeScreen(root.GetComponentInChildren<StorageToolPresenter>(true));
+        WakeScreen(root.GetComponentInChildren<SellCartPresenter>(true));
+    }
+
+    // 그 화면을 켠다 (WakeTabScreens에서 호출). 아직 없는 화면은 건너뛴다.
+    private static void WakeScreen(Component? screen)
+    {
+        if (screen == null)
+        {
+            return;
+        }
+
+        screen.gameObject.SetActive(true);
     }
 
     #endregion

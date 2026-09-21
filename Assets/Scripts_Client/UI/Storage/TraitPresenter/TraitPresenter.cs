@@ -125,8 +125,9 @@ public class TraitPresenter : MonoBehaviour
 
         _isReady = true;
 
-        // 씬에는 켜진 채로 저장한다(꺼진 채면 이 Start가 영영 안 돈다).
         // 배선이 끝난 지금 현재 탭을 보고 스스로 물러난다.
+        // ※ 꺼진 채로 저장돼도 된다 — 탭 줄이 'ShowTab' 전에 한 번 켜 주므로 이 Start는 반드시 돈다
+        //   ('StorageTabPresenter.WakeTabScreens').
         ApplyStorageTab(storageTabs.CurrentTab);
     }
 
