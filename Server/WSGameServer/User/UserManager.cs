@@ -12,7 +12,7 @@ namespace WSGameServer;
 /// </summary>
 public sealed class UserManager : Singleton<UserManager>
 {
-    private readonly ConcurrentDictionary<ulong, User>   _userKeys    = new(); // uid -> User
+    private readonly ConcurrentDictionary<ulong, User>   _userKeys    = new(); // User.Key -> User (계정 Uid가 아니다 — TryGetUserByUid)
     private readonly ConcurrentDictionary<string, ulong> _pids        = new(); // pid -> uid
     private readonly ConcurrentDictionary<long, ulong>   _sessionKeys = new(); // sessId -> uid  
     //private readonly ConcurrentDictionary<long, long>   _uids        = new(); // 
@@ -49,6 +49,14 @@ public sealed class UserManager : Singleton<UserManager>
     }
     
     public bool TryGetUser(ulong uid, out User? user) => _userKeys.TryGetValue(uid, out user);
+
+    // 접속 중인 유저를 계정 Uid로 찾는다. _userKeys의 키는 Uid가 아니라 User.Key라 위 TryGetUser로는 못 찾는다.
+    // 전체를 훑는다 — 운영 발송처럼 드문 경로에서만 쓴다.
+    public bool TryGetUserByUid(long uid, out User? user)
+    {
+        user = _userKeys.Values.FirstOrDefault(u => u.Uid == uid);
+        return user != null;
+    }
 
     public int Count => _userKeys.Count;
 

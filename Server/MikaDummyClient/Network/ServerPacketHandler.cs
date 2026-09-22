@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using MikaNetwork;
 using MikaProtocol;
@@ -246,6 +247,42 @@ namespace MikaDummyClient
                 Console.WriteLine($"  - Kind={item.Kind.ToString()}, ItemId={item.ItemId}, Count={item.Count}");
             }
         }
+
+        [PacketHandler]
+        public static void Handle_S_MailListResponse(ISession session, S_MailListResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 우편함: {res.Mails?.Count ?? 0}통");
+            PrintMails(res.Mails);
+        }
+
+        [PacketHandler]
+        public static void Handle_S_MailArrivedResponse(ISession session, S_MailArrivedResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 새 우편: {res.Mails?.Count ?? 0}통");
+            PrintMails(res.Mails);
+        }
+
+        [PacketHandler]
+        public static void Handle_S_MailClaimResponse(ISession session, S_MailClaimResponse res)
+        {
+            var ids = string.Join(",", res.ClaimedMailIds ?? new List<long>());
+            Console.WriteLine($"[Client] Recv 우편 수령: {res.Result} 받은=[{ids}] 남은={res.RemainingCount} 아이템변경={res.ItemChangeInfos?.Count ?? 0}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_MailDeleteResponse(ISession session, S_MailDeleteResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 우편 삭제: {res.Result} MailId={res.MailId}");
+        }
+
+        private static void PrintMails(List<MailInfo>? mails)
+        {
+            foreach (var m in mails ?? new List<MailInfo>())
+            {
+                var items = string.Join(",", (m.Items ?? new List<ItemInfo>()).Select(i => $"{i.ItemId}x{i.Count}"));
+                Console.WriteLine($"  - #{m.MailId} 템플릿={m.TemplateTid} 골드={m.Gold} 다이아={m.Dia} 아이템=[{items}] " +
+                                  $"캐릭터={m.CharacterTids?.Count ?? 0} 장비={m.EquipTids?.Count ?? 0} {(m.ClaimedAtUnixMs > 0 ? "받음" : "안 받음")}");
+            }
+        }
     }
 }
-

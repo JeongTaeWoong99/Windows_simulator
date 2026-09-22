@@ -30,6 +30,8 @@ namespace MikaDummyClient
                 new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
                 new ClientAction("UserTraitLearn (특성 찍기 — 산업 레벨 2xxx · 속도 3xxx)", SendUserTraitLearn),
                 new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
+                new ClientAction("MailClaim (우편 수령 — MailId, 0이면 모두 받기)", SendMailClaim),
+                new ClientAction("MailDelete (받은 우편 삭제 — MailId)", SendMailDelete),
             };
         }
 
@@ -202,7 +204,7 @@ namespace MikaDummyClient
         {
             Console.WriteLine("명령: 1=GiveGold(Arg1=금액, 음수면 차감) 2=GiveDia 3=GiveItem(TID, 개수) " +
                               "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle(판정 횟수) 7=Unlock(UnlockTID) " +
-                              "8=GiveEquip(EquipTID) 9=GiveAccountExp(경험치)");
+                              "8=GiveEquip(EquipTID) 9=GiveAccountExp(경험치) 10=SendMail(템플릿TID, 받는 UID — 0이면 전체)");
             Console.Write("Command > ");
             if (!byte.TryParse(Console.ReadLine(), out byte command))
             {
@@ -216,6 +218,20 @@ namespace MikaDummyClient
             long.TryParse(Console.ReadLine(), out long arg2);
 
             NetworkManager.Instance.Send(new C_CheatRequest { Command = (ECheatCommand)command, Arg1 = arg1, Arg2 = arg2 });
+        }
+
+        private void SendMailClaim()
+        {
+            Console.Write("MailId (0 = 모두 받기) > ");
+            long.TryParse(Console.ReadLine(), out long mailId);
+            NetworkManager.Instance.Send(new C_MailClaimRequest { MailId = mailId });
+        }
+
+        private void SendMailDelete()
+        {
+            Console.Write("MailId > ");
+            long.TryParse(Console.ReadLine(), out long mailId);
+            NetworkManager.Instance.Send(new C_MailDeleteRequest { MailId = mailId });
         }
 
         private void SendItemUse()

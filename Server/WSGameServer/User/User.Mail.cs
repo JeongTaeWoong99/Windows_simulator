@@ -209,7 +209,7 @@ public partial class User
             return (EResultCode.Ok, $"전체 우편 {templateTid} 발송 · {template.PeriodDays}일");
         }
 
-        UserManager.Instance.TryGetUser((ulong)recipientUid, out var recipient);
+        UserManager.Instance.TryGetUserByUid(recipientUid, out var recipient);
         PostDBTask(new SendMailRepository(this, recipientUid, recipient, templateTid, MailCatalog.AttachmentOf(template), now));
         return (EResultCode.Ok, $"우편 {templateTid} → Uid {recipientUid}{(recipient is null ? " (오프라인 — 다음 로그인)" : "")}");
     }

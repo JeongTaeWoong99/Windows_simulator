@@ -138,6 +138,8 @@ public sealed class SendMailRepository(User owner, long recipientUid, User? reci
 
     public long RecipientUid => recipientUid;
 
+    public User? Recipient => recipient;
+
     public int TemplateTid => templateTid;
 
     public async Task ExecuteAsync(DbConnection connection)

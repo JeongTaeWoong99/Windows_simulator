@@ -212,6 +212,25 @@ public class UserMailTest
     }
 
     [Fact]
+    public void 접속_중인_유저에게_보내면_그_유저의_우편함으로_도착한다()
+    {
+        // 실측(2026-09-22)에서 발견 — UserManager는 Uid가 아니라 내부 Key로 유저를 찾아서, 접속 중인데도 오프라인으로 떨어졌다.
+        var (user, b) = UserWithMails();
+        UserManager.Instance.JoinUser(user);
+
+        try
+        {
+            user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SendMail, Arg1 = OperationTemplate, Arg2 = user.Uid }, Now);
+
+            b.DB.PostedOf<SendMailRepository>().ShouldHaveSingleItem().Recipient.ShouldBeSameAs(user);
+        }
+        finally
+        {
+            UserManager.Instance.LeaveUser(user);
+        }
+    }
+
+    [Fact]
     public void 치트로_전체_우편을_보내면_전체_우편_한_줄을_요청한다()
     {
         var (user, b) = UserWithMails();
