@@ -21,6 +21,9 @@ public sealed class Inventory
             .ToList();
     }
     
+    /// <summary>보유 종류 수 — 0개짜리 항목은 지워지므로 곧 창고 칸 수다.</summary>
+    public int KindCount => _items.Count;
+
     /// <summary>보유 수량. 없으면 0.</summary>
     public int GetCount(int itemId) => _items.TryGetValue(itemId, out var item) ? item.Count : 0;
 

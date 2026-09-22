@@ -54,7 +54,15 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        // 2) 비용 차감 — 반드시 지급 전에 한다. 모자라면 아무것도 바뀌지 않는다.
+        // 2) 추첨(순수) → 칸 검사 → 비용 차감 → 지급. 칸 검사에 결과가 필요해 추첨이 차감보다 앞선다.
+        var picked = pool.PickMany(drawCount);
+        if (!HasStorageFor(user, picked))
+        {
+            user.Send(new S_GachaDrawResponse { Result = EResultCode.StorageFull });
+            return;
+        }
+
+        // 차감은 반드시 지급 전에 한다. 모자라면 아무것도 바뀌지 않는다.
         var cost = drawCount == MultiDraw ? info.CostMulti : info.CostSingle;
         if (!TrySpend(user, info.CostCurrency, cost))
         {
@@ -62,8 +70,8 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        // 3) 추첨 → 지급. Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
-        var (rewards, changes) = Grant(user, pool.PickMany(drawCount));
+        // 3) 지급. Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
+        var (rewards, changes) = Grant(user, picked);
 
         user.Send(new S_GachaDrawResponse
         {
@@ -92,13 +100,28 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
+        if (user.GetItemCount(itemTid) < count)
+        {
+            Reply(EResultCode.NotEnoughItem);
+            return;
+        }
+
+        // 상자를 전부 열면 그 상자 칸이 빈다 — 빈 칸까지 보고 판정한다.
+        var picked = pool.PickMany(count);
+        var freed  = user.GetItemCount(itemTid) == count ? itemTid : 0;
+        if (!HasStorageFor(user, picked, freed))
+        {
+            Reply(EResultCode.StorageFull);
+            return;
+        }
+
         if (!user.TryConsumeItems(new Dictionary<int, int> { [itemTid] = count }, out var consumed))
         {
             Reply(EResultCode.NotEnoughItem);
             return;
         }
 
-        var (rewards, changes) = Grant(user, pool.PickMany(count));
+        var (rewards, changes) = Grant(user, picked);
 
         // 상자 차감을 앞에 싣는다 — 클라는 누적 총량으로 덮어쓰기만 하면 된다.
         consumed.AddRange(changes);
@@ -172,6 +195,17 @@ public sealed class GachaService : Singleton<GachaService>
 
         return (rewards, changes);
     }
+
+    // 캐릭터·장비는 개체 수, 아이템은 종류 수가 칸이다. 개체 수는 구간이 있으면 최대치로 본다 — 지급 때 굴린 값이 검사보다 크면 안 된다.
+    private static bool HasStorageFor(User user, IReadOnlyList<GachaEntry> picked, int freedItemTid = 0)
+    {
+        var itemTids   = picked.Where(e => e.RewardType == GachaRewardType.Item).Select(e => e.RewardTID);
+        var characters = picked.Where(e => e.RewardType == GachaRewardType.Character).Sum(MaxCountOf);
+        var equips     = picked.Where(e => e.RewardType == GachaRewardType.Equip).Sum(MaxCountOf);
+        return user.HasStorageFor(itemTids, characters, equips, freedItemTid);
+    }
+
+    private static int MaxCountOf(GachaEntry entry) => Math.Max(entry.Count, entry.MaxCount);
 
     // 구간 보상(골드)은 Count~MaxCount에서 고른다. MaxCount가 없거나 작으면 Count 고정이다.
     private static int RollCount(GachaEntry entry)

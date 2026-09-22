@@ -45,6 +45,7 @@ public partial class User
     /// </summary>
     public void GrantGachaCharacters(IReadOnlyList<int> characterTids)
     {
+        _pendingCharacterCount += characterTids.Count;
         PostDBTask(new GrantCharacterRepository(this, characterTids, CharacterGrantReason.Gacha));
     }
 
@@ -54,6 +55,8 @@ public partial class User
     /// </summary>
     public void OnGachaCharactersGranted(IReadOnlyList<(long Id, int Tid)> granted)
     {
+        _pendingCharacterCount = Math.Max(0, _pendingCharacterCount - granted.Count);
+
         foreach (var (characterId, characterTid) in granted)
         {
             AddCharacter(characterId, characterTid);

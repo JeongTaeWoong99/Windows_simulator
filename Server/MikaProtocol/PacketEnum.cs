@@ -21,6 +21,7 @@ namespace MikaProtocol
         InvalidDrawCount   = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)
         InvalidGachaId     = 101, // 존재하지 않는 가챠 풀
         NotEnoughCurrency  = 102, // 비용을 낼 재화가 모자람 — 아무것도 지급하지 않는다
+        StorageFull        = 103, // 창고 칸(자원 종류·캐릭터·장비 각 200)이 모자람 — 뽑기·상자 개봉 모두. 아무것도 바꾸지 않는다
 
         // ── 200~: 작업슬롯 ──
         InvalidSlotIndex    = 200, // 보유하지 않은 슬롯 번호
