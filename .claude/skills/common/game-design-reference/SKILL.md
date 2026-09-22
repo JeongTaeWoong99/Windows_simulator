@@ -5,7 +5,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 
 # 게임 기획 참조
 
-> 최종 업데이트: 2026-09-16 (README의 `최종 업데이트` 줄 삭제 반영 · 해금 문서 추가 · 하이브리드 분할 — 전파 알고리즘·사고 사례·검사 옵션·새 시스템 절차를 `전파 상세.md`로)
+> 최종 업데이트: 2026-09-22 (문서 지도에 우편 추가)
 >
 > 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md)** 를
 > 먼저 읽고, 그 다음 해당 영역의 **상세 기획안**을 읽는다.
@@ -72,6 +72,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 | `GameDesign/design/trade/README.md` | 거래소·화폐·경제 |
 | `GameDesign/design/progression/README.md` | 성장 곡선·온보딩·후반 목표 |
 | `GameDesign/design/ui/README.md` | 바탕화면 위젯·팝업 UI·알림 |
+| `GameDesign/design/mail/README.md` | 우편 — 운영 지급·창고 넘침 보관·수령 |
 | `GameDesign/design/기획평가.md` | 리스크 확인·설계 판단 근거 |
 
 ---
