@@ -37,3 +37,10 @@ tags: [server, mail, excel, db, packet, T-081]
 - **버그: 접속 중인 수신자를 못 찾았다.** `UserManager.TryGetUser(ulong uid)`는 이름과 달리 `User.Key`로 찾는다. `TryGetUserByUid`를 추가해 고쳤다(`42923e3`). **Uid로 접속 중인 유저를 찾을 일이 생기면 `TryGetUserByUid`를 쓴다.**
 - 더미 클라에 우편 메뉴를 붙였다(14 = 수령, 0이면 모두 받기 · 15 = 삭제 · 치트 10 = SendMail). stdin에 스크립트를 흘려 넣어 몰 수 있다.
 - 실측 계정(uid 7·8)과 전체 우편 1건은 지웠다. `game.sqlite3`는 커밋 버전 바이트로 되돌렸다(VACUUM이 바이트를 바꾼다).
+
+## 업데이트 (2026-09-22) — 넘침 보관 (T-082)
+- `GachaService.OpenBox`는 이제 **수량 굴리기 → 칸 검사 → (안 들어가면) 우편함 상한 검사 → 상자 차감 → 지급 또는 넘침 우편** 순서로 돈다. 수량을 한 번만 굴리는 `Roll`을 분리했다 — 창고로 주든 우편에 담든 같은 값이어야 한다.
+- 우편함 상한 100은 `User.MailboxCapacity`다. **저장을 기다리는 넘침 우편**(`_pendingOverflowMails`)도 센다 — 캐릭터 대기분과 같은 이유다.
+- `S_ItemUseResponse.StoredInMail` 필드를 추가했다. true면 `ItemChangeInfos`에 상자 차감만 들어 있다.
+- 넘침 템플릿 TID 2는 `MailCatalog.OverflowTemplateTid`다. 이 템플릿이 엑셀에 없으면 기동이 멈춘다.
+- **자원 칸 200은 실제로 차지 않는다**(아이템 162종). 넘침은 장비 칸이 찼을 때 일어난다. 실측은 생략했다 — 우편 저장 경로는 T-081 실측으로 확인했다.
