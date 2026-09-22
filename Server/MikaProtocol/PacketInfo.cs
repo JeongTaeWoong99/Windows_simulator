@@ -93,4 +93,19 @@ namespace MikaProtocol
         public EEquipSlot EquippedSlot        { get; set; }  // 창고면 None
         public int        SlotPosition        { get; set; }
     }
+
+    /// <summary>우편 한 통. 제목·본문·발신자는 싣지 않는다 — 클라가 <c>MailTemplateTable</c>에서 <c>TemplateTid</c>로 읽는다.</summary>
+    [MemoryPackable]
+    public partial class MailInfo
+    {
+        public long            MailId           { get; set; }
+        public int             TemplateTid      { get; set; }
+        public long            Gold             { get; set; }
+        public long            Dia              { get; set; }
+        public List<ItemInfo>? Items            { get; set; }
+        public List<int>?      CharacterTids    { get; set; }  // 한 명 = 한 원소
+        public List<int>?      EquipTids        { get; set; }  // 한 개 = 한 원소
+        public long            ReceivedAtUnixMs { get; set; }  // 도착 시각 (Unix epoch 밀리초, UTC)
+        public long            ClaimedAtUnixMs  { get; set; }  // 받은 시각. 0 = 안 받음
+    }
 }

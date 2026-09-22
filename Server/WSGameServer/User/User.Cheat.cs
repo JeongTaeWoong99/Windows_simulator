@@ -38,6 +38,7 @@ public partial class User
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
             ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
+            ECheatCommand.SendMail         => CheatSendMail(req.Arg1, req.Arg2, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -173,6 +174,17 @@ public partial class User
         // 캐릭터 경험치가 계정으로 흘러드는 것과 같은 함수 — 레벨업·포인트·저장·푸시가 같다.
         GainAccountExp(amount, notify: true);
         return (EResultCode.Ok, $"계정 Lv{AccountLevel} Exp{AccountExp} 특성포인트{TraitPoint}");
+    }
+
+    private (EResultCode, string) CheatSendMail(long templateTid, long recipientUid, DateTime now)
+    {
+        if (templateTid <= 0 || templateTid > int.MaxValue)
+        {
+            return (EResultCode.InvalidCheatArgs, $"MailTemplateTable에 없는 TID {templateTid}");
+        }
+
+        // 운영툴과 같은 발송 경로 — 치트 전용 지급 코드를 만들지 않는다(치트 원칙 4).
+        return SendOperationMail((int)templateTid, recipientUid, now);
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

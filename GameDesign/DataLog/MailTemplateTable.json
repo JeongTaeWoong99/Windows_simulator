@@ -1,0 +1,34 @@
+[
+  {
+    "MailTemplateTID": 1,
+    "Title": "점검 보상",
+    "Body": "점검에 협조해 주셔서 감사합니다.",
+    "Sender": "운영팀",
+    "PeriodDays": 14,
+    "Gold": 1000,
+    "Dia": 0,
+    "ItemTIDs": [
+      100007
+    ],
+    "ItemCounts": [
+      3
+    ],
+    "CharacterTIDs": [],
+    "EquipTIDs": [],
+    "Description": "테스트 — 운영 우편"
+  },
+  {
+    "MailTemplateTID": 2,
+    "Title": "보관된 보상",
+    "Body": "창고가 가득 차 받지 못한 보상을 보관했습니다.",
+    "Sender": "시스템",
+    "PeriodDays": 0,
+    "Gold": 0,
+    "Dia": 0,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "CharacterTIDs": [],
+    "EquipTIDs": [],
+    "Description": "넘침 보관 — 첨부는 서버가 채운다(T-082)"
+  }
+]

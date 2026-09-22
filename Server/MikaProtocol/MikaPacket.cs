@@ -67,6 +67,12 @@ namespace MikaProtocol
         S_AccountLevelResponse = 36,
         C_ItemUseRequest = 37,
         S_ItemUseResponse = 38,
+        S_MailListResponse = 39,
+        S_MailArrivedResponse = 40,
+        C_MailClaimRequest = 41,
+        S_MailClaimResponse = 42,
+        C_MailDeleteRequest = 43,
+        S_MailDeleteResponse = 44,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -430,5 +436,54 @@ namespace MikaProtocol
         public EResultCode Result { get; set; }
         public long GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 갱신 후 누적 총량. 0개는 Kind=Remove
+    }
+
+    /// <summary>우편함 전체 스냅샷(로그인 직후). 받은 우편은 7일 동안 함께 실린다.</summary>
+    [MemoryPackable, Packet(PacketId.S_MailListResponse)]
+    public partial class S_MailListResponse : IPacket
+    {
+        public List<MailInfo>? Mails { get; set; }
+    }
+
+    /// <summary>접속 중에 새 우편이 들어왔다(운영 발송 · 전체 우편 복사). 목록에 더하기만 하면 된다.</summary>
+    [MemoryPackable, Packet(PacketId.S_MailArrivedResponse)]
+    public partial class S_MailArrivedResponse : IPacket
+    {
+        public List<MailInfo>? Mails { get; set; }
+    }
+
+    /// <summary>우편 수령. <c>MailId = 0</c>이면 모두 받기 — 오래된 순으로 받다가 창고에 안 들어가는 우편에서 멈춘다.</summary>
+    [MemoryPackable, Packet(PacketId.C_MailClaimRequest)]
+    public partial class C_MailClaimRequest : IPacket
+    {
+        public long MailId { get; set; }
+    }
+
+    /// <summary>
+    /// 수령 결과. 한 통은 <b>전부 받거나 아무것도 안 받는다</b> — 창고가 모자라면 <see cref="EResultCode.StorageFull"/>.
+    /// 모두 받기가 중간에 멈춰도 그 전까지 받은 것은 <c>ClaimedMailIds</c>에 실린다.
+    /// 재화는 <see cref="S_CurrencyResponse"/>, 캐릭터·장비는 각자의 목록 패킷으로 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_MailClaimResponse)]
+    public partial class S_MailClaimResponse : IPacket
+    {
+        public EResultCode           Result          { get; set; }
+        public List<long>?           ClaimedMailIds  { get; set; }
+        public int                   RemainingCount  { get; set; }  // 아직 안 받은 우편 수
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 받은 아이템의 누적 총량
+    }
+
+    /// <summary>받은 우편 삭제. 안 받은 우편은 지울 수 없다(<see cref="EResultCode.MailNotClaimed"/>).</summary>
+    [MemoryPackable, Packet(PacketId.C_MailDeleteRequest)]
+    public partial class C_MailDeleteRequest : IPacket
+    {
+        public long MailId { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_MailDeleteResponse)]
+    public partial class S_MailDeleteResponse : IPacket
+    {
+        public EResultCode Result { get; set; }
+        public long        MailId { get; set; }
     }
 }

@@ -1,0 +1,33 @@
+---
+date: 2026-09-22
+title: 서버 우편 — 운영 우편(개인·전체) · 원자적 수령 · 모두 받기 · 삭제 · 치트 발송 (T-081)
+tags: [server, mail, excel, db, packet, T-081]
+---
+
+# 서버 우편 (T-081)
+
+## 목적 / 배경
+- 우편 기획(`GameDesign/design/mail/README.md`)의 운영 우편 부분을 구현했다. 넘침 보관은 T-082, 클라 화면은 T-083이다.
+
+## 변경 내용
+- 엑셀 `Mail.xlsx` / `MailTemplateTable` — 우편 한 통이 한 줄이고 첨부도 같은 줄에 담는다(사용자가 시트 1개를 골랐다). 테스트 데이터 2줄: 1 = 점검 보상, 2 = 넘침 템플릿
+- DB `t_user_mail` · `t_global_mail` · `t_user_global_mail`. `game.sqlite3`에 적용했고 `SqliteFixture.CreateMailTables`에도 같은 DDL을 넣었다
+- 패킷 39~44 · `MailInfo` · 결과 코드 900~ · `ECheatCommand.SendMail = 10`
+- `MailCatalog` — 기동할 때 `ItemTIDs`와 `ItemCounts` 개수가 다르면 예외
+- `User.Mail.cs` — 수령·모두 받기·삭제·도착 통지·`SendOperationMail`
+- `MailRepository.cs` — 로그인 적재 · 전체 우편 복사 · 발송 · 받음 표시 · 삭제
+- `User.Login(now)` — 시각 인자를 추가했고, 끝에서 `LoadMailbox`를 부른다
+
+## 주요 결정 / 근거
+- **첨부는 보내는 순간 우편 행(JSON)에 복사한다.** 템플릿을 고쳐도 이미 보낸 우편은 그대로다. 넘침 우편은 템플릿 대신 실제 보상을 같은 칸에 넣는다.
+- **제목·본문은 패킷에 싣지 않는다.** 클라가 `MailTemplateTable`에서 `TemplateTid`로 읽는다. 운영툴이 자유 문구를 보내게 되면 필드를 추가한다.
+- **로그인 때 정리·전체 우편 복사·조회를 한 저장소 작업으로 묶었다**(`LoadMailboxRepository`). 따로 돌리면 "도착" 통지와 목록 스냅샷이 겹쳐 클라에 같은 우편이 두 번 들어간다.
+- **복사 기록은 따로 둔다**(`t_user_global_mail`). 받은 우편은 7일 뒤 지워지는데, 복사 기록까지 같이 사라지면 기간이 남은 전체 우편이 다시 복사된다.
+- 오프라인 유저에게 보내는 개인 우편은 **보낸 사람의 DB 파티션**에서 INSERT한다. 받는 사람이 없으니 파티션도 없다. 받는 사람이 그 순간 로그인하면 이번 로그인 목록에서 빠질 수 있지만, 다음 로그인에는 실린다.
+- 인벤토리 부족은 새 코드를 만들지 않고 `StorageFull`을 재사용했다(칸 계산 `HasStorageFor`도 T-063 것 그대로).
+
+## 후속 작업 / 주의사항
+- **실측이 남았다** — 실서버 + 클라(또는 더미 클라)로 왕복 확인.
+- 클라 쪽 `S_Mail*` 핸들러가 없어 Unity에 MIKA001 경고 4건이 뜬다. 정상이며 T-083이 채운다.
+- 테스트는 구현 뒤에 썼다. 칸 검사와 복사 중복 방지를 일부러 깨 보니 3건이 실패했고, 테스트가 동작을 잡는다는 걸 확인했다.
+- `DeliverGlobalMailsAsync`는 DB 스레드에서 `MailCatalog.Instance`(읽기 전용)를 읽는다. User에 주입한 카탈로그와 다를 수 있으니 테스트할 때 주의한다.

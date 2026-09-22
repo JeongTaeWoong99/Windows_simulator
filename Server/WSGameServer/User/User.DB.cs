@@ -89,6 +89,6 @@ public partial class User
         // 접속마다 다시 계산하므로 그동안 밸런스가 바뀌었어도 반영된다.
         RefreshWorkStationSpeed(now, notify: false);
 
-        Login();   // S_LoginResponse + 인벤·재화·슬롯 스냅샷 전송
+        Login(now);   // S_LoginResponse + 인벤·재화·슬롯 스냅샷 전송
     }
 }

@@ -223,4 +223,32 @@ public static class ClientPacketHandler
 
         ShopService.Instance.Sell(user, req.Items);
     }
+
+    /// <summary>우편 수령. MailId = 0이면 모두 받기. 창고 검사·지급은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_MailClaimRequest(ISession session, C_MailClaimRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MailClaimResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryClaimMail(req.MailId, DateTime.UtcNow);
+    }
+
+    /// <summary>받은 우편 삭제. 안 받은 우편은 거절한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_MailDeleteRequest(ISession session, C_MailDeleteRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MailDeleteResponse { Result = EResultCode.NotLoggedIn, MailId = req.MailId });
+            return;
+        }
+
+        user.TryDeleteMail(req.MailId);
+    }
 }

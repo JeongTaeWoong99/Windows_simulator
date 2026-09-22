@@ -101,6 +101,36 @@ internal sealed class SqliteFixture : IDisposable
             ) STRICT;");
     }
 
+    /// <summary>우편 3종(개인 우편 · 전체 우편 · 전체 우편 복사 기록). 운영 DDL과 같아야 한다.</summary>
+    public void CreateMailTables()
+    {
+        Execute(@"
+            CREATE TABLE t_user_mail (
+                mail_id        INTEGER PRIMARY KEY,
+                user_id        INTEGER NOT NULL,
+                template_tid   INTEGER NOT NULL,
+                gold           INTEGER NOT NULL DEFAULT 0,
+                dia            INTEGER NOT NULL DEFAULT 0,
+                items          TEXT    NOT NULL DEFAULT '[]',
+                character_tids TEXT    NOT NULL DEFAULT '[]',
+                equip_tids     TEXT    NOT NULL DEFAULT '[]',
+                received_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+                claimed_at     TEXT
+            ) STRICT;
+            CREATE INDEX idx_user_mail_user ON t_user_mail (user_id);
+            CREATE TABLE t_global_mail (
+                global_mail_id INTEGER PRIMARY KEY,
+                template_tid   INTEGER NOT NULL,
+                sent_at        TEXT    NOT NULL DEFAULT (datetime('now')),
+                ends_at        TEXT    NOT NULL
+            ) STRICT;
+            CREATE TABLE t_user_global_mail (
+                user_id        INTEGER NOT NULL,
+                global_mail_id INTEGER NOT NULL,
+                PRIMARY KEY (user_id, global_mail_id)
+            ) STRICT;");
+    }
+
     /// <summary>단일 값 조회. 검증용.</summary>
     public object? Query(string sql)
     {

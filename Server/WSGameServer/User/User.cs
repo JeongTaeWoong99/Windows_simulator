@@ -45,6 +45,8 @@ public sealed partial class User
     /// <summary>채취 공통 보상(판정 1회마다 굴리는 상자). 정산에 쓴다. 규약은 위와 같다.</summary>
     private readonly CommonRewardCatalog _commonRewards;
 
+    private readonly MailCatalog _mailCatalog;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -131,7 +133,8 @@ public sealed partial class User
         EquipCatalog?         equips = null,
         AccountLevelCatalog?  accountLevels = null,
         UserTraitCatalog?     traits = null,
-        CommonRewardCatalog?  commonRewards = null)
+        CommonRewardCatalog?  commonRewards = null,
+        MailCatalog?          mails = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -147,6 +150,7 @@ public sealed partial class User
         _accountLevels = accountLevels ?? AccountLevelCatalog.Instance;
         _traitCatalog = traits ?? UserTraitCatalog.Instance;
         _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
+        _mailCatalog = mails ?? MailCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -179,7 +183,7 @@ public sealed partial class User
         ServerLog.Trace("유저", $"GC 수거 SessionId={SessionId} Pid={Pid}");
     }
 
-    public void Login()
+    public void Login(DateTime now)
     {
         // 연결되지 않았으면 정리
         if (!_channel.IsConnected)
@@ -210,6 +214,9 @@ public sealed partial class User
         // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
         // 슬롯은 로그인 흐름에서 이미 "지금부터" 시작하도록 만들어져 있다.
         SendWorkStationSlots(); // S_WorkStationSlotsResponse
+
+        // 우편함은 DB가 정리·전체 우편 복사까지 끝낸 뒤 S_MailListResponse로 늦게 내려간다.
+        LoadMailbox(now);
     }
 
     public void OnCreate()

@@ -96,3 +96,25 @@ public sealed record PlayerLoginData(
     List<UserEquipRow> EquipRows,
     List<CharacterEquipRow> CharacterEquipRows,
     AccountRow? Account = null);
+
+// t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
+// 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.
+public sealed record UserMailRow
+{
+    public long    mail_id        { get; init; }
+    public int     template_tid   { get; init; }
+    public long    gold           { get; init; }
+    public long    dia            { get; init; }
+    public string  items          { get; init; } = "[]";
+    public string  character_tids { get; init; } = "[]";
+    public string  equip_tids     { get; init; } = "[]";
+    public string  received_at    { get; init; } = "";
+    public string? claimed_at     { get; init; }
+}
+
+// 아직 복사받지 않은 전체 우편 한 줄 (t_global_mail).
+public sealed record PendingGlobalMailRow
+{
+    public long global_mail_id { get; init; }
+    public int  template_tid   { get; init; }
+}

@@ -59,6 +59,11 @@ namespace MikaProtocol
         InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 이미 찍음 → AlreadyUnlocked · 조건 미달 → UnlockLocked
         NotEnoughTraitPoint = 801, // 남은 특성 포인트가 비용보다 적다 — 아무것도 바꾸지 않는다
         TraitOnlyUnlock     = 802, // 특성 노드의 해금을 C_UnlockRequest로 열려 했다 — 특성으로만 연다
+
+        // ── 900~: 우편 ── 창고가 모자라 못 받으면 StorageFull(103)
+        MailNotFound       = 900, // 없는(남의) 우편
+        MailAlreadyClaimed = 901, // 이미 받은 우편을 다시 받으려 했다
+        MailNotClaimed     = 902, // 안 받은 우편을 지우려 했다 — 보상을 실수로 버리지 않게 막는다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -98,6 +103,7 @@ namespace MikaProtocol
         Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
         GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
         GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업·특성 포인트까지 실제 경로와 같다
+        SendMail         = 10, // Arg1 = MailTemplateTID · Arg2 = 받는 UID(0이면 전체 우편 — 템플릿의 PeriodDays 동안)
     }
 
     public enum EItemChangeKind : byte
