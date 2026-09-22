@@ -9,12 +9,24 @@ namespace WSGameServer;
 /// </summary>
 public sealed class MailCatalog : Singleton<MailCatalog>
 {
+    /// <summary>창고가 가득 차 보관한 보상의 우편 템플릿. 첨부는 비어 있고 서버가 채운다 → 기획 우편 2.4.</summary>
+    public const int OverflowTemplateTid = 2;
+
     private readonly Dictionary<int, MailTemplateTableRow> _templates = new();
 
     public int Count => _templates.Count;
 
     /// <summary>반드시 <c>GameTable.LoadAll</c> 이후에 부른다.</summary>
-    public void LoadAll() => Load(GameTable.MailTemplateTable.All);
+    public void LoadAll()
+    {
+        Load(GameTable.MailTemplateTable.All);
+
+        // 넘침 템플릿이 없으면 창고가 찼을 때 보상을 보관할 곳이 없다 — 기동에서 막는다.
+        if (!_templates.ContainsKey(OverflowTemplateTid))
+        {
+            throw new InvalidDataException($"MailTemplateTable에 넘침 보관 템플릿 {OverflowTemplateTid}이 없다");
+        }
+    }
 
     public void Load(IEnumerable<MailTemplateTableRow> rows)
     {

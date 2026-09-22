@@ -149,6 +149,24 @@ public sealed class SendMailRepository(User owner, long recipientUid, User? reci
         => recipient?.OnMailsArrived(new List<UserMailRow> { MailDb.ToRow(_mailId, templateTid, attachment, now) });
 }
 
+/// <summary>창고에 안 들어간 보상을 넘침 우편 1통으로 저장한다. 끝나면 대기 수를 풀고 도착을 알린다.</summary>
+public sealed class StoreOverflowMailRepository(User user, MailAttachment attachment, DateTime now) : IRepository
+{
+    private long _mailId;
+
+    public long Key => User.DbKey;
+
+    public User User { get; } = user;
+
+    public MailAttachment Attachment => attachment;
+
+    public async Task ExecuteAsync(DbConnection connection)
+        => _mailId = await MailDb.InsertMailAsync(connection, User.Uid, MailCatalog.OverflowTemplateTid, attachment, now);
+
+    public void Apply()
+        => User.OnOverflowMailStored(MailDb.ToRow(_mailId, MailCatalog.OverflowTemplateTid, attachment, now));
+}
+
 /// <summary>전체 우편 한 줄을 남기고, 끝나면 접속 중인 유저 전원에게 복사를 요청한다.</summary>
 public sealed class SendGlobalMailRepository(User owner, int templateTid, DateTime now, DateTime endsAt) : IRepository
 {

@@ -417,6 +417,7 @@ namespace MikaProtocol
         public int                    ItemTID         { get; set; }
         public List<GachaRewardInfo>? Rewards         { get; set; }
         public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
+        public bool                   StoredInMail    { get; set; }  // 창고에 안 들어가 보상 전체를 우편으로 보관했다 — ItemChangeInfos엔 상자 차감만 있다
     }
 
     [MemoryPackable, Packet(PacketId.C_ItemSellRequest)]

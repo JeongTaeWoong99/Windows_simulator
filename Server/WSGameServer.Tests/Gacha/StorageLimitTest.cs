@@ -157,22 +157,64 @@ public class StorageLimitTest
         // 200종(상자 포함) — 상자 3개를 다 열면 199종 + 붕어 = 200
         var (user, b) = RichUserWithItemKinds(200, (WoodBoxTid, 3));
 
-        ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100)).OpenBox(user, WoodBoxTid, 3);
+        ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100)).OpenBox(user, WoodBoxTid, 3, TestUserBuilder.Base);
 
         b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
         user.GetItemCount(FishTid).ShouldBe(3);
     }
 
     [Fact]
-    public void 상자를_일부만_열어_칸이_모자라면_거절하고_상자가_그대로다()
+    public void 상자_보상이_창고에_안_들어가면_우편으로_보관한다()
     {
-        // 상자가 남으면 칸이 비지 않는다 — 200 + 붕어 = 201
+        // 상자가 남으면 칸이 비지 않는다 — 200 + 붕어 = 201. 상자는 소모하고 보상 전체를 넘침 우편 1통으로(T-082)
         var (user, b) = RichUserWithItemKinds(200, (WoodBoxTid, 3));
 
-        ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100)).OpenBox(user, WoodBoxTid, 2);
+        ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100)).OpenBox(user, WoodBoxTid, 2, TestUserBuilder.Base);
+
+        var res = b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem();
+        res.Result.ShouldBe(EResultCode.Ok);
+        res.StoredInMail.ShouldBeTrue();
+        user.GetItemCount(WoodBoxTid).ShouldBe(1);
+        user.GetItemCount(FishTid).ShouldBe(0);
+
+        var mail = b.DB.PostedOf<StoreOverflowMailRepository>().ShouldHaveSingleItem();
+        mail.Attachment.Items.ShouldBe(new[] { (FishTid, 2) });
+    }
+
+    [Fact]
+    public void 우편함이_가득하면_상자_개봉을_거절하고_상자가_그대로다()
+    {
+        // 안 받은 우편 100통 — 넘침 보관이 멈추고 원래대로 거절한다. 우편함이 두 번째 창고가 되지 않게 한다.
+        var (user, b) = RichUserWithItemKinds(200, (WoodBoxTid, 3));
+        user.OnMailboxLoaded(Enumerable.Range(1, 100).Select(i => new UserMailRow
+        {
+            mail_id = i, template_tid = 1, received_at = MailDb.ToDb(TestUserBuilder.Base),
+        }).ToList());
+        b.Channel.Sent.Clear();
+
+        ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100)).OpenBox(user, WoodBoxTid, 2, TestUserBuilder.Base);
 
         b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.StorageFull);
         user.GetItemCount(WoodBoxTid).ShouldBe(3);
-        user.GetItemCount(FishTid).ShouldBe(0);
+        b.DB.PostedOf<StoreOverflowMailRepository>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 저장을_기다리는_넘침_우편도_우편함_칸을_차지한다()
+    {
+        // 안 받은 99통 + 넘침 1통 대기(DB가 mail_id를 아직 안 줬다) = 100 → 다음 개봉은 거절
+        var (user, b) = RichUserWithItemKinds(200, (WoodBoxTid, 3));
+        user.OnMailboxLoaded(Enumerable.Range(1, 99).Select(i => new UserMailRow
+        {
+            mail_id = i, template_tid = 1, received_at = MailDb.ToDb(TestUserBuilder.Base),
+        }).ToList());
+        var service = ServiceWith(new GachaEntry(BoxPoolId, GachaRewardType.Item, FishTid, 1, 100));
+        service.OpenBox(user, WoodBoxTid, 1, TestUserBuilder.Base);
+        b.Channel.Sent.Clear();
+
+        service.OpenBox(user, WoodBoxTid, 1, TestUserBuilder.Base);
+
+        b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.StorageFull);
+        b.DB.PostedOf<StoreOverflowMailRepository>().ShouldHaveSingleItem();
     }
 }

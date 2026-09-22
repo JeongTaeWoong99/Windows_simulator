@@ -139,7 +139,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count);
+        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, DateTime.UtcNow);
     }
 
     /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>

@@ -71,7 +71,7 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         // 3) 지급. Rewards는 연출용(델타), ItemChangeInfos는 인벤토리 반영용(누적 총량)
-        var (rewards, changes) = Grant(user, picked);
+        var (rewards, changes) = Grant(user, Roll(picked));
 
         user.Send(new S_GachaDrawResponse
         {
@@ -85,7 +85,7 @@ public sealed class GachaService : Singleton<GachaService>
     /// 상자를 연다(T-029). 상자 = <c>OpenGachaId</c>가 있는 아이템. 그 풀을 개수만큼 <b>비용 없이</b> 돈다.
     /// 차감을 지급보다 먼저 한다 — 모자라면 아무것도 바뀌지 않는다.
     /// </summary>
-    public void OpenBox(User user, int itemTid, int count)
+    public void OpenBox(User user, int itemTid, int count, DateTime now)
     {
         if (count < 1 || count > MaxOpenCount)
         {
@@ -107,9 +107,12 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         // 상자를 전부 열면 그 상자 칸이 빈다 — 빈 칸까지 보고 판정한다.
-        var picked = pool.PickMany(count);
+        var rolled = Roll(pool.PickMany(count));
         var freed  = user.GetItemCount(itemTid) == count ? itemTid : 0;
-        if (!HasStorageFor(user, picked, freed))
+        var fits   = HasStorageFor(user, rolled.Select(r => r.Entry).ToList(), freed);
+
+        // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.
+        if (!fits && !user.HasMailboxRoom)
         {
             Reply(EResultCode.StorageFull);
             return;
@@ -121,7 +124,21 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        var (rewards, changes) = Grant(user, picked);
+        if (!fits)
+        {
+            user.StoreOverflowMail(ToAttachment(rolled), now);
+            user.Send(new S_ItemUseResponse
+            {
+                Result          = EResultCode.Ok,
+                ItemTID         = itemTid,
+                Rewards         = rolled.Select(r => ToRewardInfo(r.Entry, r.Count)).ToList(),
+                ItemChangeInfos = consumed,
+                StoredInMail    = true,
+            });
+            return;
+        }
+
+        var (rewards, changes) = Grant(user, rolled);
 
         // 상자 차감을 앞에 싣는다 — 클라는 누적 총량으로 덮어쓰기만 하면 된다.
         consumed.AddRange(changes);
@@ -143,16 +160,15 @@ public sealed class GachaService : Singleton<GachaService>
 
     // 뽑힌 항목을 종류별로 지급하고 연출용 목록과 인벤토리 변경분을 돌려준다.
     // 같은 종류는 한 번에 모은다 — 아이템은 종류당 UPSERT 1번, 골드는 저장·통지 1번, 캐릭터는 DB 왕복 1번.
-    private static (List<GachaRewardInfo> Rewards, List<ItemChangeInfo> Changes) Grant(User user, IReadOnlyList<GachaEntry> entries)
+    private static (List<GachaRewardInfo> Rewards, List<ItemChangeInfo> Changes) Grant(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled)
     {
-        var rewards = new List<GachaRewardInfo>(entries.Count);
+        var rewards = new List<GachaRewardInfo>(rolled.Count);
         var gained = new Dictionary<int, int>();
         var characterTids = new List<int>();
         long gold = 0;
 
-        foreach (var entry in entries)
+        foreach (var (entry, count) in rolled)
         {
-            var count = RollCount(entry);
             rewards.Add(ToRewardInfo(entry, count));
 
             switch (entry.RewardType)
@@ -206,6 +222,26 @@ public sealed class GachaService : Singleton<GachaService>
     }
 
     private static int MaxCountOf(GachaEntry entry) => Math.Max(entry.Count, entry.MaxCount);
+
+    // 수량을 한 번만 굴린다 — 창고로 지급하든 우편에 담든 같은 값이어야 한다.
+    private static List<(GachaEntry Entry, int Count)> Roll(IReadOnlyList<GachaEntry> entries)
+        => entries.Select(e => (e, RollCount(e))).ToList();
+
+    // 굴린 보상을 우편 첨부로 옮긴다. 같은 아이템은 한 줄로 합친다(지급 경로의 UPSERT와 같은 모양).
+    private static MailAttachment ToAttachment(IReadOnlyList<(GachaEntry Entry, int Count)> rolled)
+    {
+        var items = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Item)
+            .GroupBy(r => r.Entry.RewardTID)
+            .Select(g => (g.Key, g.Sum(r => r.Count)))
+            .ToList();
+
+        return new MailAttachment(
+            rolled.Where(r => r.Entry.RewardType == GachaRewardType.Gold).Sum(r => (long)r.Count),
+            0,
+            items,
+            rolled.Where(r => r.Entry.RewardType == GachaRewardType.Character).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList(),
+            rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList());
+    }
 
     // 구간 보상(골드)은 Count~MaxCount에서 고른다. MaxCount가 없거나 작으면 Count 고정이다.
     private static int RollCount(GachaEntry entry)
