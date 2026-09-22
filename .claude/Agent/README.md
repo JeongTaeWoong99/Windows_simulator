@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-22 서버 답이 돌아온 이슈 #30·#31 정리](2026-09-22-issue-30-31-close.md) — `#docs` `#client` 가챠 1번 풀은 테스트가 읽고 있어 남기고, 치트 해금은 포인트 미차감이 정의라 치트창을 그대로 뒀다
 - [2026-09-22 창고 탭이 꺼진 채 저장된 SUB VIEW를 깨운다](2026-09-22-storage-tab-wake-screens.md) — `#client` `#ui` 초기 활성 상태가 씬 저장값에 의존해 특성 탭이 빈 화면이 되던 것을 탭 줄이 켜고 시작하도록 고쳤다
 - [2026-09-20 특성 트리 화면 · 계정 레벨 표시 · 산업 레벨 선택 칸](2026-09-20-trait-tree-account-level.md) — `#client` `#ui` 창고 특성 탭만 격자를 쓰지 않는 예외로 두고, 트리 모양을 TID가 아니라 테이블에서 파생시켰다
 - [2026-09-20 unity-handoff → unity-editor-ops 개편](2026-09-20-unity-editor-ops-skill.md) — `#docs` `#infra` `#editor` 에디터를 직접 조작하는 전제로 다시 쓰고, auto 모드에서 작동하는 확인 수단은 `deny`뿐임을 실측
