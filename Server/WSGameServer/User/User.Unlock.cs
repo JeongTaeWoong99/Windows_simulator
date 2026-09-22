@@ -138,5 +138,6 @@ public partial class User
         Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
 
         OnWorkSlotUnlocked(unlockTid, now);
+        OnTraitUnlocked(unlockTid, now);
     }
 }

@@ -45,13 +45,6 @@ public partial class User
 
         ApplyUnlock(userTraitTid, now);
         Send(new S_UserTraitLearnResponse { Result = EResultCode.Ok, UserTraitTID = userTraitTid });
-
-        // 속도 특성은 열리는 순간부터 붙는다. 정산을 먼저 해야 이전 구간이 새 속도로 소급되지 않는다.
-        if (trait.EffectType == UserTraitEffect.SpeedAdd)
-        {
-            RefreshWorkStationSpeed(now);
-        }
-
         return;
 
         void Reject(EResultCode code, string reason)
@@ -59,6 +52,18 @@ public partial class User
             ServerLog.Warn("특성", $"거절 — {reason}. Uid={Uid} UserTraitTID={userTraitTid}");
             Send(new S_UserTraitLearnResponse { Result = code, UserTraitTID = userTraitTid });
         }
+    }
+
+    // 해금 후속 — 찍기·치트·보상 어느 경로로 열려도 같은 시점에 붙는다(#31).
+    // 속도 특성은 열리는 순간부터 붙는다. 정산을 먼저 해야 이전 구간이 새 속도로 소급되지 않는다.
+    private void OnTraitUnlocked(int unlockTid, DateTime now)
+    {
+        if (!_traitCatalog.TryGet(unlockTid, out var trait) || trait.EffectType != UserTraitEffect.SpeedAdd)
+        {
+            return;
+        }
+
+        RefreshWorkStationSpeed(now);
     }
 
     /// <summary>열린 속도 특성의 가산 합(천분율). 대상 산업이 <c>None</c>이면 전 산업에 붙는다.</summary>

@@ -123,6 +123,23 @@ public class UserTraitTest
     }
 
     [Fact]
+    public void 서버가_지급한_속도_특성도_그_자리에서_속도에_붙는다()
+    {
+        // 치트·퀘스트 보상(GrantUnlock)도 찍은 것과 같은 시점에 붙어야 한다 — 다음 재정산까지 밀리면 치트 검증을 믿을 수 없다(#31).
+        // 기본 속도 × (1 + 10%)
+        var (user, b) = UserWith(level: 1, traitPoint: 0);
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.RefreshWorkStationSpeed(Base, notify: false);
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        var before = slot.CurrentWorkSpeed;
+
+        user.GrantUnlock(FishingSpeed1, Base);
+
+        slot.CurrentWorkSpeed.ShouldBe(before * 11 / 10);
+        b.Channel.SentOf<S_WorkStationSlotSyncResponse>().ShouldNotBeEmpty();
+    }
+
+    [Fact]
     public void 속도_특성은_다른_산업에는_붙지_않는다()
     {
         var (user, _) = UserWith(level: 1, traitPoint: 1);

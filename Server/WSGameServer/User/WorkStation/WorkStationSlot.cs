@@ -52,7 +52,7 @@ public sealed class WorkStationSlot
     /// <summary>지정된 산업. None이면 미지정. DB에 저장된다.</summary>
     public IndustryType Industry { get; private set; }
 
-    /// <summary>지정된 산업 레벨. ⚠️ 저장·패킷·해금 검증 미구현(T-017)이라 지금은 항상 DefaultIndustryLevel.</summary>
+    /// <summary>지정된 산업 레벨. DB에 저장된다. 잠긴 레벨은 배치 단계에서 거절된다(IndustryLevelLocked).</summary>
     public int IndustryLevel { get; private set; }
 
     /// <summary>판정 1회에 필요한 작업량(밀리초×천분율). (산업, 레벨)의 값이며 Assign이 레벨과 함께 바꾼다.</summary>
