@@ -75,6 +75,16 @@ namespace MikaProtocol
         S_MailDeleteResponse = 44,
         C_EquipEnchantRequest = 45,
         S_EquipEnchantResponse = 46,
+        C_AuctionSearchRequest = 47,
+        S_AuctionSearchResponse = 48,
+        C_AuctionRegisterRequest = 49,
+        S_AuctionRegisterResponse = 50,
+        C_AuctionBuyRequest = 51,
+        S_AuctionBuyResponse = 52,
+        C_AuctionCancelRequest = 53,
+        S_AuctionCancelResponse = 54,
+        C_AuctionMyListingsRequest = 55,
+        S_AuctionMyListingsResponse = 56,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -516,5 +526,104 @@ namespace MikaProtocol
     {
         public EResultCode Result { get; set; }
         public long        MailId { get; set; }
+    }
+
+    /// <summary>
+    /// 경매장 검색. 0·빈 목록은 조건 없음. 이름 검색은 클라가 이름을 TID 목록으로 바꿔 <c>Tids</c>에 싣는다.
+    /// 정렬은 단가 오름차순 하나 — 다음 페이지는 마지막으로 본 (단가, 매물 ID)를 커서로 보낸다(첫 페이지는 둘 다 0).
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionSearchRequest)]
+    public partial class C_AuctionSearchRequest : IPacket
+    {
+        public EAuctionKind Kind            { get; set; }
+        public int          Category        { get; set; }  // 자원은 ItemType, 장비는 EquipKind. Kind가 None이면 무시
+        public List<int>?   Tids            { get; set; }
+        public int          MinRarity       { get; set; }
+        public int          MaxRarity       { get; set; }
+        public int          MinEnchantGrade { get; set; }
+        public List<int>?   OptionTids      { get; set; }  // 전부 가진 매물만
+        public long         MaxUnitPrice    { get; set; }
+        public long         CursorUnitPrice { get; set; }
+        public long         CursorListingId { get; set; }
+        public int          PageSize        { get; set; }  // 0이면 20, 최대 50
+    }
+
+    [MemoryPackable, Packet(PacketId.S_AuctionSearchResponse)]
+    public partial class S_AuctionSearchResponse : IPacket
+    {
+        public EResultCode               Result   { get; set; }
+        public List<AuctionListingInfo>? Listings { get; set; }
+        public bool                      HasMore  { get; set; }
+    }
+
+    /// <summary>
+    /// 경매 등록. 자원은 <c>ItemTid</c>·<c>Count</c>, 장비는 <c>EquipId</c>를 채운다(장비는 수량 1).
+    /// 등록비는 등록 순간 빠지고, 만료로 돌아오면 환급된다(취소는 환급 없음).
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionRegisterRequest)]
+    public partial class C_AuctionRegisterRequest : IPacket
+    {
+        public EAuctionKind Kind      { get; set; }
+        public int          ItemTid   { get; set; }
+        public int          Count     { get; set; }
+        public long         EquipId   { get; set; }
+        public long         UnitPrice { get; set; }
+    }
+
+    /// <summary>
+    /// 등록 결과. 아이템은 이미 창고에서 빠졌다 — 자원은 <c>ItemChangeInfos</c>, 장비는 <c>EquipId</c>를 창고에서 지운다.
+    /// 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_AuctionRegisterResponse)]
+    public partial class S_AuctionRegisterResponse : IPacket
+    {
+        public EResultCode           Result          { get; set; }
+        public long                  ListingId       { get; set; }
+        public long                  ListingFee      { get; set; }
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
+        public long                  EquipId         { get; set; }
+    }
+
+    /// <summary>즉시구매. 매물은 통째로만 산다. <c>ExpectedTotalPrice</c>가 지금 가격과 다르면 거절된다(AuctionPriceChanged).</summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionBuyRequest)]
+    public partial class C_AuctionBuyRequest : IPacket
+    {
+        public long ListingId          { get; set; }
+        public long ExpectedTotalPrice { get; set; }
+    }
+
+    /// <summary>구매 결과. 산 아이템은 우편으로 온다(<see cref="S_MailArrivedResponse"/>), 골드는 <see cref="S_CurrencyResponse"/>.</summary>
+    [MemoryPackable, Packet(PacketId.S_AuctionBuyResponse)]
+    public partial class S_AuctionBuyResponse : IPacket
+    {
+        public EResultCode Result    { get; set; }
+        public long        ListingId { get; set; }
+    }
+
+    /// <summary>판매 취소. 구매 진행 중이면 거절된다. 아이템은 우편으로 돌아온다(등록비 환급 없음).</summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionCancelRequest)]
+    public partial class C_AuctionCancelRequest : IPacket
+    {
+        public long ListingId { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_AuctionCancelResponse)]
+    public partial class S_AuctionCancelResponse : IPacket
+    {
+        public EResultCode Result    { get; set; }
+        public long        ListingId { get; set; }
+    }
+
+    /// <summary>내가 올린 진행 중 매물(판매 중 · 구매 진행 중).</summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionMyListingsRequest)]
+    public partial class C_AuctionMyListingsRequest : IPacket
+    {
+    }
+
+    [MemoryPackable, Packet(PacketId.S_AuctionMyListingsResponse)]
+    public partial class S_AuctionMyListingsResponse : IPacket
+    {
+        public EResultCode               Result   { get; set; }
+        public List<AuctionListingInfo>? Listings { get; set; }
     }
 }

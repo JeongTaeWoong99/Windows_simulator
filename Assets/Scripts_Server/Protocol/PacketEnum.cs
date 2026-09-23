@@ -71,6 +71,21 @@ namespace MikaProtocol
         MailNotFound       = 900, // 없는(남의) 우편
         MailAlreadyClaimed = 901, // 이미 받은 우편을 다시 받으려 했다
         MailNotClaimed     = 902, // 안 받은 우편을 지우려 했다 — 보상을 실수로 버리지 않게 막는다
+
+        // ── 1000~: 경매 ── 골드 부족은 NotEnoughCurrency(102) · 보유 부족은 NotEnoughItem(301) · 미보유 장비는 EquipNotOwned(600)
+        AuctionUnavailable     = 1000, // 경매장에 닿지 않는다(점검·장애) 또는 로그인 직후 준비 전 — 아무것도 바뀌지 않았다
+        AuctionInvalidRequest  = 1001, // 종류·수량·TID가 잘못됐다
+        AuctionPriceOutOfBand  = 1002, // 단가가 가격 밴드(하한 BasePrice ~ 상한) 밖
+        AuctionListingLimit    = 1003, // 판매 중 매물이 상한에 닿았다
+        AuctionEquipped        = 1004, // 착용 중인 장비 — 벗겨야 올릴 수 있다
+        AuctionNotFound        = 1005, // 없는 매물
+        AuctionInProgress      = 1006, // 다른 유저가 구매 중 — 그쪽이 실패하면 다시 풀릴 수 있다
+        AuctionSoldOut         = 1007, // 이미 팔렸다
+        AuctionClosed          = 1008, // 취소·만료된 매물
+        AuctionPriceChanged    = 1009, // 본 가격과 지금 가격이 다르다 — 다시 검색한다
+        AuctionOwnListing      = 1010, // 자기 매물은 살 수 없다
+        AuctionNotOwner        = 1011, // 남의 매물은 취소할 수 없다
+        AuctionTooManyRequests = 1012, // 검색이 너무 잦다 — 잠시 뒤 다시
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -157,5 +172,21 @@ namespace MikaProtocol
         Epic = 4,
         Legendary = 5,
         Mythic = 6,
+    }
+
+    // 경매 매물 종류. 경매장 서버(auction.proto의 kind)와 값이 같아야 한다.
+    public enum EAuctionKind : byte
+    {
+        None  = 0,
+        Item  = 1,   // 자원(스택) — 매물은 통째로만 팔린다
+        Equip = 2,   // 장비 개체 — 인챈트까지 그대로 넘어간다
+    }
+
+    // 진행 중 매물의 상태. 경매장 서버(auction.proto의 ListingState)와 값이 같아야 한다.
+    public enum EAuctionListingState : byte
+    {
+        None     = 0,
+        Listed   = 1,
+        Reserved = 2,   // 누군가 구매 중 — 취소할 수 없다
     }
 }

@@ -109,5 +109,24 @@ namespace MikaProtocol
         public List<int>?      EquipTids        { get; set; }  // 한 개 = 한 원소
         public long            ReceivedAtUnixMs { get; set; }  // 도착 시각 (Unix epoch 밀리초, UTC)
         public long            ClaimedAtUnixMs  { get; set; }  // 받은 시각. 0 = 안 받음
+        public List<EquipInfo>? Equips          { get; set; }  // 개체 장비(경매 구매·반환) — 인챈트까지 그대로 온다. 창고 칸은 받을 때 정해진다
+    }
+
+    /// <summary>경매 매물 한 줄. 판매자는 싣지 않는다.</summary>
+    [MemoryPackable]
+    public partial class AuctionListingInfo
+    {
+        public long                 ListingId       { get; set; }
+        public EAuctionKind         Kind            { get; set; }
+        public int                  Tid             { get; set; }  // ItemTID 또는 EquipTID
+        public int                  Category        { get; set; }  // 자원은 ItemType, 장비는 EquipKind
+        public int                  Rarity          { get; set; }
+        public int                  Count           { get; set; }
+        public int                  EnchantGrade    { get; set; }
+        public List<int>?           EnchantOptions  { get; set; }
+        public long                 UnitPrice       { get; set; }
+        public long                 TotalPrice      { get; set; }  // 이 값으로 산다 — 매물은 통째로만 팔린다
+        public long                 ExpiresAtUnixMs { get; set; }
+        public EAuctionListingState State           { get; set; }
     }
 }
