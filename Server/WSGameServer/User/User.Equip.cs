@@ -278,6 +278,8 @@ public partial class User
             EquippedCharacterId = e.EquippedCharacterId,
             EquippedSlot        = (EEquipSlot)e.EquippedSlot,
             SlotPosition        = e.SlotPosition,
+            EnchantGrade        = (int)e.EnchantGrade,
+            EnchantOptions      = e.EnchantOptionTids.ToList(),
         };
     }
 }

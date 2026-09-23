@@ -51,6 +51,13 @@ namespace MikaProtocol
         EquipKindMismatch  = 602, // 종류가 칸에 맞지 않음 (무기를 보석 칸에 등)
         EquipSlotEmpty     = 603, // 해제할 장비가 없는 칸
 
+        // ── 610~: 인챈트 ──
+        EnchantItemNotOwned  = 610, // 인챈트 아이템 미보유
+        EnchantAlreadyRolled = 611, // 이미 인챈트가 있는 장비에 부여
+        EnchantNotRolled     = 612, // 인챈트가 없는 장비에 재롤·확장
+        EnchantLineMax       = 613, // 이미 상한(3줄)
+        EnchantEquipped      = 614, // 착용 중 — 벗겨야 인챈트할 수 있다
+
         // ── 700~: 캐릭터 (600은 장비와 겹쳐 있었다 — 2026-09-17) ──
         NoAptitudePoint = 700, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
         AptitudeAtCap   = 701, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned

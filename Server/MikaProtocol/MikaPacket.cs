@@ -73,6 +73,8 @@ namespace MikaProtocol
         S_MailClaimResponse = 42,
         C_MailDeleteRequest = 43,
         S_MailDeleteResponse = 44,
+        C_EquipEnchantRequest = 45,
+        S_EquipEnchantResponse = 46,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -390,6 +392,32 @@ namespace MikaProtocol
         public EResultCode Result      { get; set; }
         public long        CharacterId { get; set; }
         public EEquipSlot  Slot        { get; set; }
+    }
+
+    /// <summary>
+    /// 인챈트 요청. <b>무엇을 하는지는 아이템이 정한다</b>(EnchantItemTable의 Action) — 클라가 동작을 고르지 않는다.
+    /// 착용 중인 장비는 거절된다(EnchantEquipped): 벗기는 것이 선행 조건이다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_EquipEnchantRequest)]
+    public partial class C_EquipEnchantRequest : IPacket
+    {
+        public long EquipId { get; set; }  // 개체 PK
+        public int  ItemTid { get; set; }  // 인챈트 아이템 (EnchantItemTable.ItemTID)
+    }
+
+    /// <summary>
+    /// 인챈트 결과. Success는 아이템의 성공 판정이며, <b>실패해도 GradeUp은 줄을 재롤</b>하므로
+    /// Options는 항상 갱신된 값이다. 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_EquipEnchantResponse)]
+    public partial class S_EquipEnchantResponse : IPacket
+    {
+        public EResultCode Result      { get; set; }
+        public long        EquipId     { get; set; }
+        public bool        Success     { get; set; }
+        public int         BeforeGrade { get; set; }
+        public int         AfterGrade  { get; set; }
+        public List<int>   Options     { get; set; } = new();
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────
