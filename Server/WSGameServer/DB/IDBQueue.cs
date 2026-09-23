@@ -20,3 +20,11 @@ public interface IDBQueue
 {
     void Post<TRepository>(TRepository repository) where TRepository : IRepository;
 }
+
+/// <summary>
+/// 유저 큐를 타지 않는 DB 작업의 경계(경매 릴레이 — outbox 전송·반환·대사). 테스트는 <c>:memory:</c> 커넥션을 끼운다.
+/// </summary>
+public interface IDbRunner
+{
+    Task<T> RunAsync<T>(Func<DbConnection, Task<T>> body);
+}

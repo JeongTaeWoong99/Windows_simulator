@@ -138,7 +138,8 @@ public sealed partial class User
         UserTraitCatalog?     traits = null,
         CommonRewardCatalog?  commonRewards = null,
         MailCatalog?          mails = null,
-        EnchantCatalog?       enchants = null)
+        EnchantCatalog?       enchants = null,
+        AuctionService?       auction = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -156,6 +157,7 @@ public sealed partial class User
         _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
         _mailCatalog = mails ?? MailCatalog.Instance;
         _enchantCatalog = enchants ?? EnchantCatalog.Instance;
+        _auction = auction ?? AuctionService.Current;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -222,6 +224,9 @@ public sealed partial class User
 
         // 우편함은 DB가 정리·전체 우편 복사까지 끝낸 뒤 S_MailListResponse로 늦게 내려간다.
         LoadMailbox(now);
+
+        // 판매 중 건수를 읽는다. 끝나기 전의 경매 등록은 AuctionUnavailable로 거절된다.
+        LoadAuctionState();
     }
 
     public void OnCreate()

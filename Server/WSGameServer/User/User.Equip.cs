@@ -27,45 +27,11 @@ public partial class User
 
         foreach (var r in equipRows)
         {
-            // 테이블에 없는 TID는 건너뛴다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
-            if (!_equipCatalog.TryGet(r.equip_tid, out var row))
+            var equip = BuildEquip(r.equip_id, r.equip_tid, r.slot_position, r.enchant_grade, new[] { r.enchant_1, r.enchant_2, r.enchant_3 });
+            if (equip is not null)
             {
-                ServerLog.Warn("로그인", $"EquipTable에 없는 TID, 건너뜀: {r.equip_tid} (개체 {r.equip_id})");
-                continue;
+                _equips[r.equip_id] = equip;
             }
-
-            var equip = new Equip(r.equip_id, row, r.slot_position);
-
-            var enchantGrade = (GlobalRarity)r.enchant_grade;
-            if (enchantGrade != GlobalRarity.None && !_enchantCatalog.HasPool(enchantGrade))
-            {
-                // 풀이 없는 등급은 큐브 재롤이 소모 뒤에 예외를 낸다 — 인챈트를 통째로 버린다.
-                ServerLog.Warn("로그인", $"옵션 풀이 없는 인챈트 등급, 인챈트를 버림: {enchantGrade} (개체 {r.equip_id})");
-                enchantGrade = GlobalRarity.None;
-            }
-
-            if (enchantGrade != GlobalRarity.None)
-            {
-                // 테이블에 없는 EnchantOptionTID는 그 줄만 버린다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
-                var options = new List<EnchantOptionTableRow>();
-                foreach (var tid in new[] { r.enchant_1, r.enchant_2, r.enchant_3 })
-                {
-                    if (tid == 0)
-                    {
-                        continue;
-                    }
-                    if (!_enchantCatalog.TryGetOption(tid, out var option))
-                    {
-                        ServerLog.Warn("로그인", $"EnchantOptionTable에 없는 EnchantOptionTID, 건너뜀: {tid} (개체 {r.equip_id})");
-                        continue;
-                    }
-                    options.Add(option);
-                }
-
-                equip.SetEnchant(enchantGrade, options);
-            }
-
-            _equips[r.equip_id] = equip;
         }
 
         foreach (var r in wornRows)
@@ -295,6 +261,80 @@ public partial class User
         _equips[equipId] = equip;
 
         ServerLog.Info("장비", $"지급 Uid={Uid} 장비 {equipId}(TID {equipTid}) 칸 {slotPosition}");
+        Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
+    }
+
+    // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID는 그 줄만 버린다 —
+    // 데이터 한 줄 때문에 로그인·수령이 막히면 안 된다.
+    private Equip? BuildEquip(long equipId, int equipTid, int slotPosition, int enchantGrade, IEnumerable<int> optionTids)
+    {
+        if (!_equipCatalog.TryGet(equipTid, out var row))
+        {
+            ServerLog.Warn("장비", $"EquipTable에 없는 TID, 건너뜀: {equipTid} (개체 {equipId})");
+            return null;
+        }
+
+        var equip = new Equip(equipId, row, slotPosition);
+
+        var grade = (GlobalRarity)enchantGrade;
+        if (grade != GlobalRarity.None && !_enchantCatalog.HasPool(grade))
+        {
+            // 풀이 없는 등급은 큐브 재롤이 소모 뒤에 예외를 낸다 — 인챈트를 통째로 버린다.
+            ServerLog.Warn("장비", $"옵션 풀이 없는 인챈트 등급, 인챈트를 버림: {grade} (개체 {equipId})");
+            grade = GlobalRarity.None;
+        }
+
+        if (grade == GlobalRarity.None)
+        {
+            return equip;
+        }
+
+        var options = new List<EnchantOptionTableRow>();
+        foreach (var tid in optionTids)
+        {
+            if (tid == 0)
+            {
+                continue;
+            }
+            if (!_enchantCatalog.TryGetOption(tid, out var option))
+            {
+                ServerLog.Warn("장비", $"EnchantOptionTable에 없는 EnchantOptionTID, 건너뜀: {tid} (개체 {equipId})");
+                continue;
+            }
+            options.Add(option);
+        }
+
+        equip.SetEnchant(grade, options);
+        return equip;
+    }
+
+    /// <summary>우편으로 온 잠긴 장비(경매)를 받는다. 칸을 잡아 두고 잠금 해제를 저장한다 — 끝나면 <see cref="OnMailEquipUnlocked"/>.</summary>
+    private void UnlockMailEquip(MailEquip mailEquip)
+    {
+        var position = NextFreeEquipPosition();
+        _pendingEquipPositions.Add(position);
+        PostDBTask(new UnlockMailEquipRepository(this, mailEquip, position));
+    }
+
+    /// <summary>잠금 해제가 끝나면 불린다(로직 스레드). 메모리에 올리고 그 개체만 밀어 준다.</summary>
+    public void OnMailEquipUnlocked(MailEquip mailEquip, int slotPosition, bool unlocked)
+    {
+        _pendingEquipPositions.Remove(slotPosition);
+
+        if (!unlocked)
+        {
+            ServerLog.Warn("장비", $"우편 장비 잠금 해제 실패 — 이미 풀렸거나 남의 장비. Uid={Uid} 장비 {mailEquip.EquipId}");
+            return;
+        }
+
+        var equip = BuildEquip(mailEquip.EquipId, mailEquip.EquipTid, slotPosition, mailEquip.EnchantGrade, mailEquip.Options);
+        if (equip is null)
+        {
+            return;
+        }
+
+        _equips[equip.Id] = equip;
+        ServerLog.Info("장비", $"우편 장비 수령 Uid={Uid} 장비 {equip.Id}(TID {equip.Tid}) 칸 {slotPosition}");
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
     }
 

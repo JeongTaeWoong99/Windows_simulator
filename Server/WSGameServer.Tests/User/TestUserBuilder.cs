@@ -1,5 +1,6 @@
 using GameData;
 using MikaProtocol;
+using MikaNetwork.Server;
 
 namespace WSGameServer;
 
@@ -132,6 +133,13 @@ internal sealed class TestUserBuilder
     /// <summary>인챈트 옵션·등급·아이템. <b>비워 두면 아무 옵션도 없다</b>(실데이터를 넣지 않는다) — <see cref="CommonRewards"/>와 같은 방침, 난수 롤이 다른 테스트를 흔들지 않게.</summary>
     public EnchantCatalog Enchants { get; } = new();
 
+    /// <summary>경매장 연결. <b>비워 두면 경매장이 없는 서버다</b> — 경매 요청은 전부 AuctionUnavailable로 돌아온다.</summary>
+    public AuctionService? Auction { get; set; }
+
+    // 실제 SQL·실행기로 흐름 전체를 볼 때 갈아 끼운다(경매 끝-대-끝). 비워 두면 기록만 하는 가짜다.
+    public IDBQueue?       QueueOverride    { get; set; }
+    public ILogicExecutor? ExecutorOverride { get; set; }
+
     /// <summary>
     /// 예약된 작업을 그 자리에서 실행하게 만든다 — <c>Create()</c> 이후의 흐름을 볼 때.
     /// <b><c>Destroy()</c> 검증에는 쓰지 않는다</b>: <c>OnDestroy</c>가
@@ -200,9 +208,9 @@ internal sealed class TestUserBuilder
             Mails.LoadAll();
         }
 
-        var user = new User(Channel, DB, Executor,
+        var user = new User(Channel, QueueOverride ?? DB, ExecutorOverride ?? Executor,
                             pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
-                            Accounts, Traits, CommonRewards, Mails, Enchants);
+                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null));
         user.Uid = uid;
         return user;
     }

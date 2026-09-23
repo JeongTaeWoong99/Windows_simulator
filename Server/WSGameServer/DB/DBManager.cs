@@ -5,7 +5,7 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-public class DBManager : IDBQueue
+public class DBManager : IDBQueue, IDbRunner
 {
     // 커넥션을 만드는 방법만 안다 — 파일 DB냐 :memory:냐는 주입하는 쪽이 정한다.
     private Func<SqliteConnection>? _connectionFactory;
@@ -77,5 +77,14 @@ public class DBManager : IDBQueue
 
             _logicExecutor.Post(repository.Apply);
         });
+    }
+
+    /// <summary>유저에 묶이지 않은 DB 작업(경매 릴레이). 호출한 스레드에서 돈다 — 로직 스레드에서 부르지 않는다.</summary>
+    public async Task<T> RunAsync<T>(Func<DbConnection, Task<T>> body)
+    {
+        await using var conn = _connectionFactory!();
+        await conn.OpenAsync();
+
+        return await body(new DbConnection(conn));
     }
 }

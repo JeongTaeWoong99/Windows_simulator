@@ -95,7 +95,8 @@ internal sealed class SqliteFixture : IDisposable
                 enchant_1     INTEGER NOT NULL DEFAULT 0,
                 enchant_2     INTEGER NOT NULL DEFAULT 0,
                 enchant_3     INTEGER NOT NULL DEFAULT 0,
-                created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
+                created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+                auction_trade_id INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_character_equip (
                 character_id INTEGER NOT NULL,
@@ -119,7 +120,8 @@ internal sealed class SqliteFixture : IDisposable
                 character_tids TEXT    NOT NULL DEFAULT '[]',
                 equip_tids     TEXT    NOT NULL DEFAULT '[]',
                 received_at    TEXT    NOT NULL DEFAULT (datetime('now')),
-                claimed_at     TEXT
+                claimed_at     TEXT,
+                equip_ids      TEXT    NOT NULL DEFAULT '[]'
             ) STRICT;
             CREATE INDEX idx_user_mail_user ON t_user_mail (user_id);
             CREATE TABLE t_global_mail (
@@ -132,6 +134,37 @@ internal sealed class SqliteFixture : IDisposable
                 user_id        INTEGER NOT NULL,
                 global_mail_id INTEGER NOT NULL,
                 PRIMARY KEY (user_id, global_mail_id)
+            ) STRICT;");
+    }
+
+    /// <summary>경매 거래 원장·outbox. 운영 DDL과 같아야 한다. 정산·반환이 우편과 장비를 함께 쓰므로 둘도 만든다.</summary>
+    public void CreateAuctionTables()
+    {
+        Execute(@"
+            CREATE TABLE t_auction_trade (
+                trade_id    INTEGER PRIMARY KEY,
+                seller_id   INTEGER NOT NULL,
+                kind        INTEGER NOT NULL,
+                tid         INTEGER NOT NULL,
+                count       INTEGER NOT NULL,
+                equip_id    INTEGER NOT NULL DEFAULT 0,
+                snapshot    TEXT    NOT NULL DEFAULT '{}',
+                unit_price  INTEGER NOT NULL,
+                listing_fee INTEGER NOT NULL,
+                state       INTEGER NOT NULL DEFAULT 1,
+                buyer_id    INTEGER NOT NULL DEFAULT 0,
+                purchase_id INTEGER NOT NULL DEFAULT 0,
+                sale_fee    INTEGER NOT NULL DEFAULT 0,
+                created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
+                closed_at   TEXT
+            ) STRICT;
+            CREATE TABLE t_auction_outbox (
+                outbox_id  INTEGER PRIMARY KEY AUTOINCREMENT,
+                trade_id   INTEGER NOT NULL,
+                kind       INTEGER NOT NULL,
+                payload    TEXT    NOT NULL,
+                created_at TEXT    NOT NULL DEFAULT (datetime('now')),
+                sent_at    TEXT
             ) STRICT;");
     }
 

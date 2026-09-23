@@ -73,10 +73,11 @@ public sealed class LoginRepository : IRepository
             "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 7) 장비 개체(유저 소유 전부)와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
+        // 7) 장비 개체와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
+        // 경매에 잠긴 개체(등록 중·우편 대기)는 싣지 않는다 — 메모리에 있으면 저장이 잠긴 행을 덮는다.
         _equipRows = await connection.QueryAsync<UserEquipRow>(
             @"SELECT equip_id, equip_tid, slot_position, enchant_grade, enchant_1, enchant_2, enchant_3
-              FROM t_user_equip WHERE user_id = @userId",
+              FROM t_user_equip WHERE user_id = @userId AND auction_trade_id = 0",
             new { userId = User.Uid });
 
         _characterEquipRows = await connection.QueryAsync<CharacterEquipRow>(

@@ -267,4 +267,72 @@ public static class ClientPacketHandler
 
         user.TryDeleteMail(req.MailId);
     }
+    [PacketHandler]
+    public static void Handle_C_AuctionSearchRequest(ISession session, C_AuctionSearchRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionSearchResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TrySearchAuction(req, DateTime.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_AuctionRegisterRequest(ISession session, C_AuctionRegisterRequest req)
+    {
+        ServerLog.Debug("경매", $"등록 요청 {req.Kind} TID {req.ItemTid}×{req.Count} 장비 {req.EquipId} 단가 {req.UnitPrice} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionRegisterResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryRegisterAuction(req.Kind, req.ItemTid, req.Count, req.EquipId, req.UnitPrice, DateTime.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_AuctionBuyRequest(ISession session, C_AuctionBuyRequest req)
+    {
+        ServerLog.Debug("경매", $"구매 요청 매물 {req.ListingId} 총액 {req.ExpectedTotalPrice} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionBuyResponse { Result = EResultCode.NotLoggedIn, ListingId = req.ListingId });
+            return;
+        }
+
+        user.TryBuyAuction(req.ListingId, req.ExpectedTotalPrice, DateTime.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_AuctionCancelRequest(ISession session, C_AuctionCancelRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionCancelResponse { Result = EResultCode.NotLoggedIn, ListingId = req.ListingId });
+            return;
+        }
+
+        user.TryCancelAuction(req.ListingId);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_AuctionMyListingsRequest(ISession session, C_AuctionMyListingsRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionMyListingsResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryGetMyAuctionListings();
+    }
 }

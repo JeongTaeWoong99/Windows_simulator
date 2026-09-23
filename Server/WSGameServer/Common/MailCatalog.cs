@@ -26,6 +26,15 @@ public sealed class MailCatalog : Singleton<MailCatalog>
         {
             throw new InvalidDataException($"MailTemplateTable에 넘침 보관 템플릿 {OverflowTemplateTid}이 없다");
         }
+
+        // 경매 정산·반환 우편 템플릿. 없으면 거래가 끝난 물건을 보낼 곳이 없다.
+        foreach (var tid in AuctionMail.All)
+        {
+            if (!_templates.ContainsKey(tid))
+            {
+                throw new InvalidDataException($"MailTemplateTable에 경매 우편 템플릿 {tid}이 없다");
+            }
+        }
     }
 
     public void Load(IEnumerable<MailTemplateTableRow> rows)

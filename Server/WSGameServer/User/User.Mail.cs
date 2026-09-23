@@ -144,7 +144,7 @@ public partial class User
     private EResultCode TryGrantMail(Mail mail, DateTime now, List<long> claimed, List<ItemChangeInfo> changes)
     {
         var a = mail.Attachment;
-        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count, a.EquipTids.Count))
+        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count, a.EquipTids.Count + a.Equips.Count))
         {
             return EResultCode.StorageFull;
         }
@@ -175,6 +175,11 @@ public partial class User
         foreach (var equipTid in a.EquipTids)
         {
             GrantEquip(equipTid);
+        }
+
+        foreach (var equip in a.Equips)
+        {
+            UnlockMailEquip(equip);
         }
 
         ServerLog.Info("우편", $"수령 Uid={Uid} MailId={mail.Id} Template={mail.TemplateTid}");

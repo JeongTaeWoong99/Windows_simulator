@@ -13,6 +13,10 @@ public class GameServer : IDisposable
     private readonly SessionWatchdog _sessionWatchdog;
     private readonly DBManager _dbManager;
 
+    // 경매장 연결. 경매장이 꺼져 있어도 게임은 돈다 — 경매 요청만 AuctionUnavailable로 돌아가고 릴레이가 재시도한다.
+    private GrpcAuctionClient? _auctionClient;
+    private readonly CancellationTokenSource _auctionStop = new();
+
     // 매니저, Executor 등 전역 싱글톤은 한번 생성하고 이후는 생성자 주입
     public GameServer()
     {
@@ -62,13 +66,29 @@ public class GameServer : IDisposable
 
             // 접속 중인 플레이어의 채취를 주기적으로 정산해 밀어 준다(서버 권위).
             _gatheringScheduler.Start();
+
+            StartAuction();
         });
 
     }
     
     
+    private void StartAuction()
+    {
+        var settings = AuctionClientSettings.FromEnvironment();
+        _auctionClient = new GrpcAuctionClient(settings);
+
+        var relay = new AuctionRelay(_auctionClient, _dbManager, _logicExecutor,
+                                     uid => UserManager.Instance.TryGetUserByUid(uid, out var user) ? user : null);
+        AuctionService.Configure(new AuctionService(_auctionClient, _logicExecutor) { KickRelay = relay.Kick });
+
+        _ = Task.Run(() => relay.RunAsync(() => DateTime.UtcNow, _auctionStop.Token));
+        ServerLog.Info("경매", $"경매장 {settings.Address} — 릴레이 시작");
+    }
+
     public void Dispose()
     {
-       
+        _auctionStop.Cancel();
+        _auctionClient?.Dispose();
     }
 }

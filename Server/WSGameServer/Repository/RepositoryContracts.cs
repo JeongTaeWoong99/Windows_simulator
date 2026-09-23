@@ -116,6 +116,7 @@ public sealed record UserMailRow
     public string  items          { get; init; } = "[]";
     public string  character_tids { get; init; } = "[]";
     public string  equip_tids     { get; init; } = "[]";
+    public string  equip_ids      { get; init; } = "[]";
     public string  received_at    { get; init; } = "";
     public string? claimed_at     { get; init; }
 }

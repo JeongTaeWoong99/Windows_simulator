@@ -24,7 +24,8 @@ public partial class User
         _dia  = row?.dia  ?? 0L;
     }
 
-    public bool CanAffordGold(long gold) => _gold >= gold;
+    /// <summary>경매 구매 hold를 뺀 골드로 본다 — 응답을 기다리는 구매 대금을 다른 데 쓰지 못하게.</summary>
+    public bool CanAffordGold(long gold) => AvailableGold >= gold;
 
     public bool CanAffordDia(long dia) => _dia >= dia;
 
@@ -56,7 +57,17 @@ public partial class User
 
     /// <summary>골드를 차감하고 저장·통지한다. <b>잔액이 모자라면 아무것도 바꾸지 않는다.</b></summary>
     /// <returns>차감에 성공했으면 true.</returns>
-    public bool TrySpendGold(long gold) => TrySpend(ref _gold, gold);
+    public bool TrySpendGold(long gold)
+    {
+        ArgumentOutOfRangeException.ThrowIfNegativeOrZero(gold);
+
+        if (gold > AvailableGold)
+        {
+            return false;
+        }
+
+        return TrySpend(ref _gold, gold);
+    }
 
     /// <summary>다이아를 차감하고 저장·통지한다. <b>잔액이 모자라면 아무것도 바꾸지 않는다.</b></summary>
     /// <returns>차감에 성공했으면 true.</returns>
