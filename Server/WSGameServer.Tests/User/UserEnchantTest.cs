@@ -1,9 +1,11 @@
 using GameData;
+using MikaProtocol;
 
 namespace WSGameServer;
 
 /// <summary>
-/// 인챈트 — 효과 합산. Equip이 옵션 Row를 들고 기본값 위에 더할 뿐, 부여·재롤은 다루지 않는다(Task 6).
+/// 인챈트 — 효과 합산과 부여·재롤·줄 확장. 착용 중인 장비를 거절하는 것이 이 경로의 뼈대다:
+/// 그래서 정산·속도 재확정이 없다. 이 거절이 무너지면 가동 중인 슬롯 속도가 소급으로 바뀐다.
 /// </summary>
 public class UserEnchantTest
 {
@@ -18,6 +20,12 @@ public class UserEnchantTest
 
     private static readonly EnchantOptionTableRow Exp =
         new() { EnchantOptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = 30, Weight = 100 };
+
+    private static readonly EnchantOptionTableRow EpicAllSpeed =
+        new() { EnchantOptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 40, Weight = 300 };
+
+    private static readonly EnchantOptionTableRow EpicFishSpeed =
+        new() { EnchantOptionTID = 203, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 80, Weight = 120 };
 
     private static Equip RodWith(params EnchantOptionTableRow[] options)
     {
@@ -74,5 +82,182 @@ public class UserEnchantTest
         equip.EnchantLineCount.ShouldBe(0);
         equip.SpeedAddPermilleFor(IndustryType.Fishing).ShouldBe(300);
         equip.ExpAddPermille.ShouldBe(0);
+    }
+
+    // ───────────────────────── 부여·재롤·확장 ─────────────────────────
+
+    private const int GrantTid  = 9001;  // Grant · 확정
+    private const int CubeTid   = 9003;  // GradeUp
+    private const int ExpandTid = 9004;  // ExpandLine · 확정
+    private const int RodTid    = 1002;
+    private const long Rod      = 11;
+    private const long CharA    = 500;
+
+    private static readonly EnchantGradeTableRow[] GradeRows =
+    {
+        new() { Grade = GlobalRarity.Rare,      UpPermille = 1000 },  // 테스트에서는 확정 상승으로 둔다
+        new() { Grade = GlobalRarity.Epic,      UpPermille = 0 },
+        new() { Grade = GlobalRarity.Legendary, UpPermille = 0 },
+    };
+
+    private static readonly EnchantItemTableRow[] ItemRows =
+    {
+        new() { ItemTID = GrantTid,  Action = EnchantAction.Grant,      SuccessPermille = 1000 },
+        new() { ItemTID = CubeTid,   Action = EnchantAction.GradeUp,    SuccessPermille = 1000 },
+        new() { ItemTID = ExpandTid, Action = EnchantAction.ExpandLine, SuccessPermille = 1000 },
+    };
+
+    private static (User User, TestUserBuilder B) UserWithRod(params CharacterEquipRow[] worn)
+    {
+        var b = new TestUserBuilder();
+        b.Equips.Load(new[]
+        {
+            new EquipTableRow { EquipTID = RodTid, Name = "대", EquipKind = EquipKind.Weapon, Industry = IndustryType.Fishing, SpeedAddPermille = 300 },
+        });
+        b.Enchants.Load(new[] { AllSpeed, FishSpeed, Exp, EpicAllSpeed, EpicFishSpeed }, GradeRows, ItemRows);
+
+        var user = b.Build();
+        user.LoadCharacters(new[] { new CharacterRow { character_id = CharA, character_tid = 1001, level = 1, exp = 0 } });
+        user.LoadEquips(new[] { new UserEquipRow { equip_id = Rod, equip_tid = RodTid, slot_position = 0 } }, worn);
+        user.GainItem(GrantTid, 5);
+        user.GainItem(CubeTid, 5);
+        user.GainItem(ExpandTid, 5);
+
+        b.Channel.Sent.Clear();
+        b.DB.Posted.Clear();
+        return (user, b);
+    }
+
+    private static S_EquipEnchantResponse LastResponse(TestUserBuilder b)
+        => b.Channel.SentOf<S_EquipEnchantResponse>().Last();
+
+    [Fact]
+    public void 착용_중인_장비는_인챈트가_거부된다()
+    {
+        var (user, b) = UserWithRod(new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon, equip_id = Rod });
+
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+
+        LastResponse(b).Result.ShouldBe(EResultCode.EnchantEquipped);
+        user.GetItemCount(GrantTid).ShouldBe(5);   // 소모되지 않는다
+    }
+
+    [Fact]
+    public void 인챈트가_없는_장비에_큐브를_쓰면_거부된다()
+    {
+        var (user, b) = UserWithRod();
+
+        user.TryEnchant(Rod, CubeTid, new Random(1));
+
+        LastResponse(b).Result.ShouldBe(EResultCode.EnchantNotRolled);
+    }
+
+    [Fact]
+    public void 이미_인챈트가_있으면_부여가_거부된다()
+    {
+        var (user, b) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+
+        LastResponse(b).Result.ShouldBe(EResultCode.EnchantAlreadyRolled);
+    }
+
+    [Fact]
+    public void 아이템이_없으면_거부된다()
+    {
+        var (user, b) = UserWithRod();
+
+        user.TryEnchant(Rod, 99999, new Random(1));
+
+        LastResponse(b).Result.ShouldBe(EResultCode.EnchantItemNotOwned);
+    }
+
+    [Fact]
+    public void 세_줄이_되면_확장이_거부된다()
+    {
+        var (user, b) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+        user.TryEnchant(Rod, ExpandTid, new Random(1));
+
+        user.TryEnchant(Rod, ExpandTid, new Random(1));
+
+        LastResponse(b).Result.ShouldBe(EResultCode.EnchantLineMax);
+    }
+
+    [Fact]
+    public void 부여하면_Rare_두_줄이_생긴다()
+    {
+        var (user, b) = UserWithRod();
+
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+
+        user.TryGetEquip(Rod, out var equip).ShouldBeTrue();
+        equip.EnchantGrade.ShouldBe(GlobalRarity.Rare);
+        equip.EnchantLineCount.ShouldBe(2);
+
+        var res = LastResponse(b);
+        res.Result.ShouldBe(EResultCode.Ok);
+        res.Success.ShouldBeTrue();
+        res.BeforeGrade.ShouldBe(0);
+        res.AfterGrade.ShouldBe((int)GlobalRarity.Rare);
+        res.Options.Count.ShouldBe(2);
+
+        user.GetItemCount(GrantTid).ShouldBe(4);
+        b.DB.PostedOf<SaveEquipEnchantRepository>().Count.ShouldBe(1);
+        b.Channel.SentOf<S_EquipSyncResponse>().Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void 큐브가_성공하면_등급이_오르고_줄을_다시_뽑는다()
+    {
+        var (user, b) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+
+        user.TryEnchant(Rod, CubeTid, new Random(1));
+
+        user.TryGetEquip(Rod, out var equip).ShouldBeTrue();
+        equip.EnchantGrade.ShouldBe(GlobalRarity.Epic);
+        equip.EnchantLineCount.ShouldBe(2);   // 줄 수는 그대로다
+
+        var res = LastResponse(b);
+        res.BeforeGrade.ShouldBe((int)GlobalRarity.Rare);
+        res.AfterGrade.ShouldBe((int)GlobalRarity.Epic);
+        res.Success.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void 큐브가_실패해도_줄은_다시_뽑는다()
+    {
+        // Epic의 UpPermille이 0이라 상승은 반드시 실패한다.
+        var (user, b) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+        user.TryEnchant(Rod, CubeTid, new Random(1));   // Rare → Epic
+        b.Channel.Sent.Clear();
+
+        user.TryEnchant(Rod, CubeTid, new Random(7));
+
+        var res = LastResponse(b);
+        res.Result.ShouldBe(EResultCode.Ok);
+        res.Success.ShouldBeFalse();
+        res.BeforeGrade.ShouldBe((int)GlobalRarity.Epic);
+        res.AfterGrade.ShouldBe((int)GlobalRarity.Epic);
+        res.Options.Count.ShouldBe(2);        // 재롤은 됐다
+        user.GetItemCount(CubeTid).ShouldBe(3);
+    }
+
+    [Fact]
+    public void 확장하면_세_줄이_되고_새_줄만_늘어난다()
+    {
+        var (user, _) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+        user.TryGetEquip(Rod, out var before).ShouldBeTrue();
+        var kept = before.EnchantOptionTids.ToList();
+
+        user.TryEnchant(Rod, ExpandTid, new Random(1));
+
+        user.TryGetEquip(Rod, out var after).ShouldBeTrue();
+        after.EnchantLineCount.ShouldBe(3);
+        after.EnchantOptionTids.Take(2).ShouldBe(kept);   // 기존 줄은 유지된다
     }
 }
