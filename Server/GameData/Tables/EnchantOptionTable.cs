@@ -10,12 +10,12 @@ namespace GameData
     [MemoryPackable]
     public partial class EnchantOptionTableRow
     {
-        public int               OptionTID   { get; set; }        // int [1..-]
-        public GlobalRarity      Grade       { get; set; }        // eGlobalRarity
-        public EnchantOptionType OptionType  { get; set; }        // eEnchantOptionType
-        public IndustryType      Industry    { get; set; }        // eIndustryType
-        public int               Value       { get; set; }        // int [1..-]
-        public int               Weight      { get; set; }        // int [1..-]
-        public string            Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int               EnchantOptionTID { get; set; }        // int [1..-]
+        public GlobalRarity      Grade            { get; set; }        // eGlobalRarity
+        public EnchantOptionType OptionType       { get; set; }        // eEnchantOptionType
+        public IndustryType      Industry         { get; set; }        // eIndustryType
+        public int               Value            { get; set; }        // int [1..-]
+        public int               Weight           { get; set; }        // int [1..-]
+        public string            Description      { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

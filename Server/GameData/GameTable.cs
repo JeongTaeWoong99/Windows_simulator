@@ -50,7 +50,7 @@ namespace GameData
             LoggingBasicTable = TableSet<int, LoggingBasicTableRow>.From(read("LoggingBasicTable.bytes"), r => r.DropTID);
             MiningBasicTable = TableSet<int, MiningBasicTableRow>.From(read("MiningBasicTable.bytes"), r => r.DropTID);
             EquipTable = TableSet<int, EquipTableRow>.From(read("EquipTable.bytes"), r => r.EquipTID);
-            EnchantOptionTable = TableSet<int, EnchantOptionTableRow>.From(read("EnchantOptionTable.bytes"), r => r.OptionTID);
+            EnchantOptionTable = TableSet<int, EnchantOptionTableRow>.From(read("EnchantOptionTable.bytes"), r => r.EnchantOptionTID);
             EnchantGradeTable = TableSet<GlobalRarity, EnchantGradeTableRow>.From(read("EnchantGradeTable.bytes"), r => r.Grade);
             EnchantItemTable = TableSet<int, EnchantItemTableRow>.From(read("EnchantItemTable.bytes"), r => r.ItemTID);
             GachaItemTable = TableSet<int, GachaItemTableRow>.From(read("GachaItemTable.bytes"), r => r.GachaItemTID);

@@ -1,6 +1,6 @@
 [
   {
-    "OptionTID": 101,
+    "EnchantOptionTID": 101,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "None",
@@ -9,7 +9,7 @@
     "Description": "전 산업 +2%"
   },
   {
-    "OptionTID": 102,
+    "EnchantOptionTID": 102,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "Farming",
@@ -18,7 +18,7 @@
     "Description": "농사 +4%"
   },
   {
-    "OptionTID": 103,
+    "EnchantOptionTID": 103,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "Fishing",
@@ -27,7 +27,7 @@
     "Description": "낚시 +4%"
   },
   {
-    "OptionTID": 104,
+    "EnchantOptionTID": 104,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "Mining",
@@ -36,7 +36,7 @@
     "Description": "채굴 +4%"
   },
   {
-    "OptionTID": 105,
+    "EnchantOptionTID": 105,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "Logging",
@@ -45,7 +45,7 @@
     "Description": "벌목 +4%"
   },
   {
-    "OptionTID": 106,
+    "EnchantOptionTID": 106,
     "Grade": "Rare",
     "OptionType": "Speed",
     "Industry": "Hunting",
@@ -54,7 +54,7 @@
     "Description": "사냥 +4%"
   },
   {
-    "OptionTID": 107,
+    "EnchantOptionTID": 107,
     "Grade": "Rare",
     "OptionType": "CharacterExp",
     "Industry": "None",
@@ -63,7 +63,7 @@
     "Description": "경험치 +3%"
   },
   {
-    "OptionTID": 201,
+    "EnchantOptionTID": 201,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "None",
@@ -72,7 +72,7 @@
     "Description": "전 산업 +5%"
   },
   {
-    "OptionTID": 202,
+    "EnchantOptionTID": 202,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "Farming",
@@ -81,7 +81,7 @@
     "Description": "농사 +9%"
   },
   {
-    "OptionTID": 203,
+    "EnchantOptionTID": 203,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "Fishing",
@@ -90,7 +90,7 @@
     "Description": "낚시 +9%"
   },
   {
-    "OptionTID": 204,
+    "EnchantOptionTID": 204,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "Mining",
@@ -99,7 +99,7 @@
     "Description": "채굴 +9%"
   },
   {
-    "OptionTID": 205,
+    "EnchantOptionTID": 205,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "Logging",
@@ -108,7 +108,7 @@
     "Description": "벌목 +9%"
   },
   {
-    "OptionTID": 206,
+    "EnchantOptionTID": 206,
     "Grade": "Epic",
     "OptionType": "Speed",
     "Industry": "Hunting",
@@ -117,7 +117,7 @@
     "Description": "사냥 +9%"
   },
   {
-    "OptionTID": 207,
+    "EnchantOptionTID": 207,
     "Grade": "Epic",
     "OptionType": "CharacterExp",
     "Industry": "None",
@@ -126,7 +126,7 @@
     "Description": "경험치 +7%"
   },
   {
-    "OptionTID": 301,
+    "EnchantOptionTID": 301,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "None",
@@ -135,7 +135,7 @@
     "Description": "전 산업 +10%"
   },
   {
-    "OptionTID": 302,
+    "EnchantOptionTID": 302,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "Farming",
@@ -144,7 +144,7 @@
     "Description": "농사 +18%"
   },
   {
-    "OptionTID": 303,
+    "EnchantOptionTID": 303,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "Fishing",
@@ -153,7 +153,7 @@
     "Description": "낚시 +18%"
   },
   {
-    "OptionTID": 304,
+    "EnchantOptionTID": 304,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "Mining",
@@ -162,7 +162,7 @@
     "Description": "채굴 +18%"
   },
   {
-    "OptionTID": 305,
+    "EnchantOptionTID": 305,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "Logging",
@@ -171,7 +171,7 @@
     "Description": "벌목 +18%"
   },
   {
-    "OptionTID": 306,
+    "EnchantOptionTID": 306,
     "Grade": "Legendary",
     "OptionType": "Speed",
     "Industry": "Hunting",
@@ -180,7 +180,7 @@
     "Description": "사냥 +18%"
   },
   {
-    "OptionTID": 307,
+    "EnchantOptionTID": 307,
     "Grade": "Legendary",
     "OptionType": "CharacterExp",
     "Industry": "None",

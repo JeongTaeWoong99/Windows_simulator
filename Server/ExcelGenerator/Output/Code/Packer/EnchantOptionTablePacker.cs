@@ -14,13 +14,13 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static EnchantOptionTableRow Parse(string[] cells) => new()
         {
-            OptionTID   = PackerUtil.ParseInt(cells[0], Table, "OptionTID", 1, null),
-            Grade       = PackerUtil.ParseEnum<GlobalRarity>(cells[1], Table, "Grade"),
-            OptionType  = PackerUtil.ParseEnum<EnchantOptionType>(cells[2], Table, "OptionType"),
-            Industry    = PackerUtil.ParseEnum<IndustryType>(cells[3], Table, "Industry"),
-            Value       = PackerUtil.ParseInt(cells[4], Table, "Value", 1, null),
-            Weight      = PackerUtil.ParseInt(cells[5], Table, "Weight", 1, null),
-            Description = cells[6].Length > 0 ? PackerUtil.RequireString(cells[6], Table, "Description") : "",
+            EnchantOptionTID = PackerUtil.ParseInt(cells[0], Table, "EnchantOptionTID", 1, null),
+            Grade            = PackerUtil.ParseEnum<GlobalRarity>(cells[1], Table, "Grade"),
+            OptionType       = PackerUtil.ParseEnum<EnchantOptionType>(cells[2], Table, "OptionType"),
+            Industry         = PackerUtil.ParseEnum<IndustryType>(cells[3], Table, "Industry"),
+            Value            = PackerUtil.ParseInt(cells[4], Table, "Value", 1, null),
+            Weight           = PackerUtil.ParseInt(cells[5], Table, "Weight", 1, null),
+            Description      = cells[6].Length > 0 ? PackerUtil.RequireString(cells[6], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>
