@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using MikaProtocol;
 
 namespace MikaDummyClient
@@ -33,6 +34,11 @@ namespace MikaDummyClient
                 new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
                 new ClientAction("MailClaim (우편 수령 — MailId, 0이면 모두 받기)", SendMailClaim),
                 new ClientAction("MailDelete (받은 우편 삭제 — MailId)", SendMailDelete),
+                new ClientAction("AuctionSearch (경매 검색 — 종류 0전체/1자원/2장비 · TID 목록)", SendAuctionSearch),
+                new ClientAction("AuctionRegister (경매 등록 — 자원 TID·수량 또는 장비ID · 단가)", SendAuctionRegister),
+                new ClientAction("AuctionBuy (경매 구매 — 매물ID · 본 총액)", SendAuctionBuy),
+                new ClientAction("AuctionCancel (경매 취소 — 매물ID)", SendAuctionCancel),
+                new ClientAction("AuctionMyListings (내 매물)", SendAuctionMyListings),
             };
         }
 
@@ -319,5 +325,50 @@ namespace MikaDummyClient
 
             NetworkManager.Instance.Send(new C_ItemSellRequest { Items = items });
         }
-    }
+            private static long ReadLong(string prompt)
+        {
+            Console.Write(prompt);
+            return long.TryParse(Console.ReadLine(), out var value) ? value : 0;
+        }
+
+        // 이름 검색은 클라가 이름을 TID로 바꿔 보낸다 — 더미는 TID를 직접 받는다(쉼표 구분, 비우면 전체).
+        private void SendAuctionSearch()
+        {
+            var kind = (EAuctionKind)ReadLong("종류 (0=전체 1=자원 2=장비) > ");
+            Console.Write("TID 목록 (쉼표, 비우면 전체) > ");
+            var tids = (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+            NetworkManager.Instance.Send(new C_AuctionSearchRequest { Kind = kind, Tids = tids });
+        }
+
+        private void SendAuctionRegister()
+        {
+            var kind = (EAuctionKind)ReadLong("종류 (1=자원 2=장비) > ");
+            if (kind == EAuctionKind.Equip)
+            {
+                var equipId = ReadLong("장비ID > ");
+                NetworkManager.Instance.Send(new C_AuctionRegisterRequest { Kind = kind, EquipId = equipId, UnitPrice = ReadLong("단가 > ") });
+                return;
+            }
+
+            var itemTid = (int)ReadLong("ItemTID > ");
+            var count   = (int)ReadLong("수량 > ");
+            NetworkManager.Instance.Send(new C_AuctionRegisterRequest { Kind = kind, ItemTid = itemTid, Count = count, UnitPrice = ReadLong("단가 > ") });
+        }
+
+        private void SendAuctionBuy()
+        {
+            var listingId = ReadLong("매물ID > ");
+            NetworkManager.Instance.Send(new C_AuctionBuyRequest { ListingId = listingId, ExpectedTotalPrice = ReadLong("본 총액 > ") });
+        }
+
+        private void SendAuctionCancel()
+        {
+            NetworkManager.Instance.Send(new C_AuctionCancelRequest { ListingId = ReadLong("매물ID > ") });
+        }
+
+        private void SendAuctionMyListings()
+        {
+            NetworkManager.Instance.Send(new C_AuctionMyListingsRequest());
+        }
+}
 }

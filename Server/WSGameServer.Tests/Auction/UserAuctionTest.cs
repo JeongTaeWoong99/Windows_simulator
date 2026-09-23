@@ -277,6 +277,19 @@ public class UserAuctionTest
         b.DB.PostedOf<SettleAuctionRepository>().Count.ShouldBe(1);
     }
 
+    [Fact]
+    public void 예약_총액이_본_가격과_다르면_정산하지_않는다()
+    {
+        var (user, b) = NewUser();
+        _client.Reserve = _ => Task.FromResult(new Proto.ReserveReply { Result = Proto.ReserveResult.Ok, TotalPrice = 5000 });
+
+        user.TryBuyAuction(1, 800, Now);
+
+        user.Gold.ShouldBe(1000);
+        b.DB.PostedOf<SettleAuctionRepository>().ShouldBeEmpty();
+        Last<S_AuctionBuyResponse>(b).Result.ShouldBe(EResultCode.AuctionPriceChanged);
+    }
+
     [Theory]
     [InlineData(Proto.ReserveResult.InProgress, EResultCode.AuctionInProgress)]
     [InlineData(Proto.ReserveResult.Sold, EResultCode.AuctionSoldOut)]

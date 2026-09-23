@@ -293,8 +293,50 @@ namespace MikaDummyClient
             {
                 var items = string.Join(",", (m.Items ?? new List<ItemInfo>()).Select(i => $"{i.ItemId}x{i.Count}"));
                 Console.WriteLine($"  - #{m.MailId} 템플릿={m.TemplateTid} 골드={m.Gold} 다이아={m.Dia} 아이템=[{items}] " +
-                                  $"캐릭터={m.CharacterTids?.Count ?? 0} 장비={m.EquipTids?.Count ?? 0} {(m.ClaimedAtUnixMs > 0 ? "받음" : "안 받음")}");
+                                  $"캐릭터={m.CharacterTids?.Count ?? 0} 장비={m.EquipTids?.Count ?? 0} " +
+                                  $"장비개체=[{string.Join(",", (m.Equips ?? new List<EquipInfo>()).Select(e => $"#{e.EquipId}(TID {e.EquipTid}){EnchantText(e)}"))}] " +
+                                  $"{(m.ClaimedAtUnixMs > 0 ? "받음" : "안 받음")}");
             }
         }
-    }
+            private static void PrintListings(List<AuctionListingInfo>? listings)
+        {
+            foreach (var l in listings ?? new List<AuctionListingInfo>())
+            {
+                var enchant = l.EnchantGrade == 0 ? "" : $" 인챈트 {l.EnchantGrade}[{string.Join(",", l.EnchantOptions ?? new List<int>())}]";
+                Console.WriteLine($"  - 매물 {l.ListingId} {l.Kind} TID {l.Tid} ×{l.Count} 단가 {l.UnitPrice} 총액 {l.TotalPrice}{enchant} {l.State}");
+            }
+        }
+
+        [PacketHandler]
+        public static void Handle_S_AuctionSearchResponse(ISession session, S_AuctionSearchResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 경매 검색: {res.Result} {res.Listings?.Count ?? 0}건{(res.HasMore ? " (더 있음)" : "")}");
+            PrintListings(res.Listings);
+        }
+
+        [PacketHandler]
+        public static void Handle_S_AuctionRegisterResponse(ISession session, S_AuctionRegisterResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 경매 등록: {res.Result} 매물 {res.ListingId} 등록비 {res.ListingFee} 장비 {res.EquipId} 아이템변경={res.ItemChangeInfos?.Count ?? 0}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_AuctionBuyResponse(ISession session, S_AuctionBuyResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 경매 구매: {res.Result} 매물 {res.ListingId}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_AuctionCancelResponse(ISession session, S_AuctionCancelResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 경매 취소: {res.Result} 매물 {res.ListingId}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_AuctionMyListingsResponse(ISession session, S_AuctionMyListingsResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 내 매물: {res.Result} {res.Listings?.Count ?? 0}건");
+            PrintListings(res.Listings);
+        }
+}
 }

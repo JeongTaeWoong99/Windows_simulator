@@ -16,7 +16,6 @@ public class AuctionRelayTest : IDisposable
     private readonly SqliteFixture      _db       = new();
     private readonly FakeAuctionClient  _client   = new();
     private readonly FakeLogicExecutor  _logic    = new() { RunImmediately = true };
-    private readonly List<(long Uid, UserMailRow Mail)> _notified = new();
     private readonly AuctionRelay       _relay;
 
     public AuctionRelayTest()
@@ -122,6 +121,17 @@ public class AuctionRelayTest : IDisposable
 
         var confirm = _client.RequestsOf<Proto.ConfirmRequest>().Single();
         (confirm.PurchaseId, confirm.Success).ShouldBe((900L, true));
+    }
+
+    [Fact]
+    public async Task 경매장에_닿지_않으면_이벤트도_건너뛴다()
+    {
+        await Register();
+        _client.Register = null;
+
+        (await _relay.RunOnceAsync(Now)).ShouldBeFalse();
+
+        _client.RequestsOf<Proto.FetchEventsRequest>().ShouldBeEmpty();
     }
 
     // ── 이벤트 ──

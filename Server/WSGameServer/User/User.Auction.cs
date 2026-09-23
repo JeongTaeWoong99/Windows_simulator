@@ -219,7 +219,14 @@ public partial class User
             return;
         }
 
-        // 경매장이 총액 일치를 조건으로 예약했으므로 여기서 어긋나면 버그다 — 정산 트랜잭션이 가격을 다시 보고 실패로 돌린다.
+        // 경매장이 총액 일치를 조건으로 예약했으므로 어긋나면 버그다. 골드를 음수로 만들지 않고 멈춘다 — 예약은 타임아웃으로 풀린다.
+        if (reply.TotalPrice != expectedTotal || _gold < reply.TotalPrice)
+        {
+            ServerLog.Error("경매", $"예약 총액 불일치 — 정산하지 않는다. Uid={Uid} 매물 {listingId} 본 {expectedTotal} 예약 {reply.TotalPrice} 잔액 {_gold}");
+            Send(new S_AuctionBuyResponse { Result = EResultCode.AuctionPriceChanged, ListingId = listingId });
+            return;
+        }
+
         _gold -= reply.TotalPrice;
         Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
 

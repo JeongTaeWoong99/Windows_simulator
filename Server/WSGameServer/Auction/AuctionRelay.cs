@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Grpc.Core;
 using MikaNetwork.Server;
 using Proto = AuctionProtocol;
 
@@ -20,6 +21,9 @@ public sealed class AuctionRelay
 
     public static readonly TimeSpan PollInterval      = TimeSpan.FromSeconds(1);
     public static readonly TimeSpan ReconcileInterval = TimeSpan.FromMinutes(5);
+
+    /// <summary>경매장에 닿지 않을 때의 재시도 간격 — 1초마다 두드리면 장애 동안 로그만 쌓인다.</summary>
+    public static readonly TimeSpan RetryInterval = TimeSpan.FromSeconds(5);
 
     private readonly IAuctionClient    _client;
     private readonly IDbRunner         _db;
@@ -58,25 +62,30 @@ public sealed class AuctionRelay
 
         while (!stop.IsCancellationRequested)
         {
+            var reachable = false;
             try
             {
-                await RunOnceAsync(clock());
+                reachable = await RunOnceAsync(clock());
 
-                if (clock() >= nextReconcile)
+                if (reachable && clock() >= nextReconcile)
                 {
                     await ReconcileAsync(clock());
                     nextReconcile = clock() + ReconcileInterval;
                 }
             }
+            catch (RpcException e)
+            {
+                // 경매장 장애 — 한 바퀴를 건너뛰고 다시 한다. outbox·이벤트는 지워지지 않았다.
+                ServerLog.Warn("경매", $"경매장에 닿지 않는다 — {RetryInterval.TotalSeconds:F0}초 뒤 재시도: {e.StatusCode}");
+            }
             catch (Exception e)
             {
-                // 한 바퀴가 실패해도 다음 바퀴에 다시 한다 — outbox·이벤트는 지워지지 않았다.
                 ServerLog.Error("경매", "릴레이 한 바퀴 실패", e);
             }
 
             try
             {
-                await _kick.WaitAsync(PollInterval, stop);
+                await _kick.WaitAsync(reachable ? PollInterval : RetryInterval, stop);
             }
             catch (OperationCanceledException)
             {
@@ -85,10 +94,16 @@ public sealed class AuctionRelay
         }
     }
 
-    public async Task RunOnceAsync(DateTime now)
+    /// <returns>경매장에 닿았으면 true. outbox를 다 못 보냈으면 이벤트도 건너뛴다 — 어차피 닿지 않는다.</returns>
+    public async Task<bool> RunOnceAsync(DateTime now)
     {
-        await FlushOutboxAsync(now);
+        if (!await FlushOutboxAsync(now))
+        {
+            return false;
+        }
+
         await DrainEventsAsync(now);
+        return true;
     }
 
     /// <summary>
@@ -107,7 +122,8 @@ public sealed class AuctionRelay
             }
             catch (Exception e)
             {
-                ServerLog.Warn("경매", $"outbox 전송 실패 — 다음 바퀴에 재시도. outbox {row.outbox_id} 거래 {row.trade_id}: {e.Message}");
+                var reason = e is RpcException rpc ? rpc.StatusCode.ToString() : e.Message;
+                ServerLog.Warn("경매", $"outbox 전송 실패 — 다음 바퀴에 재시도. outbox {row.outbox_id} 거래 {row.trade_id}: {reason}");
                 return false;
             }
 
