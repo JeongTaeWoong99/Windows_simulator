@@ -99,4 +99,25 @@ namespace GameData
 
         Max     ,
     };
+
+    public enum EnchantOptionType : byte
+    {
+        None         = 0,
+
+        Speed        = 1,  // 작업속도 가산 — Value 천분율, Industry None=전 산업
+        CharacterExp = 2,  // 캐릭터 경험치 가산 — Value 천분율
+
+        Max         ,
+    };
+
+    public enum EnchantAction : byte
+    {
+        None       = 0,
+
+        Grant      = 1,  // 인챈트 부여
+        GradeUp    = 2,  // 등급 상승 판정 + 줄 재롤
+        ExpandLine = 3,  // 인챈트 줄 3줄로 확장
+
+        Max       ,
+    };
 }

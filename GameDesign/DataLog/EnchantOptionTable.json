@@ -1,0 +1,191 @@
+[
+  {
+    "OptionTID": 101,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "None",
+    "Value": 20,
+    "Weight": 300,
+    "Description": "전 산업 +2%"
+  },
+  {
+    "OptionTID": 102,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "Farming",
+    "Value": 40,
+    "Weight": 120,
+    "Description": "농사 +4%"
+  },
+  {
+    "OptionTID": 103,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "Fishing",
+    "Value": 40,
+    "Weight": 120,
+    "Description": "낚시 +4%"
+  },
+  {
+    "OptionTID": 104,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "Mining",
+    "Value": 40,
+    "Weight": 120,
+    "Description": "채굴 +4%"
+  },
+  {
+    "OptionTID": 105,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "Logging",
+    "Value": 40,
+    "Weight": 120,
+    "Description": "벌목 +4%"
+  },
+  {
+    "OptionTID": 106,
+    "Grade": "Rare",
+    "OptionType": "Speed",
+    "Industry": "Hunting",
+    "Value": 40,
+    "Weight": 120,
+    "Description": "사냥 +4%"
+  },
+  {
+    "OptionTID": 107,
+    "Grade": "Rare",
+    "OptionType": "CharacterExp",
+    "Industry": "None",
+    "Value": 30,
+    "Weight": 100,
+    "Description": "경험치 +3%"
+  },
+  {
+    "OptionTID": 201,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "None",
+    "Value": 50,
+    "Weight": 300,
+    "Description": "전 산업 +5%"
+  },
+  {
+    "OptionTID": 202,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "Farming",
+    "Value": 90,
+    "Weight": 120,
+    "Description": "농사 +9%"
+  },
+  {
+    "OptionTID": 203,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "Fishing",
+    "Value": 90,
+    "Weight": 120,
+    "Description": "낚시 +9%"
+  },
+  {
+    "OptionTID": 204,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "Mining",
+    "Value": 90,
+    "Weight": 120,
+    "Description": "채굴 +9%"
+  },
+  {
+    "OptionTID": 205,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "Logging",
+    "Value": 90,
+    "Weight": 120,
+    "Description": "벌목 +9%"
+  },
+  {
+    "OptionTID": 206,
+    "Grade": "Epic",
+    "OptionType": "Speed",
+    "Industry": "Hunting",
+    "Value": 90,
+    "Weight": 120,
+    "Description": "사냥 +9%"
+  },
+  {
+    "OptionTID": 207,
+    "Grade": "Epic",
+    "OptionType": "CharacterExp",
+    "Industry": "None",
+    "Value": 70,
+    "Weight": 100,
+    "Description": "경험치 +7%"
+  },
+  {
+    "OptionTID": 301,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "None",
+    "Value": 100,
+    "Weight": 300,
+    "Description": "전 산업 +10%"
+  },
+  {
+    "OptionTID": 302,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "Farming",
+    "Value": 180,
+    "Weight": 120,
+    "Description": "농사 +18%"
+  },
+  {
+    "OptionTID": 303,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "Fishing",
+    "Value": 180,
+    "Weight": 120,
+    "Description": "낚시 +18%"
+  },
+  {
+    "OptionTID": 304,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "Mining",
+    "Value": 180,
+    "Weight": 120,
+    "Description": "채굴 +18%"
+  },
+  {
+    "OptionTID": 305,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "Logging",
+    "Value": 180,
+    "Weight": 120,
+    "Description": "벌목 +18%"
+  },
+  {
+    "OptionTID": 306,
+    "Grade": "Legendary",
+    "OptionType": "Speed",
+    "Industry": "Hunting",
+    "Value": 180,
+    "Weight": 120,
+    "Description": "사냥 +18%"
+  },
+  {
+    "OptionTID": 307,
+    "Grade": "Legendary",
+    "OptionType": "CharacterExp",
+    "Industry": "None",
+    "Value": 150,
+    "Weight": 100,
+    "Description": "경험치 +15%"
+  }
+]

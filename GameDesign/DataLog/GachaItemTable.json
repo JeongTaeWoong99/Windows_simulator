@@ -96,6 +96,22 @@
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
+    "GachaItemTID": 6007,
+    "GachaId": 6,
+    "ItemTID": 100013,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "인챈트 원석"
+  },
+  {
+    "GachaItemTID": 6008,
+    "GachaId": 6,
+    "ItemTID": 100016,
+    "Count": 1,
+    "Weight": 30,
+    "Description": "인챈트 확장석"
+  },
+  {
     "GachaItemTID": 7001,
     "GachaId": 7,
     "ItemTID": 10002,
@@ -144,6 +160,30 @@
     "Description": "상자 전용 은빛 나침반"
   },
   {
+    "GachaItemTID": 7007,
+    "GachaId": 7,
+    "ItemTID": 100013,
+    "Count": 1,
+    "Weight": 60,
+    "Description": "인챈트 원석"
+  },
+  {
+    "GachaItemTID": 7008,
+    "GachaId": 7,
+    "ItemTID": 100015,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "인챈트 큐브"
+  },
+  {
+    "GachaItemTID": 7009,
+    "GachaId": 7,
+    "ItemTID": 100016,
+    "Count": 1,
+    "Weight": 40,
+    "Description": "인챈트 확장석"
+  },
+  {
     "GachaItemTID": 8001,
     "GachaId": 8,
     "ItemTID": 10003,
@@ -190,5 +230,29 @@
     "Count": 1,
     "Weight": 20,
     "Description": "상자 전용 황금 열쇠"
+  },
+  {
+    "GachaItemTID": 8007,
+    "GachaId": 8,
+    "ItemTID": 100015,
+    "Count": 1,
+    "Weight": 80,
+    "Description": "인챈트 큐브"
+  },
+  {
+    "GachaItemTID": 8008,
+    "GachaId": 8,
+    "ItemTID": 100014,
+    "Count": 1,
+    "Weight": 20,
+    "Description": "정제된 인챈트 원석"
+  },
+  {
+    "GachaItemTID": 8009,
+    "GachaId": 8,
+    "ItemTID": 100017,
+    "Count": 1,
+    "Weight": 15,
+    "Description": "정제된 인챈트 확장석"
   }
 ]

@@ -1,0 +1,32 @@
+[
+  {
+    "ItemTID": 100013,
+    "Action": "Grant",
+    "SuccessPermille": 500,
+    "Description": "인챈트 원석 — 50% 부여"
+  },
+  {
+    "ItemTID": 100014,
+    "Action": "Grant",
+    "SuccessPermille": 1000,
+    "Description": "정제된 인챈트 원석 — 확정 부여"
+  },
+  {
+    "ItemTID": 100015,
+    "Action": "GradeUp",
+    "SuccessPermille": 1000,
+    "Description": "인챈트 큐브 — 이 값은 읽지 않는다. 상승 확률은 EnchantGradeTable"
+  },
+  {
+    "ItemTID": 100016,
+    "Action": "ExpandLine",
+    "SuccessPermille": 300,
+    "Description": "인챈트 확장석 — 30% 확장"
+  },
+  {
+    "ItemTID": 100017,
+    "Action": "ExpandLine",
+    "SuccessPermille": 1000,
+    "Description": "정제된 인챈트 확장석 — 확정 확장"
+  }
+]

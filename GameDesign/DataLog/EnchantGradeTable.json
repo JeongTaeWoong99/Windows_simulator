@@ -1,0 +1,17 @@
+[
+  {
+    "Grade": "Rare",
+    "UpPermille": 50,
+    "Description": "→ Epic 5%"
+  },
+  {
+    "Grade": "Epic",
+    "UpPermille": 5,
+    "Description": "→ Legendary 0.5%"
+  },
+  {
+    "Grade": "Legendary",
+    "UpPermille": 0,
+    "Description": "최고 등급 — 재롤만"
+  }
+]
