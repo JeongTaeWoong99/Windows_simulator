@@ -152,10 +152,14 @@ public partial class User
             }
 
             // 판정 1회마다 배치된 캐릭터가 (산업, 레벨)의 ExpPerJudge만큼 경험치를 번다 (캐릭터 기획 5.2).
+            // 착용 장비의 인챈트 경험치 줄이 천분율로 곱해진다. 중간값이 ×1000이라 long으로 계산한다.
             if (WorkStation.TryGet(harvest.SlotIndex, out var slot) &&
                 TryGetCharacter(slot.CharacterId, out var worker))
             {
-                GrantCharacterExp(worker, harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel), notify);
+                var baseExp = (long)harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel);
+                var gained  = baseExp * (1000 + GetEquipExpAdd(slot.CharacterId)) / 1000;
+
+                GrantCharacterExp(worker, (int)gained, notify);
             }
 
             if (!notify)

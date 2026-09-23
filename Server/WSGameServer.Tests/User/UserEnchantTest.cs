@@ -356,4 +356,138 @@ public class UserEnchantTest
         LastResponse(b).Result.ShouldBe(EResultCode.EnchantItemNotOwned);
         user.GetItemCount(ZeroOwnedTid).ShouldBe(0);
     }
+    // ───────────────────────── 속도·경험치 반영 ─────────────────────────
+
+    private static int ExpectedSpeed(User user, long characterId, IndustryType industry, int addPermille)
+    {
+        user.TryGetCharacter(characterId, out var c).ShouldBeTrue();
+        return WorkSpeed.From(c.GetBaseWorkSpeed(industry))
+            .Add(addPermille)
+            .Multiply(Global.GatherSpeedMultiplier)
+            .Resolve();
+    }
+
+    private static int SlotSpeed(User user)
+    {
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        return slot.CurrentWorkSpeed;
+    }
+
+    [Fact]
+    public void 인챈트한_장비를_장착하면_가산이_속도에_실린다()
+    {
+        var (user, _) = UserWithRod();
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+        user.TryGetEquip(Rod, out var equip).ShouldBeTrue();
+        var expectedAdd = equip.SpeedAddPermilleFor(IndustryType.Fishing);
+
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
+        user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
+
+        // expectedAdd는 장비에서 읽은 값이라 롤 결과와 무관하게 맞는다 —
+        // "300보다 크다" 같은 단언은 2줄 모두 경험치로 뽑히면 거짓이 되므로 두지 않는다.
+        SlotSpeed(user).ShouldBe(ExpectedSpeed(user, CharA, IndustryType.Fishing, expectedAdd));
+    }
+
+    [Fact]
+    public void 산업이_다른_장비의_인챈트_줄도_맞는_슬롯에서는_속도에_실린다()
+    {
+        // 낚시대(낚시 +30%)에 농사 +4% · 전 산업 +2% 줄. 농사 슬롯에서는 기본값 300이 빠지고 줄만 붙는다 → +60.
+        // 장비 산업으로 먼저 거르면 두 줄이 통째로 사라져 +0이 된다.
+        var (user, _) = UserWithRod();
+        user.TryGetEquip(Rod, out var equip).ShouldBeTrue();
+        equip.SetEnchant(GlobalRarity.Rare, new[] { FarmSpeed, AllSpeed });
+
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Farming, CharA, TestUserBuilder.Base) });
+        user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
+
+        SlotSpeed(user).ShouldBe(ExpectedSpeed(user, CharA, IndustryType.Farming, 60));
+    }
+
+    [Fact]
+    public void 인챈트_경험치_줄이_착용_장비에서_합산된다()
+    {
+        var b = new TestUserBuilder();
+        b.Equips.Load(new[]
+        {
+            new EquipTableRow { EquipTID = RodTid, Name = "대", EquipKind = EquipKind.Weapon, Industry = IndustryType.Fishing, SpeedAddPermille = 0 },
+        });
+        b.Enchants.Load(new[] { Exp }, GradeRows, ItemRows);   // 후보가 1종 → 2줄 모두 Exp
+
+        var user = b.Build();
+        user.LoadCharacters(new[] { new CharacterRow { character_id = CharA, character_tid = 1001, level = 1, exp = 0 } });
+        user.LoadEquips(new[] { new UserEquipRow { equip_id = Rod, equip_tid = RodTid, slot_position = 0 } }, Array.Empty<CharacterEquipRow>());
+        user.GainItem(GrantTid, 1);
+        user.TryEnchant(Rod, GrantTid, new Random(1));
+        user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
+
+        user.GetEquipExpAdd(CharA).ShouldBe(Exp.Value * EnchantCatalog.BaseLineCount);
+        user.GetEquipExpAdd(999).ShouldBe(0);   // 배치되지 않은 캐릭터
+    }
+
+    /// <summary>
+    /// 낚시 슬롯에 캐릭터를 배치하고 속도 가산 0인 낚시대를 채운 뒤 5분 정산한다. 판정당 경험치 100, 레벨업은 일어나지 않는다.
+    /// enchanted면 경험치 줄만 있는 풀에서 부여해 +30‰ × 2줄 = +60‰가 붙는다.
+    /// </summary>
+    private static (long Exp, int Judges) SettleWithRod(bool enchanted)
+    {
+        var b = new TestUserBuilder().WithFishingDrops();
+        b.Equips.Load(new[]
+        {
+            new EquipTableRow { EquipTID = RodTid, Name = "대", EquipKind = EquipKind.Weapon, Industry = IndustryType.Fishing, SpeedAddPermille = 0 },
+        });
+        b.Enchants.Load(new[] { Exp }, GradeRows, ItemRows);
+        b.Levels.Load(new[]
+        {
+            new IndustryLevelTableRow
+            {
+                IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1,
+                Name = "개울", RequiredScore = 30_000, ExpPerJudge = 100,
+            },
+        });
+        b.Growth.Load(new[]
+        {
+            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0 },
+            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 1_000_000 },
+        });
+
+        var user = b.Build();
+        user.LoadCharacters(new[] { new CharacterRow { character_id = CharA, character_tid = 1001, level = 1, exp = 0 } });
+        user.LoadEquips(new[] { new UserEquipRow { equip_id = Rod, equip_tid = RodTid, slot_position = 0 } }, Array.Empty<CharacterEquipRow>());
+        if (enchanted)
+        {
+            user.GainItem(GrantTid, 1);
+            user.TryEnchant(Rod, GrantTid, new Random(1));
+        }
+
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
+        user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
+        b.Channel.Sent.Clear();
+
+        user.SettleWorkStation(TestUserBuilder.Base.AddMinutes(5));
+
+        var judges = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount;
+        user.TryGetCharacter(CharA, out var character).ShouldBeTrue();
+        character.Level.ShouldBe(1);
+        return (character.Exp, judges);
+    }
+
+    [Fact]
+    public void 정산하면_인챈트_경험치_가산만큼_더_번다()
+    {
+        // 판정당 100 × (1000 + 60) / 1000 = 106.
+        var (exp, judges) = SettleWithRod(enchanted: true);
+
+        judges.ShouldBeGreaterThan(0);
+        exp.ShouldBe(judges * 106L);
+    }
+
+    [Fact]
+    public void 인챈트가_없으면_정산_경험치는_기본값_그대로다()
+    {
+        var (exp, judges) = SettleWithRod(enchanted: false);
+
+        judges.ShouldBeGreaterThan(0);
+        exp.ShouldBe(judges * 100L);
+    }
 }

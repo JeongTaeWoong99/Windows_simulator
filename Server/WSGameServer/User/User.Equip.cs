@@ -208,9 +208,30 @@ public partial class User
         var sum = 0;
         foreach (var ((wornBy, _), equip) in _worn)
         {
-            if (wornBy == characterId && equip.AppliesTo(industry))
+            if (wornBy == characterId)
             {
-                sum += equip.SpeedAddPermille;
+                // 산업 판단은 장비가 한다 — 장비 기본값과 인챈트 줄의 대상 산업이 다를 수 있다.
+                sum += equip.SpeedAddPermilleFor(industry);
+            }
+        }
+
+        return sum;
+    }
+
+    /// <summary>착용 장비의 인챈트 경험치 가산(천분율). 경험치에는 산업 구분이 없다.</summary>
+    public int GetEquipExpAdd(long characterId)
+    {
+        if (characterId == 0)
+        {
+            return 0;
+        }
+
+        var sum = 0;
+        foreach (var ((wornBy, _), equip) in _worn)
+        {
+            if (wornBy == characterId)
+            {
+                sum += equip.ExpAddPermille;
             }
         }
 
