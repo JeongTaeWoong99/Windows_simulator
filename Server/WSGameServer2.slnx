@@ -7,6 +7,12 @@
     <Project Path="MikaNetwork.Lib/MikaSourceGen/MikaSourceGen.csproj" />
     <Project Path="MikaNetwork.Lib/MikaUtils/MikaUtils.csproj" />
   </Folder>
+  <!-- 경매장 서버 — 메인과 다른 프로세스·머신에서 돈다. 메인과는 AuctionProtocol(gRPC)로만 이어진다. -->
+  <Folder Name="/Auction/">
+    <Project Path="AuctionProtocol/AuctionProtocol.csproj" />
+    <Project Path="AuctionServer/AuctionServer.csproj" />
+    <Project Path="AuctionServer.Tests/AuctionServer.Tests.csproj" />
+  </Folder>
   <Project Path="ExcelGenerator/ExcelGenerator.csproj" />
   <Project Path="GameData/GameData.csproj" />
   <Project Path="MikaDummyClient/MikaDummyClient.csproj" />

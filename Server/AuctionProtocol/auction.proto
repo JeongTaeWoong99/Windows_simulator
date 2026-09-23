@@ -1,0 +1,198 @@
+// 메인 서버 ↔ 경매장 서버 계약. 메인이 항상 호출자다 — 경매장은 메인을 부르지 않는다.
+// 설계 근거: Server/docs/경매장.md
+syntax = "proto3";
+
+option csharp_namespace = "AuctionProtocol";
+
+package auction;
+
+service Auction {
+  // 등록. listing_id(= 메인 trade_id)가 멱등 키 — 같은 매물을 두 번 보내도 한 번만 들어간다.
+  rpc Register (RegisterRequest) returns (RegisterReply);
+  // 구매 예약. Listed → Reserved 조건부 전이. purchase_id가 멱등 키.
+  rpc Reserve (ReserveRequest) returns (ReserveReply);
+  // 메인 정산 결과. 성공이면 Sold, 실패면 Listed로 되돌린다.
+  rpc Confirm (ConfirmRequest) returns (ConfirmReply);
+  // 판매자 취소. 성공하면 잠금 해제 이벤트가 쌓인다.
+  rpc Cancel (CancelRequest) returns (CancelReply);
+  // 매물 검색. 상태를 바꾸지 않는다.
+  rpc Search (SearchRequest) returns (SearchReply);
+  // 한 판매자의 진행 중 매물(Listed·Reserved).
+  rpc GetSellerListings (SellerListingsRequest) returns (SellerListingsReply);
+  // 메인이 가져갈 이벤트(취소·만료). 처리 후 AckEvents로 지운다.
+  rpc FetchEvents (FetchEventsRequest) returns (FetchEventsReply);
+  rpc AckEvents (AckEventsRequest) returns (AckEventsReply);
+  // 대사용 — 메인이 오래 잠긴 거래의 매물 상태를 묻는다.
+  rpc GetListingStates (ListingStatesRequest) returns (ListingStatesReply);
+}
+
+// 매물 종류. 1 = 자원(스택), 2 = 장비(개체).
+// category는 종류에 따라 GameData.ItemType 또는 GameData.EquipKind 값이다 — 경매장은 GameData를 모른다.
+message ListingSnapshot {
+  int64 listing_id = 1;
+  int64 seller_id = 2;
+  int32 kind = 3;
+  int32 tid = 4;
+  int32 category = 5;
+  int32 rarity = 6;
+  int32 count = 7;
+  int32 enchant_grade = 8;
+  repeated int32 options = 9;
+  int64 unit_price = 10;
+  int64 expires_at_unix_ms = 11;
+}
+
+message RegisterRequest {
+  ListingSnapshot listing = 1;
+}
+
+enum RegisterResult {
+  REGISTER_RESULT_OK = 0;        // 새로 들어갔거나 이미 있다
+  REGISTER_RESULT_REJECTED = 1;  // 스냅샷이 잘못됐다 — 메인이 반환한다
+}
+
+message RegisterReply {
+  RegisterResult result = 1;
+}
+
+message ReserveRequest {
+  int64 purchase_id = 1;
+  int64 listing_id = 2;
+  int64 buyer_id = 3;
+  int64 expected_total = 4;  // 클라가 본 총액 — 다르면 PRICE_CHANGED
+}
+
+enum ReserveResult {
+  RESERVE_RESULT_OK = 0;
+  RESERVE_RESULT_NOT_FOUND = 1;
+  RESERVE_RESULT_IN_PROGRESS = 2;   // 다른 유저가 구매 중 — 실패하면 다시 풀릴 수 있다
+  RESERVE_RESULT_SOLD = 3;
+  RESERVE_RESULT_CLOSED = 4;        // 취소·만료
+  RESERVE_RESULT_PRICE_CHANGED = 5;
+  RESERVE_RESULT_OWN_LISTING = 6;
+}
+
+message ReserveReply {
+  ReserveResult result = 1;
+  int64 seller_id = 2;
+  int64 total_price = 3;
+}
+
+message ConfirmRequest {
+  int64 purchase_id = 1;
+  bool success = 2;
+}
+
+message ConfirmReply {
+}
+
+message CancelRequest {
+  int64 listing_id = 1;
+  int64 seller_id = 2;
+}
+
+enum CancelResult {
+  CANCEL_RESULT_OK = 0;
+  CANCEL_RESULT_NOT_FOUND = 1;
+  CANCEL_RESULT_NOT_OWNER = 2;
+  CANCEL_RESULT_IN_PROGRESS = 3;  // 구매 진행 중이라 취소할 수 없다
+  CANCEL_RESULT_CLOSED = 4;       // 이미 팔렸거나 만료됐다
+}
+
+message CancelReply {
+  CancelResult result = 1;
+}
+
+// 0은 "조건 없음"이다. 커서는 마지막으로 본 (단가, 매물 ID) — 첫 페이지는 둘 다 0.
+message SearchRequest {
+  int32 kind = 1;
+  int32 category = 2;
+  repeated int32 tids = 3;
+  int32 min_rarity = 4;
+  int32 max_rarity = 5;
+  int32 min_enchant_grade = 6;
+  repeated int32 option_tids = 7;  // 전부 포함해야 한다
+  int64 max_unit_price = 8;
+  int64 cursor_unit_price = 9;
+  int64 cursor_listing_id = 10;
+  int32 page_size = 11;
+}
+
+enum ListingState {
+  LISTING_STATE_NOT_FOUND = 0;
+  LISTING_STATE_LISTED = 1;
+  LISTING_STATE_RESERVED = 2;
+  LISTING_STATE_SOLD = 3;
+  LISTING_STATE_CANCELLED = 4;
+  LISTING_STATE_EXPIRED = 5;
+}
+
+// 검색·내 매물 응답의 한 줄. 판매자는 싣지 않는다.
+message ListingView {
+  int64 listing_id = 1;
+  int32 kind = 2;
+  int32 tid = 3;
+  int32 category = 4;
+  int32 rarity = 5;
+  int32 count = 6;
+  int32 enchant_grade = 7;
+  repeated int32 options = 8;
+  int64 unit_price = 9;
+  int64 total_price = 10;
+  int64 expires_at_unix_ms = 11;
+  ListingState state = 12;
+}
+
+message SearchReply {
+  repeated ListingView listings = 1;
+  bool has_more = 2;
+}
+
+message SellerListingsRequest {
+  int64 seller_id = 1;
+}
+
+message SellerListingsReply {
+  repeated ListingView listings = 1;
+}
+
+enum EventKind {
+  EVENT_KIND_NONE = 0;
+  EVENT_KIND_CANCELLED = 1;
+  EVENT_KIND_EXPIRED = 2;
+}
+
+message AuctionEvent {
+  int64 event_id = 1;
+  EventKind kind = 2;
+  int64 listing_id = 3;
+  int64 seller_id = 4;
+}
+
+message FetchEventsRequest {
+  int32 max = 1;
+}
+
+message FetchEventsReply {
+  repeated AuctionEvent events = 1;
+}
+
+message AckEventsRequest {
+  repeated int64 event_ids = 1;
+}
+
+message AckEventsReply {
+}
+
+message ListingStatesRequest {
+  repeated int64 listing_ids = 1;
+}
+
+message ListingStateEntry {
+  int64 listing_id = 1;
+  ListingState state = 2;
+}
+
+message ListingStatesReply {
+  repeated ListingStateEntry states = 1;
+}
