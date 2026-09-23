@@ -62,7 +62,8 @@
 | 인챈트 있는 장비에 `Grant` | `EnchantAlreadyRolled` |
 | 인챈트 없는 장비에 `GradeUp`·`ExpandLine` | `EnchantNotRolled` |
 | 3줄 장비에 `ExpandLine` | `EnchantLineMax` |
-| 인챈트 아이템 미보유 | `EnchantItemNotOwned` |
+| 인챈트 아이템이 아닌 TID (`EnchantItemTable`에 없음 — 상자 등) | 기존 `ItemNotUsable` |
+| 인챈트 아이템이지만 보유 0 | `EnchantItemNotOwned` |
 | 장비 미보유 | 기존 `EquipNotOwned` |
 
 > **착용 중 거부가 서버를 크게 줄인다.** 창고에 있는 장비만 바뀌므로 **인챈트는 가동 중인 슬롯의
@@ -109,13 +110,17 @@ T-002가 *"강화 기획이 생기면 `ALTER TABLE ADD COLUMN`"* 으로 비워 �
 
 | 컬럼 | Type | 비고 |
 | --- | --- | --- |
-| `EnchantOptionTID` | int | 유일. **DB에 저장된다 → 번호 재사용 금지** |
+| `EnchantOptionTID` | int | 유일. **DB에 저장된다 → 삭제·재사용 금지, 퇴역은 `Weight = 0`** (아래) |
 | `Grade` | eGlobalRarity | Rare·Epic·Legendary만 |
 | `OptionType` | eEnchantOptionType | |
 | `Industry` | eIndustryType | None(0) = 전 산업. `Speed`에만 의미 |
 | `Value` | int [1..] | 천분율 |
-| `Weight` | int [1..] | **같은 `Grade` 안에서의 가중치** |
+| `Weight` | int [0..] | **같은 `Grade` 안에서의 가중치.** 0 = 퇴역(추첨에서만 빠진다) |
 | `Description` | string `""` | 메모 |
+
+> **옵션 행은 지우지 않는다 — `Weight = 0`으로 퇴역시킨다.** 줄은 `enchant_1~3`에 자리 순서대로 저장되므로,
+> 가운데 줄의 행을 지우면 로드에서 그 줄이 빠져 당겨지고 다음 인챈트가 `enchant_3 = 0`으로 저장해 3번째 줄이 영구히 사라진다.
+> `Weight = 0` 행은 로드에서 계속 풀린다. 등급마다 양수 행이 하나는 남아야 한다(전부 0이면 기동 실패).
 
 같은 `EquipEnchant.xlsx` / 시트 `EnchantGradeTable` — **등급이 갖는 값**:
 
@@ -167,9 +172,12 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 
 **적재** — `LoginRepository`의 `t_user_equip` SELECT에 컬럼 4개가 붙는다. 쿼리 수는 그대로다.
 `UserEquipRow`에 필드 추가. 테이블에 없는 `EnchantOptionTID`는 경고만 남기고 그 줄을 버린다(기존 미보유 TID 처리와 같은 규약).
+옵션 풀이 없는 등급(`Common`·`Mythic` 등)으로 저장된 인챈트는 경고 후 통째로 버린다 — 두면 큐브가 아이템을 소모한 뒤 재롤에서 예외가 난다.
+줄 버림이 3번째 줄을 앗아가지 않게 하는 것은 5장의 옵션 행 퇴역 규칙이다.
 
 **카탈로그** — `Common/EnchantCatalog.cs`: `Grade → WeightedPicker<EnchantOptionTableRow>` · `ItemTID → (Action, SuccessPermille)`.
 기동 시 `GameTable.LoadAll` 뒤 `LoadAll`. `EquipCatalog`과 같은 자리.
+기동 검증: TID 중복 · `Value ≤ 0` · 알 수 없는 `Action`이면 예외(서버가 뜨지 않는다).
 
 **메모리** — `Equip` 개체에 `EnchantGrade` · `IReadOnlyList<int> EnchantOptions` 추가.
 착용 효과 합산을 `Equip`이 직접 제공한다: `SpeedAddPermilleFor(IndustryType)` · `ExpAddPermille`.
