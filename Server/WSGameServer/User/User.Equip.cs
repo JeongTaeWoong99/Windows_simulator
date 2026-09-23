@@ -36,7 +36,15 @@ public partial class User
 
             var equip = new Equip(r.equip_id, row, r.slot_position);
 
-            if (r.enchant_grade != 0)
+            var enchantGrade = (GlobalRarity)r.enchant_grade;
+            if (enchantGrade != GlobalRarity.None && !_enchantCatalog.HasPool(enchantGrade))
+            {
+                // 풀이 없는 등급은 큐브 재롤이 소모 뒤에 예외를 낸다 — 인챈트를 통째로 버린다.
+                ServerLog.Warn("로그인", $"옵션 풀이 없는 인챈트 등급, 인챈트를 버림: {enchantGrade} (개체 {r.equip_id})");
+                enchantGrade = GlobalRarity.None;
+            }
+
+            if (enchantGrade != GlobalRarity.None)
             {
                 // 테이블에 없는 EnchantOptionTID는 그 줄만 버린다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
                 var options = new List<EnchantOptionTableRow>();
@@ -54,7 +62,7 @@ public partial class User
                     options.Add(option);
                 }
 
-                equip.SetEnchant((GlobalRarity)r.enchant_grade, options);
+                equip.SetEnchant(enchantGrade, options);
             }
 
             _equips[r.equip_id] = equip;

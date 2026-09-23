@@ -24,7 +24,7 @@ public sealed class EnchantCatalog : Singleton<EnchantCatalog>
         Load(GameTable.EnchantOptionTable.All, GameTable.EnchantGradeTable.All, GameTable.EnchantItemTable.All);
     }
 
-    /// <summary>세 시트로 인덱스를 만든다. EnchantOptionTID·ItemTID가 중복되면 예외.</summary>
+    /// <summary>세 시트로 인덱스를 만든다. TID 중복 · Value ≤ 0 · 알 수 없는 Action이면 예외(기동 실패).</summary>
     public void Load(
         IEnumerable<EnchantOptionTableRow> options,
         IEnumerable<EnchantGradeTableRow>  grades,
@@ -46,6 +46,12 @@ public sealed class EnchantCatalog : Singleton<EnchantCatalog>
             if (!_optionByTid.TryAdd(row.EnchantOptionTID, row))
             {
                 throw new InvalidOperationException($"EnchantOptionTable에 EnchantOptionTID가 중복됐습니다: {row.EnchantOptionTID}");
+            }
+
+            // 음수 줄은 경험치 배율(1000 + 가산)을 0 이하로 끌어내릴 수 있다. 퇴역은 Value가 아니라 Weight 0으로 한다.
+            if (row.Value <= 0)
+            {
+                throw new InvalidOperationException($"EnchantOptionTable의 Value는 양수여야 합니다: {row.EnchantOptionTID} = {row.Value}");
             }
 
             if (!byGrade.TryGetValue(row.Grade, out var list))
@@ -72,6 +78,11 @@ public sealed class EnchantCatalog : Singleton<EnchantCatalog>
             {
                 throw new InvalidOperationException($"EnchantItemTable에 ItemTID가 중복됐습니다: {row.ItemTID}");
             }
+
+            if (row.Action is not (EnchantAction.Grant or EnchantAction.GradeUp or EnchantAction.ExpandLine))
+            {
+                throw new InvalidOperationException($"EnchantItemTable에 알 수 없는 Action이 있습니다: {row.ItemTID} = {row.Action}");
+            }
         }
     }
 
@@ -80,6 +91,9 @@ public sealed class EnchantCatalog : Singleton<EnchantCatalog>
 
     public bool TryGetItem(int itemTid, out EnchantItemTableRow row)
         => _itemByTid.TryGetValue(itemTid, out row!);
+
+    /// <summary>그 등급에 뽑을 옵션이 있는가. 없으면 RollOptions가 예외를 던진다.</summary>
+    public bool HasPool(GlobalRarity grade) => _poolByGrade.ContainsKey(grade);
 
     /// <summary>다음 등급으로 오를 확률(천분율). 표에 없는 등급은 0 — 오르지 않는다.</summary>
     public int UpPermilleOf(GlobalRarity grade)

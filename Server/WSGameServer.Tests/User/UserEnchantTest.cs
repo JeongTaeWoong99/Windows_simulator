@@ -176,13 +176,31 @@ public class UserEnchantTest
     }
 
     [Fact]
-    public void 아이템이_없으면_거부된다()
+    public void 인챈트_아이템이_아니면_쓸_수_없는_아이템으로_거부된다()
     {
         var (user, b) = UserWithRod();
 
+        // EnchantItemTable에 없는 TID(상자 등) — 보유 여부가 아니라 용도가 틀렸다.
         user.TryEnchant(Rod, 99999, new Random(1));
 
-        LastResponse(b).Result.ShouldBe(EResultCode.EnchantItemNotOwned);
+        LastResponse(b).Result.ShouldBe(EResultCode.ItemNotUsable);
+    }
+
+    [Theory]
+    [InlineData(GlobalRarity.Common)]
+    [InlineData(GlobalRarity.Mythic)]
+    public void 풀이_없는_등급으로_저장된_인챈트는_로드에서_버려진다(GlobalRarity grade)
+    {
+        // 풀이 없는 등급에 큐브를 쓰면 소모 뒤 재롤에서 예외가 난다 — 로드에서 인챈트를 통째로 버린다.
+        var (user, b) = UserWithRod();
+        user.LoadEquips(new[]
+        {
+            new UserEquipRow { equip_id = Rod, equip_tid = RodTid, slot_position = 0, enchant_grade = (int)grade, enchant_1 = AllSpeed.EnchantOptionTID, enchant_2 = Exp.EnchantOptionTID },
+        }, Array.Empty<CharacterEquipRow>());
+
+        user.TryGetEquip(Rod, out var equip).ShouldBeTrue();
+        equip.EnchantGrade.ShouldBe(GlobalRarity.None);
+        equip.EnchantLineCount.ShouldBe(0);
     }
 
     [Fact]

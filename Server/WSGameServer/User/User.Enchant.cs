@@ -31,11 +31,12 @@ public partial class User
 
         if (!_enchantCatalog.TryGetItem(itemTid, out var item))
         {
-            RejectEnchant(EResultCode.EnchantItemNotOwned, equipId, $"인챈트 아이템이 아님 {itemTid}");
+            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"인챈트 아이템이 아님 {itemTid}");
             return;
         }
 
-        // 동작을 모르는 아이템은 소모 전에 막는다 — 통과시키면 아이템만 사라지고 아무것도 안 바뀐다.
+        // 1차 방어는 EnchantCatalog.Load의 기동 검증이다. 이건 그 검증을 거치지 않은 로드 경로 대비 —
+        // 통과시키면 아이템만 사라지고 아무것도 안 바뀐다.
         if (!IsKnownAction(item.Action))
         {
             RejectEnchant(EResultCode.ItemNotUsable, equipId, $"알 수 없는 동작 {item.Action} ({itemTid})");

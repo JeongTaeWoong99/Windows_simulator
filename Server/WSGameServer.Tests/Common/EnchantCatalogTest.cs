@@ -106,4 +106,34 @@ public class EnchantCatalogTest
 
         Should.Throw<InvalidOperationException>(() => catalog.RollOptions(GlobalRarity.Legendary, 2, new Random(1)));
     }
+    [Fact]
+    public void 옵션이_있는_등급만_풀이_있다()
+    {
+        var catalog = Loaded();
+
+        catalog.HasPool(GlobalRarity.Rare).ShouldBeTrue();
+        catalog.HasPool(GlobalRarity.Legendary).ShouldBeFalse();
+        catalog.HasPool(GlobalRarity.Mythic).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 모르는_동작의_아이템이_있으면_예외다()
+    {
+        var catalog = new EnchantCatalog();
+        var items = new[] { new EnchantItemTableRow { ItemTID = 9009, Action = EnchantAction.None, SuccessPermille = 1000 } };
+
+        Should.Throw<InvalidOperationException>(() => catalog.Load(Options, Grades, items));
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-20)]
+    public void 값이_0_이하인_옵션이_있으면_예외다(int value)
+    {
+        // 음수 줄은 경험치 배율(1000 + 가산)을 0 이하로 끌어내릴 수 있다 — 기동에서 막는다.
+        var catalog = new EnchantCatalog();
+        var bad = new EnchantOptionTableRow { EnchantOptionTID = 199, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = value, Weight = 100 };
+
+        Should.Throw<InvalidOperationException>(() => catalog.Load(new[] { Options[0], bad }, Grades, Items));
+    }
 }
