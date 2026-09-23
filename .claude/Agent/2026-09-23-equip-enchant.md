@@ -40,3 +40,12 @@ tags: [server, data, design, docs, test]
   - **`git checkout -- Server/Shared/game.sqlite3`가 "unable to unlink"로 실패할 수 있다** — 사용자의 HeidiSQL이 파일을 열고 있다. 프로세스를 죽이지 말고 `git show HEAD:Server/Shared/game.sqlite3 > Server/Shared/game.sqlite3`로 제자리 덮어쓴다.
 - **`check-doc-graph.ps1 -Fix`를 쓰지 말 것.** Windows PowerShell 5.1에서 블록 라벨이 한글 문서명이 아니라 영문 폴더명(`character`·`item` …)으로 바뀌고 무관한 문서 11개까지 다시 쓴다. 블록은 손으로 고친다.
 - `check-doc-graph -Changed`의 경고 `[trade] 블록에 남음: trait`는 이 작업 이전부터 있던 것이다(특성 문서가 거래를 링크하지 않는다).
+
+## 업데이트 (2026-09-24) — 최종 리뷰 수정
+
+- `EnchantCatalog.Load` 기동 검증 추가: 알 수 없는 `Action` · `Value ≤ 0` 옵션이면 예외. `HasPool(grade)` 추가
+- `User.LoadEquips`: 풀 없는 등급(`Common`·`Mythic` 등)으로 저장된 인챈트는 경고 후 통째로 버린다 — 큐브가 소모 뒤 재롤에서 예외를 내던 구멍
+- `User.TryEnchant`: 인챈트 아이템이 아닌 TID → `ItemNotUsable`(302). `EnchantItemNotOwned`(610)는 보유 0 전용
+- `S_EquipEnchantResponse` 주석: 거절이면 Result·EquipId만 유효 · Ok일 때 Options는 동작 후 줄
+- 규칙: **`EnchantOptionTID`는 삭제·재사용 금지, 퇴역은 `Weight = 0`** — 자리 순서 저장 때문에 가운데 줄 삭제 시 3번째 줄이 영구히 사라진다(데이터-카탈로그 9절 · 스펙 5장)
+- 후속: `UserMailTest.접속_중인_유저에게_보내면_그_유저의_우편함으로_도착한다`가 간헐 실패한다(4bd74be에서도 재현 — `UserManager` 싱글턴을 병렬 테스트가 공유하는 듯). 이번 작업과 무관
