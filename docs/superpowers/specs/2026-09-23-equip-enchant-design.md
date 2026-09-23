@@ -160,7 +160,7 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 - 개체 갱신은 기존 `S_EquipSyncResponse`, 아이템 차감은 기존 인벤토리 싱크를 그대로 탄다.
 - `Success`는 **아이템의 성공 판정 결과**다. `GradeUp` 실패도 줄은 재롤되므로 `Options`는 항상 갱신된 값이다.
 - `EResultCode` 610번대 신설: `EnchantItemNotOwned=610` · `EnchantAlreadyRolled=611` · `EnchantNotRolled=612` · `EnchantLineMax=613` · `EnchantEquipped=614`.
-- `ECheatCommand.GiveEnchantItem` 추가 — Arg1 = ItemTID. `Server/docs/치트.md`에 등록.
+- **치트를 추가하지 않는다** — 인챈트 아이템은 평범한 아이템이라 기존 `ECheatCommand.GiveItem`(Arg1 = ItemTID · Arg2 = 개수)이 이미 지급한다.
 
 ## 7. 서버 흐름
 
