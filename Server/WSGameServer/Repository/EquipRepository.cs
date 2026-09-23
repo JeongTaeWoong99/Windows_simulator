@@ -97,25 +97,26 @@ public sealed class SaveCharacterEquipRepository : IRepository
 /// </summary>
 public sealed class SaveEquipEnchantRepository : IRepository
 {
-    private readonly long _equipId;
-    private readonly int  _grade;
-    private readonly int  _option1;
-    private readonly int  _option2;
-    private readonly int  _option3;
-
     public SaveEquipEnchantRepository(User user, long equipId, int grade, int option1, int option2, int option3)
     {
-        User     = user;
-        _equipId = equipId;
-        _grade   = grade;
-        _option1 = option1;
-        _option2 = option2;
-        _option3 = option3;
+        User    = user;
+        EquipId = equipId;
+        Grade   = grade;
+        Option1 = option1;
+        Option2 = option2;
+        Option3 = option3;
     }
 
     public long Key => User.DbKey;
 
     public User User { get; }
+
+    // 저장할 값. 빈 줄은 0이며 줄 수는 따로 저장하지 않는다 — enchant_3가 0이면 2줄짜리다.
+    public long EquipId { get; }
+    public int  Grade   { get; }
+    public int  Option1 { get; }
+    public int  Option2 { get; }
+    public int  Option3 { get; }
 
     public Task ExecuteAsync(DbConnection connection)
     {
@@ -123,7 +124,7 @@ public sealed class SaveEquipEnchantRepository : IRepository
             @"UPDATE t_user_equip
                  SET enchant_grade = @grade, enchant_1 = @o1, enchant_2 = @o2, enchant_3 = @o3
                WHERE equip_id = @equipId",
-            new { equipId = _equipId, grade = _grade, o1 = _option1, o2 = _option2, o3 = _option3 });
+            new { equipId = EquipId, grade = Grade, o1 = Option1, o2 = Option2, o3 = Option3 });
     }
 
     public void Apply()

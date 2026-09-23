@@ -35,6 +35,13 @@ public partial class User
             return;
         }
 
+        // 동작을 모르는 아이템은 소모 전에 막는다 — 통과시키면 아이템만 사라지고 아무것도 안 바뀐다.
+        if (!IsKnownAction(item.Action))
+        {
+            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"알 수 없는 동작 {item.Action} ({itemTid})");
+            return;
+        }
+
         if (GetItemCount(itemTid) <= 0)
         {
             RejectEnchant(EResultCode.EnchantItemNotOwned, equipId, $"보유 0 {itemTid}");
@@ -85,7 +92,10 @@ public partial class User
 
             case EnchantAction.GradeUp:
                 // 상승 확률은 아이템이 아니라 현재 등급이 정한다(큐브가 1종이므로).
-                success = Rolled(_enchantCatalog.UpPermilleOf(beforeGrade), rng);
+                // 최고 등급은 오를 곳이 없다 — 판정이 맞아도 오르지 않았으면 Success가 참일 수 없다.
+                success = Rolled(_enchantCatalog.UpPermilleOf(beforeGrade), rng)
+                          && EnchantCatalog.NextGrade(beforeGrade) != beforeGrade;
+
                 var grade = success ? EnchantCatalog.NextGrade(beforeGrade) : beforeGrade;
 
                 // 상승에 실패해도 줄은 다시 뽑는다 — 빈손이 없게 한 설계다. 줄 수는 유지한다.
@@ -123,6 +133,10 @@ public partial class User
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
         Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = consumed });
     }
+
+    /// <summary>이 서버가 처리할 줄 아는 동작인가. 모르는 동작은 거절한다 — 표가 잘못 쓰여도 조용히 넘어가지 않게.</summary>
+    private static bool IsKnownAction(EnchantAction action)
+        => action is EnchantAction.Grant or EnchantAction.GradeUp or EnchantAction.ExpandLine;
 
     /// <summary>천분율 판정. 1000이면 항상 성공, 0이면 항상 실패다.</summary>
     private static bool Rolled(int permille, Random random)
