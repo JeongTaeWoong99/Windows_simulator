@@ -406,8 +406,10 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 인챈트 결과. Success는 아이템의 성공 판정이며, <b>실패해도 GradeUp은 줄을 재롤</b>하므로
-    /// Options는 항상 갱신된 값이다. 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
+    /// 인챈트 결과. <b>Result != Ok(거절)이면 Result·EquipId만 유효하다</b> — 나머지는 기본값이니 그리지 않는다.
+    /// Result == Ok면 Success는 아이템의 성공 판정이고, Options는 동작 후 장비의 줄이다:
+    /// GradeUp은 실패해도 줄을 재롤하고, Grant·ExpandLine이 실패하면 이전 줄 그대로다.
+    /// 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_EquipEnchantResponse)]
     public partial class S_EquipEnchantResponse : IPacket
