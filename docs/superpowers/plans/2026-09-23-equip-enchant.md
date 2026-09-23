@@ -18,7 +18,7 @@
 - **엑셀 수정 시 [`excel-table-creator`](../../../.claude/skills/common/excel-table-creator/SKILL.md) 스킬을 매번 연다.** 파일명·시트명·컬럼명은 만들기 전에 사용자 확인
 - **패킷 정의는 `Server/MikaProtocol`에서만** 수정한다. `Assets/Scripts_Server/Protocol`은 post-build가 덮어쓰는 사본
 - **`Enum.xlsx`의 enum은 뒤에만 추가한다.** DB에 정수로 저장되므로 중간 삽입 금지
-- **`OptionTID`는 번호를 재사용하지 않는다.** DB에 저장된다
+- **`EnchantOptionTID`는 번호를 재사용하지 않는다.** DB에 저장된다
 - **DB 테이블은 `STRICT`, 모든 컬럼에 한글 인라인 주석** — [`sqlite-sql-creator`](../../../Server/.claude/skills/sqlite-sql-creator/SKILL.md)
 - **커밋은 `<type>: <한글 제목>`**, trailer 없음. 푸시하지 않는다 — [`commit-convention`](../../../.claude/skills/common/commit-convention/SKILL.md)
 - 실행 중인 `WSGameServer.exe`가 있으면 DLL 잠금(MSB3021)으로 빌드가 실패한다. 종료하고 돌린다
@@ -59,7 +59,7 @@
 
 **Interfaces:**
 - Consumes: 없음 (첫 작업)
-- Produces: `GameData.EnchantOptionType`(`Speed=1`·`CharacterExp=2`) · `GameData.EnchantAction`(`Grant=1`·`GradeUp=2`·`ExpandLine=3`) · Row 클래스 `EnchantOptionTableRow`(`OptionTID`·`Grade`·`OptionType`·`Industry`·`Value`·`Weight`) · `EnchantGradeTableRow`(`Grade`·`UpPermille`) · `EnchantItemTableRow`(`ItemTID`·`Action`·`SuccessPermille`) · `GameTable.EnchantOptionTable.All` 등
+- Produces: `GameData.EnchantOptionType`(`Speed=1`·`CharacterExp=2`) · `GameData.EnchantAction`(`Grant=1`·`GradeUp=2`·`ExpandLine=3`) · Row 클래스 `EnchantOptionTableRow`(`EnchantOptionTID`·`Grade`·`OptionType`·`Industry`·`Value`·`Weight`) · `EnchantGradeTableRow`(`Grade`·`UpPermille`) · `EnchantItemTableRow`(`ItemTID`·`Action`·`SuccessPermille`) · `GameTable.EnchantOptionTable.All` 등
 
 - [ ] **Step 1: `excel-table-creator` 스킬을 연다**
 
@@ -85,7 +85,7 @@
 
 | 컬럼 | Type | Min | Max | Default(Null) | Ref |
 | --- | --- | --- | --- | --- | --- |
-| `OptionTID` | `int` | 1 | | | |
+| `EnchantOptionTID` | `int` | 1 | | | |
 | `Grade` | `eGlobalRarity` | | | | |
 | `OptionType` | `eEnchantOptionType` | | | | |
 | `Industry` | `eIndustryType` | | | | |
@@ -95,7 +95,7 @@
 
 테스트값 행 (등급이 오를수록 값이 커지고 상위 옵션의 `Weight`가 낮다):
 
-| `OptionTID` | `Grade` | `OptionType` | `Industry` | `Value` | `Weight` | `Description` |
+| `EnchantOptionTID` | `Grade` | `OptionType` | `Industry` | `Value` | `Weight` | `Description` |
 | --- | --- | --- | --- | --- | --- | --- |
 | 101 | Rare | Speed | None | 20 | 300 | 전 산업 +2% |
 | 102 | Rare | Speed | Farming | 40 | 120 | 농사 +4% |
@@ -235,7 +235,7 @@ git commit -m "feat: 인챈트 데이터 테이블 추가
 
 ```sql
 ALTER TABLE t_user_equip ADD COLUMN enchant_grade INTEGER NOT NULL DEFAULT 0;  -- 인챈트 등급. 0=없음, 그 외 GlobalRarity 정수
-ALTER TABLE t_user_equip ADD COLUMN enchant_1     INTEGER NOT NULL DEFAULT 0;  -- 1번째 옵션 줄 (EnchantOptionTable.OptionTID). 0=빈 줄
+ALTER TABLE t_user_equip ADD COLUMN enchant_1     INTEGER NOT NULL DEFAULT 0;  -- 1번째 옵션 줄 (EnchantOptionTable.EnchantOptionTID). 0=빈 줄
 ALTER TABLE t_user_equip ADD COLUMN enchant_2     INTEGER NOT NULL DEFAULT 0;  -- 2번째 옵션 줄
 ALTER TABLE t_user_equip ADD COLUMN enchant_3     INTEGER NOT NULL DEFAULT 0;  -- 3번째 옵션 줄. 0이면 2줄짜리다
 ```
@@ -387,10 +387,10 @@ public class EnchantCatalogTest
 {
     private static readonly EnchantOptionTableRow[] Options =
     {
-        new() { OptionTID = 101, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.None,    Value = 20, Weight = 300 },
-        new() { OptionTID = 103, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.Fishing, Value = 40, Weight = 120 },
-        new() { OptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None,    Value = 30, Weight = 100 },
-        new() { OptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.None,    Value = 50, Weight = 300 },
+        new() { EnchantOptionTID = 101, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.None,    Value = 20, Weight = 300 },
+        new() { EnchantOptionTID = 103, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.Fishing, Value = 40, Weight = 120 },
+        new() { EnchantOptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None,    Value = 30, Weight = 100 },
+        new() { EnchantOptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed,        Industry = IndustryType.None,    Value = 50, Weight = 300 },
     };
 
     private static readonly EnchantGradeTableRow[] Grades =
@@ -434,7 +434,7 @@ public class EnchantCatalogTest
 
         var rolled = catalog.RollOptions(GlobalRarity.Rare, 2, new Random(1));
 
-        rolled.Select(o => o.OptionTID).ShouldBe(new[] { 101, 101 });
+        rolled.Select(o => o.EnchantOptionTID).ShouldBe(new[] { 101, 101 });
     }
 
     [Fact]
@@ -468,7 +468,7 @@ public class EnchantCatalogTest
     }
 
     [Fact]
-    public void OptionTID가_중복되면_예외다()
+    public void EnchantOptionTID가_중복되면_예외다()
     {
         var catalog = new EnchantCatalog();
         var dup = new[] { Options[0], Options[0] };
@@ -542,9 +542,9 @@ public sealed class EnchantCatalog : Singleton<EnchantCatalog>
 
         foreach (var row in options)
         {
-            if (!_optionByTid.TryAdd(row.OptionTID, row))
+            if (!_optionByTid.TryAdd(row.EnchantOptionTID, row))
             {
-                throw new InvalidOperationException($"EnchantOptionTable에 OptionTID가 중복됐습니다: {row.OptionTID}");
+                throw new InvalidOperationException($"EnchantOptionTable에 EnchantOptionTID가 중복됐습니다: {row.EnchantOptionTID}");
             }
 
             if (!byGrade.TryGetValue(row.Grade, out var list))
@@ -667,23 +667,23 @@ namespace WSGameServer;
 public class UserEnchantTest
 {
     private static readonly EnchantOptionTableRow FishSpeed =
-        new() { OptionTID = 103, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 40, Weight = 120 };
+        new() { EnchantOptionTID = 103, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 40, Weight = 120 };
 
     private static readonly EnchantOptionTableRow AllSpeed =
-        new() { OptionTID = 101, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 20, Weight = 300 };
+        new() { EnchantOptionTID = 101, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 20, Weight = 300 };
 
     private static readonly EnchantOptionTableRow FarmSpeed =
-        new() { OptionTID = 102, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Farming, Value = 40, Weight = 120 };
+        new() { EnchantOptionTID = 102, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Farming, Value = 40, Weight = 120 };
 
     private static readonly EnchantOptionTableRow Exp =
-        new() { OptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = 30, Weight = 100 };
+        new() { EnchantOptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = 30, Weight = 100 };
 
     // Epic 풀 — 큐브가 Rare에서 Epic으로 올린 뒤 재롤할 대상이 있어야 한다(없으면 RollOptions가 던진다).
     private static readonly EnchantOptionTableRow EpicAllSpeed =
-        new() { OptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 50, Weight = 300 };
+        new() { EnchantOptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 50, Weight = 300 };
 
     private static readonly EnchantOptionTableRow EpicFishSpeed =
-        new() { OptionTID = 203, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 90, Weight = 120 };
+        new() { EnchantOptionTID = 203, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 90, Weight = 120 };
 
     private static Equip RodWith(params EnchantOptionTableRow[] options)
     {
@@ -770,8 +770,8 @@ Expected: FAIL — `SetEnchant`·`SpeedAddPermilleFor`가 없어 컴파일 오�
     /// <summary>줄 수. 2 또는 3이며 인챈트가 없으면 0이다.</summary>
     public int EnchantLineCount => _enchantOptions.Count;
 
-    /// <summary>패킷·DB에 싣는 OptionTID 목록.</summary>
-    public IReadOnlyList<int> EnchantOptionTids => _enchantOptions.Select(o => o.OptionTID).ToList();
+    /// <summary>패킷·DB에 싣는 EnchantOptionTID 목록.</summary>
+    public IReadOnlyList<int> EnchantOptionTids => _enchantOptions.Select(o => o.EnchantOptionTID).ToList();
 
     /// <summary>인챈트 상태를 통째로 바꾼다(부여·재롤·확장 모두 이 경로다). 줄은 항상 전부 넘긴다.</summary>
     public void SetEnchant(GlobalRarity grade, IReadOnlyList<EnchantOptionTableRow> options)
@@ -830,7 +830,7 @@ Expected: FAIL — `SetEnchant`·`SpeedAddPermilleFor`가 없어 컴파일 오�
 
             if (r.enchant_grade != 0)
             {
-                // 테이블에 없는 OptionTID는 그 줄만 버린다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
+                // 테이블에 없는 EnchantOptionTID는 그 줄만 버린다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
                 var options = new List<EnchantOptionTableRow>();
                 foreach (var tid in new[] { r.enchant_1, r.enchant_2, r.enchant_3 })
                 {
@@ -840,7 +840,7 @@ Expected: FAIL — `SetEnchant`·`SpeedAddPermilleFor`가 없어 컴파일 오�
                     }
                     if (!_enchantCatalog.TryGetOption(tid, out var option))
                     {
-                        ServerLog.Warn("로그인", $"EnchantOptionTable에 없는 OptionTID, 건너뜀: {tid} (개체 {r.equip_id})");
+                        ServerLog.Warn("로그인", $"EnchantOptionTable에 없는 EnchantOptionTID, 건너뜀: {tid} (개체 {r.equip_id})");
                         continue;
                     }
                     options.Add(option);
@@ -919,7 +919,7 @@ git commit -m "feat: 장비 개체에 인챈트 상태와 효과 합산 추가
         public EEquipSlot EquippedSlot        { get; set; }  // 창고면 None
         public int        SlotPosition        { get; set; }
         public int        EnchantGrade        { get; set; }  // 0=인챈트 없음, 그 외 GlobalRarity
-        public List<int>  EnchantOptions      { get; set; } = new();  // OptionTID. 줄 수만큼(0·2·3개)
+        public List<int>  EnchantOptions      { get; set; } = new();  // EnchantOptionTID. 줄 수만큼(0·2·3개)
     }
 ```
 
@@ -979,7 +979,7 @@ git commit -m "feat: 장비 개체에 인챈트 상태와 효과 합산 추가
 
 - [ ] **Step 6: `PacketEnumTest`에 실패하는 대조를 추가한다**
 
-기존 `EEquipSlot` ↔ `EquipSlot` 대조가 어떤 형태인지 보고 같은 형태로 쓴다. 이 태스크에서는 **프로토콜 전용 enum을 새로 만들지 않으므로**(등급·OptionTID를 `int`로 싣는다) 대조할 쌍이 없다. 대신 PacketId 중복만 막는다 — 기존 테스트가 이미 그 일을 한다면 추가하지 않고 아래로 넘어간다.
+기존 `EEquipSlot` ↔ `EquipSlot` 대조가 어떤 형태인지 보고 같은 형태로 쓴다. 이 태스크에서는 **프로토콜 전용 enum을 새로 만들지 않으므로**(등급·EnchantOptionTID를 `int`로 싣는다) 대조할 쌍이 없다. 대신 PacketId 중복만 막는다 — 기존 테스트가 이미 그 일을 한다면 추가하지 않고 아래로 넘어간다.
 
 ```csharp
 [Fact]

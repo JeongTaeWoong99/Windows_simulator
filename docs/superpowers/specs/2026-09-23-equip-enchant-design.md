@@ -78,7 +78,7 @@
 
 ```sql
 ALTER TABLE t_user_equip ADD COLUMN enchant_grade INTEGER NOT NULL DEFAULT 0;  -- 0=인챈트없음, 그 외 GlobalRarity
-ALTER TABLE t_user_equip ADD COLUMN enchant_1     INTEGER NOT NULL DEFAULT 0;  -- EnchantOptionTable.OptionTID
+ALTER TABLE t_user_equip ADD COLUMN enchant_1     INTEGER NOT NULL DEFAULT 0;  -- EnchantOptionTable.EnchantOptionTID
 ALTER TABLE t_user_equip ADD COLUMN enchant_2     INTEGER NOT NULL DEFAULT 0;
 ALTER TABLE t_user_equip ADD COLUMN enchant_3     INTEGER NOT NULL DEFAULT 0;  -- 0 = 2줄짜리
 ```
@@ -86,7 +86,7 @@ ALTER TABLE t_user_equip ADD COLUMN enchant_3     INTEGER NOT NULL DEFAULT 0;  -
 T-002가 *"강화 기획이 생기면 `ALTER TABLE ADD COLUMN`"* 으로 비워 둔 자리를 그대로 쓴다.
 
 **별도 테이블로 쪼개지 않는 이유** — ① 줄 수 상한 3이 기획 확정이라 가변이 아니고,
-② 줄은 `OptionTID` 정수 하나뿐이며 **항상 통째로 읽고 통째로 쓴다**(재롤은 전 줄 교체 = `UPDATE` 1행),
+② 줄은 `EnchantOptionTID` 정수 하나뿐이며 **항상 통째로 읽고 통째로 쓴다**(재롤은 전 줄 교체 = `UPDATE` 1행),
 ③ 인챈트는 장비 개체와 수명이 같은 1:0..1 관계다. 분리하면 로그인 조회가 하나 늘고
 한 개체의 상태가 두 테이블로 갈라진다.
 
@@ -109,7 +109,7 @@ T-002가 *"강화 기획이 생기면 `ALTER TABLE ADD COLUMN`"* 으로 비워 �
 
 | 컬럼 | Type | 비고 |
 | --- | --- | --- |
-| `OptionTID` | int | 유일. **DB에 저장된다 → 번호 재사용 금지** |
+| `EnchantOptionTID` | int | 유일. **DB에 저장된다 → 번호 재사용 금지** |
 | `Grade` | eGlobalRarity | Rare·Epic·Legendary만 |
 | `OptionType` | eEnchantOptionType | |
 | `Industry` | eIndustryType | None(0) = 전 산업. `Speed`에만 의미 |
@@ -166,7 +166,7 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 ## 7. 서버 흐름
 
 **적재** — `LoginRepository`의 `t_user_equip` SELECT에 컬럼 4개가 붙는다. 쿼리 수는 그대로다.
-`UserEquipRow`에 필드 추가. 테이블에 없는 `OptionTID`는 경고만 남기고 그 줄을 버린다(기존 미보유 TID 처리와 같은 규약).
+`UserEquipRow`에 필드 추가. 테이블에 없는 `EnchantOptionTID`는 경고만 남기고 그 줄을 버린다(기존 미보유 TID 처리와 같은 규약).
 
 **카탈로그** — `Common/EnchantCatalog.cs`: `Grade → WeightedPicker<EnchantOptionTableRow>` · `ItemTID → (Action, SuccessPermille)`.
 기동 시 `GameTable.LoadAll` 뒤 `LoadAll`. `EquipCatalog`과 같은 자리.
@@ -194,7 +194,7 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 
 | 파일 | 내용 |
 | --- | --- |
-| `Common/EnchantCatalogTest` | 등급별 풀 구성 · 중복 `OptionTID` 예외 · `EnchantItemTable`의 `ItemTID`가 `ItemTable`에 있는지 |
+| `Common/EnchantCatalogTest` | 등급별 풀 구성 · 중복 `EnchantOptionTID` 예외 · `EnchantItemTable`의 `ItemTID`가 `ItemTable`에 있는지 |
 | `User/UserEnchantTest` | 부여/큐브/확장 각 성공·실패 · 3.3의 거부 5종(**착용 중 포함**) · Legendary에서 재롤만 · 시드 고정 롤 결과 · **인챈트 후 장착했을 때** 속도·경험치 반영 · 산업 불일치 줄은 가산 0 |
 | `Repository/EquipRepositoryTest` | `:memory:` SQLite로 `UPDATE` 왕복 · 마이그레이션 후 기존 행이 0으로 읽히는지 |
 | `Protocol/PacketEnumTest` | `EEnchantOptionType`·`EEnchantAction` ↔ `GameData` 쪽 enum |
