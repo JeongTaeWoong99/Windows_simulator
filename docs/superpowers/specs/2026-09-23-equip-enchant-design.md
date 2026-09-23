@@ -24,7 +24,8 @@
 | 9 | 중복 줄 | **허용.** "2줄 전부 낚시 속도"가 잭팟으로 성립한다 |
 | 10 | 저장 | **`t_user_equip`에 컬럼 추가.** 별도 테이블로 쪼개지 않는다 → 4장 |
 | 11 | 획득 | **상자 3종**(`CommonRewardTable`)에서 드롭 |
-| 12 | 수치 | 옵션 값·`Weight`·성공 확률은 **전부 테스트값**으로 시작 |
+| 12 | **착용 중 인챈트** | **거부한다.** 캐릭터에서 벗겨야 인챈트할 수 있다 → 3.3 |
+| 13 | 수치 | 등급 상승 확률만 확정(5% · 0.5%). 옵션 값·`Weight`·아이템 확률은 **테스트값** |
 
 ## 3. 동작
 
@@ -44,17 +45,29 @@
 - **Legendary 장비에 `GradeUp`을 쓰면 상승 판정 없이 재롤만 한다.** 응답의 `Success`는 `false`다
   — 올라간 등급이 없기 때문이다. 줄은 갱신된다.
 - **재롤은 줄 수를 바꾸지 않는다.** 3줄짜리를 재롤하면 3줄이 그대로 다시 뽑힌다.
-- 성공 확률은 `EnchantItemTable.SuccessPermille`이 아이템마다 정한다.
+- **성공 확률의 출처가 동작마다 다르다.**
+
+| `Action` | 확률 출처 | 이유 |
+| --- | --- | --- |
+| `Grant`·`ExpandLine` | `EnchantItemTable.SuccessPermille` | **아이템마다 다르다**(확률형·확정형) |
+| `GradeUp` | `EnchantGradeTable.UpPermille` | **현재 등급마다 다르다.** 큐브는 1종이라 아이템에 실을 수 없다 |
+
+> `GradeUp` 아이템의 `SuccessPermille`은 읽지 않는다. 시트에는 `1000`을 적어 둔다.
 
 ### 3.3 거부
 
 | 상황 | `EResultCode` |
 | --- | --- |
+| **캐릭터가 착용 중인 장비** | **`EnchantEquipped`** — 동작 3종 전부. **벗기는 것이 선행 조건이다** |
 | 인챈트 있는 장비에 `Grant` | `EnchantAlreadyRolled` |
 | 인챈트 없는 장비에 `GradeUp`·`ExpandLine` | `EnchantNotRolled` |
 | 3줄 장비에 `ExpandLine` | `EnchantLineMax` |
 | 인챈트 아이템 미보유 | `EnchantItemNotOwned` |
 | 장비 미보유 | 기존 `EquipNotOwned` |
+
+> **착용 중 거부가 서버를 크게 줄인다.** 창고에 있는 장비만 바뀌므로 **인챈트는 가동 중인 슬롯의
+> 속도·경험치에 영향을 줄 수 없다.** 정산(`SettleWorkStation`)도, 속도 재확정(`RefreshWorkStationSpeed`)도
+> 부를 필요가 없다 — 소급 버그의 여지 자체가 사라진다. 바뀐 값은 **다음에 장착할 때** 기존 `TryEquip` 경로가 반영한다.
 
 ### 3.4 줄 뽑기
 
@@ -104,6 +117,20 @@ T-002가 *"강화 기획이 생기면 `ALTER TABLE ADD COLUMN`"* 으로 비워 �
 | `Weight` | int [1..] | **같은 `Grade` 안에서의 가중치** |
 | `Description` | string `""` | 메모 |
 
+같은 `EquipEnchant.xlsx` / 시트 `EnchantGradeTable` — **등급이 갖는 값**:
+
+| 컬럼 | Type | 비고 |
+| --- | --- | --- |
+| `Grade` | eGlobalRarity | Rare·Epic·Legendary |
+| `UpPermille` | int [0..1000] | **다음 등급으로 오를 확률.** Legendary는 0 |
+| `Description` | string `""` | 메모 |
+
+| `Grade` | `UpPermille` | 뜻 |
+| --- | --- | --- |
+| Rare | **50** | → Epic **5%** |
+| Epic | **5** | → Legendary **0.5%** |
+| Legendary | 0 | 최고 등급 — 재롤만 |
+
 같은 `EquipEnchant.xlsx` / 시트 `EnchantItemTable` — **아이템이 무엇을 하는가**:
 
 | 컬럼 | Type | 비고 |
@@ -132,7 +159,7 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 - **요청 패킷은 하나다** — 무엇을 하는 아이템인지는 `EnchantItemTable`이 정하므로 클라가 동작을 고르지 않는다.
 - 개체 갱신은 기존 `S_EquipSyncResponse`, 아이템 차감은 기존 인벤토리 싱크를 그대로 탄다.
 - `Success`는 **아이템의 성공 판정 결과**다. `GradeUp` 실패도 줄은 재롤되므로 `Options`는 항상 갱신된 값이다.
-- `EResultCode` 610번대 신설: `EnchantItemNotOwned=610` · `EnchantAlreadyRolled=611` · `EnchantNotRolled=612` · `EnchantLineMax=613`.
+- `EResultCode` 610번대 신설: `EnchantItemNotOwned=610` · `EnchantAlreadyRolled=611` · `EnchantNotRolled=612` · `EnchantLineMax=613` · `EnchantEquipped=614`.
 - `ECheatCommand.GiveEnchantItem` 추가 — Arg1 = ItemTID. `Server/docs/치트.md`에 등록.
 
 ## 7. 서버 흐름
@@ -146,16 +173,17 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 **메모리** — `Equip` 개체에 `EnchantGrade` · `IReadOnlyList<int> EnchantOptions` 추가.
 착용 효과 합산을 `Equip`이 직접 제공한다: `SpeedAddPermilleFor(IndustryType)` · `ExpAddPermille`.
 
-**`TryEnchant(equipId, itemTid, now)`**
-1. 장비·아이템 보유와 3.3의 거부 조건 검사.
-2. `SettleWorkStation(now)` — **속도·경험치가 바뀌기 전에 정산.** 이 순서가 소급을 막는다(기존 `TryEquip`과 같다).
-3. 아이템 1개 차감.
-4. 성공 판정 → 3.2대로 등급·줄 갱신.
-5. `RefreshWorkStationSpeed(now)` — 착용 중이면 영향받은 슬롯이 `S_WorkStationSlotSyncResponse`로 나간다.
-6. `SaveEquipEnchantRepository`(`UPDATE t_user_equip` 1행) → `S_EquipEnchantResponse` + `S_EquipSyncResponse` + 인벤 싱크.
+**`TryEnchant(equipId, itemTid)`**
+1. 장비·아이템 보유와 3.3의 거부 조건 검사. **착용 중이면 여기서 끝난다**(`EnchantEquipped`).
+2. 아이템 1개 차감.
+3. 성공 판정 → 3.2대로 등급·줄 갱신.
+4. `SaveEquipEnchantRepository`(`UPDATE t_user_equip` 1행) → `S_EquipEnchantResponse` + `S_EquipSyncResponse` + 인벤 싱크.
+
+> **`now`를 받지 않는다.** 정산도 속도 재확정도 없기 때문이다 — 3.3의 착용 중 거부가 만든 결과다.
+> `TryEquip`이 6단계인 것과 대비된다.
 
 **속도** — `ResolveSlotSpeed`의 장비 가산이 `기본 SpeedAddPermille`에서
-`기본 + 인챈트 Speed 줄(Industry가 슬롯 산업과 같거나 None)`로 바뀐다. **기존 코드에 닿는 수정은 이것과 아래 둘뿐이다.**
+`기본 + 인챈트 Speed 줄(Industry가 슬롯 산업과 같거나 None)`로 바뀐다. **기존 코드에 닿는 수정은 이것과 아래 경험치 둘뿐이다.**
 
 **경험치** — `SettleWorkStation`의 캐릭터 경험치 지급에 **그 캐릭터가 착용한 장비의 `CharacterExp` 줄 합**을 가산한다.
 
@@ -166,7 +194,7 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 | 파일 | 내용 |
 | --- | --- |
 | `Common/EnchantCatalogTest` | 등급별 풀 구성 · 중복 `OptionTID` 예외 · `EnchantItemTable`의 `ItemTID`가 `ItemTable`에 있는지 |
-| `User/UserEnchantTest` | 부여/큐브/확장 각 성공·실패 · 3.3의 거부 4종 · Legendary에서 재롤만 · 시드 고정 롤 결과 · 배치 중 인챈트 시 **정산 후** 속도 반영 · 산업 불일치 줄은 가산 0 · 경험치 가산 |
+| `User/UserEnchantTest` | 부여/큐브/확장 각 성공·실패 · 3.3의 거부 5종(**착용 중 포함**) · Legendary에서 재롤만 · 시드 고정 롤 결과 · **인챈트 후 장착했을 때** 속도·경험치 반영 · 산업 불일치 줄은 가산 0 |
 | `Repository/EquipRepositoryTest` | `:memory:` SQLite로 `UPDATE` 왕복 · 마이그레이션 후 기존 행이 0으로 읽히는지 |
 | `Protocol/PacketEnumTest` | `EEnchantOptionType`·`EEnchantAction` ↔ `GameData` 쪽 enum |
 
@@ -185,6 +213,5 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 | 항목 | 비고 |
 | --- | --- |
 | 옵션 풀의 `Value`·`Weight` | 등급 간 격차가 곧 큐브의 동기다 |
-| 등급 상승 확률 | 제안: Rare→Epic 10% · Epic→Legendary 3% |
 | 부여·확장 아이템의 종수와 확률 | 확률형/확정형 최소 2종씩 |
 | 상자별 드롭 수량 | 상자 등급이 올라갈수록 좋은 아이템이 나오게 할지 포함 |
