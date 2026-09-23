@@ -678,6 +678,13 @@ public class UserEnchantTest
     private static readonly EnchantOptionTableRow Exp =
         new() { OptionTID = 107, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = 30, Weight = 100 };
 
+    // Epic 풀 — 큐브가 Rare에서 Epic으로 올린 뒤 재롤할 대상이 있어야 한다(없으면 RollOptions가 던진다).
+    private static readonly EnchantOptionTableRow EpicAllSpeed =
+        new() { OptionTID = 201, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.None, Value = 50, Weight = 300 };
+
+    private static readonly EnchantOptionTableRow EpicFishSpeed =
+        new() { OptionTID = 203, Grade = GlobalRarity.Epic, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = 90, Weight = 120 };
+
     private static Equip RodWith(params EnchantOptionTableRow[] options)
     {
         // 낚시 무기 +30%. 인챈트 줄이 그 위에 더해진다.
@@ -1049,7 +1056,7 @@ git commit -m "feat: 인챈트 패킷 추가
         {
             new EquipTableRow { EquipTID = RodTid, Name = "대", EquipKind = EquipKind.Weapon, Industry = IndustryType.Fishing, SpeedAddPermille = 300 },
         });
-        b.Enchants.Load(new[] { AllSpeed, FishSpeed, Exp }, GradeRows, ItemRows);
+        b.Enchants.Load(new[] { AllSpeed, FishSpeed, Exp, EpicAllSpeed, EpicFishSpeed }, GradeRows, ItemRows);
 
         var user = b.Build();
         user.LoadCharacters(new[] { new CharacterRow { character_id = CharA, character_tid = 1001, level = 1, exp = 0 } });
@@ -1482,8 +1489,8 @@ git commit -m "feat: 인챈트 부여·재롤·줄 확장 구현
         user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
         user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
 
-        // 기본 300에 인챈트 줄이 더해졌으므로 장비 기본값만일 때보다 크다.
-        expectedAdd.ShouldBeGreaterThan(300);
+        // expectedAdd는 장비에서 읽은 값이라 롤 결과와 무관하게 맞는다 —
+        // "300보다 크다" 같은 단언은 2줄 모두 경험치로 뽑히면 거짓이 되므로 두지 않는다.
         user.WorkStation.Slots[0].CurrentWorkSpeed.ShouldBe(
             ExpectedFishingSpeed(user, CharA, expectedAdd));
     }
