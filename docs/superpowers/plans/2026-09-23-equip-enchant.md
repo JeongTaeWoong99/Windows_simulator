@@ -33,7 +33,7 @@
 | `GameDesign/Excel/Enum.xlsx` | `EnchantOptionType`·`EnchantAction` 추가 |
 | `GameDesign/Excel/EquipEnchant.xlsx` | 3시트 — 옵션 풀 · 등급 확률 · 아이템 동작 |
 | `GameDesign/Excel/Item.xlsx` | 인챈트 아이템 4종(`Special`) |
-| `GameDesign/Excel/DropCommon.xlsx` | 상자 보상에 인챈트 아이템 |
+| `GameDesign/Excel/Gacha.xlsx` | 상자 개봉 풀(`GachaId` 6·7·8)에 인챈트 아이템 |
 | `Server/WSGameServer/Common/EnchantCatalog.cs` | **신규.** 3시트 보관소 + 줄 뽑기 + 등급 상승 확률 |
 | `Server/WSGameServer/User/Equip/Equip.cs` | 인챈트 상태 보유 + 효과 합산(`SpeedAddPermilleFor`·`ExpAddPermille`) |
 | `Server/WSGameServer/User/User.Enchant.cs` | **신규.** `TryEnchant` — 검증·소모·판정·저장·응답 |
@@ -54,21 +54,19 @@
 **Files:**
 - Modify: `GameDesign/Excel/Enum.xlsx`
 - Create: `GameDesign/Excel/EquipEnchant.xlsx`
-- Modify: `GameDesign/Excel/Item.xlsx` · `GameDesign/Excel/DropCommon.xlsx`
+- Modify: `GameDesign/Excel/Item.xlsx` · `GameDesign/Excel/Gacha.xlsx`
 - Generated: `Server/GameData/` · `Server/Shared/Data/` · `GameDesign/DataLog/` · Unity 미러
 
 **Interfaces:**
 - Consumes: 없음 (첫 작업)
 - Produces: `GameData.EnchantOptionType`(`Speed=1`·`CharacterExp=2`) · `GameData.EnchantAction`(`Grant=1`·`GradeUp=2`·`ExpandLine=3`) · Row 클래스 `EnchantOptionTableRow`(`OptionTID`·`Grade`·`OptionType`·`Industry`·`Value`·`Weight`) · `EnchantGradeTableRow`(`Grade`·`UpPermille`) · `EnchantItemTableRow`(`ItemTID`·`Action`·`SuccessPermille`) · `GameTable.EnchantOptionTable.All` 등
 
-- [ ] **Step 1: `excel-table-creator` 스킬을 열고 이름을 확인받는다**
+- [ ] **Step 1: `excel-table-creator` 스킬을 연다**
 
-스킬을 읽고(기억으로 대신하지 않는다), 아래를 **사용자에게 확인**한 뒤 진행한다. CLAUDE.md가 요구하는 절차다.
+스킬을 읽고 그 절차대로 한다 — 기억으로 대신하지 않는다.
 
-- 파일명 `EquipEnchant.xlsx`
-- 시트명 `EnchantOptionTable` · `EnchantGradeTable` · `EnchantItemTable`
-- 컬럼명 (아래 Step 3~5의 표)
-- 인챈트 아이템 4종의 이름과 `ItemTID` 대역
+**이름은 2026-09-23에 사용자 확인을 받았다**(파일 `EquipEnchant.xlsx` · 시트 3종 · 아이템 5종 이름과 TID `100013~100017`).
+**컬럼명이나 이름을 바꿔야 할 일이 생기면 다시 확인받는다.**
 
 열려 있는 엑셀이 있으면 그 파일만 저장하지 않고 닫는다(파일 잠금으로 파이프라인이 즉시 실패한다).
 
@@ -148,23 +146,49 @@
 
 | `ItemTID` | `Action` | `SuccessPermille` | `Description` |
 | --- | --- | --- | --- |
-| (부여·확률) | Grant | 500 | 50% 부여 |
-| (부여·확정) | Grant | 1000 | 확정 부여 |
-| (큐브) | GradeUp | 1000 | **읽지 않는다** — 등급 상승 확률은 `EnchantGradeTable` |
-| (확장·확률) | ExpandLine | 300 | 30% 확장 |
-| (확장·확정) | ExpandLine | 1000 | 확정 확장 |
+| 100013 | Grant | 500 | 인챈트 원석 — 50% 부여 |
+| 100014 | Grant | 1000 | 정제된 인챈트 원석 — 확정 부여 |
+| 100015 | GradeUp | 1000 | 인챈트 큐브 — **이 값은 읽지 않는다.** 상승 확률은 `EnchantGradeTable` |
+| 100016 | ExpandLine | 300 | 인챈트 확장석 — 30% 확장 |
+| 100017 | ExpandLine | 1000 | 정제된 인챈트 확장석 — 확정 확장 |
 
-`ItemTID`는 Step 6에서 `Item.xlsx`에 넣은 실제 값을 쓴다.
+`Ref`가 `ItemTable.ItemTID`를 검사하므로 **Step 6을 먼저 하지 않으면 파이프라인이 실패한다.**
 
 - [ ] **Step 6: `Item.xlsx`에 인챈트 아이템 5종 추가**
 
-`ItemType = Special`. TID 대역·`BasePrice`·이름은 Step 1에서 확인받은 값을 쓴다.
-기존 특수 아이템 3종 옆에 붙인다 — **번호를 재사용하지 않는다.**
+`ItemType = Special`. 기존 특수 아이템이 `100001~100012`를 쓰므로 **`100013`부터** 붙인다 —
+**번호를 재사용하지 않는다.** `OpenGachaId = 0`(상자가 아니다), `MaxStack = 9999`.
 
-- [ ] **Step 7: `DropCommon.xlsx`의 `CommonRewardTable`에 인챈트 아이템을 넣는다**
+| `ItemTID` | `Name` | `GlobalRarity` | `BasePrice` | `Description` |
+| --- | --- | --- | --- | --- |
+| 100013 | 인챈트 원석 | Uncommon | 200 | 인챈트 부여 50% |
+| 100014 | 정제된 인챈트 원석 | Rare | 600 | 인챈트 부여 확정 |
+| 100015 | 인챈트 큐브 | Rare | 500 | 등급 판정 + 줄 재롤 |
+| 100016 | 인챈트 확장석 | Uncommon | 300 | 3줄 확장 30% |
+| 100017 | 정제된 인챈트 확장석 | Epic | 1200 | 3줄 확장 확정 |
 
-상자 3종(나무·은·황금)에 배분한다. 황금 상자에서 확정형이 더 자주 나오게 둔다.
-시트의 기존 컬럼 구조를 그대로 따른다(새 컬럼을 만들지 않는다).
+`Name`은 사용자 확인을 받은 값이다(2026-09-23).
+
+- [ ] **Step 7: `Gacha.xlsx`의 `GachaItemTable`에 인챈트 아이템을 넣는다**
+
+상자를 **열었을 때** 나오는 풀이다 — `GachaId` 6(나무) · 7(은) · 8(황금).
+**`CommonRewardTable`은 건드리지 않는다**: 그건 채취 판정마다 *상자가* 떨어질 확률이다.
+
+기존 행 형태(`GachaItemTID`·`GachaId`·`ItemTID`·`Count`·`Weight`·`Description`)를 그대로 따른다.
+`GachaItemTID`는 풀별 대역을 지킨다(`6001~`·`7001~`·`8001~`). 테스트값:
+
+| `GachaItemTID` | `GachaId` | `ItemTID` | `Count` | `Weight` | `Description` |
+| --- | --- | --- | --- | --- | --- |
+| (6 풀 다음 번호) | 6 | 100013 | 1 | 40 | 인챈트 원석 |
+| (6 풀 다음 번호) | 6 | 100016 | 1 | 30 | 인챈트 확장석 |
+| (7 풀 다음 번호) | 7 | 100013 | 1 | 60 | 인챈트 원석 |
+| (7 풀 다음 번호) | 7 | 100015 | 1 | 40 | 인챈트 큐브 |
+| (7 풀 다음 번호) | 7 | 100016 | 1 | 40 | 인챈트 확장석 |
+| (8 풀 다음 번호) | 8 | 100015 | 1 | 80 | 인챈트 큐브 |
+| (8 풀 다음 번호) | 8 | 100014 | 1 | 20 | 정제된 인챈트 원석 |
+| (8 풀 다음 번호) | 8 | 100017 | 1 | 15 | 정제된 인챈트 확장석 |
+
+**상자 등급이 오를수록 확정형이 나온다** — 나무 상자에는 확정형을 넣지 않는다.
 
 - [ ] **Step 8: 파이프라인 실행**
 
@@ -189,7 +213,7 @@ git commit -m "feat: 인챈트 데이터 테이블 추가
 
 - EquipEnchant.xlsx 3시트(옵션 풀·등급 확률·아이템 동작)
 - Enum.xlsx에 EnchantOptionType·EnchantAction 추가
-- 인챈트 아이템 5종을 Item.xlsx·CommonRewardTable에 등록"
+- 인챈트 아이템 5종을 Item.xlsx·상자 개봉 풀(GachaItemTable)에 등록"
 ```
 
 ---
