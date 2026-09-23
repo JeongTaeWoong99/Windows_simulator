@@ -115,6 +115,7 @@ public sealed class AuctionStore : IDisposable
     {
         public long purchase_id { get; init; }
         public long listing_id  { get; init; }
+        public long buyer_id    { get; init; }
         public long total_price { get; init; }
         public long status      { get; init; }
     }
@@ -164,10 +165,16 @@ public sealed class AuctionStore : IDisposable
         using var tx = _conn.BeginTransaction();
 
         var previous = _conn.QueryFirstOrDefault<PurchaseRow>(
-            "SELECT purchase_id, listing_id, total_price, status FROM t_purchase WHERE purchase_id = @purchaseId;",
+            "SELECT purchase_id, listing_id, buyer_id, total_price, status FROM t_purchase WHERE purchase_id = @purchaseId;",
             new { purchaseId }, tx);
         if (previous is not null)
         {
+            // 같은 ID로 다른 매물·구매자가 왔다 — 재시도가 아니라 ID 충돌이다. Ok를 주면 메인이 예약 없는 매물을 정산한다.
+            if (previous.listing_id != listingId || previous.buyer_id != buyerId)
+            {
+                return new ReserveOutcome(ReserveResult.InProgress);
+            }
+
             var seller = FindListing(previous.listing_id, tx)?.seller_id ?? 0;
             return new ReserveOutcome(ReserveResult.Ok, seller, previous.total_price);
         }
@@ -245,7 +252,7 @@ public sealed class AuctionStore : IDisposable
         using var tx = _conn.BeginTransaction();
 
         var purchase = _conn.QueryFirstOrDefault<PurchaseRow>(
-            "SELECT purchase_id, listing_id, total_price, status FROM t_purchase WHERE purchase_id = @purchaseId;",
+            "SELECT purchase_id, listing_id, buyer_id, total_price, status FROM t_purchase WHERE purchase_id = @purchaseId;",
             new { purchaseId }, tx);
         if (purchase is null || purchase.status != 0)
         {

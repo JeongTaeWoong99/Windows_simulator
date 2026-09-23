@@ -185,6 +185,18 @@ public class AuctionEngineTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task 같은_구매_ID로_다른_매물을_예약하면_거절한다()
+    {
+        await Engine.RegisterAsync(_f.Item(1));
+        await Engine.RegisterAsync(_f.Item(2));
+        await Engine.ReserveAsync(9, 1, 200, 100);
+
+        // 재시도가 아니라 ID 충돌이다 — Ok를 주면 메인이 예약도 없는 2번을 정산한다.
+        (await Engine.ReserveAsync(9, 2, 200, 100)).Result.ShouldBe(ReserveResult.InProgress);
+        _f.SearchIds().ShouldBe(new long[] { 2 });
+    }
+
+    [Fact]
     public async Task 동시에_여러_명이_사도_한_명만_예약한다()
     {
         await Engine.RegisterAsync(_f.Item(1));

@@ -485,6 +485,47 @@ public class UserAuctionTest
         Last<S_AuctionMyListingsResponse>(b).Listings!.Single().State.ShouldBe(EAuctionListingState.Reserved);
     }
 
+    // ── 우편 도착 경합 ──
+
+    [Fact]
+    public void 이미_받은_우편이_다시_도착해도_받은_표시가_유지된다()
+    {
+        // 적재가 이미 읽은 반환 우편을 늦게 온 도착 알림이 "안 받음"으로 덮으면 두 번 받는다.
+        var (user, _) = NewUser();
+        var mail = new UserMailRow { mail_id = 50, template_tid = AuctionMail.ExpiredTemplateTid, gold = 3, received_at = MailDb.ToDb(Now) };
+        user.OnMailboxLoaded(new[] { mail });
+        user.TryClaimMail(50, Now);
+
+        user.OnAuctionClosed(mail);
+
+        user.TryGetMail(50, out var arrived).ShouldBeTrue();
+        arrived.IsClaimed.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void 이미_있는_우편이면_판매중_건수를_다시_빼지_않는다()
+    {
+        var (user, _) = NewUser();
+        user.OnAuctionStateLoaded(3);
+        var mail = new UserMailRow { mail_id = 50, template_tid = AuctionMail.SoldTemplateTid, gold = 95, received_at = MailDb.ToDb(Now) };
+        user.OnMailboxLoaded(new[] { mail });
+
+        user.OnAuctionClosed(mail);
+
+        user.ActiveListingCount.ShouldBe(3);
+    }
+
+    [Fact]
+    public void 적재_전에_도착한_우편은_적재_뒤에도_남는다()
+    {
+        var (user, _) = NewUser();
+        user.OnAuctionClosed(new UserMailRow { mail_id = 51, template_tid = AuctionMail.SoldTemplateTid, gold = 95, received_at = MailDb.ToDb(Now) });
+
+        user.OnMailboxLoaded(Array.Empty<UserMailRow>());
+
+        user.TryGetMail(51, out _).ShouldBeTrue();
+    }
+
     // ── 우편 장비 ──
 
     [Fact]

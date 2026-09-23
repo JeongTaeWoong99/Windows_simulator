@@ -104,7 +104,7 @@ public static class AuctionDb
 
     /// <summary>
     /// 정산 한 트랜잭션: 거래 Listed→Settled · 장비 소유 이전 · 구매자 골드 · 구매자 우편(물건) · 판매자 우편(대금) · outbox(확정).
-    /// 거래가 이미 끝났거나 가격이 어긋나면 아무것도 바꾸지 않고 outbox(실패)만 남긴다.
+    /// 거래가 이미 끝났거나 가격이 어긋나면 구매자 잔액을 되돌려 쓰고 outbox(실패)만 남긴다.
     /// </summary>
     public static async Task<AuctionSettleResult> SettleAsync(
         DbConnection connection, long tradeId, long buyerId, long purchaseId, long totalPrice, long buyerGold, long buyerDia, DateTime now)
@@ -116,6 +116,9 @@ public static class AuctionDb
             var trade = await FindTradeAsync(tx, tradeId);
             if (trade is null || trade.state != Listed || trade.TotalPrice != totalPrice || trade.seller_id == buyerId)
             {
+                // 메모리는 대금을 이미 뺐다. 그 사이 다른 저장이 뺀 잔액을 썼을 수 있으니 돌려준 잔액을 같은 트랜잭션에 쓴다 —
+                // 로직 스레드의 반환 저장까지 기다리면 그 사이에 죽을 때 대금이 사라진다.
+                await WriteCurrencyAsync(tx, buyerId, checked(buyerGold + totalPrice), buyerDia);
                 await InsertOutboxAsync(tx, tradeId, AuctionOutboxKind.Confirm, JsonSerializer.Serialize(new AuctionConfirmMessage(purchaseId, false)), now);
                 result = new AuctionSettleResult(false, trade?.seller_id ?? 0, null, null);
                 return;
@@ -242,14 +245,15 @@ public static class AuctionDb
     /// <summary>
     /// 대사 대상 — 오래 Listed이고 등록 메시지를 이미 보낸 거래. 아직 안 보냈으면 경매장이 모르는 게 정상이라 뺀다.
     /// </summary>
-    public static Task<List<long>> FindStaleListedAsync(DbConnection connection, DateTime createdBefore, int max)
+    /// <param name="afterTradeId">이 ID 다음부터 본다(커서). 정상 판매 중인 매물이 앞을 막아 뒤쪽이 영영 안 보이는 것을 막는다.</param>
+    public static Task<List<long>> FindStaleListedAsync(DbConnection connection, DateTime createdBefore, int max, long afterTradeId = 0)
     {
         return connection.QueryAsync<long>(
             @"SELECT t.trade_id FROM t_auction_trade t
-              WHERE t.state = 1 AND t.created_at <= @cutoff
+              WHERE t.state = 1 AND t.created_at <= @cutoff AND t.trade_id > @afterTradeId
                 AND NOT EXISTS (SELECT 1 FROM t_auction_outbox o WHERE o.trade_id = t.trade_id AND o.sent_at IS NULL)
               ORDER BY t.trade_id LIMIT @max;",
-            new { cutoff = MailDb.ToDb(createdBefore), max });
+            new { cutoff = MailDb.ToDb(createdBefore), max, afterTradeId });
     }
 
     private static Task InsertOutboxAsync(DbConnection tx, long tradeId, AuctionOutboxKind kind, string payload, DateTime now)

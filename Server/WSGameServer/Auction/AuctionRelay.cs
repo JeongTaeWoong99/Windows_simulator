@@ -32,6 +32,9 @@ public sealed class AuctionRelay
 
     private readonly SemaphoreSlim _kick = new(0, 1);
 
+    // 대사 커서. 한 바퀴에 BatchSize만 보고 다음 바퀴는 그 뒤부터 — 끝까지 가면 처음으로 돌아간다.
+    private long _reconcileAfter;
+
     public AuctionRelay(IAuctionClient client, IDbRunner db, ILogicExecutor logic, Func<long, User?> findOnlineUser)
     {
         _client         = client;
@@ -200,7 +203,8 @@ public sealed class AuctionRelay
     /// </summary>
     public async Task ReconcileAsync(DateTime now)
     {
-        var stale = await _db.RunAsync(conn => AuctionDb.FindStaleListedAsync(conn, now - StaleAfter, BatchSize));
+        var stale = await _db.RunAsync(conn => AuctionDb.FindStaleListedAsync(conn, now - StaleAfter, BatchSize, _reconcileAfter));
+        _reconcileAfter = stale.Count < BatchSize ? 0 : stale[^1];
         if (stale.Count == 0)
         {
             return;

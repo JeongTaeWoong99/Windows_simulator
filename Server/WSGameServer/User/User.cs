@@ -69,6 +69,9 @@ public sealed partial class User
     
     private bool _created;
 
+    // DB 작업이 실패해 세션을 끊는 중. 메모리가 DB와 갈라졌으므로 종료 정산이 그 메모리를 확정값으로 저장하면 안 된다.
+    private bool _dbFailed;
+
     // Destroy는 여러 곳에서 들어온다(소켓 해제·유휴 스윕·중복 로그인 정리).
     // 가드가 없으면 OnDestroy가 여러 번 큐에 실려 종료 정산이 중복된다.
     private int _destroyed;
@@ -250,7 +253,10 @@ public sealed partial class User
     {
         try
         {
-            SettleWorkStation(now, notify: false);
+            if (!_dbFailed)
+            {
+                SettleWorkStation(now, notify: false);
+            }
         }
         catch (Exception e)
         {
@@ -297,6 +303,7 @@ public sealed partial class User
     public void OnDbFailed(string repositoryName, Exception e)
     {
         ServerLog.Error("DB", $"{repositoryName} 실패 — 세션을 끊는다. Uid={Uid} Pid={Pid} sid={SessionId}", e);
+        _dbFailed = true;
 
         if (!IsLoggedIn)
         {

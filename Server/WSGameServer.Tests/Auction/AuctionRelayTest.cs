@@ -250,6 +250,30 @@ public class AuctionRelayTest : IDisposable
     }
 
     [Fact]
+    public async Task 대사는_앞쪽_정상_매물에_막히지_않고_다음_묶음으로_넘어간다()
+    {
+        for (var i = 0; i <= AuctionRelay.BatchSize; i++)
+        {
+            await Register();
+        }
+        await _relay.FlushOutboxAsync(Now);
+        await _relay.FlushOutboxAsync(Now);   // outbox도 한 번에 BatchSize씩 보낸다
+        _client.ListingStates = r =>
+        {
+            var reply = new Proto.ListingStatesReply();
+            reply.States.AddRange(r.ListingIds.Select(id => new Proto.ListingStateEntry { ListingId = id, State = Proto.ListingState.Listed }));
+            return Task.FromResult(reply);
+        };
+
+        await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
+        await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
+        await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
+
+        // 101건 = 100건 + 1건, 끝까지 가면 처음으로 돌아간다
+        _client.RequestsOf<Proto.ListingStatesRequest>().Select(r => r.ListingIds.Count).ShouldBe(new[] { 100, 1, 100 });
+    }
+
+    [Fact]
     public async Task 아직_어린_거래는_묻지_않는다()
     {
         await RegisterAndSend();

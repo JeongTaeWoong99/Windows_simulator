@@ -39,27 +39,34 @@ public partial class User
     /// <summary>로그인 때 우편함을 연다. 정리·전체 우편 복사·조회를 DB가 한 번에 하고 <see cref="OnMailboxLoaded"/>로 돌아온다.</summary>
     private void LoadMailbox(DateTime now) => PostDBTask(new LoadMailboxRepository(this, now));
 
+    // 비우지 않고 합친다 — 적재가 끝나기 전에 도착 알림(경매 정산·반환)이 먼저 올 수 있다. 비우면 그 우편이 메모리에서 사라진다.
     public void OnMailboxLoaded(IReadOnlyList<UserMailRow> rows)
     {
-        _mails.Clear();
         foreach (var row in rows)
         {
-            AddMail(row);
+            if (!_mails.ContainsKey(row.mail_id))
+            {
+                AddMail(row);
+            }
         }
 
         Send(new S_MailListResponse { Mails = _mails.Values.Select(m => m.ToInfo()).ToList() });
     }
 
-    /// <summary>접속 중에 새 우편이 들어왔다. 빈 목록이면 알리지 않는다(전체 우편을 이미 받은 유저).</summary>
-    public void OnMailsArrived(IReadOnlyList<UserMailRow> rows)
+    /// <summary>
+    /// 접속 중에 새 우편이 들어왔다. 이미 있는 우편은 건너뛴다 — 적재가 먼저 읽은 우편을 덮으면 받은 표시가 풀려 두 번 받는다.
+    /// </summary>
+    /// <returns>새로 들어온 우편 수. 0이면 알리지 않는다.</returns>
+    public int OnMailsArrived(IReadOnlyList<UserMailRow> rows)
     {
-        if (rows.Count == 0)
+        var arrived = rows.Where(r => !_mails.ContainsKey(r.mail_id)).Select(AddMail).ToList();
+        if (arrived.Count == 0)
         {
-            return;
+            return 0;
         }
 
-        var arrived = rows.Select(AddMail).ToList();
         Send(new S_MailArrivedResponse { Mails = arrived.Select(m => m.ToInfo()).ToList() });
+        return arrived.Count;
     }
 
     /// <summary>발송된 전체 우편을 이 유저에게 복사한다. 로그인 전이면 로그인 때 복사되므로 건너뛴다.</summary>

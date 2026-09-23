@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-09-16 (치트 문서 추가 · 루트 `CLAUDE.md`에서 서버 파트를 분리)
+> 최종 업데이트: 2026-09-24 (경매장 서버 추가 — 폴더·테스트·실행)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -29,7 +29,10 @@
 | `Server/GameData/` | (생성) 엑셀에서 생성된 테이블 정의(Row/Enum/GameTable/TableSet) — **직접 수정 금지** |
 | `Server/Shared/Data/` | (생성) MemoryPack 바이너리 `*.bytes` |
 | `Server/WSGameServer.Tests/` | 서버 유닛 테스트 — **xUnit + Shouldly + Moq** |
-| `Server/docs/` | 서버 전용 문서 — [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) |
+| `Server/AuctionServer/` | **경매장 서버**(ASP.NET Core · gRPC · 자체 SQLite `auction.sqlite3`). 메인과 다른 프로세스·머신에서 돈다 — GameData·MikaNetwork를 모른다. 설계는 [`경매장.md`](docs/경매장.md) |
+| `Server/AuctionProtocol/` | 메인 ↔ 경매장 gRPC 계약(`auction.proto`). **메인이 항상 호출자다** |
+| `Server/AuctionServer.Tests/` | 경매장 테스트 — 상태머신·검색 인덱스·gRPC(TestServer) |
+| `Server/docs/` | 서버 전용 문서 — [`경매장.md`](docs/경매장.md)(분리 서버·outbox·복구) · [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) |
 | `Assets/Scripts_Server/Protocol/` | (미러) `Server/MikaProtocol` 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | (미러) `Server/GameData` 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | (미러) `Server/Shared/Data`의 `*.bytes` |
@@ -60,8 +63,10 @@
 
 ```powershell
 dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
+dotnet test Server/AuctionServer.Tests/AuctionServer.Tests.csproj   # 경매장
 ```
 
+- 경매 끝-대-끝(`WSGameServer.Tests/Auction/AuctionEndToEndTest`)은 경매장 서버를 TestServer로 띄워 메인 SQL과 함께 돈다.
 - 테스트 이름은 한글로 **동작을 서술**한다 (예: `만료된_티켓은_소모되지_않는다`).
 - `SmokeTest.cs`는 프레임워크 연결 확인용이다. 실제 테스트는 새 파일로 나눈다.
 - 작성 규칙·red-green 절차는 [`server-tdd`](.claude/skills/server-tdd/SKILL.md) 스킬 참조.

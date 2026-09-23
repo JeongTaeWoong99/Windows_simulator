@@ -256,12 +256,11 @@ public partial class User
     /// <summary>내 매물이 팔렸거나 돌아왔다(판매자 쪽, 로직 스레드). 우편이 이미 DB에 있다 — 도착만 알린다.</summary>
     public void OnAuctionClosed(UserMailRow mail)
     {
-        if (_activeListings > 0)
+        // 적재가 이미 읽은 우편이면 판매 중 건수도 이미 DB에서 읽힌 값이다 — 두 번 빼지 않는다.
+        if (OnMailsArrived(new List<UserMailRow> { mail }) > 0 && _activeListings > 0)
         {
             _activeListings--;
         }
-
-        OnMailsArrived(new List<UserMailRow> { mail });
     }
 
     private static EResultCode ToResultCode(Proto.ReserveResult result)

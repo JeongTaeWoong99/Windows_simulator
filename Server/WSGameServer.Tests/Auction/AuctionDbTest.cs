@@ -199,7 +199,19 @@ public class AuctionDbTest : IDisposable
 
         Text($"SELECT payload FROM t_auction_outbox WHERE trade_id = {tradeId} AND kind = 2")
             .ShouldBe("{\"PurchaseId\":900,\"Success\":false}");
-        Scalar("SELECT COUNT(*) FROM t_user_currency WHERE user_id = 8").ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task 정산에_실패하면_뺀_대금을_돌려준_잔액을_같이_쓴다()
+    {
+        var tradeId = await RegisterWood(count: 10, unitPrice: 30);
+        await AuctionDb.ReturnAsync(Conn, tradeId, AuctionReturnReason.Expired, Now);
+
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, buyerGold: 700, 0, Now);
+
+        // 메모리는 1000 − 300 = 700을 들고 있다. 실패면 DB에는 700 + 300 = 1000이 남아야 한다.
+        Scalar("SELECT gold FROM t_user_currency WHERE user_id = 8").ShouldBe(1000);
+        Scalar("SELECT COUNT(*) FROM t_user_mail").ShouldBe(1);
     }
 
     [Fact]
