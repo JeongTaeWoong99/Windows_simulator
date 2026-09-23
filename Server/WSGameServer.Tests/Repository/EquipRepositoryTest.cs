@@ -1,3 +1,4 @@
+using Dapper;
 using GameData;
 
 namespace WSGameServer;
@@ -84,5 +85,22 @@ public class EquipRepositoryTest : IDisposable
 
         Count("SELECT COUNT(*) FROM t_character_equip").ShouldBe(1);
         Count("SELECT character_id FROM t_character_equip").ShouldBe(500);
+    }
+
+    [Fact]
+    public async Task 인챈트_컬럼은_기본값_0으로_읽힌다()
+    {
+        using var fx = new SqliteFixture();
+        fx.CreateEquipTables();
+        fx.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid) VALUES (7, 1, 1001)");
+
+        var rows = (await fx.Connection.QueryAsync<UserEquipRow>(
+            "SELECT equip_id, equip_tid, slot_position, enchant_grade, enchant_1, enchant_2, enchant_3 FROM t_user_equip")).ToList();
+
+        rows.Count.ShouldBe(1);
+        rows[0].enchant_grade.ShouldBe(0);
+        rows[0].enchant_1.ShouldBe(0);
+        rows[0].enchant_2.ShouldBe(0);
+        rows[0].enchant_3.ShouldBe(0);
     }
 }

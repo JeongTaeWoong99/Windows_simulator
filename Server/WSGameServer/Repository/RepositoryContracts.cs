@@ -68,6 +68,14 @@ public sealed record UserEquipRow
     public long equip_id      { get; init; }
     public int  equip_tid     { get; init; }
     public int  slot_position { get; init; }
+
+    /// <summary>인챈트 등급. 0이면 인챈트 없음, 그 외는 GlobalRarity 정수다.</summary>
+    public int enchant_grade { get; init; }
+
+    // 옵션 줄. 0은 빈 줄이며, enchant_3가 0이면 2줄짜리다 — 줄 수를 따로 저장하지 않는다.
+    public int enchant_1 { get; init; }
+    public int enchant_2 { get; init; }
+    public int enchant_3 { get; init; }
 }
 
 // t_character_equip 조회 전용 Row. slot은 GameData.EquipSlot 정수값.

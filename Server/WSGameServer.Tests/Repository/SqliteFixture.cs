@@ -91,6 +91,10 @@ internal sealed class SqliteFixture : IDisposable
                 user_id       INTEGER NOT NULL,
                 equip_tid     INTEGER NOT NULL,
                 slot_position INTEGER NOT NULL DEFAULT 0,
+                enchant_grade INTEGER NOT NULL DEFAULT 0,
+                enchant_1     INTEGER NOT NULL DEFAULT 0,
+                enchant_2     INTEGER NOT NULL DEFAULT 0,
+                enchant_3     INTEGER NOT NULL DEFAULT 0,
                 created_at    TEXT    NOT NULL DEFAULT (datetime('now'))
             ) STRICT;
             CREATE TABLE t_character_equip (
