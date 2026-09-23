@@ -20,7 +20,7 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
-    [SerializeField, Tooltip("슬롯 번호·산업·캐릭터·속도")]
+    [SerializeField, Tooltip("슬롯 번호·산업(+레벨)·캐릭터·속도")]
     private TMP_Text slotText = null!;
 
     [SerializeField, Tooltip("다음 수확까지 남은 시간")]
@@ -67,9 +67,15 @@ public class WorkStationSlotView : MonoBehaviour
             return;
         }
 
+        // 산업 레벨은 산업 바로 뒤에 붙인다 — '·'로 가르면 무엇의 레벨인지 모호해진다.
+        // 레벨 이름('저수지')은 세팅 화면의 레벨 버튼에만 쓴다. 최대 6자('신성한 대지')라
+        // 여기 적으면 한 줄이 길어지는데, 'Slot Text'는 오토사이징이라 그만큼 글자가 작아진다.
+        // 레벨 0은 적지 않는다 — 서버 기본값이 1이라 올 일이 없고, 'Lv0'은 없는 값이다.
+        string industryWithLevel = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
+
         // 천분율 → 배율 (1000 = 1.0배)
         float speedMultiplier = slot.CurrentWorkSpeed / 1000f;
-        slotText.text = $"슬롯 {slot.SlotIndex} · {industry} · {character} · {speedMultiplier:0.00}배";
+        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배";
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
