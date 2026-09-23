@@ -28,6 +28,7 @@ namespace MikaDummyClient
                 new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
                 new ClientAction("Equip (장착 — 캐릭터ID 장비ID 칸1~4)", SendEquip),
                 new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
+                new ClientAction("EquipEnchant (인챈트 — 장비ID 아이템TID 100013~100017)", SendEquipEnchant),
                 new ClientAction("UserTraitLearn (특성 찍기 — 산업 레벨 2xxx · 속도 3xxx)", SendUserTraitLearn),
                 new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
                 new ClientAction("MailClaim (우편 수령 — MailId, 0이면 모두 받기)", SendMailClaim),
@@ -198,6 +199,20 @@ namespace MikaDummyClient
             }
 
             NetworkManager.Instance.Send(new C_UnequipRequest { CharacterId = characterId, Slot = (EEquipSlot)slot });
+        }
+
+        // 무엇을 하는지는 아이템이 정한다(EnchantItemTable) — 동작을 따로 고르지 않는다.
+        private void SendEquipEnchant()
+        {
+            Console.Write("EquipId ItemTID > ");
+            var parts = (Console.ReadLine() ?? "").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2 || !long.TryParse(parts[0], out var equipId) || !int.TryParse(parts[1], out var itemTid))
+            {
+                Console.WriteLine("[Client] 숫자 두 개를 띄어 적습니다.");
+                return;
+            }
+
+            NetworkManager.Instance.Send(new C_EquipEnchantRequest { EquipId = equipId, ItemTid = itemTid });
         }
 
         private void SendCheat()

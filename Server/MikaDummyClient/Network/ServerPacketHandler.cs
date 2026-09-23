@@ -68,6 +68,10 @@ namespace MikaDummyClient
             }
         }
 
+        // 인챈트 없는 개체는 아무것도 붙이지 않는다.
+        private static string EnchantText(EquipInfo e) =>
+            e.EnchantGrade == 0 ? "" : $" 인챈트 {e.EnchantGrade}[{string.Join(",", e.EnchantOptions)}]";
+
         // 종류에 따라 읽는 TID 필드가 다르다 — 반대쪽 필드는 항상 0이다. 골드는 TID가 없다.
         private static int RewardTid(GachaRewardInfo reward) => reward.RewardType switch
         {
@@ -206,7 +210,7 @@ namespace MikaDummyClient
         public static void Handle_S_EquipListResponse(ISession session, S_EquipListResponse res)
         {
             Console.WriteLine($"[Client] Recv 보유 장비 {res.Equips.Count}개: " +
-                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}")));
+                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}{EnchantText(e)}")));
         }
 
         // 바뀐 개체만 온다 — 지급·장착·해제·자동 이동. EquipId로 덮어쓴다.
@@ -214,7 +218,15 @@ namespace MikaDummyClient
         public static void Handle_S_EquipSyncResponse(ISession session, S_EquipSyncResponse res)
         {
             Console.WriteLine($"[Client] Recv 장비 동기화: " +
-                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}")));
+                string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}{EnchantText(e)}")));
+        }
+
+        // 등급은 GlobalRarity 정수(0=없음). Options는 EnchantOptionTID — GradeUp은 실패해도 재롤돼 항상 갱신된 값이다.
+        [PacketHandler]
+        public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 인챈트 #{res.EquipId} → {res.Result} Success={res.Success} " +
+                              $"등급 {res.BeforeGrade}→{res.AfterGrade} 옵션=[{string.Join(",", res.Options)}]");
         }
 
         [PacketHandler]
