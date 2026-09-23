@@ -34,7 +34,30 @@ public partial class User
                 continue;
             }
 
-            _equips[r.equip_id] = new Equip(r.equip_id, row, r.slot_position);
+            var equip = new Equip(r.equip_id, row, r.slot_position);
+
+            if (r.enchant_grade != 0)
+            {
+                // 테이블에 없는 EnchantOptionTID는 그 줄만 버린다 — 데이터 한 줄 때문에 로그인이 막히면 안 된다.
+                var options = new List<EnchantOptionTableRow>();
+                foreach (var tid in new[] { r.enchant_1, r.enchant_2, r.enchant_3 })
+                {
+                    if (tid == 0)
+                    {
+                        continue;
+                    }
+                    if (!_enchantCatalog.TryGetOption(tid, out var option))
+                    {
+                        ServerLog.Warn("로그인", $"EnchantOptionTable에 없는 EnchantOptionTID, 건너뜀: {tid} (개체 {r.equip_id})");
+                        continue;
+                    }
+                    options.Add(option);
+                }
+
+                equip.SetEnchant((GlobalRarity)r.enchant_grade, options);
+            }
+
+            _equips[r.equip_id] = equip;
         }
 
         foreach (var r in wornRows)

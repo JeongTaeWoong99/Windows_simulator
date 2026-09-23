@@ -47,6 +47,9 @@ public sealed partial class User
 
     private readonly MailCatalog _mailCatalog;
 
+    /// <summary>인챈트 옵션·등급·아이템 인덱스. 적재·롤에 쓴다. 규약은 위와 같다.</summary>
+    private readonly EnchantCatalog _enchantCatalog;
+
     public long SessionId { get; }
     public string Pid { get; }
 
@@ -134,7 +137,8 @@ public sealed partial class User
         AccountLevelCatalog?  accountLevels = null,
         UserTraitCatalog?     traits = null,
         CommonRewardCatalog?  commonRewards = null,
-        MailCatalog?          mails = null)
+        MailCatalog?          mails = null,
+        EnchantCatalog?       enchants = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -151,6 +155,7 @@ public sealed partial class User
         _traitCatalog = traits ?? UserTraitCatalog.Instance;
         _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
         _mailCatalog = mails ?? MailCatalog.Instance;
+        _enchantCatalog = enchants ?? EnchantCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
