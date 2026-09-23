@@ -1,7 +1,7 @@
 # 08. 캐릭터 (Character)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md) · 전제: [`작업슬롯`](../workslot/README.md)
-> 상태: **적성·장비·시작 캐릭터·획득 경로(가챠 — 캐릭터·장비)·경험치 획득·레벨 곡선·레벨 효과(적성 포인트) 확정**
+> 상태: **적성·장비·장비 인챈트·시작 캐릭터·획득 경로(가챠 — 캐릭터·장비)·경험치 획득·레벨 곡선·레벨 효과(적성 포인트) 확정**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`산업레벨`](../gathering/산업레벨.md) · [`아이템`](../item/README.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
 >   [`진행 및 성장`](../progression/README.md) · [`특성`](../trait/README.md) · [`해금`](../unlock/README.md)
 
@@ -22,7 +22,7 @@
 | 3 | **적성 0 = 배치 불가** | 그 산업을 다루지 못한다. 배치 요청을 서버가 거절한다 → 2.2 |
 | 4 | **적성 = 기본값 + 찍은 포인트** | 기본값은 TID별 고정(`CharacterTable`), 개체는 **찍은 보너스만** 든다. **클라이언트에 내려가는 값은 서버가 합산한다** → 5.4 · 7장 |
 | 5 | **슬롯당 1명** | 여러 명을 한 슬롯에 넣지 않는다 |
-| 6 | **장비 부위 = 무기1 · 장신구2 · 보석1** | 4칸. 효과는 속도식의 **가산** 항 — **대상 산업 지정(None=전 산업) + 가산 천분율.** 장비는 적성을 바꾸지 않는다. 서버 구현 완료(2026-09-17 · T-002) · **정의 69종 입력(2026-09-19)** → 1.3. **획득 경로 = 장비 뽑기**(무기·장신구·보석 풀 3개 → 5.1.1) |
+| 6 | **장비 부위 = 무기1 · 장신구2 · 보석1** | 4칸. 효과는 속도식의 **가산** 항 — **대상 산업 지정(None=전 산업) + 가산 천분율.** 장비는 적성을 바꾸지 않는다. 서버 구현 완료(2026-09-17 · T-002) · **정의 69종 입력(2026-09-19)** → 1.3. **획득 경로 = 장비 뽑기**(무기·장신구·보석 풀 3개 → 5.1.1). **장비 개체마다 인챈트**(등급 + 옵션 2~3줄 — 속도 가산·캐릭터 경험치)가 붙는다 → 1.4 |
 | 7 | **계정(섬주인)과 분리** | 섬주인은 캐릭터가 아니다. 배치되지 않는다 → 3장 |
 | 8 | **종족을 여러 개 둔다** | 사람·몬스터 등. **외형과 적성 분포의 차이로만** 표현한다 → 4장 |
 | 9 | **획득 경로 = 가챠** | 골드를 내고 캐릭터 풀을 뽑는다 → 5.1 |
@@ -107,6 +107,55 @@ DB에 남는 것은 플레이어가 **찍은 보너스**뿐이고, 실효 적성
 > ⚠️ **수치는 전부 테스트값이다.** 확정은 희귀도 분포(T-008)·회당 산출(T-009)·`BasePrice`(T-018)와 **함께** 잡는다 —
 > 장비 가산은 시간당 수익에 직접 곱해지므로 따로 정하면 그 셋이 어긋난다.
 > ⚠️ **구 번호 둘**(`1002` 낚싯대 · `2002` 어부의 목걸이)은 대역 규칙 밖에 있다. DB에 살아 있을 수 있어 지우지 않았다.
+
+### 1.4 장비 인챈트 (2026-09-23 확정 · T-085)
+
+**장비 개체 하나에 붙는 추가옵션이다.** 같은 `EquipTID`라도 개체마다 인챈트가 다르다 —
+장비 정의(1.3)는 그대로 두고, 개체가 **`(인챈트 등급, 옵션 줄 0~3개)`** 를 갖는다.
+
+| 항목 | 규칙 |
+| --- | --- |
+| **등급** | **Rare · Epic · Legendary 3단계** + 인챈트 없음. `GlobalRarity`를 재사용한다. 등급은 **옵션 풀의 질**만 정한다 |
+| **줄 수** | **기본 2줄 · 상한 3줄.** 등급과 **독립된 축**이다 |
+| **효과 축** | **속도 가산**(대상 산업 지정, `None` = 전 산업) · **캐릭터 경험치**(천분율) 둘. 획득 아이템의 양·질에는 관여하지 않는다 → [자원채취](../gathering/README.md) 2.1 |
+| **중복 줄** | **허용한다.** 두 줄이 같은 옵션이면 효과도 두 번 붙는다 |
+| **착용 중** | **인챈트할 수 없다**(`EnchantEquipped`). 캐릭터에서 벗겨야 한다 |
+
+**인챈트 아이템 — 동작 3종.** 무엇을 하는지는 아이템이 정한다(`EnchantItemTable.Action`). 성공하든 실패하든 **아이템은 소모된다.**
+
+| 동작 | 대상 | 성공 | 실패 | 성공 확률 |
+| --- | --- | --- | --- | --- |
+| **부여** (`Grant`) | 인챈트 없음 | **Rare + 2줄** | 변화 없음 | 아이템마다 (`SuccessPermille`) |
+| **큐브** (`GradeUp`) | 인챈트 있음 | **등급 1단계 ↑ + 줄 전부 재롤** | **등급 유지 + 줄 전부 재롤** | 현재 등급마다 (`EnchantGradeTable.UpPermille`) — Rare→Epic **5%** · Epic→Legendary **0.5%** |
+| **줄 확장** (`ExpandLine`) | 인챈트 있음 · 2줄 | **3줄**(새 줄만 뽑는다) | 변화 없음 | 아이템마다 (`SuccessPermille`) |
+
+- **부여는 항상 Rare에서 시작한다.** 등급은 큐브로만 오른다.
+- **큐브는 빈손이 없다** — 등급이 안 올라도 줄은 다시 뽑힌다. Legendary 장비에 쓰면 판정 없이 재롤만 한다.
+- **재롤은 줄 수를 바꾸지 않는다.** 3줄이면 3줄이 다시 뽑힌다.
+- 줄은 그 등급의 `EnchantOptionTable` 행들에서 `Weight` 비례로 뽑는다.
+
+| 아이템 | TID | 동작 | 성공 확률 |
+| --- | --- | --- | --- |
+| 인챈트 원석 | 100013 | 부여 | 50% |
+| 정제된 인챈트 원석 | 100014 | 부여 | 확정 |
+| 인챈트 큐브 | 100015 | 큐브 | 등급표를 따른다 |
+| 인챈트 확장석 | 100016 | 줄 확장 | 30% |
+| 정제된 인챈트 확장석 | 100017 | 줄 확장 | 확정 |
+
+**효과가 붙는 곳**
+
+| 옵션 | 어디에 | 합성 |
+| --- | --- | --- |
+| **속도** (`Speed`) | 착용한 캐릭터가 배치된 슬롯 — 옵션의 대상 산업이 **슬롯 산업과 같거나 `None`** 인 줄만 | 장비 기본 가산과 함께 속도식의 **가산** 항으로 더해진다 → [작업슬롯](../workslot/README.md) 3.4 |
+| **캐릭터 경험치** (`CharacterExp`) | 착용한 캐릭터가 판정마다 받는 경험치 | `ExpPerJudge × (1 + Σ줄)`. 계정 경험치는 캐릭터 경험치 전량이라 함께 오른다 → 5.2 · [특성](../trait/README.md) 3장 |
+
+- **얻는 곳 = 상자 3종 개봉**(`GachaItemTable` 풀 6·7·8) → [아이템](../item/README.md) 4.1. 판정마다 상자가 떨어질 확률(`CommonRewardTable`)은 그대로다.
+- **착용 중 거부가 속도 정산을 단순하게 만든다.** 창고에 있는 장비만 바뀌므로 인챈트가 가동 중인 슬롯의
+  속도·경험치를 바꿀 수 없다. 바뀐 값은 **다음에 장착할 때** 장착 경로가 반영한다.
+
+> ⚠️ **옵션 값·`Weight`와 아이템 성공 확률(50% · 30%)은 테스트값이다.** 등급 상승 확률(5% · 0.5%)만 확정이다.
+> 줄 고정(잠금)·인챈트 이전·거래소에서의 인챈트 장비 취급은 기획에 없다.
+> 설계 상세는 `docs/superpowers/specs/2026-09-23-equip-enchant-design.md`.
 
 ---
 
@@ -278,17 +327,17 @@ enum은 **뒤에만 추가한다**.
 | 항목 | 확정 내용 |
 | --- | --- |
 | 획득 시점 | **판정 1회 성립** — 누적 점수 ≥ `RequiredScore` ([산업 레벨](../gathering/산업레벨.md) 2.4) |
-| 획득량 | `IndustryLevelTable.ExpPerJudge` — **`(산업, 레벨)`별 값.** Lv1 1 → Lv5 81 (레벨당 ×3) |
+| 획득량 | `IndustryLevelTable.ExpPerJudge` — **`(산업, 레벨)`별 값.** Lv1 1 → Lv5 81 (레벨당 ×3). 착용 장비의 **인챈트 경험치 줄**이 있으면 `× (1 + Σ줄)`(내림) → 1.4 |
 | 레벨 곡선 | `CharacterLevelTable.RequiredExp` — **그 레벨에 도달하는 데 직전 레벨에서 필요한 경험치.** Lv2 10에서 레벨당 ×1.2 (내림) |
 | 만렙 | **100** = 테이블의 마지막 행. 만렙에서는 경험치를 더 쌓지 않는다 |
 | 레벨업 처리 | 필요치를 채우면 레벨 +1, **남은 경험치는 이월**한다. 한 정산에서 여러 레벨이 오를 수 있다 |
 | 저장 | `t_character.level` · `t_character.exp` — `exp`는 **현재 레벨에서 쌓은 양**(누적이 아니다) |
-| 등급·산업 차등 | **없다.** 어떤 캐릭터든 같은 판정이면 같은 경험치 |
+| 등급·산업 차등 | **없다.** 어떤 캐릭터든 같은 판정·같은 장비면 같은 경험치 |
 
 **`ExpPerJudge`가 `RequiredScore`와 같은 ×3 등비인 이유** — 점수 30,000당 경험치 1로 고정되어
 **시간당 경험치가 산업 레벨 선택과 무관해진다.** 상위 레벨은 판정이 1/3로 드물지만 한 번에 3배를 주므로
 "경험치 때문에 Lv1만 돌린다"는 경로가 생기지 않는다. 시간당 경험치를 정하는 것은
-**작업속도(적성·보정)뿐**이다 — 적성 1이 시간당 120, 적성 10이 480.
+**작업속도(적성·보정)와 인챈트 경험치 줄뿐**이다 — 적성 1이 시간당 120, 적성 10이 480(인챈트 없음 기준).
 
 | 레벨 | 필요 경험치 | 누적 |
 | --- | --- | --- |
@@ -301,7 +350,7 @@ enum은 **뒤에만 추가한다**.
 > 누적값은 int 범위를 넘지만 **저장·비교는 레벨별 `RequiredExp`(최대 5.75억)로만 하므로** int로 충분하다.
 > ⚠️ **수치는 전부 테스트용이다.** 성장 페이스([진행 및 성장](../progression/README.md) 2.2)가 잡히면 다시 잡는다.
 
-> ✅ **서버 구현 (2026-09-13).** `SettleWorkStation`이 판정 횟수 × `ExpPerJudge`를 배치 캐릭터에 더하고
+> ✅ **서버 구현 (2026-09-13).** `SettleWorkStation`이 판정 횟수 × `ExpPerJudge`(× 인챈트 경험치 가산 `User.GetEquipExpAdd`)를 배치 캐릭터에 더하고
 > (`Character.GainExp` · `CharacterLevelCatalog`), 확정값을 `t_character`에 저장한 뒤 `S_CharacterSyncResponse`로 그 개체를 밀어 준다.
 > ⏸ **클라이언트는 아직 이 푸시를 화면에 반영하지 않는다** — `PlayerDataModel` 배선은 클라 몫이다(T-003).
 
@@ -412,8 +461,9 @@ Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 �
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
 | `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) · **산업별 보너스 5열**(찍은 포인트 → 5.4) |
 | `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(창고 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
+| `EquipEnchant.xlsx` · `t_user_equip` 인챈트 4열 | `EnchantOptionTable`(등급별 옵션 풀 · `Weight`) · `EnchantGradeTable`(등급 상승 확률) · `EnchantItemTable`(아이템 → 동작 · 성공 확률) · 개체의 `enchant_grade` · `enchant_1~3`(`EnchantOptionTID`, 0 = 빈 줄) → 1.4 |
 | 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value, Cap}` 목록 · `CharacterInfo.AptitudePoints` → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 · **`C_AptitudeUpRequest` / `S_AptitudeUpResponse`** → 5.4 |
-| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비 가산 · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) |
+| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비 가산 · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) · **`User.Enchant.cs` · `Common/EnchantCatalog.cs`**(인챈트 — 패킷 `C_EquipEnchantRequest` · `S_EquipEnchantResponse`, 개체 갱신은 `S_EquipSyncResponse` · `EquipInfo.EnchantGrade`·`EnchantOptions`) |
 
 > 밸런스 수치는 코드 상수가 아니라 엑셀에 둔다. 수정 후 `GameDesign/generate-tables.ps1` 실행.
 
