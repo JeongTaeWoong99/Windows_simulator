@@ -21,8 +21,10 @@ tags: [data, design, server]
 - **`EnchantGradeTable`의 키는 `Grade`(eGlobalRarity)다.** 별도 TID를 두지 않았다 —
   등급이 곧 정체성이라 1:1 컬럼이 둘이 되면 어긋날 여지만 생긴다(`WorkSpeedTable`과 같은 판단).
   생성 결과는 `TableSet<GlobalRarity, EnchantGradeTableRow>`.
-- **`EnchantOptionTable`의 첫 컬럼은 `OptionTID`**다. 시트 접두(`EnchantOption`)와 다르지만
-  브리프에서 확정된 이름이라 그대로 뒀다. 바꾸려면 사용자 확인이 필요하다.
+- **`EnchantOptionTable`의 키는 `EnchantOptionTID`다.** 처음엔 브리프대로 `OptionTID`로 넣었다가
+  개명했다(`2202b39`) — 저장소의 모든 테이블이 **시트 접두 전체**를 쓰고(`GachaItemTID`·`MailTemplateTID` …)
+  하드 규칙 1도 그렇게 못박는다. `Option`은 `EnchantOption`의 접두가 아니다.
+  서버 코드가 Row 타입을 읽기 전에 고쳐야 값이 싸다.
 - `GachaItemTable` 행은 **풀 대역 안에 끼워 넣었다**(6007~/7007~/8007~). 맨 뒤에 붙이면
   엑셀에서 풀별 묶음이 끊긴다. DataLog JSON은 어느 쪽이든 삽입 diff라 리뷰 비용은 같다.
 - `EnchantItemTable.SuccessPermille`은 `GradeUp`(인챈트 큐브) 행에서 **읽히지 않는다.**
