@@ -175,6 +175,40 @@ public class AuctionGrpcServiceTest : IAsyncLifetime
         events.Single().Kind.ShouldBe(Proto.EventKind.Expired);
     }
 
+    private static Proto.ListingSnapshot Carp(long id, long unitPrice, int count, long seller)
+    {
+        return new Proto.ListingSnapshot
+        {
+            ListingId = id, SellerId = seller, Kind = 1, Tid = 10001, Category = 2, Rarity = 1, Count = count, UnitPrice = unitPrice,
+            ExpiresAtUnixMs = new DateTimeOffset(Start.AddHours(48)).ToUnixTimeMilliseconds(),
+        };
+    }
+
+    [Fact]
+    public async Task 수량_예약이_매물별_판매자와_수량을_싣는다()
+    {
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(1, 30, 10, seller: 100) });
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(2, 32, 10, seller: 101) });
+
+        var reply = await _client.ReserveQuantityAsync(new Proto.ReserveQuantityRequest { PurchaseId = 9, BuyerId = 200, Tid = 10001, Quantity = 12, MaxUnitPrice = 32 });
+
+        reply.Allocations.Select(a => (a.ListingId, a.SellerId, a.Quantity, a.UnitPrice)).ShouldBe(new[] { (1L, 100L, 10, 30L), (2L, 101L, 2, 32L) });
+        reply.TotalPrice.ShouldBe(364);
+    }
+
+    [Fact]
+    public async Task 거래소_목록과_가격대가_실린다()
+    {
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(1, 30, 10, seller: 100) });
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(2, 32, 4, seller: 101) });
+
+        var items  = await _client.GetMarketItemsAsync(new Proto.MarketItemsRequest());
+        var ladder = await _client.GetPriceLadderAsync(new Proto.PriceLadderRequest { Tid = 10001, Levels = 5 });
+
+        items.Items.Single().ShouldSatisfyAllConditions(m => m.LowestUnitPrice.ShouldBe(30), m => m.Available.ShouldBe(14));
+        ladder.Levels.Select(l => (l.UnitPrice, l.Quantity)).ShouldBe(new[] { (30L, 10L), (32L, 4L) });
+    }
+
     // 청소는 백그라운드 타이머라 가짜 시계를 넘긴 뒤 한 박자 늦게 돈다.
     private async Task<IReadOnlyList<Proto.AuctionEvent>> WaitForEvents()
     {

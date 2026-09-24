@@ -9,14 +9,20 @@ package auction;
 service Auction {
   // 등록. listing_id(= 메인 trade_id)가 멱등 키 — 같은 매물을 두 번 보내도 한 번만 들어간다.
   rpc Register (RegisterRequest) returns (RegisterReply);
-  // 구매 예약. Listed → Reserved 조건부 전이. purchase_id가 멱등 키.
+  // 경매장 즉시구매 — 매물 하나를 통째로 예약한다. purchase_id가 멱등 키.
   rpc Reserve (ReserveRequest) returns (ReserveReply);
+  // 거래소 수량 구매 — 한 종류를 단가 상한 안에서 최저가부터 원하는 수량만큼 예약한다(여러 매물에 걸친다). 다 못 채우면 아무것도 잡지 않는다.
+  rpc ReserveQuantity (ReserveQuantityRequest) returns (ReserveReply);
   // 메인 정산 결과. 성공이면 Sold, 실패면 Listed로 되돌린다.
   rpc Confirm (ConfirmRequest) returns (ConfirmReply);
   // 판매자 취소. 성공하면 잠금 해제 이벤트가 쌓인다.
   rpc Cancel (CancelRequest) returns (CancelReply);
   // 매물 검색. 상태를 바꾸지 않는다.
   rpc Search (SearchRequest) returns (SearchReply);
+  // 거래소 목록 — 종류별 최저가·판매 중 수량·최근가·전일 평균가.
+  rpc GetMarketItems (MarketItemsRequest) returns (MarketItemsReply);
+  // 거래소 가격대 — 한 종류의 단가별 판매 중 수량.
+  rpc GetPriceLadder (PriceLadderRequest) returns (PriceLadderReply);
   // 한 판매자의 진행 중 매물(Listed·Reserved).
   rpc GetSellerListings (SellerListingsRequest) returns (SellerListingsReply);
   // 메인이 가져갈 이벤트(취소·만료). 처리 후 AckEvents로 지운다.
@@ -70,12 +76,30 @@ enum ReserveResult {
   RESERVE_RESULT_CLOSED = 4;        // 취소·만료
   RESERVE_RESULT_PRICE_CHANGED = 5;
   RESERVE_RESULT_OWN_LISTING = 6;
+  RESERVE_RESULT_NOT_ENOUGH = 7;    // 거래소 — 단가 상한 안에서 수량을 다 채울 수 없다
+}
+
+// 예약 한 줄 — 이 매물에서 이 수량을 이 단가로 잡았다. 메인이 판매자별 대금을 나눈다.
+message Allocation {
+  int64 listing_id = 1;
+  int64 seller_id = 2;
+  int32 quantity = 3;
+  int64 unit_price = 4;
 }
 
 message ReserveReply {
   ReserveResult result = 1;
-  int64 seller_id = 2;
+  int64 seller_id = 2;      // 매물 하나를 통째로 산 경우의 판매자
   int64 total_price = 3;
+  repeated Allocation allocations = 4;
+}
+
+message ReserveQuantityRequest {
+  int64 purchase_id = 1;
+  int64 buyer_id = 2;
+  int32 tid = 3;
+  int32 quantity = 4;
+  int64 max_unit_price = 5;  // 클라가 본 단가 상한 — 이보다 비싼 매물은 잡지 않는다
 }
 
 message ConfirmRequest {
@@ -146,6 +170,40 @@ message ListingView {
 message SearchReply {
   repeated ListingView listings = 1;
   bool has_more = 2;
+}
+
+// 0·빈 목록은 조건 없음. 요청한 TID는 매물이 없어도 시세만으로 실린다.
+message MarketItemsRequest {
+  int32 category = 1;
+  repeated int32 tids = 2;
+}
+
+message MarketItem {
+  int32 tid = 1;
+  int32 category = 2;
+  int32 rarity = 3;
+  int64 lowest_unit_price = 4;    // 판매 중 최저 단가. 매물이 없으면 0
+  int64 available = 5;            // 판매 중 수량(예약분 제외)
+  int64 recent_unit_price = 6;    // 마지막 체결 단가. 체결이 없으면 0
+  int64 yesterday_avg_price = 7;  // 전일 수량 가중 평균 단가. 없으면 0
+}
+
+message MarketItemsReply {
+  repeated MarketItem items = 1;
+}
+
+message PriceLadderRequest {
+  int32 tid = 1;
+  int32 levels = 2;   // 최대 칸 수(1~50)
+}
+
+message PriceLevel {
+  int64 unit_price = 1;
+  int64 quantity = 2;
+}
+
+message PriceLadderReply {
+  repeated PriceLevel levels = 1;
 }
 
 message SellerListingsRequest {

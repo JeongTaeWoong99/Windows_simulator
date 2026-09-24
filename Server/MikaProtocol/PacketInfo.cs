@@ -112,6 +112,25 @@ namespace MikaProtocol
         public List<EquipInfo>? Equips          { get; set; }  // 개체 장비(경매 구매·반환) — 인챈트까지 그대로 온다. 창고 칸은 받을 때 정해진다
     }
 
+    /// <summary>거래소 목록 한 줄 — 자원 종류별 요약. 매물·체결이 없으면 해당 값은 0이다.</summary>
+    [MemoryPackable]
+    public partial class MarketItemInfo
+    {
+        public int  Tid               { get; set; }
+        public long LowestUnitPrice   { get; set; }
+        public long AvailableCount    { get; set; }  // 지금 살 수 있는 수량(누가 구매 중인 수량은 빠진다)
+        public long RecentUnitPrice   { get; set; }  // 마지막 체결 단가
+        public long YesterdayAvgPrice { get; set; }  // 전일(한국 시간 자정 기준) 수량 가중 평균 단가
+    }
+
+    /// <summary>거래소 가격대 한 칸 — 이 단가에 판매 중인 수량.</summary>
+    [MemoryPackable]
+    public partial class MarketPriceLevelInfo
+    {
+        public long UnitPrice { get; set; }
+        public long Count     { get; set; }
+    }
+
     /// <summary>경매 매물 한 줄. 판매자는 싣지 않는다.</summary>
     [MemoryPackable]
     public partial class AuctionListingInfo

@@ -15,6 +15,9 @@ public sealed class AuctionOptions
     // gRPC 기한(수 초)보다 훨씬 길어야 한다 — 짧으면 정상 정산 중인 매물이 풀려 다른 사람이 예약한다.
     public TimeSpan ReservationTimeout { get; set; } = TimeSpan.FromMinutes(2);
 
+    /// <summary>시세의 하루 경계 — UTC에 더할 시차. 기본은 한국 시간(+9시간) 자정이다.</summary>
+    public TimeSpan MarketDayOffset { get; set; } = TimeSpan.FromHours(9);
+
     /// <summary>만료·예약 타임아웃 청소 주기.</summary>
     public TimeSpan SweepInterval { get; set; } = TimeSpan.FromSeconds(10);
 

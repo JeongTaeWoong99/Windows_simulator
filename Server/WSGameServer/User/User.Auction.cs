@@ -203,6 +203,8 @@ public partial class User
 
         if (reply is null)
         {
+            // 기한 초과라도 경매장은 잡았을 수 있다 — 놓아 달라고 보낸다.
+            ReleasePurchase(purchaseId, now);
             Send(new S_AuctionBuyResponse { Result = EResultCode.AuctionUnavailable, ListingId = listingId });
             return;
         }
@@ -215,7 +217,8 @@ public partial class User
 
         if (IsDestroyed)
         {
-            ServerLog.Warn("경매", $"예약 뒤 유저가 나감 — 예약은 타임아웃으로 풀린다. Uid={Uid} 매물 {listingId}");
+            ServerLog.Warn("경매", $"예약 뒤 유저가 나감 — 예약을 놓는다. Uid={Uid} 매물 {listingId}");
+            ReleasePurchase(purchaseId, now);
             return;
         }
 
@@ -223,6 +226,7 @@ public partial class User
         if (reply.TotalPrice != expectedTotal || _gold < reply.TotalPrice)
         {
             ServerLog.Error("경매", $"예약 총액 불일치 — 정산하지 않는다. Uid={Uid} 매물 {listingId} 본 {expectedTotal} 예약 {reply.TotalPrice} 잔액 {_gold}");
+            ReleasePurchase(purchaseId, now);
             Send(new S_AuctionBuyResponse { Result = EResultCode.AuctionPriceChanged, ListingId = listingId });
             return;
         }
@@ -231,6 +235,23 @@ public partial class User
         Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
 
         PostDBTask(new SettleAuctionRepository(this, purchaseId, listingId, reply.TotalPrice, _gold, _dia, now));
+    }
+
+    // 버린 예약을 놓는다 — 안 보내면 그 수량이 타임아웃까지 잠겨 취소·만료·다른 구매가 막힌다.
+    private void ReleasePurchase(long purchaseId, DateTime now) => PostDBTask(new ReleasePurchaseRepository(this, purchaseId, now));
+
+    public void OnPurchaseReleased() => _auction.KickRelay();
+
+    /// <summary>
+    /// 정산이 예외로 끝났다(로직 스레드). 트랜잭션은 롤백됐으니 메모리에서 뺀 대금을 돌려주고 예약도 놓은 뒤 세션을 끊는다 —
+    /// 돌려주지 않으면 이후 재화 저장이 대금이 빠진 잔액을 확정값으로 쓴다.
+    /// </summary>
+    public void OnSettleFailed(long purchaseId, long totalPrice, string repositoryName, Exception e)
+    {
+        _gold = checked(_gold + totalPrice);
+        PostDBTask(new SaveCurrencyRepository(this, _gold, _dia));
+        ReleasePurchase(purchaseId, DateTime.UtcNow);
+        OnDbFailed(repositoryName, e);
     }
 
     /// <summary>정산 결과(로직 스레드). 실패면 뺀 골드를 돌려준다 — 저장은 그 반환이 확정 잔액으로 덮는다.</summary>
@@ -324,8 +345,13 @@ public partial class User
     /// <summary>검색 중계. 유저별 빈도 제한을 여기서 건다 — 싼 매물을 긁는 매크로를 막는다.</summary>
     public void TrySearchAuction(C_AuctionSearchRequest req, DateTime now)
     {
-        _searchBucket ??= new TokenBucket(AuctionRules.SearchBurst, AuctionRules.SearchRefill, now);
-        if (!_searchBucket.TryTake(now))
+        if (req.Tids is { Count: > MaxQueryTids } || req.OptionTids is { Count: > MaxQueryTids })
+        {
+            Send(new S_AuctionSearchResponse { Result = EResultCode.AuctionInvalidRequest });
+            return;
+        }
+
+        if (!TakeSearchToken(now))
         {
             Send(new S_AuctionSearchResponse { Result = EResultCode.AuctionTooManyRequests });
             return;

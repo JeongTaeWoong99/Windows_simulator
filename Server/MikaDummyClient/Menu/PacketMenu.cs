@@ -39,6 +39,9 @@ namespace MikaDummyClient
                 new ClientAction("AuctionBuy (경매 구매 — 매물ID · 본 총액)", SendAuctionBuy),
                 new ClientAction("AuctionCancel (경매 취소 — 매물ID)", SendAuctionCancel),
                 new ClientAction("AuctionMyListings (내 매물)", SendAuctionMyListings),
+                new ClientAction("MarketItems (거래소 목록 — TID 목록, 비우면 전체)", SendMarketItems),
+                new ClientAction("MarketPrice (거래소 가격대 — TID)", SendMarketPrice),
+                new ClientAction("MarketBuy (거래소 구매 — TID · 수량 · 단가 상한)", SendMarketBuy),
             };
         }
 
@@ -369,6 +372,24 @@ namespace MikaDummyClient
         private void SendAuctionMyListings()
         {
             NetworkManager.Instance.Send(new C_AuctionMyListingsRequest());
+        }
+        private void SendMarketItems()
+        {
+            Console.Write("TID 목록 (쉼표, 비우면 전체) > ");
+            var tids = (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
+            NetworkManager.Instance.Send(new C_MarketItemsRequest { Tids = tids });
+        }
+
+        private void SendMarketPrice()
+        {
+            NetworkManager.Instance.Send(new C_MarketPriceRequest { Tid = (int)ReadLong("TID > ") });
+        }
+
+        private void SendMarketBuy()
+        {
+            var tid   = (int)ReadLong("TID > ");
+            var count = (int)ReadLong("수량 > ");
+            NetworkManager.Instance.Send(new C_MarketBuyRequest { Tid = tid, Count = count, MaxUnitPrice = ReadLong("단가 상한 > ") });
         }
 }
 }

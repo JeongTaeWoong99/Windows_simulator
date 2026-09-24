@@ -198,8 +198,8 @@ public sealed class AuctionRelay
     }
 
     /// <summary>
-    /// 오래 Listed인 거래를 경매장에 묻는다. 경매장에 없으면(유실) 등록비까지 돌려주고, 끝났으면 사유대로 돌려준다.
-    /// 경매장이 Sold라는데 메인이 Listed면 있을 수 없는 상태라 손대지 않고 로그만 남긴다.
+    /// 오래 Listed인 거래를 경매장에 묻는다. 경매장에서 끝났거나 없는데 메인에 남은 수량이 있으면 그 수량을 돌려준다 —
+    /// 팔렸는지는 메인이 판정한다(정산을 커밋한 수량만 팔린 것이다). 아직 안 간 메시지가 걸린 거래는 묻지 않는다.
     /// </summary>
     public async Task ReconcileAsync(DateTime now)
     {
@@ -229,7 +229,9 @@ public sealed class AuctionRelay
                     await ReturnAsync(entry.ListingId, AuctionReturnReason.Expired, now);
                     break;
                 case Proto.ListingState.Sold:
-                    ServerLog.Error("경매", $"대사 — 경매장은 판매됐다는데 메인은 판매 중이다. 손대지 않는다. 거래 {entry.ListingId}");
+                    // 경매장이 남은 수량을 더 적게 셌다(늦게 온 확정이 겹친 경우 등). 메인이 정산하지 않은 수량은 팔리지 않은 것이다.
+                    ServerLog.Warn("경매", $"대사 — 경매장은 판매 완료인데 메인에 남은 수량이 있다. 남은 수량을 반환한다. 거래 {entry.ListingId}");
+                    await ReturnAsync(entry.ListingId, AuctionReturnReason.Lost, now);
                     break;
             }
         }

@@ -335,4 +335,44 @@ public static class ClientPacketHandler
 
         user.TryGetMyAuctionListings();
     }
+    [PacketHandler]
+    public static void Handle_C_MarketItemsRequest(ISession session, C_MarketItemsRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MarketItemsResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryGetMarketItems(req.Category, req.Tids, DateTime.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_MarketPriceRequest(ISession session, C_MarketPriceRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MarketPriceResponse { Result = EResultCode.NotLoggedIn, Tid = req.Tid });
+            return;
+        }
+
+        user.TryGetMarketPrice(req.Tid, DateTime.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_MarketBuyRequest(ISession session, C_MarketBuyRequest req)
+    {
+        ServerLog.Debug("경매", $"거래소 구매 요청 TID {req.Tid}×{req.Count} 상한 {req.MaxUnitPrice} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MarketBuyResponse { Result = EResultCode.NotLoggedIn, Tid = req.Tid, Count = req.Count });
+            return;
+        }
+
+        user.TryBuyMarket(req.Tid, req.Count, req.MaxUnitPrice, DateTime.UtcNow);
+    }
 }

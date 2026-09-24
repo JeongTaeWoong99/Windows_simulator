@@ -37,6 +37,8 @@ public class AuctionRelayTest : IDisposable
 
     private long Scalar(string sql) => Convert.ToInt64(_db.Query(sql) ?? 0L);
 
+    private string? Text(string sql) => _db.Query(sql) as string;
+
     private Task<long> Register(int count = 10, long unitPrice = 30, long fee = 3)
     {
         var item = new AuctionItemSnapshot { Kind = EAuctionKind.Item, Tid = 10001, Category = 2, Rarity = 1, Count = count };
@@ -227,15 +229,53 @@ public class AuctionRelayTest : IDisposable
     }
 
     [Fact]
-    public async Task 경매장이_판매됐다는데_메인이_판매중이면_손대지_않는다()
+    public async Task 경매장이_판매_완료인데_메인에_남은_수량은_돌려준다()
     {
+        // 팔렸는지는 메인이 판정한다 — 메인이 정산하지 않은 수량은 팔리지 않은 것이다.
         var tradeId = await RegisterAndSend();
         States((tradeId, Proto.ListingState.Sold));
 
         await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
 
-        Scalar($"SELECT state FROM t_auction_trade WHERE trade_id = {tradeId}").ShouldBe(AuctionDb.Listed);
-        Scalar("SELECT COUNT(*) FROM t_user_mail").ShouldBe(0);
+        Scalar($"SELECT state FROM t_auction_trade WHERE trade_id = {tradeId}").ShouldBe(AuctionDb.Returned);
+        Text($"SELECT items FROM t_user_mail WHERE user_id = {Seller}").ShouldBe("[[10001,10]]");
+    }
+
+    [Fact]
+    public async Task 다른_거래의_미전송_메시지는_대사를_막지_않는다()
+    {
+        var sent = await RegisterAndSend();
+        await Register();   // 아직 경매장에 안 간 다른 등록
+        States((sent, Proto.ListingState.Listed));
+
+        await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
+
+        _client.RequestsOf<Proto.ListingStatesRequest>().Single().ListingIds.ShouldBe(new[] { sent });
+    }
+
+    [Fact]
+    public async Task 확정이_아직_안_간_구매가_걸린_거래는_묻지_않는다()
+    {
+        // 거래소 확정은 첫 거래에만 outbox가 붙는다 — 뒤 거래는 purchase_id로 걸러야 한다.
+        var a = await RegisterAndSend();
+        var b = await RegisterAndSend();
+        await AuctionDb.SettleMarketAsync(Conn, 8, purchaseId: 900, 10001,
+            new[] { new MarketAllocation(a, 2, 30), new MarketAllocation(b, 2, 30) }, 500, 0, Now);
+
+        await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
+
+        _client.RequestsOf<Proto.ListingStatesRequest>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public async Task 예약_해제는_확정_실패로_나간다()
+    {
+        await AuctionDb.ReleasePurchaseAsync(Conn, 777, Now);
+
+        await _relay.FlushOutboxAsync(Now);
+
+        var confirm = _client.RequestsOf<Proto.ConfirmRequest>().Single();
+        (confirm.PurchaseId, confirm.Success).ShouldBe((777L, false));
     }
 
     [Fact]

@@ -20,12 +20,49 @@ public sealed class AuctionGrpcService(AuctionEngine engine) : Proto.Auction.Auc
     public override async Task<Proto.ReserveReply> Reserve(Proto.ReserveRequest request, ServerCallContext context)
     {
         var outcome = await engine.ReserveAsync(request.PurchaseId, request.ListingId, request.BuyerId, request.ExpectedTotal);
-        return new Proto.ReserveReply
+        return ToReply(outcome);
+    }
+
+    public override async Task<Proto.ReserveReply> ReserveQuantity(Proto.ReserveQuantityRequest request, ServerCallContext context)
+    {
+        var outcome = await engine.ReserveQuantityAsync(request.PurchaseId, request.BuyerId, request.Tid, request.Quantity, request.MaxUnitPrice);
+        return ToReply(outcome);
+    }
+
+    private static Proto.ReserveReply ToReply(ReserveOutcome outcome)
+    {
+        var reply = new Proto.ReserveReply
         {
             Result     = (Proto.ReserveResult)outcome.Result,
             SellerId   = outcome.SellerId,
             TotalPrice = outcome.TotalPrice,
         };
+        reply.Allocations.AddRange(outcome.Lines.Select(a => new Proto.Allocation
+        {
+            ListingId = a.ListingId, SellerId = a.SellerId, Quantity = a.Quantity, UnitPrice = a.UnitPrice,
+        }));
+        return reply;
+    }
+
+    public override async Task<Proto.MarketItemsReply> GetMarketItems(Proto.MarketItemsRequest request, ServerCallContext context)
+    {
+        var items = await engine.MarketItemsAsync(request.Category, request.Tids.ToArray());
+
+        var reply = new Proto.MarketItemsReply();
+        reply.Items.AddRange(items.Select(m => new Proto.MarketItem
+        {
+            Tid = m.Tid, Category = m.Category, Rarity = m.Rarity, LowestUnitPrice = m.LowestUnitPrice, Available = m.Available,
+            RecentUnitPrice = m.RecentUnitPrice, YesterdayAvgPrice = m.YesterdayAvgPrice,
+        }));
+        return reply;
+    }
+
+    public override Task<Proto.PriceLadderReply> GetPriceLadder(Proto.PriceLadderRequest request, ServerCallContext context)
+    {
+        var reply = new Proto.PriceLadderReply();
+        reply.Levels.AddRange(engine.PriceLadder(request.Tid, request.Levels)
+            .Select(l => new Proto.PriceLevel { UnitPrice = l.UnitPrice, Quantity = l.Quantity }));
+        return Task.FromResult(reply);
     }
 
     public override async Task<Proto.ConfirmReply> Confirm(Proto.ConfirmRequest request, ServerCallContext context)

@@ -338,5 +338,27 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv 내 매물: {res.Result} {res.Listings?.Count ?? 0}건");
             PrintListings(res.Listings);
         }
+        [PacketHandler]
+        public static void Handle_S_MarketItemsResponse(ISession session, S_MarketItemsResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 거래소 목록: {res.Result} {res.Items?.Count ?? 0}종");
+            foreach (var m in res.Items ?? new List<MarketItemInfo>())
+            {
+                Console.WriteLine($"  - TID {m.Tid} 최저가 {m.LowestUnitPrice} 판매 중 {m.AvailableCount} 최근가 {m.RecentUnitPrice} 전일 평균 {m.YesterdayAvgPrice}");
+            }
+        }
+
+        [PacketHandler]
+        public static void Handle_S_MarketPriceResponse(ISession session, S_MarketPriceResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 거래소 가격대: {res.Result} TID {res.Tid} " +
+                string.Join(" / ", (res.Levels ?? new List<MarketPriceLevelInfo>()).Select(l => $"{l.UnitPrice}×{l.Count}")));
+        }
+
+        [PacketHandler]
+        public static void Handle_S_MarketBuyResponse(ISession session, S_MarketBuyResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 거래소 구매: {res.Result} TID {res.Tid} ×{res.Count} 총액 {res.TotalPrice}");
+        }
 }
 }

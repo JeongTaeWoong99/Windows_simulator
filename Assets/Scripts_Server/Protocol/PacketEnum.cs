@@ -86,6 +86,7 @@ namespace MikaProtocol
         AuctionOwnListing      = 1010, // 자기 매물은 살 수 없다
         AuctionNotOwner        = 1011, // 남의 매물은 취소할 수 없다
         AuctionTooManyRequests = 1012, // 검색이 너무 잦다 — 잠시 뒤 다시
+        MarketNotEnough        = 1013, // 거래소 — 단가 상한 안에서 원하는 수량을 다 채울 수 없다(누가 먼저 샀거나 가격이 올랐다). 아무것도 사지 않았다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —

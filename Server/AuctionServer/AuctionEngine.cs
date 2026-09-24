@@ -126,16 +126,37 @@ public sealed class AuctionEngine : IAsyncDisposable
         return l.UnitPrice <= long.MaxValue / l.Count;
     }
 
+    // DB에서 방금 바뀐 매물들의 모습을 다시 읽어 인덱스에 반영한다 — 판매 가능 수량이 남았으면 그 수량으로, 아니면 뺀다.
+    private void Refresh(IEnumerable<long> listingIds)
+    {
+        var index = _index;
+        foreach (var id in listingIds.Distinct())
+        {
+            var entry = _store.IndexEntry(id);
+            index = entry is null ? index.Remove(id) : index.Add(entry);
+        }
+
+        Publish(index);
+    }
+
+    /// <summary>경매장 즉시구매 — 매물 하나를 통째로 잡는다.</summary>
     public Task<ReserveOutcome> ReserveAsync(long purchaseId, long listingId, long buyerId, long expectedTotal)
     {
         return Enqueue(() =>
         {
-            var outcome = _store.Reserve(purchaseId, listingId, buyerId, expectedTotal, Now, out var reserved);
-            if (reserved is not null)
-            {
-                Publish(_index.Remove(reserved.ListingId));
-            }
+            var outcome = _store.ReserveListing(purchaseId, listingId, buyerId, expectedTotal, Now);
+            Refresh(outcome.Lines.Select(a => a.ListingId));
+            return outcome;
+        });
+    }
 
+    /// <summary>거래소 수량 구매 — 한 종류를 최저가부터 원하는 수량만큼. 다 못 채우면 아무것도 잡지 않는다.</summary>
+    public Task<ReserveOutcome> ReserveQuantityAsync(long purchaseId, long buyerId, int tid, int quantity, long maxUnitPrice)
+    {
+        return Enqueue(() =>
+        {
+            var outcome = _store.ReserveQuantity(purchaseId, buyerId, tid, quantity, maxUnitPrice, Now);
+            Refresh(outcome.Lines.Select(a => a.ListingId));
             return outcome;
         });
     }
@@ -144,17 +165,7 @@ public sealed class AuctionEngine : IAsyncDisposable
     {
         return Enqueue(() =>
         {
-            var (relisted, removed) = _store.Confirm(purchaseId, success, Now);
-            if (relisted is not null)
-            {
-                Publish(_index.Add(relisted));
-            }
-
-            if (removed is { } id)
-            {
-                Publish(_index.Remove(id));
-            }
-
+            Refresh(_store.Confirm(purchaseId, success, Now));
             return true;
         });
     }
@@ -164,34 +175,23 @@ public sealed class AuctionEngine : IAsyncDisposable
         return Enqueue(() =>
         {
             var result = _store.Cancel(listingId, sellerId, Now);
-            if (result == CancelResult.Ok)
-            {
-                Publish(_index.Remove(listingId));
-            }
-
+            Refresh(new[] { listingId });
             return result;
         });
     }
 
-    /// <summary>만료 → Expired(+이벤트), 오래된 예약 → Listed. 주기 타이머가 부른다.</summary>
+    /// <summary>만료 → Expired(+이벤트), 오래된 예약 → 수량을 놓는다. 주기 타이머가 부른다.</summary>
     public Task SweepAsync()
     {
         return Enqueue(() =>
         {
-            var now   = Now;
-            var index = _index;
+            var now = Now;
 
-            foreach (var id in _store.ExpireDue(now))
-            {
-                index = index.Remove(id);
-            }
+            // 타임아웃을 먼저 푼다 — 예약이 걸린 매물은 만료되지 않으므로, 풀린 뒤라야 같은 청소에서 만료될 수 있다.
+            var released = _store.ReleaseStaleReservations(now - _options.ReservationTimeout);
+            var expired  = _store.ExpireDue(now);
 
-            foreach (var listing in _store.ReleaseStaleReservations(now - _options.ReservationTimeout))
-            {
-                index = index.Add(listing);
-            }
-
-            Publish(index);
+            Refresh(released.Concat(expired));
             return true;
         });
     }
@@ -215,6 +215,40 @@ public sealed class AuctionEngine : IAsyncDisposable
         => Enqueue<IReadOnlyList<ListingWithState>>(() => _store.GetSellerListings(sellerId));
 
     public SearchPage Search(SearchQuery query) => Index.Search(query, Now);
+
+    /// <summary>
+    /// 거래소 목록 — 인덱스의 종류별 최저가·수량에 DB의 시세를 붙인다. 요청한 TID는 매물이 없어도 시세만으로 싣는다.
+    /// 시세는 DB를 읽으므로 채널을 탄다.
+    /// </summary>
+    public Task<IReadOnlyList<MarketItem>> MarketItemsAsync(int category, IReadOnlyCollection<int> tids)
+    {
+        return Enqueue<IReadOnlyList<MarketItem>>(() =>
+        {
+            var now     = Now;
+            var summary = _index.Summaries(ListingKind.Item, category, tids, now).ToDictionary(m => m.Tid);
+            foreach (var tid in tids.Where(t => !summary.ContainsKey(t)))
+            {
+                summary[tid] = new MarketItem(tid, category, 0, 0, 0, 0, 0);
+            }
+
+            var stats = _store.MarketStats(ListingKind.Item, summary.Keys.ToList(), MarketDayStart(now));
+            return summary.Values
+                .Select(m => stats.TryGetValue(m.Tid, out var s) ? m with { RecentUnitPrice = s.RecentUnitPrice, YesterdayAvgPrice = s.YesterdayAvgPrice } : m)
+                .OrderBy(m => m.Tid)
+                .ToList();
+        });
+    }
+
+    /// <summary>한 종류의 가격대(단가별 판매 중 수량). 인덱스만 읽는다.</summary>
+    public IReadOnlyList<PriceLevel> PriceLadder(int tid, int levels)
+        => Index.PriceLadder(ListingKind.Item, tid, Math.Clamp(levels, 1, 50), Now);
+
+    // "오늘"의 시작(UTC) — 게임의 하루 경계(MarketDayOffset, 기본 KST)에 맞춘다. 전일 평균은 이 앞 24시간이다.
+    private DateTime MarketDayStart(DateTime nowUtc)
+    {
+        var local = nowUtc + _options.MarketDayOffset;
+        return local.Date - _options.MarketDayOffset;
+    }
 
     public async ValueTask DisposeAsync()
     {

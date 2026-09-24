@@ -156,7 +156,8 @@ internal sealed class SqliteFixture : IDisposable
                 purchase_id INTEGER NOT NULL DEFAULT 0,
                 sale_fee    INTEGER NOT NULL DEFAULT 0,
                 created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
-                closed_at   TEXT
+                closed_at   TEXT,
+                listed_count INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_auction_outbox (
                 outbox_id  INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -164,7 +165,8 @@ internal sealed class SqliteFixture : IDisposable
                 kind       INTEGER NOT NULL,
                 payload    TEXT    NOT NULL,
                 created_at TEXT    NOT NULL DEFAULT (datetime('now')),
-                sent_at    TEXT
+                sent_at    TEXT,
+                purchase_id INTEGER NOT NULL DEFAULT 0
             ) STRICT;");
     }
 

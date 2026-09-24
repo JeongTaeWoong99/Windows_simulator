@@ -85,6 +85,12 @@ namespace MikaProtocol
         S_AuctionCancelResponse = 54,
         C_AuctionMyListingsRequest = 55,
         S_AuctionMyListingsResponse = 56,
+        C_MarketItemsRequest = 57,
+        S_MarketItemsResponse = 58,
+        C_MarketPriceRequest = 59,
+        S_MarketPriceResponse = 60,
+        C_MarketBuyRequest = 61,
+        S_MarketBuyResponse = 62,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -625,5 +631,60 @@ namespace MikaProtocol
     {
         public EResultCode               Result   { get; set; }
         public List<AuctionListingInfo>? Listings { get; set; }
+    }
+
+    /// <summary>
+    /// 거래소 목록 — 자원을 종류별 한 줄로(최저가 · 판매 중 수량 · 최근가 · 전일 평균가).
+    /// <c>Category</c>는 ItemType(0이면 전체). 이름 검색은 클라가 TID 목록으로 바꿔 <c>Tids</c>에 싣는다 — 요청한 TID는 매물이 없어도 시세와 함께 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_MarketItemsRequest)]
+    public partial class C_MarketItemsRequest : IPacket
+    {
+        public int        Category { get; set; }
+        public List<int>? Tids     { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_MarketItemsResponse)]
+    public partial class S_MarketItemsResponse : IPacket
+    {
+        public EResultCode           Result { get; set; }
+        public List<MarketItemInfo>? Items  { get; set; }
+    }
+
+    /// <summary>거래소 가격대 — 한 종류의 단가별 판매 중 수량(싼 순, 최대 10칸).</summary>
+    [MemoryPackable, Packet(PacketId.C_MarketPriceRequest)]
+    public partial class C_MarketPriceRequest : IPacket
+    {
+        public int Tid { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_MarketPriceResponse)]
+    public partial class S_MarketPriceResponse : IPacket
+    {
+        public EResultCode                 Result { get; set; }
+        public int                         Tid    { get; set; }
+        public List<MarketPriceLevelInfo>? Levels { get; set; }
+    }
+
+    /// <summary>
+    /// 거래소 구매 — 한 종류를 <c>Count</c>개, 개당 <c>MaxUnitPrice</c> 이하로 최저가부터 산다(여러 판매자에 걸친다).
+    /// 다 못 채우면 아무것도 사지 않는다(MarketNotEnough). 실제 낸 금액은 <c>Count × MaxUnitPrice</c>보다 적을 수 있다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_MarketBuyRequest)]
+    public partial class C_MarketBuyRequest : IPacket
+    {
+        public int  Tid          { get; set; }
+        public int  Count        { get; set; }
+        public long MaxUnitPrice { get; set; }
+    }
+
+    /// <summary>거래소 구매 결과. 산 자원은 우편으로 온다(<see cref="S_MailArrivedResponse"/>), 골드는 <see cref="S_CurrencyResponse"/>.</summary>
+    [MemoryPackable, Packet(PacketId.S_MarketBuyResponse)]
+    public partial class S_MarketBuyResponse : IPacket
+    {
+        public EResultCode Result     { get; set; }
+        public int         Tid        { get; set; }
+        public int         Count      { get; set; }
+        public long        TotalPrice { get; set; }  // 실제로 낸 금액
     }
 }

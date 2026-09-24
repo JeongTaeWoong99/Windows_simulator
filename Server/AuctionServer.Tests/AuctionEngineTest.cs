@@ -93,7 +93,7 @@ public class AuctionEngineTest : IAsyncLifetime
         var outcome = await Engine.ReserveAsync(9, 1, buyerId: 200, expectedTotal: 210);
 
         // 30 × 7 = 210
-        outcome.ShouldBe(new ReserveOutcome(ReserveResult.Ok, SellerId: 100, TotalPrice: 210));
+        (outcome.Result, outcome.SellerId, outcome.TotalPrice).ShouldBe((ReserveResult.Ok, 100L, 210L));
     }
 
     [Fact]
@@ -181,7 +181,8 @@ public class AuctionEngineTest : IAsyncLifetime
         await Engine.ReserveAsync(9, 1, 200, 100);
 
         // 메인이 응답을 못 받고 재시도한 경우 — 자기 예약에 "구매 중"이라고 답하면 안 된다.
-        (await Engine.ReserveAsync(9, 1, 200, 100)).ShouldBe(new ReserveOutcome(ReserveResult.Ok, 100, 100));
+        var again = await Engine.ReserveAsync(9, 1, 200, 100);
+        (again.Result, again.SellerId, again.TotalPrice).ShouldBe((ReserveResult.Ok, 100L, 100L));
     }
 
     [Fact]

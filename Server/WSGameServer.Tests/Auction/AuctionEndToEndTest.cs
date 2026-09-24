@@ -363,4 +363,117 @@ public class AuctionEndToEndTest : IAsyncLifetime
 
         Sent<S_AuctionMyListingsResponse>(SellerUid).Single().Listings!.Single().ListingId.ShouldBe(listingId);
     }
+    // ── 거래소 (수량 구매) ──
+
+    private async Task<S_MarketBuyResponse> BuyMarket(User buyer, int count, long maxUnitPrice)
+    {
+        var before = Sent<S_MarketBuyResponse>(buyer.Uid).Count;
+        buyer.TryBuyMarket(Carp, count, maxUnitPrice, Now);
+        await _logic.Pump(() => Sent<S_MarketBuyResponse>(buyer.Uid).Count > before);
+        return Sent<S_MarketBuyResponse>(buyer.Uid).Last();
+    }
+
+    private async Task<MarketItemInfo> MarketItem(User user)
+    {
+        var before = Sent<S_MarketItemsResponse>(user.Uid).Count;
+        user.TryGetMarketItems(0, new List<int> { Carp }, Now);
+        await _logic.Pump(() => Sent<S_MarketItemsResponse>(user.Uid).Count > before);
+        return Sent<S_MarketItemsResponse>(user.Uid).Last().Items!.Single();
+    }
+
+    [Fact]
+    public async Task 거래소에서_여러_판매자의_매물을_최저가부터_원하는_수량만큼_산다()
+    {
+        var sellerA = Login(SellerUid);
+        var sellerB = Login(RivalUid);
+        var buyer   = Login(BuyerUid, carp: 0);
+        RegisterItem(sellerA, count: 10, unitPrice: 30);
+        RegisterItem(sellerB, count: 10, unitPrice: 32);
+        await _relay.FlushOutboxAsync(Now);
+
+        var before = await MarketItem(buyer);
+        (before.LowestUnitPrice, before.AvailableCount).ShouldBe((30L, 20L));
+
+        var bought = await BuyMarket(buyer, count: 15, maxUnitPrice: 32);
+        ClaimAll(buyer);
+
+        // 30 × 10 + 32 × 5 = 460
+        (bought.Result, bought.TotalPrice).ShouldBe((EResultCode.Ok, 460L));
+        (buyer.GetItemCount(Carp), buyer.Gold).ShouldBe((15, 540L));
+    }
+
+    [Fact]
+    public async Task 거래소_판매자는_각자_판_만큼_대금을_받고_남은_수량은_계속_팔린다()
+    {
+        var sellerA = Login(SellerUid);
+        var sellerB = Login(RivalUid);
+        var buyer   = Login(BuyerUid);
+        RegisterItem(sellerA, 10, 30);
+        RegisterItem(sellerB, 10, 32);
+        await _relay.FlushOutboxAsync(Now);
+
+        await BuyMarket(buyer, 15, 32);
+        await _relay.FlushOutboxAsync(Now);
+        ClaimAll(sellerA);
+        ClaimAll(sellerB);
+
+        // A: 1000 − 등록비 3 + (300 − 15) = 1282 · B: 1000 − 등록비 3 + (160 − 8) = 1149
+        (sellerA.Gold, sellerB.Gold).ShouldBe((1282L, 1149L));
+        var after = await MarketItem(buyer);
+        (after.LowestUnitPrice, after.AvailableCount, after.RecentUnitPrice).ShouldBe((32L, 5L, 32L));
+    }
+
+    [Fact]
+    public async Task 일부_팔린_매물을_취소하면_남은_수량만_돌아온다()
+    {
+        var seller = Login(SellerUid);
+        var buyer  = Login(BuyerUid);
+        var listingId = RegisterItem(seller, count: 10, unitPrice: 30);
+        await _relay.FlushOutboxAsync(Now);
+        await BuyMarket(buyer, 4, 30);
+        await _relay.FlushOutboxAsync(Now);
+
+        seller.TryCancelAuction(listingId);
+        await _logic.Pump(() => Sent<S_AuctionCancelResponse>(SellerUid).Count > 0);
+        await _relay.DrainEventsAsync(Now);
+        _logic.Drain();
+        ClaimAll(seller);
+
+        // 창고 20 − 10 + 6 = 16 · 골드 1000 − 3 + (120 − 6) = 1111 (취소라 등록비는 없다)
+        (seller.GetItemCount(Carp), seller.Gold).ShouldBe((16, 1111L));
+    }
+
+    [Fact]
+    public async Task 두_명이_같은_수량을_동시에_사면_있는_만큼만_팔린다()
+    {
+        var seller = Login(SellerUid);
+        var buyer  = Login(BuyerUid);
+        var rival  = Login(RivalUid);
+        RegisterItem(seller, 10, 30);
+        await _relay.FlushOutboxAsync(Now);
+
+        buyer.TryBuyMarket(Carp, 7, 30, Now);
+        rival.TryBuyMarket(Carp, 7, 30, Now);
+        await _logic.Pump(() => Sent<S_MarketBuyResponse>(BuyerUid).Count > 0 && Sent<S_MarketBuyResponse>(RivalUid).Count > 0);
+
+        var results = new[] { Sent<S_MarketBuyResponse>(BuyerUid).Single().Result, Sent<S_MarketBuyResponse>(RivalUid).Single().Result };
+        results.OrderBy(r => r).ShouldBe(new[] { EResultCode.Ok, EResultCode.MarketNotEnough });
+        (buyer.Gold + rival.Gold).ShouldBe(1790);   // 2000 − 7 × 30
+    }
+
+    [Fact]
+    public async Task 전일_평균가는_다음_날_목록에_나온다()
+    {
+        var seller = Login(SellerUid);
+        var buyer  = Login(BuyerUid);
+        RegisterItem(seller, 10, 30);
+        await _relay.FlushOutboxAsync(Now);
+        await BuyMarket(buyer, 4, 30);
+        await _relay.FlushOutboxAsync(Now);
+
+        _auctionTime.Advance(TimeSpan.FromDays(1));
+
+        (await MarketItem(buyer)).YesterdayAvgPrice.ShouldBe(30);
+    }
 }
+
