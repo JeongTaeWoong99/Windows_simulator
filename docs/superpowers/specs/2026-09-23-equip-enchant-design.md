@@ -155,16 +155,18 @@ T-002가 *"강화 기획이 생기면 `ALTER TABLE ADD COLUMN`"* 으로 비워 �
 ## 6. 패킷 (`MikaProtocol`)
 
 ```
-EquipInfo             + int EnchantGrade; int[] EnchantOptions      (줄 수만큼 0~3개)
+EquipInfo             + int EnchantGrade; List<int> EnchantOptions  (줄 수만큼 0~3개)
 
 C_EquipEnchantRequest   { long EquipId; int ItemTid }
 S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
-                          int BeforeGrade; int AfterGrade; int[] Options }
+                          int BeforeGrade; int AfterGrade; List<int> Options }
 ```
 
 - **요청 패킷은 하나다** — 무엇을 하는 아이템인지는 `EnchantItemTable`이 정하므로 클라가 동작을 고르지 않는다.
 - 개체 갱신은 기존 `S_EquipSyncResponse`, 아이템 차감은 기존 인벤토리 싱크를 그대로 탄다.
-- `Success`는 **아이템의 성공 판정 결과**다. `GradeUp` 실패도 줄은 재롤되므로 `Options`는 항상 갱신된 값이다.
+- **거절(`Result != Ok`)이면 `Result`·`EquipId`만 유효하다.** 나머지는 기본값(등급 0 · 빈 `Options`)이니 클라는 그리지 않는다.
+- `Result == Ok`면 `Success`는 **아이템의 성공 판정 결과**이고, `Options`는 **동작 후 장비의 줄**이다 —
+  `GradeUp`은 실패해도 줄을 재롤하므로 새 줄이고, `Grant`·`ExpandLine`이 실패하면 이전 줄 그대로다.
 - `EResultCode` 610번대 신설: `EnchantItemNotOwned=610` · `EnchantAlreadyRolled=611` · `EnchantNotRolled=612` · `EnchantLineMax=613` · `EnchantEquipped=614`.
 - **치트를 추가하지 않는다** — 인챈트 아이템은 평범한 아이템이라 기존 `ECheatCommand.GiveItem`(Arg1 = ItemTID · Arg2 = 개수)이 이미 지급한다.
 
@@ -179,7 +181,8 @@ S_EquipEnchantResponse  { EResultCode Result; long EquipId; bool Success;
 기동 시 `GameTable.LoadAll` 뒤 `LoadAll`. `EquipCatalog`과 같은 자리.
 기동 검증: TID 중복 · `Value ≤ 0` · 알 수 없는 `Action`이면 예외(서버가 뜨지 않는다).
 
-**메모리** — `Equip` 개체에 `EnchantGrade` · `IReadOnlyList<int> EnchantOptions` 추가.
+**메모리** — `Equip` 개체에 `EnchantGrade` · `IReadOnlyList<EnchantOptionTableRow> EnchantOptions` 추가.
+옵션을 행으로 들고 있어 `Equip`이 카탈로그를 몰라도 된다. 패킷·DB에 싣는 번호 목록은 `EnchantOptionTids`가 따로 낸다.
 착용 효과 합산을 `Equip`이 직접 제공한다: `SpeedAddPermilleFor(IndustryType)` · `ExpAddPermille`.
 
 **`TryEnchant(equipId, itemTid)`**
