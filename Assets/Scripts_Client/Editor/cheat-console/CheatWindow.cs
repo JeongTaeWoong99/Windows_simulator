@@ -19,6 +19,9 @@ namespace DesktopWindowControl.EditorTools
 		private const float  AccentWidth        = 4f;    // 칸 왼쪽 색 띠 두께(px)
 		private const float  ToolDividerWidth   = 2f;    // 도구 줄 구분선 두께(px)
 		private const float  ToolGapPadding     = 5f;    // 구분선 양옆 여백(px)
+		private const float  StatusWidth        = 42f;   // 해금 줄의 '[열림]'·'[잠김]' 고정 폭 — 이름 열을 맞춘다
+		private const float  IndustryHeadHeight = 18f;   // 해금 목록 안 산업 이름 줄 높이(px)
+		private const float  UnlockIndent       = 10f;   // 해금 묶음 안쪽 들여쓰기(px) — 산업 줄과 해금 줄이 같은 선에서 시작한다
 		private const int    MaxCharacterCount  = 10;    // 서버 'User.CheatMaxCharacterCount'와 같다
 		private const int    MaxSettleJudges    = 100;   // 서버 'User.CheatMaxSettleJudges'와 같다 — 넘기면 InvalidCheatArgs
 
@@ -53,6 +56,12 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private TidPicker _equipPicker     = new();
 		[SerializeField] private int       _settleJudges    = 1;
 		[SerializeField] private int       _unlockTid;
+
+		// 해금 묶음의 펼침 상태 — 51줄을 한 번에 펼쳐 두면 훑기 어렵다(2026-09-23 요청).
+		// 가장 짧은 작업슬롯만 펼쳐 두고 나머지는 접어 둔다. 접힌 머리에도 '열림/전체'는 보인다.
+		[SerializeField] private bool      _unlockSlotOpen = true;
+		[SerializeField] private bool      _unlockLevelOpen;
+		[SerializeField] private bool      _unlockSpeedOpen;
 
 		private Vector2 _scroll;
 		private Vector2 _logScroll;
@@ -242,12 +251,20 @@ namespace DesktopWindowControl.EditorTools
 			DrawColoredLabel($"{(isDone ? "●" : "○")} {label}", isDone ? DoneColor : PendingColor);
 		}
 
-		private static void DrawColoredLabel(string text, Color color)
+		// 색 입힌 한 줄. 'width'를 주면 고정 폭으로 그린다 — 여러 줄의 다음 칸을 세로로 맞출 때 쓴다.
+		private static void DrawColoredLabel(string text, Color color, float width = 0f)
 		{
 			var previous = GUI.contentColor;
 			GUI.contentColor = color;
 
-			GUILayout.Label(text, EditorStyles.miniLabel);
+			if (width > 0f)
+			{
+				GUILayout.Label(text, EditorStyles.miniLabel, GUILayout.Width(width));
+			}
+			else
+			{
+				GUILayout.Label(text, EditorStyles.miniLabel);
+			}
 
 			GUI.contentColor = previous;
 		}
@@ -498,37 +515,162 @@ namespace DesktopWindowControl.EditorTools
 			EndSection(UnlockAccent);
 		}
 
-		private static void DrawUnlockRows()
+		// 해금 목록은 성격이 셋으로 갈린다 — 51줄을 한 줄기로 늘어놓으면 원하는 줄을 찾기 어렵다.
+		private enum UnlockGroup
 		{
-			var model = CheatGuard.FindLoggedInModel();
+			WorkSlot,       // 특성 노드가 아닌 해금 — 지금은 작업슬롯뿐이다
+			IndustrySpeed,  // 특성 노드 · SpeedAdd
+			IndustryLevel,  // 특성 노드 · 효과 없음 — UnlockTID가 열리는 것 자체가 산업 레벨 해금이다
+		}
+
+		private void DrawUnlockRows()
+		{
+			_unlockSlotOpen  = DrawUnlockGroup("작업슬롯",  UnlockGroup.WorkSlot,      _unlockSlotOpen);
+			_unlockSpeedOpen = DrawUnlockGroup("산업 속도", UnlockGroup.IndustrySpeed, _unlockSpeedOpen);
+			_unlockLevelOpen = DrawUnlockGroup("산업 레벨", UnlockGroup.IndustryLevel, _unlockLevelOpen);
+		}
+
+		// 묶음 하나를 '접기 머리 + (펼쳤으면) 줄들'로 그리고, 바뀐 펼침 상태를 돌려준다.
+		//
+		// ※ 머리에 '열림/전체'를 적는 이유 — 접어 둔 묶음도 진행 상황은 보여야 한다.
+		//   접었더니 아무것도 모르게 되면 결국 다시 펴게 되고, 접는 의미가 없어진다.
+		private static bool DrawUnlockGroup(string title, UnlockGroup group, bool isOpen)
+		{
+			var model  = CheatGuard.FindLoggedInModel();
+			var rows   = new List<UnlockTableRow>();
+			var opened = 0;
 
 			foreach (var row in GameTable.UnlockTable.All)
 			{
-				// 로그인 전에는 열림 여부를 모른다 — '?'로 두고 버튼은 살린다(누르면 'CheatGuard'가 막는다).
-				var isUnlocked = model != null && model.IsUnlocked(row.UnlockTID);
-
-				using (new EditorGUILayout.HorizontalScope())
+				if (GroupOf(row.UnlockTID) != group)
 				{
-					if (model == null)
-					{
-						DrawColoredLabel("[ ? ]", GUI.contentColor);
-					}
-					else
-					{
-						DrawColoredLabel(isUnlocked ? "[열림]" : "[잠김]", isUnlocked ? DoneColor : PendingColor);
-					}
+					continue;
+				}
 
-					EditorGUILayout.LabelField($"{row.Name} ({row.UnlockTID})");
+				rows.Add(row);
 
-					using (new EditorGUI.DisabledScope(isUnlocked))
+				if (model != null && model.IsUnlocked(row.UnlockTID))
+				{
+					opened++;
+				}
+			}
+
+			// 빈 묶음은 머리도 그리지 않는다 — 누를 것이 없는 줄이 남으면 목록만 길어진다.
+			if (rows.Count == 0)
+			{
+				return isOpen;
+			}
+
+			// 로그인 전에는 열림 수를 모른다 — 전체 개수만 적는다.
+			var counts = model != null ? $"{opened}/{rows.Count}" : $"?/{rows.Count}";
+			var result = EditorGUILayout.Foldout(isOpen, $"{title}  ({counts})", true, EditorStyles.foldoutHeader);
+
+			if (!result)
+			{
+				return false;
+			}
+
+			// ※ 'EditorGUI.IndentLevelScope'를 쓰지 않는다 — indentLevel은 'GUILayout' 줄에 먹지 않아
+			//   산업 띠만 밀리고 해금 줄은 제자리에 남는다. 둘 다 'UnlockIndent'로 직접 민다.
+			var lastIndustry = EIndustryType.None;
+
+			foreach (var row in rows)
+			{
+				// 산업이 바뀌는 자리에 이름 줄을 하나 끼운다 — 5산업이 한 덩어리로 붙어 보이지 않게.
+				// **접지 않는다**(2026-09-23 요청): 가르기만 하고 줄은 늘 보인다.
+				var industry = IndustryOf(row.UnlockTID);
+
+				if (industry != EIndustryType.None && industry != lastIndustry)
+				{
+					DrawIndustryHead(IndustryLabel.Get(industry), lastIndustry != EIndustryType.None);
+					lastIndustry = industry;
+				}
+
+				DrawUnlockRow(row, model);
+			}
+
+			return true;
+		}
+
+		// 해금 한 줄 — 상태 · 이름(TID) · [열기].
+		private static void DrawUnlockRow(UnlockTableRow row, PlayerDataModel? model)
+		{
+			// 로그인 전에는 열림 여부를 모른다 — '?'로 두고 버튼은 살린다(누르면 'CheatGuard'가 막는다).
+			var isUnlocked = model != null && model.IsUnlocked(row.UnlockTID);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				GUILayout.Space(UnlockIndent);
+
+				if (model == null)
+				{
+					DrawColoredLabel("[ ? ]", GUI.contentColor, StatusWidth);
+				}
+				else
+				{
+					DrawColoredLabel(isUnlocked ? "[열림]" : "[잠김]", isUnlocked ? DoneColor : PendingColor, StatusWidth);
+				}
+
+				// 'EditorGUILayout.LabelField'는 앞머리 라벨 자리에 그려서 이름이 멀찍이 떨어진다 — 바로 붙여 쓴다.
+				GUILayout.Label($"{row.Name} ({row.UnlockTID})");
+
+				using (new EditorGUI.DisabledScope(isUnlocked))
+				{
+					if (GUILayout.Button("열기", GUILayout.Width(ButtonWidth)))
 					{
-						if (GUILayout.Button("열기", GUILayout.Width(ButtonWidth)))
-						{
-							Request(ECheatCommand.Unlock, row.UnlockTID);
-						}
+						Request(ECheatCommand.Unlock, row.UnlockTID);
 					}
 				}
 			}
+		}
+
+		// 이 해금 TID가 어느 묶음인가.
+		//
+		// ※ **TID 대역을 여기 베끼지 않는다** — 'GameDataLoader.UserTraits' 주석과 같은 이유로,
+		//   시트에 단이 늘어도 분류가 저절로 따라오게 테이블에서 파생시킨다.
+		//   특성 테이블에 없는 TID는 특성 노드가 아니다 → 작업슬롯 쪽으로 간다.
+		private static UnlockGroup GroupOf(int unlockTid)
+		{
+			if (!GameDataLoader.TryGetUserTrait(unlockTid, out var trait))
+			{
+				return UnlockGroup.WorkSlot;
+			}
+
+			return trait.EffectType == UserTraitEffect.SpeedAdd ? UnlockGroup.IndustrySpeed : UnlockGroup.IndustryLevel;
+		}
+
+		// 산업 이름 줄 — 칸 머리('BeginSection')와 같은 언어를 더 얇게 쓴다.
+		// 옅은 바탕 + 아래 실선 한 줄. 이름만 덩그러니 띄우면 어느 쪽에 붙는 줄인지 안 보인다.
+		//
+		//   'isFollowing' : 앞에 다른 산업이 있었으면 위에 숨을 한 번 준다(첫 줄은 머리에 바로 붙인다).
+		private static void DrawIndustryHead(string name, bool isFollowing)
+		{
+			if (isFollowing)
+			{
+				EditorGUILayout.Space(4f);
+			}
+
+			var head = EditorGUILayout.GetControlRect(false, IndustryHeadHeight);
+
+			head.x     += UnlockIndent;
+			head.width -= UnlockIndent;
+
+			EditorGUI.DrawRect(head, new Color(UnlockAccent.r, UnlockAccent.g, UnlockAccent.b, 0.10f));
+			EditorGUI.DrawRect(new Rect(head.x, head.yMax - 1f, head.width, 1f),
+			                   new Color(UnlockAccent.r, UnlockAccent.g, UnlockAccent.b, 0.45f));
+
+			EditorGUI.LabelField(new Rect(head.x + 4f, head.y, head.width - 4f, head.height), name, EditorStyles.miniBoldLabel);
+		}
+
+		// 이 해금 TID가 걸린 산업. 특성 노드가 아니면(작업슬롯 등) 'None'이라 가르는 줄이 붙지 않는다.
+		//
+		// ※ 'UserTraitTableRow.Industry'는 'GameData.IndustryType', 화면 이름은 'MikaProtocol.EIndustryType'을
+		//   받는다 — 두 enum은 값이 같아 바이트로 건넌다('TraitPresenter.CollectColumn'과 같은 방식).
+		private static EIndustryType IndustryOf(int unlockTid)
+		{
+			return GameDataLoader.TryGetUserTrait(unlockTid, out var trait)
+				? (EIndustryType)(byte)trait.Industry
+				: EIndustryType.None;
 		}
 
 		// 칸 머리 — 색 띠 + 옅게 물든 바탕 + 굵은 제목. 본문은 'EndSection'까지 상자 안에 그린다.

@@ -12,8 +12,13 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   한때 'LV.19 폭스파스크'로 이름 줄에 붙였더니 100px 칸에서 글자가 크게 줄었다(2026-09-16).
 //   레벨 배지·경험치 게이지는 적성 스트립처럼 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
 //
-// ★ 슬롯 변경도 함께 구독한다 — 배치·해제가 일어나면 칸의 '배' 마크가 바뀐다.
-//   캐릭터 목록만 구독하면 배치를 바꿔도 마크가 낡은 채로 남는다.
+// ■ 배치 중인 캐릭터는 여기 없다 (2026-09-25 · T-086)
+//   작업슬롯에 배치하면 **창고 목록에서 빠진다** — 팰월드식으로, 배치는 "슬롯으로 옮긴 것"이다.
+//   보유 전량은 「창고 + 작업슬롯」의 합집합이다: 배치된 것은 작업슬롯 화면에 그대로 보인다.
+//   ⚠️ 그래서 "적성 0이라 배치 목록에 안 보이는 캐릭터"의 답은 여전히 창고다 — 그건 배치가 안 된 것이라 여기 남는다.
+//
+// ★ 슬롯 변경도 함께 구독한다 — 배치·해제가 일어나면 목록에서 빠지거나 다시 들어온다.
+//   캐릭터 목록만 구독하면 배치를 바꿔도 칸이 낡은 채로 남는다.
 //
 // ■ 보조 문구를 쓰지 않는다 — 그 자리는 적성 스트립이 쓴다 (T-048)
 // 배치 여부는 '배' 마크가 말하고(T-046), 적성은 하단 5칸 스트립이 말한다.
@@ -21,7 +26,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // **100px 칸에서 글자가 5px까지 줄었다.** 문구를 짓는 쪽을 남겨 두면 다음에 보는 사람이
 // 어느 표시가 진짜인지 알 수 없으므로 함께 걷어냈다.
 //
-// ※ 적성은 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw') — '배' 마크와 같은 방식이다.
+// ※ 적성은 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
 //   배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"낚시를 눌렀더니 내 캐릭터가 없다"의 답이
 //   창고 칸밖에 없다** — 그래서 표시 자체는 빠질 수 없다.
 public class CharacterSlotSource : StorageSlotSource
@@ -42,6 +47,14 @@ public class CharacterSlotSource : StorageSlotSource
     {
         foreach (CharacterInfo character in _data.Characters)
         {
+            // 배치 중인 캐릭터는 창고에 없다 — 슬롯으로 옮겨 간 것으로 본다(클래스 주석).
+            // 판정은 'FindSlotIndexOf' 하나로 읽는다 — 작업슬롯 화면도 같은 것을 보므로,
+            // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
+            if (_data.FindSlotIndexOf(character.CharacterId) >= 0)
+            {
+                continue;
+            }
+
             into.Add(new SlotData(
                 character.CharacterId,
                 GameDataLoader.GetCharacterName(character.CharacterTid),

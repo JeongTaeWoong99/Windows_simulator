@@ -369,11 +369,14 @@ public class StorageGridPresenter : MonoBehaviour
                 // 담김 표시의 주인은 카트다 — 자원 탭이 아니면 담길 수 없으므로 항상 꺼진다.
                 view.SetSellMark(IsSellableTab && _cart.Contains((int)data.Key));
 
-                // 배치 표시의 주인은 슬롯 스냅샷이다. 판정은 'FindSlotIndexOf' 하나로 읽는다 —
-                // 작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
+                // '배' 마크 — **이제 켜질 일이 없다** (2026-09-25 · T-086).
+                // 배치·장착 중인 개체를 공급자가 목록에서 빼기 때문이다
+                // ('CharacterSlotSource.Fill' · 'EquipSlotSource.Fill').
                 //
-                // ★ 장비 탭에서는 같은 마크가 '장착 중'을 뜻한다 — 창고 칸을 차지한 채 캐릭터가
-                //   끼고 있는 상태라, 캐릭터가 작업슬롯에 나가 있는 것과 읽는 법이 같다.
+                // ★ 그래도 판정을 남겨 둔다 — 걸러내기가 깨졌을 때 **마크가 다시 뜨는 것이
+                //   화면에 드러나는 유일한 신호**다. 마크 자체를 걷어내는 건 서버가 배치분을
+                //   칸 수에서 빼고 난 뒤다(T-086의 서버 몫). 판정은 'FindSlotIndexOf' 하나로 읽는다 —
+                //   작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
                 view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0
                                    || IsEquipTab && _data.IsEquipped(data.Key));
 

@@ -31,6 +31,10 @@ public static class ResultMessages
         EResultCode.InvalidUserTraitTID => "존재하지 않는 특성입니다.",
         // 특성 노드를 일반 해금 경로로 열려 할 때만 온다 — 정상 화면에서는 나오지 않는다(치트창 경로 · 이슈 #31).
         EResultCode.TraitOnlyUnlock     => "특성 화면에서만 열 수 있습니다.",
+        EResultCode.EquipNotOwned       => "보유하지 않은 장비입니다.",
+        EResultCode.InvalidEquipSlot    => "올바르지 않은 장비 칸입니다.",
+        EResultCode.EquipKindMismatch   => "이 칸에 낄 수 없는 장비입니다.",
+        EResultCode.EquipSlotEmpty      => "이미 비어 있는 칸입니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

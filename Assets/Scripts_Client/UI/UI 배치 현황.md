@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-21 (계정 경험치가 가로 띠 → 닉 아이콘 원형 진행도 — T-068) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-24 (장비 장착 UI — T-074 · 산업 레벨 정보 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -74,23 +74,39 @@ Root Canvas
 │  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
 │  │  │  │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
 │  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
-│  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50
-│  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90
-│  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)
-│  │  │  │  ├─ Industry Level Panel               레벨 5개                       pref 32
-│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭"). 안 연 레벨은 회색·비활성
-│  │  │  │  ├─ Character Assign Scroll View Panel
-│  │  │  │  │  ├─ Content > CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
-│  │  │  │  │  │    Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]      pref 90
-│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (고를 것이 없을 때만)
-│  │  │  │  └─ Character Setting Panel            VLG ctrl on · exp off → 자식 모두 flexW 1
-│  │  │  │     ├─ Character Label                 "캐릭터"                         pref 30
-│  │  │  │     ├─ Assigned Character Card         CharacterStateRowView 프리팹 · [해제]  pref 90
-│  │  │  │     ├─ Equipment Label                 "장비"                           pref 30
-│  │  │  │     ├─ Equipment Panel                 무기 · 장신구 1·2 · 보석 (임시 — T-002)  pref 110
-│  │  │  │     ├─ Efficiency Label                "효율 계산"                      pref 30
-│  │  │  │     └─ Efficiency Scroll View Panel    위 스크롤 뷰와 같은 설정 · 스크롤바 Permanent  flexH 1
-│  │  │  │        └─ Content > EfficiencyRowView 프리팹 (줄 수만큼 런타임 생성)
+│  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50   ┐
+│  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90   │ 고정
+│  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)    │ (굴러가지
+│  │  │  │  ├─ Industry Level Panel               레벨 5개                       pref 32   │  않는다)
+│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭 ▲"). LE pref W 0 · flexW 1 ┘
+│  │  │  │  └─ Body Scroll Panel                  ★ 이 화면의 **유일한** 스크롤   flexH 1
+│  │  │  │     └─ Viewport > Content              VLG + ContentSizeFitter(Preferred) — CSF는 여기만
+│  │  │  │        ├─ Industry Level Info Panel    VLG · 내용만큼 늘어난다 (레벨 탭이 펼침 토글 · 기본 펼침)
+│  │  │  │        │  ├─ EfficiencyRowView 프리팹   ■ 작업지 정보 (기준 주기 · 판정당 경험치)
+│  │  │  │        │  └─ IndustryDropRowView 프리팹 ■ 나오는 자원 — 이름 / 확률 80 / 판매가 130, 바탕 = 등급색
+│  │  │  │        ├─ 1 Character Assign Panel     VLG (평소 꺼짐 — 2단계)
+│  │  │  │        │  ├─ Empty Text (TMP)          고를 캐릭터가 없을 때만          pref 28
+│  │  │  │        │  └─ CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │  │        │       Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]      pref 90
+│  │  │  │        └─ 2 Character Setting Panel    VLG (3단계)
+│  │  │  │           ├─ Character Label           "캐릭터"                         pref 30
+│  │  │  │           ├─ Assigned Character Card   CharacterStateRowView 프리팹 · [해제]  pref 90
+│  │  │  │           ├─ Equipment Label           "장비"                           pref 30
+│  │  │  │           ├─ Equipment Panel           칸 4개가 버튼이다 (T-074)        pref 114
+│  │  │  │           │  └─ Weapon / Accessory 1 / Accessory 2 / Gem Slot   LE pref W 0 · flexW 1 (1:1:1:1)
+│  │  │  │           │       바탕 Image = 등급색 · 고르는 중이면 버튼 색 전이로 어두워진다
+│  │  │  │           │       ├─ Part Text (TMP)     "무기"·"장신구1"…           pref 26
+│  │  │  │           │       ├─ Icon Row > Icon (임시)  정사각형 빈 네모 (SquareLayoutElement)  pref 34
+│  │  │  │           │       ├─ Name Text (TMP)     낀 장비 이름 · 비면 빈 문자열  pref 20
+│  │  │  │           │       └─ Effect Text (TMP)   "채굴 +10%" · 비면 빈 문자열   pref 18
+│  │  │  │           ├─ Efficiency Label          "효율 계산"                      pref 30   ┐ 장비를
+│  │  │  │           ├─ Progress Panel > Progress Slider  목록 칸의 슬라이더를 떼어 왔다 (표시 전용) pref 22 │ 고르는
+│  │  │  │           ├─ Efficiency Rows Panel     VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
+│  │  │  │           └─ Equip Picker Panel        VLG (평소 꺼짐 — 열리면 레벨 정보·캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
+│  │  │  │              ├─ Header Panel           제목 · [해제] · [닫기]           pref 30
+│  │  │  │              ├─ Filter Panel           농사·낚시·채굴·벌목·사냥 (균등 5칸)      pref 26
+│  │  │  │              ├─ Equip Rows Panel       VLG · EquipPickRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │  │              └─ Empty Text (TMP)       끼울 장비가 없을 때만            pref 28
 │  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
@@ -203,15 +219,23 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
        ├── 빈 칸 ──────────────→ 2
        └── 이미 배치된 칸 ──────→ 3
 
-   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) · Industry Level(1~5) 은 2·3 모두 ─┐
+   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) · Industry Level(1~5) 고정 + 레벨 정보 는 2·3 모두 ─┐
    │                                                                                             │
 2  │  Character Assign Scroll View Panel    캐릭터 줄 목록                                       │
    │      │ 줄의 [배치] → 배치 요청 → 응답 성공 ──→ 3                                            │
    │      │                                                                                      │
-3  │  Character Setting Panel               배치된 캐릭터 카드 · 장비 · 효율 계산               │
+3  │  Character Setting Panel               배치된 캐릭터 카드 · 장비 4칸 · 효율 계산          │
+   │      │ 장비 칸을 누르면 위아래가 접히고 장비 칸 + 목록만 남는다 (3 안의 곁가지)      │
    │      │ 카드의 [해제] → 해제 요청 → 응답 성공 ──────→ 2                                             │
    └──────┴─ [뒤로가기] 또는 응답 실패 ───────────→ 1 ───────────────────────────────────────────┘
 ```
+
+**레벨 탭은 그 레벨의 정보도 함께 펼친다**(`Industry Level Info Panel` · T-078). 기본이 펼침이고,
+고른 탭을 한 번 더 누르면 접힌다(라벨의 `▲`/`▼`가 지금 상태다).
+
+⭐ **머리(제목 · 산업 · 산업 레벨)만 고정이고 2·3은 통째로 한 스크롤 안에 있다**(`Body Scroll Panel`).
+스크롤이 이 화면에 **하나뿐이라** 휠이 어디로 갈지 헷갈리지 않는다 — 자세한 근거는
+[`Main 규칙.md`](<Main/Main 규칙.md>)의 "이 화면의 스크롤은 하나뿐이다".
 
 2·3은 **한 Presenter 안의 단계**다(정렬용 패널을 켜고 끈다). 1↔2·3 은 **화면 전환**이라
 `UIManager`를 거친다 — **경계가 어디인지가 이름에 드러난다.**
@@ -283,12 +307,26 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 
 - **작업슬롯 선택 화면의 `(임시)` 자리는 데이터·리소스를 기다린다 (2026-09-14 · T-053).**
   산업 탭 `Icon (임시)`·줄의 `Portrait (임시)`는 흰 네모이고 종족은 "종족 추가 예정"이다
-  → [`T-054`](../../../tasks/T-054-종족과초상화.md). 장비 4칸은 "추가 예정" 문구만 있다 → [`T-002`](../../../tasks/archive/T-002-장비슬롯.md).
+  → [`T-054`](../../../tasks/T-054-종족과초상화.md).
   목업의 **색은 따르지 않았다** — 지금 게임 팔레트다.
-- 🔴 **효율 계산의 "개발용 전역 배수" 안내는 역산이라 이제 실제로 틀릴 수 있다** (`현재 작업속도 ÷ 적성 기본값`).
-  2026-09-20부터 **특성 속도 가산을 찍을 수 있게 되어**, 찍은 몫까지 전역 배수로 보인다.
-  클라에서 역산을 고칠 방법이 없다 — 서버가 배수를 명시해 주는
-  [`T-055`](../../../tasks/T-055-속도보정내역전달.md)가 먼저다.
+- ✅ **장비 4칸은 더 이상 "추가 예정"이 아니다** (2026-09-24 · T-074). 칸이 버튼이고, 누르면
+  **효율 계산 자리가 장비 고르기 목록으로 바뀐다.** 칸은 `선택 띠 / 부위 / 아이콘 / 이름 / 효과`이고
+  바탕 Image가 **등급색**이다(다른 칸들과 같은 축 — 🎨 스프라이트가 오면 함께 바뀐다).
+  **빈 칸에는 글자를 적지 않는다** — `Icon (임시)`의 빈 네모가 그 역할을 한다.
+  고르는 중인 칸은 **버튼 색 전이로 어두워진다** — 표시용 위젯을 따로 두지 않는다
+  (`▼` → 노란 띠 → 버튼 색 순으로 두 번 되돌아왔다 · 🎨 ON/OFF 스프라이트가 올 자리다).
+  목록에는 **산업 필터 5개**가 붙고(열면 **그 슬롯의 산업**이 골라져 있다), **전산업 장비는 어느 필터에서도 보인다.**
+  **목록에 나오는 것은 창고에 있는 장비뿐이다** — 끼워져 있으면 빠지므로, 남의 것을 가져오려면 그쪽에서 먼저 해제한다.
+  줄 순서는 **효과 수치 높은 순 → 전 산업 먼저** — 등급으로 세우면 더 느린 것이 위로 올라온다.
+  칸 이미지의 `Raycast Target`은 이때 **꺼짐 → 켜짐**으로 바뀌었다(안 켜면 버튼이 눌리지 않는다).
+- ⚠️ **`Equipment Panel`의 칸 넷에는 `LayoutElement`가 반드시 있어야 한다**(`pref W 0 · flexW 1`).
+  없으면 `childControlWidth`가 선호 폭을 **TMP 글자 폭**에서 가져와, 고르는 중인 칸에 `▼`가 붙는 순간
+  **그 칸만 넓어진다**(2026-09-24 실측·수정). 같은 함정이 다른 균등 분할 줄에도 해당한다.
+- ✅ **효율 계산에 `속도 가산` 줄이 생겼다** (2026-09-24 · T-074) — 값은 총합, 아래 주석은 `특성 +20% · 장비 +5%`.
+  **"개발용 전역 배수" 역산도 이걸로 고쳐졌다** — 이제 가산을 걷어낸 뒤 나눈다
+  (`현재 ÷ (기본값 × (1 + Σ가산))`). 2026-09-20~09-24 사이엔 찍은 특성 몫까지 배수로 보였다.
+  ⚠️ 다만 **가산은 클라가 서버 식을 베껴 되짚은 값**이라 표가 갈리면 화면만 조용히 틀린다 —
+  [`T-055`](../../../tasks/T-055-속도보정내역전달.md)(서버가 내역을 명시 필드로)는 그대로 남는다.
 - **상태 패널의 `Nick Icon (임시)`도 회색 원이다** — 작업슬롯 줄과 같은 리소스를 기다린다
   → [`T-054`](../../../tasks/T-054-종족과초상화.md). ⚠️ 다만 이건 **자리표시자이면서 동시에 고리를
   만드는 부품**이라 비워 둘 수 없다 (위 항목).
