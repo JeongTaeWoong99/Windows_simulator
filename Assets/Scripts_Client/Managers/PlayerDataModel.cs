@@ -269,6 +269,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     public event Action?                         CharactersChanged;          // 보유 캐릭터 캐시 갱신됨
     public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
+    public event Action<bool, EResultCode>?      EquipCompleted;             // 장착·해제 완료 (성공 여부·결과 코드)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
@@ -329,6 +330,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CharacterSynced          += OnCharacterSynced;
         ServerPacketHandler.EquipListReceived        += OnEquipListReceived;
         ServerPacketHandler.EquipSynced              += OnEquipSynced;
+        ServerPacketHandler.EquipResponded           += OnEquipResponded;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -360,6 +362,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CharacterSynced          -= OnCharacterSynced;
         ServerPacketHandler.EquipListReceived        -= OnEquipListReceived;
         ServerPacketHandler.EquipSynced              -= OnEquipSynced;
+        ServerPacketHandler.EquipResponded           -= OnEquipResponded;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -512,6 +515,16 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         EquipsChanged?.Invoke();
+    }
+
+    // 장착·해제 응답 — 결과만 알린다.
+    //
+    // ※ **바뀐 값은 여기로 오지 않는다.** 개체는 'S_EquipSyncResponse'가, 슬롯 속도는
+    //   'S_WorkStationSlotSyncResponse'가 따로 싣고 온다 — 이 응답은 "받아들여졌는가"뿐이다.
+    //   그래서 화면은 결과 문구에만 이걸 쓰고, 그리는 것은 'EquipsChanged'로 한다.
+    private void OnEquipResponded(S_EquipResponse res)
+    {
+        EquipCompleted?.Invoke(res.Result == EResultCode.Ok, res.Result);
     }
 
     // 작업슬롯 스냅샷 — 캐시 교체 후 이벤트 발행

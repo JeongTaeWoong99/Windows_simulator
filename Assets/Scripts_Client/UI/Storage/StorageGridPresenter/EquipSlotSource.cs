@@ -21,6 +21,9 @@ using MikaProtocol;
 //   서버가 장착할 때 'SlotPosition'을 비우지 않는다(서버 'Equip.Wear'). 목록에서 빼면
 //   "장비가 사라졌다"로 읽히므로 그대로 두고, 격자가 '배' 마크로 구분한다
 //   ('StorageGridPresenter.Redraw' — 캐릭터의 배치 마크와 같은 자리다).
+//
+// ※ 칸의 보조 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
+//   작업슬롯 세팅의 장비 칸이 같은 문구를 쓰기 때문이다(T-074).
 public class EquipSlotSource : StorageSlotSource
 {
     private readonly PlayerDataModel _data;
@@ -45,7 +48,7 @@ public class EquipSlotSource : StorageSlotSource
             into.Add(new SlotData(
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
-                BuildEffectText(equip.EquipTid),
+                EquipLabel.GetEffectText(equip.EquipTid),
                 GameDataLoader.GetEquipRarity(equip.EquipTid)));
         }
     }
@@ -109,27 +112,6 @@ public class EquipSlotSource : StorageSlotSource
     protected override void OnUnsubscribe()
     {
         _data.EquipsChanged -= Rebuild;
-    }
-
-    // 칸의 보조 문구 — '낚시 +30%' · 전 산업이면 '전산업 +10%' (Fill에서 호출).
-    //
-    // ⚠️ 산업 'None'에 'IndustryLabel'을 쓰지 않는다 — 거기서는 '미지정'이 나오는데,
-    //   장비의 None은 지정을 안 한 것이 아니라 **어느 산업에나 붙는다**는 뜻이다.
-    // ※ 'SpeedAddPermille'은 천분율이다(100 = 10%). 감산 장비가 생길 수 있어 부호를 함께 만든다.
-    private static string BuildEffectText(int equipTid)
-    {
-        if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
-        {
-            return "";
-        }
-
-        string industry = row.Industry == IndustryType.None
-            ? "전산업"
-            : IndustryLabel.Get((EIndustryType)(byte)row.Industry);
-
-        string sign = row.SpeedAddPermille >= 0 ? "+" : "";
-
-        return $"{industry} {sign}{row.SpeedAddPermille / 10f:0.#}%";
     }
 
     // 서버가 정한 창고 칸 번호 순서 (Fill의 정렬 비교자).

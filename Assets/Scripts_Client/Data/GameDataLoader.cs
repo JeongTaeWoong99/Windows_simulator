@@ -374,6 +374,72 @@ public static class GameDataLoader
         }
     }
 
+    // 이 산업 레벨에서 나오는 자원 목록. 없는 (산업, 레벨)이면 빈 목록.
+    //
+    // ■ 산업마다 테이블이 따로다
+    // 'FarmingBasicTable' … 'HuntingBasicTable' 다섯이 **모양은 같고 타입만 다르다.**
+    // 화면이 산업으로 분기하면 그 분기가 화면마다 복사되므로 **여기 한 곳에만 둔다.**
+    //
+    // ※ 비율은 화면이 만든다 — 'Weight' 합으로 나누면 된다(서버 'WeightedPicker'와 같은 축).
+    public static IReadOnlyList<IndustryDrop> GetIndustryDrops(EIndustryType industry, int level)
+    {
+        var key = ((byte)industry, level);
+
+        if (IndustryDrops.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+
+        var list = new List<IndustryDrop>();
+
+        switch (industry)
+        {
+            case EIndustryType.Farming:
+                foreach (var row in GameTable.FarmingBasicTable.All)
+                {
+                    if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
+                }
+                break;
+
+            case EIndustryType.Fishing:
+                foreach (var row in GameTable.FishingBasicTable.All)
+                {
+                    if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
+                }
+                break;
+
+            case EIndustryType.Mining:
+                foreach (var row in GameTable.MiningBasicTable.All)
+                {
+                    if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
+                }
+                break;
+
+            case EIndustryType.Logging:
+                foreach (var row in GameTable.LoggingBasicTable.All)
+                {
+                    if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
+                }
+                break;
+
+            case EIndustryType.Hunting:
+                foreach (var row in GameTable.HuntingBasicTable.All)
+                {
+                    if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
+                }
+                break;
+        }
+
+        var drops = list.ToArray();
+        IndustryDrops[key] = drops;
+
+        return drops;
+    }
+
+    // (산업, 레벨) → 자원 목록. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static readonly Dictionary<(byte Industry, int Level), IndustryDrop[]> IndustryDrops
+        = new Dictionary<(byte Industry, int Level), IndustryDrop[]>();
+
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
     private static void WarnUnknownId(string kind, int id, HashSet<int> warned)
     {
@@ -385,4 +451,21 @@ public static class GameDataLoader
         ClientLogger.Warn(ClientLogger.Data, $"{kind} 테이블에 없는 Id {id}가 들어왔다. " +
                                        $"서버가 보내는 Id와 엑셀 데이터가 어긋났는지 확인할 것.");
     }
+}
+
+// 산업 레벨 하나에서 나오는 자원 한 줄 — 아이템 종류와 가중치.
+//
+// ※ 산업별 드롭 테이블 다섯이 모양은 같고 타입만 달라, 화면이 한 타입으로 읽도록 여기서 합친다
+//   ('GameDataLoader.GetIndustryDrops'). 비율은 'Weight' 합으로 나눠 화면이 만든다.
+public readonly struct IndustryDrop
+{
+    public IndustryDrop(int itemTid, int weight)
+    {
+        ItemTid = itemTid;
+        Weight  = weight;
+    }
+
+    public int ItemTid { get; }
+
+    public int Weight { get; }
 }
