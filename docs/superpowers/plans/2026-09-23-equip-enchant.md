@@ -1664,7 +1664,7 @@ git commit -m "feat: 인챈트 가산을 채취 속도와 경험치에 반영
 **Files:**
 - Modify: `GameDesign/design/character/README.md` · `GameDesign/design/workslot/README.md` · `GameDesign/design/item/README.md` · `GameDesign/design/게임기획코어.md`
 - Modify: `Server/docs/채취-정산.md` · `Server/docs/데이터-카탈로그.md`
-- Modify: `tasks/T-085-인챈트.md` · `tasks/README.md`
+- Modify: `tasks/T-092-인챈트.md` · `tasks/README.md`
 
 **Interfaces:**
 - Consumes: Task 1~7 전부
@@ -1706,7 +1706,7 @@ Expected: 깨진 링크·갱신일 역전 없음
 
 - [ ] **Step 5: 일감을 완료 처리한다**
 
-`tasks/T-085-인챈트.md`의 체크박스를 닫고 상태를 갱신한 뒤, **main에서** `tasks/README.md` INDEX를 맞춘다.
+`tasks/T-092-인챈트.md`의 체크박스를 닫고 상태를 갱신한 뒤, **main에서** `tasks/README.md` INDEX를 맞춘다.
 (워크트리 안이라면 INDEX를 건드리지 않고 일감 파일만 고친다 — 머지 충돌 원천이다.)
 
 - [ ] **Step 6: 커밋**

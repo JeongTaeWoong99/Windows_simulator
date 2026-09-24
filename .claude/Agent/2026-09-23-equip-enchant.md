@@ -1,20 +1,20 @@
 ---
 date: 2026-09-23
-title: 장비 인챈트 — 데이터 · DB · 카탈로그 · 패킷 · 서버 로직 · 속도/경험치 반영 · 실서버 확인 · 문서 전파 (T-085)
+title: 장비 인챈트 — 데이터 · DB · 카탈로그 · 패킷 · 서버 로직 · 속도/경험치 반영 · 실서버 확인 · 문서 전파 (T-092)
 tags: [server, data, design, docs, test]
 ---
 
-# 장비 인챈트 (T-085 · Task 1~8)
+# 장비 인챈트 (T-092 · Task 1~8)
 
 ## 목적 / 배경
 
 - 장비 개체에 추가옵션(인챈트)을 붙인다. 등급(Rare·Epic·Legendary)이 옵션 풀의 질을, 줄 수(2~3)가 개수를 정하고 둘은 독립 축이다.
-- 설계 → `docs/superpowers/specs/2026-09-23-equip-enchant-design.md` · 계획 → `docs/superpowers/plans/2026-09-23-equip-enchant.md` · 일감 → `tasks/T-085-인챈트.md`
+- 설계 → `docs/superpowers/specs/2026-09-23-equip-enchant-design.md` · 계획 → `docs/superpowers/plans/2026-09-23-equip-enchant.md` · 일감 → `tasks/T-092-인챈트.md`
 - 데이터 단계(Task 1)의 상세·함정은 [`2026-09-23-enchant-data-tables.md`](2026-09-23-enchant-data-tables.md)에 따로 있다.
 
 ## 변경 내용
 
-- 커밋 `3f4dce1`…`938cf69`(서버) · `04ffa41`(더미 클라) · `f4e5014`(문서) · `0213ce4`(일감). 목록은 `tasks/T-085` "관련 커밋".
+- 커밋 `3f4dce1`…`938cf69`(서버) · `04ffa41`(더미 클라) · `f4e5014`(문서) · `0213ce4`(일감). 목록은 `tasks/T-092` "관련 커밋".
 - 서버 스위트 457 통과(Task 7 기준). 규칙 서술은 `character/README.md` 1.4가 원본이다.
 
 ## 주요 결정 / 근거
