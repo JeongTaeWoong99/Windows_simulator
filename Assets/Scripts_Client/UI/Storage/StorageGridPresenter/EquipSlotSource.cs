@@ -17,10 +17,14 @@ using MikaProtocol;
 //   (T-058 → T-044), 장비는 이미 있으므로 **그 순서를 따른다** — 재접속해도 자리가 유지된다.
 //   [정렬]을 누른 뒤의 자리 기억은 자원·캐릭터와 똑같이 세션 한정이다(기반 클래스 주석).
 //
-// ■ 장착 중인 장비도 여기 남는다
-//   서버가 장착할 때 'SlotPosition'을 비우지 않는다(서버 'Equip.Wear'). 목록에서 빼면
-//   "장비가 사라졌다"로 읽히므로 그대로 두고, 격자가 '배' 마크로 구분한다
-//   ('StorageGridPresenter.Redraw' — 캐릭터의 배치 마크와 같은 자리다).
+// ■ 장착 중인 장비는 여기 없다 (2026-09-25 · T-086)
+//   캐릭터가 끼고 있으면 **창고 목록에서 빠진다** — 팰월드식으로, 장착은 "캐릭터에게 옮긴 것"이다.
+//   보유 전량은 「창고 + 장착 중」의 합집합이고, 장착분은 작업슬롯 세팅 화면에서 보인다.
+//
+//   ⚠️ **서버는 아직 장착분을 창고 칸에서 빼지 않는다** — 'Equip.Wear'가 'SlotPosition'을
+//   비우지 않고, 'User.StorageCapacity' 검사도 장착 여부를 가리지 않는다.
+//   그래서 **"빈 칸이 보이는데 뽑기가 거절되는" 구간이 남아 있다.** 서버 쪽 제외가 T-086의 몫이고,
+//   그때까지의 안내 문구는 T-064가 갖는다. 화면만 먼저 바뀐 상태라는 것을 알고 봐야 한다.
 //
 // ※ 칸의 보조 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
 //   작업슬롯 세팅의 장비 칸이 같은 문구를 쓰기 때문이다(T-074).
@@ -45,6 +49,12 @@ public class EquipSlotSource : StorageSlotSource
 
         foreach (EquipInfo equip in _ordered)
         {
+            // 장착 중인 장비는 창고에 없다 — 캐릭터에게 옮겨 간 것으로 본다(클래스 주석).
+            if (_data.IsEquipped(equip.EquipId))
+            {
+                continue;
+            }
+
             into.Add(new SlotData(
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
