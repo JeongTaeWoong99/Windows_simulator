@@ -29,7 +29,7 @@
 | `RarityPalette.cs` | 등급 → 표시 색 | Storage · System |
 | `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
 | `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Storage(칸 스트립) · Main(캐릭터 줄·카드) |
-| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-047`](../../../../tasks/T-047-산업이름출처.md)이 끝나면 **이 파일은 지운다** | Main |
+| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
 | `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류. ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Storage(장비 탭) · Main(작업슬롯 장비 칸) |
 
 ## 들어올 자격
