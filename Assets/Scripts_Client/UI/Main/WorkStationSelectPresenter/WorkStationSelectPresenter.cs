@@ -42,6 +42,8 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // ⚠️ **끼울 목록을 거르는 것은 표시용이다.** 거절은 서버가 한다('EquipKindMismatch').
 // ⚠️ **다른 캐릭터가 낀 장비도 그대로 보낸다** — 서버가 옮긴다. 클라가 해제를 먼저 보내면
 //    실패했을 때 장비가 아무 데도 안 낀 상태로 남는다.
+// ⚠️ **캐릭터를 슬롯에서 뺄 때만은 클라가 해제를 먼저 보낸다** — 서버의 배치 해제가 착용을
+//    건드리지 않기 때문이다('UnequipAllWorn').
 //
 // 세 단계 흐름 · 응답을 기다렸다 넘어가는 규칙은 'Main 규칙.md'의 "전환 층은 하나다" 절 참조.
 public class WorkStationSelectPresenter : MonoBehaviour
@@ -1472,6 +1474,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     }
 
     // 카드의 해제를 눌렀다 (assignedCard.AssignClicked 구독)
+    //
+    // ⚠️ **끼고 있던 장비를 먼저 뺀다.** 서버의 배치 해제는 착용을 건드리지 않아
+    //    ('User.AssignWorkStation'), 그냥 빼면 일하지도 않는 캐릭터가 장비를 붙들고 있는다 —
+    //    창고에서 '배' 마크만 붙은 채 남아 다른 캐릭터에 끼울 때까지 돌아오지 않는다.
     private void OnAssignedCardClicked(CharacterStateRowView card)
     {
         if (!CanSend())
@@ -1479,10 +1485,45 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
+        UnequipAllWorn();
+
         Send(EIndustryType.None, 0, DefaultIndustryLevel); // 산업 None·캐릭터 0 = 해제 (레벨 주의 — 'Send' 주석)
         ClientLogger.Info(ClientLogger.Send, $"작업슬롯 해제 요청 — 슬롯={_slotIndex}");
 
         BeginWaiting(PendingRequest.Unassign);
+    }
+
+    // 배치된 캐릭터가 낀 장비를 칸마다 하나씩 뺀다 (배치 해제 직전에 'OnAssignedCardClicked'가 호출).
+    //
+    // 한 세션이 보낸 패킷은 보낸 순서대로 처리되므로, 해제를 먼저 보내면 캐릭터가 슬롯에서
+    // 빠지기 전에 장비가 창고로 돌아간다.
+    //
+    // ※ 응답('S_EquipResponse')은 기다리지 않는다 — 대기는 뒤이어 보내는 배치 해제 하나만 연다.
+    //   먼저 도착하는 장비 응답은 'OnEquipCompleted'가 _pending(Unassign)을 보고 흘려 보내고,
+    //   창고·장비 칸 표시는 'EquipsChanged'(OnEquipsChanged)가 따로 갱신한다.
+    private void UnequipAllWorn()
+    {
+        var slot = FindSlot();
+
+        if (slot == null || !IsAssigned(slot))
+        {
+            return;
+        }
+
+        for (int i = 0; i < EquipSlotCount; i++)
+        {
+            var part = (EEquipSlot)(i + 1);
+
+            // 빈 칸까지 보내면 서버가 'EquipSlotEmpty'로 거절한다 — 낀 것만 보낸다.
+            if (FindWornEquip(part) == null)
+            {
+                continue;
+            }
+
+            _network.Send(new C_UnequipRequest { CharacterId = slot.CharacterId, Slot = part });
+            ClientLogger.Info(ClientLogger.Send,
+                $"배치 해제에 딸린 장비 해제 요청 — 슬롯={_slotIndex}, 캐릭터개체={slot.CharacterId}, 칸={part}");
+        }
     }
 
     // 응답이 올 때까지 배치·해제 버튼을 잠그고 대기를 연다 (요청을 보낸 뒤 호출)
