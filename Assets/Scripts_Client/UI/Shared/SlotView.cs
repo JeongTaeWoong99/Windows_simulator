@@ -88,9 +88,24 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 이 칸을 좌클릭했다 — 위와 같다. 창고 격자가 '상자 개봉'으로 읽는다.
     public event Action<SlotView>? LeftClicked;
 
+    // 나가 있는 칸을 얼마나 어둡게 할지 (RGB 배수). 알파는 건드리지 않는다 —
+    // 반투명으로 만들면 뒤의 프레임이 비쳐 "빈 칸"과 헷갈린다.
+    private const float AwayTint = 0.55f;
+
     // 화면이 보조 문구를 쓰겠다고 했나('SetSubVisible'). 적성 스트립과 자리가 같아
     // 문구를 되돌릴 때 이 값이 필요하다 — 스트립을 끈다고 팝업에서 꺼 둔 문구가 살아나선 안 된다.
     private bool _isSubAllowed = true;
+
+    // 지금 딤 처리 중인가('SetDimmed'). 'Bind'가 등급색을 새로 칠하므로 여기서 다시 곱해 줘야 한다 —
+    // 안 그러면 배치 중인 칸이 다음 갱신 때 밝아진다.
+    private bool _isDimmed;
+
+    // 아이콘의 원래 색. 딤을 되돌릴 기준값이라 프리팹 값을 한 번만 읽어 둔다.
+    private Color _itemBaseColor = Color.white;
+
+    // 딤을 걷었을 때 돌아갈 등급색. 'rarityImage.color'를 그대로 읽으면 이미 어두워진 값이라
+    // 껐다 켤 때마다 점점 검어진다.
+    private Color _rarityColor = RarityPalette.Unknown;
 
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 부르는 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
@@ -113,6 +128,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             ClientLogger.Warn(ClientLogger.UI,
                 $"적성 칸이 {aptitudeValueTexts.Length}개다 — 1차 산업은 {AptitudeCount}종이라 자리가 어긋난다.", this);
         }
+
+        _itemBaseColor = itemImage.color;
 
         aptitudeStrip.SetActive(false);
         expGauge.gameObject.SetActive(false);
@@ -149,10 +166,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     //       등급 이미지가 생기면 'rarityImage'도 색 대신 sprite를 넣는다 ('RarityPalette' 참조).
     public void Bind(in SlotData data)
     {
-        Key               = data.Key;
-        rarityImage.color = RarityPalette.Get(data.Rarity);
-        nameText.text     = data.Name;
-        subText.text      = data.Sub;
+        Key           = data.Key;
+        _rarityColor  = RarityPalette.Get(data.Rarity);
+        nameText.text = data.Name;
+        subText.text  = data.Sub;
+
+        ApplyTint();
     }
 
     // 보조 문구를 켜고 끈다 (칸을 만든 화면이 한 번만 부른다).
@@ -264,14 +283,50 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(on);
     }
 
+    // 이 칸을 어둡게 한다 — 지금 창고 밖에 나가 있다는 뜻 (창고 격자가 매번 그릴 때 호출).
+    //
+    // '배' 마크와 **짝으로만 쓴다.** 딤만 두면 "왜 어두운가"를 알 수 없고,
+    // 마크만 두면 칸이 200개일 때 작은 배지가 눈에 안 띈다.
+    // ※ 끄고 켜기만 하면 되므로 마크와 합치지 않았다 — 가챠 결과 팝업은 둘 다 부르지 않는다.
+    public void SetDimmed(bool on)
+    {
+        if (_isDimmed == on)
+        {
+            return;
+        }
+
+        _isDimmed = on;
+
+        ApplyTint();
+    }
+
+    // 보관해 둔 등급색·아이콘 색에 딤을 반영한다 (Bind · SetDimmed · Clear에서 호출).
+    private void ApplyTint()
+    {
+        float tint = _isDimmed ? AwayTint : 1f;
+
+        rarityImage.color = new Color(_rarityColor.r * tint,
+                                      _rarityColor.g * tint,
+                                      _rarityColor.b * tint,
+                                      _rarityColor.a);
+
+        itemImage.color = new Color(_itemBaseColor.r * tint,
+                                    _itemBaseColor.g * tint,
+                                    _itemBaseColor.b * tint,
+                                    _itemBaseColor.a);
+    }
+
     // 칸을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
     // ※ 등급색과 마크도 되돌린다 — 안 그러면 다음에 이 칸을 쓸 때 이전 칸의 흔적이 남는다.
     public void Clear()
     {
-        Key               = 0;
-        rarityImage.color = RarityPalette.Unknown;
-        nameText.text     = "";
-        subText.text      = "";
+        Key           = 0;
+        _rarityColor  = RarityPalette.Unknown;
+        _isDimmed     = false;
+        nameText.text = "";
+        subText.text  = "";
+
+        ApplyTint();
 
         SetAptitudes(null); // 스트립을 끄고 보조 문구 자리를 원래대로 돌려준다
         SetExpGauge(null);

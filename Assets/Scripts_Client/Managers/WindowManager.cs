@@ -116,6 +116,7 @@ public class WindowManager : MonoService<WindowManager>
 
     // RaycastAll 결과 재사용 버퍼(매 프레임 new 방지 → GC 부담 감소)
     private readonly List<RaycastResult> _raycastResults = new List<RaycastResult>();
+    private          int                 _raycastFrame   = -1; // 위 버퍼를 채운 프레임 ('UIHitsUnderCursor')
 
     // ─── 프로퍼티 ───
     // 현재 설정 게터 — 창 제어 패널이 토글/드롭다운 초기 상태를 맞추는 데 쓴다.
@@ -1078,28 +1079,50 @@ public class WindowManager : MonoService<WindowManager>
     //   Unity의 Mouse.current / EventSystem.IsPointerOverGameObject 는 동작하지 않는다.
     //   → Win32 GetCursorPos 로 전역 커서를 직접 폴링해서 판정한다.
 
+    // 커서 밑의 UI 레이캐스트 결과 — 맨 위(가장 앞에 그려진 것)가 [0]이다.
+    // 동적 클릭스루 판정과 툴팁('TooltipPresenter')이 함께 읽는다.
+    //
+    // ■ 프레임당 한 번만 쏜다
+    // 둘이 각자 쏘면 같은 좌표에 같은 레이캐스트를 두 번 한다 — 상시 실행 앱이라 매 프레임 비용이 곧 생존 조건이다.
+    // 먼저 읽는 쪽이 쏘고, 같은 프레임의 다음 읽기는 결과를 그대로 받는다.
+    // ⚠️ 돌려주는 목록은 재사용 버퍼다. 붙들어 두지 말고 그 프레임 안에서만 읽는다.
+    public IReadOnlyList<RaycastResult> UIHitsUnderCursor
+    {
+        get
+        {
+            if (_raycastFrame == Time.frameCount)
+            {
+                return _raycastResults;
+            }
+
+            _raycastFrame = Time.frameCount;
+            _raycastResults.Clear();
+
+            // 커서 좌표를 직접 넣어 수동 레이캐스트한다 — 보통은 EventSystem이 자동 처리하지만,
+            // 클릭스루 중이거나 창에 포커스가 없으면 입력이 안 와 그쪽 호버가 멈춘다.
+            if (EventSystem.current != null)
+            {
+                var pointer = new PointerEventData(EventSystem.current) { position = GetCursorScreenPosition() };
+                EventSystem.current.RaycastAll(pointer, _raycastResults);
+            }
+
+            return _raycastResults;
+        }
+    }
+
     // 마우스가 콘텐츠(uGUI UI / 2D 스프라이트) 위에 있는지 판정한다. (Update 의 동적 클릭스루에서 호출)
     private bool IsPointerOverContent()
     {
-        Vector2 screenPos = GetCursorScreenPosition();
-
-        // 1) uGUI UI 위에 있는지 : 커서 좌표를 직접 넣어 수동 레이캐스트한다.
-        //    (보통은 EventSystem이 자동 처리하지만, 클릭스루 중엔 입력이 안 오므로 수동으로 쏜다)
-        if (EventSystem.current != null)
+        // 1) uGUI UI 위에 있는지 — UI가 하나라도 걸리면 콘텐츠 위
+        if (UIHitsUnderCursor.Count > 0)
         {
-            PointerEventData pointer = new PointerEventData(EventSystem.current) { position = screenPos };
-            _raycastResults.Clear();
-            EventSystem.current.RaycastAll(pointer, _raycastResults); // 해당 좌표의 모든 UI를 수집
-            if (_raycastResults.Count > 0)
-            {
-                return true; // UI가 하나라도 걸리면 콘텐츠 위
-            }
+            return true;
         }
 
         // 2) 2D 스프라이트(콜라이더) 위에 있는지 : 스크린 좌표 → 월드 좌표 → Physics2D 점 검사.
         if (_raycastCamera != null)
         {
-            Vector3   worldPoint = _raycastCamera.ScreenToWorldPoint(screenPos);
+            Vector3   worldPoint = _raycastCamera.ScreenToWorldPoint(GetCursorScreenPosition());
             Collider2D hit        = Physics2D.OverlapPoint(worldPoint);
 
             if (hit != null)

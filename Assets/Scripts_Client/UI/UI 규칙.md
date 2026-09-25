@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -380,6 +380,14 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
 > ⚠️ `button.onClick.AddListener(...)`는 **이미 옵저버 패턴이다.**
 > "옵저버로 바꿀까"라는 선택지는 없다. 정할 건 **구독자를 몇 개 둘 것인가**뿐이다.
 
+### 부가·세부 정보는 레이아웃에 펼치지 않고 툴팁으로 (2026-09-25 · T-088)
+
+"고르는 데 꼭 필요하지는 않지만 궁금하면 보는 것"(레벨 스펙·드롭 확률)과 **이미지로 바뀔 버튼의 이름**은
+대상에 `TooltipTrigger`를 붙여 **올리면 뜨게** 한다. 버튼 아래로 패널을 펼쳤다 접으면 아래 내용이
+밀리고, 누르는 동작(고르기)과 보는 동작이 한 버튼에 묶인다 — 산업 레벨 정보가 그래서 옮겨졌다.
+고정 문구는 인스펙터 `text`에, 동적 내용은 Presenter가 `SetProvider`로 넘긴다
+(→ [`System 규칙.md`](<System/System 규칙.md>)의 "툴팁").
+
 ---
 
 ## 5. 폴더 규칙 — `<캔버스>/<Presenter>/`
@@ -446,6 +454,9 @@ UI/
 │   │   └─ GachaResultPresenter.cs
 │   ├─ AmountInputPresenter/             ← 화면 전체를 막아야 해서 여기 산다
 │   │   └─ AmountInputPresenter.cs
+│   ├─ TooltipPresenter/                 ← 어느 캔버스 위에든 떠야 해서 여기 산다 (막지 않는다)
+│   │   ├─ TooltipPresenter.cs
+│   │   └─ TooltipRowView.cs
 │   └─ NoticePresenter/
 │       └─ NoticePresenter.cs
 ├─ Shared/                                ← 예외. 캔버스에 속하지 않는 공용 표현 부품
@@ -453,7 +464,8 @@ UI/
 │   ├─ SlotView.cs              ← 창고 격자와 가챠 결과가 함께 쓰는 칸
 │   ├─ SlotData.cs                ← 그 칸에 넘기는 완성값
 │   ├─ ResultMessages.cs · RarityPalette.cs
-│   └─ WorkStationProgress.cs · IndustryLabel.cs · AptitudeLabel.cs
+│   ├─ WorkStationProgress.cs · IndustryLabel.cs · AptitudeLabel.cs
+│   └─ TooltipTrigger.cs · TooltipContent.cs  ← 툴팁을 달 대상 · 그 내용
 └─ Layout/                                ← 예외. 화면이 아니라 배치 계산
     ├─ Layout 규칙.md
     ├─ WidgetPositionLayout.cs

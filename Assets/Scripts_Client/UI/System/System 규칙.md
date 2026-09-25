@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-09-25 (툴팁 — T-088) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -14,6 +14,7 @@
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
+| `TooltipPresenter/TooltipPresenter.cs` · `TooltipRowView.cs` | 커서 밑 `TooltipTrigger`(Shared) 옆에 툴팁을 띄운다. **차단하지 않는 오버레이다** — 아래 "툴팁" 절 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
@@ -58,7 +59,8 @@
 ├─ [2] Gacha Result Presenter (↓ SUB VIEW)
 ├─ [3] Amount Input Presenter (↓ SUB VIEW)
 ├─ [4] Confirm Presenter      (↓ SUB VIEW)
-└─ [5] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
+├─ [5] Tooltip Presenter      (↓ SUB VIEW)   ← 팝업 위 · 알림 아래
+└─ [6] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
 ```
 
 **`Notice Presenter`는 언제나 맨 아래(마지막)다.** 알림은 실패·종료를 알리는 마지막 출구라
@@ -256,3 +258,24 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 > ⚠️ **팝업이 뜬 채로 부른 화면이 닫히는 경로를 막아야 한다.** 상주라 `OnDisable`이 오지 않아
 > 스스로 정리할 손이 없다 — `UIManager.CloseAllExceptWidget()`이 `Close()`를 부른다.
 > 빠뜨리면 증상이 "가끔 아무것도 없는 바탕에 팝업만 떠 있다"로만 보인다.
+
+## 툴팁 — 막지 않는 오버레이 (2026-09-25 · T-088)
+
+부가·세부 정보(산업 레벨 스펙)와 아이콘 버튼의 이름은 **올리면 뜨는 툴팁**으로 보인다.
+대상에 `TooltipTrigger`(`UI/Shared/`)를 붙이면 끝이고, 그리는 것은 여기 하나다.
+
+| 갈림길 | 결정 | 왜 |
+|---|---|---|
+| 자리 | 이 캔버스 · `Notice` 바로 앞 | 어느 열 위에서든 떠야 하고, 결과 팝업 위의 칸에도 뜰 수 있어야 한다. 알림은 여전히 그 위다 |
+| 여닫기 | `CanvasGroup.alpha`만 | 상주 오버레이라 ②가 강제한다. **`blocksRaycasts`는 늘 끈다** |
+| 호버 감지 | `WindowManager.UIHitsUnderCursor`의 **맨 위 하나** | 포커스가 없으면 Unity 입력이 멈춰 `IPointerEnter`가 안 온다. 클릭스루 판정이 쏜 레이캐스트를 같이 읽는다(프레임당 한 번) |
+| 자리 계산 | 대상의 오른쪽 옆 · 넘치면 왼쪽 · 세로는 창 안으로 | 커서를 따라가면 읽는 동안 흔들린다 |
+| 지연 | 0.3초 · 숨김 즉시 · 끈 직후 0.15초 안에 다른 대상이면 바로 | 버튼 사이 간격을 지나는 한두 프레임에 대상이 비어도 끊겨 보이지 않게 |
+
+> ⚠️ **툴팁 안의 그림은 전부 `raycastTarget`을 끈다.** 켜 두면 커서 밑에 깔린 툴팁이 맨 위 결과가 되어
+> 대상을 잃고 깜빡이고, 클릭스루 판정이 툴팁을 콘텐츠로 봐 **빈 바탕에서 창이 클릭을 먹는다.**
+> 줄 프리팹(`TooltipRowView`)도 마찬가지다.
+
+> **맨 위 하나만 보는 것이 곧 차단 규칙이다.** 팝업의 차단막이 떠 있으면 맨 위가 차단막이라
+> 가려진 버튼에는 뜨지 않는다 — 따로 막을 코드가 없다.
+

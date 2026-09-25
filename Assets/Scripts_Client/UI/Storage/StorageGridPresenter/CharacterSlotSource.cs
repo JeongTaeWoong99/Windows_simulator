@@ -12,12 +12,13 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   한때 'LV.19 폭스파스크'로 이름 줄에 붙였더니 100px 칸에서 글자가 크게 줄었다(2026-09-16).
 //   레벨 배지·경험치 게이지는 적성 스트립처럼 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
 //
-// ■ 배치 중인 캐릭터는 여기 없다 (2026-09-25 · T-086)
-//   작업슬롯에 배치하면 **창고 목록에서 빠진다** — 팰월드식으로, 배치는 "슬롯으로 옮긴 것"이다.
-//   보유 전량은 「창고 + 작업슬롯」의 합집합이다: 배치된 것은 작업슬롯 화면에 그대로 보인다.
-//   ⚠️ 그래서 "적성 0이라 배치 목록에 안 보이는 캐릭터"의 답은 여전히 창고다 — 그건 배치가 안 된 것이라 여기 남는다.
+// ■ 배치 중인 캐릭터도 **제자리에 남는다** (2026-09-25 결정)
+//   작업슬롯에 배치해도 창고에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고, [정렬]에서만 맨 뒤로 민다
+//   ('IsAway' · 'Storage 규칙.md'의 "배치 중인 개체도 제자리에 남는다").
+//   한때 팰월드식으로 **목록에서 빼는** 안을 넣었다가 되돌렸다 — 창고가 보유 전량의 단일 목록이라는 성질이
+//   깨지고, 그 대가로 칸 한도를 넘는 초과분을 따로 관리해야 했다(경위는 로그 '2026-09-24-storage-sort-assigned-first').
 //
-// ★ 슬롯 변경도 함께 구독한다 — 배치·해제가 일어나면 목록에서 빠지거나 다시 들어온다.
+// ★ 슬롯 변경도 함께 구독한다 — 배치·해제로 딤과 마크가 바뀐다.
 //   캐릭터 목록만 구독하면 배치를 바꿔도 칸이 낡은 채로 남는다.
 //
 // ■ 보조 문구를 쓰지 않는다 — 그 자리는 적성 스트립이 쓴다 (T-048)
@@ -47,14 +48,6 @@ public class CharacterSlotSource : StorageSlotSource
     {
         foreach (CharacterInfo character in _data.Characters)
         {
-            // 배치 중인 캐릭터는 창고에 없다 — 슬롯으로 옮겨 간 것으로 본다(클래스 주석).
-            // 판정은 'FindSlotIndexOf' 하나로 읽는다 — 작업슬롯 화면도 같은 것을 보므로,
-            // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
-            if (_data.FindSlotIndexOf(character.CharacterId) >= 0)
-            {
-                continue;
-            }
-
             into.Add(new SlotData(
                 character.CharacterId,
                 GameDataLoader.GetCharacterName(character.CharacterTid),
@@ -85,6 +78,12 @@ public class CharacterSlotSource : StorageSlotSource
 
         return a.Key.CompareTo(b.Key);
     }
+
+    // 이 캐릭터가 지금 작업슬롯에 나가 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
+    //
+    // 판정은 'FindSlotIndexOf' 하나로 읽는다 — 작업슬롯 화면도 같은 것을 보므로,
+    // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
+    public override bool IsAway(long key) => _data.FindSlotIndexOf(key) >= 0;
 
     // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)
     protected override void OnSubscribe()

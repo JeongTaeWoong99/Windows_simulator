@@ -4,7 +4,7 @@ using MikaProtocol;
 using UnityEngine;
 
 // 창고의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
-// 지금 켜진 탭의 공급자('StorageSlotSource')에게 목록을 받아 앞 칸부터 채운다.
+// 지금 켜진 탭의 공급자('StorageSlotSource')에게 칸 배치를 받아 그대로 옮긴다.
 //
 // ■ 왜 탭마다 격자를 두지 않는가
 // 자원·캐릭터·장비의 격자·스크롤·레이아웃이 완전히 같다. 같아야 할 것을 세 벌로 두면
@@ -16,10 +16,18 @@ using UnityEngine;
 //   들어간다. Content 직속으로 만들면 프레임을 벗어나 레이아웃이 무너진다.
 //   프레임은 코드가 만들지도 지우지도 않는다.
 //
-// ■ i번째 항목이 i번째 프레임에 들어간다
-//   예전에는 'ItemId → 프레임'을 고정해 두고 빈 프레임을 앞에서부터 찾았다. 그러면 아이템이
-//   처음 들어온 순서로 칸이 영구히 고정돼 **정렬을 넣을 자리가 없다.**
-//   순서의 주인을 공급자로 옮겼기 때문에, [정렬]도 공급자 안에서 끝나고 격자는 받은 순서만 그린다.
+// ■ 격자는 자리를 정하지 않는다 — i번째 칸에 i번째 프레임을 쓸 뿐이다
+//   어느 개체가 몇 번 칸인지도, 어디가 빈 칸인지도 공급자가 정한다('StorageSlotSource.Arrange').
+//   [정렬]도 공급자 안에서 끝난다. 한때 격자가 'ItemId → 프레임'을 직접 붙들었는데,
+//   그러면 처음 들어온 순서로 칸이 영구히 굳어 **정렬을 넣을 자리가 없었다.**
+//
+// ■ 배치·장착 중인 개체도 **창고에 남는다** (2026-09-25)
+//   나가 있다고 목록에서 빼지 않는다 — 딤 처리 + '배' 마크로 구분하고, [정렬]에서만 맨 뒤로 민다.
+//   나가 있는지는 공급자가 답한다('StorageSlotSource.IsAway') — 뜻이 탭마다 다르기 때문이다.
+//
+// ■ 빈 칸은 'Get'이 null로 답한다 (2026-09-25 · T-044)
+//   장착·배치·판매로 개체가 빠져도 **그 칸은 비워 둔다** — 뒤의 것을 당겨 오지 않는다.
+//   당겨 오면 장비 하나를 끼울 때마다 창고 전체가 한 칸씩 밀려 보던 자리를 잃는다.
 //
 // ■ 칸은 파괴하지 않고 풀로 되돌린다
 //   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
@@ -96,9 +104,6 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 이 탭의 칸이 캐릭터인가. 적성 스트립·레벨 배지·경험치 게이지는 여기서만 켜진다.
     private bool IsCharacterTab => _currentTab == StorageTab.Character;
-
-    // 이 탭의 칸이 장비인가. '배' 마크의 뜻이 여기서만 '장착 중'으로 바뀐다.
-    private bool IsEquipTab => _currentTab == StorageTab.Equipment;
 
     // 이 탭의 'Key'가 아이템 TID인가. 상자 개봉은 여기서만 연다.
     //
@@ -352,7 +357,11 @@ public class StorageGridPresenter : MonoBehaviour
 
         for (int i = 0; i < _frames.Count; i++)
         {
-            if (i < count)
+            // 빈 칸이면 내용을 비우고 프레임만 남긴다 — 뒤의 것을 당겨 오지 않는다.
+            // 장착·배치로 빠진 자리가 그대로 보여야 "어디서 빠졌는지"가 읽힌다('StorageSlotSource' 주석).
+            SlotData? cell = i < count ? _current!.Get(i) : null;
+
+            if (cell != null)
             {
                 SlotView? view = GetOrCreateView(i);
 
@@ -361,7 +370,7 @@ public class StorageGridPresenter : MonoBehaviour
                     continue;
                 }
 
-                SlotData data = _current!.Get(i);
+                SlotData data = cell.Value;
 
                 view.gameObject.SetActive(true);
                 view.Bind(data);
@@ -369,16 +378,16 @@ public class StorageGridPresenter : MonoBehaviour
                 // 담김 표시의 주인은 카트다 — 자원 탭이 아니면 담길 수 없으므로 항상 꺼진다.
                 view.SetSellMark(IsSellableTab && _cart.Contains((int)data.Key));
 
-                // '배' 마크 — **이제 켜질 일이 없다** (2026-09-25 · T-086).
-                // 배치·장착 중인 개체를 공급자가 목록에서 빼기 때문이다
-                // ('CharacterSlotSource.Fill' · 'EquipSlotSource.Fill').
+                // 지금 창고 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
+                // **딤과 '배' 마크를 짝으로** 켠다: 딤만 두면 왜 어두운지 알 수 없고,
+                // 마크만 두면 칸 200개 안에서 작은 배지가 묻힌다.
                 //
-                // ★ 그래도 판정을 남겨 둔다 — 걸러내기가 깨졌을 때 **마크가 다시 뜨는 것이
-                //   화면에 드러나는 유일한 신호**다. 마크 자체를 걷어내는 건 서버가 배치분을
-                //   칸 수에서 빼고 난 뒤다(T-086의 서버 몫). 판정은 'FindSlotIndexOf' 하나로 읽는다 —
-                //   작업슬롯 화면도 같은 것을 보므로, 각자 훑으면 두 화면이 다른 말을 한다.
-                view.SetAssignMark(IsCharacterTab && _data.FindSlotIndexOf(data.Key) >= 0
-                                   || IsEquipTab && _data.IsEquipped(data.Key));
+                // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
+                //   딤·마크·[정렬] 세 군데에 같은 분기가 흩어진다('StorageSlotSource.IsAway').
+                bool isAway = _current.IsAway(data.Key);
+
+                view.SetAssignMark(isAway);
+                view.SetDimmed(isAway);
 
                 // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
                 // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.

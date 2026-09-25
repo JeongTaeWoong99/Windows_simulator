@@ -35,7 +35,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   · 효율 계산의 가산 항목(장비 · 특성 · 액티브) → 서버가 내역을 주면 추가 예정 (일감 'T-055')
 //
 // ■ 장비 4칸 — 누르면 장비 칸만 남고 그 아래가 목록이 된다 (T-074)
-// 'Equip Picker Panel'이 켜지면서 **위(레벨 정보·캐릭터 칸)와 아래(효율 계산)를 모두 접는다.**
+// 'Equip Picker Panel'이 켜지면서 **위(캐릭터 칸)와 아래(효율 계산)를 모두 접는다.**
 // 팝업을 띄우지 않는 이유는 이 캔버스가 이미 쓰는 수법이기 때문이다 — 한 자리를 여러 화면이
 // 갈아 끼운다('Main 규칙.md'). 같은 칸을 다시 누르면 접힌다.
 //
@@ -90,25 +90,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         [Tooltip("그 버튼의 라벨. 산업이 바뀌면 코드가 'Lv2 밭'처럼 채운다")]
         public TMP_Text label;
+
+        [Tooltip("그 버튼의 툴팁. 올리면 그 레벨의 스펙·나오는 자원이 뜬다 — 내용은 코드가 넘긴다")]
+        public TooltipTrigger tooltip;
     }
 
     // ※ 산업 버튼 줄 바로 아래의 'Industry Level Panel'이다. 순서가 곧 레벨(1~)이라
     //   인덱스 + 1이 레벨이 된다 — 산업 버튼이 인덱스로 산업을 가리키는 것과 같은 축이다.
     [SerializeField, NonReorderable, Tooltip("산업 레벨 버튼들. 인스펙터에 넣은 순서가 곧 레벨(Lv1부터)이다")]
     private IndustryLevelButton[] industryLevelButtons = new IndustryLevelButton[0];
-
-    // ※ 레벨 버튼 바로 아래에 붙는다. **1·2단계 공통 영역**이라 배치 목록에서도 보인다 —
-    //   거기서 산업·레벨은 걸러 보는 수단이고, "이 레벨은 무엇이 나오나"는 그때도 묻는 질문이다.
-    [SerializeField, Tooltip("Industry Level Info Panel 오브젝트 — 고른 레벨의 스펙·자원 목록")]
-    private GameObject industryLevelInfoPanel = null!;
-
-    [SerializeField, Tooltip("산업 레벨 정보 줄이 쌓이는 부모 — Industry Level Info Panel > Viewport > Content")]
-    private RectTransform industryLevelInfoRowParent = null!;
-
-    // 자원 줄만 프리팹이 다르다 — 값이 둘(확률·판매가)이라 한 칸에 넣으면 잘린다
-    // ('IndustryDropRowView'의 머리 주석). 스펙 줄은 위 'efficiencyRowPrefab'을 그대로 쓴다.
-    [SerializeField, Tooltip("나오는 자원 한 줄 프리팹 (IndustryDropRowView)")]
-    private IndustryDropRowView industryDropRowPrefab = null!;
 
     [CenterHeader("1단계 캐릭터 할당 패널 (전환)")]
     [SerializeField, Tooltip("Character Assign Scroll View Panel 오브젝트")]
@@ -179,7 +169,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private GameObject efficiencyPanel = null!;
 
     // ■ 이 화면의 스크롤은 **이것 하나뿐이다** (2026-09-24)
-    // 레벨 정보 · 캐릭터 목록 · 세팅 · 장비 목록이 저마다 스크롤을 갖고 있었는데,
+    // (당시의 산업 레벨 정보 패널) · 캐릭터 목록 · 세팅 · 장비 목록이 저마다 스크롤을 갖고 있었는데,
     // 겹쳐 놓으니 **휠이 어디로 갈지 알 수 없었다**(안쪽이 먼저 먹고 끝에 닿아도 넘겨주지 않는다).
     // 머리(제목 · 산업 · 산업 레벨)만 고정이고 그 아래는 전부 이 하나에 담겨 함께 굴러간다.
     [SerializeField, Tooltip("Body Scroll Panel의 ScrollRect — 이 화면의 유일한 스크롤")]
@@ -260,12 +250,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 만들어 둔 장비 고르기 줄. 칸마다 목록이 통째로 바뀌므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<EquipPickRowView> _equipRows = new List<EquipPickRowView>();
 
-    // 산업 레벨 정보의 **스펙** 줄 — 효율 계산과 같은 프리팹을 쓰지만 풀은 따로 둔다(동시에 보이기 때문).
-    private readonly List<EfficiencyRowView> _industryLevelInfoRows = new List<EfficiencyRowView>();
-
-    // 산업 레벨 정보의 **자원** 줄. 스펙 줄 뒤에 이어 붙는다.
-    private readonly List<IndustryDropRowView> _industryDropRows = new List<IndustryDropRowView>();
-
     // 지금 고르는 중인 장비 칸. 'None'이면 고르는 중이 아니다 — 그때는 효율 계산이 보인다.
     private EEquipSlot _pickingSlot = EEquipSlot.None;
 
@@ -295,11 +279,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 조건 없이 늘 열려 있는 기본 레벨. 서버의 'WorkStationSlot.DefaultIndustryLevel'과 같은 값이다.
     private const int DefaultIndustryLevel = 1;
-
-    // 산업 레벨 정보가 펼쳐져 있는가. **펼친 채로 시작한다** (2026-09-24 사용자 결정).
-    // 들어오자마자 보이는 편이 낫고, 접는 것은 자리가 아쉬울 때의 선택지로 남긴다.
-    // 화면이 통째로 한 스크롤이라(아래 'bodyScroll') 펼쳐도 가려지는 항목 없이 길어질 뿐이다.
-    private bool _industryLevelInfoOpen = true;
 
     // 응답을 기다리는 중인 요청. 없으면 None.
     private PendingRequest _pending = PendingRequest.None;
@@ -332,11 +311,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         this.RequireRef(characterLabel,      nameof(characterLabel));
         this.RequireRef(efficiencyRowPrefab, nameof(efficiencyRowPrefab));
         this.RequireRef(efficiencyRowParent, nameof(efficiencyRowParent));
-        this.RequireRef(industryLevelInfoPanel,     nameof(industryLevelInfoPanel));
-        this.RequireRef(bodyScroll,                 nameof(bodyScroll));
-        this.RequireRef(industryLevelInfoRowParent, nameof(industryLevelInfoRowParent));
-        this.RequireRef(industryDropRowPrefab,      nameof(industryDropRowPrefab));
-        this.RequireRef(progressSlider, nameof(progressSlider));
+        this.RequireRef(bodyScroll,          nameof(bodyScroll));
+        this.RequireRef(progressSlider,      nameof(progressSlider));
         this.RequireRef(efficiencyLabel,     nameof(efficiencyLabel));
         this.RequireRef(efficiencyPanel,     nameof(efficiencyPanel));
         this.RequireRef(equipPickerPanel,    nameof(equipPickerPanel));
@@ -397,9 +373,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private void OnDisable()
     {
         Unsubscribe();
-
-        // 다음 슬롯도 펼친 채로 연다 — 접은 것은 그 화면에서의 선택이라 들고 나가지 않는다.
-        _industryLevelInfoOpen = true;
 
         if (_isReady)
         {
@@ -701,6 +674,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             int level = i + 1; // 순서가 곧 레벨
             industryLevelButtons[i].button.onClick.AddListener(() => SelectIndustryLevel(level));
+
+            if (industryLevelButtons[i].tooltip != null)
+            {
+                industryLevelButtons[i].tooltip.SetProvider(() => BuildIndustryLevelTooltip(level));
+            }
         }
     }
 
@@ -709,19 +687,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ⚠️ 산업 버튼과 똑같이 **단계마다 뜻이 다르다.** 캐릭터를 고르는 중이면 배치 요청에 실을
     // 값을 화면이 들고 있고, 세팅 중이면 이미 돌고 있는 슬롯이라 요청을 한 번 보낸다.
     //
-    // ■ 누르면 그 레벨의 정보가 함께 펼쳐진다
-    // 고르는 순간이 곧 "이 레벨은 무엇이 나오나"를 묻는 순간이다. **같은 탭을 다시 누르면 접는다** —
-    // 정보 패널을 따로 여는 버튼을 두지 않으려는 것이고, 접으면 그 자리는 아래 목록이 되돌려 받는다.
-    // ※ 세팅 단계에서 같은 레벨을 다시 누르면 요청은 나가지 않지만('RequestIndustryLevelChange')
-    //   펼침 상태는 바뀌므로, 요청과 무관하게 버튼 갱신을 한 번 돌린다.
+    // ※ 레벨 정보는 누르는 것과 무관하다 — 올리면 툴팁으로 뜬다('BuildIndustryLevelTooltip').
     private void SelectIndustryLevel(int level)
     {
-        _industryLevelInfoOpen = level != _selectedIndustryLevel || !_industryLevelInfoOpen;
-
         if (settingPanel.activeSelf)
         {
             RequestIndustryLevelChange(level);
-            RefreshIndustryLevelButtons();
 
             return;
         }
@@ -784,15 +755,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             if (entry.label != null)
             {
-                var name = GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
-                    ? $"Lv{level} {row.Name}"
-                    : $"Lv{level}";
-
-                // 펼침 표시는 **고른 레벨에만** 붙는다 — 다른 버튼에 붙이면 누르면 접힌다는 뜻이 된다.
-                // ▼ = 지금 접혀 있다(누르면 펼친다) · ▲ = 지금 펼쳐져 있다(누르면 접는다).
-                entry.label.text = level == _selectedIndustryLevel
-                    ? $"{name} {(_industryLevelInfoOpen ? "▲" : "▼")}"
-                    : name;
+                entry.label.text = GetIndustryLevelName(industry, level);
             }
 
             var tint   = level == _selectedIndustryLevel ? selectedIndustryColor : unselectedIndustryColor;
@@ -806,44 +769,48 @@ public class WorkStationSelectPresenter : MonoBehaviour
             entry.button.colors     = colors;
         }
 
-        RefreshIndustryLevelInfo(industry);
     }
 
-    // 고른 산업 레벨의 스펙과 나오는 자원을 줄로 늘어놓는다 ('RefreshIndustryLevelButtons' 끝에서 호출).
+    // 레벨 버튼 라벨 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
+    private static string GetIndustryLevelName(EIndustryType industry, int level)
+        => GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
+            ? $"Lv{level} {row.Name}"
+            : $"Lv{level}";
+
+    // 레벨 버튼 툴팁 — 그 레벨의 스펙과 나오는 자원 (레벨 버튼의 'TooltipTrigger'가 띄울 때 호출).
+    //
+    // ■ 펼침 패널이 아니라 툴팁이다 (2026-09-25 · T-088)
+    // 예전엔 누르면 레벨 버튼 아래에 펼쳐졌다 접혔다 하며 아래 목록을 밀었다. 고르는 동작과 보는 동작이
+    // 한 버튼에 묶여 있던 것을 갈랐다 — 누르면 고르기만 하고, 정보는 올려서 본다.
+    // 잠긴 레벨에도 뜬다 — "무엇이 나오나"는 열기 전에 알아야 특성을 찍을지 정한다.
     //
     // ■ 서버가 주지 않는다 — 전부 클라 테이블이다
     // 스펙은 'IndustryLevelTable', 자원은 산업별 드롭 테이블이다('GameDataLoader.GetIndustryDrops').
-    // 값이 정적이라 **레벨 버튼을 누르는 것만으로** 서버에 묻지 않고 바뀐다.
     //
     // ※ 기준 주기는 'RequiredScore / 1000'초다 — 엑셀이 '초 × 천분율'로 적고 서버는 ×1000만 한다
     //   (서버 'IndustryLevelCatalog.JudgeCostUnits'). **실효 주기와 다르다** — 이쪽은 속도 보정 전 값이고,
     //   보정이 들어간 값은 효율 계산의 '실효 주기' 줄이다.
-    private void RefreshIndustryLevelInfo(EIndustryType industry)
+    private TooltipContent? BuildIndustryLevelTooltip(int level)
     {
-        int level = _selectedIndustryLevel;
+        EIndustryType industry = SelectedIndustry;
 
-        // 접혀 있으면 줄을 만들지도 않는다 — 펼칠 때 그려도 늦지 않다(값이 정적이라 계산이 없다).
-        if (!_industryLevelInfoOpen
-            || industry == EIndustryType.None
-            || !GameDataLoader.TryGetIndustryLevel(industry, level, out var spec))
+        if (industry == EIndustryType.None || !GameDataLoader.TryGetIndustryLevel(industry, level, out var spec))
         {
-            industryLevelInfoPanel.SetActive(false);
-            HideIndustryLevelInfoRowsFrom(0);
-            HideIndustryDropRowsFrom(0);
-
-            return;
+            return null;
         }
 
-        industryLevelInfoPanel.SetActive(true);
+        var content = new TooltipContent(GetIndustryLevelName(industry, level));
 
-        var shown = 0;
+        if (!_data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, level)))
+        {
+            content.Row("잠김 — 특성 트리에서 연다", "");
+        }
 
         // 줄이 두 묶음이라 제목을 끼워 가른다 — 앞은 이 레벨 자체의 제원, 뒤는 거기서 나오는 것이다.
-        GetOrCreateIndustryLevelInfoRow(shown++).Bind("■ 작업지 정보", "");
-        GetOrCreateIndustryLevelInfoRow(shown++).Bind("기준 주기", $"{spec.RequiredScore / 1000f:0.#}초");
-        GetOrCreateIndustryLevelInfoRow(shown++).Bind("판정당 경험치", $"{spec.ExpPerJudge}");
-        GetOrCreateIndustryLevelInfoRow(shown++).Bind("■ 나오는 자원", "");
-        HideIndustryLevelInfoRowsFrom(shown);
+        content.Header("작업지 정보")
+               .Row("기준 주기", $"{spec.RequiredScore / 1000f:0.#}초")
+               .Row("판정당 경험치", $"{spec.ExpPerJudge}")
+               .Header("나오는 자원");
 
         var drops = GameDataLoader.GetIndustryDrops(industry, level);
         var total = 0;
@@ -857,79 +824,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
         //
         // ※ 판매가를 확률 옆 **칸**에 적는다 — "자주 나오지만 싼 것"과 "드물지만 비싼 것"이
         //   한 줄에서 갈려야 레벨을 올릴지 정할 수 있다. 값은 'ItemTable.BasePrice'다.
-        var dropShown = 0;
-
         foreach (var drop in drops)
         {
-            var row   = GetOrCreateIndustryDropRow(dropShown++);
             var rate  = total > 0 ? $"{drop.Weight * 100f / total:0.##}%" : "—";
             var price = GameDataLoader.GetItemPrice(drop.ItemTid);
 
-            row.Bind(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드");
-            row.SetRarity(GameDataLoader.GetItemRarity(drop.ItemTid));
+            content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드",
+                        RarityPalette.Get(GameDataLoader.GetItemRarity(drop.ItemTid)));
         }
 
-        HideIndustryDropRowsFrom(dropShown);
-
-        // 방금 켠 줄은 이 프레임 끝까지 프리팹 크기 그대로다('RefreshRows' 끝 주석).
-        // ⚠️ 레벨 정보도 **제 스크롤이 없다** — 바깥 스크롤의 내용을 다시 재야 길이가 맞는다.
-        LayoutRebuilder.ForceRebuildLayoutImmediate((RectTransform)bodyScroll.content);
-    }
-
-    // 'index'번째 산업 레벨 정보 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshIndustryLevelInfo에서 호출).
-    private EfficiencyRowView GetOrCreateIndustryLevelInfoRow(int index)
-    {
-        if (index >= _industryLevelInfoRows.Count)
-        {
-            _industryLevelInfoRows.Add(Instantiate(efficiencyRowPrefab, industryLevelInfoRowParent));
-        }
-
-        var row = _industryLevelInfoRows[index];
-
-        // 켜기 전에 비운다 — 묶음 제목 줄이 앞서 쓰이던 자원 줄의 등급 색을 뒤집어쓰지 않게.
-        row.Clear();
-        row.gameObject.SetActive(true);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 산업 레벨 정보 줄을 비우고 꺼 둔다 (RefreshIndustryLevelInfo에서 호출).
-    private void HideIndustryLevelInfoRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _industryLevelInfoRows.Count; i++)
-        {
-            _industryLevelInfoRows[i].Clear();
-            _industryLevelInfoRows[i].gameObject.SetActive(false);
-        }
-    }
-
-    // 'index'번째 자원 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshIndustryLevelInfo에서 호출).
-    //
-    // ※ **스펙 줄과 부모가 같다.** 자원 줄이 항상 뒤에 오도록 켤 때마다 맨 뒤로 보낸다 —
-    //   풀 둘이 같은 부모를 나눠 쓰므로 생성 순서에만 기대면 순서가 뒤집힐 수 있다.
-    private IndustryDropRowView GetOrCreateIndustryDropRow(int index)
-    {
-        if (index >= _industryDropRows.Count)
-        {
-            _industryDropRows.Add(Instantiate(industryDropRowPrefab, industryLevelInfoRowParent));
-        }
-
-        var row = _industryDropRows[index];
-
-        row.transform.SetAsLastSibling();
-        row.gameObject.SetActive(true);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 자원 줄을 비우고 꺼 둔다 (RefreshIndustryLevelInfo에서 호출).
-    private void HideIndustryDropRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _industryDropRows.Count; i++)
-        {
-            _industryDropRows[i].Clear();
-            _industryDropRows[i].gameObject.SetActive(false);
-        }
+        return content;
     }
 
     // 고른 레벨이 지금 산업에서 열려 있지 않으면 기본 레벨로 되돌린다 ('Refresh'가 목록 단계에서 호출).
@@ -1785,14 +1689,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 이 칸에 낄 장비를 고르는 목록을 연다.
     //
     // ■ 고르는 동안에는 **장비 칸 넷만 남긴다**
-    // 위(산업 레벨 정보 · 캐릭터 카드)와 아래(효율 계산)를 모두 접는다. 그러면 칸 넷이
+    // 위(캐릭터 카드)와 아래(효율 계산)를 모두 접는다. 그러면 칸 넷이
     // **고정 머리 바로 아래로 올라오고** 목록이 그 아래에 바로 붙어, 굴리지 않고도 둘 다 보인다.
     // 장비가 늘어날수록 목록이 길어지므로 **자리를 최대한 목록에 준다.**
     private void OpenEquipPicker(EEquipSlot part)
     {
         _pickingSlot = part;
 
-        _industryLevelInfoOpen = false;   // 레벨 정보도 접는다 (버튼 라벨이 ▼로 바뀐다)
         characterLabel.SetActive(false);
         assignedCard.gameObject.SetActive(false);
 
@@ -1807,7 +1710,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // **다음 칸이 이유 없이 비어 보인다.** 이 캐릭터가 지금 하는 일이 곧 기본값이다.
         _equipFilter = SelectedIndustry;
 
-        RefreshIndustryLevelButtons();  // 접은 레벨 정보와 ▼ 표시를 반영한다
         RefreshEquipFilterButtons();
         RefreshEquipSlots();  // 누른 칸을 어둡게 만든다
         RefreshEquipPicker();

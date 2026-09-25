@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-24 (장비 장착 UI — T-074 · 산업 레벨 정보 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -67,7 +67,7 @@ Root Canvas
 │  │  │     │     ├─ Nick Icon (임시)             가운데를 덮어 원반을 고리로 만든다 (T-054 대기)
 │  │  │     │     ├─ Percent Text                 ⏸ 꺼 둔 상태 — 배선만 살아 있다
 │  │  │     │     └─ Lv Text                      "Lv.n" (가장 위)
-│  │  │     └─ Setting Button · xxx Button (1..3 ⏸) · Exit Button      flex 1씩
+│  │  │     └─ Setting Button · xxx Button (1..3 ⏸) · Exit Button      flex 1씩 · 세팅·종료에 TooltipTrigger(문구)
 │  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 950 · flexH 0 ← 사람이 정함
 │  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
 │  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
@@ -78,12 +78,9 @@ Root Canvas
 │  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90   │ 고정
 │  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)    │ (굴러가지
 │  │  │  │  ├─ Industry Level Panel               레벨 5개                       pref 32   │  않는다)
-│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭 ▲"). LE pref W 0 · flexW 1 ┘
+│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭"). LE pref W 0 · flexW 1 · TooltipTrigger(레벨 정보) ┘
 │  │  │  │  └─ Body Scroll Panel                  ★ 이 화면의 **유일한** 스크롤   flexH 1
 │  │  │  │     └─ Viewport > Content              VLG + ContentSizeFitter(Preferred) — CSF는 여기만
-│  │  │  │        ├─ Industry Level Info Panel    VLG · 내용만큼 늘어난다 (레벨 탭이 펼침 토글 · 기본 펼침)
-│  │  │  │        │  ├─ EfficiencyRowView 프리팹   ■ 작업지 정보 (기준 주기 · 판정당 경험치)
-│  │  │  │        │  └─ IndustryDropRowView 프리팹 ■ 나오는 자원 — 이름 / 확률 80 / 판매가 130, 바탕 = 등급색
 │  │  │  │        ├─ 1 Character Assign Panel     VLG (평소 꺼짐 — 2단계)
 │  │  │  │        │  ├─ Empty Text (TMP)          고를 캐릭터가 없을 때만          pref 28
 │  │  │  │        │  └─ CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
@@ -102,7 +99,7 @@ Root Canvas
 │  │  │  │           ├─ Efficiency Label          "효율 계산"                      pref 30   ┐ 장비를
 │  │  │  │           ├─ Progress Panel > Progress Slider  목록 칸의 슬라이더를 떼어 왔다 (표시 전용) pref 22 │ 고르는
 │  │  │  │           ├─ Efficiency Rows Panel     VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
-│  │  │  │           └─ Equip Picker Panel        VLG (평소 꺼짐 — 열리면 레벨 정보·캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
+│  │  │  │           └─ Equip Picker Panel        VLG (평소 꺼짐 — 열리면 캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
 │  │  │  │              ├─ Header Panel           제목 · [해제] · [닫기]           pref 30
 │  │  │  │              ├─ Filter Panel           농사·낚시·채굴·벌목·사냥 (균등 5칸)      pref 26
 │  │  │  │              ├─ Equip Rows Panel       VLG · EquipPickRowView 프리팹 (보일 수만큼 런타임 생성)
@@ -140,6 +137,10 @@ Root Canvas
    │  └─ Panel                                    440x240 (제목 · 수량 입력 · 확인/취소)
    ├─ Confirm Presenter (↓ SUB VIEW)               ConfirmPresenter   UIManager.AskConfirm 이 연다
    │  └─ Panel                                    440x240 (문구 · 확인/취소)
+   ├─ Tooltip Presenter (↓ SUB VIEW)               TooltipPresenter   CanvasGroup alpha만 · blocksRaycasts 늘 끔 (T-088)
+   │  └─ Panel                                    pivot 좌상단 · VLG + CSF(Preferred) · raycastTarget 전부 끔
+   │     ├─ Title Text (TMP)                      제목 한 줄 (흰색 22)
+   │     └─ Row Panel                             TooltipRowView 프리팹 (라벨 / 값 80 / 보조 값 130) — 줄이 없으면 꺼진다
    └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
@@ -158,6 +159,7 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > 여닫는다 — 상주 캔버스라 자기를 끄면 `Start`가 돌지 않거나 다시 켤 이벤트를 못 받는다.
 > 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(raycastTarget 켬)를
 > 함께 갖는다. 차단막 색은 셋이 **검정 a 0.35**, `Loading`만 **흰색 a 0.851**(축이 다르다).
+> **`Tooltip Presenter`만 차단막이 없다** — 막지 않는 오버레이라 `blocksRaycasts`를 늘 끈다(`System 규칙.md`의 "툴팁").
 > **여기만 다른 게 아니라 기준이 있다** — 판별 축이 둘(차단 범위 / 생명주기)이라는 것과
 > 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
 >
@@ -219,7 +221,7 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
        ├── 빈 칸 ──────────────→ 2
        └── 이미 배치된 칸 ──────→ 3
 
-   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) · Industry Level(1~5) 고정 + 레벨 정보 는 2·3 모두 ─┐
+   ┌─ WorkStation Select Presenter ─ Header(뒤로가기) · Industry(산업 5개) · Industry Level(1~5) 고정 은 2·3 모두 ─┐
    │                                                                                             │
 2  │  Character Assign Scroll View Panel    캐릭터 줄 목록                                       │
    │      │ 줄의 [배치] → 배치 요청 → 응답 성공 ──→ 3                                            │
@@ -230,8 +232,8 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
    └──────┴─ [뒤로가기] 또는 응답 실패 ───────────→ 1 ───────────────────────────────────────────┘
 ```
 
-**레벨 탭은 그 레벨의 정보도 함께 펼친다**(`Industry Level Info Panel` · T-078). 기본이 펼침이고,
-고른 탭을 한 번 더 누르면 접힌다(라벨의 `▲`/`▼`가 지금 상태다).
+**레벨 정보는 레벨 탭에 올리면 툴팁으로 뜬다**(T-088). 누르면 고르기만 한다 —
+예전엔 탭 아래로 펼쳐졌다 접혔다 하며 목록을 밀었다([`Main 규칙.md`](<Main/Main 규칙.md>)의 "레벨 정보는 올리면 뜨는 툴팁이다").
 
 ⭐ **머리(제목 · 산업 · 산업 레벨)만 고정이고 2·3은 통째로 한 스크롤 안에 있다**(`Body Scroll Panel`).
 스크롤이 이 화면에 **하나뿐이라** 휠이 어디로 갈지 헷갈리지 않는다 — 자세한 근거는
