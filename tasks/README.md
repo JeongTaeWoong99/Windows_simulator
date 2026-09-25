@@ -86,7 +86,7 @@
 
 > 일감 단위로 🎨인 것은 이 넷뿐이다. 나머지 🎨는 항목 하나로 다른 일감 안에 산다 — T-033·T-039(⏸이 진짜 이유).
 
-> 끝난 일감 50건은 [`archive/README.md`](archive/README.md)에 있다.
+> 끝난 일감 53건은 [`archive/README.md`](archive/README.md)에 있다.
 
 ---
 
