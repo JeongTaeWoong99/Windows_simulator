@@ -21,7 +21,7 @@ tags: [server, data, test, docs]
 - 수치는 전부 테스트값(`AuctionRules`). 우편 템플릿 TID 3~7은 `MailCatalog.LoadAll`이 없으면 기동을 멈춘다.
 
 ## 후속 작업 / 주의사항
-- 클라 화면은 T-088. 입찰은 미착수(`Server/docs/경매장.md` 9장).
+- 클라 화면은 T-096. 입찰은 미착수(`Server/docs/경매장.md` 9장).
 - `UserMailTest.접속_중인_유저에게_보내면_그_유저의_우편함으로_도착한다`는 **작업 전 커밋에서도 6번 중 3번 실패하는 기존 불안정 테스트**다(전역 `UserManager` 공유 — T-020). 경매 변경과 무관.
 - 실측 때 `Server/Shared/game.sqlite3`에 테스트 계정을 넣었다가 백업으로 되돌렸다 — 커밋된 DB에는 DDL만 있다.
 - 경매장 DB(`auction.sqlite3`)는 실행 폴더에 생긴다. 백업은 WAL 3파일을 함께(`-wal`·`-shm`) 다룬다.

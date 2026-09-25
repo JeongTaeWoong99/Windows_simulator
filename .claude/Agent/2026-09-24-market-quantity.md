@@ -20,4 +20,4 @@ tags: [server, test, docs]
 ## 후속 작업 / 주의사항
 - ⚠️ SQLite `UPDATE ... SET a = x, b = CASE WHEN a - q ...`의 식은 **갱신 전 행 값**을 본다 — `Confirm`·`SettleMarketAsync`가 이것에 기댄다.
 - 대사는 이제 전역 가드가 아니라 거래별로 거른다 — outbox `purchase_id` + 거래의 마지막 `purchase_id`. 확정이 순서대로 나간다는 전제다.
-- 클라 화면은 T-088에 거래소 항목을 더했다. 묶음 단위(10개씩)는 두지 않았다.
+- 클라 화면은 T-096에 거래소 항목을 더했다. 묶음 단위(10개씩)는 두지 않았다.
