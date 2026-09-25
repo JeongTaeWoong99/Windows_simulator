@@ -9,7 +9,7 @@ tags: [server, data, design, docs, test]
 ## 목적 / 배경
 
 - 장비 개체에 추가옵션(인챈트)을 붙인다. 등급(Rare·Epic·Legendary)이 옵션 풀의 질을, 줄 수(2~3)가 개수를 정하고 둘은 독립 축이다.
-- 설계 → `docs/superpowers/specs/2026-09-23-equip-enchant-design.md` · 계획 → `docs/superpowers/plans/2026-09-23-equip-enchant.md` · 일감 → `tasks/T-092-인챈트.md`
+- 설계 → `docs/superpowers/specs/2026-09-23-equip-enchant-design.md` · 계획 → `docs/superpowers/plans/2026-09-23-equip-enchant.md` · 일감 → `tasks/archive/T-092-인챈트.md`
 - 데이터 단계(Task 1)의 상세·함정은 [`2026-09-23-enchant-data-tables.md`](2026-09-23-enchant-data-tables.md)에 따로 있다.
 
 ## 변경 내용
