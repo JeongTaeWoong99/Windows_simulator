@@ -20,29 +20,50 @@ public enum StorageSortOrder
 // 탭이 늘어도 격자·전환·잠금은 그대로고, 공급자 하나가 더 생길 뿐이다
 // (절차는 'Storage 규칙.md'의 "탭 하나를 채우는 절차").
 //
-// ■ 목록을 통째로 다시 만드는 이유
-// 데이터가 바뀔 때마다 'Rebuild'가 목록을 새로 채운다. 원본을 그때그때 인덱스로 훑지 않는 것은,
+// ■ 내용물은 매번 새로 만들고, **자리는 그대로 둔다** (2026-09-25 · T-044)
+// 데이터가 바뀔 때마다 'Rebuild'가 내용물을 새로 채운다. 원본을 그때그때 인덱스로 훑지 않는 것은,
 // 수량 0처럼 화면에서 빼야 하는 항목이 섞이면 원본 인덱스와 칸 인덱스가 어긋나기 때문이다.
+// 다만 **채운 순서가 곧 칸 번호는 아니다** — 칸 번호는 'Key → 칸'으로 따로 기억한다('_place').
+// 한때는 채운 순서를 그대로 칸에 썼는데, 그러면 장착·배치로 하나가 빠질 때마다
+// **뒤의 것이 통째로 앞으로 당겨졌다.** 보던 자리가 매번 흔들린다.
 //
-// ■ 정렬 — 누른 순간의 순서를 기억한다 (클라 임시)
-// [정렬]을 누르면 'CompareForSort'로 줄 세우고 **그 순서를 Key별 자리로 기억한다.**
-// 이후 채취·판매로 목록이 다시 채워져도 기억한 자리를 따르고, 처음 보는 항목은 도착 순서대로 뒤에 붙는다.
-// 매번 규칙으로 다시 줄 세우지 않는 이유 — 새 자원이 들어올 때마다 칸이 뒤섞이면 보던 자리를 잃는다.
-// ⚠️ 이 기억은 세션 한정이다. 칸 위치의 주인은 서버로 옮겨 간다(서버 'T-058' → 클라 'T-044').
+// ■ 빈 칸은 빈 칸으로 남는다
+// 개체가 창고를 떠나면(장착·배치·판매) 그 칸은 **비어 있는 채로** 남고, 다음에 들어오는 것이
+// **앞에서부터 세어 첫 빈 칸**을 차지한다. 나가고 들어오는 것이 서로의 자리를 밀지 않는다.
+//
+// ■ 정렬만이 자리를 다시 매긴다 (클라 임시)
+// [정렬]을 누르면 'CompareForSort'로 줄 세우고 **그때 빈 칸도 함께 메운다** — 정리하려고 누르는
+// 버튼이라 여기서는 앞으로 당겨지는 것이 맞다. 그 순서를 Key별 자리로 기억하고, 이후로는 다시
+// 위 규칙을 따른다.
+//
+// ■ 나가 있는 개체는 **정렬하면 맨 뒤로 간다** (2026-09-25)
+// 배치 중인 캐릭터·장착 중인 장비는 창고에서 빠지지 않고 제자리에 남는다(딤 + '배' 마크).
+// 다만 [정렬]은 "지금 손댈 수 있는 것을 위로"가 목적이라, 나가 있는 것은 뒤로 민다('IsAway').
+// ⚠️ 이 기억은 **세션 한정**이다. 재접속하면 서버가 주는 순서로 처음부터 자리를 매긴다 —
+//   칸 위치의 주인은 서버로 옮겨 간다(서버 'T-058' → 클라 'T-044').
 public abstract class StorageSlotSource
 {
-    // 이번에 그릴 칸들. 'Rebuild'·'Sort'만 갈아 끼운다.
-    private readonly List<SlotData> _slots = new List<SlotData>();
+    // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
+    private readonly List<SlotData?> _slots = new List<SlotData?>();
 
-    // [정렬]로 정해진 자리. Key → 칸 순번. 비어 있으면 받은 순서 그대로다.
-    private readonly Dictionary<long, int> _rank = new Dictionary<long, int>();
+    // 지금 창고에 있는 것들. 'Fill'이 채운 순서가 곧 **빈 칸을 차지하는 순서**다.
+    private readonly List<SlotData> _filled = new List<SlotData>();
 
-    // 기억에 없는 항목을 도착 순서대로 잠시 담는 버퍼 — 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
-    private readonly List<SlotData> _unranked = new List<SlotData>();
+    // 이번 배치에서 이미 찬 칸. 첫 빈 칸을 찾을 때 본다.
+    private readonly HashSet<int> _taken = new HashSet<int>();
+
+    // 자리를 아직 못 받은 것 — 기억에 없거나(새로 들어옴) 자리가 겹친 것. 앞에서부터 빈 칸에 넣는다.
+    private readonly List<SlotData> _arrived = new List<SlotData>();
 
     // 정렬 비교자. 메서드 그룹을 매번 넘기면 호출마다 대리자가 새로 생겨서 한 번만 만든다.
     private readonly Comparison<SlotData> _byRule;
-    private readonly Comparison<SlotData> _byRank;
+
+    // Key → 칸 번호. 한 번 정해지면 그 개체가 창고를 떠날 때까지 바뀌지 않는다.
+    //
+    // ※ 매번 '_nextPlace'에 새로 담아 통째로 맞바꾼다 — 떠난 개체의 자리를 따로 지우지 않아도
+    //   저절로 빠진다. 지우는 것을 잊으면 **아무도 못 쓰는 칸**이 계속 쌓인다.
+    private Dictionary<long, int> _place     = new Dictionary<long, int>();
+    private Dictionary<long, int> _nextPlace = new Dictionary<long, int>();
 
     // 마지막으로 누른 정렬 방향. 오름차순이면 'CompareForSort'의 결과를 뒤집는다.
     private StorageSortOrder _order = StorageSortOrder.Descending;
@@ -52,17 +73,25 @@ public abstract class StorageSlotSource
     protected StorageSlotSource()
     {
         _byRule = CompareByRule;
-        _byRank = CompareByRank;
     }
 
-    // 그릴 칸 수.
+    // 그릴 칸 수 — **빈 칸을 포함한** 마지막 내용물까지의 길이다.
+    // 뒤쪽이 통째로 비면 그만큼 줄어든다(그 자리는 격자가 빈 프레임으로 둔다).
     public int Count => _slots.Count;
 
     // 내용이 바뀌었다 — 격자가 다시 그린다.
     public event Action? Changed;
 
-    // i번째 칸에 그릴 완성값 (격자가 호출).
-    public SlotData Get(int index) => _slots[index];
+    // i번째 칸에 그릴 완성값 (격자가 호출). **빈 칸이면 null**이다.
+    public SlotData? Get(int index) => _slots[index];
+
+    // 이 개체가 지금 창고 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중 (격자·정렬이 호출).
+    //
+    // ■ 판정의 주인을 공급자 하나로 둔다
+    //   "나가 있다"의 뜻이 탭마다 다르다. 격자가 탭을 보고 분기하면 **딤·마크·정렬 세 군데에서
+    //   같은 분기를 반복**하게 되고, 탭이 늘 때 한 곳만 빠진다.
+    // ※ 자원은 나갈 곳이 없어 기본값 false 그대로다.
+    public virtual bool IsAway(long key) => false;
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //
@@ -91,21 +120,23 @@ public abstract class StorageSlotSource
         OnUnsubscribe();
     }
 
-    // 지금 목록을 규칙대로 줄 세우고 그 자리를 기억한다 (격자의 'SortCurrent' — 도구 줄의 화살표 버튼).
+    // 지금 내용을 규칙대로 줄 세우고 그 자리를 기억한다 (격자의 'SortCurrent' — 도구 줄의 화살표 버튼).
     //
-    // ※ 격자는 켜진 탭에만 부르므로 목록은 구독 중에 채워진 최신값이다.
+    // **빈 칸은 여기서만 메워진다.** 정리하려고 누르는 버튼이라 앞으로 당겨지는 것이 맞다.
+    // ※ 격자는 켜진 탭에만 부르므로 '_filled'는 구독 중에 채워진 최신값이다.
     public void Sort(StorageSortOrder order)
     {
         _order = order;
-        _slots.Sort(_byRule);
+        _filled.Sort(_byRule);
 
-        _rank.Clear();
+        _place.Clear();
 
-        for (int i = 0; i < _slots.Count; i++)
+        for (int i = 0; i < _filled.Count; i++)
         {
-            _rank[_slots[i].Key] = i;
+            _place[_filled[i].Key] = i;
         }
 
+        Arrange();
         Changed?.Invoke();
     }
 
@@ -114,7 +145,7 @@ public abstract class StorageSlotSource
     // 재접속하면 목록이 서버 순서로 새로 오는데, 지난 세션의 자리를 들고 있으면 다른 계정·다른 상태에 덮인다.
     public void ClearOrder()
     {
-        _rank.Clear();
+        _place.Clear();
 
         if (_isSubscribed)
         {
@@ -122,22 +153,20 @@ public abstract class StorageSlotSource
         }
     }
 
-    // 목록을 다시 채우고 격자에 알린다 (파생 공급자가 데이터 변경 이벤트에서 호출).
+    // 내용을 다시 채우고 격자에 알린다 (파생 공급자가 데이터 변경 이벤트에서 호출).
     protected void Rebuild()
     {
-        _slots.Clear();
-        Fill(_slots);
+        _filled.Clear();
+        Fill(_filled);
 
-        if (_rank.Count > 0)
-        {
-            ApplyRememberedOrder();
-        }
-
+        Arrange();
         Changed?.Invoke();
     }
 
-    // 이 탭이 그릴 칸들을 순서대로 채운다 (Rebuild에서 호출).
-    // 여기 담기는 순서가 곧 화면의 칸 순서다 — [정렬]을 누르기 전까지는.
+    // 이 탭이 지금 창고에 두고 있는 것들을 채운다 (Rebuild에서 호출).
+    //
+    // ⚠️ 여기 담는 순서는 **칸 번호가 아니라 "빈 칸을 고르는 순서"** 다 —
+    //   이미 자리를 가진 것은 그 자리에 남고, 처음 보는 것만 이 순서대로 앞의 빈 칸을 가져간다.
     protected abstract void Fill(List<SlotData> into);
 
     // [정렬]의 규칙. a가 앞이면 음수 (Sort에서 호출).
@@ -150,47 +179,88 @@ public abstract class StorageSlotSource
     // 구독을 해제한다 (Unsubscribe에서 호출).
     protected abstract void OnUnsubscribe();
 
-    // 기억한 자리대로 앞에 두고, 처음 보는 항목은 도착 순서대로 뒤에 붙인다 (Rebuild에서 호출).
+    // '_filled'를 칸에 앉힌다 — 가진 자리는 지키고, 나머지는 앞에서부터 첫 빈 칸에 넣는다.
     //
-    // ※ 둘을 한 비교자로 섞지 않는다 — 'List.Sort'가 안정 정렬이 아니라서 새 항목끼리의 도착 순서가 흐트러진다.
-    //   자리는 Key마다 하나라 기억한 쪽끼리는 동점이 없다.
-    private void ApplyRememberedOrder()
+    // 두 번에 나눠 도는 이유 — 먼저 **자리를 가진 것을 전부 앉혀야** 어디가 빈 칸인지 확정된다.
+    // 한 번에 돌면서 새 항목을 끼워 넣으면, 뒤에 나오는 "원래 그 칸의 주인"과 부딪힌다.
+    private void Arrange()
     {
-        _unranked.Clear();
+        _taken.Clear();
+        _arrived.Clear();
+        _nextPlace.Clear();
 
-        int kept = 0;
-
-        for (int i = 0; i < _slots.Count; i++)
+        // 1) 이미 자리를 가진 것 — 떠난 개체의 자리는 '_nextPlace'에 실리지 않아 저절로 비워진다.
+        foreach (SlotData slot in _filled)
         {
-            SlotData slot = _slots[i];
+            // 'Add'가 false면 같은 칸을 둘이 주장한 것이다 — 뒤에 온 쪽을 새로 온 것으로 돌린다.
+            if (_place.TryGetValue(slot.Key, out int position) && _taken.Add(position))
+            {
+                _nextPlace[slot.Key] = position;
 
-            if (_rank.ContainsKey(slot.Key))
-            {
-                _slots[kept] = slot;
-                kept++;
+                continue;
             }
-            else
+
+            _arrived.Add(slot);
+        }
+
+        // 2) 처음 보는 것 — 앞에서부터 세어 첫 빈 칸에 넣는다.
+        //    커서는 뒤로만 간다. 앞의 칸은 1)에서 이미 확정됐고, 여기서 준 칸도 곧바로 차기 때문이다.
+        int cursor = 0;
+
+        foreach (SlotData slot in _arrived)
+        {
+            while (_taken.Contains(cursor))
             {
-                _unranked.Add(slot);
+                cursor++;
+            }
+
+            _nextPlace[slot.Key] = cursor;
+            _taken.Add(cursor);
+            cursor++;
+        }
+
+        (_place, _nextPlace) = (_nextPlace, _place);
+
+        // 3) 칸 배치를 만든다. 빈 칸은 null로 남는다.
+        int size = 0;
+
+        foreach (int position in _taken)
+        {
+            if (position >= size)
+            {
+                size = position + 1;
             }
         }
 
-        _slots.RemoveRange(kept, _slots.Count - kept);
-        _slots.Sort(_byRank);
-        _slots.AddRange(_unranked);
+        _slots.Clear();
+
+        for (int i = 0; i < size; i++)
+        {
+            _slots.Add(null);
+        }
+
+        foreach (SlotData slot in _filled)
+        {
+            _slots[_place[slot.Key]] = slot;
+        }
     }
 
     // 규칙대로 비교한다. 오름차순이면 결과를 뒤집는다 (Sort의 정렬 비교자).
+    //
+    // ⚠️ **"나가 있는 것은 맨 뒤"만 방향을 타지 않는다** — 위 "오름차순은 규칙 전체를 뒤집는다"의
+    //   유일한 예외다. 이건 값의 순위가 아니라 **덩어리 가르기**라서, 뒤집으면 ▲를 누를 때마다
+    //   손댈 수 없는 것들이 맨 위를 차지한다. [정렬]의 목적("지금 쓸 수 있는 것을 위로")과 반대다.
     private int CompareByRule(SlotData a, SlotData b)
     {
+        bool awayA = IsAway(a.Key);
+
+        if (awayA != IsAway(b.Key))
+        {
+            return awayA ? 1 : -1;
+        }
+
         int compared = CompareForSort(a, b);
 
         return _order == StorageSortOrder.Ascending ? -compared : compared;
-    }
-
-    // 기억한 자리끼리 비교한다 (ApplyRememberedOrder의 정렬 비교자).
-    private int CompareByRank(SlotData a, SlotData b)
-    {
-        return _rank[a.Key].CompareTo(_rank[b.Key]);
     }
 }

@@ -11,20 +11,20 @@ using MikaProtocol;
 //   같은 장비를 여러 개 가질 수 있어 종류(TID)로는 하나를 특정하지 못한다.
 //   칸의 'Key'는 개체 번호('EquipId')이고, 이름·등급·효과는 TID로 테이블에서 읽는다.
 //
-// ■ 칸 순서의 주인은 서버다
-//   'EquipInfo.SlotPosition'이 창고 칸 번호이고 서버가 빈 자리를 찾아 넣는다
-//   (서버 'User.NextFreeEquipPosition'). 자원·캐릭터는 아직 서버 위치가 없어 도착 순서로 그리지만
-//   (T-058 → T-044), 장비는 이미 있으므로 **그 순서를 따른다** — 재접속해도 자리가 유지된다.
-//   [정렬]을 누른 뒤의 자리 기억은 자원·캐릭터와 똑같이 세션 한정이다(기반 클래스 주석).
+// ■ 'SlotPosition'은 **칸 번호가 아니라 도착 순서**로 쓴다 (2026-09-25 · T-044)
+//   'EquipInfo.SlotPosition'은 서버가 빈 자리를 찾아 넣는 창고 칸 번호다
+//   (서버 'User.NextFreeEquipPosition'). 자원·캐릭터에는 그런 필드가 아예 없어
+//   **세 탭의 자리 규칙이 갈라진다** — 장비만 서버 번호를 쓰면 "빈 칸이 왜 여기 있나"의 답이
+//   탭마다 달라진다. 그래서 여기서는 **줄 세우는 데만 쓰고**, 실제 칸 번호는 기반 클래스가 준다
+//   (처음 보는 것은 앞에서부터 첫 빈 칸 — 'StorageSlotSource.Arrange').
+//   ⚠️ 그래서 지금은 **자리가 세션 한정**이다. 재접속하면 위 순서로 처음부터 다시 앉는다 —
+//   칸 번호를 서버가 갖는 것은 T-058 → T-044의 몫이다.
 //
-// ■ 장착 중인 장비는 여기 없다 (2026-09-25 · T-086)
-//   캐릭터가 끼고 있으면 **창고 목록에서 빠진다** — 팰월드식으로, 장착은 "캐릭터에게 옮긴 것"이다.
-//   보유 전량은 「창고 + 장착 중」의 합집합이고, 장착분은 작업슬롯 세팅 화면에서 보인다.
-//
-//   ⚠️ **서버는 아직 장착분을 창고 칸에서 빼지 않는다** — 'Equip.Wear'가 'SlotPosition'을
-//   비우지 않고, 'User.StorageCapacity' 검사도 장착 여부를 가리지 않는다.
-//   그래서 **"빈 칸이 보이는데 뽑기가 거절되는" 구간이 남아 있다.** 서버 쪽 제외가 T-086의 몫이고,
-//   그때까지의 안내 문구는 T-064가 갖는다. 화면만 먼저 바뀐 상태라는 것을 알고 봐야 한다.
+// ■ 장착 중인 장비도 **제자리에 남는다** (2026-09-25 결정)
+//   캐릭터가 끼고 있어도 창고에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고,
+//   [정렬]에서만 맨 뒤로 민다('IsAway').
+//   서버도 장착 시 'SlotPosition'을 그대로 두므로(`Equip.Wear`) **클라·서버의 견해가 일치한다** —
+//   한때 목록에서 빼는 안을 넣었을 때 생겼던 "빈 칸이 보이는데 뽑기가 거절되는" 어긋남이 사라졌다.
 //
 // ※ 칸의 보조 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
 //   작업슬롯 세팅의 장비 칸이 같은 문구를 쓰기 때문이다(T-074).
@@ -49,12 +49,6 @@ public class EquipSlotSource : StorageSlotSource
 
         foreach (EquipInfo equip in _ordered)
         {
-            // 장착 중인 장비는 창고에 없다 — 캐릭터에게 옮겨 간 것으로 본다(클래스 주석).
-            if (_data.IsEquipped(equip.EquipId))
-            {
-                continue;
-            }
-
             into.Add(new SlotData(
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
@@ -108,6 +102,9 @@ public class EquipSlotSource : StorageSlotSource
 
         return byTid != 0 ? byTid : a.Key.CompareTo(b.Key);
     }
+
+    // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
+    public override bool IsAway(long key) => _data.IsEquipped(key);
 
     // 장비 변경 구독 (Subscribe에서 호출)
     //
