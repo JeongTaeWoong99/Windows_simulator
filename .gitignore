@@ -114,3 +114,6 @@ Assets/Resources/PerformanceTestRunSettings.json.meta
 # 씬 테스트 복사본 — 로컬 전용, 커밋하지 않는다 (이슈 #14: '오리지널 씬 복사' 버튼이 채운다)
 /Assets/Scenes/Test Copy/
 /Assets/Scenes/Test Copy.meta
+
+# 프로파일러 캡처 — 측정할 때마다 쌓이는 로컬 산출물 (.data 가 수십 MB)
+/ProfilerCaptures/
