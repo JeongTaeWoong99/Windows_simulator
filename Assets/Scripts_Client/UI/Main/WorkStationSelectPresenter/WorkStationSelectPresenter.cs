@@ -821,20 +821,52 @@ public class WorkStationSelectPresenter : MonoBehaviour
             total += drop.Weight;
         }
 
-        // 가중치 합이 0이면 비율을 만들 수 없다 — 테이블이 비었거나 전부 0인 경우다.
-        //
-        // ※ 판매가를 확률 옆 **칸**에 적는다 — "자주 나오지만 싼 것"과 "드물지만 비싼 것"이
-        //   한 줄에서 갈려야 레벨을 올릴지 정할 수 있다. 값은 'ItemTable.BasePrice'다.
+        // ■ 상자는 '럭키 상자' 묶음으로 뗀다 (이슈 #33)
+        // 상자도 같은 드롭 테이블의 줄이라 한 목록으로 그리면 신화 아래에서 등급이 일반·고급으로
+        // 되돌아가 등급순으로 읽히지 않는다. 자원을 먼저 다 그리고, 상자는 제목을 끼워 따로 그린다.
+        // 확률의 분모는 **둘을 합친 가중치**다 — 서버가 한 풀에서 뽑으므로 따로 나누면 합이 100%를 넘는다.
         foreach (var drop in drops)
         {
-            var rate  = total > 0 ? $"{drop.Weight * 100f / total:0.##}%" : "—";
-            var price = GameDataLoader.GetItemPrice(drop.ItemTid);
+            if (!GameDataLoader.IsBox(drop.ItemTid))
+            {
+                AddDropRow(content, drop, total);
+            }
+        }
 
-            content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드",
-                        RarityPalette.Get(GameDataLoader.GetItemRarity(drop.ItemTid)));
+        var hasBoxHeader = false;
+
+        foreach (var drop in drops)
+        {
+            if (!GameDataLoader.IsBox(drop.ItemTid))
+            {
+                continue;
+            }
+
+            if (!hasBoxHeader)
+            {
+                content.Header("럭키 상자");
+                hasBoxHeader = true;
+            }
+
+            AddDropRow(content, drop, total);
         }
 
         return content;
+    }
+
+    // 드롭 한 줄 — 이름 · 확률 · 판매가 ('BuildIndustryLevelTooltip'에서 호출).
+    //
+    // 가중치 합이 0이면 비율을 만들 수 없다 — 테이블이 비었거나 전부 0인 경우다.
+    //
+    // ※ 판매가를 확률 옆 **칸**에 적는다 — "자주 나오지만 싼 것"과 "드물지만 비싼 것"이
+    //   한 줄에서 갈려야 레벨을 올릴지 정할 수 있다. 값은 'ItemTable.BasePrice'다.
+    private static void AddDropRow(TooltipContent content, IndustryDrop drop, int total)
+    {
+        var rate  = total > 0 ? $"{drop.Weight * 100f / total:0.##}%" : "—";
+        var price = GameDataLoader.GetItemPrice(drop.ItemTid);
+
+        content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드",
+                    RarityPalette.Get(GameDataLoader.GetItemRarity(drop.ItemTid)));
     }
 
     // 고른 레벨이 지금 산업에서 열려 있지 않으면 기본 레벨로 되돌린다 ('Refresh'가 목록 단계에서 호출).

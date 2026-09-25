@@ -6,9 +6,10 @@ using UnityEngine.UI;
 // 수량 입력 팝업 — "몇 개?"를 묻고 확인을 누르면 그 수를 돌려준다.
 //
 // ■ 지금 누가 쓰나
-// 창고의 자원 칸 우클릭(판매 담기)뿐이다. 보유량이 2개 이상일 때만 뜬다 — 1개짜리는
-// 물어볼 것이 없어 격자가 바로 담는다 ('Storage 규칙.md'의 우클릭 동선).
+// 창고의 자원 칸 우클릭(판매 담기)과 상자 칸 좌클릭(상자 개봉)이다. 보유량이 2개 이상일 때만 뜬다 —
+// 1개짜리는 물어볼 것이 없어 격자가 바로 처리한다 ('Storage 규칙.md'의 우클릭·좌클릭 동선).
 // 판매 전용이 아니라 **수량을 묻는 자리면 어디서든** 쓰라고 이 이름·이 캔버스에 둔다.
+// 그래서 묻는 말("몇 개를 팔까?"·"몇 개를 열까?")은 부르는 쪽이 넘긴다 — 팝업이 용도를 모른다.
 //
 // ■ 왜 창고 열이 아니라 '!System Canvas'인가
 // 열 캔버스(#Storage·#Market·#Main·#State)는 **Sorting Order가 전부 0인 형제**라,
@@ -31,7 +32,7 @@ public class AmountInputPresenter : MonoBehaviour
     [SerializeField, Tooltip("자기 CanvasGroup. 이 오브젝트를 끄지 않고 alpha·blocksRaycasts로 여닫는다")]
     private CanvasGroup group = null!;
 
-    [SerializeField, Tooltip("무엇을 몇 개까지 팔 수 있는지 알리는 문구")]
+    [SerializeField, Tooltip("무엇을 몇 개까지 고를 수 있는지 알리는 문구. 묻는 말은 부르는 쪽이 넘긴다")]
     private TMP_Text titleText = null!;
 
     [SerializeField, Tooltip("수량 입력칸. Content Type은 Integer Number로 둔다")]
@@ -68,20 +69,21 @@ public class AmountInputPresenter : MonoBehaviour
     #region 여닫기
 
     // 수량을 묻는다 ('UIManager.AskAmount'가 호출).
-    //   itemId    : 무엇을 파는가 — 문구에만 쓴다
+    //   itemId    : 무엇의 수량인가 — 문구에만 쓴다
     //   maxCount  : 보유량. 입력값은 1..maxCount로 클램프된다
+    //   question  : 묻는 말 — "몇 개를 팔까?" · "몇 개를 열까?"
     //   onConfirm : 확인을 눌렀을 때 받을 곳. 취소면 불리지 않는다
-    public void Open(int itemId, int maxCount, Action<int> onConfirm)
+    public void Open(int itemId, int maxCount, string question, Action<int> onConfirm)
     {
         _maxCount  = Mathf.Max(1, maxCount);
         _onConfirm = onConfirm;
 
-        titleText.text   = $"{GameDataLoader.GetItemName(itemId)} — 몇 개를 팔까? (최대 {_maxCount:N0}개)";
+        titleText.text   = $"{GameDataLoader.GetItemName(itemId)} — {question} (최대 {_maxCount:N0}개)";
         amountInput.text = _maxCount.ToString();
 
         SetVisible(true);
 
-        // 방치형은 전량 판매가 기본 동선이라 기본값을 최대치로 두고, 바로 고칠 수 있게 커서를 준다.
+        // 방치형은 전량 처리(판매·개봉)가 기본 동선이라 기본값을 최대치로 두고, 바로 고칠 수 있게 커서를 준다.
         amountInput.Select();
         amountInput.ActivateInputField();
     }

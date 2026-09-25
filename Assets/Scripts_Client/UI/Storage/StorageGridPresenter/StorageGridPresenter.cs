@@ -520,7 +520,7 @@ public class StorageGridPresenter : MonoBehaviour
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!System Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   창고 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
-        _ui.AskAmount(itemId, owned, amount => _cart.Add(itemId, amount));
+        _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));
     }
 
     #endregion
@@ -566,7 +566,7 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
-        _ui.AskAmount(itemId, owned, amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, owned, "몇 개를 열까?", amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).

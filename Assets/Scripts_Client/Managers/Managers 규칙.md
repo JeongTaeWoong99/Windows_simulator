@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-09-18 (`DisplayManager` — 표시·성능 설정의 주인 · 설정마다 매니저를 두지 않는다) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-09-25 (수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-18 (`DisplayManager` — 표시·성능 설정의 주인 · 설정마다 매니저를 두지 않는다) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -32,7 +32,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 
 > **`UIManager`가 드는 것은 캔버스뿐이 아니다 — 팝업 하나가 예외로 섞여 있다.**
 > `!System Canvas`는 상주라 여닫지 않으므로 캔버스로는 들지 않는다. 대신 그 아래
-> `AmountInputPresenter` 하나를 인스펙터로 들고 `AskAmount(itemId, max, onConfirm)`로 중개한다.
+> `AmountInputPresenter` 하나를 인스펙터로 들고 `AskAmount(itemId, max, question, onConfirm)`로 중개한다 (`question` = 묻는 말 — 팝업은 용도를 모른다).
 > **답을 돌려줘야 하는 유일한 오버레이**라서다 — 나머지 셋은 매니저 이벤트를 스스로 구독해
 > 뜨므로 참조가 없다. 근거는 [`System 규칙.md`](<../UI/System/System 규칙.md>)의
 > "왜 이것만 `UIManager`를 거치는가".
