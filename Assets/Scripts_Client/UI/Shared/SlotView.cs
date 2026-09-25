@@ -74,7 +74,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
     // 작업슬롯 선택 화면의 캐릭터 줄도 같은 5칸을 그린다.
-    public const int AptitudeCount = AptitudeLabel.Count;
+    public static readonly int AptitudeCount = AptitudeLabel.Count;
 
     // 이 칸이 그리고 있는 대상. 자원은 ItemId, 캐릭터는 개체 번호. 비어 있으면 0.
     public long Key { get; private set; }

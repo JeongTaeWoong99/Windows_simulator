@@ -16,6 +16,8 @@ public static class ResultMessages
         EResultCode.InvalidDrawCount    => "뽑기 횟수가 올바르지 않습니다.",
         EResultCode.InvalidGachaId      => "존재하지 않는 뽑기입니다.",
         EResultCode.NotEnoughCurrency   => "골드가 부족합니다.",
+        // 뽑기와 상자 개봉이 같은 코드로 온다. 상자는 넘치면 우편으로 보관되므로, 이 코드면 우편함까지 찬 것이다.
+        EResultCode.StorageFull         => "창고가 가득 찼습니다. 정리한 뒤 다시 시도해 주세요.",
         EResultCode.InvalidSlotIndex    => "아직 열리지 않은 작업 슬롯입니다.",
         EResultCode.CharacterNotOwned   => "보유하지 않은 캐릭터입니다.",
         EResultCode.NoAptitude          => "이 캐릭터는 해당 산업 적성이 없습니다.",

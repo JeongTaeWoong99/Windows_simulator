@@ -254,10 +254,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private EEquipSlot _pickingSlot = EEquipSlot.None;
 
     // 장비 칸 수 — 'EEquipSlot'의 None을 뺀 개수다(무기·장신구1·장신구2·보석).
-    private const int EquipSlotCount = 4;
+    // 손으로 세어 적지 않고 enum에서 파생한다 — 서버 enum에 칸이 늘면 따라 늘어야 한다(T-085).
+    private static readonly int EquipSlotCount = Enum.GetValues(typeof(EEquipSlot)).Length - 1;
 
-    // 장비 산업 필터 수 — 채취 산업 5종.
-    private const int EquipFilterCount = 5;
+    // 장비 산업 필터 수 — 채취 산업 수('EIndustryType'의 None 제외). 위와 같은 이유로 파생한다.
+    private static readonly int EquipFilterCount = Enum.GetValues(typeof(EIndustryType)).Length - 1;
 
     // 지금 걸린 장비 산업 필터. 고르기를 열 때 **그 슬롯의 산업**으로 맞춰진다.
     // ※ 'None'은 화면에서 고를 수 없다 — 배치 전 등 산업을 모르는 때만 잠깐 들고, 그때는 거르지 않는다.

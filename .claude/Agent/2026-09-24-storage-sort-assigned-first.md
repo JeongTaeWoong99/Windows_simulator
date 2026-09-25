@@ -166,7 +166,7 @@ if (_data.IsEquipped(equip.EquipId)) { continue; }
 
 - 이슈 [#36](https://github.com/JeongTaeWoong99/Windows_simulator/issues/36) — `[기획·서버 요청]` 규칙 6개 + 칸 풀 정책
 - 일감 [T-086](../../tasks/T-086-배치개체인벤토리제외.md)(공용·진행중) · [T-087](../../tasks/T-087-창고칸풀동적관리.md)(클라·대기)
-- 연계 갱신 — [T-064](../../tasks/T-064-클라창고가득참.md)(문구가 "상한 초과" 쪽으로 바뀐다) · [T-075](../../tasks/T-075-캐릭터장비판매.md)(배치분이 애초에 안 담긴다)
+- 연계 갱신 — [T-064](../../tasks/archive/T-064-클라창고가득참.md)(문구가 "상한 초과" 쪽으로 바뀐다) · [T-075](../../tasks/T-075-캐릭터장비판매.md)(배치분이 애초에 안 담긴다)
 - [`Storage 규칙.md`](../../Assets/Scripts_Client/UI/Storage/Storage%20규칙.md) — "배치·장착 중인 개체는 창고에 없다" 절 신설
 
 ### 검증

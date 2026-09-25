@@ -73,7 +73,7 @@ private int CompareByRule(SlotData a, SlotData b)
 
 - [T-086](../../tasks/archive/T-086-배치개체인벤토리제외.md) → `tasks/archive/` · **취소**(기획 방향 변경)
 - [T-087](../../tasks/archive/T-087-창고칸풀동적관리.md) → `tasks/archive/` · **불필요**(전제 소멸)
-- [T-064](../../tasks/T-064-클라창고가득참.md) — "상한 규칙이 바뀐다"가 무효. 원래 계획대로 간다
+- [T-064](../../tasks/archive/T-064-클라창고가득참.md) — "상한 규칙이 바뀐다"가 무효. 원래 계획대로 간다
 - [T-075](../../tasks/T-075-캐릭터장비판매.md) — 배치분이 화면에 보이므로 **담기 단계 차단이 다시 필요**하다
 - [T-058](../../tasks/T-058-창고칸위치서버.md) — 장착해도 `SlotPosition`을 비우지 않는 **지금 서버 동작이 맞다**
 - [`Storage 규칙.md`](../../Assets/Scripts_Client/UI/Storage/Storage%20규칙.md) — 해당 절 교체
