@@ -22,8 +22,6 @@ namespace DesktopWindowControl.EditorTools
 		private const float  StatusWidth        = 42f;   // 해금 줄의 '[열림]'·'[잠김]' 고정 폭 — 이름 열을 맞춘다
 		private const float  IndustryHeadHeight = 18f;   // 해금 목록 안 산업 이름 줄 높이(px)
 		private const float  UnlockIndent       = 10f;   // 해금 묶음 안쪽 들여쓰기(px) — 산업 줄과 해금 줄이 같은 선에서 시작한다
-		private const int    MaxCharacterCount  = 10;    // 서버 'User.CheatMaxCharacterCount'와 같다
-		private const int    MaxSettleJudges    = 100;   // 서버 'User.CheatMaxSettleJudges'와 같다 — 넘기면 InvalidCheatArgs
 
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
@@ -72,6 +70,11 @@ namespace DesktopWindowControl.EditorTools
 		private double  _nextStatusPoll;
 
 		private CheatGuard.Step _completedSteps;
+
+		// 슬라이더 상한 — 서버와 같은 'Constants.xlsx' 값을 읽는다(넘기면 서버가 InvalidCheatArgs로 거절).
+		// 테이블은 Play에 들어가야 적재되므로 그 전에는 1로 둔다 — 그때는 어차피 보낼 수 없다.
+		private static int MaxCharacterCount => GameDataLoader.IsLoaded ? (int)Constants.CheatMaxCharacterCount : 1;
+		private static int MaxSettleJudges   => GameDataLoader.IsLoaded ? (int)Constants.CheatMaxSettleJudges   : 1;
 
 		// 치트 창을 연다 (툴바 버튼·메뉴)
 		[MenuItem("Window/DesktopWindowControl/치트")]

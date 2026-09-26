@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 클라 이중 상수를 Constants 조회로 교체](2026-09-26-client-constants-lookup.md) — `#client` `#data` 치트·가챠·창고 한도를 Constants.xlsx 조회로
 - [2026-09-26 클라 우편함 화면](2026-09-26-mailbox-ui.md) — `#client` `#ui` `#editor` 상태바 우편 버튼·점 + 우편함 화면(받기·모두 받기·삭제) · 우편 치트 칸 (T-083)
 - [2026-09-26 공용 상수 시트 Constants.xlsx (T-085)](2026-09-26-constants-sheet.md) — `#server` `#data` `#docs` 클라·서버 공용 값을 엑셀 한 곳에 두고 생성기가 행마다 `Constants.Xxx` 속성을 만들게 했다
 - [2026-09-26 창고 칸 툴팁](2026-09-26-storage-slot-tooltip.md) — `#client` `#ui` `#docs` 내용은 공급자 `BuildTooltip`이 만들고 트리거는 격자가 코드로 붙인다 · `RarityLabel` 공용화 (T-050)

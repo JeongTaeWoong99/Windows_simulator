@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
@@ -58,11 +59,6 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
-
-    // 서버 창고 한도 — 서버 'User.StorageCapacity'와 같은 값이어야 한다(탭마다 따로 200칸).
-    // ⚠️ 서버가 한도를 내려 주지 않아 사본을 둔다. 값의 거처가 정해지면 조회로 바꾼다(T-085).
-    //   그 전까지는 프레임 수와 대조만 한다('CacheFrames') — 어긋나면 로그로 드러난다.
-    private const int ServerStorageCapacity = 200;
 
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
     private readonly List<SlotView?> _views = new List<SlotView?>();
@@ -668,12 +664,15 @@ public class StorageGridPresenter : MonoBehaviour
             ClientLogger.Error(ClientLogger.UI,
                 "칸 프레임이 하나도 없다 — Slot Parent가 Content를 가리키는지 확인할 것.", this);
         }
-        else if (_frames.Count != ServerStorageCapacity)
+        else if (_frames.Count != Constants.StorageCapacity)
         {
+            // 서버 한도는 'Constants.xlsx'의 StorageCapacity(탭마다 따로)다 — 서버와 같은 값을 읽는다(T-085).
+            // 프레임은 씬 오브젝트라 시트를 따라 늘지 않으므로, 값을 바꾸면 프레임 수도 함께 맞춰야 한다.
+            //
             // 한도가 프레임보다 크면 뒤쪽 칸이 보이지 않아 "아이템이 사라졌다"로 읽히고,
             // 작으면 서버가 거절할 자리를 그린다. 어느 쪽이든 조용히 지나가면 못 찾는다.
             ClientLogger.Error(ClientLogger.UI,
-                $"칸 프레임이 {_frames.Count}개인데 서버 창고 한도는 {ServerStorageCapacity}칸이다 — 둘을 맞출 것.", this);
+                $"칸 프레임이 {_frames.Count}개인데 서버 창고 한도(Constants.StorageCapacity)는 {Constants.StorageCapacity}칸이다 — 둘을 맞출 것.", this);
         }
     }
 

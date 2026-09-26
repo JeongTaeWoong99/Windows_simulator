@@ -30,7 +30,7 @@ public class GachaPresenter : MonoBehaviour
         [Tooltip("뽑을 풀 Id (= GachaInfoTable의 GachaInfoTID). 2=캐릭터 · 3=무기 · 4=장신구 · 5=보석")]
         public int gachaId;
 
-        [Tooltip("한 번에 뽑을 횟수. 서버가 1과 10만 받는다")]
+        [Tooltip("한 번에 뽑을 횟수. 서버가 Constants.xlsx의 GachaDrawSingle·GachaDrawMulti(지금 1·10)만 받는다")]
         public int drawCount;
 
         [Tooltip("이 줄의 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -164,10 +164,14 @@ public class GachaPresenter : MonoBehaviour
             return 0L;
         }
 
-        if (entry.drawCount != 1 && entry.drawCount != 10)
+        bool isSingle = entry.drawCount == Constants.GachaDrawSingle;
+        bool isMulti  = entry.drawCount == Constants.GachaDrawMulti;
+
+        if (!isSingle && !isMulti)
         {
             ClientLogger.Error(ClientLogger.UI,
-                $"허용되지 않는 뽑기 횟수 {entry.drawCount} — 서버가 1과 10만 받는다 (풀 {entry.gachaId}).", this);
+                $"허용되지 않는 뽑기 횟수 {entry.drawCount} — 서버가 {Constants.GachaDrawSingle}과 {Constants.GachaDrawMulti}만 받는다 " +
+                $"(Constants.xlsx, 풀 {entry.gachaId}).", this);
         }
 
         if (!GameDataLoader.TryGetGachaInfo(entry.gachaId, out GachaInfoTableRow info))
@@ -179,7 +183,7 @@ public class GachaPresenter : MonoBehaviour
         }
 
         // ⚠️ 10연차 비용은 단차 x 10이 아니다. 컬럼이 따로라 각각 읽는다.
-        long cost = entry.drawCount == 1 ? info.CostSingle : info.CostMulti;
+        long cost = isSingle ? info.CostSingle : info.CostMulti;
 
         // 지금 재화 축은 골드뿐이다. 다이아 비용이 생기면 잔액 비교(ApplyButtons)도 함께 갈라야 한다.
         if (info.CostCurrency != CurrencyType.Gold)
