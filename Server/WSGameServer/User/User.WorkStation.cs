@@ -67,25 +67,41 @@ public partial class User
             openRows.Add(r);
         }
 
-        // 보유하지 않은 캐릭터를 물고 있는 슬롯은 데이터 이상이다(방출·삭제 경로가 생기면 정상 발생 가능).
-        // 배치는 유지하되 흔적을 남긴다 — 이런 슬롯은 기본 속도로 돌게 되어 조용히 어긋난다.
-        foreach (var r in openRows)
+        // 보유하지 않은 캐릭터를 물고 있는 칸은 배치를 풀어 적재한다(방출·삭제 경로가 생기면 정상 발생 가능 · 이슈 #39).
+        // 두면 클라가 없는 캐릭터를 찾다 경고를 띄우고, 그 칸은 기본 속도로 조용히 돈다. 산업은 그대로 둔다.
+        var orphaned = new List<WorkStationSlot>();
+        var slots = openRows.Select(r =>
         {
-            if (r.character_id != 0 && !TryGetCharacter(r.character_id, out _))
+            var industry    = (IndustryType)r.industry;
+            var level       = r.industry_level;
+            var characterId = r.character_id;
+
+            var orphan = characterId != 0 && !TryGetCharacter(characterId, out _);
+            if (orphan)
             {
                 ServerLog.Warn("작업슬롯",
-                    $"슬롯이 미보유 캐릭터를 참조. Uid={Uid} Slot={r.slot_index} Character={r.character_id}");
+                    $"슬롯이 미보유 캐릭터를 참조 — 배치 해제. Uid={Uid} Slot={r.slot_index} Character={characterId}");
+                characterId = 0;
             }
-        }
 
-        WorkStation.Load(openRows.Select(r =>
+            var slot = new WorkStationSlot(r.slot_index, industry, characterId, startedAt,
+                                           industryLevel: level,
+                                           judgeCostUnits: ResolveJudgeCost(industry, level));
+            if (orphan)
+            {
+                orphaned.Add(slot);
+            }
+
+            return slot;
+        }).ToList();
+
+        WorkStation.Load(slots);
+
+        // 푼 칸은 DB에도 비워 둔다 — 안 그러면 로그인할 때마다 같은 경고가 남는다.
+        if (orphaned.Count > 0)
         {
-            var industry = (IndustryType)r.industry;
-            var level    = r.industry_level;
-            return new WorkStationSlot(r.slot_index, industry, r.character_id, startedAt,
-                                       industryLevel: level,
-                                       judgeCostUnits: ResolveJudgeCost(industry, level));
-        }));
+            PostDBTask(new SaveWorkStationSlotRepository(this, orphaned));
+        }
     }
 
     /// <summary>

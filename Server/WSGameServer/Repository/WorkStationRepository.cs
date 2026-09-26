@@ -23,6 +23,8 @@ public sealed class SaveWorkStationSlotRepository : IRepository
 
     public User User { get; }
 
+    public IReadOnlyList<WorkStationSlot> Slots => _slots;
+
     public async Task ExecuteAsync(DbConnection connection)
     {
         // 슬롯 여러 개를 한 번의 왕복으로 처리한다. Dapper는 배열을 넘기면 문장을 반복 실행한다.
