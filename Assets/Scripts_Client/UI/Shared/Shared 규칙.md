@@ -1,6 +1,6 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
 (`#Storage Canvas` → `Storage/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
@@ -34,9 +34,26 @@
 | `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류. ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Storage(장비 탭) · Main(작업슬롯 장비 칸) |
 | `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Storage · Main (버튼마다) · Storage 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |
+| `theme/` (`UIThemeRole`·`UIThemePalette`·`UIThemeColor`) | 🎨 **아트 전 임시 색** — 역할 → 색 표 하나. 아래 "임시 테마" 절 | 모든 캔버스·프리팹 |
 
 > ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").
 > 쓰는 곳이 늘며 모양이 굳을 때까지 여기서 다듬고, 굳으면 툴킷으로 올린다(마스터 반영은 확인을 받는다).
+
+## 임시 테마 — `theme/`
+
+아트가 없는 동안 색을 **역할**(`PanelBg`·`Button`·`TextMain`…)로만 적고, 색 값은
+`Assets/Resources/UIThemePalette.asset` 하나가 정한다. 톤은 Palworld식 다크(짙은 남색 패널 · 흰 글씨 · 하늘 강조 · 주황 선택).
+
+| 색이 | 누가 칠하나 |
+|---|---|
+| 고정이다 (패널·글씨·일반 버튼) | Image·TMP에 붙은 **`UIThemeColor` 태그** — 에디터에서 씬·프리팹에 **구워 둔다**. 실행 중엔 아무것도 안 한다 |
+| 상태로 바뀐다 (고른 탭·찍은 노드·흐린 글씨) | 그 Presenter가 **`UIThemePalette.Of(역할)`** 로 칠한다. 색 필드 대신 `UIThemeRole` 필드를 둔다 |
+
+- 팔레트 값을 고치면 열린 씬은 바로 따라온다. **프리팹은 메뉴 `Window/DesktopWindowControl/UI 테마/적용`** 을 눌러야 한다.
+- ⚠️ **버튼 바탕은 흰색이고 색은 `ColorBlock`에 있다** — 틴트가 `Image.color`에 곱해지므로 바탕에 색을 넣으면 탁해진다.
+- 새 화면은 Image·TMP에 태그를 붙이고 역할만 고르면 된다. 자동 태그 메뉴는 처음 한 번 쓴 도구다(색을 보고 역할을 짐작).
+- 등급색(`RarityPalette`)은 게임 규칙의 의미라 팔레트에 넣지 않는다.
+- 🎨 **아트가 들어오면 태그를 걷고 이 폴더를 지운다.**
 
 ## 들어올 자격
 

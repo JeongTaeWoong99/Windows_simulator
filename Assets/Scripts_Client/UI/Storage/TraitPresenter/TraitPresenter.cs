@@ -79,11 +79,11 @@ public class TraitPresenter : MonoBehaviour
     private TabEntry[] tabs = new TabEntry[0];
 
     [CenterHeader("색")]
-    [SerializeField, Tooltip("지금 열린 구역의 탭 색 — 창고 탭 줄과 같은 금색")]
-    private Color selectedTabColor = new Color(0.839f, 0.682f, 0.067f);
+    [SerializeField, Tooltip("지금 열린 구역의 탭 색 — 창고 탭 줄과 같은 역할")]
+    private UIThemeRole selectedTabRole = UIThemeRole.ButtonSelected;
 
     [SerializeField, Tooltip("열리지 않은 구역의 탭 색")]
-    private Color normalTabColor = Color.white;
+    private UIThemeRole normalTabRole = UIThemeRole.Button;
 
     // 만들어 둔 노드 칸. 파괴하지 않고 재사용한다 (남는 칸은 꺼 둔다).
     private readonly List<TraitNodeView> _nodes = new List<TraitNodeView>();
@@ -255,7 +255,7 @@ public class TraitPresenter : MonoBehaviour
                 continue;
             }
 
-            Color target = entry.tab == _currentTab ? selectedTabColor : normalTabColor;
+            Color target = UIThemePalette.Of(entry.tab == _currentTab ? selectedTabRole : normalTabRole);
 
             ColorBlock colors = entry.button.colors;
 

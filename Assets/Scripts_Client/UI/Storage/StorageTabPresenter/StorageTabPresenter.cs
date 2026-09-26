@@ -74,10 +74,10 @@ public class StorageTabPresenter : MonoBehaviour
 
     [CenterHeader("선택 표시")]
     [SerializeField, Tooltip("지금 열려 있는 탭의 버튼 색")]
-    private Color selectedColor = new Color(0.62f, 0.78f, 1f, 1f);
+    private UIThemeRole selectedRole = UIThemeRole.ButtonSelected;
 
     [SerializeField, Tooltip("열려 있지 않은 탭의 버튼 색")]
-    private Color normalColor = Color.white;
+    private UIThemeRole normalRole = UIThemeRole.Button;
 
     // 지금 열려 있는 탭. 창고를 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     public StorageTab CurrentTab { get; private set; } = DefaultTab;
@@ -228,7 +228,7 @@ public class StorageTabPresenter : MonoBehaviour
                 continue;
             }
 
-            Color target = entry.tab == CurrentTab ? selectedColor : normalColor;
+            Color target = UIThemePalette.Of(entry.tab == CurrentTab ? selectedRole : normalRole);
 
             ColorBlock colors = entry.button.colors;
             colors.normalColor   = target;

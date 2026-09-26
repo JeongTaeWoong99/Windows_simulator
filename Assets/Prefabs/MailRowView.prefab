@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 1605838158446232172}
   - component: {fileID: 8919736931368169054}
   - component: {fileID: 3034413376338355758}
+  - component: {fileID: 319070798327748012}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -161,7 +162,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -223,6 +224,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &319070798327748012
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2813211002042790814}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 30
+  alpha: 1
 --- !u!1 &3628408439510327170
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,6 +252,7 @@ GameObject:
   - component: {fileID: 8895565171448428263}
   - component: {fileID: 3904461269889238158}
   - component: {fileID: 8627994529891350865}
+  - component: {fileID: 8252228456971735980}
   m_Layer: 5
   m_Name: MailRowView
   m_TagString: Untagged
@@ -306,7 +322,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.18039216, g: 0.14117648, b: 0.10980392, a: 1}
+  m_Color: {r: 0.14901961, g: 0.22352941, b: 0.30980393, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -366,6 +382,20 @@ MonoBehaviour:
   attachmentText: {fileID: 1861582269495287973}
   actionButton: {fileID: 5062264041231212111}
   actionText: {fileID: 3034413376338355758}
+--- !u!114 &8252228456971735980
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3628408439510327170}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 2
+  alpha: 1
 --- !u!1 &3691728442945004289
 GameObject:
   m_ObjectHideFlags: 0
@@ -378,6 +408,7 @@ GameObject:
   - component: {fileID: 6604817515075571606}
   - component: {fileID: 570711799165053370}
   - component: {fileID: 1861582269495287973}
+  - component: {fileID: 4013657837286632241}
   m_Layer: 5
   m_Name: Attachment Text (TMP)
   m_TagString: Untagged
@@ -462,7 +493,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9411765, g: 0.8235294, b: 0.47058824, a: 1}
+  m_fontColor: {r: 1, g: 0.83137256, b: 0.2784314, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -524,6 +555,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4013657837286632241
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3691728442945004289}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 21
+  alpha: 1
 --- !u!1 &4700072476053951618
 GameObject:
   m_ObjectHideFlags: 0
@@ -536,6 +581,7 @@ GameObject:
   - component: {fileID: 147135330057491274}
   - component: {fileID: 8698457356697901780}
   - component: {fileID: 8095097391277685683}
+  - component: {fileID: 6889851782486658752}
   m_Layer: 5
   m_Name: Title Text (TMP)
   m_TagString: Untagged
@@ -620,7 +666,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -682,6 +728,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &6889851782486658752
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4700072476053951618}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 30
+  alpha: 1
 --- !u!1 &5493726147851357114
 GameObject:
   m_ObjectHideFlags: 0
@@ -694,6 +754,7 @@ GameObject:
   - component: {fileID: 1015950952300773664}
   - component: {fileID: 1452239955701037864}
   - component: {fileID: 7312742289382021968}
+  - component: {fileID: 7970468912070493107}
   m_Layer: 5
   m_Name: Info Text (TMP)
   m_TagString: Untagged
@@ -778,7 +839,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.7058824, g: 0.64705884, b: 0.54901963, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -840,6 +901,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7970468912070493107
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5493726147851357114}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 30
+  alpha: 1
 --- !u!1 &6828752365278146243
 GameObject:
   m_ObjectHideFlags: 0
@@ -853,6 +928,7 @@ GameObject:
   - component: {fileID: 4733557042742812563}
   - component: {fileID: 5291677255909392320}
   - component: {fileID: 5062264041231212111}
+  - component: {fileID: 2387831461671996316}
   m_Layer: 5
   m_Name: Action Button
   m_TagString: Untagged
@@ -921,7 +997,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.8235294, g: 0.47058824, b: 0.11764706, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -959,11 +1035,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_NormalColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
+    m_HighlightedColor: {r: 0.82, g: 0.5866667, b: 0.21666667, a: 1}
+    m_PressedColor: {r: 0.63058823, g: 0.4109804, b: 0.0627451, a: 1}
+    m_SelectedColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
+    m_DisabledColor: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -982,3 +1058,17 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &2387831461671996316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6828752365278146243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 12
+  alpha: 1

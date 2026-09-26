@@ -10,10 +10,6 @@ using UnityEngine.UI;
 // 제목·첨부 문구는 'MailPresenter'가 완성해서 넘긴다 (종속 View 규약은 'UI 규칙.md').
 public class MailRowView : MonoBehaviour
 {
-    // 받은 우편은 흐리게 — "이미 처리한 줄"이 한눈에 갈린다.
-    private static readonly Color UnclaimedTitleColor = Color.white;
-    private static readonly Color ClaimedTitleColor   = new Color(1f, 1f, 1f, 0.45f);
-
     [CenterHeader("참조")]
     [SerializeField, Tooltip("우편 제목 (템플릿의 Title)")]
     private TMP_Text titleText = null!;
@@ -63,7 +59,7 @@ public class MailRowView : MonoBehaviour
         _isClaimed = isClaimed;
 
         titleText.text      = title;
-        titleText.color     = isClaimed ? ClaimedTitleColor : UnclaimedTitleColor;
+        titleText.color     = UIThemePalette.Of(isClaimed ? UIThemeRole.TextDisabled : UIThemeRole.TextMain); // 받은 우편은 흐리게
         infoText.text       = info;
         attachmentText.text = attachment;
         actionText.text     = isClaimed ? "삭제" : "받기";

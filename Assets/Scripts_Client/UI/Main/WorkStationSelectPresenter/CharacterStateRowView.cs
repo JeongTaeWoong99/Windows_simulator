@@ -51,8 +51,8 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("적성 값 5개. 순서 = 농사·낚시·채굴·벌목·사냥")]
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
-    [SerializeField, Tooltip("지금 고른 산업 칸의 바탕 (노랑 — 산업 탭의 고른 색과 같다)")]
-    private Color highlightCellColor = new Color(0.839f, 0.682f, 0.067f, 1f);
+    [SerializeField, Tooltip("지금 고른 산업 칸의 바탕 (산업 탭의 고른 색과 같은 역할)")]
+    private UIThemeRole highlightCellRole = UIThemeRole.ButtonSelected;
 
     [SerializeField, Tooltip("나머지 칸의 바탕 (반투명 어둠)")]
     private Color normalCellColor = new Color(0f, 0f, 0f, 0.25f);
@@ -127,7 +127,7 @@ public class CharacterStateRowView : MonoBehaviour
 
             if (aptitudeCellImages[i] != null)
             {
-                aptitudeCellImages[i].color = i == highlightIndex ? highlightCellColor : normalCellColor;
+                aptitudeCellImages[i].color = i == highlightIndex ? UIThemePalette.Of(highlightCellRole) : normalCellColor;
             }
         }
     }

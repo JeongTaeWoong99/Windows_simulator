@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2752484123989144264}
   - component: {fileID: 7303029323411391086}
   - component: {fileID: 5655952734959042622}
+  - component: {fileID: 3134473754003056625}
   m_Layer: 5
   m_Name: Gacha Send Button
   m_TagString: Untagged
@@ -62,7 +63,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.80392164, g: 0.7176471, b: 0.38823533, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -100,11 +101,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_NormalColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
+    m_HighlightedColor: {r: 0.82, g: 0.5866667, b: 0.21666667, a: 1}
+    m_PressedColor: {r: 0.63058823, g: 0.4109804, b: 0.0627451, a: 1}
+    m_SelectedColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
+    m_DisabledColor: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -149,6 +150,20 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &3134473754003056625
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3874597849746927191}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 12
+  alpha: 1
 --- !u!1 &5871941735086967925
 GameObject:
   m_ObjectHideFlags: 0
@@ -160,6 +175,7 @@ GameObject:
   - component: {fileID: 7726231581758584289}
   - component: {fileID: 632309468727364245}
   - component: {fileID: 3797451757623118282}
+  - component: {fileID: 5668247648940131263}
   m_Layer: 5
   m_Name: Gold Text (TMP)
   m_TagString: Untagged
@@ -224,7 +240,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278253030
-  m_fontColor: {r: 0.90196085, g: 0.9607844, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 0.83137256, b: 0.2784314, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -286,6 +302,20 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &5668247648940131263
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5871941735086967925}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 21
+  alpha: 1
 --- !u!1 &7548464160167319213
 GameObject:
   m_ObjectHideFlags: 0
@@ -297,6 +327,7 @@ GameObject:
   - component: {fileID: 2526044766777116667}
   - component: {fileID: 1628149524599360029}
   - component: {fileID: 1669197634050171046}
+  - component: {fileID: 7567276046460392681}
   m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -361,7 +392,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4281479730
-  m_fontColor: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -423,3 +454,17 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &7567276046460392681
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7548464160167319213}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 30
+  alpha: 1

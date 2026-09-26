@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 6574410404735447136}
   - component: {fileID: 6644751978478655420}
   - component: {fileID: 3292163645557315778}
+  - component: {fileID: 3446380212372273143}
   m_Layer: 0
   m_Name: Character Image
   m_TagString: Untagged
@@ -58,7 +59,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.45, g: 0.45, b: 0.5, a: 1}
+  m_Color: {r: 0.24313726, g: 0.3529412, b: 0.47058824, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -75,6 +76,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &3446380212372273143
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2331228343889844760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 3
+  alpha: 1
 --- !u!1 &2908390494771958399
 GameObject:
   m_ObjectHideFlags: 0
@@ -86,6 +101,7 @@ GameObject:
   - component: {fileID: 3149241597760167667}
   - component: {fileID: 8582934399159468906}
   - component: {fileID: 1227453896073611588}
+  - component: {fileID: 4199220885918819413}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -133,7 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.08, g: 0.08, b: 0.09, a: 1}
+  m_Color: {r: 0.14901961, g: 0.22352941, b: 0.30980393, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -150,6 +166,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &4199220885918819413
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2908390494771958399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 2
+  alpha: 1
 --- !u!1 &4577908994033144240
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +227,7 @@ GameObject:
   - component: {fileID: 6259416486644911715}
   - component: {fileID: 1499908595446059058}
   - component: {fileID: 732794344898968866}
+  - component: {fileID: 1762204954877721549}
   m_Layer: 0
   m_Name: Fill
   m_TagString: Untagged
@@ -244,7 +275,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.31, g: 0.85, b: 0.42, a: 1}
+  m_Color: {r: 0.42745098, g: 0.85882354, b: 0.47843137, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -261,6 +292,20 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1762204954877721549
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5315594802027422998}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 40
+  alpha: 1
 --- !u!1 &6191801148331597662
 GameObject:
   m_ObjectHideFlags: 0
@@ -363,6 +408,7 @@ GameObject:
   - component: {fileID: 1352256165293028013}
   - component: {fileID: 6688479553459979492}
   - component: {fileID: 5506499910461230404}
+  - component: {fileID: 1844180094523596103}
   m_Layer: 0
   m_Name: WidgetMiniSlotView
   m_TagString: Untagged
@@ -413,7 +459,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.16, g: 0.16, b: 0.18, a: 1}
+  m_Color: {r: 0.14901961, g: 0.22352941, b: 0.30980393, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -466,6 +512,20 @@ MonoBehaviour:
   characterImage: {fileID: 3292163645557315778}
   harvestText: {fileID: 2472931416502404810}
   progressSlider: {fileID: 9116991798078815453}
+--- !u!114 &1844180094523596103
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6312371686899442399}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 2
+  alpha: 1
 --- !u!1 &8110470697063805242
 GameObject:
   m_ObjectHideFlags: 0
@@ -477,6 +537,7 @@ GameObject:
   - component: {fileID: 1640858467957651975}
   - component: {fileID: 4337085878161530941}
   - component: {fileID: 2472931416502404810}
+  - component: {fileID: 4040516069723025237}
   m_Layer: 0
   m_Name: Harvest Text (TMP)
   m_TagString: Untagged
@@ -541,7 +602,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.94, g: 1, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 0.83137256, b: 0.2784314, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -603,3 +664,17 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &4040516069723025237
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8110470697063805242}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
+  role: 21
+  alpha: 1

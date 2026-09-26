@@ -20,15 +20,12 @@ public static class AptitudeLabel
     //   "못 다루는 산업"은 알려 줄 값이 없는 게 아니라 알려 줄 것이 있는 상태다.
     private static readonly string[] Texts = { "X", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10" };
 
-    // 적성 0은 흐리게 — 'X'가 숫자와 같은 세기로 보이면 눈이 먼저 X를 읽는다.
-    public static readonly Color ValueColor = Color.white;
-    public static readonly Color ZeroColor  = new Color(0.62f, 0.62f, 0.62f, 1f);
-
     // 칸에 적을 문구 (적성 칸을 그릴 때 호출)
     public static string GetText(byte value)
         => value < Texts.Length ? Texts[value] : value.ToString();
 
     // 칸 글자색 (적성 칸을 그릴 때 호출)
+    // 적성 0은 흐리게 — 'X'가 숫자와 같은 세기로 보이면 눈이 먼저 X를 읽는다.
     public static Color GetColor(byte value)
-        => value == 0 ? ZeroColor : ValueColor;
+        => UIThemePalette.Of(value == 0 ? UIThemeRole.TextDisabled : UIThemeRole.TextMain);
 }

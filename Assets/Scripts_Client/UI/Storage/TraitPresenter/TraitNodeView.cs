@@ -42,14 +42,14 @@ public class TraitNodeView : MonoBehaviour
     [CenterHeader("색")]
     // ⚠️ 'Image.color'가 아니라 'ColorBlock'을 칠한다 — 'Selectable'이 실행 중 'Image.color'를
     //    덮어써서, 마우스가 스치기만 해도 색이 돌아간다(산업 버튼과 같은 함정).
-    [SerializeField, Tooltip("찍은 노드 — 화면 테두리의 금색")]
-    private Color learnedColor = new Color(0.839f, 0.682f, 0.067f);
+    [SerializeField, Tooltip("찍은 노드")]
+    private UIThemeRole learnedRole = UIThemeRole.ButtonSelected;
 
     [SerializeField, Tooltip("지금 찍을 수 있는 노드")]
-    private Color availableColor = Color.white;
+    private UIThemeRole availableRole = UIThemeRole.Button;
 
     [SerializeField, Tooltip("잠긴 노드. disabledColor 자리에 들어간다")]
-    private Color lockedColor = new Color(0.5f, 0.5f, 0.5f);
+    private UIThemeRole lockedRole = UIThemeRole.ButtonDisabled;
 
     // 이 노드를 눌렀다 ('TraitPresenter'가 구독).
     public event Action<TraitNodeView>? Clicked;
@@ -101,11 +101,11 @@ public class TraitNodeView : MonoBehaviour
     // ⚠️ 잠긴 색만은 'disabledColor'다 — 회색을 'normalColor'에 넣으면 잠근 순간 무시된다.
     private void ApplyState(NodeState state)
     {
-        Color target = state switch
+        Color target = UIThemePalette.Of(state switch
         {
-            NodeState.Learned => learnedColor,
-            _                 => availableColor,
-        };
+            NodeState.Learned => learnedRole,
+            _                 => availableRole,
+        });
 
         ColorBlock colors = button.colors;
 
@@ -113,7 +113,7 @@ public class TraitNodeView : MonoBehaviour
         colors.highlightedColor = target;
         colors.pressedColor     = target;
         colors.selectedColor    = target;
-        colors.disabledColor    = lockedColor;
+        colors.disabledColor    = UIThemePalette.Of(lockedRole);
 
         button.colors = colors;
 

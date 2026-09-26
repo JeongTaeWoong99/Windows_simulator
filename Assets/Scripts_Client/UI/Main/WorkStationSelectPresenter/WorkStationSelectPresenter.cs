@@ -61,14 +61,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 세 색이 세 상태와 1:1이다 — 고름 / 고르지 않음 / 못 고름.
     // 못 고르는 것은 색만 흐린 게 아니라 실제로 잠긴다('CanSelectIndustry').
     [CenterHeader("공통 Industry Panel (항상 보인다)")]
-    [SerializeField, Tooltip("고른 산업 버튼의 바탕색 (노랑)")]
-    private Color selectedIndustryColor = new Color(0.839f, 0.682f, 0.067f, 1f);
+    // 색은 팔레트('UIThemePalette')의 역할로 고른다 — 버튼 바탕 Image는 흰색이라 'ColorBlock' 색이 그대로 보인다.
+    [SerializeField, Tooltip("고른 산업 버튼의 바탕색")]
+    private UIThemeRole selectedIndustryRole = UIThemeRole.ButtonSelected;
 
-    [SerializeField, Tooltip("고르지 않았지만 고를 수 있는 산업 버튼의 바탕색 (하양)")]
-    private Color unselectedIndustryColor = Color.white;
+    [SerializeField, Tooltip("고르지 않았지만 고를 수 있는 산업 버튼의 바탕색")]
+    private UIThemeRole unselectedIndustryRole = UIThemeRole.Button;
 
-    [SerializeField, Tooltip("잠긴 산업 버튼의 바탕색 (회색). 'Selectable'이 disabledColor로 따로 칠한다")]
-    private Color disabledIndustryColor = new Color(0.55f, 0.55f, 0.55f, 1f);
+    [SerializeField, Tooltip("잠긴 산업 버튼의 바탕색. 'Selectable'이 disabledColor로 따로 칠한다")]
+    private UIThemeRole disabledIndustryRole = UIThemeRole.ButtonDisabled;
 
     // 고르는 중인 장비 칸을 **눌러 둔 것처럼** 어둡게 만든다. 칸 바탕은 등급색이라 이 값이 그 위에 곱해진다
     // ('Button'의 색 전이 규칙). 표시용 채널을 따로 만들지 않고 버튼이 이미 가진 것을 쓴다 —
@@ -627,14 +628,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 기본값(highlighted·selected = 0.961 흰색)을 그대로 두면 **마우스를 올리거나 마지막으로
             // 누른 버튼이라는 이유로** 색이 바뀐다. 특히 'selected'는 EventSystem이 클릭한 버튼을
             // 계속 잡고 있어 **고른 표시가 엉뚱한 버튼에 남는다.**
-            var tint = i == _selectedIndustry ? selectedIndustryColor : unselectedIndustryColor;
+            var tint = UIThemePalette.Of(i == _selectedIndustry ? selectedIndustryRole : unselectedIndustryRole);
 
             var colors = button.colors;
             colors.normalColor      = tint;
             colors.highlightedColor = tint;
             colors.pressedColor     = tint;
             colors.selectedColor    = tint;
-            colors.disabledColor    = disabledIndustryColor;
+            colors.disabledColor    = UIThemePalette.Of(disabledIndustryRole);
             button.colors           = colors;
         }
     }
@@ -759,14 +760,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 entry.label.text = GetIndustryLevelName(industry, level);
             }
 
-            var tint   = level == _selectedIndustryLevel ? selectedIndustryColor : unselectedIndustryColor;
+            var tint   = UIThemePalette.Of(level == _selectedIndustryLevel ? selectedIndustryRole : unselectedIndustryRole);
             var colors = entry.button.colors;
 
             colors.normalColor      = tint;
             colors.highlightedColor = tint;
             colors.pressedColor     = tint;
             colors.selectedColor    = tint;
-            colors.disabledColor    = disabledIndustryColor;
+            colors.disabledColor    = UIThemePalette.Of(disabledIndustryRole);
             entry.button.colors     = colors;
         }
 
@@ -1676,7 +1677,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 colors.highlightedColor = tint;
                 colors.pressedColor     = tint;
                 colors.selectedColor    = tint;
-                colors.disabledColor    = disabledIndustryColor;
+                colors.disabledColor    = UIThemePalette.Of(disabledIndustryRole);
                 entry.button.colors     = colors;
             }
 
@@ -1967,14 +1968,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 ? _industries[i]
                 : EIndustryType.None;
 
-            var tint = filter == _equipFilter ? selectedIndustryColor : unselectedIndustryColor;
+            var tint = UIThemePalette.Of(filter == _equipFilter ? selectedIndustryRole : unselectedIndustryRole);
 
             var colors = button.colors;
             colors.normalColor      = tint;
             colors.highlightedColor = tint;
             colors.pressedColor     = tint;
             colors.selectedColor    = tint;
-            colors.disabledColor    = disabledIndustryColor;
+            colors.disabledColor    = UIThemePalette.Of(disabledIndustryRole);
             button.colors           = colors;
         }
     }
