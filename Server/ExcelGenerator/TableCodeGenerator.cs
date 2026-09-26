@@ -68,6 +68,9 @@ public static class TableCodeGenerator
             Header + BuildGameTable(metas), Utf8NoBom);
         File.WriteAllText(Path.Combine(gameDataDir, "TableSet.cs"),
             Header + CodeGenUtil.BuildFile("GameData", TableSetUsings, TableSetBody), Utf8NoBom);
+
+        // 공용 상수 시트는 행마다 속성 하나를 가진 Constants 클래스를 따로 만든다(Constants.StorageCapacity).
+        ConstantsGenerator.Generate(tables, gameDataDir);
     }
 
     /// <summary>GameTable 생성에 필요한 테이블 요약. Key가 null이면 리스트 전용 접근자로 생성한다.</summary>

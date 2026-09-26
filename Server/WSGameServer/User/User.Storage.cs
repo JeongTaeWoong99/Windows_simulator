@@ -1,9 +1,11 @@
+using GameData;
+
 namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>창고 탭마다의 칸 수(자원·캐릭터·장비 각각). 클라 칸 프레임 수와 같다 — 공용 상수 시트(T-077)가 서면 옮긴다.</summary>
-    public const int StorageCapacity = 200;
+    /// <summary>창고 탭마다의 칸 수(자원·캐릭터·장비 각각) — Constants.xlsx. 클라 칸 프레임 수와 같아야 한다.</summary>
+    public static int StorageCapacity => (int)Constants.StorageCapacity;
 
     // DB가 PK를 발급하기 전의 캐릭터 수. 세지 않으면 응답이 오기 전 연속 뽑기가 한도를 지나친다.
     private int _pendingCharacterCount;

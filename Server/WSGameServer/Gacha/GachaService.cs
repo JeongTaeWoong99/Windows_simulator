@@ -12,12 +12,12 @@ namespace WSGameServer;
 /// </summary>
 public sealed class GachaService : Singleton<GachaService>
 {
-    // 허용하는 뽑기 횟수(단차 / 10연차)
-    private const int SingleDraw = 1;
-    private const int MultiDraw = 10;
+    // 허용하는 뽑기 횟수(단차 / 연차) — Constants.xlsx
+    private static int SingleDraw => (int)Constants.GachaDrawSingle;
+    private static int MultiDraw  => (int)Constants.GachaDrawMulti;
 
-    /// <summary>한 번에 여는 상자 수 상한. 상자 최대 수량(MaxStack 99)과 같다.</summary>
-    public const int MaxOpenCount = 99;
+    /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx. 상자 최대 수량(MaxStack 99)과 같다.</summary>
+    public static int MaxOpenCount => (int)Constants.BoxOpenMax;
 
     private readonly GachaPoolCatalog _pools;
 

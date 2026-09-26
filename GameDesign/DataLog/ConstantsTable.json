@@ -1,0 +1,77 @@
+[
+  {
+    "Name": "StorageCapacity",
+    "Value": 200,
+    "Description": "창고 탭마다 칸 수(자원·캐릭터·장비 각각)"
+  },
+  {
+    "Name": "MailboxCapacity",
+    "Value": 100,
+    "Description": "안 받은 우편 상한 — 넘침 보관이 멈추는 선"
+  },
+  {
+    "Name": "BoxOpenMax",
+    "Value": 99,
+    "Description": "상자를 한 번에 여는 수"
+  },
+  {
+    "Name": "GachaDrawSingle",
+    "Value": 1,
+    "Description": "뽑기 단차 횟수"
+  },
+  {
+    "Name": "GachaDrawMulti",
+    "Value": 10,
+    "Description": "뽑기 연차 횟수"
+  },
+  {
+    "Name": "SellRatePermille",
+    "Value": 1000,
+    "Description": "즉시 판매가 = BasePrice × 이 값(천분율) — 거래소 하한과 묶인다"
+  },
+  {
+    "Name": "AuctionListingHours",
+    "Value": 48,
+    "Description": "거래소·경매장 등록 기간(시간)"
+  },
+  {
+    "Name": "AuctionMaxActiveListings",
+    "Value": 20,
+    "Description": "1인 판매 중 매물 상한"
+  },
+  {
+    "Name": "AuctionPriceBandMultiplier",
+    "Value": 10,
+    "Description": "단가 상한 = 하한(BasePrice) × 이 값"
+  },
+  {
+    "Name": "AuctionListingFeePermille",
+    "Value": 10,
+    "Description": "등록비 = 총액 × 이 값(천분율, 최소 1) — 만료면 환급"
+  },
+  {
+    "Name": "AuctionSaleFeePermille",
+    "Value": 50,
+    "Description": "판매 수수료 = 판매액 × 이 값(천분율)"
+  },
+  {
+    "Name": "AuctionSearchBurst",
+    "Value": 5,
+    "Description": "거래소·경매장 조회 순간 허용 횟수"
+  },
+  {
+    "Name": "AuctionSearchRefillSeconds",
+    "Value": 2,
+    "Description": "조회 1회가 회복되는 간격(초)"
+  },
+  {
+    "Name": "CheatMaxCharacterCount",
+    "Value": 10,
+    "Description": "치트 — 한 번에 지급하는 캐릭터 장수 상한"
+  },
+  {
+    "Name": "CheatMaxSettleJudges",
+    "Value": 100,
+    "Description": "치트 — 정산을 한 번에 앞당기는 판정 횟수 상한"
+  }
+]

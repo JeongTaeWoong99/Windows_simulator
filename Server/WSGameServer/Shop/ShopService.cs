@@ -10,9 +10,9 @@ namespace WSGameServer;
 /// </summary>
 public sealed class ShopService : Singleton<ShopService>
 {
-    // 즉시 판매가 = BasePrice × 이 비율(천분율, 1000 = 100%).
-    // 거래소 가격의 하한과 묶이는 값이라 한 곳에만 둔다 — 거래소가 붙으면 여기서 엑셀로 옮긴다.
-    private const int SellRatePermille = 1000;
+    // 즉시 판매가 = BasePrice × 이 비율(천분율, 1000 = 100%) — Constants.xlsx.
+    // 거래소 가격의 하한과 묶이는 값이다(AuctionRules.MinUnitPrice).
+    private static long SellRatePermille => Constants.SellRatePermille;
 
     public void Sell(User user, List<ItemInfo>? items)
     {

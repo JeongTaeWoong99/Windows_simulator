@@ -9,11 +9,11 @@ public partial class User
     /// 개발을 위해서 CheatAdminLevel은 없도록.
     public const int CheatAdminLevel = 0;
 
-    /// <summary>한 번에 지급할 수 있는 캐릭터 장수 상한. 10연차와 같다.</summary>
-    public const int CheatMaxCharacterCount = 10;
+    /// <summary>한 번에 지급할 수 있는 캐릭터 장수 상한 — Constants.xlsx. 클라 치트창과 같은 값을 읽는다.</summary>
+    public static int CheatMaxCharacterCount => (int)Constants.CheatMaxCharacterCount;
 
-    /// <summary>정산 치트가 한 번에 앞당길 수 있는 판정 횟수 상한.</summary>
-    public const int CheatMaxSettleJudges = 100;
+    /// <summary>정산 치트가 한 번에 앞당길 수 있는 판정 횟수 상한 — Constants.xlsx.</summary>
+    public static int CheatMaxSettleJudges => (int)Constants.CheatMaxSettleJudges;
 
     /// <summary>
     /// 치트 명령을 실행하고 <c>S_CheatResponse</c>로 결과를 돌려준다.
