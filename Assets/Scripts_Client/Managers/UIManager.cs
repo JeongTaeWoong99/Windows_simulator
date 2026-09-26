@@ -305,9 +305,10 @@ public class UIManager : MonoService<UIManager>
     //
     // ※ 로딩·알림·가챠 결과에는 이런 중개가 없다 — 매니저 이벤트를 스스로 구독해 뜨는 단방향이라서다.
     //   이 팝업만 **답을 돌려주는 왕복**이라 구독형으로 만들 수 없다('System 규칙.md').
-    public void AskAmount(int itemId, int maxCount, Action<int> onConfirm)
+    // 'question'은 묻는 말이다("몇 개를 팔까?") — 팝업은 무엇에 쓰이는지 모른다.
+    public void AskAmount(int itemId, int maxCount, string question, Action<int> onConfirm)
     {
-        amountInput.Open(itemId, maxCount, onConfirm);
+        amountInput.Open(itemId, maxCount, question, onConfirm);
     }
 
     // 예/아니오를 묻고, 확인을 누르면 'onConfirm'을 부른다 (취소면 부르지 않는다).

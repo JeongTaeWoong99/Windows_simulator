@@ -59,6 +59,11 @@ public class StorageGridPresenter : MonoBehaviour
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
 
+    // 서버 창고 한도 — 서버 'User.StorageCapacity'와 같은 값이어야 한다(탭마다 따로 200칸).
+    // ⚠️ 서버가 한도를 내려 주지 않아 사본을 둔다. 값의 거처가 정해지면 조회로 바꾼다(T-085).
+    //   그 전까지는 프레임 수와 대조만 한다('CacheFrames') — 어긋나면 로그로 드러난다.
+    private const int ServerStorageCapacity = 200;
+
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
     private readonly List<SlotView?> _views = new List<SlotView?>();
 
@@ -515,7 +520,7 @@ public class StorageGridPresenter : MonoBehaviour
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!System Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   창고 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
-        _ui.AskAmount(itemId, owned, amount => _cart.Add(itemId, amount));
+        _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));
     }
 
     #endregion
@@ -561,7 +566,7 @@ public class StorageGridPresenter : MonoBehaviour
         }
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
-        _ui.AskAmount(itemId, owned, amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, owned, "몇 개를 열까?", amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).
@@ -640,6 +645,13 @@ public class StorageGridPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 "칸 프레임이 하나도 없다 — Slot Parent가 Content를 가리키는지 확인할 것.", this);
+        }
+        else if (_frames.Count != ServerStorageCapacity)
+        {
+            // 한도가 프레임보다 크면 뒤쪽 칸이 보이지 않아 "아이템이 사라졌다"로 읽히고,
+            // 작으면 서버가 거절할 자리를 그린다. 어느 쪽이든 조용히 지나가면 못 찾는다.
+            ClientLogger.Error(ClientLogger.UI,
+                $"칸 프레임이 {_frames.Count}개인데 서버 창고 한도는 {ServerStorageCapacity}칸이다 — 둘을 맞출 것.", this);
         }
     }
 

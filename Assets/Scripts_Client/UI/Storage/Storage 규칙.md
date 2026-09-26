@@ -1,6 +1,6 @@
 # Storage 폴더 규칙
 
-> 최종 업데이트: 2026-09-25 (배치 중인 개체도 제자리에 남는다 · 빈 칸은 빈 칸으로 남는다) · 대상: `Assets/Scripts_Client/UI/Storage/`
+> 최종 업데이트: 2026-09-25 (상자 개봉 팝업이 "몇 개를 열까?"로 묻는다 · 배치 중인 개체도 제자리에 남는다 · 빈 칸은 빈 칸으로 남는다) · 대상: `Assets/Scripts_Client/UI/Storage/`
 
 **`#Storage Canvas` — 탭으로 내용을 갈아 끼우는 창고 화면.**
 
@@ -244,7 +244,8 @@ Sell Cart Presenter     줄 목록 · 합계 · [판매] → C_ItemSellRequest
 ([`System 규칙.md`](<../System/System 규칙.md>)). 창고는 그것을 **부르기만** 한다:
 
 ```csharp
-_ui.AskAmount(itemId, owned, amount => _cart.Add(itemId, amount));
+_ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));   // 우클릭 판매 담기
+_ui.AskAmount(itemId, owned, "몇 개를 열까?", amount => OpenBox(itemId, amount));       // 좌클릭 상자 개봉
 ```
 
 > 🔴 **처음엔 `#Storage Canvas` 자식으로 뒀다가 옮겼다(2026-09-05).** 열 캔버스는 넷 다

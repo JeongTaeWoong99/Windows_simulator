@@ -1,3 +1,5 @@
+using System;
+using MikaProtocol;
 using UnityEngine;
 
 // 적성 값(0~10) → 칸에 적을 문구와 색.
@@ -8,8 +10,9 @@ using UnityEngine;
 // 'IndustryLabel'·'RarityPalette'와 같은 부류 — 캔버스를 가로지르는 표시용 변환이라 여기 둔다.
 public static class AptitudeLabel
 {
-    // 적성 칸 수 = 1차 산업 5종. 'EIndustryType'의 None 제외 개수와 같아야 한다.
-    public const int Count = 5;
+    // 적성 칸 수 = 1차 산업 수. 'EIndustryType'에서 None을 뺀 개수로 파생한다 —
+    // 손으로 세어 적으면 서버 enum에 원소가 늘 때 조용히 틀린다(T-085).
+    public static readonly int Count = Enum.GetValues(typeof(EIndustryType)).Length - 1;
 
     // 적성은 0~10이라 미리 만들어 둔다 — 창고는 200칸 × 5개를 매번 그리므로
     // 'ToString()'을 그때그때 부르면 그릴 때마다 문자열 1000개가 버려진다(상주 앱이라 쌓인다).

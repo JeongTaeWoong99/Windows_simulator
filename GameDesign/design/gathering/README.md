@@ -452,7 +452,7 @@ P3("하루 단위로 달라진다")는 **어느 산업이 열리는가**가 아�
 | `<산업>BasicTable` | 산업별 5종 | `DropTID`(키) · **`IndustryLevel`**(`Ref`) · `ItemTID`(`Ref`) · `Weight` · `Description` | ✅ **레벨 5단계 확장 완료** (2026-08-01 · 산업당 38행 · 2026-08-08 산업별 파일 분리) |
 | `IndustryLevelTable` | 산업 × 레벨 | `IndustryLevelTID`(키) · `IndustryType` · `Level` · `Name` · **`RequiredScore`** · `RequiredAptitude` · `RequiredAccountLevel` | ✅ **생성됨** (2026-08-01 · 25행 · `Industry.xlsx` · 2026-08-08 산업별 시트 분리) |
 | `GatheringTable` | 산업별 | `IndustryType`, `YieldPerCycle`, `UnlockCondition` | ❌ 미작성 |
-| `CommonRewardTable` | 전 산업 공통 | `ItemTID`, `Weight` — 티켓·고유 아이템 | ❌ 미작성 |
+| `CommonRewardTable` | 전 산업 공통 | `CommonRewardTID`(키) · `ItemTID`(`Ref`) · `Count` · `ChancePerMillion` — 상자 3종, 판정 1회마다 행별 독립 확률 | ✅ 생성됨 (2026-09-19 · T-030) → 🔁 **폐지 예정** (2026-09-25) — 상자는 `<산업>BasicTable`의 신화 아래 2줄로 옮긴다 ([이슈 #33](https://github.com/JeongTaeWoong99/Windows_simulator/issues/33)) |
 | ~~`RarityWeightTable`~~ | — | ❌ **폐지 (2026-07-31).** 가중치는 산업 시트가 직접 갖는다 | — |
 | ~~`<산업>SpecialTable`~~ | — | ❌ **폐지 (2026-07-30).** 특별보상 층이 없어졌다 | — |
 | ~~`WeekdayRotationTable`~~ | — | ❌ **폐지 (2026-07-29).** 요일 로테이션이 없어졌다 | — |
