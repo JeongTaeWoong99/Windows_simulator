@@ -1,11 +1,12 @@
+using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>안 받은 우편 상한 — 넘침 보관만 이 선에서 멈춘다(운영 우편은 무관). 공용 상수 시트(T-077)가 서면 옮긴다.</summary>
-    public const int MailboxCapacity = 100;
+    /// <summary>안 받은 우편 상한 — 넘침 보관만 이 선에서 멈춘다(운영 우편은 무관). Constants.xlsx.</summary>
+    public static int MailboxCapacity => (int)Constants.MailboxCapacity;
 
     // 우편함. 도착 순(= mail_id 순)이 모두 받기의 순서다.
     private readonly SortedDictionary<long, Mail> _mails = new();
