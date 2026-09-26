@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 창고 칸 툴팁](2026-09-26-storage-slot-tooltip.md) — `#client` `#ui` `#docs` 내용은 공급자 `BuildTooltip`이 만들고 트리거는 격자가 코드로 붙인다 · `RarityLabel` 공용화 (T-050)
 - [2026-09-25 럭키 상자 표시 · 수량 팝업 문구 · 일감 전수 점검](2026-09-25-lucky-box-display-and-task-audit.md) — `#client` `#ui` `#docs` 상자 개봉 팝업을 "몇 개를 열까?"로 · 레벨 툴팁에 `■ 럭키 상자` 묶음 (T-030 · 이슈 #33)
 - [2026-09-25 창고 가득 참 문구 · enum 개수 파생 · 프레임 수 대조](2026-09-25-storage-full-and-enum-counts.md) — `#client` `#ui` `StorageFull(103)` 문구 · 장비 칸·산업 수를 enum에서 파생 (T-064 · T-085 클라 파트)
 - [2026-09-25 공용 툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로](2026-09-25-tooltip.md) — `#client` `#ui` `#docs` 호버는 `IPointerEnter`가 아니라 Win32 커서 폴링 레이캐스트의 맨 위 하나 · 대상 오른쪽 옆, 넘치면 왼쪽 (T-088)

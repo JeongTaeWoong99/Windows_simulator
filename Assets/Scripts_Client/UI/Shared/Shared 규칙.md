@@ -1,6 +1,6 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
 (`#Storage Canvas` → `Storage/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
@@ -27,11 +27,12 @@
 | `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
 | `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Storage + `PlayerDataModel` |
 | `RarityPalette.cs` | 등급 → 표시 색 | Storage · System |
+| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Storage(도구 줄 드롭다운 · 칸 툴팁) |
 | `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
 | `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Storage(칸 스트립) · Main(캐릭터 줄·카드) |
 | `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
 | `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류. ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Storage(장비 탭) · Main(작업슬롯 장비 칸) |
-| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Storage · Main (버튼마다) |
+| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Storage · Main (버튼마다) · Storage 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |
 
 > ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").

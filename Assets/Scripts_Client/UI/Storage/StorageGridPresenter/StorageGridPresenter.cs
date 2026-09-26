@@ -73,7 +73,8 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 적성 칸의 순서 = 산업. 'EIndustryType'의 None 제외 순서와 같고, 배치 화면의 산업 버튼도
     // 같은 순서로 만들어진다('WorkStationSelectPresenter.BuildIndustryList') — 두 화면이 맞아야 한다.
-    private static readonly EIndustryType[] StripIndustries =
+    // ※ 칸 툴팁의 적성 줄('CharacterSlotSource.BuildTooltip')도 이 순서를 탄다 — 스트립과 위아래가 같게 읽힌다.
+    public static readonly EIndustryType[] StripIndustries =
     {
         EIndustryType.Farming,
         EIndustryType.Fishing,
@@ -434,13 +435,9 @@ public class StorageGridPresenter : MonoBehaviour
     //
     // ※ 'LV.' 접두를 뗄 수 없다 — 초상화 형태가 제각각이라 숫자만 두면 '2'가 무엇인지 드러나지 않는다.
     //   글자가 줄던 문제는 이름 줄에서 배지로 떼어 내 풀었다(한때 'LV.19 폭스파스크'로 이름 줄에 붙였다).
-    // 만렙 = 곡선 테이블에 다음 레벨 행이 없다('GameDataLoader.TryGetRequiredExp').
+    // ※ 문구 규칙은 칸 툴팁과 함께 쓴다('CharacterSlotSource.GetLevelLabel').
     private string ReadLevelLabel(long characterId)
-    {
-        int level = _data.GetCharacterLevel(characterId);
-
-        return GameDataLoader.TryGetRequiredExp(level + 1, out _) ? $"LV.{level}" : "LV.MAX";
-    }
+        => CharacterSlotSource.GetLevelLabel(_data.GetCharacterLevel(characterId));
 
     // i번째 프레임의 칸을 얻는다. 아직 없으면 그 프레임 안에 만든다 (Redraw에서 호출).
     private SlotView? GetOrCreateView(int index)
@@ -459,9 +456,27 @@ public class StorageGridPresenter : MonoBehaviour
         view.RightClicked += OnSlotRightClicked;
         view.LeftClicked  += OnSlotLeftClicked;
 
+        AttachTooltip(view);
+
         _views[index] = view;
 
         return view;
+    }
+
+    // 칸에 툴팁을 단다 — 올리면 칸에 다 못 담은 정보가 옆에 뜬다 (GetOrCreateView에서 호출, T-050).
+    //
+    // ■ 프리팹이 아니라 여기서 붙인다
+    //   가챠 결과 팝업이 같은 칸 프리팹을 쓰는데, 그쪽은 결과를 보여 주는 자리라 툴팁 대상이 아니다.
+    //   창고 칸을 만드는 곳이 여기 하나뿐이라 붙이는 곳도 하나다.
+    // ■ 칸을 기억하지 않고 **띄우는 순간 'view.Key'를 읽는다**
+    //   칸은 풀로 돌며 다른 개체로 다시 묶인다. 만들 때의 Key를 잡아 두면 정렬 한 번에 엉뚱한 것을 보인다.
+    // ※ 내용은 지금 탭의 공급자가 만든다('StorageSlotSource.BuildTooltip') — 탭이 바뀌면 저절로 따라간다.
+    // ※ 입력을 가로채지 않는다 — 툴팁은 레이캐스트 결과를 읽기만 하므로 우클릭 담기·좌클릭 개봉이 그대로 돈다.
+    private void AttachTooltip(SlotView view)
+    {
+        var trigger = view.gameObject.AddComponent<TooltipTrigger>();
+
+        trigger.SetProvider(() => view.IsEmpty || _current == null ? null : _current.BuildTooltip(view.Key));
     }
 
     // i번째 칸을 비우고 꺼 둔다 — 파괴하지 않고 풀로 되돌린다 (Redraw에서 호출).

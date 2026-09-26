@@ -62,6 +62,33 @@ public class ResourceSlotSource : StorageSlotSource
         return itemA.CompareTo(itemB);
     }
 
+    // 자원 칸 툴팁 — 등급 · 보유 · 판매가(개당 · 전부) · 조작 안내 (격자가 칸에 올린 순간 호출).
+    //
+    // ※ 판매가를 합계와 함께 적는다 — 칸에는 수량만 있어 "이 칸을 다 팔면 얼마인가"를 알 길이 없었다.
+    // ※ 조작 안내를 한 줄 둔다 — 좌클릭(상자 개봉)·우클릭(판매 담기)은 칸에 아무 표시가 없어 눌러 봐야 안다.
+    // ⚠️ 엑셀 'Description'은 쓰지 않는다 — 기획 메모 컬럼이라 플레이어용 문구가 아니다(T-093).
+    public override TooltipContent? BuildTooltip(long key)
+    {
+        int itemId = (int)key;
+        int count  = _data.GetItemCount(itemId);
+
+        if (count <= 0)
+        {
+            return null; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
+        }
+
+        long price   = GameDataLoader.GetItemPrice(itemId);
+        var  content = new TooltipContent(GameDataLoader.GetItemName(itemId));
+
+        AddRarityRow(content, GameDataLoader.GetItemRarity(itemId))
+            .Row("보유", $"{count:N0} 개")
+            .Row("판매가", $"{price:N0} 골드", $"전부 {price * count:N0} 골드", null);
+
+        content.Row(GameDataLoader.IsBox(itemId) ? "좌클릭 열기 · 우클릭 판매 담기" : "우클릭 판매 담기", "");
+
+        return content;
+    }
+
     // 인벤토리 변경 구독 (Subscribe에서 호출)
     protected override void OnSubscribe()
     {

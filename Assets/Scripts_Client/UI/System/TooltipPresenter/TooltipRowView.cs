@@ -6,8 +6,13 @@ using UnityEngine.UI;
 //
 // ■ 값 칸을 둘로 나눈 이유
 // 한 칸에 "19.51% · 2,025 골드"를 붙여 쓰면 칸을 넘겨 잘린다(2026-09-24 실측).
-// 칸마다 고정폭을 두면 잘리지 않고, **줄마다 세로 열이 맞는다** — 숫자 길이가 제각각(0.1% / 64.29%)이다.
+// 칸을 나누면 **줄마다 세로 열이 맞는다** — 숫자 길이가 제각각(0.1% / 64.29%)이다.
 // 보조 값이 빈 줄은 그 칸을 꺼서 값 칸이 오른쪽 끝에 붙게 한다.
+//
+// ■ 열 폭은 툴팁마다 잰다 (2026-09-26 · T-050)
+// 한때 값 80px · 보조 값 130px 고정이었는데, '슬롯 1 · 낚시 Lv.1' 같은 긴 값이 '…'로 잘렸다.
+// 이제 'TooltipPresenter'가 이 툴팁의 줄 전부에서 **열마다 가장 긴 글자 폭**을 재어('MeasureColumns')
+// 모든 줄에 같은 폭을 준다('SetColumnWidths') — 잘리지 않으면서 열도 맞는다. 패널은 그만큼 넓어진다.
 //
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 public class TooltipRowView : MonoBehaviour
@@ -28,6 +33,10 @@ public class TooltipRowView : MonoBehaviour
     // 프리팹에 찍힌 기본 바탕색. 풀에서 재사용될 때 이전 줄의 색이 남지 않게 여기로 되돌린다.
     private Color _defaultColor;
 
+    // 값 · 보조 값 칸의 폭을 정하는 레이아웃 요소 — 줄의 HorizontalLayoutGroup이 이 값으로 칸을 나눈다.
+    private LayoutElement _valueLayout    = null!;
+    private LayoutElement _subValueLayout = null!;
+
     private void Awake()
     {
         this.RequireRef(labelText,       nameof(labelText));
@@ -35,7 +44,43 @@ public class TooltipRowView : MonoBehaviour
         this.RequireRef(subValueText,    nameof(subValueText));
         this.RequireRef(backgroundImage, nameof(backgroundImage));
 
-        _defaultColor = backgroundImage.color;
+        _defaultColor   = backgroundImage.color;
+        _valueLayout    = RequireLayout(valueText);
+        _subValueLayout = RequireLayout(subValueText);
+    }
+
+    // 이 줄의 값 · 보조 값이 잘리지 않을 폭 ('TooltipPresenter.Render'가 열 폭을 정할 때 호출).
+    // 꺼진 보조 값 칸은 0이다 — 그 줄은 보조 값 열을 쓰지 않는다.
+    public (float Value, float SubValue) MeasureColumns()
+    {
+        float value = MeasureText(valueText);
+        float sub   = subValueText.gameObject.activeSelf ? MeasureText(subValueText) : 0f;
+
+        return (value, sub);
+    }
+
+    // 값 · 보조 값 칸 폭을 정한다 — 한 툴팁의 모든 줄에 같은 값을 준다 ('TooltipPresenter.Render'에서 호출).
+    public void SetColumnWidths(float value, float subValue)
+    {
+        _valueLayout.minWidth          = value;
+        _valueLayout.preferredWidth    = value;
+        _subValueLayout.minWidth       = subValue;
+        _subValueLayout.preferredWidth = subValue;
+    }
+
+    // 글자가 한 줄에 다 들어갈 폭. 빈 문자열이면 0 (MeasureColumns에서 호출).
+    // ※ 소수점 폭에서 반올림 오차로 '…'가 붙지 않게 올림한다.
+    private static float MeasureText(TMP_Text text)
+        => text.text.Length == 0 ? 0f : Mathf.Ceil(text.GetPreferredValues(text.text).x);
+
+    // 칸의 LayoutElement를 얻는다. 없으면 여기서 멈춘다 — 폭을 못 정하면 조용히 잘린다 (Awake에서 호출).
+    private LayoutElement RequireLayout(TMP_Text text)
+    {
+        var layout = text.GetComponent<LayoutElement>();
+
+        this.RequireRef(layout, $"{text.name}의 LayoutElement");
+
+        return layout;
     }
 
     // 줄을 채운다 ('TooltipPresenter.Render'에서 호출).

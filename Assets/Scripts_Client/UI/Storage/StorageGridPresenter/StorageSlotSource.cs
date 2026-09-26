@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameData;
 
 // 창고 [정렬]의 방향. 도구 줄의 화살표 버튼이 둘을 오간다.
 //
@@ -92,6 +93,18 @@ public abstract class StorageSlotSource
     //   같은 분기를 반복**하게 되고, 탭이 늘 때 한 곳만 빠진다.
     // ※ 자원은 나갈 곳이 없어 기본값 false 그대로다.
     public virtual bool IsAway(long key) => false;
+
+    // 이 개체의 칸 툴팁 — 칸에 다 못 담은 것 (격자가 칸에 올린 순간 호출, T-050). 없으면 null이고 툴팁이 뜨지 않는다.
+    //
+    // ■ 'SlotData'에서 만들지 않는다
+    //   그건 칸에 그릴 것만 담은 완성값이라 적성·배치처·판매가가 없다. 거기에 끼우면 가챠 결과 칸까지
+    //   따라 두꺼워진다. 원본('PlayerDataModel'·테이블)을 쥔 공급자가 **띄우는 순간에** 읽는다.
+    // ■ 격자가 아니라 여기인 이유는 'IsAway'와 같다 — 무엇을 보일지가 탭마다 통째로 다르다.
+    public virtual TooltipContent? BuildTooltip(long key) => null;
+
+    // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
+    protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
+        => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //

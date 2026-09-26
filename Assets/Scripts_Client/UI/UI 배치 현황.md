@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -140,7 +140,7 @@ Root Canvas
    ├─ Tooltip Presenter (↓ SUB VIEW)               TooltipPresenter   CanvasGroup alpha만 · blocksRaycasts 늘 끔 (T-088)
    │  └─ Panel                                    pivot 좌상단 · VLG + CSF(Preferred) · raycastTarget 전부 끔
    │     ├─ Title Text (TMP)                      제목 한 줄 (흰색 22)
-   │     └─ Row Panel                             TooltipRowView 프리팹 (라벨 / 값 80 / 보조 값 130) — 줄이 없으면 꺼진다
+   │     └─ Row Panel                             TooltipRowView 프리팹 (라벨 / 값 / 보조 값 — 값 열 폭은 코드가 툴팁마다 가장 긴 글자에 맞춘다) — 줄이 없으면 꺼진다
    └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
       └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
 
@@ -376,8 +376,8 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
 - ✅ **`Sell Cart Presenter`로 개명했다 (2026-09-12 · T-049).** 예전 `Information Presenter`는
   아이템 상세를 띄우는 자리였는데 2026-09-04에 판매 목록이 들어와 **이름이 거짓이 된 상태**였다.
-  **좌클릭 상세 표시는 이 패널로 돌아오지 않는다** — 칸 정보는 커서 옆 호버 UI로 간다
-  ([`T-050`](../../../tasks/T-050-칸정보호버.md) · 패널 자리를 다투지 않는 쪽을 골랐다).
+  **좌클릭 상세 표시는 이 패널로 돌아오지 않는다** — 칸 정보는 칸에 올리면 뜨는 툴팁으로 갔다
+  ([`T-050`](../../../tasks/archive/T-050-칸정보호버.md) · 패널 자리를 다투지 않는 쪽을 골랐다. 씬 변경 없음 — 트리거는 격자가 코드로 붙인다).
 - **판매는 자원 탭에서만 된다.** 서버 판매 패킷이 아이템 TID 축이라 캐릭터를 담을 수 없어서,
   격자가 다른 탭의 우클릭을 무시한다 — 근거는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
 - 🔴 **수량 팝업은 `#Storage Canvas`에 있다가 `!System Canvas`로 옮겼다 (2026-09-05).**

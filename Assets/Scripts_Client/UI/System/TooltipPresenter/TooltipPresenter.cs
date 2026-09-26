@@ -192,10 +192,36 @@ public class TooltipPresenter : MonoBehaviour
             _rows[i].gameObject.SetActive(false);
         }
 
+        FitColumns(lines.Count);
+
         rowParent.gameObject.SetActive(lines.Count > 0);
 
         // 크기를 지금 확정해야 아래 'Place'가 넘침을 잴 수 있다('UI 규칙.md' "만든 자리에서 바로 태운다").
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+    }
+
+    // 값 · 보조 값 열 폭을 이 툴팁에서 가장 긴 글자에 맞춘다 (Render에서 호출).
+    //
+    // 줄마다 제 폭을 쓰면 열이 들쭉날쭉해지고, 고정폭이면 긴 값이 '…'로 잘린다('TooltipRowView' 머리 주석).
+    // 그래서 열마다 최댓값을 구해 모든 줄에 같은 폭을 준다. 라벨은 남는 폭을 차지하므로 따로 재지 않는다 —
+    // 패널이 'ContentSizeFitter'로 가장 넓은 줄에 맞춰 늘어난다.
+    private void FitColumns(int count)
+    {
+        float value = 0f;
+        float sub   = 0f;
+
+        for (int i = 0; i < count; i++)
+        {
+            var (rowValue, rowSub) = _rows[i].MeasureColumns();
+
+            value = Mathf.Max(value, rowValue);
+            sub   = Mathf.Max(sub,   rowSub);
+        }
+
+        for (int i = 0; i < count; i++)
+        {
+            _rows[i].SetColumnWidths(value, sub);
+        }
     }
 
     // 툴팁을 대상 오른쪽 옆에 놓는다. 창 밖으로 넘치면 왼쪽으로 뒤집고, 세로는 창 안으로 밀어 넣는다.

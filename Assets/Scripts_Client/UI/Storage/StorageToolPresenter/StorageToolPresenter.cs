@@ -33,17 +33,6 @@ public class StorageToolPresenter : MonoBehaviour
         GlobalRarity.Mythic,
     };
 
-    // 등급의 한글 이름. ⚠️ 임시 사본이다 — 표시 이름의 출처는 엑셀로 옮겨 간다(일감 'T-047').
-    private static readonly string[] RarityNames =
-    {
-        "일반",
-        "고급",
-        "희귀",
-        "영웅",
-        "전설",
-        "신화",
-    };
-
     [CenterHeader("참조")]
     [SerializeField, Tooltip("정렬 방향 버튼 (정사각형). OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sortButton = null!;
@@ -150,9 +139,9 @@ public class StorageToolPresenter : MonoBehaviour
 
         var options = new List<string>(SellRarities.Length);
 
-        foreach (string name in RarityNames)
+        foreach (GlobalRarity rarity in SellRarities)
         {
-            options.Add($"{name} 이하");
+            options.Add($"{RarityLabel.Get(rarity)} 이하");
         }
 
         bulkRarityDropdown.AddOptions(options);
@@ -228,7 +217,7 @@ public class StorageToolPresenter : MonoBehaviour
 
         if (added == 0)
         {
-            _wait.RaiseNotice($"{RarityNames[bulkRarityDropdown.value]} 이하로 담을 자원이 없습니다.");
+            _wait.RaiseNotice($"{RarityLabel.Get(SellRarities[bulkRarityDropdown.value])} 이하로 담을 자원이 없습니다.");
 
             return;
         }
