@@ -87,6 +87,12 @@ public partial class User
             return (EResultCode.InvalidCheatArgs, $"ItemTable에 없는 TID {itemTid}");
         }
 
+        // 뽑기와 같은 칸 검사 — 넘기면 클라 격자에 칸이 없어 보이지 않는다(#40).
+        if (!HasStorageFor(new[] { (int)itemTid }, characterCount: 0, equipCount: 0))
+        {
+            return (EResultCode.StorageFull, $"창고가 가득 참 (자원 {ItemSlotsUsed}/{StorageCapacity})");
+        }
+
         AddItem((int)itemTid, (int)count);
         return (EResultCode.Ok, $"아이템 {itemTid} +{count}");
     }
@@ -101,6 +107,11 @@ public partial class User
         if (!GameTable.CharacterTable.TryGet((int)characterTid, out _))
         {
             return (EResultCode.InvalidCheatArgs, $"CharacterTable에 없는 TID {characterTid}");
+        }
+
+        if (!HasStorageFor(Array.Empty<int>(), characterCount: (int)count, equipCount: 0))
+        {
+            return (EResultCode.StorageFull, $"창고가 가득 참 (캐릭터 {CharacterSlotsUsed}/{StorageCapacity})");
         }
 
         // 가챠와 같은 지급 경로 — 개체 PK 발급 후 목록 재전송까지 동일하다.
@@ -192,6 +203,11 @@ public partial class User
         if (equipTid <= 0 || equipTid > int.MaxValue || !_equipCatalog.TryGet((int)equipTid, out _))
         {
             return (EResultCode.InvalidCheatArgs, $"EquipTable에 없는 TID {equipTid}");
+        }
+
+        if (!HasStorageFor(Array.Empty<int>(), characterCount: 0, equipCount: 1))
+        {
+            return (EResultCode.StorageFull, $"창고가 가득 참 (장비 {EquipSlotsUsed}/{StorageCapacity})");
         }
 
         // 앞으로 생길 획득 경로와 같은 지급 함수 — PK 발급 후 S_EquipSyncResponse까지 동일하다.
