@@ -37,8 +37,25 @@ public class TooltipRowView : MonoBehaviour
     private LayoutElement _valueLayout    = null!;
     private LayoutElement _subValueLayout = null!;
 
+    private bool _isReady; // 참조 확보 완료 여부
+
     private void Awake()
     {
+        EnsureInitialized();
+    }
+
+    // 참조를 확보한다 (Awake · 공개 메서드 첫머리에서 호출).
+    //
+    // ⚠️ 'Awake'만 믿지 않는다 — **꺼진 부모 아래에 만든 줄은 부모가 켜질 때까지 'Awake'가 미뤄진다.**
+    //   그 사이 'Bind'·'SetColumnWidths'가 불려 NRE가 났다(2026-09-26 — 간단형 툴팁이 줄 영역을 끈 직후).
+    //   부르는 쪽 순서에 기대지 않고 여기서 스스로 보장한다. 두 번 불려도 한 번만 돈다.
+    private void EnsureInitialized()
+    {
+        if (_isReady)
+        {
+            return;
+        }
+
         this.RequireRef(labelText,       nameof(labelText));
         this.RequireRef(valueText,       nameof(valueText));
         this.RequireRef(subValueText,    nameof(subValueText));
@@ -47,12 +64,17 @@ public class TooltipRowView : MonoBehaviour
         _defaultColor   = backgroundImage.color;
         _valueLayout    = RequireLayout(valueText);
         _subValueLayout = RequireLayout(subValueText);
+
+        // ★ 끝까지 왔을 때만 세운다 — 위에서 예외가 나면 다음 호출이 다시 시도하고 같은 원인을 드러낸다.
+        _isReady = true;
     }
 
     // 이 줄의 값 · 보조 값이 잘리지 않을 폭 ('TooltipPresenter.Render'가 열 폭을 정할 때 호출).
     // 꺼진 보조 값 칸은 0이다 — 그 줄은 보조 값 열을 쓰지 않는다.
     public (float Value, float SubValue) MeasureColumns()
     {
+        EnsureInitialized();
+
         float value = MeasureText(valueText);
         float sub   = subValueText.gameObject.activeSelf ? MeasureText(subValueText) : 0f;
 
@@ -62,6 +84,8 @@ public class TooltipRowView : MonoBehaviour
     // 값 · 보조 값 칸 폭을 정한다 — 한 툴팁의 모든 줄에 같은 값을 준다 ('TooltipPresenter.Render'에서 호출).
     public void SetColumnWidths(float value, float subValue)
     {
+        EnsureInitialized();
+
         _valueLayout.minWidth          = value;
         _valueLayout.preferredWidth    = value;
         _subValueLayout.minWidth       = subValue;
@@ -86,6 +110,8 @@ public class TooltipRowView : MonoBehaviour
     // 줄을 채운다 ('TooltipPresenter.Render'에서 호출).
     public void Bind(TooltipContent.Line line)
     {
+        EnsureInitialized();
+
         labelText.text    = line.Label;
         valueText.text    = line.Value;
         subValueText.text = line.SubValue;

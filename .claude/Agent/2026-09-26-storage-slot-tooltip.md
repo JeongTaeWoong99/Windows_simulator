@@ -36,3 +36,9 @@ tags: [client, ui, docs]
 - 사용자 실측: 캐릭터 툴팁 `상태` 값(`슬롯 1 · 낚시 Lv.1`)이 `슬롯 1 ·…`로 잘렸다. 원인은 줄 프리팹의 값 80px · 보조 값 130px 고정폭.
 - `TooltipRowView.MeasureColumns`/`SetColumnWidths` + `TooltipPresenter.FitColumns` — 툴팁마다 열별 최대 글자 폭(`GetPreferredValues`, 올림)을 재서 모든 줄에 같은 폭을 준다. 열 정렬은 유지되고 패널은 `ContentSizeFitter`로 늘어난다.
 - 프리팹 값은 그대로 두었다(코드가 덮는다). 산업 레벨 툴팁도 같은 경로라 함께 바뀐다 — 보조 값 열이 130 고정보다 좁아질 수 있다.
+
+## 추가 — 툴팁 NRE 수정 (같은 날, 커밋 `ac4a84d` 이후)
+- 증상: 산업 레벨 버튼에 올리면 `TooltipRowView.SetColumnWidths`에서 NRE.
+- 원인: 간단형 툴팁(줄 0개)이 `Row Panel`을 끈 뒤, 줄이 있는 툴팁이 **꺼진 부모 아래에 새 줄을 만들면 `Awake`가 미뤄진다** → `_valueLayout` 미할당. 창고 칸에서는 줄이 먼저 만들어져 드러나지 않았다. `_defaultColor`도 같은 잠복 버그였다.
+- 수정: `Render`가 줄 영역을 **채우기 전에** 켠다 · `TooltipRowView`는 공개 메서드마다 `EnsureInitialized`로 스스로 보장(호출 순서에 기대지 않는다).
+- 확인: 꺼진 부모 아래 인스턴스화 → Bind·Measure·SetColumnWidths가 예외 없이 돈다(에디터 재현).

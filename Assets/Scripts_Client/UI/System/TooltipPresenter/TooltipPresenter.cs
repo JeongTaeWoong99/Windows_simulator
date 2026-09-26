@@ -176,6 +176,12 @@ public class TooltipPresenter : MonoBehaviour
 
         var lines = content.Lines;
 
+        // ★ 줄을 만들고 채우기 **전에** 줄 영역을 켠다.
+        //   간단형(줄 0개)이 한 번 뜨면 영역이 꺼진 채 남는데, 꺼진 부모 아래에 만든 줄은 'Awake'가
+        //   부모가 켜질 때까지 미뤄진다 — 그 사이 'Bind'·폭 재기가 돌아 NRE가 났다(2026-09-26).
+        //   꺼진 TMP는 글자 폭도 제대로 못 잰다.
+        rowParent.gameObject.SetActive(lines.Count > 0);
+
         for (int i = 0; i < lines.Count; i++)
         {
             if (i >= _rows.Count)
@@ -193,8 +199,6 @@ public class TooltipPresenter : MonoBehaviour
         }
 
         FitColumns(lines.Count);
-
-        rowParent.gameObject.SetActive(lines.Count > 0);
 
         // 크기를 지금 확정해야 아래 'Place'가 넘침을 잴 수 있다('UI 규칙.md' "만든 자리에서 바로 태운다").
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
