@@ -11,8 +11,18 @@ const byRank = (a: any, b: any) =>
   (PRIORITY_ORDER[a.data.priority] ?? 9) - (PRIORITY_ORDER[b.data.priority] ?? 9) ||
   a.data.taskId.localeCompare(b.data.taskId);
 
-const open = all.filter((t) => !t.data.done).sort(byRank);
-const done = all.filter((t) => t.data.done).sort((a, b) => a.data.taskId.localeCompare(b.data.taskId));
+const byId = (a: any, b: any) => a.data.taskId.localeCompare(b.data.taskId);
+
+// 열 보드는 INDEX(tasks/ 루트)만. art/·later/는 남은 일이지만 목록과 섞지 않고 아래 접힌 칸에 둔다.
+const open = all.filter((t) => t.data.bucket === 'open').sort(byRank);
+const art = all.filter((t) => t.data.bucket === 'art').sort(byId);
+const later = all.filter((t) => t.data.bucket === 'later').sort(byId);
+const done = all.filter((t) => t.data.done).sort(byId);
+
+const shelves = [
+  { key: 'art', label: '🎨 아트만 남음', note: '기능은 섰고 연출·리소스만 남았다 — 메인이 다 선 뒤 한꺼번에', items: art },
+  { key: 'later', label: '⏳ 나중에', note: '먼 훗날(배포 전 게이트 등) 할 것', items: later },
+];
 
 // 담당이 곧 열이다. 공용은 어느 열에도 속하지 않아 위에 따로 둔다.
 const shared = open.filter((t) => t.data.owner === '공용');
@@ -109,6 +119,36 @@ const columns = [
       ))
     }
   </div>
+
+  <!-- INDEX 밖의 남은 일 — 기본은 접어 둔다. 필터(data-owner)는 걸지 않는다: 열 보드만 거른다 -->
+  {
+    shelves.map((s) => (
+      <details class="mt-10 group">
+        <summary class="cursor-pointer select-none text-sm font-bold text-slate-500">
+          {s.label} {s.items.length}건
+          <span class="font-normal text-xs text-slate-400 ml-1">— {s.note}</span>
+        </summary>
+        {s.items.length > 0 ? (
+          <ul class="flex flex-wrap gap-2 mt-3">
+            {s.items.map((t) => (
+              <li>
+                <a
+                  href={`/tasks/${t.data.slug}`}
+                  class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs text-slate-600"
+                >
+                  <span class="font-mono text-slate-400">{t.data.taskId}</span>
+                  <span class={`text-[10px] px-1.5 rounded-full ${OWNER_STYLE[t.data.owner] ?? ''}`}>{t.data.owner}</span>
+                  {t.data.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p class="text-xs text-slate-400 mt-3">없다</p>
+        )}
+      </details>
+    ))
+  }
 
   <h2 class="text-sm font-bold text-slate-500 mt-10 mb-3">보관 — 끝난 일감 {done.length}건</h2>
   <ul class="flex flex-wrap gap-2">

@@ -8,6 +8,9 @@ export const REPO_ROOT = path.resolve(here, '..', '..', '..', '..');
 
 export const TASKS_DIR = path.join(REPO_ROOT, 'tasks');
 export const ARCHIVE_DIR = path.join(TASKS_DIR, 'archive');
+// INDEX에서 뺀 남은 일 — 🎨 아트만 남은 것 · 먼 훗날 할 것
+export const ART_DIR = path.join(TASKS_DIR, 'art');
+export const LATER_DIR = path.join(TASKS_DIR, 'later');
 export const DESIGN_DIR = path.join(REPO_ROOT, 'GameDesign', 'design');
 
 /** 목업·이미지가 복사되어 나가는 자리 (public/ 아래). */

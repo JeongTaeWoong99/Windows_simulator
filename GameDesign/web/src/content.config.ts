@@ -29,6 +29,7 @@ const tasks = defineCollection({
     priority: z.string(),
     due: z.string(),
     done: z.boolean(),
+    bucket: z.enum(['open', 'art', 'later', 'done']),
     bodyHtml: z.string(),
   }),
 });

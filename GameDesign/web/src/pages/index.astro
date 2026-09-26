@@ -7,7 +7,8 @@ import { GITHUB_REPO } from '../lib/paths';
 const tasks = await getCollection('tasks');
 const docs = await getCollection('design');
 
-const open = tasks.filter((t) => !t.data.done);
+// 홈의 남은 일감은 INDEX와 같다 — art/·later/로 뺀 것은 보드(/tasks)의 접힌 칸에만 있다.
+const open = tasks.filter((t) => t.data.bucket === 'open');
 const running = open.filter((t) => t.data.status === '진행중');
 const blocked = open.filter((t) => t.data.status === '보류');
 const core = docs.find((d) => d.data.slug === 'core');
@@ -153,6 +154,7 @@ const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
     title: string;
     html_url: string;
     labels: { name: string }[];
+    assignees: { login: string; avatar_url: string }[];
     pull_request?: unknown;
   };
 
@@ -211,9 +213,40 @@ const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
       tag.textContent = label.name;
       a.append(tag);
     }
+    a.append(renderAssignees(issue.assignees ?? []));
 
     li.append(a);
     return li;
+  }
+
+  // 할당자 — 아바타 + 로그인. 비었으면 "미할당"으로 드러낸다(할당 누락이 알림 누락이다).
+  function renderAssignees(assignees: Issue['assignees']) {
+    const box = document.createElement('span');
+    box.className = 'flex items-center gap-1 shrink-0';
+
+    if (assignees.length === 0) {
+      box.className += ' text-[11px] px-2 py-0.5 rounded-full border border-dashed border-slate-300 text-slate-400';
+      box.textContent = '미할당';
+      return box;
+    }
+
+    for (const user of assignees) {
+      const chip = document.createElement('span');
+      chip.className = 'inline-flex items-center gap-1 text-[11px] pl-0.5 pr-2 py-0.5 rounded-full bg-blue-50 text-blue-700';
+      chip.title = `할당: ${user.login}`;
+
+      const img = document.createElement('img');
+      img.src = `${user.avatar_url}&s=32`;
+      img.alt = '';
+      img.className = 'w-4 h-4 rounded-full';
+
+      const name = document.createElement('span');
+      name.textContent = user.login;
+
+      chip.append(img, name);
+      box.append(chip);
+    }
+    return box;
   }
 
   loadIssues();

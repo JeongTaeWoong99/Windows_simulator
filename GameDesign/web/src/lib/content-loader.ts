@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import MarkdownIt from 'markdown-it';
-import { REPO_ROOT, TASKS_DIR, ARCHIVE_DIR, DESIGN_DIR, GITHUB_BLOB } from './paths';
+import { REPO_ROOT, TASKS_DIR, ARCHIVE_DIR, ART_DIR, LATER_DIR, DESIGN_DIR, GITHUB_BLOB } from './paths';
 import { designSlug, taskSlug } from './slugs';
 import assets from '../generated/assets.json';
 
@@ -20,6 +20,9 @@ export type DesignDoc = {
   bodyHtml: string;
 };
 
+/** 일감이 사는 폴더 — open(tasks/) · art(tasks/art/) · later(tasks/later/) · done(tasks/archive/) */
+export type TaskBucket = 'open' | 'art' | 'later' | 'done';
+
 export type TaskDoc = {
   taskId: string;
   slug: string;
@@ -29,6 +32,7 @@ export type TaskDoc = {
   priority: string;
   due: string;
   done: boolean;
+  bucket: TaskBucket;
   bodyHtml: string;
 };
 
@@ -143,17 +147,20 @@ export function loadDesignDocs(): DesignDoc[] {
 
 export function loadTasks(): TaskDoc[] {
   const tasks: TaskDoc[] = [];
-  const files: Array<{ dir: string; name: string; done: boolean }> = [];
+  const files: Array<{ dir: string; name: string; bucket: TaskBucket }> = [];
 
-  for (const name of fs.readdirSync(TASKS_DIR)) {
-    if (name.toLowerCase().endsWith('.md') && name.toLowerCase() !== 'readme.md') {
-      files.push({ dir: TASKS_DIR, name, done: false });
-    }
-  }
-  if (fs.existsSync(ARCHIVE_DIR)) {
-    for (const name of fs.readdirSync(ARCHIVE_DIR)) {
+  // 폴더가 곧 분류다 — 루트는 INDEX(굴러가는 것), 나머지 셋은 목록에서 뺀 것.
+  const dirs: Array<[string, TaskBucket]> = [
+    [TASKS_DIR, 'open'],
+    [ART_DIR, 'art'],
+    [LATER_DIR, 'later'],
+    [ARCHIVE_DIR, 'done'],
+  ];
+  for (const [dir, bucket] of dirs) {
+    if (!fs.existsSync(dir)) continue;
+    for (const name of fs.readdirSync(dir)) {
       if (name.toLowerCase().endsWith('.md') && name.toLowerCase() !== 'readme.md') {
-        files.push({ dir: ARCHIVE_DIR, name, done: true });
+        files.push({ dir, name, bucket });
       }
     }
   }
@@ -167,10 +174,11 @@ export function loadTasks(): TaskDoc[] {
       slug: taskSlug(f.name),
       title: data['제목'] ?? firstHeading(body),
       owner: data['담당'] ?? '공용',
-      status: data['상태'] ?? (f.done ? '완료' : '대기'),
+      status: data['상태'] ?? (f.bucket === 'done' ? '완료' : '대기'),
       priority: data['우선순위'] ?? '보통',
       due: data['마감'] ?? '미정',
-      done: f.done,
+      done: f.bucket === 'done',
+      bucket: f.bucket,
       // 제목은 헤더에서 이미 보여 준다 — 본문 첫 h1을 빼지 않으면 두 번 나온다.
       bodyHtml: renderMd(body.replace(/^#\s+.+\r?\n/m, ''), path.dirname(full)),
     });

@@ -23,6 +23,8 @@ const { task } = Astro.props;
       <span class={PRIORITY_STYLE[task.priority] ?? ''}>우선순위 {task.priority}</span>
       <span class="text-slate-400">마감 {task.due}</span>
       {task.done && <span class="text-slate-400">· 보관됨</span>}
+      {task.bucket === 'art' && <span class="text-slate-400">· 🎨 아트만 남음</span>}
+      {task.bucket === 'later' && <span class="text-slate-400">· ⏳ 나중에</span>}
     </div>
   </header>
 
