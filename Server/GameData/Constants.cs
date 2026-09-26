@@ -54,5 +54,29 @@ namespace GameData
 
         /// <summary>치트 — 정산을 한 번에 앞당기는 판정 횟수 상한</summary>
         public static long CheatMaxSettleJudges => GameTable.ConstantsTable["CheatMaxSettleJudges"].Value;
+
+        /// <summary>게임 시작 시 열린 산업 레벨</summary>
+        public static long DefaultIndustryLevel => GameTable.ConstantsTable["DefaultIndustryLevel"].Value;
+
+        /// <summary>인챈트 부여 시 옵션 줄 수</summary>
+        public static long EnchantBaseLineCount => GameTable.ConstantsTable["EnchantBaseLineCount"].Value;
+
+        /// <summary>인챈트 줄 확장 상한 — 넘기면 EnchantLineMax</summary>
+        public static long EnchantMaxLineCount => GameTable.ConstantsTable["EnchantMaxLineCount"].Value;
+
+        /// <summary>거래소 한 번 구매 수량 상한</summary>
+        public static long MarketMaxBuyCount => GameTable.ConstantsTable["MarketMaxBuyCount"].Value;
+
+        /// <summary>거래소 가격대 줄 수</summary>
+        public static long MarketPriceLevels => GameTable.ConstantsTable["MarketPriceLevels"].Value;
+
+        /// <summary>신규 유저 시작 캐릭터 — 전 산업 적성 1 이상이어야 한다</summary>
+        public static long DefaultCharacterTid => GameTable.ConstantsTable["DefaultCharacterTid"].Value;
+
+        /// <summary>작업속도 1.0배 = 이 값(천분율 단위) — 바꾸면 ‰ 데이터 전부 재해석</summary>
+        public static long WorkSpeedScale => GameTable.ConstantsTable["WorkSpeedScale"].Value;
+
+        /// <summary>1.0배 속도의 판정 1회 시간(초)</summary>
+        public static long BaseCycleSeconds => GameTable.ConstantsTable["BaseCycleSeconds"].Value;
     }
 }

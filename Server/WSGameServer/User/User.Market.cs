@@ -1,3 +1,4 @@
+using GameData;
 using MikaProtocol;
 using Proto = AuctionProtocol;
 
@@ -9,10 +10,11 @@ namespace WSGameServer;
 /// </summary>
 public partial class User
 {
-    /// <summary>한 번에 살 수 있는 수량 상한 — hold 계산(수량 × 단가 상한)이 넘치지 않게.</summary>
-    public const int MarketMaxBuyCount = 9999;
+    /// <summary>한 번에 살 수 있는 수량 상한 — hold 계산(수량 × 단가 상한)이 넘치지 않게. Constants.xlsx.</summary>
+    public static int MarketMaxBuyCount => (int)Constants.MarketMaxBuyCount;
 
-    private const int MarketPriceLevels = 10;
+    // 가격대 조회의 줄 수 — Constants.xlsx.
+    private static int MarketPriceLevels => (int)Constants.MarketPriceLevels;
 
     // 목록·가격대·검색은 같은 빈도 제한을 쓴다 — 창을 바꿔 가며 긁는 매크로를 한 통으로 막는다.
     private bool TakeSearchToken(DateTime now)

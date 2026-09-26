@@ -74,7 +74,7 @@ public class UserWorkStationTest
         User user,
         DateTime startedAt,
         long characterId = CharacterId,
-        int workSpeed = WorkStationSlot.DefaultWorkSpeed,
+        int? workSpeed = null,
         IndustryType industry = IndustryType.Fishing)
     {
         user.WorkStation.Load(new[]
@@ -486,6 +486,50 @@ public class UserWorkStationTest
         results.Count.ShouldBe(2);
         results.Single(r => r.SlotIndex == 0).JudgeCount.ShouldBe(10);   // 5분
         results.Single(r => r.SlotIndex == 1).JudgeCount.ShouldBe(2);    // 1분
+    }
+
+    // ─────────────────────── 창고 한도 (T-085 — 가) ───────────────────────
+
+    // 창고를 채우는 자리 채움 TID — 표에 없는 값이어도 된다. 칸은 종류 수만 본다.
+    private const int FillerTidBase = 900_000;
+
+    private static void FillItemKinds(User user, int kinds)
+    {
+        for (var i = 0; i < kinds; i++)
+        {
+            user.GainItem(FillerTidBase + i, 1);
+        }
+    }
+
+    [Fact]
+    public void 자원_칸이_가득_차면_새_종류_산출은_버리고_진행은_계속된다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        FillItemKinds(user, User.StorageCapacity);
+        GiveSlot(user, Base);
+        b.DB.Posted.Clear();
+
+        user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(1);
+
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(0);
+        user.ItemSlotsUsed.ShouldBe(User.StorageCapacity);
+        var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
+        result.JudgeCount.ShouldBe(10);
+        result.ItemChanges!.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 자원_칸이_가득_차도_이미_가진_종류는_쌓인다()
+    {
+        // 물고기 1 + 채움 199 = 200종. 5분 = 10판정 → 1 + 10 = 11
+        var (user, _) = UserWith(AllRounderTid);
+        user.GainItem(TestUserBuilder.FishItemTid, 1);
+        FillItemKinds(user, User.StorageCapacity - 1);
+        GiveSlot(user, Base);
+
+        user.SettleWorkStation(Base.AddMinutes(5));
+
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(11);
     }
 
     // ─────────────────────── 접속 종료 ───────────────────────

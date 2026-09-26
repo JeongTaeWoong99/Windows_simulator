@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 상수 8개 Constants.xlsx 이관 · 채취 창고 한도](2026-09-26-constants-migration-harvest-limit.md) — `#server` `#data` `#test` 창고가 가득 차면 채취 새 종류 산출을 버린다 (T-085 · #34)
 - [2026-09-26 아트 전 임시 UI 색을 Palworld식 다크 팔레트로 통일](2026-09-26-ui-temp-theme.md) — `#client` `#ui` 역할 태그 + 팔레트 SO 한 곳에서 색을 정한다
 - [2026-09-26 일감 art/·later/ 폴더 + 사이트 이슈 할당자](2026-09-26-tasks-art-later-folders.md) — `#docs` `#web` 🎨만 남은 클라 일감 4건을 `art/`로 · `later/` 신설 · 사이트 접힌 칸 · 이슈 할당자 칩
 - [2026-09-26 클라 이중 상수를 Constants 조회로 교체](2026-09-26-client-constants-lookup.md) — `#client` `#data` 치트·가챠·창고 한도를 Constants.xlsx 조회로

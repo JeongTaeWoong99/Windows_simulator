@@ -16,7 +16,7 @@ public class WorkStationSlotTest
 
     private static WorkStationSlot ActiveSlot(
         DateTime startedAt,
-        int currentWorkSpeed = WorkStationSlot.DefaultWorkSpeed)
+        int? currentWorkSpeed = null)
         => new(slotIndex: 0, IndustryType.Fishing, characterId: 100, startedAt, currentWorkSpeed);
 
     [Fact]

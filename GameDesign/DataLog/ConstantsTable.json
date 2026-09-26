@@ -73,5 +73,45 @@
     "Name": "CheatMaxSettleJudges",
     "Value": 100,
     "Description": "치트 — 정산을 한 번에 앞당기는 판정 횟수 상한"
+  },
+  {
+    "Name": "DefaultIndustryLevel",
+    "Value": 1,
+    "Description": "게임 시작 시 열린 산업 레벨"
+  },
+  {
+    "Name": "EnchantBaseLineCount",
+    "Value": 2,
+    "Description": "인챈트 부여 시 옵션 줄 수"
+  },
+  {
+    "Name": "EnchantMaxLineCount",
+    "Value": 3,
+    "Description": "인챈트 줄 확장 상한 — 넘기면 EnchantLineMax"
+  },
+  {
+    "Name": "MarketMaxBuyCount",
+    "Value": 9999,
+    "Description": "거래소 한 번 구매 수량 상한"
+  },
+  {
+    "Name": "MarketPriceLevels",
+    "Value": 10,
+    "Description": "거래소 가격대 줄 수"
+  },
+  {
+    "Name": "DefaultCharacterTid",
+    "Value": 1001,
+    "Description": "신규 유저 시작 캐릭터 — 전 산업 적성 1 이상이어야 한다"
+  },
+  {
+    "Name": "WorkSpeedScale",
+    "Value": 1000,
+    "Description": "작업속도 1.0배 = 이 값(천분율 단위) — 바꾸면 ‰ 데이터 전부 재해석"
+  },
+  {
+    "Name": "BaseCycleSeconds",
+    "Value": 30,
+    "Description": "1.0배 속도의 판정 1회 시간(초)"
   }
 ]

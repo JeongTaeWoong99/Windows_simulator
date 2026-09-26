@@ -14,7 +14,7 @@ public class WorkSpeedTest
     /// <summary>적성 4의 속도(1800천분율 = 1.8배). 나누어떨어지지 않는 값이라 절단 실수가 드러난다.</summary>
     private const int Aptitude4 = 1800;
 
-    private const int Base = WorkStationSlot.DefaultWorkSpeed;   // 1000 = 1.0배
+    private const int Base = 1000;   // WorkStationSlot.DefaultWorkSpeed(1.0배) — 기대값을 손으로 계산하려고 리터럴로 둔다
 
     [Fact]
     public void 보정이_없으면_기본값_그대로다()

@@ -164,6 +164,12 @@ public partial class User
             var changes = new List<ItemChangeInfo>(harvest.Gained.Count);
             foreach (var (itemTid, count) in harvest.Gained)
             {
+                // 창고가 가득 차면 새 종류는 버린다 — 진행·경험치는 그대로 간다(T-085 기획 결정 가).
+                if (!HasStorageFor(new[] { itemTid }, characterCount: 0, equipCount: 0))
+                {
+                    continue;
+                }
+
                 changes.Add(GainItem(itemTid, count));
             }
 
@@ -201,13 +207,19 @@ public partial class User
         return harvests.Count;
     }
 
+    /// <summary>기본 산업 레벨로 배치한다. 기본 레벨은 Constants.xlsx 값이라 기본 매개변수로 둘 수 없다.</summary>
+    public void AssignWorkStation(int slotIndex, IndustryType industry, long characterId, DateTime now)
+    {
+        AssignWorkStation(slotIndex, industry, characterId, now, WorkStationSlot.DefaultIndustryLevel);
+    }
+
     /// <summary>슬롯에 산업·레벨·캐릭터를 배치한다. 바꾸기 전에 먼저 정산한다. 레벨은 클라가 보낸 값이라 해금 여부를 서버가 검증한다(P4).</summary>
     public void AssignWorkStation(
         int slotIndex,
         IndustryType industry,
         long characterId,
         DateTime now,
-        int industryLevel = WorkStationSlot.DefaultIndustryLevel)
+        int industryLevel)
     {
         if (!WorkStation.TryGet(slotIndex, out var slot))
         {

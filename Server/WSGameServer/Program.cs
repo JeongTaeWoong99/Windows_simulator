@@ -24,7 +24,7 @@ class Program
     /// </summary>
     private static void WarnIfTuned()
     {
-        const double baseCycle = WorkStationSlot.BaseCycleSeconds;
+        double baseCycle = WorkStationSlot.BaseCycleSeconds;
 
         if (Math.Abs(GatherSpeedMultiplier - 1.0) < 0.0001)
         {

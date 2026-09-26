@@ -7,11 +7,11 @@ namespace WSGameServer;
 // GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md
 public sealed class EnchantCatalog : Singleton<EnchantCatalog>
 {
-    /// <summary>인챈트를 부여하면 생기는 줄 수.</summary>
-    public const int BaseLineCount = 2;
+    /// <summary>인챈트를 부여하면 생기는 줄 수 — Constants.xlsx.</summary>
+    public static int BaseLineCount => (int)Constants.EnchantBaseLineCount;
 
-    /// <summary>줄 확장의 상한. 넘기면 EnchantLineMax로 거절한다.</summary>
-    public const int MaxLineCount = 3;
+    /// <summary>줄 확장의 상한. 넘기면 EnchantLineMax로 거절한다 — Constants.xlsx.</summary>
+    public static int MaxLineCount => (int)Constants.EnchantMaxLineCount;
 
     private readonly Dictionary<int, EnchantOptionTableRow>                       _optionByTid = new();
     private readonly Dictionary<GlobalRarity, WeightedPicker<EnchantOptionTableRow>> _poolByGrade = new();

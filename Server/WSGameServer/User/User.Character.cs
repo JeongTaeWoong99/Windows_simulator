@@ -10,7 +10,7 @@ public partial class User
     /// <b>전 산업 적성이 1 이상인 캐릭터여야 한다</b> — 적성 0인 산업은 배치가 막히므로,
     /// 시작 캐릭터에 0이 섞이면 신규 유저는 그 산업을 아예 시작하지 못한다.
     /// </summary>
-    public const int DefaultCharacterTid = 1001;
+    public static int DefaultCharacterTid => (int)Constants.DefaultCharacterTid;
 
     /// <summary>
     /// 유저가 소유한 캐릭터 개체들. 키는 <b>개체 PK</b>(<c>t_character.character_id</c>)이며 TID가 아니다.

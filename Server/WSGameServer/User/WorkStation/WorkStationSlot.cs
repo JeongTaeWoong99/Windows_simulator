@@ -7,44 +7,44 @@ namespace WSGameServer;
 // 진행도는 세션 지역 상태(저장 안 함)이며 단위는 시간이 아니라 작업량이다 → Server/docs/채취-정산.md
 public sealed class WorkStationSlot
 {
-    /// <summary>기준 채취 주기(초). 속도 1.0배일 때 판정 1회에 걸리는 시간.</summary>
-    public const int BaseCycleSeconds = 30;
+    /// <summary>기준 채취 주기(초). 속도 1.0배일 때 판정 1회에 걸리는 시간 — Constants.xlsx.</summary>
+    public static int BaseCycleSeconds => (int)Constants.BaseCycleSeconds;
 
-    /// <summary>작업속도의 정수 단위. 1000 = 1.0배(천분율). "작업속도"라고 적힌 정수는 전부 이 단위다.</summary>
-    public const int WorkSpeedScale = 1000;
+    /// <summary>작업속도의 정수 단위. 1000 = 1.0배(천분율). "작업속도"라고 적힌 정수는 전부 이 단위다 — Constants.xlsx.</summary>
+    public static int WorkSpeedScale => (int)Constants.WorkSpeedScale;
 
     /// <summary>기준 작업속도(1.0배). 보정이 하나도 없을 때의 값.</summary>
-    public const int DefaultWorkSpeed = WorkSpeedScale;
+    public static int DefaultWorkSpeed => WorkSpeedScale;
 
     // 0이면 TimeUntilNextJudge에서 0으로 나눈다. "채취 정지"는 배치를 비우는 것으로 표현한다.
     public const int MinWorkSpeed = 1;
 
     // Lv1 판정 비용 = 기준주기(초) × 1000ms × 1000천분율. 경과ms × 속도천분율과 차원이 같아 나눗셈 없이 누적한다.
     // 실제 판정은 인스턴스의 JudgeCostUnits(레벨별 RequiredScore)를 쓴다 → Server/docs/채취-정산.md 2장
-    public const long JudgeCost = (long)BaseCycleSeconds * 1000 * WorkSpeedScale;
+    public static long JudgeCost => (long)BaseCycleSeconds * 1000 * WorkSpeedScale;
 
     /// <summary>판정 1회당 산출 개수. 현재 1개 고정(회당 산출 수치 미확정).</summary>
     public const int YieldPerJudge = 1;
 
-    /// <summary>기본 산업 레벨. 게임 시작 시 열려 있는 레벨(산업레벨.md 3.3).</summary>
-    public const int DefaultIndustryLevel = 1;
+    /// <summary>기본 산업 레벨. 게임 시작 시 열려 있는 레벨(산업레벨.md 3.3) — Constants.xlsx.</summary>
+    public static int DefaultIndustryLevel => (int)Constants.DefaultIndustryLevel;
 
     public WorkStationSlot(
         int slotIndex,
         IndustryType industry,
         long characterId,
         DateTime startedAt,
-        int currentWorkSpeed = DefaultWorkSpeed,
-        int industryLevel = DefaultIndustryLevel,
-        long judgeCostUnits = JudgeCost)
+        int? currentWorkSpeed = null,
+        int? industryLevel = null,
+        long? judgeCostUnits = null)
     {
         SlotIndex        = slotIndex;
         Industry         = industry;
-        IndustryLevel    = industryLevel;
-        JudgeCostUnits   = judgeCostUnits;
+        IndustryLevel    = industryLevel ?? DefaultIndustryLevel;
+        JudgeCostUnits   = judgeCostUnits ?? JudgeCost;
         CharacterId      = characterId;
         LastTickAt       = startedAt;
-        CurrentWorkSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed);
+        CurrentWorkSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed ?? DefaultWorkSpeed);
     }
 
     public int SlotIndex { get; }
@@ -82,12 +82,12 @@ public sealed class WorkStationSlot
         IndustryType industry,
         long characterId,
         DateTime now,
-        int industryLevel = DefaultIndustryLevel,
-        long judgeCostUnits = JudgeCost)
+        int? industryLevel = null,
+        long? judgeCostUnits = null)
     {
         Industry       = industry;
-        IndustryLevel  = industryLevel;
-        JudgeCostUnits = judgeCostUnits;
+        IndustryLevel  = industryLevel ?? DefaultIndustryLevel;
+        JudgeCostUnits = judgeCostUnits ?? JudgeCost;
         CharacterId    = characterId;
 
         // 진행 중이던 조각은 버린다. 이월하면 산업을 갈아타며 조각을 모으는 악용이 된다.
