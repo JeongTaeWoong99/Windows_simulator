@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 일감 art/·later/ 폴더 + 사이트 이슈 할당자](2026-09-26-tasks-art-later-folders.md) — `#docs` `#web` 🎨만 남은 클라 일감 4건을 `art/`로 · `later/` 신설 · 사이트 접힌 칸 · 이슈 할당자 칩
 - [2026-09-26 클라 이중 상수를 Constants 조회로 교체](2026-09-26-client-constants-lookup.md) — `#client` `#data` 치트·가챠·창고 한도를 Constants.xlsx 조회로
 - [2026-09-26 클라 우편함 화면](2026-09-26-mailbox-ui.md) — `#client` `#ui` `#editor` 상태바 우편 버튼·점 + 우편함 화면(받기·모두 받기·삭제) · 우편 치트 칸 (T-083)
 - [2026-09-26 공용 상수 시트 Constants.xlsx (T-085)](2026-09-26-constants-sheet.md) — `#server` `#data` `#docs` 클라·서버 공용 값을 엑셀 한 곳에 두고 생성기가 행마다 `Constants.Xxx` 속성을 만들게 했다
