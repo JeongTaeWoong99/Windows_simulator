@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using MikaProtocol;
 
 // UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
 using CharacterInfo = MikaProtocol.CharacterInfo;
@@ -84,6 +85,68 @@ public class CharacterSlotSource : StorageSlotSource
     // 판정은 'FindSlotIndexOf' 하나로 읽는다 — 작업슬롯 화면도 같은 것을 보므로,
     // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
     public override bool IsAway(long key) => _data.FindSlotIndexOf(key) >= 0;
+
+    // 캐릭터 칸 툴팁 — 등급 · 레벨 · 어디서 일하나 · 적성 5종(산업 이름 + 기본 속도) (격자가 칸에 올린 순간 호출).
+    //
+    // ★ 적성을 **산업 이름과 함께** 적는 것이 본론이다 — 칸의 스트립은 숫자만이라 어느 산업인지는
+    //   위치로만 안다(T-048). 기본 속도를 곁들이면 "어디로 보낼까"를 여기서 정할 수 있다.
+    // ※ 속도는 적성만의 값이다 — 장비·특성 가산은 빠진다. 실제 속도는 작업슬롯 화면이 말한다.
+    public override TooltipContent? BuildTooltip(long key)
+    {
+        int tid = _data.GetCharacterTid(key);
+
+        if (tid == 0)
+        {
+            return null; // 목록이 아직 낡았다 — 뒤이어 올 CharactersChanged가 이 칸을 지운다
+        }
+
+        var content = new TooltipContent(GameDataLoader.GetCharacterName(tid));
+
+        AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
+            .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
+            .Row("상태", GetWorkText(key))
+            .Header("적성");
+
+        foreach (EIndustryType industry in StorageGridPresenter.StripIndustries)
+        {
+            byte aptitude = _data.GetAptitude(key, industry);
+            string speed  = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / 1000f:0.00}배";
+
+            content.Row(IndustryLabel.Get(industry), AptitudeLabel.GetText(aptitude), speed, null);
+        }
+
+        return content;
+    }
+
+    // 레벨 문구 — 'LV.19', 만렙이면 'LV.MAX' (칸 배지 · 툴팁이 호출).
+    //
+    // ※ 칸 배지와 툴팁이 같은 문구여야 한다 — 한쪽에만 만렙 표기가 있으면 같은 캐릭터를 다르게 말한다.
+    // 만렙 = 곡선 테이블에 다음 레벨 행이 없다('GameDataLoader.TryGetRequiredExp').
+    public static string GetLevelLabel(int level)
+        => GameDataLoader.TryGetRequiredExp(level + 1, out _) ? $"LV.{level}" : "LV.MAX";
+
+    // 어디서 일하는지 — '슬롯 2 · 낚시 Lv.3', 배치돼 있지 않으면 '대기' (BuildTooltip에서 호출).
+    //
+    // 칸의 '배' 마크는 여부만 말한다 — 여러 슬롯을 돌리면 누가 어디 있는지는 여기서만 알 수 있다.
+    private string GetWorkText(long characterId)
+    {
+        int slotIndex = _data.FindSlotIndexOf(characterId);
+
+        if (slotIndex < 0)
+        {
+            return "대기";
+        }
+
+        foreach (WorkStationSlotInfo slot in _data.WorkStationSlots)
+        {
+            if (slot.SlotIndex == slotIndex)
+            {
+                return $"슬롯 {slotIndex} · {IndustryLabel.Get(slot.Industry)} Lv.{slot.IndustryLevel}";
+            }
+        }
+
+        return $"슬롯 {slotIndex}";
+    }
 
     // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)
     protected override void OnSubscribe()

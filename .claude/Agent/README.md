@@ -24,6 +24,7 @@
 ## INDEX
 
 - [2026-09-26 공용 상수 시트 Constants.xlsx (T-085)](2026-09-26-constants-sheet.md) — `#server` `#data` `#docs` 클라·서버 공용 값을 엑셀 한 곳에 두고 생성기가 행마다 `Constants.Xxx` 속성을 만들게 했다
+- [2026-09-26 창고 칸 툴팁](2026-09-26-storage-slot-tooltip.md) — `#client` `#ui` `#docs` 내용은 공급자 `BuildTooltip`이 만들고 트리거는 격자가 코드로 붙인다 · `RarityLabel` 공용화 (T-050)
 - [2026-09-26 치트 지급 3종에 창고 한도 검사](2026-09-26-cheat-storage-limit.md) — `#server` `#test` GiveItem·GiveCharacter·GiveEquip이 넘치면 StorageFull (#40)
 - [2026-09-25 럭키 상자 표시 · 수량 팝업 문구 · 일감 전수 점검](2026-09-25-lucky-box-display-and-task-audit.md) — `#client` `#ui` `#docs` 상자 개봉 팝업을 "몇 개를 열까?"로 · 레벨 툴팁에 `■ 럭키 상자` 묶음 (T-030 · 이슈 #33)
 - [2026-09-25 창고 가득 참 문구 · enum 개수 파생 · 프레임 수 대조](2026-09-25-storage-full-and-enum-counts.md) — `#client` `#ui` `StorageFull(103)` 문구 · 장비 칸·산업 수를 enum에서 파생 (T-064 · T-085 클라 파트)

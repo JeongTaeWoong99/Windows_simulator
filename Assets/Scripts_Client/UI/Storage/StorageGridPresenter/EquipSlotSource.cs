@@ -106,6 +106,47 @@ public class EquipSlotSource : StorageSlotSource
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => _data.IsEquipped(key);
 
+    // 장비 칸 툴팁 — 등급 · 종류 · 효과 · 누가 끼고 있나 (격자가 칸에 올린 순간 호출).
+    //
+    // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
+    // ⏸ 인챈트 등급·옵션은 인챈트 UI(T-095)가 표기 규칙과 함께 넣는다.
+    public override TooltipContent? BuildTooltip(long key)
+    {
+        EquipInfo? equip = FindEquip(key);
+
+        if (equip == null || !GameDataLoader.TryGetEquip(equip.EquipTid, out EquipTableRow row))
+        {
+            return null; // 목록이 아직 낡았거나 모르는 TID — 칸도 이름을 그리지 못한다
+        }
+
+        string state = equip.EquippedCharacterId == 0L
+            ? "창고"
+            : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
+
+        var content = new TooltipContent(GameDataLoader.GetEquipName(equip.EquipTid));
+
+        AddRarityRow(content, GameDataLoader.GetEquipRarity(equip.EquipTid))
+            .Row("종류", EquipLabel.GetKindName(row.EquipKind))
+            .Row("효과", EquipLabel.GetEffectText(equip.EquipTid))
+            .Row("장착", state);
+
+        return content;
+    }
+
+    // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).
+    private EquipInfo? FindEquip(long equipId)
+    {
+        foreach (EquipInfo equip in _data.Equips)
+        {
+            if (equip.EquipId == equipId)
+            {
+                return equip;
+            }
+        }
+
+        return null;
+    }
+
     // 장비 변경 구독 (Subscribe에서 호출)
     //
     // ※ 캐릭터 탭과 달리 이벤트 하나만 듣는다 — 지급도 장착·해제도 전부

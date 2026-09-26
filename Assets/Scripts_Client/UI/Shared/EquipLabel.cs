@@ -40,6 +40,15 @@ public static class EquipLabel
         _                     => false,
     };
 
+    // 장비 종류의 이름 — '무기' · '장신구' · '보석'. 모르는 값이면 영문 이름 그대로('IndustryLabel'과 같다).
+    public static string GetKindName(EquipKind kind) => kind switch
+    {
+        EquipKind.Weapon    => "무기",
+        EquipKind.Accessory => "장신구",
+        EquipKind.Gem       => "보석",
+        _                   => kind.ToString(),
+    };
+
     // 장비 칸의 부위 이름 — '무기' · '장신구1' · '장신구2' · '보석'.
     public static string GetSlotName(EEquipSlot slot) => slot switch
     {
