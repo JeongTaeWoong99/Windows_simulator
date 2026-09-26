@@ -40,6 +40,7 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color EquipAccent     = new(0.90f, 0.45f, 0.70f);   // 장비 지급 — 분홍
 		private static readonly Color SettleAccent    = new(0.30f, 0.80f, 0.80f);   // 정산 — 청록
 		private static readonly Color UnlockAccent    = new(0.95f, 0.55f, 0.30f);   // 해금 — 주황
+		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
 		private static readonly long[] DiaQuickAmounts  = { 100, 1_000, -100 };
@@ -56,6 +57,8 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private TidPicker _equipPicker     = new();
 		[SerializeField] private int       _settleJudges    = 1;
 		[SerializeField] private int       _unlockTid;
+		[SerializeField] private TidPicker _mailPicker      = new();
+		[SerializeField] private long      _mailTargetUid;  // 0이면 전체 우편
 
 		// 해금 묶음의 펼침 상태 — 51줄을 한 번에 펼쳐 두면 훑기 어렵다(2026-09-23 요청).
 		// 가장 짧은 작업슬롯만 펼쳐 두고 나머지는 접어 둔다. 접힌 머리에도 '열림/전체'는 보인다.
@@ -109,6 +112,7 @@ namespace DesktopWindowControl.EditorTools
 			DrawCharacterExp();
 			DrawEquip();
 			DrawSettle();
+			DrawMail();
 			DrawUnlock();
 
 			EditorGUILayout.Space(6f);
@@ -486,6 +490,32 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			EndSection(SettleAccent);
+		}
+
+		// 우편 템플릿 한 줄을 보낸다. 받는 UID가 0이면 전체 우편이다 — 템플릿의 PeriodDays 동안 로그인하는 모두가 받는다
+		// (PeriodDays = 0인 템플릿은 전체로 보낼 수 없어 서버가 거절한다). 넘침 보관 템플릿(2)은 첨부가 비어 있다.
+		private void DrawMail()
+		{
+			BeginSection("우편 발송", MailAccent);
+
+			var rows = GameDataLoader.IsLoaded ? GameTable.MailTemplateTable.All : null;
+			_mailPicker.Draw(rows, row => row.MailTemplateTID, row => row.Title);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("받는 UID", GUILayout.Width(LabelWidth));
+				_mailTargetUid = Math.Max(0L, EditorGUILayout.LongField(_mailTargetUid));
+
+				if (GUILayout.Button("발송", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SendMail, _mailPicker.Tid, _mailTargetUid);
+				}
+			}
+
+			EditorGUILayout.LabelField(_mailTargetUid == 0L ? "0 = 전체 우편 (접속 중인 유저 + 기간 안에 로그인하는 유저)" : "개인 우편",
+				EditorStyles.miniLabel);
+
+			EndSection(MailAccent);
 		}
 
 		private void DrawUnlock()

@@ -620,9 +620,16 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
     // (PlayerDataModel.ItemUseCompleted 구독)
-    private void OnItemUseCompleted(List<GachaRewardInfo> rewards)
+    // ※ 창고가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 창고에 들어온 줄 안다.
+    //   알림은 '!System Canvas'의 마지막 형제라 결과창 위에 뜬다.
+    private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
         _waitHandle?.Succeed();
+
+        if (storedInMail)
+        {
+            _wait.RaiseNotice("창고가 가득 차 보상을 우편함에 보관했습니다.\n우편함에서 받아 주세요.");
+        }
     }
 
     // 개봉 실패 도착 — 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다 (PlayerDataModel.ItemUseFailed 구독)

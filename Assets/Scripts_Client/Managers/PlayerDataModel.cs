@@ -22,6 +22,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
     private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
+    private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
     // ─── 내부 상태 ───
     private bool _isSubscribed;
@@ -235,6 +236,27 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
     }
 
+    // 우편함 — 안 받은 우편과 받은 지 7일이 안 된 우편. 서버가 준 순서 그대로다(정렬은 화면이 한다).
+    // ※ 'ClaimedAtUnixMs = 0'이 안 받은 우편이다. 받은 우편은 7일 뒤 로그인 때 서버가 지운다.
+    public IReadOnlyList<MailInfo> Mails => _mails;
+
+    // 안 받은 우편이 하나라도 있는가 — 우편함 버튼의 점 하나가 이것만 본다(숫자는 적지 않는다).
+    public bool HasUnclaimedMail
+    {
+        get
+        {
+            foreach (var mail in _mails)
+            {
+                if (mail.ClaimedAtUnixMs == 0L)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+    }
+
     // 재화 보유량. 종류마다 필드다 — 서버가 행이 아니라 컬럼으로 싣기 때문이다
     // (DB 't_user_currency'도 같은 축이다). 재화가 늘면 패킷에 필드가 하나 늘고 여기도 하나 는다.
     //
@@ -278,8 +300,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
     public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
 
-    public event Action<List<GachaRewardInfo>>? ItemUseCompleted; // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐)
-    public event Action<EResultCode>?           ItemUseFailed;    // 아이템 사용 실패 (거절 사유)
+    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 창고가 차서 보상 전체가 우편으로 갔는가)
+    public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
+    public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
+
+    public event Action?                        MailsChanged;        // 우편함 캐시 갱신됨 (목록·도착·수령·삭제)
+    public event Action<List<MailInfo>>?        MailRewardsClaimed;  // 이번에 받은 우편들 (첨부 연출용 — 받은 게 있을 때만)
+    public event Action<EResultCode, int, int>? MailClaimCompleted;  // 수령 결과 (결과 코드·이번에 받은 수·남은 수)
+    public event Action<bool, EResultCode>?     MailDeleteCompleted; // 삭제 결과 (성공 여부·결과 코드)
 
     public event Action?                   UnlocksChanged;  // 열린 해금 목록 갱신됨 (로그인 목록 · 해금 성공 후)
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
@@ -343,6 +371,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  += OnUserTraitLearnResponded;
+        ServerPacketHandler.MailListReceived         += OnMailListReceived;
+        ServerPacketHandler.MailArrived              += OnMailArrived;
+        ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
+        ServerPacketHandler.MailDeleteResponded      += OnMailDeleteResponded;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -375,6 +407,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  -= OnUserTraitLearnResponded;
+        ServerPacketHandler.MailListReceived         -= OnMailListReceived;
+        ServerPacketHandler.MailArrived              -= OnMailArrived;
+        ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
+        ServerPacketHandler.MailDeleteResponded      -= OnMailDeleteResponded;
     }
 
     #endregion
@@ -640,6 +676,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //   Rewards         = 이번에 얻은 개별 항목(델타) → 연출 전용
     // ★ 골드와 장비는 여기서 건드리지 않는다 — 골드는 'S_CurrencyResponse',
     //   장비 개체는 'S_EquipSyncResponse'로 따로 온다. 보상 목록의 골드는 **보여 주기 위한 값**이다.
+    // ★ 'StoredInMail'이면 창고가 모자라 보상 전체가 우편 한 통으로 갔다 — 'Rewards'는 연출용으로 그대로 오고,
+    //   'ItemChangeInfos'에는 상자 차감만 있다. 그 우편은 'S_MailArrivedResponse'로 따로 온다.
     private void OnItemUsed(S_ItemUseResponse res)
     {
         if (res.Result != EResultCode.Ok)
@@ -651,7 +689,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         ApplyItemChanges(res.ItemChangeInfos);
-        ItemUseCompleted?.Invoke(res.Rewards ?? new List<GachaRewardInfo>());
+        ItemUseCompleted?.Invoke(res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
     }
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.
@@ -724,6 +762,112 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         TraitLearnCompleted?.Invoke(success, res.Result);
+    }
+
+    #endregion
+
+    #region 우편 (ServerPacketHandler 구독)
+
+    // 우편함 전체 — 로그인 직후 1회. 스냅샷이라 비우고 채운다.
+    // ※ 다른 스냅샷보다 늦게 온다 — 그 전에 우편함을 열었으면 빈 목록이다가 여기서 채워진다.
+    private void OnMailListReceived(S_MailListResponse res)
+    {
+        _mails.Clear();
+        if (res.Mails != null)
+        {
+            _mails.AddRange(res.Mails);
+        }
+
+        MailsChanged?.Invoke();
+    }
+
+    // 새 우편 — 더하기만 한다. 같은 id가 이미 있으면 교체한다(두 번 쌓이지 않게).
+    private void OnMailArrived(S_MailArrivedResponse res)
+    {
+        if (res.Mails == null || res.Mails.Count == 0)
+        {
+            return;
+        }
+
+        foreach (var arrived in res.Mails)
+        {
+            int index = _mails.FindIndex(mail => mail.MailId == arrived.MailId);
+
+            if (index >= 0)
+            {
+                _mails[index] = arrived;
+            }
+            else
+            {
+                _mails.Add(arrived);
+            }
+        }
+
+        MailsChanged?.Invoke();
+    }
+
+    // 수령 결과 — 받은 우편을 "받음"으로 바꾸고 아이템을 반영한 뒤 결과를 알린다.
+    //
+    // ★ 결과가 실패여도 목록을 반영한다 — 모두 받기가 'StorageFull'로 멈춰도
+    //   그 전까지 받은 우편은 'ClaimedMailIds'에 실려 온다(서버는 이미 지급했다).
+    // ※ 받은 시각은 서버가 보내지 않는다 — 지금 시각으로 채운다. 표시에만 쓰고,
+    //   7일 정리는 서버가 자기 시각으로 한다.
+    private void OnMailClaimResponded(S_MailClaimResponse res)
+    {
+        int claimedCount = res.ClaimedMailIds?.Count ?? 0;
+
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"우편 수령 실패 — 결과={res.Result}, 그 전까지 받음 {claimedCount}통");
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+
+        if (claimedCount > 0)
+        {
+            long now     = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            var  claimed = new List<MailInfo>(claimedCount);
+
+            foreach (long mailId in res.ClaimedMailIds!)
+            {
+                MailInfo? mail = _mails.Find(m => m.MailId == mailId);
+
+                if (mail != null)
+                {
+                    mail.ClaimedAtUnixMs = now;
+                    claimed.Add(mail);
+                }
+            }
+
+            MailsChanged?.Invoke();
+
+            // ※ 응답에는 받은 것의 목록이 없다 — 우편 캐시의 첨부(보낸 순간 복사된 값)가 곧 받은 것이다.
+            //   모두 받기가 'StorageFull'로 멈춰도 그 전까지 받은 것은 보여 준다.
+            if (claimed.Count > 0)
+            {
+                MailRewardsClaimed?.Invoke(claimed);
+            }
+        }
+
+        MailClaimCompleted?.Invoke(res.Result, claimedCount, res.RemainingCount);
+    }
+
+    // 삭제 결과 — 성공이면 목록에서 뺀다.
+    private void OnMailDeleteResponded(S_MailDeleteResponse res)
+    {
+        bool success = res.Result == EResultCode.Ok;
+
+        if (success)
+        {
+            _mails.RemoveAll(mail => mail.MailId == res.MailId);
+            MailsChanged?.Invoke();
+        }
+        else
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"우편 삭제 실패 — 우편={res.MailId}, 결과={res.Result}");
+        }
+
+        MailDeleteCompleted?.Invoke(success, res.Result);
     }
 
     #endregion

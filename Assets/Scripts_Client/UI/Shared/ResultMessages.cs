@@ -37,6 +37,10 @@ public static class ResultMessages
         EResultCode.InvalidEquipSlot    => "올바르지 않은 장비 칸입니다.",
         EResultCode.EquipKindMismatch   => "이 칸에 낄 수 없는 장비입니다.",
         EResultCode.EquipSlotEmpty      => "이미 비어 있는 칸입니다.",
+        EResultCode.MailNotFound        => "없는 우편입니다.",
+        EResultCode.MailAlreadyClaimed  => "이미 받은 우편입니다.",
+        // 안 받은 우편에는 삭제 버튼이 없다 — 정상 화면에서는 나오지 않는다.
+        EResultCode.MailNotClaimed      => "받지 않은 우편은 지울 수 없습니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

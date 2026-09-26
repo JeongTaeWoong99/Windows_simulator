@@ -1,6 +1,6 @@
 # cheat-console 폴더 규칙
 
-> 최종 업데이트: 2026-09-23 (해금 칸 안을 세 묶음으로 접는다) · 대상: `Assets/Scripts_Client/Editor/cheat-console/`
+> 최종 업데이트: 2026-09-26 (우편 발송 칸 — T-083) · 2026-09-23 (해금 칸 안을 세 묶음으로 접는다) · 대상: `Assets/Scripts_Client/Editor/cheat-console/`
 
 **서버 치트를 한 창에 모아 보내는 에디터 툴.** 폴더 전체에 걸리는 규칙(네임스페이스·툴바 버튼
 공식 API)은 [`Editor 규칙.md`](<../Editor 규칙.md>)에 있다. 명령·인자·거절 조건의 원본은
@@ -10,7 +10,7 @@
 
 | 파일 | 하는 일 |
 |------|---------|
-| `CheatWindow.cs` | 도구 줄(씬 복사·서버 콘솔) + 준비 상태 줄 + 치트 칸(재화·자원·캐릭터·경험치·장비·정산·해금) + 결과 로그를 그리는 `EditorWindow`. 그리기만 한다 |
+| `CheatWindow.cs` | 도구 줄(씬 복사·서버 콘솔) + 준비 상태 줄 + 치트 칸(재화·자원·캐릭터·경험치·장비·정산·우편·해금) + 결과 로그를 그리는 `EditorWindow`. 그리기만 한다 |
 | `CheatSender.cs` | `C_CheatRequest` 전송 · 응답 대기(시간 초과) · 결과 로그 보관. UI 없음 |
 | `CheatGuard.cs` | 준비 단계 판정 · 보내기 전 검사와 사유 팝업 · 응답 없음/권한 없음 팝업 |
 | `CheatToolbarButton.cs` | 위 창을 여는 상단 메인 툴바 '치트' 버튼 (메뉴 `Window/DesktopWindowControl/치트`로도 연다) |

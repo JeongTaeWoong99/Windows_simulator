@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 클라 우편함 화면](2026-09-26-mailbox-ui.md) — `#client` `#ui` `#editor` 상태바 우편 버튼·점 + 우편함 화면(받기·모두 받기·삭제) · 우편 치트 칸 (T-083)
 - [2026-09-26 창고 칸 툴팁](2026-09-26-storage-slot-tooltip.md) — `#client` `#ui` `#docs` 내용은 공급자 `BuildTooltip`이 만들고 트리거는 격자가 코드로 붙인다 · `RarityLabel` 공용화 (T-050)
 - [2026-09-26 치트 지급 3종에 창고 한도 검사](2026-09-26-cheat-storage-limit.md) — `#server` `#test` GiveItem·GiveCharacter·GiveEquip이 넘치면 StorageFull (#40)
 - [2026-09-25 럭키 상자 표시 · 수량 팝업 문구 · 일감 전수 점검](2026-09-25-lucky-box-display-and-task-audit.md) — `#client` `#ui` `#docs` 상자 개봉 팝업을 "몇 개를 열까?"로 · 레벨 툴팁에 `■ 럭키 상자` 묶음 (T-030 · 이슈 #33)

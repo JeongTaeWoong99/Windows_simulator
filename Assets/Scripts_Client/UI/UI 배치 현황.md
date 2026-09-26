@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -12,7 +12,7 @@
 | 무엇을 알고 싶나 | 절 |
 |---|---|
 | 씬에 어떤 캔버스·Presenter가 있나 | 1. 오브젝트 트리 |
-| 메인 화면 셋이 어떻게 갈리나 | 2. 메인 화면 전환 흐름 |
+| 메인 화면 넷이 어떻게 갈리나 | 2. 메인 화면 전환 흐름 |
 | 작업슬롯 화면은 어떻게 이어지나 | 3. 작업슬롯 화면 흐름 |
 | 아직 안 끝난 것 · 임시로 둔 것 | 4. 알려진 임시 상태 |
 
@@ -61,6 +61,8 @@ Root Canvas
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
 │  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter     가로 한 줄
+│  │  │     ├─ Mail Button                        Dia Panel 뒤 · Setting 앞 · flex 1 · TooltipTrigger(문구) — 누르면 우편함 (Setting 과 같은 토글)
+│  │  │     │  └─ New Dot                         오른쪽 위 12px 빨간 점. 안 받은 우편이 있을 때만 켜진다 (StatePresenter.mailDot)
 │  │  │     ├─ Nick / Gold / Dia Panel               정렬 상자 (아이콘 + 텍스트)  flex 4씩
 │  │  │     │  └─ Nick Image                      검은 원반(Knob). 계정 레벨이 여기 겹친다
 │  │  │     │     ├─ Exp Ring Fill                Filled · Radial360 — 계정 경험치
@@ -108,6 +110,14 @@ Root Canvas
 │  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
 │  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
 │  │  │  │  └─ Dropdown Panel                     드롭다운 5 (크기·위치·프레임·FPS 위치 + 미사용 1)          pref 0 · flexH 1
+│  │  │  ├─ Mail Presenter (↓ SUB VIEW)           MailPresenter               (평소 꺼짐) VLG pad 5 · 어두운 갈색
+│  │  │  │  ├─ Header Panel                       '안 받은 우편 n통' · 닫기 (Setting 과 같은 규격)  pref 50
+│  │  │  │  ├─ Body Scroll Panel                  ScrollRect(세로) · flexH 1
+│  │  │  │  │  ├─ Viewport > Content              VLG + ContentSizeFitter(Preferred)
+│  │  │  │  │  │  └─ MailRowView 프리팹 (우편 수만큼 런타임 생성 · 풀)  제목 / 발신자·시각 / 첨부 · [받기]|[삭제]  pref 84
+│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (우편이 없을 때만)
+│  │  │  │  ├─ Guide Text (TMP)                   안내 두 줄                    pref 48
+│  │  │  │  └─ Footer Panel > Claim All Button    [모두 받기] pref W 240          pref 60
 │  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    창고·거래 버튼  pref 100
 │  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
 │  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
@@ -131,7 +141,7 @@ Root Canvas
    │  └─ Text (TMP)                               회색 22 · raycastTarget 끔(클릭스루)
    ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
-   │                                               가챠·상자 개봉 공용 (T-033)
+   │                                               가챠·상자 개봉·우편 수령 공용 (T-033 · T-083) — 제목은 코드가 '<출처> 결과'로 바꾼다
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
    ├─ Amount Input Presenter (↓ SUB VIEW)          AmountInputPresenter  UIManager.AskAmount 가 연다
    │  └─ Panel                                    440x240 (제목 · 수량 입력 · 확인/취소)
@@ -166,15 +176,16 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > **`Notice Presenter`는 형제 순서에서 항상 마지막이다** — 나중에 올수록 위에 그려지고,
 > 알림은 무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
 
-## 2. 메인 화면 전환 흐름 — 셋이 한 자리를 나눈다
+## 2. 메인 화면 전환 흐름 — 넷이 한 자리를 나눈다
 
 ```
                     ┌──────────────── #Main Canvas ────────────────┐
                     │  Title                       (문구가 바뀐다) │
                     │  ┌────────────────────────────────────────┐  │
    State Presenter  │  │  WorkStation List Presenter   [기본]   │  │
-   [Setting] ──────►│  │  WorkStation Select Presenter          │  │  ← 셋 중 하나
-   List 의 칸 ─────►│  │  Setting Presenter                     │  │
+   [Setting] ──────►│  │  WorkStation Select Presenter          │  │  ← 넷 중 하나
+   [우편] ─────────►│  │  Setting Presenter                     │  │
+   List 의 칸 ─────►│  │  Mail Presenter                        │  │
                     │  └────────────────────────────────────────┘  │
                     │  Menu Presenter              (항상 켜져 있다)│
                     └──────────────────────────────────────────────┘

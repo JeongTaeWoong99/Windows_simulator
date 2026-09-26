@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,6 +13,7 @@ using UnityEngine.UI;
 // 서버가 상자 개봉 결과를 가챠와 **같은 모양**('GachaRewardInfo')으로 내려주기 때문이다.
 // 연출을 두 벌 만들면 한쪽만 고쳐지므로 여기 하나로 둔다(T-033).
 // 늘어놓는 방식만 갈린다 — 가챠는 뽑힌 순서 그대로, 상자는 종류별 합계다('OnItemUseCompleted').
+// 우편 수령도 여기로 온다 — 받은 우편의 첨부를 상자처럼 종류별로 합친다('OnMailRewardsClaimed').
 //
 // ■ 왜 거래 열이 아니라 '!System Canvas'인가
 // 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
@@ -29,6 +31,9 @@ public class GachaResultPresenter : MonoBehaviour
     [CenterHeader("참조")]
     [SerializeField, Tooltip("팝업 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
     private CanvasGroup group = null!;
+
+    [SerializeField, Tooltip("팝업 제목 — 띄울 때마다 경로에 맞춰 바꾼다('가챠 결과' · '상자 개봉 결과' · '우편 수령 결과')")]
+    private TMP_Text titleText = null!;
 
     [SerializeField, Tooltip("보상 칸이 들어갈 부모 — GridLayoutGroup(5열)이 붙어 있다")]
     private Transform slotParent = null!;
@@ -52,6 +57,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void Start()
     {
         this.RequireRef(group,       nameof(group));
+        this.RequireRef(titleText,   nameof(titleText));
         this.RequireRef(slotParent,  nameof(slotParent));
         this.RequireRef(slotPrefab,  nameof(slotPrefab));
         this.RequireRef(closeButton, nameof(closeButton));
@@ -82,7 +88,7 @@ public class GachaResultPresenter : MonoBehaviour
 
     #region 구독
 
-    // 가챠·상자 개봉 성공 도착 구독 (Start · OnEnable에서 호출)
+    // 가챠·상자 개봉·우편 수령 성공 도착 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -90,9 +96,10 @@ public class GachaResultPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed           = true;
-        _data.GachaCompleted   += OnGachaCompleted;
-        _data.ItemUseCompleted += OnItemUseCompleted;
+        _isSubscribed             = true;
+        _data.GachaCompleted     += OnGachaCompleted;
+        _data.ItemUseCompleted   += OnItemUseCompleted;
+        _data.MailRewardsClaimed += OnMailRewardsClaimed;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -103,9 +110,10 @@ public class GachaResultPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed           = false;
-        _data.GachaCompleted   -= OnGachaCompleted;
-        _data.ItemUseCompleted -= OnItemUseCompleted;
+        _isSubscribed             = false;
+        _data.GachaCompleted     -= OnGachaCompleted;
+        _data.ItemUseCompleted   -= OnItemUseCompleted;
+        _data.MailRewardsClaimed -= OnMailRewardsClaimed;
     }
 
     #endregion
@@ -115,7 +123,7 @@ public class GachaResultPresenter : MonoBehaviour
     // 가챠 결과 도착 — 뽑힌 순서 그대로 늘어놓는다 (PlayerDataModel.GachaCompleted 구독)
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
-        Show(ToSlots(rewards), "가챠");
+        Show(ToSlots(rewards), "가챠", showCount: false);
     }
 
     // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
@@ -125,17 +133,30 @@ public class GachaResultPresenter : MonoBehaviour
     // 사람이 알고 싶은 것도 "무엇을 얼마나 얻었나"이지 몇 번째로 무엇이 나왔는지가 아니다.
     // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
-    private void OnItemUseCompleted(List<GachaRewardInfo> rewards)
+    private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
-        Show(Summarize(rewards), "상자 개봉");
+        Show(Summarize(rewards), "상자 개봉", showCount: true);
+    }
+
+    // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
+    //
+    // ■ 왜 'GachaRewardInfo'로 바꾸지 않고 칸 값을 바로 만드나
+    // 우편에는 다이아가 붙는데 'EGachaRewardType'에 다이아가 없다. 억지로 끼우면 패킷 enum을 클라가 늘려야 한다.
+    // ※ 모두 받기로 여러 통을 받으면 상자와 같은 이유로 합친다 — 몇 번째 우편에서 무엇이 나왔나는 우편함 목록에 남아 있다.
+    // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
+    private void OnMailRewardsClaimed(List<MailInfo> mails)
+    {
+        Show(SummarizeMails(mails), "우편 수령", showCount: true);
     }
 
     // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
     //
     // 보상이 비어 있으면 띄우지 않는다 — 빈 창이 뜨면 사용자가 닫기를 누를 때까지 화면이 막힌다.
     // 성공 응답에 보상이 없는 건 서버 쪽 이상이므로 경고만 남기고 조용히 지나간다.
-    //   source : 경고에 적을 출처. 두 경로가 같은 팝업을 쓰므로 어느 쪽이 비었는지 로그로 갈린다
-    private void Show(List<SlotData> slots, string source)
+    //   source    : 출처 — 제목('<출처> 결과')과 경고에 쓴다. 여러 경로가 같은 팝업을 쓰므로 어느 쪽인지 갈린다
+    //   showCount : 칸에 수량을 적는가. 가챠는 뽑힌 것을 한 건씩 늘어놓아 개수가 목록 길이로 드러나지만,
+    //               종류별로 합친 상자·우편은 수량을 적지 않으면 "골드"만 보이고 얼마인지 모른다
+    private void Show(List<SlotData> slots, string source, bool showCount)
     {
         if (slots.Count == 0)
         {
@@ -149,10 +170,12 @@ public class GachaResultPresenter : MonoBehaviour
             SlotView slot = GetOrCreateSlot(i);
 
             slot.gameObject.SetActive(true);
+            slot.SetSubVisible(showCount);
             slot.Bind(slots[i]);
         }
 
         HideSlotsFrom(slots.Count);
+        titleText.text = $"{source} 결과";
         SetVisible(true);
     }
 
@@ -209,6 +232,98 @@ public class GachaResultPresenter : MonoBehaviour
         return slots;
     }
 
+    // 우편 첨부를 종류별로 합쳐 칸 값으로 옮긴다 (OnMailRewardsClaimed에서 호출).
+    // 순서는 골드 → 다이아 → 아이템 → 캐릭터 → 장비, 각 안에서는 처음 나온 순서다.
+    // ⚠️ 묶는 열쇠는 'Summarize'와 같이 **종류 + TID**다 — 아이템 1001과 장비 1001은 다른 물건이다.
+    private static List<SlotData> SummarizeMails(List<MailInfo> mails)
+    {
+        long gold = 0L;
+        long dia  = 0L;
+
+        var order  = new List<(char Kind, int Tid)>();
+        var totals = new Dictionary<(char Kind, int Tid), long>();
+
+        void Add(char kind, int tid, long count)
+        {
+            var key = (kind, tid);
+
+            if (totals.TryGetValue(key, out long total))
+            {
+                totals[key] = total + count;
+            }
+            else
+            {
+                totals.Add(key, count);
+                order.Add(key);
+            }
+        }
+
+        foreach (MailInfo mail in mails)
+        {
+            gold += mail.Gold;
+            dia  += mail.Dia;
+
+            if (mail.Items != null)
+            {
+                foreach (ItemInfo item in mail.Items)
+                {
+                    Add('I', item.ItemId, item.Count);
+                }
+            }
+
+            if (mail.CharacterTids != null)
+            {
+                foreach (int tid in mail.CharacterTids)
+                {
+                    Add('C', tid, 1L);
+                }
+            }
+
+            if (mail.EquipTids != null)
+            {
+                foreach (int tid in mail.EquipTids)
+                {
+                    Add('E', tid, 1L);
+                }
+            }
+
+            // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 창고에서 본다.
+            if (mail.Equips != null)
+            {
+                foreach (EquipInfo equip in mail.Equips)
+                {
+                    Add('E', equip.EquipTid, 1L);
+                }
+            }
+        }
+
+        var slots = new List<SlotData>(order.Count + 2);
+
+        if (gold > 0L)
+        {
+            slots.Add(new SlotData(0L, "골드", gold.ToString("N0"), GlobalRarity.None));
+        }
+
+        if (dia > 0L)
+        {
+            slots.Add(new SlotData(0L, "다이아", dia.ToString("N0"), GlobalRarity.None));
+        }
+
+        foreach (var key in order)
+        {
+            string count = totals[key].ToString("N0");
+
+            slots.Add(key.Kind switch
+            {
+                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid)),
+                'E' => new SlotData(key.Tid, GameDataLoader.GetEquipName(key.Tid),     count, GameDataLoader.GetEquipRarity(key.Tid)),
+                _   => new SlotData(key.Tid, GameDataLoader.GetItemName(key.Tid),      count, GameDataLoader.GetItemRarity(key.Tid)),
+            });
+        }
+
+        return slots;
+    }
+
     // 이 보상이 가리키는 **종류 번호**. 묶음 열쇠와 칸의 'Key'가 같은 값을 써야 해서 한곳에 모았다.
     //
     // ⚠️ 개체 번호가 아니다 — 개체 PK는 DB가 늦게 발급해서 이 응답에 실리지 않고,
@@ -249,15 +364,14 @@ public class GachaResultPresenter : MonoBehaviour
 
     // 'index'번째 칸을 돌려준다. 아직 없으면 그때 만든다 (OnGachaCompleted에서 호출)
     //
-    // ※ 만드는 순간 수량 표시를 끈다 — 여기서는 뽑힌 것을 그대로 늘어놓으므로 개수가
-    //   칸이 아니라 목록의 길이로 드러난다. 만들 때 한 번이면 되고, 'Clear'는 이 결정을 되돌리지 않는다.
+    // ※ 수량 표시는 여기서 정하지 않는다 — 가챠(끔)와 상자·우편(켬)이 같은 칸을 돌려쓰므로
+    //   'Show'가 띄울 때마다 정한다.
     private SlotView GetOrCreateSlot(int index)
     {
         while (_slots.Count <= index)
         {
             SlotView slot = Instantiate(slotPrefab, slotParent);
 
-            slot.SetSubVisible(false);
             _slots.Add(slot);
         }
 

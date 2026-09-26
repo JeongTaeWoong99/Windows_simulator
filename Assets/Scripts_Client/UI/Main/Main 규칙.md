@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-09-26 (우편함 화면 — T-083) · 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -11,6 +11,7 @@
 | `WorkStationListPresenter/` | 작업슬롯 목록 (+ 종속 View `WorkStationSlotView`) |
 | `WorkStationSelectPresenter/` | 작업슬롯 선택 (+ 종속 View `CharacterStateRowView` — 목록 줄과 세팅 카드가 함께 쓴다 · `EfficiencyRowView` — 효율 계산 한 줄 · `EquipPickRowView` — 낄 장비 한 줄) |
 | `SettingPresenter/` | 창 설정 |
+| `MailPresenter/` | 우편함 — 받기·모두 받기·받은 우편 삭제 (+ 종속 View `MailRowView` — 우편 한 줄) |
 | `MenuPresenter/` | 하단 메뉴 — **항상 켜져 있다** |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 레이아웃 함정은
@@ -27,7 +28,8 @@
 ├─ Title                                        pref 50  · flexH 0   ← 항상
 ├─ WorkStation List Presenter   (↓ SUB VIEW)    pref  0  · flexH 1   ┐
 ├─ WorkStation Select Presenter (↓ SUB VIEW)    pref  0  · flexH 1   │ 하나만 켜진다
-├─ Setting Presenter            (↓ SUB VIEW)    pref  0  · flexH 1   ┘
+├─ Setting Presenter            (↓ SUB VIEW)    pref  0  · flexH 1   │
+├─ Mail Presenter               (↓ SUB VIEW)    pref  0  · flexH 1   ┘
 └─ Menu Presenter               (↓ SUB VIEW)    pref 100 · flexH 0   ← 항상
 ```
 
@@ -48,6 +50,7 @@
 - 줄이 `pref 100 · flexH 0`이고 갈아 끼워지는 화면이 `flexH 1`이라 **버튼이 늘어도 슬롯 영역은 밀리지 않는다** —
   줄 안의 `HorizontalLayoutGroup`(폭 확장)이 버튼 폭만 나눈다.
 - 아직 없는 콘텐츠의 **빈 칸·잠긴 버튼을 미리 두지 않는다**. 버튼에 **배지·타이머·"오늘까지"를 붙이지 않는다**(P1).
+  ※ 예외는 상태바의 **우편 버튼 점 하나**뿐이다 — 숫자·기한 없이 "안 받은 우편이 있다"만 알린다(기획 우편 1장 18번 · `StatePresenter.mailDot`).
 
 ## 전환 층은 하나다 — 화면은 자기를 끄지 않는다
 

@@ -209,6 +209,15 @@ public static class GameDataLoader
         return GameTable.EquipTable.TryGet(equipTid, out row);
     }
 
+    // 우편 템플릿 한 행 — 제목·본문·발신자는 패킷에 없고 여기서만 읽는다.
+    // ※ 첨부는 이 행이 아니라 패킷('MailInfo')의 것을 쓴다 — 서버가 보낸 순간 복사해 두므로
+    //   템플릿을 나중에 고쳐도 이미 온 우편은 그대로이고, 넘침 보관 템플릿은 첨부가 비어 있다.
+    // ※ 실패를 그대로 돌려준다 — 제목·발신자를 한꺼번에 대체해야 해서 부르는 쪽이 정한다('TryGetEquip'과 같은 이유).
+    public static bool TryGetMailTemplate(int templateTid, out MailTemplateTableRow row)
+    {
+        return GameTable.MailTemplateTable.TryGet(templateTid, out row);
+    }
+
     // 적성(0~10)의 기본 작업속도(천분율, 1000 = 1.0배). 없는 적성이면 0이고 처음 한 번만 경고한다.
     //
     // ※ 캐릭터 적성과 달리 클라가 테이블을 읽어도 된다 — 적성 → 속도는 **개체마다 갈라지지 않는 정적 곡선**이다.

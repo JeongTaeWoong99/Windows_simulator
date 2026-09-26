@@ -61,6 +61,12 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("누르면 그 화면으로 갈아 끼운다. 같은 화면이 열려 있으면 작업슬롯으로 돌아간다")]
     private ScreenButton[] screenButtons = new ScreenButton[0];
 
+    // ※ 우편 버튼 자체는 위 배열의 한 줄이다 — 여기 드는 건 그 위에 겹친 점 하나뿐이다.
+    //   숫자·기한·토스트 없이 점만 둔다(기획 '우편' 1장 18번 — 'GameDesign/design/mail/README.md').
+    [CenterHeader("우편")]
+    [SerializeField, Tooltip("우편 버튼 오른쪽 위의 점. 안 받은 우편이 있을 때만 켜진다")]
+    private GameObject mailDot = null!;
+
     // ※ 화면 전환 버튼(위)과 역할이 다르다 — 화면을 여는 게 아니라 앱을 즉시 끈다. 그래서 배열이 아니라
     //   전용 필드로 가른다. 타이틀바를 끄면 창 'X'가 없어져 명시적 종료 출구가 필요하다.
     [CenterHeader("시스템")]
@@ -84,6 +90,7 @@ public class StatePresenter : MonoBehaviour
         this.RequireRef(expFill,        nameof(expFill));
         this.RequireRef(expPercentText, nameof(expPercentText));
         this.RequireRef(quitButton,     nameof(quitButton));
+        this.RequireRef(mailDot,        nameof(mailDot));
 
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
@@ -131,6 +138,7 @@ public class StatePresenter : MonoBehaviour
         _data.CurrencyChanged     += Refresh;
         _data.AccountLevelChanged += Refresh;
         _data.LoginCompleted      += OnLoginCompleted;
+        _data.MailsChanged        += RefreshMailDot;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -145,6 +153,7 @@ public class StatePresenter : MonoBehaviour
         _data.CurrencyChanged     -= Refresh;
         _data.AccountLevelChanged -= Refresh;
         _data.LoginCompleted      -= OnLoginCompleted;
+        _data.MailsChanged        -= RefreshMailDot;
     }
 
     #endregion
@@ -193,6 +202,13 @@ public class StatePresenter : MonoBehaviour
         diaText.text      = _data.Dia.ToString("N0");
 
         RefreshAccountLevel();
+        RefreshMailDot();
+    }
+
+    // 안 받은 우편이 있으면 점을 켠다 (MailsChanged 구독 · Refresh에서 호출)
+    private void RefreshMailDot()
+    {
+        mailDot.SetActive(_data.HasUnclaimedMail);
     }
 
     // 레벨 배지와 경험치 진행도를 그린다 (Refresh에서 호출).

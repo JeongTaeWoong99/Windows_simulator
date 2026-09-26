@@ -29,6 +29,7 @@ namespace MikaNetwork
     /// S_EquipListResponse         보유 장비 (캐릭터 뒤 · 슬롯 앞 — EquippedCharacterId가 캐릭터를 가리킨다)
     /// S_UnlockListResponse        열린 해금 목록 (슬롯보다 먼저 온다 — 잠긴 칸을 그리는 근거)
     /// S_WorkStationSlotsResponse  작업슬롯 전체 스냅샷 (열린 칸만 담긴다)
+    /// S_MailListResponse          우편함 전체 (가장 늦게 — 서버가 DB 정리·전체 우편 복사를 끝낸 뒤)
     ///
     /// UI 초기화는 이것들이 다 도착한 뒤를 기준으로 잡아야 한다.
     /// </summary>
@@ -390,6 +391,61 @@ namespace MikaNetwork
             ClientLogger.Info(ClientLogger.Recv,
                 $"아이템 사용 결과={res.Result}, TID={res.ItemTID}, 보상 {rewardCount}건, 변경 {changeCount}건");
             ItemUsed?.Invoke(res);
+        }
+
+        #endregion
+
+        #region 우편
+
+        // 우편함 전체 도착 (Handle_S_MailListResponse에서 발행)
+        public static event Action<S_MailListResponse>? MailListReceived;
+
+        // 접속 중 새 우편 도착 (Handle_S_MailArrivedResponse에서 발행)
+        public static event Action<S_MailArrivedResponse>? MailArrived;
+
+        // 우편 수령 결과 도착 (Handle_S_MailClaimResponse에서 발행)
+        public static event Action<S_MailClaimResponse>? MailClaimResponded;
+
+        // 우편 삭제 결과 도착 (Handle_S_MailDeleteResponse에서 발행)
+        public static event Action<S_MailDeleteResponse>? MailDeleteResponded;
+
+        // 우편함 전체 — 로그인 직후 한 번 (S_MailListResponse 수신 시 자동 호출)
+        // ※ 로그인 수신 세트 중 **가장 늦게** 온다 — 서버가 DB 정리·전체 우편 복사를 끝낸 뒤 보낸다.
+        //   그 전에 우편함을 열면 빈 목록이다가 이 패킷에서 채워진다.
+        [PacketHandler]
+        public static void Handle_S_MailListResponse(ISession session, S_MailListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"우편함 {res.Mails?.Count ?? 0}통");
+            MailListReceived?.Invoke(res);
+        }
+
+        // 새 우편 — 운영 발송·전체 우편 복사가 접속 중에 일어나면 온다 (S_MailArrivedResponse 수신 시 자동 호출)
+        // ※ 목록에 **더하기만** 한다. 스냅샷이 아니다.
+        [PacketHandler]
+        public static void Handle_S_MailArrivedResponse(ISession session, S_MailArrivedResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"새 우편 {res.Mails?.Count ?? 0}통");
+            MailArrived?.Invoke(res);
+        }
+
+        // 우편 수령 결과 (S_MailClaimResponse 수신 시 자동 호출)
+        // ★ 한 통은 전부 받거나 아무것도 안 받는다. 모두 받기가 StorageFull로 멈춰도
+        //   그 전까지 받은 것은 ClaimedMailIds에 실려 온다 — 결과가 실패여도 목록을 반영해야 한다.
+        // ※ ItemChangeInfos의 Count는 누적 총량이다. 재화·캐릭터·장비는 각자의 패킷으로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_MailClaimResponse(ISession session, S_MailClaimResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"우편 수령 결과={res.Result}, 받음 {res.ClaimedMailIds?.Count ?? 0}통, 남음 {res.RemainingCount}통");
+            MailClaimResponded?.Invoke(res);
+        }
+
+        // 우편 삭제 결과 (S_MailDeleteResponse 수신 시 자동 호출)
+        [PacketHandler]
+        public static void Handle_S_MailDeleteResponse(ISession session, S_MailDeleteResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"우편 삭제 결과={res.Result}, 우편={res.MailId}");
+            MailDeleteResponded?.Invoke(res);
         }
 
         #endregion
