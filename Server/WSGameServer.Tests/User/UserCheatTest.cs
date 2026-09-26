@@ -300,6 +300,76 @@ public class UserCheatTest
         b.DB.Posted.ShouldBeEmpty();
     }
 
+    // ─────────────────────── 창고 한도 (#40) ───────────────────────
+
+    // 창고를 채우는 자리 채움 TID — 표에 없는 값이어도 된다. 칸은 종류 수만 본다.
+    private const int FillerTidBase = 900_000;
+
+    [Fact]
+    public void 캐릭터_칸이_모자라면_GiveCharacter는_StorageFull이고_지급하지_않는다()
+    {
+        // 보유 1(Admin) + 198 = 199. 2장을 주면 201 > 200
+        var (user, b) = Admin();
+        user.LoadCharacters(Enumerable.Range(1, 199)
+            .Select(i => new CharacterRow { character_id = i, character_tid = AllRounderTid, level = 1, exp = 0 })
+            .ToList());
+        b.DB.Posted.Clear();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveCharacter, AllRounderTid, 2), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.StorageFull);
+        b.DB.PostedOf<GrantCharacterRepository>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 자원_칸이_가득_차면_새_종류_GiveItem은_StorageFull이다()
+    {
+        var (user, b) = Admin();
+        for (var i = 0; i < User.StorageCapacity; i++)
+        {
+            user.GainItem(FillerTidBase + i, 1);
+        }
+        b.DB.Posted.Clear();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveItem, RealItemTid, 3), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.StorageFull);
+        user.GetItemCount(RealItemTid).ShouldBe(0);
+        b.DB.Posted.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 자원_칸이_가득_차도_이미_가진_종류는_GiveItem으로_쌓인다()
+    {
+        // 붕어 1 + 채움 199 = 200종. 붕어는 칸을 더 쓰지 않는다 → 1 + 3 = 4
+        var (user, b) = Admin();
+        user.GainItem(RealItemTid, 1);
+        for (var i = 0; i < User.StorageCapacity - 1; i++)
+        {
+            user.GainItem(FillerTidBase + i, 1);
+        }
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveItem, RealItemTid, 3), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        user.GetItemCount(RealItemTid).ShouldBe(4);
+    }
+
+    [Fact]
+    public void 장비_칸이_가득_차면_GiveEquip은_StorageFull이고_지급하지_않는다()
+    {
+        var (user, b) = Admin();
+        user.LoadEquips(
+            Enumerable.Range(0, User.StorageCapacity).Select(i => new UserEquipRow { equip_id = i + 1, equip_tid = 1001, slot_position = i }).ToList(),
+            new List<CharacterEquipRow>());
+        b.DB.Posted.Clear();
+
+        user.ExecuteCheat(Req(ECheatCommand.GiveEquip, 1001), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.StorageFull);
+        b.DB.PostedOf<GrantEquipRepository>().ShouldBeEmpty();
+    }
+
     [Fact]
     public void 계정_경험치를_지급하면_레벨업과_특성_포인트가_실제_경로로_붙는다()
     {

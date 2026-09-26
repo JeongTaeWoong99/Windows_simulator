@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-26 치트 지급 3종에 창고 한도 검사](2026-09-26-cheat-storage-limit.md) — `#server` `#test` GiveItem·GiveCharacter·GiveEquip이 넘치면 StorageFull (#40)
 - [2026-09-25 공용 툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로](2026-09-25-tooltip.md) — `#client` `#ui` `#docs` 호버는 `IPointerEnter`가 아니라 Win32 커서 폴링 레이캐스트의 맨 위 하나 · 대상 오른쪽 옆, 넘치면 왼쪽 (T-088)
 - [2026-09-25 배치·장착 중인 개체도 창고 제자리에 남는다](2026-09-25-storage-keep-deployed-in-place.md) — `#client` `#ui` `#docs` 팰월드식 "목록에서 빼기"를 **철회** → 제자리 + 딤 + `배` 마크 + [정렬] 맨 뒤. 칸 수가 안 변해 **칸 풀 동적 관리가 통째로 불필요**해졌다 (T-086·T-087 보관 · 이슈 #36 닫음)
 - [2026-09-25 창고 칸에서 빠진 자리를 빈 칸으로 남긴다](2026-09-25-storage-keep-empty-slots.md) — `#client` `#ui` 장착·배치로 개체가 빠져도 **뒤의 것을 당겨 오지 않는다** — 자리(`Key → 칸`)를 공급자가 들고, 새 항목은 첫 빈 칸으로
