@@ -3,7 +3,7 @@ name: github-issue-writer
 description: GitHub 이슈(Windows_simulator)를 쓰거나 고친다. 상대 직군(서버·클라·기획)에게 먼저 해 달라고 요청할 일·확인받을 일이 생겼을 때, 내가 끝낸 것을 상대가 이어받아야 할 때, 버그를 넘길 때 연다. 저장소 안에서 내가 처리하는 일은 이슈가 아니라 tasks/(task-writer)의 몫이다.
 ---
 
-> 최종 업데이트: 2026-09-24 (대상 직군 병기 형식 — `기획·서버`)
+> 최종 업데이트: 2026-09-28 (회차 마일스톤 — 2주 주기)
 
 # GitHub 이슈 작성
 
@@ -91,6 +91,16 @@ description: GitHub 이슈(Windows_simulator)를 쓰거나 고친다. 상대 직
 - **기획 판단이 섞여 있으면 규빈을 빠뜨리지 않는다.** 서버·클라만 걸린 일로 보여도 엑셀 데이터·수치·규칙이 바뀌면 기획 몫이다.
 - 내가 이어서 할 일이 남아 있어도 assignee는 **상대**다 — 내 몫은 `tasks/`가 추적한다.
 - **공이 넘어가면 assignee도 함께 바꾼다** — 제목만 바꾸고 두면 목록에서 누구 차례인지 어긋난다 (3장).
+
+### MILESTONE = 목표 회차
+
+프로젝트는 2주 회차(토 22:00 회의 · 그날 빌드로 플레이)로 굴러간다. 회차 이름은 `YYMMDD`(`261010`, `261024`, …)이고
+일감의 `목표` 필드와 같다 ([`task-writer`](../task-writer/SKILL.md) "목표 회차").
+
+- 새 이슈는 **다음 회차 마일스톤**을 단다: `gh issue create … --milestone 261010`
+- 마일스톤이 없으면 만든다: `gh api repos/{owner}/{repo}/milestones -f title=261024 -f due_on=2026-10-24T13:00:00Z`
+- 회차 안에 못 끝나면 다음 회차로 옮긴다: `gh issue edit <번호> --milestone 261024`
+- ⚠️ 회차 이슈 목록은 `gh issue list --search "milestone:261010"`로 본다 — `--milestone 261010`은 숫자 제목을 마일스톤 **번호**로 읽어 실패한다.
 
 ### LABELS = 종류에 맞춰
 
