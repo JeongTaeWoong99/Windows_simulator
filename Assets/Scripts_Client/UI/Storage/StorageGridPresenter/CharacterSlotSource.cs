@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData;
 using MikaProtocol;
 
 // UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
@@ -110,7 +111,7 @@ public class CharacterSlotSource : StorageSlotSource
         foreach (EIndustryType industry in StorageGridPresenter.StripIndustries)
         {
             byte aptitude = _data.GetAptitude(key, industry);
-            string speed  = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / 1000f:0.00}배";
+            string speed  = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale:0.00}배";
 
             content.Row(IndustryLabel.Get(industry), AptitudeLabel.GetText(aptitude), speed, null);
         }

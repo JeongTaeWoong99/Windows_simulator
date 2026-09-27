@@ -73,8 +73,8 @@ public class WorkStationSlotView : MonoBehaviour
         // 레벨 0은 적지 않는다 — 서버 기본값이 1이라 올 일이 없고, 'Lv0'은 없는 값이다.
         string industryWithLevel = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
 
-        // 천분율 → 배율 (1000 = 1.0배)
-        float speedMultiplier = slot.CurrentWorkSpeed / 1000f;
+        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배)
+        float speedMultiplier = slot.CurrentWorkSpeed / (float)Constants.WorkSpeedScale;
         slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배";
     }
 
