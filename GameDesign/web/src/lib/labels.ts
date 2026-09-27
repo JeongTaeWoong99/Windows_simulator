@@ -52,7 +52,7 @@ export const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
 export const PEOPLE = [
   { name: '태웅', role: '클라' },
   { name: '규빈', role: '기획' },
-  { name: '진우', role: '서버' },
+  { name: '진우', role: '서버·기획' },
 ] as const;
 
 export const OWNER_STYLE: Record<string, string> = {
