@@ -49,8 +49,7 @@ internal sealed class SqliteFixture : IDisposable
             ) STRICT;
             CREATE TABLE t_user_currency (
                 user_id INTEGER PRIMARY KEY,
-                gold    INTEGER NOT NULL DEFAULT 0,
-                dia     INTEGER NOT NULL DEFAULT 0
+                gold    INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_user_inventory (
                 user_id INTEGER NOT NULL,
@@ -115,7 +114,6 @@ internal sealed class SqliteFixture : IDisposable
                 user_id        INTEGER NOT NULL,
                 template_tid   INTEGER NOT NULL,
                 gold           INTEGER NOT NULL DEFAULT 0,
-                dia            INTEGER NOT NULL DEFAULT 0,
                 items          TEXT    NOT NULL DEFAULT '[]',
                 character_tids TEXT    NOT NULL DEFAULT '[]',
                 equip_tids     TEXT    NOT NULL DEFAULT '[]',

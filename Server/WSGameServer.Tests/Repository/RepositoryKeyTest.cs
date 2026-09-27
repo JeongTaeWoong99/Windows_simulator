@@ -26,7 +26,7 @@ public class RepositoryKeyTest
         var previous = Connect("same-pid", sessionId: 10);
         var current  = Connect("same-pid", sessionId: 11);
 
-        var lastSave  = new SaveCurrencyRepository(previous, gold: 1, dia: 0);
+        var lastSave  = new SaveCurrencyRepository(previous, gold: 1);
         var firstLoad = new LoginRepository(current);
 
         lastSave.Key.ShouldBe(firstLoad.Key);

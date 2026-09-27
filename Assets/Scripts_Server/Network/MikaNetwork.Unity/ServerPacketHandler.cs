@@ -125,7 +125,7 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv, $"재화 — 골드 {res.Gold:N0} · 다이아 {res.Dia:N0}");
+            ClientLogger.Info(ClientLogger.Recv, $"재화 — 골드 {res.Gold:N0}");
             CurrencyReceived?.Invoke(res);
         }
 

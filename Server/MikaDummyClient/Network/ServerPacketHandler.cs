@@ -240,7 +240,7 @@ namespace MikaDummyClient
         [PacketHandler]
         public static void Handle_S_CurrencyResponse(ISession session, S_CurrencyResponse res)
         {
-            Console.WriteLine($"[Client] Recv 재화: Gold={res.Gold}, Dia={res.Dia}");
+            Console.WriteLine($"[Client] Recv 재화: Gold={res.Gold}");
         }
 
         // 잔액은 이 패킷이 아니라 뒤따르는 S_CurrencyResponse가 들고 온다(GainedGold는 이번에 번 금액).
@@ -292,7 +292,7 @@ namespace MikaDummyClient
             foreach (var m in mails ?? new List<MailInfo>())
             {
                 var items = string.Join(",", (m.Items ?? new List<ItemInfo>()).Select(i => $"{i.ItemId}x{i.Count}"));
-                Console.WriteLine($"  - #{m.MailId} 템플릿={m.TemplateTid} 골드={m.Gold} 다이아={m.Dia} 아이템=[{items}] " +
+                Console.WriteLine($"  - #{m.MailId} 템플릿={m.TemplateTid} 골드={m.Gold} 아이템=[{items}] " +
                                   $"캐릭터={m.CharacterTids?.Count ?? 0} 장비={m.EquipTids?.Count ?? 0} " +
                                   $"장비개체=[{string.Join(",", (m.Equips ?? new List<EquipInfo>()).Select(e => $"#{e.EquipId}(TID {e.EquipTid}){EnchantText(e)}"))}] " +
                                   $"{(m.ClaimedAtUnixMs > 0 ? "받음" : "안 받음")}");

@@ -103,7 +103,6 @@ namespace MikaProtocol
         public long            MailId           { get; set; }
         public int             TemplateTid      { get; set; }
         public long            Gold             { get; set; }
-        public long            Dia              { get; set; }
         public List<ItemInfo>? Items            { get; set; }
         public List<int>?      CharacterTids    { get; set; }  // 한 명 = 한 원소
         public List<int>?      EquipTids        { get; set; }  // 한 개 = 한 원소

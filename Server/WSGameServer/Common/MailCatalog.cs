@@ -66,7 +66,6 @@ public sealed class MailCatalog : Singleton<MailCatalog>
     {
         return new MailAttachment(
             row.Gold,
-            row.Dia,
             row.ItemTIDs.Zip(row.ItemCounts, (tid, count) => (tid, count)).ToList(),
             row.CharacterTIDs.ToList(),
             row.EquipTIDs.ToList());

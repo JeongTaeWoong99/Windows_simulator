@@ -81,14 +81,14 @@ public static class AuctionDb
     /// </summary>
     public static async Task<long> RegisterAsync(
         DbConnection connection, long sellerId, AuctionItemSnapshot item, long unitPrice, long listingFee,
-        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, long dia, DateTime expiresAt, DateTime now)
+        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now)
     {
         long tradeId = 0;
 
         await connection.InTransactionAsync(async tx =>
         {
             await WriteInventoryAsync(tx, sellerId, inventoryChanges);
-            await WriteCurrencyAsync(tx, sellerId, gold, dia);
+            await WriteCurrencyAsync(tx, sellerId, gold);
 
             tradeId = await tx.ExecuteScalarAsync<long>(
                 @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, equip_id, snapshot, unit_price, listing_fee, state, created_at)
@@ -125,7 +125,7 @@ public static class AuctionDb
     /// 거래가 이미 끝났거나 가격이 어긋나면 구매자 잔액을 되돌려 쓰고 outbox(실패)만 남긴다.
     /// </summary>
     public static async Task<AuctionSettleResult> SettleAsync(
-        DbConnection connection, long tradeId, long buyerId, long purchaseId, long totalPrice, long buyerGold, long buyerDia, DateTime now)
+        DbConnection connection, long tradeId, long buyerId, long purchaseId, long totalPrice, long buyerGold, DateTime now)
     {
         AuctionSettleResult result = new(false, 0, null, null);
 
@@ -136,7 +136,7 @@ public static class AuctionDb
             {
                 // 메모리는 대금을 이미 뺐다. 그 사이 다른 저장이 뺀 잔액을 썼을 수 있으니 돌려준 잔액을 같은 트랜잭션에 쓴다 —
                 // 로직 스레드의 반환 저장까지 기다리면 그 사이에 죽을 때 대금이 사라진다.
-                await WriteCurrencyAsync(tx, buyerId, checked(buyerGold + totalPrice), buyerDia);
+                await WriteCurrencyAsync(tx, buyerId, checked(buyerGold + totalPrice));
                 await InsertConfirmAsync(tx, tradeId, purchaseId, false, now);
                 result = new AuctionSettleResult(false, trade?.seller_id ?? 0, null, null);
                 return;
@@ -166,10 +166,10 @@ public static class AuctionDb
                 }
             }
 
-            await WriteCurrencyAsync(tx, buyerId, buyerGold, buyerDia);
+            await WriteCurrencyAsync(tx, buyerId, buyerGold);
 
             var buyerAttachment  = item.ToAttachment(0);
-            var sellerAttachment = new MailAttachment(totalPrice - saleFee, 0, new(), new(), new());
+            var sellerAttachment = new MailAttachment(totalPrice - saleFee, new(), new(), new());
             var buyerMailId  = await MailDb.InsertMailAsync(tx, buyerId, AuctionMail.PurchasedTemplateTid, buyerAttachment, now);
             var sellerMailId = await MailDb.InsertMailAsync(tx, trade.seller_id, AuctionMail.SoldTemplateTid, sellerAttachment, now);
 
@@ -231,7 +231,7 @@ public static class AuctionDb
     /// </summary>
     public static async Task<AuctionMarketSettleResult> SettleMarketAsync(
         DbConnection connection, long buyerId, long purchaseId, int tid, IReadOnlyList<MarketAllocation> allocations,
-        long buyerGold, long buyerDia, DateTime now)
+        long buyerGold, DateTime now)
     {
         var total = allocations.Sum(a => a.Price);
         var firstTrade = allocations.Count > 0 ? allocations[0].TradeId : 0;
@@ -276,16 +276,16 @@ public static class AuctionDb
                     }
                 }
 
-                await WriteCurrencyAsync(tx, buyerId, buyerGold, buyerDia);
+                await WriteCurrencyAsync(tx, buyerId, buyerGold);
 
                 var quantity        = allocations.Sum(a => a.Quantity);
-                var buyerAttachment = new MailAttachment(0, 0, new List<(int, int)> { (tid, quantity) }, new(), new());
+                var buyerAttachment = new MailAttachment(0, new List<(int, int)> { (tid, quantity) }, new(), new());
                 var buyerMailId     = await MailDb.InsertMailAsync(tx, buyerId, AuctionMail.PurchasedTemplateTid, buyerAttachment, now);
 
                 var sellerMails = new List<(long, UserMailRow, int)>();
                 foreach (var (sellerId, gold) in proceeds)
                 {
-                    var attachment = new MailAttachment(gold, 0, new(), new(), new());
+                    var attachment = new MailAttachment(gold, new(), new(), new());
                     var mailId     = await MailDb.InsertMailAsync(tx, sellerId, AuctionMail.SoldTemplateTid, attachment, now);
                     sellerMails.Add((sellerId, MailDb.ToRow(mailId, AuctionMail.SoldTemplateTid, attachment, now), closed.GetValueOrDefault(sellerId)));
                 }
@@ -304,7 +304,7 @@ public static class AuctionDb
             // 메모리는 대금을 이미 뺐다 — 돌려준 잔액을 확정 메시지와 한 트랜잭션에 쓴다(SettleAsync 실패 분기와 같은 이유).
             await connection.InTransactionAsync(async tx =>
             {
-                await WriteCurrencyAsync(tx, buyerId, checked(buyerGold + total), buyerDia);
+                await WriteCurrencyAsync(tx, buyerId, checked(buyerGold + total));
                 await InsertConfirmAsync(tx, firstTrade, purchaseId, false, now);
             });
 
@@ -408,11 +408,11 @@ public static class AuctionDb
     }
 
     // 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 되지 않게.
-    private static Task WriteCurrencyAsync(DbConnection tx, long userId, long gold, long dia)
+    private static Task WriteCurrencyAsync(DbConnection tx, long userId, long gold)
     {
         return tx.ExecuteAsync(
-            @"INSERT INTO t_user_currency (user_id, gold, dia) VALUES (@userId, @gold, @dia)
-              ON CONFLICT (user_id) DO UPDATE SET gold = excluded.gold, dia = excluded.dia;",
-            new { userId, gold, dia });
+            @"INSERT INTO t_user_currency (user_id, gold) VALUES (@userId, @gold)
+              ON CONFLICT (user_id) DO UPDATE SET gold = excluded.gold;",
+            new { userId, gold });
     }
 }

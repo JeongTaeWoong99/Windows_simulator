@@ -20,9 +20,9 @@ public partial class User
         // 대금은 BasePrice × 수량이라 음수가 될 수 없고, 0원 판매(BasePrice=0)도 그대로 통과시킨다.
         _gold = checked(_gold + gold);
 
-        PostDBTask(new SellItemsRepository(this, changes, _gold, _dia));
+        PostDBTask(new SellItemsRepository(this, changes, _gold));
 
-        Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
+        Send(new S_CurrencyResponse { Gold = _gold });
 
         return true;
     }

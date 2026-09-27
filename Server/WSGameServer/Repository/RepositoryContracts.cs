@@ -29,7 +29,6 @@ public sealed record CharacterRow
 public sealed record CurrencyRow
 {
     public long gold { get; init; }
-    public long dia  { get; init; }
 }
 
 // t_user_inventory 조회 전용 Row
@@ -112,7 +111,6 @@ public sealed record UserMailRow
     public long    mail_id        { get; init; }
     public int     template_tid   { get; init; }
     public long    gold           { get; init; }
-    public long    dia            { get; init; }
     public string  items          { get; init; } = "[]";
     public string  character_tids { get; init; } = "[]";
     public string  equip_tids     { get; init; } = "[]";

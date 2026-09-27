@@ -9,13 +9,12 @@ namespace WSGameServer;
 /// </summary>
 public sealed record MailAttachment(
     long Gold,
-    long Dia,
     List<(int Tid, int Count)> Items,
     List<int> CharacterTids,
     List<int> EquipTids,
     List<MailEquip>? LockedEquips = null)
 {
-    public static MailAttachment Empty => new(0, 0, new(), new(), new());
+    public static MailAttachment Empty => new(0, new(), new(), new());
 
     public IReadOnlyList<MailEquip> Equips => LockedEquips ?? (IReadOnlyList<MailEquip>)Array.Empty<MailEquip>();
 
@@ -30,7 +29,6 @@ public sealed record MailAttachment(
         var items = JsonSerializer.Deserialize<List<int[]>>(row.items) ?? new();
         return new MailAttachment(
             row.gold,
-            row.dia,
             items.Select(pair => (pair[0], pair[1])).ToList(),
             JsonSerializer.Deserialize<List<int>>(row.character_tids) ?? new(),
             JsonSerializer.Deserialize<List<int>>(row.equip_tids) ?? new(),
@@ -70,7 +68,6 @@ public sealed class Mail(long id, int templateTid, MailAttachment attachment, Da
             MailId           = Id,
             TemplateTid      = TemplateTid,
             Gold             = Attachment.Gold,
-            Dia              = Attachment.Dia,
             Items            = Attachment.Items.Select(i => new ItemInfo { ItemId = i.Tid, Count = i.Count }).ToList(),
             CharacterTids    = Attachment.CharacterTids.ToList(),
             EquipTids        = Attachment.EquipTids.ToList(),

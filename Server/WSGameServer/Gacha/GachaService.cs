@@ -237,7 +237,6 @@ public sealed class GachaService : Singleton<GachaService>
 
         return new MailAttachment(
             rolled.Where(r => r.Entry.RewardType == GachaRewardType.Gold).Sum(r => (long)r.Count),
-            0,
             items,
             rolled.Where(r => r.Entry.RewardType == GachaRewardType.Character).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList(),
             rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList());

@@ -33,11 +33,11 @@ public class MarketDbTest : IDisposable
     private Task<long> List(long seller, int count, long unitPrice, long fee = 10, int tid = Carp)
     {
         var item = new AuctionItemSnapshot { Kind = EAuctionKind.Item, Tid = tid, Category = 2, Rarity = 1, Count = count };
-        return AuctionDb.RegisterAsync(Conn, seller, item, unitPrice, fee, new List<ItemChangeInfo>(), 1000, 0, Now.AddHours(48), Now);
+        return AuctionDb.RegisterAsync(Conn, seller, item, unitPrice, fee, new List<ItemChangeInfo>(), 1000, Now.AddHours(48), Now);
     }
 
     private Task<AuctionMarketSettleResult> Settle(params MarketAllocation[] lines)
-        => AuctionDb.SettleMarketAsync(Conn, Buyer, purchaseId: 900, Carp, lines, buyerGold: 500, buyerDia: 0, Now);
+        => AuctionDb.SettleMarketAsync(Conn, Buyer, purchaseId: 900, Carp, lines, buyerGold: 500, Now);
 
     [Fact]
     public async Task 여러_판매자에서_산_수량이_구매자_우편_한_통으로_간다()
@@ -104,7 +104,7 @@ public class MarketDbTest : IDisposable
         var a = await List(SellerA, 10, 30);
 
         await Settle(new MarketAllocation(a, 4, 30));
-        await AuctionDb.SettleMarketAsync(Conn, Buyer, 901, Carp, new[] { new MarketAllocation(a, 6, 30) }, 500, 0, Now);
+        await AuctionDb.SettleMarketAsync(Conn, Buyer, 901, Carp, new[] { new MarketAllocation(a, 6, 30) }, 500, Now);
 
         // 120 × 5% = 6 · 180 × 5% = 9
         Scalar($"SELECT sale_fee FROM t_auction_trade WHERE trade_id = {a}").ShouldBe(15);
@@ -217,7 +217,7 @@ public class MarketDbTest : IDisposable
         var a = await List(SellerA, 10, 30);
         await Settle(new MarketAllocation(a, 4, 30));
 
-        var result = await AuctionDb.SettleAsync(Conn, a, 11, 901, totalPrice: 180, 500, 0, Now);
+        var result = await AuctionDb.SettleAsync(Conn, a, 11, 901, totalPrice: 180, 500, Now);
 
         MailAttachment.FromRow(result.BuyerMail!).Items.Single().ShouldBe((Carp, 6));
         Scalar($"SELECT count FROM t_auction_trade WHERE trade_id = {a}").ShouldBe(0);

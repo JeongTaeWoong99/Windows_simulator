@@ -20,7 +20,7 @@ public sealed class LoadAuctionStateRepository(User user) : IRepository
 /// <summary>등록 한 트랜잭션 → <see cref="AuctionDb.RegisterAsync"/>. 끝나면 매물 ID를 알린다.</summary>
 public sealed class RegisterAuctionRepository(
     User user, AuctionItemSnapshot item, long unitPrice, long listingFee,
-    List<ItemChangeInfo> inventoryChanges, long gold, long dia, DateTime expiresAt, DateTime now) : IRepository
+    List<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now) : IRepository
 {
     private long _tradeId;
 
@@ -31,7 +31,7 @@ public sealed class RegisterAuctionRepository(
     public AuctionItemSnapshot Item => item;
 
     public async Task ExecuteAsync(DbConnection connection)
-        => _tradeId = await AuctionDb.RegisterAsync(connection, User.Uid, item, unitPrice, listingFee, inventoryChanges, gold, dia, expiresAt, now);
+        => _tradeId = await AuctionDb.RegisterAsync(connection, User.Uid, item, unitPrice, listingFee, inventoryChanges, gold, expiresAt, now);
 
     public void Apply() => User.OnAuctionRegistered(_tradeId, item, listingFee, inventoryChanges);
 }
@@ -57,7 +57,7 @@ public sealed class ReleasePurchaseRepository(User user, long purchaseId, DateTi
 
 /// <summary>정산 한 트랜잭션 → <see cref="AuctionDb.SettleAsync"/>. 작업 파티션은 구매자다.</summary>
 public sealed class SettleAuctionRepository(
-    User buyer, long purchaseId, long listingId, long totalPrice, long gold, long dia, DateTime now) : IRepository
+    User buyer, long purchaseId, long listingId, long totalPrice, long gold, DateTime now) : IRepository
 {
     private AuctionSettleResult _result = new(false, 0, null, null);
 
@@ -66,7 +66,7 @@ public sealed class SettleAuctionRepository(
     public User User { get; } = buyer;
 
     public async Task ExecuteAsync(DbConnection connection)
-        => _result = await AuctionDb.SettleAsync(connection, listingId, User.Uid, purchaseId, totalPrice, gold, dia, now);
+        => _result = await AuctionDb.SettleAsync(connection, listingId, User.Uid, purchaseId, totalPrice, gold, now);
 
     public void Apply() => User.OnAuctionSettled(listingId, totalPrice, _result);
 

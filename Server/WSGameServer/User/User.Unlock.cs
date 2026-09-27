@@ -54,7 +54,7 @@ public partial class User
             return;
         }
 
-        // 지불 컬럼은 아직 Gold 하나다. Dia 컬럼이 생기면 여기에 분기를 더한다 — 지불 컬럼끼리는 OR(해금 #16).
+        // 지불 컬럼은 Gold 하나다. 지불 컬럼이 늘면 여기에 분기를 더한다 — 지불 컬럼끼리는 OR(해금 #16).
         if (row.Gold > 0)
         {
             if (currency != CurrencyType.Gold)

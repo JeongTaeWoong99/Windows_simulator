@@ -42,7 +42,7 @@ public class AuctionRelayTest : IDisposable
     private Task<long> Register(int count = 10, long unitPrice = 30, long fee = 3)
     {
         var item = new AuctionItemSnapshot { Kind = EAuctionKind.Item, Tid = 10001, Category = 2, Rarity = 1, Count = count };
-        return AuctionDb.RegisterAsync(Conn, Seller, item, unitPrice, fee, new List<ItemChangeInfo>(), 997, 0, Now.AddHours(48), Now);
+        return AuctionDb.RegisterAsync(Conn, Seller, item, unitPrice, fee, new List<ItemChangeInfo>(), 997, Now.AddHours(48), Now);
     }
 
     private void Events(params (long EventId, Proto.EventKind Kind, long ListingId)[] events)
@@ -117,7 +117,7 @@ public class AuctionRelayTest : IDisposable
     {
         var tradeId = await Register(count: 10, unitPrice: 30);
         await _relay.FlushOutboxAsync(Now);
-        await AuctionDb.SettleAsync(Conn, tradeId, 8, purchaseId: 900, totalPrice: 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, 8, purchaseId: 900, totalPrice: 300, 700, Now);
 
         await _relay.FlushOutboxAsync(Now);
 
@@ -260,7 +260,7 @@ public class AuctionRelayTest : IDisposable
         var a = await RegisterAndSend();
         var b = await RegisterAndSend();
         await AuctionDb.SettleMarketAsync(Conn, 8, purchaseId: 900, 10001,
-            new[] { new MarketAllocation(a, 2, 30), new MarketAllocation(b, 2, 30) }, 500, 0, Now);
+            new[] { new MarketAllocation(a, 2, 30), new MarketAllocation(b, 2, 30) }, 500, Now);
 
         await _relay.ReconcileAsync(Now + AuctionRelay.StaleAfter);
 

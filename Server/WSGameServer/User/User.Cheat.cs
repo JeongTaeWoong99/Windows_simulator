@@ -29,8 +29,7 @@ public partial class User
 
         var (result, message) = req.Command switch
         {
-            ECheatCommand.GiveGold         => CheatGiveCurrency(req.Arg1, CurrencyType.Gold),
-            ECheatCommand.GiveDia          => CheatGiveCurrency(req.Arg1, CurrencyType.Dia),
+            ECheatCommand.GiveGold         => CheatGiveGold(req.Arg1),
             ECheatCommand.GiveItem         => CheatGiveItem(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacter    => CheatGiveCharacter(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
@@ -53,7 +52,7 @@ public partial class User
         }
     }
 
-    private (EResultCode, string) CheatGiveCurrency(long amount, CurrencyType currency)
+    private (EResultCode, string) CheatGiveGold(long amount)
     {
         if (amount == 0)
         {
@@ -62,17 +61,16 @@ public partial class User
 
         if (amount > 0)
         {
-            var balance = currency == CurrencyType.Gold ? GainGold(amount) : GainDia(amount);
-            return (EResultCode.Ok, $"{currency} +{amount} → {balance}");
+            var balance = GainGold(amount);
+            return (EResultCode.Ok, $"Gold +{amount} → {balance}");
         }
 
-        var spent = currency == CurrencyType.Gold ? TrySpendGold(-amount) : TrySpendDia(-amount);
-        if (!spent)
+        if (!TrySpendGold(-amount))
         {
-            return (EResultCode.NotEnoughCurrency, $"{currency} 잔액 부족");
+            return (EResultCode.NotEnoughCurrency, "Gold 잔액 부족");
         }
 
-        return (EResultCode.Ok, $"{currency} {amount}");
+        return (EResultCode.Ok, $"Gold {amount}");
     }
 
     private (EResultCode, string) CheatGiveItem(long itemTid, long count)

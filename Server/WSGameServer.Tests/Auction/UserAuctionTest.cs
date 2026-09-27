@@ -532,7 +532,7 @@ public class UserAuctionTest
     public void 잠긴_장비_우편을_받으면_잠금_해제를_요청한다()
     {
         var (user, b) = NewUser();
-        var attachment = new MailAttachment(0, 0, new(), new(), new(), new List<MailEquip> { new(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 101 }) });
+        var attachment = new MailAttachment(0, new(), new(), new(), new List<MailEquip> { new(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 101 }) });
         user.OnMailsArrived(new List<UserMailRow> { MailDb.ToRow(40, AuctionMail.PurchasedTemplateTid, attachment, Now) });
 
         user.TryClaimMail(40, Now);

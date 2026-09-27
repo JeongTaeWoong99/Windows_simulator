@@ -224,8 +224,7 @@ namespace MikaProtocol
     /// <para>
     /// 아이템처럼 스냅샷/델타 패킷을 나누지 않는 이유는 값이 증감이 아니라
     /// <b>확정된 잔액</b>이기 때문이다. 클라이언트는 두 경우 모두 <b>덮어쓰기</b>만 하면 되므로
-    /// 처리 경로가 하나로 끝난다. <b>한쪽만 바뀌어도 둘 다 실어 보낸다</b> — 덮어쓰기라 안전하고,
-    /// 재화마다 패킷을 나누면 "무엇을 보내야 하는가"를 호출부가 매번 판단해야 한다.
+    /// 처리 경로가 하나로 끝난다. 재화는 지금 골드 하나다 — 다이아는 폐지했다(2026-09-28).
     /// </para>
     ///
     /// <para>
@@ -237,8 +236,7 @@ namespace MikaProtocol
     public partial class S_CurrencyResponse : IPacket
     {
         // 보유량. int로 받지 말 것 — 거래 경제에서 21억을 넘길 수 있다
-        public long Gold { get; set; }  // 무료 재화
-        public long Dia  { get; set; }  // 유료 재화
+        public long Gold { get; set; }
     }
 
     // ───────────────────────── 캐릭터 (Character) ─────────────────────────

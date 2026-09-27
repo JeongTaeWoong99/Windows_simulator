@@ -180,9 +180,9 @@ public partial class User
         }
 
         _gold -= total;
-        Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
+        Send(new S_CurrencyResponse { Gold = _gold });
 
-        PostDBTask(new SettleMarketRepository(this, purchaseId, tid, allocations, _gold, _dia, now));
+        PostDBTask(new SettleMarketRepository(this, purchaseId, tid, allocations, _gold, now));
         return;
 
         void Reply(EResultCode result)
@@ -228,7 +228,7 @@ public partial class User
 
 /// <summary>거래소 정산 한 트랜잭션 → <see cref="AuctionDb.SettleMarketAsync"/>. 작업 파티션은 구매자다.</summary>
 public sealed class SettleMarketRepository(
-    User buyer, long purchaseId, int tid, List<MarketAllocation> allocations, long gold, long dia, DateTime now) : IRepository
+    User buyer, long purchaseId, int tid, List<MarketAllocation> allocations, long gold, DateTime now) : IRepository
 {
     private AuctionMarketSettleResult _result = new(false, null, Array.Empty<(long, UserMailRow, int)>());
 
@@ -239,7 +239,7 @@ public sealed class SettleMarketRepository(
     public IReadOnlyList<MarketAllocation> Allocations => allocations;
 
     public async Task ExecuteAsync(DbConnection connection)
-        => _result = await AuctionDb.SettleMarketAsync(connection, User.Uid, purchaseId, tid, allocations, gold, dia, now);
+        => _result = await AuctionDb.SettleMarketAsync(connection, User.Uid, purchaseId, tid, allocations, gold, now);
 
     public void Apply() => User.OnMarketSettled(tid, allocations.Sum(a => a.Quantity), allocations.Sum(a => a.Price), _result);
 

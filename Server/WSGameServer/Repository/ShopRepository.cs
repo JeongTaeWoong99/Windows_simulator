@@ -10,14 +10,12 @@ public sealed class SellItemsRepository : IRepository
 {
     private readonly List<ItemChangeInfo> _itemChanges;
     private readonly long _gold;
-    private readonly long _dia;
 
-    public SellItemsRepository(User user, List<ItemChangeInfo> itemChanges, long gold, long dia)
+    public SellItemsRepository(User user, List<ItemChangeInfo> itemChanges, long gold)
     {
         User         = user;
         _itemChanges = itemChanges;
         _gold        = gold;
-        _dia         = dia;
     }
 
     public long Key => User.DbKey;
@@ -47,12 +45,11 @@ public sealed class SellItemsRepository : IRepository
             }
 
             // 델타가 아니라 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 된다.
-            // 바뀌는 건 골드뿐이지만 두 재화를 함께 쓴다 — SaveCurrencyRepository와 같은 이유다.
             await tx.ExecuteAsync(
-                @"INSERT INTO t_user_currency (user_id, gold, dia)
-                  VALUES (@userId, @gold, @dia)
-                  ON CONFLICT (user_id) DO UPDATE SET gold = excluded.gold, dia = excluded.dia;",
-                new { userId = User.Uid, gold = _gold, dia = _dia });
+                @"INSERT INTO t_user_currency (user_id, gold)
+                  VALUES (@userId, @gold)
+                  ON CONFLICT (user_id) DO UPDATE SET gold = excluded.gold;",
+                new { userId = User.Uid, gold = _gold });
         });
     }
 

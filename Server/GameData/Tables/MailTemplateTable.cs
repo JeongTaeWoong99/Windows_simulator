@@ -16,7 +16,6 @@ namespace GameData
         public string Sender          { get; set; } = "";                         // string
         public int    PeriodDays      { get; set; }                               // int [0..-]
         public long   Gold            { get; set; }                               // long [0..-]
-        public long   Dia             { get; set; }                               // long [0..-]
         public int[]  ItemTIDs        { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
         public int[]  ItemCounts      { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
         public int[]  CharacterTIDs   { get; set; } = System.Array.Empty<int>();  // int[] 기본=""

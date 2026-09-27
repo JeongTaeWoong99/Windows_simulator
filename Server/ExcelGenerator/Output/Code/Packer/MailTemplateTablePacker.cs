@@ -20,12 +20,11 @@ namespace GameData
             Sender          = PackerUtil.RequireString(cells[3], Table, "Sender"),
             PeriodDays      = PackerUtil.ParseInt(cells[4], Table, "PeriodDays", 0, null),
             Gold            = PackerUtil.ParseLong(cells[5], Table, "Gold", 0, null),
-            Dia             = PackerUtil.ParseLong(cells[6], Table, "Dia", 0, null),
-            ItemTIDs        = cells[7].Length > 0 ? PackerUtil.ParseIntArray(cells[7], Table, "ItemTIDs") : System.Array.Empty<int>(),
-            ItemCounts      = cells[8].Length > 0 ? PackerUtil.ParseIntArray(cells[8], Table, "ItemCounts") : System.Array.Empty<int>(),
-            CharacterTIDs   = cells[9].Length > 0 ? PackerUtil.ParseIntArray(cells[9], Table, "CharacterTIDs") : System.Array.Empty<int>(),
-            EquipTIDs       = cells[10].Length > 0 ? PackerUtil.ParseIntArray(cells[10], Table, "EquipTIDs") : System.Array.Empty<int>(),
-            Description     = cells[11].Length > 0 ? PackerUtil.RequireString(cells[11], Table, "Description") : "",
+            ItemTIDs        = cells[6].Length > 0 ? PackerUtil.ParseIntArray(cells[6], Table, "ItemTIDs") : System.Array.Empty<int>(),
+            ItemCounts      = cells[7].Length > 0 ? PackerUtil.ParseIntArray(cells[7], Table, "ItemCounts") : System.Array.Empty<int>(),
+            CharacterTIDs   = cells[8].Length > 0 ? PackerUtil.ParseIntArray(cells[8], Table, "CharacterTIDs") : System.Array.Empty<int>(),
+            EquipTIDs       = cells[9].Length > 0 ? PackerUtil.ParseIntArray(cells[9], Table, "EquipTIDs") : System.Array.Empty<int>(),
+            Description     = cells[10].Length > 0 ? PackerUtil.RequireString(cells[10], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

@@ -170,11 +170,6 @@ public partial class User
             GainGold(a.Gold);
         }
 
-        if (a.Dia > 0)
-        {
-            GainDia(a.Dia);
-        }
-
         if (a.CharacterTids.Count > 0)
         {
             GrantGachaCharacters(a.CharacterTids);

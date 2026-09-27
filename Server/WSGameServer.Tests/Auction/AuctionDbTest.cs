@@ -39,13 +39,13 @@ public class AuctionDbTest : IDisposable
     private Task<long> RegisterWood(int count = 10, long unitPrice = 30, long fee = 3)
     {
         var changes = new List<ItemChangeInfo> { new() { ItemId = 40001, Count = 5 } };
-        return AuctionDb.RegisterAsync(Conn, Seller, Wood(count), unitPrice, fee, changes, gold: 997, dia: 0, Now.AddHours(48), Now);
+        return AuctionDb.RegisterAsync(Conn, Seller, Wood(count), unitPrice, fee, changes, gold: 997, Now.AddHours(48), Now);
     }
 
     private Task<long> RegisterSword(long equipId = 55)
     {
         _db.Execute($"INSERT INTO t_user_equip (equip_id, user_id, equip_tid, enchant_grade, enchant_1, enchant_2) VALUES ({equipId}, {Seller}, 1001, 4, 701, 702)");
-        return AuctionDb.RegisterAsync(Conn, Seller, Sword(equipId), 500, 5, new List<ItemChangeInfo>(), gold: 995, dia: 0, Now.AddHours(48), Now);
+        return AuctionDb.RegisterAsync(Conn, Seller, Sword(equipId), 500, 5, new List<ItemChangeInfo>(), gold: 995, Now.AddHours(48), Now);
     }
 
     // ── 등록 ──
@@ -94,7 +94,7 @@ public class AuctionDbTest : IDisposable
         await RegisterSword();
 
         await Should.ThrowAsync<InvalidOperationException>(
-            () => AuctionDb.RegisterAsync(Conn, Seller, Sword(55), 500, 5, new List<ItemChangeInfo>(), 990, 0, Now.AddHours(48), Now));
+            () => AuctionDb.RegisterAsync(Conn, Seller, Sword(55), 500, 5, new List<ItemChangeInfo>(), 990, Now.AddHours(48), Now));
 
         Scalar("SELECT COUNT(*) FROM t_auction_trade").ShouldBe(1);
         Scalar("SELECT gold FROM t_user_currency WHERE user_id = 7").ShouldBe(995);
@@ -117,7 +117,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        var result = await AuctionDb.SettleAsync(Conn, tradeId, Buyer, purchaseId: 900, totalPrice: 300, buyerGold: 700, buyerDia: 0, Now);
+        var result = await AuctionDb.SettleAsync(Conn, tradeId, Buyer, purchaseId: 900, totalPrice: 300, buyerGold: 700, Now);
 
         result.Settled.ShouldBeTrue();
         Text("SELECT items FROM t_user_mail WHERE user_id = 8").ShouldBe("[[40001,10]]");
@@ -128,7 +128,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, Now);
 
         // 300 − 300 × 5% = 285
         Scalar($"SELECT gold FROM t_user_mail WHERE user_id = 7 AND template_tid = {AuctionMail.SoldTemplateTid}").ShouldBe(285);
@@ -139,7 +139,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, buyerGold: 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, buyerGold: 700, Now);
 
         Scalar("SELECT gold FROM t_user_currency WHERE user_id = 8").ShouldBe(700);
     }
@@ -149,7 +149,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, Now);
 
         Text($"SELECT payload FROM t_auction_outbox WHERE trade_id = {tradeId} AND kind = 2")
             .ShouldBe("{\"PurchaseId\":900,\"Success\":true}");
@@ -160,7 +160,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterSword(55);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
 
         Scalar("SELECT user_id FROM t_user_equip WHERE equip_id = 55").ShouldBe(Buyer);
         Scalar("SELECT auction_trade_id FROM t_user_equip WHERE equip_id = 55").ShouldBe(tradeId);
@@ -171,7 +171,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterSword(55);
 
-        var result = await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, 0, Now);
+        var result = await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
 
         MailAttachment.FromRow(result.BuyerMail!).Equips.ShouldBe(new[] { new MailEquip(55, 1001, 4, new List<int> { 701, 702 }) },
             ignoreOrder: false, comparer: new MailEquipComparer());
@@ -181,9 +181,9 @@ public class AuctionDbTest : IDisposable
     public async Task 두_번_정산해도_한_번만_팔린다()
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, Now);
 
-        var second = await AuctionDb.SettleAsync(Conn, tradeId, 9, 901, 300, 700, 0, Now);
+        var second = await AuctionDb.SettleAsync(Conn, tradeId, 9, 901, 300, 700, Now);
 
         second.Settled.ShouldBeFalse();
         Scalar("SELECT COUNT(*) FROM t_user_mail WHERE template_tid = 3").ShouldBe(1);
@@ -195,7 +195,7 @@ public class AuctionDbTest : IDisposable
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
         await AuctionDb.ReturnAsync(Conn, tradeId, AuctionReturnReason.Expired, Now);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, Now);
 
         Text($"SELECT payload FROM t_auction_outbox WHERE trade_id = {tradeId} AND kind = 2")
             .ShouldBe("{\"PurchaseId\":900,\"Success\":false}");
@@ -207,7 +207,7 @@ public class AuctionDbTest : IDisposable
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
         await AuctionDb.ReturnAsync(Conn, tradeId, AuctionReturnReason.Expired, Now);
 
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, buyerGold: 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, buyerGold: 700, Now);
 
         // 메모리는 1000 − 300 = 700을 들고 있다. 실패면 DB에는 700 + 300 = 1000이 남아야 한다.
         Scalar("SELECT gold FROM t_user_currency WHERE user_id = 8").ShouldBe(1000);
@@ -219,7 +219,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        (await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, totalPrice: 299, 700, 0, Now)).Settled.ShouldBeFalse();
+        (await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, totalPrice: 299, 700, Now)).Settled.ShouldBeFalse();
     }
 
     [Fact]
@@ -227,7 +227,7 @@ public class AuctionDbTest : IDisposable
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
 
-        (await AuctionDb.SettleAsync(Conn, tradeId, Seller, 900, 300, 700, 0, Now)).Settled.ShouldBeFalse();
+        (await AuctionDb.SettleAsync(Conn, tradeId, Seller, 900, 300, 700, Now)).Settled.ShouldBeFalse();
     }
 
     // ── 반환 ──
@@ -280,7 +280,7 @@ public class AuctionDbTest : IDisposable
     public async Task 팔린_거래는_반환하지_않는다()
     {
         var tradeId = await RegisterWood(count: 10, unitPrice: 30);
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 300, 700, Now);
 
         (await AuctionDb.ReturnAsync(Conn, tradeId, AuctionReturnReason.Expired, Now)).ShouldBeNull();
     }
@@ -291,7 +291,7 @@ public class AuctionDbTest : IDisposable
     public async Task 잠긴_장비를_받으면_잠금이_풀리고_칸이_정해진다()
     {
         var tradeId = await RegisterSword(55);
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
 
         (await AuctionDb.UnlockEquipAsync(Conn, 55, Buyer, slotPosition: 3)).ShouldBeTrue();
 
@@ -303,7 +303,7 @@ public class AuctionDbTest : IDisposable
     public async Task 남의_잠긴_장비는_받을_수_없다()
     {
         var tradeId = await RegisterSword(55);
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
 
         (await AuctionDb.UnlockEquipAsync(Conn, 55, Seller, 3)).ShouldBeFalse();
     }
@@ -312,7 +312,7 @@ public class AuctionDbTest : IDisposable
     public async Task 이미_받은_장비는_다시_풀지_않는다()
     {
         var tradeId = await RegisterSword(55);
-        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, 0, Now);
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
         await AuctionDb.UnlockEquipAsync(Conn, 55, Buyer, 3);
 
         (await AuctionDb.UnlockEquipAsync(Conn, 55, Buyer, 4)).ShouldBeFalse();
@@ -344,7 +344,7 @@ public class AuctionDbTest : IDisposable
                 await AuctionDb.MarkSentAsync(Conn, row.outbox_id, Now);
             }
         }
-        await AuctionDb.SettleAsync(Conn, settled, Buyer, 900, 300, 700, 0, Now);
+        await AuctionDb.SettleAsync(Conn, settled, Buyer, 900, 300, 700, Now);
 
         var stale = await AuctionDb.FindStaleListedAsync(Conn, createdBefore: Now, max: 10);
 

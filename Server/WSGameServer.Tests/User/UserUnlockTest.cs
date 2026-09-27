@@ -112,14 +112,12 @@ public class UserUnlockTest
     [Fact]
     public void 이_해금에_없는_재화를_고르면_UnlockLocked다()
     {
-        // 1002는 골드 해금이다. 다이아를 골라도 뭘 빼야 할지 없으므로 거절한다 — 다이아 잔액도 건드리지 않는다.
+        // 1002는 골드 해금이다. 골드가 아닌 재화를 고르면 뭘 빼야 할지 없으므로 거절한다 — 골드도 건드리지 않는다.
         var (user, b) = UserWith(gold: 10_000);
-        user.GainDia(1_000);
 
-        user.TryUnlock(SecondSlot, CurrencyType.Dia, Base);
+        user.TryUnlock(SecondSlot, CurrencyType.None, Base);
 
         b.Channel.SentOf<S_UnlockResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.UnlockLocked);
-        user.Dia.ShouldBe(1_000);
         user.Gold.ShouldBe(10_000);
     }
 

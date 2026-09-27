@@ -86,8 +86,8 @@ public partial class User
         _gold -= fee;
         _activeListings++;
 
-        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, _dia, now + AuctionRules.ListingDuration, now));
-        Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
+        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now));
+        Send(new S_CurrencyResponse { Gold = _gold });
         return;
 
         void Reject(EResultCode result)
@@ -232,9 +232,9 @@ public partial class User
         }
 
         _gold -= reply.TotalPrice;
-        Send(new S_CurrencyResponse { Gold = _gold, Dia = _dia });
+        Send(new S_CurrencyResponse { Gold = _gold });
 
-        PostDBTask(new SettleAuctionRepository(this, purchaseId, listingId, reply.TotalPrice, _gold, _dia, now));
+        PostDBTask(new SettleAuctionRepository(this, purchaseId, listingId, reply.TotalPrice, _gold, now));
     }
 
     // 버린 예약을 놓는다 — 안 보내면 그 수량이 타임아웃까지 잠겨 취소·만료·다른 구매가 막힌다.
@@ -249,7 +249,7 @@ public partial class User
     public void OnSettleFailed(long purchaseId, long totalPrice, string repositoryName, Exception e)
     {
         _gold = checked(_gold + totalPrice);
-        PostDBTask(new SaveCurrencyRepository(this, _gold, _dia));
+        PostDBTask(new SaveCurrencyRepository(this, _gold));
         ReleasePurchase(purchaseId, DateTime.UtcNow);
         OnDbFailed(repositoryName, e);
     }

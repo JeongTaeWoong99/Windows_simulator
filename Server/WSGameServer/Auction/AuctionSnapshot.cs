@@ -27,10 +27,10 @@ public sealed record AuctionItemSnapshot
     {
         if (Kind == EAuctionKind.Equip)
         {
-            return new MailAttachment(gold, 0, new(), new(), new(), new List<MailEquip> { new(EquipId, Tid, EnchantGrade, Options.ToList()) });
+            return new MailAttachment(gold, new(), new(), new(), new List<MailEquip> { new(EquipId, Tid, EnchantGrade, Options.ToList()) });
         }
 
-        return new MailAttachment(gold, 0, new List<(int, int)> { (Tid, Count) }, new(), new());
+        return new MailAttachment(gold, new List<(int, int)> { (Tid, Count) }, new(), new());
     }
 }
 

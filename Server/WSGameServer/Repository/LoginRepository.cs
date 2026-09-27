@@ -45,7 +45,7 @@ public sealed class LoginRepository : IRepository
         // 2) 재화. 한 번도 벌지 않았으면 행 자체가 없고, 그건 0으로 본다
         //    (가입 시 0짜리 행을 만들지 않는다 — 재화 컬럼이 늘 때마다 백필이 필요해진다).
         _currency = await connection.QueryFirstOrDefaultAsync<CurrencyRow>(
-            "SELECT gold, dia FROM t_user_currency WHERE user_id = @userId",
+            "SELECT gold FROM t_user_currency WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 3) 캐릭터. 하나도 없으면(신규 유저) 지급 판단은 로직 스레드가 한다.

@@ -96,7 +96,6 @@ namespace MikaProtocol
         None = 0,
 
         Gold = 1,
-        Dia  = 2,
     }
 
     // 장비 칸. GameData.EquipSlot(Enum.xlsx)과 이름·값이 1:1이어야 한다 — 서버가 byte 캐스팅으로 옮기고 DB에 저장한다.
@@ -118,7 +117,7 @@ namespace MikaProtocol
     {
         None             = 0,
         GiveGold         = 1,  // Arg1 = 금액 (음수면 차감)
-        GiveDia          = 2,  // Arg1 = 금액 (음수면 차감)
+        // 2 = GiveDia — 다이아 폐지(2026-09-28, #41). 번호는 재사용하지 않는다
         GiveItem         = 3,  // Arg1 = ItemTID · Arg2 = 개수
         GiveCharacter    = 4,  // Arg1 = CharacterTID · Arg2 = 장수 (1~10)
         GiveCharacterExp = 5,  // Arg1 = CharacterId(개체) · Arg2 = 경험치
