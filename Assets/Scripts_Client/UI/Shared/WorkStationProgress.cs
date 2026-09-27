@@ -14,9 +14,9 @@ using UnityEngine;
 // 카운트다운은 연출이고 판정은 서버가 한다. 어긋나도 다음 슬롯 동기화가 기준점을 교정한다.
 public static class WorkStationProgress
 {
-    // 작업량 단위는 "밀리초 × 천분율 속도"다. 1초 × 1.0배 = 1000ms × 1000 = 1,000,000 단위.
-    // 남은 시간을 초로 되돌릴 때 이 값으로 나눈다.
-    private const float UnitsPerSecondAtBaseSpeed = 1000f;
+    // 작업량 단위는 "밀리초 × 천분율 속도"다. 작업량 ÷ 속도 = 밀리초라, 초로 되돌릴 때 이 값으로 나눈다.
+    // ※ 속도 스케일('Constants.WorkSpeedScale')이 아니다 — 속도로 나누면 스케일은 이미 지워진다(T-085).
+    private const float MillisecondsPerSecond = 1000f;
 
     // 칸이 배치 상태인가 — 산업과 캐릭터가 둘 다 차 있어야 배치다.
     // 'IsRunning'과 다르다. 그쪽은 속도까지 봐서 "카운트다운을 돌릴 수 있는가"를 뜻한다.
@@ -44,7 +44,7 @@ public static class WorkStationProgress
             return 0f;
         }
 
-        return remainUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
+        return remainUnits / (float)slot.CurrentWorkSpeed / MillisecondsPerSecond;
     }
 
     // 판정 1회에 걸리는 초 = 실효 주기 (작업슬롯 선택 화면의 효율 계산에서 호출)
@@ -56,7 +56,7 @@ public static class WorkStationProgress
             return 0f;
         }
 
-        return slot.JudgeCostUnits / (float)slot.CurrentWorkSpeed / UnitsPerSecondAtBaseSpeed;
+        return slot.JudgeCostUnits / (float)slot.CurrentWorkSpeed / MillisecondsPerSecond;
     }
 
     // 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.

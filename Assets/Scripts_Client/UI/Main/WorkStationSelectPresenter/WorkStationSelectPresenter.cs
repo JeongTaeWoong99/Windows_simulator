@@ -276,11 +276,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 지금 고른 산업 레벨(1~). **슬롯마다 따로 정하는 값이다** — 서버가 슬롯에 저장하고
     // 판정 시간·드롭 테이블·판정당 경험치가 전부 이 값으로 갈린다('IndustryLevelTable').
-    // Lv1은 조건 없이 열려 있어 기본값이 된다.
-    private int _selectedIndustryLevel = DefaultIndustryLevel;
+    // 기본 레벨은 조건 없이 열려 있어 기본값이 된다 — 테이블 값이라 'Start'에서 채운다.
+    private int _selectedIndustryLevel;
 
-    // 조건 없이 늘 열려 있는 기본 레벨. 서버의 'WorkStationSlot.DefaultIndustryLevel'과 같은 값이다.
-    private const int DefaultIndustryLevel = 1;
+    // 조건 없이 늘 열려 있는 기본 레벨. 서버와 같은 'Constants.xlsx' 값을 읽는다(T-085).
+    private static int DefaultIndustryLevel => (int)Constants.DefaultIndustryLevel;
 
     // 응답을 기다리는 중인 요청. 없으면 None.
     private PendingRequest _pending = PendingRequest.None;
@@ -331,6 +331,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
 
         _rowOrder = CompareRows;
+
+        // 필드 초기화에서 읽지 않는다 — 에디터 직렬화 때도 불려 테이블이 없을 수 있다.
+        _selectedIndustryLevel = DefaultIndustryLevel;
 
         Subscribe();
 
@@ -1155,7 +1158,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         speedRow.Bind("현재 작업속도", FormatSpeed(slot.CurrentWorkSpeed));
 
         // 가산을 걷어낸 기대 속도 — 서버 'WorkSpeed.Resolve'의 가산 단계와 같은 식이다.
-        float expected = baseSpeed * Mathf.Max(0, 1000 + traitAdd + equipAdd) / 1000f;
+        int   scale    = (int)Constants.WorkSpeedScale;
+        float expected = baseSpeed * Mathf.Max(0, scale + traitAdd + equipAdd) / (float)scale;
 
         if (expected > 0f)
         {
@@ -1181,7 +1185,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 천분율 속도를 "2.45배"로 적는다. 0이면 모르는 값이라 "—" (효율 계산에서 호출)
     private static string FormatSpeed(int permille)
-        => permille > 0 ? $"{permille / 1000f:0.00}배" : "—";
+        => permille > 0 ? $"{permille / (float)Constants.WorkSpeedScale:0.00}배" : "—";
 
     // 천분율 가산을 "+25%"로 적는다. 0도 그대로 "+0%"다 — 빈 값은 "못 읽었다"와 구분되지 않는다.
     // ※ 감산 장비·특성이 생길 수 있어 부호를 함께 만든다.
