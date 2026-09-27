@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { OWNER_STYLE, STATUS_STYLE, PRIORITY_ORDER, STATUS_ORDER } from '../lib/labels';
+import { OWNER_STYLE, STATUS_STYLE, PRIORITY_ORDER, STATUS_ORDER, PEOPLE } from '../lib/labels';
 import { loadDesignStatus, DESIGN_STATE_LABEL, DESIGN_STATE_STYLE, type DesignState } from '../lib/status';
 
 const tasks = await getCollection('tasks');
@@ -14,7 +14,7 @@ const byRank = (a: any, b: any) =>
 const shipped = tasks.filter((t) => t.data.done).sort((a, b) => a.data.taskId.localeCompare(b.data.taskId));
 const remaining = tasks.filter((t) => !t.data.done).sort(byRank);
 
-const OWNERS = ['클라', '서버', '공용'] as const;
+const OWNERS = PEOPLE.map((p) => p.name);
 const countBy = (list: typeof tasks, owner: string) => list.filter((t) => t.data.owner === owner).length;
 
 // 기획 확정 현황 — 게임기획코어 5장 표를 그대로 읽는다

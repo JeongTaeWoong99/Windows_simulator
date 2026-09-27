@@ -30,7 +30,10 @@ export type TaskDoc = {
   owner: string;
   status: string;
   priority: string;
-  due: string;
+  /** 목표 회차(YYMMDD) 또는 '미정' */
+  target: string;
+  /** Closed 사유(취소·불필요) — 없으면 빈 문자열 */
+  closure: string;
   done: boolean;
   bucket: TaskBucket;
   bodyHtml: string;
@@ -173,10 +176,11 @@ export function loadTasks(): TaskDoc[] {
       taskId: data['id'] ?? f.name.slice(0, 5),
       slug: taskSlug(f.name),
       title: data['제목'] ?? firstHeading(body),
-      owner: data['담당'] ?? '공용',
-      status: data['상태'] ?? (f.bucket === 'done' ? '완료' : '대기'),
+      owner: data['담당'] ?? '미할당',
+      status: data['상태'] ?? (f.bucket === 'done' ? 'Closed' : 'New'),
       priority: data['우선순위'] ?? '보통',
-      due: data['마감'] ?? '미정',
+      target: data['목표'] ?? '미정',
+      closure: data['종료'] ?? '',
       done: f.bucket === 'done',
       bucket: f.bucket,
       // 제목은 헤더에서 이미 보여 준다 — 본문 첫 h1을 빼지 않으면 두 번 나온다.

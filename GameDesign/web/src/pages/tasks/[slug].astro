@@ -21,7 +21,8 @@ const { task } = Astro.props;
       <span class={`px-2 py-0.5 rounded-full ${OWNER_STYLE[task.owner] ?? ''}`}>{task.owner}</span>
       <span class={`px-2 py-0.5 rounded-full ${STATUS_STYLE[task.status]?.cls ?? ''}`}>{task.status}</span>
       <span class={PRIORITY_STYLE[task.priority] ?? ''}>우선순위 {task.priority}</span>
-      <span class="text-slate-400">마감 {task.due}</span>
+      <span class="text-slate-400">목표 {task.target}</span>
+      {task.closure && <span class="text-slate-400">· {task.closure}</span>}
       {task.done && <span class="text-slate-400">· 보관됨</span>}
       {task.bucket === 'art' && <span class="text-slate-400">· 🎨 아트만 남음</span>}
       {task.bucket === 'later' && <span class="text-slate-400">· ⏳ 나중에</span>}

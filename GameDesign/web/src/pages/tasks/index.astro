@@ -1,187 +1,218 @@
 ---
 import Layout from '../../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { STATUS_STYLE, OWNER_STYLE, PRIORITY_STYLE, PRIORITY_ORDER, STATUS_ORDER } from '../../lib/labels';
+import {
+  STATUSES,
+  STATUS_STYLE,
+  PEOPLE,
+  OWNER_STYLE,
+  PRIORITY_STYLE,
+  PRIORITY_ORDER,
+  STATUS_ORDER,
+  upcomingCycles,
+} from '../../lib/labels';
 
 const all = await getCollection('tasks');
 
-// INDEX와 같은 기준 — 상태(진행중 > 보류 > 대기) 다음 우선순위.
+// 상태 → 우선순위 → ID. 손이 가야 하는 것이 위로 온다.
 const byRank = (a: any, b: any) =>
   (STATUS_ORDER[a.data.status] ?? 9) - (STATUS_ORDER[b.data.status] ?? 9) ||
   (PRIORITY_ORDER[a.data.priority] ?? 9) - (PRIORITY_ORDER[b.data.priority] ?? 9) ||
   a.data.taskId.localeCompare(b.data.taskId);
 
-const byId = (a: any, b: any) => a.data.taskId.localeCompare(b.data.taskId);
+const live = all.filter((t) => !t.data.done).sort(byRank);
+const closed = all.filter((t) => t.data.done).sort((a, b) => b.data.taskId.localeCompare(a.data.taskId));
 
-// 열 보드는 INDEX(tasks/ 루트)만. art/·later/는 남은 일이지만 목록과 섞지 않고 아래 접힌 칸에 둔다.
-const open = all.filter((t) => t.data.bucket === 'open').sort(byRank);
-const art = all.filter((t) => t.data.bucket === 'art').sort(byId);
-const later = all.filter((t) => t.data.bucket === 'later').sort(byId);
-const done = all.filter((t) => t.data.done).sort(byId);
+// 회차 탭 — 다가오는 두 회차는 비어 있어도 띄우고, 일감에 적힌 다른 회차도 붙인다.
+const isCycle = (v: string) => /^\d{6}$/.test(v);
+const cycles = [...new Set([...upcomingCycles(2), ...live.map((t) => t.data.target).filter(isCycle)])].sort();
 
-const shelves = [
-  { key: 'art', label: '🎨 아트만 남음', note: '기능은 섰고 연출·리소스만 남았다 — 메인이 다 선 뒤 한꺼번에', items: art },
-  { key: 'later', label: '⏳ 나중에', note: '먼 훗날(배포 전 게이트 등) 할 것', items: later },
+type Tab = { key: string; label: string; note: string; items: typeof all };
+const tabs: Tab[] = [
+  ...cycles.map((c) => ({
+    key: c,
+    label: `${c} 목표 일감`,
+    note: `20${c.slice(0, 2)}-${c.slice(2, 4)}-${c.slice(4)} (토) 22:00 회의 — 그날 빌드에 들어갈 일`,
+    items: live.filter((t) => t.data.target === c),
+  })),
+  {
+    key: 'server',
+    label: '서버 구현 일감',
+    note: '담당 진우 — 회차와 상관없이 남은 전부',
+    items: live.filter((t) => t.data.owner === '진우'),
+  },
+  {
+    key: 'client',
+    label: '클라 구현 일감',
+    note: '담당 태웅 — 회차와 상관없이 남은 전부',
+    items: live.filter((t) => t.data.owner === '태웅'),
+  },
+  {
+    key: 'someday',
+    label: '회차 밖',
+    note: '목표 미정 — 🎨 아트만 남음 · ⏳ 나중에(배포 전 게이트 등)',
+    items: live.filter((t) => !isCycle(t.data.target)),
+  },
+  { key: 'all', label: '남은 일감 전부', note: 'Closed를 뺀 전부', items: live },
+  { key: 'closed', label: 'Closed', note: '끝났거나 취소된 일감', items: closed },
 ];
 
-// 담당이 곧 열이다. 공용은 어느 열에도 속하지 않아 위에 따로 둔다.
-const shared = open.filter((t) => t.data.owner === '공용');
-const client = open.filter((t) => t.data.owner === '클라');
-const server = open.filter((t) => t.data.owner === '서버');
-
-const columns = [
-  { owner: '클라', items: client, accent: 'violet' },
-  { owner: '서버', items: server, accent: 'sky' },
-];
+// 행 하나가 여러 탭에 속한다 — 탭마다 행을 복제하지 않고 data-tabs로 표시만 가른다.
+const rows = [...live, ...closed].map((t) => ({
+  t,
+  tabs: tabs.filter((tab) => tab.items.includes(t)).map((tab) => tab.key),
+}));
 ---
 
 <Layout title="일감">
-  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1 mb-1">
-    <h1 class="text-xl font-extrabold">일감</h1>
-    <p class="text-sm text-slate-500">
-      남은 일 {open.length}건 — 클라 {client.length} · 서버 {server.length} · 공용 {shared.length}
-    </p>
-  </div>
-  <p class="text-xs text-slate-400 mb-5">
-    담당이 곧 열이다. <strong class="text-slate-500">공용</strong>은 어느 한쪽 폴더로 갈리지 않아 위에 둔다 —
-    대개 <em>기획 결정</em>이라 양쪽을 함께 막는다.
-  </p>
+  <div class="flex flex-col lg:flex-row gap-6">
+    <!-- 왼쪽 탭 — 좁은 화면에서는 위로 올라가 가로로 넘긴다 -->
+    <aside class="lg:w-52 shrink-0">
+      <nav
+        id="task-tabs"
+        class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-visible lg:sticky lg:top-20 -mx-4 px-4 lg:mx-0 lg:px-0 pb-1"
+        aria-label="일감 탭"
+      >
+        {
+          tabs.map((tab) => (
+            <button class="tasktab" data-tab={tab.key}>
+              <span class="truncate">{tab.label}</span>
+              <span class="ml-auto pl-2 text-[11px] font-normal text-slate-400">{tab.items.length}</span>
+            </button>
+          ))
+        }
+      </nav>
+    </aside>
 
-  <!-- 태그 필터 — 열을 지우지 않고 항목만 걸러낸다 -->
-  <div class="flex flex-wrap gap-1.5 mb-6" id="owner-filter">
-    <button class="tagbtn" data-filter="전체" data-on="true">전체</button>
-    <button class="tagbtn" data-filter="클라">클라 {client.length}</button>
-    <button class="tagbtn" data-filter="서버">서버 {server.length}</button>
-    <button class="tagbtn" data-filter="공용">공용 {shared.length}</button>
-  </div>
+    <section class="flex-1 min-w-0">
+      {
+        tabs.map((tab) => (
+          <header data-tab-head={tab.key} hidden>
+            <h1 class="text-xl font-extrabold">{tab.label}</h1>
+            <p class="text-xs text-slate-400 mt-1">{tab.note}</p>
+          </header>
+        ))
+      }
 
-  {
-    shared.length > 0 && (
-      <section class="mb-8" data-owner="공용">
-        <h2 class="flex items-center gap-2 text-sm font-bold text-slate-500 mb-3">
-          <span class={`text-[11px] px-2 py-0.5 rounded-full ${OWNER_STYLE['공용']}`}>공용</span>
-          클라·서버가 함께 보는 것
-        </h2>
-        <ul class="grid gap-2 sm:grid-cols-2">
-          {shared.map((t) => (
-            <li data-owner="공용">
-              <a href={`/tasks/${t.data.slug}`} class="taskcard">
-                <div class="flex items-center gap-2 mb-1">
-                  <span class="font-mono text-[11px] text-slate-400">{t.data.taskId}</span>
-                  <span class={`text-[10px] px-1.5 py-0.5 rounded-full ${STATUS_STYLE[t.data.status]?.cls ?? ''}`}>
-                    {t.data.status}
-                  </span>
-                  <span class={`ml-auto text-[11px] ${PRIORITY_STYLE[t.data.priority] ?? ''}`}>
-                    {t.data.priority}
-                  </span>
-                </div>
-                <div class="text-sm font-semibold leading-snug">{t.data.title}</div>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )
-  }
+      <!-- 담당·상태 필터 — 탭과 AND로 걸린다 -->
+      <div class="flex flex-wrap items-center gap-1.5 mt-4 mb-2" id="owner-filter">
+        <span class="text-xs font-bold text-slate-500 w-10">담당</span>
+        <button class="tagbtn" data-filter="*" data-on="true">전체</button>
+        {PEOPLE.map((p) => <button class="tagbtn" data-filter={p.name}>{p.name}<span class="font-normal text-slate-400 ml-1">{p.role}</span></button>)}
+      </div>
+      <div class="flex flex-wrap items-center gap-1.5 mb-4" id="status-filter">
+        <span class="text-xs font-bold text-slate-500 w-10">상태</span>
+        <button class="tagbtn" data-filter="*" data-on="true">전체</button>
+        {STATUSES.map((s) => <button class="tagbtn" data-filter={s}>{s}</button>)}
+      </div>
 
-  <div class="grid gap-5 md:grid-cols-2">
-    {
-      columns.map((col) => (
-        <section data-owner={col.owner}>
-          <h2 class="flex items-center gap-2 text-sm font-bold text-slate-500 mb-3 pb-2 border-b border-slate-200">
-            <span class={`text-[11px] px-2 py-0.5 rounded-full ${OWNER_STYLE[col.owner]}`}>{col.owner}</span>
-            <span class="text-slate-400 font-normal">{col.items.length}건</span>
-          </h2>
-          <ul class="space-y-2">
-            {col.items.map((t) => (
-              <li data-owner={col.owner}>
-                <a href={`/tasks/${t.data.slug}`} class="taskcard">
-                  <div class="flex items-center gap-2 mb-1">
-                    <span class="font-mono text-[11px] text-slate-400">{t.data.taskId}</span>
-                    <span class={`text-[10px] px-1.5 py-0.5 rounded-full ${STATUS_STYLE[t.data.status]?.cls ?? ''}`}>
+      <div class="overflow-x-auto bg-white border border-slate-200 rounded-lg">
+        <table class="tasktable">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>제목</th>
+              <th>담당</th>
+              <th>상태</th>
+              <th>우선순위</th>
+              <th>목표</th>
+            </tr>
+          </thead>
+          <tbody id="task-rows">
+            {
+              rows.map(({ t, tabs }) => (
+                <tr data-tabs={tabs.join(' ')} data-owner={t.data.owner} data-status={t.data.status} hidden>
+                  <td class="font-mono text-[11px] text-slate-400 whitespace-nowrap">{t.data.taskId}</td>
+                  <td>
+                    <a href={`/tasks/${t.data.slug}`} class="font-semibold hover:text-blue-600">
+                      {t.data.title}
+                    </a>
+                    {t.data.bucket === 'art' && <span class="ml-1 text-[11px] text-slate-400">🎨 아트만</span>}
+                    {t.data.bucket === 'later' && <span class="ml-1 text-[11px] text-slate-400">⏳ 나중에</span>}
+                    {t.data.closure && <span class="ml-1 text-[11px] text-slate-400">({t.data.closure})</span>}
+                  </td>
+                  <td>
+                    <span class={`text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ${OWNER_STYLE[t.data.owner] ?? 'bg-rose-50 text-rose-600'}`}>
+                      {t.data.owner}
+                    </span>
+                  </td>
+                  <td>
+                    <span class={`text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ${STATUS_STYLE[t.data.status]?.cls ?? ''}`}>
                       {t.data.status}
                     </span>
-                    <span class={`ml-auto text-[11px] ${PRIORITY_STYLE[t.data.priority] ?? ''}`}>
-                      {t.data.priority}
-                    </span>
-                  </div>
-                  <div class="text-sm font-semibold leading-snug">{t.data.title}</div>
-                </a>
-              </li>
-            ))}
-            {col.items.length === 0 && (
-              <li class="text-xs text-slate-400 border border-dashed border-slate-200 rounded-lg px-3 py-4 text-center">
-                남은 일감이 없다
-              </li>
-            )}
-          </ul>
-        </section>
-      ))
-    }
+                  </td>
+                  <td class={`text-xs whitespace-nowrap ${PRIORITY_STYLE[t.data.priority] ?? ''}`}>{t.data.priority}</td>
+                  <td class="font-mono text-xs text-slate-500 whitespace-nowrap">{t.data.target}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+      </div>
+      <p id="task-empty" class="text-xs text-slate-400 mt-3" hidden>조건에 맞는 일감이 없다</p>
+    </section>
   </div>
 
-  <!-- INDEX 밖의 남은 일 — 기본은 접어 둔다. 필터(data-owner)는 걸지 않는다: 열 보드만 거른다 -->
-  {
-    shelves.map((s) => (
-      <details class="mt-10 group">
-        <summary class="cursor-pointer select-none text-sm font-bold text-slate-500">
-          {s.label} {s.items.length}건
-          <span class="font-normal text-xs text-slate-400 ml-1">— {s.note}</span>
-        </summary>
-        {s.items.length > 0 ? (
-          <ul class="flex flex-wrap gap-2 mt-3">
-            {s.items.map((t) => (
-              <li>
-                <a
-                  href={`/tasks/${t.data.slug}`}
-                  class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs text-slate-600"
-                >
-                  <span class="font-mono text-slate-400">{t.data.taskId}</span>
-                  <span class={`text-[10px] px-1.5 rounded-full ${OWNER_STYLE[t.data.owner] ?? ''}`}>{t.data.owner}</span>
-                  {t.data.title}
-                </a>
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p class="text-xs text-slate-400 mt-3">없다</p>
-        )}
-      </details>
-    ))
-  }
-
-  <h2 class="text-sm font-bold text-slate-500 mt-10 mb-3">보관 — 끝난 일감 {done.length}건</h2>
-  <ul class="flex flex-wrap gap-2">
-    {
-      done.map((t) => (
-        <li>
-          <a
-            href={`/tasks/${t.data.slug}`}
-            class="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-full px-3 py-1 text-xs text-slate-500"
-          >
-            <span class="font-mono text-slate-400">{t.data.taskId}</span>
-            {t.data.title}
-          </a>
-        </li>
-      ))
-    }
-  </ul>
-
   <script>
-    // 필터는 표시만 끈다 — 열 구조는 그대로 두어 "어느 쪽이 비었는지"가 계속 보이게 한다.
-    const bar = document.getElementById('owner-filter');
-    bar?.addEventListener('click', (e) => {
-      const btn = (e.target as HTMLElement).closest('button');
-      if (!btn) return;
+    // 탭은 주소의 #으로 남긴다 — 링크를 건네면 같은 탭이 열린다.
+    const tabBar = document.getElementById('task-tabs')!;
+    const ownerBar = document.getElementById('owner-filter')!;
+    const statusBar = document.getElementById('status-filter')!;
+    const rows = [...document.querySelectorAll<HTMLElement>('#task-rows tr')];
+    const heads = [...document.querySelectorAll<HTMLElement>('[data-tab-head]')];
+    const tabButtons = [...tabBar.querySelectorAll<HTMLElement>('button[data-tab]')];
+    const empty = document.getElementById('task-empty')!;
 
-      const pick = btn.dataset.filter ?? '전체';
-      bar.querySelectorAll('button').forEach((b) => {
-        b.dataset.on = String(b === btn);
-      });
+    const picked = (bar: HTMLElement) => bar.querySelector<HTMLElement>('button[data-on="true"]')?.dataset.filter ?? '*';
 
-      document.querySelectorAll<HTMLElement>('[data-owner]').forEach((el) => {
-        el.hidden = pick !== '전체' && el.dataset.owner !== pick;
+    function currentTab() {
+      const hash = decodeURIComponent(location.hash.slice(1));
+      return tabButtons.some((b) => b.dataset.tab === hash) ? hash : tabButtons[0].dataset.tab!;
+    }
+
+    function apply() {
+      const tab = currentTab();
+      const owner = picked(ownerBar);
+      const status = picked(statusBar);
+
+      tabButtons.forEach((b) => (b.dataset.on = String(b.dataset.tab === tab)));
+      heads.forEach((h) => (h.hidden = h.dataset.tabHead !== tab));
+
+      let visible = 0;
+      rows.forEach((r) => {
+        const inTab = (r.dataset.tabs ?? '').split(' ').includes(tab);
+        r.hidden =
+          !inTab || (owner !== '*' && r.dataset.owner !== owner) || (status !== '*' && r.dataset.status !== status);
+        visible += r.hidden ? 0 : 1;
       });
+      empty.hidden = visible > 0;
+    }
+
+    tabBar.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement).closest<HTMLElement>('button[data-tab]');
+      if (!btn) {
+        return;
+      }
+      history.replaceState(null, '', `#${btn.dataset.tab}`);
+      apply();
     });
+
+    // 담당·상태는 하나만 고른다 — 같은 버튼을 다시 누르면 전체로 돌아간다.
+    for (const bar of [ownerBar, statusBar]) {
+      bar.addEventListener('click', (e) => {
+        const btn = (e.target as HTMLElement).closest<HTMLElement>('button[data-filter]');
+        if (!btn) {
+          return;
+        }
+        const next = btn.dataset.on === 'true' ? '*' : btn.dataset.filter;
+        bar.querySelectorAll<HTMLElement>('button[data-filter]').forEach((b) => {
+          b.dataset.on = String(b.dataset.filter === next);
+        });
+        apply();
+      });
+    }
+
+    window.addEventListener('hashchange', apply);
+    apply();
   </script>
 </Layout>

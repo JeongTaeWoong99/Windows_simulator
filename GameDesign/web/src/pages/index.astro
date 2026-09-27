@@ -1,7 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import { getCollection } from 'astro:content';
-import { STATUS_STYLE, OWNER_STYLE, PRIORITY_STYLE, PRIORITY_ORDER, STATUS_ORDER } from '../lib/labels';
+import { STATUS_STYLE, OWNER_STYLE, PRIORITY_STYLE, PRIORITY_ORDER, STATUS_ORDER, PEOPLE } from '../lib/labels';
 import { GITHUB_REPO } from '../lib/paths';
 
 const tasks = await getCollection('tasks');
@@ -9,8 +9,8 @@ const docs = await getCollection('design');
 
 // 홈의 남은 일감은 INDEX와 같다 — art/·later/로 뺀 것은 보드(/tasks)의 접힌 칸에만 있다.
 const open = tasks.filter((t) => t.data.bucket === 'open');
-const running = open.filter((t) => t.data.status === '진행중');
-const blocked = open.filter((t) => t.data.status === '보류');
+const running = open.filter((t) => t.data.status === 'In Progress');
+const blocked = open.filter((t) => t.data.status === 'Feedback');
 const core = docs.find((d) => d.data.slug === 'core');
 
 // 일감 보드(/tasks)와 같은 정렬 — 상태 → 우선순위 → ID.
@@ -21,12 +21,12 @@ const ranked = [...open].sort(
     a.data.taskId.localeCompare(b.data.taskId),
 );
 
-// 담당 값은 클라·서버·공용 셋이다. 공용은 대개 기획 결정이라 홈에서는 "기획"으로 부른다.
-const owners = [
-  { value: '클라', label: '클라' },
-  { value: '서버', label: '서버' },
-  { value: '공용', label: '기획' },
-].map((o) => ({ ...o, count: open.filter((t) => t.data.owner === o.value).length }));
+// 담당은 사람 한 명이다 (2026-09-28).
+const owners = PEOPLE.map((p) => ({
+  value: p.name,
+  label: p.name,
+  count: open.filter((t) => t.data.owner === p.name).length,
+}));
 const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
 ---
 
@@ -54,7 +54,7 @@ const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
     <a href="/tasks" class="block bg-white border border-slate-200 rounded-lg p-5 hover:border-blue-400">
       <div class="text-xs text-slate-400 mb-1">남은 일감</div>
       <div class="font-bold">{open.length}건</div>
-      <div class="text-xs text-slate-400 mt-2">진행중 {running.length} · 보류 {blocked.length}</div>
+      <div class="text-xs text-slate-400 mt-2">In Progress {running.length} · Feedback {blocked.length}</div>
     </a>
   </div>
 
@@ -128,7 +128,7 @@ const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
   {
     blocked.length > 0 && (
       <section>
-        <h2 class="text-sm font-bold text-slate-500 mb-3">사람이 결정해야 풀리는 것</h2>
+        <h2 class="text-sm font-bold text-slate-500 mb-3">Feedback — 다시 손봐야 하는 것</h2>
         <ul class="space-y-2">
           {blocked.map((t) => (
             <li>
@@ -259,7 +259,7 @@ const ownerLabel = Object.fromEntries(owners.map((o) => [o.value, o.label]));
 
   // 고른 담당은 브라우저(localStorage)에 남긴다 — 다음 방문에도 같은 조합으로 시작한다.
   // 비공개 창·차단 등으로 저장소가 없으면 그냥 전부 켠 채로 간다.
-  const FILTER_KEY = 'home-owner-filter';
+  const FILTER_KEY = 'home-owner-filter-v2';
   const ownerButtons = [...ownerBar.querySelectorAll<HTMLElement>('button[data-filter]')];
 
   function restoreOwnerFilter() {
