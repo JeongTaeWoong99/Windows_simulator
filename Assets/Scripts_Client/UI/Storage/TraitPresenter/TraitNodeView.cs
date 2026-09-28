@@ -33,11 +33,14 @@ public class TraitNodeView : MonoBehaviour
     [SerializeField, Tooltip("조건·효과 한 줄 (예: 'Lv15 필요')")]
     private TMP_Text detailText = null!;
 
-    [SerializeField, Tooltip("이 노드를 찍는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [SerializeField, Tooltip("이 노드를 고르는 버튼(누르면 정보 영역에 펼쳐진다). OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button button = null!;
 
     [SerializeField, Tooltip("위 노드와 잇는 세로 선. 각 열의 첫 줄에서는 꺼진다")]
     private Image linkImage = null!;
+
+    [SerializeField, Tooltip("지금 고른 노드 표시(테두리). 평소 꺼져 있다")]
+    private GameObject selectedMark = null!;
 
     [CenterHeader("색")]
     // ⚠️ 'Image.color'가 아니라 'ColorBlock'을 칠한다 — 'Selectable'이 실행 중 'Image.color'를
@@ -48,7 +51,7 @@ public class TraitNodeView : MonoBehaviour
     [SerializeField, Tooltip("지금 찍을 수 있는 노드")]
     private UIThemeRole availableRole = UIThemeRole.Button;
 
-    [SerializeField, Tooltip("잠긴 노드. disabledColor 자리에 들어간다")]
+    [SerializeField, Tooltip("잠긴 노드")]
     private UIThemeRole lockedRole = UIThemeRole.ButtonDisabled;
 
     // 이 노드를 눌렀다 ('TraitPresenter'가 구독).
@@ -64,7 +67,8 @@ public class TraitNodeView : MonoBehaviour
         this.RequireRef(nameText,   nameof(nameText));
         this.RequireRef(detailText, nameof(detailText));
         this.RequireRef(button,     nameof(button));
-        this.RequireRef(linkImage,  nameof(linkImage));
+        this.RequireRef(linkImage,    nameof(linkImage));
+        this.RequireRef(selectedMark, nameof(selectedMark));
 
         button.onClick.AddListener(() => Clicked?.Invoke(this));
     }
@@ -75,13 +79,18 @@ public class TraitNodeView : MonoBehaviour
     //   detail       : 조건·효과 한 줄
     //   state        : 색과 누를 수 있는지를 함께 정한다
     //   hasLink      : 위 노드와 선으로 이을지 (각 열의 첫 줄은 false)
-    public void Bind(int userTraitTid, string displayName, string detail, NodeState state, bool hasLink)
+    //   isSelected   : 지금 정보 영역에 펼쳐진 노드인지
+    public void Bind(int userTraitTid, string displayName, string detail, NodeState state, bool hasLink, bool isSelected)
     {
         UserTraitTid    = userTraitTid;
         nameText.text   = displayName;
         detailText.text = detail;
 
         linkImage.gameObject.SetActive(hasLink);
+        selectedMark.SetActive(isSelected);
+
+        // 빈 칸(열 맞추기용)은 누를 것이 없다
+        button.interactable = userTraitTid != 0;
 
         ApplyState(state);
     }
@@ -92,19 +101,23 @@ public class TraitNodeView : MonoBehaviour
         UserTraitTid    = 0;
         nameText.text   = "";
         detailText.text = "";
+
+        selectedMark.SetActive(false);
     }
 
     // 상태에 맞춰 색과 누를 수 있는지를 칠한다 (Bind에서 호출).
     //
     // ⚠️ 네 상태를 같은 색으로 덮는다 — 기본값을 두면 **마우스를 올렸다는 이유로, 마지막에
     //    눌렀다는 이유로** 색이 바뀐다. 이 칸의 색은 "찍었는가" 하나만 말해야 한다.
-    // ⚠️ 잠긴 색만은 'disabledColor'다 — 회색을 'normalColor'에 넣으면 잠근 순간 무시된다.
+    // ※ 잠긴 노드도 누를 수 있다 — 누르면 정보부터 펼쳐지므로, 무엇이 모자란지 읽을 수 있어야 한다.
+    //   그래서 잠김 회색도 'disabledColor'가 아니라 네 상태 전부에 칠한다.
     private void ApplyState(NodeState state)
     {
         Color target = UIThemePalette.Of(state switch
         {
-            NodeState.Learned => learnedRole,
-            _                 => availableRole,
+            NodeState.Learned   => learnedRole,
+            NodeState.Available => availableRole,
+            _                   => lockedRole,
         });
 
         ColorBlock colors = button.colors;
@@ -113,12 +126,8 @@ public class TraitNodeView : MonoBehaviour
         colors.highlightedColor = target;
         colors.pressedColor     = target;
         colors.selectedColor    = target;
-        colors.disabledColor    = UIThemePalette.Of(lockedRole);
+        colors.disabledColor    = target;
 
         button.colors = colors;
-
-        // 찍은 노드도 누를 수는 있게 둔다 — 서버가 'AlreadyUnlocked'로 돌려보내기 전에
-        // 클라가 "이미 배웠습니다"로 막는다(누를 수 없는 칸과 색으로 구분되어야 하므로).
-        button.interactable = state != NodeState.Locked;
     }
 }

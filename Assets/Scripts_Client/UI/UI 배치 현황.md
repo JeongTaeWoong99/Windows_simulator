@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -37,13 +37,17 @@ Root Canvas
 │  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
-│  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭)
+│  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
 │  │  │  │  ├─ Trait Tab Panel                    [산업 속도] [산업 레벨]        pref 34
 │  │  │  │  ├─ Point Text (TMP)                   "특성 포인트 n"                pref 22
-│  │  │  │  └─ Scroll View Panel                  스크롤바 Permanent · flexH 1
-│  │  │  │     └─ Content                         GridLayoutGroup 5열 = 산업. cell 106x58 · spacing 8x20
-│  │  │  │        └─ TraitNodeView 프리팹 (노드 수만큼 런타임 생성 · 풀)
-│  │  │  │           └─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
+│  │  │  │  ├─ Scroll View Panel                  스크롤바 Permanent · flexH 1
+│  │  │  │  │  └─ Content                         GridLayoutGroup 5열 = 산업. cell 106x58 · spacing 8x20
+│  │  │  │  │     └─ TraitNodeView 프리팹 (노드 수만큼 런타임 생성 · 풀)
+│  │  │  │  │        ├─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
+│  │  │  │  │        └─ Selected Mark             고른 노드 테두리(4변 · Highlight). 평소 꺼짐
+│  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 375 고정 (= 판매 목록 높이)
+│  │  │  │     ├─ Detail Info Panel               이름 · 효과/필요 포인트/조건/상태 · 빈 안내(고른 것이 없을 때만)
+│  │  │  │     └─ Confirm Button                  [배우기] 50 (= [판매]) — 배운 특성에서는 숨는다
 │  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 40 — 정렬 화살표 · -(Layout) · 등급 범위 드롭다운 · [판매]
 │  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다

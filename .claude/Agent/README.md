@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-29 특성 — 누르면 정보부터, [배우기]로 찍는다](2026-09-29-trait-detail-two-step.md) — `#client` `#ui` 특성 2단계 플로우 · 정보 영역을 판매 목록 자리에 (T-079)
 - [2026-09-28 다이아(유료 재화) 폐지](2026-09-28-remove-dia.md) — `#server` `#data` `#design` 패킷·DB·엑셀·기획 문서에서 Dia 삭제 (#41)
 - [2026-09-27 클라 속도 스케일·기본 산업 레벨 Constants 교체](2026-09-27-client-constants-speed-scale.md) — `#client` `#data` T-085 클라 몫 종료 (#34 · #39 닫음)
 - [2026-09-26 상수 8개 Constants.xlsx 이관 · 채취 창고 한도](2026-09-26-constants-migration-harvest-limit.md) — `#server` `#data` `#test` 창고가 가득 차면 채취 새 종류 산출을 버린다 (T-085 · #34)

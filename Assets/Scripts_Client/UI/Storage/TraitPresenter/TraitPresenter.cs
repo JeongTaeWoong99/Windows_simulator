@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;
@@ -72,6 +73,19 @@ public class TraitPresenter : MonoBehaviour
     [SerializeField, Tooltip("창고 탭 줄. 특성 탭일 때만 이 패널이 켜진다")]
     private StorageTabPresenter storageTabs = null!;
 
+    [CenterHeader("정보 영역")]
+    [SerializeField, Tooltip("고른 특성의 이름")]
+    private TMP_Text detailNameText = null!;
+
+    [SerializeField, Tooltip("고른 특성의 효과 · 필요 포인트 · 조건 · 상태 (여러 줄)")]
+    private TMP_Text detailBodyText = null!;
+
+    [SerializeField, Tooltip("아무것도 고르지 않았을 때의 안내 문구. 빈 칸은 고장과 구분되지 않는다")]
+    private TMP_Text detailEmptyText = null!;
+
+    [SerializeField, Tooltip("고른 특성을 배우는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    private Button confirmButton = null!;
+
     // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
     //   ('UI 규칙.md'의 "공통 작성 규약").
     [CenterHeader("구역 탭")]
@@ -93,6 +107,7 @@ public class TraitPresenter : MonoBehaviour
     private ServerWaitManager _wait = null!;
 
     private TraitTab _currentTab = TraitTab.Speed;
+    private int      _selectedTraitTid; // 정보 영역에 펼친 특성. 0이면 고른 것이 없다
     private bool     _isSubscribed;
     private bool     _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -108,12 +123,18 @@ public class TraitPresenter : MonoBehaviour
         this.RequireRef(pointText,   nameof(pointText));
         this.RequireRef(storageTabs, nameof(storageTabs));
 
+        this.RequireRef(detailNameText,  nameof(detailNameText));
+        this.RequireRef(detailBodyText,  nameof(detailBodyText));
+        this.RequireRef(detailEmptyText, nameof(detailEmptyText));
+        this.RequireRef(confirmButton,   nameof(confirmButton));
+
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
         _wait = Services.Get<ServerWaitManager>();
 
         ValidateTabs();
         BindTabButtons();
+        confirmButton.onClick.AddListener(OnConfirmClicked);
 
         // ⚠️ 창고 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
         //    OnDisable에서 풀면 다시 켤 신호를 받을 길이 사라져 특성 탭에 영영 못 돌아온다
@@ -276,19 +297,31 @@ public class TraitPresenter : MonoBehaviour
 
     #region 그리기
 
-    // 지금 구역의 트리를 다시 그린다 (탭 전환 · 해금·레벨 변경 구독).
+    // 지금 구역의 트리와 정보 영역을 다시 그린다 (탭 전환 · 노드 선택 · 해금·레벨 변경 구독).
+    //
+    // ※ 정보 영역도 여기서 함께 그린다 — 찍은 직후 "필요 포인트 n"이 남아 있으면 안 되고,
+    //   해금·계정 레벨 변경은 전부 이 함수를 거친다.
     private void Redraw()
     {
         pointText.text = $"특성 포인트 {_data.TraitPoint}";
 
         // 열마다 세로로 쌓을 노드를 모은다. 줄 수는 산업마다 다를 수 있으므로 가장 긴 열에 맞춘다.
-        var columnNodes = new List<UserTraitTableRow>[Columns.Length];
-        int rowCount    = 0;
+        var  columnNodes     = new List<UserTraitTableRow>[Columns.Length];
+        int  rowCount        = 0;
+        bool isSelectedShown = false;
 
         for (int column = 0; column < Columns.Length; column++)
         {
             columnNodes[column] = CollectColumn(Columns[column]);
             rowCount            = Mathf.Max(rowCount, columnNodes[column].Count);
+
+            isSelectedShown |= columnNodes[column].Exists(row => row.UserTraitTID == _selectedTraitTid);
+        }
+
+        // 고른 특성이 지금 구역에 없으면(탭 전환) 선택을 비운다 — 안 보이는 노드를 펼쳐 두지 않는다.
+        if (!isSelectedShown)
+        {
+            _selectedTraitTid = 0;
         }
 
         // 격자는 형제 순서대로 채워지므로 **줄 단위(왼쪽→오른쪽)** 로 넘긴다.
@@ -320,6 +353,71 @@ public class TraitPresenter : MonoBehaviour
             _nodes[i].Clear();
             _nodes[i].gameObject.SetActive(false);
         }
+
+        RedrawDetail();
+    }
+
+    // 고른 특성을 정보 영역에 펼친다 (Redraw에서 호출).
+    //
+    // [확인]은 **배운 특성에서만** 숨긴다. 조건 미달·포인트 부족이어도 눌리게 둔다 —
+    // 누르면 지금까지의 알림("계정 레벨 n이 필요합니다" 등)이 그대로 뜬다.
+    private void RedrawDetail()
+    {
+        bool hasSelection = GameDataLoader.TryGetUserTrait(_selectedTraitTid, out var trait);
+
+        detailEmptyText.gameObject.SetActive(!hasSelection);
+        detailNameText.gameObject.SetActive(hasSelection);
+        detailBodyText.gameObject.SetActive(hasSelection);
+
+        if (!hasSelection)
+        {
+            confirmButton.gameObject.SetActive(false);
+
+            return;
+        }
+
+        bool learned = _data.IsUnlocked(trait.UserTraitTID);
+
+        detailNameText.text = trait.Name;
+        detailBodyText.text = BuildDetailBody(trait, learned);
+
+        confirmButton.gameObject.SetActive(!learned);
+    }
+
+    // 정보 영역 본문 — 효과 · 필요 포인트 · 조건 · 상태 (RedrawDetail에서 호출).
+    //
+    // 칸 아래 한 줄(BuildDetail)은 조건과 효과 중 하나만 적지만, 여기는 **전부** 적는다.
+    // 조건은 채웠든 못 채웠든 모두 나열한다 — 무엇이 남았는지가 한 화면에서 끝나야 한다.
+    private string BuildDetailBody(UserTraitTableRow trait, bool learned)
+    {
+        var sb = new StringBuilder();
+
+        sb.AppendLine($"효과 : {DescribeEffect(trait)}");
+        sb.AppendLine($"필요 포인트 : {trait.TraitPoint}점 (보유 {_data.TraitPoint})");
+
+        if (GameDataLoader.TryGetUnlock(trait.UserTraitTID, out var unlock))
+        {
+            foreach (int requiredTid in unlock.RequiredUnlockTIDs)
+            {
+                string mark = _data.IsUnlocked(requiredTid) ? "충족" : "미충족";
+                sb.AppendLine($"조건 : {DescribeTrait(requiredTid)} 배우기 ({mark})");
+            }
+
+            if (unlock.AccountLevel > 0)
+            {
+                string mark = _data.AccountLevel >= unlock.AccountLevel ? "충족" : "미충족";
+                sb.AppendLine($"조건 : 계정 Lv{unlock.AccountLevel} (지금 Lv{_data.AccountLevel} · {mark})");
+            }
+        }
+
+        string state = learned                              ? "배움"
+                     : !MeetsConditions(trait.UserTraitTID) ? "잠김"
+                     : _data.TraitPoint < trait.TraitPoint  ? "포인트 부족"
+                                                            : "배울 수 있음";
+
+        sb.Append($"상태 : {state}");
+
+        return sb.ToString();
     }
 
     // 이 산업의 노드를 지금 구역에 맞게 골라 TID 순으로 돌려준다 (Redraw에서 호출).
@@ -362,7 +460,8 @@ public class TraitPresenter : MonoBehaviour
                                       : ready    ? TraitNodeView.NodeState.Available
                                                  : TraitNodeView.NodeState.Locked;
 
-        view.Bind(trait.UserTraitTID, trait.Name, BuildDetail(trait, learned), state, hasLink);
+        view.Bind(trait.UserTraitTID, trait.Name, BuildDetail(trait, learned), state, hasLink,
+                  isSelected: trait.UserTraitTID == _selectedTraitTid);
         view.Clicked -= OnNodeClicked; // 재사용 칸이라 중복 구독을 먼저 끊는다
         view.Clicked += OnNodeClicked;
     }
@@ -371,7 +470,7 @@ public class TraitPresenter : MonoBehaviour
     private void BindEmpty(TraitNodeView view)
     {
         view.gameObject.SetActive(true);
-        view.Bind(0, "", "", TraitNodeView.NodeState.Locked, hasLink: false);
+        view.Bind(0, "", "", TraitNodeView.NodeState.Locked, hasLink: false, isSelected: false);
     }
 
     // 칸 아래 한 줄 — 잠겼으면 **조건**을, 아니면 **효과**를 적는다.
@@ -436,20 +535,36 @@ public class TraitPresenter : MonoBehaviour
 
     #region 찍기
 
-    // 노드를 눌렀다 (TraitNodeView.Clicked 구독).
+    // 노드를 눌렀다 — **고르기만 한다** (TraitNodeView.Clicked 구독).
+    //
+    // 누르는 즉시 팝업을 띄우면 읽고 결정할 자리가 없다(T-079). 정보 영역에 펼치고,
+    // 배우기는 [확인]이 한다.
+    private void OnNodeClicked(TraitNodeView view)
+    {
+        if (view.UserTraitTid == 0)
+        {
+            return; // 빈 칸(열 맞추기용)
+        }
+
+        _selectedTraitTid = view.UserTraitTid;
+
+        Redraw();
+    }
+
+    // [확인]을 눌렀다 — 고른 특성을 배운다 (confirmButton.onClick).
     //
     // 순서는 서버 판정과 같다 — 선행 → 계정 레벨 → 포인트.
     // ※ 클라 판정은 안내일 뿐이다. 통과해도 서버가 다시 검사한다(게임기획코어 P4).
-    private void OnNodeClicked(TraitNodeView view)
+    private void OnConfirmClicked()
     {
         if (_learnWait != null)
         {
             return; // 응답 대기 중 — 같은 노드를 두 번 보내면 두 번째가 AlreadyUnlocked로 거절된다
         }
 
-        if (!GameDataLoader.TryGetUserTrait(view.UserTraitTid, out var trait))
+        if (!GameDataLoader.TryGetUserTrait(_selectedTraitTid, out var trait))
         {
-            return; // 빈 칸(열 맞추기용)이거나 테이블에 없는 TID
+            return; // 고른 것이 없거나 테이블에 없는 TID
         }
 
         if (_data.IsUnlocked(trait.UserTraitTID))
