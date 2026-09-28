@@ -103,6 +103,10 @@ public class EquipSlotSource : StorageSlotSource
         return byTid != 0 ? byTid : a.Key.CompareTo(b.Key);
     }
 
+    // 장비의 대상 산업 (Matches에서 호출). 테이블에 없는 TID는 어느 산업에도 속하지 않는다.
+    protected override bool MatchesIndustry(SlotData slot, byte industry)
+        => GameDataLoader.TryGetEquip(_data.GetEquipTid(slot.Key), out EquipTableRow row) && (byte)row.Industry == industry;
+
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => _data.IsEquipped(key);
 

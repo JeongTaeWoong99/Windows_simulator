@@ -3,6 +3,7 @@ using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 창고의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
 // 지금 켜진 탭의 공급자('StorageSlotSource')에게 칸 배치를 받아 그대로 옮긴다.
@@ -56,6 +57,12 @@ public class StorageGridPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("칸 프레임(Slot)들이 들어 있는 부모 — Inventory Scroll View Panel > Viewport > Content")]
     private Transform slotParent = null!;
+
+    [SerializeField, Tooltip("찾기 결과가 0건일 때 격자 위에 겹치는 안내(바탕 + 문구). 흑백 칸만 남으면 고장과 구분되지 않는다")]
+    private GameObject emptyNotice = null!;
+
+    [SerializeField, Tooltip("이 격자의 스크롤. 찾기 조건이 바뀌면 맨 위로 올린다 — 결과는 앞으로 모인다")]
+    private ScrollRect scrollRect = null!;
 
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
@@ -144,6 +151,8 @@ public class StorageGridPresenter : MonoBehaviour
         // Instantiate에서 NRE가 나는데, 그때는 원인이 인스펙터라는 게 드러나지 않는다.
         this.RequireRef(slotPrefab, nameof(slotPrefab));
         this.RequireRef(slotParent, nameof(slotParent));
+        this.RequireRef(emptyNotice, nameof(emptyNotice));
+        this.RequireRef(scrollRect,  nameof(scrollRect));
 
         CacheFrames();
 
@@ -299,6 +308,9 @@ public class StorageGridPresenter : MonoBehaviour
         {
             _current.Unsubscribe();
             _current.Changed -= Redraw;
+
+            // 떠나는 탭의 찾기 조건을 비운다 — 거른 채로 남으면 다음에 돌아왔을 때 "아이템이 사라졌다"가 된다.
+            _current.SetFilter(default);
         }
 
         _current = next;
@@ -316,10 +328,10 @@ public class StorageGridPresenter : MonoBehaviour
 
     #region 정렬
 
-    // 지금 탭을 규칙대로 줄 세운다 ('StorageToolPresenter'의 화살표 버튼이 호출).
+    // 지금 탭을 기준대로 줄 세운다 ('StorageToolPresenter'의 화살표 버튼 · 기준 드롭다운이 호출).
     //
     // 규칙과 기억은 공급자가 쥔다 — 격자는 공급자가 알리는 'Changed'로 다시 그리기만 한다.
-    public void SortCurrent(StorageSortOrder order)
+    public void SortCurrent(StorageSortKey key, StorageSortOrder order)
     {
         EnsureInitialized();
 
@@ -328,7 +340,42 @@ public class StorageGridPresenter : MonoBehaviour
             return; // 공급자가 없는 탭 — 그릴 것이 없으니 방향만 바뀐 채 다음 탭에서 반영된다
         }
 
-        _current.Sort(order);
+        _current.Sort(key, order);
+    }
+
+    // 지금 탭에 찾기 조건을 건다 ('StorageToolPresenter'의 검색창 · 드롭다운이 호출).
+    //
+    // ★ 맨 위로 올린다 — 결과는 앞으로 모이는데, 아래로 내려 둔 채 검색하면 결과가 화면 밖에 있다.
+    public void FilterCurrent(StorageFilter filter)
+    {
+        EnsureInitialized();
+
+        if (_current == null)
+        {
+            return;
+        }
+
+        _current.SetFilter(filter);
+        scrollRect.verticalNormalizedPosition = 1f;
+    }
+
+    // 지금 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 기준 목록을 만들 때 호출).
+    public bool CurrentSupportsSortKey(StorageSortKey key)
+    {
+        EnsureInitialized();
+
+        return _current != null && _current.SupportsSortKey(key);
+    }
+
+    // 지금 탭이 산업으로 거를 수 있나 (도구 줄이 산업 드롭다운을 보일지 정할 때 호출).
+    public bool CurrentSupportsIndustryFilter
+    {
+        get
+        {
+            EnsureInitialized();
+
+            return _current != null && _current.SupportsIndustryFilter;
+        }
     }
 
     // 로그인했다 — 지난 세션에 기억한 정렬 자리를 버린다 (PlayerDataModel.LoginCompleted 구독)
@@ -391,6 +438,9 @@ public class StorageGridPresenter : MonoBehaviour
                 view.SetAssignMark(isAway);
                 view.SetDimmed(isAway);
 
+                // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('StorageSlotSource' 주석).
+                view.SetFilteredOut(_current.IsFilteredOut(data.Key));
+
                 // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
                 // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
                 view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
@@ -410,6 +460,9 @@ public class StorageGridPresenter : MonoBehaviour
             ClientLogger.Warn(ClientLogger.UI,
                 $"칸 프레임이 {_frames.Count}개인데 표시할 것이 {count}개다 — 뒤쪽이 잘렸다. 프레임을 늘려야 한다.", this);
         }
+
+        // 찾기 결과 0건 — 안내 하나만 켜고 끈다. 프레임 200개는 건드리지 않는다(레이아웃 리빌드 규칙).
+        emptyNotice.SetActive(_current != null && _current.IsFiltering && _current.MatchCount == 0);
     }
 
     // 이 캐릭터의 적성 5종을 스트립 순서대로 담아 돌려준다 (Redraw에서 호출).

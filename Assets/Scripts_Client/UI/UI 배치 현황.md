@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-29 (창고 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -45,13 +45,16 @@ Root Canvas
 │  │  │  │  │     └─ TraitNodeView 프리팹 (노드 수만큼 런타임 생성 · 풀)
 │  │  │  │  │        ├─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
 │  │  │  │  │        └─ Selected Mark             고른 노드 테두리(4변 · Highlight). 평소 꺼짐
-│  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 375 고정 (= 판매 목록 높이)
+│  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
 │  │  │  │     ├─ Detail Info Panel               이름 · 효과/필요 포인트/조건/상태 · 빈 안내(고른 것이 없을 때만)
 │  │  │  │     └─ Confirm Button                  [배우기] 50 (= [판매]) — 배운 특성에서는 숨는다
-│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 40 — 정렬 화살표 · -(Layout) · 등급 범위 드롭다운 · [판매]
+│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
+│  │  │  │  ├─ Tool Row 1                         30 — 정렬 화살표 · 정렬 기준 · -(Layout) · 일괄 범위 드롭다운 · [판매 등록]
+│  │  │  │  └─ Tool Row 2                         30 — 이름 검색(flex) · 산업 · 등급 · [초기화]
 │  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
 │  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
 │  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
+│  │  │  │  ├─ Empty Notice > Empty Text (TMP)   찾기 결과 0건일 때만 · 격자 가운데 440x70 · Overlay 바탕
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
 │  │  │  │     └─ SlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
 │  │  │  │        └─ Aptitude Strip               캐릭터 탭 전용 5칸. 보조 문구와 같은 밴드를 나눠 쓴다

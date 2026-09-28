@@ -81,6 +81,9 @@ public class CharacterSlotSource : StorageSlotSource
         return a.Key.CompareTo(b.Key);
     }
 
+    // 캐릭터는 산업으로 거르지 않는다 — 적성이 다섯 산업에 걸쳐 있어 "어느 산업 캐릭터"가 없다 (도구 줄이 호출).
+    public override bool SupportsIndustryFilter => false;
+
     // 이 캐릭터가 지금 작업슬롯에 나가 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     //
     // 판정은 'FindSlotIndexOf' 하나로 읽는다 — 작업슬롯 화면도 같은 것을 보므로,

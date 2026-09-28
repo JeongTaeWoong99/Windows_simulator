@@ -15,6 +15,22 @@ public enum StorageSortOrder
     Ascending,
 }
 
+// 창고 [정렬]의 기준 (T-073). 도구 줄의 드롭다운이 고른다.
+//
+// ※ ▼(Descending)는 **기준마다의 기본 방향**이다 — 등급 높은 순 · 이름 가나다 순 · 수량 많은 순.
+//   ▲는 그 결과를 통째로 뒤집는다.
+public enum StorageSortKey
+{
+    // 등급 — 탭마다의 'CompareForSort' 규칙 그대로
+    Rarity,
+
+    // 이름 가나다 순
+    Name,
+
+    // 보유 수량 — 자원 탭 전용(캐릭터·장비는 개체라 늘 1이다)
+    Count,
+}
+
 // 창고 탭 하나가 격자에 무엇을 그릴지 답하는 공급자.
 //
 // 격자('StorageGridPresenter')는 이 타입만 알고 자원인지 캐릭터인지는 모른다.
@@ -42,6 +58,13 @@ public enum StorageSortOrder
 // 다만 [정렬]은 "지금 손댈 수 있는 것을 위로"가 목적이라, 나가 있는 것은 뒤로 민다('IsAway').
 // ⚠️ 이 기억은 **세션 한정**이다. 재접속하면 서버가 주는 순서로 처음부터 자리를 매긴다 —
 //   칸 위치의 주인은 서버로 옮겨 간다(서버 'T-058' → 클라 'T-044').
+//
+// ■ 찾기(필터)는 자리를 건드리지 않는다 (2026-09-29 · T-069)
+// 거르는 동안은 **맞는 것을 앞으로, 안 맞는 것을 그 뒤에** 각각 기억된 칸 순서대로 이어 붙이고,
+// 안 맞는 것은 격자가 흑백으로 그린다('IsFilteredOut'). 자리 기억('_place')은 늘 전체 기준으로
+// 계산하므로, 거르는 중에 채취·판매가 일어나도 필터를 풀면 원래 배치가 그대로 돌아온다.
+// ※ 안 맞는 것을 **빼지 않는다** — 한때 맞는 것만 남겼더니 창고가 텅 비어 보였다(2026-09-29 실측).
+//   제자리에 두고 흐리게만 하면(WoW 가방식) 결과가 흩어져 스크롤로 찾아야 한다. 둘을 섞은 것이 이 방식이다.
 public abstract class StorageSlotSource
 {
     // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
@@ -66,8 +89,21 @@ public abstract class StorageSlotSource
     private Dictionary<long, int> _place     = new Dictionary<long, int>();
     private Dictionary<long, int> _nextPlace = new Dictionary<long, int>();
 
-    // 마지막으로 누른 정렬 방향. 오름차순이면 'CompareForSort'의 결과를 뒤집는다.
+    // 마지막으로 누른 정렬 방향. 오름차순이면 기준 비교의 결과를 뒤집는다.
     private StorageSortOrder _order = StorageSortOrder.Descending;
+
+    // 마지막으로 고른 정렬 기준.
+    private StorageSortKey _key = StorageSortKey.Rarity;
+
+    // 지금 찾기 조건. 기본값이면 거르지 않는다.
+    private StorageFilter _filter;
+
+    // 거를 때 맞는 것 · 안 맞는 것을 칸 번호 순으로 모으는 버퍼. 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
+    private readonly List<SlotData> _matched   = new List<SlotData>();
+    private readonly List<SlotData> _unmatched = new List<SlotData>();
+
+    // 지금 찾기 조건에 안 맞는 Key — 격자가 흑백으로 그린다.
+    private readonly HashSet<long> _filteredOut = new HashSet<long>();
 
     private bool _isSubscribed;
 
@@ -79,6 +115,23 @@ public abstract class StorageSlotSource
     // 그릴 칸 수 — **빈 칸을 포함한** 마지막 내용물까지의 길이다.
     // 뒤쪽이 통째로 비면 그만큼 줄어든다(그 자리는 격자가 빈 프레임으로 둔다).
     public int Count => _slots.Count;
+
+    // 찾기 조건이 걸려 있나 — 결과 0건 안내를 띄울지 격자가 본다.
+    public bool IsFiltering => _filter.IsActive;
+
+    // 거른 결과 수. 거르지 않을 때는 전체 수다.
+    public int MatchCount => _filter.IsActive ? _matched.Count : _filled.Count;
+
+    // 이 개체가 지금 찾기 조건에 안 맞나 — 격자가 흑백으로 그린다 (Redraw에서 호출).
+    public bool IsFilteredOut(long key) => _filteredOut.Contains(key);
+
+    // 이 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 드롭다운 목록을 만들 때 호출).
+    // 기본은 등급·이름 — 보유 수량은 자원만 뜻이 있다.
+    public virtual bool SupportsSortKey(StorageSortKey key) => key != StorageSortKey.Count;
+
+    // 이 탭이 산업으로 거를 수 있나 (도구 줄이 산업 드롭다운을 보일지 정할 때 호출).
+    // 캐릭터는 산업 축이 없다(적성이 다섯 산업에 걸쳐 있다).
+    public virtual bool SupportsIndustryFilter => true;
 
     // 내용이 바뀌었다 — 격자가 다시 그린다.
     public event Action? Changed;
@@ -133,12 +186,14 @@ public abstract class StorageSlotSource
         OnUnsubscribe();
     }
 
-    // 지금 내용을 규칙대로 줄 세우고 그 자리를 기억한다 (격자의 'SortCurrent' — 도구 줄의 화살표 버튼).
+    // 지금 내용을 기준대로 줄 세우고 그 자리를 기억한다 (격자의 'SortCurrent' — 도구 줄의 화살표·기준).
     //
     // **빈 칸은 여기서만 메워진다.** 정리하려고 누르는 버튼이라 앞으로 당겨지는 것이 맞다.
     // ※ 격자는 켜진 탭에만 부르므로 '_filled'는 구독 중에 채워진 최신값이다.
-    public void Sort(StorageSortOrder order)
+    // ※ 거르는 중이어도 **전체**를 줄 세운다 — 자리 기억은 늘 전체 기준이다(클래스 주석).
+    public void Sort(StorageSortKey key, StorageSortOrder order)
     {
+        _key   = SupportsSortKey(key) ? key : StorageSortKey.Rarity;
         _order = order;
         _filled.Sort(_byRule);
 
@@ -148,6 +203,17 @@ public abstract class StorageSlotSource
         {
             _place[_filled[i].Key] = i;
         }
+
+        Arrange();
+        Changed?.Invoke();
+    }
+
+    // 찾기 조건을 바꾼다 (격자의 'FilterCurrent' — 도구 줄의 검색창·드롭다운).
+    //
+    // 자리 기억은 그대로 두고 보이는 것만 다시 모은다 — 필터를 풀면 원래 배치로 돌아와야 한다.
+    public void SetFilter(StorageFilter filter)
+    {
+        _filter = filter;
 
         Arrange();
         Changed?.Invoke();
@@ -185,6 +251,13 @@ public abstract class StorageSlotSource
     // [정렬]의 규칙. a가 앞이면 음수 (Sort에서 호출).
     // ⚠️ 끝까지 가서 0이 나오지 않게 한다 — 'List.Sort'는 안정 정렬이 아니라 동점이면 누를 때마다 자리가 바뀐다.
     protected abstract int CompareForSort(SlotData a, SlotData b);
+
+    // 보유 수량 비교 — 많은 것이 앞이면 음수. 수량 축이 없는 탭은 0이다 (CompareByRule에서 호출).
+    protected virtual int CompareByCount(SlotData a, SlotData b) => 0;
+
+    // 이 칸이 그 산업에 속하나 (Matches에서 호출). 산업 축이 없는 탭은 늘 true다.
+    //   industry : 'IndustryType' 값 (0은 호출 전에 걸러진다)
+    protected virtual bool MatchesIndustry(SlotData slot, byte industry) => true;
 
     // 데이터 변경 이벤트를 구독한다 (Subscribe에서 호출).
     protected abstract void OnSubscribe();
@@ -256,6 +329,69 @@ public abstract class StorageSlotSource
         {
             _slots[_place[slot.Key]] = slot;
         }
+
+        _filteredOut.Clear();
+
+        if (_filter.IsActive)
+        {
+            GatherMatches();
+        }
+    }
+
+    // 거르는 중이면 맞는 것 → 안 맞는 것 순으로, 각각 칸 번호 순서대로 0번부터 다시 앉힌다 (Arrange 끝에서 호출).
+    //
+    // 자리 기억('_place')은 이미 전체 기준으로 끝난 뒤다 — 여기서는 보이는 배치('_slots')만 바꾼다.
+    // 빈 칸은 이 동안 사라진다 — 모아 보이는 중이라 "어디서 빠졌나"를 읽을 자리가 아니다.
+    private void GatherMatches()
+    {
+        _matched.Clear();
+        _unmatched.Clear();
+
+        foreach (SlotData? slot in _slots)
+        {
+            if (slot == null)
+            {
+                continue;
+            }
+
+            if (Matches(slot.Value))
+            {
+                _matched.Add(slot.Value);
+            }
+            else
+            {
+                _unmatched.Add(slot.Value);
+                _filteredOut.Add(slot.Value.Key);
+            }
+        }
+
+        _slots.Clear();
+
+        foreach (SlotData slot in _matched)
+        {
+            _slots.Add(slot);
+        }
+
+        foreach (SlotData slot in _unmatched)
+        {
+            _slots.Add(slot);
+        }
+    }
+
+    // 이 칸이 지금 찾기 조건에 맞나 — 이름 일부 · 등급 · 산업이 모두 맞아야 한다 (GatherMatches에서 호출).
+    private bool Matches(SlotData slot)
+    {
+        if (!string.IsNullOrEmpty(_filter.Text) && slot.Name.IndexOf(_filter.Text, StringComparison.OrdinalIgnoreCase) < 0)
+        {
+            return false;
+        }
+
+        if (_filter.Rarity != GlobalRarity.None && slot.Rarity != _filter.Rarity)
+        {
+            return false;
+        }
+
+        return _filter.Industry == 0 || MatchesIndustry(slot, _filter.Industry);
     }
 
     // 규칙대로 비교한다. 오름차순이면 결과를 뒤집는다 (Sort의 정렬 비교자).
@@ -272,8 +408,24 @@ public abstract class StorageSlotSource
             return awayA ? 1 : -1;
         }
 
-        int compared = CompareForSort(a, b);
+        int compared = CompareByKey(a, b);
 
         return _order == StorageSortOrder.Ascending ? -compared : compared;
+    }
+
+    // 고른 기준으로 비교하고, 동점이면 탭 고유 규칙('CompareForSort')으로 끝까지 가른다 (CompareByRule에서 호출).
+    //
+    // ※ 이름은 'SlotData.Name' 하나만 읽는다 — 표시 이름의 출처가 엑셀로 옮겨 가도(T-085) 칸 문구와 함께 따라온다.
+    // ※ 'CompareOrdinal'로 충분하다 — 한글 음절은 유니코드 순서가 곧 가나다 순이고, 문화권에 따라 결과가 흔들리지 않는다.
+    private int CompareByKey(SlotData a, SlotData b)
+    {
+        int byKey = _key switch
+        {
+            StorageSortKey.Name  => string.CompareOrdinal(a.Name, b.Name),
+            StorageSortKey.Count => CompareByCount(a, b),
+            _                    => 0,
+        };
+
+        return byKey != 0 ? byKey : CompareForSort(a, b);
     }
 }

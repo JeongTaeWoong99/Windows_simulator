@@ -92,6 +92,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 반투명으로 만들면 뒤의 프레임이 비쳐 "빈 칸"과 헷갈린다.
     private const float AwayTint = 0.55f;
 
+    // 찾기 조건에 안 맞는 칸의 흑백 밝기 배수와 글씨 투명도.
+    // ※ 흑백으로 가르는 이유 — 딤(나가 있음)은 색조를 남기고 어둡게만 해서, 둘이 겹쳐도 구분된다.
+    //   반투명은 쓰지 않는다(위 'AwayTint'와 같은 이유 — 빈 칸과 헷갈린다). 글씨만 옅게 한다.
+    private const float FilteredOutTint      = 0.75f;
+    private const float FilteredOutTextAlpha = 0.45f;
+
     // 화면이 보조 문구를 쓰겠다고 했나('SetSubVisible'). 적성 스트립과 자리가 같아
     // 문구를 되돌릴 때 이 값이 필요하다 — 스트립을 끈다고 팝업에서 꺼 둔 문구가 살아나선 안 된다.
     private bool _isSubAllowed = true;
@@ -100,8 +106,15 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 안 그러면 배치 중인 칸이 다음 갱신 때 밝아진다.
     private bool _isDimmed;
 
+    // 지금 흑백 처리 중인가('SetFilteredOut'). 딤과 같은 이유로 'Bind' 뒤에 다시 반영한다.
+    private bool _isFilteredOut;
+
     // 아이콘의 원래 색. 딤을 되돌릴 기준값이라 프리팹 값을 한 번만 읽어 둔다.
     private Color _itemBaseColor = Color.white;
+
+    // 이름·보조 문구의 원래 투명도. 흑백을 걷을 때 돌아갈 값이다 — 1로 되돌리면 테마가 준 투명도를 덮는다.
+    private float _nameBaseAlpha = 1f;
+    private float _subBaseAlpha  = 1f;
 
     // 딤을 걷었을 때 돌아갈 등급색. 'rarityImage.color'를 그대로 읽으면 이미 어두워진 값이라
     // 껐다 켤 때마다 점점 검어진다.
@@ -130,6 +143,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
 
         _itemBaseColor = itemImage.color;
+        _nameBaseAlpha = nameText.alpha;
+        _subBaseAlpha  = subText.alpha;
 
         aptitudeStrip.SetActive(false);
         expGauge.gameObject.SetActive(false);
@@ -300,31 +315,62 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
     }
 
-    // 보관해 둔 등급색·아이콘 색에 딤을 반영한다 (Bind · SetDimmed · Clear에서 호출).
+    // 이 칸을 흑백으로 그린다 — 창고 찾기 조건에 안 맞는다는 뜻 (창고 격자가 매번 그릴 때 호출, T-069).
+    //
+    // 칸은 그대로 두고 색만 뺀다 — 빼 버리면 창고가 비어 보인다('StorageSlotSource' 주석).
+    // ⚠️ 색 곱셈이라 **등급 바탕·단색 아이콘까지만** 흑백이 된다. 아이콘 스프라이트가 들어오면
+    //    그 색은 곱셈으로 빠지지 않는다 — 그때는 흑백 머티리얼로 바꾼다(🎨).
+    public void SetFilteredOut(bool on)
+    {
+        if (_isFilteredOut == on)
+        {
+            return;
+        }
+
+        _isFilteredOut = on;
+
+        ApplyTint();
+    }
+
+    // 보관해 둔 등급색·아이콘 색에 딤·흑백을 반영한다 (Bind · SetDimmed · SetFilteredOut · Clear에서 호출).
     private void ApplyTint()
     {
-        float tint = _isDimmed ? AwayTint : 1f;
+        rarityImage.color = Tint(_rarityColor);
+        itemImage.color   = Tint(_itemBaseColor);
 
-        rarityImage.color = new Color(_rarityColor.r * tint,
-                                      _rarityColor.g * tint,
-                                      _rarityColor.b * tint,
-                                      _rarityColor.a);
+        float textAlpha = _isFilteredOut ? FilteredOutTextAlpha : 1f;
 
-        itemImage.color = new Color(_itemBaseColor.r * tint,
-                                    _itemBaseColor.g * tint,
-                                    _itemBaseColor.b * tint,
-                                    _itemBaseColor.a);
+        nameText.alpha = _nameBaseAlpha * textAlpha;
+        subText.alpha  = _subBaseAlpha  * textAlpha;
+    }
+
+    // 원래 색에 흑백(찾기 제외) → 딤(나가 있음)을 차례로 입힌다. 알파는 건드리지 않는다.
+    private Color Tint(Color source)
+    {
+        Color color = source;
+
+        if (_isFilteredOut)
+        {
+            float gray = (color.r * 0.299f + color.g * 0.587f + color.b * 0.114f) * FilteredOutTint;
+
+            color = new Color(gray, gray, gray, color.a);
+        }
+
+        float dim = _isDimmed ? AwayTint : 1f;
+
+        return new Color(color.r * dim, color.g * dim, color.b * dim, color.a);
     }
 
     // 칸을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
     // ※ 등급색과 마크도 되돌린다 — 안 그러면 다음에 이 칸을 쓸 때 이전 칸의 흔적이 남는다.
     public void Clear()
     {
-        Key           = 0;
-        _rarityColor  = RarityPalette.Unknown;
-        _isDimmed     = false;
-        nameText.text = "";
-        subText.text  = "";
+        Key            = 0;
+        _rarityColor   = RarityPalette.Unknown;
+        _isDimmed      = false;
+        _isFilteredOut = false;
+        nameText.text  = "";
+        subText.text   = "";
 
         ApplyTint();
 

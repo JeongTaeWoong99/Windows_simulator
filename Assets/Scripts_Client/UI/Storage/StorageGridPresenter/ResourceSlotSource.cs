@@ -15,8 +15,7 @@ public class ResourceSlotSource : StorageSlotSource
 
     // 보유 아이템을 칸으로 옮긴다 (Rebuild에서 호출).
     //
-    // ※ 산업별로 걸러 내지 않는다 — 칸 200개를 탭이 함께 쓰는 격자에서 일부만 보이면 빈 칸이 "사라진 아이템"처럼 읽힌다.
-    //   정리는 [정렬] 한 번으로 한다('CompareForSort').
+    // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 자리 기억과 떼어 따로 한다('StorageSlotSource' 주석).
     protected override void Fill(List<SlotData> into)
     {
         foreach (ItemInfo item in _data.Inventory)
@@ -61,6 +60,18 @@ public class ResourceSlotSource : StorageSlotSource
 
         return itemA.CompareTo(itemB);
     }
+
+    // 자원만 보유 수량으로 줄 세울 수 있다 — 캐릭터·장비는 개체라 수량이 늘 1이다 (도구 줄이 호출).
+    public override bool SupportsSortKey(StorageSortKey key) => true;
+
+    // 보유 수량 많은 순 (기반 클래스의 CompareByKey에서 호출).
+    protected override int CompareByCount(SlotData a, SlotData b)
+        => _data.GetItemCount((int)b.Key).CompareTo(_data.GetItemCount((int)a.Key));
+
+    // 자원의 산업 = 'ItemType' (Matches에서 호출).
+    // ※ 기타·특수(상자 등)는 산업이 아니라 '산업 전체'에서만 보인다 — 'ItemType'과 'IndustryType'은 1~5가 같은 값이다.
+    protected override bool MatchesIndustry(SlotData slot, byte industry)
+        => (byte)GameDataLoader.GetItemType((int)slot.Key) == industry;
 
     // 자원 칸 툴팁 — 등급 · 보유 · 판매가(개당 · 전부) · 조작 안내 (격자가 칸에 올린 순간 호출).
     //
