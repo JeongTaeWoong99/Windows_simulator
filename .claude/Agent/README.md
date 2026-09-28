@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-29 치트 해금 일괄 열기](2026-09-29-cheat-unlock-bulk.md) — `#client` `#editor` 해금 칸·묶음·산업 단위 전부 열기 버튼
 - [2026-09-29 특성 — 누르면 정보부터, [배우기]로 찍는다](2026-09-29-trait-detail-two-step.md) — `#client` `#ui` 특성 2단계 플로우 · 정보 영역을 판매 목록 자리에 (T-079)
 - [2026-09-28 다이아(유료 재화) 폐지](2026-09-28-remove-dia.md) — `#server` `#data` `#design` 패킷·DB·엑셀·기획 문서에서 Dia 삭제 (#41)
 - [2026-09-27 클라 속도 스케일·기본 산업 레벨 Constants 교체](2026-09-27-client-constants-speed-scale.md) — `#client` `#data` T-085 클라 몫 종료 (#34 · #39 닫음)
