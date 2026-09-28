@@ -61,9 +61,9 @@ Root Canvas
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
 │  │  │  └─ State Presenter (↓ SUB VIEW)          StatePresenter     가로 한 줄
-│  │  │     ├─ Mail Button                        Dia Panel 뒤 · Setting 앞 · flex 1 · TooltipTrigger(문구) — 누르면 우편함 (Setting 과 같은 토글)
+│  │  │     ├─ Mail Button                        Gold Panel 뒤 · Setting 앞 · flex 1 · TooltipTrigger(문구) — 누르면 우편함 (Setting 과 같은 토글)
 │  │  │     │  └─ New Dot                         오른쪽 위 12px 빨간 점. 안 받은 우편이 있을 때만 켜진다 (StatePresenter.mailDot)
-│  │  │     ├─ Nick / Gold / Dia Panel               정렬 상자 (아이콘 + 텍스트)  flex 4씩
+│  │  │     ├─ Nick / Gold Panel                     정렬 상자 (아이콘 + 텍스트)  flex 4씩
 │  │  │     │  └─ Nick Image                      검은 원반(Knob). 계정 레벨이 여기 겹친다
 │  │  │     │     ├─ Exp Ring Fill                Filled · Radial360 — 계정 경험치
 │  │  │     │     ├─ Nick Icon (임시)             가운데를 덮어 원반을 고리로 만든다 (T-054 대기)

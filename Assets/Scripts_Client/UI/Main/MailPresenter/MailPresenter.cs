@@ -218,7 +218,7 @@ public class MailPresenter : MonoBehaviour
         return isClaimed ? $"받음 · {info}" : info;
     }
 
-    // 첨부 요약 — "골드 1,000 · 다이아 10 · 나무 x10 · 무사 x2 · 낡은 곡괭이".
+    // 첨부 요약 — "골드 1,000 · 나무 x10 · 무사 x2 · 낡은 곡괭이".
     // ※ 템플릿이 아니라 패킷의 첨부를 쓴다 — 넘침 보관 우편은 템플릿 첨부가 비어 있다('GameDataLoader.TryGetMailTemplate').
     private static string BuildAttachment(MailInfo mail)
     {
@@ -227,11 +227,6 @@ public class MailPresenter : MonoBehaviour
         if (mail.Gold > 0L)
         {
             parts.Add($"골드 {mail.Gold:N0}");
-        }
-
-        if (mail.Dia > 0L)
-        {
-            parts.Add($"다이아 {mail.Dia:N0}");
         }
 
         if (mail.Items != null)

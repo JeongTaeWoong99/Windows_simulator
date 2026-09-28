@@ -41,11 +41,9 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
-		private static readonly long[] DiaQuickAmounts  = { 100, 1_000, -100 };
 
 		// 입력값 — 플레이 진입(도메인 리로드)에도 남도록 직렬화한다.
 		[SerializeField] private long      _goldAmount      = 1_000;
-		[SerializeField] private long      _diaAmount       = 100;
 		[SerializeField] private TidPicker _itemPicker      = new();
 		[SerializeField] private int       _itemCount       = 10;
 		[SerializeField] private TidPicker _characterPicker = new();
@@ -319,8 +317,6 @@ namespace DesktopWindowControl.EditorTools
 			BeginSection("재화", CurrencyAccent);
 
 			DrawCurrencyRow("골드", ECheatCommand.GiveGold, ref _goldAmount, GoldQuickAmounts);
-			EditorGUILayout.Space(2f);
-			DrawCurrencyRow("다이아", ECheatCommand.GiveDia, ref _diaAmount, DiaQuickAmounts);
 
 			EndSection(CurrencyAccent);
 		}

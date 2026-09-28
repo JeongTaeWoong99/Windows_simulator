@@ -1,8 +1,8 @@
 # State 폴더 규칙
 
-> 최종 업데이트: 2026-09-21 (경험치를 가로 띠에서 닉 아이콘을 두르는 원형 진행도로 — T-068) · 대상: `Assets/Scripts_Client/UI/State/`
+> 최종 업데이트: 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
 
-**`#State Canvas` — 계정 레벨 · 닉네임 · 재화(골드 · 다이아)를 늘 보여 주고, 메인 화면을 여는 버튼을 쥔다.**
+**`#State Canvas` — 계정 레벨 · 닉네임 · 재화(골드)를 늘 보여 주고, 메인 화면을 여는 버튼을 쥔다.**
 
 | 폴더 | 무엇 |
 |------|------|
@@ -25,7 +25,6 @@
     │       ├─ Percent Text     ⏸ 꺼 둔 상태 — 배선만 살아 있다
     │       └─ Lv Text          "Lv.n" (가장 위)
     ├─ Gold Panel   ─ Gold Image · Gold Text
-    ├─ Dia Panel    ─ Dia Image  · Dia Text
     ├─ Setting Button
     ├─ xxx Button (1..3)        ⏸ 열 화면이 없어 꺼 둔 상태
     └─ Exit Button
@@ -117,12 +116,10 @@
 > `GameDataLoader`에 캐릭터용(`int`)과 **별개 함수**로 두었다 — 같은 이름으로 합치면
 > 넘치는 쪽이 조용히 잘린다.
 
-## ⏸ 다이아는 늘 0이다 — 버그가 아니다
+## 재화는 골드 하나다
 
-`Dia`는 **그릇만 있고 지급·차감 경로가 없다**
-([`trade/README.md`](../../../../GameDesign/design/trade/README.md) 1장 — "상점은 골드 상점,
-현금 상품을 두지 않는다"). 서버가 잔액을 실어 보내고 클라도 받고 있지만,
-**그 값이 움직일 길이 아직 없다.** 결제·상점이 생기면 저절로 움직인다.
+유료 재화 `Dia`는 **폐지했다**([#41](https://github.com/JeongTaeWoong99/Windows_simulator/issues/41)) —
+과금은 게임 밖(DLC · 스팀 마켓 수수료)에서 한다. 상태바에 재화 칸을 다시 늘릴 일은 없다.
 
 ## 메인 화면 여는 버튼은 여기서 배선한다
 

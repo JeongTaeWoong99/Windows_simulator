@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 상태 패널 — 계정 이름과 재화(골드·다이아)를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
+// 상태 패널 — 계정 이름과 재화(골드)를 표시하고, 메인 화면을 갈아 끼우는 버튼들을 갖는다.
 //
 // ■ 버튼은 여기 있고, 무엇을 열지는 여기서 안 정한다
 // 버튼은 이 패널의 위젯이라 여기가 쥐지만, 어느 캔버스가 열리는지는 모른다.
@@ -41,9 +41,6 @@ public class StatePresenter : MonoBehaviour
 
     [SerializeField, Tooltip("골드 보유량")]
     private TMP_Text goldText = null!;
-
-    [SerializeField, Tooltip("다이아 보유량. ⏸ 지급·차감 경로가 없어 늘 0이다")]
-    private TMP_Text diaText = null!;
 
     [CenterHeader("계정 레벨")]
     [SerializeField, Tooltip("닉 아이콘 아래쪽에 겹치는 레벨 배지 문구")]
@@ -85,7 +82,6 @@ public class StatePresenter : MonoBehaviour
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다(SettingPresenter와 같은 규칙).
         this.RequireRef(nickNameText,   nameof(nickNameText));
         this.RequireRef(goldText,       nameof(goldText));
-        this.RequireRef(diaText,        nameof(diaText));
         this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(expFill,        nameof(expFill));
         this.RequireRef(expPercentText, nameof(expPercentText));
@@ -199,7 +195,6 @@ public class StatePresenter : MonoBehaviour
     {
         nickNameText.text = string.IsNullOrEmpty(_data.LoginId) ? "-" : _data.LoginId;
         goldText.text     = _data.Gold.ToString("N0"); // 천 단위 구분
-        diaText.text      = _data.Dia.ToString("N0");
 
         RefreshAccountLevel();
         RefreshMailDot();

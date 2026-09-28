@@ -262,8 +262,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //
     // ※ 예전에는 'Dictionary<byte, long>'에 'CurrencyType'을 키로 담았다. 그 축이 없어졌는데
     //   사전만 채우는 식으로 두면 패킷과 캐시가 다시 어긋난다 — 사전째 걷어냈다.
-    public long Gold { get; private set; }  // 무료 재화
-    public long Dia  { get; private set; }  // 유료 재화. ⏸ 지급·차감 경로가 아직 없어 늘 0이다
+    public long Gold { get; private set; }  // 유일한 재화 — 유료 재화(다이아)는 폐지했다(#41)
 
     // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
     // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
@@ -694,11 +693,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.
     //
-    // ★ 한쪽만 바뀌어도 서버는 둘 다 실어 보낸다. 값이 델타가 아니라 확정 잔액이라 안전하다.
+    // ★ 값이 델타가 아니라 확정 잔액이라 안전하다.
     private void OnCurrencyReceived(S_CurrencyResponse res)
     {
         Gold = res.Gold;
-        Dia  = res.Dia;
 
         CurrencyChanged?.Invoke();
     }
