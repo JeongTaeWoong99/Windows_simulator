@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;           // 배율 라벨의 소수점(로캘에 따라 쉼표가 되지 않게)
 using System.Runtime.InteropServices; // MONITORINFO.cbSize 를 채우는 Marshal.SizeOf
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -23,9 +24,13 @@ public enum ScreenAnchor
 }
 
 // 창 크기 배율 프리셋. 기준 960x540(16:9)에 배율을 곱한 절대 픽셀이다.
+//   X0_5 = 480x270, X0_75 = 720x405,
 //   X1 = 960x540, X1_25 = 1200x675, X1_5 = 1440x810, X2 = 1920x1080.
 //
 // 모니터 비례가 아닌 이유와 16:9 유지 규칙은 'Managers 규칙.md' 5장 참조.
+//
+// ⚠️ 새 항목은 맨 뒤에만 붙인다 — 이 값은 씬과 'PlayerPrefs'에 int로 저장돼 있어, 중간에 끼우면
+//   저장값이 조용히 다른 배율을 가리킨다. 드롭다운 표시 순서는 'WindowManager.SizeOrder'가 따로 정한다.
 public enum WindowScale
 {
     X1,    // 960x540
@@ -34,12 +39,15 @@ public enum WindowScale
     X2,    // 1920x1080
 
     // 작업표시줄에 맞춤 — 위젯 바 높이가 작업표시줄과 같아지는 배율. 고정값이 아니라 런타임에
-    // 계산되므로('WindowManager.RecalculateFitScale') 'ScaleFactors' 표에 자리가 없다.
+    // 계산되므로('WindowManager.RecalculateFitScale') 고정 배율('PresetFactor')이 없다.
     //
     // ※ 크기를 감각으로 고르는 프리셋들과 같은 드롭다운에 둔 이유 — 둘은 상호배타다.
     //   맞춤은 크기와 "함께" 고르는 게 아니라 크기 선택을 대체한다. 별도 토글로 두면
     //   "1x + 맞춤" 처럼 성립하지 않는 조합(위젯이 상태 칸을 다 먹는다)을 표현할 수 있게 된다.
-    FitTaskbar
+    FitTaskbar,
+
+    X0_75, // 720x405 (T-070 — 1x보다 작게. 뒤에 붙인 이유는 위 ⚠️)
+    X0_5,  // 480x270
 }
 
 public class WindowManager : MonoService<WindowManager>
@@ -55,9 +63,13 @@ public class WindowManager : MonoService<WindowManager>
     // 맞춤 배율을 계산하지 못했을 때 대신 쓸 프리셋.
     private const WindowScale FitFallbackScale = WindowScale.X1_25;
 
-    // ─── static readonly 표 (WindowScale 의 프리셋 4개와 1:1 — 계산값인 FitTaskbar 는 여기 자리가 없다) ───
-    private static readonly string[] SizeLabels   = { "1x", "1.25x", "1.5x", "2x" }; // 드롭다운 표시 라벨
-    private static readonly float[]  ScaleFactors = { 1f  , 1.25f  , 1.5f  , 2f   }; // 기준 960x540에 곱할 배율
+    // 크기 드롭다운의 표시 순서 — 작은 것부터, 맞춤은 맨 끝. 드롭다운 인덱스는 이 표의 인덱스다.
+    // ⚠️ enum 값 순서(=저장값)와 다르다. 저장은 enum 값으로, 드롭다운은 이 표로 오간다.
+    private static readonly WindowScale[] SizeOrder =
+    {
+        WindowScale.X0_5, WindowScale.X0_75, WindowScale.X1, WindowScale.X1_25,
+        WindowScale.X1_5, WindowScale.X2,    WindowScale.FitTaskbar,
+    };
 
     // ─── 공장 초기값 (인스펙터) ───
     // ⚠️ 여기 적은 값은 "저장된 설정이 없을 때"만 쓰인다. 사용자가 한 번이라도 토글·드롭다운을
@@ -125,7 +137,7 @@ public class WindowManager : MonoService<WindowManager>
     public bool Transparent         => _isTransparent;
     public bool Topmost             => _isTopmost;
     public bool DynamicClickThrough => _dynamicClickThrough;
-    public int  SizeIndex           => (int)_currentScale;
+    public int  SizeIndex           => Array.IndexOf(SizeOrder, _currentScale); // 드롭다운 인덱스('SizeOrder')
     public int  AnchorIndex         => (int)_currentAnchor;
 
     // ──────────────────────────────────────────────
@@ -213,11 +225,12 @@ public class WindowManager : MonoService<WindowManager>
         // 빌드: 사용자 저장값이 진실. 없으면(첫 실행) 인스펙터 공장값을 fallback으로 쓴다.
         _isTopmost = WindowSettings.LoadBool(WindowSettings.TopmostKey, setStartTopmost);
 
-        // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
         int scale  = WindowSettings.LoadInt(WindowSettings.ScaleKey,  (int)setStartScale);
         int anchor = WindowSettings.LoadInt(WindowSettings.AnchorKey, (int)setStartAnchor);
 
-        _currentScale  = (WindowScale)Mathf.Clamp(scale, 0, (int)WindowScale.FitTaskbar);
+        // 모르는 배율 값이면 공장값으로 돌린다. 범위 클램프를 쓰지 않는다 — 마지막 enum 값을
+        // 상한으로 가정하면 뒤에 붙인 항목이 잘린다(T-070).
+        _currentScale  = Enum.IsDefined(typeof(WindowScale), scale) ? (WindowScale)scale : setStartScale;
         _currentAnchor = (ScreenAnchor)MigrateAnchor(anchor);
 
         // 위젯 칸 높이는 씬 레이아웃에서 나오는 값이라 UI가 알려 줘야 하는데, 그건 설정 패널을
@@ -540,12 +553,17 @@ public class WindowManager : MonoService<WindowManager>
 
     #region 위치 · 크기
 
-    // 크기 드롭다운 옵션 라벨을 WindowScale enum 순서대로 만든다 — 프리셋 4개 + '작업표시줄 맞춤'.
+    // 크기 드롭다운 옵션 라벨을 'SizeOrder' 순서대로 만든다 — 프리셋 6개(작은 것부터) + '작업표시줄 맞춤'.
     public List<string> GetSizeLabels()
     {
-        var labels = new List<string>(SizeLabels);
+        var labels = new List<string>(SizeOrder.Length);
 
-        labels.Add(FitTaskbarLabel());
+        foreach (WindowScale scale in SizeOrder)
+        {
+            labels.Add(scale == WindowScale.FitTaskbar
+                           ? FitTaskbarLabel()
+                           : PresetFactor(scale).ToString("0.##", CultureInfo.InvariantCulture) + "x");
+        }
 
         return labels;
     }
@@ -569,9 +587,10 @@ public class WindowManager : MonoService<WindowManager>
     // 크기·위치를 하나의 기준 모니터로 원자 적용한다('ApplySizeAndPosition').
     // ⚠️ 'Screen.SetResolution'과 캔버스 기준 해상도 변경을 쓰지 않는다 —
     // 둘 다 창 제어를 망가뜨린다 ('Managers 규칙.md' 5장).
+    // ⚠️ 'index'는 enum 값이 아니라 드롭다운 인덱스('SizeOrder')다.
     public void SetWindowSizeByIndex(int index)
     {
-        _currentScale = (WindowScale)Mathf.Clamp(index, 0, (int)WindowScale.FitTaskbar);
+        _currentScale = SizeOrder[Mathf.Clamp(index, 0, SizeOrder.Length - 1)];
         WindowSettings.SaveInt(WindowSettings.ScaleKey, (int)_currentScale);
         ClearCustomPosition(); // 드롭다운으로 고른 순간 손으로 만든 자리는 무효다
 #if !UNITY_EDITOR
@@ -682,6 +701,21 @@ public class WindowManager : MonoService<WindowManager>
 #if !UNITY_EDITOR
         ApplySizeAndPosition(_currentScale, _currentAnchor);
 #endif
+    }
+
+    // 창 크기를 공장값('setStartScale')으로 되돌린다 (설정의 [창 크기 복원]).
+    // 드롭다운을 고른 것과 같은 경로라 저장·손 좌표 폐기까지 함께 일어난다.
+    public void ResetWindowSize()
+    {
+        SetWindowSizeByIndex(Array.IndexOf(SizeOrder, setStartScale));
+    }
+
+    // 창 위치를 공장 앵커('setStartAnchor')로 되돌린다 (설정의 [창 위치 복원]).
+    // 드래그로 옮긴 자리도 버린다 — 화면 밖에서 잃어버린 창을 되찾는 용도다.
+    // ⚠️ 위젯 위치는 여기서 맞추지 않는다 — 부른 쪽이 'AnchorIndex'로 함께 맞춘다(Managers → UI 의존 금지).
+    public void ResetWindowPosition()
+    {
+        SetAnchorByIndex((int)setStartAnchor);
     }
 
 #if !UNITY_EDITOR
@@ -872,18 +906,30 @@ public class WindowManager : MonoService<WindowManager>
         return new Vector2Int(Mathf.RoundToInt(BaseWidth * factor), Mathf.RoundToInt(BaseHeight * factor));
     }
 
-    // 그 프리셋이 기준 960x540에 곱할 배율. 'FitTaskbar'만 'ScaleFactors' 표에 자리가 없어 따로 답한다
-    // — 고정값이 아니라 작업표시줄과 위젯 칸에서 계산되는 값이기 때문이다('RecalculateFitScale').
+    // 그 프리셋이 기준 960x540에 곱할 배율. 'FitTaskbar'만 고정값이 없어 따로 답한다
+    // — 작업표시줄과 위젯 칸에서 계산되는 값이기 때문이다('RecalculateFitScale').
     // 계산이 안 됐으면(에디터 · 작업표시줄 없음 · 크기 초과) 프리셋 하나로 떨어뜨린다.
     private float ScaleFactorOf(WindowScale scale)
     {
         if (scale != WindowScale.FitTaskbar)
         {
-            return ScaleFactors[(int)scale];
+            return PresetFactor(scale);
         }
 
-        return _fitScaleFactor > 0f ? _fitScaleFactor : ScaleFactors[(int)FitFallbackScale];
+        return _fitScaleFactor > 0f ? _fitScaleFactor : PresetFactor(FitFallbackScale);
     }
+
+    // 고정 프리셋의 배율. 'FitTaskbar'는 고정값이 없다 — 'ScaleFactorOf'가 따로 답한다.
+    private static float PresetFactor(WindowScale scale) => scale switch
+    {
+        WindowScale.X0_5  => 0.5f,
+        WindowScale.X0_75 => 0.75f,
+        WindowScale.X1    => 1f,
+        WindowScale.X1_25 => 1.25f,
+        WindowScale.X1_5  => 1.5f,
+        WindowScale.X2    => 2f,
+        _                 => throw new ArgumentOutOfRangeException(nameof(scale), scale, "고정 배율이 없는 항목"),
+    };
 
     // 창이 작업 영역(작업표시줄 제외)을 넘으면 16:9를 유지한 채 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
     // 가로·세로 중 더 많이 넘치는 쪽 비율 하나로 양쪽을 함께 줄여야 비율이 보존된다

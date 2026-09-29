@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-09-26 (우편함 화면 — T-083) · 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-09-29 (설정 화면 — 탭 4개 · 줄 목록 · `(기능 없음)` 줄 — T-098) · 2026-09-26 (우편함 화면 — T-083) · 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -10,7 +10,7 @@
 | `MainCanvasView.cs` | 캔버스 껍데기 + **`SetTitle(string)`** (아래 "캔버스 머리의 제목") |
 | `WorkStationListPresenter/` | 작업슬롯 목록 (+ 종속 View `WorkStationSlotView`) |
 | `WorkStationSelectPresenter/` | 작업슬롯 선택 (+ 종속 View `CharacterStateRowView` — 목록 줄과 세팅 카드가 함께 쓴다 · `EfficiencyRowView` — 효율 계산 한 줄 · `EquipPickRowView` — 낄 장비 한 줄) |
-| `SettingPresenter/` | 창 설정 |
+| `SettingPresenter/` | 설정 — 탭 4개(일반·그래픽·오디오·기타) · 줄 목록 (아래 "설정 화면") |
 | `MailPresenter/` | 우편함 — 받기·모두 받기·받은 우편 삭제 (+ 종속 View `MailRowView` — 우편 한 줄) |
 | `MenuPresenter/` | 하단 메뉴 — **항상 켜져 있다** |
 
@@ -302,6 +302,28 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
   이 화면은 슬롯 **하나**만 보므로 줄 순회도 없다.
 - 표시 전용이라 `interactable`은 꺼 두고 `transition`도 `None`이다 — 끌면 안 되는 물건이다.
 - 장비를 고르는 동안에는 `Efficiency Label`·`Efficiency Rows Panel`과 **함께 꺼진다.**
+
+## 설정 화면 — 탭 4개 · 줄 목록 (2026-09-29 · T-098)
+
+```
+Setting Presenter (↓ SUB VIEW)
+├─ Header Panel      [일반][그래픽][오디오][기타] ── Spacer ── [X]
+├─ General Page      ┐
+├─ Graphic Page      │ 탭 하나만 켜진다 — 넷 다 pref 0 · flexH 1 (위 "갈아 끼운다"와 같은 값)
+├─ Audio Page        │
+└─ Etc Page          ┘
+    └─ Xxx Row       Name Text · [No Feature Text] · Spacer(flexW 1) · 조작(Dropdown·Toggle·Slider·Button)
+```
+
+- **탭 전환은 `SettingPresenter` 안에서 끝난다** — 바깥 전환 층(`MainScreen`)을 늘리지 않는다. 탭 짝(버튼·페이지)은
+  인스펙터 `Tabs`에 `SettingTab` 값마다 한 줄. 선택 색은 `StorageTabPresenter`처럼 `ColorBlock`으로 칠한다.
+- **`(기능 없음)` 줄은 씬에만 있다.** 이름 옆 `No Feature Text (TMP)`가 표시하고 조작은 `interactable = false`다.
+  코드는 모른다 — 기능을 붙일 때 **그 줄의 조작을 `SettingPresenter` 필드로 받아 배선하고 `No Feature Text`를 지운다.**
+  ※ 위 "하단 메뉴 줄"의 "빈 칸·잠긴 버튼을 미리 두지 않는다"는 **특별 이벤트 자리 이야기**다. 설정은 사용자 결정으로 구조를 먼저 세웠다.
+- 투명도 슬라이더의 범위(10~100)는 코드가 `DisplayManager` 상수로 채운다 — 인스펙터 min·max는 덮어써진다.
+- ⚠️ **하이어라키에 안 보이는 자식이 둘 있다** — `(미사용) Toggle Panel`(옛 토글 + 타이틀바·투명·동적 클릭스루 토글) ·
+  `(미사용) Dropdown Panel`(옛 드롭다운). 테스트용으로 남겨 두고 **비활성 + `HideFlags.HideInHierarchy`** 로 숨겼다. 코드 참조는 없다.
+  꺼내려면 `hideFlags = HideFlags.None`으로 돌린다(에디터 `eval` 한 줄 — `SettingPresenter` 아래 `Find("(미사용) Toggle Panel")`).
 
 ## 캔버스 머리의 제목은 `UIManager`가 밀어 넣는다
 

@@ -22,7 +22,7 @@ public enum FpsTextPosition
     LowerRight,
 }
 
-// 표시·성능 설정의 주인 — 지금은 프레임 제한과 FPS 텍스트 위치를 정하고 적용한다.
+// 표시·성능 설정의 주인 — 지금은 프레임 제한 · FPS 텍스트 위치 · UI 투명도를 정하고 적용한다.
 // 설정 화면이 고르고, 저장은 'WindowSettings'('Display.*' 키)가 한다.
 //
 // ■ 설정마다 매니저를 만들지 않는다
@@ -33,17 +33,33 @@ public enum FpsTextPosition
 // 먹는 값이라 마지막 선택이 유지되는 편이 테스트에 맞다. 인스펙터 'setStart*'는 첫 실행 기본값뿐이다.
 //
 // ⚠️ 모니터 동기화는 에디터에서 Game 뷰의 VSync 토글이 덮을 수 있다('Settings 규칙.md' 1장).
+//
+// ■ 투명도는 Win32 알파가 아니라 UI 알파다 (T-070)
+// 'SetLayeredWindowAttributes'로 창 전체 알파를 걸면 DWM per-pixel 투명이 균일 알파 모드로 덮여
+// 창이 검게 변한다('WindowManager.SetClickThrough' 주석). 그래서 최상위 캔버스의 'CanvasGroup.alpha'를 내린다.
+// 창 모양이 아니라 그려지는 UI를 바꾸고 에디터에서도 실제로 먹어서 'WindowManager'가 아니라 여기다.
 public class DisplayManager : MonoService<DisplayManager>
 {
     // 숫자 항목의 목표 프레임. 'FrameRateOption' 순서와 같다(VSync는 숫자가 없다).
     private static readonly int[] TargetFrameRates = { 30, 60, 90, 144 };
 
+    // 불투명도 범위(%) — 설정 슬라이더의 양 끝. 0이면 UI를 잃어버려 10에서 멈춘다.
+    public const int MinOpacityPercent = 10;
+    public const int MaxOpacityPercent = 100;
+
     [CenterHeader("첫 실행 기본값 (저장값이 있으면 그걸 따른다)")]
     [SerializeField] private FrameRateOption setStartFrameRate       = FrameRateOption.Fps60;
     [SerializeField] private FpsTextPosition setStartFpsTextPosition = FpsTextPosition.Hidden;
+    [SerializeField, Range(MinOpacityPercent, MaxOpacityPercent), Tooltip("불투명도 %")]
+    private int setStartOpacity = MaxOpacityPercent;
+
+    [CenterHeader("투명도를 걸 대상")]
+    [SerializeField, Tooltip("Root Canvas의 CanvasGroup — 모든 UI가 그 아래에 있어 alpha가 전부에 곱해진다")]
+    private CanvasGroup rootCanvasGroup = null!;
 
     private FrameRateOption _frameRate;
     private FpsTextPosition _fpsTextPosition;
+    private int             _opacityPercent;
 
     // FPS 텍스트 위치가 바뀌었다 — 'FpsTextPresenter'가 구독한다.
     public event Action<FpsTextPosition>? FpsTextPositionChanged;
@@ -51,6 +67,7 @@ public class DisplayManager : MonoService<DisplayManager>
     public int             FrameRateIndex       => (int)_frameRate;
     public int             FpsTextPositionIndex => (int)_fpsTextPosition;
     public FpsTextPosition FpsTextPosition      => _fpsTextPosition;
+    public int             OpacityPercent       => _opacityPercent;
 
     // 저장값을 읽어 곧바로 프레임을 건다. 다른 서비스를 건드리지 않는 순수 값 로드라 Awake에서 안전하다.
     protected override void Awake()
@@ -64,7 +81,19 @@ public class DisplayManager : MonoService<DisplayManager>
         _frameRate       = (FrameRateOption)Mathf.Clamp(frameRate, 0, (int)FrameRateOption.VSync);
         _fpsTextPosition = (FpsTextPosition)Mathf.Clamp(position,  0, (int)FpsTextPosition.LowerRight);
 
+        // 범위 밖이면(범위가 바뀌었다면) 불투명으로 돌린다 — 흐린 쪽으로 틀리면 UI를 못 찾는다.
+        int opacity = WindowSettings.LoadInt(WindowSettings.OpacityKey, setStartOpacity);
+        _opacityPercent = opacity >= MinOpacityPercent && opacity <= MaxOpacityPercent ? opacity : MaxOpacityPercent;
+
         ApplyFrameRate();
+    }
+
+    // 투명도를 건다 (Unity 메시지). 인스펙터 참조를 검증해야 해서 'Awake'가 아니라 여기다 — 첫 렌더 전이라 깜빡이지 않는다.
+    private void Start()
+    {
+        this.RequireRef(rootCanvasGroup, nameof(rootCanvasGroup));
+
+        ApplyOpacity();
     }
 
     // 프레임 드롭다운 옵션 라벨을 'FrameRateOption' 순서대로 만든다.
@@ -93,6 +122,26 @@ public class DisplayManager : MonoService<DisplayManager>
         _fpsTextPosition = (FpsTextPosition)Mathf.Clamp(index, 0, (int)FpsTextPosition.LowerRight);
         WindowSettings.SaveInt(WindowSettings.FpsTextPositionKey, (int)_fpsTextPosition);
         FpsTextPositionChanged?.Invoke(_fpsTextPosition);
+    }
+
+    // 불투명도를 바꿔 즉시 건다 (설정 슬라이더 onValueChanged). 저장은 하지 않는다 —
+    // 드래그 중에는 매 프레임 불리므로, 손을 뗄 때 'SaveOpacity'가 한 번 저장한다.
+    public void SetOpacity(int percent)
+    {
+        _opacityPercent = Mathf.Clamp(percent, MinOpacityPercent, MaxOpacityPercent);
+        ApplyOpacity();
+    }
+
+    // 지금 불투명도를 저장한다 (설정 슬라이더에서 손을 뗐을 때).
+    public void SaveOpacity()
+    {
+        WindowSettings.SaveInt(WindowSettings.OpacityKey, _opacityPercent);
+    }
+
+    // 현재 투명도를 최상위 CanvasGroup에 건다. 'blocksRaycasts'는 건드리지 않는다 — 흐려도 클릭은 받는다.
+    private void ApplyOpacity()
+    {
+        rootCanvasGroup.alpha = _opacityPercent / 100f;
     }
 
     // 현재 항목을 엔진에 건다. 'vSyncCount'가 0이 아니면 'targetFrameRate'는 무시되므로 숫자 항목은 VSync를 끈다.
