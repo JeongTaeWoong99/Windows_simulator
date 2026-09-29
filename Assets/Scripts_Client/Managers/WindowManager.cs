@@ -24,7 +24,6 @@ public enum ScreenAnchor
 }
 
 // 창 크기 배율 프리셋. 기준 960x540(16:9)에 배율을 곱한 절대 픽셀이다.
-//   X0_5 = 480x270, X0_75 = 720x405,
 //   X1 = 960x540, X1_25 = 1200x675, X1_5 = 1440x810, X2 = 1920x1080.
 //
 // 모니터 비례가 아닌 이유와 16:9 유지 규칙은 'Managers 규칙.md' 5장 참조.
@@ -46,8 +45,8 @@ public enum WindowScale
     //   "1x + 맞춤" 처럼 성립하지 않는 조합(위젯이 상태 칸을 다 먹는다)을 표현할 수 있게 된다.
     FitTaskbar,
 
-    X0_75, // 720x405 (T-070 — 1x보다 작게. 뒤에 붙인 이유는 위 ⚠️)
-    X0_5,  // 480x270
+    // ※ 5·6은 한때 X0_75·X0_5였다(T-070 → 너무 작아 2026-09-30 제거). 저장값에 남아 있으면
+    //   'Enum.IsDefined'가 걸러 공장값으로 떨어진다. 다음 항목은 7부터 쓴다 — 옛 저장값이 새 배율로 읽히지 않게.
 }
 
 public class WindowManager : MonoService<WindowManager>
@@ -67,8 +66,7 @@ public class WindowManager : MonoService<WindowManager>
     // ⚠️ enum 값 순서(=저장값)와 다르다. 저장은 enum 값으로, 드롭다운은 이 표로 오간다.
     private static readonly WindowScale[] SizeOrder =
     {
-        WindowScale.X0_5, WindowScale.X0_75, WindowScale.X1, WindowScale.X1_25,
-        WindowScale.X1_5, WindowScale.X2,    WindowScale.FitTaskbar,
+        WindowScale.X1, WindowScale.X1_25, WindowScale.X1_5, WindowScale.X2, WindowScale.FitTaskbar,
     };
 
     // ─── 공장 초기값 (인스펙터) ───
@@ -569,7 +567,7 @@ public class WindowManager : MonoService<WindowManager>
 
     #region 위치 · 크기
 
-    // 크기 드롭다운 옵션 라벨을 'SizeOrder' 순서대로 만든다 — 프리셋 6개(작은 것부터) + '작업표시줄 맞춤'.
+    // 크기 드롭다운 옵션 라벨을 'SizeOrder' 순서대로 만든다 — 프리셋 4개(작은 것부터) + '작업표시줄 맞춤'.
     public List<string> GetSizeLabels()
     {
         var labels = new List<string>(SizeOrder.Length);
@@ -976,8 +974,6 @@ public class WindowManager : MonoService<WindowManager>
     // 고정 프리셋의 배율. 'FitTaskbar'는 고정값이 없다 — 'ScaleFactorOf'가 따로 답한다.
     private static float PresetFactor(WindowScale scale) => scale switch
     {
-        WindowScale.X0_5  => 0.5f,
-        WindowScale.X0_75 => 0.75f,
         WindowScale.X1    => 1f,
         WindowScale.X1_25 => 1.25f,
         WindowScale.X1_5  => 1.5f,

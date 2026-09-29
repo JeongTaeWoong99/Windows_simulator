@@ -43,3 +43,8 @@ tags: [client, ui, window, settings]
 - 안 쓰게 된 `TryGetMonitorBounds` 삭제. 빌드 정의 dotnet 빌드로 `#if !UNITY_EDITOR` 코드 0 오류 확인, 빌드 실측은 남음.
 - (추가) 사용자 실측 확인 후 요청으로 맞춤보다 작은 프리셋까지 넓혔다(`FitsInTaskbar` — `PresetFactor ≤ _fitScaleFactor`). 밀어낼 때(드래그 끝·항상 위 끔) `ServerWaitManager.RaiseNotice`로 이유 팝업. 부팅 복원·부팅 중 `SetTopmost`는 사용자 조작이 아니라 팝업 없음(`_initialized` 가드).
 - ⚠️ bash heredoc 안 파이썬으로 C# 문자열에 줄바꿈 이스케이프를 넣었더니 실제 줄바꿈이 들어가 빌드 정의 컴파일에서만 깨졌다(에디터 컴파일은 `#if !UNITY_EDITOR`라 통과). 문자열 이스케이프는 Edit 도구로.
+
+## 업데이트 (2026-09-30) — 1x 미만 배율 제거 · T-099 보관
+- 사용자 결정: 0.5x·0.75x는 너무 작다 → 제거. enum 5·6은 **비워 둔다**(옛 저장값이 새 항목으로 읽히지 않게) — `Enum.IsDefined`가 공장값으로 떨어뜨린다.
+- 맞춤 배율이 대개 1 미만이라 `FitsInTaskbar`는 사실상 맞춤 항목만 해당한다(더 큰 작업표시줄·작은 위젯 칸이면 1x도 걸린다).
+- T-099 사용자 확인 → Closed · 보관. 폰트 교체는 [T-100](../../tasks/T-100-폰트교체.md)로 등록.
