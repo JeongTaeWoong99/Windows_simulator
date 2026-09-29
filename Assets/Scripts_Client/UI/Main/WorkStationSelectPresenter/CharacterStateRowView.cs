@@ -24,7 +24,7 @@ using UnityEngine.UI;
 public class CharacterStateRowView : MonoBehaviour
 {
     [CenterHeader("캐릭터")]
-    // 줄 바탕을 등급 색으로 칠한다('SetRarity'). 창고 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
+    // 줄 바탕을 등급 색으로 칠한다('SetRarity'). 인벤토리 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
     // 🎨 등급 테두리 스프라이트가 나오면 색 대신 여기에 스프라이트를 넣는다.
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;

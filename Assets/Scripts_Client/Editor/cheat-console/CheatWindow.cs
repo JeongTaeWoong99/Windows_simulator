@@ -452,7 +452,7 @@ namespace DesktopWindowControl.EditorTools
 			return characters[index].CharacterId;
 		}
 
-		// 장비는 개수 칸이 없다 — 서버 'CheatGiveEquip'이 한 번에 개체 1개만 만든다(창고 첫 빈 칸).
+		// 장비는 개수 칸이 없다 — 서버 'CheatGiveEquip'이 한 번에 개체 1개만 만든다(인벤토리 첫 빈 칸).
 		private void DrawEquip()
 		{
 			BeginSection("장비 지급", EquipAccent);

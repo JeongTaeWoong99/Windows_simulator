@@ -41,7 +41,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 아이템 하나의 보유 수량. 없으면 0이다.
     //
     // 서버가 0개가 된 아이템도 목록에 실어 보내므로(감소도 같은 경로로 온다) 캐시에 남아 있다.
-    // 판매 카트와 창고 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
+    // 판매 카트와 인벤토리 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
     // 한쪽만 고쳐졌을 때 화면과 요청이 다른 수량을 말한다.
     public int GetItemCount(int itemId)
     {
@@ -170,7 +170,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 이 캐릭터가 배치된 작업슬롯 번호. 배치돼 있지 않으면 -1.
     //
-    // 창고 캐릭터 탭과 작업슬롯 선택 화면이 **같은 판정을 봐야 한다** — 각자 'WorkStationSlots'를
+    // 인벤토리 캐릭터 탭과 작업슬롯 선택 화면이 **같은 판정을 봐야 한다** — 각자 'WorkStationSlots'를
     // 훑으면 한쪽만 고쳐졌을 때 두 화면이 다른 말을 한다. 그래서 여기 한 번 두고 양쪽이 부른다.
     // ⚠️ 리스트 순번이 아니라 'SlotIndex'를 돌려준다 — 열린 슬롯만 실려 오므로 둘이 어긋난다.
     public int FindSlotIndexOf(long characterId)
@@ -191,12 +191,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return -1;
     }
 
-    // 내가 가진 장비들. 창고에 있든 캐릭터가 끼고 있든 전부 여기 있다.
+    // 내가 가진 장비들. 인벤토리에 있든 캐릭터가 끼고 있든 전부 여기 있다.
     //
     // ⚠️ 캐릭터와 같은 모양이다 — 'EquipId'가 개체 번호이고 'EquipTid'가 종류다.
     //   이름·등급·효과는 TID로 'EquipTable'에서 읽는다.
-    // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(창고 칸)을 그대로 두므로
-    //   창고에 남아 있고, 'IsEquipped'로 구분한다.
+    // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(인벤토리 칸)을 그대로 두므로
+    //   인벤토리에 남아 있고, 'IsEquipped'로 구분한다.
     public IReadOnlyList<EquipInfo> Equips => _equips;
 
     // 장비 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
@@ -213,8 +213,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
-    // 이 장비를 캐릭터가 끼고 있는가. 창고에 있으면(또는 모르는 개체면) false.
-    // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 창고다.
+    // 이 장비를 캐릭터가 끼고 있는가. 인벤토리에 있으면(또는 모르는 개체면) false.
+    // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 인벤토리다.
     public bool IsEquipped(long equipId)
     {
         foreach (var equip in _equips)
@@ -299,7 +299,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
     public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
 
-    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 창고가 차서 보상 전체가 우편으로 갔는가)
+    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
 
@@ -510,7 +510,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         {
             // TODO: 레벨업 연출 — 연출 리소스가 오면 여기서 알린다 (T-052 🎨).
             //       이벤트(예: 'CharacterLeveledUp(long characterId, int level)')를 열고
-            //       창고 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
+            //       인벤토리 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
             ClientLogger.Info(ClientLogger.Recv,
                 $"캐릭터 레벨업 — 개체={synced.CharacterId} Lv.{previous.Level} → Lv.{synced.Level}");
         }
@@ -519,7 +519,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 보유 장비 스냅샷 — 캐시 교체 후 이벤트 발행
-    // ★ 로그인 시 자동으로 1회 수신(캐릭터 목록 뒤·작업슬롯 앞). 창고에 있든 끼고 있든 전부 실려 온다.
+    // ★ 로그인 시 자동으로 1회 수신(캐릭터 목록 뒤·작업슬롯 앞). 인벤토리에 있든 끼고 있든 전부 실려 온다.
     private void OnEquipListReceived(S_EquipListResponse res)
     {
         _equips.Clear();
@@ -675,7 +675,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //   Rewards         = 이번에 얻은 개별 항목(델타) → 연출 전용
     // ★ 골드와 장비는 여기서 건드리지 않는다 — 골드는 'S_CurrencyResponse',
     //   장비 개체는 'S_EquipSyncResponse'로 따로 온다. 보상 목록의 골드는 **보여 주기 위한 값**이다.
-    // ★ 'StoredInMail'이면 창고가 모자라 보상 전체가 우편 한 통으로 갔다 — 'Rewards'는 연출용으로 그대로 오고,
+    // ★ 'StoredInMail'이면 인벤토리가 모자라 보상 전체가 우편 한 통으로 갔다 — 'Rewards'는 연출용으로 그대로 오고,
     //   'ItemChangeInfos'에는 상자 차감만 있다. 그 우편은 'S_MailArrivedResponse'로 따로 온다.
     private void OnItemUsed(S_ItemUseResponse res)
     {

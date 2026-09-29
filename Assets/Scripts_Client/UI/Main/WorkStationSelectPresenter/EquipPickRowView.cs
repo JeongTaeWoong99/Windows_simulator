@@ -10,11 +10,11 @@ using UnityEngine.UI;
 // 무엇을 몇 줄 그릴지는 'WorkStationSelectPresenter'가 정한다.
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 //
-// ■ 읽기는 창고 장비 탭과 같다
-// 이름 · 효과 · 등급색을 창고 칸('SlotView')과 같은 출처에서 받는다('EquipLabel' · 'RarityPalette') —
+// ■ 읽기는 인벤토리 장비 탭과 같다
+// 이름 · 효과 · 등급색을 인벤토리 칸('SlotView')과 같은 출처에서 받는다('EquipLabel' · 'RarityPalette') —
 // 같은 장비가 두 화면에서 다르게 보이면 어느 쪽이 맞는지 알 수 없다.
 //
-// ■ 여기 오는 것은 **창고에 있는 장비뿐이다**
+// ■ 여기 오는 것은 **인벤토리에 있는 장비뿐이다**
 // 누가 끼고 있는지 알릴 일이 없어 착용자 칸을 두지 않는다 — 끼운 것은 목록에서 아예 빠진다
 // ('WorkStationSelectPresenter.RefreshEquipPicker').
 //
@@ -23,7 +23,7 @@ using UnityEngine.UI;
 public class EquipPickRowView : MonoBehaviour
 {
     [CenterHeader("참조")]
-    // 줄 바탕을 장비의 등급 색으로 칠한다('SetRarity'). 창고 칸과 같은 표('RarityPalette')를 쓴다.
+    // 줄 바탕을 장비의 등급 색으로 칠한다('SetRarity'). 인벤토리 칸과 같은 표('RarityPalette')를 쓴다.
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 

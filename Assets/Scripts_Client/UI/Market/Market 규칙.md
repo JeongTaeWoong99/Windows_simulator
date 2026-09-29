@@ -1,13 +1,33 @@
 # Market 폴더 규칙
 
-> 최종 업데이트: 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
+> 최종 업데이트: 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
 
-**`#Market Canvas` — 거래 열. 지금은 가챠 화면 하나뿐이다.**
+**`#Market Canvas` — 거래 열. 뽑기 · 경매장 · 창고 3탭이다(2026-09-30, T-101). 동작하는 것은 뽑기뿐이다.**
 
 | 폴더 | 무엇 |
 |------|------|
 | `MarketCanvasView.cs` | 캔버스 껍데기 |
-| `GachaPresenter/` | 뽑기 요청 버튼 **4개** — 풀 2종 x (1회 · 10연차) |
+| `MarketTabPresenter/` | 탭 줄 — `MarketTab`(뽑기·경매장·창고)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
+| `GachaPresenter/` | 뽑기 탭의 화면 — 뽑기 요청 버튼 |
+
+이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
+
+---
+
+## 탭마다 화면이 따로다 — 인벤토리 탭과 다르다
+
+인벤토리 열은 격자 하나가 탭 내용을 갈아 끼우지만, 거래 열의 세 탭은 **내용도 모양도 달라** 화면을 따로 둔다.
+
+| 탭 | 화면 | 지금 |
+|---|---|---|
+| 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
+| 경매장 | `Auction Page` | `(기능 없음)` — 클라 화면은 [T-096](../../../../tasks/T-096-클라경매장화면.md) |
+| 창고 | `Warehouse Page` | `(기능 없음)` — 기획 없음 |
+
+- 기능을 붙일 때는 **그 page 안에 Presenter를 넣고 `No Feature Text (TMP)`를 지운다.** `MarketTabPresenter`는 안 바뀐다.
+- 아직 기능이 없는 탭도 누를 수 있다 — 화면의 `(기능 없음)`이 고장과 구분해 준다(설정 화면의 표기와 같다).
+- ⚠️ page는 꺼졌다 켜진다. page 안의 Presenter는 `OnEnable`/`OnDisable`로 구독을 잇고 끊는다(`GachaPresenter`가 그렇다).
+- ⚠️ **여기 '창고'는 인벤토리가 아니다.** 인벤토리(옛 이름 창고/Storage)는 왼쪽 열이고, 코드에서 헷갈리지 않게 이 탭은 `Warehouse`라 부른다.
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
 
@@ -23,7 +43,7 @@
 | 2 | 캐릭터 소환 | 캐릭터 (`GachaCharacterTable`) |
 
 `GachaPresenter`의 `Draws` 배열에 `{ gachaId, drawCount, 버튼, 이름 텍스트, 비용 텍스트 }`를
-**화면과 같은 순서로** 넣는다(`StorageTabPresenter`의 `Tabs`와 같은 패턴).
+**화면과 같은 순서로** 넣는다(`InventoryTabPresenter`의 `Tabs`와 같은 패턴).
 배선이 비었거나 테이블에 없는 풀을 가리키면 `ValidateDraws`가 콘솔로 알린다 —
 안 그러면 버튼이 고장 난 것처럼 보인다.
 

@@ -3,9 +3,10 @@ using MikaNetwork;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 창고 오른쪽의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다.
+// 인벤토리 오른쪽의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다.
 //
 // ■ 무엇을 보여 주나
 // 자원 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
@@ -13,9 +14,9 @@ using UnityEngine.UI;
 // (화면 중앙 팝업을 최소화한다 — 기획 P1).
 //
 // ■ 담긴 내용을 여기서 들고 있지 않다
-// 격자('StorageGridPresenter')도 같은 목록을 봐야 담김 표시를 켤 수 있다. 둘 중 하나가
+// 격자('InventoryGridPresenter')도 같은 목록을 봐야 담김 표시를 켤 수 있다. 둘 중 하나가
 // 들고 있으면 패널끼리 서로를 참조하게 되므로, 상태는 'SellCartModel'에 두고 양쪽이 구독한다
-// ('Storage 규칙.md').
+// ('Inventory 규칙.md').
 //
 // ※ 이 자리는 원래 "고른 항목의 상세"였다. 2026-09-04에 판매 목록이 들어오면서 역할이 바뀌었고,
 //   이름도 2026-09-12에 'StorageInformationPresenter' → 'SellCartPresenter'로 맞췄다
@@ -42,8 +43,9 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
 
-    [SerializeField, Tooltip("창고 탭 줄. 자원 탭에서만 이 패널이 보인다")]
-    private StorageTabPresenter storageTabs = null!;
+    [SerializeField, Tooltip("인벤토리 탭 줄. 자원 탭에서만 이 패널이 보인다")]
+    [FormerlySerializedAs("storageTabs")]
+    private InventoryTabPresenter inventoryTabs = null!;
 
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<SellCartRowView> _rows = new List<SellCartRowView>();
@@ -72,7 +74,7 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(totalText,         nameof(totalText));
         this.RequireRef(highRarityWarning, nameof(highRarityWarning));
         this.RequireRef(sellButton,        nameof(sellButton));
-        this.RequireRef(storageTabs,       nameof(storageTabs));
+        this.RequireRef(inventoryTabs,       nameof(inventoryTabs));
 
         _data    = Services.Get<PlayerDataModel>();
         _cart    = Services.Get<SellCartModel>();
@@ -81,22 +83,22 @@ public class SellCartPresenter : MonoBehaviour
 
         // ⚠️ 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
         //    'OnDisable'에서 풀면 다시 켤 신호를 받을 길이 사라져 자원 탭에 영영 못 돌아온다
-        //    (도구 줄이 같은 이유로 그렇게 한다 → 'Storage 규칙.md').
-        storageTabs.TabChanged += ApplyTab;
+        //    (도구 줄이 같은 이유로 그렇게 한다 → 'Inventory 규칙.md').
+        inventoryTabs.TabChanged += ApplyTab;
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
-        Refresh(); // 창고를 닫아 둔 사이에 담긴 것이 있을 수 있다
+        Refresh(); // 인벤토리를 닫아 둔 사이에 담긴 것이 있을 수 있다
 
         _isReady = true;
 
-        ApplyTab(storageTabs.CurrentTab); // 탭 줄이 먼저 돌아 통지가 지나갔을 수 있다
+        ApplyTab(inventoryTabs.CurrentTab); // 탭 줄이 먼저 돌아 통지가 지나갔을 수 있다
     }
 
     // 탭 구독 해제 (Unity 메시지). 자기 오브젝트를 끄므로 여기서만 푼다.
     private void OnDestroy()
     {
-        storageTabs.TabChanged -= ApplyTab;
+        inventoryTabs.TabChanged -= ApplyTab;
     }
 
     // 이 탭에서 판매 목록을 보일지 정한다 (Start · TabChanged 구독).
@@ -104,11 +106,11 @@ public class SellCartPresenter : MonoBehaviour
     // **특성 탭에서만 사라진다** — 도구 줄과 같은 판단이다. 거기는 격자 자체가 물러나고
     // 트리가 그 자리를 쓰므로 팔 대상이 화면에 없다.
     // ⚠️ 캐릭터·장비 탭에서는 **그대로 보인다** — 아직 못 파는 이유를 알려 주는 자리가 필요해서다
-    //   (일괄 담기 버튼도 잠그지 않고 이유를 알린다 → 'Storage 규칙.md').
+    //   (일괄 담기 버튼도 잠그지 않고 이유를 알린다 → 'Inventory 규칙.md').
     // 담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
-    private void ApplyTab(StorageTab tab)
+    private void ApplyTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab != StorageTab.Trait);
+        gameObject.SetActive(tab != InventoryTab.Trait);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)

@@ -219,7 +219,7 @@ public class SettingPresenter : MonoBehaviour
     // 그 탭의 페이지만 켜고 버튼 선택 색을 맞춘다 (Start · 탭 버튼).
     //
     // ⚠️ 버튼 Image.color를 직접 건드리지 않는다 — Transition이 ColorTint라 다음 상태 변화에
-    //   덮어써진다. 색의 주인은 ColorBlock이다('StorageTabPresenter.RefreshSelection'과 같다).
+    //   덮어써진다. 색의 주인은 ColorBlock이다('InventoryTabPresenter.RefreshSelection'과 같다).
     private void ShowTab(SettingTab tab)
     {
         _currentTab = tab;

@@ -6,15 +6,16 @@ using MikaNetwork;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 특성 트리 화면 — 창고 열의 '특성' 탭에서만 켜진다.
+// 특성 트리 화면 — 인벤토리 열의 '특성' 탭에서만 켜진다.
 //
-// ■ 창고 안에 있지만 격자가 아니다
-// 자원·캐릭터·장비 셋은 'StorageGridPresenter' 하나가 공급자만 갈아 끼워 그리는데,
+// ■ 인벤토리 안에 있지만 격자가 아니다
+// 자원·캐릭터·장비 셋은 'InventoryGridPresenter' 하나가 공급자만 갈아 끼워 그리는데,
 // 특성은 칸 목록이 아니라 **선으로 이어진 트리**라 그 격자에 들어가지 않는다.
 // 그래서 이 탭에서는 격자·도구 줄·판매 목록이 꺼지고 이 패널이 대신 켜진다
-// (근거와 예외 규칙은 'Storage 규칙.md'의 "탭이 달라도 격자는 하나다").
+// (근거와 예외 규칙은 'Inventory 규칙.md'의 "탭이 달라도 격자는 하나다").
 //
 // ■ 노드 45개를 씬에 깔지 않는다
 // 프리팹 하나를 찍어 풀로 쓴다 — 탭마다 줄 수가 다르고(속도 5줄 · 레벨 4줄),
@@ -70,8 +71,9 @@ public class TraitPresenter : MonoBehaviour
     [SerializeField, Tooltip("남은 특성 포인트 문구")]
     private TMP_Text pointText = null!;
 
-    [SerializeField, Tooltip("창고 탭 줄. 특성 탭일 때만 이 패널이 켜진다")]
-    private StorageTabPresenter storageTabs = null!;
+    [SerializeField, Tooltip("인벤토리 탭 줄. 특성 탭일 때만 이 패널이 켜진다")]
+    [FormerlySerializedAs("storageTabs")]
+    private InventoryTabPresenter inventoryTabs = null!;
 
     [CenterHeader("정보 영역")]
     [SerializeField, Tooltip("고른 특성의 이름")]
@@ -93,7 +95,7 @@ public class TraitPresenter : MonoBehaviour
     private TabEntry[] tabs = new TabEntry[0];
 
     [CenterHeader("색")]
-    [SerializeField, Tooltip("지금 열린 구역의 탭 색 — 창고 탭 줄과 같은 역할")]
+    [SerializeField, Tooltip("지금 열린 구역의 탭 색 — 인벤토리 탭 줄과 같은 역할")]
     private UIThemeRole selectedTabRole = UIThemeRole.ButtonSelected;
 
     [SerializeField, Tooltip("열리지 않은 구역의 탭 색")]
@@ -121,7 +123,7 @@ public class TraitPresenter : MonoBehaviour
         this.RequireRef(nodePrefab,  nameof(nodePrefab));
         this.RequireRef(nodeParent,  nameof(nodeParent));
         this.RequireRef(pointText,   nameof(pointText));
-        this.RequireRef(storageTabs, nameof(storageTabs));
+        this.RequireRef(inventoryTabs, nameof(inventoryTabs));
 
         this.RequireRef(detailNameText,  nameof(detailNameText));
         this.RequireRef(detailBodyText,  nameof(detailBodyText));
@@ -136,10 +138,10 @@ public class TraitPresenter : MonoBehaviour
         BindTabButtons();
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
-        // ⚠️ 창고 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
+        // ⚠️ 인벤토리 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
         //    OnDisable에서 풀면 다시 켤 신호를 받을 길이 사라져 특성 탭에 영영 못 돌아온다
-        //    (도구 줄이 같은 이유로 그렇게 한다 → 'Storage 규칙.md').
-        storageTabs.TabChanged += ApplyStorageTab;
+        //    (도구 줄이 같은 이유로 그렇게 한다 → 'Inventory 규칙.md').
+        inventoryTabs.TabChanged += ApplyInventoryTab;
 
         Subscribe();
         ShowTab(_currentTab);
@@ -148,8 +150,8 @@ public class TraitPresenter : MonoBehaviour
 
         // 배선이 끝난 지금 현재 탭을 보고 스스로 물러난다.
         // ※ 꺼진 채로 저장돼도 된다 — 탭 줄이 'ShowTab' 전에 한 번 켜 주므로 이 Start는 반드시 돈다
-        //   ('StorageTabPresenter.WakeTabScreens').
-        ApplyStorageTab(storageTabs.CurrentTab);
+        //   ('InventoryTabPresenter.WakeTabScreens').
+        ApplyInventoryTab(inventoryTabs.CurrentTab);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
@@ -173,10 +175,10 @@ public class TraitPresenter : MonoBehaviour
         Unsubscribe();
     }
 
-    // 창고 탭 구독 해제 (Unity 메시지). 자기 오브젝트를 끄므로 여기서만 푼다.
+    // 인벤토리 탭 구독 해제 (Unity 메시지). 자기 오브젝트를 끄므로 여기서만 푼다.
     private void OnDestroy()
     {
-        storageTabs.TabChanged -= ApplyStorageTab;
+        inventoryTabs.TabChanged -= ApplyInventoryTab;
     }
 
     #region 구독
@@ -266,7 +268,7 @@ public class TraitPresenter : MonoBehaviour
 
     // 지금 열린 구역의 탭만 선택 색으로 칠한다 (ShowTab에서 호출).
     //
-    // ⚠️ 'Image.color'가 아니라 'ColorBlock'이다 — 창고 탭 줄과 같은 이유.
+    // ⚠️ 'Image.color'가 아니라 'ColorBlock'이다 — 인벤토리 탭 줄과 같은 이유.
     private void RefreshTabSelection()
     {
         foreach (TabEntry entry in tabs)
@@ -286,11 +288,11 @@ public class TraitPresenter : MonoBehaviour
         }
     }
 
-    // 창고 탭이 바뀌었다 ('StorageTabPresenter.TabChanged' 구독).
+    // 인벤토리 탭이 바뀌었다 ('InventoryTabPresenter.TabChanged' 구독).
     // 특성 탭일 때만 이 패널이 보인다 — 도구 줄·격자·판매 목록이 같은 방식으로 자기를 끈다.
-    private void ApplyStorageTab(StorageTab tab)
+    private void ApplyInventoryTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab == StorageTab.Trait);
+        gameObject.SetActive(tab == InventoryTab.Trait);
     }
 
     #endregion

@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (창고 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (창고 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -32,11 +32,11 @@ Root Canvas
 ├─ !Login Canvas (MAIN VIEW)                      LoginCanvasView      ← 게임의 시작점
 │  └─ Login Presenter (↓ SUB VIEW)                LoginPresenter
 ├─ !Horizental Columns                            WidgetPositionLayout ← 항상 켜져 있어야 한다
-│  ├─ @Storage Column                              -(Layout) · 캔버스 · -(Layout) 세 칸
+│  ├─ @Inventory Column                              -(Layout) · 캔버스 · -(Layout) 세 칸
 │  │  ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
-│  │  ├─ #Storage Canvas (MAIN VIEW)              StorageCanvasView   pref 950 · flexH 0
+│  │  ├─ #Inventory Canvas (MAIN VIEW)              InventoryCanvasView   pref 950 · flexH 0
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
-│  │  │  ├─ Tab Presenter (↓ SUB VIEW)            StorageTabPresenter   자원·캐릭터·장비·특성 순
+│  │  │  ├─ Tab Presenter (↓ SUB VIEW)            InventoryTabPresenter   자원·캐릭터·장비·특성 순
 │  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
 │  │  │  │  ├─ Trait Tab Panel                    [산업 속도] [산업 레벨]        pref 34
 │  │  │  │  ├─ Point Text (TMP)                   "특성 포인트 n"                pref 22
@@ -48,11 +48,11 @@ Root Canvas
 │  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
 │  │  │  │     ├─ Detail Info Panel               이름 · 효과/필요 포인트/조건/상태 · 빈 안내(고른 것이 없을 때만)
 │  │  │  │     └─ Confirm Button                  [배우기] 50 (= [판매]) — 배운 특성에서는 숨는다
-│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           StorageToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
+│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           InventoryToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
 │  │  │  │  ├─ Tool Row 1                         30 — 정렬 화살표 · 정렬 기준 · -(Layout) · 일괄 범위 드롭다운 · [판매 등록]
 │  │  │  │  └─ Tool Row 2                         30 — 이름 검색(flex) · 산업 · 등급 · [초기화]
 │  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
-│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           StorageGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
+│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           InventoryGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
 │  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
 │  │  │  │  ├─ Empty Notice > Empty Text (TMP)   찾기 결과 0건일 때만 · 격자 가운데 440x70 · Overlay 바탕
 │  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
@@ -126,7 +126,7 @@ Root Canvas
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (우편이 없을 때만)
 │  │  │  │  ├─ Guide Text (TMP)                   안내 두 줄                    pref 48
 │  │  │  │  └─ Footer Panel > Claim All Button    [모두 받기] pref W 240          pref 60
-│  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    창고·거래 버튼  pref 100
+│  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    인벤토리·거래 버튼  pref 100
 │  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
 │  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
 │  │        ├─ Top Panel                          (정렬용 — 스크립트 없음)       pref  26
@@ -134,14 +134,17 @@ Root Canvas
 │  │        ├─ Strip Panel                        (정렬용) 왼쪽 정렬 · flexH 1
 │  │        │  └─ WidgetMiniSlotView 프리팹 (배치된 칸만 런타임 생성)
 │  │        └─ Open/Close Button                  ignoreLayout · 우하단 40×40
-│  └─ @Market Column                               창고 열과 같은 세 칸 구성
+│  └─ @Market Column                               인벤토리 열과 같은 세 칸 구성
 │     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 950 · flexH 0
 │     │  ├─ Title                                 (정적 요소 — 표기 없음)
-│     │  └─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   Draws 8줄 (풀 4종 x 1회·10회)
-│     │     └─ Gacha Send Button (0..7)           캐릭터 · 무기 · 장신구 · 보석 순, 각 1·10회.
-│     │                                           이름·비용 문구는 Start 가 테이블에서 채운다
-│     │                                           ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
+│     │  ├─ Tab Presenter (↓ SUB VIEW)            MarketTabPresenter   pref 50 · 뽑기 · 경매장 · 창고 (T-101)
+│     │  ├─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   뽑기 탭 화면 · Draws 8줄 (풀 4종 x 1회·10회)
+│     │  │  └─ Gacha Send Button (0..7)           캐릭터 · 무기 · 장신구 · 보석 순, 각 1·10회.
+│     │  │                                        이름·비용 문구는 Start 가 테이블에서 채운다
+│     │  │                                        ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
+│     │  ├─ Auction Page                          경매장 탭 화면 — (기능 없음) · flexH 1
+│     │  └─ Warehouse Page                        창고 탭 화면 — (기능 없음) · flexH 1 (인벤토리와 별개)
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
@@ -316,7 +319,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **레벨은 슬롯마다 따로다.** 전역이 아니라 `t_user_workstation_slot.industry_level`에 저장된다 —
   특성으로 Lv3을 열어도 **이미 배치된 칸은 그대로다.** 올리려면 그 칸에서 다시 고른다.
 - 잠금은 `IsUnlocked(GetIndustryLevelUnlockTid(산업, 레벨))`에서 파생된다.
-  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 창고 **특성 탭 → 산업 레벨**에서 한다.
+  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 인벤토리 **특성 탭 → 산업 레벨**에서 한다.
 - **산업이 바뀌면 레벨 줄을 다시 그리고, 잠긴 레벨이 골라져 있으면 Lv1로 되돌린다.**
   산업마다 열어 둔 레벨이 다르기 때문이다.
 - 3에서 레벨 버튼을 누르면 **산업 교체와 똑같이 재배치 요청 1회**다(같은 레벨이면 보내지 않는다).
@@ -337,7 +340,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   고르는 중인 칸은 **버튼 색 전이로 어두워진다** — 표시용 위젯을 따로 두지 않는다
   (`▼` → 노란 띠 → 버튼 색 순으로 두 번 되돌아왔다 · 🎨 ON/OFF 스프라이트가 올 자리다).
   목록에는 **산업 필터 5개**가 붙고(열면 **그 슬롯의 산업**이 골라져 있다), **전산업 장비는 어느 필터에서도 보인다.**
-  **목록에 나오는 것은 창고에 있는 장비뿐이다** — 끼워져 있으면 빠지므로, 남의 것을 가져오려면 그쪽에서 먼저 해제한다.
+  **목록에 나오는 것은 인벤토리에 있는 장비뿐이다** — 끼워져 있으면 빠지므로, 남의 것을 가져오려면 그쪽에서 먼저 해제한다.
   줄 순서는 **효과 수치 높은 순 → 전 산업 먼저** — 등급으로 세우면 더 느린 것이 위로 올라온다.
   칸 이미지의 `Raycast Target`은 이때 **꺼짐 → 켜짐**으로 바뀌었다(안 켜면 버튼이 눌리지 않는다).
 - ⚠️ **`Equipment Panel`의 칸 넷에는 `LayoutElement`가 반드시 있어야 한다**(`pref W 0 · flexW 1`).
@@ -361,24 +364,24 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - ✅ **줄은 씬에 깔지 않는다 — 코드가 프리팹을 찍어 풀로 쓴다**(2026-09-11 · T-046).
   예전에는 "21줄 깔아 뒀다"고 적혀 있었는데 **씬에는 1줄뿐이라 16마리가 안 보였다.**
   프레임을 깔지 않는 이유는 **보유 수가 곧 줄 수**라 프레임 개수가 그대로 상한이 되기 때문이다
-  (창고 격자와 다른 점 — 거기는 칸 200개가 고정이다).
+  (인벤토리 격자와 다른 점 — 거기는 칸 200개가 고정이다).
 - ✅ **산업 버튼을 누르면 목록이 걸러진다**(2026-09-11 · T-046). 그 산업의 적성이 0이거나
   **다른 슬롯에서 일하는 중**인 캐릭터는 빠진다. 고를 것이 하나도 없으면 `Empty Text (TMP)`가
   *"해당 적성을 가진 캐릭터가 없습니다."* 로 뜬다 — **판매 목록의 빈 안내와 같은 자리·같은 방식**이다.
-  숨긴 캐릭터의 적성은 **창고 캐릭터 탭**이 보여 준다 — 칸 아래 **적성 스트립 5칸**이고
+  숨긴 캐릭터의 적성은 **인벤토리 캐릭터 탭**이 보여 준다 — 칸 아래 **적성 스트립 5칸**이고
   **위치가 곧 산업**(농사·낚시·채굴·벌목·사냥)이며 적성 0은 `X`다(2026-09-12 · T-048).
-- **창고 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
-  `StorageTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
+- **인벤토리 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
+  `InventoryTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).
 - ✅ **네 탭이 모두 실재한다** (기본 탭은 자원 · 장비는 2026-09-19 · 특성은 2026-09-20 · T-043).
-  잠금 판정은 `StorageTabPresenter.HasScreen` **한 곳**에서 갈린다 —
+  잠금 판정은 `InventoryTabPresenter.HasScreen` **한 곳**에서 갈린다 —
   셋은 격자가 공급자를 갖고 있는지로, **특성 하나는 전용 화면(`TraitPresenter`)이 배선돼 있는지로** 본다.
   - 장비 칸은 **이름 + 효과 한 줄**(`낚시 +30%`)이고, 캐릭터가 끼고 있으면 **'배' 마크**가 켜진다
     (캐릭터 탭의 배치 마크와 같은 표시다). 지금 장비를 넣는 경로는 **치트 창의 `장비 지급`뿐**이다 —
     뽑기는 서버·엑셀 선행(`tasks/archive/T-067-장비뽑기.md`).
 - **탭이 달라도 격자는 하나다 — 단 특성 탭은 예외다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만
   갈아 끼우지만, 특성은 칸 목록이 아니라 선으로 이어진 트리라 `Trait Presenter`가 따로 그린다.
-  구조와 "탭 하나를 채우는 절차"는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
+  구조와 "탭 하나를 채우는 절차"는 [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>).
 - **특성 탭에서 꺼지는 것은 셋이다** — 도구 줄 · 격자 · 판매 목록. **각자 스스로 끈다**
   (탭 줄이 목록을 들고 있지 않다). 셋 다 `TabChanged` 구독을 **`Start`/`OnDestroy`** 에 건다 —
   `OnDisable`에서 풀면 자기를 끈 순간 **다시 켤 신호를 받을 길이 사라진다.**
@@ -392,18 +395,18 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **`xxx Button (1)`~`(3)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았고
   **씬에서도 꺼 두었다**(2026-09-21) — 빈 버튼이 줄의 가로 몫을 먹고 있었다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
-  (`MainCanvasView.SetTitle`), 창고·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
+  (`MainCanvasView.SetTitle`), 인벤토리·거래의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
 - ✅ **`Sell Cart Presenter`로 개명했다 (2026-09-12 · T-049).** 예전 `Information Presenter`는
   아이템 상세를 띄우는 자리였는데 2026-09-04에 판매 목록이 들어와 **이름이 거짓이 된 상태**였다.
   **좌클릭 상세 표시는 이 패널로 돌아오지 않는다** — 칸 정보는 칸에 올리면 뜨는 툴팁으로 갔다
   ([`T-050`](../../../tasks/archive/T-050-칸정보호버.md) · 패널 자리를 다투지 않는 쪽을 골랐다. 씬 변경 없음 — 트리거는 격자가 코드로 붙인다).
 - **판매는 자원 탭에서만 된다.** 서버 판매 패킷이 아이템 TID 축이라 캐릭터를 담을 수 없어서,
-  격자가 다른 탭의 우클릭을 무시한다 — 근거는 [`Storage 규칙.md`](<Storage/Storage 규칙.md>).
-- 🔴 **수량 팝업은 `#Storage Canvas`에 있다가 `!System Canvas`로 옮겼다 (2026-09-05).**
-  열 캔버스는 넷 다 Sorting Order가 **0인 형제**라, 창고 안에 깐 차단막이 다른 열에 닿지 않아
+  격자가 다른 탭의 우클릭을 무시한다 — 근거는 [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>).
+- 🔴 **수량 팝업은 `#Inventory Canvas`에 있다가 `!System Canvas`로 옮겼다 (2026-09-05).**
+  열 캔버스는 넷 다 Sorting Order가 **0인 형제**라, 인벤토리 안에 깐 차단막이 다른 열에 닿지 않아
   **확인을 누르기 전인데 상태바·메인·거래 버튼이 눌렸다.** 옮기면서 이름도
   `Amount Input Presenter`로 바꾸고(판매 전용이 아니다) 차단막 겹 하나를 걷어냈다.
-  창고는 `UIManager.AskAmount(...)` 한 줄로 부르므로 팝업 참조를 들지 않는다.
+  인벤토리는 `UIManager.AskAmount(...)` 한 줄로 부르므로 팝업 참조를 들지 않는다.
 - ✅ **Presenter 오브젝트 이름의 낱말을 띄우는 것으로 통일했다 (2026-09-12 · T-049).**
   `AmountInput Presenter`·`GachaResult Presenter` 둘만 붙여 써서 나머지 13개와 어긋나 있었다
   → `Amount Input Presenter`·`Gacha Result Presenter`. **`WorkStation`은 한 낱말인 도메인 용어라**

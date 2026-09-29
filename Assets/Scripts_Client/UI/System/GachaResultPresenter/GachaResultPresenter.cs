@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 보상 결과 팝업 — 이번에 얻은 것을 5열로 늘어놓고, 닫기를 누르면 사라진다.
-// 칸은 창고와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
-// ⚠️ 그래서 창고 쪽을 고치면 이 팝업도 함께 바뀐다.
+// 칸은 인벤토리와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
+// ⚠️ 그래서 인벤토리 쪽을 고치면 이 팝업도 함께 바뀐다.
 //
 // ■ 가챠와 상자 개봉이 같은 팝업을 쓴다
 // 서버가 상자 개봉 결과를 가챠와 **같은 모양**('GachaRewardInfo')으로 내려주기 때문이다.
@@ -38,7 +38,7 @@ public class GachaResultPresenter : MonoBehaviour
     [SerializeField, Tooltip("보상 칸이 들어갈 부모 — GridLayoutGroup(5열)이 붙어 있다")]
     private Transform slotParent = null!;
 
-    [SerializeField, Tooltip("보상 한 칸 프리팹 (SlotView 포함). 창고 격자와 공유하는 칸이다")]
+    [SerializeField, Tooltip("보상 한 칸 프리팹 (SlotView 포함). 인벤토리 격자와 공유하는 칸이다")]
     private SlotView slotPrefab = null!;
 
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -285,7 +285,7 @@ public class GachaResultPresenter : MonoBehaviour
                 }
             }
 
-            // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 창고에서 본다.
+            // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 인벤토리에서 본다.
             if (mail.Equips != null)
             {
                 foreach (EquipInfo equip in mail.Equips)

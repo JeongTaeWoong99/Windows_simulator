@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 우편함 — 서버가 맡겨 둔 보상(운영 지급 · 창고 넘침 보관)을 보고 받고 지운다.
+// 우편함 — 서버가 맡겨 둔 보상(운영 지급 · 인벤토리 넘침 보관)을 보고 받고 지운다.
 //
 // ■ 목록 순서
 // 안 받은 우편이 위, 그 안에서는 새로 온 것이 위다. 받은 우편은 아래로 내려가 흐려진다.
@@ -389,8 +389,8 @@ public class MailPresenter : MonoBehaviour
         if (code == EResultCode.StorageFull)
         {
             string message = isClaimAll && claimedCount > 0
-                ? $"인벤토리가 부족해 우편 {claimedCount}통만 받았습니다.\n남은 {remainingCount}통은 창고를 정리한 뒤 받아 주세요."
-                : "인벤토리가 부족합니다.\n창고를 정리한 뒤 다시 받아 주세요.";
+                ? $"인벤토리가 부족해 우편 {claimedCount}통만 받았습니다.\n남은 {remainingCount}통은 인벤토리를 정리한 뒤 받아 주세요."
+                : "인벤토리가 부족합니다.\n인벤토리를 정리한 뒤 다시 받아 주세요.";
 
             _waitHandle.Fail(message);
 

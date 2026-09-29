@@ -13,29 +13,29 @@ using MikaProtocol;
 //   칸의 'Key'는 개체 번호('EquipId')이고, 이름·등급·효과는 TID로 테이블에서 읽는다.
 //
 // ■ 'SlotPosition'은 **칸 번호가 아니라 도착 순서**로 쓴다 (2026-09-25 · T-044)
-//   'EquipInfo.SlotPosition'은 서버가 빈 자리를 찾아 넣는 창고 칸 번호다
+//   'EquipInfo.SlotPosition'은 서버가 빈 자리를 찾아 넣는 인벤토리 칸 번호다
 //   (서버 'User.NextFreeEquipPosition'). 자원·캐릭터에는 그런 필드가 아예 없어
 //   **세 탭의 자리 규칙이 갈라진다** — 장비만 서버 번호를 쓰면 "빈 칸이 왜 여기 있나"의 답이
 //   탭마다 달라진다. 그래서 여기서는 **줄 세우는 데만 쓰고**, 실제 칸 번호는 기반 클래스가 준다
-//   (처음 보는 것은 앞에서부터 첫 빈 칸 — 'StorageSlotSource.Arrange').
+//   (처음 보는 것은 앞에서부터 첫 빈 칸 — 'InventorySlotSource.Arrange').
 //   ⚠️ 그래서 지금은 **자리가 세션 한정**이다. 재접속하면 위 순서로 처음부터 다시 앉는다 —
 //   칸 번호를 서버가 갖는 것은 T-058 → T-044의 몫이다.
 //
 // ■ 장착 중인 장비도 **제자리에 남는다** (2026-09-25 결정)
-//   캐릭터가 끼고 있어도 창고에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고,
+//   캐릭터가 끼고 있어도 인벤토리에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고,
 //   [정렬]에서만 맨 뒤로 민다('IsAway').
 //   서버도 장착 시 'SlotPosition'을 그대로 두므로(`Equip.Wear`) **클라·서버의 견해가 일치한다** —
 //   한때 목록에서 빼는 안을 넣었을 때 생겼던 "빈 칸이 보이는데 뽑기가 거절되는" 어긋남이 사라졌다.
 //
 // ※ 기본 능력치 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
 //   작업슬롯 세팅의 장비 칸이 같은 문구를 쓰기 때문이다(T-074).
-//   창고 칸에서는 툴팁에만 나온다 — 칸 아래 밴드는 능력치 칸 줄이 쓴다(T-095).
+//   인벤토리 칸에서는 툴팁에만 나온다 — 칸 아래 밴드는 능력치 칸 줄이 쓴다(T-095).
 //
 // ■ 능력치 칸 (T-095)
 //   칸 수는 장비 등급('EquipLabel.GetStatSlotCount'), 칸 하나의 색은 거기 박힌 옵션의 등급이다.
 //   ⏸ **옵션을 지금은 옛 인챈트 필드('EquipInfo.EnchantOptions')에서 읽는다.** 새 능력치 기획
 //      (칸마다 등급·종류·수치)의 패킷이 오면 'ReadStatOptions' 한 곳만 갈아 끼운다.
-public class EquipSlotSource : StorageSlotSource
+public class EquipSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
 
@@ -43,7 +43,7 @@ public class EquipSlotSource : StorageSlotSource
     private readonly List<EquipInfo> _ordered = new List<EquipInfo>();
 
     // 능력치 칸 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
-    // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('StorageGridPresenter.ReadAptitudes'와 같은 규약).
+    // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
     private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
 
@@ -184,7 +184,7 @@ public class EquipSlotSource : StorageSlotSource
         }
 
         string state = equip.EquippedCharacterId == 0L
-            ? "창고"
+            ? "인벤토리"
             : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
 
         var content = new TooltipContent(GameDataLoader.GetEquipName(equip.EquipTid));
@@ -265,7 +265,7 @@ public class EquipSlotSource : StorageSlotSource
         _data.EquipsChanged -= Rebuild;
     }
 
-    // 서버가 정한 창고 칸 번호 순서 (Fill의 정렬 비교자).
+    // 서버가 정한 인벤토리 칸 번호 순서 (Fill의 정렬 비교자).
     // ⚠️ 끝까지 가서 0이 나오지 않게 개체 번호까지 본다 — 'List.Sort'는 안정 정렬이 아니다.
     private static int CompareBySlotPosition(EquipInfo a, EquipInfo b)
     {

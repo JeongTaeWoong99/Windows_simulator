@@ -98,13 +98,13 @@
 |---|---|
 | `!System Canvas` | **2** |
 | `!Login Canvas` | 1 |
-| `#Widget` · `#Storage` · `#Market` · `#Main` · `#State` | **0 — 전부 형제** |
+| `#Widget` · `#Inventory` · `#Market` · `#Main` · `#State` | **0 — 전부 형제** |
 
 열 캔버스는 전부 order 0인 **형제**다. 그 안에 전체화면 차단막을 깔아도 **자기 열만 막고**
 상태바·메인·다른 열은 그대로 눌린다. 화면 전체를 막을 수 있는 것은 order 2인 이 캔버스뿐이다.
 
 > 🔴 **여기서 한 번 틀렸다.** 수량 입력 팝업(당시 `SellAmountPresenter`)을 ②만 보고
-> "격자가 켜 주니 `SetActive`" → `#Storage Canvas` 자식으로 뒀다. ②의 판단 자체는 맞았지만
+> "격자가 켜 주니 `SetActive`" → `#Inventory Canvas` 자식으로 뒀다. ②의 판단 자체는 맞았지만
 > ①을 묻지 않았다. **증상은 "확인을 누르기 전인데 다른 열 버튼이 눌린다"로만 보여**
 > 알파·`raycastTarget`·`blocksRaycasts`를 먼저 의심하게 되는데, 원인은 전부 그쪽이 아니라
 > **캔버스 order**였다. 2026-09-05에 `!System Canvas`로 옮겼다.
@@ -214,7 +214,7 @@
 최상단 상주 오버레이로 두면 어느 열이 열려 있든, 심지어 다 닫혀 있어도 결과가 뜬다.
 
 > 칸은 인벤토리와 같은 `SlotView` 프리팹을 쓴다 — 같아야 할 생김새를 두 벌로 두면
-> 한쪽만 고쳐진다. 자세한 건 [`Storage 규칙.md`](<../Storage/Storage 규칙.md>).
+> 한쪽만 고쳐진다. 자세한 건 [`Inventory 규칙.md`](<../Inventory/Inventory 규칙.md>).
 
 ### 가챠와 상자 개봉이 같은 팝업을 쓴다 (2026-09-20 · T-033)
 
@@ -248,7 +248,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 **수량 팝업만 답을 돌려줘야 한다** — `Open(itemId, max, onConfirm)`의 `onConfirm`이 그것이라
 이벤트만으로는 성립하지 않는다.
 
-그렇다고 부르는 쪽(창고 격자)이 직접 들면 **캔버스를 넘어 남의 패널을 붙드는** 모양이 되고,
+그렇다고 부르는 쪽(인벤토리 격자)이 직접 들면 **캔버스를 넘어 남의 패널을 붙드는** 모양이 되고,
 같은 팝업을 쓰는 화면이 늘 때마다 그 화면 수만큼 배선이 늘어난다.
 → 참조를 `UIManager` 한 곳에 모으고 **`AskAmount(itemId, max, question, onConfirm)`** 로 중개한다.
   묻는 말(`question`)은 부르는 쪽이 넘긴다 — 판매 담기는 "몇 개를 팔까?", 상자 개봉은 "몇 개를 열까?"다.

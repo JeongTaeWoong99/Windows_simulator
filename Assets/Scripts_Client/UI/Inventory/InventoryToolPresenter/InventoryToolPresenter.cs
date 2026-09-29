@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 창고 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
+// 인벤토리 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
 //   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기(범위 + 버튼)
 //   2줄: 찾기 — 이름 검색 · 산업 · 등급 · [초기화]
 //
@@ -23,12 +23,12 @@ using UnityEngine.UI;
 // ■ 일괄 담기는 '더하기'가 아니라 '다시 잡기'다
 //   누를 때마다 목록을 **비우고** 고른 범위만 담는다. 그래야 화면의 `○○ 이하`와 팔릴 것이 늘 같다.
 //
-// ■ 찾기는 탭을 바꾸거나 창고를 닫으면 비운다
-//   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 창고를 닫을 때도
+// ■ 찾기는 탭을 바꾸거나 인벤토리를 닫으면 비운다
+//   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 인벤토리를 닫을 때도
 //   꺼지므로 'OnDisable' 한 곳에서 비운다.
-public class StorageToolPresenter : MonoBehaviour
+public class InventoryToolPresenter : MonoBehaviour
 {
-    // 정렬 기준 드롭다운의 문구. 'StorageSortKey' 순서와 같다.
+    // 정렬 기준 드롭다운의 문구. 'InventorySortKey' 순서와 같다.
     private static readonly string[] SortKeyLabels = { "등급순", "이름순", "수량순" };
 
     // 드롭다운에 세울 등급. 'None'과 'Max'를 뺀 실제 등급만, 낮은 것부터.
@@ -56,10 +56,10 @@ public class StorageToolPresenter : MonoBehaviour
     private Button bulkSellButton = null!;
 
     [SerializeField, Tooltip("탭 줄 — 지금 어느 탭인지 여기서 듣는다")]
-    private StorageTabPresenter tabs = null!;
+    private InventoryTabPresenter tabs = null!;
 
     [SerializeField, Tooltip("칸 격자 — 정렬을 지시할 상대")]
-    private StorageGridPresenter grid = null!;
+    private InventoryGridPresenter grid = null!;
 
     [CenterHeader("정렬 기준")]
     [SerializeField, Tooltip("정렬 기준 — 등급순 · 이름순 · 수량순(자원 탭만). 목록은 코드가 채운다")]
@@ -79,13 +79,13 @@ public class StorageToolPresenter : MonoBehaviour
     private Button resetButton = null!;
 
     // 등급 높은 순으로 시작한다 — 값나가는 것이 위에 오는 쪽이 기본이다.
-    private StorageSortOrder _order = StorageSortOrder.Descending;
+    private InventorySortOrder _order = InventorySortOrder.Descending;
 
     // 지금 고른 정렬 기준. 탭이 그 기준을 못 쓰면 등급으로 돌아간다.
-    private StorageSortKey _sortKey = StorageSortKey.Rarity;
+    private InventorySortKey _sortKey = InventorySortKey.Rarity;
 
     // 기준 드롭다운의 항목 순서 — 탭마다 다르다(수량은 자원만). 드롭다운 값 → 기준.
-    private readonly List<StorageSortKey> _sortKeyOptions = new List<StorageSortKey>();
+    private readonly List<InventorySortKey> _sortKeyOptions = new List<InventorySortKey>();
 
     private PlayerDataModel   _data = null!;
     private SellCartModel     _cart = null!;
@@ -136,7 +136,7 @@ public class StorageToolPresenter : MonoBehaviour
         ApplyTab(tabs.CurrentTab);
     }
 
-    // 찾기 조건을 비운다 (Unity 메시지) — 특성 탭으로 가거나 창고를 닫으면 이 줄이 꺼진다.
+    // 찾기 조건을 비운다 (Unity 메시지) — 특성 탭으로 가거나 인벤토리를 닫으면 이 줄이 꺼진다.
     private void OnDisable()
     {
         if (!_isReady)
@@ -159,7 +159,7 @@ public class StorageToolPresenter : MonoBehaviour
     //
     // ⚠️ 'OnEnable/OnDisable'이 아니라 'Start/OnDestroy'다 — 이 줄은 **특성 탭에서 스스로 꺼진다.**
     //   꺼질 때 구독을 놓으면 다시 켤 신호('TabChanged')를 받을 길이 사라져 영영 안 돌아온다
-    //   ('StorageGridPresenter'가 로그인 구독을 'OnDestroy'에서 푸는 것과 같은 이유다).
+    //   ('InventoryGridPresenter'가 로그인 구독을 'OnDestroy'에서 푸는 것과 같은 이유다).
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -209,12 +209,12 @@ public class StorageToolPresenter : MonoBehaviour
 
     // 찾기 드롭다운 둘의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
     //
-    // ※ 산업 순서는 격자의 적성 스트립('StorageGridPresenter.StripIndustries')과 같다 — 화면마다 순서가 다르면 헷갈린다.
+    // ※ 산업 순서는 격자의 적성 스트립('InventoryGridPresenter.StripIndustries')과 같다 — 화면마다 순서가 다르면 헷갈린다.
     private void BuildFilterOptions()
     {
         var industries = new List<string> { "산업 전체" };
 
-        foreach (EIndustryType industry in StorageGridPresenter.StripIndustries)
+        foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
             industries.Add(IndustryLabel.Get(industry));
         }
@@ -244,9 +244,9 @@ public class StorageToolPresenter : MonoBehaviour
     // 정렬 방향을 뒤집고 지금 탭을 다시 줄 세운다 (Sort Button OnClick에 코드로 연결)
     private void OnSortClicked()
     {
-        _order = _order == StorageSortOrder.Descending
-            ? StorageSortOrder.Ascending
-            : StorageSortOrder.Descending;
+        _order = _order == InventorySortOrder.Descending
+            ? InventorySortOrder.Ascending
+            : InventorySortOrder.Descending;
 
         RefreshArrow();
         grid.SortCurrent(_sortKey, _order);
@@ -274,11 +274,11 @@ public class StorageToolPresenter : MonoBehaviour
 
         var labels = new List<string>();
 
-        foreach (StorageSortKey key in (StorageSortKey[])System.Enum.GetValues(typeof(StorageSortKey)))
+        foreach (InventorySortKey key in (InventorySortKey[])System.Enum.GetValues(typeof(InventorySortKey)))
         {
             // 등급·이름은 어느 탭이나 된다. 격자에 물어보는 것은 탭마다 다른 것뿐이다 —
             // 격자가 아직 탭을 받기 전이어도(Start 순서) 두 기준은 늘 세워 둔다.
-            if (key == StorageSortKey.Count && !grid.CurrentSupportsSortKey(key))
+            if (key == InventorySortKey.Count && !grid.CurrentSupportsSortKey(key))
             {
                 continue;
             }
@@ -289,7 +289,7 @@ public class StorageToolPresenter : MonoBehaviour
 
         if (!_sortKeyOptions.Contains(_sortKey))
         {
-            _sortKey = StorageSortKey.Rarity;
+            _sortKey = InventorySortKey.Rarity;
         }
 
         sortKeyDropdown.ClearOptions();
@@ -303,7 +303,7 @@ public class StorageToolPresenter : MonoBehaviour
     // ▼가 "위에서 아래로 낮아진다"(등급 높은 순)다 — 방향이 곧 목록의 모양이다.
     private void RefreshArrow()
     {
-        sortArrowText.text = _order == StorageSortOrder.Descending ? "▼" : "▲";
+        sortArrowText.text = _order == InventorySortOrder.Descending ? "▼" : "▲";
     }
 
     #endregion
@@ -312,12 +312,12 @@ public class StorageToolPresenter : MonoBehaviour
 
     // 고른 등급 이하의 자원을 보유 수량 전부 판매 목록에 담는다 (Bulk Sell Button OnClick에 코드로 연결)
     //
-    // 팔지 않고 담기까지만 한다 — 확인 절차는 아래 [판매] 버튼이다('Storage 규칙.md').
+    // 팔지 않고 담기까지만 한다 — 확인 절차는 아래 [판매] 버튼이다('Inventory 규칙.md').
     private void OnBulkSellClicked()
     {
         // ⏸ 캐릭터·장비는 팔 수 없다 — 서버 판매 패킷이 아이템 TID 축이고, 값(BasePrice)도 없다.
         //   버튼을 잠그는 대신 왜 안 되는지 알린다. 잠가 두면 "고장 났나"가 되고, 이유는 어디에도 안 남는다.
-        if (tabs.CurrentTab != StorageTab.Resource)
+        if (tabs.CurrentTab != InventoryTab.Resource)
         {
             _wait.RaiseNotice("자원만 판매할 수 있습니다. 캐릭터·장비 판매는 서버·기획 작업을 기다리는 중입니다.");
 
@@ -385,11 +385,11 @@ public class StorageToolPresenter : MonoBehaviour
             : GlobalRarity.None;
 
         byte industry = industryDropdown.gameObject.activeSelf
-                        && industryIndex >= 0 && industryIndex < StorageGridPresenter.StripIndustries.Length
-            ? (byte)StorageGridPresenter.StripIndustries[industryIndex]
+                        && industryIndex >= 0 && industryIndex < InventoryGridPresenter.StripIndustries.Length
+            ? (byte)InventoryGridPresenter.StripIndustries[industryIndex]
             : (byte)0;
 
-        grid.FilterCurrent(new StorageFilter(searchInput.text, rarity, industry));
+        grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry));
     }
 
     // 찾기 조건을 모두 비운다 ([초기화] · 탭 전환 · OnDisable).
@@ -415,11 +415,11 @@ public class StorageToolPresenter : MonoBehaviour
     //
     // 스스로 꺼져도 구독은 살아 있다 — 구독을 'Start/OnDestroy'에 건 이유가 이것이다('Subscribe' 주석).
     // ※ 찾기 조건은 탭마다 비운다 — 떠난 탭의 조건은 격자가 이미 풀었고('ShowTab'), 위젯만 남아 있으면 거짓말이 된다.
-    private void ApplyTab(StorageTab tab)
+    private void ApplyTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab != StorageTab.Trait);
+        gameObject.SetActive(tab != InventoryTab.Trait);
 
-        if (tab == StorageTab.Trait)
+        if (tab == InventoryTab.Trait)
         {
             return; // OnDisable이 비운다
         }

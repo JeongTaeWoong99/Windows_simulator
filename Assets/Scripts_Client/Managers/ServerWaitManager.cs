@@ -93,7 +93,7 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
     // 개별 요청 대기와 달리 앱 종료로 이어지므로 별도 이벤트로 낸다.
     public void RaiseFatal(string message) => FatalRaised?.Invoke(message);
 
-    // 서버 왕복 없이 알림 한 줄만 띄운다 (아직 없는 기능을 눌렀을 때 — 창고 도구 줄의 일괄 판매).
+    // 서버 왕복 없이 알림 한 줄만 띄운다 (아직 없는 기능을 눌렀을 때 — 인벤토리 도구 줄의 일괄 판매).
     //
     // ※ 대기('Begin')를 열지 않는다 — 보낼 요청이 없어서 로딩을 띄울 것도, 응답을 기다릴 것도 없다.
     //   알림 화면('NoticePresenter')이 이 매니저만 구독하고 있어 창구를 여기 둔다.

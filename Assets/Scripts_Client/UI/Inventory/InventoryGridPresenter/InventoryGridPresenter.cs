@@ -5,12 +5,12 @@ using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 창고의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
-// 지금 켜진 탭의 공급자('StorageSlotSource')에게 칸 배치를 받아 그대로 옮긴다.
+// 인벤토리의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
+// 지금 켜진 탭의 공급자('InventorySlotSource')에게 칸 배치를 받아 그대로 옮긴다.
 //
 // ■ 왜 탭마다 격자를 두지 않는가
 // 자원·캐릭터·장비의 격자·스크롤·레이아웃이 완전히 같다. 같아야 할 것을 세 벌로 두면
-// 한쪽만 고쳐지고, 씬 오브젝트도 세 배가 된다('Storage 규칙.md'의 "탭이 달라도 격자는 하나다").
+// 한쪽만 고쳐지고, 씬 오브젝트도 세 배가 된다('Inventory 규칙.md'의 "탭이 달라도 격자는 하나다").
 // 탭마다 다른 것은 **데이터와 표시 문구뿐**이라 그쪽만 공급자로 갈라 두었다.
 //
 // ■ 칸 프레임은 씬에 미리 깔려 있다
@@ -19,17 +19,17 @@ using UnityEngine.UI;
 //   프레임은 코드가 만들지도 지우지도 않는다.
 //
 // ■ 격자는 자리를 정하지 않는다 — i번째 칸에 i번째 프레임을 쓸 뿐이다
-//   어느 개체가 몇 번 칸인지도, 어디가 빈 칸인지도 공급자가 정한다('StorageSlotSource.Arrange').
+//   어느 개체가 몇 번 칸인지도, 어디가 빈 칸인지도 공급자가 정한다('InventorySlotSource.Arrange').
 //   [정렬]도 공급자 안에서 끝난다. 한때 격자가 'ItemId → 프레임'을 직접 붙들었는데,
 //   그러면 처음 들어온 순서로 칸이 영구히 굳어 **정렬을 넣을 자리가 없었다.**
 //
-// ■ 배치·장착 중인 개체도 **창고에 남는다** (2026-09-25)
+// ■ 배치·장착 중인 개체도 **인벤토리에 남는다** (2026-09-25)
 //   나가 있다고 목록에서 빼지 않는다 — 딤 처리 + '배' 마크로 구분하고, [정렬]에서만 맨 뒤로 민다.
-//   나가 있는지는 공급자가 답한다('StorageSlotSource.IsAway') — 뜻이 탭마다 다르기 때문이다.
+//   나가 있는지는 공급자가 답한다('InventorySlotSource.IsAway') — 뜻이 탭마다 다르기 때문이다.
 //
 // ■ 빈 칸은 'Get'이 null로 답한다 (2026-09-25 · T-044)
 //   장착·배치·판매로 개체가 빠져도 **그 칸은 비워 둔다** — 뒤의 것을 당겨 오지 않는다.
-//   당겨 오면 장비 하나를 끼울 때마다 창고 전체가 한 칸씩 밀려 보던 자리를 잃는다.
+//   당겨 오면 장비 하나를 끼울 때마다 인벤토리 전체가 한 칸씩 밀려 보던 자리를 잃는다.
 //
 // ■ 칸은 파괴하지 않고 풀로 되돌린다
 //   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
@@ -44,12 +44,12 @@ using UnityEngine.UI;
 // ■ 우클릭 = 판매 목록에 담기 · 빼기 (자원 탭에서만)
 //   칸('SlotView')은 우클릭을 이벤트로 던지기만 하고 무슨 뜻인지 모른다.
 //   그것을 판매로 읽는 것이 여기다 — 서버 판매 패킷이 아이템 TID 축이라 캐릭터는 담을 수 없어서
-//   자원 탭이 아니면 무시한다 (동선은 'Storage 규칙.md').
+//   자원 탭이 아니면 무시한다 (동선은 'Inventory 규칙.md').
 //
 // ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸에서만)
 //   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
 //   한 조작에 두 뜻을 겹치면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
-public class StorageGridPresenter : MonoBehaviour
+public class InventoryGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
     [SerializeField, Tooltip("칸 프리팹 (SlotView 포함) — 자원·캐릭터 어느 탭이든 같은 칸이다. 빈 프레임 안에 생성된다")]
@@ -87,13 +87,13 @@ public class StorageGridPresenter : MonoBehaviour
     };
 
     // 탭별 공급자. 여기 없는 탭은 "아직 데이터가 없는 탭"이고, 탭 줄이 그 버튼을 잠근다.
-    private readonly Dictionary<StorageTab, StorageSlotSource> _sources =
-        new Dictionary<StorageTab, StorageSlotSource>();
+    private readonly Dictionary<InventoryTab, InventorySlotSource> _sources =
+        new Dictionary<InventoryTab, InventorySlotSource>();
 
-    private StorageSlotSource? _current;
+    private InventorySlotSource? _current;
 
     // 지금 열린 탭. 우클릭을 판매로 읽어도 되는 탭인지 여기서 가른다.
-    private StorageTab _currentTab = StorageTab.Resource;
+    private InventoryTab _currentTab = InventoryTab.Resource;
 
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
@@ -109,17 +109,17 @@ public class StorageGridPresenter : MonoBehaviour
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // 이 탭의 칸을 팔 수 있나. 서버 판매 패킷이 아이템 TID 축이라 자원만 담긴다.
-    private bool IsSellableTab => _currentTab == StorageTab.Resource;
+    private bool IsSellableTab => _currentTab == InventoryTab.Resource;
 
     // 이 탭의 칸이 캐릭터인가. 적성 스트립·레벨 배지·경험치 게이지는 여기서만 켜진다.
-    private bool IsCharacterTab => _currentTab == StorageTab.Character;
+    private bool IsCharacterTab => _currentTab == InventoryTab.Character;
 
     // 이 탭의 'Key'가 아이템 TID인가. 상자 개봉은 여기서만 연다.
     //
     // ⚠️ 지금 'IsSellableTab'과 값이 같지만 **합치지 않는다.** 판매 축이 캐릭터·장비로 넓어지면
     //   ('C_ItemSellRequest'가 TID 축이라 서버 패킷이 먼저다) 그쪽이 true가 되면서 상자 개봉까지
     //   따라 열린다. 캐릭터·장비 탭의 'Key'는 **개체 PK**라 상자 TID와 우연히 겹칠 수 있다.
-    private bool IsItemKeyTab => _currentTab == StorageTab.Resource;
+    private bool IsItemKeyTab => _currentTab == InventoryTab.Resource;
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
     private void Start()
@@ -165,22 +165,22 @@ public class StorageGridPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
 
         // ★ 탭을 하나 채우는 일은 여기 한 줄로 끝난다 — 공급자를 만들어 등록하면
-        //   전환·잠금·격자는 그대로다 ('Storage 규칙.md'의 "탭 하나를 채우는 절차").
+        //   전환·잠금·격자는 그대로다 ('Inventory 규칙.md'의 "탭 하나를 채우는 절차").
         //
         // ⏸ Trait — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
-        _sources.Add(StorageTab.Resource,  new ResourceSlotSource(data));
-        _sources.Add(StorageTab.Character, new CharacterSlotSource(data));
-        _sources.Add(StorageTab.Equipment, new EquipSlotSource(data));
+        _sources.Add(InventoryTab.Resource,  new ResourceSlotSource(data));
+        _sources.Add(InventoryTab.Character, new CharacterSlotSource(data));
+        _sources.Add(InventoryTab.Equipment, new EquipSlotSource(data));
 
         // ★ 끝까지 왔을 때만 세운다 — 위에서 예외가 나면(참조 미연결·서비스 미등록) 플래그가
         //   안 켜져 다음 호출이 다시 시도하고, 원인도 매번 같은 예외로 드러난다.
         //   먼저 세우면 초기화가 중단됐는데도 격자가 조용히 빈 채로 굳는다.
         _isReady = true;
 
-        // ※ 로그인은 창고가 닫혀 있어도 알아야 해서 켜고 끌 때 풀지 않는다 — 파괴될 때만 푼다.
+        // ※ 로그인은 인벤토리가 닫혀 있어도 알아야 해서 켜고 끌 때 풀지 않는다 — 파괴될 때만 푼다.
         _data.LoginCompleted += OnLoginCompleted;
 
-        // ※ 개봉 결과도 같은 이유로 켜고 끌 때 풀지 않는다 — 응답이 늦게 오는 사이 창고를 닫으면
+        // ※ 개봉 결과도 같은 이유로 켜고 끌 때 풀지 않는다 — 응답이 늦게 오는 사이 인벤토리를 닫으면
         //   대기 손잡이가 영영 안 닫혀 로딩이 남는다.
         _data.ItemUseCompleted += OnItemUseCompleted;
         _data.ItemUseFailed    += OnItemUseFailed;
@@ -192,7 +192,7 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
     //
-    // ★ 재구독만으로는 부족하다 — 창고를 닫아 둔 사이 채취·가챠로 수량이 바뀌었을 수 있다.
+    // ★ 재구독만으로는 부족하다 — 인벤토리를 닫아 둔 사이 채취·가챠로 수량이 바뀌었을 수 있다.
     //   'Subscribe'가 목록을 다시 채우므로 여기서는 다시 그리기만 하면 맞는다.
     private void OnEnable()
     {
@@ -275,15 +275,15 @@ public class StorageGridPresenter : MonoBehaviour
     //
     // 잠금을 탭마다 손으로 켜고 끄지 않는 이유 — 공급자가 생기면 그 탭은 저절로 열려야 한다.
     // 두 곳에 적어 두면 공급자를 붙이고도 버튼이 잠긴 채 남는다.
-    public bool HasSource(StorageTab tab)
+    public bool HasSource(InventoryTab tab)
     {
         EnsureInitialized();
 
         return _sources.ContainsKey(tab);
     }
 
-    // 이 탭의 내용으로 갈아 끼운다 ('StorageTabPresenter'가 호출).
-    public void ShowTab(StorageTab tab)
+    // 이 탭의 내용으로 갈아 끼운다 ('InventoryTabPresenter'가 호출).
+    public void ShowTab(InventoryTab tab)
     {
         EnsureInitialized();
 
@@ -291,12 +291,12 @@ public class StorageGridPresenter : MonoBehaviour
         //   'next'가 둘 다 null이라 조기 반환에 걸리는데, 그때도 지금 탭은 바뀌어 있다.
         _currentTab = tab;
 
-        _sources.TryGetValue(tab, out StorageSlotSource? next);
+        _sources.TryGetValue(tab, out InventorySlotSource? next);
 
         // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 그 자리는 전용 화면이 쓴다(특성 탭).
         // ★ 조기 반환보다 먼저 한다. 그리고 칸 200개를 하나씩 끄지 않는다 —
         //   프레임을 개별로 토글하면 탭을 옮길 때마다 레이아웃 리빌드가 200번 돈다
-        //   ('Storage 규칙.md'). 격자 오브젝트 하나만 끄면 리빌드는 다시 켤 때 한 번이다.
+        //   ('Inventory 규칙.md'). 격자 오브젝트 하나만 끄면 리빌드는 다시 켤 때 한 번이다.
         gameObject.SetActive(next != null);
 
         if (_current == next)
@@ -328,10 +328,10 @@ public class StorageGridPresenter : MonoBehaviour
 
     #region 정렬
 
-    // 지금 탭을 기준대로 줄 세운다 ('StorageToolPresenter'의 화살표 버튼 · 기준 드롭다운이 호출).
+    // 지금 탭을 기준대로 줄 세운다 ('InventoryToolPresenter'의 화살표 버튼 · 기준 드롭다운이 호출).
     //
     // 규칙과 기억은 공급자가 쥔다 — 격자는 공급자가 알리는 'Changed'로 다시 그리기만 한다.
-    public void SortCurrent(StorageSortKey key, StorageSortOrder order)
+    public void SortCurrent(InventorySortKey key, InventorySortOrder order)
     {
         EnsureInitialized();
 
@@ -343,10 +343,10 @@ public class StorageGridPresenter : MonoBehaviour
         _current.Sort(key, order);
     }
 
-    // 지금 탭에 찾기 조건을 건다 ('StorageToolPresenter'의 검색창 · 드롭다운이 호출).
+    // 지금 탭에 찾기 조건을 건다 ('InventoryToolPresenter'의 검색창 · 드롭다운이 호출).
     //
     // ★ 맨 위로 올린다 — 결과는 앞으로 모이는데, 아래로 내려 둔 채 검색하면 결과가 화면 밖에 있다.
-    public void FilterCurrent(StorageFilter filter)
+    public void FilterCurrent(InventoryFilter filter)
     {
         EnsureInitialized();
 
@@ -360,7 +360,7 @@ public class StorageGridPresenter : MonoBehaviour
     }
 
     // 지금 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 기준 목록을 만들 때 호출).
-    public bool CurrentSupportsSortKey(StorageSortKey key)
+    public bool CurrentSupportsSortKey(InventorySortKey key)
     {
         EnsureInitialized();
 
@@ -389,7 +389,7 @@ public class StorageGridPresenter : MonoBehaviour
             return;
         }
 
-        foreach (StorageSlotSource source in _sources.Values)
+        foreach (InventorySlotSource source in _sources.Values)
         {
             source.ClearOrder();
         }
@@ -407,7 +407,7 @@ public class StorageGridPresenter : MonoBehaviour
         for (int i = 0; i < _frames.Count; i++)
         {
             // 빈 칸이면 내용을 비우고 프레임만 남긴다 — 뒤의 것을 당겨 오지 않는다.
-            // 장착·배치로 빠진 자리가 그대로 보여야 "어디서 빠졌는지"가 읽힌다('StorageSlotSource' 주석).
+            // 장착·배치로 빠진 자리가 그대로 보여야 "어디서 빠졌는지"가 읽힌다('InventorySlotSource' 주석).
             SlotData? cell = i < count ? _current!.Get(i) : null;
 
             if (cell != null)
@@ -427,18 +427,18 @@ public class StorageGridPresenter : MonoBehaviour
                 // 담김 표시의 주인은 카트다 — 자원 탭이 아니면 담길 수 없으므로 항상 꺼진다.
                 view.SetSellMark(IsSellableTab && _cart.Contains((int)data.Key));
 
-                // 지금 창고 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
+                // 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
                 // **딤과 '배' 마크를 짝으로** 켠다: 딤만 두면 왜 어두운지 알 수 없고,
                 // 마크만 두면 칸 200개 안에서 작은 배지가 묻힌다.
                 //
                 // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
-                //   딤·마크·[정렬] 세 군데에 같은 분기가 흩어진다('StorageSlotSource.IsAway').
+                //   딤·마크·[정렬] 세 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
                 bool isAway = _current.IsAway(data.Key);
 
                 view.SetAssignMark(isAway);
                 view.SetDimmed(isAway);
 
-                // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('StorageSlotSource' 주석).
+                // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
                 view.SetFilteredOut(_current.IsFilteredOut(data.Key));
 
                 // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
@@ -519,10 +519,10 @@ public class StorageGridPresenter : MonoBehaviour
     //
     // ■ 프리팹이 아니라 여기서 붙인다
     //   가챠 결과 팝업이 같은 칸 프리팹을 쓰는데, 그쪽은 결과를 보여 주는 자리라 툴팁 대상이 아니다.
-    //   창고 칸을 만드는 곳이 여기 하나뿐이라 붙이는 곳도 하나다.
+    //   인벤토리 칸을 만드는 곳이 여기 하나뿐이라 붙이는 곳도 하나다.
     // ■ 칸을 기억하지 않고 **띄우는 순간 'view.Key'를 읽는다**
     //   칸은 풀로 돌며 다른 개체로 다시 묶인다. 만들 때의 Key를 잡아 두면 정렬 한 번에 엉뚱한 것을 보인다.
-    // ※ 내용은 지금 탭의 공급자가 만든다('StorageSlotSource.BuildTooltip') — 탭이 바뀌면 저절로 따라간다.
+    // ※ 내용은 지금 탭의 공급자가 만든다('InventorySlotSource.BuildTooltip') — 탭이 바뀌면 저절로 따라간다.
     // ※ 입력을 가로채지 않는다 — 툴팁은 레이캐스트 결과를 읽기만 하므로 우클릭 담기·좌클릭 개봉이 그대로 돈다.
     private void AttachTooltip(SlotView view)
     {
@@ -586,7 +586,7 @@ public class StorageGridPresenter : MonoBehaviour
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!System Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
-        //   창고 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
+        //   인벤토리 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
         _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));
     }
 
@@ -672,7 +672,7 @@ public class StorageGridPresenter : MonoBehaviour
 
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
     // (PlayerDataModel.ItemUseCompleted 구독)
-    // ※ 창고가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 창고에 들어온 줄 안다.
+    // ※ 인벤토리가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 인벤토리에 들어온 줄 안다.
     //   알림은 '!System Canvas'의 마지막 형제라 결과창 위에 뜬다.
     private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
@@ -680,7 +680,7 @@ public class StorageGridPresenter : MonoBehaviour
 
         if (storedInMail)
         {
-            _wait.RaiseNotice("창고가 가득 차 보상을 우편함에 보관했습니다.\n우편함에서 받아 주세요.");
+            _wait.RaiseNotice("인벤토리가 가득 차 보상을 우편함에 보관했습니다.\n우편함에서 받아 주세요.");
         }
     }
 
@@ -728,7 +728,7 @@ public class StorageGridPresenter : MonoBehaviour
             // 한도가 프레임보다 크면 뒤쪽 칸이 보이지 않아 "아이템이 사라졌다"로 읽히고,
             // 작으면 서버가 거절할 자리를 그린다. 어느 쪽이든 조용히 지나가면 못 찾는다.
             ClientLogger.Error(ClientLogger.UI,
-                $"칸 프레임이 {_frames.Count}개인데 서버 창고 한도(Constants.StorageCapacity)는 {Constants.StorageCapacity}칸이다 — 둘을 맞출 것.", this);
+                $"칸 프레임이 {_frames.Count}개인데 서버 인벤토리 한도(Constants.StorageCapacity)는 {Constants.StorageCapacity}칸이다 — 둘을 맞출 것.", this);
         }
     }
 

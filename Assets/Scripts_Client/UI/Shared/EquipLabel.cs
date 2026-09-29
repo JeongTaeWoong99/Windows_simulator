@@ -4,7 +4,7 @@ using MikaProtocol;
 // 장비 → 사용자에게 보일 문구.
 //
 // ■ 두 화면이 같은 장비를 읽는다
-// 창고 장비 탭('EquipSlotSource')과 작업슬롯 세팅의 장비 칸('WorkStationSelectPresenter')이
+// 인벤토리 장비 탭('EquipSlotSource')과 작업슬롯 세팅의 장비 칸('WorkStationSelectPresenter')이
 // 같은 효과 문구를 쓴다. 한쪽에만 두면 같은 장비가 두 화면에서 다르게 읽힌다.
 //
 // ■ 기본 능력치와 추가 능력치 (T-095)

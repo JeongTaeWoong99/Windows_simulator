@@ -6,12 +6,12 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-// 창고 칸 하나의 표시. 프리팹에 붙는다.
+// 인벤토리 칸 하나의 표시. 프리팹에 붙는다.
 // 비어 있는 칸은 파괴하지 않고 'Clear'로 비워 두었다가 재사용한다
 // — 채취가 도는 동안, 탭을 오가는 동안 생성·파괴가 반복되면 GC 부담이 쌓인다.
 //
 // ■ 아이템 전용이 아니다
-// 창고 격자('StorageGridPresenter')가 자원·캐릭터를 같은 칸으로 그리고,
+// 인벤토리 격자('InventoryGridPresenter')가 자원·캐릭터를 같은 칸으로 그리고,
 // 가챠 결과 팝업('GachaResultPresenter')도 같은 프리팹을 쓴다 — 칸의 생김새가 같아야 하고,
 // 같아야 할 것을 여러 벌로 두면 한쪽만 고쳐지기 때문이다.
 // 그래서 이 뷰는 '어느 화면에 있는지'도 '무엇을 그리는지'도 모른다. 값은 부르는 쪽이 완성해서 넘긴다.
@@ -51,7 +51,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
     // ※ 아이콘 왼쪽 여백(20px)에 세로로 선다 — 아이콘과 높이를 같게 두고, 아래에서 위로 찬다.
-    //   높이는 고정값이 아니라 위아래 20px 안쪽 스트레치다 — 창고 격자가 칸을 프레임 크기로 늘려도 아이콘과 함께 늘어난다.
+    //   높이는 고정값이 아니라 위아래 20px 안쪽 스트레치다 — 인벤토리 격자가 칸을 프레임 크기로 늘려도 아이콘과 함께 늘어난다.
     //   조작하는 슬라이더가 아니라 표시 전용이다(interactable 꺼짐 · 핸들 없음 · raycast 끔 — 우클릭을 가로채지 않는다).
     [CenterHeader("레벨 · 경험치 (캐릭터 탭)")]
     [SerializeField, Tooltip("현재 레벨의 경험치 진행. 왼쪽 벽 세로 막대 · 아래→위. 자원 탭·가챠 결과에서는 꺼진다")]
@@ -98,7 +98,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 이 칸을 우클릭했다 — 무슨 뜻인지는 이 칸을 만든 화면이 정한다.
     public event Action<SlotView>? RightClicked;
 
-    // 이 칸을 좌클릭했다 — 위와 같다. 창고 격자가 '상자 개봉'으로 읽는다.
+    // 이 칸을 좌클릭했다 — 위와 같다. 인벤토리 격자가 '상자 개봉'으로 읽는다.
     public event Action<SlotView>? LeftClicked;
 
     // 나가 있는 칸을 얼마나 어둡게 할지 (RGB 배수). 알파는 건드리지 않는다 —
@@ -201,7 +201,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // 완성된 표시값을 그린다 ('StorageGridPresenter'·'GachaResultPresenter'가 호출).
+    // 완성된 표시값을 그린다 ('InventoryGridPresenter'·'GachaResultPresenter'가 호출).
     //
     // 이름도 등급도 여기서 조회하지 않는다 — 출처가 탭마다 다르기 때문이다.
     // 자원은 'ItemTable', 캐릭터는 'CharacterTable', 가챠 보상은 패킷이 등급을 실어 온다.
@@ -221,7 +221,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 보조 문구를 켜고 끈다 (칸을 만든 화면이 한 번만 부른다).
     //
-    // 창고는 "몇 개 갖고 있나"가 칸의 핵심이라 켜 두고, 가챠 결과는 뽑힌 것을
+    // 인벤토리는 "몇 개 갖고 있나"가 칸의 핵심이라 켜 두고, 가챠 결과는 뽑힌 것을
     // 그대로 늘어놓는 자리라 끈다 — 거기서는 개수가 칸이 아니라 목록의 길이로 드러난다.
     // ※ Clear는 이 상태를 되돌리지 않는다 — 풀에서 재사용돼도 화면의 결정이 유지돼야 한다.
     public void SetSubVisible(bool on)
@@ -240,7 +240,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     }
 
     // 적성 5종을 스트립에 그린다. 'null'이면 스트립을 끄고 보조 문구 자리를 돌려준다
-    // (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    // (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
     //
     // ■ 왜 값을 받아 오는가
     // 이 칸은 캐릭터를 모른다 — '배' 마크가 그렇듯 판단과 조회는 격자가 하고 칸은 그리기만 한다.
@@ -282,7 +282,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     }
 
     // 능력치 칸을 그린다. 'null'이면 줄을 끄고 보조 문구 자리를 돌려준다
-    // (창고 격자가 매번 그릴 때 호출 — 장비 탭에서만 값이 온다 · T-095).
+    // (인벤토리 격자가 매번 그릴 때 호출 — 장비 탭에서만 값이 온다 · T-095).
     //
     // grades의 길이가 곧 칸 수이고, 원소는 그 칸에 박힌 능력치의 등급이다 — 'None'이면 빈 칸.
     // 칸 수·등급의 판단은 공급자가 한다('EquipSlotSource') — 이 칸은 장비를 모른다('SetAptitudes'와 같은 이유).
@@ -328,7 +328,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
     }
 
-    // 레벨 배지를 그린다. 'null'이면 배지를 끈다 (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    // 레벨 배지를 그린다. 'null'이면 배지를 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
     // 문구('LV.19' · 'LV.MAX')는 격자가 짓는다 — 이 칸은 만렙이 몇인지 모른다.
     public void SetLevelBadge(string? label)
     {
@@ -345,7 +345,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     }
 
     // 경험치 진행(0~1)을 세로 게이지에 그린다. 'null'이면 게이지를 끈다
-    // (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    // (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
     //
     // 적성 스트립과 같은 이유로 값을 받아 온다 — 이 칸은 캐릭터를 모르고,
     // 진행률 계산(레벨 곡선 조회)은 'PlayerDataModel.GetExpProgress'가 한다.
@@ -363,7 +363,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         expGauge.SetValueWithoutNotify(progress!.Value);
     }
 
-    // 판매 목록에 담겼음을 표시한다 (창고 격자가 매번 그릴 때 호출).
+    // 판매 목록에 담겼음을 표시한다 (인벤토리 격자가 매번 그릴 때 호출).
     //
     // 'SetSubVisible'과 달리 한 번 정하고 끝나는 스위치가 아니다 — 담기·빼기로 계속 바뀐다.
     // 가챠 결과 팝업은 이걸 부르지 않으므로 거기서는 늘 꺼져 있다.
@@ -372,7 +372,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         sellMark.SetActive(on);
     }
 
-    // 이 칸이 지금 쓰이고 있음을 표시한다 (창고 격자가 매번 그릴 때 호출).
+    // 이 칸이 지금 쓰이고 있음을 표시한다 (인벤토리 격자가 매번 그릴 때 호출).
     // 캐릭터는 작업슬롯에서 일하는 중, 장비는 캐릭터가 끼고 있는 중이다 — 무엇인지는 격자가 정한다.
     //
     // 'SetSellMark'와 같은 성격이다 — 배치·해제, 장착·해제로 계속 바뀐다.
@@ -382,7 +382,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(on);
     }
 
-    // 이 칸을 어둡게 한다 — 지금 창고 밖에 나가 있다는 뜻 (창고 격자가 매번 그릴 때 호출).
+    // 이 칸을 어둡게 한다 — 지금 인벤토리 밖에 나가 있다는 뜻 (인벤토리 격자가 매번 그릴 때 호출).
     //
     // '배' 마크와 **짝으로만 쓴다.** 딤만 두면 "왜 어두운가"를 알 수 없고,
     // 마크만 두면 칸이 200개일 때 작은 배지가 눈에 안 띈다.
@@ -399,9 +399,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
     }
 
-    // 이 칸을 흑백으로 그린다 — 창고 찾기 조건에 안 맞는다는 뜻 (창고 격자가 매번 그릴 때 호출, T-069).
+    // 이 칸을 흑백으로 그린다 — 인벤토리 찾기 조건에 안 맞는다는 뜻 (인벤토리 격자가 매번 그릴 때 호출, T-069).
     //
-    // 칸은 그대로 두고 색만 뺀다 — 빼 버리면 창고가 비어 보인다('StorageSlotSource' 주석).
+    // 칸은 그대로 두고 색만 뺀다 — 빼 버리면 인벤토리가 비어 보인다('InventorySlotSource' 주석).
     // ⚠️ 색 곱셈이라 **등급 바탕·단색 아이콘까지만** 흑백이 된다. 아이콘 스프라이트가 들어오면
     //    그 색은 곱셈으로 빠지지 않는다 — 그때는 흑백 머티리얼로 바꾼다(🎨).
     public void SetFilteredOut(bool on)

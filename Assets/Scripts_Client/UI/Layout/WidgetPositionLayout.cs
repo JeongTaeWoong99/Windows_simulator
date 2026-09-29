@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 // 위젯이 놓일 창 안 6칸(가로 3 × 세로 2). 'ScreenAnchor'와 같은 나열 순서·같은 칸 수를 써서
@@ -30,8 +31,8 @@ public enum WidgetPosition
 //   항상 남아 있어 3열 묶음의 폭이 변하지 않고, 위젯이 6칸 자리에서 움직이지 않는다.
 //   Column 을 끄면 남은 열들이 가운데로 다시 몰려 위젯 가로 칸이 무의미해진다 — 그래서 안 끈다.
 //
-// ■ 3열 순서 규칙 — 작업슬롯과 창고는 항상 붙어 있다
-//   거래를 작업슬롯에서 가장 먼 끝에 두면 창고가 자동으로 사이에 남는다.
+// ■ 3열 순서 규칙 — 작업슬롯과 인벤토리는 항상 붙어 있다
+//   거래를 작업슬롯에서 가장 먼 끝에 두면 인벤토리가 자동으로 사이에 남는다.
 //   → GameDesign/design/ui/README.md 2.1
 //
 // ■ ExecuteAlways
@@ -48,7 +49,8 @@ public class WidgetPositionLayout : MonoBehaviour
     //   (SettingPresenter 처럼 예외를 던지지 않는 이유 — 이 컴포넌트는 배선 도중인 에디터에서도 돌기 때문이다)
     [CenterHeader("열 참조")]
     [SerializeField] private RectTransform columns           = null!; // HorizontalLayoutGroup 을 가진 3열의 부모
-    [SerializeField] private RectTransform storageColumn     = null!; // 창고 열
+    [SerializeField, FormerlySerializedAs("storageColumn")]
+    private RectTransform inventoryColumn = null!; // 인벤토리 열 (개명 전 이름: storageColumn)
     [SerializeField] private RectTransform workstationColumn = null!; // 작업슬롯 열 — 위젯의 가로 칸을 따라간다
     [SerializeField] private RectTransform marketColumn      = null!; // 거래 열
 
@@ -273,12 +275,12 @@ public class WidgetPositionLayout : MonoBehaviour
             return;
         }
 
-        float storage     = storageColumn.rect.width;
+        float inventory     = inventoryColumn.rect.width;
         float workstation = workstationColumn.rect.width;
         float market      = marketColumn.rect.width;
 
-        float max = Mathf.Max(storage, Mathf.Max(workstation, market));
-        float min = Mathf.Min(storage, Mathf.Min(workstation, market));
+        float max = Mathf.Max(inventory, Mathf.Max(workstation, market));
+        float min = Mathf.Min(inventory, Mathf.Min(workstation, market));
 
         if (max - min <= 1f)
         {
@@ -287,7 +289,7 @@ public class WidgetPositionLayout : MonoBehaviour
             return;
         }
 
-        string detail = $"창고 {storage:F1} · 작업 {workstation:F1} · 거래 {market:F1} (차이 {max - min:F1}px)";
+        string detail = $"인벤토리 {inventory:F1} · 작업 {workstation:F1} · 거래 {market:F1} (차이 {max - min:F1}px)";
 
         if (_guardRetried)
         {
@@ -315,7 +317,7 @@ public class WidgetPositionLayout : MonoBehaviour
         {
             if (order[i] == null)
             {
-                order[i] = storageColumn; // 남은 한 칸이 창고 — 언제나 작업슬롯 옆이 된다
+                order[i] = inventoryColumn; // 남은 한 칸이 인벤토리 — 언제나 작업슬롯 옆이 된다
             }
         }
 
@@ -367,14 +369,14 @@ public class WidgetPositionLayout : MonoBehaviour
     // 위젯이 위 칸이면 내용을 위로 붙여 위젯이 창 위 가장자리에 오고, 아래 칸이면 반대다.
     // 조합은 'position'이 정한다 — 고를 여지가 없어 상수로 둔다(UpperAlignment · LowerAlignment).
     //
-    // 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 창고·거래의 배너 줄 높이가 어긋난다
+    // 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 인벤토리·거래의 배너 줄 높이가 어긋난다
     // (기획 2장 "세 창의 정렬 규칙": 세 배너 줄이 같은 높이에 와야 한다).
     private bool ApplyChildAlignment(bool isUpper)
     {
         TextAnchor alignment = isUpper ? UpperAlignment : LowerAlignment;
 
         // ⚠️ '|='다. '||'로 쓰면 앞 열이 바뀐 순간 나머지 열의 정렬을 안 고친다.
-        bool changed = SetColumnAlignment(storageColumn,     alignment);
+        bool changed = SetColumnAlignment(inventoryColumn,     alignment);
         changed     |= SetColumnAlignment(workstationColumn, alignment);
         changed     |= SetColumnAlignment(marketColumn,      alignment);
 
@@ -422,14 +424,14 @@ public class WidgetPositionLayout : MonoBehaviour
 
         var problems = new System.Text.StringBuilder();
 
-        float storage     = ApplyColumnHeights(storageColumn,     isUpper, problems, out bool storageChanged);
+        float inventory     = ApplyColumnHeights(inventoryColumn,     isUpper, problems, out bool inventoryChanged);
         float workstation = ApplyColumnHeights(workstationColumn, isUpper, problems, out bool workstationChanged);
         float market      = ApplyColumnHeights(marketColumn,      isUpper, problems, out bool marketChanged);
 
-        AppendCenterMismatch(storage, workstation, market, problems);
+        AppendCenterMismatch(inventory, workstation, market, problems);
         ReportHeightProblems(problems);
 
-        return storageChanged || workstationChanged || marketChanged;
+        return inventoryChanged || workstationChanged || marketChanged;
     }
 
     // 한 열의 위·아래 칸에 높이를 써 넣고 그 열의 가운데 높이를 돌려준다.
@@ -548,24 +550,24 @@ public class WidgetPositionLayout : MonoBehaviour
     // 다르면 세 배너 줄이 가로로 어긋난다 (기획 2장 "세 창의 정렬 규칙").
     // 고치지 않고 알리기만 한다 — 어느 값이 맞는지는 이 컴포넌트가 알 수 없다.
     // 한 열의 값을 나머지에 복사하면 사람이 인스펙터에 넣은 숫자가 조용히 사라진다.
-    private static void AppendCenterMismatch(float storage, float workstation, float market,
+    private static void AppendCenterMismatch(float inventory, float workstation, float market,
                                              System.Text.StringBuilder problems)
     {
         // 하나라도 못 읽었으면 그 이유가 이미 적혀 있다 — 여기서 또 말할 것이 없다
-        if (float.IsNaN(storage) || float.IsNaN(workstation) || float.IsNaN(market))
+        if (float.IsNaN(inventory) || float.IsNaN(workstation) || float.IsNaN(market))
         {
             return;
         }
 
-        float max = Mathf.Max(storage, Mathf.Max(workstation, market));
-        float min = Mathf.Min(storage, Mathf.Min(workstation, market));
+        float max = Mathf.Max(inventory, Mathf.Max(workstation, market));
+        float min = Mathf.Min(inventory, Mathf.Min(workstation, market));
 
         if (max - min <= 1f)
         {
             return;
         }
 
-        problems.Append($"\n  가운데 칸 높이가 열마다 다르다 — 창고 {storage:F0} · 작업 {workstation:F0} · 거래 {market:F0}. " +
+        problems.Append($"\n  가운데 칸 높이가 열마다 다르다 — 인벤토리 {inventory:F0} · 작업 {workstation:F0} · 거래 {market:F0}. " +
                         "세 배너 줄이 가로로 어긋난다.");
     }
 
@@ -589,7 +591,7 @@ public class WidgetPositionLayout : MonoBehaviour
     // 필수 참조가 전부 연결됐는지 확인한다 (Apply 진입 가드)
     private bool HasAllReferences()
     {
-        RectTransform[] references = { columns, storageColumn, workstationColumn, marketColumn, widgetPanel, statePanel };
+        RectTransform[] references = { columns, inventoryColumn, workstationColumn, marketColumn, widgetPanel, statePanel };
 
         int linked = 0;
 
@@ -636,7 +638,7 @@ public class WidgetPositionLayout : MonoBehaviour
         }
 
         var found = new System.Text.StringBuilder();
-        CollectOverflow(storageColumn,     found);
+        CollectOverflow(inventoryColumn,     found);
         CollectOverflow(workstationColumn, found);
         CollectOverflow(marketColumn,      found);
 
@@ -644,7 +646,7 @@ public class WidgetPositionLayout : MonoBehaviour
         var   group   = columns.GetComponent<HorizontalLayoutGroup>();
         float spacing = group != null ? group.spacing * 2f : 0f;
         float padding = group != null ? group.padding.horizontal : 0f;
-        float used    = storageColumn.rect.width + workstationColumn.rect.width + marketColumn.rect.width
+        float used    = inventoryColumn.rect.width + workstationColumn.rect.width + marketColumn.rect.width
                       + spacing + padding;
 
         if (used - columns.rect.width > 1f)

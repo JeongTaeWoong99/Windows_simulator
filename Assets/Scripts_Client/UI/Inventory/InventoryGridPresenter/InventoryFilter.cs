@@ -1,9 +1,9 @@
 using GameData;
 
-// 창고 찾기 조건 — 이름 일부 · 등급 · 산업 (T-069). 도구 줄이 만들고 공급자가 거른다.
+// 인벤토리 찾기 조건 — 이름 일부 · 등급 · 산업 (T-069). 도구 줄이 만들고 공급자가 거른다.
 //
 // ※ 기본값(default)이 곧 "거르지 않음"이다 — 탭 전환·창 닫기 때 이것으로 비운다.
-public readonly struct StorageFilter
+public readonly struct InventoryFilter
 {
     // 이름에 들어 있어야 할 글자. 비었으면 이름으로 거르지 않는다.
     public readonly string Text;
@@ -14,7 +14,7 @@ public readonly struct StorageFilter
     // 이 산업만 남긴다('IndustryType' 값). 0이면 전체 — 산업 축이 없는 탭(캐릭터)은 늘 0이다.
     public readonly byte Industry;
 
-    public StorageFilter(string text, GlobalRarity rarity, byte industry)
+    public InventoryFilter(string text, GlobalRarity rarity, byte industry)
     {
         Text     = text.Trim();
         Rarity   = rarity;

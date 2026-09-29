@@ -2,11 +2,11 @@ using System;
 using System.Collections.Generic;
 using GameData;
 
-// 창고 [정렬]의 방향. 도구 줄의 화살표 버튼이 둘을 오간다.
+// 인벤토리 [정렬]의 방향. 도구 줄의 화살표 버튼이 둘을 오간다.
 //
 // ※ 오름차순은 **규칙 전체를 뒤집는다** — 등급만이 아니라 산업·TID 순서까지 반대가 된다.
 //   기준을 하나만 뒤집으면 "무엇이 반대인가"를 매번 표로 확인해야 한다.
-public enum StorageSortOrder
+public enum InventorySortOrder
 {
     // 등급 높은 순 (기본) — 값나가는 것이 위로 온다
     Descending,
@@ -15,11 +15,11 @@ public enum StorageSortOrder
     Ascending,
 }
 
-// 창고 [정렬]의 기준 (T-073). 도구 줄의 드롭다운이 고른다.
+// 인벤토리 [정렬]의 기준 (T-073). 도구 줄의 드롭다운이 고른다.
 //
 // ※ ▼(Descending)는 **기준마다의 기본 방향**이다 — 등급 높은 순 · 이름 가나다 순 · 수량 많은 순.
 //   ▲는 그 결과를 통째로 뒤집는다.
-public enum StorageSortKey
+public enum InventorySortKey
 {
     // 등급 — 탭마다의 'CompareForSort' 규칙 그대로
     Rarity,
@@ -31,11 +31,11 @@ public enum StorageSortKey
     Count,
 }
 
-// 창고 탭 하나가 격자에 무엇을 그릴지 답하는 공급자.
+// 인벤토리 탭 하나가 격자에 무엇을 그릴지 답하는 공급자.
 //
-// 격자('StorageGridPresenter')는 이 타입만 알고 자원인지 캐릭터인지는 모른다.
+// 격자('InventoryGridPresenter')는 이 타입만 알고 자원인지 캐릭터인지는 모른다.
 // 탭이 늘어도 격자·전환·잠금은 그대로고, 공급자 하나가 더 생길 뿐이다
-// (절차는 'Storage 규칙.md'의 "탭 하나를 채우는 절차").
+// (절차는 'Inventory 규칙.md'의 "탭 하나를 채우는 절차").
 //
 // ■ 내용물은 매번 새로 만들고, **자리는 그대로 둔다** (2026-09-25 · T-044)
 // 데이터가 바뀔 때마다 'Rebuild'가 내용물을 새로 채운다. 원본을 그때그때 인덱스로 훑지 않는 것은,
@@ -45,7 +45,7 @@ public enum StorageSortKey
 // **뒤의 것이 통째로 앞으로 당겨졌다.** 보던 자리가 매번 흔들린다.
 //
 // ■ 빈 칸은 빈 칸으로 남는다
-// 개체가 창고를 떠나면(장착·배치·판매) 그 칸은 **비어 있는 채로** 남고, 다음에 들어오는 것이
+// 개체가 인벤토리를 떠나면(장착·배치·판매) 그 칸은 **비어 있는 채로** 남고, 다음에 들어오는 것이
 // **앞에서부터 세어 첫 빈 칸**을 차지한다. 나가고 들어오는 것이 서로의 자리를 밀지 않는다.
 //
 // ■ 정렬만이 자리를 다시 매긴다 (클라 임시)
@@ -54,7 +54,7 @@ public enum StorageSortKey
 // 위 규칙을 따른다.
 //
 // ■ 나가 있는 개체는 **정렬하면 맨 뒤로 간다** (2026-09-25)
-// 배치 중인 캐릭터·장착 중인 장비는 창고에서 빠지지 않고 제자리에 남는다(딤 + '배' 마크).
+// 배치 중인 캐릭터·장착 중인 장비는 인벤토리에서 빠지지 않고 제자리에 남는다(딤 + '배' 마크).
 // 다만 [정렬]은 "지금 손댈 수 있는 것을 위로"가 목적이라, 나가 있는 것은 뒤로 민다('IsAway').
 // ⚠️ 이 기억은 **세션 한정**이다. 재접속하면 서버가 주는 순서로 처음부터 자리를 매긴다 —
 //   칸 위치의 주인은 서버로 옮겨 간다(서버 'T-058' → 클라 'T-044').
@@ -63,14 +63,14 @@ public enum StorageSortKey
 // 거르는 동안은 **맞는 것을 앞으로, 안 맞는 것을 그 뒤에** 각각 기억된 칸 순서대로 이어 붙이고,
 // 안 맞는 것은 격자가 흑백으로 그린다('IsFilteredOut'). 자리 기억('_place')은 늘 전체 기준으로
 // 계산하므로, 거르는 중에 채취·판매가 일어나도 필터를 풀면 원래 배치가 그대로 돌아온다.
-// ※ 안 맞는 것을 **빼지 않는다** — 한때 맞는 것만 남겼더니 창고가 텅 비어 보였다(2026-09-29 실측).
+// ※ 안 맞는 것을 **빼지 않는다** — 한때 맞는 것만 남겼더니 인벤토리가 텅 비어 보였다(2026-09-29 실측).
 //   제자리에 두고 흐리게만 하면(WoW 가방식) 결과가 흩어져 스크롤로 찾아야 한다. 둘을 섞은 것이 이 방식이다.
-public abstract class StorageSlotSource
+public abstract class InventorySlotSource
 {
     // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
     private readonly List<SlotData?> _slots = new List<SlotData?>();
 
-    // 지금 창고에 있는 것들. 'Fill'이 채운 순서가 곧 **빈 칸을 차지하는 순서**다.
+    // 지금 인벤토리에 있는 것들. 'Fill'이 채운 순서가 곧 **빈 칸을 차지하는 순서**다.
     private readonly List<SlotData> _filled = new List<SlotData>();
 
     // 이번 배치에서 이미 찬 칸. 첫 빈 칸을 찾을 때 본다.
@@ -82,7 +82,7 @@ public abstract class StorageSlotSource
     // 정렬 비교자. 메서드 그룹을 매번 넘기면 호출마다 대리자가 새로 생겨서 한 번만 만든다.
     private readonly Comparison<SlotData> _byRule;
 
-    // Key → 칸 번호. 한 번 정해지면 그 개체가 창고를 떠날 때까지 바뀌지 않는다.
+    // Key → 칸 번호. 한 번 정해지면 그 개체가 인벤토리를 떠날 때까지 바뀌지 않는다.
     //
     // ※ 매번 '_nextPlace'에 새로 담아 통째로 맞바꾼다 — 떠난 개체의 자리를 따로 지우지 않아도
     //   저절로 빠진다. 지우는 것을 잊으면 **아무도 못 쓰는 칸**이 계속 쌓인다.
@@ -90,13 +90,13 @@ public abstract class StorageSlotSource
     private Dictionary<long, int> _nextPlace = new Dictionary<long, int>();
 
     // 마지막으로 누른 정렬 방향. 오름차순이면 기준 비교의 결과를 뒤집는다.
-    private StorageSortOrder _order = StorageSortOrder.Descending;
+    private InventorySortOrder _order = InventorySortOrder.Descending;
 
     // 마지막으로 고른 정렬 기준.
-    private StorageSortKey _key = StorageSortKey.Rarity;
+    private InventorySortKey _key = InventorySortKey.Rarity;
 
     // 지금 찾기 조건. 기본값이면 거르지 않는다.
-    private StorageFilter _filter;
+    private InventoryFilter _filter;
 
     // 거를 때 맞는 것 · 안 맞는 것을 칸 번호 순으로 모으는 버퍼. 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
     private readonly List<SlotData> _matched   = new List<SlotData>();
@@ -107,7 +107,7 @@ public abstract class StorageSlotSource
 
     private bool _isSubscribed;
 
-    protected StorageSlotSource()
+    protected InventorySlotSource()
     {
         _byRule = CompareByRule;
     }
@@ -127,7 +127,7 @@ public abstract class StorageSlotSource
 
     // 이 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 드롭다운 목록을 만들 때 호출).
     // 기본은 등급·이름 — 보유 수량은 자원만 뜻이 있다.
-    public virtual bool SupportsSortKey(StorageSortKey key) => key != StorageSortKey.Count;
+    public virtual bool SupportsSortKey(InventorySortKey key) => key != InventorySortKey.Count;
 
     // 이 탭이 산업으로 거를 수 있나 (도구 줄이 산업 드롭다운을 보일지 정할 때 호출).
     // 캐릭터는 산업 축이 없다(적성이 다섯 산업에 걸쳐 있다).
@@ -139,7 +139,7 @@ public abstract class StorageSlotSource
     // i번째 칸에 그릴 완성값 (격자가 호출). **빈 칸이면 null**이다.
     public SlotData? Get(int index) => _slots[index];
 
-    // 이 개체가 지금 창고 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중 (격자·정렬이 호출).
+    // 이 개체가 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중 (격자·정렬이 호출).
     //
     // ■ 판정의 주인을 공급자 하나로 둔다
     //   "나가 있다"의 뜻이 탭마다 다르다. 격자가 탭을 보고 분기하면 **딤·마크·정렬 세 군데에서
@@ -166,7 +166,7 @@ public abstract class StorageSlotSource
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //
-    // 목록도 함께 채운다 — 창고를 닫아 둔 사이 채취·가챠로 내용이 바뀌었을 수 있다.
+    // 목록도 함께 채운다 — 인벤토리를 닫아 둔 사이 채취·가챠로 내용이 바뀌었을 수 있다.
     public void Subscribe()
     {
         if (_isSubscribed)
@@ -196,9 +196,9 @@ public abstract class StorageSlotSource
     // **빈 칸은 여기서만 메워진다.** 정리하려고 누르는 버튼이라 앞으로 당겨지는 것이 맞다.
     // ※ 격자는 켜진 탭에만 부르므로 '_filled'는 구독 중에 채워진 최신값이다.
     // ※ 거르는 중이어도 **전체**를 줄 세운다 — 자리 기억은 늘 전체 기준이다(클래스 주석).
-    public void Sort(StorageSortKey key, StorageSortOrder order)
+    public void Sort(InventorySortKey key, InventorySortOrder order)
     {
-        _key   = SupportsSortKey(key) ? key : StorageSortKey.Rarity;
+        _key   = SupportsSortKey(key) ? key : InventorySortKey.Rarity;
         _order = order;
         _filled.Sort(_byRule);
 
@@ -216,7 +216,7 @@ public abstract class StorageSlotSource
     // 찾기 조건을 바꾼다 (격자의 'FilterCurrent' — 도구 줄의 검색창·드롭다운).
     //
     // 자리 기억은 그대로 두고 보이는 것만 다시 모은다 — 필터를 풀면 원래 배치로 돌아와야 한다.
-    public void SetFilter(StorageFilter filter)
+    public void SetFilter(InventoryFilter filter)
     {
         _filter = filter;
 
@@ -247,7 +247,7 @@ public abstract class StorageSlotSource
         Changed?.Invoke();
     }
 
-    // 이 탭이 지금 창고에 두고 있는 것들을 채운다 (Rebuild에서 호출).
+    // 이 탭이 지금 인벤토리에 두고 있는 것들을 채운다 (Rebuild에서 호출).
     //
     // ⚠️ 여기 담는 순서는 **칸 번호가 아니라 "빈 칸을 고르는 순서"** 다 —
     //   이미 자리를 가진 것은 그 자리에 남고, 처음 보는 것만 이 순서대로 앞의 빈 칸을 가져간다.
@@ -415,7 +415,7 @@ public abstract class StorageSlotSource
 
         int compared = CompareByKey(a, b);
 
-        return _order == StorageSortOrder.Ascending ? -compared : compared;
+        return _order == InventorySortOrder.Ascending ? -compared : compared;
     }
 
     // 고른 기준으로 비교하고, 동점이면 탭 고유 규칙('CompareForSort')으로 끝까지 가른다 (CompareByRule에서 호출).
@@ -426,8 +426,8 @@ public abstract class StorageSlotSource
     {
         int byKey = _key switch
         {
-            StorageSortKey.Name  => string.CompareOrdinal(a.Name, b.Name),
-            StorageSortKey.Count => CompareByCount(a, b),
+            InventorySortKey.Name  => string.CompareOrdinal(a.Name, b.Name),
+            InventorySortKey.Count => CompareByCount(a, b),
             _                    => 0,
         };
 

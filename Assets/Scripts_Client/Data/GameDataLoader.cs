@@ -95,7 +95,7 @@ public static class GameDataLoader
 
     // 아이템 분류(산업 · 기타 · 특수)를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
     //
-    // ※ 창고 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
+    // ※ 인벤토리 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
     public static ItemType GetItemType(int itemId)
     {
         if (GameTable.ItemTable.TryGet(itemId, out var row))
@@ -158,7 +158,7 @@ public static class GameDataLoader
 
     // 캐릭터 등급을 조회한다. 규칙은 'GetItemRarity'와 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
     //
-    // ※ 창고 캐릭터 목록이 쓰는 값이다. 가챠 결과창은 이 함수를 쓰지 않는다 —
+    // ※ 인벤토리 캐릭터 목록이 쓰는 값이다. 가챠 결과창은 이 함수를 쓰지 않는다 —
     //   패킷('GachaRewardInfo.Rarity')이 등급을 실어 오므로 그 값을 그대로 쓴다('GetItemRarity'와 같은 이유).
     // ⚠️ 종류(TID)를 넣는다 — 개체 번호('CharacterInfo.CharacterId')를 넣으면 조회가 빗나가 'None'이 나온다.
     public static GlobalRarity GetCharacterRarity(int characterTid)
@@ -200,7 +200,7 @@ public static class GameDataLoader
         return GlobalRarity.None;
     }
 
-    // 장비 정의 한 행. 부위·산업·속도 가산을 한꺼번에 봐야 하는 쪽이 쓴다(창고 장비 칸의 효과 문구·정렬).
+    // 장비 정의 한 행. 부위·산업·속도 가산을 한꺼번에 봐야 하는 쪽이 쓴다(인벤토리 장비 칸의 효과 문구·정렬).
     //
     // ※ 이름·등급과 달리 실패를 그대로 돌려준다 — 대체할 표시가 없고, 여러 값을 동시에 읽는 자리라
     //   빗나갔을 때 무엇으로 떨어뜨릴지를 부르는 쪽이 정해야 한다('TryGetGachaInfo'와 같은 이유).

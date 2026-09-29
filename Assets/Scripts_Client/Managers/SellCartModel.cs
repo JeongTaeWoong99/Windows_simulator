@@ -7,10 +7,10 @@ using UnityEngine;
 // 판매하려고 담아 둔 아이템 목록 — "장바구니".
 //
 // ■ 왜 매니저인가
-// 창고 격자('StorageGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
+// 인벤토리 격자('InventoryGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
 // 정보 칸('SellCartPresenter')은 목록·합계·판매 버튼을 그려야 한다.
 // 두 화면이 같은 것을 봐야 하는데 서로를 직접 참조하면 패널 사이 참조가 그물이 된다
-// ('Storage 규칙.md'). 그래서 상태를 여기 한 곳에 두고 양쪽이 각자 구독한다.
+// ('Inventory 규칙.md'). 그래서 상태를 여기 한 곳에 두고 양쪽이 각자 구독한다.
 //
 // ■ 송신하지 않는다
 // 판매 요청은 버튼을 누른 Presenter가 직접 보낸다 — 'PlayerDataModel'과 같은 경계다.
@@ -197,7 +197,7 @@ public class SellCartModel : MonoService<SellCartModel>
     // 인벤토리가 바뀌었다 — 보유량을 넘는 항목을 깎거나 뺀다 (PlayerDataModel.InventoryChanged 구독)
     //
     // 바뀐 게 없으면 이벤트를 쏘지 않는다. 채취가 도는 동안 이 경로가 계속 불리므로,
-    // 매번 발행하면 창고 격자 200칸이 이유 없이 다시 그려진다.
+    // 매번 발행하면 인벤토리 격자 200칸이 이유 없이 다시 그려진다.
     private void OnInventoryChanged()
     {
         bool isDirty = false;

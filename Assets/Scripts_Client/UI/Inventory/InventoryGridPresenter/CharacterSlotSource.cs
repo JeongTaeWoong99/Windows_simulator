@@ -12,13 +12,13 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 레벨은 이름 줄에 넣지 않는다 — 아이콘 왼쪽 위 배지가 말한다
 //   한때 'LV.19 폭스파스크'로 이름 줄에 붙였더니 100px 칸에서 글자가 크게 줄었다(2026-09-16).
-//   레벨 배지·경험치 게이지는 적성 스트립처럼 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
+//   레벨 배지·경험치 게이지는 적성 스트립처럼 격자가 읽어 칸에 넘긴다('InventoryGridPresenter.Redraw').
 //
 // ■ 배치 중인 캐릭터도 **제자리에 남는다** (2026-09-25 결정)
-//   작업슬롯에 배치해도 창고에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고, [정렬]에서만 맨 뒤로 민다
-//   ('IsAway' · 'Storage 규칙.md'의 "배치 중인 개체도 제자리에 남는다").
-//   한때 팰월드식으로 **목록에서 빼는** 안을 넣었다가 되돌렸다 — 창고가 보유 전량의 단일 목록이라는 성질이
-//   깨지고, 그 대가로 칸 한도를 넘는 초과분을 따로 관리해야 했다(경위는 로그 '2026-09-24-storage-sort-assigned-first').
+//   작업슬롯에 배치해도 인벤토리에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고, [정렬]에서만 맨 뒤로 민다
+//   ('IsAway' · 'Inventory 규칙.md'의 "배치 중인 개체도 제자리에 남는다").
+//   한때 팰월드식으로 **목록에서 빼는** 안을 넣었다가 되돌렸다 — 인벤토리가 보유 전량의 단일 목록이라는 성질이
+//   깨지고, 그 대가로 칸 한도를 넘는 초과분을 따로 관리해야 했다(경위는 로그 '2026-09-24-inventory-sort-assigned-first').
 //
 // ★ 슬롯 변경도 함께 구독한다 — 배치·해제로 딤과 마크가 바뀐다.
 //   캐릭터 목록만 구독하면 배치를 바꿔도 칸이 낡은 채로 남는다.
@@ -29,10 +29,10 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // **100px 칸에서 글자가 5px까지 줄었다.** 문구를 짓는 쪽을 남겨 두면 다음에 보는 사람이
 // 어느 표시가 진짜인지 알 수 없으므로 함께 걷어냈다.
 //
-// ※ 적성은 격자가 읽어 칸에 넘긴다('StorageGridPresenter.Redraw').
+// ※ 적성은 격자가 읽어 칸에 넘긴다('InventoryGridPresenter.Redraw').
 //   배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"낚시를 눌렀더니 내 캐릭터가 없다"의 답이
-//   창고 칸밖에 없다** — 그래서 표시 자체는 빠질 수 없다.
-public class CharacterSlotSource : StorageSlotSource
+//   인벤토리 칸밖에 없다** — 그래서 표시 자체는 빠질 수 없다.
+public class CharacterSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
 
@@ -111,7 +111,7 @@ public class CharacterSlotSource : StorageSlotSource
             .Row("상태", GetWorkText(key))
             .Header("적성");
 
-        foreach (EIndustryType industry in StorageGridPresenter.StripIndustries)
+        foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
             byte aptitude = _data.GetAptitude(key, industry);
             string speed  = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale:0.00}배";

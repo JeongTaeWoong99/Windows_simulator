@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using MikaProtocol;
 
-// 자원 탭 — 인벤토리 아이템을 칸으로 내놓는다. 창고의 기본 탭이다.
+// 자원 탭 — 인벤토리 아이템을 칸으로 내놓는다. 인벤토리의 기본 탭이다.
 //
 // 수량·등급의 주인은 서버와 테이블이다. 이 공급자는 그것을 화면 문구로 옮기기만 한다.
-public class ResourceSlotSource : StorageSlotSource
+public class ResourceSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
 
@@ -15,7 +15,7 @@ public class ResourceSlotSource : StorageSlotSource
 
     // 보유 아이템을 칸으로 옮긴다 (Rebuild에서 호출).
     //
-    // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 자리 기억과 떼어 따로 한다('StorageSlotSource' 주석).
+    // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 자리 기억과 떼어 따로 한다('InventorySlotSource' 주석).
     protected override void Fill(List<SlotData> into)
     {
         foreach (ItemInfo item in _data.Inventory)
@@ -62,7 +62,7 @@ public class ResourceSlotSource : StorageSlotSource
     }
 
     // 자원만 보유 수량으로 줄 세울 수 있다 — 캐릭터·장비는 개체라 수량이 늘 1이다 (도구 줄이 호출).
-    public override bool SupportsSortKey(StorageSortKey key) => true;
+    public override bool SupportsSortKey(InventorySortKey key) => true;
 
     // 보유 수량 많은 순 (기반 클래스의 CompareByKey에서 호출).
     protected override int CompareByCount(SlotData a, SlotData b)
