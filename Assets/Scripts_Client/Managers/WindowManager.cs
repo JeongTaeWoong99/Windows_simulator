@@ -482,11 +482,20 @@ public class WindowManager : MonoService<WindowManager>
         uint   flags       = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOSIZE | Win32Native.SWP_SHOWWINDOW;
         Win32Native.SetWindowPos(_hWnd, insertAfter, 0, 0, 0, 0, flags);
 
-        // 항상 위를 끈 순간 '작업표시줄 맞춤' 창이 작업표시줄에 겹쳐 있었다면 그 위로 올린다('AvoidTaskbar').
-        // 손으로 만든 자리였으면 올라간 좌표를 새 자리로 저장한다 — 다음 실행에서 다시 묻히지 않게.
-        if (ClampIntoMonitor() && _hasCustomPosition)
+        // 항상 위를 끈 순간 '작업표시줄 맞춤' 이하 크기 창이 작업표시줄에 겹쳐 있었다면 그 위로 올린다('AvoidTaskbar').
+        // 손으로 만든 자리였으면 올라간 좌표를 새 자리로 저장한다 — 다음 실행에서 다시 묻히지 않게. 왜 올렸는지는 팝업으로 알린다.
+        if (ClampIntoMonitor())
         {
-            SaveCurrentPosition("항상 위 끔 → 작업표시줄 위로");
+            if (_hasCustomPosition)
+            {
+                SaveCurrentPosition("항상 위 끔 → 작업표시줄 위로");
+            }
+
+            // 부팅 중(저장값 적용)에는 사용자가 한 일이 아니므로 알리지 않는다.
+            if (_initialized)
+            {
+                NotifyTaskbarAvoided();
+            }
         }
 #endif
     }
@@ -852,13 +861,39 @@ public class WindowManager : MonoService<WindowManager>
     private int BottomLimit(Win32Native.RECT wa, Win32Native.RECT full) => AvoidTaskbar ? wa.bottom : full.bottom;
 #endif
 
-    // 창이 작업표시줄을 침범하지 못하게 할 때인가 — 항상 위를 끄고 '작업표시줄 맞춤'을 쓸 때 (T-099).
+    // 창이 작업표시줄을 침범하지 못하게 할 때인가 — 항상 위를 끄고 '작업표시줄 맞춤' 이하 크기를 쓸 때 (T-099).
     //
     // ■ 왜 이 조합만인가
-    //   맞춤이면 위젯 높이가 작업표시줄과 같다. 항상 위가 꺼져 있으면 작업표시줄(그 자체가 topmost)이
-    //   창을 덮는데, 겹친 부분이 정확히 위젯이라 **잡아 올릴 손잡이가 전부 가려진다.**
-    //   항상 위가 켜져 있으면 창이 앞에 있고, 다른 배율이면 가려지지 않은 부분이 남아 겹쳐 두는 배치를 막지 않는다.
-    private bool AvoidTaskbar => !_isTopmost && _currentScale == WindowScale.FitTaskbar;
+    //   맞춤이면 위젯 높이가 작업표시줄과 같고, 그보다 작은 배율이면 더 낮다. 항상 위가 꺼져 있으면
+    //   작업표시줄(그 자체가 topmost)이 창을 덮는데, 겹친 부분에 위젯이 통째로 들어가
+    //   **잡아 올릴 손잡이가 전부 가려진다.**
+    //   항상 위가 켜져 있으면 창이 앞에 있고, 맞춤보다 큰 배율이면 가려지지 않은 부분이 남아 겹쳐 두는 배치를 막지 않는다.
+    // ※ 맞춤 배율을 계산하지 못했으면(에디터 · 작업표시줄 없음) 비교할 기준이 없어 맞춤 항목만 해당한다.
+    private bool AvoidTaskbar => !_isTopmost && FitsInTaskbar(_currentScale);
+
+    // 그 배율의 위젯이 작업표시줄 높이 안에 들어가는가 — 맞춤 자신과 그보다 작은 프리셋.
+    private bool FitsInTaskbar(WindowScale scale)
+    {
+        if (scale == WindowScale.FitTaskbar)
+        {
+            return true;
+        }
+
+        return _fitScaleFactor > 0f && PresetFactor(scale) <= _fitScaleFactor + 0.0001f;
+    }
+
+#if !UNITY_EDITOR
+    // 작업표시줄에서 창을 밀어낸 이유를 알림 팝업으로 알린다 (드래그 끝 · 항상 위를 끈 순간).
+    // 알림 화면('NoticePresenter')이 'ServerWaitManager'만 구독하므로 그 창구를 쓴다 — Managers → UI 의존을 만들지 않는다.
+    private void NotifyTaskbarAvoided()
+    {
+        Services.Get<ServerWaitManager>().RaiseNotice(
+            $"'항상 위에 고정'이 꺼져 있으면 {FitTaskbarLabel()} 이하 크기로는\n" +
+            "창을 작업표시줄 위에 둘 수 없습니다.\n" +
+            "작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\n\n" +
+            "작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.");
+    }
+#endif
 
 #if !UNITY_EDITOR
     // 원하는 클라이언트 크기를, 그 크기를 얻는 데 필요한 외곽 크기로 바꾼다 ('ApplySizeAndPosition'에서 호출).
@@ -1035,8 +1070,12 @@ public class WindowManager : MonoService<WindowManager>
         Win32Native.SendMessage(_hWnd, Win32Native.WM_SYSCOMMAND, Win32Native.SC_MOVE_HTCAPTION, 0);
 
         // 'SendMessage'는 OS 이동 루프가 끝날 때까지 돌아오지 않는다 — 즉 여기는 마우스를 놓은 뒤다.
-        // 창이 화면 아래로 묻힌 채 끝났으면 되올린다.
-        ClampIntoMonitor();
+        // 창이 화면 아래로 묻힌 채 끝났으면 되올린다. 작업표시줄에서 밀어냈으면 이유를 알린다.
+        if (ClampIntoMonitor() && AvoidTaskbar)
+        {
+            NotifyTaskbarAvoided();
+        }
+
         SaveCurrentPosition();
 #endif
     }

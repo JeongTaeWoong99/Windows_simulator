@@ -41,3 +41,6 @@ tags: [client, ui, window, settings]
 - 이 조합(`WindowManager.AvoidTaskbar`)에서만 아래 한계를 `full.bottom` → `wa.bottom`(`BottomLimit`). 드래그 끝(`ClampIntoMonitor`) · 항상 위 끔(`SetTopmost`, 올라가면 좌표 저장) · 부팅 복원(`ResolvePosition`) 세 곳.
 - 그 밖의 조합은 작업표시줄에 겹쳐 두는 기존 배치를 유지한다 — 전면 작업 영역 클램프는 예전 버그로 돌아간다.
 - 안 쓰게 된 `TryGetMonitorBounds` 삭제. 빌드 정의 dotnet 빌드로 `#if !UNITY_EDITOR` 코드 0 오류 확인, 빌드 실측은 남음.
+- (추가) 사용자 실측 확인 후 요청으로 맞춤보다 작은 프리셋까지 넓혔다(`FitsInTaskbar` — `PresetFactor ≤ _fitScaleFactor`). 밀어낼 때(드래그 끝·항상 위 끔) `ServerWaitManager.RaiseNotice`로 이유 팝업. 부팅 복원·부팅 중 `SetTopmost`는 사용자 조작이 아니라 팝업 없음(`_initialized` 가드).
+- ⚠️ bash heredoc 안 파이썬으로 C# 문자열에 `
+`을 넣으면 실제 줄바꿈이 들어가 빌드 정의 컴파일에서만 깨졌다(에디터 컴파일은 `#if !UNITY_EDITOR`라 통과). 문자열 이스케이프는 Edit 도구로.
