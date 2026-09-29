@@ -6,6 +6,10 @@ using MikaProtocol;
 // ■ 두 화면이 같은 장비를 읽는다
 // 창고 장비 탭('EquipSlotSource')과 작업슬롯 세팅의 장비 칸('WorkStationSelectPresenter')이
 // 같은 효과 문구를 쓴다. 한쪽에만 두면 같은 장비가 두 화면에서 다르게 읽힌다.
+//
+// ■ 기본 능력치와 추가 능력치 (T-095)
+// 기본 능력치는 장비 종류(TID)가 정한다('GetEffectText'). 추가 능력치는 **개체마다** 붙는 옵션이고,
+// 장비 등급만큼 칸이 있다('GetStatSlotCount'). 칸 하나에 옵션 하나('GetOptionText')다.
 public static class EquipLabel
 {
     // 이 장비의 효과 한 줄 — '낚시 +30%' · 전 산업이면 '전산업 +10%'. 모르는 TID면 빈 문자열.
@@ -27,6 +31,38 @@ public static class EquipLabel
         string sign = row.SpeedAddPermille >= 0 ? "+" : "";
 
         return $"{industry} {sign}{row.SpeedAddPermille / 10f:0.#}%";
+    }
+
+    // 능력치 칸 수의 상한 — 신화 장비의 칸 수다. 장비 칸 프리팹의 네모 개수와 같아야 한다('SlotView').
+    public const int MaxStatSlotCount = 6;
+
+    // 이 등급의 장비가 갖는 능력치 칸 수 — 일반 1 · 고급 2 · … · 신화 6. 모르는 등급이면 0.
+    //
+    // ⏸ **이 규칙의 주인은 서버다** — 새 능력치 기획(칸 수 = 장비 등급)이 서버에 들어오면
+    //   서버가 칸 수를 판정하고, 이 표는 그 값과 맞춰야 한다. 지금은 화면을 먼저 세우려고 클라가 든다.
+    // ※ 'GlobalRarity'의 값이 곧 서수다(Common 1 ~ Mythic 6). 값이 늘면 상한에서 자른다.
+    public static int GetStatSlotCount(GlobalRarity rarity)
+    {
+        int ordinal = (int)rarity;
+
+        return ordinal <= 0 ? 0 : System.Math.Min(ordinal, MaxStatSlotCount);
+    }
+
+    // 능력치 옵션 한 줄의 문구 — '낚시 +4%' · '전산업 +2%' · '경험치 +3%'. 모르는 종류면 빈 문자열.
+    //
+    // ※ 'Value'는 천분율이다(40 = 4%). 산업 'None'을 '전산업'으로 읽는 이유는 'GetEffectText'와 같다.
+    public static string GetOptionText(EnchantOptionTableRow option)
+    {
+        string percent = $"+{option.Value / 10f:0.#}%";
+
+        return option.OptionType switch
+        {
+            EnchantOptionType.Speed => option.Industry == IndustryType.None
+                ? $"전산업 {percent}"
+                : $"{IndustryLabel.Get((EIndustryType)(byte)option.Industry)} {percent}",
+            EnchantOptionType.CharacterExp => $"경험치 {percent}",
+            _                              => "",
+        };
     }
 
     // 이 칸에 낄 수 있는 종류인가. 클라가 목록을 거를 때만 쓴다 —

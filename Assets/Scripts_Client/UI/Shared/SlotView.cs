@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -63,6 +65,17 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
     private TMP_Text levelText = null!;
 
+    // ※ 보조 문구·적성 스트립과 **같은 밴드**를 쓴다 — 장비 탭에서는 효과 문구 대신 이 줄이 선다
+    //   (기본 능력치 문구는 툴팁으로 갔다 · T-095).
+    // ※ 네모는 **오른쪽 끝부터** 앉는다 — 칸이 1개인 일반 장비는 오른쪽 아래 하나만 켜진다.
+    [CenterHeader("능력치 칸 (장비 탭)")]
+    [SerializeField, Tooltip("능력치 칸 네모를 담은 하단 밴드. 장비 탭에서만 켜진다")]
+    private GameObject statSocketStrip = null!;
+
+    // ⚠️ **배열 순서 = 화면의 왼쪽 → 오른쪽**이다. 칸 수가 적으면 앞(왼쪽)부터 꺼진다.
+    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 6개. 왼쪽 → 오른쪽 순서")]
+    private Image[] statSocketImages = new Image[0];
+
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
@@ -120,6 +133,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 껐다 켤 때마다 점점 검어진다.
     private Color _rarityColor = RarityPalette.Unknown;
 
+    // 능력치 칸 네모의 원래 색 — 등급색과 같은 이유로 딤·흑백 전의 값을 들고 있는다.
+    private Color[] _socketColors = new Color[0];
+
+    // 빈 능력치 칸의 색. 일반 등급 회색(#9D9D9D)보다 확실히 어둡게 둔다 — 둘이 비슷하면 "박혔나"가 안 읽힌다.
+    private static readonly Color EmptySocketColor = new Color32(0x2A, 0x2A, 0x2A, 0xFF);
+
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 부르는 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
@@ -134,6 +153,16 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(sellMark,       nameof(sellMark));
         this.RequireRef(assignMark,     nameof(assignMark));
+        this.RequireRef(statSocketStrip, nameof(statSocketStrip));
+
+        // 네모가 상한보다 적으면 신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
+        if (statSocketImages.Length != EquipLabel.MaxStatSlotCount)
+        {
+            ClientLogger.Warn(ClientLogger.UI,
+                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한은 {EquipLabel.MaxStatSlotCount}칸이다.", this);
+        }
+
+        _socketColors = new Color[statSocketImages.Length];
 
         // 칸이 5개가 아니면 값이 다른 산업 자리에 들어간다 — 위치가 곧 산업이라 조용히 틀린다.
         if (aptitudeValueTexts.Length != AptitudeCount)
@@ -147,6 +176,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _subBaseAlpha  = subText.alpha;
 
         aptitudeStrip.SetActive(false);
+        statSocketStrip.SetActive(false);
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
         sellMark.SetActive(false);
@@ -198,8 +228,15 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     {
         _isSubAllowed = on;
 
-        // 스트립이 켜져 있으면 그쪽이 자리를 쓰고 있다 — 여기서 켜면 둘이 겹친다.
-        subText.gameObject.SetActive(on && !aptitudeStrip.activeSelf);
+        RefreshSubText();
+    }
+
+    // 하단 밴드의 주인을 정한다 — 적성 스트립이나 능력치 칸이 켜져 있으면 문구는 비킨다
+    // (SetSubVisible · SetAptitudes · SetStatSockets에서 호출).
+    // ※ 셋이 같은 자리라 판정을 한 곳에 둔다 — 셋에 흩어 두면 하나를 더할 때 한 곳이 빠진다.
+    private void RefreshSubText()
+    {
+        subText.gameObject.SetActive(_isSubAllowed && !aptitudeStrip.activeSelf && !statSocketStrip.activeSelf);
     }
 
     // 적성 5종을 스트립에 그린다. 'null'이면 스트립을 끄고 보조 문구 자리를 돌려준다
@@ -221,7 +258,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         aptitudeStrip.SetActive(on);
 
         // 같은 밴드를 나눠 쓴다 — 스트립이 켜지면 문구는 비켜야 한다.
-        subText.gameObject.SetActive(_isSubAllowed && !on);
+        RefreshSubText();
 
         if (!on)
         {
@@ -242,6 +279,53 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             text.text  = AptitudeLabel.GetText(value);
             text.color = AptitudeLabel.GetColor(value);
         }
+    }
+
+    // 능력치 칸을 그린다. 'null'이면 줄을 끄고 보조 문구 자리를 돌려준다
+    // (창고 격자가 매번 그릴 때 호출 — 장비 탭에서만 값이 온다 · T-095).
+    //
+    // grades의 길이가 곧 칸 수이고, 원소는 그 칸에 박힌 능력치의 등급이다 — 'None'이면 빈 칸.
+    // 칸 수·등급의 판단은 공급자가 한다('EquipSlotSource') — 이 칸은 장비를 모른다('SetAptitudes'와 같은 이유).
+    public void SetStatSockets(IReadOnlyList<GlobalRarity>? grades)
+    {
+        bool on = grades != null && grades.Count > 0;
+
+        statSocketStrip.SetActive(on);
+        RefreshSubText();
+
+        if (!on)
+        {
+            return;
+        }
+
+        // 오른쪽 끝부터 앉힌다 — 앞의 'offset'개 네모는 끈다.
+        int offset = statSocketImages.Length - grades!.Count;
+
+        for (int i = 0; i < statSocketImages.Length; i++)
+        {
+            Image? socket = statSocketImages[i];
+
+            if (socket == null)
+            {
+                continue; // 배선 누락은 Awake가 이미 경고했다
+            }
+
+            int line = i - offset;
+            bool isUsed = line >= 0;
+
+            socket.gameObject.SetActive(isUsed);
+
+            if (!isUsed)
+            {
+                continue;
+            }
+
+            GlobalRarity grade = grades[line];
+
+            _socketColors[i] = grade == GlobalRarity.None ? EmptySocketColor : RarityPalette.Get(grade);
+        }
+
+        ApplyTint();
     }
 
     // 레벨 배지를 그린다. 'null'이면 배지를 끈다 (창고 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
@@ -338,6 +422,14 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         rarityImage.color = Tint(_rarityColor);
         itemImage.color   = Tint(_itemBaseColor);
 
+        for (int i = 0; i < statSocketImages.Length; i++)
+        {
+            if (statSocketImages[i] != null)
+            {
+                statSocketImages[i].color = Tint(_socketColors[i]);
+            }
+        }
+
         float textAlpha = _isFilteredOut ? FilteredOutTextAlpha : 1f;
 
         nameText.alpha = _nameBaseAlpha * textAlpha;
@@ -375,6 +467,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
 
         SetAptitudes(null); // 스트립을 끄고 보조 문구 자리를 원래대로 돌려준다
+        SetStatSockets(null);
         SetExpGauge(null);
         SetLevelBadge(null);
         sellMark.SetActive(false);

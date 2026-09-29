@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -26,14 +27,25 @@ using MikaProtocol;
 //   서버도 장착 시 'SlotPosition'을 그대로 두므로(`Equip.Wear`) **클라·서버의 견해가 일치한다** —
 //   한때 목록에서 빼는 안을 넣었을 때 생겼던 "빈 칸이 보이는데 뽑기가 거절되는" 어긋남이 사라졌다.
 //
-// ※ 칸의 보조 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
+// ※ 기본 능력치 문구('낚시 +30%')는 'UI/Shared/EquipLabel'이 만든다 —
 //   작업슬롯 세팅의 장비 칸이 같은 문구를 쓰기 때문이다(T-074).
+//   창고 칸에서는 툴팁에만 나온다 — 칸 아래 밴드는 능력치 칸 줄이 쓴다(T-095).
+//
+// ■ 능력치 칸 (T-095)
+//   칸 수는 장비 등급('EquipLabel.GetStatSlotCount'), 칸 하나의 색은 거기 박힌 옵션의 등급이다.
+//   ⏸ **옵션을 지금은 옛 인챈트 필드('EquipInfo.EnchantOptions')에서 읽는다.** 새 능력치 기획
+//      (칸마다 등급·종류·수치)의 패킷이 오면 'ReadStatOptions' 한 곳만 갈아 끼운다.
 public class EquipSlotSource : StorageSlotSource
 {
     private readonly PlayerDataModel _data;
 
     // 'SlotPosition'으로 줄 세울 때 쓰는 버퍼. 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
     private readonly List<EquipInfo> _ordered = new List<EquipInfo>();
+
+    // 능력치 칸 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
+    // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('StorageGridPresenter.ReadAptitudes'와 같은 규약).
+    private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
+    private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
 
     public EquipSlotSource(PlayerDataModel data)
     {
@@ -49,10 +61,11 @@ public class EquipSlotSource : StorageSlotSource
 
         foreach (EquipInfo equip in _ordered)
         {
+            // 보조 문구는 비운다 — 그 밴드를 능력치 칸이 쓰고, 기본 능력치는 툴팁으로 갔다(T-095).
             into.Add(new SlotData(
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
-                EquipLabel.GetEffectText(equip.EquipTid),
+                "",
                 GameDataLoader.GetEquipRarity(equip.EquipTid)));
         }
     }
@@ -110,10 +123,57 @@ public class EquipSlotSource : StorageSlotSource
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => _data.IsEquipped(key);
 
-    // 장비 칸 툴팁 — 등급 · 종류 · 효과 · 누가 끼고 있나 (격자가 칸에 올린 순간 호출).
+    // 이 장비의 능력치 칸 — 칸마다 박힌 옵션의 등급, 빈 칸은 'None' (격자가 매번 그릴 때 호출).
+    public override IReadOnlyList<GlobalRarity>? GetStatSockets(long key)
+    {
+        EquipInfo? equip = FindEquip(key);
+
+        if (equip == null)
+        {
+            return null;
+        }
+
+        ReadStatOptions(equip);
+
+        _sockets.Clear();
+
+        foreach (EnchantOptionTableRow? option in _options)
+        {
+            _sockets.Add(option?.Grade ?? GlobalRarity.None);
+        }
+
+        return _sockets;
+    }
+
+    // 칸마다 박힌 옵션을 '_options'에 채운다 — 길이 = 칸 수, 빈 칸은 null (GetStatSockets · BuildTooltip에서 호출).
+    //
+    // ⏸ 옛 인챈트 필드에서 읽는 임시 배선이다(머리 주석). 새 패킷이 오면 여기만 바꾼다.
+    // ※ 옛 데이터는 칸 수를 넘을 수 있다(일반 장비에 인챈트 2~3줄). **숨기지 않고 칸을 늘려** 보인다 —
+    //   잘라 버리면 실제로 붙어 있는 옵션이 화면에서 사라진다. 상한(6)만 지킨다.
+    private void ReadStatOptions(EquipInfo equip)
+    {
+        _options.Clear();
+
+        int slotCount = EquipLabel.GetStatSlotCount(GameDataLoader.GetEquipRarity(equip.EquipTid));
+        int count     = Math.Min(Math.Max(slotCount, equip.EnchantOptions.Count), EquipLabel.MaxStatSlotCount);
+
+        for (int i = 0; i < count; i++)
+        {
+            EnchantOptionTableRow? option = null;
+
+            if (i < equip.EnchantOptions.Count && GameDataLoader.TryGetEnchantOption(equip.EnchantOptions[i], out EnchantOptionTableRow row))
+            {
+                option = row;
+            }
+
+            _options.Add(option);
+        }
+    }
+
+    // 장비 칸 툴팁 — 등급 · 종류 · 기본 능력치 · 능력치 칸 · 누가 끼고 있나 (격자가 칸에 올린 순간 호출).
     //
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
-    // ⏸ 인챈트 등급·옵션은 인챈트 UI(T-095)가 표기 규칙과 함께 넣는다.
+    // 능력치 칸은 칸의 네모가 색만 말하므로, 무엇이 박혔는지는 여기서 줄마다 적는다(줄 바탕 = 그 옵션의 등급색).
     public override TooltipContent? BuildTooltip(long key)
     {
         EquipInfo? equip = FindEquip(key);
@@ -131,10 +191,49 @@ public class EquipSlotSource : StorageSlotSource
 
         AddRarityRow(content, GameDataLoader.GetEquipRarity(equip.EquipTid))
             .Row("종류", EquipLabel.GetKindName(row.EquipKind))
-            .Row("효과", EquipLabel.GetEffectText(equip.EquipTid))
+            .Row("기본 능력치", EquipLabel.GetEffectText(equip.EquipTid))
             .Row("장착", state);
 
+        ReadStatOptions(equip);
+
+        if (_options.Count == 0)
+        {
+            return content;
+        }
+
+        content.Header($"능력치 칸 {CountFilled()}/{_options.Count}");
+
+        for (int i = 0; i < _options.Count; i++)
+        {
+            EnchantOptionTableRow? option = _options[i];
+
+            if (option == null)
+            {
+                content.Row($"{i + 1}", "비어 있음");
+
+                continue;
+            }
+
+            content.Row($"{i + 1}", EquipLabel.GetOptionText(option), RarityLabel.Get(option.Grade), RarityPalette.Get(option.Grade));
+        }
+
         return content;
+    }
+
+    // '_options' 중 박힌 칸의 수 (BuildTooltip에서 호출).
+    private int CountFilled()
+    {
+        int filled = 0;
+
+        foreach (EnchantOptionTableRow? option in _options)
+        {
+            if (option != null)
+            {
+                filled++;
+            }
+        }
+
+        return filled;
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

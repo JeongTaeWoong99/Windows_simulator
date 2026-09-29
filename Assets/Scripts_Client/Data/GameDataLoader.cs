@@ -209,6 +209,13 @@ public static class GameDataLoader
         return GameTable.EquipTable.TryGet(equipTid, out row);
     }
 
+    // 장비 능력치 옵션 한 행 — 등급·종류·산업·수치. 장비 칸의 능력치 칸 색과 툴팁 문구가 쓴다.
+    // ※ 실패를 그대로 돌려준다 — 모르는 옵션은 칸을 비운 것으로 그릴지 부르는 쪽이 정한다('TryGetEquip'과 같은 이유).
+    public static bool TryGetEnchantOption(int optionTid, out EnchantOptionTableRow row)
+    {
+        return GameTable.EnchantOptionTable.TryGet(optionTid, out row);
+    }
+
     // 우편 템플릿 한 행 — 제목·본문·발신자는 패킷에 없고 여기서만 읽는다.
     // ※ 첨부는 이 행이 아니라 패킷('MailInfo')의 것을 쓴다 — 서버가 보낸 순간 복사해 두므로
     //   템플릿을 나중에 고쳐도 이미 온 우편은 그대로이고, 넘침 보관 템플릿은 첨부가 비어 있다.

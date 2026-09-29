@@ -449,6 +449,9 @@ public class StorageGridPresenter : MonoBehaviour
                 view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
                 view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
 
+                // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
+                view.SetStatSockets(_current.GetStatSockets(data.Key));
+
                 continue;
             }
 

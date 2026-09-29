@@ -155,6 +155,11 @@ public abstract class StorageSlotSource
     // ■ 격자가 아니라 여기인 이유는 'IsAway'와 같다 — 무엇을 보일지가 탭마다 통째로 다르다.
     public virtual TooltipContent? BuildTooltip(long key) => null;
 
+    // 이 개체의 능력치 칸 — 길이 = 칸 수, 원소 = 박힌 등급('None'은 빈 칸) (격자가 매번 그릴 때 호출, T-095).
+    // 능력치 칸이 없는 탭은 null이고, 칸은 줄을 끈다. 지금은 장비 탭만 값이 있다.
+    // ※ 판단을 격자가 아니라 여기 두는 이유는 'IsAway'와 같다.
+    public virtual IReadOnlyList<GlobalRarity>? GetStatSockets(long key) => null;
+
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
