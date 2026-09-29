@@ -35,3 +35,9 @@ tags: [client, ui, window, settings]
 - 슬라이더 최소값 잔여 채움: 유니티 기본 `Fill` 폭 10 때문. `Fill Area` 좌우를 손잡이 구간(10)과 맞추고 `Fill` 폭 0.
 - 슬라이더 값 표시: 양끝 10%·100%는 어색하다는 피드백으로 **왼쪽에 지금 값 하나**로 바꿨다(오디오 넷도 자리만 · 100% 고정).
 - 탭 균등: `Spacer` 제거 + 탭 LayoutElement min 0 · pref 0 · flexW 1(산업 레벨 버튼과 같은 값).
+
+## 업데이트 (2026-09-30) — 작업표시줄 침범 금지 (T-099)
+- 항상 위 off + `FitTaskbar`면 위젯 높이 = 작업표시줄 높이라, 작업표시줄에 겹치면 창 전체가 가려져 잡을 곳이 없다(사용자 보고).
+- 이 조합(`WindowManager.AvoidTaskbar`)에서만 아래 한계를 `full.bottom` → `wa.bottom`(`BottomLimit`). 드래그 끝(`ClampIntoMonitor`) · 항상 위 끔(`SetTopmost`, 올라가면 좌표 저장) · 부팅 복원(`ResolvePosition`) 세 곳.
+- 그 밖의 조합은 작업표시줄에 겹쳐 두는 기존 배치를 유지한다 — 전면 작업 영역 클램프는 예전 버그로 돌아간다.
+- 안 쓰게 된 `TryGetMonitorBounds` 삭제. 빌드 정의 dotnet 빌드로 `#if !UNITY_EDITOR` 코드 0 오류 확인, 빌드 실측은 남음.

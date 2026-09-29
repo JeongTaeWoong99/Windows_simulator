@@ -481,6 +481,13 @@ public class WindowManager : MonoService<WindowManager>
         IntPtr insertAfter = enable ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
         uint   flags       = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOSIZE | Win32Native.SWP_SHOWWINDOW;
         Win32Native.SetWindowPos(_hWnd, insertAfter, 0, 0, 0, 0, flags);
+
+        // 항상 위를 끈 순간 '작업표시줄 맞춤' 창이 작업표시줄에 겹쳐 있었다면 그 위로 올린다('AvoidTaskbar').
+        // 손으로 만든 자리였으면 올라간 좌표를 새 자리로 저장한다 — 다음 실행에서 다시 묻히지 않게.
+        if (ClampIntoMonitor() && _hasCustomPosition)
+        {
+            SaveCurrentPosition("항상 위 끔 → 작업표시줄 위로");
+        }
 #endif
     }
 
@@ -834,12 +841,24 @@ public class WindowManager : MonoService<WindowManager>
         }
 
         // 창이 모니터보다 크면 하한이 상한을 넘으므로 좌상단을 우선한다(Max로 접는다).
-        int x = Mathf.Clamp(_customPosition.x, full.left, Mathf.Max(full.left, full.right  - outer.x));
-        int y = Mathf.Clamp(_customPosition.y, full.top,  Mathf.Max(full.top,  full.bottom - outer.y));
+        int x = Mathf.Clamp(_customPosition.x, full.left, Mathf.Max(full.left, full.right - outer.x));
+        int y = Mathf.Clamp(_customPosition.y, full.top,  Mathf.Max(full.top,  BottomLimit(wa, full) - outer.y));
 
         return new Vector2Int(x, y);
     }
+
+    // 창 아랫변이 내려갈 수 있는 한계. 보통은 모니터 끝(작업표시줄 위에 겹쳐 두는 배치 허용)이고,
+    // 'AvoidTaskbar'일 때만 작업 영역 끝(작업표시줄 위)이다.
+    private int BottomLimit(Win32Native.RECT wa, Win32Native.RECT full) => AvoidTaskbar ? wa.bottom : full.bottom;
 #endif
+
+    // 창이 작업표시줄을 침범하지 못하게 할 때인가 — 항상 위를 끄고 '작업표시줄 맞춤'을 쓸 때 (T-099).
+    //
+    // ■ 왜 이 조합만인가
+    //   맞춤이면 위젯 높이가 작업표시줄과 같다. 항상 위가 꺼져 있으면 작업표시줄(그 자체가 topmost)이
+    //   창을 덮는데, 겹친 부분이 정확히 위젯이라 **잡아 올릴 손잡이가 전부 가려진다.**
+    //   항상 위가 켜져 있으면 창이 앞에 있고, 다른 배율이면 가려지지 않은 부분이 남아 겹쳐 두는 배치를 막지 않는다.
+    private bool AvoidTaskbar => !_isTopmost && _currentScale == WindowScale.FitTaskbar;
 
 #if !UNITY_EDITOR
     // 원하는 클라이언트 크기를, 그 크기를 얻는 데 필요한 외곽 크기로 바꾼다 ('ApplySizeAndPosition'에서 호출).
@@ -953,9 +972,6 @@ public class WindowManager : MonoService<WindowManager>
     // 창이 실제로 올라가 있는 모니터의 작업 영역(작업표시줄 제외) 사각형을 얻는다.
     private bool TryGetWorkArea(out Win32Native.RECT workArea) => TryGetMonitorRects(out workArea, out _);
 
-    // 같은 모니터의 '전체'(작업표시줄 포함) 사각형을 얻는다 — 드래그 클램프('ClampIntoMonitor')용.
-    private bool TryGetMonitorBounds(out Win32Native.RECT full) => TryGetMonitorRects(out _, out full);
-
     // 창이 놓인 모니터의 작업 영역과 전체 사각형을 한 번의 조회로 함께 얻는다
     // ('MONITORINFO'가 둘을 같이 담아 오므로 나눠 부를 이유가 없다).
     //
@@ -1033,34 +1049,38 @@ public class WindowManager : MonoService<WindowManager>
     //
     // ⚠️ 기준은 작업 영역이 아니라 '모니터 전체'다 — 작업표시줄 위에 창을 겹쳐 두는 배치는
     //   의도된 사용이라 막지 않는다. 화면 밖으로 나가는 것만 되돌린다.
+    //   **예외는 'AvoidTaskbar'** — 그때는 작업표시줄 위까지만 허용한다(가려져 못 잡는 것을 막는다).
     //   앵커 배치('AnchorPosition')는 그대로 작업 영역 기준이다 — 둘은 목적이 다르다.
     //   여기서 만든 자리는 'SaveCurrentPosition'이 저장해, 다음 실행에서 앵커보다 먼저 쓰인다.
     // ⚠️ 가로는 건드리지 않는다 — 좌우로 걸쳐 두는 것도 의도된 배치다.
-    private void ClampIntoMonitor()
+    // 옮겼으면 true.
+    private bool ClampIntoMonitor()
     {
         // 'GetWindowRect'는 외곽 사각형이라 'SetWindowPos'가 옮기는 대상과 좌표계가 같다
         // → 프레임 두께를 따로 보정할 필요가 없다.
         if (_hWnd == IntPtr.Zero
             || !Win32Native.GetWindowRect(_hWnd, out Win32Native.RECT rect)
-            || !TryGetMonitorBounds(out Win32Native.RECT full))
+            || !TryGetMonitorRects(out Win32Native.RECT wa, out Win32Native.RECT full))
         {
-            return;
+            return false;
         }
 
         int height = rect.bottom - rect.top;
 
         // 창이 모니터보다 크면 아래를 맞추다 위가 잘린다 → 그럴 땐 위를 우선한다(maxTop이 full.top으로 접힘).
-        int maxTop = Mathf.Max(full.top, full.bottom - height);
+        int maxTop = Mathf.Max(full.top, BottomLimit(wa, full) - height);
         int y      = Mathf.Clamp(rect.top, full.top, maxTop);
 
         if (y == rect.top)
         {
-            return; // 이미 안에 있다 — 불필요한 SetWindowPos로 Z순서·프레임을 흔들지 않는다
+            return false; // 이미 안에 있다 — 불필요한 SetWindowPos로 Z순서·프레임을 흔들지 않는다
         }
 
         IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
         uint   flags = Win32Native.SWP_NOSIZE | Win32Native.SWP_NOACTIVATE;
         Win32Native.SetWindowPos(_hWnd, after, rect.left, y, 0, 0, flags);
+
+        return true;
     }
 
     // 지금 창이 있는 자리를 "손으로 만든 위치"로 저장한다 (드래그가 끝난 직후 호출).
@@ -1068,7 +1088,7 @@ public class WindowManager : MonoService<WindowManager>
     //
     // ⚠️ 'ClampIntoMonitor' 뒤에 불러야 한다 — 그게 되올린 뒤의 최종 좌표를 저장해야 하고,
     //   클램프가 필요 없어 일찍 빠져나간 경우에도 저장은 되어야 하기 때문이다.
-    private void SaveCurrentPosition()
+    private void SaveCurrentPosition(string reason = "드래그 끝")
     {
         if (_hWnd == IntPtr.Zero || !Win32Native.GetWindowRect(_hWnd, out Win32Native.RECT rect))
         {
@@ -1081,7 +1101,7 @@ public class WindowManager : MonoService<WindowManager>
         WindowSettings.SaveInt(WindowSettings.PositionXKey, rect.left);
         WindowSettings.SaveInt(WindowSettings.PositionYKey, rect.top);
 
-        LogWindowState("드래그 끝 → 좌표 저장");
+        LogWindowState(reason + " → 좌표 저장");
     }
 #endif
 
