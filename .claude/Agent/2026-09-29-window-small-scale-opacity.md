@@ -29,3 +29,9 @@ tags: [client, ui, window, settings]
 - `(기능 없음)` 줄은 **씬에만** 있고 코드는 모른다 — 기능을 붙일 때 필드로 받아 배선하고 표시 글씨를 지운다.
 - 씬은 `eval_file` 스크립트로 만들었다. 에디터 Game 뷰 캡처는 Overlay UI가 안 찍혀(플레이 전용) **Root Canvas를 잠깐 ScreenSpaceCamera로 돌려 임시 카메라로 렌더**해 확인했다.
 - 복원 버튼은 공장값(`setStartScale`·`setStartAnchor`)으로 되돌린다 — 위젯 위치는 부른 쪽(`SettingPresenter`)이 함께 맞춘다(Managers → UI 의존 금지).
+
+## 업데이트 (2026-09-30) — 설정 폴리싱
+- 체크가 흐렸던 원인: 유니티 기본 `Checkmark` 스프라이트가 어두운 회색(평균 밝기 0.28, 렌더텍스처로 픽셀 측정). 색 곱셈이라 밝아질 수 없다 → 흰색 픽셀 체크를 `Assets/Sprites/ui/checkmark.png`로 코드 생성.
+- 슬라이더 최소값 잔여 채움: 유니티 기본 `Fill` 폭 10 때문. `Fill Area` 좌우를 손잡이 구간(10)과 맞추고 `Fill` 폭 0.
+- 슬라이더 값 표시: 양끝 10%·100%는 어색하다는 피드백으로 **왼쪽에 지금 값 하나**로 바꿨다(오디오 넷도 자리만 · 100% 고정).
+- 탭 균등: `Spacer` 제거 + 탭 LayoutElement min 0 · pref 0 · flexW 1(산업 레벨 버튼과 같은 값).

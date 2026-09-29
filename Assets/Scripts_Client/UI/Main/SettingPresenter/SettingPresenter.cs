@@ -81,6 +81,7 @@ public class SettingPresenter : MonoBehaviour
     // 둘은 같은 6칸 나열 순서라 인덱스가 1:1이다 — 짝이 맞는 모서리 조합만 유효.
     [SerializeField] private TMP_Dropdown windowPositionDropdown  = null!; // 창+위젯 위치 (6칸)
     [SerializeField] private Slider       opacitySlider           = null!; // 화면 투명도 (불투명도 10~100%)
+    [SerializeField] private TMP_Text     opacityValueText        = null!; // 슬라이더 왼쪽 — 지금 값 (예: 80%)
     [SerializeField] private Button       resetSizeButton         = null!; // 창 크기 복원
     [SerializeField] private Button       resetPositionButton     = null!; // 창 위치 복원
 
@@ -107,6 +108,7 @@ public class SettingPresenter : MonoBehaviour
         this.RequireRef(sizeDropdown,            nameof(sizeDropdown));
         this.RequireRef(windowPositionDropdown,  nameof(windowPositionDropdown));
         this.RequireRef(opacitySlider,           nameof(opacitySlider));
+        this.RequireRef(opacityValueText,        nameof(opacityValueText));
         this.RequireRef(resetSizeButton,         nameof(resetSizeButton));
         this.RequireRef(resetPositionButton,     nameof(resetPositionButton));
         this.RequireRef(widgetLayout,            nameof(widgetLayout));
@@ -267,19 +269,32 @@ public class SettingPresenter : MonoBehaviour
 
     // 투명도 슬라이더 — 끌면 즉시 반영하고, 손을 떼면 한 번 저장한다.
     // ※ 범위는 코드가 정한다 — 인스펙터 min·max를 손으로 맞추면 'DisplayManager'의 범위와 어긋난다.
+    //   왼쪽 글씨는 지금 값을 보여 준다 — 왼쪽 끝이 0%가 아니라 최소값(10%)이라는 것도 이걸로 드러난다.
     private void BindOpacitySlider(DisplayManager display)
     {
         opacitySlider.wholeNumbers = true;
         opacitySlider.minValue     = DisplayManager.MinOpacityPercent;
         opacitySlider.maxValue     = DisplayManager.MaxOpacityPercent;
         opacitySlider.SetValueWithoutNotify(display.OpacityPercent);
-        opacitySlider.onValueChanged.AddListener(value => display.SetOpacity(Mathf.RoundToInt(value)));
+        ShowOpacity(display.OpacityPercent);
+        opacitySlider.onValueChanged.AddListener(value =>
+        {
+            int percent = Mathf.RoundToInt(value);
+            display.SetOpacity(percent);
+            ShowOpacity(percent);
+        });
 
         // 슬라이더에는 "손을 뗐다" 이벤트가 없어 PointerUp을 따로 받는다.
         var trigger = opacitySlider.gameObject.AddComponent<EventTrigger>();
         var entry   = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
         entry.callback.AddListener(_ => display.SaveOpacity());
         trigger.triggers.Add(entry);
+    }
+
+    // 투명도 값 글씨를 갱신한다 (BindOpacitySlider · 슬라이더 onValueChanged).
+    private void ShowOpacity(int percent)
+    {
+        opacityValueText.text = $"{percent}%";
     }
 
     #endregion
