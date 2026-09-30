@@ -7,10 +7,17 @@ using UnityEngine.UI;
 //
 // 버튼은 하나다 — 안 받은 우편은 받기만, 받은 우편은 지우기만 할 수 있어서 둘이 동시에 뜨는 일이 없다.
 // 안 받은 우편에 삭제 버튼을 두지 않는 것은 기획(우편 1장 12번)이다.
-// 제목·첨부 문구는 'MailPresenter'가 완성해서 넘긴다 (종속 View 규약은 'UI 규칙.md').
+// 제목·첨부 문구·아이콘·툴팁은 'MailPresenter'가 완성해서 넘긴다 (종속 View 규약은 'UI 규칙.md').
+// 왼쪽 아이콘은 첫 첨부 하나다 — 첨부 전부는 줄에 마우스를 올리면 뜨는 툴팁에 있다.
 public class MailRowView : MonoBehaviour
 {
     [CenterHeader("참조")]
+    [SerializeField, Tooltip("왼쪽 아이콘 칸 (ItemIconView 프리팹) — 첫 첨부")]
+    private ItemIconView iconView = null!;
+
+    [SerializeField, Tooltip("줄 루트의 툴팁 트리거. 내용은 코드가 넘긴다 — 첨부 전부")]
+    private TooltipTrigger tooltipTrigger = null!;
+
     [SerializeField, Tooltip("우편 제목 (템플릿의 Title)")]
     private TMP_Text titleText = null!;
 
@@ -38,6 +45,8 @@ public class MailRowView : MonoBehaviour
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
     private void Awake()
     {
+        this.RequireRef(iconView,       nameof(iconView));
+        this.RequireRef(tooltipTrigger, nameof(tooltipTrigger));
         this.RequireRef(titleText,      nameof(titleText));
         this.RequireRef(infoText,       nameof(infoText));
         this.RequireRef(attachmentText, nameof(attachmentText));
@@ -53,10 +62,16 @@ public class MailRowView : MonoBehaviour
     //   info       : 완성된 "발신자 · 도착 시각" 문구
     //   attachment : 완성된 첨부 요약
     //   isClaimed  : 받은 우편인가 — 버튼이 [받기]와 [삭제] 중 무엇이 될지를 정한다
-    public void Bind(long mailId, string title, string info, string attachment, bool isClaimed)
+    //   icon       : 왼쪽 아이콘 칸의 완성값
+    //   tooltip    : 줄에 마우스를 올리면 부를 툴팁 함수
+    public void Bind(long mailId, string title, string info, string attachment, bool isClaimed,
+                     in ItemIconContent icon, Func<TooltipContent?> tooltip)
     {
         _mailId    = mailId;
         _isClaimed = isClaimed;
+
+        iconView.Bind(icon);
+        tooltipTrigger.SetProvider(tooltip);
 
         titleText.text      = title;
         titleText.color     = UIThemePalette.Of(isClaimed ? UIThemeRole.TextDisabled : UIThemeRole.TextMain); // 받은 우편은 흐리게
@@ -72,6 +87,8 @@ public class MailRowView : MonoBehaviour
     public void Clear()
     {
         _mailId             = 0L;
+        iconView.Clear();
+        tooltipTrigger.SetProvider(null);
         titleText.text      = "";
         infoText.text       = "";
         attachmentText.text = "";

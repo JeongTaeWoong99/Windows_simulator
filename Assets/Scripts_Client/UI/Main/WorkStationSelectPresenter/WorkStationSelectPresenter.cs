@@ -1847,6 +1847,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             view.Bind(equip.EquipId, row.Name, EquipLabel.GetEffectText(equip.EquipTid));
             view.SetRarity(row.GlobalRarity);
+            view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                           () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));
             view.SetPickable(!IsWaiting);
         }
 

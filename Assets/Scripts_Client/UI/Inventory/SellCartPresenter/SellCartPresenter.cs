@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -10,6 +11,7 @@ using UnityEngine.UI;
 //
 // ■ 무엇을 보여 주나
 // 자원 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
+// 여기서 파는 값은 **즉시 판매가**(정해진 값)다. 더 비싸게 팔려면 경매장에 올린다(즉시 판매가 ~ x10 — 'Market 규칙.md').
 // 담고 → 판매 버튼, 이 두 단계가 곧 확인 절차라 별도 확인 모달을 두지 않는다
 // (화면 중앙 팝업을 최소화한다 — 기획 P1).
 //
@@ -165,6 +167,38 @@ public class SellCartPresenter : MonoBehaviour
 
     #region 목록 그리기
 
+    // 줄 툴팁 — 담은 수량 · 보유 · 개당 즉시 판매가 · 합계, 그리고 경매로 올리면의 단가 범위.
+    // ※ 담긴 수량은 올리는 순간의 카트에서 읽는다 — 줄을 그린 뒤 담기·빼기가 있었을 수 있다.
+    private TooltipContent? BuildRowTooltip(int itemId)
+    {
+        long count = 0L;
+
+        foreach (ItemInfo entry in _cart.Entries)
+        {
+            if (entry.ItemId == itemId)
+            {
+                count = entry.Count;
+            }
+        }
+
+        if (count <= 0L)
+        {
+            return null;
+        }
+
+        GlobalRarity rarity    = GameDataLoader.GetItemRarity(itemId);
+        int          basePrice = GameDataLoader.GetItemPrice(itemId);
+
+        return new TooltipContent(GameDataLoader.GetItemName(itemId))
+            .Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+            .Row("담은 수량", $"{count:N0} 개", $"보유 {_data.GetItemCount(itemId):N0}", null)
+            .Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(basePrice):N0} 골드", "개당", null)
+            .Row("받을 골드", $"{AuctionModel.InstantSellTotal(basePrice, count):N0} 골드")
+            .Header("경매로 올리면")
+            .Row("경매 등록가", AuctionModel.FormatBand(basePrice), "개당 단가", null)
+            .Row("경매장 [등록] 탭에서 직접 정합니다", "");
+    }
+
     // 담긴 목록·합계·경고·버튼 상태를 화면에 반영한다 (Start · OnEnable · SellCartModel.Changed 구독).
     private void Refresh()
     {
@@ -172,20 +206,25 @@ public class SellCartPresenter : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            ItemInfo        entry = _cart.Entries[i];
-            SellCartRowView row   = GetOrCreateRow(i);
+            ItemInfo        entry     = _cart.Entries[i];
+            SellCartRowView row       = GetOrCreateRow(i);
+            int             itemId    = entry.ItemId;
+            int             basePrice = GameDataLoader.GetItemPrice(itemId);
 
             row.gameObject.SetActive(true);
-            row.Bind(entry.ItemId,
-                     GameDataLoader.GetItemName(entry.ItemId),
+            row.Bind(itemId,
+                     GameDataLoader.GetItemName(itemId),
                      entry.Count,
-                     (long)GameDataLoader.GetItemPrice(entry.ItemId) * entry.Count);
+                     AuctionModel.InstantSellTotal(basePrice, entry.Count),
+                     ItemIconContent.ForItem(itemId, 0L),
+                     () => BuildRowTooltip(itemId));
         }
 
         HideRowsFrom(count);
 
         emptyText.gameObject.SetActive(count == 0);
-        totalText.text = $"합계 {_cart.TotalPrice:N0} G";
+        // '즉시 판매'라고 못 박는다 — 경매장(직접 가격, 즉시 판매가 ~ x10)과 다른 파는 법이라는 걸 합계 줄에서 말한다.
+        totalText.text = $"즉시 판매 {_cart.TotalPrice:N0} G";
 
         // 상위 등급은 다시 모으기 어렵다. 목록에서 빼지 않고 눈에 띄게만 알린다 —
         // 빼 버리면 "왜 안 담기지"가 되고, 팔 자유는 남겨 둔다.

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-09-30 경매장 탭 클라 화면 (T-096)](2026-09-30-auction-client-screens.md) — `#client` `#ui` 거래소·장비·등록·내 매물 하위 탭과 AuctionModel
 - [2026-09-30 창고 → 인벤토리 개명 · 거래 탭 3개](2026-09-30-inventory-rename-market-tabs.md) — `#client` `#ui` Storage→Inventory 전면 개명 · MarketTabPresenter (T-101)
 - [2026-09-29 창 작은 배율 · 투명도 · 설정 탭](2026-09-29-window-small-scale-opacity.md) — `#client` `#ui` 0.5x·0.75x 배율(이후 제거) · 투명도 슬라이더 · 설정 탭 4개 · 작업표시줄 침범 금지 (T-070 · T-098 · T-099)
 - [2026-09-29 장비 칸 능력치 칸 표시](2026-09-29-equip-stat-socket-display.md) — `#client` `#ui` 칸 오른쪽 아래 등급색 네모 · 툴팁 칸 목록 (T-095 · 새 능력치 기획 선행)

@@ -4,7 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 장비 고르기 목록의 한 줄 — 이름 · 효과 한 줄. 바탕은 등급 색이다.
+// 장비 고르기 목록의 한 줄 — 아이콘(능력치 칸 포함) · 이름 · 효과 한 줄. 바탕은 등급 색이다.
+// 마우스를 올리면 인벤토리 장비 칸과 같은 툴팁(기본 능력치 · 능력치 칸 전부)이 뜬다 — 같은 종류 여럿 중 무엇을 낄지 고르는 자리다.
 //
 // 눌리면 'PickClicked'만 쏜다 — 어느 캐릭터의 어느 칸에 끼우는지는 이 줄이 모른다.
 // 무엇을 몇 줄 그릴지는 'WorkStationSelectPresenter'가 정한다.
@@ -27,6 +28,12 @@ public class EquipPickRowView : MonoBehaviour
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
+    [SerializeField, Tooltip("왼쪽 아이콘 칸 (ItemIconView 프리팹) — 능력치 칸이 보인다")]
+    private ItemIconView iconView = null!;
+
+    [SerializeField, Tooltip("줄 루트의 툴팁 트리거. 내용은 코드가 넘긴다")]
+    private TooltipTrigger tooltipTrigger = null!;
+
     [SerializeField, Tooltip("장비 이름")]
     private TMP_Text nameText = null!;
 
@@ -47,6 +54,8 @@ public class EquipPickRowView : MonoBehaviour
     private void Awake()
     {
         this.RequireRef(backgroundImage, nameof(backgroundImage));
+        this.RequireRef(iconView,        nameof(iconView));
+        this.RequireRef(tooltipTrigger,  nameof(tooltipTrigger));
         this.RequireRef(nameText,        nameof(nameText));
         this.RequireRef(effectText,      nameof(effectText));
         this.RequireRef(pickButton,      nameof(pickButton));
@@ -72,6 +81,15 @@ public class EquipPickRowView : MonoBehaviour
         backgroundImage.color = RarityPalette.Get(rarity);
     }
 
+    // 아이콘과 툴팁을 정한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
+    //   icon    : 'ItemIconContent.ForEquip'이 만든 완성값 — 능력치 칸까지
+    //   tooltip : 줄에 마우스를 올리면 부를 툴팁 함수
+    public void SetDetail(in ItemIconContent icon, Func<TooltipContent?> tooltip)
+    {
+        iconView.Bind(icon);
+        tooltipTrigger.SetProvider(tooltip);
+    }
+
     // 버튼을 잠그거나 푼다 — 응답을 기다리는 동안만 잠긴다.
     public void SetPickable(bool on)
     {
@@ -83,6 +101,8 @@ public class EquipPickRowView : MonoBehaviour
     public void Clear()
     {
         EquipId               = 0;
+        iconView.Clear();
+        tooltipTrigger.SetProvider(null);
         nameText.text         = "";
         effectText.text       = "";
         backgroundImage.color = RarityPalette.Unknown;

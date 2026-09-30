@@ -450,6 +450,103 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 경매장 · 거래소
+
+        // 경매장 검색 결과 도착 (Handle_S_AuctionSearchResponse에서 발행)
+        public static event Action<S_AuctionSearchResponse>? AuctionSearched;
+
+        // 경매 등록 결과 도착 (Handle_S_AuctionRegisterResponse에서 발행)
+        public static event Action<S_AuctionRegisterResponse>? AuctionRegisterResponded;
+
+        // 경매 즉시구매 결과 도착 (Handle_S_AuctionBuyResponse에서 발행)
+        public static event Action<S_AuctionBuyResponse>? AuctionBuyResponded;
+
+        // 경매 판매 취소 결과 도착 (Handle_S_AuctionCancelResponse에서 발행)
+        public static event Action<S_AuctionCancelResponse>? AuctionCancelResponded;
+
+        // 내 매물 목록 도착 (Handle_S_AuctionMyListingsResponse에서 발행)
+        public static event Action<S_AuctionMyListingsResponse>? AuctionMyListingsReceived;
+
+        // 거래소 목록 도착 (Handle_S_MarketItemsResponse에서 발행)
+        public static event Action<S_MarketItemsResponse>? MarketItemsReceived;
+
+        // 거래소 가격대 도착 (Handle_S_MarketPriceResponse에서 발행)
+        public static event Action<S_MarketPriceResponse>? MarketPriceReceived;
+
+        // 거래소 수량 구매 결과 도착 (Handle_S_MarketBuyResponse에서 발행)
+        public static event Action<S_MarketBuyResponse>? MarketBought;
+
+        // 경매장 검색 결과 (S_AuctionSearchResponse 수신 시 자동 호출)
+        [PacketHandler]
+        public static void Handle_S_AuctionSearchResponse(ISession session, S_AuctionSearchResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"경매 검색 결과={res.Result}, {res.Listings?.Count ?? 0}건, 더 있음={res.HasMore}");
+            AuctionSearched?.Invoke(res);
+        }
+
+        // 경매 등록 결과 (S_AuctionRegisterResponse 수신 시 자동 호출)
+        // ★ 성공이면 물건은 이미 인벤토리에서 빠졌다 — 자원은 ItemChangeInfos(누적 총량), 장비는 EquipId로 지운다.
+        //   장비 제거는 'S_EquipSyncResponse'로 오지 않는다. 골드는 'S_CurrencyResponse'가 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_AuctionRegisterResponse(ISession session, S_AuctionRegisterResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"경매 등록 결과={res.Result}, 매물={res.ListingId}, 등록비={res.ListingFee}");
+            AuctionRegisterResponded?.Invoke(res);
+        }
+
+        // 경매 즉시구매 결과 (S_AuctionBuyResponse 수신 시 자동 호출)
+        // ※ 산 물건은 우편으로, 골드는 'S_CurrencyResponse'로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_AuctionBuyResponse(ISession session, S_AuctionBuyResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"경매 구매 결과={res.Result}, 매물={res.ListingId}");
+            AuctionBuyResponded?.Invoke(res);
+        }
+
+        // 경매 판매 취소 결과 (S_AuctionCancelResponse 수신 시 자동 호출)
+        // ※ 물건은 우편으로 돌아온다. 등록비는 환급되지 않는다.
+        [PacketHandler]
+        public static void Handle_S_AuctionCancelResponse(ISession session, S_AuctionCancelResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"경매 취소 결과={res.Result}, 매물={res.ListingId}");
+            AuctionCancelResponded?.Invoke(res);
+        }
+
+        // 내 매물 목록 (S_AuctionMyListingsResponse 수신 시 자동 호출)
+        [PacketHandler]
+        public static void Handle_S_AuctionMyListingsResponse(ISession session, S_AuctionMyListingsResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"내 매물 결과={res.Result}, {res.Listings?.Count ?? 0}건");
+            AuctionMyListingsReceived?.Invoke(res);
+        }
+
+        // 거래소 목록 (S_MarketItemsResponse 수신 시 자동 호출)
+        [PacketHandler]
+        public static void Handle_S_MarketItemsResponse(ISession session, S_MarketItemsResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"거래소 목록 결과={res.Result}, {res.Items?.Count ?? 0}종");
+            MarketItemsReceived?.Invoke(res);
+        }
+
+        // 거래소 가격대 (S_MarketPriceResponse 수신 시 자동 호출)
+        [PacketHandler]
+        public static void Handle_S_MarketPriceResponse(ISession session, S_MarketPriceResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"거래소 가격대 결과={res.Result}, TID={res.Tid}, {res.Levels?.Count ?? 0}칸");
+            MarketPriceReceived?.Invoke(res);
+        }
+
+        // 거래소 수량 구매 결과 (S_MarketBuyResponse 수신 시 자동 호출)
+        // ※ 산 자원은 우편 한 통으로, 골드는 'S_CurrencyResponse'로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_MarketBuyResponse(ISession session, S_MarketBuyResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"거래소 구매 결과={res.Result}, TID={res.Tid}, {res.Count}개, {res.TotalPrice}G");
+            MarketBought?.Invoke(res);
+        }
+
+        #endregion
+
         #region 테스트용 (연결 확인) — 추후 필요 없어지면 삭제
 
         // 에코 응답 — 왕복 연결 테스트용 (S_EchoResponse 수신 시 자동 호출)

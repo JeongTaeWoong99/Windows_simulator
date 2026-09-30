@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -34,7 +33,7 @@ using MikaProtocol;
 // ■ 능력치 칸 (T-095)
 //   칸 수는 장비 등급('EquipLabel.GetStatSlotCount'), 칸 하나의 색은 거기 박힌 옵션의 등급이다.
 //   ⏸ **옵션을 지금은 옛 인챈트 필드('EquipInfo.EnchantOptions')에서 읽는다.** 새 능력치 기획
-//      (칸마다 등급·종류·수치)의 패킷이 오면 'ReadStatOptions' 한 곳만 갈아 끼운다.
+//      (칸마다 등급·종류·수치)의 패킷이 오면 'EquipLabel.ReadStatOptions' 한 곳만 갈아 끼운다(경매장 매물 줄도 같은 함수를 쓴다).
 public class EquipSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
@@ -133,107 +132,28 @@ public class EquipSlotSource : InventorySlotSource
             return null;
         }
 
-        ReadStatOptions(equip);
-
-        _sockets.Clear();
-
-        foreach (EnchantOptionTableRow? option in _options)
-        {
-            _sockets.Add(option?.Grade ?? GlobalRarity.None);
-        }
+        EquipLabel.ReadStatOptions(equip.EquipTid, equip.EnchantOptions, _options);
+        EquipLabel.ToSocketGrades(_options, _sockets);
 
         return _sockets;
     }
 
-    // 칸마다 박힌 옵션을 '_options'에 채운다 — 길이 = 칸 수, 빈 칸은 null (GetStatSockets · BuildTooltip에서 호출).
-    //
-    // ⏸ 옛 인챈트 필드에서 읽는 임시 배선이다(머리 주석). 새 패킷이 오면 여기만 바꾼다.
-    // ※ 옛 데이터는 칸 수를 넘을 수 있다(일반 장비에 인챈트 2~3줄). **숨기지 않고 칸을 늘려** 보인다 —
-    //   잘라 버리면 실제로 붙어 있는 옵션이 화면에서 사라진다. 상한(6)만 지킨다.
-    private void ReadStatOptions(EquipInfo equip)
-    {
-        _options.Clear();
-
-        int slotCount = EquipLabel.GetStatSlotCount(GameDataLoader.GetEquipRarity(equip.EquipTid));
-        int count     = Math.Min(Math.Max(slotCount, equip.EnchantOptions.Count), EquipLabel.MaxStatSlotCount);
-
-        for (int i = 0; i < count; i++)
-        {
-            EnchantOptionTableRow? option = null;
-
-            if (i < equip.EnchantOptions.Count && GameDataLoader.TryGetEnchantOption(equip.EnchantOptions[i], out EnchantOptionTableRow row))
-            {
-                option = row;
-            }
-
-            _options.Add(option);
-        }
-    }
-
-    // 장비 칸 툴팁 — 등급 · 종류 · 기본 능력치 · 능력치 칸 · 누가 끼고 있나 (격자가 칸에 올린 순간 호출).
-    //
+    // 장비 칸 툴팁 — 공용 장비 툴팁('EquipLabel.BuildTooltip')에 "누가 어느 부위에 끼고 있나"를 더한다 (격자가 칸에 올린 순간 호출).
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
-    // 능력치 칸은 칸의 네모가 색만 말하므로, 무엇이 박혔는지는 여기서 줄마다 적는다(줄 바탕 = 그 옵션의 등급색).
     public override TooltipContent? BuildTooltip(long key)
     {
         EquipInfo? equip = FindEquip(key);
 
-        if (equip == null || !GameDataLoader.TryGetEquip(equip.EquipTid, out EquipTableRow row))
+        if (equip == null)
         {
-            return null; // 목록이 아직 낡았거나 모르는 TID — 칸도 이름을 그리지 못한다
+            return null; // 목록이 아직 낡았다 — 칸도 이름을 그리지 못한다
         }
 
         string state = equip.EquippedCharacterId == 0L
             ? "인벤토리"
             : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
 
-        var content = new TooltipContent(GameDataLoader.GetEquipName(equip.EquipTid));
-
-        AddRarityRow(content, GameDataLoader.GetEquipRarity(equip.EquipTid))
-            .Row("종류", EquipLabel.GetKindName(row.EquipKind))
-            .Row("기본 능력치", EquipLabel.GetEffectText(equip.EquipTid))
-            .Row("장착", state);
-
-        ReadStatOptions(equip);
-
-        if (_options.Count == 0)
-        {
-            return content;
-        }
-
-        content.Header($"능력치 칸 {CountFilled()}/{_options.Count}");
-
-        for (int i = 0; i < _options.Count; i++)
-        {
-            EnchantOptionTableRow? option = _options[i];
-
-            if (option == null)
-            {
-                content.Row($"{i + 1}", "비어 있음");
-
-                continue;
-            }
-
-            content.Row($"{i + 1}", EquipLabel.GetOptionText(option), RarityLabel.Get(option.Grade), RarityPalette.Get(option.Grade));
-        }
-
-        return content;
-    }
-
-    // '_options' 중 박힌 칸의 수 (BuildTooltip에서 호출).
-    private int CountFilled()
-    {
-        int filled = 0;
-
-        foreach (EnchantOptionTableRow? option in _options)
-        {
-            if (option != null)
-            {
-                filled++;
-            }
-        }
-
-        return filled;
+        return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state);
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

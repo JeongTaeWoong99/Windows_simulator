@@ -374,6 +374,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailArrived              += OnMailArrived;
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      += OnMailDeleteResponded;
+        ServerPacketHandler.AuctionRegisterResponded += OnAuctionRegisterResponded;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -410,6 +411,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailArrived              -= OnMailArrived;
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      -= OnMailDeleteResponded;
+        ServerPacketHandler.AuctionRegisterResponded -= OnAuctionRegisterResponded;
     }
 
     #endregion
@@ -871,6 +873,26 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     #endregion
 
     #region 인벤토리 반영
+
+    // 경매 등록 응답 — 올린 물건을 인벤토리에서 뺀다. 결과 알림은 'AuctionModel'이 맡는다.
+    //
+    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId'로 지운다.
+    //   장비 제거는 'S_EquipSyncResponse'로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
+    // ⚠️ 거절 응답에도 'EquipId'가 실려 온다 — 결과를 먼저 본다.
+    private void OnAuctionRegisterResponded(S_AuctionRegisterResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            return;
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+
+        if (res.EquipId != 0L && _equips.RemoveAll(equip => equip.EquipId == res.EquipId) > 0)
+        {
+            EquipsChanged?.Invoke();
+        }
+    }
 
     // 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
     // Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다

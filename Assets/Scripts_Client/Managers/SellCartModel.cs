@@ -238,7 +238,7 @@ public class SellCartModel : MonoService<SellCartModel>
 
         foreach (var entry in _entries)
         {
-            total += (long)GameDataLoader.GetItemPrice(entry.ItemId) * entry.Count;
+            total += AuctionModel.InstantSellTotal(GameDataLoader.GetItemPrice(entry.ItemId), entry.Count);
 
             if (GameDataLoader.GetItemRarity(entry.ItemId) >= GlobalRarity.Rare)
             {
