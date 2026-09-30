@@ -1,6 +1,6 @@
 # server-console 폴더 규칙
 
-> 최종 업데이트: 2026-09-17 (여는 버튼을 메인 툴바에서 치트 창 도구 줄로 이동) · 대상: `Assets/Scripts_Client/Editor/server-console/`
+> 최종 업데이트: 2026-09-30 (경매장 서버 함께 실행 — T-096) · 2026-09-17 (여는 버튼을 메인 툴바에서 치트 창 도구 줄로 이동) · 대상: `Assets/Scripts_Client/Editor/server-console/`
 
 **에디터에서 서버를 켜고 끄고 로그를 보는 툴.** 폴더 전체에 걸리는 규칙(네임스페이스·툴바 버튼
 공식 API)은 [`Editor 규칙.md`](<../Editor 규칙.md>)에 있다.
@@ -9,7 +9,7 @@
 
 | 파일 | 하는 일 |
 |------|---------|
-| `ServerRunner.cs` | WSGameServer를 백그라운드로 켜고/끄는 프로세스 제어기(UI 없음). PID는 `SessionState`, 로그는 `Temp/WSGameServer.log`로 리다이렉트 |
+| `ServerRunner.cs` | WSGameServer(+ 경매장 서버)를 백그라운드로 켜고/끄는 프로세스 제어기(UI 없음). PID는 `SessionState`, 로그는 `Temp/WSGameServer.log`로 리다이렉트 |
 | `ServerConsoleWindow.cs` | 실행/종료 토글 + 로그 파일을 tail 해 터미널처럼 보여주는 `EditorWindow`(보이는 줄만 그리는 가상 스크롤·줄 단위 복사) |
 
 ---
@@ -21,6 +21,13 @@
 
 - **실행 방식**: `ServerRunner`가 `cmd /S /C "chcp 65001 && dotnet run --project ...\WSGameServer.csproj > Temp\WSGameServer.log 2>&1"`
   를 백그라운드로 띄운다. 빌드 단계 없이 **항상 최신 소스**로 돈다.
+- **경매장 서버도 함께 띄운다 (2026-09-30, T-096)**: 메인은 경매장 서버(`Server/AuctionServer`, 포트 10060)에 gRPC로 붙는다.
+  안 떠 있으면 **등록만 되고**(메인 DB outbox에 쌓였다가 경매장이 뜨면 넘어간다) 검색·내 매물·거래소 조회는 전부
+  `AuctionUnavailable` — 화면에는 "경매장이 점검 중입니다"로 뜬다. 그래서 같은 cmd에서 경매장을 **먼저 빌드한 뒤**
+  `start /b`로 띄우고(`--no-build`), 이어서 메인을 `dotnet run`한다.
+  - 빌드를 나눈 이유: 두 서버가 `AuctionProtocol`을 함께 참조해 동시에 `dotnet run`하면 같은 obj를 두고 부딪친다.
+  - 로그는 `Temp/AuctionServer.log`(창에는 안 보인다). DB는 작업 폴더인 `Server/AuctionServer/auction.sqlite3` — `.gitignore` 처리.
+  - `start /b`의 자식은 이 cmd 아래라 종료(`taskkill /T`)가 함께 내린다. orphan 정리도 두 포트(10050·10060)를 본다.
 - **로그를 파일로 리다이렉트하는 이유**: 서버 로그(`Console` 출력)를 cmd의 `>`로 `Temp/WSGameServer.log`에
   직접 적게 하고, 창은 그 파일을 tail 한다. ★ 이렇게 해야 **에디터가 스크립트를 재컴파일(도메인 리로드)해
   static·콜백이 소멸해도** 서버가 안 끊기고 로그도 계속 쌓인다. in-process로 stdout을 붙잡으면 리로드마다

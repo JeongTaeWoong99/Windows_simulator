@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // '#Main Canvas' 안에서 같은 자리를 나눠 쓰는 화면들.
 // 'Title'과 'Menu Presenter' 사이의 한 칸을 이 중 하나가 차지한다.
@@ -24,7 +25,7 @@ public enum MainScreen
 }
 
 // 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
-// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Storage·#Market·!Login)와
+// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Market·!Login)와
 // 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
 //
 // ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
@@ -74,8 +75,10 @@ public class UIManager : MonoService<UIManager>
     //   Column을 끄면 남은 열들이 Horizental Columns 안에서 가운데로 다시 몰려 위젯 가로 칸이 어긋난다.
     //   Canvas만 끄면 Column 3개와 (Layout) 스페이서가 남아 폭이 그대로라 위젯이 제자리에 있는다.
     [CenterHeader("좌우 열 캔버스")]
-    [SerializeField, Tooltip("창고 열의 본체 — @Storage Column 안의 #Storage Canvas")]
-    private StorageCanvasView storageCanvas = null!;
+    // ※ FormerlySerializedAs — 창고(Storage) → 인벤토리 개명(2026-09-30) 전 씬 값을 잇는다. Test Copy 씬이 옛 이름으로 남아 있을 수 있어 지우지 않는다.
+    [FormerlySerializedAs("storageCanvas")]
+    [SerializeField, Tooltip("인벤토리 열의 본체 — @Inventory Column 안의 #Inventory Canvas")]
+    private InventoryCanvasView inventoryCanvas = null!;
 
     [SerializeField, Tooltip("거래 열의 본체 — @Market Column 안의 #Market Canvas")]
     private MarketCanvasView marketCanvas = null!;
@@ -98,7 +101,7 @@ public class UIManager : MonoService<UIManager>
     private ConfirmPresenter confirm = null!;
 
     // ─── 참조 ───
-    public StorageCanvasView Storage => storageCanvas;
+    public InventoryCanvasView Inventory => inventoryCanvas;
     public MarketCanvasView  Market  => marketCanvas;
     public WidgetCanvasView  Widget  => widgetCanvas;
 
@@ -110,7 +113,7 @@ public class UIManager : MonoService<UIManager>
     public bool IsOpen =>
         mainCanvas.gameObject.activeSelf     ||
         stateCanvas.gameObject.activeSelf    ||
-        storageCanvas.gameObject.activeSelf  ||
+        inventoryCanvas.gameObject.activeSelf  ||
         marketCanvas.gameObject.activeSelf;
 
     // 필수 참조 검증 → 메인 화면 불변식 정리 (Unity 메시지)
@@ -119,7 +122,7 @@ public class UIManager : MonoService<UIManager>
     {
         this.RequireRef(loginCanvas,   nameof(loginCanvas));
         this.RequireRef(mainCanvas,    nameof(mainCanvas));
-        this.RequireRef(storageCanvas, nameof(storageCanvas));
+        this.RequireRef(inventoryCanvas, nameof(inventoryCanvas));
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
         this.RequireRef(marketCanvas,  nameof(marketCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
@@ -227,7 +230,7 @@ public class UIManager : MonoService<UIManager>
     // 상태 패널의 화면 버튼이 부른다 — 이미 그 화면이면 기본(작업슬롯 목록)으로 되돌린다.
     //
     // 여는 일만 하면 이미 열려 있을 때 눌러도 변화가 없어 버튼이 고장 난 것처럼 보인다.
-    // 닫는 버튼을 따로 두지 않아도 되는 것은 'ToggleStorage'와 같은 이유다.
+    // 닫는 버튼을 따로 두지 않아도 되는 것은 'ToggleInventory'와 같은 이유다.
     public void ToggleMainScreen(MainScreen screen)
         => ShowMainScreen(CurrentMainScreen == screen ? DefaultMainScreen : screen);
 
@@ -236,7 +239,7 @@ public class UIManager : MonoService<UIManager>
     #region 전체 여닫기
 
     // 위젯의 열기/닫기 버튼이 부른다 — 열려 있으면 전부 접고, 닫혀 있으면 작업슬롯을 연다.
-    // 진입 순서(위젯 → 작업슬롯 → 창고·거래)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
+    // 진입 순서(위젯 → 작업슬롯 → 인벤토리·거래)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
     public void ToggleAll()
     {
         if (IsOpen)
@@ -249,7 +252,7 @@ public class UIManager : MonoService<UIManager>
         }
     }
 
-    // 작업슬롯 목록과 상태 캔버스를 연다. 창고·거래는 작업슬롯의 하단 버튼으로 연다.
+    // 작업슬롯 목록과 상태 캔버스를 연다. 인벤토리·거래는 작업슬롯의 하단 버튼으로 연다.
     public void OpenWorkStation()
     {
         ShowMainScreen(DefaultMainScreen);
@@ -264,7 +267,7 @@ public class UIManager : MonoService<UIManager>
     // ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다".
     public void CloseAllExceptWidget()
     {
-        storageCanvas.Show(false);
+        inventoryCanvas.Show(false);
         marketCanvas.Show(false);
         stateCanvas.Show(false);
         mainCanvas.Show(false);
@@ -281,16 +284,16 @@ public class UIManager : MonoService<UIManager>
 
     #region 좌우 열
 
-    // 창고 열을 열고 닫는다.
-    public void ShowStorage(bool on) => storageCanvas.Show(on);
+    // 인벤토리 열을 열고 닫는다.
+    public void ShowInventory(bool on) => inventoryCanvas.Show(on);
 
     // 거래 열을 열고 닫는다.
     public void ShowMarket(bool on) => marketCanvas.Show(on);
 
-    // 창고 열을 뒤집는다 (작업슬롯 하단 버튼).
+    // 인벤토리 열을 뒤집는다 (작업슬롯 하단 버튼).
     // 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
     // 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
-    public void ToggleStorage() => ShowStorage(!storageCanvas.gameObject.activeSelf);
+    public void ToggleInventory() => ShowInventory(!inventoryCanvas.gameObject.activeSelf);
 
     // 거래 열을 뒤집는다 (작업슬롯 하단 버튼).
     public void ToggleMarket() => ShowMarket(!marketCanvas.gameObject.activeSelf);
@@ -303,7 +306,7 @@ public class UIManager : MonoService<UIManager>
     //
     // ★ 왜 부르는 쪽이 팝업을 직접 알지 않는가
     //   팝업은 '!System Canvas'에 산다 — 화면 전체를 막아야 해서다(열 캔버스는 Sorting Order가
-    //   전부 0인 형제라 열 안의 차단막이 다른 열에 닿지 않는다). 그런데 그렇게 두면 창고 격자가
+    //   전부 0인 형제라 열 안의 차단막이 다른 열에 닿지 않는다). 그런데 그렇게 두면 인벤토리 격자가
     //   **캔버스를 넘어 남의 패널을 인스펙터로 붙드는** 모양이 된다. 그 참조를 여기로 모은다.
     //
     // ※ 로딩·알림·가챠 결과에는 이런 중개가 없다 — 매니저 이벤트를 스스로 구독해 뜨는 단방향이라서다.

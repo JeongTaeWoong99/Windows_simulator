@@ -15,7 +15,7 @@ using UnityEngine.UI;
 public class WorkStationSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
-    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 창고 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
+    // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 인벤토리 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
     // 🎨 등급 이미지가 나오면 색 대신 여기에 스프라이트를 넣는다.
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;

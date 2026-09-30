@@ -41,7 +41,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 아이템 하나의 보유 수량. 없으면 0이다.
     //
     // 서버가 0개가 된 아이템도 목록에 실어 보내므로(감소도 같은 경로로 온다) 캐시에 남아 있다.
-    // 판매 카트와 창고 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
+    // 판매 카트와 인벤토리 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
     // 한쪽만 고쳐졌을 때 화면과 요청이 다른 수량을 말한다.
     public int GetItemCount(int itemId)
     {
@@ -170,7 +170,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 이 캐릭터가 배치된 작업슬롯 번호. 배치돼 있지 않으면 -1.
     //
-    // 창고 캐릭터 탭과 작업슬롯 선택 화면이 **같은 판정을 봐야 한다** — 각자 'WorkStationSlots'를
+    // 인벤토리 캐릭터 탭과 작업슬롯 선택 화면이 **같은 판정을 봐야 한다** — 각자 'WorkStationSlots'를
     // 훑으면 한쪽만 고쳐졌을 때 두 화면이 다른 말을 한다. 그래서 여기 한 번 두고 양쪽이 부른다.
     // ⚠️ 리스트 순번이 아니라 'SlotIndex'를 돌려준다 — 열린 슬롯만 실려 오므로 둘이 어긋난다.
     public int FindSlotIndexOf(long characterId)
@@ -191,12 +191,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return -1;
     }
 
-    // 내가 가진 장비들. 창고에 있든 캐릭터가 끼고 있든 전부 여기 있다.
+    // 내가 가진 장비들. 인벤토리에 있든 캐릭터가 끼고 있든 전부 여기 있다.
     //
     // ⚠️ 캐릭터와 같은 모양이다 — 'EquipId'가 개체 번호이고 'EquipTid'가 종류다.
     //   이름·등급·효과는 TID로 'EquipTable'에서 읽는다.
-    // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(창고 칸)을 그대로 두므로
-    //   창고에 남아 있고, 'IsEquipped'로 구분한다.
+    // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(인벤토리 칸)을 그대로 두므로
+    //   인벤토리에 남아 있고, 'IsEquipped'로 구분한다.
     public IReadOnlyList<EquipInfo> Equips => _equips;
 
     // 장비 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
@@ -213,8 +213,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
-    // 이 장비를 캐릭터가 끼고 있는가. 창고에 있으면(또는 모르는 개체면) false.
-    // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 창고다.
+    // 이 장비를 캐릭터가 끼고 있는가. 인벤토리에 있으면(또는 모르는 개체면) false.
+    // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 인벤토리다.
     public bool IsEquipped(long equipId)
     {
         foreach (var equip in _equips)
@@ -262,8 +262,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //
     // ※ 예전에는 'Dictionary<byte, long>'에 'CurrencyType'을 키로 담았다. 그 축이 없어졌는데
     //   사전만 채우는 식으로 두면 패킷과 캐시가 다시 어긋난다 — 사전째 걷어냈다.
-    public long Gold { get; private set; }  // 무료 재화
-    public long Dia  { get; private set; }  // 유료 재화. ⏸ 지급·차감 경로가 아직 없어 늘 0이다
+    public long Gold { get; private set; }  // 유일한 재화 — 유료 재화(다이아)는 폐지했다(#41)
 
     // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
     // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
@@ -300,7 +299,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
     public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
 
-    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 창고가 차서 보상 전체가 우편으로 갔는가)
+    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
 
@@ -375,6 +374,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailArrived              += OnMailArrived;
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      += OnMailDeleteResponded;
+        ServerPacketHandler.AuctionRegisterResponded += OnAuctionRegisterResponded;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -411,6 +411,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailArrived              -= OnMailArrived;
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      -= OnMailDeleteResponded;
+        ServerPacketHandler.AuctionRegisterResponded -= OnAuctionRegisterResponded;
     }
 
     #endregion
@@ -511,7 +512,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         {
             // TODO: 레벨업 연출 — 연출 리소스가 오면 여기서 알린다 (T-052 🎨).
             //       이벤트(예: 'CharacterLeveledUp(long characterId, int level)')를 열고
-            //       창고 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
+            //       인벤토리 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
             ClientLogger.Info(ClientLogger.Recv,
                 $"캐릭터 레벨업 — 개체={synced.CharacterId} Lv.{previous.Level} → Lv.{synced.Level}");
         }
@@ -520,7 +521,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 보유 장비 스냅샷 — 캐시 교체 후 이벤트 발행
-    // ★ 로그인 시 자동으로 1회 수신(캐릭터 목록 뒤·작업슬롯 앞). 창고에 있든 끼고 있든 전부 실려 온다.
+    // ★ 로그인 시 자동으로 1회 수신(캐릭터 목록 뒤·작업슬롯 앞). 인벤토리에 있든 끼고 있든 전부 실려 온다.
     private void OnEquipListReceived(S_EquipListResponse res)
     {
         _equips.Clear();
@@ -676,7 +677,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //   Rewards         = 이번에 얻은 개별 항목(델타) → 연출 전용
     // ★ 골드와 장비는 여기서 건드리지 않는다 — 골드는 'S_CurrencyResponse',
     //   장비 개체는 'S_EquipSyncResponse'로 따로 온다. 보상 목록의 골드는 **보여 주기 위한 값**이다.
-    // ★ 'StoredInMail'이면 창고가 모자라 보상 전체가 우편 한 통으로 갔다 — 'Rewards'는 연출용으로 그대로 오고,
+    // ★ 'StoredInMail'이면 인벤토리가 모자라 보상 전체가 우편 한 통으로 갔다 — 'Rewards'는 연출용으로 그대로 오고,
     //   'ItemChangeInfos'에는 상자 차감만 있다. 그 우편은 'S_MailArrivedResponse'로 따로 온다.
     private void OnItemUsed(S_ItemUseResponse res)
     {
@@ -694,11 +695,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.
     //
-    // ★ 한쪽만 바뀌어도 서버는 둘 다 실어 보낸다. 값이 델타가 아니라 확정 잔액이라 안전하다.
+    // ★ 값이 델타가 아니라 확정 잔액이라 안전하다.
     private void OnCurrencyReceived(S_CurrencyResponse res)
     {
         Gold = res.Gold;
-        Dia  = res.Dia;
 
         CurrencyChanged?.Invoke();
     }
@@ -873,6 +873,26 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     #endregion
 
     #region 인벤토리 반영
+
+    // 경매 등록 응답 — 올린 물건을 인벤토리에서 뺀다. 결과 알림은 'AuctionModel'이 맡는다.
+    //
+    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId'로 지운다.
+    //   장비 제거는 'S_EquipSyncResponse'로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
+    // ⚠️ 거절 응답에도 'EquipId'가 실려 온다 — 결과를 먼저 본다.
+    private void OnAuctionRegisterResponded(S_AuctionRegisterResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            return;
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+
+        if (res.EquipId != 0L && _equips.RemoveAll(equip => equip.EquipId == res.EquipId) > 0)
+        {
+            EquipsChanged?.Invoke();
+        }
+    }
 
     // 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
     // Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다

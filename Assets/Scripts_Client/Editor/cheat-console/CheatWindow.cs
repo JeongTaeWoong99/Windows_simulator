@@ -22,6 +22,7 @@ namespace DesktopWindowControl.EditorTools
 		private const float  StatusWidth        = 42f;   // 해금 줄의 '[열림]'·'[잠김]' 고정 폭 — 이름 열을 맞춘다
 		private const float  IndustryHeadHeight = 18f;   // 해금 목록 안 산업 이름 줄 높이(px)
 		private const float  UnlockIndent       = 10f;   // 해금 묶음 안쪽 들여쓰기(px) — 산업 줄과 해금 줄이 같은 선에서 시작한다
+		private const float  GroupButtonWidth   = 96f;   // 묶음 머리·산업 띠의 일괄 열기 버튼 폭(px)
 
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
@@ -41,11 +42,9 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
-		private static readonly long[] DiaQuickAmounts  = { 100, 1_000, -100 };
 
 		// 입력값 — 플레이 진입(도메인 리로드)에도 남도록 직렬화한다.
 		[SerializeField] private long      _goldAmount      = 1_000;
-		[SerializeField] private long      _diaAmount       = 100;
 		[SerializeField] private TidPicker _itemPicker      = new();
 		[SerializeField] private int       _itemCount       = 10;
 		[SerializeField] private TidPicker _characterPicker = new();
@@ -319,8 +318,6 @@ namespace DesktopWindowControl.EditorTools
 			BeginSection("재화", CurrencyAccent);
 
 			DrawCurrencyRow("골드", ECheatCommand.GiveGold, ref _goldAmount, GoldQuickAmounts);
-			EditorGUILayout.Space(2f);
-			DrawCurrencyRow("다이아", ECheatCommand.GiveDia, ref _diaAmount, DiaQuickAmounts);
 
 			EndSection(CurrencyAccent);
 		}
@@ -455,7 +452,7 @@ namespace DesktopWindowControl.EditorTools
 			return characters[index].CharacterId;
 		}
 
-		// 장비는 개수 칸이 없다 — 서버 'CheatGiveEquip'이 한 번에 개체 1개만 만든다(창고 첫 빈 칸).
+		// 장비는 개수 칸이 없다 — 서버 'CheatGiveEquip'이 한 번에 개체 1개만 만든다(인벤토리 첫 빈 칸).
 		private void DrawEquip()
 		{
 			BeginSection("장비 지급", EquipAccent);
@@ -556,47 +553,77 @@ namespace DesktopWindowControl.EditorTools
 			IndustryLevel,  // 특성 노드 · 효과 없음 — UnlockTID가 열리는 것 자체가 산업 레벨 해금이다
 		}
 
+		// ■ 일괄 열기는 세 층이다 (2026-09-29 요청)
+		//   칸 맨 위 = 세 묶음 전부 · 묶음 머리 = 그 묶음 전부 · 산업 이름 줄 = 그 산업 전부.
+		//   서버 치트는 조건(선행·계정 레벨)을 보지 않으므로 순서와 상관없이 다 열린다.
 		private void DrawUnlockRows()
 		{
-			_unlockSlotOpen  = DrawUnlockGroup("작업슬롯",  UnlockGroup.WorkSlot,      _unlockSlotOpen);
-			_unlockSpeedOpen = DrawUnlockGroup("산업 속도", UnlockGroup.IndustrySpeed, _unlockSpeedOpen);
-			_unlockLevelOpen = DrawUnlockGroup("산업 레벨", UnlockGroup.IndustryLevel, _unlockLevelOpen);
+			var model = CheatGuard.FindLoggedInModel();
+
+			var slotRows  = CollectUnlockRows(UnlockGroup.WorkSlot);
+			var speedRows = CollectUnlockRows(UnlockGroup.IndustrySpeed);
+			var levelRows = CollectUnlockRows(UnlockGroup.IndustryLevel);
+
+			var allRows = new List<UnlockTableRow>(slotRows);
+			allRows.AddRange(speedRows);
+			allRows.AddRange(levelRows);
+
+			DrawUnlockAllButton("해금 전부 열기 (작업슬롯 · 산업 속도 · 산업 레벨)", allRows, model);
+			EditorGUILayout.Space(2f);
+
+			_unlockSlotOpen  = DrawUnlockGroup("작업슬롯",  slotRows,  _unlockSlotOpen,  model);
+			_unlockSpeedOpen = DrawUnlockGroup("산업 속도", speedRows, _unlockSpeedOpen, model);
+			_unlockLevelOpen = DrawUnlockGroup("산업 레벨", levelRows, _unlockLevelOpen, model);
+		}
+
+		// 이 묶음의 해금 줄을 테이블 순서대로 모은다 (DrawUnlockRows에서 호출).
+		private static List<UnlockTableRow> CollectUnlockRows(UnlockGroup group)
+		{
+			var rows = new List<UnlockTableRow>();
+
+			foreach (var row in GameTable.UnlockTable.All)
+			{
+				if (GroupOf(row.UnlockTID) == group)
+				{
+					rows.Add(row);
+				}
+			}
+
+			return rows;
 		}
 
 		// 묶음 하나를 '접기 머리 + (펼쳤으면) 줄들'로 그리고, 바뀐 펼침 상태를 돌려준다.
 		//
 		// ※ 머리에 '열림/전체'를 적는 이유 — 접어 둔 묶음도 진행 상황은 보여야 한다.
 		//   접었더니 아무것도 모르게 되면 결국 다시 펴게 되고, 접는 의미가 없어진다.
-		private static bool DrawUnlockGroup(string title, UnlockGroup group, bool isOpen)
+		// ※ [묶음 전부 열기]는 접힌 머리에도 있다 — 펴지 않고 한 번에 여는 것이 목적이다.
+		private static bool DrawUnlockGroup(string title, List<UnlockTableRow> rows, bool isOpen, PlayerDataModel? model)
 		{
-			var model  = CheatGuard.FindLoggedInModel();
-			var rows   = new List<UnlockTableRow>();
-			var opened = 0;
-
-			foreach (var row in GameTable.UnlockTable.All)
-			{
-				if (GroupOf(row.UnlockTID) != group)
-				{
-					continue;
-				}
-
-				rows.Add(row);
-
-				if (model != null && model.IsUnlocked(row.UnlockTID))
-				{
-					opened++;
-				}
-			}
-
 			// 빈 묶음은 머리도 그리지 않는다 — 누를 것이 없는 줄이 남으면 목록만 길어진다.
 			if (rows.Count == 0)
 			{
 				return isOpen;
 			}
 
+			var opened = 0;
+
+			foreach (var row in rows)
+			{
+				if (model != null && model.IsUnlocked(row.UnlockTID))
+				{
+					opened++;
+				}
+			}
+
 			// 로그인 전에는 열림 수를 모른다 — 전체 개수만 적는다.
 			var counts = model != null ? $"{opened}/{rows.Count}" : $"?/{rows.Count}";
-			var result = EditorGUILayout.Foldout(isOpen, $"{title}  ({counts})", true, EditorStyles.foldoutHeader);
+			bool result;
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				result = EditorGUILayout.Foldout(isOpen, $"{title}  ({counts})", true, EditorStyles.foldoutHeader);
+				DrawUnlockAllButton("묶음 전부 열기", rows, model, GUILayout.Width(GroupButtonWidth));
+			}
 
 			if (!result)
 			{
@@ -615,7 +642,9 @@ namespace DesktopWindowControl.EditorTools
 
 				if (industry != EIndustryType.None && industry != lastIndustry)
 				{
-					DrawIndustryHead(IndustryLabel.Get(industry), lastIndustry != EIndustryType.None);
+					var industryRows = rows.FindAll(other => IndustryOf(other.UnlockTID) == industry);
+
+					DrawIndustryHead(IndustryLabel.Get(industry), lastIndustry != EIndustryType.None, industryRows, model);
 					lastIndustry = industry;
 				}
 
@@ -623,6 +652,60 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			return true;
+		}
+
+		// 일괄 열기 버튼 — 누르면 아직 잠긴 줄만 보낸다. 다 열렸으면 잠근다.
+		//
+		// ※ 열린 줄을 빼고 보낸다 — 섞어 보내면 로그가 'AlreadyUnlocked' 거절로 뒤덮인다.
+		//   로그인 전에는 무엇이 열렸는지 모르므로 버튼만 살려 둔다(누르면 'CheatGuard'가 막는다).
+		private static void DrawUnlockAllButton(string label, List<UnlockTableRow> rows, PlayerDataModel? model,
+		                                        params GUILayoutOption[] options)
+		{
+			var locked = LockedTids(rows, model);
+
+			using (new EditorGUI.DisabledScope(model != null && locked.Count == 0))
+			{
+				if (GUILayout.Button(label, options))
+				{
+					RequestUnlockAll(locked);
+				}
+			}
+		}
+
+		// 아직 잠긴 해금 TID. 로그인 전이면 전부다.
+		private static List<int> LockedTids(List<UnlockTableRow> rows, PlayerDataModel? model)
+		{
+			var result = new List<int>();
+
+			foreach (var row in rows)
+			{
+				if (model == null || !model.IsUnlocked(row.UnlockTID))
+				{
+					result.Add(row.UnlockTID);
+				}
+			}
+
+			return result;
+		}
+
+		// 해금 여러 개를 한 번에 보낸다.
+		//
+		// ⚠️ 가드를 **먼저 한 번만** 본다 — 'CheatSender.Send'마다 보게 두면 로그인 전에 누른 순간
+		//    경고 팝업이 줄 수만큼 뜬다.
+		private static void RequestUnlockAll(List<int> unlockTids)
+		{
+			EditorApplication.delayCall += () =>
+			{
+				if (!CheatGuard.CanSend())
+				{
+					return;
+				}
+
+				foreach (var tid in unlockTids)
+				{
+					CheatSender.Send(ECheatCommand.Unlock, tid);
+				}
+			};
 		}
 
 		// 해금 한 줄 — 상태 · 이름(TID) · [열기].
@@ -676,7 +759,8 @@ namespace DesktopWindowControl.EditorTools
 		// 옅은 바탕 + 아래 실선 한 줄. 이름만 덩그러니 띄우면 어느 쪽에 붙는 줄인지 안 보인다.
 		//
 		//   'isFollowing' : 앞에 다른 산업이 있었으면 위에 숨을 한 번 준다(첫 줄은 머리에 바로 붙인다).
-		private static void DrawIndustryHead(string name, bool isFollowing)
+		//   'rows'        : 이 산업의 해금 줄 — 오른쪽 끝 [산업 전부 열기]가 보낸다.
+		private static void DrawIndustryHead(string name, bool isFollowing, List<UnlockTableRow> rows, PlayerDataModel? model)
 		{
 			if (isFollowing)
 			{
@@ -693,6 +777,18 @@ namespace DesktopWindowControl.EditorTools
 			                   new Color(UnlockAccent.r, UnlockAccent.g, UnlockAccent.b, 0.45f));
 
 			EditorGUI.LabelField(new Rect(head.x + 4f, head.y, head.width - 4f, head.height), name, EditorStyles.miniBoldLabel);
+
+			// 띠 오른쪽 끝에 붙인다 — 줄을 하나 더 쓰면 산업마다 목록이 한 줄씩 길어진다.
+			var buttonRect = new Rect(head.xMax - GroupButtonWidth, head.y + 1f, GroupButtonWidth, head.height - 2f);
+			var locked     = LockedTids(rows, model);
+
+			using (new EditorGUI.DisabledScope(model != null && locked.Count == 0))
+			{
+				if (GUI.Button(buttonRect, "산업 전부 열기", EditorStyles.miniButton))
+				{
+					RequestUnlockAll(locked);
+				}
+			}
 		}
 
 		// 이 해금 TID가 걸린 산업. 특성 노드가 아니면(작업슬롯 등) 'None'이라 가르는 줄이 붙지 않는다.

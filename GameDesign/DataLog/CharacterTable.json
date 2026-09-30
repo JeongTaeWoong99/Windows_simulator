@@ -13,6 +13,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "시작 지급. 전 산업 1 — 어떤 산업이든 시작할 수 있어야 한다"
   },
   {
@@ -29,6 +30,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "농사 담당"
   },
   {
@@ -45,6 +47,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "낚시 담당"
   },
   {
@@ -61,6 +64,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "채굴 담당"
   },
   {
@@ -77,6 +81,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "벌목 담당"
   },
   {
@@ -93,6 +98,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "사냥 담당"
   },
   {
@@ -109,6 +115,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "농사 입문"
   },
   {
@@ -125,6 +132,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "낚시 입문"
   },
   {
@@ -141,6 +149,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "채굴 입문"
   },
   {
@@ -157,6 +166,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "벌목 입문"
   },
   {
@@ -173,6 +183,7 @@
     "MiningCap": 2,
     "LoggingCap": 2,
     "HuntingCap": 2,
+    "BasePrice": 50,
     "Description": "사냥 입문"
   },
   {
@@ -189,6 +200,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "낚시 담당"
   },
   {
@@ -205,6 +217,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "사냥 담당"
   },
   {
@@ -221,6 +234,7 @@
     "MiningCap": 4,
     "LoggingCap": 4,
     "HuntingCap": 4,
+    "BasePrice": 100,
     "Description": "벌목 담당"
   },
   {
@@ -237,6 +251,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "낚시 특화"
   },
   {
@@ -253,6 +268,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "농사 특화"
   },
   {
@@ -269,6 +285,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "채굴 특화"
   },
   {
@@ -285,6 +302,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "벌목 특화"
   },
   {
@@ -301,6 +319,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "사냥 특화"
   },
   {
@@ -317,6 +336,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "농사 특화"
   },
   {
@@ -333,6 +353,7 @@
     "MiningCap": 6,
     "LoggingCap": 6,
     "HuntingCap": 6,
+    "BasePrice": 250,
     "Description": "낚시 특화"
   },
   {
@@ -349,6 +370,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 600,
     "Description": "채굴 정예"
   },
   {
@@ -365,6 +387,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 600,
     "Description": "낚시 정예"
   },
   {
@@ -381,6 +404,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 600,
     "Description": "농사 정예"
   },
   {
@@ -397,6 +421,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 600,
     "Description": "사냥 정예"
   },
   {
@@ -413,6 +438,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 600,
     "Description": "벌목 정예"
   },
   {
@@ -429,6 +455,7 @@
     "MiningCap": 9,
     "LoggingCap": 9,
     "HuntingCap": 9,
+    "BasePrice": 1500,
     "Description": "농사 최상위"
   },
   {
@@ -445,6 +472,7 @@
     "MiningCap": 9,
     "LoggingCap": 9,
     "HuntingCap": 9,
+    "BasePrice": 1500,
     "Description": "낚시 최상위"
   },
   {
@@ -461,6 +489,7 @@
     "MiningCap": 9,
     "LoggingCap": 9,
     "HuntingCap": 9,
+    "BasePrice": 1500,
     "Description": "채굴 최상위"
   },
   {
@@ -477,6 +506,7 @@
     "MiningCap": 7,
     "LoggingCap": 7,
     "HuntingCap": 7,
+    "BasePrice": 4000,
     "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다"
   }
 ]

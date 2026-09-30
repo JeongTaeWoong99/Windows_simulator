@@ -4,17 +4,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 장비 고르기 목록의 한 줄 — 이름 · 효과 한 줄. 바탕은 등급 색이다.
+// 장비 고르기 목록의 한 줄 — 아이콘(능력치 칸 포함) · 이름 · 효과 한 줄. 바탕은 등급 색이다.
+// 마우스를 올리면 인벤토리 장비 칸과 같은 툴팁(기본 능력치 · 능력치 칸 전부)이 뜬다 — 같은 종류 여럿 중 무엇을 낄지 고르는 자리다.
 //
 // 눌리면 'PickClicked'만 쏜다 — 어느 캐릭터의 어느 칸에 끼우는지는 이 줄이 모른다.
 // 무엇을 몇 줄 그릴지는 'WorkStationSelectPresenter'가 정한다.
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 //
-// ■ 읽기는 창고 장비 탭과 같다
-// 이름 · 효과 · 등급색을 창고 칸('SlotView')과 같은 출처에서 받는다('EquipLabel' · 'RarityPalette') —
+// ■ 읽기는 인벤토리 장비 탭과 같다
+// 이름 · 효과 · 등급색을 인벤토리 칸('SlotView')과 같은 출처에서 받는다('EquipLabel' · 'RarityPalette') —
 // 같은 장비가 두 화면에서 다르게 보이면 어느 쪽이 맞는지 알 수 없다.
 //
-// ■ 여기 오는 것은 **창고에 있는 장비뿐이다**
+// ■ 여기 오는 것은 **인벤토리에 있는 장비뿐이다**
 // 누가 끼고 있는지 알릴 일이 없어 착용자 칸을 두지 않는다 — 끼운 것은 목록에서 아예 빠진다
 // ('WorkStationSelectPresenter.RefreshEquipPicker').
 //
@@ -23,9 +24,15 @@ using UnityEngine.UI;
 public class EquipPickRowView : MonoBehaviour
 {
     [CenterHeader("참조")]
-    // 줄 바탕을 장비의 등급 색으로 칠한다('SetRarity'). 창고 칸과 같은 표('RarityPalette')를 쓴다.
+    // 줄 바탕을 장비의 등급 색으로 칠한다('SetRarity'). 인벤토리 칸과 같은 표('RarityPalette')를 쓴다.
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
+
+    [SerializeField, Tooltip("왼쪽 아이콘 칸 (ItemIconView 프리팹) — 능력치 칸이 보인다")]
+    private ItemIconView iconView = null!;
+
+    [SerializeField, Tooltip("줄 루트의 툴팁 트리거. 내용은 코드가 넘긴다")]
+    private TooltipTrigger tooltipTrigger = null!;
 
     [SerializeField, Tooltip("장비 이름")]
     private TMP_Text nameText = null!;
@@ -47,6 +54,8 @@ public class EquipPickRowView : MonoBehaviour
     private void Awake()
     {
         this.RequireRef(backgroundImage, nameof(backgroundImage));
+        this.RequireRef(iconView,        nameof(iconView));
+        this.RequireRef(tooltipTrigger,  nameof(tooltipTrigger));
         this.RequireRef(nameText,        nameof(nameText));
         this.RequireRef(effectText,      nameof(effectText));
         this.RequireRef(pickButton,      nameof(pickButton));
@@ -72,6 +81,15 @@ public class EquipPickRowView : MonoBehaviour
         backgroundImage.color = RarityPalette.Get(rarity);
     }
 
+    // 아이콘과 툴팁을 정한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
+    //   icon    : 'ItemIconContent.ForEquip'이 만든 완성값 — 능력치 칸까지
+    //   tooltip : 줄에 마우스를 올리면 부를 툴팁 함수
+    public void SetDetail(in ItemIconContent icon, Func<TooltipContent?> tooltip)
+    {
+        iconView.Bind(icon);
+        tooltipTrigger.SetProvider(tooltip);
+    }
+
     // 버튼을 잠그거나 푼다 — 응답을 기다리는 동안만 잠긴다.
     public void SetPickable(bool on)
     {
@@ -83,6 +101,8 @@ public class EquipPickRowView : MonoBehaviour
     public void Clear()
     {
         EquipId               = 0;
+        iconView.Clear();
+        tooltipTrigger.SetProvider(null);
         nameText.text         = "";
         effectText.text       = "";
         backgroundImage.color = RarityPalette.Unknown;

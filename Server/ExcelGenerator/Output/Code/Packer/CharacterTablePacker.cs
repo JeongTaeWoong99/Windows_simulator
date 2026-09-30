@@ -27,7 +27,8 @@ namespace GameData
             MiningCap    = PackerUtil.ParseInt(cells[10], Table, "MiningCap"),
             LoggingCap   = PackerUtil.ParseInt(cells[11], Table, "LoggingCap"),
             HuntingCap   = PackerUtil.ParseInt(cells[12], Table, "HuntingCap"),
-            Description  = cells[13].Length > 0 ? PackerUtil.RequireString(cells[13], Table, "Description") : "",
+            BasePrice    = PackerUtil.ParseInt(cells[13], Table, "BasePrice", 0, null),
+            Description  = cells[14].Length > 0 ? PackerUtil.RequireString(cells[14], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

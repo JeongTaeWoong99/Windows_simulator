@@ -1,6 +1,6 @@
 # Main 폴더 규칙
 
-> 최종 업데이트: 2026-09-26 (우편함 화면 — T-083) · 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
+> 최종 업데이트: 2026-10-01 (우편함 — 안 받은/받은 탭 · 줄 아이콘·툴팁 · 장비 고르기 줄 아이콘·툴팁 — T-103) · 2026-09-30 (설정 폴리싱 — 탭 균등 · 슬라이더 왼쪽에 지금 값 · 흰색 체크) · 2026-09-29 (설정 화면 — 탭 4개 · 줄 목록 · `(기능 없음)` 줄 — T-098) · 2026-09-26 (우편함 화면 — T-083) · 2026-09-25 (레벨 툴팁에 `■ 럭키 상자` 묶음 · 산업 레벨 정보를 펼침 패널에서 툴팁으로 — T-088) · 2026-09-24 (장비 장착 UI — T-074 · 화면의 스크롤을 하나로 — T-078) · 대상: `Assets/Scripts_Client/UI/Main/`
 
 **`#Main Canvas` — 한 자리를 여러 화면이 갈아 끼우는 유일한 캔버스.**
 `UI/`에서 규칙이 가장 많은 곳이라, 화면을 하나 더 붙이려면 여기를 읽는다.
@@ -10,8 +10,8 @@
 | `MainCanvasView.cs` | 캔버스 껍데기 + **`SetTitle(string)`** (아래 "캔버스 머리의 제목") |
 | `WorkStationListPresenter/` | 작업슬롯 목록 (+ 종속 View `WorkStationSlotView`) |
 | `WorkStationSelectPresenter/` | 작업슬롯 선택 (+ 종속 View `CharacterStateRowView` — 목록 줄과 세팅 카드가 함께 쓴다 · `EfficiencyRowView` — 효율 계산 한 줄 · `EquipPickRowView` — 낄 장비 한 줄) |
-| `SettingPresenter/` | 창 설정 |
-| `MailPresenter/` | 우편함 — 받기·모두 받기·받은 우편 삭제 (+ 종속 View `MailRowView` — 우편 한 줄) |
+| `SettingPresenter/` | 설정 — 탭 4개(일반·그래픽·오디오·기타) · 줄 목록 (아래 "설정 화면") |
+| `MailPresenter/` | 우편함 — **[안 받은 우편] · [받은 우편] 탭**(2026-10-01) · 받기·모두 받기·받은 우편 삭제 (+ 종속 View `MailRowView` — 우편 한 줄 · 첫 첨부 아이콘 · 첨부 전부 툴팁). 모두 받기는 안 받은 탭에만, 받은 탭은 "7일 뒤 삭제" 안내와 줄마다 "n일 뒤 삭제" |
 | `MenuPresenter/` | 하단 메뉴 — **항상 켜져 있다** |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 레이아웃 함정은
@@ -110,7 +110,7 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 
 ### 줄 바탕은 등급 색이다
 
-`CharacterStateRowView`의 루트 Image를 **`RarityPalette`의 등급 색**으로 칠한다(`SetRarity`) — 창고 칸과 같은 표다.
+`CharacterStateRowView`의 루트 Image를 **`RarityPalette`의 등급 색**으로 칠한다(`SetRarity`) — 인벤토리 칸과 같은 표다.
 목록 줄과 세팅 카드가 같은 프리팹이라 둘 다 칠해진다.
 
 - 등급은 **종류(TID)로 읽는다.** 세팅 카드는 슬롯이 개체 번호만 주므로 `PlayerDataModel.GetCharacterTid`를 거친다.
@@ -125,7 +125,7 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 - **레벨은 슬롯마다 따로다** — 전역이 아니다. 서버가 `t_user_workstation_slot.industry_level`에 저장한다.
   **특성으로 레벨을 열어도 이미 배치된 칸은 그대로다.** 올리려면 그 칸에서 다시 고른다.
 - 잠금은 `IsUnlocked(GetIndustryLevelUnlockTid(산업, 레벨))`에서 파생된다.
-  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 창고 **특성 탭 → 산업 레벨**에서 한다.
+  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 인벤토리 **특성 탭 → 산업 레벨**에서 한다.
 - 버튼 문구는 `IndustryLevelTable.Name`이라 산업마다 다르다(`Lv2 밭` · `Lv2 저수지`) —
   **코드가 갈아 쓴다.** 그 산업에 없는 레벨은 버튼째 숨긴다.
 - **목록 칸은 `산업 Lv{n}`으로 붙여 적는다** — `슬롯 3 · 낚시 Lv2 · 아무개 · 1.24배`
@@ -136,7 +136,7 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
 - **산업을 바꾸면 레벨 줄을 다시 그리고, 잠긴 레벨이 골라져 있으면 Lv1로 되돌린다.**
 - 색 규칙·"켜진 불빛은 슬롯에서 파생된다"는 **산업 버튼과 똑같다** — 3단계에서 레벨을 누르면
   산업 교체와 같은 **재배치 요청 1회**이고, 같은 레벨이면 보내지 않고 실패해도 제자리다.
-- `UnlocksChanged`를 구독한다 — 창고와 작업슬롯이 **동시에 보이므로**, 특성을 찍은 그 자리에서
+- `UnlocksChanged`를 구독한다 — 인벤토리와 작업슬롯이 **동시에 보이므로**, 특성을 찍은 그 자리에서
   레벨 버튼이 켜져야 한다.
 
 > ⚠️ **해제 요청에는 레벨을 `1`로 실어 보낸다.** 해제는 산업이 `None`으로 가는데 `None`에는
@@ -209,7 +209,7 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
   칸 위 노란 띠 → **보기 나빠서** 뺐다(2026-09-24 사용자 결정).
   ※ 네 상태(normal·highlighted·pressed·selected)를 같은 색으로 덮는다 — 산업 버튼과 같은 이유로,
   `selected`는 EventSystem이 마지막으로 누른 버튼을 잡고 있어 **고른 표시가 엉뚱한 칸에 남는다.**
-- **등급색은 칸 바탕(버튼의 Target Graphic)에 칠한다** — 창고 칸·캐릭터 카드·작업슬롯 칸과 같은 축이라
+- **등급색은 칸 바탕(버튼의 Target Graphic)에 칠한다** — 인벤토리 칸·캐릭터 카드·작업슬롯 칸과 같은 축이라
   🎨 등급 스프라이트가 오면 **네 곳이 함께** 색에서 스프라이트로 바뀐다.
   ※ `Button`의 색 전이가 이 색과 곱해져 누르면 어두워진다 — **색은 임시 표기라 감수한다**(2026-09-24 결정).
 - **목록은 산업으로 걸러 본다** — 버튼 5개, 순서가 곧 산업이라 산업 버튼 줄과 같은 축이다.
@@ -225,18 +225,18 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
   남은 줄은 전부 **이 산업에 실제로 붙는 값**이라 한 축으로 비교된다.
   **수치가 같으면 전 산업이 앞이다** — 슬롯의 산업을 바꿔도 그대로 남기 때문이다.
   개체 번호까지 가서 **동점을 없앤다** — `List.Sort`는 안정 정렬이 아니라 동점이면 다시 그릴 때마다 줄이 바뀐다.
-- **목록에는 창고에 있는 장비만 낸다** — 어디든 끼워져 있으면 뺀다(2026-09-24 사용자 결정).
+- **목록에는 인벤토리에 있는 장비만 낸다** — 어디든 끼워져 있으면 뺀다(2026-09-24 사용자 결정).
   서버는 남이 낀 장비도 옮겨 주지만, 그 동선을 목록에 두면 **착용자를 줄마다 적어 줘야 하고**
-  같은 장비가 칸에도 목록에도 있어 **무엇이 창고에 남았는지가 흐려진다.**
+  같은 장비가 칸에도 목록에도 있어 **무엇이 인벤토리에 남았는지가 흐려진다.**
   ⚠️ **다른 캐릭터에게서 가져오려면 그쪽에서 먼저 해제한다** — 이 화면에 그 동선은 없다.
   (같은 캐릭터의 장신구 1↔2 맞바꾸기도 마찬가지로 해제가 한 번 든다.)
 - **목록에서 거르는 것은 표시용이고 거절은 서버가 한다**(`EquipKindMismatch`).
 - **같은 칸을 다시 누르면 접는다** — 여는 버튼이 곧 닫는 버튼이다.
 - **고르기는 세팅 단계에서만 산다.** 뒤로가기·해제 성공·`OnDisable`에서 닫는다 —
   안 닫으면 다음에 들어왔을 때 **남의 칸 목록이 떠 있다.**
-- 효과 문구(`낚시 +30%`·`전산업 +5%`)는 창고 장비 탭과 **같은 출처**다(`UI/Shared/EquipLabel`) —
+- 효과 문구(`낚시 +30%`·`전산업 +5%`)는 인벤토리 장비 탭과 **같은 출처**다(`UI/Shared/EquipLabel`) —
   한쪽에만 두면 같은 장비가 두 화면에서 다르게 읽힌다.
-- 장착·해제가 성공하면 `EquipsChanged`가 4칸과 **창고 장비 탭의 '배' 마크를 함께** 갱신하고,
+- 장착·해제가 성공하면 `EquipsChanged`가 4칸과 **인벤토리 장비 탭의 '배' 마크를 함께** 갱신하고,
   뒤따르는 `S_WorkStationSlotSyncResponse`가 슬롯 속도를 고친다.
 
 ### 효율 계산은 가산 줄을 스스로 되짚는다 (2026-09-24)
@@ -302,6 +302,33 @@ ui.ShowMainScreen(MainScreen.WorkStationList);
   이 화면은 슬롯 **하나**만 보므로 줄 순회도 없다.
 - 표시 전용이라 `interactable`은 꺼 두고 `transition`도 `None`이다 — 끌면 안 되는 물건이다.
 - 장비를 고르는 동안에는 `Efficiency Label`·`Efficiency Rows Panel`과 **함께 꺼진다.**
+
+## 설정 화면 — 탭 4개 · 줄 목록 (2026-09-29 · T-098)
+
+```
+Setting Presenter (↓ SUB VIEW)
+├─ Header Panel      [일반][그래픽][오디오][기타][X]   ← 탭 넷이 X를 뺀 폭을 똑같이 나눈다(min 0 · pref 0 · flexW 1)
+├─ General Page      ┐
+├─ Graphic Page      │ 탭 하나만 켜진다 — 넷 다 pref 0 · flexH 1 (위 "갈아 끼운다"와 같은 값)
+├─ Audio Page        │
+└─ Etc Page          ┘
+    └─ Xxx Row       Name Text · [No Feature Text] · Spacer(flexW 1) · 조작(Dropdown·Toggle·Slider·Button)
+```
+
+- **탭 전환은 `SettingPresenter` 안에서 끝난다** — 바깥 전환 층(`MainScreen`)을 늘리지 않는다. 탭 짝(버튼·페이지)은
+  인스펙터 `Tabs`에 `SettingTab` 값마다 한 줄. 선택 색은 `InventoryTabPresenter`처럼 `ColorBlock`으로 칠한다.
+- **`(기능 없음)` 줄은 씬에만 있다.** 이름 옆 `No Feature Text (TMP)`가 표시하고 조작은 `interactable = false`다.
+  코드는 모른다 — 기능을 붙일 때 **그 줄의 조작을 `SettingPresenter` 필드로 받아 배선하고 `No Feature Text`를 지운다.**
+  ※ 위 "하단 메뉴 줄"의 "빈 칸·잠긴 버튼을 미리 두지 않는다"는 **특별 이벤트 자리 이야기**다. 설정은 사용자 결정으로 구조를 먼저 세웠다.
+- 투명도 슬라이더의 범위(10~100)는 코드가 `DisplayManager` 상수로 채운다 — 인스펙터 min·max는 덮어써진다.
+- 슬라이더 줄은 `이름 · Spacer · Value Text(지금 값 %) · Slider`다. 투명도의 값 글씨는 코드가 갱신한다.
+  오디오 슬라이더 넷의 값 글씨는 `100%` 고정 — 기능이 붙을 때 함께 배선한다.
+- 슬라이더 채움은 `Fill Area` 좌우 여백 0 · `Fill` 폭 0이다 — 유니티 기본값(`Fill` 폭 10)이면 최소값에서도 채움이 남는다.
+- 체크 표시는 `Assets/Sprites/ui/checkmark.png`(흰색 픽셀 체크 · 🎨 임시)다. ⚠️ 유니티 기본 `Checkmark` 스프라이트는 **어두운 회색**(평균 밝기 0.28)이라
+  테마 색을 곱하면 흐려진다 — 색을 입힐 스프라이트는 흰색이어야 한다.
+- ⚠️ **하이어라키에 안 보이는 자식이 둘 있다** — `(미사용) Toggle Panel`(옛 토글 + 타이틀바·투명·동적 클릭스루 토글) ·
+  `(미사용) Dropdown Panel`(옛 드롭다운). 테스트용으로 남겨 두고 **비활성 + `HideFlags.HideInHierarchy`** 로 숨겼다. 코드 참조는 없다.
+  꺼내려면 `hideFlags = HideFlags.None`으로 돌린다(에디터 `eval` 한 줄 — `SettingPresenter` 아래 `Find("(미사용) Toggle Panel")`).
 
 ## 캔버스 머리의 제목은 `UIManager`가 밀어 넣는다
 

@@ -54,7 +54,7 @@ public class EfficiencyRowView : MonoBehaviour
     }
 
     // 줄 바탕을 등급 색으로 칠한다 (산업 레벨 정보의 자원 줄만 호출).
-    //   rarity : 아이템 종류(TID)로 읽은 등급. 창고 칸과 같은 표('RarityPalette')다
+    //   rarity : 아이템 종류(TID)로 읽은 등급. 인벤토리 칸과 같은 표('RarityPalette')다
     public void SetRarity(GlobalRarity rarity)
     {
         backgroundImage.color = RarityPalette.Get(rarity);

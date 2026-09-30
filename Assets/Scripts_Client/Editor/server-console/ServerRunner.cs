@@ -9,6 +9,8 @@ using Debug = UnityEngine.Debug;
 namespace DesktopWindowControl.EditorTools
 {
 	// WSGameServer를 에디터에서 백그라운드로 켜고/끄는 프로세스 제어기. UI는 없다(창은 'ServerConsoleWindow').
+	// ★ 경매장 서버(AuctionServer)도 같은 cmd 아래에서 함께 띄운다 — 메인은 경매장에 gRPC로 붙고, 안 떠 있으면
+	//    등록만 되고(메인 DB outbox에 쌓인다) 검색·내 매물·거래소 조회가 전부 'AuctionUnavailable'(점검 중)로 온다.
 	// ★ stdout/stderr를 cmd의 '>' 리다이렉트로 로그 파일에 직접 흘려 담는다 —
 	//    에디터가 스크립트를 재컴파일(도메인 리로드)해 static·콜백이 소멸해도 로그가 계속 쌓이고, 서버도 안 끊긴다.
 	// ★ 실행 중 프로세스 PID는 'SessionState'에 둔다 — 도메인 리로드를 넘어 살아남고 Unity 재시작 때 비워지므로 재부착에 맞다.
@@ -17,12 +19,18 @@ namespace DesktopWindowControl.EditorTools
 	{
 		// 서버 프로젝트(.csproj) — 프로젝트 루트 기준 상대 경로
 		private const string ServerProjectRelPath = "Server/WSGameServer/WSGameServer.csproj";
+		// 경매장 서버 프로젝트 — 메인과 다른 프로세스다(Server/docs/경매장.md)
+		private const string AuctionProjectRelPath = "Server/AuctionServer/AuctionServer.csproj";
 		// 서버가 요구하는 .NET SDK 최소 메이저 버전 (= WSGameServer.csproj의 net10.0). TFM을 올리면 같이 올린다.
 		private const int RequiredSdkMajor = 10;
 		// 서버가 여는 포트(WSGameServer 하드코딩). 크래시로 추적 PID를 잃은 orphan 서버 탐지에 쓴다.
 		public const int ServerPort = 10050;
+		// 경매장 서버 gRPC 포트(AuctionServer/appsettings.json의 ListenPort). orphan 정리에 쓴다.
+		public const int AuctionPort = 10060;
 		// 서버 stdout/stderr를 담는 로그 파일 — 창이 tail 한다. 'Temp/'는 git 무시라 커밋되지 않는다.
 		private const string LogFileRelPath = "Temp/WSGameServer.log";
+		// 경매장 서버 로그 — 빌드 출력도 여기 담긴다. 창은 메인 로그만 보여 주고 이건 파일로 연다.
+		private const string AuctionLogFileRelPath = "Temp/AuctionServer.log";
 		// 실행 중 프로세스(cmd) PID를 담는 세션 키
 		private const string PidSessionKey = "DWC.ServerConsole.Pid";
 
@@ -103,11 +111,15 @@ namespace DesktopWindowControl.EditorTools
 				}
 
 				KillByPort(ServerPort);
+				KillByPort(AuctionPort); // 같은 세션에서 함께 떴던 경매장 서버도 남아 있다
 			}
 
-			var root   = ProjectRoot;
-			var csproj = Path.Combine(root, ServerProjectRelPath);
-			var log    = Path.Combine(root, LogFileRelPath);
+			var root       = ProjectRoot;
+			var csproj     = Path.Combine(root, ServerProjectRelPath);
+			var log        = Path.Combine(root, LogFileRelPath);
+			var auction    = Path.Combine(root, AuctionProjectRelPath);
+			var auctionDir = Path.GetDirectoryName(auction)!;
+			var auctionLog = Path.Combine(root, AuctionLogFileRelPath);
 
 			if (!File.Exists(csproj))
 			{
@@ -131,9 +143,19 @@ namespace DesktopWindowControl.EditorTools
 				//   즉시 EOF(null)를 받아 곧바로 종료해 버린다(→ 서버가 바로 꺼지고 접속이 거부된다).
 				//   숨겨진 콘솔이 있으면 ReadLine이 정상적으로 블록해 서버가 계속 살아 있고, 이 프로세스는
 				//   부모(에디터)와 독립이라 도메인 리로드도 견딘다. (CreateNoWindow는 ShellExecute에선 무시되므로 WindowStyle을 쓴다.)
+				//
+				// ★ 경매장 서버는 **먼저 빌드를 끝낸 뒤** 'start /b'로 같은 콘솔에 띄운다('--no-build').
+				//   두 서버가 AuctionProtocol을 함께 참조해서, 동시에 'dotnet run'하면 같은 obj를 두고 빌드가 부딪친다.
+				//   'start /b'의 자식은 이 cmd 아래에 붙으므로 종료('taskkill /T')가 경매장까지 함께 내린다.
+				//   작업 폴더(/d)를 프로젝트 폴더로 둔다 — appsettings.json과 auction.sqlite3을 거기서 찾는다.
+				//   경매장 빌드가 실패해도 메인은 뜬다('&') — 원인은 AuctionServer.log에 남는다.
+				var auctionPart =
+					$"\"{dotnet}\" build \"{auction}\" -nologo -v q > \"{auctionLog}\" 2>&1 && " +
+					$"start \"\" /b /d \"{auctionDir}\" \"{dotnet}\" run --no-build --project \"{auction}\" >> \"{auctionLog}\" 2>&1";
+
 				var psi = new ProcessStartInfo("cmd.exe")
 				{
-					Arguments        = $"/S /C \"chcp 65001>nul && \"{dotnet}\" run --project \"{csproj}\" > \"{log}\" 2>&1\"",
+					Arguments        = $"/S /C \"chcp 65001>nul && {auctionPart} & \"{dotnet}\" run --project \"{csproj}\" > \"{log}\" 2>&1\"",
 					WorkingDirectory = root,
 					UseShellExecute  = true,
 					WindowStyle      = ProcessWindowStyle.Hidden,
@@ -149,7 +171,7 @@ namespace DesktopWindowControl.EditorTools
 				}
 
 				SessionState.SetInt(PidSessionKey, proc.Id);
-				Debug.Log($"[서버 콘솔] 서버 시작 (pid {proc.Id}, dotnet: {dotnet}).");
+				Debug.Log($"[서버 콘솔] 서버 시작 — 경매장 서버 포함 (pid {proc.Id}, dotnet: {dotnet}, 경매장 로그: {AuctionLogFileRelPath}).");
 			}
 			catch (Exception e)
 			{

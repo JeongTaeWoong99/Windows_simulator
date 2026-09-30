@@ -1,7 +1,8 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 작업슬롯 화면 하단의 메뉴 줄 — 좌우 열(창고·거래)을 여는 버튼들. (기획 2.4)
+// 작업슬롯 화면 하단의 메뉴 줄 — 좌우 열(인벤토리·거래)을 여는 버튼들. (기획 2.4)
 // 'Title'과 함께 늘 켜져 있어, 가운데 세 화면이 무엇으로 바뀌든 그대로 남는다.
 //
 // ■ 이 줄이 특별 이벤트 자리다 (기획 2.4 · 2026-09-16 확정)
@@ -10,14 +11,15 @@ using UnityEngine.UI;
 //   ⚠️ 버튼에 배지·타이머·"오늘까지" 표시를 붙이지 않는다 — 상주 창이 재촉하는 물건이 된다(P1).
 //
 // ⚠️ 열지 않고 뒤집는다 — 여는 일만 하면 이미 열려 있을 때 눌러도 변화가 없어
-// 버튼이 고장 난 것처럼 보인다. 창고·거래는 자리를 뺏지 않으므로 'MainScreen' 전환이 아니라
-// 각각의 열 토글('ToggleStorage'·'ToggleMarket')을 쓴다.
+// 버튼이 고장 난 것처럼 보인다. 인벤토리·거래는 자리를 뺏지 않으므로 'MainScreen' 전환이 아니라
+// 각각의 열 토글('ToggleInventory'·'ToggleMarket')을 쓴다.
 public class MenuPresenter : MonoBehaviour
 {
     // ※ 선택 참조다. 비워 두면 그 버튼이 아직 없는 것으로 보고 넘어간다.
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("창고 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
-    private Button? storageButton;
+    [SerializeField, Tooltip("인벤토리 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [FormerlySerializedAs("storageButton")]
+    private Button? inventoryButton;
 
     [SerializeField, Tooltip("거래 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button? marketButton;
@@ -28,9 +30,9 @@ public class MenuPresenter : MonoBehaviour
     {
         var ui = Services.Get<UIManager>();
 
-        if (storageButton != null)
+        if (inventoryButton != null)
         {
-            storageButton.onClick.AddListener(ui.ToggleStorage);
+            inventoryButton.onClick.AddListener(ui.ToggleInventory);
         }
 
         if (marketButton != null)

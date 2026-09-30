@@ -1,9 +1,9 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
-(`#Storage Canvas` → `Storage/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
+(`#Inventory Canvas` → `Inventory/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
 
 ## 왜 이 폴더가 있나
 
@@ -14,7 +14,7 @@
 
 | 예전 | 무엇이 거짓이었나 |
 |------|------------------|
-| `Storage/StorageGridPresenter/InventorySlotView.cs` | 창고 소유처럼 보이지만 **가챠 결과 팝업이 같은 클래스·같은 프리팹을 쓴다.** 창고를 고치다 팝업을 조용히 바꾸게 된다. **이름의 `Inventory`도 거짓이었다** → `SlotView`로 개명 |
+| `Inventory/InventoryGridPresenter/InventorySlotView.cs` | 인벤토리 소유처럼 보이지만 **가챠 결과 팝업이 같은 클래스·같은 프리팹을 쓴다.** 인벤토리를 고치다 팝업을 조용히 바꾸게 된다. **이름의 `Inventory`도 거짓이었다** → `SlotView`로 개명 |
 | `System/RarityPalette.cs` 등 4개 | `#System Canvas`와 **무관**한데 그 폴더에 있었다. `System 규칙.md`가 *"어디에도 속하지 않는 것들"* 이라 적어 두고도 자리를 못 만들어 준 상태였다 |
 
 **소유자가 여럿이면 자리도 공용이어야 한다.** 그게 이 폴더다.
@@ -23,17 +23,20 @@
 
 | 파일 | 하는 일 | 누가 쓰나 |
 |------|---------|-----------|
-| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View) | `#Storage Canvas`의 격자 · `!System Canvas`의 가챠 결과 |
+| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View) | `#Inventory Canvas`의 격자 · `!System Canvas`의 가챠 결과 |
 | `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
-| `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Storage + `PlayerDataModel` |
-| `RarityPalette.cs` | 등급 → 표시 색 | Storage · System |
-| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Storage(도구 줄 드롭다운 · 칸 툴팁) |
+| `ItemIconView.cs` + `Assets/Prefabs/ItemIconView.prefab` | **목록 줄 왼쪽의 작은 아이콘 칸** — 등급 바탕 · 이름 첫 글자(🎨 아이콘 전 임시) · 모서리 수량 · 능력치 칸. 줄에서는 `SquareLayoutElement`로 줄 높이만큼 정사각형 | Market(경매장 줄) · Main(우편 · 장비 고르기) · Inventory(판매 목록) |
+| `ItemIconContent.cs` | 아이콘 칸의 완성값 + 팩토리(`ForItem`·`ForEquip`·`ForCharacter`·`ForGold`) — 이름·등급 조회를 한 곳에 | 위 아이콘을 채우는 모두 |
+| `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Inventory + `PlayerDataModel` |
+| `RarityPalette.cs` | 등급 → 표시 색 | Inventory · System |
+| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
 | `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
-| `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Storage(칸 스트립) · Main(캐릭터 줄·카드) |
+| `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Inventory(칸 스트립) · Main(캐릭터 줄·카드) |
 | `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
-| `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류. ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Storage(장비 탭) · Main(작업슬롯 장비 칸) |
-| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Storage · Main (버튼마다) · Storage 격자(칸마다 — 코드가 붙인다, T-050) |
+| `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
+| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |
+| `theme/UIRichText.cs` | 한 줄 안에서 **라벨은 흐린 색 · 가격은 강조색**으로 가르는 TMP 리치 텍스트 조각. 색은 팔레트 역할에서 읽는다 | Market · Main(우편) |
 | `theme/` (`UIThemeRole`·`UIThemePalette`·`UIThemeColor`) | 🎨 **아트 전 임시 색** — 역할 → 색 표 하나. 아래 "임시 테마" 절 | 모든 캔버스·프리팹 |
 
 > ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").
@@ -76,11 +79,11 @@
 
 ## 고칠 때
 
-- 🔴 **여기 있는 파일을 고치면 여러 화면이 동시에 바뀐다.** 창고를 보며 고쳐도 가챠 결과 팝업이
+- 🔴 **여기 있는 파일을 고치면 여러 화면이 동시에 바뀐다.** 인벤토리를 보며 고쳐도 가챠 결과 팝업이
   함께 움직인다 — **양쪽을 다 확인하고 커밋한다.**
 - **화면마다 달라야 하는 것은 분기하지 않고 스위치로 뺀다** — 부품이 화면을 알아보면
   화면이 늘 때마다 부품을 고치게 된다. `SlotView.SetSubVisible`이 그 형태다
-  (창고는 보조 문구를 켜고, 가챠 결과는 끈다). 상세는 [`Storage 규칙.md`](<../Storage/Storage 규칙.md>).
+  (인벤토리는 보조 문구를 켜고, 가챠 결과는 끈다). 상세는 [`Inventory 규칙.md`](<../Inventory/Inventory 규칙.md>).
 - **파일이 하나의 캔버스만 쓰게 줄어들면 그 폴더로 내린다.** 공용 폴더는 **지금의 사실**을
   적는 자리다 — 예전에 공유했다는 이유로 남겨 두면 다음 사람이 못 건드린다.
 

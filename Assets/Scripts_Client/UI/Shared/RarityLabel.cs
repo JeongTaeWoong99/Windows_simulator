@@ -3,7 +3,7 @@ using GameData;
 // 등급('GlobalRarity') → 사용자에게 보일 이름.
 //
 // ■ 왜 따로 두는가
-// 창고 도구 줄의 일괄 담기 드롭다운('StorageToolPresenter')과 창고 칸 툴팁('StorageSlotSource')이
+// 인벤토리 도구 줄의 일괄 담기 드롭다운('InventoryToolPresenter')과 인벤토리 칸 툴팁('InventorySlotSource')이
 // 같은 이름을 쓴다. 한쪽에만 적어 두면 같은 등급이 두 화면에서 다르게 읽힌다.
 // 색은 'RarityPalette', 이름은 여기 — 'IndustryLabel'과 같은 부류다.
 //

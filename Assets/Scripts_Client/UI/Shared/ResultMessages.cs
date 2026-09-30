@@ -17,7 +17,7 @@ public static class ResultMessages
         EResultCode.InvalidGachaId      => "존재하지 않는 뽑기입니다.",
         EResultCode.NotEnoughCurrency   => "골드가 부족합니다.",
         // 뽑기와 상자 개봉이 같은 코드로 온다. 상자는 넘치면 우편으로 보관되므로, 이 코드면 우편함까지 찬 것이다.
-        EResultCode.StorageFull         => "창고가 가득 찼습니다. 정리한 뒤 다시 시도해 주세요.",
+        EResultCode.StorageFull         => "인벤토리가 가득 찼습니다. 정리한 뒤 다시 시도해 주세요.",
         EResultCode.InvalidSlotIndex    => "아직 열리지 않은 작업 슬롯입니다.",
         EResultCode.CharacterNotOwned   => "보유하지 않은 캐릭터입니다.",
         EResultCode.NoAptitude          => "이 캐릭터는 해당 산업 적성이 없습니다.",
@@ -41,6 +41,21 @@ public static class ResultMessages
         EResultCode.MailAlreadyClaimed  => "이미 받은 우편입니다.",
         // 안 받은 우편에는 삭제 버튼이 없다 — 정상 화면에서는 나오지 않는다.
         EResultCode.MailNotClaimed      => "받지 않은 우편은 지울 수 없습니다.",
+        // 경매장·거래소 (1000~1013). 뜻은 'PacketEnum.cs' 주석.
+        EResultCode.AuctionUnavailable     => "경매장이 점검 중입니다. 잠시 뒤 다시 시도해 주세요.",
+        EResultCode.AuctionInvalidRequest  => "거래 요청이 올바르지 않습니다.",
+        EResultCode.AuctionPriceOutOfBand  => $"경매 단가는 즉시 판매가 ~ {AuctionModel.PriceBandMultiplier:N0}배 사이로 정해 주세요.",
+        EResultCode.AuctionListingLimit    => "판매 중인 매물이 너무 많습니다. 정리한 뒤 다시 등록해 주세요.",
+        EResultCode.AuctionEquipped        => "착용 중인 장비는 올릴 수 없습니다. 먼저 벗겨 주세요.",
+        EResultCode.AuctionNotFound        => "없는 매물입니다.",
+        EResultCode.AuctionInProgress      => "다른 사람이 구매 중인 매물입니다. 잠시 뒤 다시 시도해 주세요.",
+        EResultCode.AuctionSoldOut         => "이미 팔린 매물입니다.",
+        EResultCode.AuctionClosed          => "취소되었거나 기간이 끝난 매물입니다.",
+        EResultCode.AuctionPriceChanged    => "가격이 바뀌었습니다. 다시 검색해 주세요.",
+        EResultCode.AuctionOwnListing      => "내가 올린 매물은 살 수 없습니다.",
+        EResultCode.AuctionNotOwner        => "내 매물만 취소할 수 있습니다.",
+        EResultCode.AuctionTooManyRequests => "조회가 너무 잦습니다. 잠시 뒤 다시 시도해 주세요.",
+        EResultCode.MarketNotEnough        => "그 가격으로 원하는 수량을 다 살 수 없습니다. 아무것도 사지 않았습니다.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

@@ -25,7 +25,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // 예전에는 "숨기지 않고 잠근다"였다. 16마리를 기르면 낚시를 눌러도 16줄이 그대로 남아
 // **누를 수 있는 것을 골라내는 일을 사람이 하게 되기 때문에** 뒤집었다(T-046).
 // 목록이 통째로 비면 안내 문구 하나만 뜨고(빈 목록은 고장과 구분되지 않는다),
-// "내 캐릭터가 어디 갔나"의 답은 창고 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
+// "내 캐릭터가 어디 갔나"의 답은 인벤토리 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
 // 적성은 패킷('CharacterInfo.Aptitudes')에서 온다 — 테이블을 직접 읽지 않는다.
 //
 // ■ 세팅 단계의 구성 (목업 'GameDesign/design/ui/게임UI목업(2026-07-30 업데이트).html'의 슬롯 상세)
@@ -133,7 +133,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         [Tooltip("장비 칸 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
         public Button button;
 
-        // 칸 버튼의 바탕 그래픽이다. 등급 색은 **여기** 칠한다 — 창고 칸·캐릭터 카드와 같은 축이라
+        // 칸 버튼의 바탕 그래픽이다. 등급 색은 **여기** 칠한다 — 인벤토리 칸·캐릭터 카드와 같은 축이라
         // 🎨 등급 스프라이트가 오면 **네 곳이 함께** 색에서 스프라이트로 바뀐다.
         // ※ 'Button'의 색 전이가 이 색과 곱해진다(누르면 어두워진다). 색은 임시 표기라 감수한다.
         [Tooltip("칸 바탕 — 버튼의 Target Graphic. 낀 장비의 등급 색으로 칠해진다, 비었으면 회색")]
@@ -145,7 +145,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         [Tooltip("낀 장비 이름. 비었으면 '비어있음'")]
         public TMP_Text nameLabel;
 
-        // 무엇을 끼웠는지만으로는 **왜 이걸 끼웠는지**를 알 수 없다 — 창고 장비 탭과 같은 문구를 칸에도 적는다.
+        // 무엇을 끼웠는지만으로는 **왜 이걸 끼웠는지**를 알 수 없다 — 인벤토리 장비 탭과 같은 문구를 칸에도 적는다.
         [Tooltip("낀 장비의 효과 한 줄('채굴 +10%'). 비었으면 빈 문자열이라 줄이 사라진다")]
         public TMP_Text effectLabel;
     }
@@ -242,7 +242,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private Comparison<CharacterInfo> _rowOrder = null!;
 
     // 줄에 넘길 적성 5칸. 산업 목록 순서 그대로 담는다 — 줄마다 새로 만들지 않고 이 배열을 재사용한다.
-    // ※ 줄이 받아 그리는 즉시 쓰임이 끝나므로 공유해도 된다('StorageGridPresenter.ReadAptitudes'와 같다).
+    // ※ 줄이 받아 그리는 즉시 쓰임이 끝나므로 공유해도 된다('InventoryGridPresenter.ReadAptitudes'와 같다).
     private byte[] _aptitudes = new byte[0];
 
     // 만들어 둔 효율 계산 줄. 캐릭터 줄과 같은 풀 규칙이다.
@@ -916,7 +916,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            // 이미 다른 슬롯에서 일하는 중이면 고를 수 없다 — 판정은 창고 캐릭터 탭과 같은 곳에서 읽는다.
+            // 이미 다른 슬롯에서 일하는 중이면 고를 수 없다 — 판정은 인벤토리 캐릭터 탭과 같은 곳에서 읽는다.
             if (_data.FindSlotIndexOf(character.CharacterId) >= 0)
             {
                 continue;
@@ -944,7 +944,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         HideRowsFrom(_visible.Count);
 
         // 빈 목록은 고장과 구분되지 않는다 — 왜 비었는지만 알린다.
-        // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 창고 캐릭터 탭(적성 스트립·'배' 마크)에 있다.
+        // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 인벤토리 캐릭터 탭(적성 스트립·'배' 마크)에 있다.
         emptyText.gameObject.SetActive(_visible.Count == 0);
 
         // 방금 만든 줄은 아직 프리팹에 저장된 크기 그대로다 — uGUI의 레이아웃 계산은 이 프레임
@@ -1419,7 +1419,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //
     // ⚠️ **끼고 있던 장비를 먼저 뺀다.** 서버의 배치 해제는 착용을 건드리지 않아
     //    ('User.AssignWorkStation'), 그냥 빼면 일하지도 않는 캐릭터가 장비를 붙들고 있는다 —
-    //    창고에서 '배' 마크만 붙은 채 남아 다른 캐릭터에 끼울 때까지 돌아오지 않는다.
+    //    인벤토리에서 '배' 마크만 붙은 채 남아 다른 캐릭터에 끼울 때까지 돌아오지 않는다.
     private void OnAssignedCardClicked(CharacterStateRowView card)
     {
         if (!CanSend())
@@ -1438,11 +1438,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 배치된 캐릭터가 낀 장비를 칸마다 하나씩 뺀다 (배치 해제 직전에 'OnAssignedCardClicked'가 호출).
     //
     // 한 세션이 보낸 패킷은 보낸 순서대로 처리되므로, 해제를 먼저 보내면 캐릭터가 슬롯에서
-    // 빠지기 전에 장비가 창고로 돌아간다.
+    // 빠지기 전에 장비가 인벤토리로 돌아간다.
     //
     // ※ 응답('S_EquipResponse')은 기다리지 않는다 — 대기는 뒤이어 보내는 배치 해제 하나만 연다.
     //   먼저 도착하는 장비 응답은 'OnEquipCompleted'가 _pending(Unassign)을 보고 흘려 보내고,
-    //   창고·장비 칸 표시는 'EquipsChanged'(OnEquipsChanged)가 따로 갱신한다.
+    //   인벤토리·장비 칸 표시는 'EquipsChanged'(OnEquipsChanged)가 따로 갱신한다.
     private void UnequipAllWorn()
     {
         var slot = FindSlot();
@@ -1691,13 +1691,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 entry.nameLabel.text = worn != null ? GameDataLoader.GetEquipName(worn.EquipTid) : "";
             }
 
-            // 효과는 창고 장비 탭과 **같은 출처**다('EquipLabel') — 빈 칸이면 빈 문자열이라 줄이 사라진다.
+            // 효과는 인벤토리 장비 탭과 **같은 출처**다('EquipLabel') — 빈 칸이면 빈 문자열이라 줄이 사라진다.
             if (entry.effectLabel != null)
             {
                 entry.effectLabel.text = worn != null ? EquipLabel.GetEffectText(worn.EquipTid) : "";
             }
 
-            // 창고 칸·캐릭터 카드와 같은 표('RarityPalette')다. 빈 칸은 회색('Unknown').
+            // 인벤토리 칸·캐릭터 카드와 같은 표('RarityPalette')다. 빈 칸은 회색('Unknown').
             if (entry.background != null)
             {
                 entry.background.color = worn != null
@@ -1796,9 +1796,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //
     // ⚠️ **여기서 거르는 것은 표시용이다** — 진짜 거절은 서버가 한다('EquipKindMismatch').
     //
-    // ※ **끼워져 있는 개체는 빼고 창고에 있는 것만 낸다**(2026-09-24 사용자 결정).
+    // ※ **끼워져 있는 개체는 빼고 인벤토리에 있는 것만 낸다**(2026-09-24 사용자 결정).
     //   서버는 남이 낀 장비도 옮겨 주지만, 그 동선을 목록에 두면 착용자를 적어 줘야 하고
-    //   **같은 장비가 칸에도 목록에도 있어** 무엇이 창고에 남았는지가 흐려진다.
+    //   **같은 장비가 칸에도 목록에도 있어** 무엇이 인벤토리에 남았는지가 흐려진다.
     //   다른 캐릭터에게서 가져오려면 **그쪽에서 먼저 해제한다.**
     private void RefreshEquipPicker()
     {
@@ -1847,6 +1847,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             view.Bind(equip.EquipId, row.Name, EquipLabel.GetEffectText(equip.EquipTid));
             view.SetRarity(row.GlobalRarity);
+            view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                           () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));
             view.SetPickable(!IsWaiting);
         }
 
@@ -1986,7 +1988,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 고른 장비를 지금 칸에 끼운다 (장비 줄 클릭).
     //
-    // ※ 목록에는 창고에 있는 것만 있으므로 **여기서 오는 장비는 늘 비어 있는 개체다.**
+    // ※ 목록에는 인벤토리에 있는 것만 있으므로 **여기서 오는 장비는 늘 비어 있는 개체다.**
     //   그래도 클라가 해제를 먼저 보내지는 않는다 — 서버가 한 번에 처리한다.
     private void OnEquipRowClicked(EquipPickRowView row)
     {
@@ -2050,7 +2052,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 보유 장비가 바뀌었다 — 지급·장착·해제·남에게 밀려난 것까지 전부 (PlayerDataModel.EquipsChanged 구독).
     //
-    // ※ 창고 장비 탭도 같은 이벤트로 함께 갱신된다 — '배' 마크가 여기서 켜지고 꺼진다.
+    // ※ 인벤토리 장비 탭도 같은 이벤트로 함께 갱신된다 — '배' 마크가 여기서 켜지고 꺼진다.
     private void OnEquipsChanged()
     {
         if (!settingPanel.activeSelf)

@@ -23,6 +23,13 @@
 
 ## INDEX
 
+- [2026-09-30 경매장 탭 클라 화면 (T-096)](2026-09-30-auction-client-screens.md) — `#client` `#ui` 거래소·장비·등록·내 매물 하위 탭과 AuctionModel
+- [2026-09-30 창고 → 인벤토리 개명 · 거래 탭 3개](2026-09-30-inventory-rename-market-tabs.md) — `#client` `#ui` Storage→Inventory 전면 개명 · MarketTabPresenter (T-101)
+- [2026-09-29 창 작은 배율 · 투명도 · 설정 탭](2026-09-29-window-small-scale-opacity.md) — `#client` `#ui` 0.5x·0.75x 배율(이후 제거) · 투명도 슬라이더 · 설정 탭 4개 · 작업표시줄 침범 금지 (T-070 · T-098 · T-099)
+- [2026-09-29 장비 칸 능력치 칸 표시](2026-09-29-equip-stat-socket-display.md) — `#client` `#ui` 칸 오른쪽 아래 등급색 네모 · 툴팁 칸 목록 (T-095 · 새 능력치 기획 선행)
+- [2026-09-29 창고 정렬 기준 · 찾기](2026-09-29-storage-sort-filter.md) — `#client` `#ui` 정렬 기준 3개 · 검색·산업·등급 필터 (T-073 · T-069)
+- [2026-09-29 치트 해금 일괄 열기](2026-09-29-cheat-unlock-bulk.md) — `#client` `#editor` 해금 칸·묶음·산업 단위 전부 열기 버튼
+- [2026-09-29 특성 — 누르면 정보부터, [배우기]로 찍는다](2026-09-29-trait-detail-two-step.md) — `#client` `#ui` 특성 2단계 플로우 · 정보 영역을 판매 목록 자리에 (T-079)
 - [2026-09-28 다이아(유료 재화) 폐지](2026-09-28-remove-dia.md) — `#server` `#data` `#design` 패킷·DB·엑셀·기획 문서에서 Dia 삭제 (#41)
 - [2026-09-27 클라 속도 스케일·기본 산업 레벨 Constants 교체](2026-09-27-client-constants-speed-scale.md) — `#client` `#data` T-085 클라 몫 종료 (#34 · #39 닫음)
 - [2026-09-26 상수 8개 Constants.xlsx 이관 · 채취 창고 한도](2026-09-26-constants-migration-harvest-limit.md) — `#server` `#data` `#test` 창고가 가득 차면 채취 새 종류 산출을 버린다 (T-085 · #34)

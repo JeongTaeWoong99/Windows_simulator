@@ -23,6 +23,7 @@ namespace GameData
         public int          MiningCap    { get; set; }        // int
         public int          LoggingCap   { get; set; }        // int
         public int          HuntingCap   { get; set; }        // int
+        public int          BasePrice    { get; set; }        // int [0..-]
         public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

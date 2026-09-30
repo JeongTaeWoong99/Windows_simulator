@@ -45,6 +45,9 @@ public static class WindowSettings
     public const string FrameRateKey           = "Display.FrameRate";
     public const string FpsTextPositionKey     = "Display.FpsTextPosition";
 
+    // UI 투명도(불투명도 %, 10~100) — 설정 슬라이더 값 그대로. 에디터도 저장값을 읽는다('DisplayManager').
+    public const string OpacityKey             = "Display.Opacity";
+
     // 저장된 bool을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
     public static bool LoadBool(string key, bool fallback)
     {

@@ -185,7 +185,7 @@ public class GachaPresenter : MonoBehaviour
         // ⚠️ 10연차 비용은 단차 x 10이 아니다. 컬럼이 따로라 각각 읽는다.
         long cost = isSingle ? info.CostSingle : info.CostMulti;
 
-        // 지금 재화 축은 골드뿐이다. 다이아 비용이 생기면 잔액 비교(ApplyButtons)도 함께 갈라야 한다.
+        // 재화 축은 골드뿐이다(다이아 폐지 — #41). 잔액 비교(ApplyButtons)도 골드로만 한다.
         if (info.CostCurrency != CurrencyType.Gold)
         {
             ClientLogger.Warn(ClientLogger.UI,

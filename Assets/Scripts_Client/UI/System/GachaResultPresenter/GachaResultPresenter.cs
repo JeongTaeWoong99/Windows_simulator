@@ -6,8 +6,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 보상 결과 팝업 — 이번에 얻은 것을 5열로 늘어놓고, 닫기를 누르면 사라진다.
-// 칸은 창고와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
-// ⚠️ 그래서 창고 쪽을 고치면 이 팝업도 함께 바뀐다.
+// 칸은 인벤토리와 **공유하는** 프리팹('SlotView')이다 — 인벤토리 전용이 아니다.
+// ⚠️ 그래서 인벤토리 쪽을 고치면 이 팝업도 함께 바뀐다.
 //
 // ■ 가챠와 상자 개봉이 같은 팝업을 쓴다
 // 서버가 상자 개봉 결과를 가챠와 **같은 모양**('GachaRewardInfo')으로 내려주기 때문이다.
@@ -38,7 +38,7 @@ public class GachaResultPresenter : MonoBehaviour
     [SerializeField, Tooltip("보상 칸이 들어갈 부모 — GridLayoutGroup(5열)이 붙어 있다")]
     private Transform slotParent = null!;
 
-    [SerializeField, Tooltip("보상 한 칸 프리팹 (SlotView 포함). 창고 격자와 공유하는 칸이다")]
+    [SerializeField, Tooltip("보상 한 칸 프리팹 (SlotView 포함). 인벤토리 격자와 공유하는 칸이다")]
     private SlotView slotPrefab = null!;
 
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -141,7 +141,7 @@ public class GachaResultPresenter : MonoBehaviour
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
     //
     // ■ 왜 'GachaRewardInfo'로 바꾸지 않고 칸 값을 바로 만드나
-    // 우편에는 다이아가 붙는데 'EGachaRewardType'에 다이아가 없다. 억지로 끼우면 패킷 enum을 클라가 늘려야 한다.
+    // 우편 첨부는 종류마다 필드가 따로 온다(Gold · Items · CharacterTids · EquipTids · Equips). 한 목록으로 옮겼다 되읽느니 바로 합친다.
     // ※ 모두 받기로 여러 통을 받으면 상자와 같은 이유로 합친다 — 몇 번째 우편에서 무엇이 나왔나는 우편함 목록에 남아 있다.
     // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
     private void OnMailRewardsClaimed(List<MailInfo> mails)
@@ -233,12 +233,11 @@ public class GachaResultPresenter : MonoBehaviour
     }
 
     // 우편 첨부를 종류별로 합쳐 칸 값으로 옮긴다 (OnMailRewardsClaimed에서 호출).
-    // 순서는 골드 → 다이아 → 아이템 → 캐릭터 → 장비, 각 안에서는 처음 나온 순서다.
+    // 순서는 골드 → 아이템 → 캐릭터 → 장비, 각 안에서는 처음 나온 순서다.
     // ⚠️ 묶는 열쇠는 'Summarize'와 같이 **종류 + TID**다 — 아이템 1001과 장비 1001은 다른 물건이다.
     private static List<SlotData> SummarizeMails(List<MailInfo> mails)
     {
         long gold = 0L;
-        long dia  = 0L;
 
         var order  = new List<(char Kind, int Tid)>();
         var totals = new Dictionary<(char Kind, int Tid), long>();
@@ -261,7 +260,6 @@ public class GachaResultPresenter : MonoBehaviour
         foreach (MailInfo mail in mails)
         {
             gold += mail.Gold;
-            dia  += mail.Dia;
 
             if (mail.Items != null)
             {
@@ -287,7 +285,7 @@ public class GachaResultPresenter : MonoBehaviour
                 }
             }
 
-            // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 창고에서 본다.
+            // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 인벤토리에서 본다.
             if (mail.Equips != null)
             {
                 foreach (EquipInfo equip in mail.Equips)
@@ -302,11 +300,6 @@ public class GachaResultPresenter : MonoBehaviour
         if (gold > 0L)
         {
             slots.Add(new SlotData(0L, "골드", gold.ToString("N0"), GlobalRarity.None));
-        }
-
-        if (dia > 0L)
-        {
-            slots.Add(new SlotData(0L, "다이아", dia.ToString("N0"), GlobalRarity.None));
         }
 
         foreach (var key in order)

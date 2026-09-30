@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;           // 배율 라벨의 소수점(로캘에 따라 쉼표가 되지 않게)
 using System.Runtime.InteropServices; // MONITORINFO.cbSize 를 채우는 Marshal.SizeOf
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -26,6 +27,9 @@ public enum ScreenAnchor
 //   X1 = 960x540, X1_25 = 1200x675, X1_5 = 1440x810, X2 = 1920x1080.
 //
 // 모니터 비례가 아닌 이유와 16:9 유지 규칙은 'Managers 규칙.md' 5장 참조.
+//
+// ⚠️ 새 항목은 맨 뒤에만 붙인다 — 이 값은 씬과 'PlayerPrefs'에 int로 저장돼 있어, 중간에 끼우면
+//   저장값이 조용히 다른 배율을 가리킨다. 드롭다운 표시 순서는 'WindowManager.SizeOrder'가 따로 정한다.
 public enum WindowScale
 {
     X1,    // 960x540
@@ -34,12 +38,15 @@ public enum WindowScale
     X2,    // 1920x1080
 
     // 작업표시줄에 맞춤 — 위젯 바 높이가 작업표시줄과 같아지는 배율. 고정값이 아니라 런타임에
-    // 계산되므로('WindowManager.RecalculateFitScale') 'ScaleFactors' 표에 자리가 없다.
+    // 계산되므로('WindowManager.RecalculateFitScale') 고정 배율('PresetFactor')이 없다.
     //
     // ※ 크기를 감각으로 고르는 프리셋들과 같은 드롭다운에 둔 이유 — 둘은 상호배타다.
     //   맞춤은 크기와 "함께" 고르는 게 아니라 크기 선택을 대체한다. 별도 토글로 두면
     //   "1x + 맞춤" 처럼 성립하지 않는 조합(위젯이 상태 칸을 다 먹는다)을 표현할 수 있게 된다.
-    FitTaskbar
+    FitTaskbar,
+
+    // ※ 5·6은 한때 X0_75·X0_5였다(T-070 → 너무 작아 2026-09-30 제거). 저장값에 남아 있으면
+    //   'Enum.IsDefined'가 걸러 공장값으로 떨어진다. 다음 항목은 7부터 쓴다 — 옛 저장값이 새 배율로 읽히지 않게.
 }
 
 public class WindowManager : MonoService<WindowManager>
@@ -55,9 +62,12 @@ public class WindowManager : MonoService<WindowManager>
     // 맞춤 배율을 계산하지 못했을 때 대신 쓸 프리셋.
     private const WindowScale FitFallbackScale = WindowScale.X1_25;
 
-    // ─── static readonly 표 (WindowScale 의 프리셋 4개와 1:1 — 계산값인 FitTaskbar 는 여기 자리가 없다) ───
-    private static readonly string[] SizeLabels   = { "1x", "1.25x", "1.5x", "2x" }; // 드롭다운 표시 라벨
-    private static readonly float[]  ScaleFactors = { 1f  , 1.25f  , 1.5f  , 2f   }; // 기준 960x540에 곱할 배율
+    // 크기 드롭다운의 표시 순서 — 작은 것부터, 맞춤은 맨 끝. 드롭다운 인덱스는 이 표의 인덱스다.
+    // ⚠️ enum 값 순서(=저장값)와 다르다. 저장은 enum 값으로, 드롭다운은 이 표로 오간다.
+    private static readonly WindowScale[] SizeOrder =
+    {
+        WindowScale.X1, WindowScale.X1_25, WindowScale.X1_5, WindowScale.X2, WindowScale.FitTaskbar,
+    };
 
     // ─── 공장 초기값 (인스펙터) ───
     // ⚠️ 여기 적은 값은 "저장된 설정이 없을 때"만 쓰인다. 사용자가 한 번이라도 토글·드롭다운을
@@ -125,7 +135,7 @@ public class WindowManager : MonoService<WindowManager>
     public bool Transparent         => _isTransparent;
     public bool Topmost             => _isTopmost;
     public bool DynamicClickThrough => _dynamicClickThrough;
-    public int  SizeIndex           => (int)_currentScale;
+    public int  SizeIndex           => Array.IndexOf(SizeOrder, _currentScale); // 드롭다운 인덱스('SizeOrder')
     public int  AnchorIndex         => (int)_currentAnchor;
 
     // ──────────────────────────────────────────────
@@ -213,11 +223,12 @@ public class WindowManager : MonoService<WindowManager>
         // 빌드: 사용자 저장값이 진실. 없으면(첫 실행) 인스펙터 공장값을 fallback으로 쓴다.
         _isTopmost = WindowSettings.LoadBool(WindowSettings.TopmostKey, setStartTopmost);
 
-        // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
         int scale  = WindowSettings.LoadInt(WindowSettings.ScaleKey,  (int)setStartScale);
         int anchor = WindowSettings.LoadInt(WindowSettings.AnchorKey, (int)setStartAnchor);
 
-        _currentScale  = (WindowScale)Mathf.Clamp(scale, 0, (int)WindowScale.FitTaskbar);
+        // 모르는 배율 값이면 공장값으로 돌린다. 범위 클램프를 쓰지 않는다 — 마지막 enum 값을
+        // 상한으로 가정하면 뒤에 붙인 항목이 잘린다(T-070).
+        _currentScale  = Enum.IsDefined(typeof(WindowScale), scale) ? (WindowScale)scale : setStartScale;
         _currentAnchor = (ScreenAnchor)MigrateAnchor(anchor);
 
         // 위젯 칸 높이는 씬 레이아웃에서 나오는 값이라 UI가 알려 줘야 하는데, 그건 설정 패널을
@@ -468,6 +479,22 @@ public class WindowManager : MonoService<WindowManager>
         IntPtr insertAfter = enable ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
         uint   flags       = Win32Native.SWP_NOMOVE | Win32Native.SWP_NOSIZE | Win32Native.SWP_SHOWWINDOW;
         Win32Native.SetWindowPos(_hWnd, insertAfter, 0, 0, 0, 0, flags);
+
+        // 항상 위를 끈 순간 '작업표시줄 맞춤' 이하 크기 창이 작업표시줄에 겹쳐 있었다면 그 위로 올린다('AvoidTaskbar').
+        // 손으로 만든 자리였으면 올라간 좌표를 새 자리로 저장한다 — 다음 실행에서 다시 묻히지 않게. 왜 올렸는지는 팝업으로 알린다.
+        if (ClampIntoMonitor())
+        {
+            if (_hasCustomPosition)
+            {
+                SaveCurrentPosition("항상 위 끔 → 작업표시줄 위로");
+            }
+
+            // 부팅 중(저장값 적용)에는 사용자가 한 일이 아니므로 알리지 않는다.
+            if (_initialized)
+            {
+                NotifyTaskbarAvoided();
+            }
+        }
 #endif
     }
 
@@ -540,12 +567,17 @@ public class WindowManager : MonoService<WindowManager>
 
     #region 위치 · 크기
 
-    // 크기 드롭다운 옵션 라벨을 WindowScale enum 순서대로 만든다 — 프리셋 4개 + '작업표시줄 맞춤'.
+    // 크기 드롭다운 옵션 라벨을 'SizeOrder' 순서대로 만든다 — 프리셋 4개(작은 것부터) + '작업표시줄 맞춤'.
     public List<string> GetSizeLabels()
     {
-        var labels = new List<string>(SizeLabels);
+        var labels = new List<string>(SizeOrder.Length);
 
-        labels.Add(FitTaskbarLabel());
+        foreach (WindowScale scale in SizeOrder)
+        {
+            labels.Add(scale == WindowScale.FitTaskbar
+                           ? FitTaskbarLabel()
+                           : PresetFactor(scale).ToString("0.##", CultureInfo.InvariantCulture) + "x");
+        }
 
         return labels;
     }
@@ -569,9 +601,10 @@ public class WindowManager : MonoService<WindowManager>
     // 크기·위치를 하나의 기준 모니터로 원자 적용한다('ApplySizeAndPosition').
     // ⚠️ 'Screen.SetResolution'과 캔버스 기준 해상도 변경을 쓰지 않는다 —
     // 둘 다 창 제어를 망가뜨린다 ('Managers 규칙.md' 5장).
+    // ⚠️ 'index'는 enum 값이 아니라 드롭다운 인덱스('SizeOrder')다.
     public void SetWindowSizeByIndex(int index)
     {
-        _currentScale = (WindowScale)Mathf.Clamp(index, 0, (int)WindowScale.FitTaskbar);
+        _currentScale = SizeOrder[Mathf.Clamp(index, 0, SizeOrder.Length - 1)];
         WindowSettings.SaveInt(WindowSettings.ScaleKey, (int)_currentScale);
         ClearCustomPosition(); // 드롭다운으로 고른 순간 손으로 만든 자리는 무효다
 #if !UNITY_EDITOR
@@ -682,6 +715,21 @@ public class WindowManager : MonoService<WindowManager>
 #if !UNITY_EDITOR
         ApplySizeAndPosition(_currentScale, _currentAnchor);
 #endif
+    }
+
+    // 창 크기를 공장값('setStartScale')으로 되돌린다 (설정의 [창 크기 복원]).
+    // 드롭다운을 고른 것과 같은 경로라 저장·손 좌표 폐기까지 함께 일어난다.
+    public void ResetWindowSize()
+    {
+        SetWindowSizeByIndex(Array.IndexOf(SizeOrder, setStartScale));
+    }
+
+    // 창 위치를 공장 앵커('setStartAnchor')로 되돌린다 (설정의 [창 위치 복원]).
+    // 드래그로 옮긴 자리도 버린다 — 화면 밖에서 잃어버린 창을 되찾는 용도다.
+    // ⚠️ 위젯 위치는 여기서 맞추지 않는다 — 부른 쪽이 'AnchorIndex'로 함께 맞춘다(Managers → UI 의존 금지).
+    public void ResetWindowPosition()
+    {
+        SetAnchorByIndex((int)setStartAnchor);
     }
 
 #if !UNITY_EDITOR
@@ -800,10 +848,48 @@ public class WindowManager : MonoService<WindowManager>
         }
 
         // 창이 모니터보다 크면 하한이 상한을 넘으므로 좌상단을 우선한다(Max로 접는다).
-        int x = Mathf.Clamp(_customPosition.x, full.left, Mathf.Max(full.left, full.right  - outer.x));
-        int y = Mathf.Clamp(_customPosition.y, full.top,  Mathf.Max(full.top,  full.bottom - outer.y));
+        int x = Mathf.Clamp(_customPosition.x, full.left, Mathf.Max(full.left, full.right - outer.x));
+        int y = Mathf.Clamp(_customPosition.y, full.top,  Mathf.Max(full.top,  BottomLimit(wa, full) - outer.y));
 
         return new Vector2Int(x, y);
+    }
+
+    // 창 아랫변이 내려갈 수 있는 한계. 보통은 모니터 끝(작업표시줄 위에 겹쳐 두는 배치 허용)이고,
+    // 'AvoidTaskbar'일 때만 작업 영역 끝(작업표시줄 위)이다.
+    private int BottomLimit(Win32Native.RECT wa, Win32Native.RECT full) => AvoidTaskbar ? wa.bottom : full.bottom;
+#endif
+
+    // 창이 작업표시줄을 침범하지 못하게 할 때인가 — 항상 위를 끄고 '작업표시줄 맞춤' 이하 크기를 쓸 때 (T-099).
+    //
+    // ■ 왜 이 조합만인가
+    //   맞춤이면 위젯 높이가 작업표시줄과 같고, 그보다 작은 배율이면 더 낮다. 항상 위가 꺼져 있으면
+    //   작업표시줄(그 자체가 topmost)이 창을 덮는데, 겹친 부분에 위젯이 통째로 들어가
+    //   **잡아 올릴 손잡이가 전부 가려진다.**
+    //   항상 위가 켜져 있으면 창이 앞에 있고, 맞춤보다 큰 배율이면 가려지지 않은 부분이 남아 겹쳐 두는 배치를 막지 않는다.
+    // ※ 맞춤 배율을 계산하지 못했으면(에디터 · 작업표시줄 없음) 비교할 기준이 없어 맞춤 항목만 해당한다.
+    private bool AvoidTaskbar => !_isTopmost && FitsInTaskbar(_currentScale);
+
+    // 그 배율의 위젯이 작업표시줄 높이 안에 들어가는가 — 맞춤 자신과 그보다 작은 프리셋.
+    private bool FitsInTaskbar(WindowScale scale)
+    {
+        if (scale == WindowScale.FitTaskbar)
+        {
+            return true;
+        }
+
+        return _fitScaleFactor > 0f && PresetFactor(scale) <= _fitScaleFactor + 0.0001f;
+    }
+
+#if !UNITY_EDITOR
+    // 작업표시줄에서 창을 밀어낸 이유를 알림 팝업으로 알린다 (드래그 끝 · 항상 위를 끈 순간).
+    // 알림 화면('NoticePresenter')이 'ServerWaitManager'만 구독하므로 그 창구를 쓴다 — Managers → UI 의존을 만들지 않는다.
+    private void NotifyTaskbarAvoided()
+    {
+        Services.Get<ServerWaitManager>().RaiseNotice(
+            $"'항상 위에 고정'이 꺼져 있으면 {FitTaskbarLabel()} 이하 크기로는\n" +
+            "창을 작업표시줄 위에 둘 수 없습니다.\n" +
+            "작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\n\n" +
+            "작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.");
     }
 #endif
 
@@ -872,18 +958,28 @@ public class WindowManager : MonoService<WindowManager>
         return new Vector2Int(Mathf.RoundToInt(BaseWidth * factor), Mathf.RoundToInt(BaseHeight * factor));
     }
 
-    // 그 프리셋이 기준 960x540에 곱할 배율. 'FitTaskbar'만 'ScaleFactors' 표에 자리가 없어 따로 답한다
-    // — 고정값이 아니라 작업표시줄과 위젯 칸에서 계산되는 값이기 때문이다('RecalculateFitScale').
+    // 그 프리셋이 기준 960x540에 곱할 배율. 'FitTaskbar'만 고정값이 없어 따로 답한다
+    // — 작업표시줄과 위젯 칸에서 계산되는 값이기 때문이다('RecalculateFitScale').
     // 계산이 안 됐으면(에디터 · 작업표시줄 없음 · 크기 초과) 프리셋 하나로 떨어뜨린다.
     private float ScaleFactorOf(WindowScale scale)
     {
         if (scale != WindowScale.FitTaskbar)
         {
-            return ScaleFactors[(int)scale];
+            return PresetFactor(scale);
         }
 
-        return _fitScaleFactor > 0f ? _fitScaleFactor : ScaleFactors[(int)FitFallbackScale];
+        return _fitScaleFactor > 0f ? _fitScaleFactor : PresetFactor(FitFallbackScale);
     }
+
+    // 고정 프리셋의 배율. 'FitTaskbar'는 고정값이 없다 — 'ScaleFactorOf'가 따로 답한다.
+    private static float PresetFactor(WindowScale scale) => scale switch
+    {
+        WindowScale.X1    => 1f,
+        WindowScale.X1_25 => 1.25f,
+        WindowScale.X1_5  => 1.5f,
+        WindowScale.X2    => 2f,
+        _                 => throw new ArgumentOutOfRangeException(nameof(scale), scale, "고정 배율이 없는 항목"),
+    };
 
     // 창이 작업 영역(작업표시줄 제외)을 넘으면 16:9를 유지한 채 안으로 줄인다. 이미 들어가면 그대로 돌려준다.
     // 가로·세로 중 더 많이 넘치는 쪽 비율 하나로 양쪽을 함께 줄여야 비율이 보존된다
@@ -906,9 +1002,6 @@ public class WindowManager : MonoService<WindowManager>
 #if !UNITY_EDITOR
     // 창이 실제로 올라가 있는 모니터의 작업 영역(작업표시줄 제외) 사각형을 얻는다.
     private bool TryGetWorkArea(out Win32Native.RECT workArea) => TryGetMonitorRects(out workArea, out _);
-
-    // 같은 모니터의 '전체'(작업표시줄 포함) 사각형을 얻는다 — 드래그 클램프('ClampIntoMonitor')용.
-    private bool TryGetMonitorBounds(out Win32Native.RECT full) => TryGetMonitorRects(out _, out full);
 
     // 창이 놓인 모니터의 작업 영역과 전체 사각형을 한 번의 조회로 함께 얻는다
     // ('MONITORINFO'가 둘을 같이 담아 오므로 나눠 부를 이유가 없다).
@@ -973,8 +1066,12 @@ public class WindowManager : MonoService<WindowManager>
         Win32Native.SendMessage(_hWnd, Win32Native.WM_SYSCOMMAND, Win32Native.SC_MOVE_HTCAPTION, 0);
 
         // 'SendMessage'는 OS 이동 루프가 끝날 때까지 돌아오지 않는다 — 즉 여기는 마우스를 놓은 뒤다.
-        // 창이 화면 아래로 묻힌 채 끝났으면 되올린다.
-        ClampIntoMonitor();
+        // 창이 화면 아래로 묻힌 채 끝났으면 되올린다. 작업표시줄에서 밀어냈으면 이유를 알린다.
+        if (ClampIntoMonitor() && AvoidTaskbar)
+        {
+            NotifyTaskbarAvoided();
+        }
+
         SaveCurrentPosition();
 #endif
     }
@@ -987,34 +1084,38 @@ public class WindowManager : MonoService<WindowManager>
     //
     // ⚠️ 기준은 작업 영역이 아니라 '모니터 전체'다 — 작업표시줄 위에 창을 겹쳐 두는 배치는
     //   의도된 사용이라 막지 않는다. 화면 밖으로 나가는 것만 되돌린다.
+    //   **예외는 'AvoidTaskbar'** — 그때는 작업표시줄 위까지만 허용한다(가려져 못 잡는 것을 막는다).
     //   앵커 배치('AnchorPosition')는 그대로 작업 영역 기준이다 — 둘은 목적이 다르다.
     //   여기서 만든 자리는 'SaveCurrentPosition'이 저장해, 다음 실행에서 앵커보다 먼저 쓰인다.
     // ⚠️ 가로는 건드리지 않는다 — 좌우로 걸쳐 두는 것도 의도된 배치다.
-    private void ClampIntoMonitor()
+    // 옮겼으면 true.
+    private bool ClampIntoMonitor()
     {
         // 'GetWindowRect'는 외곽 사각형이라 'SetWindowPos'가 옮기는 대상과 좌표계가 같다
         // → 프레임 두께를 따로 보정할 필요가 없다.
         if (_hWnd == IntPtr.Zero
             || !Win32Native.GetWindowRect(_hWnd, out Win32Native.RECT rect)
-            || !TryGetMonitorBounds(out Win32Native.RECT full))
+            || !TryGetMonitorRects(out Win32Native.RECT wa, out Win32Native.RECT full))
         {
-            return;
+            return false;
         }
 
         int height = rect.bottom - rect.top;
 
         // 창이 모니터보다 크면 아래를 맞추다 위가 잘린다 → 그럴 땐 위를 우선한다(maxTop이 full.top으로 접힘).
-        int maxTop = Mathf.Max(full.top, full.bottom - height);
+        int maxTop = Mathf.Max(full.top, BottomLimit(wa, full) - height);
         int y      = Mathf.Clamp(rect.top, full.top, maxTop);
 
         if (y == rect.top)
         {
-            return; // 이미 안에 있다 — 불필요한 SetWindowPos로 Z순서·프레임을 흔들지 않는다
+            return false; // 이미 안에 있다 — 불필요한 SetWindowPos로 Z순서·프레임을 흔들지 않는다
         }
 
         IntPtr after = _isTopmost ? Win32Native.HWND_TOPMOST : Win32Native.HWND_NOTOPMOST;
         uint   flags = Win32Native.SWP_NOSIZE | Win32Native.SWP_NOACTIVATE;
         Win32Native.SetWindowPos(_hWnd, after, rect.left, y, 0, 0, flags);
+
+        return true;
     }
 
     // 지금 창이 있는 자리를 "손으로 만든 위치"로 저장한다 (드래그가 끝난 직후 호출).
@@ -1022,7 +1123,7 @@ public class WindowManager : MonoService<WindowManager>
     //
     // ⚠️ 'ClampIntoMonitor' 뒤에 불러야 한다 — 그게 되올린 뒤의 최종 좌표를 저장해야 하고,
     //   클램프가 필요 없어 일찍 빠져나간 경우에도 저장은 되어야 하기 때문이다.
-    private void SaveCurrentPosition()
+    private void SaveCurrentPosition(string reason = "드래그 끝")
     {
         if (_hWnd == IntPtr.Zero || !Win32Native.GetWindowRect(_hWnd, out Win32Native.RECT rect))
         {
@@ -1035,7 +1136,7 @@ public class WindowManager : MonoService<WindowManager>
         WindowSettings.SaveInt(WindowSettings.PositionXKey, rect.left);
         WindowSettings.SaveInt(WindowSettings.PositionYKey, rect.top);
 
-        LogWindowState("드래그 끝 → 좌표 저장");
+        LogWindowState(reason + " → 좌표 저장");
     }
 #endif
 

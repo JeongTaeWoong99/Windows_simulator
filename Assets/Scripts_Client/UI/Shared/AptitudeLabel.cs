@@ -5,7 +5,7 @@ using UnityEngine;
 // 적성 값(0~10) → 칸에 적을 문구와 색.
 //
 // ■ 왜 Presenter 밖에 있나
-// 창고 칸('SlotView'의 적성 스트립)과 작업슬롯 선택 화면('CharacterStateRowView')이 같은 5칸을 그린다.
+// 인벤토리 칸('SlotView'의 적성 스트립)과 작업슬롯 선택 화면('CharacterStateRowView')이 같은 5칸을 그린다.
 // 표기 규칙("0은 X · 흐리게")이 한쪽에만 고쳐지면 두 화면이 같은 캐릭터를 다르게 말한다.
 // 'IndustryLabel'·'RarityPalette'와 같은 부류 — 캔버스를 가로지르는 표시용 변환이라 여기 둔다.
 public static class AptitudeLabel
@@ -14,7 +14,7 @@ public static class AptitudeLabel
     // 손으로 세어 적으면 서버 enum에 원소가 늘 때 조용히 틀린다(T-085).
     public static readonly int Count = Enum.GetValues(typeof(EIndustryType)).Length - 1;
 
-    // 적성은 0~10이라 미리 만들어 둔다 — 창고는 200칸 × 5개를 매번 그리므로
+    // 적성은 0~10이라 미리 만들어 둔다 — 인벤토리는 200칸 × 5개를 매번 그리므로
     // 'ToString()'을 그때그때 부르면 그릴 때마다 문자열 1000개가 버려진다(상주 앱이라 쌓인다).
     // ※ 0번은 'X'다 — **빈 칸으로 두면 배선이 빠진 칸과 구분되지 않는다.**
     //   "못 다루는 산업"은 알려 줄 값이 없는 게 아니라 알려 줄 것이 있는 상태다.

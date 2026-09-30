@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -27,7 +27,7 @@
 | **여러 캔버스가 함께 쓰는 칸·변환표**를 어디 두나 | [`Shared 규칙.md`](<Shared/Shared 규칙.md>) |
 | 로딩·알림 오버레이 · `SetActive` vs `CanvasGroup` | [`System 규칙.md`](<System/System 규칙.md>) |
 | 메인 화면을 갈아 끼우는 규칙 · 화면 추가 절차 | [`Main 규칙.md`](<Main/Main 규칙.md>) |
-| 창고 탭 · 로그인 · 거래 · 상태 · 위젯 | 각 폴더의 `<폴더명> 규칙.md` |
+| 인벤토리 탭 · 로그인 · 거래 · 상태 · 위젯 | 각 폴더의 `<폴더명> 규칙.md` |
 | 지금 씬에 무엇이 있나 | [`UI 배치 현황.md`](<UI 배치 현황.md>) |
 
 ## 0. 이 프로젝트는 MVP(Legacy) 다
@@ -115,12 +115,12 @@ topmostToggle.onValueChanged.AddListener(on => {
 |---|---|---|
 | 상태를 들고 이벤트를 쏜다 | `...Model` | `PlayerDataModel` |
 | 구독해서 그리고, 입력을 넘긴다 | `...Presenter` | `LoginPresenter` · `WorkStationListPresenter` · `StatePresenter` |
-| **캔버스 껍데기** — `Show(bool)`만 | `...CanvasView` | `StorageCanvasView` · `MainCanvasView` · `MarketCanvasView` |
+| **캔버스 껍데기** — `Show(bool)`만 | `...CanvasView` | `InventoryCanvasView` · `MainCanvasView` · `MarketCanvasView` |
 | **반복되는 한 칸** — Presenter가 `Bind`한다 | `...View` | `SlotView` · `WorkStationSlotView` · `CharacterStateRowView` |
 | 배치를 계산하는 컴포넌트 | `...Layout` / `...LayoutGroup` | `WidgetPositionLayout` · `FlexibleGridLayoutGroup` |
 
 > ⚠️ **반복 칸 중에도 "주인이 하나가 아닌 것"이 있다.** `WorkStationSlotView`·`CharacterStateRowView`는
-> 한 Presenter만 쓰므로 그 폴더에 살지만, `SlotView`는 **창고 격자와 가챠 결과 팝업이 함께**
+> 한 Presenter만 쓰므로 그 폴더에 살지만, `SlotView`는 **인벤토리 격자와 가챠 결과 팝업이 함께**
 > 쓴다 — 그래서 자리가 [`Shared/`](<Shared/Shared 규칙.md>)다. **이름 규칙은 같고, 자리만 다르다.**
 
 > **캔버스는 언제나 `...CanvasView`다.** 예전엔 자기 안의 화면을 갈아 끼우는 캔버스를
@@ -131,7 +131,7 @@ topmostToggle.onValueChanged.AddListener(on => {
 
 ```
 !  최상위 · 다른 축      !Horizental Columns · !Login Canvas (MAIN VIEW)
-@  컬럼                  @Storage Column · @Main Column · @Market Column
+@  컬럼                  @Inventory Column · @Main Column · @Market Column
 #  캔버스                #Main Canvas (MAIN VIEW) · #State Canvas (MAIN VIEW)
 (없음)  Presenter·패널·위젯   Menu Presenter (↓ SUB VIEW) · Header Panel · Gold Text
 ```
@@ -169,10 +169,10 @@ WorkStation Select Presenter (↓ SUB VIEW)   ← 화면.  WorkStationSelectPres
 └─ Character Setting Panel
 ```
 
-**클래스 이름은 어셈블리 전체에서 유일해야 한다.** 그래서 `StorageTabPresenter`·`StorageGridPresenter`처럼
+**클래스 이름은 어셈블리 전체에서 유일해야 한다.** 그래서 `InventoryTabPresenter`·`InventoryGridPresenter`처럼
 캔버스 이름을 앞에 다는 것이 많다 — 하지만 **접두는 규칙이 아니라 수단이다.**
 바른 이름이 이미 유일하면 붙이지 않는다: `MenuPresenter`·`GachaPresenter`·`WorkStationListPresenter`가 그렇고,
-`SellCartPresenter`는 `SellCartModel`과 짝이 맞는 고유한 이름이라 `Storage` 접두를 달지 않는다(2026-09-12 · T-049).
+`SellCartPresenter`는 `SellCartModel`과 짝이 맞는 고유한 이름이라 `Inventory` 접두를 달지 않는다(2026-09-12 · T-049).
 ⚠️ **접두를 붙였다가 역할이 바뀌면 이름이 거짓이 된다** — `StorageInformationPresenter`가 그래서 개명됐다.
 
 **오브젝트 이름에는 캔버스 이름을 되풀이하지 않는다.** 오브젝트는
@@ -227,7 +227,7 @@ WorkStation Select Presenter (↓ SUB VIEW)   ← 화면.  WorkStationSelectPres
 
 ### Presenter가 자기 위젯을 쥔다 — 상위가 건너뛰어 잡지 않는다
 
-> ⚠️ 예전엔 `WorkStationPresenter`가 자식인 `Menu Panel`의 창고·거래 버튼을 직접 들고 있었다.
+> ⚠️ 예전엔 `WorkStationPresenter`가 자식인 `Menu Panel`의 인벤토리·거래 버튼을 직접 들고 있었다.
 > 버튼이 늘어날수록 **상위 Presenter가 남의 화면 사정을 알게 된다.**
 > 지금은 `MenuPresenter`가 그 버튼들을 쥔다.
 
@@ -274,10 +274,10 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 마지막 줄의 예 — `Window Panel`이 이미 5를 줬으므로 그 안의 `Button Panel`은 0이다.
 둘 다 주면 10이 된다.
 
-**예외 — 격자 프레임 안의 칸은 여백 0으로 꽉 채운다** (2026-09-16). 창고 `Slot (N)` 프레임에 들어가는
+**예외 — 격자 프레임 안의 칸은 여백 0으로 꽉 채운다** (2026-09-16). 인벤토리 `Slot (N)` 프레임에 들어가는
 `SlotView`가 그렇다 — 프레임이 곧 칸의 테두리이고 칸 사이 간격은 바깥 `Content`의 격자가 이미 준다.
 이런 **특수한 경우는 괜찮다.** 대신 예외를 둔 자리의 폴더 규칙에 이유를 적는다
-→ [`Storage 규칙.md`](<Storage/Storage 규칙.md>) "칸은 프레임을 꽉 채운다".
+→ [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>) "칸은 프레임을 꽉 채운다".
 
 **스프라이트** — 역할이 곧 스프라이트다.
 
@@ -313,7 +313,7 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 
 | | `ScrollRect` | 왜 |
 |---|---|---|
-| 창고 격자 | `AutoHideAndExpandViewport` · spacing **-3** | 칸 200개라 **늘 넘친다.** 자동이든 상시든 결과가 같다 |
+| 인벤토리 격자 | `AutoHideAndExpandViewport` · spacing **-3** | 칸 200개라 **늘 넘친다.** 자동이든 상시든 결과가 같다 |
 | 판매 목록 | **`Permanent`** | 담고 빼기로 길이가 계속 변한다. 자동이면 바가 나타났다 사라질 때마다 **뷰포트 폭이 바뀌어 줄이 다시 흐른다** |
 
 > ⚠️ **`Permanent`는 뷰포트 폭을 `ScrollRect`가 더 이상 건드리지 않는다는 뜻이다.**
@@ -366,8 +366,8 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
         ├─ #Main Canvas 의 자리를 통째로 차지하는 화면인가? (목록·선택·설정 …)
         │     예 → [`Main 규칙.md`](<Main/Main 규칙.md>)의 "메인 화면 추가"
         │
-        ├─ 다른 캔버스 안에서 자리를 나눠 쓰나? (창고 탭 같은)
-        │     예 → Presenter 를 새로 만들고, 그 캔버스의 전환 담당 한 곳이 켜고 끈다 (예: `Storage 규칙.md`)
+        ├─ 다른 캔버스 안에서 자리를 나눠 쓰나? (인벤토리 탭 같은)
+        │     예 → Presenter 를 새로 만들고, 그 캔버스의 전환 담당 한 곳이 켜고 끈다 (예: `Inventory 규칙.md`)
         │
         └─ 그냥 기능 위젯 하나 더인가?
               예 → 그 화면 Presenter 의 Start() 에 1줄 추가. 끝.
@@ -404,13 +404,13 @@ UI/
 │   ├─ LoginCanvasView.cs
 │   └─ LoginPresenter/
 │       └─ LoginPresenter.cs
-├─ Storage/
-│   ├─ Storage 규칙.md
-│   ├─ StorageCanvasView.cs
-│   ├─ StorageTabPresenter/
-│   │   └─ StorageTabPresenter.cs
-│   ├─ StorageGridPresenter/
-│   │   ├─ StorageGridPresenter.cs
+├─ Inventory/
+│   ├─ Inventory 규칙.md
+│   ├─ InventoryCanvasView.cs
+│   ├─ InventoryTabPresenter/
+│   │   └─ InventoryTabPresenter.cs
+│   ├─ InventoryGridPresenter/
+│   │   ├─ InventoryGridPresenter.cs
 │   │   └─ XxxSlotSource.cs              ← 탭별 공급자 (화면이 아니라 데이터)
 │   │                                      ※ 칸은 캔버스를 넘어 공유돼 Shared/ 에 있다
 │   └─ SellCartPresenter/
@@ -438,6 +438,8 @@ UI/
 ├─ Market/
 │   ├─ Market 규칙.md
 │   ├─ MarketCanvasView.cs
+│   ├─ MarketTabPresenter/
+│   │   └─ MarketTabPresenter.cs
 │   └─ GachaPresenter/
 │       └─ GachaPresenter.cs
 ├─ Widget/
@@ -461,7 +463,7 @@ UI/
 │       └─ NoticePresenter.cs
 ├─ Shared/                                ← 예외. 캔버스에 속하지 않는 공용 표현 부품
 │   ├─ Shared 규칙.md
-│   ├─ SlotView.cs              ← 창고 격자와 가챠 결과가 함께 쓰는 칸
+│   ├─ SlotView.cs              ← 인벤토리 격자와 가챠 결과가 함께 쓰는 칸
 │   ├─ SlotData.cs                ← 그 칸에 넘기는 완성값
 │   ├─ ResultMessages.cs · RarityPalette.cs
 │   ├─ WorkStationProgress.cs · IndustryLabel.cs · AptitudeLabel.cs

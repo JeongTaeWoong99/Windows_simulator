@@ -267,7 +267,7 @@ public static class UIThemeBaker
         return true;
     }
 
-    // 글씨는 흰색이 기본이다 — 노랑(골드·재화)과 파랑(다이아)만 수치 강조로 남긴다.
+    // 글씨는 흰색이 기본이다 — 노랑(골드·재화)과 파랑(강조)만 수치 강조로 남긴다.
     // 빨강·초록 글씨를 경고·긍정색으로 옮기면 색 바탕 위에서 묻힌다(2026-09-26 실측).
     private static UIThemeRole GuessTextRole(float h, float s)
     {

@@ -7,11 +7,18 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 우편함 — 서버가 맡겨 둔 보상(운영 지급 · 창고 넘침 보관)을 보고 받고 지운다.
+// 우편함 — 서버가 맡겨 둔 보상(운영 지급 · 인벤토리 넘침 보관)을 보고 받고 지운다.
+//
+// ■ 탭 두 개 — [안 받은 우편] · [받은 우편] (2026-10-01)
+// 한 목록에 섞어 두면 받은 우편이 쌓일수록 받을 것이 묻힌다. 탭마다 할 일이 다르다 —
+// 안 받은 우편은 [받기]·[모두 받기], 받은 우편은 [삭제]뿐이고 7일 뒤 서버가 지운다(기획 우편 1장 9번).
+// 탭 이름에 개수를 붙여, 다른 탭에 무엇이 있는지 열지 않고도 보인다.
 //
 // ■ 목록 순서
-// 안 받은 우편이 위, 그 안에서는 새로 온 것이 위다. 받은 우편은 아래로 내려가 흐려진다.
+// 안 받은 우편은 새로 온 것이 위, 받은 우편은 최근에 받은 것이 위다.
 // 모두 받기는 서버가 **오래된 것부터** 받는다 — 화면 순서와 다르지만, 보여 주는 순서와 받는 순서는 별개다.
+//
+// ■ 줄마다 첨부 아이콘(첫 첨부 · 나머지 종류 수)과 툴팁(첨부 전부)이 붙는다 — 줄의 요약 문구는 길면 잘린다.
 //
 // ■ 요청은 한 번에 하나
 // 받기·삭제·모두 받기가 대기 하나를 나눠 쓴다. 응답이 오기 전에는 버튼이 전부 잠긴다
@@ -31,6 +38,25 @@ public class MailPresenter : MonoBehaviour
     [SerializeField, Tooltip("작업슬롯 목록으로 나간다. OnClick은 코드가 연결한다")]
     private Button backButton = null!;
 
+    [CenterHeader("Tab Panel")]
+    [SerializeField, Tooltip("[안 받은 우편] 탭 버튼. OnClick은 코드가 연결한다")]
+    private Button unclaimedTabButton = null!;
+
+    [SerializeField, Tooltip("[안 받은 우편] 탭 문구 — 개수가 붙는다")]
+    private TMP_Text unclaimedTabText = null!;
+
+    [SerializeField, Tooltip("[받은 우편] 탭 버튼. OnClick은 코드가 연결한다")]
+    private Button claimedTabButton = null!;
+
+    [SerializeField, Tooltip("[받은 우편] 탭 문구 — 개수가 붙는다")]
+    private TMP_Text claimedTabText = null!;
+
+    [SerializeField, Tooltip("지금 열린 탭 버튼 색")]
+    private UIThemeRole selectedTabRole = UIThemeRole.ButtonSelected;
+
+    [SerializeField, Tooltip("열리지 않은 탭 버튼 색")]
+    private UIThemeRole normalTabRole = UIThemeRole.Button;
+
     [CenterHeader("Body Scroll Panel")]
     [SerializeField, Tooltip("우편 한 줄 프리팹")]
     private MailRowView rowPrefab = null!;
@@ -38,15 +64,31 @@ public class MailPresenter : MonoBehaviour
     [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
     private RectTransform rowParent = null!;
 
-    [SerializeField, Tooltip("우편이 한 통도 없을 때만 보인다")]
+    [SerializeField, Tooltip("지금 탭에 우편이 한 통도 없을 때만 보인다. 문구는 탭마다 코드가 바꾼다")]
     private TMP_Text emptyText = null!;
 
     [CenterHeader("Footer Panel")]
     [SerializeField, Tooltip("안 받은 우편을 오래된 것부터 전부 받는다. OnClick은 코드가 연결한다")]
     private Button claimAllButton = null!;
 
+    [SerializeField, Tooltip("아래 안내 한 줄 — 탭마다 보관 규칙을 적는다(안 받은 우편은 사라지지 않음 · 받은 우편은 7일 뒤 삭제)")]
+    private TMP_Text footerNoteText = null!;
+
+    // 우편함의 탭 — 받았는지로 가른다.
+    private enum MailTab
+    {
+        Unclaimed, // 안 받은 우편 — [받기] · [모두 받기]
+        Claimed,   // 받은 우편 — [삭제] · 7일 뒤 서버가 지운다
+    }
+
+    // 받은 우편이 남는 기간 — 기획 우편 1장 9번. 지우는 것은 서버다 — 여기선 "며칠 남았나"를 적는 데만 쓴다.
+    private const int ClaimedKeepDays = 7;
+
     private readonly List<MailRowView> _rows   = new List<MailRowView>();
     private readonly List<MailInfo>    _sorted = new List<MailInfo>();
+
+    // 지금 열린 탭 — 화면 상태라 저장하지 않는다. 다시 열면 안 받은 우편부터다.
+    private MailTab _tab = MailTab.Unclaimed;
 
     private PlayerDataModel   _data    = null!;
     private UIManager         _ui      = null!;
@@ -67,6 +109,11 @@ public class MailPresenter : MonoBehaviour
         this.RequireRef(rowParent,      nameof(rowParent));
         this.RequireRef(emptyText,      nameof(emptyText));
         this.RequireRef(claimAllButton, nameof(claimAllButton));
+        this.RequireRef(footerNoteText, nameof(footerNoteText));
+        this.RequireRef(unclaimedTabButton, nameof(unclaimedTabButton));
+        this.RequireRef(unclaimedTabText,   nameof(unclaimedTabText));
+        this.RequireRef(claimedTabButton,   nameof(claimedTabButton));
+        this.RequireRef(claimedTabText,     nameof(claimedTabText));
 
         _data    = Services.Get<PlayerDataModel>();
         _ui      = Services.Get<UIManager>();
@@ -76,6 +123,8 @@ public class MailPresenter : MonoBehaviour
         // 이 화면을 직접 끄지 않는다 — 'SettingPresenter'의 뒤로가기와 같은 이유('Main 규칙.md'의 "전환 층은 하나다").
         backButton.onClick.AddListener(() => _ui.ShowMainScreen(MainScreen.WorkStationList));
         claimAllButton.onClick.AddListener(OnClaimAllClicked);
+        unclaimedTabButton.onClick.AddListener(() => ShowTab(MailTab.Unclaimed));
+        claimedTabButton.onClick.AddListener(() => ShowTab(MailTab.Claimed));
 
         Subscribe();
         Refresh(); // 이미 우편함을 받은 뒤에 처음 열렸을 수 있다
@@ -136,54 +185,98 @@ public class MailPresenter : MonoBehaviour
 
     #region 표시
 
-    // 목록·개수·모두 받기 버튼을 현재 우편함으로 다시 그린다 (Start · OnEnable · MailsChanged 구독)
+    // 탭을 바꿔 다시 그린다 (탭 버튼 OnClick).
+    private void ShowTab(MailTab tab)
+    {
+        _tab = tab;
+        Refresh();
+    }
+
+    // 목록·개수·탭·모두 받기 버튼을 현재 우편함으로 다시 그린다 (Start · OnEnable · MailsChanged 구독 · 탭 전환)
     private void Refresh()
     {
+        bool showClaimed    = _tab == MailTab.Claimed;
+        int  unclaimedCount = 0;
+        int  claimedCount   = 0;
+
         _sorted.Clear();
-        _sorted.AddRange(_data.Mails);
-        _sorted.Sort(CompareForDisplay);
 
-        int unclaimedCount = 0;
-
-        for (int i = 0; i < _sorted.Count; i++)
+        foreach (MailInfo mail in _data.Mails)
         {
-            MailInfo mail      = _sorted[i];
-            bool     isClaimed = mail.ClaimedAtUnixMs != 0L;
+            bool isClaimed = mail.ClaimedAtUnixMs != 0L;
 
-            if (!isClaimed)
+            if (isClaimed)
+            {
+                claimedCount++;
+            }
+            else
             {
                 unclaimedCount++;
             }
 
+            if (isClaimed == showClaimed)
+            {
+                _sorted.Add(mail);
+            }
+        }
+
+        _sorted.Sort(showClaimed ? CompareByClaimedDesc : CompareByReceivedDesc);
+
+        for (int i = 0; i < _sorted.Count; i++)
+        {
+            MailInfo mail = _sorted[i];
             MailRowView row = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(mail.MailId, BuildTitle(mail), BuildInfo(mail, isClaimed), BuildAttachment(mail), isClaimed);
+            row.Bind(mail.MailId, BuildTitle(mail), BuildInfo(mail, showClaimed), BuildAttachment(mail), showClaimed,
+                BuildIcon(mail), () => BuildTooltip(mail));
         }
 
         HideRowsFrom(_sorted.Count);
 
-        emptyText.gameObject.SetActive(_sorted.Count == 0);
-        countText.text = $"안 받은 우편 {unclaimedCount}통";
+        countText.text        = $"안 받은 우편 {unclaimedCount}통";
+        unclaimedTabText.text = $"안 받은 우편 ({unclaimedCount})";
+        claimedTabText.text   = $"받은 우편 ({claimedCount})";
 
+        emptyText.gameObject.SetActive(_sorted.Count == 0);
+        emptyText.text = showClaimed ? "받은 우편이 없습니다." : "받을 우편이 없습니다.";
+
+        // 모두 받기는 안 받은 탭에서만 뜻이 있다 — 받은 탭에서는 자리를 안내 문구에 내준다.
+        claimAllButton.gameObject.SetActive(!showClaimed);
+        footerNoteText.text = showClaimed
+            ? $"받은 우편은 받은 뒤 {ClaimedKeepDays}일이 지나면 자동으로 지워집니다."
+            : "안 받은 우편은 기한 없이 남습니다.";
+
+        ApplyTabColors();
         ApplyInteractable();
 
         // 방금 만든 줄은 아직 프리팹 크기 그대로다 — 'SellCartPresenter.Refresh'와 같은 이유로 미리 태운다.
         LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
     }
 
-    // 안 받은 우편이 위 → 그 안에서는 새로 온 것이 위.
-    private static int CompareForDisplay(MailInfo a, MailInfo b)
+    // 새로 온 것이 위 (안 받은 탭).
+    private static int CompareByReceivedDesc(MailInfo a, MailInfo b)
+        => b.ReceivedAtUnixMs.CompareTo(a.ReceivedAtUnixMs);
+
+    // 최근에 받은 것이 위 (받은 탭) — 방금 받은 것을 바로 확인하는 자리다.
+    private static int CompareByClaimedDesc(MailInfo a, MailInfo b)
+        => b.ClaimedAtUnixMs.CompareTo(a.ClaimedAtUnixMs);
+
+    // 탭 버튼의 선택 표시 — 'AuctionTabPresenter'와 같이 ColorBlock을 바꾼다(Image.color는 틴트가 곱해져 탁해진다).
+    private void ApplyTabColors()
     {
-        bool aClaimed = a.ClaimedAtUnixMs != 0L;
-        bool bClaimed = b.ClaimedAtUnixMs != 0L;
+        SetTabColor(unclaimedTabButton, _tab == MailTab.Unclaimed);
+        SetTabColor(claimedTabButton,   _tab == MailTab.Claimed);
+    }
 
-        if (aClaimed != bClaimed)
-        {
-            return aClaimed ? 1 : -1;
-        }
+    private void SetTabColor(Button button, bool on)
+    {
+        Color target = UIThemePalette.Of(on ? selectedTabRole : normalTabRole);
 
-        return b.ReceivedAtUnixMs.CompareTo(a.ReceivedAtUnixMs);
+        ColorBlock colors = button.colors;
+        colors.normalColor   = target;
+        colors.selectedColor = target;
+        button.colors        = colors;
     }
 
     // 버튼 잠금을 지금 상태에 맞춘다 — 기다리는 요청이 있으면 전부 잠그고, 받을 우편이 없으면 모두 받기를 잠근다.
@@ -207,18 +300,179 @@ public class MailPresenter : MonoBehaviour
             : $"우편 #{mail.TemplateTid}";
     }
 
-    // "발신자 · 도착 시각" — 받은 우편이면 '받음'을 앞에 붙인다.
-    // ※ 기한은 적지 않는다 — 안 받은 우편은 만료되지 않는다(기획 우편 1장 8번).
+    // "발신자 · 도착 시각" — 받은 우편이면 "받음 · n일 뒤 삭제"를 붙인다.
+    // ※ 안 받은 우편에는 기한을 적지 않는다 — 만료되지 않는다(기획 우편 1장 8번).
     private static string BuildInfo(MailInfo mail, bool isClaimed)
     {
-        string sender   = GameDataLoader.TryGetMailTemplate(mail.TemplateTid, out MailTemplateTableRow row) ? row.Sender : "";
-        string received = DateTimeOffset.FromUnixTimeMilliseconds(mail.ReceivedAtUnixMs).ToLocalTime().ToString("yyyy-MM-dd HH:mm");
-        string info     = string.IsNullOrEmpty(sender) ? received : $"{sender} · {received}";
+        string sender   = GetSender(mail);
+        string received = FormatTime(mail.ReceivedAtUnixMs);
+        string info     = string.IsNullOrEmpty(sender)
+            ? received
+            : $"{UIRichText.Label(sender)}{UIRichText.Dot}{received}";
 
-        return isClaimed ? $"받음 · {info}" : info;
+        if (!isClaimed)
+        {
+            return info;
+        }
+
+        return $"{info}{UIRichText.Dot}{UIRichText.Paint(FormatDeleteIn(mail.ClaimedAtUnixMs), UIThemeRole.TextDisabled)}";
     }
 
-    // 첨부 요약 — "골드 1,000 · 다이아 10 · 나무 x10 · 무사 x2 · 낡은 곡괭이".
+    // 받은 우편이 지워질 때까지 — "6일 뒤 삭제" · 하루 안이면 "오늘 삭제".
+    private static string FormatDeleteIn(long claimedAtUnixMs)
+    {
+        DateTimeOffset deleteAt = DateTimeOffset.FromUnixTimeMilliseconds(claimedAtUnixMs).AddDays(ClaimedKeepDays);
+        int            days     = (int)Math.Ceiling((deleteAt - DateTimeOffset.UtcNow).TotalDays);
+
+        return days <= 1 ? "오늘 삭제" : $"{days}일 뒤 삭제";
+    }
+
+    private static string GetSender(MailInfo mail)
+        => GameDataLoader.TryGetMailTemplate(mail.TemplateTid, out MailTemplateTableRow row) ? row.Sender : "";
+
+    private static string FormatTime(long unixMs)
+        => DateTimeOffset.FromUnixTimeMilliseconds(unixMs).ToLocalTime().ToString("yyyy-MM-dd HH:mm");
+
+    // 줄 왼쪽 아이콘 — 첫 첨부 하나를 그리고, 첨부 종류가 더 있으면 모서리에 '+n'을 적는다.
+    // 순서는 첨부 요약과 같다 — 골드 → 자원 → 캐릭터 → 장비.
+    private static ItemIconContent BuildIcon(MailInfo mail)
+    {
+        var  icons = new List<ItemIconContent>();
+
+        if (mail.Gold > 0L)
+        {
+            icons.Add(ItemIconContent.ForGold());
+        }
+
+        if (mail.Items != null)
+        {
+            foreach (ItemInfo item in mail.Items)
+            {
+                icons.Add(ItemIconContent.ForItem(item.ItemId, item.Count));
+            }
+        }
+
+        if (mail.CharacterTids != null)
+        {
+            foreach (int tid in mail.CharacterTids)
+            {
+                icons.Add(ItemIconContent.ForCharacter(tid));
+            }
+        }
+
+        if (mail.EquipTids != null)
+        {
+            foreach (int tid in mail.EquipTids)
+            {
+                icons.Add(ItemIconContent.ForEquip(tid, null));
+            }
+        }
+
+        if (mail.Equips != null)
+        {
+            foreach (EquipInfo equip in mail.Equips)
+            {
+                icons.Add(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions));
+            }
+        }
+
+        if (icons.Count == 0)
+        {
+            return new ItemIconContent(GlobalRarity.None, "-", "", null);
+        }
+
+        ItemIconContent first = icons[0];
+
+        return icons.Count == 1
+            ? first
+            : new ItemIconContent(first.Rarity, first.Glyph, $"+{icons.Count - 1}", first.Sockets);
+    }
+
+    // 우편 툴팁 — 발신 · 도착 · (받은 시각 · 삭제까지) · 첨부 전부(이름은 등급색, 장비는 능력치 칸 수).
+    // 줄의 첨부 요약은 길면 잘린다 — 여기서 빠짐없이 적는다.
+    private static TooltipContent BuildTooltip(MailInfo mail)
+    {
+        var content = new TooltipContent(BuildTitle(mail));
+        string sender = GetSender(mail);
+
+        if (!string.IsNullOrEmpty(sender))
+        {
+            content.Row("발신", sender);
+        }
+
+        content.Row("도착", FormatTime(mail.ReceivedAtUnixMs));
+
+        if (mail.ClaimedAtUnixMs != 0L)
+        {
+            content.Row("받음", FormatTime(mail.ClaimedAtUnixMs), FormatDeleteIn(mail.ClaimedAtUnixMs), null);
+        }
+
+        content.Header("첨부");
+
+        int before = content.Lines.Count;
+
+        if (mail.Gold > 0L)
+        {
+            content.Row("골드", $"{mail.Gold:N0}");
+        }
+
+        if (mail.Items != null)
+        {
+            foreach (ItemInfo item in mail.Items)
+            {
+                GlobalRarity rarity = GameDataLoader.GetItemRarity(item.ItemId);
+
+                content.Row(UIRichText.Paint(GameDataLoader.GetItemName(item.ItemId), RarityPalette.Get(rarity)), $"x{item.Count:N0}", RarityLabel.Get(rarity), null);
+            }
+        }
+
+        if (mail.CharacterTids != null)
+        {
+            foreach (int tid in mail.CharacterTids)
+            {
+                GlobalRarity rarity = GameDataLoader.GetCharacterRarity(tid);
+
+                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(tid), RarityPalette.Get(rarity)), "캐릭터", RarityLabel.Get(rarity), null);
+            }
+        }
+
+        if (mail.EquipTids != null)
+        {
+            foreach (int tid in mail.EquipTids)
+            {
+                AddEquipLine(content, tid, null);
+            }
+        }
+
+        if (mail.Equips != null)
+        {
+            foreach (EquipInfo equip in mail.Equips)
+            {
+                AddEquipLine(content, equip.EquipTid, equip.EnchantOptions);
+            }
+        }
+
+        if (content.Lines.Count == before)
+        {
+            content.Row("첨부 없음", "");
+        }
+
+        return content;
+    }
+
+    // 장비 첨부 한 줄 — 이름(등급색) · 기본 능력치 · 능력치 칸 수 (BuildTooltip에서 호출).
+    private static void AddEquipLine(TooltipContent content, int equipTid, IReadOnlyList<int>? optionTids)
+    {
+        GlobalRarity rarity = GameDataLoader.GetEquipRarity(equipTid);
+
+        content.Row(
+            UIRichText.Paint(GameDataLoader.GetEquipName(equipTid), RarityPalette.Get(rarity)),
+            EquipLabel.GetEffectText(equipTid),
+            AuctionText.FormatStatSummary(equipTid, optionTids),
+            null);
+    }
+
+    // 첨부 요약 — "골드 1,000 · 나무 x10 · 무사 x2 · 낡은 곡괭이".
     // ※ 템플릿이 아니라 패킷의 첨부를 쓴다 — 넘침 보관 우편은 템플릿 첨부가 비어 있다('GameDataLoader.TryGetMailTemplate').
     private static string BuildAttachment(MailInfo mail)
     {
@@ -227,11 +481,6 @@ public class MailPresenter : MonoBehaviour
         if (mail.Gold > 0L)
         {
             parts.Add($"골드 {mail.Gold:N0}");
-        }
-
-        if (mail.Dia > 0L)
-        {
-            parts.Add($"다이아 {mail.Dia:N0}");
         }
 
         if (mail.Items != null)
@@ -394,8 +643,8 @@ public class MailPresenter : MonoBehaviour
         if (code == EResultCode.StorageFull)
         {
             string message = isClaimAll && claimedCount > 0
-                ? $"인벤토리가 부족해 우편 {claimedCount}통만 받았습니다.\n남은 {remainingCount}통은 창고를 정리한 뒤 받아 주세요."
-                : "인벤토리가 부족합니다.\n창고를 정리한 뒤 다시 받아 주세요.";
+                ? $"인벤토리가 부족해 우편 {claimedCount}통만 받았습니다.\n남은 {remainingCount}통은 인벤토리를 정리한 뒤 받아 주세요."
+                : "인벤토리가 부족합니다.\n인벤토리를 정리한 뒤 다시 받아 주세요.";
 
             _waitHandle.Fail(message);
 
