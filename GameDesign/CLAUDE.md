@@ -1,6 +1,6 @@
 # CLAUDE.md — 게임 기획 · 데이터
 
-> 최종 업데이트: 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
+> 최종 업데이트: 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
 
 게임 시스템·콘텐츠·데이터에 닿는 작업에서 참고하는 문서다.
 공통 규칙(환경·협업·스킬)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -113,7 +113,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 
 ### 공용 상수 — `Constants.xlsx` (2026-09-26)
 
-**클라·서버가 함께 쓰는 단일 값**(창고 칸 수 · 우편함 상한 · 판매가 비율 · 경매 수수료 …)은 `Constants.xlsx`의 `ConstantsTable`에 둔다.
+**클라·서버가 함께 쓰는 단일 값**(인벤토리 칸 수 · 우편함 상한 · 판매가 비율 · 경매 수수료 …)은 `Constants.xlsx`의 `ConstantsTable`에 둔다.
 
 - 컬럼은 `Name` · `Value` · `Description`. **이름이 곧 키**이고 **값은 전부 `long`** — 소수는 천분율 정수로 적고 이름 끝에 `Permille`을 붙인다
 - 생성기가 **행 하나마다 속성 하나**를 가진 `GameData.Constants`를 만든다 → 서버·클라가 `Constants.StorageCapacity`로 읽는다

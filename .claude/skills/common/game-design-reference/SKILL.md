@@ -5,7 +5,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 
 # 게임 기획 참조
 
-> 최종 업데이트: 2026-09-22 (문서 지도에 우편 추가)
+> 최종 업데이트: 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-22 (문서 지도에 우편 추가)
 >
 > 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md)** 를
 > 먼저 읽고, 그 다음 해당 영역의 **상세 기획안**을 읽는다.
@@ -72,7 +72,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 | `GameDesign/design/trade/README.md` | 거래소·화폐·경제 |
 | `GameDesign/design/progression/README.md` | 성장 곡선·온보딩·후반 목표 |
 | `GameDesign/design/ui/README.md` | 바탕화면 위젯·팝업 UI·알림 |
-| `GameDesign/design/mail/README.md` | 우편 — 운영 지급·창고 넘침 보관·수령 |
+| `GameDesign/design/mail/README.md` | 우편 — 운영 지급·인벤토리 넘침 보관·수령 |
 | `GameDesign/design/기획평가.md` | 리스크 확인·설계 판단 근거 |
 
 ---
