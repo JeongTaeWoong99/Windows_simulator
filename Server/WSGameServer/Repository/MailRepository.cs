@@ -168,7 +168,7 @@ public sealed class StoreOverflowMailRepository(User user, MailAttachment attach
 }
 
 /// <summary>전체 우편 한 줄을 남기고, 끝나면 접속 중인 유저 전원에게 복사를 요청한다.</summary>
-public sealed class SendGlobalMailRepository(User owner, int templateTid, DateTime now, DateTime endsAt) : IRepository
+public sealed class SendGlobalMailRepository(User owner, IOnlineUsers online, int templateTid, DateTime now, DateTime endsAt) : IRepository
 {
     public long Key => User.DbKey;
 
@@ -185,7 +185,7 @@ public sealed class SendGlobalMailRepository(User owner, int templateTid, DateTi
 
     public void Apply()
     {
-        foreach (var user in UserManager.Instance.All)
+        foreach (var user in online.All)
         {
             user.DeliverGlobalMails(now);
         }

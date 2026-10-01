@@ -18,6 +18,15 @@ public sealed partial class User
     
     private readonly ILogicExecutor _logicExecutor;
 
+    /// <summary>다른 유저 조회(치트 우편 수신자 · 전체 우편 전달). 생략하면 전역 <see cref="UserManager"/>다.</summary>
+    private readonly IOnlineUsers _onlineUsers;
+
+    /// <summary>로그인 응답 직전. <see cref="UserManager"/>가 이때 접속 목록에 올린다 — User는 매니저를 모른다.</summary>
+    public event Action<User>? LoggedIn;
+
+    /// <summary>종료 정산이 끝난 뒤. <see cref="UserManager"/>가 이때 접속 목록에서 내린다.</summary>
+    public event Action<User>? Left;
+
     /// <summary>
     /// 채취 판정에 쓸 드롭 테이블. 생략하면 전역 인스턴스를 쓴다 —
     /// <see cref="WorkStation.Settle"/>이 이미 같은 규약이라 맞춘다.
@@ -142,7 +151,8 @@ public sealed partial class User
         CommonRewardCatalog?  commonRewards = null,
         MailCatalog?          mails = null,
         EnchantCatalog?       enchants = null,
-        AuctionService?       auction = null)
+        AuctionService?       auction = null,
+        IOnlineUsers?         onlineUsers = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -161,6 +171,7 @@ public sealed partial class User
         _mailCatalog = mails ?? MailCatalog.Instance;
         _enchantCatalog = enchants ?? EnchantCatalog.Instance;
         _auction = auction ?? AuctionService.Current;
+        _onlineUsers = onlineUsers ?? UserManager.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -202,7 +213,7 @@ public sealed partial class User
             return;
         }
         
-        UserManager.Instance.JoinUser(this);
+        LoggedIn?.Invoke(this);
 
         IsLoggedIn = true;
         Send(new S_LoginResponse { Result = EResultCode.Ok, SessionId = SessionId });
@@ -264,7 +275,7 @@ public sealed partial class User
             ServerLog.Error("채취", $"종료 정산 실패 SessionId={SessionId}", e);
         }
 
-        UserManager.Instance.LeaveUser(this);
+        Left?.Invoke(this);
     }
 
     public void OnDestroy()

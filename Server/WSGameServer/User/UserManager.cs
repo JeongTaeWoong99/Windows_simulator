@@ -10,7 +10,7 @@ namespace WSGameServer;
 /// 로그인한 User들을 SessionId 단위로 보관/조회/정리하는 게임 로직 레이어 매니저.
 /// 프레임워크의 <c>SessionManager</c>(transport)와 분리된 게임 로직 전용 저장소다.
 /// </summary>
-public sealed class UserManager : Singleton<UserManager>
+public sealed class UserManager : Singleton<UserManager>, IOnlineUsers
 {
     private readonly ConcurrentDictionary<ulong, User>   _userKeys    = new(); // User.Key -> User (계정 Uid가 아니다 — TryGetUserByUid)
     private readonly ConcurrentDictionary<string, ulong> _pids        = new(); // pid -> uid
@@ -107,7 +107,12 @@ public sealed class UserManager : Singleton<UserManager>
             _logicExecutor!,
             pid,
             nickname,
-            DateTime.UtcNow);
+            DateTime.UtcNow,
+            onlineUsers: this);
+
+        // 접속 목록 등록·해제는 매니저의 일이다 — User는 로그인·종료를 알리기만 한다.
+        user.LoggedIn += u => JoinUser(u);
+        user.Left     += u => LeaveUser(u);
 
         if (!user.Create())
         {

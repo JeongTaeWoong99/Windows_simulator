@@ -58,26 +58,18 @@ public class InventorySlotRepositoryTest : IDisposable
     [Fact]
     public async Task 재로그인하면_자원과_캐릭터의_칸이_그대로다()
     {
-        // 로그인 마무리가 전역 UserManager에 유저를 올린다 — 다른 테스트와 uid가 겹치지 않게 하고 끝나면 내린다(T-089).
-        const long uid = 5801;
+        const long uid = 7;
         _db.Execute($"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES ({uid}, 0, 10001, 1, 9)");
         _db.Execute($"INSERT INTO t_character (character_id, user_id, character_tid, slot) VALUES (40, {uid}, {User.DefaultCharacterTid}, 3)");
         var b    = new TestUserBuilder();
         var user = b.Build(uid);
         var login = new LoginRepository(user);
 
-        try
-        {
-            await login.ExecuteAsync(new DbConnection(_db.Connection));
-            login.Apply();
+        await login.ExecuteAsync(new DbConnection(_db.Connection));
+        login.Apply();
 
-            b.Channel.SentOf<S_InventoryResponse>().Last().Items!.Single().Slot.ShouldBe(9);
-            user.TryGetCharacter(40, out var character).ShouldBeTrue();
-            character.Slot.ShouldBe(3);
-        }
-        finally
-        {
-            UserManager.Instance.LeaveUser(user);
-        }
+        b.Channel.SentOf<S_InventoryResponse>().Last().Items!.Single().Slot.ShouldBe(9);
+        user.TryGetCharacter(40, out var character).ShouldBeTrue();
+        character.Slot.ShouldBe(3);
     }
 }
