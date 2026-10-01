@@ -53,7 +53,11 @@ public class AuctionEndToEndTest : IAsyncLifetime
         await _app.StartAsync();
 
         _channel = GrpcChannel.ForAddress("http://localhost", new GrpcChannelOptions { HttpHandler = _app.GetTestServer().CreateHandler() });
-        _client  = new GrpcAuctionClient(_channel, TimeSpan.FromSeconds(5));
+        // CI 러너(커버리지 계측 · 병렬 실행)에서는 첫 gRPC 호출이 수 초 걸린다 — 운영 기한(5초)을 쓰면 첫 테스트가 기한에 걸린다.
+        _client  = new GrpcAuctionClient(_channel, TimeSpan.FromSeconds(30));
+
+        // 첫 호출 비용(JIT · HTTP/2 연결)을 셋업에서 치른다. 안 그러면 처음 gRPC를 부르는 테스트만 느려 기한을 넘긴다.
+        await _client.GetListingStatesAsync(new Proto.ListingStatesRequest());
 
         _db.CreatePlayerTables();
         _db.CreateMailTables();
