@@ -52,7 +52,7 @@ public sealed class LoginRepository : IRepository
         _characterRows = await connection.QueryAsync<CharacterRow>(
             @"SELECT character_id, character_tid, level, exp,
                      farming_bonus, fishing_bonus, mining_bonus, logging_bonus, hunting_bonus
-              FROM t_character WHERE user_id = @userId",
+              FROM t_character WHERE user_id = @userId AND auction_trade_id = 0",
             new { userId = User.Uid });
 
         // 4) 작업슬롯. 슬롯 행에는 진행도가 없다 — 배치 설정(산업·캐릭터)뿐이다.

@@ -25,6 +25,7 @@ namespace MikaDummyClient
                 new ClientAction("GachaDraw", SendGachaDraw),
                 new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
                 new ClientAction("ItemSell (즉시 판매)", SendItemSell),
+                new ClientAction("EntitySell (개체 판매 — 캐릭터ID·장비ID 목록)", SendEntitySell),
                 new ClientAction("Cheat (admin 전용 — 지급·정산)", SendCheat),
                 new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
                 new ClientAction("Equip (장착 — 캐릭터ID 장비ID 칸1~4)", SendEquip),
@@ -327,6 +328,25 @@ namespace MikaDummyClient
 
             NetworkManager.Instance.Send(new C_ItemSellRequest { Items = items });
         }
+
+        // 개체 PK 목록 두 줄 — 비우면 그 종류는 팔지 않는다.
+        private void SendEntitySell()
+        {
+            NetworkManager.Instance.Send(new C_EntitySellRequest
+            {
+                CharacterIds = ReadIds("캐릭터ID (쉼표 구분) > "),
+                EquipIds     = ReadIds("장비ID (쉼표 구분) > "),
+            });
+        }
+
+        private static List<long> ReadIds(string prompt)
+        {
+            Console.Write(prompt);
+            return (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => long.TryParse(s.Trim(), out var id) ? id : 0)
+                .Where(id => id != 0)
+                .ToList();
+        }
             private static long ReadLong(string prompt)
         {
             Console.Write(prompt);
@@ -336,7 +356,7 @@ namespace MikaDummyClient
         // 이름 검색은 클라가 이름을 TID로 바꿔 보낸다 — 더미는 TID를 직접 받는다(쉼표 구분, 비우면 전체).
         private void SendAuctionSearch()
         {
-            var kind = (EAuctionKind)ReadLong("종류 (0=전체 1=자원 2=장비) > ");
+            var kind = (EAuctionKind)ReadLong("종류 (0=전체 1=자원 2=장비 3=캐릭터) > ");
             Console.Write("TID 목록 (쉼표, 비우면 전체) > ");
             var tids = (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
             NetworkManager.Instance.Send(new C_AuctionSearchRequest { Kind = kind, Tids = tids });
@@ -344,7 +364,14 @@ namespace MikaDummyClient
 
         private void SendAuctionRegister()
         {
-            var kind = (EAuctionKind)ReadLong("종류 (1=자원 2=장비) > ");
+            var kind = (EAuctionKind)ReadLong("종류 (1=자원 2=장비 3=캐릭터) > ");
+            if (kind == EAuctionKind.Character)
+            {
+                var characterId = ReadLong("캐릭터ID > ");
+                NetworkManager.Instance.Send(new C_AuctionRegisterRequest { Kind = kind, CharacterId = characterId, UnitPrice = ReadLong("단가 > ") });
+                return;
+            }
+
             if (kind == EAuctionKind.Equip)
             {
                 var equipId = ReadLong("장비ID > ");

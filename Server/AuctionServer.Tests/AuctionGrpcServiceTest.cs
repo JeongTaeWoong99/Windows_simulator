@@ -86,6 +86,21 @@ public class AuctionGrpcServiceTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task 판매자_이름이_검색과_내_매물에_실린다()
+    {
+        // 내 매물은 DB에서 읽는다 — 저장까지 왕복해야 이름이 남는다.
+        var listing = Equip(1, 250, seller: 100);
+        listing.SellerName = "판매자";
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = listing });
+
+        var search = await _client.SearchAsync(new Proto.SearchRequest { Kind = 2 });
+        var mine   = await _client.GetSellerListingsAsync(new Proto.SellerListingsRequest { SellerId = 100 });
+
+        search.Listings.Single().SellerName.ShouldBe("판매자");
+        mine.Listings.Single().SellerName.ShouldBe("판매자");
+    }
+
+    [Fact]
     public async Task 스냅샷이_없는_등록은_거부한다()
     {
         var reply = await _client.RegisterAsync(new Proto.RegisterRequest());

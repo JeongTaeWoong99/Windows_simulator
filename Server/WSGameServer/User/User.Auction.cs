@@ -31,10 +31,10 @@ public partial class User
     // ── 등록 ──
 
     /// <summary>
-    /// 경매 등록. 검증 → 메모리에서 빼기(자원 차감·장비 제거) + 등록비 차감 → 한 트랜잭션 저장.
-    /// 장비를 메모리에서 빼는 이유: 메모리에 남으면 이후 저장이 잠긴 행을 덮는다.
+    /// 경매 등록. 검증 → 메모리에서 빼기(자원 차감·장비·캐릭터 제거) + 등록비 차감 → 한 트랜잭션 저장.
+    /// 개체를 메모리에서 빼는 이유: 메모리에 남으면 이후 저장이 잠긴 행을 덮는다.
     /// </summary>
-    public void TryRegisterAuction(EAuctionKind kind, int itemTid, int count, long equipId, long unitPrice, DateTime now)
+    public void TryRegisterAuction(EAuctionKind kind, int itemTid, int count, long equipId, long unitPrice, DateTime now, long characterId = 0)
     {
         if (!_auction.IsAvailable || _activeListings < 0)
         {
@@ -52,6 +52,7 @@ public partial class User
         {
             EAuctionKind.Item  => DescribeItem(itemTid, count),
             EAuctionKind.Equip => DescribeEquip(equipId),
+            EAuctionKind.Character => DescribeCharacter(characterId),
             _                  => (EResultCode.AuctionInvalidRequest, null, 0),
         };
         if (code != EResultCode.Ok)
@@ -78,22 +79,27 @@ public partial class User
         {
             Inventory.TryRemoveItems(new Dictionary<int, int> { [itemTid] = count }, out changes);
         }
-        else
+        else if (kind == EAuctionKind.Equip)
         {
             _equips.Remove(equipId);
+        }
+        else
+        {
+            _characters.Remove(characterId);
         }
 
         _gold -= fee;
         _activeListings++;
 
+        item = item with { SellerName = NickName };
         PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now));
         Send(new S_CurrencyResponse { Gold = _gold });
         return;
 
         void Reject(EResultCode result)
         {
-            ServerLog.Warn("경매", $"등록 거절 {result} Uid={Uid} {kind} TID {itemTid}×{count} 장비 {equipId} 단가 {unitPrice}");
-            Send(new S_AuctionRegisterResponse { Result = result, EquipId = equipId });
+            ServerLog.Warn("경매", $"등록 거절 {result} Uid={Uid} {kind} TID {itemTid}×{count} 장비 {equipId} 캐릭터 {characterId} 단가 {unitPrice}");
+            Send(new S_AuctionRegisterResponse { Result = result, EquipId = equipId, CharacterId = characterId });
         }
     }
 
@@ -142,6 +148,35 @@ public partial class User
         return (EResultCode.Ok, item, equip.Row.BasePrice);
     }
 
+    private (EResultCode, AuctionItemSnapshot?, int BasePrice) DescribeCharacter(long characterId)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+        {
+            return (EResultCode.CharacterNotOwned, null, 0);
+        }
+
+        if (IsCharacterBusy(characterId))
+        {
+            return (EResultCode.AuctionCharacterBusy, null, 0);
+        }
+
+        if (_characters.Count <= 1)
+        {
+            return (EResultCode.AuctionLastCharacter, null, 0);
+        }
+
+        // 분류는 두지 않는다(0) — 캐릭터는 산업 하나에 묶이지 않는다. 검색은 TID·희귀도로 한다.
+        var item = new AuctionItemSnapshot
+        {
+            Kind      = EAuctionKind.Character,
+            Tid       = character.Tid,
+            Rarity    = (int)character.Row.GlobalRarity,
+            Count     = 1,
+            Character = new MailCharacter(character.Id, character.Tid, character.Level, character.Exp, character.Bonus),
+        };
+        return (EResultCode.Ok, item, character.Row.BasePrice);
+    }
+
     public void OnAuctionRegistered(long tradeId, AuctionItemSnapshot item, long fee, List<ItemChangeInfo> changes)
     {
         ServerLog.Info("경매", $"등록 Uid={Uid} 매물 {tradeId} {item.Kind} TID {item.Tid}×{item.Count} 등록비 {fee}");
@@ -153,6 +188,7 @@ public partial class User
             ListingFee      = fee,
             ItemChangeInfos = changes,
             EquipId         = item.EquipId,
+            CharacterId     = item.Character?.CharacterId ?? 0,
         });
         _auction.KickRelay();
     }
@@ -404,7 +440,7 @@ public partial class User
         });
     }
 
-    private static AuctionListingInfo ToListingInfo(Proto.ListingView v)
+    private AuctionListingInfo ToListingInfo(Proto.ListingView v)
     {
         return new AuctionListingInfo
         {
@@ -416,10 +452,32 @@ public partial class User
             Count           = v.Count,
             EnchantGrade    = v.EnchantGrade,
             EnchantOptions  = v.Options.ToList(),
+            SellerName      = v.SellerName,
+            Character       = ToListingCharacter(v),
             UnitPrice       = v.UnitPrice,
             TotalPrice      = v.TotalPrice,
             ExpiresAtUnixMs = v.ExpiresAtUnixMs,
             State           = (EAuctionListingState)v.State,
         };
+    }
+
+    // 캐릭터 매물의 상세(JSON)를 클라 형식으로. 깨진 상세는 버린다 — 매물 한 줄 때문에 검색 응답 전체가 막히면 안 된다.
+    private CharacterInfo? ToListingCharacter(Proto.ListingView v)
+    {
+        if (v.Kind != (int)EAuctionKind.Character || string.IsNullOrEmpty(v.Detail))
+        {
+            return null;
+        }
+
+        try
+        {
+            var character = System.Text.Json.JsonSerializer.Deserialize<MailCharacter>(v.Detail);
+            return character is null ? null : ToCharacterInfo(character);
+        }
+        catch (System.Text.Json.JsonException e)
+        {
+            ServerLog.Warn("경매", $"캐릭터 매물 상세를 읽지 못함 — 매물 {v.ListingId}: {e.Message}");
+            return null;
+        }
     }
 }

@@ -34,6 +34,9 @@ namespace MikaProtocol
         NotEnoughItem      = 301, // 보유량보다 많이 팔려는(열려는) 시도
         ItemNotUsable      = 302, // 쓸 수 없는 아이템 (상자가 아님 · 테이블에 없음)
         InvalidUseCount    = 303, // 한 번에 쓰는 개수가 1~99 밖
+        SellEquipWorn      = 304, // 착용 중인 장비 판매 — 벗겨야 판다
+        SellCharacterBusy  = 305, // 슬롯에 배치됐거나 장비를 낀 캐릭터 판매 — 빼고·벗겨야 판다
+        SellLastCharacter  = 306, // 캐릭터를 하나도 남기지 않는 판매
 
         // ── 400~: 치트 ──
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
@@ -84,6 +87,8 @@ namespace MikaProtocol
         AuctionNotOwner        = 1011, // 남의 매물은 취소할 수 없다
         AuctionTooManyRequests = 1012, // 검색이 너무 잦다 — 잠시 뒤 다시
         MarketNotEnough        = 1013, // 거래소 — 단가 상한 안에서 원하는 수량을 다 채울 수 없다(누가 먼저 샀거나 가격이 올랐다). 아무것도 사지 않았다
+        AuctionCharacterBusy   = 1014, // 슬롯에 배치됐거나 장비를 낀 캐릭터 — 빼고·벗겨야 올릴 수 있다
+        AuctionLastCharacter   = 1015, // 캐릭터를 하나도 남기지 않는 등록
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -177,6 +182,7 @@ namespace MikaProtocol
         None  = 0,
         Item  = 1,   // 자원(스택) — 매물은 통째로만 팔린다
         Equip = 2,   // 장비 개체 — 인챈트까지 그대로 넘어간다
+        Character = 3,   // 캐릭터 개체 — 레벨·경험치·찍은 적성까지 그대로 넘어간다
     }
 
     // 진행 중 매물의 상태. 경매장 서버(auction.proto의 ListingState)와 값이 같아야 한다.

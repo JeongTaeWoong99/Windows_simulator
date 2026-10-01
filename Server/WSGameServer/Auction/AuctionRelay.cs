@@ -170,6 +170,8 @@ public sealed class AuctionRelay
             Rarity          = m.Item.Rarity,
             Count           = m.Item.Count,
             EnchantGrade    = m.Item.EnchantGrade,
+            SellerName      = m.Item.SellerName,
+            Detail          = m.Item.Detail,
             UnitPrice       = m.UnitPrice,
             ExpiresAtUnixMs = m.ExpiresAtUnixMs,
         };

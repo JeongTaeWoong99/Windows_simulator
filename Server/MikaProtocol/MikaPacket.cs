@@ -91,6 +91,8 @@ namespace MikaProtocol
         S_MarketPriceResponse = 60,
         C_MarketBuyRequest = 61,
         S_MarketBuyResponse = 62,
+        C_EntitySellRequest = 63,
+        S_EntitySellResponse = 64,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -482,6 +484,28 @@ namespace MikaProtocol
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 갱신 후 누적 총량. 0개는 Kind=Remove
     }
 
+    /// <summary>
+    /// 캐릭터·장비 개체 즉시 판매. 아이템(TID·수량 축)과 달리 개체 PK 목록 축이다.
+    /// 판매가는 <c>CharacterTable</c>·<c>EquipTable</c>의 <c>BasePrice</c> × <c>SellRatePermille</c>.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_EntitySellRequest)]
+    public partial class C_EntitySellRequest : IPacket
+    {
+        public List<long>? CharacterIds { get; set; }
+        public List<long>? EquipIds     { get; set; }
+    }
+
+    /// <summary>
+    /// 개체 판매 결과. <b>전부 성공하거나 전부 실패한다.</b> Ok면 요청한 개체가 모두 사라진 것이니 클라가 목록에서 지운다.
+    /// 갱신된 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 내려간다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_EntitySellResponse)]
+    public partial class S_EntitySellResponse : IPacket
+    {
+        public EResultCode Result     { get; set; }
+        public long        GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
+    }
+
     /// <summary>우편함 전체 스냅샷(로그인 직후). 받은 우편은 7일 동안 함께 실린다.</summary>
     [MemoryPackable, Packet(PacketId.S_MailListResponse)]
     public partial class S_MailListResponse : IPacket
@@ -571,10 +595,11 @@ namespace MikaProtocol
         public int          Count     { get; set; }
         public long         EquipId   { get; set; }
         public long         UnitPrice { get; set; }
+        public long         CharacterId { get; set; }  // Kind = Character일 때. 수량은 1
     }
 
     /// <summary>
-    /// 등록 결과. 아이템은 이미 창고에서 빠졌다 — 자원은 <c>ItemChangeInfos</c>, 장비는 <c>EquipId</c>를 창고에서 지운다.
+    /// 등록 결과. 아이템은 이미 창고에서 빠졌다 — 자원은 <c>ItemChangeInfos</c>, 장비는 <c>EquipId</c>, 캐릭터는 <c>CharacterId</c>를 창고에서 지운다.
     /// 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_AuctionRegisterResponse)]
@@ -585,6 +610,7 @@ namespace MikaProtocol
         public long                  ListingFee      { get; set; }
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
         public long                  EquipId         { get; set; }
+        public long                  CharacterId     { get; set; }
     }
 
     /// <summary>즉시구매. 매물은 통째로만 산다. <c>ExpectedTotalPrice</c>가 지금 가격과 다르면 거절된다(AuctionPriceChanged).</summary>

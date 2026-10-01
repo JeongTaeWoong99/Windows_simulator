@@ -51,7 +51,7 @@ public partial class User
             }
         }
 
-        Send(new S_MailListResponse { Mails = _mails.Values.Select(m => m.ToInfo()).ToList() });
+        Send(new S_MailListResponse { Mails = _mails.Values.Select(m => m.ToInfo(ToCharacterInfo)).ToList() });
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public partial class User
             return 0;
         }
 
-        Send(new S_MailArrivedResponse { Mails = arrived.Select(m => m.ToInfo()).ToList() });
+        Send(new S_MailArrivedResponse { Mails = arrived.Select(m => m.ToInfo(ToCharacterInfo)).ToList() });
         return arrived.Count;
     }
 
@@ -152,7 +152,7 @@ public partial class User
     private EResultCode TryGrantMail(Mail mail, DateTime now, List<long> claimed, List<ItemChangeInfo> changes)
     {
         var a = mail.Attachment;
-        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count, a.EquipTids.Count + a.Equips.Count))
+        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count))
         {
             return EResultCode.StorageFull;
         }
@@ -183,6 +183,11 @@ public partial class User
         foreach (var equip in a.Equips)
         {
             UnlockMailEquip(equip);
+        }
+
+        foreach (var character in a.Characters)
+        {
+            UnlockMailCharacter(character);
         }
 
         ServerLog.Info("우편", $"수령 Uid={Uid} MailId={mail.Id} Template={mail.TemplateTid}");

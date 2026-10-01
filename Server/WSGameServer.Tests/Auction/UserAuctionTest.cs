@@ -205,6 +205,17 @@ public class UserAuctionTest
     }
 
     [Fact]
+    public void 등록_스냅샷에_판매자_닉네임이_실린다()
+    {
+        // 경매장은 유저를 모른다 — 이름은 등록 순간에 실어 보내야만 검색 결과에 보인다.
+        var (user, b) = NewUser();
+
+        user.TryRegisterAuction(EAuctionKind.Equip, 0, 0, Sword, 70, Now);
+
+        b.DB.PostedOf<RegisterAuctionRepository>().Single().Item.SellerName.ShouldBe("테스터");
+    }
+
+    [Fact]
     public void 착용_중인_장비는_올릴_수_없다()
     {
         var (user, b) = NewUser();
@@ -442,7 +453,7 @@ public class UserAuctionTest
     public void 검색_결과를_클라_형식으로_옮긴다()
     {
         var (user, b) = NewUser();
-        var view = new Proto.ListingView { ListingId = 3, Kind = 2, Tid = 1001, Count = 1, EnchantGrade = 3, UnitPrice = 70, TotalPrice = 70, State = Proto.ListingState.Listed };
+        var view = new Proto.ListingView { ListingId = 3, Kind = 2, Tid = 1001, Count = 1, EnchantGrade = 3, UnitPrice = 70, TotalPrice = 70, State = Proto.ListingState.Listed, SellerName = "판매자" };
         view.Options.AddRange(new[] { 101, 102 });
         var reply = new Proto.SearchReply { HasMore = true };
         reply.Listings.Add(view);
@@ -455,6 +466,7 @@ public class UserAuctionTest
         (response.Result, response.HasMore, listing.ListingId, listing.Kind, listing.TotalPrice, listing.State)
             .ShouldBe((EResultCode.Ok, true, 3L, EAuctionKind.Equip, 70L, EAuctionListingState.Listed));
         listing.EnchantOptions.ShouldBe(new[] { 101, 102 });
+        listing.SellerName.ShouldBe("판매자");
     }
 
     [Fact]

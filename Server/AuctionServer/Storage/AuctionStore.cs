@@ -13,7 +13,7 @@ namespace AuctionServer;
 public sealed class AuctionStore : IDisposable
 {
     // 스키마 판. 바뀌면 옛 파일로 조용히 돌지 않고 멈춘다 — 컬럼이 어긋나면 예약 합계가 틀린다.
-    private const int SchemaVersion = 2;
+    private const int SchemaVersion = 3;
 
     // SQLite datetime('now')와 같은 순서로 정렬되는 UTC 문자열 — 문자열 비교가 곧 시각 비교다.
     private const string TimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
@@ -43,6 +43,14 @@ public sealed class AuctionStore : IDisposable
 
         var version  = conn.ExecuteScalar<long>("PRAGMA user_version;");
         var hasTable = conn.ExecuteScalar<long>("SELECT COUNT(*) FROM sqlite_master WHERE name = 't_listing';") > 0;
+        // 2 → 3: 판매자 닉네임 · 개체 상세 컬럼만 늘었다 — 옛 매물은 빈 값으로 보인다.
+        if (hasTable && version == 2)
+        {
+            conn.Execute("ALTER TABLE t_listing ADD COLUMN seller_name TEXT NOT NULL DEFAULT '' /* 등록 순간의 판매자 닉네임 */;");
+            conn.Execute("ALTER TABLE t_listing ADD COLUMN detail TEXT NOT NULL DEFAULT '' /* 개체 상세 JSON — 메인만 읽는다 */;");
+            version = 3;
+        }
+
         if (hasTable && version != SchemaVersion)
         {
             conn.Dispose();
@@ -59,7 +67,7 @@ public sealed class AuctionStore : IDisposable
         CREATE TABLE IF NOT EXISTS t_listing (
             listing_id    INTEGER PRIMARY KEY,           -- 매물 ID = 메인 t_auction_trade.trade_id. 등록 멱등 키
             seller_id     INTEGER NOT NULL,              -- 판매자 (메인 t_user.user_id)
-            kind          INTEGER NOT NULL,              -- 1=자원(거래소) 2=장비(경매장)
+            kind          INTEGER NOT NULL,              -- 1=자원(거래소) 2=장비 3=캐릭터(경매장)
             tid           INTEGER NOT NULL,              -- ItemTID 또는 EquipTID
             category      INTEGER NOT NULL,              -- 자원은 ItemType, 장비는 EquipKind
             rarity        INTEGER NOT NULL,              -- GlobalRarity
@@ -71,7 +79,9 @@ public sealed class AuctionStore : IDisposable
             state         INTEGER NOT NULL DEFAULT 1,    -- 1 Listed · 3 Sold · 4 Cancelled · 5 Expired (예약 중은 t_reservation이 말한다)
             expires_at    TEXT    NOT NULL,              -- 만료 시각 (UTC)
             created_at    TEXT    NOT NULL,              -- 등록 시각 (UTC)
-            closed_at     TEXT                           -- 종착 상태가 된 시각 (UTC)
+            closed_at     TEXT,                          -- 종착 상태가 된 시각 (UTC)
+            seller_name   TEXT    NOT NULL DEFAULT '',   -- 등록 순간의 판매자 닉네임 (검색 표시용)
+            detail        TEXT    NOT NULL DEFAULT ''    -- 개체 상세 JSON (캐릭터 레벨·적성 등). 메인만 읽는다
         ) STRICT;
         CREATE INDEX IF NOT EXISTS idx_listing_state_expires ON t_listing (state, expires_at);    -- 재시작 적재·만료 청소
         CREATE INDEX IF NOT EXISTS idx_listing_seller ON t_listing (seller_id, state);            -- 내 매물
@@ -98,7 +108,7 @@ public sealed class AuctionStore : IDisposable
 
         CREATE TABLE IF NOT EXISTS t_deal (
             deal_id    INTEGER PRIMARY KEY AUTOINCREMENT, -- 체결 ID
-            kind       INTEGER NOT NULL,                  -- 1=자원 2=장비
+            kind       INTEGER NOT NULL,                  -- 1=자원 2=장비 3=캐릭터
             tid        INTEGER NOT NULL,                  -- ItemTID 또는 EquipTID
             quantity   INTEGER NOT NULL,                  -- 체결 수량
             unit_price INTEGER NOT NULL,                  -- 체결 단가
@@ -126,7 +136,7 @@ public sealed class AuctionStore : IDisposable
 
     private const string ListingColumns =
         "l.listing_id, l.seller_id, l.kind, l.tid, l.category, l.rarity, l.count, l.enchant_grade, l.options, " +
-        "l.unit_price, l.state, l.expires_at, " + ReservedExpr + " AS reserved";
+        "l.unit_price, l.state, l.expires_at, l.seller_name, l.detail, " + ReservedExpr + " AS reserved";
 
     private sealed record ListingRow
     {
@@ -142,6 +152,8 @@ public sealed class AuctionStore : IDisposable
         public long   unit_price    { get; init; }
         public long   state         { get; init; }
         public string expires_at    { get; init; } = "";
+        public string seller_name   { get; init; } = "";
+        public string detail        { get; init; } = "";
         public long   reserved      { get; init; }
 
         public long Available => count - reserved;
@@ -152,7 +164,7 @@ public sealed class AuctionStore : IDisposable
             return new Listing(
                 listing_id, seller_id, (ListingKind)kind, (int)tid, (int)category, (int)rarity, (int)quantity,
                 (int)enchant_grade, JsonSerializer.Deserialize<int[]>(options) ?? Array.Empty<int>(),
-                unit_price, FromDb(expires_at));
+                unit_price, FromDb(expires_at), seller_name, detail);
         }
 
         /// <summary>바깥에 보이는 상태 — 판매 중인데 예약이 걸려 있으면 Reserved다.</summary>
@@ -211,14 +223,14 @@ public sealed class AuctionStore : IDisposable
     {
         var inserted = _conn.Execute(
             @"INSERT INTO t_listing (listing_id, seller_id, kind, tid, category, rarity, count, listed_count, enchant_grade, options,
-                                     unit_price, state, expires_at, created_at)
+                                     unit_price, state, expires_at, created_at, seller_name, detail)
               VALUES (@ListingId, @SellerId, @kind, @Tid, @Category, @Rarity, @Count, @Count, @EnchantGrade, @options,
-                      @UnitPrice, 1, @expiresAt, @createdAt)
+                      @UnitPrice, 1, @expiresAt, @createdAt, @SellerName, @Detail)
               ON CONFLICT (listing_id) DO NOTHING;",
             new
             {
                 l.ListingId, l.SellerId, kind = (int)l.Kind, l.Tid, l.Category, l.Rarity, l.Count, l.EnchantGrade,
-                options = JsonSerializer.Serialize(l.Options), l.UnitPrice,
+                options = JsonSerializer.Serialize(l.Options), l.UnitPrice, l.SellerName, l.Detail,
                 expiresAt = ToDb(l.ExpiresAt), createdAt = ToDb(now),
             });
 

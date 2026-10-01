@@ -245,6 +245,12 @@ namespace MikaDummyClient
 
         // 잔액은 이 패킷이 아니라 뒤따르는 S_CurrencyResponse가 들고 온다(GainedGold는 이번에 번 금액).
         [PacketHandler]
+        public static void Handle_S_EntitySellResponse(ISession session, S_EntitySellResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 개체 판매: {res.Result} 획득 골드={res.GainedGold}");
+        }
+
+        [PacketHandler]
         public static void Handle_S_ItemSellResponse(ISession session, S_ItemSellResponse res)
         {
             if (res.Result != EResultCode.Ok)
@@ -303,7 +309,8 @@ namespace MikaDummyClient
             foreach (var l in listings ?? new List<AuctionListingInfo>())
             {
                 var enchant = l.EnchantGrade == 0 ? "" : $" 인챈트 {l.EnchantGrade}[{string.Join(",", l.EnchantOptions ?? new List<int>())}]";
-                Console.WriteLine($"  - 매물 {l.ListingId} {l.Kind} TID {l.Tid} ×{l.Count} 단가 {l.UnitPrice} 총액 {l.TotalPrice}{enchant} {l.State}");
+                var character = l.Character is null ? "" : $" Lv{l.Character.Level}";
+                Console.WriteLine($"  - 매물 {l.ListingId} {l.Kind} TID {l.Tid} ×{l.Count} 단가 {l.UnitPrice} 총액 {l.TotalPrice}{enchant}{character} 판매자 {l.SellerName} {l.State}");
             }
         }
 

@@ -109,6 +109,7 @@ namespace MikaProtocol
         public long            ReceivedAtUnixMs { get; set; }  // 도착 시각 (Unix epoch 밀리초, UTC)
         public long            ClaimedAtUnixMs  { get; set; }  // 받은 시각. 0 = 안 받음
         public List<EquipInfo>? Equips          { get; set; }  // 개체 장비(경매 구매·반환) — 인챈트까지 그대로 온다. 창고 칸은 받을 때 정해진다
+        public List<CharacterInfo>? Characters  { get; set; }  // 개체 캐릭터(경매 구매·반환) — 레벨·적성까지 그대로 온다
     }
 
     /// <summary>거래소 목록 한 줄 — 자원 종류별 요약. 매물·체결이 없으면 해당 값은 0이다.</summary>
@@ -130,7 +131,7 @@ namespace MikaProtocol
         public long Count     { get; set; }
     }
 
-    /// <summary>경매 매물 한 줄. 판매자는 싣지 않는다.</summary>
+    /// <summary>경매 매물 한 줄. 판매자는 ID 없이 닉네임만 싣는다(등록 순간의 이름).</summary>
     [MemoryPackable]
     public partial class AuctionListingInfo
     {
@@ -146,5 +147,7 @@ namespace MikaProtocol
         public long                 TotalPrice      { get; set; }  // 이 값으로 산다 — 매물은 통째로만 팔린다
         public long                 ExpiresAtUnixMs { get; set; }
         public EAuctionListingState State           { get; set; }
+        public string               SellerName      { get; set; } = "";
+        public CharacterInfo?       Character       { get; set; }  // Kind = Character일 때만 — 레벨·경험치·적성
     }
 }

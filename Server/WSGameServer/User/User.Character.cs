@@ -198,4 +198,50 @@ public partial class User
 
         return TryGetCharacter(characterId, out var character) && character.CanWork(industry);
     }
+
+    /// <summary>슬롯에 배치됐거나 장비를 낀 캐릭터인가. 이런 캐릭터는 팔거나 경매에 올릴 수 없다 — 슬롯·착용 매핑이 허공을 가리키게 된다.</summary>
+    public bool IsCharacterBusy(long characterId)
+        => WorkStation.Slots.Any(s => s.CharacterId == characterId) || _worn.Keys.Any(k => k.CharacterId == characterId);
+
+    /// <summary>우편·경매 매물의 캐릭터 개체를 클라 형식으로. 테이블에 없는 TID면 null이다.</summary>
+    private CharacterInfo? ToCharacterInfo(MailCharacter m)
+    {
+        if (!GameTable.CharacterTable.TryGet(m.CharacterTid, out var row))
+        {
+            return null;
+        }
+
+        return ToCharacterInfo(new Character(m.CharacterId, row, m.Level, m.Exp, m.Bonus));
+    }
+
+    /// <summary>우편으로 온 잠긴 캐릭터를 받는다. 잠금 해제가 끝나면 <see cref="OnMailCharacterUnlocked"/>.</summary>
+    private void UnlockMailCharacter(MailCharacter character)
+    {
+        _pendingCharacterCount++;
+        PostDBTask(new UnlockMailCharacterRepository(this, character));
+    }
+
+    /// <summary>잠금 해제가 끝나면 불린다(로직 스레드). 메모리에 올리고 그 개체만 밀어 준다.</summary>
+    public void OnMailCharacterUnlocked(MailCharacter mailCharacter, bool unlocked)
+    {
+        _pendingCharacterCount = Math.Max(0, _pendingCharacterCount - 1);
+
+        if (!unlocked)
+        {
+            ServerLog.Warn("캐릭터", $"우편 캐릭터 잠금 해제 실패 — 이미 풀렸거나 남의 캐릭터. Uid={Uid} 캐릭터 {mailCharacter.CharacterId}");
+            return;
+        }
+
+        if (!GameTable.CharacterTable.TryGet(mailCharacter.CharacterTid, out var row))
+        {
+            ServerLog.Warn("캐릭터", $"CharacterTable에 없는 TID, 수령 건너뜀: {mailCharacter.CharacterTid} (개체 {mailCharacter.CharacterId})");
+            return;
+        }
+
+        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp, mailCharacter.Bonus);
+        _characters[character.Id] = character;
+
+        ServerLog.Info("캐릭터", $"우편 캐릭터 수령 Uid={Uid} 캐릭터 {character.Id}(TID {character.Tid}) Lv{character.Level}");
+        Send(new S_CharacterSyncResponse { Character = ToCharacterInfo(character) });
+    }
 }
