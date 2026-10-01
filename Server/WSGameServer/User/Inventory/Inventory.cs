@@ -6,18 +6,39 @@ public sealed class Inventory
 {
     private Dictionary<int, Item> _items = new();
 
-    // 로그인 시 아이템을 적재한다. Row → Item 변환은 호출자(User.OnLoginDataLoaded)가 끝냈다 —
-    // 인벤토리는 Repository의 Row도 네트워크 DTO도 모른다.
+    // 로그인 시 아이템을 적재한다. 칸이 겹치면(마이그레이션 전 행 등) 뒤의 것을 첫 빈 칸으로 옮긴다 —
+    // 겹친 채 두면 클라 격자에서 하나가 가려진다. 옮긴 칸은 다음 증분 저장에 함께 실린다.
     public void Load(IEnumerable<Item> items)
     {
-        _items = items.ToDictionary(item => item.Id);
+        // 겹치지 않은 칸을 먼저 전부 잡는다 — 한 번에 돌면 겹친 것이 뒤 항목의 제 칸을 빼앗는다.
+        _items = new Dictionary<int, Item>();
+        var used     = new HashSet<int>();
+        var overlaps = new List<Item>();
+        foreach (var item in items)
+        {
+            _items[item.Id] = item;
+            if (!used.Add(item.Slot))
+            {
+                overlaps.Add(item);
+            }
+        }
+
+        foreach (var item in overlaps)
+        {
+            item.Slot = StorageSlots.FirstFree(used);
+            used.Add(item.Slot);
+        }
     }
+
+    public IReadOnlyCollection<Item> Items => _items.Values;
+
+    public bool TryGet(int itemId, out Item item) => _items.TryGetValue(itemId, out item!);
 
     // 현재 인벤토리 전체를 네트워크 전송용 ItemInfo 목록으로 변환한다.
     public List<ItemInfo> Snapshot()
     {
         return _items.Values
-            .Select(item => new ItemInfo { ItemId = item.Id, Count = item.Count })
+            .Select(item => new ItemInfo { ItemId = item.Id, Count = item.Count, Slot = item.Slot })
             .ToList();
     }
     
@@ -34,15 +55,15 @@ public sealed class Inventory
             item.Count += count;
             return new ItemChangeInfo
             {
-                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update
+                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Slot = item.Slot
             };
         }
 
-        var added = new Item(itemId, count);
+        var added = new Item(itemId, count, StorageSlots.FirstFree(_items.Values.Select(i => i.Slot)));
         _items[itemId] = added;
         return new ItemChangeInfo
         {
-            ItemId = itemId, Count = added.Count, Kind = EItemChangeKind.Add
+            ItemId = itemId, Count = added.Count, Kind = EItemChangeKind.Add, Slot = added.Slot
         };
     }
 
@@ -80,14 +101,14 @@ public sealed class Inventory
                 _items.Remove(itemId);
                 changes.Add(new ItemChangeInfo
                 {
-                    ItemId = itemId, Count = 0, Kind = EItemChangeKind.Remove
+                    ItemId = itemId, Count = 0, Kind = EItemChangeKind.Remove, Slot = item.Slot
                 });
                 continue;
             }
 
             changes.Add(new ItemChangeInfo
             {
-                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update
+                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Slot = item.Slot
             });
         }
 

@@ -36,6 +36,7 @@ public sealed record InventoryRow
 {
     public int item_id { get; init; }
     public int count   { get; init; }
+    public int slot    { get; init; }
 }
 
 // t_user_workstation_slot 조회 전용 Row (배치 설정만 — 진행도는 저장하지 않는다)
