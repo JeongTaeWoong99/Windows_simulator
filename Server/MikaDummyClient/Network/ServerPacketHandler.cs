@@ -42,7 +42,7 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv Inventory: Count={res.Items?.Count}");
             foreach (var item in res.Items!)
             {
-                Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}");
+                Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}, Slot={item.Slot}");
             }
         }
 
@@ -154,7 +154,7 @@ namespace MikaDummyClient
             {
                 var aptitudes = string.Join(" ", character.Aptitudes.Select(a => $"{a.Industry}={a.Value}"));
                 Console.WriteLine($"  - Id={character.CharacterId}, Tid={character.CharacterTid}, " +
-                                  $"Lv={character.Level}, Exp={character.Exp}, 적성: {aptitudes}");
+                                  $"Lv={character.Level}, Exp={character.Exp}, Slot={character.Slot}, 적성: {aptitudes}");
             }
         }
 

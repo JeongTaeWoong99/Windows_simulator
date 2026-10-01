@@ -43,6 +43,8 @@ namespace MikaDummyClient
                 new ClientAction("MarketItems (거래소 목록 — TID 목록, 비우면 전체)", SendMarketItems),
                 new ClientAction("MarketPrice (거래소 가격대 — TID)", SendMarketPrice),
                 new ClientAction("MarketBuy (거래소 구매 — TID · 수량 · 단가 상한)", SendMarketBuy),
+                new ClientAction("StorageSort (인벤토리 정렬 — 탭 0자원/1캐릭터/2장비 · 기준 0등급/1이름/2수량 · 0내림/1오름)", SendStorageSort),
+                new ClientAction("StorageMoveSlot (인벤토리 자리 이동 — 탭 · 출발 칸 · 도착 칸)", SendStorageMoveSlot),
             };
         }
 
@@ -416,6 +418,26 @@ namespace MikaDummyClient
             var tid   = (int)ReadLong("TID > ");
             var count = (int)ReadLong("수량 > ");
             NetworkManager.Instance.Send(new C_MarketBuyRequest { Tid = tid, Count = count, MaxUnitPrice = ReadLong("단가 상한 > ") });
+        }
+
+        private void SendStorageSort()
+        {
+            var tab = (EStorageTab)ReadLong("탭 > ");
+            var key = (EStorageSortKey)ReadLong("기준 > ");
+            NetworkManager.Instance.Send(new C_StorageSortRequest
+            {
+                Container = EContainer.Inventory, Tab = tab, SortKey = key, Order = (EStorageSortOrder)ReadLong("방향 > "),
+            });
+        }
+
+        private void SendStorageMoveSlot()
+        {
+            var tab  = (EStorageTab)ReadLong("탭 > ");
+            var from = (int)ReadLong("출발 칸 > ");
+            NetworkManager.Instance.Send(new C_StorageMoveSlotRequest
+            {
+                Container = EContainer.Inventory, Tab = tab, FromSlot = from, ToSlot = (int)ReadLong("도착 칸 > "),
+            });
         }
 }
 }
