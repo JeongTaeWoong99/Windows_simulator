@@ -27,6 +27,12 @@ public partial class User
             return;
         }
 
+        if (PendingSlots(tab).Contains(toSlot))
+        {
+            SendSlots(EResultCode.StorageSlotPending, container, tab, new List<SlotChange>());
+            return;
+        }
+
         var changes = StorageSlots.Move(occupied, fromSlot, toSlot);
         ApplySlotChanges(tab, changes);
         PostDBTask(new SaveStorageSlotsRepository(this, tab, changes));
@@ -49,7 +55,7 @@ public partial class User
         }
 
         var ordered = StorageSort.Order(SortEntries(tab), (StorageSortKey)key, order == EStorageSortOrder.Ascending);
-        var changes = StorageSlots.Renumber(ordered);
+        var changes = StorageSlots.Renumber(ordered, PendingSlots(tab));
 
         ApplySlotChanges(tab, changes);
         PostDBTask(new SaveStorageSlotsRepository(this, tab, changes));
@@ -93,19 +99,47 @@ public partial class User
     private static bool IsInGrid(int slot) => slot >= 0 && slot < StorageCapacity;
 
     // 칸 → 키. 장착·배치 중인 개체도 칸을 차지한다(2026-09-25 결정).
+    // 칸이 겹친 데이터가 있어도 예외로 요청을 삼키지 않는다 — 먼저 온 것만 잡고, 정렬하면 풀린다.
     private Dictionary<int, long> OccupiedSlots(EStorageTab tab)
+    {
+        var occupied = new Dictionary<int, long>();
+        foreach (var (slot, key) in SlotsOf(tab))
+        {
+            occupied.TryAdd(slot, key);
+        }
+
+        return occupied;
+    }
+
+    private IEnumerable<(int Slot, long Key)> SlotsOf(EStorageTab tab)
     {
         if (tab == EStorageTab.Resource)
         {
-            return Inventory.Items.ToDictionary(i => i.Slot, i => (long)i.Id);
+            return Inventory.Items.Select(i => (i.Slot, (long)i.Id));
         }
 
         if (tab == EStorageTab.Character)
         {
-            return _characters.Values.ToDictionary(c => c.Slot, c => c.Id);
+            return _characters.Values.Select(c => (c.Slot, c.Id));
         }
 
-        return _equips.Values.ToDictionary(e => e.SlotPosition, e => e.Id);
+        return _equips.Values.Select(e => (e.SlotPosition, e.Id));
+    }
+
+    // 지급 대기 칸 — PK가 오기 전이라 개체는 없지만 칸은 이미 주인이 있다. 자원은 지급이 즉시라 없다.
+    private IReadOnlyCollection<int> PendingSlots(EStorageTab tab)
+    {
+        if (tab == EStorageTab.Character)
+        {
+            return _pendingCharacterSlots;
+        }
+
+        if (tab == EStorageTab.Equip)
+        {
+            return _pendingEquipPositions;
+        }
+
+        return Array.Empty<int>();
     }
 
     private void ApplySlotChanges(EStorageTab tab, IReadOnlyList<SlotChange> changes)

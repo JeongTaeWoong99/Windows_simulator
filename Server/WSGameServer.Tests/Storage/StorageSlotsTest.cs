@@ -51,4 +51,12 @@ public class StorageSlotsTest
         StorageSlots.Renumber(new long[] { 30, 10, 20 })
             .ShouldBe(new[] { new SlotChange(30, 0), new SlotChange(10, 1), new SlotChange(20, 2) });
     }
+
+    [Fact]
+    public void 재번호는_예약된_칸을_건너뛴다()
+    {
+        // 칸 1은 지급 대기 중 → 30·10·20이 0·2·3을 받는다
+        StorageSlots.Renumber(new long[] { 30, 10, 20 }, reserved: new[] { 1 })
+            .ShouldBe(new[] { new SlotChange(30, 0), new SlotChange(10, 2), new SlotChange(20, 3) });
+    }
 }

@@ -35,12 +35,21 @@ public static class StorageSlots
         return changes;
     }
 
-    public static List<SlotChange> Renumber(IReadOnlyList<long> keysInOrder)
+    // reserved는 지급 대기로 잡아 둔 칸 — 건너뛴다. 덮으면 지급이 끝날 때 같은 칸에 둘이 선다.
+    public static List<SlotChange> Renumber(IReadOnlyList<long> keysInOrder, IEnumerable<int>? reserved = null)
     {
+        var skip    = new HashSet<int>(reserved ?? Array.Empty<int>());
         var changes = new List<SlotChange>(keysInOrder.Count);
-        for (var i = 0; i < keysInOrder.Count; i++)
+        var slot    = 0;
+        foreach (var key in keysInOrder)
         {
-            changes.Add(new SlotChange(keysInOrder[i], i));
+            while (skip.Contains(slot))
+            {
+                slot++;
+            }
+
+            changes.Add(new SlotChange(key, slot));
+            slot++;
         }
 
         return changes;

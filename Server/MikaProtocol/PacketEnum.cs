@@ -94,6 +94,7 @@ namespace MikaProtocol
         StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖이거나, 아직 없는 보관함(창고는 T-107)
         StorageSlotEmpty      = 1101, // 자리 이동의 출발 칸이 비어 있음
         InvalidStorageSortKey = 1102, // 그 탭에 쓸 수 없는 정렬 기준 (캐릭터·장비 탭의 수량순)
+        StorageSlotPending    = 1103, // 도착 칸이 지급 대기(뽑기·우편 수령 응답 전)로 예약돼 있음 — 잠시 뒤 다시
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —

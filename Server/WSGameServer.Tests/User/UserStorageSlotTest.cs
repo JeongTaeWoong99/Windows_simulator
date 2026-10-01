@@ -109,4 +109,22 @@ public class UserStorageSlotTest
 
         Last(b).Slots.Select(s => (s.Key, s.Slot)).ShouldBe(new[] { (2L, 0), (1L, 4) });
     }
+
+    [Fact]
+    public void 지급_대기_중인_칸으로는_옮길_수_없다()
+    {
+        // 칸 1이 비어 있지만 뽑기 응답을 기다리며 예약돼 있다 — 옮기면 지급된 캐릭터와 겹친다
+        var b    = new TestUserBuilder();
+        var user = b.Build();
+        user.LoadCharacters(new[]
+        {
+            new CharacterRow { character_id = 1, character_tid = CharacterTid, level = 1, slot = 0 },
+            new CharacterRow { character_id = 2, character_tid = CharacterTid, level = 1, slot = 2 },
+        });
+        user.GrantGachaCharacters(new[] { CharacterTid });
+
+        user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Character, 0, 1);
+
+        Last(b).Result.ShouldBe(EResultCode.StorageSlotPending);
+    }
 }

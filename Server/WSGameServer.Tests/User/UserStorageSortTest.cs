@@ -82,4 +82,22 @@ public class UserStorageSortTest
         // 같은 TID라 원래는 1·2 순이지만 1이 배치 중 → 2, 1
         Last(b).Slots.Select(s => s.Key).ShouldBe(new long[] { 2, 1 });
     }
+
+    [Fact]
+    public void 정렬은_지급_대기_칸을_비워_둔다()
+    {
+        var b    = new TestUserBuilder();
+        var user = b.Build();
+        user.LoadCharacters(new[]
+        {
+            new CharacterRow { character_id = 1, character_tid = CharacterTid, level = 1, slot = 0 },
+            new CharacterRow { character_id = 2, character_tid = CharacterTid, level = 1, slot = 2 },
+        });
+        user.GrantGachaCharacters(new[] { CharacterTid });   // 칸 1 예약
+
+        user.SortStorage(EContainer.Inventory, EStorageTab.Character, EStorageSortKey.Rarity, EStorageSortOrder.Descending);
+
+        // 1·2 순서는 그대로, 예약된 칸 1을 건너뛰어 0·2
+        Last(b).Slots.Select(s => (s.Key, s.Slot)).ShouldBe(new[] { (1L, 0), (2L, 2) });
+    }
 }
