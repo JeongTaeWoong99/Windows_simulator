@@ -367,5 +367,12 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 거래소 구매: {res.Result} TID {res.Tid} ×{res.Count} 총액 {res.TotalPrice}");
         }
+
+        [PacketHandler]
+        public static void Handle_S_StorageSlotsResponse(ISession session, S_StorageSlotsResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 칸 위치: {res.Result} {res.Container}/{res.Tab} " +
+                string.Join(", ", res.Slots.Select(s => $"{s.Key}→{s.Slot}")));
+        }
 }
 }

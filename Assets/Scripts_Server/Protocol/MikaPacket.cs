@@ -93,6 +93,9 @@ namespace MikaProtocol
         S_MarketBuyResponse = 62,
         C_EntitySellRequest = 63,
         S_EntitySellResponse = 64,
+        C_StorageSortRequest = 65,
+        C_StorageMoveSlotRequest = 66,
+        S_StorageSlotsResponse = 67,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -709,5 +712,35 @@ namespace MikaProtocol
         public int         Tid        { get; set; }
         public int         Count      { get; set; }
         public long        TotalPrice { get; set; }  // 실제로 낸 금액
+    }
+
+    // 서버가 격자 전체를 0부터 다시 매기고 S_StorageSlotsResponse로 전부 돌려준다.
+    [MemoryPackable, Packet(PacketId.C_StorageSortRequest)]
+    public partial class C_StorageSortRequest : IPacket
+    {
+        public EContainer        Container { get; set; }
+        public EStorageTab       Tab       { get; set; }
+        public EStorageSortKey   SortKey   { get; set; }
+        public EStorageSortOrder Order     { get; set; }
+    }
+
+    // 목적지가 비었으면 옮기고 차 있으면 교환한다. 칸은 응답이 온 뒤에 바꾼다(낙관적 갱신 없음).
+    [MemoryPackable, Packet(PacketId.C_StorageMoveSlotRequest)]
+    public partial class C_StorageMoveSlotRequest : IPacket
+    {
+        public EContainer  Container { get; set; }
+        public EStorageTab Tab       { get; set; }
+        public int         FromSlot  { get; set; }
+        public int         ToSlot    { get; set; }
+    }
+
+    // 정렬이면 격자 전체, 자리 이동이면 바뀐 칸만 싣는다. 거절이면 Slots는 비어 있다.
+    [MemoryPackable, Packet(PacketId.S_StorageSlotsResponse)]
+    public partial class S_StorageSlotsResponse : IPacket
+    {
+        public EResultCode           Result    { get; set; }
+        public EContainer            Container { get; set; }
+        public EStorageTab           Tab       { get; set; }
+        public List<StorageSlotInfo> Slots     { get; set; } = new();
     }
 }

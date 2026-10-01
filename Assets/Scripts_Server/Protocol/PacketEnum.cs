@@ -89,6 +89,11 @@ namespace MikaProtocol
         MarketNotEnough        = 1013, // 거래소 — 단가 상한 안에서 원하는 수량을 다 채울 수 없다(누가 먼저 샀거나 가격이 올랐다). 아무것도 사지 않았다
         AuctionCharacterBusy   = 1014, // 슬롯에 배치됐거나 장비를 낀 캐릭터 — 빼고·벗겨야 올릴 수 있다
         AuctionLastCharacter   = 1015, // 캐릭터를 하나도 남기지 않는 등록
+
+        // ── 1100~: 인벤토리 칸 (T-058) ──
+        StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖이거나, 아직 없는 보관함(창고는 T-107)
+        StorageSlotEmpty      = 1101, // 자리 이동의 출발 칸이 비어 있음
+        InvalidStorageSortKey = 1102, // 그 탭에 쓸 수 없는 정렬 기준 (캐릭터·장비 탭의 수량순)
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -191,5 +196,33 @@ namespace MikaProtocol
         None     = 0,
         Listed   = 1,
         Reserved = 2,   // 누군가 구매 중 — 취소할 수 없다
+    }
+
+    /// <summary>보관함. 칸 격자는 보관함 × 탭이다.</summary>
+    public enum EContainer : byte
+    {
+        Inventory = 0,
+        Warehouse = 1,   // 창고 (T-107)
+    }
+
+    public enum EStorageTab : byte
+    {
+        Resource  = 0,
+        Character = 1,
+        Equip     = 2,
+    }
+
+    /// <summary>정렬 기준. 서버 StorageSortKey와 이름·값이 같아야 한다(PacketEnumTest).</summary>
+    public enum EStorageSortKey : byte
+    {
+        Rarity = 0,
+        Name   = 1,
+        Count  = 2,   // 자원 탭만
+    }
+
+    public enum EStorageSortOrder : byte
+    {
+        Descending = 0,   // 규칙 그대로 (기본)
+        Ascending  = 1,   // 규칙 전체를 뒤집는다 — 나가 있는 것은 그래도 맨 뒤
     }
 }

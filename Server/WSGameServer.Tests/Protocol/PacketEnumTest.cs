@@ -135,4 +135,14 @@ public class PacketEnumTest
 
         duplicated.ShouldBeEmpty();
     }
+
+    [Fact]
+    public void 서버_정렬_기준은_프로토콜_정렬_기준과_이름_값이_1대1이다()
+    {
+        // 핸들러가 (StorageSortKey)req.SortKey로 캐스팅한다 — 순서가 어긋나면 이름순이 수량순으로 돈다.
+        var protocol = Enum.GetValues<EStorageSortKey>().Select(v => $"{v}={(byte)v}");
+        var server   = Enum.GetValues<StorageSortKey>().Select(v => $"{v}={(int)v}");
+
+        protocol.ShouldBe(server);
+    }
 }
