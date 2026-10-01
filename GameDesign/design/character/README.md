@@ -353,7 +353,7 @@ enum은 **뒤에만 추가한다**.
 
 > **경험치 1 = Lv1 판정 1회.** 누적은 곧 "Lv1 환산 판정 횟수"다 — 만렙 100은 사실상 닿지 않는 상한이다.
 > 누적값은 int 범위를 넘지만 **저장·비교는 레벨별 `RequiredExp`(최대 5.75억)로만 하므로** int로 충분하다.
-> ⚠️ **수치는 전부 테스트용이다.** 성장 페이스([진행 및 성장](../progression/README.md) 2.2)가 잡히면 다시 잡는다.
+> ⚠️ **수치는 전부 테스트용이다.** 도달 목표([진행 및 성장](../progression/README.md) 2장)에서 역산해 다시 잡는다.
 
 > ✅ **서버 구현 (2026-09-13).** `SettleWorkStation`이 판정 횟수 × `ExpPerJudge`(× 인챈트 경험치 가산 `User.GetEquipExpAdd`)를 배치 캐릭터에 더하고
 > (`Character.GainExp` · `CharacterLevelCatalog`), 확정값을 `t_character`에 저장한 뒤 `S_CharacterSyncResponse`로 그 개체를 밀어 준다.
