@@ -30,4 +30,15 @@ public partial class User
                CharacterSlotsUsed + characterCount <= StorageCapacity &&
                EquipSlotsUsed + equipCount <= StorageCapacity;
     }
+
+    // 최대 수량(ItemTable.MaxStack)까지 받을 수 있는 개수. 표에 없는 TID는 상한 없이 그대로 준다.
+    public int ClampToMaxStack(int itemTid, int count)
+    {
+        if (!GameTable.ItemTable.TryGet(itemTid, out var row))
+        {
+            return count;
+        }
+
+        return Math.Min(count, Math.Max(0, row.MaxStack - Inventory.GetCount(itemTid)));
+    }
 }

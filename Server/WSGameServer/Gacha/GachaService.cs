@@ -16,7 +16,7 @@ public sealed class GachaService : Singleton<GachaService>
     private static int SingleDraw => (int)Constants.GachaDrawSingle;
     private static int MultiDraw  => (int)Constants.GachaDrawMulti;
 
-    /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx. 상자 최대 수량(MaxStack 99)과 같다.</summary>
+    /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx. 상자 최대 수량(MaxStack 50)과 같다.</summary>
     public static int MaxOpenCount => (int)Constants.BoxOpenMax;
 
     private readonly GachaPoolCatalog _pools;

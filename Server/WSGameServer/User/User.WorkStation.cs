@@ -164,7 +164,14 @@ public partial class User
                     continue;
                 }
 
-                changes.Add(GainItem(itemTid, count));
+                // 최대 수량(상자 50개 등)을 넘는 몫은 버린다 — 창고 칸과 같은 방침이다.
+                var granted = ClampToMaxStack(itemTid, count);
+                if (granted <= 0)
+                {
+                    continue;
+                }
+
+                changes.Add(GainItem(itemTid, granted));
             }
 
             // 판정 1회마다 배치된 캐릭터가 (산업, 레벨)의 ExpPerJudge만큼 경험치를 번다 (캐릭터 기획 5.2).

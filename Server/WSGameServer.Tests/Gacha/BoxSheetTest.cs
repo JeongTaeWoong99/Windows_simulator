@@ -13,13 +13,13 @@ public class BoxSheetTest
     private static IEnumerable<ItemTableRow> Boxes => GameTable.ItemTable.All.Where(r => r.OpenGachaId != 0);
 
     [Fact]
-    public void 상자는_산업_레벨마다_세_등급이고_최대_99개다()
+    public void 상자는_산업_레벨마다_세_등급이고_최대_50개다()
     {
         // 나무·은·황금 × Lv1~5 = 15종.
         Boxes.Count().ShouldBe(15);
         Boxes.GroupBy(r => r.GlobalRarity).Select(g => (g.Key, g.Count())).OrderBy(g => g.Key)
             .ShouldBe(new[] { (GlobalRarity.Common, 5), (GlobalRarity.Uncommon, 5), (GlobalRarity.Rare, 5) });
-        Boxes.ShouldAllBe(r => r.ItemType == ItemType.Special && r.MaxStack == 99);
+        Boxes.ShouldAllBe(r => r.ItemType == ItemType.Special && r.MaxStack == 50);
     }
 
     [Fact]

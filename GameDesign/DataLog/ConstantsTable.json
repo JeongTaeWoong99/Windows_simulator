@@ -11,7 +11,7 @@
   },
   {
     "Name": "BoxOpenMax",
-    "Value": 99,
+    "Value": 50,
     "Description": "상자를 한 번에 여는 수"
   },
   {

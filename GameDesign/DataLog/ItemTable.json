@@ -1614,7 +1614,7 @@
     "Name": "나무 상자 Lv1",
     "ItemType": "Special",
     "GlobalRarity": "Common",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 54,
     "OpenGachaId": 9,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×10"
@@ -1624,7 +1624,7 @@
     "Name": "은 상자 Lv1",
     "ItemType": "Special",
     "GlobalRarity": "Uncommon",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 163,
     "OpenGachaId": 10,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×30"
@@ -1634,7 +1634,7 @@
     "Name": "황금 상자 Lv1",
     "ItemType": "Special",
     "GlobalRarity": "Rare",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 542,
     "OpenGachaId": 11,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×100"
@@ -1644,7 +1644,7 @@
     "Name": "나무 상자 Lv2",
     "ItemType": "Special",
     "GlobalRarity": "Common",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 163,
     "OpenGachaId": 12,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×10"
@@ -1654,7 +1654,7 @@
     "Name": "은 상자 Lv2",
     "ItemType": "Special",
     "GlobalRarity": "Uncommon",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 488,
     "OpenGachaId": 13,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×30"
@@ -1664,7 +1664,7 @@
     "Name": "황금 상자 Lv2",
     "ItemType": "Special",
     "GlobalRarity": "Rare",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 1625,
     "OpenGachaId": 14,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×100"
@@ -1674,7 +1674,7 @@
     "Name": "나무 상자 Lv3",
     "ItemType": "Special",
     "GlobalRarity": "Common",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 488,
     "OpenGachaId": 15,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×10"
@@ -1684,7 +1684,7 @@
     "Name": "은 상자 Lv3",
     "ItemType": "Special",
     "GlobalRarity": "Uncommon",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 1463,
     "OpenGachaId": 16,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×30"
@@ -1694,7 +1694,7 @@
     "Name": "황금 상자 Lv3",
     "ItemType": "Special",
     "GlobalRarity": "Rare",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 4876,
     "OpenGachaId": 17,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×100"
@@ -1704,7 +1704,7 @@
     "Name": "나무 상자 Lv4",
     "ItemType": "Special",
     "GlobalRarity": "Common",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 1463,
     "OpenGachaId": 18,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×10"
@@ -1714,7 +1714,7 @@
     "Name": "은 상자 Lv4",
     "ItemType": "Special",
     "GlobalRarity": "Uncommon",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 4389,
     "OpenGachaId": 19,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×30"
@@ -1724,7 +1724,7 @@
     "Name": "황금 상자 Lv4",
     "ItemType": "Special",
     "GlobalRarity": "Rare",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 14629,
     "OpenGachaId": 20,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×100"
@@ -1734,7 +1734,7 @@
     "Name": "나무 상자 Lv5",
     "ItemType": "Special",
     "GlobalRarity": "Common",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 4389,
     "OpenGachaId": 21,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×10"
@@ -1744,7 +1744,7 @@
     "Name": "은 상자 Lv5",
     "ItemType": "Special",
     "GlobalRarity": "Uncommon",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 13166,
     "OpenGachaId": 22,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×30"
@@ -1754,7 +1754,7 @@
     "Name": "황금 상자 Lv5",
     "ItemType": "Special",
     "GlobalRarity": "Rare",
-    "MaxStack": 99,
+    "MaxStack": 50,
     "BasePrice": 43886,
     "OpenGachaId": 23,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×100"
