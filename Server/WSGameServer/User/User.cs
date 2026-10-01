@@ -52,7 +52,6 @@ public sealed partial class User
     private readonly UserTraitCatalog _traitCatalog;
 
     /// <summary>채취 공통 보상(판정 1회마다 굴리는 상자). 정산에 쓴다. 규약은 위와 같다.</summary>
-    private readonly CommonRewardCatalog _commonRewards;
 
     private readonly MailCatalog _mailCatalog;
 
@@ -148,7 +147,6 @@ public sealed partial class User
         EquipCatalog?         equips = null,
         AccountLevelCatalog?  accountLevels = null,
         UserTraitCatalog?     traits = null,
-        CommonRewardCatalog?  commonRewards = null,
         MailCatalog?          mails = null,
         EnchantCatalog?       enchants = null,
         AuctionService?       auction = null,
@@ -167,7 +165,6 @@ public sealed partial class User
         _equipCatalog = equips ?? EquipCatalog.Instance;
         _accountLevels = accountLevels ?? AccountLevelCatalog.Instance;
         _traitCatalog = traits ?? UserTraitCatalog.Instance;
-        _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
         _mailCatalog = mails ?? MailCatalog.Instance;
         _enchantCatalog = enchants ?? EnchantCatalog.Instance;
         _auction = auction ?? AuctionService.Current;

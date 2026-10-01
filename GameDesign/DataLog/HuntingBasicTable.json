@@ -42,6 +42,27 @@
     "Description": "마수의 심장"
   },
   {
+    "DropTID": 500109,
+    "IndustryLevel": 1,
+    "ItemTID": 100019,
+    "Weight": 205,
+    "Description": "나무 상자 Lv1"
+  },
+  {
+    "DropTID": 500110,
+    "IndustryLevel": 1,
+    "ItemTID": 100020,
+    "Weight": 31,
+    "Description": "은 상자 Lv1"
+  },
+  {
+    "DropTID": 500111,
+    "IndustryLevel": 1,
+    "ItemTID": 100021,
+    "Weight": 3,
+    "Description": "황금 상자 Lv1"
+  },
+  {
     "DropTID": 500201,
     "IndustryLevel": 2,
     "ItemTID": 50011,
@@ -84,18 +105,25 @@
     "Description": "산신의 인장"
   },
   {
-    "DropTID": 500207,
+    "DropTID": 500209,
     "IndustryLevel": 2,
-    "ItemTID": 50001,
-    "Weight": 1000,
-    "Description": "질긴 고기 — Lv1 하위 혼입"
+    "ItemTID": 100022,
+    "Weight": 205,
+    "Description": "나무 상자 Lv2"
   },
   {
-    "DropTID": 500208,
+    "DropTID": 500210,
     "IndustryLevel": 2,
-    "ItemTID": 50002,
-    "Weight": 300,
-    "Description": "토끼 가죽 — Lv1 하위 혼입"
+    "ItemTID": 100023,
+    "Weight": 31,
+    "Description": "은 상자 Lv2"
+  },
+  {
+    "DropTID": 500211,
+    "IndustryLevel": 2,
+    "ItemTID": 100024,
+    "Weight": 3,
+    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 500301,
@@ -140,18 +168,25 @@
     "Description": "숲 지배자의 눈"
   },
   {
-    "DropTID": 500307,
+    "DropTID": 500309,
     "IndustryLevel": 3,
-    "ItemTID": 50001,
-    "Weight": 700,
-    "Description": "질긴 고기 — Lv1 하위 혼입"
+    "ItemTID": 100025,
+    "Weight": 205,
+    "Description": "나무 상자 Lv3"
   },
   {
-    "DropTID": 500308,
+    "DropTID": 500310,
     "IndustryLevel": 3,
-    "ItemTID": 50002,
-    "Weight": 200,
-    "Description": "토끼 가죽 — Lv1 하위 혼입"
+    "ItemTID": 100026,
+    "Weight": 31,
+    "Description": "은 상자 Lv3"
+  },
+  {
+    "DropTID": 500311,
+    "IndustryLevel": 3,
+    "ItemTID": 100027,
+    "Weight": 3,
+    "Description": "황금 상자 Lv3"
   },
   {
     "DropTID": 500401,
@@ -196,18 +231,25 @@
     "Description": "영구동토의 심장"
   },
   {
-    "DropTID": 500407,
+    "DropTID": 500409,
     "IndustryLevel": 4,
-    "ItemTID": 50001,
-    "Weight": 400,
-    "Description": "질긴 고기 — Lv1 하위 혼입"
+    "ItemTID": 100028,
+    "Weight": 205,
+    "Description": "나무 상자 Lv4"
   },
   {
-    "DropTID": 500408,
+    "DropTID": 500410,
     "IndustryLevel": 4,
-    "ItemTID": 50002,
-    "Weight": 100,
-    "Description": "토끼 가죽 — Lv1 하위 혼입"
+    "ItemTID": 100029,
+    "Weight": 31,
+    "Description": "은 상자 Lv4"
+  },
+  {
+    "DropTID": 500411,
+    "IndustryLevel": 4,
+    "ItemTID": 100030,
+    "Weight": 3,
+    "Description": "황금 상자 Lv4"
   },
   {
     "DropTID": 500501,
@@ -252,17 +294,24 @@
     "Description": "마신의 파편"
   },
   {
-    "DropTID": 500507,
+    "DropTID": 500509,
     "IndustryLevel": 5,
-    "ItemTID": 50001,
-    "Weight": 200,
-    "Description": "질긴 고기 — Lv1 하위 혼입"
+    "ItemTID": 100031,
+    "Weight": 205,
+    "Description": "나무 상자 Lv5"
   },
   {
-    "DropTID": 500508,
+    "DropTID": 500510,
     "IndustryLevel": 5,
-    "ItemTID": 50002,
-    "Weight": 50,
-    "Description": "토끼 가죽 — Lv1 하위 혼입"
+    "ItemTID": 100032,
+    "Weight": 31,
+    "Description": "은 상자 Lv5"
+  },
+  {
+    "DropTID": 500511,
+    "IndustryLevel": 5,
+    "ItemTID": 100033,
+    "Weight": 3,
+    "Description": "황금 상자 Lv5"
   }
 ]

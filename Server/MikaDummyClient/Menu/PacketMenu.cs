@@ -32,7 +32,7 @@ namespace MikaDummyClient
                 new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
                 new ClientAction("EquipEnchant (큐브 — 장비ID 큐브TID 100015·100018)", SendEquipEnchant),
                 new ClientAction("UserTraitLearn (특성 찍기 — 산업 레벨 2xxx · 속도 3xxx)", SendUserTraitLearn),
-                new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
+                new ClientAction("ItemUse (상자 열기 — 100019 나무 Lv1 · 100020 은 Lv1 · 100021 황금 Lv1)", SendItemUse),
                 new ClientAction("MailClaim (우편 수령 — MailId, 0이면 모두 받기)", SendMailClaim),
                 new ClientAction("MailDelete (받은 우편 삭제 — MailId)", SendMailDelete),
                 new ClientAction("AuctionSearch (경매 검색 — 종류 0전체/1자원/2장비 · TID 목록)", SendAuctionSearch),

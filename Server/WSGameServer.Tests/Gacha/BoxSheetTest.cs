@@ -13,10 +13,12 @@ public class BoxSheetTest
     private static IEnumerable<ItemTableRow> Boxes => GameTable.ItemTable.All.Where(r => r.OpenGachaId != 0);
 
     [Fact]
-    public void 상자는_세_등급이고_최대_99개다()
+    public void 상자는_산업_레벨마다_세_등급이고_최대_99개다()
     {
-        Boxes.Select(r => r.GlobalRarity).OrderBy(r => r)
-            .ShouldBe(new[] { GlobalRarity.Common, GlobalRarity.Uncommon, GlobalRarity.Rare });
+        // 나무·은·황금 × Lv1~5 = 15종.
+        Boxes.Count().ShouldBe(15);
+        Boxes.GroupBy(r => r.GlobalRarity).Select(g => (g.Key, g.Count())).OrderBy(g => g.Key)
+            .ShouldBe(new[] { (GlobalRarity.Common, 5), (GlobalRarity.Uncommon, 5), (GlobalRarity.Rare, 5) });
         Boxes.ShouldAllBe(r => r.ItemType == ItemType.Special && r.MaxStack == 99);
     }
 
@@ -53,11 +55,21 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 공통_보상은_상자만_준다()
+    public void 산업_레벨마다_상자가_세_종류씩_나온다()
     {
+        // 상자는 산업 드롭 테이블의 한 줄이다 — 빠진 레벨이 있으면 그 레벨에서는 상자를 얻을 길이 없다.
         var boxTids = Boxes.Select(r => r.ItemTID).ToHashSet();
+        var drops = GameTable.FarmingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID))
+            .Concat(GameTable.FishingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
+            .Concat(GameTable.MiningBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
+            .Concat(GameTable.LoggingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
+            .Concat(GameTable.HuntingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
+            .Where(d => boxTids.Contains(d.ItemTID))
+            .ToList();
 
-        GameTable.CommonRewardTable.All.ShouldNotBeEmpty();
-        GameTable.CommonRewardTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
+        // 5개 산업 × 5레벨 × 3종. 레벨마다 같은 상자 3종을 5개 산업이 나눠 쓴다.
+        drops.Count.ShouldBe(75);
+        drops.GroupBy(d => d.IndustryLevel).ShouldAllBe(g => g.Select(d => d.ItemTID).Distinct().Count() == 3);
+        drops.Select(d => d.ItemTID).Distinct().Count().ShouldBe(15);
     }
 }

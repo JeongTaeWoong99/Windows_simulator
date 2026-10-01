@@ -40,24 +40,120 @@
     "Description": "보석 31종"
   },
   {
-    "GachaInfoTID": 6,
-    "Name": "나무 상자",
+    "GachaInfoTID": 9,
+    "Name": "나무 상자 Lv1",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "상자 전용 — 골드로 뽑을 수 없다"
   },
   {
-    "GachaInfoTID": 7,
-    "Name": "은 상자",
+    "GachaInfoTID": 10,
+    "Name": "은 상자 Lv1",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "상자 전용 — 골드로 뽑을 수 없다"
   },
   {
-    "GachaInfoTID": 8,
-    "Name": "황금 상자",
+    "GachaInfoTID": 11,
+    "Name": "황금 상자 Lv1",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 12,
+    "Name": "나무 상자 Lv2",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 13,
+    "Name": "은 상자 Lv2",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 14,
+    "Name": "황금 상자 Lv2",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 15,
+    "Name": "나무 상자 Lv3",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 16,
+    "Name": "은 상자 Lv3",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 17,
+    "Name": "황금 상자 Lv3",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 18,
+    "Name": "나무 상자 Lv4",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 19,
+    "Name": "은 상자 Lv4",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 20,
+    "Name": "황금 상자 Lv4",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 21,
+    "Name": "나무 상자 Lv5",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 22,
+    "Name": "은 상자 Lv5",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 23,
+    "Name": "황금 상자 Lv5",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,

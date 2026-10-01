@@ -57,7 +57,7 @@ public class MailRepositoryTest : IDisposable
 
         await new DeliverGlobalMailRepository(NewUser(), Now).ExecuteAsync(new DbConnection(_db.Connection));
 
-        Count("SELECT COUNT(*) FROM t_user_mail WHERE gold = 1000 AND items = '[[100007,3]]'").ShouldBe(1);
+        Count("SELECT COUNT(*) FROM t_user_mail WHERE gold = 1000 AND items = '[[100019,3]]'").ShouldBe(1);
     }
 
     [Fact]

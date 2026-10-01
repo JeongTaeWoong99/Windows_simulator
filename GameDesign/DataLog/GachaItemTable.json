@@ -48,187 +48,923 @@
     "Description": "신화"
   },
   {
-    "GachaItemTID": 6001,
-    "GachaId": 6,
+    "GachaItemTID": 9001,
+    "GachaId": 9,
     "ItemTID": 10001,
-    "Count": 5,
-    "Weight": 80,
-    "Description": "자원 붕어 x5"
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 붕어 x27"
   },
   {
-    "GachaItemTID": 6002,
-    "GachaId": 6,
+    "GachaItemTID": 9002,
+    "GachaId": 9,
     "ItemTID": 20001,
-    "Count": 5,
-    "Weight": 80,
-    "Description": "자원 밀 x5"
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 밀 x27"
   },
   {
-    "GachaItemTID": 6003,
-    "GachaId": 6,
+    "GachaItemTID": 9003,
+    "GachaId": 9,
     "ItemTID": 30001,
-    "Count": 5,
-    "Weight": 80,
-    "Description": "자원 잡목 x5"
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 잡목 x27"
   },
   {
-    "GachaItemTID": 6004,
-    "GachaId": 6,
+    "GachaItemTID": 9004,
+    "GachaId": 9,
     "ItemTID": 40001,
-    "Count": 5,
-    "Weight": 80,
-    "Description": "자원 돌덩어리 x5"
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 돌덩어리 x27"
   },
   {
-    "GachaItemTID": 6005,
-    "GachaId": 6,
+    "GachaItemTID": 9005,
+    "GachaId": 9,
     "ItemTID": 50001,
-    "Count": 5,
-    "Weight": 80,
-    "Description": "자원 질긴 고기 x5"
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 질긴 고기 x27"
   },
   {
-    "GachaItemTID": 6006,
-    "GachaId": 6,
+    "GachaItemTID": 9006,
+    "GachaId": 9,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 20,
+    "Weight": 200,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
-    "GachaItemTID": 6009,
-    "GachaId": 6,
+    "GachaItemTID": 9007,
+    "GachaId": 9,
     "ItemTID": 100015,
     "Count": 1,
-    "Weight": 40,
-    "Description": "인챈트 큐브"
+    "Weight": 400,
+    "Description": "인챈트 큐브 x1"
   },
   {
-    "GachaItemTID": 7001,
-    "GachaId": 7,
+    "GachaItemTID": 10001,
+    "GachaId": 10,
     "ItemTID": 10002,
-    "Count": 3,
-    "Weight": 80,
-    "Description": "자원 잉어 x3"
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 잉어 x33"
   },
   {
-    "GachaItemTID": 7002,
-    "GachaId": 7,
+    "GachaItemTID": 10002,
+    "GachaId": 10,
     "ItemTID": 20002,
-    "Count": 3,
-    "Weight": 80,
-    "Description": "자원 감자 x3"
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 감자 x33"
   },
   {
-    "GachaItemTID": 7003,
-    "GachaId": 7,
+    "GachaItemTID": 10003,
+    "GachaId": 10,
     "ItemTID": 30002,
-    "Count": 3,
-    "Weight": 80,
-    "Description": "자원 소나무 목재 x3"
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 소나무 목재 x33"
   },
   {
-    "GachaItemTID": 7004,
-    "GachaId": 7,
+    "GachaItemTID": 10004,
+    "GachaId": 10,
     "ItemTID": 40002,
-    "Count": 3,
-    "Weight": 80,
-    "Description": "자원 구리 광석 x3"
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 구리 광석 x33"
   },
   {
-    "GachaItemTID": 7005,
-    "GachaId": 7,
+    "GachaItemTID": 10005,
+    "GachaId": 10,
     "ItemTID": 50002,
-    "Count": 3,
-    "Weight": 80,
-    "Description": "자원 토끼 가죽 x3"
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 토끼 가죽 x33"
   },
   {
-    "GachaItemTID": 7006,
-    "GachaId": 7,
+    "GachaItemTID": 10006,
+    "GachaId": 10,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 20,
+    "Weight": 200,
     "Description": "상자 전용 은빛 나침반"
   },
   {
-    "GachaItemTID": 7008,
-    "GachaId": 7,
+    "GachaItemTID": 10007,
+    "GachaId": 10,
     "ItemTID": 100015,
     "Count": 1,
-    "Weight": 40,
-    "Description": "인챈트 큐브"
+    "Weight": 400,
+    "Description": "인챈트 큐브 x1"
   },
   {
-    "GachaItemTID": 7010,
-    "GachaId": 7,
+    "GachaItemTID": 10008,
+    "GachaId": 10,
     "ItemTID": 100018,
     "Count": 1,
-    "Weight": 20,
-    "Description": "상급 인챈트 큐브"
+    "Weight": 200,
+    "Description": "상급 인챈트 큐브 x1"
   },
   {
-    "GachaItemTID": 8001,
-    "GachaId": 8,
+    "GachaItemTID": 11001,
+    "GachaId": 11,
     "ItemTID": 10003,
-    "Count": 2,
-    "Weight": 80,
-    "Description": "자원 월척 붕어 x2"
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 월척 붕어 x45"
   },
   {
-    "GachaItemTID": 8002,
-    "GachaId": 8,
+    "GachaItemTID": 11002,
+    "GachaId": 11,
     "ItemTID": 20003,
-    "Count": 2,
-    "Weight": 80,
-    "Description": "자원 옥수수 x2"
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 옥수수 x45"
   },
   {
-    "GachaItemTID": 8003,
-    "GachaId": 8,
+    "GachaItemTID": 11003,
+    "GachaId": 11,
     "ItemTID": 30003,
-    "Count": 2,
-    "Weight": 80,
-    "Description": "자원 참나무 목재 x2"
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 참나무 목재 x45"
   },
   {
-    "GachaItemTID": 8004,
-    "GachaId": 8,
+    "GachaItemTID": 11004,
+    "GachaId": 11,
     "ItemTID": 40003,
-    "Count": 2,
-    "Weight": 80,
-    "Description": "자원 은광석 x2"
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 은광석 x45"
   },
   {
-    "GachaItemTID": 8005,
-    "GachaId": 8,
+    "GachaItemTID": 11005,
+    "GachaId": 11,
     "ItemTID": 50003,
-    "Count": 2,
-    "Weight": 80,
-    "Description": "자원 늑대 가죽 x2"
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 늑대 가죽 x45"
   },
   {
-    "GachaItemTID": 8006,
-    "GachaId": 8,
+    "GachaItemTID": 11006,
+    "GachaId": 11,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 20,
+    "Weight": 200,
     "Description": "상자 전용 황금 열쇠"
   },
   {
-    "GachaItemTID": 8007,
-    "GachaId": 8,
+    "GachaItemTID": 11007,
+    "GachaId": 11,
     "ItemTID": 100015,
     "Count": 1,
-    "Weight": 80,
-    "Description": "인챈트 큐브"
+    "Weight": 800,
+    "Description": "인챈트 큐브 x1"
   },
   {
-    "GachaItemTID": 8010,
-    "GachaId": 8,
+    "GachaItemTID": 11008,
+    "GachaId": 11,
     "ItemTID": 100018,
     "Count": 1,
-    "Weight": 40,
-    "Description": "상급 인챈트 큐브"
+    "Weight": 400,
+    "Description": "상급 인챈트 큐브 x1"
+  },
+  {
+    "GachaItemTID": 12001,
+    "GachaId": 12,
+    "ItemTID": 10011,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 피라미 x27"
+  },
+  {
+    "GachaItemTID": 12002,
+    "GachaId": 12,
+    "ItemTID": 20011,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 보리 x27"
+  },
+  {
+    "GachaItemTID": 12003,
+    "GachaId": 12,
+    "ItemTID": 30011,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 잔가지 x27"
+  },
+  {
+    "GachaItemTID": 12004,
+    "GachaId": 12,
+    "ItemTID": 40011,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 석회암 x27"
+  },
+  {
+    "GachaItemTID": 12005,
+    "GachaId": 12,
+    "ItemTID": 50011,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 여우 가죽 x27"
+  },
+  {
+    "GachaItemTID": 12006,
+    "GachaId": 12,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 낡은 보물 지도"
+  },
+  {
+    "GachaItemTID": 12007,
+    "GachaId": 12,
+    "ItemTID": 100015,
+    "Count": 2,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x2"
+  },
+  {
+    "GachaItemTID": 13001,
+    "GachaId": 13,
+    "ItemTID": 10012,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 메기 x33"
+  },
+  {
+    "GachaItemTID": 13002,
+    "GachaId": 13,
+    "ItemTID": 20012,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 고구마 x33"
+  },
+  {
+    "GachaItemTID": 13003,
+    "GachaId": 13,
+    "ItemTID": 30012,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 삼나무 목재 x33"
+  },
+  {
+    "GachaItemTID": 13004,
+    "GachaId": 13,
+    "ItemTID": 40012,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 주석 광석 x33"
+  },
+  {
+    "GachaItemTID": 13005,
+    "GachaId": 13,
+    "ItemTID": 50012,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 멧돼지 엄니 x33"
+  },
+  {
+    "GachaItemTID": 13006,
+    "GachaId": 13,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 은빛 나침반"
+  },
+  {
+    "GachaItemTID": 13007,
+    "GachaId": 13,
+    "ItemTID": 100015,
+    "Count": 2,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x2"
+  },
+  {
+    "GachaItemTID": 13008,
+    "GachaId": 13,
+    "ItemTID": 100018,
+    "Count": 2,
+    "Weight": 200,
+    "Description": "상급 인챈트 큐브 x2"
+  },
+  {
+    "GachaItemTID": 14001,
+    "GachaId": 14,
+    "ItemTID": 10013,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 가물치 x45"
+  },
+  {
+    "GachaItemTID": 14002,
+    "GachaId": 14,
+    "ItemTID": 20013,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 호박 x45"
+  },
+  {
+    "GachaItemTID": 14003,
+    "GachaId": 14,
+    "ItemTID": 30013,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 편백나무 목재 x45"
+  },
+  {
+    "GachaItemTID": 14004,
+    "GachaId": 14,
+    "ItemTID": 40013,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 철광석 x45"
+  },
+  {
+    "GachaItemTID": 14005,
+    "GachaId": 14,
+    "ItemTID": 50013,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 사슴뿔 x45"
+  },
+  {
+    "GachaItemTID": 14006,
+    "GachaId": 14,
+    "ItemTID": 100012,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 황금 열쇠"
+  },
+  {
+    "GachaItemTID": 14007,
+    "GachaId": 14,
+    "ItemTID": 100015,
+    "Count": 2,
+    "Weight": 800,
+    "Description": "인챈트 큐브 x2"
+  },
+  {
+    "GachaItemTID": 14008,
+    "GachaId": 14,
+    "ItemTID": 100018,
+    "Count": 2,
+    "Weight": 400,
+    "Description": "상급 인챈트 큐브 x2"
+  },
+  {
+    "GachaItemTID": 15001,
+    "GachaId": 15,
+    "ItemTID": 10021,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 모래무지 x27"
+  },
+  {
+    "GachaItemTID": 15002,
+    "GachaId": 15,
+    "ItemTID": 20021,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 벼 x27"
+  },
+  {
+    "GachaItemTID": 15003,
+    "GachaId": 15,
+    "ItemTID": 30021,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 도토리 가지 x27"
+  },
+  {
+    "GachaItemTID": 15004,
+    "GachaId": 15,
+    "ItemTID": 40021,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 현무암 x27"
+  },
+  {
+    "GachaItemTID": 15005,
+    "GachaId": 15,
+    "ItemTID": 50021,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 표범 가죽 x27"
+  },
+  {
+    "GachaItemTID": 15006,
+    "GachaId": 15,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 낡은 보물 지도"
+  },
+  {
+    "GachaItemTID": 15007,
+    "GachaId": 15,
+    "ItemTID": 100015,
+    "Count": 3,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x3"
+  },
+  {
+    "GachaItemTID": 16001,
+    "GachaId": 16,
+    "ItemTID": 10022,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 쏘가리 x33"
+  },
+  {
+    "GachaItemTID": 16002,
+    "GachaId": 16,
+    "ItemTID": 20022,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 콩 x33"
+  },
+  {
+    "GachaItemTID": 16003,
+    "GachaId": 16,
+    "ItemTID": 30022,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 너도밤나무 목재 x33"
+  },
+  {
+    "GachaItemTID": 16004,
+    "GachaId": 16,
+    "ItemTID": 40022,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 아연 광석 x33"
+  },
+  {
+    "GachaItemTID": 16005,
+    "GachaId": 16,
+    "ItemTID": 50022,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 큰뿔 사슴뿔 x33"
+  },
+  {
+    "GachaItemTID": 16006,
+    "GachaId": 16,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 은빛 나침반"
+  },
+  {
+    "GachaItemTID": 16007,
+    "GachaId": 16,
+    "ItemTID": 100015,
+    "Count": 3,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x3"
+  },
+  {
+    "GachaItemTID": 16008,
+    "GachaId": 16,
+    "ItemTID": 100018,
+    "Count": 3,
+    "Weight": 200,
+    "Description": "상급 인챈트 큐브 x3"
+  },
+  {
+    "GachaItemTID": 17001,
+    "GachaId": 17,
+    "ItemTID": 10023,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 황금 잉어 x45"
+  },
+  {
+    "GachaItemTID": 17002,
+    "GachaId": 17,
+    "ItemTID": 20023,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 딸기 x45"
+  },
+  {
+    "GachaItemTID": 17003,
+    "GachaId": 17,
+    "ItemTID": 30023,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 단풍나무 목재 x45"
+  },
+  {
+    "GachaItemTID": 17004,
+    "GachaId": 17,
+    "ItemTID": 40023,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 미스릴 광석 x45"
+  },
+  {
+    "GachaItemTID": 17005,
+    "GachaId": 17,
+    "ItemTID": 50023,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 곰의 이빨 x45"
+  },
+  {
+    "GachaItemTID": 17006,
+    "GachaId": 17,
+    "ItemTID": 100012,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 황금 열쇠"
+  },
+  {
+    "GachaItemTID": 17007,
+    "GachaId": 17,
+    "ItemTID": 100015,
+    "Count": 3,
+    "Weight": 800,
+    "Description": "인챈트 큐브 x3"
+  },
+  {
+    "GachaItemTID": 17008,
+    "GachaId": 17,
+    "ItemTID": 100018,
+    "Count": 3,
+    "Weight": 400,
+    "Description": "상급 인챈트 큐브 x3"
+  },
+  {
+    "GachaItemTID": 18001,
+    "GachaId": 18,
+    "ItemTID": 10031,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 빙어 x27"
+  },
+  {
+    "GachaItemTID": 18002,
+    "GachaId": 18,
+    "ItemTID": 20031,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 목화 x27"
+  },
+  {
+    "GachaItemTID": 18003,
+    "GachaId": 18,
+    "ItemTID": 30031,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 그을린 통나무 x27"
+  },
+  {
+    "GachaItemTID": 18004,
+    "GachaId": 18,
+    "ItemTID": 40031,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 수정 파편 x27"
+  },
+  {
+    "GachaItemTID": 18005,
+    "GachaId": 18,
+    "ItemTID": 50031,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 설표 가죽 x27"
+  },
+  {
+    "GachaItemTID": 18006,
+    "GachaId": 18,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 낡은 보물 지도"
+  },
+  {
+    "GachaItemTID": 18007,
+    "GachaId": 18,
+    "ItemTID": 100015,
+    "Count": 4,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x4"
+  },
+  {
+    "GachaItemTID": 19001,
+    "GachaId": 19,
+    "ItemTID": 10032,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 송어 x33"
+  },
+  {
+    "GachaItemTID": 19002,
+    "GachaId": 19,
+    "ItemTID": 20032,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 사탕수수 x33"
+  },
+  {
+    "GachaItemTID": 19003,
+    "GachaId": 19,
+    "ItemTID": 30032,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 흑참나무 목재 x33"
+  },
+  {
+    "GachaItemTID": 19004,
+    "GachaId": 19,
+    "ItemTID": 40032,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 코발트 광석 x33"
+  },
+  {
+    "GachaItemTID": 19005,
+    "GachaId": 19,
+    "ItemTID": 50032,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 얼음늑대 송곳니 x33"
+  },
+  {
+    "GachaItemTID": 19006,
+    "GachaId": 19,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 은빛 나침반"
+  },
+  {
+    "GachaItemTID": 19007,
+    "GachaId": 19,
+    "ItemTID": 100015,
+    "Count": 4,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x4"
+  },
+  {
+    "GachaItemTID": 19008,
+    "GachaId": 19,
+    "ItemTID": 100018,
+    "Count": 4,
+    "Weight": 200,
+    "Description": "상급 인챈트 큐브 x4"
+  },
+  {
+    "GachaItemTID": 20001,
+    "GachaId": 20,
+    "ItemTID": 10033,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 무지개 송어 x45"
+  },
+  {
+    "GachaItemTID": 20002,
+    "GachaId": 20,
+    "ItemTID": 20033,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 커피 열매 x45"
+  },
+  {
+    "GachaItemTID": 20003,
+    "GachaId": 20,
+    "ItemTID": 30033,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 자단 목재 x45"
+  },
+  {
+    "GachaItemTID": 20004,
+    "GachaId": 20,
+    "ItemTID": 40033,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 오리하르콘 광석 x45"
+  },
+  {
+    "GachaItemTID": 20005,
+    "GachaId": 20,
+    "ItemTID": 50033,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 서리곰 모피 x45"
+  },
+  {
+    "GachaItemTID": 20006,
+    "GachaId": 20,
+    "ItemTID": 100012,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 황금 열쇠"
+  },
+  {
+    "GachaItemTID": 20007,
+    "GachaId": 20,
+    "ItemTID": 100015,
+    "Count": 4,
+    "Weight": 800,
+    "Description": "인챈트 큐브 x4"
+  },
+  {
+    "GachaItemTID": 20008,
+    "GachaId": 20,
+    "ItemTID": 100018,
+    "Count": 4,
+    "Weight": 400,
+    "Description": "상급 인챈트 큐브 x4"
+  },
+  {
+    "GachaItemTID": 21001,
+    "GachaId": 21,
+    "ItemTID": 10041,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 심해 새우 x27"
+  },
+  {
+    "GachaItemTID": 21002,
+    "GachaId": 21,
+    "ItemTID": 20041,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 정화된 흙 x27"
+  },
+  {
+    "GachaItemTID": 21003,
+    "GachaId": 21,
+    "ItemTID": 30041,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 세계수 껍질 x27"
+  },
+  {
+    "GachaItemTID": 21004,
+    "GachaId": 21,
+    "ItemTID": 40041,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 심연의 파편 x27"
+  },
+  {
+    "GachaItemTID": 21005,
+    "GachaId": 21,
+    "ItemTID": 50041,
+    "Count": 27,
+    "Weight": 800,
+    "Description": "자원 마수의 가죽 x27"
+  },
+  {
+    "GachaItemTID": 21006,
+    "GachaId": 21,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 낡은 보물 지도"
+  },
+  {
+    "GachaItemTID": 21007,
+    "GachaId": 21,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x5"
+  },
+  {
+    "GachaItemTID": 22001,
+    "GachaId": 22,
+    "ItemTID": 10042,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 아귀 x33"
+  },
+  {
+    "GachaItemTID": 22002,
+    "GachaId": 22,
+    "ItemTID": 20042,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 성스러운 이삭 x33"
+  },
+  {
+    "GachaItemTID": 22003,
+    "GachaId": 22,
+    "ItemTID": 30042,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 빛나는 수액 x33"
+  },
+  {
+    "GachaItemTID": 22004,
+    "GachaId": 22,
+    "ItemTID": 40042,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 암흑 광석 x33"
+  },
+  {
+    "GachaItemTID": 22005,
+    "GachaId": 22,
+    "ItemTID": 50042,
+    "Count": 33,
+    "Weight": 800,
+    "Description": "자원 마물의 뿔 x33"
+  },
+  {
+    "GachaItemTID": 22006,
+    "GachaId": 22,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 은빛 나침반"
+  },
+  {
+    "GachaItemTID": 22007,
+    "GachaId": 22,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 400,
+    "Description": "인챈트 큐브 x5"
+  },
+  {
+    "GachaItemTID": 22008,
+    "GachaId": 22,
+    "ItemTID": 100018,
+    "Count": 5,
+    "Weight": 200,
+    "Description": "상급 인챈트 큐브 x5"
+  },
+  {
+    "GachaItemTID": 23001,
+    "GachaId": 23,
+    "ItemTID": 10043,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 심해 등불고기 x45"
+  },
+  {
+    "GachaItemTID": 23002,
+    "GachaId": 23,
+    "ItemTID": 20043,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 영약초 x45"
+  },
+  {
+    "GachaItemTID": 23003,
+    "GachaId": 23,
+    "ItemTID": 30043,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 신목 목재 x45"
+  },
+  {
+    "GachaItemTID": 23004,
+    "GachaId": 23,
+    "ItemTID": 40043,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 아다만트 광석 x45"
+  },
+  {
+    "GachaItemTID": 23005,
+    "GachaId": 23,
+    "ItemTID": 50043,
+    "Count": 45,
+    "Weight": 800,
+    "Description": "자원 흉수의 송곳니 x45"
+  },
+  {
+    "GachaItemTID": 23006,
+    "GachaId": 23,
+    "ItemTID": 100012,
+    "Count": 1,
+    "Weight": 200,
+    "Description": "상자 전용 황금 열쇠"
+  },
+  {
+    "GachaItemTID": 23007,
+    "GachaId": 23,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 800,
+    "Description": "인챈트 큐브 x5"
+  },
+  {
+    "GachaItemTID": 23008,
+    "GachaId": 23,
+    "ItemTID": 100018,
+    "Count": 5,
+    "Weight": 400,
+    "Description": "상급 인챈트 큐브 x5"
   }
 ]
