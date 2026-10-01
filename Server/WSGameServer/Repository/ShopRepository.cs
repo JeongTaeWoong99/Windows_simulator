@@ -32,16 +32,20 @@ public sealed class SellItemsRepository : IRepository
                 if (change.Count == 0)
                 {
                     await tx.ExecuteAsync(
-                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND item_id = @itemId",
-                        new { userId = User.Uid, itemId = change.ItemId });
+                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
+                        new { userId = User.Uid, container = (int)change.Container, itemId = change.ItemId });
                     continue;
                 }
 
                 await tx.ExecuteAsync(
-                    @"INSERT INTO t_user_inventory (user_id, item_id, count)
-                      VALUES (@userId, @itemId, @count)
-                      ON CONFLICT (user_id, item_id) DO UPDATE SET count = excluded.count;",
-                    new { userId = User.Uid, itemId = change.ItemId, count = change.Count });
+                    @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
+                      VALUES (@userId, @container, @itemId, @count, @slot)
+                      ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+                    new
+                    {
+                        userId = User.Uid, container = (int)change.Container, itemId = change.ItemId,
+                        count  = change.Count, slot = change.Slot,
+                    });
             }
 
             // 델타가 아니라 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 된다.

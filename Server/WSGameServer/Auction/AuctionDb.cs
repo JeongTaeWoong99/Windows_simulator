@@ -431,15 +431,15 @@ public static class AuctionDb
             if (change.Count == 0)
             {
                 await tx.ExecuteAsync(
-                    "DELETE FROM t_user_inventory WHERE user_id = @userId AND item_id = @itemId",
-                    new { userId, itemId = change.ItemId });
+                    "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
+                    new { userId, container = (int)change.Container, itemId = change.ItemId });
                 continue;
             }
 
             await tx.ExecuteAsync(
-                @"INSERT INTO t_user_inventory (user_id, item_id, count) VALUES (@userId, @itemId, @count)
-                  ON CONFLICT (user_id, item_id) DO UPDATE SET count = excluded.count;",
-                new { userId, itemId = change.ItemId, count = change.Count });
+                @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES (@userId, @container, @itemId, @count, @slot)
+                  ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+                new { userId, container = (int)change.Container, itemId = change.ItemId, count = change.Count, slot = change.Slot });
         }
     }
 
