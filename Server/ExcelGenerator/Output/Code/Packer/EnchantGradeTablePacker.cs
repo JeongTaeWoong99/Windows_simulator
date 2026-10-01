@@ -15,8 +15,9 @@ namespace GameData
         public static EnchantGradeTableRow Parse(string[] cells) => new()
         {
             Grade       = PackerUtil.ParseEnum<GlobalRarity>(cells[0], Table, "Grade"),
-            UpPermille  = PackerUtil.ParseInt(cells[1], Table, "UpPermille", 0, 1000),
-            Description = cells[2].Length > 0 ? PackerUtil.RequireString(cells[2], Table, "Description") : "",
+            SlotCount   = PackerUtil.ParseInt(cells[1], Table, "SlotCount", 0, 3),
+            UpPermyriad = PackerUtil.ParseInt(cells[2], Table, "UpPermyriad", 0, 10000),
+            Description = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

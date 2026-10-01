@@ -215,19 +215,7 @@ public partial class User
     /// <summary>창고 장비 탭의 첫 빈 칸(0부터). 지급 대기 중인 칸도 찬 것으로 본다.</summary>
     public int NextFreeEquipPosition()
     {
-        var used = new HashSet<int>(_pendingEquipPositions);
-        foreach (var equip in _equips.Values)
-        {
-            used.Add(equip.SlotPosition);
-        }
-
-        var position = 0;
-        while (used.Contains(position))
-        {
-            position++;
-        }
-
-        return position;
+        return StorageSlots.FirstFree(_equips.Values.Select(e => e.SlotPosition).Concat(_pendingEquipPositions));
     }
 
     /// <summary>장비 개체 1개를 지급한다(치트·앞으로의 획득 경로가 같은 길을 쓴다). 개체 PK는 <see cref="OnEquipGranted"/>로 돌아온다.</summary>
@@ -264,7 +252,7 @@ public partial class User
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
     }
 
-    // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID는 그 줄만 버린다 —
+    // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID·칸 수 밖의 칸은 버린다 —
     // 데이터 한 줄 때문에 로그인·수령이 막히면 안 된다.
     private Equip? BuildEquip(long equipId, int equipTid, int slotPosition, int enchantGrade, IEnumerable<int> optionTids)
     {
@@ -289,12 +277,18 @@ public partial class User
             return equip;
         }
 
-        var options = new List<EnchantOptionTableRow>();
+        var slotCount = _enchantCatalog.SlotCountOf(row.GlobalRarity);
+        var options   = new List<EnchantOptionTableRow>();
         foreach (var tid in optionTids)
         {
             if (tid == 0)
             {
                 continue;
+            }
+            if (options.Count >= slotCount)
+            {
+                ServerLog.Warn("장비", $"칸 수({slotCount})를 넘는 능력치, 버림: {tid} (개체 {equipId})");
+                break;
             }
             if (!_enchantCatalog.TryGetOption(tid, out var option))
             {

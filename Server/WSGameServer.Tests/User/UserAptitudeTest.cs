@@ -71,10 +71,10 @@ public class UserAptitudeTest
 
         user.RaiseAptitude(CharacterId, IndustryType.Fishing, Base);
 
-        // 적성 2 = 1250천분율(WorkSpeedTable) × 전역 배수 6.0 = 7500. 적성 1이면 6000이다.
+        // 적성 2 = 1250천분율(WorkSpeedTable) × 전역 배수 1.0 = 1250. 적성 1이면 1000이다.
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
-        slot.CurrentWorkSpeed.ShouldBe(7500);
-        b.Channel.SentOf<S_WorkStationSlotSyncResponse>().ShouldHaveSingleItem().Slot!.CurrentWorkSpeed.ShouldBe(7500);
+        slot.CurrentWorkSpeed.ShouldBe(1250);
+        b.Channel.SentOf<S_WorkStationSlotSyncResponse>().ShouldHaveSingleItem().Slot!.CurrentWorkSpeed.ShouldBe(1250);
     }
 
     [Fact]

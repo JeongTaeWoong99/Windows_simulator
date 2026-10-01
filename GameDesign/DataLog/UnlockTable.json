@@ -2,15 +2,15 @@
   {
     "UnlockTID": 1002,
     "Name": "작업슬롯 2번",
-    "Gold": 500,
+    "Gold": 3000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [],
-    "Description": "작업슬롯 2번 · 골드는 테스트값 · 계정 레벨은 곡선 확정 뒤 채운다"
+    "Description": "작업슬롯 2번 · 골드 단독 해금(계정 레벨 조건 없음)"
   },
   {
     "UnlockTID": 1003,
     "Name": "작업슬롯 3번",
-    "Gold": 1500,
+    "Gold": 30000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
       1002
@@ -20,7 +20,7 @@
   {
     "UnlockTID": 1004,
     "Name": "작업슬롯 4번",
-    "Gold": 4000,
+    "Gold": 300000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
       1003
@@ -30,7 +30,7 @@
   {
     "UnlockTID": 1005,
     "Name": "작업슬롯 5번",
-    "Gold": 10000,
+    "Gold": 1000000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
       1004
@@ -40,7 +40,7 @@
   {
     "UnlockTID": 1006,
     "Name": "작업슬롯 6번",
-    "Gold": 25000,
+    "Gold": 5000000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
       1005
@@ -50,7 +50,7 @@
   {
     "UnlockTID": 1007,
     "Name": "작업슬롯 7번",
-    "Gold": 60000,
+    "Gold": 10000000,
     "AccountLevel": 0,
     "RequiredUnlockTIDs": [
       1006

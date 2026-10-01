@@ -91,6 +91,11 @@ namespace MikaProtocol
         S_MarketPriceResponse = 60,
         C_MarketBuyRequest = 61,
         S_MarketBuyResponse = 62,
+        C_EntitySellRequest = 63,
+        S_EntitySellResponse = 64,
+        C_StorageSortRequest = 65,
+        C_StorageMoveSlotRequest = 66,
+        S_StorageSlotsResponse = 67,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -409,20 +414,19 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 인챈트 요청. <b>무엇을 하는지는 아이템이 정한다</b>(EnchantItemTable의 Action) — 클라가 동작을 고르지 않는다.
+    /// 큐브 사용. 인챈트가 없으면 일반으로 시작하고, 있으면 큐브 확률로 한 단계 오른다. 어느 쪽이든 칸 전부를 다시 뽑는다.
     /// 착용 중인 장비는 거절된다(EnchantEquipped): 벗기는 것이 선행 조건이다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.C_EquipEnchantRequest)]
     public partial class C_EquipEnchantRequest : IPacket
     {
         public long EquipId { get; set; }  // 개체 PK
-        public int  ItemTid { get; set; }  // 인챈트 아이템 (EnchantItemTable.ItemTID)
+        public int  ItemTid { get; set; }  // 큐브 (EnchantItemTable.ItemTID)
     }
 
     /// <summary>
     /// 인챈트 결과. <b>Result != Ok(거절)이면 Result·EquipId만 유효하다</b> — 나머지는 기본값이니 그리지 않는다.
-    /// Result == Ok면 Success는 아이템의 성공 판정이고, Options는 동작 후 장비의 줄이다:
-    /// GradeUp은 실패해도 줄을 재롤하고, Grant·ExpandLine이 실패하면 이전 줄 그대로다.
+    /// Result == Ok면 Success는 등급이 한 단계 올랐는가(첫 부여는 false), Options는 다시 뽑힌 칸 전부다.
     /// 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_EquipEnchantResponse)]
@@ -481,6 +485,28 @@ namespace MikaProtocol
         public EResultCode Result { get; set; }
         public long GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 갱신 후 누적 총량. 0개는 Kind=Remove
+    }
+
+    /// <summary>
+    /// 캐릭터·장비 개체 즉시 판매. 아이템(TID·수량 축)과 달리 개체 PK 목록 축이다.
+    /// 판매가는 <c>CharacterTable</c>·<c>EquipTable</c>의 <c>BasePrice</c> × <c>SellRatePermille</c>.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_EntitySellRequest)]
+    public partial class C_EntitySellRequest : IPacket
+    {
+        public List<long>? CharacterIds { get; set; }
+        public List<long>? EquipIds     { get; set; }
+    }
+
+    /// <summary>
+    /// 개체 판매 결과. <b>전부 성공하거나 전부 실패한다.</b> Ok면 요청한 개체가 모두 사라진 것이니 클라가 목록에서 지운다.
+    /// 갱신된 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 내려간다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_EntitySellResponse)]
+    public partial class S_EntitySellResponse : IPacket
+    {
+        public EResultCode Result     { get; set; }
+        public long        GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
     }
 
     /// <summary>우편함 전체 스냅샷(로그인 직후). 받은 우편은 7일 동안 함께 실린다.</summary>
@@ -572,10 +598,11 @@ namespace MikaProtocol
         public int          Count     { get; set; }
         public long         EquipId   { get; set; }
         public long         UnitPrice { get; set; }
+        public long         CharacterId { get; set; }  // Kind = Character일 때. 수량은 1
     }
 
     /// <summary>
-    /// 등록 결과. 아이템은 이미 창고에서 빠졌다 — 자원은 <c>ItemChangeInfos</c>, 장비는 <c>EquipId</c>를 창고에서 지운다.
+    /// 등록 결과. 아이템은 이미 창고에서 빠졌다 — 자원은 <c>ItemChangeInfos</c>, 장비는 <c>EquipId</c>, 캐릭터는 <c>CharacterId</c>를 창고에서 지운다.
     /// 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_AuctionRegisterResponse)]
@@ -586,6 +613,7 @@ namespace MikaProtocol
         public long                  ListingFee      { get; set; }
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
         public long                  EquipId         { get; set; }
+        public long                  CharacterId     { get; set; }
     }
 
     /// <summary>즉시구매. 매물은 통째로만 산다. <c>ExpectedTotalPrice</c>가 지금 가격과 다르면 거절된다(AuctionPriceChanged).</summary>
@@ -684,5 +712,35 @@ namespace MikaProtocol
         public int         Tid        { get; set; }
         public int         Count      { get; set; }
         public long        TotalPrice { get; set; }  // 실제로 낸 금액
+    }
+
+    // 서버가 격자 전체를 0부터 다시 매기고 S_StorageSlotsResponse로 전부 돌려준다.
+    [MemoryPackable, Packet(PacketId.C_StorageSortRequest)]
+    public partial class C_StorageSortRequest : IPacket
+    {
+        public EContainer        Container { get; set; }
+        public EStorageTab       Tab       { get; set; }
+        public EStorageSortKey   SortKey   { get; set; }
+        public EStorageSortOrder Order     { get; set; }
+    }
+
+    // 목적지가 비었으면 옮기고 차 있으면 교환한다. 칸은 응답이 온 뒤에 바꾼다(낙관적 갱신 없음).
+    [MemoryPackable, Packet(PacketId.C_StorageMoveSlotRequest)]
+    public partial class C_StorageMoveSlotRequest : IPacket
+    {
+        public EContainer  Container { get; set; }
+        public EStorageTab Tab       { get; set; }
+        public int         FromSlot  { get; set; }
+        public int         ToSlot    { get; set; }
+    }
+
+    // 정렬이면 격자 전체, 자리 이동이면 바뀐 칸만 싣는다. 거절이면 Slots는 비어 있다.
+    [MemoryPackable, Packet(PacketId.S_StorageSlotsResponse)]
+    public partial class S_StorageSlotsResponse : IPacket
+    {
+        public EResultCode           Result    { get; set; }
+        public EContainer            Container { get; set; }
+        public EStorageTab           Tab       { get; set; }
+        public List<StorageSlotInfo> Slots     { get; set; } = new();
     }
 }

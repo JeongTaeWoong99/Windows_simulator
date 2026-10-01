@@ -51,7 +51,7 @@ public partial class User
             }
         }
 
-        Send(new S_MailListResponse { Mails = _mails.Values.Select(m => m.ToInfo()).ToList() });
+        Send(new S_MailListResponse { Mails = _mails.Values.Select(m => m.ToInfo(ToCharacterInfo)).ToList() });
     }
 
     /// <summary>
@@ -66,7 +66,7 @@ public partial class User
             return 0;
         }
 
-        Send(new S_MailArrivedResponse { Mails = arrived.Select(m => m.ToInfo()).ToList() });
+        Send(new S_MailArrivedResponse { Mails = arrived.Select(m => m.ToInfo(ToCharacterInfo)).ToList() });
         return arrived.Count;
     }
 
@@ -152,7 +152,7 @@ public partial class User
     private EResultCode TryGrantMail(Mail mail, DateTime now, List<long> claimed, List<ItemChangeInfo> changes)
     {
         var a = mail.Attachment;
-        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count, a.EquipTids.Count + a.Equips.Count))
+        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count))
         {
             return EResultCode.StorageFull;
         }
@@ -183,6 +183,11 @@ public partial class User
         foreach (var equip in a.Equips)
         {
             UnlockMailEquip(equip);
+        }
+
+        foreach (var character in a.Characters)
+        {
+            UnlockMailCharacter(character);
         }
 
         ServerLog.Info("우편", $"수령 Uid={Uid} MailId={mail.Id} Template={mail.TemplateTid}");
@@ -236,11 +241,11 @@ public partial class User
                 return (EResultCode.InvalidCheatArgs, $"템플릿 {templateTid}은 PeriodDays가 0 — 전체 우편으로 보낼 수 없다");
             }
 
-            PostDBTask(new SendGlobalMailRepository(this, templateTid, now, now.AddDays(template.PeriodDays)));
+            PostDBTask(new SendGlobalMailRepository(this, _onlineUsers, templateTid, now, now.AddDays(template.PeriodDays)));
             return (EResultCode.Ok, $"전체 우편 {templateTid} 발송 · {template.PeriodDays}일");
         }
 
-        UserManager.Instance.TryGetUserByUid(recipientUid, out var recipient);
+        _onlineUsers.TryGetUserByUid(recipientUid, out var recipient);
         PostDBTask(new SendMailRepository(this, recipientUid, recipient, templateTid, MailCatalog.AttachmentOf(template), now));
         return (EResultCode.Ok, $"우편 {templateTid} → Uid {recipientUid}{(recipient is null ? " (오프라인 — 다음 로그인)" : "")}");
     }

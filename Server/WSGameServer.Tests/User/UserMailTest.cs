@@ -216,18 +216,31 @@ public class UserMailTest
     {
         // 실측(2026-09-22)에서 발견 — UserManager는 Uid가 아니라 내부 Key로 유저를 찾아서, 접속 중인데도 오프라인으로 떨어졌다.
         var (user, b) = UserWithMails();
-        UserManager.Instance.JoinUser(user);
+        b.Online.Add(user);
 
-        try
-        {
-            user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SendMail, Arg1 = OperationTemplate, Arg2 = user.Uid }, Now);
+        user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SendMail, Arg1 = OperationTemplate, Arg2 = user.Uid }, Now);
 
-            b.DB.PostedOf<SendMailRepository>().ShouldHaveSingleItem().Recipient.ShouldBeSameAs(user);
-        }
-        finally
-        {
-            UserManager.Instance.LeaveUser(user);
-        }
+        b.DB.PostedOf<SendMailRepository>().ShouldHaveSingleItem().Recipient.ShouldBeSameAs(user);
+    }
+
+    [Fact]
+    public void 전체_우편은_보낸_순간의_접속자_모두에게_전달된다()
+    {
+        // 발송자 자신과 다른 접속자 모두 전체 우편 복사를 요청한다 — 오프라인 유저는 다음 로그인에 받는다.
+        var (sender, b) = UserWithMails();
+        var ob    = new TestUserBuilder();
+        var other = ob.Build(uid: 8);
+        sender.Login(Now);
+        other.Login(Now);
+        b.Online.Add(sender);
+        b.Online.Add(other);
+        b.DB.Posted.Clear();
+        ob.DB.Posted.Clear();
+
+        new SendGlobalMailRepository(sender, b.Online, OperationTemplate, Now, Now.AddDays(7)).Apply();
+
+        b.DB.PostedOf<DeliverGlobalMailRepository>().Count.ShouldBe(1);
+        ob.DB.PostedOf<DeliverGlobalMailRepository>().Count.ShouldBe(1);
     }
 
     [Fact]

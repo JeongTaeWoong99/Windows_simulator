@@ -1,17 +1,38 @@
 [
   {
+    "Grade": "Common",
+    "SlotCount": 1,
+    "UpPermyriad": 1600,
+    "Description": "일반 장비 1칸 · 큐브 A → 고급 16%"
+  },
+  {
+    "Grade": "Uncommon",
+    "SlotCount": 1,
+    "UpPermyriad": 800,
+    "Description": "고급 장비 1칸 · 큐브 A → 희귀 8%"
+  },
+  {
     "Grade": "Rare",
-    "UpPermille": 50,
-    "Description": "→ Epic 5%"
+    "SlotCount": 2,
+    "UpPermyriad": 400,
+    "Description": "희귀 장비 2칸 · 큐브 A → 영웅 4%"
   },
   {
     "Grade": "Epic",
-    "UpPermille": 5,
-    "Description": "→ Legendary 0.5%"
+    "SlotCount": 2,
+    "UpPermyriad": 40,
+    "Description": "영웅 장비 2칸 · 큐브 A → 전설 0.4%"
   },
   {
     "Grade": "Legendary",
-    "UpPermille": 0,
-    "Description": "최고 등급 — 재롤만"
+    "SlotCount": 3,
+    "UpPermyriad": 4,
+    "Description": "전설 장비 3칸 · 큐브 A → 신화 0.04%"
+  },
+  {
+    "Grade": "Mythic",
+    "SlotCount": 3,
+    "UpPermyriad": 0,
+    "Description": "신화 장비 3칸 · 큐브 A 최고 등급 — 옵션만 다시 뽑는다"
   }
 ]

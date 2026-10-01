@@ -206,11 +206,43 @@ public static class ClientPacketHandler
         user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
     }
 
-    /// <summary>인챈트. 보유·착용·동작 검증은 User가 맡는다.</summary>
+    /// <summary>인벤토리 칸 자리 이동.</summary>
+    [PacketHandler]
+    public static void Handle_C_StorageMoveSlotRequest(ISession session, C_StorageMoveSlotRequest req)
+    {
+        ServerLog.Debug("인벤토리", $"자리 이동 {req.Container}/{req.Tab} {req.FromSlot}→{req.ToSlot} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = req.Tab });
+            return;
+        }
+
+        user.MoveStorageSlot(req.Container, req.Tab, req.FromSlot, req.ToSlot);
+    }
+
+    /// <summary>인벤토리 탭 정렬. 서버가 순서를 계산해 격자 전체를 돌려준다.</summary>
+    [PacketHandler]
+    public static void Handle_C_StorageSortRequest(ISession session, C_StorageSortRequest req)
+    {
+        ServerLog.Debug("인벤토리", $"정렬 {req.Container}/{req.Tab} {req.SortKey} {req.Order} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = req.Tab });
+            return;
+        }
+
+        user.SortStorage(req.Container, req.Tab, req.SortKey, req.Order);
+    }
+
+    /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)
     {
-        ServerLog.Debug("인챈트", $"요청 장비={req.EquipId} 아이템={req.ItemTid} sid={session.SessionId}");
+        ServerLog.Debug("인챈트", $"요청 장비={req.EquipId} 큐브={req.ItemTid} sid={session.SessionId}");
 
         var user = session.GetUser();
         if (user == null)
@@ -238,6 +270,22 @@ public static class ClientPacketHandler
         }
 
         ShopService.Instance.Sell(user, req.Items);
+    }
+
+    /// <summary>캐릭터·장비 개체 판매. 보유·착용·배치 검증은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_EntitySellRequest(ISession session, C_EntitySellRequest req)
+    {
+        ServerLog.Debug("상점", $"개체 판매 요청 캐릭터={req.CharacterIds?.Count ?? 0} 장비={req.EquipIds?.Count ?? 0} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_EntitySellResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TrySellEntities(req.CharacterIds ?? new List<long>(), req.EquipIds ?? new List<long>());
     }
 
     /// <summary>우편 수령. MailId = 0이면 모두 받기. 창고 검사·지급은 User가 한다.</summary>
@@ -283,7 +331,7 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_AuctionRegisterRequest(ISession session, C_AuctionRegisterRequest req)
     {
-        ServerLog.Debug("경매", $"등록 요청 {req.Kind} TID {req.ItemTid}×{req.Count} 장비 {req.EquipId} 단가 {req.UnitPrice} sid={session.SessionId}");
+        ServerLog.Debug("경매", $"등록 요청 {req.Kind} TID {req.ItemTid}×{req.Count} 장비 {req.EquipId} 캐릭터 {req.CharacterId} 단가 {req.UnitPrice} sid={session.SessionId}");
 
         var user = session.GetUser();
         if (user == null)
@@ -292,7 +340,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryRegisterAuction(req.Kind, req.ItemTid, req.Count, req.EquipId, req.UnitPrice, DateTime.UtcNow);
+        user.TryRegisterAuction(req.Kind, req.ItemTid, req.Count, req.EquipId, req.UnitPrice, DateTime.UtcNow, req.CharacterId);
     }
 
     [PacketHandler]

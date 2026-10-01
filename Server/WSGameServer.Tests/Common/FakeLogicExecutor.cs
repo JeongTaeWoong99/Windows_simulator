@@ -14,9 +14,7 @@ namespace WSGameServer;
 /// <para>
 /// 모드가 둘이다 — 어느 쪽을 쓸지는 <b>검증 대상이 예약이냐 결과냐</b>로 갈린다.
 /// <list type="bullet">
-///   <item><b>기록 모드</b>(기본): 큐에 쌓기만 한다. "몇 번 예약됐는가"를 볼 때 쓴다.
-///   멱등 가드처럼 <b>작업이 실제로 돌면 전역 상태를 만지는</b> 경우에도 이쪽이다 —
-///   <c>User.OnDestroy</c>는 <c>UserManager.Instance</c>를 건드린다.</item>
+///   <item><b>기록 모드</b>(기본): 큐에 쌓기만 한다. "몇 번 예약됐는가"를 볼 때 쓴다.</item>
 ///   <item><b>즉시 실행 모드</b>: <c>Post</c>가 곧바로 실행한다. 흐름 전체를 볼 때 쓴다.</item>
 /// </list>
 /// </para>

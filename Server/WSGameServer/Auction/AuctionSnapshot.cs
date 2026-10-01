@@ -17,14 +17,30 @@ public sealed record AuctionItemSnapshot
     public long         EquipId      { get; init; }
     public int          EnchantGrade { get; init; }
     public List<int>    Options      { get; init; } = new();
+    public string       SellerName   { get; init; } = "";  // 등록 순간의 판매자 닉네임 — 경매장 매물 줄에 보인다
+    public MailCharacter? Character  { get; init; }        // 캐릭터 매물의 개체 — 레벨·경험치·찍은 적성
+
+    /// <summary>경매장에 맡기는 개체 상세(JSON). 경매장은 읽지 않고 검색 결과에 그대로 돌려준다.</summary>
+    public string Detail => Character is null ? "" : JsonSerializer.Serialize(Character);
 
     public string ToJson() => JsonSerializer.Serialize(this);
 
     public static AuctionItemSnapshot FromJson(string json) => JsonSerializer.Deserialize<AuctionItemSnapshot>(json)!;
 
-    /// <summary>이 물건을 우편으로 보낼 때의 첨부. 자원은 수량 그대로, 장비는 잠긴 개체 그대로다.</summary>
+    /// <summary>이 물건을 우편으로 보낼 때의 첨부. 자원은 수량 그대로, 장비·캐릭터는 잠긴 개체 그대로다.</summary>
     public MailAttachment ToAttachment(long gold)
     {
+        if (Kind == EAuctionKind.Character)
+        {
+            // 개체 없이 아래로 흘려보내면 캐릭터 TID가 자원으로 지급된다 — 원장이 깨진 것이니 멈춘다.
+            if (Character is null)
+            {
+                throw new InvalidOperationException($"캐릭터 매물 스냅샷에 개체가 없다: TID {Tid}");
+            }
+
+            return new MailAttachment(gold, new(), new(), new(), null, new List<MailCharacter> { Character });
+        }
+
         if (Kind == EAuctionKind.Equip)
         {
             return new MailAttachment(gold, new(), new(), new(), new List<MailEquip> { new(EquipId, Tid, EnchantGrade, Options.ToList()) });

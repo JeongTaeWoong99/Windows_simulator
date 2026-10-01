@@ -25,7 +25,7 @@ public class CharacterAptitudeRepositoryTest : IDisposable
 
         // 지급 → 개체 PK 발급 (GrantCharacterRepository의 INSERT)
         var owner = new TestUserBuilder().Build(uid);
-        var grant = new GrantCharacterRepository(owner, User.DefaultCharacterTid, CharacterGrantReason.Gacha);
+        var grant = new GrantCharacterRepository(owner, new[] { User.DefaultCharacterTid }, new[] { 0 }, CharacterGrantReason.Gacha);
         await grant.ExecuteAsync(new DbConnection(_db.Connection));
         grant.Apply();
         var characterId = owner.Characters.Single().Id;

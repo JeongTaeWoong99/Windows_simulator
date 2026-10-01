@@ -45,17 +45,22 @@ internal sealed class SqliteFixture : IDisposable
                 fishing_bonus INTEGER NOT NULL DEFAULT 0,
                 mining_bonus  INTEGER NOT NULL DEFAULT 0,
                 logging_bonus INTEGER NOT NULL DEFAULT 0,
-                hunting_bonus INTEGER NOT NULL DEFAULT 0
+                hunting_bonus INTEGER NOT NULL DEFAULT 0,
+                auction_trade_id INTEGER NOT NULL DEFAULT 0,
+                container     INTEGER NOT NULL DEFAULT 0,
+                slot          INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_user_currency (
                 user_id INTEGER PRIMARY KEY,
                 gold    INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_user_inventory (
-                user_id INTEGER NOT NULL,
-                item_id INTEGER NOT NULL,
-                count   INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY (user_id, item_id)
+                user_id   INTEGER NOT NULL,
+                container INTEGER NOT NULL DEFAULT 0,
+                item_id   INTEGER NOT NULL,
+                count     INTEGER NOT NULL DEFAULT 0,
+                slot      INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (user_id, container, item_id)
             ) STRICT;
             CREATE TABLE t_user_workstation_slot (
                 user_id        INTEGER NOT NULL,
@@ -95,6 +100,7 @@ internal sealed class SqliteFixture : IDisposable
                 enchant_2     INTEGER NOT NULL DEFAULT 0,
                 enchant_3     INTEGER NOT NULL DEFAULT 0,
                 created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
+                container     INTEGER NOT NULL DEFAULT 0,
                 auction_trade_id INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_character_equip (
@@ -119,7 +125,8 @@ internal sealed class SqliteFixture : IDisposable
                 equip_tids     TEXT    NOT NULL DEFAULT '[]',
                 received_at    TEXT    NOT NULL DEFAULT (datetime('now')),
                 claimed_at     TEXT,
-                equip_ids      TEXT    NOT NULL DEFAULT '[]'
+                equip_ids      TEXT    NOT NULL DEFAULT '[]',
+                character_ids  TEXT    NOT NULL DEFAULT '[]'
             ) STRICT;
             CREATE INDEX idx_user_mail_user ON t_user_mail (user_id);
             CREATE TABLE t_global_mail (
@@ -155,7 +162,8 @@ internal sealed class SqliteFixture : IDisposable
                 sale_fee    INTEGER NOT NULL DEFAULT 0,
                 created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
                 closed_at   TEXT,
-                listed_count INTEGER NOT NULL DEFAULT 0
+                listed_count INTEGER NOT NULL DEFAULT 0,
+                character_id INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_auction_outbox (
                 outbox_id  INTEGER PRIMARY KEY AUTOINCREMENT,

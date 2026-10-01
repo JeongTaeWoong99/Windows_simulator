@@ -17,14 +17,14 @@ internal static class MailDb
     public static Task<long> InsertMailAsync(DbConnection connection, long userId, int templateTid, MailAttachment a, DateTime now)
     {
         return connection.ExecuteScalarAsync<long>(
-            @"INSERT INTO t_user_mail (user_id, template_tid, gold, items, character_tids, equip_tids, equip_ids, received_at)
-              VALUES (@userId, @templateTid, @gold, @items, @characterTids, @equipTids, @equipIds, @receivedAt)
+            @"INSERT INTO t_user_mail (user_id, template_tid, gold, items, character_tids, equip_tids, equip_ids, character_ids, received_at)
+              VALUES (@userId, @templateTid, @gold, @items, @characterTids, @equipTids, @equipIds, @characterIds, @receivedAt)
               RETURNING mail_id;",
             new
             {
                 userId, templateTid, gold = a.Gold,
                 items = a.ItemsJson, characterTids = a.CharacterTidsJson, equipTids = a.EquipTidsJson,
-                equipIds = a.EquipIdsJson, receivedAt = ToDb(now),
+                equipIds = a.EquipIdsJson, characterIds = a.CharacterIdsJson, receivedAt = ToDb(now),
             });
     }
 
@@ -74,7 +74,7 @@ internal static class MailDb
         {
             mail_id = mailId, template_tid = templateTid, gold = a.Gold,
             items = a.ItemsJson, character_tids = a.CharacterTidsJson, equip_tids = a.EquipTidsJson,
-            equip_ids = a.EquipIdsJson, received_at = ToDb(receivedAt),
+            equip_ids = a.EquipIdsJson, character_ids = a.CharacterIdsJson, received_at = ToDb(receivedAt),
         };
     }
 }
@@ -100,7 +100,7 @@ public sealed class LoadMailboxRepository(User user, DateTime now) : IRepository
         await MailDb.DeliverGlobalMailsAsync(connection, User.Uid, now);
 
         _rows = await connection.QueryAsync<UserMailRow>(
-            @"SELECT mail_id, template_tid, gold, items, character_tids, equip_tids, equip_ids, received_at, claimed_at
+            @"SELECT mail_id, template_tid, gold, items, character_tids, equip_tids, equip_ids, character_ids, received_at, claimed_at
               FROM t_user_mail WHERE user_id = @userId ORDER BY mail_id;",
             new { userId = User.Uid });
     }
@@ -168,7 +168,7 @@ public sealed class StoreOverflowMailRepository(User user, MailAttachment attach
 }
 
 /// <summary>전체 우편 한 줄을 남기고, 끝나면 접속 중인 유저 전원에게 복사를 요청한다.</summary>
-public sealed class SendGlobalMailRepository(User owner, int templateTid, DateTime now, DateTime endsAt) : IRepository
+public sealed class SendGlobalMailRepository(User owner, IOnlineUsers online, int templateTid, DateTime now, DateTime endsAt) : IRepository
 {
     public long Key => User.DbKey;
 
@@ -185,7 +185,7 @@ public sealed class SendGlobalMailRepository(User owner, int templateTid, DateTi
 
     public void Apply()
     {
-        foreach (var user in UserManager.Instance.All)
+        foreach (var user in online.All)
         {
             user.DeliverGlobalMails(now);
         }

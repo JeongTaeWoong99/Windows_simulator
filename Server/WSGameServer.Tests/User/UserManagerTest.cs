@@ -15,7 +15,6 @@ public class UserManagerTest
 
     // 가드는 Entity 기반 클래스에 있었고, 그때는 스텁 하위 타입으로만 볼 수 있었다.
     // 실행기가 주입 가능해진 뒤로는 진짜 User에 대고 "몇 번 예약됐는가"를 직접 센다.
-    // 실행기는 기록 모드다 — OnDestroy를 실제로 돌리면 UserManager.Instance(전역)가 오염된다.
 
     [Fact]
     public void Destroy를_여러_번_불러도_정리는_한_번만_예약된다()

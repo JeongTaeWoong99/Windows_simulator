@@ -42,7 +42,7 @@ public class UserAuctionTest
         user.AddItem(Carp, 20);
         user.LoadCharacters(new[] { new CharacterRow { character_id = CharA, character_tid = 1001, level = 1, exp = 0 } });
         user.LoadEquips(
-            new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, slot_position = 0, enchant_grade = (int)GlobalRarity.Rare, enchant_1 = 101, enchant_2 = 102 } },
+            new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, slot_position = 0, enchant_grade = (int)GlobalRarity.Rare, enchant_1 = 1301, enchant_2 = 1307 } },
             Array.Empty<CharacterEquipRow>());
 
         b.Channel.Sent.Clear();
@@ -201,7 +201,18 @@ public class UserAuctionTest
 
         var item = b.DB.PostedOf<RegisterAuctionRepository>().Single().Item;
         (item.EquipId, item.Count, item.EnchantGrade, item.Category).ShouldBe((Sword, 1, (int)GlobalRarity.Rare, (int)EquipKind.Weapon));
-        item.Options.ShouldBe(new[] { 101, 102 });
+        item.Options.ShouldBe(new[] { 1301, 1307 });
+    }
+
+    [Fact]
+    public void 등록_스냅샷에_판매자_닉네임이_실린다()
+    {
+        // 경매장은 유저를 모른다 — 이름은 등록 순간에 실어 보내야만 검색 결과에 보인다.
+        var (user, b) = NewUser();
+
+        user.TryRegisterAuction(EAuctionKind.Equip, 0, 0, Sword, 70, Now);
+
+        b.DB.PostedOf<RegisterAuctionRepository>().Single().Item.SellerName.ShouldBe("테스터");
     }
 
     [Fact]
@@ -442,7 +453,7 @@ public class UserAuctionTest
     public void 검색_결과를_클라_형식으로_옮긴다()
     {
         var (user, b) = NewUser();
-        var view = new Proto.ListingView { ListingId = 3, Kind = 2, Tid = 1001, Count = 1, EnchantGrade = 3, UnitPrice = 70, TotalPrice = 70, State = Proto.ListingState.Listed };
+        var view = new Proto.ListingView { ListingId = 3, Kind = 2, Tid = 1001, Count = 1, EnchantGrade = 3, UnitPrice = 70, TotalPrice = 70, State = Proto.ListingState.Listed, SellerName = "판매자" };
         view.Options.AddRange(new[] { 101, 102 });
         var reply = new Proto.SearchReply { HasMore = true };
         reply.Listings.Add(view);
@@ -455,6 +466,7 @@ public class UserAuctionTest
         (response.Result, response.HasMore, listing.ListingId, listing.Kind, listing.TotalPrice, listing.State)
             .ShouldBe((EResultCode.Ok, true, 3L, EAuctionKind.Equip, 70L, EAuctionListingState.Listed));
         listing.EnchantOptions.ShouldBe(new[] { 101, 102 });
+        listing.SellerName.ShouldBe("판매자");
     }
 
     [Fact]
@@ -532,7 +544,7 @@ public class UserAuctionTest
     public void 잠긴_장비_우편을_받으면_잠금_해제를_요청한다()
     {
         var (user, b) = NewUser();
-        var attachment = new MailAttachment(0, new(), new(), new(), new List<MailEquip> { new(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 101 }) });
+        var attachment = new MailAttachment(0, new(), new(), new(), new List<MailEquip> { new(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 1301 }) });
         user.OnMailsArrived(new List<UserMailRow> { MailDb.ToRow(40, AuctionMail.PurchasedTemplateTid, attachment, Now) });
 
         user.TryClaimMail(40, Now);
@@ -545,11 +557,11 @@ public class UserAuctionTest
     {
         var (user, b) = NewUser();
 
-        user.OnMailEquipUnlocked(new MailEquip(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 101, 102 }), slotPosition: 4, unlocked: true);
+        user.OnMailEquipUnlocked(new MailEquip(77, SwordTid, (int)GlobalRarity.Rare, new List<int> { 1301, 1307 }), slotPosition: 4, unlocked: true);
 
         user.TryGetEquip(77, out var equip).ShouldBeTrue();
         (equip.SlotPosition, equip.EnchantGrade).ShouldBe((4, GlobalRarity.Rare));
-        equip.EnchantOptionTids.ShouldBe(new[] { 101, 102 });
+        equip.EnchantOptionTids.ShouldBe(new[] { 1301, 1307 });
     }
 
     [Fact]

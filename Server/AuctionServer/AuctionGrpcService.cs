@@ -146,7 +146,7 @@ public sealed class AuctionGrpcService(AuctionEngine engine) : Proto.Auction.Auc
     {
         return new Listing(
             s.ListingId, s.SellerId, (ListingKind)s.Kind, s.Tid, s.Category, s.Rarity, s.Count, s.EnchantGrade,
-            s.Options.ToArray(), s.UnitPrice, DateTimeOffset.FromUnixTimeMilliseconds(s.ExpiresAtUnixMs).UtcDateTime);
+            s.Options.ToArray(), s.UnitPrice, DateTimeOffset.FromUnixTimeMilliseconds(s.ExpiresAtUnixMs).UtcDateTime, s.SellerName, s.Detail);
     }
 
     private static Proto.ListingView ToView(Listing l, ListingState state)
@@ -164,6 +164,8 @@ public sealed class AuctionGrpcService(AuctionEngine engine) : Proto.Auction.Auc
             TotalPrice      = l.TotalPrice,
             ExpiresAtUnixMs = new DateTimeOffset(l.ExpiresAt).ToUnixTimeMilliseconds(),
             State           = (Proto.ListingState)state,
+            SellerName      = l.SellerName,
+            Detail          = l.Detail,
         };
         view.Options.AddRange(l.Options);
         return view;

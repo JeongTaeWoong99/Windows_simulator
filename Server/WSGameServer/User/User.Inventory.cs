@@ -6,9 +6,9 @@ namespace WSGameServer;
 public partial class User
 {
     /// <summary>DB에서 읽은 인벤토리 Row를 도메인(Item)으로 변환해 적재한다(로그인 시 1회).</summary>
-    private void LoadInventory(IReadOnlyList<InventoryRow> rows)
+    public void LoadInventory(IReadOnlyList<InventoryRow> rows)
     {
-        Inventory.Load(rows.Select(r => new Item(r.item_id, r.count)));
+        Inventory.Load(rows.Select(r => new Item(r.item_id, r.count, r.slot)));
     }
 
     // 현재 인벤토리 전체 스냅샷을 클라이언트로 전송한다.

@@ -42,7 +42,7 @@ namespace MikaDummyClient
             Console.WriteLine($"[Client] Recv Inventory: Count={res.Items?.Count}");
             foreach (var item in res.Items!)
             {
-                Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}");
+                Console.WriteLine($"  - ItemId={item.ItemId}, Count={item.Count}, Slot={item.Slot}");
             }
         }
 
@@ -154,7 +154,7 @@ namespace MikaDummyClient
             {
                 var aptitudes = string.Join(" ", character.Aptitudes.Select(a => $"{a.Industry}={a.Value}"));
                 Console.WriteLine($"  - Id={character.CharacterId}, Tid={character.CharacterTid}, " +
-                                  $"Lv={character.Level}, Exp={character.Exp}, 적성: {aptitudes}");
+                                  $"Lv={character.Level}, Exp={character.Exp}, Slot={character.Slot}, 적성: {aptitudes}");
             }
         }
 
@@ -221,7 +221,7 @@ namespace MikaDummyClient
                 string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}{EnchantText(e)}")));
         }
 
-        // 등급은 GlobalRarity 정수(0=없음). Options는 EnchantOptionTID — GradeUp은 실패해도 재롤돼 항상 갱신된 값이다.
+        // 등급은 GlobalRarity 정수(0=없음). Options는 다시 뽑힌 칸 전부의 EnchantOptionTID다.
         [PacketHandler]
         public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
         {
@@ -244,6 +244,12 @@ namespace MikaDummyClient
         }
 
         // 잔액은 이 패킷이 아니라 뒤따르는 S_CurrencyResponse가 들고 온다(GainedGold는 이번에 번 금액).
+        [PacketHandler]
+        public static void Handle_S_EntitySellResponse(ISession session, S_EntitySellResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 개체 판매: {res.Result} 획득 골드={res.GainedGold}");
+        }
+
         [PacketHandler]
         public static void Handle_S_ItemSellResponse(ISession session, S_ItemSellResponse res)
         {
@@ -303,7 +309,8 @@ namespace MikaDummyClient
             foreach (var l in listings ?? new List<AuctionListingInfo>())
             {
                 var enchant = l.EnchantGrade == 0 ? "" : $" 인챈트 {l.EnchantGrade}[{string.Join(",", l.EnchantOptions ?? new List<int>())}]";
-                Console.WriteLine($"  - 매물 {l.ListingId} {l.Kind} TID {l.Tid} ×{l.Count} 단가 {l.UnitPrice} 총액 {l.TotalPrice}{enchant} {l.State}");
+                var character = l.Character is null ? "" : $" Lv{l.Character.Level}";
+                Console.WriteLine($"  - 매물 {l.ListingId} {l.Kind} TID {l.Tid} ×{l.Count} 단가 {l.UnitPrice} 총액 {l.TotalPrice}{enchant}{character} 판매자 {l.SellerName} {l.State}");
             }
         }
 
@@ -359,6 +366,13 @@ namespace MikaDummyClient
         public static void Handle_S_MarketBuyResponse(ISession session, S_MarketBuyResponse res)
         {
             Console.WriteLine($"[Client] Recv 거래소 구매: {res.Result} TID {res.Tid} ×{res.Count} 총액 {res.TotalPrice}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_StorageSlotsResponse(ISession session, S_StorageSlotsResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 칸 위치: {res.Result} {res.Container}/{res.Tab} " +
+                string.Join(", ", res.Slots.Select(s => $"{s.Key}→{s.Slot}")));
         }
 }
 }

@@ -32,7 +32,7 @@ service Auction {
   rpc GetListingStates (ListingStatesRequest) returns (ListingStatesReply);
 }
 
-// 매물 종류. 1 = 자원(스택), 2 = 장비(개체).
+// 매물 종류. 1 = 자원(스택), 2 = 장비(개체), 3 = 캐릭터(개체).
 // category는 종류에 따라 GameData.ItemType 또는 GameData.EquipKind 값이다 — 경매장은 GameData를 모른다.
 message ListingSnapshot {
   int64 listing_id = 1;
@@ -46,6 +46,8 @@ message ListingSnapshot {
   repeated int32 options = 9;
   int64 unit_price = 10;
   int64 expires_at_unix_ms = 11;
+  string seller_name = 12;  // 등록 순간의 판매자 닉네임 — 검색 결과에 그대로 싣는다
+  string detail = 13;       // 개체 상세(캐릭터의 레벨·적성 등) — 메인만 읽는 JSON. 경매장은 그대로 보관·반환한다
 }
 
 message RegisterRequest {
@@ -151,7 +153,7 @@ enum ListingState {
   LISTING_STATE_EXPIRED = 5;
 }
 
-// 검색·내 매물 응답의 한 줄. 판매자는 싣지 않는다.
+// 검색·내 매물 응답의 한 줄. 판매자는 ID 없이 닉네임만 싣는다.
 message ListingView {
   int64 listing_id = 1;
   int32 kind = 2;
@@ -165,6 +167,8 @@ message ListingView {
   int64 total_price = 10;
   int64 expires_at_unix_ms = 11;
   ListingState state = 12;
+  string seller_name = 13;
+  string detail = 14;
 }
 
 message SearchReply {

@@ -137,7 +137,7 @@ public class GachaServiceTest
         BuildService().Draw(user, CharacterPoolId, 1);
         user.Characters.Count.ShouldBe(0);
 
-        user.OnGachaCharactersGranted(new[] { (Id: 500L, Tid: RewardCharacterTid) });
+        user.OnGachaCharactersGranted(new[] { (Id: 500L, Tid: RewardCharacterTid, Slot: 0) });
 
         user.Characters.Count.ShouldBe(1);
         var sent = b.Channel.SentOf<S_CharacterListResponse>().ShouldHaveSingleItem();

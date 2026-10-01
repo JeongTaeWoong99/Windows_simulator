@@ -70,14 +70,16 @@ public partial class User
     /// <summary>기본 캐릭터 지급을 요청한다. 완료는 <see cref="OnDefaultCharacterGranted"/>로 돌아온다.</summary>
     private void GrantDefaultCharacter()
     {
-        PostDBTask(new GrantCharacterRepository(this, DefaultCharacterTid, CharacterGrantReason.Login));
+        var slots = ReserveCharacterSlots(1);
+        PostDBTask(new GrantCharacterRepository(this, new[] { DefaultCharacterTid }, slots, CharacterGrantReason.Login));
     }
 
     /// <summary>기본 캐릭터 지급이 끝나면 불린다(로직 스레드). 적재 후 로그인을 마무리한다.</summary>
-    public void OnDefaultCharacterGranted(long characterId, DateTime now)
+    public void OnDefaultCharacterGranted(long characterId, int slot, DateTime now)
     {
         // 테이블에 없으면 AddCharacter가 경고만 남긴다 — 없다고 로그인을 막지 않는다.
-        AddCharacter(characterId, DefaultCharacterTid);
+        _pendingCharacterSlots.Remove(slot);
+        AddCharacter(characterId, DefaultCharacterTid, slot);
 
         FinishLogin(now);
     }

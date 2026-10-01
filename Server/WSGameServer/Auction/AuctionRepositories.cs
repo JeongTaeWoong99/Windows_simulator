@@ -75,6 +75,21 @@ public sealed class SettleAuctionRepository(
 }
 
 /// <summary>우편으로 온 잠긴 장비의 잠금을 풀고 창고 칸을 준다.</summary>
+/// <summary>우편으로 온 잠긴 캐릭터의 잠금을 푼다. 끝나면 메모리에 올린다.</summary>
+public sealed class UnlockMailCharacterRepository(User user, MailCharacter character, int slot) : IRepository
+{
+    private bool _unlocked;
+
+    public long Key => User.DbKey;
+
+    public User User { get; } = user;
+
+    public async Task ExecuteAsync(DbConnection connection)
+        => _unlocked = await AuctionDb.UnlockCharacterAsync(connection, character.CharacterId, User.Uid, slot);
+
+    public void Apply() => User.OnMailCharacterUnlocked(character, slot, _unlocked);
+}
+
 public sealed class UnlockMailEquipRepository(User user, MailEquip equip, int slotPosition) : IRepository
 {
     private bool _unlocked;

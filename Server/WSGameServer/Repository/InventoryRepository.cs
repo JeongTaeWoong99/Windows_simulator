@@ -18,10 +18,14 @@ public class AddItemRepository : IRepository
     public async Task ExecuteAsync(DbConnection connection)
     {
         await connection.ExecuteAsync(
-            @"INSERT INTO t_user_inventory (user_id, item_id, count)
-              VALUES (@userId, @itemId, @count)
-              ON CONFLICT (user_id, item_id) DO UPDATE SET count = excluded.count;",
-            new { userId = User.Uid, itemId = ItemChangeInfo.ItemId, count = ItemChangeInfo.Count });
+            @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
+              VALUES (@userId, @container, @itemId, @count, @slot)
+              ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+            new
+            {
+                userId = User.Uid, container = (int)ItemChangeInfo.Container, itemId = ItemChangeInfo.ItemId,
+                count  = ItemChangeInfo.Count, slot = ItemChangeInfo.Slot,
+            });
     }
 
     public void Apply()
@@ -57,16 +61,20 @@ public sealed class SaveItemChangesRepository : IRepository
                 if (change.Count == 0)
                 {
                     await tx.ExecuteAsync(
-                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND item_id = @itemId",
-                        new { userId = User.Uid, itemId = change.ItemId });
+                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
+                        new { userId = User.Uid, container = (int)change.Container, itemId = change.ItemId });
                     continue;
                 }
 
                 await tx.ExecuteAsync(
-                    @"INSERT INTO t_user_inventory (user_id, item_id, count)
-                      VALUES (@userId, @itemId, @count)
-                      ON CONFLICT (user_id, item_id) DO UPDATE SET count = excluded.count;",
-                    new { userId = User.Uid, itemId = change.ItemId, count = change.Count });
+                    @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
+                      VALUES (@userId, @container, @itemId, @count, @slot)
+                      ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+                    new
+                    {
+                        userId = User.Uid, container = (int)change.Container, itemId = change.ItemId,
+                        count  = change.Count, slot = change.Slot,
+                    });
             }
         });
     }

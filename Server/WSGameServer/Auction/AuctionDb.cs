@@ -12,6 +12,7 @@ public sealed record AuctionTradeRow
     public int    tid         { get; init; }
     public int    count       { get; init; }
     public long   equip_id    { get; init; }
+    public long   character_id { get; init; }
     public string snapshot    { get; init; } = "{}";
     public long   unit_price  { get; init; }
     public long   listing_fee  { get; init; }
@@ -76,7 +77,7 @@ public static class AuctionDb
     public const int Returned = 3;
 
     /// <summary>
-    /// 등록 한 트랜잭션: 인벤 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비 잠금 · outbox.
+    /// 등록 한 트랜잭션: 인벤 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
     /// 하나라도 빠지면 아이템이 증발하거나(차감만) 복제된다(등록만).
     /// </summary>
     public static async Task<long> RegisterAsync(
@@ -91,12 +92,13 @@ public static class AuctionDb
             await WriteCurrencyAsync(tx, sellerId, gold);
 
             tradeId = await tx.ExecuteScalarAsync<long>(
-                @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, equip_id, snapshot, unit_price, listing_fee, state, created_at)
-                  VALUES (@sellerId, @kind, @tid, @count, @count, @equipId, @snapshot, @unitPrice, @listingFee, 1, @now)
+                @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, equip_id, character_id, snapshot, unit_price, listing_fee, state, created_at)
+                  VALUES (@sellerId, @kind, @tid, @count, @count, @equipId, @characterId, @snapshot, @unitPrice, @listingFee, 1, @now)
                   RETURNING trade_id;",
                 new
                 {
                     sellerId, kind = (int)item.Kind, tid = item.Tid, count = item.Count, equipId = item.EquipId,
+                    characterId = item.Character?.CharacterId ?? 0,
                     snapshot = item.ToJson(), unitPrice, listingFee, now = MailDb.ToDb(now),
                 });
 
@@ -112,6 +114,18 @@ public static class AuctionDb
                 }
             }
 
+            if (item.Kind == EAuctionKind.Character)
+            {
+                var locked = await tx.ExecuteAsync(
+                    @"UPDATE t_character SET auction_trade_id = @tradeId
+                      WHERE character_id = @characterId AND user_id = @sellerId AND auction_trade_id = 0;",
+                    new { tradeId, characterId = item.Character!.CharacterId, sellerId });
+                if (locked != 1)
+                {
+                    throw new InvalidOperationException($"캐릭터 잠금 실패 — 이미 잠겼거나 남의 캐릭터다. 캐릭터 {item.Character.CharacterId} 판매자 {sellerId}");
+                }
+            }
+
             var message = new AuctionRegisterMessage(
                 tradeId, sellerId, item, unitPrice, new DateTimeOffset(DateTime.SpecifyKind(expiresAt, DateTimeKind.Utc)).ToUnixTimeMilliseconds());
             await InsertOutboxAsync(tx, tradeId, AuctionOutboxKind.Register, JsonSerializer.Serialize(message), now);
@@ -121,7 +135,7 @@ public static class AuctionDb
     }
 
     /// <summary>
-    /// 정산 한 트랜잭션: 거래 Listed→Settled · 장비 소유 이전 · 구매자 골드 · 구매자 우편(물건) · 판매자 우편(대금) · outbox(확정).
+    /// 정산 한 트랜잭션: 거래 Listed→Settled · 장비·캐릭터 소유 이전 · 구매자 골드 · 구매자 우편(물건) · 판매자 우편(대금) · outbox(확정).
     /// 거래가 이미 끝났거나 가격이 어긋나면 구매자 잔액을 되돌려 쓰고 outbox(실패)만 남긴다.
     /// </summary>
     public static async Task<AuctionSettleResult> SettleAsync(
@@ -163,6 +177,17 @@ public static class AuctionDb
                 if (moved != 1)
                 {
                     throw new InvalidOperationException($"장비 이전 실패 — 거래 {tradeId} 장비 {trade.equip_id}");
+                }
+            }
+
+            if (item.Kind == EAuctionKind.Character)
+            {
+                var moved = await tx.ExecuteAsync(
+                    "UPDATE t_character SET user_id = @buyerId WHERE character_id = @characterId AND auction_trade_id = @tradeId;",
+                    new { buyerId, characterId = trade.character_id, tradeId });
+                if (moved != 1)
+                {
+                    throw new InvalidOperationException($"캐릭터 이전 실패 — 거래 {tradeId} 캐릭터 {trade.character_id}");
                 }
             }
 
@@ -322,7 +347,7 @@ public static class AuctionDb
     public static async Task<AuctionTradeRow?> FindTradeAsync(DbConnection connection, long tradeId)
     {
         return await connection.QueryFirstOrDefaultAsync<AuctionTradeRow>(
-            @"SELECT trade_id, seller_id, kind, tid, count, equip_id, snapshot, unit_price, listing_fee, state, listed_count
+            @"SELECT trade_id, seller_id, kind, tid, count, equip_id, character_id, snapshot, unit_price, listing_fee, state, listed_count
               FROM t_auction_trade WHERE trade_id = @tradeId;",
             new { tradeId });
     }
@@ -341,6 +366,17 @@ public static class AuctionDb
             @"UPDATE t_user_equip SET auction_trade_id = 0, slot_position = @slotPosition
               WHERE equip_id = @equipId AND user_id = @userId AND auction_trade_id <> 0;",
             new { equipId, userId, slotPosition });
+
+        return changed == 1;
+    }
+
+    /// <summary>우편으로 온 잠긴 캐릭터를 받는다 — 잠금을 풀고 인벤토리 칸을 준다. 이미 풀렸거나 남의 캐릭터면 false.</summary>
+    public static async Task<bool> UnlockCharacterAsync(DbConnection connection, long characterId, long userId, int slot)
+    {
+        var changed = await connection.ExecuteAsync(
+            @"UPDATE t_character SET auction_trade_id = 0, slot = @slot
+              WHERE character_id = @characterId AND user_id = @userId AND auction_trade_id <> 0;",
+            new { characterId, userId, slot });
 
         return changed == 1;
     }
@@ -395,15 +431,15 @@ public static class AuctionDb
             if (change.Count == 0)
             {
                 await tx.ExecuteAsync(
-                    "DELETE FROM t_user_inventory WHERE user_id = @userId AND item_id = @itemId",
-                    new { userId, itemId = change.ItemId });
+                    "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
+                    new { userId, container = (int)change.Container, itemId = change.ItemId });
                 continue;
             }
 
             await tx.ExecuteAsync(
-                @"INSERT INTO t_user_inventory (user_id, item_id, count) VALUES (@userId, @itemId, @count)
-                  ON CONFLICT (user_id, item_id) DO UPDATE SET count = excluded.count;",
-                new { userId, itemId = change.ItemId, count = change.Count });
+                @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES (@userId, @container, @itemId, @count, @slot)
+                  ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+                new { userId, container = (int)change.Container, itemId = change.ItemId, count = change.Count, slot = change.Slot });
         }
     }
 

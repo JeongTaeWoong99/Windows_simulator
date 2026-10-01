@@ -15,6 +15,7 @@ public enum ListingKind
 {
     Item  = 1,
     Equip = 2,
+    Character = 3,
 }
 
 /// <summary>
@@ -32,7 +33,9 @@ public sealed record Listing(
     int                 EnchantGrade,
     IReadOnlyList<int>  Options,
     long                UnitPrice,
-    DateTime            ExpiresAt)
+    DateTime            ExpiresAt,
+    string              SellerName = "",
+    string              Detail     = "")
 {
     /// <summary>매물 전체 가격. 매물은 통째로만 팔린다.</summary>
     public long TotalPrice => UnitPrice * Count;

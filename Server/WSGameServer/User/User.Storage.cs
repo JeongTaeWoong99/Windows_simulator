@@ -7,14 +7,14 @@ public partial class User
     /// <summary>창고 탭마다의 칸 수(자원·캐릭터·장비 각각) — Constants.xlsx. 클라 칸 프레임 수와 같아야 한다.</summary>
     public static int StorageCapacity => (int)Constants.StorageCapacity;
 
-    // DB가 PK를 발급하기 전의 캐릭터 수. 세지 않으면 응답이 오기 전 연속 뽑기가 한도를 지나친다.
-    private int _pendingCharacterCount;
+    // DB가 PK를 발급(또는 우편 잠금 해제)하기 전의 캐릭터 칸. 세지 않으면 응답 전 연속 뽑기가 한도와 칸을 지나친다.
+    private readonly HashSet<int> _pendingCharacterSlots = new();
 
     /// <summary>자원 칸 — 보유 수량이 0보다 큰 아이템 종류 수</summary>
     public int ItemSlotsUsed => Inventory.KindCount;
 
     /// <summary>캐릭터 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
-    public int CharacterSlotsUsed => _characters.Count + _pendingCharacterCount;
+    public int CharacterSlotsUsed => _characters.Count + _pendingCharacterSlots.Count;
 
     /// <summary>장비 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
     public int EquipSlotsUsed => _equips.Count + _pendingEquipPositions.Count;

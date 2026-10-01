@@ -28,6 +28,9 @@ public sealed class Character
 
     public int Level { get; private set; }
 
+    /// <summary>인벤토리 캐릭터 탭의 칸 번호(0부터). 배치 중이어도 칸을 유지한다.</summary>
+    public int Slot { get; set; }
+
     /// <summary>현재 레벨에서 쌓은 경험치(누적이 아니다). 레벨업하면 필요치를 뺀 나머지가 이월된다.</summary>
     public int Exp { get; private set; }
 

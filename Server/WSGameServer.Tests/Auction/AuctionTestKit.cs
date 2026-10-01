@@ -114,10 +114,10 @@ internal sealed class PumpedLogicExecutor : ILogicExecutor
         }
     }
 
-    /// <summary>조건이 설 때까지 작업을 비우며 기다린다. 5초 안에 안 서면 실패다.</summary>
+    /// <summary>조건이 설 때까지 작업을 비우며 기다린다. 30초 안에 안 서면 실패다 — 느린 CI 러너도 견디는 안전망일 뿐, 통과하는 테스트는 곧바로 끝난다.</summary>
     public async Task Pump(Func<bool> until)
     {
-        var deadline = DateTime.UtcNow.AddSeconds(5);
+        var deadline = DateTime.UtcNow.AddSeconds(30);
         while (true)
         {
             Drain();

@@ -25,11 +25,12 @@ namespace MikaDummyClient
                 new ClientAction("GachaDraw", SendGachaDraw),
                 new ClientAction("WorkStationAssign (슬롯 배치)", SendWorkStationAssign),
                 new ClientAction("ItemSell (즉시 판매)", SendItemSell),
+                new ClientAction("EntitySell (개체 판매 — 캐릭터ID·장비ID 목록)", SendEntitySell),
                 new ClientAction("Cheat (admin 전용 — 지급·정산)", SendCheat),
                 new ClientAction("Unlock (해금 — 작업슬롯 1002~1007)", SendUnlock),
                 new ClientAction("Equip (장착 — 캐릭터ID 장비ID 칸1~4)", SendEquip),
                 new ClientAction("Unequip (해제 — 캐릭터ID 칸1~4)", SendUnequip),
-                new ClientAction("EquipEnchant (인챈트 — 장비ID 아이템TID 100013~100017)", SendEquipEnchant),
+                new ClientAction("EquipEnchant (큐브 — 장비ID 큐브TID 100015·100018)", SendEquipEnchant),
                 new ClientAction("UserTraitLearn (특성 찍기 — 산업 레벨 2xxx · 속도 3xxx)", SendUserTraitLearn),
                 new ClientAction("ItemUse (상자 열기 — 100007 나무 · 100008 은 · 100009 황금)", SendItemUse),
                 new ClientAction("MailClaim (우편 수령 — MailId, 0이면 모두 받기)", SendMailClaim),
@@ -42,6 +43,8 @@ namespace MikaDummyClient
                 new ClientAction("MarketItems (거래소 목록 — TID 목록, 비우면 전체)", SendMarketItems),
                 new ClientAction("MarketPrice (거래소 가격대 — TID)", SendMarketPrice),
                 new ClientAction("MarketBuy (거래소 구매 — TID · 수량 · 단가 상한)", SendMarketBuy),
+                new ClientAction("StorageSort (인벤토리 정렬 — 탭 0자원/1캐릭터/2장비 · 기준 0등급/1이름/2수량 · 0내림/1오름)", SendStorageSort),
+                new ClientAction("StorageMoveSlot (인벤토리 자리 이동 — 탭 · 출발 칸 · 도착 칸)", SendStorageMoveSlot),
             };
         }
 
@@ -210,7 +213,6 @@ namespace MikaDummyClient
             NetworkManager.Instance.Send(new C_UnequipRequest { CharacterId = characterId, Slot = (EEquipSlot)slot });
         }
 
-        // 무엇을 하는지는 아이템이 정한다(EnchantItemTable) — 동작을 따로 고르지 않는다.
         private void SendEquipEnchant()
         {
             Console.Write("EquipId ItemTID > ");
@@ -328,6 +330,25 @@ namespace MikaDummyClient
 
             NetworkManager.Instance.Send(new C_ItemSellRequest { Items = items });
         }
+
+        // 개체 PK 목록 두 줄 — 비우면 그 종류는 팔지 않는다.
+        private void SendEntitySell()
+        {
+            NetworkManager.Instance.Send(new C_EntitySellRequest
+            {
+                CharacterIds = ReadIds("캐릭터ID (쉼표 구분) > "),
+                EquipIds     = ReadIds("장비ID (쉼표 구분) > "),
+            });
+        }
+
+        private static List<long> ReadIds(string prompt)
+        {
+            Console.Write(prompt);
+            return (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(s => long.TryParse(s.Trim(), out var id) ? id : 0)
+                .Where(id => id != 0)
+                .ToList();
+        }
             private static long ReadLong(string prompt)
         {
             Console.Write(prompt);
@@ -337,7 +358,7 @@ namespace MikaDummyClient
         // 이름 검색은 클라가 이름을 TID로 바꿔 보낸다 — 더미는 TID를 직접 받는다(쉼표 구분, 비우면 전체).
         private void SendAuctionSearch()
         {
-            var kind = (EAuctionKind)ReadLong("종류 (0=전체 1=자원 2=장비) > ");
+            var kind = (EAuctionKind)ReadLong("종류 (0=전체 1=자원 2=장비 3=캐릭터) > ");
             Console.Write("TID 목록 (쉼표, 비우면 전체) > ");
             var tids = (Console.ReadLine() ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToList();
             NetworkManager.Instance.Send(new C_AuctionSearchRequest { Kind = kind, Tids = tids });
@@ -345,7 +366,14 @@ namespace MikaDummyClient
 
         private void SendAuctionRegister()
         {
-            var kind = (EAuctionKind)ReadLong("종류 (1=자원 2=장비) > ");
+            var kind = (EAuctionKind)ReadLong("종류 (1=자원 2=장비 3=캐릭터) > ");
+            if (kind == EAuctionKind.Character)
+            {
+                var characterId = ReadLong("캐릭터ID > ");
+                NetworkManager.Instance.Send(new C_AuctionRegisterRequest { Kind = kind, CharacterId = characterId, UnitPrice = ReadLong("단가 > ") });
+                return;
+            }
+
             if (kind == EAuctionKind.Equip)
             {
                 var equipId = ReadLong("장비ID > ");
@@ -390,6 +418,26 @@ namespace MikaDummyClient
             var tid   = (int)ReadLong("TID > ");
             var count = (int)ReadLong("수량 > ");
             NetworkManager.Instance.Send(new C_MarketBuyRequest { Tid = tid, Count = count, MaxUnitPrice = ReadLong("단가 상한 > ") });
+        }
+
+        private void SendStorageSort()
+        {
+            var tab = (EStorageTab)ReadLong("탭 > ");
+            var key = (EStorageSortKey)ReadLong("기준 > ");
+            NetworkManager.Instance.Send(new C_StorageSortRequest
+            {
+                Container = EContainer.Inventory, Tab = tab, SortKey = key, Order = (EStorageSortOrder)ReadLong("방향 > "),
+            });
+        }
+
+        private void SendStorageMoveSlot()
+        {
+            var tab  = (EStorageTab)ReadLong("탭 > ");
+            var from = (int)ReadLong("출발 칸 > ");
+            NetworkManager.Instance.Send(new C_StorageMoveSlotRequest
+            {
+                Container = EContainer.Inventory, Tab = tab, FromSlot = from, ToSlot = (int)ReadLong("도착 칸 > "),
+            });
         }
 }
 }

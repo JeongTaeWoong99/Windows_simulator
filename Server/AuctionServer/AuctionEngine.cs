@@ -107,12 +107,12 @@ public sealed class AuctionEngine : IAsyncDisposable
             return false;
         }
 
-        if (l.Kind is not (ListingKind.Item or ListingKind.Equip))
+        if (l.Kind is not (ListingKind.Item or ListingKind.Equip or ListingKind.Character))
         {
             return false;
         }
 
-        if (l.Kind == ListingKind.Equip && l.Count != 1)
+        if (l.Kind is (ListingKind.Equip or ListingKind.Character) && l.Count != 1)
         {
             return false;
         }

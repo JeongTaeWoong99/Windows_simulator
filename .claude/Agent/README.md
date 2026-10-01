@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-01 인벤토리 칸 위치 저장 · 정렬 · 자리 이동 (T-058)](2026-10-01-storage-slot-position.md) — `#server` `#data` 자원·캐릭터·장비에 칸 번호 · 정렬/이동 패킷 · DB 마이그레이션
 - [2026-09-30 경매장 탭 클라 화면 (T-096)](2026-09-30-auction-client-screens.md) — `#client` `#ui` 거래소·장비·등록·내 매물 하위 탭과 AuctionModel
 - [2026-09-30 창고 → 인벤토리 개명 · 거래 탭 3개](2026-09-30-inventory-rename-market-tabs.md) — `#client` `#ui` Storage→Inventory 전면 개명 · MarketTabPresenter (T-101)
 - [2026-09-29 창 작은 배율 · 투명도 · 설정 탭](2026-09-29-window-small-scale-opacity.md) — `#client` `#ui` 0.5x·0.75x 배율(이후 제거) · 투명도 슬라이더 · 설정 탭 4개 · 작업표시줄 침범 금지 (T-070 · T-098 · T-099)

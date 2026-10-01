@@ -34,6 +34,9 @@ namespace MikaProtocol
         NotEnoughItem      = 301, // 보유량보다 많이 팔려는(열려는) 시도
         ItemNotUsable      = 302, // 쓸 수 없는 아이템 (상자가 아님 · 테이블에 없음)
         InvalidUseCount    = 303, // 한 번에 쓰는 개수가 1~99 밖
+        SellEquipWorn      = 304, // 착용 중인 장비 판매 — 벗겨야 판다
+        SellCharacterBusy  = 305, // 슬롯에 배치됐거나 장비를 낀 캐릭터 판매 — 빼고·벗겨야 판다
+        SellLastCharacter  = 306, // 캐릭터를 하나도 남기지 않는 판매
 
         // ── 400~: 치트 ──
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
@@ -52,11 +55,8 @@ namespace MikaProtocol
         EquipSlotEmpty     = 603, // 해제할 장비가 없는 칸
 
         // ── 610~: 인챈트 ──
-        EnchantItemNotOwned  = 610, // 인챈트 아이템 미보유
-        EnchantAlreadyRolled = 611, // 이미 인챈트가 있는 장비에 부여
-        EnchantNotRolled     = 612, // 인챈트가 없는 장비에 재롤·확장
-        EnchantLineMax       = 613, // 이미 상한(3줄)
-        EnchantEquipped      = 614, // 착용 중 — 벗겨야 인챈트할 수 있다
+        EnchantItemNotOwned  = 610, // 큐브 미보유. 611~613은 옛 인챈트(부여·재롤·확장)의 퇴역 번호다
+        EnchantEquipped      = 614, // 착용 중 — 벗겨야 큐브를 쓸 수 있다
 
         // ── 700~: 캐릭터 (600은 장비와 겹쳐 있었다 — 2026-09-17) ──
         NoAptitudePoint = 700, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
@@ -87,6 +87,14 @@ namespace MikaProtocol
         AuctionNotOwner        = 1011, // 남의 매물은 취소할 수 없다
         AuctionTooManyRequests = 1012, // 검색이 너무 잦다 — 잠시 뒤 다시
         MarketNotEnough        = 1013, // 거래소 — 단가 상한 안에서 원하는 수량을 다 채울 수 없다(누가 먼저 샀거나 가격이 올랐다). 아무것도 사지 않았다
+        AuctionCharacterBusy   = 1014, // 슬롯에 배치됐거나 장비를 낀 캐릭터 — 빼고·벗겨야 올릴 수 있다
+        AuctionLastCharacter   = 1015, // 캐릭터를 하나도 남기지 않는 등록
+
+        // ── 1100~: 인벤토리 칸 (T-058) ──
+        StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖이거나, 아직 없는 보관함(창고는 T-107)
+        StorageSlotEmpty      = 1101, // 자리 이동의 출발 칸이 비어 있음
+        InvalidStorageSortKey = 1102, // 그 탭에 쓸 수 없는 정렬 기준 (캐릭터·장비 탭의 수량순)
+        StorageSlotPending    = 1103, // 도착 칸이 지급 대기(뽑기·우편 수령 응답 전)로 예약돼 있음 — 잠시 뒤 다시
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -180,6 +188,7 @@ namespace MikaProtocol
         None  = 0,
         Item  = 1,   // 자원(스택) — 매물은 통째로만 팔린다
         Equip = 2,   // 장비 개체 — 인챈트까지 그대로 넘어간다
+        Character = 3,   // 캐릭터 개체 — 레벨·경험치·찍은 적성까지 그대로 넘어간다
     }
 
     // 진행 중 매물의 상태. 경매장 서버(auction.proto의 ListingState)와 값이 같아야 한다.
@@ -188,5 +197,33 @@ namespace MikaProtocol
         None     = 0,
         Listed   = 1,
         Reserved = 2,   // 누군가 구매 중 — 취소할 수 없다
+    }
+
+    /// <summary>보관함. 칸 격자는 보관함 × 탭이다.</summary>
+    public enum EContainer : byte
+    {
+        Inventory = 0,
+        Warehouse = 1,   // 창고 (T-107)
+    }
+
+    public enum EStorageTab : byte
+    {
+        Resource  = 0,
+        Character = 1,
+        Equip     = 2,
+    }
+
+    /// <summary>정렬 기준. 서버 StorageSortKey와 이름·값이 같아야 한다(PacketEnumTest).</summary>
+    public enum EStorageSortKey : byte
+    {
+        Rarity = 0,
+        Name   = 1,
+        Count  = 2,   // 자원 탭만
+    }
+
+    public enum EStorageSortOrder : byte
+    {
+        Descending = 0,   // 규칙 그대로 (기본)
+        Ascending  = 1,   // 규칙 전체를 뒤집는다 — 나가 있는 것은 그래도 맨 뒤
     }
 }

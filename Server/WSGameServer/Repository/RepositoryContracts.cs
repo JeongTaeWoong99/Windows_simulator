@@ -22,6 +22,7 @@ public sealed record CharacterRow
     public int  mining_bonus  { get; init; }
     public int  logging_bonus { get; init; }
     public int  hunting_bonus { get; init; }
+    public int  slot          { get; init; }
 }
 
 // t_user_currency 조회 전용 Row. 재화가 늘면 행이 아니라 컬럼이 는다.
@@ -36,6 +37,7 @@ public sealed record InventoryRow
 {
     public int item_id { get; init; }
     public int count   { get; init; }
+    public int slot    { get; init; }
 }
 
 // t_user_workstation_slot 조회 전용 Row (배치 설정만 — 진행도는 저장하지 않는다)
@@ -115,6 +117,7 @@ public sealed record UserMailRow
     public string  character_tids { get; init; } = "[]";
     public string  equip_tids     { get; init; } = "[]";
     public string  equip_ids      { get; init; } = "[]";
+    public string  character_ids  { get; init; } = "[]";
     public string  received_at    { get; init; } = "";
     public string? claimed_at     { get; init; }
 }
