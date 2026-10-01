@@ -206,6 +206,22 @@ public static class ClientPacketHandler
         user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
     }
 
+    /// <summary>인벤토리 칸 자리 이동.</summary>
+    [PacketHandler]
+    public static void Handle_C_StorageMoveSlotRequest(ISession session, C_StorageMoveSlotRequest req)
+    {
+        ServerLog.Debug("인벤토리", $"자리 이동 {req.Container}/{req.Tab} {req.FromSlot}→{req.ToSlot} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = req.Tab });
+            return;
+        }
+
+        user.MoveStorageSlot(req.Container, req.Tab, req.FromSlot, req.ToSlot);
+    }
+
     /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)
