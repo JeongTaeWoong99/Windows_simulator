@@ -64,7 +64,7 @@ public class WorkSpeedTest
     [Fact]
     public void 가산을_먼저_적용한_뒤_승산을_곱한다()
     {
-        // 적성4(1800) + 특성 +25% + 부스트 +100% → 4050, 여기에 전역 배수 6.0
+        // 적성4(1800) + 특성 +25% + 부스트 +100% → 4050, 여기에 승산 6.0
         WorkSpeed.From(Aptitude4)
             .Add(250)
             .Add(1000)
