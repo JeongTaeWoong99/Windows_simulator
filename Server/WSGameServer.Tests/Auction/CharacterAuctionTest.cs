@@ -178,9 +178,9 @@ public class CharacterAuctionTest : IDisposable
         var tradeId = await RegisterInDb();
         await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 50, 950, Now);
 
-        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Seller)).ShouldBeFalse();
-        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer)).ShouldBeTrue();
-        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer)).ShouldBeFalse();
+        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Seller, 0)).ShouldBeFalse();
+        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer, 0)).ShouldBeTrue();
+        (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer, 0)).ShouldBeFalse();
     }
 
     // ── 우편 수령 ──
@@ -202,7 +202,7 @@ public class CharacterAuctionTest : IDisposable
     {
         var (user, b) = NewUser();
 
-        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, new AptitudeBonus(Fishing: 1)), unlocked: true);
+        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, new AptitudeBonus(Fishing: 1)), slot: 0, unlocked: true);
 
         user.TryGetCharacter(77, out var character).ShouldBeTrue();
         (character.Level, character.Exp, character.Bonus.Fishing).ShouldBe((7, 30, 1));
@@ -214,7 +214,7 @@ public class CharacterAuctionTest : IDisposable
     {
         var (user, _) = NewUser();
 
-        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, default), unlocked: false);
+        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, default), slot: 0, unlocked: false);
 
         user.TryGetCharacter(77, out _).ShouldBeFalse();
     }

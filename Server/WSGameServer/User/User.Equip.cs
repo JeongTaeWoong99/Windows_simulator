@@ -215,19 +215,7 @@ public partial class User
     /// <summary>창고 장비 탭의 첫 빈 칸(0부터). 지급 대기 중인 칸도 찬 것으로 본다.</summary>
     public int NextFreeEquipPosition()
     {
-        var used = new HashSet<int>(_pendingEquipPositions);
-        foreach (var equip in _equips.Values)
-        {
-            used.Add(equip.SlotPosition);
-        }
-
-        var position = 0;
-        while (used.Contains(position))
-        {
-            position++;
-        }
-
-        return position;
+        return StorageSlots.FirstFree(_equips.Values.Select(e => e.SlotPosition).Concat(_pendingEquipPositions));
     }
 
     /// <summary>장비 개체 1개를 지급한다(치트·앞으로의 획득 경로가 같은 길을 쓴다). 개체 PK는 <see cref="OnEquipGranted"/>로 돌아온다.</summary>

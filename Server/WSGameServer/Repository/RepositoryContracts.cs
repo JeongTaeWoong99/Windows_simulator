@@ -22,6 +22,7 @@ public sealed record CharacterRow
     public int  mining_bonus  { get; init; }
     public int  logging_bonus { get; init; }
     public int  hunting_bonus { get; init; }
+    public int  slot          { get; init; }
 }
 
 // t_user_currency 조회 전용 Row. 재화가 늘면 행이 아니라 컬럼이 는다.

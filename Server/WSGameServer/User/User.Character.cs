@@ -34,7 +34,7 @@ public partial class User
             }
 
             var bonus = new AptitudeBonus(r.farming_bonus, r.fishing_bonus, r.mining_bonus, r.logging_bonus, r.hunting_bonus);
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, bonus);
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, bonus) { Slot = r.slot };
         }
     }
 
@@ -45,21 +45,40 @@ public partial class User
     /// </summary>
     public void GrantGachaCharacters(IReadOnlyList<int> characterTids)
     {
-        _pendingCharacterCount += characterTids.Count;
-        PostDBTask(new GrantCharacterRepository(this, characterTids, CharacterGrantReason.Gacha));
+        var slots = ReserveCharacterSlots(characterTids.Count);
+        PostDBTask(new GrantCharacterRepository(this, characterTids, slots, CharacterGrantReason.Gacha));
+    }
+
+    /// <summary>캐릭터 탭의 첫 빈 칸. 지급 대기 중인 칸도 찬 것으로 본다.</summary>
+    public int NextFreeCharacterSlot()
+    {
+        return StorageSlots.FirstFree(_characters.Values.Select(c => c.Slot).Concat(_pendingCharacterSlots));
+    }
+
+    // 지급할 장수만큼 칸을 차례로 예약한다.
+    private List<int> ReserveCharacterSlots(int count)
+    {
+        var slots = new List<int>(count);
+        for (var i = 0; i < count; i++)
+        {
+            var slot = NextFreeCharacterSlot();
+            _pendingCharacterSlots.Add(slot);
+            slots.Add(slot);
+        }
+
+        return slots;
     }
 
     /// <summary>
     /// 가챠 지급이 끝나면 불린다(로직 스레드). 적재 후 목록을 다시 내려보낸다 —
     /// 클라이언트가 <b>재로그인 없이</b> 뽑은 캐릭터를 배치할 수 있어야 한다.
     /// </summary>
-    public void OnGachaCharactersGranted(IReadOnlyList<(long Id, int Tid)> granted)
+    public void OnGachaCharactersGranted(IReadOnlyList<(long Id, int Tid, int Slot)> granted)
     {
-        _pendingCharacterCount = Math.Max(0, _pendingCharacterCount - granted.Count);
-
-        foreach (var (characterId, characterTid) in granted)
+        foreach (var (characterId, characterTid, slot) in granted)
         {
-            AddCharacter(characterId, characterTid);
+            _pendingCharacterSlots.Remove(slot);
+            AddCharacter(characterId, characterTid, slot);
         }
 
         SendCharacters();
@@ -69,7 +88,7 @@ public partial class User
     /// 지급받은 캐릭터 하나를 메모리에 올린다.
     /// 테이블에 없는 TID는 <see cref="LoadCharacters"/>와 같은 정책으로 경고만 남기고 건너뛴다.
     /// </summary>
-    private void AddCharacter(long characterId, int characterTid)
+    private void AddCharacter(long characterId, int characterTid, int slot)
     {
         if (!GameTable.CharacterTable.TryGet(characterTid, out var row))
         {
@@ -77,7 +96,7 @@ public partial class User
             return;
         }
 
-        _characters[characterId] = new Character(characterId, row, level: 1, exp: 0);
+        _characters[characterId] = new Character(characterId, row, level: 1, exp: 0) { Slot = slot };
     }
 
     /// <summary>
@@ -129,6 +148,7 @@ public partial class User
             Exp            = c.Exp,
             AptitudePoints = c.RemainingPoints(_characterLevels),
             Aptitudes      = ToAptitudeInfos(c),
+            Slot           = c.Slot,
         };
     }
 
@@ -217,14 +237,14 @@ public partial class User
     /// <summary>우편으로 온 잠긴 캐릭터를 받는다. 잠금 해제가 끝나면 <see cref="OnMailCharacterUnlocked"/>.</summary>
     private void UnlockMailCharacter(MailCharacter character)
     {
-        _pendingCharacterCount++;
-        PostDBTask(new UnlockMailCharacterRepository(this, character));
+        var slot = ReserveCharacterSlots(1)[0];
+        PostDBTask(new UnlockMailCharacterRepository(this, character, slot));
     }
 
     /// <summary>잠금 해제가 끝나면 불린다(로직 스레드). 메모리에 올리고 그 개체만 밀어 준다.</summary>
-    public void OnMailCharacterUnlocked(MailCharacter mailCharacter, bool unlocked)
+    public void OnMailCharacterUnlocked(MailCharacter mailCharacter, int slot, bool unlocked)
     {
-        _pendingCharacterCount = Math.Max(0, _pendingCharacterCount - 1);
+        _pendingCharacterSlots.Remove(slot);
 
         if (!unlocked)
         {
@@ -238,7 +258,7 @@ public partial class User
             return;
         }
 
-        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp, mailCharacter.Bonus);
+        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp, mailCharacter.Bonus) { Slot = slot };
         _characters[character.Id] = character;
 
         ServerLog.Info("캐릭터", $"우편 캐릭터 수령 Uid={Uid} 캐릭터 {character.Id}(TID {character.Tid}) Lv{character.Level}");

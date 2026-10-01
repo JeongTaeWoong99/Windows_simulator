@@ -25,8 +25,9 @@ public enum CharacterGrantReason
 public sealed class GrantCharacterRepository : IRepository
 {
     private readonly IReadOnlyList<int> _characterTids;
+    private readonly IReadOnlyList<int> _slots;
     private readonly CharacterGrantReason _reason;
-    private readonly List<(long Id, int Tid)> _granted = new();
+    private readonly List<(long Id, int Tid, int Slot)> _granted = new();
 
     public long Key => User.DbKey;
 
@@ -35,29 +36,30 @@ public sealed class GrantCharacterRepository : IRepository
     /// <summary>지급을 요청받은 캐릭터 종류들. 같은 TID가 여러 번 들어 있을 수 있다.</summary>
     public IReadOnlyList<int> CharacterTids => _characterTids;
 
-    public GrantCharacterRepository(User user, int characterTid, CharacterGrantReason reason)
-        : this(user, new[] { characterTid }, reason)
-    {
-    }
+    /// <summary>TID와 같은 순서로 예약된 인벤토리 칸.</summary>
+    public IReadOnlyList<int> Slots => _slots;
 
-    public GrantCharacterRepository(User user, IReadOnlyList<int> characterTids, CharacterGrantReason reason)
+    public GrantCharacterRepository(User user, IReadOnlyList<int> characterTids, IReadOnlyList<int> slots, CharacterGrantReason reason)
     {
         User           = user;
         _characterTids = characterTids;
+        _slots         = slots;
         _reason        = reason;
     }
 
     // === DB 스레드에서 실행 ===
     public async Task ExecuteAsync(DbConnection connection)
     {
-        foreach (var tid in _characterTids)
+        for (var i = 0; i < _characterTids.Count; i++)
         {
+            var tid  = _characterTids[i];
+            var slot = _slots[i];
             var characterId = await connection.ExecuteScalarAsync<long>(
-                @"INSERT INTO t_character (user_id, character_tid)
-                  VALUES (@userId, @tid) RETURNING character_id;",
-                new { userId = User.Uid, tid });
+                @"INSERT INTO t_character (user_id, character_tid, slot)
+                  VALUES (@userId, @tid, @slot) RETURNING character_id;",
+                new { userId = User.Uid, tid, slot });
 
-            _granted.Add((characterId, tid));
+            _granted.Add((characterId, tid, slot));
         }
     }
 
@@ -66,7 +68,7 @@ public sealed class GrantCharacterRepository : IRepository
     {
         if (_reason == CharacterGrantReason.Login)
         {
-            User.OnDefaultCharacterGranted(_granted[0].Id, DateTime.UtcNow);
+            User.OnDefaultCharacterGranted(_granted[0].Id, _granted[0].Slot, DateTime.UtcNow);
             return;
         }
 
