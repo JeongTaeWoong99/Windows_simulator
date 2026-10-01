@@ -40,7 +40,7 @@ public class UserStorageSlotTest
         user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Resource, 0, 7);
         user.SendInventory();
 
-        b.Channel.SentOf<S_InventoryResponse>().Last().Items.Single().Slot.ShouldBe(7);
+        b.Channel.SentOf<S_InventoryResponse>().Last().Items!.Single().Slot.ShouldBe(7);
     }
 
     [Fact]

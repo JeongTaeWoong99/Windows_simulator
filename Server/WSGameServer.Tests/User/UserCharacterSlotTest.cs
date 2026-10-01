@@ -54,7 +54,7 @@ public class UserCharacterSlotTest
         user.OnGachaCharactersGranted(new[] { (Id: 50L, Tid: CharacterTid, Slot: 1) });
 
         b.Channel.SentOf<S_CharacterListResponse>().Last()
-            .Characters.Single(c => c.CharacterId == 50).Slot.ShouldBe(1);
+            .Characters!.Single(c => c.CharacterId == 50).Slot.ShouldBe(1);
     }
 
     [Fact]
@@ -64,7 +64,7 @@ public class UserCharacterSlotTest
 
         user.SendCharacters();
 
-        b.Channel.SentOf<S_CharacterListResponse>().Last().Characters.Single().Slot.ShouldBe(4);
+        b.Channel.SentOf<S_CharacterListResponse>().Last().Characters!.Single().Slot.ShouldBe(4);
     }
 
     [Fact]
