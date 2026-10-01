@@ -26,3 +26,5 @@
 - 남긴 것: 옛 기록(`gyub/`·`docs/superpowers/`·`tasks/archive/`·목업 HTML), 일감 파일명, `Server/docs/`(서버 영역 · 서버 코드도 `Storage*` 그대로). 서버 문서까지 맞추려면 진우와 합의한다.
 - 창고 서버 패킷은 인벤토리 칸 위치(T-058)가 생긴 뒤 요청한다 → `tasks/README.md` 순서 메모.
 - T-070 · T-098 · T-101 사용자 실측 완료 → 보관.
+- 하단 메뉴 `Market Button (2)` 글씨 `거래소` → `거래`. '거래소'는 경매장 [구매]의 자원 축 이름(`MarketItemPresenter`)이 됐다.
+  ⚠️ 씬 작업 사본에 레이아웃 재계산 잡음(RectTransform 0,0 · 약 1600줄)이 남아 있어, 커밋에는 이 한 줄만 인덱스에 직접 올렸다.
