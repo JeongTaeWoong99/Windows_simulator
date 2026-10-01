@@ -1,3 +1,4 @@
+using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
@@ -30,6 +31,63 @@ public partial class User
         ApplySlotChanges(tab, changes);
         PostDBTask(new SaveStorageSlotsRepository(this, tab, changes));
         SendSlots(EResultCode.Ok, container, tab, changes);
+    }
+
+    /// <summary>격자 전체를 정렬해 0부터 다시 매긴다. 응답에는 격자 전체를 싣는다.</summary>
+    public void SortStorage(EContainer container, EStorageTab tab, EStorageSortKey key, EStorageSortOrder order)
+    {
+        if (container != EContainer.Inventory)
+        {
+            SendSlots(EResultCode.StorageSlotOutOfRange, container, tab, new List<SlotChange>());
+            return;
+        }
+
+        if (key == EStorageSortKey.Count && tab != EStorageTab.Resource)
+        {
+            SendSlots(EResultCode.InvalidStorageSortKey, container, tab, new List<SlotChange>());
+            return;
+        }
+
+        var ordered = StorageSort.Order(SortEntries(tab), (StorageSortKey)key, order == EStorageSortOrder.Ascending);
+        var changes = StorageSlots.Renumber(ordered);
+
+        ApplySlotChanges(tab, changes);
+        PostDBTask(new SaveStorageSlotsRepository(this, tab, changes));
+        SendSlots(EResultCode.Ok, container, tab, changes);
+    }
+
+    // 표에 없는 TID는 등급·산업 0, 이름 ""이다 — 클라도 같은 칸을 '?#'으로 그리고 뒤로 민다.
+    private List<StorageSortEntry> SortEntries(EStorageTab tab)
+    {
+        if (tab == EStorageTab.Resource)
+        {
+            return Inventory.Items.Select(ResourceEntry).ToList();
+        }
+
+        if (tab == EStorageTab.Character)
+        {
+            var placed = WorkStation.Slots.Select(s => s.CharacterId).ToHashSet();
+            return _characters.Values
+                .Select(c => new StorageSortEntry(c.Id, placed.Contains(c.Id), c.Name, 1,
+                    StorageSort.CharacterTieBreak((int)c.Row.GlobalRarity, c.Tid, c.Id)))
+                .ToList();
+        }
+
+        return _equips.Values
+            .Select(e => new StorageSortEntry(e.Id, e.IsEquipped, e.Row.Name, 1,
+                StorageSort.EquipTieBreak((int)e.Row.GlobalRarity, (int)e.Kind, (int)e.Industry, e.Tid, e.Id)))
+            .ToList();
+    }
+
+    private static StorageSortEntry ResourceEntry(Item item)
+    {
+        if (!GameTable.ItemTable.TryGet(item.Id, out var row))
+        {
+            return new StorageSortEntry(item.Id, false, "", item.Count, StorageSort.ResourceTieBreak(0, 0, item.Id));
+        }
+
+        return new StorageSortEntry(item.Id, false, row.Name, item.Count,
+            StorageSort.ResourceTieBreak((int)row.GlobalRarity, (int)row.ItemType, item.Id));
     }
 
     private static bool IsInGrid(int slot) => slot >= 0 && slot < StorageCapacity;

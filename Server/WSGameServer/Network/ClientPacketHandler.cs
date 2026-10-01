@@ -222,6 +222,22 @@ public static class ClientPacketHandler
         user.MoveStorageSlot(req.Container, req.Tab, req.FromSlot, req.ToSlot);
     }
 
+    /// <summary>인벤토리 탭 정렬. 서버가 순서를 계산해 격자 전체를 돌려준다.</summary>
+    [PacketHandler]
+    public static void Handle_C_StorageSortRequest(ISession session, C_StorageSortRequest req)
+    {
+        ServerLog.Debug("인벤토리", $"정렬 {req.Container}/{req.Tab} {req.SortKey} {req.Order} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = req.Tab });
+            return;
+        }
+
+        user.SortStorage(req.Container, req.Tab, req.SortKey, req.Order);
+    }
+
     /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)
