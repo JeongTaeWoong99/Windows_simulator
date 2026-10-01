@@ -80,16 +80,6 @@
     "Description": "게임 시작 시 열린 산업 레벨"
   },
   {
-    "Name": "EnchantBaseLineCount",
-    "Value": 2,
-    "Description": "인챈트 부여 시 옵션 줄 수"
-  },
-  {
-    "Name": "EnchantMaxLineCount",
-    "Value": 3,
-    "Description": "인챈트 줄 확장 상한 — 넘기면 EnchantLineMax"
-  },
-  {
     "Name": "MarketMaxBuyCount",
     "Value": 9999,
     "Description": "거래소 한 번 구매 수량 상한"

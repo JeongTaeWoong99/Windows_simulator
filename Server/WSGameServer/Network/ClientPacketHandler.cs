@@ -206,11 +206,11 @@ public static class ClientPacketHandler
         user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
     }
 
-    /// <summary>인챈트. 보유·착용·동작 검증은 User가 맡는다.</summary>
+    /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)
     {
-        ServerLog.Debug("인챈트", $"요청 장비={req.EquipId} 아이템={req.ItemTid} sid={session.SessionId}");
+        ServerLog.Debug("인챈트", $"요청 장비={req.EquipId} 큐브={req.ItemTid} sid={session.SessionId}");
 
         var user = session.GetUser();
         if (user == null)

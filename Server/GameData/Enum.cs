@@ -108,15 +108,4 @@ namespace GameData
 
         Max         ,
     };
-
-    public enum EnchantAction : byte
-    {
-        None       = 0,
-
-        Grant      = 1,  // 인챈트 부여
-        GradeUp    = 2,  // 등급 상승 판정 + 줄 재롤
-        ExpandLine = 3,  // 인챈트 줄 3줄로 확장
-
-        Max       ,
-    };
 }

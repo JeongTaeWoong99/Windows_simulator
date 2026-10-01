@@ -22,15 +22,15 @@ public sealed class Equip
     public IndustryType Industry         => Row.Industry;
     public int          SpeedAddPermille => Row.SpeedAddPermille;
 
-    /// <summary>인챈트 등급. None이면 인챈트가 없다.</summary>
+    /// <summary>인챈트 등급. 모든 칸이 이 등급의 수치를 쓴다. None이면 인챈트가 없다.</summary>
     public GlobalRarity EnchantGrade { get; private set; }
 
     private readonly List<EnchantOptionTableRow> _enchantOptions = new();
 
-    /// <summary>옵션 줄. 순서가 곧 DB의 enchant_1~3 순서다.</summary>
+    /// <summary>능력치 칸. 순서가 곧 DB의 enchant_1~3 순서다.</summary>
     public IReadOnlyList<EnchantOptionTableRow> EnchantOptions => _enchantOptions;
 
-    /// <summary>줄 수. 2 또는 3이며 인챈트가 없으면 0이다.</summary>
+    /// <summary>찬 칸 수. 칸 수(장비 등급별)와 같고 인챈트가 없으면 0이다.</summary>
     public int EnchantLineCount => _enchantOptions.Count;
 
     /// <summary>패킷·DB에 싣는 EnchantOptionTID 목록.</summary>
@@ -63,7 +63,7 @@ public sealed class Equip
     public bool AppliesTo(IndustryType industry)
         => Industry == IndustryType.None || Industry == industry;
 
-    /// <summary>인챈트 상태를 통째로 바꾼다(부여·재롤·확장 모두 이 경로다). 줄은 항상 전부 넘긴다.</summary>
+    /// <summary>인챈트 상태를 통째로 바꾼다. 큐브가 칸 전부를 다시 뽑으므로 칸은 항상 전부 넘긴다.</summary>
     public void SetEnchant(GlobalRarity grade, IReadOnlyList<EnchantOptionTableRow> options)
     {
         EnchantGrade = grade;
@@ -71,7 +71,7 @@ public sealed class Equip
         _enchantOptions.AddRange(options);
     }
 
-    /// <summary>이 슬롯 산업에 붙는 속도 가산 — 테이블 기본값 + 인챈트 줄. 산업이 맞지 않는 쪽은 빠진다.</summary>
+    /// <summary>이 슬롯 산업에 붙는 속도 가산 — 테이블 기본값 + 능력치 칸. 산업이 맞지 않는 쪽은 빠진다.</summary>
     public int SpeedAddPermilleFor(IndustryType industry)
     {
         var total = AppliesTo(industry) ? SpeedAddPermille : 0;

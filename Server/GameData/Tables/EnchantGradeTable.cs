@@ -11,7 +11,8 @@ namespace GameData
     public partial class EnchantGradeTableRow
     {
         public GlobalRarity Grade       { get; set; }        // eGlobalRarity
-        public int          UpPermille  { get; set; }        // int [0..1000]
+        public int          SlotCount   { get; set; }        // int [0..3]
+        public int          UpPermyriad { get; set; }        // int [0..10000]
         public string       Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

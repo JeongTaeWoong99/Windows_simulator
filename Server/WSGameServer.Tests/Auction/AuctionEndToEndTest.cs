@@ -211,23 +211,23 @@ public class AuctionEndToEndTest : IAsyncLifetime
         _builders[SellerUid].Enchants.LoadAll();
         _builders[BuyerUid].Enchants.LoadAll();
         _db.Execute($@"INSERT INTO t_user_equip (equip_id, user_id, equip_tid, slot_position, enchant_grade, enchant_1, enchant_2)
-                       VALUES ({Sword}, {SellerUid}, {WoodSwordTid}, 0, {(int)GlobalRarity.Rare}, 101, 102)");
+                       VALUES ({Sword}, {SellerUid}, {WoodSwordTid}, 0, {(int)GlobalRarity.Common}, 1103, 0)");
         seller.LoadEquips(
-            new[] { new UserEquipRow { equip_id = Sword, equip_tid = WoodSwordTid, enchant_grade = (int)GlobalRarity.Rare, enchant_1 = 101, enchant_2 = 102 } },
+            new[] { new UserEquipRow { equip_id = Sword, equip_tid = WoodSwordTid, enchant_grade = (int)GlobalRarity.Common, enchant_1 = 1103 } },
             Array.Empty<CharacterEquipRow>());
 
         seller.TryRegisterAuction(EAuctionKind.Equip, 0, 0, Sword, 70, Now);
         _logic.Drain();
         await _relay.FlushOutboxAsync(Now);
 
-        var found = await Search(buyer, new C_AuctionSearchRequest { Kind = EAuctionKind.Equip, OptionTids = new() { 102 } });
+        var found = await Search(buyer, new C_AuctionSearchRequest { Kind = EAuctionKind.Equip, OptionTids = new() { 1103 } });
         var listing = found.Listings!.Single();
         (await Buy(buyer, listing.ListingId, listing.TotalPrice)).Result.ShouldBe(EResultCode.Ok);
         ClaimAll(buyer);
 
         buyer.TryGetEquip(Sword, out var equip).ShouldBeTrue();
-        equip.EnchantGrade.ShouldBe(GlobalRarity.Rare);
-        equip.EnchantOptionTids.ShouldBe(new[] { 101, 102 });
+        equip.EnchantGrade.ShouldBe(GlobalRarity.Common);
+        equip.EnchantOptionTids.ShouldBe(new[] { 1103 });
         Scalar($"SELECT user_id FROM t_user_equip WHERE equip_id = {Sword}").ShouldBe(BuyerUid);
         Scalar($"SELECT auction_trade_id FROM t_user_equip WHERE equip_id = {Sword}").ShouldBe(0);
         seller.TryGetEquip(Sword, out _).ShouldBeFalse();

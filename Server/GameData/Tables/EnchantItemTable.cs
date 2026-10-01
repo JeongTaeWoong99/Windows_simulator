@@ -10,9 +10,8 @@ namespace GameData
     [MemoryPackable]
     public partial class EnchantItemTableRow
     {
-        public int           ItemTID         { get; set; }        // int [1..-]
-        public EnchantAction Action          { get; set; }        // eEnchantAction
-        public int           SuccessPermille { get; set; }        // int [1..1000]
-        public string        Description     { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int    ItemTID        { get; set; }        // int [1..-]
+        public int    UpRatePermille { get; set; }        // int [1..-]
+        public string Description    { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

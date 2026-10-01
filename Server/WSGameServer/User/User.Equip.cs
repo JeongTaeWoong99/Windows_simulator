@@ -264,7 +264,7 @@ public partial class User
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
     }
 
-    // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID는 그 줄만 버린다 —
+    // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID·칸 수 밖의 칸은 버린다 —
     // 데이터 한 줄 때문에 로그인·수령이 막히면 안 된다.
     private Equip? BuildEquip(long equipId, int equipTid, int slotPosition, int enchantGrade, IEnumerable<int> optionTids)
     {
@@ -289,12 +289,18 @@ public partial class User
             return equip;
         }
 
-        var options = new List<EnchantOptionTableRow>();
+        var slotCount = _enchantCatalog.SlotCountOf(row.GlobalRarity);
+        var options   = new List<EnchantOptionTableRow>();
         foreach (var tid in optionTids)
         {
             if (tid == 0)
             {
                 continue;
+            }
+            if (options.Count >= slotCount)
+            {
+                ServerLog.Warn("장비", $"칸 수({slotCount})를 넘는 능력치, 버림: {tid} (개체 {equipId})");
+                break;
             }
             if (!_enchantCatalog.TryGetOption(tid, out var option))
             {

@@ -1620,26 +1620,6 @@
     "Description": "황금 상자 전용 (임시 이름 · 용도 미정)"
   },
   {
-    "ItemTID": 100013,
-    "Name": "인챈트 원석",
-    "ItemType": "Special",
-    "GlobalRarity": "Uncommon",
-    "MaxStack": 9999,
-    "BasePrice": 200,
-    "OpenGachaId": 0,
-    "Description": "인챈트 부여 50%"
-  },
-  {
-    "ItemTID": 100014,
-    "Name": "정제된 인챈트 원석",
-    "ItemType": "Special",
-    "GlobalRarity": "Rare",
-    "MaxStack": 9999,
-    "BasePrice": 600,
-    "OpenGachaId": 0,
-    "Description": "인챈트 부여 확정"
-  },
-  {
     "ItemTID": 100015,
     "Name": "인챈트 큐브",
     "ItemType": "Special",
@@ -1647,26 +1627,16 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "등급 판정 + 줄 재롤"
+    "Description": "장비 능력치 칸 1개 다시 뽑기 — 등급 상승 기본 확률"
   },
   {
-    "ItemTID": 100016,
-    "Name": "인챈트 확장석",
-    "ItemType": "Special",
-    "GlobalRarity": "Uncommon",
-    "MaxStack": 9999,
-    "BasePrice": 300,
-    "OpenGachaId": 0,
-    "Description": "3줄 확장 30%"
-  },
-  {
-    "ItemTID": 100017,
-    "Name": "정제된 인챈트 확장석",
+    "ItemTID": 100018,
+    "Name": "상급 인챈트 큐브",
     "ItemType": "Special",
     "GlobalRarity": "Epic",
     "MaxStack": 9999,
-    "BasePrice": 1200,
+    "BasePrice": 1000,
     "OpenGachaId": 0,
-    "Description": "3줄 확장 확정"
+    "Description": "장비 능력치 칸 1개 다시 뽑기 — 등급 상승 확률 ×1.25"
   }
 ]

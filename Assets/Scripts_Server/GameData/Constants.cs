@@ -58,12 +58,6 @@ namespace GameData
         /// <summary>게임 시작 시 열린 산업 레벨</summary>
         public static long DefaultIndustryLevel => GameTable.ConstantsTable["DefaultIndustryLevel"].Value;
 
-        /// <summary>인챈트 부여 시 옵션 줄 수</summary>
-        public static long EnchantBaseLineCount => GameTable.ConstantsTable["EnchantBaseLineCount"].Value;
-
-        /// <summary>인챈트 줄 확장 상한 — 넘기면 EnchantLineMax</summary>
-        public static long EnchantMaxLineCount => GameTable.ConstantsTable["EnchantMaxLineCount"].Value;
-
         /// <summary>거래소 한 번 구매 수량 상한</summary>
         public static long MarketMaxBuyCount => GameTable.ConstantsTable["MarketMaxBuyCount"].Value;
 

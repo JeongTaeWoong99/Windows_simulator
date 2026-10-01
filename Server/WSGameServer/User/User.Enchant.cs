@@ -5,15 +5,8 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>
-    /// 인챈트. 검증 → 아이템 소모 → 성공 판정 → 상태 갱신 → 저장 → 응답·싱크.
-    ///
-    /// <para>
-    /// <b>정산도 속도 재확정도 하지 않는다.</b> 착용 중인 장비를 거절하므로(EnchantEquipped)
-    /// 가동 중인 슬롯의 속도·경험치가 바뀔 수 없다 — 소급의 여지가 없다.
-    /// 바뀐 값은 다음에 장착할 때 TryEquip이 반영한다.
-    /// </para>
-    /// </summary>
+    // 큐브 사용. 검증 → 큐브 소모 → 등급 판정 · 칸 전부 다시 뽑기 → 저장 → 응답·싱크.
+    // 착용 중인 장비를 거절하므로 정산도 속도 재확정도 없다 — 가동 중인 슬롯의 속도가 소급으로 바뀔 수 없다.
     public void TryEnchant(long equipId, int itemTid, Random? random = null)
     {
         if (!TryGetEquip(equipId, out var equip))
@@ -22,112 +15,60 @@ public partial class User
             return;
         }
 
-        // 착용 중 거부가 이 경로를 단순하게 만든다 — 정산 순서를 신경 쓸 필요가 없다.
         if (equip.IsEquipped)
         {
             RejectEnchant(EResultCode.EnchantEquipped, equipId, "착용 중");
             return;
         }
 
-        if (!_enchantCatalog.TryGetItem(itemTid, out var item))
+        if (!_enchantCatalog.TryGetItem(itemTid, out var cube))
         {
-            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"인챈트 아이템이 아님 {itemTid}");
+            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"큐브가 아님 {itemTid}");
             return;
         }
 
-        // 1차 방어는 EnchantCatalog.Load의 기동 검증이다. 이건 그 검증을 거치지 않은 로드 경로 대비 —
-        // 통과시키면 아이템만 사라지고 아무것도 안 바뀐다.
-        if (!IsKnownAction(item.Action))
+        var slotCount = _enchantCatalog.SlotCountOf(equip.Row.GlobalRarity);
+        if (slotCount <= 0)
         {
-            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"알 수 없는 동작 {item.Action} ({itemTid})");
-            return;
-        }
-
-        if (GetItemCount(itemTid) <= 0)
-        {
-            RejectEnchant(EResultCode.EnchantItemNotOwned, equipId, $"보유 0 {itemTid}");
-            return;
-        }
-
-        var hasEnchant = equip.EnchantGrade != GlobalRarity.None;
-
-        if (item.Action == EnchantAction.Grant && hasEnchant)
-        {
-            RejectEnchant(EResultCode.EnchantAlreadyRolled, equipId, "이미 인챈트 있음");
-            return;
-        }
-
-        if (item.Action != EnchantAction.Grant && !hasEnchant)
-        {
-            RejectEnchant(EResultCode.EnchantNotRolled, equipId, "인챈트 없음");
-            return;
-        }
-
-        if (item.Action == EnchantAction.ExpandLine && equip.EnchantLineCount >= EnchantCatalog.MaxLineCount)
-        {
-            RejectEnchant(EResultCode.EnchantLineMax, equipId, "줄 상한");
+            RejectEnchant(EResultCode.ItemNotUsable, equipId, $"칸이 없는 장비 등급 {equip.Row.GlobalRarity}");
             return;
         }
 
         if (!TryConsumeItems(new Dictionary<int, int> { [itemTid] = 1 }, out var consumed))
         {
-            RejectEnchant(EResultCode.EnchantItemNotOwned, equipId, $"소모 실패 {itemTid}");
+            RejectEnchant(EResultCode.EnchantItemNotOwned, equipId, $"보유 부족 {itemTid}");
             return;
         }
 
         var rng         = random ?? Random.Shared;
         var beforeGrade = equip.EnchantGrade;
-        var success     = false;
 
-        switch (item.Action)
+        // 인챈트가 없으면 일반으로 시작한다. 있으면 상승 판정만 한다 — 등급은 내려가지 않는다.
+        var grade  = GlobalRarity.Common;
+        var rankUp = false;
+        if (beforeGrade != GlobalRarity.None)
         {
-            case EnchantAction.Grant:
-                success = Rolled(item.SuccessPermille, rng);
-                if (success)
-                {
-                    // 부여는 항상 Rare에서 시작한다. 등급은 GradeUp으로만 오른다.
-                    equip.SetEnchant(GlobalRarity.Rare,
-                        _enchantCatalog.RollOptions(GlobalRarity.Rare, EnchantCatalog.BaseLineCount, rng));
-                }
-                break;
-
-            case EnchantAction.GradeUp:
-                // 상승 확률은 아이템이 아니라 현재 등급이 정한다(큐브가 1종이므로).
-                // 최고 등급은 오를 곳이 없다 — 판정이 맞아도 오르지 않았으면 Success가 참일 수 없다.
-                success = Rolled(_enchantCatalog.UpPermilleOf(beforeGrade), rng)
-                          && EnchantCatalog.NextGrade(beforeGrade) != beforeGrade;
-
-                var grade = success ? EnchantCatalog.NextGrade(beforeGrade) : beforeGrade;
-
-                // 상승에 실패해도 줄은 다시 뽑는다 — 빈손이 없게 한 설계다. 줄 수는 유지한다.
-                equip.SetEnchant(grade, _enchantCatalog.RollOptions(grade, equip.EnchantLineCount, rng));
-                break;
-
-            case EnchantAction.ExpandLine:
-                success = Rolled(item.SuccessPermille, rng);
-                if (success)
-                {
-                    var options = equip.EnchantOptions.ToList();
-                    options.AddRange(_enchantCatalog.RollOptions(equip.EnchantGrade, 1, rng));
-                    equip.SetEnchant(equip.EnchantGrade, options);
-                }
-                break;
+            rankUp = Rolled(_enchantCatalog.RankUpPermyriadOf(beforeGrade, cube), rng);
+            grade  = rankUp ? EnchantCatalog.NextGrade(beforeGrade) : beforeGrade;
         }
+
+        var options = _enchantCatalog.RollOptions(grade, slotCount, rng);
+
+        equip.SetEnchant(grade, options);
 
         var tids = equip.EnchantOptionTids;
         PostDBTask(new SaveEquipEnchantRepository(
-            this, equipId, (int)equip.EnchantGrade,
-            TidAt(tids, 0), TidAt(tids, 1), TidAt(tids, 2)));
+            this, equipId, (int)grade, TidAt(tids, 0), TidAt(tids, 1), TidAt(tids, 2)));
 
-        ServerLog.Info("인챈트", $"{item.Action} Uid={Uid} 장비 {equipId} 성공={success} 등급 {beforeGrade}→{equip.EnchantGrade}");
+        ServerLog.Info("인챈트", $"큐브 {itemTid} Uid={Uid} 장비 {equipId} 등급 {beforeGrade}→{grade} 상승={rankUp}");
 
         Send(new S_EquipEnchantResponse
         {
             Result      = EResultCode.Ok,
             EquipId     = equipId,
-            Success     = success,
+            Success     = rankUp,
             BeforeGrade = (int)beforeGrade,
-            AfterGrade  = (int)equip.EnchantGrade,
+            AfterGrade  = (int)grade,
             Options     = tids.ToList(),
         });
 
@@ -135,15 +76,11 @@ public partial class User
         Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = consumed });
     }
 
-    /// <summary>이 서버가 처리할 줄 아는 동작인가. 모르는 동작은 거절한다 — 표가 잘못 쓰여도 조용히 넘어가지 않게.</summary>
-    private static bool IsKnownAction(EnchantAction action)
-        => action is EnchantAction.Grant or EnchantAction.GradeUp or EnchantAction.ExpandLine;
+    /// <summary>만분율 판정. 10000이면 항상 성공, 0이면 항상 실패다.</summary>
+    private static bool Rolled(int permyriad, Random random)
+        => permyriad > 0 && random.Next(EnchantCatalog.PermyriadScale) < permyriad;
 
-    /// <summary>천분율 판정. 1000이면 항상 성공, 0이면 항상 실패다.</summary>
-    private static bool Rolled(int permille, Random random)
-        => permille > 0 && random.Next(1000) < permille;
-
-    /// <summary>빈 줄은 0으로 저장한다.</summary>
+    /// <summary>빈 칸은 0으로 저장한다.</summary>
     private static int TidAt(IReadOnlyList<int> tids, int index)
         => index < tids.Count ? tids[index] : 0;
 

@@ -14,10 +14,9 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static EnchantItemTableRow Parse(string[] cells) => new()
         {
-            ItemTID         = PackerUtil.ParseInt(cells[0], Table, "ItemTID", 1, null),
-            Action          = PackerUtil.ParseEnum<EnchantAction>(cells[1], Table, "Action"),
-            SuccessPermille = PackerUtil.ParseInt(cells[2], Table, "SuccessPermille", 1, 1000),
-            Description     = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
+            ItemTID        = PackerUtil.ParseInt(cells[0], Table, "ItemTID", 1, null),
+            UpRatePermille = PackerUtil.ParseInt(cells[1], Table, "UpRatePermille", 1, null),
+            Description    = cells[2].Length > 0 ? PackerUtil.RequireString(cells[2], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

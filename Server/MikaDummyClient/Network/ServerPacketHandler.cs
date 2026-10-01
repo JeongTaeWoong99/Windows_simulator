@@ -221,7 +221,7 @@ namespace MikaDummyClient
                 string.Join(", ", res.Equips.Select(e => $"#{e.EquipId}(TID {e.EquipTid})→{e.EquippedCharacterId}/{e.EquippedSlot} 칸{e.SlotPosition}{EnchantText(e)}")));
         }
 
-        // 등급은 GlobalRarity 정수(0=없음). Options는 EnchantOptionTID — GradeUp은 실패해도 재롤돼 항상 갱신된 값이다.
+        // 등급은 GlobalRarity 정수(0=없음). Options는 다시 뽑힌 칸 전부의 EnchantOptionTID다.
         [PacketHandler]
         public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
         {

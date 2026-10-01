@@ -409,20 +409,19 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 인챈트 요청. <b>무엇을 하는지는 아이템이 정한다</b>(EnchantItemTable의 Action) — 클라가 동작을 고르지 않는다.
+    /// 큐브 사용. 인챈트가 없으면 일반으로 시작하고, 있으면 큐브 확률로 한 단계 오른다. 어느 쪽이든 칸 전부를 다시 뽑는다.
     /// 착용 중인 장비는 거절된다(EnchantEquipped): 벗기는 것이 선행 조건이다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.C_EquipEnchantRequest)]
     public partial class C_EquipEnchantRequest : IPacket
     {
         public long EquipId { get; set; }  // 개체 PK
-        public int  ItemTid { get; set; }  // 인챈트 아이템 (EnchantItemTable.ItemTID)
+        public int  ItemTid { get; set; }  // 큐브 (EnchantItemTable.ItemTID)
     }
 
     /// <summary>
     /// 인챈트 결과. <b>Result != Ok(거절)이면 Result·EquipId만 유효하다</b> — 나머지는 기본값이니 그리지 않는다.
-    /// Result == Ok면 Success는 아이템의 성공 판정이고, Options는 동작 후 장비의 줄이다:
-    /// GradeUp은 실패해도 줄을 재롤하고, Grant·ExpandLine이 실패하면 이전 줄 그대로다.
+    /// Result == Ok면 Success는 등급이 한 단계 올랐는가(첫 부여는 false), Options는 다시 뽑힌 칸 전부다.
     /// 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_EquipEnchantResponse)]
