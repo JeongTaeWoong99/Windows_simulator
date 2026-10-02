@@ -4,13 +4,14 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 특성 표의 한 칸. 특성 하나를 보여 주고 눌리면 'Clicked'만 쏜다.
+// 특성 표의 한 칸 — 종류 이름 · 'Lv 2/5' · 레벨 눈금. 눌리면 'Clicked'만 쏜다.
 //
 // 이 칸은 레벨 조건도, 포인트가 남았는지도 모른다 — 완성된 문구와 상태만 'Bind'로 받는다.
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 //
-// ※ 예전엔 노드 사슬이라 위 노드와 잇는 선을 칸이 들고 있었다. 레벨형으로 바뀌며(2026-10-02 · T-116)
-//   사슬이 없어져 선도 걷어냈다.
+// ■ 눈금은 최대 레벨만큼만 켠다
+// 프리팹에 눈금을 넉넉히(10개) 깔아 두고 최대 레벨만큼 켜고, 지금 레벨만큼 채운다.
+// 개척(최대 5)과 속도(최대 10)가 같은 칸 폭에서 "얼마나 찼나"로 읽힌다.
 public class TraitNodeView : MonoBehaviour
 {
     // 칸의 상태 셋. 색이 곧 이 값이다.
@@ -27,11 +28,15 @@ public class TraitNodeView : MonoBehaviour
     }
 
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("특성 이름 (예: '농사 속도')")]
+    [SerializeField, Tooltip("종류 이름 (예: '개척' · 공통 줄은 '공통 산출량')")]
     private TMP_Text nameText = null!;
 
-    [SerializeField, Tooltip("레벨·효과 한 줄 (예: 'Lv 3/10 · +15%')")]
-    private TMP_Text detailText = null!;
+    [SerializeField, Tooltip("레벨 한 줄 (예: 'Lv 2/5')")]
+    [FormerlySerializedAs("detailText")]
+    private TMP_Text levelText = null!;
+
+    [SerializeField, NonReorderable, Tooltip("레벨 눈금. 최대 레벨만큼 켜지고 지금 레벨만큼 채워진다 — 가장 큰 최대 레벨 이상 넣어 둔다")]
+    private Image[] pips = new Image[0];
 
     [SerializeField, Tooltip("이 칸을 고르는 버튼(누르면 정보 영역에 펼쳐진다). OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button button = null!;
@@ -52,6 +57,15 @@ public class TraitNodeView : MonoBehaviour
     [SerializeField, Tooltip("다음 레벨의 계정 레벨이 모자란 칸")]
     private UIThemeRole lockedRole = UIThemeRole.ButtonDisabled;
 
+    [SerializeField, Tooltip("채운 눈금 (지금 레벨까지)")]
+    private UIThemeRole pipFilledRole = UIThemeRole.TextMain;
+
+    [SerializeField, Tooltip("최대 레벨 칸(밝은 바탕)의 채운 눈금")]
+    private UIThemeRole pipFilledOnMaxRole = UIThemeRole.TextDark;
+
+    [SerializeField, Range(0f, 1f), Tooltip("빈 눈금의 어둡기 — 'Overlay'(검정)에 이 투명도를 준다")]
+    private float pipEmptyAlpha = 0.35f;
+
     // 이 칸을 눌렀다 ('TraitPresenter'가 구독).
     public event Action<TraitNodeView>? Clicked;
 
@@ -63,7 +77,7 @@ public class TraitNodeView : MonoBehaviour
     private void Awake()
     {
         this.RequireRef(nameText,     nameof(nameText));
-        this.RequireRef(detailText,   nameof(detailText));
+        this.RequireRef(levelText,    nameof(levelText));
         this.RequireRef(button,       nameof(button));
         this.RequireRef(selectedMark, nameof(selectedMark));
 
@@ -72,15 +86,15 @@ public class TraitNodeView : MonoBehaviour
 
     // 이 칸이 그릴 특성을 정한다 ('TraitPresenter'가 호출).
     //   userTraitTid : 레벨 올리기 요청에 그대로 실린다
-    //   displayName  : 이미 완성된 이름 문구
-    //   detail       : 레벨·효과 한 줄
+    //   displayName  : 종류 이름
+    //   level · max  : 'Lv 2/5'와 눈금
     //   state        : 색을 정한다
     //   isSelected   : 지금 정보 영역에 펼쳐진 칸인지
-    public void Bind(int userTraitTid, string displayName, string detail, NodeState state, bool isSelected)
+    public void Bind(int userTraitTid, string displayName, int level, int max, NodeState state, bool isSelected)
     {
-        UserTraitTid    = userTraitTid;
-        nameText.text   = displayName;
-        detailText.text = detail;
+        UserTraitTid   = userTraitTid;
+        nameText.text  = displayName;
+        levelText.text = $"Lv {level}/{max}";
 
         selectedMark.SetActive(isSelected);
         SetBackgroundVisible(true);
@@ -88,18 +102,30 @@ public class TraitNodeView : MonoBehaviour
         button.interactable = true;
 
         ApplyState(state);
+        ApplyPips(level, max, state == NodeState.MaxLevel);
     }
 
     // 줄 맞추기용 빈 칸으로 만든다 ('TraitPresenter'가 호출) — 자리만 차지하고 보이지도 눌리지도 않는다.
     //
-    // ※ 칸을 빼지 않고 비우는 이유: 격자가 형제 순서대로 채워져, 칸을 빼면 뒤 칸이 당겨져
-    //   열(개척·속도·산출량)이 어긋난다. 회색으로 두면 "잠긴 특성"으로 읽혀 바탕째 끈다.
+    // ※ 칸을 빼지 않고 비우는 이유: 줄의 칸이 열(개척·속도·산출량) 자리를 지켜야 머리 줄과 맞는다.
+    //   회색으로 두면 "잠긴 특성"으로 읽혀 바탕째 끈다.
     public void BindBlank()
     {
         Clear();
         SetBackgroundVisible(false);
+        ApplyPips(0, 0, false);
 
         button.interactable = false;
+    }
+
+    // 칸을 비운다. 오브젝트는 살려 두고 재사용한다.
+    public void Clear()
+    {
+        UserTraitTid   = 0;
+        nameText.text  = "";
+        levelText.text = "";
+
+        selectedMark.SetActive(false);
     }
 
     // 칸 바탕(버튼 그래픽)을 켜고 끈다 (Bind · BindBlank에서 호출).
@@ -111,14 +137,21 @@ public class TraitNodeView : MonoBehaviour
         }
     }
 
-    // 칸을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
-    public void Clear()
+    // 눈금을 최대 레벨만큼 켜고 지금 레벨만큼 채운다 (Bind · BindBlank에서 호출).
+    //
+    // ※ 눈금이 최대 레벨보다 적으면 앞쪽만 그린다 — 넘친 레벨이 안 보일 뿐 깨지지는 않는다.
+    private void ApplyPips(int level, int max, bool onBrightBackground)
     {
-        UserTraitTid    = 0;
-        nameText.text   = "";
-        detailText.text = "";
+        Color filled = UIThemePalette.Of(onBrightBackground ? pipFilledOnMaxRole : pipFilledRole);
+        Color empty  = UIThemePalette.Of(UIThemeRole.Overlay);
 
-        selectedMark.SetActive(false);
+        empty.a = pipEmptyAlpha;
+
+        for (int i = 0; i < pips.Length; i++)
+        {
+            pips[i].gameObject.SetActive(i < max);
+            pips[i].color = i < level ? filled : empty;
+        }
     }
 
     // 상태에 맞춰 색을 칠한다 (Bind에서 호출).
