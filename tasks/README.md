@@ -47,7 +47,8 @@
 | [T-008](T-008-희귀도확률.md) | 산업별 희귀도 분포 확률값 결정 — 산업마다 정한다 (Lv1 분포는 실측 가능) · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261010 |
 | [T-009](T-009-회당산출.md) | 산업별 회당 산출 결정 — 레벨별 실측은 [T-021](archive/T-021-산업레벨해금판정.md)로 열렸다(특성으로 상위 레벨을 연다) · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261010 |
 | [T-066](T-066-연계일감갱신스킬.md) | 연계 일감 갱신 스킬 — 작업이 끝나면 관련된 미완료 일감을 전부 갱신 (지금 누락분 전수 정리 포함) | 진우 | New | 높음 | 261010 |
-| [T-096](T-096-클라경매장화면.md) | 클라 — 거래소 · 경매장 화면 (목록 · 가격대 · 수량 구매 · 검색 · 등록 · 취소 · 내 매물) — **서버 완료** · **클라 구현 완료(2026-09-30)** · 구매·등록·내 매물 3탭 · 가격 밴드 유지 · 줄 아이콘·툴팁(10-01) · 남은 것: 실측 · 새 능력치 구조 패킷(#46) · 캐릭터 경매·판매자 이름([#47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47)) · [이슈 #37](https://github.com/JeongTaeWoong99/Windows_simulator/issues/37) | 태웅 | In Progress | 보통 | 261010 |
+| [T-096](T-096-클라경매장화면.md) | 클라 — 거래소 · 경매장 화면 (목록 · 가격대 · 수량 구매 · 검색 · 등록 · 취소 · 내 매물) — **서버 완료** · **클라 구현 완료(2026-09-30)** · 구매·등록·내 매물 3탭 · 가격 밴드 유지 · 줄 아이콘·툴팁(10-01) · 남은 것: 실측 · 새 능력치 구조 패킷(#46 도착) · 캐릭터 경매·판매자 이름·즉시 판매([#47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47) 서버 처리 도착 `23387a6`) · [이슈 #37](https://github.com/JeongTaeWoong99/Windows_simulator/issues/37) | 태웅 | In Progress | 보통 | 261010 |
+| [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI (큐브 사용 · 효율 계산) — **칸 표시 완료**(`c19e3ea`) · **#46 서버 처리 도착**(`ac9a8e3` — 칸 수 = 장비 등급 1·1·2·2·3·3 · 인챈트 등급은 장비당 하나 · 큐브 2종 · 칸 전부 다시 뽑기) · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46) | 태웅 | In Progress | 보통 | 261010 |
 | [T-093](T-093-설명보간.md) | 아이템 설명 보간 — 엑셀 설명문의 `{컬럼}`을 생성 시점에 치환해 수치 중복을 없앤다 ([T-092](archive/T-092-인챈트.md) 이후) | 진우 | New | 보통 | 261010 |
 | [T-090](T-090-문서그래프Fix이름.md) | `check-doc-graph -Fix`가 README 문서 이름을 영문 폴더명으로 써 19개 블록을 덮어쓴다 — `Get-DocName`이 폴더명을 쓴다(2026-08-08 개명 이후) | 진우 | New | 보통 | 261010 |
 | [T-076](T-076-성장재료소비처.md) | 기획 — 자원·캐릭터·장비를 성장 재료로 쓸지 (중복 개체의 출구) — 문서가 "먹이기"와 "일해서만 자란다"로 **엇갈려 있다** · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 보통 | 261010 |
@@ -76,7 +77,6 @@
 
 | ID | 제목 | 담당 | 상태 | **무엇을 기다리나** | 우선순위 |
 |----|------|------|------|--------------------|----------|
-| [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI (큐브 사용 · 효율 계산) — **칸 표시 완료**(`c19e3ea`) · 🔁 기획 변경: 등급별 칸 수 + 큐브 1종 | 태웅 | In Progress | **[이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46)** 능력치 칸 데이터·서버·패킷 (진우) | 261010 |
 | [T-106](T-106-시간조작치트.md) | 클라 — 시간 조작 치트로 시간 기능(경매 만료·전일 평균·우편 7일 삭제 등)을 로컬에서 시험 · 표시를 서버 시각 기준으로 | 태웅 | New | **[이슈 #48](https://github.com/JeongTaeWoong99/Windows_simulator/issues/48)** 서버 게임 시계 · `AdvanceTime` 치트 · 서버 시각 패킷 (진우) | 261024 |
 | [T-117](T-117-치트창특성레벨.md) | 클라 — 치트 창 **특성 레벨 묶음** 다시 붙이기 (T-116에서 분리 · 옛 묶음은 숨겨 둠) | 태웅 | New | **[T-115](T-115-특성레벨치트.md)** 서버 특성 레벨 치트 · [이슈 #51](https://github.com/JeongTaeWoong99/Windows_simulator/issues/51) (진우) | 보통 |
 
