@@ -42,27 +42,6 @@
     "Description": "심연의 원석"
   },
   {
-    "DropTID": 300109,
-    "IndustryLevel": 1,
-    "ItemTID": 100019,
-    "Weight": 205,
-    "Description": "나무 상자 Lv1"
-  },
-  {
-    "DropTID": 300110,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Weight": 31,
-    "Description": "은 상자 Lv1"
-  },
-  {
-    "DropTID": 300111,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Weight": 3,
-    "Description": "황금 상자 Lv1"
-  },
-  {
     "DropTID": 300201,
     "IndustryLevel": 2,
     "ItemTID": 40011,
@@ -103,27 +82,6 @@
     "ItemTID": 40016,
     "Weight": 10,
     "Description": "지맥의 결정"
-  },
-  {
-    "DropTID": 300209,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
-    "Weight": 205,
-    "Description": "나무 상자 Lv2"
-  },
-  {
-    "DropTID": 300210,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Weight": 31,
-    "Description": "은 상자 Lv2"
-  },
-  {
-    "DropTID": 300211,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Weight": 3,
-    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 300301,
@@ -168,27 +126,6 @@
     "Description": "대지의 핵"
   },
   {
-    "DropTID": 300309,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
-    "Weight": 205,
-    "Description": "나무 상자 Lv3"
-  },
-  {
-    "DropTID": 300310,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Weight": 31,
-    "Description": "은 상자 Lv3"
-  },
-  {
-    "DropTID": 300311,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Weight": 3,
-    "Description": "황금 상자 Lv3"
-  },
-  {
     "DropTID": 300401,
     "IndustryLevel": 4,
     "ItemTID": 40031,
@@ -231,27 +168,6 @@
     "Description": "공동의 심장"
   },
   {
-    "DropTID": 300409,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
-    "Weight": 205,
-    "Description": "나무 상자 Lv4"
-  },
-  {
-    "DropTID": 300410,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Weight": 31,
-    "Description": "은 상자 Lv4"
-  },
-  {
-    "DropTID": 300411,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Weight": 3,
-    "Description": "황금 상자 Lv4"
-  },
-  {
     "DropTID": 300501,
     "IndustryLevel": 5,
     "ItemTID": 40041,
@@ -292,26 +208,5 @@
     "ItemTID": 40046,
     "Weight": 10,
     "Description": "세계의 축"
-  },
-  {
-    "DropTID": 300509,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
-    "Weight": 205,
-    "Description": "나무 상자 Lv5"
-  },
-  {
-    "DropTID": 300510,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
-    "Weight": 31,
-    "Description": "은 상자 Lv5"
-  },
-  {
-    "DropTID": 300511,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Weight": 3,
-    "Description": "황금 상자 Lv5"
   }
 ]

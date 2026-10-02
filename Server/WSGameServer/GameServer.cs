@@ -50,6 +50,7 @@ public class GameServer : IDisposable
             EnchantCatalog.Instance.LoadAll();
             AccountLevelCatalog.Instance.LoadAll();
             UserTraitCatalog.Instance.LoadAll();
+            CommonRewardCatalog.Instance.LoadAll();
             MailCatalog.Instance.LoadAll();   // ItemTIDs·ItemCounts 개수가 다르면 여기서 기동이 멈춘다
             CharacterTableValidator.Validate(GameTable.CharacterTable.All);   // 기본 적성 > 상한이면 기동이 멈춘다
 

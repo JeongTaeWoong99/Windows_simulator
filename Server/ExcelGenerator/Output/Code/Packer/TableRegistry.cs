@@ -20,6 +20,7 @@ namespace GameData
             ["WorkSpeedTable"] = new(WorkSpeedTablePacker.Pack, WorkSpeedTablePacker.Verify, WorkSpeedTablePacker.Preview, WorkSpeedTablePacker.Dump),
             ["CharacterLevelTable"] = new(CharacterLevelTablePacker.Pack, CharacterLevelTablePacker.Verify, CharacterLevelTablePacker.Preview, CharacterLevelTablePacker.Dump),
             ["ConstantsTable"] = new(ConstantsTablePacker.Pack, ConstantsTablePacker.Verify, ConstantsTablePacker.Preview, ConstantsTablePacker.Dump),
+            ["CommonRewardTable"] = new(CommonRewardTablePacker.Pack, CommonRewardTablePacker.Verify, CommonRewardTablePacker.Preview, CommonRewardTablePacker.Dump),
             ["FarmingBasicTable"] = new(FarmingBasicTablePacker.Pack, FarmingBasicTablePacker.Verify, FarmingBasicTablePacker.Preview, FarmingBasicTablePacker.Dump),
             ["FishingBasicTable"] = new(FishingBasicTablePacker.Pack, FishingBasicTablePacker.Verify, FishingBasicTablePacker.Preview, FishingBasicTablePacker.Dump),
             ["HuntingBasicTable"] = new(HuntingBasicTablePacker.Pack, HuntingBasicTablePacker.Verify, HuntingBasicTablePacker.Preview, HuntingBasicTablePacker.Dump),

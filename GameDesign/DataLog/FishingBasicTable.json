@@ -42,27 +42,6 @@
     "Description": "전설의 잉어"
   },
   {
-    "DropTID": 200109,
-    "IndustryLevel": 1,
-    "ItemTID": 100019,
-    "Weight": 205,
-    "Description": "나무 상자 Lv1"
-  },
-  {
-    "DropTID": 200110,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Weight": 31,
-    "Description": "은 상자 Lv1"
-  },
-  {
-    "DropTID": 200111,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Weight": 3,
-    "Description": "황금 상자 Lv1"
-  },
-  {
     "DropTID": 200201,
     "IndustryLevel": 2,
     "ItemTID": 10011,
@@ -103,27 +82,6 @@
     "ItemTID": 10016,
     "Weight": 10,
     "Description": "용왕의 사자"
-  },
-  {
-    "DropTID": 200209,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
-    "Weight": 205,
-    "Description": "나무 상자 Lv2"
-  },
-  {
-    "DropTID": 200210,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Weight": 31,
-    "Description": "은 상자 Lv2"
-  },
-  {
-    "DropTID": 200211,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Weight": 3,
-    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 200301,
@@ -168,27 +126,6 @@
     "Description": "강신의 비늘"
   },
   {
-    "DropTID": 200309,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
-    "Weight": 205,
-    "Description": "나무 상자 Lv3"
-  },
-  {
-    "DropTID": 200310,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Weight": 31,
-    "Description": "은 상자 Lv3"
-  },
-  {
-    "DropTID": 200311,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Weight": 3,
-    "Description": "황금 상자 Lv3"
-  },
-  {
     "DropTID": 200401,
     "IndustryLevel": 4,
     "ItemTID": 10031,
@@ -231,27 +168,6 @@
     "Description": "호수의 심장"
   },
   {
-    "DropTID": 200409,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
-    "Weight": 205,
-    "Description": "나무 상자 Lv4"
-  },
-  {
-    "DropTID": 200410,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Weight": 31,
-    "Description": "은 상자 Lv4"
-  },
-  {
-    "DropTID": 200411,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Weight": 3,
-    "Description": "황금 상자 Lv4"
-  },
-  {
     "DropTID": 200501,
     "IndustryLevel": 5,
     "ItemTID": 10041,
@@ -292,26 +208,5 @@
     "ItemTID": 10046,
     "Weight": 10,
     "Description": "리바이어던의 조각"
-  },
-  {
-    "DropTID": 200509,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
-    "Weight": 205,
-    "Description": "나무 상자 Lv5"
-  },
-  {
-    "DropTID": 200510,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
-    "Weight": 31,
-    "Description": "은 상자 Lv5"
-  },
-  {
-    "DropTID": 200511,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Weight": 3,
-    "Description": "황금 상자 Lv5"
   }
 ]

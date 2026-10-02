@@ -42,27 +42,6 @@
     "Description": "태초의 씨앗"
   },
   {
-    "DropTID": 100109,
-    "IndustryLevel": 1,
-    "ItemTID": 100019,
-    "Weight": 205,
-    "Description": "나무 상자 Lv1"
-  },
-  {
-    "DropTID": 100110,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Weight": 31,
-    "Description": "은 상자 Lv1"
-  },
-  {
-    "DropTID": 100111,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Weight": 3,
-    "Description": "황금 상자 Lv1"
-  },
-  {
     "DropTID": 100201,
     "IndustryLevel": 2,
     "ItemTID": 20011,
@@ -103,27 +82,6 @@
     "ItemTID": 20016,
     "Weight": 10,
     "Description": "불멸의 뿌리"
-  },
-  {
-    "DropTID": 100209,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
-    "Weight": 205,
-    "Description": "나무 상자 Lv2"
-  },
-  {
-    "DropTID": 100210,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Weight": 31,
-    "Description": "은 상자 Lv2"
-  },
-  {
-    "DropTID": 100211,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Weight": 3,
-    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 100301,
@@ -168,27 +126,6 @@
     "Description": "생명의 열매"
   },
   {
-    "DropTID": 100309,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
-    "Weight": 205,
-    "Description": "나무 상자 Lv3"
-  },
-  {
-    "DropTID": 100310,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Weight": 31,
-    "Description": "은 상자 Lv3"
-  },
-  {
-    "DropTID": 100311,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Weight": 3,
-    "Description": "황금 상자 Lv3"
-  },
-  {
     "DropTID": 100401,
     "IndustryLevel": 4,
     "ItemTID": 20031,
@@ -231,27 +168,6 @@
     "Description": "세계수의 씨앗"
   },
   {
-    "DropTID": 100409,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
-    "Weight": 205,
-    "Description": "나무 상자 Lv4"
-  },
-  {
-    "DropTID": 100410,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Weight": 31,
-    "Description": "은 상자 Lv4"
-  },
-  {
-    "DropTID": 100411,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Weight": 3,
-    "Description": "황금 상자 Lv4"
-  },
-  {
     "DropTID": 100501,
     "IndustryLevel": 5,
     "ItemTID": 20041,
@@ -292,26 +208,5 @@
     "ItemTID": 20046,
     "Weight": 10,
     "Description": "창세의 열매"
-  },
-  {
-    "DropTID": 100509,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
-    "Weight": 205,
-    "Description": "나무 상자 Lv5"
-  },
-  {
-    "DropTID": 100510,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
-    "Weight": 31,
-    "Description": "은 상자 Lv5"
-  },
-  {
-    "DropTID": 100511,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Weight": 3,
-    "Description": "황금 상자 Lv5"
   }
 ]

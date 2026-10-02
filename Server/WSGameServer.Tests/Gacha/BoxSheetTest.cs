@@ -55,21 +55,31 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 산업_레벨마다_상자가_세_종류씩_나온다()
+    public void 산업_레벨마다_그_레벨_상자_세_종류가_있다()
     {
-        // 상자는 산업 드롭 테이블의 한 줄이다 — 빠진 레벨이 있으면 그 레벨에서는 상자를 얻을 길이 없다.
-        var boxTids = Boxes.Select(r => r.ItemTID).ToHashSet();
-        var drops = GameTable.FarmingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID))
-            .Concat(GameTable.FishingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
-            .Concat(GameTable.MiningBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
-            .Concat(GameTable.LoggingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
-            .Concat(GameTable.HuntingBasicTable.All.Select(r => (r.IndustryLevel, r.ItemTID)))
-            .Where(d => boxTids.Contains(d.ItemTID))
-            .ToList();
+        // 상자는 공통 보상 표에서만 나온다 — 빠진 (산업, 레벨)이 있으면 거기서는 상자를 얻을 길이 없다.
+        var rows = GameTable.CommonRewardTable.All;
+        var boxOfLevel = Boxes.ToDictionary(r => r.ItemTID, r => (r.ItemTID - 100019) / 3 + 1);
 
-        // 5개 산업 × 5레벨 × 3종. 레벨마다 같은 상자 3종을 5개 산업이 나눠 쓴다.
-        drops.Count.ShouldBe(75);
-        drops.GroupBy(d => d.IndustryLevel).ShouldAllBe(g => g.Select(d => d.ItemTID).Distinct().Count() == 3);
-        drops.Select(d => d.ItemTID).Distinct().Count().ShouldBe(15);
+        rows.Count.ShouldBe(75);
+        rows.GroupBy(r => (r.IndustryType, r.IndustryLevel)).Count().ShouldBe(25);
+        rows.GroupBy(r => (r.IndustryType, r.IndustryLevel)).ShouldAllBe(g => g.Select(r => r.ItemTID).Distinct().Count() == 3);
+        rows.ShouldAllBe(r => boxOfLevel[r.ItemTID] == r.IndustryLevel);
+    }
+
+    [Fact]
+    public void 공통_보상은_상자만_주고_드롭_테이블에는_상자가_없다()
+    {
+        // 상자는 자원 롤과 따로 굴린다 — 드롭 테이블에 섞이면 자원을 대신해 두 번 나온다.
+        var boxTids = Boxes.Select(r => r.ItemTID).ToHashSet();
+
+        GameTable.CommonRewardTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
+        GameTable.FarmingBasicTable.All.Select(r => r.ItemTID)
+            .Concat(GameTable.FishingBasicTable.All.Select(r => r.ItemTID))
+            .Concat(GameTable.MiningBasicTable.All.Select(r => r.ItemTID))
+            .Concat(GameTable.LoggingBasicTable.All.Select(r => r.ItemTID))
+            .Concat(GameTable.HuntingBasicTable.All.Select(r => r.ItemTID))
+            .Where(boxTids.Contains)
+            .ShouldBeEmpty();
     }
 }

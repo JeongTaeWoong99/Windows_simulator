@@ -124,6 +124,9 @@ internal sealed class TestUserBuilder
     /// <summary>특성 트리. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다 — 속도 가산은 찍은 노드에만 붙어 기존 테스트를 흔들지 않는다.</summary>
     public UserTraitCatalog Traits { get; } = new();
 
+    /// <summary>채취 공통 보상(상자). <b>비워 두면 아무것도 안 나온다</b>(실데이터를 넣지 않는다) — 난수 보상이 다른 정산 테스트를 흔들지 않게.</summary>
+    public CommonRewardCatalog CommonRewards { get; } = new();
+
     /// <summary>우편 템플릿. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다.</summary>
     public MailCatalog Mails { get; } = new();
 
@@ -209,7 +212,7 @@ internal sealed class TestUserBuilder
 
         var user = new User(Channel, QueueOverride ?? DB, ExecutorOverride ?? Executor,
                             pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
-                            Accounts, Traits, Mails, Enchants, Auction ?? new AuctionService(null, null), Online);
+                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online);
         user.Uid = uid;
         return user;
     }

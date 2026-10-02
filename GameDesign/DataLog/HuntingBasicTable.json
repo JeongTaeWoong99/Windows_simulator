@@ -42,27 +42,6 @@
     "Description": "마수의 심장"
   },
   {
-    "DropTID": 500109,
-    "IndustryLevel": 1,
-    "ItemTID": 100019,
-    "Weight": 205,
-    "Description": "나무 상자 Lv1"
-  },
-  {
-    "DropTID": 500110,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Weight": 31,
-    "Description": "은 상자 Lv1"
-  },
-  {
-    "DropTID": 500111,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Weight": 3,
-    "Description": "황금 상자 Lv1"
-  },
-  {
     "DropTID": 500201,
     "IndustryLevel": 2,
     "ItemTID": 50011,
@@ -103,27 +82,6 @@
     "ItemTID": 50016,
     "Weight": 10,
     "Description": "산신의 인장"
-  },
-  {
-    "DropTID": 500209,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
-    "Weight": 205,
-    "Description": "나무 상자 Lv2"
-  },
-  {
-    "DropTID": 500210,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Weight": 31,
-    "Description": "은 상자 Lv2"
-  },
-  {
-    "DropTID": 500211,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Weight": 3,
-    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 500301,
@@ -168,27 +126,6 @@
     "Description": "숲 지배자의 눈"
   },
   {
-    "DropTID": 500309,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
-    "Weight": 205,
-    "Description": "나무 상자 Lv3"
-  },
-  {
-    "DropTID": 500310,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Weight": 31,
-    "Description": "은 상자 Lv3"
-  },
-  {
-    "DropTID": 500311,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Weight": 3,
-    "Description": "황금 상자 Lv3"
-  },
-  {
     "DropTID": 500401,
     "IndustryLevel": 4,
     "ItemTID": 50031,
@@ -231,27 +168,6 @@
     "Description": "영구동토의 심장"
   },
   {
-    "DropTID": 500409,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
-    "Weight": 205,
-    "Description": "나무 상자 Lv4"
-  },
-  {
-    "DropTID": 500410,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Weight": 31,
-    "Description": "은 상자 Lv4"
-  },
-  {
-    "DropTID": 500411,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Weight": 3,
-    "Description": "황금 상자 Lv4"
-  },
-  {
     "DropTID": 500501,
     "IndustryLevel": 5,
     "ItemTID": 50041,
@@ -292,26 +208,5 @@
     "ItemTID": 50046,
     "Weight": 10,
     "Description": "마신의 파편"
-  },
-  {
-    "DropTID": 500509,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
-    "Weight": 205,
-    "Description": "나무 상자 Lv5"
-  },
-  {
-    "DropTID": 500510,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
-    "Weight": 31,
-    "Description": "은 상자 Lv5"
-  },
-  {
-    "DropTID": 500511,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Weight": 3,
-    "Description": "황금 상자 Lv5"
   }
 ]

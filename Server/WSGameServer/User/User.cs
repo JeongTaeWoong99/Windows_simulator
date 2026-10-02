@@ -50,6 +50,7 @@ public sealed partial class User
 
     /// <summary>특성 트리(노드 비용·효과). 특성 찍기와 슬롯 속도 가산에 쓴다. 규약은 위와 같다.</summary>
     private readonly UserTraitCatalog _traitCatalog;
+    private readonly CommonRewardCatalog _commonRewards;
 
     /// <summary>채취 공통 보상(판정 1회마다 굴리는 상자). 정산에 쓴다. 규약은 위와 같다.</summary>
 
@@ -147,6 +148,7 @@ public sealed partial class User
         EquipCatalog?         equips = null,
         AccountLevelCatalog?  accountLevels = null,
         UserTraitCatalog?     traits = null,
+        CommonRewardCatalog?  commonRewards = null,
         MailCatalog?          mails = null,
         EnchantCatalog?       enchants = null,
         AuctionService?       auction = null,
@@ -165,6 +167,7 @@ public sealed partial class User
         _equipCatalog = equips ?? EquipCatalog.Instance;
         _accountLevels = accountLevels ?? AccountLevelCatalog.Instance;
         _traitCatalog = traits ?? UserTraitCatalog.Instance;
+        _commonRewards = commonRewards ?? CommonRewardCatalog.Instance;
         _mailCatalog = mails ?? MailCatalog.Instance;
         _enchantCatalog = enchants ?? EnchantCatalog.Instance;
         _auction = auction ?? AuctionService.Current;

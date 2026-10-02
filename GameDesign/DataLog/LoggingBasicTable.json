@@ -42,27 +42,6 @@
     "Description": "세계수 가지"
   },
   {
-    "DropTID": 400109,
-    "IndustryLevel": 1,
-    "ItemTID": 100019,
-    "Weight": 205,
-    "Description": "나무 상자 Lv1"
-  },
-  {
-    "DropTID": 400110,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Weight": 31,
-    "Description": "은 상자 Lv1"
-  },
-  {
-    "DropTID": 400111,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Weight": 3,
-    "Description": "황금 상자 Lv1"
-  },
-  {
     "DropTID": 400201,
     "IndustryLevel": 2,
     "ItemTID": 30011,
@@ -103,27 +82,6 @@
     "ItemTID": 30016,
     "Weight": 10,
     "Description": "숲의 정령목"
-  },
-  {
-    "DropTID": 400209,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
-    "Weight": 205,
-    "Description": "나무 상자 Lv2"
-  },
-  {
-    "DropTID": 400210,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Weight": 31,
-    "Description": "은 상자 Lv2"
-  },
-  {
-    "DropTID": 400211,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Weight": 3,
-    "Description": "황금 상자 Lv2"
   },
   {
     "DropTID": 400301,
@@ -168,27 +126,6 @@
     "Description": "대지의 뿌리"
   },
   {
-    "DropTID": 400309,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
-    "Weight": 205,
-    "Description": "나무 상자 Lv3"
-  },
-  {
-    "DropTID": 400310,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Weight": 31,
-    "Description": "은 상자 Lv3"
-  },
-  {
-    "DropTID": 400311,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Weight": 3,
-    "Description": "황금 상자 Lv3"
-  },
-  {
     "DropTID": 400401,
     "IndustryLevel": 4,
     "ItemTID": 30031,
@@ -231,27 +168,6 @@
     "Description": "어둠나무의 핵"
   },
   {
-    "DropTID": 400409,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
-    "Weight": 205,
-    "Description": "나무 상자 Lv4"
-  },
-  {
-    "DropTID": 400410,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Weight": 31,
-    "Description": "은 상자 Lv4"
-  },
-  {
-    "DropTID": 400411,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Weight": 3,
-    "Description": "황금 상자 Lv4"
-  },
-  {
     "DropTID": 400501,
     "IndustryLevel": 5,
     "ItemTID": 30041,
@@ -292,26 +208,5 @@
     "ItemTID": 30046,
     "Weight": 10,
     "Description": "창세목의 조각"
-  },
-  {
-    "DropTID": 400509,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
-    "Weight": 205,
-    "Description": "나무 상자 Lv5"
-  },
-  {
-    "DropTID": 400510,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
-    "Weight": 31,
-    "Description": "은 상자 Lv5"
-  },
-  {
-    "DropTID": 400511,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Weight": 3,
-    "Description": "황금 상자 Lv5"
   }
 ]
