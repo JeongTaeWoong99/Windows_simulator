@@ -37,3 +37,10 @@ tags: [design, data, server, gacha, box]
 - 사용자 결정: 상한 50, **넘치는 몫은 버린다**("매번 까는 게 도파민"). 팝업 개봉(작업표시줄 히어로식 상한 5 + 팝업)은 보류.
 - `User.ClampToMaxStack` — 채취 지급 경로에서만 자른다. 우편 수령·개봉 경로는 자르지 않는다(필요해지면 같은 함수로).
 - `Constants.BoxOpenMax` 99 → 50. 클라 `GachaResultPresenter.cs` 132줄 주석에 "99개"가 남아 있다(클라 영역).
+
+## 업데이트 (2026-10-02) — 다시 별도 롤 · (산업, 레벨)별 확률
+- 사용자: 상자를 자원과 독립으로 굴리고(확률·상자 종류 그대로), 산업별로도 확률을 다르게 두고 싶다.
+- `CommonRewardTable`을 git에서 되살리고 `IndustryType`·`IndustryLevel` 컬럼 추가 — 75행, TID = 산업×1000 + 레벨×10 + 단계. 드롭 테이블 상자 줄 삭제.
+- `CommonRewardCatalog.Roll(industry, level, judgeCount, random)` · Unity `.meta`는 옛 GUID 그대로 되살렸다.
+- 함정: `generate-tables.ps1`을 `-NonInteractive` 없이 백그라운드로 돌리면 끝의 `Read-Host`에서 멈춘다.
+- 클라 툴팁(럭키 상자 줄)이 드롭 테이블을 읽어 지금 비어 보인다 → 이슈 #49 (태웅).
