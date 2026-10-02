@@ -632,8 +632,12 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
+        // ※ 한 번에 여는 수는 'Constants.BoxOpenMax'까지다 — 넘기면 서버가 'InvalidUseCount'로 거절한다.
+        //   지금은 상자 최대 수량(50)과 같아 걸리지 않지만, 두 값은 엑셀에서 따로 바뀐다.
+        int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
+
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
-        _ui.AskAmount(itemId, owned, "몇 개를 열까?", amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, "몇 개를 열까?", amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).

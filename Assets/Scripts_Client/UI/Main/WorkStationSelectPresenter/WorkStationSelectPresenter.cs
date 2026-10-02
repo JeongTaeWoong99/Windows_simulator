@@ -791,6 +791,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //
     // ■ 서버가 주지 않는다 — 전부 클라 테이블이다
     // 스펙은 'IndustryLevelTable', 자원은 산업별 드롭 테이블이다('GameDataLoader.GetIndustryDrops').
+    // 상자는 'CommonRewardTable'(+ 산업별 덮어쓰기)이다('GameDataLoader.GetIndustryBoxRewards').
     //
     // ※ 기준 주기는 'RequiredScore / 1000'초다 — 엑셀이 '초 × 천분율'로 적고 서버는 ×1000만 한다
     //   (서버 'IndustryLevelCatalog.JudgeCostUnits'). **실효 주기와 다르다** — 이쪽은 속도 보정 전 값이고,
@@ -825,34 +826,24 @@ public class WorkStationSelectPresenter : MonoBehaviour
             total += drop.Weight;
         }
 
-        // ■ 상자는 '럭키 상자' 묶음으로 뗀다 (이슈 #33)
-        // 상자도 같은 드롭 테이블의 줄이라 한 목록으로 그리면 신화 아래에서 등급이 일반·고급으로
-        // 되돌아가 등급순으로 읽히지 않는다. 자원을 먼저 다 그리고, 상자는 제목을 끼워 따로 그린다.
-        // 확률의 분모는 **둘을 합친 가중치**다 — 서버가 한 풀에서 뽑으므로 따로 나누면 합이 100%를 넘는다.
         foreach (var drop in drops)
         {
-            if (!GameDataLoader.IsBox(drop.ItemTid))
-            {
-                AddDropRow(content, drop, total);
-            }
+            AddDropRow(content, drop, total);
         }
 
-        var hasBoxHeader = false;
+        // ■ 상자는 드롭 테이블이 아니라 'CommonRewardTable'에서 읽는다 (이슈 #49)
+        // 서버가 상자를 자원 롤과 **따로**, 판정마다 줄마다 굴린다 — 자원 가중치의 분모에 섞으면
+        // 자원 확률이 틀려진다. 그래서 묶음도 확률 계산도 따로다('AddBoxRow').
+        var boxes = GameDataLoader.GetIndustryBoxRewards(industry, level);
 
-        foreach (var drop in drops)
+        if (boxes.Count > 0)
         {
-            if (!GameDataLoader.IsBox(drop.ItemTid))
-            {
-                continue;
-            }
+            content.Header("럭키 상자");
 
-            if (!hasBoxHeader)
+            foreach (var box in boxes)
             {
-                content.Header("럭키 상자");
-                hasBoxHeader = true;
+                AddBoxRow(content, box);
             }
-
-            AddDropRow(content, drop, total);
         }
 
         return content;
@@ -871,6 +862,21 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드",
                     RarityPalette.Get(GameDataLoader.GetItemRarity(drop.ItemTid)));
+    }
+
+    // 상자 한 줄 — 이름(개수) · 판정당 확률 · 판매가 ('BuildIndustryLevelTooltip'에서 호출).
+    //
+    // ※ 확률은 'ChancePerMillion / 1,000,000' 그대로다 — 줄마다 독립으로 굴리므로 합으로 나누지 않는다.
+    //   0.03%처럼 아주 작은 값이 있어 소수 셋째 자리까지 적는다.
+    private static void AddBoxRow(TooltipContent content, IndustryBoxReward box)
+    {
+        var name  = GameDataLoader.GetItemName(box.ItemTid);
+        var label = box.Count > 1 ? $"{name} ×{box.Count}" : name;
+        var rate  = $"{box.ChancePerMillion * 100.0 / 1_000_000:0.###}%";
+        var price = GameDataLoader.GetItemPrice(box.ItemTid);
+
+        content.Row(label, rate, $"{price:N0} 골드",
+                    RarityPalette.Get(GameDataLoader.GetItemRarity(box.ItemTid)));
     }
 
     // 고른 레벨이 지금 산업에서 열려 있지 않으면 기본 레벨로 되돌린다 ('Refresh'가 목록 단계에서 호출).

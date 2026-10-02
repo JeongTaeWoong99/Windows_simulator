@@ -456,6 +456,51 @@ public static class GameDataLoader
     private static readonly Dictionary<(byte Industry, int Level), IndustryDrop[]> IndustryDrops
         = new Dictionary<(byte Industry, int Level), IndustryDrop[]>();
 
+    // 이 산업 레벨의 판정마다 따로 굴리는 상자 목록 (이슈 #49). 없는 (산업, 레벨)이면 빈 목록.
+    //
+    // ■ 두 시트에서 고른다 — 서버 'CommonRewardCatalog.Roll'과 같은 규칙이다
+    // 기본은 'CommonRewardTable'의 **레벨 행**(전 산업 공통)이고, 'CommonRewardOverrideTable'에
+    // 그 (산업, 레벨) 행이 하나라도 있으면 공통 행을 **통째로** 대신한다(섞지 않는다).
+    public static IReadOnlyList<IndustryBoxReward> GetIndustryBoxRewards(EIndustryType industry, int level)
+    {
+        var key = ((byte)industry, level);
+
+        if (IndustryBoxRewards.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+
+        var list = new List<IndustryBoxReward>();
+
+        foreach (var row in GameTable.CommonRewardOverrideTable.All)
+        {
+            if ((byte)row.IndustryType == (byte)industry && row.IndustryLevel == level)
+            {
+                list.Add(new IndustryBoxReward(row.ItemTID, row.Count, row.ChancePerMillion));
+            }
+        }
+
+        if (list.Count == 0)
+        {
+            foreach (var row in GameTable.CommonRewardTable.All)
+            {
+                if (row.IndustryLevel == level)
+                {
+                    list.Add(new IndustryBoxReward(row.ItemTID, row.Count, row.ChancePerMillion));
+                }
+            }
+        }
+
+        var rewards = list.ToArray();
+        IndustryBoxRewards[key] = rewards;
+
+        return rewards;
+    }
+
+    // (산업, 레벨) → 상자 목록. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static readonly Dictionary<(byte Industry, int Level), IndustryBoxReward[]> IndustryBoxRewards
+        = new Dictionary<(byte Industry, int Level), IndustryBoxReward[]>();
+
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
     private static void WarnUnknownId(string kind, int id, HashSet<int> warned)
     {
@@ -484,4 +529,24 @@ public readonly struct IndustryDrop
     public int ItemTid { get; }
 
     public int Weight { get; }
+}
+
+// 산업 레벨 하나에서 판정마다 따로 굴리는 상자 한 줄 — 아이템 · 개수 · 백만분율 확률.
+//
+// ※ 'IndustryDrop'과 달리 **가중치가 아니라 독립 확률**이다 — 줄마다 따로 굴리므로 자원 가중치의
+//   분모에 섞지 않는다. 비율은 'ChancePerMillion / 1,000,000'이다('GameDataLoader.GetIndustryBoxRewards').
+public readonly struct IndustryBoxReward
+{
+    public IndustryBoxReward(int itemTid, int count, int chancePerMillion)
+    {
+        ItemTid          = itemTid;
+        Count            = count;
+        ChancePerMillion = chancePerMillion;
+    }
+
+    public int ItemTid { get; }
+
+    public int Count { get; }
+
+    public int ChancePerMillion { get; }
 }
