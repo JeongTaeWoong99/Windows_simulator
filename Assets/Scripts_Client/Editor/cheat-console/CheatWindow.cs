@@ -568,6 +568,15 @@ namespace DesktopWindowControl.EditorTools
 			allRows.AddRange(speedRows);
 			allRows.AddRange(levelRows);
 
+			if (!ShowTraitUnlockGroups)
+			{
+				_unlockSlotOpen = DrawUnlockGroup("작업슬롯", slotRows, _unlockSlotOpen, model);
+				EditorGUILayout.HelpBox("특성(산업 개척 · 속도 · 산출량) — 서버 치트가 열리면 추가 예정 (T-115 · 이슈 #51)",
+					MessageType.Info);
+
+				return;
+			}
+
 			DrawUnlockAllButton("해금 전부 열기 (작업슬롯 · 산업 속도 · 산업 레벨)", allRows, model);
 			EditorGUILayout.Space(2f);
 
@@ -575,6 +584,14 @@ namespace DesktopWindowControl.EditorTools
 			_unlockSpeedOpen = DrawUnlockGroup("산업 속도", speedRows, _unlockSpeedOpen, model);
 			_unlockLevelOpen = DrawUnlockGroup("산업 레벨", levelRows, _unlockLevelOpen, model);
 		}
+
+		// 옛 특성 묶음(산업 속도 · 산업 레벨)을 그릴지.
+		//
+		// ■ 지금은 끈다 (2026-10-02 · T-116)
+		// 특성이 레벨형으로 바뀌며(T-108) 특성 노드가 'UnlockTable'에서 빠져 두 묶음이 비었고,
+		// 'ECheatCommand.Unlock'은 특성 레벨('t_user_trait')에 닿지 않는다.
+		// 코드는 지우지 않는다 — 서버 특성 레벨 치트(T-115)가 오면 이 묶음 자리를 그 치트로 다시 붙인다.
+		private static readonly bool ShowTraitUnlockGroups = false;  // const면 아래 줄이 도달 불가 경고(CS0162)가 된다
 
 		// 이 묶음의 해금 줄을 테이블 순서대로 모은다 (DrawUnlockRows에서 호출).
 		private static List<UnlockTableRow> CollectUnlockRows(UnlockGroup group)
