@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Text;
 using GameData;
@@ -9,40 +8,32 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 특성 트리 화면 — 인벤토리 열의 '특성' 탭에서만 켜진다.
+// 특성 화면 — 인벤토리 열의 '특성' 탭에서만 켜진다.
 //
 // ■ 인벤토리 안에 있지만 격자가 아니다
 // 자원·캐릭터·장비 셋은 'InventoryGridPresenter' 하나가 공급자만 갈아 끼워 그리는데,
-// 특성은 칸 목록이 아니라 **선으로 이어진 트리**라 그 격자에 들어가지 않는다.
+// 특성은 칸 목록이 아니라 **산업 × 종류 표**라 그 격자에 들어가지 않는다.
 // 그래서 이 탭에서는 격자·도구 줄·판매 목록이 꺼지고 이 패널이 대신 켜진다
 // (근거와 예외 규칙은 'Inventory 규칙.md'의 "탭이 달라도 격자는 하나다").
 //
-// ■ 노드 45개를 씬에 깔지 않는다
-// 프리팹 하나를 찍어 풀로 쓴다 — 탭마다 줄 수가 다르고(속도 5줄 · 레벨 4줄),
-// 칸을 만들고 부수기를 반복하면 상시 실행 앱에서 GC가 쌓인다(캐릭터 줄과 같은 판단).
+// ■ 산업 × 종류 표다 — 탭이 없다 (2026-10-02 · T-116 A안)
+// 줄 = 공통 · 농사 · 낚시 · 채굴 · 벌목 · 사냥, 열 = 개척 · 속도 · 산출량.
+// 포인트로 전부 올릴 수 없어(130점 중 99점) **"어느 산업을 키울까"가 곧 선택**이다 —
+// 그 비교는 한 산업의 세 특성이 같은 줄에 놓여야 된다. 예전엔 노드 사슬을 구역 탭 둘로 갈랐다.
 //
-// ■ 트리 모양은 데이터가 정한다
-// 열 = 산업('UserTraitTableRow.Industry'), 줄 = 같은 산업 안의 TID 순서다.
-// **TID 규칙을 여기 베끼지 않는다** — 시트에 단이 하나 늘면 트리도 저절로 한 줄 는다.
+// ■ 표 모양은 데이터가 정한다
+// 칸 = (줄의 산업, 열의 효과)에 맞는 'UserTraitTable' 행이다. 없으면 빈 칸으로 자리만 지킨다.
+// **TID 규칙을 여기 베끼지 않는다** — 효과는 'EffectType', 산업은 'Industry'로 찾는다.
 //
-// ■ 찍었는지는 열린 해금 목록이 말한다
-// 노드 TID = UnlockTID라 특성 전용 보유 목록이 없다. 조건(계정 레벨·선행)도
-// **같은 TID의 'UnlockTable' 행**에 있어, 한 칸을 그리려면 두 테이블을 함께 읽는다.
+// ■ 특성은 레벨형이다
+// 특성 하나가 기본 레벨 → 최대 레벨을 1씩 오른다. 레벨은 'PlayerDataModel.GetTraitLevel',
+// 다음 레벨의 조건(계정 레벨)은 'UserTraitLevelTable', 비용·효과는 레벨마다 같다('UserTraitTable').
 public class TraitPresenter : MonoBehaviour
 {
-    // 이 화면 안의 두 구역. 산업 축은 같고 세로로 쌓이는 것이 다르다.
-    private enum TraitTab
+    // 표의 줄 = 산업. 'None'은 전 산업에 붙는 공통 특성 줄이다.
+    private static readonly EIndustryType[] Rows =
     {
-        // 산업별 작업속도 가산 (+10%씩 누적)
-        Speed,
-
-        // 산업 레벨 해금 (Lv2~) — 찍으면 작업슬롯에서 그 레벨을 고를 수 있다
-        Level,
-    }
-
-    // 트리의 열 = 산업. 'EIndustryType'의 None을 뺀 순서이고, 화면의 왼쪽부터다.
-    private static readonly EIndustryType[] Columns =
-    {
+        EIndustryType.None,
         EIndustryType.Farming,
         EIndustryType.Fishing,
         EIndustryType.Mining,
@@ -50,22 +41,19 @@ public class TraitPresenter : MonoBehaviour
         EIndustryType.Hunting,
     };
 
-    // 탭 버튼 하나와 그 버튼이 여는 구역. 인스펙터에서 짝지어 넣는다.
-    [Serializable]
-    private struct TabEntry
+    // 표의 열 = 효과. 격자의 열 수(3)와 같아야 한다.
+    private static readonly UserTraitEffect[] Columns =
     {
-        [Tooltip("이 화면 안의 탭 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
-        public Button button;
-
-        [Tooltip("이 버튼이 여는 구역")]
-        public TraitTab tab;
-    }
+        UserTraitEffect.IndustryUnlock,
+        UserTraitEffect.SpeedAdd,
+        UserTraitEffect.YieldAdd,
+    };
 
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("노드 한 칸 프리팹 (TraitNodeView 포함). Content 아래에 런타임 생성된다")]
+    [SerializeField, Tooltip("특성 한 칸 프리팹 (TraitNodeView 포함). Content 아래에 런타임 생성된다")]
     private TraitNodeView nodePrefab = null!;
 
-    [SerializeField, Tooltip("노드가 들어가는 부모 — Scroll View > Viewport > Content (GridLayoutGroup 5열)")]
+    [SerializeField, Tooltip("칸이 들어가는 부모 — Scroll View > Viewport > Content (GridLayoutGroup 3열 — 개척·속도·산출량)")]
     private Transform nodeParent = null!;
 
     [SerializeField, Tooltip("남은 특성 포인트 문구")]
@@ -79,50 +67,36 @@ public class TraitPresenter : MonoBehaviour
     [SerializeField, Tooltip("고른 특성의 이름")]
     private TMP_Text detailNameText = null!;
 
-    [SerializeField, Tooltip("고른 특성의 효과 · 필요 포인트 · 조건 · 상태 (여러 줄)")]
+    [SerializeField, Tooltip("고른 특성의 레벨 · 효과 · 설명 · 다음 레벨 조건 · 상태 (여러 줄)")]
     private TMP_Text detailBodyText = null!;
 
     [SerializeField, Tooltip("아무것도 고르지 않았을 때의 안내 문구. 빈 칸은 고장과 구분되지 않는다")]
     private TMP_Text detailEmptyText = null!;
 
-    [SerializeField, Tooltip("고른 특성을 배우는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [SerializeField, Tooltip("고른 특성을 1레벨 올리는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button confirmButton = null!;
 
-    // ※ NonReorderable — reorderable list 로 그려지면 Unity 가 그 위의 [CenterHeader] 를 건너뛴다
-    //   ('UI 규칙.md'의 "공통 작성 규약").
-    [CenterHeader("구역 탭")]
-    [SerializeField, NonReorderable, Tooltip("구역 탭 버튼들. TraitTab 값마다 정확히 한 줄씩, 화면과 같은 순서로 넣는다")]
-    private TabEntry[] tabs = new TabEntry[0];
-
-    [CenterHeader("색")]
-    [SerializeField, Tooltip("지금 열린 구역의 탭 색 — 인벤토리 탭 줄과 같은 역할")]
-    private UIThemeRole selectedTabRole = UIThemeRole.ButtonSelected;
-
-    [SerializeField, Tooltip("열리지 않은 구역의 탭 색")]
-    private UIThemeRole normalTabRole = UIThemeRole.Button;
-
-    // 만들어 둔 노드 칸. 파괴하지 않고 재사용한다 (남는 칸은 꺼 둔다).
+    // 만들어 둔 칸. 파괴하지 않고 재사용한다 (남는 칸은 꺼 둔다).
     private readonly List<TraitNodeView> _nodes = new List<TraitNodeView>();
 
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
     private ServerWaitManager _wait = null!;
 
-    private TraitTab _currentTab = TraitTab.Speed;
-    private int      _selectedTraitTid; // 정보 영역에 펼친 특성. 0이면 고른 것이 없다
-    private bool     _isSubscribed;
-    private bool     _isReady; // Start 완료 여부 — OnEnable 재구독 가드
+    private int  _selectedTraitTid; // 정보 영역에 펼친 특성. 0이면 고른 것이 없다
+    private bool _isSubscribed;
+    private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
-    // 내가 보낸 찍기 요청의 대기. null이면 기다리는 요청이 없다.
+    // 내가 보낸 레벨 올리기 요청의 대기. null이면 기다리는 요청이 없다.
     private ServerWaitHandle? _learnWait;
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
-        this.RequireRef(nodePrefab,  nameof(nodePrefab));
-        this.RequireRef(nodeParent,  nameof(nodeParent));
-        this.RequireRef(pointText,   nameof(pointText));
+        this.RequireRef(nodePrefab,    nameof(nodePrefab));
+        this.RequireRef(nodeParent,    nameof(nodeParent));
+        this.RequireRef(pointText,     nameof(pointText));
         this.RequireRef(inventoryTabs, nameof(inventoryTabs));
 
         this.RequireRef(detailNameText,  nameof(detailNameText));
@@ -134,8 +108,6 @@ public class TraitPresenter : MonoBehaviour
         _ui   = Services.Get<UIManager>();
         _wait = Services.Get<ServerWaitManager>();
 
-        ValidateTabs();
-        BindTabButtons();
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
         // ⚠️ 인벤토리 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
@@ -144,7 +116,7 @@ public class TraitPresenter : MonoBehaviour
         inventoryTabs.TabChanged += ApplyInventoryTab;
 
         Subscribe();
-        ShowTab(_currentTab);
+        Redraw();
 
         _isReady = true;
 
@@ -156,7 +128,7 @@ public class TraitPresenter : MonoBehaviour
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
     //
-    // ★ 재구독만으로는 부족하다 — 닫혀 있는 동안 온 해금·레벨 변경을 놓쳤기 때문이다.
+    // ★ 재구독만으로는 부족하다 — 닫혀 있는 동안 온 특성·계정 레벨 변경을 놓쳤기 때문이다.
     //   캐시(PlayerDataModel)는 계속 살아 있으므로 다시 그리기만 하면 즉시 맞는다.
     private void OnEnable()
     {
@@ -183,7 +155,7 @@ public class TraitPresenter : MonoBehaviour
 
     #region 구독
 
-    // 해금·계정 레벨 변경 구독 (Start · OnEnable에서 호출)
+    // 특성·계정 레벨 변경 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -192,8 +164,8 @@ public class TraitPresenter : MonoBehaviour
         }
 
         _isSubscribed              = true;
-        _data.UnlocksChanged      += Redraw;      // 찍힌 표시는 열린 해금 목록이 바꾼다
-        _data.AccountLevelChanged += Redraw;      // 남은 포인트·계정 레벨 조건
+        _data.TraitsChanged       += Redraw;      // 특성 레벨 (로그인 목록 · 올리기 응답)
+        _data.AccountLevelChanged += Redraw;      // 남은 포인트 · 다음 레벨의 계정 레벨 조건
         _data.TraitLearnCompleted += OnTraitLearnCompleted;
     }
 
@@ -206,86 +178,9 @@ public class TraitPresenter : MonoBehaviour
         }
 
         _isSubscribed              = false;
-        _data.UnlocksChanged      -= Redraw;
+        _data.TraitsChanged       -= Redraw;
         _data.AccountLevelChanged -= Redraw;
         _data.TraitLearnCompleted -= OnTraitLearnCompleted;
-    }
-
-    #endregion
-
-    #region 탭
-
-    // 인스펙터 배선이 'TraitTab'과 맞는지 본다 (Start에서 한 번).
-    // 빠진 구역은 조용히 안 열린다 — 버튼을 눌러도 아무 일이 없어 고장처럼 보인다.
-    private void ValidateTabs()
-    {
-        foreach (TraitTab tab in Enum.GetValues(typeof(TraitTab)))
-        {
-            int count = 0;
-
-            foreach (TabEntry entry in tabs)
-            {
-                if (entry.tab == tab && entry.button != null)
-                {
-                    count++;
-                }
-            }
-
-            if (count != 1)
-            {
-                ClientLogger.Error(ClientLogger.UI,
-                    $"특성 구역 '{tab}'의 버튼이 {count}개다 (정확히 1개여야 한다). " +
-                    $"Trait Presenter의 Tabs를 확인할 것.", this);
-            }
-        }
-    }
-
-    // 구역 탭 버튼을 배선한다 (Start에서 한 번).
-    //
-    // ⚠️ 반복 변수를 람다에 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
-    private void BindTabButtons()
-    {
-        foreach (TabEntry entry in tabs)
-        {
-            if (entry.button == null)
-            {
-                continue;
-            }
-
-            TraitTab tab = entry.tab;
-            entry.button.onClick.AddListener(() => ShowTab(tab));
-        }
-    }
-
-    // 그 구역을 열고 나머지 탭의 선택 표시를 끈다 (Start · 탭 버튼).
-    private void ShowTab(TraitTab tab)
-    {
-        _currentTab = tab;
-
-        RefreshTabSelection();
-        Redraw();
-    }
-
-    // 지금 열린 구역의 탭만 선택 색으로 칠한다 (ShowTab에서 호출).
-    //
-    // ⚠️ 'Image.color'가 아니라 'ColorBlock'이다 — 인벤토리 탭 줄과 같은 이유.
-    private void RefreshTabSelection()
-    {
-        foreach (TabEntry entry in tabs)
-        {
-            if (entry.button == null)
-            {
-                continue;
-            }
-
-            Color target = UIThemePalette.Of(entry.tab == _currentTab ? selectedTabRole : normalTabRole);
-
-            ColorBlock colors = entry.button.colors;
-
-            colors.normalColor   = target;
-            colors.selectedColor = target;
-            entry.button.colors  = colors;
-        }
     }
 
     // 인벤토리 탭이 바뀌었다 ('InventoryTabPresenter.TabChanged' 구독).
@@ -299,57 +194,43 @@ public class TraitPresenter : MonoBehaviour
 
     #region 그리기
 
-    // 지금 구역의 트리와 정보 영역을 다시 그린다 (탭 전환 · 노드 선택 · 해금·레벨 변경 구독).
+    // 표와 정보 영역을 다시 그린다 (칸 선택 · 특성·계정 레벨 변경 구독).
     //
-    // ※ 정보 영역도 여기서 함께 그린다 — 찍은 직후 "필요 포인트 n"이 남아 있으면 안 되고,
-    //   해금·계정 레벨 변경은 전부 이 함수를 거친다.
+    // ※ 정보 영역도 여기서 함께 그린다 — 올린 직후 옛 레벨이 남아 있으면 안 되고,
+    //   특성·계정 레벨 변경은 전부 이 함수를 거친다.
     private void Redraw()
     {
         pointText.text = $"특성 포인트 {_data.TraitPoint}";
 
-        // 열마다 세로로 쌓을 노드를 모은다. 줄 수는 산업마다 다를 수 있으므로 가장 긴 열에 맞춘다.
-        var  columnNodes     = new List<UserTraitTableRow>[Columns.Length];
-        int  rowCount        = 0;
-        bool isSelectedShown = false;
-
-        for (int column = 0; column < Columns.Length; column++)
-        {
-            columnNodes[column] = CollectColumn(Columns[column]);
-            rowCount            = Mathf.Max(rowCount, columnNodes[column].Count);
-
-            isSelectedShown |= columnNodes[column].Exists(row => row.UserTraitTID == _selectedTraitTid);
-        }
-
-        // 고른 특성이 지금 구역에 없으면(탭 전환) 선택을 비운다 — 안 보이는 노드를 펼쳐 두지 않는다.
-        if (!isSelectedShown)
-        {
-            _selectedTraitTid = 0;
-        }
-
         // 격자는 형제 순서대로 채워지므로 **줄 단위(왼쪽→오른쪽)** 로 넘긴다.
         int used = 0;
 
-        for (int row = 0; row < rowCount; row++)
+        foreach (EIndustryType industry in Rows)
         {
-            for (int column = 0; column < Columns.Length; column++)
+            var row = new UserTraitTableRow?[Columns.Length];
+
+            if (!CollectRow(industry, row))
+            {
+                continue; // 이 산업에 특성이 하나도 없다 — 빈 줄을 그리지 않는다
+            }
+
+            foreach (var trait in row)
             {
                 TraitNodeView view = GetNode(used++);
-                var           list = columnNodes[column];
 
-                // 이 열이 다른 열보다 짧으면 빈 칸을 둔다 — 칸을 빼면 아래 줄이 왼쪽으로 당겨져
-                // 산업 열이 어긋난다(지금 데이터는 다섯 열이 모두 같은 길이다).
-                if (row >= list.Count)
+                if (trait == null)
                 {
-                    BindEmpty(view);
+                    view.gameObject.SetActive(true);
+                    view.BindBlank(); // 열을 맞추는 빈 칸 — 공통 줄의 개척·속도 자리
 
                     continue;
                 }
 
-                BindNode(view, list[row], hasLink: row > 0);
+                BindNode(view, trait);
             }
         }
 
-        // 남는 칸은 파괴하지 않고 꺼 둔다 (속도 5줄 ↔ 레벨 4줄을 오간다).
+        // 남는 칸은 파괴하지 않고 꺼 둔다.
         for (int i = used; i < _nodes.Count; i++)
         {
             _nodes[i].Clear();
@@ -359,10 +240,65 @@ public class TraitPresenter : MonoBehaviour
         RedrawDetail();
     }
 
+    // 이 산업 줄의 칸을 열 순서대로 채운다. 하나라도 있으면 true (Redraw에서 호출).
+    private static bool CollectRow(EIndustryType industry, UserTraitTableRow?[] row)
+    {
+        bool any = false;
+
+        foreach (var trait in GameDataLoader.UserTraits)
+        {
+            if ((byte)trait.Industry != (byte)industry)
+            {
+                continue;
+            }
+
+            int column = System.Array.IndexOf(Columns, trait.EffectType);
+
+            if (column < 0 || row[column] != null)
+            {
+                continue; // 표에 열이 없는 효과 · 같은 칸에 두 번째 특성 — 첫 것만 그린다
+            }
+
+            row[column] = trait;
+            any         = true;
+        }
+
+        return any;
+    }
+
+    // 칸 하나를 특성에 묶는다 (Redraw에서 호출).
+    private void BindNode(TraitNodeView view, UserTraitTableRow trait)
+    {
+        view.gameObject.SetActive(true);
+
+        int level = _data.GetTraitLevel(trait.UserTraitTID);
+
+        view.Bind(trait.UserTraitTID, trait.Name, $"Lv {level}/{trait.MaxLevel} · {DescribeEffect(trait, level)}",
+                  GetNodeState(trait, level), isSelected: trait.UserTraitTID == _selectedTraitTid);
+        view.Clicked -= OnNodeClicked; // 재사용 칸이라 중복 구독을 먼저 끊는다
+        view.Clicked += OnNodeClicked;
+    }
+
+    // 칸의 색 — 최대 레벨 · 올릴 수 있음 · 다음 레벨의 계정 레벨 미달.
+    //
+    // ※ 포인트 부족은 색으로 가르지 않는다 — 모든 칸에 똑같이 걸려 전부 회색이 되면 아무것도 읽히지 않는다.
+    //   누르면 알림으로 말한다.
+    private TraitNodeView.NodeState GetNodeState(UserTraitTableRow trait, int level)
+    {
+        if (level >= trait.MaxLevel)
+        {
+            return TraitNodeView.NodeState.MaxLevel;
+        }
+
+        return _data.AccountLevel >= GetRequiredAccountLevel(trait, level + 1)
+            ? TraitNodeView.NodeState.Available
+            : TraitNodeView.NodeState.Locked;
+    }
+
     // 고른 특성을 정보 영역에 펼친다 (Redraw에서 호출).
     //
-    // [확인]은 **배운 특성에서만** 숨긴다. 조건 미달·포인트 부족이어도 눌리게 둔다 —
-    // 누르면 지금까지의 알림("계정 레벨 n이 필요합니다" 등)이 그대로 뜬다.
+    // [레벨 올리기]는 **최대 레벨에서만** 숨긴다. 조건 미달·포인트 부족이어도 눌리게 둔다 —
+    // 누르면 이유("계정 레벨 n이 필요합니다" 등)가 알림으로 뜬다.
     private void RedrawDetail()
     {
         bool hasSelection = GameDataLoader.TryGetUserTrait(_selectedTraitTid, out var trait);
@@ -378,146 +314,126 @@ public class TraitPresenter : MonoBehaviour
             return;
         }
 
-        bool learned = _data.IsUnlocked(trait.UserTraitTID);
+        int level = _data.GetTraitLevel(trait.UserTraitTID);
 
-        detailNameText.text = trait.Name;
-        detailBodyText.text = BuildDetailBody(trait, learned);
+        detailNameText.text = $"{trait.Name}  Lv {level} / {trait.MaxLevel}";
+        detailBodyText.text = BuildDetailBody(trait, level);
 
-        confirmButton.gameObject.SetActive(!learned);
+        confirmButton.gameObject.SetActive(level < trait.MaxLevel);
     }
 
-    // 정보 영역 본문 — 효과 · 필요 포인트 · 조건 · 상태 (RedrawDetail에서 호출).
+    // 정보 영역 본문 — 지금 효과 · 다음 레벨 효과 · 설명 · 다음 레벨 조건 · 비용 · 상태 (RedrawDetail에서 호출).
     //
-    // 칸 아래 한 줄(BuildDetail)은 조건과 효과 중 하나만 적지만, 여기는 **전부** 적는다.
-    // 조건은 채웠든 못 채웠든 모두 나열한다 — 무엇이 남았는지가 한 화면에서 끝나야 한다.
-    private string BuildDetailBody(UserTraitTableRow trait, bool learned)
+    // 칸 아래 한 줄은 레벨과 지금 효과만 적지만, 여기는 **올리면 무엇이 되는지와 그 조건**을 다 적는다.
+    private string BuildDetailBody(UserTraitTableRow trait, int level)
     {
-        var sb = new StringBuilder();
+        var  sb      = new StringBuilder();
+        bool isMax   = level >= trait.MaxLevel;
+        int  next    = level + 1;
 
-        sb.AppendLine($"효과 : {DescribeEffect(trait)}");
-        sb.AppendLine($"필요 포인트 : {trait.TraitPoint}점 (보유 {_data.TraitPoint})");
+        // ※ '→'를 쓰지 않는다 — 폰트(neodgm_pro SDF)가 Static 아틀라스라 그 글리프가 없어 □로 나온다.
+        sb.AppendLine($"지금 효과 : {DescribeEffect(trait, level)}");
 
-        if (GameDataLoader.TryGetUnlock(trait.UserTraitTID, out var unlock))
+        if (!isMax)
         {
-            foreach (int requiredTid in unlock.RequiredUnlockTIDs)
-            {
-                string mark = _data.IsUnlocked(requiredTid) ? "충족" : "미충족";
-                sb.AppendLine($"조건 : {DescribeTrait(requiredTid)} 배우기 ({mark})");
-            }
-
-            if (unlock.AccountLevel > 0)
-            {
-                string mark = _data.AccountLevel >= unlock.AccountLevel ? "충족" : "미충족";
-                sb.AppendLine($"조건 : 계정 Lv{unlock.AccountLevel} (지금 Lv{_data.AccountLevel} · {mark})");
-            }
+            sb.AppendLine($"다음 레벨 : {DescribeNextEffect(trait, next)}");
         }
 
-        string state = learned                              ? "배움"
-                     : !MeetsConditions(trait.UserTraitTID) ? "잠김"
-                     : _data.TraitPoint < trait.TraitPoint  ? "포인트 부족"
-                                                            : "배울 수 있음";
+        sb.AppendLine(DescribeKind(trait));
+        sb.AppendLine();
+
+        if (isMax)
+        {
+            sb.Append("상태 : 최대 레벨");
+
+            return sb.ToString();
+        }
+
+        int  required  = GetRequiredAccountLevel(trait, next);
+        bool levelOk   = _data.AccountLevel >= required;
+        bool pointOk   = _data.TraitPoint >= trait.TraitPoint;
+
+        sb.AppendLine($"다음 레벨 조건 : 계정 Lv{required} (지금 Lv{_data.AccountLevel} · {(levelOk ? "충족" : "미충족")})");
+        sb.AppendLine($"필요 포인트 : {trait.TraitPoint}점 (보유 {_data.TraitPoint})");
+
+        string state = !levelOk ? "계정 레벨 부족"
+                     : !pointOk ? "포인트 부족"
+                                : "올릴 수 있음";
 
         sb.Append($"상태 : {state}");
 
         return sb.ToString();
     }
 
-    // 이 산업의 노드를 지금 구역에 맞게 골라 TID 순으로 돌려준다 (Redraw에서 호출).
+    // 지금 레벨의 효과 한 마디 — 칸 아래 줄 · 정보 영역의 "지금 효과".
     //
-    // ※ 구역을 'EffectType'으로 가른다 — 속도는 'SpeedAdd', 산업 레벨은 효과가 없고('None')
-    //   **UnlockTID가 열리는 것 자체가 결과**다(그 TID를 'IndustryLevelTable'이 참조한다).
-    private List<UserTraitTableRow> CollectColumn(EIndustryType industry)
+    // ※ 효과 = 레벨당 값 × (지금 레벨 − 기본 레벨)이다(서버 'User.SumTraitEffect').
+    //   개척은 수치가 아니라 **지금 열린 산업 레벨의 이름**을 적는다 — 그게 실제 결과다.
+    private static string DescribeEffect(UserTraitTableRow trait, int level)
     {
-        var result = new List<UserTraitTableRow>();
-
-        foreach (var row in GameDataLoader.UserTraits)
+        switch (trait.EffectType)
         {
-            if ((byte)row.Industry != (byte)industry)
-            {
-                continue;
-            }
+            case UserTraitEffect.IndustryUnlock:
+                return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, level, out var row)
+                    ? $"{row.Name}까지"
+                    : $"Lv{level}까지";
 
-            bool isSpeed = row.EffectType == UserTraitEffect.SpeedAdd;
+            case UserTraitEffect.SpeedAdd:
+                return $"속도 {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
 
-            if (isSpeed == (_currentTab == TraitTab.Speed))
-            {
-                result.Add(row);
-            }
+            case UserTraitEffect.YieldAdd:
+                return $"산출량 {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
+
+            default:
+                return "";
+        }
+    }
+
+    // 다음 레벨에서 바뀌는 것 — 정보 영역의 "다음 레벨". 개척은 **새로 열리는 산업 레벨**을 적는다.
+    private static string DescribeNextEffect(UserTraitTableRow trait, int next)
+    {
+        if (trait.EffectType == UserTraitEffect.IndustryUnlock)
+        {
+            return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, next, out var row)
+                ? $"Lv{next} {row.Name} 열림"
+                : $"Lv{next} 열림";
         }
 
-        result.Sort((a, b) => a.UserTraitTID.CompareTo(b.UserTraitTID));
-
-        return result;
+        return DescribeEffect(trait, next);
     }
 
-    // 칸 하나를 노드에 묶는다 (Redraw에서 호출).
-    private void BindNode(TraitNodeView view, UserTraitTableRow trait, bool hasLink)
-    {
-        view.gameObject.SetActive(true);
-
-        bool learned = _data.IsUnlocked(trait.UserTraitTID);
-        bool ready   = learned || MeetsConditions(trait.UserTraitTID);
-
-        TraitNodeView.NodeState state = learned  ? TraitNodeView.NodeState.Learned
-                                      : ready    ? TraitNodeView.NodeState.Available
-                                                 : TraitNodeView.NodeState.Locked;
-
-        view.Bind(trait.UserTraitTID, trait.Name, BuildDetail(trait, learned), state, hasLink,
-                  isSelected: trait.UserTraitTID == _selectedTraitTid);
-        view.Clicked -= OnNodeClicked; // 재사용 칸이라 중복 구독을 먼저 끊는다
-        view.Clicked += OnNodeClicked;
-    }
-
-    // 열 길이를 맞추기 위한 빈 칸 (Redraw에서 호출)
-    private void BindEmpty(TraitNodeView view)
-    {
-        view.gameObject.SetActive(true);
-        view.Bind(0, "", "", TraitNodeView.NodeState.Locked, hasLink: false, isSelected: false);
-    }
-
-    // 칸 아래 한 줄 — 잠겼으면 **조건**을, 아니면 **효과**를 적는다.
+    // 이 종류의 특성이 무엇을 좋게 하는지 한 줄 (정보 영역).
     //
-    // ※ 잠긴 노드를 숨기지 않는다(해금 규칙). 무엇이 모자란지가 여기 나와야
-    //   "왜 안 눌리지"가 화면에서 끝난다.
-    private string BuildDetail(UserTraitTableRow trait, bool learned)
+    // ■ 산출량은 이름만으로 뜻이 안 읽힌다 (2026-10-02 사용자 요청)
+    // "좋은 게 나올 확률이 오르나?"로 오해되기 쉽다 — 실제로는 **같은 자원이 더** 나오고 희귀도 확률은 그대로다.
+    // 속도와 갈리는 점(상자·경험치는 늘지 않는다)까지 적어야 둘 중 무엇을 찍을지 고를 수 있다.
+    private static string DescribeKind(UserTraitTableRow trait)
     {
-        if (!learned && GameDataLoader.TryGetUnlock(trait.UserTraitTID, out var unlock))
+        switch (trait.EffectType)
         {
-            foreach (int requiredTid in unlock.RequiredUnlockTIDs)
-            {
-                if (!_data.IsUnlocked(requiredTid))
-                {
-                    return "앞 단계 먼저";
-                }
-            }
+            case UserTraitEffect.IndustryUnlock:
+                return "그 산업의 다음 레벨 작업지를 엽니다. 작업슬롯에서 고를 수 있게 됩니다.";
 
-            if (_data.AccountLevel < unlock.AccountLevel)
-            {
-                return $"계정 Lv{unlock.AccountLevel} 필요";
-            }
+            case UserTraitEffect.SpeedAdd:
+                return "작업 주기가 짧아집니다. 자원 · 상자 · 경험치가 모두 더 빨리 쌓입니다.";
+
+            case UserTraitEffect.YieldAdd:
+                return "판정 1회에 같은 자원이 더 나옵니다. 120%면 1개 + 20% 확률로 1개 더.\n"
+                     + "좋은 자원이 나올 확률은 그대로이고, 상자 · 경험치는 늘지 않습니다."
+                     + (trait.Industry == IndustryType.None ? "\n모든 산업에 붙습니다." : "");
+
+            default:
+                return "";
         }
-
-        return DescribeEffect(trait);
     }
 
-    // 이 노드가 주는 것 한 줄 (BuildDetail · 확인 문구에서 호출).
-    //
-    // ※ 산업 레벨 노드는 효과가 없다 — 여는 레벨의 이름('밭')을 대신 적는다.
-    //   그게 이 노드의 실제 결과이고, 트리만 보고도 무엇이 열리는지 알 수 있어야 한다.
-    private static string DescribeEffect(UserTraitTableRow trait)
-    {
-        if (trait.EffectType == UserTraitEffect.SpeedAdd)
-        {
-            return $"작업속도 +{trait.EffectValue / 10f:0.#}%"; // EffectValue는 천분율
-        }
+    // 이 특성을 'level'로 올릴 때의 계정 레벨 조건. 조건 행이 없으면 0(조건 없음).
+    private static int GetRequiredAccountLevel(UserTraitTableRow trait, int level)
+        => GameDataLoader.TryGetUserTraitLevel(trait.UserTraitTID, level, out var row) ? row.AccountLevel : 0;
 
-        if (GameDataLoader.TryGetIndustryLevelByUnlockTid(trait.UserTraitTID, out var level))
-        {
-            return $"Lv{level.Level} {level.Name}";
-        }
-
-        return "";
-    }
+    // 천분율 가산을 "+15%"로 적는다 (EffectValue는 천분율).
+    private static string FormatPermille(int permille)
+        => $"+{permille / 10f:0.#}%";
 
     // 칸을 꺼내 온다. 모자라면 프리팹을 하나 더 찍는다 (Redraw에서 호출).
     //
@@ -535,12 +451,12 @@ public class TraitPresenter : MonoBehaviour
 
     #endregion
 
-    #region 찍기
+    #region 레벨 올리기
 
-    // 노드를 눌렀다 — **고르기만 한다** (TraitNodeView.Clicked 구독).
+    // 칸을 눌렀다 — **고르기만 한다** (TraitNodeView.Clicked 구독).
     //
     // 누르는 즉시 팝업을 띄우면 읽고 결정할 자리가 없다(T-079). 정보 영역에 펼치고,
-    // 배우기는 [확인]이 한다.
+    // 올리기는 [레벨 올리기]가 한다.
     private void OnNodeClicked(TraitNodeView view)
     {
         if (view.UserTraitTid == 0)
@@ -553,15 +469,15 @@ public class TraitPresenter : MonoBehaviour
         Redraw();
     }
 
-    // [확인]을 눌렀다 — 고른 특성을 배운다 (confirmButton.onClick).
+    // [레벨 올리기]를 눌렀다 — 고른 특성을 1레벨 올린다 (confirmButton.onClick).
     //
-    // 순서는 서버 판정과 같다 — 선행 → 계정 레벨 → 포인트.
+    // 순서는 서버 판정과 같다 — 최대 레벨 → 계정 레벨 → 포인트.
     // ※ 클라 판정은 안내일 뿐이다. 통과해도 서버가 다시 검사한다(게임기획코어 P4).
     private void OnConfirmClicked()
     {
         if (_learnWait != null)
         {
-            return; // 응답 대기 중 — 같은 노드를 두 번 보내면 두 번째가 AlreadyUnlocked로 거절된다
+            return; // 응답 대기 중 — 연타하면 두 번 올라간다
         }
 
         if (!GameDataLoader.TryGetUserTrait(_selectedTraitTid, out var trait))
@@ -569,15 +485,21 @@ public class TraitPresenter : MonoBehaviour
             return; // 고른 것이 없거나 테이블에 없는 TID
         }
 
-        if (_data.IsUnlocked(trait.UserTraitTID))
+        int level = _data.GetTraitLevel(trait.UserTraitTID);
+
+        if (level >= trait.MaxLevel)
         {
-            _wait.RaiseNotice("이미 배운 특성입니다.");
+            _wait.RaiseNotice("이미 최대 레벨입니다.");
 
             return;
         }
 
-        if (!MeetsConditions(trait.UserTraitTID, notice: true))
+        int required = GetRequiredAccountLevel(trait, level + 1);
+
+        if (_data.AccountLevel < required)
         {
+            _wait.RaiseNotice($"계정 레벨 {required}이(가) 필요합니다. (지금 {_data.AccountLevel})");
+
             return;
         }
 
@@ -588,73 +510,31 @@ public class TraitPresenter : MonoBehaviour
             return;
         }
 
-        _ui.AskConfirm($"특성 포인트 {trait.TraitPoint}점을 사용합니다.\n'{trait.Name}'을(를) 배우시겠습니까?",
+        _ui.AskConfirm($"특성 포인트 {trait.TraitPoint}점을 사용합니다.\n'{trait.Name}'을(를) Lv{level + 1}로 올리시겠습니까?",
                        () => RequestLearn(trait.UserTraitTID));
     }
 
-    // 계정 레벨·선행을 만족하는가. 'notice'면 못 만족한 이유를 알린다 (그리기 · 클릭에서 호출).
-    private bool MeetsConditions(int userTraitTid, bool notice = false)
-    {
-        if (!GameDataLoader.TryGetUnlock(userTraitTid, out var unlock))
-        {
-            return true; // 조건 행이 없으면 조건이 없는 것이다
-        }
-
-        foreach (int requiredTid in unlock.RequiredUnlockTIDs)
-        {
-            if (!_data.IsUnlocked(requiredTid))
-            {
-                if (notice)
-                {
-                    _wait.RaiseNotice($"{DescribeTrait(requiredTid)}을(를) 먼저 배워야 합니다.");
-                }
-
-                return false;
-            }
-        }
-
-        if (_data.AccountLevel < unlock.AccountLevel)
-        {
-            if (notice)
-            {
-                _wait.RaiseNotice($"계정 레벨 {unlock.AccountLevel}이(가) 필요합니다. (지금 {_data.AccountLevel})");
-            }
-
-            return false;
-        }
-
-        return true;
-    }
-
-    // 특성 TID를 사람이 읽는 이름으로 ('UserTraitTable.Name').
-    private static string DescribeTrait(int userTraitTid)
-    {
-        return GameDataLoader.TryGetUserTrait(userTraitTid, out var row) && row.Name.Length > 0
-            ? row.Name
-            : $"특성 #{userTraitTid}";
-    }
-
-    // 찍기 요청을 보내고 응답을 기다린다 (확인 팝업 콜백).
+    // 레벨 올리기 요청을 보내고 응답을 기다린다 (확인 팝업 콜백).
     //
-    // 결과는 'OnTraitLearnCompleted'가 받는다. 찍힌 표시는 앞서 오는 'S_UnlockResponse'
-    // → 'UnlocksChanged' → 'Redraw'가 이미 바꾼다.
+    // 결과는 'OnTraitLearnCompleted'가 받는다. 레벨은 응답('S_UserTraitLearnResponse.Level')
+    // → 'TraitsChanged' → 'Redraw'가 바꾼다.
     private void RequestLearn(int userTraitTid)
     {
         // 로그인 전에 보내면 서버가 응답 없이 버린다 — 'WorkStationSelectPresenter.CanSend'와 같은 이유
         if (!_data.IsLoggedIn)
         {
-            ClientLogger.Warn(ClientLogger.Send, "특성 찍기 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+            ClientLogger.Warn(ClientLogger.Send, "특성 레벨 올리기 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
 
             return;
         }
 
-        ClientLogger.Info(ClientLogger.Send, $"특성 찍기 요청 — {userTraitTid}");
+        ClientLogger.Info(ClientLogger.Send, $"특성 레벨 올리기 요청 — {userTraitTid}");
 
         NetworkManager.Instance.Send(new C_UserTraitLearnRequest { UserTraitTID = userTraitTid });
-        _learnWait = _wait.Begin("특성 찍기", onClosed: () => _learnWait = null);
+        _learnWait = _wait.Begin("특성 레벨 올리기", onClosed: () => _learnWait = null);
     }
 
-    // 찍기 결과 (PlayerDataModel.TraitLearnCompleted 구독).
+    // 레벨 올리기 결과 (PlayerDataModel.TraitLearnCompleted 구독).
     private void OnTraitLearnCompleted(bool success, EResultCode code)
     {
         if (_learnWait == null)

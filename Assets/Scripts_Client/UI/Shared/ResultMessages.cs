@@ -31,8 +31,9 @@ public static class ResultMessages
         EResultCode.UnlockLocked        => "해금 조건을 만족하지 않습니다.",
         EResultCode.NotEnoughTraitPoint => "특성 포인트가 부족합니다.",
         EResultCode.InvalidUserTraitTID => "존재하지 않는 특성입니다.",
-        // 특성 노드를 일반 해금 경로로 열려 할 때만 온다 — 정상 화면에서는 나오지 않는다(치트창 경로 · 이슈 #31).
+        // (결번) 특성이 해금 노드이던 시절의 값 — 레벨형으로 바뀐 뒤(2026-10-02 · T-108) 더 오지 않는다.
         EResultCode.TraitOnlyUnlock     => "특성 화면에서만 열 수 있습니다.",
+        EResultCode.TraitMaxLevel       => "이미 최대 레벨입니다.",
         EResultCode.EquipNotOwned       => "보유하지 않은 장비입니다.",
         EResultCode.InvalidEquipSlot    => "올바르지 않은 장비 칸입니다.",
         EResultCode.EquipKindMismatch   => "이 칸에 낄 수 없는 장비입니다.",

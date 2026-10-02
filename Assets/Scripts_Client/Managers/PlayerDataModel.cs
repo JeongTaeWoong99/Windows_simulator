@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
@@ -22,6 +23,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
     private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
+    private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
     // ─── 내부 상태 ───
@@ -236,6 +238,57 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
     }
 
+    // 특성의 지금 레벨. 올린 적 없으면 'UserTraitTable.BaseLevel', 없는 특성이면 0 (서버 'User.GetTraitLevel'과 같다).
+    public int GetTraitLevel(int userTraitTid)
+    {
+        if (_traitLevels.TryGetValue(userTraitTid, out int level))
+        {
+            return level;
+        }
+
+        return GameDataLoader.TryGetUserTrait(userTraitTid, out var trait) ? trait.BaseLevel : 0;
+    }
+
+    // 이 산업 레벨이 열렸는가 — **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이면 열린다 (2026-10-02 · T-108).
+    //
+    // ※ 개척 특성이 없는 산업이면 Lv1만 연다 — 표가 비었을 때 상위 레벨을 열어 두면 서버 거절로만 드러난다.
+    public bool IsIndustryLevelOpen(EIndustryType industry, int level)
+    {
+        if (level <= 1)
+        {
+            return true;
+        }
+
+        return GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait)
+            && GetTraitLevel(trait.UserTraitTID) >= level;
+    }
+
+    // 이 효과를 가진 특성 중 **이 산업에 붙는** 것의 가산 합(천분율).
+    //
+    // ⚠️ 서버 'User.SumTraitEffect'의 사본이다 — 레벨당 효과 × (지금 레벨 − 기본 레벨).
+    //   대상 산업이 'None'인 특성(공통)은 모든 산업에 붙는다. 표를 고치면 화면만 틀리고 조용하다.
+    public int GetTraitEffectSum(UserTraitEffect effect, EIndustryType industry)
+    {
+        int sum = 0;
+
+        foreach (var trait in GameDataLoader.UserTraits)
+        {
+            if (trait.EffectType != effect)
+            {
+                continue;
+            }
+
+            if (trait.Industry != IndustryType.None && (byte)trait.Industry != (byte)industry)
+            {
+                continue;
+            }
+
+            sum += trait.EffectValue * (GetTraitLevel(trait.UserTraitTID) - trait.BaseLevel);
+        }
+
+        return sum;
+    }
+
     // 우편함 — 안 받은 우편과 받은 지 7일이 안 된 우편. 서버가 준 순서 그대로다(정렬은 화면이 한다).
     // ※ 'ClaimedAtUnixMs = 0'이 안 받은 우편이다. 받은 우편은 7일 뒤 로그인 때 서버가 지운다.
     public IReadOnlyList<MailInfo> Mails => _mails;
@@ -267,8 +320,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
     // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
     //
-    // ※ 특성을 찍은 기록은 여기 없다 — 열린 해금 목록('IsUnlocked')으로 온다.
-    //   노드 TID = UnlockTID라 특성 전용 보유 목록이 따로 없다.
+    // ※ 특성 레벨은 여기 없다 — 'GetTraitLevel'이 따로 든다(S_UserTraitListResponse · 2026-10-02).
     public int  AccountLevel { get; private set; } = 1;
     public long AccountExp   { get; private set; }  // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 long이다
     public int  TraitPoint   { get; private set; }  // 남은(안 쓴) 특성 포인트
@@ -312,7 +364,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
 
     public event Action?                    AccountLevelChanged; // 계정 레벨·경험치·특성 포인트 갱신됨
-    public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 찍기 결과 (성공 여부·결과 코드)
+    public event Action?                    TraitsChanged;       // 특성 레벨 갱신됨 (로그인 목록 · 레벨 올리기 응답)
+    public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
 
     // ─── Unity 메시지 ───
 
@@ -370,6 +423,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  += OnUserTraitLearnResponded;
+        ServerPacketHandler.UserTraitListReceived    += OnUserTraitListReceived;
         ServerPacketHandler.MailListReceived         += OnMailListReceived;
         ServerPacketHandler.MailArrived              += OnMailArrived;
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
@@ -407,6 +461,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  -= OnUserTraitLearnResponded;
+        ServerPacketHandler.UserTraitListReceived    -= OnUserTraitListReceived;
         ServerPacketHandler.MailListReceived         -= OnMailListReceived;
         ServerPacketHandler.MailArrived              -= OnMailArrived;
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
@@ -747,21 +802,40 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         AccountLevelChanged?.Invoke();
     }
 
-    // 특성 찍기 결과 — 결과 코드만 나른다.
+    // 특성 레벨 올리기 결과 — 레벨을 반영하고 결과 코드를 나른다.
     //
-    // ★ 캐시를 여기서 건드리지 않는다. 찍힌 기록은 앞서 온 'S_UnlockResponse'가
-    //   열린 해금 목록에 넣었고, 남은 포인트는 뒤따라 오는 'S_AccountLevelResponse'가 채운다
-    //   ('OnUnlockResponded'가 골드를 건드리지 않는 것과 같은 이유).
+    // ★ 실패여도 'Level'(지금 레벨)을 반영한다 — 서버가 "지금 이 레벨이다"라고 알려 준 것이라
+    //   캐시가 어긋나 있었다면 여기서 맞는다. 남은 포인트는 앞서 온 'S_AccountLevelResponse'가 채운다.
     private void OnUserTraitLearnResponded(S_UserTraitLearnResponse res)
     {
         bool success = res.Result == EResultCode.Ok;
 
         if (!success)
         {
-            ClientLogger.Warn(ClientLogger.Recv, $"특성 찍기 실패 — {res.UserTraitTID}, 결과={res.Result}");
+            ClientLogger.Warn(ClientLogger.Recv, $"특성 레벨 올리기 실패 — {res.UserTraitTID}, 결과={res.Result}");
+        }
+
+        if (GameDataLoader.TryGetUserTrait(res.UserTraitTID, out _) && res.Level != GetTraitLevel(res.UserTraitTID))
+        {
+            _traitLevels[res.UserTraitTID] = res.Level;
+            TraitsChanged?.Invoke();
         }
 
         TraitLearnCompleted?.Invoke(success, res.Result);
+    }
+
+    // 특성 레벨 전체 — 로그인 직후 1회. 스냅샷이라 비우고 채운다.
+    // 기본 레벨보다 올린 특성만 실리므로 빠진 특성은 'GetTraitLevel'이 기본 레벨로 읽는다.
+    private void OnUserTraitListReceived(S_UserTraitListResponse res)
+    {
+        _traitLevels.Clear();
+
+        foreach (var info in res.Traits)
+        {
+            _traitLevels[info.UserTraitTID] = info.Level;
+        }
+
+        TraitsChanged?.Invoke();
     }
 
     #endregion

@@ -210,8 +210,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("장비 산업 필터 5개. 인스펙터에 넣은 순서가 곧 산업이다(농사·낚시·채굴·벌목·사냥)")]
     private Button[] equipFilterButtons = new Button[0];
 
-    // 효율 계산 줄 수 — 적성 기본값 · 속도 가산 · 현재 작업속도 · 실효 주기.
-    private const int EfficiencyRowCount = 4;
+    // 효율 계산 줄 수 — 적성 기본값 · 속도 가산 · 현재 작업속도 · 실효 주기 · 산출량.
+    private const int EfficiencyRowCount = 5;
 
     // 현재 ÷ 기본값이 1에서 이만큼 벗어나야 전역 배수로 본다 — 서버의 천분율 반올림 오차를 흡수한다.
     private const float GlobalMultiplierTolerance = 0.005f;
@@ -471,7 +471,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _isSubscribed                    = true;
         _data.WorkStationSlotsChanged   += Refresh;
         _data.CharactersChanged         += Refresh; // 보유 캐릭터가 늘면 줄도 늘어야 한다
-        _data.UnlocksChanged            += Refresh; // 특성으로 산업 레벨이 열리면 레벨 버튼이 켜져야 한다
+        _data.TraitsChanged             += Refresh; // 개척 특성이 오르면 레벨 버튼이 켜지고, 속도·산출량 줄이 바뀐다
         _data.WorkStationAssignCompleted += OnAssignCompleted;
         _data.EquipsChanged             += OnEquipsChanged;   // 지급·장착·해제가 전부 이 하나로 온다
         _data.EquipCompleted            += OnEquipCompleted;
@@ -488,7 +488,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _isSubscribed                    = false;
         _data.WorkStationSlotsChanged   -= Refresh;
         _data.CharactersChanged         -= Refresh;
-        _data.UnlocksChanged            -= Refresh;
+        _data.TraitsChanged             -= Refresh;
         _data.WorkStationAssignCompleted -= OnAssignCompleted;
         _data.EquipsChanged             -= OnEquipsChanged;
         _data.EquipCompleted            -= OnEquipCompleted;
@@ -725,9 +725,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 레벨 버튼의 이름·잠금·색을 지금 산업에 맞춘다 (표시 갱신 때 호출).
     //
     // ■ 잠긴 레벨도 보인다
-    // 숨기면 "더 있다"는 사실이 사라져 특성 트리로 갈 이유를 알 수 없다(해금 규칙과 같다).
-    // 열렸는지는 'IndustryLevelTable.UnlockTID'가 열린 해금 목록에 있는가로 판정한다 —
-    // **그 TID가 곧 특성 노드**라, 트리에서 찍으면 여기 버튼이 켜진다.
+    // 숨기면 "더 있다"는 사실이 사라져 특성 화면으로 갈 이유를 알 수 없다(해금 규칙과 같다).
+    // 열렸는지는 **그 산업 개척 특성의 레벨 ≥ 산업 레벨**로 판정한다('PlayerDataModel.IsIndustryLevelOpen'
+    // · 2026-10-02 T-116) — 특성 화면에서 개척을 올리면 여기 버튼이 켜진다.
     //
     // ※ 색 규칙은 산업 버튼과 같다(네 상태를 덮고, 잠김만 'disabledColor').
     private void RefreshIndustryLevelButtons()
@@ -754,7 +754,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            bool unlocked = _data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, level));
+            bool unlocked = _data.IsIndustryLevelOpen(industry, level);
 
             entry.button.interactable = unlocked;
 
@@ -775,6 +775,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
     }
+
+    // 이 산업을 여는 개척 특성의 이름 — 잠김 문구용. 표에 없으면 '개척'.
+    private static string GetIndustryUnlockTraitName(EIndustryType industry)
+        => GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait) && trait.Name.Length > 0 ? trait.Name : "개척";
 
     // 레벨 버튼 라벨 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
     private static string GetIndustryLevelName(EIndustryType industry, int level)
@@ -807,9 +811,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         var content = new TooltipContent(GetIndustryLevelName(industry, level));
 
-        if (!_data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, level)))
+        if (!_data.IsIndustryLevelOpen(industry, level))
         {
-            content.Row("잠김 — 특성 트리에서 연다", "");
+            content.Row($"잠김 — 특성 '{GetIndustryUnlockTraitName(industry)}' Lv{level} 필요", "");
         }
 
         // 줄이 두 묶음이라 제목을 끼워 가른다 — 앞은 이 레벨 자체의 제원, 뒤는 거기서 나오는 것이다.
@@ -893,7 +897,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         if (_selectedIndustryLevel > GameDataLoader.GetMaxIndustryLevel(industry)
-            || !_data.IsUnlocked(GameDataLoader.GetIndustryLevelUnlockTid(industry, _selectedIndustryLevel)))
+            || !_data.IsIndustryLevelOpen(industry, _selectedIndustryLevel))
         {
             _selectedIndustryLevel = DefaultIndustryLevel;
         }
@@ -1122,8 +1126,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 'CurrentWorkSpeed'는 보정이 전부 적용된 값이고 **내역은 오지 않는다.**
     // 그래서 가산 줄은 클라가 **같은 표를 다시 읽어 되짚는다**(아래 두 헬퍼).
     //
-    // ⚠️ **이건 서버 식의 사본이다** — 'User.GetEquipSpeedAdd' · 'User.GetTraitSpeedAdd'와 같은 모양이다.
-    //   서버가 가산 내역을 명시 필드로 내려 주면(일감 'T-055') 두 헬퍼를 지우고 받은 값을 그린다.
+    // ⚠️ **이건 서버 식의 사본이다** — 'User.GetEquipSpeedAdd' · 'User.GetTraitSpeedAdd'와 같은 모양이다
+    //   (특성 쪽은 'PlayerDataModel.GetTraitEffectSum'). 서버가 가산 내역을 명시 필드로 내려 주면
+    //   (일감 'T-055') 사본을 지우고 받은 값을 그린다.
     //   **표가 갈리면 화면만 틀리고 조용하다** — 속도 특성·장비 테이블을 고칠 때 여기도 본다.
     //
     // ■ 개발용 전역 배수를 역산한다
@@ -1146,7 +1151,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         int   baseSpeed = GameDataLoader.GetBaseWorkSpeed(aptitude);
         float cycle     = WorkStationProgress.CalculateCycleSeconds(slot);
 
-        int traitAdd = GetTraitSpeedAdd(slot.Industry);
+        int traitAdd = _data.GetTraitEffectSum(UserTraitEffect.SpeedAdd, slot.Industry);
         int equipAdd = GetEquipSpeedAdd(slot.CharacterId, slot.Industry);
 
         GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(baseSpeed));
@@ -1179,6 +1184,19 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         GetOrCreateEfficiencyRow(3).Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" : "—");
+
+        // ■ 산출량 — 판정 1회에 같은 자원이 몇 개 나오나 (2026-10-02 · T-108)
+        // 서버 식은 '100% + 공통 + 그 산업'이다(가산). 서버가 값을 보내지 않으므로 속도 가산과 같은 사본이다.
+        int commonYield   = _data.GetTraitEffectSum(UserTraitEffect.YieldAdd, EIndustryType.None);
+        int industryYield = _data.GetTraitEffectSum(UserTraitEffect.YieldAdd, slot.Industry) - commonYield;
+        var yieldRow      = GetOrCreateEfficiencyRow(4);
+
+        yieldRow.Bind("산출량", $"{(1000 + commonYield + industryYield) / 10f:0.#}%");
+
+        if (commonYield != 0 || industryYield != 0)
+        {
+            yieldRow.SetNote($"공통 {FormatPermille(commonYield)} · 산업 {FormatPermille(industryYield)}");
+        }
 
         HideEfficiencyRowsFrom(EfficiencyRowCount);
 
@@ -1224,37 +1242,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
             }
 
             sum += row.SpeedAddPermille;
-        }
-
-        return sum;
-    }
-
-    // 찍은 특성 중 **이 산업에 붙는** 속도 가산의 합(천분율).
-    //
-    // ⚠️ 서버 'User.GetTraitSpeedAdd'의 사본이다 (일감 'T-055'가 끝나면 지운다).
-    // ※ 특성을 찍은 기록은 **열린 해금 목록**으로 온다 — 'UserTraitTID'가 곧 'UnlockTID'다.
-    private int GetTraitSpeedAdd(EIndustryType industry)
-    {
-        var sum = 0;
-
-        foreach (var trait in GameDataLoader.UserTraits)
-        {
-            if (trait.EffectType != UserTraitEffect.SpeedAdd)
-            {
-                continue;
-            }
-
-            if (trait.Industry != IndustryType.None && (EIndustryType)(byte)trait.Industry != industry)
-            {
-                continue;
-            }
-
-            if (!_data.IsUnlocked(trait.UserTraitTID))
-            {
-                continue;
-            }
-
-            sum += trait.EffectValue;
         }
 
         return sum;
