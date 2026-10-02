@@ -37,6 +37,7 @@ namespace GameData
         public static TableSet<int, UnlockTableRow> UnlockTable { get; private set; } = null!;
         public static TableSet<int, AccountLevelTableRow> AccountLevelTable { get; private set; } = null!;
         public static TableSet<int, UserTraitTableRow> UserTraitTable { get; private set; } = null!;
+        public static TableSet<int, UserTraitLevelTableRow> UserTraitLevelTable { get; private set; } = null!;
         public static TableSet<int, WorkSlotTableRow> WorkSlotTable { get; private set; } = null!;
 
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
@@ -68,6 +69,7 @@ namespace GameData
             UnlockTable = TableSet<int, UnlockTableRow>.From(read("UnlockTable.bytes"), r => r.UnlockTID);
             AccountLevelTable = TableSet<int, AccountLevelTableRow>.From(read("AccountLevelTable.bytes"), r => r.AccountLevelTID);
             UserTraitTable = TableSet<int, UserTraitTableRow>.From(read("UserTraitTable.bytes"), r => r.UserTraitTID);
+            UserTraitLevelTable = TableSet<int, UserTraitLevelTableRow>.From(read("UserTraitLevelTable.bytes"), r => r.UserTraitLevelTID);
             WorkSlotTable = TableSet<int, WorkSlotTableRow>.From(read("WorkSlotTable.bytes"), r => r.WorkSlotTID);
         }
     }

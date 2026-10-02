@@ -9,7 +9,7 @@ public partial class User
     public WorkStation WorkStation { get; } = new();
 
     /// <summary>
-    /// 이 산업 레벨이 열려 있는가. 원본은 <c>IndustryLevelTable.UnlockTID</c> → <c>t_user_unlock</c> 하나다(특성 노드로 연다).
+    /// 이 산업 레벨이 열려 있는가. 원본은 그 산업 개척 특성의 레벨이다 — 특성 레벨이 곧 열린 산업 레벨(T-108).
     /// 기본 레벨(Lv1)은 늘 열려 있고, 표에 없는 레벨은 닫혀 있다. <b>해금은 계정 단위·영구다</b>(산업레벨.md 3.2).
     /// </summary>
     public bool IsIndustryLevelUnlocked(IndustryType industry, int level)
@@ -20,8 +20,9 @@ public partial class User
         }
 
         return level > WorkStationSlot.DefaultIndustryLevel &&
-               _industryLevels.TryGet(industry, level, out var row) &&
-               IsUnlocked(row.UnlockTID);
+               _industryLevels.TryGet(industry, level, out _) &&
+               _traitCatalog.TryGetIndustryUnlock(industry, out var pioneer) &&
+               GetTraitLevel(pioneer.UserTraitTID) >= level;
     }
 
     /// <summary>이 칸이 열려 있는가. <c>WorkSlotTable</c>에 없는 번호는 없는 칸이라 false다.</summary>
@@ -154,9 +155,19 @@ public partial class User
 
         foreach (var harvest in harvests)
         {
-            // 상자 — 자원 롤과 따로, 판정 1회마다 그 슬롯 (산업, 레벨)의 행을 굴려 이 슬롯의 수확에 얹는다(T-030).
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
+                // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
+                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry);
+                if (yieldAdd > 0)
+                {
+                    foreach (var itemTid in harvest.Gained.Keys.ToList())
+                    {
+                        harvest.Gained[itemTid] = ApplyYield(harvest.Gained[itemTid], yieldAdd, Random.Shared);
+                    }
+                }
+
+                // 상자 — 자원 롤과 따로, 판정 1회마다 그 슬롯 (산업, 레벨)의 행을 굴려 이 슬롯의 수확에 얹는다(T-030).
                 foreach (var (itemTid, count) in _commonRewards.Roll(rolledSlot.Industry, rolledSlot.IndustryLevel, harvest.JudgeCount, Random.Shared))
                 {
                     harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
@@ -289,6 +300,28 @@ public partial class User
                 Send(new S_WorkStationSlotSyncResponse { Slot = slot.ToInfo() });
             }
         }
+    }
+
+    /// <summary>
+    /// 판정 <paramref name="count"/>번 나온 자원에 산출량을 붙인 개수. 산출량 = 1000‰ + <paramref name="yieldAddPermille"/>.
+    /// 판정마다 정수부만큼 주고, 소수부는 확률로 1개 더 준다 — 120%면 1개 + 20% 확률로 1개 더(T-108).
+    /// </summary>
+    public static int ApplyYield(int count, int yieldAddPermille, Random random)
+    {
+        var yieldPermille = WorkStationSlot.WorkSpeedScale + yieldAddPermille;
+        var whole = yieldPermille / WorkStationSlot.WorkSpeedScale;
+        var frac  = yieldPermille % WorkStationSlot.WorkSpeedScale;
+
+        var total = count * whole;
+        for (var i = 0; i < count && frac > 0; i++)
+        {
+            if (random.Next(WorkStationSlot.WorkSpeedScale) < frac)
+            {
+                total++;
+            }
+        }
+
+        return total;
     }
 
     // 이 슬롯의 채취 속도(천분율). 속도에 관여하는 것은 전부 여기로 모은다 — 정산 → ApplyWorkSpeed 순서를 타는 유일한 경로라

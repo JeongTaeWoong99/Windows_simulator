@@ -96,6 +96,7 @@ namespace MikaProtocol
         C_StorageSortRequest = 65,
         C_StorageMoveSlotRequest = 66,
         S_StorageSlotsResponse = 67,
+        S_UserTraitListResponse = 68,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -306,7 +307,7 @@ namespace MikaProtocol
     /// 해금 결과. 열린 뒤 무엇이 달라지는가는 <b>콘텐츠별 기존 패킷</b>이 따로 밀어 준다
     /// (작업슬롯이면 <see cref="S_WorkStationSlotSyncResponse"/>). 서버가 직접 연 경우(퀘스트·치트)도 같은 패킷이 온다.
     /// </summary>
-    /// <summary>특성 노드 하나를 찍는다. 조건은 그 노드의 <c>UnlockTable</c> 행 + 특성 포인트다.</summary>
+    /// <summary>특성을 1레벨 올린다. 조건은 다음 레벨의 <c>UserTraitLevelTable</c> 행(계정 레벨) + 특성 포인트다.</summary>
     [MemoryPackable, Packet(PacketId.C_UserTraitLearnRequest)]
     public partial class C_UserTraitLearnRequest : IPacket
     {
@@ -314,7 +315,7 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 특성 찍기 결과. 성공하면 이 앞에 <see cref="S_UnlockResponse"/>가, 뒤에 <see cref="S_AccountLevelResponse"/>(남은 포인트)가 온다.
+    /// 특성 레벨업 결과. 성공하면 이 앞에 <see cref="S_AccountLevelResponse"/>(남은 포인트)가 온다.
     /// 속도 특성이면 바뀐 슬롯이 <see cref="S_WorkStationSlotSyncResponse"/>로 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_UserTraitLearnResponse)]
@@ -322,6 +323,14 @@ namespace MikaProtocol
     {
         public EResultCode Result       { get; set; }
         public int         UserTraitTID { get; set; }
+        public int         Level        { get; set; }   // 성공이면 올린 뒤 레벨, 실패면 지금 레벨
+    }
+
+    /// <summary>특성 레벨 스냅샷(로그인 직후). 기본 레벨보다 올린 특성만 싣는다 — 없는 특성은 <c>UserTraitTable.BaseLevel</c>이다.</summary>
+    [MemoryPackable, Packet(PacketId.S_UserTraitListResponse)]
+    public partial class S_UserTraitListResponse : IPacket
+    {
+        public List<UserTraitInfo> Traits { get; set; } = new();
     }
 
     /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>

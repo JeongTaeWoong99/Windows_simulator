@@ -1,0 +1,912 @@
+[
+  {
+    "UserTraitLevelTID": 10102,
+    "UserTraitTID": 101,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "농사 개척 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 10103,
+    "UserTraitTID": 101,
+    "Level": 3,
+    "AccountLevel": 15,
+    "Description": "농사 개척 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 10104,
+    "UserTraitTID": 101,
+    "Level": 4,
+    "AccountLevel": 30,
+    "Description": "농사 개척 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 10105,
+    "UserTraitTID": 101,
+    "Level": 5,
+    "AccountLevel": 50,
+    "Description": "농사 개척 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 10202,
+    "UserTraitTID": 102,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "낚시 개척 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 10203,
+    "UserTraitTID": 102,
+    "Level": 3,
+    "AccountLevel": 15,
+    "Description": "낚시 개척 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 10204,
+    "UserTraitTID": 102,
+    "Level": 4,
+    "AccountLevel": 30,
+    "Description": "낚시 개척 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 10205,
+    "UserTraitTID": 102,
+    "Level": 5,
+    "AccountLevel": 50,
+    "Description": "낚시 개척 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 10302,
+    "UserTraitTID": 103,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "채굴 개척 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 10303,
+    "UserTraitTID": 103,
+    "Level": 3,
+    "AccountLevel": 15,
+    "Description": "채굴 개척 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 10304,
+    "UserTraitTID": 103,
+    "Level": 4,
+    "AccountLevel": 30,
+    "Description": "채굴 개척 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 10305,
+    "UserTraitTID": 103,
+    "Level": 5,
+    "AccountLevel": 50,
+    "Description": "채굴 개척 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 10402,
+    "UserTraitTID": 104,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "벌목 개척 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 10403,
+    "UserTraitTID": 104,
+    "Level": 3,
+    "AccountLevel": 15,
+    "Description": "벌목 개척 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 10404,
+    "UserTraitTID": 104,
+    "Level": 4,
+    "AccountLevel": 30,
+    "Description": "벌목 개척 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 10405,
+    "UserTraitTID": 104,
+    "Level": 5,
+    "AccountLevel": 50,
+    "Description": "벌목 개척 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 10502,
+    "UserTraitTID": 105,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "사냥 개척 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 10503,
+    "UserTraitTID": 105,
+    "Level": 3,
+    "AccountLevel": 15,
+    "Description": "사냥 개척 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 10504,
+    "UserTraitTID": 105,
+    "Level": 4,
+    "AccountLevel": 30,
+    "Description": "사냥 개척 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 10505,
+    "UserTraitTID": 105,
+    "Level": 5,
+    "AccountLevel": 50,
+    "Description": "사냥 개척 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20101,
+    "UserTraitTID": 201,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "농사 속도 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 20102,
+    "UserTraitTID": 201,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "농사 속도 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 20103,
+    "UserTraitTID": 201,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "농사 속도 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 20104,
+    "UserTraitTID": 201,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "농사 속도 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 20105,
+    "UserTraitTID": 201,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "농사 속도 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20106,
+    "UserTraitTID": 201,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "농사 속도 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 20107,
+    "UserTraitTID": 201,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "농사 속도 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 20108,
+    "UserTraitTID": 201,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "농사 속도 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 20109,
+    "UserTraitTID": 201,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "농사 속도 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 20110,
+    "UserTraitTID": 201,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "농사 속도 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 20201,
+    "UserTraitTID": 202,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "낚시 속도 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 20202,
+    "UserTraitTID": 202,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "낚시 속도 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 20203,
+    "UserTraitTID": 202,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "낚시 속도 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 20204,
+    "UserTraitTID": 202,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "낚시 속도 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 20205,
+    "UserTraitTID": 202,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "낚시 속도 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20206,
+    "UserTraitTID": 202,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "낚시 속도 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 20207,
+    "UserTraitTID": 202,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "낚시 속도 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 20208,
+    "UserTraitTID": 202,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "낚시 속도 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 20209,
+    "UserTraitTID": 202,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "낚시 속도 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 20210,
+    "UserTraitTID": 202,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "낚시 속도 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 20301,
+    "UserTraitTID": 203,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "채굴 속도 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 20302,
+    "UserTraitTID": 203,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "채굴 속도 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 20303,
+    "UserTraitTID": 203,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "채굴 속도 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 20304,
+    "UserTraitTID": 203,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "채굴 속도 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 20305,
+    "UserTraitTID": 203,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "채굴 속도 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20306,
+    "UserTraitTID": 203,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "채굴 속도 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 20307,
+    "UserTraitTID": 203,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "채굴 속도 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 20308,
+    "UserTraitTID": 203,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "채굴 속도 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 20309,
+    "UserTraitTID": 203,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "채굴 속도 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 20310,
+    "UserTraitTID": 203,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "채굴 속도 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 20401,
+    "UserTraitTID": 204,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "벌목 속도 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 20402,
+    "UserTraitTID": 204,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "벌목 속도 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 20403,
+    "UserTraitTID": 204,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "벌목 속도 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 20404,
+    "UserTraitTID": 204,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "벌목 속도 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 20405,
+    "UserTraitTID": 204,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "벌목 속도 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20406,
+    "UserTraitTID": 204,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "벌목 속도 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 20407,
+    "UserTraitTID": 204,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "벌목 속도 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 20408,
+    "UserTraitTID": 204,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "벌목 속도 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 20409,
+    "UserTraitTID": 204,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "벌목 속도 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 20410,
+    "UserTraitTID": 204,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "벌목 속도 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 20501,
+    "UserTraitTID": 205,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "사냥 속도 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 20502,
+    "UserTraitTID": 205,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "사냥 속도 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 20503,
+    "UserTraitTID": 205,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "사냥 속도 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 20504,
+    "UserTraitTID": 205,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "사냥 속도 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 20505,
+    "UserTraitTID": 205,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "사냥 속도 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 20506,
+    "UserTraitTID": 205,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "사냥 속도 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 20507,
+    "UserTraitTID": 205,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "사냥 속도 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 20508,
+    "UserTraitTID": 205,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "사냥 속도 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 20509,
+    "UserTraitTID": 205,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "사냥 속도 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 20510,
+    "UserTraitTID": 205,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "사냥 속도 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30001,
+    "UserTraitTID": 300,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "공통 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30002,
+    "UserTraitTID": 300,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "공통 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30003,
+    "UserTraitTID": 300,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "공통 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30004,
+    "UserTraitTID": 300,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "공통 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30005,
+    "UserTraitTID": 300,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "공통 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30006,
+    "UserTraitTID": 300,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "공통 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30007,
+    "UserTraitTID": 300,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "공통 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30008,
+    "UserTraitTID": 300,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "공통 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30009,
+    "UserTraitTID": 300,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "공통 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30010,
+    "UserTraitTID": 300,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "공통 산출량 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30101,
+    "UserTraitTID": 301,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "농사 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30102,
+    "UserTraitTID": 301,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "농사 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30103,
+    "UserTraitTID": 301,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "농사 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30104,
+    "UserTraitTID": 301,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "농사 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30105,
+    "UserTraitTID": 301,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "농사 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30106,
+    "UserTraitTID": 301,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "농사 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30107,
+    "UserTraitTID": 301,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "농사 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30108,
+    "UserTraitTID": 301,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "농사 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30109,
+    "UserTraitTID": 301,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "농사 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30110,
+    "UserTraitTID": 301,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "농사 산출량 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30201,
+    "UserTraitTID": 302,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "낚시 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30202,
+    "UserTraitTID": 302,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "낚시 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30203,
+    "UserTraitTID": 302,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "낚시 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30204,
+    "UserTraitTID": 302,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "낚시 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30205,
+    "UserTraitTID": 302,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "낚시 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30206,
+    "UserTraitTID": 302,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "낚시 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30207,
+    "UserTraitTID": 302,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "낚시 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30208,
+    "UserTraitTID": 302,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "낚시 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30209,
+    "UserTraitTID": 302,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "낚시 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30210,
+    "UserTraitTID": 302,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "낚시 산출량 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30301,
+    "UserTraitTID": 303,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "채굴 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30302,
+    "UserTraitTID": 303,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "채굴 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30303,
+    "UserTraitTID": 303,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "채굴 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30304,
+    "UserTraitTID": 303,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "채굴 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30305,
+    "UserTraitTID": 303,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "채굴 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30306,
+    "UserTraitTID": 303,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "채굴 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30307,
+    "UserTraitTID": 303,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "채굴 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30308,
+    "UserTraitTID": 303,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "채굴 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30309,
+    "UserTraitTID": 303,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "채굴 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30310,
+    "UserTraitTID": 303,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "채굴 산출량 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30401,
+    "UserTraitTID": 304,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "벌목 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30402,
+    "UserTraitTID": 304,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "벌목 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30403,
+    "UserTraitTID": 304,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "벌목 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30404,
+    "UserTraitTID": 304,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "벌목 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30405,
+    "UserTraitTID": 304,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "벌목 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30406,
+    "UserTraitTID": 304,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "벌목 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30407,
+    "UserTraitTID": 304,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "벌목 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30408,
+    "UserTraitTID": 304,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "벌목 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30409,
+    "UserTraitTID": 304,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "벌목 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30410,
+    "UserTraitTID": 304,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "벌목 산출량 Lv10"
+  },
+  {
+    "UserTraitLevelTID": 30501,
+    "UserTraitTID": 305,
+    "Level": 1,
+    "AccountLevel": 0,
+    "Description": "사냥 산출량 Lv1"
+  },
+  {
+    "UserTraitLevelTID": 30502,
+    "UserTraitTID": 305,
+    "Level": 2,
+    "AccountLevel": 5,
+    "Description": "사냥 산출량 Lv2"
+  },
+  {
+    "UserTraitLevelTID": 30503,
+    "UserTraitTID": 305,
+    "Level": 3,
+    "AccountLevel": 10,
+    "Description": "사냥 산출량 Lv3"
+  },
+  {
+    "UserTraitLevelTID": 30504,
+    "UserTraitTID": 305,
+    "Level": 4,
+    "AccountLevel": 15,
+    "Description": "사냥 산출량 Lv4"
+  },
+  {
+    "UserTraitLevelTID": 30505,
+    "UserTraitTID": 305,
+    "Level": 5,
+    "AccountLevel": 20,
+    "Description": "사냥 산출량 Lv5"
+  },
+  {
+    "UserTraitLevelTID": 30506,
+    "UserTraitTID": 305,
+    "Level": 6,
+    "AccountLevel": 25,
+    "Description": "사냥 산출량 Lv6"
+  },
+  {
+    "UserTraitLevelTID": 30507,
+    "UserTraitTID": 305,
+    "Level": 7,
+    "AccountLevel": 30,
+    "Description": "사냥 산출량 Lv7"
+  },
+  {
+    "UserTraitLevelTID": 30508,
+    "UserTraitTID": 305,
+    "Level": 8,
+    "AccountLevel": 35,
+    "Description": "사냥 산출량 Lv8"
+  },
+  {
+    "UserTraitLevelTID": 30509,
+    "UserTraitTID": 305,
+    "Level": 9,
+    "AccountLevel": 40,
+    "Description": "사냥 산출량 Lv9"
+  },
+  {
+    "UserTraitLevelTID": 30510,
+    "UserTraitTID": 305,
+    "Level": 10,
+    "AccountLevel": 45,
+    "Description": "사냥 산출량 Lv10"
+  }
+]

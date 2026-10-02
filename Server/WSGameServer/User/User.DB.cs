@@ -49,6 +49,7 @@ public partial class User
 
         // 열린 해금이 곧 열린 칸의 근거라 슬롯보다 먼저 적재한다 — 잠긴 칸의 배치 행을 걸러야 한다.
         LoadUnlocks(data.UnlockRows);
+        LoadTraits(data.TraitRows ?? new List<UserTraitRow>());
         LoadWorkStation(data.WorkStationSlotRows, startedAt);
     }
 

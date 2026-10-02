@@ -166,4 +166,12 @@ namespace MikaProtocol
         public long Key  { get; set; }
         public int  Slot { get; set; }
     }
+
+    /// <summary>특성 하나의 레벨.</summary>
+    [MemoryPackable]
+    public partial class UserTraitInfo
+    {
+        public int UserTraitTID { get; set; }
+        public int Level        { get; set; }
+    }
 }

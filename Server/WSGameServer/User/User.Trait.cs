@@ -5,76 +5,119 @@ namespace WSGameServer;
 
 public partial class User
 {
+    // 기본 레벨보다 올린 특성만 담는다. 없으면 UserTraitTable.BaseLevel이다.
+    private readonly Dictionary<int, int> _traitLevels = new();
+
+    /// <summary>DB에서 읽은 특성 레벨을 적재한다(로그인 시 1회). 표에 없는 특성은 경고 후 버린다.</summary>
+    public void LoadTraits(IReadOnlyList<UserTraitRow> rows)
+    {
+        _traitLevels.Clear();
+        foreach (var row in rows)
+        {
+            if (!_traitCatalog.TryGet(row.user_trait_tid, out var trait))
+            {
+                ServerLog.Warn("특성", $"표에 없는 특성 — 버린다. Uid={Uid} UserTraitTID={row.user_trait_tid}");
+                continue;
+            }
+
+            _traitLevels[row.user_trait_tid] = Math.Clamp(row.level, trait.BaseLevel, trait.MaxLevel);
+        }
+    }
+
+    /// <summary>특성의 지금 레벨. 올린 적 없으면 기본 레벨, 없는 특성이면 0.</summary>
+    public int GetTraitLevel(int userTraitTid)
+    {
+        if (_traitLevels.TryGetValue(userTraitTid, out var level))
+        {
+            return level;
+        }
+
+        return _traitCatalog.TryGet(userTraitTid, out var trait) ? trait.BaseLevel : 0;
+    }
+
+    /// <summary>특성 레벨 스냅샷을 보낸다(로그인 직후).</summary>
+    public void SendTraitList()
+    {
+        Send(new S_UserTraitListResponse
+        {
+            Traits = _traitLevels.OrderBy(p => p.Key)
+                .Select(p => new UserTraitInfo { UserTraitTID = p.Key, Level = p.Value })
+                .ToList(),
+        });
+    }
+
     /// <summary>
-    /// 특성 노드 하나를 찍는다. 노드 TID = <c>UnlockTID</c>라 판정은 해금과 같고(<see cref="CheckUnlockConditions"/>),
-    /// 거기에 특성 포인트가 붙는다. <b>포인트는 조건을 전부 통과한 뒤에만 빠진다.</b> 찍은 기록은 <c>t_user_unlock</c> 하나다.
+    /// 특성을 1레벨 올린다. 조건은 다음 레벨의 계정 레벨 + 특성 포인트다.
+    /// <b>포인트는 조건을 전부 통과한 뒤에만 빠진다</b> — 거절 경로에서 포인트가 움직이지 않는다.
     /// </summary>
     public void TryLearnTrait(int userTraitTid, DateTime now)
     {
-        if (!_traitCatalog.TryGet(userTraitTid, out var trait) ||
-            !_unlockCatalog.TryGetUnlock(userTraitTid, out var unlock))
+        if (!_traitCatalog.TryGet(userTraitTid, out var trait))
         {
-            Reject(EResultCode.InvalidUserTraitTID, "없는 TID");
+            Reject(EResultCode.InvalidUserTraitTID, "없는 TID", 0);
             return;
         }
 
-        var (code, reason) = CheckUnlockConditions(userTraitTid, unlock);
-        if (code != EResultCode.Ok)
+        var current = GetTraitLevel(userTraitTid);
+        var next    = current + 1;
+        if (next > trait.MaxLevel || !_traitCatalog.TryGetLevel(userTraitTid, next, out var levelRow))
         {
-            Reject(code, reason);
+            Reject(EResultCode.TraitMaxLevel, $"최대 레벨 {trait.MaxLevel}", current);
             return;
         }
 
-        // 특성 노드의 해금 행에는 골드를 두지 않는다 — 비용은 특성 포인트 하나다. 두면 여기서 함께 받는다.
-        if (unlock.Gold > 0 && Gold < unlock.Gold)
+        if (AccountLevel < levelRow.AccountLevel)
         {
-            Reject(EResultCode.NotEnoughCurrency, $"골드 {Gold} < {unlock.Gold}");
+            Reject(EResultCode.UnlockLocked, $"계정 Lv{AccountLevel} < {levelRow.AccountLevel}", current);
             return;
         }
 
         if (!TrySpendTraitPoint(trait.TraitPoint))
         {
-            Reject(EResultCode.NotEnoughTraitPoint, $"포인트 {TraitPoint} < {trait.TraitPoint}");
+            Reject(EResultCode.NotEnoughTraitPoint, $"포인트 {TraitPoint} < {trait.TraitPoint}", current);
             return;
         }
 
-        if (unlock.Gold > 0)
+        // 속도·산출량은 판정에 붙는다 — 레벨을 바꾸기 전에 정산해야 이전 구간에 소급되지 않는다.
+        if (trait.EffectType is UserTraitEffect.SpeedAdd or UserTraitEffect.YieldAdd)
         {
-            TrySpendGold(unlock.Gold);
+            SettleWorkStation(now);
         }
 
-        ApplyUnlock(userTraitTid, now);
-        Send(new S_UserTraitLearnResponse { Result = EResultCode.Ok, UserTraitTID = userTraitTid });
+        _traitLevels[userTraitTid] = next;
+        PostDBTask(new SaveUserTraitRepository(this, userTraitTid, next));
+        ServerLog.Info("특성", $"Lv{next} Uid={Uid} UserTraitTID={userTraitTid}");
+
+        if (trait.EffectType == UserTraitEffect.SpeedAdd)
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
+        Send(new S_UserTraitLearnResponse { Result = EResultCode.Ok, UserTraitTID = userTraitTid, Level = next });
         return;
 
-        void Reject(EResultCode code, string reason)
+        void Reject(EResultCode code, string reason, int level)
         {
             ServerLog.Warn("특성", $"거절 — {reason}. Uid={Uid} UserTraitTID={userTraitTid}");
-            Send(new S_UserTraitLearnResponse { Result = code, UserTraitTID = userTraitTid });
+            Send(new S_UserTraitLearnResponse { Result = code, UserTraitTID = userTraitTid, Level = level });
         }
     }
 
-    // 해금 후속 — 찍기·치트·보상 어느 경로로 열려도 같은 시점에 붙는다(#31).
-    // 속도 특성은 열리는 순간부터 붙는다. 정산을 먼저 해야 이전 구간이 새 속도로 소급되지 않는다.
-    private void OnTraitUnlocked(int unlockTid, DateTime now)
-    {
-        if (!_traitCatalog.TryGet(unlockTid, out var trait) || trait.EffectType != UserTraitEffect.SpeedAdd)
-        {
-            return;
-        }
+    /// <summary>속도 특성의 가산 합(천분율). 대상 산업이 <c>None</c>이면 전 산업에 붙는다.</summary>
+    public int GetTraitSpeedAdd(IndustryType industry) => SumTraitEffect(_traitCatalog.SpeedAdds, industry);
 
-        RefreshWorkStationSpeed(now);
-    }
+    /// <summary>산출량 특성의 가산 합(천분율). 공통(<c>None</c>)과 그 산업을 더한다.</summary>
+    public int GetTraitYieldAdd(IndustryType industry) => SumTraitEffect(_traitCatalog.YieldAdds, industry);
 
-    /// <summary>열린 속도 특성의 가산 합(천분율). 대상 산업이 <c>None</c>이면 전 산업에 붙는다.</summary>
-    public int GetTraitSpeedAdd(IndustryType industry)
+    // 레벨당 효과 × (지금 레벨 − 기본 레벨)
+    private int SumTraitEffect(IReadOnlyList<UserTraitTableRow> traits, IndustryType industry)
     {
         var sum = 0;
-        foreach (var trait in _traitCatalog.SpeedAdds)
+        foreach (var trait in traits)
         {
-            if ((trait.Industry == IndustryType.None || trait.Industry == industry) && IsUnlocked(trait.UserTraitTID))
+            if (trait.Industry == IndustryType.None || trait.Industry == industry)
             {
-                sum += trait.EffectValue;
+                sum += trait.EffectValue * (GetTraitLevel(trait.UserTraitTID) - trait.BaseLevel);
             }
         }
 

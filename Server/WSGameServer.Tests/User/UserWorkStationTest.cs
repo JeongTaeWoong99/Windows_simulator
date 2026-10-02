@@ -24,14 +24,14 @@ public class UserWorkStationTest
 
     private const long CharacterId = 500;
 
-    /// <summary>낚시 Lv2를 여는 해금(특성 노드). Lv3·4·5는 +1씩 — 실데이터 대역 2000 + 산업×100 + 레벨.</summary>
-    private const int FishingLv2 = 2202;
+    /// <summary>낚시 개척 특성(실데이터 100 + 산업). 특성 레벨이 곧 열린 산업 레벨이다(T-108).</summary>
+    private const int FishingPioneer = 102;
 
     public UserWorkStationTest() => GameTableFixture.EnsureLoaded();
 
     /// <summary>
-    /// 산업 레벨 1~5 행(판정 30초 고정 · 레벨별 UnlockTID)을 넣고 <paramref name="upTo"/>까지의 해금을 연다.
-    /// 산업 레벨은 해금으로만 열린다 — 열렸는지의 원본은 <c>t_user_unlock</c>이다.
+    /// 산업 레벨 1~5 행(판정 30초 고정)을 넣고 개척 특성을 <paramref name="upTo"/>레벨로 둔다.
+    /// 산업 레벨은 개척 특성으로만 열린다 — 열렸는지의 원본은 <c>t_user_trait</c>다.
     /// </summary>
     private static void OpenIndustryLevels(TestUserBuilder b, User user, IndustryType industry, int upTo)
     {
@@ -44,15 +44,12 @@ public class UserWorkStationTest
                 {
                     IndustryLevelTID = (int)ind * 100 + level, IndustryType = ind, Level = level,
                     Name = $"{ind} Lv{level}", RequiredScore = 30_000,
-                    UnlockTID = level == 1 ? 0 : 2000 + (int)ind * 100 + level,
                 });
             }
         }
 
         b.Levels.Load(rows);
-        user.LoadUnlocks(Enumerable.Range(2, Math.Max(0, upTo - 1))
-            .Select(level => new UserUnlockRow { unlock_tid = 2000 + (int)industry * 100 + level })
-            .ToList());
+        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = 100 + (int)industry, level = upTo } });
     }
 
     /// <summary>캐릭터 1장을 보유한 유저를 만든다.</summary>
@@ -288,10 +285,9 @@ public class UserWorkStationTest
             {
                 IndustryLevelTID = 202, IndustryType = IndustryType.Fishing, Level = 2,
                 Name = "저수지", RequiredScore = 90_000,     // 90초
-                UnlockTID = FishingLv2,
             },
         });
-        user.LoadUnlocks(new[] { new UserUnlockRow { unlock_tid = FishingLv2 } });
+        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = FishingPioneer, level = 2 } });
 
         // 60초 경과 후 Lv2로 변경. Lv1 비용(30초)으로 정산하면 2회,
         // 새 Lv2 비용(90초)으로 계산해 버리면 0회가 된다.
@@ -324,12 +320,10 @@ public class UserWorkStationTest
             {
                 new() { slot_index = 0, industry = (int)IndustryType.Fishing, character_id = CharacterId, industry_level = 4 },
             },
-            new List<UserUnlockRow>
-            {
-                new() { unlock_tid = FishingLv2 }, new() { unlock_tid = FishingLv2 + 1 }, new() { unlock_tid = FishingLv2 + 2 },
-            },
+            new List<UserUnlockRow>(),
             new List<UserEquipRow>(),
-            new List<CharacterEquipRow>()), Base);
+            new List<CharacterEquipRow>(),
+            TraitRows: new List<UserTraitRow> { new() { user_trait_tid = FishingPioneer, level = 4 } }), Base);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         slot.IndustryLevel.ShouldBe(4);

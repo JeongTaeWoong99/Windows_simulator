@@ -16,6 +16,8 @@ namespace GameData
         public UserTraitEffect EffectType   { get; set; }        // eUserTraitEffect
         public IndustryType    Industry     { get; set; }        // eIndustryType
         public int             EffectValue  { get; set; }        // int [0..-]
+        public int             BaseLevel    { get; set; }        // int [0..-]
+        public int             MaxLevel     { get; set; }        // int [1..-]
         public string          Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }

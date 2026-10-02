@@ -81,6 +81,12 @@ internal sealed class SqliteFixture : IDisposable
                 unlock_tid  INTEGER NOT NULL,
                 unlocked_at TEXT    NOT NULL DEFAULT (datetime('now')),
                 PRIMARY KEY (user_id, unlock_tid)
+            ) STRICT;
+            CREATE TABLE t_user_trait (
+                user_id        INTEGER NOT NULL,
+                user_trait_tid INTEGER NOT NULL,
+                level          INTEGER NOT NULL,
+                PRIMARY KEY (user_id, user_trait_tid)
             ) STRICT;");
 
         CreateEquipTables();

@@ -231,6 +231,7 @@ public sealed partial class User
 
         // 열린 해금을 슬롯보다 먼저 보낸다 — 클라가 8칸 중 어느 칸이 잠겼는지 그릴 때 이미 알고 있어야 한다.
         SendUnlockList();  // S_UnlockListResponse
+        SendTraitList();   // S_UserTraitListResponse — 산업 레벨이 열렸는지도 여기서 정해진다
 
         // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
         // 슬롯은 로그인 흐름에서 이미 "지금부터" 시작하도록 만들어져 있다.

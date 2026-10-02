@@ -63,6 +63,13 @@ public sealed record UserUnlockRow
     public int unlock_tid { get; init; }
 }
 
+// t_user_trait 조회 전용 Row (기본 레벨보다 올린 특성만 행이 있다)
+public sealed record UserTraitRow
+{
+    public int user_trait_tid { get; init; }
+    public int level          { get; init; }
+}
+
 // t_user_equip 조회 전용 Row. equip_id는 개체 PK(long), equip_tid는 테이블 정의(int).
 public sealed record UserEquipRow
 {
@@ -104,7 +111,8 @@ public sealed record PlayerLoginData(
     List<UserUnlockRow> UnlockRows,
     List<UserEquipRow> EquipRows,
     List<CharacterEquipRow> CharacterEquipRows,
-    AccountRow? Account = null);
+    AccountRow? Account = null,
+    List<UserTraitRow>? TraitRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

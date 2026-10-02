@@ -27,9 +27,8 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     /// <summary>모든 행을 <c>GameTable</c>에서 읽어 등록한다. 반드시 <c>GameTable.LoadAll</c> 이후에 부른다.</summary>
     public void LoadAll()
     {
-        // 작업슬롯 말고도 해금을 참조하는 콘텐츠 — 특성 노드(TID = UnlockTID)와 그 노드가 여는 산업 레벨.
-        var otherReferences = GameTable.UserTraitTable.All.Select(r => r.UserTraitTID)
-            .Concat(GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID));
+        // 작업슬롯 말고도 해금을 참조하는 콘텐츠. 산업 레벨은 특성(개척)으로 열려 지금은 0이다(T-108).
+        var otherReferences = GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID);
 
         Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All, otherReferences);
     }

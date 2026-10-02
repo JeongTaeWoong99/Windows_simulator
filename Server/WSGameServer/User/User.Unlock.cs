@@ -40,13 +40,6 @@ public partial class User
             return;
         }
 
-        // 특성 노드는 포인트를 내야 열린다. 여기로 오면 골드 컬럼만 보고 공짜로 열리므로 막는다.
-        if (_traitCatalog.IsTraitUnlock(unlockTid))
-        {
-            Reject(EResultCode.TraitOnlyUnlock, "특성 노드 — C_UserTraitLearnRequest로 연다");
-            return;
-        }
-
         var (code, reason) = CheckUnlockConditions(unlockTid, row);
         if (code != EResultCode.Ok)
         {
@@ -138,6 +131,5 @@ public partial class User
         Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
 
         OnWorkSlotUnlocked(unlockTid, now);
-        OnTraitUnlocked(unlockTid, now);
     }
 }

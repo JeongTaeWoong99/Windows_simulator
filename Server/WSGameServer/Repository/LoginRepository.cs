@@ -18,6 +18,7 @@ public sealed class LoginRepository : IRepository
     private List<WorkStationSlotRow> _workStationSlotRows = new();
     private AccountRow?                _account;
     private List<UserUnlockRow>        _unlockRows        = new();
+    private List<UserTraitRow>         _traitRows         = new();
     private List<UserEquipRow>         _equipRows          = new();
     private List<CharacterEquipRow>    _characterEquipRows = new();
 
@@ -68,9 +69,14 @@ public sealed class LoginRepository : IRepository
             "SELECT level, exp, trait_point FROM t_user_account WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸·산업 레벨·찍은 특성이 전부 이 목록으로 정해진다.
+        // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸이 이 목록으로 정해진다.
         _unlockRows = await connection.QueryAsync<UserUnlockRow>(
             "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        // 6-1) 특성 레벨. 기본 레벨보다 올린 특성만 행이 있다.
+        _traitRows = await connection.QueryAsync<UserTraitRow>(
+            "SELECT user_trait_tid, level FROM t_user_trait WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 7) 장비 개체와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
@@ -97,7 +103,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account),
+                                _equipRows, _characterEquipRows, _account, _traitRows),
             DateTime.UtcNow);
     }
 }

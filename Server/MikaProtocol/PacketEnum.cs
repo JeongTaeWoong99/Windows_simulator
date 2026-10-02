@@ -63,9 +63,10 @@ namespace MikaProtocol
         AptitudeAtCap   = 701, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
 
         // ── 800~: 특성 ──
-        InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 이미 찍음 → AlreadyUnlocked · 조건 미달 → UnlockLocked
+        InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 최대 레벨 → TraitMaxLevel · 계정 레벨 미달 → UnlockLocked
         NotEnoughTraitPoint = 801, // 남은 특성 포인트가 비용보다 적다 — 아무것도 바꾸지 않는다
-        TraitOnlyUnlock     = 802, // 특성 노드의 해금을 C_UnlockRequest로 열려 했다 — 특성으로만 연다
+        TraitOnlyUnlock     = 802, // (쓰지 않음) 특성이 해금 노드이던 시절의 값 — 번호는 결번으로 남긴다
+        TraitMaxLevel       = 803, // 이미 최대 레벨 — 아무것도 바꾸지 않는다
 
         // ── 900~: 우편 ── 창고가 모자라 못 받으면 StorageFull(103)
         MailNotFound       = 900, // 없는(남의) 우편
