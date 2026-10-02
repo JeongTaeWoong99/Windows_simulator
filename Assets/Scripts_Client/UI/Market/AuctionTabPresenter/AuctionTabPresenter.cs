@@ -11,7 +11,7 @@ public enum AuctionTab
     // 구매 — 자원·장비·캐릭터 축을 골라 산다('AuctionBuyTabPresenter'). 기본 탭이다.
     Buy,
 
-    // 등록 — 인벤토리의 자원·장비를 골라 올린다('AuctionRegisterPresenter').
+    // 등록 — 인벤토리의 자원·장비·캐릭터를 골라 올린다('AuctionRegisterPresenter').
     Register,
 
     // 내 매물 — 올린 것을 보고 취소한다('AuctionMyListingPresenter').
@@ -28,6 +28,10 @@ public enum AuctionTab
 //
 // ⚠️ 화면은 꺼졌다 켜진다 — 각 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊는다.
 //   요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Market 규칙.md').
+//
+// ■ 내 매물 배지: 경매 우편(판매 대금·만료 반환)이 오면 [내 매물] 버튼에 점을 단다('AuctionModel.HasMyListingsNews').
+//   내 매물 화면이 그려지면 모델이 끈다.
+// ■ 밖에서 여는 길: 'ShowTab' — 인벤토리 [경매 등록]이 등록 탭을 열 때 쓴다('MarketCanvasView.OpenAuctionRegister').
 public class AuctionTabPresenter : MonoBehaviour
 {
     // 경매장 탭을 처음 열었을 때의 하위 탭.
@@ -60,16 +64,82 @@ public class AuctionTabPresenter : MonoBehaviour
     [SerializeField, Tooltip("열려 있지 않은 탭의 버튼 색")]
     private UIThemeRole normalRole = UIThemeRole.Button;
 
+
+    [CenterHeader("배지")]
+    [SerializeField, Tooltip("[내 매물] 버튼 위의 점 — 안 본 내 매물 소식이 있을 때만 켜진다")]
+    private GameObject myListingsBadge = null!;
+
+    private AuctionModel _auction = null!;
+
+    private bool _isSubscribed;
+    private bool _isReady;         // Start 완료 여부 — OnEnable 재구독 가드
+    private bool _hasRequestedTab; // Start 전에 밖에서 탭을 골랐나 — Start가 기본 탭으로 덮지 않게 한다
+
     // 지금 열려 있는 하위 탭. 경매장 탭을 닫아도 유지된다.
     public AuctionTab CurrentTab { get; private set; } = DefaultTab;
 
-    // 참조 확보 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
+    // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
+    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 [경매 등록]).
     private void Start()
     {
+        this.RequireRef(myListingsBadge, nameof(myListingsBadge));
+
+        _auction = Services.Get<AuctionModel>();
+
         ValidateTabs();
+        Subscribe();
         BindButtons();
-        ShowTab(DefaultTab);
+        ShowTab(_hasRequestedTab ? CurrentTab : DefaultTab);
+        RefreshBadge();
+
+        _isReady = true;
     }
+
+    // 껐다 켠 경우의 재구독 (Unity 메시지)
+    private void OnEnable()
+    {
+        if (_isReady)
+        {
+            Subscribe();
+            RefreshBadge();
+        }
+    }
+
+    // 구독 해제 (Unity 메시지)
+    private void OnDisable()
+    {
+        Unsubscribe();
+    }
+
+    #region 구독
+
+    // 내 매물 소식 구독 (Start · OnEnable에서 호출)
+    private void Subscribe()
+    {
+        if (_isSubscribed)
+        {
+            return;
+        }
+
+        _isSubscribed = true;
+
+        _auction.MyListingsNewsChanged += RefreshBadge;
+    }
+
+    // 구독 해제 (OnDisable에서 호출)
+    private void Unsubscribe()
+    {
+        if (!_isSubscribed)
+        {
+            return;
+        }
+
+        _isSubscribed = false;
+
+        _auction.MyListingsNewsChanged -= RefreshBadge;
+    }
+
+    #endregion
 
     #region 초기화
 
@@ -118,11 +188,12 @@ public class AuctionTabPresenter : MonoBehaviour
 
     #region 탭 전환
 
-    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼).
+    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 인벤토리 [경매 등록]).
     // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('MarketTabPresenter'와 같다).
-    private void ShowTab(AuctionTab tab)
+    public void ShowTab(AuctionTab tab)
     {
-        CurrentTab = tab;
+        CurrentTab       = tab;
+        _hasRequestedTab = true;
 
         foreach (TabEntry entry in tabs)
         {
@@ -145,6 +216,16 @@ public class AuctionTabPresenter : MonoBehaviour
             colors.selectedColor = target;
             entry.button.colors  = colors;
         }
+    }
+
+    #endregion
+
+    #region 배지
+
+    // [내 매물] 점을 켜고 끈다 (Start · OnEnable · AuctionModel.MyListingsNewsChanged 구독)
+    private void RefreshBadge()
+    {
+        myListingsBadge.SetActive(_auction.HasMyListingsNews);
     }
 
     #endregion

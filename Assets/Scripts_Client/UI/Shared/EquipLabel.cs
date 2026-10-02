@@ -10,7 +10,8 @@ using MikaProtocol;
 //
 // ■ 기본 능력치와 추가 능력치 (T-095)
 // 기본 능력치는 장비 종류(TID)가 정한다('GetEffectText'). 추가 능력치는 **개체마다** 붙는 옵션이고,
-// 장비 등급만큼 칸이 있다('GetStatSlotCount'). 칸 하나에 옵션 하나('GetOptionText')다.
+// 장비 등급이 칸 수를 정한다('GetStatSlotCount'). 칸 하나에 옵션 하나('GetOptionText')다.
+// 인챈트 등급은 **장비 하나에 하나**라 모든 칸이 같은 등급의 옵션이다(이슈 #46 — 칸 색이 모두 같다).
 public static class EquipLabel
 {
     // 이 장비의 효과 한 줄 — '낚시 +30%' · 전 산업이면 '전산업 +10%'. 모르는 TID면 빈 문자열.
@@ -34,20 +35,15 @@ public static class EquipLabel
         return $"{industry} {sign}{row.SpeedAddPermille / 10f:0.#}%";
     }
 
-    // 능력치 칸 수의 상한 — 신화 장비의 칸 수다. 장비 칸 프리팹의 네모 개수와 같아야 한다('SlotView').
-    public const int MaxStatSlotCount = 6;
+    // 능력치 칸 수의 상한 — 전설·신화 장비의 칸 수다('EnchantGradeTable.SlotCount'의 최댓값).
+    // ※ 장비 칸 프리팹의 네모는 이보다 많아도 된다 — 남는 네모는 꺼진다('SlotView' · 'ItemIconView').
+    public const int MaxStatSlotCount = 3;
 
-    // 이 등급의 장비가 갖는 능력치 칸 수 — 일반 1 · 고급 2 · … · 신화 6. 모르는 등급이면 0.
+    // 이 등급의 장비가 갖는 능력치 칸 수 — 일반·고급 1 · 희귀·영웅 2 · 전설·신화 3. 모르는 등급이면 0.
     //
-    // ⏸ **이 규칙의 주인은 서버다** — 새 능력치 기획(칸 수 = 장비 등급)이 서버에 들어오면
-    //   서버가 칸 수를 판정하고, 이 표는 그 값과 맞춰야 한다. 지금은 화면을 먼저 세우려고 클라가 든다.
-    // ※ 'GlobalRarity'의 값이 곧 서수다(Common 1 ~ Mythic 6). 값이 늘면 상한에서 자른다.
+    // 칸 수는 서버와 같은 표('EnchantGradeTable.SlotCount')에서 읽는다 — 이슈 #46에서 기획이 확정했다.
     public static int GetStatSlotCount(GlobalRarity rarity)
-    {
-        int ordinal = (int)rarity;
-
-        return ordinal <= 0 ? 0 : System.Math.Min(ordinal, MaxStatSlotCount);
-    }
+        => System.Math.Min(GameDataLoader.GetEnchantSlotCount(rarity), MaxStatSlotCount);
 
     // 능력치 옵션 한 줄의 문구 — '낚시 +4%' · '전산업 +2%' · '경험치 +3%'. 모르는 종류면 빈 문자열.
     //
@@ -67,12 +63,11 @@ public static class EquipLabel
     }
 
     // 장비 개체의 능력치 칸을 'into'에 채운다 — 길이 = 칸 수, 빈 칸은 null.
-    //   optionTids : 칸마다 박힌 옵션 TID (지금은 옛 인챈트 필드 'EnchantOptions')
+    //   optionTids : 칸마다 박힌 옵션 TID ('EnchantOptions' — 칸 수만큼, 인챈트 전이면 비어 있다)
     //
     // 인벤토리 장비 칸('EquipSlotSource')과 경매장 매물 줄('AuctionText')이 같은 장비를 같은 칸으로 읽게 한 곳에 둔다.
-    // ⏸ 옛 인챈트 필드에서 읽는 임시 배선이다 — 새 능력치 패킷(이슈 #46)이 오면 이 함수의 입력만 바꾼다.
-    // ※ 옛 데이터는 칸 수를 넘을 수 있다(일반 장비에 인챈트 2~3줄). **숨기지 않고 칸을 늘려** 보인다 —
-    //   잘라 버리면 실제로 붙어 있는 옵션이 화면에서 사라진다. 상한(6)만 지킨다.
+    // ※ 옵션이 칸 수보다 많이 오면(옛 데이터) **숨기지 않고 칸을 늘려** 보인다 —
+    //   잘라 버리면 실제로 붙어 있는 옵션이 화면에서 사라진다. 상한만 지킨다.
     public static void ReadStatOptions(int equipTid, IReadOnlyList<int>? optionTids, List<EnchantOptionTableRow?> into)
     {
         into.Clear();
@@ -152,7 +147,6 @@ public static class EquipLabel
     //
     // 인벤토리 장비 칸 · 장비 고르기 줄 · 경매 등록 후보가 같은 장비를 **같은 툴팁**으로 읽게 한 곳에 둔다.
     // ※ 두 가격을 나란히 적는다 — 즉시 판매는 정해진 값, 경매는 그 값 ~ x10 사이에서 직접 정한다('Market 규칙.md').
-    //   ⏸ 장비 즉시 판매는 아직 안 된다(T-075 — 개체 축 판매 패킷). 값만 미리 보인다.
     public static TooltipContent? BuildTooltip(int equipTid, IReadOnlyList<int>? optionTids, string? equipped = null)
     {
         if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
@@ -170,7 +164,7 @@ public static class EquipLabel
             content.Row("장착", equipped);
         }
 
-        content.Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(row.BasePrice):N0} 골드", "판매 준비 중", null)
+        content.Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(row.BasePrice):N0} 골드", "인벤토리 [판매]", null)
                .Row("경매 등록가", AuctionModel.FormatBand(row.BasePrice));
 
         var options = new List<EnchantOptionTableRow?>();

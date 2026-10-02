@@ -31,9 +31,8 @@ using MikaProtocol;
 //   인벤토리 칸에서는 툴팁에만 나온다 — 칸 아래 밴드는 능력치 칸 줄이 쓴다(T-095).
 //
 // ■ 능력치 칸 (T-095)
-//   칸 수는 장비 등급('EquipLabel.GetStatSlotCount'), 칸 하나의 색은 거기 박힌 옵션의 등급이다.
-//   ⏸ **옵션을 지금은 옛 인챈트 필드('EquipInfo.EnchantOptions')에서 읽는다.** 새 능력치 기획
-//      (칸마다 등급·종류·수치)의 패킷이 오면 'EquipLabel.ReadStatOptions' 한 곳만 갈아 끼운다(경매장 매물 줄도 같은 함수를 쓴다).
+//   칸 수는 장비 등급('EquipLabel.GetStatSlotCount' — 1·1·2·2·3·3), 칸 색은 장비의 인챈트 등급 하나다(이슈 #46).
+//   옵션은 'EquipInfo.EnchantOptions'에서 'EquipLabel.ReadStatOptions'로 읽는다(경매장 매물 줄도 같은 함수를 쓴다).
 public class EquipSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
@@ -153,7 +152,9 @@ public class EquipSlotSource : InventorySlotSource
             ? "인벤토리"
             : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
 
-        return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state);
+        // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
+        return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state)?
+            .Row("우클릭 판매 담기 · Shift+우클릭 경매 등록", "");
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

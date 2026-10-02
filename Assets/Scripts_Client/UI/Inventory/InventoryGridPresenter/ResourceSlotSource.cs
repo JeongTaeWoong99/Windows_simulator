@@ -98,7 +98,8 @@ public class ResourceSlotSource : InventorySlotSource
             .Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, count):N0} 골드", null)
             .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
 
-        content.Row(GameDataLoader.IsBox(itemId) ? "좌클릭 열기 · 우클릭 판매 담기" : "우클릭 판매 담기", "");
+        content.Row(GameDataLoader.IsBox(itemId) ? "좌클릭 열기 · 우클릭 판매 담기" : "우클릭 판매 담기", "")
+               .Row("Shift+우클릭 경매 등록", "");
 
         return content;
     }

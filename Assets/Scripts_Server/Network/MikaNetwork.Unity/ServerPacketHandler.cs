@@ -384,6 +384,19 @@ namespace MikaNetwork
             ItemSold?.Invoke(res);
         }
 
+        // 개체(캐릭터·장비) 판매 결과 도착 (Handle_S_EntitySellResponse에서 발행)
+        public static event Action<S_EntitySellResponse>? EntitySold;
+
+        // 개체 판매 결과 (S_EntitySellResponse 수신 시 자동 호출)
+        // ★ 전부 되거나 전혀 안 된다 — 응답에 개체 ID가 없으니 클라가 보낸 목록을 기억했다가 Ok면 지운다.
+        // ※ GainedGold는 이번에 번 금액(델타)이다. 잔액은 S_CurrencyResponse가 따로 내려준다.
+        [PacketHandler]
+        public static void Handle_S_EntitySellResponse(ISession session, S_EntitySellResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"개체 판매 결과={res.Result}, 획득 골드 {res.GainedGold:N0}");
+            EntitySold?.Invoke(res);
+        }
+
         #endregion
 
         #region 아이템 사용

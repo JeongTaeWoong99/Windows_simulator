@@ -27,6 +27,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
     // ─── 내부 상태 ───
+    // 응답을 기다리는 개체 판매 — 'S_EntitySellResponse'에는 개체 ID가 없어 보낸 목록을 여기 둔다('BeginEntitySell').
+    private readonly List<long> _sellingCharacterIds = new List<long>();
+    private readonly List<long> _sellingEquipIds     = new List<long>();
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -215,6 +219,25 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
+    // 이 캐릭터가 일하는 중인가 — 작업슬롯에 배치됐거나 장비를 끼고 있다.
+    // ※ 서버 'User.IsCharacterBusy'와 같은 판정이다. 바쁜 캐릭터는 팔 수도(SellCharacterBusy)
+    //   경매에 올릴 수도(AuctionCharacterBusy) 없다 — 화면이 미리 막고 이유를 적는 데 쓴다.
+    public bool IsCharacterBusy(long characterId)
+    {
+        return FindSlotIndexOf(characterId) >= 0 || IsWearingEquip(characterId);
+    }
+
+    // 이 캐릭터가 장비를 하나라도 끼고 있는가.
+    public bool IsWearingEquip(long characterId)
+    {
+        if (characterId == 0L)
+        {
+            return false; // 0은 '인벤토리'라 끼지 않은 장비 전부와 맞아 버린다
+        }
+
+        return _equips.Exists(equip => equip.EquippedCharacterId == characterId);
+    }
+
     // 이 장비를 캐릭터가 끼고 있는가. 인벤토리에 있으면(또는 모르는 개체면) false.
     // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 인벤토리다.
     public bool IsEquipped(long equipId)
@@ -348,8 +371,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
 
-    public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
-    public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
+    public event Action<long>?        ItemSellCompleted;   // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
+    public event Action<EResultCode>? ItemSellFailed;      // 판매 실패 (거절 사유)
+    public event Action<long>?        EntitySellCompleted; // 개체(캐릭터·장비) 판매 성공 (이번에 번 골드)
+    public event Action<EResultCode>? EntitySellFailed;    // 개체 판매 실패 (거절 사유)
 
     // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
@@ -418,6 +443,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
         ServerPacketHandler.ItemSold                 += OnItemSold;
+        ServerPacketHandler.EntitySold               += OnEntitySold;
         ServerPacketHandler.ItemUsed                 += OnItemUsed;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
@@ -456,6 +482,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
         ServerPacketHandler.ItemSold                 -= OnItemSold;
+        ServerPacketHandler.EntitySold               -= OnEntitySold;
         ServerPacketHandler.ItemUsed                 -= OnItemUsed;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
@@ -536,11 +563,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         CharactersChanged?.Invoke();
     }
 
-    // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌면 요청 없이 도착한다.
+    // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌거나, 우편으로 캐릭터를 받으면 요청 없이 도착한다.
     //
     // ★ 증감이 아니라 확정값이라 통째로 **교체**한다 (레벨업하면 'Exp'가 줄어드는 것도 그대로 받는다).
-    // ⚠️ 목록에 없는 개체는 추가하지 않는다 — 보유 목록의 원본은 로그인 스냅샷이다.
-    //   여기서 넣기 시작하면 스냅샷과 푸시 중 무엇이 진실인지 흐려진다.
+    // ★ 목록에 없는 개체는 **추가한다** (2026-10-03 · T-096) — 경매로 산 캐릭터·취소로 돌아온 캐릭터는
+    //   우편 수령 때 이 패킷으로만 온다('User.Character' 우편 캐릭터 잠금 해제). 장비('OnEquipSynced')와 같아졌다.
     private void OnCharacterSynced(S_CharacterSyncResponse res)
     {
         var synced = res.Character;
@@ -554,7 +581,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (index < 0)
         {
-            ClientLogger.Warn(ClientLogger.Recv, $"보유 목록에 없는 캐릭터 동기화 — 개체={synced.CharacterId} (무시)");
+            _characters.Add(synced);
+            ClientLogger.Info(ClientLogger.Recv, $"새 캐릭터 도착 — 개체={synced.CharacterId}, TID={synced.CharacterTid}");
+            CharactersChanged?.Invoke();
 
             return;
         }
@@ -723,6 +752,51 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         ApplyItemChanges(res.ItemChangeInfos);
         ItemSellCompleted?.Invoke(res.GainedGold);
+    }
+
+    // 개체 판매를 보낸다고 적어 둔다 — 응답에 개체 ID가 없어서다 (SellCartPresenter가 'C_EntitySellRequest'를 보내며 호출).
+    // ※ 송신은 Presenter가 한다(이 모델은 보내지 않는다). 여기는 성공했을 때 무엇을 지울지만 기억한다.
+    public void BeginEntitySell(IReadOnlyList<long> characterIds, IReadOnlyList<long> equipIds)
+    {
+        _sellingCharacterIds.Clear();
+        _sellingCharacterIds.AddRange(characterIds);
+        _sellingEquipIds.Clear();
+        _sellingEquipIds.AddRange(equipIds);
+    }
+
+    // 개체 판매 응답 — 성공이면 보낸 개체를 전부 지운다(전부 되거나 전혀 안 된다).
+    //
+    // ★ 골드는 건드리지 않는다 — 'OnItemSold'와 같은 이유('S_CurrencyResponse'가 확정 잔액을 준다).
+    // ★ 지우는 일은 여기만 한다 — 서버는 개체 제거를 동기화 패킷으로 따로 보내지 않는다.
+    private void OnEntitySold(S_EntitySellResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"개체 판매 실패 — 결과={res.Result}");
+            _sellingCharacterIds.Clear();
+            _sellingEquipIds.Clear();
+            EntitySellFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        int removedCharacters = _characters.RemoveAll(character => _sellingCharacterIds.Contains(character.CharacterId));
+        int removedEquips     = _equips.RemoveAll(equip => _sellingEquipIds.Contains(equip.EquipId));
+
+        _sellingCharacterIds.Clear();
+        _sellingEquipIds.Clear();
+
+        if (removedCharacters > 0)
+        {
+            CharactersChanged?.Invoke();
+        }
+
+        if (removedEquips > 0)
+        {
+            EquipsChanged?.Invoke();
+        }
+
+        EntitySellCompleted?.Invoke(res.GainedGold);
     }
 
     // 아이템 사용 응답 — 인벤토리 반영 후 보상 이벤트 발행. 'OnGachaDrawn'과 같은 모양이다.
@@ -950,9 +1024,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 경매 등록 응답 — 올린 물건을 인벤토리에서 뺀다. 결과 알림은 'AuctionModel'이 맡는다.
     //
-    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId'로 지운다.
-    //   장비 제거는 'S_EquipSyncResponse'로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
-    // ⚠️ 거절 응답에도 'EquipId'가 실려 온다 — 결과를 먼저 본다.
+    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId', 캐릭터는 'CharacterId'로 지운다.
+    //   개체 제거는 동기화 패킷으로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
+    // ⚠️ 거절 응답에도 'EquipId'·'CharacterId'가 실려 온다 — 결과를 먼저 본다.
     private void OnAuctionRegisterResponded(S_AuctionRegisterResponse res)
     {
         if (res.Result != EResultCode.Ok)
@@ -965,6 +1039,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (res.EquipId != 0L && _equips.RemoveAll(equip => equip.EquipId == res.EquipId) > 0)
         {
             EquipsChanged?.Invoke();
+        }
+
+        if (res.CharacterId != 0L && _characters.RemoveAll(character => character.CharacterId == res.CharacterId) > 0)
+        {
+            CharactersChanged?.Invoke();
         }
     }
 

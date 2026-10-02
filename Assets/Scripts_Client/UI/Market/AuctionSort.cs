@@ -22,8 +22,16 @@ public static class AuctionSort
         => order == AuctionSortOrder.Ascending ? AuctionSortOrder.Descending : AuctionSortOrder.Ascending;
 
     // 정렬 버튼 문구 — 지금 무엇으로 보고 있는지를 말한다.
-    public static string GetLabel(AuctionSortOrder order)
-        => order == AuctionSortOrder.Ascending ? "낮은 가격순 ▲" : "높은 가격순 ▼";
+    //   isPartial : 받은 것이 전부가 아니다(장비·캐릭터 검색에 [더 보기]가 남았다) — 높은 가격순이 받은 것 안에서만 맞다고 적는다
+    public static string GetLabel(AuctionSortOrder order, bool isPartial = false)
+    {
+        if (order == AuctionSortOrder.Ascending)
+        {
+            return "낮은 가격순 ▲";
+        }
+
+        return isPartial ? "받은 것 중 높은순 ▼" : "높은 가격순 ▼";
+    }
 
     // 'source'를 'order'대로 정렬한 새 목록을 만든다. 원본은 건드리지 않는다.
     //   price : 정렬 기준 가격. 0 이하(매물 없음)는 방향과 상관없이 맨 뒤로 보낸다

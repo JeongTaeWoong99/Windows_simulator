@@ -73,7 +73,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private GameObject statSocketStrip = null!;
 
     // ⚠️ **배열 순서 = 화면의 왼쪽 → 오른쪽**이다. 칸 수가 적으면 앞(왼쪽)부터 꺼진다.
-    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 6개. 왼쪽 → 오른쪽 순서")]
+    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 — 상한(3) 이상. 왼쪽 → 오른쪽 순서. 남는 네모는 꺼진다")]
     private Image[] statSocketImages = new Image[0];
 
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
@@ -155,11 +155,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(assignMark,     nameof(assignMark));
         this.RequireRef(statSocketStrip, nameof(statSocketStrip));
 
-        // 네모가 상한보다 적으면 신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
-        if (statSocketImages.Length != EquipLabel.MaxStatSlotCount)
+        // 네모가 상한보다 적으면 전설·신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
+        if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
         {
             ClientLogger.Warn(ClientLogger.UI,
-                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한은 {EquipLabel.MaxStatSlotCount}칸이다.", this);
+                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한 {EquipLabel.MaxStatSlotCount}칸보다 적다.", this);
         }
 
         _socketColors = new Color[statSocketImages.Length];

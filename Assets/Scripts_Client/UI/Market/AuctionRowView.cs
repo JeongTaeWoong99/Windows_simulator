@@ -15,6 +15,7 @@ public struct AuctionRowContent
     public string Seller;      // 판매자 줄. 비우면 줄을 숨긴다(거래소 자원 줄·등록 후보는 판매자가 없다)
     public string ActionLabel; // 버튼 문구 — '구매' · '취소' · '선택'
     public bool   CanAct;      // 버튼을 누를 수 있나
+    public bool   Dimmed;      // 줄 전체를 흐리게 — 목록에는 보이지만 고를 수 없는 것(등록 불가 후보). 툴팁은 그대로 뜬다
 
     // 줄에 마우스를 올리면 띄울 툴팁 — **올리는 순간에 만든다**('TooltipTrigger'). null이면 뜨지 않는다.
     public Func<TooltipContent?>? Tooltip;
@@ -43,7 +44,7 @@ public class AuctionRowView : MonoBehaviour
     [SerializeField, Tooltip("셋째 줄 — 가격")]
     private TMP_Text detailText = null!;
 
-    [SerializeField, Tooltip("판매자 — 비면 숨긴다. ⏸ 서버가 매물에 판매자 이름을 실어 주기 전까지는 '나'/'-'만 적는다")]
+    [SerializeField, Tooltip("판매자 이름 — 비면 숨긴다(거래소 자원 줄·등록 후보)")]
     private TMP_Text sellerText = null!;
 
     [SerializeField, Tooltip("줄의 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -54,6 +55,12 @@ public class AuctionRowView : MonoBehaviour
 
     // 버튼이 눌렸다 — 이 줄의 'Key'를 싣는다 (목록을 가진 Presenter가 구독).
     public event Action<long>? ActionClicked;
+
+    // 흐림 표시('Dimmed') — 프리팹에 없으면 Awake에서 붙인다. 레이캐스트는 막지 않는다(툴팁이 떠야 한다).
+    private CanvasGroup _group = null!;
+
+    // 흐린 줄의 투명도 — 인벤토리의 배치 중 딤과 비슷한 정도.
+    private const float DimmedAlpha = 0.45f;
 
     private long _key;
 
@@ -68,6 +75,13 @@ public class AuctionRowView : MonoBehaviour
         this.RequireRef(sellerText,   nameof(sellerText));
         this.RequireRef(actionButton, nameof(actionButton));
         this.RequireRef(actionText,   nameof(actionText));
+
+        _group = GetComponent<CanvasGroup>();
+
+        if (_group == null)
+        {
+            _group = gameObject.AddComponent<CanvasGroup>();
+        }
 
         actionButton.onClick.AddListener(OnActionClicked);
     }
@@ -88,6 +102,7 @@ public class AuctionRowView : MonoBehaviour
         sellerText.gameObject.SetActive(!string.IsNullOrEmpty(content.Seller));
         actionText.text           = content.ActionLabel;
         actionButton.interactable = content.CanAct;
+        _group.alpha              = content.Dimmed ? DimmedAlpha : 1f;
     }
 
     // 버튼 눌림 — 이 줄의 키를 위로 던진다 (actionButton.onClick)

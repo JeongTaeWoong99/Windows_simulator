@@ -4,7 +4,7 @@ using GameData;
 using MikaProtocol;
 using UnityEngine;
 
-// 판매하려고 담아 둔 아이템 목록 — "장바구니".
+// 판매하려고 담아 둔 것들의 목록 — "장바구니". 자원(수량)과 개체(캐릭터·장비, 1개씩)를 함께 담는다.
 //
 // ■ 왜 매니저인가
 // 인벤토리 격자('InventoryGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
@@ -20,18 +20,33 @@ using UnityEngine;
 //   서버 판매는 **전부 되거나 전혀 안 된다** — 목록 중 한 종류라도 보유량이 모자라면
 //   'NotEnoughItem'으로 거절되고 아무것도 팔리지 않는다. 방치형이라 담아 둔 사이에도
 //   채취·판매로 인벤토리가 계속 바뀌므로, 여기서 따라가지 않으면 판매가 통째로 막힌다.
+//
+// ■ 개체(캐릭터·장비)는 따로 담는다 (T-075 · 2026-10-03)
+//   서버 패킷이 둘이다 — 자원은 'C_ItemSellRequest', 개체는 'C_EntitySellRequest'. 섞어 담으면 판매 버튼이 둘 다 보낸다.
+//   개체도 같은 이유로 따라간다 — 사라졌거나(경매 등록·판매) 일하게 된(배치·착용) 개체는 목록에서 뺀다.
+//   서버는 일하는 캐릭터·끼고 있는 장비·마지막 캐릭터를 거절하고, 하나라도 걸리면 개체 판매 전체가 막힌다.
+//   ※ 담기 전에 막는 일(사유 알림)은 격자가 한다('EntityBlockText'). 여기는 담긴 뒤의 변화만 따라간다.
 public class SellCartModel : MonoService<SellCartModel>
 {
     // 담긴 항목들. 'ItemInfo.Count'는 "팔 개수"(델타)다 — 보유량이 아니다.
     private readonly List<ItemInfo> _entries = new List<ItemInfo>();
 
-    public IReadOnlyList<ItemInfo> Entries => _entries;
+    // 담긴 개체 번호들 — 캐릭터·장비. 개체는 하나씩이라 수량이 없다.
+    private readonly List<long> _characterIds = new List<long>();
+    private readonly List<long> _equipIds     = new List<long>();
 
-    // 담긴 종류 수. 비어 있으면 판매 버튼을 잠근다.
-    public int Count => _entries.Count;
+    public IReadOnlyList<ItemInfo> Entries      => _entries;
+    public IReadOnlyList<long>     CharacterIds => _characterIds;
+    public IReadOnlyList<long>     EquipIds     => _equipIds;
 
-    // 담긴 것을 다 팔면 받을 골드. 'ItemTable.BasePrice' x 수량이고 지금 판매율은 100%다.
-    // ※ 미리보기일 뿐이다 — 실제 지급액은 서버가 정한다('S_ItemSellResponse.GainedGold').
+    // 담긴 줄 수 — 자원 종류 + 개체 수. 비어 있으면 판매 버튼을 잠근다.
+    public int Count => _entries.Count + _characterIds.Count + _equipIds.Count;
+
+    public bool HasItems    => _entries.Count > 0;
+    public bool HasEntities => _characterIds.Count > 0 || _equipIds.Count > 0;
+
+    // 담긴 것을 다 팔면 받을 골드. 기준가(BasePrice) x 수량에 즉시 판매율을 곱한 값이다('AuctionModel.InstantSellTotal').
+    // ※ 미리보기일 뿐이다 — 실제 지급액은 서버가 정한다('S_ItemSellResponse' · 'S_EntitySellResponse'의 'GainedGold').
     public long TotalPrice { get; private set; }
 
     // Rare 이상이 담겨 있나. 오판매를 막으려고 화면이 경고를 띄우는 근거다.
@@ -73,7 +88,7 @@ public class SellCartModel : MonoService<SellCartModel>
 
     #region 구독
 
-    // 인벤토리 변경 구독 (Start · OnEnable에서 호출)
+    // 인벤토리·캐릭터·장비·작업슬롯 변경 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -81,8 +96,11 @@ public class SellCartModel : MonoService<SellCartModel>
             return;
         }
 
-        _isSubscribed         = true;
-        _data.InventoryChanged += OnInventoryChanged;
+        _isSubscribed                  = true;
+        _data.InventoryChanged        += OnInventoryChanged;
+        _data.CharactersChanged       += OnEntitiesChanged;
+        _data.EquipsChanged           += OnEntitiesChanged;
+        _data.WorkStationSlotsChanged += OnEntitiesChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -93,8 +111,11 @@ public class SellCartModel : MonoService<SellCartModel>
             return;
         }
 
-        _isSubscribed         = false;
-        _data.InventoryChanged -= OnInventoryChanged;
+        _isSubscribed                  = false;
+        _data.InventoryChanged        -= OnInventoryChanged;
+        _data.CharactersChanged       -= OnEntitiesChanged;
+        _data.EquipsChanged           -= OnEntitiesChanged;
+        _data.WorkStationSlotsChanged -= OnEntitiesChanged;
     }
 
     #endregion
@@ -160,8 +181,77 @@ public class SellCartModel : MonoService<SellCartModel>
         return index >= 0 ? _entries[index].Count : 0;
     }
 
-    // 목록을 통째로 비운다 (판매 성공 후).
+    // 이 캐릭터를 담는다. 이미 담겨 있으면 아무 일도 하지 않는다.
+    // ⚠️ 팔 수 있는지(바쁨·마지막)는 부르는 쪽이 먼저 본다('EntityBlockText.ForCharacter').
+    public void AddCharacter(long characterId)
+    {
+        if (_characterIds.Contains(characterId))
+        {
+            return;
+        }
+
+        _characterIds.Add(characterId);
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 이 장비를 담는다. 이미 담겨 있으면 아무 일도 하지 않는다.
+    // ⚠️ 팔 수 있는지(착용)는 부르는 쪽이 먼저 본다('EntityBlockText.ForEquip').
+    public void AddEquip(long equipId)
+    {
+        if (_equipIds.Contains(equipId))
+        {
+            return;
+        }
+
+        _equipIds.Add(equipId);
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 이 캐릭터를 뺀다. 담겨 있지 않으면 아무 일도 하지 않는다.
+    public void RemoveCharacter(long characterId)
+    {
+        if (_characterIds.Remove(characterId))
+        {
+            Recalculate();
+            Changed?.Invoke();
+        }
+    }
+
+    // 이 장비를 뺀다. 담겨 있지 않으면 아무 일도 하지 않는다.
+    public void RemoveEquip(long equipId)
+    {
+        if (_equipIds.Remove(equipId))
+        {
+            Recalculate();
+            Changed?.Invoke();
+        }
+    }
+
+    public bool ContainsCharacter(long characterId) => _characterIds.Contains(characterId);
+    public bool ContainsEquip(long equipId)         => _equipIds.Contains(equipId);
+
+    // 목록을 통째로 비운다.
     public void Clear()
+    {
+        if (Count == 0)
+        {
+            return;
+        }
+
+        _entries.Clear();
+        _characterIds.Clear();
+        _equipIds.Clear();
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 자원만 비운다 (자원 판매 성공 후 · 일괄 담기가 범위를 다시 잡을 때). 담아 둔 개체는 남긴다.
+    public void ClearItems()
     {
         if (_entries.Count == 0)
         {
@@ -169,6 +259,21 @@ public class SellCartModel : MonoService<SellCartModel>
         }
 
         _entries.Clear();
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 개체만 비운다 (개체 판매 성공 후). 담아 둔 자원은 남긴다.
+    public void ClearEntities()
+    {
+        if (!HasEntities)
+        {
+            return;
+        }
+
+        _characterIds.Clear();
+        _equipIds.Clear();
 
         Recalculate();
         Changed?.Invoke();
@@ -230,6 +335,31 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
+    // 캐릭터·장비·작업슬롯이 바뀌었다 — 사라졌거나 일하게 된 개체를 뺀다
+    // (PlayerDataModel.CharactersChanged · EquipsChanged · WorkStationSlotsChanged 구독)
+    //
+    // ※ 마지막 캐릭터 규칙도 여기서 지킨다 — 다른 경로로 캐릭터가 줄어 담긴 수가 보유 수에 닿으면
+    //   뒤에 담은 것부터 뺀다. 그대로 두면 서버가 'SellLastCharacter'로 개체 판매 전체를 거절한다.
+    private void OnEntitiesChanged()
+    {
+        int removed = _characterIds.RemoveAll(id => _data.GetCharacterTid(id) == 0 || _data.IsCharacterBusy(id))
+                    + _equipIds.RemoveAll(id => _data.GetEquipTid(id) == 0 || _data.IsEquipped(id));
+
+        while (_characterIds.Count > 0 && _characterIds.Count >= _data.Characters.Count)
+        {
+            _characterIds.RemoveAt(_characterIds.Count - 1);
+            removed++;
+        }
+
+        if (removed == 0)
+        {
+            return;
+        }
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
     // 합계 골드와 상위 등급 포함 여부를 다시 센다 (담기·빼기·비우기·인벤 변경에서 호출).
     private void Recalculate()
     {
@@ -241,6 +371,33 @@ public class SellCartModel : MonoService<SellCartModel>
             total += AuctionModel.InstantSellTotal(GameDataLoader.GetItemPrice(entry.ItemId), entry.Count);
 
             if (GameDataLoader.GetItemRarity(entry.ItemId) >= GlobalRarity.Rare)
+            {
+                hasHighRarity = true;
+            }
+        }
+
+        foreach (long characterId in _characterIds)
+        {
+            int characterTid = _data.GetCharacterTid(characterId);
+
+            total += AuctionModel.InstantSellTotal(GameDataLoader.GetCharacterPrice(characterTid), 1);
+
+            if (GameDataLoader.GetCharacterRarity(characterTid) >= GlobalRarity.Rare)
+            {
+                hasHighRarity = true;
+            }
+        }
+
+        foreach (long equipId in _equipIds)
+        {
+            if (!GameDataLoader.TryGetEquip(_data.GetEquipTid(equipId), out EquipTableRow row))
+            {
+                continue;
+            }
+
+            total += AuctionModel.InstantSellTotal(row.BasePrice, 1);
+
+            if (row.GlobalRarity >= GlobalRarity.Rare)
             {
                 hasHighRarity = true;
             }

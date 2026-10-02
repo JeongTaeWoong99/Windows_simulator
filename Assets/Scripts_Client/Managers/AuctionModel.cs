@@ -25,8 +25,20 @@ using MikaProtocol;
 // 수치는 'Constants.xlsx'의 Auction*·Market* 행 — 코드에 박지 않는다.
 //
 // ■ 내 매물 표시
-// 매물 정보에는 판매자가 없다 — 검색 결과에서 내 것을 가리려고 내 매물 ID를 따로 들고 있다.
+// 매물에는 판매자 이름('SellerName')만 있다 — 이름은 겹칠 수 있어 내 것은 내 매물 ID로 가린다.
 // 내 매물 조회는 빈도 제한 밖이라 구매 화면을 열 때마다 조용히 받는다('RequestMyListings').
+//
+// ■ 검색 축은 장비 · 캐릭터 둘이다
+// 두 화면이 같은 패킷으로 검색하지만 조건·결과·커서는 **축마다 따로** 든다('SearchState') —
+// 하나로 두면 장비 화면의 [더 보기]가 캐릭터 검색의 커서로 이어 받는다.
+// 응답에는 축이 없어 보낸 축('_pendingSearchKind')에 꽂는다. 검색은 대기 차단으로 한 번에 하나다.
+//
+// ■ 받은 시각
+// 목록마다 마지막으로 받은 시각을 둔다 — 화면이 "n분 전에 받음"으로 시세가 얼마나 낡았는지 보인다.
+//
+// ■ 내 매물 소식
+// 팔리거나 만료돼도 푸시는 없고 우편만 온다. 그래서 **경매 우편(판매 대금·만료·실패 반환)이 도착하면**
+// 내 매물을 조용히 다시 받고 '소식 있음'을 켠다 — 탭 버튼이 배지를 달고, 내 매물 화면이 보이면 끈다.
 public class AuctionModel : MonoService<AuctionModel>
 {
     // 장비 검색 한 페이지의 줄 수. 0이면 서버 기본값(20)이다.
@@ -37,18 +49,39 @@ public class AuctionModel : MonoService<AuctionModel>
 
     private readonly List<MarketItemInfo>       _marketItems  = new List<MarketItemInfo>();
     private readonly List<MarketPriceLevelInfo> _priceLevels  = new List<MarketPriceLevelInfo>();
-    private readonly List<AuctionListingInfo>   _searchResult = new List<AuctionListingInfo>();
     private readonly List<AuctionListingInfo>   _myListings   = new List<AuctionListingInfo>();
     private readonly HashSet<long>              _myListingIds = new HashSet<long>();
 
-    // 마지막 장비 검색 조건 — [더 보기]가 같은 조건에 커서만 바꿔 다시 보낸다.
-    private C_AuctionSearchRequest? _lastSearch;
+    // 검색 축 하나의 상태 — 마지막 조건 · 누적 결과 · 더 있나 · 받은 시각.
+    private sealed class SearchState
+    {
+        // 마지막 검색 조건 — [더 보기]가 같은 조건에 커서만 바꿔 다시 보낸다.
+        public C_AuctionSearchRequest? Request;
+
+        public readonly List<AuctionListingInfo> Results = new List<AuctionListingInfo>();
+
+        public bool      HasMore;
+        public DateTime? ReceivedAt;
+    }
+
+    private readonly Dictionary<EAuctionKind, SearchState> _searches = new Dictionary<EAuctionKind, SearchState>
+    {
+        { EAuctionKind.Equip,     new SearchState() },
+        { EAuctionKind.Character, new SearchState() },
+    };
+
+    // 지금 기다리는 검색의 축 — 응답에 축이 없어 여기에 꽂는다.
+    private EAuctionKind _pendingSearchKind = EAuctionKind.Equip;
 
     // 마지막 거래소 목록 조건 — 구매 뒤 같은 조건으로 다시 받는다.
     private List<int>? _lastMarketTids;
 
     // 지금 기다리는 검색이 다음 페이지인가 — 응답을 앞 결과에 이어 붙일지 갈아 끼울지 정한다.
     private bool _isNextPagePending;
+
+    // 내 매물이 바뀌었다는 경매 우편 템플릿 — 서버 'AuctionMail'의 Sold·Expired·Failed와 같다.
+    // 구매(3)는 내 매물과 무관하고, 취소(5)는 내가 누른 것이라 화면이 이미 맞다.
+    private static readonly HashSet<int> MyListingMailTids = new HashSet<int> { 4, 6, 7 };
 
     private NetworkManager _network = null!;
 
@@ -66,17 +99,29 @@ public class AuctionModel : MonoService<AuctionModel>
 
     public IReadOnlyList<MarketPriceLevelInfo> PriceLevels => _priceLevels;
 
-    // ─── 경매장(장비) ───
-    public IReadOnlyList<AuctionListingInfo> SearchResults => _searchResult;
+    // 거래소 목록을 마지막으로 받은 시각(로컬). 아직 없으면 null.
+    public DateTime? MarketItemsReceivedAt { get; private set; }
+
+    // ─── 경매장(장비 · 캐릭터) ───
+    public IReadOnlyList<AuctionListingInfo> GetSearchResults(EAuctionKind kind) => GetState(kind).Results;
 
     // 검색 결과가 더 있나 — [더 보기] 버튼을 켤지 정한다.
-    public bool HasMoreResults { get; private set; }
+    public bool HasMoreResults(EAuctionKind kind) => GetState(kind).HasMore;
 
-    // 장비 검색을 한 번이라도 했나. 탭을 처음 열 때만 자동으로 검색하려고 본다.
-    public bool HasSearched => _lastSearch != null;
+    // 이 축을 한 번이라도 검색했나. 화면을 처음 열 때만 자동으로 검색하려고 본다.
+    public bool HasSearched(EAuctionKind kind) => GetState(kind).Request != null;
+
+    // 이 축의 검색 결과를 마지막으로 받은 시각(로컬). 아직 없으면 null.
+    public DateTime? GetSearchReceivedAt(EAuctionKind kind) => GetState(kind).ReceivedAt;
 
     // ─── 내 매물 ───
     public IReadOnlyList<AuctionListingInfo> MyListings => _myListings;
+
+    // 내 매물을 마지막으로 받은 시각(로컬). 아직 없으면 null.
+    public DateTime? MyListingsReceivedAt { get; private set; }
+
+    // 안 본 내 매물 소식이 있나 — 경매 우편이 오면 켜지고, 내 매물 화면이 보이면 꺼진다(탭 배지).
+    public bool HasMyListingsNews { get; private set; }
 
     // 이 매물이 내가 올린 것인가 — 검색 결과에서 [구매]를 잠그고 '내 매물'로 표시한다.
     // ※ 방금 등록한 것도 참이다(등록 응답의 ListingId를 바로 넣는다). 내 매물 목록이 오면 그것으로 다시 맞춘다.
@@ -103,11 +148,12 @@ public class AuctionModel : MonoService<AuctionModel>
     public event Action<EResultCode>?         MarketItemsCompleted;
     public event Action<EResultCode>?         MarketPriceCompleted;
     public event Action<S_MarketBuyResponse>? MarketBuyCompleted; // 산 수량·낸 금액을 알림에 쓴다
-    public event Action<EResultCode>?         SearchCompleted;
+    public event Action<EAuctionKind, EResultCode>? SearchCompleted; // 축 · 결과 코드 — 자기 축이 아니면 무시한다
     public event Action<EResultCode>?         BuyCompleted;
     public event Action<EResultCode, long>?   RegisterCompleted;  // 결과 코드 · 낸 등록비
     public event Action<EResultCode>?         CancelCompleted;
     public event Action<EResultCode>?         MyListingsCompleted;
+    public event Action?                      MyListingsNewsChanged; // 'HasMyListingsNews'가 바뀜 — 탭 배지
 
     // 참조 확보 → 구독 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다.
@@ -155,6 +201,7 @@ public class AuctionModel : MonoService<AuctionModel>
         ServerPacketHandler.AuctionRegisterResponded  += OnAuctionRegisterResponded;
         ServerPacketHandler.AuctionCancelResponded    += OnAuctionCancelResponded;
         ServerPacketHandler.AuctionMyListingsReceived += OnAuctionMyListingsReceived;
+        ServerPacketHandler.MailArrived               += OnMailArrived;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -175,6 +222,7 @@ public class AuctionModel : MonoService<AuctionModel>
         ServerPacketHandler.AuctionRegisterResponded  -= OnAuctionRegisterResponded;
         ServerPacketHandler.AuctionCancelResponded    -= OnAuctionCancelResponded;
         ServerPacketHandler.AuctionMyListingsReceived -= OnAuctionMyListingsReceived;
+        ServerPacketHandler.MailArrived               -= OnMailArrived;
     }
 
     #endregion
@@ -211,40 +259,63 @@ public class AuctionModel : MonoService<AuctionModel>
 
     #endregion
 
-    #region 요청 — 경매장(장비)
+    #region 요청 — 경매장(장비 · 캐릭터)
 
     // 장비를 첫 페이지부터 검색한다 (AuctionSearchPresenter가 호출).
-    //   tids      : 이름 검색 결과. null이면 이름 조건 없음
-    //   kind      : 장비 분류. None이면 전체
-    //   rarity    : 희귀도. None이면 전체 — 고르면 그 등급만 본다
-    public void SearchEquips(List<int>? tids, EquipKind kind, GlobalRarity rarity)
+    //   tids         : 이름 검색 결과. null이면 이름 조건 없음
+    //   kind         : 장비 분류. None이면 전체
+    //   rarity       : 희귀도. None이면 전체 — 고르면 그 등급만 본다
+    //   enchantGrade : 인챈트 등급 하한. None이면 조건 없음 — 장비 하나의 등급 하나로 거른다(칸마다가 아니다)
+    public void SearchEquips(List<int>? tids, EquipKind kind, GlobalRarity rarity, GlobalRarity enchantGrade)
     {
-        _lastSearch = new C_AuctionSearchRequest
+        StartSearch(new C_AuctionSearchRequest
         {
-            Kind      = EAuctionKind.Equip,
-            Category  = (int)kind,
+            Kind            = EAuctionKind.Equip,
+            Category        = (int)kind,
+            Tids            = tids,
+            MinRarity       = (int)rarity,
+            MaxRarity       = (int)rarity,
+            MinEnchantGrade = (int)enchantGrade,
+            PageSize        = SearchPageSize,
+        });
+    }
+
+    // 캐릭터를 첫 페이지부터 검색한다 (AuctionSearchPresenter가 호출). 분류는 없다(Category = 0).
+    public void SearchCharacters(List<int>? tids, GlobalRarity rarity)
+    {
+        StartSearch(new C_AuctionSearchRequest
+        {
+            Kind      = EAuctionKind.Character,
             Tids      = tids,
             MinRarity = (int)rarity,
             MaxRarity = (int)rarity,
             PageSize  = SearchPageSize,
-        };
-
-        _isNextPagePending = false;
-        SendSearch(0L, 0L);
+        });
     }
 
     // 같은 조건으로 다음 페이지를 받는다 — 마지막으로 본 매물이 커서다 (AuctionSearchPresenter의 [더 보기]).
-    public void SearchNextPage()
+    public void SearchNextPage(EAuctionKind kind)
     {
-        if (_lastSearch == null || _searchResult.Count == 0)
+        SearchState state = GetState(kind);
+
+        if (state.Request == null || state.Results.Count == 0)
         {
             return;
         }
 
-        AuctionListingInfo last = _searchResult[_searchResult.Count - 1];
+        AuctionListingInfo last = state.Results[state.Results.Count - 1];
 
         _isNextPagePending = true;
-        SendSearch(last.UnitPrice, last.ListingId);
+        SendSearch(state.Request, last.UnitPrice, last.ListingId);
+    }
+
+    // 새 조건을 그 축에 걸고 첫 페이지를 보낸다 (SearchEquips · SearchCharacters에서 호출).
+    private void StartSearch(C_AuctionSearchRequest request)
+    {
+        GetState(request.Kind).Request = request;
+
+        _isNextPagePending = false;
+        SendSearch(request, 0L, 0L);
     }
 
     // 매물 하나를 통째로 산다 (AuctionSearchPresenter가 호출).
@@ -255,14 +326,28 @@ public class AuctionModel : MonoService<AuctionModel>
         ClientLogger.Info(ClientLogger.Send, $"경매 구매 요청 — 매물 {listing.ListingId}, {listing.TotalPrice}G");
     }
 
-    // 검색 요청을 커서와 함께 보낸다 (SearchEquips · SearchNextPage에서 호출). 첫 페이지는 커서가 둘 다 0이다.
-    private void SendSearch(long cursorUnitPrice, long cursorListingId)
+    // 검색 요청을 커서와 함께 보낸다 (StartSearch · SearchNextPage에서 호출). 첫 페이지는 커서가 둘 다 0이다.
+    private void SendSearch(C_AuctionSearchRequest request, long cursorUnitPrice, long cursorListingId)
     {
-        _lastSearch!.CursorUnitPrice = cursorUnitPrice;
-        _lastSearch.CursorListingId  = cursorListingId;
+        request.CursorUnitPrice = cursorUnitPrice;
+        request.CursorListingId = cursorListingId;
+        _pendingSearchKind      = request.Kind;
 
-        _network.Send(_lastSearch);
-        ClientLogger.Info(ClientLogger.Send, $"경매 검색 요청 — 분류 {_lastSearch.Category}, 커서 ({cursorUnitPrice}, {cursorListingId})");
+        _network.Send(request);
+        ClientLogger.Info(ClientLogger.Send, $"경매 검색 요청 — {request.Kind} 분류 {request.Category}, 커서 ({cursorUnitPrice}, {cursorListingId})");
+    }
+
+    // 축의 검색 상태. 검색 축이 아닌 값(자원 등)은 장비 축으로 떨어뜨린다 — 부르는 쪽 배선 실수다.
+    private SearchState GetState(EAuctionKind kind)
+    {
+        if (_searches.TryGetValue(kind, out SearchState state))
+        {
+            return state;
+        }
+
+        ClientLogger.Warn(ClientLogger.UI, $"검색 축이 아닌 종류 {kind} — 장비 축으로 본다.");
+
+        return _searches[EAuctionKind.Equip];
     }
 
     #endregion
@@ -283,12 +368,31 @@ public class AuctionModel : MonoService<AuctionModel>
         ClientLogger.Info(ClientLogger.Send, $"경매 등록 요청 — 장비 {equipId}, 단가 {unitPrice}");
     }
 
+    // 캐릭터 개체 하나를 올린다 — 레벨·경험치·적성까지 그대로 넘어간다 (AuctionRegisterPresenter가 호출).
+    public void RegisterCharacter(long characterId, long unitPrice)
+    {
+        _network.Send(new C_AuctionRegisterRequest { Kind = EAuctionKind.Character, CharacterId = characterId, Count = 1, UnitPrice = unitPrice });
+        ClientLogger.Info(ClientLogger.Send, $"경매 등록 요청 — 캐릭터 {characterId}, 단가 {unitPrice}");
+    }
+
     // 내 진행 중 매물을 받는다 (AuctionMyListingPresenter · 구매 화면을 열 때 · 등록 성공 뒤).
     // ※ 빈도 제한 밖이라 자주 불러도 된다. 구매 화면은 대기 없이 조용히 부른다 — 내 매물 표시용이다.
     public void RequestMyListings()
     {
         _network.Send(new C_AuctionMyListingsRequest());
         ClientLogger.Info(ClientLogger.Send, "내 매물 요청");
+    }
+
+    // 내 매물 소식을 봤다 — 배지를 끈다 (AuctionMyListingPresenter가 그릴 때 호출).
+    public void ClearMyListingsNews()
+    {
+        if (!HasMyListingsNews)
+        {
+            return;
+        }
+
+        HasMyListingsNews = false;
+        MyListingsNewsChanged?.Invoke();
     }
 
     // 판매를 취소한다 — 물건은 우편으로 돌아오고 등록비는 돌아오지 않는다 (AuctionMyListingPresenter가 호출).
@@ -309,7 +413,8 @@ public class AuctionModel : MonoService<AuctionModel>
         {
             _marketItems.Clear();
             _marketItems.AddRange(res.Items ?? new List<MarketItemInfo>());
-            HasMarketItems = true;
+            HasMarketItems        = true;
+            MarketItemsReceivedAt = DateTime.Now;
         }
 
         MarketItemsCompleted?.Invoke(res.Result);
@@ -340,22 +445,26 @@ public class AuctionModel : MonoService<AuctionModel>
         MarketBuyCompleted?.Invoke(res);
     }
 
-    // 장비 검색 — 다음 페이지면 이어 붙이고, 첫 페이지면 갈아 끼운다
+    // 검색 — 보낸 축에 꽂는다. 다음 페이지면 이어 붙이고, 첫 페이지면 갈아 끼운다
     private void OnAuctionSearched(S_AuctionSearchResponse res)
     {
+        EAuctionKind kind  = _pendingSearchKind;
+        SearchState  state = GetState(kind);
+
         if (res.Result == EResultCode.Ok)
         {
             if (!_isNextPagePending)
             {
-                _searchResult.Clear();
+                state.Results.Clear();
             }
 
-            _searchResult.AddRange(res.Listings ?? new List<AuctionListingInfo>());
-            HasMoreResults = res.HasMore;
+            state.Results.AddRange(res.Listings ?? new List<AuctionListingInfo>());
+            state.HasMore    = res.HasMore;
+            state.ReceivedAt = DateTime.Now;
         }
 
         _isNextPagePending = false;
-        SearchCompleted?.Invoke(res.Result);
+        SearchCompleted?.Invoke(kind, res.Result);
     }
 
     // 즉시구매 — 이 매물을 더는 살 수 없게 됐으면 목록에서 뺀다
@@ -371,7 +480,10 @@ public class AuctionModel : MonoService<AuctionModel>
 
         if (isGone)
         {
-            _searchResult.RemoveAll(listing => listing.ListingId == res.ListingId);
+            foreach (SearchState state in _searches.Values)
+            {
+                state.Results.RemoveAll(listing => listing.ListingId == res.ListingId);
+            }
         }
 
         BuyCompleted?.Invoke(res.Result);
@@ -410,6 +522,7 @@ public class AuctionModel : MonoService<AuctionModel>
         {
             _myListings.Clear();
             _myListings.AddRange(res.Listings ?? new List<AuctionListingInfo>());
+            MyListingsReceivedAt = DateTime.Now;
 
             _myListingIds.Clear();
 
@@ -422,9 +535,43 @@ public class AuctionModel : MonoService<AuctionModel>
         MyListingsCompleted?.Invoke(res.Result);
     }
 
+    // 새 우편 — 경매 우편이 섞였으면 내 매물을 조용히 다시 받고 소식을 켠다.
+    // 우편함 캐시는 'PlayerDataModel'이 같은 패킷으로 갱신한다.
+    private void OnMailArrived(S_MailArrivedResponse res)
+    {
+        if (res.Mails == null || !res.Mails.Exists(mail => MyListingMailTids.Contains(mail.TemplateTid)))
+        {
+            return;
+        }
+
+        RequestMyListings();
+
+        HasMyListingsNews = true;
+        MyListingsNewsChanged?.Invoke();
+    }
+
     #endregion
 
     #region 가격 (표시용 — 판정은 서버가 한다)
+
+    // "방금 받음" · "3분 전에 받음" · "2시간 전에 받음" — 목록이 얼마나 낡았는지 적는다. 받은 적 없으면 빈 문자열.
+    // ※ 화면을 다시 그릴 때만 바뀐다(매초 세지 않는다) — 탭을 열거나 응답이 올 때 맞으면 충분하다.
+    public static string FormatReceivedAgo(DateTime? receivedAt)
+    {
+        if (receivedAt == null)
+        {
+            return "";
+        }
+
+        TimeSpan ago = DateTime.Now - receivedAt.Value;
+
+        if (ago.TotalMinutes < 1d)
+        {
+            return "방금 받음";
+        }
+
+        return ago.TotalHours >= 1d ? $"{(int)ago.TotalHours}시간 전에 받음" : $"{(int)ago.TotalMinutes}분 전에 받음";
+    }
 
     // 즉시 판매가 — 인벤토리에서 바로 팔 때 받는 정해진 값(BasePrice x SellRatePermille).
     public static long InstantSellPrice(int basePrice) => basePrice * Constants.SellRatePermille / 1000L;

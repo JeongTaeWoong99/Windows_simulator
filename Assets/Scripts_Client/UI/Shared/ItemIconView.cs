@@ -32,7 +32,7 @@ public class ItemIconView : MonoBehaviour
     private GameObject statSocketStrip = null!;
 
     // ⚠️ **배열 순서 = 화면의 왼쪽 → 오른쪽**이다. 칸 수가 적으면 앞(왼쪽)부터 꺼진다('SlotView'와 같다).
-    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 6개. 왼쪽 → 오른쪽 순서")]
+    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 — 상한(3) 이상. 왼쪽 → 오른쪽 순서. 남는 네모는 꺼진다")]
     private Image[] statSocketImages = new Image[0];
 
     // 빈 능력치 칸의 색 — 'SlotView'와 같은 값이다(같은 장비가 두 화면에서 같게 읽혀야 한다).
@@ -47,10 +47,10 @@ public class ItemIconView : MonoBehaviour
         this.RequireRef(countText,       nameof(countText));
         this.RequireRef(statSocketStrip, nameof(statSocketStrip));
 
-        if (statSocketImages.Length != EquipLabel.MaxStatSlotCount)
+        if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
         {
             ClientLogger.Warn(ClientLogger.UI,
-                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한은 {EquipLabel.MaxStatSlotCount}칸이다.", this);
+                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한 {EquipLabel.MaxStatSlotCount}칸보다 적다.", this);
         }
     }
 

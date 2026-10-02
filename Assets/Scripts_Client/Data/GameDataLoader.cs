@@ -173,6 +173,19 @@ public static class GameDataLoader
         return GlobalRarity.None;
     }
 
+    // 캐릭터 기준가('CharacterTable.BasePrice') — 즉시 판매가·경매 등록가의 바닥. 없는 TID면 0.
+    public static int GetCharacterPrice(int characterTid)
+    {
+        if (GameTable.CharacterTable.TryGet(characterTid, out var row))
+        {
+            return row.BasePrice;
+        }
+
+        WarnUnknownId("캐릭터", characterTid, _warnedCharacterIds);
+
+        return 0;
+    }
+
     // 장비 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     // ⚠️ 종류(TID)를 넣는다 — 개체 번호('EquipInfo.EquipId')를 넣으면 조회가 빗나간다.
     public static string GetEquipName(int equipTid)
@@ -214,6 +227,12 @@ public static class GameDataLoader
     public static bool TryGetEnchantOption(int optionTid, out EnchantOptionTableRow row)
     {
         return GameTable.EnchantOptionTable.TryGet(optionTid, out row);
+    }
+
+    // 이 등급의 장비가 갖는 능력치 칸 수('EnchantGradeTable.SlotCount'). 모르는 등급('None' 포함)이면 0.
+    public static int GetEnchantSlotCount(GlobalRarity rarity)
+    {
+        return GameTable.EnchantGradeTable.TryGet(rarity, out EnchantGradeTableRow row) ? row.SlotCount : 0;
     }
 
     // 우편 템플릿 한 행 — 제목·본문·발신자는 패킷에 없고 여기서만 읽는다.
