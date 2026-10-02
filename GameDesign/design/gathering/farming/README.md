@@ -106,7 +106,7 @@ Lv2~5 각 6종) TID 대역은 `20001~20046`이다. → [아이템](../../item/RE
 | 테이블 | 컬럼 |
 | --- | --- |
 | `CropTable` | ⚠️ **만들지 않았다.** 파종을 레벨로 흡수하면 불필요하다 (2장 A안 — 현재 데이터가 이쪽) |
-| `FarmingBasicTable` | `DropTID`(키), **`IndustryLevel`**, `ItemTID`, `Weight`, `Description` ✅ **38행 생성됨** |
+| `FarmingBasicTable` | `DropTID`(키), **`IndustryLevel`**, `ItemTID`, `Weight`, `Description` ✅ **30행 생성됨** (레벨마다 6행) |
 | ~~`FarmingSpecialTable`~~ | ❌ **폐지 (2026-07-30).** 특별보상 층이 없어졌다 |
 
 > ⚠️ **실제 시트는 위 표의 옛 구상(`CropTID`·`Rarity`)이 아니라 다른 4종과 같은 형태다**

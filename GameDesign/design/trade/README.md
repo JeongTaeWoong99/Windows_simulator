@@ -3,7 +3,7 @@
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
 > 상태: **경제 골격 확정 · 즉시 판매 구현 완료 · 거래소(자원 수량 구매)·경매장(장비·캐릭터 즉시구매) 서버 구현 · 캐릭터·장비 즉시 판매(#47) ([T-094](../../../tasks/archive/T-094-경매장서버.md) · [T-091](../../../tasks/archive/T-091-거래소수량구매.md)) · 수치는 테스트값**
 > **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`아이템`](../item/README.md) · [`우편`](../mail/README.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
->   [`진행 및 성장`](../progression/README.md) · [`캐릭터`](../character/README.md) · [`퀘스트`](../quest/README.md) · [`특성`](../trait/README.md) · [`해금`](../unlock/README.md)
+>   [`진행 및 성장`](../progression/README.md) · [`캐릭터`](../character/README.md) · [`퀘스트`](../quest/README.md) · [`해금`](../unlock/README.md)
 
 이 게임의 **유일한 경쟁 축**이자, 승패 조건이 없는 게임에서 **장기 목표를 대신하는 시스템**이다.
 
