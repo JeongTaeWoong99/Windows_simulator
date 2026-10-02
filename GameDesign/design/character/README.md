@@ -157,7 +157,7 @@ DB에 남는 것은 플레이어가 **찍은 보너스**뿐이고, 실효 적성
 | **캐릭터 경험치** (`CharacterExp`) | 착용한 캐릭터가 판정마다 받는 경험치 | `ExpPerJudge × (1 + Σ칸)`. 계정 경험치는 캐릭터 경험치 전량이라 함께 오른다 → 5.2 · [특성](../trait/README.md) 3장 |
 
 - **얻는 곳 = 상자 개봉** — 나무·은·황금 × 산업 Lv1~5, 15종(`GachaItemTable` 풀 9~23). 수량은 상자의 레벨만큼 → [아이템](../item/README.md) 4.1.
-- **착용 중 거부가 속도 정산을 단순하게 만든다.** 창고에 있는 장비만 바뀌므로 큐브가 가동 중인 슬롯의
+- **착용 중 거부가 속도 정산을 단순하게 만든다.** 인벤토리에 있는 장비만 바뀌므로 큐브가 가동 중인 슬롯의
   속도·경험치를 바꿀 수 없다. 바뀐 값은 **다음에 장착할 때** 장착 경로가 반영한다.
 
 > ⚠️ **확률·수치·`Weight`는 전부 테스트값이다.** 칸 고정(잠금)·인챈트 이전은 기획에 없다.
@@ -321,7 +321,7 @@ enum은 **뒤에만 추가한다**.
 
 - 풀 구성은 `GachaEquipTable`. 가중치는 등급별(Common 640 · Uncommon 200 · Rare 100 · Epic 40 · Legendary 15 · Mythic 5) — **테스트값**
 - 한 풀에는 한 종류만 둔다 — 서버 테스트(`GachaEquipSheetTest`)가 지킨다
-- 중복은 개체를 늘린다(캐릭터와 같다). 창고 칸 한도는 [T-063](../../../tasks/archive/T-063-창고한도뽑기거부.md)
+- 중복은 개체를 늘린다(캐릭터와 같다). 인벤토리 칸 한도는 [T-063](../../../tasks/archive/T-063-창고한도뽑기거부.md)
 - **상자 풀에도 장비가 들어 있다** — 등급 = (상자 레벨 − 1) + 단계(나무 0 · 은 1 · 황금 2) → [아이템](../item/README.md) 4.1
 
 ### 5.2 성장 — 경험치 · 레벨 (2026-09-13 확정)
@@ -465,7 +465,7 @@ Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 �
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
 | `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) · **산업별 보너스 5열**(찍은 포인트 → 5.4) |
-| `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(창고 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
+| `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(인벤토리 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
 | `EquipEnchant.xlsx` · `t_user_equip` 인챈트 4열 | `EnchantOptionTable`(등급별 옵션 풀 · 고정 `Value` · `Weight`) · `EnchantGradeTable`(장비 등급별 `SlotCount` · 인챈트 등급별 `UpPermyriad`) · `EnchantItemTable`(큐브 → `UpRatePermille`) · 개체의 `enchant_grade` · `enchant_1~3`(`EnchantOptionTID`, 0 = 빈 칸) → 1.4 |
 | 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value, Cap}` 목록 · `CharacterInfo.AptitudePoints` → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 · **`C_AptitudeUpRequest` / `S_AptitudeUpResponse`** → 5.4 |
 | 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비 가산 · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) · **`User.Enchant.cs` · `Common/EnchantCatalog.cs`**(인챈트 — 패킷 `C_EquipEnchantRequest` · `S_EquipEnchantResponse`, 개체 갱신은 `S_EquipSyncResponse` · `EquipInfo.EnchantGrade`·`EnchantOptions`) |
@@ -523,7 +523,7 @@ public partial struct AptitudeInfo
 - **적성이 변하면 서버가 클라에 알린다.** 포인트를 찍으면 `S_AptitudeUpResponse`, 그 밖의 변경은 `S_CharacterSyncResponse`.
 
 > **왜 지금 나눠 두는가** — 장비 4칸이 붙으면 적성에 보정이 올라올 여지가 생긴다.
-> 그때 클라가 테이블을 직접 읽고 있으면 **배치 UI·필터·창고 탭이 한꺼번에 틀린다.**
+> 그때 클라가 테이블을 직접 읽고 있으면 **배치 UI·필터·인벤토리 탭이 한꺼번에 틀린다.**
 > 특히 적성 0을 1로 올리는 보정이 생기면 클라가 **실제로는 배치 가능한 캐릭터를 숨긴다.**
 > 전달값을 서버로 넘겨 두면 그 결정을 **미룰 수 있고**, 어느 쪽으로 정하든 클라는 안 바뀐다.
 >
