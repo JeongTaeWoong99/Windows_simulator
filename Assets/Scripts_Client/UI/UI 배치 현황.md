@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -158,9 +158,9 @@ Root Canvas
 │     │  │  ├─ Auction Buy Page                   구매 탭 화면 · flexH 1 · VLG 0/5
 │     │  │  │  ├─ Auction Buy Tab Presenter (↓ SUB VIEW) AuctionBuyTabPresenter   pref 40 · 자원 · 장비 · 캐릭터
 │     │  │  │  ├─ Market Item Presenter (↓ SUB VIEW) MarketItemPresenter   검색 줄(+ 정렬) · 목록 · 가격대(130) · 수량/단가/구매 줄
-│     │  │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   이름·분류·등급(+ 정렬) · 목록 · [더 보기]
-│     │  │  │  └─ Character Auction Page          (준비 중) 문구만 — 서버 캐릭터 경매 대기(이슈 #47)
-│     │  │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(44) · 종류 · 후보 목록 · 수량/단가/등록 줄
+│     │  │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   Search Panel(이름·[검색]) / Filter Panel(분류·등급·인챈트·Spacer·정렬) · 목록 · [더 보기]
+│     │  │  │  └─ Character Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   위의 복제(searchKind = Character) — 분류·인챈트 드롭다운은 꺼 둔다
+│     │  │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(60 · 3줄) · 종류 · 후보 목록 · 수량/단가/등록 줄 · 힌트(66 · 3줄)
 │     │  │  └─ Auction My Listing Presenter (↓ SUB VIEW) AuctionMyListingPresenter   판매 중 n/상한 · [새로고침] · 목록
 │     │  │     ※ 네 목록 모두 Body Scroll Panel(우편함의 것 복제) + AuctionRowView 프리팹 줄 (런타임 생성 · pref 104 · 아이콘/이름/정보/가격/판매자 · 줄 툴팁)
 │     │  │     ※ 정렬 버튼 pref W 130 ('낮은 가격순 ▲') · 검색·도구 줄 드롭다운 라벨은 오른쪽 28px 비움(화살표 자리)
