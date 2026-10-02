@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { APP_VERSION } from '../lib/labels';
+import { APP_VERSION, BUILD_TIME } from '../lib/labels';
 
 interface Props {
   title: string;
@@ -60,6 +60,7 @@ const links = [
     <div class="flex-1 w-full max-w-7xl mx-auto flex gap-8 px-4 py-6">
       {withSidebar && <slot name="sidebar" />}
       <main class="flex-1 min-w-0">
+        <p class="mb-3 text-xs text-slate-400">최종 갱신 <time class="font-mono">{BUILD_TIME}</time> (KST)</p>
         <slot />
       </main>
     </div>
@@ -69,7 +70,7 @@ const links = [
         class="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between text-xs text-slate-400"
       >
         <span>기획 문서와 일감은 저장소가 원본이다 — 이 사이트는 읽기 전용 사본이다.</span>
-        <span class="font-mono font-semibold text-slate-500">v{APP_VERSION}</span>
+        <span class="font-mono font-semibold text-slate-500">v{APP_VERSION} · {BUILD_TIME} KST</span>
       </div>
     </footer>
 

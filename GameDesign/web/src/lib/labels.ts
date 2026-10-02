@@ -1,5 +1,23 @@
 export const APP_VERSION = '0.4.0';
 
+/** 사이트를 빌드한 시각(KST) — 문서·일감이 바뀔 때마다 다시 빌드되므로 곧 최종 갱신 시각이다. 예: `2026-10-02 14:30` */
+export const BUILD_TIME = (() => {
+  const parts = Object.fromEntries(
+    new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Seoul',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hourCycle: 'h23',
+    })
+      .formatToParts(new Date())
+      .map((p) => [p.type, p.value]),
+  );
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}`;
+})();
+
 /// <summary>영문 폴더명을 사이드바에 보일 한글 라벨로 옮긴다</summary>
 export const SECTION_LABELS: Record<string, string> = {
   '': '최상위',
