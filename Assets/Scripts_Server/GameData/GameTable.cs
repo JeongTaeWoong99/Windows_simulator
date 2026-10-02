@@ -16,6 +16,7 @@ namespace GameData
         public static TableSet<int, CharacterLevelTableRow> CharacterLevelTable { get; private set; } = null!;
         public static TableSet<string, ConstantsTableRow> ConstantsTable { get; private set; } = null!;
         public static TableSet<int, CommonRewardTableRow> CommonRewardTable { get; private set; } = null!;
+        public static TableSet<int, CommonRewardOverrideTableRow> CommonRewardOverrideTable { get; private set; } = null!;
         public static TableSet<int, FarmingBasicTableRow> FarmingBasicTable { get; private set; } = null!;
         public static TableSet<int, FishingBasicTableRow> FishingBasicTable { get; private set; } = null!;
         public static TableSet<int, HuntingBasicTableRow> HuntingBasicTable { get; private set; } = null!;
@@ -46,6 +47,7 @@ namespace GameData
             CharacterLevelTable = TableSet<int, CharacterLevelTableRow>.From(read("CharacterLevelTable.bytes"), r => r.CharacterLevelTID);
             ConstantsTable = TableSet<string, ConstantsTableRow>.From(read("ConstantsTable.bytes"), r => r.Name);
             CommonRewardTable = TableSet<int, CommonRewardTableRow>.From(read("CommonRewardTable.bytes"), r => r.CommonRewardTID);
+            CommonRewardOverrideTable = TableSet<int, CommonRewardOverrideTableRow>.From(read("CommonRewardOverrideTable.bytes"), r => r.CommonRewardOverrideTID);
             FarmingBasicTable = TableSet<int, FarmingBasicTableRow>.From(read("FarmingBasicTable.bytes"), r => r.DropTID);
             FishingBasicTable = TableSet<int, FishingBasicTableRow>.From(read("FishingBasicTable.bytes"), r => r.DropTID);
             HuntingBasicTable = TableSet<int, HuntingBasicTableRow>.From(read("HuntingBasicTable.bytes"), r => r.DropTID);

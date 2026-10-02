@@ -57,14 +57,15 @@ public class BoxSheetTest
     [Fact]
     public void 산업_레벨마다_그_레벨_상자_세_종류가_있다()
     {
-        // 상자는 공통 보상 표에서만 나온다 — 빠진 (산업, 레벨)이 있으면 거기서는 상자를 얻을 길이 없다.
-        var rows = GameTable.CommonRewardTable.All;
+        // 공통 행이 레벨마다 있어야 한다 — 빠진 레벨은 덮어쓰기가 없는 산업에서 상자를 얻을 길이 없다.
+        var common = GameTable.CommonRewardTable.All;
         var boxOfLevel = Boxes.ToDictionary(r => r.ItemTID, r => (r.ItemTID - 100019) / 3 + 1);
 
-        rows.Count.ShouldBe(75);
-        rows.GroupBy(r => (r.IndustryType, r.IndustryLevel)).Count().ShouldBe(25);
-        rows.GroupBy(r => (r.IndustryType, r.IndustryLevel)).ShouldAllBe(g => g.Select(r => r.ItemTID).Distinct().Count() == 3);
-        rows.ShouldAllBe(r => boxOfLevel[r.ItemTID] == r.IndustryLevel);
+        common.Count.ShouldBe(15);
+        common.GroupBy(r => r.IndustryLevel).Select(g => g.Key).OrderBy(l => l).ShouldBe(new[] { 1, 2, 3, 4, 5 });
+        common.GroupBy(r => r.IndustryLevel).ShouldAllBe(g => g.Select(r => r.ItemTID).Distinct().Count() == 3);
+        common.ShouldAllBe(r => boxOfLevel[r.ItemTID] == r.IndustryLevel);
+        GameTable.CommonRewardOverrideTable.All.ShouldAllBe(r => boxOfLevel.ContainsKey(r.ItemTID) && boxOfLevel[r.ItemTID] == r.IndustryLevel);
     }
 
     [Fact]
@@ -74,6 +75,7 @@ public class BoxSheetTest
         var boxTids = Boxes.Select(r => r.ItemTID).ToHashSet();
 
         GameTable.CommonRewardTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
+        GameTable.CommonRewardOverrideTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
         GameTable.FarmingBasicTable.All.Select(r => r.ItemTID)
             .Concat(GameTable.FishingBasicTable.All.Select(r => r.ItemTID))
             .Concat(GameTable.MiningBasicTable.All.Select(r => r.ItemTID))
