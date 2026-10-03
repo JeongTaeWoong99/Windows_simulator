@@ -58,10 +58,24 @@ const tabs: Tab[] = [
 ];
 
 // 행 하나가 여러 탭에 속한다 — 탭마다 행을 복제하지 않고 data-tabs로 표시만 가른다.
-const rows = [...live, ...closed].map((t) => ({
+const rows = [...live, ...closed].map((t, rank) => ({
   t,
+  rank,
+  sortId: Number(t.data.taskId.replace(/\D/g, '')) || 0,
+  // 회차(YYMMDD)가 앞, 미정 등 글자는 뒤로 — '~'가 숫자보다 뒤에 온다.
+  sortTarget: isCycle(t.data.target) ? t.data.target : `~${t.data.target}`,
   tabs: tabs.filter((tab) => tab.items.includes(t)).map((tab) => tab.key),
 }));
+
+// 표 머리를 누르면 이 값으로 정렬한다. 상태·우선순위는 글자가 아니라 정해 둔 순서로 잰다.
+const COLUMNS = [
+  { key: 'id', label: 'ID' },
+  { key: 'title', label: '제목' },
+  { key: 'owner', label: '담당' },
+  { key: 'status', label: '상태' },
+  { key: 'priority', label: '우선순위' },
+  { key: 'target', label: '목표' },
+];
 ---
 
 <Layout title="일감">
@@ -110,18 +124,34 @@ const rows = [...live, ...closed].map((t) => ({
         <table class="tasktable">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>제목</th>
-              <th>담당</th>
-              <th>상태</th>
-              <th>우선순위</th>
-              <th>목표</th>
+              {
+                COLUMNS.map((c) => (
+                  <th>
+                    <button class="sorthead" data-sort={c.key} title="눌러서 정렬 — 오름차순 · 내림차순 · 기본 순서">
+                      {c.label}
+                      <span class="sortmark" aria-hidden="true" />
+                    </button>
+                  </th>
+                ))
+              }
             </tr>
           </thead>
           <tbody id="task-rows">
             {
-              rows.map(({ t, tabs }) => (
-                <tr data-tabs={tabs.join(' ')} data-owner={t.data.owner} data-status={t.data.status} hidden>
+              rows.map(({ t, rank, sortId, sortTarget, tabs }) => (
+                <tr
+                  data-tabs={tabs.join(' ')}
+                  data-owner={t.data.owner}
+                  data-status={t.data.status}
+                  data-rank={rank}
+                  data-sort-id={sortId}
+                  data-sort-title={t.data.title}
+                  data-sort-owner={t.data.owner}
+                  data-sort-status={STATUS_ORDER[t.data.status] ?? 9}
+                  data-sort-priority={PRIORITY_ORDER[t.data.priority] ?? 9}
+                  data-sort-target={sortTarget}
+                  hidden
+                >
                   <td class="font-mono text-[11px] text-slate-400 whitespace-nowrap">{t.data.taskId}</td>
                   <td>
                     <a href={`/tasks/${t.data.slug}`} class="font-semibold hover:text-blue-600">
@@ -209,6 +239,47 @@ const rows = [...live, ...closed].map((t) => ({
           b.dataset.on = String(b.dataset.filter === next);
         });
         apply();
+      });
+    }
+
+    // 표 머리 정렬 — 같은 머리를 누를 때마다 오름차순 → 내림차순 → 기본 순서(상태 → 우선순위 → ID).
+    const body = document.getElementById('task-rows')!;
+    const sortHeads = [...document.querySelectorAll<HTMLElement>('button[data-sort]')];
+    const NUMERIC = new Set(['id', 'status', 'priority']);
+    let sortKey = '';
+    let sortDir = 0; // 1 오름 · -1 내림 · 0 기본
+
+    function valueOf(r: HTMLElement, key: string) {
+      return r.dataset[`sort${key[0].toUpperCase()}${key.slice(1)}`] ?? '';
+    }
+
+    function applySort() {
+      const sorted = [...rows].sort((a, b) => {
+        if (sortDir === 0) {
+          return Number(a.dataset.rank) - Number(b.dataset.rank);
+        }
+        const va = valueOf(a, sortKey);
+        const vb = valueOf(b, sortKey);
+        const cmp = NUMERIC.has(sortKey) ? Number(va) - Number(vb) : va.localeCompare(vb, 'ko');
+        // 같은 값끼리는 기본 순서를 지킨다.
+        return cmp * sortDir || Number(a.dataset.rank) - Number(b.dataset.rank);
+      });
+      sorted.forEach((r) => body.appendChild(r));
+      sortHeads.forEach((h) => {
+        h.dataset.dir = h.dataset.sort === sortKey && sortDir !== 0 ? (sortDir > 0 ? 'asc' : 'desc') : '';
+      });
+    }
+
+    for (const head of sortHeads) {
+      head.addEventListener('click', () => {
+        const key = head.dataset.sort!;
+        if (key !== sortKey) {
+          sortKey = key;
+          sortDir = 1;
+        } else {
+          sortDir = sortDir === 1 ? -1 : sortDir === -1 ? 0 : 1;
+        }
+        applySort();
       });
     }
 
