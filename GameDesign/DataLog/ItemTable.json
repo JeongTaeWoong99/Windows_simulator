@@ -1597,7 +1597,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "장비 능력치 칸 1개 다시 뽑기 — 등급 상승 기본 확률"
+    "Description": "장비 능력치 칸 전부 다시 뽑기 · 확률로 인챈트 등급 한 단계 상승"
   },
   {
     "ItemTID": 100018,
@@ -1607,7 +1607,7 @@
     "MaxStack": 9999,
     "BasePrice": 1000,
     "OpenGachaId": 0,
-    "Description": "장비 능력치 칸 1개 다시 뽑기 — 등급 상승 확률 ×1.25"
+    "Description": "장비 능력치 칸 전부 다시 뽑기 · 인챈트 큐브보다 등급 상승 확률이 높다"
   },
   {
     "ItemTID": 100019,
