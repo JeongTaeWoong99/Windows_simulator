@@ -227,8 +227,11 @@ namespace MikaNetwork
         // 로그인 직후 1회 + 경험치가 오를 때 + 특성 포인트를 쓸 때 온다 (재화와 같은 관례)
         public static event Action<S_AccountLevelResponse>? AccountLevelReceived;
 
-        // 특성 찍기 결과 도착 (Handle_S_UserTraitLearnResponse에서 발행)
+        // 특성 레벨 올리기 결과 도착 (Handle_S_UserTraitLearnResponse에서 발행)
         public static event Action<S_UserTraitLearnResponse>? UserTraitLearnResponded;
+
+        // 특성 레벨 스냅샷 도착 (Handle_S_UserTraitListResponse에서 발행) — 로그인 직후 1회
+        public static event Action<S_UserTraitListResponse>? UserTraitListReceived;
 
         // 계정 레벨 스냅샷 (S_AccountLevelResponse 수신 시 자동 호출)
         // ★ 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다 — 캐릭터가 만렙이어도 계정은 자란다.
@@ -240,15 +243,25 @@ namespace MikaNetwork
             AccountLevelReceived?.Invoke(res);
         }
 
-        // 특성 찍기 결과 (S_UserTraitLearnResponse 수신 시 자동 호출)
-        // ※ 성공이면 이 앞에 S_UnlockResponse(찍힌 기록), 뒤에 S_AccountLevelResponse(남은 포인트)가 온다.
-        //   그래서 "찍혔다"는 표시는 이 패킷이 아니라 열린 해금 목록이 바꾼다.
+        // 특성 레벨 올리기 결과 (S_UserTraitLearnResponse 수신 시 자동 호출)
+        // ※ 'Level'은 성공이면 올린 뒤 레벨, 실패면 지금 레벨이다 — 이 패킷이 특성 레벨을 바꾼다(2026-10-02 · T-108).
+        //   남은 포인트는 앞서 온 S_AccountLevelResponse가 채운다.
         //   속도 특성이면 바뀐 슬롯이 S_WorkStationSlotSyncResponse로 따로 온다.
         [PacketHandler]
         public static void Handle_S_UserTraitLearnResponse(ISession session, S_UserTraitLearnResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv, $"특성 찍기 {res.UserTraitTID} → {res.Result}");
+            ClientLogger.Info(ClientLogger.Recv, $"특성 레벨 올리기 {res.UserTraitTID} → {res.Result} (Lv{res.Level})");
             UserTraitLearnResponded?.Invoke(res);
+        }
+
+        // 특성 레벨 스냅샷 (S_UserTraitListResponse 수신 시 자동 호출)
+        // ※ 기본 레벨보다 올린 특성만 실린다 — 없는 특성은 'UserTraitTable.BaseLevel'이다.
+        //   S_UnlockListResponse 다음에 온다.
+        [PacketHandler]
+        public static void Handle_S_UserTraitListResponse(ISession session, S_UserTraitListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"특성 레벨 목록 — {res.Traits.Count}개");
+            UserTraitListReceived?.Invoke(res);
         }
 
         #endregion
@@ -369,6 +382,19 @@ namespace MikaNetwork
             int changeCount = res.ItemChangeInfos?.Count ?? 0;
             ClientLogger.Info(ClientLogger.Recv, $"판매 결과={res.Result}, 획득 골드 {res.GainedGold:N0}, 변경 {changeCount}건");
             ItemSold?.Invoke(res);
+        }
+
+        // 개체(캐릭터·장비) 판매 결과 도착 (Handle_S_EntitySellResponse에서 발행)
+        public static event Action<S_EntitySellResponse>? EntitySold;
+
+        // 개체 판매 결과 (S_EntitySellResponse 수신 시 자동 호출)
+        // ★ 전부 되거나 전혀 안 된다 — 응답에 개체 ID가 없으니 클라가 보낸 목록을 기억했다가 Ok면 지운다.
+        // ※ GainedGold는 이번에 번 금액(델타)이다. 잔액은 S_CurrencyResponse가 따로 내려준다.
+        [PacketHandler]
+        public static void Handle_S_EntitySellResponse(ISession session, S_EntitySellResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"개체 판매 결과={res.Result}, 획득 골드 {res.GainedGold:N0}");
+            EntitySold?.Invoke(res);
         }
 
         #endregion

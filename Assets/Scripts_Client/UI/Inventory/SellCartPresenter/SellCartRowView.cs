@@ -3,7 +3,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 판매 목록의 한 줄. 담긴 아이템 하나를 보여 주고 빼기 버튼을 갖는다.
+// 판매 목록 줄이 그리는 것의 종류 — 빼기를 누르면 카트의 어느 목록에서 뺄지 정한다.
+public enum SellCartKind
+{
+    Item,      // 자원 — 키는 TID
+    Character, // 캐릭터 — 키는 개체 번호
+    Equip,     // 장비 — 키는 개체 번호
+}
+
+// 판매 목록의 한 줄. 담긴 자원 한 종류 또는 개체 하나를 보여 주고 빼기 버튼을 갖는다.
 //
 // 눌리면 'RemoveClicked'만 쏜다 — 카트도 합계도 이 줄은 모른다.
 // 이름·가격·아이콘·툴팁처럼 변환이 필요한 값은 'Bind'로 완성된 값을 받는다.
@@ -32,8 +40,9 @@ public class SellCartRowView : MonoBehaviour
     // 이 줄의 빼기를 눌렀다 ('SellCartPresenter'가 구독).
     public event Action<SellCartRowView>? RemoveClicked;
 
-    // 이 줄이 그리고 있는 아이템. 미바인딩이면 0.
-    public int ItemId { get; private set; }
+    // 이 줄이 그리고 있는 것 — 종류와 키(자원 TID · 개체 번호). 미바인딩이면 키가 0.
+    public SellCartKind Kind { get; private set; }
+    public long         Key  { get; private set; }
 
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 패널의 Start가 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
@@ -50,15 +59,16 @@ public class SellCartRowView : MonoBehaviour
     }
 
     // 이 줄이 그릴 항목을 정한다 ('SellCartPresenter'가 호출).
-    //   itemId      : 빼기 요청에 그대로 실린다
+    //   kind · key  : 빼기 요청에 그대로 실린다
     //   displayName : 이미 완성된 이름 문구
     //   count       : 팔 개수(보유량이 아니다)
     //   price       : 이 줄이 받을 골드
     //   icon        : 왼쪽 아이콘 칸의 완성값
     //   tooltip     : 줄에 마우스를 올리면 부를 툴팁 함수
-    public void Bind(int itemId, string displayName, int count, long price, in ItemIconContent icon, Func<TooltipContent?> tooltip)
+    public void Bind(SellCartKind kind, long key, string displayName, int count, long price, in ItemIconContent icon, Func<TooltipContent?> tooltip)
     {
-        ItemId         = itemId;
+        Kind           = kind;
+        Key            = key;
         iconView.Bind(icon);
         tooltipTrigger.SetProvider(tooltip);
         nameText.text  = displayName;
@@ -69,7 +79,7 @@ public class SellCartRowView : MonoBehaviour
     // 줄을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다 — 판매 목록은 담고 빼기를 반복한다.
     public void Clear()
     {
-        ItemId         = 0;
+        Key            = 0L;
         iconView.Clear();
         tooltipTrigger.SetProvider(null);
         nameText.text  = "";

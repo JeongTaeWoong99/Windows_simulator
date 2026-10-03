@@ -315,11 +315,11 @@ public class InventoryToolPresenter : MonoBehaviour
     // 팔지 않고 담기까지만 한다 — 확인 절차는 아래 [판매] 버튼이다('Inventory 규칙.md').
     private void OnBulkSellClicked()
     {
-        // ⏸ 캐릭터·장비는 팔 수 없다 — 서버 판매 패킷이 아이템 TID 축이고, 값(BasePrice)도 없다.
-        //   버튼을 잠그는 대신 왜 안 되는지 알린다. 잠가 두면 "고장 났나"가 되고, 이유는 어디에도 안 남는다.
+        // 캐릭터·장비는 일괄로 담지 않는다 — 개체 하나하나가 레벨·적성·인챈트가 달라 등급만으로 고르면 아까운 것이 섞인다.
+        //   버튼을 잠그는 대신 어떻게 담는지 알린다. 잠가 두면 "고장 났나"가 되고, 이유는 어디에도 안 남는다.
         if (tabs.CurrentTab != InventoryTab.Resource)
         {
-            _wait.RaiseNotice("자원만 판매할 수 있습니다. 캐릭터·장비 판매는 서버·기획 작업을 기다리는 중입니다.");
+            _wait.RaiseNotice("일괄 담기는 자원만 됩니다. 캐릭터·장비는 칸을 우클릭해 하나씩 담으세요.");
 
             return;
         }
@@ -327,8 +327,8 @@ public class InventoryToolPresenter : MonoBehaviour
         // ★ 먼저 비운다 — 이 버튼은 "더 담기"가 아니라 **범위를 다시 잡는 것**이다.
         //   비우지 않으면 영웅 이하로 담았다가 일반 이하로 다시 누를 때 영웅·희귀가 그대로 남아,
         //   화면의 범위(`일반 이하`)와 실제로 팔릴 것이 어긋난다.
-        //   ⚠️ 우클릭으로 하나씩 담아 둔 것도 함께 빠진다. 범위를 다시 잡는다는 뜻이 그것이다.
-        _cart.Clear();
+        //   ⚠️ 우클릭으로 하나씩 담아 둔 자원도 함께 빠진다. 범위를 다시 잡는다는 뜻이 그것이다.
+        _cart.ClearItems(); // 우클릭으로 담아 둔 캐릭터·장비는 범위와 상관없으니 남긴다
 
         GlobalRarity limit = SelectedRarity;
         int          added = 0;

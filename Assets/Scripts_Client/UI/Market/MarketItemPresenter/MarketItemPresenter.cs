@@ -42,6 +42,9 @@ public class MarketItemPresenter : MonoBehaviour
     [SerializeField, Tooltip("목록이 비었을 때만 보인다")]
     private GameObject emptyText = null!;
 
+    [SerializeField, Tooltip("받은 시각 문구 — \"3분 전에 받음\". 목록은 [검색]을 눌러야 새로 받으므로 얼마나 낡았는지 보인다")]
+    private TMP_Text receivedText = null!;
+
     [SerializeField, Tooltip("가격 정렬 버튼 — 낮은 가격순 ↔ 높은 가격순(최저가 기준). OnClick은 코드가 연결한다")]
     private Button sortButton = null!;
 
@@ -93,6 +96,7 @@ public class MarketItemPresenter : MonoBehaviour
         this.RequireRef(rowPrefab,     nameof(rowPrefab));
         this.RequireRef(rowParent,     nameof(rowParent));
         this.RequireRef(emptyText,     nameof(emptyText));
+        this.RequireRef(receivedText,  nameof(receivedText));
         this.RequireRef(sortButton,    nameof(sortButton));
         this.RequireRef(sortText,      nameof(sortText));
         this.RequireRef(priceText,     nameof(priceText));
@@ -377,7 +381,8 @@ public class MarketItemPresenter : MonoBehaviour
 
         _rows.Show(_contents);
         emptyText.SetActive(_contents.Count == 0);
-        sortText.text = AuctionSort.GetLabel(_sortOrder);
+        sortText.text     = AuctionSort.GetLabel(_sortOrder);
+        receivedText.text = AuctionModel.FormatReceivedAgo(_auction.MarketItemsReceivedAt);
 
         priceText.text = BuildPriceText();
         RefreshBuy();

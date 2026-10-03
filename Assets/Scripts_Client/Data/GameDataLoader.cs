@@ -173,6 +173,19 @@ public static class GameDataLoader
         return GlobalRarity.None;
     }
 
+    // 캐릭터 기준가('CharacterTable.BasePrice') — 즉시 판매가·경매 등록가의 바닥. 없는 TID면 0.
+    public static int GetCharacterPrice(int characterTid)
+    {
+        if (GameTable.CharacterTable.TryGet(characterTid, out var row))
+        {
+            return row.BasePrice;
+        }
+
+        WarnUnknownId("캐릭터", characterTid, _warnedCharacterIds);
+
+        return 0;
+    }
+
     // 장비 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     // ⚠️ 종류(TID)를 넣는다 — 개체 번호('EquipInfo.EquipId')를 넣으면 조회가 빗나간다.
     public static string GetEquipName(int equipTid)
@@ -214,6 +227,12 @@ public static class GameDataLoader
     public static bool TryGetEnchantOption(int optionTid, out EnchantOptionTableRow row)
     {
         return GameTable.EnchantOptionTable.TryGet(optionTid, out row);
+    }
+
+    // 이 등급의 장비가 갖는 능력치 칸 수('EnchantGradeTable.SlotCount'). 모르는 등급('None' 포함)이면 0.
+    public static int GetEnchantSlotCount(GlobalRarity rarity)
+    {
+        return GameTable.EnchantGradeTable.TryGet(rarity, out EnchantGradeTableRow row) ? row.SlotCount : 0;
     }
 
     // 우편 템플릿 한 행 — 제목·본문·발신자는 패킷에 없고 여기서만 읽는다.
@@ -293,19 +312,61 @@ public static class GameDataLoader
         return false;
     }
 
-    // 특성 노드 전체 (엑셀 순서 그대로). 트리 화면이 산업·효과로 갈라 쓴다.
+    // 특성 전체 (엑셀 순서 그대로). 특성 화면이 산업·효과로 갈라 쓴다.
     //
-    // ※ **TID 규칙을 클라에 베끼지 않는다.** 노드가 속도인지 산업 레벨인지는 'EffectType'으로,
-    //   어느 열인지는 'Industry'로 갈린다 — 시트에 단이 하나 늘면 트리도 저절로 한 줄 는다.
+    // ※ **TID 규칙을 클라에 베끼지 않는다.** 무엇을 하는 특성인지는 'EffectType'으로,
+    //   어느 산업인지는 'Industry'로 갈린다 — 시트에 특성이 늘면 화면도 저절로 따라온다.
     public static IReadOnlyList<UserTraitTableRow> UserTraits => GameTable.UserTraitTable.All;
 
-    // 특성 노드 한 줄(이름·비용·효과)을 조회한다. 없는 TID면 false.
+    // 특성 한 줄(이름·레벨당 비용·레벨당 효과·기본/최대 레벨)을 조회한다. 없는 TID면 false.
     //
-    // ※ 조건(계정 레벨·선행)은 여기 없다 — **같은 TID의 'UnlockTable' 행**에 있다
-    //   (노드 TID = UnlockTID). 그래서 트리 한 칸을 그리려면 두 테이블을 함께 읽는다.
+    // ※ 레벨마다 다른 것은 계정 레벨 조건뿐이다 — 그건 'TryGetUserTraitLevel'이 준다.
     public static bool TryGetUserTrait(int userTraitTid, out UserTraitTableRow row)
     {
         return GameTable.UserTraitTable.TryGet(userTraitTid, out row);
+    }
+
+    // 특성을 'level'로 올릴 때의 조건 행(계정 레벨)을 조회한다. 그 레벨이 없으면 false.
+    //
+    // ※ 시트 키는 'UserTraitLevelTID'(= 특성 × 100 + 레벨)지만 그 계산식을 여기 베끼지 않는다 —
+    //   (특성, 레벨)로 한 번 뒤집어 둔다('TryGetIndustryLevel'과 같은 이유).
+    public static bool TryGetUserTraitLevel(int userTraitTid, int level, out UserTraitLevelTableRow row)
+    {
+        if (_userTraitLevels == null)
+        {
+            _userTraitLevels = new Dictionary<(int, int), UserTraitLevelTableRow>();
+
+            foreach (var candidate in GameTable.UserTraitLevelTable.All)
+            {
+                _userTraitLevels[(candidate.UserTraitTID, candidate.Level)] = candidate;
+            }
+        }
+
+        return _userTraitLevels.TryGetValue((userTraitTid, level), out row!);
+    }
+
+    // (특성, 레벨) → 레벨 조건 행. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static Dictionary<(int Trait, int Level), UserTraitLevelTableRow>? _userTraitLevels;
+
+    // 이 산업의 개척 특성('IndustryUnlock')을 찾는다. 없으면 false.
+    //
+    // ■ 산업 레벨은 해금 행이 아니라 이 특성의 레벨로 열린다 (2026-10-02 · T-108)
+    // **특성 레벨 N = 그 산업 Lv N까지 열림** — 판정은 'PlayerDataModel.IsIndustryLevelOpen'.
+    public static bool TryGetIndustryUnlockTrait(EIndustryType industry, out UserTraitTableRow row)
+    {
+        foreach (var candidate in GameTable.UserTraitTable.All)
+        {
+            if (candidate.EffectType == UserTraitEffect.IndustryUnlock && (byte)candidate.Industry == (byte)industry)
+            {
+                row = candidate;
+
+                return true;
+            }
+        }
+
+        row = null!;
+
+        return false;
     }
 
     // 산업 레벨 한 줄(이름·요구 점수·판정당 경험치)을 (산업, 레벨)로 조회한다. 없으면 false.
@@ -315,40 +376,6 @@ public static class GameDataLoader
     public static bool TryGetIndustryLevel(EIndustryType industry, int level, out IndustryLevelTableRow row)
     {
         return IndustryLevels.TryGetValue(((byte)industry, level), out row!);
-    }
-
-    // 이 산업 레벨을 여는 해금 TID. Lv1은 조건이 없어 **0**이고, 'PlayerDataModel.IsUnlocked'가 항상 참으로 읽는다.
-    //
-    // ※ 이 TID가 곧 특성 노드의 'UserTraitTID'다 — 트리에서 그 노드를 찍으면 이 레벨이 열린다.
-    public static int GetIndustryLevelUnlockTid(EIndustryType industry, int level)
-    {
-        return TryGetIndustryLevel(industry, level, out var row) ? row.UnlockTID : 0;
-    }
-
-    // 이 해금 TID가 여는 산업 레벨 행. 산업 레벨을 여는 TID가 아니면 false.
-    //
-    // ※ 특성 트리가 쓴다 — 노드 TID만 들고 "이게 무엇을 여는가"(예: '밭')를 물어야 하기 때문이다.
-    //   Lv1은 'UnlockTID = 0'이라 여기 걸리지 않는다(조건 없이 열려 있다).
-    public static bool TryGetIndustryLevelByUnlockTid(int unlockTid, out IndustryLevelTableRow row)
-    {
-        row = null!;
-
-        if (unlockTid == 0)
-        {
-            return false;
-        }
-
-        foreach (var candidate in GameTable.IndustryLevelTable.All)
-        {
-            if (candidate.UnlockTID == unlockTid)
-            {
-                row = candidate;
-
-                return true;
-            }
-        }
-
-        return false;
     }
 
     // 이 산업에 존재하는 가장 높은 레벨 (버튼을 몇 개 그릴지). 행이 하나도 없으면 0.
@@ -456,6 +483,51 @@ public static class GameDataLoader
     private static readonly Dictionary<(byte Industry, int Level), IndustryDrop[]> IndustryDrops
         = new Dictionary<(byte Industry, int Level), IndustryDrop[]>();
 
+    // 이 산업 레벨의 판정마다 따로 굴리는 상자 목록 (이슈 #49). 없는 (산업, 레벨)이면 빈 목록.
+    //
+    // ■ 두 시트에서 고른다 — 서버 'CommonRewardCatalog.Roll'과 같은 규칙이다
+    // 기본은 'CommonRewardTable'의 **레벨 행**(전 산업 공통)이고, 'CommonRewardOverrideTable'에
+    // 그 (산업, 레벨) 행이 하나라도 있으면 공통 행을 **통째로** 대신한다(섞지 않는다).
+    public static IReadOnlyList<IndustryBoxReward> GetIndustryBoxRewards(EIndustryType industry, int level)
+    {
+        var key = ((byte)industry, level);
+
+        if (IndustryBoxRewards.TryGetValue(key, out var cached))
+        {
+            return cached;
+        }
+
+        var list = new List<IndustryBoxReward>();
+
+        foreach (var row in GameTable.CommonRewardOverrideTable.All)
+        {
+            if ((byte)row.IndustryType == (byte)industry && row.IndustryLevel == level)
+            {
+                list.Add(new IndustryBoxReward(row.ItemTID, row.Count, row.ChancePerMillion));
+            }
+        }
+
+        if (list.Count == 0)
+        {
+            foreach (var row in GameTable.CommonRewardTable.All)
+            {
+                if (row.IndustryLevel == level)
+                {
+                    list.Add(new IndustryBoxReward(row.ItemTID, row.Count, row.ChancePerMillion));
+                }
+            }
+        }
+
+        var rewards = list.ToArray();
+        IndustryBoxRewards[key] = rewards;
+
+        return rewards;
+    }
+
+    // (산업, 레벨) → 상자 목록. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static readonly Dictionary<(byte Industry, int Level), IndustryBoxReward[]> IndustryBoxRewards
+        = new Dictionary<(byte Industry, int Level), IndustryBoxReward[]>();
+
     // 테이블에 없는 Id를 처음 만났을 때만 경고한다 (이름·등급·가격 조회에서 호출)
     private static void WarnUnknownId(string kind, int id, HashSet<int> warned)
     {
@@ -484,4 +556,24 @@ public readonly struct IndustryDrop
     public int ItemTid { get; }
 
     public int Weight { get; }
+}
+
+// 산업 레벨 하나에서 판정마다 따로 굴리는 상자 한 줄 — 아이템 · 개수 · 백만분율 확률.
+//
+// ※ 'IndustryDrop'과 달리 **가중치가 아니라 독립 확률**이다 — 줄마다 따로 굴리므로 자원 가중치의
+//   분모에 섞지 않는다. 비율은 'ChancePerMillion / 1,000,000'이다('GameDataLoader.GetIndustryBoxRewards').
+public readonly struct IndustryBoxReward
+{
+    public IndustryBoxReward(int itemTid, int count, int chancePerMillion)
+    {
+        ItemTid          = itemTid;
+        Count            = count;
+        ChancePerMillion = chancePerMillion;
+    }
+
+    public int ItemTid { get; }
+
+    public int Count { get; }
+
+    public int ChancePerMillion { get; }
 }

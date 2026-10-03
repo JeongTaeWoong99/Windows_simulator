@@ -6,6 +6,7 @@ using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 우편함 — 서버가 맡겨 둔 보상(운영 지급 · 인벤토리 넘침 보관)을 보고 받고 지운다.
 //
@@ -360,6 +361,14 @@ public class MailPresenter : MonoBehaviour
             }
         }
 
+        if (mail.Characters != null)
+        {
+            foreach (CharacterInfo character in mail.Characters)
+            {
+                icons.Add(ItemIconContent.ForCharacter(character.CharacterTid));
+            }
+        }
+
         if (mail.EquipTids != null)
         {
             foreach (int tid in mail.EquipTids)
@@ -436,6 +445,17 @@ public class MailPresenter : MonoBehaviour
             }
         }
 
+        // 개체 캐릭터(경매 구매·반환) — 레벨·대표 적성까지 적는다. 같은 종류라도 개체마다 값이 다르다.
+        if (mail.Characters != null)
+        {
+            foreach (CharacterInfo character in mail.Characters)
+            {
+                GlobalRarity rarity = GameDataLoader.GetCharacterRarity(character.CharacterTid);
+
+                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(character.CharacterTid), RarityPalette.Get(rarity)), AuctionText.FormatCharacterSummary(character), RarityLabel.Get(rarity), null);
+            }
+        }
+
         if (mail.EquipTids != null)
         {
             foreach (int tid in mail.EquipTids)
@@ -492,6 +512,14 @@ public class MailPresenter : MonoBehaviour
         }
 
         AddGrouped(parts, mail.CharacterTids, tid => GameDataLoader.GetCharacterName(tid));
+
+        if (mail.Characters != null)
+        {
+            foreach (CharacterInfo character in mail.Characters)
+            {
+                parts.Add(GameDataLoader.GetCharacterName(character.CharacterTid));
+            }
+        }
         AddGrouped(parts, mail.EquipTids,     GameDataLoader.GetEquipName);
 
         if (mail.Equips != null)

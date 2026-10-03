@@ -10,7 +10,7 @@ using UnityEngine.UI;
 // 인벤토리 오른쪽의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다.
 //
 // ■ 무엇을 보여 주나
-// 자원 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
+// 자원·캐릭터·장비 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
 // 여기서 파는 값은 **즉시 판매가**(정해진 값)다. 더 비싸게 팔려면 경매장에 올린다(즉시 판매가 ~ x10 — 'Market 규칙.md').
 // 담고 → 판매 버튼, 이 두 단계가 곧 확인 절차라 별도 확인 모달을 두지 않는다
 // (화면 중앙 팝업을 최소화한다 — 기획 P1).
@@ -24,6 +24,11 @@ using UnityEngine.UI;
 //   이름도 2026-09-12에 'StorageInformationPresenter' → 'SellCartPresenter'로 맞췄다
 //   ('SellCartModel'과 짝이 된다). 칸의 상세 정보는 이 패널로 돌아오지 않는다 —
 //   커서 옆 호버 UI로 간다(일감 'T-050').
+//
+// ■ 자원과 개체는 패킷이 다르다 (T-075 · 2026-10-03)
+//   자원은 'C_ItemSellRequest', 캐릭터·장비는 'C_EntitySellRequest'. 섞어 담았으면 [판매] 한 번에 둘 다 보내고
+//   응답 둘을 다 받은 뒤에 대기를 닫는다. 각각 전부 되거나 전혀 안 되므로, 한쪽만 실패하면
+//   성공한 쪽만 목록에서 빠지고 실패한 쪽은 사유와 함께 남는다.
 public class SellCartPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -62,6 +67,10 @@ public class SellCartPresenter : MonoBehaviour
 
     // 응답을 기다리는 중인가 — 연타로 두 번 나가면 두 번 팔린다.
     private bool _isWaiting;
+
+    // 아직 안 온 응답 수(자원·개체 각 1) · 그 사이에 받은 실패 — 둘 다 오면 대기를 한 번에 닫는다.
+    private int          _pendingResponses;
+    private EResultCode? _failedCode;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -107,8 +116,7 @@ public class SellCartPresenter : MonoBehaviour
     //
     // **특성 탭에서만 사라진다** — 도구 줄과 같은 판단이다. 거기는 격자 자체가 물러나고
     // 트리가 그 자리를 쓰므로 팔 대상이 화면에 없다.
-    // ⚠️ 캐릭터·장비 탭에서는 **그대로 보인다** — 아직 못 파는 이유를 알려 주는 자리가 필요해서다
-    //   (일괄 담기 버튼도 잠그지 않고 이유를 알린다 → 'Inventory 규칙.md').
+    // 자원·캐릭터·장비 탭은 모두 담을 수 있는 탭이라 그대로 보인다(T-075).
     // 담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
     private void ApplyTab(InventoryTab tab)
     {
@@ -143,10 +151,12 @@ public class SellCartPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed            = true;
-        _cart.Changed           += Refresh;
-        _data.ItemSellCompleted += OnSellCompleted;
-        _data.ItemSellFailed    += OnSellFailed;
+        _isSubscribed              = true;
+        _cart.Changed             += Refresh;
+        _data.ItemSellCompleted   += OnSellCompleted;
+        _data.ItemSellFailed      += OnSellFailed;
+        _data.EntitySellCompleted += OnEntitySellCompleted;
+        _data.EntitySellFailed    += OnSellFailed;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -157,10 +167,12 @@ public class SellCartPresenter : MonoBehaviour
             return;
         }
 
-        _isSubscribed            = false;
-        _cart.Changed           -= Refresh;
-        _data.ItemSellCompleted -= OnSellCompleted;
-        _data.ItemSellFailed    -= OnSellFailed;
+        _isSubscribed              = false;
+        _cart.Changed             -= Refresh;
+        _data.ItemSellCompleted   -= OnSellCompleted;
+        _data.ItemSellFailed      -= OnSellFailed;
+        _data.EntitySellCompleted -= OnEntitySellCompleted;
+        _data.EntitySellFailed    -= OnSellFailed;
     }
 
     #endregion
@@ -199,26 +211,80 @@ public class SellCartPresenter : MonoBehaviour
             .Row("경매장 [등록] 탭에서 직접 정합니다", "");
     }
 
+    // 개체 줄 툴팁 — 등급 · 즉시 판매가, 그리고 경매로 올리면의 단가 범위.
+    private static TooltipContent BuildEntityTooltip(string name, GlobalRarity rarity, int basePrice)
+    {
+        return new TooltipContent(name)
+            .Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+            .Row("즉시 판매가", $"{AuctionModel.InstantSellTotal(basePrice, 1):N0} 골드")
+            .Header("경매로 올리면")
+            .Row("경매 등록가", AuctionModel.FormatBand(basePrice), "", null)
+            .Row("경매장 [등록] 탭에서 직접 정합니다", "");
+    }
+
     // 담긴 목록·합계·경고·버튼 상태를 화면에 반영한다 (Start · OnEnable · SellCartModel.Changed 구독).
+    // 줄 순서 = 자원 → 캐릭터 → 장비.
     private void Refresh()
     {
-        int count = _cart.Count;
+        int index = 0;
 
-        for (int i = 0; i < count; i++)
+        foreach (ItemInfo entry in _cart.Entries)
         {
-            ItemInfo        entry     = _cart.Entries[i];
-            SellCartRowView row       = GetOrCreateRow(i);
+            SellCartRowView row       = GetOrCreateRow(index++);
             int             itemId    = entry.ItemId;
             int             basePrice = GameDataLoader.GetItemPrice(itemId);
 
             row.gameObject.SetActive(true);
-            row.Bind(itemId,
+            row.Bind(SellCartKind.Item,
+                     itemId,
                      GameDataLoader.GetItemName(itemId),
                      entry.Count,
                      AuctionModel.InstantSellTotal(basePrice, entry.Count),
                      ItemIconContent.ForItem(itemId, 0L),
                      () => BuildRowTooltip(itemId));
         }
+
+        foreach (long characterId in _cart.CharacterIds)
+        {
+            SellCartRowView row       = GetOrCreateRow(index++);
+            int             tid       = _data.GetCharacterTid(characterId);
+            string          name      = GameDataLoader.GetCharacterName(tid);
+            int             basePrice = GameDataLoader.GetCharacterPrice(tid);
+            GlobalRarity    rarity    = GameDataLoader.GetCharacterRarity(tid);
+
+            row.gameObject.SetActive(true);
+            row.Bind(SellCartKind.Character,
+                     characterId,
+                     name,
+                     1,
+                     AuctionModel.InstantSellTotal(basePrice, 1),
+                     ItemIconContent.ForCharacter(tid),
+                     () => BuildEntityTooltip(name, rarity, basePrice));
+        }
+
+        foreach (EquipInfo equip in _data.Equips)
+        {
+            if (!_cart.ContainsEquip(equip.EquipId) || !GameDataLoader.TryGetEquip(equip.EquipTid, out EquipTableRow equipRow))
+            {
+                continue;
+            }
+
+            SellCartRowView row       = GetOrCreateRow(index++);
+            string          name      = equipRow.Name;
+            int             basePrice = equipRow.BasePrice;
+            GlobalRarity    rarity    = equipRow.GlobalRarity;
+
+            row.gameObject.SetActive(true);
+            row.Bind(SellCartKind.Equip,
+                     equip.EquipId,
+                     name,
+                     1,
+                     AuctionModel.InstantSellTotal(basePrice, 1),
+                     ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                     () => BuildEntityTooltip(name, rarity, basePrice));
+        }
+
+        int count = index;
 
         HideRowsFrom(count);
 
@@ -287,7 +353,12 @@ public class SellCartPresenter : MonoBehaviour
             return; // 이미 나간 요청의 목록을 바꾸면 화면과 요청이 어긋난다
         }
 
-        _cart.Remove(row.ItemId);
+        switch (row.Kind)
+        {
+            case SellCartKind.Character: _cart.RemoveCharacter(row.Key); break;
+            case SellCartKind.Equip:     _cart.RemoveEquip(row.Key);     break;
+            default:                     _cart.Remove((int)row.Key);     break;
+        }
     }
 
     // 담긴 것을 한 번에 판다 (sellButton OnClick에 코드로 연결).
@@ -308,12 +379,34 @@ public class SellCartPresenter : MonoBehaviour
             return;
         }
 
-        _network.Send(new C_ItemSellRequest
-        {
-            Items = _cart.ToRequestItems()
-        });
+        _pendingResponses = 0;
+        _failedCode       = null;
 
-        ClientLogger.Info(ClientLogger.Send, $"판매 요청 — {_cart.Count}종, 예상 {_cart.TotalPrice:N0} G");
+        if (_cart.HasItems)
+        {
+            _network.Send(new C_ItemSellRequest
+            {
+                Items = _cart.ToRequestItems()
+            });
+            _pendingResponses++;
+        }
+
+        if (_cart.HasEntities)
+        {
+            // 응답에 개체 ID가 없다 — 무엇을 지울지 모델에 먼저 적어 둔다.
+            var characterIds = new List<long>(_cart.CharacterIds);
+            var equipIds     = new List<long>(_cart.EquipIds);
+
+            _data.BeginEntitySell(characterIds, equipIds);
+            _network.Send(new C_EntitySellRequest
+            {
+                CharacterIds = characterIds,
+                EquipIds     = equipIds,
+            });
+            _pendingResponses++;
+        }
+
+        ClientLogger.Info(ClientLogger.Send, $"판매 요청 — {_cart.Count}줄(패킷 {_pendingResponses}개), 예상 {_cart.TotalPrice:N0} G");
 
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isWaiting  = true;
@@ -324,29 +417,59 @@ public class SellCartPresenter : MonoBehaviour
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼 잠금을 푼다 (ServerWaitManager.Begin의 onClosed)
     private void OnWaitClosed()
     {
-        _isWaiting  = false;
-        _waitHandle = null;
+        _isWaiting        = false;
+        _waitHandle       = null;
+        _pendingResponses = 0;
         ApplySellButton();
     }
 
-    // 판매 성공 — 목록을 비운다 (PlayerDataModel.ItemSellCompleted 구독)
+    // 자원 판매 성공 — 자원을 비운다 (PlayerDataModel.ItemSellCompleted 구독)
     //
     // ※ 골드 표시는 상태바가 'CurrencyChanged'로 따로 갱신한다. 여기서 잔액을 만지지 않는다.
     private void OnSellCompleted(long gainedGold)
     {
-        ClientLogger.Info(ClientLogger.Recv, $"판매 완료 — {gainedGold:N0} G 획득");
+        ClientLogger.Info(ClientLogger.Recv, $"자원 판매 완료 — {gainedGold:N0} G 획득");
 
-        _waitHandle?.Succeed();
-        _cart.Clear(); // Changed가 발행되어 목록·합계가 다시 그려진다
+        _cart.ClearItems(); // Changed가 발행되어 목록·합계가 다시 그려진다
+        OnResponsePart();
     }
 
-    // 판매 실패 — 사유를 사람이 읽을 문구로 옮겨 알림에 띄운다 (PlayerDataModel.ItemSellFailed 구독)
+    // 개체 판매 성공 — 개체를 비운다 (PlayerDataModel.EntitySellCompleted 구독)
+    // ※ 판 개체는 'PlayerDataModel'이 이미 지웠다 — 카트도 그 변경을 따라 빼지만, 남은 것이 없게 한 번 더 비운다.
+    private void OnEntitySellCompleted(long gainedGold)
+    {
+        ClientLogger.Info(ClientLogger.Recv, $"개체 판매 완료 — {gainedGold:N0} G 획득");
+
+        _cart.ClearEntities();
+        OnResponsePart();
+    }
+
+    // 판매 실패 — 사유를 기억해 둔다 (PlayerDataModel.ItemSellFailed · EntitySellFailed 구독)
     //
-    // ★ 목록을 비우지 않는다. 전부 되거나 전혀 안 되므로 아무것도 팔리지 않았고,
+    // ★ 실패한 쪽 목록을 비우지 않는다. 전부 되거나 전혀 안 되므로 아무것도 팔리지 않았고,
     //   담아 둔 것을 다시 고르게 하면 조작을 처음부터 반복시키는 셈이다.
     private void OnSellFailed(EResultCode code)
     {
-        _waitHandle?.Fail(ResultMessages.ToText(code));
+        _failedCode ??= code;
+        OnResponsePart();
+    }
+
+    // 응답 하나가 왔다 — 보낸 것이 다 오면 대기를 닫는다(실패가 하나라도 있으면 그 사유로).
+    private void OnResponsePart()
+    {
+        if (_waitHandle == null || --_pendingResponses > 0)
+        {
+            return;
+        }
+
+        if (_failedCode is EResultCode code)
+        {
+            _waitHandle.Fail(ResultMessages.ToText(code));
+        }
+        else
+        {
+            _waitHandle.Succeed();
+        }
     }
 
     #endregion

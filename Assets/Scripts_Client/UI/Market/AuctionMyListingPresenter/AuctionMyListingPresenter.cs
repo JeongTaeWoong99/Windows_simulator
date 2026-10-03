@@ -11,10 +11,12 @@ using UnityEngine.UI;
 //   (대금이 우편으로 올 뿐이다) 열 때 받지 않으면 이미 팔린 매물이 남아 보인다.
 // ■ 구매 진행 중(Reserved)인 매물은 [취소]를 잠근다 — 서버도 거절한다.
 // ■ 취소하면 물건은 **우편**으로 돌아오고 등록비는 돌려받지 못한다. 확인 창에서 먼저 알린다.
+// ■ 경매 우편이 오면 'AuctionModel'이 조용히 다시 받는다 — 이 화면이 보이는 중이면 그대로 다시 그리고,
+//   그릴 때마다 탭 배지('HasMyListingsNews')를 끈다. 머리 문구에 받은 시각을 붙인다.
 public class AuctionMyListingPresenter : MonoBehaviour
 {
     [CenterHeader("머리")]
-    [SerializeField, Tooltip("'판매 중 n / 상한' 문구")]
+    [SerializeField, Tooltip("'판매 중 n / 상한 · 받은 시각' 문구")]
     private TMP_Text countText = null!;
 
     [SerializeField, Tooltip("새로고침 버튼. OnClick은 코드가 연결한다")]
@@ -232,8 +234,13 @@ public class AuctionMyListingPresenter : MonoBehaviour
         _rows.Show(_contents);
         emptyText.SetActive(_contents.Count == 0);
 
-        countText.text             = $"판매 중 {_contents.Count:N0} / {Constants.AuctionMaxActiveListings:N0}건";
+        string received = AuctionModel.FormatReceivedAgo(_auction.MyListingsReceivedAt);
+
+        countText.text             = $"판매 중 {_contents.Count:N0} / {Constants.AuctionMaxActiveListings:N0}건"
+                                   + (received.Length > 0 ? UIRichText.Dot + UIRichText.Label(received) : "");
         refreshButton.interactable = _waitHandle == null;
+
+        _auction.ClearMyListingsNews();
     }
 
     #endregion

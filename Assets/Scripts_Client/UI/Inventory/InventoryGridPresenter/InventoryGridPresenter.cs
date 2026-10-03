@@ -3,6 +3,7 @@ using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // 인벤토리의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
@@ -36,15 +37,20 @@ using UnityEngine.UI;
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
 // ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
-//   적성 스트립 · 레벨 배지 · 경험치 게이지는 캐릭터 탭에서만, 판매 담김 표시는 자원 탭에서만 켜진다.
+//   적성 스트립 · 레벨 배지 · 경험치 게이지는 캐릭터 탭에서만 켜진다. 판매 담김 표시는 탭마다 카트의 다른 목록을 본다.
 //   '배' 마크는 캐릭터 탭에서 '배치 중', 장비 탭에서 '장착 중'으로 뜻이 갈린다 — 판정도 탭마다 다르다.
 //   칸은 이 판단을 모른다 — 공급자가 만드는 완성값(`SlotData`)에 캐릭터 전용 필드를 끼우면
 //   자원·가챠 칸까지 따라 두꺼워지므로, 탭을 아는 격자가 읽어서 넘긴다.
 //
-// ■ 우클릭 = 판매 목록에 담기 · 빼기 (자원 탭에서만)
+// ■ 우클릭 = 판매 목록에 담기 · 빼기 (자원·캐릭터·장비 탭)
 //   칸('SlotView')은 우클릭을 이벤트로 던지기만 하고 무슨 뜻인지 모른다.
-//   그것을 판매로 읽는 것이 여기다 — 서버 판매 패킷이 아이템 TID 축이라 캐릭터는 담을 수 없어서
-//   자원 탭이 아니면 무시한다 (동선은 'Inventory 규칙.md').
+//   그것을 판매로 읽는 것이 여기다 — 자원은 TID, 캐릭터·장비는 개체 번호로 카트의 다른 목록에 담는다(T-075).
+//   팔 수 없는 개체(일하는 캐릭터·끼고 있는 장비·마지막 캐릭터)는 담지 않고 사유를 알린다('EntityBlockText').
+//   동선은 'Inventory 규칙.md'.
+//
+// ■ Shift+우클릭 = 경매 등록 (2026-10-03)
+//   거래 열을 열어 경매 등록 화면에 그 물건을 골라 둔다('MarketCanvasView.OpenAuctionRegister').
+//   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
 // ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸에서만)
 //   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
@@ -108,17 +114,13 @@ public class InventoryGridPresenter : MonoBehaviour
     private bool _isCartSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
-    // 이 탭의 칸을 팔 수 있나. 서버 판매 패킷이 아이템 TID 축이라 자원만 담긴다.
-    private bool IsSellableTab => _currentTab == InventoryTab.Resource;
 
     // 이 탭의 칸이 캐릭터인가. 적성 스트립·레벨 배지·경험치 게이지는 여기서만 켜진다.
     private bool IsCharacterTab => _currentTab == InventoryTab.Character;
 
     // 이 탭의 'Key'가 아이템 TID인가. 상자 개봉은 여기서만 연다.
     //
-    // ⚠️ 지금 'IsSellableTab'과 값이 같지만 **합치지 않는다.** 판매 축이 캐릭터·장비로 넓어지면
-    //   ('C_ItemSellRequest'가 TID 축이라 서버 패킷이 먼저다) 그쪽이 true가 되면서 상자 개봉까지
-    //   따라 열린다. 캐릭터·장비 탭의 'Key'는 **개체 PK**라 상자 TID와 우연히 겹칠 수 있다.
+    // ⚠️ 캐릭터·장비 탭의 'Key'는 **개체 PK**라 상자 TID와 우연히 겹칠 수 있다 — 판매처럼 탭을 넓히지 않는다.
     private bool IsItemKeyTab => _currentTab == InventoryTab.Resource;
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
@@ -424,8 +426,8 @@ public class InventoryGridPresenter : MonoBehaviour
                 view.gameObject.SetActive(true);
                 view.Bind(data);
 
-                // 담김 표시의 주인은 카트다 — 자원 탭이 아니면 담길 수 없으므로 항상 꺼진다.
-                view.SetSellMark(IsSellableTab && _cart.Contains((int)data.Key));
+                // 담김 표시의 주인은 카트다 — 탭마다 카트의 다른 목록을 본다.
+                view.SetSellMark(IsInCart(data.Key));
 
                 // 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
                 // **딤과 '배' 마크를 짝으로** 켠다: 딤만 두면 왜 어두운지 알 수 없고,
@@ -549,18 +551,110 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 판매 담기
 
-    // 칸을 우클릭했다 — 자원이면 판매 목록에 담거나 뺀다 (SlotView.RightClicked 구독)
+    // 이 칸이 판매 목록에 담겨 있나 — 지금 탭에 맞는 카트 목록을 본다 (Redraw에서 호출).
+    private bool IsInCart(long key) => _currentTab switch
+    {
+        InventoryTab.Resource  => _cart.Contains((int)key),
+        InventoryTab.Character => _cart.ContainsCharacter(key),
+        InventoryTab.Equipment => _cart.ContainsEquip(key),
+        _                      => false,
+    };
+
+    // 칸을 우클릭했다 — 판매 목록에 담거나 뺀다. Shift를 누르고 있으면 경매 등록으로 간다 (SlotView.RightClicked 구독)
     //
     // 이미 담긴 칸을 다시 누르면 뺀다(토글). 수량을 고치려면 뺐다가 다시 담는다 —
     // 한 조작에 '담기'와 '수량 바꾸기'를 겹쳐 두면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
     private void OnSlotRightClicked(SlotView view)
     {
-        if (!IsSellableTab || view.IsEmpty)
+        if (view.IsEmpty)
         {
             return;
         }
 
-        int itemId = (int)view.Key;
+        if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
+        {
+            OpenAuctionRegister(view.Key);
+
+            return;
+        }
+
+        switch (_currentTab)
+        {
+            case InventoryTab.Resource:  ToggleItem((int)view.Key); break;
+            case InventoryTab.Character: ToggleCharacter(view.Key); break;
+            case InventoryTab.Equipment: ToggleEquip(view.Key);     break;
+        }
+    }
+
+    // 그 물건을 경매 등록 화면에 골라 둔다 — 거래 열을 연다 (OnSlotRightClicked에서 호출).
+    // ※ 올릴 수 없는 개체여도 연다 — 등록 화면이 흐린 줄과 사유로 말한다(한 곳에서만 말하게).
+    private void OpenAuctionRegister(long key)
+    {
+        EAuctionKind kind = _currentTab switch
+        {
+            InventoryTab.Character => EAuctionKind.Character,
+            InventoryTab.Equipment => EAuctionKind.Equip,
+            InventoryTab.Resource  => EAuctionKind.Item,
+            _                      => EAuctionKind.None,
+        };
+
+        if (kind == EAuctionKind.None)
+        {
+            return;
+        }
+
+        _ui.Market.OpenAuctionRegister(kind, key);
+    }
+
+    // 캐릭터를 담거나 뺀다 — 팔 수 없으면 사유를 알린다 (OnSlotRightClicked에서 호출).
+    // ※ 마지막 캐릭터 판정은 이미 담은 캐릭터를 빼고 센다 — 서버가 "판 뒤 0명"을 거절한다(SellLastCharacter).
+    private void ToggleCharacter(long characterId)
+    {
+        if (_cart.ContainsCharacter(characterId))
+        {
+            _cart.RemoveCharacter(characterId);
+
+            return;
+        }
+
+        int     remainingAfter = _data.Characters.Count - _cart.CharacterIds.Count - 1;
+        string? blocked        = EntityBlockText.ForCharacter(_data, characterId, remainingAfter);
+
+        if (blocked != null)
+        {
+            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+
+            return;
+        }
+
+        _cart.AddCharacter(characterId);
+    }
+
+    // 장비를 담거나 뺀다 — 끼고 있으면 사유를 알린다 (OnSlotRightClicked에서 호출).
+    private void ToggleEquip(long equipId)
+    {
+        if (_cart.ContainsEquip(equipId))
+        {
+            _cart.RemoveEquip(equipId);
+
+            return;
+        }
+
+        string? blocked = EntityBlockText.ForEquip(_data, equipId);
+
+        if (blocked != null)
+        {
+            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+
+            return;
+        }
+
+        _cart.AddEquip(equipId);
+    }
+
+    // 자원을 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
+    private void ToggleItem(int itemId)
+    {
 
         if (_cart.Contains(itemId))
         {
@@ -632,8 +726,12 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
+        // ※ 한 번에 여는 수는 'Constants.BoxOpenMax'까지다 — 넘기면 서버가 'InvalidUseCount'로 거절한다.
+        //   지금은 상자 최대 수량(50)과 같아 걸리지 않지만, 두 값은 엑셀에서 따로 바뀐다.
+        int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
+
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
-        _ui.AskAmount(itemId, owned, "몇 개를 열까?", amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, "몇 개를 열까?", amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).

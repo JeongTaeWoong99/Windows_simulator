@@ -65,12 +65,15 @@ public class MarketTabPresenter : MonoBehaviour
     // 지금 열려 있는 탭. 거래 열을 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     public MarketTab CurrentTab { get; private set; } = DefaultTab;
 
+    private bool _hasRequestedTab; // Start 전에 밖에서 탭을 골랐나 — Start가 기본 탭으로 덮지 않게 한다
+
     // 참조 확보 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
+    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 인벤토리 [경매 등록]).
     private void Start()
     {
         ValidateTabs();
         BindButtons();
-        ShowTab(DefaultTab);
+        ShowTab(_hasRequestedTab ? CurrentTab : DefaultTab);
     }
 
     #region 초기화
@@ -120,13 +123,14 @@ public class MarketTabPresenter : MonoBehaviour
 
     #region 탭 전환
 
-    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼).
+    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 'MarketCanvasView.OpenAuctionRegister').
     //
     // ⚠️ Image.color를 직접 건드리지 않는다 — 버튼의 Transition이 ColorTint라 다음 상태 변화에
     //   덮어써진다. 색의 주인은 ColorBlock이다('InventoryTabPresenter'와 같다).
-    private void ShowTab(MarketTab tab)
+    public void ShowTab(MarketTab tab)
     {
-        CurrentTab = tab;
+        CurrentTab       = tab;
+        _hasRequestedTab = true;
 
         foreach (TabEntry entry in tabs)
         {

@@ -119,6 +119,9 @@ public class CharacterSlotSource : InventorySlotSource
             content.Row(IndustryLabel.Get(industry), AptitudeLabel.GetText(aptitude), speed, null);
         }
 
+        // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
+        content.Row("우클릭 판매 담기 · Shift+우클릭 경매 등록", "");
+
         return content;
     }
 

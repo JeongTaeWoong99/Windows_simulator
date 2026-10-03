@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -38,16 +38,25 @@ Root Canvas
 │  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
 │  │  │  ├─ Tab Presenter (↓ SUB VIEW)            InventoryTabPresenter   자원·캐릭터·장비·특성 순
 │  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
-│  │  │  │  ├─ Trait Tab Panel                    [산업 속도] [산업 레벨]        pref 34
-│  │  │  │  ├─ Point Text (TMP)                   "특성 포인트 n"                pref 22
-│  │  │  │  ├─ Scroll View Panel                  스크롤바 Permanent · flexH 1
-│  │  │  │  │  └─ Content                         GridLayoutGroup 5열 = 산업. cell 106x58 · spacing 8x20
-│  │  │  │  │     └─ TraitNodeView 프리팹 (노드 수만큼 런타임 생성 · 풀)
-│  │  │  │  │        ├─ Link Image                위 노드와 잇는 세로 선. 칸 위 20px(격자 간격)으로 뻗는다
-│  │  │  │  │        └─ Selected Mark             고른 노드 테두리(4변 · Highlight). 평소 꺼짐
+│  │  │  │  ├─ Trait Header Row                   머리 줄 개척·속도·산출량 15 · pref 22 · 여백 좌우 6 · 간격 6
+│  │  │  │  │                                     Spacer 64 + 열 이름 셋(flex 1) — 줄 프리팹과 같은 폭 규칙
+│  │  │  │  ├─ Trait Table Panel                  flexH 1 · 스크롤 없음(6줄이 다 들어간다)
+│  │  │  │  │  └─ Viewport > Content                         VerticalLayoutGroup 여백 6 · 간격 4 · 줄 = 공통·산업 5
+│  │  │  │  │     └─ TraitRowView 프리팹 (줄 수만큼 런타임 생성 · 풀) · 60 · 간격 6
+│  │  │  │  │        ├─ Industry Label            산업 이름 열 64 (PanelSub) · 17
+│  │  │  │  │        └─ TraitNodeView 프리팹 ×3   이름 18 · Lv x/y 13 · 눈금 10(Pip Bar) · 빈 칸은 바탕째 꺼짐
+│  │  │  │  │           └─ Selected Mark          고른 칸 테두리(4변 · Highlight). 평소 꺼짐
 │  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
-│  │  │  │     ├─ Detail Info Panel               이름 · 효과/필요 포인트/조건/상태 · 빈 안내(고른 것이 없을 때만)
-│  │  │  │     └─ Confirm Button                  [배우기] 50 (= [판매]) — 배운 특성에서는 숨는다
+│  │  │  │     ├─ Detail Info Panel               VerticalLayoutGroup 여백 14/14/12/12 · 간격 10
+│  │  │  │     │  ├─ Detail Name Text (TMP)       이름 24 + Lv x / y (최대면 '· 최대' 노랑) · 32
+│  │  │  │     │  ├─ Detail Desc Text (TMP)       종류 설명 16
+│  │  │  │     │  ├─ Detail Stats                 TraitDetailStatsView
+│  │  │  │     │  │  └─ Compare Row               68 · flexH 0 — Now Box ▶ Next Box(파랑). 최대 레벨이면 Now Box만 (제목 14 · 값 24)
+│  │  │  │     │  ├─ Spacer                       flexH 1 — 변화와 조건 사이를 벌려 조건 줄을 버튼 쪽으로 민다
+│  │  │  │     │  ├─ Requirement Divider          2 (Slot)
+│  │  │  │     │  ├─ Requirement Text (TMP)       17 · 24 — "조건 계정 Lv35 · 보유 포인트 13" (고른 것 없음·최대 레벨이면 보유 포인트만)
+│  │  │  │     │  └─ Detail Empty Text (TMP)      고른 것 없을 때 안내 (ignoreLayout)
+│  │  │  │     └─ Confirm Button                  [레벨 올리기 (n점)] 50 (= [판매]) — 최대 레벨에서만 숨는다 · 못 올리면 회색
 │  │  │  ├─ Tool Presenter (↓ SUB VIEW)           InventoryToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
 │  │  │  │  ├─ Tool Row 1                         30 — 정렬 화살표 · 정렬 기준 · -(Layout) · 일괄 범위 드롭다운 · [판매 등록]
 │  │  │  │  └─ Tool Row 2                         30 — 이름 검색(flex) · 산업 · 등급 · [초기화]
@@ -149,9 +158,9 @@ Root Canvas
 │     │  │  ├─ Auction Buy Page                   구매 탭 화면 · flexH 1 · VLG 0/5
 │     │  │  │  ├─ Auction Buy Tab Presenter (↓ SUB VIEW) AuctionBuyTabPresenter   pref 40 · 자원 · 장비 · 캐릭터
 │     │  │  │  ├─ Market Item Presenter (↓ SUB VIEW) MarketItemPresenter   검색 줄(+ 정렬) · 목록 · 가격대(130) · 수량/단가/구매 줄
-│     │  │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   이름·분류·등급(+ 정렬) · 목록 · [더 보기]
-│     │  │  │  └─ Character Auction Page          (준비 중) 문구만 — 서버 캐릭터 경매 대기(이슈 #47)
-│     │  │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(44) · 종류 · 후보 목록 · 수량/단가/등록 줄
+│     │  │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   Search Panel(이름·[검색]) / Filter Panel(분류·등급·인챈트·Spacer·정렬) · 목록 · [더 보기]
+│     │  │  │  └─ Character Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   위의 복제(searchKind = Character) — 분류·인챈트 드롭다운은 꺼 둔다
+│     │  │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(60 · 3줄) · 종류 · 후보 목록 · 수량/단가/등록 줄 · 힌트(66 · 3줄)
 │     │  │  └─ Auction My Listing Presenter (↓ SUB VIEW) AuctionMyListingPresenter   판매 중 n/상한 · [새로고침] · 목록
 │     │  │     ※ 네 목록 모두 Body Scroll Panel(우편함의 것 복제) + AuctionRowView 프리팹 줄 (런타임 생성 · pref 104 · 아이콘/이름/정보/가격/판매자 · 줄 툴팁)
 │     │  │     ※ 정렬 버튼 pref W 130 ('낮은 가격순 ▲') · 검색·도구 줄 드롭다운 라벨은 오른쪽 28px 비움(화살표 자리)
@@ -329,8 +338,8 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 
 - **레벨은 슬롯마다 따로다.** 전역이 아니라 `t_user_workstation_slot.industry_level`에 저장된다 —
   특성으로 Lv3을 열어도 **이미 배치된 칸은 그대로다.** 올리려면 그 칸에서 다시 고른다.
-- 잠금은 `IsUnlocked(GetIndustryLevelUnlockTid(산업, 레벨))`에서 파생된다.
-  **Lv1은 `UnlockTID = 0`이라 늘 열려 있다.** 해금은 인벤토리 **특성 탭 → 산업 레벨**에서 한다.
+- 잠금은 **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이다(`PlayerDataModel.IsIndustryLevelOpen` · 2026-10-02).
+  **Lv1은 늘 열려 있다.** 개척은 인벤토리 **특성 탭 → 그 산업 줄의 개척 칸**에서 올린다.
 - **산업이 바뀌면 레벨 줄을 다시 그리고, 잠긴 레벨이 골라져 있으면 Lv1로 되돌린다.**
   산업마다 열어 둔 레벨이 다르기 때문이다.
 - 3에서 레벨 버튼을 누르면 **산업 교체와 똑같이 재배치 요청 1회**다(같은 레벨이면 보내지 않는다).
@@ -391,7 +400,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
     (캐릭터 탭의 배치 마크와 같은 표시다). 지금 장비를 넣는 경로는 **치트 창의 `장비 지급`뿐**이다 —
     뽑기는 서버·엑셀 선행(`tasks/archive/T-067-장비뽑기.md`).
 - **탭이 달라도 격자는 하나다 — 단 특성 탭은 예외다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만
-  갈아 끼우지만, 특성은 칸 목록이 아니라 선으로 이어진 트리라 `Trait Presenter`가 따로 그린다.
+  갈아 끼우지만, 특성은 칸 목록이 아니라 산업 × 종류 표라 `Trait Presenter`가 따로 그린다.
   구조와 "탭 하나를 채우는 절차"는 [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>).
 - **특성 탭에서 꺼지는 것은 셋이다** — 도구 줄 · 격자 · 판매 목록. **각자 스스로 끈다**
   (탭 줄이 목록을 들고 있지 않다). 셋 다 `TabChanged` 구독을 **`Start`/`OnDestroy`** 에 건다 —
@@ -400,9 +409,9 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   처음엔 줄 아래 가로 띠였는데 43px을 위아래로 나누니 재화 줄이 눌려서, **줄을 건드리지 않고 아이콘 안으로** 옮겼다.
   🔴 **고리 스프라이트가 없어 원반 두 장 + 가운데를 덮는 `Nick Icon (임시)`으로 만든다** —
   그 칸을 지우면 진행도가 고리가 아니라 파이 차트가 된다(근거는 [`State 규칙.md`](<State/State 규칙.md>)).
-  **남은 특성 포인트는 상태 패널이 아니라 특성 화면 머리**(`Point Text`)에 있다 — 43px에 더 넣으면 배치가 깨진다.
-- **특성 노드 45개를 씬에 깔지 않는다** — `TraitNodeView` 프리팹 하나를 찍어 풀로 쓴다(캐릭터 줄과 같은 판단).
-  **선은 노드가 들고 있다**(`Link Image`) — 각 열 첫 줄에서만 꺼진다. 선을 그리는 코드는 없다.
+  **남은 특성 포인트는 상태 패널이 아니라 특성 정보 영역의 조건 줄**(`Requirement Text`)에 있다 — 43px에 더 넣으면 배치가 깨진다.
+  (2026-10-03까지 표 위 `Point Text`에 있었는데, 조건 줄과 같은 숫자가 두 번 나와 걷어냈다.)
+- **특성 표의 줄을 씬에 깔지 않는다** — `TraitRowView` 프리팹(칸 `TraitNodeView` 셋)을 찍어 풀로 쓴다(캐릭터 줄과 같은 판단).
 - **`xxx Button (1)`~`(3)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았고
   **씬에서도 꺼 두었다**(2026-09-21) — 빈 버튼이 줄의 가로 몫을 먹고 있었다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고

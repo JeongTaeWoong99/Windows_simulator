@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
@@ -22,9 +23,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
     private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
+    private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
     // ─── 내부 상태 ───
+    // 응답을 기다리는 개체 판매 — 'S_EntitySellResponse'에는 개체 ID가 없어 보낸 목록을 여기 둔다('BeginEntitySell').
+    private readonly List<long> _sellingCharacterIds = new List<long>();
+    private readonly List<long> _sellingEquipIds     = new List<long>();
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -213,6 +219,25 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
+    // 이 캐릭터가 일하는 중인가 — 작업슬롯에 배치됐거나 장비를 끼고 있다.
+    // ※ 서버 'User.IsCharacterBusy'와 같은 판정이다. 바쁜 캐릭터는 팔 수도(SellCharacterBusy)
+    //   경매에 올릴 수도(AuctionCharacterBusy) 없다 — 화면이 미리 막고 이유를 적는 데 쓴다.
+    public bool IsCharacterBusy(long characterId)
+    {
+        return FindSlotIndexOf(characterId) >= 0 || IsWearingEquip(characterId);
+    }
+
+    // 이 캐릭터가 장비를 하나라도 끼고 있는가.
+    public bool IsWearingEquip(long characterId)
+    {
+        if (characterId == 0L)
+        {
+            return false; // 0은 '인벤토리'라 끼지 않은 장비 전부와 맞아 버린다
+        }
+
+        return _equips.Exists(equip => equip.EquippedCharacterId == characterId);
+    }
+
     // 이 장비를 캐릭터가 끼고 있는가. 인벤토리에 있으면(또는 모르는 개체면) false.
     // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 인벤토리다.
     public bool IsEquipped(long equipId)
@@ -234,6 +259,57 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public bool IsUnlocked(int unlockTid)
     {
         return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
+    }
+
+    // 특성의 지금 레벨. 올린 적 없으면 'UserTraitTable.BaseLevel', 없는 특성이면 0 (서버 'User.GetTraitLevel'과 같다).
+    public int GetTraitLevel(int userTraitTid)
+    {
+        if (_traitLevels.TryGetValue(userTraitTid, out int level))
+        {
+            return level;
+        }
+
+        return GameDataLoader.TryGetUserTrait(userTraitTid, out var trait) ? trait.BaseLevel : 0;
+    }
+
+    // 이 산업 레벨이 열렸는가 — **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이면 열린다 (2026-10-02 · T-108).
+    //
+    // ※ 개척 특성이 없는 산업이면 Lv1만 연다 — 표가 비었을 때 상위 레벨을 열어 두면 서버 거절로만 드러난다.
+    public bool IsIndustryLevelOpen(EIndustryType industry, int level)
+    {
+        if (level <= 1)
+        {
+            return true;
+        }
+
+        return GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait)
+            && GetTraitLevel(trait.UserTraitTID) >= level;
+    }
+
+    // 이 효과를 가진 특성 중 **이 산업에 붙는** 것의 가산 합(천분율).
+    //
+    // ⚠️ 서버 'User.SumTraitEffect'의 사본이다 — 레벨당 효과 × (지금 레벨 − 기본 레벨).
+    //   대상 산업이 'None'인 특성(공통)은 모든 산업에 붙는다. 표를 고치면 화면만 틀리고 조용하다.
+    public int GetTraitEffectSum(UserTraitEffect effect, EIndustryType industry)
+    {
+        int sum = 0;
+
+        foreach (var trait in GameDataLoader.UserTraits)
+        {
+            if (trait.EffectType != effect)
+            {
+                continue;
+            }
+
+            if (trait.Industry != IndustryType.None && (byte)trait.Industry != (byte)industry)
+            {
+                continue;
+            }
+
+            sum += trait.EffectValue * (GetTraitLevel(trait.UserTraitTID) - trait.BaseLevel);
+        }
+
+        return sum;
     }
 
     // 우편함 — 안 받은 우편과 받은 지 7일이 안 된 우편. 서버가 준 순서 그대로다(정렬은 화면이 한다).
@@ -267,8 +343,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
     // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
     //
-    // ※ 특성을 찍은 기록은 여기 없다 — 열린 해금 목록('IsUnlocked')으로 온다.
-    //   노드 TID = UnlockTID라 특성 전용 보유 목록이 따로 없다.
+    // ※ 특성 레벨은 여기 없다 — 'GetTraitLevel'이 따로 든다(S_UserTraitListResponse · 2026-10-02).
     public int  AccountLevel { get; private set; } = 1;
     public long AccountExp   { get; private set; }  // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 long이다
     public int  TraitPoint   { get; private set; }  // 남은(안 쓴) 특성 포인트
@@ -296,8 +371,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
 
-    public event Action<long>?        ItemSellCompleted; // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
-    public event Action<EResultCode>? ItemSellFailed;    // 판매 실패 (거절 사유)
+    public event Action<long>?        ItemSellCompleted;   // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
+    public event Action<EResultCode>? ItemSellFailed;      // 판매 실패 (거절 사유)
+    public event Action<long>?        EntitySellCompleted; // 개체(캐릭터·장비) 판매 성공 (이번에 번 골드)
+    public event Action<EResultCode>? EntitySellFailed;    // 개체 판매 실패 (거절 사유)
 
     // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
@@ -312,7 +389,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
 
     public event Action?                    AccountLevelChanged; // 계정 레벨·경험치·특성 포인트 갱신됨
-    public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 찍기 결과 (성공 여부·결과 코드)
+    public event Action?                    TraitsChanged;       // 특성 레벨 갱신됨 (로그인 목록 · 레벨 올리기 응답)
+    public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
 
     // ─── Unity 메시지 ───
 
@@ -365,11 +443,13 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         += OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
         ServerPacketHandler.ItemSold                 += OnItemSold;
+        ServerPacketHandler.EntitySold               += OnEntitySold;
         ServerPacketHandler.ItemUsed                 += OnItemUsed;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  += OnUserTraitLearnResponded;
+        ServerPacketHandler.UserTraitListReceived    += OnUserTraitListReceived;
         ServerPacketHandler.MailListReceived         += OnMailListReceived;
         ServerPacketHandler.MailArrived              += OnMailArrived;
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
@@ -402,11 +482,13 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.CurrencyReceived         -= OnCurrencyReceived;
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
         ServerPacketHandler.ItemSold                 -= OnItemSold;
+        ServerPacketHandler.EntitySold               -= OnEntitySold;
         ServerPacketHandler.ItemUsed                 -= OnItemUsed;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  -= OnUserTraitLearnResponded;
+        ServerPacketHandler.UserTraitListReceived    -= OnUserTraitListReceived;
         ServerPacketHandler.MailListReceived         -= OnMailListReceived;
         ServerPacketHandler.MailArrived              -= OnMailArrived;
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
@@ -481,11 +563,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         CharactersChanged?.Invoke();
     }
 
-    // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌면 요청 없이 도착한다.
+    // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌거나, 우편으로 캐릭터를 받으면 요청 없이 도착한다.
     //
     // ★ 증감이 아니라 확정값이라 통째로 **교체**한다 (레벨업하면 'Exp'가 줄어드는 것도 그대로 받는다).
-    // ⚠️ 목록에 없는 개체는 추가하지 않는다 — 보유 목록의 원본은 로그인 스냅샷이다.
-    //   여기서 넣기 시작하면 스냅샷과 푸시 중 무엇이 진실인지 흐려진다.
+    // ★ 목록에 없는 개체는 **추가한다** (2026-10-03 · T-096) — 경매로 산 캐릭터·취소로 돌아온 캐릭터는
+    //   우편 수령 때 이 패킷으로만 온다('User.Character' 우편 캐릭터 잠금 해제). 장비('OnEquipSynced')와 같아졌다.
     private void OnCharacterSynced(S_CharacterSyncResponse res)
     {
         var synced = res.Character;
@@ -499,7 +581,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (index < 0)
         {
-            ClientLogger.Warn(ClientLogger.Recv, $"보유 목록에 없는 캐릭터 동기화 — 개체={synced.CharacterId} (무시)");
+            _characters.Add(synced);
+            ClientLogger.Info(ClientLogger.Recv, $"새 캐릭터 도착 — 개체={synced.CharacterId}, TID={synced.CharacterTid}");
+            CharactersChanged?.Invoke();
 
             return;
         }
@@ -670,6 +754,51 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ItemSellCompleted?.Invoke(res.GainedGold);
     }
 
+    // 개체 판매를 보낸다고 적어 둔다 — 응답에 개체 ID가 없어서다 (SellCartPresenter가 'C_EntitySellRequest'를 보내며 호출).
+    // ※ 송신은 Presenter가 한다(이 모델은 보내지 않는다). 여기는 성공했을 때 무엇을 지울지만 기억한다.
+    public void BeginEntitySell(IReadOnlyList<long> characterIds, IReadOnlyList<long> equipIds)
+    {
+        _sellingCharacterIds.Clear();
+        _sellingCharacterIds.AddRange(characterIds);
+        _sellingEquipIds.Clear();
+        _sellingEquipIds.AddRange(equipIds);
+    }
+
+    // 개체 판매 응답 — 성공이면 보낸 개체를 전부 지운다(전부 되거나 전혀 안 된다).
+    //
+    // ★ 골드는 건드리지 않는다 — 'OnItemSold'와 같은 이유('S_CurrencyResponse'가 확정 잔액을 준다).
+    // ★ 지우는 일은 여기만 한다 — 서버는 개체 제거를 동기화 패킷으로 따로 보내지 않는다.
+    private void OnEntitySold(S_EntitySellResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"개체 판매 실패 — 결과={res.Result}");
+            _sellingCharacterIds.Clear();
+            _sellingEquipIds.Clear();
+            EntitySellFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        int removedCharacters = _characters.RemoveAll(character => _sellingCharacterIds.Contains(character.CharacterId));
+        int removedEquips     = _equips.RemoveAll(equip => _sellingEquipIds.Contains(equip.EquipId));
+
+        _sellingCharacterIds.Clear();
+        _sellingEquipIds.Clear();
+
+        if (removedCharacters > 0)
+        {
+            CharactersChanged?.Invoke();
+        }
+
+        if (removedEquips > 0)
+        {
+            EquipsChanged?.Invoke();
+        }
+
+        EntitySellCompleted?.Invoke(res.GainedGold);
+    }
+
     // 아이템 사용 응답 — 인벤토리 반영 후 보상 이벤트 발행. 'OnGachaDrawn'과 같은 모양이다.
     //
     // ★ 한 패킷에 두 가지가 실려 오는 것도 가챠와 같다.
@@ -747,21 +876,40 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         AccountLevelChanged?.Invoke();
     }
 
-    // 특성 찍기 결과 — 결과 코드만 나른다.
+    // 특성 레벨 올리기 결과 — 레벨을 반영하고 결과 코드를 나른다.
     //
-    // ★ 캐시를 여기서 건드리지 않는다. 찍힌 기록은 앞서 온 'S_UnlockResponse'가
-    //   열린 해금 목록에 넣었고, 남은 포인트는 뒤따라 오는 'S_AccountLevelResponse'가 채운다
-    //   ('OnUnlockResponded'가 골드를 건드리지 않는 것과 같은 이유).
+    // ★ 실패여도 'Level'(지금 레벨)을 반영한다 — 서버가 "지금 이 레벨이다"라고 알려 준 것이라
+    //   캐시가 어긋나 있었다면 여기서 맞는다. 남은 포인트는 앞서 온 'S_AccountLevelResponse'가 채운다.
     private void OnUserTraitLearnResponded(S_UserTraitLearnResponse res)
     {
         bool success = res.Result == EResultCode.Ok;
 
         if (!success)
         {
-            ClientLogger.Warn(ClientLogger.Recv, $"특성 찍기 실패 — {res.UserTraitTID}, 결과={res.Result}");
+            ClientLogger.Warn(ClientLogger.Recv, $"특성 레벨 올리기 실패 — {res.UserTraitTID}, 결과={res.Result}");
+        }
+
+        if (GameDataLoader.TryGetUserTrait(res.UserTraitTID, out _) && res.Level != GetTraitLevel(res.UserTraitTID))
+        {
+            _traitLevels[res.UserTraitTID] = res.Level;
+            TraitsChanged?.Invoke();
         }
 
         TraitLearnCompleted?.Invoke(success, res.Result);
+    }
+
+    // 특성 레벨 전체 — 로그인 직후 1회. 스냅샷이라 비우고 채운다.
+    // 기본 레벨보다 올린 특성만 실리므로 빠진 특성은 'GetTraitLevel'이 기본 레벨로 읽는다.
+    private void OnUserTraitListReceived(S_UserTraitListResponse res)
+    {
+        _traitLevels.Clear();
+
+        foreach (var info in res.Traits)
+        {
+            _traitLevels[info.UserTraitTID] = info.Level;
+        }
+
+        TraitsChanged?.Invoke();
     }
 
     #endregion
@@ -876,9 +1024,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 경매 등록 응답 — 올린 물건을 인벤토리에서 뺀다. 결과 알림은 'AuctionModel'이 맡는다.
     //
-    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId'로 지운다.
-    //   장비 제거는 'S_EquipSyncResponse'로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
-    // ⚠️ 거절 응답에도 'EquipId'가 실려 온다 — 결과를 먼저 본다.
+    // ★ 성공이면 서버가 이미 뺐다 — 자원은 'ItemChangeInfos'(누적 총량), 장비는 'EquipId', 캐릭터는 'CharacterId'로 지운다.
+    //   개체 제거는 동기화 패킷으로 오지 않으므로 여기서 지우지 않으면 인벤토리에 유령이 남는다.
+    // ⚠️ 거절 응답에도 'EquipId'·'CharacterId'가 실려 온다 — 결과를 먼저 본다.
     private void OnAuctionRegisterResponded(S_AuctionRegisterResponse res)
     {
         if (res.Result != EResultCode.Ok)
@@ -891,6 +1039,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (res.EquipId != 0L && _equips.RemoveAll(equip => equip.EquipId == res.EquipId) > 0)
         {
             EquipsChanged?.Invoke();
+        }
+
+        if (res.CharacterId != 0L && _characters.RemoveAll(character => character.CharacterId == res.CharacterId) > 0)
+        {
+            CharactersChanged?.Invoke();
         }
     }
 

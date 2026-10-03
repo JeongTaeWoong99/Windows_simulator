@@ -13,15 +13,15 @@ public enum AuctionBuyKind
     // 장비 — 매물을 하나씩 검색해 통째로 산다('AuctionSearchPresenter').
     Equip,
 
-    // 캐릭터 — ⏸ 서버에 캐릭터 매물 종류가 없다. 화면은 '(준비 중)' 문구만 있다(T-096 이슈).
+    // 캐릭터 — 장비와 같은 검색 화면을 '캐릭터' 종류로 하나 더 둔다('AuctionSearchPresenter.searchKind' · #47).
     Character,
 }
 
 // 경매장 [구매] 탭의 축 줄 — 자원 · 장비 · 캐릭터 (씬 왼쪽부터).
 //
 // 모양은 'AuctionTabPresenter'와 같다 — 축마다 화면이 따로 있고 지금 축의 화면만 켠다.
-// 자원과 장비는 사는 법이 달라 화면이 다르다: 자원은 같은 TID면 똑같아 "N개를 최대 P에"로 사고,
-// 장비는 개체마다 인챈트가 달라 매물을 하나씩 고른다.
+// 자원과 개체는 사는 법이 달라 화면이 다르다: 자원은 같은 TID면 똑같아 "N개를 최대 P에"로 사고,
+// 장비·캐릭터는 개체마다 인챈트·레벨·적성이 달라 매물을 하나씩 고른다.
 //
 // ⚠️ 화면은 꺼졌다 켜진다 — 각 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊는다.
 public class AuctionBuyTabPresenter : MonoBehaviour

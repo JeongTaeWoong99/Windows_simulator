@@ -5,31 +5,44 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 장비 구매 화면 — 경매장 [구매] 탭의 '장비' 축. 장비 매물을 검색해 통째로 산다(입찰 없음).
+// 개체 구매 화면 — 경매장 [구매] 탭의 '장비' · '캐릭터' 축. 개체 매물을 검색해 통째로 산다(입찰 없음).
 //
-// ■ 검색 조건: 이름 · 분류(무기·장신구·보석) · 희귀도. 결과는 단가가 싼 순이다.
-//   인챈트 등급·옵션 필터는 넣지 않았다 — 능력치 칸 기획이 바뀌는 중이다(이슈 #46 · T-095).
+// ■ 한 스크립트, 두 화면: 'searchKind'로 축을 정한다. 씬에는 축마다 이 Presenter가 하나씩 붙는다.
+//   검색 상태(조건·결과·커서·받은 시각)는 'AuctionModel'이 축마다 따로 든다 — 두 화면이 서로의 [더 보기]를 잇지 않는다.
+// ■ 검색 조건
+//   장비   : 이름 · 분류(무기·장신구·보석) · 희귀도 · 인챈트 등급 하한
+//   캐릭터 : 이름 · 희귀도 — 분류·인챈트 드롭다운은 비워 둔다(연결하지 않는다)
+//   인챈트 등급은 장비 하나에 하나다(이슈 #46 — 칸마다 색이 다르지 않다). 옵션 다중 선택은 매물이 쌓인 뒤에 넣는다.
 // ■ 페이지: 서버는 **단가 낮은 순으로 20개씩** 준다(최대 50). [더 보기]가 받은 것 중 마지막 매물(단가·ID)을 커서로
 //   다음 20개를 이어 받고, 서버가 'HasMore'로 더 있는지 알린다('AuctionModel.SearchNextPage').
 //   버튼 문구에 지금까지 받은 수를 적는다 — 전체가 몇 개인지는 서버가 주지 않는다.
 // ■ 구매: 목록에서 본 총액을 그대로 보낸다. 그사이 가격이 바뀌면 AuctionPriceChanged로 거절된다 —
-//   그때는 사유 알림에 "다시 검색해 주세요"가 뜬다. 산 장비는 **우편**으로 온다(인챈트 포함).
-// ■ 조회 빈도 제한 때문에 탭을 **처음** 열 때만 자동 검색한다('MarketItemPresenter'와 같다).
+//   그때는 사유 알림에 "다시 검색해 주세요"가 뜬다. 산 개체는 **우편**으로 온다(인챈트·레벨·적성 포함).
+// ■ 조회 빈도 제한 때문에 화면을 **처음** 열 때만 자동 검색한다('MarketItemPresenter'와 같다).
+//   대신 받은 시각을 "n분 전에 받음"으로 적어 목록이 얼마나 낡았는지 보인다.
 // ■ 내 매물은 '[내 매물]'로 표시하고 [구매]를 잠근다 — 어디쯤에 있는지 보이게 목록에서 빼지는 않는다.
 //   판별 재료(내 매물 목록)는 화면을 열 때마다 조용히 받는다 — 빈도 제한 밖이다.
 // ■ [가격 정렬]은 받은 결과의 **사본만** 정렬한다('AuctionSort'). [더 보기]는 서버 순서의 마지막 매물로 잇는다.
-//   ⚠️ 높은 가격순은 **받은 페이지 안에서만** 맞다 — 서버가 싼 것부터 주므로 더 비싼 매물이 아직 안 왔을 수 있다.
+//   ⚠️ 높은 가격순은 **받은 페이지 안에서만** 맞다 — 더 받을 것이 남았으면 버튼에 '받은 것 중'을 적는다.
 public class AuctionSearchPresenter : MonoBehaviour
 {
+    [CenterHeader("축")]
+    [SerializeField, Tooltip("이 화면이 검색하는 매물 종류 — Equip 또는 Character")]
+    private EAuctionKind searchKind = EAuctionKind.Equip;
+
+
     [CenterHeader("검색")]
     [SerializeField, Tooltip("이름 검색 입력칸. 비우면 이름 조건 없음")]
     private TMP_InputField searchInput = null!;
 
-    [SerializeField, Tooltip("분류 드롭다운 — 전체·무기·장신구·보석. 항목은 코드가 채운다")]
-    private TMP_Dropdown kindDropdown = null!;
+    [SerializeField, Tooltip("분류 드롭다운 — 전체·무기·장신구·보석. 장비 축에만 연결한다. 항목은 코드가 채운다")]
+    private TMP_Dropdown? kindDropdown;
 
     [SerializeField, Tooltip("희귀도 드롭다운 — 전체·일반~신화. 항목은 코드가 채운다")]
     private TMP_Dropdown rarityDropdown = null!;
+
+    [SerializeField, Tooltip("인챈트 등급 하한 드롭다운 — 무관·일반 이상~신화 이상. 장비 축에만 연결한다. 항목은 코드가 채운다")]
+    private TMP_Dropdown? enchantDropdown;
 
     [SerializeField, Tooltip("검색 버튼. OnClick은 코드가 연결한다")]
     private Button searchButton = null!;
@@ -44,6 +57,9 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("목록이 비었을 때만 보인다")]
     private GameObject emptyText = null!;
+
+    [SerializeField, Tooltip("받은 시각 문구 — \"3분 전에 받음\"")]
+    private TMP_Text receivedText = null!;
 
     [SerializeField, Tooltip("다음 페이지 버튼 — 결과가 더 있을 때만 누를 수 있다. OnClick은 코드가 연결한다")]
     private Button moreButton = null!;
@@ -69,6 +85,9 @@ public class AuctionSearchPresenter : MonoBehaviour
         GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic,
     };
 
+    // 인챈트 등급 하한 — 희귀도와 같은 등급 체계다. 0번이 '무관'(None).
+    private static readonly GlobalRarity[] EnchantOptions = RarityOptions;
+
     private readonly List<AuctionRowContent> _contents = new List<AuctionRowContent>();
 
     private AuctionModel      _auction = null!;
@@ -86,20 +105,31 @@ public class AuctionSearchPresenter : MonoBehaviour
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
+    private bool IsEquip => searchKind == EAuctionKind.Equip;
+
+    // 알림·확인창에 쓰는 축 이름
+    private string KindWord => IsEquip ? "장비" : "캐릭터";
+
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
     {
         this.RequireRef(searchInput,    nameof(searchInput));
-        this.RequireRef(kindDropdown,   nameof(kindDropdown));
         this.RequireRef(rarityDropdown, nameof(rarityDropdown));
         this.RequireRef(searchButton,   nameof(searchButton));
         this.RequireRef(rowPrefab,      nameof(rowPrefab));
         this.RequireRef(rowParent,      nameof(rowParent));
         this.RequireRef(emptyText,      nameof(emptyText));
+        this.RequireRef(receivedText,   nameof(receivedText));
         this.RequireRef(moreButton,     nameof(moreButton));
         this.RequireRef(sortButton,     nameof(sortButton));
         this.RequireRef(sortText,       nameof(sortText));
         this.RequireRef(moreText,       nameof(moreText));
+
+        if (IsEquip)
+        {
+            this.RequireRef(kindDropdown,    nameof(kindDropdown));
+            this.RequireRef(enchantDropdown, nameof(enchantDropdown));
+        }
 
         _auction = Services.Get<AuctionModel>();
         _data    = Services.Get<PlayerDataModel>();
@@ -118,7 +148,7 @@ public class AuctionSearchPresenter : MonoBehaviour
         Refresh();
         RequestMyListings();
 
-        if (!_auction.HasSearched && _data.IsLoggedIn)
+        if (!_auction.HasSearched(searchKind) && _data.IsLoggedIn)
         {
             OnSearchClicked();
         }
@@ -181,16 +211,9 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 초기화
 
-    // 분류·희귀도 드롭다운 항목을 채운다 (Start에서 한 번). 이름은 공용 표시 이름을 쓴다.
+    // 드롭다운 항목을 채운다 (Start에서 한 번). 이름은 공용 표시 이름을 쓴다. 연결 안 된 드롭다운은 건너뛴다.
     private void FillDropdowns()
     {
-        var kindNames = new List<string>();
-
-        foreach (EquipKind kind in KindOptions)
-        {
-            kindNames.Add(kind == EquipKind.None ? "분류 전체" : EquipLabel.GetKindName(kind));
-        }
-
         var rarityNames = new List<string>();
 
         foreach (GlobalRarity rarity in RarityOptions)
@@ -198,17 +221,41 @@ public class AuctionSearchPresenter : MonoBehaviour
             rarityNames.Add(rarity == GlobalRarity.None ? "등급 전체" : RarityLabel.Get(rarity));
         }
 
-        kindDropdown.ClearOptions();
-        kindDropdown.AddOptions(kindNames);
         rarityDropdown.ClearOptions();
         rarityDropdown.AddOptions(rarityNames);
+
+        if (kindDropdown != null)
+        {
+            var kindNames = new List<string>();
+
+            foreach (EquipKind kind in KindOptions)
+            {
+                kindNames.Add(kind == EquipKind.None ? "분류 전체" : EquipLabel.GetKindName(kind));
+            }
+
+            kindDropdown.ClearOptions();
+            kindDropdown.AddOptions(kindNames);
+        }
+
+        if (enchantDropdown != null)
+        {
+            var enchantNames = new List<string>();
+
+            foreach (GlobalRarity grade in EnchantOptions)
+            {
+                enchantNames.Add(grade == GlobalRarity.None ? "인챈트 무관" : $"{RarityLabel.Get(grade)} 이상");
+            }
+
+            enchantDropdown.ClearOptions();
+            enchantDropdown.AddOptions(enchantNames);
+        }
     }
 
     #endregion
 
     #region 요청
 
-    // 조건으로 첫 페이지를 검색한다 (searchButton OnClick · 입력칸 Enter · 탭을 처음 열 때).
+    // 조건으로 첫 페이지를 검색한다 (searchButton OnClick · 입력칸 Enter · 화면을 처음 열 때).
     //
     // 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
     private void OnSearchClicked()
@@ -218,16 +265,29 @@ public class AuctionSearchPresenter : MonoBehaviour
             return;
         }
 
-        List<int>? tids = AuctionText.FindEquipTids(searchInput.text);
+        List<int>? tids = IsEquip ? AuctionText.FindEquipTids(searchInput.text) : AuctionText.FindCharacterTids(searchInput.text);
 
         if (tids != null && tids.Count == 0)
         {
-            _wait.RaiseNotice($"'{searchInput.text.Trim()}'(이)라는 장비가 없습니다.");
+            _wait.RaiseNotice($"'{searchInput.text.Trim()}'(이)라는 {KindWord}이(가) 없습니다.");
 
             return;
         }
 
-        _auction.SearchEquips(tids, KindOptions[kindDropdown.value], RarityOptions[rarityDropdown.value]);
+        GlobalRarity rarity = RarityOptions[rarityDropdown.value];
+
+        if (IsEquip)
+        {
+            EquipKind    kind    = kindDropdown    != null ? KindOptions[kindDropdown.value]       : EquipKind.None;
+            GlobalRarity enchant = enchantDropdown != null ? EnchantOptions[enchantDropdown.value] : GlobalRarity.None;
+
+            _auction.SearchEquips(tids, kind, rarity, enchant);
+        }
+        else
+        {
+            _auction.SearchCharacters(tids, rarity);
+        }
+
         BeginWait("경매장 검색");
     }
 
@@ -250,12 +310,12 @@ public class AuctionSearchPresenter : MonoBehaviour
     // [더 보기] — 같은 조건으로 다음 페이지를 받는다 (moreButton OnClick)
     private void OnMoreClicked()
     {
-        if (_waitHandle != null || !_auction.HasMoreResults)
+        if (_waitHandle != null || !_auction.HasMoreResults(searchKind))
         {
             return;
         }
 
-        _auction.SearchNextPage();
+        _auction.SearchNextPage(searchKind);
         BeginWait("경매장 검색");
     }
 
@@ -276,7 +336,7 @@ public class AuctionSearchPresenter : MonoBehaviour
 
         string name = AuctionText.GetName(listing.Kind, listing.Tid);
 
-        _ui.AskConfirm($"{name}을(를) {listing.TotalPrice:N0} G에 삽니다.\n보유 {_data.Gold:N0} G · 구매 후 {_data.Gold - listing.TotalPrice:N0} G\n\n산 장비는 우편으로 옵니다.", () =>
+        _ui.AskConfirm($"{name}을(를) {listing.TotalPrice:N0} G에 삽니다.\n보유 {_data.Gold:N0} G · 구매 후 {_data.Gold - listing.TotalPrice:N0} G\n\n산 {KindWord}은(는) 우편으로 옵니다.", () =>
         {
             _auction.RequestBuy(listing);
             BeginWait("경매장 구매");
@@ -287,9 +347,14 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 응답 (AuctionModel 구독)
 
-    // 검색 결과 도착 (AuctionModel.SearchCompleted 구독)
-    private void OnSearchCompleted(EResultCode code)
+    // 검색 결과 도착 — 다른 축의 응답은 무시한다 (AuctionModel.SearchCompleted 구독)
+    private void OnSearchCompleted(EAuctionKind kind, EResultCode code)
     {
+        if (kind != searchKind)
+        {
+            return;
+        }
+
         CloseWait(code);
         Refresh();
     }
@@ -300,9 +365,17 @@ public class AuctionSearchPresenter : MonoBehaviour
         Refresh();
     }
 
-    // 구매 결과 — 성공이면 우편으로 온다고 알린다. 목록에서 빼는 일은 모델이 했다 (AuctionModel.BuyCompleted 구독)
+    // 구매 결과 — 내가 건 대기일 때만 닫고 알린다. 목록에서 빼는 일은 모델이 했다 (AuctionModel.BuyCompleted 구독)
+    // ※ 두 축 화면 중 꺼진 쪽은 구독이 풀려 있어 받지 않는다. 그래도 대기 손잡이로 내 요청인지 가린다.
     private void OnBuyCompleted(EResultCode code)
     {
+        if (_waitHandle == null)
+        {
+            Refresh();
+
+            return;
+        }
+
         CloseWait(code);
 
         if (code == EResultCode.Ok)
@@ -348,15 +421,18 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 표시 갱신
 
-    // 목록과 [더 보기]를 지금 상태로 그린다.
+    // 목록과 [더 보기]·받은 시각·정렬 문구를 지금 상태로 그린다.
     //
     // [구매]는 세 축을 함께 본다 — 내 매물이면, 누가 구매 중(Reserved)이면, 골드가 모자라면 잠근다.
     // ※ 골드 판단은 표시용이다. 실제 거절은 서버가 한다(NotEnoughCurrency · AuctionOwnListing).
     private void Refresh()
     {
+        IReadOnlyList<AuctionListingInfo> results = _auction.GetSearchResults(searchKind);
+        bool                              hasMore = _auction.HasMoreResults(searchKind);
+
         _contents.Clear();
 
-        foreach (AuctionListingInfo listing in AuctionSort.Apply(_auction.SearchResults, _sortOrder, l => l.TotalPrice))
+        foreach (AuctionListingInfo listing in AuctionSort.Apply(results, _sortOrder, l => l.TotalPrice))
         {
             bool isMine = _auction.IsMine(listing.ListingId);
             bool canBuy = _waitHandle == null
@@ -369,9 +445,10 @@ public class AuctionSearchPresenter : MonoBehaviour
 
         _rows.Show(_contents);
         emptyText.SetActive(_contents.Count == 0);
-        moreButton.interactable = _waitHandle == null && _auction.HasMoreResults;
-        moreText.text           = FormatMoreLabel(_auction.SearchResults.Count, _auction.HasMoreResults);
-        sortText.text           = AuctionSort.GetLabel(_sortOrder);
+        receivedText.text       = AuctionModel.FormatReceivedAgo(_auction.GetSearchReceivedAt(searchKind));
+        moreButton.interactable = _waitHandle == null && hasMore;
+        moreText.text           = FormatMoreLabel(results.Count, hasMore);
+        sortText.text           = AuctionSort.GetLabel(_sortOrder, hasMore);
     }
 
     #endregion
@@ -389,10 +466,10 @@ public class AuctionSearchPresenter : MonoBehaviour
         return hasMore ? $"더 보기 ({loaded:N0}개 받음)" : $"전부 받음 ({loaded:N0}개)";
     }
 
-    // 검색 결과에서 이 매물을 찾는다. 없으면 null.
+    // 이 축의 검색 결과에서 매물을 찾는다. 없으면 null.
     private AuctionListingInfo? FindListing(long listingId)
     {
-        foreach (AuctionListingInfo listing in _auction.SearchResults)
+        foreach (AuctionListingInfo listing in _auction.GetSearchResults(searchKind))
         {
             if (listing.ListingId == listingId)
             {

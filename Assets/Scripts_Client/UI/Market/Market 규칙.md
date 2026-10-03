@@ -1,6 +1,6 @@
 # Market 폴더 규칙
 
-> 최종 업데이트: 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-10-01 (줄 아이콘·툴팁 · 문구 색 구분 · 정렬 2단(낮은/높은 가격순) · [더 보기] 받은 수 — T-096 · T-103) · 2026-09-30 (경매장 탭 — 구매·등록·내 매물 3탭 · 가격 밴드 유지 · 정렬·내 매물 표시 — T-096) · 2026-09-30 (경매장 탭 — 하위 탭 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
+> 최종 업데이트: 2026-10-03 (검색 줄 2단 — 이름+검색 / 드롭다운+정렬 · 옛 캐릭터 준비 중 자리 삭제) · 2026-10-03 (캐릭터 경매 · 판매자 이름 · 인챈트 등급 검색 · 등록 불가 사유 · 인벤토리 Shift+우클릭 등록 · 내 매물 자동 갱신·배지 · 받은 시각 · 정렬 "받은 것 중" — T-096 · 이슈 #46·#47) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-10-01 (줄 아이콘·툴팁 · 문구 색 구분 · 정렬 2단(낮은/높은 가격순) · [더 보기] 받은 수 — T-096 · T-103) · 2026-09-30 (경매장 탭 — 구매·등록·내 매물 3탭 · 가격 밴드 유지 · 정렬·내 매물 표시 — T-096) · 2026-09-30 (경매장 탭 — 하위 탭 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
 
 **`#Market Canvas` — 거래 열. 뽑기 · 경매장 · 창고 3탭이다(2026-09-30, T-101). 창고만 아직 `(기능 없음)`이다.**
 
@@ -12,8 +12,8 @@
 | `AuctionTabPresenter/` | 경매장 탭 안의 하위 탭 줄 — `AuctionTab`(구매·등록·내 매물)마다 버튼과 화면을 짝짓는다 |
 | `AuctionBuyTabPresenter/` | [구매] 안의 축 줄 — `AuctionBuyKind`(자원·장비·캐릭터)마다 버튼과 화면을 짝짓는다 |
 | `MarketItemPresenter/` | 구매 › 자원(거래소) — 자원 목록 · 가격대 · 수량 구매 |
-| `AuctionSearchPresenter/` | 구매 › 장비 — 검색 · [더 보기] · 즉시구매 |
-| `AuctionRegisterPresenter/` | 등록 — 인벤토리의 자원·장비를 골라 단가를 정해 올린다 |
+| `AuctionSearchPresenter/` | 구매 › 장비 · 캐릭터 — 검색 · [더 보기] · 즉시구매. **같은 클래스를 씬에 둘** 놓고 `searchKind`로 가른다 |
+| `AuctionRegisterPresenter/` | 등록 — 인벤토리의 자원·장비·캐릭터를 골라 단가를 정해 올린다 |
 | `AuctionMyListingPresenter/` | 내 매물 — 올린 것 보기 · 취소 |
 | `AuctionRowView.cs` · `AuctionRowList.cs` · `AuctionText.cs` | 경매장 화면들이 함께 쓰는 목록 한 줄 · 줄 풀 · 문구(매물 줄·판매자·남은 시간·이름→TID). **이 캔버스 안에서만 쓰여** `UI/Shared/`가 아니라 여기 둔다 |
 | `AuctionSort.cs` · `AuctionInput.cs` | 목록 가격 정렬(로컬 사본만) · 수량·단가 입력칸 범위 맞추기 — 같은 이유로 여기 둔다 |
@@ -29,7 +29,7 @@
 | 탭 | 화면 | 지금 |
 |---|---|---|
 | 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
-| 경매장 | `Auction Page` | 동작 — 하위 탭 3개 ([T-096](../../../../tasks/T-096-클라경매장화면.md), 아래 "경매장 탭") |
+| 경매장 | `Auction Page` | 동작 — 하위 탭 3개 ([T-096](../../../../tasks/archive/T-096-클라경매장화면.md), 아래 "경매장 탭") |
 | 창고 | `Warehouse Page` | `(기능 없음)` — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 패킷은 인벤토리 칸 위치([T-058](../../../../tasks/T-058-창고칸위치서버.md)) 뒤에 요청 |
 
 - 기능을 붙일 때는 **그 page 안에 Presenter를 넣고 `No Feature Text (TMP)`를 지운다.** `MarketTabPresenter`는 안 바뀐다.
@@ -53,20 +53,23 @@ Auction Page
 │   ├─ Auction Buy Tab Presenter (↓ SUB VIEW) 자원 · 장비 · 캐릭터
 │   ├─ Market Item Presenter                 자원(거래소)
 │   ├─ Auction Search Presenter              장비
-│   └─ Character Auction Page                (준비 중)
+│   └─ Character Search Presenter            캐릭터 (위의 복제 · searchKind = Character)
 ├─ Auction Register Presenter
 └─ Auction My Listing Presenter
 ```
 
 화면은 탭 Presenter의 자식이 아니라 **형제**다(Presenter 안에 Presenter를 두지 않는다).
 
+**장비·캐릭터 검색 줄은 두 줄이다** — `Search Panel`(이름 입력 + [검색]) / `Filter Panel`(드롭다운들 + `Spacer` + 정렬).
+⚠️ 한 줄에 다 넣으면 min 폭 합(685)이 열 폭(603)을 넘어 **바깥 3열 레이아웃까지 밀린다**(2026-10-03). 두 줄 모두 `LayoutElement.minWidth = 0` — 칸을 더 넣어도 열 폭을 밀지 않는다. 드롭다운을 늘릴 때는 `Filter Panel`에 넣는다.
+
 | 탭 · 축 | 화면 | 무엇 |
 |---|---|---|
 | 구매 › 자원 | `MarketItemPresenter` | **거래소** — 자원을 종류별 한 줄로(최저가·판매 중 수량·최근가·전일 평균) → [선택] → 가격대 → "N개, 개당 최대 P" 구매. 다 못 채우면 아무것도 안 산다 |
-| 구매 › 장비 | `AuctionSearchPresenter` | 이름·분류·등급으로 검색. **서버가 단가 싼 순으로 20개씩**(최대 50) 주고, [더 보기]가 받은 것의 마지막 매물(단가·ID)을 커서로 다음 20개를 잇는다 — 더 있는지는 `HasMore`. 버튼에 받은 수를 적는다(전체 수는 서버가 주지 않는다). 매물은 통째로만 산다 |
-| 구매 › 캐릭터 | `Character Auction Page` | `(준비 중)` — 서버에 캐릭터 매물 종류가 없다([이슈 #47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47)) |
-| 등록 | `AuctionRegisterPresenter` | [등록] 버튼 방식(인벤토리 칸에서 바로 올리지 않는다 — 2026-09-30 결정). 착용 중인 장비는 후보에 없다. 캐릭터는 준비 중 |
-| 내 매물 | `AuctionMyListingPresenter` | 열 때마다 새로 받는다. 구매 진행 중(`Reserved`)이면 [취소]를 잠근다 |
+| 구매 › 장비 | `AuctionSearchPresenter` | 이름·분류·등급·**인챈트 등급**으로 검색. **서버가 단가 싼 순으로 20개씩**(최대 50) 주고, [더 보기]가 받은 것의 마지막 매물(단가·ID)을 커서로 다음 20개를 잇는다 — 더 있는지는 `HasMore`. 버튼에 받은 수를 적는다(전체 수는 서버가 주지 않는다). 매물은 통째로만 산다 |
+| 구매 › 캐릭터 | `Character Search Presenter` | 이름·등급으로 검색(분류·인챈트 드롭다운은 꺼 둔다). 줄은 레벨, **적성 5종은 툴팁에**([이슈 #47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47)) |
+| 등록 | `AuctionRegisterPresenter` | 자원·장비·캐릭터. **올릴 수 없는 것도 목록에 흐리게 남기고 툴팁에 사유**(끼고 있는 장비 · 배치 중·장비 낀 캐릭터 · 마지막 캐릭터 — `EntityBlockText`). 인벤토리 칸 **Shift+우클릭**으로 바로 와서 그 물건이 골라진다(`MarketCanvasView.OpenAuctionRegister`) |
+| 내 매물 | `AuctionMyListingPresenter` | 열 때마다 새로 받는다. 구매 진행 중(`Reserved`)이면 [취소]를 잠근다. 판매·만료로 바뀌면 탭 버튼에 **배지**(`News Badge`) — 열면 꺼진다 |
 
 ### 거래소는 서버 상점이 아니다
 
@@ -97,7 +100,9 @@ Auction Page
 - **내 매물은 목록에 남기되 `[내 매물]`로 표시하고 [구매]를 잠근다** — 내 물건이 가격대 어디쯤 있는지 보이게. 거래소 목록·가격대에는 "내 매물 N개"를 붙인다.
   매물 정보에 판매자가 없어서 **내 매물 목록**(`AuctionModel.IsMine`)으로 가린다 — 구매 화면을 열 때마다 조용히(대기 없이) 받는다. 빈도 제한 밖이다.
   거래소 구매는 서버가 내 매물을 건너뛰므로 살 수 있는 수량에서도 뺀다.
-- **판매자 줄**은 자리만 있다 — 내 것은 `나`, 남의 것은 `-`. 서버에 판매자 이름 필드를 요청했다([이슈 #47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47)).
+- **판매자 줄**은 서버가 준 이름이다(내 것은 `나`) — [이슈 #47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47).
+- **정렬 버튼 글자는 "받은 것 중 낮은 가격순"** 이다 — 장비·캐릭터 검색은 받은 페이지 안에서만 정렬되기 때문이다(아래 ⚠️).
+- **목록 위에 "n분 전에 받음"** (`Received Text`) — 조회가 빈도 제한 때문에 자동으로 안 돌아서, 본 목록이 언제 것인지 말한다.
 
 ### 줄 · 툴팁 · 문구 (2026-10-01)
 
@@ -118,7 +123,7 @@ Auction Page
   내 매물 조회는 제한에 들지 않아 열 때마다 받는다.
 - ⚠️ **이름 검색에 맞는 것이 없으면 요청을 보내지 않는다.** 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
 - **능력치 칸 표기는 옛 인챈트 필드로 먼저 붙였다**(2026-10-01) — 매물 줄 `능력치 n/N` · 아이콘의 칸 네모 · 툴팁의 칸 목록. 읽는 곳은 `EquipLabel.ReadStatOptions` 한 곳이다.
-  ⏸ 새 능력치 구조가 `AuctionListingInfo`·검색 필터·우편 `Equips`에도 실리도록 요청했다([이슈 #46 코멘트](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46)). **검색 필터는 아직 없다.**
+  검색 필터는 **인챈트 등급 드롭다운 하나**다(2026-10-03 · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46)) — 옵션 다중 선택은 매물이 쌓인 뒤에.
 - 처음에는 구매 › 자원 화면만 켜 둔다. 나머지가 켜진 채 저장되면 경매장 탭을 처음 열 때 각자 조회를 보낸다.
 - `AuctionTab`·`AuctionBuyKind`는 씬에 int로 저장된다 — 값을 끼우거나 재정렬하면 씬 배선을 함께 고친다.
 

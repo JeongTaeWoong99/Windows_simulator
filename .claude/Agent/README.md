@@ -23,6 +23,9 @@
 
 ## INDEX
 
+- [2026-10-03 캐릭터 경매 · 캐릭터·장비 즉시 판매 · 경매장 개선 (T-096 · T-075 · #46·#47)](2026-10-03-auction-character-entity-sell.md) — `#client` `#ui` 캐릭터 검색 복제본 · EntityBlockText 사유 · Shift+우클릭 등록 · 내 매물 배지 · 받은 시각 · 인챈트 등급 검색
+- [2026-10-02 클라 특성 화면을 레벨형 산업 × 종류 표로 (T-116 · #50)](2026-10-02-leveled-trait-screen-client.md) — `#client` `#ui` 특성 레벨 캐시 · 산업 × 종류 표(이름 열·눈금) · 비교 상자 · 버튼 위 조건 줄 · 개척으로 산업 레벨 잠금 · 산출량 줄 · 5차까지 피드백 반영
+- [2026-10-02 레벨 툴팁 럭키 상자를 CommonRewardTable에서 읽기 (#49)](2026-10-02-lucky-box-tooltip-common-reward.md) — `#client` `#ui` 상자를 공통 + 산업별 덮어쓰기 시트에서 독립 확률로 표시
 - [2026-10-01 인벤토리 칸 위치 저장 · 정렬 · 자리 이동 (T-058)](2026-10-01-storage-slot-position.md) — `#server` `#data` 자원·캐릭터·장비에 칸 번호 · 정렬/이동 패킷 · DB 마이그레이션
 - [2026-09-30 경매장 탭 클라 화면 (T-096)](2026-09-30-auction-client-screens.md) — `#client` `#ui` 거래소·장비·등록·내 매물 하위 탭과 AuctionModel
 - [2026-09-30 창고 → 인벤토리 개명 · 거래 탭 3개](2026-09-30-inventory-rename-market-tabs.md) — `#client` `#ui` Storage→Inventory 전면 개명 · MarketTabPresenter (T-101)
