@@ -1216,12 +1216,20 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private static string FormatPermille(int permille)
         => $"{(permille >= 0 ? "+" : "")}{permille / 10f:0.#}%";
 
-    // 이 캐릭터가 낀 장비 중 **이 산업에 붙는** 것들의 가산 합(천분율).
+    // 이 캐릭터가 낀 장비 중 **이 산업에 붙는** 것들의 가산 합(천분율) — 장비 기본값 + 능력치 칸.
     //
-    // ⚠️ 서버 'User.GetEquipSpeedAdd'의 사본이다 (일감 'T-055'가 끝나면 지운다).
+    // ⚠️ 서버 'User.GetEquipSpeedAdd' → 'Equip.SpeedAddPermilleFor'의 사본이다 (일감 'T-055'가 끝나면 지운다).
     // ※ 산업 'None'은 지정을 안 한 것이 아니라 **어느 산업에나 붙는다**는 뜻이다('Equip.AppliesTo').
+    // ■ 산업 판정은 장비와 칸이 **따로** 한다 (T-095 · 2026-10-03)
+    //   낚시 장비라도 칸에 '전산업 +2%'가 있으면 농사 슬롯에 그 2%가 붙는다. 예전엔 장비 산업이 다르면
+    //   통째로 건너뛰어 칸의 몫까지 빠졌고, 그 차이가 '개발용 전역 배수'로 잘못 읽혔다.
     private int GetEquipSpeedAdd(long characterId, EIndustryType industry)
     {
+        if (characterId == 0L)
+        {
+            return 0; // 0은 '인벤토리'라 끼지 않은 장비 전부와 맞아 버린다
+        }
+
         var sum = 0;
 
         foreach (var equip in _data.Equips)
@@ -1231,21 +1239,28 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            if (!GameDataLoader.TryGetEquip(equip.EquipTid, out var row))
+            if (GameDataLoader.TryGetEquip(equip.EquipTid, out var row) && AppliesTo(row.Industry, industry))
             {
-                continue;
+                sum += row.SpeedAddPermille;
             }
 
-            if (row.Industry != IndustryType.None && (EIndustryType)(byte)row.Industry != industry)
+            foreach (int optionTid in equip.EnchantOptions)
             {
-                continue;
+                if (GameDataLoader.TryGetEnchantOption(optionTid, out var option)
+                    && option.OptionType == EnchantOptionType.Speed
+                    && AppliesTo(option.Industry, industry))
+                {
+                    sum += option.Value;
+                }
             }
-
-            sum += row.SpeedAddPermille;
         }
 
         return sum;
     }
+
+    // 이 산업 지정이 슬롯 산업에 붙는가 — 'None'(전 산업)은 어디든 붙는다 (GetEquipSpeedAdd에서 호출).
+    private static bool AppliesTo(IndustryType target, EIndustryType industry)
+        => target == IndustryType.None || (EIndustryType)(byte)target == industry;
 
     // 'index'번째 효율 계산 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEfficiency에서 호출).
     private EfficiencyRowView GetOrCreateEfficiencyRow(int index)
