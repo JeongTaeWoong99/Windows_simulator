@@ -41,6 +41,8 @@ public static class ResultMessages
         EResultCode.InvalidEquipSlot    => "올바르지 않은 장비 칸입니다.",
         EResultCode.EquipKindMismatch   => "이 칸에 낄 수 없는 장비입니다.",
         EResultCode.EquipSlotEmpty      => "이미 비어 있는 칸입니다.",
+        EResultCode.EnchantItemNotOwned => "큐브가 없습니다.",
+        EResultCode.EnchantEquipped     => "착용 중인 장비에는 큐브를 쓸 수 없습니다. 먼저 벗겨 주세요.",
         EResultCode.MailNotFound        => "없는 우편입니다.",
         EResultCode.MailAlreadyClaimed  => "이미 받은 우편입니다.",
         // 안 받은 우편에는 삭제 버튼이 없다 — 정상 화면에서는 나오지 않는다.

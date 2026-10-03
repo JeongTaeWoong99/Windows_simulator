@@ -154,7 +154,7 @@ public class EquipSlotSource : InventorySlotSource
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state)?
-            .Row("우클릭 판매 담기 · Shift+우클릭 경매 등록", "");
+            .Row("좌클릭 큐브 · 우클릭 판매 · Shift+우클릭 경매", "");
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

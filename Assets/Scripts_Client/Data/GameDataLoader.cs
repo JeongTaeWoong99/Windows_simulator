@@ -235,6 +235,27 @@ public static class GameDataLoader
         return GameTable.EnchantGradeTable.TryGet(rarity, out EnchantGradeTableRow row) ? row.SlotCount : 0;
     }
 
+    // 큐브 아이템 목록('EnchantItemTable') — 큐브 창의 버튼이 이 순서로 놓인다.
+    public static IReadOnlyList<EnchantItemTableRow> EnchantCubes => GameTable.EnchantItemTable.All;
+
+    // 이 인챈트 등급에서 그 큐브로 한 단계 오를 확률(만분율). 최고 등급·모르는 큐브면 0.
+    //   enchantGrade : 장비의 지금 인챈트 등급 ('None'이면 아직 인챈트가 없다 — 첫 사용은 판정 없이 일반이 된다)
+    //
+    // ⚠️ 서버 'EnchantCatalog.RankUpPermyriadOf'의 사본이다 — 기본 확률(만분율) × 큐브 배율(천분율) ÷ 1000, **정수 내림**.
+    //   화면에 보여 주기만 하고 판정은 서버가 한다. 식이 바뀌면 둘을 함께 고친다.
+    // ※ 'EnchantGradeTable'의 행은 두 뜻을 함께 싣는다 — 'SlotCount'는 **장비 등급**으로, 'UpPermyriad'는 **인챈트 등급**으로 읽는다.
+    public static int GetEnchantUpPermyriad(GlobalRarity enchantGrade, int cubeTid)
+    {
+        if (enchantGrade >= GlobalRarity.Mythic
+            || !GameTable.EnchantGradeTable.TryGet(enchantGrade, out EnchantGradeTableRow grade)
+            || !GameTable.EnchantItemTable.TryGet(cubeTid, out EnchantItemTableRow cube))
+        {
+            return 0;
+        }
+
+        return (int)((long)grade.UpPermyriad * cube.UpRatePermille / 1000);
+    }
+
     // 우편 템플릿 한 행 — 제목·본문·발신자는 패킷에 없고 여기서만 읽는다.
     // ※ 첨부는 이 행이 아니라 패킷('MailInfo')의 것을 쓴다 — 서버가 보낸 순간 복사해 두므로
     //   템플릿을 나중에 고쳐도 이미 온 우편은 그대로이고, 넘침 보관 템플릿은 첨부가 비어 있다.

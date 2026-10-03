@@ -305,6 +305,20 @@ namespace MikaNetwork
             EquipResponded?.Invoke(res);
         }
 
+        // 큐브 사용(인챈트) 결과 도착 (Handle_S_EquipEnchantResponse에서 발행)
+        public static event Action<S_EquipEnchantResponse>? EquipEnchantResponded;
+
+        // 큐브 사용 결과 (S_EquipEnchantResponse 수신 시 자동 호출)
+        // ※ 성공이면 바뀐 개체가 S_EquipSyncResponse로 따로 온다 — 여기 'Options'는 결과 표시용이다.
+        // ⚠️ 거절이면 Result·EquipId만 유효하다(나머지는 기본값).
+        [PacketHandler]
+        public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"큐브 사용 #{res.EquipId} → {res.Result} (등급 {res.BeforeGrade}→{res.AfterGrade}, 상승={res.Success}, 칸 {res.Options.Count}개)");
+            EquipEnchantResponded?.Invoke(res);
+        }
+
         #endregion
 
         #region 작업슬롯 · 채취

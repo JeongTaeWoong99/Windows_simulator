@@ -52,9 +52,10 @@ using UnityEngine.UI;
 //   거래 열을 열어 경매 등록 화면에 그 물건을 골라 둔다('MarketCanvasView.OpenAuctionRegister').
 //   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
-// ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸에서만)
+// ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸) · 큐브 창 (장비 탭의 장비 칸 · T-095)
 //   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
 //   한 조작에 두 뜻을 겹치면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
+//   큐브 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
 public class InventoryGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -69,6 +70,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("이 격자의 스크롤. 찾기 조건이 바뀌면 맨 위로 올린다 — 결과는 앞으로 모인다")]
     private ScrollRect scrollRect = null!;
+
+    [SerializeField, Tooltip("큐브 창 — 장비 칸을 좌클릭하면 그 장비로 연다")]
+    private EquipEnchantPresenter equipEnchant = null!;
 
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
@@ -155,6 +159,7 @@ public class InventoryGridPresenter : MonoBehaviour
         this.RequireRef(slotParent, nameof(slotParent));
         this.RequireRef(emptyNotice, nameof(emptyNotice));
         this.RequireRef(scrollRect,  nameof(scrollRect));
+        this.RequireRef(equipEnchant, nameof(equipEnchant));
 
         CacheFrames();
 
@@ -578,6 +583,9 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
+        // 판매 목록 자리를 큐브 창이 쓰고 있으면 돌려준다 — 담은 것이 보여야 한다.
+        equipEnchant.Close();
+
         switch (_currentTab)
         {
             case InventoryTab.Resource:  ToggleItem((int)view.Key); break;
@@ -688,13 +696,26 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 상자 개봉
 
-    // 칸을 좌클릭했다 — 상자면 몇 개 열지 묻고 개봉을 요청한다 (SlotView.LeftClicked 구독)
+    // 칸을 좌클릭했다 — 장비면 큐브 창을 열고, 상자면 몇 개 열지 묻고 개봉을 요청한다 (SlotView.LeftClicked 구독)
     //
-    // 상자가 아닌 칸은 아무 일도 하지 않는다. 좌클릭에 다른 뜻이 붙기 전까지는 그게 맞는 반응이다.
+    // 상자가 아닌 자원 칸·캐릭터 칸은 아무 일도 하지 않는다. 좌클릭에 다른 뜻이 붙기 전까지는 그게 맞는 반응이다.
     // 수량을 묻는 동선은 판매 담기와 **똑같이** 간다 — 1개면 묻지 않고, 2개 이상이면 팝업을 띄운다.
     private void OnSlotLeftClicked(SlotView view)
     {
-        if (!IsItemKeyTab || view.IsEmpty)
+        if (view.IsEmpty)
+        {
+            return;
+        }
+
+        // 장비 칸 — 큐브 창을 그 장비로 연다(T-095). 착용 중이어도 연다 — 창이 [해제하고 사용]으로 말한다.
+        if (_currentTab == InventoryTab.Equipment)
+        {
+            equipEnchant.Open(view.Key);
+
+            return;
+        }
+
+        if (!IsItemKeyTab)
         {
             return;
         }

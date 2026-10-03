@@ -205,6 +205,20 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //   인벤토리에 남아 있고, 'IsEquipped'로 구분한다.
     public IReadOnlyList<EquipInfo> Equips => _equips;
 
+    // 장비 개체 하나를 찾는다. 모르는 개체면 null.
+    public EquipInfo? FindEquip(long equipId)
+    {
+        foreach (var equip in _equips)
+        {
+            if (equip.EquipId == equipId)
+            {
+                return equip;
+            }
+        }
+
+        return null;
+    }
+
     // 장비 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
     public int GetEquipTid(long equipId)
     {
@@ -366,6 +380,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                         CharactersChanged;          // 보유 캐릭터 캐시 갱신됨
     public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
     public event Action<bool, EResultCode>?      EquipCompleted;             // 장착·해제 완료 (성공 여부·결과 코드)
+    public event Action<S_EquipEnchantResponse>? EquipEnchantCompleted;      // 큐브 사용 결과 (거절 포함 — 'Result'를 먼저 본다)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
@@ -436,6 +451,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipListReceived        += OnEquipListReceived;
         ServerPacketHandler.EquipSynced              += OnEquipSynced;
         ServerPacketHandler.EquipResponded           += OnEquipResponded;
+        ServerPacketHandler.EquipEnchantResponded    += OnEquipEnchantResponded;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -475,6 +491,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipListReceived        -= OnEquipListReceived;
         ServerPacketHandler.EquipSynced              -= OnEquipSynced;
         ServerPacketHandler.EquipResponded           -= OnEquipResponded;
+        ServerPacketHandler.EquipEnchantResponded    -= OnEquipEnchantResponded;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -646,6 +663,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnEquipResponded(S_EquipResponse res)
     {
         EquipCompleted?.Invoke(res.Result == EResultCode.Ok, res.Result);
+    }
+
+    // 큐브 사용 응답 — 결과를 그대로 넘긴다.
+    //
+    // ※ 장착 응답과 같은 경계다 — **바뀐 개체는 'S_EquipSyncResponse'가 따로 싣고 온다.**
+    //   여기 'Options'·등급은 결과 화면(이전 ▶ 이후)을 그리는 데만 쓰고, 캐시는 건드리지 않는다.
+    private void OnEquipEnchantResponded(S_EquipEnchantResponse res)
+    {
+        EquipEnchantCompleted?.Invoke(res);
     }
 
     // 작업슬롯 스냅샷 — 캐시 교체 후 이벤트 발행

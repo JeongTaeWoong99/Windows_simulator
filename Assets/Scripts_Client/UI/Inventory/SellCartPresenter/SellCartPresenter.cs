@@ -50,9 +50,12 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
 
-    [SerializeField, Tooltip("인벤토리 탭 줄. 자원 탭에서만 이 패널이 보인다")]
+    [SerializeField, Tooltip("인벤토리 탭 줄. 특성 탭에서는 이 패널이 물러난다")]
     [FormerlySerializedAs("storageTabs")]
     private InventoryTabPresenter inventoryTabs = null!;
+
+    [SerializeField, Tooltip("큐브 창 — 이 자리를 빌려 쓴다. 열리면 판매 목록을 비우고 물러난다")]
+    private EquipEnchantPresenter equipEnchant = null!;
 
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<SellCartRowView> _rows = new List<SellCartRowView>();
@@ -85,7 +88,8 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(totalText,         nameof(totalText));
         this.RequireRef(highRarityWarning, nameof(highRarityWarning));
         this.RequireRef(sellButton,        nameof(sellButton));
-        this.RequireRef(inventoryTabs,       nameof(inventoryTabs));
+        this.RequireRef(inventoryTabs,     nameof(inventoryTabs));
+        this.RequireRef(equipEnchant,      nameof(equipEnchant));
 
         _data    = Services.Get<PlayerDataModel>();
         _cart    = Services.Get<SellCartModel>();
@@ -95,7 +99,8 @@ public class SellCartPresenter : MonoBehaviour
         // ⚠️ 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
         //    'OnDisable'에서 풀면 다시 켤 신호를 받을 길이 사라져 자원 탭에 영영 못 돌아온다
         //    (도구 줄이 같은 이유로 그렇게 한다 → 'Inventory 규칙.md').
-        inventoryTabs.TabChanged += ApplyTab;
+        inventoryTabs.TabChanged  += ApplyTab;
+        equipEnchant.OpenChanged  += OnEnchantOpenChanged;
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
@@ -110,6 +115,7 @@ public class SellCartPresenter : MonoBehaviour
     private void OnDestroy()
     {
         inventoryTabs.TabChanged -= ApplyTab;
+        equipEnchant.OpenChanged -= OnEnchantOpenChanged;
     }
 
     // 이 탭에서 판매 목록을 보일지 정한다 (Start · TabChanged 구독).
@@ -118,9 +124,25 @@ public class SellCartPresenter : MonoBehaviour
     // 트리가 그 자리를 쓰므로 팔 대상이 화면에 없다.
     // 자원·캐릭터·장비 탭은 모두 담을 수 있는 탭이라 그대로 보인다(T-075).
     // 담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
+    // ※ 큐브 창이 열려 있어도 물러난다 — 같은 자리를 빌려 쓴다(T-095).
     private void ApplyTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab != InventoryTab.Trait);
+        gameObject.SetActive(tab != InventoryTab.Trait && !equipEnchant.IsOpen);
+    }
+
+    // 큐브 창이 열리고 닫혔다 — 열리면 목록을 비우고 물러난다 (EquipEnchantPresenter.OpenChanged 구독).
+    //
+    // ★ 비우는 이유(2026-10-03 사용자 결정): 보이지 않는 카트에 담긴 것이 남으면, 돌아왔을 때
+    //   "언제 담았지"가 되고 큐브를 쓰려던 장비가 카트에 섞여 함께 팔릴 수 있다.
+    // ※ 판매 응답을 기다리는 중이면 비우지 않는다 — 응답이 성공한 쪽을 스스로 비운다.
+    private void OnEnchantOpenChanged(bool open)
+    {
+        if (open && !_isWaiting)
+        {
+            _cart.Clear();
+        }
+
+        ApplyTab(inventoryTabs.CurrentTab);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)

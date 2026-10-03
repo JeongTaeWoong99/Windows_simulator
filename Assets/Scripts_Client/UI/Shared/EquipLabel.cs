@@ -127,6 +127,14 @@ public static class EquipLabel
 
         content.Header($"능력치 칸 {CountFilled(options)}/{options.Count}");
 
+        // 인챈트 등급은 장비 하나에 하나다 — 칸마다 같은 등급이라 첫 칸의 것을 읽는다(이슈 #46).
+        GlobalRarity grade = FirstGrade(options);
+
+        content.Row("인챈트 등급",
+                    grade == GlobalRarity.None ? "없음" : RarityLabel.Get(grade),
+                    "",
+                    grade == GlobalRarity.None ? null : RarityPalette.Get(grade));
+
         for (int i = 0; i < options.Count; i++)
         {
             EnchantOptionTableRow? option = options[i];
@@ -140,6 +148,108 @@ public static class EquipLabel
 
             content.Row($"{i + 1}", GetOptionText(option), RarityLabel.Get(option.Grade), RarityPalette.Get(option.Grade));
         }
+    }
+
+    // 박힌 칸의 인챈트 등급 — 칸이 모두 같은 등급이라 첫 칸의 것이다. 비어 있으면 'None'.
+    public static GlobalRarity FirstGrade(IReadOnlyList<EnchantOptionTableRow?> options)
+    {
+        foreach (EnchantOptionTableRow? option in options)
+        {
+            if (option != null)
+            {
+                return option.Grade;
+            }
+        }
+
+        return GlobalRarity.None;
+    }
+
+    // 만분율 확률 — '16%' · '0.4%' · '0.05%'. 큐브 상승 확률을 적는다.
+    public static string FormatPermyriad(int permyriad) => $"{permyriad / 100f:0.##}%";
+
+    // 큐브 규칙 툴팁 — 칸 수 · 첫 사용 · 등급 상승 · 다시 뽑기 · 큐브별 상승 확률 표.
+    //
+    // ■ 왜 툴팁인가 (2026-10-03 사용자 피드백)
+    // "처음엔 일반만 나오다가 확률로 한 단계씩 오른다"는 문서를 읽지 않으면 화면만 보고 알 수 없었다.
+    // 큐브 창에는 한 줄 요약만 두고, 전체 규칙과 확률 표는 올리면 여기서 펼친다.
+    // ※ 값은 테이블에서 읽는다 — 수치를 문구에 적어 두면 엑셀이 바뀔 때 거짓이 된다.
+    //
+    // ■ 규칙 문장은 라벨 칸에만 쓴다 (2026-10-04 사용자 피드백 — "좌우가 너무 길다")
+    // 값·보조 값 열 폭은 툴팁의 모든 줄에서 가장 긴 글자에 맞춰진다('TooltipPresenter.FitColumns').
+    // 문장을 값 칸에 두면 확률 표까지 그 폭을 물려받아 패널이 늘어난다 — 값 칸에는 짧은 확률만 둔다.
+    public static TooltipContent BuildCubeRuleTooltip()
+    {
+        var content = new TooltipContent("인챈트 큐브")
+            .Row(SlotCountSummary(), "")
+            .Row("첫 사용은 일반 · 이후 확률로 한 단계씩 상승", "")
+            .Row("매번 칸 전부 다시 뽑기 (옵션 중복 가능)", "")
+            .Row("착용 중이면 벗긴 뒤 사용", "");
+
+        IReadOnlyList<EnchantItemTableRow> cubes = GameDataLoader.EnchantCubes;
+
+        if (cubes.Count == 0)
+        {
+            return content;
+        }
+
+        // 확률 표 — 값 칸이 첫 큐브, 보조 칸이 둘째 큐브다. 큐브가 셋 이상이 되면 표 모양을 다시 정한다.
+        // 열 머리는 큐브 이름에서 공통 꼬리('인챈트 큐브')를 뗀 짧은 이름이다 — 긴 이름은 열을 넓힌다.
+        content.Row("■ 등급 상승 확률",
+                    ShortCubeName(cubes[0].ItemTID),
+                    cubes.Count > 1 ? ShortCubeName(cubes[1].ItemTID) : "",
+                    null);
+
+        for (GlobalRarity grade = GlobalRarity.Common; grade < GlobalRarity.Mythic; grade++)
+        {
+            GlobalRarity next = grade + 1;
+
+            content.Row($"{RarityLabel.Get(grade)} ▶ {RarityLabel.Get(next)}",
+                        FormatPermyriad(GameDataLoader.GetEnchantUpPermyriad(grade, cubes[0].ItemTID)),
+                        cubes.Count > 1 ? FormatPermyriad(GameDataLoader.GetEnchantUpPermyriad(grade, cubes[1].ItemTID)) : "",
+                        RarityPalette.Get(next));
+        }
+
+        return content.Row($"{RarityLabel.Get(GlobalRarity.Mythic)}은 최고 등급 · 옵션만 다시 뽑기", "");
+    }
+
+    // 확률 표 열 머리 — '인챈트 큐브' → '기본', '상급 인챈트 큐브' → '상급'. 꼬리가 다르면 이름 그대로.
+    private static string ShortCubeName(int cubeTid)
+    {
+        const string Tail = "인챈트 큐브";
+
+        string name  = GameDataLoader.GetItemName(cubeTid);
+        string front = name.EndsWith(Tail) ? name[..^Tail.Length].Trim() : name;
+
+        return front.Length == 0 ? "기본" : front;
+    }
+
+    // 등급별 칸 수 요약 — '일반·고급 1칸 · 희귀·영웅 2칸 · 전설·신화 3칸'. 같은 칸 수의 등급을 묶는다.
+    private static string SlotCountSummary()
+    {
+        var parts = new List<string>();
+        var names = new List<string>();
+        int run   = -1;
+
+        for (GlobalRarity grade = GlobalRarity.Common; grade <= GlobalRarity.Mythic; grade++)
+        {
+            int count = GetStatSlotCount(grade);
+
+            if (count != run && names.Count > 0)
+            {
+                parts.Add($"{string.Join("·", names)} {run}칸");
+                names.Clear();
+            }
+
+            run = count;
+            names.Add(RarityLabel.Get(grade));
+        }
+
+        if (names.Count > 0)
+        {
+            parts.Add($"{string.Join("·", names)} {run}칸");
+        }
+
+        return string.Join(" · ", parts);
     }
 
     // 장비 개체 하나의 툴팁 — 등급 · 종류 · 기본 능력치 · (장착) · 즉시 판매가·경매 등록가 · 능력치 칸. 모르는 TID면 null.
