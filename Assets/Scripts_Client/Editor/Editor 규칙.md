@@ -1,6 +1,6 @@
 # Editor 폴더 규칙
 
-> 최종 업데이트: 2026-09-17 (`cheat-console/` 추가) · 대상: `Assets/Scripts_Client/Editor/`
+> 최종 업데이트: 2026-10-04 (`art-import/` 추가) · 2026-09-17 (`cheat-console/` 추가) · 대상: `Assets/Scripts_Client/Editor/`
 
 **이 프로젝트 전용 에디터 툴을 두는 곳.** 폴더 이름이 `Editor`라서 유니티가
 자동으로 `Assembly-CSharp-Editor`로 컴파일하고 **런타임 빌드에서 제외**한다.
@@ -27,6 +27,7 @@
 | `scene-copy/` | 오리지널 씬을 `Test Copy`로 복사 + 낡음 알림 (동작만 — 버튼은 치트 창 도구 줄) | [`scene-copy 규칙.md`](<scene-copy/scene-copy 규칙.md>) |
 | `server-console/` | 에디터에서 서버 실행/종료 + 로그 보기 (여는 버튼은 치트 창 도구 줄) | [`server-console 규칙.md`](<server-console/server-console 규칙.md>) |
 | `cheat-console/` | 서버 치트를 한 창에 모아 보내기 + 안전장치 팝업. **프로젝트 전용 버튼(씬 복사·서버 콘솔)도 이 창 도구 줄에 모은다** | [`cheat-console 규칙.md`](<cheat-console/cheat-console 규칙.md>) |
+| `art-import/` | `Assets/Art/` 원본 그림을 같은 규격으로 굽기 · 임포트 설정 고정 · 검사 (메뉴 `아트/`) | [`art-import 규칙.md`](<art-import/art-import 규칙.md>) |
 
 **메인 툴바에 올리는 프로젝트 전용 요소는 '치트' 버튼 하나다.** 새 툴이 버튼을 원하면 툴바가 아니라 치트 창 도구 줄에 붙인다.
 
