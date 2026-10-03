@@ -48,7 +48,7 @@
 | [T-008](T-008-희귀도확률.md) | 산업별 희귀도 분포 확률값 결정 — 산업마다 정한다 (Lv1 분포는 실측 가능) · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261010 |
 | [T-009](T-009-회당산출.md) | 산업별 회당 산출 결정 — 레벨별 실측은 [T-021](archive/T-021-산업레벨해금판정.md)로 열렸다(특성으로 상위 레벨을 연다) · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261010 |
 | [T-066](T-066-연계일감갱신스킬.md) | 연계 일감 갱신 스킬 — 작업이 끝나면 관련된 미완료 일감을 전부 갱신 (지금 누락분 전수 정리 포함) | 진우 | New | 높음 | 261010 |
-| [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI (큐브 사용 · 효율 계산) — **칸 표시 완료**(`c19e3ea`) · **#46 서버 처리 도착**(`ac9a8e3` — 칸 수 = 장비 등급 1·1·2·2·3·3 · 인챈트 등급은 장비당 하나 · 큐브 2종 · 칸 전부 다시 뽑기) · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46) | 태웅 | In Progress | 보통 | 261010 |
+| [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI — **큐브 창 · 효율 계산 · 규칙 툴팁 붙음(2026-10-03)** · 큐브 설명문 엑셀(D6) 반영 · 실측 확인 · 남은 것: 상급 큐브 처우 [이슈 #53](https://github.com/JeongTaeWoong99/Windows_simulator/issues/53) · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46) | 태웅 | In Progress | 보통 | 261010 |
 | [T-093](T-093-설명보간.md) | 아이템 설명 보간 — 엑셀 설명문의 `{컬럼}`을 생성 시점에 치환해 수치 중복을 없앤다 ([T-092](archive/T-092-인챈트.md) 이후) | 진우 | New | 보통 | 261010 |
 | [T-090](T-090-문서그래프Fix이름.md) | `check-doc-graph -Fix`가 README 문서 이름을 영문 폴더명으로 써 19개 블록을 덮어쓴다 — `Get-DocName`이 폴더명을 쓴다(2026-08-08 개명 이후) | 진우 | New | 보통 | 261010 |
 | [T-076](T-076-성장재료소비처.md) | 기획 — 자원·캐릭터·장비를 성장 재료로 쓸지 (중복 개체의 출구) — 문서가 "먹이기"와 "일해서만 자란다"로 **엇갈려 있다** · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 보통 | 261010 |
