@@ -90,7 +90,7 @@
 > 지금은 비어 있다. 🎨만 남은 **클라** 일감(T-031·T-015·T-052·T-039)은 [`art/`](art/README.md)로, T-051은 [`later/`](later/README.md)로 옮겼다(2026-09-28).
 > 나머지 🎨는 항목 하나로 다른 일감 안에 산다 — T-033.
 
-> 끝난 일감 72건은 [`archive/README.md`](archive/README.md)에 있다.
+> 끝난 일감 73건은 [`archive/README.md`](archive/README.md)에 있다.
 
 ---
 
