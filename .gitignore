@@ -120,3 +120,9 @@ Assets/Resources/PerformanceTestRunSettings.json.meta
 
 # 프로파일러 캡처 — 측정할 때마다 쌓이는 로컬 산출물 (.data 가 수십 MB)
 /ProfilerCaptures/
+
+# 그림(원본 팩·가공 결과·레시피) — 공개 저장소에 올리지 않는다. 무료 팩도 재배포 금지가 많고 유료 팩이 들어온다
+# 규칙 문서만 남긴다. 그림 보관 방식은 팀 결정 대기
+/Assets/Art/*
+!/Assets/Art/Art 규칙.md
+!/Assets/Art/Art 규칙.md.meta

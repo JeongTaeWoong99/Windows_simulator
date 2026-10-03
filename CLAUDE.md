@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-09-28 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
+> 최종 업데이트: 2026-10-04 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -45,6 +45,7 @@
 | `Assets/Scripts_Server/` | 서버 | Unity 측 네트워크/서버 연동 코드 + `Server/`에서 자동 복사되는 미러(`Protocol`·`GameData`) |
 | `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드. **폴더 구성·클라 코딩 규약은 [`폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md)** |
 | `Assets/Scripts_Client/Common/` | 클라이언트 | **Arca Unity Toolkit의 사본** — 게임을 모르는 범용 코드. **자산 하나 = 폴더 하나**(에디터 전용 파일만 각 자산 안 `Editor/`에 — ⚠️ 펴면 빌드가 깨진다). 마스터는 `~/.claude/skills`(저장소)이고, 여기서 고쳤으면 `/unity-skill-sync`로 되돌린다. 특정 프로젝트 이름을 주석에 남기지 않는다 |
+| `Assets/Art/` | 클라이언트 | **그림 원본·가공 결과** — 원본은 `_source/`에 그대로, 화면은 굽기로 규격을 맞춘 결과물만 쓴다. [`Art 규칙.md`](Assets/Art/Art%20규칙.md) |
 | `Assets/Scenes/` | 공용 | 씬 파일 |
 
 > 서버 → Unity 미러링(패킷 정의·GameData·`.bytes`·Roslyn 분석기)과
