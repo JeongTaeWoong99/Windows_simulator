@@ -94,7 +94,7 @@ namespace DesktopWindowControl.EditorTools
 
         private static void CheckCharacter(CharacterVisual visual, StringBuilder report)
         {
-            if (visual.RunFrames.Length == 0 || visual.AttackFrames.Length == 0)
+            if (visual.RunFrames.Length == 0 || visual.Attacks.Length == 0 || visual.Attacks.Any(a => a.frames == null || a.frames.Length == 0))
             {
                 report.AppendLine($"❌ 캐릭터 {visual.name}: 달리기·공격 프레임이 비어 있다");
                 return;
@@ -102,7 +102,7 @@ namespace DesktopWindowControl.EditorTools
 
             Vector2Int cell = ArtSpec.CharacterCell;
 
-            foreach (Sprite? frame in visual.RunFrames.Concat(visual.AttackFrames))
+            foreach (Sprite? frame in visual.RunFrames.Concat(visual.Attacks.SelectMany(a => a.frames)))
             {
                 if (frame == null || (int)frame.rect.width != cell.x || (int)frame.rect.height != cell.y)
                 {
@@ -111,9 +111,14 @@ namespace DesktopWindowControl.EditorTools
                 }
             }
 
-            if (visual.HitFrame < 0 || visual.HitFrame >= visual.AttackFrames.Length)
+            for (int i = 0; i < visual.Attacks.Length; i++)
             {
-                report.AppendLine($"❌ 캐릭터 {visual.name}: 타격 프레임 {visual.HitFrame}이 공격 범위 밖이다");
+                CharacterVisual.AttackMotion motion = visual.Attacks[i];
+
+                if (motion.hitFrame < 0 || motion.hitFrame >= motion.frames.Length)
+                {
+                    report.AppendLine($"❌ 캐릭터 {visual.name}: {i + 1}타의 타격 프레임 {motion.hitFrame}이 공격 범위 밖이다");
+                }
             }
 
             if (visual.Portrait == null || visual.Head == null)

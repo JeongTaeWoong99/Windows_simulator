@@ -43,7 +43,7 @@ namespace DesktopWindowControl.EditorTools
             importer.wrapModeV   = TextureWrapMode.Clamp;
         }
 
-        // 캐릭터·대상 — 달리기·공격 띠는 여러 장('ArtBaker'가 칸을 자른다), 나머지는 한 장
+        // 캐릭터·대상 — 달리기·공격(1·2·3타…) 띠는 여러 장('ArtBaker'가 칸을 자른다), 나머지는 한 장
         private static void ApplySprite(TextureImporter importer, string fileName)
         {
             ApplyPixelArt(importer);
@@ -51,7 +51,7 @@ namespace DesktopWindowControl.EditorTools
             importer.spritePixelsPerUnit = ArtSpec.PixelsPerUnit;
             importer.wrapMode            = TextureWrapMode.Clamp;
 
-            bool isStrip = fileName.EndsWith(ArtSpec.RunSuffix) || fileName.EndsWith(ArtSpec.AttackSuffix);
+            bool isStrip = ArtSpec.IsStrip(fileName);
             importer.spriteImportMode = isStrip ? SpriteImportMode.Multiple : SpriteImportMode.Single;
 
             if (isStrip)

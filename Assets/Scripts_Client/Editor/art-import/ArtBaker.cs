@@ -60,10 +60,10 @@ namespace DesktopWindowControl.EditorTools
             (string folder, string key) = Locate(recipe);
             var warnings = new List<string>();
 
-            Sprite[] run    = Resolve(recipe.RunSprites,    recipe.RunClip);
-            Sprite[] attack = Resolve(recipe.AttackSprites, recipe.AttackClip);
+            Sprite[]   run     = Resolve(recipe.RunSprites, recipe.RunClip);
+            Sprite[][] attacks = recipe.Attacks.Select(a => Resolve(a.sprites, a.clip)).ToArray();
 
-            if (run.Length == 0 || attack.Length == 0)
+            if (run.Length == 0 || attacks.Length == 0 || attacks.Any(a => a.Length == 0))
             {
                 return $"❌ {key}: 달리기·공격 원본이 비어 있다";
             }
@@ -76,44 +76,88 @@ namespace DesktopWindowControl.EditorTools
             Vector2Int cell        = ArtSpec.CharacterCell;
             var        offset      = new Vector2Int(cell.x / 2 - feet.x, -feet.y);
 
-            ArtImage[] runCells    = run.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray();
-            ArtImage[] attackCells = attack.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray();
-            ArtImage   anchorCell  = Place(anchor, recipe, anchorImage, offset, warnings);
+            ArtImage[]   runCells    = run.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray();
+            ArtImage[][] attackCells = attacks.Select(a => a.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray()).ToArray();
+            ArtImage     anchorCell  = Place(anchor, recipe, anchorImage, offset, warnings);
 
-            int hitFrame = recipe.HitFrameOverride >= 0 ? recipe.HitFrameOverride : FindHitFrame(attackCells);
+            int[] hitFrames = attackCells
+                .Select((cells, i) => recipe.Attacks[i].hitFrameOverride > 0 ? recipe.Attacks[i].hitFrameOverride : FindHitFrame(cells))
+                .ToArray();
 
             RectInt portraitRect = recipe.PortraitRect.width > 0 ? recipe.PortraitRect : AutoPortrait(anchorCell);
             RectInt headRect     = recipe.HeadRect.width > 0     ? recipe.HeadRect     : AutoHead(anchorCell);
 
             string runPath      = $"{folder}/{key}{ArtSpec.RunSuffix}.png";
-            string attackPath   = $"{folder}/{key}{ArtSpec.AttackSuffix}.png";
             string portraitPath = $"{folder}/{key}_portrait.png";
             string headPath     = $"{folder}/{key}_head.png";
 
             Strip(runCells).SavePng(runPath);
-            Strip(attackCells).SavePng(attackPath);
             Fit(anchorCell.Crop(portraitRect), PortraitCanvas).SavePng(portraitPath);
             Fit(anchorCell.Crop(headRect),     HeadCanvas).SavePng(headPath);
 
             Sprite[] runSprites    = ImportStrip(runPath,    $"{key}{ArtSpec.RunSuffix}",    runCells.Length);
-            Sprite[] attackSprites = ImportStrip(attackPath, $"{key}{ArtSpec.AttackSuffix}", attackCells.Length);
             Sprite   portrait      = ImportSingle(portraitPath);
             Sprite   head          = ImportSingle(headPath);
 
+            // 공격은 연속 공격마다 띠 하나 — '<키>_attack_1' …. 공격 수가 줄었으면 남는 띠를 지운다
+            var attackSprites = new Sprite[attackCells.Length][];
+
+            for (int i = 0; i < attackCells.Length; i++)
+            {
+                string attackName = $"{key}{ArtSpec.AttackSuffix}_{i + 1}";
+                string attackPath = $"{folder}/{attackName}.png";
+                Strip(attackCells[i]).SavePng(attackPath);
+                attackSprites[i] = ImportStrip(attackPath, attackName, attackCells[i].Length);
+            }
+
+            DeleteStaleAttackStrips(folder, key, attackCells.Length);
+
             CharacterVisual visual = LoadOrCreate<CharacterVisual>($"{folder}/{key}.asset");
             var so = new SerializedObject(visual);
-            SetArray(so.FindProperty("runFrames"),    runSprites);
-            SetArray(so.FindProperty("attackFrames"), attackSprites);
-            so.FindProperty("hitFrame").intValue                  = hitFrame;
-            so.FindProperty("portrait").objectReferenceValue      = portrait;
-            so.FindProperty("head").objectReferenceValue          = head;
+            SetArray(so.FindProperty("runFrames"), runSprites);
+
+            SerializedProperty attacksProperty = so.FindProperty("attacks");
+            attacksProperty.arraySize = attackSprites.Length;
+
+            for (int i = 0; i < attackSprites.Length; i++)
+            {
+                SerializedProperty motion = attacksProperty.GetArrayElementAtIndex(i);
+                SetArray(motion.FindPropertyRelative("frames"), attackSprites[i]);
+                motion.FindPropertyRelative("hitFrame").intValue = hitFrames[i];
+            }
+
+            so.FindProperty("portrait").objectReferenceValue = portrait;
+            so.FindProperty("head").objectReferenceValue     = head;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(visual);
 
             string warn = warnings.Count > 0 ? "\n   ⚠️ " + string.Join("\n   ⚠️ ", warnings.Distinct()) : "";
 
-            return $"✅ {key}: 달리기 {runSprites.Length} · 공격 {attackSprites.Length}(타격 {hitFrame}) · " +
+            string attackSummary = string.Join(" → ", attackSprites.Select((frames, i) => $"{frames.Length}(타격 {hitFrames[i]})"));
+
+            return $"✅ {key}: 달리기 {runSprites.Length} · 공격 {attackSummary} · " +
                    $"상반신 {portraitRect} · 머리 {headRect}{warn}";
+        }
+
+        // 예전 단일 띠('<키>_attack')와 공격 수보다 큰 번호의 띠를 지운다
+        private static void DeleteStaleAttackStrips(string folder, string key, int attackCount)
+        {
+            string singlePath = $"{folder}/{key}{ArtSpec.AttackSuffix}.png";
+
+            if (AssetDatabase.LoadMainAssetAtPath(singlePath) != null)
+            {
+                AssetDatabase.DeleteAsset(singlePath);
+            }
+
+            for (int i = attackCount + 1; ; i++)
+            {
+                string stalePath = $"{folder}/{key}{ArtSpec.AttackSuffix}_{i}.png";
+
+                if (!AssetDatabase.DeleteAsset(stalePath))
+                {
+                    break;
+                }
+            }
         }
 
         private static ArtImage Prepare(Sprite sprite, CharacterRecipe recipe)

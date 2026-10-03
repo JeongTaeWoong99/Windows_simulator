@@ -25,6 +25,9 @@ namespace DesktopWindowControl.EditorTools
 
         // 프레임이 여러 장인 시트의 파일 접미사 — 임포트할 때 'Multiple'로 잘린다
         public const string RunSuffix    = "_run";
-        public const string AttackSuffix = "_attack";
+        public const string AttackSuffix = "_attack";   // 연속 공격은 '_attack_1' · '_attack_2' …
+
+        public static bool IsStrip(string fileName)
+            => fileName.EndsWith(RunSuffix) || System.Text.RegularExpressions.Regex.IsMatch(fileName, AttackSuffix + @"_\d+$");
     }
 }

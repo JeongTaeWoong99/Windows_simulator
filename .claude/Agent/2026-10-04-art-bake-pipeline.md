@@ -29,3 +29,11 @@ tags: [client, art, editor, ui, design]
 - Unity CLI eval 함정: `using`·제네릭 로컬 함수·`'\'` 문자 리터럴 불가 · internal 타입 접근 불가(→ `ExecuteMenuItem`) · 메인 스레드 5초 타임아웃이 나도 작업은 끝난다(`Temp/` 표식 파일로 확인) · `delayCall` 안 돈다.
 - 그림(`_source/`·가공 결과·레시피)은 공개 저장소라 커밋하지 않는다(.gitignore). 보관 방식은 팀 결정 대기.
 - 다음: T-097 루프 플레이어 — `WorkStationSlotView`에 RawImage 층 · 진행도 기반 타임라인 · 흰 번쩍임 · Presenter가 TID 조회.
+
+## 추가 — 연속 공격 · 그림 비공개 (같은 날)
+
+- **연속 공격**: 사용자 요청 "연속 공격 소스가 있으면 되도록 사용". 레시피 `attacks[]`(클립/스프라이트 + 타별 `hitFrameOverride`, 0 = 자동) → `CharacterVisual.attacks[]`(`frames`·`hitFrame`). 띠는 `<키>_attack_N`, 남는 띠·예전 `_attack`은 굽기가 지운다.
+  - 흑기사 `BK_attack_1~4`(타격 자동 3·4·7·2) · 브링어 `Attack-NoEffect` 하나. `heavy_attack`은 안 씀.
+  - 재생 규칙: 판정에서 거꾸로 k칸 앞 = `(n-1-k) mod n`번 공격 → 판정엔 늘 마지막 타. 목업에 반영.
+- **그림 비공개**: 저장소가 공개라 원본뿐 아니라 가공 결과도 올리면 안 된다(사용자 지적). push 전이라 커밋 3개를 다시 써서 그림을 뺐다 — `5370d73` → `4e27f51`(규칙 문서·.gitignore만). `/Assets/Art/*` 무시, `Art 규칙.md`만 추적.
+  - 보관 방식(저장소 비공개 전환 vs 별도 비공개 그림 저장소)은 팀 결정 대기.
