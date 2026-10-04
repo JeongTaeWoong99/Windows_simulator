@@ -29,6 +29,9 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("판정 진행도 (0~1). 표시 전용이라 interactable은 꺼 둔다")]
     private Slider progressSlider = null!;
 
+    [SerializeField, Tooltip("슬롯 무대 (Visible Panel). 비우면 연출 없이 바탕만 남는다")]
+    private SlotStageView? stage;
+
     private WorkStationSlotInfo? _slot;
 
     // 이 뷰가 그리고 있는 슬롯 번호. 미바인딩이면 -1.
@@ -51,9 +54,16 @@ public class WorkStationSlotView : MonoBehaviour
     //   characterName : 배치된 캐릭터의 표시 이름. 뷰가 직접 조회하지 않는다 —
     //                   'slot.CharacterId'는 개체 번호라 테이블에서 이름이 안 나오고,
     //                   보유 목록을 거쳐야 한다. 그 변환은 세션을 아는 패널의 몫이다.
-    public void Bind(WorkStationSlotInfo slot, string characterName)
+    //   characterTid  : 배치된 캐릭터의 종류(TID) — 무대가 그림을 고른다. 이름과 같은 이유로 패널이 넘긴다
+    public void Bind(WorkStationSlotInfo slot, string characterName, int characterTid)
     {
         _slot = slot;
+
+        if (stage != null)
+        {
+            stage.Show(slot.CharacterId != 0 ? characterTid : 0, slot.Industry, slot.IndustryLevel);
+            stage.DrawIdle(); // 돌지 않는 칸은 이 장면에 멈춰 있다. 도는 칸은 다음 Tick이 덮는다
+        }
 
         string industry  = IndustryLabel.Get(slot.Industry);
         string character = slot.CharacterId != 0 ? characterName : "-";
@@ -86,9 +96,15 @@ public class WorkStationSlotView : MonoBehaviour
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).
-    public void Tick(float progress, float remainSeconds)
+    //   cycleSeconds : 판정 1회의 초 — 무대가 진행도를 주기 안의 순간으로 바꾼다
+    public void Tick(float progress, float remainSeconds, float cycleSeconds)
     {
         progressSlider.value = progress;
         remainText.text      = $"{remainSeconds:0.0}초 후 수확";
+
+        if (stage != null)
+        {
+            stage.Tick(progress * cycleSeconds, cycleSeconds, Time.deltaTime);
+        }
     }
 }

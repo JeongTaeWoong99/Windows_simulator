@@ -101350,10 +101350,10 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
-    m_HighlightedColor: {r: 0.82, g: 0.5866667, b: 0.21666667, a: 1}
-    m_PressedColor: {r: 0.63058823, g: 0.4109804, b: 0.0627451, a: 1}
-    m_SelectedColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
+    m_NormalColor: {r: 0.16862746, g: 0.43529412, b: 0.61960787, a: 1}
+    m_HighlightedColor: {r: 0.29333335, g: 0.52, b: 0.6766667, a: 1}
+    m_PressedColor: {r: 0.13490197, g: 0.3482353, b: 0.4956863, a: 1}
+    m_SelectedColor: {r: 0.16862746, g: 0.43529412, b: 0.61960787, a: 1}
     m_DisabledColor: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
@@ -116551,7 +116551,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 924431470}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.07423687
+  m_Size: 0.021492353
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

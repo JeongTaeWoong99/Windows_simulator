@@ -113,7 +113,9 @@ public class WorkStationListPresenter : MonoBehaviour
                 continue;
             }
 
-            view.Tick(WorkStationProgress.CalculateProgress(slot), WorkStationProgress.CalculateRemainSeconds(slot));
+            view.Tick(WorkStationProgress.CalculateProgress(slot),
+                      WorkStationProgress.CalculateRemainSeconds(slot),
+                      WorkStationProgress.CalculateCycleSeconds(slot));
         }
     }
 
@@ -340,8 +342,10 @@ public class WorkStationListPresenter : MonoBehaviour
                 _views.Add(slot.SlotIndex, view);
             }
 
-            view.Bind(slot, _data.GetCharacterName(slot.CharacterId));
-            view.SetRarity(GameDataLoader.GetCharacterRarity(_data.GetCharacterTid(slot.CharacterId)));
+            int characterTid = _data.GetCharacterTid(slot.CharacterId);
+
+            view.Bind(slot, _data.GetCharacterName(slot.CharacterId), characterTid);
+            view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
         }
     }
 

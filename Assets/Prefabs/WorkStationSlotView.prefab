@@ -13,6 +13,8 @@ GameObject:
   - component: {fileID: 689098260959160646}
   - component: {fileID: 3015784041329882978}
   - component: {fileID: 1796955832513312602}
+  - component: {fileID: 4179745691752712024}
+  - component: {fileID: 1748983412400989297}
   m_Layer: 5
   m_Name: Visible Panel
   m_TagString: Untagged
@@ -111,6 +113,33 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 2
   alpha: 1
+--- !u!114 &4179745691752712024
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 236069905854331071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3312d7739989d2b4e91e6319e9a96d76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.RectMask2D
+  m_Padding: {x: 0, y: 0, z: 0, w: 0}
+  m_Softness: {x: 0, y: 0}
+--- !u!114 &1748983412400989297
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 236069905854331071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90ca8e4b60b28794e93de8b6b777824f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::SlotStageView
+  catalog: {fileID: 11400000, guid: ac9cdbf77f0cede4baf237a9b27bb6b0, type: 2}
 --- !u!1 &3616460877357359638
 GameObject:
   m_ObjectHideFlags: 0
@@ -197,6 +226,7 @@ MonoBehaviour:
   slotText: {fileID: 2635945914803179432}
   remainText: {fileID: 6150595748935389424}
   progressSlider: {fileID: 647758233822417899}
+  stage: {fileID: 1748983412400989297}
 --- !u!222 &1682027219142303611
 CanvasRenderer:
   m_ObjectHideFlags: 0
