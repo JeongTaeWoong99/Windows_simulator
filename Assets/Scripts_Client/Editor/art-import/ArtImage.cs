@@ -61,10 +61,12 @@ namespace DesktopWindowControl.EditorTools
         }
 
         // 스프라이트 한 장을 원본 해상도로 잘라 낸다
+        // 'sprite.texture'는 SpriteAtlas가 묶인 뒤엔 아틀라스(파일 없음)를 가리킨다 — 스프라이트가 든 원본 텍스처를 직접 연다
         public static ArtImage FromSprite(Sprite sprite)
         {
-            ArtImage sheet = FromTexture(sprite.texture);
-            float    scale = sheet.Width / (float)sprite.texture.width;
+            var      source = AssetDatabase.LoadAssetAtPath<Texture2D>(AssetDatabase.GetAssetPath(sprite));
+            ArtImage sheet  = FromTexture(source);
+            float    scale  = sheet.Width / (float)source.width;
             Rect     rect  = sprite.rect;
 
             return sheet.Crop(new RectInt(

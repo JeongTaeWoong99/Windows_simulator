@@ -17,9 +17,9 @@ namespace DesktopWindowControl.EditorTools
             {
                 ApplyBackground((TextureImporter)assetImporter);
             }
-            else if (path.StartsWith(ArtSpec.CharactersRoot + "/") || path.StartsWith(ArtSpec.TargetsRoot + "/"))
+            else if (path.StartsWith(ArtSpec.CharactersRoot + "/") || path.StartsWith(ArtSpec.TargetsRoot + "/") || path.StartsWith(ArtSpec.IconsRoot + "/"))
             {
-                ApplySprite((TextureImporter)assetImporter, System.IO.Path.GetFileNameWithoutExtension(path));
+                ApplySprite((TextureImporter)assetImporter, System.IO.Path.GetFileNameWithoutExtension(path), path.StartsWith(ArtSpec.IconsRoot + "/"));
             }
         }
 
@@ -43,8 +43,8 @@ namespace DesktopWindowControl.EditorTools
             importer.wrapModeV   = TextureWrapMode.Clamp;
         }
 
-        // 캐릭터·대상 — 달리기·공격(1·2·3타…) 띠는 여러 장('ArtBaker'가 칸을 자른다), 나머지는 한 장
-        private static void ApplySprite(TextureImporter importer, string fileName)
+        // 캐릭터·대상·아이콘 — 달리기·공격(1·2·3타…) 띠는 여러 장('ArtBaker'가 칸을 자른다), 나머지는 한 장
+        private static void ApplySprite(TextureImporter importer, string fileName, bool isIcon)
         {
             ApplyPixelArt(importer);
             importer.textureType         = TextureImporterType.Sprite;
@@ -59,8 +59,8 @@ namespace DesktopWindowControl.EditorTools
                 return;
             }
 
-            // 포트레이트·머리는 가운데, 땅에 서는 것(대상)은 발 기준
-            bool isCrop = fileName.EndsWith("_portrait") || fileName.EndsWith("_head");
+            // 포트레이트·머리·아이콘은 가운데, 땅에 서는 것(대상)은 발 기준
+            bool isCrop = isIcon || fileName.EndsWith("_portrait") || fileName.EndsWith("_head");
             var  settings = new TextureImporterSettings();
             importer.ReadTextureSettings(settings);
             settings.spriteAlignment = (int)(isCrop ? SpriteAlignment.Center : SpriteAlignment.BottomCenter);

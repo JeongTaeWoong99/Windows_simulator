@@ -102,7 +102,7 @@ namespace DesktopWindowControl.EditorTools
 
             Vector2Int cell = ArtSpec.CharacterCell;
 
-            foreach (Sprite? frame in visual.RunFrames.Concat(visual.Attacks.SelectMany(a => a.frames)))
+            foreach (Sprite? frame in visual.IdleFrames.Concat(visual.RunFrames).Concat(visual.Attacks.SelectMany(a => a.frames.Concat(a.effectFrames ?? System.Array.Empty<Sprite>()))))
             {
                 if (frame == null || (int)frame.rect.width != cell.x || (int)frame.rect.height != cell.y)
                 {
@@ -213,6 +213,25 @@ namespace DesktopWindowControl.EditorTools
             if (missing.Count > 0)
             {
                 report.AppendLine($"ℹ️ 목록: 그림 없는 캐릭터 {missing.Count}종 — 대체 그림으로 그린다\n   {string.Join(" · ", missing)}");
+            }
+
+            // 아이콘 — 0번(대체)이 없으면 아이콘 없는 칸이 자리 표시 네모로 남는다
+            if (catalog.GetItemIcon(0) == null)
+            {
+                report.AppendLine($"⚠️ 목록: 자원 대체 아이콘이 없다 — {ArtSpec.ItemIconsRoot}/{ArtSpec.ItemIconPrefix}0.png");
+            }
+
+            if (catalog.GetEquipIcon(0) == null)
+            {
+                report.AppendLine($"⚠️ 목록: 장비 대체 아이콘이 없다 — {ArtSpec.EquipIconsRoot}/{ArtSpec.EquipIconPrefix}0.png");
+            }
+
+            int noItemIcon  = GameTable.ItemTable.All.Count(row => !catalog.HasItemIcon(row.ItemTID));
+            int noEquipIcon = GameTable.EquipTable.All.Count(row => !catalog.HasEquipIcon(row.EquipTID));
+
+            if (noItemIcon + noEquipIcon > 0)
+            {
+                report.AppendLine($"ℹ️ 목록: 아이콘 없는 자원 {noItemIcon}종 · 장비 {noEquipIcon}종 — 0번 아이콘으로 그린다");
             }
         }
 

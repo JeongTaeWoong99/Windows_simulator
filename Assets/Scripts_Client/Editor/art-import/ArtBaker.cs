@@ -43,6 +43,14 @@ namespace DesktopWindowControl.EditorTools
                 {
                     log.AppendLine(Bake(recipe));
                 }
+
+                foreach (IconRecipe recipe in FindRecipes<IconRecipe>())
+                {
+                    log.AppendLine(Bake(recipe));
+                }
+
+                AssetDatabase.SaveAssets();
+                log.AppendLine(ArtCatalogSync.Sync());
             }
             finally
             {
@@ -61,14 +69,17 @@ namespace DesktopWindowControl.EditorTools
             var warnings = new List<string>();
 
             Sprite[]   run     = Resolve(recipe.RunSprites, recipe.RunClip);
-            Sprite[][] attacks = recipe.Attacks.Select(a => Resolve(a.sprites, a.clip)).ToArray();
+            Sprite[][] attacks = recipe.Attacks.Select(a => Trim(Resolve(a.sprites, a.clip), a.trimStart, a.trimEnd)).ToArray();
+            Sprite[][] effects = recipe.Attacks.Select(a => Trim(Resolve(a.effectSprites ?? System.Array.Empty<Sprite>(), a.effectClip), a.trimStart, a.trimEnd)).ToArray();
+            Sprite[][] hits    = recipe.Attacks.Select(a => Resolve(a.hitEffectSprites ?? System.Array.Empty<Sprite>(), a.hitEffectClip)).ToArray();
+            Sprite[]   idle    = recipe.IdleClip != null ? SpritesOf(recipe.IdleClip) : System.Array.Empty<Sprite>();
 
             if (run.Length == 0 || attacks.Length == 0 || attacks.Any(a => a.Length == 0))
             {
                 return $"❌ {key}: 달리기·공격 원본이 비어 있다";
             }
 
-            Sprite anchor = recipe.IdleClip != null ? SpritesOf(recipe.IdleClip).FirstOrDefault() ?? run[0] : run[0];
+            Sprite anchor = idle.Length > 0 ? idle[0] : run[0];
 
             // 기준 프레임의 발을 칸 아래 가운데에 놓는 이동량 — 모든 프레임에 같은 값을 쓴다(원본의 움직임을 지킨다)
             ArtImage   anchorImage = Prepare(anchor, recipe);
@@ -78,6 +89,8 @@ namespace DesktopWindowControl.EditorTools
 
             ArtImage[]   runCells    = run.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray();
             ArtImage[][] attackCells = attacks.Select(a => a.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray()).ToArray();
+            ArtImage[]   idleCells   = idle.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray();
+            ArtImage[][] effectCells = effects.Select(a => a.Select(s => Place(s, recipe, anchorImage, offset, warnings)).ToArray()).ToArray();
             ArtImage     anchorCell  = Place(anchor, recipe, anchorImage, offset, warnings);
 
             int[] hitFrames = attackCells
@@ -96,11 +109,13 @@ namespace DesktopWindowControl.EditorTools
             Fit(anchorCell.Crop(headRect),     HeadCanvas).SavePng(headPath);
 
             Sprite[] runSprites    = ImportStrip(runPath,    $"{key}{ArtSpec.RunSuffix}",    runCells.Length);
+            Sprite[] idleSprites   = BakeStrip(folder, $"{key}{ArtSpec.IdleSuffix}", idleCells);
             Sprite   portrait      = ImportSingle(portraitPath);
             Sprite   head          = ImportSingle(headPath);
 
             // 공격은 연속 공격마다 띠 하나 — '<키>_attack_1' …. 공격 수가 줄었으면 남는 띠를 지운다
             var attackSprites = new Sprite[attackCells.Length][];
+            var effectSprites = new Sprite[attackCells.Length][];
 
             for (int i = 0; i < attackCells.Length; i++)
             {
@@ -108,12 +123,14 @@ namespace DesktopWindowControl.EditorTools
                 string attackPath = $"{folder}/{attackName}.png";
                 Strip(attackCells[i]).SavePng(attackPath);
                 attackSprites[i] = ImportStrip(attackPath, attackName, attackCells[i].Length);
+                effectSprites[i] = BakeStrip(folder, $"{attackName}{ArtSpec.EffectSuffix}", effectCells[i]);
             }
 
             DeleteStaleAttackStrips(folder, key, attackCells.Length);
 
             CharacterVisual visual = LoadOrCreate<CharacterVisual>($"{folder}/{key}.asset");
             var so = new SerializedObject(visual);
+            SetArray(so.FindProperty("idleFrames"), idleSprites);
             SetArray(so.FindProperty("runFrames"), runSprites);
 
             SerializedProperty attacksProperty = so.FindProperty("attacks");
@@ -124,6 +141,8 @@ namespace DesktopWindowControl.EditorTools
                 SerializedProperty motion = attacksProperty.GetArrayElementAtIndex(i);
                 SetArray(motion.FindPropertyRelative("frames"), attackSprites[i]);
                 motion.FindPropertyRelative("hitFrame").intValue = hitFrames[i];
+                SetArray(motion.FindPropertyRelative("effectFrames"), effectSprites[i]);
+                SetArray(motion.FindPropertyRelative("hitEffectFrames"), hits[i]);
             }
 
             so.FindProperty("portrait").objectReferenceValue = portrait;
@@ -135,8 +154,35 @@ namespace DesktopWindowControl.EditorTools
 
             string attackSummary = string.Join(" → ", attackSprites.Select((frames, i) => $"{frames.Length}(타격 {hitFrames[i]})"));
 
-            return $"✅ {key}: 달리기 {runSprites.Length} · 공격 {attackSummary} · " +
+            return $"✅ {key}: 대기 {idleSprites.Length} · 달리기 {runSprites.Length} · 공격 {attackSummary} · " +
                    $"상반신 {portraitRect} · 머리 {headRect}{warn}";
+        }
+
+        // 있어도 없어도 되는 띠 — 대기 '<키>_idle' · 공격 이펙트 '<키>_attack_N_fx'.
+        // 원본이 없으면 띠를 지우고 빈 배열(재생 쪽이 대기는 달리기 첫 프레임으로 대신하고, 이펙트는 그리지 않는다)
+        private static Sprite[] BakeStrip(string folder, string name, ArtImage[] cells)
+        {
+            string path = $"{folder}/{name}.png";
+
+            if (cells.Length == 0)
+            {
+                AssetDatabase.DeleteAsset(path);
+
+                return System.Array.Empty<Sprite>();
+            }
+
+            Strip(cells).SavePng(path);
+
+            return ImportStrip(path, name, cells.Length);
+        }
+
+        // 공격 앞뒤 프레임을 잘라 낸다 — 다 잘려 나가면 빈 배열(굽기가 실패로 알린다)
+        private static Sprite[] Trim(Sprite[] frames, int start, int end)
+        {
+            int skip  = Mathf.Max(0, start);
+            int count = frames.Length - skip - Mathf.Max(0, end);
+
+            return count > 0 ? frames.Skip(skip).Take(count).ToArray() : System.Array.Empty<Sprite>();
         }
 
         // 예전 단일 띠('<키>_attack')와 공격 수보다 큰 번호의 띠를 지운다
@@ -152,6 +198,8 @@ namespace DesktopWindowControl.EditorTools
             for (int i = attackCount + 1; ; i++)
             {
                 string stalePath = $"{folder}/{key}{ArtSpec.AttackSuffix}_{i}.png";
+
+                AssetDatabase.DeleteAsset($"{folder}/{key}{ArtSpec.AttackSuffix}_{i}{ArtSpec.EffectSuffix}.png");
 
                 if (!AssetDatabase.DeleteAsset(stalePath))
                 {
@@ -280,21 +328,27 @@ namespace DesktopWindowControl.EditorTools
             {
                 BackgroundRecipe.LayerGroup group = recipe.Groups[i];
 
-                if (group.sources == null || group.sources.Length == 0)
+                // 아틀라스 스프라이트가 있으면 그것, 없으면 텍스처 통째로
+                ArtImage[] sources = group.spriteSources != null && group.spriteSources.Length > 0
+                    ? group.spriteSources.Where(s => s != null).Select(ArtImage.FromSprite).ToArray()
+                    : (group.sources ?? System.Array.Empty<Texture2D>()).Where(t => t != null).Select(t => ArtImage.FromTexture(t)).ToArray();
+
+                if (sources.Length == 0)
                 {
                     return $"❌ {key}: {i}번 층의 원본이 비어 있다";
                 }
 
-                ArtImage first  = ArtImage.FromTexture(group.sources[0]);
-                var      merged = new ArtImage(first.Width, first.Height);
+                var merged = new ArtImage(sources[0].Width, sources[0].Height);
 
-                foreach (Texture2D source in group.sources)
+                foreach (ArtImage source in sources)
                 {
-                    merged.AlphaOver(ArtImage.FromTexture(source));
+                    merged.AlphaOver(source);
                 }
 
+                int skip = Mathf.Clamp(recipe.SkipBottom, 0, merged.Height - 1);
+
                 ArtImage layer = merged
-                    .Crop(new RectInt(0, 0, merged.Width, Mathf.Min(recipe.CropBottom, merged.Height)))
+                    .Crop(new RectInt(0, skip, merged.Width, Mathf.Min(recipe.CropBottom, merged.Height - skip)))
                     .DownscaleBox(recipe.Downscale);
 
                 stageHeight = layer.Height;
@@ -313,6 +367,36 @@ namespace DesktopWindowControl.EditorTools
                 {
                     texture    = AssetDatabase.LoadAssetAtPath<Texture2D>(path),
                     speedRatio = group.speedRatio,
+                });
+            }
+
+            // 땅 띠 — 배경 원본에 땅이 없을 때 타일을 이어 붙여 맨 앞 층으로
+            if (recipe.GroundTiles.Any(t => t != null))
+            {
+                ArtImage[] tiles = recipe.GroundTiles.Where(t => t != null).Select(ArtImage.FromSprite).ToArray();
+                var        strip = new ArtImage(tiles.Sum(t => t.Width), tiles.Max(t => t.Height));
+                int        x     = 0;
+
+                foreach (ArtImage tile in tiles)
+                {
+                    strip.AlphaOver(tile, x, 0);
+                    x += tile.Width;
+                }
+
+                strip = strip.DownscaleNearest(recipe.GroundDownscale);
+
+                // 층은 모두 무대 높이로 늘려 그리므로, 띠를 바닥에 붙인 무대 높이 그림으로 만든다
+                var ground = new ArtImage(strip.Width, Mathf.Max(stageHeight, strip.Height));
+                ground.AlphaOver(strip, 0, 0);
+
+                string path = $"{folder}/{key}_L{layers.Count}.png";
+                ground.SavePng(path);
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+
+                layers.Add(new BackgroundVisual.Layer
+                {
+                    texture    = AssetDatabase.LoadAssetAtPath<Texture2D>(path),
+                    speedRatio = 1f,
                 });
             }
 
@@ -374,6 +458,41 @@ namespace DesktopWindowControl.EditorTools
             EditorUtility.SetDirty(visual);
 
             return $"✅ {key}: {image.Width}×{image.Height} · 레벨 색 {recipe.LevelTints.Length}";
+        }
+
+        // ── 아이콘 ──────────────────────────────────────────
+
+        // 레시피의 TID마다 스프라이트의 그림 부분만 잘라 'item_<TID>' · 'equip_<TID>'로 쓴다
+        public static string Bake(IconRecipe recipe)
+        {
+            int items  = BakeIcons(recipe.Items,  ArtSpec.ItemIconsRoot,  ArtSpec.ItemIconPrefix);
+            int equips = BakeIcons(recipe.Equips, ArtSpec.EquipIconsRoot, ArtSpec.EquipIconPrefix);
+
+            return $"✅ 아이콘: 자원 {items} · 장비 {equips}";
+        }
+
+        private static int BakeIcons(IconRecipe.Entry[] entries, string root, string prefix)
+        {
+            Directory.CreateDirectory(root);
+
+            int count = 0;
+
+            foreach (IconRecipe.Entry entry in entries)
+            {
+                if (entry.sprite == null || entry.tid <= 0)
+                {
+                    continue;
+                }
+
+                ArtImage raw  = ArtImage.FromSprite(entry.sprite);
+                string   path = $"{root}/{prefix}{entry.tid}.png";
+
+                raw.Crop(raw.OpaqueBounds()).SavePng(path);
+                AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+                count++;
+            }
+
+            return count;
         }
 
         // ── 공통 ────────────────────────────────────────────
