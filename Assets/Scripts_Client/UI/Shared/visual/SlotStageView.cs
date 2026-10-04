@@ -18,7 +18,8 @@ using UnityEngine.UI;
 //   전체 세팅('SlotStageSettings')·캐릭터 개인 조정(멈추는 거리 · 확대 배율)을 플레이 중에 고쳐도 바로 보인다.
 //
 // ■ 그림이 없으면 그리지 않는다
-//   'catalog'가 비어 있으면(그림 저장소를 받지 않은 PC) 무대 자식을 만들지 않고 패널 바탕만 남는다.
+//   목록이 없으면(그림 저장소를 받지 않은 PC) 무대 자식을 만들지 않고 패널 바탕만 남는다.
+//   프리팹의 'catalog'는 비워 둔다 — 메인 저장소가 그림 저장소의 GUID를 가리키지 않게 Resources로 찾는다.
 [RequireComponent(typeof(RectTransform))]
 public class SlotStageView : MonoBehaviour
 {
