@@ -197,8 +197,10 @@ public class WidgetPresenter : MonoBehaviour
             //   병합되면 리스트 끝에 붙는다. 번호 순을 보장해야 할 일이 생기면
             //   그 보장은 캐시 쪽에서 해야 한다 — 여기서 다시 정렬하지 않는다.
             view.transform.SetSiblingIndex(activeCount - 1);
-            view.Bind(slot);
-            view.SetRarity(GameDataLoader.GetCharacterRarity(_data.GetCharacterTid(slot.CharacterId)));
+            int characterTid = _data.GetCharacterTid(slot.CharacterId);
+
+            view.Bind(slot, characterTid);
+            view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
         }
 
         activeSlotText.text = $"가동 {activeCount}/{_data.WorkStationSlots.Count}";

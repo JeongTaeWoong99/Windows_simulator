@@ -64,7 +64,8 @@ public class EquipSlotSource : InventorySlotSource
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
                 "",
-                GameDataLoader.GetEquipRarity(equip.EquipTid)));
+                GameDataLoader.GetEquipRarity(equip.EquipTid),
+                VisualCatalog.EquipIconOf(equip.EquipTid)));
         }
     }
 

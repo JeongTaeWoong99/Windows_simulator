@@ -1,12 +1,13 @@
 using System.Collections.Generic;
 using GameData;
+using UnityEngine;
 
 // 아이콘 칸 하나에 넘기는 완성값 — 등급 바탕 · 글자 · 모서리 수량 · 능력치 칸 ('ItemIconView'가 그린다).
 //
 // ■ 왜 글자인가
-// 아이콘 에셋이 아직 없다(🎨). 그동안은 **이름의 첫 글자**를 등급 바탕 위에 크게 적는다 —
+// 아이콘 그림('VisualCatalog')이 없는 PC·없는 아이템은 **이름의 첫 글자**를 등급 바탕 위에 크게 적는다 —
 // 줄마다 같은 회색 네모가 서 있으면 목록이 한 덩어리로 보이고, 글자만 있어도 눈이 줄을 가른다.
-// 아이콘이 들어오면 'IconKey'로 스프라이트를 찾고 글자는 숨긴다(칸 쪽 한 곳만 바뀐다).
+// 그림이 있으면 'Icon'에 실어 보내고 칸이 글자를 숨긴다.
 //
 // ■ 팩토리는 여기, 그리기는 칸에
 // 자원·장비·캐릭터·골드가 이름·등급을 다른 테이블에서 읽는다. 부르는 화면마다 그 조회를 반복하면
@@ -26,12 +27,16 @@ public readonly struct ItemIconContent
     // ⚠️ 받은 목록을 그대로 쥔다 — 부르는 쪽이 버퍼를 재사용하면 'Bind' 전에 바꾸지 않는다.
     public readonly IReadOnlyList<GlobalRarity>? Sockets;
 
-    public ItemIconContent(GlobalRarity rarity, string glyph, string count, IReadOnlyList<GlobalRarity>? sockets)
+    // 아이콘 그림 — 자원·장비 아이콘 · 캐릭터 상반신. null이면 글자를 적는다.
+    public readonly Sprite? Icon;
+
+    public ItemIconContent(GlobalRarity rarity, string glyph, string count, IReadOnlyList<GlobalRarity>? sockets, Sprite? icon = null)
     {
         Rarity  = rarity;
         Glyph   = glyph;
         Count   = count;
         Sockets = sockets;
+        Icon    = icon;
     }
 
     // 자원 — 수량이 1보다 크면 모서리에 적는다.
@@ -40,7 +45,8 @@ public readonly struct ItemIconContent
             GameDataLoader.GetItemRarity(itemTid),
             GlyphOf(GameDataLoader.GetItemName(itemTid)),
             count > 1L ? $"x{count:N0}" : "",
-            null);
+            null,
+            VisualCatalog.ItemIconOf(itemTid));
 
     // 장비 — 능력치 칸까지 그린다. 옵션을 모르면(null) 칸 수만큼 빈 칸이다.
     public static ItemIconContent ForEquip(int equipTid, IReadOnlyList<int>? optionTids)
@@ -55,7 +61,8 @@ public readonly struct ItemIconContent
             GameDataLoader.GetEquipRarity(equipTid),
             GlyphOf(GameDataLoader.GetEquipName(equipTid)),
             "",
-            grades);
+            grades,
+            VisualCatalog.EquipIconOf(equipTid));
     }
 
     // 캐릭터 — 같은 종류가 여러 명이면 모서리에 명 수를 적는다(우편 첨부).
@@ -64,7 +71,8 @@ public readonly struct ItemIconContent
             GameDataLoader.GetCharacterRarity(characterTid),
             GlyphOf(GameDataLoader.GetCharacterName(characterTid)),
             count > 1 ? $"x{count}" : "",
-            null);
+            null,
+            VisualCatalog.PortraitOf(characterTid));
 
     // 골드 — 등급이 없다. 글자는 'G'.
     public static ItemIconContent ForGold()

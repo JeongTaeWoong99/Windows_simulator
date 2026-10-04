@@ -24,7 +24,7 @@ public class WidgetMiniSlotView : MonoBehaviour
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
-    [SerializeField, Tooltip("캐릭터 그림 자리. 스프라이트는 아직 비어 있고 나중에 교체한다")]
+    [SerializeField, Tooltip("캐릭터 머리 그림 자리 — 'VisualCatalog'의 머리 크롭. 그림이 없으면 자리 표시 네모")]
     private Image characterImage = null!;
 
     [SerializeField, Tooltip("수확 표시가 떠오를 자리. 지금은 빈 문자열로 둔다")]
@@ -52,11 +52,20 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     // 슬롯 스냅샷을 반영한다 (WidgetPresenter가 호출).
     //
-    // ⏸ 캐릭터 그림 교체 지점 — 'slot.CharacterId'로 캐릭터 테이블을 조회해
-    //    'characterImage.sprite'를 갈아 끼우는 자리다. 에셋이 없어 지금은 자리만 잡는다.
-    public void Bind(WorkStationSlotInfo slot)
+    //   characterTid : 배치된 캐릭터의 종류(TID) — 개체 번호가 아니다. 머리 그림을 고른다
+    // 머리 그림('VisualCatalog.HeadOf')이 없으면(그림 저장소 없음) 프리팹의 자리 표시 네모 그대로 둔다.
+    public void Bind(WorkStationSlotInfo slot, int characterTid)
     {
         _slot = slot;
+
+        Sprite? head = VisualCatalog.HeadOf(characterTid);
+
+        if (head != null)
+        {
+            characterImage.sprite         = head;
+            characterImage.preserveAspect = true;
+            characterImage.color          = Color.white;
+        }
 
         progressSlider.value = WorkStationProgress.CalculateProgress(slot);
     }

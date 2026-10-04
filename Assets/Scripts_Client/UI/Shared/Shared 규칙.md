@@ -1,6 +1,6 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-10-05 (`VisualCatalog.Current` — 인벤토리 상반신·위젯 머리·자원·장비 아이콘을 목록에서 찾는다 · T-097) · 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · 슬롯 무대 `SlotStageView`·전체 세팅 `SlotStageSettings` · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
 (`#Inventory Canvas` → `Inventory/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
@@ -38,7 +38,8 @@
 | `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |
 | `theme/UIRichText.cs` | 한 줄 안에서 **라벨은 흐린 색 · 가격은 강조색**으로 가르는 TMP 리치 텍스트 조각. 색은 팔레트 역할에서 읽는다 | Market · Main(우편) |
-| `visual/` (`VisualCatalog`·`CharacterVisual`·`BackgroundVisual`·`TargetVisual`) | **연출 그림** — 캐릭터 프레임·크롭 · 패럴랙스 층 · 대상과 레벨 색. 빠진 그림은 대체로 버틴다. 굽는 쪽은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) | Main(큰 창 슬롯) · 🎨 Widget(머리) · Inventory(몸통) — 아직 붙기 전 |
+| `visual/` (`VisualCatalog`·`CharacterVisual`·`BackgroundVisual`·`TargetVisual`) | **연출 그림** — 캐릭터 프레임·크롭 · 패럴랙스 층 · 대상과 레벨 색. 빠진 그림은 대체로 버틴다(캐릭터 = 대체 그림, 아이콘 = 0번). 화면은 `VisualCatalog.Current`(Resources)로 찾고, 목록이 없는 PC면 자리 표시를 그린다. 굽는 쪽은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) | Main(큰 창 슬롯) · Widget(머리) · Inventory·가챠·목록 줄(상반신·아이콘) |
+| `visual/` (`SlotStageView`·`SlotStageTimeline`·`SlotStageSettings`·`SlotStagePreview`) | **슬롯 무대** — 판정 주기 안의 순간을 그린다(배경만 누적). 시간·거리는 전체 세팅 `Resources/SlotStageSettings`, 캐릭터별 값은 `CharacterVisual`의 개인 조정 칸 — 플레이 중 고쳐도 바로 보인다. 미리보기는 서버 없이 돌려 볼 때 | Main(큰 창 슬롯 `Visible Panel`) |
 | `theme/` (`UIThemeRole`·`UIThemePalette`·`UIThemeColor`) | 🎨 **아트 전 임시 색** — 역할 → 색 표 하나. 아래 "임시 테마" 절 | 모든 캔버스·프리팹 |
 
 > ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").

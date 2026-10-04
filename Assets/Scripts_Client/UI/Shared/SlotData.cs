@@ -1,4 +1,5 @@
 using GameData;
+using UnityEngine;
 
 // 인벤토리 칸 하나에 그릴 완성된 표시값. 공급자('InventorySlotSource')가 만들어 격자에 넘긴다.
 //
@@ -24,11 +25,15 @@ public readonly struct SlotData
     // 조회가 빗나가면 'GlobalRarity.None'이 오고 — 'RarityPalette.Get'이 'Unknown' 색으로 떨어뜨린다.
     public readonly GlobalRarity Rarity;
 
-    public SlotData(long key, string name, string sub, GlobalRarity rarity)
+    // 아이콘 칸 그림 — 자원·장비는 아이콘, 캐릭터는 상반신('VisualCatalog'). null이면 자리 표시 네모 그대로.
+    public readonly Sprite? Icon;
+
+    public SlotData(long key, string name, string sub, GlobalRarity rarity, Sprite? icon = null)
     {
         Key    = key;
         Name   = name;
         Sub    = sub;
         Rarity = rarity;
+        Icon   = icon;
     }
 }

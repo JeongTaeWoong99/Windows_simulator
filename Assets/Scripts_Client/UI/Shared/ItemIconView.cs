@@ -18,7 +18,7 @@ public class ItemIconView : MonoBehaviour
     [SerializeField, Tooltip("등급 바탕. 칸 전체를 덮는다 — 색만 등급에 따라 바뀐다")]
     private Image rarityImage = null!;
 
-    [SerializeField, Tooltip("아이콘 자리. 🎨 에셋이 없어 지금은 어두운 네모다")]
+    [SerializeField, Tooltip("아이콘 자리 — 그림이 있으면 그 그림, 없으면 어두운 네모(프리팹 색) 위에 글자")]
     private Image iconImage = null!;
 
     [SerializeField, Tooltip("아이콘 대신 적는 글자 — 이름의 첫 글자")]
@@ -38,6 +38,8 @@ public class ItemIconView : MonoBehaviour
     // 빈 능력치 칸의 색 — 'SlotView'와 같은 값이다(같은 장비가 두 화면에서 같게 읽혀야 한다).
     private static readonly Color EmptySocketColor = new Color32(0x2A, 0x2A, 0x2A, 0xFF);
 
+    private Color _iconPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
+
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
     private void Awake()
     {
@@ -46,6 +48,8 @@ public class ItemIconView : MonoBehaviour
         this.RequireRef(glyphText,       nameof(glyphText));
         this.RequireRef(countText,       nameof(countText));
         this.RequireRef(statSocketStrip, nameof(statSocketStrip));
+
+        _iconPlaceholderColor = iconImage.color;
 
         if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
         {
@@ -56,11 +60,16 @@ public class ItemIconView : MonoBehaviour
 
     // 완성값을 그린다 (줄 View가 자기 Bind에서 호출).
     //
-    // TODO: 아이콘 에셋이 생기면 'iconImage.sprite'를 채우고 글자를 끈다.
+    // 그림이 있으면 그림을 놓고 글자를 끈다. 없으면 어두운 네모 위에 글자.
     public void Bind(in ItemIconContent content)
     {
-        rarityImage.color = RarityPalette.Get(content.Rarity);
-        glyphText.text    = content.Glyph;
+        bool hasIcon = content.Icon != null;
+
+        rarityImage.color        = RarityPalette.Get(content.Rarity);
+        iconImage.sprite         = content.Icon;
+        iconImage.preserveAspect = hasIcon;
+        iconImage.color          = hasIcon ? Color.white : _iconPlaceholderColor;
+        glyphText.text           = hasIcon ? "" : content.Glyph;
 
         bool hasCount = !string.IsNullOrEmpty(content.Count);
 

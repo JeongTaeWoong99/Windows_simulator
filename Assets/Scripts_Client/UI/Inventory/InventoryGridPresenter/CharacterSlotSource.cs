@@ -54,7 +54,8 @@ public class CharacterSlotSource : InventorySlotSource
                 character.CharacterId,
                 GameDataLoader.GetCharacterName(character.CharacterTid),
                 "",
-                GameDataLoader.GetCharacterRarity(character.CharacterTid)));
+                GameDataLoader.GetCharacterRarity(character.CharacterTid),
+                VisualCatalog.PortraitOf(character.CharacterTid)));
         }
     }
 

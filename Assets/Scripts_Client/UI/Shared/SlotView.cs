@@ -25,7 +25,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("등급 배경. 칸 전체를 덮는다 — 색만 등급에 따라 바뀐다")]
     private Image rarityImage = null!;
 
-    [SerializeField, Tooltip("아이콘. 아이콘 에셋이 아직 없어 지금은 비어 있다")]
+    [SerializeField, Tooltip("아이콘 — 자원·장비 아이콘 · 캐릭터 상반신. 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image itemImage = null!;
 
     [SerializeField, Tooltip("칸 이름 — 아이템 이름 · 캐릭터 이름")]
@@ -124,6 +124,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 아이콘의 원래 색. 딤을 되돌릴 기준값이라 프리팹 값을 한 번만 읽어 둔다.
     private Color _itemBaseColor = Color.white;
+    private Color _itemPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
 
     // 이름·보조 문구의 원래 투명도. 흑백을 걷을 때 돌아갈 값이다 — 1로 되돌리면 테마가 준 투명도를 덮는다.
     private float _nameBaseAlpha = 1f;
@@ -171,7 +172,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
                 $"적성 칸이 {aptitudeValueTexts.Length}개다 — 1차 산업은 {AptitudeCount}종이라 자리가 어긋난다.", this);
         }
 
-        _itemBaseColor = itemImage.color;
+        _itemPlaceholderColor = itemImage.color;
+        _itemBaseColor        = _itemPlaceholderColor;
         _nameBaseAlpha = nameText.alpha;
         _subBaseAlpha  = subText.alpha;
 
@@ -207,8 +209,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 자원은 'ItemTable', 캐릭터는 'CharacterTable', 가챠 보상은 패킷이 등급을 실어 온다.
     // 칸이 한쪽을 골라 버리면 다른 쪽이 조용히 무시된다.
     //
-    // TODO: 아이콘 에셋이 생기면 'itemImage.sprite'를 여기서 채운다.
-    //       등급 이미지가 생기면 'rarityImage'도 색 대신 sprite를 넣는다 ('RarityPalette' 참조).
+    // TODO: 등급 이미지가 생기면 'rarityImage'도 색 대신 sprite를 넣는다 ('RarityPalette' 참조).
     public void Bind(in SlotData data)
     {
         Key           = data.Key;
@@ -216,7 +217,16 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         nameText.text = data.Name;
         subText.text  = data.Sub;
 
+        SetIcon(data.Icon);
         ApplyTint();
+    }
+
+    // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)
+    private void SetIcon(Sprite? icon)
+    {
+        itemImage.sprite         = icon;
+        itemImage.preserveAspect = icon != null;
+        _itemBaseColor           = icon != null ? Color.white : _itemPlaceholderColor;
     }
 
     // 보조 문구를 켜고 끈다 (칸을 만든 화면이 한 번만 부른다).
@@ -464,6 +474,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         nameText.text  = "";
         subText.text   = "";
 
+        SetIcon(null);
         ApplyTint();
 
         SetAptitudes(null); // 스트립을 끄고 보조 문구 자리를 원래대로 돌려준다

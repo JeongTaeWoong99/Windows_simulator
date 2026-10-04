@@ -30,7 +30,8 @@ public class ResourceSlotSource : InventorySlotSource
                 item.ItemId,
                 GameDataLoader.GetItemName(item.ItemId),
                 $"{item.Count} 개", // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
-                GameDataLoader.GetItemRarity(item.ItemId)));
+                GameDataLoader.GetItemRarity(item.ItemId),
+                VisualCatalog.ItemIconOf(item.ItemId)));
         }
     }
 

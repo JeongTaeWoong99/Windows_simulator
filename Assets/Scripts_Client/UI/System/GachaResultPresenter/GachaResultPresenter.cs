@@ -308,9 +308,9 @@ public class GachaResultPresenter : MonoBehaviour
 
             slots.Add(key.Kind switch
             {
-                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid)),
-                'E' => new SlotData(key.Tid, GameDataLoader.GetEquipName(key.Tid),     count, GameDataLoader.GetEquipRarity(key.Tid)),
-                _   => new SlotData(key.Tid, GameDataLoader.GetItemName(key.Tid),      count, GameDataLoader.GetItemRarity(key.Tid)),
+                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid), VisualCatalog.PortraitOf(key.Tid)),
+                'E' => new SlotData(key.Tid, GameDataLoader.GetEquipName(key.Tid),     count, GameDataLoader.GetEquipRarity(key.Tid),     VisualCatalog.EquipIconOf(key.Tid)),
+                _   => new SlotData(key.Tid, GameDataLoader.GetItemName(key.Tid),      count, GameDataLoader.GetItemRarity(key.Tid),      VisualCatalog.ItemIconOf(key.Tid)),
             });
         }
 
@@ -352,7 +352,15 @@ public class GachaResultPresenter : MonoBehaviour
             _                          => GameDataLoader.GetItemName(tid),
         };
 
-        return new SlotData(tid, name, count.ToString("N0"), rarity);
+        Sprite? icon = reward.RewardType switch
+        {
+            EGachaRewardType.Character => VisualCatalog.PortraitOf(tid),
+            EGachaRewardType.Equip     => VisualCatalog.EquipIconOf(tid),
+            EGachaRewardType.Gold      => null,
+            _                          => VisualCatalog.ItemIconOf(tid),
+        };
+
+        return new SlotData(tid, name, count.ToString("N0"), rarity, icon);
     }
 
     // 'index'번째 칸을 돌려준다. 아직 없으면 그때 만든다 (OnGachaCompleted에서 호출)

@@ -29,9 +29,9 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
-    // 임시 — 초상화 스프라이트가 없어 흰 네모만 둔다. 엑셀(CharacterTable) · 기획 · 리소스가 나오면
-    // 여기에 캐릭터별 sprite를 넣는다(일감 'T-054'). 그때까지 코드는 이 필드를 건드리지 않는다.
-    [SerializeField, Tooltip("캐릭터 초상화 (임시 — 흰 네모)")]
+    // 캐릭터 상반신 — 인벤토리 캐릭터 칸과 같은 그림('VisualCatalog.PortraitOf', TID로 찾는다).
+    // 그림 저장소가 없는 PC면 null이라 프리팹의 자리 표시 네모를 그대로 둔다.
+    [SerializeField, Tooltip("캐릭터 상반신 — 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image portraitImage = null!;
 
     [SerializeField, Tooltip("캐릭터 이름")]
@@ -70,6 +70,8 @@ public class CharacterStateRowView : MonoBehaviour
     // 이 줄이 그리고 있는 캐릭터 개체 번호. 미바인딩이면 0.
     public long CharacterId { get; private set; }
 
+    private Color _portraitPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
+
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 패널이 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
@@ -80,6 +82,8 @@ public class CharacterStateRowView : MonoBehaviour
         this.RequireRef(raceText,      nameof(raceText));
         this.RequireRef(assignButton,  nameof(assignButton));
         this.RequireRef(assignLabel,   nameof(assignLabel));
+
+        _portraitPlaceholderColor = portraitImage.color;
 
         if (aptitudeCellImages.Length != AptitudeLabel.Count || aptitudeValueTexts.Length != AptitudeLabel.Count)
         {
@@ -94,10 +98,21 @@ public class CharacterStateRowView : MonoBehaviour
     // 이 줄이 그릴 캐릭터를 정한다 ('WorkStationSelectPresenter'가 호출).
     //   characterId : 서버가 발급한 개체 번호. 배치 요청에 그대로 실린다
     //   displayName : 보유 목록을 거쳐 얻은 표시 이름
-    public void Bind(long characterId, string displayName)
+    //   characterTid : 종류(TID) — 상반신 그림을 고른다. 개체 번호가 아니다
+    public void Bind(long characterId, string displayName, int characterTid)
     {
         CharacterId   = characterId;
         nameText.text = displayName;
+
+        SetPortrait(VisualCatalog.PortraitOf(characterTid));
+    }
+
+    // 상반신 — 그림이 있으면 제 색(흰색 곱) · 비율 유지, 없으면 자리 표시 네모 (Bind · Clear에서 호출)
+    private void SetPortrait(Sprite? portrait)
+    {
+        portraitImage.sprite         = portrait;
+        portraitImage.preserveAspect = portrait != null;
+        portraitImage.color          = portrait != null ? Color.white : _portraitPlaceholderColor;
     }
 
     // 줄 바탕을 이 캐릭터의 등급 색으로 칠한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
@@ -151,5 +166,7 @@ public class CharacterStateRowView : MonoBehaviour
         CharacterId           = 0;
         nameText.text         = "";
         backgroundImage.color = RarityPalette.Unknown;
+
+        SetPortrait(null);
     }
 }

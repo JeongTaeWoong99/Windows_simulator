@@ -145,15 +145,15 @@ public class AuctionModel : MonoService<AuctionModel>
     }
 
     // 응답 이벤트 — 상태를 먼저 고친 뒤 결과 코드와 함께 쏜다. 받은 Presenter가 대기를 닫고 다시 그린다.
-    public event Action<EResultCode>?         MarketItemsCompleted;
-    public event Action<EResultCode>?         MarketPriceCompleted;
-    public event Action<S_MarketBuyResponse>? MarketBuyCompleted; // 산 수량·낸 금액을 알림에 쓴다
-    public event Action<EAuctionKind, EResultCode>? SearchCompleted; // 축 · 결과 코드 — 자기 축이 아니면 무시한다
-    public event Action<EResultCode>?         BuyCompleted;
-    public event Action<EResultCode, long>?   RegisterCompleted;  // 결과 코드 · 낸 등록비
-    public event Action<EResultCode>?         CancelCompleted;
-    public event Action<EResultCode>?         MyListingsCompleted;
-    public event Action?                      MyListingsNewsChanged; // 'HasMyListingsNews'가 바뀜 — 탭 배지
+    public event Action<EResultCode>?               MarketItemsCompleted;
+    public event Action<EResultCode>?               MarketPriceCompleted;
+    public event Action<S_MarketBuyResponse>?       MarketBuyCompleted;   // 산 수량·낸 금액을 알림에 쓴다
+    public event Action<EAuctionKind, EResultCode>? SearchCompleted;      // 축 · 결과 코드 — 자기 축이 아니면 무시한다
+    public event Action<EResultCode>?               BuyCompleted;
+    public event Action<EResultCode, long>?         RegisterCompleted;    // 결과 코드 · 낸 등록비
+    public event Action<EResultCode>?               CancelCompleted;
+    public event Action<EResultCode>?               MyListingsCompleted;
+    public event Action?                            MyListingsNewsChanged; // 'HasMyListingsNews'가 바뀜 — 탭 배지
 
     // 참조 확보 → 구독 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다.
