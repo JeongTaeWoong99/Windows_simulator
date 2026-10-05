@@ -40,9 +40,9 @@
     "Description": "1인 판매 중 매물 상한"
   },
   {
-    "Name": "AuctionPriceBandMultiplier",
-    "Value": 10,
-    "Description": "단가 상한 = 하한(BasePrice) × 이 값"
+    "Name": "AuctionMaxUnitPrice",
+    "Value": 10000000000000,
+    "Description": "경매 단가 상한(10조) — 하한은 즉시 판매가. 단가×수량×수수료가 long을 넘지 않게"
   },
   {
     "Name": "AuctionListingFeePermille",

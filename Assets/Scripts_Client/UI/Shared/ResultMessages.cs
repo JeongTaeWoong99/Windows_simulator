@@ -50,7 +50,7 @@ public static class ResultMessages
         // 경매장·거래소 (1000~1015). 뜻은 'PacketEnum.cs' 주석.
         EResultCode.AuctionUnavailable     => "경매장이 점검 중입니다. 잠시 뒤 다시 시도해 주세요.",
         EResultCode.AuctionInvalidRequest  => "거래 요청이 올바르지 않습니다.",
-        EResultCode.AuctionPriceOutOfBand  => $"경매 단가는 즉시 판매가 ~ {AuctionModel.PriceBandMultiplier:N0}배 사이로 정해 주세요.",
+        EResultCode.AuctionPriceOutOfBand  => $"경매 단가는 즉시 판매가 이상, {AuctionModel.FormatMaxUnitPrice()} G 이하로 정해 주세요.",
         EResultCode.AuctionListingLimit    => "판매 중인 매물이 너무 많습니다. 정리한 뒤 다시 등록해 주세요.",
         EResultCode.AuctionEquipped        => "착용 중인 장비는 올릴 수 없습니다. 먼저 벗겨 주세요.",
         EResultCode.AuctionNotFound        => "없는 매물입니다.",

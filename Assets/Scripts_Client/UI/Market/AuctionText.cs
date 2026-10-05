@@ -275,7 +275,7 @@ public static class AuctionText
     private static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
 
-    // 가격 기준 묶음 — 즉시 판매가(정해진 값) · 경매 등록가(그 값 ~ x10). 두 판매 방식을 한눈에 비교하게 둔다.
+    // 가격 기준 묶음 — 즉시 판매가(정해진 값) · 경매 등록가(그 값 이상). 두 판매 방식을 한눈에 비교하게 둔다.
     private static void AddPriceRules(TooltipContent content, int basePrice)
     {
         content.Header("가격 기준")

@@ -6,6 +6,8 @@ namespace WSGameServer;
 /// </summary>
 public class AuctionRulesTest
 {
+    public AuctionRulesTest() => GameTableFixture.EnsureLoaded();
+
     [Fact]
     public void 하한은_기준가다()
     {
@@ -19,17 +21,17 @@ public class AuctionRulesTest
     }
 
     [Fact]
-    public void 상한은_하한의_10배다()
+    public void 상한은_기준가와_무관한_10조다()
     {
-        // 37 × 10 = 370
-        AuctionRules.MaxUnitPrice(37).ShouldBe(370);
+        AuctionRules.MaxUnitPrice.ShouldBe(10_000_000_000_000);
     }
 
     [Theory]
     [InlineData(36, false)]
     [InlineData(37, true)]
-    [InlineData(370, true)]
-    [InlineData(371, false)]
+    [InlineData(371, true)]
+    [InlineData(10_000_000_000_000, true)]
+    [InlineData(10_000_000_000_001, false)]
     public void 밴드_경계를_포함한다(long unitPrice, bool inBand)
     {
         AuctionRules.IsInBand(37, unitPrice).ShouldBe(inBand);

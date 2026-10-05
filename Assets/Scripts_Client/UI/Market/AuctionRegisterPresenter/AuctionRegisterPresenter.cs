@@ -23,7 +23,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 두 가지 파는 법을 화면이 구분해 말한다 (2026-09-30)
 //   즉시 판매(인벤토리 [판매]) : 즉시 판매가에 바로 판다 — 값이 정해져 있다.
-//   경매 등록(여기)            : 단가를 직접 정한다 — 즉시 판매가 ~ 그 x10 사이(가격 밴드 · 시세 조작 대응, 기획 거래 3.4).
+//   경매 등록(여기)            : 단가를 직접 정한다 — 즉시 판매가 이상이면 얼마든(상한 10조 · 자율 경제, 2026-10-05).
 //   그래서 줄·힌트·확인 창마다 '즉시 판매가'와 '경매 등록가 범위'를 나란히 적는다.
 //   범위 밖 값은 입력칸이 고친다 — 위로 넘치면 바로, 아래로 모자라면 입력이 끝날 때('AuctionInput').
 //   등록비(총액의 1%, 최소 1)는 등록 순간 빠진다. 취소하면 돌려받지 못하고, 만료되면 돌려받는다.
@@ -295,7 +295,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     {
         if (_selectedKey != 0L)
         {
-            AuctionInput.ClampMax(priceInput, AuctionModel.MaxUnitPrice(GetBasePrice()));
+            AuctionInput.ClampMax(priceInput, AuctionModel.MaxUnitPrice);
         }
 
         RefreshForm();
@@ -598,7 +598,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         return
             $"<b>경매 등록</b>  {UIRichText.Label("단가를 직접 정해 올립니다 · 팔리면 대금이 우편으로 옵니다")}\n" +
-            UIRichText.Small($"{UIRichText.Label("단가 범위")} 즉시 판매가 ~ {AuctionModel.PriceBandMultiplier:N0}배{UIRichText.Dot}{UIRichText.Label("등록비")} {feePercent} (취소하면 돌려받지 못함)") + "\n" +
+            UIRichText.Small($"{UIRichText.Label("단가 범위")} 즉시 판매가 이상 (상한 {AuctionModel.FormatMaxUnitPrice()} G){UIRichText.Dot}{UIRichText.Label("등록비")} {feePercent} (취소하면 돌려받지 못함)") + "\n" +
             $"<b>즉시 판매</b>  {UIRichText.Label("인벤토리 [판매] — 정해진 값(즉시 판매가)에 바로 팝니다")}";
     }
 
@@ -662,7 +662,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return isCountValid
             && long.TryParse(priceInput.text, out unitPrice)
             && unitPrice >= AuctionModel.MinUnitPrice(basePrice)
-            && unitPrice <= AuctionModel.MaxUnitPrice(basePrice);
+            && unitPrice <= AuctionModel.MaxUnitPrice;
     }
 
     #endregion

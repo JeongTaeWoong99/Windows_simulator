@@ -34,8 +34,8 @@ namespace GameData
         /// <summary>1인 판매 중 매물 상한</summary>
         public static long AuctionMaxActiveListings => GameTable.ConstantsTable["AuctionMaxActiveListings"].Value;
 
-        /// <summary>단가 상한 = 하한(BasePrice) × 이 값</summary>
-        public static long AuctionPriceBandMultiplier => GameTable.ConstantsTable["AuctionPriceBandMultiplier"].Value;
+        /// <summary>경매 단가 상한(10조) — 하한은 즉시 판매가. 단가×수량×수수료가 long을 넘지 않게</summary>
+        public static long AuctionMaxUnitPrice => GameTable.ConstantsTable["AuctionMaxUnitPrice"].Value;
 
         /// <summary>등록비 = 총액 × 이 값(천분율, 최소 1) — 만료면 환급</summary>
         public static long AuctionListingFeePermille => GameTable.ConstantsTable["AuctionListingFeePermille"].Value;

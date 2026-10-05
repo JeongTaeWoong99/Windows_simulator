@@ -21,7 +21,7 @@ using MikaProtocol;
 // ■ 가격 규칙은 표시용이다
 // 두 가지 파는 법을 화면이 구분해 말하도록 식을 여기 모은다 — 판정은 서버가 한다.
 //   즉시 판매(인벤토리): 즉시 판매가(BasePrice x SellRatePermille)에 바로 판다. 값이 정해져 있다.
-//   경매 등록(경매장)  : 단가를 직접 정한다. 즉시 판매가 ~ 그 x10 사이(가격 밴드 — 기획 거래 3.4, 2026-09-30 유지 확정).
+//   경매 등록(경매장)  : 단가를 직접 정한다. 즉시 판매가 이상이면 얼마든(상한 10조 — 자율 경제, 2026-10-05 · 옛 x10 밴드 폐지).
 // 수치는 'Constants.xlsx'의 Auction*·Market* 행 — 코드에 박지 않는다.
 //
 // ■ 내 매물 표시
@@ -583,14 +583,20 @@ public class AuctionModel : MonoService<AuctionModel>
     // 경매 단가 하한 — 즉시 판매가가 곧 바닥이다. 서버 'AuctionRules.MinUnitPrice'와 같은 식(최소 1).
     public static long MinUnitPrice(int basePrice) => Math.Max(basePrice, 1L);
 
-    // 경매 단가 상한 — 하한 x 배수(가격 밴드 · 시세 조작 대응 — 기획 거래 3.4). 서버 'AuctionRules.MaxUnitPrice'와 같다.
-    public static long MaxUnitPrice(int basePrice) => MinUnitPrice(basePrice) * PriceBandMultiplier;
+    // 경매 단가 상한 — 기준가와 무관한 절대값(10조 · 자율 경제 2026-10-05). 서버 'AuctionRules.MaxUnitPrice'와 같다.
+    public static long MaxUnitPrice => Constants.AuctionMaxUnitPrice;
 
-    // 가격 밴드 배수 — 안내 문구의 'x10'에 쓴다.
-    public static long PriceBandMultiplier => Constants.AuctionPriceBandMultiplier;
+    // 경매 등록가 범위 문구 — "12 G 이상". 상한은 터무니없는 값을 막는 선이라 줄마다 적지 않는다(안내 문구에 한 번).
+    // 등록 화면·인벤토리 툴팁이 같은 모양으로 말한다.
+    public static string FormatBand(int basePrice) => $"{MinUnitPrice(basePrice):N0} G 이상";
 
-    // 경매 등록가 범위 문구 — "12 ~ 120 G". 등록 화면·인벤토리 툴팁이 같은 모양으로 말한다.
-    public static string FormatBand(int basePrice) => $"{MinUnitPrice(basePrice):N0} ~ {MaxUnitPrice(basePrice):N0} G";
+    // 상한 문구 — "10조". 조 단위로 나누어떨어지면 조로, 아니면 숫자 그대로 적는다.
+    public static string FormatMaxUnitPrice()
+    {
+        const long Jo = 1_000_000_000_000L;
+
+        return MaxUnitPrice % Jo == 0 ? $"{MaxUnitPrice / Jo:N0}조" : MaxUnitPrice.ToString("N0");
+    }
 
     // 등록비 비율(천분율) — 안내 문구의 '1%'에 쓴다.
     public static long ListingFeePermille => Constants.AuctionListingFeePermille;

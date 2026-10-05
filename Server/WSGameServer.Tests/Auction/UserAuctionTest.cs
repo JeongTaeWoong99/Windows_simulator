@@ -116,7 +116,7 @@ public class UserAuctionTest
 
     [Theory]
     [InlineData(9)]     // 하한 10 미만
-    [InlineData(101)]   // 상한 100 초과
+    [InlineData(10_000_000_000_001)]   // 상한 10조 초과 — 기준가와 무관한 절대 상한
     public void 가격_밴드_밖이면_아무것도_바꾸지_않는다(long unitPrice)
     {
         var (user, b) = NewUser();
