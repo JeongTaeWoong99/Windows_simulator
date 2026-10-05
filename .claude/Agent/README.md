@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-06 특성 레벨 치트 SetTraitLevel (T-115 · #51)](2026-10-06-trait-level-cheat.md) — `#server` `#test` 조건·포인트 없이 특성 레벨 지정 · 결과는 특성 목록 재전송
 - [2026-10-06 캐릭터 레벨 효과를 작업속도 가산으로 — 적성 포인트 철거 (T-003 · #35)](2026-10-06-level-speed-add.md) — `#server` `#data` `#design` `SpeedAddPermille` 총량값 · 레벨업 시 정산 뒤 속도 재계산
 - [2026-10-05 그림을 비공개 저장소로 분리 (T-121)](2026-10-05-art-repo-split.md) — `#client` `#art` `#infra` Windows_simulator_Art · 같은 자리 독립 저장소 · 메인 그림 GUID 0개 · 경로 260자
 - [2026-10-04 그림 가공 파이프라인 · 슬롯 연출 임시 그림 · 게임UI 2.5 새 방향 (T-120 · T-097)](2026-10-04-art-bake-pipeline.md) — `#client` `#art` `#editor` 원본→규격 굽기 · 고정 모션 길이

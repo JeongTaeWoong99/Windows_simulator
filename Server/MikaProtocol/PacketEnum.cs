@@ -133,6 +133,7 @@ namespace MikaProtocol
         GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
         GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업·특성 포인트까지 실제 경로와 같다
         SendMail         = 10, // Arg1 = MailTemplateTID · Arg2 = 받는 UID(0이면 전체 우편 — 템플릿의 PeriodDays 동안)
+        SetTraitLevel    = 11, // Arg1 = UserTraitTID(0이면 전 특성) · Arg2 = 레벨 — 조건·포인트 없이 정한다. 기본~최대로 자른다
     }
 
     public enum EItemChangeKind : byte

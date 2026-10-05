@@ -20,7 +20,12 @@ public partial class User
                 continue;
             }
 
-            _traitLevels[row.user_trait_tid] = Math.Clamp(row.level, trait.BaseLevel, trait.MaxLevel);
+            // 치트로 내린 특성은 기본 레벨 행으로 남는다 — 담지 않아야 목록이 내리기 직후와 같다.
+            var level = Math.Clamp(row.level, trait.BaseLevel, trait.MaxLevel);
+            if (level > trait.BaseLevel)
+            {
+                _traitLevels[row.user_trait_tid] = level;
+            }
         }
     }
 
@@ -35,7 +40,7 @@ public partial class User
         return _traitCatalog.TryGet(userTraitTid, out var trait) ? trait.BaseLevel : 0;
     }
 
-    /// <summary>특성 레벨 스냅샷을 보낸다(로그인 직후).</summary>
+    /// <summary>특성 레벨 스냅샷을 보낸다(로그인 직후 · 레벨 치트 뒤). 목록에 없는 특성은 기본 레벨이다.</summary>
     public void SendTraitList()
     {
         Send(new S_UserTraitListResponse
@@ -101,6 +106,49 @@ public partial class User
             ServerLog.Warn("특성", $"거절 — {reason}. Uid={Uid} UserTraitTID={userTraitTid}");
             Send(new S_UserTraitLearnResponse { Result = code, UserTraitTID = userTraitTid, Level = level });
         }
+    }
+
+    /// <summary>조건·포인트 없이 특성 레벨을 정한다(치트 전용). 특성마다 기본~최대 레벨로 자르고, 바뀐 개수를 돌려준다.</summary>
+    private int SetTraitLevels(IReadOnlyList<UserTraitTableRow> traits, int level, DateTime now)
+    {
+        var changes = traits
+            .Select(trait => (Trait: trait, Next: Math.Clamp(level, trait.BaseLevel, trait.MaxLevel)))
+            .Where(c => c.Next != GetTraitLevel(c.Trait.UserTraitTID))
+            .ToList();
+
+        // 정상 경로(TryLearnTrait)와 같다 — 레벨을 바꾸기 전에 정산해야 이전 구간에 소급되지 않는다.
+        if (changes.Any(c => c.Trait.EffectType is UserTraitEffect.SpeedAdd or UserTraitEffect.YieldAdd))
+        {
+            SettleWorkStation(now);
+        }
+
+        foreach (var (trait, next) in changes)
+        {
+            if (next == trait.BaseLevel)
+            {
+                _traitLevels.Remove(trait.UserTraitTID);
+            }
+            else
+            {
+                _traitLevels[trait.UserTraitTID] = next;
+            }
+
+            PostDBTask(new SaveUserTraitRepository(this, trait.UserTraitTID, next));
+            ServerLog.Info("특성", $"치트 Lv{next} Uid={Uid} UserTraitTID={trait.UserTraitTID}");
+        }
+
+        if (changes.Any(c => c.Trait.EffectType == UserTraitEffect.SpeedAdd))
+        {
+            ApplyWorkStationSpeed(notify: true);
+        }
+
+        // 여러 특성이 한꺼번에 바뀌고 내려가기도 해서 Learn 응답 대신 스냅샷 전체를 보낸다.
+        if (changes.Count > 0)
+        {
+            SendTraitList();
+        }
+
+        return changes.Count;
     }
 
     /// <summary>속도 특성의 가산 합(천분율). 대상 산업이 <c>None</c>이면 전 산업에 붙는다.</summary>

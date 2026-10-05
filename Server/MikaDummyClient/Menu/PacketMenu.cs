@@ -230,7 +230,8 @@ namespace MikaDummyClient
         {
             Console.WriteLine("명령: 1=GiveGold(Arg1=금액, 음수면 차감) 3=GiveItem(TID, 개수) " +
                               "4=GiveCharacter(TID, 장수) 5=GiveCharacterExp(개체Id, 경험치) 6=Settle(판정 횟수) 7=Unlock(UnlockTID) " +
-                              "8=GiveEquip(EquipTID) 9=GiveAccountExp(경험치) 10=SendMail(템플릿TID, 받는 UID — 0이면 전체)");
+                              "8=GiveEquip(EquipTID) 9=GiveAccountExp(경험치) 10=SendMail(템플릿TID, 받는 UID — 0이면 전체) " +
+                              "11=SetTraitLevel(특성TID — 0이면 전부, 레벨)");
             Console.Write("Command > ");
             if (!byte.TryParse(Console.ReadLine(), out byte command))
             {

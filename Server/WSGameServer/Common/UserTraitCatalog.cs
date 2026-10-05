@@ -18,6 +18,8 @@ public sealed class UserTraitCatalog : Singleton<UserTraitCatalog>
 
     public int Count => _byTid.Count;
 
+    public IEnumerable<UserTraitTableRow> All => _byTid.Values;
+
     /// <summary>속도 가산 특성 전부. 슬롯 속도를 낼 때 레벨만큼 더한다.</summary>
     public IReadOnlyList<UserTraitTableRow> SpeedAdds => _speedAdds;
 
