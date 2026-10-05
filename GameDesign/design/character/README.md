@@ -1,7 +1,7 @@
 # 08. 캐릭터 (Character)
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md) · 전제: [`작업슬롯`](../workslot/README.md)
-> 상태: **적성·장비·장비 인챈트·시작 캐릭터·획득 경로(가챠 — 캐릭터·장비)·경험치 획득·레벨 곡선·레벨 효과(적성 포인트) 확정**
+> 상태: **적성·장비·장비 인챈트·시작 캐릭터·획득 경로(가챠 — 캐릭터·장비)·경험치 획득·레벨 곡선·레벨 효과(작업속도 가산) 확정**
 > **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`산업레벨`](../gathering/산업레벨.md) · [`아이템`](../item/README.md) · [`자원채취`](../gathering/README.md) · [`작업슬롯`](../workslot/README.md)
 >   [`진행 및 성장`](../progression/README.md) · [`특성`](../trait/README.md) · [`해금`](../unlock/README.md)
 
@@ -20,7 +20,7 @@
 | 1 | **캐릭터 스탯 = 산업 적성** | 별도 스탯을 두지 않는다. 5개 산업 각각에 대한 적성(0~10)이 전부다 |
 | 2 | **적성 = 기본 작업속도** | 적성을 `WorkSpeedTable`로 변환한 값이 속도 계산의 출발점이다 |
 | 3 | **적성 0 = 배치 불가** | 그 산업을 다루지 못한다. 배치 요청을 서버가 거절한다 → 2.2 |
-| 4 | **적성 = 기본값 + 찍은 포인트** | 기본값은 TID별 고정(`CharacterTable`), 개체는 **찍은 보너스만** 든다. **클라이언트에 내려가는 값은 서버가 합산한다** → 5.4 · 7장 |
+| 4 | **적성 = TID별 고정값** | `CharacterTable` 값 그대로다. 레벨·장비는 적성을 바꾸지 않고 속도식의 **가산** 항으로만 기여한다. **클라이언트에 내려가는 값은 서버가 준다** → 5.4 · 7장 |
 | 5 | **슬롯당 1명** | 여러 명을 한 슬롯에 넣지 않는다 |
 | 6 | **장비 부위 = 무기1 · 장신구2 · 보석1** | 4칸. 효과는 속도식의 **가산** 항 — **대상 산업 지정(None=전 산업) + 가산 천분율.** 장비는 적성을 바꾸지 않는다. 서버 구현 완료(2026-09-17 · T-002) · **정의 69종 입력(2026-09-19)** → 1.3. **획득 경로 = 장비 뽑기**(무기·장신구·보석 풀 3개 → 5.1.1). **장비 개체마다 인챈트**(등급 하나 + 장비 등급별 칸 1~3개 — 속도 가산·캐릭터 경험치)가 붙는다 → 1.4 |
 | 7 | **계정(섬주인)과 분리** | 섬주인은 캐릭터가 아니다. 배치되지 않는다 → 3장 |
@@ -28,7 +28,7 @@
 | 9 | **획득 경로 = 가챠** | 골드를 내고 캐릭터 풀을 뽑는다 → 5.1 |
 | 10 | **등급 = `GlobalRarity` 재사용** | 아이템과 같은 6단계 축. **등급이 곧 최고 적성의 상한**이다 → 1.2 |
 | 11 | **경험치 = 판정 1회마다 획득** | 배치된 슬롯에서 판정이 성립할 때마다 그 `(산업, 레벨)`의 `ExpPerJudge`만큼. **만렙 100**, 곡선은 `CharacterLevelTable` → 5.2 |
-| 12 | **레벨 효과 = 적성 포인트** | **10레벨마다 1포인트.** 플레이어가 원할 때 산업 하나의 적성을 +1. **캐릭터·산업별 상한** 안에서만, 0도 1로, **되돌리기 없음** → 5.4 |
+| 12 | **레벨 효과 = 작업속도 가산** | 레벨이 오르면 **자동으로** 빨라진다 — `CharacterLevelTable.SpeedAddPermille`(초안 레벨당 +1%). 고를 것·되돌릴 것이 없다 (2026-10-06 · [이슈 #35](https://github.com/JeongTaeWoong99/Windows_simulator/issues/35)) → 5.4 |
 
 > **적성이 있어서 배치가 퍼즐이 된다.** 슬롯 3개에 캐릭터 5명이면 "누구를 어디에"가
 > 실제 선택이 된다. 적성이 없으면 스탯 높은 순으로 채우면 끝이라 배치에 의사결정이 없다.
@@ -41,10 +41,10 @@
 | --- | --- | --- |
 | `CharacterTID` | 캐릭터 **종류** — 이름·적성·종족 | 엑셀 `Character.xlsx` |
 | `character_id` | 캐릭터 **개체** — DB 발급 PK | `t_character` |
-| 개체가 갖는 것 | **성장의 입력(레벨·경험치)** 과 **찍은 적성 보너스**(산업별) | `t_character` |
+| 개체가 갖는 것 | **성장의 입력(레벨·경험치)** | `t_character` |
 
 **기본 적성을 DB에 저장하지 않는다.** 저장하면 엑셀에서 밸런스를 조정해도 DB가 낡은 값을 붙든다.
-DB에 남는 것은 플레이어가 **찍은 보너스**뿐이고, 실효 적성은 로그인·조회 때마다 `기본값 + 보너스`로 합산한다 → 5.4.
+DB에 남는 것은 **레벨·경험치**뿐이고, 레벨 가산은 조회 때마다 `CharacterLevelTable`에서 읽는다 → 5.4.
 
 **중복은 개체를 늘리는 것으로 끝난다 (2026-09-02 확정).** 조각·강화로 바꾸지 않고,
 **보유 정원도 두지 않는다.** 둘 다 되돌리기 어려운 결정이 아니므로 가장 단순한 쪽에서 시작한다 —
@@ -76,8 +76,7 @@ DB에 남는 것은 플레이어가 **찍은 보너스**뿐이고, 실효 적성
 > ⚠️ **수치는 전부 테스트용이다.** 등급별 확률·적성 곡선은 희귀도 분포(T-008)·
 > 회당 산출(T-009)이 정해진 뒤에 다시 잡는다.
 
-> **이 표는 기본 적성의 가이드다.** 성장(적성 포인트)으로 닿을 수 있는 상한은 등급이 아니라
-> **캐릭터·산업마다 엑셀 컬럼(`FarmingCap` …)** 이 정한다 → 5.4. 등급표는 그 컬럼을 채울 때의 기준선이다.
+> **이 표는 적성의 가이드다.** 적성은 성장으로 바뀌지 않는다 — 레벨은 속도 가산으로만 기여한다 → 5.4.
 
 ### 1.3 장비 사다리 (2026-09-19 입력 · 69종)
 
@@ -359,88 +358,38 @@ enum은 **뒤에만 추가한다**.
 > (`Character.GainExp` · `CharacterLevelCatalog`), 확정값을 `t_character`에 저장한 뒤 `S_CharacterSyncResponse`로 그 개체를 밀어 준다.
 > ⏸ **클라이언트는 아직 이 푸시를 화면에 반영하지 않는다** — `PlayerDataModel` 배선은 클라 몫이다(T-003).
 
-### 5.4 성장 → 적성 포인트 (2026-09-17 확정)
+### 5.4 성장 → 작업속도 가산 (2026-10-06 확정)
 
-**캐릭터 레벨이 올리는 것은 적성이다.** 레벨은 직접 속도를 바꾸지 않고 **적성 포인트**를 준다.
-플레이어가 포인트를 **원하는 산업에, 원하는 때에** 찍어 그 산업의 적성을 +1 올린다.
-속도식(2장)은 그대로다 — 적성이 오르면 `WorkSpeedTable` 변환값이 따라 오른다.
+**캐릭터 레벨이 올리는 것은 작업속도다.** 레벨이 오르면 **자동으로** 그 캐릭터가 빨라진다.
+적성은 그대로다 — 레벨은 속도식(2장)의 **가산** 항으로 들어간다.
 
-#### 규칙
+```
+속도 = 적성기본값(WorkSpeedTable) × (1 + 장비 + 특성 + 레벨) × 전역배수
+```
 
 | 항목 | 확정 내용 |
 | --- | --- |
-| 포인트 획득 | **10레벨마다 1포인트** — Lv10·20·…·100에서. 만렙까지 **총 10포인트** |
-| 획득 시점의 원본 | `CharacterLevelTable.AptitudePoint` — 그 레벨에 도달하면 주는 포인트 수. 지금은 10의 배수 행만 1, 나머지 0 |
-| 사용 | 포인트 1 → 산업 하나의 적성 **+1.** 여러 산업에 나눠 찍어도, 한 산업에 몰아 찍어도 된다 |
-| 시점 | **플레이어가 원할 때.** 안 쓴 포인트는 남는다. 자동으로 찍히지 않는다 |
-| 상한 | **캐릭터·산업마다 다르다** — `CharacterTable`의 산업별 `Cap` 5컬럼. 상한에 닿은 산업은 더 못 찍는다 |
-| 적성 0인 산업 | **찍을 수 있다.** 0 → 1이 되면 그 산업에 배치가 열린다(2.2는 "실효 적성 0"에 대한 규칙이다) |
-| 되돌리기 | **없다.** 찍으면 끝. 초기화·재배치 경로를 두지 않는다 |
-| 개체 단위 | 같은 TID를 여러 장 가지면 **개체마다 따로** 자라고 따로 찍는다 |
-| 소급 | 포인트는 **레벨에서 계산**한다. 이미 Lv10 이상인 개체는 규칙 도입 시점에 자동으로 포인트를 갖는다 |
+| 원본 | `CharacterLevelTable.SpeedAddPermille` — **그 레벨의 가산 총량**(천분율, 누적값). 초안 레벨당 +10‰ → Lv1 0 · Lv100 990‰ |
+| 합성 | 장비·특성 가산과 **더한 뒤** 적성 기본값에 한 번 곱한다 — 적성이 높은 캐릭터일수록 같은 %에서 더 많이 얻는다 |
+| 시점 | 레벨이 오르면 **정산 → 속도 재계산** ([작업슬롯](../workslot/README.md) 3.4의 순서 불변식). 새 속도는 오르기 전 구간에 소급되지 않는다 |
+| 선택 · 되돌리기 | **없다.** 결정할 것이 없으므로 후회할 것도 없다 |
+| 개체 단위 | 같은 TID를 여러 장 가지면 개체마다 레벨이 따로이고 가산도 따로다 |
+| 클라 | 가산값은 GameData 미러(`CharacterLevelTable`)에서 읽는다 — 별도 패킷이 없다. 슬롯 확정 속도는 `CurrentWorkSpeed`로 온다. 찍는 화면([게임UI](../ui/README.md) 6장 #14)은 없어졌다 |
 
-**남은 포인트 = 레벨로 번 총합 − 찍은 보너스 합.** 남은 포인트를 따로 저장하지 않는다 —
-두 값을 각각 저장하면 어긋날 수 있고, 어긋나면 어느 쪽이 진실인지 정할 수 없다.
+> ⚠️ 수치는 테스트용이다. 100행이라 **레벨 구간마다 다른 기울기**도 데이터만으로 바꿀 수 있다.
 
-#### 상한이 캐릭터·산업마다 다른 이유
+#### 왜 적성 포인트를 버렸나 (2026-09-17 → 2026-10-06)
 
-포인트 제도의 위험은 하나다 — **만렙이면 누구나 전 산업을 잘하게 되어 배치 퍼즐(1장)이 무너진다.**
-상한을 **캐릭터 공통**(예: 등급별 한 값)으로 두면 이 위험이 등급 안에서 그대로 벌어진다.
-Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 수렴한다.
+처음에는 **10레벨마다 적성 포인트 1개를 플레이어가 산업 하나에 찍는** 방식으로 확정했고 서버까지 구현했다.
+클라 화면을 붙이기 전에 [이슈 #35](https://github.com/JeongTaeWoong99/Windows_simulator/issues/35)에서 되돌렸다.
 
-상한을 **산업마다** 두면 캐릭터 30종을 **현재 적성(출발점)** 과 **상한(도착점)** 두 표로 설계할 수 있다.
-"전설 낚시꾼은 낚시 9까지 가지만 농사는 2에서 멈춘다"가 데이터로 표현된다 — 자라도 개성이 남는다.
+- **방치형인데 능동 관리를 요구했다.** 개체가 늘수록 찍을 포인트가 쌓이고, 방치하면 손해 보는 자원이 생긴다.
+- **설명할 규칙이 많았다.** 획득 주기 · 산업별 적성 · 캐릭터·산업마다 다른 상한 · 되돌리기 없음.
+- **상한 150칸(30종 × 5산업)을 손으로 조율해야 배치 퍼즐이 지켜졌다.** 포인트가 적성을 정수로 평평하게 올려 캐릭터 간 격차를 좁히기 때문이다.
+  가산 방식은 적성에 **곱해지므로** 격차가 오히려 유지된다.
 
-| 캐릭터 | 산업 | 기본 | 상한 | 포인트로 얻는 것 |
-| --- | --- | --- | --- | --- |
-| 시작 캐릭터 `1001` (Common) | 전 산업 | 1 | 2 | 어느 산업이든 +1. 5포인트면 전 산업 2 |
-| 전설 낚시꾼 | 낚시 | 9 | 9 | **없음** — 이미 상한. 포인트는 다른 산업에 |
-| 전설 낚시꾼 | 농사 | 0 | 2 | 0 → 1로 농사 배치가 열리고, 2에서 멈춘다 |
-| Mythic 만능형 | 전 산업 | 7 | 7 | **없음** — 만능형은 자라지 않는다. 뽑는 순간이 완성이다 |
-
-> 상한값 30종 × 5는 **기획자가 채운다.** 초안은 등급표(1.2) 윗값을 전 산업에 넣되,
-> **주력이 아닌 산업은 그보다 낮게** 잡아 위 표의 "개성이 남는다"가 실제로 성립하게 한다.
-> ⚠️ 수치는 테스트용이다. `≤ 10`은 파이프라인(`Ref`)이, **기본 ≤ 상한**은 서버 기동 시(`CharacterTableValidator`)가 검사한다 — 어긋나면 기동이 멈춘다.
-
-#### 왜 매 레벨이 아니라 10레벨마다인가
-
-- 만렙 100에 포인트 100개면 상한이 곧 채워져 **상한이 사실상 기본값이 된다.** 10개면 "어디에 찍을지"가 끝까지 남는다.
-- 레벨 곡선(5.2)이 ×1.2 등비라 **Lv50 이후 한 포인트는 몇 주짜리 결정**이다. 그 무게가 되돌리기 없음과 맞물린다.
-- 클라가 "다음 포인트까지 N레벨"을 그릴 수 있어 성장 체감이 생긴다. 매 레벨 +1은 체감이 흐려진다.
-
-#### 데이터
-
-| 대상 | 내용 |
-| --- | --- |
-| `CharacterTable` | **`FarmingCap` · `FishingCap` · `MiningCap` · `LoggingCap` · `HuntingCap`** (int 0~10). 검증: 기본 적성 ≤ 상한 |
-| `CharacterLevelTable` | **`AptitudePoint`** (int ≥ 0). 그 레벨에 도달하면 주는 포인트. 10의 배수 행 1 |
-| `t_character` | **`farming_bonus` … `hunting_bonus`** (INTEGER NOT NULL DEFAULT 0). 찍은 양만. 남은 포인트는 저장하지 않는다 |
-
-#### 패킷
-
-| 패킷 | 내용 |
-| --- | --- |
-| `AptitudeInfo` | `Value`(실효 적성 = 기본 + 보너스) 옆에 **`Cap`** 추가. 클라가 "더 찍을 수 있는 칸"을 그린다 |
-| `CharacterInfo` | **`AptitudePoints`** — 남은 포인트. 서버가 계산해 내려준다 |
-| `C_AptitudeUpRequest { CharacterId, Industry }` | 포인트 1개를 그 산업에 찍는다 |
-| `S_AptitudeUpResponse { Result, Character }` | 성공이면 갱신된 `CharacterInfo` 1건. 배치 중이면 슬롯 속도 갱신은 `S_WorkStationSlotSyncResponse`가 따로 간다 |
-| 결과 코드 | `NoAptitudePoint`(남은 포인트 0) · `AptitudeAtCap`(그 산업 상한) · 미보유는 `CharacterNotOwned` |
-
-#### 서버 처리 순서
-
-1. 개체 보유 확인 → 남은 포인트 ≥ 1 → 실효 적성 < 상한. 하나라도 어긋나면 거절하고 **아무것도 바꾸지 않는다.**
-2. 보너스 +1, 확정값 저장(`t_character.<산업>_bonus`).
-3. 그 개체가 배치된 슬롯이 있으면 **정산 → 속도 재계산** ([작업슬롯](../workslot/README.md) 3.4의 순서 불변식). 적성 변경이 정산 전 구간에 소급되지 않는다.
-4. `S_AptitudeUpResponse`로 개체를, 슬롯이 바뀌었으면 `S_WorkStationSlotSyncResponse`로 슬롯을 밀어 준다.
-
-> **적성이 변하는 첫 번째 주체**다. 7.1의 "서버가 계산한 실효 적성을 내려준다"는 규약이 이 시점부터 실제 값 차이를 갖는다.
-> 클라가 `CharacterTable`을 직접 읽고 있었다면 여기서 틀린다.
-
-#### 클라이언트
-
-- 캐릭터 상세에 **산업별 적성 · 상한 · 남은 포인트 · 다음 포인트까지 레벨**을 보이고, 찍을 수 있는 칸에만 +1 버튼을 둔다.
-- 되돌리기가 없으므로 **찍기 전에 확인**을 한 번 받는다.
-- 화면은 [게임UI](../ui/README.md) 6장 결정 필요 항목으로 넘긴다.
+철거한 것: `CharacterLevelTable.AptitudePoint` · `CharacterTable` `…Cap` 5컬럼 · `t_character` `…_bonus` 5컬럼 ·
+패킷 `C_AptitudeUpRequest`(32)/`S_AptitudeUpResponse`(33) · `AptitudeInfo.Cap` · `CharacterInfo.AptitudePoints` · 결과 코드 700·701(결번).
 
 ### 5.3 ❌ 미정 — 이 문서에서 결정하지 않은 것
 
@@ -450,9 +399,8 @@ Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 �
 | --- | --- | --- |
 | 1 | **추가 경험치 획득 경로** (먹이기 등) | 지금은 판정뿐이다(5.2). 먹이기를 두면 하위 아이템의 수요처가 생긴다 → [산업 레벨](../gathering/산업레벨.md) 4.2 |
 | 3 | **가챠 천장 · 확정 지급 경로** | 높은 적성을 얻는 길이 운뿐이다 → 5.1 (콘텐츠 해금과는 무관 → 2.3) |
-| 4 | **상한값 30종 × 5산업** | 5.4의 `Cap` 컬럼. 초안은 등급표 윗값이고, 주력 외 산업을 낮추는 조정은 기획자 몫 |
 
-> 레벨 효과는 5.4로 확정됐다(2026-09-17). **일감 T-003이 다시 착수 가능하다.**
+> 레벨 효과는 5.4로 확정됐다(2026-10-06 작업속도 가산으로 재확정 · T-003).
 
 ---
 
@@ -460,15 +408,15 @@ Rare 캐릭터의 상한이 전 산업 6이면 만렙 Rare는 전 산업 6에 �
 
 | 대상 | 내용 |
 | --- | --- |
-| `Character.xlsx` | `CharacterTable`: `CharacterTID` · `Name` · **`GlobalRarity`** · 산업 적성 5열 · **산업 상한 5열(`…Cap`)** · `Description` (`Race`는 보류 → 4장) · **`CharacterLevelTable`**: 레벨(=TID) → `RequiredExp` · **`AptitudePoint`** (100행 → 5.2 · 5.4) |
+| `Character.xlsx` | `CharacterTable`: `CharacterTID` · `Name` · **`GlobalRarity`** · 산업 적성 5열 · `BasePrice` · `Description` (`Race`는 보류 → 4장) · **`CharacterLevelTable`**: 레벨(=TID) → `RequiredExp` · **`SpeedAddPermille`** (100행 → 5.2 · 5.4) |
 | `Gacha.xlsx` | `GachaInfoTable`(풀 이름·비용) · `GachaCharacterTable`(캐릭터 풀) → 5.1 · `GachaEquipTable`(장비 풀 3개) → 5.1.1 |
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
-| `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) · **산업별 보너스 5열**(찍은 포인트 → 5.4) |
+| `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) |
 | `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(인벤토리 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
 | `EquipEnchant.xlsx` · `t_user_equip` 인챈트 4열 | `EnchantOptionTable`(등급별 옵션 풀 · 고정 `Value` · `Weight`) · `EnchantGradeTable`(장비 등급별 `SlotCount` · 인챈트 등급별 `UpPermyriad`) · `EnchantItemTable`(큐브 → `UpRatePermille`) · 개체의 `enchant_grade` · `enchant_1~3`(`EnchantOptionTID`, 0 = 빈 칸) → 1.4 |
-| 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value, Cap}` 목록 · `CharacterInfo.AptitudePoints` → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 · **`C_AptitudeUpRequest` / `S_AptitudeUpResponse`** → 5.4 |
-| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비 가산 · `SettleWorkStation` — 경험치 가산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) · **`User.Enchant.cs` · `Common/EnchantCatalog.cs`**(인챈트 — 패킷 `C_EquipEnchantRequest` · `S_EquipEnchantResponse`, 개체 갱신은 `S_EquipSyncResponse` · `EquipInfo.EnchantGrade`·`EnchantOptions`) |
+| 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value}` 목록 → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 |
+| 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비·특성·**레벨** 가산 · `SettleWorkStation` — 경험치 가산 · 레벨업 시 속도 재계산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) · **`User.Enchant.cs` · `Common/EnchantCatalog.cs`**(인챈트 — 패킷 `C_EquipEnchantRequest` · `S_EquipEnchantResponse`, 개체 갱신은 `S_EquipSyncResponse` · `EquipInfo.EnchantGrade`·`EnchantOptions`) |
 
 > 밸런스 수치는 코드 상수가 아니라 엑셀에 둔다. 수정 후 `GameDesign/generate-tables.ps1` 실행.
 
@@ -519,8 +467,8 @@ public partial struct AptitudeInfo
 > 산업을 뜻하던 `ItemType` 자리를 전부 옮겼다. 이제 `GetAptitude(ItemType.Misc)` 같은 호출이
 > **컴파일 단계에서 막힌다** — 예전엔 `_ => 0`이 런타임에 삼켰다.
 > `ItemTable.ItemType`은 원래 뜻(아이템 분류)으로 남는다. → [기획평가](../기획평가.md) 2.7(R7 해소)
-- **두 값은 다를 수 있다.** 적성 포인트(5.4)가 첫 번째 변경 주체다 — `Value`는 기본값에 찍은 보너스를 더한 것이고, 장비(T-002)가 붙으면 그 보정도 여기에 실린다.
-- **적성이 변하면 서버가 클라에 알린다.** 포인트를 찍으면 `S_AptitudeUpResponse`, 그 밖의 변경은 `S_CharacterSyncResponse`.
+- **지금은 두 값이 같다.** 적성을 바꾸는 주체가 없다 — 레벨(5.4)·장비(T-002)는 적성이 아니라 속도 가산으로 들어간다.
+  보정이 생기면 `Value`에 실리고, 클라는 그대로 읽으면 된다.
 
 > **왜 지금 나눠 두는가** — 장비 4칸이 붙으면 적성에 보정이 올라올 여지가 생긴다.
 > 그때 클라가 테이블을 직접 읽고 있으면 **배치 UI·필터·인벤토리 탭이 한꺼번에 틀린다.**

@@ -172,7 +172,7 @@ public partial class User
             Tid       = character.Tid,
             Rarity    = (int)character.Row.GlobalRarity,
             Count     = 1,
-            Character = new MailCharacter(character.Id, character.Tid, character.Level, character.Exp, character.Bonus),
+            Character = new MailCharacter(character.Id, character.Tid, character.Level, character.Exp),
         };
         return (EResultCode.Ok, item, character.Row.BasePrice);
     }

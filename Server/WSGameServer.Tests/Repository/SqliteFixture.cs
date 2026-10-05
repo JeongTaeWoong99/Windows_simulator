@@ -41,11 +41,6 @@ internal sealed class SqliteFixture : IDisposable
                 level         INTEGER NOT NULL DEFAULT 1,
                 exp           INTEGER NOT NULL DEFAULT 0,
                 created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
-                farming_bonus INTEGER NOT NULL DEFAULT 0,
-                fishing_bonus INTEGER NOT NULL DEFAULT 0,
-                mining_bonus  INTEGER NOT NULL DEFAULT 0,
-                logging_bonus INTEGER NOT NULL DEFAULT 0,
-                hunting_bonus INTEGER NOT NULL DEFAULT 0,
                 auction_trade_id INTEGER NOT NULL DEFAULT 0,
                 container     INTEGER NOT NULL DEFAULT 0,
                 slot          INTEGER NOT NULL DEFAULT 0

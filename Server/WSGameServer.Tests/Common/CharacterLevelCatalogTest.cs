@@ -49,21 +49,20 @@ public class CharacterLevelCatalogTest
     }
 
     [Fact]
-    public void 그_레벨까지_번_적성_포인트를_합산한다()
+    public void 레벨의_속도_가산을_돌려준다()
     {
         var catalog = new CharacterLevelCatalog();
         catalog.Load(new[]
         {
-            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0,  AptitudePoint = 0 },
-            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 10, AptitudePoint = 1 },
-            new CharacterLevelTableRow { CharacterLevelTID = 3, RequiredExp = 12, AptitudePoint = 0 },
-            new CharacterLevelTableRow { CharacterLevelTID = 4, RequiredExp = 14, AptitudePoint = 2 },
+            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0,  SpeedAddPermille = 0 },
+            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 10, SpeedAddPermille = 10 },
+            new CharacterLevelTableRow { CharacterLevelTID = 3, RequiredExp = 12, SpeedAddPermille = 25 },
         });
 
-        // Lv3까지 1, Lv4에서 2가 더해져 3. 테이블 밖 레벨은 마지막 값을 유지한다.
-        catalog.PointsEarnedBy(1).ShouldBe(0);
-        catalog.PointsEarnedBy(3).ShouldBe(1);
-        catalog.PointsEarnedBy(4).ShouldBe(3);
-        catalog.PointsEarnedBy(99).ShouldBe(3);
+        // 행의 값이 그 레벨의 가산 총량이다(누적하지 않는다). 테이블 밖 레벨은 만렙 값, 0 이하는 0.
+        catalog.SpeedAddAt(2).ShouldBe(10);
+        catalog.SpeedAddAt(3).ShouldBe(25);
+        catalog.SpeedAddAt(99).ShouldBe(25);
+        catalog.SpeedAddAt(0).ShouldBe(0);
     }
 }

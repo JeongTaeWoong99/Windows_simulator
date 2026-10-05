@@ -58,9 +58,7 @@ namespace MikaProtocol
         EnchantItemNotOwned  = 610, // 큐브 미보유. 611~613은 옛 인챈트(부여·재롤·확장)의 퇴역 번호다
         EnchantEquipped      = 614, // 착용 중 — 벗겨야 큐브를 쓸 수 있다
 
-        // ── 700~: 캐릭터 (600은 장비와 겹쳐 있었다 — 2026-09-17) ──
-        NoAptitudePoint = 700, // 남은 적성 포인트가 0 — 아무것도 바꾸지 않는다
-        AptitudeAtCap   = 701, // 그 산업이 이미 상한 — 아무것도 바꾸지 않는다. 미보유는 CharacterNotOwned
+        // ── 700~: 캐릭터 ── 700·701은 옛 적성 포인트(NoAptitudePoint·AptitudeAtCap)의 결번이다 — 2026-10-06 철거(이슈 #35)
 
         // ── 800~: 특성 ──
         InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 최대 레벨 → TraitMaxLevel · 계정 레벨 미달 → UnlockLocked
