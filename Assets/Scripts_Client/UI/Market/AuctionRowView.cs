@@ -16,6 +16,8 @@ public struct AuctionRowContent
     public string ActionLabel; // 버튼 문구 — '구매' · '취소' · '선택'
     public bool   CanAct;      // 버튼을 누를 수 있나
     public bool   Dimmed;      // 줄 전체를 흐리게 — 목록에는 보이지만 고를 수 없는 것(등록 불가 후보). 툴팁은 그대로 뜬다
+    public bool   Selectable;  // 고르는 목록의 줄인가(등록 후보 · 거래소) — 참이면 버튼을 탭처럼 칠한다. 거짓이면 프리팹 색(구매·취소)
+    public bool   Selected;    // 지금 고른 줄 — 'Selectable'일 때만 뜻이 있다. 문구('선택됨')만으로는 잘 안 보였다
 
     // 줄에 마우스를 올리면 띄울 툴팁 — **올리는 순간에 만든다**('TooltipTrigger'). null이면 뜨지 않는다.
     public Func<TooltipContent?>? Tooltip;
@@ -62,6 +64,9 @@ public class AuctionRowView : MonoBehaviour
     // 흐린 줄의 투명도 — 인벤토리의 배치 중 딤과 비슷한 정도.
     private const float DimmedAlpha = 0.45f;
 
+    // 프리팹에 구워 둔 버튼 색 — 고르지 않은 줄은 이 색으로 되돌린다('구매'·'취소' 줄도 같은 프리팹이라 색을 지어내지 않는다).
+    private ColorBlock _normalColors;
+
     private long _key;
 
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
@@ -83,6 +88,8 @@ public class AuctionRowView : MonoBehaviour
             _group = gameObject.AddComponent<CanvasGroup>();
         }
 
+        _normalColors = actionButton.colors;
+
         actionButton.onClick.AddListener(OnActionClicked);
     }
 
@@ -103,6 +110,31 @@ public class AuctionRowView : MonoBehaviour
         actionText.text           = content.ActionLabel;
         actionButton.interactable = content.CanAct;
         _group.alpha              = content.Dimmed ? DimmedAlpha : 1f;
+
+        PaintSelection(content.Selectable, content.Selected);
+    }
+
+    // 고르는 목록이면 탭과 같은 두 색(고름 = ButtonSelected · 안 고름 = Button)으로, 아니면 프리팹 색으로 칠한다 (Bind에서 호출).
+    //
+    // ⚠️ 프리팹 색은 'ButtonPrimary'(주황)다 — 'ButtonSelected'와 거의 같은 주황이라, 고른 줄만 칠하면 차이가 안 보였다(2026-10-05).
+    //   그래서 안 고른 줄을 파랑('Button')으로 내린다. 탭 줄과 같은 규칙이라 "주황 = 고른 것"으로 읽힌다.
+    // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다(탭 버튼 'AuctionTabPresenter'와 같다).
+    private void PaintSelection(bool selectable, bool selected)
+    {
+        if (!selectable)
+        {
+            actionButton.colors = _normalColors;
+
+            return;
+        }
+
+        Color      target = UIThemePalette.Of(selected ? UIThemeRole.ButtonSelected : UIThemeRole.Button);
+        ColorBlock colors = _normalColors;
+
+        colors.normalColor      = target;
+        colors.selectedColor    = target;
+        colors.highlightedColor = Color.Lerp(target, Color.white, 0.15f);
+        actionButton.colors     = colors;
     }
 
     // 버튼 눌림 — 이 줄의 키를 위로 던진다 (actionButton.onClick)

@@ -412,7 +412,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
         for (int i = 0; i < _contents.Count; i++)
         {
             AuctionRowContent content = _contents[i];
-            content.ActionLabel = content.Dimmed ? "불가" : content.Key == _selectedKey ? "선택됨" : "선택";
+            content.Selectable  = true;
+            content.Selected    = !content.Dimmed && content.Key == _selectedKey;
+            content.ActionLabel = content.Dimmed ? "불가" : content.Selected ? "선택됨" : "선택";
             _contents[i]        = content;
         }
 

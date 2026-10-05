@@ -409,6 +409,8 @@ public class MarketItemPresenter : MonoBehaviour
             Info        = $"{UIRichText.Label("판매 중")} {item.AvailableCount:N0}개{mineText}{dot}{UIRichText.Label("최근")} {recent}{dot}{UIRichText.Label("전일 평균")} {yesterday}",
             Detail      = lowest,
             ActionLabel = item.Tid == _selectedTid ? "선택됨" : "선택",
+            Selectable  = true,
+            Selected    = item.Tid == _selectedTid,
             CanAct      = true,
             Tooltip     = () => AuctionText.BuildMarketItemTooltip(item, _auction.GetMyItemCount(item.Tid), _data.GetItemCount(item.Tid)),
         };
