@@ -1,7 +1,7 @@
 namespace WSGameServer;
 
 /// <summary>
-/// 특성 하나의 레벨을 <c>t_user_trait</c>에 기록한다. 레벨은 오르기만 해서 마지막 값으로 덮어쓴다.
+/// 특성 하나의 레벨을 <c>t_user_trait</c>에 기록한다. 마지막 값으로 덮어쓴다 — 치트로는 내려가기도 한다.
 /// </summary>
 public sealed class SaveUserTraitRepository : IRepository
 {

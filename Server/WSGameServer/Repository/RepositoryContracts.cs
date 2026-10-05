@@ -17,11 +17,6 @@ public sealed record CharacterRow
     public int  character_tid { get; init; }
     public int  level         { get; init; }
     public int  exp           { get; init; }
-    public int  farming_bonus { get; init; }
-    public int  fishing_bonus { get; init; }
-    public int  mining_bonus  { get; init; }
-    public int  logging_bonus { get; init; }
-    public int  hunting_bonus { get; init; }
     public int  slot          { get; init; }
 }
 

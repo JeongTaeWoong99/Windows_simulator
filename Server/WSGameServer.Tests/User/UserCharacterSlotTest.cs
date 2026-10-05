@@ -72,7 +72,7 @@ public class UserCharacterSlotTest
     {
         var (user, b) = UserWith((1, 0), (2, 1));
 
-        user.OnMailCharacterUnlocked(new MailCharacter(77, CharacterTid, 1, 0, default), slot: 2, unlocked: true);
+        user.OnMailCharacterUnlocked(new MailCharacter(77, CharacterTid, 1, 0), slot: 2, unlocked: true);
 
         b.Channel.SentOf<S_CharacterSyncResponse>().Last().Character!.Slot.ShouldBe(2);
     }

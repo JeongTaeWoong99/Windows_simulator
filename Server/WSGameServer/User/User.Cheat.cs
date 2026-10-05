@@ -32,12 +32,13 @@ public partial class User
             ECheatCommand.GiveGold         => CheatGiveGold(req.Arg1),
             ECheatCommand.GiveItem         => CheatGiveItem(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacter    => CheatGiveCharacter(req.Arg1, req.Arg2),
-            ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
+            ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2, now),
             ECheatCommand.Settle           => CheatSettle(req.Arg1, now),
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
             ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
             ECheatCommand.SendMail         => CheatSendMail(req.Arg1, req.Arg2, now),
+            ECheatCommand.SetTraitLevel    => CheatSetTraitLevel(req.Arg1, req.Arg2, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -117,7 +118,7 @@ public partial class User
         return (EResultCode.Ok, $"캐릭터 {characterTid} × {count} 지급 요청");
     }
 
-    private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount)
+    private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount, DateTime now)
     {
         if (amount <= 0 || amount > int.MaxValue)
         {
@@ -129,7 +130,12 @@ public partial class User
             return (EResultCode.CharacterNotOwned, $"미보유 캐릭터 {characterId}");
         }
 
-        GrantCharacterExp(character, (int)amount, notify: true);
+        // 레벨이 오르면 배치 슬롯 속도를 다시 매긴다. 정산 시점의 슬롯 속도는 아직 옛 값이라 소급되지 않는다.
+        if (GrantCharacterExp(character, (int)amount, notify: true))
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
         return (EResultCode.Ok, $"캐릭터 {characterId} Lv{character.Level} Exp{character.Exp}");
     }
 
@@ -194,6 +200,32 @@ public partial class User
 
         // 운영툴과 같은 발송 경로 — 치트 전용 지급 코드를 만들지 않는다(치트 원칙 4).
         return SendOperationMail((int)templateTid, recipientUid, now);
+    }
+
+    private (EResultCode, string) CheatSetTraitLevel(long userTraitTid, long level, DateTime now)
+    {
+        if (level < 0)
+        {
+            return (EResultCode.InvalidCheatArgs, "레벨이 음수");
+        }
+
+        List<UserTraitTableRow> targets;
+        if (userTraitTid == 0)
+        {
+            targets = _traitCatalog.All.ToList();
+        }
+        else if (userTraitTid > 0 && userTraitTid <= int.MaxValue && _traitCatalog.TryGet((int)userTraitTid, out var trait))
+        {
+            targets = new List<UserTraitTableRow> { trait };
+        }
+        else
+        {
+            return (EResultCode.InvalidCheatArgs, $"UserTraitTable에 없는 TID {userTraitTid}");
+        }
+
+        // 최대 레벨을 넘는 값은 어차피 최대로 잘린다 — int로 좁힐 때 넘침만 막는다.
+        var changed = SetTraitLevels(targets, (int)Math.Min(level, int.MaxValue), now);
+        return (EResultCode.Ok, $"특성 {targets.Count}개 중 {changed}개 변경 (요청 Lv{level})");
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

@@ -33,8 +33,7 @@ public partial class User
                 continue;
             }
 
-            var bonus = new AptitudeBonus(r.farming_bonus, r.fishing_bonus, r.mining_bonus, r.logging_bonus, r.hunting_bonus);
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, bonus) { Slot = r.slot };
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp) { Slot = r.slot };
         }
     }
 
@@ -114,8 +113,9 @@ public partial class User
     /// <summary>
     /// 경험치를 캐릭터에 더한다(판정 정산·치트가 같은 경로를 쓴다). 바뀐 것이 있으면 <b>확정값을 저장하고 개체를 밀어 준다.</b>
     /// 만렙이라 아무것도 안 바뀌면 저장도 푸시도 하지 않는다.
+    /// 레벨이 오르면 true — 속도 가산이 바뀌므로 부른 쪽이 정산 뒤 슬롯 속도를 다시 매긴다(이슈 #35).
     /// </summary>
-    public void GrantCharacterExp(Character character, int amount, bool notify)
+    public bool GrantCharacterExp(Character character, int amount, bool notify)
     {
         // 캐릭터가 얻은 경험치는 그대로 계정 경험치가 된다(특성 3장). 캐릭터가 만렙이어도 계정은 자란다.
         GainAccountExp(amount, notify);
@@ -127,7 +127,7 @@ public partial class User
 
         if (character.Level == levelBefore && character.Exp == expBefore)
         {
-            return;
+            return false;
         }
 
         PostDBTask(new SaveCharacterGrowthRepository(this, character));
@@ -136,7 +136,13 @@ public partial class User
         {
             Send(new S_CharacterSyncResponse { Character = ToCharacterInfo(character) });
         }
+
+        return character.Level != levelBefore;
     }
+
+    /// <summary>배치된 캐릭터의 레벨 속도 가산(천분율). 빈 슬롯·미보유면 0이다.</summary>
+    public int GetLevelSpeedAdd(long characterId)
+        => TryGetCharacter(characterId, out var character) ? _characterLevels.SpeedAddAt(character.Level) : 0;
 
     private CharacterInfo ToCharacterInfo(Character c)
     {
@@ -146,7 +152,6 @@ public partial class User
             CharacterTid   = c.Tid,
             Level          = c.Level,
             Exp            = c.Exp,
-            AptitudePoints = c.RemainingPoints(_characterLevels),
             Aptitudes      = ToAptitudeInfos(c),
             Slot           = c.Slot,
         };
@@ -161,44 +166,8 @@ public partial class User
             {
                 Industry = (EIndustryType)industry,
                 Value    = (byte)character.GetAptitude(industry),
-                Cap      = (byte)character.GetAptitudeCap(industry),
             })
             .ToList();
-    }
-
-    // 적성 포인트 찍기. 검증 → 저장 → 정산·속도 갱신 → 응답 (캐릭터 기획 5.4). 거절이면 아무것도 바꾸지 않는다.
-    // 속도 갱신이 정산을 먼저 하므로 오른 적성이 정산 전 구간에 소급되지 않는다.
-    public void RaiseAptitude(long characterId, IndustryType industry, DateTime now)
-    {
-        if (!TryGetCharacter(characterId, out var character))
-        {
-            Reject(EResultCode.CharacterNotOwned, "미보유 캐릭터");
-            return;
-        }
-
-        var result = character.TryRaiseAptitude(industry, _characterLevels);
-        if (result != AptitudeRaiseResult.Ok)
-        {
-            Reject(result == AptitudeRaiseResult.NoPoint ? EResultCode.NoAptitudePoint : EResultCode.AptitudeAtCap,
-                   result == AptitudeRaiseResult.NoPoint ? "남은 포인트 없음" : "상한");
-            return;
-        }
-
-        PostDBTask(new SaveCharacterAptitudeRepository(this, character));
-
-        ServerLog.Info("캐릭터", $"적성 +1 Uid={Uid} Character={characterId} {industry} → {character.GetAptitude(industry)}");
-
-        // 배치된 슬롯이 있으면 새 적성의 속도로 갈아탄다. 바뀐 슬롯만 싱크가 나간다.
-        RefreshWorkStationSpeed(now);
-
-        Send(new S_AptitudeUpResponse { Result = EResultCode.Ok, Character = ToCharacterInfo(character) });
-        return;
-
-        void Reject(EResultCode code, string reason)
-        {
-            ServerLog.Warn("캐릭터", $"적성 찍기 거절 — {reason}. Uid={Uid} Character={characterId} Industry={industry}");
-            Send(new S_AptitudeUpResponse { Result = code });
-        }
     }
 
     public bool TryGetCharacter(long characterId, out Character character)
@@ -231,7 +200,7 @@ public partial class User
             return null;
         }
 
-        return ToCharacterInfo(new Character(m.CharacterId, row, m.Level, m.Exp, m.Bonus));
+        return ToCharacterInfo(new Character(m.CharacterId, row, m.Level, m.Exp));
     }
 
     /// <summary>우편으로 온 잠긴 캐릭터를 받는다. 잠금 해제가 끝나면 <see cref="OnMailCharacterUnlocked"/>.</summary>
@@ -258,7 +227,7 @@ public partial class User
             return;
         }
 
-        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp, mailCharacter.Bonus) { Slot = slot };
+        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp) { Slot = slot };
         _characters[character.Id] = character;
 
         ServerLog.Info("캐릭터", $"우편 캐릭터 수령 Uid={Uid} 캐릭터 {character.Id}(TID {character.Tid}) Lv{character.Level}");

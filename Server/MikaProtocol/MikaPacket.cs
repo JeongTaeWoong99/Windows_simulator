@@ -60,8 +60,7 @@ namespace MikaProtocol
         C_EquipRequest = 29,
         C_UnequipRequest = 30,
         S_EquipResponse = 31,
-        C_AptitudeUpRequest = 32,   // 27·28은 장비 패킷과 겹쳐 있었다(2026-09-17). PacketEnumTest가 중복을 막는다
-        S_AptitudeUpResponse = 33,
+        // 32·33은 옛 적성 찍기(C_AptitudeUpRequest·S_AptitudeUpResponse)의 결번이다 — 2026-10-06 철거(이슈 #35). 재사용하지 않는다
         C_UserTraitLearnRequest = 34,
         S_UserTraitLearnResponse = 35,
         S_AccountLevelResponse = 36,
@@ -357,27 +356,6 @@ namespace MikaProtocol
     public partial class S_UnlockListResponse : IPacket
     {
         public List<int> UnlockTIDs { get; set; } = new();
-    }
-
-    // ───────────────────────── 캐릭터 성장 (Aptitude) ─────────────────────────
-
-    /// <summary>적성 포인트 1개를 그 캐릭터의 산업 하나에 찍는다. 포인트·상한 검증은 서버가 한다.</summary>
-    [MemoryPackable, Packet(PacketId.C_AptitudeUpRequest)]
-    public partial class C_AptitudeUpRequest : IPacket
-    {
-        public long          CharacterId { get; set; }   // 개체 PK. TID가 아니다
-        public EIndustryType Industry    { get; set; }
-    }
-
-    /// <summary>
-    /// 찍기 결과. Ok면 갱신된 개체 1건(<c>CharacterInfo</c>)이 실린다 — 목록·동기화와 같은 형태라 CharacterId로 덮어쓴다.
-    /// 배치 중인 슬롯의 속도 변화는 <see cref="S_WorkStationSlotSyncResponse"/>가 따로 온다.
-    /// </summary>
-    [MemoryPackable, Packet(PacketId.S_AptitudeUpResponse)]
-    public partial class S_AptitudeUpResponse : IPacket
-    {
-        public EResultCode    Result    { get; set; }
-        public CharacterInfo? Character { get; set; }
     }
 
     // ───────────────────────── 장비 (Equip) ─────────────────────────

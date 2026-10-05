@@ -52,7 +52,7 @@ public sealed record MailEquip(long EquipId, int EquipTid, int EnchantGrade, Lis
 }
 
 /// <summary>우편에 실린 캐릭터 개체. 행은 잠긴 채 받는 사람 소유이고, 받을 때 잠금을 푼다. 레벨·적성은 잠긴 동안 바뀌지 않는다.</summary>
-public sealed record MailCharacter(long CharacterId, int CharacterTid, int Level, int Exp, AptitudeBonus Bonus);
+public sealed record MailCharacter(long CharacterId, int CharacterTid, int Level, int Exp);
 
 /// <summary>우편 한 통. <see cref="ClaimedAt"/>이 null이면 안 받음 — 안 받은 우편은 만료되지 않는다.</summary>
 public sealed class Mail(long id, int templateTid, MailAttachment attachment, DateTime receivedAt, DateTime? claimedAt)

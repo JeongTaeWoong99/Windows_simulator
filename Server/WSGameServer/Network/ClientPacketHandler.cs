@@ -110,22 +110,6 @@ public static class ClientPacketHandler
                                DateTime.UtcNow, industryLevel);
     }
 
-    /// <summary>적성 포인트 찍기. 포인트·상한 검증은 User가 한다 — 클라가 "찍을 수 있다"고 그렸어도 여기서 다시 검사한다.</summary>
-    [PacketHandler]
-    public static void Handle_C_AptitudeUpRequest(ISession session, C_AptitudeUpRequest req)
-    {
-        ServerLog.Debug("캐릭터", $"적성 찍기 요청 Character={req.CharacterId} 산업={req.Industry} sid={session.SessionId}");
-
-        var user = session.GetUser();
-        if (user == null)
-        {
-            session.SendPacket(new S_AptitudeUpResponse { Result = EResultCode.NotLoggedIn });
-            return;
-        }
-
-        user.RaiseAptitude(req.CharacterId, (GameData.IndustryType)req.Industry, DateTime.UtcNow);
-    }
-
     /// <summary>아이템 사용 — 지금은 상자 개봉뿐이다. 보유·개수 검증과 지급은 GachaService가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_ItemUseRequest(ISession session, C_ItemUseRequest req)

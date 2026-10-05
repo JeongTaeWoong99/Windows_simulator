@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-10-04 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
+> 최종 업데이트: 2026-10-06 (README.md에는 `최종 업데이트` 줄을 두지 않는다 — 머지 충돌 원천)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -64,6 +64,8 @@
   원본(`Server/MikaProtocol`, `GameDesign/Excel`)에서 고치고 파이프라인을 돌린다.
 - 커밋은 `commit-convention` 규칙을 따른다.
 - **워크트리는 기본적으로 만들지 않는다.** 사용자가 "워크트리"를 명시했을 때만 만든다.
+  **예외 — 진우의 일감 작업은 워크트리를 기본으로 만든다 (2026-10-06).** 같은 트리에서 세션 여럿이
+  동시에 작업하다 작업 트리가 통째로 되돌아간 일이 있었다. 질문 답변·이슈 코멘트처럼 파일을 거의 안 고치는 일은 해당 없음.
   만들 때 이름은 **`worktree-T-0XX-<영문-kebab-슬러그>`** 로 고정한다 (예: `worktree-T-028-baseprice-shop`).
   `git worktree list`에서 일감 ID가 보여야 어느 작업의 것인지 알 수 있다 —
   해당 일감이 없으면 `tasks/`에 먼저 등록하고 그 ID를 쓴다.
@@ -120,7 +122,7 @@
 | [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
 | [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
 | [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
-| [`github-issue-writer`](.claude/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 |
+| [`github-issue-writer`](.claude/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) · **이슈·일감 작업이 끝났을 때 — 조건 없이 항상**(관련 이슈·일감 공돌리기 + 넘긴 번호 보고) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 · 공돌리기(3장) |
 
 ### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
 

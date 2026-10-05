@@ -16,7 +16,7 @@ namespace GameData
         {
             CharacterLevelTID = PackerUtil.ParseInt(cells[0], Table, "CharacterLevelTID", 1, null),
             RequiredExp       = PackerUtil.ParseInt(cells[1], Table, "RequiredExp", 0, null),
-            AptitudePoint     = PackerUtil.ParseInt(cells[2], Table, "AptitudePoint", 0, null),
+            SpeedAddPermille  = PackerUtil.ParseInt(cells[2], Table, "SpeedAddPermille", 0, null),
             Description       = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
         };
 
