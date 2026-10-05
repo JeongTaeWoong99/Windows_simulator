@@ -32,7 +32,7 @@ public partial class User
             ECheatCommand.GiveGold         => CheatGiveGold(req.Arg1),
             ECheatCommand.GiveItem         => CheatGiveItem(req.Arg1, req.Arg2),
             ECheatCommand.GiveCharacter    => CheatGiveCharacter(req.Arg1, req.Arg2),
-            ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2),
+            ECheatCommand.GiveCharacterExp => CheatGiveCharacterExp(req.Arg1, req.Arg2, now),
             ECheatCommand.Settle           => CheatSettle(req.Arg1, now),
             ECheatCommand.Unlock           => CheatUnlock(req.Arg1, now),
             ECheatCommand.GiveEquip        => CheatGiveEquip(req.Arg1),
@@ -117,7 +117,7 @@ public partial class User
         return (EResultCode.Ok, $"캐릭터 {characterTid} × {count} 지급 요청");
     }
 
-    private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount)
+    private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount, DateTime now)
     {
         if (amount <= 0 || amount > int.MaxValue)
         {
@@ -129,7 +129,12 @@ public partial class User
             return (EResultCode.CharacterNotOwned, $"미보유 캐릭터 {characterId}");
         }
 
-        GrantCharacterExp(character, (int)amount, notify: true);
+        // 레벨이 오르면 배치 슬롯 속도를 다시 매긴다. 정산 시점의 슬롯 속도는 아직 옛 값이라 소급되지 않는다.
+        if (GrantCharacterExp(character, (int)amount, notify: true))
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
         return (EResultCode.Ok, $"캐릭터 {characterId} Lv{character.Level} Exp{character.Exp}");
     }
 

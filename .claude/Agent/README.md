@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-06 캐릭터 레벨 효과를 작업속도 가산으로 — 적성 포인트 철거 (T-003 · #35)](2026-10-06-level-speed-add.md) — `#server` `#data` `#design` `SpeedAddPermille` 총량값 · 레벨업 시 정산 뒤 속도 재계산
 - [2026-10-05 그림을 비공개 저장소로 분리 (T-121)](2026-10-05-art-repo-split.md) — `#client` `#art` `#infra` Windows_simulator_Art · 같은 자리 독립 저장소 · 메인 그림 GUID 0개 · 경로 260자
 - [2026-10-04 그림 가공 파이프라인 · 슬롯 연출 임시 그림 · 게임UI 2.5 새 방향 (T-120 · T-097)](2026-10-04-art-bake-pipeline.md) — `#client` `#art` `#editor` 원본→규격 굽기 · 고정 모션 길이
 - [2026-10-04 상급 큐브 무의미 구간 안내 · 큐브 규칙 툴팁 압축 (T-095 · #53)](2026-10-04-cube-tooltip-compact.md) — `#client` `#ui` 첫 사용·신화 상급 큐브 안내 · 규칙 문장은 라벨 칸에 · 확률 열 머리 기본/상급 · 이슈 #53

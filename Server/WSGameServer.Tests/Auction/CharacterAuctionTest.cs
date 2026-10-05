@@ -40,7 +40,7 @@ public class CharacterAuctionTest : IDisposable
         user.GainGold(1000);
         user.LoadCharacters(characters.Length > 0 ? characters : new[]
         {
-            new CharacterRow { character_id = CharA, character_tid = 1001, level = 7, exp = 30, fishing_bonus = 1 },
+            new CharacterRow { character_id = CharA, character_tid = 1001, level = 7, exp = 30 },
             new CharacterRow { character_id = CharB, character_tid = 1001, level = 1, exp = 0 },
         });
 
@@ -66,7 +66,7 @@ public class CharacterAuctionTest : IDisposable
         user.TryGetCharacter(CharA, out _).ShouldBeFalse();
         var item = b.DB.PostedOf<RegisterAuctionRepository>().Single().Item;
         (item.Kind, item.Tid, item.Count, item.Rarity).ShouldBe((EAuctionKind.Character, 1001, 1, (int)GlobalRarity.Common));
-        item.Character.ShouldBe(new MailCharacter(CharA, 1001, 7, 30, new AptitudeBonus(Fishing: 1)));
+        item.Character.ShouldBe(new MailCharacter(CharA, 1001, 7, 30));
     }
 
     [Fact]
@@ -119,7 +119,7 @@ public class CharacterAuctionTest : IDisposable
     private long Scalar(string sql) => Convert.ToInt64(_db.Query(sql) ?? 0L);
 
     private static AuctionItemSnapshot Snapshot(long characterId)
-        => new() { Kind = EAuctionKind.Character, Tid = 1001, Rarity = 1, Count = 1, Character = new MailCharacter(characterId, 1001, 7, 30, new AptitudeBonus(Fishing: 1)) };
+        => new() { Kind = EAuctionKind.Character, Tid = 1001, Rarity = 1, Count = 1, Character = new MailCharacter(characterId, 1001, 7, 30) };
 
     private Task<long> RegisterInDb(long characterId = CharA)
     {
@@ -157,7 +157,7 @@ public class CharacterAuctionTest : IDisposable
         result.Settled.ShouldBeTrue();
         Scalar($"SELECT user_id FROM t_character WHERE character_id = {CharA}").ShouldBe(Buyer);
         Scalar($"SELECT auction_trade_id FROM t_character WHERE character_id = {CharA}").ShouldBe(tradeId);
-        MailAttachment.FromRow(result.BuyerMail!).Characters.Single().ShouldBe(new MailCharacter(CharA, 1001, 7, 30, new AptitudeBonus(Fishing: 1)));
+        MailAttachment.FromRow(result.BuyerMail!).Characters.Single().ShouldBe(new MailCharacter(CharA, 1001, 7, 30));
     }
 
     [Fact]
@@ -189,7 +189,7 @@ public class CharacterAuctionTest : IDisposable
     public void 잠긴_캐릭터_우편을_받으면_잠금_해제를_요청한다()
     {
         var (user, b) = NewUser();
-        var attachment = new MailAttachment(0, new(), new(), new(), null, new List<MailCharacter> { new(77, 1001, 7, 30, default) });
+        var attachment = new MailAttachment(0, new(), new(), new(), null, new List<MailCharacter> { new(77, 1001, 7, 30) });
         user.OnMailsArrived(new List<UserMailRow> { MailDb.ToRow(40, AuctionMail.PurchasedTemplateTid, attachment, Now) });
 
         user.TryClaimMail(40, Now);
@@ -198,14 +198,14 @@ public class CharacterAuctionTest : IDisposable
     }
 
     [Fact]
-    public void 잠금이_풀리면_레벨과_적성까지_그대로_들어온다()
+    public void 잠금이_풀리면_레벨과_경험치가_그대로_들어온다()
     {
         var (user, b) = NewUser();
 
-        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, new AptitudeBonus(Fishing: 1)), slot: 0, unlocked: true);
+        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30), slot: 0, unlocked: true);
 
         user.TryGetCharacter(77, out var character).ShouldBeTrue();
-        (character.Level, character.Exp, character.Bonus.Fishing).ShouldBe((7, 30, 1));
+        (character.Level, character.Exp).ShouldBe((7, 30));
         Last<S_CharacterSyncResponse>(b).Character!.CharacterId.ShouldBe(77);
     }
 
@@ -214,7 +214,7 @@ public class CharacterAuctionTest : IDisposable
     {
         var (user, _) = NewUser();
 
-        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30, default), slot: 0, unlocked: false);
+        user.OnMailCharacterUnlocked(new MailCharacter(77, 1001, 7, 30), slot: 0, unlocked: false);
 
         user.TryGetCharacter(77, out _).ShouldBeFalse();
     }
@@ -228,7 +228,7 @@ public class CharacterAuctionTest : IDisposable
         var view = new Proto.ListingView
         {
             ListingId = 3, Kind = (int)EAuctionKind.Character, Tid = 1001, Count = 1, UnitPrice = 60, TotalPrice = 60,
-            State = Proto.ListingState.Listed, Detail = System.Text.Json.JsonSerializer.Serialize(new MailCharacter(77, 1001, 7, 30, default)),
+            State = Proto.ListingState.Listed, Detail = System.Text.Json.JsonSerializer.Serialize(new MailCharacter(77, 1001, 7, 30)),
         };
         var reply = new Proto.SearchReply();
         reply.Listings.Add(view);

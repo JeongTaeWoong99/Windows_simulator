@@ -18,7 +18,7 @@ public sealed record AuctionItemSnapshot
     public int          EnchantGrade { get; init; }
     public List<int>    Options      { get; init; } = new();
     public string       SellerName   { get; init; } = "";  // 등록 순간의 판매자 닉네임 — 경매장 매물 줄에 보인다
-    public MailCharacter? Character  { get; init; }        // 캐릭터 매물의 개체 — 레벨·경험치·찍은 적성
+    public MailCharacter? Character  { get; init; }        // 캐릭터 매물의 개체 — 레벨·경험치
 
     /// <summary>경매장에 맡기는 개체 상세(JSON). 경매장은 읽지 않고 검색 결과에 그대로 돌려준다.</summary>
     public string Detail => Character is null ? "" : JsonSerializer.Serialize(Character);

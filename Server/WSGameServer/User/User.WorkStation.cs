@@ -153,6 +153,7 @@ public partial class User
             return 0;
         }
 
+        var leveledUp = false;
         foreach (var harvest in harvests)
         {
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
@@ -202,7 +203,7 @@ public partial class User
                 var baseExp = (long)harvest.JudgeCount * ResolveExpPerJudge(slot.Industry, slot.IndustryLevel);
                 var gained  = baseExp * (1000 + GetEquipExpAdd(slot.CharacterId)) / 1000;
 
-                GrantCharacterExp(worker, (int)gained, notify);
+                leveledUp |= GrantCharacterExp(worker, (int)gained, notify);
             }
 
             if (!notify)
@@ -221,6 +222,12 @@ public partial class User
             {
                 Send(new S_WorkStationSlotSyncResponse { Slot = settledSlot.ToInfo() });
             }
+        }
+
+        // 레벨이 오르면 속도 가산이 바뀐다. 정산이 방금 구간을 끊었으므로 새 속도는 소급되지 않는다(이슈 #35).
+        if (leveledUp)
+        {
+            ApplyWorkStationSpeed(notify);
         }
 
         // 슬롯 자체는 저장하지 않는다. 진행도(LastTickAt·ProgressUnits)가 세션 지역 상태가 되면서
@@ -292,7 +299,12 @@ public partial class User
     public void RefreshWorkStationSpeed(DateTime now, bool notify = true)
     {
         SettleWorkStation(now);
+        ApplyWorkStationSpeed(notify);
+    }
 
+    // 모든 슬롯에 지금 속도를 매긴다. 정산 직후에만 부른다 — 그래야 새 속도가 지난 구간에 소급되지 않는다.
+    private void ApplyWorkStationSpeed(bool notify)
+    {
         foreach (var slot in WorkStation.Slots)
         {
             if (slot.ApplyWorkSpeed(ResolveSlotSpeed(slot)) && notify)
@@ -337,6 +349,7 @@ public partial class User
             // 착용 장비 가산(전 산업 + 슬롯 산업). 특성·부스트도 여기에 .Add(천분율)로 붙는다 — 개수가 늘어도 각 보정의 몫은 그대로다.
             .Add(GetEquipSpeedAdd(slot.CharacterId, slot.Industry))
             .Add(GetTraitSpeedAdd(slot.Industry))
+            .Add(GetLevelSpeedAdd(slot.CharacterId))
             .Multiply(GatherSpeedMultiplier)
             .Resolve();
     }

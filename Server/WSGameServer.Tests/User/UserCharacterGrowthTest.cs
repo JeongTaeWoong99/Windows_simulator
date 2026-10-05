@@ -18,7 +18,7 @@ public class UserCharacterGrowthTest
 
     public UserCharacterGrowthTest() => GameTableFixture.EnsureLoaded();
 
-    /// <summary>낚시 Lv1 판정당 경험치 3, 곡선 Lv2 10 · Lv3 12 · Lv4 14(만렙)인 유저를 만든다.</summary>
+    /// <summary>낚시 Lv1 판정당 경험치 3, 곡선 Lv2 10 · Lv3 12 · Lv4 14(만렙) · 속도 가산 레벨당 +10‰인 유저를 만든다.</summary>
     private static (User User, TestUserBuilder B) UserWith(int level = 1, int exp = 0)
     {
         var b = new TestUserBuilder().WithFishingDrops();
@@ -33,10 +33,10 @@ public class UserCharacterGrowthTest
         });
         b.Growth.Load(new[]
         {
-            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0 },
-            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 10 },
-            new CharacterLevelTableRow { CharacterLevelTID = 3, RequiredExp = 12 },
-            new CharacterLevelTableRow { CharacterLevelTID = 4, RequiredExp = 14 },
+            new CharacterLevelTableRow { CharacterLevelTID = 1, RequiredExp = 0,  SpeedAddPermille = 0 },
+            new CharacterLevelTableRow { CharacterLevelTID = 2, RequiredExp = 10, SpeedAddPermille = 10 },
+            new CharacterLevelTableRow { CharacterLevelTID = 3, RequiredExp = 12, SpeedAddPermille = 20 },
+            new CharacterLevelTableRow { CharacterLevelTID = 4, RequiredExp = 14, SpeedAddPermille = 30 },
         });
 
         var user = b.Build();
@@ -149,5 +149,42 @@ public class UserCharacterGrowthTest
         previous.Level.ShouldBe(2);
         next.Exp.ShouldBe(0);
         b.DB.PostedOf<SaveCharacterGrowthRepository>().ShouldHaveSingleItem().CharacterId.ShouldBe(CharacterId);
+    }
+
+    // ─────────────────────── 레벨 → 속도 가산 (이슈 #35) ───────────────────────
+
+    [Fact]
+    public void 레벨이_오르면_배치된_슬롯_속도가_가산만큼_빨라진다()
+    {
+        var (user, b) = UserWith();
+
+        // 판정 5회 → Lv2. 램볼 낚시 적성 1 = 1000‰ → Lv2 가산 +10‰ → 1000 × 1.01 = 1010
+        user.SettleWorkStation(Base.AddSeconds(150));
+
+        b.Channel.SentOf<S_WorkStationSlotSyncResponse>().Last().Slot.CurrentWorkSpeed.ShouldBe(1010);
+    }
+
+    [Fact]
+    public void 레벨이_오르기_전_구간은_이전_속도로_정산된다()
+    {
+        // 레벨업이 정산 도중에 일어나도 새 속도가 지나간 구간에 소급되면 안 된다.
+        // 1000‰ = 30초에 1판정 → 150초 = 정확히 5판정. 소급되면 1010‰로 5판정을 넘긴다.
+        var (user, b) = UserWith();
+
+        user.SettleWorkStation(Base.AddSeconds(150));
+
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().JudgeCount.ShouldBe(5);
+    }
+
+    [Fact]
+    public void 배치할_때_캐릭터_레벨의_가산이_속도에_들어간다()
+    {
+        // Lv3 가산 +20‰ → 1000 × 1.02 = 1020
+        var (user, b) = UserWith(level: 3);
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.None, 0, Base) });
+
+        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
+
+        b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Slot!.CurrentWorkSpeed.ShouldBe(1020);
     }
 }
