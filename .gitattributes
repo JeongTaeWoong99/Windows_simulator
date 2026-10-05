@@ -25,3 +25,15 @@
 *.controller -merge
 *.anim       -merge
 *.mat        -merge
+
+# ─────────────────────────────────────────────────────────────
+# 엑셀 파이프라인 생성물 — 줄바꿈을 LF로 고정
+#
+# 생성기(ExcelGenerator)는 LF로 쓴다(CodeGenUtil.WriteText). 이 줄이 없으면 윈도우의 core.autocrlf=true가
+# 체크아웃을 CRLF로 바꾸고, 생성기를 돌릴 때마다 LF로 다시 쓰인 파일을 git이 "수정됨"으로 잡는다
+# — 내용은 같은데 diff 수십 개가 남았다(2026-10-06). eol=lf면 어느 PC에서나 체크아웃도 LF라 생성물과 같다.
+# ─────────────────────────────────────────────────────────────
+Server/GameData/**/*.cs                         text eol=lf
+Assets/Scripts_Server/GameData/**/*.cs          text eol=lf
+Server/ExcelGenerator/Output/**/*.cs            text eol=lf
+GameDesign/DataLog/*.json                       text eol=lf

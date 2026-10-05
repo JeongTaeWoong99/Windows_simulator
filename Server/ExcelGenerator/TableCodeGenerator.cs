@@ -18,7 +18,6 @@ public static class TableCodeGenerator
         "// 이 파일은 ExcelGenerator가 Excel 데이터 시트로부터 생성했습니다. 직접 수정 금지.\n" +
         "// </auto-generated>\n\n";
 
-    private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
 
     /// <summary>
     /// 모든 테이블의 코드를 outputDir 아래(Tables/, Packer/)에 생성한다.
@@ -45,10 +44,10 @@ public static class TableCodeGenerator
         {
             var columns = FilterColumns(table, target);
 
-            File.WriteAllText(Path.Combine(tablesDir, $"{table.Name}.cs"),
-                Header + BuildRowClass(table.Name, columns), Utf8NoBom);
-            File.WriteAllText(Path.Combine(packerDir, $"{table.Name}Packer.cs"),
-                Header + BuildPacker(table.Name, columns), Utf8NoBom);
+            CodeGenUtil.WriteText(Path.Combine(tablesDir, $"{table.Name}.cs"),
+                Header + BuildRowClass(table.Name, columns));
+            CodeGenUtil.WriteText(Path.Combine(packerDir, $"{table.Name}Packer.cs"),
+                Header + BuildPacker(table.Name, columns));
 
             var key = PickKey(columns);
             metas.Add(new TableMeta(table.Name, key));
@@ -58,16 +57,16 @@ public static class TableCodeGenerator
         }
 
         // 패커 전용(GenerateData가 런타임 컴파일할 때만 사용 — 배포 대상 아님)
-        File.WriteAllText(Path.Combine(packerDir, "TableRegistry.cs"),
-            Header + BuildRegistry(tables), Utf8NoBom);
-        File.WriteAllText(Path.Combine(packerDir, "PackerUtil.cs"),
-            Header + CodeGenUtil.BuildFile("GameData", PackerUtilUsings, PackerUtilBody), Utf8NoBom);
+        CodeGenUtil.WriteText(Path.Combine(packerDir, "TableRegistry.cs"),
+            Header + BuildRegistry(tables));
+        CodeGenUtil.WriteText(Path.Combine(packerDir, "PackerUtil.cs"),
+            Header + CodeGenUtil.BuildFile("GameData", PackerUtilUsings, PackerUtilBody));
 
         // 공유(서버·Unity) 로드/조회 진입점 + 헬퍼
-        File.WriteAllText(Path.Combine(gameDataDir, "GameTable.cs"),
-            Header + BuildGameTable(metas), Utf8NoBom);
-        File.WriteAllText(Path.Combine(gameDataDir, "TableSet.cs"),
-            Header + CodeGenUtil.BuildFile("GameData", TableSetUsings, TableSetBody), Utf8NoBom);
+        CodeGenUtil.WriteText(Path.Combine(gameDataDir, "GameTable.cs"),
+            Header + BuildGameTable(metas));
+        CodeGenUtil.WriteText(Path.Combine(gameDataDir, "TableSet.cs"),
+            Header + CodeGenUtil.BuildFile("GameData", TableSetUsings, TableSetBody));
 
         // 공용 상수 시트는 행마다 속성 하나를 가진 Constants 클래스를 따로 만든다(Constants.StorageCapacity).
         ConstantsGenerator.Generate(tables, gameDataDir);

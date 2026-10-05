@@ -151,6 +151,6 @@ public static class EnumGenerator
             "// 이 파일은 ExcelGenerator가 Excel(Enum.xlsx)로부터 생성했습니다. 직접 수정 금지.\n" +
             "// </auto-generated>\n\n";
 
-        File.WriteAllText(outputPath, header + _enumSource, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+        CodeGenUtil.WriteText(outputPath, header + _enumSource);
     }
 }

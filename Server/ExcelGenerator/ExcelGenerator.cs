@@ -173,8 +173,7 @@ public static class ExcelGenerator
 
             // 사람이 읽는 JSON 사이드카(전체 행) → 엑셀 대조/git diff 리뷰용.
             var logPath = Path.Combine(logDir, $"{table.Name}.json");
-            File.WriteAllText(logPath, (string)dump.DynamicInvoke(bytes)!,
-                new System.Text.UTF8Encoding(encoderShouldEmitUTF8Identifier: false));
+            CodeGenUtil.WriteText(logPath, (string)dump.DynamicInvoke(bytes)!);
 
             Console.WriteLine($"[데이터 생성] {table.Name}: {count}행, {bytes.Length:N0} bytes → {outputPath}");
             Console.WriteLine($"    로그: {logPath}");

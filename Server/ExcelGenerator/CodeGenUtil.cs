@@ -16,6 +16,21 @@ internal static class CodeGenUtil
 {
     private const string Indent = "    ";
 
+    private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
+
+    /// <summary>
+    /// 생성물을 쓴다 — **줄바꿈은 LF 하나로**, UTF-8(BOM 없음).
+    ///
+    /// ⚠️ 생성물 파일은 반드시 이것으로 쓴다(File.WriteAllText 직접 호출 금지).
+    ///    머리말은 "\n"으로, 본문은 AppendLine(윈도우에서 CRLF)으로 써서 한 파일에 줄바꿈이 섞였고,
+    ///    git이 그 파일을 매번 "수정됨"으로 잡았다 — 내용은 같은데 생성기를 돌릴 때마다 diff 23개가 남았다(2026-10-06).
+    ///    저장소에는 LF로 들어가므로(.gitattributes text=auto) LF로 쓰면 git이 볼 차이가 없다.
+    /// </summary>
+    internal static void WriteText(string path, string content)
+    {
+        File.WriteAllText(path, content.Replace("\r\n", "\n"), Utf8NoBom);
+    }
+
     /// <summary>
     /// using 목록과 본문을 받아 블록 네임스페이스로 감싼 파일 소스를 만든다.
     /// 본문은 한 단계 들여쓰기가 적용된다(호출부에서 미리 들여쓸 필요 없음).

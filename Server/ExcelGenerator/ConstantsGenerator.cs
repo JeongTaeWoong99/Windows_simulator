@@ -28,7 +28,6 @@ internal static class ConstantsGenerator
         "// 이 파일은 ExcelGenerator가 Constants.xlsx(ConstantsTable)의 행으로부터 생성했습니다. 직접 수정 금지.\n" +
         "// </auto-generated>\n\n";
 
-    private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
 
     /// <summary>
     /// 상수 시트가 있으면 <c>Constants.cs</c>를 만들고, 없으면 옛 파일을 지운다(시트를 지웠는데 클래스가 남으면 빈 테이블을 읽다 터진다).
@@ -48,7 +47,7 @@ internal static class ConstantsGenerator
         }
 
         var constants = Read(table);
-        File.WriteAllText(path, Header + Build(constants), Utf8NoBom);
+        CodeGenUtil.WriteText(path, Header + Build(constants));
         Console.WriteLine($"[코드 생성] Constants: 상수 {constants.Count}개 → GameData/{FileName}");
     }
 
