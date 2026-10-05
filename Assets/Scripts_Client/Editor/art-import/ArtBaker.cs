@@ -10,8 +10,12 @@ namespace DesktopWindowControl.EditorTools
 {
     // 레시피 → 결과물(PNG + 런타임 SO). 원본 팩은 읽기만 한다.
     //
-    // ■ 결과물은 다시 만들 수 있는 것이다
-    //   레시피 옆의 PNG·SO는 언제든 덮인다. 손으로 고칠 것은 레시피뿐이다.
+    // ■ 그림은 다시 만들고, 조정값은 처음 한 번만 넣는다
+    //   레시피 옆의 PNG와 SO의 그림 참조(텍스처·스프라이트·층 높이)는 구울 때마다 덮인다.
+    //   ⚠️ **사람이 SO에서 다듬는 값은 SO가 처음 생길 때만 레시피에서 채운다** — 배경의 땅 높이·층 속도, 대상의 레벨 색.
+    //   그 뒤로는 굽기가 건드리지 않는다. 레시피 값은 "첫 값"일 뿐이다.
+    //   (2026-10-05 — 그림 저장소 분리 때 [전부 다시 굽기]가 다듬어 둔 땅 높이 4벌을 레시피 값으로 되돌렸다)
+    //   층이 늘어난 경우처럼 SO에 자리가 없던 값만 레시피에서 채운다.
     //   스프라이트 ID는 이름으로 이어 받아, 다시 구워도 다른 곳의 참조가 끊기지 않는다.
     //
     // ■ 임포트 설정은 여기서 정하지 않는다
@@ -400,26 +404,38 @@ namespace DesktopWindowControl.EditorTools
                 });
             }
 
-            BackgroundVisual visual = LoadOrCreate<BackgroundVisual>($"{folder}/{key}.asset");
+            BackgroundVisual visual = LoadOrCreate<BackgroundVisual>($"{folder}/{key}.asset", out bool created);
             var so = new SerializedObject(visual);
             SerializedProperty layersProp = so.FindProperty("layers");
+            int keptLayers = created ? 0 : layersProp.arraySize; // 이 칸까지는 다듬은 속도를 남긴다
             layersProp.arraySize = layers.Count;
 
             for (int i = 0; i < layers.Count; i++)
             {
                 SerializedProperty element = layersProp.GetArrayElementAtIndex(i);
                 element.FindPropertyRelative("texture").objectReferenceValue = layers[i].texture;
-                element.FindPropertyRelative("speedRatio").floatValue       = layers[i].speedRatio;
+
+                if (i >= keptLayers)
+                {
+                    element.FindPropertyRelative("speedRatio").floatValue = layers[i].speedRatio;
+                }
             }
 
-            so.FindProperty("stageHeight").intValue  = stageHeight;
-            so.FindProperty("groundHeight").intValue = recipe.GroundHeight;
+            so.FindProperty("stageHeight").intValue = stageHeight;
+
+            // 땅 높이는 SO에서 다듬는다 — 처음 생길 때만 레시피 값을 넣는다(머리 주석).
+            if (created)
+            {
+                so.FindProperty("groundHeight").intValue = recipe.GroundHeight;
+            }
+
+            int groundHeight = so.FindProperty("groundHeight").intValue;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(visual);
 
             string warn = warnings.Count > 0 ? "\n   ⚠️ " + string.Join("\n   ⚠️ ", warnings) : "";
 
-            return $"✅ {key}: 층 {layers.Count} · 높이 {stageHeight} · 땅 {recipe.GroundHeight}{warn}";
+            return $"✅ {key}: 층 {layers.Count} · 높이 {stageHeight} · 땅 {groundHeight}{(created ? "" : " (SO 값 유지)")}{warn}";
         }
 
         // ── 대상 ────────────────────────────────────────────
@@ -442,14 +458,16 @@ namespace DesktopWindowControl.EditorTools
             image.SavePng(spritePath);
             image.WhiteSilhouette().SavePng(flashPath);
 
-            TargetVisual visual = LoadOrCreate<TargetVisual>($"{folder}/{key}.asset");
+            TargetVisual visual = LoadOrCreate<TargetVisual>($"{folder}/{key}.asset", out bool created);
             var so = new SerializedObject(visual);
             so.FindProperty("sprite").objectReferenceValue = ImportSingle(spritePath);
             so.FindProperty("flash").objectReferenceValue  = ImportSingle(flashPath);
 
+            // 레벨 색은 SO에서 다듬는다 — 없던 칸만 레시피에서 채운다(머리 주석). 칸 수는 레시피를 따른다.
             SerializedProperty tints = so.FindProperty("levelTints");
+            int keptTints = created ? 0 : tints.arraySize;
             tints.arraySize = recipe.LevelTints.Length;
-            for (int i = 0; i < recipe.LevelTints.Length; i++)
+            for (int i = keptTints; i < recipe.LevelTints.Length; i++)
             {
                 tints.GetArrayElementAtIndex(i).colorValue = recipe.LevelTints[i];
             }
@@ -593,13 +611,17 @@ namespace DesktopWindowControl.EditorTools
             return AssetDatabase.LoadAssetAtPath<Sprite>(path);
         }
 
-        private static T LoadOrCreate<T>(string path) where T : ScriptableObject
+        private static T LoadOrCreate<T>(string path) where T : ScriptableObject => LoadOrCreate<T>(path, out _);
+
+        // created : 이번에 새로 만들었나 — 참이면 조정값을 레시피에서 채운다(머리 주석)
+        private static T LoadOrCreate<T>(string path, out bool created) where T : ScriptableObject
         {
             var asset = AssetDatabase.LoadAssetAtPath<T>(path);
+            created   = asset == null;
 
-            if (asset != null)
+            if (!created)
             {
-                return asset;
+                return asset!;
             }
 
             asset = ScriptableObject.CreateInstance<T>();

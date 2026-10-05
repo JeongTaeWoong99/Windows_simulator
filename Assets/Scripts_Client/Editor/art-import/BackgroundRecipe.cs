@@ -43,7 +43,7 @@ namespace DesktopWindowControl.EditorTools
         [SerializeField, Min(1), Tooltip("정수 배 축소 — 칸 평균으로 줄인다")]
         private int downscale = 2;
 
-        [SerializeField, Min(0), Tooltip("바닥에서 발이 서는 높이 (결과 픽셀)")]
+        [SerializeField, Min(0), Tooltip("바닥에서 발이 서는 높이 (결과 픽셀) — 결과 SO가 처음 생길 때만 쓰인다. 그 뒤로는 결과 SO에서 다듬는다")]
         private int groundHeight;
 
         public LayerGroup[] Groups       => groups;
