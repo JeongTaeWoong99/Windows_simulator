@@ -55,7 +55,8 @@ public class WorkStationSlotView : MonoBehaviour
     //                   'slot.CharacterId'는 개체 번호라 테이블에서 이름이 안 나오고,
     //                   보유 목록을 거쳐야 한다. 그 변환은 세션을 아는 패널의 몫이다.
     //   characterTid  : 배치된 캐릭터의 종류(TID) — 무대가 그림을 고른다. 이름과 같은 이유로 패널이 넘긴다
-    public void Bind(WorkStationSlotInfo slot, string characterName, int characterTid)
+    //   characterLevel : 배치된 캐릭터의 레벨 — 이름 바로 뒤에 붙인다. 0이면 적지 않는다(모르는 개체)
+    public void Bind(WorkStationSlotInfo slot, string characterName, int characterTid, int characterLevel)
     {
         _slot = slot;
 
@@ -66,7 +67,9 @@ public class WorkStationSlotView : MonoBehaviour
         }
 
         string industry  = IndustryLabel.Get(slot.Industry);
-        string character = slot.CharacterId != 0 ? characterName : "-";
+        string character = slot.CharacterId == 0 ? "-"
+                         : characterLevel > 0     ? $"{characterName} Lv{characterLevel}"
+                         : characterName;
 
         if (!IsRunning)
         {

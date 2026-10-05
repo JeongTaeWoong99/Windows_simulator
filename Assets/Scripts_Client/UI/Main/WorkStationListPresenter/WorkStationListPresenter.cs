@@ -132,6 +132,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _isSubscribed                 = true;
         _data.WorkStationSlotsChanged += Rebuild;
         _data.UnlocksChanged          += Rebuild; // 열린 목록이 바뀌면 잠김 표시를 다시 그린다
+        _data.CharactersChanged       += Rebuild; // 캐릭터 레벨이 오르면 칸 글자의 'Lv'를 고친다
         _data.UnlockCompleted         += OnUnlockCompleted;
     }
 
@@ -146,6 +147,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _isSubscribed                 = false;
         _data.WorkStationSlotsChanged -= Rebuild;
         _data.UnlocksChanged          -= Rebuild;
+        _data.CharactersChanged       -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
     }
 
@@ -344,7 +346,7 @@ public class WorkStationListPresenter : MonoBehaviour
 
             int characterTid = _data.GetCharacterTid(slot.CharacterId);
 
-            view.Bind(slot, _data.GetCharacterName(slot.CharacterId), characterTid);
+            view.Bind(slot, _data.GetCharacterName(slot.CharacterId), characterTid, _data.GetCharacterLevel(slot.CharacterId));
             view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
         }
     }

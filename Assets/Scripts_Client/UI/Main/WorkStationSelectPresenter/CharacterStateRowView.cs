@@ -34,7 +34,8 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("캐릭터 상반신 — 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image portraitImage = null!;
 
-    [SerializeField, Tooltip("캐릭터 이름")]
+    // 레벨도 이름 뒤에 붙인다 — 'Lv'가 적성 포인트를 늘려 같은 캐릭터라도 레벨에 따라 빨라진다 (2026-10-05).
+    [SerializeField, Tooltip("캐릭터 이름 · 레벨 — '이름 Lv27'")]
     private TMP_Text nameText = null!;
 
     // 임시 — 종족은 데이터에 없다('CharacterTable'에 컬럼이 없다). 프리팹에 "종족 추가 예정"이 적혀 있고,
@@ -99,10 +100,11 @@ public class CharacterStateRowView : MonoBehaviour
     //   characterId : 서버가 발급한 개체 번호. 배치 요청에 그대로 실린다
     //   displayName : 보유 목록을 거쳐 얻은 표시 이름
     //   characterTid : 종류(TID) — 상반신 그림을 고른다. 개체 번호가 아니다
-    public void Bind(long characterId, string displayName, int characterTid)
+    //   level        : 캐릭터 레벨. 0 이하(보유 목록에 없음)면 이름만 적는다
+    public void Bind(long characterId, string displayName, int characterTid, int level)
     {
         CharacterId   = characterId;
-        nameText.text = displayName;
+        nameText.text = level > 0 ? $"{displayName} Lv{level}" : displayName;
 
         SetPortrait(VisualCatalog.PortraitOf(characterTid));
     }

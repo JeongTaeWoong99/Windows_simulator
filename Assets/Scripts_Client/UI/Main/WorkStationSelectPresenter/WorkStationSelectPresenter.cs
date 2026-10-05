@@ -945,7 +945,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             var           row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid);
+            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level);
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
@@ -1096,7 +1096,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         int assignedTid = _data.GetCharacterTid(slot.CharacterId);
 
-        assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId), assignedTid);
+        assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId), assignedTid,
+                          _data.GetCharacterLevel(slot.CharacterId));
         assignedCard.SetRarity(GameDataLoader.GetCharacterRarity(assignedTid));
         assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
     }
