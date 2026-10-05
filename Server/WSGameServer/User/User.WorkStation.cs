@@ -184,7 +184,7 @@ public partial class User
                     continue;
                 }
 
-                // 최대 수량(상자 50개 등)을 넘는 몫은 버린다 — 창고 칸과 같은 방침이다.
+                // 최대 수량(상자 1000개 등)을 넘는 몫은 버린다 — 창고 칸과 같은 방침이다.
                 var granted = ClampToMaxStack(itemTid, count);
                 if (granted <= 0)
                 {

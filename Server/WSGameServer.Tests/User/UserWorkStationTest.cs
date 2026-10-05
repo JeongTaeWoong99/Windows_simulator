@@ -526,9 +526,9 @@ public class UserWorkStationTest
         user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(11);
     }
 
-    // ─────────────────────── 최대 수량 (상자 50개) ───────────────────────
+    // ─────────────────────── 최대 수량 (상자 1000개) ───────────────────────
 
-    /// <summary>나무 상자 Lv1 — 실데이터 MaxStack 50.</summary>
+    /// <summary>나무 상자 Lv1 — 실데이터 MaxStack 1000.</summary>
     private const int WoodBoxLv1Tid = 100019;
 
     /// <summary>채굴 Lv1에서 상자만 나오는 유저. 낚시 드롭은 빌더가 이미 쥐고 있어 채굴 칸을 쓴다.</summary>
@@ -544,28 +544,28 @@ public class UserWorkStationTest
     [Fact]
     public void 최대_수량을_넘는_산출은_버린다()
     {
-        // 45개 + 10판정 → 50개에서 멈추고 5개만 지급한다.
+        // 995개 + 10판정 → 1000개에서 멈추고 5개만 지급한다.
         var (user, b) = UserWithBoxDrops();
-        user.GainItem(WoodBoxLv1Tid, 45);
+        user.GainItem(WoodBoxLv1Tid, 995);
 
         user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(1);
 
-        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(50);
+        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1000);
         var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
         result.JudgeCount.ShouldBe(10);
-        result.ItemChanges!.ShouldHaveSingleItem().Count.ShouldBe(50);
+        result.ItemChanges!.ShouldHaveSingleItem().Count.ShouldBe(1000);
     }
 
     [Fact]
     public void 이미_최대_수량이면_아무것도_지급하지_않고_진행은_계속된다()
     {
         var (user, b) = UserWithBoxDrops();
-        user.GainItem(WoodBoxLv1Tid, 50);
+        user.GainItem(WoodBoxLv1Tid, 1000);
         b.DB.Posted.Clear();
 
         user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(1);
 
-        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(50);
+        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1000);
         b.DB.PostedOf<AddItemRepository>().ShouldBeEmpty();
         b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().ItemChanges!.ShouldBeEmpty();
     }
