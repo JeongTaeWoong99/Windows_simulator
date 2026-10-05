@@ -385,6 +385,17 @@ public class InventoryGridPresenter : MonoBehaviour
         }
     }
 
+    // 지금 탭이 상자 · 기타 묶음으로 거를 수 있나 (도구 줄이 분류 드롭다운 항목을 만들 때 호출).
+    public bool CurrentSupportsGroupFilter
+    {
+        get
+        {
+            EnsureInitialized();
+
+            return _current != null && _current.SupportsGroupFilter;
+        }
+    }
+
     // 로그인했다 — 지난 세션에 기억한 정렬 자리를 버린다 (PlayerDataModel.LoginCompleted 구독)
     //
     // 목록이 서버 순서로 새로 오므로, 들고 있던 자리가 다른 상태를 덮지 않게 한다.

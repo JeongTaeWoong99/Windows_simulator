@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using GameData;
 using MikaProtocol;
 
 // 자원 탭 — 인벤토리 아이템을 칸으로 내놓는다. 인벤토리의 기본 탭이다.
@@ -70,13 +71,39 @@ public class ResourceSlotSource : InventorySlotSource
         => _data.GetItemCount((int)b.Key).CompareTo(_data.GetItemCount((int)a.Key));
 
     // 자원의 산업 = 'ItemType' (Matches에서 호출).
-    // ※ 기타·특수(상자 등)는 산업이 아니라 '산업 전체'에서만 보인다 — 'ItemType'과 'IndustryType'은 1~5가 같은 값이다.
+    // ※ 기타·특수(상자 등)는 산업이 아니다 — 분류 드롭다운의 '상자' · '기타'로 따로 거른다('MatchesGroup').
+    //   'ItemType'과 'IndustryType'은 1~5가 같은 값이다.
     protected override bool MatchesIndustry(SlotData slot, byte industry)
         => (byte)GameDataLoader.GetItemType((int)slot.Key) == industry;
 
+    // 자원 탭은 상자 · 기타 묶음으로도 거른다 (2026-10-05).
+    public override bool SupportsGroupFilter => true;
+
+    // 상자 = 열 수 있는 것('OpenGachaId' — 서버와 같은 판정). 기타 = 산업 자원도 상자도 아닌 것(큐브 · 구슬 등) (Matches에서 호출).
+    protected override bool MatchesGroup(SlotData slot, InventoryItemGroup group)
+    {
+        int  itemId = (int)slot.Key;
+        bool isBox  = GameDataLoader.IsBox(itemId);
+
+        return group switch
+        {
+            InventoryItemGroup.Box   => isBox,
+            InventoryItemGroup.Other => !isBox && !IsIndustryItem(itemId),
+            _                        => true,
+        };
+    }
+
+    // 산업 자원인가 — 'ItemType' 1~5(농사 ~ 사냥). 기타 · 특수는 아니다.
+    private static bool IsIndustryItem(int itemId)
+    {
+        ItemType type = GameDataLoader.GetItemType(itemId);
+
+        return type >= ItemType.Farming && type <= ItemType.Hunting;
+    }
+
     // 자원 칸 툴팁 — 등급 · 보유 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
     //
-    // ※ 두 가격을 나란히 적는다 — 우클릭 판매는 즉시 판매가(정해진 값), 경매장은 그 값 ~ x10 사이에서 직접 정한다.
+    // ※ 두 가격을 나란히 적는다 — 우클릭 판매는 즉시 판매가(정해진 값), 경매장은 그 값 이상에서 직접 정한다.
     // ※ 판매가를 합계와 함께 적는다 — 칸에는 수량만 있어 "이 칸을 다 팔면 얼마인가"를 알 길이 없었다.
     // ※ 조작 안내를 한 줄 둔다 — 좌클릭(상자 개봉)·우클릭(판매 담기)은 칸에 아무 표시가 없어 눌러 봐야 안다.
     // ⚠️ 엑셀 'Description'은 쓰지 않는다 — 기획 메모 컬럼이라 플레이어용 문구가 아니다(T-093).

@@ -133,6 +133,9 @@ public abstract class InventorySlotSource
     // 캐릭터는 산업 축이 없다(적성이 다섯 산업에 걸쳐 있다).
     public virtual bool SupportsIndustryFilter => true;
 
+    // 이 탭이 산업 아닌 묶음(상자 · 기타)으로 거를 수 있나 (도구 줄이 분류 드롭다운 항목을 만들 때 호출). 자원 탭만 된다.
+    public virtual bool SupportsGroupFilter => false;
+
     // 내용이 바뀌었다 — 격자가 다시 그린다.
     public event Action? Changed;
 
@@ -264,6 +267,10 @@ public abstract class InventorySlotSource
     //   industry : 'IndustryType' 값 (0은 호출 전에 걸러진다)
     protected virtual bool MatchesIndustry(SlotData slot, byte industry) => true;
 
+    // 이 칸이 그 묶음에 속하나 (Matches에서 호출). 묶음 축이 없는 탭은 늘 true다.
+    //   group : 'None'은 호출 전에 걸러진다
+    protected virtual bool MatchesGroup(SlotData slot, InventoryItemGroup group) => true;
+
     // 데이터 변경 이벤트를 구독한다 (Subscribe에서 호출).
     protected abstract void OnSubscribe();
 
@@ -383,7 +390,7 @@ public abstract class InventorySlotSource
         }
     }
 
-    // 이 칸이 지금 찾기 조건에 맞나 — 이름 일부 · 등급 · 산업이 모두 맞아야 한다 (GatherMatches에서 호출).
+    // 이 칸이 지금 찾기 조건에 맞나 — 이름 일부 · 등급 · 산업 · 묶음이 모두 맞아야 한다 (GatherMatches에서 호출).
     private bool Matches(SlotData slot)
     {
         if (!string.IsNullOrEmpty(_filter.Text) && slot.Name.IndexOf(_filter.Text, StringComparison.OrdinalIgnoreCase) < 0)
@@ -392,6 +399,11 @@ public abstract class InventorySlotSource
         }
 
         if (_filter.Rarity != GlobalRarity.None && slot.Rarity != _filter.Rarity)
+        {
+            return false;
+        }
+
+        if (_filter.Group != InventoryItemGroup.None && !MatchesGroup(slot, _filter.Group))
         {
             return false;
         }

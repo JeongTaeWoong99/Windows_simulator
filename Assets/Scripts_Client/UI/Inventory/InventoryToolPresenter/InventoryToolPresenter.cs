@@ -4,10 +4,11 @@ using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 인벤토리 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
-//   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기(범위 + 버튼)
-//   2줄: 찾기 — 이름 검색 · 산업 · 등급 · [초기화]
+//   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기(범위 + [상자 제외] + 버튼)
+//   2줄: 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
 //
 // 탭 줄보다 낮은 별도 줄이다. 탭은 "무엇을 보는가", 이 줄은 "그것을 어떻게 다루는가"라
 // 같은 줄에 두면 네 탭 사이에 성격이 다른 버튼이 끼어든다.
@@ -21,7 +22,19 @@ using UnityEngine.UI;
 //   우클릭 담기와 같은 자리에 쌓이므로 담긴 뒤 하나씩 빼는 것도 그대로 된다.
 //
 // ■ 일괄 담기는 '더하기'가 아니라 '다시 잡기'다
-//   누를 때마다 목록을 **비우고** 고른 범위만 담는다. 그래야 화면의 `○○ 이하`와 팔릴 것이 늘 같다.
+//   누를 때마다 **지금 탭의 것만** 비우고 고른 범위만 담는다. 그래야 화면의 `○○ 이하`와 팔릴 것이 늘 같다.
+//   다른 탭에서 담아 둔 것은 범위와 상관없으니 남긴다.
+//
+// ■ 캐릭터·장비도 일괄로 담는다 (2026-10-05)
+//   팔 수 없는 개체(배치 중 · 장비 착용 · 마지막 캐릭터 · 끼고 있는 장비)는 **건너뛰고** 몇 개를 뺐는지 알린다 —
+//   서버는 하나라도 걸리면 개체 판매 전체를 거절하므로, 담아 두면 [판매]가 통째로 막힌다.
+//   장비는 인챈트 등급도 범위로 본다 — 일반 장비에 신화 인챈트가 붙었으면 '일반 이하'에 담기지 않는다.
+//
+// ■ 자원은 상자를 빼고 담는다 — [상자 제외] 토글, 기본 켬 (2026-10-05)
+//   상자는 열어야 값이 나온다(내용물 기대값이 판매가의 몇 배). 일괄 판매에 섞이면 모르고 판다.
+//
+// ■ 분류 드롭다운 — 자원 탭은 산업 뒤에 '상자' · '기타'가 붙는다 (2026-10-05)
+//   상자만 모아 보고 열거나, 큐브·구슬 같은 산업 밖 아이템만 볼 수 있게. 캐릭터 탭은 산업 축이 없어 감춘다.
 //
 // ■ 찾기는 탭을 바꾸거나 인벤토리를 닫으면 비운다
 //   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 인벤토리를 닫을 때도
@@ -55,6 +68,9 @@ public class InventoryToolPresenter : MonoBehaviour
     [SerializeField, Tooltip("일괄 담기 버튼 (정사각형). OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button bulkSellButton = null!;
 
+    [SerializeField, Tooltip("일괄 담기에서 상자를 뺄지 — 자원 탭에서만 보인다. 시작은 켬(코드가 정한다)")]
+    private Toggle excludeBoxToggle = null!;
+
     [SerializeField, Tooltip("탭 줄 — 지금 어느 탭인지 여기서 듣는다")]
     private InventoryTabPresenter tabs = null!;
 
@@ -69,7 +85,7 @@ public class InventoryToolPresenter : MonoBehaviour
     [SerializeField, Tooltip("이름 검색창. 입력하는 대로 걸러진다")]
     private TMP_InputField searchInput = null!;
 
-    [SerializeField, Tooltip("산업 필터 — '산업 전체' + 5산업. 캐릭터 탭에서는 감춘다. 목록은 코드가 채운다")]
+    [SerializeField, Tooltip("분류 필터 — '전체' + 5산업 (+ 자원 탭은 상자 · 기타). 캐릭터 탭에서는 감춘다. 목록은 코드가 채운다")]
     private TMP_Dropdown industryDropdown = null!;
 
     [SerializeField, Tooltip("등급 필터 — '등급 전체' + 등급별. 목록은 코드가 채운다")]
@@ -87,6 +103,9 @@ public class InventoryToolPresenter : MonoBehaviour
     // 기준 드롭다운의 항목 순서 — 탭마다 다르다(수량은 자원만). 드롭다운 값 → 기준.
     private readonly List<InventorySortKey> _sortKeyOptions = new List<InventorySortKey>();
 
+    // 분류 드롭다운의 항목 순서 — 탭마다 다르다(상자·기타는 자원만). 드롭다운 값 → (산업, 묶음). 0번은 늘 '전체'.
+    private readonly List<(byte Industry, InventoryItemGroup Group)> _categoryOptions = new List<(byte, InventoryItemGroup)>();
+
     private PlayerDataModel   _data = null!;
     private SellCartModel     _cart = null!;
     private ServerWaitManager _wait = null!;
@@ -101,6 +120,7 @@ public class InventoryToolPresenter : MonoBehaviour
         this.RequireRef(sortArrowText,      nameof(sortArrowText));
         this.RequireRef(bulkRarityDropdown, nameof(bulkRarityDropdown));
         this.RequireRef(bulkSellButton,     nameof(bulkSellButton));
+        this.RequireRef(excludeBoxToggle,   nameof(excludeBoxToggle));
         this.RequireRef(tabs,               nameof(tabs));
         this.RequireRef(grid,               nameof(grid));
         this.RequireRef(sortKeyDropdown,    nameof(sortKeyDropdown));
@@ -117,6 +137,8 @@ public class InventoryToolPresenter : MonoBehaviour
 
         BuildRarityOptions();
         BuildFilterOptions();
+
+        excludeBoxToggle.SetIsOnWithoutNotify(true); // 기본은 상자를 뺀다 — 모르고 파는 쪽이 더 아깝다
 
         sortButton.onClick.AddListener(OnSortClicked);
         bulkSellButton.onClick.AddListener(OnBulkSellClicked);
@@ -207,23 +229,10 @@ public class InventoryToolPresenter : MonoBehaviour
         bulkRarityDropdown.RefreshShownValue();
     }
 
-    // 찾기 드롭다운 둘의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
-    //
-    // ※ 산업 순서는 격자의 적성 스트립('InventoryGridPresenter.StripIndustries')과 같다 — 화면마다 순서가 다르면 헷갈린다.
+    // 등급 찾기 드롭다운의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
+    // ※ 분류 드롭다운은 탭마다 항목이 달라 탭을 바꿀 때 채운다('RebuildCategoryOptions').
     private void BuildFilterOptions()
     {
-        var industries = new List<string> { "산업 전체" };
-
-        foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
-        {
-            industries.Add(IndustryLabel.Get(industry));
-        }
-
-        industryDropdown.ClearOptions();
-        industryDropdown.AddOptions(industries);
-        industryDropdown.SetValueWithoutNotify(0);
-        industryDropdown.RefreshShownValue();
-
         var rarities = new List<string> { "등급 전체" };
 
         foreach (GlobalRarity rarity in SellRarities)
@@ -262,6 +271,39 @@ public class InventoryToolPresenter : MonoBehaviour
 
         _sortKey = _sortKeyOptions[index];
         grid.SortCurrent(_sortKey, _order);
+    }
+
+    // 이 탭이 거를 수 있는 분류만 드롭다운에 세운다 (ApplyTab에서 호출). 0번은 늘 '전체'다.
+    //
+    // ※ 산업 순서는 격자의 적성 스트립('InventoryGridPresenter.StripIndustries')과 같다 — 화면마다 순서가 다르면 헷갈린다.
+    // ※ 묶음(상자 · 기타)이 붙는 탭은 '산업 전체'가 아니라 '분류 전체'라고 적는다 — 상자는 산업이 아니다.
+    private void RebuildCategoryOptions()
+    {
+        bool hasGroups = grid.CurrentSupportsGroupFilter;
+
+        _categoryOptions.Clear();
+        _categoryOptions.Add((0, InventoryItemGroup.None));
+
+        var labels = new List<string> { hasGroups ? "분류 전체" : "산업 전체" };
+
+        foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
+        {
+            _categoryOptions.Add(((byte)industry, InventoryItemGroup.None));
+            labels.Add(IndustryLabel.Get(industry));
+        }
+
+        if (hasGroups)
+        {
+            _categoryOptions.Add((0, InventoryItemGroup.Box));
+            labels.Add("상자");
+            _categoryOptions.Add((0, InventoryItemGroup.Other));
+            labels.Add("기타");
+        }
+
+        industryDropdown.ClearOptions();
+        industryDropdown.AddOptions(labels);
+        industryDropdown.SetValueWithoutNotify(0);
+        industryDropdown.RefreshShownValue();
     }
 
     // 이 탭이 쓸 수 있는 기준만 드롭다운에 세운다 (ApplyTab에서 호출).
@@ -310,28 +352,32 @@ public class InventoryToolPresenter : MonoBehaviour
 
     #region 일괄 담기
 
-    // 고른 등급 이하의 자원을 보유 수량 전부 판매 목록에 담는다 (Bulk Sell Button OnClick에 코드로 연결)
+    // 고른 등급 이하를 판매 목록에 담는다 — 지금 탭의 것만 (Bulk Sell Button OnClick에 코드로 연결)
     //
     // 팔지 않고 담기까지만 한다 — 확인 절차는 아래 [판매] 버튼이다('Inventory 규칙.md').
     private void OnBulkSellClicked()
     {
-        // 캐릭터·장비는 일괄로 담지 않는다 — 개체 하나하나가 레벨·적성·인챈트가 달라 등급만으로 고르면 아까운 것이 섞인다.
-        //   버튼을 잠그는 대신 어떻게 담는지 알린다. 잠가 두면 "고장 났나"가 되고, 이유는 어디에도 안 남는다.
-        if (tabs.CurrentTab != InventoryTab.Resource)
+        switch (tabs.CurrentTab)
         {
-            _wait.RaiseNotice("일괄 담기는 자원만 됩니다. 캐릭터·장비는 칸을 우클릭해 하나씩 담으세요.");
-
-            return;
+            case InventoryTab.Resource:  BulkAddItems();      break;
+            case InventoryTab.Character: BulkAddCharacters(); break;
+            case InventoryTab.Equipment: BulkAddEquips();     break;
         }
+    }
 
+    // 자원 — 고른 등급 이하를 보유 수량 전부. [상자 제외]가 켜져 있으면 상자는 뺀다 (OnBulkSellClicked에서 호출).
+    private void BulkAddItems()
+    {
         // ★ 먼저 비운다 — 이 버튼은 "더 담기"가 아니라 **범위를 다시 잡는 것**이다.
         //   비우지 않으면 영웅 이하로 담았다가 일반 이하로 다시 누를 때 영웅·희귀가 그대로 남아,
         //   화면의 범위(`일반 이하`)와 실제로 팔릴 것이 어긋난다.
         //   ⚠️ 우클릭으로 하나씩 담아 둔 자원도 함께 빠진다. 범위를 다시 잡는다는 뜻이 그것이다.
         _cart.ClearItems(); // 우클릭으로 담아 둔 캐릭터·장비는 범위와 상관없으니 남긴다
 
-        GlobalRarity limit = SelectedRarity;
-        int          added = 0;
+        GlobalRarity limit      = SelectedRarity;
+        bool         excludeBox = excludeBoxToggle.isOn;
+        int          added      = 0;
+        int          skipped    = 0;
 
         foreach (ItemInfo item in _data.Inventory)
         {
@@ -345,19 +391,124 @@ public class InventoryToolPresenter : MonoBehaviour
                 continue;
             }
 
+            if (excludeBox && GameDataLoader.IsBox(item.ItemId))
+            {
+                skipped++;
+
+                continue;
+            }
+
             _cart.Add(item.ItemId, item.Count);
             added++;
         }
 
+        string skippedText = skipped > 0 ? $" (상자 {skipped}종 제외 — [상자 제외]를 끄면 함께 담깁니다)" : "";
+
         if (added == 0)
         {
-            _wait.RaiseNotice($"{RarityLabel.Get(SellRarities[bulkRarityDropdown.value])} 이하로 담을 자원이 없습니다.");
+            _wait.RaiseNotice($"{LimitLabel} 이하로 담을 자원이 없습니다.{skippedText}");
 
             return;
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 {added}종을 판매 목록에 담았다");
+        // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 상자는 보이지 않는다.
+        if (skipped > 0)
+        {
+            _wait.RaiseNotice($"자원 {added}종을 담았습니다.{skippedText}");
+        }
+
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 상자 {skipped}종 제외");
     }
+
+    // 캐릭터 — 고른 등급 이하 중 팔 수 있는 것만 (OnBulkSellClicked에서 호출).
+    //
+    // ※ 판정은 우클릭 담기와 같은 'EntityBlockText'다. 마지막 한 명이 남도록 고를 때마다 남는 수를 줄여 가며 묻는다.
+    // ※ 다 고른 뒤 한 번에 담는다('SellCartModel.AddEntities') — 하나씩 담으면 격자가 개체 수만큼 다시 그린다.
+    private void BulkAddCharacters()
+    {
+        _cart.ClearCharacters(); // 범위를 다시 잡는다 — 담아 둔 자원·장비는 남긴다
+
+        GlobalRarity limit   = SelectedRarity;
+        var          picked  = new List<long>();
+        int          blocked = 0;
+
+        foreach (CharacterInfo character in _data.Characters)
+        {
+            if (GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
+            {
+                continue;
+            }
+
+            // 방금 비웠으니 담길 캐릭터는 'picked'뿐이다.
+            int remainingAfter = _data.Characters.Count - picked.Count - 1;
+
+            if (EntityBlockText.ForCharacter(_data, character.CharacterId, remainingAfter) != null)
+            {
+                blocked++;
+
+                continue;
+            }
+
+            picked.Add(character.CharacterId);
+        }
+
+        _cart.AddEntities(picked, System.Array.Empty<long>());
+        NotifyEntityBulk("캐릭터", "명", picked.Count, blocked, "배치 중 · 장비 착용 · 마지막 캐릭터");
+    }
+
+    // 장비 — 고른 등급 이하 중 끼고 있지 않은 것만. 인챈트 등급도 범위 안이어야 한다 (OnBulkSellClicked에서 호출).
+    private void BulkAddEquips()
+    {
+        _cart.ClearEquips(); // 범위를 다시 잡는다 — 담아 둔 자원·캐릭터는 남긴다
+
+        GlobalRarity limit   = SelectedRarity;
+        var          picked  = new List<long>();
+        int          blocked = 0;
+
+        foreach (EquipInfo equip in _data.Equips)
+        {
+            // 'EnchantGrade'는 0(없음) 또는 'GlobalRarity' 값이다 — 장비 등급과 같은 축으로 비교한다.
+            if (GameDataLoader.GetEquipRarity(equip.EquipTid) > limit || (GlobalRarity)equip.EnchantGrade > limit)
+            {
+                continue;
+            }
+
+            if (EntityBlockText.ForEquip(_data, equip.EquipId) != null)
+            {
+                blocked++;
+
+                continue;
+            }
+
+            picked.Add(equip.EquipId);
+        }
+
+        _cart.AddEntities(System.Array.Empty<long>(), picked);
+        NotifyEntityBulk("장비", "개", picked.Count, blocked, "캐릭터가 끼고 있는 장비");
+    }
+
+    // 개체 일괄 담기 결과를 알린다 — 뺀 것이 있을 때와 하나도 못 담았을 때만 (BulkAddCharacters · BulkAddEquips).
+    private void NotifyEntityBulk(string kind, string unit, int added, int blocked, string blockedReason)
+    {
+        string blockedText = blocked > 0 ? $" ({blockedReason} {blocked}{unit} 제외)" : "";
+
+        if (added == 0)
+        {
+            _wait.RaiseNotice($"{LimitLabel} 이하로 담을 {kind}이(가) 없습니다.{blockedText}");
+
+            return;
+        }
+
+        if (blocked > 0)
+        {
+            _wait.RaiseNotice($"{kind} {added}{unit}을(를) 담았습니다.{blockedText}");
+        }
+
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added}{unit} · 제외 {blocked}{unit}");
+    }
+
+    // 드롭다운이 가리키는 범위의 이름 — "일반".
+    private string LimitLabel => RarityLabel.Get(SelectedRarity);
 
     // 드롭다운이 가리키는 등급. 목록과 값 배열이 어긋나면 가장 낮은 등급으로 떨어진다.
     private GlobalRarity SelectedRarity
@@ -378,18 +529,18 @@ public class InventoryToolPresenter : MonoBehaviour
     private void ApplyFilter()
     {
         int rarityIndex   = rarityDropdown.value - 1; // 0번은 '등급 전체'
-        int industryIndex = industryDropdown.value - 1; // 0번은 '산업 전체'
+        int categoryIndex = industryDropdown.value;   // 0번은 '전체'
 
         GlobalRarity rarity = rarityIndex >= 0 && rarityIndex < SellRarities.Length
             ? SellRarities[rarityIndex]
             : GlobalRarity.None;
 
-        byte industry = industryDropdown.gameObject.activeSelf
-                        && industryIndex >= 0 && industryIndex < InventoryGridPresenter.StripIndustries.Length
-            ? (byte)InventoryGridPresenter.StripIndustries[industryIndex]
-            : (byte)0;
+        (byte industry, InventoryItemGroup group) = industryDropdown.gameObject.activeSelf
+                                                     && categoryIndex >= 0 && categoryIndex < _categoryOptions.Count
+            ? _categoryOptions[categoryIndex]
+            : ((byte)0, InventoryItemGroup.None);
 
-        grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry));
+        grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry, group));
     }
 
     // 찾기 조건을 모두 비운다 ([초기화] · 탭 전환 · OnDisable).
@@ -425,9 +576,13 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         RebuildSortKeyOptions();
+        RebuildCategoryOptions();
 
         // 산업 축이 없는 탭(캐릭터)은 드롭다운을 감춘다 — 골라도 아무 일이 없으면 고장처럼 보인다.
         industryDropdown.gameObject.SetActive(grid.CurrentSupportsIndustryFilter);
+
+        // 상자 제외는 자원 탭에서만 뜻이 있다.
+        excludeBoxToggle.gameObject.SetActive(tab == InventoryTab.Resource);
 
         ResetFilter();
     }

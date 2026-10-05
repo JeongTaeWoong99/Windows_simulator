@@ -211,6 +211,38 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
+    // 여러 캐릭터·장비를 한 번에 담는다 (일괄 담기). 이미 담긴 것은 건너뛴다.
+    // ※ 하나씩 'AddCharacter'를 부르면 담을 때마다 'Changed'가 나가 격자·목록이 개체 수만큼 다시 그린다.
+    // ⚠️ 팔 수 있는지는 부르는 쪽이 먼저 본다('EntityBlockText').
+    public void AddEntities(IReadOnlyList<long> characterIds, IReadOnlyList<long> equipIds)
+    {
+        int before = _characterIds.Count + _equipIds.Count;
+
+        foreach (long id in characterIds)
+        {
+            if (!_characterIds.Contains(id))
+            {
+                _characterIds.Add(id);
+            }
+        }
+
+        foreach (long id in equipIds)
+        {
+            if (!_equipIds.Contains(id))
+            {
+                _equipIds.Add(id);
+            }
+        }
+
+        if (_characterIds.Count + _equipIds.Count == before)
+        {
+            return;
+        }
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
     // 이 캐릭터를 뺀다. 담겨 있지 않으면 아무 일도 하지 않는다.
     public void RemoveCharacter(long characterId)
     {
@@ -273,6 +305,34 @@ public class SellCartModel : MonoService<SellCartModel>
         }
 
         _characterIds.Clear();
+        _equipIds.Clear();
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 캐릭터만 비운다 (캐릭터 탭 일괄 담기가 범위를 다시 잡을 때). 담아 둔 자원·장비는 남긴다.
+    public void ClearCharacters()
+    {
+        if (_characterIds.Count == 0)
+        {
+            return;
+        }
+
+        _characterIds.Clear();
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 장비만 비운다 (장비 탭 일괄 담기가 범위를 다시 잡을 때). 담아 둔 자원·캐릭터는 남긴다.
+    public void ClearEquips()
+    {
+        if (_equipIds.Count == 0)
+        {
+            return;
+        }
+
         _equipIds.Clear();
 
         Recalculate();
