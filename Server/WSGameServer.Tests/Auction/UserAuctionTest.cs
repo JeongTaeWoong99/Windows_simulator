@@ -116,7 +116,7 @@ public class UserAuctionTest
 
     [Theory]
     [InlineData(9)]     // 하한 10 미만
-    [InlineData(10_000_000_000_001)]   // 상한 10조 초과 — 기준가와 무관한 절대 상한
+    [InlineData(1_000_000_000_001)]   // 상한 1조 초과 — 기준가와 무관한 절대 상한
     public void 가격_밴드_밖이면_아무것도_바꾸지_않는다(long unitPrice)
     {
         var (user, b) = NewUser();
@@ -125,6 +125,32 @@ public class UserAuctionTest
 
         Last<S_AuctionRegisterResponse>(b).Result.ShouldBe(EResultCode.AuctionPriceOutOfBand);
         (user.GetItemCount(Carp), user.Gold).ShouldBe((20, 1000L));
+        b.DB.PostedOf<RegisterAuctionRepository>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 한_번에_9999개까지_올릴_수_있다()
+    {
+        var (user, _) = NewUser();
+        user.AddItem(Carp, 9980);   // 20 + 9,980 = 10,000개
+
+        // 단가 10 × 9,999개 = 99,990 → 등록비 1% = 999
+        user.TryRegisterAuction(EAuctionKind.Item, Carp, 9999, 0, 10, Now);
+
+        (user.GetItemCount(Carp), user.Gold).ShouldBe((1, 1L));
+    }
+
+    [Fact]
+    public void 한_번에_9999개를_넘기면_아무것도_바꾸지_않는다()
+    {
+        var (user, b) = NewUser();
+        user.AddItem(Carp, 9980);   // 20 + 9,980 = 10,000개 — 보유량은 충분하다
+        b.Channel.Sent.Clear();
+
+        user.TryRegisterAuction(EAuctionKind.Item, Carp, 10000, 0, 10, Now);
+
+        Last<S_AuctionRegisterResponse>(b).Result.ShouldBe(EResultCode.AuctionInvalidRequest);
+        (user.GetItemCount(Carp), user.Gold).ShouldBe((10000, 1000L));
         b.DB.PostedOf<RegisterAuctionRepository>().ShouldBeEmpty();
     }
 

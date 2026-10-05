@@ -21,17 +21,31 @@ public class AuctionRulesTest
     }
 
     [Fact]
-    public void 상한은_기준가와_무관한_10조다()
+    public void 상한은_기준가와_무관한_1조다()
     {
-        AuctionRules.MaxUnitPrice.ShouldBe(10_000_000_000_000);
+        AuctionRules.MaxUnitPrice.ShouldBe(1_000_000_000_000);
+    }
+
+    [Fact]
+    public void 한_번에_올리는_수량_상한은_9999개다()
+    {
+        AuctionRules.MaxListingCount.ShouldBe(9999);
+    }
+
+    [Fact]
+    public void 최고_단가로_최대_수량을_올려도_수수료_계산이_넘치지_않는다()
+    {
+        // 1조 × 9,999개 = 9,999조 → 판매 수수료 5% = 499조 9,500억
+        // 곱한 뒤 나누므로 중간값은 9,999조 × 50 ≈ 50경 — long 한계(약 922경) 안이어야 한다
+        AuctionRules.SaleFee(1_000_000_000_000 * 9999).ShouldBe(499_950_000_000_000);
     }
 
     [Theory]
     [InlineData(36, false)]
     [InlineData(37, true)]
     [InlineData(371, true)]
-    [InlineData(10_000_000_000_000, true)]
-    [InlineData(10_000_000_000_001, false)]
+    [InlineData(1_000_000_000_000, true)]
+    [InlineData(1_000_000_000_001, false)]
     public void 밴드_경계를_포함한다(long unitPrice, bool inBand)
     {
         AuctionRules.IsInBand(37, unitPrice).ShouldBe(inBand);

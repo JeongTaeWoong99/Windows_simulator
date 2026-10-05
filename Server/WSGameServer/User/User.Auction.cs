@@ -105,7 +105,7 @@ public partial class User
 
     private (EResultCode, AuctionItemSnapshot?, int BasePrice) DescribeItem(int itemTid, int count)
     {
-        if (count <= 0 || !GameTable.ItemTable.TryGet(itemTid, out var row))
+        if (count <= 0 || count > AuctionRules.MaxListingCount || !GameTable.ItemTable.TryGet(itemTid, out var row))
         {
             return (EResultCode.AuctionInvalidRequest, null, 0);
         }

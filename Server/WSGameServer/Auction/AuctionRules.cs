@@ -13,11 +13,10 @@ public static class AuctionRules
     /// <summary>판매 중 매물 상한 — 1인 등록 건수 제한(시세 조작 대응).</summary>
     public static int MaxActiveListings => (int)Constants.AuctionMaxActiveListings;
 
-    /// <summary>
-    /// 단가 상한 — 기준가와 무관한 절대값(10조). 값은 판매자가 정한다(자율 경제 · 2026-10-05).
-    /// 단가 × 수량 × 수수료 천분율이 long을 넘지 않는 선이다.
-    /// </summary>
+    // 단가 상한(1조)과 한 번에 올리는 수량 상한(9,999개) — 둘이 한 쌍이다.
+    // 단가 × 수량 × 수수료 천분율이 long을 넘지 않게 묶는다(지금 값으로 천분율 922까지 버틴다).
     public static long MaxUnitPrice => Constants.AuctionMaxUnitPrice;
+    public static int MaxListingCount => (int)Constants.AuctionMaxListingCount;
 
     // 천분율(1000 = 100%). 등록비는 만료면 환급, 취소면 환급하지 않는다.
     public static long ListingFeePermille => Constants.AuctionListingFeePermille;
