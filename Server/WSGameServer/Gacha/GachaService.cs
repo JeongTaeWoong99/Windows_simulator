@@ -16,7 +16,7 @@ public sealed class GachaService : Singleton<GachaService>
     private static int SingleDraw => (int)Constants.GachaDrawSingle;
     private static int MultiDraw  => (int)Constants.GachaDrawMulti;
 
-    /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx. 상자 최대 수량(MaxStack 50)과 같다.</summary>
+    /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx(50). 상자 최대 수량(MaxStack 1000)보다 작아 여러 번 나눠 연다.</summary>
     public static int MaxOpenCount => (int)Constants.BoxOpenMax;
 
     private readonly GachaPoolCatalog _pools;
@@ -141,13 +141,16 @@ public sealed class GachaService : Singleton<GachaService>
         var (rewards, changes) = Grant(user, rolled);
 
         // 상자 차감을 앞에 싣는다 — 클라는 누적 총량으로 덮어쓰기만 하면 된다.
-        consumed.AddRange(changes);
+        // ⚠️ 새 목록에 담는다 — consumed는 차감 저장 작업이 DB 스레드에서 순회 중이라 덧붙이면 세션이 끊긴다.
+        var allChanges = new List<ItemChangeInfo>(consumed.Count + changes.Count);
+        allChanges.AddRange(consumed);
+        allChanges.AddRange(changes);
         user.Send(new S_ItemUseResponse
         {
             Result          = EResultCode.Ok,
             ItemTID         = itemTid,
             Rewards         = rewards,
-            ItemChangeInfos = consumed,
+            ItemChangeInfos = allChanges,
         });
         return;
 

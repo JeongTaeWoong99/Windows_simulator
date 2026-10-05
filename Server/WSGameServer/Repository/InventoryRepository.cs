@@ -42,15 +42,19 @@ public sealed class SaveItemChangesRepository : IRepository
 {
     private readonly List<ItemChangeInfo> _changes;
 
+    // 목록을 복사해 둔다 — 넘긴 쪽이 로직 스레드에서 목록을 고쳐도 DB 스레드의 순회가 깨지지 않게.
     public SaveItemChangesRepository(User user, List<ItemChangeInfo> changes)
     {
         User     = user;
-        _changes = changes;
+        _changes = new List<ItemChangeInfo>(changes);
     }
 
     public long Key => User.DbKey;
 
     public User User { get; }
+
+    /// <summary>저장할 변경분 — DB 스레드가 순회한다.</summary>
+    public IReadOnlyList<ItemChangeInfo> Changes => _changes;
 
     public Task ExecuteAsync(DbConnection connection)
     {
