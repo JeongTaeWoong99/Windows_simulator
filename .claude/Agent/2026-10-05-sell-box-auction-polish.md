@@ -31,3 +31,8 @@ tags: [client, server, ui, data, docs]
 - **배경 땅 높이가 되돌아가던 원인**: `ArtBaker.Bake`가 결과 SO의 `groundHeight`·`speedRatio`(대상은 `levelTints`)를 매번 레시피 값으로 덮었다. T-121 때 [전부 다시 굽기](03:08)가 다듬은 값 4벌(american-forest 16 · dark-forest 18 · hills 16 · plains 20 — 그림 저장소 `012bd84`)을 레시피 값으로 되돌렸다. 이제 SO가 **처음 생길 때만** 레시피에서 채운다. 되돌려진 값 복구는 사용자 결정 대기(직접 고치지 않음).
 - 이슈 #56(경매 상한 리뷰 · T-123) · #57(거래소·경매 분류 검색 · T-124) 등록.
 - 땅 높이 4벌을 `012bd84` 값으로 복구(사용자 지시) — 그림 저장소에서 별도 커밋 필요.
+
+## 업데이트 (2026-10-06) — 생성물 줄바꿈 diff
+- 원인: 생성기가 머리말 "\n" + 본문 AppendLine(CRLF)으로 써서 한 파일에 섞였고, autocrlf=true 환경에서 git이 내용이 같아도 "수정됨"으로 잡았다.
+- 해결: `CodeGenUtil.WriteText`(LF 고정)로 쓰기 통일 + `.gitattributes`에 생성물 경로 `eol=lf`. 파이프라인 재실행 뒤 diff 0 확인.
+- 지뢰: 생성물에 `File.WriteAllText`를 직접 쓰면 재발한다. 다른 PC는 첫 pull 뒤 한 번 생성물이 수정됨으로 보일 수 있다 — 그 경로를 `git add`하면 사라진다(내용 차이 없음).

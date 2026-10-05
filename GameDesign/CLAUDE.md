@@ -1,6 +1,6 @@
 # CLAUDE.md — 게임 기획 · 데이터
 
-> 최종 업데이트: 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
+> 최종 업데이트: 2026-10-06 (생성물 줄바꿈 LF 고정 — 생성기 `WriteText` · `.gitattributes`) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
 
 게임 시스템·콘텐츠·데이터에 닿는 작업에서 참고하는 문서다.
 공통 규칙(환경·협업·스킬)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -97,6 +97,9 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
   상세는 [`excel-table-creator`](../.claude/skills/common/excel-table-creator/SKILL.md) 스킬 참조.
 - **시트를 지우면 그 테이블의 `.bytes`·`.json`도 자동 삭제된다**(Unity 미러까지 전파).
   생성물을 손으로 지울 필요가 없다.
+- **생성물(`.cs`·`.json`)의 줄바꿈은 LF다** — 생성기는 `CodeGenUtil.WriteText`로만 쓰고, `.gitattributes`가 그 경로를 `eol=lf`로 고정한다.
+  ⚠️ 생성기에 `File.WriteAllText`를 직접 쓰면 줄바꿈이 섞여, 내용이 같아도 git이 매번 "수정됨"으로 잡는다(2026-10-06 — 윈도우 `autocrlf=true`).
+  pull 직후 생성물이 내용 차이 없이 "수정됨"으로 보이면 그 경로를 `git add` 하면 사라진다.
 
 ### 엑셀 마커 행 (A열)
 
