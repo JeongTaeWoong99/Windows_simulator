@@ -255,6 +255,26 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return _equips.Exists(equip => equip.EquippedCharacterId == characterId);
     }
 
+    // 이 캐릭터가 이 칸에 낀 장비. 비었으면(또는 모르는 캐릭터면) null.
+    // ※ 인벤토리 캐릭터 칸 · 작업슬롯 칸의 장착 네모(T-104)와 슬롯 설정의 장비 칸이 같은 판정을 쓴다.
+    public EquipInfo? FindWornEquip(long characterId, EEquipSlot slot)
+    {
+        if (characterId == 0L || slot == EEquipSlot.None)
+        {
+            return null; // 0은 '인벤토리'라 끼지 않은 장비 전부와 맞아 버린다
+        }
+
+        foreach (var equip in _equips)
+        {
+            if (equip.EquippedCharacterId == characterId && equip.EquippedSlot == slot)
+            {
+                return equip;
+            }
+        }
+
+        return null;
+    }
+
     // 이 장비를 캐릭터가 끼고 있는가. 인벤토리에 있으면(또는 모르는 개체면) false.
     // ※ 서버의 'Equip.IsEquipped'와 같은 판정이다 — 'EquippedCharacterId = 0'이 인벤토리다.
     public bool IsEquipped(long equipId)

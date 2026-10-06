@@ -10,21 +10,31 @@ namespace DesktopWindowControl.EditorTools
 {
     // 레시피 → 결과물(PNG + 런타임 SO). 원본 팩은 읽기만 한다.
     //
-    // ■ 그림은 다시 만들고, 조정값은 처음 한 번만 넣는다
-    //   레시피 옆의 PNG와 SO의 그림 참조(텍스처·스프라이트·층 높이)는 구울 때마다 덮인다.
-    //   ⚠️ **사람이 SO에서 다듬는 값은 SO가 처음 생길 때만 레시피에서 채운다** — 배경의 땅 높이·층 속도, 대상의 레벨 색.
-    //   그 뒤로는 굽기가 건드리지 않는다. 레시피 값은 "첫 값"일 뿐이다.
-    //   (2026-10-05 — 그림 저장소 분리 때 [전부 다시 굽기]가 다듬어 둔 땅 높이 4벌을 레시피 값으로 되돌렸다)
-    //   층이 늘어난 경우처럼 SO에 자리가 없던 값만 레시피에서 채운다.
-    //   스프라이트 ID는 이름으로 이어 받아, 다시 구워도 다른 곳의 참조가 끊기지 않는다.
+    // ■ 그림은 다시 만들고, SO는 처음 한 번만 채운다
+    //   레시피 옆의 PNG는 구울 때마다 다시 쓴다. 스프라이트 ID는 이름으로 이어 받아 SO·씬의 참조가 끊기지 않는다.
+    //   ⚠️ **결과 SO의 값은 사람이 다듬는다 — 굽기는 SO가 처음 생길 때·칸이 비어 있을 때만 채운다.**
+    //     캐릭터: 대기·달리기 프레임, 공격 칸(순서·반복·타격 프레임·이펙트), 상반신·머리
+    //     배경  : 무대 높이·땅 높이·층 속도 (층 텍스처 참조만 매번 갱신)
+    //     대상  : 레벨 색 (그림·섬광 참조만 매번 갱신)
+    //   레시피 값은 "첫 값"일 뿐이다. 다시 채우게 하려면 SO의 그 칸을 비우고 굽는다.
+    //   (2026-10-05 [전부 다시 굽기]가 다듬어 둔 땅 높이 4벌을 되돌렸고,
+    //    2026-10-07 black-knight 공격 순서 1 2 1 3을 레시피 순서로 되돌렸다 — 둘 다 사람이 다듬은 값이었다)
     //
     // ■ 임포트 설정은 여기서 정하지 않는다
     //   'ArtImportPostprocessor'가 폴더·접미사로 정한다 — 손으로 넣은 그림도 같은 규격을 받게.
     internal static class ArtBaker
     {
-        // 포트레이트·머리 결과 크기 (정사각형). 크롭을 정수 배로 키워 이 안에 가운데 맞춘다
-        private const int PortraitCanvas = 64;
-        private const int HeadCanvas     = 32;
+        // 포트레이트 결과의 최대 변 — 크롭을 이 안에서 정수 배로 키우되 **캔버스로 채우지 않는다**('Upscale').
+        // 머리 결과 크기 (정사각형) — 크롭을 정수 배로 키워 이 안에 가운데 맞춘다('Fit').
+        private const int PortraitMaxSize = 64;
+        private const int HeadCanvas      = 32;
+
+        // 자동 상반신 크롭 — 키의 이 비율을 위에서부터(머리 + 상체) · 최대 변 32(× 2 = 64로 꼭 맞는다)
+        private const float PortraitHeightRatio = 0.6f;
+        private const int   PortraitAutoMax     = 32;
+
+        // 몸통 가운데를 잴 위쪽 줄 수 — 머리·어깨
+        private const int TorsoRows = 12;
 
         [MenuItem(ArtSpec.MenuRoot + "전부 다시 굽기", priority = 0)]
         public static void BakeAll()
@@ -109,7 +119,7 @@ namespace DesktopWindowControl.EditorTools
             string headPath     = $"{folder}/{key}_head.png";
 
             Strip(runCells).SavePng(runPath);
-            Fit(anchorCell.Crop(portraitRect), PortraitCanvas).SavePng(portraitPath);
+            Upscale(anchorCell.Crop(portraitRect), PortraitMaxSize).SavePng(portraitPath);
             Fit(anchorCell.Crop(headRect),     HeadCanvas).SavePng(headPath);
 
             Sprite[] runSprites    = ImportStrip(runPath,    $"{key}{ArtSpec.RunSuffix}",    runCells.Length);
@@ -132,25 +142,38 @@ namespace DesktopWindowControl.EditorTools
 
             DeleteStaleAttackStrips(folder, key, attackCells.Length);
 
-            CharacterVisual visual = LoadOrCreate<CharacterVisual>($"{folder}/{key}.asset");
-            var so = new SerializedObject(visual);
-            SetArray(so.FindProperty("idleFrames"), idleSprites);
-            SetArray(so.FindProperty("runFrames"), runSprites);
+            // 그림 파일은 위에서 다시 썼다 — 스프라이트 ID를 이름으로 이어 받아 SO의 참조는 그대로 산다.
+            // SO의 칸(프레임 배열·공격 순서·타격 프레임·상반신·머리)은 사람이 다듬는 값이라 **비어 있을 때만** 채운다(머리 주석).
+            CharacterVisual visual = LoadOrCreate<CharacterVisual>($"{folder}/{key}.asset", out bool created);
+            var so   = new SerializedObject(visual);
+            var kept = new List<string>();
 
+            FillArrayIfEmpty(so.FindProperty("idleFrames"), idleSprites, "대기",   kept);
+            FillArrayIfEmpty(so.FindProperty("runFrames"),  runSprites,  "달리기", kept);
+
+            // 공격은 한 칸이라도 있으면 통째로 둔다 — 순서(1 2 1 3 같은 반복)·타격 프레임을 사람이 다듬는다
             SerializedProperty attacksProperty = so.FindProperty("attacks");
-            attacksProperty.arraySize = attackSprites.Length;
 
-            for (int i = 0; i < attackSprites.Length; i++)
+            if (attacksProperty.arraySize == 0)
             {
-                SerializedProperty motion = attacksProperty.GetArrayElementAtIndex(i);
-                SetArray(motion.FindPropertyRelative("frames"), attackSprites[i]);
-                motion.FindPropertyRelative("hitFrame").intValue = hitFrames[i];
-                SetArray(motion.FindPropertyRelative("effectFrames"), effectSprites[i]);
-                SetArray(motion.FindPropertyRelative("hitEffectFrames"), hits[i]);
+                attacksProperty.arraySize = attackSprites.Length;
+
+                for (int i = 0; i < attackSprites.Length; i++)
+                {
+                    SerializedProperty motion = attacksProperty.GetArrayElementAtIndex(i);
+                    SetArray(motion.FindPropertyRelative("frames"), attackSprites[i]);
+                    motion.FindPropertyRelative("hitFrame").intValue = hitFrames[i];
+                    SetArray(motion.FindPropertyRelative("effectFrames"), effectSprites[i]);
+                    SetArray(motion.FindPropertyRelative("hitEffectFrames"), hits[i]);
+                }
+            }
+            else
+            {
+                kept.Add("공격");
             }
 
-            so.FindProperty("portrait").objectReferenceValue = portrait;
-            so.FindProperty("head").objectReferenceValue     = head;
+            FillReferenceIfEmpty(so.FindProperty("portrait"), portrait, "상반신", kept);
+            FillReferenceIfEmpty(so.FindProperty("head"),     head,     "머리",   kept);
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(visual);
 
@@ -159,7 +182,8 @@ namespace DesktopWindowControl.EditorTools
             string attackSummary = string.Join(" → ", attackSprites.Select((frames, i) => $"{frames.Length}(타격 {hitFrames[i]})"));
 
             return $"✅ {key}: 대기 {idleSprites.Length} · 달리기 {runSprites.Length} · 공격 {attackSummary} · " +
-                   $"상반신 {portraitRect} · 머리 {headRect}{warn}";
+                   $"상반신 {portraitRect} · 머리 {headRect}" +
+                   (created || kept.Count == 0 ? "" : $" (SO 값 유지: {string.Join("·", kept)})") + warn;
         }
 
         // 있어도 없어도 되는 띠 — 대기 '<키>_idle' · 공격 이펙트 '<키>_attack_N_fx'.
@@ -269,20 +293,57 @@ namespace DesktopWindowControl.EditorTools
         }
 
         // 자동 크롭은 자리만 잡아 준다 — 결과를 보고 레시피에 사각형을 적는다
+        //
+        // 상반신 규칙('Art 규칙.md' "상반신 크롭"): **머리와 상체**가 중심 — 위는 머리 꼭대기에 붙이고,
+        // 가로는 **몸통 가운데**(위쪽 몇 줄의 불투명 픽셀 평균). 무기·방패는 잘려도 된다.
+        // 크기는 키의 'PortraitHeightRatio'(머리 + 상체) — 몸 전체를 담으면 칸에서 멀리 보인다(2026-10-07). 최대 'PortraitAutoMax'.
+        // ⚠️ 평균이 무기에 끌릴 수 있다 — 결과를 보고 어긋나면 레시피에 직접 적는다.
         private static RectInt AutoPortrait(ArtImage cell)
         {
+            RectInt body    = cell.OpaqueBounds();
+            int     size    = Mathf.Clamp(Mathf.RoundToInt(body.height * PortraitHeightRatio), 8, PortraitAutoMax);
+            int     centerX = TorsoCenterX(cell, body);
+
+            return new RectInt(centerX - size / 2, body.yMax - size, size, size);
+        }
+
+        // 머리 규칙: 크기를 **캔버스를 정수 배로 꼭 채우는 값**(32 → 16 · 8)으로 올린다 — 14px을 자르면 2배 28px이라
+        // 32 캔버스에 4px 여백이 남는다(2026-10-07 hero-knight·warrior). 위는 머리 꼭대기 + 1px, 가로는 발 x.
+        private static RectInt AutoHead(ArtImage cell)
+        {
             RectInt body = cell.OpaqueBounds();
-            int     size = Mathf.Max(8, Mathf.RoundToInt(body.height * 0.7f));
+            int     raw  = Mathf.Max(6, Mathf.RoundToInt(body.height * 0.35f));
+            int     size = HeadCanvas;
+
+            // 캔버스의 약수 중 raw 이상인 가장 작은 값 — 32면 8 · 16 · 32
+            while (size / 2 >= raw && size % 2 == 0)
+            {
+                size /= 2;
+            }
 
             return new RectInt(cell.Width / 2 - size / 2, body.yMax - size + 1, size, size);
         }
 
-        private static RectInt AutoHead(ArtImage cell)
+        // 몸통 가운데 x — 위쪽 'TorsoRows'줄(머리·어깨)의 불투명 픽셀 평균 (AutoPortrait에서 호출).
+        // 몸 전체의 가운데를 쓰면 한쪽으로 뻗은 칼·방패에 끌려 몸통이 한쪽으로 쏠린다(2026-10-07 hero-knight).
+        private static int TorsoCenterX(ArtImage cell, RectInt body)
         {
-            RectInt body = cell.OpaqueBounds();
-            int     size = Mathf.Max(6, Mathf.RoundToInt(body.height * 0.35f));
+            float sum   = 0f;
+            int   count = 0;
 
-            return new RectInt(cell.Width / 2 - size / 2, body.yMax - size + 1, size, size);
+            for (int y = body.yMax - 1; y >= body.yMax - TorsoRows && y >= body.yMin; y--)
+            {
+                for (int x = body.xMin; x < body.xMax; x++)
+                {
+                    if (cell.IsOpaque(x, y))
+                    {
+                        sum += x;
+                        count++;
+                    }
+                }
+            }
+
+            return count > 0 ? Mathf.RoundToInt(sum / count) : body.xMin + body.width / 2;
         }
 
         private static ArtImage Strip(ArtImage[] cells)
@@ -297,7 +358,28 @@ namespace DesktopWindowControl.EditorTools
             return strip;
         }
 
-        // 크롭을 정수 배로 키워 정사각형 캔버스 가운데에 놓는다 — 캐릭터마다 몸집이 달라도 결과 크기가 같다
+        // 크롭을 정수 배로만 키운다 — 캔버스를 덧대지 않아 결과 크기 = 크롭 × 배수 (상반신용).
+        //
+        // ■ 왜 'Fit'을 쓰지 않나 (2026-10-07)
+        //   64 캔버스에 맞추면 크롭이 33~63px일 때 배수가 1이라 나머지가 전부 여백이 된다 — warrior(33)·hero-knight(44)가
+        //   칸 안에서 작게 떠 보였다. 화면은 UI Image가 비율을 지켜 늘리므로 결과 크기가 캐릭터마다 달라도 된다.
+        private static ArtImage Upscale(ArtImage crop, int maxSize)
+        {
+            int scale  = Mathf.Max(1, maxSize / Mathf.Max(crop.Width, crop.Height));
+            var result = new ArtImage(crop.Width * scale, crop.Height * scale);
+
+            for (int y = 0; y < result.Height; y++)
+            {
+                for (int x = 0; x < result.Width; x++)
+                {
+                    result[x, y] = crop[x / scale, y / scale];
+                }
+            }
+
+            return result;
+        }
+
+        // 크롭을 정수 배로 키워 정사각형 캔버스 가운데에 놓는다 — 캐릭터마다 몸집이 달라도 결과 크기가 같다 (머리용)
         private static ArtImage Fit(ArtImage crop, int canvasSize)
         {
             int scale  = Mathf.Max(1, canvasSize / Mathf.Max(crop.Width, crop.Height));
@@ -421,14 +503,14 @@ namespace DesktopWindowControl.EditorTools
                 }
             }
 
-            so.FindProperty("stageHeight").intValue = stageHeight;
-
-            // 땅 높이는 SO에서 다듬는다 — 처음 생길 때만 레시피 값을 넣는다(머리 주석).
+            // 무대·땅 높이는 SO에서 다듬는다 — 처음 생길 때만 굽기·레시피 값을 넣는다(머리 주석).
             if (created)
             {
+                so.FindProperty("stageHeight").intValue  = stageHeight;
                 so.FindProperty("groundHeight").intValue = recipe.GroundHeight;
             }
 
+            stageHeight = so.FindProperty("stageHeight").intValue;
             int groundHeight = so.FindProperty("groundHeight").intValue;
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(visual);
@@ -628,6 +710,32 @@ namespace DesktopWindowControl.EditorTools
             AssetDatabase.CreateAsset(asset, path);
 
             return asset;
+        }
+
+        // 비어 있는 배열만 채운다 — 한 칸이라도 있으면 사람이 다듬은 값으로 보고 둔다
+        private static void FillArrayIfEmpty(SerializedProperty property, Object[] values, string label, List<string> kept)
+        {
+            if (property.arraySize > 0)
+            {
+                kept.Add(label);
+
+                return;
+            }
+
+            SetArray(property, values);
+        }
+
+        // 비어 있는 참조만 채운다
+        private static void FillReferenceIfEmpty(SerializedProperty property, Object value, string label, List<string> kept)
+        {
+            if (property.objectReferenceValue != null)
+            {
+                kept.Add(label);
+
+                return;
+            }
+
+            property.objectReferenceValue = value;
         }
 
         private static void SetArray(SerializedProperty property, Object[] values)

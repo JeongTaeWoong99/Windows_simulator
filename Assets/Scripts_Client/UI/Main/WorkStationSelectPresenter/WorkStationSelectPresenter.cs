@@ -142,6 +142,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
         [Tooltip("부위 이름. 코드가 '무기'·'장신구1'처럼 채우고, 고르는 중이면 '▼'를 붙인다")]
         public TMP_Text partLabel;
 
+        // 고르기 목록·인벤토리 장비 칸과 같은 그림('VisualCatalog.EquipIconOf')이다 — 칸에만 없으면 같은 장비가 두 곳에서 달라 보인다.
+        [Tooltip("낀 장비의 아이콘 — 'Icon Row/Icon (임시)'. 비었거나 그림이 없으면 자리 표시 네모(프리팹 색)")]
+        public Image icon;
+
         [Tooltip("낀 장비 이름. 비었으면 '비어있음'")]
         public TMP_Text nameLabel;
 
@@ -154,6 +158,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //   (Weapon=1 · Accessory1=2 · Accessory2=3 · Gem=4) — 산업 레벨 버튼과 같은 축이다.
     [SerializeField, NonReorderable, Tooltip("장비 칸 4개. 인스펙터에 넣은 순서가 곧 칸이다(무기·장신구1·장신구2·보석)")]
     private EquipSlotButton[] equipSlotButtons = new EquipSlotButton[0];
+
+    // 장비 칸 아이콘의 자리 표시 색 — 씬 값을 한 번 읽어 둔다(그림을 넣으면 흰색이라 되돌릴 기준이 필요하다).
+    private Color[] _equipIconPlaceholderColors = new Color[0];
 
     [SerializeField, Tooltip("효율 계산 줄 프리팹 (EfficiencyRowView 포함). 그릴 항목 수만큼 만들어 재사용한다")]
     private EfficiencyRowView efficiencyRowPrefab = null!;
@@ -1663,6 +1670,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
             int index = i;
             equipSlotButtons[i].button.onClick.AddListener(() => OnEquipSlotClicked(index));
         }
+
+        _equipIconPlaceholderColors = new Color[equipSlotButtons.Length];
+
+        for (int i = 0; i < equipSlotButtons.Length; i++)
+        {
+            Image? icon = equipSlotButtons[i].icon;
+
+            _equipIconPlaceholderColors[i] = icon != null ? icon.color : Color.white;
+        }
     }
 
     // 장비 칸 4개를 그린다 ('Refresh'가 세팅 단계에서 호출).
@@ -1703,6 +1719,20 @@ public class WorkStationSelectPresenter : MonoBehaviour
             if (entry.nameLabel != null)
             {
                 entry.nameLabel.text = worn != null ? GameDataLoader.GetEquipName(worn.EquipTid) : "";
+            }
+
+            // 아이콘 — 그림이 있으면 제 색(흰색 곱) · 비율 유지, 없거나 빈 칸이면 자리 표시 네모.
+            if (entry.icon != null)
+            {
+                Sprite? sprite = worn != null ? VisualCatalog.EquipIconOf(worn.EquipTid) : null;
+
+                entry.icon.sprite         = sprite;
+                entry.icon.preserveAspect = sprite != null;
+
+                // 'Start'(BindEquipSlotButtons) 전에 불리면 기준 색이 아직 없다 — 그때는 지금 색을 둔다
+                Color placeholder = i < _equipIconPlaceholderColors.Length ? _equipIconPlaceholderColors[i] : entry.icon.color;
+
+                entry.icon.color = sprite != null ? Color.white : placeholder;
             }
 
             // 효과는 인벤토리 장비 탭과 **같은 출처**다('EquipLabel') — 빈 칸이면 빈 문자열이라 줄이 사라진다.
@@ -2110,11 +2140,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 이 칸에 낀 장비. 없거나 슬롯이 비었으면 null (칸 그리기 · [해제] 잠금에서 호출).
     private EquipInfo? FindWornEquip(EEquipSlot part)
     {
-        if (part == EEquipSlot.None)
-        {
-            return null;
-        }
-
         var slot = FindSlot();
 
         if (slot == null || !IsAssigned(slot))
@@ -2122,15 +2147,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return null;
         }
 
-        foreach (var equip in _data.Equips)
-        {
-            if (equip.EquippedCharacterId == slot.CharacterId && equip.EquippedSlot == part)
-            {
-                return equip;
-            }
-        }
-
-        return null;
+        return _data.FindWornEquip(slot.CharacterId, part);
     }
 
     // 'index'번째 장비 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEquipPicker에서 호출).

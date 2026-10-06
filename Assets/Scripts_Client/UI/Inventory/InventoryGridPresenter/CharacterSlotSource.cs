@@ -22,6 +22,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ★ 슬롯 변경도 함께 구독한다 — 배치·해제로 딤과 마크가 바뀐다.
 //   캐릭터 목록만 구독하면 배치를 바꿔도 칸이 낡은 채로 남는다.
+// ★ 장비 변경도 구독한다 — 장착·해제로 칸의 장착 네모가 바뀐다(T-104).
 //
 // ■ 보조 문구를 쓰지 않는다 — 그 자리는 적성 스트립이 쓴다 (T-048)
 // 배치 여부는 '배' 마크가 말하고(T-046), 적성은 하단 5칸 스트립이 말한다.
@@ -35,6 +36,10 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 public class CharacterSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
+
+    // 장착 네모 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
+    // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
+    private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
 
     public CharacterSlotSource(PlayerDataModel data)
     {
@@ -76,7 +81,16 @@ public class CharacterSlotSource : InventorySlotSource
     // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
     public override bool IsAway(long key) => _data.FindSlotIndexOf(key) >= 0;
 
-    // 캐릭터 칸 툴팁 — 등급 · 레벨 · 어디서 일하나 · 적성 5종(산업 이름 + 기본 속도) (격자가 칸에 올린 순간 호출).
+    // 이 캐릭터가 낀 장비 4칸의 등급 (격자가 매번 그릴 때 호출 — 칸의 장착 네모, T-104).
+    public override IReadOnlyList<GlobalRarity>? GetWornEquips(long key)
+    {
+        EquipLabel.ReadWornGrades(_data, key, _wornGrades);
+
+        return _wornGrades;
+    }
+
+    // 캐릭터 칸 툴팁 — 등급 · 레벨 · 어디서 일하나 · 장비 4칸 · 적성 5종(산업 이름 + 기본 속도) (격자가 칸에 올린 순간 호출).
+    // ※ 장비는 칸의 네모가 등급만 말하므로 이름을 여기서 적는다(T-104).
     //
     // ★ 적성을 **산업 이름과 함께** 적는 것이 본론이다 — 칸의 스트립은 숫자만이라 어느 산업인지는
     //   위치로만 안다(T-048). 기본 속도를 곁들이면 "어디로 보낼까"를 여기서 정할 수 있다.
@@ -94,8 +108,11 @@ public class CharacterSlotSource : InventorySlotSource
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
             .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
-            .Row("상태", GetWorkText(key))
-            .Header("적성");
+            .Row("상태", GetWorkText(key));
+
+        EquipLabel.AddWornRows(content, _data, key);
+
+        content.Header("적성");
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
@@ -141,11 +158,12 @@ public class CharacterSlotSource : InventorySlotSource
         return $"슬롯 {slotIndex}";
     }
 
-    // 캐릭터 목록·슬롯 변경 구독 (Subscribe에서 호출)
+    // 캐릭터 목록·슬롯·장비 변경 구독 (Subscribe에서 호출)
     protected override void OnSubscribe()
     {
         _data.CharactersChanged       += Rebuild;
         _data.WorkStationSlotsChanged += Rebuild;
+        _data.EquipsChanged           += Rebuild;
     }
 
     // 구독 해제 (Unsubscribe에서 호출)
@@ -153,5 +171,6 @@ public class CharacterSlotSource : InventorySlotSource
     {
         _data.CharactersChanged       -= Rebuild;
         _data.WorkStationSlotsChanged -= Rebuild;
+        _data.EquipsChanged           -= Rebuild;
     }
 }
