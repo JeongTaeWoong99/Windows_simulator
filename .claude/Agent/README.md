@@ -24,7 +24,7 @@
 ## INDEX
 
 - [2026-10-06 경매 단가 상한 1조 · 등록 수량 상한 9,999 (T-123)](2026-10-06-auction-price-count-cap.md) — `#server` `#data` `#client` 두 상한을 한 쌍으로 묶어 수수료 계산이 long을 넘지 않게
-- [2026-10-06 특성 레벨 치트 SetTraitLevel (T-115 · #51)](2026-10-06-trait-level-cheat.md) — `#server` `#test` 조건·포인트 없이 특성 레벨 지정 · 결과는 특성 목록 재전송
+- [2026-10-06 특성 레벨 치트 SetTraitLevel (T-115 · #51)](2026-10-06-trait-level-cheat.md) — `#server` `#test` `#client` 조건·포인트 없이 특성 레벨 지정 · 결과는 특성 목록 재전송
 - [2026-10-06 캐릭터 레벨 효과를 작업속도 가산으로 — 적성 포인트 철거 (T-003 · #35)](2026-10-06-level-speed-add.md) — `#server` `#data` `#design` `SpeedAddPermille` 총량값 · 레벨업 시 정산 뒤 속도 재계산 · `#client` 효율 줄 레벨 항
 - [2026-10-05 판매·상자·경매 다듬기 7건](2026-10-05-sell-box-auction-polish.md) — `#client` `#server` `#ui` `#data` 상자 연속 개봉 크래시 수정 · 상자 상한 1000 · 경매 상한 10조 · 일괄 담기 3탭
 - [2026-10-05 그림을 비공개 저장소로 분리 (T-121)](2026-10-05-art-repo-split.md) — `#client` `#art` `#infra` Windows_simulator_Art · 같은 자리 독립 저장소 · 메인 그림 GUID 0개 · 경로 260자
