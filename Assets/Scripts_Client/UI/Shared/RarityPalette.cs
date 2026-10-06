@@ -16,6 +16,11 @@ public static class RarityPalette
     // 'SlotView.Clear'가 칸을 비울 때 되돌리는 색이기도 하다.
     public static readonly Color Unknown = new Color32(0x4A, 0x4A, 0x4A, 0xFF);
 
+    // 빈 네모의 색 — 장비의 빈 능력치 칸 · 캐릭터의 빈 장착 칸(T-104).
+    // 일반 등급 회색(#9D9D9D)보다 확실히 어둡게 둔다 — 둘이 비슷하면 "박혔나·꼈나"가 안 읽힌다.
+    // ※ 같은 표시를 쓰는 칸('SlotView' · 'ItemIconView' · 'EquipPipsView')이 이 하나를 본다.
+    public static readonly Color EmptySocket = new Color32(0x2A, 0x2A, 0x2A, 0xFF);
+
     // 테이블 등급에 대응하는 색. 모르는 등급도 예외 없이 'Unknown'으로 떨어진다(표시용이다).
     public static Color Get(GlobalRarity rarity) => rarity switch
     {

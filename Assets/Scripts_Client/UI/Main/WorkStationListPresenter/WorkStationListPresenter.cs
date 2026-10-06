@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -47,6 +48,10 @@ public class WorkStationListPresenter : MonoBehaviour
 
     // 칸 번호 → 프레임 라벨("비어있음." 자리). 잠긴 칸은 여기에 해금 조건을 적는다.
     private readonly Dictionary<int, TMP_Text> _frameLabels = new Dictionary<int, TMP_Text>();
+
+    // 장착 네모 버퍼 — 칸마다 새로 만들지 않는다. 뷰가 받는 즉시 쓰임이 끝난다.
+    private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
+    private readonly List<Sprite?>      _wornIcons  = new List<Sprite?>();
 
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
@@ -133,6 +138,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.WorkStationSlotsChanged += Rebuild;
         _data.UnlocksChanged          += Rebuild; // 열린 목록이 바뀌면 잠김 표시를 다시 그린다
         _data.CharactersChanged       += Rebuild; // 캐릭터 레벨이 오르면 칸 글자의 'Lv'를 고친다
+        _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
     }
 
@@ -148,6 +154,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.WorkStationSlotsChanged -= Rebuild;
         _data.UnlocksChanged          -= Rebuild;
         _data.CharactersChanged       -= Rebuild;
+        _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
     }
 
@@ -348,6 +355,10 @@ public class WorkStationListPresenter : MonoBehaviour
 
             view.Bind(slot, _data.GetCharacterName(slot.CharacterId), characterTid, _data.GetCharacterLevel(slot.CharacterId));
             view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
+
+            // 배치된 칸에만 뷰가 있으므로 캐릭터는 늘 있다 — 인벤토리 캐릭터 칸과 같은 값을 그린다(T-104)
+            EquipLabel.ReadWornGrades(_data, slot.CharacterId, _wornGrades, _wornIcons);
+            view.SetEquipPips(_wornGrades, _wornIcons);
         }
     }
 

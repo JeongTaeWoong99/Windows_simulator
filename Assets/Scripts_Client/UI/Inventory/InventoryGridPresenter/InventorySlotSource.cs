@@ -149,6 +149,10 @@ public abstract class InventorySlotSource
     // ※ 판단을 격자가 아니라 여기 두는 이유는 'IsAway'와 같다.
     public virtual IReadOnlyList<GlobalRarity>? GetStatSockets(long key) => null;
 
+    // 이 개체가 낀 장비 4칸의 등급 — 'EquipLabel.WornSlots' 순서, 빈 칸은 'None' (격자가 매번 그릴 때 호출, T-104).
+    // 장비를 끼지 않는 탭은 null이고, 칸은 장착 네모를 끈다. 지금은 캐릭터 탭만 값이 있다.
+    public virtual IReadOnlyList<GlobalRarity>? GetWornEquips(long key) => null;
+
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));

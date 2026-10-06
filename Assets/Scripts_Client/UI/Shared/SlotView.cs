@@ -76,6 +76,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 — 상한(3) 이상. 왼쪽 → 오른쪽 순서. 남는 네모는 꺼진다")]
     private Image[] statSocketImages = new Image[0];
 
+    // ※ LV 배지와 **같은 줄**, 오른쪽 끝은 **적성 스트립의 오른쪽 끝**과 맞춘다 — 왼쪽의 경험치 게이지가
+    //   스트립 왼쪽 끝과 맞는 것과 짝이다(2026-10-07). 장비 탭의 능력치 칸과 같은 네모라 새로 배울 표시가 없다.
+    [CenterHeader("장착 네모 (캐릭터 탭)")]
+    [SerializeField, Tooltip("캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석. 캐릭터 탭에서만 켜진다")]
+    private EquipPipsView equipPips = null!;
+
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
@@ -137,9 +143,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 능력치 칸 네모의 원래 색 — 등급색과 같은 이유로 딤·흑백 전의 값을 들고 있는다.
     private Color[] _socketColors = new Color[0];
 
-    // 빈 능력치 칸의 색. 일반 등급 회색(#9D9D9D)보다 확실히 어둡게 둔다 — 둘이 비슷하면 "박혔나"가 안 읽힌다.
-    private static readonly Color EmptySocketColor = new Color32(0x2A, 0x2A, 0x2A, 0xFF);
-
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 부르는 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
@@ -155,6 +158,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(sellMark,       nameof(sellMark));
         this.RequireRef(assignMark,     nameof(assignMark));
         this.RequireRef(statSocketStrip, nameof(statSocketStrip));
+        this.RequireRef(equipPips,       nameof(equipPips));
 
         // 네모가 상한보다 적으면 전설·신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
         if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
@@ -179,6 +183,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         aptitudeStrip.SetActive(false);
         statSocketStrip.SetActive(false);
+        equipPips.gameObject.SetActive(false);
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
         sellMark.SetActive(false);
@@ -332,8 +337,19 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
             GlobalRarity grade = grades[line];
 
-            _socketColors[i] = grade == GlobalRarity.None ? EmptySocketColor : RarityPalette.Get(grade);
+            _socketColors[i] = grade == GlobalRarity.None ? RarityPalette.EmptySocket : RarityPalette.Get(grade);
         }
+
+        ApplyTint();
+    }
+
+    // 장착 네모를 그린다. 'null'이면 줄을 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다, T-104).
+    //
+    // grades는 'EquipLabel.WornSlots' 순서의 등급이고 'None'은 빈 칸이다. 읽는 것은 공급자다('CharacterSlotSource')
+    // — 이 칸은 캐릭터를 모른다('SetAptitudes'와 같은 이유).
+    public void SetEquipPips(IReadOnlyList<GlobalRarity>? grades)
+    {
+        equipPips.Bind(grades);
 
         ApplyTint();
     }
@@ -440,25 +456,31 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             }
         }
 
+        equipPips.SetTint(_isDimmed, _isFilteredOut);
+
         float textAlpha = _isFilteredOut ? FilteredOutTextAlpha : 1f;
 
         nameText.alpha = _nameBaseAlpha * textAlpha;
         subText.alpha  = _subBaseAlpha  * textAlpha;
     }
 
+    // 원래 색에 이 칸의 흑백·딤을 입힌다 (ApplyTint에서 호출).
+    private Color Tint(Color source) => TintColor(source, _isDimmed, _isFilteredOut);
+
     // 원래 색에 흑백(찾기 제외) → 딤(나가 있음)을 차례로 입힌다. 알파는 건드리지 않는다.
-    private Color Tint(Color source)
+    // ※ 칸 안에 끼운 다른 View('EquipPipsView')도 이 규칙 하나로 어두워진다 — 따로 두면 네모만 떠 보인다.
+    public static Color TintColor(Color source, bool dimmed, bool filteredOut)
     {
         Color color = source;
 
-        if (_isFilteredOut)
+        if (filteredOut)
         {
             float gray = (color.r * 0.299f + color.g * 0.587f + color.b * 0.114f) * FilteredOutTint;
 
             color = new Color(gray, gray, gray, color.a);
         }
 
-        float dim = _isDimmed ? AwayTint : 1f;
+        float dim = dimmed ? AwayTint : 1f;
 
         return new Color(color.r * dim, color.g * dim, color.b * dim, color.a);
     }
@@ -479,6 +501,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         SetAptitudes(null); // 스트립을 끄고 보조 문구 자리를 원래대로 돌려준다
         SetStatSockets(null);
+        SetEquipPips(null);
         SetExpGauge(null);
         SetLevelBadge(null);
         sellMark.SetActive(false);

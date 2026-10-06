@@ -35,9 +35,6 @@ public class ItemIconView : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 — 상한(3) 이상. 왼쪽 → 오른쪽 순서. 남는 네모는 꺼진다")]
     private Image[] statSocketImages = new Image[0];
 
-    // 빈 능력치 칸의 색 — 'SlotView'와 같은 값이다(같은 장비가 두 화면에서 같게 읽혀야 한다).
-    private static readonly Color EmptySocketColor = new Color32(0x2A, 0x2A, 0x2A, 0xFF);
-
     private Color _iconPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
 
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
@@ -115,7 +112,7 @@ public class ItemIconView : MonoBehaviour
 
             if (isUsed)
             {
-                socket.color = grades[line] == GlobalRarity.None ? EmptySocketColor : RarityPalette.Get(grades[line]);
+                socket.color = grades[line] == GlobalRarity.None ? RarityPalette.EmptySocket : RarityPalette.Get(grades[line]);
             }
         }
     }
