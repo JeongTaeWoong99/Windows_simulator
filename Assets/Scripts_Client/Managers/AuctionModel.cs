@@ -21,7 +21,7 @@ using MikaProtocol;
 // ■ 가격 규칙은 표시용이다
 // 두 가지 파는 법을 화면이 구분해 말하도록 식을 여기 모은다 — 판정은 서버가 한다.
 //   즉시 판매(인벤토리): 즉시 판매가(BasePrice x SellRatePermille)에 바로 판다. 값이 정해져 있다.
-//   경매 등록(경매장)  : 단가를 직접 정한다. 즉시 판매가 이상이면 얼마든(상한 10조 — 자율 경제, 2026-10-05 · 옛 x10 밴드 폐지).
+//   경매 등록(경매장)  : 단가를 직접 정한다. 즉시 판매가 이상이면 얼마든(상한 1조 — 자율 경제, 2026-10-05 · 옛 x10 밴드 폐지 · #56).
 // 수치는 'Constants.xlsx'의 Auction*·Market* 행 — 코드에 박지 않는다.
 //
 // ■ 내 매물 표시
@@ -583,14 +583,19 @@ public class AuctionModel : MonoService<AuctionModel>
     // 경매 단가 하한 — 즉시 판매가가 곧 바닥이다. 서버 'AuctionRules.MinUnitPrice'와 같은 식(최소 1).
     public static long MinUnitPrice(int basePrice) => Math.Max(basePrice, 1L);
 
-    // 경매 단가 상한 — 기준가와 무관한 절대값(10조 · 자율 경제 2026-10-05). 서버 'AuctionRules.MaxUnitPrice'와 같다.
+    // 경매 단가 상한 — 기준가와 무관한 절대값(1조 · 자율 경제 2026-10-05 · #56). 서버 'AuctionRules.MaxUnitPrice'와 같다.
     public static long MaxUnitPrice => Constants.AuctionMaxUnitPrice;
+
+    // 한 번에 올리는 수량 상한(9,999 · #56). 서버 'AuctionRules.MaxListingCount'와 같다.
+    // ※ 단가 상한과 **한 쌍**이다 — 최고 단가 × 이 수량의 수수료가 'long'을 넘지 않는 선이다.
+    //   보유량은 우편·상자로 'MaxStack'을 넘을 수 있어 보유량만으로는 막히지 않는다.
+    public static long MaxListingCount => Constants.AuctionMaxListingCount;
 
     // 경매 등록가 범위 문구 — "12 G 이상". 상한은 터무니없는 값을 막는 선이라 줄마다 적지 않는다(안내 문구에 한 번).
     // 등록 화면·인벤토리 툴팁이 같은 모양으로 말한다.
     public static string FormatBand(int basePrice) => $"{MinUnitPrice(basePrice):N0} G 이상";
 
-    // 상한 문구 — "10조". 조 단위로 나누어떨어지면 조로, 아니면 숫자 그대로 적는다.
+    // 상한 문구 — "1조". 조 단위로 나누어떨어지면 조로, 아니면 숫자 그대로 적는다.
     public static string FormatMaxUnitPrice()
     {
         const long Jo = 1_000_000_000_000L;

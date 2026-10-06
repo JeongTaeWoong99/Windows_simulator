@@ -40,7 +40,6 @@
 | [T-016](T-016-산업레벨해금조건.md) | 산업 레벨 해금 조건 · 레벨 구성 결정 — 조건은 특성 노드로 정해졌다 · 남은 것은 요구치 `M` 확정(테스트값 5·15·30·50) (T-014와 같은 결정) | 진우 | In Progress | 높음 | 261010 |
 | [T-012](T-012-슬롯증가곡선.md) | 슬롯 해금 — **골드 단독으로 결정**([#43](https://github.com/JeongTaeWoong99/Windows_simulator/issues/43)) · 골드 곡선 한 달 기준 입력(`9cd5611`) · #43 닫음(2026-10-06 클라 확인) · 기획 문서 갱신 완료 · 남은 것: 거래 최소 계정 레벨 · 경제 검토 | 진우 | In Progress | **높음** | 261010 |
 | [T-108](T-108-레벨형특성산출량.md) | 특성을 **레벨형**으로 · **산출량** 특성 신설(공통 · 산업별) — 포인트는 계정 레벨마다 1점 · 마일스톤 역산에서 나옴 | 진우 | In Progress | 높음 | 261024 |
-| [T-123](T-123-경매단가절대상한.md) | 경매 단가 상한 **x10 → 절대 1조 · 한 번에 9,999개** — 서버 리뷰에서 10조를 1조로 낮추고 수량 상한을 뒀다(2026-10-06) · 남은 것: 클라 수량 입력 상한 · 실측 [이슈 #56](https://github.com/JeongTaeWoong99/Windows_simulator/issues/56) | 태웅 | Feedback | 보통 | 261010 |
 | [T-124](T-124-경매거래소분류검색서버.md) | 서버 — **거래소·경매 검색에 상자 · 기타 분류** (인벤토리 필터와 같은 묶음) · 클라 드롭다운은 그 뒤 · [이슈 #57](https://github.com/JeongTaeWoong99/Windows_simulator/issues/57) | 진우 | New | 보통 | 261024 |
 | [T-118](T-118-경매시세요약서버.md) | 서버 — **장비·캐릭터 경매 TID별 시세 요약** (최저가 · 매물 수 · 최근가 · 전일 평균) · [이슈 #52](https://github.com/JeongTaeWoong99/Windows_simulator/issues/52) | 진우 | New | 보통 | 261024 |
 | [T-115](T-115-특성레벨치트.md) | 서버 — **특성 레벨 치트** — `SetTraitLevel = 11` **서버 완료(2026-10-06)** · 남은 것: 실서버 확인(클라 [T-117](T-117-치트창특성레벨.md)과 함께) · [이슈 #51](https://github.com/JeongTaeWoong99/Windows_simulator/issues/51) | 진우 | Resolve | 높음 | 261010 |
@@ -94,7 +93,7 @@
 > 지금은 비어 있다. 🎨만 남은 **클라** 일감(T-031·T-015·T-052·T-039)은 [`art/`](art/README.md)로, T-051은 [`later/`](later/README.md)로 옮겼다(2026-09-28).
 > 나머지 🎨는 항목 하나로 다른 일감 안에 산다 — T-033.
 
-> 끝난 일감 74건은 [`archive/README.md`](archive/README.md)에 있다.
+> 끝난 일감 75건은 [`archive/README.md`](archive/README.md)에 있다.
 
 ---
 
