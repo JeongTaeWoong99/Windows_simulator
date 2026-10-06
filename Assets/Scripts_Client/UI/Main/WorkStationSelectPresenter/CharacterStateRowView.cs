@@ -34,7 +34,7 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("캐릭터 상반신 — 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image portraitImage = null!;
 
-    // 레벨도 이름 뒤에 붙인다 — 'Lv'가 적성 포인트를 늘려 같은 캐릭터라도 레벨에 따라 빨라진다 (2026-10-05).
+    // 레벨도 이름 뒤에 붙인다 — 레벨마다 작업속도 가산이 붙어 같은 캐릭터라도 레벨에 따라 빨라진다 (이슈 #35).
     [SerializeField, Tooltip("캐릭터 이름 · 레벨 — '이름 Lv27'")]
     private TMP_Text nameText = null!;
 

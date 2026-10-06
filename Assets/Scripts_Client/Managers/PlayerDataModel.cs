@@ -31,6 +31,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<long> _sellingCharacterIds = new List<long>();
     private readonly List<long> _sellingEquipIds     = new List<long>();
 
+    // 칸 위치 응답을 Key → 칸으로 옮겨 두는 버퍼 — 정렬 응답은 탭 전체(최대 200칸)라 목록을 칸마다 훑지 않는다.
+    private readonly Dictionary<long, int> _slotByKey = new Dictionary<long, int>();
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -407,6 +410,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                    TraitsChanged;       // 특성 레벨 갱신됨 (로그인 목록 · 레벨 올리기 응답)
     public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
 
+    // 인벤토리 [정렬]·칸 이동 결과 (거절 포함). 성공이면 칸 번호를 캐시에 반영하고 탭의 변경 이벤트를 먼저 발행한 뒤에 온다.
+    public event Action<EResultCode>? StorageSlotsResponded;
+
     // ─── Unity 메시지 ───
 
     // 구독 → 초기화 순서로 진행한다 (매니저 공통 규약 — 이 매니저는 확보할 참조가 없다)
@@ -471,6 +477,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      += OnMailDeleteResponded;
         ServerPacketHandler.AuctionRegisterResponded += OnAuctionRegisterResponded;
+        ServerPacketHandler.StorageSlotsReceived     += OnStorageSlotsReceived;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -511,6 +518,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
         ServerPacketHandler.MailDeleteResponded      -= OnMailDeleteResponded;
         ServerPacketHandler.AuctionRegisterResponded -= OnAuctionRegisterResponded;
+        ServerPacketHandler.StorageSlotsReceived     -= OnStorageSlotsReceived;
     }
 
     #endregion
@@ -1088,19 +1096,92 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         foreach (var change in changes)
         {
-            int index = _inventory.FindIndex(item => item.ItemId == change.ItemId);
+            // ※ 칸 번호도 함께 덮어쓴다 — 새 자원은 서버가 정한 첫 빈 칸으로 온다(T-058). 빠뜨리면 0번 칸으로 읽혀 겹친다.
+            int index = _inventory.FindIndex(item => item.ItemId == change.ItemId && item.Container == change.Container);
 
             if (index >= 0)
             {
                 _inventory[index].Count = change.Count;
+                _inventory[index].Slot  = change.Slot;
             }
             else
             {
-                _inventory.Add(new ItemInfo { ItemId = change.ItemId, Count = change.Count });
+                _inventory.Add(new ItemInfo
+                {
+                    ItemId    = change.ItemId,
+                    Count     = change.Count,
+                    Container = change.Container,
+                    Slot      = change.Slot
+                });
             }
         }
 
         InventoryChanged?.Invoke();
+    }
+
+    // 인벤토리 [정렬]·칸 이동 결과 — 성공이면 칸 번호를 캐시에 반영하고 그 탭의 변경 이벤트를 발행한다 (ServerPacketHandler 구독)
+    //
+    // ★ 칸은 **이 응답이 온 뒤에만** 바뀐다 — 놓는 순간 미리 옮기지 않는다(낙관적 갱신 없음 · T-044).
+    //   자리의 주인은 서버 DB다. 거절이면 아무것도 바뀌지 않고 결과만 알린다.
+    // ※ 정렬이면 탭 전체, 이동이면 바뀐 칸만(교환이면 둘) 온다 — 실린 것만 덮어쓰면 둘 다 맞는다.
+    private void OnStorageSlotsReceived(S_StorageSlotsResponse res)
+    {
+        if (res.Result == EResultCode.Ok && res.Container == EContainer.Inventory)
+        {
+            _slotByKey.Clear();
+
+            foreach (StorageSlotInfo slot in res.Slots)
+            {
+                _slotByKey[slot.Key] = slot.Slot;
+            }
+
+            ApplySlots(res.Tab);
+        }
+
+        StorageSlotsResponded?.Invoke(res.Result);
+    }
+
+    // 받은 칸 번호('_slotByKey')를 그 탭의 캐시에 덮어쓰고 변경 이벤트를 발행한다 (OnStorageSlotsReceived에서 호출).
+    private void ApplySlots(EStorageTab tab)
+    {
+        switch (tab)
+        {
+            case EStorageTab.Resource:
+                foreach (ItemInfo item in _inventory)
+                {
+                    if (item.Container == EContainer.Inventory && _slotByKey.TryGetValue(item.ItemId, out int slot))
+                    {
+                        item.Slot = slot;
+                    }
+                }
+
+                InventoryChanged?.Invoke();
+                break;
+
+            case EStorageTab.Character:
+                foreach (CharacterInfo character in _characters)
+                {
+                    if (_slotByKey.TryGetValue(character.CharacterId, out int slot))
+                    {
+                        character.Slot = slot;
+                    }
+                }
+
+                CharactersChanged?.Invoke();
+                break;
+
+            case EStorageTab.Equip:
+                foreach (EquipInfo equip in _equips)
+                {
+                    if (_slotByKey.TryGetValue(equip.EquipId, out int slot))
+                    {
+                        equip.SlotPosition = slot;
+                    }
+                }
+
+                EquipsChanged?.Invoke();
+                break;
+        }
     }
 
     #endregion

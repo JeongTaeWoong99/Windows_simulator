@@ -23,7 +23,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 두 가지 파는 법을 화면이 구분해 말한다 (2026-09-30)
 //   즉시 판매(인벤토리 [판매]) : 즉시 판매가에 바로 판다 — 값이 정해져 있다.
-//   경매 등록(여기)            : 단가를 직접 정한다 — 즉시 판매가 이상이면 얼마든(상한 10조 · 자율 경제, 2026-10-05).
+//   경매 등록(여기)            : 단가를 직접 정한다 — 즉시 판매가 이상이면 얼마든(상한 1조 · 자율 경제, 2026-10-05 · #56).
 //   그래서 줄·힌트·확인 창마다 '즉시 판매가'와 '경매 등록가 범위'를 나란히 적는다.
 //   범위 밖 값은 입력칸이 고친다 — 위로 넘치면 바로, 아래로 모자라면 입력이 끝날 때('AuctionInput').
 //   등록비(총액의 1%, 최소 1)는 등록 순간 빠진다. 취소하면 돌려받지 못하고, 만료되면 돌려받는다.
@@ -624,10 +624,13 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return "";
     }
 
-    // 올릴 수 있는 최대 수량 — 자원은 보유량, 장비·캐릭터는 1.
+    // 올릴 수 있는 최대 수량 — 자원은 보유량(한 번에 'AuctionModel.MaxListingCount'까지), 장비·캐릭터는 1.
+    // ※ 넘기면 서버가 'AuctionInvalidRequest'로 거절한다 — 입력 단계에서 먼저 자른다(#56).
     private long GetMaxCount()
     {
-        return CurrentKind == RegisterKind.Item ? _data.GetItemCount((int)_selectedKey) : 1L;
+        return CurrentKind == RegisterKind.Item
+            ? System.Math.Min(_data.GetItemCount((int)_selectedKey), AuctionModel.MaxListingCount)
+            : 1L;
     }
 
     // 고른 것의 기준가(BasePrice) — 즉시 판매가·경매 등록가 범위의 재료다. 못 찾으면 0.
@@ -646,7 +649,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return GameDataLoader.TryGetEquip(_data.GetEquipTid(_selectedKey), out EquipTableRow row) ? row.BasePrice : 0;
     }
 
-    // 등록 칸 입력을 읽는다. 수량이 보유량 밖이거나 단가가 경매 등록가 범위 밖이면 false.
+    // 등록 칸 입력을 읽는다. 수량이 올릴 수 있는 최대 수량 밖이거나 단가가 경매 등록가 범위 밖이면 false.
     private bool TryReadForm(out int count, out long unitPrice)
     {
         unitPrice = 0L;

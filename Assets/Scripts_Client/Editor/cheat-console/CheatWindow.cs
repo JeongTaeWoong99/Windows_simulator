@@ -20,9 +20,11 @@ namespace DesktopWindowControl.EditorTools
 		private const float  ToolDividerWidth   = 2f;    // 도구 줄 구분선 두께(px)
 		private const float  ToolGapPadding     = 5f;    // 구분선 양옆 여백(px)
 		private const float  StatusWidth        = 42f;   // 해금 줄의 '[열림]'·'[잠김]' 고정 폭 — 이름 열을 맞춘다
-		private const float  IndustryHeadHeight = 18f;   // 해금 목록 안 산업 이름 줄 높이(px)
-		private const float  UnlockIndent       = 10f;   // 해금 묶음 안쪽 들여쓰기(px) — 산업 줄과 해금 줄이 같은 선에서 시작한다
-		private const float  GroupButtonWidth   = 96f;   // 묶음 머리·산업 띠의 일괄 열기 버튼 폭(px)
+		private const float  IndustryHeadHeight = 18f;   // 특성 칸 안 산업 이름 띠 높이(px)
+		private const float  RowIndent          = 10f;   // 칸 안 줄 들여쓰기(px) — 산업 띠와 줄이 같은 선에서 시작한다
+		private const float  GroupButtonWidth   = 96f;   // 산업 띠 오른쪽 끝 일괄 버튼 폭(px)
+		private const float  TraitLevelWidth    = 56f;   // 특성 줄의 'Lv 지금/최대' 고정 폭 — 버튼 열을 맞춘다
+		private const float  StepButtonWidth    = 34f;   // 특성 줄의 [기본]·[-1]·[+1]·[최대] 폭(px)
 
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
@@ -40,6 +42,7 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color SettleAccent    = new(0.30f, 0.80f, 0.80f);   // 정산 — 청록
 		private static readonly Color UnlockAccent    = new(0.95f, 0.55f, 0.30f);   // 해금 — 주황
 		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
+		private static readonly Color TraitAccent     = new(0.65f, 0.85f, 0.30f);   // 특성 레벨 — 연두
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
 
@@ -56,12 +59,6 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private int       _unlockTid;
 		[SerializeField] private TidPicker _mailPicker      = new();
 		[SerializeField] private long      _mailTargetUid;  // 0이면 전체 우편
-
-		// 해금 묶음의 펼침 상태 — 51줄을 한 번에 펼쳐 두면 훑기 어렵다(2026-09-23 요청).
-		// 가장 짧은 작업슬롯만 펼쳐 두고 나머지는 접어 둔다. 접힌 머리에도 '열림/전체'는 보인다.
-		[SerializeField] private bool      _unlockSlotOpen = true;
-		[SerializeField] private bool      _unlockLevelOpen;
-		[SerializeField] private bool      _unlockSpeedOpen;
 
 		private Vector2 _scroll;
 		private Vector2 _logScroll;
@@ -116,6 +113,7 @@ namespace DesktopWindowControl.EditorTools
 			DrawSettle();
 			DrawMail();
 			DrawUnlock();
+			DrawTraitLevel();
 
 			EditorGUILayout.Space(6f);
 			EditorGUILayout.EndScrollView();
@@ -518,13 +516,24 @@ namespace DesktopWindowControl.EditorTools
 			EndSection(MailAccent);
 		}
 
+		// 해금 칸 — 지금 'UnlockTable'은 작업슬롯 6줄뿐이라 묶음 없이 줄을 바로 늘어놓는다.
+		// 특성은 해금을 쓰지 않는다(T-108) → 아래 '특성 레벨' 칸.
 		private void DrawUnlock()
 		{
 			BeginSection("해금", UnlockAccent);
 
 			if (GameDataLoader.IsLoaded)
 			{
-				DrawUnlockRows();
+				var model = CheatGuard.FindLoggedInModel();
+				var rows  = new List<UnlockTableRow>(GameTable.UnlockTable.All);
+
+				DrawUnlockAllButton("해금 전부 열기", rows, model);
+				EditorGUILayout.Space(2f);
+
+				foreach (var row in rows)
+				{
+					DrawUnlockRow(row, model);
+				}
 			}
 			else
 			{
@@ -545,184 +554,29 @@ namespace DesktopWindowControl.EditorTools
 			EndSection(UnlockAccent);
 		}
 
-		// 해금 목록은 성격이 셋으로 갈린다 — 51줄을 한 줄기로 늘어놓으면 원하는 줄을 찾기 어렵다.
-		private enum UnlockGroup
-		{
-			WorkSlot,       // 특성 노드가 아닌 해금 — 지금은 작업슬롯뿐이다
-			IndustrySpeed,  // 특성 노드 · SpeedAdd
-			IndustryLevel,  // 특성 노드 · 효과 없음 — UnlockTID가 열리는 것 자체가 산업 레벨 해금이다
-		}
-
-		// ■ 일괄 열기는 세 층이다 (2026-09-29 요청)
-		//   칸 맨 위 = 세 묶음 전부 · 묶음 머리 = 그 묶음 전부 · 산업 이름 줄 = 그 산업 전부.
-		//   서버 치트는 조건(선행·계정 레벨)을 보지 않으므로 순서와 상관없이 다 열린다.
-		private void DrawUnlockRows()
-		{
-			var model = CheatGuard.FindLoggedInModel();
-
-			var slotRows  = CollectUnlockRows(UnlockGroup.WorkSlot);
-			var speedRows = CollectUnlockRows(UnlockGroup.IndustrySpeed);
-			var levelRows = CollectUnlockRows(UnlockGroup.IndustryLevel);
-
-			var allRows = new List<UnlockTableRow>(slotRows);
-			allRows.AddRange(speedRows);
-			allRows.AddRange(levelRows);
-
-			if (!ShowTraitUnlockGroups)
-			{
-				_unlockSlotOpen = DrawUnlockGroup("작업슬롯", slotRows, _unlockSlotOpen, model);
-				EditorGUILayout.HelpBox("특성(산업 개척 · 속도 · 산출량) — 서버 치트가 열리면 추가 예정 (T-115 · 이슈 #51)",
-					MessageType.Info);
-
-				return;
-			}
-
-			DrawUnlockAllButton("해금 전부 열기 (작업슬롯 · 산업 속도 · 산업 레벨)", allRows, model);
-			EditorGUILayout.Space(2f);
-
-			_unlockSlotOpen  = DrawUnlockGroup("작업슬롯",  slotRows,  _unlockSlotOpen,  model);
-			_unlockSpeedOpen = DrawUnlockGroup("산업 속도", speedRows, _unlockSpeedOpen, model);
-			_unlockLevelOpen = DrawUnlockGroup("산업 레벨", levelRows, _unlockLevelOpen, model);
-		}
-
-		// 옛 특성 묶음(산업 속도 · 산업 레벨)을 그릴지.
-		//
-		// ■ 지금은 끈다 (2026-10-02 · T-116)
-		// 특성이 레벨형으로 바뀌며(T-108) 특성 노드가 'UnlockTable'에서 빠져 두 묶음이 비었고,
-		// 'ECheatCommand.Unlock'은 특성 레벨('t_user_trait')에 닿지 않는다.
-		// 코드는 지우지 않는다 — 서버 특성 레벨 치트(T-115)가 오면 이 묶음 자리를 그 치트로 다시 붙인다.
-		private static readonly bool ShowTraitUnlockGroups = false;  // const면 아래 줄이 도달 불가 경고(CS0162)가 된다
-
-		// 이 묶음의 해금 줄을 테이블 순서대로 모은다 (DrawUnlockRows에서 호출).
-		private static List<UnlockTableRow> CollectUnlockRows(UnlockGroup group)
-		{
-			var rows = new List<UnlockTableRow>();
-
-			foreach (var row in GameTable.UnlockTable.All)
-			{
-				if (GroupOf(row.UnlockTID) == group)
-				{
-					rows.Add(row);
-				}
-			}
-
-			return rows;
-		}
-
-		// 묶음 하나를 '접기 머리 + (펼쳤으면) 줄들'로 그리고, 바뀐 펼침 상태를 돌려준다.
-		//
-		// ※ 머리에 '열림/전체'를 적는 이유 — 접어 둔 묶음도 진행 상황은 보여야 한다.
-		//   접었더니 아무것도 모르게 되면 결국 다시 펴게 되고, 접는 의미가 없어진다.
-		// ※ [묶음 전부 열기]는 접힌 머리에도 있다 — 펴지 않고 한 번에 여는 것이 목적이다.
-		private static bool DrawUnlockGroup(string title, List<UnlockTableRow> rows, bool isOpen, PlayerDataModel? model)
-		{
-			// 빈 묶음은 머리도 그리지 않는다 — 누를 것이 없는 줄이 남으면 목록만 길어진다.
-			if (rows.Count == 0)
-			{
-				return isOpen;
-			}
-
-			var opened = 0;
-
-			foreach (var row in rows)
-			{
-				if (model != null && model.IsUnlocked(row.UnlockTID))
-				{
-					opened++;
-				}
-			}
-
-			// 로그인 전에는 열림 수를 모른다 — 전체 개수만 적는다.
-			var counts = model != null ? $"{opened}/{rows.Count}" : $"?/{rows.Count}";
-			bool result;
-
-			using (new EditorGUILayout.HorizontalScope())
-			{
-				result = EditorGUILayout.Foldout(isOpen, $"{title}  ({counts})", true, EditorStyles.foldoutHeader);
-				DrawUnlockAllButton("묶음 전부 열기", rows, model, GUILayout.Width(GroupButtonWidth));
-			}
-
-			if (!result)
-			{
-				return false;
-			}
-
-			// ※ 'EditorGUI.IndentLevelScope'를 쓰지 않는다 — indentLevel은 'GUILayout' 줄에 먹지 않아
-			//   산업 띠만 밀리고 해금 줄은 제자리에 남는다. 둘 다 'UnlockIndent'로 직접 민다.
-			var lastIndustry = EIndustryType.None;
-
-			foreach (var row in rows)
-			{
-				// 산업이 바뀌는 자리에 이름 줄을 하나 끼운다 — 5산업이 한 덩어리로 붙어 보이지 않게.
-				// **접지 않는다**(2026-09-23 요청): 가르기만 하고 줄은 늘 보인다.
-				var industry = IndustryOf(row.UnlockTID);
-
-				if (industry != EIndustryType.None && industry != lastIndustry)
-				{
-					var industryRows = rows.FindAll(other => IndustryOf(other.UnlockTID) == industry);
-
-					DrawIndustryHead(IndustryLabel.Get(industry), lastIndustry != EIndustryType.None, industryRows, model);
-					lastIndustry = industry;
-				}
-
-				DrawUnlockRow(row, model);
-			}
-
-			return true;
-		}
-
 		// 일괄 열기 버튼 — 누르면 아직 잠긴 줄만 보낸다. 다 열렸으면 잠근다.
 		//
 		// ※ 열린 줄을 빼고 보낸다 — 섞어 보내면 로그가 'AlreadyUnlocked' 거절로 뒤덮인다.
 		//   로그인 전에는 무엇이 열렸는지 모르므로 버튼만 살려 둔다(누르면 'CheatGuard'가 막는다).
-		private static void DrawUnlockAllButton(string label, List<UnlockTableRow> rows, PlayerDataModel? model,
-		                                        params GUILayoutOption[] options)
+		private static void DrawUnlockAllButton(string label, List<UnlockTableRow> rows, PlayerDataModel? model)
 		{
-			var locked = LockedTids(rows, model);
-
-			using (new EditorGUI.DisabledScope(model != null && locked.Count == 0))
-			{
-				if (GUILayout.Button(label, options))
-				{
-					RequestUnlockAll(locked);
-				}
-			}
-		}
-
-		// 아직 잠긴 해금 TID. 로그인 전이면 전부다.
-		private static List<int> LockedTids(List<UnlockTableRow> rows, PlayerDataModel? model)
-		{
-			var result = new List<int>();
+			var locked = new List<(long, long)>();
 
 			foreach (var row in rows)
 			{
 				if (model == null || !model.IsUnlocked(row.UnlockTID))
 				{
-					result.Add(row.UnlockTID);
+					locked.Add((row.UnlockTID, 0L));
 				}
 			}
 
-			return result;
-		}
-
-		// 해금 여러 개를 한 번에 보낸다.
-		//
-		// ⚠️ 가드를 **먼저 한 번만** 본다 — 'CheatSender.Send'마다 보게 두면 로그인 전에 누른 순간
-		//    경고 팝업이 줄 수만큼 뜬다.
-		private static void RequestUnlockAll(List<int> unlockTids)
-		{
-			EditorApplication.delayCall += () =>
+			using (new EditorGUI.DisabledScope(model != null && locked.Count == 0))
 			{
-				if (!CheatGuard.CanSend())
+				if (GUILayout.Button(label))
 				{
-					return;
+					RequestAll(ECheatCommand.Unlock, locked);
 				}
-
-				foreach (var tid in unlockTids)
-				{
-					CheatSender.Send(ECheatCommand.Unlock, tid);
-				}
-			};
+			}
 		}
 
 		// 해금 한 줄 — 상태 · 이름(TID) · [열기].
@@ -733,7 +587,7 @@ namespace DesktopWindowControl.EditorTools
 
 			using (new EditorGUILayout.HorizontalScope())
 			{
-				GUILayout.Space(UnlockIndent);
+				GUILayout.Space(RowIndent);
 
 				if (model == null)
 				{
@@ -757,27 +611,172 @@ namespace DesktopWindowControl.EditorTools
 			}
 		}
 
-		// 이 해금 TID가 어느 묶음인가.
+		// 특성 레벨을 조건·포인트 없이 정한다 — 서버 'SetTraitLevel'(Arg1 = UserTraitTID · 0이면 전부, Arg2 = 레벨).
 		//
-		// ※ **TID 대역을 여기 베끼지 않는다** — 'GameDataLoader.UserTraits' 주석과 같은 이유로,
-		//   시트에 단이 늘어도 분류가 저절로 따라오게 테이블에서 파생시킨다.
-		//   특성 테이블에 없는 TID는 특성 노드가 아니다 → 작업슬롯 쪽으로 간다.
-		private static UnlockGroup GroupOf(int unlockTid)
+		// ■ 서버가 기본~최대로 자른다
+		// 그래서 [전부 최대]는 테이블에서 가장 큰 최대 레벨을 보내면 특성마다 제 최대로 잘린다.
+		// 바뀐 것이 있으면 서버가 'S_UserTraitListResponse'를 다시 보내 특성 화면·산업 레벨 잠금이 그 자리에서 갱신된다.
+		//
+		// ※ 산업 개척을 내려도 이미 그 레벨로 돌던 슬롯은 그대로 돈다 — 잠금은 다시 배치할 때 걸린다(서버 결정, #51).
+		private void DrawTraitLevel()
 		{
-			if (!GameDataLoader.TryGetUserTrait(unlockTid, out var trait))
+			BeginSection("특성 레벨", TraitAccent);
+
+			if (!GameDataLoader.IsLoaded)
 			{
-				return UnlockGroup.WorkSlot;
+				EditorGUILayout.LabelField("목록은 Play 중 테이블을 읽은 뒤 뜬다", EditorStyles.miniLabel);
+				EndSection(TraitAccent);
+
+				return;
 			}
 
-			return trait.EffectType == UserTraitEffect.SpeedAdd ? UnlockGroup.IndustrySpeed : UnlockGroup.IndustryLevel;
+			var model  = CheatGuard.FindLoggedInModel();
+			var traits = GameDataLoader.UserTraits;
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				if (GUILayout.Button("전부 최대"))
+				{
+					Request(ECheatCommand.SetTraitLevel, 0L, MaxTraitLevelOf(traits));
+				}
+
+				if (GUILayout.Button("전부 기본"))
+				{
+					Request(ECheatCommand.SetTraitLevel, 0L, 0L);
+				}
+			}
+
+			EditorGUILayout.Space(2f);
+
+			// 공통(산업 없음)을 맨 위에, 그 아래 산업 순서대로 — 특성 화면의 줄 순서와 같다.
+			var isFollowing = false;
+
+			for (var industry = EIndustryType.None; industry <= EIndustryType.Hunting; industry++)
+			{
+				var rows = new List<UserTraitTableRow>();
+
+				foreach (var trait in traits)
+				{
+					if ((EIndustryType)(byte)trait.Industry == industry)
+					{
+						rows.Add(trait);
+					}
+				}
+
+				if (rows.Count == 0)
+				{
+					continue;
+				}
+
+				DrawTraitIndustryHead(industry == EIndustryType.None ? "공통" : IndustryLabel.Get(industry), isFollowing, rows);
+				isFollowing = true;
+
+				foreach (var trait in rows)
+				{
+					DrawTraitRow(trait, model);
+				}
+			}
+
+			EndSection(TraitAccent);
 		}
 
-		// 산업 이름 줄 — 칸 머리('BeginSection')와 같은 언어를 더 얇게 쓴다.
+		// 특성 한 줄 — 이름(TID) · Lv 지금/최대 · [기본] [-1] [+1] [최대].
+		// 끝에 닿은 쪽 버튼은 끈다. 로그인 전에는 지금 레벨을 모르니 '?'로 두고 버튼은 살린다(누르면 'CheatGuard'가 막는다).
+		private static void DrawTraitRow(UserTraitTableRow trait, PlayerDataModel? model)
+		{
+			var level = model?.GetTraitLevel(trait.UserTraitTID) ?? trait.BaseLevel;
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				GUILayout.Space(RowIndent);
+				GUILayout.Label($"{trait.Name} ({trait.UserTraitTID})");
+
+				var levelText = model == null ? $"Lv ?/{trait.MaxLevel}" : $"Lv {level}/{trait.MaxLevel}";
+				var isMax     = model != null && level >= trait.MaxLevel;
+
+				DrawColoredLabel(levelText, isMax ? DoneColor : GUI.contentColor, TraitLevelWidth);
+
+				var canLower = model == null || level > trait.BaseLevel;
+				var canRaise = model == null || level < trait.MaxLevel;
+
+				DrawTraitStepButton("기본", trait, trait.BaseLevel, canLower);
+				DrawTraitStepButton("-1",   trait, level - 1,       canLower);
+				DrawTraitStepButton("+1",   trait, level + 1,       canRaise);
+				DrawTraitStepButton("최대", trait, trait.MaxLevel,  canRaise);
+			}
+		}
+
+		private static void DrawTraitStepButton(string label, UserTraitTableRow trait, int targetLevel, bool isEnabled)
+		{
+			using (new EditorGUI.DisabledScope(!isEnabled))
+			{
+				if (GUILayout.Button(label, EditorStyles.miniButton, GUILayout.Width(StepButtonWidth)))
+				{
+					Request(ECheatCommand.SetTraitLevel, trait.UserTraitTID, targetLevel);
+				}
+			}
+		}
+
+		// 산업 이름 띠 + 오른쪽 끝 [산업 최대] — 그 산업 특성을 각자 최대로 보낸다.
+		private static void DrawTraitIndustryHead(string name, bool isFollowing, List<UserTraitTableRow> rows)
+		{
+			var head       = DrawIndustryBand(name, isFollowing, TraitAccent);
+			var buttonRect = new Rect(head.xMax - GroupButtonWidth, head.y + 1f, GroupButtonWidth, head.height - 2f);
+
+			if (GUI.Button(buttonRect, "산업 최대", EditorStyles.miniButton))
+			{
+				var commands = new List<(long, long)>();
+
+				foreach (var trait in rows)
+				{
+					commands.Add((trait.UserTraitTID, trait.MaxLevel));
+				}
+
+				RequestAll(ECheatCommand.SetTraitLevel, commands);
+			}
+		}
+
+		// 테이블에서 가장 큰 최대 레벨 — [전부 최대]의 Arg2. 서버가 특성마다 제 최대로 자른다.
+		private static long MaxTraitLevelOf(IReadOnlyList<UserTraitTableRow> traits)
+		{
+			var max = 0;
+
+			foreach (var trait in traits)
+			{
+				max = Math.Max(max, trait.MaxLevel);
+			}
+
+			return max;
+		}
+
+		// 같은 명령 여러 개를 한 번에 보낸다 (해금 전부 열기 · 산업 최대).
+		//
+		// ⚠️ 가드를 **먼저 한 번만** 본다 — 'CheatSender.Send'마다 보게 두면 로그인 전에 누른 순간
+		//    경고 팝업이 줄 수만큼 뜬다.
+		private static void RequestAll(ECheatCommand command, List<(long Arg1, long Arg2)> args)
+		{
+			EditorApplication.delayCall += () =>
+			{
+				if (!CheatGuard.CanSend())
+				{
+					return;
+				}
+
+				foreach (var (arg1, arg2) in args)
+				{
+					CheatSender.Send(command, arg1, arg2);
+				}
+			};
+		}
+
+		// 칸 안을 가르는 산업 이름 띠 — 칸 머리('BeginSection')와 같은 언어를 더 얇게 쓴다. 띠 영역을 돌려준다(오른쪽 끝 버튼 자리).
 		// 옅은 바탕 + 아래 실선 한 줄. 이름만 덩그러니 띄우면 어느 쪽에 붙는 줄인지 안 보인다.
 		//
-		//   'isFollowing' : 앞에 다른 산업이 있었으면 위에 숨을 한 번 준다(첫 줄은 머리에 바로 붙인다).
-		//   'rows'        : 이 산업의 해금 줄 — 오른쪽 끝 [산업 전부 열기]가 보낸다.
-		private static void DrawIndustryHead(string name, bool isFollowing, List<UnlockTableRow> rows, PlayerDataModel? model)
+		//   'isFollowing' : 앞에 다른 띠가 있었으면 위에 숨을 한 번 준다(첫 띠는 칸 머리에 바로 붙인다).
+		//
+		// ※ 'EditorGUI.IndentLevelScope'를 쓰지 않는다 — indentLevel은 'GUILayout' 줄에 먹지 않아
+		//   띠만 밀리고 줄은 제자리에 남는다. 둘 다 'RowIndent'로 직접 민다.
+		private static Rect DrawIndustryBand(string name, bool isFollowing, Color accent)
 		{
 			if (isFollowing)
 			{
@@ -786,37 +785,15 @@ namespace DesktopWindowControl.EditorTools
 
 			var head = EditorGUILayout.GetControlRect(false, IndustryHeadHeight);
 
-			head.x     += UnlockIndent;
-			head.width -= UnlockIndent;
+			head.x     += RowIndent;
+			head.width -= RowIndent;
 
-			EditorGUI.DrawRect(head, new Color(UnlockAccent.r, UnlockAccent.g, UnlockAccent.b, 0.10f));
-			EditorGUI.DrawRect(new Rect(head.x, head.yMax - 1f, head.width, 1f),
-			                   new Color(UnlockAccent.r, UnlockAccent.g, UnlockAccent.b, 0.45f));
+			EditorGUI.DrawRect(head, new Color(accent.r, accent.g, accent.b, 0.10f));
+			EditorGUI.DrawRect(new Rect(head.x, head.yMax - 1f, head.width, 1f), new Color(accent.r, accent.g, accent.b, 0.45f));
 
 			EditorGUI.LabelField(new Rect(head.x + 4f, head.y, head.width - 4f, head.height), name, EditorStyles.miniBoldLabel);
 
-			// 띠 오른쪽 끝에 붙인다 — 줄을 하나 더 쓰면 산업마다 목록이 한 줄씩 길어진다.
-			var buttonRect = new Rect(head.xMax - GroupButtonWidth, head.y + 1f, GroupButtonWidth, head.height - 2f);
-			var locked     = LockedTids(rows, model);
-
-			using (new EditorGUI.DisabledScope(model != null && locked.Count == 0))
-			{
-				if (GUI.Button(buttonRect, "산업 전부 열기", EditorStyles.miniButton))
-				{
-					RequestUnlockAll(locked);
-				}
-			}
-		}
-
-		// 이 해금 TID가 걸린 산업. 특성 노드가 아니면(작업슬롯 등) 'None'이라 가르는 줄이 붙지 않는다.
-		//
-		// ※ 'UserTraitTableRow.Industry'는 'GameData.IndustryType', 화면 이름은 'MikaProtocol.EIndustryType'을
-		//   받는다 — 두 enum은 값이 같아 바이트로 건넌다('TraitPresenter.CollectColumn'과 같은 방식).
-		private static EIndustryType IndustryOf(int unlockTid)
-		{
-			return GameDataLoader.TryGetUserTrait(unlockTid, out var trait)
-				? (EIndustryType)(byte)trait.Industry
-				: EIndustryType.None;
+			return head;
 		}
 
 		// 칸 머리 — 색 띠 + 옅게 물든 바탕 + 굵은 제목. 본문은 'EndSection'까지 상자 안에 그린다.

@@ -1129,8 +1129,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 'CurrentWorkSpeed'는 보정이 전부 적용된 값이고 **내역은 오지 않는다.**
     // 그래서 가산 줄은 클라가 **같은 표를 다시 읽어 되짚는다**(아래 두 헬퍼).
     //
-    // ⚠️ **이건 서버 식의 사본이다** — 'User.GetEquipSpeedAdd' · 'User.GetTraitSpeedAdd'와 같은 모양이다
-    //   (특성 쪽은 'PlayerDataModel.GetTraitEffectSum'). 서버가 가산 내역을 명시 필드로 내려 주면
+    // ⚠️ **이건 서버 식의 사본이다** — 'User.GetEquipSpeedAdd' · 'User.GetTraitSpeedAdd' · 'User.GetLevelSpeedAdd'와
+    //   같은 모양이다 (특성 쪽은 'PlayerDataModel.GetTraitEffectSum'). 서버가 가산 내역을 명시 필드로 내려 주면
     //   (일감 'T-055') 사본을 지우고 받은 값을 그린다.
     //   **표가 갈리면 화면만 틀리고 조용하다** — 속도 특성·장비 테이블을 고칠 때 여기도 본다.
     //
@@ -1156,16 +1156,19 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         int traitAdd = _data.GetTraitEffectSum(UserTraitEffect.SpeedAdd, slot.Industry);
         int equipAdd = GetEquipSpeedAdd(slot.CharacterId, slot.Industry);
+        int levelAdd = GameDataLoader.GetLevelSpeedAdd(_data.GetCharacterLevel(slot.CharacterId));
+        int totalAdd = traitAdd + equipAdd + levelAdd;
 
         GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(baseSpeed));
 
         // 총합을 값에 적고 내역은 주석 줄에 둔다 — "왜 이만큼인가"가 한 줄 아래에 있어야 한다.
+        // ※ 레벨 항은 장비·특성과 **따로** 더한다(서버 'User.WorkStation'의 가산 합 · 이슈 #35).
         var addRow = GetOrCreateEfficiencyRow(1);
-        addRow.Bind("속도 가산", FormatPermille(traitAdd + equipAdd));
+        addRow.Bind("속도 가산", FormatPermille(totalAdd));
 
-        if (traitAdd != 0 || equipAdd != 0)
+        if (totalAdd != 0)
         {
-            addRow.SetNote($"특성 {FormatPermille(traitAdd)} · 장비 {FormatPermille(equipAdd)}");
+            addRow.SetNote($"레벨 {FormatPermille(levelAdd)} · 특성 {FormatPermille(traitAdd)} · 장비 {FormatPermille(equipAdd)}");
         }
 
         var speedRow = GetOrCreateEfficiencyRow(2);
@@ -1173,7 +1176,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         // 가산을 걷어낸 기대 속도 — 서버 'WorkSpeed.Resolve'의 가산 단계와 같은 식이다.
         int   scale    = (int)Constants.WorkSpeedScale;
-        float expected = baseSpeed * Mathf.Max(0, scale + traitAdd + equipAdd) / (float)scale;
+        float expected = baseSpeed * Mathf.Max(0, scale + totalAdd) / (float)scale;
 
         if (expected > 0f)
         {

@@ -11,14 +11,9 @@ using MikaProtocol;
 //   같은 장비를 여러 개 가질 수 있어 종류(TID)로는 하나를 특정하지 못한다.
 //   칸의 'Key'는 개체 번호('EquipId')이고, 이름·등급·효과는 TID로 테이블에서 읽는다.
 //
-// ■ 'SlotPosition'은 **칸 번호가 아니라 도착 순서**로 쓴다 (2026-09-25 · T-044)
-//   'EquipInfo.SlotPosition'은 서버가 빈 자리를 찾아 넣는 인벤토리 칸 번호다
-//   (서버 'User.NextFreeEquipPosition'). 자원·캐릭터에는 그런 필드가 아예 없어
-//   **세 탭의 자리 규칙이 갈라진다** — 장비만 서버 번호를 쓰면 "빈 칸이 왜 여기 있나"의 답이
-//   탭마다 달라진다. 그래서 여기서는 **줄 세우는 데만 쓰고**, 실제 칸 번호는 기반 클래스가 준다
-//   (처음 보는 것은 앞에서부터 첫 빈 칸 — 'InventorySlotSource.Arrange').
-//   ⚠️ 그래서 지금은 **자리가 세션 한정**이다. 재접속하면 위 순서로 처음부터 다시 앉는다 —
-//   칸 번호를 서버가 갖는 것은 T-058 → T-044의 몫이다.
+// ■ 'SlotPosition'이 곧 칸 번호다 (2026-10-06 · T-044)
+//   자원·캐릭터의 'Slot'과 같은 뜻이다 — 장비만 이름이 다른 것은 칸 번호가 먼저 생겼기 때문이다(T-002).
+//   한때(2026-09-25) 자원·캐릭터에 같은 필드가 없어 도착 순서로만 썼다. 서버 칸(T-058)이 오면서 세 탭이 같아졌다.
 //
 // ■ 장착 중인 장비도 **제자리에 남는다** (2026-09-25 결정)
 //   캐릭터가 끼고 있어도 인벤토리에서 빠지지 않는다 — 딤 처리와 '배' 마크로 구분하고,
@@ -37,9 +32,6 @@ public class EquipSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
 
-    // 'SlotPosition'으로 줄 세울 때 쓰는 버퍼. 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
-    private readonly List<EquipInfo> _ordered = new List<EquipInfo>();
-
     // 능력치 칸 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
     // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
@@ -50,69 +42,27 @@ public class EquipSlotSource : InventorySlotSource
         _data = data;
     }
 
-    // 보유 장비를 서버 칸 번호 순서로 옮긴다 (Rebuild에서 호출).
-    protected override void Fill(List<SlotData> into)
+    // 보유 장비를 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
+    // ※ 창고(T-107)에 맡긴 장비는 인벤토리 격자에 그리지 않는다.
+    protected override void Fill(List<PlacedSlot> into)
     {
-        _ordered.Clear();
-        _ordered.AddRange(_data.Equips);
-        _ordered.Sort(CompareBySlotPosition);
-
-        foreach (EquipInfo equip in _ordered)
+        foreach (EquipInfo equip in _data.Equips)
         {
+            if (equip.Container != EContainer.Inventory)
+            {
+                continue;
+            }
+
             // 보조 문구는 비운다 — 그 밴드를 능력치 칸이 쓰고, 기본 능력치는 툴팁으로 갔다(T-095).
-            into.Add(new SlotData(
+            var slot = new SlotData(
                 equip.EquipId,
                 GameDataLoader.GetEquipName(equip.EquipTid),
                 "",
                 GameDataLoader.GetEquipRarity(equip.EquipTid),
-                VisualCatalog.EquipIconOf(equip.EquipTid)));
+                VisualCatalog.EquipIconOf(equip.EquipTid));
+
+            into.Add(new PlacedSlot(slot, equip.SlotPosition));
         }
-    }
-
-    // 장비 [정렬] 규칙 — 등급 높은 순 → 부위 → 산업 → 종류(TID) → 개체 번호 (Sort에서 호출).
-    //
-    // 같은 장비를 여러 개 가질 수 있어 개체 번호까지 가야 동점이 없다.
-    // ※ 칸의 'Key'는 개체 번호라 TID는 보유 목록에서 찾아온다.
-    protected override int CompareForSort(SlotData a, SlotData b)
-    {
-        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
-
-        if (byRarity != 0)
-        {
-            return byRarity;
-        }
-
-        int tidA = _data.GetEquipTid(a.Key);
-        int tidB = _data.GetEquipTid(b.Key);
-
-        bool hasA = GameDataLoader.TryGetEquip(tidA, out EquipTableRow rowA);
-        bool hasB = GameDataLoader.TryGetEquip(tidB, out EquipTableRow rowB);
-
-        // 테이블에 없는 TID는 이름이 '?#'으로 보이는 칸이라 뒤로 민다.
-        if (!hasA || !hasB)
-        {
-            int byKnown = (hasA ? 0 : 1).CompareTo(hasB ? 0 : 1);
-
-            return byKnown != 0 ? byKnown : a.Key.CompareTo(b.Key);
-        }
-
-        int byKind = ((byte)rowA.EquipKind).CompareTo((byte)rowB.EquipKind);
-
-        if (byKind != 0)
-        {
-            return byKind;
-        }
-
-        int byIndustry = ((byte)rowA.Industry).CompareTo((byte)rowB.Industry);
-
-        if (byIndustry != 0)
-        {
-            return byIndustry;
-        }
-
-        int byTid = tidA.CompareTo(tidB);
-
-        return byTid != 0 ? byTid : a.Key.CompareTo(b.Key);
     }
 
     // 장비의 대상 산업 (Matches에서 호출). 테이블에 없는 TID는 어느 산업에도 속하지 않는다.
@@ -185,14 +135,5 @@ public class EquipSlotSource : InventorySlotSource
     protected override void OnUnsubscribe()
     {
         _data.EquipsChanged -= Rebuild;
-    }
-
-    // 서버가 정한 인벤토리 칸 번호 순서 (Fill의 정렬 비교자).
-    // ⚠️ 끝까지 가서 0이 나오지 않게 개체 번호까지 본다 — 'List.Sort'는 안정 정렬이 아니다.
-    private static int CompareBySlotPosition(EquipInfo a, EquipInfo b)
-    {
-        int byPosition = a.SlotPosition.CompareTo(b.SlotPosition);
-
-        return byPosition != 0 ? byPosition : a.EquipId.CompareTo(b.EquipId);
     }
 }

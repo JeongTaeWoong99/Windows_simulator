@@ -64,6 +64,11 @@ public static class ResultMessages
         EResultCode.AuctionCharacterBusy   => "배치됐거나 장비를 낀 캐릭터는 올릴 수 없습니다. 빼고 벗긴 뒤 다시 시도해 주세요.",
         EResultCode.AuctionLastCharacter   => "캐릭터를 하나는 남겨야 합니다.",
         EResultCode.MarketNotEnough        => "그 가격으로 원하는 수량을 다 살 수 없습니다. 아무것도 사지 않았습니다.",
+        // 인벤토리 칸 (1100~1103 · T-058). 화면이 낡았을 때만 나온다 — 다음 동기화가 칸을 맞춘다.
+        EResultCode.StorageSlotOutOfRange  => "옮길 수 없는 칸입니다.",
+        EResultCode.StorageSlotEmpty       => "이미 비어 있는 칸입니다.",
+        EResultCode.InvalidStorageSortKey  => "이 탭에서는 쓸 수 없는 정렬 기준입니다.",
+        EResultCode.StorageSlotPending     => "새로 받는 아이템이 들어갈 칸입니다. 잠시 뒤 다시 시도해 주세요.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

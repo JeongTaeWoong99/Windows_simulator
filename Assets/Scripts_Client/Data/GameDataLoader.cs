@@ -95,7 +95,7 @@ public static class GameDataLoader
 
     // 아이템 분류(산업 · 기타 · 특수)를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
     //
-    // ※ 인벤토리 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
+    // ※ 인벤토리 찾기의 산업 판정이 쓰는 값이다('ResourceSlotSource.MatchesIndustry'). 정렬은 서버가 한다(T-044).
     public static ItemType GetItemType(int itemId)
     {
         if (GameTable.ItemTable.TryGet(itemId, out var row))
@@ -299,6 +299,32 @@ public static class GameDataLoader
         requiredExp = 0;
 
         return false;
+    }
+
+    // 캐릭터 레벨 L의 작업속도 가산(천분율, 이슈 #35). 그 레벨까지 쌓인 **총량**이다(Lv1 = 0).
+    //
+    // ⚠️ 서버 'CharacterLevelCatalog.SpeedAddAt'의 사본이다 — 테이블 밖 레벨은 만렙 값, 행이 없으면 0.
+    // ※ 경험치 곡선과 같은 정적 곡선이라 클라가 읽어도 된다. 레벨 값은 서버가 준 것을 넣는다.
+    public static int GetLevelSpeedAdd(int level)
+    {
+        if (GameTable.CharacterLevelTable.TryGet(level, out var row))
+        {
+            return row.SpeedAddPermille;
+        }
+
+        int maxLevel = 0;
+        int maxAdd   = 0;
+
+        foreach (var each in GameTable.CharacterLevelTable.All)
+        {
+            if (each.CharacterLevelTID > maxLevel)
+            {
+                maxLevel = each.CharacterLevelTID;
+                maxAdd   = each.SpeedAddPermille;
+            }
+        }
+
+        return level > maxLevel ? maxAdd : 0;
     }
 
     // 작업슬롯 한 칸을 여는 해금 TID. 'WorkSlotTable'에 없는 칸이거나 조건 없는 칸이면 0.
