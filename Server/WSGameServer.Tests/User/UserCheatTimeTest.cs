@@ -4,7 +4,7 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 시간 치트(<c>AdvanceTime</c>·<c>ResetTime</c> · T-126 · 이슈 #48) — 서버 전체의 게임 시계를 넘긴다.
+/// 시간 치트(<c>AdvanceTime</c>·<c>ResetTime</c> · T-128 · 이슈 #48) — 서버 전체의 게임 시계를 넘긴다.
 /// 지킬 것은 셋이다 — <b>넘긴 시간은 채취에 쌓이지 않는다</b>, 접속 중인 모두가 새 서버 시각을 받는다, 경매장 릴레이를 깨운다.
 /// </summary>
 public class UserCheatTimeTest
