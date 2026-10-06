@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-07 캐릭터 장착 네모 · 상반신 여백 제거 (T-104)](2026-10-07-equip-pips-portrait-crop.md) — `#client` `#ui` `#editor` 인벤토리 캐릭터 칸·작업슬롯 칸에 장비 등급 네모 4개
 - [2026-10-06 인벤토리 칸 서버 위치 · 서버 정렬 · 끌어 놓기 (T-044)](2026-10-06-inventory-slot-drag.md) — `#client` `#ui` 세션 기억을 걷고 서버 칸 번호로 · 드래그로 칸 이동·교환
 - [2026-10-06 경매 단가 상한 1조 · 등록 수량 상한 9,999 (T-123)](2026-10-06-auction-price-count-cap.md) — `#server` `#data` `#client` 두 상한을 한 쌍으로 묶어 수수료 계산이 long을 넘지 않게
 - [2026-10-06 특성 레벨 치트 SetTraitLevel (T-115 · #51)](2026-10-06-trait-level-cheat.md) — `#server` `#test` `#client` 조건·포인트 없이 특성 레벨 지정 · 결과는 특성 목록 재전송
