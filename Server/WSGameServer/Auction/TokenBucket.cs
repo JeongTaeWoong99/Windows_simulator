@@ -38,7 +38,14 @@ public sealed class TokenBucket
     // 지난 간격 수만큼 채운다. 남는 조각 시간은 버리지 않고 다음 회복으로 넘긴다.
     private void Refill(DateTime now)
     {
-        if (now <= _lastRefill)
+        // 시계가 뒤로 갔다(시간 치트 ResetTime). 기준을 지금으로 당긴다 — 두면 넘겼던 만큼 회복이 멈춘다.
+        if (now < _lastRefill)
+        {
+            _lastRefill = now;
+            return;
+        }
+
+        if (now == _lastRefill)
         {
             return;
         }

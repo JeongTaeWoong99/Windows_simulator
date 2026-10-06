@@ -68,7 +68,7 @@ public sealed class GrantCharacterRepository : IRepository
     {
         if (_reason == CharacterGrantReason.Login)
         {
-            User.OnDefaultCharacterGranted(_granted[0].Id, _granted[0].Slot, DateTime.UtcNow);
+            User.OnDefaultCharacterGranted(_granted[0].Id, _granted[0].Slot, GameClock.Instance.UtcNow);
             return;
         }
 

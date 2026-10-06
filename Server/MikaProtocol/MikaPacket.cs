@@ -96,6 +96,7 @@ namespace MikaProtocol
         C_StorageMoveSlotRequest = 66,
         S_StorageSlotsResponse = 67,
         S_UserTraitListResponse = 68,
+        S_ServerTimeResponse = 69,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -287,6 +288,16 @@ namespace MikaProtocol
         public EResultCode   Result  { get; set; }
         public ECheatCommand Command { get; set; }
         public string        Message { get; set; } = "";   // 로그용 한 줄. 클라 로직이 읽지 않는다
+    }
+
+    /// <summary>
+    /// 서버의 "지금"(게임 시계 기준). 로그인 직후와 시간 치트(<c>AdvanceTime</c>·<c>ResetTime</c>) 직후에 온다.
+    /// 클라는 <c>ServerNowUnixMs - 내 PC 시각</c>을 들고 남은 시간·진행도를 그린다 — PC 시계가 틀려도 함께 맞는다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ServerTimeResponse)]
+    public partial class S_ServerTimeResponse : IPacket
+    {
+        public long ServerNowUnixMs { get; set; }
     }
 
     // ───────────────────────── 해금 (Unlock) ─────────────────────────

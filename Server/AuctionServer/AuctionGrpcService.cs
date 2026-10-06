@@ -4,7 +4,7 @@ using Proto = AuctionProtocol;
 namespace AuctionServer;
 
 /// <summary>gRPC ↔ 엔진 매핑만 한다. 판정은 전부 엔진·DB가 한다.</summary>
-public sealed class AuctionGrpcService(AuctionEngine engine) : Proto.Auction.AuctionBase
+public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider clock) : Proto.Auction.AuctionBase
 {
     public override async Task<Proto.RegisterReply> Register(Proto.RegisterRequest request, ServerCallContext context)
     {
@@ -140,6 +140,17 @@ public sealed class AuctionGrpcService(AuctionEngine engine) : Proto.Auction.Auc
             State     = s.Value is { } state ? (Proto.ListingState)state : Proto.ListingState.NotFound,
         }));
         return reply;
+    }
+
+    public override Task<Proto.SetClockOffsetReply> SetClockOffset(Proto.SetClockOffsetRequest request, ServerCallContext context)
+    {
+        if (request.OffsetMs < 0)
+        {
+            throw new RpcException(new Status(StatusCode.InvalidArgument, "게임 시계는 뒤로 가지 않는다"));
+        }
+
+        clock.Offset = TimeSpan.FromMilliseconds(request.OffsetMs);
+        return Task.FromResult(new Proto.SetClockOffsetReply());
     }
 
     private static Listing ToListing(Proto.ListingSnapshot s)

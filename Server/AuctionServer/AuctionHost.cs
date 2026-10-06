@@ -13,9 +13,10 @@ public static class AuctionHost
 
         builder.Services.AddSingleton(options);
         builder.Services.TryAddSingletonTimeProvider();
+        builder.Services.AddSingleton(sp => new GameTimeProvider(sp.GetRequiredService<TimeProvider>()));
         builder.Services.AddSingleton(sp =>
         {
-            var engine = new AuctionEngine(AuctionStore.Open(options.DbPath), sp.GetRequiredService<TimeProvider>(), options);
+            var engine = new AuctionEngine(AuctionStore.Open(options.DbPath), sp.GetRequiredService<GameTimeProvider>(), options);
             engine.Start();
             return engine;
         });

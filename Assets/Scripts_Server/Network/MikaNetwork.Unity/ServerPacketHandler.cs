@@ -176,6 +176,17 @@ namespace MikaNetwork
             CheatResponded?.Invoke(res);
         }
 
+        // 서버 시각(게임 시계 기준) 도착 — 로그인 직후·시간 치트 직후 (Handle_S_ServerTimeResponse에서 발행).
+        // 클라는 ServerNowUnixMs - 내 PC 시각을 들고 남은 시간·진행도를 그린다.
+        public static event Action<S_ServerTimeResponse>? ServerTimeReceived;
+
+        [PacketHandler]
+        public static void Handle_S_ServerTimeResponse(ISession session, S_ServerTimeResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"서버 시각 {DateTimeOffset.FromUnixTimeMilliseconds(res.ServerNowUnixMs):u}");
+            ServerTimeReceived?.Invoke(res);
+        }
+
         #endregion
 
         #region 해금

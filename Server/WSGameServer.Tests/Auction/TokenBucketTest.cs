@@ -62,4 +62,15 @@ public class TokenBucketTest
 
         TakeAll(bucket, T0.AddHours(1)).ShouldBe(5);
     }
+
+    [Fact]
+    public void 시계가_뒤로_가면_그_시각부터_다시_회복한다()
+    {
+        // 시간 치트로 7일 넘겼다가 되돌린 경우. 기준을 안 당기면 7일 동안 검색이 막힌다.
+        var bucket = new TokenBucket(5, TimeSpan.FromSeconds(2), T0);
+        TakeAll(bucket, T0.AddDays(7));
+
+        bucket.TryTake(T0).ShouldBeFalse();
+        TakeAll(bucket, T0.AddSeconds(4)).ShouldBe(2);
+    }
 }

@@ -153,6 +153,11 @@ public sealed class WorkStationSlot
         return true;
     }
 
+    /// <summary>
+    /// 게임 시계가 움직인 만큼 기준 시각도 함께 민다(시간 치트 전용). 넘긴 시간은 채취에 쌓이지 않고, 진행 중이던 조각은 그대로 남는다.
+    /// </summary>
+    public void ShiftClock(TimeSpan delta) => LastTickAt += delta;
+
     /// <summary>다음 판정까지 남은 시간(클라이언트 카운트다운용). 비활성 슬롯은 Zero.</summary>
     public TimeSpan TimeUntilNextJudge(DateTime now)
     {

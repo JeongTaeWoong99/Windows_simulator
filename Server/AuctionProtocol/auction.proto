@@ -30,6 +30,8 @@ service Auction {
   rpc AckEvents (AckEventsRequest) returns (AckEventsReply);
   // 대사용 — 메인이 오래 잠긴 거래의 매물 상태를 묻는다.
   rpc GetListingStates (ListingStatesRequest) returns (ListingStatesReply);
+  // 게임 시계 오프셋(시간 치트). 메인 릴레이가 매 바퀴 보낸다 — 어느 쪽이 재시작해도 1초 안에 다시 맞는다.
+  rpc SetClockOffset (SetClockOffsetRequest) returns (SetClockOffsetReply);
 }
 
 // 매물 종류. 1 = 자원(스택), 2 = 장비(개체), 3 = 캐릭터(개체).
@@ -257,4 +259,11 @@ message ListingStateEntry {
 
 message ListingStatesReply {
   repeated ListingStateEntry states = 1;
+}
+
+message SetClockOffsetRequest {
+  int64 offset_ms = 1;  // 실제 시각에 더할 밀리초 (0 이상)
+}
+
+message SetClockOffsetReply {
 }

@@ -29,6 +29,7 @@ public class AuctionRelayTest : IDisposable
         _client.Confirm     = _ => Task.CompletedTask;
         _client.FetchEvents = _ => Task.FromResult(new Proto.FetchEventsReply());
         _client.AckEvents   = _ => Task.CompletedTask;
+        _client.SetClockOffset = _ => Task.CompletedTask;
     }
 
     public void Dispose() => _db.Dispose();
@@ -338,7 +339,7 @@ public class AuctionRelayTest : IDisposable
     {
         await Register();
         using var stop = new CancellationTokenSource();
-        var loop = _relay.RunAsync(() => Now, stop.Token);
+        var loop = _relay.RunAsync(new GameClock(), stop.Token);
 
         for (var i = 0; i < 100 && _client.RequestsOf<Proto.RegisterRequest>().Count == 0; i++)
         {
@@ -349,5 +350,46 @@ public class AuctionRelayTest : IDisposable
         stop.Cancel();
         await loop;
         _client.RequestsOf<Proto.RegisterRequest>().Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public async Task 바퀴마다_게임_시계_오프셋을_경매장에_맞춘다()
+    {
+        // 경매장이 재시작하면 오프셋이 0으로 돌아간다 — 바뀔 때만 보내면 다시 맞출 기회가 없다.
+        var clock = new GameClock();
+        clock.Advance(TimeSpan.FromDays(1));
+        using var stop = new CancellationTokenSource();
+        var loop = _relay.RunAsync(clock, stop.Token);
+
+        for (var i = 0; i < 100 && _client.RequestsOf<Proto.SetClockOffsetRequest>().Count < 2; i++)
+        {
+            _relay.Kick();
+            await Task.Delay(10);
+        }
+
+        stop.Cancel();
+        await loop;
+        var sent = _client.RequestsOf<Proto.SetClockOffsetRequest>();
+        sent.Count.ShouldBeGreaterThanOrEqualTo(2);
+        sent.ShouldAllBe(r => r.OffsetMs == 86_400_000);
+    }
+
+    [Fact]
+    public async Task 오프셋을_맞추지_못하면_그_바퀴의_전송을_건너뛴다()
+    {
+        // 시계가 어긋난 경매장에 등록하면 만료가 다른 "지금"으로 판정된다. 닿지 않는 바퀴로 보고 재시도한다.
+        _client.SetClockOffset = null;
+        await Register();
+        using var stop = new CancellationTokenSource();
+        var loop = _relay.RunAsync(new GameClock(), stop.Token);
+
+        for (var i = 0; i < 20 && _client.RequestsOf<Proto.SetClockOffsetRequest>().Count == 0; i++)
+        {
+            await Task.Delay(10);
+        }
+
+        stop.Cancel();
+        await loop;
+        _client.RequestsOf<Proto.RegisterRequest>().ShouldBeEmpty();
     }
 }

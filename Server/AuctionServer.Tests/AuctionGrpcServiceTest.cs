@@ -190,6 +190,28 @@ public class AuctionGrpcServiceTest : IAsyncLifetime
         events.Single().Kind.ShouldBe(Proto.EventKind.Expired);
     }
 
+    [Fact]
+    public async Task 게임_시계를_넘기면_실제_시간은_청소_주기만큼만_흘러도_만료된다()
+    {
+        // 시간 치트 — 메인이 넘긴 오프셋을 경매장의 "지금"에 더한다. 청소 타이머는 실제 시간으로 돈다.
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Equip(1, 250) });
+
+        await _client.SetClockOffsetAsync(new Proto.SetClockOffsetRequest { OffsetMs = (long)TimeSpan.FromHours(48).TotalMilliseconds });
+        _time.Advance(TimeSpan.FromSeconds(10));
+
+        var events = await WaitForEvents();
+        events.Single().Kind.ShouldBe(Proto.EventKind.Expired);
+    }
+
+    [Fact]
+    public async Task 게임_시계_오프셋이_음수면_거절한다()
+    {
+        var e = await Should.ThrowAsync<Grpc.Core.RpcException>(
+            async () => await _client.SetClockOffsetAsync(new Proto.SetClockOffsetRequest { OffsetMs = -1 }));
+
+        e.StatusCode.ShouldBe(Grpc.Core.StatusCode.InvalidArgument);
+    }
+
     private static Proto.ListingSnapshot Carp(long id, long unitPrice, int count, long seller)
     {
         return new Proto.ListingSnapshot

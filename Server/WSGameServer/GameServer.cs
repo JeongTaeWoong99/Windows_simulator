@@ -82,7 +82,7 @@ public class GameServer : IDisposable
                                      uid => UserManager.Instance.TryGetUserByUid(uid, out var user) ? user : null);
         AuctionService.Configure(new AuctionService(_auctionClient, _logicExecutor) { KickRelay = relay.Kick });
 
-        _ = Task.Run(() => relay.RunAsync(() => DateTime.UtcNow, _auctionStop.Token));
+        _ = Task.Run(() => relay.RunAsync(GameClock.Instance, _auctionStop.Token));
         ServerLog.Info("경매", $"경매장 {settings.Address} — 릴레이 시작");
     }
 

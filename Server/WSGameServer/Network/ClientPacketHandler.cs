@@ -79,7 +79,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.ExecuteCheat(req, DateTime.UtcNow);
+        user.ExecuteCheat(req, GameClock.Instance.UtcNow);
     }
 
     /// <summary>
@@ -107,7 +107,7 @@ public static class ClientPacketHandler
             : req.IndustryLevel;
 
         user.AssignWorkStation(req.SlotIndex, (GameData.IndustryType)req.Industry, req.CharacterId,
-                               DateTime.UtcNow, industryLevel);
+                               GameClock.Instance.UtcNow, industryLevel);
     }
 
     /// <summary>아이템 사용 — 지금은 상자 개봉뿐이다. 보유·개수 검증과 지급은 GachaService가 한다.</summary>
@@ -123,7 +123,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, DateTime.UtcNow);
+        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, GameClock.Instance.UtcNow);
     }
 
     /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>
@@ -139,7 +139,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryLearnTrait(req.UserTraitTID, DateTime.UtcNow);
+        user.TryLearnTrait(req.UserTraitTID, GameClock.Instance.UtcNow);
     }
 
     /// <summary>해금 요청. 조건 판정·차감은 User가 한다 — 클라가 "열 수 있다"고 그렸어도 여기서 다시 검사한다.</summary>
@@ -155,7 +155,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryUnlock(req.UnlockTID, (GameData.CurrencyType)req.Currency, DateTime.UtcNow);
+        user.TryUnlock(req.UnlockTID, (GameData.CurrencyType)req.Currency, GameClock.Instance.UtcNow);
     }
 
     /// <summary>장비 장착. 보유·칸·종류 검증과 정산 순서는 User가 맡는다.</summary>
@@ -171,7 +171,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryEquip(req.CharacterId, req.EquipId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
+        user.TryEquip(req.CharacterId, req.EquipId, (GameData.EquipSlot)req.Slot, GameClock.Instance.UtcNow);
     }
 
     /// <summary>장비 해제.</summary>
@@ -187,7 +187,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, DateTime.UtcNow);
+        user.TryUnequip(req.CharacterId, (GameData.EquipSlot)req.Slot, GameClock.Instance.UtcNow);
     }
 
     /// <summary>인벤토리 칸 자리 이동.</summary>
@@ -283,7 +283,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryClaimMail(req.MailId, DateTime.UtcNow);
+        user.TryClaimMail(req.MailId, GameClock.Instance.UtcNow);
     }
 
     /// <summary>받은 우편 삭제. 안 받은 우편은 거절한다.</summary>
@@ -309,7 +309,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TrySearchAuction(req, DateTime.UtcNow);
+        user.TrySearchAuction(req, GameClock.Instance.UtcNow);
     }
 
     [PacketHandler]
@@ -324,7 +324,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryRegisterAuction(req.Kind, req.ItemTid, req.Count, req.EquipId, req.UnitPrice, DateTime.UtcNow, req.CharacterId);
+        user.TryRegisterAuction(req.Kind, req.ItemTid, req.Count, req.EquipId, req.UnitPrice, GameClock.Instance.UtcNow, req.CharacterId);
     }
 
     [PacketHandler]
@@ -339,7 +339,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryBuyAuction(req.ListingId, req.ExpectedTotalPrice, DateTime.UtcNow);
+        user.TryBuyAuction(req.ListingId, req.ExpectedTotalPrice, GameClock.Instance.UtcNow);
     }
 
     [PacketHandler]
@@ -377,7 +377,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryGetMarketItems(req.Category, req.Tids, DateTime.UtcNow);
+        user.TryGetMarketItems(req.Category, req.Tids, GameClock.Instance.UtcNow);
     }
 
     [PacketHandler]
@@ -390,7 +390,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryGetMarketPrice(req.Tid, DateTime.UtcNow);
+        user.TryGetMarketPrice(req.Tid, GameClock.Instance.UtcNow);
     }
 
     [PacketHandler]
@@ -405,6 +405,6 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryBuyMarket(req.Tid, req.Count, req.MaxUnitPrice, DateTime.UtcNow);
+        user.TryBuyMarket(req.Tid, req.Count, req.MaxUnitPrice, GameClock.Instance.UtcNow);
     }
 }

@@ -134,6 +134,8 @@ namespace MikaProtocol
         GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업·특성 포인트까지 실제 경로와 같다
         SendMail         = 10, // Arg1 = MailTemplateTID · Arg2 = 받는 UID(0이면 전체 우편 — 템플릿의 PeriodDays 동안)
         SetTraitLevel    = 11, // Arg1 = UserTraitTID(0이면 전 특성) · Arg2 = 레벨 — 조건·포인트 없이 정한다. 기본~최대로 자른다
+        AdvanceTime      = 12, // Arg1 = 넘길 초 (> 0, 누적) — 서버 전체의 게임 시계를 앞으로. 채취는 쌓이지 않는다
+        ResetTime        = 13, // 게임 시계 오프셋을 0으로 — 미래 시각으로 저장된 데이터는 남는다
     }
 
     public enum EItemChangeKind : byte

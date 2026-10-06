@@ -15,6 +15,9 @@ public partial class User
     /// <summary>정산 치트가 한 번에 앞당길 수 있는 판정 횟수 상한 — Constants.xlsx.</summary>
     public static int CheatMaxSettleJudges => (int)Constants.CheatMaxSettleJudges;
 
+    /// <summary>시간 치트가 한 번에 넘길 수 있는 상한. 0 하나 더 친 오타와 DateTime 넘침을 막는다.</summary>
+    public static readonly TimeSpan CheatMaxAdvanceTime = TimeSpan.FromDays(365);
+
     /// <summary>
     /// 치트 명령을 실행하고 <c>S_CheatResponse</c>로 결과를 돌려준다.
     /// 게임과 같은 지급 함수를 부르므로 결과는 기존 동기화 패킷으로도 나간다 (<c>Server/docs/치트.md</c>).
@@ -39,6 +42,8 @@ public partial class User
             ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
             ECheatCommand.SendMail         => CheatSendMail(req.Arg1, req.Arg2, now),
             ECheatCommand.SetTraitLevel    => CheatSetTraitLevel(req.Arg1, req.Arg2, now),
+            ECheatCommand.AdvanceTime      => CheatAdvanceTime(req.Arg1, now),
+            ECheatCommand.ResetTime        => CheatResetTime(now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -226,6 +231,53 @@ public partial class User
         // 최대 레벨을 넘는 값은 어차피 최대로 잘린다 — int로 좁힐 때 넘침만 막는다.
         var changed = SetTraitLevels(targets, (int)Math.Min(level, int.MaxValue), now);
         return (EResultCode.Ok, $"특성 {targets.Count}개 중 {changed}개 변경 (요청 Lv{level})");
+    }
+
+    private (EResultCode, string) CheatAdvanceTime(long seconds, DateTime now)
+    {
+        if (seconds <= 0 || seconds > (long)CheatMaxAdvanceTime.TotalSeconds)
+        {
+            return (EResultCode.InvalidCheatArgs, $"넘길 초는 1~{(long)CheatMaxAdvanceTime.TotalSeconds}");
+        }
+
+        var delta = TimeSpan.FromSeconds(seconds);
+        _clock.Advance(delta);
+        ShiftGameClock(delta, now + delta);
+        return (EResultCode.Ok, $"게임 시계 +{delta} → 오프셋 {_clock.Offset}");
+    }
+
+    private (EResultCode, string) CheatResetTime(DateTime now)
+    {
+        var delta = _clock.Reset();
+        if (delta == TimeSpan.Zero)
+        {
+            return (EResultCode.Ok, "오프셋이 이미 0");
+        }
+
+        ShiftGameClock(delta, now + delta);
+        return (EResultCode.Ok, $"게임 시계 {delta} 되돌림 → 오프셋 0");
+    }
+
+    // 오프셋은 서버 전체 하나라 접속 중인 모두에게 알린다. 경매장은 릴레이가 다음 바퀴에 같은 오프셋을 맞춘다.
+    private void ShiftGameClock(TimeSpan delta, DateTime now)
+    {
+        foreach (var user in _onlineUsers.All.Append(this).Distinct())
+        {
+            user.OnGameClockShifted(delta, now);
+        }
+
+        _auction.KickRelay();
+    }
+
+    /// <summary>
+    /// 게임 시계가 <paramref name="delta"/>만큼 움직였다. 슬롯 기준 시각을 같이 밀어 <b>넘긴 시간은 채취에 쌓이지 않는다</b> —
+    /// 보상이 크게 튀지 않게(이슈 #48 결정). 판정을 당기려면 <c>Settle</c> 치트를 쓴다.
+    /// </summary>
+    public void OnGameClockShifted(TimeSpan delta, DateTime now)
+    {
+        WorkStation.ShiftClock(delta);
+        SendWorkStationSlots();
+        SendServerTime(now);
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

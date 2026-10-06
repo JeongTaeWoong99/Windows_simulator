@@ -23,6 +23,7 @@ public interface IAuctionClient
     Task<Proto.FetchEventsReply>    FetchEventsAsync(Proto.FetchEventsRequest request);
     Task                            AckEventsAsync(Proto.AckEventsRequest request);
     Task<Proto.ListingStatesReply>  GetListingStatesAsync(Proto.ListingStatesRequest request);
+    Task                            SetClockOffsetAsync(Proto.SetClockOffsetRequest request);
 }
 
 /// <summary>경매장 연결 설정. 환경 변수로 덮는다 — 메인은 설정 파일이 없다.</summary>
@@ -134,6 +135,9 @@ public sealed class GrpcAuctionClient : IAuctionClient, IDisposable
 
     public async Task<Proto.ListingStatesReply> GetListingStatesAsync(Proto.ListingStatesRequest request)
         => await _client.GetListingStatesAsync(request, Options());
+
+    public async Task SetClockOffsetAsync(Proto.SetClockOffsetRequest request)
+        => await _client.SetClockOffsetAsync(request, Options());
 
     public void Dispose() => _channel.Dispose();
 }

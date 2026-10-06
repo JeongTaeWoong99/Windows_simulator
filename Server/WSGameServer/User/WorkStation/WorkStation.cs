@@ -90,6 +90,15 @@ public sealed class WorkStation
         return harvests;
     }
 
+    /// <summary>모든 슬롯의 기준 시각을 민다 — 게임 시계를 넘겨도 채취가 쌓이지 않게(시간 치트).</summary>
+    public void ShiftClock(TimeSpan delta)
+    {
+        foreach (var slot in _slots.Values)
+        {
+            slot.ShiftClock(delta);
+        }
+    }
+
     public List<WorkStationSlotInfo> Snapshot()
         => _slots.Values.OrderBy(s => s.SlotIndex).Select(s => s.ToInfo()).ToList();
 }

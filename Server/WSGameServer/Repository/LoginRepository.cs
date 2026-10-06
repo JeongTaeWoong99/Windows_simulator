@@ -103,6 +103,6 @@ public sealed class LoginRepository : IRepository
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
                                 _equipRows, _characterEquipRows, _account, _traitRows),
-            DateTime.UtcNow);
+            GameClock.Instance.UtcNow);
     }
 }

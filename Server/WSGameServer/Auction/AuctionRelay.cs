@@ -59,21 +59,22 @@ public sealed class AuctionRelay
         }
     }
 
-    public async Task RunAsync(Func<DateTime> clock, CancellationToken stop)
+    public async Task RunAsync(GameClock clock, CancellationToken stop)
     {
-        var nextReconcile = clock() + ReconcileInterval;
+        var nextReconcile = clock.UtcNow + ReconcileInterval;
 
         while (!stop.IsCancellationRequested)
         {
             var reachable = false;
             try
             {
-                reachable = await RunOnceAsync(clock());
+                await SyncClockAsync(clock.Offset);
+                reachable = await RunOnceAsync(clock.UtcNow);
 
-                if (reachable && clock() >= nextReconcile)
+                if (reachable && clock.UtcNow >= nextReconcile)
                 {
-                    await ReconcileAsync(clock());
-                    nextReconcile = clock() + ReconcileInterval;
+                    await ReconcileAsync(clock.UtcNow);
+                    nextReconcile = clock.UtcNow + ReconcileInterval;
                 }
             }
             catch (RpcException e)
@@ -96,6 +97,13 @@ public sealed class AuctionRelay
             }
         }
     }
+
+    /// <summary>
+    /// 게임 시계 오프셋을 경매장에 맞춘다(시간 치트). 바뀔 때만 보내지 않고 매 바퀴 보낸다 —
+    /// 경매장이 재시작하면 오프셋이 0으로 돌아가는데 메인은 그것을 알 길이 없다.
+    /// </summary>
+    public Task SyncClockAsync(TimeSpan offset)
+        => _client.SetClockOffsetAsync(new Proto.SetClockOffsetRequest { OffsetMs = (long)offset.TotalMilliseconds });
 
     /// <returns>경매장에 닿았으면 true. outbox를 다 못 보냈으면 이벤트도 건너뛴다 — 어차피 닿지 않는다.</returns>
     public async Task<bool> RunOnceAsync(DateTime now)

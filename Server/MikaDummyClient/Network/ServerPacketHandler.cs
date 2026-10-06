@@ -172,6 +172,12 @@ namespace MikaDummyClient
         }
 
         [PacketHandler]
+        public static void Handle_S_ServerTimeResponse(ISession session, S_ServerTimeResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 서버 시각: {DateTimeOffset.FromUnixTimeMilliseconds(res.ServerNowUnixMs):u}");
+        }
+
+        [PacketHandler]
         public static void Handle_S_UnlockResponse(ISession session, S_UnlockResponse res)
         {
             Console.WriteLine($"[Client] Recv 해금: UnlockTID={res.UnlockTID} → {res.Result}");

@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-09-24 (경매장 서버 추가 — 폴더·테스트·실행)
+> 최종 업데이트: 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-126) · 2026-09-24 (경매장 서버 추가)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -99,6 +99,8 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   시각·레벨·스레드·분류가 함께 남아야 로그를 읽을 수 있다.
   `MikaNetwork.Lib`은 로그 정책을 갖지 않는다 — 훅(`MikaPacketManager.Dispatching`,
   `MikaSessionPacketExtensions.Sent`, `MikaServer.Connected`)만 뚫고 호스트가 채운다.
+- **게임 로직의 "지금"은 `GameClock`(게임 시계)에서만 받는다** — 핸들러·타이머가 `GameClock.Instance.UtcNow`를 만들어 넘긴다.
+  게임 로직에 `DateTime.UtcNow`를 직접 쓰면 시간 치트(`AdvanceTime`)가 그 기능을 못 넘긴다. 세션 감시·gRPC 기한·로그는 예외 → [`치트.md`](docs/치트.md) 5장.
 - 생성물(`Server/GameData`, `Server/Shared/Data`)은 직접 고치지 않는다.
   엑셀에서 고치고 파이프라인을 돌린다 — [`GameDesign/CLAUDE.md`](../GameDesign/CLAUDE.md) 참조.
 - 코드는 한글 주석을 사용한다.

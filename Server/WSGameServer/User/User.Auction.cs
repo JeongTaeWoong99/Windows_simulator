@@ -286,7 +286,7 @@ public partial class User
     {
         _gold = checked(_gold + totalPrice);
         PostDBTask(new SaveCurrencyRepository(this, _gold));
-        ReleasePurchase(purchaseId, DateTime.UtcNow);
+        ReleasePurchase(purchaseId, _clock.UtcNow);
         OnDbFailed(repositoryName, e);
     }
 

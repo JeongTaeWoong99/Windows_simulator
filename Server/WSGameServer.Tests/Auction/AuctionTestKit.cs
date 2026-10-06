@@ -23,6 +23,7 @@ internal sealed class FakeAuctionClient : IAuctionClient
     public Func<Proto.FetchEventsRequest, Task<Proto.FetchEventsReply>>?       FetchEvents    { get; set; }
     public Func<Proto.AckEventsRequest, Task>?                                 AckEvents      { get; set; }
     public Func<Proto.ListingStatesRequest, Task<Proto.ListingStatesReply>>?   ListingStates  { get; set; }
+    public Func<Proto.SetClockOffsetRequest, Task>?                            SetClockOffset { get; set; }
 
     public List<object> Requests { get; } = new();
 
@@ -62,6 +63,7 @@ internal sealed class FakeAuctionClient : IAuctionClient
     public Task<Proto.FetchEventsReply> FetchEventsAsync(Proto.FetchEventsRequest request) => Call(FetchEvents, request);
     public Task AckEventsAsync(Proto.AckEventsRequest request) => Call(AckEvents, request);
     public Task<Proto.ListingStatesReply> GetListingStatesAsync(Proto.ListingStatesRequest request) => Call(ListingStates, request);
+    public Task SetClockOffsetAsync(Proto.SetClockOffsetRequest request) => Call(SetClockOffset, request);
 }
 
 /// <summary>유저 무관 DB 작업을 테스트의 <c>:memory:</c> 커넥션에 대고 돌린다.</summary>

@@ -139,6 +139,9 @@ internal sealed class TestUserBuilder
     /// <summary>이 테스트만의 접속 유저 목록. 전역 <see cref="UserManager"/>를 쓰지 않는다 — 병렬 테스트끼리 섞이지 않게.</summary>
     public FakeOnlineUsers Online { get; } = new();
 
+    /// <summary>이 테스트만의 게임 시계. 전역 <see cref="GameClock.Instance"/>의 오프셋을 병렬 테스트끼리 공유하지 않게.</summary>
+    public GameClock Clock { get; } = new();
+
     // 실제 SQL·실행기로 흐름 전체를 볼 때 갈아 끼운다(경매 끝-대-끝). 비워 두면 기록만 하는 가짜다.
     public IDBQueue?       QueueOverride    { get; set; }
     public ILogicExecutor? ExecutorOverride { get; set; }
@@ -212,7 +215,7 @@ internal sealed class TestUserBuilder
 
         var user = new User(Channel, QueueOverride ?? DB, ExecutorOverride ?? Executor,
                             pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
-                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online);
+                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online, Clock);
         user.Uid = uid;
         return user;
     }

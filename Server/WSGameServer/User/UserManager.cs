@@ -107,7 +107,7 @@ public sealed class UserManager : Singleton<UserManager>, IOnlineUsers
             _logicExecutor!,
             pid,
             nickname,
-            DateTime.UtcNow,
+            GameClock.Instance.UtcNow,
             onlineUsers: this);
 
         // 접속 목록 등록·해제는 매니저의 일이다 — User는 로그인·종료를 알리기만 한다.

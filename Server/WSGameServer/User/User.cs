@@ -21,6 +21,9 @@ public sealed partial class User
     /// <summary>다른 유저 조회(치트 우편 수신자 · 전체 우편 전달). 생략하면 전역 <see cref="UserManager"/>다.</summary>
     private readonly IOnlineUsers _onlineUsers;
 
+    /// <summary>게임 시계. 시간 치트가 움직이고, 시각을 인자로 받을 수 없는 경계(OnDestroy·실패 콜백)만 읽는다. 생략하면 <see cref="GameClock.Instance"/>다.</summary>
+    private readonly GameClock _clock;
+
     /// <summary>로그인 응답 직전. <see cref="UserManager"/>가 이때 접속 목록에 올린다 — User는 매니저를 모른다.</summary>
     public event Action<User>? LoggedIn;
 
@@ -152,7 +155,8 @@ public sealed partial class User
         MailCatalog?          mails = null,
         EnchantCatalog?       enchants = null,
         AuctionService?       auction = null,
-        IOnlineUsers?         onlineUsers = null)
+        IOnlineUsers?         onlineUsers = null,
+        GameClock?            clock = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -172,6 +176,7 @@ public sealed partial class User
         _enchantCatalog = enchants ?? EnchantCatalog.Instance;
         _auction = auction ?? AuctionService.Current;
         _onlineUsers = onlineUsers ?? UserManager.Instance;
+        _clock = clock ?? GameClock.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;
@@ -217,6 +222,7 @@ public sealed partial class User
 
         IsLoggedIn = true;
         Send(new S_LoginResponse { Result = EResultCode.Ok, SessionId = SessionId });
+        SendServerTime(now); // S_ServerTimeResponse — 남은 시간·진행도를 그리기 전에 서버 시각을 안다
         
         SendInventory();   // S_InventoryResponse
         SendCurrency();    // S_CurrencyResponse
@@ -284,7 +290,7 @@ public sealed partial class User
         // 끊김 시 결정적으로 호출됨(로직 스레드). 소멸자가 아니라 여기가 정리 지점이다.
         ServerLog.Info("유저", $"소멸 SessionId={SessionId} Pid={Pid}");
 
-        Disconnect(DateTime.UtcNow);
+        Disconnect(_clock.UtcNow);
     }
 
     public void Initialize(long userId, string nickName, int adminLevel, bool isNewbie)
@@ -298,6 +304,12 @@ public sealed partial class User
     }
 
     public void Send<T>(T packet) where T : IPacket => _channel.Send(packet);
+
+    /// <summary>게임 시계 기준 "지금"을 알린다(로그인 직후·시간 치트 직후).</summary>
+    public void SendServerTime(DateTime now)
+    {
+        Send(new S_ServerTimeResponse { ServerNowUnixMs = new DateTimeOffset(now, TimeSpan.Zero).ToUnixTimeMilliseconds() });
+    }
 
     /// <summary>
     /// 클라이언트와의 통로를 닫는다. <see cref="Destroy"/>는 게임 상태만 정리하므로
