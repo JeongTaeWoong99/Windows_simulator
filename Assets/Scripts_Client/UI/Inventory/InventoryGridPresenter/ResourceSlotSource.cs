@@ -14,61 +14,33 @@ public class ResourceSlotSource : InventorySlotSource
         _data = data;
     }
 
-    // 보유 아이템을 칸으로 옮긴다 (Rebuild에서 호출).
+    // 보유 아이템을 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
     //
-    // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 자리 기억과 떼어 따로 한다('InventorySlotSource' 주석).
-    protected override void Fill(List<SlotData> into)
+    // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 칸 번호와 떼어 따로 한다('InventorySlotSource' 주석).
+    // ※ 창고(T-107)에 맡긴 것은 인벤토리 격자에 그리지 않는다 — 같은 TID가 두 보관함에 따로 있을 수 있다.
+    protected override void Fill(List<PlacedSlot> into)
     {
         foreach (ItemInfo item in _data.Inventory)
         {
             // 서버가 0개가 된 아이템도 실어 보낸다(감소도 같은 경로로 온다). 화면에서는 뺀다.
-            if (item.Count <= 0)
+            if (item.Count <= 0 || item.Container != EContainer.Inventory)
             {
                 continue;
             }
 
-            into.Add(new SlotData(
+            var slot = new SlotData(
                 item.ItemId,
                 GameDataLoader.GetItemName(item.ItemId),
                 $"{item.Count} 개", // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
                 GameDataLoader.GetItemRarity(item.ItemId),
-                VisualCatalog.ItemIconOf(item.ItemId)));
+                VisualCatalog.ItemIconOf(item.ItemId));
+
+            into.Add(new PlacedSlot(slot, item.Slot));
         }
-    }
-
-    // 자원 [정렬] 규칙 — 등급 높은 순 → 산업 순 → TID 순 (Sort에서 호출).
-    //
-    // 산업 순은 'ItemType' 값 순서다 — 농사·낚시·채광·벌목·사냥·기타·특수로, 배치 화면의 산업 버튼·적성 스트립과 같다.
-    // TID 대역(낚시 1xxxx · 농사 2xxxx)으로 바로 줄 세우면 낚시가 농사보다 앞에 와서 두 화면의 순서가 어긋난다.
-    // ※ enum끼리 'CompareTo'를 부르면 박싱이 일어나 숫자로 바꿔 비교한다.
-    protected override int CompareForSort(SlotData a, SlotData b)
-    {
-        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
-
-        if (byRarity != 0)
-        {
-            return byRarity;
-        }
-
-        int itemA = (int)a.Key;
-        int itemB = (int)b.Key;
-
-        int byType = ((byte)GameDataLoader.GetItemType(itemA)).CompareTo((byte)GameDataLoader.GetItemType(itemB));
-
-        if (byType != 0)
-        {
-            return byType;
-        }
-
-        return itemA.CompareTo(itemB);
     }
 
     // 자원만 보유 수량으로 줄 세울 수 있다 — 캐릭터·장비는 개체라 수량이 늘 1이다 (도구 줄이 호출).
     public override bool SupportsSortKey(InventorySortKey key) => true;
-
-    // 보유 수량 많은 순 (기반 클래스의 CompareByKey에서 호출).
-    protected override int CompareByCount(SlotData a, SlotData b)
-        => _data.GetItemCount((int)b.Key).CompareTo(_data.GetItemCount((int)a.Key));
 
     // 자원의 산업 = 'ItemType' (Matches에서 호출).
     // ※ 기타·특수(상자 등)는 산업이 아니다 — 분류 드롭다운의 '상자' · '기타'로 따로 거른다('MatchesGroup').

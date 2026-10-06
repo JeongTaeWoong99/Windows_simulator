@@ -95,7 +95,7 @@ public static class GameDataLoader
 
     // 아이템 분류(산업 · 기타 · 특수)를 조회한다. 규칙은 'GetItemName'과 같다 — 없는 Id는 'None'으로 떨어지고 처음 한 번만 경고한다.
     //
-    // ※ 인벤토리 정렬이 쓰는 값이다 — 같은 등급 안에서 산업 순서로 묶는다('ResourceSlotSource.CompareForSort').
+    // ※ 인벤토리 찾기의 산업 판정이 쓰는 값이다('ResourceSlotSource.MatchesIndustry'). 정렬은 서버가 한다(T-044).
     public static ItemType GetItemType(int itemId)
     {
         if (GameTable.ItemTable.TryGet(itemId, out var row))

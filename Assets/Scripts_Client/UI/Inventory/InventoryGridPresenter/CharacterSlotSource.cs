@@ -46,40 +46,25 @@ public class CharacterSlotSource : InventorySlotSource
     // ⚠️ 이름도 등급도 종류(TID)로 읽는다 — 개체 번호를 넣으면 이름은 '?#2'가 되고 등급은 회색('None')이 된다.
     //    칸에 실어 보내는 'Key'만 개체 번호('CharacterId')다.
     // ※ 보조 문구는 빈 문자열이다 — 그 자리를 적성 스트립이 쓴다(위 주석).
-    protected override void Fill(List<SlotData> into)
+    // ※ 창고(T-107)에 맡긴 캐릭터는 인벤토리 격자에 그리지 않는다.
+    protected override void Fill(List<PlacedSlot> into)
     {
         foreach (CharacterInfo character in _data.Characters)
         {
-            into.Add(new SlotData(
+            if (character.Container != EContainer.Inventory)
+            {
+                continue;
+            }
+
+            var slot = new SlotData(
                 character.CharacterId,
                 GameDataLoader.GetCharacterName(character.CharacterTid),
                 "",
                 GameDataLoader.GetCharacterRarity(character.CharacterTid),
-                VisualCatalog.PortraitOf(character.CharacterTid)));
+                VisualCatalog.PortraitOf(character.CharacterTid));
+
+            into.Add(new PlacedSlot(slot, character.Slot));
         }
-    }
-
-    // 캐릭터 [정렬] 규칙 — 등급 높은 순 → 종류(TID) 순 → 개체 번호 순 (Sort에서 호출).
-    //
-    // 같은 종류를 여러 마리 가질 수 있어 개체 번호까지 가야 동점이 없다.
-    // ※ 칸의 'Key'는 개체 번호라 TID는 보유 목록에서 찾아온다.
-    protected override int CompareForSort(SlotData a, SlotData b)
-    {
-        int byRarity = ((byte)b.Rarity).CompareTo((byte)a.Rarity);
-
-        if (byRarity != 0)
-        {
-            return byRarity;
-        }
-
-        int byTid = _data.GetCharacterTid(a.Key).CompareTo(_data.GetCharacterTid(b.Key));
-
-        if (byTid != 0)
-        {
-            return byTid;
-        }
-
-        return a.Key.CompareTo(b.Key);
     }
 
     // 캐릭터는 산업으로 거르지 않는다 — 적성이 다섯 산업에 걸쳐 있어 "어느 산업 캐릭터"가 없다 (도구 줄이 호출).
