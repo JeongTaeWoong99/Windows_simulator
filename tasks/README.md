@@ -54,7 +54,6 @@
 | [T-009](T-009-회당산출.md) | **공통** 회당 산출 확정 — 5산업 같은 값(#42 합의 · 2026-10-07 축소) · `YieldPerJudge = 1` 유지 여부 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261010 |
 | [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI — **큐브 창 · 효율 계산 · 규칙 툴팁 붙음(2026-10-03)** · 큐브 설명문 엑셀(D6) 반영 · 실측 확인 · 남은 것: 상급 큐브 처우 [이슈 #53](https://github.com/JeongTaeWoong99/Windows_simulator/issues/53) · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46) | 태웅 | In Progress | 보통 | 261010 |
 | [T-093](T-093-설명보간.md) | 아이템 설명 보간 — **플레이어용 `Tooltip` 컬럼**(아이템·장비)의 `{컬럼}`·`{컬럼:permille}`을 생성 시점에 치환 · **완료(2026-10-07)** — 남은 것: 확인 · 문구 채우기와 클라 표시는 일감 밖 | 진우 | Resolve | 보통 | 261010 |
-| [T-090](T-090-문서그래프Fix이름.md) | `check-doc-graph -Fix`가 README 문서 이름을 영문 폴더명으로 써 19개 블록을 덮어쓴다 — `Get-DocName`이 폴더명을 쓴다(2026-08-08 개명 이후) | 진우 | New | 보통 | 261010 |
 | [T-076](T-076-성장재료소비처.md) | 기획 — 자원·캐릭터·장비를 성장 재료로 쓸지 (중복 개체의 출구) — ✅ 캐릭터 = **응축 ★** · 장비 = **분해 → 재료** (2026-10-07) · 남은 것: 자원 먹이기 · A안(산업 자원 → 장비 강화)은 [T-125](T-125-산업특성화.md) 결과까지 미룬다 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | In Progress | 보통 | 261010 |
 | [T-018](T-018-BasePrice.md) | `BasePrice` 값 확정 — 임시값은 156종에 들어갔다 · 산업 간 맞추기는 #42로 폐기 · 남은 것: **레벨 배율 · 가챠 되팔기 검산** · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 보통 | 261010 |
 | [T-054](T-054-종족과초상화.md) | 캐릭터 종족 기획 · `CharacterTable` 컬럼 + 초상화·산업 아이콘 리소스 (T-053이 자리를 만들었다) | 진우 | New | 보통 | 261010 |
@@ -93,7 +92,7 @@
 > 지금은 비어 있다. 🎨만 남은 **클라** 일감(T-031·T-015·T-052·T-039)은 [`art/`](art/README.md)로, T-051은 [`later/`](later/README.md)로 옮겼다(2026-09-28).
 > 나머지 🎨는 항목 하나로 다른 일감 안에 산다 — T-033.
 
-> 끝난 일감 81건은 [`archive/README.md`](archive/README.md)에 있다.
+> 끝난 일감 82건은 [`archive/README.md`](archive/README.md)에 있다.
 
 ---
 
