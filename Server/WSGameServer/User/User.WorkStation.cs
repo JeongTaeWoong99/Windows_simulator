@@ -336,23 +336,23 @@ public partial class User
         return total;
     }
 
-    // 이 슬롯의 채취 속도(천분율). 속도에 관여하는 것은 전부 여기로 모은다 — 정산 → ApplyWorkSpeed 순서를 타는 유일한 경로라
-    // 여기서 곱하면 소급이 불가능하다. 합성 규칙은 WorkSpeed → Server/docs/채취-정산.md 5장
-    private int ResolveSlotSpeed(WorkStationSlot slot)
+    // 이 슬롯의 채취 속도 내역. 속도에 관여하는 것은 전부 여기로 모은다 — 정산 → ApplyWorkSpeed 순서를 타는 유일한 경로라
+    // 여기서 곱하면 소급이 불가능하다. 합성 규칙은 WorkSpeedBreakdown.Resolve → Server/docs/채취-정산.md 5장
+    private WorkSpeedBreakdown ResolveSlotSpeed(WorkStationSlot slot)
     {
         // 비어 있는 슬롯은 어차피 돌지 않는다(IsActive=false). 값은 의미가 없으므로 기준값을 둔다.
-        var baseSpeed = !slot.IsActive || !TryGetCharacter(slot.CharacterId, out var character)
-            ? WorkStationSlot.DefaultWorkSpeed
-            : character.GetBaseWorkSpeed(slot.Industry);
+        if (!slot.IsActive || !TryGetCharacter(slot.CharacterId, out var character))
+        {
+            return WorkSpeedBreakdown.Of(WorkStationSlot.DefaultWorkSpeed) with { GatherSpeedPermille = _gatherSpeed.Permille };
+        }
 
-        return WorkSpeed.From(baseSpeed)
-            // 착용 장비 가산(전 산업 + 슬롯 산업). 특성·부스트도 여기에 .Add(천분율)로 붙는다 — 개수가 늘어도 각 보정의 몫은 그대로다.
-            .Add(GetEquipSpeedAdd(slot.CharacterId, slot.Industry))
-            .Add(GetTraitSpeedAdd(slot.Industry))
-            .Add(GetLevelSpeedAdd(slot.CharacterId))
-            .Add(GetStarSpeedAdd(slot.CharacterId))
-            .Multiply(GatherSpeedMultiplier)
-            .Resolve();
+        return new WorkSpeedBreakdown(
+            BaseWorkSpeed:       character.GetBaseWorkSpeed(slot.Industry),
+            LevelAddPermille:    GetLevelSpeedAdd(slot.CharacterId),
+            TraitAddPermille:    GetTraitSpeedAdd(slot.Industry),
+            EquipAddPermille:    GetEquipSpeedAdd(slot.CharacterId, slot.Industry),
+            StarAddPermille:     GetStarSpeedAdd(slot.CharacterId),
+            GatherSpeedPermille: _gatherSpeed.Permille);
     }
 
     /// <summary>지정한 슬롯들의 <b>배치 설정</b>을 DB에 반영한다(진행도는 저장하지 않는다).</summary>

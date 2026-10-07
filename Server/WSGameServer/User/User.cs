@@ -23,6 +23,7 @@ public sealed partial class User
 
     /// <summary>게임 시계. 시간 치트가 움직이고, 시각을 인자로 받을 수 없는 경계(OnDestroy·실패 콜백)만 읽는다. 생략하면 <see cref="GameClock.Instance"/>다.</summary>
     private readonly GameClock _clock;
+    private readonly GatherSpeed _gatherSpeed;
 
     /// <summary>로그인 응답 직전. <see cref="UserManager"/>가 이때 접속 목록에 올린다 — User는 매니저를 모른다.</summary>
     public event Action<User>? LoggedIn;
@@ -160,7 +161,8 @@ public sealed partial class User
         AuctionService?       auction = null,
         IOnlineUsers?         onlineUsers = null,
         GameClock?            clock = null,
-        CharacterStarCatalog? characterStars = null)
+        CharacterStarCatalog? characterStars = null,
+        GatherSpeed?          gatherSpeed = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -182,6 +184,7 @@ public sealed partial class User
         _onlineUsers = onlineUsers ?? UserManager.Instance;
         _clock = clock ?? GameClock.Instance;
         _characterStars = characterStars ?? CharacterStarCatalog.Instance;
+        _gatherSpeed = gatherSpeed ?? GatherSpeed.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

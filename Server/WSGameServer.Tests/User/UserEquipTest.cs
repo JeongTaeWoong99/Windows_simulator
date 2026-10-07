@@ -67,7 +67,6 @@ public class UserEquipTest
         user.TryGetCharacter(characterId, out var c).ShouldBeTrue();
         return WorkSpeed.From(c.GetBaseWorkSpeed(IndustryType.Fishing))
             .Add(addPermille)
-            .Multiply(Global.GatherSpeedMultiplier)
             .Resolve();
     }
 

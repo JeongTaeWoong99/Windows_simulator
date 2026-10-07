@@ -290,7 +290,6 @@ public class UserEnchantTest
         user.TryGetCharacter(CharA, out var c).ShouldBeTrue();
         return WorkSpeed.From(c.GetBaseWorkSpeed(industry))
             .Add(addPermille)
-            .Multiply(Global.GatherSpeedMultiplier)
             .Resolve();
     }
 

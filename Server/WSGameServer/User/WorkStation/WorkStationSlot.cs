@@ -45,6 +45,7 @@ public sealed class WorkStationSlot
         CharacterId      = characterId;
         LastTickAt       = startedAt;
         CurrentWorkSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed ?? DefaultWorkSpeed);
+        SpeedBreakdown   = WorkSpeedBreakdown.Of(CurrentWorkSpeed);
     }
 
     public int SlotIndex { get; }
@@ -70,6 +71,9 @@ public sealed class WorkStationSlot
     /// <summary>현재 작업속도(천분율). 보정을 모두 적용한 확정값이며 접속마다 재계산한다. 테이블 기본값은 입력, 이 값은 결과.</summary>
     public int CurrentWorkSpeed { get; private set; }
 
+    /// <summary>현재 작업속도를 이루는 항목들. 슬롯 정보로 그대로 나간다(T-055). 세션 지역 상태.</summary>
+    public WorkSpeedBreakdown SpeedBreakdown { get; private set; }
+
     /// <summary>이 슬롯의 실효 채취 주기. 표시·로그용이며 계산에는 쓰지 않는다.</summary>
     public TimeSpan EffectiveCycle
         => TimeSpan.FromMilliseconds((double)JudgeCostUnits / CurrentWorkSpeed);
@@ -93,6 +97,15 @@ public sealed class WorkStationSlot
         // 진행 중이던 조각은 버린다. 이월하면 산업을 갈아타며 조각을 모으는 악용이 된다.
         LastTickAt    = now;
         ProgressUnits = 0;
+    }
+
+    /// <summary>내역으로 속도를 확정해 바꾼다. ⚠️ 호출 전에 반드시 정산한다 — 안 그러면 이전 구간까지 새 속도로 소급된다.</summary>
+    /// <returns>속도나 내역이 바뀌었으면 true — 합이 같아도 내역이 바뀌면 클라 화면이 달라진다.</returns>
+    public bool ApplyWorkSpeed(WorkSpeedBreakdown breakdown)
+    {
+        var breakdownChanged = breakdown != SpeedBreakdown;
+        SpeedBreakdown = breakdown;
+        return ApplyWorkSpeed(breakdown.Resolve()) || breakdownChanged;
     }
 
     /// <summary>채취 속도를 바꾼다. ⚠️ 호출 전에 반드시 정산한다 — 안 그러면 이전 구간까지 새 속도로 소급된다.</summary>
@@ -190,5 +203,11 @@ public sealed class WorkStationSlot
         ProgressUnits    = ProgressUnits,
         CurrentWorkSpeed = CurrentWorkSpeed,
         JudgeCostUnits   = JudgeCostUnits,
+        BaseWorkSpeed       = SpeedBreakdown.BaseWorkSpeed,
+        LevelAddPermille    = SpeedBreakdown.LevelAddPermille,
+        TraitAddPermille    = SpeedBreakdown.TraitAddPermille,
+        EquipAddPermille    = SpeedBreakdown.EquipAddPermille,
+        StarAddPermille     = SpeedBreakdown.StarAddPermille,
+        GatherSpeedPermille = SpeedBreakdown.GatherSpeedPermille,
     };
 }
