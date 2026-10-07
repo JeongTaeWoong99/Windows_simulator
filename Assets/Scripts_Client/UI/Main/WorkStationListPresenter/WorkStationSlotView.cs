@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -29,6 +30,11 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("판정 진행도 (0~1). 표시 전용이라 interactable은 꺼 둔다")]
     private Slider progressSlider = null!;
 
+    // ※ 남은 시간 줄('Remain Text')의 오른쪽에 붙는다 — 인벤토리 캐릭터 칸에서 LV 배지 줄 오른쪽에 붙는 것과 짝이다(T-104).
+    //   여기는 칸이 넓어 'EquipIconsView'(등급 바탕 + 장비 아이콘)를 쓴다.
+    [SerializeField, Tooltip("배치된 캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석 (EquipIconsView 프리팹)")]
+    private EquipPipsView equipPips = null!;
+
     [SerializeField, Tooltip("슬롯 무대 (Visible Panel). 비우면 연출 없이 바탕만 남는다")]
     private SlotStageView? stage;
 
@@ -48,6 +54,7 @@ public class WorkStationSlotView : MonoBehaviour
         this.RequireRef(slotText,       nameof(slotText));
         this.RequireRef(remainText,     nameof(remainText));
         this.RequireRef(progressSlider, nameof(progressSlider));
+        this.RequireRef(equipPips,      nameof(equipPips));
     }
 
     // 슬롯 스냅샷을 반영한다 (WorkStationListPresenter가 호출).
@@ -96,6 +103,14 @@ public class WorkStationSlotView : MonoBehaviour
     public void SetRarity(GlobalRarity rarity)
     {
         backgroundImage.color = RarityPalette.Get(rarity);
+    }
+
+    // 배치된 캐릭터의 장착 네모를 그린다 (WorkStationListPresenter가 Bind 뒤에 호출).
+    //   grades : 'EquipLabel.WornSlots' 순서의 등급 — 'None'은 빈 칸
+    //   icons  : 같은 순서의 장비 아이콘 — 빈 칸·그림 없음은 null
+    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons)
+    {
+        equipPips.Bind(grades, icons);
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

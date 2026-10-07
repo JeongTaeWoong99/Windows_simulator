@@ -1,6 +1,6 @@
 # Shared 폴더 규칙
 
-> 최종 업데이트: 2026-10-05 (`VisualCatalog.Current` — 인벤토리 상반신·위젯 머리·자원·장비 아이콘을 목록에서 찾는다 · T-097) · 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · 슬롯 무대 `SlotStageView`·전체 세팅 `SlotStageSettings` · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+> 최종 업데이트: 2026-10-07 (`EquipPipsView` 추가 — 캐릭터가 낀 장비 4칸을 네모로 · 인벤토리 캐릭터 칸·작업슬롯 칸 · `EquipLabel`에 장착 읽기 · `RarityPalette.EmptySocket` · T-104) · 2026-10-05 (`VisualCatalog.Current` — 인벤토리 상반신·위젯 머리·자원·장비 아이콘을 목록에서 찾는다 · T-097) · 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · 슬롯 무대 `SlotStageView`·전체 세팅 `SlotStageSettings` · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
 
 **여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
 (`#Inventory Canvas` → `Inventory/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
@@ -26,14 +26,15 @@
 | `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View) | `#Inventory Canvas`의 격자 · `!System Canvas`의 가챠 결과 |
 | `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
 | `ItemIconView.cs` + `Assets/Prefabs/ItemIconView.prefab` | **목록 줄 왼쪽의 작은 아이콘 칸** — 등급 바탕 · 이름 첫 글자(🎨 아이콘 전 임시) · 모서리 수량 · 능력치 칸. 줄에서는 `SquareLayoutElement`로 줄 높이만큼 정사각형 | Market(경매장 줄) · Main(우편 · 장비 고르기) · Inventory(판매 목록) |
+| `EquipPipsView.cs` + 프리팹 둘 | **캐릭터가 낀 장비 4칸** — 빈 칸은 어두운 네모 · 낀 칸은 장비 등급색. **4자리 고정**(무기·장신구1·장신구2·보석). `EquipPipsView.prefab` = 색 네모만(능력치 칸과 같은 11px · 14 간격) · `EquipIconsView.prefab` = 등급 바탕 + 장비 아이콘(줄 높이 정사각형). 딤·흑백은 `SlotView.TintColor` 하나로 | Inventory(캐릭터 칸 — 색 네모) · Main(작업슬롯 칸 — 아이콘) — 슬롯 설정 캐릭터 카드에는 두지 않는다(장비 칸이 바로 보인다) |
 | `ItemIconContent.cs` | 아이콘 칸의 완성값 + 팩토리(`ForItem`·`ForEquip`·`ForCharacter`·`ForGold`) — 이름·등급 조회를 한 곳에 | 위 아이콘을 채우는 모두 |
 | `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Inventory + `PlayerDataModel` |
-| `RarityPalette.cs` | 등급 → 표시 색 | Inventory · System |
+| `RarityPalette.cs` | 등급 → 표시 색 · 빈 네모 색(`EmptySocket` — 능력치 칸·장착 칸이 함께 쓴다) | Inventory · System |
 | `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
 | `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
 | `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Inventory(칸 스트립) · Main(캐릭터 줄·카드) |
 | `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
-| `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
+| `EquipLabel.cs` | 장비 → 효과 한 줄(`낚시 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`) · **캐릭터의 장착 읽기**(`WornSlots` 순서 · `ReadWornGrades` · 툴팁 `AddWornRows` — T-104). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
 | `EntityBlockText.cs` | 캐릭터·장비 개체 → **팔거나 올릴 수 없는 사유** 한 줄(끼고 있음 · 배치 중 · 장비 낌 · 마지막 캐릭터), 없으면 null. ⚠️ **표시용이고 거절은 서버가 한다** | Inventory(즉시 판매 담기) · Market(경매 등록 흐린 줄) |
 | `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |

@@ -503,6 +503,9 @@ public class InventoryGridPresenter : MonoBehaviour
                 // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
                 view.SetStatSockets(_current.GetStatSockets(data.Key));
 
+                // 장착 네모 — 캐릭터 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-104).
+                view.SetEquipPips(_current.GetWornEquips(data.Key));
+
                 continue;
             }
 

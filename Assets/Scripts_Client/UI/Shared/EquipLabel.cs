@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using UnityEngine;
 
 // 장비 → 사용자에게 보일 문구.
 //
@@ -304,6 +305,54 @@ public static class EquipLabel
         EquipKind.Gem       => "보석",
         _                   => kind.ToString(),
     };
+
+    // 캐릭터의 장비 칸 — **배열 순서 = 장착 네모의 왼쪽 → 오른쪽**(T-104). 슬롯 설정의 장비 칸 4개와 같은 순서다.
+    public static readonly EEquipSlot[] WornSlots =
+    {
+        EEquipSlot.Weapon, EEquipSlot.Accessory1, EEquipSlot.Accessory2, EEquipSlot.Gem,
+    };
+
+    // 이 캐릭터가 칸마다 낀 장비의 등급(+ 아이콘)을 'WornSlots' 순서로 담는다 — 빈 칸은 'None' · null (장착 네모가 호출, T-104).
+    //   icons : 아이콘까지 그리는 줄(작업슬롯 칸)만 넘긴다. null이면 등급만 읽는다(인벤토리 캐릭터 칸)
+    //
+    // ※ 인벤토리 캐릭터 칸과 작업슬롯 칸이 같은 값을 그린다 — 각자 훑으면 두 화면이 다르게 말한다.
+    public static void ReadWornGrades(PlayerDataModel data, long characterId, List<GlobalRarity> into, List<Sprite?>? icons = null)
+    {
+        into.Clear();
+        icons?.Clear();
+
+        foreach (EEquipSlot slot in WornSlots)
+        {
+            EquipInfo? equip = data.FindWornEquip(characterId, slot);
+
+            into.Add(equip != null ? GameDataLoader.GetEquipRarity(equip.EquipTid) : GlobalRarity.None);
+            icons?.Add(equip != null ? VisualCatalog.EquipIconOf(equip.EquipTid) : null);
+        }
+    }
+
+    // 툴팁에 '장비' 묶음 — 칸 이름 · 장비 이름 · 등급(줄 바탕 등급색) · 빈 칸은 '비어 있음' (캐릭터 칸 툴팁이 호출, T-104).
+    //
+    // 네모는 등급만 말한다 — 무엇을 꼈는지는 여기서 읽는다.
+    public static void AddWornRows(TooltipContent content, PlayerDataModel data, long characterId)
+    {
+        content.Header("장비");
+
+        foreach (EEquipSlot slot in WornSlots)
+        {
+            EquipInfo? equip = data.FindWornEquip(characterId, slot);
+
+            if (equip == null)
+            {
+                content.Row(GetSlotName(slot), "비어 있음");
+
+                continue;
+            }
+
+            GlobalRarity rarity = GameDataLoader.GetEquipRarity(equip.EquipTid);
+
+            content.Row(GetSlotName(slot), GameDataLoader.GetEquipName(equip.EquipTid), RarityLabel.Get(rarity), RarityPalette.Get(rarity));
+        }
+    }
 
     // 장비 칸의 부위 이름 — '무기' · '장신구1' · '장신구2' · '보석'.
     public static string GetSlotName(EEquipSlot slot) => slot switch

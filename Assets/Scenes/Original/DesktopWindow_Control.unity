@@ -93426,21 +93426,25 @@ MonoBehaviour:
   - button: {fileID: 899207372}
     background: {fileID: 899207370}
     partLabel: {fileID: 2047820137}
+    icon: {fileID: 1888790839}
     nameLabel: {fileID: 736357968}
     effectLabel: {fileID: 73377020}
   - button: {fileID: 650809}
     background: {fileID: 650807}
     partLabel: {fileID: 69824057}
+    icon: {fileID: 1248671056}
     nameLabel: {fileID: 1829214036}
     effectLabel: {fileID: 151304527}
   - button: {fileID: 1338802607}
     background: {fileID: 1338802605}
     partLabel: {fileID: 755311668}
+    icon: {fileID: 1038956969}
     nameLabel: {fileID: 769164280}
     effectLabel: {fileID: 408612316}
   - button: {fileID: 1352552188}
     background: {fileID: 1352552186}
     partLabel: {fileID: 1983025973}
+    icon: {fileID: 1526301110}
     nameLabel: {fileID: 723877634}
     effectLabel: {fileID: 1117725414}
   efficiencyRowPrefab: {fileID: 6865581932452753862, guid: 722f5cc84ef02884f9d0a9c47c03a447, type: 3}
