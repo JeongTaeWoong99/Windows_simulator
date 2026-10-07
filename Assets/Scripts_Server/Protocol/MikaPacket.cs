@@ -97,6 +97,8 @@ namespace MikaProtocol
         S_StorageSlotsResponse = 67,
         S_UserTraitListResponse = 68,
         S_ServerTimeResponse = 69,
+        C_CharacterCondenseRequest = 70,
+        S_CharacterCondenseResponse = 71,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -505,6 +507,25 @@ namespace MikaProtocol
     {
         public EResultCode Result     { get; set; }
         public long        GainedGold { get; set; }  // 이번 판매로 번 금액(델타). 잔액이 아니다
+    }
+
+    /// <summary>
+    /// 응축 — 같은 캐릭터 재료를 녹여 대상의 ★을 올린다(캐릭터 기획 5.5). 재료 수에 단계 제한이 없다 —
+    /// 누적이 기준을 넘는 만큼 ★이 오르고, 최고 ★을 넘는 몫도 소모된다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_CharacterCondenseRequest)]
+    public partial class C_CharacterCondenseRequest : IPacket
+    {
+        public long        CharacterId { get; set; }  // ★을 올릴 개체
+        public List<long>? MaterialIds { get; set; }  // 녹일 개체 — 전부 같은 CharacterTid
+    }
+
+    /// <summary>응축 결과. Ok면 재료 개체는 모두 사라졌고, <see cref="Character"/>가 올린 개체의 새 값(★ · 누적 재료 수)이다.</summary>
+    [MemoryPackable, Packet(PacketId.S_CharacterCondenseResponse)]
+    public partial class S_CharacterCondenseResponse : IPacket
+    {
+        public EResultCode    Result    { get; set; }
+        public CharacterInfo? Character { get; set; }
     }
 
     /// <summary>우편함 전체 스냅샷(로그인 직후). 받은 우편은 7일 동안 함께 실린다.</summary>

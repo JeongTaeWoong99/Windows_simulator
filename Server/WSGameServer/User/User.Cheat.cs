@@ -18,6 +18,10 @@ public partial class User
     /// <summary>시간 치트가 한 번에 넘길 수 있는 상한. 0 하나 더 친 오타와 DateTime 넘침을 막는다.</summary>
     public static readonly TimeSpan CheatMaxAdvanceTime = TimeSpan.FromDays(365);
 
+    /// <summary>전역 배수 치트의 범위(천분율). ×0.1 ~ ×100 — 0 하나 더 친 오타가 판정 폭주로 번지지 않게.</summary>
+    public const int CheatMinGatherSpeedPermille = 100;
+    public const int CheatMaxGatherSpeedPermille = 100_000;
+
     /// <summary>
     /// 치트 명령을 실행하고 <c>S_CheatResponse</c>로 결과를 돌려준다.
     /// 게임과 같은 지급 함수를 부르므로 결과는 기존 동기화 패킷으로도 나간다 (<c>Server/docs/치트.md</c>).
@@ -44,6 +48,8 @@ public partial class User
             ECheatCommand.SetTraitLevel    => CheatSetTraitLevel(req.Arg1, req.Arg2, now),
             ECheatCommand.AdvanceTime      => CheatAdvanceTime(req.Arg1, now),
             ECheatCommand.ResetTime        => CheatResetTime(now),
+            ECheatCommand.SetCondenseCount => CheatSetCondenseCount(req.Arg1, req.Arg2, now),
+            ECheatCommand.SetGatherSpeed   => CheatSetGatherSpeed(req.Arg1, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -142,6 +148,28 @@ public partial class User
         }
 
         return (EResultCode.Ok, $"캐릭터 {characterId} Lv{character.Level} Exp{character.Exp}");
+    }
+
+    // 재료 없이 응축 누적을 정한다. 실제 응축과 같은 저장·속도 갱신을 탄다 — 재료 목록만 비어 있다.
+    private (EResultCode, string) CheatSetCondenseCount(long characterId, long count, DateTime now)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+        {
+            return (EResultCode.CharacterNotOwned, $"미보유 캐릭터 {characterId}");
+        }
+
+        var starBefore = StarOf(character);
+        character.SetCondenseCount((int)Math.Clamp(count, 0, _characterStars.MaxCount));
+
+        PostDBTask(new CondenseCharacterRepository(this, character, new List<long>()));
+        Send(new S_CharacterSyncResponse { Character = ToCharacterInfo(character) });
+
+        if (StarOf(character) != starBefore)
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
+        return (EResultCode.Ok, $"캐릭터 {characterId} 누적 {character.CondenseCount} ★{StarOf(character)}");
     }
 
     // 쌓인 진행도만 정산하면 스케줄러(0.1초)가 먼저 가져가 늘 0개다. 판정을 N회분 얹고 정산한다.
@@ -278,6 +306,23 @@ public partial class User
         WorkStation.ShiftClock(delta);
         SendWorkStationSlots();
         SendServerTime(now);
+    }
+
+    // 배수는 서버 전체 하나라 접속 중인 모두를 정산한 뒤 새 속도로 갈아태운다 — 바꾸기 전 구간은 예전 배수로 끝난다.
+    private (EResultCode, string) CheatSetGatherSpeed(long permille, DateTime now)
+    {
+        if (permille < CheatMinGatherSpeedPermille || permille > CheatMaxGatherSpeedPermille)
+        {
+            return (EResultCode.InvalidCheatArgs, $"배수 천분율은 {CheatMinGatherSpeedPermille}~{CheatMaxGatherSpeedPermille} (1000 = ×1.0)");
+        }
+
+        _gatherSpeed.Set((int)permille);
+        foreach (var user in _onlineUsers.All.Append(this).Distinct())
+        {
+            user.RefreshWorkStationSpeed(now);
+        }
+
+        return (EResultCode.Ok, $"채취 전역 배수 ×{permille / 1000.0:0.###} (저장 안 함 — 재시작하면 ×1)");
     }
 
     private (EResultCode, string) CheatGiveEquip(long equipTid)

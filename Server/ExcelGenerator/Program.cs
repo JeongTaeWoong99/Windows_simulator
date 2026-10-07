@@ -53,6 +53,7 @@ public class Program
             //    실제 드랍이 일어나는 순간에야 KeyNotFoundException으로 드러나기 때문이다.
             ExcelGenerator.LoadExcel(excelDir);
             ReferenceValidator.Validate(ExcelGenerator.Tables);
+            TooltipInterpolator.Apply(ExcelGenerator.Tables);   // Tooltip의 {컬럼}을 같은 행 값으로 — .bytes·DataLog에는 치환된 문장이 들어간다
             ExcelGenerator.GenerateCode(gameDataDir, packerDir);
 
             // 3) 생성 코드를 런타임 컴파일해 .bytes 생성 (구 ExcelDataPacker 역할 흡수) + JSON 사이드카(DataLog)

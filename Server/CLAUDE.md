@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
+> 최종 업데이트: 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -32,6 +32,7 @@
 | `Server/AuctionServer/` | **경매장 서버**(ASP.NET Core · gRPC · 자체 SQLite `auction.sqlite3`). 메인과 다른 프로세스·머신에서 돈다 — GameData·MikaNetwork를 모른다. 설계는 [`경매장.md`](docs/경매장.md) |
 | `Server/AuctionProtocol/` | 메인 ↔ 경매장 gRPC 계약(`auction.proto`). **메인이 항상 호출자다** |
 | `Server/AuctionServer.Tests/` | 경매장 테스트 — 상태머신·검색 인덱스·gRPC(TestServer) |
+| `Server/ExcelGenerator.Tests/` | 데이터 생성기 테스트 — `Tooltip` 보간(`TooltipInterpolator`) |
 | `Server/docs/` | 서버 전용 문서 — [`경매장.md`](docs/경매장.md)(분리 서버·outbox·복구) · [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) |
 | `Assets/Scripts_Server/Protocol/` | (미러) `Server/MikaProtocol` 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | (미러) `Server/GameData` 사본 — **직접 수정 금지** |
@@ -64,6 +65,7 @@
 ```powershell
 dotnet test Server/WSGameServer.Tests/WSGameServer.Tests.csproj
 dotnet test Server/AuctionServer.Tests/AuctionServer.Tests.csproj   # 경매장
+dotnet test Server/ExcelGenerator.Tests                               # 데이터 생성기
 ```
 
 - 경매 끝-대-끝(`WSGameServer.Tests/Auction/AuctionEndToEndTest`)은 경매장 서버를 TestServer로 띄워 메인 SQL과 함께 돈다.
@@ -101,6 +103,9 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   `MikaSessionPacketExtensions.Sent`, `MikaServer.Connected`)만 뚫고 호스트가 채운다.
 - **게임 로직의 "지금"은 `GameClock`(게임 시계)에서만 받는다** — 핸들러·타이머가 `GameClock.Instance.UtcNow`를 만들어 넘긴다.
   게임 로직에 `DateTime.UtcNow`를 직접 쓰면 시간 치트(`AdvanceTime`)가 그 기능을 못 넘긴다. 세션 감시·gRPC 기한·로그는 예외 → [`치트.md`](docs/치트.md) 5장.
+- **DB는 `Server/Shared/game.sqlite3` 하나가 본체다 (2026-10-07 사용자 결정).** 마이그레이션 파일을 따로 두지 않는다 —
+  스키마를 바꾸면 이 파일에 직접 적용한다(서버는 자동 적용하지 않는다). **이 파일이 바뀌어 있으면 무조건 커밋한다** —
+  커밋 안 된 컬럼을 서버 코드가 읽으면 pull한 쪽에서 로그인 쿼리가 깨진다.
 - 생성물(`Server/GameData`, `Server/Shared/Data`)은 직접 고치지 않는다.
   엑셀에서 고치고 파이프라인을 돌린다 — [`GameDesign/CLAUDE.md`](../GameDesign/CLAUDE.md) 참조.
 - 코드는 한글 주석을 사용한다.

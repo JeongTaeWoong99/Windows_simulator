@@ -42,3 +42,49 @@ public sealed class SaveCharacterGrowthRepository : IRepository
     {
     }
 }
+
+/// <summary>
+/// 응축 — 재료 개체를 지우고 대상의 누적 재료 수를 확정값으로 쓴다. 한 트랜잭션이라 재료만 사라지거나 ★만 오르지 않는다.
+/// </summary>
+public sealed class CondenseCharacterRepository : IRepository
+{
+    private readonly long       _characterId;
+    private readonly int        _condenseCount;
+    private readonly List<long> _materialIds;
+
+    public CondenseCharacterRepository(User user, Character character, List<long> materialIds)
+    {
+        User           = user;
+        _characterId   = character.Id;
+        _condenseCount = character.CondenseCount;
+        _materialIds   = materialIds;
+    }
+
+    public long Key => User.DbKey;
+
+    public User User { get; }
+
+    public long                CharacterId   => _characterId;
+    public int                 CondenseCount => _condenseCount;
+    public IReadOnlyList<long> MaterialIds   => _materialIds;
+
+    public Task ExecuteAsync(DbConnection connection)
+    {
+        return connection.InTransactionAsync(async tx =>
+        {
+            await tx.ExecuteAsync(
+                "DELETE FROM t_character WHERE user_id = @userId AND auction_trade_id = 0 AND character_id IN @materialIds",
+                new { userId = User.Uid, materialIds = _materialIds });
+
+            await tx.ExecuteAsync(
+                @"UPDATE t_character
+                  SET condense_count = @condenseCount
+                  WHERE character_id = @characterId AND user_id = @userId;",
+                new { condenseCount = _condenseCount, characterId = _characterId, userId = User.Uid });
+        });
+    }
+
+    public void Apply()
+    {
+    }
+}

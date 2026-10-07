@@ -23,6 +23,7 @@ public sealed partial class User
 
     /// <summary>게임 시계. 시간 치트가 움직이고, 시각을 인자로 받을 수 없는 경계(OnDestroy·실패 콜백)만 읽는다. 생략하면 <see cref="GameClock.Instance"/>다.</summary>
     private readonly GameClock _clock;
+    private readonly GatherSpeed _gatherSpeed;
 
     /// <summary>로그인 응답 직전. <see cref="UserManager"/>가 이때 접속 목록에 올린다 — User는 매니저를 모른다.</summary>
     public event Action<User>? LoggedIn;
@@ -41,6 +42,9 @@ public sealed partial class User
 
     /// <summary>캐릭터 레벨 곡선. 정산 시 경험치 가산·레벨업 판정에 쓴다. 규약은 위와 같다.</summary>
     private readonly CharacterLevelCatalog _characterLevels;
+
+    /// <summary>응축 ★ 기준·속도 가산. 응축과 슬롯 속도 가산에 쓴다. 규약은 위와 같다.</summary>
+    private readonly CharacterStarCatalog _characterStars;
 
     /// <summary>해금 조건·작업슬롯 칸 인덱스. 해금 판정과 로그인 시 열린 칸 구성에 쓴다. 규약은 위와 같다.</summary>
     private readonly UnlockCatalog _unlockCatalog;
@@ -156,7 +160,9 @@ public sealed partial class User
         EnchantCatalog?       enchants = null,
         AuctionService?       auction = null,
         IOnlineUsers?         onlineUsers = null,
-        GameClock?            clock = null)
+        GameClock?            clock = null,
+        CharacterStarCatalog? characterStars = null,
+        GatherSpeed?          gatherSpeed = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -177,6 +183,8 @@ public sealed partial class User
         _auction = auction ?? AuctionService.Current;
         _onlineUsers = onlineUsers ?? UserManager.Instance;
         _clock = clock ?? GameClock.Instance;
+        _characterStars = characterStars ?? CharacterStarCatalog.Instance;
+        _gatherSpeed = gatherSpeed ?? GatherSpeed.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

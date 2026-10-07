@@ -19,6 +19,7 @@ namespace GameData
             ["CharacterTable"] = new(CharacterTablePacker.Pack, CharacterTablePacker.Verify, CharacterTablePacker.Preview, CharacterTablePacker.Dump),
             ["WorkSpeedTable"] = new(WorkSpeedTablePacker.Pack, WorkSpeedTablePacker.Verify, WorkSpeedTablePacker.Preview, WorkSpeedTablePacker.Dump),
             ["CharacterLevelTable"] = new(CharacterLevelTablePacker.Pack, CharacterLevelTablePacker.Verify, CharacterLevelTablePacker.Preview, CharacterLevelTablePacker.Dump),
+            ["CharacterStarTable"] = new(CharacterStarTablePacker.Pack, CharacterStarTablePacker.Verify, CharacterStarTablePacker.Preview, CharacterStarTablePacker.Dump),
             ["ConstantsTable"] = new(ConstantsTablePacker.Pack, ConstantsTablePacker.Verify, ConstantsTablePacker.Preview, ConstantsTablePacker.Dump),
             ["CommonRewardTable"] = new(CommonRewardTablePacker.Pack, CommonRewardTablePacker.Verify, CommonRewardTablePacker.Preview, CommonRewardTablePacker.Dump),
             ["CommonRewardOverrideTable"] = new(CommonRewardOverrideTablePacker.Pack, CommonRewardOverrideTablePacker.Verify, CommonRewardOverrideTablePacker.Preview, CommonRewardOverrideTablePacker.Dump),

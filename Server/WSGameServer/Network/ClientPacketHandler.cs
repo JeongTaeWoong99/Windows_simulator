@@ -272,6 +272,20 @@ public static class ClientPacketHandler
         user.TrySellEntities(req.CharacterIds ?? new List<long>(), req.EquipIds ?? new List<long>());
     }
 
+    /// <summary>응축 — 같은 캐릭터 재료로 ★을 올린다. 검증·차감은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_CharacterCondenseRequest(ISession session, C_CharacterCondenseRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_CharacterCondenseResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryCondenseCharacter(req.CharacterId, req.MaterialIds ?? new List<long>(), GameClock.Instance.UtcNow);
+    }
+
     /// <summary>우편 수령. MailId = 0이면 모두 받기. 창고 검사·지급은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_MailClaimRequest(ISession session, C_MailClaimRequest req)

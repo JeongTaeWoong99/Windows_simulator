@@ -7,12 +7,13 @@ namespace WSGameServer;
 public sealed class Character
 {
     /// <summary>테이블 정의를 생성자로 받는다 — 정적 조회에 묶이지 않아 테스트에서 바로 만들 수 있다.</summary>
-    public Character(long id, CharacterTableRow row, int level, int exp)
+    public Character(long id, CharacterTableRow row, int level, int exp, int condenseCount = 0)
     {
-        Id    = id;
-        Row   = row;
-        Level = level;
-        Exp   = exp;
+        Id            = id;
+        Row           = row;
+        Level         = level;
+        Exp           = exp;
+        CondenseCount = condenseCount;
     }
 
     /// <summary>캐릭터 개체 PK (<c>t_character.character_id</c>). DB가 발급한다.</summary>
@@ -32,6 +33,20 @@ public sealed class Character
 
     /// <summary>현재 레벨에서 쌓은 경험치(누적이 아니다). 레벨업하면 필요치를 뺀 나머지가 이월된다.</summary>
     public int Exp { get; private set; }
+
+    /// <summary>응축에 넣은 재료의 누적 수. ★은 이 값으로 <see cref="CharacterStarCatalog"/>에서 읽는다(기획 5.5).</summary>
+    public int CondenseCount { get; private set; }
+
+    /// <summary>재료를 넣는다. 최고 ★을 넘는 몫은 버린다 — 남는 재료도 소모된다. 오른 ★ 수를 돌려준다.</summary>
+    public int Condense(int materialCount, CharacterStarCatalog stars)
+    {
+        var before = stars.StarAt(CondenseCount);
+        CondenseCount = Math.Min(CondenseCount + materialCount, stars.MaxCount);
+        return stars.StarAt(CondenseCount) - before;
+    }
+
+    /// <summary>치트 전용 — 재료 없이 누적을 정한다. 범위는 부른 쪽이 자른다.</summary>
+    public void SetCondenseCount(int count) => CondenseCount = count;
 
     public bool IsMaxLevel(CharacterLevelCatalog curve) => Level >= curve.MaxLevel;
 

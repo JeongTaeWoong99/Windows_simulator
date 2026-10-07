@@ -192,6 +192,10 @@ public static class TableCodeGenerator
         {
             comment += " [기획 메모 — 로직에서 읽지 않는다]";
         }
+        if (string.Equals(col.Name, TooltipInterpolator.ColumnName, StringComparison.Ordinal))
+        {
+            comment += " [플레이어용 설명 — {컬럼}은 생성 시점에 치환됐다]";
+        }
 
         return comment;
     }

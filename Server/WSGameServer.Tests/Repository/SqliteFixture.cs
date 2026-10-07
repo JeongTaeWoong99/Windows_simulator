@@ -43,7 +43,8 @@ internal sealed class SqliteFixture : IDisposable
                 created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
                 auction_trade_id INTEGER NOT NULL DEFAULT 0,
                 container     INTEGER NOT NULL DEFAULT 0,
-                slot          INTEGER NOT NULL DEFAULT 0
+                slot          INTEGER NOT NULL DEFAULT 0,
+                condense_count INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_user_currency (
                 user_id INTEGER PRIMARY KEY,

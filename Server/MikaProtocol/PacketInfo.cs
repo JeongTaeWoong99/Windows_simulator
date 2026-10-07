@@ -18,7 +18,7 @@ namespace MikaProtocol
         public EContainer Container { get; set; }
         public int        Slot      { get; set; }   // 격자 안 칸 번호(0부터)
     }
-    
+
     [MemoryPackable]
     public partial class ItemChangeInfo   // Count는 델타가 아니라 갱신 후 누적 총량 — 클라는 덮어쓴다
     {
@@ -69,6 +69,10 @@ namespace MikaProtocol
 
         public EContainer Container { get; set; }
         public int        Slot      { get; set; }   // 격자 안 칸 번호(0부터)
+
+        // 응축(캐릭터 기획 5.5). 진행 바는 CondenseCount와 CharacterStarTable의 누적 기준으로 그린다.
+        public int Star          { get; set; }
+        public int CondenseCount { get; set; }      // 넣은 재료의 누적 수
     }
 
     // 작업슬롯 한 칸의 상태. 주기 대신 진행도·속도·비용을 주어 클라가 카운트다운을 직접 구한다(연출일 뿐, 개수는 서버가 정한다).
@@ -84,6 +88,14 @@ namespace MikaProtocol
         public long ProgressUnits  { get; set; }  // 마지막 정산 시점의 누적 작업량 (판정에 못 미친 자투리)
         public int  CurrentWorkSpeed { get; set; }  // 현재 작업속도 — 보정 전부 적용된 확정값 (1000 = 기준 1.0배)
         public long JudgeCostUnits { get; set; }  // 판정 1회에 필요한 작업량
+
+        // 작업속도 내역(천분율) — CurrentWorkSpeed = 기본값 × (1 + Σ가산) × 전역 배수. 클라는 서버 식을 베끼지 않고 이 값을 그린다(T-055)
+        public int BaseWorkSpeed       { get; set; }  // 적성 기본값
+        public int LevelAddPermille    { get; set; }  // 캐릭터 레벨 가산
+        public int TraitAddPermille    { get; set; }  // 특성 가산
+        public int EquipAddPermille    { get; set; }  // 장비 가산 (인챈트 포함)
+        public int StarAddPermille     { get; set; }  // ★ 가산
+        public int GatherSpeedPermille { get; set; }  // 전역 배수 (1000 = ×1.0, 치트 SetGatherSpeed)
     }
 
     // 장비 개체 하나. 유저 소유이며 EquippedCharacterId가 0이면 창고에 있다. SlotPosition은 창고 장비 탭의 칸 번호(0부터).

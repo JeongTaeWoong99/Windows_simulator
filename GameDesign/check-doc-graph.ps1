@@ -62,7 +62,7 @@ $LinksPerLine = 6
 
 # ── 유틸 ──────────────────────────────────────────────────────────────────────
 
-# 문서의 표시 이름. `<시스템>/README.md`는 폴더명이 곧 이름이다.
+# 문서의 임시 이름. `<시스템>/README.md`는 폴더명을 두었다가, 블록 파싱 뒤 한글 이름으로 바꾼다(아래 "README 표시 이름").
 function Get-DocName {
     param([string]$FullPath)
 
@@ -207,6 +207,41 @@ foreach ($doc in $docs.Values) {
     $doc.Declared = @($declared)
 }
 
+# README 문서의 표시 이름을 정한다. 폴더가 영문으로 바뀐 뒤(2026-08-08) 폴더명은 이름이 아니다(T-090).
+#   1순위 — 블록들이 이미 부르는 이름(다수결). 사람이 맞춰 둔 한글 이름(`자원채취`·`게임UI`)을 그대로 지킨다.
+#   2순위 — 문서 첫 `#` 제목에서 번호·분류 머리·영문 괄호를 뗀 것. 아직 아무 블록에도 안 나온 새 문서용.
+$blockLabelPattern = '\[`([^`]+)`\]\(([^)]+?\.md)\)'
+$labelVotes = @{}
+foreach ($doc in $docs.Values) {
+    $blockMatch = [regex]::Match($doc.Text, $BlockPattern)
+    if (-not $blockMatch.Success) { continue }
+
+    foreach ($match in [regex]::Matches($blockMatch.Value, $blockLabelPattern)) {
+        $target = Resolve-LinkTarget -FromFile $doc.Path -Target $match.Groups[2].Value
+        if (-not ($target -and $docs.ContainsKey($target))) { continue }
+
+        if (-not $labelVotes.ContainsKey($target)) { $labelVotes[$target] = @{} }
+        $label = $match.Groups[1].Value
+        $labelVotes[$target][$label] = 1 + [int]$labelVotes[$target][$label]
+    }
+}
+
+foreach ($doc in $docs.Values) {
+    if ($doc.Rel -notlike '*/README.md') { continue }
+
+    if ($labelVotes.ContainsKey($doc.Path)) {
+        $doc.Name = ($labelVotes[$doc.Path].GetEnumerator() | Sort-Object Value -Descending | Select-Object -First 1).Key
+        continue
+    }
+
+    $title = [regex]::Match($doc.Text, '(?m)^#\s+(.+?)\s*$')
+    if ($title.Success) {
+        # "01. 자원 채취 (Gathering)" → "자원 채취" · "1차 산업 — 농사 (Farming)" → "농사"
+        $name = $title.Groups[1].Value -replace '^\d+\.\s*', '' -replace '^.*—\s*', '' -replace '\s*\([^)]*\)\s*$', ''
+        if ($name) { $doc.Name = $name }
+    }
+}
+
 
 # ── 역참조 계산 ───────────────────────────────────────────────────────────────
 # "A가 바뀌면 갱신할 곳" = A를 참조하는 문서들. 참조가 곧 의존이다.
@@ -257,6 +292,14 @@ if ($Fix) {
     foreach ($doc in $sorted) {
         $targets = @($incoming[$doc.Path]) | ForEach-Object { $docs[$_] } | Sort-Object Name
         if ($targets.Count -eq 0) { continue }
+
+        # 이미 맞는 블록은 그대로 둔다 — 다시 쓰면 손으로 접어 둔 줄바꿈만 바뀌어 관련 없는 문서가 diff에 섞인다(T-090).
+        if ($doc.HasBlock) {
+            $expected = @($incoming[$doc.Path])
+            $same = $expected.Count -eq $doc.Declared.Count -and
+                    -not ($expected | Where-Object { $doc.Declared -notcontains $_ })
+            if ($same) { continue }
+        }
 
         $parts = @(foreach ($t in $targets) {
             "[``$($t.Name)``]($(Get-DocRelativeLink -FromFile $doc.Path -ToFile $t.Path))"

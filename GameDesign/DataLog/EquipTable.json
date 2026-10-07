@@ -7,7 +7,8 @@
     "Industry": "None",
     "SpeedAddPermille": 50,
     "BasePrice": 70,
-    "Description": "전 산업 +5% · 입문 무기"
+    "Description": "전 산업 +5% · 입문 무기",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1002,
@@ -17,7 +18,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 180,
     "BasePrice": 250,
-    "Description": "낚시 +18% · 구 번호(낚시 무기 Uncommon 자리 — 1202는 결번)"
+    "Description": "낚시 +18% · 구 번호(낚시 무기 Uncommon 자리 — 1202는 결번)",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2001,
@@ -27,7 +29,8 @@
     "Industry": "None",
     "SpeedAddPermille": 30,
     "BasePrice": 50,
-    "Description": "전 산업 +3% · 입문 장신구"
+    "Description": "전 산업 +3% · 입문 장신구",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2002,
@@ -37,7 +40,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 180,
     "BasePrice": 360,
-    "Description": "낚시 +18% · 구 번호(유일한 산업 전용 장신구)"
+    "Description": "낚시 +18% · 구 번호(유일한 산업 전용 장신구)",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3001,
@@ -47,7 +51,8 @@
     "Industry": "None",
     "SpeedAddPermille": 20,
     "BasePrice": 30,
-    "Description": "전 산업 +2% · 입문 보석"
+    "Description": "전 산업 +2% · 입문 보석",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1101,
@@ -57,7 +62,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 100,
     "BasePrice": 100,
-    "Description": "농사 +10%"
+    "Description": "농사 +10%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1102,
@@ -67,7 +73,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 180,
     "BasePrice": 250,
-    "Description": "농사 +18%"
+    "Description": "농사 +18%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1103,
@@ -77,7 +84,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 300,
     "BasePrice": 600,
-    "Description": "농사 +30%"
+    "Description": "농사 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1104,
@@ -87,7 +95,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 480,
     "BasePrice": 1500,
-    "Description": "농사 +48%"
+    "Description": "농사 +48%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1105,
@@ -97,7 +106,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 720,
     "BasePrice": 4000,
-    "Description": "농사 +72%"
+    "Description": "농사 +72%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1106,
@@ -107,7 +117,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 1000,
     "BasePrice": 10000,
-    "Description": "농사 +100%"
+    "Description": "농사 +100%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1201,
@@ -117,7 +128,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 100,
     "BasePrice": 100,
-    "Description": "낚시 +10%"
+    "Description": "낚시 +10%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1203,
@@ -127,7 +139,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 300,
     "BasePrice": 600,
-    "Description": "낚시 +30%"
+    "Description": "낚시 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1204,
@@ -137,7 +150,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 480,
     "BasePrice": 1500,
-    "Description": "낚시 +48%"
+    "Description": "낚시 +48%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1205,
@@ -147,7 +161,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 720,
     "BasePrice": 4000,
-    "Description": "낚시 +72%"
+    "Description": "낚시 +72%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1206,
@@ -157,7 +172,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 1000,
     "BasePrice": 10000,
-    "Description": "낚시 +100%"
+    "Description": "낚시 +100%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1301,
@@ -167,7 +183,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 100,
     "BasePrice": 100,
-    "Description": "채굴 +10%"
+    "Description": "채굴 +10%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1302,
@@ -177,7 +194,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 180,
     "BasePrice": 250,
-    "Description": "채굴 +18%"
+    "Description": "채굴 +18%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1303,
@@ -187,7 +205,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 300,
     "BasePrice": 600,
-    "Description": "채굴 +30%"
+    "Description": "채굴 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1304,
@@ -197,7 +216,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 480,
     "BasePrice": 1500,
-    "Description": "채굴 +48%"
+    "Description": "채굴 +48%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1305,
@@ -207,7 +227,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 720,
     "BasePrice": 4000,
-    "Description": "채굴 +72%"
+    "Description": "채굴 +72%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1306,
@@ -217,7 +238,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 1000,
     "BasePrice": 10000,
-    "Description": "채굴 +100%"
+    "Description": "채굴 +100%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1401,
@@ -227,7 +249,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 100,
     "BasePrice": 100,
-    "Description": "벌목 +10%"
+    "Description": "벌목 +10%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1402,
@@ -237,7 +260,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 180,
     "BasePrice": 250,
-    "Description": "벌목 +18%"
+    "Description": "벌목 +18%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1403,
@@ -247,7 +271,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 300,
     "BasePrice": 600,
-    "Description": "벌목 +30%"
+    "Description": "벌목 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1404,
@@ -257,7 +282,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 480,
     "BasePrice": 1500,
-    "Description": "벌목 +48%"
+    "Description": "벌목 +48%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1405,
@@ -267,7 +293,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 720,
     "BasePrice": 4000,
-    "Description": "벌목 +72%"
+    "Description": "벌목 +72%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1406,
@@ -277,7 +304,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 1000,
     "BasePrice": 10000,
-    "Description": "벌목 +100%"
+    "Description": "벌목 +100%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1501,
@@ -287,7 +315,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 100,
     "BasePrice": 100,
-    "Description": "사냥 +10%"
+    "Description": "사냥 +10%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1502,
@@ -297,7 +326,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 180,
     "BasePrice": 250,
-    "Description": "사냥 +18%"
+    "Description": "사냥 +18%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1503,
@@ -307,7 +337,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 300,
     "BasePrice": 600,
-    "Description": "사냥 +30%"
+    "Description": "사냥 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1504,
@@ -317,7 +348,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 480,
     "BasePrice": 1500,
-    "Description": "사냥 +48%"
+    "Description": "사냥 +48%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1505,
@@ -327,7 +359,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 720,
     "BasePrice": 4000,
-    "Description": "사냥 +72%"
+    "Description": "사냥 +72%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 1506,
@@ -337,7 +370,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 1000,
     "BasePrice": 10000,
-    "Description": "사냥 +100%"
+    "Description": "사냥 +100%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2003,
@@ -347,7 +381,8 @@
     "Industry": "None",
     "SpeedAddPermille": 55,
     "BasePrice": 120,
-    "Description": "전 산업 +5.5%"
+    "Description": "전 산업 +5.5%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2004,
@@ -357,7 +392,8 @@
     "Industry": "None",
     "SpeedAddPermille": 90,
     "BasePrice": 300,
-    "Description": "전 산업 +9%"
+    "Description": "전 산업 +9%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2005,
@@ -367,7 +403,8 @@
     "Industry": "None",
     "SpeedAddPermille": 145,
     "BasePrice": 750,
-    "Description": "전 산업 +14.5%"
+    "Description": "전 산업 +14.5%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2006,
@@ -377,7 +414,8 @@
     "Industry": "None",
     "SpeedAddPermille": 215,
     "BasePrice": 2000,
-    "Description": "전 산업 +21.5%"
+    "Description": "전 산업 +21.5%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 2007,
@@ -387,7 +425,8 @@
     "Industry": "None",
     "SpeedAddPermille": 300,
     "BasePrice": 5000,
-    "Description": "전 산업 +30%"
+    "Description": "전 산업 +30%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3101,
@@ -397,7 +436,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 40,
     "BasePrice": 40,
-    "Description": "농사 +4%"
+    "Description": "농사 +4%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3102,
@@ -407,7 +447,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 70,
     "BasePrice": 100,
-    "Description": "농사 +7%"
+    "Description": "농사 +7%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3103,
@@ -417,7 +458,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 120,
     "BasePrice": 240,
-    "Description": "농사 +12%"
+    "Description": "농사 +12%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3104,
@@ -427,7 +469,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 190,
     "BasePrice": 600,
-    "Description": "농사 +19%"
+    "Description": "농사 +19%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3105,
@@ -437,7 +480,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 290,
     "BasePrice": 1600,
-    "Description": "농사 +29%"
+    "Description": "농사 +29%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3106,
@@ -447,7 +491,8 @@
     "Industry": "Farming",
     "SpeedAddPermille": 400,
     "BasePrice": 4000,
-    "Description": "농사 +40%"
+    "Description": "농사 +40%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3201,
@@ -457,7 +502,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 40,
     "BasePrice": 40,
-    "Description": "낚시 +4%"
+    "Description": "낚시 +4%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3202,
@@ -467,7 +513,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 70,
     "BasePrice": 100,
-    "Description": "낚시 +7%"
+    "Description": "낚시 +7%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3203,
@@ -477,7 +524,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 120,
     "BasePrice": 240,
-    "Description": "낚시 +12%"
+    "Description": "낚시 +12%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3204,
@@ -487,7 +535,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 190,
     "BasePrice": 600,
-    "Description": "낚시 +19%"
+    "Description": "낚시 +19%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3205,
@@ -497,7 +546,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 290,
     "BasePrice": 1600,
-    "Description": "낚시 +29%"
+    "Description": "낚시 +29%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3206,
@@ -507,7 +557,8 @@
     "Industry": "Fishing",
     "SpeedAddPermille": 400,
     "BasePrice": 4000,
-    "Description": "낚시 +40%"
+    "Description": "낚시 +40%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3301,
@@ -517,7 +568,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 40,
     "BasePrice": 40,
-    "Description": "채굴 +4%"
+    "Description": "채굴 +4%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3302,
@@ -527,7 +579,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 70,
     "BasePrice": 100,
-    "Description": "채굴 +7%"
+    "Description": "채굴 +7%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3303,
@@ -537,7 +590,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 120,
     "BasePrice": 240,
-    "Description": "채굴 +12%"
+    "Description": "채굴 +12%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3304,
@@ -547,7 +601,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 190,
     "BasePrice": 600,
-    "Description": "채굴 +19%"
+    "Description": "채굴 +19%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3305,
@@ -557,7 +612,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 290,
     "BasePrice": 1600,
-    "Description": "채굴 +29%"
+    "Description": "채굴 +29%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3306,
@@ -567,7 +623,8 @@
     "Industry": "Mining",
     "SpeedAddPermille": 400,
     "BasePrice": 4000,
-    "Description": "채굴 +40%"
+    "Description": "채굴 +40%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3401,
@@ -577,7 +634,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 40,
     "BasePrice": 40,
-    "Description": "벌목 +4%"
+    "Description": "벌목 +4%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3402,
@@ -587,7 +645,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 70,
     "BasePrice": 100,
-    "Description": "벌목 +7%"
+    "Description": "벌목 +7%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3403,
@@ -597,7 +656,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 120,
     "BasePrice": 240,
-    "Description": "벌목 +12%"
+    "Description": "벌목 +12%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3404,
@@ -607,7 +667,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 190,
     "BasePrice": 600,
-    "Description": "벌목 +19%"
+    "Description": "벌목 +19%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3405,
@@ -617,7 +678,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 290,
     "BasePrice": 1600,
-    "Description": "벌목 +29%"
+    "Description": "벌목 +29%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3406,
@@ -627,7 +689,8 @@
     "Industry": "Logging",
     "SpeedAddPermille": 400,
     "BasePrice": 4000,
-    "Description": "벌목 +40%"
+    "Description": "벌목 +40%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3501,
@@ -637,7 +700,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 40,
     "BasePrice": 40,
-    "Description": "사냥 +4%"
+    "Description": "사냥 +4%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3502,
@@ -647,7 +711,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 70,
     "BasePrice": 100,
-    "Description": "사냥 +7%"
+    "Description": "사냥 +7%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3503,
@@ -657,7 +722,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 120,
     "BasePrice": 240,
-    "Description": "사냥 +12%"
+    "Description": "사냥 +12%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3504,
@@ -667,7 +733,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 190,
     "BasePrice": 600,
-    "Description": "사냥 +19%"
+    "Description": "사냥 +19%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3505,
@@ -677,7 +744,8 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 290,
     "BasePrice": 1600,
-    "Description": "사냥 +29%"
+    "Description": "사냥 +29%",
+    "Tooltip": ""
   },
   {
     "EquipTID": 3506,
@@ -687,6 +755,7 @@
     "Industry": "Hunting",
     "SpeedAddPermille": 400,
     "BasePrice": 4000,
-    "Description": "사냥 +40%"
+    "Description": "사냥 +40%",
+    "Tooltip": ""
   }
 ]
