@@ -3,7 +3,7 @@
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
 > 상태: **골격 확정 · 서버 해금 구현(T-038) · 수치 미정**
 > **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`낚시`](../gathering/fishing/README.md) · [`산업레벨`](../gathering/산업레벨.md) · [`자원채취`](../gathering/README.md) · [`캐릭터`](../character/README.md)
->   [`특성`](../trait/README.md) · [`해금`](../unlock/README.md)
+>   [`특성`](../trait/README.md)
 
 채취가 시작되는 지점이다. **플레이어는 슬롯에 산업·레벨을 지정하고 캐릭터를 배치**하며,
 배치된 슬롯 하나하나가 독립적으로 [자원채취](../gathering/README.md) 루프를 돌린다.
