@@ -1,6 +1,6 @@
 # DesktopWindow 규칙
 
-> 최종 업데이트: 2026-09-30 (항상 위 off + 작업표시줄 맞춤이면 작업표시줄 위로 — T-099) · 2026-08-30 (드래그 후 화면 밖 보정 — 아래로 묻힌 창을 되올린다, §5-7) · 대상: `Assets/Scripts_Client/DesktopWindow/`
+> 최종 업데이트: 2026-10-08 (창 초기화 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/DesktopWindow/`
 
 **Win32 / DWM 네이티브 API의 P/Invoke 선언만** 두는 곳. 이 게임이 데스크톱 위의 투명 창으로
 동작하기 위해 필요한 OS 함수들이다.
@@ -132,7 +132,7 @@ UI 위인지 판정한다. (`WindowManager.GetCursorScreenPosition` / `IsPointer
 `Start()`에서 바로 `GetActiveWindow()`를 부르면 **유니티 스플래시 때문에 메인 창이 아직 활성이
 아니라** 빈/엉뚱한 핸들을 잡는다. 빌드에서만 재현되고 에디터에선 멀쩡하다.
 
-→ `Process.GetCurrentProcess().MainWindowHandle`이 유효해질 때까지 코루틴으로 대기한 뒤 적용한다.
+→ `Process.GetCurrentProcess().MainWindowHandle`이 유효해질 때까지 프레임을 넘기며(UniTask) 대기한 뒤 적용한다.
 
 ### 5-6. 좌표계가 뒤집혀 있다
 

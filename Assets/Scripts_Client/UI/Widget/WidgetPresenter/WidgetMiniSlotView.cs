@@ -35,6 +35,11 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     private WorkStationSlotInfo? _slot;
 
+    // 프리팹의 자리 표시 네모 — 칸을 다시 쓸 때 머리 그림이 없는 캐릭터면 이것으로 되돌린다
+    private Sprite? _placeholderSprite;
+    private Color   _placeholderColor;
+    private bool    _placeholderPreserveAspect;
+
     // 배치돼 있고 속도가 0이 아니어서 카운트다운을 돌릴 수 있는가.
     public bool IsRunning => _slot != null && WorkStationProgress.IsRunning(_slot);
 
@@ -48,6 +53,10 @@ public class WidgetMiniSlotView : MonoBehaviour
         this.RequireRef(progressSlider, nameof(progressSlider));
 
         harvestText.text = string.Empty;
+
+        _placeholderSprite         = characterImage.sprite;
+        _placeholderColor          = characterImage.color;
+        _placeholderPreserveAspect = characterImage.preserveAspect;
     }
 
     // 슬롯 스냅샷을 반영한다 (WidgetPresenter가 호출).
@@ -65,6 +74,13 @@ public class WidgetMiniSlotView : MonoBehaviour
             characterImage.sprite         = head;
             characterImage.preserveAspect = true;
             characterImage.color          = Color.white;
+        }
+        else
+        {
+            // ⚠️ 칸은 해제 뒤 꺼 두었다가 다시 쓴다 — 되돌리지 않으면 이전 캐릭터의 머리가 남는다
+            characterImage.sprite         = _placeholderSprite;
+            characterImage.preserveAspect = _placeholderPreserveAspect;
+            characterImage.color          = _placeholderColor;
         }
 
         progressSlider.value = WorkStationProgress.CalculateProgress(slot);

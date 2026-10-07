@@ -1,4 +1,6 @@
-using System.Collections;
+using System;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 // 로딩 표시 — 서버 요청이 진행 중일 때만 뜬다. 'ServerWaitManager.BusyChanged'만 구독해
@@ -9,7 +11,7 @@ using UnityEngine;
 //
 // ■ 빠른 응답은 아예 안 띄운다 (깜빡임 제거)
 // 켜라는 신호가 와도 곧바로 띄우지 않고 'ShowDelaySeconds'만큼 미룬다. 그 안에 응답이 와서
-// 끄라는 신호가 오면 코루틴을 취소해 한 번도 뜨지 않는다. 느린 왕복만 실제로 표시된다.
+// 끄라는 신호가 오면 대기를 취소해 한 번도 뜨지 않는다. 느린 왕복만 실제로 표시된다.
 //
 // ■ 미루는 것은 표시뿐이다 — 차단은 즉시 건다
 // 두 축을 함께 미루면 그 사이 뒤 UI가 열려 있다. 요청을 보낸 화면을 사용자가 그때 닫아 버리면
@@ -32,8 +34,8 @@ public class LoadingPresenter : MonoBehaviour
 
     private ServerWaitManager _wait = null!;
 
-    // grace를 기다리는 표시 코루틴. 대기가 그 전에 끝나면 취소한다.
-    private Coroutine? _showDelay;
+    // grace를 기다리는 표시 대기의 손잡이. 대기가 그 전에 끝나면 취소한다.
+    private CancellationTokenSource? _showDelay;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -66,6 +68,7 @@ public class LoadingPresenter : MonoBehaviour
     private void OnDisable()
     {
         Unsubscribe();
+        CancelShowDelay(); // 코루틴이 꺼질 때 같이 멈추던 동작을 그대로 옮긴다
     }
 
     private void Subscribe()
@@ -100,17 +103,13 @@ public class LoadingPresenter : MonoBehaviour
 
             if (_showDelay == null)
             {
-                _showDelay = StartCoroutine(ShowAfterDelay());
+                _showDelay = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+                ShowAfterDelayAsync(_showDelay.Token).Forget();
             }
         }
         else
         {
-            if (_showDelay != null)
-            {
-                StopCoroutine(_showDelay);
-                _showDelay = null;
-            }
-
+            CancelShowDelay();
             SetShown(false);
             SetBlocking(false);
         }
@@ -119,12 +118,27 @@ public class LoadingPresenter : MonoBehaviour
     // grace가 지나도록 대기가 이어지면 그제야 표시한다 (OnBusyChanged가 시작).
     // 차단은 이미 걸려 있다 — 여기서는 보이게만 한다.
     // 타임스케일이 0이어도(일시정지 연출 등) 실제 시간으로 흐른다.
-    private IEnumerator ShowAfterDelay()
+    private async UniTask ShowAfterDelayAsync(CancellationToken ct)
     {
-        yield return new WaitForSecondsRealtime(ShowDelaySeconds);
+        await UniTask.Delay(TimeSpan.FromSeconds(ShowDelaySeconds), ignoreTimeScale: true, cancellationToken: ct);
 
+        // 이 대기는 이미 끝났다 — 끄라는 신호가 와도 다시 취소하지 않게 떼어 낸다
+        _showDelay?.Dispose();
         _showDelay = null;
         SetShown(true);
+    }
+
+    // 표시 대기를 끊는다 (끄라는 신호 · OnDisable)
+    private void CancelShowDelay()
+    {
+        if (_showDelay == null)
+        {
+            return;
+        }
+
+        _showDelay.Cancel();
+        _showDelay.Dispose();
+        _showDelay = null;
     }
 
     // 차단 축 — 뒤 UI 클릭을 막는다(모달). 대기가 시작되는 즉시 걸고, 끝나면 푼다.

@@ -39,7 +39,8 @@ public class SlotStageView : MonoBehaviour
 
     private RectTransform        _rect     = null!;
     private RectTransform?       _layerRoot;
-    private readonly List<RawImage> _layers = new List<RawImage>();
+    private readonly List<RawImage> _layers = new List<RawImage>(); // 만든 층 전부 — 지금 배경이 쓰는 것은 앞의 '_layerCount'개
+    private int                  _layerCount;
     private TargetImages         _dying;
     private TargetImages         _coming;
     private Image?               _character;
@@ -196,7 +197,7 @@ public class SlotStageView : MonoBehaviour
         float width = _rect.rect.width;
         BackgroundVisual.Layer[] layers = _background.Layers;
 
-        for (int i = 0; i < _layers.Count && i < layers.Length; i++)
+        for (int i = 0; i < _layerCount && i < layers.Length; i++)
         {
             Texture2D texture = layers[i].texture;
 
@@ -431,21 +432,16 @@ public class SlotStageView : MonoBehaviour
 
     #region 자식 만들기
 
-    // 배경이 바뀌면 층을 다시 만든다 — 층 수가 배경마다 다르다
+    // 배경이 바뀌면 층을 다시 짠다 — 층 수가 배경마다 다르다.
+    // 층은 파괴하지 않는다: 모자라면 만들고, 남으면 꺼 둔다(배치·해제·산업 변경마다 생성·파괴가 돌지 않게).
     private void RebuildLayers()
     {
-        foreach (RawImage layer in _layers)
-        {
-            if (layer != null)
-            {
-                Destroy(layer.gameObject);
-            }
-        }
-
-        _layers.Clear();
+        _layerCount = 0;
 
         if (_background == null)
         {
+            HideLayersFrom(0);
+
             return;
         }
 
@@ -458,19 +454,37 @@ public class SlotStageView : MonoBehaviour
             _layerRoot.SetAsFirstSibling();
         }
 
-        // 뒤 → 앞 순서 그대로 자식이 된다
+        // 뒤 → 앞 순서 그대로 자식이 된다 — i번째 층이 늘 i번째 자식이라 다시 써도 순서가 같다
         foreach (BackgroundVisual.Layer layer in _background.Layers)
         {
-            RectTransform rect = CreateChild($"Layer {_layers.Count}", _layerRoot);
-            rect.anchorMin = new Vector2(0f, 0f);
-            rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot     = new Vector2(0.5f, 0f);
+            if (_layerCount == _layers.Count)
+            {
+                RectTransform rect = CreateChild($"Layer {_layers.Count}", _layerRoot);
+                rect.anchorMin = new Vector2(0f, 0f);
+                rect.anchorMax = new Vector2(1f, 0f);
+                rect.pivot     = new Vector2(0.5f, 0f);
 
-            RawImage image = rect.gameObject.AddComponent<RawImage>();
-            image.texture       = layer.texture;
-            image.raycastTarget = false;
+                RawImage created = rect.gameObject.AddComponent<RawImage>();
+                created.raycastTarget = false;
 
-            _layers.Add(image);
+                _layers.Add(created);
+            }
+
+            RawImage image = _layers[_layerCount++];
+            image.texture = layer.texture;
+            image.uvRect  = new Rect(0f, 0f, 1f, 1f); // 이전 배경이 밀어 둔 uv를 남기지 않는다 — 다음 'DrawLayers'가 다시 정한다
+            image.gameObject.SetActive(true);
+        }
+
+        HideLayersFrom(_layerCount);
+    }
+
+    // 지금 배경이 쓰지 않는 층을 끈다 ('RebuildLayers'에서 호출)
+    private void HideLayersFrom(int startIndex)
+    {
+        for (int i = startIndex; i < _layers.Count; i++)
+        {
+            _layers[i].gameObject.SetActive(false);
         }
     }
 

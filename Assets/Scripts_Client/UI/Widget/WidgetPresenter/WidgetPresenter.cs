@@ -113,7 +113,7 @@ public class WidgetPresenter : MonoBehaviour
 
         foreach (var slot in _data.WorkStationSlots)
         {
-            if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.IsRunning)
+            if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.gameObject.activeSelf || !view.IsRunning)
             {
                 continue;
             }
@@ -189,6 +189,9 @@ public class WidgetPresenter : MonoBehaviour
                 _views.Add(slot.SlotIndex, view);
             }
 
+            // 해제 때 꺼 둔 칸을 다시 쓴다 — 아래 Bind가 이전 값을 전부 덮는다
+            view.gameObject.SetActive(true);
+
             // 캐시에 담긴 순서 그대로 왼쪽부터 채운다 — 나중에 배치한 칸이 뷰만 늦게 생겨도
             // 자리는 원래 순서를 지킨다.
             //
@@ -206,19 +209,13 @@ public class WidgetPresenter : MonoBehaviour
         activeSlotText.text = $"가동 {activeCount}/{_data.WorkStationSlots.Count}";
     }
 
-    // 배치가 풀린 칸을 지운다 ('Rebuild'에서 호출). 레이아웃이 뒤의 칸을 당겨 빈자리를 없앤다.
+    // 배치가 풀린 칸을 끈다 ('Rebuild'에서 호출). 꺼진 칸은 레이아웃에서 빠져 뒤의 칸이 당겨진다.
+    // 파괴하지 않는다 — 같은 칸에 다시 배치되면 그대로 켜서 쓴다.
     private void RemoveView(int slotIndex)
     {
-        if (!_views.TryGetValue(slotIndex, out var view))
+        if (_views.TryGetValue(slotIndex, out var view) && view != null)
         {
-            return;
-        }
-
-        _views.Remove(slotIndex); // Update가 죽은 뷰를 만지지 않도록 먼저 뺀다
-
-        if (view != null)
-        {
-            Destroy(view.gameObject);
+            view.gameObject.SetActive(false); // Update는 꺼진 칸을 건너뛴다
         }
     }
 
