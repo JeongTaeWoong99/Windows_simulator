@@ -44,6 +44,7 @@ public partial class User
             ECheatCommand.SetTraitLevel    => CheatSetTraitLevel(req.Arg1, req.Arg2, now),
             ECheatCommand.AdvanceTime      => CheatAdvanceTime(req.Arg1, now),
             ECheatCommand.ResetTime        => CheatResetTime(now),
+            ECheatCommand.SetCondenseCount => CheatSetCondenseCount(req.Arg1, req.Arg2, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -142,6 +143,28 @@ public partial class User
         }
 
         return (EResultCode.Ok, $"캐릭터 {characterId} Lv{character.Level} Exp{character.Exp}");
+    }
+
+    // 재료 없이 응축 누적을 정한다. 실제 응축과 같은 저장·속도 갱신을 탄다 — 재료 목록만 비어 있다.
+    private (EResultCode, string) CheatSetCondenseCount(long characterId, long count, DateTime now)
+    {
+        if (!TryGetCharacter(characterId, out var character))
+        {
+            return (EResultCode.CharacterNotOwned, $"미보유 캐릭터 {characterId}");
+        }
+
+        var starBefore = StarOf(character);
+        character.SetCondenseCount((int)Math.Clamp(count, 0, _characterStars.MaxCount));
+
+        PostDBTask(new CondenseCharacterRepository(this, character, new List<long>()));
+        Send(new S_CharacterSyncResponse { Character = ToCharacterInfo(character) });
+
+        if (StarOf(character) != starBefore)
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
+        return (EResultCode.Ok, $"캐릭터 {characterId} 누적 {character.CondenseCount} ★{StarOf(character)}");
     }
 
     // 쌓인 진행도만 정산하면 스케줄러(0.1초)가 먼저 가져가 늘 0개다. 판정을 N회분 얹고 정산한다.

@@ -42,6 +42,9 @@ public sealed partial class User
     /// <summary>캐릭터 레벨 곡선. 정산 시 경험치 가산·레벨업 판정에 쓴다. 규약은 위와 같다.</summary>
     private readonly CharacterLevelCatalog _characterLevels;
 
+    /// <summary>응축 ★ 기준·속도 가산. 응축과 슬롯 속도 가산에 쓴다. 규약은 위와 같다.</summary>
+    private readonly CharacterStarCatalog _characterStars;
+
     /// <summary>해금 조건·작업슬롯 칸 인덱스. 해금 판정과 로그인 시 열린 칸 구성에 쓴다. 규약은 위와 같다.</summary>
     private readonly UnlockCatalog _unlockCatalog;
 
@@ -156,7 +159,8 @@ public sealed partial class User
         EnchantCatalog?       enchants = null,
         AuctionService?       auction = null,
         IOnlineUsers?         onlineUsers = null,
-        GameClock?            clock = null)
+        GameClock?            clock = null,
+        CharacterStarCatalog? characterStars = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -177,6 +181,7 @@ public sealed partial class User
         _auction = auction ?? AuctionService.Current;
         _onlineUsers = onlineUsers ?? UserManager.Instance;
         _clock = clock ?? GameClock.Instance;
+        _characterStars = characterStars ?? CharacterStarCatalog.Instance;
 
         SessionId  = channel.SessionId;
         Pid        = pid;

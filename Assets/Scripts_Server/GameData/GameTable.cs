@@ -14,6 +14,7 @@ namespace GameData
         public static TableSet<int, CharacterTableRow> CharacterTable { get; private set; } = null!;
         public static TableSet<int, WorkSpeedTableRow> WorkSpeedTable { get; private set; } = null!;
         public static TableSet<int, CharacterLevelTableRow> CharacterLevelTable { get; private set; } = null!;
+        public static TableSet<int, CharacterStarTableRow> CharacterStarTable { get; private set; } = null!;
         public static TableSet<string, ConstantsTableRow> ConstantsTable { get; private set; } = null!;
         public static TableSet<int, CommonRewardTableRow> CommonRewardTable { get; private set; } = null!;
         public static TableSet<int, CommonRewardOverrideTableRow> CommonRewardOverrideTable { get; private set; } = null!;
@@ -46,6 +47,7 @@ namespace GameData
             CharacterTable = TableSet<int, CharacterTableRow>.From(read("CharacterTable.bytes"), r => r.CharacterTID);
             WorkSpeedTable = TableSet<int, WorkSpeedTableRow>.From(read("WorkSpeedTable.bytes"), r => r.WorkSpeedTID);
             CharacterLevelTable = TableSet<int, CharacterLevelTableRow>.From(read("CharacterLevelTable.bytes"), r => r.CharacterLevelTID);
+            CharacterStarTable = TableSet<int, CharacterStarTableRow>.From(read("CharacterStarTable.bytes"), r => r.CharacterStarTID);
             ConstantsTable = TableSet<string, ConstantsTableRow>.From(read("ConstantsTable.bytes"), r => r.Name);
             CommonRewardTable = TableSet<int, CommonRewardTableRow>.From(read("CommonRewardTable.bytes"), r => r.CommonRewardTID);
             CommonRewardOverrideTable = TableSet<int, CommonRewardOverrideTableRow>.From(read("CommonRewardOverrideTable.bytes"), r => r.CommonRewardOverrideTID);

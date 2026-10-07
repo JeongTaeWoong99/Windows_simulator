@@ -33,7 +33,7 @@ public partial class User
                 continue;
             }
 
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp) { Slot = r.slot };
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, r.condense_count) { Slot = r.slot };
         }
     }
 
@@ -144,6 +144,81 @@ public partial class User
     public int GetLevelSpeedAdd(long characterId)
         => TryGetCharacter(characterId, out var character) ? _characterLevels.SpeedAddAt(character.Level) : 0;
 
+    /// <summary>배치된 캐릭터의 응축 ★ 속도 가산(천분율). 빈 슬롯·미보유면 0이다.</summary>
+    public int GetStarSpeedAdd(long characterId)
+        => TryGetCharacter(characterId, out var character) ? _characterStars.SpeedAddAt(StarOf(character)) : 0;
+
+    public int StarOf(Character character) => _characterStars.StarAt(character.CondenseCount);
+
+    /// <summary>
+    /// 응축 — 같은 캐릭터 재료를 녹여 대상의 누적 재료 수를 올린다(기획 5.5). 전부 검증한 뒤에만 지운다.
+    /// 대상은 배치·착용 중이어도 된다 — ★이 오르면 정산 뒤 슬롯 속도를 다시 매긴다.
+    /// </summary>
+    public void TryCondenseCharacter(long characterId, IReadOnlyList<long> materialIds, DateTime now)
+    {
+        if (!TryGetCharacter(characterId, out var target))
+        {
+            Reject(EResultCode.CharacterNotOwned, $"미보유 대상 {characterId}");
+            return;
+        }
+
+        if (materialIds.Count == 0 || materialIds.Distinct().Count() != materialIds.Count || materialIds.Contains(characterId))
+        {
+            Reject(EResultCode.CondenseInvalidRequest, "빈 재료 · 중복 · 대상 포함");
+            return;
+        }
+
+        if (StarOf(target) >= _characterStars.MaxStar)
+        {
+            Reject(EResultCode.CondenseMaxStar, $"최고 ★ 대상 {characterId}");
+            return;
+        }
+
+        foreach (var materialId in materialIds)
+        {
+            if (!TryGetCharacter(materialId, out var material))
+            {
+                Reject(EResultCode.CharacterNotOwned, $"미보유 재료 {materialId}");
+                return;
+            }
+            if (material.Tid != target.Tid)
+            {
+                Reject(EResultCode.CondenseTidMismatch, $"다른 캐릭터 재료 {materialId}(TID {material.Tid})");
+                return;
+            }
+            if (IsCharacterBusy(materialId))
+            {
+                Reject(EResultCode.CondenseMaterialBusy, $"배치·착용 중 재료 {materialId}");
+                return;
+            }
+        }
+
+        foreach (var materialId in materialIds)
+        {
+            _characters.Remove(materialId);
+        }
+
+        var starGained = target.Condense(materialIds.Count, _characterStars);
+
+        PostDBTask(new CondenseCharacterRepository(this, target, materialIds.ToList()));
+
+        // 배치된 대상은 새 속도를 받는다. 정산이 먼저라 오른 ★이 지난 구간에 소급되지 않는다.
+        if (starGained > 0 && IsCharacterBusy(characterId))
+        {
+            RefreshWorkStationSpeed(now);
+        }
+
+        ServerLog.Info("캐릭터", $"응축 Uid={Uid} 캐릭터 {characterId} 재료 {materialIds.Count} → 누적 {target.CondenseCount} ★{StarOf(target)}");
+        Send(new S_CharacterCondenseResponse { Result = EResultCode.Ok, Character = ToCharacterInfo(target) });
+        return;
+
+        void Reject(EResultCode code, string reason)
+        {
+            ServerLog.Warn("캐릭터", $"응축 거절 {code} Uid={Uid} 사유={reason}");
+            Send(new S_CharacterCondenseResponse { Result = code });
+        }
+    }
+
     private CharacterInfo ToCharacterInfo(Character c)
     {
         return new CharacterInfo
@@ -154,6 +229,8 @@ public partial class User
             Exp            = c.Exp,
             Aptitudes      = ToAptitudeInfos(c),
             Slot           = c.Slot,
+            Star           = StarOf(c),
+            CondenseCount  = c.CondenseCount,
         };
     }
 
@@ -200,7 +277,7 @@ public partial class User
             return null;
         }
 
-        return ToCharacterInfo(new Character(m.CharacterId, row, m.Level, m.Exp));
+        return ToCharacterInfo(new Character(m.CharacterId, row, m.Level, m.Exp, m.CondenseCount));
     }
 
     /// <summary>우편으로 온 잠긴 캐릭터를 받는다. 잠금 해제가 끝나면 <see cref="OnMailCharacterUnlocked"/>.</summary>
@@ -227,7 +304,7 @@ public partial class User
             return;
         }
 
-        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp) { Slot = slot };
+        var character = new Character(mailCharacter.CharacterId, row, mailCharacter.Level, mailCharacter.Exp, mailCharacter.CondenseCount) { Slot = slot };
         _characters[character.Id] = character;
 
         ServerLog.Info("캐릭터", $"우편 캐릭터 수령 Uid={Uid} 캐릭터 {character.Id}(TID {character.Tid}) Lv{character.Level}");

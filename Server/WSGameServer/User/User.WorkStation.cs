@@ -350,6 +350,7 @@ public partial class User
             .Add(GetEquipSpeedAdd(slot.CharacterId, slot.Industry))
             .Add(GetTraitSpeedAdd(slot.Industry))
             .Add(GetLevelSpeedAdd(slot.CharacterId))
+            .Add(GetStarSpeedAdd(slot.CharacterId))
             .Multiply(GatherSpeedMultiplier)
             .Resolve();
     }

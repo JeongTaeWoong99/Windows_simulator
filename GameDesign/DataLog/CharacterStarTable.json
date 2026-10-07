@@ -1,0 +1,26 @@
+[
+  {
+    "CharacterStarTID": 1,
+    "RequiredCount": 8,
+    "SpeedAddPermille": 100,
+    "Description": "★1 — 누적 8"
+  },
+  {
+    "CharacterStarTID": 2,
+    "RequiredCount": 14,
+    "SpeedAddPermille": 200,
+    "Description": "★2 — 누적 22"
+  },
+  {
+    "CharacterStarTID": 3,
+    "RequiredCount": 22,
+    "SpeedAddPermille": 300,
+    "Description": "★3 — 누적 44"
+  },
+  {
+    "CharacterStarTID": 4,
+    "RequiredCount": 32,
+    "SpeedAddPermille": 500,
+    "Description": "★4 — 누적 76 · 최대"
+  }
+]

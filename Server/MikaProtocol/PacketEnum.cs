@@ -59,6 +59,10 @@ namespace MikaProtocol
         EnchantEquipped      = 614, // 착용 중 — 벗겨야 큐브를 쓸 수 있다
 
         // ── 700~: 캐릭터 ── 700·701은 옛 적성 포인트(NoAptitudePoint·AptitudeAtCap)의 결번이다 — 2026-10-06 철거(이슈 #35)
+        CondenseInvalidRequest = 702, // 재료가 없거나 · 겹치거나 · 대상 자신이 재료에 섞였다
+        CondenseTidMismatch    = 703, // 대상과 다른 캐릭터가 재료에 섞였다
+        CondenseMaterialBusy   = 704, // 슬롯에 배치됐거나 장비를 낀 재료 — 빼고·벗겨야 녹인다
+        CondenseMaxStar        = 705, // 이미 최고 ★ — 아무것도 바꾸지 않는다
 
         // ── 800~: 특성 ──
         InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 최대 레벨 → TraitMaxLevel · 계정 레벨 미달 → UnlockLocked
@@ -136,6 +140,7 @@ namespace MikaProtocol
         SetTraitLevel    = 11, // Arg1 = UserTraitTID(0이면 전 특성) · Arg2 = 레벨 — 조건·포인트 없이 정한다. 기본~최대로 자른다
         AdvanceTime      = 12, // Arg1 = 넘길 초 (> 0, 누적) — 서버 전체의 게임 시계를 앞으로. 채취는 쌓이지 않는다
         ResetTime        = 13, // 게임 시계 오프셋을 0으로 — 미래 시각으로 저장된 데이터는 남는다
+        SetCondenseCount = 14, // Arg1 = CharacterId(개체) · Arg2 = 응축 누적 재료 수 — 재료 없이 정한다. 0~최고 ★ 기준으로 자른다
     }
 
     public enum EItemChangeKind : byte

@@ -18,7 +18,7 @@ namespace MikaProtocol
         public EContainer Container { get; set; }
         public int        Slot      { get; set; }   // 격자 안 칸 번호(0부터)
     }
-    
+
     [MemoryPackable]
     public partial class ItemChangeInfo   // Count는 델타가 아니라 갱신 후 누적 총량 — 클라는 덮어쓴다
     {
@@ -69,6 +69,10 @@ namespace MikaProtocol
 
         public EContainer Container { get; set; }
         public int        Slot      { get; set; }   // 격자 안 칸 번호(0부터)
+
+        // 응축(캐릭터 기획 5.5). 진행 바는 CondenseCount와 CharacterStarTable의 누적 기준으로 그린다.
+        public int Star          { get; set; }
+        public int CondenseCount { get; set; }      // 넣은 재료의 누적 수
     }
 
     // 작업슬롯 한 칸의 상태. 주기 대신 진행도·속도·비용을 주어 클라가 카운트다운을 직접 구한다(연출일 뿐, 개수는 서버가 정한다).

@@ -107,6 +107,9 @@ internal sealed class TestUserBuilder
     public DropTableCatalog      Drops    { get; } = new();
     public IndustryLevelCatalog  Levels   { get; } = new();
     public CharacterLevelCatalog Growth   { get; } = new();
+
+    /// <summary>응축 ★ 표. 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다.</summary>
+    public CharacterStarCatalog Stars { get; } = new();
     public FakeLogicExecutor     Executor { get; private set; } = new();
 
     /// <summary>
@@ -213,9 +216,15 @@ internal sealed class TestUserBuilder
             Mails.LoadAll();
         }
 
+        if (Stars.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            Stars.LoadAll();
+        }
+
         var user = new User(Channel, QueueOverride ?? DB, ExecutorOverride ?? Executor,
                             pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
-                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online, Clock);
+                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online, Clock, Stars);
         user.Uid = uid;
         return user;
     }
