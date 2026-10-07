@@ -3,7 +3,7 @@ name: dotween
 description: DOTween으로 움직임·페이드 연출을 짜는 규칙 — 트윈 수명(SetLink·Kill), 설정, 트윈을 기다릴 때 DOTween 단독 대기 API 대신 UniTask의 DOTween 전용 API(ToUniTask·AwaitFor…). 클라이언트 코드에서 값·위치·색·크기를 바꾸는 연출을 새로 짜거나 고칠 때, 트윈 끝을 기다릴 때 적용한다. 기다림만 있는 흐름은 unitask 스킬. 연출이 없는 로직·데이터·배치 작업에는 적용하지 않는다.
 ---
 
-> 최종 업데이트: 2026-10-08 (`unitask-dotween`에서 분리)
+> 최종 업데이트: 2026-10-08 (`unitask-dotween`에서 분리 · 함정 — 넘긴 트윈을 finally에서 다시 Kill)
 
 # 연출 — DOTween
 
@@ -68,6 +68,7 @@ UniTask 쪽은 트윈 콜백에 걸어 **폴링 없이** 깨어나고, 대기 �
 | `ToUniTask()` 기본값은 `TweenCancelBehaviour.Kill` | 취소돼도 **트윈만 죽고 await 뒤가 정상 완료로 계속 돈다** | `KillAndCancelAwait`를 명시한다 |
 | 트윈이 밖에서 Kill됨(`SetLink`·`DOKill`) | await가 **정상 완료로** 깨어난다 | 토큰을 함께 넘겨 두고, await 뒤에 오브젝트를 만지기 전에 확인한다 |
 | 인자 없는 `await tween` | 그 트윈의 **`onKill`을 덮어쓴다** | `OnKill` 콜백을 건 트윈은 `ToUniTask`로 기다린다 |
+| `KillAndCancelAwait`로 넘긴 트윈을 `finally`에서 또 `Kill()` | 취소되면 UniTask가 Kill하고 **그 Kill 안에서 finally가 동기로 돈다** — 두 번째 Kill이 DOTween 안에서 `IndexOutOfRangeException`(`TweenManager.RemoveActiveTween`) | 넘긴 뒤에는 Kill하지 않는다. 넘기기 전에 예외가 났을 때만 직접 Kill (플래그로 가른다) |
 
 ---
 

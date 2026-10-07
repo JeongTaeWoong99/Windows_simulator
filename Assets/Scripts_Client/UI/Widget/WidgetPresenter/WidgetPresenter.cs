@@ -23,6 +23,8 @@ using UnityEngine.UI;
 // 상시 실행 앱에서 리소스는 기능이 아니라 생존 조건이고, 급격한 애니메이션은
 // P1(주의를 뺏지 않는다)을 정면으로 어긴다.
 // → GameDesign/design/ui/README.md 2.1
+// ※ 예외 하나 — 수확 때 머리 자리에서 아이템 아이콘이 작게 떠올라 사라진다(2026-10-08 사용자 요청).
+//   수확 때만 1초 남짓 돌고 끝나는 트윈이라 상시 루프가 아니다('ItemGainEffectView').
 public class WidgetPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -58,6 +60,9 @@ public class WidgetPresenter : MonoBehaviour
     private PlayerDataModel _data = null!;
     private bool            _isSubscribed;
     private bool            _isReady; // Start 완료 여부 — OnEnable 재구독 가드
+
+    // 획득 연출에 넘길 아이콘 — 수확마다 새로 만들지 않고 비워 다시 쓴다
+    private readonly List<Sprite?> _gainIcons = new List<Sprite?>();
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
@@ -219,17 +224,17 @@ public class WidgetPresenter : MonoBehaviour
         }
     }
 
-    // 채취 결과 푸시 도착 — 그 칸의 게이지를 처음으로 되돌린다 (GatherResultReceived 구독).
+    // 채취 결과 푸시 도착 — 그 칸의 게이지를 처음으로 되돌리고 얻은 아이템을 띄운다 (GatherResultReceived 구독).
     //
     // ⚠️ 이 패킷에는 진행도가 없다(SlotIndex · JudgeCount · ItemChanges뿐이다).
     //   게이지의 실제 동기화는 'S_WorkStationSlotSyncResponse' → 'WorkStationSlotsChanged'가 한다.
-    //   그래서 이 구독이 하는 일은 "어느 칸에서 수확이 났는가"를 아는 것이고,
-    //   ⏸ 나중에 수확 표시가 떠오르는 연출이 붙을 자리다.
+    //   그래서 이 구독이 하는 일은 "어느 칸에서 무엇을 얻었나"를 아는 것이다.
     private void OnGatherResultReceived(S_GatherResultResponse res)
     {
-        if (_views.TryGetValue(res.SlotIndex, out var view))
+        if (_views.TryGetValue(res.SlotIndex, out var view) && view.isActiveAndEnabled)
         {
-            view.MarkHarvested();
+            ItemGainEffectView.ReadGainIcons(res.ItemChanges, _gainIcons);
+            view.MarkHarvested(_gainIcons);
         }
     }
 

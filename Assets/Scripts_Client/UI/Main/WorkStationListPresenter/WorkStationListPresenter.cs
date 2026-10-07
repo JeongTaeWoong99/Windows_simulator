@@ -53,6 +53,9 @@ public class WorkStationListPresenter : MonoBehaviour
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
     private readonly List<Sprite?>      _wornIcons  = new List<Sprite?>();
 
+    // 획득 연출에 넘길 아이콘 — 수확마다 새로 만들지 않고 비워 다시 쓴다
+    private readonly List<Sprite?> _gainIcons = new List<Sprite?>();
+
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
     private ServerWaitManager _wait = null!;
@@ -140,6 +143,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.CharactersChanged       += Rebuild; // 캐릭터 레벨이 오르면 칸 글자의 'Lv'를 고친다
         _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
+        _data.GatherResultReceived    += OnGatherResultReceived;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -156,6 +160,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.CharactersChanged       -= Rebuild;
         _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
+        _data.GatherResultReceived    -= OnGatherResultReceived;
     }
 
     #endregion
@@ -367,6 +372,19 @@ public class WorkStationListPresenter : MonoBehaviour
             EquipLabel.ReadWornGrades(_data, characterId, _wornGrades, _wornIcons);
             view.SetEquipPips(_wornGrades, _wornIcons, () => BuildWornTooltip(characterId));
         }
+    }
+
+    // 채취 결과 푸시 — 그 칸에서 얻은 아이템을 띄운다 (GatherResultReceived 구독).
+    // ※ 이 푸시는 판정이 끝날 때 온다 — 칸의 카운트다운이 0이 되어 대상이 쓰러지는 때와 같다.
+    private void OnGatherResultReceived(MikaProtocol.S_GatherResultResponse res)
+    {
+        if (!_views.TryGetValue(res.SlotIndex, out var view) || view == null || !view.isActiveAndEnabled)
+        {
+            return;
+        }
+
+        ItemGainEffectView.ReadGainIcons(res.ItemChanges, _gainIcons);
+        view.PlayGain(_gainIcons);
     }
 
     // 장비 줄 툴팁 — 캐릭터 이름 아래 칸마다 낀 장비 (장비 줄에 마우스를 올릴 때 호출).

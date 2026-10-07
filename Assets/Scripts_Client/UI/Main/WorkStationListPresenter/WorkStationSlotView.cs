@@ -38,6 +38,10 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("슬롯 무대 (Visible Panel). 비우면 연출 없이 바탕만 남는다")]
     private SlotStageView? stage;
 
+    // 무대 안이 아니라 칸 루트에 붙는다 — 무대는 'RectMask2D'라 위로 오르는 아이콘이 잘린다.
+    [SerializeField, Tooltip("아이템 획득 연출 (칸 루트의 ItemGainEffectView). 비우면 연출 없이 지나간다")]
+    private ItemGainEffectView? gainEffect;
+
     private WorkStationSlotInfo? _slot;
 
     // 이 뷰가 그리고 있는 슬롯 번호. 미바인딩이면 -1.
@@ -113,6 +117,22 @@ public class WorkStationSlotView : MonoBehaviour
     {
         equipPips.Bind(grades, icons);
         equipPips.SetTooltip(tooltip);
+    }
+
+    // 이 칸에서 얻은 아이템을 띄운다 — 쓰러지는 대상 자리에서, 무대 그림이 없으면 무대 가운데에서
+    // (WorkStationListPresenter의 GatherResultReceived 구독에서 호출).
+    public void PlayGain(IReadOnlyList<Sprite?> icons)
+    {
+        if (gainEffect == null)
+        {
+            return;
+        }
+
+        Vector3 point = stage != null && stage.TryGetHarvestPoint(out Vector3 harvest) ? harvest
+                      : stage != null ? stage.transform.position
+                      : transform.position;
+
+        gainEffect.Play(point, icons);
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

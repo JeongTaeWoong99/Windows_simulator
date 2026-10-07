@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -14,7 +15,7 @@ using UnityEngine.UI;
 //   Update·코루틴을 두지 않고 'WidgetPresenter'가 계산해 넘겨 준 값만 그린다.
 //   상시 실행 앱이라 칸마다 루프를 돌리면 슬롯 수만큼 낭비가 곱해진다.
 //
-// ⏸ 아직 자리만 잡아 둔 것 — 캐릭터 스프라이트와 수확 표시는 에셋이 나온 뒤에 붙인다.
+// ■ 수확 표시 — 머리 자리에서 얻은 아이템 아이콘이 작게 떠올라 사라진다('ItemGainEffectView', 큰 창 칸과 같은 연출).
 public class WidgetMiniSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -32,6 +33,9 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     [SerializeField, Tooltip("판정 진행도 (0~1). 표시 전용이라 interactable은 꺼 둔다")]
     private Slider progressSlider = null!;
+
+    [SerializeField, Tooltip("아이템 획득 연출 (칸 루트의 ItemGainEffectView — 큰 창보다 작은 값). 비우면 연출 없이 지나간다")]
+    private ItemGainEffectView? gainEffect;
 
     private WorkStationSlotInfo? _slot;
 
@@ -101,10 +105,16 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     // 이 칸에서 수확이 났다 (WidgetPresenter의 GatherResultReceived 구독에서 호출).
     //
-    // ⏸ 수확 표시가 떠오르는 연출이 붙을 자리다. 지금은 게이지만 처음으로 되돌린다 —
-    //    다음 슬롯 동기화가 오기 전까지 이전 사이클의 진행도를 그리고 있지 않도록.
-    public void MarkHarvested()
+    // 게이지를 처음으로 되돌린다 — 다음 슬롯 동기화가 오기 전까지 이전 사이클의 진행도를 그리고 있지 않도록.
+    // 얻은 아이템은 머리 자리에서 떠오른다.
+    //   icons : 얻은 아이템 아이콘('ItemGainEffectView.ReadGainIcons')
+    public void MarkHarvested(IReadOnlyList<Sprite?> icons)
     {
         progressSlider.value = 0f;
+
+        if (gainEffect != null)
+        {
+            gainEffect.Play(characterImage.rectTransform.TransformPoint(characterImage.rectTransform.rect.center), icons);
+        }
     }
 }

@@ -161,6 +161,35 @@ public class SlotStageView : MonoBehaviour
         PlaceCharacter(PickFrame(now), PickEffect(now), settings, k);
     }
 
+    // 수확 자리 — 판정 경계에서 쓰러지는 대상의 가운데(월드 좌표). 대상 그림이 없으면 false (획득 연출이 호출).
+    //
+    // ※ 쓰러지는 대상은 여운 동안 멈춤 자리에 서 있다('DrawTargets'의 dyingX가 주기 처음에 stopX - 반폭) —
+    //   그래서 시간과 상관없이 같은 자리를 돌려준다.
+    public bool TryGetHarvestPoint(out Vector3 worldPoint)
+    {
+        worldPoint = default;
+
+        Sprite? sprite = _target != null ? _target.Sprite : null;
+
+        if (_background == null || _characterVisual == null || sprite == null)
+        {
+            return false;
+        }
+
+        SlotStageSettings settings = SlotStageSettings.Current;
+        float k     = Scale(settings);
+        float feetX = _rect.rect.width - settings.RightPad * k;
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
+        Vector2 size = sprite.rect.size * k;
+
+        // 무대 좌표는 왼쪽 아래 기준('Place') — 피벗 기준 로컬로 옮긴 뒤 월드로
+        var local = new Vector2(stopX - size.x / 2f, GroundY(k) + size.y / 2f) + _rect.rect.min;
+
+        worldPoint = _rect.TransformPoint(local);
+
+        return true;
+    }
+
     // ■ 되감기 방어
     //   진행도는 서버 동기화(정산 패킷)를 받을 때마다 기준점이 다시 잡힌다. 클라 시계가 조금 앞서 있었으면
     //   진행도가 살짝 뒤로 간다 — 그대로 그리면 방금 끝난 공격이 다시 나오거나, 판정 경계를 거꾸로 넘어
