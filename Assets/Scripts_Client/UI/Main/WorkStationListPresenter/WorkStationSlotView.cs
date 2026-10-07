@@ -121,6 +121,7 @@ public class WorkStationSlotView : MonoBehaviour
 
     // 이 칸에서 얻은 아이템을 띄운다 — 쓰러지는 대상 자리에서, 무대 그림이 없으면 무대 가운데에서
     // (WorkStationListPresenter의 GatherResultReceived 구독에서 호출).
+    // 땅이 흐르면 대상과 함께 흘러간다 — 화면에 박혀 있으면 캐릭터를 따라오는 것처럼 보인다.
     public void PlayGain(IReadOnlyList<Sprite?> icons)
     {
         if (gainEffect == null)
@@ -128,11 +129,18 @@ public class WorkStationSlotView : MonoBehaviour
             return;
         }
 
-        Vector3 point = stage != null && stage.TryGetHarvestPoint(out Vector3 harvest) ? harvest
-                      : stage != null ? stage.transform.position
-                      : transform.position;
+        if (stage == null)
+        {
+            gainEffect.Play(transform.position, icons);
 
-        gainEffect.Play(point, icons);
+            return;
+        }
+
+        SlotStageView stageView = stage;
+        Vector3       point     = stageView.TryGetHarvestPoint(out Vector3 harvest) ? harvest : stageView.transform.position;
+        double        ground    = stageView.GroundDistance;
+
+        gainEffect.Play(point, icons, () => stageView.FollowGround(point, ground));
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

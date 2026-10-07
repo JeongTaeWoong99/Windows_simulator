@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6644751978478655420}
   - component: {fileID: 3292163645557315778}
   - component: {fileID: 3446380212372273143}
+  - component: {fileID: 5731586280017563446}
   m_Layer: 0
   m_Name: Character Image
   m_TagString: Untagged
@@ -90,6 +91,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 3
   alpha: 1
+--- !u!114 &5731586280017563446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2331228343889844760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 786b1704425f27149b3aec7bcffcf534, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::WidgetHeadMotion
+  bounceHeight: 2
+  bouncePeriod: 0.9
+  hopHeight: 5
+  hopDuration: 0.45
+  squash: {x: 1.12, y: 0.85}
+  stretch: {x: 0.95, y: 1.08}
+  land: {x: 1.06, y: 0.94}
 --- !u!1 &2908390494771958399
 GameObject:
   m_ObjectHideFlags: 0
@@ -514,6 +534,7 @@ MonoBehaviour:
   harvestText: {fileID: 2472931416502404810}
   progressSlider: {fileID: 9116991798078815453}
   gainEffect: {fileID: 6916515483760838888}
+  headMotion: {fileID: 5731586280017563446}
 --- !u!114 &1844180094523596103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -545,12 +566,12 @@ MonoBehaviour:
   maxIcons: 5
   startOffset: {x: 0, y: 0}
   riseDistance: 16
-  duration: 1
+  duration: 0.667
   riseEase: 9
-  fadeDelay: 0.45
+  fadeDelay: 0.3
   fadeEase: 5
   appearScale: 0.6
-  appearDuration: 0.18
+  appearDuration: 0.12
   appearEase: 27
   maxPooled: 16
 --- !u!1 &8110470697063805242

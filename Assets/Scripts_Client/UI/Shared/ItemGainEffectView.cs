@@ -20,6 +20,10 @@ using UnityEngine.UI;
 // ■ 여러 개면 가운데를 중심으로 좌우 대칭
 //   간격 = 아이콘 크기 + 'iconSpacing' — 크기를 바꿔도 겹치지 않는다. 모두 한 Sequence라 같은 속도·거리로 함께 오른다.
 //
+// ■ 자리를 따라간다 (선택)
+//   'follow'를 넘기면 매 프레임 그 월드 좌표로 가로 자리를 옮긴다 — 큰 창 칸은 땅이 흐르면 쓰러진 대상이 땅과 함께
+//   흘러가므로 아이콘도 그 자리를 따라간다(화면에 박혀 캐릭터를 따라오는 것처럼 보이지 않게). 세로는 떠오름 트윈 몫이다.
+//
 // ■ 수명
 //   재생은 켜져 있는 동안만이다. 꺼지거나 파괴되면 토큰이 끊기고 Sequence가 Kill돼('KillAndCancelAwait') 남는 트윈·대기가 없다.
 //   아이콘은 'PrefabPool'로 돌려쓴다 — 수확은 칸마다 몇 초에 한 번씩 계속 난다.
@@ -43,13 +47,13 @@ public class ItemGainEffectView : MonoBehaviour
     private float riseDistance = 28f;
 
     [SerializeField, Min(0.05f), Tooltip("나타나서 사라질 때까지 (초)")]
-    private float duration = 1.1f;
+    private float duration = 0.73f;
 
     [SerializeField, Tooltip("오르는 곡선")]
     private Ease riseEase = Ease.OutCubic;
 
     [SerializeField, Min(0f), Tooltip("페이드아웃을 시작하는 때 (초). 이때부터 끝까지 흐려진다")]
-    private float fadeDelay = 0.45f;
+    private float fadeDelay = 0.3f;
 
     [SerializeField, Tooltip("흐려지는 곡선")]
     private Ease fadeEase = Ease.InQuad;
@@ -58,7 +62,7 @@ public class ItemGainEffectView : MonoBehaviour
     private float appearScale = 0.6f;
 
     [SerializeField, Min(0f), Tooltip("시작 크기에서 제 크기가 되는 시간 (초)")]
-    private float appearDuration = 0.18f;
+    private float appearDuration = 0.12f;
 
     [SerializeField, Tooltip("나타나는 곡선")]
     private Ease appearEase = Ease.OutBack;
@@ -114,7 +118,8 @@ public class ItemGainEffectView : MonoBehaviour
     // 'worldCenter'에서 아이콘들을 띄운다. 꺼져 있거나 아이콘이 없으면 아무것도 하지 않는다.
     //   worldCenter : 아이콘 줄의 가운데 — 부르는 쪽이 대상·머리의 월드 좌표를 넘긴다
     //   icons       : 띄울 그림. null인 것(그림 없음)은 건너뛴다
-    public void Play(Vector3 worldCenter, IReadOnlyList<Sprite?> icons)
+    //   follow      : (선택) 재생 동안 따라갈 월드 좌표 — 가로만 따른다. null이면 처음 자리에 머문다
+    public void Play(Vector3 worldCenter, IReadOnlyList<Sprite?> icons, System.Func<Vector3>? follow = null)
     {
         if (!isActiveAndEnabled)
         {
@@ -125,10 +130,10 @@ public class ItemGainEffectView : MonoBehaviour
 
         _playCts ??= CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 
-        PlayAsync(worldCenter, icons, _playCts.Token).Forget();
+        PlayAsync(worldCenter, icons, follow, _playCts.Token).Forget();
     }
 
-    private async UniTask PlayAsync(Vector3 worldCenter, IReadOnlyList<Sprite?> icons, CancellationToken ct)
+    private async UniTask PlayAsync(Vector3 worldCenter, IReadOnlyList<Sprite?> icons, System.Func<Vector3>? follow, CancellationToken ct)
     {
         var sprites = new List<Sprite>(maxIcons);
 
@@ -150,6 +155,7 @@ public class ItemGainEffectView : MonoBehaviour
         RectTransform     layer  = _layer!;
         PrefabPool<Image> pool   = _pool!;
         var               rented = new List<Image>(sprites.Count);
+        var               spread = new float[sprites.Count]; // 줄 가운데로부터 가로 거리
 
         // 층을 맨 앞으로 — 칸이 나중에 만든 자식(무대 배우 등)보다 위에 그린다
         layer.SetAsLastSibling();
@@ -169,7 +175,9 @@ public class ItemGainEffectView : MonoBehaviour
                 rented.Add(icon);
 
                 // 가운데를 중심으로 좌우 대칭 — i번째의 가운데로부터 거리는 (i - (n-1)/2) 칸
-                Vector2 start = center + new Vector2((i - (sprites.Count - 1) * 0.5f) * step, 0f);
+                spread[i] = (i - (sprites.Count - 1) * 0.5f) * step;
+
+                Vector2 start = center + new Vector2(spread[i], 0f);
 
                 icon.enabled          = true;
                 icon.sprite           = sprites[i];
@@ -189,6 +197,22 @@ public class ItemGainEffectView : MonoBehaviour
                 float fadeStart = Mathf.Min(fadeDelay, duration);
 
                 seq.Insert(fadeStart, icon.DOFade(0f, duration - fadeStart).SetEase(fadeEase));
+            }
+
+            // 가로는 따라갈 자리로 — 떠오름 트윈은 Y만 바꾸므로(DOAnchorPosY) 여기서 X를 덮어도 부딪치지 않는다
+            if (follow != null)
+            {
+                seq.OnUpdate(() =>
+                {
+                    float x = layer.InverseTransformPoint(follow()).x + startOffset.x;
+
+                    for (int i = 0; i < rented.Count; i++)
+                    {
+                        RectTransform rect = rented[i].rectTransform;
+
+                        rect.anchoredPosition = new Vector2(x + spread[i], rect.anchoredPosition.y);
+                    }
+                });
             }
 
             handed = true;

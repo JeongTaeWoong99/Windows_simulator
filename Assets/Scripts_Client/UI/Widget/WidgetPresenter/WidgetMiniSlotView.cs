@@ -9,7 +9,7 @@ using UnityEngine.UI;
 //
 // ■ 큰 창의 'WorkStationSlotView'와 다른 점
 //   글자를 쓰지 않는다. 위젯 높이는 87px뿐이라 슬롯 번호·산업·남은 초를 넣을 자리가 없다.
-//   여기서 도는 것은 게이지 하나이고, 나머지는 캐릭터 그림이 채운다.
+//   여기서 도는 것은 게이지와 머리 움직임('WidgetHeadMotion' — 일하는 동안 통통 · 수확 순간 펄쩍)이다.
 //
 // ■ 스스로 시간을 세지 않는다
 //   Update·코루틴을 두지 않고 'WidgetPresenter'가 계산해 넘겨 준 값만 그린다.
@@ -36,6 +36,9 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     [SerializeField, Tooltip("아이템 획득 연출 (칸 루트의 ItemGainEffectView — 큰 창보다 작은 값). 비우면 연출 없이 지나간다")]
     private ItemGainEffectView? gainEffect;
+
+    [SerializeField, Tooltip("머리 움직임 (Character Image의 WidgetHeadMotion). 비우면 머리가 멈춰 있다")]
+    private WidgetHeadMotion? headMotion;
 
     private WorkStationSlotInfo? _slot;
 
@@ -88,6 +91,12 @@ public class WidgetMiniSlotView : MonoBehaviour
         }
 
         progressSlider.value = WorkStationProgress.CalculateProgress(slot);
+
+        // 위상은 슬롯 번호로 흩는다 — 같은 순간에 모든 머리가 튀지 않게
+        if (headMotion != null)
+        {
+            headMotion.SetWorking(IsRunning, slot.SlotIndex * 0.37f);
+        }
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WidgetPresenter가 Bind 뒤에 호출).
@@ -111,6 +120,11 @@ public class WidgetMiniSlotView : MonoBehaviour
     public void MarkHarvested(IReadOnlyList<Sprite?> icons)
     {
         progressSlider.value = 0f;
+
+        if (headMotion != null)
+        {
+            headMotion.Hop();
+        }
 
         if (gainEffect != null)
         {

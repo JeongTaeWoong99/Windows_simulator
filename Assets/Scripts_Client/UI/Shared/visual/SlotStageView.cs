@@ -190,6 +190,14 @@ public class SlotStageView : MonoBehaviour
         return true;
     }
 
+    // 땅이 지금까지 흐른 거리 (무대 로컬 단위) — 획득 연출이 시작 때 값을 잡아 두고 'FollowGround'로 따라간다
+    public double GroundDistance => _groundDistance;
+
+    // 'sinceGround' 때 'worldPoint'에 있던 것이 땅과 함께 흘러 지금 있을 자리 (월드).
+    // 쓰러진 대상과 같은 규칙이다 — 땅은 달리는 동안만 흐른다('Tick').
+    public Vector3 FollowGround(Vector3 worldPoint, double sinceGround)
+        => worldPoint + _rect.TransformVector(new Vector3((float)(_groundDistance - sinceGround), 0f, 0f));
+
     // ■ 되감기 방어
     //   진행도는 서버 동기화(정산 패킷)를 받을 때마다 기준점이 다시 잡힌다. 클라 시계가 조금 앞서 있었으면
     //   진행도가 살짝 뒤로 간다 — 그대로 그리면 방금 끝난 공격이 다시 나오거나, 판정 경계를 거꾸로 넘어

@@ -299,12 +299,12 @@ MonoBehaviour:
   maxIcons: 5
   startOffset: {x: 0, y: 0}
   riseDistance: 28
-  duration: 1.1
+  duration: 0.733
   riseEase: 9
-  fadeDelay: 0.45
+  fadeDelay: 0.3
   fadeEase: 5
   appearScale: 0.6
-  appearDuration: 0.18
+  appearDuration: 0.12
   appearEase: 27
   maxPooled: 16
 --- !u!1 &4178089002867239358

@@ -25,6 +25,8 @@ using UnityEngine.UI;
 // → GameDesign/design/ui/README.md 2.1
 // ※ 예외 하나 — 수확 때 머리 자리에서 아이템 아이콘이 작게 떠올라 사라진다(2026-10-08 사용자 요청).
 //   수확 때만 1초 남짓 돌고 끝나는 트윈이라 상시 루프가 아니다('ItemGainEffectView').
+// ※ 예외 둘 — 머리가 일하는 동안 2px 통통 튀고 수확 때 펄쩍 뛴다(2026-10-08 사용자 선택 · 'WidgetHeadMotion').
+//   정수 px로 끊고 칸마다 위상을 달리해 스트립 전체가 출렁이지 않게 한다.
 public class WidgetPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
