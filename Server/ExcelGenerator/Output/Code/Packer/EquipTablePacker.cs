@@ -22,6 +22,7 @@ namespace GameData
             SpeedAddPermille = PackerUtil.ParseInt(cells[5], Table, "SpeedAddPermille", -999, null),
             BasePrice        = PackerUtil.ParseInt(cells[6], Table, "BasePrice", 0, null),
             Description      = cells[7].Length > 0 ? PackerUtil.RequireString(cells[7], Table, "Description") : "",
+            Tooltip          = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Tooltip") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

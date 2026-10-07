@@ -18,5 +18,6 @@ namespace GameData
         public int          SpeedAddPermille { get; set; }        // int [-999..-]
         public int          BasePrice        { get; set; }        // int [0..-]
         public string       Description      { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public string       Tooltip          { get; set; } = "";  // string 기본="" [플레이어용 설명 — {컬럼}은 생성 시점에 치환됐다]
     }
 }

@@ -13,6 +13,7 @@
     <Project Path="AuctionServer/AuctionServer.csproj" />
     <Project Path="AuctionServer.Tests/AuctionServer.Tests.csproj" />
   </Folder>
+  <Project Path="ExcelGenerator.Tests/ExcelGenerator.Tests.csproj" />
   <Project Path="ExcelGenerator/ExcelGenerator.csproj" />
   <Project Path="GameData/GameData.csproj" />
   <Project Path="MikaDummyClient/MikaDummyClient.csproj" />
