@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-07 문서 그래프 -Fix가 한글 문서 이름을 지킨다 (T-090)](2026-10-07-doc-graph-fix-name.md) — `#docs` `#infra` README 이름을 블록의 한글 이름으로 · 맞는 블록은 다시 쓰지 않음
 - [2026-10-07 캐릭터 응축 서버 (T-130)](2026-10-07-character-condense.md) — `#server` `#data` 같은 캐릭터를 녹여 ★ · 개체는 누적 재료 수만 저장
 - [2026-10-07 캐릭터 장착 네모 · 상반신 여백 제거 (T-104)](2026-10-07-equip-pips-portrait-crop.md) — `#client` `#ui` `#editor` 인벤토리 캐릭터 칸·작업슬롯 칸에 장비 등급 네모 4개
 - [2026-10-06 게임 시계 · 시간 조작 치트 (T-128 · #48)](2026-10-06-game-clock-time-cheat.md) — `#server` `#test` "지금"을 GameClock 하나로 · AdvanceTime·ResetTime · 경매장 오프셋 동기화

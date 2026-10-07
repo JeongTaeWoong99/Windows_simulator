@@ -2,7 +2,7 @@
 id: T-090
 제목: check-doc-graph -Fix가 README 문서 이름을 영문 폴더명으로 쓴다
 담당: 진우
-상태: Resolve
+상태: Closed
 우선순위: 보통
 목표: 261010
 ---
@@ -54,4 +54,4 @@ if ($rel -like '*/README.md') {
 
 ## 관련 커밋
 
-- 없음
+- 90a5d04 — 문서 그래프 -Fix가 한글 문서 이름을 지킨다
