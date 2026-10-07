@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-10-08 (클라 비동기·풀링 스킬 — `unitask-dotween` · `object-pool`)
+> 최종 업데이트: 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -27,7 +27,7 @@
 | 렌더 파이프라인 | Built-in |
 | 서버 런타임 | .NET 10 (WSGameServer) — 상세는 [`Server/CLAUDE.md`](Server/CLAUDE.md) |
 | DB | SQLite (`Server/Shared/game.sqlite3`) |
-| 비동기·연출 (클라) | UniTask + DOTween (`UNITASK_DOTWEEN_SUPPORT`) — **새 클라 코드에 코루틴을 쓰지 않는다** ([`unitask-dotween`](.claude/skills/client/unitask-dotween/SKILL.md)) |
+| 비동기·연출 (클라) | UniTask + DOTween (`UNITASK_DOTWEEN_SUPPORT`) — **새 클라 코드에 코루틴을 쓰지 않는다** ([`unitask`](.claude/skills/client/unitask/SKILL.md) · [`dotween`](.claude/skills/client/dotween/SKILL.md)) |
 
 ---
 
@@ -140,7 +140,8 @@
 | [`feature-design`](.claude/skills/client/feature-design/SKILL.md) | 새 기능·클래스·시스템을 **설계**할 때 | OOP·SOLID·디자인 패턴 |
 | [`ugui-mvp`](.claude/skills/client/ugui-mvp/SKILL.md) | 화면·위젯을 **새로 만들** 때 · 이름/부착 위치/폴더를 정할 때 | MVP 역할 분담 · 이름 규칙 · Presenter 뼈대 |
 | [`ugui-layout`](.claude/skills/client/ugui-layout/SKILL.md) | 배치를 짜거나, **배치가 의도대로 안 나올 때** | Canvas·LayoutGroup 함정과 정석 구조 |
-| [`unitask-dotween`](.claude/skills/client/unitask-dotween/SKILL.md) | 기다림(지연·다음 프레임·응답 대기)이나 움직임·페이드 연출을 짤 때 · 코루틴이 있는 파일을 고칠 때 — 대기·연출이 없는 작업은 해당 없음 | 코루틴 대신 UniTask·DOTween · 취소 토큰 · 트윈 수명 · `async void` 금지 |
+| [`unitask`](.claude/skills/client/unitask/SKILL.md) | 기다림(지연·다음 프레임·응답 대기)을 짤 때 · 코루틴이 있는 파일을 고칠 때 — 기다림이 없는 작업은 해당 없음 | 코루틴 대신 UniTask · 취소 토큰 · `async void` 금지 · 코루틴 전환표 |
+| [`dotween`](.claude/skills/client/dotween/SKILL.md) | 움직임·페이드 연출을 짜거나 트윈 끝을 기다릴 때 — 연출이 없는 작업은 해당 없음 | 트윈 수명(`SetLink`·Kill) · UniTask의 DOTween 전용 대기 API(`ToUniTask`) |
 | [`object-pool`](.claude/skills/client/object-pool/SKILL.md) | `Instantiate`/`Destroy`를 새로 쓰거나(연출·이펙트·목록 줄) 생성·삭제가 잦은 화면을 고칠 때 — 한 번 만들고 두는 오브젝트는 해당 없음 | `Common/object-pool` 사용법 · 대여 토큰 · 반납·초기화 · UI 함정 |
 | [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
 | [`unity-editor-ops`](.claude/skills/client/unity-editor-ops/SKILL.md) | 에디터를 조작할 때 — 씬·프리팹·인스펙터·SO·플레이 모드·테스트·빌드 · 코드 파일만 고치면 해당 없음 | 실행 경로(Unity CLI → MCP → 사람 인계) · 실행 전 확인받을 작업 · 핸드오프 프롬프트 |

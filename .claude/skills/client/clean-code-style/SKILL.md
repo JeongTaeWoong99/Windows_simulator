@@ -3,7 +3,7 @@ name: clean-code-style
 description: Unity/C# 클린 코드 스타일 규칙(명명·포맷·주석·nullable). 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-10-08 (10장 — 비동기·연출은 `unitask-dotween` 스킬로 안내)
+> 최종 업데이트: 2026-10-08 (10장 — 비동기·연출은 `unitask`·`dotween` 스킬로 안내)
 
 # Unity/C# 클린 코드 스타일
 
@@ -365,7 +365,7 @@ _titlePanel.Active(true);           // 타이틀 패널 켜기
 
 ---
 
-## 10. 비동기·연출 → [`unitask-dotween`](../unitask-dotween/SKILL.md)
+## 10. 비동기·연출 → [`unitask`](../unitask/SKILL.md) · [`dotween`](../dotween/SKILL.md)
 
-> UniTask·DOTween이 설치된 프로젝트면 **코루틴을 쓰지 않는다.** 취소 토큰·트윈 수명·`async void` 금지·코루틴 전환표는
+> **코루틴을 쓰지 않는다** — UniTask·DOTween은 표준 패키지다(없으면 설치 안내). 취소 토큰·트윈 수명·`async void` 금지·코루틴 전환표는
 > 그 스킬에 있다. 오브젝트를 돌려쓸 때는 [`object-pool`](../object-pool/SKILL.md).

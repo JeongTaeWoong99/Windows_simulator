@@ -13,7 +13,7 @@ id: T-132
 
 UniTask·DOTween을 들였다(`UNITASK_DOTWEEN_SUPPORT`, 2026-10-07). 새 클라 코드는 코루틴을 쓰지 않고,
 자주 생기고 사라지는 오브젝트는 풀로 돌려쓴다. 규칙은 스킬 두 개 —
-[`unitask-dotween`](../../.claude/skills/client/unitask-dotween/SKILL.md) · [`object-pool`](../../.claude/skills/client/object-pool/SKILL.md).
+[`unitask`](../../.claude/skills/client/unitask/SKILL.md) · [`dotween`](../../.claude/skills/client/dotween/SKILL.md) · [`object-pool`](../../.claude/skills/client/object-pool/SKILL.md).
 
 조사 결과(2026-10-07) **지금 코드는 생성·삭제가 잦지 않다** — 목록 줄 대부분은 이미 "늘리기만 하고 남는 줄은 끄는" 방식이고,
 `Destroy`는 슬롯 뷰 해제·무대 배경 층 두 곳뿐이었다. 풀링의 실익은 **앞으로 만들 획득 연출**과 복제된 줄 풀 코드 정리다.
