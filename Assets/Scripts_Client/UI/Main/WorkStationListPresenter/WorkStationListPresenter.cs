@@ -361,9 +361,23 @@ public class WorkStationListPresenter : MonoBehaviour
             view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
 
             // 배치된 칸에만 뷰가 있으므로 캐릭터는 늘 있다 — 인벤토리 캐릭터 칸과 같은 값을 그린다(T-104)
-            EquipLabel.ReadWornGrades(_data, slot.CharacterId, _wornGrades, _wornIcons);
-            view.SetEquipPips(_wornGrades, _wornIcons);
+            // 툴팁은 띄우는 순간에 읽는다 — 장비가 바뀌어도 다시 넣어 줄 필요가 없다
+            long characterId = slot.CharacterId;
+
+            EquipLabel.ReadWornGrades(_data, characterId, _wornGrades, _wornIcons);
+            view.SetEquipPips(_wornGrades, _wornIcons, () => BuildWornTooltip(characterId));
         }
+    }
+
+    // 장비 줄 툴팁 — 캐릭터 이름 아래 칸마다 낀 장비 (장비 줄에 마우스를 올릴 때 호출).
+    // 인벤토리 캐릭터 칸 툴팁의 '장비' 묶음과 같은 출처다('EquipLabel.AddWornRows').
+    private TooltipContent BuildWornTooltip(long characterId)
+    {
+        var content = new TooltipContent(_data.GetCharacterName(characterId));
+
+        EquipLabel.AddWornRows(content, _data, characterId);
+
+        return content;
     }
 
     // 프레임 라벨을 칸 상태대로 적는다 — 잠긴 칸은 해금 조건, 열린 칸은 "비어있음." ('Rebuild'에서 호출).

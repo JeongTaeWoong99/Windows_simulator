@@ -108,9 +108,11 @@ public class WorkStationSlotView : MonoBehaviour
     // 배치된 캐릭터의 장착 네모를 그린다 (WorkStationListPresenter가 Bind 뒤에 호출).
     //   grades : 'EquipLabel.WornSlots' 순서의 등급 — 'None'은 빈 칸
     //   icons  : 같은 순서의 장비 아이콘 — 빈 칸·그림 없음은 null
-    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons)
+    //   tooltip : 장비 줄에 올리면 띄울 내용 — 칸마다 낀 장비 이름·등급
+    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons, System.Func<TooltipContent?> tooltip)
     {
         equipPips.Bind(grades, icons);
+        equipPips.SetTooltip(tooltip);
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

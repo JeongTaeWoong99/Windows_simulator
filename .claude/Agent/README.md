@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-08 장비 툴팁 두 곳 · T-103·T-104·T-121 닫기](2026-10-08-equip-tooltips-close.md) — `#client` `#ui` 작업슬롯 장비 줄·슬롯 설정 장비 칸 툴팁 · 아이콘은 VisualCatalog(특수 5종만 없음)
 - [2026-10-08 오브젝트 풀 · 코루틴 → UniTask (T-132)](2026-10-08-object-pool-unitask.md) — `#client` `#infra` Common/object-pool 신설 · 코루틴 0건 · 슬롯 뷰 파괴 대신 재사용
 - [2026-10-07 문서 그래프 -Fix가 한글 문서 이름을 지킨다 (T-090)](2026-10-07-doc-graph-fix-name.md) — `#docs` `#infra` README 이름을 블록의 한글 이름으로 · 맞는 블록은 다시 쓰지 않음
 - [2026-10-07 캐릭터 응축 서버 (T-130)](2026-10-07-character-condense.md) — `#server` `#data` 같은 캐릭터를 녹여 ★ · 개체는 누적 재료 수만 저장

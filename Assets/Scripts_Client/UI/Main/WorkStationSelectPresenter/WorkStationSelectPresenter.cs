@@ -1669,6 +1669,19 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
             equipSlotButtons[i].button.onClick.AddListener(() => OnEquipSlotClicked(index));
+
+            // 칸에는 이름·효과 한 줄만 보인다 — 올리면 능력치 칸까지 인벤토리 장비 칸과 같은 툴팁으로 펼친다.
+            // 낀 장비는 띄우는 순간에 읽는다(빈 칸이면 뜨지 않는다).
+            GameObject cell = equipSlotButtons[i].button.gameObject;
+
+            if (!cell.TryGetComponent(out TooltipTrigger trigger))
+            {
+                trigger = cell.AddComponent<TooltipTrigger>();
+            }
+
+            trigger.SetProvider(() => FindWornEquip((EEquipSlot)(index + 1)) is EquipInfo worn
+                                          ? EquipLabel.BuildTooltip(worn.EquipTid, worn.EnchantOptions)
+                                          : null);
         }
 
         _equipIconPlaceholderColors = new Color[equipSlotButtons.Length];
