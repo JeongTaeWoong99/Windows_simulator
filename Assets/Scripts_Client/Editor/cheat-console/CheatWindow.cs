@@ -43,8 +43,15 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color UnlockAccent    = new(0.95f, 0.55f, 0.30f);   // 해금 — 주황
 		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
 		private static readonly Color TraitAccent     = new(0.65f, 0.85f, 0.30f);   // 특성 레벨 — 연두
+		private static readonly Color TimeAccent      = new(0.85f, 0.30f, 0.35f);   // 시간 — 진홍
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
+
+		// 시간 넘기기 단축 버튼 — 48시간은 경매 등록 기간, 7일은 받은 우편 보관 기간이다.
+		private static readonly (string Label, long Seconds)[] TimeQuickSteps =
+		{
+			("+1시간", 3_600), ("+1일", 86_400), ("+2일", 172_800), ("+7일", 604_800),
+		};
 
 		// 입력값 — 플레이 진입(도메인 리로드)에도 남도록 직렬화한다.
 		[SerializeField] private long      _goldAmount      = 1_000;
@@ -59,6 +66,7 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private int       _unlockTid;
 		[SerializeField] private TidPicker _mailPicker      = new();
 		[SerializeField] private long      _mailTargetUid;  // 0이면 전체 우편
+		[SerializeField] private long      _advanceSeconds  = 3_600;
 
 		private Vector2 _scroll;
 		private Vector2 _logScroll;
@@ -111,6 +119,7 @@ namespace DesktopWindowControl.EditorTools
 			DrawCharacterExp();
 			DrawEquip();
 			DrawSettle();
+			DrawTime();
 			DrawMail();
 			DrawUnlock();
 			DrawTraitLevel();
@@ -488,6 +497,68 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			EndSection(SettleAccent);
+		}
+
+		// 서버 전체의 게임 시계를 앞으로 넘긴다 — 서버 'AdvanceTime'(Arg1 = 초, 1초~1년, 누적) · 'ResetTime'(오프셋 0).
+		// 넘기면 서버가 'S_ServerTimeResponse'를 다시 보내 'ServerClock'이 따라가고, 남은 시간 · 삭제까지 표시가 함께 움직인다.
+		//
+		// ※ 채취는 쌓이지 않는다 — 서버가 슬롯 기준 시각도 같이 민다. 판정을 당기려면 위 '정산' 칸.
+		// ※ 받은 우편 7일 삭제는 로그인 때 판정한다 — 넘긴 뒤 다시 접속해야 사라진다.
+		private void DrawTime()
+		{
+			BeginSection("시간", TimeAccent);
+
+			var isLoggedIn = CheatGuard.FindLoggedInModel() != null;
+			DrawColoredLabel(isLoggedIn ? $"게임 시계: {FormatOffset(ServerClock.Offset)}" : "게임 시계: (로그인 후 표시)",
+			                 GUI.contentColor);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				foreach (var (label, seconds) in TimeQuickSteps)
+				{
+					if (GUILayout.Button(label, EditorStyles.miniButton))
+					{
+						Request(ECheatCommand.AdvanceTime, seconds);
+					}
+				}
+			}
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("초", GUILayout.Width(LabelWidth));
+				_advanceSeconds = Math.Max(1L, EditorGUILayout.LongField(_advanceSeconds));
+
+				if (GUILayout.Button("넘기기", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.AdvanceTime, _advanceSeconds);
+				}
+			}
+
+			if (GUILayout.Button("실제 시각으로 되돌리기"))
+			{
+				Request(ECheatCommand.ResetTime);
+			}
+
+			EditorGUILayout.LabelField("되돌려도 넘긴 동안 저장된 시각(우편 도착 · 경매 등록)은 미래로 남는다", EditorStyles.miniLabel);
+
+			EndSection(TimeAccent);
+		}
+
+		// 게임 시계가 PC보다 얼마나 앞섰나 — "실제 시각" · "+2일 3시간 5분".
+		// 차이에는 PC 시계 오차도 섞이므로 1분 아래는 실제 시각으로 본다.
+		private static string FormatOffset(TimeSpan offset)
+		{
+			if (Math.Abs(offset.TotalMinutes) < 1d)
+			{
+				return "실제 시각";
+			}
+
+			var sign = offset < TimeSpan.Zero ? "-" : "+";
+			var abs  = offset.Duration();
+
+			return abs.TotalDays >= 1d
+				? $"{sign}{(int)abs.TotalDays}일 {abs.Hours}시간 {abs.Minutes}분"
+				: $"{sign}{abs.Hours}시간 {abs.Minutes}분";
 		}
 
 		// 우편 템플릿 한 줄을 보낸다. 받는 UID가 0이면 전체 우편이다 — 템플릿의 PeriodDays 동안 로그인하는 모두가 받는다

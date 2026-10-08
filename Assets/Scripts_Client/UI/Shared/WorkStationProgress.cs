@@ -63,7 +63,7 @@ public static class WorkStationProgress
     // 판정 1회 비용으로 나눈 나머지라, 여러 판정이 밀려 있어도 현재 사이클만 남는다.
     private static long GetPendingUnits(WorkStationSlotInfo slot)
     {
-        double elapsedMs   = (DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() - slot.LastTickAtUnixMs);
+        double elapsedMs   = (ServerClock.UtcNowUnixMs - slot.LastTickAtUnixMs);
         double accumulated = slot.ProgressUnits + elapsedMs * slot.CurrentWorkSpeed;
 
         return (long)(accumulated % slot.JudgeCostUnits);

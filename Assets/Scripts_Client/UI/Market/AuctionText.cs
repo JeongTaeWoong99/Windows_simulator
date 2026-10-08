@@ -304,7 +304,7 @@ public static class AuctionText
     // 만료까지 남은 시간 — "23시간" · "15분" · "곧 만료".
     public static string FormatRemaining(long expiresAtUnixMs)
     {
-        TimeSpan left = DateTimeOffset.FromUnixTimeMilliseconds(expiresAtUnixMs) - DateTimeOffset.UtcNow;
+        TimeSpan left = DateTimeOffset.FromUnixTimeMilliseconds(expiresAtUnixMs) - ServerClock.UtcNow;
 
         if (left.TotalHours >= 1d)
         {

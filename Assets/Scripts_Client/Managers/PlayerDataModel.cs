@@ -1012,7 +1012,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //
     // ★ 결과가 실패여도 목록을 반영한다 — 모두 받기가 'StorageFull'로 멈춰도
     //   그 전까지 받은 우편은 'ClaimedMailIds'에 실려 온다(서버는 이미 지급했다).
-    // ※ 받은 시각은 서버가 보내지 않는다 — 지금 시각으로 채운다. 표시에만 쓰고,
+    // ※ 받은 시각은 서버가 보내지 않는다 — 게임 시계('ServerClock')의 지금으로 채운다. 표시에만 쓰고,
     //   7일 정리는 서버가 자기 시각으로 한다.
     private void OnMailClaimResponded(S_MailClaimResponse res)
     {
@@ -1027,7 +1027,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (claimedCount > 0)
         {
-            long now     = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+            long now     = ServerClock.UtcNowUnixMs;
             var  claimed = new List<MailInfo>(claimedCount);
 
             foreach (long mailId in res.ClaimedMailIds!)
