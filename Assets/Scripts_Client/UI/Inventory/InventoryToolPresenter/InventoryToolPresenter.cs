@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 인벤토리 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
-//   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기(범위 + [상자 제외] + 버튼)
+//   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기(범위 + [상자 제외] + [큐브 제외] + 버튼)
 //   2줄: 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
 //
 // 탭 줄보다 낮은 별도 줄이다. 탭은 "무엇을 보는가", 이 줄은 "그것을 어떻게 다루는가"라
@@ -32,6 +32,10 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 자원은 상자를 빼고 담는다 — [상자 제외] 토글, 기본 켬 (2026-10-05)
 //   상자는 열어야 값이 나온다(내용물 기대값이 판매가의 몇 배). 일괄 판매에 섞이면 모르고 판다.
+//
+// ■ 큐브도 같은 방식으로 뺀다 — [큐브 제외] 토글, 기본 켬 (2026-10-09)
+//   큐브는 장비 인챈트의 재료다. 등급이 낮아 '○○ 이하' 범위에 쉽게 걸리는데, 판 뒤에는 다시 구하기 어렵다.
+//   두 토글은 따로 논다 — 상자만 팔고 싶거나 큐브만 팔고 싶은 경우가 모두 있다.
 //
 // ■ 분류 드롭다운 — 자원 탭은 산업 뒤에 '상자' · '기타'가 붙는다 (2026-10-05)
 //   상자만 모아 보고 열거나, 큐브·구슬 같은 산업 밖 아이템만 볼 수 있게. 캐릭터 탭은 산업 축이 없어 감춘다.
@@ -70,6 +74,9 @@ public class InventoryToolPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("일괄 담기에서 상자를 뺄지 — 자원 탭에서만 보인다. 시작은 켬(코드가 정한다)")]
     private Toggle excludeBoxToggle = null!;
+
+    [SerializeField, Tooltip("일괄 담기에서 큐브(인챈트 재료)를 뺄지 — 자원 탭에서만 보인다. 시작은 켬(코드가 정한다)")]
+    private Toggle excludeCubeToggle = null!;
 
     [SerializeField, Tooltip("탭 줄 — 지금 어느 탭인지 여기서 듣는다")]
     private InventoryTabPresenter tabs = null!;
@@ -121,6 +128,7 @@ public class InventoryToolPresenter : MonoBehaviour
         this.RequireRef(bulkRarityDropdown, nameof(bulkRarityDropdown));
         this.RequireRef(bulkSellButton,     nameof(bulkSellButton));
         this.RequireRef(excludeBoxToggle,   nameof(excludeBoxToggle));
+        this.RequireRef(excludeCubeToggle,  nameof(excludeCubeToggle));
         this.RequireRef(tabs,               nameof(tabs));
         this.RequireRef(grid,               nameof(grid));
         this.RequireRef(sortKeyDropdown,    nameof(sortKeyDropdown));
@@ -138,7 +146,8 @@ public class InventoryToolPresenter : MonoBehaviour
         BuildRarityOptions();
         BuildFilterOptions();
 
-        excludeBoxToggle.SetIsOnWithoutNotify(true); // 기본은 상자를 뺀다 — 모르고 파는 쪽이 더 아깝다
+        excludeBoxToggle.SetIsOnWithoutNotify(true);  // 기본은 상자를 뺀다 — 모르고 파는 쪽이 더 아깝다
+        excludeCubeToggle.SetIsOnWithoutNotify(true); // 큐브도 같은 이유로 기본은 뺀다
 
         sortButton.onClick.AddListener(OnSortClicked);
         bulkSellButton.onClick.AddListener(OnBulkSellClicked);
@@ -365,7 +374,7 @@ public class InventoryToolPresenter : MonoBehaviour
         }
     }
 
-    // 자원 — 고른 등급 이하를 보유 수량 전부. [상자 제외]가 켜져 있으면 상자는 뺀다 (OnBulkSellClicked에서 호출).
+    // 자원 — 고른 등급 이하를 보유 수량 전부. [상자 제외]·[큐브 제외]가 켜져 있으면 그것은 뺀다 (OnBulkSellClicked에서 호출).
     private void BulkAddItems()
     {
         // ★ 먼저 비운다 — 이 버튼은 "더 담기"가 아니라 **범위를 다시 잡는 것**이다.
@@ -374,10 +383,12 @@ public class InventoryToolPresenter : MonoBehaviour
         //   ⚠️ 우클릭으로 하나씩 담아 둔 자원도 함께 빠진다. 범위를 다시 잡는다는 뜻이 그것이다.
         _cart.ClearItems(); // 우클릭으로 담아 둔 캐릭터·장비는 범위와 상관없으니 남긴다
 
-        GlobalRarity limit      = SelectedRarity;
-        bool         excludeBox = excludeBoxToggle.isOn;
-        int          added      = 0;
-        int          skipped    = 0;
+        GlobalRarity limit       = SelectedRarity;
+        bool         excludeBox  = excludeBoxToggle.isOn;
+        bool         excludeCube = excludeCubeToggle.isOn;
+        int          added       = 0;
+        int          skippedBox  = 0;
+        int          skippedCube = 0;
 
         foreach (ItemInfo item in _data.Inventory)
         {
@@ -393,7 +404,14 @@ public class InventoryToolPresenter : MonoBehaviour
 
             if (excludeBox && GameDataLoader.IsBox(item.ItemId))
             {
-                skipped++;
+                skippedBox++;
+
+                continue;
+            }
+
+            if (excludeCube && GameDataLoader.IsCube(item.ItemId))
+            {
+                skippedCube++;
 
                 continue;
             }
@@ -402,7 +420,7 @@ public class InventoryToolPresenter : MonoBehaviour
             added++;
         }
 
-        string skippedText = skipped > 0 ? $" (상자 {skipped}종 제외 — [상자 제외]를 끄면 함께 담깁니다)" : "";
+        string skippedText = SkippedText(skippedBox, skippedCube);
 
         if (added == 0)
         {
@@ -411,13 +429,40 @@ public class InventoryToolPresenter : MonoBehaviour
             return;
         }
 
-        // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 상자는 보이지 않는다.
-        if (skipped > 0)
+        // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 상자·큐브는 보이지 않는다.
+        if (skippedBox + skippedCube > 0)
         {
             _wait.RaiseNotice($"자원 {added}종을 담았습니다.{skippedText}");
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 상자 {skipped}종 제외");
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 상자 {skippedBox}종 · 큐브 {skippedCube}종 제외");
+    }
+
+    // 자원 일괄 담기에서 뺀 것을 알릴 꼬리 문구 — " (상자 2종 · 큐브 1종 제외 — [상자 제외]·[큐브 제외]를 끄면 함께 담깁니다)".
+    // 뺀 것이 없으면 빈 문자열. 토글 이름은 실제로 뺀 쪽만 적는다 — 끌 필요가 없는 토글까지 적으면 무엇을 꺼야 할지 헷갈린다.
+    private static string SkippedText(int box, int cube)
+    {
+        if (box + cube == 0)
+        {
+            return "";
+        }
+
+        var counts  = new List<string>(2);
+        var toggles = new List<string>(2);
+
+        if (box > 0)
+        {
+            counts.Add($"상자 {box}종");
+            toggles.Add("[상자 제외]");
+        }
+
+        if (cube > 0)
+        {
+            counts.Add($"큐브 {cube}종");
+            toggles.Add("[큐브 제외]");
+        }
+
+        return $" ({string.Join(" · ", counts)} 제외 — {string.Join("·", toggles)}를 끄면 함께 담깁니다)";
     }
 
     // 캐릭터 — 고른 등급 이하 중 팔 수 있는 것만 (OnBulkSellClicked에서 호출).
@@ -581,8 +626,9 @@ public class InventoryToolPresenter : MonoBehaviour
         // 산업 축이 없는 탭(캐릭터)은 드롭다운을 감춘다 — 골라도 아무 일이 없으면 고장처럼 보인다.
         industryDropdown.gameObject.SetActive(grid.CurrentSupportsIndustryFilter);
 
-        // 상자 제외는 자원 탭에서만 뜻이 있다.
+        // 상자·큐브 제외는 자원 탭에서만 뜻이 있다.
         excludeBoxToggle.gameObject.SetActive(tab == InventoryTab.Resource);
+        excludeCubeToggle.gameObject.SetActive(tab == InventoryTab.Resource);
 
         ResetFilter();
     }

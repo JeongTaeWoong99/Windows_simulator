@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-09 획득 아이콘 1.5배 · 캐릭터 자리 비율화 · 큐브 제외 · 가챠 다시 뽑기](2026-10-09-ui-tweaks-cube-redraw.md) — `#client` `#ui` SlotStageSettings.characterAnchor · IsCube · GachaPresenter.DrawAgain
 - [2026-10-08 아이템 획득 연출 — 큰 창 칸 · 위젯 칸 (T-015)](2026-10-08-item-gain-effect.md) — `#client` `#ui` ItemGainEffectView · 채취 푸시로 띄움 · finally 이중 Kill 함정
 - [2026-10-08 장비 툴팁 두 곳 · T-103·T-104·T-121 닫기](2026-10-08-equip-tooltips-close.md) — `#client` `#ui` 작업슬롯 장비 줄·슬롯 설정 장비 칸 툴팁 · 아이콘은 VisualCatalog(특수 5종만 없음)
 - [2026-10-08 오브젝트 풀 · 코루틴 → UniTask (T-132)](2026-10-08-object-pool-unitask.md) — `#client` `#infra` Common/object-pool 신설 · 코루틴 0건 · 슬롯 뷰 파괴 대신 재사용

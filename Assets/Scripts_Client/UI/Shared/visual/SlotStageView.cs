@@ -146,7 +146,7 @@ public class SlotStageView : MonoBehaviour
 
         SlotStageTimeline.Result now = SlotStageTimeline.Evaluate(time, cycle, _characterVisual, settings);
 
-        float feetX = width - settings.RightPad * k;
+        float feetX = FeetX(width, settings);
         float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k; // 대상 오른쪽 끝이 멈추는 자리
         float speed = (stopX + SpawnMargin * k) / settings.ApproachSeconds;            // 화면 단위/초
 
@@ -178,7 +178,7 @@ public class SlotStageView : MonoBehaviour
 
         SlotStageSettings settings = SlotStageSettings.Current;
         float k     = Scale(settings);
-        float feetX = _rect.rect.width - settings.RightPad * k;
+        float feetX = FeetX(_rect.rect.width, settings);
         float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
         Vector2 size = sprite.rect.size * k;
 
@@ -394,7 +394,7 @@ public class SlotStageView : MonoBehaviour
             return;
         }
 
-        Vector2 feet = new Vector2(Mathf.Round(_rect.rect.width - settings.RightPad * k), GroundY(k));
+        Vector2 feet = new Vector2(FeetX(_rect.rect.width, settings), GroundY(k));
 
         _character.sprite = frame;
         // 캐릭터 크기 배수 — 발 자리는 그대로 두고 그림만 키운다(피벗이 발이라 땅에서 뜨지 않는다)
@@ -454,6 +454,9 @@ public class SlotStageView : MonoBehaviour
     // 확대 배율 — 캐릭터 개인 값이 있으면 그것 (키 큰 캐릭터는 무대째 작게 본다)
     private float Scale(SlotStageSettings settings)
         => _characterVisual != null ? _characterVisual.GetPixelScale(settings) : settings.PixelScale;
+
+    // 캐릭터 발의 가로 자리 — 패널 폭의 비율이라 창 폭이 바뀌어도 같은 자리에 선다. 반 칸 걸치지 않게 정수로 맞춘다
+    private static float FeetX(float width, SlotStageSettings settings) => Mathf.Round(width * settings.CharacterAnchor);
 
     // 땅선 높이 — 무대 그림의 아래를 패널 아래에 붙인다
     private float GroundY(float k) => _background != null ? Mathf.Round(_background.GroundHeight * k) : 0f;

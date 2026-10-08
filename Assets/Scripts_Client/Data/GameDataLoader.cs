@@ -134,6 +134,13 @@ public static class GameDataLoader
         return GameTable.ItemTable.TryGet(itemId, out var row) && row.OpenGachaId != 0;
     }
 
+    // 이 아이템이 **인챈트 큐브**인가 — 'EnchantItemTable'에 행이 있으면 큐브다. 큐브 창의 버튼 목록('EnchantCubes')과 같은 출처다.
+    // ※ 없는 Id는 '큐브가 아니다'로 떨어진다 — 'IsBox'와 같은 이유로 경고를 내지 않는다.
+    public static bool IsCube(int itemId)
+    {
+        return GameTable.EnchantItemTable.TryGet(itemId, out _);
+    }
+
     // 가챠 풀의 메타(이름·비용)를 조회한다. 'GachaId'는 'GachaInfoTID'와 같은 값이다.
     //
     // ※ 여기만 이름·등급 조회와 달리 실패를 그대로 돌려준다 — 값이 없으면 대체할 표시가 없고,

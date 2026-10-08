@@ -15,6 +15,12 @@ using UnityEngine.UI;
 // 늘어놓는 방식만 갈린다 — 가챠는 뽑힌 순서 그대로, 상자는 종류별 합계다('OnItemUseCompleted').
 // 우편 수령도 여기로 온다 — 받은 우편의 첨부를 상자처럼 종류별로 합친다('OnMailRewardsClaimed').
 //
+// ■ [n회 더 뽑기] — 가챠 결과에서만 보인다 (2026-10-09)
+// 닫기 왼쪽에 둔다. 방금 뽑은 횟수 그대로(1회면 1회, 10회면 10회) 같은 풀을 다시 뽑는다.
+// 요청은 'GachaPresenter.DrawAgain'에 맡긴다 — 대기·연타 방지·실패 알림이 그쪽에 한 벌 있다.
+// 결과가 오면 이 팝업이 새 결과로 다시 그려진다(닫았다 열 필요 없다).
+// 상자·우편 결과에서는 숨긴다 — 다시 할 '뽑기'가 없다.
+//
 // ■ 왜 거래 열이 아니라 '!System Canvas'인가
 // 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
 // 거래 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
@@ -44,6 +50,15 @@ public class GachaResultPresenter : MonoBehaviour
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
+    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 — 닫기 왼쪽. 가챠 결과에서만 보인다. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    private Button drawAgainButton = null!;
+
+    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 문구 — 방금 뽑은 횟수로 코드가 채운다")]
+    private TMP_Text drawAgainText = null!;
+
+    [SerializeField, Tooltip("다시 뽑기를 맡길 가챠 패널 (거래 열)")]
+    private GachaPresenter gacha = null!;
+
     // 만들어 둔 칸들. 뽑기 횟수가 1회와 10회를 오가므로 파괴하지 않고 켜고 끄며 돌려쓴다.
     private readonly List<SlotView> _slots = new List<SlotView>();
 
@@ -56,16 +71,20 @@ public class GachaResultPresenter : MonoBehaviour
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
-        this.RequireRef(group,       nameof(group));
-        this.RequireRef(titleText,   nameof(titleText));
-        this.RequireRef(slotParent,  nameof(slotParent));
-        this.RequireRef(slotPrefab,  nameof(slotPrefab));
-        this.RequireRef(closeButton, nameof(closeButton));
+        this.RequireRef(group,           nameof(group));
+        this.RequireRef(titleText,       nameof(titleText));
+        this.RequireRef(slotParent,      nameof(slotParent));
+        this.RequireRef(slotPrefab,      nameof(slotPrefab));
+        this.RequireRef(closeButton,     nameof(closeButton));
+        this.RequireRef(drawAgainButton, nameof(drawAgainButton));
+        this.RequireRef(drawAgainText,   nameof(drawAgainText));
+        this.RequireRef(gacha,           nameof(gacha));
 
         _data = Services.Get<PlayerDataModel>();
 
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
+        drawAgainButton.onClick.AddListener(OnDrawAgainClicked);
 
         SetVisible(false); // 시작은 숨김 — 가챠·개봉 결과가 오면 켜진다
         _isReady = true;
@@ -100,6 +119,7 @@ public class GachaResultPresenter : MonoBehaviour
         _data.GachaCompleted     += OnGachaCompleted;
         _data.ItemUseCompleted   += OnItemUseCompleted;
         _data.MailRewardsClaimed += OnMailRewardsClaimed;
+        gacha.DrawStateChanged   += RefreshDrawAgain;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -114,6 +134,7 @@ public class GachaResultPresenter : MonoBehaviour
         _data.GachaCompleted     -= OnGachaCompleted;
         _data.ItemUseCompleted   -= OnItemUseCompleted;
         _data.MailRewardsClaimed -= OnMailRewardsClaimed;
+        gacha.DrawStateChanged   -= RefreshDrawAgain;
     }
 
     #endregion
@@ -124,6 +145,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
         Show(ToSlots(rewards), "가챠", showCount: false);
+        ShowDrawAgain(true);
     }
 
     // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
@@ -136,6 +158,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
         Show(Summarize(rewards), "상자 개봉", showCount: true);
+        ShowDrawAgain(false);
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -147,6 +170,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
         Show(SummarizeMails(mails), "우편 수령", showCount: true);
+        ShowDrawAgain(false);
     }
 
     // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
@@ -390,6 +414,34 @@ public class GachaResultPresenter : MonoBehaviour
             _slots[i].Clear();
             _slots[i].gameObject.SetActive(false);
         }
+    }
+
+    #endregion
+
+    #region 다시 뽑기
+
+    // [n회 더 뽑기]를 보일지 정하고 문구·잠금을 맞춘다 (가챠·상자·우편 결과 도착 시).
+    private void ShowDrawAgain(bool on)
+    {
+        drawAgainButton.gameObject.SetActive(on);
+
+        if (on)
+        {
+            drawAgainText.text = $"{gacha.LastDrawCount}회 더 뽑기";
+            RefreshDrawAgain();
+        }
+    }
+
+    // 버튼 잠금을 가챠 패널 상태에 맞춘다 — 대기 중·골드 부족·패널이 꺼짐이면 잠긴다 (GachaPresenter.DrawStateChanged 구독)
+    private void RefreshDrawAgain()
+    {
+        drawAgainButton.interactable = gacha.CanDrawAgain;
+    }
+
+    // [n회 더 뽑기] — 같은 풀을 같은 횟수로 다시 뽑는다. 팝업은 띄운 채로 두고 결과가 오면 새로 그린다 (drawAgainButton OnClick에 코드로 연결)
+    private void OnDrawAgainClicked()
+    {
+        gacha.DrawAgain();
     }
 
     #endregion

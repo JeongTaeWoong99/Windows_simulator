@@ -12,6 +12,10 @@ using UnityEngine;
 // ■ 거리 값은 아트 픽셀이다
 //   화면에서는 '확대 배율'을 곱한다. 전체 배율은 정수 — 점 그림이 고르게 커진다.
 //   캐릭터 개인 배율은 소수도 받는다(1.5 등) — 대신 점 크기가 한두 칸씩 들쭉날쭉해질 수 있다.
+//
+// ■ 캐릭터 자리만은 패널 폭의 비율이다 (2026-10-09)
+//   픽셀 여백이면 창 폭에 따라 칸이 넓어질수록 캐릭터가 오른쪽 끝으로 쏠린다. 비율이면 어느 폭에서나 같은 자리에 선다.
+//   대상이 멈추는 자리는 여전히 캐릭터 발에서 'stopGap'(+ 캐릭터 개인 오프셋)만큼 왼쪽이다.
 [CreateAssetMenu(menuName = "DesktopWindowControl/Visual/Slot Stage Settings", fileName = "SlotStageSettings")]
 public class SlotStageSettings : ScriptableObject
 {
@@ -47,8 +51,9 @@ public class SlotStageSettings : ScriptableObject
     [SerializeField, Range(0, 120), Tooltip("캐릭터 발과 대상 오른쪽 끝 사이 — 대상이 멈추는 거리")]
     private int stopGap = 34;
 
-    [SerializeField, Range(0, 120), Tooltip("패널 오른쪽 끝에서 캐릭터 발까지")]
-    private int rightPad = 30;
+    [CenterHeader("자리")]
+    [SerializeField, Range(0.5f, 0.95f), Tooltip("캐릭터 발의 가로 자리 — 패널 왼쪽 끝 0, 오른쪽 끝 1. 0.7이면 열 칸 중 7~8번째. 모든 캐릭터에 똑같이 걸린다")]
+    private float characterAnchor = 0.7f;
 
     [CenterHeader("화면")]
     [SerializeField, Range(1, 4), Tooltip("아트 픽셀 하나를 화면 몇 칸으로 — 정수만")]
@@ -66,7 +71,7 @@ public class SlotStageSettings : ScriptableObject
     public float FlashSeconds    => flashSeconds;
     public float HitEffectSeconds => hitEffectSeconds;
     public int   StopGap         => stopGap;
-    public int   RightPad        => rightPad;
+    public float CharacterAnchor => characterAnchor;
     public int   PixelScale      => pixelScale;
     public float FarLayerSpeed   => farLayerSpeed;
 

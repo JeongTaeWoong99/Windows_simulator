@@ -22,6 +22,6 @@ MonoBehaviour:
   hitEffectSeconds: 0.3
   minLeadAttack: 0.5
   stopGap: 34
-  rightPad: 30
+  characterAnchor: 0.7
   pixelScale: 2
   farLayerSpeed: 1
