@@ -18,12 +18,14 @@ on:
       # 사이트는 web/ 밖의 원본을 그대로 읽는다. 문서가 바뀌어도 다시 빌드해야 한다.
       - 'GameDesign/web/**'
       - 'GameDesign/design/**'
+      - 'GameDesign/DataLog/**'
       - 'tasks/**'
       - '.github/workflows/docs-deploy.yml'
   pull_request:
     paths:
       - 'GameDesign/web/**'
       - 'GameDesign/design/**'
+      - 'GameDesign/DataLog/**'
       - 'tasks/**'
       - '.github/workflows/docs-deploy.yml'
   workflow_dispatch:

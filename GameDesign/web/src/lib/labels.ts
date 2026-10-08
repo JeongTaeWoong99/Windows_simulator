@@ -1,4 +1,4 @@
-export const APP_VERSION = '0.4.0';
+export const APP_VERSION = '0.5.0';
 
 /** 사이트를 빌드한 시각(KST) — 문서·일감이 바뀔 때마다 다시 빌드되므로 곧 최종 갱신 시각이다. 예: `2026-10-02 14:30` */
 export const BUILD_TIME = (() => {

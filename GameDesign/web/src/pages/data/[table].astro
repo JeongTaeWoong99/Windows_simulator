@@ -1,0 +1,230 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import {
+  loadDataTables,
+  buildNameLookup,
+  lookupFor,
+  filterColumns,
+  percentOf,
+  cellText,
+  WEIGHT_GROUP_KEYS,
+  type Cell,
+} from '../../lib/datalog';
+
+export async function getStaticPaths() {
+  return loadDataTables().map((t) => ({ params: { table: t.slug } }));
+}
+
+const tables = loadDataTables();
+const table = tables.find((t) => t.slug === Astro.params.table)!;
+const names = buildNameLookup(tables);
+
+const keyColumn = table.columns[0];
+const filters = filterColumns(table);
+// 가중치 열이 있으면 묶음(가챠 하나 · 레벨 하나) 안의 비율을 붙인다 — 롤 한 번에 그 행이 나올 확률.
+const hasWeight = table.columns.includes('Weight');
+const groupColumn = WEIGHT_GROUP_KEYS.find((k) => table.columns.includes(k)) ?? '';
+
+/** 셀 옆 회색 글씨 — 이름표(TID → 이름) 또는 단위 환산(%). 자기 테이블의 키 열에는 붙이지 않는다. */
+function hint(column: string, value: Cell): string {
+  const key = column === keyColumn ? null : lookupFor(column, names);
+  if (key) {
+    const ids = Array.isArray(value) ? value : [value];
+    return ids.map((id) => names[key][String(id)] ?? '?').join(', ');
+  }
+  return percentOf(column, value) ?? '';
+}
+
+const isNumber = (v: Cell) => typeof v === 'number';
+---
+
+<Layout title={table.name}>
+  <div class="flex flex-col lg:flex-row gap-6">
+    <aside class="lg:w-56 shrink-0">
+      <nav
+        class="flex lg:flex-col gap-1 overflow-x-auto lg:overflow-y-auto lg:max-h-[calc(100dvh-7rem)] lg:sticky lg:top-20 -mx-4 px-4 lg:mx-0 lg:px-0 pb-1"
+        aria-label="테이블"
+      >
+        {
+          tables.map((t) => (
+            <a href={`/data/${t.slug}`} class="tasktab" data-on={String(t.slug === table.slug)}>
+              <span class="truncate">{t.name.replace(/Table$/, '')}</span>
+              <span class="ml-auto pl-2 text-[11px] font-normal text-slate-400">{t.rows.length}</span>
+            </a>
+          ))
+        }
+      </nav>
+    </aside>
+
+    <section class="flex-1 min-w-0">
+      <h1 class="text-xl font-extrabold">{table.name}</h1>
+      <p class="text-xs text-slate-400 mt-1">
+        <code>GameDesign/DataLog/{table.name}.json</code> — 엑셀에서 만든 <code>.bytes</code>를 되읽은 값이다. 고칠 때는 엑셀에서.
+        {hasWeight && groupColumn && <span> · <b>비율</b>은 보이는 행 중 같은 <code>{groupColumn}</code> 안에서 Weight가 차지하는 몫이다.</span>}
+      </p>
+
+      {
+        table.rows.length === 0 ? (
+          <p class="mt-6 text-sm text-slate-400">행이 없다.</p>
+        ) : (
+          <>
+            <div class="flex flex-wrap items-center gap-2 mt-4 mb-3" id="data-filters">
+              <input
+                id="data-search"
+                type="search"
+                placeholder="검색 — 띄어 쓴 낱말이 모두 든 행"
+                class="text-sm px-3 py-1.5 border border-slate-200 rounded-lg bg-white w-full sm:w-72"
+              />
+              {filters.map((f) => (
+                <label class="text-xs text-slate-500 flex items-center gap-1">
+                  {f.column}
+                  <select data-filter={f.column} class="text-xs px-2 py-1 border border-slate-200 rounded-md bg-white">
+                    <option value="*">전체</option>
+                    {f.values.map((v) => <option value={v}>{v}</option>)}
+                  </select>
+                </label>
+              ))}
+              <span id="data-count" class="ml-auto text-xs text-slate-400" />
+            </div>
+
+            <div class="overflow-x-auto bg-white border border-slate-200 rounded-lg">
+              <table class="tasktable" id="data-table" data-group={groupColumn}>
+                <thead>
+                  <tr>
+                    {table.columns.map((c) => (
+                      <th>
+                        <button class="sorthead" data-sort={c}>
+                          {c}
+                          <span class="sortmark" aria-hidden="true" />
+                        </button>
+                      </th>
+                    ))}
+                    {hasWeight && (
+                      <th>
+                        <button class="sorthead" data-sort="__ratio">
+                          비율
+                          <span class="sortmark" aria-hidden="true" />
+                        </button>
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody id="data-rows">
+                  {table.rows.map((r, i) => (
+                    <tr data-rank={i} data-search={table.columns.map((c) => `${cellText(r[c])} ${hint(c, r[c])}`).join(' ').toLowerCase()}>
+                      {table.columns.map((c) => (
+                        <td
+                          data-col={c}
+                          data-v={cellText(r[c])}
+                          class={isNumber(r[c]) ? 'font-mono text-right whitespace-nowrap' : c === 'Description' || c === 'Tooltip' ? 'text-slate-500 min-w-[12rem]' : 'whitespace-nowrap'}
+                        >
+                          {cellText(r[c])}
+                          {hint(c, r[c]) && <span class="ml-1 text-[11px] text-slate-400 font-sans">{hint(c, r[c])}</span>}
+                        </td>
+                      ))}
+                      {hasWeight && <td data-col="__ratio" data-v="" class="font-mono text-right whitespace-nowrap text-blue-600" />}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p id="data-empty" class="text-xs text-slate-400 mt-3" hidden>조건에 맞는 행이 없다</p>
+          </>
+        )
+      }
+    </section>
+  </div>
+
+  <script>
+    const body = document.getElementById('data-rows');
+    if (body) {
+      const table = document.getElementById('data-table')!;
+      const rows = [...body.querySelectorAll<HTMLElement>('tr')];
+      const search = document.getElementById('data-search') as HTMLInputElement;
+      const selects = [...document.querySelectorAll<HTMLSelectElement>('select[data-filter]')];
+      const count = document.getElementById('data-count')!;
+      const empty = document.getElementById('data-empty')!;
+      const groupColumn = table.dataset.group ?? '';
+
+      const cell = (r: HTMLElement, col: string) => r.querySelector<HTMLElement>(`td[data-col="${col}"]`);
+      const value = (r: HTMLElement, col: string) => cell(r, col)?.dataset.v ?? '';
+
+      // 비율 — 보이는 행만으로 묶음별 Weight 합을 다시 잰다. 거르기를 바꾸면 따라 바뀐다.
+      function updateRatio(visible: HTMLElement[]) {
+        if (!cell(rows[0], '__ratio')) {
+          return;
+        }
+        const sums = new Map<string, number>();
+        for (const r of visible) {
+          const g = groupColumn ? value(r, groupColumn) : '';
+          sums.set(g, (sums.get(g) ?? 0) + Number(value(r, 'Weight')));
+        }
+        for (const r of rows) {
+          const td = cell(r, '__ratio')!;
+          const sum = sums.get(groupColumn ? value(r, groupColumn) : '') ?? 0;
+          const ratio = sum > 0 ? (Number(value(r, 'Weight')) / sum) * 100 : 0;
+          td.dataset.v = String(ratio);
+          td.textContent = r.hidden ? '' : `${Number(ratio.toFixed(3))}%`;
+        }
+      }
+
+      function apply() {
+        const words = search.value.toLowerCase().split(/\s+/).filter(Boolean);
+        const picked = selects.filter((s) => s.value !== '*');
+        const visible: HTMLElement[] = [];
+        for (const r of rows) {
+          const text = r.dataset.search ?? '';
+          r.hidden =
+            !words.every((w) => text.includes(w)) || !picked.every((s) => value(r, s.dataset.filter!) === s.value);
+          if (!r.hidden) {
+            visible.push(r);
+          }
+        }
+        updateRatio(visible);
+        count.textContent = `${visible.length} / ${rows.length}행`;
+        empty.hidden = visible.length > 0;
+      }
+
+      search.addEventListener('input', apply);
+      selects.forEach((s) => s.addEventListener('change', apply));
+
+      // 표 머리 정렬 — 누를 때마다 오름차순 → 내림차순 → 원래 순서. 둘 다 숫자면 숫자로 잰다.
+      const heads = [...document.querySelectorAll<HTMLElement>('button[data-sort]')];
+      let sortKey = '';
+      let sortDir = 0;
+
+      function applySort() {
+        const sorted = [...rows].sort((a, b) => {
+          const base = Number(a.dataset.rank) - Number(b.dataset.rank);
+          if (sortDir === 0) {
+            return base;
+          }
+          const va = value(a, sortKey);
+          const vb = value(b, sortKey);
+          const numeric = va !== '' && vb !== '' && !isNaN(Number(va)) && !isNaN(Number(vb));
+          const cmp = numeric ? Number(va) - Number(vb) : va.localeCompare(vb, 'ko');
+          return cmp * sortDir || base;
+        });
+        sorted.forEach((r) => body!.appendChild(r));
+        heads.forEach((h) => {
+          h.dataset.dir = h.dataset.sort === sortKey && sortDir !== 0 ? (sortDir > 0 ? 'asc' : 'desc') : '';
+        });
+      }
+
+      for (const head of heads) {
+        head.addEventListener('click', () => {
+          const key = head.dataset.sort!;
+          if (key !== sortKey) {
+            sortKey = key;
+            sortDir = 1;
+          } else {
+            sortDir = sortDir === 1 ? -1 : sortDir === -1 ? 0 : 1;
+          }
+          applySort();
+        });
+      }
+
+      apply();
+    }
+  </script>
+</Layout>

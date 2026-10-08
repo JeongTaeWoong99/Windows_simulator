@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-08 문서 사이트 게임 데이터 뷰어 /data (T-132)](2026-10-08-web-data-viewer.md) — `#docs` `#data` DataLog JSON을 테이블별 페이지로 · 이름표 · Weight 비율
 - [2026-10-07 문서 사이트 회차 탭에 닫힌 일감도 담는다](2026-10-07-web-cycle-tab-closed.md) — `#docs` 회차 탭 + 상태 Closed 필터로 그 회차에 끝낸 일을 본다
 - [2026-10-07 문서 그래프 -Fix가 한글 문서 이름을 지킨다 (T-090)](2026-10-07-doc-graph-fix-name.md) — `#docs` `#infra` README 이름을 블록의 한글 이름으로 · 맞는 블록은 다시 쓰지 않음
 - [2026-10-07 캐릭터 응축 서버 (T-130)](2026-10-07-character-condense.md) — `#server` `#data` 같은 캐릭터를 녹여 ★ · 개체는 누적 재료 수만 저장

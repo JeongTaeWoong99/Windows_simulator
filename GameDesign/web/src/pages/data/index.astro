@@ -1,0 +1,29 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadDataTables } from '../../lib/datalog';
+
+// 테이블 목록 — 이름만 보고 고르게 한다. 표는 /data/<테이블>에서 본다.
+const tables = loadDataTables();
+---
+
+<Layout title="데이터">
+  <h1 class="text-xl font-extrabold">게임 데이터</h1>
+  <p class="text-xs text-slate-400 mt-1">
+    <code>GameDesign/DataLog/*.json</code> — 엑셀(<code>GameDesign/Excel</code>)로 만든 <code>.bytes</code>를 되읽은 값이다.
+    서버·클라가 실제로 받는 데이터와 같다. 고칠 때는 엑셀에서 고치고 <code>generate-tables.ps1</code>을 돌린다.
+  </p>
+
+  <div class="grid gap-2 mt-5 sm:grid-cols-2 lg:grid-cols-3">
+    {
+      tables.map((t) => (
+        <a href={`/data/${t.slug}`} class="block bg-white border border-slate-200 rounded-lg px-4 py-3 hover:border-blue-400">
+          <div class="flex items-baseline gap-2">
+            <span class="font-semibold text-sm">{t.name}</span>
+            <span class="ml-auto text-[11px] text-slate-400">{t.rows.length}행</span>
+          </div>
+          <p class="text-[11px] text-slate-400 mt-1 truncate font-mono">{t.columns.join(' · ') || '—'}</p>
+        </a>
+      ))
+    }
+  </div>
+</Layout>
