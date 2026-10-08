@@ -316,6 +316,20 @@ namespace MikaNetwork
             EquipEnchantResponded?.Invoke(res);
         }
 
+        // 응축 결과 도착 (Handle_S_CharacterCondenseResponse에서 발행)
+        public static event Action<S_CharacterCondenseResponse>? CharacterCondenseResponded;
+
+        // 응축 결과 (S_CharacterCondenseResponse 수신 시 자동 호출)
+        // ★ 성공이면 재료는 서버에서 이미 사라졌고 'Character'가 대상의 새 값이다 — 재료 제거는 따로 오지 않는다.
+        // ⚠️ 거절이면 Result만 유효하다('Character'는 null).
+        [PacketHandler]
+        public static void Handle_S_CharacterCondenseResponse(ISession session, S_CharacterCondenseResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"응축 → {res.Result} (대상 #{res.Character?.CharacterId} ★{res.Character?.Star} 누적 {res.Character?.CondenseCount})");
+            CharacterCondenseResponded?.Invoke(res);
+        }
+
         #endregion
 
         #region 작업슬롯 · 채취

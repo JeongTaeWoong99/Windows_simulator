@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-09 캐릭터 응축 화면 (T-130 · 이슈 #59)](2026-10-09-character-condense-ui.md) — `#client` `#ui` 판매 목록 자리 · 격자가 재료 고르기 · ★ 스프라이트(폰트에 없음) · 꺼진 창 첫 프레임 NRE
 - [2026-10-09 클라 ServerClock과 치트 창 시간 칸](2026-10-09-server-clock-time-cheat.md) — `#client` `#cheat` 정적 `ServerClock`(Managers 아님 — 쓰는 쪽이 정적 헬퍼) · T-106 · 이슈 #48
 - [2026-10-09 획득 아이콘 1.5배 · 캐릭터 자리 비율화 · 큐브 제외 · 가챠 다시 뽑기](2026-10-09-ui-tweaks-cube-redraw.md) — `#client` `#ui` SlotStageSettings.characterAnchor · IsCube · GachaPresenter.DrawAgain
 - [2026-10-08 아이템 획득 연출 — 큰 창 칸 · 위젯 칸 (T-015)](2026-10-08-item-gain-effect.md) — `#client` `#ui` ItemGainEffectView · 채취 푸시로 띄움 · finally 이중 Kill 함정

@@ -952,7 +952,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             var           row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level);
+            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level, character.Star);
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
@@ -1104,7 +1104,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         int assignedTid = _data.GetCharacterTid(slot.CharacterId);
 
         assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId), assignedTid,
-                          _data.GetCharacterLevel(slot.CharacterId));
+                          _data.GetCharacterLevel(slot.CharacterId), _data.GetCharacterStar(slot.CharacterId));
         assignedCard.SetRarity(GameDataLoader.GetCharacterRarity(assignedTid));
         assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
     }
@@ -1164,18 +1164,19 @@ public class WorkStationSelectPresenter : MonoBehaviour
         int traitAdd = _data.GetTraitEffectSum(UserTraitEffect.SpeedAdd, slot.Industry);
         int equipAdd = GetEquipSpeedAdd(slot.CharacterId, slot.Industry);
         int levelAdd = GameDataLoader.GetLevelSpeedAdd(_data.GetCharacterLevel(slot.CharacterId));
-        int totalAdd = traitAdd + equipAdd + levelAdd;
+        int starAdd  = GameDataLoader.GetStarSpeedAdd(_data.GetCharacterStar(slot.CharacterId));
+        int totalAdd = traitAdd + equipAdd + levelAdd + starAdd;
 
         GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(baseSpeed));
 
         // 총합을 값에 적고 내역은 주석 줄에 둔다 — "왜 이만큼인가"가 한 줄 아래에 있어야 한다.
-        // ※ 레벨 항은 장비·특성과 **따로** 더한다(서버 'User.WorkStation'의 가산 합 · 이슈 #35).
+        // ※ 레벨 항은 장비·특성과 **따로** 더한다(서버 'User.WorkStation'의 가산 합 · 이슈 #35). 응축 ★ 항도 같은 합이다(T-130).
         var addRow = GetOrCreateEfficiencyRow(1);
         addRow.Bind("속도 가산", FormatPermille(totalAdd));
 
         if (totalAdd != 0)
         {
-            addRow.SetNote($"레벨 {FormatPermille(levelAdd)} · 특성 {FormatPermille(traitAdd)} · 장비 {FormatPermille(equipAdd)}");
+            addRow.SetNote($"레벨 {FormatPermille(levelAdd)} · 응축 {FormatPermille(starAdd)} · 특성 {FormatPermille(traitAdd)} · 장비 {FormatPermille(equipAdd)}");
         }
 
         var speedRow = GetOrCreateEfficiencyRow(2);

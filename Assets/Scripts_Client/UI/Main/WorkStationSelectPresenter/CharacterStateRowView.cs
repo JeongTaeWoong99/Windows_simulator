@@ -101,10 +101,16 @@ public class CharacterStateRowView : MonoBehaviour
     //   displayName : 보유 목록을 거쳐 얻은 표시 이름
     //   characterTid : 종류(TID) — 상반신 그림을 고른다. 개체 번호가 아니다
     //   level        : 캐릭터 레벨. 0 이하(보유 목록에 없음)면 이름만 적는다
-    public void Bind(long characterId, string displayName, int characterTid, int level)
+    //   star         : 응축 단계(T-130). 0이면 적지 않는다 — '★'은 폰트에 없어 'n성'으로 쓴다
+    public void Bind(long characterId, string displayName, int characterTid, int level, int star = 0)
     {
         CharacterId   = characterId;
         nameText.text = level > 0 ? $"{displayName} Lv{level}" : displayName;
+
+        if (star > 0)
+        {
+            nameText.text += $" {UIRichText.Paint($"{star}성", UIThemeRole.Highlight)}";
+        }
 
         SetPortrait(VisualCatalog.PortraitOf(characterTid));
     }

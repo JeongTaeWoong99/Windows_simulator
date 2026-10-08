@@ -110,6 +110,8 @@ public class CharacterSlotSource : InventorySlotSource
             .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
             .Row("상태", GetWorkText(key));
 
+        AddCondenseRow(content, key);
+
         EquipLabel.AddWornRows(content, _data, key);
 
         content.Header("적성");
@@ -123,9 +125,35 @@ public class CharacterSlotSource : InventorySlotSource
         }
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        content.Row("우클릭 판매 담기 · Shift+우클릭 경매 등록", "");
+        content.Row("좌클릭 응축 · 우클릭 판매 담기", "")
+               .Row("Shift+우클릭 경매 등록", "");
 
         return content;
+    }
+
+    // 응축 줄 — '2성 · 누적 24/44' · 작업속도 가산 (BuildTooltip에서 호출, T-130).
+    // ※ 칸의 ★ 그림은 수만 말한다 — 다음 단계까지 얼마 남았는지는 여기와 응축 창에서만 보인다.
+    private void AddCondenseRow(TooltipContent content, long key)
+    {
+        CharacterInfo? character = _data.FindCharacter(key);
+
+        if (character == null)
+        {
+            return;
+        }
+
+        int max  = GameDataLoader.CondenseMaxStar;
+        int star = character.Star;
+        string progress = star >= max
+            ? $"누적 {character.CondenseCount} · 최고"
+            : $"누적 {character.CondenseCount}/{GameDataLoader.GetCondenseThreshold(star + 1)}";
+
+        content.Row("응축", $"{star}성", progress, null);
+
+        if (star > 0)
+        {
+            content.Row("응축 가산", $"작업속도 +{GameDataLoader.GetStarSpeedAdd(star) / 10f:0.#}%");
+        }
     }
 
     // 레벨 문구 — 'LV.19', 만렙이면 'LV.MAX' (칸 배지 · 툴팁이 호출).

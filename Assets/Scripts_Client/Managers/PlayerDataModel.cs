@@ -31,6 +31,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<long> _sellingCharacterIds = new List<long>();
     private readonly List<long> _sellingEquipIds     = new List<long>();
 
+    // 응답을 기다리는 응축의 재료 — 'S_CharacterCondenseResponse'에는 재료 ID가 없어 보낸 목록을 여기 둔다('BeginCondense').
+    private readonly List<long> _condensingMaterialIds = new List<long>();
+
     // 칸 위치 응답을 Key → 칸으로 옮겨 두는 버퍼 — 정렬 응답은 탭 전체(최대 200칸)라 목록을 칸마다 훑지 않는다.
     private readonly Dictionary<long, int> _slotByKey = new Dictionary<long, int>();
 
@@ -133,6 +136,24 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         return 0f;
     }
+
+    // 캐릭터 개체를 찾는다. 모르는 개체면 null.
+    // ※ ★·누적처럼 한 화면이 여러 값을 함께 읽을 때 쓴다 — 값마다 목록을 다시 훑지 않는다.
+    public CharacterInfo? FindCharacter(long characterId)
+    {
+        foreach (var character in _characters)
+        {
+            if (character.CharacterId == characterId)
+            {
+                return character;
+            }
+        }
+
+        return null;
+    }
+
+    // 캐릭터 개체의 응축 ★(0~최고). 모르는 개체면 0. 값의 주인은 서버다('CharacterInfo.Star').
+    public int GetCharacterStar(long characterId) => FindCharacter(characterId)?.Star ?? 0;
 
     // 캐릭터 개체 번호로 종류(TID)를 얻는다. 모르는 개체면 0.
     //
@@ -404,6 +425,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
     public event Action<bool, EResultCode>?      EquipCompleted;             // 장착·해제 완료 (성공 여부·결과 코드)
     public event Action<S_EquipEnchantResponse>? EquipEnchantCompleted;      // 큐브 사용 결과 (거절 포함 — 'Result'를 먼저 본다)
+    public event Action<S_CharacterCondenseResponse>? CharacterCondenseCompleted; // 응축 결과 (거절 포함 — 'Result'를 먼저 본다 · 캐시 반영 뒤에 온다)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
@@ -478,6 +500,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipSynced              += OnEquipSynced;
         ServerPacketHandler.EquipResponded           += OnEquipResponded;
         ServerPacketHandler.EquipEnchantResponded    += OnEquipEnchantResponded;
+        ServerPacketHandler.CharacterCondenseResponded += OnCharacterCondenseResponded;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -519,6 +542,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipSynced              -= OnEquipSynced;
         ServerPacketHandler.EquipResponded           -= OnEquipResponded;
         ServerPacketHandler.EquipEnchantResponded    -= OnEquipEnchantResponded;
+        ServerPacketHandler.CharacterCondenseResponded -= OnCharacterCondenseResponded;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -700,6 +724,47 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnEquipEnchantResponded(S_EquipEnchantResponse res)
     {
         EquipEnchantCompleted?.Invoke(res);
+    }
+
+    // 응축을 보낸다고 적어 둔다 — 응답에 재료 ID가 없어서다 ('CharacterCondensePresenter'가 'C_CharacterCondenseRequest'를 보내며 호출).
+    // ※ 송신은 Presenter가 한다(이 모델은 보내지 않는다). 여기는 성공했을 때 무엇을 지울지만 기억한다('BeginEntitySell'과 같다).
+    public void BeginCondense(IReadOnlyList<long> materialIds)
+    {
+        _condensingMaterialIds.Clear();
+        _condensingMaterialIds.AddRange(materialIds);
+    }
+
+    // 응축 응답 — 성공이면 재료를 지우고 대상을 새 값으로 덮은 뒤 결과를 알린다.
+    //
+    // ★ 지우는 일은 여기만 한다 — 서버는 재료 제거를 동기화 패킷으로 따로 보내지 않는다('OnEntitySold'와 같다).
+    // ★ 캐시를 먼저 고치고 'CharactersChanged'를 낸 뒤 완료를 알린다 — 완료를 받은 화면이 새 ★을 읽을 수 있어야 한다.
+    private void OnCharacterCondenseResponded(S_CharacterCondenseResponse res)
+    {
+        if (res.Result == EResultCode.Ok)
+        {
+            _characters.RemoveAll(character => _condensingMaterialIds.Contains(character.CharacterId));
+
+            CharacterInfo? target = res.Character;
+
+            if (target != null)
+            {
+                int index = _characters.FindIndex(character => character.CharacterId == target.CharacterId);
+
+                if (index >= 0)
+                {
+                    _characters[index] = target;
+                }
+            }
+
+            CharactersChanged?.Invoke();
+        }
+        else
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"응축 실패 — 결과={res.Result}");
+        }
+
+        _condensingMaterialIds.Clear();
+        CharacterCondenseCompleted?.Invoke(res);
     }
 
     // 작업슬롯 스냅샷 — 캐시 교체 후 이벤트 발행

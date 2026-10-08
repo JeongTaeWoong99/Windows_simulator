@@ -61,6 +61,7 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private int       _characterCount  = 1;
 		[SerializeField] private long      _expCharacterId;
 		[SerializeField] private int       _expAmount       = 100;
+		[SerializeField] private int       _condenseCount;
 		[SerializeField] private TidPicker _equipPicker     = new();
 		[SerializeField] private int       _settleJudges    = 1;
 		[SerializeField] private int       _unlockTid;
@@ -401,9 +402,10 @@ namespace DesktopWindowControl.EditorTools
 		}
 
 		// 경험치는 캐릭터 '종류'가 아니라 내가 가진 '개체'에 준다 — 목록은 테이블이 아니라 보유 캐릭터다.
+		// 응축 누적도 같은 개체에 정하므로 한 묶음에 둔다 — 서버 'SetCondenseCount'(Arg1 = CharacterId · Arg2 = 누적 수, T-130).
 		private void DrawCharacterExp()
 		{
-			BeginSection("캐릭터 경험치", ExpAccent);
+			BeginSection("캐릭터 경험치 · 응축", ExpAccent);
 
 			var model = CheatGuard.FindLoggedInModel();
 
@@ -434,6 +436,20 @@ namespace DesktopWindowControl.EditorTools
 				}
 			}
 
+			// 누적 0~최고 ★ 기준. 서버가 같은 범위로 자른다 — 슬라이더는 표가 안 읽혔을 때만 넉넉히 연다.
+			var maxCount = GameDataLoader.IsLoaded ? GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar) : 999;
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("응축 누적", GUILayout.Width(LabelWidth));
+				_condenseCount = EditorGUILayout.IntSlider(_condenseCount, 0, maxCount);
+
+				if (GUILayout.Button("정하기", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetCondenseCount, _expCharacterId, _condenseCount);
+				}
+			}
+
 			EndSection(ExpAccent);
 		}
 
@@ -446,7 +462,7 @@ namespace DesktopWindowControl.EditorTools
 			for (var i = 0; i < characters.Count; i++)
 			{
 				var character = characters[i];
-				labels[i] = $"{model.GetCharacterName(character.CharacterId)}  Lv{character.Level}  Exp{character.Exp}  (#{character.CharacterId})";
+				labels[i] = $"{model.GetCharacterName(character.CharacterId)}  Lv{character.Level}  Exp{character.Exp}  {character.Star}성({character.CondenseCount})  (#{character.CharacterId})";
 
 				if (character.CharacterId == selectedId)
 				{
