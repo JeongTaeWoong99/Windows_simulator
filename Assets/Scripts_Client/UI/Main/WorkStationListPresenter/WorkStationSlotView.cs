@@ -97,9 +97,10 @@ public class WorkStationSlotView : MonoBehaviour
         // 레벨 0은 적지 않는다 — 서버 기본값이 1이라 올 일이 없고, 'Lv0'은 없는 값이다.
         string industryWithLevel = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
 
-        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배)
-        float speedMultiplier = slot.CurrentWorkSpeed / (float)Constants.WorkSpeedScale;
-        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배";
+        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 '(최대)'를 붙인다 (T-102)
+        float  speedMultiplier = WorkStationProgress.GetEffectiveSpeed(slot) / (float)Constants.WorkSpeedScale;
+        string capMark         = WorkStationProgress.IsAtMinCycle(slot) ? "(최대)" : "";
+        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배{capMark}";
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).

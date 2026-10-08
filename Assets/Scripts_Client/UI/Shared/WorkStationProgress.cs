@@ -1,4 +1,5 @@
 using System;
+using GameData;
 using MikaProtocol;
 using UnityEngine;
 
@@ -9,6 +10,12 @@ using UnityEngine;
 // 슬롯 목록('WorkStationListPresenter')과 상주 위젯('WidgetPresenter')이 같은 값을 그린다.
 // 한쪽에 두고 복사하면 서버 판정식이 두 벌이 되어 한쪽만 고쳐진다.
 // 'RarityPalette'·'ResultMessages'와 같은 부류 — 캔버스를 가로지르는 표시용 변환이라 여기 둔다.
+//
+// ■ 판정 1회에는 최소 시간이 있다 (2026-10-09 · T-102 · 이슈 #60)
+//   실효 주기 = max('Constants.MinCycleMs', 판정 비용 ÷ 속도). 연출 한 바퀴(여운 → 숨 → 달리기 → 숨 → 공격 1회)를 보장하는 값이다.
+//   속도로 바꾸면 **상한 = 판정 비용 ÷ 최소 시간(ms)** (정수 나눗셈 버림) — 서버도 같은 식으로 'CurrentWorkSpeed'를 자른다.
+//   서버가 이미 자른 값을 보내면 여기서 한 번 더 잘라도 그대로다(같은 식이라 멱등).
+//   ※ 최소 시간이 연출 한 바퀴보다 짧으면 'SlotStageSettings.RequiredCycleSeconds'가 경고한다.
 //
 // ■ 표시는 값의 진실이 아니다
 // 카운트다운은 연출이고 판정은 서버가 한다. 어긋나도 다음 슬롯 동기화가 기준점을 교정한다.
@@ -27,6 +34,21 @@ public static class WorkStationProgress
     public static bool IsRunning(WorkStationSlotInfo slot)
         => slot.CharacterId != 0 && slot.CurrentWorkSpeed > 0;
 
+    // 판정 1회 최소 시간(초) — 엑셀 'Constants.MinCycleMs' (효율 계산 표시에서 호출)
+    public static float MinCycleSeconds => Constants.MinCycleMs / MillisecondsPerSecond;
+
+    // 이 슬롯의 속도 상한(천분율) — 이보다 빠르면 주기가 최소 시간보다 짧아진다.
+    public static int GetSpeedCap(WorkStationSlotInfo slot)
+        => (int)Math.Min(int.MaxValue, Math.Max(1L, slot.JudgeCostUnits / Math.Max(1L, Constants.MinCycleMs)));
+
+    // 실제로 쓰는 속도(천분율) — 받은 속도를 상한으로 자른 값. 진행도·남은 초·주기가 전부 이 값으로 돈다.
+    public static int GetEffectiveSpeed(WorkStationSlotInfo slot)
+        => Math.Min(slot.CurrentWorkSpeed, GetSpeedCap(slot));
+
+    // 속도가 상한에 닿아 주기가 최소 시간에 붙어 있는가 (효율 계산·슬롯 줄 표시에서 호출)
+    public static bool IsAtMinCycle(WorkStationSlotInfo slot)
+        => slot.CurrentWorkSpeed > 0 && slot.CurrentWorkSpeed >= GetSpeedCap(slot);
+
     // 판정 진행도 0~1 (각 Presenter의 Update에서 호출)
     public static float CalculateProgress(WorkStationSlotInfo slot)
     {
@@ -44,7 +66,7 @@ public static class WorkStationProgress
             return 0f;
         }
 
-        return remainUnits / (float)slot.CurrentWorkSpeed / MillisecondsPerSecond;
+        return remainUnits / (float)GetEffectiveSpeed(slot) / MillisecondsPerSecond;
     }
 
     // 판정 1회에 걸리는 초 = 실효 주기 (작업슬롯 선택 화면의 효율 계산에서 호출)
@@ -56,7 +78,7 @@ public static class WorkStationProgress
             return 0f;
         }
 
-        return slot.JudgeCostUnits / (float)slot.CurrentWorkSpeed / MillisecondsPerSecond;
+        return slot.JudgeCostUnits / (float)GetEffectiveSpeed(slot) / MillisecondsPerSecond;
     }
 
     // 마지막 정산 이후 쌓인 작업량 중 이번 판정에 해당하는 몫을 구한다.
@@ -64,7 +86,7 @@ public static class WorkStationProgress
     private static long GetPendingUnits(WorkStationSlotInfo slot)
     {
         double elapsedMs   = (ServerClock.UtcNowUnixMs - slot.LastTickAtUnixMs);
-        double accumulated = slot.ProgressUnits + elapsedMs * slot.CurrentWorkSpeed;
+        double accumulated = slot.ProgressUnits + elapsedMs * GetEffectiveSpeed(slot);
 
         return (long)(accumulated % slot.JudgeCostUnits);
     }

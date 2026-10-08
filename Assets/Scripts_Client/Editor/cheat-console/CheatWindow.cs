@@ -525,6 +525,7 @@ namespace DesktopWindowControl.EditorTools
 		// 서버 전체의 채취 전역 배수 — 서버 'SetGatherSpeed'(Arg1 = 천분율, 100~100,000). 정산 칸 안에 붙인다.
 		// 바꾸면 서버가 접속 중인 모두에게 슬롯을 다시 보내 속도·주기가 바로 바뀐다.
 		// ※ 서버는 저장하지 않는다 — 재시작하면 ×1.0이다. 지금 값은 받은 슬롯의 'GatherSpeedPermille'을 읽는다.
+		// ※ 배수가 아무리 커도 판정 주기는 'Constants.MinCycleMs' 아래로 내려가지 않는다 — 연출 한 바퀴 보장(T-102).
 		private void DrawGatherSpeed()
 		{
 			EditorGUILayout.Space(4f);
@@ -550,6 +551,7 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			EditorGUILayout.LabelField("1000 = ×1.0 · 서버 전체 · 재시작하면 ×1.0", EditorStyles.miniLabel);
+			EditorGUILayout.LabelField("배수를 올려도 판정은 최소 주기(엑셀 MinCycleMs)보다 짧아지지 않는다", EditorStyles.miniLabel);
 		}
 
 		// 서버 전체의 게임 시계를 앞으로 넘긴다 — 서버 'AdvanceTime'(Arg1 = 초, 1초~1년, 누적) · 'ResetTime'(오프셋 0).

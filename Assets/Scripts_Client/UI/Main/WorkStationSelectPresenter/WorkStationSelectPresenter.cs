@@ -1134,6 +1134,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 클라는 **다시 계산하지 않는다** — 예전엔 서버 식을 베껴 가산을 되짚고 전역 배수를 역산했는데,
     //   서버가 항목을 늘리면(★ 가산 · T-130) 그 몫이 조용히 "전역 배수"로 읽혔다.
     // 전역 배수는 치트('SetGatherSpeed')로만 바뀐다 — 1.0이 아닐 때만 값 아래에 알린다.
+    //
+    // ■ 최소 주기를 늘 보인다 (T-102)
+    // 판정 1회는 'Constants.MinCycleMs'보다 짧아지지 않는다 — 속도가 상한에 닿으면 더 올려도 주기가 그대로다.
+    // 그게 버그로 보이지 않도록 실효 주기 줄에 하한을 적고, 닿았으면 현재 작업속도 줄에 상한을 적는다.
     private void RefreshEfficiency()
     {
         var slot = FindSlot();
@@ -1161,7 +1165,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         var speedRow = GetOrCreateEfficiencyRow(2);
-        speedRow.Bind("현재 작업속도", FormatSpeed(slot.CurrentWorkSpeed));
+        bool atMinCycle = WorkStationProgress.IsAtMinCycle(slot);
+        speedRow.Bind("현재 작업속도", FormatSpeed(WorkStationProgress.GetEffectiveSpeed(slot)));
 
         // ※ 0은 필드가 없던 옛 서버다 — 배수가 없는 것으로 본다.
         if (slot.GatherSpeedPermille != 0 && slot.GatherSpeedPermille != (int)Constants.WorkSpeedScale)
@@ -1169,7 +1174,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
             speedRow.SetNote($"개발용 전역 배수 ×{slot.GatherSpeedPermille / (float)Constants.WorkSpeedScale:0.00} 적용 중");
         }
 
-        GetOrCreateEfficiencyRow(3).Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" : "—");
+        // 상한 안내는 실효 주기 줄에 둔다 — 현재 작업속도 줄의 안내 칸은 전역 배수가 쓴다.
+        // ※ 닿지 않았을 때는 상한 속도를 적지 않는다. 높은 산업 레벨은 상한이 수백 배라 숫자가 오히려 헷갈린다.
+        float minCycle = WorkStationProgress.MinCycleSeconds;
+
+        var cycleRow = GetOrCreateEfficiencyRow(3);
+        cycleRow.Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" + (atMinCycle ? " (최소)" : "") : "—");
+        cycleRow.SetNote(atMinCycle
+            ? $"최소 주기 {minCycle:0.0#}초에 닿음 — 속도 상한 {FormatSpeed(WorkStationProgress.GetSpeedCap(slot))}, 더 올려도 빨라지지 않는다"
+            : $"최소 주기 {minCycle:0.0#}초");
 
         // ■ 산출량 — 판정 1회에 같은 자원이 몇 개 나오나 (2026-10-02 · T-108)
         // 서버 식은 '100% + 공통 + 그 산업'이다(가산). 서버가 값을 보내지 않으므로 속도 가산과 같은 사본이다.
