@@ -308,32 +308,6 @@ public static class GameDataLoader
         return false;
     }
 
-    // 캐릭터 레벨 L의 작업속도 가산(천분율, 이슈 #35). 그 레벨까지 쌓인 **총량**이다(Lv1 = 0).
-    //
-    // ⚠️ 서버 'CharacterLevelCatalog.SpeedAddAt'의 사본이다 — 테이블 밖 레벨은 만렙 값, 행이 없으면 0.
-    // ※ 경험치 곡선과 같은 정적 곡선이라 클라가 읽어도 된다. 레벨 값은 서버가 준 것을 넣는다.
-    public static int GetLevelSpeedAdd(int level)
-    {
-        if (GameTable.CharacterLevelTable.TryGet(level, out var row))
-        {
-            return row.SpeedAddPermille;
-        }
-
-        int maxLevel = 0;
-        int maxAdd   = 0;
-
-        foreach (var each in GameTable.CharacterLevelTable.All)
-        {
-            if (each.CharacterLevelTID > maxLevel)
-            {
-                maxLevel = each.CharacterLevelTID;
-                maxAdd   = each.SpeedAddPermille;
-            }
-        }
-
-        return level > maxLevel ? maxAdd : 0;
-    }
-
     // 응축 최고 ★ — 'CharacterStarTable'의 행 수(★1부터 빠짐없이 이어진다). 행이 없으면 0이고 응축할 수 없다.
     public static int CondenseMaxStar => GameTable.CharacterStarTable.All.Count;
 

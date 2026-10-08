@@ -26,6 +26,10 @@ namespace DesktopWindowControl.EditorTools
 		private const float  TraitLevelWidth    = 56f;   // 특성 줄의 'Lv 지금/최대' 고정 폭 — 버튼 열을 맞춘다
 		private const float  StepButtonWidth    = 34f;   // 특성 줄의 [기본]·[-1]·[+1]·[최대] 폭(px)
 
+		// 전역 배수 천분율 범위 — 서버 'SetGatherSpeed'가 받는 범위와 같다(밖이면 InvalidCheatArgs).
+		private const int MinGatherSpeedPermille = 100;
+		private const int MaxGatherSpeedPermille = 100_000;
+
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
 		private static readonly Color ErrorColor   = new(1.00f, 0.45f, 0.45f);
@@ -68,6 +72,7 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private TidPicker _mailPicker      = new();
 		[SerializeField] private long      _mailTargetUid;  // 0이면 전체 우편
 		[SerializeField] private long      _advanceSeconds  = 3_600;
+		[SerializeField] private int       _gatherSpeedPermille = 2_000;
 
 		private Vector2 _scroll;
 		private Vector2 _logScroll;
@@ -512,7 +517,39 @@ namespace DesktopWindowControl.EditorTools
 				Request(ECheatCommand.Settle, _settleJudges);
 			}
 
+			DrawGatherSpeed();
+
 			EndSection(SettleAccent);
+		}
+
+		// 서버 전체의 채취 전역 배수 — 서버 'SetGatherSpeed'(Arg1 = 천분율, 100~100,000). 정산 칸 안에 붙인다.
+		// 바꾸면 서버가 접속 중인 모두에게 슬롯을 다시 보내 속도·주기가 바로 바뀐다.
+		// ※ 서버는 저장하지 않는다 — 재시작하면 ×1.0이다. 지금 값은 받은 슬롯의 'GatherSpeedPermille'을 읽는다.
+		private void DrawGatherSpeed()
+		{
+			EditorGUILayout.Space(4f);
+
+			var model   = CheatGuard.FindLoggedInModel();
+			var current = model != null && model.WorkStationSlots.Count > 0 ? model.WorkStationSlots[0].GatherSpeedPermille : 0;
+			DrawColoredLabel(current > 0 ? $"전역 배수: ×{current / 1000f:0.00}" : "전역 배수: (로그인 후 표시)", GUI.contentColor);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("천분율", GUILayout.Width(LabelWidth));
+				_gatherSpeedPermille = Mathf.Clamp(EditorGUILayout.IntField(_gatherSpeedPermille), MinGatherSpeedPermille, MaxGatherSpeedPermille);
+
+				if (GUILayout.Button("적용", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetGatherSpeed, _gatherSpeedPermille);
+				}
+
+				if (GUILayout.Button("×1", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetGatherSpeed, 1000);
+				}
+			}
+
+			EditorGUILayout.LabelField("1000 = ×1.0 · 서버 전체 · 재시작하면 ×1.0", EditorStyles.miniLabel);
 		}
 
 		// 서버 전체의 게임 시계를 앞으로 넘긴다 — 서버 'AdvanceTime'(Arg1 = 초, 1초~1년, 누적) · 'ResetTime'(오프셋 0).
