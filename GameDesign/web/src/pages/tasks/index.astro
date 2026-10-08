@@ -27,13 +27,15 @@ const closed = all.filter((t) => t.data.done).sort((a, b) => b.data.taskId.local
 const isCycle = (v: string) => /^\d{6}$/.test(v);
 const cycles = [...new Set([...upcomingCycles(2), ...live.map((t) => t.data.target).filter(isCycle)])].sort();
 
-type Tab = { key: string; label: string; note: string; items: typeof all };
+// count는 탭 옆 숫자 — 회차 탭은 닫힌 일감도 담지만 숫자는 남은 것만 센다.
+type Tab = { key: string; label: string; note: string; items: typeof all; count?: number };
 const tabs: Tab[] = [
   ...cycles.map((c) => ({
     key: c,
     label: `${c} 목표 일감`,
-    note: `20${c.slice(0, 2)}-${c.slice(2, 4)}-${c.slice(4)} (토) 22:00 회의 — 그날 빌드에 들어갈 일`,
-    items: live.filter((t) => t.data.target === c),
+    note: `20${c.slice(0, 2)}-${c.slice(2, 4)}-${c.slice(4)} (토) 22:00 회의 — 그날 빌드에 들어갈 일 (닫힌 일감은 아래에)`,
+    items: [...live, ...closed].filter((t) => t.data.target === c),
+    count: live.filter((t) => t.data.target === c).length,
   })),
   {
     key: 'server',
@@ -91,7 +93,7 @@ const COLUMNS = [
           tabs.map((tab) => (
             <button class="tasktab" data-tab={tab.key}>
               <span class="truncate">{tab.label}</span>
-              <span class="ml-auto pl-2 text-[11px] font-normal text-slate-400">{tab.items.length}</span>
+              <span class="ml-auto pl-2 text-[11px] font-normal text-slate-400">{tab.count ?? tab.items.length}</span>
             </button>
           ))
         }
