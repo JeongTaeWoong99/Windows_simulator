@@ -236,7 +236,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private readonly List<EIndustryType> _industries = new List<EIndustryType>();
 
     // 만들어 둔 줄. 산업을 바꿀 때마다 수가 오르내리므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
-    private readonly List<CharacterStateRowView> _rows = new List<CharacterStateRowView>();
+    private UIRowList<CharacterStateRowView> _rows = null!;
 
     // 이번에 보일 캐릭터. 걸러 낸 결과라 'Characters'와 순번이 다르다 —
     // 매번 새로 만들지 않으려고 필드로 들고 재사용한다(상주 앱이라 GC가 쌓인다).
@@ -250,10 +250,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private byte[] _aptitudes = new byte[0];
 
     // 만들어 둔 효율 계산 줄. 캐릭터 줄과 같은 풀 규칙이다.
-    private readonly List<EfficiencyRowView> _efficiencyRows = new List<EfficiencyRowView>();
+    private UIRowList<EfficiencyRowView> _efficiencyRows = null!;
 
     // 만들어 둔 장비 고르기 줄. 칸마다 목록이 통째로 바뀌므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
-    private readonly List<EquipPickRowView> _equipRows = new List<EquipPickRowView>();
+    private UIRowList<EquipPickRowView> _equipRows = null!;
 
     // 지금 고르는 중인 장비 칸. 'None'이면 고르는 중이 아니다 — 그때는 효율 계산이 보인다.
     private EEquipSlot _pickingSlot = EEquipSlot.None;
@@ -335,6 +335,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
 
         _rowOrder = CompareRows;
+
+        // 줄은 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
+        // ※ 아래 'CloseEquipPicker'가 장비 줄을 비우므로 그보다 먼저 만든다.
+        _rows = new UIRowList<CharacterStateRowView>(rowPrefab, rowParent, row =>
+        {
+            row.SetButtonLabel("배치");
+            row.AssignClicked += OnRowAssignClicked;
+        }, row => row.Clear());
+        _efficiencyRows = new UIRowList<EfficiencyRowView>(efficiencyRowPrefab, efficiencyRowParent, onHide: row => row.Clear());
+        _equipRows      = new UIRowList<EquipPickRowView>(equipRowPrefab, equipRowParent, row => row.PickClicked += OnEquipRowClicked, row => row.Clear());
 
         // 필드 초기화에서 읽지 않는다 — 에디터 직렬화 때도 불려 테이블이 없을 수 있다.
         _selectedIndustryLevel = DefaultIndustryLevel;
@@ -946,16 +956,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
         {
             CharacterInfo character   = _visible[i];
             long          characterId = character.CharacterId;
-            var           row         = GetOrCreateRow(i);
+            var           row         = _rows.Get(i);
 
-            row.gameObject.SetActive(true);
             row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level, character.Star);
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
         }
 
-        HideRowsFrom(_visible.Count);
+        _rows.HideFrom(_visible.Count);
 
         // 빈 목록은 고장과 구분되지 않는다 — 왜 비었는지만 알린다.
         // 숨긴 캐릭터가 누구인지는 여기서 세지 않는다. 그 답은 인벤토리 캐릭터 탭(적성 스트립·'배' 마크)에 있다.
@@ -995,25 +1004,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
         return a.CharacterId.CompareTo(b.CharacterId);
     }
 
-    // 'index'번째 줄을 돌려준다. 아직 없으면 그때 만든다 (RefreshRows에서 호출).
-    private CharacterStateRowView GetOrCreateRow(int index)
-    {
-        if (index < _rows.Count)
-        {
-            return _rows[index];
-        }
-
-        CharacterStateRowView row = Instantiate(rowPrefab, rowParent);
-
-        // 줄은 파괴하지 않고 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
-        row.SetButtonLabel("배치");
-        row.AssignClicked += OnRowAssignClicked;
-
-        _rows.Add(row);
-
-        return row;
-    }
-
     // 이 캐릭터의 적성 5종을 산업 목록 순서대로 담아 돌려준다 (줄·카드를 그릴 때 호출).
     // ※ 돌려주는 배열은 재사용되는 하나다 — 받은 쪽이 들고 있으면 안 된다.
     private byte[] ReadAptitudes(long characterId)
@@ -1024,16 +1014,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         return _aptitudes;
-    }
-
-    // 이번에 쓰이지 않은 줄을 비우고 꺼 둔다 (RefreshRows에서 호출).
-    private void HideRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _rows.Count; i++)
-        {
-            _rows[i].Clear();
-            _rows[i].gameObject.SetActive(false);
-        }
     }
 
     #endregion
@@ -1144,7 +1124,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         if (slot == null || !IsAssigned(slot))
         {
-            HideEfficiencyRowsFrom(0);
+            _efficiencyRows.HideFrom(0);
 
             return;
         }
@@ -1152,10 +1132,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
         float cycle    = WorkStationProgress.CalculateCycleSeconds(slot);
         int   totalAdd = slot.LevelAddPermille + slot.StarAddPermille + slot.TraitAddPermille + slot.EquipAddPermille;
 
-        GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(slot.BaseWorkSpeed));
+        _efficiencyRows.Get(0).Bind("적성 기본값", FormatSpeed(slot.BaseWorkSpeed));
 
         // 총합을 값에 적고 내역은 주석 줄에 둔다 — "왜 이만큼인가"가 한 줄 아래에 있어야 한다.
-        var addRow = GetOrCreateEfficiencyRow(1);
+        var addRow = _efficiencyRows.Get(1);
         addRow.Bind("속도 가산", FormatPermille(totalAdd));
 
         if (totalAdd != 0)
@@ -1164,7 +1144,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
                          + $"특성 {FormatPermille(slot.TraitAddPermille)} · 장비 {FormatPermille(slot.EquipAddPermille)}");
         }
 
-        var speedRow = GetOrCreateEfficiencyRow(2);
+        var speedRow = _efficiencyRows.Get(2);
         bool atMinCycle = WorkStationProgress.IsAtMinCycle(slot);
         speedRow.Bind("현재 작업속도", FormatSpeed(WorkStationProgress.GetEffectiveSpeed(slot)));
 
@@ -1178,7 +1158,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // ※ 닿지 않았을 때는 상한 속도를 적지 않는다. 높은 산업 레벨은 상한이 수백 배라 숫자가 오히려 헷갈린다.
         float minCycle = WorkStationProgress.MinCycleSeconds;
 
-        var cycleRow = GetOrCreateEfficiencyRow(3);
+        var cycleRow = _efficiencyRows.Get(3);
         cycleRow.Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" + (atMinCycle ? " (최소)" : "") : "—");
         cycleRow.SetNote(atMinCycle
             ? $"최소 주기 {minCycle:0.0#}초에 닿음 — 속도 상한 {FormatSpeed(WorkStationProgress.GetSpeedCap(slot))}, 더 올려도 빨라지지 않는다"
@@ -1188,7 +1168,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // 서버 식은 '100% + 공통 + 그 산업'이다(가산). 서버가 값을 보내지 않으므로 속도 가산과 같은 사본이다.
         int commonYield   = _data.GetTraitEffectSum(UserTraitEffect.YieldAdd, EIndustryType.None);
         int industryYield = _data.GetTraitEffectSum(UserTraitEffect.YieldAdd, slot.Industry) - commonYield;
-        var yieldRow      = GetOrCreateEfficiencyRow(4);
+        var yieldRow      = _efficiencyRows.Get(4);
 
         yieldRow.Bind("산출량", $"{(1000 + commonYield + industryYield) / 10f:0.#}%");
 
@@ -1197,7 +1177,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             yieldRow.SetNote($"공통 {FormatPermille(commonYield)} · 산업 {FormatPermille(industryYield)}");
         }
 
-        HideEfficiencyRowsFrom(EfficiencyRowCount);
+        _efficiencyRows.HideFrom(EfficiencyRowCount);
 
         // 캐릭터 줄과 같은 이유 — 방금 켠 줄은 이 프레임 끝까지 프리팹 크기 그대로다('RefreshRows' 끝 주석).
         //
@@ -1214,30 +1194,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ 감산 장비·특성이 생길 수 있어 부호를 함께 만든다.
     private static string FormatPermille(int permille)
         => $"{(permille >= 0 ? "+" : "")}{permille / 10f:0.#}%";
-
-    // 'index'번째 효율 계산 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEfficiency에서 호출).
-    private EfficiencyRowView GetOrCreateEfficiencyRow(int index)
-    {
-        if (index >= _efficiencyRows.Count)
-        {
-            _efficiencyRows.Add(Instantiate(efficiencyRowPrefab, efficiencyRowParent));
-        }
-
-        var row = _efficiencyRows[index];
-        row.gameObject.SetActive(true);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 효율 계산 줄을 비우고 꺼 둔다 (RefreshEfficiency에서 호출).
-    private void HideEfficiencyRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _efficiencyRows.Count; i++)
-        {
-            _efficiencyRows[i].Clear();
-            _efficiencyRows[i].gameObject.SetActive(false);
-        }
-    }
 
     // 담당 슬롯의 현재 상태를 찾는다. 서버가 주지 않은 번호면 null (단계 판정·클릭 처리에서 호출)
     private WorkStationSlotInfo? FindSlot()
@@ -1515,7 +1471,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     {
         assignedCard.SetAssignable(!IsWaiting);
 
-        foreach (var row in _rows)
+        foreach (var row in _rows.All)
         {
             row.SetAssignable(!IsWaiting);
         }
@@ -1531,7 +1487,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             }
         }
 
-        foreach (var row in _equipRows)
+        foreach (var row in _equipRows.All)
         {
             row.SetPickable(!IsWaiting);
         }
@@ -1765,7 +1721,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         progressPanel.SetActive(true);
         efficiencyPanel.SetActive(true);
 
-        HideEquipRowsFrom(0);
+        _equipRows.HideFrom(0);
 
         // ※ **레벨 정보는 접힌 채로 둔다.** 고르려고 접은 것을 되돌리면 사용자가 접어 둔 것까지
         //   덮어쓴다 — 보고 싶으면 레벨 탭을 누르면 된다(그게 펼침 토글이다).
@@ -1840,7 +1796,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             var equip = _pickCandidates[i];
             GameDataLoader.TryGetEquip(equip.EquipTid, out var row);  // 위에서 이미 걸렀다
 
-            var view = GetOrCreateEquipRow(i);
+            var view = _equipRows.Get(i);
 
             view.Bind(equip.EquipId, row.Name, EquipLabel.GetEffectText(equip.EquipTid));
             view.SetRarity(row.GlobalRarity);
@@ -1851,7 +1807,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         var shown = _pickCandidates.Count;
 
-        HideEquipRowsFrom(shown);
+        _equipRows.HideFrom(shown);
 
         // 빈 목록은 고장과 구분되지 않는다 — 안내 한 줄을 띄운다(캐릭터 목록과 같은 규칙).
         equipEmptyText.gameObject.SetActive(shown == 0);
@@ -2101,32 +2057,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         return _data.FindWornEquip(slot.CharacterId, part);
-    }
-
-    // 'index'번째 장비 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEquipPicker에서 호출).
-    private EquipPickRowView GetOrCreateEquipRow(int index)
-    {
-        if (index >= _equipRows.Count)
-        {
-            var created = Instantiate(equipRowPrefab, equipRowParent);
-            created.PickClicked += OnEquipRowClicked;
-            _equipRows.Add(created);
-        }
-
-        var row = _equipRows[index];
-        row.gameObject.SetActive(true);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 장비 줄을 비우고 꺼 둔다 (RefreshEquipPicker · 닫기에서 호출).
-    private void HideEquipRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _equipRows.Count; i++)
-        {
-            _equipRows[i].Clear();
-            _equipRows[i].gameObject.SetActive(false);
-        }
     }
 
     #endregion

@@ -85,8 +85,10 @@ public class MailPresenter : MonoBehaviour
     // 받은 우편이 남는 기간 — 기획 우편 1장 9번. 지우는 것은 서버다 — 여기선 "며칠 남았나"를 적는 데만 쓴다.
     private const int ClaimedKeepDays = 7;
 
-    private readonly List<MailRowView> _rows   = new List<MailRowView>();
-    private readonly List<MailInfo>    _sorted = new List<MailInfo>();
+    private readonly List<MailInfo> _sorted = new List<MailInfo>();
+
+    // 만들어 둔 줄. 다시 그릴 때마다 줄 수가 바뀌므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
+    private UIRowList<MailRowView> _rows = null!;
 
     // 지금 열린 탭 — 화면 상태라 저장하지 않는다. 다시 열면 안 받은 우편부터다.
     private MailTab _tab = MailTab.Unclaimed;
@@ -126,6 +128,13 @@ public class MailPresenter : MonoBehaviour
         claimAllButton.onClick.AddListener(OnClaimAllClicked);
         unclaimedTabButton.onClick.AddListener(() => ShowTab(MailTab.Unclaimed));
         claimedTabButton.onClick.AddListener(() => ShowTab(MailTab.Claimed));
+
+        // 줄은 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
+        _rows = new UIRowList<MailRowView>(rowPrefab, rowParent, row =>
+        {
+            row.ClaimClicked  += OnRowClaimClicked;
+            row.DeleteClicked += OnRowDeleteClicked;
+        }, row => row.Clear());
 
         Subscribe();
         Refresh(); // 이미 우편함을 받은 뒤에 처음 열렸을 수 있다
@@ -226,14 +235,13 @@ public class MailPresenter : MonoBehaviour
         for (int i = 0; i < _sorted.Count; i++)
         {
             MailInfo mail = _sorted[i];
-            MailRowView row = GetOrCreateRow(i);
+            MailRowView row = _rows.Get(i);
 
-            row.gameObject.SetActive(true);
             row.Bind(mail.MailId, BuildTitle(mail), BuildInfo(mail, showClaimed), BuildAttachment(mail), showClaimed,
                 BuildIcon(mail), () => BuildTooltip(mail));
         }
 
-        HideRowsFrom(_sorted.Count);
+        _rows.HideFrom(_sorted.Count);
 
         countText.text        = $"안 받은 우편 {unclaimedCount}통";
         unclaimedTabText.text = $"안 받은 우편 ({unclaimedCount})";
@@ -287,7 +295,7 @@ public class MailPresenter : MonoBehaviour
 
         claimAllButton.interactable = isIdle && _data.HasUnclaimedMail;
 
-        foreach (MailRowView row in _rows)
+        foreach (MailRowView row in _rows.All)
         {
             row.SetInteractable(isIdle);
         }
@@ -697,39 +705,6 @@ public class MailPresenter : MonoBehaviour
         else
         {
             _waitHandle.Fail(ResultMessages.ToText(code));
-        }
-    }
-
-    #endregion
-
-    #region 줄 풀
-
-    // 'index'번째 줄을 돌려준다. 아직 없으면 그때 만든다 (Refresh에서 호출).
-    private MailRowView GetOrCreateRow(int index)
-    {
-        if (index < _rows.Count)
-        {
-            return _rows[index];
-        }
-
-        MailRowView row = Instantiate(rowPrefab, rowParent);
-
-        // 줄은 파괴하지 않고 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
-        row.ClaimClicked  += OnRowClaimClicked;
-        row.DeleteClicked += OnRowDeleteClicked;
-
-        _rows.Add(row);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 줄을 비우고 꺼 둔다 (Refresh에서 호출).
-    private void HideRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _rows.Count; i++)
-        {
-            _rows[i].Clear();
-            _rows[i].gameObject.SetActive(false);
         }
     }
 

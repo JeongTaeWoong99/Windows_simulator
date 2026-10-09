@@ -26,7 +26,7 @@ UniTask·DOTween을 들였다(`UNITASK_DOTWEEN_SUPPORT`, 2026-10-07). 새 클라
 - [x] 슬롯 뷰 — `WorkStationListPresenter`·`WidgetPresenter`는 해제 때 파괴 대신 끄고 다시 쓴다 · `SlotStageView` 배경 층 재사용
 - [x] `AuctionRowList`를 `UIRowList` 위에 얹음
 - [x] 실측 — 로딩 지연 표시 · 응답 타임아웃 알림 · 슬롯 배치→해제→다른 캐릭터 배치 (이전 그림이 남지 않나) · **빌드에서** 창 초기화(`Player.log`)
-- ✂️ 목록 줄 정리 → [T-133](../T-133-목록줄UIRowList전환.md)로 뗐다
+- ✂️ 목록 줄 정리 → [T-133](T-133-목록줄UIRowList전환.md)로 뗐다
 - ✂️ 수확 획득 연출 → 🎨 [T-015](T-015-산업아이템클라적용.md)(채취 획득 표시)에 `PrefabPool`로 만든다고 적어 뒀다
 
 ## 완료 조건

@@ -95,7 +95,7 @@ public class TraitPresenter : MonoBehaviour
     private UIThemeRole confirmBlockedRole = UIThemeRole.ButtonDisabled;
 
     // 만들어 둔 줄. 파괴하지 않고 재사용한다 (남는 것은 꺼 둔다).
-    private readonly List<TraitRowView> _rows = new List<TraitRowView>();
+    private UIRowList<TraitRowView> _rows = null!;
 
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
@@ -127,6 +127,10 @@ public class TraitPresenter : MonoBehaviour
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
         _wait = Services.Get<ServerWaitManager>();
+
+        // ⚠️ 'LayoutGroup'이 배치하는 줄은 만든 자리에서 바로 태운다 — 부모를 나중에 옮기면
+        //    한 프레임 동안 엉뚱한 자리에 그려진다('UI 규칙.md' 3장). 'UIRowList'가 그렇게 만든다.
+        _rows = new UIRowList<TraitRowView>(rowPrefab, rowParent, OnRowCreated);
 
         confirmButton.onClick.AddListener(OnConfirmClicked);
         BindHeader();
@@ -241,9 +245,8 @@ public class TraitPresenter : MonoBehaviour
                 continue; // 이 산업에 특성이 하나도 없다 — 빈 줄을 그리지 않는다
             }
 
-            TraitRowView row = GetRow(used++);
+            TraitRowView row = _rows.Get(used++);
 
-            row.gameObject.SetActive(true);
             row.Bind(industry == EIndustryType.None ? "공통" : IndustryLabel.Get(industry));
 
             for (int column = 0; column < Columns.Length && column < row.CellCount; column++)
@@ -263,11 +266,7 @@ public class TraitPresenter : MonoBehaviour
             }
         }
 
-        // 남는 줄은 파괴하지 않고 꺼 둔다.
-        for (int i = used; i < _rows.Count; i++)
-        {
-            _rows[i].gameObject.SetActive(false);
-        }
+        _rows.HideFrom(used);
 
         RedrawDetail();
     }
@@ -323,25 +322,13 @@ public class TraitPresenter : MonoBehaviour
             : TraitNodeView.NodeState.Locked;
     }
 
-    // 줄을 꺼내 온다. 모자라면 프리팹을 하나 더 찍는다 (Redraw에서 호출).
-    //
-    // ⚠️ 'LayoutGroup'이 배치하는 프리팹은 만든 자리에서 바로 태운다 — 부모를 나중에 옮기면
-    //    한 프레임 동안 엉뚱한 자리에 그려진다('UI 규칙.md' 3장).
-    private TraitRowView GetRow(int index)
+    // 줄을 만들 때 한 번 — 칸 클릭을 건다. 줄은 파괴하지 않으므로 다시 걸면 중복으로 쌓인다.
+    private void OnRowCreated(TraitRowView row)
     {
-        while (_rows.Count <= index)
+        for (int column = 0; column < row.CellCount; column++)
         {
-            var row = Instantiate(rowPrefab, rowParent);
-
-            for (int column = 0; column < row.CellCount; column++)
-            {
-                row.GetCell(column).Clicked += OnCellClicked; // 줄은 파괴하지 않으므로 한 번만 건다
-            }
-
-            _rows.Add(row);
+            row.GetCell(column).Clicked += OnCellClicked;
         }
-
-        return _rows[index];
     }
 
     #endregion

@@ -64,7 +64,7 @@ public class SellCartPresenter : MonoBehaviour
     private CharacterCondensePresenter characterCondense = null!;
 
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
-    private readonly List<SellCartRowView> _rows = new List<SellCartRowView>();
+    private UIRowList<SellCartRowView> _rows = null!;
 
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
@@ -111,6 +111,9 @@ public class SellCartPresenter : MonoBehaviour
         equipEnchant.OpenChanged  += OnEnchantOpenChanged;
         characterCondense.OpenChanged += OnEnchantOpenChanged;
         _cart.Changed             += OnCartChanged; // 비어 있으면 꺼지므로 켜는 신호도 여기서 받는다
+
+        // 줄은 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
+        _rows = new UIRowList<SellCartRowView>(rowPrefab, rowParent, row => row.RemoveClicked += OnRowRemoveClicked, row => row.Clear());
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
@@ -285,11 +288,10 @@ public class SellCartPresenter : MonoBehaviour
 
         foreach (ItemInfo entry in _cart.Entries)
         {
-            SellCartRowView row       = GetOrCreateRow(index++);
+            SellCartRowView row       = _rows.Get(index++);
             int             itemId    = entry.ItemId;
             int             basePrice = GameDataLoader.GetItemPrice(itemId);
 
-            row.gameObject.SetActive(true);
             row.Bind(SellCartKind.Item,
                      itemId,
                      GameDataLoader.GetItemName(itemId),
@@ -301,13 +303,12 @@ public class SellCartPresenter : MonoBehaviour
 
         foreach (long characterId in _cart.CharacterIds)
         {
-            SellCartRowView row       = GetOrCreateRow(index++);
+            SellCartRowView row       = _rows.Get(index++);
             int             tid       = _data.GetCharacterTid(characterId);
             string          name      = GameDataLoader.GetCharacterName(tid);
             int             basePrice = GameDataLoader.GetCharacterPrice(tid);
             GlobalRarity    rarity    = GameDataLoader.GetCharacterRarity(tid);
 
-            row.gameObject.SetActive(true);
             row.Bind(SellCartKind.Character,
                      characterId,
                      name,
@@ -324,12 +325,11 @@ public class SellCartPresenter : MonoBehaviour
                 continue;
             }
 
-            SellCartRowView row       = GetOrCreateRow(index++);
+            SellCartRowView row       = _rows.Get(index++);
             string          name      = equipRow.Name;
             int             basePrice = equipRow.BasePrice;
             GlobalRarity    rarity    = equipRow.GlobalRarity;
 
-            row.gameObject.SetActive(true);
             row.Bind(SellCartKind.Equip,
                      equip.EquipId,
                      name,
@@ -341,7 +341,7 @@ public class SellCartPresenter : MonoBehaviour
 
         int count = index;
 
-        HideRowsFrom(count);
+        _rows.HideFrom(count);
 
         emptyText.gameObject.SetActive(count == 0);
         // '즉시 판매'라고 못 박는다 — 경매장(직접 가격, 즉시 판매가 이상)과 다른 파는 법이라는 걸 합계 줄에서 말한다.
@@ -360,34 +360,6 @@ public class SellCartPresenter : MonoBehaviour
         // 여기서 미리 태워 두면 아무도 반쯤 놓인 줄을 보지 않는다.
         // ※ 프리팹 크기를 부모보다 작게 저장해 피하는 방법은 자식 하나만 커도 다시 터진다.
         LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
-    }
-
-    // 'index'번째 줄을 돌려준다. 아직 없으면 그때 만든다 (Refresh에서 호출).
-    private SellCartRowView GetOrCreateRow(int index)
-    {
-        if (index < _rows.Count)
-        {
-            return _rows[index];
-        }
-
-        SellCartRowView row = Instantiate(rowPrefab, rowParent);
-
-        // 줄은 파괴하지 않고 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
-        row.RemoveClicked += OnRowRemoveClicked;
-
-        _rows.Add(row);
-
-        return row;
-    }
-
-    // 이번에 쓰이지 않은 줄을 비우고 꺼 둔다 (Refresh에서 호출).
-    private void HideRowsFrom(int startIndex)
-    {
-        for (int i = startIndex; i < _rows.Count; i++)
-        {
-            _rows[i].Clear();
-            _rows[i].gameObject.SetActive(false);
-        }
     }
 
     // 판매 버튼을 열고 닫는다 — 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.
