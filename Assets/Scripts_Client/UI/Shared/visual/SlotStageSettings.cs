@@ -1,3 +1,4 @@
+using GameData;
 using UnityEngine;
 
 // 슬롯 무대 연출의 전체 세팅 — 모든 슬롯·모든 캐릭터에 똑같이 걸리는 시간·거리 값.
@@ -12,6 +13,16 @@ using UnityEngine;
 // ■ 거리 값은 아트 픽셀이다
 //   화면에서는 '확대 배율'을 곱한다. 전체 배율은 정수 — 점 그림이 고르게 커진다.
 //   캐릭터 개인 배율은 소수도 받는다(1.5 등) — 대신 점 크기가 한두 칸씩 들쭉날쭉해질 수 있다.
+//
+// ■ 캐릭터 자리만은 패널 폭의 비율이다 (2026-10-09)
+//   픽셀 여백이면 창 폭에 따라 칸이 넓어질수록 캐릭터가 오른쪽 끝으로 쏠린다. 비율이면 어느 폭에서나 같은 자리에 선다.
+//   대상이 멈추는 자리는 여전히 캐릭터 발에서 'stopGap'(+ 캐릭터 개인 오프셋)만큼 왼쪽이다.
+//
+// ■ 연출 한 바퀴 = 판정 1회의 최소 시간 (2026-10-09 · T-102)
+//   여운 + 숨 + 달리기(다가오기) + 숨 + 공격 1회 = 'RequiredCycleSeconds'. 지금 값이면 0.3 + 0.1 + 1 + 0.1 + 0.6 = 2.1초.
+//   판정 주기가 이보다 짧으면 'SlotStageTimeline'이 여운·숨·달리기를 깎아 공격이 끊긴다 —
+//   그래서 엑셀 'Constants.MinCycleMs'가 이 값 이상이어야 하고, 서버·클라가 그 값으로 주기를 막는다('WorkStationProgress').
+//   ⚠️ 여기 시간을 늘렸으면 'MinCycleMs'도 함께 올린다. 짧으면 플레이 시작 때 경고가 한 번 뜬다.
 [CreateAssetMenu(menuName = "DesktopWindowControl/Visual/Slot Stage Settings", fileName = "SlotStageSettings")]
 public class SlotStageSettings : ScriptableObject
 {
@@ -47,8 +58,9 @@ public class SlotStageSettings : ScriptableObject
     [SerializeField, Range(0, 120), Tooltip("캐릭터 발과 대상 오른쪽 끝 사이 — 대상이 멈추는 거리")]
     private int stopGap = 34;
 
-    [SerializeField, Range(0, 120), Tooltip("패널 오른쪽 끝에서 캐릭터 발까지")]
-    private int rightPad = 30;
+    [CenterHeader("자리")]
+    [SerializeField, Range(0.5f, 0.95f), Tooltip("캐릭터 발의 가로 자리 — 패널 왼쪽 끝 0, 오른쪽 끝 1. 0.7이면 열 칸 중 7~8번째. 모든 캐릭터에 똑같이 걸린다")]
+    private float characterAnchor = 0.7f;
 
     [CenterHeader("화면")]
     [SerializeField, Range(1, 4), Tooltip("아트 픽셀 하나를 화면 몇 칸으로 — 정수만")]
@@ -66,9 +78,14 @@ public class SlotStageSettings : ScriptableObject
     public float FlashSeconds    => flashSeconds;
     public float HitEffectSeconds => hitEffectSeconds;
     public int   StopGap         => stopGap;
-    public int   RightPad        => rightPad;
+    public float CharacterAnchor => characterAnchor;
     public int   PixelScale      => pixelScale;
     public float FarLayerSpeed   => farLayerSpeed;
+
+    // 연출 한 바퀴에 필요한 초 — 여운 + 숨 + 달리기 + 숨 + 공격 1회 (위 머리 주석)
+    public float RequiredCycleSeconds => recoverSeconds + 2f * idleSeconds + approachSeconds + attackSeconds;
+
+    private static bool _minCycleChecked;
 
     private static SlotStageSettings? _current;
 
@@ -87,7 +104,28 @@ public class SlotStageSettings : ScriptableObject
                 _current = CreateInstance<SlotStageSettings>();
             }
 
+            WarnIfMinCycleTooShort(_current);
+
             return _current;
+        }
+    }
+
+    // 엑셀 최소 주기가 연출 한 바퀴보다 짧으면 한 번 알린다 (Current에서 호출 — 테이블이 적재된 뒤 첫 번만 본다)
+    private static void WarnIfMinCycleTooShort(SlotStageSettings settings)
+    {
+        if (_minCycleChecked || !GameDataLoader.IsLoaded)
+        {
+            return;
+        }
+
+        _minCycleChecked = true;
+
+        float minCycle = Constants.MinCycleMs / 1000f;
+
+        if (minCycle + 0.0005f < settings.RequiredCycleSeconds)
+        {
+            Debug.LogWarning($"[SlotStageSettings] 엑셀 'MinCycleMs'({Constants.MinCycleMs}ms)가 연출 한 바퀴({settings.RequiredCycleSeconds:0.00}초)보다 짧다 — "
+                           + "빠른 슬롯에서 공격이 끊긴다. Constants.xlsx 값을 올린다.");
         }
     }
 }

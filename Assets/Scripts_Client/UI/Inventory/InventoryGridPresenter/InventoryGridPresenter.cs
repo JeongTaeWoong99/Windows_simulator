@@ -57,10 +57,12 @@ using UnityEngine.UI;
 //   놓는 순간에는 이동 요청만 보내고, 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음 · 자리의 주인은 서버 DB).
 //   찾기 중에는 막는다 — 거르는 동안 보이는 순서는 칸 번호가 아니다. 입력은 'InventorySlotDrag'가 받는다.
 //
-// ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸) · 큐브 창 (장비 탭의 장비 칸 · T-095)
+// ■ 좌클릭 = 상자 개봉 (자원 탭의 상자 칸) · 큐브 창 (장비 탭의 장비 칸 · T-095) · 응축 창 (캐릭터 탭 · T-130)
 //   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
 //   한 조작에 두 뜻을 겹치면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
-//   큐브 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
+//   큐브 창·응축 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
+//   응축 창이 열린 동안 캐릭터 칸 좌클릭은 **재료 고르기**다 — 무엇을 할지는 응축 창이 정하고('OnCharacterClicked'),
+//   칸이 대상·재료·못 넣음 중 무엇인지도 응축 창이 답한다('GetMark'). 격자는 그대로 그린다.
 public class InventoryGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -78,6 +80,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("큐브 창 — 장비 칸을 좌클릭하면 그 장비로 연다")]
     private EquipEnchantPresenter equipEnchant = null!;
+
+    [SerializeField, Tooltip("응축 창 — 캐릭터 칸을 좌클릭하면 그 캐릭터로 열고, 열린 동안은 재료를 고른다")]
+    private CharacterCondensePresenter characterCondense = null!;
 
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
@@ -188,6 +193,7 @@ public class InventoryGridPresenter : MonoBehaviour
         this.RequireRef(emptyNotice, nameof(emptyNotice));
         this.RequireRef(scrollRect,  nameof(scrollRect));
         this.RequireRef(equipEnchant, nameof(equipEnchant));
+        this.RequireRef(characterCondense, nameof(characterCondense));
 
         CacheFrames();
 
@@ -217,6 +223,10 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseCompleted      += OnItemUseCompleted;
         _data.ItemUseFailed         += OnItemUseFailed;
         _data.StorageSlotsResponded += OnStorageSlotsResponded;
+
+        // 응축 창의 대상·재료가 바뀌면 칸 표시(테두리·체크·흑백)를 다시 그린다.
+        // ※ 켜고 끌 때 풀지 않는다 — 응축 창이 닫힐 때의 알림(표시 걷기)을 격자가 꺼져 있어도 놓치면 안 된다.
+        characterCondense.SelectionChanged += Redraw;
 
         // ※ 카트 구독은 여기서 시작한다 — 'OnEnable'은 'EnsureInitialized'보다 먼저 돌 수 있어
         //   (탭 줄의 Start가 우리를 깨우는 경로) 거기에만 두면 첫 판이 구독을 놓친다.
@@ -270,6 +280,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseCompleted      -= OnItemUseCompleted;
         _data.ItemUseFailed         -= OnItemUseFailed;
         _data.StorageSlotsResponded -= OnStorageSlotsResponded;
+        characterCondense.SelectionChanged -= Redraw;
     }
 
     #region 구독
@@ -506,6 +517,10 @@ public class InventoryGridPresenter : MonoBehaviour
                 // 장착 네모 — 캐릭터 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-104).
                 view.SetEquipPips(_current.GetWornEquips(data.Key));
 
+                // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
+                view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
+                view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
+
                 continue;
             }
 
@@ -633,8 +648,9 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        // 판매 목록 자리를 큐브 창이 쓰고 있으면 돌려준다 — 담은 것이 보여야 한다.
+        // 판매 목록 자리를 큐브 창·응축 창이 쓰고 있으면 돌려준다 — 담은 것이 보여야 한다.
         equipEnchant.Close();
+        characterCondense.Close();
 
         switch (_currentTab)
         {
@@ -1057,9 +1073,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 상자 개봉
 
-    // 칸을 좌클릭했다 — 장비면 큐브 창을 열고, 상자면 몇 개 열지 묻고 개봉을 요청한다 (SlotView.LeftClicked 구독)
+    // 칸을 좌클릭했다 — 장비면 큐브 창, 캐릭터면 응축 창, 상자면 몇 개 열지 묻고 개봉을 요청한다 (SlotView.LeftClicked 구독)
     //
-    // 상자가 아닌 자원 칸·캐릭터 칸은 아무 일도 하지 않는다. 좌클릭에 다른 뜻이 붙기 전까지는 그게 맞는 반응이다.
+    // 상자가 아닌 자원 칸은 아무 일도 하지 않는다. 좌클릭에 다른 뜻이 붙기 전까지는 그게 맞는 반응이다.
     // 수량을 묻는 동선은 판매 담기와 **똑같이** 간다 — 1개면 묻지 않고, 2개 이상이면 팝업을 띄운다.
     private void OnSlotLeftClicked(SlotView view)
     {
@@ -1072,6 +1088,14 @@ public class InventoryGridPresenter : MonoBehaviour
         if (_currentTab == InventoryTab.Equipment)
         {
             equipEnchant.Open(view.Key);
+
+            return;
+        }
+
+        // 캐릭터 칸 — 닫혀 있으면 응축 창을 열고, 열려 있으면 재료를 고른다(T-130). 배치·착용 중이어도 대상으로는 연다.
+        if (_currentTab == InventoryTab.Character)
+        {
+            characterCondense.OnCharacterClicked(view.Key);
 
             return;
         }

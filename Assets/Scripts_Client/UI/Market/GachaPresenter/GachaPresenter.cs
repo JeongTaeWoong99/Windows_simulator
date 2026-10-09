@@ -21,6 +21,10 @@ using UnityEngine.UI;
 // 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고, 결과 팝업은 최상단의
 // 'GachaResultPresenter'('!System Canvas')가 스스로 구독해서 띄운다 — 여기 자식으로 두지 않는다.
 // 다만 성공/실패 도착 여부는 여기서 구독한다 — 요청 중 로딩·버튼 잠금·실패 알림을 위해서다.
+//
+// ■ 결과 팝업의 [n회 더 뽑기]도 여기로 들어온다 (2026-10-09)
+// 팝업이 요청을 직접 보내면 대기·연타 방지·실패 알림을 두 벌 갖게 된다. 마지막에 누른 줄을 기억해 두고
+// 'DrawAgain'으로 같은 줄을 다시 누른 것처럼 처리한다. 팝업은 'DrawStateChanged'를 듣고 버튼 잠금을 맞춘다.
 public class GachaPresenter : MonoBehaviour
 {
     // 뽑기 버튼 하나 — 어느 풀을 몇 회 뽑는가. 인스펙터에서 짝지어 넣는다.
@@ -63,6 +67,22 @@ public class GachaPresenter : MonoBehaviour
     // 응답을 기다리는 중인가 — 연타로 두 번 나가면 인벤토리·재화가 꼬이므로 버튼을 잠근다.
     private bool _isWaiting;
 
+    // 마지막으로 요청한 줄(draws의 번호). 아직 뽑은 적이 없으면 -1 — [n회 더 뽑기]가 이 줄을 다시 누른다.
+    private int _lastIndex = -1;
+
+    // [n회 더 뽑기]를 지금 누를 수 있는지가 바뀌었다 — 대기 시작/종료 · 재화 변경 · 패널 켜짐/꺼짐.
+    public event Action? DrawStateChanged;
+
+    // 마지막으로 뽑은 횟수 (1 · 10). 아직 뽑은 적이 없으면 0.
+    public int LastDrawCount => _lastIndex >= 0 ? draws[_lastIndex].drawCount : 0;
+
+    // 마지막 줄을 지금 다시 뽑을 수 있는가 — 패널이 켜져 있고(꺼지면 응답 구독이 풀려 대기를 닫을 수 없다),
+    // 대기 중이 아니고, 골드가 그 줄의 비용 이상이어야 한다. 'Refresh'의 버튼 잠금과 같은 판정이다.
+    public bool CanDrawAgain => isActiveAndEnabled
+                                && _lastIndex >= 0
+                                && !_isWaiting
+                                && _data.Gold >= CostAt(_lastIndex);
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -95,10 +115,11 @@ public class GachaPresenter : MonoBehaviour
         }
     }
 
-    // 구독 해제 (Unity 메시지)
+    // 구독 해제 (Unity 메시지) — 꺼진 패널로는 다시 뽑을 수 없으니 팝업에도 알린다
     private void OnDisable()
     {
         Unsubscribe();
+        DrawStateChanged?.Invoke();
     }
 
     #region 구독
@@ -245,6 +266,8 @@ public class GachaPresenter : MonoBehaviour
 
         DrawEntry entry = draws[index];
 
+        _lastIndex = index;
+
         _network.Send(new C_GachaDrawRequest
         {
             GachaId   = entry.gachaId,
@@ -257,6 +280,18 @@ public class GachaPresenter : MonoBehaviour
         _isWaiting  = true;
         Refresh();
         _waitHandle = _wait.Begin($"가챠 {entry.drawCount}회", onClosed: OnWaitClosed);
+    }
+
+    // 결과 팝업의 [n회 더 뽑기] — 마지막에 누른 줄을 다시 누른다 (GachaResultPresenter에서 호출).
+    // 잠금 판정은 'CanDrawAgain' 하나로 한다 — 팝업 버튼이 늦게 갱신됐어도 여기서 한 번 더 막는다.
+    public void DrawAgain()
+    {
+        if (!CanDrawAgain)
+        {
+            return;
+        }
+
+        Draw(_lastIndex);
     }
 
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼을 다시 연다 (ServerWaitManager.Begin의 onClosed)
@@ -299,11 +334,14 @@ public class GachaPresenter : MonoBehaviour
                 continue;
             }
 
-            long cost = i < _costs.Count ? _costs[i] : 0L;
-
-            draws[i].button.interactable = !_isWaiting && _data.Gold >= cost;
+            draws[i].button.interactable = !_isWaiting && _data.Gold >= CostAt(i);
         }
+
+        DrawStateChanged?.Invoke();
     }
+
+    // draws[index]의 비용. 'ValidateDraws' 전이면 0.
+    private long CostAt(int index) => index < _costs.Count ? _costs[index] : 0L;
 
     #endregion
 }

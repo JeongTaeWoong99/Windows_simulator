@@ -82,6 +82,23 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석. 캐릭터 탭에서만 켜진다")]
     private EquipPipsView equipPips = null!;
 
+    // ※ 글자가 아니라 그림이다 — 옛 폰트에 '★' 글리프가 없어 그림으로 정했다('Inventory 규칙.md').
+    // ※ 얻은 ★만 켠다. ★0이면 줄째 꺼져 대부분의 칸이 깨끗하게 남는다(T-130 목업).
+    [CenterHeader("응축 ★ (캐릭터 탭)")]
+    [SerializeField, Tooltip("★ 줄 — 이름 아래 왼쪽. ★0이면 꺼진다")]
+    private GameObject starRow = null!;
+
+    [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 왼쪽부터 ★ 수만큼 켜진다")]
+    private Image[] starImages = new Image[0];
+
+    // ※ 응축 창이 열린 동안만 켜진다 — 대상은 파랑 테두리, 고른 재료는 노랑 테두리 + 체크.
+    //   못 넣는 칸(다른 캐릭터 · 배치·착용 중)은 표시를 따로 두지 않고 흑백으로 그린다('SlotCondenseMark.Excluded').
+    [SerializeField, Tooltip("응축 대상 표시 — 파랑 테두리. 평소에는 꺼져 있다")]
+    private GameObject condenseTargetMark = null!;
+
+    [SerializeField, Tooltip("응축 재료로 고름 표시 — 노랑 테두리 + 체크. 평소에는 꺼져 있다")]
+    private GameObject condensePickMark = null!;
+
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
 
@@ -94,6 +111,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
     // 작업슬롯 선택 화면의 캐릭터 줄도 같은 5칸을 그린다.
     public static readonly int AptitudeCount = AptitudeLabel.Count;
+
+    // 칸이 그릴 수 있어야 하는 ★ 수 — 'CharacterStarTable' 행 수(4)와 맞춘다. 프리팹의 ★ 그림 수 확인에만 쓴다.
+    private const int MaxStarImages = 4;
 
     // 이 칸이 그리고 있는 대상. 자원은 ItemId, 캐릭터는 개체 번호. 비어 있으면 0.
     public long Key { get; private set; }
@@ -128,6 +148,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 지금 흑백 처리 중인가('SetFilteredOut'). 딤과 같은 이유로 'Bind' 뒤에 다시 반영한다.
     private bool _isFilteredOut;
 
+    // 응축 창이 이 칸을 재료로 못 쓴다고 했나('SetCondenseMark'). 찾기 제외와 같은 흑백으로 그린다.
+    // ※ 찾기와 플래그를 나눈 이유 — 응축 창을 닫으면 이것만 걷혀야 한다. 찾기 조건은 그대로 남는다.
+    private bool _isCondenseExcluded;
+
     // 아이콘의 원래 색. 딤을 되돌릴 기준값이라 프리팹 값을 한 번만 읽어 둔다.
     private Color _itemBaseColor = Color.white;
     private Color _itemPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
@@ -159,6 +183,15 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(assignMark,     nameof(assignMark));
         this.RequireRef(statSocketStrip, nameof(statSocketStrip));
         this.RequireRef(equipPips,       nameof(equipPips));
+        this.RequireRef(starRow,            nameof(starRow));
+        this.RequireRef(condenseTargetMark, nameof(condenseTargetMark));
+        this.RequireRef(condensePickMark,   nameof(condensePickMark));
+
+        // ★ 그림이 최고 ★보다 적으면 높은 ★이 덜 그려진다 — 조용히 틀리므로 경고한다.
+        if (starImages.Length < MaxStarImages)
+        {
+            ClientLogger.Warn(ClientLogger.UI, $"★ 그림이 {starImages.Length}개다 — 최고 ★ {MaxStarImages}보다 적다.", this);
+        }
 
         // 네모가 상한보다 적으면 전설·신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
         if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
@@ -188,6 +221,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         levelBadge.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
+        starRow.SetActive(false);
+        condenseTargetMark.SetActive(false);
+        condensePickMark.SetActive(false);
     }
 
     // 칸을 클릭했다 — 좌·우를 갈라 위로 던진다 (EventSystem 클릭 콜백).
@@ -389,6 +425,35 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         expGauge.SetValueWithoutNotify(progress!.Value);
     }
 
+    // 응축 ★을 그린다 — 왼쪽부터 ★ 수만큼 켜고, 0이면 줄을 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 0이 아니다).
+    public void SetStars(int star)
+    {
+        starRow.SetActive(star > 0);
+
+        for (int i = 0; i < starImages.Length; i++)
+        {
+            starImages[i].gameObject.SetActive(i < star);
+        }
+    }
+
+    // 응축 창에서 이 칸이 무엇인가를 그린다 (인벤토리 격자가 매번 그릴 때 호출 — 응축 창이 닫혀 있으면 늘 'None').
+    public void SetCondenseMark(SlotCondenseMark mark)
+    {
+        condenseTargetMark.SetActive(mark == SlotCondenseMark.Target);
+        condensePickMark.SetActive(mark == SlotCondenseMark.Material);
+
+        bool excluded = mark == SlotCondenseMark.Excluded;
+
+        if (_isCondenseExcluded == excluded)
+        {
+            return;
+        }
+
+        _isCondenseExcluded = excluded;
+
+        ApplyTint();
+    }
+
     // 판매 목록에 담겼음을 표시한다 (인벤토리 격자가 매번 그릴 때 호출).
     //
     // 'SetSubVisible'과 달리 한 번 정하고 끝나는 스위치가 아니다 — 담기·빼기로 계속 바뀐다.
@@ -442,7 +507,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
     }
 
-    // 보관해 둔 등급색·아이콘 색에 딤·흑백을 반영한다 (Bind · SetDimmed · SetFilteredOut · Clear에서 호출).
+    // 흑백으로 그리나 — 찾기 제외 또는 응축 재료로 못 씀. 둘은 같은 모양이다.
+    private bool IsGray => _isFilteredOut || _isCondenseExcluded;
+
+    // 보관해 둔 등급색·아이콘 색에 딤·흑백을 반영한다 (Bind · SetDimmed · SetFilteredOut · SetCondenseMark · Clear에서 호출).
     private void ApplyTint()
     {
         rarityImage.color = Tint(_rarityColor);
@@ -456,16 +524,16 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             }
         }
 
-        equipPips.SetTint(_isDimmed, _isFilteredOut);
+        equipPips.SetTint(_isDimmed, IsGray);
 
-        float textAlpha = _isFilteredOut ? FilteredOutTextAlpha : 1f;
+        float textAlpha = IsGray ? FilteredOutTextAlpha : 1f;
 
         nameText.alpha = _nameBaseAlpha * textAlpha;
         subText.alpha  = _subBaseAlpha  * textAlpha;
     }
 
     // 원래 색에 이 칸의 흑백·딤을 입힌다 (ApplyTint에서 호출).
-    private Color Tint(Color source) => TintColor(source, _isDimmed, _isFilteredOut);
+    private Color Tint(Color source) => TintColor(source, _isDimmed, IsGray);
 
     // 원래 색에 흑백(찾기 제외) → 딤(나가 있음)을 차례로 입힌다. 알파는 건드리지 않는다.
     // ※ 칸 안에 끼운 다른 View('EquipPipsView')도 이 규칙 하나로 어두워진다 — 따로 두면 네모만 떠 보인다.
@@ -493,6 +561,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _rarityColor   = RarityPalette.Unknown;
         _isDimmed      = false;
         _isFilteredOut = false;
+        _isCondenseExcluded = false;
         nameText.text  = "";
         subText.text   = "";
 
@@ -506,5 +575,27 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         SetLevelBadge(null);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
+        SetStars(0);
+        condenseTargetMark.SetActive(false);
+        condensePickMark.SetActive(false);
     }
+}
+
+// 응축 창이 열린 동안 칸 하나가 무엇인가 ('SlotView.SetCondenseMark'). 뜻은 인벤토리 격자가 정한다.
+public enum SlotCondenseMark
+{
+    // 응축 창이 닫혀 있다 — 아무것도 그리지 않는다
+    None,
+
+    // ★을 올릴 대상 — 파랑 테두리
+    Target,
+
+    // 재료로 고른 칸 — 노랑 테두리 + 체크
+    Material,
+
+    // 고를 수 있지만 아직 안 고른 칸 — 평소 모습 그대로
+    Candidate,
+
+    // 재료로 못 쓴다(다른 캐릭터 · 배치·착용 중) — 흑백
+    Excluded,
 }

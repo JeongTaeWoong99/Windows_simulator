@@ -38,6 +38,10 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("슬롯 무대 (Visible Panel). 비우면 연출 없이 바탕만 남는다")]
     private SlotStageView? stage;
 
+    // 무대 안이 아니라 칸 루트에 붙는다 — 무대는 'RectMask2D'라 위로 오르는 아이콘이 잘린다.
+    [SerializeField, Tooltip("아이템 획득 연출 (칸 루트의 ItemGainEffectView). 비우면 연출 없이 지나간다")]
+    private ItemGainEffectView? gainEffect;
+
     private WorkStationSlotInfo? _slot;
 
     // 이 뷰가 그리고 있는 슬롯 번호. 미바인딩이면 -1.
@@ -93,9 +97,10 @@ public class WorkStationSlotView : MonoBehaviour
         // 레벨 0은 적지 않는다 — 서버 기본값이 1이라 올 일이 없고, 'Lv0'은 없는 값이다.
         string industryWithLevel = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
 
-        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배)
-        float speedMultiplier = slot.CurrentWorkSpeed / (float)Constants.WorkSpeedScale;
-        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배";
+        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 '(최대)'를 붙인다 (T-102)
+        float  speedMultiplier = WorkStationProgress.GetEffectiveSpeed(slot) / (float)Constants.WorkSpeedScale;
+        string capMark         = WorkStationProgress.IsAtMinCycle(slot) ? "(최대)" : "";
+        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배{capMark}";
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
@@ -108,9 +113,35 @@ public class WorkStationSlotView : MonoBehaviour
     // 배치된 캐릭터의 장착 네모를 그린다 (WorkStationListPresenter가 Bind 뒤에 호출).
     //   grades : 'EquipLabel.WornSlots' 순서의 등급 — 'None'은 빈 칸
     //   icons  : 같은 순서의 장비 아이콘 — 빈 칸·그림 없음은 null
-    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons)
+    //   tooltip : 장비 줄에 올리면 띄울 내용 — 칸마다 낀 장비 이름·등급
+    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons, System.Func<TooltipContent?> tooltip)
     {
         equipPips.Bind(grades, icons);
+        equipPips.SetTooltip(tooltip);
+    }
+
+    // 이 칸에서 얻은 아이템을 띄운다 — 쓰러지는 대상 자리에서, 무대 그림이 없으면 무대 가운데에서
+    // (WorkStationListPresenter의 GatherResultReceived 구독에서 호출).
+    // 땅이 흐르면 대상과 함께 흘러간다 — 화면에 박혀 있으면 캐릭터를 따라오는 것처럼 보인다.
+    public void PlayGain(IReadOnlyList<ItemGainEffectView.Gain> gains)
+    {
+        if (gainEffect == null)
+        {
+            return;
+        }
+
+        if (stage == null)
+        {
+            gainEffect.Play(transform.position, gains);
+
+            return;
+        }
+
+        SlotStageView stageView = stage;
+        Vector3       point     = stageView.TryGetHarvestPoint(out Vector3 harvest) ? harvest : stageView.transform.position;
+        double        ground    = stageView.GroundDistance;
+
+        gainEffect.Play(point, gains, () => stageView.FollowGround(point, ground));
     }
 
     // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

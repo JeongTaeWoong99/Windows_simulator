@@ -25,6 +25,16 @@
 
 - [2026-10-08 문서 사이트 게임 데이터 뷰어 /data (T-132)](2026-10-08-web-data-viewer.md) — `#docs` `#data` DataLog JSON을 테이블별 페이지로 · 이름표 · Weight 비율
 - [2026-10-07 문서 사이트 회차 탭에 닫힌 일감도 담는다](2026-10-07-web-cycle-tab-closed.md) — `#docs` 회차 탭 + 상태 Closed 필터로 그 회차에 끝낸 일을 본다
+- [2026-10-09 보상 결과 하나씩 공개 연출 (T-031 · T-033)](2026-10-09-reward-reveal-fx.md) — `#client` `#fx` 칸에 런타임 부착 · 이펙트 그림은 코드 생성(Art 저장소 분리) · 스킵은 칸 클릭도 구독 · reveal 씬 직렬화
+- [2026-10-09 아이템 획득 연출 — 아이콘 뒤 등급 빛](2026-10-09-item-gain-glow.md) — `#client` `#fx` 등급 3단계(번짐/광선/섬광+빛 기둥·겹광선) · 아이콘 묶음 풀 · 배율 조정값 · FxSprites 이름표 — 코드 그리기 삭제·그림만(make_fx.py)
+- [2026-10-09 위젯 상단 줄 — 수익 집계 · 초기화 버튼 · 아이콘화](2026-10-09-widget-earnings.md) — `#client` `#ui` 수확 증가분 × BasePrice · 세션 기준 · 증가분은 덮어쓰기 전에
+- [2026-10-09 폰트 Pretendard 교체 · EN/KR Static 분리 (T-100)](2026-10-09-pretendard-font-kr-en.md) — `#client` `#ui` 호환 자모 누락이 □ 원인 · KR 아틀라스 꽉 참 · 기호는 EN만 다시 굽기
+- [2026-10-09 캐릭터 응축 화면 (T-130 · 이슈 #59)](2026-10-09-character-condense-ui.md) — `#client` `#ui` 판매 목록 자리 · 격자가 재료 고르기 · ★ 스프라이트(폰트에 없음) · 꺼진 창 첫 프레임 NRE
+- [2026-10-09 클라 ServerClock과 치트 창 시간 칸](2026-10-09-server-clock-time-cheat.md) — `#client` `#cheat` 정적 `ServerClock`(Managers 아님 — 쓰는 쪽이 정적 헬퍼) · T-106 · 이슈 #48
+- [2026-10-09 획득 아이콘 1.5배 · 캐릭터 자리 비율화 · 큐브 제외 · 가챠 다시 뽑기](2026-10-09-ui-tweaks-cube-redraw.md) — `#client` `#ui` SlotStageSettings.characterAnchor · IsCube · GachaPresenter.DrawAgain
+- [2026-10-08 아이템 획득 연출 — 큰 창 칸 · 위젯 칸 (T-015)](2026-10-08-item-gain-effect.md) — `#client` `#ui` ItemGainEffectView · 채취 푸시로 띄움 · finally 이중 Kill 함정
+- [2026-10-08 장비 툴팁 두 곳 · T-103·T-104·T-121 닫기](2026-10-08-equip-tooltips-close.md) — `#client` `#ui` 작업슬롯 장비 줄·슬롯 설정 장비 칸 툴팁 · 아이콘은 VisualCatalog(특수 5종만 없음)
+- [2026-10-08 오브젝트 풀 · 코루틴 → UniTask (T-132)](2026-10-08-object-pool-unitask.md) — `#client` `#infra` Common/object-pool 신설 · 코루틴 0건 · 슬롯 뷰 파괴 대신 재사용
 - [2026-10-07 문서 그래프 -Fix가 한글 문서 이름을 지킨다 (T-090)](2026-10-07-doc-graph-fix-name.md) — `#docs` `#infra` README 이름을 블록의 한글 이름으로 · 맞는 블록은 다시 쓰지 않음
 - [2026-10-07 캐릭터 응축 서버 (T-130)](2026-10-07-character-condense.md) — `#server` `#data` 같은 캐릭터를 녹여 ★ · 개체는 누적 재료 수만 저장
 - [2026-10-07 캐릭터 장착 네모 · 상반신 여백 제거 (T-104)](2026-10-07-equip-pips-portrait-crop.md) — `#client` `#ui` `#editor` 인벤토리 캐릭터 칸·작업슬롯 칸에 장비 등급 네모 4개

@@ -26,6 +26,10 @@ namespace DesktopWindowControl.EditorTools
 		private const float  TraitLevelWidth    = 56f;   // 특성 줄의 'Lv 지금/최대' 고정 폭 — 버튼 열을 맞춘다
 		private const float  StepButtonWidth    = 34f;   // 특성 줄의 [기본]·[-1]·[+1]·[최대] 폭(px)
 
+		// 전역 배수 천분율 범위 — 서버 'SetGatherSpeed'가 받는 범위와 같다(밖이면 InvalidCheatArgs).
+		private const int MinGatherSpeedPermille = 100;
+		private const int MaxGatherSpeedPermille = 100_000;
+
 		private static readonly Color DoneColor    = new(0.45f, 0.85f, 0.45f);
 		private static readonly Color PendingColor = new(0.95f, 0.65f, 0.25f);
 		private static readonly Color ErrorColor   = new(1.00f, 0.45f, 0.45f);
@@ -43,8 +47,15 @@ namespace DesktopWindowControl.EditorTools
 		private static readonly Color UnlockAccent    = new(0.95f, 0.55f, 0.30f);   // 해금 — 주황
 		private static readonly Color MailAccent      = new(0.60f, 0.60f, 0.65f);   // 우편 — 회색
 		private static readonly Color TraitAccent     = new(0.65f, 0.85f, 0.30f);   // 특성 레벨 — 연두
+		private static readonly Color TimeAccent      = new(0.85f, 0.30f, 0.35f);   // 시간 — 진홍
 
 		private static readonly long[] GoldQuickAmounts = { 1_000, 100_000, -1_000 };
+
+		// 시간 넘기기 단축 버튼 — 48시간은 경매 등록 기간, 7일은 받은 우편 보관 기간이다.
+		private static readonly (string Label, long Seconds)[] TimeQuickSteps =
+		{
+			("+1시간", 3_600), ("+1일", 86_400), ("+2일", 172_800), ("+7일", 604_800),
+		};
 
 		// 입력값 — 플레이 진입(도메인 리로드)에도 남도록 직렬화한다.
 		[SerializeField] private long      _goldAmount      = 1_000;
@@ -54,11 +65,14 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private int       _characterCount  = 1;
 		[SerializeField] private long      _expCharacterId;
 		[SerializeField] private int       _expAmount       = 100;
+		[SerializeField] private int       _condenseCount;
 		[SerializeField] private TidPicker _equipPicker     = new();
 		[SerializeField] private int       _settleJudges    = 1;
 		[SerializeField] private int       _unlockTid;
 		[SerializeField] private TidPicker _mailPicker      = new();
 		[SerializeField] private long      _mailTargetUid;  // 0이면 전체 우편
+		[SerializeField] private long      _advanceSeconds  = 3_600;
+		[SerializeField] private int       _gatherSpeedPermille = 2_000;
 
 		private Vector2 _scroll;
 		private Vector2 _logScroll;
@@ -111,6 +125,7 @@ namespace DesktopWindowControl.EditorTools
 			DrawCharacterExp();
 			DrawEquip();
 			DrawSettle();
+			DrawTime();
 			DrawMail();
 			DrawUnlock();
 			DrawTraitLevel();
@@ -392,9 +407,10 @@ namespace DesktopWindowControl.EditorTools
 		}
 
 		// 경험치는 캐릭터 '종류'가 아니라 내가 가진 '개체'에 준다 — 목록은 테이블이 아니라 보유 캐릭터다.
+		// 응축 누적도 같은 개체에 정하므로 한 묶음에 둔다 — 서버 'SetCondenseCount'(Arg1 = CharacterId · Arg2 = 누적 수, T-130).
 		private void DrawCharacterExp()
 		{
-			BeginSection("캐릭터 경험치", ExpAccent);
+			BeginSection("캐릭터 경험치 · 응축", ExpAccent);
 
 			var model = CheatGuard.FindLoggedInModel();
 
@@ -425,6 +441,20 @@ namespace DesktopWindowControl.EditorTools
 				}
 			}
 
+			// 누적 0~최고 ★ 기준. 서버가 같은 범위로 자른다 — 슬라이더는 표가 안 읽혔을 때만 넉넉히 연다.
+			var maxCount = GameDataLoader.IsLoaded ? GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar) : 999;
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("응축 누적", GUILayout.Width(LabelWidth));
+				_condenseCount = EditorGUILayout.IntSlider(_condenseCount, 0, maxCount);
+
+				if (GUILayout.Button("정하기", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetCondenseCount, _expCharacterId, _condenseCount);
+				}
+			}
+
 			EndSection(ExpAccent);
 		}
 
@@ -437,7 +467,7 @@ namespace DesktopWindowControl.EditorTools
 			for (var i = 0; i < characters.Count; i++)
 			{
 				var character = characters[i];
-				labels[i] = $"{model.GetCharacterName(character.CharacterId)}  Lv{character.Level}  Exp{character.Exp}  (#{character.CharacterId})";
+				labels[i] = $"{model.GetCharacterName(character.CharacterId)}  Lv{character.Level}  Exp{character.Exp}  {character.Star}성({character.CondenseCount})  (#{character.CharacterId})";
 
 				if (character.CharacterId == selectedId)
 				{
@@ -487,7 +517,103 @@ namespace DesktopWindowControl.EditorTools
 				Request(ECheatCommand.Settle, _settleJudges);
 			}
 
+			DrawGatherSpeed();
+
 			EndSection(SettleAccent);
+		}
+
+		// 서버 전체의 채취 전역 배수 — 서버 'SetGatherSpeed'(Arg1 = 천분율, 100~100,000). 정산 칸 안에 붙인다.
+		// 바꾸면 서버가 접속 중인 모두에게 슬롯을 다시 보내 속도·주기가 바로 바뀐다.
+		// ※ 서버는 저장하지 않는다 — 재시작하면 ×1.0이다. 지금 값은 받은 슬롯의 'GatherSpeedPermille'을 읽는다.
+		// ※ 배수가 아무리 커도 판정 주기는 'Constants.MinCycleMs' 아래로 내려가지 않는다 — 연출 한 바퀴 보장(T-102).
+		private void DrawGatherSpeed()
+		{
+			EditorGUILayout.Space(4f);
+
+			var model   = CheatGuard.FindLoggedInModel();
+			var current = model != null && model.WorkStationSlots.Count > 0 ? model.WorkStationSlots[0].GatherSpeedPermille : 0;
+			DrawColoredLabel(current > 0 ? $"전역 배수: ×{current / 1000f:0.00}" : "전역 배수: (로그인 후 표시)", GUI.contentColor);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("천분율", GUILayout.Width(LabelWidth));
+				_gatherSpeedPermille = Mathf.Clamp(EditorGUILayout.IntField(_gatherSpeedPermille), MinGatherSpeedPermille, MaxGatherSpeedPermille);
+
+				if (GUILayout.Button("적용", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetGatherSpeed, _gatherSpeedPermille);
+				}
+
+				if (GUILayout.Button("×1", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.SetGatherSpeed, 1000);
+				}
+			}
+
+			EditorGUILayout.LabelField("1000 = ×1.0 · 서버 전체 · 재시작하면 ×1.0", EditorStyles.miniLabel);
+			EditorGUILayout.LabelField("배수를 올려도 판정은 최소 주기(엑셀 MinCycleMs)보다 짧아지지 않는다", EditorStyles.miniLabel);
+		}
+
+		// 서버 전체의 게임 시계를 앞으로 넘긴다 — 서버 'AdvanceTime'(Arg1 = 초, 1초~1년, 누적) · 'ResetTime'(오프셋 0).
+		// 넘기면 서버가 'S_ServerTimeResponse'를 다시 보내 'ServerClock'이 따라가고, 남은 시간 · 삭제까지 표시가 함께 움직인다.
+		//
+		// ※ 채취는 쌓이지 않는다 — 서버가 슬롯 기준 시각도 같이 민다. 판정을 당기려면 위 '정산' 칸.
+		// ※ 받은 우편 7일 삭제는 로그인 때 판정한다 — 넘긴 뒤 다시 접속해야 사라진다.
+		private void DrawTime()
+		{
+			BeginSection("시간", TimeAccent);
+
+			var isLoggedIn = CheatGuard.FindLoggedInModel() != null;
+			DrawColoredLabel(isLoggedIn ? $"게임 시계: {FormatOffset(ServerClock.Offset)}" : "게임 시계: (로그인 후 표시)",
+			                 GUI.contentColor);
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				foreach (var (label, seconds) in TimeQuickSteps)
+				{
+					if (GUILayout.Button(label, EditorStyles.miniButton))
+					{
+						Request(ECheatCommand.AdvanceTime, seconds);
+					}
+				}
+			}
+
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				EditorGUILayout.LabelField("초", GUILayout.Width(LabelWidth));
+				_advanceSeconds = Math.Max(1L, EditorGUILayout.LongField(_advanceSeconds));
+
+				if (GUILayout.Button("넘기기", GUILayout.Width(ButtonWidth)))
+				{
+					Request(ECheatCommand.AdvanceTime, _advanceSeconds);
+				}
+			}
+
+			if (GUILayout.Button("실제 시각으로 되돌리기"))
+			{
+				Request(ECheatCommand.ResetTime);
+			}
+
+			EditorGUILayout.LabelField("되돌려도 넘긴 동안 저장된 시각(우편 도착 · 경매 등록)은 미래로 남는다", EditorStyles.miniLabel);
+
+			EndSection(TimeAccent);
+		}
+
+		// 게임 시계가 PC보다 얼마나 앞섰나 — "실제 시각" · "+2일 3시간 5분".
+		// 차이에는 PC 시계 오차도 섞이므로 1분 아래는 실제 시각으로 본다.
+		private static string FormatOffset(TimeSpan offset)
+		{
+			if (Math.Abs(offset.TotalMinutes) < 1d)
+			{
+				return "실제 시각";
+			}
+
+			var sign = offset < TimeSpan.Zero ? "-" : "+";
+			var abs  = offset.Duration();
+
+			return abs.TotalDays >= 1d
+				? $"{sign}{(int)abs.TotalDays}일 {abs.Hours}시간 {abs.Minutes}분"
+				: $"{sign}{abs.Hours}시간 {abs.Minutes}분";
 		}
 
 		// 우편 템플릿 한 줄을 보낸다. 받는 UID가 0이면 전체 우편이다 — 템플릿의 PeriodDays 동안 로그인하는 모두가 받는다

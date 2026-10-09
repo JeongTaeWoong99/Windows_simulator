@@ -89,6 +89,29 @@ public class EquipPipsView : MonoBehaviour
         SetTint(false, false);
     }
 
+    // 줄에 마우스를 올리면 띄울 툴팁을 단다 — 네모는 등급만 말하니 무엇을 꼈는지는 툴팁으로 읽는다.
+    //   provider : 띄우는 순간에 부른다('TooltipTrigger'). null을 넘기면 뜨지 않는다
+    //
+    // ※ 칸 전체에 툴팁이 따로 있는 곳(인벤토리 캐릭터 칸 — 장비 묶음이 이미 들어 있다)에서는 부르지 않는다.
+    // ※ 네모가 레이캐스트를 받아야 뜬다 — 부를 때 켠다. 클릭은 부모 버튼으로 그대로 올라간다.
+    public void SetTooltip(System.Func<TooltipContent?>? provider)
+    {
+        if (!TryGetComponent(out TooltipTrigger trigger))
+        {
+            trigger = gameObject.AddComponent<TooltipTrigger>();
+        }
+
+        trigger.SetProvider(provider);
+
+        foreach (Image pip in pipImages)
+        {
+            if (pip != null)
+            {
+                pip.raycastTarget = true;
+            }
+        }
+    }
+
     // 칸의 딤(나가 있음)·흑백(찾기 제외)을 네모에도 입힌다 ('SlotView.ApplyTint'가 호출).
     // ※ 색 규칙은 'SlotView.TintColor' 하나다 — 칸과 네모가 다르게 어두워지면 네모만 떠 보인다.
     public void SetTint(bool dimmed, bool filteredOut)

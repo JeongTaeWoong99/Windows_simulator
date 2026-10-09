@@ -1,8 +1,13 @@
+using System;
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using GameData;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // 보상 결과 팝업 — 이번에 얻은 것을 5열로 늘어놓고, 닫기를 누르면 사라진다.
@@ -15,6 +20,22 @@ using UnityEngine.UI;
 // 늘어놓는 방식만 갈린다 — 가챠는 뽑힌 순서 그대로, 상자는 종류별 합계다('OnItemUseCompleted').
 // 우편 수령도 여기로 온다 — 받은 우편의 첨부를 상자처럼 종류별로 합친다('OnMailRewardsClaimed').
 //
+// ■ [n회 더 뽑기] — 가챠 결과에서만 보인다 (2026-10-09)
+// 닫기 왼쪽에 둔다. 방금 뽑은 횟수 그대로(1회면 1회, 10회면 10회) 같은 풀을 다시 뽑는다.
+// 요청은 'GachaPresenter.DrawAgain'에 맡긴다 — 대기·연타 방지·실패 알림이 그쪽에 한 벌 있다.
+// 결과가 오면 이 팝업이 새 결과로 다시 그려진다(닫았다 열 필요 없다).
+// 상자·우편 결과에서는 숨긴다 — 다시 할 '뽑기'가 없다.
+//
+// ■ 하나씩 공개한다 — 공개 연출 (T-031 · T-033, 2026-10-09 목업 A + D)
+// 창은 다 자란 채로 뜨고(칸은 자리를 지키되 투명), 칸이 받은 순서대로 하나씩 튀어나온다.
+// 영웅↑은 멈칫 → 차오름 → 빛 폭발로 공개하고, 전설↑은 창까지 흔든다. 공개 뒤 고등급 칸은 빛이 남는다.
+// 가챠·상자·우편 세 경로가 같은 연출을 쓴다 — 늘어놓는 방식(낱개·합계)만 갈린다.
+// 칸 하나의 움직임은 'RewardRevealFx', 폭발은 'RewardBurstFx', 조정값은 'RewardRevealSettings'(인스펙터 'reveal')에 있다.
+//
+// 공개 중에는 [n회 더 뽑기] · 닫기가 잠긴다 — 결과를 다 보기 전에 창을 닫거나 새 결과로 덮지 못한다.
+// 공개 중에 창 아무 곳(칸 포함)을 누르면 **스킵** — 남은 칸이 한꺼번에 끝 모습으로 놓이고 버튼이 풀린다.
+// 칸 클릭은 'SlotView'가 먼저 받으므로('IPointerClickHandler') 칸의 클릭 이벤트도 함께 구독해 스킵으로 읽는다.
+//
 // ■ 왜 거래 열이 아니라 '!System Canvas'인가
 // 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
 // 거래 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
@@ -26,7 +47,7 @@ using UnityEngine.UI;
 // ⚠️ 'Rewards'는 이번에 얻은 델타(연출용)다
 // 인벤토리 수량은 'ItemChangeInfos'(누적 총량)로 'PlayerDataModel'이 이미 반영해 두었다.
 // 여기서 다시 더하면 수량이 두 배가 된다 — 이 팝업은 오직 보여 주기만 한다.
-public class GachaResultPresenter : MonoBehaviour
+public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 {
     [CenterHeader("참조")]
     [SerializeField, Tooltip("팝업 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
@@ -44,8 +65,35 @@ public class GachaResultPresenter : MonoBehaviour
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
+    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 — 닫기 왼쪽. 가챠 결과에서만 보인다. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    private Button drawAgainButton = null!;
+
+    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 문구 — 방금 뽑은 횟수로 코드가 채운다")]
+    private TMP_Text drawAgainText = null!;
+
+    [SerializeField, Tooltip("다시 뽑기를 맡길 가챠 패널 (거래 열)")]
+    private GachaPresenter gacha = null!;
+
+    [SerializeField, Tooltip("결과 창 상자(Panel) — 폭발 층을 이 위에 만들고, 전설↑ 공개 때 흔든다")]
+    private RectTransform panel = null!;
+
+    [SerializeField, Tooltip("하나씩 공개하는 연출의 조정값")]
+    private RewardRevealSettings reveal = new RewardRevealSettings();
+
     // 만들어 둔 칸들. 뽑기 횟수가 1회와 10회를 오가므로 파괴하지 않고 켜고 끄며 돌려쓴다.
     private readonly List<SlotView> _slots = new List<SlotView>();
+
+    // 칸마다 붙인 공개 연출 — '_slots'와 같은 순서
+    private readonly List<RewardRevealFx> _revealFxs = new List<RewardRevealFx>();
+
+    // 이번 결과의 칸별 등급 — 공개 순서와 스킵이 읽는다
+    private readonly List<GlobalRarity> _revealRarities = new List<GlobalRarity>();
+
+    private RewardBurstFx?           _burst;
+    private CancellationTokenSource? _revealCts;
+    private Tween?                   _panelShake;
+    private Vector2                  _panelRestPosition; // 흔들기를 끊었을 때 돌아갈 창 자리
+    private bool                     _isRevealing;       // 하나씩 공개하는 중인가 — 스킵할 것이 있는가
 
     private PlayerDataModel _data = null!;
 
@@ -56,16 +104,23 @@ public class GachaResultPresenter : MonoBehaviour
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
-        this.RequireRef(group,       nameof(group));
-        this.RequireRef(titleText,   nameof(titleText));
-        this.RequireRef(slotParent,  nameof(slotParent));
-        this.RequireRef(slotPrefab,  nameof(slotPrefab));
-        this.RequireRef(closeButton, nameof(closeButton));
+        this.RequireRef(group,           nameof(group));
+        this.RequireRef(titleText,       nameof(titleText));
+        this.RequireRef(slotParent,      nameof(slotParent));
+        this.RequireRef(slotPrefab,      nameof(slotPrefab));
+        this.RequireRef(closeButton,     nameof(closeButton));
+        this.RequireRef(drawAgainButton, nameof(drawAgainButton));
+        this.RequireRef(drawAgainText,   nameof(drawAgainText));
+        this.RequireRef(gacha,           nameof(gacha));
+        this.RequireRef(panel,           nameof(panel));
 
-        _data = Services.Get<PlayerDataModel>();
+        _data              = Services.Get<PlayerDataModel>();
+        _burst             = RewardBurstFx.Create(panel, reveal);
+        _panelRestPosition = panel.anchoredPosition;
 
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
+        drawAgainButton.onClick.AddListener(OnDrawAgainClicked);
 
         SetVisible(false); // 시작은 숨김 — 가챠·개봉 결과가 오면 켜진다
         _isReady = true;
@@ -80,10 +135,11 @@ public class GachaResultPresenter : MonoBehaviour
         }
     }
 
-    // 구독 해제 (Unity 메시지)
+    // 구독 해제 · 공개 중이면 끊는다 (Unity 메시지)
     private void OnDisable()
     {
         Unsubscribe();
+        CancelReveal();
     }
 
     #region 구독
@@ -100,6 +156,7 @@ public class GachaResultPresenter : MonoBehaviour
         _data.GachaCompleted     += OnGachaCompleted;
         _data.ItemUseCompleted   += OnItemUseCompleted;
         _data.MailRewardsClaimed += OnMailRewardsClaimed;
+        gacha.DrawStateChanged   += RefreshDrawAgain;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -114,6 +171,7 @@ public class GachaResultPresenter : MonoBehaviour
         _data.GachaCompleted     -= OnGachaCompleted;
         _data.ItemUseCompleted   -= OnItemUseCompleted;
         _data.MailRewardsClaimed -= OnMailRewardsClaimed;
+        gacha.DrawStateChanged   -= RefreshDrawAgain;
     }
 
     #endregion
@@ -124,6 +182,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
         Show(ToSlots(rewards), "가챠", showCount: false);
+        ShowDrawAgain(true);
     }
 
     // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
@@ -136,6 +195,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
         Show(Summarize(rewards), "상자 개봉", showCount: true);
+        ShowDrawAgain(false);
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -147,6 +207,7 @@ public class GachaResultPresenter : MonoBehaviour
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
         Show(SummarizeMails(mails), "우편 수령", showCount: true);
+        ShowDrawAgain(false);
     }
 
     // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
@@ -165,6 +226,9 @@ public class GachaResultPresenter : MonoBehaviour
             return;
         }
 
+        CancelReveal(); // 공개 중에 [n회 더 뽑기] 결과가 오면 앞의 공개를 끊고 새로 시작한다
+        _revealRarities.Clear();
+
         for (int i = 0; i < slots.Count; i++)
         {
             SlotView slot = GetOrCreateSlot(i);
@@ -172,11 +236,19 @@ public class GachaResultPresenter : MonoBehaviour
             slot.gameObject.SetActive(true);
             slot.SetSubVisible(showCount);
             slot.Bind(slots[i]);
+
+            _revealFxs[i].Hide(); // 자리는 지키되 투명 — 창이 처음부터 다 자란 크기로 뜬다
+            _revealRarities.Add(slots[i].Rarity);
         }
 
         HideSlotsFrom(slots.Count);
         titleText.text = $"{source} 결과";
         SetVisible(true);
+
+        _revealCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+
+        SetRevealing(true);
+        RevealAsync(_revealCts.Token).Forget();
     }
 
     // 보상 목록을 받은 순서 그대로 칸 값으로 옮긴다 (OnGachaCompleted에서 호출).
@@ -367,13 +439,22 @@ public class GachaResultPresenter : MonoBehaviour
     //
     // ※ 수량 표시는 여기서 정하지 않는다 — 가챠(끔)와 상자·우편(켬)이 같은 칸을 돌려쓰므로
     //   'Show'가 띄울 때마다 정한다.
+    //
+    // 칸을 만들 때 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다 — 칸 프리팹은 인벤토리와 공유라 손대지 않는다.
     private SlotView GetOrCreateSlot(int index)
     {
         while (_slots.Count <= index)
         {
-            SlotView slot = Instantiate(slotPrefab, slotParent);
+            SlotView       slot = Instantiate(slotPrefab, slotParent);
+            RewardRevealFx fx   = slot.gameObject.AddComponent<RewardRevealFx>();
+
+            fx.Init(reveal);
+
+            slot.LeftClicked  += OnSlotClicked;
+            slot.RightClicked += OnSlotClicked;
 
             _slots.Add(slot);
+            _revealFxs.Add(fx);
         }
 
         return _slots[index];
@@ -387,6 +468,7 @@ public class GachaResultPresenter : MonoBehaviour
     {
         for (int i = startIndex; i < _slots.Count; i++)
         {
+            _revealFxs[i].Hide();
             _slots[i].Clear();
             _slots[i].gameObject.SetActive(false);
         }
@@ -394,9 +476,185 @@ public class GachaResultPresenter : MonoBehaviour
 
     #endregion
 
+    #region 공개 연출
+
+    // 칸을 받은 순서대로 하나씩 공개한다 — 보통은 튀어나오고, 영웅↑은 멈칫 → 차오름 → 폭발 (Show에서 시작).
+    //
+    // ■ 고등급 연출이 뒤 칸을 막지 않는다 (2026-10-09 사용자 요청)
+    // 칸마다 연출을 띄워 두고 기다리지 않은 채 'Gap'만큼 지나 다음 칸을 띄운다 — 영웅이 차오르는 동안에도 뒤 칸이 계속 나온다.
+    // 공개가 끝난 때는 **마지막 칸이 뜬 때가 아니라 모든 칸의 연출이 끝난 때**다 — 그때 버튼이 풀린다.
+    private async UniTask RevealAsync(CancellationToken ct)
+    {
+        var reveals = new List<UniTask>(_revealRarities.Count);
+
+        await DelayAsync(reveal.StartDelay, ct);
+
+        for (int i = 0; i < _revealRarities.Count; i++)
+        {
+            RewardRevealFx fx     = _revealFxs[i];
+            GlobalRarity   rarity = _revealRarities[i];
+
+            reveals.Add(RewardRevealSettings.IsBig(rarity) ? RevealBigAsync(fx, rarity, ct) : fx.PopAsync(rarity, ct));
+
+            await DelayAsync(reveal.Gap, ct);
+        }
+
+        await UniTask.WhenAll(reveals);
+
+        SetRevealing(false);
+    }
+
+    // 고등급 칸 하나 — 멈칫 → 차오름 → 폭발(+ 전설↑ 창 흔들기)과 함께 튀어나옴 (RevealAsync에서 호출)
+    private async UniTask RevealBigAsync(RewardRevealFx fx, GlobalRarity rarity, CancellationToken ct)
+    {
+        bool isTop = RewardRevealSettings.IsTop(rarity);
+
+        await DelayAsync(reveal.BigPause, ct);
+        await fx.ChargeAsync(rarity, ct);
+
+        _burst!.Play(fx.transform.position, RarityPalette.Get(rarity), isTop);
+
+        if (isTop)
+        {
+            ShakePanel();
+        }
+
+        await fx.PopAsync(rarity, ct);
+    }
+
+    // 공개 중인가를 바꾸고 버튼 잠금을 맞춘다 — 공개 중에는 [n회 더 뽑기] · 닫기가 잠긴다 (Show · RevealAsync · CancelReveal에서 호출).
+    // 결과를 다 보기 전에 창을 닫거나 새 결과로 덮지 못하게 한다(2026-10-09 사용자 요청). 다 보고 싶지 않으면 창을 눌러 스킵한다.
+    private void SetRevealing(bool on)
+    {
+        _isRevealing = on;
+
+        closeButton.interactable = !on;
+        RefreshDrawAgain();
+    }
+
+    // 창을 흔든다 — 창 자리는 레이아웃이 아니라 이 Presenter 아래 고정 자리라 흔들어도 된다 (RevealBigAsync에서 호출)
+    private void ShakePanel()
+    {
+        StopPanelShake();
+
+        _panelShake = panel.DOShakeAnchorPos(reveal.PanelShakeDuration, reveal.PanelShakeStrength, 20, 90f, false, true)
+                           .SetLink(gameObject);
+    }
+
+    // 창 흔들기를 끊고 제자리로 (ShakePanel · CancelReveal에서 호출)
+    private void StopPanelShake()
+    {
+        if (_panelShake != null && _panelShake.IsActive())
+        {
+            _panelShake.Kill();
+        }
+
+        _panelShake            = null;
+        panel.anchoredPosition = _panelRestPosition;
+    }
+
+    // 스킵 — 공개를 끊고 남은 칸까지 끝 모습으로 놓는다 (OnPointerClick · OnSlotClicked에서 호출)
+    private void SkipReveal()
+    {
+        if (!_isRevealing)
+        {
+            return;
+        }
+
+        CancelReveal();
+
+        for (int i = 0; i < _revealRarities.Count; i++)
+        {
+            _revealFxs[i].ShowAtRest(_revealRarities[i]);
+        }
+    }
+
+    // 공개를 끊는다 — 칸은 그 자리 모습에 멈춘다. 끝 모습으로 놓는 것은 부르는 쪽 몫이다
+    // (Show · SkipReveal · 닫기 · OnDisable에서 호출).
+    // ⚠️ 토큰을 먼저 취소한다 — 기다리던 트윈은 UniTask가 Kill한다. 칸 쪽에서 다시 Kill하지 않는다(dotween 스킬 2장).
+    private void CancelReveal()
+    {
+        if (_isRevealing)
+        {
+            SetRevealing(false);
+        }
+
+        _revealCts?.Cancel();
+        _revealCts?.Dispose();
+        _revealCts = null;
+
+        if (_burst == null)
+        {
+            return; // Start 전 — 연출이 시작된 적이 없다
+        }
+
+        _burst.Stop();
+        StopPanelShake();
+    }
+
+    // 공개 중이면 스킵한다 — 창 바탕·제목 클릭 (EventSystem 클릭 콜백). 버튼은 자기가 먼저 받는다.
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        SkipReveal();
+    }
+
+    // 칸 클릭 — 결과 창에서 칸의 뜻은 스킵 하나다 (SlotView.LeftClicked · RightClicked 구독)
+    private void OnSlotClicked(SlotView slot)
+    {
+        SkipReveal();
+    }
+
+    // 연출 간격 기다리기 — 0이면 기다리지 않는다
+    private static UniTask DelayAsync(float seconds, CancellationToken ct)
+    {
+        return seconds > 0f
+            ? UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: ct)
+            : UniTask.CompletedTask;
+    }
+
+    #endregion
+
+    #region 다시 뽑기
+
+    // [n회 더 뽑기]를 보일지 정하고 문구·잠금을 맞춘다 (가챠·상자·우편 결과 도착 시).
+    private void ShowDrawAgain(bool on)
+    {
+        drawAgainButton.gameObject.SetActive(on);
+
+        if (on)
+        {
+            drawAgainText.text = $"{gacha.LastDrawCount}회 더 뽑기";
+            RefreshDrawAgain();
+        }
+    }
+
+    // 버튼 잠금을 가챠 패널 상태에 맞춘다 — 대기 중·골드 부족·패널이 꺼짐 · 공개 중이면 잠긴다
+    // (GachaPresenter.DrawStateChanged 구독 · SetRevealing에서 호출)
+    private void RefreshDrawAgain()
+    {
+        drawAgainButton.interactable = gacha.CanDrawAgain && !_isRevealing;
+    }
+
+    // [n회 더 뽑기] — 같은 풀을 같은 횟수로 다시 뽑는다. 팝업은 띄운 채로 두고 결과가 오면 새로 그린다 (drawAgainButton OnClick에 코드로 연결)
+    private void OnDrawAgainClicked()
+    {
+        gacha.DrawAgain();
+    }
+
+    #endregion
+
     // 닫기 — 팝업만 내린다. 보상은 이미 인벤토리에 반영돼 있어 여기서 할 일이 없다 (closeButton OnClick에 코드로 연결)
+    //
+    // 공개 중이면 끊고 칸 연출을 걷는다 — 숨긴 창에서 강조 반복 트윈이 계속 돌지 않게.
     private void OnCloseClicked()
     {
+        CancelReveal();
+
+        foreach (RewardRevealFx fx in _revealFxs)
+        {
+            fx.Hide();
+        }
+
         SetVisible(false);
     }
 

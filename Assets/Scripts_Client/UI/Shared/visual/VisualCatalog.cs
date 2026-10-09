@@ -10,6 +10,10 @@ using UnityEngine;
 // ■ 누가 채우나
 //   손으로 채우지 않는다 — 메뉴 '아트/전부 다시 굽기'가 끝에 폴더를 훑어 다시 쓴다('ArtCatalogSync').
 //   캐릭터 = 레시피의 'characterTids'(CharacterTable TID, 0이면 대체 그림) · 아이콘 = 파일 이름의 TID.
+//   이펙트 = 'fx/<연출 키>/<키>_<부위>.png' — 파일 이름이 곧 찾는 이름('FxOf("reveal_glow")'). 메뉴 '아트/목록만 다시 쓰기'로도 채운다.
+//
+// ■ 이펙트는 없으면 null — 그 효과만 빠진다
+//   쓰는 쪽('FxSprites' 이름표를 거쳐)은 null이면 그 Image를 켜지 않는다. 그림 저장소가 없어도 연출의 움직임은 돈다.
 //
 // ■ 빠진 그림은 대체로 버틴다
 //   그림이 아직 없는 캐릭터는 'fallbackCharacter'(TID 0으로 등록한 그림)로, 산업 배경이 없으면 'defaultBackground'로 그린다.
@@ -35,6 +39,15 @@ public class VisualCatalog : ScriptableObject
         public int tid;
 
         public Sprite icon;
+    }
+
+    [Serializable]
+    public struct FxEntry
+    {
+        [Tooltip("파일 이름 — 'fx/<연출 키>/<키>_<부위>.png'의 '<키>_<부위>'")]
+        public string key;
+
+        public Sprite sprite;
     }
 
     [Serializable]
@@ -94,9 +107,14 @@ public class VisualCatalog : ScriptableObject
     [SerializeField, Tooltip("장비 아이콘 ('icons/equips/equip_<TID>')")]
     private IconEntry[] equipIcons = Array.Empty<IconEntry>();
 
+    [CenterHeader("이펙트")]
+    [SerializeField, Tooltip("이펙트 그림 ('fx/<연출 키>/<키>_<부위>') — 흰색으로 그리고 색은 코드가 입힌다")]
+    private FxEntry[] fxSprites = Array.Empty<FxEntry>();
+
     // 아이콘은 칸마다 찾으므로 표로 바꿔 둔다 (처음 찾을 때 만든다)
     private Dictionary<int, Sprite>? _itemIconMap;
     private Dictionary<int, Sprite>? _equipIconMap;
+    private Dictionary<string, Sprite>? _fxMap;
 
     #region 화면이 부르는 곳 — 목록이 없으면(그림 저장소 없음) null
 
@@ -130,7 +148,12 @@ public class VisualCatalog : ScriptableObject
     // 캐릭터 머리 (위젯) — 그림 없는 캐릭터는 대체 캐릭터의 것
     public static Sprite? HeadOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid).Head : null;
 
+    // 이펙트 그림 — 파일 이름('reveal_glow')으로 찾는다. 없거나 목록이 없으면 null
+    public static Sprite? FxOf(string key) => Current != null ? Current.GetFx(key) : null;
+
     #endregion
+
+    public Sprite? GetFx(string key) => (_fxMap ??= ToFxMap(fxSprites)).TryGetValue(key, out Sprite sprite) ? sprite : null;
 
     public Sprite? GetItemIcon(int itemTid)
         => (_itemIconMap ??= ToMap(itemIcons)).TryGetValue(itemTid, out Sprite icon) ? icon : fallbackItemIcon;
@@ -147,6 +170,22 @@ public class VisualCatalog : ScriptableObject
     {
         _itemIconMap  = null;
         _equipIconMap = null;
+        _fxMap        = null;
+    }
+
+    private static Dictionary<string, Sprite> ToFxMap(FxEntry[] entries)
+    {
+        var map = new Dictionary<string, Sprite>(entries.Length);
+
+        foreach (FxEntry entry in entries)
+        {
+            if (entry.sprite != null && !string.IsNullOrEmpty(entry.key))
+            {
+                map[entry.key] = entry.sprite;
+            }
+        }
+
+        return map;
     }
 
     private static Dictionary<int, Sprite> ToMap(IconEntry[] entries)

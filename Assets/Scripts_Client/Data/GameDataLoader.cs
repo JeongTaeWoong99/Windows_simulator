@@ -134,6 +134,13 @@ public static class GameDataLoader
         return GameTable.ItemTable.TryGet(itemId, out var row) && row.OpenGachaId != 0;
     }
 
+    // 이 아이템이 **인챈트 큐브**인가 — 'EnchantItemTable'에 행이 있으면 큐브다. 큐브 창의 버튼 목록('EnchantCubes')과 같은 출처다.
+    // ※ 없는 Id는 '큐브가 아니다'로 떨어진다 — 'IsBox'와 같은 이유로 경고를 내지 않는다.
+    public static bool IsCube(int itemId)
+    {
+        return GameTable.EnchantItemTable.TryGet(itemId, out _);
+    }
+
     // 가챠 풀의 메타(이름·비용)를 조회한다. 'GachaId'는 'GachaInfoTID'와 같은 값이다.
     //
     // ※ 여기만 이름·등급 조회와 달리 실패를 그대로 돌려준다 — 값이 없으면 대체할 표시가 없고,
@@ -301,30 +308,52 @@ public static class GameDataLoader
         return false;
     }
 
-    // 캐릭터 레벨 L의 작업속도 가산(천분율, 이슈 #35). 그 레벨까지 쌓인 **총량**이다(Lv1 = 0).
+    // 응축 최고 ★ — 'CharacterStarTable'의 행 수(★1부터 빠짐없이 이어진다). 행이 없으면 0이고 응축할 수 없다.
+    public static int CondenseMaxStar => GameTable.CharacterStarTable.All.Count;
+
+    // 그 ★에 닿는 **누적** 재료 수 (응축 창의 진행 바). ★0 이하는 0, 최고 ★을 넘으면 최고 ★의 값.
     //
-    // ⚠️ 서버 'CharacterLevelCatalog.SpeedAddAt'의 사본이다 — 테이블 밖 레벨은 만렙 값, 행이 없으면 0.
-    // ※ 경험치 곡선과 같은 정적 곡선이라 클라가 읽어도 된다. 레벨 값은 서버가 준 것을 넣는다.
-    public static int GetLevelSpeedAdd(int level)
+    // ⚠️ 서버 'CharacterStarCatalog'의 사본이다 — 표의 'RequiredCount'는 **그 단계의 몫**이라 앞 단계까지 더한다.
+    // ※ 값은 화면에만 쓴다. ★ 자체는 서버가 'CharacterInfo.Star'로 준다.
+    public static int GetCondenseThreshold(int star)
     {
-        if (GameTable.CharacterLevelTable.TryGet(level, out var row))
-        {
-            return row.SpeedAddPermille;
-        }
+        int total = 0;
 
-        int maxLevel = 0;
-        int maxAdd   = 0;
-
-        foreach (var each in GameTable.CharacterLevelTable.All)
+        for (int i = 1; i <= Mathf.Min(star, CondenseMaxStar); i++)
         {
-            if (each.CharacterLevelTID > maxLevel)
+            if (GameTable.CharacterStarTable.TryGet(i, out CharacterStarTableRow row))
             {
-                maxLevel = each.CharacterLevelTID;
-                maxAdd   = each.SpeedAddPermille;
+                total += row.RequiredCount;
             }
         }
 
-        return level > maxLevel ? maxAdd : 0;
+        return total;
+    }
+
+    // 누적 재료 수로 닿는 ★ (응축 창의 "넣으면 몇 ★"). 서버 'CharacterStarCatalog.StarAt'의 사본이다.
+    public static int GetCondenseStarAt(int condenseCount)
+    {
+        int star = 0;
+
+        while (star < CondenseMaxStar && condenseCount >= GetCondenseThreshold(star + 1))
+        {
+            star++;
+        }
+
+        return star;
+    }
+
+    // 이 ★의 작업속도 가산(천분율, **총량**). ★0·행 없음은 0이다. 서버 'CharacterStarCatalog.SpeedAddAt'의 사본이다.
+    public static int GetStarSpeedAdd(int star)
+    {
+        if (star <= 0)
+        {
+            return 0;
+        }
+
+        return GameTable.CharacterStarTable.TryGet(Mathf.Min(star, CondenseMaxStar), out CharacterStarTableRow row)
+            ? row.SpeedAddPermille
+            : 0;
     }
 
     // 작업슬롯 한 칸을 여는 해금 TID. 'WorkSlotTable'에 없는 칸이거나 조건 없는 칸이면 0.

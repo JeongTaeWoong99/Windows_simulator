@@ -43,6 +43,10 @@ public static class ResultMessages
         EResultCode.EquipSlotEmpty      => "이미 비어 있는 칸입니다.",
         EResultCode.EnchantItemNotOwned => "큐브가 없습니다.",
         EResultCode.EnchantEquipped     => "착용 중인 장비에는 큐브를 쓸 수 없습니다. 먼저 벗겨 주세요.",
+        EResultCode.CondenseInvalidRequest => "응축 재료가 올바르지 않습니다.",
+        EResultCode.CondenseTidMismatch    => "같은 캐릭터만 재료로 넣을 수 있습니다.",
+        EResultCode.CondenseMaterialBusy   => "배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.",
+        EResultCode.CondenseMaxStar        => "이미 최고 단계입니다.",
         EResultCode.MailNotFound        => "없는 우편입니다.",
         EResultCode.MailAlreadyClaimed  => "이미 받은 우편입니다.",
         // 안 받은 우편에는 삭제 버튼이 없다 — 정상 화면에서는 나오지 않는다.

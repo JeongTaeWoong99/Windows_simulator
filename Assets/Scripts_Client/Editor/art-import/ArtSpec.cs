@@ -17,6 +17,9 @@ namespace DesktopWindowControl.EditorTools
         public const string EquipIconPrefix = "equip_";
         public const string IconRecipePath  = IconsRoot + "/icon_recipe.asset";
 
+        // 이펙트 — 'fx/<연출 키>/<키>_<부위>.png'. 굽지 않고 그린(또는 만든) 그대로 쓴다. 파일 이름이 목록의 찾는 이름이다
+        public const string FxRoot          = Root + "/fx";
+
         // 런타임이 'Resources.Load'로 찾는다 — 그림과 같이 git 밖이라 'Art/' 안의 Resources에 둔다
         public const string CatalogPath     = Root + "/Resources/VisualCatalog.asset";
 

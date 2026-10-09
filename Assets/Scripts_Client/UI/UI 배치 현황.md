@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -70,13 +70,18 @@ Root Canvas
 │  │  │  │        │                               오른쪽 끝 x 96(-4) = 적성 띠 오른쪽 끝 = 능력치 칸 오른쪽 끝 (T-104)
 │  │  │  │        │                               ⚠️ 벽 여백 4px로 맞춘다 — Exp Gauge x 4 · Aptitude Strip 좌우 3(칸 안쪽 1 → 4~96) · Level Badge x 16 폭 26
 │  │  │  │        │                               (배지 폭을 줄여 네모와 1px 띄웠다 — LV.MAX는 글자가 자동으로 줄어든다)
+│  │  │  │        ├─ Star Row                     캐릭터 탭 전용 — 응축 ★ 그림 4개(10px · 간격 1 · star.png). 이름 아래 왼쪽 (x 17 = 배지와 같은 x · y -21).
+│  │  │  │        │                               얻은 ★만 켠다 · ★0이면 줄째 꺼짐 (T-130)
 │  │  │  │        ├─ Aptitude Strip               캐릭터 탭 전용 5칸. 보조 문구와 같은 밴드를 나눠 쓴다
-│  │  │  │        └─ Stat Socket Strip            장비 탭 전용 — 능력치 칸 네모 6개(11px). 오른쪽 끝부터 칸 수만큼 켜진다 · 같은 밴드 (T-095)
+│  │  │  │        ├─ Stat Socket Strip            장비 탭 전용 — 능력치 칸 네모 6개(11px). 오른쪽 끝부터 칸 수만큼 켜진다 · 같은 밴드 (T-095)
+│  │  │  │        ├─ Condense Target Mark         응축 창 대상 — 4변 3px (Accent). 평소 꺼짐 (T-130)
+│  │  │  │        ├─ Condense Pick Mark           응축 재료 — Cover(Highlight 18%) · 4변 3px · Check Badge 30(checkmark 20). 평소 꺼짐
+│  │  │  │        └─ Sell Mark · Assign Mark      맨 뒤로 옮겼다 — 체크 덮개 위에 '배' 마크가 보이게
 │  │  │  ├─ Sell Cart Presenter (↓ SUB VIEW)      SellCartPresenter            판매 목록 · 합계 · [판매]
-│  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
+│  │  │  │                                        담긴 것이 없거나 특성 탭·큐브 창·응축 창이면 자기 오브젝트를 끈다
 │  │  │  │  ├─ Sell Scroll View Panel             Content 에 SellCartRowView 프리팹이 쌓인다
 │  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
-│  │  │  │  ├─ Summary Panel                      High Rarity Warning(평소 꺼짐) · Total Text
+│  │  │  │  ├─ Summary Panel                      Clear Button 72([비우기] — 응축 창 Close Button 복제) · High Rarity Warning(평소 꺼짐) · Total Text
 │  │  │  │  └─ Sell Button                        [판매]
 │  │  │  ├─ Equip Enchant Presenter (↓ SUB VIEW)  EquipEnchantPresenter   큐브 창 — 판매 목록과 **같은 자리**(flexH 1). 평소 꺼짐 (T-095)
 │  │  │  │                                        장비 칸 좌클릭이 연다 · 열리면 판매 목록이 비워지며 물러난다 · 닫기·탭 전환·우클릭이면 닫힌다
@@ -87,6 +92,16 @@ Root Canvas
 │  │  │  │  │  ├─ Rule Text (TMP)                 36 · 14 — 이번에 쓰면 무엇이 되나 한 줄 · TooltipTrigger(규칙·확률 표)
 │  │  │  │  │  └─ Cube Row                        56 — Cube View (1)(2) (EnchantCubeView · 특성 칸 프리팹을 풀어 만듦 · 고르면 노랑 테두리 · 툴팁)
 │  │  │  │  └─ Confirm Button                     50 — [큐브 사용 (인챈트 큐브 1개)] · 착용 중이면 [해제하고 사용] · 쓴 뒤 [한 번 더]
+│  │  │  ├─ Character Condense Presenter (↓ SUB VIEW)  CharacterCondensePresenter  응축 창 — 판매 목록과 **같은 자리**(큐브 창 복제). 평소 꺼짐 (T-130)
+│  │  │  │                                        캐릭터 칸 좌클릭이 연다 · 열린 동안 격자 좌클릭 = 재료 고르기 · 닫기·탭 전환·우클릭이면 닫힌다
+│  │  │  │  ├─ Condense Info Panel               Overlay 바탕 · 여백 14/14/12/12 · 간격 8
+│  │  │  │  │  ├─ Header Row                      48 — Portrait Image 48 · Header Texts(이름 등급색 · 'LV.7 · 응축 누적 15 / 76') · Star Row 92(★ 20px ×4) · Close Button 72
+│  │  │  │  │  ├─ Condense Stats > Compare Row    62 — Before Box('지금 n성' · 작업속도) ▶ After Box(파랑 · ★이 오를 때만)
+│  │  │  │  │  ├─ Stage Bar                       22 — Stage 1..4 (CondenseStageView · Current Fill 파랑 · Preview Fill 노랑 70% · '1성 · 5/8' 12)
+│  │  │  │  │  ├─ Caption Row                     20 — Left '누적 15 + 9 = 24' · Right '3성까지 20'
+│  │  │  │  │  ├─ Spacer                          flexH 1
+│  │  │  │  │  └─ Warn Text (TMP)                 24 — 넘침·최고 단계(빨강) · 못 넣는 수·안내(흐림). 색은 코드가 칠한다
+│  │  │  │  └─ Action Row                        50 — Fill Button 200 [다음 단계까지 채우기] · Confirm Button flex [응축 (n마리)]
 │  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
@@ -106,7 +121,7 @@ Root Canvas
 │  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
 │  │  │  │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
 │  │  │  │        └─ Remain Text > Equip Icons   EquipIconsView 프리팹 — 남은 시간 줄 오른쪽 끝 · 등급 바탕 + 장비 아이콘 4칸 ·
-│  │  │  │                                       줄 높이만큼 정사각형(SquareLayoutElement) · 간격 3 · ContentSizeFitter로 폭 (T-104)
+│  │  │  │                                       줄 높이만큼 정사각형(SquareLayoutElement) · 간격 3 · ContentSizeFitter로 폭 (T-104) · 올리면 칸별 장비 툴팁(코드가 붙인다)
 │  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
 │  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50   ┐
 │  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90   │ 고정
@@ -123,7 +138,7 @@ Root Canvas
 │  │  │  │           ├─ Character Label           "캐릭터"                         pref 30
 │  │  │  │           ├─ Assigned Character Card   CharacterStateRowView 프리팹 · [해제]  pref 90
 │  │  │  │           ├─ Equipment Label           "장비"                           pref 30
-│  │  │  │           ├─ Equipment Panel           칸 4개가 버튼이다 (T-074)        pref 114
+│  │  │  │           ├─ Equipment Panel           칸 4개가 버튼이다 (T-074) · 올리면 장비 툴팁(코드가 붙인다)        pref 114
 │  │  │  │           │  └─ Weapon / Accessory 1 / Accessory 2 / Gem Slot   LE pref W 0 · flexW 1 (1:1:1:1)
 │  │  │  │           │       바탕 Image = 등급색 · 고르는 중이면 버튼 색 전이로 어두워진다
 │  │  │  │           │       ├─ Part Text (TMP)     "무기"·"장신구1"…           pref 26
@@ -385,7 +400,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   **"개발용 전역 배수" 역산도 이걸로 고쳐졌다** — 이제 가산을 걷어낸 뒤 나눈다
   (`현재 ÷ (기본값 × (1 + Σ가산))`). 2026-09-20~09-24 사이엔 찍은 특성 몫까지 배수로 보였다.
   ⚠️ 다만 **가산은 클라가 서버 식을 베껴 되짚은 값**이라 표가 갈리면 화면만 조용히 틀린다 —
-  [`T-055`](../../../tasks/T-055-속도보정내역전달.md)(서버가 내역을 명시 필드로)는 그대로 남는다.
+  [`T-055`](../../../tasks/archive/T-055-속도보정내역전달.md)(서버가 내역을 명시 필드로)는 그대로 남는다.
 - **상태 패널의 `Nick Icon (임시)`도 회색 원이다** — 작업슬롯 줄과 같은 리소스를 기다린다
   → [`T-054`](../../../tasks/T-054-종족과초상화.md). ⚠️ 다만 이건 **자리표시자이면서 동시에 고리를
   만드는 부품**이라 비워 둘 수 없다 (위 항목).
@@ -457,7 +472,8 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **위젯 상단의 `Per Hour Text`·`Total Text`는 씬의 더미 문구가 그대로 보인다.** 산출 정의가
   기획에서 안 정해져 코드가 손대지 않는다 — 참조만 잡혀 있다. 정해지면 `WidgetPresenter`에 연결한다.
 - **`WidgetMiniSlotView`의 `Character Image`는 회색 네모다.** 캐릭터 스프라이트가 없어 자리만
-  잡아 뒀고, `Harvest Text (TMP)`도 빈 문자열이다. 지금 실제로 도는 것은 게이지 하나다.
+  잡아 뒀고, `Harvest Text (TMP)`도 빈 문자열이다. 수확 때는 루트의 `ItemGainEffectView`가 머리 자리에서 아이템 아이콘을 띄운다(2026-10-08).
+  `Character Image`에는 `WidgetHeadMotion`이 붙어 일하는 동안 통통 튀고 수확 때 펄쩍 뛴다(`headMotion`으로 연결).
 
 > 씬의 `m_EditorClassIdentifier`에 옛 클래스 이름이 남아 있어도 **문제 없다.**
 > 스크립트 연결은 GUID로 이뤄지고, 그 문자열은 다음 씬 저장 때 Unity가 갱신한다.

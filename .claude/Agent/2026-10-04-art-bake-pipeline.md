@@ -49,7 +49,7 @@ tags: [client, art, editor, ui, design]
   - 매 프레임 `SlotStageSettings.Current`를 읽어 플레이 중 인스펙터·CLI·MCP 수정이 바로 보인다.
   - 배선: 프리팹 `WorkStationSlotView`의 `Visible Panel`에 `RectMask2D` + `SlotStageView`(catalog = `Assets/Art/VisualCatalog.asset` — 그림 없는 PC에선 null이라 바탕만). `Bind(slot, name, tid)` · `Tick(progress, remain, cycle)`로 시그니처 변경.
   - 확인: 플레이 모드에서 미리보기 3칸(채집/낚시/채굴 · 주기 4·2.5·1초) 캡처 — 다가옴·공격·번쩍임·사라짐·레벨 색 정상.
-- 후속: 빈 슬롯 배경(빈 칸엔 슬롯 뷰가 없다) · 실서버 확인 · 그림 비공개 저장소 [T-121](../../tasks/T-121-그림비공개저장소.md).
+- 후속: 빈 슬롯 배경(빈 칸엔 슬롯 뷰가 없다) · 실서버 확인 · 그림 비공개 저장소 [T-121](../../tasks/archive/T-121-그림비공개저장소.md).
 
 ## 추가 — 숨 · 개인 배율 · 타격 맞추기 · 판정 하한 일감 (같은 날)
 

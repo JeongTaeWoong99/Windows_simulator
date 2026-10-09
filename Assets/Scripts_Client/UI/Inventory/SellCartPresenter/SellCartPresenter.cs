@@ -50,12 +50,18 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
 
+    [SerializeField, Tooltip("비우기 버튼 — 담은 것을 모두 빼고 패널을 닫는다. OnClick은 코드가 연결한다")]
+    private Button clearButton = null!;
+
     [SerializeField, Tooltip("인벤토리 탭 줄. 특성 탭에서는 이 패널이 물러난다")]
     [FormerlySerializedAs("storageTabs")]
     private InventoryTabPresenter inventoryTabs = null!;
 
     [SerializeField, Tooltip("큐브 창 — 이 자리를 빌려 쓴다. 열리면 판매 목록을 비우고 물러난다")]
     private EquipEnchantPresenter equipEnchant = null!;
+
+    [SerializeField, Tooltip("응축 창 — 이 자리를 빌려 쓴다. 열리면 판매 목록을 비우고 물러난다")]
+    private CharacterCondensePresenter characterCondense = null!;
 
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private readonly List<SellCartRowView> _rows = new List<SellCartRowView>();
@@ -88,8 +94,10 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(totalText,         nameof(totalText));
         this.RequireRef(highRarityWarning, nameof(highRarityWarning));
         this.RequireRef(sellButton,        nameof(sellButton));
+        this.RequireRef(clearButton,       nameof(clearButton));
         this.RequireRef(inventoryTabs,     nameof(inventoryTabs));
         this.RequireRef(equipEnchant,      nameof(equipEnchant));
+        this.RequireRef(characterCondense, nameof(characterCondense));
 
         _data    = Services.Get<PlayerDataModel>();
         _cart    = Services.Get<SellCartModel>();
@@ -101,9 +109,12 @@ public class SellCartPresenter : MonoBehaviour
         //    (도구 줄이 같은 이유로 그렇게 한다 → 'Inventory 규칙.md').
         inventoryTabs.TabChanged  += ApplyTab;
         equipEnchant.OpenChanged  += OnEnchantOpenChanged;
+        characterCondense.OpenChanged += OnEnchantOpenChanged;
+        _cart.Changed             += OnCartChanged; // 비어 있으면 꺼지므로 켜는 신호도 여기서 받는다
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
+        clearButton.onClick.AddListener(OnClearClicked);
         Refresh(); // 인벤토리를 닫아 둔 사이에 담긴 것이 있을 수 있다
 
         _isReady = true;
@@ -116,21 +127,43 @@ public class SellCartPresenter : MonoBehaviour
     {
         inventoryTabs.TabChanged -= ApplyTab;
         equipEnchant.OpenChanged -= OnEnchantOpenChanged;
+        characterCondense.OpenChanged -= OnEnchantOpenChanged;
+        _cart.Changed             -= OnCartChanged;
     }
 
-    // 이 탭에서 판매 목록을 보일지 정한다 (Start · TabChanged 구독).
+    // 판매 목록을 보일지 정한다 (Start · TabChanged · 카트 변경 · 대기 종료).
     //
-    // **특성 탭에서만 사라진다** — 도구 줄과 같은 판단이다. 거기는 격자 자체가 물러나고
-    // 트리가 그 자리를 쓰므로 팔 대상이 화면에 없다.
-    // 자원·캐릭터·장비 탭은 모두 담을 수 있는 탭이라 그대로 보인다(T-075).
-    // 담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
-    // ※ 큐브 창이 열려 있어도 물러난다 — 같은 자리를 빌려 쓴다(T-095).
+    // **담긴 것이 있을 때만 보인다(2026-10-09 사용자 결정)** — 비어 있는 목록이 자리를 차지하면
+    // 격자가 반으로 줄어든다. 꺼지면 격자(flexH 1)가 그 자리까지 넓힌다.
+    // 칸을 우클릭해 담는 순간 나타나고, 마지막 줄을 빼거나 [비우기]·판매를 마치면 사라진다.
+    // ※ 판매 응답을 기다리는 동안은 비어도 남는다 — 응답 전에 카트가 먼저 비워진다.
+    // ※ 특성 탭에서는 사라진다 — 격자 자체가 물러나고 트리가 그 자리를 쓴다.
+    //   담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
+    // ※ 큐브 창·응축 창이 열려 있어도 물러난다 — 같은 자리를 빌려 쓴다(T-095 · T-130).
     private void ApplyTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab != InventoryTab.Trait && !equipEnchant.IsOpen);
+        bool hasContent = _cart.Count > 0 || _isWaiting;
+
+        gameObject.SetActive(hasContent && tab != InventoryTab.Trait && !equipEnchant.IsOpen && !characterCondense.IsOpen);
     }
 
-    // 큐브 창이 열리고 닫혔다 — 열리면 목록을 비우고 물러난다 (EquipEnchantPresenter.OpenChanged 구독).
+    // 카트가 바뀌었다 — 비었으면 물러나고, 처음 담겼으면 나타난다 (SellCartModel.Changed 구독 · Start/OnDestroy).
+    private void OnCartChanged()
+    {
+        ApplyTab(inventoryTabs.CurrentTab);
+    }
+
+    // 담은 것을 모두 뺀다 — 비면 'OnCartChanged'가 패널을 닫는다 (clearButton OnClick에 코드로 연결).
+    private void OnClearClicked()
+    {
+        if (!_isWaiting)
+        {
+            _cart.Clear();
+        }
+    }
+
+    // 큐브 창·응축 창이 열리고 닫혔다 — 열리면 목록을 비우고 물러난다 (둘의 OpenChanged 구독).
+    // ※ 응축 창도 비운다 — 재료로 고른 캐릭터가 카트에도 남아 있으면 판매와 응축이 같은 개체를 두고 다툰다.
     //
     // ★ 비우는 이유(2026-10-03 사용자 결정): 보이지 않는 카트에 담긴 것이 남으면, 돌아왔을 때
     //   "언제 담았지"가 되고 큐브를 쓰려던 장비가 카트에 섞여 함께 팔릴 수 있다.
@@ -360,7 +393,8 @@ public class SellCartPresenter : MonoBehaviour
     // 판매 버튼을 열고 닫는다 — 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.
     private void ApplySellButton()
     {
-        sellButton.interactable = !_isWaiting && _cart.Count > 0;
+        sellButton.interactable  = !_isWaiting && _cart.Count > 0;
+        clearButton.interactable = !_isWaiting;
     }
 
     #endregion
@@ -443,6 +477,7 @@ public class SellCartPresenter : MonoBehaviour
         _waitHandle       = null;
         _pendingResponses = 0;
         ApplySellButton();
+        ApplyTab(inventoryTabs.CurrentTab); // 다 팔렸으면 이제 물러난다
     }
 
     // 자원 판매 성공 — 자원을 비운다 (PlayerDataModel.ItemSellCompleted 구독)

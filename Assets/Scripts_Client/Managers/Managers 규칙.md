@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-06 (`AuctionModel` — 단가 상한 1조 · 수량 상한 `MaxListingCount` — 이슈 #56) · 2026-10-05 (`SellCartModel` — 축별 비우기·여럿 담기 · `AuctionModel` — 단가 상한 10조) · 2026-10-03 (`SellCartModel` — 캐릭터·장비 개체 담기 — T-075) · 2026-09-30 (`AuctionModel` — 가격 밴드 식 · 내 매물 판별 — T-096) · 2026-09-30 (`AuctionModel` — 경매장·거래소 창구 · 송신 예외 — T-096) · 2026-09-30 (1x 미만 배율 제거 — enum 5·6 비워 둠) · 2026-09-30 (항상 위 off + 작업표시줄 맞춤 이하 크기면 작업표시줄 침범 금지 · 알림 팝업 — T-099) · 2026-09-29 (작은 배율 0.5x·0.75x — enum 뒤에 붙이고 드롭다운 순서는 따로 · T-070) · 2026-09-25 (수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-18 (`DisplayManager` — 표시·성능 설정의 주인 · 설정마다 매니저를 두지 않는다) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -498,7 +498,7 @@ Win32 호출 자체는 [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWind
 #### ⚠️ 맞춤 배율은 `_hWnd`를 잡은 뒤 다시 계산한다
 
 `LoadSettings`는 `Awake`에서 도는데 그때는 `_hWnd`가 아직 `IntPtr.Zero`다(핸들은 `Start`의
-코루틴이 잡는다). 그래서 `MonitorFromWindow`가 실패하고 **주 모니터로 폴백**한다 — 창이 보조
+비동기 대기가 잡는다). 그래서 `MonitorFromWindow`가 실패하고 **주 모니터로 폴백**한다 — 창이 보조
 모니터에 있고 두 모니터의 작업표시줄·DPI가 다르면 부팅할 때만 크기가 틀어진다.
 `InitializeWindow`에서 `RecalculateFitScale`을 한 번 더 부른다.
 

@@ -1,9 +1,9 @@
 ---
 name: clean-code-style
-description: Unity/C# 클린 코드 스타일 규칙. 코드 작성 및 리뷰 시 이 규칙을 따른다.
+description: Unity/C# 클린 코드 스타일 규칙(명명·포맷·주석·nullable). 코드 작성 및 리뷰 시 이 규칙을 따른다.
 ---
 
-> 최종 업데이트: 2026-08-25 (XML 주석 금지 · 중괄호 생략 금지 · 수직 간격 규칙 확정)
+> 최종 업데이트: 2026-10-08 (10장 — 비동기·연출은 `unitask`·`dotween` 스킬로 안내)
 
 # Unity/C# 클린 코드 스타일
 
@@ -362,3 +362,10 @@ _titlePanel.Active(true);           // 타이틀 패널 켜기
 
 > 📖 `x!` 가 왜 검사가 아닌지, 가짜 null 의 동작, 각 규칙의 예시는
 > **[`nullable 상세.md`](<nullable 상세.md>)** 에 있다 — 위 규칙만으로 판단이 서면 열지 않아도 된다.
+
+---
+
+## 10. 비동기·연출 → [`unitask`](../unitask/SKILL.md) · [`dotween`](../dotween/SKILL.md)
+
+> **코루틴을 쓰지 않는다** — UniTask·DOTween은 표준 패키지다(없으면 설치 안내). 취소 토큰·트윈 수명·`async void` 금지·코루틴 전환표는
+> 그 스킬에 있다. 오브젝트를 돌려쓸 때는 [`object-pool`](../object-pool/SKILL.md).

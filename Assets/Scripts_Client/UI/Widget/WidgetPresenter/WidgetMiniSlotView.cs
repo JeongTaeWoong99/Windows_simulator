@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -8,13 +9,13 @@ using UnityEngine.UI;
 //
 // ■ 큰 창의 'WorkStationSlotView'와 다른 점
 //   글자를 쓰지 않는다. 위젯 높이는 87px뿐이라 슬롯 번호·산업·남은 초를 넣을 자리가 없다.
-//   여기서 도는 것은 게이지 하나이고, 나머지는 캐릭터 그림이 채운다.
+//   여기서 도는 것은 게이지와 머리 움직임('WidgetHeadMotion' — 일하는 동안 통통 · 수확 순간 펄쩍)이다.
 //
 // ■ 스스로 시간을 세지 않는다
 //   Update·코루틴을 두지 않고 'WidgetPresenter'가 계산해 넘겨 준 값만 그린다.
 //   상시 실행 앱이라 칸마다 루프를 돌리면 슬롯 수만큼 낭비가 곱해진다.
 //
-// ⏸ 아직 자리만 잡아 둔 것 — 캐릭터 스프라이트와 수확 표시는 에셋이 나온 뒤에 붙인다.
+// ■ 수확 표시 — 머리 자리에서 얻은 아이템 아이콘이 작게 떠올라 사라진다('ItemGainEffectView', 큰 창 칸과 같은 연출).
 public class WidgetMiniSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -33,7 +34,18 @@ public class WidgetMiniSlotView : MonoBehaviour
     [SerializeField, Tooltip("판정 진행도 (0~1). 표시 전용이라 interactable은 꺼 둔다")]
     private Slider progressSlider = null!;
 
+    [SerializeField, Tooltip("아이템 획득 연출 (칸 루트의 ItemGainEffectView — 큰 창보다 작은 값). 비우면 연출 없이 지나간다")]
+    private ItemGainEffectView? gainEffect;
+
+    [SerializeField, Tooltip("머리 움직임 (Character Image의 WidgetHeadMotion). 비우면 머리가 멈춰 있다")]
+    private WidgetHeadMotion? headMotion;
+
     private WorkStationSlotInfo? _slot;
+
+    // 프리팹의 자리 표시 네모 — 칸을 다시 쓸 때 머리 그림이 없는 캐릭터면 이것으로 되돌린다
+    private Sprite? _placeholderSprite;
+    private Color   _placeholderColor;
+    private bool    _placeholderPreserveAspect;
 
     // 배치돼 있고 속도가 0이 아니어서 카운트다운을 돌릴 수 있는가.
     public bool IsRunning => _slot != null && WorkStationProgress.IsRunning(_slot);
@@ -48,6 +60,10 @@ public class WidgetMiniSlotView : MonoBehaviour
         this.RequireRef(progressSlider, nameof(progressSlider));
 
         harvestText.text = string.Empty;
+
+        _placeholderSprite         = characterImage.sprite;
+        _placeholderColor          = characterImage.color;
+        _placeholderPreserveAspect = characterImage.preserveAspect;
     }
 
     // 슬롯 스냅샷을 반영한다 (WidgetPresenter가 호출).
@@ -66,8 +82,21 @@ public class WidgetMiniSlotView : MonoBehaviour
             characterImage.preserveAspect = true;
             characterImage.color          = Color.white;
         }
+        else
+        {
+            // ⚠️ 칸은 해제 뒤 꺼 두었다가 다시 쓴다 — 되돌리지 않으면 이전 캐릭터의 머리가 남는다
+            characterImage.sprite         = _placeholderSprite;
+            characterImage.preserveAspect = _placeholderPreserveAspect;
+            characterImage.color          = _placeholderColor;
+        }
 
         progressSlider.value = WorkStationProgress.CalculateProgress(slot);
+
+        // 위상은 슬롯 번호로 흩는다 — 같은 순간에 모든 머리가 튀지 않게
+        if (headMotion != null)
+        {
+            headMotion.SetWorking(IsRunning, slot.SlotIndex * 0.37f);
+        }
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WidgetPresenter가 Bind 뒤에 호출).
@@ -85,10 +114,21 @@ public class WidgetMiniSlotView : MonoBehaviour
 
     // 이 칸에서 수확이 났다 (WidgetPresenter의 GatherResultReceived 구독에서 호출).
     //
-    // ⏸ 수확 표시가 떠오르는 연출이 붙을 자리다. 지금은 게이지만 처음으로 되돌린다 —
-    //    다음 슬롯 동기화가 오기 전까지 이전 사이클의 진행도를 그리고 있지 않도록.
-    public void MarkHarvested()
+    // 게이지를 처음으로 되돌린다 — 다음 슬롯 동기화가 오기 전까지 이전 사이클의 진행도를 그리고 있지 않도록.
+    // 얻은 아이템은 머리 자리에서 떠오른다.
+    //   gains : 얻은 아이템 그림·등급('ItemGainEffectView.ReadGains')
+    public void MarkHarvested(IReadOnlyList<ItemGainEffectView.Gain> gains)
     {
         progressSlider.value = 0f;
+
+        if (headMotion != null)
+        {
+            headMotion.Hop();
+        }
+
+        if (gainEffect != null)
+        {
+            gainEffect.Play(characterImage.rectTransform.TransformPoint(characterImage.rectTransform.rect.center), gains);
+        }
     }
 }

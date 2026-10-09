@@ -220,9 +220,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 효율 계산 줄 수 — 적성 기본값 · 속도 가산 · 현재 작업속도 · 실효 주기 · 산출량.
     private const int EfficiencyRowCount = 5;
 
-    // 현재 ÷ 기본값이 1에서 이만큼 벗어나야 전역 배수로 본다 — 서버의 천분율 반올림 오차를 흡수한다.
-    private const float GlobalMultiplierTolerance = 0.005f;
-
     // 보낸 요청의 종류. 응답에는 배치였는지 교체였는지 해제였는지가 안 실려 와서 보낸 쪽이 기억한다.
     private enum PendingRequest
     {
@@ -952,7 +949,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             var           row         = GetOrCreateRow(i);
 
             row.gameObject.SetActive(true);
-            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level);
+            row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level, character.Star);
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetAssignable(!IsWaiting);
@@ -1104,7 +1101,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         int assignedTid = _data.GetCharacterTid(slot.CharacterId);
 
         assignedCard.Bind(slot.CharacterId, _data.GetCharacterName(slot.CharacterId), assignedTid,
-                          _data.GetCharacterLevel(slot.CharacterId));
+                          _data.GetCharacterLevel(slot.CharacterId), _data.GetCharacterStar(slot.CharacterId));
         assignedCard.SetRarity(GameDataLoader.GetCharacterRarity(assignedTid));
         assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
     }
@@ -1132,20 +1129,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 효율 계산 줄을 채운다 ('Refresh'가 세팅 단계에서 호출).
     //
-    // ■ 서버가 주는 것은 확정 속도 하나다
-    // 'CurrentWorkSpeed'는 보정이 전부 적용된 값이고 **내역은 오지 않는다.**
-    // 그래서 가산 줄은 클라가 **같은 표를 다시 읽어 되짚는다**(아래 두 헬퍼).
+    // ■ 속도는 서버가 준 내역을 그대로 그린다 (T-055 · 이슈 #60)
+    // 서버 식은 '기본값 × (1 + Σ가산) × 전역 배수'이고, 슬롯 정보에 각 항목이 천분율로 실려 온다.
+    // 클라는 **다시 계산하지 않는다** — 예전엔 서버 식을 베껴 가산을 되짚고 전역 배수를 역산했는데,
+    //   서버가 항목을 늘리면(★ 가산 · T-130) 그 몫이 조용히 "전역 배수"로 읽혔다.
+    // 전역 배수는 치트('SetGatherSpeed')로만 바뀐다 — 1.0이 아닐 때만 값 아래에 알린다.
     //
-    // ⚠️ **이건 서버 식의 사본이다** — 'User.GetEquipSpeedAdd' · 'User.GetTraitSpeedAdd' · 'User.GetLevelSpeedAdd'와
-    //   같은 모양이다 (특성 쪽은 'PlayerDataModel.GetTraitEffectSum'). 서버가 가산 내역을 명시 필드로 내려 주면
-    //   (일감 'T-055') 사본을 지우고 받은 값을 그린다.
-    //   **표가 갈리면 화면만 틀리고 조용하다** — 속도 특성·장비 테이블을 고칠 때 여기도 본다.
-    //
-    // ■ 개발용 전역 배수를 역산한다
-    // 서버 식은 '기본값 × (1 + Σ가산) × 전역배수'다. 가산을 알게 됐으므로 그 몫을 먼저 걷어내고
-    // '현재 ÷ (기본값 × (1 + Σ가산))'으로 배수를 되짚는다 — 예전엔 기본값으로만 나눠서
-    //   **특성·장비로 빨라진 몫까지 "전역 배수"로 읽혔다**(2026-09-20 ~ 2026-09-24).
-    // 1이 아니면 값 아래에 알리고, 1이면(배포 설정, 일감 'T-004') 문구가 저절로 사라진다.
+    // ■ 최소 주기를 늘 보인다 (T-102)
+    // 판정 1회는 'Constants.MinCycleMs'보다 짧아지지 않는다 — 속도가 상한에 닿으면 더 올려도 주기가 그대로다.
+    // 그게 버그로 보이지 않도록 실효 주기 줄에 하한을 적고, 닿았으면 현재 작업속도 줄에 상한을 적는다.
     private void RefreshEfficiency()
     {
         var slot = FindSlot();
@@ -1157,46 +1149,40 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
-        byte  aptitude  = _data.GetAptitude(slot.CharacterId, slot.Industry);
-        int   baseSpeed = GameDataLoader.GetBaseWorkSpeed(aptitude);
-        float cycle     = WorkStationProgress.CalculateCycleSeconds(slot);
+        float cycle    = WorkStationProgress.CalculateCycleSeconds(slot);
+        int   totalAdd = slot.LevelAddPermille + slot.StarAddPermille + slot.TraitAddPermille + slot.EquipAddPermille;
 
-        int traitAdd = _data.GetTraitEffectSum(UserTraitEffect.SpeedAdd, slot.Industry);
-        int equipAdd = GetEquipSpeedAdd(slot.CharacterId, slot.Industry);
-        int levelAdd = GameDataLoader.GetLevelSpeedAdd(_data.GetCharacterLevel(slot.CharacterId));
-        int totalAdd = traitAdd + equipAdd + levelAdd;
-
-        GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(baseSpeed));
+        GetOrCreateEfficiencyRow(0).Bind("적성 기본값", FormatSpeed(slot.BaseWorkSpeed));
 
         // 총합을 값에 적고 내역은 주석 줄에 둔다 — "왜 이만큼인가"가 한 줄 아래에 있어야 한다.
-        // ※ 레벨 항은 장비·특성과 **따로** 더한다(서버 'User.WorkStation'의 가산 합 · 이슈 #35).
         var addRow = GetOrCreateEfficiencyRow(1);
         addRow.Bind("속도 가산", FormatPermille(totalAdd));
 
         if (totalAdd != 0)
         {
-            addRow.SetNote($"레벨 {FormatPermille(levelAdd)} · 특성 {FormatPermille(traitAdd)} · 장비 {FormatPermille(equipAdd)}");
+            addRow.SetNote($"레벨 {FormatPermille(slot.LevelAddPermille)} · 응축 {FormatPermille(slot.StarAddPermille)} · "
+                         + $"특성 {FormatPermille(slot.TraitAddPermille)} · 장비 {FormatPermille(slot.EquipAddPermille)}");
         }
 
         var speedRow = GetOrCreateEfficiencyRow(2);
-        speedRow.Bind("현재 작업속도", FormatSpeed(slot.CurrentWorkSpeed));
+        bool atMinCycle = WorkStationProgress.IsAtMinCycle(slot);
+        speedRow.Bind("현재 작업속도", FormatSpeed(WorkStationProgress.GetEffectiveSpeed(slot)));
 
-        // 가산을 걷어낸 기대 속도 — 서버 'WorkSpeed.Resolve'의 가산 단계와 같은 식이다.
-        int   scale    = (int)Constants.WorkSpeedScale;
-        float expected = baseSpeed * Mathf.Max(0, scale + totalAdd) / (float)scale;
-
-        if (expected > 0f)
+        // ※ 0은 필드가 없던 옛 서버다 — 배수가 없는 것으로 본다.
+        if (slot.GatherSpeedPermille != 0 && slot.GatherSpeedPermille != (int)Constants.WorkSpeedScale)
         {
-            float multiplier = slot.CurrentWorkSpeed / expected;
-
-            // 서버가 천분율 정수로 반올림하므로 딱 1.0이 아닐 수 있다 — 반올림 오차는 배수로 치지 않는다.
-            if (Mathf.Abs(multiplier - 1f) > GlobalMultiplierTolerance)
-            {
-                speedRow.SetNote($"개발용 전역 배수 ×{multiplier:0.00} 적용 중");
-            }
+            speedRow.SetNote($"개발용 전역 배수 ×{slot.GatherSpeedPermille / (float)Constants.WorkSpeedScale:0.00} 적용 중");
         }
 
-        GetOrCreateEfficiencyRow(3).Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" : "—");
+        // 상한 안내는 실효 주기 줄에 둔다 — 현재 작업속도 줄의 안내 칸은 전역 배수가 쓴다.
+        // ※ 닿지 않았을 때는 상한 속도를 적지 않는다. 높은 산업 레벨은 상한이 수백 배라 숫자가 오히려 헷갈린다.
+        float minCycle = WorkStationProgress.MinCycleSeconds;
+
+        var cycleRow = GetOrCreateEfficiencyRow(3);
+        cycleRow.Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" + (atMinCycle ? " (최소)" : "") : "—");
+        cycleRow.SetNote(atMinCycle
+            ? $"최소 주기 {minCycle:0.0#}초에 닿음 — 속도 상한 {FormatSpeed(WorkStationProgress.GetSpeedCap(slot))}, 더 올려도 빨라지지 않는다"
+            : $"최소 주기 {minCycle:0.0#}초");
 
         // ■ 산출량 — 판정 1회에 같은 자원이 몇 개 나오나 (2026-10-02 · T-108)
         // 서버 식은 '100% + 공통 + 그 산업'이다(가산). 서버가 값을 보내지 않으므로 속도 가산과 같은 사본이다.
@@ -1228,52 +1214,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ 감산 장비·특성이 생길 수 있어 부호를 함께 만든다.
     private static string FormatPermille(int permille)
         => $"{(permille >= 0 ? "+" : "")}{permille / 10f:0.#}%";
-
-    // 이 캐릭터가 낀 장비 중 **이 산업에 붙는** 것들의 가산 합(천분율) — 장비 기본값 + 능력치 칸.
-    //
-    // ⚠️ 서버 'User.GetEquipSpeedAdd' → 'Equip.SpeedAddPermilleFor'의 사본이다 (일감 'T-055'가 끝나면 지운다).
-    // ※ 산업 'None'은 지정을 안 한 것이 아니라 **어느 산업에나 붙는다**는 뜻이다('Equip.AppliesTo').
-    // ■ 산업 판정은 장비와 칸이 **따로** 한다 (T-095 · 2026-10-03)
-    //   낚시 장비라도 칸에 '전산업 +2%'가 있으면 농사 슬롯에 그 2%가 붙는다. 예전엔 장비 산업이 다르면
-    //   통째로 건너뛰어 칸의 몫까지 빠졌고, 그 차이가 '개발용 전역 배수'로 잘못 읽혔다.
-    private int GetEquipSpeedAdd(long characterId, EIndustryType industry)
-    {
-        if (characterId == 0L)
-        {
-            return 0; // 0은 '인벤토리'라 끼지 않은 장비 전부와 맞아 버린다
-        }
-
-        var sum = 0;
-
-        foreach (var equip in _data.Equips)
-        {
-            if (equip.EquippedCharacterId != characterId)
-            {
-                continue;
-            }
-
-            if (GameDataLoader.TryGetEquip(equip.EquipTid, out var row) && AppliesTo(row.Industry, industry))
-            {
-                sum += row.SpeedAddPermille;
-            }
-
-            foreach (int optionTid in equip.EnchantOptions)
-            {
-                if (GameDataLoader.TryGetEnchantOption(optionTid, out var option)
-                    && option.OptionType == EnchantOptionType.Speed
-                    && AppliesTo(option.Industry, industry))
-                {
-                    sum += option.Value;
-                }
-            }
-        }
-
-        return sum;
-    }
-
-    // 이 산업 지정이 슬롯 산업에 붙는가 — 'None'(전 산업)은 어디든 붙는다 (GetEquipSpeedAdd에서 호출).
-    private static bool AppliesTo(IndustryType target, EIndustryType industry)
-        => target == IndustryType.None || (EIndustryType)(byte)target == industry;
 
     // 'index'번째 효율 계산 줄을 켜서 돌려준다. 아직 없으면 그때 만든다 (RefreshEfficiency에서 호출).
     private EfficiencyRowView GetOrCreateEfficiencyRow(int index)
@@ -1669,6 +1609,19 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
             equipSlotButtons[i].button.onClick.AddListener(() => OnEquipSlotClicked(index));
+
+            // 칸에는 이름·효과 한 줄만 보인다 — 올리면 능력치 칸까지 인벤토리 장비 칸과 같은 툴팁으로 펼친다.
+            // 낀 장비는 띄우는 순간에 읽는다(빈 칸이면 뜨지 않는다).
+            GameObject cell = equipSlotButtons[i].button.gameObject;
+
+            if (!cell.TryGetComponent(out TooltipTrigger trigger))
+            {
+                trigger = cell.AddComponent<TooltipTrigger>();
+            }
+
+            trigger.SetProvider(() => FindWornEquip((EEquipSlot)(index + 1)) is EquipInfo worn
+                                          ? EquipLabel.BuildTooltip(worn.EquipTid, worn.EnchantOptions)
+                                          : null);
         }
 
         _equipIconPlaceholderColors = new Color[equipSlotButtons.Length];

@@ -1,6 +1,6 @@
 # art-import 규칙
 
-> 최종 업데이트: 2026-10-07 (굽기는 결과 SO를 덮지 않는다 — 빈 칸만 채움) · 2026-10-07 (상반신 — 캔버스로 채우지 않는 `Upscale` · 자동 크롭은 몸통 가운데·머리 16 · T-104) · 2026-10-05 (칸 224 · 공격 이펙트 띠 · 타격 이펙트 · 목록 자동 등록 `ArtCatalogSync` · 아이콘 레시피 `IconRecipe` · 배경 `spriteSources`·`skipBottom`·`groundTiles` · 아틀라스 스프라이트 읽기 · T-097) · 2026-10-04 (연속 공격 · 대기 띠 · 공격 자르기 · T-097) · 대상: `Assets/Scripts_Client/Editor/art-import/`
+> 최종 업데이트: 2026-10-09 (이펙트 `fx/` — 임포트 설정 · 목록 등록 · 메뉴 '목록만 다시 쓰기') · 2026-10-07 (굽기는 결과 SO를 덮지 않는다 — 빈 칸만 채움) · 2026-10-07 (상반신 — 캔버스로 채우지 않는 `Upscale` · 자동 크롭은 몸통 가운데·머리 16 · T-104) · 2026-10-05 (칸 224 · 공격 이펙트 띠 · 타격 이펙트 · 목록 자동 등록 `ArtCatalogSync` · 아이콘 레시피 `IconRecipe` · 배경 `spriteSources`·`skipBottom`·`groundTiles` · 아틀라스 스프라이트 읽기 · T-097) · 2026-10-04 (연속 공격 · 대기 띠 · 공격 자르기 · T-097) · 대상: `Assets/Scripts_Client/Editor/art-import/`
 
 `Assets/Art/`의 원본 그림을 같은 규격의 결과물로 굽는 에디터 도구다.
 **규격·폴더·새 그림 넣는 절차는 [`Art 규칙.md`](<../../../Art/Art 규칙.md>)에 있다** — 여기는 코드 쪽만 적는다.
@@ -11,7 +11,8 @@
 | `ArtImage.cs` | 픽셀 버퍼 — 자르기 · 뒤집기 · 축소(가장 가까운 픽셀 / 알파 가중 평균) · 겹치기 · 테두리 · 발 위치 · 흰 실루엣 · PNG 저장 |
 | `CharacterRecipe.cs` · `BackgroundRecipe.cs` · `TargetRecipe.cs` | 레시피 SO — 무엇을 어떻게 가공할지. 우클릭 **이 레시피 굽기** |
 | `ArtBaker.cs` | 굽기 — 레시피 → PNG + 결과 SO(`CharacterVisual`·`BackgroundVisual`·`TargetVisual`). 메뉴 **아트/전부 다시 굽기** |
-| `ArtImportPostprocessor.cs` | `characters/`·`backgrounds/`·`targets/`의 임포트 설정 고정. `_source/`는 건드리지 않는다 |
+| `ArtImportPostprocessor.cs` | `characters/`·`backgrounds/`·`targets/`·`icons/`·`fx/`의 임포트 설정 고정. `_source/`는 건드리지 않는다. `fx/`는 선형 필터이고 9-slice 경계는 두고 간다 |
+| `ArtCatalogSync.cs` | 목록(`Resources/VisualCatalog`)을 폴더에서 다시 쓴다 — 캐릭터 · 아이콘 · 이펙트(`fx/**/<키>_<부위>.png` → 파일 이름). 굽기 끝에 돌고, 메뉴 **아트/목록만 다시 쓰기**로 따로도 돈다 |
 | `ArtValidator.cs` | 결과물·목록 검사 — 고치지 않고 알린다(❌ · ⚠️ · ℹ️). 메뉴 **아트/검사** |
 
 결과 SO의 런타임 쪽은 `UI/Shared/visual/`에 있다(빌드에 들어가야 하므로 Editor 밖).

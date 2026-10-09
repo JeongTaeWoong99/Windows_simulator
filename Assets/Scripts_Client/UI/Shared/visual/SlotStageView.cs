@@ -39,7 +39,8 @@ public class SlotStageView : MonoBehaviour
 
     private RectTransform        _rect     = null!;
     private RectTransform?       _layerRoot;
-    private readonly List<RawImage> _layers = new List<RawImage>();
+    private readonly List<RawImage> _layers = new List<RawImage>(); // 만든 층 전부 — 지금 배경이 쓰는 것은 앞의 '_layerCount'개
+    private int                  _layerCount;
     private TargetImages         _dying;
     private TargetImages         _coming;
     private Image?               _character;
@@ -145,7 +146,7 @@ public class SlotStageView : MonoBehaviour
 
         SlotStageTimeline.Result now = SlotStageTimeline.Evaluate(time, cycle, _characterVisual, settings);
 
-        float feetX = width - settings.RightPad * k;
+        float feetX = FeetX(width, settings);
         float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k; // 대상 오른쪽 끝이 멈추는 자리
         float speed = (stopX + SpawnMargin * k) / settings.ApproachSeconds;            // 화면 단위/초
 
@@ -159,6 +160,43 @@ public class SlotStageView : MonoBehaviour
         DrawTargets(now, time, stopX, speed, settings, k);
         PlaceCharacter(PickFrame(now), PickEffect(now), settings, k);
     }
+
+    // 수확 자리 — 판정 경계에서 쓰러지는 대상의 가운데(월드 좌표). 대상 그림이 없으면 false (획득 연출이 호출).
+    //
+    // ※ 쓰러지는 대상은 여운 동안 멈춤 자리에 서 있다('DrawTargets'의 dyingX가 주기 처음에 stopX - 반폭) —
+    //   그래서 시간과 상관없이 같은 자리를 돌려준다.
+    public bool TryGetHarvestPoint(out Vector3 worldPoint)
+    {
+        worldPoint = default;
+
+        Sprite? sprite = _target != null ? _target.Sprite : null;
+
+        if (_background == null || _characterVisual == null || sprite == null)
+        {
+            return false;
+        }
+
+        SlotStageSettings settings = SlotStageSettings.Current;
+        float k     = Scale(settings);
+        float feetX = FeetX(_rect.rect.width, settings);
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
+        Vector2 size = sprite.rect.size * k;
+
+        // 무대 좌표는 왼쪽 아래 기준('Place') — 피벗 기준 로컬로 옮긴 뒤 월드로
+        var local = new Vector2(stopX - size.x / 2f, GroundY(k) + size.y / 2f) + _rect.rect.min;
+
+        worldPoint = _rect.TransformPoint(local);
+
+        return true;
+    }
+
+    // 땅이 지금까지 흐른 거리 (무대 로컬 단위) — 획득 연출이 시작 때 값을 잡아 두고 'FollowGround'로 따라간다
+    public double GroundDistance => _groundDistance;
+
+    // 'sinceGround' 때 'worldPoint'에 있던 것이 땅과 함께 흘러 지금 있을 자리 (월드).
+    // 쓰러진 대상과 같은 규칙이다 — 땅은 달리는 동안만 흐른다('Tick').
+    public Vector3 FollowGround(Vector3 worldPoint, double sinceGround)
+        => worldPoint + _rect.TransformVector(new Vector3((float)(_groundDistance - sinceGround), 0f, 0f));
 
     // ■ 되감기 방어
     //   진행도는 서버 동기화(정산 패킷)를 받을 때마다 기준점이 다시 잡힌다. 클라 시계가 조금 앞서 있었으면
@@ -196,7 +234,7 @@ public class SlotStageView : MonoBehaviour
         float width = _rect.rect.width;
         BackgroundVisual.Layer[] layers = _background.Layers;
 
-        for (int i = 0; i < _layers.Count && i < layers.Length; i++)
+        for (int i = 0; i < _layerCount && i < layers.Length; i++)
         {
             Texture2D texture = layers[i].texture;
 
@@ -356,7 +394,7 @@ public class SlotStageView : MonoBehaviour
             return;
         }
 
-        Vector2 feet = new Vector2(Mathf.Round(_rect.rect.width - settings.RightPad * k), GroundY(k));
+        Vector2 feet = new Vector2(FeetX(_rect.rect.width, settings), GroundY(k));
 
         _character.sprite = frame;
         // 캐릭터 크기 배수 — 발 자리는 그대로 두고 그림만 키운다(피벗이 발이라 땅에서 뜨지 않는다)
@@ -417,6 +455,9 @@ public class SlotStageView : MonoBehaviour
     private float Scale(SlotStageSettings settings)
         => _characterVisual != null ? _characterVisual.GetPixelScale(settings) : settings.PixelScale;
 
+    // 캐릭터 발의 가로 자리 — 패널 폭의 비율이라 창 폭이 바뀌어도 같은 자리에 선다. 반 칸 걸치지 않게 정수로 맞춘다
+    private static float FeetX(float width, SlotStageSettings settings) => Mathf.Round(width * settings.CharacterAnchor);
+
     // 땅선 높이 — 무대 그림의 아래를 패널 아래에 붙인다
     private float GroundY(float k) => _background != null ? Mathf.Round(_background.GroundHeight * k) : 0f;
 
@@ -431,21 +472,16 @@ public class SlotStageView : MonoBehaviour
 
     #region 자식 만들기
 
-    // 배경이 바뀌면 층을 다시 만든다 — 층 수가 배경마다 다르다
+    // 배경이 바뀌면 층을 다시 짠다 — 층 수가 배경마다 다르다.
+    // 층은 파괴하지 않는다: 모자라면 만들고, 남으면 꺼 둔다(배치·해제·산업 변경마다 생성·파괴가 돌지 않게).
     private void RebuildLayers()
     {
-        foreach (RawImage layer in _layers)
-        {
-            if (layer != null)
-            {
-                Destroy(layer.gameObject);
-            }
-        }
-
-        _layers.Clear();
+        _layerCount = 0;
 
         if (_background == null)
         {
+            HideLayersFrom(0);
+
             return;
         }
 
@@ -458,19 +494,37 @@ public class SlotStageView : MonoBehaviour
             _layerRoot.SetAsFirstSibling();
         }
 
-        // 뒤 → 앞 순서 그대로 자식이 된다
+        // 뒤 → 앞 순서 그대로 자식이 된다 — i번째 층이 늘 i번째 자식이라 다시 써도 순서가 같다
         foreach (BackgroundVisual.Layer layer in _background.Layers)
         {
-            RectTransform rect = CreateChild($"Layer {_layers.Count}", _layerRoot);
-            rect.anchorMin = new Vector2(0f, 0f);
-            rect.anchorMax = new Vector2(1f, 0f);
-            rect.pivot     = new Vector2(0.5f, 0f);
+            if (_layerCount == _layers.Count)
+            {
+                RectTransform rect = CreateChild($"Layer {_layers.Count}", _layerRoot);
+                rect.anchorMin = new Vector2(0f, 0f);
+                rect.anchorMax = new Vector2(1f, 0f);
+                rect.pivot     = new Vector2(0.5f, 0f);
 
-            RawImage image = rect.gameObject.AddComponent<RawImage>();
-            image.texture       = layer.texture;
-            image.raycastTarget = false;
+                RawImage created = rect.gameObject.AddComponent<RawImage>();
+                created.raycastTarget = false;
 
-            _layers.Add(image);
+                _layers.Add(created);
+            }
+
+            RawImage image = _layers[_layerCount++];
+            image.texture = layer.texture;
+            image.uvRect  = new Rect(0f, 0f, 1f, 1f); // 이전 배경이 밀어 둔 uv를 남기지 않는다 — 다음 'DrawLayers'가 다시 정한다
+            image.gameObject.SetActive(true);
+        }
+
+        HideLayersFrom(_layerCount);
+    }
+
+    // 지금 배경이 쓰지 않는 층을 끈다 ('RebuildLayers'에서 호출)
+    private void HideLayersFrom(int startIndex)
+    {
+        for (int i = startIndex; i < _layers.Count; i++)
+        {
+            _layers[i].gameObject.SetActive(false);
         }
     }
 

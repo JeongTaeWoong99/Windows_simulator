@@ -53,6 +53,9 @@ public class WorkStationListPresenter : MonoBehaviour
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
     private readonly List<Sprite?>      _wornIcons  = new List<Sprite?>();
 
+    // 획득 연출에 넘길 아이템 — 수확마다 새로 만들지 않고 비워 다시 쓴다
+    private readonly List<ItemGainEffectView.Gain> _gains = new List<ItemGainEffectView.Gain>();
+
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
     private ServerWaitManager _wait = null!;
@@ -113,7 +116,7 @@ public class WorkStationListPresenter : MonoBehaviour
 
         foreach (var slot in _data.WorkStationSlots)
         {
-            if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.IsRunning)
+            if (!_views.TryGetValue(slot.SlotIndex, out var view) || !view.gameObject.activeSelf || !view.IsRunning)
             {
                 continue;
             }
@@ -140,6 +143,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.CharactersChanged       += Rebuild; // 캐릭터 레벨이 오르면 칸 글자의 'Lv'를 고친다
         _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
+        _data.GatherResultReceived    += OnGatherResultReceived;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -156,6 +160,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.CharactersChanged       -= Rebuild;
         _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
+        _data.GatherResultReceived    -= OnGatherResultReceived;
     }
 
     #endregion
@@ -317,8 +322,9 @@ public class WorkStationListPresenter : MonoBehaviour
     // 인벤토리와 달리 번호가 고정이라 "빈 프레임 찾기"가 아니라 자리를 직접 고른다.
     //
     // ■ 배치된 칸에만 뷰를 둔다
-    // 배치가 풀리면 뷰를 지운다. 남겨 두고 "대기"라고 적으면 빈 칸과 구분이 안 되고,
+    // 배치가 풀리면 뷰를 끈다. 켜 둔 채 "대기"라고 적으면 빈 칸과 구분이 안 되고,
     // 무엇보다 뷰가 프레임 위를 덮어 칸을 눌러 배치 화면으로 들어가는 길을 막는다.
+    // 파괴는 하지 않는다 — 같은 칸에 다시 배치되면 꺼 둔 뷰를 켜서 쓴다('RemoveView').
     private void Rebuild()
     {
         RefreshFrameLabels();
@@ -351,15 +357,45 @@ public class WorkStationListPresenter : MonoBehaviour
                 _views.Add(slot.SlotIndex, view);
             }
 
+            // 해제 때 꺼 둔 뷰를 다시 쓴다 — 아래 Bind가 이전 캐릭터의 값을 전부 덮는다
+            view.gameObject.SetActive(true);
+
             int characterTid = _data.GetCharacterTid(slot.CharacterId);
 
             view.Bind(slot, _data.GetCharacterName(slot.CharacterId), characterTid, _data.GetCharacterLevel(slot.CharacterId));
             view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
 
             // 배치된 칸에만 뷰가 있으므로 캐릭터는 늘 있다 — 인벤토리 캐릭터 칸과 같은 값을 그린다(T-104)
-            EquipLabel.ReadWornGrades(_data, slot.CharacterId, _wornGrades, _wornIcons);
-            view.SetEquipPips(_wornGrades, _wornIcons);
+            // 툴팁은 띄우는 순간에 읽는다 — 장비가 바뀌어도 다시 넣어 줄 필요가 없다
+            long characterId = slot.CharacterId;
+
+            EquipLabel.ReadWornGrades(_data, characterId, _wornGrades, _wornIcons);
+            view.SetEquipPips(_wornGrades, _wornIcons, () => BuildWornTooltip(characterId));
         }
+    }
+
+    // 채취 결과 푸시 — 그 칸에서 얻은 아이템을 띄운다 (GatherResultReceived 구독).
+    // ※ 이 푸시는 판정이 끝날 때 온다 — 칸의 카운트다운이 0이 되어 대상이 쓰러지는 때와 같다.
+    private void OnGatherResultReceived(MikaProtocol.S_GatherResultResponse res)
+    {
+        if (!_views.TryGetValue(res.SlotIndex, out var view) || view == null || !view.isActiveAndEnabled)
+        {
+            return;
+        }
+
+        ItemGainEffectView.ReadGains(res.ItemChanges, _gains);
+        view.PlayGain(_gains);
+    }
+
+    // 장비 줄 툴팁 — 캐릭터 이름 아래 칸마다 낀 장비 (장비 줄에 마우스를 올릴 때 호출).
+    // 인벤토리 캐릭터 칸 툴팁의 '장비' 묶음과 같은 출처다('EquipLabel.AddWornRows').
+    private TooltipContent BuildWornTooltip(long characterId)
+    {
+        var content = new TooltipContent(_data.GetCharacterName(characterId));
+
+        EquipLabel.AddWornRows(content, _data, characterId);
+
+        return content;
     }
 
     // 프레임 라벨을 칸 상태대로 적는다 — 잠긴 칸은 해금 조건, 열린 칸은 "비어있음." ('Rebuild'에서 호출).
@@ -416,19 +452,14 @@ public class WorkStationListPresenter : MonoBehaviour
         return GameDataLoader.TryGetUnlock(unlockTid, out var row) && row.Name.Length > 0 ? row.Name : $"해금 #{unlockTid}";
     }
 
-    // 배치가 풀린 칸의 뷰를 지운다 ('Rebuild'에서 호출).
+    // 배치가 풀린 칸의 뷰를 끈다 ('Rebuild'에서 호출).
+    // 파괴하지 않는다 — 뷰마다 무대(배경 층·캐릭터·이펙트) 하위 트리가 딸려 있어 배치할 때마다 새로 만들면 무겁다.
+    // 칸 프레임 안에 꺼진 채 남아 같은 칸에 다시 배치되면 그대로 켜진다. 꺼져 있으면 프레임을 덮지 않는다.
     private void RemoveView(int slotIndex)
     {
-        if (!_views.TryGetValue(slotIndex, out var view))
+        if (_views.TryGetValue(slotIndex, out var view) && view != null)
         {
-            return;
-        }
-
-        _views.Remove(slotIndex); // Update가 죽은 뷰를 만지지 않도록 먼저 뺀다
-
-        if (view != null)
-        {
-            Destroy(view.gameObject);
+            view.gameObject.SetActive(false); // Update는 꺼진 뷰를 건너뛴다
         }
     }
 

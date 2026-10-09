@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;           // 배율 라벨의 소수점(로캘에 따라 쉼표가 되지 않게)
 using System.Runtime.InteropServices; // MONITORINFO.cbSize 를 채우는 Marshal.SizeOf
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -160,8 +162,8 @@ public class WindowManager : MonoService<WindowManager>
             _raycastCamera = Camera.main;
         }
 
-        // 창 핸들 확보는 타이밍이 중요하므로 코루틴에서 대기 후 초기화한다.
-        StartCoroutine(InitializeWhenReady());
+        // 창 핸들 확보는 타이밍이 중요하므로 프레임을 넘기며 대기한 뒤 초기화한다.
+        InitializeWhenReadyAsync(destroyCancellationToken).Forget();
     }
 
     private void Update()
@@ -266,8 +268,8 @@ public class WindowManager : MonoService<WindowManager>
     // Unity 메인 창이 실제로 생성될 때까지 기다린 뒤 창 제어를 적용한다.
     // - Start() 시점엔 유니티 스플래시/초기화 때문에 GetActiveWindow 가 엉뚱한(또는 빈) 핸들을
     //   반환할 수 있다. 그래서 Process.MainWindowHandle 이 유효(0이 아님)해질 때까지 폴링한다.
-    // - IEnumerator + yield return null : 코루틴. 매 프레임 한 번씩 끊어가며 대기하는 Unity 패턴.
-    private System.Collections.IEnumerator InitializeWhenReady()
+    // - 'UniTask.NextFrame' : 매 프레임 한 번씩 끊어가며 대기한다(옛 코루틴의 'yield return null').
+    private async UniTask InitializeWhenReadyAsync(CancellationToken ct)
     {
 #if !UNITY_EDITOR
         // 프로세스의 메인 창 핸들이 잡힐 때까지 최대 5초 대기 (못 잡으면 GetActiveWindow 로 폴백)
@@ -282,18 +284,18 @@ public class WindowManager : MonoService<WindowManager>
                 break;
             }
             timeout -= Time.unscaledDeltaTime; // timeScale 영향 안 받는 실제 경과 시간
-            yield return null;                 // 다음 프레임까지 대기
+            await UniTask.NextFrame(ct);       // 다음 프레임까지 대기
         }
         if (_hWnd == IntPtr.Zero)
         {
             _hWnd = Win32Native.GetActiveWindow(); // 폴백
         }
 
-        yield return null; // 창을 한 프레임 더 안정화시킨 뒤 효과 적용
+        await UniTask.NextFrame(ct); // 창을 한 프레임 더 안정화시킨 뒤 효과 적용
+#else
+        await UniTask.CompletedTask; // 에디터는 창 핸들을 기다리지 않는다 — Start 안에서 바로 초기화된다
 #endif
         InitializeWindow();
-
-        yield break;
     }
 
     // 확보된 창 핸들에 현재 상태(타이틀바 → 크기/위치 → 투명 → 항상위 → 클릭스루)를 적용한다.
@@ -322,7 +324,7 @@ public class WindowManager : MonoService<WindowManager>
         SetClickThrough(false); // 정적 클릭스루 시작값은 동적 클릭스루가 있으면 무의미 → 클릭 받는 상태로 시작(동적ON이면 Update가 관리)
 
         LogWindowState("초기화 완료");
-        StartCoroutine(WatchWindowSize());
+        WatchWindowSizeAsync(destroyCancellationToken).Forget();
 #endif
         _initialized = true;
     }
@@ -355,13 +357,13 @@ public class WindowManager : MonoService<WindowManager>
     //   **스스로 재생산되는 고장**이라 한 번 어긋나면 재빌드로도 풀리지 않는다.
     // ※ 감시는 부팅 직후 짧게만 돈다. 사용자가 창 크기를 바꿀 수단이 없으므로(리사이즈 비트 제거)
     //   이후에 크기가 달라지는 정상 경로는 없다.
-    private System.Collections.IEnumerator WatchWindowSize()
+    private async UniTask WatchWindowSizeAsync(CancellationToken ct)
     {
         float elapsed = 0f;
 
         while (elapsed < WatchDuration)
         {
-            yield return new WaitForSecondsRealtime(WatchInterval);
+            await UniTask.Delay(TimeSpan.FromSeconds(WatchInterval), ignoreTimeScale: true, cancellationToken: ct);
             elapsed += WatchInterval;
 
             LogWindowState($"감시 +{elapsed:0.0}s");

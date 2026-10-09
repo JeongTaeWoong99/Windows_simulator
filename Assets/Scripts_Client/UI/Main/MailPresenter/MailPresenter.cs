@@ -323,7 +323,7 @@ public class MailPresenter : MonoBehaviour
     private static string FormatDeleteIn(long claimedAtUnixMs)
     {
         DateTimeOffset deleteAt = DateTimeOffset.FromUnixTimeMilliseconds(claimedAtUnixMs).AddDays(ClaimedKeepDays);
-        int            days     = (int)Math.Ceiling((deleteAt - DateTimeOffset.UtcNow).TotalDays);
+        int            days     = (int)Math.Ceiling((deleteAt - ServerClock.UtcNow).TotalDays);
 
         return days <= 1 ? "오늘 삭제" : $"{days}일 뒤 삭제";
     }

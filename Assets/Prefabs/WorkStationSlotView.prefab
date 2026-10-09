@@ -154,6 +154,7 @@ GameObject:
   - component: {fileID: 1682027219142303611}
   - component: {fileID: 3737357419468821787}
   - component: {fileID: 1430448680760089305}
+  - component: {fileID: 818640620870190986}
   m_Layer: 5
   m_Name: WorkStationSlotView
   m_TagString: Untagged
@@ -228,6 +229,7 @@ MonoBehaviour:
   progressSlider: {fileID: 647758233822417899}
   equipPips: {fileID: 214830610791120874}
   stage: {fileID: 1748983412400989297}
+  gainEffect: {fileID: 818640620870190986}
 --- !u!222 &1682027219142303611
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -280,6 +282,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 1
   alpha: 1
+--- !u!114 &818640620870190986
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3616460877357359638}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d340a5d008ec02542bf026f403c96d7f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ItemGainEffectView
+  iconSize: 27
+  iconSpacing: 6
+  maxIcons: 5
+  startOffset: {x: 0, y: 0}
+  riseDistance: 28
+  duration: 0.733
+  riseEase: 9
+  fadeDelay: 0.3
+  fadeEase: 5
+  appearScale: 0.6
+  appearDuration: 0.12
+  appearEase: 27
+  maxPooled: 16
 --- !u!1 &4178089002867239358
 GameObject:
   m_ObjectHideFlags: 0
@@ -479,8 +506,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uC2AC\uB86F\uC815\uBCF4"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 51fc0b592ad3e014e8ff8c4c898a77a8, type: 2}
-  m_sharedMaterial: {fileID: 1409007631558297729, guid: 51fc0b592ad3e014e8ff8c4c898a77a8, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -869,8 +896,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uB0A8\uC740\uC2DC\uAC04"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 51fc0b592ad3e014e8ff8c4c898a77a8, type: 2}
-  m_sharedMaterial: {fileID: 1409007631558297729, guid: 51fc0b592ad3e014e8ff8c4c898a77a8, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []

@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 
 // 서버 왕복 중의 사용자 피드백(로딩 표시·응답 타임아웃·오류 알림)을 한 곳에 모은 단일 창구
@@ -44,12 +45,14 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
             BusyChanged?.Invoke(true);
         }
 
-        handle.Timeout = StartCoroutine(WatchTimeout(handle, label));
+        // 매니저가 파괴되면(앱 종료) 대기도 함께 끝난다
+        handle.Timeout = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+        WatchTimeoutAsync(handle, label, handle.Timeout.Token).Forget();
 
         return handle;
     }
 
-    // 성공·실패·타임아웃 어느 쪽이든 대기 하나를 끝낸다 (핸들·타임아웃 코루틴이 호출).
+    // 성공·실패·타임아웃 어느 쪽이든 대기 하나를 끝낸다 (핸들·타임아웃 감시가 호출).
     // 이미 닫힌 핸들은 무시하므로, 타임아웃 뒤 늦게 온 응답은 아무 일도 하지 않는다.
     internal void Resolve(ServerWaitHandle handle, string? failMessage)
     {
@@ -62,7 +65,8 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
 
         if (handle.Timeout != null)
         {
-            StopCoroutine(handle.Timeout);
+            handle.Timeout.Cancel();
+            handle.Timeout.Dispose();
             handle.Timeout = null;
         }
 
@@ -81,11 +85,15 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
 
     // 제한 시간까지 성공·실패 보고가 없으면 스스로 끝내고 알린다 (Begin이 시작).
     // 타임스케일이 0이어도(일시정지 연출 등) 대기는 실제 시간으로 흘러야 한다.
-    private IEnumerator WatchTimeout(ServerWaitHandle handle, string label)
+    // 응답이 먼저 오면 'Resolve'가 토큰을 취소해 여기서 조용히 끝난다(취소는 Forget이 삼킨다).
+    private async UniTask WatchTimeoutAsync(ServerWaitHandle handle, string label, CancellationToken ct)
     {
-        yield return new WaitForSecondsRealtime(RequestTimeoutSeconds);
+        await UniTask.Delay(TimeSpan.FromSeconds(RequestTimeoutSeconds), ignoreTimeScale: true, cancellationToken: ct);
 
-        handle.Timeout = null; // 이 코루틴은 이미 끝났다 — Resolve가 StopCoroutine하지 않게 비운다
+        // 이 감시는 이미 끝났다 — 'Resolve'가 자기 토큰을 다시 취소하지 않게 먼저 떼어 낸다
+        handle.Timeout?.Dispose();
+        handle.Timeout = null;
+
         Resolve(handle, $"'{label}' 응답이 {RequestTimeoutSeconds:F0}초 안에 오지 않았습니다. 잠시 후 다시 시도해 주세요.");
     }
 
@@ -108,8 +116,8 @@ public sealed class ServerWaitHandle
     private readonly ServerWaitManager _owner;
     private readonly Action?           _onClosed;
 
-    // 이 대기의 타임아웃 코루틴 핸들. 매니저가 시작·정리한다.
-    internal Coroutine? Timeout;
+    // 이 대기의 타임아웃 감시를 끊는 손잡이. 매니저가 시작·정리한다.
+    internal CancellationTokenSource? Timeout;
 
     private bool _isClosed;
 
