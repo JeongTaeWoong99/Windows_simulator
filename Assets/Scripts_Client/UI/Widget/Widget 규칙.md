@@ -77,7 +77,7 @@ Widget Presenter        VerticalLayoutGroup
 
 `OnEnable`에서 일하는 컴포넌트(`WidgetPositionLayout`)를 **토글 대상 캔버스에 붙이면
 그게 꺼져 있는 동안 아무 일도 하지 않는다.** 기본 상태로 꺼져 있으면 한 번도 안 돈다.
-그래서 `WidgetPositionLayout`은 이 캔버스가 아니라 **상주하는 `!Horizental Columns`**에 있다
+그래서 `WidgetPositionLayout`은 이 캔버스가 아니라 **상주하는 `!Horizontal Columns`**에 있다
 (→ [`Layout 규칙.md`](<../Layout/Layout 규칙.md>)).
 
 ## 위젯 자리는 다른 캔버스가 닫혀야 제대로 나온다
@@ -87,4 +87,4 @@ Widget Presenter        VerticalLayoutGroup
 남겨 두면 그 950px가 안 사라져 **위젯이 창 가장자리에서 밀린다.**
 
 > ⚠️ 이것이 오버레이를 뺀 나머지를 `CanvasGroup`이 아니라 `SetActive`로 여닫는 근거 중
-> 하나다 — [`System 규칙.md`](<../System/System 규칙.md>)의 "무엇으로 여닫는가".
+> 하나다 — [`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>)의 "무엇으로 여닫는가".

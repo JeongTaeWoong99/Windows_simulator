@@ -19,7 +19,7 @@ using UnityEngine.UI;
 //
 // ■ 결과 내용은 여기서 보지 않는다
 // 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고, 결과 팝업은 최상단의
-// 'GachaResultPresenter'('!System Canvas')가 스스로 구독해서 띄운다 — 여기 자식으로 두지 않는다.
+// 'GachaResultPresenter'('!Overlay Canvas')가 스스로 구독해서 띄운다 — 여기 자식으로 두지 않는다.
 // 다만 성공/실패 도착 여부는 여기서 구독한다 — 요청 중 로딩·버튼 잠금·실패 알림을 위해서다.
 //
 // ■ 결과 팝업의 [n회 더 뽑기]도 여기로 들어온다 (2026-10-09)

@@ -18,6 +18,10 @@ using UnityEngine.UI;
 //
 // ⚠️ 화면을 닫는 시점은 "버튼을 누른 때"가 아니라 "성공 응답이 온 때"다.
 // 누르자마자 닫으면 위의 무응답 상황에서 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
+//
+// ■ '!Overlay Canvas'의 첫 형제 — 이 오브젝트가 화면 전체를 덮는 어두운 판이고, 상자는 자식 'Panel'이다.
+// 오버레이의 다른 팝업과 달리 'CanvasGroup'이 아니라 'SetActive'로 여닫는다('Show') —
+// 스스로 이벤트를 받아 뜨는 팝업이 아니라 'UIManager'가 여닫는 화면이라서다('Overlay 규칙.md').
 public class LoginPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -82,6 +86,12 @@ public class LoginPresenter : MonoBehaviour
     private void RefreshButton()
     {
         loginButton.interactable = !_isWaiting && !string.IsNullOrWhiteSpace(idInput.text);
+    }
+
+    // 로그인 화면을 열고 닫는다 ('UIManager.ShowLogin'이 부른다)
+    public void Show(bool on)
+    {
+        gameObject.SetActive(on);
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)

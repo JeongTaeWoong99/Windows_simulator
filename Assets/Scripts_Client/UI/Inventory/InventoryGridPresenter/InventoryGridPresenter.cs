@@ -159,9 +159,9 @@ public class InventoryGridPresenter : MonoBehaviour
     private RectTransform? _dropHighlight;
     private int            _highlightedFrame = -1;
 
-    // 끌리는 그림의 정렬 순서 — 모든 열 캔버스(0)·로그인(1)·'!System Canvas'(2) 위에 그린다.
+    // 끌리는 그림의 정렬 순서 — 열 캔버스(0)·'!Overlay Canvas'(100) 위에 그린다.
     // ※ 열 캔버스가 각자 'overrideSorting'이라 루트에 붙이기만 하면 **그 뒤에 깔려 안 보인다**(2026-10-06 실측).
-    private const int GhostSortingOrder = 10;
+    private const int GhostSortingOrder = 200;
 
     // 놓을 칸 덮개 색 — "여기 놓인다"만 느껴지게 살짝. 칸 내용이 비쳐야 무엇과 바뀌는지 보인다.
     private static readonly Color DropHighlightColor = new Color(0f, 0f, 0f, 0.5f);
@@ -897,9 +897,9 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!System Canvas'에 살아서다.
+        // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!Overlay Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
-        //   인벤토리 안에 두면 다른 열이 그대로 눌린다('System 규칙.md').
+        //   인벤토리 안에 두면 다른 열이 그대로 눌린다('Overlay 규칙.md').
         _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));
     }
 
@@ -1281,7 +1281,7 @@ public class InventoryGridPresenter : MonoBehaviour
         //   지금은 상자 최대 수량(50)과 같아 걸리지 않지만, 두 값은 엑셀에서 따로 바뀐다.
         int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
 
-        // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!System Canvas').
+        // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!Overlay Canvas').
         _ui.AskAmount(itemId, maxOpen, "몇 개를 열까?", amount => OpenBox(itemId, amount));
     }
 
@@ -1322,7 +1322,7 @@ public class InventoryGridPresenter : MonoBehaviour
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
     // (PlayerDataModel.ItemUseCompleted 구독)
     // ※ 인벤토리가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 인벤토리에 들어온 줄 안다.
-    //   알림은 '!System Canvas'의 마지막 형제라 결과창 위에 뜬다.
+    //   알림은 '!Overlay Canvas'에서 결과창보다 뒤 형제라 그 위에 뜬다.
     private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
         _waitHandle?.Succeed();

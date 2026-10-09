@@ -20,7 +20,7 @@ using UnityEngine.UI;
 // ■ 자리 — 대상의 오른쪽 옆, 넘치면 왼쪽
 // 커서를 따라다니지 않는다(글을 읽는 동안 흔들린다). 윗변을 대상 윗변에 맞추고, 창 아래로 넘치면 위로 밀어 넣는다.
 //
-// 상주 오버레이라 'CanvasGroup'으로 여닫는다('System 규칙.md' ②).
+// 상주 오버레이라 'CanvasGroup'으로 여닫는다('Overlay 규칙.md' ②).
 public class TooltipPresenter : MonoBehaviour
 {
     // 올려 두고 이만큼 지나야 뜬다 — 지나가는 커서마다 뜨면 화면이 번쩍거린다.
@@ -51,7 +51,8 @@ public class TooltipPresenter : MonoBehaviour
 
     private WindowManager _window = null!;
 
-    private readonly List<TooltipRowView> _rows = new List<TooltipRowView>();
+    // 만들어 둔 줄. 툴팁마다 줄 수가 바뀌므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
+    private UIRowList<TooltipRowView> _rows = null!;
 
     private TooltipTrigger? _hovered;      // 지금 커서 밑의 대상
     private TooltipTrigger? _shown;        // 지금 툴팁을 띄운 대상
@@ -69,6 +70,7 @@ public class TooltipPresenter : MonoBehaviour
         this.RequireRef(rowPrefab,   nameof(rowPrefab));
 
         _window = Services.Get<WindowManager>();
+        _rows   = new UIRowList<TooltipRowView>(rowPrefab, rowParent);
 
         canvasGroup.blocksRaycasts = false;
         canvasGroup.interactable   = false;
@@ -184,19 +186,10 @@ public class TooltipPresenter : MonoBehaviour
 
         for (int i = 0; i < lines.Count; i++)
         {
-            if (i >= _rows.Count)
-            {
-                _rows.Add(Instantiate(rowPrefab, rowParent));
-            }
-
-            _rows[i].gameObject.SetActive(true);
-            _rows[i].Bind(lines[i]);
+            _rows.Get(i).Bind(lines[i]);
         }
 
-        for (int i = lines.Count; i < _rows.Count; i++)
-        {
-            _rows[i].gameObject.SetActive(false);
-        }
+        _rows.HideFrom(lines.Count);
 
         FitColumns(lines.Count);
 
@@ -216,7 +209,7 @@ public class TooltipPresenter : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            var (rowValue, rowSub) = _rows[i].MeasureColumns();
+            var (rowValue, rowSub) = _rows.All[i].MeasureColumns();
 
             value = Mathf.Max(value, rowValue);
             sub   = Mathf.Max(sub,   rowSub);
@@ -224,7 +217,7 @@ public class TooltipPresenter : MonoBehaviour
 
         for (int i = 0; i < count; i++)
         {
-            _rows[i].SetColumnWidths(value, sub);
+            _rows.All[i].SetColumnWidths(value, sub);
         }
     }
 

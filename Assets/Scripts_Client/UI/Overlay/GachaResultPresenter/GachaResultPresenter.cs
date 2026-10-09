@@ -36,7 +36,7 @@ using UnityEngine.UI;
 // 공개 중에 창 아무 곳(칸 포함)을 누르면 **스킵** — 남은 칸이 한꺼번에 끝 모습으로 놓이고 버튼이 풀린다.
 // 칸 클릭은 'SlotView'가 먼저 받으므로('IPointerClickHandler') 칸의 클릭 이벤트도 함께 구독해 스킵으로 읽는다.
 //
-// ■ 왜 거래 열이 아니라 '!System Canvas'인가
+// ■ 왜 거래 열이 아니라 '!Overlay Canvas'인가
 // 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
 // 거래 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
 // 최상단 상주 오버레이로 두면 어느 열이 열려 있든 결과가 뜬다.
@@ -81,7 +81,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private RewardRevealSettings reveal = new RewardRevealSettings();
 
     // 만들어 둔 칸들. 뽑기 횟수가 1회와 10회를 오가므로 파괴하지 않고 켜고 끄며 돌려쓴다.
-    private readonly List<SlotView> _slots = new List<SlotView>();
+    private UIRowList<SlotView> _slots = null!;
 
     // 칸마다 붙인 공개 연출 — '_slots'와 같은 순서
     private readonly List<RewardRevealFx> _revealFxs = new List<RewardRevealFx>();
@@ -117,6 +117,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _data              = Services.Get<PlayerDataModel>();
         _burst             = RewardBurstFx.Create(panel, reveal);
         _panelRestPosition = panel.anchoredPosition;
+        _slots             = new UIRowList<SlotView>(slotPrefab, slotParent, OnSlotCreated, OnSlotHide);
 
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
@@ -231,9 +232,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         for (int i = 0; i < slots.Count; i++)
         {
-            SlotView slot = GetOrCreateSlot(i);
+            SlotView slot = _slots.Get(i);
 
-            slot.gameObject.SetActive(true);
             slot.SetSubVisible(showCount);
             slot.Bind(slots[i]);
 
@@ -241,7 +241,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             _revealRarities.Add(slots[i].Rarity);
         }
 
-        HideSlotsFrom(slots.Count);
+        _slots.HideFrom(slots.Count);
         titleText.text = $"{source} 결과";
         SetVisible(true);
 
@@ -435,43 +435,31 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         return new SlotData(tid, name, count.ToString("N0"), rarity, icon);
     }
 
-    // 'index'번째 칸을 돌려준다. 아직 없으면 그때 만든다 (OnGachaCompleted에서 호출)
+    // 칸을 만들 때 한 번 — 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다.
+    // 칸 프리팹은 인벤토리와 공유라 손대지 않는다.
     //
     // ※ 수량 표시는 여기서 정하지 않는다 — 가챠(끔)와 상자·우편(켬)이 같은 칸을 돌려쓰므로
     //   'Show'가 띄울 때마다 정한다.
-    //
-    // 칸을 만들 때 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다 — 칸 프리팹은 인벤토리와 공유라 손대지 않는다.
-    private SlotView GetOrCreateSlot(int index)
+    private void OnSlotCreated(SlotView slot)
     {
-        while (_slots.Count <= index)
-        {
-            SlotView       slot = Instantiate(slotPrefab, slotParent);
-            RewardRevealFx fx   = slot.gameObject.AddComponent<RewardRevealFx>();
+        RewardRevealFx fx = slot.gameObject.AddComponent<RewardRevealFx>();
 
-            fx.Init(reveal);
+        fx.Init(reveal);
 
-            slot.LeftClicked  += OnSlotClicked;
-            slot.RightClicked += OnSlotClicked;
+        slot.LeftClicked  += OnSlotClicked;
+        slot.RightClicked += OnSlotClicked;
 
-            _slots.Add(slot);
-            _revealFxs.Add(fx);
-        }
-
-        return _slots[index];
+        _revealFxs.Add(fx); // 칸은 앞에서부터 하나씩 만들어지므로 순서가 '_slots'와 같다
     }
 
-    // 이번 결과에 쓰이지 않은 칸을 비우고 끈다 (OnGachaCompleted에서 호출)
+    // 이번 결과에 쓰이지 않은 칸을 끄기 직전 — 연출과 내용을 비운다.
     //
     // 10연차 뒤에 1회를 뽑으면 남은 아홉 칸이 이전 결과를 그대로 들고 있다.
     // 끄기 전에 'Clear'까지 하는 이유는 다음에 이 칸을 다시 켤 때 옛 값이 한 프레임 비치지 않게 하기 위해서다.
-    private void HideSlotsFrom(int startIndex)
+    private static void OnSlotHide(SlotView slot)
     {
-        for (int i = startIndex; i < _slots.Count; i++)
-        {
-            _revealFxs[i].Hide();
-            _slots[i].Clear();
-            _slots[i].gameObject.SetActive(false);
-        }
+        slot.GetComponent<RewardRevealFx>().Hide();
+        slot.Clear();
     }
 
     #endregion

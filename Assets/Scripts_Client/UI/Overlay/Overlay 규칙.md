@@ -1,14 +1,14 @@
-# System 폴더 규칙
+# Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
-**최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
-**어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
-다른 캔버스와 달리 **상주한다**(항상 켜져 있다).
+**`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
+로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
+열 캔버스와 달리 **상주한다**(항상 켜져 있다). 그래서 껍데기 스크립트(View)가 없다 — 여닫을 일이 없다.
 
 | 파일 | 하는 일 |
 |------|---------|
-| `SystemCanvasView.cs` | 캔버스 껍데기 |
+| `LoginPresenter/LoginPresenter.cs` | **로그인 화면** — 아이디 입력·로그인 요청·종료 버튼. 이 층에서 유일하게 `UIManager`가 `SetActive`로 여닫는다 — 아래 "로그인" 절 |
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`·`ItemUseCompleted`를 구독해 얻은 보상을 5열로 표시 (가챠·상자 개봉 공용) |
 | `GachaResultPresenter/RewardRevealFx.cs` · `RewardBurstFx.cs` · `RewardRevealSettings.cs` | 결과 칸을 **하나씩 공개**하는 연출 — 칸 하나의 팝·차오름·강조(칸에 코드로 붙인다) · 고등급 빛 폭발(창 위 층) · 조정값(Presenter 인스펙터 `reveal`) · 이펙트 그림은 `Shared/visual/FxSprites`의 `reveal_*`(그림 저장소 `Art/fx/reveal/` — 없으면 그 효과만 빠진다). 고등급 연출은 뒤 칸을 막지 않는다 · 공개 중 [n회 더 뽑기]·닫기 잠금 · 창·칸 클릭 = 스킵 |
@@ -20,7 +20,7 @@
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
 > `ResultMessages`·`RarityPalette`·`IndustryLabel`·`WorkStationProgress`는
-> [`Shared 규칙.md`](<../Shared/Shared 규칙.md>)로 내려갔다 — **`#System Canvas`와 무관한데
+> [`Shared 규칙.md`](<../Shared/Shared 규칙.md>)로 내려갔다 — **이 층과 무관한데
 > 이 폴더에 있어서 위치가 소유권을 거짓으로 주장했다.**
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 캔버스·레이아웃 함정은
@@ -30,42 +30,60 @@
 
 ## 계층과 Sorting Order
 
-`!System Canvas`는 **가장 큰 Sorting Order**를 갖는다 — 로딩·알림은 무엇 위에든 떠야 하고,
-다른 화면이 그 위를 덮으면 안 된다.
+`!Overlay Canvas`는 **열보다 큰 Sorting Order**를 갖는다 — 로딩·알림은 무엇 위에든 떠야 하고,
+다른 화면이 그 위를 덮으면 안 된다. 하이라키에서도 **`Root Canvas`의 마지막 형제**다 — 위에서 읽는 순서가 깔리는 순서다.
 
-| 캔버스 | Sorting Order |
+| 무엇 | Sorting Order |
 |--------|---------------|
-| `!System Canvas` | **2** |
-| `!Login Canvas` | 1 |
-| 나머지 `#...Canvas` | 0 |
+| 끌리는 그림(인벤토리 끌어 놓기 · 런타임 생성) | **200** |
+| `!Overlay Canvas` | **100** |
+| `#...Canvas` (열) | 0 |
 
-> 값은 작지만 **상대 순서만 맞으면 된다**. 문서가 한동안 `100·200·300`이라 적어 두었는데
-> 씬의 실제 값과 달랐다 — 2026-08-25에 실제 값으로 맞췄다.
+> 값은 띄엄띄엄 준다 — 사이에 끼울 일이 생긴다. 한동안 0·1·2였다가 2026-10-10(T-140)에 로그인 캔버스를 이 층으로 접으며 맞췄다.
 
 `Override Sorting` + 자기 `GraphicRaycaster`는 여기도 그대로 적용된다.
 
-계층은 다른 캔버스와 같은 2단이다 — `(MAIN VIEW)` → `(↓ SUB VIEW)` → 내용.
-넷이 각자 그 `(↓ SUB VIEW)` 오브젝트에
-스크립트·`CanvasGroup`·전체화면 `Image`(raycast blocker)를 함께 갖는다.
+계층은 2단이다 — `!Overlay Canvas` → `(↓ SUB VIEW)` → 내용. 로그인도 캔버스가 아니라 이 층의 Presenter다.
+각 Presenter가 그 오브젝트에 스크립트·`CanvasGroup`(로그인은 빼고)·전체화면 `Image`(raycast blocker)를 함께 갖는다.
 
 > 그 아래에 `Panel`이 한 겹 더 있는 셋이 있다 — 근거는 아래 "왜 여기만 `Presenter` 아래에
 > `Panel`이 한 겹 더 있는가"에 있다. 없어도 되는 겹이 아니다.
 
-**형제 순서가 곧 위아래다 — 나중에 올수록 위에 그려진다.**
+**형제 순서가 곧 앞뒤다 — 하이라키에서 아래(나중)에 있을수록 화면에서는 앞(위)에 그려진다.**
+⚠️ 하이라키를 위에서부터 "앞에 오는 것"으로 읽으면 **정반대가 된다** — 맨 위 형제가 맨 뒤에 깔린다.
 
 ```
-!System Canvas (MAIN VIEW)
-├─ [0] Fps Text Presenter    (↓ SUB VIEW)   ← 오버레이가 아니라 맨 밑
-├─ [1] Loading Presenter     (↓ SUB VIEW)
-├─ [2] Gacha Result Presenter (↓ SUB VIEW)
-├─ [3] Amount Input Presenter (↓ SUB VIEW)
-├─ [4] Confirm Presenter      (↓ SUB VIEW)
-├─ [5] Tooltip Presenter      (↓ SUB VIEW)   ← 팝업 위 · 알림 아래
-└─ [6] Notice Presenter      (↓ SUB VIEW)   ← 항상 마지막
+!Overlay Canvas                                 화면에서
+├─ [0] Gacha Result Presenter (↓ SUB VIEW)  ┐   맨 뒤
+├─ [1] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
+├─ [2] Confirm Presenter      (↓ SUB VIEW)  ┘
+├─ [3] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
+├─ [4] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
+├─ [5] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
+├─ [6] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [7] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
 
-**`Notice Presenter`는 언제나 맨 아래(마지막)다.** 알림은 실패·종료를 알리는 마지막 출구라
-무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
+순서의 근거 (2026-10-10 · T-141):
+- **로딩 > 팝업 셋** — 대기 중에는 떠 있는 팝업의 버튼까지 막아야 한다(결과창의 [n회 더 뽑기] 등). 전에는 로딩이 팝업 아래였다.
+- **알림 > 로딩** — 연결 끊김(`RaiseFatal`)은 진행 중 대기를 끝내지 않는다. 로딩이 위면 종료 안내와 그 버튼이 흰 차단막에 덮인다. 알림은 마지막 출구다.
+- **툴팁이 맨 앞** — `blocksRaycasts`를 늘 꺼 아무것도 막지 않고, 커서 밑 **맨 위 하나**에만 뜬다. 로딩이 뜨면 맨 위가 로딩 차단막이 되어 툴팁은 스스로 사라진다 — 맨 앞에 둬도 무엇을 가리지 않고, 알림·로딩 안의 대상에도 툴팁을 달 수 있다.
+- **FPS > 로그인** — 로그인 화면에서도 보인다. 로딩보다 뒤라 대기 중엔 덮인다(진단 표시라 괜찮다).
+- 오버레이를 새로 넣을 때 — **막는 팝업은 `Confirm` 다음(로그인 앞)**, 막지 않는 표시는 성격에 맞춰 끼운다. 알림·툴팁보다 앞에 두지 않는다.
+
+### 캔버스를 하나로 둔다 — 나누지 않는 근거 (2026-10-10 · T-141 실측)
+
+캔버스는 안의 그래픽 하나가 바뀌면 **그 캔버스 전체**를 다시 묶어 그린다. 그래서 자주 바뀌는 것과 큰 것을 한 캔버스에 두면 병목이 된다.
+이 층은 해당하지 않는다.
+
+| | 그래픽 수(켜진 것) |
+|---|---|
+| `!Overlay Canvas` 전체 | **49** (로그인 후 · 팝업 닫힘) |
+| `!Horizontal Columns` | 1,333 |
+
+- 자주 바뀌는 것은 FPS 글자 하나다 — 갱신 주기마다, 값이 바뀔 때만 다시 묶는다. 다시 묶는 비용은 바뀌지 않은 프레임과 0.01ms 차이였다.
+- 닫힌 팝업은 그려지지 않는다(투명) — 열리는 순간에만 비용이 있다.
+- **나누는 조건** — 매 프레임 바뀌는 큰 것(애니메이션되는 결과 연출 칸 수십 개 등)이 이 층에 상주하게 되면 그것만 자기 `Canvas`를 단다(격자의 `Canvas`와 같은 방식 — [`UI 규칙.md`](<../UI 규칙.md>)).
 
 ### 차단막 색 — 넷이 같은 값을 쓴다
 
@@ -76,6 +94,7 @@
 |---|---|---|
 | `GachaResult` · `AmountInput` · `Confirm` · `Notice` | **검정 a 0.35** | 떠 있는 창에 눈을 모은다. 같은 알림·확인류라 농도가 다르면 생김새가 갈린다 |
 | `Loading` | **흰색 a 0.851** | 이건 "무언가 떴다"가 아니라 **"지금은 아무것도 만질 수 없다"** 를 말한다. 뒤를 거의 덮는 것이 목적이라 다른 축이다 |
+| `Login` | 로그인 캔버스 시절 값 그대로(테마 딤) | 팝업이 아니라 **게임 앞의 화면**이다 — 뒤의 3열을 가리는 것이 목적이라 팝업 농도와 맞추지 않는다 |
 
 > ⚠️ **알파가 0이어도 `raycastTarget`이 켜져 있으면 계속 막는다.** 안 어둡던 시절(a 0.000)에도
 > 차단은 정상으로 돌고 있었다 — **어두워졌는지로 차단 여부를 판단하면 안 된다.**
@@ -89,7 +108,7 @@
 | **① 차단 범위** | **어느 캔버스에 사는가** | 이게 떠 있는 동안 **화면 전체**를 막아야 하나? |
 | **② 생명주기** | `SetActive`인가 `CanvasGroup`인가 | 나를 **다시 켜 줄 주체가 밖에** 있는가? |
 
-**①을 먼저 묻는다.** ①의 답이 "화면 전체"면 자리가 `!System Canvas`로 정해지고,
+**①을 먼저 묻는다.** ①의 답이 "화면 전체"면 자리가 `!Overlay Canvas`로 정해지고,
 그 순간 ②의 답은 **`CanvasGroup`으로 강제된다** — 상주 캔버스에서 자기를 끈 채 시작하면
 `Start`가 돌지 않아 배선이 끊기기 때문이다. 즉 ②는 ①에 종속될 수 있고, 그 반대는 없다.
 
@@ -97,29 +116,33 @@
 
 | 캔버스 | Sorting Order |
 |---|---|
-| `!System Canvas` | **2** |
-| `!Login Canvas` | 1 |
+| `!Overlay Canvas` | **100** |
 | `#Widget` · `#Inventory` · `#Market` · `#Main` · `#State` | **0 — 전부 형제** |
 
 열 캔버스는 전부 order 0인 **형제**다. 그 안에 전체화면 차단막을 깔아도 **자기 열만 막고**
-상태바·메인·다른 열은 그대로 눌린다. 화면 전체를 막을 수 있는 것은 order 2인 이 캔버스뿐이다.
+상태바·메인·다른 열은 그대로 눌린다. 화면 전체를 막을 수 있는 것은 이 층뿐이다.
 
 > 🔴 **여기서 한 번 틀렸다.** 수량 입력 팝업(당시 `SellAmountPresenter`)을 ②만 보고
 > "격자가 켜 주니 `SetActive`" → `#Inventory Canvas` 자식으로 뒀다. ②의 판단 자체는 맞았지만
 > ①을 묻지 않았다. **증상은 "확인을 누르기 전인데 다른 열 버튼이 눌린다"로만 보여**
 > 알파·`raycastTarget`·`blocksRaycasts`를 먼저 의심하게 되는데, 원인은 전부 그쪽이 아니라
-> **캔버스 order**였다. 2026-09-05에 `!System Canvas`로 옮겼다.
+> **캔버스 order**였다. 2026-09-05에 이 층(당시 `!System Canvas`)으로 옮겼다.
 
 ### ② 생명주기 — 나를 다시 켜 줄 손이 밖에 있는가
 
 | 종류 | 여닫는 법 | 무엇이 | 왜 |
 |---|---|---|---|
-| **밖에서 켜 주는 화면** | `SetActive` | 캔버스 · 메인 화면 셋 · 좌우 열 · 로그인 — **나머지 전부** | `UIManager`나 형제 Presenter가 켜 준다. 꺼져도 켜 줄 손이 살아 있고, `OnEnable` 재구독 + `Refresh`([`UI 규칙.md`](<../UI 규칙.md>)의 "공통 작성 규약")가 꺼진 동안 놓친 것을 따라잡는다 |
-| **상주 오버레이** | `CanvasGroup` | 이 캔버스의 넷 전부 | 오브젝트를 끄면 `Start`가 돌지 않거나(배선이 끊긴다) 다시 켤 이벤트를 못 받아 **영구 잠김**이 된다(꺼진 오브젝트엔 콜백이 안 온다) |
+| **밖에서 켜 주는 화면** | `SetActive` | 캔버스 · 메인 화면 셋 · 좌우 열 · **이 층의 로그인** — **나머지 전부** | `UIManager`나 형제 Presenter가 켜 준다. 꺼져도 켜 줄 손이 살아 있고, `OnEnable` 재구독 + `Refresh`([`UI 규칙.md`](<../UI 규칙.md>)의 "공통 작성 규약")가 꺼진 동안 놓친 것을 따라잡는다 |
+| **상주 오버레이** | `CanvasGroup` | 이 층에서 로그인을 뺀 전부 | 오브젝트를 끄면 `Start`가 돌지 않거나(배선이 끊긴다) 다시 켤 이벤트를 못 받아 **영구 잠김**이 된다(꺼진 오브젝트엔 콜백이 안 온다) |
 
 ⚠️ **`SetActive`로 못 여닫는다고 해서 "자기 이벤트로 뜨는 것"인 건 아니다.**
 `AmountInputPresenter`는 밖(`UIManager.AskAmount`)에서 열어 주는데도 `CanvasGroup`을 쓴다 —
 ①이 자리를 정했고 자리가 여닫는 법을 정했을 뿐이다.
+
+> **로그인이 이 층에 있으면서 `SetActive`인 이유** — ①이 자리를 정하면 ②가 `CanvasGroup`으로 강제되는 것은
+> "끈 채 시작하면 `Start`가 안 돈다"와 "다시 켤 이벤트를 못 받는다" 때문이다. 로그인은 **켜진 채 시작**해
+> `Start`가 돌고, 다시 켜는 손(`UIManager.ShowLogin`)이 밖에 있다. 둘 다 해당하지 않는다.
+> ⚠️ 그래서 로그인을 **꺼진 채 씬에 저장하면 안 된다.**
 
 오버레이는 오브젝트를 **항상 활성**으로 두고 `alpha`(0/1)·`blocksRaycasts`로 여닫는다.
 `blocksRaycasts`가 대기·알림 중 뒤 UI 클릭을 막는다(전체화면 blocker Image는 alpha 0이어도
@@ -170,22 +193,21 @@
 
 ## 왜 여기만 `Presenter` 아래에 `Panel`이 한 겹 더 있는가
 
-다른 캔버스는 `(↓ SUB VIEW)` 아래에 내용이 바로 온다. 여기 넷 중 셋만 그 사이에 `Panel`이 있다.
+다른 캔버스는 `(↓ SUB VIEW)` 아래에 내용이 바로 온다. 여기는 창 모양인 것(로그인 · 결과 · 수량 · 확인 · 알림 · 툴팁)이 그 사이에 `Panel`을 둔다.
 **멋이 아니라 차단막과 창을 한 사각형에 담을 수 없어서 생긴 겹이다.**
 
-`!Login Canvas`와 나란히 놓고 보면 갈라지는 지점이 보인다.
-
-| | `!Login Canvas` | `!System Canvas` |
+| | Presenter | `Panel` |
 |---|---|---|
-| 여닫는 법 | 캔버스째 `SetActive` | **상주**(항상 켜짐), 오버레이가 각자 `CanvasGroup` |
-| 차단막 Image | **캔버스에 있다**(a 0.43) | **캔버스에 없다** |
-| Presenter 크기 | 200×400 — 그 자체가 창 | **1920×1080** — 그 자체가 차단막 |
-| 창 상자 | 필요 없다 | `Panel` 자식 |
+| 크기 | 화면 전체(stretch) — 그 자체가 차단막 | 창 크기(고정 또는 `ContentSizeFitter`) |
+| 갖는 것 | 스크립트 · 차단막 `Image` · `CanvasGroup`(로그인은 빼고) | 창 배경 `Image` · 세로 정렬 |
+
+> 로그인도 2026-10-10(T-140)부터 이 모양이다. 전에는 `!Login Canvas`가 차단막, 그 안의 Presenter가 200×400 창이라
+> 이 층의 다른 것과 층 구성이 달랐다.
 
 왜 이렇게 되는지는 세 단계다.
 
-1. **`!System Canvas`는 상주한다.** 여기에 전체화면 Image를 달면 아무것도 안 떠 있는 평상시에도
-   화면 전체가 영원히 막힌다. 로그인은 캔버스가 통째로 꺼지므로 차단막을 캔버스에 올려도 된다.
+1. **`!Overlay Canvas`는 상주한다.** 여기에 전체화면 Image를 달면 아무것도 안 떠 있는 평상시에도
+   화면 전체가 영원히 막힌다.
 2. **그래서 차단막이 Presenter로 내려온다.** 넷이 각자 뜨고 지므로 차단도 각자
    해야 한다 → 각 Presenter가 자기 몫의 전체화면 Image(`blocksRaycasts`로 여닫는 그것)를 갖고,
    **오브젝트가 화면 전체로 늘어난다.**
@@ -234,8 +256,8 @@
 ## 왜 이것만 `UIManager`를 거치는가 — 넷 중 하나는 왕복이다
 
 **여기 사는 오버레이는 원칙적으로 밖에서 참조당하지 않는다.** 매니저가 이벤트를 쏘고
-Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버스를 **들고 있지 않고**,
-`SystemCanvasView.Show()`는 지금 호출처가 0이다(상주라 여닫을 일이 없다).
+Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 층을 **들고 있지 않고**,
+껍데기 View도 없다(상주라 여닫을 일이 없다 — 예약으로 두던 `SystemCanvasView`는 2026-10-10 삭제).
 
 | 오버레이 | 무엇을 구독하나 |
 |---|---|
@@ -244,6 +266,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 | `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` · `ItemUseCompleted` |
 | `AmountInputPresenter` | **없다 — 구독형이 아니다** |
 | `ConfirmPresenter` | **없다 — 같은 왕복형이다** (`UIManager.AskConfirm`) |
+| `LoginPresenter` | `PlayerDataModel.LoginCompleted` — 여닫기는 `UIManager.ShowLogin`(아래 "로그인") |
 
 셋은 단방향이다. "이런 일이 생겼다"를 듣고 뜨면 끝이라 부르는 쪽이 답을 기다리지 않는다.
 **수량 팝업만 답을 돌려줘야 한다** — `Open(itemId, max, onConfirm)`의 `onConfirm`이 그것이라
@@ -269,7 +292,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 
 | 갈림길 | 결정 | 왜 |
 |---|---|---|
-| 자리 | 이 캔버스 · `Notice` 바로 앞 | 어느 열 위에서든 떠야 하고, 결과 팝업 위의 칸에도 뜰 수 있어야 한다. 알림은 여전히 그 위다 |
+| 자리 | 이 캔버스의 **마지막 형제(맨 앞)** | 어느 열 위에서든 떠야 하고, 결과 팝업·알림 위의 칸에도 뜰 수 있어야 한다. 막지 않아서 맨 앞이어도 된다(위 "순서의 근거") |
 | 여닫기 | `CanvasGroup.alpha`만 | 상주 오버레이라 ②가 강제한다. **`blocksRaycasts`는 늘 끈다** |
 | 호버 감지 | `WindowManager.UIHitsUnderCursor`의 **맨 위 하나** | 포커스가 없으면 Unity 입력이 멈춰 `IPointerEnter`가 안 온다. 클릭스루 판정이 쏜 레이캐스트를 같이 읽는다(프레임당 한 번) |
 | 자리 계산 | 대상의 오른쪽 옆 · 넘치면 왼쪽 · 세로는 창 안으로 | 커서를 따라가면 읽는 동안 흔들린다 |
@@ -282,3 +305,15 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 캔버�
 > **맨 위 하나만 보는 것이 곧 차단 규칙이다.** 팝업의 차단막이 떠 있으면 맨 위가 차단막이라
 > 가려진 버튼에는 뜨지 않는다 — 따로 막을 코드가 없다.
 
+## 로그인 — 게임의 시작 화면 (2026-10-10 · T-140 — `UI/Login/`에서 옮겼다)
+
+게임에 들어오면 가장 먼저, 그리고 이것만 보이는 화면이다. 전에는 따로 `!Login Canvas`(Sorting Order 1)였는데,
+**3열 위에 겹쳐 뜨는 것**이라 이 층의 첫 형제로 접었다 — 루트 UI가 두 축(열 · 오버레이)으로 읽힌다.
+
+- **`UIManager`의 인스펙터에서 로그인이 맨 위에 온다.** 게임이 거기서 시작하기 때문이다 — 인스펙터 필드는 화면에 나오는 순서로 둔다.
+- **닫는 시점은 성공 응답이 온 때다** — 누르자마자 닫으면 무응답(이슈 #10)일 때 빈 화면에 갇힌다(`LoginPresenter` 주석).
+- **종료 버튼이 여기에도 있다.** 로그인 화면이 떠 있는 동안은 상태 패널의 종료 버튼이
+  가려져 손이 닿지 않고, 타이틀바를 끈 보더리스라 창 `X`도 없다. 나가는 길이 ESC 하나뿐이면
+  모르는 사용자는 갇힌다. 연결은 `WindowManager.QuitApplication` 단일 경로다
+  (→ [`Managers 규칙.md`](<../../Managers/Managers 규칙.md>)).
+- 여닫는 법이 이 층의 다른 것과 다르다(`SetActive`) — 위 ② 절의 "로그인이 이 층에 있으면서 `SetActive`인 이유".

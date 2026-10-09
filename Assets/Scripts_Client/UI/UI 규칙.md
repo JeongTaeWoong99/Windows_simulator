@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -25,7 +25,7 @@
 | 코드 작성 규약 (Presenter · 캔버스 View · 종속 View) | 이 문서 §6 |
 | ⚠️ Canvas · 레이아웃 그룹의 **함정** | [`ugui-layout` 스킬](<../../../.claude/skills/client/ugui-layout/SKILL.md>) — 이 프로젝트 고유 배치는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>) |
 | **여러 캔버스가 함께 쓰는 칸·변환표**를 어디 두나 | [`Shared 규칙.md`](<Shared/Shared 규칙.md>) |
-| 로딩·알림 오버레이 · `SetActive` vs `CanvasGroup` | [`System 규칙.md`](<System/System 규칙.md>) |
+| 로딩·알림 오버레이 · `SetActive` vs `CanvasGroup` | [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>) |
 | 메인 화면을 갈아 끼우는 규칙 · 화면 추가 절차 | [`Main 규칙.md`](<Main/Main 규칙.md>) |
 | 인벤토리 탭 · 로그인 · 거래 · 상태 · 위젯 | 각 폴더의 `<폴더명> 규칙.md` |
 | 지금 씬에 무엇이 있나 | [`UI 배치 현황.md`](<UI 배치 현황.md>) |
@@ -130,7 +130,7 @@ topmostToggle.onValueChanged.AddListener(on => {
 ### 오브젝트 — 접두사로 계층, 이름과 표기로 역할
 
 ```
-!  최상위 · 다른 축      !Horizental Columns · !Login Canvas (MAIN VIEW)
+!  최상위 · 다른 축      !Horizontal Columns · !Overlay Canvas   (루트 아래 이 둘뿐 — 늘 떠 있는 3열 · 그 위에 겹쳐 뜨는 것)
 @  컬럼                  @Inventory Column · @Main Column · @Market Column
 #  캔버스                #Main Canvas (MAIN VIEW) · #State Canvas (MAIN VIEW)
 (없음)  Presenter·패널·위젯   Menu Presenter (↓ SUB VIEW) · Header Panel · Gold Text
@@ -139,7 +139,7 @@ topmostToggle.onValueChanged.AddListener(on => {
 | 표기 | 무엇인가 |
 |---|---|
 | `(MODEL)` | **상태를 들고 이벤트를 쏘는** 오브젝트. 서버 상태(`PlayerData`)뿐 아니라 여러 화면이 함께 보는 선택 상태(`SellCart`)도 여기다 |
-| `(MAIN VIEW)` | **캔버스** — 화면 단위로 켜고 끄는 껍데기 |
+| `(MAIN VIEW)` | **캔버스** — 화면 단위로 켜고 끄는 껍데기(`...CanvasView`가 붙는다). ⚠️ 상주하는 `!Overlay Canvas`는 캔버스지만 여닫지 않아 껍데기 스크립트가 없고 표기도 없다 — 이름의 `Canvas`가 "Presenter를 담는 캔버스"를, 표기 없음이 "여닫지 않는다"를 말한다 |
 | `(↓ SUB VIEW)` | **Presenter** — 아래가 전부 위젯이다 |
 | 표기 없음 | 컬럼 · 정렬용 패널 · 위젯 · 정적 요소 |
 
@@ -260,7 +260,7 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 
 | 어디 | padding | spacing |
 |---|---|---|
-| `!Horizental Columns` | 0 | **10** (열 사이) |
+| `!Horizontal Columns` | 0 | **10** (열 사이) |
 | `@Xxx Column` | 0 | 0 |
 | 캔버스 — 가운데 열은 그 아래 `Body Panel` | **5 5 5 5** | 5 |
 | **위젯이 직접 들어가는 상자** — 버튼 줄 · 스크롤 `Content` · 반복 줄 · 팝업 창 | **5 5 5 5** | 5 |
@@ -425,7 +425,7 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
 대상에 `TooltipTrigger`를 붙여 **올리면 뜨게** 한다. 버튼 아래로 패널을 펼쳤다 접으면 아래 내용이
 밀리고, 누르는 동작(고르기)과 보는 동작이 한 버튼에 묶인다 — 산업 레벨 정보가 그래서 옮겨졌다.
 고정 문구는 인스펙터 `text`에, 동적 내용은 Presenter가 `SetProvider`로 넘긴다
-(→ [`System 규칙.md`](<System/System 규칙.md>)의 "툴팁").
+(→ [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>)의 "툴팁").
 
 ---
 
@@ -438,11 +438,6 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
 UI/
 ├─ UI 규칙.md                             ← 이 문서 (UI 전체 공통)
 ├─ UI 배치 현황.md                        ← 지금 씬에 무엇이 놓여 있나
-├─ Login/
-│   ├─ Login 규칙.md
-│   ├─ LoginCanvasView.cs
-│   └─ LoginPresenter/
-│       └─ LoginPresenter.cs
 ├─ Inventory/
 │   ├─ Inventory 규칙.md
 │   ├─ InventoryCanvasView.cs
@@ -486,9 +481,10 @@ UI/
 │   ├─ WidgetCanvasView.cs
 │   └─ WidgetPresenter/
 │       └─ WidgetPresenter.cs
-├─ System/                                ← 캔버스 하나에 오버레이 넷
-│   ├─ System 규칙.md
-│   ├─ SystemCanvasView.cs
+├─ Overlay/                               ← 3열 위에 겹쳐 뜨는 층 — 껍데기 View 없음(상주)
+│   ├─ Overlay 규칙.md
+│   ├─ LoginPresenter/                   ← 게임의 시작 화면 — 이 층에서 유일하게 SetActive
+│   │   └─ LoginPresenter.cs
 │   ├─ LoadingPresenter/
 │   │   └─ LoadingPresenter.cs
 │   ├─ GachaResultPresenter/

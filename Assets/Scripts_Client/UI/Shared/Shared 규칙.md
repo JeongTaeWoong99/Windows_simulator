@@ -15,7 +15,7 @@
 | 예전 | 무엇이 거짓이었나 |
 |------|------------------|
 | `Inventory/InventoryGridPresenter/InventorySlotView.cs` | 인벤토리 소유처럼 보이지만 **가챠 결과 팝업이 같은 클래스·같은 프리팹을 쓴다.** 인벤토리를 고치다 팝업을 조용히 바꾸게 된다. **이름의 `Inventory`도 거짓이었다** → `SlotView`로 개명 |
-| `System/RarityPalette.cs` 등 4개 | `#System Canvas`와 **무관**한데 그 폴더에 있었다. `System 규칙.md`가 *"어디에도 속하지 않는 것들"* 이라 적어 두고도 자리를 못 만들어 준 상태였다 |
+| `System/RarityPalette.cs` 등 4개 | `!Overlay Canvas`와 **무관**한데 그 폴더에 있었다. `Overlay 규칙.md`가 *"어디에도 속하지 않는 것들"* 이라 적어 두고도 자리를 못 만들어 준 상태였다 |
 
 **소유자가 여럿이면 자리도 공용이어야 한다.** 그게 이 폴더다.
 
@@ -23,7 +23,7 @@
 
 | 파일 | 하는 일 | 누가 쓰나 |
 |------|---------|-----------|
-| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View) | `#Inventory Canvas`의 격자 · `!System Canvas`의 가챠 결과 |
+| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View) | `#Inventory Canvas`의 격자 · `!Overlay Canvas`의 가챠 결과 |
 | `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
 | `ItemIconView.cs` + `Assets/Prefabs/ItemIconView.prefab` | **목록 줄 왼쪽의 작은 아이콘 칸** — 등급 바탕 · 이름 첫 글자(🎨 아이콘 전 임시) · 모서리 수량 · 능력치 칸. 줄에서는 `SquareLayoutElement`로 줄 높이만큼 정사각형 | Market(경매장 줄) · Main(우편 · 장비 고르기) · Inventory(판매 목록) |
 | `EquipPipsView.cs` + 프리팹 둘 | **캐릭터가 낀 장비 4칸** — 빈 칸은 어두운 네모 · 낀 칸은 장비 등급색. **4자리 고정**(무기·장신구1·장신구2·보석). `EquipPipsView.prefab` = 색 네모만(능력치 칸과 같은 11px · 14 간격) · `EquipIconsView.prefab` = 등급 바탕 + 장비 아이콘(줄 높이 정사각형). 딤·흑백은 `SlotView.TintColor` 하나로 | Inventory(캐릭터 칸 — 색 네모) · Main(작업슬롯 칸 — 아이콘) — 슬롯 설정 캐릭터 카드에는 두지 않는다(장비 칸이 바로 보인다) |
@@ -38,7 +38,7 @@
 | `EntityBlockText.cs` | 캐릭터·장비 개체 → **팔거나 올릴 수 없는 사유** 한 줄(끼고 있음 · 배치 중 · 장비 낌 · 마지막 캐릭터), 없으면 null. ⚠️ **표시용이고 거절은 서버가 한다** | Inventory(즉시 판매 담기) · Market(경매 등록 흐린 줄) |
 | `ItemGainEffectView.cs` | **아이템 획득 연출** — 넘겨받은 월드 위치에서 아이콘이 나타나 떠오르며 사라진다. 여러 개면 좌우 대칭(간격 = 크기 + 빈틈). DOTween `Sequence` + UniTask(`KillAndCancelAwait`) · 아이콘은 `PrefabPool` — 층·풀은 `Start`에 만들고 `maxIcons`만큼 미리 채운다(첫 수확 프레임이 8~9ms 튀었다 · T-139). `follow`를 넘기면 매 프레임 가로 위치를 그 자리에 맞춘다 — 큰 창 칸은 `SlotStageView.FollowGround`로 땅과 함께 뒤로 흐른다. 꺼지거나 파괴되면 끊긴다. 채취 푸시 → 그림·등급 읽기(`ReadGains`)도 여기. **아이콘 뒤 등급 빛** — 일반·고급 번짐 · 희귀·영웅 + 광선 · 전설·신화 + 섬광·빛 기둥(또는 겹광선·고리)·아이콘 튐. 조정값은 인스펙터 `glow`(아이콘 대비 배율 — 큰 창·위젯 같은 값). ⚠️ 칸 **루트**에 붙인다 — 무대는 `RectMask2D`라 잘린다 |
 | `ItemGainFx.cs` · `ItemGainGlowSettings.cs` | 위 연출의 **아이콘 한 개 묶음**(아이콘 + 뒤·앞 빛 — 코드가 원본을 만들어 풀로 돌린다) · **빛 조정값**(`[Serializable]`, 등급 → 3단계 `TierOf`) | 위와 같음 | Main(작업슬롯 칸 — 쓰러지는 대상 자리) · Widget(미니 칸 — 머리 자리, 작게) |
-| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!System Canvas`의 `TooltipPresenter` | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
+| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!Overlay Canvas`의 `TooltipPresenter` | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
 | `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색) | 위 트리거에 내용을 넘기는 모두 |
 | `theme/UIRichText.cs` | 한 줄 안에서 **라벨은 흐린 색 · 가격은 강조색**으로 가르는 TMP 리치 텍스트 조각. 색은 팔레트 역할에서 읽는다 | Market · Main(우편) |
 | `visual/` (`VisualCatalog`·`CharacterVisual`·`BackgroundVisual`·`TargetVisual`) | **연출 그림** — 캐릭터 프레임·크롭 · 패럴랙스 층 · 대상과 레벨 색. 빠진 그림은 대체로 버틴다(캐릭터 = 대체 그림, 아이콘 = 0번). 화면은 `VisualCatalog.Current`(Resources)로 찾고, 목록이 없는 PC면 자리 표시를 그린다. 굽는 쪽은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) | Main(큰 창 슬롯) · Widget(머리) · Inventory·가챠·목록 줄(상반신·아이콘) |

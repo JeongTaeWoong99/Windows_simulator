@@ -58,9 +58,9 @@ public class UIManager : MonoService<UIManager>
     // ※ 로그인은 3열·위젯과 다른 축이다 — 게임에 들어오기 전까지 이것만 보이고, 성공하면 다시 안 나온다.
     //   그래서 ToggleAll·CloseAllExceptWidget의 대상에 넣지 않는다.
     //   ★ 게임이 여기서 시작하므로 맨 위에 둔다.
-    [CenterHeader("로그인 캔버스 — 가장 먼저 보이는 화면")]
-    [SerializeField, Tooltip("로그인 열. 다른 UI보다 앞에 오도록 Override Sorting을 켜고 Sorting Order를 크게 준다")]
-    private LoginCanvasView loginCanvas = null!;
+    [CenterHeader("로그인 — 가장 먼저 보이는 화면")]
+    [SerializeField, Tooltip("로그인 화면. !Overlay Canvas의 첫 형제라 3열 위, 로딩·알림 아래에 뜬다")]
+    private LoginPresenter loginPresenter = null!;
 
     // ※ 메인 화면만 GameObject 배열로 받는다 — 여기 들어오는 패널은 여닫히기만 하면 되고,
     //   공통 타입을 강요하면 화면을 하나 붙일 때마다 상속·인터페이스를 먼저 손봐야 한다.
@@ -72,7 +72,7 @@ public class UIManager : MonoService<UIManager>
     private MainScreenEntry[] mainScreens = new MainScreenEntry[0];
 
     // ※ 여닫는 대상은 전부 Canvas다 — Column이 아니다.
-    //   Column을 끄면 남은 열들이 Horizental Columns 안에서 가운데로 다시 몰려 위젯 가로 칸이 어긋난다.
+    //   Column을 끄면 남은 열들이 Horizontal Columns 안에서 가운데로 다시 몰려 위젯 가로 칸이 어긋난다.
     //   Canvas만 끄면 Column 3개와 (Layout) 스페이서가 남아 폭이 그대로라 위젯이 제자리에 있는다.
     [CenterHeader("좌우 열 캔버스")]
     // ※ FormerlySerializedAs — 창고(Storage) → 인벤토리 개명(2026-09-30) 전 씬 값을 잇는다. Test Copy 씬이 옛 이름으로 남아 있을 수 있어 지우지 않는다.
@@ -90,14 +90,14 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("바탕화면에 항상 떠 있는 위젯. 여닫지 않고 참조만 들고 있는다")]
     private WidgetCanvasView widgetCanvas = null!;
 
-    // ※ '!System Canvas' 자체는 여기 들지 않는다 — 상주라 여닫을 일이 없다('SystemCanvasView').
+    // ※ '!Overlay Canvas' 자체는 여기 들지 않는다 — 상주라 여닫을 일이 없다(그래서 View 스크립트도 없다).
     //   여기 드는 것은 캔버스가 아니라 **답을 돌려줘야 해서 중개가 필요한 팝업 하나**다.
     //   로딩·알림·가챠 결과는 매니저 이벤트를 스스로 구독해 뜨므로 참조가 필요 없다.
     [CenterHeader("시스템 오버레이 — 중개가 필요한 것만")]
-    [SerializeField, Tooltip("수량 입력 팝업. !System Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
+    [SerializeField, Tooltip("수량 입력 팝업. !Overlay Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
     private AmountInputPresenter amountInput = null!;
 
-    [SerializeField, Tooltip("확인 팝업(예/아니오). !System Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
+    [SerializeField, Tooltip("확인 팝업(예/아니오). !Overlay Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
     private ConfirmPresenter confirm = null!;
 
     // ─── 참조 ───
@@ -120,7 +120,7 @@ public class UIManager : MonoService<UIManager>
     // ※ 이 매니저는 다른 서비스를 조회하지 않는다 — 인스펙터 참조만 쓰므로 확보 단계가 없다.
     private void Start()
     {
-        this.RequireRef(loginCanvas,   nameof(loginCanvas));
+        this.RequireRef(loginPresenter, nameof(loginPresenter));
         this.RequireRef(mainCanvas,    nameof(mainCanvas));
         this.RequireRef(inventoryCanvas, nameof(inventoryCanvas));
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
@@ -135,12 +135,12 @@ public class UIManager : MonoService<UIManager>
 
     #region 로그인 — 게임의 시작점
 
-    // 로그인 열을 열고 닫는다 ('LoginPresenter'가 로그인 성공 응답을 받고 부른다).
+    // 로그인 화면을 열고 닫는다 ('LoginPresenter'가 로그인 성공 응답을 받고 부른다).
     //
     // ⚠️ 버튼을 누른 시점이 아니라 성공 응답이 온 시점에 닫는다. 서버는 같은 Id가 이미
     // 접속 중이면 응답도 로그도 없이 요청을 버린다(이슈 #10). 누르자마자 닫으면 그때
     // 아무것도 없는 화면에 갇혀 원인을 알 수 없다.
-    public void ShowLogin(bool on) => loginCanvas.Show(on);
+    public void ShowLogin(bool on) => loginPresenter.Show(on);
 
     #endregion
 
@@ -305,12 +305,12 @@ public class UIManager : MonoService<UIManager>
     // 수량을 묻고, 확인을 누르면 그 수를 'onConfirm'으로 돌려준다 (취소면 부르지 않는다).
     //
     // ★ 왜 부르는 쪽이 팝업을 직접 알지 않는가
-    //   팝업은 '!System Canvas'에 산다 — 화면 전체를 막아야 해서다(열 캔버스는 Sorting Order가
+    //   팝업은 '!Overlay Canvas'에 산다 — 화면 전체를 막아야 해서다(열 캔버스는 Sorting Order가
     //   전부 0인 형제라 열 안의 차단막이 다른 열에 닿지 않는다). 그런데 그렇게 두면 인벤토리 격자가
     //   **캔버스를 넘어 남의 패널을 인스펙터로 붙드는** 모양이 된다. 그 참조를 여기로 모은다.
     //
     // ※ 로딩·알림·가챠 결과에는 이런 중개가 없다 — 매니저 이벤트를 스스로 구독해 뜨는 단방향이라서다.
-    //   이 팝업만 **답을 돌려주는 왕복**이라 구독형으로 만들 수 없다('System 규칙.md').
+    //   이 팝업만 **답을 돌려주는 왕복**이라 구독형으로 만들 수 없다('Overlay 규칙.md').
     // 'question'은 묻는 말이다("몇 개를 팔까?") — 팝업은 무엇에 쓰이는지 모른다.
     public void AskAmount(int itemId, int maxCount, string question, Action<int> onConfirm)
     {

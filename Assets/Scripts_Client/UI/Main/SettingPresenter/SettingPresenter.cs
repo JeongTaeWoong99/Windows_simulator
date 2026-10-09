@@ -88,9 +88,9 @@ public class SettingPresenter : MonoBehaviour
     // ※ WidgetPositionLayout은 Services에 등록되지 않는다([ExecuteAlways] 레이아웃 컴포넌트라
     //   에디터에서도 돌아야 해서 서비스 로케이터에 묶지 않았다). 그래서 인스펙터로 직접 받는다.
     //
-    // ★ 그 컴포넌트는 이 패널이 아니라 !Horizental Columns 에 붙어 있다 — 같은 오브젝트에 두면
+    // ★ 그 컴포넌트는 이 패널이 아니라 !Horizontal Columns 에 붙어 있다 — 같은 오브젝트에 두면
     //   설정 화면이 꺼져 있는 동안 OnEnable 이 안 돌아 3열 순서와 위젯 위치가 아예 반영되지 않는다.
-    [SerializeField, Tooltip("위젯 위치를 실제로 반영할 레이아웃 컴포넌트 — !Horizental Columns 에 있다")]
+    [SerializeField, Tooltip("위젯 위치를 실제로 반영할 레이아웃 컴포넌트 — !Horizontal Columns 에 있다")]
     private WidgetPositionLayout widgetLayout = null!;
 
     // 지금 열려 있는 탭. 설정을 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.

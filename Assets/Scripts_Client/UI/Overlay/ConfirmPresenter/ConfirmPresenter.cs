@@ -10,8 +10,8 @@ using UnityEngine.UI;
 // 해금 전용이 아니라 **예/아니오를 묻는 자리면 어디서든** 쓰라고 이 이름·이 캔버스에 둔다.
 //
 // ■ 'AmountInputPresenter'와 같은 모양이다
-// 화면 전체를 막아야 해서 '!System Canvas'에 살고, 상주라 'CanvasGroup'으로 여닫으며,
-// 답을 돌려주는 왕복이라 'UIManager.AskConfirm'이 중개한다('System 규칙.md').
+// 화면 전체를 막아야 해서 '!Overlay Canvas'에 살고, 상주라 'CanvasGroup'으로 여닫으며,
+// 답을 돌려주는 왕복이라 'UIManager.AskConfirm'이 중개한다('Overlay 규칙.md').
 public class ConfirmPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]

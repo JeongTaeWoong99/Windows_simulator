@@ -1,6 +1,6 @@
 # Layout 폴더 규칙
 
-> 최종 업데이트: 2026-09-02 (가운데 950으로 정정 · 정사각형은 `SquareLayoutElement`로 파생) · 대상: `Assets/Scripts_Client/UI/Layout/`
+> 최종 업데이트: 2026-10-10 (Sorting Order 실제 값 — 열 0 · 오버레이 100 · 끌리는 그림 200 · T-140) · 2026-10-10 (넘침 감시는 1초마다 · 가운데 캔버스의 레이아웃 경계 `Body Panel` — T-139) · 2026-10-10 (넘침 감시는 에디터·개발 빌드에서만) · 2026-09-02 (가운데 950으로 정정 · 정사각형은 `SquareLayoutElement`로 파생) · 대상: `Assets/Scripts_Client/UI/Layout/`
 
 **화면이 아니라 배치를 계산하는 컴포넌트를 두는 곳.** 어느 캔버스에도 속하지 않아
 `UI/` 아래에서 유일하게 캔버스 폴더가 아니다.
@@ -59,7 +59,7 @@
 
 ## 이 프로젝트의 Canvas 값
 
-- **`Sorting Order`** — `Login = 100`, `Log = 200`, `!System = 300`. 띄엄띄엄 준다.
+- **`Sorting Order`** — 열 캔버스 `0` · `!Overlay Canvas` `100` · 끌리는 그림 `200`. 띄엄띄엄 준다. 루트 아래는 두 축뿐이다 — 하이라키에서도 열이 첫 형제, 오버레이가 마지막 형제(`Overlay 규칙.md`).
 - **`CanvasScaler`** — `Scale With Screen Size` / `1920×1080` / `Match = 1(Height)`.
   **Root Canvas와 동일하게** 맞춘다.
 - **열을 껐더니 다른 열들이 가운데로 몰린다** → Column을 껐다. Column이 아니라

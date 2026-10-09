@@ -322,8 +322,8 @@ Sell Cart Presenter     줄 목록 · 합계 · [즉시 판매] → C_ItemSellRe
 
 ### 수량 팝업은 인벤토리 것이 아니다
 
-**`AmountInputPresenter`는 `!System Canvas`에 산다** — 이 폴더에 없다
-([`System 규칙.md`](<../System/System 규칙.md>)). 인벤토리는 그것을 **부르기만** 한다:
+**`AmountInputPresenter`는 `!Overlay Canvas`에 산다** — 이 폴더에 없다
+([`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>)). 인벤토리는 그것을 **부르기만** 한다:
 
 ```csharp
 _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));   // 우클릭 판매 담기
@@ -687,7 +687,7 @@ Presenter가 다 들고 있을 수 없다. **매 프레임 도는 계산은 View
 칸(`SlotView`)과 그것이 받는 완성값(`SlotData`)은 **이 폴더에 없다.**
 2026-09-12에 [`UI/Shared/`](<../Shared/Shared 규칙.md>)로 내려갔다 —
 **프리팹(`Assets/Prefabs/SlotView.prefab`)이 캔버스를 넘어 재사용되기 때문이다.**
-`!System Canvas`의 [`GachaResultPresenter`](<../System/System 규칙.md>)가 가챠 결과 칸으로 같은 것을 찍어 쓴다.
+`!Overlay Canvas`의 [`GachaResultPresenter`](<../Overlay/Overlay 규칙.md>)가 가챠 결과 칸으로 같은 것을 찍어 쓴다.
 
 **같아야 할 생김새를 두 벌로 두면 한쪽만 고쳐진다.** 그래서 복제하지 않고 공유한다 —
 그리고 🔴 **여기를 고치면 가챠 결과 팝업이 함께 바뀐다.**

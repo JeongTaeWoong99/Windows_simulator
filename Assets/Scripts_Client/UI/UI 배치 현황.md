@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -22,86 +22,85 @@
 **캔버스 = `(MAIN VIEW)`, 그 자식 = `Xxx Presenter (↓ …)`** 가 예외 없이 지켜진다.
 `Panel`이라는 이름은 **Presenter 안쪽에서 서브 뷰를 줄 세우는 상자**에만 남아 있다.
 
-> Root Canvas 바로 아래의 **형제 순서는 씬에서 `!System` → `!Login` → `!Horizental Columns`** 다.
-> 아래 트리는 읽기 좋게 위에서부터 늘어놓았을 뿐이다 — 이 셋은 각자 `Override Sorting`을 켜고
-> Sorting Order로 앞뒤가 정해지므로 **형제 순서가 그림 순서를 바꾸지 않는다**.
-> 형제 순서가 곧 앞뒤인 것은 `!System Canvas` **안쪽의 오버레이 셋**이다(아래 주석).
+> Root Canvas 바로 아래는 **두 축** — `!Horizontal Columns`(늘 떠 있는 3열) → `!Overlay Canvas`(그 위에 겹쳐 뜨는 것 전부)다(2026-10-10 · T-140).
+> 형제 순서가 깔리는 순서와 같다 — 오버레이가 마지막 형제이고 Sorting Order도 100으로 열(0)보다 크다.
+> 오버레이 **안쪽**은 형제 순서가 곧 앞뒤다(아래 주석).
 
 ```
 Root Canvas
-├─ !Login Canvas (MAIN VIEW)                      LoginCanvasView      ← 게임의 시작점
-│  └─ Login Presenter (↓ SUB VIEW)                LoginPresenter
-├─ !Horizental Columns                            WidgetPositionLayout ← 항상 켜져 있어야 한다
+├─ !Horizontal Columns                            WidgetPositionLayout ← 항상 켜져 있어야 한다
 │  ├─ @Inventory Column                              -(Layout) · 캔버스 · -(Layout) 세 칸
 │  │  ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │  │  ├─ #Inventory Canvas (MAIN VIEW)              InventoryCanvasView   pref 950 · flexH 0
-│  │  │  ├─ Title                                 (정적 요소 — 표기 없음)
-│  │  │  ├─ Tab Presenter (↓ SUB VIEW)            InventoryTabPresenter   자원·캐릭터·장비·특성 순
-│  │  │  ├─ Trait Presenter (↓ SUB VIEW)          TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
-│  │  │  │  ├─ Trait Header Row                   머리 줄 개척·속도·산출량 15 · pref 22 · 여백 좌우 6 · 간격 6
-│  │  │  │  │                                     Spacer 64 + 열 이름 셋(flex 1) — 줄 프리팹과 같은 폭 규칙
-│  │  │  │  ├─ Trait Table Panel                  flexH 1 · 스크롤 없음(6줄이 다 들어간다)
-│  │  │  │  │  └─ Viewport > Content                         VerticalLayoutGroup 여백 6 · 간격 4 · 줄 = 공통·산업 5
-│  │  │  │  │     └─ TraitRowView 프리팹 (줄 수만큼 런타임 생성 · 풀) · 60 · 간격 6
-│  │  │  │  │        ├─ Industry Label            산업 이름 열 64 (PanelSub) · 17
-│  │  │  │  │        └─ TraitNodeView 프리팹 ×3   이름 18 · Lv x/y 13 · 눈금 10(Pip Bar) · 빈 칸은 바탕째 꺼짐
-│  │  │  │  │           └─ Selected Mark          고른 칸 테두리(4변 · Highlight). 평소 꺼짐
-│  │  │  │  └─ Trait Detail Panel                 고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
-│  │  │  │     ├─ Detail Info Panel               VerticalLayoutGroup 여백 14/14/12/12 · 간격 10
-│  │  │  │     │  ├─ Detail Name Text (TMP)       이름 24 + Lv x / y (최대면 '· 최대' 노랑) · 32
-│  │  │  │     │  ├─ Detail Desc Text (TMP)       종류 설명 16
-│  │  │  │     │  ├─ Detail Stats                 TraitDetailStatsView
-│  │  │  │     │  │  └─ Compare Row               68 · flexH 0 — Now Box ▶ Next Box(파랑). 최대 레벨이면 Now Box만 (제목 14 · 값 24)
-│  │  │  │     │  ├─ Spacer                       flexH 1 — 변화와 조건 사이를 벌려 조건 줄을 버튼 쪽으로 민다
-│  │  │  │     │  ├─ Requirement Divider          2 (Slot)
-│  │  │  │     │  ├─ Requirement Text (TMP)       17 · 24 — "조건 계정 Lv35 · 보유 포인트 13" (고른 것 없음·최대 레벨이면 보유 포인트만)
-│  │  │  │     │  └─ Detail Empty Text (TMP)      고른 것 없을 때 안내 (ignoreLayout)
-│  │  │  │     └─ Confirm Button                  [레벨 올리기 (n점)] 50 (= [판매]) — 최대 레벨에서만 숨는다 · 못 올리면 회색
-│  │  │  ├─ Tool Presenter (↓ SUB VIEW)           InventoryToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
-│  │  │  │  ├─ Tool Row 1                         30 — 정렬 화살표 · 정렬 기준 · -(Layout) · 일괄 범위 드롭다운 · [판매 등록]
-│  │  │  │  └─ Tool Row 2                         30 — 이름 검색(flex) · 산업 · 등급 · [초기화]
-│  │  │  │                                        특성 탭에서는 자식이 전부 꺼진다
-│  │  │  ├─ Grid Presenter (↓ SUB VIEW)           InventoryGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
-│  │  │  │                                        특성 탭에서는 자기 오브젝트를 끈다
-│  │  │  │  ├─ Empty Notice > Empty Text (TMP)   찾기 결과 0건일 때만 · 격자 가운데 440x70 · Overlay 바탕
-│  │  │  │  └─ Content > Slot (1..200)            빈 프레임. 그 안에 런타임 생성:
-│  │  │  │     └─ SlotView 프리팹        Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
-│  │  │  │        ├─ Equip Pips                   캐릭터 탭 전용 — EquipPipsView 프리팹(53x11, 네모 11px · 14 간격 = 능력치 칸과 같다). LV 배지와 같은 줄(y 27) ·
-│  │  │  │        │                               오른쪽 끝 x 96(-4) = 적성 띠 오른쪽 끝 = 능력치 칸 오른쪽 끝 (T-104)
-│  │  │  │        │                               ⚠️ 벽 여백 4px로 맞춘다 — Exp Gauge x 4 · Aptitude Strip 좌우 3(칸 안쪽 1 → 4~96) · Level Badge x 16 폭 26
-│  │  │  │        │                               (배지 폭을 줄여 네모와 1px 띄웠다 — LV.MAX는 글자가 자동으로 줄어든다)
-│  │  │  │        ├─ Star Row                     캐릭터 탭 전용 — 응축 ★ 그림 4개(10px · 간격 1 · star.png). 이름 아래 왼쪽 (x 17 = 배지와 같은 x · y -21).
-│  │  │  │        │                               얻은 ★만 켠다 · ★0이면 줄째 꺼짐 (T-130)
-│  │  │  │        ├─ Aptitude Strip               캐릭터 탭 전용 5칸. 보조 문구와 같은 밴드를 나눠 쓴다
-│  │  │  │        ├─ Stat Socket Strip            장비 탭 전용 — 능력치 칸 네모 6개(11px). 오른쪽 끝부터 칸 수만큼 켜진다 · 같은 밴드 (T-095)
-│  │  │  │        ├─ Condense Target Mark         응축 창 대상 — 4변 3px (Accent). 평소 꺼짐 (T-130)
-│  │  │  │        ├─ Condense Pick Mark           응축 재료 — Cover(Highlight 18%) · 4변 3px · Check Badge 30(checkmark 20). 평소 꺼짐
-│  │  │  │        └─ Sell Mark · Assign Mark      맨 뒤로 옮겼다 — 체크 덮개 위에 '배' 마크가 보이게
-│  │  │  ├─ Sell Cart Presenter (↓ SUB VIEW)      SellCartPresenter            판매 목록 · 합계 · [판매]
-│  │  │  │                                        담긴 것이 없거나 특성 탭·큐브 창·응축 창이면 자기 오브젝트를 끈다
-│  │  │  │  ├─ Sell Scroll View Panel             Content 에 SellCartRowView 프리팹이 쌓인다
-│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
-│  │  │  │  ├─ Summary Panel                      Clear Button 72([비우기] — 응축 창 Close Button 복제) · High Rarity Warning(평소 꺼짐) · Total Text
-│  │  │  │  └─ Sell Button                        [판매]
-│  │  │  ├─ Equip Enchant Presenter (↓ SUB VIEW)  EquipEnchantPresenter   큐브 창 — 판매 목록과 **같은 자리**(flexH 1). 평소 꺼짐 (T-095)
-│  │  │  │                                        장비 칸 좌클릭이 연다 · 열리면 판매 목록이 비워지며 물러난다 · 닫기·탭 전환·우클릭이면 닫힌다
-│  │  │  │  ├─ Enchant Info Panel                 Overlay 바탕 · 여백 14/14/12/12 · 간격 8 (특성 정보 영역을 복제)
-│  │  │  │  │  ├─ Header Row                      48 — Item Icon(ItemIconView 48) · Header Texts(이름 22 등급색 · 정보 14) · Close Button 72 [닫기]
-│  │  │  │  │  ├─ Enchant Stats > Compare Row     96 — Before Box ▶ After Box(파랑). 쓰기 전에는 Before(현재)만 · 칸 목록 17 등급색
-│  │  │  │  │  ├─ Spacer                          flexH 1
-│  │  │  │  │  ├─ Rule Text (TMP)                 36 · 14 — 이번에 쓰면 무엇이 되나 한 줄 · TooltipTrigger(규칙·확률 표)
-│  │  │  │  │  └─ Cube Row                        56 — Cube View (1)(2) (EnchantCubeView · 특성 칸 프리팹을 풀어 만듦 · 고르면 노랑 테두리 · 툴팁)
-│  │  │  │  └─ Confirm Button                     50 — [큐브 사용 (인챈트 큐브 1개)] · 착용 중이면 [해제하고 사용] · 쓴 뒤 [한 번 더]
-│  │  │  ├─ Character Condense Presenter (↓ SUB VIEW)  CharacterCondensePresenter  응축 창 — 판매 목록과 **같은 자리**(큐브 창 복제). 평소 꺼짐 (T-130)
-│  │  │  │                                        캐릭터 칸 좌클릭이 연다 · 열린 동안 격자 좌클릭 = 재료 고르기 · 닫기·탭 전환·우클릭이면 닫힌다
-│  │  │  │  ├─ Condense Info Panel               Overlay 바탕 · 여백 14/14/12/12 · 간격 8
-│  │  │  │  │  ├─ Header Row                      48 — Portrait Image 48 · Header Texts(이름 등급색 · 'LV.7 · 응축 누적 15 / 76') · Star Row 92(★ 20px ×4) · Close Button 72
-│  │  │  │  │  ├─ Condense Stats > Compare Row    62 — Before Box('지금 n성' · 작업속도) ▶ After Box(파랑 · ★이 오를 때만)
-│  │  │  │  │  ├─ Stage Bar                       22 — Stage 1..4 (CondenseStageView · Current Fill 파랑 · Preview Fill 노랑 70% · '1성 · 5/8' 12)
-│  │  │  │  │  ├─ Caption Row                     20 — Left '누적 15 + 9 = 24' · Right '3성까지 20'
-│  │  │  │  │  ├─ Spacer                          flexH 1
-│  │  │  │  │  └─ Warn Text (TMP)                 24 — 넘침·최고 단계(빨강) · 못 넣는 수·안내(흐림). 색은 코드가 칠한다
-│  │  │  │  └─ Action Row                        50 — Fill Button 200 [다음 단계까지 채우기] · Confirm Button flex [응축 (n마리)]
+│  │  │  └─ Body Panel                     VerticalLayoutGroup(5·5) — 레이아웃 경계 (T-139)
+│  │  │     ├─ Title                              (정적 요소 — 표기 없음)
+│  │  │     ├─ Tab Presenter (↓ SUB VIEW)         InventoryTabPresenter   자원·캐릭터·장비·특성 순
+│  │  │     ├─ Trait Presenter (↓ SUB VIEW)       TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
+│  │  │     │  ├─ Trait Header Row                머리 줄 개척·속도·산출량 15 · pref 22 · 여백 좌우 6 · 간격 6
+│  │  │     │  │                                     Spacer 64 + 열 이름 셋(flex 1) — 줄 프리팹과 같은 폭 규칙
+│  │  │     │  ├─ Trait Table Panel               flexH 1 · 스크롤 없음(6줄이 다 들어간다)
+│  │  │     │  │  └─ Viewport > Content                      VerticalLayoutGroup 여백 6 · 간격 4 · 줄 = 공통·산업 5
+│  │  │     │  │     └─ TraitRowView 프리팹 (줄 수만큼 런타임 생성 · 풀) · 60 · 간격 6
+│  │  │     │  │        ├─ Industry Label         산업 이름 열 64 (PanelSub) · 17
+│  │  │     │  │        └─ TraitNodeView 프리팹 ×3   이름 18 · Lv x/y 13 · 눈금 10(Pip Bar) · 빈 칸은 바탕째 꺼짐
+│  │  │     │  │           └─ Selected Mark       고른 칸 테두리(4변 · Highlight). 평소 꺼짐
+│  │  │     │  └─ Trait Detail Panel              고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
+│  │  │     │     ├─ Detail Info Panel            VerticalLayoutGroup 여백 14/14/12/12 · 간격 10
+│  │  │     │     │  ├─ Detail Name Text (TMP)    이름 24 + Lv x / y (최대면 '· 최대' 노랑) · 32
+│  │  │     │     │  ├─ Detail Desc Text (TMP)    종류 설명 16
+│  │  │     │     │  ├─ Detail Stats              TraitDetailStatsView
+│  │  │     │     │  │  └─ Compare Row            68 · flexH 0 — Now Box ▶ Next Box(파랑). 최대 레벨이면 Now Box만 (제목 14 · 값 24)
+│  │  │     │     │  ├─ Spacer                    flexH 1 — 변화와 조건 사이를 벌려 조건 줄을 버튼 쪽으로 민다
+│  │  │     │     │  ├─ Requirement Divider       2 (Slot)
+│  │  │     │     │  ├─ Requirement Text (TMP)    17 · 24 — "조건 계정 Lv35 · 보유 포인트 13" (고른 것 없음·최대 레벨이면 보유 포인트만)
+│  │  │     │     │  └─ Detail Empty Text (TMP)   고른 것 없을 때 안내 (ignoreLayout)
+│  │  │     │     └─ Confirm Button               [레벨 올리기 (n점)] 50 (= [판매]) — 최대 레벨에서만 숨는다 · 못 올리면 회색
+│  │  │     ├─ Tool Presenter (↓ SUB VIEW)        InventoryToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
+│  │  │     │  └─ Tool Panel                  VerticalLayoutGroup — 레이아웃 경계 (T-139)
+│  │  │     │     ├─ Tool Row 1                   30 — 정렬 화살표 · 정렬 기준 · -(Layout) · 일괄 범위 드롭다운 · [판매 등록]
+│  │  │     │     └─ Tool Row 2                   30 — 이름 검색(flex) · 산업 · 등급 · [초기화]
+│  │  │     │                                           특성 탭에서는 자식이 전부 꺼진다
+│  │  │     ├─ Grid Presenter (↓ SUB VIEW)        InventoryGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
+│  │  │     │                                        특성 탭에서는 자기 오브젝트를 끈다
+│  │  │     │  ├─ Empty Notice > Empty Text (TMP)   찾기 결과 0건일 때만 · 격자 가운데 440x70 · Overlay 바탕
+│  │  │     │  └─ Content > Slot (1..200)         빈 프레임. 그 안에 런타임 생성:
+│  │  │     │     └─ SlotView 프리팹     Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
+│  │  │     │        ├─ Equip Pips                캐릭터 탭 전용 — EquipPipsView 프리팹(53x11, 네모 11px · 14 간격 = 능력치 칸과 같다). LV 배지와 같은 줄(y 27) ·
+│  │  │     │        │                               오른쪽 끝 x 96(-4) = 적성 띠 오른쪽 끝 = 능력치 칸 오른쪽 끝 (T-104)
+│  │  │     │        │                               ⚠️ 벽 여백 4px로 맞춘다 — Exp Gauge x 4 · Aptitude Strip 좌우 3(칸 안쪽 1 → 4~96) · Level Badge x 16 폭 26
+│  │  │     │        │                               (배지 폭을 줄여 네모와 1px 띄웠다 — LV.MAX는 글자가 자동으로 줄어든다)
+│  │  │     │        ├─ Star Row                  캐릭터 탭 전용 — 응축 ★ 그림 4개(10px · 간격 1 · star.png). 이름 아래 왼쪽 (x 17 = 배지와 같은 x · y -21).
+│  │  │     │        │                               얻은 ★만 켠다 · ★0이면 줄째 꺼짐 (T-130)
+│  │  │     │        ├─ Aptitude Strip            캐릭터 탭 전용 5칸. 보조 문구와 같은 밴드를 나눠 쓴다
+│  │  │     │        ├─ Stat Socket Strip         장비 탭 전용 — 능력치 칸 네모 6개(11px). 오른쪽 끝부터 칸 수만큼 켜진다 · 같은 밴드 (T-095)
+│  │  │     │        ├─ Condense Target Mark      응축 창 대상 — 4변 3px (Accent). 평소 꺼짐 (T-130)
+│  │  │     │        ├─ Condense Pick Mark        응축 재료 — Cover(Highlight 18%) · 4변 3px · Check Badge 30(checkmark 20). 평소 꺼짐
+│  │  │     │        └─ Sell Mark · Assign Mark   맨 뒤로 옮겼다 — 체크 덮개 위에 '배' 마크가 보이게
+│  │  │     ├─ Sell Cart Presenter (↓ SUB VIEW)   SellCartPresenter            판매 목록 · 합계 · [판매]
+│  │  │     │                                        담긴 것이 없거나 특성 탭·큐브 창·응축 창이면 자기 오브젝트를 끈다
+│  │  │     │  ├─ Sell Scroll View Panel          Content 에 SellCartRowView 프리팹이 쌓인다
+│  │  │     │  │  └─ Empty Text (TMP)             목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
+│  │  │     │  ├─ Summary Panel                   Clear Button 72([비우기] — 응축 창 Close Button 복제) · High Rarity Warning(평소 꺼짐) · Total Text
+│  │  │     │  └─ Sell Button                     [판매]
+│  │  │     ├─ Equip Enchant Presenter (↓ SUB VIEW)  EquipEnchantPresenter   큐브 창 — 판매 목록과 **같은 자리**(flexH 1). 평소 꺼짐 (T-095)
+│  │  │     │                                        장비 칸 좌클릭이 연다 · 열리면 판매 목록이 비워지며 물러난다 · 닫기·탭 전환·우클릭이면 닫힌다
+│  │  │     │  ├─ Enchant Info Panel              Overlay 바탕 · 여백 14/14/12/12 · 간격 8 (특성 정보 영역을 복제)
+│  │  │     │  │  ├─ Header Row                   48 — Item Icon(ItemIconView 48) · Header Texts(이름 22 등급색 · 정보 14) · Close Button 72 [닫기]
+│  │  │     │  │  ├─ Enchant Stats > Compare Row  96 — Before Box ▶ After Box(파랑). 쓰기 전에는 Before(현재)만 · 칸 목록 17 등급색
+│  │  │     │  │  ├─ Spacer                       flexH 1
+│  │  │     │  │  ├─ Rule Text (TMP)              36 · 14 — 이번에 쓰면 무엇이 되나 한 줄 · TooltipTrigger(규칙·확률 표)
+│  │  │     │  │  └─ Cube Row                     56 — Cube View (1)(2) (EnchantCubeView · 특성 칸 프리팹을 풀어 만듦 · 고르면 노랑 테두리 · 툴팁)
+│  │  │     │  └─ Confirm Button                  50 — [큐브 사용 (인챈트 큐브 1개)] · 착용 중이면 [해제하고 사용] · 쓴 뒤 [한 번 더]
+│  │  │     ├─ Character Condense Presenter (↓ SUB VIEW)  CharacterCondensePresenter  응축 창 — 판매 목록과 **같은 자리**(큐브 창 복제). 평소 꺼짐 (T-130)
+│  │  │     │                                        캐릭터 칸 좌클릭이 연다 · 열린 동안 격자 좌클릭 = 재료 고르기 · 닫기·탭 전환·우클릭이면 닫힌다
+│  │  │     │  ├─ Condense Info Panel            Overlay 바탕 · 여백 14/14/12/12 · 간격 8
+│  │  │     │  │  ├─ Header Row                   48 — Portrait Image 48 · Header Texts(이름 등급색 · 'LV.7 · 응축 누적 15 / 76') · Star Row 92(★ 20px ×4) · Close Button 72
+│  │  │     │  │  ├─ Condense Stats > Compare Row 62 — Before Box('지금 n성' · 작업속도) ▶ After Box(파랑 · ★이 오를 때만)
+│  │  │     │  │  ├─ Stage Bar                    22 — Stage 1..4 (CondenseStageView · Current Fill 파랑 · Preview Fill 노랑 70% · '1성 · 5/8' 12)
+│  │  │     │  │  ├─ Caption Row                  20 — Left '누적 15 + 9 = 24' · Right '3성까지 20'
+│  │  │     │  │  ├─ Spacer                       flexH 1
+│  │  │     │  │  └─ Warn Text (TMP)              24 — 넘침·최고 단계(빨강) · 못 넣는 수·안내(흐림). 색은 코드가 칠한다
+│  │  │     │  └─ Action Row                     50 — Fill Button 200 [다음 단계까지 채우기] · Confirm Button flex [응축 (n마리)]
 │  │  └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │  ├─ @Main Column                                 세 칸 전부 높이 고정 (43+950+87 = 1080)
 │  │  ├─ #State Canvas (MAIN VIEW)                StateCanvasView    pref 43 · flexH 0 ← 계산됨
@@ -116,57 +115,58 @@ Root Canvas
 │  │  │     │     └─ Lv Text                      "Lv.n" (가장 위)
 │  │  │     └─ Setting Button · xxx Button (1..3 ⏸) · Exit Button      flex 1씩 · 세팅·종료에 TooltipTrigger(문구)
 │  │  ├─ #Main Canvas (MAIN VIEW)                 MainCanvasView     pref 950 · flexH 0 ← 사람이 정함
-│  │  │  ├─ Title                                 문구만 바뀐다 (SetTitle)      pref  50
-│  │  │  ├─ WorkStation List Presenter (↓ SUB VIEW)    WorkStationListPresenter   [기본]
-│  │  │  │  └─ Content > Work Slot (0..7)         WorkSlotFrame 프리팹 [Button]
-│  │  │  │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
-│  │  │  │        └─ Remain Text > Equip Icons   EquipIconsView 프리팹 — 남은 시간 줄 오른쪽 끝 · 등급 바탕 + 장비 아이콘 4칸 ·
-│  │  │  │                                       줄 높이만큼 정사각형(SquareLayoutElement) · 간격 3 · ContentSizeFitter로 폭 (T-104) · 올리면 칸별 장비 툴팁(코드가 붙인다)
-│  │  │  ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
-│  │  │  │  ├─ Header Panel                       (정렬용 — 스크립트 없음)       pref 50   ┐
-│  │  │  │  ├─ Industry Panel                     산업 5개                       pref 90   │ 고정
-│  │  │  │  │  └─ Farming … Hunting Button        VLG → Icon (임시) 흰 네모 · Text (TMP)    │ (굴러가지
-│  │  │  │  ├─ Industry Level Panel               레벨 5개                       pref 32   │  않는다)
-│  │  │  │  │  └─ Level 1..5 Button               라벨은 코드가 채운다 ("Lv2 밭"). LE pref W 0 · flexW 1 · TooltipTrigger(레벨 정보) ┘
-│  │  │  │  └─ Body Scroll Panel                  ★ 이 화면의 **유일한** 스크롤   flexH 1
-│  │  │  │     └─ Viewport > Content              VLG + ContentSizeFitter(Preferred) — CSF는 여기만
-│  │  │  │        ├─ 1 Character Assign Panel     VLG (평소 꺼짐 — 2단계)
-│  │  │  │        │  ├─ Empty Text (TMP)          고를 캐릭터가 없을 때만          pref 28
-│  │  │  │        │  └─ CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
-│  │  │  │        │       Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]      pref 90
-│  │  │  │        └─ 2 Character Setting Panel    VLG (3단계)
-│  │  │  │           ├─ Character Label           "캐릭터"                         pref 30
-│  │  │  │           ├─ Assigned Character Card   CharacterStateRowView 프리팹 · [해제]  pref 90
-│  │  │  │           ├─ Equipment Label           "장비"                           pref 30
-│  │  │  │           ├─ Equipment Panel           칸 4개가 버튼이다 (T-074) · 올리면 장비 툴팁(코드가 붙인다)        pref 114
-│  │  │  │           │  └─ Weapon / Accessory 1 / Accessory 2 / Gem Slot   LE pref W 0 · flexW 1 (1:1:1:1)
-│  │  │  │           │       바탕 Image = 등급색 · 고르는 중이면 버튼 색 전이로 어두워진다
-│  │  │  │           │       ├─ Part Text (TMP)     "무기"·"장신구1"…           pref 26
-│  │  │  │           │       ├─ Icon Row > Icon (임시)  정사각형 빈 네모 (SquareLayoutElement)  pref 34
-│  │  │  │           │       ├─ Name Text (TMP)     낀 장비 이름 · 비면 빈 문자열  pref 20
-│  │  │  │           │       └─ Effect Text (TMP)   "채굴 +10%" · 비면 빈 문자열   pref 18
-│  │  │  │           ├─ Efficiency Label          "효율 계산"                      pref 30   ┐ 장비를
-│  │  │  │           ├─ Progress Panel > Progress Slider  목록 칸의 슬라이더를 떼어 왔다 (표시 전용) pref 22 │ 고르는
-│  │  │  │           ├─ Efficiency Rows Panel     VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
-│  │  │  │           └─ Equip Picker Panel        VLG (평소 꺼짐 — 열리면 캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
-│  │  │  │              ├─ Header Panel           제목 · [해제] · [닫기]           pref 30
-│  │  │  │              ├─ Filter Panel           농사·낚시·채굴·벌목·사냥 (균등 5칸)      pref 26
-│  │  │  │              ├─ Equip Rows Panel       VLG · EquipPickRowView 프리팹 (보일 수만큼 런타임 생성)
-│  │  │  │              └─ Empty Text (TMP)       끼울 장비가 없을 때만            pref 28
-│  │  │  ├─ Setting Presenter (↓ SUB VIEW)        SettingPresenter            (평소 꺼짐)
-│  │  │  │  ├─ Header Panel                       뒤로가기 (Select 와 같은 규격)  pref 50
-│  │  │  │  ├─ Toggle Panel                       토글 4              pref 0 · flexH 1
-│  │  │  │  └─ Dropdown Panel                     드롭다운 5 (크기·위치·프레임·FPS 위치 + 미사용 1)          pref 0 · flexH 1
-│  │  │  ├─ Mail Presenter (↓ SUB VIEW)           MailPresenter               (평소 꺼짐) VLG pad 5 · 어두운 갈색
-│  │  │  │  ├─ Header Panel                       '안 받은 우편 n통' · 닫기 (Setting 과 같은 규격)  pref 50
-│  │  │  │  ├─ Tab Panel                          HLG · [안 받은 우편 (n)] · [받은 우편 (n)] (경매장 탭 버튼 복제) pref 40
-│  │  │  │  ├─ Body Scroll Panel                  ScrollRect(세로) · flexH 1
-│  │  │  │  │  ├─ Viewport > Content              VLG + ContentSizeFitter(Preferred)
-│  │  │  │  │  │  └─ MailRowView 프리팹 (우편 수만큼 런타임 생성 · 풀)  아이콘(첫 첨부) · 제목 / 발신자·시각 / 첨부 · [받기]|[삭제]  pref 84
-│  │  │  │  │  └─ Empty Text (TMP)                목록 위에 겹쳐 둔다 (지금 탭에 우편이 없을 때만)
-│  │  │  │  ├─ Guide Text (TMP)                   탭마다 보관 규칙 한 줄 (footerNoteText)   pref 28
-│  │  │  │  └─ Footer Panel > Claim All Button    [모두 받기] pref W 240 · 안 받은 탭에서만  pref 60
-│  │  │  └─ Menu Presenter (↓ SUB VIEW)           MenuPresenter    인벤토리·거래 버튼  pref 100
+│  │  │  └─ Body Panel                     VerticalLayoutGroup(5·5) — 레이아웃 경계 (T-139)
+│  │  │     ├─ Title                              문구만 바뀐다 (SetTitle)      pref  50
+│  │  │     ├─ WorkStation List Presenter (↓ SUB VIEW) WorkStationListPresenter   [기본]
+│  │  │     │  └─ Content > Work Slot (0..7)      WorkSlotFrame 프리팹 [Button]
+│  │  │     │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
+│  │  │     │        └─ Remain Text > Equip Icons   EquipIconsView 프리팹 — 남은 시간 줄 오른쪽 끝 · 등급 바탕 + 장비 아이콘 4칸 ·
+│  │  │     │                                       줄 높이만큼 정사각형(SquareLayoutElement) · 간격 3 · ContentSizeFitter로 폭 (T-104) · 올리면 칸별 장비 툴팁(코드가 붙인다)
+│  │  │     ├─ WorkStation Select Presenter (↓ SUB VIEW)  WorkStationSelectPresenter (평소 꺼짐)
+│  │  │     │  ├─ Header Panel                    (정렬용 — 스크립트 없음)       pref 50   ┐
+│  │  │     │  ├─ Industry Panel                  산업 5개                       pref 90   │ 고정
+│  │  │     │  │  └─ Farming … Hunting Button     VLG → Icon (임시) 흰 네모 · Text (TMP)    │ (굴러가지
+│  │  │     │  ├─ Industry Level Panel            레벨 5개                       pref 32   │  않는다)
+│  │  │     │  │  └─ Level 1..5 Button            라벨은 코드가 채운다 ("Lv2 밭"). LE pref W 0 · flexW 1 · TooltipTrigger(레벨 정보) ┘
+│  │  │     │  └─ Body Scroll Panel               ★ 이 화면의 **유일한** 스크롤   flexH 1
+│  │  │     │     └─ Viewport > Content           VLG + ContentSizeFitter(Preferred) — CSF는 여기만
+│  │  │     │        ├─ 1 Character Assign Panel  VLG (평소 꺼짐 — 2단계)
+│  │  │     │        │  ├─ Empty Text (TMP)       고를 캐릭터가 없을 때만          pref 28
+│  │  │     │        │  └─ CharacterStateRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │     │        │       Portrait (임시) · 이름 / 종족 (임시) / 적성 5칸 · [배치]   pref 90
+│  │  │     │        └─ 2 Character Setting Panel VLG (3단계)
+│  │  │     │           ├─ Character Label        "캐릭터"                         pref 30
+│  │  │     │           ├─ Assigned Character Card   CharacterStateRowView 프리팹 · [해제]  pref 90
+│  │  │     │           ├─ Equipment Label        "장비"                           pref 30
+│  │  │     │           ├─ Equipment Panel        칸 4개가 버튼이다 (T-074) · 올리면 장비 툴팁(코드가 붙인다)        pref 114
+│  │  │     │           │  └─ Weapon / Accessory 1 / Accessory 2 / Gem Slot   LE pref W 0 · flexW 1 (1:1:1:1)
+│  │  │     │           │       바탕 Image = 등급색 · 고르는 중이면 버튼 색 전이로 어두워진다
+│  │  │     │           │       ├─ Part Text (TMP)  "무기"·"장신구1"…           pref 26
+│  │  │     │           │       ├─ Icon Row > Icon (임시)  정사각형 빈 네모 (SquareLayoutElement)  pref 34
+│  │  │     │           │       ├─ Name Text (TMP)  낀 장비 이름 · 비면 빈 문자열  pref 20
+│  │  │     │           │       └─ Effect Text (TMP)   "채굴 +10%" · 비면 빈 문자열   pref 18
+│  │  │     │           ├─ Efficiency Label       "효율 계산"                      pref 30   ┐ 장비를
+│  │  │     │           ├─ Progress Panel > Progress Slider  목록 칸의 슬라이더를 떼어 왔다 (표시 전용) pref 22 │ 고르는
+│  │  │     │           ├─ Efficiency Rows Panel  VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
+│  │  │     │           └─ Equip Picker Panel     VLG (평소 꺼짐 — 열리면 캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
+│  │  │     │              ├─ Header Panel        제목 · [해제] · [닫기]           pref 30
+│  │  │     │              ├─ Filter Panel        농사·낚시·채굴·벌목·사냥 (균등 5칸)      pref 26
+│  │  │     │              ├─ Equip Rows Panel    VLG · EquipPickRowView 프리팹 (보일 수만큼 런타임 생성)
+│  │  │     │              └─ Empty Text (TMP)    끼울 장비가 없을 때만            pref 28
+│  │  │     ├─ Setting Presenter (↓ SUB VIEW)     SettingPresenter            (평소 꺼짐)
+│  │  │     │  ├─ Header Panel                    뒤로가기 (Select 와 같은 규격)  pref 50
+│  │  │     │  ├─ Toggle Panel                    토글 4              pref 0 · flexH 1
+│  │  │     │  └─ Dropdown Panel                  드롭다운 5 (크기·위치·프레임·FPS 위치 + 미사용 1)          pref 0 · flexH 1
+│  │  │     ├─ Mail Presenter (↓ SUB VIEW)        MailPresenter               (평소 꺼짐) VLG pad 5 · 어두운 갈색
+│  │  │     │  ├─ Header Panel                    '안 받은 우편 n통' · 닫기 (Setting 과 같은 규격)  pref 50
+│  │  │     │  ├─ Tab Panel                       HLG · [안 받은 우편 (n)] · [받은 우편 (n)] (경매장 탭 버튼 복제) pref 40
+│  │  │     │  ├─ Body Scroll Panel               ScrollRect(세로) · flexH 1
+│  │  │     │  │  ├─ Viewport > Content           VLG + ContentSizeFitter(Preferred)
+│  │  │     │  │  │  └─ MailRowView 프리팹 (우편 수만큼 런타임 생성 · 풀)  아이콘(첫 첨부) · 제목 / 발신자·시각 / 첨부 · [받기]|[삭제]  pref 84
+│  │  │     │  │  └─ Empty Text (TMP)             목록 위에 겹쳐 둔다 (지금 탭에 우편이 없을 때만)
+│  │  │     │  ├─ Guide Text (TMP)                탭마다 보관 규칙 한 줄 (footerNoteText)   pref 28
+│  │  │     │  └─ Footer Panel > Claim All Button [모두 받기] pref W 240 · 안 받은 탭에서만  pref 60
+│  │  │     └─ Menu Presenter (↓ SUB VIEW)        MenuPresenter    인벤토리·거래 버튼  pref 100
 │  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
 │  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
 │  │        ├─ Top Panel                          (정렬용 — 스크립트 없음)       pref  26
@@ -177,30 +177,28 @@ Root Canvas
 │  └─ @Market Column                               인벤토리 열과 같은 세 칸 구성
 │     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
 │     ├─ #Market Canvas (MAIN VIEW)               MarketCanvasView   pref 950 · flexH 0
-│     │  ├─ Title                                 (정적 요소 — 표기 없음)
-│     │  ├─ Tab Presenter (↓ SUB VIEW)            MarketTabPresenter   pref 50 · 뽑기 · 경매장 · 창고 (T-101)
-│     │  ├─ Gacha Presenter (↓ SUB VIEW)          GachaPresenter   뽑기 탭 화면 · Draws 8줄 (풀 4종 x 1회·10회)
-│     │  │  └─ Gacha Send Button (0..7)           캐릭터 · 무기 · 장신구 · 보석 순, 각 1·10회.
-│     │  │                                        이름·비용 문구는 Start 가 테이블에서 채운다
-│     │  │                                        ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
-│     │  ├─ Auction Page                          경매장 탭 화면 · flexH 1 · VLG 5/5 — 하위 탭 3개 (T-096)
-│     │  │  ├─ Auction Tab Presenter (↓ SUB VIEW) AuctionTabPresenter   pref 50 · 구매 · 등록 · 내 매물
-│     │  │  ├─ Auction Buy Page                   구매 탭 화면 · flexH 1 · VLG 0/5
-│     │  │  │  ├─ Auction Buy Tab Presenter (↓ SUB VIEW) AuctionBuyTabPresenter   pref 40 · 자원 · 장비 · 캐릭터
-│     │  │  │  ├─ Market Item Presenter (↓ SUB VIEW) MarketItemPresenter   검색 줄(+ 정렬) · 목록 · 가격대(130) · 수량/단가/구매 줄
-│     │  │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   Search Panel(이름·[검색]) / Filter Panel(분류·등급·인챈트·Spacer·정렬) · 목록 · [더 보기]
-│     │  │  │  └─ Character Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   위의 복제(searchKind = Character) — 분류·인챈트 드롭다운은 꺼 둔다
-│     │  │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(60 · 3줄) · 종류 · 후보 목록 · 수량/단가/등록 줄 · 힌트(66 · 3줄)
-│     │  │  └─ Auction My Listing Presenter (↓ SUB VIEW) AuctionMyListingPresenter   판매 중 n/상한 · [새로고침] · 목록
-│     │  │     ※ 네 목록 모두 Body Scroll Panel(우편함의 것 복제) + AuctionRowView 프리팹 줄 (런타임 생성 · pref 104 · 아이콘/이름/정보/가격/판매자 · 줄 툴팁)
-│     │  │     ※ 정렬 버튼 pref W 130 ('낮은 가격순 ▲') · 검색·도구 줄 드롭다운 라벨은 오른쪽 28px 비움(화살표 자리)
-│     │  └─ Warehouse Page                        창고 탭 화면 — (기능 없음) · flexH 1 (인벤토리와 별개)
+│     │  └─ Body Panel                     VerticalLayoutGroup(5·5) — 레이아웃 경계 (T-139)
+│     │     ├─ Title                              (정적 요소 — 표기 없음)
+│     │     ├─ Tab Presenter (↓ SUB VIEW)         MarketTabPresenter   pref 50 · 뽑기 · 경매장 · 창고 (T-101)
+│     │     ├─ Gacha Presenter (↓ SUB VIEW)       GachaPresenter   뽑기 탭 화면 · Draws 8줄 (풀 4종 x 1회·10회)
+│     │     │  └─ Gacha Send Button (0..7)        캐릭터 · 무기 · 장신구 · 보석 순, 각 1·10회.
+│     │     │                                        이름·비용 문구는 Start 가 테이블에서 채운다
+│     │     │                                        ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
+│     │     ├─ Auction Page                       경매장 탭 화면 · flexH 1 · VLG 5/5 — 하위 탭 3개 (T-096)
+│     │     │  ├─ Auction Tab Presenter (↓ SUB VIEW) AuctionTabPresenter   pref 50 · 구매 · 등록 · 내 매물
+│     │     │  ├─ Auction Buy Page                구매 탭 화면 · flexH 1 · VLG 0/5
+│     │     │  │  ├─ Auction Buy Tab Presenter (↓ SUB VIEW) AuctionBuyTabPresenter   pref 40 · 자원 · 장비 · 캐릭터
+│     │     │  │  ├─ Market Item Presenter (↓ SUB VIEW) MarketItemPresenter   검색 줄(+ 정렬) · 목록 · 가격대(130) · 수량/단가/구매 줄
+│     │     │  │  ├─ Auction Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   Search Panel(이름·[검색]) / Filter Panel(분류·등급·인챈트·Spacer·정렬) · 목록 · [더 보기]
+│     │     │  │  └─ Character Search Presenter (↓ SUB VIEW) AuctionSearchPresenter   위의 복제(searchKind = Character) — 분류·인챈트 드롭다운은 꺼 둔다
+│     │     │  ├─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   안내문(60 · 3줄) · 종류 · 후보 목록 · 수량/단가/등록 줄 · 힌트(66 · 3줄)
+│     │     │  └─ Auction My Listing Presenter (↓ SUB VIEW) AuctionMyListingPresenter   판매 중 n/상한 · [새로고침] · 목록
+│     │     │     ※ 네 목록 모두 Body Scroll Panel(우편함의 것 복제) + AuctionRowView 프리팹 줄 (런타임 생성 · pref 104 · 아이콘/이름/정보/가격/판매자 · 줄 툴팁)
+│     │     │     ※ 정렬 버튼 pref W 130 ('낮은 가격순 ▲') · 검색·도구 줄 드롭다운 라벨은 오른쪽 28px 비움(화살표 자리)
+│     │     └─ Warehouse Page                     창고 탭 화면 — (기능 없음) · flexH 1 (인벤토리와 별개)
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
-└─ !System Canvas (MAIN VIEW)                     SystemCanvasView   Sorting 2 · 상주 오버레이
-   ├─ Fps Text Presenter (↓ SUB VIEW)             FpsTextPresenter   구석 FPS 표시 · 차단막·CanvasGroup 없음
-   │  └─ Text (TMP)                               회색 22 · raycastTarget 끔(클릭스루)
-   ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
+└─ !Overlay Canvas                                 (스크립트 없음)    Sorting 100 · 상주 — 여닫지 않는다 · 아래로 갈수록 앞에 그린다
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
    │                                               가챠·상자 개봉·우편 수령 공용 (T-033 · T-083) — 제목은 코드가 '<출처> 결과'로 바꾼다
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
@@ -208,12 +206,17 @@ Root Canvas
    │  └─ Panel                                    440x240 (제목 · 수량 입력 · 확인/취소)
    ├─ Confirm Presenter (↓ SUB VIEW)               ConfirmPresenter   UIManager.AskConfirm 이 연다
    │  └─ Panel                                    440x240 (문구 · 확인/취소)
-   ├─ Tooltip Presenter (↓ SUB VIEW)               TooltipPresenter   CanvasGroup alpha만 · blocksRaycasts 늘 끔 (T-088)
-   │  └─ Panel                                    pivot 좌상단 · VLG + CSF(Preferred) · raycastTarget 전부 끔
-   │     ├─ Title Text (TMP)                      제목 한 줄 (흰색 22)
-   │     └─ Row Panel                             TooltipRowView 프리팹 (라벨 / 값 / 보조 값 — 값 열 폭은 코드가 툴팁마다 가장 긴 글자에 맞춘다) — 줄이 없으면 꺼진다
-   └─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
-      └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
+   ├─ Login Presenter (↓ SUB VIEW)                LoginPresenter     ← 게임의 시작점 · 꽉 찬 어두운 판 · SetActive (UIManager.ShowLogin)
+   │  └─ Panel                                    200x400 (아이디 입력 · 로그인 · 종료)
+   ├─ Fps Text Presenter (↓ SUB VIEW)             FpsTextPresenter   구석 FPS 표시 · 차단막·CanvasGroup 없음
+   │  └─ Text (TMP)                               회색 22 · raycastTarget 끔(클릭스루)
+   ├─ Loading Presenter (↓ SUB VIEW)              LoadingPresenter   차단 즉시 · 표시만 0.15s 뒤
+   ├─ Notice Presenter (↓ SUB VIEW)               NoticePresenter    CanvasGroup 토글 · 닫기=확인/종료
+   │  └─ Panel                                    다이얼로그(문구 · 닫기 버튼)
+   └─ Tooltip Presenter (↓ SUB VIEW)               TooltipPresenter   CanvasGroup alpha만 · blocksRaycasts 늘 끔 (T-088)
+      └─ Panel                                    pivot 좌상단 · VLG + CSF(Preferred) · raycastTarget 전부 끔
+         ├─ Title Text (TMP)                      제목 한 줄 (흰색 22)
+         └─ Row Panel                             TooltipRowView 프리팹 (라벨 / 값 / 보조 값 — 값 열 폭은 코드가 툴팁마다 가장 긴 글자에 맞춘다) — 줄이 없으면 꺼진다
 
 (캔버스 밖)
 Window Manager · Display Manager · UI Manager · Ping Manager · Network Manager · ServerWait Manager
@@ -226,16 +229,16 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > 위쪽이 87, 아래 칸이면 아래쪽이 87이다. **사람이 정하는 건 가운데 950 하나뿐이다**
 > — 근거는 [`Layout 규칙.md`](<Layout/Layout 규칙.md>)의 "비율은 flexible이 아니라 숫자로".
 
-> ⚠️ `!System Canvas`의 SUB VIEW 넷은 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
-> 여닫는다 — 상주 캔버스라 자기를 끄면 `Start`가 돌지 않거나 다시 켤 이벤트를 못 받는다.
+> ⚠️ `!Overlay Canvas`의 SUB VIEW는 로그인을 빼고 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
+> 여닫는다 — 상주 층이라 자기를 끄면 `Start`가 돌지 않거나 다시 켤 이벤트를 못 받는다. 로그인만 `UIManager`가 `SetActive`로 여닫는다(`Overlay 규칙.md`의 "로그인").
 > 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(raycastTarget 켬)를
 > 함께 갖는다. 차단막 색은 셋이 **검정 a 0.35**, `Loading`만 **흰색 a 0.851**(축이 다르다).
-> **`Tooltip Presenter`만 차단막이 없다** — 막지 않는 오버레이라 `blocksRaycasts`를 늘 끈다(`System 규칙.md`의 "툴팁").
+> **`Tooltip Presenter`만 차단막이 없다** — 막지 않는 오버레이라 `blocksRaycasts`를 늘 끈다(`Overlay 규칙.md`의 "툴팁").
 > **여기만 다른 게 아니라 기준이 있다** — 판별 축이 둘(차단 범위 / 생명주기)이라는 것과
-> 전부 통일하면 안 되는 이유는 [`System 규칙.md`](<System/System 규칙.md>).
+> 전부 통일하면 안 되는 이유는 [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>).
 >
-> **`Notice Presenter`는 형제 순서에서 항상 마지막이다** — 나중에 올수록 위에 그려지고,
-> 알림은 무엇에도 가려지면 안 된다. 오버레이를 새로 넣을 때는 그 앞에 끼운다.
+> **형제 순서가 곧 앞뒤다 — 아래(나중) 형제일수록 앞에 그린다.** 맨 앞은 막지 않는 툴팁, 그 뒤가 알림(무엇에도 가려지면 안 된다) · 로딩 순이다.
+> 순서의 근거와 새 오버레이를 끼울 자리는 [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>)의 "계층과 Sorting Order".
 
 ## 2. 메인 화면 전환 흐름 — 넷이 한 자리를 나눈다
 
@@ -328,7 +331,7 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 
 > 기다리는 동안 `ApplyWaitingLock`이 잠그는 것은 **카드의 해제 버튼과 캐릭터 줄**뿐이다 — 뒤로가기는
 > 코드로 잠그지 않는다. 다만 **요청을 보낸 순간부터** 로딩 오버레이가 클릭을 막으므로
-> (보이기 전에도 막는다 — [`System 규칙.md`](<System/System 규칙.md>)의 "로딩은 두 축을 나눠 쓴다") 그동안은 뒤로가기도 실제로는 누를 수 없다.
+> (보이기 전에도 막는다 — [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>)의 "로딩은 두 축을 나눠 쓴다") 그동안은 뒤로가기도 실제로는 누를 수 없다.
 > **응답이 영영 안 와도 갇히지 않는 근거는 5초 타임아웃이다** — `ServerWaitManager`가 대기를
 > 스스로 닫고(`onClosed`) 잠금을 풀면서 무응답 알림을 띄운다.
 
@@ -452,7 +455,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   ([`T-050`](../../../tasks/archive/T-050-칸정보호버.md) · 패널 자리를 다투지 않는 쪽을 골랐다. 씬 변경 없음 — 트리거는 격자가 코드로 붙인다).
 - **판매는 자원 탭에서만 된다.** 서버 판매 패킷이 아이템 TID 축이라 캐릭터를 담을 수 없어서,
   격자가 다른 탭의 우클릭을 무시한다 — 근거는 [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>).
-- 🔴 **수량 팝업은 `#Inventory Canvas`에 있다가 `!System Canvas`로 옮겼다 (2026-09-05).**
+- 🔴 **수량 팝업은 `#Inventory Canvas`에 있다가 `!Overlay Canvas`로 옮겼다 (2026-09-05).**
   열 캔버스는 넷 다 Sorting Order가 **0인 형제**라, 인벤토리 안에 깐 차단막이 다른 열에 닿지 않아
   **확인을 누르기 전인데 상태바·메인·거래 버튼이 눌렸다.** 옮기면서 이름도
   `Amount Input Presenter`로 바꾸고(판매 전용이 아니다) 차단막 겹 하나를 걷어냈다.

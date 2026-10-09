@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -31,13 +31,13 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 | **`UIManager`** | 화면 골격의 단일 출입구. 캔버스 여닫기 + `#Main Canvas` 안의 화면 전환 + **시스템 오버레이 중개**(`AskAmount`) | 위젯을 직접 쥐지 않는다. 각 패널의 위젯은 그 패널의 Presenter 몫 |
 
 > **`UIManager`가 드는 것은 캔버스뿐이 아니다 — 팝업 하나가 예외로 섞여 있다.**
-> `!System Canvas`는 상주라 여닫지 않으므로 캔버스로는 들지 않는다. 대신 그 아래
+> `!Overlay Canvas`는 상주라 여닫지 않으므로 들지 않는다. 대신 그 아래 `LoginPresenter`(게임 시작 화면 — `ShowLogin`)와
 > `AmountInputPresenter` 하나를 인스펙터로 들고 `AskAmount(itemId, max, question, onConfirm)`로 중개한다 (`question` = 묻는 말 — 팝업은 용도를 모른다).
 > **답을 돌려줘야 하는 유일한 오버레이**라서다 — 나머지 셋은 매니저 이벤트를 스스로 구독해
-> 뜨므로 참조가 없다. 근거는 [`System 규칙.md`](<../UI/System/System 규칙.md>)의
+> 뜨므로 참조가 없다. 근거는 [`Overlay 규칙.md`](<../UI/Overlay/Overlay 규칙.md>)의
 > "왜 이것만 `UIManager`를 거치는가".
 | **`WindowManager`** | 데스크톱 창 제어(투명·항상 위·클릭 스루·크기·위치) | Win32 **선언**은 갖지 않는다 → `DesktopWindow/Win32Native` |
-| **`DisplayManager`** | **표시·성능 설정의 주인.** 지금은 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 위치를 정해 `FpsTextPositionChanged` 발행. **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/System/FpsTextPresenter` |
+| **`DisplayManager`** | **표시·성능 설정의 주인.** 지금은 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 위치를 정해 `FpsTextPositionChanged` 발행. **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/Overlay/FpsTextPresenter` |
 | **`PingManager`** | 연결 생존 확인(5초 Ping / 15초 무응답 감지). **송신은 백그라운드 타이머, 판정은 `Update`** | **소켓을 끊지 않는다.** 알리고 앱을 내릴 뿐 — 세션 정리는 서버 폴더의 것 |
 | **`SellCartModel`** | **판매하려고 담아 둔 목록.** 담긴 자원 종류·수량과 캐릭터·장비 개체 번호(2026-10-03 · T-075), 합계 골드, 상위 등급 포함 여부를 들고 `Changed`를 발행. 인벤토리 격자(담김 표시)와 `SellCartPresenter`(목록·합계)가 같은 것을 보게 하는 자리다 | **송신하지 않는다** — 판매 요청은 버튼을 누른 Presenter가 보낸다. **보유량의 주인도 아니다** — `PlayerDataModel.InventoryChanged`를 구독해 초과분만 깎고, 개체 목록 변경으로 사라졌거나 나가 있는 개체를 뺀다 |
 | **`AuctionModel`** | **경매장·거래소 창구.** 거래소 목록·가격대, 장비 검색 결과(페이지 누적), 내 매물을 들고 응답마다 결과 코드와 함께 `…Completed`를 발행. 즉시 판매가·경매 단가 범위(즉시 판매가 ~ 1조)·한 번에 올리는 수량 상한(9,999)·등록비 식의 표시용 사본과, 검색 결과에서 내 매물을 가리는 `IsMine`·`GetMyItemCount`도 여기 있다 | **예외적으로 송신한다** — 장비 검색은 마지막으로 본 매물을 커서로 다음 페이지를 받아서, 조건·커서·누적 결과가 한 곳에 있어야 [더 보기]가 이어 붙는다. 대기(`ServerWaitManager`)는 여전히 요청을 일으킨 Presenter가 건다. **인벤토리 반영은 하지 않는다** — 등록 응답은 `PlayerDataModel`이 같은 패킷을 구독해 뺀다 |
@@ -63,9 +63,9 @@ Presenter          요청 전송 직후  Begin("로그인", onClosed) → Server
 - 둘이 만나는 곳은 하나뿐이다 — `PingManager`가 연결 끊김을 판정하면
   알림을 띄울 창구로 `RaiseFatal`을 빌려 쓴다.
 
-> 화면 쪽은 `UI/System/`의 `LoadingPresenter`(`BusyChanged` 구독)와
+> 화면 쪽은 `UI/Overlay/`의 `LoadingPresenter`(`BusyChanged` 구독)와
 > `NoticePresenter`(`NoticeRaised`·`FatalRaised` 구독)가 맡는다 →
-> [`System 규칙.md`](<../UI/System/System 규칙.md>).
+> [`Overlay 규칙.md`](<../UI/Overlay/Overlay 규칙.md>).
 
 ### 짝을 이루는 두 데이터 창구
 
@@ -523,7 +523,7 @@ UI를 비례 확대한다. 기준 해상도를 창 크기에 맞춰 바꾸면 �
 |------|------|
 | UI 이름·부착·폴더 규칙 (전체 공통) | [`UI 규칙.md`](<../UI/UI 규칙.md>) |
 | 화면 전환 흐름 · `MainScreen` enum · 캔버스 배치 | [`Main 규칙.md`](<../UI/Main/Main 규칙.md>) |
-| 로딩·알림 오버레이 | [`System 규칙.md`](<../UI/System/System 규칙.md>) |
+| 로딩·알림 오버레이 | [`Overlay 규칙.md`](<../UI/Overlay/Overlay 규칙.md>) |
 | 패킷이 어떤 길로 오는가 · ⭐수량 값의 뜻 | [`서버 동작 이해.md`](<../서버 동작 이해.md>) |
 | 어떤 기능이 무엇을 주고받는가 (로그인 세트·채취·적성) | [`패킷 레퍼런스.md`](<../패킷 레퍼런스.md>) |
 | 창 제어 Win32 선언 | [`DesktopWindow 규칙.md`](<../DesktopWindow/DesktopWindow 규칙.md>) |

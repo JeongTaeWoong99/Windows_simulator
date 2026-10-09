@@ -175,7 +175,7 @@ Auction Page
   (`GameDesign/기획/거래/README.md` 3.2). 화면 배치가 아니라 기획이 정한 자리라
   옮길 때는 기획 쪽을 먼저 본다.
 - **결과 내용은 이 폴더에서 그리지 않는다.** 뽑힌 보상·인벤토리 반영은 `PlayerDataModel`이
-  처리하고, 결과 팝업은 `!System Canvas`의 [`GachaResultPresenter`](<../System/System 규칙.md>)가
+  처리하고, 결과 팝업은 `!Overlay Canvas`의 [`GachaResultPresenter`](<../Overlay/Overlay 규칙.md>)가
   `GachaCompleted`를 **스스로 구독해서** 띄운다. **여기 자식으로 두지 않는다** — 요청 직후 이 열을
   닫으면 결과가 통째로 사라지기 때문이다(아래 사고와 같은 뿌리).
   다만 **성공/실패 도착 여부는 여기서 구독한다** — 요청 중 로딩·버튼 잠금·실패 알림이 필요하기 때문이다.
@@ -187,7 +187,7 @@ Auction Page
 
 대응은 이 폴더가 아니라 오버레이 쪽에 있다 — **대기 차단(`blocksRaycasts`)을 표시보다
 먼저, 요청 즉시 건다.** 근거와 두 축(차단/표시)의 구분은
-[`System 규칙.md`](<../System/System 규칙.md>)의 "로딩은 두 축을 나눠 쓴다".
+[`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>)의 "로딩은 두 축을 나눠 쓴다".
 
 **전역 차단이 생겼어도 `GachaPresenter`의 개별 버튼 잠금은 남긴다.** 역할이 다르다 —
 차단은 "대기 중 전체"를 막고, 개별 잠금은 "이 버튼은 지금 못 누른다"를 **보이게** 한다.
