@@ -405,7 +405,7 @@ public class TraitPresenter : MonoBehaviour
 
     // 비교 상자를 채운다 (RedrawDetail에서 호출).
     //
-    // ※ '→'를 쓰지 않는다 — 폰트(neodgm_pro SDF)가 Static 아틀라스라 그 글리프가 없어 □로 나온다. '▶'를 쓴다.
+    // ※ 지금 ▶ 다음은 '▶'로 잇는다 (옛 폰트에 '→'가 없어 정한 표기).
     private void BindStats(UserTraitTableRow trait, int level, bool isMax)
     {
         if (isMax)

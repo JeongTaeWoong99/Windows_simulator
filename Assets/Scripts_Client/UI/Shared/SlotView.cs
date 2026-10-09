@@ -82,7 +82,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석. 캐릭터 탭에서만 켜진다")]
     private EquipPipsView equipPips = null!;
 
-    // ※ 글자가 아니라 그림이다 — 'neodgm_pro SDF'가 Static 아틀라스라 '★' 글리프가 없다('UI 규칙.md').
+    // ※ 글자가 아니라 그림이다 — 옛 폰트에 '★' 글리프가 없어 그림으로 정했다('Inventory 규칙.md').
     // ※ 얻은 ★만 켠다. ★0이면 줄째 꺼져 대부분의 칸이 깨끗하게 남는다(T-130 목업).
     [CenterHeader("응축 ★ (캐릭터 탭)")]
     [SerializeField, Tooltip("★ 줄 — 이름 아래 왼쪽. ★0이면 꺼진다")]
