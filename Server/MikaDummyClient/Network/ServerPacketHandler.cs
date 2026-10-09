@@ -225,7 +225,13 @@ namespace MikaDummyClient
         public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
         {
             Console.WriteLine($"[Client] Recv 인챈트 #{res.EquipId} → {res.Result} Success={res.Success} " +
-                              $"등급 {res.BeforeGrade}→{res.AfterGrade} 옵션=[{string.Join(",", res.Options)}]");
+                              $"등급 {res.BeforeGrade}→{res.AfterGrade} 옵션=[{string.Join(",", res.Options)}] 고르기 대기={res.AwaitingChoice}");
+        }
+
+        [PacketHandler]
+        public static void Handle_S_EquipEnchantChooseResponse(ISession session, S_EquipEnchantChooseResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 인챈트 고르기 #{res.EquipId} → {res.Result} 새 값={res.KeepNew}");
         }
 
         [PacketHandler]

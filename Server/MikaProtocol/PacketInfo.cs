@@ -111,6 +111,8 @@ namespace MikaProtocol
         public EContainer Container           { get; set; }
         public int        EnchantGrade        { get; set; }  // 0=인챈트 없음, 그 외 GlobalRarity
         public List<int>  EnchantOptions      { get; set; } = new();  // EnchantOptionTID. 줄 수만큼(0·2·3개)
+        public int        PendingEnchantGrade   { get; set; }  // 상급 큐브의 고르기 전 결과. 0=보류 없음
+        public List<int>  PendingEnchantOptions { get; set; } = new();
     }
 
     /// <summary>우편 한 통. 제목·본문·발신자는 싣지 않는다 — 클라가 <c>MailTemplateTable</c>에서 <c>TemplateTid</c>로 읽는다.</summary>

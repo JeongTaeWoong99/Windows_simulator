@@ -238,6 +238,21 @@ public static class ClientPacketHandler
         user.TryEnchant(req.EquipId, req.ItemTid);
     }
 
+    [PacketHandler]
+    public static void Handle_C_EquipEnchantChooseRequest(ISession session, C_EquipEnchantChooseRequest req)
+    {
+        ServerLog.Debug("인챈트", $"고르기 요청 장비={req.EquipId} 새 값={req.KeepNew} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_EquipEnchantChooseResponse { Result = EResultCode.NotLoggedIn, EquipId = req.EquipId, KeepNew = req.KeepNew });
+            return;
+        }
+
+        user.TryChooseEnchant(req.EquipId, req.KeepNew);
+    }
+
     /// <summary>
     /// 아이템을 즉시 판매한다. <b>가격은 서버가 정한다</b> — 클라이언트는 무엇을 몇 개 팔지만 보낸다.
     /// </summary>

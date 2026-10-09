@@ -36,6 +36,15 @@ public sealed class Equip
     /// <summary>패킷·DB에 싣는 EnchantOptionTID 목록.</summary>
     public IReadOnlyList<int> EnchantOptionTids => _enchantOptions.Select(o => o.EnchantOptionTID).ToList();
 
+    /// <summary>상급 큐브의 고르기 전 등급. None이면 보류가 없다 — 있으면 고르기 전까지 장착·큐브·판매·경매가 막힌다.</summary>
+    public GlobalRarity PendingEnchantGrade { get; private set; }
+
+    private readonly List<EnchantOptionTableRow> _pendingOptions = new();
+
+    public bool HasPendingEnchant => PendingEnchantGrade != GlobalRarity.None;
+
+    public IReadOnlyList<int> PendingEnchantOptionTids => _pendingOptions.Select(o => o.EnchantOptionTID).ToList();
+
     /// <summary>착용 캐릭터 개체. 0이면 창고에 있다.</summary>
     public long EquippedCharacterId { get; private set; }
 
@@ -69,6 +78,24 @@ public sealed class Equip
         EnchantGrade = grade;
         _enchantOptions.Clear();
         _enchantOptions.AddRange(options);
+    }
+
+    public void SetPendingEnchant(GlobalRarity grade, IReadOnlyList<EnchantOptionTableRow> options)
+    {
+        PendingEnchantGrade = grade;
+        _pendingOptions.Clear();
+        _pendingOptions.AddRange(options);
+    }
+
+    /// <summary>보류를 끝낸다. keepNew면 보류 값이 인챈트가 되고, 아니면 버린다.</summary>
+    public void ResolvePendingEnchant(bool keepNew)
+    {
+        if (keepNew)
+        {
+            SetEnchant(PendingEnchantGrade, _pendingOptions.ToList());
+        }
+
+        SetPendingEnchant(GlobalRarity.None, Array.Empty<EnchantOptionTableRow>());
     }
 
     /// <summary>이 슬롯 산업에 붙는 속도 가산 — 테이블 기본값 + 능력치 칸. 산업이 맞지 않는 쪽은 빠진다.</summary>

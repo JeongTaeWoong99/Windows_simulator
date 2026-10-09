@@ -134,6 +134,11 @@ public partial class User
             return (EResultCode.AuctionEquipped, null, 0);
         }
 
+        if (equip.HasPendingEnchant)
+        {
+            return (EResultCode.EnchantPending, null, 0);
+        }
+
         var item = new AuctionItemSnapshot
         {
             Kind         = EAuctionKind.Equip,

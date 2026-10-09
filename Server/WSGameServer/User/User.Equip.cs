@@ -27,7 +27,8 @@ public partial class User
 
         foreach (var r in equipRows)
         {
-            var equip = BuildEquip(r.equip_id, r.equip_tid, r.slot_position, r.enchant_grade, new[] { r.enchant_1, r.enchant_2, r.enchant_3 });
+            var equip = BuildEquip(r.equip_id, r.equip_tid, r.slot_position, r.enchant_grade, new[] { r.enchant_1, r.enchant_2, r.enchant_3 },
+                r.pending_grade, new[] { r.pending_1, r.pending_2, r.pending_3 });
             if (equip is not null)
             {
                 _equips[r.equip_id] = equip;
@@ -75,6 +76,12 @@ public partial class User
         if (!EquipCatalog.IsValidSlot(slot))
         {
             Reject(EResultCode.InvalidEquipSlot, "칸 범위 밖");
+            return;
+        }
+
+        if (equip.HasPendingEnchant)
+        {
+            Reject(EResultCode.EnchantPending, "상급 큐브 결과를 고르기 전");
             return;
         }
 
@@ -254,7 +261,8 @@ public partial class User
 
     // 저장된 값으로 개체를 되살린다(로그인 적재·우편 수령). 테이블에 없는 TID면 null, 없는 옵션 TID·칸 수 밖의 칸은 버린다 —
     // 데이터 한 줄 때문에 로그인·수령이 막히면 안 된다.
-    private Equip? BuildEquip(long equipId, int equipTid, int slotPosition, int enchantGrade, IEnumerable<int> optionTids)
+    private Equip? BuildEquip(long equipId, int equipTid, int slotPosition, int enchantGrade, IEnumerable<int> optionTids,
+        int pendingGrade = 0, IEnumerable<int>? pendingTids = null)
     {
         if (!_equipCatalog.TryGet(equipTid, out var row))
         {
@@ -263,6 +271,19 @@ public partial class User
         }
 
         var equip = new Equip(equipId, row, slotPosition);
+
+        var (grade, options) = ReadEnchant(equipId, row, enchantGrade, optionTids);
+        equip.SetEnchant(grade, options);
+
+        var (pending, pendingOptions) = ReadEnchant(equipId, row, pendingGrade, pendingTids ?? Array.Empty<int>());
+        equip.SetPendingEnchant(pending, pendingOptions);
+        return equip;
+    }
+
+    private (GlobalRarity Grade, List<EnchantOptionTableRow> Options) ReadEnchant(
+        long equipId, EquipTableRow row, int enchantGrade, IEnumerable<int> optionTids)
+    {
+        var options = new List<EnchantOptionTableRow>();
 
         var grade = (GlobalRarity)enchantGrade;
         if (grade != GlobalRarity.None && !_enchantCatalog.HasPool(grade))
@@ -274,11 +295,10 @@ public partial class User
 
         if (grade == GlobalRarity.None)
         {
-            return equip;
+            return (grade, options);
         }
 
         var slotCount = _enchantCatalog.SlotCountOf(row.GlobalRarity);
-        var options   = new List<EnchantOptionTableRow>();
         foreach (var tid in optionTids)
         {
             if (tid == 0)
@@ -298,8 +318,7 @@ public partial class User
             options.Add(option);
         }
 
-        equip.SetEnchant(grade, options);
-        return equip;
+        return (grade, options);
     }
 
     /// <summary>우편으로 온 잠긴 장비(경매)를 받는다. 칸을 잡아 두고 잠금 해제를 저장한다 — 끝나면 <see cref="OnMailEquipUnlocked"/>.</summary>
@@ -342,7 +361,9 @@ public partial class User
             EquippedSlot        = (EEquipSlot)e.EquippedSlot,
             SlotPosition        = e.SlotPosition,
             EnchantGrade        = (int)e.EnchantGrade,
-            EnchantOptions      = e.EnchantOptionTids.ToList(),
+            EnchantOptions        = e.EnchantOptionTids.ToList(),
+            PendingEnchantGrade   = (int)e.PendingEnchantGrade,
+            PendingEnchantOptions = e.PendingEnchantOptionTids.ToList(),
         };
     }
 }

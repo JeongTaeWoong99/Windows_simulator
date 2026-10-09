@@ -2,11 +2,13 @@
   {
     "ItemTID": 100015,
     "UpRatePermille": 1000,
+    "CanKeepPrevious": false,
     "Description": "인챈트 큐브 — 기본 상승 확률"
   },
   {
     "ItemTID": 100018,
     "UpRatePermille": 1250,
+    "CanKeepPrevious": true,
     "Description": "상급 인챈트 큐브 — 상승 확률 ×1.25"
   }
 ]

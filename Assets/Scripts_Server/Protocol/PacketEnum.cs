@@ -57,6 +57,8 @@ namespace MikaProtocol
         // ── 610~: 인챈트 ──
         EnchantItemNotOwned  = 610, // 큐브 미보유. 611~613은 옛 인챈트(부여·재롤·확장)의 퇴역 번호다
         EnchantEquipped      = 614, // 착용 중 — 벗겨야 큐브를 쓸 수 있다
+        EnchantPending       = 615, // 상급 큐브 결과를 고르기 전 — 장착·큐브·판매·경매 등록 불가
+        EnchantNoPending     = 616, // 고를 보류 결과가 없다
 
         // ── 700~: 캐릭터 ── 700·701은 옛 적성 포인트(NoAptitudePoint·AptitudeAtCap)의 결번이다 — 2026-10-06 철거(이슈 #35)
         CondenseInvalidRequest = 702, // 재료가 없거나 · 겹치거나 · 대상 자신이 재료에 섞였다

@@ -92,19 +92,24 @@ public sealed class SaveCharacterEquipRepository : IRepository
 }
 
 /// <summary>
-/// 장비 개체의 인챈트를 저장한다. 줄을 전부 덮어쓰므로 UPDATE 1행으로 끝난다 —
-/// 재롤이 "줄 전부 교체"라서 부분 갱신이 없다.
+/// 장비 개체의 인챈트와 보류(상급 큐브)를 함께 저장한다. 칸을 전부 덮어쓰므로 UPDATE 1행으로 끝난다 —
+/// 큐브가 "칸 전부 교체"라서 부분 갱신이 없다.
 /// </summary>
 public sealed class SaveEquipEnchantRepository : IRepository
 {
-    public SaveEquipEnchantRepository(User user, long equipId, int grade, int option1, int option2, int option3)
+    public SaveEquipEnchantRepository(User user, long equipId, int grade, int option1, int option2, int option3,
+        int pendingGrade = 0, int pending1 = 0, int pending2 = 0, int pending3 = 0)
     {
-        User    = user;
-        EquipId = equipId;
-        Grade   = grade;
-        Option1 = option1;
-        Option2 = option2;
-        Option3 = option3;
+        User         = user;
+        EquipId      = equipId;
+        Grade        = grade;
+        Option1      = option1;
+        Option2      = option2;
+        Option3      = option3;
+        PendingGrade = pendingGrade;
+        Pending1     = pending1;
+        Pending2     = pending2;
+        Pending3     = pending3;
     }
 
     public long Key => User.DbKey;
@@ -118,13 +123,24 @@ public sealed class SaveEquipEnchantRepository : IRepository
     public int  Option2 { get; }
     public int  Option3 { get; }
 
+    // 보류. PendingGrade가 0이면 보류 없음이며 칸도 0이다.
+    public int PendingGrade { get; }
+    public int Pending1     { get; }
+    public int Pending2     { get; }
+    public int Pending3     { get; }
+
     public Task ExecuteAsync(DbConnection connection)
     {
         return connection.ExecuteAsync(
             @"UPDATE t_user_equip
-                 SET enchant_grade = @grade, enchant_1 = @o1, enchant_2 = @o2, enchant_3 = @o3
+                 SET enchant_grade = @grade, enchant_1 = @o1, enchant_2 = @o2, enchant_3 = @o3,
+                     pending_grade = @pendingGrade, pending_1 = @p1, pending_2 = @p2, pending_3 = @p3
                WHERE equip_id = @equipId",
-            new { equipId = EquipId, grade = Grade, o1 = Option1, o2 = Option2, o3 = Option3 });
+            new
+            {
+                equipId = EquipId, grade = Grade, o1 = Option1, o2 = Option2, o3 = Option3,
+                pendingGrade = PendingGrade, p1 = Pending1, p2 = Pending2, p3 = Pending3,
+            });
     }
 
     public void Apply()

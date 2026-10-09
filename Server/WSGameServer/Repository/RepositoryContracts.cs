@@ -80,6 +80,12 @@ public sealed record UserEquipRow
     public int enchant_1 { get; init; }
     public int enchant_2 { get; init; }
     public int enchant_3 { get; init; }
+
+    // 상급 큐브의 고르기 전 결과. pending_grade가 0이면 보류가 없다.
+    public int pending_grade { get; init; }
+    public int pending_1     { get; init; }
+    public int pending_2     { get; init; }
+    public int pending_3     { get; init; }
 }
 
 // t_character_equip 조회 전용 Row. slot은 GameData.EquipSlot 정수값.

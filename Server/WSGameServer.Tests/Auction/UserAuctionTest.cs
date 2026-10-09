@@ -254,6 +254,21 @@ public class UserAuctionTest
     }
 
     [Fact]
+    public void 상급_큐브_결과를_고르기_전인_장비는_올릴_수_없다()
+    {
+        var (user, b) = NewUser();
+        user.LoadEquips(
+            new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, enchant_grade = (int)GlobalRarity.Rare, enchant_1 = 1301, enchant_2 = 1307,
+                                       pending_grade = (int)GlobalRarity.Rare, pending_1 = 1307, pending_2 = 1307 } },
+            Array.Empty<CharacterEquipRow>());
+
+        user.TryRegisterAuction(EAuctionKind.Equip, 0, 0, Sword, 70, Now);
+
+        Last<S_AuctionRegisterResponse>(b).Result.ShouldBe(EResultCode.EnchantPending);
+        user.TryGetEquip(Sword, out _).ShouldBeTrue();
+    }
+
+    [Fact]
     public void 없는_장비는_올릴_수_없다()
     {
         var (user, b) = NewUser();

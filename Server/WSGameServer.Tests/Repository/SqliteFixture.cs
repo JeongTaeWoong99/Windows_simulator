@@ -103,7 +103,11 @@ internal sealed class SqliteFixture : IDisposable
                 enchant_3     INTEGER NOT NULL DEFAULT 0,
                 created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
                 container     INTEGER NOT NULL DEFAULT 0,
-                auction_trade_id INTEGER NOT NULL DEFAULT 0
+                auction_trade_id INTEGER NOT NULL DEFAULT 0,
+                pending_grade INTEGER NOT NULL DEFAULT 0,
+                pending_1     INTEGER NOT NULL DEFAULT 0,
+                pending_2     INTEGER NOT NULL DEFAULT 0,
+                pending_3     INTEGER NOT NULL DEFAULT 0
             ) STRICT;
             CREATE TABLE t_character_equip (
                 character_id INTEGER NOT NULL,

@@ -56,6 +56,11 @@ public partial class User
                 Reject(EResultCode.SellEquipWorn, $"착용 중 장비 {equipId}");
                 return;
             }
+            if (equip.HasPendingEnchant)
+            {
+                Reject(EResultCode.EnchantPending, $"고르기 전 장비 {equipId}");
+                return;
+            }
 
             gold += SellPrice(equip.Row.BasePrice);
         }
