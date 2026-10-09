@@ -55,6 +55,19 @@ public class EquipRepositoryTest : IDisposable
     }
 
     [Fact]
+    public async Task 인챈트_저장은_보류_칸까지_한_행에_쓴다()
+    {
+        var user = NewUser();
+        _db.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid) VALUES (10, 7, 1001)");
+
+        await new SaveEquipEnchantRepository(user, 10, grade: 1, 1103, 1103, 0, pendingGrade: 2, 1203, 1203, 0)
+            .ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT COUNT(*) FROM t_user_equip WHERE equip_id = 10 AND enchant_grade = 1 AND enchant_1 = 1103 " +
+              "AND pending_grade = 2 AND pending_1 = 1203 AND pending_2 = 1203 AND pending_3 = 0").ShouldBe(1);
+    }
+
+    [Fact]
     public async Task 해제는_행을_지운다()
     {
         var user = NewUser();

@@ -99,6 +99,8 @@ namespace MikaProtocol
         S_ServerTimeResponse = 69,
         C_CharacterCondenseRequest = 70,
         S_CharacterCondenseResponse = 71,
+        C_EquipEnchantChooseRequest = 72,
+        S_EquipEnchantChooseResponse = 73,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -427,17 +429,39 @@ namespace MikaProtocol
     /// <summary>
     /// 인챈트 결과. <b>Result != Ok(거절)이면 Result·EquipId만 유효하다</b> — 나머지는 기본값이니 그리지 않는다.
     /// Result == Ok면 Success는 등급이 한 단계 올랐는가(첫 부여는 false), Options는 다시 뽑힌 칸 전부다.
+    /// AwaitingChoice면(상급 큐브) 장비는 아직 그대로다 — 새 값은 보류됐고 C_EquipEnchantChooseRequest로 고른다.
     /// 바뀐 개체는 S_EquipSyncResponse가 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_EquipEnchantResponse)]
     public partial class S_EquipEnchantResponse : IPacket
     {
-        public EResultCode Result      { get; set; }
-        public long        EquipId     { get; set; }
-        public bool        Success     { get; set; }
-        public int         BeforeGrade { get; set; }
-        public int         AfterGrade  { get; set; }
-        public List<int>   Options     { get; set; } = new();
+        public EResultCode Result         { get; set; }
+        public long        EquipId        { get; set; }
+        public bool        Success        { get; set; }
+        public int         BeforeGrade    { get; set; }
+        public int         AfterGrade     { get; set; }
+        public List<int>   Options        { get; set; } = new();
+        public bool        AwaitingChoice { get; set; }
+    }
+
+    /// <summary>
+    /// 상급 큐브의 보류 결과 고르기. KeepNew면 새 값(등급 + 칸 전부)을, 아니면 이전 값을 남긴다.
+    /// 보류가 없으면 EnchantNoPending. 보류는 재접속해도 남는다 — EquipInfo.PendingEnchantGrade.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_EquipEnchantChooseRequest)]
+    public partial class C_EquipEnchantChooseRequest : IPacket
+    {
+        public long EquipId { get; set; }
+        public bool KeepNew { get; set; }
+    }
+
+    /// <summary>고르기 결과. 바뀐 개체는 S_EquipSyncResponse가 따로 온다.</summary>
+    [MemoryPackable, Packet(PacketId.S_EquipEnchantChooseResponse)]
+    public partial class S_EquipEnchantChooseResponse : IPacket
+    {
+        public EResultCode Result  { get; set; }
+        public long        EquipId { get; set; }
+        public bool        KeepNew { get; set; }
     }
 
     // ───────────────────────── 상점 (Shop) ─────────────────────────
