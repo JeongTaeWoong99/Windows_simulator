@@ -16,6 +16,7 @@ using UnityEngine.UI;
 //   Reveal Shine — 칸 안을 사선으로 훑는 빛 줄 ('RectMask2D'로 칸 밖은 잘린다)
 //   Reveal Flash — 나타나는 순간의 흰 번쩍 (맨 앞)
 // 전부 raycast를 끈다 — 칸 클릭(= 스킵)을 가로채지 않는다.
+// 번짐·테두리·빛 줄은 이펙트 그림('FxSprites')을 쓴다 — 그림이 없으면 그 효과만 빠진다. 번쩍·덮개는 그림 없는 단색 네모다.
 //
 // ■ 크기·기울기만 움직인다 — 자리는 건드리지 않는다
 // 칸의 자리는 격자('FlexibleGridLayoutGroup')가 정한다. 위치를 흔들면 다음 레이아웃 갱신 때 튄다.
@@ -46,11 +47,14 @@ public class RewardRevealFx : MonoBehaviour
     private CanvasGroup          _group    = null!;
 
     private Image         _glow   = null!;
-    private GameObject    _frame  = null!;
+    private GameObject?   _frame;          // 테두리 띠 그림이 없으면 만들지 않는다
     private Image         _conic  = null!;
     private Image         _cover  = null!;
     private RectTransform _shine  = null!;
     private Image         _flash  = null!;
+
+    private bool _hasGlow;  // 번짐 그림이 있는가 — 없으면 번짐 Image를 켜지 않는다(빈 Image는 흰 네모)
+    private bool _hasShine; // 빛 줄 그림이 있는가
 
     private Sequence? _motion;   // 지금 도는 튀어나오기·차오르기
     private Tween?    _glowLoop; // 전설↑ 번짐 숨쉬기
@@ -67,16 +71,28 @@ public class RewardRevealFx : MonoBehaviour
             _group = gameObject.AddComponent<CanvasGroup>();
         }
 
-        _glow = CreateImage("Reveal Glow", _rect, RevealSprites.SoftGlow, settings.GlowSpread);
+        Sprite? glow  = FxSprites.RevealGlow;
+        Sprite? frame = FxSprites.RevealFrame;
+        Sprite? conic = FxSprites.RevealConic;
+        Sprite? shine = FxSprites.RevealShine;
+
+        _hasGlow  = glow != null;
+        _hasShine = shine != null;
+
+        _glow = CreateImage("Reveal Glow", _rect, glow, settings.GlowSpread);
         _glow.transform.SetAsFirstSibling(); // 등급 바탕보다 뒤 — 칸 밖으로 번진 부분만 보인다
 
-        Image frame = CreateImage("Reveal Frame", _rect, RevealSprites.Frame, settings.FrameOutset);
+        // 테두리 띠는 마스크 모양이다 — 그림 없이 만들면 칸 전체가 마스크가 돼 원뿔이 칸을 덮는다. 띠·원뿔 둘 다 있어야 만든다
+        if (frame != null && conic != null)
+        {
+            Image band = CreateImage("Reveal Frame", _rect, frame, settings.FrameOutset);
 
-        frame.type = Image.Type.Sliced;
-        frame.gameObject.AddComponent<Mask>().showMaskGraphic = false;
+            band.type = Image.Type.Sliced;
+            band.gameObject.AddComponent<Mask>().showMaskGraphic = false;
 
-        _frame = frame.gameObject;
-        _conic = CreateImage("Conic", frame.rectTransform, RevealSprites.Conic, ConicOverhang);
+            _frame = band.gameObject;
+            _conic = CreateImage("Conic", band.rectTransform, conic, ConicOverhang);
+        }
 
         _cover = CreateImage("Reveal Cover", _rect, null, 0f);
 
@@ -84,9 +100,9 @@ public class RewardRevealFx : MonoBehaviour
 
         Stretch((RectTransform)shineClip.transform, _rect, 0f);
 
-        Image band = CreateImage("Band", (RectTransform)shineClip.transform, RevealSprites.ShineBand, 0f);
+        Image shineBand = CreateImage("Band", (RectTransform)shineClip.transform, shine, 0f);
 
-        _shine           = band.rectTransform;
+        _shine           = shineBand.rectTransform;
         _shine.anchorMin = _shine.anchorMax = new Vector2(0.5f, 0.5f);
         _shine.localRotation = Quaternion.Euler(0f, 0f, -ShineAngle);
 
@@ -150,7 +166,7 @@ public class RewardRevealFx : MonoBehaviour
         _flash.enabled      = true;
         _flash.color        = new Color(1f, 1f, 1f, _settings.FlashAlpha);
 
-        _shine.gameObject.SetActive(true);
+        _shine.gameObject.SetActive(_hasShine);
         _shine.sizeDelta        = new Vector2(ShineWidth, _rect.rect.height * ShineHeightRatio);
         _shine.anchoredPosition = new Vector2(-width, 0f);
 
@@ -184,7 +200,7 @@ public class RewardRevealFx : MonoBehaviour
         _group.alpha   = 1f;
         _cover.enabled = true;
         _cover.color   = new Color(color.r * CoverStartBrightness, color.g * CoverStartBrightness, color.b * CoverStartBrightness, 1f);
-        _glow.enabled  = true;
+        _glow.enabled  = _hasGlow;
         _glow.color    = new Color(color.r, color.g, color.b, 0f);
 
         Sequence seq = DOTween.Sequence().SetLink(gameObject, LinkBehaviour.KillOnDisable);
@@ -208,29 +224,28 @@ public class RewardRevealFx : MonoBehaviour
 
         Color color = RarityPalette.Get(rarity);
 
-        _glow.enabled = isBig;
+        _glow.enabled = isBig && _hasGlow;
         _glow.color   = new Color(color.r, color.g, color.b, _settings.GlowAlpha);
 
-        _frame.SetActive(isBig);
+        if (isTop && _hasGlow)
+        {
+            _glowLoop = _glow.DOFade(_settings.GlowPulseMin, _settings.GlowPulseDuration)
+                             .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo)
+                             .SetLink(gameObject, LinkBehaviour.KillOnDisable);
+        }
 
-        if (!isBig)
+        if (!isBig || _frame == null)
         {
             return;
         }
 
+        _frame.SetActive(true);
         _conic.color = Color.Lerp(color, Color.white, FrameWhiten);
         _conic.rectTransform.localRotation = Quaternion.identity;
 
         _turnLoop = _conic.rectTransform.DORotate(new Vector3(0f, 0f, -360f), _settings.FrameTurnDuration, RotateMode.FastBeyond360)
                           .SetEase(Ease.Linear).SetLoops(-1, LoopType.Restart)
                           .SetLink(gameObject, LinkBehaviour.KillOnDisable);
-
-        if (isTop)
-        {
-            _glowLoop = _glow.DOFade(_settings.GlowPulseMin, _settings.GlowPulseDuration)
-                             .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo)
-                             .SetLink(gameObject, LinkBehaviour.KillOnDisable);
-        }
     }
 
     // 도는 트윈을 모두 끊고 연출 층을 걷는다 — 칸은 제 크기·제 기울기로 (Hide · ShowAtRest에서 호출)
@@ -249,7 +264,7 @@ public class RewardRevealFx : MonoBehaviour
         _cover.enabled      = false;
         _flash.enabled      = false;
 
-        _frame.SetActive(false);
+        _frame?.SetActive(false);
         _shine.gameObject.SetActive(false);
     }
 
@@ -274,11 +289,8 @@ public class RewardRevealFx : MonoBehaviour
 
         image.raycastTarget = false;
 
-        // 그림이 없으면 Image가 흰 네모로 그린다 — 번쩍·덮개는 그것으로 충분하다
-        if (sprite != null)
-        {
-            image.sprite = sprite;
-        }
+        // 그림이 없으면 Image가 흰 네모로 그린다 — 번쩍·덮개는 일부러 그렇게 쓴다(그림 없는 효과는 부르는 쪽이 켜지 않는다)
+        image.sprite = sprite;
 
         return image;
     }

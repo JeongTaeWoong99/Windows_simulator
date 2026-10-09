@@ -294,7 +294,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d340a5d008ec02542bf026f403c96d7f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ItemGainEffectView
-  iconSize: 36
+  iconSize: 27
   iconSpacing: 6
   maxIcons: 5
   startOffset: {x: 0, y: 0}

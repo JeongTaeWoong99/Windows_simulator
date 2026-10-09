@@ -116,8 +116,8 @@ public class WidgetMiniSlotView : MonoBehaviour
     //
     // 게이지를 처음으로 되돌린다 — 다음 슬롯 동기화가 오기 전까지 이전 사이클의 진행도를 그리고 있지 않도록.
     // 얻은 아이템은 머리 자리에서 떠오른다.
-    //   icons : 얻은 아이템 아이콘('ItemGainEffectView.ReadGainIcons')
-    public void MarkHarvested(IReadOnlyList<Sprite?> icons)
+    //   gains : 얻은 아이템 그림·등급('ItemGainEffectView.ReadGains')
+    public void MarkHarvested(IReadOnlyList<ItemGainEffectView.Gain> gains)
     {
         progressSlider.value = 0f;
 
@@ -128,7 +128,7 @@ public class WidgetMiniSlotView : MonoBehaviour
 
         if (gainEffect != null)
         {
-            gainEffect.Play(characterImage.rectTransform.TransformPoint(characterImage.rectTransform.rect.center), icons);
+            gainEffect.Play(characterImage.rectTransform.TransformPoint(characterImage.rectTransform.rect.center), gains);
         }
     }
 }

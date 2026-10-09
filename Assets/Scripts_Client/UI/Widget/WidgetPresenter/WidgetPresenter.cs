@@ -74,8 +74,8 @@ public class WidgetPresenter : MonoBehaviour
     private readonly WidgetEarningTracker _earnings = new WidgetEarningTracker();
     private long                 _shownSecond = -1; // 마지막으로 그린 측정 시간(초) — 초가 바뀔 때만 다시 쓴다
 
-    // 획득 연출에 넘길 아이콘 — 수확마다 새로 만들지 않고 비워 다시 쓴다
-    private readonly List<Sprite?> _gainIcons = new List<Sprite?>();
+    // 획득 연출에 넘길 아이템 — 수확마다 새로 만들지 않고 비워 다시 쓴다
+    private readonly List<ItemGainEffectView.Gain> _gains = new List<ItemGainEffectView.Gain>();
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
@@ -304,8 +304,8 @@ public class WidgetPresenter : MonoBehaviour
     {
         if (_views.TryGetValue(res.SlotIndex, out var view) && view.isActiveAndEnabled)
         {
-            ItemGainEffectView.ReadGainIcons(res.ItemChanges, _gainIcons);
-            view.MarkHarvested(_gainIcons);
+            ItemGainEffectView.ReadGains(res.ItemChanges, _gains);
+            view.MarkHarvested(_gains);
         }
     }
 

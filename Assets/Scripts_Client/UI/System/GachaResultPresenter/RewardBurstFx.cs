@@ -14,6 +14,8 @@ using UnityEngine.UI;
 // Screen Space Overlay 캔버스에서는 'ParticleSystem'이 UI 위에 그려지지 않는다(UI 파티클 패키지가 없다).
 // 별 조각 Image를 트윈으로 흩뿌려 파티클처럼 보이게 한다.
 //
+// ■ 그림은 'FxSprites' — 없는 부위(광선·번짐·별)는 켜지 않는다(빈 Image는 흰 네모로 그려진다)
+//
 // ■ 폭발이 겹칠 수 있다 — 한 벌씩 돌려쓴다
 // 고등급 연출이 뒤 칸 공개를 막지 않으므로(2026-10-09) 영웅·전설이 연달아 나오면 폭발이 동시에 돈다.
 // 폭발 한 벌(광선 · 번짐 · 별 조각)을 끝난 것부터 다시 쓰고, 모자라면 한 벌 더 만든다 — 10연차라도 몇 벌이면 된다.
@@ -133,8 +135,8 @@ public class RewardBurstFx : MonoBehaviour
 
         var created = new BurstSet
         {
-            Halo = CreateImage("Halo", RevealSprites.SoftGlow),
-            Rays = CreateImage("Rays", RevealSprites.Rays),
+            Halo = CreateImage("Halo", FxSprites.RevealGlow),
+            Rays = CreateImage("Rays", FxSprites.RevealRays),
         };
 
         _sets.Add(created);
@@ -160,7 +162,7 @@ public class RewardBurstFx : MonoBehaviour
     {
         RectTransform rect = image.rectTransform;
 
-        image.enabled         = true;
+        image.enabled         = image.sprite != null;
         image.color           = color;
         rect.sizeDelta        = new Vector2(size, size);
         rect.anchoredPosition = center;
@@ -181,7 +183,7 @@ public class RewardBurstFx : MonoBehaviour
 
         Vector2 target = center + new Vector2(Mathf.Cos(angle), Mathf.Sin(angle)) * distance;
 
-        spark.enabled         = true;
+        spark.enabled         = spark.sprite != null;
         spark.color           = color;
         rect.sizeDelta        = new Vector2(_settings.SparkSize, _settings.SparkSize);
         rect.anchoredPosition = center;
@@ -199,14 +201,14 @@ public class RewardBurstFx : MonoBehaviour
     {
         while (set.Sparks.Count <= index)
         {
-            set.Sparks.Add(CreateImage("Spark", RevealSprites.Sparkle));
+            set.Sparks.Add(CreateImage("Spark", FxSprites.RevealSparkle));
         }
 
         return set.Sparks[index];
     }
 
     // 층 가운데 기준의 연출용 Image를 만든다 — raycast는 끈다
-    private Image CreateImage(string name, Sprite sprite)
+    private Image CreateImage(string name, Sprite? sprite)
     {
         var go    = new GameObject(name, typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
         var image = go.GetComponent<Image>();

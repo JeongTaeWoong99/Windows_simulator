@@ -12,8 +12,8 @@ using UnityEngine;
 //   캐릭터 = 레시피의 'characterTids'(CharacterTable TID, 0이면 대체 그림) · 아이콘 = 파일 이름의 TID.
 //   이펙트 = 'fx/<연출 키>/<키>_<부위>.png' — 파일 이름이 곧 찾는 이름('FxOf("reveal_glow")'). 메뉴 '아트/목록만 다시 쓰기'로도 채운다.
 //
-// ■ 이펙트는 없으면 null — 쓰는 쪽이 대신 그린다
-//   공개 연출('RevealSprites')은 같은 모양을 코드로 그려 버틴다. 그림 저장소가 없어도 연출은 돈다.
+// ■ 이펙트는 없으면 null — 그 효과만 빠진다
+//   쓰는 쪽('FxSprites' 이름표를 거쳐)은 null이면 그 Image를 켜지 않는다. 그림 저장소가 없어도 연출의 움직임은 돈다.
 //
 // ■ 빠진 그림은 대체로 버틴다
 //   그림이 아직 없는 캐릭터는 'fallbackCharacter'(TID 0으로 등록한 그림)로, 산업 배경이 없으면 'defaultBackground'로 그린다.

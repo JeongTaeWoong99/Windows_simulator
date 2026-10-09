@@ -53,8 +53,8 @@ public class WorkStationListPresenter : MonoBehaviour
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
     private readonly List<Sprite?>      _wornIcons  = new List<Sprite?>();
 
-    // 획득 연출에 넘길 아이콘 — 수확마다 새로 만들지 않고 비워 다시 쓴다
-    private readonly List<Sprite?> _gainIcons = new List<Sprite?>();
+    // 획득 연출에 넘길 아이템 — 수확마다 새로 만들지 않고 비워 다시 쓴다
+    private readonly List<ItemGainEffectView.Gain> _gains = new List<ItemGainEffectView.Gain>();
 
     private PlayerDataModel   _data = null!;
     private UIManager         _ui   = null!;
@@ -383,8 +383,8 @@ public class WorkStationListPresenter : MonoBehaviour
             return;
         }
 
-        ItemGainEffectView.ReadGainIcons(res.ItemChanges, _gainIcons);
-        view.PlayGain(_gainIcons);
+        ItemGainEffectView.ReadGains(res.ItemChanges, _gains);
+        view.PlayGain(_gains);
     }
 
     // 장비 줄 툴팁 — 캐릭터 이름 아래 칸마다 낀 장비 (장비 줄에 마우스를 올릴 때 호출).

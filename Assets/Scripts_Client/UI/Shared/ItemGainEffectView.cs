@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
+using GameData;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 아이템 획득 연출 — 얻은 아이템 아이콘이 한 자리에서 나타나 위로 떠오르며 사라진다.
+// 아이템 획득 연출 — 얻은 아이템 아이콘이 한 자리에서 나타나 위로 떠오르며 사라진다. 아이콘 뒤에는 등급 빛을 깐다.
 // 연출을 띄울 칸의 루트에 붙인다. 아이콘 층·풀은 처음 재생할 때 코드가 만든다(프리팹이 따로 없다).
 //
 // ■ 누가 쓰나 — 같은 로직, 인스펙터 값만 다르다
@@ -20,15 +21,33 @@ using UnityEngine.UI;
 // ■ 여러 개면 가운데를 중심으로 좌우 대칭
 //   간격 = 아이콘 크기 + 'iconSpacing' — 크기를 바꿔도 겹치지 않는다. 모두 한 Sequence라 같은 속도·거리로 함께 오른다.
 //
+// ■ 아이콘 뒤 등급 빛 (2026-10-09 목업 F·G)
+//   아이콘 하나 = 묶음 하나('ItemGainFx') — 아이콘과 그 뒤·앞의 빛이 함께 떠오르고 따라간다.
+//   일반·고급 = 번짐 · 희귀·영웅 = + 광선 · 전설·신화 = + 섬광 · 빛 기둥/겹광선 · 아이콘 튐.
+//   조정값은 'glow' — 크기가 아이콘 대비 배율이라 큰 창·위젯이 같은 값으로 같은 모양이 된다.
+//
 // ■ 자리를 따라간다 (선택)
 //   'follow'를 넘기면 매 프레임 그 월드 좌표로 가로 자리를 옮긴다 — 큰 창 칸은 땅이 흐르면 쓰러진 대상이 땅과 함께
 //   흘러가므로 아이콘도 그 자리를 따라간다(화면에 박혀 캐릭터를 따라오는 것처럼 보이지 않게). 세로는 떠오름 트윈 몫이다.
 //
 // ■ 수명
 //   재생은 켜져 있는 동안만이다. 꺼지거나 파괴되면 토큰이 끊기고 Sequence가 Kill돼('KillAndCancelAwait') 남는 트윈·대기가 없다.
-//   아이콘은 'PrefabPool'로 돌려쓴다 — 수확은 칸마다 몇 초에 한 번씩 계속 난다.
+//   묶음은 'PrefabPool'로 돌려쓴다 — 수확은 칸마다 몇 초에 한 번씩 계속 난다.
 public class ItemGainEffectView : MonoBehaviour
 {
+    // 띄울 아이템 하나 — 그림과 등급(빛 색·단계)
+    public readonly struct Gain
+    {
+        public readonly Sprite?      Icon;
+        public readonly GlobalRarity Rarity;
+
+        public Gain(Sprite? icon, GlobalRarity rarity)
+        {
+            Icon   = icon;
+            Rarity = rarity;
+        }
+    }
+
     [CenterHeader("모양")]
     [SerializeField, Min(1f), Tooltip("아이콘 한 변 (px)")]
     private float iconSize = 24f;
@@ -67,16 +86,23 @@ public class ItemGainEffectView : MonoBehaviour
     [SerializeField, Tooltip("나타나는 곡선")]
     private Ease appearEase = Ease.OutBack;
 
+    [SerializeField, Min(0f), Tooltip("전설·신화가 튄 크기에서 제 크기로 돌아오는 시간 (초)")]
+    private float popSettleDuration = 0.12f;
+
+    [CenterHeader("등급 빛")]
+    [SerializeField, Tooltip("아이콘 뒤에 까는 등급 빛 — 크기는 아이콘 대비 배율이라 큰 창·위젯이 같은 값을 쓴다")]
+    private ItemGainGlowSettings glow = new ItemGainGlowSettings();
+
     [CenterHeader("풀")]
-    [SerializeField, Min(1), Tooltip("풀 안에 쌓아 둘 최대 아이콘 수 — 동시에 뜨는 최대치의 2배쯤")]
+    [SerializeField, Min(1), Tooltip("풀 안에 쌓아 둘 최대 묶음(아이콘) 수 — 동시에 뜨는 최대치의 2배쯤")]
     private int maxPooled = 16;
 
-    private RectTransform?     _layer;
-    private PrefabPool<Image>? _pool;
+    private RectTransform?           _layer;
+    private PrefabPool<ItemGainFx>?  _pool;
     private CancellationTokenSource? _playCts;
 
-    // 꺼지는 중에 끝난 재생의 아이콘 — 부모가 꺼지거나 켜지는 동안에는 계층을 바꿀 수 없어 다음 재생 때 반납한다
-    private readonly List<Image> _pendingReturns = new List<Image>();
+    // 꺼지는 중에 끝난 재생의 묶음 — 부모가 꺼지거나 켜지는 동안에는 계층을 바꿀 수 없어 다음 재생 때 반납한다
+    private readonly List<ItemGainFx> _pendingReturns = new List<ItemGainFx>();
 
     // 꺼짐 — 도는 연출을 모두 끊는다 (Unity 메시지)
     private void OnDisable()
@@ -91,11 +117,11 @@ public class ItemGainEffectView : MonoBehaviour
         _pool?.Dispose();
     }
 
-    // 채취 결과의 아이템 아이콘을 담는다 — 같은 아이템은 한 번만, 받은 순서대로 (큰 창·위젯 두 Presenter가 함께 쓴다).
+    // 채취 결과의 아이템 그림·등급을 담는다 — 같은 아이템은 한 번만, 받은 순서대로 (큰 창·위젯 두 Presenter가 함께 쓴다).
     //
     // ※ 'ItemChanges'의 수량은 델타가 아니라 갱신 후 총량이라 얼마나 얻었는지는 모른다 — 무엇을 얻었는지만 띄운다.
     //   한 아이템이 여러 칸(묶음)에 걸쳐 오면 줄이 여럿이라 ItemId로 거른다.
-    public static void ReadGainIcons(IReadOnlyList<MikaProtocol.ItemChangeInfo>? changes, List<Sprite?> into)
+    public static void ReadGains(IReadOnlyList<MikaProtocol.ItemChangeInfo>? changes, List<Gain> into)
     {
         into.Clear();
 
@@ -110,16 +136,16 @@ public class ItemGainEffectView : MonoBehaviour
         {
             if (change.Kind != MikaProtocol.EItemChangeKind.Remove && seen.Add(change.ItemId))
             {
-                into.Add(VisualCatalog.ItemIconOf(change.ItemId));
+                into.Add(new Gain(VisualCatalog.ItemIconOf(change.ItemId), GameDataLoader.GetItemRarity(change.ItemId)));
             }
         }
     }
 
     // 'worldCenter'에서 아이콘들을 띄운다. 꺼져 있거나 아이콘이 없으면 아무것도 하지 않는다.
     //   worldCenter : 아이콘 줄의 가운데 — 부르는 쪽이 대상·머리의 월드 좌표를 넘긴다
-    //   icons       : 띄울 그림. null인 것(그림 없음)은 건너뛴다
+    //   gains       : 띄울 아이템. 그림이 null인 것(그림 없음)은 건너뛴다
     //   follow      : (선택) 재생 동안 따라갈 월드 좌표 — 가로만 따른다. null이면 처음 자리에 머문다
-    public void Play(Vector3 worldCenter, IReadOnlyList<Sprite?> icons, System.Func<Vector3>? follow = null)
+    public void Play(Vector3 worldCenter, IReadOnlyList<Gain> gains, System.Func<Vector3>? follow = null)
     {
         if (!isActiveAndEnabled)
         {
@@ -130,74 +156,42 @@ public class ItemGainEffectView : MonoBehaviour
 
         _playCts ??= CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 
-        PlayAsync(worldCenter, icons, follow, _playCts.Token).Forget();
+        PlayAsync(worldCenter, gains, follow, _playCts.Token).Forget();
     }
 
-    private async UniTask PlayAsync(Vector3 worldCenter, IReadOnlyList<Sprite?> icons, System.Func<Vector3>? follow, CancellationToken ct)
+    private async UniTask PlayAsync(Vector3 worldCenter, IReadOnlyList<Gain> gains, System.Func<Vector3>? follow, CancellationToken ct)
     {
-        var sprites = new List<Sprite>(maxIcons);
+        var shown = new List<Gain>(maxIcons);
 
-        foreach (Sprite? sprite in icons)
+        foreach (Gain gain in gains)
         {
-            if (sprite != null && sprites.Count < maxIcons)
+            if (gain.Icon != null && shown.Count < maxIcons)
             {
-                sprites.Add(sprite);
+                shown.Add(gain);
             }
         }
 
-        if (sprites.Count == 0)
+        if (shown.Count == 0)
         {
             return;
         }
 
         EnsureBuilt();
 
-        RectTransform     layer  = _layer!;
-        PrefabPool<Image> pool   = _pool!;
-        var               rented = new List<Image>(sprites.Count);
-        var               spread = new float[sprites.Count]; // 줄 가운데로부터 가로 거리
+        RectTransform layer  = _layer!;
+        var           rented = new List<ItemGainFx>(shown.Count);
+        var           spread = new float[shown.Count]; // 줄 가운데로부터 가로 거리
 
         // 층을 맨 앞으로 — 칸이 나중에 만든 자식(무대 배우 등)보다 위에 그린다
         layer.SetAsLastSibling();
 
         Vector2  center = (Vector2)layer.InverseTransformPoint(worldCenter) + startOffset;
-        float    step   = iconSize + iconSpacing;
         Sequence seq    = DOTween.Sequence().SetLink(gameObject);
         bool     handed = false; // Sequence의 수명을 UniTask에 넘겼는가
 
         try
         {
-            for (int i = 0; i < sprites.Count; i++)
-            {
-                Image         icon = pool.Get(layer);
-                RectTransform rect = icon.rectTransform;
-
-                rented.Add(icon);
-
-                // 가운데를 중심으로 좌우 대칭 — i번째의 가운데로부터 거리는 (i - (n-1)/2) 칸
-                spread[i] = (i - (sprites.Count - 1) * 0.5f) * step;
-
-                Vector2 start = center + new Vector2(spread[i], 0f);
-
-                icon.enabled          = true;
-                icon.sprite           = sprites[i];
-                icon.color            = Color.white;
-                rect.sizeDelta        = new Vector2(iconSize, iconSize);
-                rect.anchoredPosition = start;
-                rect.localScale       = Vector3.one * (appearDuration > 0f ? appearScale : 1f);
-
-                seq.Insert(0f, rect.DOAnchorPosY(start.y + riseDistance, duration).SetEase(riseEase));
-
-                if (appearDuration > 0f)
-                {
-                    seq.Insert(0f, rect.DOScale(1f, Mathf.Min(appearDuration, duration)).SetEase(appearEase));
-                }
-
-                // 중첩 트윈의 SetDelay는 Sequence가 무시한다 — 시작 시각은 Insert로 준다
-                float fadeStart = Mathf.Min(fadeDelay, duration);
-
-                seq.Insert(fadeStart, icon.DOFade(0f, duration - fadeStart).SetEase(fadeEase));
-            }
+            BuildSequence(seq, shown, center, rented, spread);
 
             // 가로는 따라갈 자리로 — 떠오름 트윈은 Y만 바꾸므로(DOAnchorPosY) 여기서 X를 덮어도 부딪치지 않는다
             if (follow != null)
@@ -208,7 +202,7 @@ public class ItemGainEffectView : MonoBehaviour
 
                     for (int i = 0; i < rented.Count; i++)
                     {
-                        RectTransform rect = rented[i].rectTransform;
+                        var rect = (RectTransform)rented[i].transform;
 
                         rect.anchoredPosition = new Vector2(x + spread[i], rect.anchoredPosition.y);
                     }
@@ -233,31 +227,79 @@ public class ItemGainEffectView : MonoBehaviour
         }
     }
 
-    // 쓴 아이콘을 풀로 — 꺼져 있으면 미뤘다가 다음 재생 때 (PlayAsync의 finally에서 호출)
+    // 묶음마다 떠오름 · 아이콘 나타남(튐) · 페이드 · 등급 빛을 'seq'에 넣는다 (PlayAsync에서 호출).
+    // ※ async 밖에 둔다 — async 안에서 'seq.Insert'의 반환을 버리면 CS4014가 난다(UniTask가 트윈을 awaitable로 만든다).
+    //   rented : 꺼낸 묶음을 담는다(끝나면 반납) · spread : 묶음별 줄 가운데로부터 가로 거리를 채운다
+    private void BuildSequence(Sequence seq, List<Gain> shown, Vector2 center, List<ItemGainFx> rented, float[] spread)
+    {
+        float step = iconSize + iconSpacing;
+
+        for (int i = 0; i < shown.Count; i++)
+        {
+            ItemGainFx fx   = _pool!.Get(_layer!);
+            var        rect = (RectTransform)fx.transform;
+
+            rented.Add(fx);
+
+            // 가운데를 중심으로 좌우 대칭 — i번째의 가운데로부터 거리는 (i - (n-1)/2) 칸
+            spread[i] = (i - (shown.Count - 1) * 0.5f) * step;
+
+            Vector2 start = center + new Vector2(spread[i], 0f);
+
+            rect.anchoredPosition = start;
+            seq.Insert(0f, rect.DOAnchorPosY(start.y + riseDistance, duration).SetEase(riseEase));
+
+            float         pop      = fx.Build(seq, shown[i].Icon!, shown[i].Rarity, iconSize, duration, glow);
+            Image         icon     = fx.Icon;
+            RectTransform iconRect = icon.rectTransform;
+
+            iconRect.localScale = Vector3.one * (appearDuration > 0f ? appearScale : 1f);
+
+            if (appearDuration > 0f)
+            {
+                float appear = Mathf.Min(appearDuration, duration);
+
+                seq.Insert(0f, iconRect.DOScale(pop, appear).SetEase(appearEase));
+
+                // 전설·신화 — 튄 크기에서 제 크기로
+                if (pop > 1f)
+                {
+                    seq.Insert(appear, iconRect.DOScale(1f, popSettleDuration).SetEase(Ease.OutQuad));
+                }
+            }
+
+            // 중첩 트윈의 SetDelay는 Sequence가 무시한다 — 시작 시각은 Insert로 준다
+            float fadeStart = Mathf.Min(fadeDelay, duration);
+
+            seq.Insert(fadeStart, icon.DOFade(0f, duration - fadeStart).SetEase(fadeEase));
+        }
+    }
+
+    // 쓴 묶음을 풀로 — 꺼져 있으면 미뤘다가 다음 재생 때 (PlayAsync의 finally에서 호출)
     //
-    // ⚠️ 끊기는 대부분 'OnDisable' 안에서 난다 — 그 순간에는 부모가 꺼지는 중이라 아이콘의 부모를 옮기면(풀 반납) 예외가 난다.
+    // ⚠️ 끊기는 대부분 'OnDisable' 안에서 난다 — 그 순간에는 부모가 꺼지는 중이라 묶음의 부모를 옮기면(풀 반납) 예외가 난다.
     //   OnEnable에서 반납해도 같다(켜지는 중). 그래서 그림만 끄고(컴포넌트 끄기는 계층 변경이 아니다) 다음 재생 때 돌려보낸다.
-    private void Return(List<Image> rented)
+    private void Return(List<ItemGainFx> rented)
     {
         if (!gameObject.activeInHierarchy)
         {
-            foreach (Image icon in rented)
+            foreach (ItemGainFx fx in rented)
             {
-                if (icon != null)
+                if (fx != null)
                 {
-                    icon.enabled = false;
-                    _pendingReturns.Add(icon);
+                    fx.HideAll();
+                    _pendingReturns.Add(fx);
                 }
             }
 
             return;
         }
 
-        foreach (Image icon in rented)
+        foreach (ItemGainFx fx in rented)
         {
-            if (icon != null)
+            if (fx != null)
             {
-                _pool?.Release(icon);
+                _pool?.Release(fx);
             }
         }
     }
@@ -269,13 +311,13 @@ public class ItemGainEffectView : MonoBehaviour
             return;
         }
 
-        var pending = new List<Image>(_pendingReturns);
+        var pending = new List<ItemGainFx>(_pendingReturns);
 
         _pendingReturns.Clear();
         Return(pending);
     }
 
-    // 도는 재생을 모두 끊는다 — 각 재생의 Sequence가 Kill되고 아이콘이 반납된다 (OnDisable · OnDestroy에서 호출)
+    // 도는 재생을 모두 끊는다 — 각 재생의 Sequence가 Kill되고 묶음이 반납된다 (OnDisable · OnDestroy에서 호출)
     private void CancelAll()
     {
         if (_playCts == null)
@@ -288,7 +330,7 @@ public class ItemGainEffectView : MonoBehaviour
         _playCts = null;
     }
 
-    // 아이콘 층 · 쉬는 자리 · 아이콘 원본 · 풀을 한 번만 만든다 (처음 재생할 때)
+    // 아이콘 층 · 쉬는 자리 · 묶음 원본 · 풀을 한 번만 만든다 (처음 재생할 때)
     private void EnsureBuilt()
     {
         if (_layer != null)
@@ -303,20 +345,13 @@ public class ItemGainEffectView : MonoBehaviour
         _layer.sizeDelta = Vector2.zero;
         _layer.gameObject.AddComponent<LayoutElement>().ignoreLayout = true;
 
-        // 쉬는 아이콘은 꺼 둔 자식 아래에 — 원본도 여기 있어 화면에 나오지 않는다
+        // 쉬는 묶음은 꺼 둔 자식 아래에 — 원본도 여기 있어 화면에 나오지 않는다
         RectTransform idle = CreateChild("Pool", _layer);
         idle.gameObject.SetActive(false);
 
-        RectTransform template = CreateChild("Icon", idle);
-        template.anchorMin = new Vector2(0.5f, 0.5f);
-        template.anchorMax = new Vector2(0.5f, 0.5f);
-        template.pivot     = new Vector2(0.5f, 0.5f);
+        ItemGainFx template = ItemGainFx.CreateTemplate(idle, glow);
 
-        Image image = template.gameObject.AddComponent<Image>();
-        image.raycastTarget  = false;
-        image.preserveAspect = true;
-
-        _pool = new PrefabPool<Image>(image, idle, defaultCapacity: maxIcons, maxSize: maxPooled);
+        _pool = new PrefabPool<ItemGainFx>(template, idle, defaultCapacity: maxIcons, maxSize: maxPooled);
     }
 
     private static RectTransform CreateChild(string name, Transform parent)
