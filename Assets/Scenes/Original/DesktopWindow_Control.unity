@@ -123624,6 +123624,40 @@ MonoBehaviour:
   drawAgainButton: {fileID: 347363489}
   drawAgainText: {fileID: 184182829}
   gacha: {fileID: 1403388539}
+  panel: {fileID: 652445082}
+  reveal:
+    StartDelay: 0.1
+    Gap: 0.09
+    PopScale: 1.5
+    PopDuration: 0.25
+    PopEase: 27
+    FlashAlpha: 0.8
+    FlashDuration: 0.2
+    ShineDelay: 0.06
+    ShineDuration: 0.35
+    BigPause: 0.15
+    EpicChargeDuration: 0.45
+    TopChargeDuration: 0.7
+    ChargeScale: 1.1
+    ChargeShakeAngle: 6
+    BigPopScale: 2
+    BigPopDuration: 0.38
+    BigGap: 0.25
+    PanelShakeDuration: 0.3
+    PanelShakeStrength: 8
+    BurstDuration: 0.7
+    RaysSize: 180
+    RaysScale: 1.4
+    SparkCount: 10
+    TopSparkCount: 16
+    SparkSize: 22
+    SparkDistance: {x: 55, y: 115}
+    GlowSpread: 16
+    GlowAlpha: 0.9
+    GlowPulseMin: 0.4
+    GlowPulseDuration: 0.8
+    FrameOutset: 2
+    FrameTurnDuration: 1.6
 --- !u!225 &1940461230
 CanvasGroup:
   m_ObjectHideFlags: 0

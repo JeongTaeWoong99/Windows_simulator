@@ -1,6 +1,6 @@
 # System 폴더 규칙
 
-> 최종 업데이트: 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
+> 최종 업데이트: 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/System/`
 
 **최상단 상주 오버레이 캔버스** — 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고
 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -11,6 +11,7 @@
 | `SystemCanvasView.cs` | 캔버스 껍데기 |
 | `LoadingPresenter/LoadingPresenter.cs` | `ServerWaitManager.BusyChanged`를 구독해 대기 표시·클릭 차단 |
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`·`ItemUseCompleted`를 구독해 얻은 보상을 5열로 표시 (가챠·상자 개봉 공용) |
+| `GachaResultPresenter/RewardRevealFx.cs` · `RewardBurstFx.cs` · `RewardRevealSettings.cs` · `RevealSprites.cs` | 결과 칸을 **하나씩 공개**하는 연출 — 칸 하나의 팝·차오름·강조(칸에 코드로 붙인다) · 고등급 빛 폭발(창 위 층) · 조정값(Presenter 인스펙터 `reveal`) · 연출용 흰 도형(그림 저장소 `Art/fx/reveal/` → 없으면 같은 모양을 코드로). 고등급 연출은 뒤 칸을 막지 않는다 · 공개 중 [n회 더 뽑기]·닫기 잠금 · 창·칸 클릭 = 스킵 |
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
