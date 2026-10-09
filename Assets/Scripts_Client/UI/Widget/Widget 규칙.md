@@ -1,13 +1,13 @@
 # Widget 폴더 규칙
 
-> 최종 업데이트: 2026-10-08 (머리 연출 — 통통 바운스 + 수확 펄쩍 `WidgetHeadMotion`) · 2026-10-08 (수확 때 아이템 획득 연출) · 2026-10-08 (해제된 칸은 파괴하지 않고 끈다) · 대상: `Assets/Scripts_Client/UI/Widget/`
+> 최종 업데이트: 2026-10-09 (상단 줄 아이콘화 · 수익 집계 · 초기화 버튼 `WidgetEarningTracker`) · 2026-10-08 (머리 연출 — 통통 바운스 + 수확 펄쩍 `WidgetHeadMotion`) · 2026-10-08 (수확 때 아이템 획득 연출) · 2026-10-08 (해제된 칸은 파괴하지 않고 끈다) · 대상: `Assets/Scripts_Client/UI/Widget/`
 
 **`#Widget Canvas` — 다른 화면을 전부 닫아도 남는, 데스크톱 위젯 본체.**
 
 | 폴더 | 무엇 |
 |------|------|
 | `WidgetCanvasView.cs` | 캔버스 껍데기 |
-| `WidgetPresenter/` | 위젯 내용(상단 줄·수확 스트립)과 열기 버튼. 스트립 한 칸은 `WidgetMiniSlotView` |
+| `WidgetPresenter/` | 위젯 내용(상단 줄·수확 스트립)과 열기·초기화 버튼. 스트립 한 칸은 `WidgetMiniSlotView`, 수익 집계는 `WidgetEarningTracker` |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
 
@@ -20,11 +20,32 @@
 
 ```
 Widget Presenter        VerticalLayoutGroup
-├─ Top Panel            골드 · 가동 N/M · 시간당 산출 · 누적 수확      pref 26
+├─ Top Panel            보유 · 가동 N/M · 누적 · 시간당 · 측정 시간    pref 26
+│  └─ <X> Stat          아이콘(22) + 숫자 한 쌍. 비율은 그룹의 flexW
 ├─ Strip Panel          배치된 칸이 왼쪽부터. 빈 칸 없음              flexH 1
 │  └─ WidgetMiniSlotView 프리팹 (런타임 생성)                        49×49
+├─ Reset Button         ignoreLayout — 열기 버튼 왼쪽, 같은 크기·높이
 └─ Open/Close Button    ignoreLayout — 레이아웃 밖에서 우하단 고정
 ```
+
+### 상단 줄은 아이콘 + 숫자다 (2026-10-09)
+
+87px 줄에 `가동`·`누적` 같은 글자 라벨을 붙이면 숫자가 밀린다. 아이콘은 `Assets/Sprites/ui/widget_*.png`
+(16×16 흰색 · Point) — **임시 그림이다.** 아트가 오면 같은 이름으로 덮으면 된다(색은 `Image.color`가 칠한다).
+`/h`는 글자로 남겼다 — 그림보다 단위 글자가 빨리 읽힌다.
+
+### 누적·시간당은 즉시 판매가 환산 추정치다
+
+수확으로 **늘어난 수량 × `BasePrice`** 의 합이다 (`PlayerDataModel.GatherValueEarned`).
+시세가 아니라 고정값이라 같은 수확이 언제나 같은 숫자다. 보유 골드 증감으로 세지 않는다 — 판매·가챠가 섞인다.
+
+- **로그인에 성공한 순간부터 센다**(`LoginCompleted`) — 로그인 전에는 측정 시간이 `0:00:00`에 멈춰 있다.
+  앱을 켤 때마다 0에서 시작하고 저장하지 않는다. 초기화 버튼은 확인 창 없이 0으로 되돌린다.
+- 칸·버튼마다 `TooltipTrigger`(고정 문구)가 붙어 있다 — 아이콘만으로는 무엇인지 헷갈린다. 정보 칸은 아이콘·글자 둘 다 레이캐스트를 받아야 뜬다.
+- 측정 1분 전에는 시간당을 `—/h`로 둔다 — 첫 수확 하나로 숫자가 튄다.
+- ⚠️ `ItemChangeInfo.Count`는 **갱신 후 총량**이라 증가분은 캐시를 덮어쓰기 **전에** 세야 한다.
+  `ApplyItemChanges` 뒤로 옮기면 늘 0이 된다.
+- 로그인 오프라인 정산은 패킷 없이(`notify: false`) 와서 집계에 안 섞인다.
 
 **글자를 스트립에 넣지 않는다.** 49px 칸에 슬롯 번호·산업·남은 초를 적으면 읽히지 않는다.
 그 정보는 큰 창의 `WorkStationSlotView`가 맡는다 — 위젯은 **"몇 칸이 돌고 있고 얼마나 찼는가"**만 본다.
@@ -40,9 +61,8 @@ Widget Presenter        VerticalLayoutGroup
 `WorkStationProgress`(`UI/Shared/`)가 갖고 있고, 큰 창의 목록과 **같은 것을 쓴다.**
 복사하면 서버 판정식이 두 벌이 되어 한쪽만 고쳐진다.
 
-> ⏸ **아직 자리만 잡아 둔 것** — 미니 슬롯의 `Character Image`는 회색 네모이고
-> `Harvest Text (TMP)`는 빈 문자열이다. 상단의 `시간당 산출`·`누적 수확`도 씬의 더미 문구다
-> (산출 정의가 기획 미정이라 코드가 손대지 않는다). 상시로 도는 것은 **게이지 하나**다.
+> ⏸ **아직 자리만 잡아 둔 것** — 미니 슬롯의 `Harvest Text (TMP)`는 빈 문자열이다.
+> 상시로 도는 것은 **게이지 하나**와, 초가 바뀔 때만 다시 쓰는 측정 시간이다.
 
 > **수확 때만 도는 연출 하나** — 머리 자리에서 얻은 아이템 아이콘이 작게 떠올라 사라진다(2026-10-08 사용자 요청).
 > 칸 루트의 `ItemGainEffectView`(`UI/Shared/`)가 하고, 큰 창 칸과 같은 컴포넌트에 값만 작다. 1초 남짓 돌고 끝나 상시 루프가 아니다.

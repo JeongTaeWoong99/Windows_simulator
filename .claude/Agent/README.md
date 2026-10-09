@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-09 위젯 상단 줄 — 수익 집계 · 초기화 버튼 · 아이콘화](2026-10-09-widget-earnings.md) — `#client` `#ui` 수확 증가분 × BasePrice · 세션 기준 · 증가분은 덮어쓰기 전에
 - [2026-10-09 폰트 Pretendard 교체 · EN/KR Static 분리 (T-100)](2026-10-09-pretendard-font-kr-en.md) — `#client` `#ui` 호환 자모 누락이 □ 원인 · KR 아틀라스 꽉 참 · 기호는 EN만 다시 굽기
 - [2026-10-09 캐릭터 응축 화면 (T-130 · 이슈 #59)](2026-10-09-character-condense-ui.md) — `#client` `#ui` 판매 목록 자리 · 격자가 재료 고르기 · ★ 스프라이트(폰트에 없음) · 꺼진 창 첫 프레임 NRE
 - [2026-10-09 클라 ServerClock과 치트 창 시간 칸](2026-10-09-server-clock-time-cheat.md) — `#client` `#cheat` 정적 `ServerClock`(Managers 아님 — 쓰는 쪽이 정적 헬퍼) · T-106 · 이슈 #48

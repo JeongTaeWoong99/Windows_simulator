@@ -10,9 +10,14 @@ using UnityEngine.UI;
 // 열려 있으면 위젯만 남기고 전부 접는다 → 'UIManager.ToggleAll'
 //
 // ■ 두 축을 섞지 않는다
-// 데이터 갱신은 이벤트(옵저버) — 'CurrencyChanged' · 'WorkStationSlotsChanged' · 'GatherResultReceived'.
+// 데이터 갱신은 이벤트(옵저버) — 'CurrencyChanged' · 'WorkStationSlotsChanged' · 'GatherResultReceived' · 'GatherValueEarned'.
 // 시간 진행은 이 클래스의 'Update' 하나. 칸마다 Update를 두면 상시 실행 앱에서
 // 비용이 슬롯 수만큼 곱해진다 ('WorkStationListPresenter'와 같은 판단).
+// 측정 시간·시간당 골드도 같은 Update에서 초가 바뀔 때만 다시 쓴다.
+//
+// ■ 상단 줄은 아이콘 + 숫자 (2026-10-09 사용자 요청)
+// 보유 · 가동 · 누적 · 시간당 · 측정 시간. 87px 줄에 글자 라벨을 붙이면 숫자가 밀린다.
+// 누적·시간당은 즉시 판매가 환산 추정치다 → 'WidgetEarningTracker'.
 //
 // ■ 스트립은 배치된 칸만, 왼쪽부터
 // 큰 창의 목록은 빈 칸도 프레임으로 남긴다 — 눌러서 배치해야 하기 때문이다.
@@ -33,6 +38,9 @@ public class WidgetPresenter : MonoBehaviour
     [SerializeField, Tooltip("열기/닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button toggleButton = null!;
 
+    [SerializeField, Tooltip("수익 집계 초기화 버튼 — 누적·측정 시간을 0으로. OnClick은 코드가 연결한다")]
+    private Button resetButton = null!;
+
     [CenterHeader("상단 줄")]
     [SerializeField, Tooltip("골드 보유량")]
     private TMP_Text goldText = null!;
@@ -40,14 +48,14 @@ public class WidgetPresenter : MonoBehaviour
     [SerializeField, Tooltip("가동 슬롯 — 돌고 있는 칸 / 전체 칸")]
     private TMP_Text activeSlotText = null!;
 
-    // ⏸ 아래 둘은 참조만 잡아 둔다 — 산출 정의(무엇을 얼마로 환산하는가)가 기획에서
-    //    아직 안 정해졌다. 지금 임의로 채우면 틀린 숫자를 사용자가 믿게 된다.
-    //    → GameDesign/design/ui/README.md 6장
-    [SerializeField, Tooltip("⏸ 시간당 산출. 기획 미정이라 아직 연결하지 않는다 — 씬의 더미 문자열이 그대로 보인다")]
+    [SerializeField, Tooltip("누적 골드 — 마지막 초기화 이후 수확의 즉시 판매가 합")]
+    private TMP_Text totalText = null!;
+
+    [SerializeField, Tooltip("시간당 골드 — 누적 ÷ 측정 시간. 1분 전에는 '—'")]
     private TMP_Text perHourText = null!;
 
-    [SerializeField, Tooltip("⏸ 누적 수확. 기획 미정이라 아직 연결하지 않는다 — 씬의 더미 문자열이 그대로 보인다")]
-    private TMP_Text totalText = null!;
+    [SerializeField, Tooltip("측정 시간 — 마지막 초기화 이후 경과")]
+    private TMP_Text elapsedText = null!;
 
     [CenterHeader("스트립")]
     [SerializeField, Tooltip("미니 슬롯 프리팹 (WidgetMiniSlotView 포함)")]
@@ -63,6 +71,9 @@ public class WidgetPresenter : MonoBehaviour
     private bool            _isSubscribed;
     private bool            _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
+    private readonly WidgetEarningTracker _earnings = new WidgetEarningTracker();
+    private long                 _shownSecond = -1; // 마지막으로 그린 측정 시간(초) — 초가 바뀔 때만 다시 쓴다
+
     // 획득 연출에 넘길 아이콘 — 수확마다 새로 만들지 않고 비워 다시 쓴다
     private readonly List<Sprite?> _gainIcons = new List<Sprite?>();
 
@@ -71,18 +82,23 @@ public class WidgetPresenter : MonoBehaviour
     private void Start()
     {
         this.RequireRef(toggleButton,   nameof(toggleButton));
+        this.RequireRef(resetButton,    nameof(resetButton));
         this.RequireRef(goldText,       nameof(goldText));
         this.RequireRef(activeSlotText, nameof(activeSlotText));
-        this.RequireRef(perHourText,    nameof(perHourText));
         this.RequireRef(totalText,      nameof(totalText));
+        this.RequireRef(perHourText,    nameof(perHourText));
+        this.RequireRef(elapsedText,    nameof(elapsedText));
         this.RequireRef(miniSlotPrefab, nameof(miniSlotPrefab));
         this.RequireRef(stripParent,    nameof(stripParent));
 
         _data = Services.Get<PlayerDataModel>();
         toggleButton.onClick.AddListener(Services.Get<UIManager>().ToggleAll);
+        resetButton.onClick.AddListener(ResetEarnings);
 
         Subscribe();
         RefreshGold();
+        BeginEarningsIfLoggedIn(); // 이미 로그인한 뒤에 켜졌을 수 있다
+        RefreshEarnings();
         Rebuild(); // 이미 스냅샷을 받은 뒤에 켜졌을 수 있다
 
         _isReady = true;
@@ -101,6 +117,8 @@ public class WidgetPresenter : MonoBehaviour
 
         Subscribe();
         RefreshGold();
+        BeginEarningsIfLoggedIn();
+        RefreshEarnings();
         Rebuild();
     }
 
@@ -116,6 +134,11 @@ public class WidgetPresenter : MonoBehaviour
         if (!_isReady)
         {
             return;
+        }
+
+        if (_earnings.IsStarted && (long)_earnings.ElapsedSeconds(Time.realtimeSinceStartupAsDouble) != _shownSecond)
+        {
+            RefreshEarnings();
         }
 
         foreach (var slot in _data.WorkStationSlots)
@@ -143,6 +166,8 @@ public class WidgetPresenter : MonoBehaviour
         _data.CurrencyChanged         += RefreshGold;
         _data.WorkStationSlotsChanged += Rebuild;
         _data.GatherResultReceived    += OnGatherResultReceived;
+        _data.GatherValueEarned       += OnGatherValueEarned;
+        _data.LoginCompleted          += OnLoginCompleted;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -157,6 +182,8 @@ public class WidgetPresenter : MonoBehaviour
         _data.CurrencyChanged         -= RefreshGold;
         _data.WorkStationSlotsChanged -= Rebuild;
         _data.GatherResultReceived    -= OnGatherResultReceived;
+        _data.GatherValueEarned       -= OnGatherValueEarned;
+        _data.LoginCompleted          -= OnLoginCompleted;
     }
 
     #endregion
@@ -167,6 +194,48 @@ public class WidgetPresenter : MonoBehaviour
     private void RefreshGold()
     {
         goldText.text = _data.Gold.ToString("N0"); // 천 단위 구분
+    }
+
+    // 누적 · 시간당 · 측정 시간을 다시 쓴다 (Update에서 초가 바뀔 때 · 수확 · 초기화)
+    private void RefreshEarnings()
+    {
+        double now     = Time.realtimeSinceStartupAsDouble;
+        long   elapsed = (long)_earnings.ElapsedSeconds(now);
+
+        _shownSecond     = elapsed;
+        totalText.text   = _earnings.TotalGold.ToString("N0");
+        perHourText.text = _earnings.TryGetPerHour(now, out long perHour) ? $"{perHour:N0}/h" : "—/h";
+        elapsedText.text = $"{elapsed / 3600}:{elapsed / 60 % 60:00}:{elapsed % 60:00}";
+    }
+
+    // 로그인에 성공하면 그때부터 센다 (LoginCompleted 구독). 로그인 전에는 캐릭터가 일하지 않는다.
+    private void OnLoginCompleted(bool success, EResultCode result)
+    {
+        BeginEarningsIfLoggedIn();
+        RefreshEarnings();
+    }
+
+    // 로그인 상태면 집계를 시작한다 (로그인 응답 · Start · OnEnable). 이미 세는 중이면 그대로 둔다.
+    private void BeginEarningsIfLoggedIn()
+    {
+        if (_data.IsLoggedIn)
+        {
+            _earnings.Begin(Time.realtimeSinceStartupAsDouble);
+        }
+    }
+
+    // 수확 하나의 환산 골드를 누적에 더한다 (GatherValueEarned 구독)
+    private void OnGatherValueEarned(long gold)
+    {
+        _earnings.Add(gold);
+        RefreshEarnings();
+    }
+
+    // 집계를 0으로 되돌린다 (초기화 버튼). 잃는 것이 통계뿐이라 확인 창을 두지 않는다.
+    private void ResetEarnings()
+    {
+        _earnings.Reset(Time.realtimeSinceStartupAsDouble);
+        RefreshEarnings();
     }
 
     // 스냅샷대로 스트립을 다시 짜고 상단의 가동 수를 갱신한다 (WorkStationSlotsChanged 구독).
@@ -213,7 +282,7 @@ public class WidgetPresenter : MonoBehaviour
             view.SetRarity(GameDataLoader.GetCharacterRarity(characterTid));
         }
 
-        activeSlotText.text = $"가동 {activeCount}/{_data.WorkStationSlots.Count}";
+        activeSlotText.text = $"{activeCount}/{_data.WorkStationSlots.Count}"; // '가동'은 앞의 아이콘이 말한다
     }
 
     // 배치가 풀린 칸을 끈다 ('Rebuild'에서 호출). 꺼진 칸은 레이아웃에서 빠져 뒤의 칸이 당겨진다.

@@ -429,6 +429,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
+    public event Action<long>?                   GatherValueEarned;          // 채취로 늘어난 아이템의 즉시 판매가 합 (0이면 오지 않는다 · 위젯 누적 집계)
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
 
     public event Action<long>?        ItemSellCompleted;   // 판매 성공 (이번에 번 골드 — 잔액은 'CurrencyChanged'로 따로 온다)
@@ -820,8 +821,43 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 채취 결과 푸시 — 판정이 완성될 때마다 요청 없이 도착한다(수확이 없으면 오지 않는다).
     private void OnGatherResultReceived(S_GatherResultResponse res)
     {
+        long earned = SumGainedValue(res.ItemChanges); // 덮어쓰기 전에 센다 — 지나면 이전 수량이 사라진다
+
         ApplyItemChanges(res.ItemChanges);
         GatherResultReceived?.Invoke(res);
+
+        if (earned > 0)
+        {
+            GatherValueEarned?.Invoke(earned);
+        }
+    }
+
+    // 이번 변경으로 늘어난 수량 × 즉시 판매가의 합 (OnGatherResultReceived에서 호출 — 반영 전에 불러야 한다).
+    //
+    // ⚠️ 'ItemChangeInfo.Count'는 늘어난 양이 아니라 갱신 후 총량이다 — 캐시의 지금 수량을 빼야 증가분이 나온다.
+    // ※ 기준이 시세가 아니라 'BasePrice'인 이유: 고정값이라 같은 수확이 언제나 같은 숫자로 보인다(2026-10-09 사용자 결정).
+    private long SumGainedValue(List<ItemChangeInfo>? changes)
+    {
+        if (changes == null)
+        {
+            return 0;
+        }
+
+        long sum = 0;
+
+        foreach (var change in changes)
+        {
+            int index  = _inventory.FindIndex(item => item.ItemId == change.ItemId && item.Container == change.Container);
+            int before = index >= 0 ? _inventory[index].Count : 0;
+            int gained = change.Count - before;
+
+            if (gained > 0)
+            {
+                sum += (long)gained * GameDataLoader.GetItemPrice(change.ItemId);
+            }
+        }
+
+        return sum;
     }
 
     // 슬롯 1칸 동기화 — 정산·속도 변경 후 도착한다. 카운트다운 기준점이 매번 교정된다.
