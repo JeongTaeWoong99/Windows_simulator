@@ -48,7 +48,7 @@
 | [T-113](T-113-특성다양화.md) | 기획 — **특성 다양화** · 콘텐츠 특화 · 특별한 특성 · 다른 종류 (레벨형 T-108 위에) | 규빈 | New | 보통 | 261024 |
 | [T-114](T-114-레이드기획.md) | 기획 — **레이드 콘텐츠** · 사냥 보스 자리만 있고 전부 미정 | 규빈 | New | 보통 | 261024 |
 | [T-125](T-125-산업특성화.md) | 기획 — **산업 특성화** · 산업마다 무엇이 다르고 왜 재밌는가 (아이디어 · 이유 · 재미 포인트) — 수치는 공통값으로 합의 · A안 의문 · B안 기각 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) · [이슈 #62](https://github.com/JeongTaeWoong99/Windows_simulator/issues/62) | 규빈 | New | 보통 | 261010 |
-| [T-019](T-019-온보딩.md) | 온보딩 1일차 시나리오 설계 — 시작 캐릭터는 T-010에 걸린다 | 진우 | New | 높음 | 261010 |
+| [T-019](T-019-온보딩.md) | 온보딩 1일차 시나리오 설계 — **초안 작성(2026-10-10)**: 개방 시점 · 가이드 퀘스트 G1~G12 · 강제 튜토리얼 없음 ([진행 및 성장](../GameDesign/design/progression/README.md) 2.7) · 남은 것: 확정 · 계정 Lv10 곡선 역산 | 진우 | In Progress | 높음 | 261024 |
 | [T-009](T-009-회당산출.md) | **공통** 회당 산출 확정 — 5산업 같은 값(#42 합의 · 2026-10-07 축소) · 지금 `YieldPerJudge = 1` → 변동 예정 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | New | 높음 | 261024 |
 | [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI — **큐브 창 · 효율 계산 · 규칙 툴팁 붙음(2026-10-03)** · 큐브 설명문 엑셀(D6) 반영 · 실측 확인 · 남은 것: 상급 큐브 **고르기 화면**(서버 ✅ T-127) [이슈 #53](https://github.com/JeongTaeWoong99/Windows_simulator/issues/53) · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46) | 태웅 | In Progress | 보통 | 261010 |
 | [T-093](T-093-설명보간.md) | 아이템 설명 보간 — **플레이어용 `Tooltip` 컬럼**(아이템·장비)의 `{컬럼}`·`{컬럼:permille}`을 생성 시점에 치환 · **완료(2026-10-07)** — 남은 것: 확인 · 문구 채우기와 클라 표시는 일감 밖 | 진우 | Resolve | 보통 | 261010 |
