@@ -72,6 +72,11 @@
 단 **부모에 레이아웃 그룹이 있는 곳만** 본다. 앵커·`sizeDelta`로 직접 배치한 부모는
 자식이 자기보다 넓은 게 정상일 수 있다 — 유니티 기본 `Scrollbar`의 `Sliding Area`(폭 0)가 그 예다.
 
+- **에디터·개발 빌드에서만 돈다**(`#if UNITY_EDITOR || DEVELOPMENT_BUILD`, 2026-10-10). 3열 전체(노드 5천여 개)를 **1초마다** 훑는 진단이다(T-139 — 10프레임마다였을 땐 144fps에서 초당 14번 돌았다. 진단이라 늦어도 된다).
+  열 폭 검사(`VerifyColumnWidths`)는 어긋나면 다시 태우는 복구까지 하므로 릴리즈에도 남는다.
+- ⚠️ 훑는 동안 **`GetComponent`로 없는 컴포넌트를 찾지 않는다** — 에디터에서는 못 찾을 때마다 에러 문구를 할당해
+  훑을 때마다 3MB GC가 났다(2026-10-09 프로파일). `TryGetComponent`를 쓴다.
+
 ## 화면 크기 변화에 스스로 반응한다
 
 `WidgetPositionLayout`은 `OnRectTransformDimensionsChange()`로 **캔버스(=창의 렌더 영역) 크기가

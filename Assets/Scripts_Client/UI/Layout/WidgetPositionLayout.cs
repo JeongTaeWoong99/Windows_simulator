@@ -208,8 +208,18 @@ public class WidgetPositionLayout : MonoBehaviour
         if (Time.frameCount % GuardInterval == 0)
         {
             VerifyColumnWidths();
+        }
+
+        // 넘침 검사는 진단용이라 릴리즈에서는 돌리지 않는다 — 3열 전체(노드 5천여 개)를 훑는다.
+        // 열 폭 검사는 어긋나면 다시 태우는 복구까지 하므로 릴리즈에도 남긴다.
+        // ※ 넘침 검사만 1초 간격이다 — 한 번에 ~4ms라 10프레임마다 돌면 에디터 평균을 0.4ms씩 먹었다(2026-10-10 실측).
+#if UNITY_EDITOR || DEVELOPMENT_BUILD
+        if (Time.realtimeSinceStartup >= _nextOverflowCheckAt)
+        {
+            _nextOverflowCheckAt = Time.realtimeSinceStartup + OverflowCheckInterval; // 편집 모드([ExecuteAlways])에서도 흐르는 시계
             VerifyNoOverflow();
         }
+#endif
     }
 
     // 현재 'position'을 3열 순서와 위·아래 슬롯에 반영한다.
@@ -612,8 +622,13 @@ public class WidgetPositionLayout : MonoBehaviour
         return linked == references.Length;
     }
 
-    // 가드 검사 주기(프레임). 매 프레임 돌 이유가 없다
+    // 열 폭 검사 주기(프레임). 매 프레임 돌 이유가 없다
     private const int GuardInterval = 10;
+
+    // 넘침 검사 주기(초) — 진단이라 늦게 알아도 된다. 다음 검사 시각은 '_nextOverflowCheckAt'
+    private const float OverflowCheckInterval = 1f;
+
+    private float _nextOverflowCheckAt;
 
     // 마지막으로 남긴 넘침 내용 — 같은 상태가 이어지면 다시 찍지 않는다 (로그 폭주 방지)
     private string _lastOverflowDump = "";
@@ -688,7 +703,8 @@ public class WidgetPositionLayout : MonoBehaviour
     //   고칠 것이 없는 경고가 상시로 뜬다 (실제로 그랬다).
     private static void CollectOverflow(RectTransform node, System.Text.StringBuilder found)
     {
-        bool governsChildren = node.GetComponent<LayoutGroup>() != null;
+        // ⚠️ 'GetComponent'는 에디터에서 못 찾으면 에러 문구를 할당한다 — 노드마다 불려 10프레임마다 3MB GC가 났다.
+        bool governsChildren = node.TryGetComponent<LayoutGroup>(out _);
 
         for (int i = 0; i < node.childCount; i++)
         {

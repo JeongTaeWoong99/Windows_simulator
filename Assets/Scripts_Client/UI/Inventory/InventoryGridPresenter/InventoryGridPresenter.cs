@@ -90,6 +90,13 @@ public class InventoryGridPresenter : MonoBehaviour
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
     private readonly List<SlotView?> _views = new List<SlotView?>();
 
+    // 지금 그려 둔 프레임 번호 범위 — 뷰포트에 걸치는 줄과 위아래 한 줄('ComputeVisibleRange'). 없으면 first > last.
+    private int _visibleFirst = int.MaxValue;
+    private int _visibleLast  = -1;
+
+    // 'GetWorldCorners' 결과를 받는 칸 — 스크롤마다 배열을 새로 만들지 않는다.
+    private static readonly Vector3[] Corners = new Vector3[4];
+
     // 캐릭터 칸에 넘길 적성 5종. 칸마다 새 배열을 만들지 않으려고 하나를 들고 재사용한다
     // — 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있는 쪽이 하나여도 된다.
     private readonly byte[] _aptitudes = new byte[SlotView.AptitudeCount];
@@ -228,6 +235,9 @@ public class InventoryGridPresenter : MonoBehaviour
         // ※ 켜고 끌 때 풀지 않는다 — 응축 창이 닫힐 때의 알림(표시 걷기)을 격자가 꺼져 있어도 놓치면 안 된다.
         characterCondense.SelectionChanged += Redraw;
 
+        // 보이는 칸만 그리므로 스크롤·창 크기가 바뀌면 새로 들어온 칸을 그린다('Redraw' 주석).
+        scrollRect.onValueChanged.AddListener(OnScrollChanged);
+
         // ※ 카트 구독은 여기서 시작한다 — 'OnEnable'은 'EnsureInitialized'보다 먼저 돌 수 있어
         //   (탭 줄의 Start가 우리를 깨우는 경로) 거기에만 두면 첫 판이 구독을 놓친다.
         SubscribeCart();
@@ -281,6 +291,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseFailed         -= OnItemUseFailed;
         _data.StorageSlotsResponded -= OnStorageSlotsResponded;
         characterCondense.SelectionChanged -= Redraw;
+        scrollRect.onValueChanged.RemoveListener(OnScrollChanged);
     }
 
     #region 구독
@@ -462,70 +473,30 @@ public class InventoryGridPresenter : MonoBehaviour
     #region 칸 그리기
 
     // 지금 탭의 목록을 칸에 반영한다 (공급자 Changed 구독 · 탭 전환 · OnEnable).
+    //
+    // ■ 보이는 프레임만 그린다 (2026-10-09)
+    //   200칸을 다 켜고 그리면 인벤토리를 열 때 한 프레임에 칸 부품 ~1000개가 켜지고 TMP ~1300개가 글자를 새로 만들어
+    //   200ms 가까이 멈췄다(에디터 프로파일). 화면에 보이는 것은 30~40칸뿐이라 나머지는 꺼 두고,
+    //   스크롤로 들어올 때 그린다('OnScrollChanged').
+    //   ※ 프레임은 200개 그대로다 — 칸 번호(서버)·끌어 놓기·놓을 칸 덮개는 프레임 기준이라 바뀌지 않는다.
+    //   ※ 칸은 데이터를 들고 있지 않다 — 들어올 때 공급자에서 지금 값을 읽으므로 화면 밖에서 놓친 변경이 없다.
     private void Redraw()
     {
-        int count = _current == null ? 0 : _current.Count;
+        ComputeVisibleRange(out _visibleFirst, out _visibleLast);
 
         for (int i = 0; i < _frames.Count; i++)
         {
-            // 빈 칸이면 내용을 비우고 프레임만 남긴다 — 뒤의 것을 당겨 오지 않는다.
-            // 장착·배치로 빠진 자리가 그대로 보여야 "어디서 빠졌는지"가 읽힌다('InventorySlotSource' 주석).
-            SlotData? cell = i < count ? _current!.Get(i) : null;
-
-            if (cell != null)
+            if (i >= _visibleFirst && i <= _visibleLast)
             {
-                SlotView? view = GetOrCreateView(i);
-
-                if (view == null)
-                {
-                    continue;
-                }
-
-                SlotData data = cell.Value;
-
-                view.gameObject.SetActive(true);
-                view.Bind(data);
-
-                // 담김 표시의 주인은 카트다 — 탭마다 카트의 다른 목록을 본다.
-                view.SetSellMark(IsInCart(data.Key));
-
-                // 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
-                // **딤과 '배' 마크를 짝으로** 켠다: 딤만 두면 왜 어두운지 알 수 없고,
-                // 마크만 두면 칸 200개 안에서 작은 배지가 묻힌다.
-                //
-                // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
-                //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
-                bool isAway = _current.IsAway(data.Key);
-
-                view.SetAssignMark(isAway);
-                view.SetDimmed(isAway);
-
-                // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
-                view.SetFilteredOut(_current.IsFilteredOut(data.Key));
-
-                // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
-                // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
-                view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
-
-                // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다.
-                view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
-                view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
-
-                // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
-                view.SetStatSockets(_current.GetStatSockets(data.Key));
-
-                // 장착 네모 — 캐릭터 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-104).
-                view.SetEquipPips(_current.GetWornEquips(data.Key));
-
-                // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
-                view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
-                view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
-
-                continue;
+                DrawCell(i);
             }
-
-            HideView(i);
+            else
+            {
+                HideView(i);
+            }
         }
+
+        int count = _current == null ? 0 : _current.Count;
 
         if (count > _frames.Count)
         {
@@ -535,6 +506,147 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 찾기 결과 0건 — 안내 하나만 켜고 끈다. 프레임 200개는 건드리지 않는다(레이아웃 리빌드 규칙).
         emptyNotice.SetActive(_current != null && _current.IsFiltering && _current.MatchCount == 0);
+    }
+
+    // 스크롤·창 크기가 바뀌었다 — 새로 보이게 된 칸만 그리고, 벗어난 칸은 끈다 (ScrollRect.onValueChanged 구독).
+    //
+    // ※ 'ScrollRect'는 위치뿐 아니라 뷰포트·콘텐츠 크기가 바뀌어도 이 이벤트를 낸다 —
+    //   처음 켜져 레이아웃이 잡히는 프레임에도 불려 첫 범위가 바로잡힌다.
+    private void OnScrollChanged(Vector2 _)
+    {
+        if (!_isReady || !isActiveAndEnabled)
+        {
+            return;
+        }
+
+        ComputeVisibleRange(out int first, out int last);
+
+        if (first == _visibleFirst && last == _visibleLast)
+        {
+            return;
+        }
+
+        for (int i = Mathf.Min(first, _visibleFirst); i <= Mathf.Max(last, _visibleLast); i++)
+        {
+            bool wasVisible = i >= _visibleFirst && i <= _visibleLast;
+            bool isVisible  = i >= first && i <= last;
+
+            if (isVisible && !wasVisible)
+            {
+                DrawCell(i);
+            }
+            else if (!isVisible && wasVisible)
+            {
+                HideView(i);
+            }
+        }
+
+        _visibleFirst = first;
+        _visibleLast  = last;
+    }
+
+    // 뷰포트에 걸치는 프레임 번호의 범위 — 위아래로 한 줄씩 여유를 둔다 (Redraw · OnScrollChanged에서 호출).
+    // 하나도 안 걸치면 first > last다.
+    //
+    // ※ 칸 크기로 줄 번호를 계산하지 않고 프레임 위치를 직접 본다 — 격자가 창 폭에 맞춰 열 수·칸 크기를 바꾸기 때문이다.
+    //   프레임은 줄 순서로 놓여 있어 걸치는 번호가 이어진 구간이 된다.
+    private void ComputeVisibleRange(out int first, out int last)
+    {
+        first = int.MaxValue;
+        last  = -1;
+
+        if (_frames.Count == 0)
+        {
+            return;
+        }
+
+        RectTransform viewport = scrollRect.viewport != null ? scrollRect.viewport : (RectTransform)scrollRect.transform;
+
+        viewport.GetWorldCorners(Corners);
+
+        float bottom = Corners[0].y;
+        float top    = Corners[1].y;
+
+        for (int i = 0; i < _frames.Count; i++)
+        {
+            ((RectTransform)_frames[i]).GetWorldCorners(Corners);
+
+            float frameBottom = Corners[0].y;
+            float frameTop    = Corners[1].y;
+            float margin      = frameTop - frameBottom; // 한 줄 여유 — 스크롤 첫 프레임에 빈 칸이 비치지 않게
+
+            if (frameTop + margin < bottom || frameBottom - margin > top)
+            {
+                continue;
+            }
+
+            first = Mathf.Min(first, i);
+            last  = Mathf.Max(last, i);
+        }
+    }
+
+    // i번째 프레임을 지금 탭의 값으로 그린다. 빈 칸이면 끈다 (Redraw · OnScrollChanged에서 호출).
+    private void DrawCell(int i)
+    {
+        int count = _current == null ? 0 : _current.Count;
+
+        // 빈 칸이면 내용을 비우고 프레임만 남긴다 — 뒤의 것을 당겨 오지 않는다.
+        // 장착·배치로 빠진 자리가 그대로 보여야 "어디서 빠졌는지"가 읽힌다('InventorySlotSource' 주석).
+        SlotData? cell = i < count ? _current!.Get(i) : null;
+
+        if (cell == null)
+        {
+            HideView(i);
+
+            return;
+        }
+
+        SlotView? view = GetOrCreateView(i);
+
+        if (view == null)
+        {
+            return;
+        }
+
+        SlotData data = cell.Value;
+
+        view.gameObject.SetActive(true);
+        view.Bind(data);
+
+        // 담김 표시의 주인은 카트다 — 탭마다 카트의 다른 목록을 본다.
+        view.SetSellMark(IsInCart(data.Key));
+
+        // 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중.
+        // **딤과 '배' 마크를 짝으로** 켠다: 딤만 두면 왜 어두운지 알 수 없고,
+        // 마크만 두면 칸 200개 안에서 작은 배지가 묻힌다.
+        //
+        // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
+        //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
+        bool isAway = _current.IsAway(data.Key);
+
+        view.SetAssignMark(isAway);
+        view.SetDimmed(isAway || i == _dragFrom); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
+
+        // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
+        view.SetFilteredOut(_current.IsFilteredOut(data.Key));
+
+        // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
+        // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
+        view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
+
+        // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다.
+        view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
+        view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
+
+        // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
+        view.SetStatSockets(_current.GetStatSockets(data.Key));
+
+        // 장착 네모 — 캐릭터 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-104).
+        view.SetEquipPips(_current.GetWornEquips(data.Key));
+
+        // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
+        view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
+        view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
     }
 
     // 이 캐릭터의 적성 5종을 스트립 순서대로 담아 돌려준다 (Redraw에서 호출).
@@ -608,7 +720,8 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         SlotView? view = _views[index];
 
-        if (view == null)
+        // 이미 꺼진 칸은 끌 때 비웠다 — 화면 밖 칸 160여 개를 'Redraw'마다 다시 비우지 않는다.
+        if (view == null || !view.gameObject.activeSelf)
         {
             return;
         }
