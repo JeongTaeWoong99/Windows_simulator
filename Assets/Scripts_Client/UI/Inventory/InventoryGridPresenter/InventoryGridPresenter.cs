@@ -84,6 +84,16 @@ public class InventoryGridPresenter : MonoBehaviour
     [SerializeField, Tooltip("응축 창 — 캐릭터 칸을 좌클릭하면 그 캐릭터로 열고, 열린 동안은 재료를 고른다")]
     private CharacterCondensePresenter characterCondense = null!;
 
+    // ※ 셋 다 이 오브젝트 자신에 붙는다 — 특성 탭에서 격자를 끄지 않고 숨기는 데 쓴다('SetShown').
+    [SerializeField, Tooltip("격자 자신의 하위 Canvas — 숨길 때 그리기만 끈다(Override Sorting 끔)")]
+    private Canvas gridCanvas = null!;
+
+    [SerializeField, Tooltip("격자 자신의 GraphicRaycaster — 숨기는 동안 클릭·휠을 받지 않게 함께 끈다")]
+    private GraphicRaycaster gridRaycaster = null!;
+
+    [SerializeField, Tooltip("격자 자신의 LayoutElement — 숨기는 동안 자리를 비워 특성 화면이 쓰게 한다(ignoreLayout)")]
+    private LayoutElement gridLayout = null!;
+
     // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
     private readonly List<Transform> _frames = new List<Transform>();
 
@@ -201,6 +211,9 @@ public class InventoryGridPresenter : MonoBehaviour
         this.RequireRef(scrollRect,  nameof(scrollRect));
         this.RequireRef(equipEnchant, nameof(equipEnchant));
         this.RequireRef(characterCondense, nameof(characterCondense));
+        this.RequireRef(gridCanvas,    nameof(gridCanvas));
+        this.RequireRef(gridRaycaster, nameof(gridRaycaster));
+        this.RequireRef(gridLayout,    nameof(gridLayout));
 
         CacheFrames();
 
@@ -353,10 +366,8 @@ public class InventoryGridPresenter : MonoBehaviour
         _sources.TryGetValue(tab, out InventorySlotSource? next);
 
         // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 그 자리는 전용 화면이 쓴다(특성 탭).
-        // ★ 조기 반환보다 먼저 한다. 그리고 칸 200개를 하나씩 끄지 않는다 —
-        //   프레임을 개별로 토글하면 탭을 옮길 때마다 레이아웃 리빌드가 200번 돈다
-        //   ('Inventory 규칙.md'). 격자 오브젝트 하나만 끄면 리빌드는 다시 켤 때 한 번이다.
-        gameObject.SetActive(next != null);
+        // ★ 조기 반환보다 먼저 한다. 칸 200개를 하나씩 끄지 않고, 격자 오브젝트도 끄지 않는다('SetShown').
+        SetShown(next != null);
 
         if (_current == next)
         {
@@ -381,6 +392,27 @@ public class InventoryGridPresenter : MonoBehaviour
         }
 
         Redraw();
+    }
+
+    // 격자를 보이거나 숨긴다 (ShowTab에서 호출).
+    //
+    // ■ 오브젝트를 끄지 않고 하위 Canvas를 끈다 (2026-10-10 · T-139)
+    //   'SetActive'로 끄면 다시 켤 때 프레임 200개의 부품이 전부 OnEnable → 다시 그리기·레이아웃을 탄다.
+    //   특성 탭에서 돌아올 때 그것만으로 34ms였다. Canvas만 끄면 그리기만 멈추고 상태가 그대로라 8ms다.
+    //   - 클릭·휠은 'GraphicRaycaster'를, 자리는 'LayoutElement.ignoreLayout'을 함께 끈다 — 특성 화면이 그 자리를 쓴다.
+    //   - 켜져 있는 채라 'OnDisable'이 돌지 않는다 — 숨기는 탭에는 공급자가 없어(_current = null) 그릴 것도 끌 것도 없다.
+    //     끌기는 'ShowTab'이 이미 끊었다.
+    // ※ 꺼진 채 씬에 저장돼도 여기서 켠다 — 탭 줄이 깨우지 않는 화면이다('Inventory 규칙.md'의 "꺼진 채 저장돼도 깨어난다").
+    private void SetShown(bool shown)
+    {
+        if (!gameObject.activeSelf)
+        {
+            gameObject.SetActive(true);
+        }
+
+        gridCanvas.enabled      = shown;
+        gridRaycaster.enabled   = shown;
+        gridLayout.ignoreLayout = !shown;
     }
 
     #endregion

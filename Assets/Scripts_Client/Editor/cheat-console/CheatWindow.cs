@@ -190,6 +190,8 @@ namespace DesktopWindowControl.EditorTools
 				DrawSceneCopyTool();
 				DrawToolGap();
 				DrawServerConsoleTool();
+				DrawToolGap();
+				DrawPeriodicLogTool();
 			}
 		}
 
@@ -242,6 +244,26 @@ namespace DesktopWindowControl.EditorTools
 			{
 				ServerConsoleWindow.Open();
 			}
+		}
+
+		// '[●]주기 수신 로그' — 수확마다 오는 수신 4종(채취 정산·슬롯·캐릭터 동기화·계정 레벨)을 콘솔에 찍을지.
+		// 평시엔 꺼 둔다 — 'Debug.Log'가 줄마다 스택을 뽑아 수확 프레임이 튄다('Log 규칙.md' 3장).
+		private static void DrawPeriodicLogTool()
+		{
+			var isOn = PeriodicLogSettings.Enabled;
+			var content = new GUIContent
+				(isOn ? "[●] 주기 수신 로그" : "[○] 주기 수신 로그",
+				 isOn ? "수확마다 오는 수신 로그를 찍는 중 — 누르면 끈다" : "수확마다 오는 수신 로그 꺼짐 — 누르면 켠다");
+
+			var previous = GUI.contentColor;
+			GUI.contentColor = isOn ? DoneColor : previous;
+
+			if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)))
+			{
+				PeriodicLogSettings.Enabled = !isOn;
+			}
+
+			GUI.contentColor = previous;
 		}
 
 		// 작업 순서 그대로 '서버 › 클라 › 로그인'을 보이고, 빠진 단계를 오른쪽에 글로 적는다.

@@ -7,7 +7,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 아이템 획득 연출 — 얻은 아이템 아이콘이 한 자리에서 나타나 위로 떠오르며 사라진다. 아이콘 뒤에는 등급 빛을 깐다.
-// 연출을 띄울 칸의 루트에 붙인다. 아이콘 층·풀은 처음 재생할 때 코드가 만든다(프리팹이 따로 없다).
+// 연출을 띄울 칸의 루트에 붙인다. 아이콘 층·풀은 켜질 때('Start') 코드가 만들고 풀을 미리 채운다(프리팹이 따로 없다).
+// ※ 예전엔 첫 재생 때 만들었다 — 칸 16개가 각자 첫 수확 프레임에 컴포넌트 120여 개를 붙여 8~9ms씩 튀었다(2026-10-10 실측).
 //
 // ■ 누가 쓰나 — 같은 로직, 인스펙터 값만 다르다
 //   큰 창 작업슬롯 칸('WorkStationSlotView') — 쓰러지는 대상 자리에서
@@ -103,6 +104,13 @@ public class ItemGainEffectView : MonoBehaviour
 
     // 꺼지는 중에 끝난 재생의 묶음 — 부모가 꺼지거나 켜지는 동안에는 계층을 바꿀 수 없어 다음 재생 때 반납한다
     private readonly List<ItemGainFx> _pendingReturns = new List<ItemGainFx>();
+
+    // 아이콘 층·풀을 만들고 한 번에 띄울 만큼 미리 채운다 — 첫 수확 프레임이 튀지 않게 (Unity 메시지)
+    private void Start()
+    {
+        EnsureBuilt();
+        _pool!.Prewarm(maxIcons);
+    }
 
     // 꺼짐 — 도는 연출을 모두 끊는다 (Unity 메시지)
     private void OnDisable()
@@ -330,7 +338,7 @@ public class ItemGainEffectView : MonoBehaviour
         _playCts = null;
     }
 
-    // 아이콘 층 · 쉬는 자리 · 묶음 원본 · 풀을 한 번만 만든다 (처음 재생할 때)
+    // 아이콘 층 · 쉬는 자리 · 묶음 원본 · 풀을 한 번만 만든다 (Start · 재생 때 — Start 전에 재생이 와도 빠지지 않게)
     private void EnsureBuilt()
     {
         if (_layer != null)

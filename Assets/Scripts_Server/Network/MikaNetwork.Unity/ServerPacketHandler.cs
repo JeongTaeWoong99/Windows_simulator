@@ -156,8 +156,13 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_CharacterSyncResponse(ISession session, S_CharacterSyncResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv,
-                $"캐릭터 동기화 — Id={res.Character?.CharacterId}, Lv={res.Character?.Level}, Exp={res.Character?.Exp}");
+            // 수확마다 온다 — 주기 수신 로그를 켰을 때만 찍는다('Log 규칙.md' 3장)
+            if (ClientLogger.ShowPeriodic)
+            {
+                ClientLogger.Info(ClientLogger.Recv,
+                    $"캐릭터 동기화 — Id={res.Character?.CharacterId}, Lv={res.Character?.Level}, Exp={res.Character?.Exp}");
+            }
+
             CharacterSynced?.Invoke(res);
         }
 
@@ -235,8 +240,13 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_AccountLevelResponse(ISession session, S_AccountLevelResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv,
-                $"계정 레벨 — Lv{res.Level}, 경험치={res.Exp}, 남은 특성 포인트={res.TraitPoint}");
+            // 수확마다 온다 — 주기 수신 로그를 켰을 때만 찍는다('Log 규칙.md' 3장)
+            if (ClientLogger.ShowPeriodic)
+            {
+                ClientLogger.Info(ClientLogger.Recv,
+                    $"계정 레벨 — Lv{res.Level}, 경험치={res.Exp}, 남은 특성 포인트={res.TraitPoint}");
+            }
+
             AccountLevelReceived?.Invoke(res);
         }
 
@@ -371,8 +381,13 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_WorkStationSlotSyncResponse(ISession session, S_WorkStationSlotSyncResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv,
-                $"슬롯 동기화 — 슬롯 {res.Slot?.SlotIndex}, 속도={res.Slot?.CurrentWorkSpeed}");
+            // 수확마다 온다 — 주기 수신 로그를 켰을 때만 찍는다('Log 규칙.md' 3장)
+            if (ClientLogger.ShowPeriodic)
+            {
+                ClientLogger.Info(ClientLogger.Recv,
+                    $"슬롯 동기화 — 슬롯 {res.Slot?.SlotIndex}, 속도={res.Slot?.CurrentWorkSpeed}");
+            }
+
             WorkStationSlotSynced?.Invoke(res);
         }
 
@@ -382,8 +397,13 @@ namespace MikaNetwork
         [PacketHandler]
         public static void Handle_S_GatherResultResponse(ISession session, S_GatherResultResponse res)
         {
-            int changeCount = res.ItemChanges?.Count ?? 0;
-            ClientLogger.Info(ClientLogger.Recv, $"채취 정산 — 슬롯 {res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changeCount}건");
+            // 수확마다 온다 — 주기 수신 로그를 켰을 때만 찍는다('Log 규칙.md' 3장)
+            if (ClientLogger.ShowPeriodic)
+            {
+                int changeCount = res.ItemChanges?.Count ?? 0;
+                ClientLogger.Info(ClientLogger.Recv, $"채취 정산 — 슬롯 {res.SlotIndex}, 판정 {res.JudgeCount}회, 변경 {changeCount}건");
+            }
+
             GatherResultReceived?.Invoke(res);
         }
 

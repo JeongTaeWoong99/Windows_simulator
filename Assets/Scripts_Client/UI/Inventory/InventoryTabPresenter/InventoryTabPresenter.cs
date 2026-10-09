@@ -175,7 +175,7 @@ public class InventoryTabPresenter : MonoBehaviour
     //   꺼진 채로 저장돼도 스스로 깨어난다('InventoryGridPresenter.EnsureInitialized').
     private void WakeTabScreens()
     {
-        // 탭 줄과 화면들은 모두 캔버스 직속 형제다. 부모가 없으면(테스트 등) 자기를 기준으로 본다.
+        // 탭 줄과 화면들은 모두 같은 부모(Body Panel) 아래 형제다. 부모가 없으면(테스트 등) 자기를 기준으로 본다.
         Transform root = transform.parent != null ? transform.parent : transform;
 
         WakeScreen(traitScreen);

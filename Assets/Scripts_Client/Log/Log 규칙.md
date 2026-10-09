@@ -1,6 +1,6 @@
 # Log 규칙
 
-> 최종 업데이트: 2026-08-26 (`PlayerDataLogger` 삭제 — 분담 절 재작성) · 대상: `Assets/Scripts_Client/Log/`
+> 최종 업데이트: 2026-10-10 (주기 수신 로그 — 치트 창 토글로만 찍는다 · T-139) · 2026-08-26 (`PlayerDataLogger` 삭제 — 분담 절 재작성) · 대상: `Assets/Scripts_Client/Log/`
 
 **클라 로그는 전부 `ClientLogger`를 거친다.** `Debug.Log`를 직접 부르지 않는다 —
 태그가 빠지면 콘솔에서 그 줄이 무엇인지 알 수 없고, 규약이 한곳에 모이지 않는다.
@@ -74,3 +74,14 @@
 
 > 이 목록에는 **주기적으로 오가는 것만** 넣는다. 드물게 오는 패킷을 숨기면
 > 안 온 것인지 숨긴 것인지 구분할 수 없게 된다.
+
+### 주기 수신 로그 — 켤 때만 찍는다 (2026-10-10 · T-139)
+
+수확마다 오는 수신 4종(`S_CharacterSyncResponse`·`S_AccountLevelResponse`·`S_WorkStationSlotSyncResponse`·`S_GatherResultResponse`)은
+**`ClientLogger.ShowPeriodic`이 켜졌을 때만** 찍는다. 켜고 끄는 곳은 치트 창 도구 줄의 `[●] 주기 수신 로그`다(에디터 설정에 남는다 — `PeriodicLogSettings`).
+
+- 이유는 소음만이 아니다. `Debug.Log`는 줄마다 스택을 뽑아 **수확 프레임이 2ms씩 튀었다**(2026-10-10 실측).
+- ⚠️ **부르는 쪽이 `ShowPeriodic`을 먼저 보고 문구를 만든다** — `if (ClientLogger.ShowPeriodic) { ClientLogger.Info(...); }`.
+  `Info` 안에서 거르면 꺼져 있어도 보간 문자열은 이미 만들어진다.
+- 빌드에는 켜는 곳이 없어 늘 꺼져 있다.
+- 패킷을 통째로 숨기는 `QuietPacketIds`와 다르다 — 이쪽은 **켜면 다시 보인다.** 새 주기 패킷이 생기면 이쪽에 넣는다.

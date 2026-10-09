@@ -25,6 +25,7 @@
 
 - [2026-10-08 문서 사이트 게임 데이터 뷰어 /data (T-132)](2026-10-08-web-data-viewer.md) — `#docs` `#data` DataLog JSON을 테이블별 페이지로 · 이름표 · Weight 비율
 - [2026-10-07 문서 사이트 회차 탭에 닫힌 일감도 담는다](2026-10-07-web-cycle-tab-closed.md) — `#docs` 회차 탭 + 상태 Closed 필터로 그 회차에 끝낸 일을 본다
+- [2026-10-10 프레임 여유 구조 정리 (T-139)](2026-10-10-frame-headroom.md) — `#client` `#ui` `#optimization` 레이아웃 경계(Body·Tool Panel) · 격자 Canvas 숨김 · Raycast Target · 주기 수신 로그 토글
 - [2026-10-10 인벤토리 격자는 보이는 칸만 그린다 (T-138)](2026-10-10-inventory-visible-slots.md) — `#client` `#ui` 열기 스파이크 · 넘침 검사 GC 제거
 - [2026-10-09 목록 줄 풀을 UIRowList로 (T-133)](2026-10-09-uirowlist-migration.md) — `#client` `#ui` 6개 화면의 복제 줄 풀 삭제
 - [2026-10-09 보상 결과 하나씩 공개 연출 (T-031 · T-033)](2026-10-09-reward-reveal-fx.md) — `#client` `#fx` 칸에 런타임 부착 · 이펙트 그림은 코드 생성(Art 저장소 분리) · 스킵은 칸 클릭도 구독 · reveal 씬 직렬화

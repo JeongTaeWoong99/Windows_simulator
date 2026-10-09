@@ -44,6 +44,9 @@ public class WorkStationSlotView : MonoBehaviour
 
     private WorkStationSlotInfo? _slot;
 
+    // 남은 시간 글자에 지금 적혀 있는 값 (0.1초 단위). -1이면 다른 문구가 적혀 있다 — 다음 Tick이 다시 쓴다.
+    private int _shownRemainTenths = -1;
+
     // 이 뷰가 그리고 있는 슬롯 번호. 미바인딩이면 -1.
     public int SlotIndex => _slot?.SlotIndex ?? -1;
 
@@ -86,6 +89,7 @@ public class WorkStationSlotView : MonoBehaviour
         {
             slotText.text          = $"슬롯 {slot.SlotIndex} · 대기";
             remainText.text        = "배치 없음";
+            _shownRemainTenths     = -1;
             progressSlider.value   = 0f;
 
             return;
@@ -149,11 +153,29 @@ public class WorkStationSlotView : MonoBehaviour
     public void Tick(float progress, float remainSeconds, float cycleSeconds)
     {
         progressSlider.value = progress;
-        remainText.text      = $"{remainSeconds:0.0}초 후 수확";
+        SetRemainText(remainSeconds);
 
         if (stage != null)
         {
             stage.Tick(progress * cycleSeconds, cycleSeconds, Time.deltaTime);
         }
+    }
+
+    // 남은 시간을 0.1초 단위로 적는다 (Tick에서 호출).
+    //
+    // ■ 표시값이 바뀔 때만 쓴다 — 문자열도 만들지 않는다
+    //   예전엔 매 프레임 '$"…"'로 새 문자열을 만들었다(칸 8개 × 프레임마다 GC).
+    //   'SetText'만 매 프레임 부르면 TMP는 같은 값이어도 글자를 다시 만든다 — 그래서 바뀔 때만 부른다.
+    private void SetRemainText(float remainSeconds)
+    {
+        int tenths = Mathf.Max(0, Mathf.RoundToInt(remainSeconds * 10f));
+
+        if (tenths == _shownRemainTenths)
+        {
+            return;
+        }
+
+        _shownRemainTenths = tenths;
+        remainText.SetText("{0}.{1}초 후 수확", tenths / 10, tenths % 10);
     }
 }

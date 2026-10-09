@@ -64,6 +64,10 @@
   **Root Canvas와 동일하게** 맞춘다.
 - **열을 껐더니 다른 열들이 가운데로 몰린다** → Column을 껐다. Column이 아니라
   **그 안의 Canvas만** 끈다 (`UIManager` 주석).
+- **가운데 캔버스(`#Main`·`#Inventory`·`#Market`)의 `VerticalLayoutGroup`은 캔버스가 아니라 자식 `Body Panel`에 단다**(2026-10-10 · T-139).
+  레이아웃 더티는 부모에 `LayoutGroup`이 있는 동안 위로 번진다 — 캔버스에 그룹이 있으면 탭 하나만 바꿔도
+  `@Main Column`·`#Main View`까지 올라가 **세 열 전체를 다시 쟀다.** `Body Panel`은 부모(캔버스)에 그룹이 없어 거기서 멈춘다.
+  캔버스 크기는 그대로 자기 `LayoutElement`(가운데 높이)와 열 폭이 정한다 — 바깥 배치는 달라지지 않는다.
 
 ## `WidgetPositionLayout`의 넘침 감시
 

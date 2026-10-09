@@ -25,6 +25,11 @@ public static class ClientLogger
         (ushort)PacketId.S_PongResponse,
     };
 
+    // 주기적으로 오는 수신(수확 1번에 4줄)을 찍을지 — 평시엔 끈다. 에디터 치트 창 도구 줄이 켠다.
+    // ※ 끄는 이유는 소음만이 아니다. 'Debug.Log'는 줄마다 스택을 뽑아 수확 프레임이 2ms씩 튀었다(2026-10-10 실측).
+    // ⚠️ 부르는 쪽이 이 값을 먼저 보고 문구를 만든다 — 꺼져 있으면 문자열도 만들지 않는다 ('Log 규칙.md' 3장).
+    public static bool ShowPeriodic { get; set; }
+
     // 송신 로그 훅 등록 (Unity 런타임 초기화 — 씬 로드 전 1회)
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
     private static void HookPacketSent()

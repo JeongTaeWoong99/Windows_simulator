@@ -189,11 +189,12 @@ WorkStation Select Presenter (↓ SUB VIEW)   ← 화면.  WorkStationSelectPres
         └─ Text (TMP)
 
 #Main Canvas (MAIN VIEW)
-├─ Title                                        ← 고정 요소라 표기 없음 (문구만 바뀐다)
-├─ WorkStation List Presenter (↓ SUB VIEW)      ┐
-├─ WorkStation Select Presenter (↓ SUB VIEW)    │ 셋이 같은 자리를 나눠 쓴다
-├─ Setting Presenter (↓ SUB VIEW)               ┘
-└─ Menu Presenter (↓ SUB VIEW)                  ← 항상 켜져 있다
+└─ Body Panel                                   ← 줄 세우는 상자 (레이아웃 경계 — 3장 "레이아웃 경계")
+    ├─ Title                                    ← 고정 요소라 표기 없음 (문구만 바뀐다)
+    ├─ WorkStation List Presenter (↓ SUB VIEW)  ┐
+    ├─ WorkStation Select Presenter (↓ SUB VIEW)│ 셋이 같은 자리를 나눠 쓴다
+    ├─ Setting Presenter (↓ SUB VIEW)           ┘
+    └─ Menu Presenter (↓ SUB VIEW)              ← 항상 켜져 있다
 ```
 
 > **`(PRESENTER ↓ SUB PRESENTER)`는 사라졌다.** Presenter 안에 또 Presenter를 두던 층
@@ -252,7 +253,8 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 ```
 
 없는 것은 건너뛴다. 예: `#Main Canvas (MAIN VIEW)`는
-`LayoutElement / CanvasRenderer / Canvas / Image / GraphicRaycaster / VerticalLayoutGroup / MainCanvasView`.
+`LayoutElement / CanvasRenderer / Canvas / Image / GraphicRaycaster / MainCanvasView`이고,
+줄 세우기(`VerticalLayoutGroup`)는 자식 `Body Panel`이 갖는다(아래 "레이아웃 경계").
 
 **여백** — **"안에 무엇이 들어가는가"로 가른다.** 깊이로 가르지 않는다.
 
@@ -260,7 +262,7 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 |---|---|---|
 | `!Horizental Columns` | 0 | **10** (열 사이) |
 | `@Xxx Column` | 0 | 0 |
-| 캔버스 | **5 5 5 5** | 5 |
+| 캔버스 — 가운데 열은 그 아래 `Body Panel` | **5 5 5 5** | 5 |
 | **위젯이 직접 들어가는 상자** — 버튼 줄 · 스크롤 `Content` · 반복 줄 · 팝업 창 | **5 5 5 5** | 5 |
 | **상자를 쌓기만 하는 자리** — Presenter가 하위 패널을 세로로 세우는 곳 | **0** | 5 |
 | **스크롤 패널** | LayoutGroup을 두지 않는다 (아래) | — |
@@ -297,6 +299,42 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 > `m_Component`를 `SerializedObject`로 직접 건드리면 Unity가 거부하고
 > (`It is not allowed to modify the m_Component property`),
 > `MoveComponentRelativeToComponent`는 대화상자를 띄워 MCP에서 실행이 끊긴다.
+
+### 레이아웃 경계 — 캔버스 바로 아래에 줄 세우는 상자를 한 겹 둔다 (2026-10-10 · T-139)
+
+**가운데 열 캔버스(`#Main`·`#Inventory`·`#Market`)는 `LayoutGroup`을 직접 갖지 않는다.** 꽉 채운 자식 `Body Panel`이 갖는다.
+
+- 이유: 레이아웃 더티는 **부모에 `LayoutGroup`이 있는 동안 위로 번진다.** 캔버스에 그룹이 있으면 탭 하나만 바꿔도
+  `@Main Column`까지 올라가 세 열을 통째로 다시 쟀다. 부모(캔버스)에 그룹이 없는 `Body Panel`에서 멈춘다.
+- 중첩 `Canvas`는 경계가 **아니다** — 유니티의 더티 전파는 캔버스를 보지 않는다.
+- 캔버스 크기는 캔버스 자신의 `LayoutElement`가 정한다 — 바깥 배치는 그대로다. 새 가운데 캔버스도 이렇게 만든다.
+- 이름은 정렬 상자 규칙(`Xxx Panel`)을 따른다. 스크립트를 붙이지 않는다.
+- **높이가 고정인데 안이 자주 바뀌는 Presenter도 같은 방식으로 경계를 둔다** — Presenter는 `LayoutElement`(고정 높이)만 갖고,
+  꽉 채운 자식 `Xxx Panel`이 그룹을 갖는다. 예: 인벤토리 `Tool Presenter` → `Tool Panel`.
+  탭마다 드롭다운·토글이 켜지고 꺼져 `Body Panel`까지 올라가 격자 전체를 다시 쟀다 — 장비 탭 전환 8.3 → 1.3ms.
+  높이가 내용을 따라가는 Presenter(목록이 늘면 커지는 것)는 경계를 두면 안 된다 — 바깥이 크기 변화를 못 받는다.
+
+### Presenter에 단 `Canvas` — 크게 숨겼다 켜는 화면은 끄지 않고 그리기만 뗀다 (2026-10-10 · T-139)
+
+칸 수백 개를 가진 화면(인벤토리 격자)은 `SetActive(false)` 대신 **자기 `Canvas`·`GraphicRaycaster`를 끄고 `LayoutElement.ignoreLayout`을 켠다.**
+`SetActive(true)`는 자손 전부의 `OnEnable` → 재빌드를 한 프레임에 몰아 34ms 멈췄고, 숨기기로 8ms가 됐다.
+→ [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>)의 "격자는 끄지 않고 숨긴다".
+
+- 이 `Canvas`는 **그리기를 떼어 내는 부품**이라 `#` 접두·`(MAIN VIEW)` 표기를 붙이지 않는다 — 화면 단위로 켜고 끄는 캔버스가 아니다.
+- 화면이 작으면 쓰지 않는다 — 평범한 `SetActive`가 더 단순하다. **켤 때 멈춤이 실제로 관측된 곳에만** 단다.
+
+### 클릭을 안 받는 글자·장식은 `Raycast Target`을 끈다 (2026-10-10 · T-139)
+
+레이캐스터는 마우스가 움직일 때마다 `Raycast Target`이 켜진 그래픽을 **전부** 훑는다 — 비용이 개수에 비례한다.
+버튼 위 글자·배경 위 장식은 클릭을 바로 위·아래 그래픽이 받으므로 꺼도 된다. 새로 만드는 글자·장식은 꺼서 만든다.
+
+끄면 안 되는 것 — 하나라도 해당하면 켜 둔다.
+- 그 그래픽을 **완전히 덮는 조상 그래픽**(같은 캔버스 · `Raycast Target` 켜짐 · 알파 판정 없음)이 없다
+  — 창 클릭 통과(투명 창) 판정이 그래픽을 본다.
+- 그 그래픽부터 그 조상 사이에 **입력 핸들러**(`Button`·`TooltipTrigger`·`IPointer…` 구현)·프로젝트 스크립트·`CanvasGroup`이 있다.
+- `Selectable`의 대상 그래픽·슬라이더 손잡이·채움이다.
+
+프리팹 안의 것은 **프리팹 원본에서** 끈다 — 씬 인스턴스에 덮어쓰기로 쌓지 않는다.
 
 ### 스크롤은 이미 서 있는 것을 그대로 베낀다
 
