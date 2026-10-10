@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -427,6 +427,9 @@ uGUI의 레이아웃 계산은 **그 프레임 맨 끝**(`Canvas.willRenderCanva
 고정 문구는 인스펙터 `text`에, 동적 내용은 Presenter가 `SetProvider`로 넘긴다
 (→ [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>)의 "툴팁").
 
+**기능·규칙·확률 설명은 대상이 아니라 도움말 아이콘(`HelpIcon` 프리팹, `?`)에 단다** — 올린 그것 자체의 정보만 대상에 단다.
+가르는 기준과 지금 자리 전체는 같은 문서의 "툴팁 두 종류".
+
 ---
 
 ## 5. 폴더 규칙 — `<캔버스>/<Presenter>/`
@@ -475,7 +478,9 @@ UI/
 │   ├─ MarketTabPresenter/
 │   │   └─ MarketTabPresenter.cs
 │   └─ GachaPresenter/
-│       └─ GachaPresenter.cs
+│       ├─ GachaPresenter.cs
+│       ├─ GachaPoolCardView.cs
+│       └─ GachaPoolSummary.cs
 ├─ Widget/
 │   ├─ Widget 규칙.md
 │   ├─ WidgetCanvasView.cs

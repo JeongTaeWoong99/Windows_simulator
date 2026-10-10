@@ -64,10 +64,10 @@ public class EquipEnchantPresenter : MonoBehaviour
     private TMP_Text afterOptionsText = null!;
 
     [CenterHeader("규칙 · 큐브")]
-    [SerializeField, Tooltip("한 줄 요약 — 이번에 쓰면 무엇이 되나. 올리면 전체 규칙·확률 표")]
+    [SerializeField, Tooltip("한 줄 요약 — 이번에 쓰면 무엇이 되나. 전체 규칙·확률은 옆 도움말 아이콘")]
     private TMP_Text ruleText = null!;
 
-    [SerializeField, Tooltip("규칙 줄의 툴팁 트리거")]
+    [SerializeField, Tooltip("규칙 줄 옆 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 큐브 규칙·확률 표")]
     private TooltipTrigger ruleTooltip = null!;
 
     [SerializeField, NonReorderable, Tooltip("큐브 버튼 — 'EnchantItemTable' 순서로 채운다. 남는 버튼은 꺼진다")]
@@ -377,11 +377,10 @@ public class EquipEnchantPresenter : MonoBehaviour
         afterBox.SetActive(true);
     }
 
-    // 규칙 줄 — 이번에 쓰면 무엇이 되나 한 줄. 전체 규칙은 올리면 툴팁으로 펼친다.
+    // 규칙 줄 — 이번에 쓰면 무엇이 되나 한 줄. 전체 규칙·확률은 옆 도움말 아이콘(?)의 툴팁이 펼친다.
+    // ※ 문구 끝에 "(올리면 규칙·확률)"을 붙이던 안내는 아이콘으로 대신했다 — 도움말 아이콘 규약('Overlay 규칙.md' "툴팁").
     private void DrawRule(GlobalRarity grade, int slotCount)
     {
-        const string More = "  (올리면 규칙·확률)";
-
         // 큐브 차이는 상승 확률뿐이라 첫 사용·신화에서는 어느 큐브든 결과가 같다 — 비싼 큐브를 고르면 알린다.
         // 근본 해결(상급 큐브에 다른 장점을 주거나 큐브를 하나로 합치기)은 서버·기획 몫이다(T-095 후속 이슈).
         if (IsWastedCube(grade, out string cheaper))
@@ -389,22 +388,22 @@ public class EquipEnchantPresenter : MonoBehaviour
             ruleText.text = Colorize(grade == GlobalRarity.None
                                          ? $"첫 사용은 어느 큐브든 {GradeText(GlobalRarity.Common)} 확정 — {cheaper}와 결과가 같습니다."
                                          : $"최고 등급이라 오를 등급이 없어 {cheaper}와 결과가 같습니다.",
-                                     UIThemePalette.Of(UIThemeRole.Highlight)) + More;
+                                     UIThemePalette.Of(UIThemeRole.Highlight));
 
             return;
         }
 
         if (grade == GlobalRarity.None)
         {
-            ruleText.text = $"처음 쓰면 {GradeText(GlobalRarity.Common)} 등급으로 칸 {slotCount}개를 채웁니다.{More}";
+            ruleText.text = $"처음 쓰면 {GradeText(GlobalRarity.Common)} 등급으로 칸 {slotCount}개를 채웁니다.";
         }
         else if (grade >= GlobalRarity.Mythic)
         {
-            ruleText.text = $"최고 등급입니다. 쓰면 칸 {slotCount}개를 같은 등급으로 다시 뽑습니다.{More}";
+            ruleText.text = $"최고 등급입니다. 쓰면 칸 {slotCount}개를 같은 등급으로 다시 뽑습니다.";
         }
         else
         {
-            ruleText.text = $"쓰면 칸 {slotCount}개를 전부 다시 뽑고, 확률로 {GradeText(grade + 1)}(으)로 오릅니다. 내려가지 않습니다.{More}";
+            ruleText.text = $"쓰면 칸 {slotCount}개를 전부 다시 뽑고, 확률로 {GradeText(grade + 1)}(으)로 오릅니다. 내려가지 않습니다.";
         }
     }
 

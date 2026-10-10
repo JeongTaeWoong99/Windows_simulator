@@ -25,6 +25,8 @@
 
 - [2026-10-08 문서 사이트 게임 데이터 뷰어 /data (T-132)](2026-10-08-web-data-viewer.md) — `#docs` `#data` DataLog JSON을 테이블별 페이지로 · 이름표 · Weight 비율
 - [2026-10-07 문서 사이트 회차 탭에 닫힌 일감도 담는다](2026-10-07-web-cycle-tab-closed.md) — `#docs` 회차 탭 + 상태 Closed 필터로 그 회차에 끝낸 일을 본다
+- [2026-10-10 툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘](2026-10-10-tooltip-help-icon.md) — `#client` `#ui` `HelpIcon` 프리팹(`?`) · 전수 조사 15곳 · 뽑기·인챈트만 아이콘으로
+- [2026-10-10 뽑기 화면을 풀마다 카드로 (T-143)](2026-10-10-gacha-pool-cards.md) — `#client` `#ui` 카드 프리팹 4장 · [P] 확률 툴팁(네 시트 가중치) · 대표 아이콘
 - [2026-10-10 칸 획득 반짝임 · 무대 배경 배율 보정 · 대상 크기](2026-10-10-gain-shine-stage-scale.md) — `#client` `#ui` 인벤토리 칸 반짝임 · 배경이 패널 높이를 채운다 · `TargetVisual.scale`
 - [2026-10-10 루트 UI 두 축 — Overlay Canvas (T-140 · T-141)](2026-10-10-overlay-layer.md) — `#client` `#ui` `!System`·`!Login` → `!Overlay Canvas` · 앞뒤 순서 · 로그인 Presenter화 · 폴더 `UI/Overlay`
 - [2026-10-10 프레임 여유 구조 정리 (T-139)](2026-10-10-frame-headroom.md) — `#client` `#ui` `#optimization` 레이아웃 경계(Body·Tool Panel) · 격자 Canvas 숨김 · Raycast Target · 주기 수신 로그 토글

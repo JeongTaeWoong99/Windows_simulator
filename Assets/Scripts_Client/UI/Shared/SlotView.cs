@@ -65,19 +65,14 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
     private TMP_Text levelText = null!;
 
-    // ※ 보조 문구·적성 스트립과 **같은 밴드**를 쓴다 — 장비 탭에서는 효과 문구 대신 이 줄이 선다
-    //   (기본 능력치 문구는 툴팁으로 갔다 · T-095).
-    // ※ 네모는 **오른쪽 끝부터** 앉는다 — 칸이 1개인 일반 장비는 오른쪽 아래 하나만 켜진다.
-    [CenterHeader("능력치 칸 (장비 탭)")]
-    [SerializeField, Tooltip("능력치 칸 네모를 담은 하단 밴드. 장비 탭에서만 켜진다")]
-    private GameObject statSocketStrip = null!;
-
-    // ⚠️ **배열 순서 = 화면의 왼쪽 → 오른쪽**이다. 칸 수가 적으면 앞(왼쪽)부터 꺼진다.
-    [SerializeField, NonReorderable, Tooltip("능력치 칸 네모 — 상한(3) 이상. 왼쪽 → 오른쪽 순서. 남는 네모는 꺼진다")]
-    private Image[] statSocketImages = new Image[0];
+    // ※ 장비 탭에서는 보조 문구(효과)를 끈다 — 기본 능력치 문구는 툴팁으로 갔다(T-095).
+    // ※ 칸 수만큼 네모를 그리던 것을 보석 하나로 바꿨다(2026-10-10 — 'EnchantGemView' 주석).
+    [CenterHeader("인챈트 보석 (장비 탭)")]
+    [SerializeField, Tooltip("오른쪽 아래 인챈트 보석 — 색 = 인챈트 등급, 인챈트 전이면 빈 보석. 장비 탭에서만 켜진다")]
+    private EnchantGemView enchantGem = null!;
 
     // ※ LV 배지와 **같은 줄**, 오른쪽 끝은 **적성 스트립의 오른쪽 끝**과 맞춘다 — 왼쪽의 경험치 게이지가
-    //   스트립 왼쪽 끝과 맞는 것과 짝이다(2026-10-07). 장비 탭의 능력치 칸과 같은 네모라 새로 배울 표시가 없다.
+    //   스트립 왼쪽 끝과 맞는 것과 짝이다(2026-10-07). 네모 하나가 낀 장비 하나의 등급이다(장비 탭의 인챈트 보석과는 다른 정보).
     [CenterHeader("장착 네모 (캐릭터 탭)")]
     [SerializeField, Tooltip("캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석. 캐릭터 탭에서만 켜진다")]
     private EquipPipsView equipPips = null!;
@@ -164,9 +159,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 껐다 켤 때마다 점점 검어진다.
     private Color _rarityColor = RarityPalette.Unknown;
 
-    // 능력치 칸 네모의 원래 색 — 등급색과 같은 이유로 딤·흑백 전의 값을 들고 있는다.
-    private Color[] _socketColors = new Color[0];
-
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 부르는 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
@@ -181,7 +173,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(sellMark,       nameof(sellMark));
         this.RequireRef(assignMark,     nameof(assignMark));
-        this.RequireRef(statSocketStrip, nameof(statSocketStrip));
+        this.RequireRef(enchantGem,      nameof(enchantGem));
         this.RequireRef(equipPips,       nameof(equipPips));
         this.RequireRef(starRow,            nameof(starRow));
         this.RequireRef(condenseTargetMark, nameof(condenseTargetMark));
@@ -192,15 +184,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         {
             ClientLogger.Warn(ClientLogger.UI, $"★ 그림이 {starImages.Length}개다 — 최고 ★ {MaxStarImages}보다 적다.", this);
         }
-
-        // 네모가 상한보다 적으면 전설·신화 장비의 칸이 잘린다 — 오른쪽부터 앉으므로 왼쪽 칸이 조용히 사라진다.
-        if (statSocketImages.Length < EquipLabel.MaxStatSlotCount)
-        {
-            ClientLogger.Warn(ClientLogger.UI,
-                $"능력치 칸 네모가 {statSocketImages.Length}개다 — 상한 {EquipLabel.MaxStatSlotCount}칸보다 적다.", this);
-        }
-
-        _socketColors = new Color[statSocketImages.Length];
 
         // 칸이 5개가 아니면 값이 다른 산업 자리에 들어간다 — 위치가 곧 산업이라 조용히 틀린다.
         if (aptitudeValueTexts.Length != AptitudeCount)
@@ -215,7 +198,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _subBaseAlpha  = subText.alpha;
 
         aptitudeStrip.SetActive(false);
-        statSocketStrip.SetActive(false);
+        enchantGem.gameObject.SetActive(false);
         equipPips.gameObject.SetActive(false);
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
@@ -282,12 +265,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         RefreshSubText();
     }
 
-    // 하단 밴드의 주인을 정한다 — 적성 스트립이나 능력치 칸이 켜져 있으면 문구는 비킨다
+    // 하단 밴드의 주인을 정한다 — 적성 스트립이 켜져 있거나 장비 칸(보석)이면 문구는 비킨다
     // (SetSubVisible · SetAptitudes · SetStatSockets에서 호출).
     // ※ 셋이 같은 자리라 판정을 한 곳에 둔다 — 셋에 흩어 두면 하나를 더할 때 한 곳이 빠진다.
     private void RefreshSubText()
     {
-        subText.gameObject.SetActive(_isSubAllowed && !aptitudeStrip.activeSelf && !statSocketStrip.activeSelf);
+        subText.gameObject.SetActive(_isSubAllowed && !aptitudeStrip.activeSelf && !enchantGem.gameObject.activeSelf);
     }
 
     // 적성 5종을 스트립에 그린다. 'null'이면 스트립을 끄고 보조 문구 자리를 돌려준다
@@ -332,50 +315,14 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // 능력치 칸을 그린다. 'null'이면 줄을 끄고 보조 문구 자리를 돌려준다
+    // 장비의 인챈트 보석을 그린다. 'null'이면 보석을 끄고 보조 문구 자리를 돌려준다
     // (인벤토리 격자가 매번 그릴 때 호출 — 장비 탭에서만 값이 온다 · T-095).
     //
-    // grades의 길이가 곧 칸 수이고, 원소는 그 칸에 박힌 능력치의 등급이다 — 'None'이면 빈 칸.
-    // 칸 수·등급의 판단은 공급자가 한다('EquipSlotSource') — 이 칸은 장비를 모른다('SetAptitudes'와 같은 이유).
+    // grades는 칸마다의 등급이다 — 칸 수·등급의 판단은 공급자가 한다('EquipSlotSource'). 보석은 그중 인챈트 등급 하나만 그린다.
     public void SetStatSockets(IReadOnlyList<GlobalRarity>? grades)
     {
-        bool on = grades != null && grades.Count > 0;
-
-        statSocketStrip.SetActive(on);
+        enchantGem.Bind(grades);
         RefreshSubText();
-
-        if (!on)
-        {
-            return;
-        }
-
-        // 오른쪽 끝부터 앉힌다 — 앞의 'offset'개 네모는 끈다.
-        int offset = statSocketImages.Length - grades!.Count;
-
-        for (int i = 0; i < statSocketImages.Length; i++)
-        {
-            Image? socket = statSocketImages[i];
-
-            if (socket == null)
-            {
-                continue; // 배선 누락은 Awake가 이미 경고했다
-            }
-
-            int line = i - offset;
-            bool isUsed = line >= 0;
-
-            socket.gameObject.SetActive(isUsed);
-
-            if (!isUsed)
-            {
-                continue;
-            }
-
-            GlobalRarity grade = grades[line];
-
-            _socketColors[i] = grade == GlobalRarity.None ? RarityPalette.EmptySocket : RarityPalette.Get(grade);
-        }
-
         ApplyTint();
     }
 
@@ -516,14 +463,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         rarityImage.color = Tint(_rarityColor);
         itemImage.color   = Tint(_itemBaseColor);
 
-        for (int i = 0; i < statSocketImages.Length; i++)
-        {
-            if (statSocketImages[i] != null)
-            {
-                statSocketImages[i].color = Tint(_socketColors[i]);
-            }
-        }
-
+        enchantGem.SetTint(_isDimmed, IsGray);
         equipPips.SetTint(_isDimmed, IsGray);
 
         float textAlpha = IsGray ? FilteredOutTextAlpha : 1f;
