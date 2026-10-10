@@ -63,6 +63,14 @@ using UnityEngine.UI;
 //   큐브 창·응축 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
 //   응축 창이 열린 동안 캐릭터 칸 좌클릭은 **재료 고르기**다 — 무엇을 할지는 응축 창이 정하고('OnCharacterClicked'),
 //   칸이 대상·재료·못 넣음 중 무엇인지도 응축 창이 답한다('GetMark'). 격자는 그대로 그린다.
+//
+// ■ 들어온 칸은 한 번 반짝인다 (2026-10-10)
+//   자원이 늘거나 새 개체가 생기면 숫자만 바뀌어 눈에 안 띄었다. 무엇이 들어왔는지는 공급자가 안다('InventorySlotSource' 획득 감지) —
+//   격자는 칸을 그릴 때 'TakeGain'으로 꺼내 그 칸에 'SlotGainShine'을 한 번 돌린다.
+//   - 한꺼번에 여럿이면 칸 순서대로 'ShineStagger'씩 늦춰 물결지게 한다 — 같은 프레임에 다 터지면 어디가 들어왔는지 안 읽힌다.
+//     지연은 'MaxShineStagger'칸에서 멈춘다(10연차가 1초 넘게 이어지지 않게).
+//   - 보이는 칸만 돈다(T-138) — 화면 밖 칸은 표시만 남았다가 스크롤로 들어올 때 반짝인다. 칸 하나 = 그림 둘 + Sequence 하나.
+//   - 칸이 다른 개체로 다시 묶이거나(정렬 응답) 꺼지면 끊는다 — 남의 칸에서 반짝임이 이어지지 않게.
 public class InventoryGridPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -99,6 +107,16 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
     private readonly List<SlotView?> _views = new List<SlotView?>();
+
+    // 프레임 i 칸의 획득 반짝임. 처음 반짝일 때 붙이고 칸과 함께 돌려쓴다.
+    private readonly List<SlotGainShine?> _shines = new List<SlotGainShine?>();
+
+    // 한 번에 그리는 동안 이미 반짝이기 시작한 칸 수 — 다음 칸의 물결 지연을 정한다('Redraw' · 'OnScrollChanged' 첫머리에서 0)
+    private int _shineOrder;
+
+    // 물결 지연 한 칸 (초) · 지연이 더 늘지 않는 칸 수
+    private const float ShineStagger    = 0.06f;
+    private const int   MaxShineStagger = 8;
 
     // 지금 그려 둔 프레임 번호 범위 — 뷰포트에 걸치는 줄과 위아래 한 줄('ComputeVisibleRange'). 없으면 first > last.
     private int _visibleFirst = int.MaxValue;
@@ -514,6 +532,8 @@ public class InventoryGridPresenter : MonoBehaviour
     //   ※ 칸은 데이터를 들고 있지 않다 — 들어올 때 공급자에서 지금 값을 읽으므로 화면 밖에서 놓친 변경이 없다.
     private void Redraw()
     {
+        _shineOrder = 0;
+
         ComputeVisibleRange(out _visibleFirst, out _visibleLast);
 
         for (int i = 0; i < _frames.Count; i++)
@@ -557,6 +577,8 @@ public class InventoryGridPresenter : MonoBehaviour
         {
             return;
         }
+
+        _shineOrder = 0;
 
         for (int i = Mathf.Min(first, _visibleFirst); i <= Mathf.Max(last, _visibleLast); i++)
         {
@@ -679,6 +701,32 @@ public class InventoryGridPresenter : MonoBehaviour
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
         view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
         view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
+
+        SyncShine(i, view, data);
+    }
+
+    // 방금 들어온 개체면 칸을 한 번 반짝이고, 칸이 다른 개체로 다시 묶였으면 이전 반짝임을 끊는다 (DrawCell에서 호출).
+    private void SyncShine(int i, SlotView view, in SlotData data)
+    {
+        SlotGainShine? shine = _shines[i];
+
+        if (_current != null && _current.TakeGain(data.Key))
+        {
+            if (shine == null)
+            {
+                shine      = SlotGainShine.Attach(view.gameObject);
+                _shines[i] = shine;
+            }
+
+            shine.Play(data.Key, data.Rarity, Mathf.Min(_shineOrder++, MaxShineStagger) * ShineStagger);
+
+            return;
+        }
+
+        if (shine != null && shine.IsPlaying && shine.Key != data.Key)
+        {
+            shine.Stop();
+        }
     }
 
     // 이 캐릭터의 적성 5종을 스트립 순서대로 담아 돌려준다 (Redraw에서 호출).
@@ -756,6 +804,13 @@ public class InventoryGridPresenter : MonoBehaviour
         if (view == null || !view.gameObject.activeSelf)
         {
             return;
+        }
+
+        SlotGainShine? shine = _shines[index];
+
+        if (shine != null)
+        {
+            shine.Stop();
         }
 
         view.Clear();
@@ -1357,11 +1412,13 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         _frames.Clear();
         _views.Clear();
+        _shines.Clear();
 
         foreach (Transform frame in slotParent)
         {
             _frames.Add(frame);
             _views.Add(null);
+            _shines.Add(null);
         }
 
         if (_frames.Count == 0)

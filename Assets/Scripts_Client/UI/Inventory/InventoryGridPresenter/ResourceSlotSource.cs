@@ -9,6 +9,10 @@ public class ResourceSlotSource : InventorySlotSource
 {
     private readonly PlayerDataModel _data;
 
+    // 이번 'Fill'에서 담은 인벤토리 수량 — 획득 감지가 읽는다('AmountOf').
+    // ※ 'GetItemCount'를 쓰지 않는다 — 같은 TID가 창고(T-107)에도 있으면 그쪽 줄을 먼저 집을 수 있다.
+    private readonly Dictionary<long, int> _counts = new Dictionary<long, int>();
+
     public ResourceSlotSource(PlayerDataModel data)
     {
         _data = data;
@@ -20,6 +24,8 @@ public class ResourceSlotSource : InventorySlotSource
     // ※ 창고(T-107)에 맡긴 것은 인벤토리 격자에 그리지 않는다 — 같은 TID가 두 보관함에 따로 있을 수 있다.
     protected override void Fill(List<PlacedSlot> into)
     {
+        _counts.Clear();
+
         foreach (ItemInfo item in _data.Inventory)
         {
             // 서버가 0개가 된 아이템도 실어 보낸다(감소도 같은 경로로 온다). 화면에서는 뺀다.
@@ -36,8 +42,12 @@ public class ResourceSlotSource : InventorySlotSource
                 VisualCatalog.ItemIconOf(item.ItemId));
 
             into.Add(new PlacedSlot(slot, item.Slot));
+            _counts[item.ItemId] = item.Count;
         }
     }
+
+    // 자원은 보유 수량으로 획득을 본다 — 이미 있는 칸에 더 들어와도 반짝인다 (획득 감지가 호출).
+    protected override int AmountOf(long key) => _counts.TryGetValue(key, out int count) ? count : 0;
 
     // 자원만 보유 수량으로 줄 세울 수 있다 — 캐릭터·장비는 개체라 수량이 늘 1이다 (도구 줄이 호출).
     public override bool SupportsSortKey(InventorySortKey key) => true;

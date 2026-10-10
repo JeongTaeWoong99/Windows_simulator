@@ -72,6 +72,14 @@ public readonly struct PlacedSlot
 // ⚠️ 그래서 거르는 동안은 **보이는 순서 ≠ 칸 번호**다 — 격자는 이때 칸 끌기를 막는다.
 // ※ 안 맞는 것을 **빼지 않는다** — 한때 맞는 것만 남겼더니 인벤토리가 텅 비어 보였다(2026-09-29 실측).
 //   제자리에 두고 흐리게만 하면(WoW 가방식) 결과가 흩어져 스크롤로 찾아야 한다. 둘을 섞은 것이 이 방식이다.
+//
+// ■ 획득 감지 (2026-10-10)
+// 'Rebuild'마다 개체별 수량('AmountOf')을 직전과 비교해 **늘었거나 새로 생긴 Key**를 모은다 — 격자가 그 칸을 그릴 때
+// 한 번 꺼내 반짝인다('TakeGain' → 'SlotGainShine'). 정렬·칸 이동·찾기·강화는 수량이 그대로라 반짝이지 않는다.
+// - 직전 기록이 비어 있으면(처음 채움 · 로그인 전 빈 목록) 전부 새것이라 건너뛴다. 그래서 다 팔아 비운 직후의 첫 획득은 반짝이지 않는다.
+// - 화면 밖 칸은 기록만 남았다가 스크롤로 들어올 때 반짝인다. 탭을 떠나 있던 동안 들어온 것도 돌아와 다시 채울 때 반짝인다
+//   (떠날 때 'Unsubscribe'가 기록을 지우지 않는다).
+// - 빠진 개체의 남은 표시는 버린다 — 번호를 다시 쓰는 개체가 엉뚱하게 반짝이지 않게.
 public abstract class InventorySlotSource
 {
     // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
@@ -96,6 +104,12 @@ public abstract class InventorySlotSource
     // 지금 찾기 조건에 안 맞는 Key — 격자가 흑백으로 그린다.
     private readonly HashSet<long> _filteredOut = new HashSet<long>();
 
+    // 획득 감지 — 직전 'Rebuild'의 Key별 수량과, 아직 격자가 꺼내 가지 않은 획득 Key
+    private Dictionary<long, int> _amounts     = new Dictionary<long, int>();
+    private Dictionary<long, int> _amountsNext = new Dictionary<long, int>();
+    private readonly HashSet<long> _gains      = new HashSet<long>();
+    private readonly List<long>    _goneGains  = new List<long>();
+
     private bool _isSubscribed;
 
     // 그릴 칸 수 — **빈 칸을 포함한** 마지막 내용물까지의 길이다.
@@ -110,6 +124,9 @@ public abstract class InventorySlotSource
 
     // 이 개체가 지금 찾기 조건에 안 맞나 — 격자가 흑백으로 그린다 (Redraw에서 호출).
     public bool IsFilteredOut(long key) => _filteredOut.Contains(key);
+
+    // 이 개체가 방금 들어왔거나 늘었나 — 맞으면 표시를 지우고 true (격자가 칸을 그릴 때 호출 · 칸마다 한 번만 반짝인다).
+    public bool TakeGain(long key) => _gains.Remove(key);
 
     // 이 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 드롭다운 목록을 만들 때 호출).
     // 기본은 등급·이름 — 보유 수량은 자원만 뜻이 있다. 서버도 같은 판정으로 거절한다('InvalidStorageSortKey').
@@ -201,6 +218,7 @@ public abstract class InventorySlotSource
         _filled.Clear();
         Fill(_filled);
 
+        DetectGains();
         Arrange();
         Changed?.Invoke();
     }
@@ -208,6 +226,10 @@ public abstract class InventorySlotSource
     // 이 탭이 지금 인벤토리에 두고 있는 것들을 **서버 칸 번호와 함께** 채운다 (Rebuild에서 호출).
     // ※ 담는 순서는 상관없다 — 자리는 칸 번호가 정한다.
     protected abstract void Fill(List<PlacedSlot> into);
+
+    // 이 개체의 수량 — 획득 감지가 직전과 비교한다 (DetectGains에서 호출).
+    // 개체(캐릭터·장비)는 늘 1이라 "새로 생겼나"만 본다. 자원만 보유 수량으로 덮어쓴다.
+    protected virtual int AmountOf(long key) => 1;
 
     // 이 칸이 그 산업에 속하나 (Matches에서 호출). 산업 축이 없는 탭은 늘 true다.
     //   industry : 'IndustryType' 값 (0은 호출 전에 걸러진다)
@@ -222,6 +244,49 @@ public abstract class InventorySlotSource
 
     // 구독을 해제한다 (Unsubscribe에서 호출).
     protected abstract void OnUnsubscribe();
+
+    // 직전 수량과 비교해 늘었거나 새로 생긴 Key를 '_gains'에 모은다 (Rebuild에서 호출 — 머리 주석 '획득 감지').
+    private void DetectGains()
+    {
+        bool hasBaseline = _amounts.Count > 0;
+
+        _amountsNext.Clear();
+
+        foreach (PlacedSlot placed in _filled)
+        {
+            long key    = placed.Data.Key;
+            int  amount = AmountOf(key);
+
+            _amountsNext[key] = amount;
+
+            if (hasBaseline && (!_amounts.TryGetValue(key, out int before) || amount > before))
+            {
+                _gains.Add(key);
+            }
+        }
+
+        // 빠진 개체의 남은 표시를 버린다
+        if (_gains.Count > 0)
+        {
+            _goneGains.Clear();
+
+            foreach (long key in _gains)
+            {
+                if (!_amountsNext.ContainsKey(key))
+                {
+                    _goneGains.Add(key);
+                }
+            }
+
+            foreach (long key in _goneGains)
+            {
+                _gains.Remove(key);
+            }
+        }
+
+        // 두 사전을 맞바꿔 쓴다 — 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다)
+        (_amounts, _amountsNext) = (_amountsNext, _amounts);
+    }
 
     // '_filled'를 서버 칸 번호에 앉힌다 (Rebuild · SetFilter에서 호출).
     //
