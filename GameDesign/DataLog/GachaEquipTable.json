@@ -1910,5 +1910,181 @@
     "Count": 1,
     "Weight": 81,
     "Description": "Mythic 월광 성석"
+  },
+  {
+    "GachaEquipTID": 24101,
+    "GachaId": 24,
+    "EquipTID": 1104,
+    "Count": 1,
+    "Weight": 69,
+    "Description": "Epic 은빛 쟁기"
+  },
+  {
+    "GachaEquipTID": 24102,
+    "GachaId": 24,
+    "EquipTID": 1204,
+    "Count": 1,
+    "Weight": 69,
+    "Description": "Epic 심해 작살"
+  },
+  {
+    "GachaEquipTID": 24103,
+    "GachaId": 24,
+    "EquipTID": 1304,
+    "Count": 1,
+    "Weight": 69,
+    "Description": "Epic 흑요석 곡괭이"
+  },
+  {
+    "GachaEquipTID": 24104,
+    "GachaId": 24,
+    "EquipTID": 1404,
+    "Count": 1,
+    "Weight": 69,
+    "Description": "Epic 백년목 도끼"
+  },
+  {
+    "GachaEquipTID": 24105,
+    "GachaId": 24,
+    "EquipTID": 1504,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 은빛 장궁"
+  },
+  {
+    "GachaEquipTID": 24106,
+    "GachaId": 24,
+    "EquipTID": 2005,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 장인의 인장"
+  },
+  {
+    "GachaEquipTID": 24107,
+    "GachaId": 24,
+    "EquipTID": 3104,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 황금 이삭석"
+  },
+  {
+    "GachaEquipTID": 24108,
+    "GachaId": 24,
+    "EquipTID": 3204,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 산호 진주"
+  },
+  {
+    "GachaEquipTID": 24109,
+    "GachaId": 24,
+    "EquipTID": 3304,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 용암 결정"
+  },
+  {
+    "GachaEquipTID": 24110,
+    "GachaId": 24,
+    "EquipTID": 3404,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 백년목 결정"
+  },
+  {
+    "GachaEquipTID": 24111,
+    "GachaId": 24,
+    "EquipTID": 3504,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Epic 사냥꾼의 별"
+  },
+  {
+    "GachaEquipTID": 24112,
+    "GachaId": 24,
+    "EquipTID": 1105,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 풍년의 괭이"
+  },
+  {
+    "GachaEquipTID": 24113,
+    "GachaId": 24,
+    "EquipTID": 1205,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 용린 낚싯대"
+  },
+  {
+    "GachaEquipTID": 24114,
+    "GachaId": 24,
+    "EquipTID": 1305,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 24115,
+    "GachaId": 24,
+    "EquipTID": 1405,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 서리강철 도끼"
+  },
+  {
+    "GachaEquipTID": 24116,
+    "GachaId": 24,
+    "EquipTID": 1505,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 폭풍의 장궁"
+  },
+  {
+    "GachaEquipTID": 24117,
+    "GachaId": 24,
+    "EquipTID": 2006,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 대장인의 훈장"
+  },
+  {
+    "GachaEquipTID": 24118,
+    "GachaId": 24,
+    "EquipTID": 3105,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 대지의 심장"
+  },
+  {
+    "GachaEquipTID": 24119,
+    "GachaId": 24,
+    "EquipTID": 3205,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 바다의 심장"
+  },
+  {
+    "GachaEquipTID": 24120,
+    "GachaId": 24,
+    "EquipTID": 3305,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 대지핵 결정"
+  },
+  {
+    "GachaEquipTID": 24121,
+    "GachaId": 24,
+    "EquipTID": 3405,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 숲의 심장"
+  },
+  {
+    "GachaEquipTID": 24122,
+    "GachaId": 24,
+    "EquipTID": 3505,
+    "Count": 1,
+    "Weight": 68,
+    "Description": "Legendary 야수의 심장"
   }
 ]

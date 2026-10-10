@@ -158,5 +158,13 @@
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "상자 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 24,
+    "Name": "비밀 금고",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "황금 열쇠 전용 — 골드로 뽑을 수 없다"
   }
 ]

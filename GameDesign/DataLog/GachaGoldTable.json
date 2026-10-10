@@ -4,7 +4,7 @@
     "GachaId": 9,
     "MinAmount": 135,
     "MaxAmount": 271,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 135~271"
   },
   {
@@ -12,7 +12,7 @@
     "GachaId": 9,
     "MinAmount": 271,
     "MaxAmount": 677,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 271~677"
   },
   {
@@ -20,7 +20,7 @@
     "GachaId": 10,
     "MinAmount": 406,
     "MaxAmount": 813,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 406~813"
   },
   {
@@ -28,7 +28,7 @@
     "GachaId": 10,
     "MinAmount": 813,
     "MaxAmount": 2032,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 813~2032"
   },
   {
@@ -36,7 +36,7 @@
     "GachaId": 11,
     "MinAmount": 1354,
     "MaxAmount": 2709,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 1354~2709"
   },
   {
@@ -44,7 +44,7 @@
     "GachaId": 11,
     "MinAmount": 2709,
     "MaxAmount": 6772,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 2709~6772"
   },
   {
@@ -52,7 +52,7 @@
     "GachaId": 12,
     "MinAmount": 406,
     "MaxAmount": 813,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 406~813"
   },
   {
@@ -60,7 +60,7 @@
     "GachaId": 12,
     "MinAmount": 813,
     "MaxAmount": 2032,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 813~2032"
   },
   {
@@ -68,7 +68,7 @@
     "GachaId": 13,
     "MinAmount": 1219,
     "MaxAmount": 2438,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 1219~2438"
   },
   {
@@ -76,7 +76,7 @@
     "GachaId": 13,
     "MinAmount": 2438,
     "MaxAmount": 6095,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 2438~6095"
   },
   {
@@ -84,7 +84,7 @@
     "GachaId": 14,
     "MinAmount": 4064,
     "MaxAmount": 8127,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 4064~8127"
   },
   {
@@ -92,7 +92,7 @@
     "GachaId": 14,
     "MinAmount": 8127,
     "MaxAmount": 20318,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 8127~20318"
   },
   {
@@ -100,7 +100,7 @@
     "GachaId": 15,
     "MinAmount": 1219,
     "MaxAmount": 2438,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 1219~2438"
   },
   {
@@ -108,7 +108,7 @@
     "GachaId": 15,
     "MinAmount": 2438,
     "MaxAmount": 6095,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 2438~6095"
   },
   {
@@ -116,7 +116,7 @@
     "GachaId": 16,
     "MinAmount": 3657,
     "MaxAmount": 7314,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 3657~7314"
   },
   {
@@ -124,7 +124,7 @@
     "GachaId": 16,
     "MinAmount": 7314,
     "MaxAmount": 18286,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 7314~18286"
   },
   {
@@ -132,7 +132,7 @@
     "GachaId": 17,
     "MinAmount": 12190,
     "MaxAmount": 24381,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 12190~24381"
   },
   {
@@ -140,7 +140,7 @@
     "GachaId": 17,
     "MinAmount": 24381,
     "MaxAmount": 60952,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 24381~60952"
   },
   {
@@ -148,7 +148,7 @@
     "GachaId": 18,
     "MinAmount": 3657,
     "MaxAmount": 7314,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 3657~7314"
   },
   {
@@ -156,7 +156,7 @@
     "GachaId": 18,
     "MinAmount": 7314,
     "MaxAmount": 18286,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 7314~18286"
   },
   {
@@ -164,7 +164,7 @@
     "GachaId": 19,
     "MinAmount": 10971,
     "MaxAmount": 21943,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 10971~21943"
   },
   {
@@ -172,7 +172,7 @@
     "GachaId": 19,
     "MinAmount": 21943,
     "MaxAmount": 54857,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 21943~54857"
   },
   {
@@ -180,7 +180,7 @@
     "GachaId": 20,
     "MinAmount": 36572,
     "MaxAmount": 73143,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 36572~73143"
   },
   {
@@ -188,7 +188,7 @@
     "GachaId": 20,
     "MinAmount": 73143,
     "MaxAmount": 182858,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 73143~182858"
   },
   {
@@ -196,7 +196,7 @@
     "GachaId": 21,
     "MinAmount": 10971,
     "MaxAmount": 21943,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 10971~21943"
   },
   {
@@ -204,7 +204,7 @@
     "GachaId": 21,
     "MinAmount": 21943,
     "MaxAmount": 54857,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 21943~54857"
   },
   {
@@ -212,7 +212,7 @@
     "GachaId": 22,
     "MinAmount": 32914,
     "MaxAmount": 65829,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 32914~65829"
   },
   {
@@ -220,7 +220,7 @@
     "GachaId": 22,
     "MinAmount": 65829,
     "MaxAmount": 164572,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 65829~164572"
   },
   {
@@ -228,7 +228,7 @@
     "GachaId": 23,
     "MinAmount": 109714,
     "MaxAmount": 219429,
-    "Weight": 3000,
+    "Weight": 2250,
     "Description": "골드 109714~219429"
   },
   {
@@ -236,7 +236,7 @@
     "GachaId": 23,
     "MinAmount": 219429,
     "MaxAmount": 548572,
-    "Weight": 1000,
+    "Weight": 750,
     "Description": "골드 219429~548572"
   }
 ]

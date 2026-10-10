@@ -1723,7 +1723,7 @@
     "MaxStack": 9999,
     "BasePrice": 50,
     "OpenGachaId": 0,
-    "Description": "나무 상자 전용 (임시 이름 · 용도 미정)",
+    "Description": "지정 슬롯 다음 1회 판정 즉시 완료 (시간 스킵)",
     "Tooltip": ""
   },
   {
@@ -1734,7 +1734,7 @@
     "MaxStack": 9999,
     "BasePrice": 150,
     "OpenGachaId": 0,
-    "Description": "은 상자 전용 (임시 이름 · 용도 미정)",
+    "Description": "지정 슬롯 다음 20회 판정 동안 상자 드롭 확률 +100% (2배)",
     "Tooltip": ""
   },
   {
@@ -1744,8 +1744,8 @@
     "GlobalRarity": "Rare",
     "MaxStack": 9999,
     "BasePrice": 500,
-    "OpenGachaId": 0,
-    "Description": "황금 상자 전용 (임시 이름 · 용도 미정)",
+    "OpenGachaId": 24,
+    "Description": "비밀 금고(GachaId 24) 1회 개봉 (고등급 장비·큐브 묶음 확정)",
     "Tooltip": ""
   },
   {
@@ -1933,6 +1933,83 @@
     "BasePrice": 43886,
     "OpenGachaId": 23,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×100",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100041,
+    "Name": "성장의 비약 (소)",
+    "ItemType": "Special",
+    "GlobalRarity": "Common",
+    "MaxStack": 9999,
+    "BasePrice": 50,
+    "OpenGachaId": 0,
+    "Description": "캐릭터 경험치 +100 Exp 즉시 획득",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100042,
+    "Name": "성장의 비약 (중)",
+    "ItemType": "Special",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "BasePrice": 250,
+    "OpenGachaId": 0,
+    "Description": "캐릭터 경험치 +500 Exp 즉시 획득",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100043,
+    "Name": "성장의 비약 (대)",
+    "ItemType": "Special",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "BasePrice": 1250,
+    "OpenGachaId": 0,
+    "Description": "캐릭터 경험치 +2,500 Exp 즉시 획득",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100044,
+    "Name": "신속의 영약",
+    "ItemType": "Special",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "BasePrice": 500,
+    "OpenGachaId": 0,
+    "Description": "지정 슬롯 다음 20회 판정 동안 작업속도 +30% (+300‰ 가산)",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100045,
+    "Name": "풍요의 영약",
+    "ItemType": "Special",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "BasePrice": 500,
+    "OpenGachaId": 0,
+    "Description": "지정 슬롯 다음 20회 판정 동안 자원 산출량 +30% (+300‰ 가산)",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100046,
+    "Name": "망각의 묘약",
+    "ItemType": "Special",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "BasePrice": 10000,
+    "OpenGachaId": 0,
+    "Description": "투자된 계정 특성 포인트 전액 초기화",
+    "Tooltip": ""
+  },
+  {
+    "ItemTID": 100050,
+    "Name": "마력의 파편",
+    "ItemType": "Special",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "BasePrice": 0,
+    "OpenGachaId": 0,
+    "Description": "남는 장비를 분해하여 얻은 마력의 결정체. 큐브나 영약으로 교환할 수 있다",
     "Tooltip": ""
   }
 ]
