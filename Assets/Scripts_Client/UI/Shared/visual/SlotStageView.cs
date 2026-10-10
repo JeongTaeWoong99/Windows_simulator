@@ -20,6 +20,17 @@ using UnityEngine.UI;
 // ■ 그림이 없으면 그리지 않는다
 //   목록이 없으면(그림 저장소를 받지 않은 PC) 무대 자식을 만들지 않고 패널 바탕만 남는다.
 //   프리팹의 'catalog'는 비워 둔다 — 메인 저장소가 그림 저장소의 GUID를 가리키지 않게 Resources로 찾는다.
+//
+// ■ 배경은 패널 높이보다 작아지지 않는다 (2026-10-10)
+//   패널 높이(H)는 창 크기를 따라 변하고(레이아웃의 flexible), 배경 높이는 'stageHeight × 배율'이다.
+//   키 큰 캐릭터의 'pixelScaleOverride'를 낮추면 배경이 H보다 낮아져 위쪽에 패널 단색이 드러났다.
+//   그래서 배율을 둘로 가른다 —
+//     배우 배율 k  = 캐릭터 개인 값 또는 전체 세팅 (캐릭터·대상·거리)
+//     배경 배율 kb = max(k, H ÷ stageHeight)    → 배경 높이 ≥ H 가 늘 성립한다 ('BackgroundScale')
+//   땅선(groundHeight)은 배경 그림의 값이라 kb로 잰다 — 배우는 그 땅선 위에 k 크기로 선다.
+//   땅이 흐르는 거리는 화면 단위라 kb가 달라도 대상과 땅이 미끄러지지 않는다('DrawLayers').
+//   ※ kb > k 이면 배경 점이 배우 점보다 크다 — 단색이 드러나는 것보다 낫다고 본 절충이다.
+//   ※ 머리가 잘리는 조건은 '땅선 + 캐릭터 키 × k × characterScale > H' — 배경과 무관하게 이것만 보고 k를 고르면 된다.
 [RequireComponent(typeof(RectTransform))]
 public class SlotStageView : MonoBehaviour
 {
@@ -180,7 +191,7 @@ public class SlotStageView : MonoBehaviour
         float k     = Scale(settings);
         float feetX = FeetX(_rect.rect.width, settings);
         float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
-        Vector2 size = sprite.rect.size * k;
+        Vector2 size = sprite.rect.size * TargetScale(k);
 
         // 무대 좌표는 왼쪽 아래 기준('Place') — 피벗 기준 로컬로 옮긴 뒤 월드로
         var local = new Vector2(stopX - size.x / 2f, GroundY(k) + size.y / 2f) + _rect.rect.min;
@@ -232,6 +243,7 @@ public class SlotStageView : MonoBehaviour
         }
 
         float width = _rect.rect.width;
+        float kb    = BackgroundScale(k);
         BackgroundVisual.Layer[] layers = _background.Layers;
 
         for (int i = 0; i < _layerCount && i < layers.Length; i++)
@@ -243,12 +255,12 @@ public class SlotStageView : MonoBehaviour
                 continue;
             }
 
-            float tileWidth = Mathf.Round(texture.width * k);
+            float tileWidth = Mathf.Round(texture.width * kb);
             float ratio     = Mathf.Approximately(layers[i].speedRatio, 1f) ? 1f : layers[i].speedRatio * settings.FarLayerSpeed;
             float shift     = (float)(_groundDistance * ratio % tileWidth);
 
             RectTransform rect = _layers[i].rectTransform;
-            rect.sizeDelta = new Vector2(0f, Mathf.Round(_background.StageHeight * k));
+            rect.sizeDelta = new Vector2(0f, Mathf.Round(_background.StageHeight * kb));
 
             _layers[i].uvRect = new Rect(-shift / tileWidth, 0f, width / tileWidth, 1f);
         }
@@ -266,7 +278,8 @@ public class SlotStageView : MonoBehaviour
             return;
         }
 
-        float halfWidth = sprite.rect.width * k / 2f;
+        float tk        = TargetScale(k);
+        float halfWidth = sprite.rect.width * tk / 2f;
         float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.RunEnd) - now.RunStart);
         float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.RunEnd - time);
 
@@ -295,7 +308,7 @@ public class SlotStageView : MonoBehaviour
         }
 
         // 타격 이펙트 — 맞은 대상(공격 중이면 다가온 대상, 아니면 쓰러진 대상)의 가운데에서 한 번
-        DrawHitEffect(now, now.HitsComing ? comingX : dyingX, sprite.rect.height * k / 2f, settings, k);
+        DrawHitEffect(now, now.HitsComing ? comingX : dyingX, sprite.rect.height * tk / 2f, settings, k);
     }
 
     private void DrawHitEffect(SlotStageTimeline.Result now, float centerX, float halfHeight, SlotStageSettings settings, float k)
@@ -340,7 +353,7 @@ public class SlotStageView : MonoBehaviour
     private void PlaceTarget(TargetImages images, Sprite sprite, float centerX, float alpha, bool flash, float k)
     {
         Vector2 position = new Vector2(Mathf.Round(centerX), GroundY(k));
-        Vector2 size     = Snap(sprite.rect.size * k);
+        Vector2 size     = Snap(sprite.rect.size * TargetScale(k));
         Color   tint     = _target != null ? _target.GetTint(_level) : Color.white;
 
         images.body.enabled = true;
@@ -458,8 +471,22 @@ public class SlotStageView : MonoBehaviour
     // 캐릭터 발의 가로 자리 — 패널 폭의 비율이라 창 폭이 바뀌어도 같은 자리에 선다. 반 칸 걸치지 않게 정수로 맞춘다
     private static float FeetX(float width, SlotStageSettings settings) => Mathf.Round(width * settings.CharacterAnchor);
 
-    // 땅선 높이 — 무대 그림의 아래를 패널 아래에 붙인다
-    private float GroundY(float k) => _background != null ? Mathf.Round(_background.GroundHeight * k) : 0f;
+    // 배경 배율 — 배우 배율 k 이상이면서 배경 높이가 패널 높이를 채우는 가장 작은 값 (머리 주석 '배경은 패널 높이보다 작아지지 않는다')
+    private float BackgroundScale(float k)
+    {
+        if (_background == null || _background.StageHeight <= 0)
+        {
+            return k;
+        }
+
+        return Mathf.Max(k, _rect.rect.height / _background.StageHeight);
+    }
+
+    // 대상 배율 — 배우 배율에 대상 SO의 크기 배율을 곱한다
+    private float TargetScale(float k) => k * (_target != null ? _target.Scale : 1f);
+
+    // 땅선 높이 — 무대 그림의 아래를 패널 아래에 붙인다. 땅선은 배경 그림의 값이라 배경 배율로 잰다
+    private float GroundY(float k) => _background != null ? Mathf.Round(_background.GroundHeight * BackgroundScale(k)) : 0f;
 
     // 왼쪽 아래 기준 · 피벗은 아래 가운데
     private static void Place(RectTransform rect, Vector2 position, Vector2 size)
