@@ -1,6 +1,6 @@
 # Common 규칙
 
-> 최종 업데이트: 2026-10-08 (`object-pool` 추가) · 대상: `Assets/Scripts_Client/Common/`
+> 최종 업데이트: 2026-10-11 (`ugui-layout`에 `ContentFloorLayoutElement`) · 2026-10-08 (`object-pool` 추가) · 대상: `Assets/Scripts_Client/Common/`
 
 **이 폴더는 이 프로젝트의 것이 아니다.** [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)이라는
 별도 저장소에서 관리하는 범용 코드의 **사본**이고, 스킬 두 개가 심고 되돌린다.
@@ -60,7 +60,7 @@ Common/
 │   └── Editor/         CenterHeaderDrawer.cs
 ├── hierarchy-styler/
 │   └── Editor/         HierarchyPalette.cs · HierarchyStyler.cs · Hierarchy Palette.asset
-├── ugui-layout/        FlexibleGridLayoutGroup.cs · SquareLayoutElement.cs
+├── ugui-layout/        FlexibleGridLayoutGroup.cs · SquareLayoutElement.cs · ContentFloorLayoutElement.cs
 │   └── Editor/         FlexibleGridLayoutGroupEditor.cs
 ├── editor-shared/      Editor/  EditorGit.cs · EditorIcons.cs · ProjectPreferences.cs
 ├── memory-meter/       Editor/  EditorMemoryMeter.cs · EditorMemoryToolbarButton.cs
@@ -89,7 +89,7 @@ Common/
 | **MonoBehaviourExtensions** | `mono-extensions/` | `RequireRef` — 필수 인스펙터 참조 검증(fail-fast) |
 | **CenterHeader** | `center-header/` | 인스펙터 섹션을 가운데 정렬 헤더로 구분. 문구에 `< >`를 넣지 않는다 |
 | **HierarchyStyler** | `hierarchy-styler/` | 하이어라키에서 이름 앞 접두 문자(`!`·`@`·`#`)로 줄을 색칠 |
-| **uGUI Layout** | `ugui-layout/` | 폭에 맞춰 셀을 역산하는 그리드 · "높이만큼 정사각형". [`ugui-layout 규칙.md`](<ugui-layout/ugui-layout 규칙.md>) |
+| **uGUI Layout** | `ugui-layout/` | 폭에 맞춰 셀을 역산하는 그리드 · "높이만큼 정사각형" · "기본은 몫, 넘치면 내용만큼". [`ugui-layout 규칙.md`](<ugui-layout/ugui-layout 규칙.md>) |
 | **EditorShared** | `editor-shared/` | 에디터 툴 공용 — git 실행 · 아이콘 캐시 · 환경 설정 뿌리. [`editor-shared 규칙.md`](<editor-shared/editor-shared 규칙.md>) |
 | **MemoryMeter** | `memory-meter/` | 상단 툴바 메모리 표시 + 정리. [`memory-meter 규칙.md`](<memory-meter/memory-meter 규칙.md>) |
 | **ObjectPool** | `object-pool/` | 프리팹 풀(`PrefabPool`) · 대여 토큰(`PooledObject`) · 목록 줄 제자리 풀(`UIRowList`). [`object-pool 규칙.md`](<object-pool/object-pool 규칙.md>) |

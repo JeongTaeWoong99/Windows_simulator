@@ -425,6 +425,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
     public event Action<bool, EResultCode>?      EquipCompleted;             // 장착·해제 완료 (성공 여부·결과 코드)
     public event Action<S_EquipEnchantResponse>? EquipEnchantCompleted;      // 큐브 사용 결과 (거절 포함 — 'Result'를 먼저 본다)
+    public event Action<S_EquipEnchantChooseResponse>? EquipEnchantChooseCompleted; // 상급 큐브 결과 고르기 (거절 포함 — 'Result'를 먼저 본다)
     public event Action<S_CharacterCondenseResponse>? CharacterCondenseCompleted; // 응축 결과 (거절 포함 — 'Result'를 먼저 본다 · 캐시 반영 뒤에 온다)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
@@ -501,6 +502,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipSynced              += OnEquipSynced;
         ServerPacketHandler.EquipResponded           += OnEquipResponded;
         ServerPacketHandler.EquipEnchantResponded    += OnEquipEnchantResponded;
+        ServerPacketHandler.EquipEnchantChooseResponded += OnEquipEnchantChooseResponded;
         ServerPacketHandler.CharacterCondenseResponded += OnCharacterCondenseResponded;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
@@ -543,6 +545,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipSynced              -= OnEquipSynced;
         ServerPacketHandler.EquipResponded           -= OnEquipResponded;
         ServerPacketHandler.EquipEnchantResponded    -= OnEquipEnchantResponded;
+        ServerPacketHandler.EquipEnchantChooseResponded -= OnEquipEnchantChooseResponded;
         ServerPacketHandler.CharacterCondenseResponded -= OnCharacterCondenseResponded;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
@@ -725,6 +728,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private void OnEquipEnchantResponded(S_EquipEnchantResponse res)
     {
         EquipEnchantCompleted?.Invoke(res);
+    }
+
+    // 상급 큐브 결과 고르기 응답 — 결과를 그대로 넘긴다. 보류가 풀린 장비는 'S_EquipSyncResponse'가 따로 싣고 온다.
+    private void OnEquipEnchantChooseResponded(S_EquipEnchantChooseResponse res)
+    {
+        EquipEnchantChooseCompleted?.Invoke(res);
     }
 
     // 응축을 보낸다고 적어 둔다 — 응답에 재료 ID가 없어서다 ('CharacterCondensePresenter'가 'C_CharacterCondenseRequest'를 보내며 호출).

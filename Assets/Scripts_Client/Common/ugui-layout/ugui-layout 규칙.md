@@ -1,6 +1,6 @@
 # ugui-layout 규칙
 
-> 최종 업데이트: 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
+> 최종 업데이트: 2026-10-11 (`ContentFloorLayoutElement` 추가) · 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
 
 **기본 UGUI로는 표현할 수 없는 배치를 채워 주는 컴포넌트.** 게임을 전혀 모르므로
 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit) 사본인 `Common/` 아래에 있다.
@@ -10,6 +10,7 @@ Common 전체에 걸리는 규칙은 상위 폴더의 `Common 규칙.md`에 있�
 |------|---------|
 | `FlexibleGridLayoutGroup.cs` | 열 개수를 고정한 채, 자기 폭에 맞춰 셀 크기를 역산하는 그리드 |
 | `SquareLayoutElement.cs` | 부모 높이를 보고 가로를 주장한다 — "높이만큼 정사각형" |
+| `ContentFloorLayoutElement.cs` | 형제와 남는 자리를 나눠 받는 칸이, 안 내용이 제 몫보다 크면 내용만큼 늘어난다 — "기본은 몫, 넘치면 내용만큼" |
 | `Editor/FlexibleGridLayoutGroupEditor.cs` | 위 그리드의 인스펙터. 기본 에디터를 그대로 두면 추가 필드가 아예 안 나온다 |
 
 ---
@@ -32,6 +33,20 @@ UGUI가 자식에게 주는 폭은 `Clamp(부모 폭, min, flexible > 0 ? 부모
 이 컴포넌트의 존재 이유이므로, 그 이상을 요구할 이유가 없다.
 
 > 배치 컴포넌트를 만들 때는 **"부모에게 무엇을 요구하는가"를 자기 크기와 무관하게** 정한다.
+
+## `ContentFloorLayoutElement` — 경계를 둔 칸이 넘칠 때 (2026-10-11)
+
+레이아웃 경계(그룹 없는 부모 — 스킬 §7)를 두면 칸 안 내용의 크기가 바깥 줄에 전해지지 않는다.
+칸은 `LayoutElement`가 정한 몫(예: 목록과 반씩)만 받고, 내용이 더 크면 **아래 버튼이 프레임 밖으로 빠진다.**
+
+- `LayoutElement.minHeight`에 내용 높이를 주는 것으로는 안 된다 — UGUI는 남는 자리를 min **위에 더해** 나눠서,
+  내용이 몫보다 작을 때도 칸이 커지고 형제가 늘 준다. "몫과 내용 중 큰 쪽"은 기본 컴포넌트로 표현할 수 없다.
+- 그래서 몫을 **부모 크기 · 형제의 preferred/flexible**로 직접 계산하고, 내용이 크면 그 축에서 min = preferred = 내용 · flexible = 0을 주장한다(우선순위 2).
+  평소에는 아무것도 주장하지 않는다(-1) — 같은 오브젝트의 `LayoutElement`가 그대로 이긴다.
+- 위 ⚠️ 절 그대로 **자기 현재 크기는 보지 않는다.** 크기가 바뀌어도 몫이 같아 수렴한다.
+- 부모는 축이 같은 `HorizontalOrVerticalLayoutGroup`이어야 한다. 아니면 늘어나지 않는다.
+- 내용이 경계 안이라 내용 글씨가 바뀌어도 이 칸까지 다시 재지 않는다 — 켜질 때 · 크기가 바뀔 때 다시 잰다.
+  열린 채로 내용 높이가 바뀌는 화면이면 `Refresh()`를 부른다.
 
 ## Canvas·LayoutGroup 함정 전반
 

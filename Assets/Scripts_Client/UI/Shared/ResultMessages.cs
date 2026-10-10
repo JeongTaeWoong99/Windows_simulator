@@ -43,6 +43,8 @@ public static class ResultMessages
         EResultCode.EquipSlotEmpty      => "이미 비어 있는 칸입니다.",
         EResultCode.EnchantItemNotOwned => "큐브가 없습니다.",
         EResultCode.EnchantEquipped     => "착용 중인 장비에는 큐브를 쓸 수 없습니다. 먼저 벗겨 주세요.",
+        EResultCode.EnchantPending      => "큐브 결과를 고르기 전인 장비입니다. 큐브 창에서 먼저 고르세요.",
+        EResultCode.EnchantNoPending    => "고를 큐브 결과가 없습니다.",
         EResultCode.CondenseInvalidRequest => "응축 재료가 올바르지 않습니다.",
         EResultCode.CondenseTidMismatch    => "같은 캐릭터만 재료로 넣을 수 있습니다.",
         EResultCode.CondenseMaterialBusy   => "배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.",

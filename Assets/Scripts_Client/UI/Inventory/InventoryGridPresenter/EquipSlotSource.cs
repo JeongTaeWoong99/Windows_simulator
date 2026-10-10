@@ -30,6 +30,8 @@ using MikaProtocol;
 //   옵션은 'EquipInfo.EnchantOptions'에서 'EquipLabel.ReadStatOptions'로 읽는다(경매장 매물 줄도 같은 함수를 쓴다).
 public class EquipSlotSource : InventorySlotSource
 {
+    private const string PendingBadge = "선택";
+
     private readonly PlayerDataModel _data;
 
     // 능력치 칸 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
@@ -87,6 +89,10 @@ public class EquipSlotSource : InventorySlotSource
 
         return _sockets;
     }
+
+    // 상급 큐브 결과를 고르기 전인 장비에 '선택' 배지 — 좌클릭하면 큐브 창이 고르기 상태로 열린다(이슈 #53).
+    // ※ 보류는 재접속해도 남는다(서버 DB) — 다시 접속해도 이 배지로 찾아 들어간다.
+    public override string? GetBadge(long key) => FindEquip(key)?.PendingEnchantGrade > 0 ? PendingBadge : null;
 
     // 장비 칸 툴팁 — 공용 장비 툴팁('EquipLabel.BuildTooltip')에 "누가 어느 부위에 끼고 있나"를 더한다 (격자가 칸에 올린 순간 호출).
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.

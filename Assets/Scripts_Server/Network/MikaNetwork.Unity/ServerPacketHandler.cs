@@ -322,8 +322,20 @@ namespace MikaNetwork
         public static void Handle_S_EquipEnchantResponse(ISession session, S_EquipEnchantResponse res)
         {
             ClientLogger.Info(ClientLogger.Recv,
-                $"큐브 사용 #{res.EquipId} → {res.Result} (등급 {res.BeforeGrade}→{res.AfterGrade}, 상승={res.Success}, 칸 {res.Options.Count}개)");
+                $"큐브 사용 #{res.EquipId} → {res.Result} (등급 {res.BeforeGrade}→{res.AfterGrade}, 상승={res.Success}, 칸 {res.Options.Count}개, 고르기 대기={res.AwaitingChoice})");
             EquipEnchantResponded?.Invoke(res);
+        }
+
+        // 상급 큐브 결과 고르기 응답 도착 (Handle_S_EquipEnchantChooseResponse에서 발행)
+        public static event Action<S_EquipEnchantChooseResponse>? EquipEnchantChooseResponded;
+
+        // 상급 큐브 결과 고르기 응답 (S_EquipEnchantChooseResponse 수신 시 자동 호출)
+        // ※ 성공이면 바뀐 개체(보류가 풀린 장비)가 S_EquipSyncResponse로 따로 온다.
+        [PacketHandler]
+        public static void Handle_S_EquipEnchantChooseResponse(ISession session, S_EquipEnchantChooseResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"큐브 결과 고르기 #{res.EquipId} → {res.Result} (새 값={res.KeepNew})");
+            EquipEnchantChooseResponded?.Invoke(res);
         }
 
         // 응축 결과 도착 (Handle_S_CharacterCondenseResponse에서 발행)

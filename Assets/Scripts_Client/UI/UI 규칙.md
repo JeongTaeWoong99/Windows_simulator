@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-10-11 (아래 열리는 창은 넘치면 늘어난다 — `ContentFloorLayoutElement`) · 2026-10-11 (레이아웃 경계 — `Body Panel` 아래 Presenter는 그룹을 `Xxx Panel`에 · 자주 바뀌는 글씨는 상자로 감싼다) · 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -313,6 +313,17 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
   꽉 채운 자식 `Xxx Panel`이 그룹을 갖는다. 예: 인벤토리 `Tool Presenter` → `Tool Panel`.
   탭마다 드롭다운·토글이 켜지고 꺼져 `Body Panel`까지 올라가 격자 전체를 다시 쟀다 — 장비 탭 전환 8.3 → 1.3ms.
   높이가 내용을 따라가는 Presenter(목록이 늘면 커지는 것)는 경계를 두면 안 된다 — 바깥이 크기 변화를 못 받는다.
+- **2026-10-11 전부 맞췄다 — `Body Panel`(과 위젯 `Top Panel`) 바로 아래 Presenter는 `LayoutGroup`을 직접 갖지 않는다.**
+  Presenter는 `LayoutElement`·배경·스크립트만 갖고, 꽉 채운 자식 **`<Presenter 이름> Panel`**(예: `Equip Enchant Panel` · `Setting Panel` · `Mail Panel`)이 그룹과 자식 전부를 갖는다.
+  큐브 창 글씨 하나가 바뀔 때마다 인벤토리 `Body Panel`(그래픽 2,472개 — 격자 포함)을 다시 쟀다 — 자동을 돌리거나 열을 내려 둬도 프레임이 흔들렸다.
+  새 Presenter도 이렇게 만든다. 검사: 각 그래픽에서 "부모에 켜진 그룹이 있는 동안" 올라간 끝(레이아웃 루트)을 모아, 큰 루트에 글씨가 물려 있으면 고친다.
+- **자주 바뀌는 글씨는 상자로 감싼다** — 남은 시간(`Remain Text`, 0.1초마다) · 큐브 돌기(`Options Text`, 45ms마다)처럼 크기가 바뀌지 않는데 글씨만 자주 바뀌면,
+  그룹 안 자리에는 `LayoutElement`만 단 `Xxx Panel`을 두고 글씨는 그 안에 꽉 채운다. 글씨의 더티가 상자에서 멈춘다.
+  글씨 크기로 자리를 정해야 하는 곳(내용이 늘면 커지는 줄)은 감싸지 않는다.
+- ⚠️ **경계를 두면 안 내용의 크기가 바깥에 전해지지 않는다** — 목록과 반씩 나누는 아래 창(큐브 · 응축 · 판매 목록)의 내용이 반보다 크면
+  버튼이 프레임 밖으로 빠졌다(2026-10-11 큐브 창 — 내용 391 > 몫 357.5). 그런 칸에는 **`ContentFloorLayoutElement`**(Common `ugui-layout`)를 단다 —
+  평소엔 반씩 그대로, 내용이 크면 창이 내용만큼 늘고 격자가 준다. `content`는 그 Presenter의 `Xxx Panel`.
+- 자주 바뀌는 글씨에는 **TMP 자동 크기(`Auto Size`)를 쓰지 않는다** — 바뀔 때마다 크기를 여러 번 재 본다. 줄 수를 고정하고 문구를 줄인다.
 
 ### Presenter에 단 `Canvas` — 크게 숨겼다 켜는 화면은 끄지 않고 그리기만 뗀다 (2026-10-10 · T-139)
 

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-10 큐브 창 — 상급 큐브 고르기 · 자동 · 공개 연출 (이슈 #53)](2026-10-10-enchant-keep-choice-auto.md) — `#client` `#ui` BEFORE|AFTER [선택] · 떠나기 막기 · 자동(1.5배 · 예상 확률) · `EnchantRevealFx`
 - [2026-10-08 문서 사이트 게임 데이터 뷰어 /data (T-132)](2026-10-08-web-data-viewer.md) — `#docs` `#data` DataLog JSON을 테이블별 페이지로 · 이름표 · Weight 비율
 - [2026-10-07 문서 사이트 회차 탭에 닫힌 일감도 담는다](2026-10-07-web-cycle-tab-closed.md) — `#docs` 회차 탭 + 상태 Closed 필터로 그 회차에 끝낸 일을 본다
 - [2026-10-10 툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘](2026-10-10-tooltip-help-icon.md) — `#client` `#ui` `HelpIcon` 프리팹(`?`) · 전수 조사 15곳 · 뽑기·인챈트만 아이콘으로

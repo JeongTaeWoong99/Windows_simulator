@@ -170,6 +170,9 @@ public abstract class InventorySlotSource
     // 장비를 끼지 않는 탭은 null이고, 칸은 장착 네모를 끈다. 지금은 캐릭터 탭만 값이 있다.
     public virtual IReadOnlyList<GlobalRarity>? GetWornEquips(long key) => null;
 
+    // 칸 위쪽 배지 문구 — 없으면 null (격자가 매번 그릴 때 호출). 캐릭터 탭은 격자가 레벨을 직접 싣는다.
+    public virtual string? GetBadge(long key) => null;
+
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));

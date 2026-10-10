@@ -236,6 +236,9 @@ public static class GameDataLoader
         return GameTable.EnchantOptionTable.TryGet(optionTid, out row);
     }
 
+    // 능력치 옵션 전체('EnchantOptionTable') — 큐브 자동의 예상 확률이 등급별 가중치를 읽는다.
+    public static IReadOnlyList<EnchantOptionTableRow> EnchantOptions => GameTable.EnchantOptionTable.All;
+
     // 이 등급의 장비가 갖는 능력치 칸 수('EnchantGradeTable.SlotCount'). 모르는 등급('None' 포함)이면 0.
     public static int GetEnchantSlotCount(GlobalRarity rarity)
     {

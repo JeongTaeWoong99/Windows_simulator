@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -87,6 +88,10 @@ public class InventoryTabPresenter : MonoBehaviour
     // ※ 격자에게는 이 이벤트로 알리지 않는다 — 여기서 직접 'ShowTab'을 부른다.
     //   내용을 갈아 끼우는 일은 전환의 본체라 구독으로 돌리면 순서가 흐려진다.
     public event Action<InventoryTab>? TabChanged;
+
+    // 탭을 떠나지 못하게 막는 조건들 — 하나라도 true면 탭 버튼을 눌러도 바뀌지 않는다 ('AddLeaveGuard'로 건다).
+    // ※ 막은 쪽이 이유를 알린다(큐브 창: 상급 큐브 결과를 고르기 전) — 여기는 묻기만 한다.
+    private readonly List<Func<bool>> _leaveGuards = new List<Func<bool>>();
 
     // 참조 확보 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
@@ -198,10 +203,38 @@ public class InventoryTabPresenter : MonoBehaviour
 
     #region 탭 전환
 
+    // 탭을 떠나지 못하게 막는 조건을 건다 — 막을 때 true를 돌려주고 이유는 스스로 알린다 ('EquipEnchantPresenter'가 Start에서 호출).
+    public void AddLeaveGuard(Func<bool> blocks)
+    {
+        _leaveGuards.Add(blocks);
+    }
+
     // 탭을 눌렀다 (탭 버튼 OnClick에 코드로 연결)
+    // ※ 지금 탭을 다시 누른 것은 떠나는 것이 아니다 — 막지 않는다.
     private void OnTabClicked(InventoryTab tab)
     {
+        if (tab != CurrentTab && IsLeaveBlocked())
+        {
+            RefreshSelection(); // 눌린 버튼에 선택 색이 남지 않게 되돌린다
+
+            return;
+        }
+
         ShowTab(tab);
+    }
+
+    // 떠나기를 막는 조건이 하나라도 있는가 (OnTabClicked에서 호출).
+    private bool IsLeaveBlocked()
+    {
+        foreach (Func<bool> blocks in _leaveGuards)
+        {
+            if (blocks())
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // 그 탭을 열고 나머지 버튼의 선택 표시를 끈다 (Start · 탭 버튼).

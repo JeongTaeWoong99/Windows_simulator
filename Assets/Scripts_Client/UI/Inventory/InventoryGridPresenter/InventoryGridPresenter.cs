@@ -688,8 +688,8 @@ public class InventoryGridPresenter : MonoBehaviour
         // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
         view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
 
-        // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다.
-        view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : null);
+        // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다. 다른 탭은 같은 배지 자리에 공급자의 표시를 싣는다(장비: 상급 큐브 결과 고르기 전 '선택').
+        view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key));
         view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
 
         // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
@@ -849,7 +849,12 @@ public class InventoryGridPresenter : MonoBehaviour
         }
 
         // 판매 목록 자리를 큐브 창·응축 창이 쓰고 있으면 돌려준다 — 담은 것이 보여야 한다.
-        equipEnchant.Close();
+        // ※ 큐브 창이 상급 큐브 결과를 고르기 전이면 닫히지 않는다 — 담지도 않는다(창이 이유를 알린다).
+        if (!equipEnchant.TryClose())
+        {
+            return;
+        }
+
         characterCondense.Close();
 
         switch (_currentTab)

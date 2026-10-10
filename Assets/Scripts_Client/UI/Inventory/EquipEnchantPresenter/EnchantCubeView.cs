@@ -11,6 +11,9 @@ using UnityEngine.UI;
 // ※ 큐브가 0개여도 눌린다 — 고르는 것은 막지 않고, [큐브 사용]이 이유를 알린다(특성 [레벨 올리기]와 같은 판단).
 public class EnchantCubeView : MonoBehaviour
 {
+    // 잠겼을 때 어둡게 누르는 정도
+    private const float LockedDarken = 0.35f;
+
     [CenterHeader("참조")]
     [SerializeField, Tooltip("큐브 이름 (예: '인챈트 큐브')")]
     private TMP_Text nameText = null!;
@@ -69,6 +72,12 @@ public class EnchantCubeView : MonoBehaviour
         ApplyColor(hasAny);
     }
 
+    // 결과 공개 중엔 누를 수 없다 — 뽑기 결과를 보기 전에 다시 누르지 못하게 ('EquipEnchantPresenter'가 호출).
+    public void SetLocked(bool locked)
+    {
+        button.interactable = !locked;
+    }
+
     // 쓸 큐브가 모자라 남는 버튼을 끈다 ('EquipEnchantPresenter'가 호출).
     public void Hide()
     {
@@ -88,7 +97,7 @@ public class EnchantCubeView : MonoBehaviour
         colors.highlightedColor = Color.Lerp(target, Color.white, 0.1f);
         colors.pressedColor     = Color.Lerp(target, Color.black, 0.2f);
         colors.selectedColor    = target;
-        colors.disabledColor    = target;
+        colors.disabledColor    = Color.Lerp(target, Color.black, LockedDarken); // 공개 중 잠김
 
         button.colors = colors;
     }
