@@ -3,7 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 뽑기 풀 카드 한 장 — [P] · 제목(괄호) · 대표 아이콘 · 종수 · [1회] · [10회] ('GachaPresenter'가 Bind한다).
+// 뽑기 풀 카드 한 장 — 제목(괄호) · 도움말 아이콘(?) · 대표 아이콘 · 종수 · [1회] · [10회] ('GachaPresenter'가 Bind한다).
 //
 // ■ 카드 하나 = 풀 하나 (T-143)
 // 버튼 8개를 나열하던 화면을 풀마다 카드로 묶었다. 카드는 같은 프리팹(`GachaPoolCardView.prefab`)을 풀 수만큼 둔다.
@@ -11,7 +11,7 @@ using UnityEngine.UI;
 public class GachaPoolCardView : MonoBehaviour
 {
     [CenterHeader("머리줄")]
-    [SerializeField, Tooltip("[P] 배지 — 올리면 등급 확률 툴팁이 뜬다. 내용은 Presenter가 SetProvider로 넘긴다")]
+    [SerializeField, Tooltip("제목 옆 도움말 아이콘(HelpIcon 프리팹) — 올리면 등급 확률 툴팁. 내용은 Presenter가 SetProvider로 넘긴다")]
     private TooltipTrigger rateTrigger = null!;
 
     [SerializeField, Tooltip("풀 이름 + 괄호(그 풀이 올려 주는 것)")]
@@ -74,7 +74,7 @@ public class GachaPoolCardView : MonoBehaviour
 
     // 풀 하나를 그린다 (GachaPresenter.Start에서 한 번).
     //   title : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기 31종'
-    //   rates : [P]에 올렸을 때 띄울 확률 툴팁을 만드는 함수
+    //   rates : 도움말 아이콘에 올렸을 때 띄울 확률 툴팁을 만드는 함수
     public void Bind(string title, string kind, in ItemIconContent iconContent,
                      int singleCount, long singleCost, int multiCount, long multiCost,
                      Func<TooltipContent?> rates)

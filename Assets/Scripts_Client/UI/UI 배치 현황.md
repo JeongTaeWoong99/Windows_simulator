@@ -183,7 +183,7 @@ Root Canvas
 │     │     ├─ Gacha Presenter (↓ SUB VIEW)       GachaPresenter   뽑기 탭 화면 · VLG 5/5 · 풀마다 카드 (T-143)
 │     │     │  └─ Pool Scroll Panel               ScrollRect · flexH 1 → Viewport(RectMask2D) → Content(VLG 0/5 + CSF)
 │     │     │     └─ Character · Weapon · Accessory · Gem Pool Card   GachaPoolCardView 프리팹 · pref 146
-│     │     │                                        [P](확률 툴팁) · 제목 · 아이콘+종수 · [1회] · [10회]
+│     │     │                                        제목 · 도움말 아이콘(확률 툴팁) · 아이콘+종수 · [1회] · [10회]
 │     │     │                                        이름·비용·종수·확률은 Start 가 테이블에서 채운다
 │     │     │                                        ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
 │     │     ├─ Auction Page                       경매장 탭 화면 · flexH 1 · VLG 5/5 — 하위 탭 3개 (T-096)

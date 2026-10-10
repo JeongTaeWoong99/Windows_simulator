@@ -128,7 +128,7 @@ public sealed class GachaPoolSummary
 
     #region 확률 툴팁
 
-    // 등급 확률 툴팁 — [P]에 올리면 뜬다 (카드의 'TooltipTrigger.SetProvider'로 넘긴다).
+    // 등급 확률 툴팁 — 카드 제목 옆 도움말 아이콘(?)에 올리면 뜬다 (카드의 'TooltipTrigger.SetProvider'로 넘긴다).
     // 행이 없는 등급은 적지 않는다. 골드가 섞인 풀이면 골드 줄을 따로 둔다.
     public TooltipContent BuildRateTooltip()
     {

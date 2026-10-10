@@ -14,7 +14,7 @@ using UnityEngine;
 // ■ 이름과 비용은 코드에 박지 않는다
 // 'GachaInfoTable'(Gacha.xlsx)의 Name·CostSingle·CostMulti를 읽어 채운다.
 // ⚠️ 10연차가 단차 x 10이라는 보장이 없다 — 컬럼이 따로다. 곱해서 만들지 않는다.
-// 카드의 괄호·종수·대표 아이콘·[P] 확률은 'GachaPoolSummary'가 가챠 시트에서 센다.
+// 카드의 괄호·종수·대표 아이콘·확률 툴팁은 'GachaPoolSummary'가 가챠 시트에서 센다.
 //
 // ■ 결과 내용은 여기서 보지 않는다
 // 뽑힌 보상·인벤토리 반영은 'PlayerDataModel'가 처리하고, 결과 팝업은 최상단의
