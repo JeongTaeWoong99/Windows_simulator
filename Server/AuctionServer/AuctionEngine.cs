@@ -94,9 +94,12 @@ public sealed class AuctionEngine : IAsyncDisposable
             if (_store.InsertListing(listing, now))
             {
                 Publish(_index.Add(listing));
+                return RegisterResult.Ok;
             }
 
-            return RegisterResult.Ok;
+            // 같은 ID에 다른 물건이 있으면 재전송이 아니라 충돌이다 — Ok로 삼키면 메인은 등록된 줄 알고
+            // 내 매물·검색에는 안 보이는 물건이 잠긴다. 거부해 메인이 바로 반환하게 한다.
+            return _store.IsSameListing(listing) ? RegisterResult.Ok : RegisterResult.Rejected;
         });
     }
 

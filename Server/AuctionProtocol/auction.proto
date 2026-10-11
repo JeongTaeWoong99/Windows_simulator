@@ -58,7 +58,7 @@ message RegisterRequest {
 
 enum RegisterResult {
   REGISTER_RESULT_OK = 0;        // 새로 들어갔거나 이미 있다
-  REGISTER_RESULT_REJECTED = 1;  // 스냅샷이 잘못됐다 — 메인이 반환한다
+  REGISTER_RESULT_REJECTED = 1;  // 스냅샷이 잘못됐거나 같은 ID에 다른 물건이 있다 — 메인이 반환한다
 }
 
 message RegisterReply {

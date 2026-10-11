@@ -237,6 +237,16 @@ public sealed class AuctionStore : IDisposable
         return inserted == 1;
     }
 
+    /// <summary>
+    /// 이미 있는 매물이 이 등록과 같은 물건인가(재전송) — 판매자·종류·TID가 같아야 한다.
+    /// 다르면 ID 충돌이다: 메인 DB만 비워져 거래 번호가 1부터 다시 났는데 이 DB에 옛 매물이 남은 경우.
+    /// </summary>
+    public bool IsSameListing(Listing l)
+    {
+        var row = FindListing(l.ListingId);
+        return row is not null && row.seller_id == l.SellerId && row.kind == (int)l.Kind && row.tid == l.Tid;
+    }
+
     // ── 예약 ──
 
     private List<Allocation> LoadAllocations(long purchaseId, SqliteTransaction? tx = null)

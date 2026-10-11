@@ -34,6 +34,23 @@ public class AuctionEngineTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task 같은_ID에_다른_판매자의_매물이_있으면_거부한다()
+    {
+        await Engine.RegisterAsync(_f.Item(1, seller: 100));
+
+        (await Engine.RegisterAsync(_f.Equip(1, seller: 200))).ShouldBe(RegisterResult.Rejected);
+        _f.SearchIds().ShouldBe(new long[] { 1 });
+    }
+
+    [Fact]
+    public async Task 같은_ID에_다른_물건이_있으면_거부한다()
+    {
+        await Engine.RegisterAsync(_f.Item(1, tid: 10001));
+
+        (await Engine.RegisterAsync(_f.Item(1, tid: 20001))).ShouldBe(RegisterResult.Rejected);
+    }
+
+    [Fact]
     public async Task 팔린_매물의_등록이_재전송돼도_다시_살아나지_않는다()
     {
         await Engine.RegisterAsync(_f.Item(1));
