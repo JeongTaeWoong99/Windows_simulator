@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-10-11 (DB는 기동 시 자동 마이그레이션 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
+> 최종 업데이트: 2026-10-11 (원격 Docker · 설정은 `appsettings.json` — T-109) · 2026-10-11 (DB는 기동 시 자동 마이그레이션 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -33,7 +33,7 @@
 | `Server/AuctionProtocol/` | 메인 ↔ 경매장 gRPC 계약(`auction.proto`). **메인이 항상 호출자다** |
 | `Server/AuctionServer.Tests/` | 경매장 테스트 — 상태머신·검색 인덱스·gRPC(TestServer) |
 | `Server/ExcelGenerator.Tests/` | 데이터 생성기 테스트 — `Tooltip` 보간(`TooltipInterpolator`) |
-| `Server/docs/` | 서버 전용 문서 — [`경매장.md`](docs/경매장.md)(분리 서버·outbox·복구) · [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) |
+| `Server/docs/` | 서버 전용 문서 — [`경매장.md`](docs/경매장.md)(분리 서버·outbox·복구) · [`테스트커버리지.md`](docs/테스트커버리지.md) · [`치트.md`](docs/치트.md)(admin 전용 개발·운영 명령) · [`채취-정산.md`](docs/채취-정산.md)(슬롯·속도·스케줄러 구현 근거) · [`세션-감시.md`](docs/세션-감시.md)(무응답 판정·좀비 세션) · [`데이터-카탈로그.md`](docs/데이터-카탈로그.md)(테이블 인덱스·추첨기) · [`도커.md`](docs/도커.md)(원격 Docker · 설정 덮기 · 외부 접속) |
 | `Assets/Scripts_Server/Protocol/` | (미러) `Server/MikaProtocol` 사본 — **직접 수정 금지** |
 | `Assets/Scripts_Server/GameData/` | (미러) `Server/GameData` 사본 — **직접 수정 금지** |
 | `Assets/StreamingAssets/Data/` | (미러) `Server/Shared/Data`의 `*.bytes` |
@@ -111,6 +111,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   - `game.sqlite3`는 git에 남는 본체다 — 서버를 한 번 띄워 적용한 DB를 **마이그레이션 파일과 같이 커밋한다.** 바뀌어 있으면 무조건 커밋한다.
   - 데이터를 지우는 마이그레이션(`DELETE`·컬럼 삭제)은 원격 DB에 친구 데이터가 생기면 공지하고 돌린다.
   - 테스트의 `SqliteFixture.CreateSchema()`도 같은 파일로 테이블을 만든다 — DDL을 테스트에 베끼지 않는다.
+- **포트·DB 경로·경매장 주소·치트 하한은 코드에 박지 않는다** — 게임 서버 `appsettings.json`의 `Game` 절(`GameSettings`). 원격(Docker)은 `docker-compose.yml`의 환경 변수로만 덮는다 → [`도커.md`](docs/도커.md)
 - 생성물(`Server/GameData`, `Server/Shared/Data`)은 직접 고치지 않는다.
   엑셀에서 고치고 파이프라인을 돌린다 — [`GameDesign/CLAUDE.md`](../GameDesign/CLAUDE.md) 참조.
 - 코드는 한글 주석을 사용한다.

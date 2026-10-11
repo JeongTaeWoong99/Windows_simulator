@@ -152,6 +152,35 @@ public class DbMigratorTest : IDisposable
     }
 
     [Fact]
+    public void DB_파일이_없으면_새로_만들고_전부_적용한다()
+    {
+        // 원격(Docker) 첫 기동 — 볼륨이 비어 있다.
+        var dbPath = Path.Combine(_dir, "game.sqlite3");
+        var migrations = Path.Combine(_dir, "migrations");
+        Directory.CreateDirectory(migrations);
+        File.WriteAllText(Path.Combine(migrations, "0001-create-a.sql"), CreateA.Sql);
+
+        DbMigrator.MigrateFile(dbPath, migrations);
+
+        using var conn = new SqliteConnection($"Data Source={dbPath};Pooling=False");
+        conn.Open();
+        TableExists(conn, "t_a").ShouldBeTrue();
+    }
+
+    [Fact]
+    public void 새로_만든_DB는_백업하지_않는다()
+    {
+        var dbPath = Path.Combine(_dir, "game.sqlite3");
+        var migrations = Path.Combine(_dir, "migrations");
+        Directory.CreateDirectory(migrations);
+        File.WriteAllText(Path.Combine(migrations, "0001-create-a.sql"), CreateA.Sql);
+
+        DbMigrator.MigrateFile(dbPath, migrations);
+
+        Directory.GetFiles(_dir, "*.bak").ShouldBeEmpty();
+    }
+
+    [Fact]
     public void 저장소의_마이그레이션은_빈_DB에_끝까지_적용된다()
     {
         // Server/Shared/migrations가 실행 폴더로 복사된 것 — 문법 오류나 순서 문제가 있으면 여기서 깨진다.

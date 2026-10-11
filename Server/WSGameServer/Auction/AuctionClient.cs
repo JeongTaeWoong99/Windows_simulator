@@ -26,27 +26,16 @@ public interface IAuctionClient
     Task                            SetClockOffsetAsync(Proto.SetClockOffsetRequest request);
 }
 
-/// <summary>경매장 연결 설정. 환경 변수로 덮는다 — 메인은 설정 파일이 없다.</summary>
+/// <summary>경매장 연결 설정 — appsettings.json의 <c>Game:Auction</c> 절(<see cref="GameSettings"/>).</summary>
 public sealed class AuctionClientSettings
 {
-    public string   Address  { get; init; } = "http://127.0.0.1:10060";
-    public TimeSpan Deadline { get; init; } = TimeSpan.FromSeconds(3);
+    public string   Address  { get; set; } = "http://127.0.0.1:30330";
+    public TimeSpan Deadline { get; set; } = TimeSpan.FromSeconds(3);
 
     // mTLS — 셋 다 있으면 켠다. 주소도 https여야 한다.
-    public string? ClientCertificatePath     { get; init; }
-    public string? ClientCertificatePassword { get; init; }
-    public string? ServerCaPath              { get; init; }
-
-    public static AuctionClientSettings FromEnvironment()
-    {
-        return new AuctionClientSettings
-        {
-            Address                   = Environment.GetEnvironmentVariable("WS_AUCTION_ADDRESS") ?? "http://127.0.0.1:10060",
-            ClientCertificatePath     = Environment.GetEnvironmentVariable("WS_AUCTION_CLIENT_CERT"),
-            ClientCertificatePassword = Environment.GetEnvironmentVariable("WS_AUCTION_CLIENT_CERT_PASSWORD"),
-            ServerCaPath              = Environment.GetEnvironmentVariable("WS_AUCTION_SERVER_CA"),
-        };
-    }
+    public string? ClientCertificatePath     { get; set; }
+    public string? ClientCertificatePassword { get; set; }
+    public string? ServerCaPath              { get; set; }
 }
 
 /// <summary>운영 구현. 호출마다 기한을 건다 — 경매장이 멈춰도 요청이 무한히 매달리지 않는다.</summary>

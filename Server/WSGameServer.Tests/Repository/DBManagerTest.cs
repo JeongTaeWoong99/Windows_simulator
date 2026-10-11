@@ -29,6 +29,15 @@ public class DBManagerTest
     }
 
     [Fact]
+    public void 절대_경로는_찾지_않고_그대로_쓴다()
+    {
+        // Docker 볼륨의 DB — 아직 없어도(첫 기동) 저장소의 Shared/를 뒤지지 않는다.
+        var path = Path.Combine(Path.GetTempPath(), $"ws-{Guid.NewGuid():N}", "game.sqlite3");
+
+        DBManager.ResolveDbPath(path).ShouldBe(path);
+    }
+
+    [Fact]
     public async Task SQL이_실패하면_OnFailed가_로직_스레드로_돌아온다()
     {
         EnsureExecutorStarted();

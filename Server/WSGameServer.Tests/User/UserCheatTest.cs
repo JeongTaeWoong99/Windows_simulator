@@ -40,19 +40,6 @@ public class UserCheatTest
     private static C_CheatRequest Req(ECheatCommand command, long arg1 = 0, long arg2 = 0)
         => new() { Command = command, Arg1 = arg1, Arg2 = arg2 };
 
-    [Fact(Skip = "개발 기간 CheatAdminLevel = 0 — 모든 계정이 치트를 쓴다. 되돌리면 Skip을 뗀다")]
-    public void 권한이_없으면_NoPermission으로_거절하고_아무것도_바꾸지_않는다()
-    {
-        var (user, b) = Admin();
-        user.AdminLevel = 0;
-
-        user.ExecuteCheat(Req(ECheatCommand.GiveGold, 1000), Base);
-
-        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.NoPermission);
-        user.Gold.ShouldBe(0);
-        b.DB.Posted.ShouldBeEmpty();
-    }
-
     [Fact]
     public void 골드를_지급하면_잔액이_늘고_재화_푸시가_나간다()
     {

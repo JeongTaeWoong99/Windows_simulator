@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-11 게임·경매장 서버 Docker 원격 배포](2026-10-11-docker-external-access.md) — `#server` `#infra` `#client` T-109 · compose · `appsettings.json` · 원격 치트 차단 · 클라 주소 `ServerSettings.json`
 - [2026-10-11 서버 기동 시 DB 마이그레이션 자동 적용](2026-10-11-db-auto-migration.md) — `#server` `#test` `#infra` T-146 · `Shared/migrations` + `user_version` · 테스트 스키마도 같은 파일로
 - [2026-10-11 슬롯 장비 큐브 표시 · 상급 큐브 대기 강조 · 경매 매물 ID 충돌 거부](2026-10-11-slot-equip-cube-pending-auction-id.md) — `#client` `#server` 🔴 경매 "내 매물에 안 보임" = 메인 DB만 비워 listing_id 충돌 → 이제 `Rejected` · 씬 미저장 · 2차: 슬롯 칸 A안 · ESC 종료 삭제 · 가방 가득 연출(클라 추정, 이슈 #67) · 3차: `KeyInputManager` · 슬롯 #1부터 · 선택 대기 띠 · 경매장 DB 초기화
 - [2026-10-10 큐브 창 — 상급 큐브 고르기 · 자동 · 공개 연출 (이슈 #53)](2026-10-10-enchant-keep-choice-auto.md) — `#client` `#ui` BEFORE|AFTER [선택] · 떠나기 막기 · 자동(1.5배 · 예상 확률) · `EnchantRevealFx`

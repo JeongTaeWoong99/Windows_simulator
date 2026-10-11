@@ -31,7 +31,10 @@ namespace MikaNetwork
                 return default;
             };
 
-            await _client.ConnectAsync("127.0.0.1", 10050);
+            // 빌드는 ServerSettings.json, 에디터는 메뉴에서 고른 곳 — ServerEndpoint
+            var (host, port) = ServerEndpoint.Resolve();
+            Debug.Log($"서버 접속 {host}:{port}");
+            await _client.ConnectAsync(host, port);
         }
 
         void Update()

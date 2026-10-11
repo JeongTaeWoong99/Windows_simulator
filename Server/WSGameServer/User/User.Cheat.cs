@@ -5,9 +5,8 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>치트를 쓸 수 있는 최소 admin_level. 0은 일반 유저다.</summary>
-    /// 개발을 위해서 CheatAdminLevel은 없도록.
-    public const int CheatAdminLevel = 0;
+    /// <summary>치트를 쓸 수 있는 최소 admin_level — 기동 시 <c>Game:CheatAdminLevel</c>로 정한다. 개발 0(모든 계정) · 원격 1.</summary>
+    public static int CheatAdminLevel { get; set; }
 
     /// <summary>한 번에 지급할 수 있는 캐릭터 장수 상한 — Constants.xlsx. 클라 치트창과 같은 값을 읽는다.</summary>
     public static int CheatMaxCharacterCount => (int)Constants.CheatMaxCharacterCount;

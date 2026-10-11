@@ -1,0 +1,10 @@
+# Docker 빌드 컨텍스트(Server/)에서 뺄 것 — 빌드 산출물과 로컬 DB.
+# 원격 DB는 빈 파일에서 시작해 마이그레이션이 스키마를 채운다 — 개발 DB(game.sqlite3)를 이미지에 싣지 않는다.
+**/bin/
+**/obj/
+**/.vs/
+**/*.user
+.claude/
+Shared/game.sqlite3
+Shared/*.bak
+**/auction.sqlite3*

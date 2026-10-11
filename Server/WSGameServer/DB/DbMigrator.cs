@@ -65,6 +65,7 @@ public static class DbMigrator
     public static IReadOnlyList<Migration> MigrateFile(string dbPath, string migrationsDirectory)
     {
         var migrations = LoadFrom(migrationsDirectory);
+        var isNew = !File.Exists(dbPath);
 
         // 풀링을 끈다 — 기동 때 한 번 쓰고 닫는 커넥션이 파일을 붙잡고 있지 않게.
         using var conn = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = dbPath, Pooling = false }.ToString());
@@ -77,12 +78,20 @@ public static class DbMigrator
             return [];
         }
 
-        var backupPath = $"{dbPath}.v{version}-{DateTime.UtcNow:yyyyMMdd-HHmmss}.bak";
-        using (var backup = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = backupPath, Pooling = false }.ToString()))
+        // 새로 만든 빈 DB(원격 첫 기동)는 백업할 것이 없다.
+        if (isNew)
         {
-            conn.BackupDatabase(backup);
+            ServerLog.Info("DB", $"DB 파일이 없어 새로 만든다: {dbPath}");
         }
-        ServerLog.Info("DB", $"마이그레이션 전 백업: {backupPath}");
+        else
+        {
+            var backupPath = $"{dbPath}.v{version}-{DateTime.UtcNow:yyyyMMdd-HHmmss}.bak";
+            using (var backup = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = backupPath, Pooling = false }.ToString()))
+            {
+                conn.BackupDatabase(backup);
+            }
+            ServerLog.Info("DB", $"마이그레이션 전 백업: {backupPath}");
+        }
 
         var applied = Apply(conn, migrations);
         foreach (var migration in applied)

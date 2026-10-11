@@ -5,12 +5,13 @@ namespace WSGameServer;
 
 public class NetworkManager
 {
-    private readonly MikaServer _server = new(10050);
+    private readonly MikaServer _server;
     private readonly ClientPacketManager _packetManager = new();
     private readonly ILogicExecutor _logicExecutor;
     private readonly SessionWatchdog _sessionWatchdog;
-    public NetworkManager(ILogicExecutor logicExecutor, SessionWatchdog sessionWatchdog)
+    public NetworkManager(int listenPort, ILogicExecutor logicExecutor, SessionWatchdog sessionWatchdog)
     {
+        _server = new MikaServer(listenPort);
         _logicExecutor = logicExecutor;
         _sessionWatchdog = sessionWatchdog;
     }

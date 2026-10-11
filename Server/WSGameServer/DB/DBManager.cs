@@ -21,11 +21,9 @@ public class DBManager : IDBQueue, IDbRunner
         _connectionFactory = connectionFactory;
     }
 
-    // DB 파일명을 받아 연결 문자열을 구성한다 (서버 시작 시 1회 호출)
-    public void Initialize(string dbFileName)
+    /// <summary>DB 파일 경로(<see cref="ResolveDbPath"/>의 결과)로 연결 문자열을 구성한다. 서버 시작 시 1회.</summary>
+    public void Initialize(string dbPath)
     {
-        string dbPath = ResolveDbPath(dbFileName);
-
         // 문자열 직접 조립 대신 빌더 사용 → 경로에 공백/특수문자가 있어도 안전
         var connectionString = new SqliteConnectionStringBuilder
         {
@@ -36,10 +34,15 @@ public class DBManager : IDBQueue, IDbRunner
         _connectionFactory = () => new SqliteConnection(connectionString);
     }
 
-    // 실행 위치(bin/publish)와 무관하게 소스의 Shared/<dbFileName>을 찾는다.
-    // 실행 파일 폴더에서 상위로 거슬러 올라가며 탐색한다.
+    // 절대 경로(Docker 볼륨)는 그대로 쓴다 — 없으면 마이그레이터가 새로 만든다.
+    // 파일명이면 실행 위치(bin/publish)와 무관하게 실행 파일 폴더에서 상위로 거슬러 올라가며 소스의 Shared/<파일명>을 찾는다.
     public static string ResolveDbPath(string dbFileName)
     {
+        if (Path.IsPathRooted(dbFileName))
+        {
+            return dbFileName;
+        }
+
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)
         {
