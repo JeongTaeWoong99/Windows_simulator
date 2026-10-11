@@ -68,10 +68,11 @@ public class LoginPresenter : MonoBehaviour
         Subscribe();
 
         loginButton.onClick.AddListener(OnLoginButtonClicked);
-        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로(ESC와 공유)
+        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로
 
         // 입력창에서 엔터를 쳐도 눌린 것으로 친다. 아이디 한 줄짜리 화면이라 마우스로 옮겨 갈 이유가 없다.
-        idInput.onSubmit.AddListener(_ => OnLoginButtonClicked());
+        // 키는 'KeyInputManager'가 모아 관리한다 — 아웃게임 키라 로그인 뒤에는 돌지 않는다.
+        Services.Get<KeyInputManager>().BindOutGameSubmit(idInput, OnLoginButtonClicked);
 
         // 빈 아이디로는 보낼 수 없으므로 버튼을 잠가 둔다. 입력이 생기면 열린다.
         idInput.onValueChanged.AddListener(_ => RefreshButton());

@@ -114,7 +114,6 @@ public class MarketItemPresenter : MonoBehaviour
         Subscribe();
 
         searchButton.onClick.AddListener(OnSearchClicked);
-        searchInput.onSubmit.AddListener(_ => OnSearchClicked());
         buyButton.onClick.AddListener(OnBuyClicked);
         sortButton.onClick.AddListener(OnSortClicked);
         countInput.onValueChanged.AddListener(_ => OnCountChanged());
@@ -206,7 +205,7 @@ public class MarketItemPresenter : MonoBehaviour
         }
     }
 
-    // 이름으로 목록을 새로 받는다 (searchButton OnClick · 입력칸 Enter).
+    // 이름으로 목록을 새로 받는다 (searchButton OnClick). ※ 입력칸 Enter 검색은 없앴다 — 인게임 키는 Shift+우클릭 하나다('KeyInputManager').
     //
     // 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
     private void OnSearchClicked()

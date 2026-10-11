@@ -685,6 +685,32 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         _equips.AddRange(res.Equips);
 
         EquipsChanged?.Invoke();
+        NotifyPendingEnchants();
+    }
+
+    // 상급 큐브 결과를 고르지 않은 장비가 있으면 접속하자마자 알린다 (OnEquipListReceived — 접속마다 1회).
+    // 보류는 서버에 남아 있어도 인벤토리 장비 탭을 열기 전에는 보이지 않는다 — 고르기 전에는 그 장비에 큐브를 더 쓸 수 없다.
+    // 알림 화면('NoticePresenter')이 'ServerWaitManager'만 구독하므로 그 창구를 쓴다('WindowManager'와 같은 이유).
+    private void NotifyPendingEnchants()
+    {
+        int count = 0;
+
+        foreach (EquipInfo equip in _equips)
+        {
+            if (equip.PendingEnchantGrade > 0)
+            {
+                count++;
+            }
+        }
+
+        if (count == 0)
+        {
+            return;
+        }
+
+        Services.Get<ServerWaitManager>().RaiseNotice(
+            $"상급 큐브 결과를 고르지 않은 장비가 {count}개 있습니다.\n" +
+            "인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.");
     }
 
     // 바뀐 장비 개체들 — 지급·장착·해제·자동 이동. 'EquipId'로 찾아 통째로 교체한다(확정값이다).

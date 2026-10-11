@@ -12,7 +12,7 @@ using UnityEngine.UI;
 // ■ 두 모양 — 같은 스크립트, 프리팹 둘
 // 'EquipPipsView'   등급색 네모만 — 인벤토리 캐릭터 칸('SlotView'). 100px 칸이라 아이콘이 읽히지 않는다.
 //                   LV 배지와 같은 줄, 오른쪽 끝은 적성 스트립 끝과 맞춘다.
-// 'EquipIconsView'  등급 바탕 + 장비 아이콘 — 작업슬롯 칸('WorkStationSlotView') 남은 시간 줄의 오른쪽.
+// 'EquipIconsView'  등급 바탕 + 장비 아이콘 — 작업슬롯 칸('WorkStationSlotView') 맨 아래 줄의 오른쪽(왼쪽은 남은 시간).
 //                   칸이 넓어 아이콘을 띄울 자리가 있다(2026-10-07 사용자 결정). 네모는 줄 높이만큼 정사각형('SquareLayoutElement').
 // 슬롯 설정의 캐릭터 카드에는 두지 않는다 — 그 화면은 장비 칸 4개가 바로 옆에 보인다(2026-10-07 결정).
 //
@@ -27,6 +27,11 @@ public class EquipPipsView : MonoBehaviour
     // 비워 두면 등급색 네모만 그린다. 채우면 'pipImages'와 같은 순서·개수여야 한다.
     [SerializeField, NonReorderable, Tooltip("(선택) 네모 위의 장비 아이콘 4개. 비우면 색 네모만. 순서는 위와 같다")]
     private Image[] iconImages = new Image[0];
+
+    // 아이콘 오른쪽 아래의 인챈트 보석 — 인벤토리 장비 칸과 같은 'EnchantGemView'다(같은 장비가 같게 보인다).
+    // 비워 두면 보석을 그리지 않는다(인벤토리 캐릭터 칸의 색 네모 줄). 채우면 'pipImages'와 같은 순서·개수여야 한다.
+    [SerializeField, NonReorderable, Tooltip("(선택) 네모 오른쪽 아래의 인챈트 보석 4개. 비우면 보석 없음. 순서는 위와 같다")]
+    private EnchantGemView[] gemViews = new EnchantGemView[0];
 
     // 딤·흑백 전의 색 — 칸이 어두워졌다 밝아질 때 돌아갈 값이다('SlotView._socketColors'와 같은 이유).
     private Color[] _baseColors = new Color[0];
@@ -45,12 +50,20 @@ public class EquipPipsView : MonoBehaviour
             ClientLogger.Warn(ClientLogger.UI,
                 $"아이콘이 {iconImages.Length}개 · 네모가 {pipImages.Length}개다 — 개수가 같아야 칸이 맞는다.", this);
         }
+
+        if (gemViews.Length > 0 && gemViews.Length != pipImages.Length)
+        {
+            ClientLogger.Warn(ClientLogger.UI,
+                $"보석이 {gemViews.Length}개 · 네모가 {pipImages.Length}개다 — 개수가 같아야 칸이 맞는다.", this);
+        }
     }
 
     // 칸마다 낀 장비의 등급(+ 아이콘)을 그린다. 'null'이면 줄을 끈다 (칸 View가 매번 그릴 때 호출).
     //   grades : 'WornSlots' 순서의 등급 — 'None'은 빈 칸
     //   icons  : 같은 순서의 아이콘 — 아이콘 자리가 없는 프리팹이면 무시된다. 그림이 없는 칸은 아이콘을 끈다(바탕 색만 남는다)
-    public void Bind(IReadOnlyList<GlobalRarity>? grades, IReadOnlyList<Sprite?>? icons = null)
+    //   enchantGrades : 같은 순서의 인챈트 등급 — 보석 자리가 없는 프리팹이면 무시된다. 빈 칸은 보석을 끄고,
+    //                   낀 장비가 인챈트 전('None')이면 빈 보석을 그린다
+    public void Bind(IReadOnlyList<GlobalRarity>? grades, IReadOnlyList<Sprite?>? icons = null, IReadOnlyList<GlobalRarity>? enchantGrades = null)
     {
         gameObject.SetActive(grades != null);
 
@@ -84,6 +97,27 @@ public class EquipPipsView : MonoBehaviour
 
             icon.sprite  = sprite;
             icon.enabled = sprite != null;
+        }
+
+        for (int i = 0; i < gemViews.Length; i++)
+        {
+            EnchantGemView? gem = gemViews[i];
+
+            if (gem == null)
+            {
+                continue; // 배선 누락은 Awake가 이미 경고했다
+            }
+
+            bool isWorn = i < grades.Count && grades[i] != GlobalRarity.None;
+
+            if (!isWorn || enchantGrades == null)
+            {
+                gem.gameObject.SetActive(false);
+
+                continue;
+            }
+
+            gem.Show(i < enchantGrades.Count ? enchantGrades[i] : GlobalRarity.None);
         }
 
         SetTint(false, false);
@@ -122,6 +156,14 @@ public class EquipPipsView : MonoBehaviour
             if (pipImages[i] != null)
             {
                 pipImages[i].color = SlotView.TintColor(_baseColors[i], dimmed, filteredOut);
+            }
+        }
+
+        foreach (EnchantGemView gem in gemViews)
+        {
+            if (gem != null && gem.gameObject.activeSelf)
+            {
+                gem.SetTint(dimmed, filteredOut);
             }
         }
     }

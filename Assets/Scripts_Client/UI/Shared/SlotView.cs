@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using DG.Tweening;
 using GameData;
 using TMPro;
 using UnityEngine;
@@ -93,6 +94,21 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     [SerializeField, Tooltip("응축 재료로 고름 표시 — 노랑 테두리 + 체크. 평소에는 꺼져 있다")]
     private GameObject condensePickMark = null!;
+
+    // ※ "할 일이 남은 칸" 표시 — 지금은 상급 큐브 결과를 고르기 전인 장비뿐이다.
+    //   빨간 테두리가 깜빡이고, 칸 아래쪽에 빨간 띠 '선택 대기'가 칸 폭만큼 깔린다(2026-10-11).
+    //   ※ 처음엔 레벨 배지 자리(26×14)에 '선택'을 썼는데 글자가 작아 칸 수십 개 사이에서 보이지 않았다 — 띠로 바꿨다.
+    //   색은 빨강(Negative) — 탭의 레드닷과 같은 "알림·경고" 색이다. 색은 프리팹의 UIThemeColor가 쥔다.
+    //   둘 다 선택 참조다 — 가챠 결과처럼 이 표시가 필요 없는 곳에서는 비워 둔다.
+    // ※ 테두리가 막대 넷이라(응축 표시와 같은 구조) 투명도는 루트의 'CanvasGroup'으로 한 번에 깜빡인다. 띠는 깜빡이지 않는다(글자가 읽혀야 한다).
+    [SerializeField, Tooltip("(선택) 주의 표시 — 빨간 테두리 묶음의 CanvasGroup. 켜지면 투명도가 천천히 깜빡인다. 평소에는 꺼져 있다")]
+    private CanvasGroup? attentionFrame;
+
+    [SerializeField, Tooltip("(선택) 주의 띠 — 칸 아래쪽 빨간 띠 '선택 대기'. 주의 테두리와 함께 켜진다")]
+    private GameObject? attentionBadge;
+
+    // 주의 테두리 깜빡임 — 켤 때 만들고 끌 때 죽인다. 칸이 꺼지면 멈췄다가 다시 켜지면 이어진다(SetLink).
+    private Tween? _attentionLoop;
 
     [SerializeField, Tooltip("판매 목록에 담겼음을 알리는 표시. 평소에는 꺼져 있다")]
     private GameObject sellMark = null!;
@@ -383,6 +399,41 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
     }
 
+    // 주의 테두리를 켜고 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 공급자의 'NeedsAttention').
+    // 이미 같은 상태면 아무것도 하지 않는다 — 다시 그릴 때마다 깜빡임이 처음부터 시작되면 튀어 보인다.
+    public void SetAttention(bool on)
+    {
+        if (attentionFrame == null)
+        {
+            return;
+        }
+
+        if (on == (_attentionLoop != null))
+        {
+            return;
+        }
+
+        _attentionLoop?.Kill();
+        _attentionLoop = null;
+
+        attentionFrame.gameObject.SetActive(on);
+
+        if (attentionBadge != null)
+        {
+            attentionBadge.SetActive(on);
+        }
+
+        if (!on)
+        {
+            return;
+        }
+
+        attentionFrame.alpha = 1f;
+        _attentionLoop = attentionFrame.DOFade(0.25f, 0.7f)
+                                       .SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo)
+                                       .SetLink(gameObject, LinkBehaviour.PauseOnDisablePlayOnEnable);
+    }
+
     // 응축 창에서 이 칸이 무엇인가를 그린다 (인벤토리 격자가 매번 그릴 때 호출 — 응축 창이 닫혀 있으면 늘 'None').
     public void SetCondenseMark(SlotCondenseMark mark)
     {
@@ -518,6 +569,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         SetStars(0);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);
+        SetAttention(false);
     }
 }
 

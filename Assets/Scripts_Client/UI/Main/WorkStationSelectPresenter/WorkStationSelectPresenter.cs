@@ -152,6 +152,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // 무엇을 끼웠는지만으로는 **왜 이걸 끼웠는지**를 알 수 없다 — 인벤토리 장비 탭과 같은 문구를 칸에도 적는다.
         [Tooltip("낀 장비의 효과 한 줄('채굴 +10%'). 비었으면 빈 문자열이라 줄이 사라진다")]
         public TMP_Text effectLabel;
+
+        // 기본 효과만으로는 큐브로 무엇이 붙었는지 모른다 — 등급 한 줄 + 옵션 줄을 효과 아래에 적는다.
+        // 줄 수가 0~5줄로 바뀌므로 칸 높이는 글자가 정한다('Equipment Panel'은 최소 높이만 쥔다).
+        [Tooltip("(선택) 큐브 등급·효과 목록. 비었으면 빈 문자열이라 줄이 사라진다")]
+        public TMP_Text enchantLabel;
     }
 
     // ※ 'Equipment Panel'의 칸 4개다. **순서가 곧 칸**이라 인덱스 + 1이 'EEquipSlot'이 된다
@@ -1026,7 +1031,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //   이 메서드는 그 단계의 내용만 채운다.
     private void Refresh()
     {
-        titleText.text = $"슬롯 {_slotIndex} 설정";
+        titleText.text = $"슬롯 {WorkStationSlotView.DisplayNumber(_slotIndex)} 설정"; // 사람에게는 1번부터
 
         // 세팅 단계의 불빛은 슬롯에서 파생한다 — 칠하기 전에 맞춘다(순서가 뒤집히면 한 프레임 늦는다).
         if (settingPanel.activeSelf)
@@ -1648,6 +1653,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
             if (entry.effectLabel != null)
             {
                 entry.effectLabel.text = worn != null ? EquipLabel.GetEffectText(worn.EquipTid) : "";
+            }
+
+            if (entry.enchantLabel != null)
+            {
+                entry.enchantLabel.text = worn != null ? EquipLabel.GetEnchantLines(worn) : "";
             }
 
             // 인벤토리 칸·캐릭터 카드와 같은 표('RarityPalette')다. 빈 칸은 회색('Unknown').

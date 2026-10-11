@@ -179,11 +179,11 @@ public class CharacterSlotSource : InventorySlotSource
         {
             if (slot.SlotIndex == slotIndex)
             {
-                return $"슬롯 {slotIndex} · {IndustryLabel.Get(slot.Industry)} Lv.{slot.IndustryLevel}";
+                return $"슬롯 {WorkStationSlotView.DisplayNumber(slotIndex)} · {IndustryLabel.Get(slot.Industry)} Lv.{slot.IndustryLevel}";
             }
         }
 
-        return $"슬롯 {slotIndex}";
+        return $"슬롯 {WorkStationSlotView.DisplayNumber(slotIndex)}";
     }
 
     // 캐릭터 목록·슬롯·장비 변경 구독 (Subscribe에서 호출)

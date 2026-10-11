@@ -37,7 +37,7 @@ using UnityEngine.UI;
 //   - 고르지 않고 [사용]을 누르면 BEFORE를 남기고 다시 굴린다 — 서버는 보류 중 큐브를 거절하므로(EnchantPending)
 //     **고르기(이전 값) → 큐브 사용**을 차례로 보낸다(해제하고 사용과 같은 두 단계).
 //   - 고르기 전에는 **창을 떠날 수 없다** — 닫기 · 탭 · 다른 장비 좌클릭 · 우클릭 담기를 막고 알림을 띄운다(사용자 결정).
-//     게임 종료처럼 막을 수 없는 경우엔 보류가 남고, 장비 칸 '선택' 배지로 다시 연다('EquipSlotSource.GetBadge').
+//     게임 종료처럼 막을 수 없는 경우엔 보류가 남고, 장비 칸의 빨간 '선택 대기' 띠로 다시 연다('EquipSlotSource.NeedsAttention').
 //
 // ■ 자동 — 사람이 누르는 흐름을 그대로, 2배 빠르기로 (이슈 #53)
 // [자동]이 비교 상자 자리에 설정 칸('EnchantAutoPanelView' — 목표 등급 · 노릴 옵션 · 조합 · 상한)을 같은 높이로 갈아 끼우고,
@@ -169,6 +169,12 @@ public class EquipEnchantPresenter : MonoBehaviour
 
     // 열림이 바뀌었다 ('SellCartPresenter'가 구독 — 열리면 카트를 비우고 물러난다).
     public event Action<bool>? OpenChanged;
+
+    // 창에 띄운 장비. 닫혀 있으면 0 — 격자가 이 장비만 색을 남기고 나머지를 흑백으로 그린다.
+    public long EquipId => _equipId;
+
+    // 띄운 장비가 바뀌었다 — 열기·닫기·다른 장비로 바꾸기 전부 ('InventoryGridPresenter'가 구독해 포커스를 다시 그린다).
+    public event Action? TargetChanged;
 
     private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
     private readonly List<int>                    _sending = new List<int>();
@@ -363,6 +369,8 @@ public class EquipEnchantPresenter : MonoBehaviour
         {
             OpenChanged?.Invoke(true);
         }
+
+        TargetChanged?.Invoke();
     }
 
     // 사용자가 창을 닫으려 한다 — 상급 큐브 결과를 고르기 전이면 막고 알린다 (닫기 버튼 · 격자의 우클릭 판매 담기).
@@ -425,6 +433,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
+        TargetChanged?.Invoke();
     }
 
     // 장비 탭을 떠나면 닫는다 (InventoryTabPresenter.TabChanged 구독).

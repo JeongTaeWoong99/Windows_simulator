@@ -168,12 +168,6 @@ public class WindowManager : MonoService<WindowManager>
 
     private void Update()
     {
-        // 안전장치 : 투명/보더리스 상태라 창을 닫기 어려우므로 ESC 로 강제 종료(종료 버튼과 같은 경로).
-        if (Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame)
-        {
-            QuitApplication();
-        }
-
         // 항상 위 유지 : 작업표시줄 등 다른 topmost 창이 앞으로 오면 밴드 안에서 밀리므로 주기적으로 재확정.
         //   (동적 클릭 스루와 무관하게 돌아야 하니 아래 early-return 앞에 둔다)
         if (_isTopmost && _initialized)
@@ -1162,7 +1156,8 @@ public class WindowManager : MonoService<WindowManager>
         WindowSettings.DeleteKey(WindowSettings.PositionYKey);
     }
 
-    // 앱을 종료한다(종료 버튼·ESC에서 호출). 보더리스라 창 'X'가 없어 명시적 출구가 필요하다.
+    // 앱을 종료한다(종료 버튼에서 호출). 보더리스라 창 'X'가 없어 명시적 출구가 필요하다.
+    // ※ ESC 종료는 없앴다(2026-10-11) — 마우스 게임이라 실수로 눌러 꺼지는 일만 생겼다. 출구는 종료 버튼뿐이다.
     // 에디터에서는 Application.Quit이 동작하지 않으므로 플레이 모드를 멈춘다.
     public void QuitApplication()
     {

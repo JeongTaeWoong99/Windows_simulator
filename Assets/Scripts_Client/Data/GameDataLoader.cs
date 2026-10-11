@@ -124,6 +124,13 @@ public static class GameDataLoader
         return 0;
     }
 
+    // 아이템 최대 수량('MaxStack' — 서버가 수확을 이 값에서 자른다)을 조회한다.
+    // ※ 없는 Id는 상한 없음(int.MaxValue)으로 떨어진다 — 서버 'ClampToMaxStack'과 같다. 경고는 이름·등급 조회에서 이미 난다.
+    public static int GetItemMaxStack(int itemId)
+    {
+        return GameTable.ItemTable.TryGet(itemId, out var row) ? row.MaxStack : int.MaxValue;
+    }
+
     // 이 아이템이 **열 수 있는 상자**인가. 서버와 같은 판정이다 — 'OpenGachaId'가 있으면 상자다.
     //
     // 상자만 따로 표시하는 분류('ItemType')가 없다 — 열었을 때 무엇이 나오는지가 상자의 정의라

@@ -52,6 +52,7 @@ public class WorkStationListPresenter : MonoBehaviour
     // 장착 네모 버퍼 — 칸마다 새로 만들지 않는다. 뷰가 받는 즉시 쓰임이 끝난다.
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
     private readonly List<Sprite?>      _wornIcons  = new List<Sprite?>();
+    private readonly List<GlobalRarity> _wornGems   = new List<GlobalRarity>();
 
     // 획득 연출에 넘길 아이템 — 수확마다 새로 만들지 않고 비워 다시 쓴다
     private readonly List<ItemGainEffectView.Gain> _gains = new List<ItemGainEffectView.Gain>();
@@ -369,8 +370,8 @@ public class WorkStationListPresenter : MonoBehaviour
             // 툴팁은 띄우는 순간에 읽는다 — 장비가 바뀌어도 다시 넣어 줄 필요가 없다
             long characterId = slot.CharacterId;
 
-            EquipLabel.ReadWornGrades(_data, characterId, _wornGrades, _wornIcons);
-            view.SetEquipPips(_wornGrades, _wornIcons, () => BuildWornTooltip(characterId));
+            EquipLabel.ReadWornGrades(_data, characterId, _wornGrades, _wornIcons, _wornGems);
+            view.SetEquipPips(_wornGrades, _wornIcons, _wornGems, () => BuildWornTooltip(characterId));
         }
     }
 
@@ -383,7 +384,7 @@ public class WorkStationListPresenter : MonoBehaviour
             return;
         }
 
-        ItemGainEffectView.ReadGains(res.ItemChanges, _gains);
+        ItemGainEffectView.ReadGains(res, _gains);
         view.PlayGain(_gains);
     }
 

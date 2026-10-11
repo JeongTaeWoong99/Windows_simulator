@@ -141,7 +141,6 @@ public class AuctionSearchPresenter : MonoBehaviour
         Subscribe();
 
         searchButton.onClick.AddListener(OnSearchClicked);
-        searchInput.onSubmit.AddListener(_ => OnSearchClicked());
         moreButton.onClick.AddListener(OnMoreClicked);
         sortButton.onClick.AddListener(OnSortClicked);
 
@@ -255,7 +254,7 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 요청
 
-    // 조건으로 첫 페이지를 검색한다 (searchButton OnClick · 입력칸 Enter · 화면을 처음 열 때).
+    // 조건으로 첫 페이지를 검색한다 (searchButton OnClick · 화면을 처음 열 때). ※ 입력칸 Enter 검색은 없앴다('KeyInputManager').
     //
     // 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
     private void OnSearchClicked()

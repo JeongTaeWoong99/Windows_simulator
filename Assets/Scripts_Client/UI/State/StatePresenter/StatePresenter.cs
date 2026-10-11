@@ -93,7 +93,7 @@ public class StatePresenter : MonoBehaviour
 
         Subscribe();
         BindScreenButtons();
-        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로(ESC와 공유)
+        quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로
         Refresh(); // 이미 통지를 받은 뒤에 켜졌을 수 있다
 
         _isReady = true;

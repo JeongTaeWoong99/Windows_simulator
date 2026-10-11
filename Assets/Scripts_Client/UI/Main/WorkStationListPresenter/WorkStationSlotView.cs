@@ -12,7 +12,20 @@ using UnityEngine.UI;
 //   상시 실행 앱이라 칸마다 루프를 돌리면 슬롯 수만큼 낭비가 곱해진다.
 //
 // ■ 표시는 값의 진실이 아니다
-//   카운트다운은 연출이고 판정은 서버가 한다. 어긋나도 다음 스냅샷이 교정한다.
+//   진행 막대는 연출이고 판정은 서버가 한다. 어긋나도 다음 스냅샷이 교정한다.
+//
+// ■ 칸의 생김새 (2026-10-11 A안 — 목업 https://claude.ai/artifact/VxGmcpHuVn1BJaWK4PhAeo)
+//   머리 줄  : [#번호] [산업 Lv]          속도(최대)   — 어디서 · 얼마나 빠른지
+//   무대     : 왼쪽 아래 캐릭터 이름 · 아래 가장자리 초록 진행 막대(칸 폭 끝까지) — 누가 · 언제
+//   아래 줄  : 남은 시간 '3.1초 후 수확'     장비 4칸(+보석) — 언제 · 무엇을 꼈는지
+//   예전엔 네 정보를 한 줄('슬롯 2 · 채굴 Lv1 · 별빛드래곤 Lv10 · 6.86배')에 '·'로만 갈라 읽기 어려웠고,
+//   진행 막대가 줄 하나(칸 높이의 1/9)를 통째로 썼다.
+//   ※ 위젯 칸('WidgetMiniSlotView')은 남은 시간 글자를 두지 않는다 — 막대만(2026-10-11 사용자 결정).
+//
+// ■ 번호는 1부터 보인다
+//   서버·클라는 슬롯을 0~7로 다루지만 사람에게는 #1~#8로 보인다('DisplayNumber'). 잠긴 칸 문구('작업슬롯 2번 해금')와 같은 셈이다.
+//   ⚠️ 이름·막대는 무대('Visible Panel') **안이 아니라** 무대 위 형제 층('Stage Overlay')에 둔다 —
+//      무대는 실행 중에 배우 그림을 자기 자식 맨 뒤에 만들어서, 안에 두면 배우에게 가려진다.
 public class WorkStationSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -21,17 +34,26 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
-    [SerializeField, Tooltip("슬롯 번호·산업(+레벨)·캐릭터·속도")]
-    private TMP_Text slotText = null!;
+    [SerializeField, Tooltip("머리 줄 왼쪽 칩 — 슬롯 번호 '#2'")]
+    private TMP_Text indexText = null!;
 
-    [SerializeField, Tooltip("다음 수확까지 남은 시간")]
-    private TMP_Text remainText = null!;
+    [SerializeField, Tooltip("머리 줄 칩 — 산업 + 레벨 '채굴 Lv1'. 돌지 않는 칸은 '대기'")]
+    private TMP_Text industryText = null!;
 
-    [SerializeField, Tooltip("판정 진행도 (0~1). 표시 전용이라 interactable은 꺼 둔다")]
+    [SerializeField, Tooltip("머리 줄 오른쪽 끝 — 속도 배율 '6.86배' (최소 주기에 걸리면 금색 '최대')")]
+    private TMP_Text speedText = null!;
+
+    [SerializeField, Tooltip("무대 왼쪽 아래 — 캐릭터 이름 + 레벨")]
+    private TMP_Text characterText = null!;
+
+    [SerializeField, Tooltip("판정 진행도 (0~1). 무대 아래 가장자리 · 칸 폭 끝까지. 표시 전용이라 interactable은 꺼 둔다")]
     private Slider progressSlider = null!;
 
-    // ※ 남은 시간 줄('Remain Text')의 오른쪽에 붙는다 — 인벤토리 캐릭터 칸에서 LV 배지 줄 오른쪽에 붙는 것과 짝이다(T-104).
-    //   여기는 칸이 넓어 'EquipIconsView'(등급 바탕 + 장비 아이콘)를 쓴다.
+    [SerializeField, Tooltip("아래 줄 왼쪽 — 남은 시간 '3.1초 후 수확'")]
+    private TMP_Text remainText = null!;
+
+    // ※ 아래 줄 오른쪽에 붙는다 — 인벤토리 캐릭터 칸에서 LV 배지 줄 오른쪽에 붙는 것과 짝이다(T-104).
+    //   여기는 칸이 넓어 'EquipIconsView'(등급 바탕 + 장비 아이콘 + 큐브 보석)를 쓴다.
     [SerializeField, Tooltip("배치된 캐릭터가 낀 장비 4칸 — 무기·장신구1·장신구2·보석 (EquipIconsView 프리팹)")]
     private EquipPipsView equipPips = null!;
 
@@ -44,11 +66,14 @@ public class WorkStationSlotView : MonoBehaviour
 
     private WorkStationSlotInfo? _slot;
 
-    // 남은 시간 글자에 지금 적혀 있는 값 (0.1초 단위). -1이면 다른 문구가 적혀 있다 — 다음 Tick이 다시 쓴다.
+    // 마지막으로 그린 남은 시간 (0.1초 단위). 같은 값이면 다시 쓰지 않는다 — -1은 "아직 안 썼다"
     private int _shownRemainTenths = -1;
 
     // 이 뷰가 그리고 있는 슬롯 번호. 미바인딩이면 -1.
     public int SlotIndex => _slot?.SlotIndex ?? -1;
+
+    // 사람에게 보이는 번호 — 0번 슬롯이 '#1'이다
+    public static int DisplayNumber(int slotIndex) => slotIndex + 1;
 
     // 배치돼 있고 속도가 0이 아니어서 카운트다운을 돌릴 수 있는가.
     public bool IsRunning => _slot != null && _slot.CharacterId != 0 && _slot.CurrentWorkSpeed > 0;
@@ -58,9 +83,12 @@ public class WorkStationSlotView : MonoBehaviour
     private void Awake()
     {
         this.RequireRef(backgroundImage, nameof(backgroundImage));
-        this.RequireRef(slotText,       nameof(slotText));
-        this.RequireRef(remainText,     nameof(remainText));
+        this.RequireRef(indexText,      nameof(indexText));
+        this.RequireRef(industryText,   nameof(industryText));
+        this.RequireRef(speedText,      nameof(speedText));
+        this.RequireRef(characterText,  nameof(characterText));
         this.RequireRef(progressSlider, nameof(progressSlider));
+        this.RequireRef(remainText,     nameof(remainText));
         this.RequireRef(equipPips,      nameof(equipPips));
     }
 
@@ -80,31 +108,36 @@ public class WorkStationSlotView : MonoBehaviour
             stage.DrawIdle(); // 돌지 않는 칸은 이 장면에 멈춰 있다. 도는 칸은 다음 Tick이 덮는다
         }
 
-        string industry  = IndustryLabel.Get(slot.Industry);
-        string character = slot.CharacterId == 0 ? "-"
-                         : characterLevel > 0     ? $"{characterName} Lv{characterLevel}"
-                         : characterName;
+        indexText.text     = $"#{DisplayNumber(slot.SlotIndex)}";
+        characterText.text = slot.CharacterId == 0 ? "배치 없음"
+                           : characterLevel > 0     ? $"{characterName} {UIRichText.Small($"Lv{characterLevel}")}"
+                           : characterName;
 
         if (!IsRunning)
         {
-            slotText.text          = $"슬롯 {slot.SlotIndex} · 대기";
-            remainText.text        = "배치 없음";
-            _shownRemainTenths     = -1;
-            progressSlider.value   = 0f;
+            industryText.text    = "대기";
+            speedText.text       = "";
+            progressSlider.value = 0f;
+            remainText.text      = "";
+            _shownRemainTenths   = -1;
 
             return;
         }
 
-        // 산업 레벨은 산업 바로 뒤에 붙인다 — '·'로 가르면 무엇의 레벨인지 모호해진다.
-        // 레벨 이름('저수지')은 세팅 화면의 레벨 버튼에만 쓴다. 최대 6자('신성한 대지')라
-        // 여기 적으면 한 줄이 길어지는데, 'Slot Text'는 오토사이징이라 그만큼 글자가 작아진다.
+        // 산업 레벨은 산업 바로 뒤에 붙인다 — 떨어뜨리면 무엇의 레벨인지 모호해진다.
+        // 레벨 이름('저수지')은 세팅 화면의 레벨 버튼에만 쓴다 — 최대 6자('신성한 대지')라 칩이 길어진다.
         // 레벨 0은 적지 않는다 — 서버 기본값이 1이라 올 일이 없고, 'Lv0'은 없는 값이다.
-        string industryWithLevel = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
+        string industry = IndustryLabel.Get(slot.Industry);
 
-        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 '(최대)'를 붙인다 (T-102)
+        industryText.text = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
+
+        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 금색 '최대'를 붙인다 (T-102)
         float  speedMultiplier = WorkStationProgress.GetEffectiveSpeed(slot) / (float)Constants.WorkSpeedScale;
-        string capMark         = WorkStationProgress.IsAtMinCycle(slot) ? "(최대)" : "";
-        slotText.text = $"슬롯 {slot.SlotIndex} · {industryWithLevel} · {character} · {speedMultiplier:0.00}배{capMark}";
+        string capMark         = WorkStationProgress.IsAtMinCycle(slot)
+                               ? UIRichText.Small(UIRichText.Paint(" 최대", UIThemeRole.Highlight))
+                               : "";
+
+        speedText.text = $"{speedMultiplier:0.00}배{capMark}";
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
@@ -117,10 +150,12 @@ public class WorkStationSlotView : MonoBehaviour
     // 배치된 캐릭터의 장착 네모를 그린다 (WorkStationListPresenter가 Bind 뒤에 호출).
     //   grades : 'EquipLabel.WornSlots' 순서의 등급 — 'None'은 빈 칸
     //   icons  : 같은 순서의 장비 아이콘 — 빈 칸·그림 없음은 null
+    //   gems   : 같은 순서의 인챈트 등급 — 아이콘 오른쪽 아래 보석. 'None'은 빈 보석(빈 칸은 보석이 꺼진다)
     //   tooltip : 장비 줄에 올리면 띄울 내용 — 칸마다 낀 장비 이름·등급
-    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons, System.Func<TooltipContent?> tooltip)
+    public void SetEquipPips(IReadOnlyList<GlobalRarity> grades, IReadOnlyList<Sprite?> icons, IReadOnlyList<GlobalRarity> gems,
+                             System.Func<TooltipContent?> tooltip)
     {
-        equipPips.Bind(grades, icons);
+        equipPips.Bind(grades, icons, gems);
         equipPips.SetTooltip(tooltip);
     }
 
@@ -148,8 +183,9 @@ public class WorkStationSlotView : MonoBehaviour
         gainEffect.Play(point, gains, () => stageView.FollowGround(point, ground));
     }
 
-    // 진행도와 남은 시간을 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).
-    //   cycleSeconds : 판정 1회의 초 — 무대가 진행도를 주기 안의 순간으로 바꾼다
+    // 진행도를 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).
+    //   remainSeconds : 다음 판정까지 남은 초
+    //   cycleSeconds  : 판정 1회의 초 — 무대가 진행도를 주기 안의 순간으로 바꾼다
     public void Tick(float progress, float remainSeconds, float cycleSeconds)
     {
         progressSlider.value = progress;

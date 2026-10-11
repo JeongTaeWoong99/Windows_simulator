@@ -4,7 +4,6 @@ using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
 using UnityEngine.UI;
 
 // 인벤토리의 칸 격자. 탭이 무엇이든 **같은 격자 하나**가 그린다 —
@@ -153,6 +152,7 @@ public class InventoryGridPresenter : MonoBehaviour
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
     private UIManager         _ui      = null!;
+    private KeyInputManager   _keys    = null!; // Shift+우클릭(경매 등록) 판별 — 키는 이 매니저만 읽는다
     private NetworkManager    _network = null!;
     private ServerWaitManager _wait    = null!;
 
@@ -240,6 +240,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data    = data;
         _cart    = Services.Get<SellCartModel>();
         _ui      = Services.Get<UIManager>();
+        _keys    = Services.Get<KeyInputManager>();
         _network = NetworkManager.Instance;
         _wait    = Services.Get<ServerWaitManager>();
 
@@ -265,6 +266,10 @@ public class InventoryGridPresenter : MonoBehaviour
         // 응축 창의 대상·재료가 바뀌면 칸 표시(테두리·체크·흑백)를 다시 그린다.
         // ※ 켜고 끌 때 풀지 않는다 — 응축 창이 닫힐 때의 알림(표시 걷기)을 격자가 꺼져 있어도 놓치면 안 된다.
         characterCondense.SelectionChanged += Redraw;
+
+        // 큐브 창이 장비를 띄우면 그 장비만 색을 남기고 나머지는 흑백으로 — 무엇을 강화하는지 격자에서 보인다(2026-10-11).
+        // 응축 창과 같은 이유로 켜고 끌 때 풀지 않는다 — 닫힐 때 흑백을 걷는 알림을 놓치면 안 된다.
+        equipEnchant.TargetChanged += Redraw;
 
         // 보이는 칸만 그리므로 스크롤·창 크기가 바뀌면 새로 들어온 칸을 그린다('Redraw' 주석).
         scrollRect.onValueChanged.AddListener(OnScrollChanged);
@@ -322,6 +327,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseFailed         -= OnItemUseFailed;
         _data.StorageSlotsResponded -= OnStorageSlotsResponded;
         characterCondense.SelectionChanged -= Redraw;
+        equipEnchant.TargetChanged         -= Redraw;
         scrollRect.onValueChanged.RemoveListener(OnScrollChanged);
     }
 
@@ -682,7 +688,10 @@ public class InventoryGridPresenter : MonoBehaviour
         view.SetDimmed(isAway || i == _dragFrom); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
 
         // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
-        view.SetFilteredOut(_current.IsFilteredOut(data.Key));
+        // 큐브 창이 열려 있으면 띄운 장비 말고는 같은 흑백으로 물린다 — 찾기 제외와 같은 표시를 쓴다.
+        bool outOfEnchant = _currentTab == InventoryTab.Equipment && equipEnchant.IsOpen && equipEnchant.EquipId != data.Key;
+
+        view.SetFilteredOut(outOfEnchant || _current.IsFilteredOut(data.Key));
 
         // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
         // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
@@ -690,6 +699,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다. 다른 탭은 같은 배지 자리에 공급자의 표시를 싣는다(장비: 상급 큐브 결과 고르기 전 '선택').
         view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key));
+        view.SetAttention(_current.NeedsAttention(data.Key));
         view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
 
         // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
@@ -841,7 +851,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        if (Keyboard.current != null && Keyboard.current.shiftKey.isPressed)
+        if (_keys.IsQuickAuctionHeld)
         {
             OpenAuctionRegister(view.Key);
 

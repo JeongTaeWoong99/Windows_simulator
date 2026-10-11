@@ -13,6 +13,10 @@ using UnityEngine.UI;
 //   뒤에 깔 것은 아이콘보다 앞 자식, 덮을 것(섬광·별)은 뒤 자식이다.
 //
 // ■ 단계별 빛은 'ItemGainGlowSettings' 머리말 참고. 그림은 'FxSprites'의 gain_* (그림 저장소 'Art/fx/gain/') — 없는 그림의 효과는 켜지 않는다.
+//
+// ■ 가방 가득 ('BuildBagFull', 2026-10-11)
+//   아이템 대신 자루(옅은 회색) + 오른쪽 아래 빨간 X('cross' — 아이콘의 자식이라 나타남 크기를 함께 탄다).
+//   뒤에는 빨간 번짐만 깔고, X가 한 번 튄다. 그림은 'FxSprites'의 bagfull_* ('Art/fx/bagfull/').
 public class ItemGainFx : MonoBehaviour
 {
     // 번짐이 다 커지는 때 · 광선이 다 나오는 때 (재생 시간 대비)
@@ -29,6 +33,13 @@ public class ItemGainFx : MonoBehaviour
     private const float FlashRatio = 0.3f;
     private const float RingRatio  = 0.5f;
     private const float SparkRatio = 0.55f;
+
+    // 가방 가득 — 자루 색 · X 자리(아이콘 가운데 기준, 아이콘 대비) · X 크기(아이콘 대비) · 뒤 번짐 진하기
+    // ※ X 자리·크기는 자루 그림이 비워 둔 자리와 맞춘다('make_fx.py'의 bagfull)
+    private static readonly Color BagColor     = new Color(0.88f, 0.88f, 0.9f, 1f);
+    private const float           CrossOffset  = 0.3f;
+    private const float           CrossScale   = 0.55f;
+    private const float           BagGlowAlpha = 0.6f;
 
     // 빛 색을 등급색에서 흰색 쪽으로 당기는 정도 — 어두운 등급색(희귀 파랑·영웅 보라)도 어두운 바탕에서 빛으로 보이게
     private const float GlowWhiten = 0.2f;
@@ -51,6 +62,7 @@ public class ItemGainFx : MonoBehaviour
     [SerializeField] private Image       ring        = null!;
     [SerializeField] private Image       icon        = null!;
     [SerializeField] private Image       flash       = null!;
+    [SerializeField] private Image       cross       = null!;
     [SerializeField] private List<Image> sparks      = new List<Image>();
     [SerializeField] private List<Image> twinkles    = new List<Image>();
 
@@ -70,6 +82,7 @@ public class ItemGainFx : MonoBehaviour
         fx.ring       = CreateImage("Ring", root, FxSprites.GainRing);
         fx.icon       = CreateImage("Icon", root, null);
         fx.flash      = CreateImage("Flash", root, FxSprites.GainGlow);
+        fx.cross      = CreateImage("Cross", fx.icon.rectTransform, FxSprites.BagFullCross);
 
         fx.icon.preserveAspect = true;
 
@@ -133,15 +146,47 @@ public class ItemGainFx : MonoBehaviour
         return settings.TopPop;
     }
 
-    // 빛 그림을 모두 끈다 — 풀에서 다시 꺼낼 때 지난 등급의 빛이 남지 않게 (Build 첫머리 · 꺼진 채 반납을 미룰 때)
+    // 가방 가득 모양을 'seq'에 넣는다 — 자루 + 빨간 X, 뒤에 빨간 번짐. 튀지 않으므로 1을 돌려준다.
+    //   sprite : 자루 그림('FxSprites.BagFullBag')
+    public float BuildBagFull(Sequence seq, Sprite sprite, float size, float duration, ItemGainGlowSettings settings)
+    {
+        HideAll();
+
+        icon.enabled                 = true;
+        icon.sprite                  = sprite;
+        icon.color                   = BagColor;
+        icon.rectTransform.sizeDelta = new Vector2(size, size);
+
+        Color negative = UIThemePalette.Of(UIThemeRole.Negative);
+
+        AddGlow(seq, negative, size * settings.GlowScale, BagGlowAlpha, duration);
+
+        RectTransform rect = Place(cross, negative, size * CrossScale);
+
+        rect.anchoredPosition = new Vector2(CrossOffset, -CrossOffset) * size;
+
+        // X가 한 번 튀고, 자루와 함께 흐려진다 — 자루의 페이드는 'ItemGainEffectView'가 아이콘에 건다
+        seq.Insert(0f, rect.DOPunchScale(Vector3.one * 0.35f, duration * FlashRatio, vibrato: 4));
+        seq.Insert(duration * GlowFadeStart, cross.DOFade(0f, duration * (1f - GlowFadeStart)).SetEase(Ease.InQuad));
+
+        return 1f;
+    }
+
+    // 아이콘과 빛 그림을 모두 끈다 — 풀에서 다시 꺼낼 때 지난 등급의 빛이 남지 않게 (Build 첫머리 · 꺼진 채 반납을 미룰 때)
+    //
+    // ⚠️ 아이콘도 끈다. 화면 전환으로 칸이 꺼지면 반납이 다음 재생까지 미뤄지는데('ItemGainEffectView.Return'),
+    //   아이콘만 켜 둔 채 미루면 반쯤 흐려진 아이콘이 화면에 돌아왔을 때 다음 수확까지 멈춰 남았다(2026-10-11).
+    //   'Build'가 아이콘을 다시 켠다.
     public void HideAll()
     {
+        icon.enabled       = false;
         pillar.enabled     = false;
         glow.enabled       = false;
         rays.enabled       = false;
         secondRays.enabled = false;
         ring.enabled       = false;
         flash.enabled      = false;
+        cross.enabled      = false;
 
         foreach (Image spark in sparks)
         {

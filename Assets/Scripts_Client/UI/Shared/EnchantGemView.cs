@@ -23,8 +23,9 @@ public class EnchantGemView : MonoBehaviour
     [SerializeField, Tooltip("왼쪽 위 흰 반짝 점 — 인챈트 전(빈 보석)에는 꺼진다")]
     private Image shineImage = null!;
 
-    // 빈 보석의 몸통 색 — 바탕 위에 어둡게 비친다.
-    private static readonly Color EmptyColor = new Color(0f, 0f, 0f, 0.35f);
+    // 빈 보석의 몸통 색 — 불투명한 검정. 일반 등급이 회색이라 "인챈트 전"은 그보다 확실히 어둡게 둔다.
+    // ※ 처음엔 반투명 검정(35%)이었는데 바탕 등급색에 묻혀 흐려 보였다(2026-10-11 사용자 지적).
+    private static readonly Color EmptyColor = new Color(0.05f, 0.05f, 0.05f, 1f);
 
     // 딤·흑백 전의 원래 색 ('SetTint'가 매번 여기서 다시 칠한다).
     private Color _baseColor = EmptyColor;
@@ -60,6 +61,15 @@ public class EnchantGemView : MonoBehaviour
                 break;
             }
         }
+
+        Show(grade);
+    }
+
+    // 인챈트 등급 하나로 보석을 켠다 — 'None'이면 빈 보석 (작업슬롯 칸의 장착 아이콘 줄 'EquipPipsView'가 호출).
+    // 칸 목록 없이 개체의 'EnchantGrade'만 아는 곳에서 쓴다.
+    public void Show(GlobalRarity grade)
+    {
+        gameObject.SetActive(true);
 
         bool isEnchanted = grade != GlobalRarity.None;
 

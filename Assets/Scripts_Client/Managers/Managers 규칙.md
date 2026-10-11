@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -23,7 +23,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 
 ---
 
-## 2. 현재 매니저 8개
+## 2. 현재 매니저 9개
 
 | 클래스 | 역할 | 경계 — 하지 않는 것 |
 |--------|------|--------------------|
@@ -42,6 +42,19 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 | **`SellCartModel`** | **판매하려고 담아 둔 목록.** 담긴 자원 종류·수량과 캐릭터·장비 개체 번호(2026-10-03 · T-075), 합계 골드, 상위 등급 포함 여부를 들고 `Changed`를 발행. 인벤토리 격자(담김 표시)와 `SellCartPresenter`(목록·합계)가 같은 것을 보게 하는 자리다 | **송신하지 않는다** — 판매 요청은 버튼을 누른 Presenter가 보낸다. **보유량의 주인도 아니다** — `PlayerDataModel.InventoryChanged`를 구독해 초과분만 깎고, 개체 목록 변경으로 사라졌거나 나가 있는 개체를 뺀다 |
 | **`AuctionModel`** | **경매장·거래소 창구.** 거래소 목록·가격대, 장비 검색 결과(페이지 누적), 내 매물을 들고 응답마다 결과 코드와 함께 `…Completed`를 발행. 즉시 판매가·경매 단가 범위(즉시 판매가 ~ 1조)·한 번에 올리는 수량 상한(9,999)·등록비 식의 표시용 사본과, 검색 결과에서 내 매물을 가리는 `IsMine`·`GetMyItemCount`도 여기 있다 | **예외적으로 송신한다** — 장비 검색은 마지막으로 본 매물을 커서로 다음 페이지를 받아서, 조건·커서·누적 결과가 한 곳에 있어야 [더 보기]가 이어 붙는다. 대기(`ServerWaitManager`)는 여전히 요청을 일으킨 Presenter가 건다. **인벤토리 반영은 하지 않는다** — 등록 응답은 `PlayerDataModel`이 같은 패킷을 구독해 뺀다 |
 | **`ServerWaitManager`** | **서버 왕복 한 건의 대기 창구.** 로딩 표시 on/off · 5초 무응답 감시 · 실패/치명 알림 발행 | **패킷을 받지 않는다.** 요청을 보낸 Presenter가 `Begin` 후 `Succeed`/`Fail`로 보고한다. `EResultCode`도 모른다 — 문구 변환은 Presenter가 `ResultMessages`로 마쳐 넘긴다 |
+| **`KeyInputManager`** | **키 입력의 단일 창구.** 게임이 받는 키를 모두 여기 적고, 쓰는 곳은 여기를 거쳐 묻는다. 아웃게임(로그인 화면)·인게임(로그인 뒤) 두 구역으로 나뉘고, 로그인 성공으로 인게임이 된다. 인게임에서는 EventSystem의 UI 키 이동을 끈다 | **키로 무엇을 할지는 모른다** — "Shift가 눌렸나"만 답하고 경매 등록은 인벤토리 격자가 한다. 다른 파일이 `Keyboard.current`를 직접 읽지 않는다 |
+
+### 키 표 (`KeyInputManager`) — 키를 늘리면 여기 한 줄
+
+| 구역 | 키 | 어디서 | 하는 일 | 매니저 API |
+|------|----|--------|---------|-----------|
+| 아웃게임 | Enter (입력칸) | 로그인 화면 아이디 칸 (`LoginPresenter`) | 로그인 | `BindOutGameSubmit` |
+| 아웃게임 | 방향키·WASD · Enter/Space · Esc | EventSystem 기본 (`InputSystemUIInputModule`) | UI 선택 이동 · 선택된 버튼 누르기 | `Scope` — 아웃게임에서만 켠다 |
+| 인게임 | Shift + 우클릭 | 인벤토리 칸 (`InventoryGridPresenter`) | 경매 등록 (우클릭만 하면 판매 목록) | `IsQuickAuctionHeld` |
+
+- **인게임 키는 Shift+우클릭 하나다** (2026-10-11 사용자 결정 — 마우스로 하는 게임). ESC 종료 · 거래소/경매 검색칸 Enter 검색 · 인게임 UI 키 이동은 없앴다.
+- 입력칸 글자 입력과 수량·가격 칸의 **포커스가 빠질 때 적용**(`onEndEdit`)은 키 단축이 아니라 입력칸 동작이라 이 표에 넣지 않는다.
+- 에디터 전용(`ServerConsoleWindow`의 Ctrl+C/A)·`Art/_source`의 에셋 데모 스크립트는 게임 키가 아니다.
 
 ### `ServerWaitManager` — 왕복 한 건을 지켜보는 곳
 

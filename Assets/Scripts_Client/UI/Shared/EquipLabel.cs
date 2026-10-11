@@ -165,6 +165,44 @@ public static class EquipLabel
         return GlobalRarity.None;
     }
 
+    // 장비 개체의 큐브 등급·효과를 여러 줄로 — '큐브 신화' 다음 줄부터 박힌 옵션 하나씩. 큐브 전이면 '큐브 없음'.
+    // 상급 큐브 결과를 고르기 전이면 마지막 줄에 '결과 선택 대기'를 붙인다 — 지금 적힌 값이 바뀔 수 있다는 뜻이다.
+    //
+    // 슬롯 설정의 장비 칸이 쓴다. 칸 바탕이 장비 등급색이라 글자는 등급색으로 칠하지 않는다(같은 색이 겹치면 안 읽힌다).
+    public static string GetEnchantLines(EquipInfo equip)
+    {
+        var options = new List<EnchantOptionTableRow?>();
+
+        ReadStatOptions(equip.EquipTid, equip.EnchantOptions, options);
+
+        GlobalRarity grade = FirstGrade(options);
+        var          sb    = new System.Text.StringBuilder();
+
+        if (grade == GlobalRarity.None)
+        {
+            sb.Append(UIRichText.Label("큐브 없음"));
+        }
+        else
+        {
+            sb.Append(UIRichText.Label("큐브")).Append(' ').Append(RarityLabel.Get(grade));
+
+            foreach (EnchantOptionTableRow? option in options)
+            {
+                if (option != null)
+                {
+                    sb.Append('\n').Append(GetOptionText(option));
+                }
+            }
+        }
+
+        if (equip.PendingEnchantGrade > 0)
+        {
+            sb.Append('\n').Append(UIRichText.Paint("결과 선택 대기", UIThemeRole.Highlight));
+        }
+
+        return sb.ToString();
+    }
+
     // 만분율 확률 — '16%' · '0.4%' · '0.05%'. 큐브 상승 확률을 적는다.
     public static string FormatPermyriad(int permyriad) => $"{permyriad / 100f:0.##}%";
 
@@ -316,10 +354,13 @@ public static class EquipLabel
     //   icons : 아이콘까지 그리는 줄(작업슬롯 칸)만 넘긴다. null이면 등급만 읽는다(인벤토리 캐릭터 칸)
     //
     // ※ 인벤토리 캐릭터 칸과 작업슬롯 칸이 같은 값을 그린다 — 각자 훑으면 두 화면이 다르게 말한다.
-    public static void ReadWornGrades(PlayerDataModel data, long characterId, List<GlobalRarity> into, List<Sprite?>? icons = null)
+    //   enchantGrades : (선택) 같은 순서의 인챈트 등급 — 빈 칸·인챈트 전은 'None'
+    public static void ReadWornGrades(PlayerDataModel data, long characterId, List<GlobalRarity> into, List<Sprite?>? icons = null,
+                                      List<GlobalRarity>? enchantGrades = null)
     {
         into.Clear();
         icons?.Clear();
+        enchantGrades?.Clear();
 
         foreach (EEquipSlot slot in WornSlots)
         {
@@ -327,6 +368,7 @@ public static class EquipLabel
 
             into.Add(equip != null ? GameDataLoader.GetEquipRarity(equip.EquipTid) : GlobalRarity.None);
             icons?.Add(equip != null ? VisualCatalog.EquipIconOf(equip.EquipTid) : null);
+            enchantGrades?.Add(equip != null ? (GlobalRarity)equip.EnchantGrade : GlobalRarity.None);
         }
     }
 

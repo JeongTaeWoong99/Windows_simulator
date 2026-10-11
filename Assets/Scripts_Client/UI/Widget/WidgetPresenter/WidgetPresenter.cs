@@ -304,7 +304,7 @@ public class WidgetPresenter : MonoBehaviour
     {
         if (_views.TryGetValue(res.SlotIndex, out var view) && view.isActiveAndEnabled)
         {
-            ItemGainEffectView.ReadGains(res.ItemChanges, _gains);
+            ItemGainEffectView.ReadGains(res, _gains);
             view.MarkHarvested(_gains);
         }
     }

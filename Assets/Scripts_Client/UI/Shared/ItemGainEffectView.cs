@@ -27,6 +27,10 @@ using UnityEngine.UI;
 //   일반·고급 = 번짐 · 희귀·영웅 = + 광선 · 전설·신화 = + 섬광 · 빛 기둥/겹광선 · 아이콘 튐.
 //   조정값은 'glow' — 크기가 아이콘 대비 배율이라 큰 창·위젯이 같은 값으로 같은 모양이 된다.
 //
+// ■ 가방 가득 (2026-10-11)
+//   받지 못한 몫이 있으면 아이템 줄 끝에 자루 + 빨간 X 하나를 같이 띄운다('Gain.BagFull' · 'ItemGainFx.BuildBagFull').
+//   언제 붙는지는 'ReadGains' 주석 — 지금은 클라 추정이다.
+//
 // ■ 자리를 따라간다 (선택)
 //   'follow'를 넘기면 매 프레임 그 월드 좌표로 가로 자리를 옮긴다 — 큰 창 칸은 땅이 흐르면 쓰러진 대상이 땅과 함께
 //   흘러가므로 아이콘도 그 자리를 따라간다(화면에 박혀 캐릭터를 따라오는 것처럼 보이지 않게). 세로는 떠오름 트윈 몫이다.
@@ -36,17 +40,22 @@ using UnityEngine.UI;
 //   묶음은 'PrefabPool'로 돌려쓴다 — 수확은 칸마다 몇 초에 한 번씩 계속 난다.
 public class ItemGainEffectView : MonoBehaviour
 {
-    // 띄울 아이템 하나 — 그림과 등급(빛 색·단계)
+    // 띄울 아이템 하나 — 그림과 등급(빛 색·단계). 'IsBagFull'이면 아이템이 아니라 "가방 가득"(자루 + 빨간 X) 모양이다
     public readonly struct Gain
     {
         public readonly Sprite?      Icon;
         public readonly GlobalRarity Rarity;
+        public readonly bool         IsBagFull;
 
-        public Gain(Sprite? icon, GlobalRarity rarity)
+        public Gain(Sprite? icon, GlobalRarity rarity, bool isBagFull = false)
         {
-            Icon   = icon;
-            Rarity = rarity;
+            Icon      = icon;
+            Rarity    = rarity;
+            IsBagFull = isBagFull;
         }
+
+        // 가방 가득 — 그림이 없으면(그림 저장소 없음) 'Play'가 건너뛴다
+        public static Gain BagFull => new Gain(FxSprites.BagFullBag, GlobalRarity.None, isBagFull: true);
     }
 
     [CenterHeader("모양")]
@@ -126,26 +135,43 @@ public class ItemGainEffectView : MonoBehaviour
     }
 
     // 채취 결과의 아이템 그림·등급을 담는다 — 같은 아이템은 한 번만, 받은 순서대로 (큰 창·위젯 두 Presenter가 함께 쓴다).
+    // 가방이 가득 차 받지 못한 몫이 있으면 끝에 "가방 가득"을 하나 붙인다.
     //
     // ※ 'ItemChanges'의 수량은 델타가 아니라 갱신 후 총량이라 얼마나 얻었는지는 모른다 — 무엇을 얻었는지만 띄운다.
     //   한 아이템이 여러 칸(묶음)에 걸쳐 오면 줄이 여럿이라 ItemId로 거른다.
-    public static void ReadGains(IReadOnlyList<MikaProtocol.ItemChangeInfo>? changes, List<Gain> into)
+    //
+    // ■ 가방 가득은 추정이다 — 서버는 칸이 없거나 'MaxStack'을 넘는 몫을 응답에서 **말없이 뺀다**(실패 필드가 없다).
+    //   ① 판정이 있었는데 받은 것이 하나도 없다 — 판정마다 아이템이 반드시 하나 나오므로 전부 버려진 것이다.
+    //   ② 받은 아이템이 최대 수량에 닿았다 — 이번에 넘친 몫이 잘렸거나, 다음 수확부터 버려진다.
+    //   ⚠️ 놓치는 경우: 이미 최대 수량인 아이템이 다른 아이템과 함께 나오면 그 아이템만 빠져 알 수 없다.
+    //   TODO: 서버가 받지 못한 목록(실패 필드)을 실어 주면 그것으로 바꾼다 — 이슈 '최대 수량 아이템 획득'.
+    public static void ReadGains(MikaProtocol.S_GatherResultResponse res, List<Gain> into)
     {
         into.Clear();
 
-        if (changes == null)
+        var  seen    = new HashSet<int>();
+        bool atLimit = false;
+
+        if (res.ItemChanges != null)
         {
-            return;
+            foreach (MikaProtocol.ItemChangeInfo change in res.ItemChanges)
+            {
+                if (change.Kind == MikaProtocol.EItemChangeKind.Remove || !seen.Add(change.ItemId))
+                {
+                    continue;
+                }
+
+                into.Add(new Gain(VisualCatalog.ItemIconOf(change.ItemId), GameDataLoader.GetItemRarity(change.ItemId)));
+
+                atLimit |= change.Count >= GameDataLoader.GetItemMaxStack(change.ItemId);
+            }
         }
 
-        var seen = new HashSet<int>();
+        bool nothingReceived = res.JudgeCount > 0 && into.Count == 0;
 
-        foreach (MikaProtocol.ItemChangeInfo change in changes)
+        if (nothingReceived || atLimit)
         {
-            if (change.Kind != MikaProtocol.EItemChangeKind.Remove && seen.Add(change.ItemId))
-            {
-                into.Add(new Gain(VisualCatalog.ItemIconOf(change.ItemId), GameDataLoader.GetItemRarity(change.ItemId)));
-            }
+            into.Add(Gain.BagFull);
         }
     }
 
@@ -257,7 +283,9 @@ public class ItemGainEffectView : MonoBehaviour
             rect.anchoredPosition = start;
             seq.Insert(0f, rect.DOAnchorPosY(start.y + riseDistance, duration).SetEase(riseEase));
 
-            float         pop      = fx.Build(seq, shown[i].Icon!, shown[i].Rarity, iconSize, duration, glow);
+            float         pop      = shown[i].IsBagFull
+                ? fx.BuildBagFull(seq, shown[i].Icon!, iconSize, duration, glow)
+                : fx.Build(seq, shown[i].Icon!, shown[i].Rarity, iconSize, duration, glow);
             Image         icon     = fx.Icon;
             RectTransform iconRect = icon.rectTransform;
 

@@ -41,4 +41,11 @@ public static class FxSprites
     public static Sprite? GainPillar  => VisualCatalog.FxOf("gain_pillar");
     // 얇은 고리 — 전설·신화 'DoubleRays'
     public static Sprite? GainRing    => VisualCatalog.FxOf("gain_ring");
+
+    // ── bagfull — 가방이 가득 차 받지 못했다 ('ItemGainFx' 가방 가득 모양) ──
+
+    // 자루 — 오른쪽 아래가 X 자리만큼 비어 있다(겹쳐도 X가 읽히게)
+    public static Sprite? BagFullBag   => VisualCatalog.FxOf("bagfull_bag");
+    // X — 자루 오른쪽 아래에 빨강으로 겹친다
+    public static Sprite? BagFullCross => VisualCatalog.FxOf("bagfull_cross");
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -80,6 +81,15 @@ public class InventoryTabPresenter : MonoBehaviour
     [SerializeField, Tooltip("열려 있지 않은 탭의 버튼 색")]
     private UIThemeRole normalRole = UIThemeRole.Button;
 
+
+    // ※ 메뉴 줄(인벤토리 버튼)이 아니라 열 안의 탭에만 둔다 — 상주 창 버튼에는 배지를 붙이지 않는다('MenuPresenter' P1).
+    //   열 밖에서는 접속 알림('PlayerDataModel.NotifyPendingEnchants')이 같은 일을 맡는다.
+    [CenterHeader("배지")]
+    [SerializeField, Tooltip("(선택) [장비] 탭 버튼 위의 점 — 상급 큐브 결과를 고르지 않은 장비가 있을 때만 켜진다")]
+    private GameObject? equipPendingBadge;
+
+    private PlayerDataModel _data = null!;
+
     // 지금 열려 있는 탭. 인벤토리를 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     public InventoryTab CurrentTab { get; private set; } = DefaultTab;
 
@@ -98,10 +108,46 @@ public class InventoryTabPresenter : MonoBehaviour
     {
         this.RequireRef(grid, nameof(grid));
 
+        _data = Services.Get<PlayerDataModel>();
+        _data.EquipsChanged += RefreshEquipBadge; // 열이 닫혀 있어도 따라간다 — 열자마자 맞는 배지가 보인다
+
         ValidateTabs();
         BindButtons();
         WakeTabScreens();
         ShowTab(DefaultTab);
+        RefreshEquipBadge();
+    }
+
+    // 구독 해제 (Unity 메시지) — Start에서 걸었으므로 파괴될 때 푼다
+    private void OnDestroy()
+    {
+        if (_data != null)
+        {
+            _data.EquipsChanged -= RefreshEquipBadge;
+        }
+    }
+
+    // [장비] 탭 배지 — 보류 중인 상급 큐브 결과가 하나라도 있으면 켠다 (Start · PlayerDataModel.EquipsChanged 구독)
+    private void RefreshEquipBadge()
+    {
+        if (equipPendingBadge == null)
+        {
+            return;
+        }
+
+        bool hasPending = false;
+
+        foreach (EquipInfo equip in _data.Equips)
+        {
+            if (equip.PendingEnchantGrade > 0)
+            {
+                hasPending = true;
+
+                break;
+            }
+        }
+
+        equipPendingBadge.SetActive(hasPending);
     }
 
     #region 초기화
