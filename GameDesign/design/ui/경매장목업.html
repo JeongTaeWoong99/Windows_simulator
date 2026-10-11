@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>경매장 목업</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+/* 게임 팔레트 — Assets/Scripts_Client/UI/Shared/theme/UIThemePalette.cs 기본값 */
+:root {
+  --panelBg: rgba(20, 32, 46, 0.92);
+  --panelSub: #1F3044;
+  --slot: #26394F;
+  --border: #3E5A78;
+  --button: #2B6F9E;
+  --buttonSelected: #B8741A;
+  --buttonPrimary: #C98314;
+  --buttonDisabled: #3A4654;
+  --accent: #4FC8F0;
+  --highlight: #FFD447;
+  --textMain: #F2F6FA;
+  --textSub: #9FB3C8;
+  --textDisabled: #5E6F80;
+  --textDark: #1A2330;
+  --positive: #6DDB7A;
+  --negative: #FF6B5E;
+  --page: #0D1117;
+  --pageText: #C9D4E0;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--page); color: var(--pageText);
+  font-family: Pretendard, "Pretendard Variable", "Malgun Gothic", sans-serif; }
+.page-head { max-width: 1920px; margin: 0 auto; padding: 16px 16px 8px; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.page-head h1 { margin: 0; font-size: 20px; color: var(--textMain); }
+.page-head span { font-size: 14px; color: var(--textSub); }
+.stage-wrap { margin: 0 auto; position: relative; overflow: hidden; }
+.stage { width: 1920px; height: 1080px; position: absolute; left: 0; top: 0; transform-origin: 0 0; overflow: hidden;
+  background: linear-gradient(160deg, #4d6f9f 0%, #8eaad3 55%, #c9d8ec 100%); color: var(--textMain); font-size: 16px; }
+.stage button { font-family: inherit; }
+.stage input, .stage select { font-family: inherit; }
+
+/* 3열 바깥 칸 — 그대로 남는 자리 */
+.strip-top { position: absolute; left: 0; right: 0; top: 0; height: 43px; display: flex; align-items: center; padding: 0 18px;
+  font-size: 14px; color: rgba(26, 35, 48, .65); }
+.strip-bottom { position: absolute; left: 0; right: 0; bottom: 0; height: 87px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+.strip-bottom .menu-note { position: absolute; left: 18px; font-size: 14px; color: rgba(26, 35, 48, .65); }
+.menu-btn { width: 96px; height: 60px; border-radius: 10px; border: 2px solid var(--border); background: var(--panelBg); color: var(--textSub);
+  font-size: 15px; font-weight: 600; cursor: default; }
+.menu-btn.on { background: var(--buttonSelected); border-color: var(--highlight); color: var(--textMain); }
+
+/* 경매장 — 가운데 띠(950)를 가로 전체로 */
+.auction { position: absolute; left: 10px; right: 10px; top: 43px; height: 950px; background: var(--panelBg);
+  border: 2px solid var(--border); border-radius: 12px; display: flex; flex-direction: column; box-shadow: 0 10px 40px rgba(0, 0, 0, .35); overflow: hidden; }
+.a-head { height: 54px; display: flex; align-items: center; gap: 16px; padding: 0 18px; background: var(--panelSub); border-bottom: 2px solid var(--border); }
+.a-head .title { font-size: 22px; font-weight: 800; letter-spacing: .02em; }
+.a-head .spacer { flex: 1; }
+.gold { font-size: 16px; color: var(--textSub); }
+.gold b { color: var(--highlight); font-size: 18px; margin-left: 6px; }
+.close { width: 36px; height: 36px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font-size: 18px; cursor: pointer; }
+
+.a-top { display: flex; align-items: center; gap: 14px; padding: 14px 16px 0; }
+.search { width: 440px; display: flex; gap: 6px; }
+.search input { flex: 1; height: 42px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain);
+  padding: 0 12px 0 38px; font-size: 16px; outline: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%239FB3C8' stroke-width='2.4' stroke-linecap='round'%3E%3Ccircle cx='10.5' cy='10.5' r='6.5'/%3E%3Cpath d='M20 20l-4.6-4.6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: 12px 50%; }
+.search input:focus { border-color: var(--accent); }
+.search input::placeholder { color: var(--textDisabled); }
+.a-top .hint { font-size: 14px; color: var(--textSub); }
+
+.btn { height: 42px; padding: 0 18px; border-radius: 8px; border: 0; background: var(--button); color: var(--textMain); font-size: 16px; font-weight: 700; cursor: pointer; }
+.btn:hover { filter: brightness(1.12); }
+.btn.primary { background: var(--buttonPrimary); }
+.btn.sm { height: 34px; padding: 0 12px; font-size: 14px; }
+.btn.xs { height: 28px; padding: 0 10px; font-size: 13px; border-radius: 6px; }
+.btn.ghost { background: var(--slot); border: 1px solid var(--border); color: var(--textSub); }
+.btn:disabled { background: var(--buttonDisabled); color: var(--textDisabled); cursor: not-allowed; filter: none; }
+
+.a-tabs { display: flex; gap: 6px; padding: 12px 16px 0; border-bottom: 2px solid var(--border); }
+.tab { position: relative; width: 104px; height: 42px; border: 0; border-radius: 8px 8px 0 0; background: var(--button); color: var(--textMain);
+  font-size: 17px; font-weight: 700; cursor: pointer; }
+.tab.on { background: var(--buttonSelected); }
+.badge { position: absolute; top: -6px; right: -6px; min-width: 20px; height: 20px; border-radius: 10px; background: var(--negative); color: #fff;
+  font-size: 12px; font-weight: 800; display: flex; align-items: center; justify-content: center; padding: 0 5px; }
+
+.a-body { flex: 1; min-height: 0; display: flex; gap: 12px; padding: 12px 16px 16px; position: relative; }
+.left { width: 440px; flex: none; background: var(--panelSub); border-radius: 10px; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border); }
+.left-scroll { flex: 1; min-height: 0; overflow: auto; padding: 6px 14px 10px; }
+.left-foot { display: flex; gap: 8px; padding: 12px 14px; border-top: 1px solid var(--border); }
+.left-foot .btn { flex: 1; }
+.main { flex: 1; min-width: 0; background: var(--panelSub); border-radius: 10px; display: flex; flex-direction: column; min-height: 0; border: 1px solid var(--border); }
+.pane { display: none; }
+.pane.on { display: flex; }
+
+/* 왼쪽 옵션 */
+.sec { padding: 12px 0; border-bottom: 1px solid rgba(62, 90, 120, .5); }
+.sec:last-child { border-bottom: 0; }
+.sec-t { font-size: 14px; font-weight: 700; color: var(--textSub); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.sec-t small { font-weight: 500; color: var(--textDisabled); }
+.tree .node { height: 34px; display: flex; align-items: center; gap: 8px; padding: 0 10px; border-radius: 6px; cursor: pointer; color: var(--textMain); font-size: 15px; }
+.tree .node:hover { background: var(--slot); }
+.tree .node.on { background: rgba(79, 200, 240, .16); box-shadow: inset 3px 0 0 var(--accent); color: var(--accent); font-weight: 700; }
+.tree .node .caret { width: 14px; color: var(--textSub); font-size: 12px; }
+.tree .node .cnt { margin-left: auto; font-size: 13px; color: var(--textDisabled); }
+.tree .child { padding-left: 22px; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { height: 32px; padding: 0 12px; border-radius: 16px; border: 1px solid var(--border); background: var(--slot); color: var(--textSub); font-size: 14px; cursor: pointer; }
+.chip.on { background: var(--button); color: var(--textMain); border-color: var(--accent); }
+.chip .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; vertical-align: 0; }
+.field { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 14px; color: var(--textSub); }
+.field:first-child { margin-top: 0; }
+.field label { width: 92px; flex: none; }
+.inp, .sel { height: 34px; border-radius: 6px; border: 1px solid var(--border); background: var(--slot); color: var(--textMain); padding: 0 10px; font-size: 14px; outline: none; min-width: 0; }
+.inp:focus, .sel:focus { border-color: var(--accent); }
+.inp.num { width: 90px; text-align: right; }
+.inp.wide { flex: 1; }
+.opt-row { display: flex; align-items: center; gap: 6px; margin-top: 6px; font-size: 14px; color: var(--textSub); }
+.opt-row .sel { flex: 1; }
+.x { width: 28px; height: 28px; border-radius: 6px; border: 1px solid var(--border); background: transparent; color: var(--textSub); cursor: pointer; }
+
+/* 결과 */
+.res-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+.res-head .count { font-size: 18px; font-weight: 800; }
+.res-head .count b { color: var(--highlight); }
+.res-head .spacer { flex: 1; }
+.res-head .recv { font-size: 13px; color: var(--textSub); }
+.applied { display: flex; gap: 6px; flex-wrap: wrap; }
+.applied span { font-size: 13px; padding: 3px 10px; border-radius: 12px; background: var(--slot); color: var(--textSub); border: 1px solid var(--border); }
+.cols, .row { display: grid; grid-template-columns: minmax(0, 1fr) 96px 160px 180px 130px 150px 96px; align-items: center; gap: 0 10px; padding: 0 16px; }
+.cols { height: 38px; font-size: 14px; color: var(--textSub); border-bottom: 1px solid var(--border); background: rgba(38, 57, 79, .5); }
+.cols div { user-select: none; }
+.cols .s { cursor: pointer; }
+.cols .s:hover { color: var(--textMain); }
+.cols .s.on { color: var(--accent); font-weight: 700; }
+.cols .r, .row .r { text-align: right; }
+.list { flex: 1; min-height: 0; overflow: auto; }
+.row { min-height: 66px; border-bottom: 1px solid rgba(62, 90, 120, .45); font-size: 15px; }
+.row:hover { background: rgba(79, 200, 240, .07); }
+.row.mine { background: rgba(255, 212, 71, .05); }
+.it { display: flex; align-items: center; gap: 12px; min-width: 0; padding: 8px 0; }
+.nm { min-width: 0; }
+.nm .name { font-weight: 700; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nm .sub { font-size: 13px; color: var(--textSub); margin-top: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.tag { display: inline-block; font-size: 12px; padding: 1px 7px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; font-weight: 700; }
+.tag.mine { background: rgba(255, 212, 71, .18); color: var(--highlight); }
+.tag.res { background: rgba(255, 107, 94, .16); color: var(--negative); }
+.price { color: var(--highlight); font-weight: 700; }
+.muted { color: var(--textSub); }
+.dim { color: var(--textDisabled); }
+.soon { color: var(--negative); }
+.list-foot { padding: 14px; text-align: center; font-size: 14px; color: var(--textSub); }
+.loading { padding: 16px; text-align: center; color: var(--accent); font-size: 14px; }
+.empty { padding: 60px 20px; text-align: center; color: var(--textSub); font-size: 16px; }
+
+/* 아이콘 — ItemIconView 흉내: 등급 바탕 · 이름 첫 글자 · 수량 · 장비 능력치 칸 */
+.icon { position: relative; width: 48px; height: 48px; flex: none; border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-size: 20px; font-weight: 800; color: rgba(255, 255, 255, .92); border: 2px solid; text-shadow: 0 1px 2px rgba(0, 0, 0, .6); }
+.icon .q { position: absolute; right: 2px; bottom: 0; font-size: 11px; font-weight: 800; color: #fff; }
+.icon .st { position: absolute; left: 2px; top: 0; font-size: 10px; color: var(--highlight); letter-spacing: -1px; }
+.icon .slots { position: absolute; left: 3px; bottom: 3px; display: flex; gap: 2px; }
+.icon .slots i { width: 6px; height: 6px; border-radius: 1px; display: block; }
+.icon.big { width: 64px; height: 64px; font-size: 26px; border-radius: 10px; }
+
+/* 툴팁 · 알림 · 확인 창 */
+.tip { position: absolute; z-index: 50; width: 360px; background: rgba(14, 22, 32, .97); border: 1px solid var(--border); border-radius: 10px;
+  padding: 12px 14px; font-size: 14px; pointer-events: none; display: none; box-shadow: 0 8px 24px rgba(0, 0, 0, .5); }
+.tip .t-name { font-size: 17px; font-weight: 800; }
+.tip .t-sub { color: var(--textSub); margin: 2px 0 8px; font-size: 13px; }
+.tip .t-row { display: flex; justify-content: space-between; gap: 10px; padding: 3px 0; }
+.tip .t-row span:first-child { color: var(--textSub); }
+.tip hr { border: 0; border-top: 1px solid var(--border); margin: 8px 0; }
+.toast { position: absolute; left: 50%; bottom: 28px; transform: translateX(-50%); background: rgba(14, 22, 32, .96); border: 1px solid var(--accent);
+  color: var(--textMain); padding: 12px 22px; border-radius: 10px; font-size: 16px; display: none; z-index: 60; }
+.modal-bg { position: absolute; inset: 0; background: rgba(0, 0, 0, .55); display: none; align-items: center; justify-content: center; z-index: 70; }
+.modal { width: 520px; background: var(--panelSub); border: 2px solid var(--border); border-radius: 12px; padding: 20px 22px; }
+.modal h3 { margin: 0 0 14px; font-size: 20px; }
+.m-item { display: flex; gap: 14px; align-items: center; padding: 12px; background: var(--slot); border-radius: 10px; }
+.kv { display: grid; grid-template-columns: 1fr auto; gap: 8px 12px; margin: 16px 0 6px; font-size: 16px; }
+.kv span:nth-child(odd) { color: var(--textSub); }
+.kv span:nth-child(even) { text-align: right; }
+.m-note { font-size: 14px; color: var(--textSub); margin-top: 10px; }
+.m-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
+
+/* 시세 */
+.mk-list .mk { display: flex; align-items: center; gap: 10px; padding: 8px 8px; border-radius: 8px; cursor: pointer; }
+.mk-list .mk:hover { background: var(--slot); }
+.mk-list .mk.on { background: rgba(79, 200, 240, .14); box-shadow: inset 3px 0 0 var(--accent); }
+.mk-list .mk .icon { width: 38px; height: 38px; font-size: 16px; }
+.mk-list .mk .nm .name { font-size: 15px; }
+.mk-list .mk .cnt { margin-left: auto; font-size: 13px; color: var(--textSub); white-space: nowrap; }
+.mk-main { flex: 1; min-height: 0; overflow: auto; padding: 18px 20px; }
+.mk-top { display: flex; align-items: center; gap: 16px; }
+.mk-top .spacer { flex: 1; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 18px 0; }
+.stat { background: var(--slot); border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); }
+.stat .k { font-size: 14px; color: var(--textSub); }
+.stat .v { font-size: 26px; font-weight: 800; color: var(--highlight); margin-top: 6px; }
+.stat .v small { font-size: 14px; color: var(--textSub); font-weight: 500; margin-left: 4px; }
+.card { background: var(--slot); border-radius: 10px; padding: 14px 16px; border: 1px solid var(--border); }
+.card h4 { margin: 0 0 10px; font-size: 15px; color: var(--textSub); font-weight: 700; }
+.two { display: grid; grid-template-columns: 1.6fr 1fr; gap: 12px; }
+.band { display: grid; grid-template-columns: 130px 1fr 70px; gap: 6px 10px; align-items: center; font-size: 14px; }
+.band .bar { height: 14px; border-radius: 3px; background: linear-gradient(90deg, var(--button), var(--accent)); }
+
+/* 판매 */
+.subtabs { display: flex; gap: 6px; padding: 12px 14px 0; }
+.subtab { flex: 1; height: 36px; border: 0; border-radius: 8px; background: var(--button); color: var(--textMain); font-size: 15px; font-weight: 700; cursor: pointer; }
+.subtab.on { background: var(--buttonSelected); }
+.inv .iv { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
+.inv .iv:hover { background: var(--slot); }
+.inv .iv.on { background: rgba(79, 200, 240, .14); box-shadow: inset 3px 0 0 var(--accent); }
+.inv .iv.block { opacity: .45; cursor: not-allowed; }
+.inv .iv .icon { width: 42px; height: 42px; font-size: 17px; }
+.inv .iv .right { margin-left: auto; text-align: right; font-size: 13px; color: var(--textSub); white-space: nowrap; }
+.sell-main { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+.reg { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.reg .fieldset { display: flex; flex-direction: column; gap: 10px; }
+.reg .line { display: flex; align-items: center; gap: 8px; font-size: 15px; }
+.reg .line label { width: 70px; color: var(--textSub); flex: none; }
+.reg .help { font-size: 13px; color: var(--textSub); margin-left: 78px; }
+.reg .inp { height: 40px; font-size: 16px; }
+.mine-list { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.mine-list .cols, .mine-list .row { grid-template-columns: minmax(0, 1fr) 90px 160px 140px 130px 90px; }
+
+/* 완료 */
+.done-list .cols, .done-list .row { grid-template-columns: 150px 120px minmax(0, 1fr) 90px 220px 140px; }
+.kind { display: inline-block; font-size: 13px; font-weight: 800; padding: 3px 10px; border-radius: 6px; }
+.kind.sold { background: rgba(109, 219, 122, .16); color: var(--positive); }
+.kind.bought { background: rgba(79, 200, 240, .16); color: var(--accent); }
+.kind.expired { background: rgba(159, 179, 200, .14); color: var(--textSub); }
+.kind.canceled { background: rgba(159, 179, 200, .14); color: var(--textSub); }
+.new-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--negative); margin-right: 6px; }
+.plus { color: var(--positive); font-weight: 700; }
+.minus { color: var(--negative); font-weight: 700; }
+
+/* 페이지 메모 — 넘길 때 함께 읽을 것 */
+.memo { max-width: 1920px; margin: 20px auto 40px; padding: 0 16px; font-size: 15px; line-height: 1.65; }
+.memo h2 { font-size: 18px; color: var(--textMain); margin: 24px 0 8px; }
+.memo ul { margin: 0; padding-left: 20px; }
+.memo li { margin: 4px 0; }
+.memo code { background: #1b2430; padding: 1px 6px; border-radius: 4px; font-size: 14px; }
+.memo .warn { color: #ffb4a8; }
+.memo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 0 32px; }
+</style>
+</head>
+<body>
+
+<div class="page-head">
+  <h1>T-147 경매장 목업 — 화면 전체</h1>
+  <span>1920×1080 게임 캔버스를 창 폭에 맞춰 줄였다 · 매물은 실제 테이블(자원·장비·캐릭터) 이름으로 만든 가짜 데이터</span>
+</div>
+
+<div class="stage-wrap" id="stageWrap">
+<div class="stage" id="stage">
+  <div class="strip-top">상태 칸 (그대로 둔다)</div>
+
+  <section class="auction" id="auction">
+    <header class="a-head">
+      <div class="title">경매장</div>
+      <div class="spacer"></div>
+      <div class="gold">보유 골드<b id="gold"></b></div>
+      <button class="close" title="닫기">✕</button>
+    </header>
+
+    <div class="a-top">
+      <div class="search">
+        <input id="q" list="names" autocomplete="off">
+        <button class="btn" id="qBtn">검색</button>
+      </div>
+      <div class="hint" id="qHint"></div>
+      <datalist id="names"></datalist>
+    </div>
+
+    <nav class="a-tabs">
+      <button class="tab on" data-tab="search">검색</button>
+      <button class="tab" data-tab="market">시세</button>
+      <button class="tab" data-tab="sell">판매</button>
+      <button class="tab" data-tab="done">완료<span class="badge" id="doneBadge"></span></button>
+    </nav>
+
+    <!-- 검색 -->
+    <div class="a-body pane on" data-pane="search">
+      <aside class="left">
+        <div class="left-scroll">
+          <div class="sec"><div class="sec-t">분류</div><div class="tree" id="tree"></div></div>
+          <div class="sec"><div class="sec-t">등급</div><div class="chips" id="rarChips"></div></div>
+          <div id="extraOpts"></div>
+          <div class="sec">
+            <div class="sec-t">단가 <small>골드</small></div>
+            <div class="field"><input class="inp num" id="pMin" placeholder="최소"> ~ <input class="inp num" id="pMax" placeholder="최대"></div>
+          </div>
+        </div>
+        <div class="left-foot">
+          <button class="btn ghost" id="resetBtn">초기화</button>
+          <button class="btn primary" id="searchBtn">검색</button>
+        </div>
+      </aside>
+      <section class="main">
+        <div class="res-head">
+          <div class="count" id="resCount"></div>
+          <div class="applied" id="applied"></div>
+          <div class="spacer"></div>
+          <div class="recv" id="recv"></div>
+          <button class="btn xs ghost" id="refreshBtn" title="다시 받기">⟳ 새로고침</button>
+          <select class="sel" id="sortSel"></select>
+        </div>
+        <div class="cols" id="cols"></div>
+        <div class="list" id="list"></div>
+      </section>
+    </div>
+
+    <!-- 시세 -->
+    <div class="a-body pane" data-pane="market">
+      <aside class="left">
+        <div class="left-scroll">
+          <div class="sec"><div class="sec-t" id="mkListTitle"></div><div class="mk-list" id="mkList"></div></div>
+        </div>
+      </aside>
+      <section class="main"><div class="mk-main" id="mkMain"></div></section>
+    </div>
+
+    <!-- 판매 -->
+    <div class="a-body pane" data-pane="sell">
+      <aside class="left">
+        <div class="subtabs" id="invTabs">
+          <button class="subtab on" data-inv="item">자원·상자·기타</button>
+          <button class="subtab" data-inv="equip">장비</button>
+          <button class="subtab" data-inv="char">캐릭터</button>
+        </div>
+        <div class="left-scroll"><div class="inv" id="invList"></div></div>
+      </aside>
+      <section class="main">
+        <div class="sell-main">
+          <div class="card" id="regCard"></div>
+          <div class="card mine-list" style="padding:0">
+            <div class="res-head"><div class="count" id="mineCount"></div><div class="spacer"></div><div class="recv">팔리면 대금은 우편으로 온다 · 등록 기간 <span id="hoursTxt"></span>시간</div></div>
+            <div class="cols"><div>아이템</div><div class="r">수량</div><div class="r">단가</div><div class="r">남은 시간</div><div>상태</div><div></div></div>
+            <div class="list" id="mineList"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- 완료 -->
+    <div class="a-body pane" data-pane="done">
+      <aside class="left">
+        <div class="left-scroll">
+          <div class="sec"><div class="sec-t">구분</div><div class="chips" id="doneKinds"></div></div>
+          <div class="sec"><div class="sec-t">기간</div><div class="chips" id="donePeriod"></div></div>
+          <div class="sec"><div class="sec-t">합계 <small>지금 보이는 기록</small></div><div id="doneSum" class="kv" style="margin:0"></div></div>
+        </div>
+      </aside>
+      <section class="main done-list">
+        <div class="res-head"><div class="count" id="doneCount"></div><div class="spacer"></div><div class="recv">물건·대금·환급은 모두 우편으로 간다</div></div>
+        <div class="cols"><div>일시</div><div>구분</div><div>아이템</div><div class="r">수량</div><div class="r">금액</div><div>받는 곳</div></div>
+        <div class="list" id="doneList"></div>
+      </section>
+    </div>
+
+    <div class="tip" id="tip"></div>
+    <div class="toast" id="toast"></div>
+    <div class="modal-bg" id="modalBg"><div class="modal" id="modal"></div></div>
+  </section>
+
+  <div class="strip-bottom">
+    <div class="menu-note">(안) 하단 메뉴에서 연다</div>
+    <button class="menu-btn">인벤토리</button>
+    <button class="menu-btn">작업슬롯</button>
+    <button class="menu-btn">거래</button>
+    <button class="menu-btn on">경매장</button>
+    <button class="menu-btn">우편</button>
+    <button class="menu-btn">설정</button>
+  </div>
+</div>
+</div>
+
+<div class="memo">
+  <h2>이 목업이 정한 것</h2>
+  <div class="memo-grid">
+    <ul>
+      <li><b>경매장이 화면 전체를 쓴다</b> — 3열 폭 전부(1920) × 가운데 띠(950). 위 상태 칸 · 아래 위젯·메뉴 칸은 그대로.</li>
+      <li><b>왼쪽 위 검색창 → 그 아래 탭 4개</b> — 검색 · 시세 · 판매 · 완료. 검색창은 탭 위에 있어 <b>네 탭이 함께 쓴다</b> (검색: 매물 이름 / 시세: 볼 아이템 / 판매: 내 인벤토리 / 완료: 기록).</li>
+      <li><b>검색 탭 = 왼쪽 옵션(메이플식) + 오른쪽 결과</b> — 분류 트리 → 등급 → 분류별 상세 옵션 → 단가 범위. 장비는 산업 · 작업속도 · 인챈트 등급 · 인챈트 옵션(종류·합계 ≥), 캐릭터는 레벨 · ★ · 적성.</li>
+      <li><b>결과는 쭉 내려간다</b> — 20개씩, 끝에 닿으면 다음 20개. 정렬은 오른쪽 위 드롭다운 또는 열 머리(아이템=등급 · 수량 · 단가 · 총액 · 남은 시간)를 눌러 바꾼다.</li>
+    </ul>
+    <ul>
+      <li>분류를 누르면 바로 조회 · 옵션을 바꾼 뒤엔 <b>[검색]</b>을 눌러야 조회 — 조회 빈도 제한(순간 5회 · 2초마다 1회 회복) 때문. 목업도 똑같이 막는다.</li>
+      <li>판매 탭: 왼쪽 내 인벤토리 → 오른쪽 위 등록(수량 · 단가 · 등록비 1% · 수수료 5% · 48시간) · 아래 판매 중 목록(20개 상한 · 구매 진행 중이면 취소 잠금).</li>
+      <li>완료 탭: 판매 완료 · 구매 완료 · 기간 만료 · 취소 기록. 새 기록은 탭에 배지, 열면 꺼진다.</li>
+      <li>거래 열에서 경매장 탭은 빠진다(뽑기 · 창고만 남는다).</li>
+    </ul>
+  </div>
+
+  <h2>아직 정할 것 · 서버가 바뀌어야 하는 것</h2>
+  <div class="memo-grid">
+    <ul>
+      <li><b>여는 곳</b> — 지금 그림은 하단 메뉴에 [경매장]을 둔 안. 거래 열 탭을 누르면 전체 화면으로 여는 안도 있다.</li>
+      <li><b>인벤토리 Shift+우클릭 → 등록</b> — 경매장이 인벤토리를 가린다. 판매 탭 왼쪽에 인벤토리를 둔 이유다. 단축키 흐름은 "경매장을 판매 탭으로 열고 그 물건을 고른다"로 바꾸는 안.</li>
+      <li class="warn"><b>자원도 매물 줄로 보여 준다</b> — 지금 자원은 거래소(TID별 한 줄 + "N개를 최대 P에" 수량 구매)다. 메이플식으로 매물을 줄마다 보이면 구매도 매물 단위가 된다. 거래소 방식을 남길지 결정.</li>
+    </ul>
+    <ul>
+      <li class="warn"><b>정렬</b> — 서버는 장비·캐릭터를 <b>단가 낮은순 20개씩</b>만 준다. 다른 정렬(높은 가격 · 마감 임박 · 등급 · 작업속도 · 레벨)은 서버 정렬이 있어야 "받은 것 중"이 아니라 전체 순서가 된다.</li>
+      <li class="warn"><b>결과 건수 "N건"</b> — 서버는 더 있는지(<code>HasMore</code>)만 준다. 건수를 보이려면 서버가 세어 줘야 한다.</li>
+      <li class="warn"><b>상세 옵션 검색</b> — 지금 서버 필터는 이름 · 분류 · 등급 · 인챈트 등급뿐. 인챈트 옵션 · 작업속도 · 캐릭터 레벨·★·적성 · 단가 범위는 서버 필터 추가가 필요.</li>
+      <li class="warn"><b>시세 탭</b> — 최저가 · 매물 수 · 최근가 · 전일 평균은 T-118/T-119. 일별 그래프는 날짜별 시세를 쌓아야 한다. <b>완료 탭</b> — 거래 기록 조회 패킷이 없다(지금은 우편으로만 남는다).</li>
+    </ul>
+  </div>
+</div>
+
+<script type="application/json" id="catalog">{"items":[[10001,"붕어","res",2,1,10,"개울(Lv1)"],[10002,"잉어","res",2,2,25,"개울(Lv1)"],[10003,"월척 붕어","res",2,3,60,"개울(Lv1)"],[10004,"향어","res",2,4,150,"개울(Lv1)"],[10005,"대물 잉어","res",2,5,400,"개울(Lv1)"],[10006,"전설의 잉어","res",2,6,1000,"개울(Lv1)"],[20001,"밀","res",1,1,10,"텃밭(Lv1)"],[20002,"감자","res",1,2,25,"텃밭(Lv1)"],[20003,"옥수수","res",1,3,60,"텃밭(Lv1)"],[20004,"인삼","res",1,4,150,"텃밭(Lv1)"],[20005,"변종 인삼","res",1,5,400,"텃밭(Lv1)"],[20006,"태초의 씨앗","res",1,6,1000,"텃밭(Lv1)"],[30001,"잡목","res",4,1,10,"잡목림(Lv1)"],[30002,"소나무 목재","res",4,2,25,"잡목림(Lv1)"],[30003,"참나무 목재","res",4,3,60,"잡목림(Lv1)"],[30004,"흑단 목재","res",4,4,150,"잡목림(Lv1)"],[30005,"고급 원목","res",4,5,400,"잡목림(Lv1)"],[30006,"세계수 가지","res",4,6,1000,"잡목림(Lv1)"],[40001,"돌덩어리","res",3,1,10,"노천 광산(Lv1)"],[40002,"구리 광석","res",3,2,25,"노천 광산(Lv1)"],[40003,"은광석","res",3,3,60,"노천 광산(Lv1)"],[40004,"금광석","res",3,4,150,"노천 광산(Lv1)"],[40005,"보석 원석","res",3,5,400,"노천 광산(Lv1)"],[40006,"심연의 원석","res",3,6,1000,"노천 광산(Lv1)"],[50001,"질긴 고기","res",5,1,10,"들판(Lv1)"],[50002,"토끼 가죽","res",5,2,25,"들판(Lv1)"],[50003,"늑대 가죽","res",5,3,60,"들판(Lv1)"],[50004,"곰 모피","res",5,4,150,"들판(Lv1)"],[50005,"거대한 뿔","res",5,5,400,"들판(Lv1)"],[50006,"마수의 심장","res",5,6,1000,"들판(Lv1)"],[10011,"피라미","res",2,1,30,"저수지(Lv2)"],[10012,"메기","res",2,2,75,"저수지(Lv2)"],[10013,"가물치","res",2,3,180,"저수지(Lv2)"],[10014,"백년 메기","res",2,4,450,"저수지(Lv2)"],[10015,"저수지의 주인","res",2,5,1200,"저수지(Lv2)"],[10016,"용왕의 사자","res",2,6,3000,"저수지(Lv2)"],[10021,"모래무지","res",2,1,90,"강 하류(Lv3)"],[10022,"쏘가리","res",2,2,225,"강 하류(Lv3)"],[10023,"황금 잉어","res",2,3,540,"강 하류(Lv3)"],[10024,"강의 수호자","res",2,4,1350,"강 하류(Lv3)"],[10025,"천년 쏘가리","res",2,5,3600,"강 하류(Lv3)"],[10026,"강신의 비늘","res",2,6,9000,"강 하류(Lv3)"],[10031,"빙어","res",2,1,270,"호수(Lv4)"],[10032,"송어","res",2,2,675,"호수(Lv4)"],[10033,"무지개 송어","res",2,3,1620,"호수(Lv4)"],[10034,"호수의 눈","res",2,4,4050,"호수(Lv4)"],[10035,"심층 대어","res",2,5,10800,"호수(Lv4)"],[10036,"호수의 심장","res",2,6,27000,"호수(Lv4)"],[10041,"심해 새우","res",2,1,810,"심해(Lv5)"],[10042,"아귀","res",2,2,2025,"심해(Lv5)"],[10043,"심해 등불고기","res",2,3,4860,"심해(Lv5)"],[10044,"대왕오징어","res",2,4,12150,"심해(Lv5)"],[10045,"해구의 지배자","res",2,5,32400,"심해(Lv5)"],[10046,"리바이어던의 조각","res",2,6,81000,"심해(Lv5)"],[20011,"보리","res",1,1,30,"밭(Lv2)"],[20012,"고구마","res",1,2,75,"밭(Lv2)"],[20013,"호박","res",1,3,180,"밭(Lv2)"],[20014,"백년초","res",1,4,450,"밭(Lv2)"],[20015,"황금 호박","res",1,5,1200,"밭(Lv2)"],[20016,"불멸의 뿌리","res",1,6,3000,"밭(Lv2)"],[20021,"벼","res",1,1,90,"농장(Lv3)"],[20022,"콩","res",1,2,225,"농장(Lv3)"],[20023,"딸기","res",1,3,540,"농장(Lv3)"],[20024,"산삼","res",1,4,1350,"농장(Lv3)"],[20025,"천년 산삼","res",1,5,3600,"농장(Lv3)"],[20026,"생명의 열매","res",1,6,9000,"농장(Lv3)"],[20031,"목화","res",1,1,270,"대농장(Lv4)"],[20032,"사탕수수","res",1,2,675,"대농장(Lv4)"],[20033,"커피 열매","res",1,3,1620,"대농장(Lv4)"],[20034,"흑진주 포도","res",1,4,4050,"대농장(Lv4)"],[20035,"무지개 밀","res",1,5,10800,"대농장(Lv4)"],[20036,"세계수의 씨앗","res",1,6,27000,"대농장(Lv4)"],[20041,"정화된 흙","res",1,1,810,"신성한 대지(Lv5)"],[20042,"성스러운 이삭","res",1,2,2025,"신성한 대지(Lv5)"],[20043,"영약초","res",1,3,4860,"신성한 대지(Lv5)"],[20044,"신월초","res",1,4,12150,"신성한 대지(Lv5)"],[20045,"신들의 곡식","res",1,5,32400,"신성한 대지(Lv5)"],[20046,"창세의 열매","res",1,6,81000,"신성한 대지(Lv5)"],[30011,"잔가지","res",4,1,30,"소나무 숲(Lv2)"],[30012,"삼나무 목재","res",4,2,75,"소나무 숲(Lv2)"],[30013,"편백나무 목재","res",4,3,180,"소나무 숲(Lv2)"],[30014,"홍송 원목","res",4,4,450,"소나무 숲(Lv2)"],[30015,"천년 소나무","res",4,5,1200,"소나무 숲(Lv2)"],[30016,"숲의 정령목","res",4,6,3000,"소나무 숲(Lv2)"],[30021,"도토리 가지","res",4,1,90,"참나무 숲(Lv3)"],[30022,"너도밤나무 목재","res",4,2,225,"참나무 숲(Lv3)"],[30023,"단풍나무 목재","res",4,3,540,"참나무 숲(Lv3)"],[30024,"고목의 심재","res",4,4,1350,"참나무 숲(Lv3)"],[30025,"백년 참나무","res",4,5,3600,"참나무 숲(Lv3)"],[30026,"대지의 뿌리","res",4,6,9000,"참나무 숲(Lv3)"],[30031,"그을린 통나무","res",4,1,270,"흑림(Lv4)"],[30032,"흑참나무 목재","res",4,2,675,"흑림(Lv4)"],[30033,"자단 목재","res",4,3,1620,"흑림(Lv4)"],[30034,"마력 깃든 목재","res",4,4,4050,"흑림(Lv4)"],[30035,"흑림의 고목","res",4,5,10800,"흑림(Lv4)"],[30036,"어둠나무의 핵","res",4,6,27000,"흑림(Lv4)"],[30041,"세계수 껍질","res",4,1,810,"세계수 뿌리(Lv5)"],[30042,"빛나는 수액","res",4,2,2025,"세계수 뿌리(Lv5)"],[30043,"신목 목재","res",4,3,4860,"세계수 뿌리(Lv5)"],[30044,"영원의 나이테","res",4,4,12150,"세계수 뿌리(Lv5)"],[30045,"세계수 심재","res",4,5,32400,"세계수 뿌리(Lv5)"],[30046,"창세목의 조각","res",4,6,81000,"세계수 뿌리(Lv5)"],[40011,"석회암","res",3,1,30,"갱도(Lv2)"],[40012,"주석 광석","res",3,2,75,"갱도(Lv2)"],[40013,"철광석","res",3,3,180,"갱도(Lv2)"],[40014,"백금 광석","res",3,4,450,"갱도(Lv2)"],[40015,"청옥 원석","res",3,5,1200,"갱도(Lv2)"],[40016,"지맥의 결정","res",3,6,3000,"갱도(Lv2)"],[40021,"현무암","res",3,1,90,"심층 갱도(Lv3)"],[40022,"아연 광석","res",3,2,225,"심층 갱도(Lv3)"],[40023,"미스릴 광석","res",3,3,540,"심층 갱도(Lv3)"],[40024,"홍옥 원석","res",3,4,1350,"심층 갱도(Lv3)"],[40025,"흑요석 결정","res",3,5,3600,"심층 갱도(Lv3)"],[40026,"대지의 핵","res",3,6,9000,"심층 갱도(Lv3)"],[40031,"수정 파편","res",3,1,270,"지하 대공동(Lv4)"],[40032,"코발트 광석","res",3,2,675,"지하 대공동(Lv4)"],[40033,"오리하르콘 광석","res",3,3,1620,"지하 대공동(Lv4)"],[40034,"자수정 원석","res",3,4,4050,"지하 대공동(Lv4)"],[40035,"별빛 광석","res",3,5,10800,"지하 대공동(Lv4)"],[40036,"공동의 심장","res",3,6,27000,"지하 대공동(Lv4)"],[40041,"심연의 파편","res",3,1,810,"심연(Lv5)"],[40042,"암흑 광석","res",3,2,2025,"심연(Lv5)"],[40043,"아다만트 광석","res",3,3,4860,"심연(Lv5)"],[40044,"심연의 수정","res",3,4,12150,"심연(Lv5)"],[40045,"용해된 별의 조각","res",3,5,32400,"심연(Lv5)"],[40046,"세계의 축","res",3,6,81000,"심연(Lv5)"],[50011,"여우 가죽","res",5,1,30,"야산(Lv2)"],[50012,"멧돼지 엄니","res",5,2,75,"야산(Lv2)"],[50013,"사슴뿔","res",5,3,180,"야산(Lv2)"],[50014,"산군의 발톱","res",5,4,450,"야산(Lv2)"],[50015,"백호의 털","res",5,5,1200,"야산(Lv2)"],[50016,"산신의 인장","res",5,6,3000,"야산(Lv2)"],[50021,"표범 가죽","res",5,1,90,"깊은 숲(Lv3)"],[50022,"큰뿔 사슴뿔","res",5,2,225,"깊은 숲(Lv3)"],[50023,"곰의 이빨","res",5,3,540,"깊은 숲(Lv3)"],[50024,"숲괴수의 발톱","res",5,4,1350,"깊은 숲(Lv3)"],[50025,"고대 짐승의 뼈","res",5,5,3600,"깊은 숲(Lv3)"],[50026,"숲 지배자의 눈","res",5,6,9000,"깊은 숲(Lv3)"],[50031,"설표 가죽","res",5,1,270,"설산(Lv4)"],[50032,"얼음늑대 송곳니","res",5,2,675,"설산(Lv4)"],[50033,"서리곰 모피","res",5,3,1620,"설산(Lv4)"],[50034,"빙룡의 비늘","res",5,4,4050,"설산(Lv4)"],[50035,"설산 주인의 뿔","res",5,5,10800,"설산(Lv4)"],[50036,"영구동토의 심장","res",5,6,27000,"설산(Lv4)"],[50041,"마수의 가죽","res",5,1,810,"마수의 영역(Lv5)"],[50042,"마물의 뿔","res",5,2,2025,"마수의 영역(Lv5)"],[50043,"흉수의 송곳니","res",5,3,4860,"마수의 영역(Lv5)"],[50044,"마수왕의 갈기","res",5,4,12150,"마수의 영역(Lv5)"],[50045,"심연수의 눈","res",5,5,32400,"마수의 영역(Lv5)"],[50046,"마신의 파편","res",5,6,81000,"마수의 영역(Lv5)"],[100001,"유리 구슬","etc",0,1,10,"가챠 전용(테스트)"],[100002,"호박 구슬","etc",0,2,25,"가챠 전용(테스트)"],[100003,"진주 구슬","etc",0,3,60,"가챠 전용(테스트)"],[100004,"오팔 구슬","etc",0,4,150,"가챠 전용(테스트)"],[100005,"용안 구슬","etc",0,5,400,"가챠 전용(테스트)"],[100006,"창세의 구슬","etc",0,6,1000,"가챠 전용(테스트)"],[100010,"낡은 보물 지도","etc",0,1,50,"지정 슬롯 다음 1회 판정 즉시 완료 (시간 스킵)"],[100011,"은빛 나침반","etc",0,2,150,"지정 슬롯 다음 20회 판정 동안 상자 드롭 확률 +100% (2배)"],[100012,"황금 열쇠","etc",0,3,500,"비밀 금고(GachaId 24) 1회 개봉 (고등급 장비·큐브 묶음 확정)"],[100015,"인챈트 큐브","etc",0,3,500,"장비 능력치 칸 전부 다시 뽑기 · 확률로 인챈트 등급 한 단계 상승"],[100018,"상급 인챈트 큐브","etc",0,4,1000,"장비 능력치 칸 전부 다시 뽑기 · 인챈트 큐브보다 등급 상승 확률이 높다"],[100019,"나무 상자 Lv1","box",0,1,54,"상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×10"],[100020,"은 상자 Lv1","box",0,2,163,"상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×30"],[100021,"황금 상자 Lv1","box",0,3,542,"상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×100"],[100022,"나무 상자 Lv2","box",0,1,163,"상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×10"],[100023,"은 상자 Lv2","box",0,2,488,"상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×30"],[100024,"황금 상자 Lv2","box",0,3,1625,"상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×100"],[100025,"나무 상자 Lv3","box",0,1,488,"상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×10"],[100026,"은 상자 Lv3","box",0,2,1463,"상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×30"],[100027,"황금 상자 Lv3","box",0,3,4876,"상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×100"],[100028,"나무 상자 Lv4","box",0,1,1463,"상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×10"],[100029,"은 상자 Lv4","box",0,2,4389,"상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×30"],[100030,"황금 상자 Lv4","box",0,3,14629,"상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×100"],[100031,"나무 상자 Lv5","box",0,1,4389,"상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×10"],[100032,"은 상자 Lv5","box",0,2,13166,"상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×30"],[100033,"황금 상자 Lv5","box",0,3,43886,"상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×100"],[100041,"성장의 비약 (소)","etc",0,1,50,"캐릭터 경험치 +100 Exp 즉시 획득"],[100042,"성장의 비약 (중)","etc",0,2,250,"캐릭터 경험치 +500 Exp 즉시 획득"],[100043,"성장의 비약 (대)","etc",0,3,1250,"캐릭터 경험치 +2,500 Exp 즉시 획득"],[100044,"신속의 영약","etc",0,2,500,"지정 슬롯 다음 20회 판정 동안 작업속도 +30% (+300‰ 가산)"],[100045,"풍요의 영약","etc",0,2,500,"지정 슬롯 다음 20회 판정 동안 자원 산출량 +30% (+300‰ 가산)"],[100046,"망각의 묘약","etc",0,3,10000,"투자된 계정 특성 포인트 전액 초기화"],[100050,"마력의 파편","etc",0,2,0,"남는 장비를 분해하여 얻은 마력의 결정체. 큐브나 영약으로 교환할 수 있다"]],"equips":[[1001,"목검",1,0,1,50,70],[1002,"낚싯대",1,2,2,180,250],[2001,"구리 반지",2,0,1,30,50],[2002,"어부의 목걸이",2,2,3,180,360],[3001,"원석",3,0,1,20,30],[1101,"나무 호미",1,1,1,100,100],[1102,"무쇠 호미",1,1,2,180,250],[1103,"강철 낫",1,1,3,300,600],[1104,"은빛 쟁기",1,1,4,480,1500],[1105,"풍년의 괭이",1,1,5,720,4000],[1106,"대지모의 호미",1,1,6,1000,10000],[1201,"대나무 낚싯대",1,2,1,100,100],[1203,"은사 낚싯대",1,2,3,300,600],[1204,"심해 작살",1,2,4,480,1500],[1205,"용린 낚싯대",1,2,5,720,4000],[1206,"해신의 삼지창",1,2,6,1000,10000],[1301,"돌 곡괭이",1,3,1,100,100],[1302,"무쇠 곡괭이",1,3,2,180,250],[1303,"강철 곡괭이",1,3,3,300,600],[1304,"흑요석 곡괭이",1,3,4,480,1500],[1305,"미스릴 곡괭이",1,3,5,720,4000],[1306,"산신의 곡괭이",1,3,6,1000,10000],[1401,"손도끼",1,4,1,100,100],[1402,"무쇠 도끼",1,4,2,180,250],[1403,"양날 도끼",1,4,3,300,600],[1404,"백년목 도끼",1,4,4,480,1500],[1405,"서리강철 도끼",1,4,5,720,4000],[1406,"세계수의 도끼",1,4,6,1000,10000],[1501,"사냥용 활",1,5,1,100,100],[1502,"참나무 활",1,5,2,180,250],[1503,"강철 석궁",1,5,3,300,600],[1504,"은빛 장궁",1,5,4,480,1500],[1505,"폭풍의 장궁",1,5,5,720,4000],[1506,"월신의 활",1,5,6,1000,10000],[2003,"은 목걸이",2,0,2,55,120],[2004,"노동자의 팔찌",2,0,3,90,300],[2005,"장인의 인장",2,0,4,145,750],[2006,"대장인의 훈장",2,0,5,215,2000],[2007,"창세의 고리",2,0,6,300,5000],[3101,"풍년석",3,1,1,40,40],[3102,"새싹 수정",3,1,2,70,100],[3103,"곡창의 비취",3,1,3,120,240],[3104,"황금 이삭석",3,1,4,190,600],[3105,"대지의 심장",3,1,5,290,1600],[3106,"풍요의 성석",3,1,6,400,4000],[3201,"물방울석",3,2,1,40,40],[3202,"조류 수정",3,2,2,70,100],[3203,"심해의 청옥",3,2,3,120,240],[3204,"산호 진주",3,2,4,190,600],[3205,"바다의 심장",3,2,5,290,1600],[3206,"해원의 성석",3,2,6,400,4000],[3301,"철광석 조각",3,3,1,40,40],[3302,"광맥 수정",3,3,2,70,100],[3303,"지맥의 흑옥",3,3,3,120,240],[3304,"용암 결정",3,3,4,190,600],[3305,"대지핵 결정",3,3,5,290,1600],[3306,"광신의 성석",3,3,6,400,4000],[3401,"나무옹이석",3,4,1,40,40],[3402,"수액 호박",3,4,2,70,100],[3403,"고목의 녹옥",3,4,3,120,240],[3404,"백년목 결정",3,4,4,190,600],[3405,"숲의 심장",3,4,5,290,1600],[3406,"세계수 성석",3,4,6,400,4000],[3501,"짐승 이빨석",3,5,1,40,40],[3502,"추적자의 수정",3,5,2,70,100],[3503,"맹수의 홍옥",3,5,3,120,240],[3504,"사냥꾼의 별",3,5,4,190,600],[3505,"야수의 심장",3,5,5,290,1600],[3506,"월광 성석",3,5,6,400,4000]],"chars":[[1001,"램볼",1,[1,1,1,1,1],50],[1002,"치키피",2,[3,0,1,2,0],100],[1003,"펭구렛",2,[1,3,0,0,2],100],[1004,"캐티바",2,[2,0,3,1,1],100],[1005,"리프몽",2,[1,1,0,3,0],100],[1006,"폭스파크스",2,[0,2,1,0,3],100],[1007,"밀개비",1,[2,1,0,1,0],50],[1008,"물방개미",1,[0,2,1,0,1],50],[1009,"두더삽",1,[0,0,2,1,1],50],[1010,"톱니쥐",1,[1,0,1,2,0],50],[1011,"살쾡이",1,[0,1,0,1,2],50],[1012,"갈대오리",2,[1,4,0,1,1],100],[1013,"뿔사슴이",2,[1,0,1,1,4],100],[1014,"솔방울곰",2,[1,0,1,4,1],100],[1015,"해달수",3,[1,5,0,1,1],250],[1016,"흙두꺼비",3,[5,1,2,0,0],250],[1017,"광부오소리",3,[0,0,5,2,2],250],[1018,"도끼늑대",3,[1,0,2,5,1],250],[1019,"창날매",3,[0,2,1,1,5],250],[1020,"이삭토끼",3,[6,1,1,1,0],250],[1021,"산호게",3,[1,6,2,0,1],250],[1022,"화산도롱뇽",4,[1,0,7,2,2],600],[1023,"파도고래",4,[2,7,1,1,1],600],[1024,"대지곰",4,[7,1,2,2,1],600],[1025,"강철사마귀",4,[0,2,3,2,7],600],[1026,"거목정령",4,[3,1,1,7,1],600],[1027,"황금기린",5,[9,2,2,3,2],1500],[1028,"심연이무기",5,[1,9,3,1,3],1500],[1029,"흑요석골렘",5,[1,1,9,4,2],1500],[1030,"별빛드래곤",6,[7,7,7,7,7],4000]]}</script>
+<script>
+// ───────── 표 · 상수 ─────────
+const C = JSON.parse(document.getElementById('catalog').textContent);
+const RAR = ['', '일반', '고급', '희귀', '영웅', '전설', '신화'];
+const RTXT = ['', '#C4C4C4', '#62F06F', '#58AEFF', '#C784FF', '#FFA040', '#F2DC95'];  // 글씨용 (GlobalRarity 색을 남색 위에서 읽히게 밝힘)
+const RBG = ['', '#5d636b', '#2c7a2c', '#1d5596', '#5c2c8a', '#94500f', '#806a2c'];   // 아이콘 바탕
+const IND = ['전 산업', '농사', '낚시', '채광', '벌목', '사냥'];
+const KIND = ['', '무기', '장신구', '보석'];
+const SLOTS = [0, 1, 1, 2, 2, 3, 3];            // EnchantGradeTable.SlotCount
+const OPT_ALL = [0, 0.5, 1, 1.5, 2.5, 4, 6];    // 인챈트 옵션 값(%) — 목업 값
+const OPT_IND = [0, 1, 2, 3, 5, 8, 12];
+const K = { hours: 48, maxActive: 20, maxUnit: 1e12, maxCount: 9999, listFee: 10, saleFee: 50, sellRate: 1000, burst: 5, refill: 2 };  // ConstantsTable
+const ME = '나';
+const SELLERS = ['맹독군주', '달빛채굴단', '곰돌이농장', '새벽낚시꾼', '도끼한자루', '사냥꾼K', '부자되자', '큐브중독', '감자왕', '은행나무', '소금장수', '별빛상회', '고래사냥', '광부김씨'];
+
+const fmt = n => Math.round(n).toLocaleString('ko-KR');
+const g = n => `${fmt(n)} G`;
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// 고정 씨앗 난수 — 새로고침해도 같은 매물
+let seed = 147;
+function rnd() { seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }
+const ri = (a, b) => a + Math.floor(rnd() * (b - a + 1));
+const pick = a => a[Math.floor(rnd() * a.length)];
+function enchantGrade() { const r = rnd(); return r < .45 ? 1 : r < .72 ? 2 : r < .88 ? 3 : r < .96 ? 4 : r < .99 ? 5 : 6; }
+function rollOpts(eg) { const o = []; for (let i = 0; i < SLOTS[eg]; i++) { const ind = rnd() < .35 ? 0 : ri(1, 5); o.push({ ind, val: ind === 0 ? OPT_ALL[eg] : OPT_IND[eg] }); } return o; }
+const instant = base => Math.max(1, Math.floor(base * K.sellRate / 1000));
+
+// ───────── 가짜 매물 ─────────
+let gold = 3606159;
+const L = [];
+let lid = 1, mineCount = 0;
+function addListing(o) {
+  o.id = lid++;
+  o.hours = o.hours ?? rnd() * K.hours;
+  o.listedMin = Math.floor((K.hours - o.hours) * 60);
+  o.seller = o.seller ?? (rnd() < .03 && mineCount < 6 ? ME : pick(SELLERS));   // 내 매물은 6개만 — 상한 20 안쪽
+  if (o.seller === ME) mineCount++;
+  o.reserved = o.reserved ?? (o.seller === ME && mineCount === 2);              // 하나만 구매 진행 중
+  o.total = o.unit * o.qty;
+  L.push(o);
+  return o;
+}
+const CAT = {};
+for (const [tid, name, cat, ind, rar, base, desc] of C.items) {
+  CAT['i' + tid] = { kind: 'item', tid, name, cat, ind, rar, base, desc };
+  for (let n = ri(0, cat === 'res' ? 3 : 2); n > 0; n--) {
+    addListing({ kind: 'item', key: 'i' + tid, cat, ind, rar, name, tid, base, desc, qty: cat === 'box' ? ri(1, 30) : ri(1, 999),
+      unit: Math.max(instant(base), Math.round(base * (1 + rnd() * rnd() * 2.5))) });
+  }
+}
+for (const [tid, name, ekind, ind, rar, speed, base] of C.equips) {
+  CAT['e' + tid] = { kind: 'equip', tid, name, ekind, ind, rar, speed, base };
+  for (let n = ri(0, 3); n > 0; n--) {
+    const eg = enchantGrade();
+    addListing({ kind: 'equip', key: 'e' + tid, cat: 'equip', ekind, ind, rar, name, tid, base, speed, eg, opts: rollOpts(eg), qty: 1,
+      unit: Math.round(base * (1 + rnd() * 2) * (1 + (eg - 1) * .6)) });
+  }
+}
+for (const [tid, name, rar, apt, base] of C.chars) {
+  CAT['c' + tid] = { kind: 'char', tid, name, rar, apt, base };
+  for (let n = ri(0, 3); n > 0; n--) {
+    const lv = Math.min(100, 1 + Math.floor(Math.pow(rnd(), 2.2) * 100));
+    const star = rnd() < .6 ? 0 : ri(1, 4);
+    addListing({ kind: 'char', key: 'c' + tid, cat: 'char', rar, name, tid, base, apt, lv, star, qty: 1,
+      unit: Math.round(base * (1 + lv / 25) * (1 + star * .8) * (1 + rnd())) });
+  }
+}
+
+// ───────── 공통 그리기 ─────────
+function iconHtml(o, cls = '') {
+  const first = o.name.replace(/\s/g, '')[0];
+  let extra = '';
+  if (o.qty > 1) extra += `<span class="q">${o.qty > 9999 ? '9999+' : fmt(o.qty)}</span>`;
+  if (o.kind === 'char' && o.star) extra += `<span class="st">${'★'.repeat(o.star)}</span>`;
+  if (o.kind === 'equip' && o.eg) extra += `<span class="slots">${o.opts.map(() => `<i style="background:${RTXT[o.eg]}"></i>`).join('')}</span>`;
+  return `<div class="icon ${cls}" style="background:linear-gradient(145deg, ${RBG[o.rar]}, #1a2330 130%);border-color:${RTXT[o.rar]}">${esc(first)}${extra}</div>`;
+}
+const optText = opts => opts.map(x => `${IND[x.ind]} +${x.val}%`).join(' · ');
+const mainApt = apt => { let m = 0; for (let i = 1; i < 5; i++) if (apt[i] > apt[m]) m = i; return m + 1; };
+const aptText = apt => apt.map((v, i) => `${IND[i + 1][0]}${v}`).join(' ');
+function subText(o) {
+  if (o.kind === 'item') return o.cat === 'res' ? `${IND[o.ind]} · ${o.desc}` : `${o.cat === 'box' ? '상자' : '기타'} · ${o.desc}`;
+  if (o.kind === 'equip') {
+    const base = `${KIND[o.ekind]} · ${IND[o.ind]} 작업속도 +${o.speed / 10}%`;
+    return o.eg ? `${base} · <span style="color:${RTXT[o.eg]}">인챈트 ${RAR[o.eg]}</span> ${optText(o.opts)}` : base;
+  }
+  return `Lv.${o.lv ?? 1}${o.star ? ' · ' + '★'.repeat(o.star) : ''} · 적성 ${aptText(o.apt)}`;
+}
+function timeText(h) {
+  if (h < 1) return `<span class="soon">${Math.max(1, Math.round(h * 60))}분</span>`;
+  const hh = Math.floor(h), mm = Math.round((h - hh) * 60);
+  return h < 6 ? `<span class="soon">${hh}시간 ${mm}분</span>` : `${hh}시간 ${mm}분`;
+}
+function tipHtml(o) {
+  const rows = [];
+  const row = (k, v) => rows.push(`<div class="t-row"><span>${k}</span><span>${v}</span></div>`);
+  let head = `<div class="t-name" style="color:${RTXT[o.rar]}">${esc(o.name)}</div><div class="t-sub">${RAR[o.rar]} · ${o.kind === 'item' ? (o.cat === 'res' ? '자원 · ' + IND[o.ind] : o.cat === 'box' ? '상자' : '기타') : o.kind === 'equip' ? '장비 · ' + KIND[o.ekind] : '캐릭터'}</div>`;
+  if (o.kind === 'equip') {
+    row('기본 능력치', `${IND[o.ind]} 작업속도 +${o.speed / 10}%`);
+    row('인챈트', `<span style="color:${RTXT[o.eg]}">${RAR[o.eg]} · ${SLOTS[o.eg]}칸</span>`);
+    o.opts.forEach((x, i) => row(`  칸 ${i + 1}`, `${IND[x.ind]} +${x.val}%`));
+  } else if (o.kind === 'char') {
+    row('레벨', `Lv.${o.lv}`);
+    row('응축', o.star ? '★'.repeat(o.star) : '없음');
+    row('적성', aptText(o.apt));
+  } else {
+    row('나오는 곳', esc(o.desc));
+  }
+  rows.push('<hr>');
+  row('수량', fmt(o.qty));
+  row('단가', `<span class="price">${g(o.unit)}</span>`);
+  if (o.qty > 1) row('총액', `<span class="price">${g(o.total)}</span>`);
+  row('즉시 판매가', g(instant(o.base)) + (o.qty > 1 ? ' /개' : ''));
+  row('남은 시간', timeText(o.hours));
+  row('판매자', o.seller === ME ? '<span style="color:var(--highlight)">나</span>' : esc(o.seller));
+  return head + rows.join('');
+}
+
+// 툴팁 — 스테이지가 줄어 있으니 좌표를 배율로 나눈다
+const stage = $('#stage'), tip = $('#tip'), auction = $('#auction');
+let scale = 1;
+function showTip(e, html) {
+  tip.innerHTML = html; tip.style.display = 'block';
+  const r = auction.getBoundingClientRect();
+  let x = (e.clientX - r.left) / scale + 18, y = (e.clientY - r.top) / scale + 14;
+  const w = tip.offsetWidth, h = tip.offsetHeight;
+  if (x + w > auction.clientWidth - 8) x -= w + 36;
+  if (y + h > auction.clientHeight - 8) y = auction.clientHeight - h - 8;
+  tip.style.left = x + 'px'; tip.style.top = y + 'px';
+}
+const hideTip = () => { tip.style.display = 'none'; };
+let toastTimer;
+function toast(msg) { const t = $('#toast'); t.innerHTML = msg; t.style.display = 'block'; clearTimeout(toastTimer); toastTimer = setTimeout(() => t.style.display = 'none', 2600); }
+function setGold() { $('#gold').textContent = g(gold); }
+
+// ───────── 조회 빈도 제한 (순간 5회 · 2초마다 1회 회복) ─────────
+let tokens = K.burst, lastRefill = Date.now();
+function takeToken() {
+  const now = Date.now(), add = Math.floor((now - lastRefill) / (K.refill * 1000));
+  if (add > 0) { tokens = Math.min(K.burst, tokens + add); lastRefill += add * K.refill * 1000; }
+  if (tokens <= 0) { toast('<span style="color:var(--negative)">조회가 너무 잦습니다</span> — 잠시 뒤 다시 눌러 주세요'); return false; }
+  tokens--; return true;
+}
+
+// ───────── 탭 ─────────
+let tab = 'search';
+const HINTS = {
+  search: ['아이템 이름 (일부만 쳐도 된다)', 'Enter 또는 [검색] — 분류·옵션과 함께 조회한다'],
+  market: ['시세 볼 아이템 이름', '이름을 치면 왼쪽 목록이 좁혀진다'],
+  sell: ['내 인벤토리에서 찾기', '왼쪽에서 올릴 것을 고른다'],
+  done: ['기록에서 아이템 찾기', '물건·대금은 우편함에서 받는다'],
+};
+document.querySelectorAll('.tab').forEach(b => b.onclick = () => openTab(b.dataset.tab));
+function openTab(t) {
+  tab = t;
+  document.querySelectorAll('.tab').forEach(b => b.classList.toggle('on', b.dataset.tab === t));
+  document.querySelectorAll('.pane').forEach(p => p.classList.toggle('on', p.dataset.pane === t));
+  $('#q').placeholder = HINTS[t][0]; $('#qHint').textContent = HINTS[t][1];
+  $('#q').value = t === 'search' ? A.q : t === 'market' ? mkQ : t === 'sell' ? invQ : doneQ;
+  hideTip();
+  if (t === 'market') renderMarket();
+  if (t === 'sell') renderSell();
+  if (t === 'done') { renderDone(); history.forEach(h => h.unread = false); setTimeout(updateBadge, 1200); }
+}
+$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') qGo(); });
+$('#q').addEventListener('input', () => {
+  const v = $('#q').value.trim();
+  if (tab === 'market') { mkQ = v; renderMkList(); }
+  if (tab === 'sell') { invQ = v; renderInv(); }
+  if (tab === 'done') { doneQ = v; renderDone(); }
+});
+$('#qBtn').onclick = qGo;
+function qGo() { if (tab === 'search') { F.q = $('#q').value.trim(); runSearch(); } }
+$('#names').innerHTML = [...new Set(Object.values(CAT).map(c => c.name))].map(n => `<option value="${esc(n)}">`).join('');
+
+// ───────── 검색 탭 ─────────
+const TREE = [
+  ['all', '전체'],
+  ['res', '자원', [['res:1', '농사'], ['res:2', '낚시'], ['res:3', '채광'], ['res:4', '벌목'], ['res:5', '사냥']]],
+  ['box', '상자'], ['etc', '기타'],
+  ['equip', '장비', [['equip:1', '무기'], ['equip:2', '장신구'], ['equip:3', '보석']]],
+  ['char', '캐릭터'],
+];
+const freshF = () => ({ q: '', node: 'all', rar: new Set([1, 2, 3, 4, 5, 6]), eind: -1, speedMin: '', egMin: 0, opts: [], lvMin: '', lvMax: '', starMin: 0, aptInd: 0, aptMin: '', pMin: '', pMax: '' });
+let F = freshF();       // 왼쪽에서 고치는 중인 값
+let A = cloneF(F);      // 마지막으로 조회한 값
+const open = new Set();   // 펼친 분류 — 누르면 펼쳐진다
+function cloneF(f) { return { ...f, rar: new Set(f.rar), opts: f.opts.map(o => ({ ...o })) }; }
+
+function nodeCount(id) { const f = { ...freshF(), node: id }; return L.filter(l => match(l, f)).length; }
+function renderTree() {
+  const html = [];
+  for (const [id, label, kids] of TREE) {
+    const caret = kids ? (open.has(id) ? '▾' : '▸') : '';
+    html.push(`<div class="node ${F.node === id ? 'on' : ''}" data-id="${id}"><span class="caret" data-caret="${kids ? id : ''}">${caret}</span>${label}<span class="cnt">${fmt(nodeCount(id))}</span></div>`);
+    if (kids && open.has(id)) for (const [cid, cl] of kids) html.push(`<div class="node child ${F.node === cid ? 'on' : ''}" data-id="${cid}"><span class="caret"></span>${cl}<span class="cnt">${fmt(nodeCount(cid))}</span></div>`);
+  }
+  $('#tree').innerHTML = html.join('');
+  $('#tree').querySelectorAll('.node').forEach(n => n.onclick = e => {
+    const c = e.target.dataset.caret;
+    if (c) { open.has(c) ? open.delete(c) : open.add(c); renderTree(); return; }
+    F.node = n.dataset.id;
+    if (TREE.some(t => t[0] === F.node && t[2])) open.add(F.node);
+    renderTree(); renderExtra(); runSearch();   // 분류는 누르면 바로 조회
+  });
+}
+function renderRar() {
+  $('#rarChips').innerHTML = RAR.slice(1).map((r, i) => `<button class="chip ${F.rar.has(i + 1) ? 'on' : ''}" data-r="${i + 1}"><span class="dot" style="background:${RTXT[i + 1]}"></span>${r}</button>`).join('');
+  $('#rarChips').querySelectorAll('.chip').forEach(c => c.onclick = () => { const r = +c.dataset.r; F.rar.has(r) ? F.rar.delete(r) : F.rar.add(r); renderRar(); });
+}
+const indOptions = (sel, withAny, anyLabel = '전체') => (withAny ? `<option value="-1" ${sel === -1 ? 'selected' : ''}>${anyLabel}</option>` : '') + IND.map((n, i) => `<option value="${i}" ${sel === i ? 'selected' : ''}>${n}</option>`).join('');
+function renderExtra() {
+  const top = F.node.split(':')[0];
+  let h = '';
+  if (top === 'equip') {
+    h += `<div class="sec"><div class="sec-t">장비 옵션</div>
+      <div class="field"><label>산업</label><select class="sel wide" id="eInd" style="flex:1">${indOptions(F.eind, true)}</select></div>
+      <div class="field"><label>작업속도</label><input class="inp num" id="eSpeed" value="${F.speedMin}" placeholder="0"> % 이상</div>
+      <div class="field"><label>인챈트 등급</label><select class="sel" id="eGrade" style="flex:1"><option value="0">전체</option>${RAR.slice(1).map((r, i) => `<option value="${i + 1}" ${F.egMin === i + 1 ? 'selected' : ''}>${r} 이상</option>`).join('')}</select></div></div>
+      <div class="sec"><div class="sec-t">인챈트 옵션 <small>칸 합계 — 최대 3줄</small></div><div id="optRows"></div>
+      <button class="btn xs ghost" id="addOpt" style="margin-top:8px" ${F.opts.length >= 3 ? 'disabled' : ''}>+ 옵션 조건 추가</button></div>`;
+  } else if (top === 'char') {
+    h += `<div class="sec"><div class="sec-t">캐릭터 옵션</div>
+      <div class="field"><label>레벨</label><input class="inp num" id="cLvMin" value="${F.lvMin}" placeholder="1"> ~ <input class="inp num" id="cLvMax" value="${F.lvMax}" placeholder="100"></div>
+      <div class="field"><label>응축 ★</label><div class="chips" id="starChips">${[0, 1, 2, 3, 4].map(s => `<button class="chip ${F.starMin === s ? 'on' : ''}" data-s="${s}">${s ? '★' + s + ' 이상' : '전체'}</button>`).join('')}</div></div>
+      <div class="field"><label>적성</label><select class="sel" id="cApt" style="flex:1"><option value="0">전체</option>${IND.slice(1).map((n, i) => `<option value="${i + 1}" ${F.aptInd === i + 1 ? 'selected' : ''}>${n}</option>`).join('')}</select><input class="inp num" id="cAptMin" value="${F.aptMin}" placeholder="1"> 이상</div></div>`;
+  }
+  $('#extraOpts').innerHTML = h;
+  if (top === 'equip') {
+    $('#eInd').onchange = e => F.eind = +e.target.value;
+    $('#eSpeed').oninput = e => F.speedMin = e.target.value.replace(/[^\d.]/g, '');
+    $('#eGrade').onchange = e => F.egMin = +e.target.value;
+    $('#addOpt').onclick = () => { F.opts.push({ ind: -1, min: '' }); renderExtra(); };
+    renderOptRows();
+  }
+  if (top === 'char') {
+    $('#cLvMin').oninput = e => F.lvMin = e.target.value.replace(/\D/g, '');
+    $('#cLvMax').oninput = e => F.lvMax = e.target.value.replace(/\D/g, '');
+    $('#cApt').onchange = e => F.aptInd = +e.target.value;
+    $('#cAptMin').oninput = e => F.aptMin = e.target.value.replace(/\D/g, '');
+    $('#starChips').querySelectorAll('.chip').forEach(c => c.onclick = () => { F.starMin = +c.dataset.s; renderExtra(); });
+  }
+}
+function renderOptRows() {
+  $('#optRows').innerHTML = F.opts.length ? F.opts.map((o, i) => `<div class="opt-row"><select class="sel" data-i="${i}">${indOptions(o.ind, true, '아무 옵션')}</select><span>작업속도 합</span><input class="inp num" data-i="${i}" value="${o.min}" placeholder="0" style="width:70px">%↑<button class="x" data-i="${i}">✕</button></div>`).join('')
+    : '<div class="dim" style="font-size:13px">조건 없음 — 메이플 잠재능력 검색처럼 "농사 작업속도 합 5% 이상"을 건다</div>';
+  $('#optRows').querySelectorAll('select').forEach(s => s.onchange = () => F.opts[+s.dataset.i].ind = +s.value);
+  $('#optRows').querySelectorAll('input').forEach(s => s.oninput = () => F.opts[+s.dataset.i].min = s.value.replace(/[^\d.]/g, ''));
+  $('#optRows').querySelectorAll('.x').forEach(b => b.onclick = () => { F.opts.splice(+b.dataset.i, 1); renderExtra(); });
+}
+$('#pMin').oninput = e => { F.pMin = e.target.value.replace(/\D/g, ''); };
+$('#pMax').oninput = e => { F.pMax = e.target.value.replace(/\D/g, ''); };
+$('#resetBtn').onclick = () => { const q = F.q; F = freshF(); F.q = q; $('#pMin').value = ''; $('#pMax').value = ''; renderTree(); renderRar(); renderExtra(); toast('옵션을 초기화했습니다 — [검색]을 누르면 적용됩니다'); };
+$('#searchBtn').onclick = () => { F.q = $('#q').value.trim(); runSearch(); };
+
+function match(l, f) {
+  if (f.q && !l.name.includes(f.q)) return false;
+  const [top, sub] = f.node.split(':');
+  if (top === 'res' && !(l.kind === 'item' && l.cat === 'res' && (!sub || l.ind === +sub))) return false;
+  if (top === 'box' && l.cat !== 'box') return false;
+  if (top === 'etc' && l.cat !== 'etc') return false;
+  if (top === 'equip' && !(l.kind === 'equip' && (!sub || l.ekind === +sub))) return false;
+  if (top === 'char' && l.kind !== 'char') return false;
+  if (!f.rar.has(l.rar)) return false;
+  if (f.pMin !== '' && l.unit < +f.pMin) return false;
+  if (f.pMax !== '' && l.unit > +f.pMax) return false;
+  if (top === 'equip') {
+    if (f.eind >= 0 && l.ind !== f.eind) return false;
+    if (f.speedMin !== '' && l.speed / 10 < +f.speedMin) return false;
+    if (l.eg < f.egMin) return false;
+    for (const o of f.opts) {
+      const sum = l.opts.filter(x => o.ind < 0 || x.ind === o.ind).reduce((a, x) => a + x.val, 0);
+      if (o.min !== '' ? sum < +o.min : (o.ind >= 0 && sum <= 0)) return false;
+    }
+  }
+  if (top === 'char') {
+    if (f.lvMin !== '' && l.lv < +f.lvMin) return false;
+    if (f.lvMax !== '' && l.lv > +f.lvMax) return false;
+    if (l.star < f.starMin) return false;
+    if (f.aptInd > 0 && l.apt[f.aptInd - 1] < (+f.aptMin || 1)) return false;
+  }
+  return true;
+}
+
+// 정렬 — 드롭다운 프리셋과 열 머리가 같은 상태를 고친다
+const PRESETS = [['unit', 1, '단가 낮은순'], ['unit', -1, '단가 높은순'], ['total', 1, '총액 낮은순'], ['total', -1, '총액 높은순'], ['time', 1, '마감 임박순'],
+  ['listed', 1, '최근 등록순'], ['rar', -1, '등급 높은순'], ['speed', -1, '작업속도 높은순 (장비)'], ['level', -1, '레벨 높은순 (캐릭터)']];
+const KEYF = { unit: l => l.unit, total: l => l.total, time: l => l.hours, listed: l => l.listedMin, rar: l => l.rar, qty: l => l.qty,
+  speed: l => l.kind === 'equip' ? l.speed + l.opts.reduce((a, x) => a + x.val * 10, 0) : -1, level: l => l.kind === 'char' ? l.lv * 10 + l.star : -1 };
+let S = { key: 'unit', dir: 1 };
+$('#sortSel').innerHTML = PRESETS.map((p, i) => `<option value="${i}">${p[2]}</option>`).join('') + '<option value="-1" hidden>열 머리로 정렬</option>';
+$('#sortSel').onchange = e => { const p = PRESETS[+e.target.value]; S = { key: p[0], dir: p[1] }; renderResults(); };
+const COLS = [['rar', '아이템 (등급)', -1], ['qty', '수량', -1, 'r'], ['unit', '단가', 1, 'r'], ['total', '총액', 1, 'r'], ['time', '남은 시간', 1, 'r'], [null, '판매자'], [null, '']];
+function renderCols() {
+  $('#cols').innerHTML = COLS.map(([k, label, , cls]) => {
+    if (!k) return `<div class="${cls || ''}">${label}</div>`;
+    const on = S.key === k;
+    return `<div class="s ${cls || ''} ${on ? 'on' : ''}" data-k="${k}">${label}${on ? (S.dir > 0 ? ' ▲' : ' ▼') : ''}</div>`;
+  }).join('');
+  $('#cols').querySelectorAll('.s').forEach(d => d.onclick = () => {
+    const k = d.dataset.k, def = COLS.find(c => c[0] === k)[2];
+    S = S.key === k ? { key: k, dir: -S.dir } : { key: k, dir: def };
+    renderResults();
+  });
+  const idx = PRESETS.findIndex(p => p[0] === S.key && p[1] === S.dir);
+  $('#sortSel').value = String(idx);
+}
+
+let RES = [], shown = 0, loading = false, recvAt = Date.now();
+function runSearch() {
+  if (!takeToken()) return;
+  A = cloneF(F); recvAt = Date.now();
+  renderResults();
+}
+function renderResults() {
+  const f = KEYF[S.key];
+  RES = L.filter(l => match(l, A)).sort((a, b) => (f(a) - f(b)) * S.dir || a.unit - b.unit || a.id - b.id);
+  shown = 0; $('#list').innerHTML = ''; $('#list').scrollTop = 0;
+  renderCols(); renderApplied();
+  $('#resCount').innerHTML = `검색 결과 <b>${fmt(RES.length)}</b>건`;
+  if (!RES.length) { $('#list').innerHTML = '<div class="empty">조건에 맞는 매물이 없습니다.<br><span class="dim">분류·등급·옵션을 넓혀 보세요</span></div>'; return; }
+  more();
+}
+function renderApplied() {
+  const out = [];
+  const nodeLabel = id => { for (const [i, l, k] of TREE) { if (i === id) return l; if (k) for (const [ci, cl] of k) if (ci === id) return `${l} › ${cl}`; } };
+  out.push(nodeLabel(A.node));
+  if (A.q) out.push(`"${esc(A.q)}"`);
+  if (A.rar.size < 6) out.push([...A.rar].sort().map(r => RAR[r]).join('·'));
+  const top = A.node.split(':')[0];
+  if (top === 'equip') {
+    if (A.eind >= 0) out.push(IND[A.eind]);
+    if (A.speedMin) out.push(`작업속도 ${A.speedMin}%↑`);
+    if (A.egMin) out.push(`인챈트 ${RAR[A.egMin]}↑`);
+    A.opts.forEach(o => out.push(`${o.ind < 0 ? '아무 옵션' : IND[o.ind]} 합 ${o.min || 0}%↑`));
+  }
+  if (top === 'char') {
+    if (A.lvMin || A.lvMax) out.push(`Lv.${A.lvMin || 1}~${A.lvMax || 100}`);
+    if (A.starMin) out.push(`★${A.starMin}↑`);
+    if (A.aptInd) out.push(`${IND[A.aptInd]} 적성 ${A.aptMin || 1}↑`);
+  }
+  if (A.pMin || A.pMax) out.push(`단가 ${A.pMin ? fmt(+A.pMin) : 0} ~ ${A.pMax ? fmt(+A.pMax) : '∞'}`);
+  $('#applied').innerHTML = out.map(s => `<span>${s}</span>`).join('');
+}
+function rowHtml(l) {
+  const mine = l.seller === ME;
+  const action = mine ? '<button class="btn sm" disabled>내 매물</button>' : `<button class="btn sm primary" data-buy="${l.id}">구매</button>`;
+  return `<div class="row ${mine ? 'mine' : ''}" data-id="${l.id}">
+    <div class="it">${iconHtml(l)}<div class="nm"><div class="name" style="color:${RTXT[l.rar]}">${esc(l.name)}${mine ? '<span class="tag mine">내 매물</span>' : ''}</div><div class="sub">${subText(l)}</div></div></div>
+    <div class="r">${fmt(l.qty)}</div>
+    <div class="r price">${g(l.unit)}</div>
+    <div class="r ${l.qty > 1 ? 'price' : 'dim'}">${l.qty > 1 ? g(l.total) : '—'}</div>
+    <div class="r">${timeText(l.hours)}</div>
+    <div class="${mine ? '' : 'muted'}" style="${mine ? 'color:var(--highlight)' : ''}">${esc(l.seller)}</div>
+    <div class="r">${action}</div></div>`;
+}
+function more() {
+  const end = Math.min(RES.length, shown + 20);
+  const foot = $('#list').querySelector('.list-foot'); if (foot) foot.remove();
+  $('#list').insertAdjacentHTML('beforeend', RES.slice(shown, end).map(rowHtml).join(''));
+  shown = end;
+  $('#list').insertAdjacentHTML('beforeend', `<div class="list-foot">${fmt(shown)} / ${fmt(RES.length)}건 — ${shown < RES.length ? '아래로 내리면 20개씩 더 받는다' : '끝'}</div>`);
+}
+$('#list').addEventListener('scroll', () => {
+  const el = $('#list');
+  if (loading || shown >= RES.length || el.scrollTop + el.clientHeight < el.scrollHeight - 60) return;
+  loading = true;
+  const foot = el.querySelector('.list-foot'); if (foot) foot.outerHTML = '<div class="loading">다음 20개 받는 중…</div>';
+  setTimeout(() => { el.querySelector('.loading')?.remove(); more(); loading = false; }, 380);
+});
+const byId = id => L.find(l => l.id === id);
+$('#list').addEventListener('mousemove', e => { const r = e.target.closest('.row'); if (!r || e.target.closest('button')) return hideTip(); showTip(e, tipHtml(byId(+r.dataset.id))); });
+$('#list').addEventListener('mouseleave', hideTip);
+$('#list').addEventListener('click', e => { const b = e.target.closest('[data-buy]'); if (b) { hideTip(); openBuy(byId(+b.dataset.buy)); } });
+$('#refreshBtn').onclick = () => { if (takeToken()) { recvAt = Date.now(); renderResults(); toast('다시 받았습니다'); } };
+setInterval(() => { const m = Math.floor((Date.now() - recvAt) / 60000); $('#recv').textContent = m < 1 ? '방금 받음' : `${m}분 전에 받음`; }, 1000);
+
+// 구매 확인
+function openModal(html) { $('#modal').innerHTML = html; $('#modalBg').style.display = 'flex'; }
+function closeModal() { $('#modalBg').style.display = 'none'; }
+$('#modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') closeModal(); });
+function openBuy(l) {
+  const after = gold - l.total, ok = after >= 0;
+  openModal(`<h3>구매 확인</h3>
+    <div class="m-item">${iconHtml(l, 'big')}<div class="nm"><div class="name" style="color:${RTXT[l.rar]};font-size:18px">${esc(l.name)}</div><div class="sub" style="white-space:normal">${subText(l)}</div></div></div>
+    <div class="kv"><span>수량</span><span>${fmt(l.qty)}</span><span>단가</span><span class="price">${g(l.unit)}</span><span>총액</span><span class="price">${g(l.total)}</span>
+      <span>보유 골드</span><span>${g(gold)}</span><span>구매 후</span><span style="color:${ok ? 'var(--textMain)' : 'var(--negative)'}">${ok ? g(after) : '골드가 모자랍니다'}</span></div>
+    <div class="m-note">매물은 통째로 산다 · 산 물건은 <b>우편</b>으로 받는다</div>
+    <div class="m-btns"><button class="btn ghost" id="mNo">취소</button><button class="btn primary" id="mYes" ${ok ? '' : 'disabled'}>구매</button></div>`);
+  $('#mNo').onclick = closeModal;
+  $('#mYes').onclick = () => {
+    gold -= l.total; setGold();
+    L.splice(L.indexOf(l), 1);
+    addHistory('bought', l, l.qty, -l.total);
+    closeModal(); renderResults(); renderTree();
+    toast(`<b style="color:${RTXT[l.rar]}">${esc(l.name)}</b> 구매 완료 — 우편함에서 받아 주세요`);
+  };
+}
+
+// ───────── 시세 탭 ─────────
+let mkQ = '', mkSel = null;
+function listingsOf(key) { return L.filter(l => l.key === key); }
+function renderMkList() {
+  let keys;
+  if (mkQ) keys = Object.keys(CAT).filter(k => CAT[k].name.includes(mkQ)).slice(0, 60);
+  else { const cnt = {}; L.forEach(l => cnt[l.key] = (cnt[l.key] || 0) + 1); keys = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || CAT[b].rar - CAT[a].rar).slice(0, 40); }
+  $('#mkListTitle').innerHTML = mkQ ? `"${esc(mkQ)}" 검색 <small>${keys.length}종</small>` : '매물 많은 아이템 <small>이름을 치면 좁혀진다</small>';
+  $('#mkList').innerHTML = keys.map(k => { const c = CAT[k], n = listingsOf(k).length;
+    return `<div class="mk ${mkSel === k ? 'on' : ''}" data-k="${k}">${iconHtml(c)}<div class="nm"><div class="name" style="color:${RTXT[c.rar]}">${esc(c.name)}</div><div class="sub">${RAR[c.rar]} · ${c.kind === 'item' ? (c.cat === 'res' ? IND[c.ind] : c.cat === 'box' ? '상자' : '기타') : c.kind === 'equip' ? KIND[c.ekind] : '캐릭터'}</div></div><div class="cnt">매물 ${n}</div></div>`; }).join('')
+    || '<div class="dim" style="padding:10px">맞는 아이템이 없습니다</div>';
+  $('#mkList').querySelectorAll('.mk').forEach(m => m.onclick = () => { mkSel = m.dataset.k; renderMkList(); renderMkMain(); });
+}
+function priceHistory(c) {
+  let s = c.tid * 7 + 3; const r = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
+  const base = instant(c.base) * (c.kind === 'item' ? 1.25 : 1.8);
+  const days = []; let v = base;
+  for (let i = 13; i >= 0; i--) { v = Math.max(instant(c.base), v * (0.9 + r() * 0.22)); const d = new Date(2026, 9, 11 - i); days.push({ d: `${d.getMonth() + 1}/${d.getDate()}`, avg: v, lo: v * (0.8 + r() * .1), hi: v * (1.15 + r() * .3), n: Math.round(2 + r() * 30) }); }
+  return days;
+}
+function chartSvg(days) {
+  const W = 900, H = 240, P = { l: 70, r: 16, t: 14, b: 30 };
+  const max = Math.max(...days.map(d => d.hi)) * 1.05, min = Math.min(...days.map(d => d.lo)) * .95;
+  const x = i => P.l + i * (W - P.l - P.r) / (days.length - 1), y = v => P.t + (1 - (v - min) / (max - min)) * (H - P.t - P.b);
+  const band = days.map((d, i) => `${x(i)},${y(d.hi)}`).join(' ') + ' ' + days.map((d, i) => `${x(days.length - 1 - i)},${y(days[days.length - 1 - i].lo)}`).join(' ');
+  const line = days.map((d, i) => `${x(i)},${y(d.avg)}`).join(' ');
+  let grid = '';
+  for (let k = 0; k <= 3; k++) { const v = min + (max - min) * k / 3; grid += `<line x1="${P.l}" x2="${W - P.r}" y1="${y(v)}" y2="${y(v)}" stroke="#3E5A78" stroke-opacity=".5"/><text x="${P.l - 8}" y="${y(v) + 4}" fill="#9FB3C8" font-size="12" text-anchor="end">${fmt(v)}</text>`; }
+  const xl = days.map((d, i) => i % 2 === 0 || i === days.length - 1 ? `<text x="${x(i)}" y="${H - 8}" fill="#9FB3C8" font-size="12" text-anchor="middle">${d.d}</text>` : '').join('');
+  const dots = days.map((d, i) => `<circle cx="${x(i)}" cy="${y(d.avg)}" r="${i === days.length - 1 ? 5 : 3}" fill="${i === days.length - 1 ? '#FFD447' : '#4FC8F0'}"/>`).join('');
+  return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${grid}<polygon points="${band}" fill="#4FC8F0" fill-opacity=".12"/><polyline points="${line}" fill="none" stroke="#4FC8F0" stroke-width="2.5"/>${dots}${xl}</svg>`;
+}
+function renderMkMain() {
+  if (!mkSel) { $('#mkMain').innerHTML = '<div class="empty">왼쪽에서 시세 볼 아이템을 고르세요.<br><span class="dim">검색창에 이름을 치면 목록이 좁혀진다</span></div>'; return; }
+  const c = CAT[mkSel], ls = listingsOf(mkSel).sort((a, b) => a.unit - b.unit), days = priceHistory(c);
+  const low = ls[0]?.unit, qty = ls.reduce((a, l) => a + l.qty, 0), last = days[13].avg * (0.96 + (c.tid % 7) / 100), prev = days[12].avg;
+  const levels = {}; ls.forEach(l => levels[l.unit] = (levels[l.unit] || 0) + l.qty);
+  const lv = Object.entries(levels).sort((a, b) => a[0] - b[0]).slice(0, 10), lvMax = Math.max(1, ...lv.map(v => v[1]));
+  const diff = (last - prev) / prev * 100;
+  $('#mkMain').innerHTML = `
+    <div class="mk-top">${iconHtml(c, 'big')}<div class="nm"><div class="name" style="color:${RTXT[c.rar]};font-size:24px">${esc(c.name)}</div><div class="sub">${RAR[c.rar]} · ${c.kind === 'item' ? (c.cat === 'res' ? '자원 · ' + IND[c.ind] : c.cat === 'box' ? '상자' : '기타') : c.kind === 'equip' ? '장비 · ' + KIND[c.ekind] : '캐릭터'} · 즉시 판매가 ${g(instant(c.base))}</div></div>
+      <div class="spacer"></div><button class="btn" id="mkGo">이 아이템 매물 보기</button><button class="btn primary" id="mkSell">팔러 가기</button></div>
+    <div class="stats">
+      <div class="stat"><div class="k">최저가</div><div class="v">${low ? fmt(low) : '—'}<small>${low ? 'G' : '매물 없음'}</small></div></div>
+      <div class="stat"><div class="k">판매 중</div><div class="v">${fmt(ls.length)}<small>건 · ${fmt(qty)}개</small></div></div>
+      <div class="stat"><div class="k">최근 거래가</div><div class="v">${fmt(last)}<small>G <span style="color:${diff >= 0 ? 'var(--positive)' : 'var(--negative)'}">${diff >= 0 ? '▲' : '▼'} ${Math.abs(diff).toFixed(1)}%</span></small></div></div>
+      <div class="stat"><div class="k">전일 평균</div><div class="v">${fmt(prev)}<small>G · ${days[12].n}건 거래</small></div></div>
+    </div>
+    <div class="two">
+      <div class="card"><h4>최근 14일 평균 거래가 <span class="dim" style="font-weight:500">· 띠 = 그날 최저~최고</span></h4>${chartSvg(days)}</div>
+      <div class="card"><h4>지금 단가별 판매 수량 <span class="dim" style="font-weight:500">· 싼 것부터 10줄</span></h4>
+        ${lv.length ? `<div class="band">${lv.map(([p, n]) => `<span class="price">${g(+p)}</span><div class="bar" style="width:${Math.max(4, n / lvMax * 100)}%"></div><span class="r" style="text-align:right">${fmt(n)}개</span>`).join('')}</div>` : '<div class="dim">지금 올라온 매물이 없다</div>'}
+      </div>
+    </div>`;
+  $('#mkGo').onclick = () => { F = freshF(); F.q = c.name; F.node = c.kind === 'item' ? (c.cat === 'res' ? 'res' : c.cat) : c.kind === 'equip' ? 'equip' : 'char'; $('#pMin').value = ''; $('#pMax').value = ''; openTab('search'); renderTree(); renderRar(); renderExtra(); runSearch(); $('#q').value = c.name; };
+  $('#mkSell').onclick = () => openTab('sell');
+}
+function renderMarket() { renderMkList(); renderMkMain(); }
+
+// ───────── 판매 탭 ─────────
+let invTab = 'item', invQ = '', invSel = null;
+seed = 9001;
+const INV = { item: [], equip: [], char: [] };
+let iid = 1;
+for (let i = 0; i < 16; i++) { const c = CAT['i' + pick(C.items)[0]]; if (!INV.item.some(x => x.tid === c.tid)) INV.item.push({ ...c, iid: iid++, qty: c.cat === 'box' ? ri(1, 40) : ri(20, 12000) }); }
+for (let i = 0; i < 8; i++) { const c = CAT['e' + pick(C.equips)[0]], eg = enchantGrade(); INV.equip.push({ ...c, iid: iid++, qty: 1, eg, opts: rollOpts(eg), block: i < 2 ? '끼고 있는 장비 — 빼야 올릴 수 있다' : null }); }
+for (let i = 0; i < 7; i++) { const c = CAT['c' + pick(C.chars)[0]]; INV.char.push({ ...c, iid: iid++, qty: 1, lv: ri(1, 60), star: rnd() < .7 ? 0 : ri(1, 3), block: i < 2 ? '배치 중인 캐릭터 — 작업슬롯에서 빼야 올릴 수 있다' : i === 2 ? '장비를 낀 캐릭터 — 장비를 먼저 뺀다' : null }); }
+let reg = { qty: 1, unit: '' };
+$('#hoursTxt').textContent = K.hours;
+document.querySelectorAll('#invTabs .subtab').forEach(b => b.onclick = () => { invTab = b.dataset.inv; document.querySelectorAll('#invTabs .subtab').forEach(x => x.classList.toggle('on', x === b)); renderInv(); });
+function renderInv() {
+  const list = INV[invTab].filter(x => !invQ || x.name.includes(invQ));
+  $('#invList').innerHTML = list.map(x => `<div class="iv ${invSel === x ? 'on' : ''} ${x.block ? 'block' : ''}" data-iid="${x.iid}">${iconHtml(x)}<div class="nm"><div class="name" style="color:${RTXT[x.rar]}">${esc(x.name)}</div><div class="sub">${x.block ? `<span style="color:var(--negative)">${x.block.split(' — ')[0]}</span>` : subText(x)}</div></div><div class="right">${x.qty > 1 ? `보유 ${fmt(x.qty)}<br>` : ''}즉시 ${g(instant(x.base))}</div></div>`).join('')
+    || '<div class="dim" style="padding:14px">올릴 것이 없습니다</div>';
+  $('#invList').querySelectorAll('.iv').forEach(el => {
+    const x = INV[invTab].find(v => v.iid === +el.dataset.iid);
+    el.onmousemove = e => x.block && showTip(e, `<div class="t-name" style="color:${RTXT[x.rar]}">${esc(x.name)}</div><div class="t-sub">올릴 수 없다</div>${x.block}`);
+    el.onmouseleave = hideTip;
+    el.onclick = () => { if (x.block) return; invSel = x; const low = listingsOf(keyOf(x)).sort((a, b) => a.unit - b.unit)[0]; reg = { qty: x.qty > 1 ? Math.min(x.qty, 100) : 1, unit: String(low ? Math.max(instant(x.base), low.unit) : instant(x.base) * 2) }; renderInv(); renderReg(); };
+  });
+}
+const keyOf = x => (x.kind === 'item' ? 'i' : x.kind === 'equip' ? 'e' : 'c') + x.tid;
+function renderReg() {
+  const x = invSel;
+  if (!x) { $('#regCard').innerHTML = '<h4>등록</h4><div class="empty" style="padding:40px">왼쪽 인벤토리에서 올릴 것을 고르세요.</div>'; return; }
+  const min = instant(x.base), maxQ = Math.min(x.qty, K.maxCount), u = +reg.unit || 0, q = +reg.qty || 0;
+  const total = u * q, fee = Math.max(1, Math.floor(total * K.listFee / 1000)), net = total - Math.floor(total * K.saleFee / 1000);
+  const ls = listingsOf(keyOf(x)).sort((a, b) => a.unit - b.unit), low = ls[0]?.unit;
+  const active = L.filter(l => l.seller === ME).length;
+  const errU = u < min ? `즉시 판매가(${g(min)})보다 낮게 올릴 수 없다` : u > K.maxUnit ? '단가는 1조까지' : '';
+  const errQ = q < 1 || q > maxQ ? `1 ~ ${fmt(maxQ)}개` : '';
+  const can = !errU && !errQ && active < K.maxActive && gold >= fee;
+  $('#regCard').innerHTML = `<h4>등록</h4>
+    <div class="reg">
+      <div class="fieldset">
+        <div class="m-item">${iconHtml(x, 'big')}<div class="nm"><div class="name" style="color:${RTXT[x.rar]};font-size:18px">${esc(x.name)}</div><div class="sub" style="white-space:normal">${subText(x)}</div></div></div>
+        <div class="line"><label>지금 시세</label><span>${low ? `최저가 <span class="price">${g(low)}</span> · 매물 ${ls.length}건` : '<span class="dim">올라온 매물 없음</span>'}</span>
+          <button class="btn xs ghost" id="toMk" style="margin-left:auto">시세 탭</button></div>
+      </div>
+      <div class="fieldset">
+        <div class="line"><label>수량</label>${x.qty > 1 ? `<button class="btn xs ghost" data-q="-1">−</button><input class="inp num" id="rQty" value="${reg.qty}" style="width:110px"><button class="btn xs ghost" data-q="1">+</button><button class="btn xs ghost" id="rMax">최대</button>` : '<span>1 (개체 하나)</span>'}</div>
+        <div class="help" style="color:${errQ ? 'var(--negative)' : ''}">${x.qty > 1 ? `보유 ${fmt(x.qty)}개 · 한 번에 ${fmt(K.maxCount)}개까지` : ''}</div>
+        <div class="line"><label>단가</label><input class="inp" id="rUnit" value="${reg.unit}" style="width:200px;text-align:right"> G
+          ${low ? `<button class="btn xs ghost" id="rLow">최저가에 맞춤</button>` : ''}</div>
+        <div class="help" style="color:${errU ? 'var(--negative)' : ''}">${errU || `즉시 판매가 ${g(min)} ~ 1조 G`}</div>
+        <div class="kv" style="margin:4px 0 0;font-size:15px">
+          <span>경매 총액</span><span class="price">${g(total)}</span>
+          <span>등록비 (1% · 만료되면 돌려받음)</span><span>${g(fee)}</span>
+          <span>팔리면 받는 금액 (수수료 5%)</span><span class="plus">${g(net)}</span>
+          <span>즉시 판매하면</span><span class="muted">${g(min * q)}</span>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;justify-content:flex-end">
+          <span class="dim" style="font-size:13px">${active >= K.maxActive ? '<span style="color:var(--negative)">판매 중 매물이 가득 찼다</span>' : `판매 중 ${active} / ${K.maxActive}`}</span>
+          <button class="btn primary" id="rGo" ${can ? '' : 'disabled'} style="width:160px">등록</button></div>
+      </div>
+    </div>`;
+  const re = () => renderReg();
+  $('#rUnit').onchange = e => { reg.unit = e.target.value.replace(/\D/g, ''); re(); };
+  if (x.qty > 1) {
+    $('#rQty').onchange = e => { reg.qty = Math.max(1, Math.min(maxQ, +e.target.value.replace(/\D/g, '') || 1)); re(); };
+    $('#regCard').querySelectorAll('[data-q]').forEach(b => b.onclick = () => { reg.qty = Math.max(1, Math.min(maxQ, (+reg.qty || 0) + +b.dataset.q)); re(); });
+    $('#rMax').onclick = () => { reg.qty = maxQ; re(); };
+  }
+  if (low) $('#rLow').onclick = () => { reg.unit = String(Math.max(min, low)); re(); };
+  $('#toMk').onclick = () => { mkSel = keyOf(x); mkQ = ''; openTab('market'); };
+  $('#rGo').onclick = () => {
+    gold -= fee; setGold();
+    const o = { kind: x.kind, key: keyOf(x), cat: x.kind === 'item' ? x.cat : x.kind, ind: x.ind, ekind: x.ekind, rar: x.rar, name: x.name, tid: x.tid, base: x.base, desc: x.desc,
+      speed: x.speed, eg: x.eg, opts: x.opts, apt: x.apt, lv: x.lv, star: x.star, qty: q, unit: u, seller: ME, hours: K.hours, reserved: false };
+    addListing(o);
+    x.qty -= q; if (x.qty <= 0) { INV[invTab].splice(INV[invTab].indexOf(x), 1); invSel = null; }
+    renderInv(); renderReg(); renderMine();
+    toast(`<b style="color:${RTXT[o.rar]}">${esc(o.name)}</b> ${q > 1 ? fmt(q) + '개 ' : ''}등록 — ${K.hours}시간 동안 판매`);
+  };
+}
+function renderMine() {
+  const mine = L.filter(l => l.seller === ME).sort((a, b) => a.hours - b.hours);
+  $('#mineCount').innerHTML = `판매 중 <b>${mine.length}</b> / ${K.maxActive}`;
+  $('#mineList').innerHTML = mine.map(l => `<div class="row" data-id="${l.id}">
+      <div class="it">${iconHtml(l)}<div class="nm"><div class="name" style="color:${RTXT[l.rar]}">${esc(l.name)}</div><div class="sub">${subText(l)}</div></div></div>
+      <div class="r">${fmt(l.qty)}</div><div class="r price">${g(l.unit)}</div><div class="r">${timeText(l.hours)}</div>
+      <div>${l.reserved ? '<span class="tag res" style="margin:0">구매 진행 중</span>' : '<span class="muted">판매 중</span>'}</div>
+      <div class="r"><button class="btn sm ghost" data-cancel="${l.id}" ${l.reserved ? 'disabled title="누군가 사는 중이라 취소할 수 없다"' : ''}>취소</button></div></div>`).join('')
+    || '<div class="empty" style="padding:30px">판매 중인 매물이 없습니다</div>';
+  $('#mineList').querySelectorAll('[data-cancel]').forEach(b => b.onclick = () => {
+    const l = byId(+b.dataset.cancel); L.splice(L.indexOf(l), 1);
+    addHistory('canceled', l, l.qty, 0);
+    renderMine(); renderReg();
+    toast('취소했습니다 — 물건은 우편으로 돌아옵니다');
+  });
+  $('#mineList').onmousemove = e => { const r = e.target.closest('.row'); if (!r || e.target.closest('button')) return hideTip(); showTip(e, tipHtml(byId(+r.dataset.id))); };
+  $('#mineList').onmouseleave = hideTip;
+}
+function renderSell() { renderInv(); renderReg(); renderMine(); }
+
+// ───────── 완료 탭 ─────────
+const history = [];
+const KINDS = { sold: '판매 완료', bought: '구매 완료', expired: '기간 만료', canceled: '취소' };
+let doneKind = 'all', donePeriod = 30, doneQ = '';
+const NOW = new Date(2026, 9, 11, 18, 40);
+function addHistory(kind, o, qty, amount, at = new Date(NOW.getTime() + (Date.now() - T0)), unread = false) {
+  history.unshift({ kind, o, qty, amount, at, unread });
+  updateBadge();
+}
+const T0 = Date.now();
+seed = 4242;
+{
+  const pool = [...C.items.map(i => CAT['i' + i[0]]), ...C.equips.map(e => CAT['e' + e[0]]), ...C.chars.map(c => CAT['c' + c[0]])];
+  for (let i = 0; i < 28; i++) {
+    const c = pick(pool), r = rnd(), kind = r < .42 ? 'sold' : r < .74 ? 'bought' : r < .9 ? 'expired' : 'canceled';
+    const qty = c.kind === 'item' ? ri(1, 300) : 1, unit = Math.round(instant(c.base) * (1.1 + rnd() * 1.5)), total = unit * qty;
+    const amount = kind === 'sold' ? total - Math.floor(total * K.saleFee / 1000) : kind === 'bought' ? -total : kind === 'expired' ? Math.max(1, Math.floor(total * K.listFee / 1000)) : 0;
+    const o = { ...c, eg: c.kind === 'equip' ? enchantGrade() : 0, lv: c.kind === 'char' ? ri(1, 50) : 0, star: 0 };
+    if (o.kind === 'equip') o.opts = rollOpts(o.eg);
+    history.push({ kind, o, qty, amount, unit, at: new Date(NOW.getTime() - Math.pow(rnd(), 1.6) * 30 * 864e5), unread: false });
+  }
+  history.sort((a, b) => b.at - a.at);
+  history.slice(0, 3).forEach(h => h.unread = true);
+}
+function updateBadge() { const n = history.filter(h => h.unread).length; const b = $('#doneBadge'); b.textContent = n; b.style.display = n ? 'flex' : 'none'; }
+function renderDoneFilters() {
+  $('#doneKinds').innerHTML = [['all', '전체'], ...Object.entries(KINDS)].map(([k, l]) => `<button class="chip ${doneKind === k ? 'on' : ''}" data-k="${k}">${l}</button>`).join('');
+  $('#donePeriod').innerHTML = [[1, '오늘'], [7, '7일'], [30, '30일']].map(([d, l]) => `<button class="chip ${donePeriod === d ? 'on' : ''}" data-d="${d}">${l}</button>`).join('');
+  $('#doneKinds').querySelectorAll('.chip').forEach(c => c.onclick = () => { doneKind = c.dataset.k; renderDone(); });
+  $('#donePeriod').querySelectorAll('.chip').forEach(c => c.onclick = () => { donePeriod = +c.dataset.d; renderDone(); });
+}
+const dt = d => `${d.getMonth() + 1}/${d.getDate()} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+function renderDone() {
+  renderDoneFilters();
+  const from = donePeriod === 1 ? new Date(2026, 9, 11) : new Date(NOW.getTime() - donePeriod * 864e5);
+  const list = history.filter(h => (doneKind === 'all' || h.kind === doneKind) && h.at >= from && (!doneQ || h.o.name.includes(doneQ)));
+  $('#doneCount').innerHTML = `기록 <b>${list.length}</b>건`;
+  $('#doneList').innerHTML = list.map(h => {
+    const amt = h.kind === 'sold' ? `<span class="plus">+${g(h.amount)}</span> <span class="dim" style="font-size:12px">수수료 뺌</span>`
+      : h.kind === 'bought' ? `<span class="minus">−${g(-h.amount)}</span>`
+      : h.kind === 'expired' ? `<span class="plus">+${g(h.amount)}</span> <span class="dim" style="font-size:12px">등록비 환급</span>` : '<span class="dim">—</span>';
+    const where = h.kind === 'sold' ? '우편 — 골드' : h.kind === 'bought' ? '우편 — 물건' : '우편 — 물건 반환';
+    return `<div class="row"><div class="muted">${h.unread ? '<span class="new-dot"></span>' : ''}${dt(h.at)}</div><div><span class="kind ${h.kind}">${KINDS[h.kind]}</span></div>
+      <div class="it">${iconHtml({ ...h.o, qty: h.qty })}<div class="nm"><div class="name" style="color:${RTXT[h.o.rar]}">${esc(h.o.name)}</div><div class="sub">${subText(h.o)}</div></div></div>
+      <div class="r">${fmt(h.qty)}</div><div class="r">${amt}</div><div class="muted">${where}</div></div>`;
+  }).join('') || '<div class="empty">기록이 없습니다</div>';
+  const inSum = list.filter(h => h.amount > 0).reduce((a, h) => a + h.amount, 0), outSum = list.filter(h => h.amount < 0).reduce((a, h) => a - h.amount, 0);
+  $('#doneSum').innerHTML = `<span>받은 골드</span><span class="plus">+${g(inSum)}</span><span>쓴 골드</span><span class="minus">−${g(outSum)}</span>`;
+}
+
+// ───────── 시작 ─────────
+function fit() {
+  const w = Math.min(document.documentElement.clientWidth - 32, 1920);
+  scale = w / 1920;
+  stage.style.transform = `scale(${scale})`;
+  const wrap = $('#stageWrap'); wrap.style.width = w + 'px'; wrap.style.height = 1080 * scale + 'px';
+}
+addEventListener('resize', fit);
+fit(); setGold(); updateBadge();
+renderTree(); renderRar(); renderExtra();
+// 주소 뒤 #tab=market · #node=equip 로 바로 열 수 있다 (넘길 때 화면을 가리키는 용도)
+const H = new URLSearchParams(location.hash.slice(1));
+if (H.get('node')) { F.node = H.get('node'); open.add(F.node.split(':')[0]); renderTree(); renderExtra(); }
+openTab('search');
+tokens = K.burst; runSearch();
+if (H.get('tab')) {
+  if (H.get('tab') === 'market') mkSel = Object.keys(CAT).find(k => CAT[k].name === '철광석') || null;
+  if (H.get('tab') === 'sell') { invSel = INV.item[0]; reg = { qty: Math.min(invSel.qty, 100), unit: String(instant(invSel.base) * 2) }; }
+  openTab(H.get('tab'));
+}
+</script>
+</body>
+</html>
