@@ -9,7 +9,7 @@ public sealed class AuctionOptions
     /// <summary>gRPC 리스너. 외부에 열지 않는다 — 내부망 인터페이스에만 바인딩한다.</summary>
     public string ListenAddress { get; set; } = "127.0.0.1";
 
-    public int ListenPort { get; set; } = 30330;
+    public int ListenPort { get; set; } = 10060;
 
     // 메인이 Reserve 뒤 정산 전에 죽으면 매물이 Reserved에 멈춘다. 이 시간이 지나면 Listed로 돌린다.
     // gRPC 기한(수 초)보다 훨씬 길어야 한다 — 짧으면 정상 정산 중인 매물이 풀려 다른 사람이 예약한다.

@@ -18,7 +18,7 @@ namespace MikaDummyClient
                 return default(ValueTask);
             };
 
-            await _client.ConnectAsync("127.0.0.1", 30329);
+            await _client.ConnectAsync("127.0.0.1", 10050);
         }
 
         public void Send<T>(T packet) where T : IPacket

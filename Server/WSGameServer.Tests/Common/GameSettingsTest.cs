@@ -21,9 +21,10 @@ public class GameSettingsTest : IDisposable
     }
 
     [Fact]
-    public void 설정이_없으면_게임_포트는_30329다()
+    public void 설정이_없으면_게임_포트는_개발용_10050이다()
     {
-        Empty().ListenPort.ShouldBe(30329);
+        // 원격(Docker)은 30329 — 같은 PC에서 둘이 함께 떠도 겹치지 않는다.
+        Empty().ListenPort.ShouldBe(10050);
     }
 
     [Fact]
@@ -33,9 +34,9 @@ public class GameSettingsTest : IDisposable
     }
 
     [Fact]
-    public void 설정이_없으면_경매장은_이_PC의_30330이다()
+    public void 설정이_없으면_경매장은_이_PC의_개발_경매장_10060이다()
     {
-        Empty().Auction.Address.ShouldBe("http://127.0.0.1:30330");
+        Empty().Auction.Address.ShouldBe("http://127.0.0.1:10060");
     }
 
     [Fact]
@@ -47,9 +48,9 @@ public class GameSettingsTest : IDisposable
     [Fact]
     public void Game_절의_값이_기본값을_덮는다()
     {
-        var settings = From(new() { ["Game:ListenPort"] = "30331" });
+        var settings = From(new() { ["Game:ListenPort"] = "30329" });
 
-        settings.ListenPort.ShouldBe(30331);
+        settings.ListenPort.ShouldBe(30329);
     }
 
     [Fact]
@@ -72,10 +73,10 @@ public class GameSettingsTest : IDisposable
     [Fact]
     public void 명령줄_인자가_설정_파일을_덮는다()
     {
-        // Docker를 켜 둔 동안 개발 서버를 다른 포트로 띄우는 경우
-        File.WriteAllText(Path.Combine(_dir, "appsettings.json"), """{ "Game": { "ListenPort": 30329 } }""");
+        // 같은 PC에서 개발 서버를 하나 더 띄우는 경우
+        File.WriteAllText(Path.Combine(_dir, "appsettings.json"), """{ "Game": { "ListenPort": 10050 } }""");
 
-        GameSettings.Load(_dir, ["--Game:ListenPort=30331"]).ListenPort.ShouldBe(30331);
+        GameSettings.Load(_dir, ["--Game:ListenPort=10051"]).ListenPort.ShouldBe(10051);
     }
 
     private static GameSettings Empty()

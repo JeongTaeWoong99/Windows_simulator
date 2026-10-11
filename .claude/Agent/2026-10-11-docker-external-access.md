@@ -31,3 +31,9 @@ tags: [server, infra, client, docs]
 - Git Bash에서 `docker compose exec game sqlite3 /data/...`는 경로가 `C:/Program Files/Git/data`로 바뀐다 — `MSYS_NO_PATHCONV=1`.
 - Unity `.meta`는 손으로 만들었다(워크트리라 에디터가 못 본다).
 - 테스트 출력 폴더의 `appsettings.json`은 경매장 것이 이긴다(두 프로젝트가 같은 이름을 복사) — 게임 설정 테스트는 임시 폴더를 쓴다.
+
+## 업데이트 (2026-10-11) — 개발/원격 포트 분리 · 에디터는 무조건 개발 서버
+- 사용자 결정: **개발은 무조건 로컬, 빌드만 원격.** 개발 포트는 예전 그대로 `10050`·`10060`, 원격(Docker)은 `30329`·`30330`(compose 환경 변수).
+- 에디터 서버 고르기 메뉴(`ServerTargetMenu` · `EditorPrefs`)를 없앴다 — `ServerEndpoint.Resolve()`는 에디터면 `127.0.0.1:10050`, 빌드면 `ServerSettings.json`.
+- 포트가 갈라져 Docker를 켜 둔 채 개발하고, 클라 서버 콘솔의 `KillByPort(10050·10060)`가 Docker를 건드리지 않는다 → 이슈 #68은 할 일이 없어 닫았다.
+- 남은 주의: 개발 게임 서버를 Docker 경매장(`30330`)에 붙이지 않는다(T-110).

@@ -29,7 +29,7 @@ public interface IAuctionClient
 /// <summary>경매장 연결 설정 — appsettings.json의 <c>Game:Auction</c> 절(<see cref="GameSettings"/>).</summary>
 public sealed class AuctionClientSettings
 {
-    public string   Address  { get; set; } = "http://127.0.0.1:30330";
+    public string   Address  { get; set; } = "http://127.0.0.1:10060";
     public TimeSpan Deadline { get; set; } = TimeSpan.FromSeconds(3);
 
     // mTLS — 셋 다 있으면 켠다. 주소도 https여야 한다.
