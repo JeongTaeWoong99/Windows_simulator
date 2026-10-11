@@ -20,9 +20,7 @@ public class AuctionRelayTest : IDisposable
 
     public AuctionRelayTest()
     {
-        _db.CreatePlayerTables();
-        _db.CreateMailTables();
-        _db.CreateAuctionTables();
+        _db.CreateSchema();
 
         _relay = new AuctionRelay(_client, new SqliteRunner(_db), _logic, _ => null);
         _client.Register    = _ => Task.FromResult(new Proto.RegisterReply { Result = Proto.RegisterResult.Ok });

@@ -9,7 +9,7 @@ public class StorageSlotRepositoryTest : IDisposable
 
     public StorageSlotRepositoryTest()
     {
-        _db.CreatePlayerTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

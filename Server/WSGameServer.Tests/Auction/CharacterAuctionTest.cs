@@ -23,9 +23,7 @@ public class CharacterAuctionTest : IDisposable
     public CharacterAuctionTest()
     {
         GameTableFixture.EnsureLoaded();
-        _db.CreatePlayerTables();
-        _db.CreateMailTables();
-        _db.CreateAuctionTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

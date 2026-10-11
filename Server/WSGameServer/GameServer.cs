@@ -61,6 +61,9 @@ public class GameServer : IDisposable
             DBExecutor.Instance.Start(8);
             _logicExecutor.Start();
 
+            // 스키마를 서버 판까지 올린 뒤에 연다 — 판이 더 높은 DB(더 새 서버가 쓰던 것)면 여기서 기동이 멈춘다.
+            DbMigrator.MigrateFile(DBManager.ResolveDbPath(SQL_CONNECTION_STRING), DbMigrator.DefaultDirectory);
+
             // 파일명 → Shared/<file> 경로 탐색 → 커넥션 팩토리 구성. 테스트는 팩토리 오버로드로 :memory:를 넣는다.
             _dbManager.Initialize(SQL_CONNECTION_STRING);
             _networkManager.Initialize();

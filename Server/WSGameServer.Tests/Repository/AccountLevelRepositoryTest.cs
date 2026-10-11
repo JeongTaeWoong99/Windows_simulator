@@ -11,7 +11,7 @@ public class AccountLevelRepositoryTest : IDisposable
     public AccountLevelRepositoryTest()
     {
         GameTableFixture.EnsureLoaded();
-        _db.CreatePlayerTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

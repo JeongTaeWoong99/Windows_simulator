@@ -59,9 +59,7 @@ public class AuctionEndToEndTest : IAsyncLifetime
         // 첫 호출 비용(JIT · HTTP/2 연결)을 셋업에서 치른다. 안 그러면 처음 gRPC를 부르는 테스트만 느려 기한을 넘긴다.
         await _client.GetListingStatesAsync(new Proto.ListingStatesRequest());
 
-        _db.CreatePlayerTables();
-        _db.CreateMailTables();
-        _db.CreateAuctionTables();
+        _db.CreateSchema();
 
         _service = new AuctionService(_client, _logic) { FindOnlineUser = uid => _online.GetValueOrDefault(uid) };
         _relay   = new AuctionRelay(_client, new SqliteRunner(_db), _logic, _service.FindOnlineUser);

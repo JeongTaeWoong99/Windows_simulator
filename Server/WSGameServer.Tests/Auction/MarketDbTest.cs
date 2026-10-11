@@ -17,9 +17,7 @@ public class MarketDbTest : IDisposable
 
     public MarketDbTest()
     {
-        _db.CreatePlayerTables();
-        _db.CreateMailTables();
-        _db.CreateAuctionTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

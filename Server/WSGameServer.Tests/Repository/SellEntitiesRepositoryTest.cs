@@ -10,7 +10,7 @@ public class SellEntitiesRepositoryTest : IDisposable
 
     public SellEntitiesRepositoryTest()
     {
-        _db.CreatePlayerTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

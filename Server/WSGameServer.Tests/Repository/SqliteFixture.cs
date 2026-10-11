@@ -4,7 +4,7 @@ namespace WSGameServer;
 
 /// <summary>
 /// Repository SQL을 실제 SQLite(<c>:memory:</c>)에 대고 돌리기 위한 커넥션. 파일 DB는 건드리지 않는다.
-/// 스키마는 운영 DB(<c>Server/Shared/game.sqlite3</c>)와 같아야 한다 — 어긋나면 여기서 통과하고 운영에서 깨진다.
+/// 스키마는 운영 DB와 같은 마이그레이션(<c>Server/Shared/migrations</c>)으로 만든다 — DDL을 손으로 베끼지 않는다.
 /// </summary>
 internal sealed class SqliteFixture : IDisposable
 {
@@ -16,170 +16,10 @@ internal sealed class SqliteFixture : IDisposable
         Connection.Open();
     }
 
-    public void CreateUserTable()
+    /// <summary>저장소의 마이그레이션을 전부 적용해 운영과 같은 테이블을 만든다.</summary>
+    public void CreateSchema()
     {
-        Execute(@"
-            CREATE TABLE t_user (
-                user_id     INTEGER PRIMARY KEY,
-                provider_id TEXT    NOT NULL UNIQUE,
-                nickname    TEXT    NOT NULL,
-                admin_level INTEGER NOT NULL DEFAULT 0,
-                is_deleted  INTEGER NOT NULL DEFAULT 0,
-                is_banned   INTEGER NOT NULL DEFAULT 0,
-                created_at  TEXT    NOT NULL DEFAULT (datetime('now'))
-            ) STRICT;");
-    }
-
-    /// <summary>로그인 조회(<c>LoginRepository</c>)가 읽는 유저 데이터 테이블 전부.</summary>
-    public void CreatePlayerTables()
-    {
-        Execute(@"
-            CREATE TABLE t_character (
-                character_id  INTEGER PRIMARY KEY,
-                user_id       INTEGER NOT NULL,
-                character_tid INTEGER NOT NULL,
-                level         INTEGER NOT NULL DEFAULT 1,
-                exp           INTEGER NOT NULL DEFAULT 0,
-                created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
-                auction_trade_id INTEGER NOT NULL DEFAULT 0,
-                container     INTEGER NOT NULL DEFAULT 0,
-                slot          INTEGER NOT NULL DEFAULT 0,
-                condense_count INTEGER NOT NULL DEFAULT 0
-            ) STRICT;
-            CREATE TABLE t_user_currency (
-                user_id INTEGER PRIMARY KEY,
-                gold    INTEGER NOT NULL DEFAULT 0
-            ) STRICT;
-            CREATE TABLE t_user_inventory (
-                user_id   INTEGER NOT NULL,
-                container INTEGER NOT NULL DEFAULT 0,
-                item_id   INTEGER NOT NULL,
-                count     INTEGER NOT NULL DEFAULT 0,
-                slot      INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY (user_id, container, item_id)
-            ) STRICT;
-            CREATE TABLE t_user_workstation_slot (
-                user_id        INTEGER NOT NULL,
-                slot_index     INTEGER NOT NULL,
-                industry       INTEGER NOT NULL DEFAULT 0,
-                industry_level INTEGER NOT NULL DEFAULT 1,
-                character_id   INTEGER NOT NULL DEFAULT 0,
-                PRIMARY KEY (user_id, slot_index)
-            ) STRICT;
-            CREATE TABLE t_user_account (
-                user_id     INTEGER PRIMARY KEY,
-                level       INTEGER NOT NULL DEFAULT 1,
-                exp         INTEGER NOT NULL DEFAULT 0,
-                trait_point INTEGER NOT NULL DEFAULT 0
-            ) STRICT;
-            CREATE TABLE t_user_unlock (
-                user_id     INTEGER NOT NULL,
-                unlock_tid  INTEGER NOT NULL,
-                unlocked_at TEXT    NOT NULL DEFAULT (datetime('now')),
-                PRIMARY KEY (user_id, unlock_tid)
-            ) STRICT;
-            CREATE TABLE t_user_trait (
-                user_id        INTEGER NOT NULL,
-                user_trait_tid INTEGER NOT NULL,
-                level          INTEGER NOT NULL,
-                PRIMARY KEY (user_id, user_trait_tid)
-            ) STRICT;");
-
-        CreateEquipTables();
-    }
-
-    /// <summary>장비 개체·착용 매핑. 운영 DDL과 같아야 한다. 로그인 조회에도 필요해 <see cref="CreatePlayerTables"/>가 함께 만든다.</summary>
-    public void CreateEquipTables()
-    {
-        Execute(@"
-            CREATE TABLE t_user_equip (
-                equip_id      INTEGER PRIMARY KEY,
-                user_id       INTEGER NOT NULL,
-                equip_tid     INTEGER NOT NULL,
-                slot_position INTEGER NOT NULL DEFAULT 0,
-                enchant_grade INTEGER NOT NULL DEFAULT 0,
-                enchant_1     INTEGER NOT NULL DEFAULT 0,
-                enchant_2     INTEGER NOT NULL DEFAULT 0,
-                enchant_3     INTEGER NOT NULL DEFAULT 0,
-                created_at    TEXT    NOT NULL DEFAULT (datetime('now')),
-                container     INTEGER NOT NULL DEFAULT 0,
-                auction_trade_id INTEGER NOT NULL DEFAULT 0,
-                pending_grade INTEGER NOT NULL DEFAULT 0,
-                pending_1     INTEGER NOT NULL DEFAULT 0,
-                pending_2     INTEGER NOT NULL DEFAULT 0,
-                pending_3     INTEGER NOT NULL DEFAULT 0
-            ) STRICT;
-            CREATE TABLE t_character_equip (
-                character_id INTEGER NOT NULL,
-                slot         INTEGER NOT NULL,
-                equip_id     INTEGER NOT NULL UNIQUE,
-                PRIMARY KEY (character_id, slot)
-            ) STRICT;");
-    }
-
-    /// <summary>우편 3종(개인 우편 · 전체 우편 · 전체 우편 복사 기록). 운영 DDL과 같아야 한다.</summary>
-    public void CreateMailTables()
-    {
-        Execute(@"
-            CREATE TABLE t_user_mail (
-                mail_id        INTEGER PRIMARY KEY,
-                user_id        INTEGER NOT NULL,
-                template_tid   INTEGER NOT NULL,
-                gold           INTEGER NOT NULL DEFAULT 0,
-                items          TEXT    NOT NULL DEFAULT '[]',
-                character_tids TEXT    NOT NULL DEFAULT '[]',
-                equip_tids     TEXT    NOT NULL DEFAULT '[]',
-                received_at    TEXT    NOT NULL DEFAULT (datetime('now')),
-                claimed_at     TEXT,
-                equip_ids      TEXT    NOT NULL DEFAULT '[]',
-                character_ids  TEXT    NOT NULL DEFAULT '[]'
-            ) STRICT;
-            CREATE INDEX idx_user_mail_user ON t_user_mail (user_id);
-            CREATE TABLE t_global_mail (
-                global_mail_id INTEGER PRIMARY KEY,
-                template_tid   INTEGER NOT NULL,
-                sent_at        TEXT    NOT NULL DEFAULT (datetime('now')),
-                ends_at        TEXT    NOT NULL
-            ) STRICT;
-            CREATE TABLE t_user_global_mail (
-                user_id        INTEGER NOT NULL,
-                global_mail_id INTEGER NOT NULL,
-                PRIMARY KEY (user_id, global_mail_id)
-            ) STRICT;");
-    }
-
-    /// <summary>경매 거래 원장·outbox. 운영 DDL과 같아야 한다. 정산·반환이 우편과 장비를 함께 쓰므로 둘도 만든다.</summary>
-    public void CreateAuctionTables()
-    {
-        Execute(@"
-            CREATE TABLE t_auction_trade (
-                trade_id    INTEGER PRIMARY KEY,
-                seller_id   INTEGER NOT NULL,
-                kind        INTEGER NOT NULL,
-                tid         INTEGER NOT NULL,
-                count       INTEGER NOT NULL,
-                equip_id    INTEGER NOT NULL DEFAULT 0,
-                snapshot    TEXT    NOT NULL DEFAULT '{}',
-                unit_price  INTEGER NOT NULL,
-                listing_fee INTEGER NOT NULL,
-                state       INTEGER NOT NULL DEFAULT 1,
-                buyer_id    INTEGER NOT NULL DEFAULT 0,
-                purchase_id INTEGER NOT NULL DEFAULT 0,
-                sale_fee    INTEGER NOT NULL DEFAULT 0,
-                created_at  TEXT    NOT NULL DEFAULT (datetime('now')),
-                closed_at   TEXT,
-                listed_count INTEGER NOT NULL DEFAULT 0,
-                character_id INTEGER NOT NULL DEFAULT 0
-            ) STRICT;
-            CREATE TABLE t_auction_outbox (
-                outbox_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-                trade_id   INTEGER NOT NULL,
-                kind       INTEGER NOT NULL,
-                payload    TEXT    NOT NULL,
-                created_at TEXT    NOT NULL DEFAULT (datetime('now')),
-                sent_at    TEXT,
-                purchase_id INTEGER NOT NULL DEFAULT 0
-            ) STRICT;");
+        DbMigrator.Apply(Connection, DbMigrator.LoadFrom(DbMigrator.DefaultDirectory));
     }
 
     /// <summary>단일 값 조회. 검증용.</summary>

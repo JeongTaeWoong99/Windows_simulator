@@ -38,7 +38,7 @@ public class DBManager : IDBQueue, IDbRunner
 
     // 실행 위치(bin/publish)와 무관하게 소스의 Shared/<dbFileName>을 찾는다.
     // 실행 파일 폴더에서 상위로 거슬러 올라가며 탐색한다.
-    private static string ResolveDbPath(string dbFileName)
+    public static string ResolveDbPath(string dbFileName)
     {
         var dir = new DirectoryInfo(AppContext.BaseDirectory);
         while (dir != null)

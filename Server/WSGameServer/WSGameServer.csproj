@@ -36,6 +36,8 @@
     <ItemGroup>
       <!-- 엑셀에서 패킹된 테이블 바이너리를 실행 폴더(Data/)로 복사한다. GameTable.LoadAll이 여기서 읽는다. -->
       <Content Include="..\Shared\Data\*.bytes" Link="Data\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+      <!-- DB 마이그레이션을 실행 폴더(Migrations/)로 복사한다. 기동 시 DbMigrator가 여기서 읽는다. -->
+      <Content Include="..\Shared\migrations\*.sql" Link="Migrations\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
     </ItemGroup>
 
 </Project>

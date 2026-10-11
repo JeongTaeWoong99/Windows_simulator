@@ -16,7 +16,7 @@ public class MailRepositoryTest : IDisposable
     {
         GameTableFixture.EnsureLoaded();
         MailCatalog.Instance.LoadAll();   // 전체 우편 복사는 DB 스레드에서 전역 카탈로그를 읽는다
-        _db.CreateMailTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

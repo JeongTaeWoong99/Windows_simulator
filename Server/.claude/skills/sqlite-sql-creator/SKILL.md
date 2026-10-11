@@ -3,10 +3,28 @@ name: sqlite-sql-creator
 description: Write SQLite DDL and queries for this project's database (Server/Shared/game.sqlite3). Every table and column must be commented, tables must use STRICT, and indexes are added only when justified with a stated reason. Use when creating or reviewing tables, columns, indexes, or queries for the SQLite database.
 ---
 
+> 최종 업데이트: 2026-10-11 (스키마 변경은 마이그레이션 파일로 — T-146)
+
 # SQLite SQL Creator
 
 Produce SQLite SQL for this project (`Server/Shared/game.sqlite3`) that is
 correct for SQLite specifically and reads cleanly. Follow every rule below.
+
+---
+
+## Where schema changes go — a migration file
+
+Any DDL that changes `game.sqlite3` (new table, `ALTER TABLE`, index, data fix)
+goes into a **new** file `Server/Shared/migrations/<NNNN>-<slug>.sql`, numbered
+one past the highest existing file. The game server applies it on startup
+(`DbMigrator`, `PRAGMA user_version` = file number). Details: `Server/CLAUDE.md`.
+
+- Never edit a migration that is already committed — add the next number.
+- No `BEGIN`/`COMMIT`/`VACUUM` inside the file — each file already runs in one transaction.
+- After adding it, start the server once so the local DB is migrated, then
+  commit the migration file **and** `game.sqlite3` together.
+- Tests build their tables from the same files (`SqliteFixture.CreateSchema()`),
+  so do not copy DDL into tests.
 
 ---
 
@@ -110,6 +128,7 @@ Always report the reasoning, e.g.:
 ## Checklist before returning SQL
 
 - [ ] Table name and columns were given by the user (asked if not).
+- [ ] Schema changes are in a new `Server/Shared/migrations/<NNNN>-<slug>.sql`, not applied by hand.
 - [ ] `STRICT` is on every `CREATE TABLE`.
 - [ ] Every column has an inline comment; every index has a comment.
 - [ ] Index decisions are stated with reasons (added or intentionally skipped).

@@ -13,7 +13,7 @@ public class EquipRepositoryTest : IDisposable
 
     public EquipRepositoryTest()
     {
-        _db.CreateEquipTables();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();
@@ -104,7 +104,7 @@ public class EquipRepositoryTest : IDisposable
     public async Task 인챈트_컬럼은_기본값_0으로_읽힌다()
     {
         using var fx = new SqliteFixture();
-        fx.CreateEquipTables();
+        fx.CreateSchema();
         fx.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid) VALUES (7, 1, 1001)");
 
         var rows = (await fx.Connection.QueryAsync<UserEquipRow>(

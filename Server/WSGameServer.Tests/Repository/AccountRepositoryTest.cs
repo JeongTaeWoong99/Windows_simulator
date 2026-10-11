@@ -12,7 +12,7 @@ public class AccountRepositoryTest : IDisposable
 
     public AccountRepositoryTest()
     {
-        _db.CreateUserTable();
+        _db.CreateSchema();
     }
 
     public void Dispose() => _db.Dispose();

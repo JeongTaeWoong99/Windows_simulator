@@ -95,6 +95,9 @@ obj
 # 경매장 서버 로컬 DB (서버 콘솔이 Server/AuctionServer/에 만든다 · -wal·-shm 포함)
 auction.sqlite3*
 
+# 게임 DB 마이그레이션 전 백업 (기동 시 DbMigrator가 DB 옆에 만든다)
+game.sqlite3.*.bak
+
 # JetBrains Rider 생성 인덱스 (개인 환경, 자동 재생성)
 identifier.sqlite
 

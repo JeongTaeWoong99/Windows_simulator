@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-10-11 (자동 마이그레이션으로 전환 결정 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
+> 최종 업데이트: 2026-10-11 (DB는 기동 시 자동 마이그레이션 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -103,11 +103,14 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   `MikaSessionPacketExtensions.Sent`, `MikaServer.Connected`)만 뚫고 호스트가 채운다.
 - **게임 로직의 "지금"은 `GameClock`(게임 시계)에서만 받는다** — 핸들러·타이머가 `GameClock.Instance.UtcNow`를 만들어 넘긴다.
   게임 로직에 `DateTime.UtcNow`를 직접 쓰면 시간 치트(`AdvanceTime`)가 그 기능을 못 넘긴다. 세션 감시·gRPC 기한·로그는 예외 → [`치트.md`](docs/치트.md) 5장.
-- **DB는 `Server/Shared/game.sqlite3` 하나가 본체다 (2026-10-07 사용자 결정).** 마이그레이션 파일을 따로 두지 않는다 —
-  스키마를 바꾸면 이 파일에 직접 적용한다(서버는 자동 적용하지 않는다). **이 파일이 바뀌어 있으면 무조건 커밋한다** —
-  커밋 안 된 컬럼을 서버 코드가 읽으면 pull한 쪽에서 로그인 쿼리가 깨진다.
-  ⚠️ **2026-10-11 기동 시 자동 마이그레이션으로 바꾸기로 했다 → [T-146](../tasks/T-146-DB마이그레이션자동적용.md).**
-  `game.sqlite3`는 본체로 남고 `migrations/`가 돌아온다. **T-146이 끝나기 전까지는 위 규칙대로 한다.**
+- **DB 스키마는 마이그레이션으로만 바꾼다 — 서버가 기동할 때 자동 적용한다 (2026-10-11, [T-146](../tasks/T-146-DB마이그레이션자동적용.md)).**
+  - `Server/Shared/migrations/<4자리 번호>-<슬러그>.sql` · **번호 = `PRAGMA user_version`**. 다음 번호로 새 파일을 만들고, 이미 커밋된 파일은 고치지 않는다.
+  - 기동 시 `DbMigrator`가 판보다 큰 번호를 번호순으로 적용한다 — 파일 하나 = 트랜잭션 하나, 적용 전 `game.sqlite3.v<판>-<시각>.bak` 백업(git 제외).
+    파일 안에 `BEGIN`/`COMMIT`·`VACUUM`을 쓰지 않는다.
+  - 번호가 겹치거나 비면, DB 판이 서버보다 높으면 **기동이 멈춘다.**
+  - `game.sqlite3`는 git에 남는 본체다 — 서버를 한 번 띄워 적용한 DB를 **마이그레이션 파일과 같이 커밋한다.** 바뀌어 있으면 무조건 커밋한다.
+  - 데이터를 지우는 마이그레이션(`DELETE`·컬럼 삭제)은 원격 DB에 친구 데이터가 생기면 공지하고 돌린다.
+  - 테스트의 `SqliteFixture.CreateSchema()`도 같은 파일로 테이블을 만든다 — DDL을 테스트에 베끼지 않는다.
 - 생성물(`Server/GameData`, `Server/Shared/Data`)은 직접 고치지 않는다.
   엑셀에서 고치고 파이프라인을 돌린다 — [`GameDesign/CLAUDE.md`](../GameDesign/CLAUDE.md) 참조.
 - 코드는 한글 주석을 사용한다.
