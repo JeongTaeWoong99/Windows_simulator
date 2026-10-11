@@ -129,7 +129,8 @@ html, body { margin: 0; background: var(--page); color: var(--pageText);
 .res-head .recv { font-size: 13px; color: var(--textSub); }
 .applied { display: flex; gap: 6px; flex-wrap: wrap; }
 .applied span { font-size: 13px; padding: 3px 10px; border-radius: 12px; background: var(--slot); color: var(--textSub); border: 1px solid var(--border); }
-.cols, .row { display: grid; grid-template-columns: minmax(0, 1fr) 96px 160px 180px 130px 150px 96px; align-items: center; gap: 0 10px; padding: 0 16px; }
+.cols, .row { display: grid; grid-template-columns: minmax(0, 1fr) 96px 160px 180px 130px 150px 176px; align-items: center; gap: 0 10px; padding: 0 16px; }
+.acts { display: flex; gap: 6px; justify-content: flex-end; }
 .cols { height: 38px; font-size: 14px; color: var(--textSub); border-bottom: 1px solid var(--border); background: rgba(38, 57, 79, .5); }
 .cols div { user-select: none; }
 .cols .s { cursor: pointer; }
@@ -185,13 +186,10 @@ html, body { margin: 0; background: var(--page); color: var(--pageText);
 .m-btns { display: flex; gap: 10px; justify-content: flex-end; margin-top: 18px; }
 
 /* 시세 */
-.picks { display: flex; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); overflow-x: auto; flex: none; }
-.pick { display: flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border-radius: 22px; border: 1px solid var(--border); background: var(--slot);
-  cursor: pointer; white-space: nowrap; font-size: 14px; font-weight: 700; flex: none; }
-.pick:hover { border-color: var(--accent); }
-.pick.on { background: rgba(79, 200, 240, .16); border-color: var(--accent); }
-.pick .icon { width: 30px; height: 30px; font-size: 13px; border-radius: 50%; border-width: 1px; }
-.pick small { color: var(--textSub); font-weight: 500; }
+.mk-mini { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 14px; }
+.mk-mini div { background: var(--slot); border-radius: 8px; padding: 8px 12px; border: 1px solid var(--border); }
+.mk-mini span { display: block; font-size: 13px; color: var(--textSub); }
+.mk-mini b { font-size: 17px; color: var(--highlight); }
 .mk-main { flex: 1; min-height: 0; overflow: auto; padding: 18px 20px; }
 .mk-top { display: flex; align-items: center; gap: 16px; }
 .mk-top .spacer { flex: 1; }
@@ -317,8 +315,6 @@ html, body { margin: 0; background: var(--page); color: var(--pageText);
     <!-- 시세 — 왼쪽 패널 없이 화면 전체 -->
     <div class="a-body pane" data-pane="market">
       <section class="main">
-        <div class="res-head"><div class="count">시세</div><div class="recv">검색창에 이름을 치고 Enter — 또는 아래에서 고른다</div></div>
-        <div class="picks" id="mkPicks"></div>
         <div class="mk-main" id="mkMain"></div>
       </section>
     </div>
@@ -376,7 +372,8 @@ html, body { margin: 0; background: var(--page); color: var(--pageText);
     <ul>
       <li>분류를 누르면 바로 조회 · 옵션을 바꾼 뒤엔 <b>[검색]</b>을 눌러야 조회 — 조회 빈도 제한(순간 5회 · 2초마다 1회 회복) 때문. 목업도 똑같이 막는다.</li>
       <li><b>왼쪽 패널은 검색 탭에만 있다.</b> 시세 · 판매 · 완료는 화면 전체를 쓴다.</li>
-      <li>시세 탭: 검색창에 이름 + Enter, 또는 위 줄(매물 많은 아이템)에서 고른다 → 최저가 · 판매 중 · 최근가 · 전일 평균 · 14일 그래프 · 단가별 수량.</li>
+      <li>시세 탭: <b>볼 아이템을 늘어놓지 않는다</b> — 검색창에 이름 + Enter로만 연다 → 최저가 · 판매 중 · 최근가 · 전일 평균 · 14일 그래프 · 단가별 수량.</li>
+      <li><b>검색에서 바로 시세를 본다</b> — 결과 줄마다 [시세] 버튼 · 구매 확인 창에 최저가 · 최근가 · 전일 평균과 "이 매물이 전일 평균보다 몇 % 비싼가/싼가".</li>
       <li>판매 탭: <b>판매 중 목록만</b>(20개 상한 · 구매 진행 중이면 취소 잠금). 올리는 것은 <b>[+ 판매 등록]</b> 창 — 왼쪽 내 인벤토리(종류는 드롭다운) · 오른쪽 수량 · 단가 · 등록비 1% · 수수료 5% · 48시간.</li>
       <li>완료 탭: 판매 완료 · 구매 완료 · 기간 만료 · 취소 기록. 구분 · 기간은 드롭다운. 새 기록은 탭에 배지, 열면 꺼진다.</li>
       <li>거래 열에서 경매장 탭은 빠진다(뽑기 · 창고만 남는다).</li>
@@ -569,7 +566,7 @@ function openTab(t) {
 $('#q').addEventListener('keydown', e => { if (e.key === 'Enter') qGo(); });
 $('#q').addEventListener('input', () => {
   const v = $('#q').value.trim();
-  if (tab === 'market') { mkQ = v; renderPicks(); }
+  if (tab === 'market') mkQ = v;
   if (tab === 'sell') { mineQ = v; renderMine(); }
   if (tab === 'done') { doneQ = v; renderDone(); }
 });
@@ -759,7 +756,8 @@ function renderApplied() {
 }
 function rowHtml(l) {
   const mine = l.seller === ME;
-  const action = mine ? '<button class="btn sm" disabled>내 매물</button>' : `<button class="btn sm primary" data-buy="${l.id}">구매</button>`;
+  const action = `<button class="btn sm ghost" data-mk="${l.key}">시세</button>`
+    + (mine ? '<button class="btn sm" disabled>내 매물</button>' : `<button class="btn sm primary" data-buy="${l.id}">구매</button>`);
   return `<div class="row ${mine ? 'mine' : ''}" data-id="${l.id}">
     <div class="it">${iconHtml(l)}<div class="nm"><div class="name" style="color:${RTXT[l.rar]}">${esc(l.name)}${mine ? '<span class="tag mine">내 매물</span>' : ''}</div><div class="sub">${subText(l)}</div></div></div>
     <div class="r">${fmt(l.qty)}</div>
@@ -767,7 +765,7 @@ function rowHtml(l) {
     <div class="r ${l.qty > 1 ? 'price' : 'dim'}">${l.qty > 1 ? g(l.total) : '—'}</div>
     <div class="r">${timeText(l.hours)}</div>
     <div class="${mine ? '' : 'muted'}" style="${mine ? 'color:var(--highlight)' : ''}">${esc(l.seller)}</div>
-    <div class="r">${action}</div></div>`;
+    <div class="acts">${action}</div></div>`;
 }
 function more() {
   const end = Math.min(RES.length, shown + 20);
@@ -786,7 +784,10 @@ $('#list').addEventListener('scroll', () => {
 const byId = id => L.find(l => l.id === id);
 $('#list').addEventListener('mousemove', e => { const r = e.target.closest('.row'); if (!r || e.target.closest('button')) return hideTip(); showTip(e, tipHtml(byId(+r.dataset.id))); });
 $('#list').addEventListener('mouseleave', hideTip);
-$('#list').addEventListener('click', e => { const b = e.target.closest('[data-buy]'); if (b) { hideTip(); openBuy(byId(+b.dataset.buy)); } });
+$('#list').addEventListener('click', e => {
+  const b = e.target.closest('[data-buy]'); if (b) { hideTip(); openBuy(byId(+b.dataset.buy)); }
+  const m = e.target.closest('[data-mk]'); if (m) { hideTip(); openMarket(m.dataset.mk); }
+});
 $('#refreshBtn').onclick = () => { if (takeToken()) { recvAt = Date.now(); renderResults(); toast('다시 받았습니다'); } };
 setInterval(() => { const m = Math.floor((Date.now() - recvAt) / 60000); $('#recv').textContent = m < 1 ? '방금 받음' : `${m}분 전에 받음`; }, 1000);
 
@@ -796,13 +797,20 @@ function closeModal() { $('#modalBg').style.display = 'none'; }
 $('#modalBg').addEventListener('click', e => { if (e.target.id === 'modalBg') closeModal(); });
 function openBuy(l) {
   const after = gold - l.total, ok = after >= 0;
+  // 사기 전에 시세를 본다 — 이 매물 단가가 전일 평균보다 비싼지 싼지
+  const s = mkStats(l.key), pv = Math.max(1, Math.round(s.prev)), vs = (l.unit - pv) / pv * 100;   // 보이는 값(반올림)끼리 견준다
   openModal(`<h3>구매 확인</h3>
     <div class="m-item">${iconHtml(l, 'big')}<div class="nm"><div class="name" style="color:${RTXT[l.rar]};font-size:18px">${esc(l.name)}</div><div class="sub" style="white-space:normal">${subText(l)}</div></div></div>
+    <div class="mk-mini"><div><span>최저가</span><b>${s.low ? g(s.low) : '—'}</b></div><div><span>최근 거래가</span><b>${g(s.last)}</b></div><div><span>전일 평균</span><b>${g(s.prev)}</b></div></div>
+    <div class="m-note" style="display:flex;align-items:center;gap:8px">${Math.abs(vs) < 1 ? '이 매물 단가는 <b>전일 평균과 같다</b>' : `이 매물 단가는 전일 평균보다
+      <b style="color:${vs > 0 ? 'var(--negative)' : 'var(--positive)'}">${Math.abs(vs).toFixed(1)}% ${vs > 0 ? '비싸다' : '싸다'}</b>`}
+      <button class="btn xs ghost" id="mMk" style="margin-left:auto">시세 자세히</button></div>
     <div class="kv"><span>수량</span><span>${fmt(l.qty)}</span><span>단가</span><span class="price">${g(l.unit)}</span><span>총액</span><span class="price">${g(l.total)}</span>
       <span>보유 골드</span><span>${g(gold)}</span><span>구매 후</span><span style="color:${ok ? 'var(--textMain)' : 'var(--negative)'}">${ok ? g(after) : '골드가 모자랍니다'}</span></div>
     <div class="m-note">매물은 통째로 산다 · 산 물건은 <b>우편</b>으로 받는다</div>
     <div class="m-btns"><button class="btn ghost" id="mNo">취소</button><button class="btn primary" id="mYes" ${ok ? '' : 'disabled'}>구매</button></div>`);
   $('#mNo').onclick = closeModal;
+  $('#mMk').onclick = () => { closeModal(); openMarket(l.key); };
   $('#mYes').onclick = () => {
     gold -= l.total; setGold();
     L.splice(L.indexOf(l), 1);
@@ -815,15 +823,11 @@ function openBuy(l) {
 // ───────── 시세 탭 ─────────
 let mkQ = '', mkSel = null;
 function listingsOf(key) { return L.filter(l => l.key === key); }
-// 위 한 줄 — 이름을 치면 맞는 것, 아니면 매물 많은 것
-function renderPicks() {
-  let keys;
-  if (mkQ) keys = Object.keys(CAT).filter(k => CAT[k].name.includes(mkQ)).slice(0, 30);
-  else { const cnt = {}; L.forEach(l => cnt[l.key] = (cnt[l.key] || 0) + 1); keys = Object.keys(cnt).sort((a, b) => cnt[b] - cnt[a] || CAT[b].rar - CAT[a].rar).slice(0, 16); }
-  $('#mkPicks').innerHTML = (mkQ ? '' : '<span class="dim" style="align-self:center;font-size:13px;flex:none">매물 많은</span>')
-    + keys.map(k => { const c = CAT[k]; return `<div class="pick ${mkSel === k ? 'on' : ''}" data-k="${k}">${iconHtml(c)}<span style="color:${RTXT[c.rar]}">${esc(c.name)}</span><small>${listingsOf(k).length}</small></div>`; }).join('')
-    + (mkQ && !keys.length ? '<span class="dim">맞는 아이템이 없습니다</span>' : '');
-  $('#mkPicks').querySelectorAll('.pick').forEach(m => m.onclick = () => { mkSel = m.dataset.k; renderMarket(); });
+// 시세는 목록을 늘어놓지 않는다 — 검색창에서 이름으로 찾거나, 검색 결과·구매 확인 창에서 연다
+function openMarket(key) { mkSel = key; mkQ = CAT[key].name; openTab('market'); }
+function mkStats(key) {
+  const c = CAT[key], ls = listingsOf(key).sort((a, b) => a.unit - b.unit), days = priceHistory(c);
+  return { c, ls, days, low: ls[0]?.unit, qty: ls.reduce((a, l) => a + l.qty, 0), last: days[13].avg * (0.96 + (c.tid % 7) / 100), prev: days[12].avg };
 }
 function priceHistory(c) {
   let s = c.tid * 7 + 3; const r = () => { s = (s * 16807) % 2147483647; return s / 2147483647; };
@@ -845,9 +849,8 @@ function chartSvg(days) {
   return `<svg viewBox="0 0 ${W} ${H}" width="100%" height="${H}" preserveAspectRatio="none">${grid}<polygon points="${band}" fill="#4FC8F0" fill-opacity=".12"/><polyline points="${line}" fill="none" stroke="#4FC8F0" stroke-width="2.5"/>${dots}${xl}</svg>`;
 }
 function renderMkMain() {
-  if (!mkSel) { $('#mkMain').innerHTML = '<div class="empty">시세 볼 아이템을 고르세요.<br><span class="dim">검색창에 이름을 치고 Enter — 또는 위 줄에서 고른다</span></div>'; return; }
-  const c = CAT[mkSel], ls = listingsOf(mkSel).sort((a, b) => a.unit - b.unit), days = priceHistory(c);
-  const low = ls[0]?.unit, qty = ls.reduce((a, l) => a + l.qty, 0), last = days[13].avg * (0.96 + (c.tid % 7) / 100), prev = days[12].avg;
+  if (!mkSel) { $('#mkMain').innerHTML = '<div class="empty" style="padding-top:220px">시세 볼 아이템을 <b>검색창</b>에서 찾으세요.<br><span class="dim">이름을 치고 Enter · 검색 결과 줄의 [시세] · 구매 확인 창에서도 열린다</span></div>'; return; }
+  const { c, ls, days, low, qty, last, prev } = mkStats(mkSel);
   const levels = {}; ls.forEach(l => levels[l.unit] = (levels[l.unit] || 0) + l.qty);
   const lv = Object.entries(levels).sort((a, b) => a[0] - b[0]).slice(0, 10), lvMax = Math.max(1, ...lv.map(v => v[1]));
   const diff = (last - prev) / prev * 100;
@@ -869,7 +872,7 @@ function renderMkMain() {
   $('#mkGo').onclick = () => { F = freshF(); F.q = c.name; F.node = c.kind === 'item' ? (c.cat === 'res' ? 'res' : c.cat) : c.kind === 'equip' ? 'equip' : 'char'; $('#pMin').value = ''; $('#pMax').value = ''; openTab('search'); renderTree(); renderRar(); renderExtra(); runSearch(); $('#q').value = c.name; };
   $('#mkSell').onclick = () => { openTab('sell'); openReg(c); };
 }
-function renderMarket() { renderPicks(); renderMkMain(); }
+function renderMarket() { renderMkMain(); }
 
 // ───────── 판매 탭 ─────────
 let invTab = 'item', invQ = '', invSel = null, mineQ = '';
@@ -1062,9 +1065,10 @@ const H = new URLSearchParams(location.hash.slice(1));
 if (H.get('node')) { F.node = H.get('node'); open.add(F.node.split(':')[0]); renderTree(); renderExtra(); }
 openTab('search');
 tokens = K.burst; runSearch();
+if (H.get('buy')) openBuy(RES.find(l => l.seller !== ME));   // #buy=1 — 구매 확인 창을 연 채로
 if (H.get('tab')) {
-  if (H.get('tab') === 'market') mkSel = Object.keys(CAT).find(k => CAT[k].name === '철광석') || null;
-  openTab(H.get('tab'));
+  if (H.get('item')) openMarket(Object.keys(CAT).find(k => CAT[k].name === H.get('item')));   // #tab=market&item=철광석
+  else openTab(H.get('tab'));
   if (H.get('reg')) openReg(INV.item[0]);   // #tab=sell&reg=1 — 등록 창을 연 채로
 }
 </script>
