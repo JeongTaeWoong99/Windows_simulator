@@ -103,7 +103,7 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
   `MikaSessionPacketExtensions.Sent`, `MikaServer.Connected`)만 뚫고 호스트가 채운다.
 - **게임 로직의 "지금"은 `GameClock`(게임 시계)에서만 받는다** — 핸들러·타이머가 `GameClock.Instance.UtcNow`를 만들어 넘긴다.
   게임 로직에 `DateTime.UtcNow`를 직접 쓰면 시간 치트(`AdvanceTime`)가 그 기능을 못 넘긴다. 세션 감시·gRPC 기한·로그는 예외 → [`치트.md`](docs/치트.md) 5장.
-- **DB 스키마는 마이그레이션으로만 바꾼다 — 서버가 기동할 때 자동 적용한다 (2026-10-11, [T-146](../tasks/T-146-DB마이그레이션자동적용.md)).**
+- **DB 스키마는 마이그레이션으로만 바꾼다 — 서버가 기동할 때 자동 적용한다 (2026-10-11, [T-146](../tasks/archive/T-146-DB마이그레이션자동적용.md)).**
   - `Server/Shared/migrations/<4자리 번호>-<슬러그>.sql` · **번호 = `PRAGMA user_version`**. 다음 번호로 새 파일을 만들고, 이미 커밋된 파일은 고치지 않는다.
   - 기동 시 `DbMigrator`가 판보다 큰 번호를 번호순으로 적용한다 — 파일 하나 = 트랜잭션 하나, 적용 전 `game.sqlite3.v<판>-<시각>.bak` 백업(git 제외).
     파일 안에 `BEGIN`/`COMMIT`·`VACUUM`을 쓰지 않는다.
