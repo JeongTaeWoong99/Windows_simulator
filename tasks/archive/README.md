@@ -14,6 +14,7 @@
 
 | ID | 제목 | 담당 | 완료 | 관련 커밋 |
 |----|------|------|------|-----------|
+| [T-102](T-102-판정최소주기.md) | 판정 최소 주기 — 전역 2.1초(`MinCycleMs`) · 서버 속도 상한 `JudgeCostUnits ÷ MinCycleMs` · 넘친 속도는 버린다 · [이슈 #63](https://github.com/JeongTaeWoong99/Windows_simulator/issues/63) | 진우 | 2026-10-12 | `a6f7ae8` · `017d7ad` · 이 커밋 — 사용자 실측 확인 |
 | [T-146](T-146-DB마이그레이션자동적용.md) | 서버 기동 시 DB 마이그레이션 자동 적용 — `Shared/migrations/<번호>` = `user_version` · 백업 · 트랜잭션 · 테스트 스키마도 같은 파일(`SqliteFixture.CreateSchema()`) · 10-07 "마이그레이션 없음"을 뒤집음 | 진우 | 2026-10-11 | `4563a42` · `f7ac376` · 이 커밋 — 사용자 확인(원격 DB) |
 | [T-109](T-109-서버도커외부접속.md) | 게임·경매장 서버를 Docker로 띄워 친구들이 내 서버에 접속 — `appsettings.json` 설정 · 개발 10050·10060 / 원격 30329·30330 · 원격 치트 차단 · 클라 빌드 주소 `ServerSettings.json` · 공유기 포트포워딩 | 진우 | 2026-10-11 | `f7ac376` · `ce40c9a` · 이 커밋 — 사용자 실측(친구 PC 접속) |
 | [T-095](T-095-클라인챈트UI.md) | 클라 — 장비 능력치 칸 UI — 큐브 창 · 상급 고르기 · 자동 큐브 · 공개 연출 · 레이아웃 경계 · 아래 창 넘침 | 태웅 | 2026-10-11 | 이 커밋 — 사용자 실측 |
@@ -27,7 +28,7 @@
 | [T-014](T-014-농사파종.md) | 농사 파종 구조 재해석 — **파종 폐지 · 산업 레벨로 흡수**([#44](https://github.com/JeongTaeWoong99/Windows_simulator/issues/44)) · T-016 "흡수 vs 두 층" 함께 닫힘 | 진우 | 2026-10-09 | `7e1f41f` — 기획 문서만. 데이터·코드 변경 없음 |
 | [T-033](T-033-클라상자연출.md) | 클라 — 상자 개봉 UI · 연출 — 받은 순서대로 하나씩 공개(가챠와 한 벌 · 영웅↑ 차오름·폭발) · 쌓임 알림은 하지 않기로 함 | 태웅 | 2026-10-09 | `7fc65ea` · 이 커밋 — 사용자 실측 |
 | [T-100](T-100-폰트교체.md) | 클라 — 폰트를 Pretendard로 교체 · EN/KR Static 에셋 분리 (자모 □ · 흐림 · diff 노이즈) | 태웅 | 2026-10-09 | 이 커밋 — 사용자 실측 |
-| [T-122](T-122-판정최소주기클라연동.md) | 클라 — 판정 최소 주기(`MinCycleMs` 2.1초)로 진행도·주기 자르기 · 효율 계산·슬롯 줄 하한 표시 | 태웅 | 2026-10-09 | `a6f7ae8` — 연출 실측은 서버 반영([#63](https://github.com/JeongTaeWoong99/Windows_simulator/issues/63)) 뒤 [T-102](../T-102-판정최소주기.md)에서 |
+| [T-122](T-122-판정최소주기클라연동.md) | 클라 — 판정 최소 주기(`MinCycleMs` 2.1초)로 진행도·주기 자르기 · 효율 계산·슬롯 줄 하한 표시 | 태웅 | 2026-10-09 | `a6f7ae8` — 연출 실측은 서버 반영([#63](https://github.com/JeongTaeWoong99/Windows_simulator/issues/63)) 뒤 [T-102](T-102-판정최소주기.md)에서 |
 | [T-055](T-055-속도보정내역전달.md) | 작업속도 보정 내역을 슬롯 정보로 · 치트 `SetGatherSpeed` · 클라 효율 계산을 받은 값으로 ([#60](https://github.com/JeongTaeWoong99/Windows_simulator/issues/60)) | 진우 | 2026-10-09 | `62a705b` — 클라 사본(장비·레벨 가산·전역 배수 역산) 삭제 |
 | [T-130](T-130-캐릭터응축.md) | 캐릭터 응축 — 같은 캐릭터를 녹여 ★ 올리기(최대 4성) · 서버 + 클라 화면(판매 목록 자리 · 격자에서 재료 고르기) ([#59](https://github.com/JeongTaeWoong99/Windows_simulator/issues/59)) | 진우 | 2026-10-09 | `adc44b0` · `4664f31` · 이 커밋 — 사용자 실측 |
 | [T-106](T-106-시간조작치트.md) | 클라 — 시간 조작 치트(`AdvanceTime`·`ResetTime` 칸) · 표시를 서버 게임 시계(`ServerClock`) 기준으로 ([#48](https://github.com/JeongTaeWoong99/Windows_simulator/issues/48)) | 태웅 | 2026-10-09 | 이 커밋 — 사용자 실측. 서버 T-128 확인도 이것으로 갈음 |
