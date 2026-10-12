@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-13 치트 창 — 왼쪽 분류 목록 · 검색 · 칸 하나 = 클래스 하나](2026-10-13-cheat-window-categories.md) — `#client` `#editor` 칸을 CheatSection 클래스로 나누고 분류·검색으로 보인다
 - [2026-10-12 슬롯 연출 — 공격은 모션 전체 · 남는 시간은 달리기로 (T-102 후속)](2026-10-12-stage-full-attack-run-fill.md) — `#client` `#ui` 공격과 달리기만 — 최소 주기 2.1초에서 공격 1번
 - [2026-10-12 판정 최소 주기 — 서버 속도 상한 (T-102)](2026-10-12-min-cycle-speed-cap.md) — `#server` `#test` `CurrentWorkSpeed`를 `JudgeCostUnits ÷ MinCycleMs`로 자른다
 - [2026-10-11 경매장 화면 전체 목업 (T-147 1차)](2026-10-11-auction-fullscreen-mockup.md) — `#design` `#ui` 검색·시세·판매·완료 4탭 HTML 목업
