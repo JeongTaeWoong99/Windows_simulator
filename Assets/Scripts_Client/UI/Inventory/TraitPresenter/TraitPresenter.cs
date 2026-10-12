@@ -16,7 +16,7 @@ using UnityEngine.UI;
 // (근거와 예외 규칙은 'Inventory 규칙.md'의 "탭이 달라도 격자는 하나다").
 //
 // ■ 산업 × 종류 표다 — 탭이 없다 (2026-10-02 · T-116 A안)
-// 줄 = 공통 · 농사 · 낚시 · 채굴 · 벌목 · 사냥 (왼쪽에 산업 이름), 열 = 개척 · 속도 · 산출량 (위에 고정 머리 줄).
+// 줄 = 공통 · 농사 · 발굴 · 채굴 · 벌목 · 사냥 (왼쪽에 산업 이름), 열 = 개척 · 속도 · 산출량 (위에 고정 머리 줄).
 // 포인트로 전부 올릴 수 없어(130점 중 99점) **"어느 산업을 키울까"가 곧 선택**이다 —
 // 그 비교는 한 산업의 세 특성이 같은 줄에 놓여야 된다. 예전엔 노드 사슬을 구역 탭 둘로 갈랐다.
 //
@@ -34,7 +34,7 @@ public class TraitPresenter : MonoBehaviour
     {
         EIndustryType.None,
         EIndustryType.Farming,
-        EIndustryType.Fishing,
+        EIndustryType.Excavation,
         EIndustryType.Mining,
         EIndustryType.Logging,
         EIndustryType.Hunting,

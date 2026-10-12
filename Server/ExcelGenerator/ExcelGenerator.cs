@@ -17,7 +17,7 @@ public static class ExcelGenerator
             .Where(path => !Path.GetFileName(path).StartsWith("~$"))
             .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase));
 
-        // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 낚시 …)이고
+        // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 발굴 …)이고
         // 베이스 이름이 같은 시트들은 한 테이블로 병합된다. '.' 없는 시트는 그대로 시트=테이블.
         var sheets = new List<(string File, string Sheet, TableData Data)>();
         foreach (var excel in excels)

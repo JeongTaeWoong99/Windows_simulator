@@ -15,7 +15,7 @@ public class UserTraitCatalogTest
         catalog.LoadAll();
 
         catalog.Count.ShouldBe(16);
-        foreach (var industry in new[] { IndustryType.Farming, IndustryType.Fishing, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
+        foreach (var industry in new[] { IndustryType.Farming, IndustryType.Excavation, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
         {
             catalog.TryGetIndustryUnlock(industry, out var pioneer).ShouldBeTrue();
             pioneer.BaseLevel.ShouldBe(1);
@@ -27,7 +27,7 @@ public class UserTraitCatalogTest
     public void 레벨_행이_빠지면_로드에서_멈춘다()
     {
         var catalog = new UserTraitCatalog();
-        var trait = new UserTraitTableRow { UserTraitTID = 202, Name = "낚시 속도", TraitPoint = 1, EffectType = UserTraitEffect.SpeedAdd, Industry = IndustryType.Fishing, EffectValue = 50, BaseLevel = 0, MaxLevel = 2 };
+        var trait = new UserTraitTableRow { UserTraitTID = 202, Name = "발굴 속도", TraitPoint = 1, EffectType = UserTraitEffect.SpeedAdd, Industry = IndustryType.Excavation, EffectValue = 50, BaseLevel = 0, MaxLevel = 2 };
 
         Should.Throw<InvalidOperationException>(() => catalog.Load(
             new[] { trait },

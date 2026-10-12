@@ -134,7 +134,7 @@ public class InventoryGridPresenter : MonoBehaviour
     public static readonly EIndustryType[] StripIndustries =
     {
         EIndustryType.Farming,
-        EIndustryType.Fishing,
+        EIndustryType.Excavation,
         EIndustryType.Mining,
         EIndustryType.Logging,
         EIndustryType.Hunting,

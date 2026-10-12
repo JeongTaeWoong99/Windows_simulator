@@ -1,7 +1,7 @@
 namespace WSGameServer;
 
 /// <summary>
-/// 드롭 후보 한 줄. 테이블 Row가 산업마다 다른 타입이라(<c>FishingBasicTableRow</c>,
+/// 드롭 후보 한 줄. 테이블 Row가 산업마다 다른 타입이라(<c>ExcavationBasicTableRow</c>,
 /// <c>MiningBasicTableRow</c> …) <b>공통 형태로 정규화</b>해서 담는다.
 /// 드롭의 결과는 결국 "어떤 <c>ItemTID</c>가 나왔는가"뿐이므로 이 두 값이면 충분하다.
 /// </summary>

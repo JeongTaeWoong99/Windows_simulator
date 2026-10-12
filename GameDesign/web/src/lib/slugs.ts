@@ -23,7 +23,7 @@ function slugifyFile(base: string): string {
 
 /**
  * 기획 문서 파일의 저장소 상대 경로를 라우트 슬러그로 바꾼다.
- * `gathering/fishing/README.md` → `gathering/fishing`
+ * `gathering/excavation/README.md` → `gathering/excavation`
  * `gathering/산업레벨.md`        → `gathering/industry-level`
  */
 export function designSlug(relPath: string): string {

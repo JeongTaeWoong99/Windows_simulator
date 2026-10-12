@@ -19,16 +19,16 @@ public class UserCheatGatherSpeedTest
     private static C_CheatRequest Req(long permille)
         => new() { Command = ECheatCommand.SetGatherSpeed, Arg1 = permille };
 
-    /// <summary>낚시 슬롯 하나가 <see cref="Base"/>부터 돌고 있는 유저. 기본 속도로 30초에 1판정이다.</summary>
-    private static (User User, TestUserBuilder B) Fishing(TestUserBuilder? b = null, long uid = 1)
+    /// <summary>발굴 슬롯 하나가 <see cref="Base"/>부터 돌고 있는 유저. 기본 속도로 30초에 1판정이다.</summary>
+    private static (User User, TestUserBuilder B) Excavation(TestUserBuilder? b = null, long uid = 1)
     {
-        b ??= new TestUserBuilder().WithFishingDrops();
+        b ??= new TestUserBuilder().WithExcavationDrops();
         var user = b.Build(uid);
         user.LoadCharacters(new[]
         {
             new CharacterRow { character_id = CharacterId, character_tid = User.DefaultCharacterTid, level = 1, exp = 0 },
         });
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
         user.RefreshWorkStationSpeed(Base, notify: false);
         b.Online.Add(user);
         b.Channel.Sent.Clear();
@@ -44,7 +44,7 @@ public class UserCheatGatherSpeedTest
     [Fact]
     public void 배수를_올리면_슬롯_속도가_그만큼_빨라지고_슬롯_푸시에_배수가_실린다()
     {
-        var (user, b) = Fishing();
+        var (user, b) = Excavation();
         var before = Slot(user).CurrentWorkSpeed;
 
         user.ExecuteCheat(Req(2000), Base);
@@ -60,7 +60,7 @@ public class UserCheatGatherSpeedTest
     public void 올리기_전_구간은_예전_속도로_정산된다()
     {
         // 5분은 ×1(10판정), 그 뒤 5분은 ×2(20판정). 배수가 소급되면 40판정이 된다.
-        var (user, b) = Fishing();
+        var (user, b) = Excavation();
 
         user.ExecuteCheat(Req(2000), Base.AddMinutes(5));
         user.SettleWorkStation(Base.AddMinutes(10));
@@ -72,10 +72,10 @@ public class UserCheatGatherSpeedTest
     public void 접속_중인_다른_유저도_빨라진다()
     {
         // 배수는 서버 전체 하나다.
-        var (user, b) = Fishing();
-        var otherBuilder = new TestUserBuilder().WithFishingDrops();
+        var (user, b) = Excavation();
+        var otherBuilder = new TestUserBuilder().WithExcavationDrops();
         otherBuilder.GatherSpeed = b.GatherSpeed;
-        var (other, _) = Fishing(otherBuilder, uid: 2);
+        var (other, _) = Excavation(otherBuilder, uid: 2);
         b.Online.Add(other);
         var before = Slot(other).CurrentWorkSpeed;
 
@@ -88,7 +88,7 @@ public class UserCheatGatherSpeedTest
     [Fact]
     public void 배수를_1000으로_되돌리면_원래_속도다()
     {
-        var (user, _) = Fishing();
+        var (user, _) = Excavation();
         var before = Slot(user).CurrentWorkSpeed;
 
         user.ExecuteCheat(Req(5000), Base);
@@ -100,7 +100,7 @@ public class UserCheatGatherSpeedTest
     [Fact]
     public void 배수는_DB에_저장하지_않는다()
     {
-        var (user, b) = Fishing();
+        var (user, b) = Excavation();
         b.DB.Posted.Clear();
 
         user.ExecuteCheat(Req(2000), Base);
@@ -115,7 +115,7 @@ public class UserCheatGatherSpeedTest
     [InlineData(User.CheatMaxGatherSpeedPermille + 1)]
     public void 배수가_범위_밖이면_InvalidCheatArgs고_속도는_그대로다(long permille)
     {
-        var (user, b) = Fishing();
+        var (user, b) = Excavation();
         var before = Slot(user).CurrentWorkSpeed;
 
         user.ExecuteCheat(Req(permille), Base);

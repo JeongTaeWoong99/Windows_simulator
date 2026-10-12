@@ -28,7 +28,7 @@ public class WorkStationOrphanTest
     }
 
     private static WorkStationSlotRow Slot(int index, long characterId)
-        => new() { slot_index = index, industry = (int)IndustryType.Fishing, industry_level = 1, character_id = characterId };
+        => new() { slot_index = index, industry = (int)IndustryType.Excavation, industry_level = 1, character_id = characterId };
 
     [Fact]
     public void 미보유_캐릭터를_가리키는_칸은_빈_칸으로_적재한다()
@@ -45,7 +45,7 @@ public class WorkStationOrphanTest
         var (user, _) = LogIn(Slot(0, NotOwned));
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
-        slot.Industry.ShouldBe(IndustryType.Fishing);
+        slot.Industry.ShouldBe(IndustryType.Excavation);
     }
 
     [Fact]

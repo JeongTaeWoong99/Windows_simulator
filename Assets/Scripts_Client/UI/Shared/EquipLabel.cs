@@ -15,7 +15,7 @@ using UnityEngine;
 // 인챈트 등급은 **장비 하나에 하나**라 모든 칸이 같은 등급의 옵션이다(이슈 #46 — 칸 색이 모두 같다).
 public static class EquipLabel
 {
-    // 이 장비의 효과 한 줄 — '낚시 +30%' · 전 산업이면 '전산업 +10%'. 모르는 TID면 빈 문자열.
+    // 이 장비의 효과 한 줄 — '발굴 +30%' · 전 산업이면 '전산업 +10%'. 모르는 TID면 빈 문자열.
     //
     // ⚠️ 산업 'None'에 'IndustryLabel'을 쓰지 않는다 — 거기서는 '미지정'이 나오는데,
     //   장비의 None은 지정을 안 한 것이 아니라 **어느 산업에나 붙는다**는 뜻이다.
@@ -46,7 +46,7 @@ public static class EquipLabel
     public static int GetStatSlotCount(GlobalRarity rarity)
         => System.Math.Min(GameDataLoader.GetEnchantSlotCount(rarity), MaxStatSlotCount);
 
-    // 능력치 옵션 한 줄의 문구 — '낚시 +4%' · '전산업 +2%' · '경험치 +3%'. 모르는 종류면 빈 문자열.
+    // 능력치 옵션 한 줄의 문구 — '발굴 +4%' · '전산업 +2%' · '경험치 +3%'. 모르는 종류면 빈 문자열.
     //
     // ※ 'Value'는 천분율이다(40 = 4%). 산업 'None'을 '전산업'으로 읽는 이유는 'GetEffectText'와 같다.
     public static string GetOptionText(EnchantOptionTableRow option)

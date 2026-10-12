@@ -37,7 +37,7 @@ public class EquipPickRowView : MonoBehaviour
     [SerializeField, Tooltip("장비 이름")]
     private TMP_Text nameText = null!;
 
-    [SerializeField, Tooltip("효과 한 줄 — '낚시 +30%' · '전산업 +5%'")]
+    [SerializeField, Tooltip("효과 한 줄 — '발굴 +30%' · '전산업 +5%'")]
     private TMP_Text effectText = null!;
 
     [SerializeField, Tooltip("줄 전체를 덮는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]

@@ -47,20 +47,20 @@ public class UserDbFailureTest
         builder.Channel.DisconnectCount.ShouldBe(1);
     }
 
-    // 낚시 슬롯에 캐릭터를 둔 유저. 종료 정산이 돌면 판정분이 지급(AddItemRepository)된다.
-    private static (User User, TestUserBuilder B) FishingUser()
+    // 발굴 슬롯에 캐릭터를 둔 유저. 종료 정산이 돌면 판정분이 지급(AddItemRepository)된다.
+    private static (User User, TestUserBuilder B) ExcavationUser()
     {
-        var b    = new TestUserBuilder().WithFishingDrops();
+        var b    = new TestUserBuilder().WithExcavationDrops();
         var user = b.Build();
         user.LoadCharacters(new[] { new CharacterRow { character_id = 1, character_tid = User.DefaultCharacterTid, level = 1, exp = 0 } });
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, GameData.IndustryType.Fishing, 1, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, GameData.IndustryType.Excavation, 1, TestUserBuilder.Base) });
         return (user, b);
     }
 
     [Fact]
     public void 정상_종료면_마지막_정산을_저장한다()
     {
-        var (user, b) = FishingUser();
+        var (user, b) = ExcavationUser();
 
         user.Disconnect(TestUserBuilder.Base.AddMinutes(10));
 
@@ -71,7 +71,7 @@ public class UserDbFailureTest
     public void DB_실패로_끊기면_종료_정산을_저장하지_않는다()
     {
         // 메모리가 DB와 갈라진 상태다(예: 경매 등록이 롤백돼 메모리만 차감됨). 그 메모리를 확정값으로 쓰면 롤백된 차감이 되살아난다.
-        var (user, b) = FishingUser();
+        var (user, b) = ExcavationUser();
         user.OnDbFailed("RegisterAuctionRepository", Boom);
         b.DB.Posted.Clear();
 

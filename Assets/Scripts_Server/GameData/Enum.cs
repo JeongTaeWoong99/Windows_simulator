@@ -6,30 +6,30 @@ namespace GameData
 {
     public enum ItemType : byte
     {
-        None    = 0,
+        None       = 0,
 
-        Farming = 1,  // 농사
-        Fishing = 2,  // 낚시
-        Mining  = 3,  // 채광
-        Logging = 4,  // 벌목
-        Hunting = 5,  // 사냥
-        Misc    = 6,  // 기타
-        Special = 7,  // 특수
+        Farming    = 1,  // 농사
+        Excavation = 2,  // 유적 발굴
+        Mining     = 3,  // 채광
+        Logging    = 4,  // 벌목
+        Hunting    = 5,  // 사냥
+        Misc       = 6,  // 기타
+        Special    = 7,  // 특수
 
-        Max    ,
+        Max       ,
     };
 
     public enum IndustryType : byte
     {
-        None    = 0,
+        None       = 0,
 
-        Farming = 1,  // 농사
-        Fishing = 2,  // 낚시
-        Mining  = 3,  // 채광
-        Logging = 4,  // 벌목
-        Hunting = 5,  // 사냥
+        Farming    = 1,  // 농사
+        Excavation = 2,  // 유적 발굴
+        Mining     = 3,  // 채광
+        Logging    = 4,  // 벌목
+        Hunting    = 5,  // 사냥
 
-        Max    ,
+        Max       ,
     };
 
     public enum GlobalRarity : byte

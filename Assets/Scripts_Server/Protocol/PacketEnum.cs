@@ -161,7 +161,7 @@ namespace MikaProtocol
         None = 0,   // 미지정 — 빈 슬롯·배치 해제
 
         Farming = 1,
-        Fishing = 2,
+        Excavation = 2,
         Mining  = 3,
         Logging = 4,
         Hunting = 5,

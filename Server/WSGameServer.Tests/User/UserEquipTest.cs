@@ -17,9 +17,9 @@ public class UserEquipTest
 
     // 테스트 전용 장비 표 — 엑셀 값에 기대지 않는다.
     private const int SwordTid = 1001;  // 무기 · 전 산업 +10%
-    private const int RodTid   = 1002;  // 무기 · 낚시 +30%
+    private const int RodTid   = 1002;  // 무기 · 발굴 +30%
     private const int RingTid  = 2001;  // 장신구 · 전 산업 +5%
-    private const int GemTid   = 3001;  // 보석 · 농사 +50% (낚시 슬롯엔 0)
+    private const int GemTid   = 3001;  // 보석 · 농사 +50% (발굴 슬롯엔 0)
 
     private const long Sword = 10, Rod = 11, Ring = 12, Gem = 13;
 
@@ -27,11 +27,11 @@ public class UserEquipTest
 
     private static (User User, TestUserBuilder B) UserWithEquips(params CharacterEquipRow[] worn)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
         b.Equips.Load(new[]
         {
             new EquipTableRow { EquipTID = SwordTid, Name = "검", EquipKind = EquipKind.Weapon,    Industry = IndustryType.None,    SpeedAddPermille = 100 },
-            new EquipTableRow { EquipTID = RodTid,   Name = "대", EquipKind = EquipKind.Weapon,    Industry = IndustryType.Fishing, SpeedAddPermille = 300 },
+            new EquipTableRow { EquipTID = RodTid,   Name = "대", EquipKind = EquipKind.Weapon,    Industry = IndustryType.Excavation, SpeedAddPermille = 300 },
             new EquipTableRow { EquipTID = RingTid,  Name = "링", EquipKind = EquipKind.Accessory, Industry = IndustryType.None,    SpeedAddPermille = 50 },
             new EquipTableRow { EquipTID = GemTid,   Name = "석", EquipKind = EquipKind.Gem,       Industry = IndustryType.Farming, SpeedAddPermille = 500 },
         });
@@ -57,15 +57,15 @@ public class UserEquipTest
         return (user, b);
     }
 
-    private static void GiveFishingSlot(User user, long characterId)
+    private static void GiveExcavationSlot(User user, long characterId)
     {
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, characterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, characterId, Base) });
     }
 
     private static int ExpectedSpeed(User user, long characterId, int addPermille)
     {
         user.TryGetCharacter(characterId, out var c).ShouldBeTrue();
-        return WorkSpeed.From(c.GetBaseWorkSpeed(IndustryType.Fishing))
+        return WorkSpeed.From(c.GetBaseWorkSpeed(IndustryType.Excavation))
             .Add(addPermille)
             .Resolve();
     }
@@ -80,7 +80,7 @@ public class UserEquipTest
         user.TryGetEquip(Rod, out var rod).ShouldBeTrue();
         rod.EquippedCharacterId.ShouldBe(CharA);
         rod.EquippedSlot.ShouldBe(EquipSlot.Weapon);
-        user.GetEquipSpeedAdd(CharA, IndustryType.Fishing).ShouldBe(300);
+        user.GetEquipSpeedAdd(CharA, IndustryType.Excavation).ShouldBe(300);
     }
 
     [Fact]
@@ -210,8 +210,8 @@ public class UserEquipTest
 
         user.TryEquip(CharA, Rod, EquipSlot.Weapon, Base);
 
-        user.GetEquipSpeedAdd(CharB, IndustryType.Fishing).ShouldBe(0);
-        user.GetEquipSpeedAdd(CharA, IndustryType.Fishing).ShouldBe(300);
+        user.GetEquipSpeedAdd(CharB, IndustryType.Excavation).ShouldBe(0);
+        user.GetEquipSpeedAdd(CharA, IndustryType.Excavation).ShouldBe(300);
         var save = b.DB.PostedOf<SaveCharacterEquipRepository>().ShouldHaveSingleItem();
         save.Changes.ShouldBe(new[]
         {
@@ -241,18 +241,18 @@ public class UserEquipTest
         var (user, _) = UserWithEquips(
             new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon,     equip_id = Sword },  // 전 산업 +100
             new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Accessory1, equip_id = Ring },   // 전 산업 +50
-            new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Gem,        equip_id = Gem });   // 농사 +500 — 낚시엔 0
+            new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Gem,        equip_id = Gem });   // 농사 +500 — 발굴엔 0
 
-        user.GetEquipSpeedAdd(CharA, IndustryType.Fishing).ShouldBe(150);
+        user.GetEquipSpeedAdd(CharA, IndustryType.Excavation).ShouldBe(150);
         user.GetEquipSpeedAdd(CharA, IndustryType.Farming).ShouldBe(650);
-        user.GetEquipSpeedAdd(0,     IndustryType.Fishing).ShouldBe(0);
+        user.GetEquipSpeedAdd(0,     IndustryType.Excavation).ShouldBe(0);
     }
 
     [Fact]
     public void 배치_중인_캐릭터에_장착하면_슬롯_속도가_바뀌어_밀려_온다()
     {
         var (user, b) = UserWithEquips();
-        GiveFishingSlot(user, CharA);
+        GiveExcavationSlot(user, CharA);
         user.RefreshWorkStationSpeed(Base, notify: false);
         b.Channel.Sent.Clear();
 
@@ -267,7 +267,7 @@ public class UserEquipTest
     {
         // 기본 속도 1.0배 = 30초에 1판정. 10분 뒤 장착이면 정확히 20판정이 이전 속도로 정산돼야 한다.
         var (user, b) = UserWithEquips();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, Base, WorkStationSlot.DefaultWorkSpeed) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharA, Base, WorkStationSlot.DefaultWorkSpeed) });
 
         user.TryEquip(CharA, Rod, EquipSlot.Weapon, Base.AddMinutes(10));
 

@@ -83,7 +83,7 @@ public sealed class Character
         return industry switch
         {
             IndustryType.Farming => Row.Farming,
-            IndustryType.Fishing => Row.Fishing,
+            IndustryType.Excavation => Row.Excavation,
             IndustryType.Mining  => Row.Mining,
             IndustryType.Logging => Row.Logging,
             IndustryType.Hunting => Row.Hunting,
@@ -98,7 +98,7 @@ public sealed class Character
     // 미지정(None)만 빠진다 — 아이템 분류는 IndustryType에 애초에 없다.
     public static readonly IndustryType[] Industries =
     {
-        IndustryType.Farming, IndustryType.Fishing,
+        IndustryType.Farming, IndustryType.Excavation,
         IndustryType.Mining,  IndustryType.Logging, IndustryType.Hunting,
     };
 

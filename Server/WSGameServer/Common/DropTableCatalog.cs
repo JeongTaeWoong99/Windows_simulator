@@ -18,8 +18,8 @@ public sealed class DropTableCatalog : Singleton<DropTableCatalog>
     {
         _byIndustryLevel.Clear();
 
-        Register(IndustryType.Fishing, nameof(GameTable.FishingBasicTable),
-                 GameTable.FishingBasicTable.All, r => r.IndustryLevel, r => r.ItemTID, r => r.Weight);
+        Register(IndustryType.Excavation, nameof(GameTable.ExcavationBasicTable),
+                 GameTable.ExcavationBasicTable.All, r => r.IndustryLevel, r => r.ItemTID, r => r.Weight);
 
         Register(IndustryType.Farming, nameof(GameTable.FarmingBasicTable),
                  GameTable.FarmingBasicTable.All, r => r.IndustryLevel, r => r.ItemTID, r => r.Weight);

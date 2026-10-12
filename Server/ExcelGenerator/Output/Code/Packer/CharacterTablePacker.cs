@@ -18,7 +18,7 @@ namespace GameData
             Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
             GlobalRarity = PackerUtil.ParseEnum<GlobalRarity>(cells[2], Table, "GlobalRarity"),
             Farming      = PackerUtil.ParseInt(cells[3], Table, "Farming"),
-            Fishing      = PackerUtil.ParseInt(cells[4], Table, "Fishing"),
+            Excavation   = PackerUtil.ParseInt(cells[4], Table, "Excavation"),
             Mining       = PackerUtil.ParseInt(cells[5], Table, "Mining"),
             Logging      = PackerUtil.ParseInt(cells[6], Table, "Logging"),
             Hunting      = PackerUtil.ParseInt(cells[7], Table, "Hunting"),

@@ -21,7 +21,7 @@ public class UserCheatTest
     /// <summary>관리자(admin_level 1) 유저. 캐릭터 1장을 보유한다.</summary>
     private static (User User, TestUserBuilder B) Admin()
     {
-        var b    = new TestUserBuilder().WithFishingDrops();
+        var b    = new TestUserBuilder().WithExcavationDrops();
         var user = b.Build();
         user.AdminLevel = 1;
         user.LoadCharacters(new[]
@@ -162,7 +162,7 @@ public class UserCheatTest
     {
         // 배치 직후라 쌓인 진행도는 0이다. 스케줄러가 먼저 정산해 늘 0개였던 것이 이 경우다(T-060).
         var (user, b) = Admin();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
 
         user.ExecuteCheat(Req(ECheatCommand.Settle, 3), Base);
 
@@ -174,7 +174,7 @@ public class UserCheatTest
     {
         // 기본 속도 30초에 1판정. 5분 = 10판정 + 앞당긴 2판정 = 12
         var (user, b) = Admin();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
 
         user.ExecuteCheat(Req(ECheatCommand.Settle, 2), Base.AddMinutes(5));
 
@@ -185,7 +185,7 @@ public class UserCheatTest
     public void Settle의_횟수를_비우면_1회_앞당긴다()
     {
         var (user, b) = Admin();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
 
         user.ExecuteCheat(Req(ECheatCommand.Settle), Base);
 
@@ -197,7 +197,7 @@ public class UserCheatTest
     {
         // 캐릭터가 없는 슬롯에 진행도가 들어가면 배치하는 순간 한꺼번에 터진다.
         var (user, b) = Admin();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, characterId: 0, Base) });
 
         user.ExecuteCheat(Req(ECheatCommand.Settle, 3), Base);
 
@@ -208,7 +208,7 @@ public class UserCheatTest
     public void Settle의_횟수가_상한을_넘으면_InvalidCheatArgs다()
     {
         var (user, b) = Admin();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
 
         user.ExecuteCheat(Req(ECheatCommand.Settle, User.CheatMaxSettleJudges + 1), Base);
 

@@ -18,16 +18,16 @@ public class UserCharacterGrowthTest
 
     public UserCharacterGrowthTest() => GameTableFixture.EnsureLoaded();
 
-    /// <summary>낚시 Lv1 판정당 경험치 3, 곡선 Lv2 10 · Lv3 12 · Lv4 14(만렙) · 속도 가산 레벨당 +10‰인 유저를 만든다.</summary>
+    /// <summary>발굴 Lv1 판정당 경험치 3, 곡선 Lv2 10 · Lv3 12 · Lv4 14(만렙) · 속도 가산 레벨당 +10‰인 유저를 만든다.</summary>
     private static (User User, TestUserBuilder B) UserWith(int level = 1, int exp = 0)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
 
         b.Levels.Load(new[]
         {
             new IndustryLevelTableRow
             {
-                IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1,
+                IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1,
                 Name = "개울", RequiredScore = 30_000, ExpPerJudge = 3,
             },
         });
@@ -48,7 +48,7 @@ public class UserCharacterGrowthTest
         // 기본 속도(1.0배) = 30초에 1판정. 슬롯 비용은 기본 상수라 Levels의 RequiredScore와 무관하다.
         user.WorkStation.Load(new[]
         {
-            new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base),
+            new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base),
         });
 
         return (user, b);
@@ -142,7 +142,7 @@ public class UserCharacterGrowthTest
             new CharacterRow { character_id = otherId,     character_tid = AllRounderTid, level = 1, exp = 0 },
         });
 
-        user.AssignWorkStation(0, IndustryType.Fishing, otherId, Base.AddSeconds(150));
+        user.AssignWorkStation(0, IndustryType.Excavation, otherId, Base.AddSeconds(150));
 
         user.TryGetCharacter(CharacterId, out var previous).ShouldBeTrue();
         user.TryGetCharacter(otherId, out var next).ShouldBeTrue();
@@ -158,7 +158,7 @@ public class UserCharacterGrowthTest
     {
         var (user, b) = UserWith();
 
-        // 판정 5회 → Lv2. 램볼 낚시 적성 1 = 1000‰ → Lv2 가산 +10‰ → 1000 × 1.01 = 1010
+        // 판정 5회 → Lv2. 램볼 발굴 적성 1 = 1000‰ → Lv2 가산 +10‰ → 1000 × 1.01 = 1010
         user.SettleWorkStation(Base.AddSeconds(150));
 
         b.Channel.SentOf<S_WorkStationSlotSyncResponse>().Last().Slot.CurrentWorkSpeed.ShouldBe(1010);
@@ -183,7 +183,7 @@ public class UserCharacterGrowthTest
         var (user, b) = UserWith(level: 3);
         user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.None, 0, Base) });
 
-        user.AssignWorkStation(0, IndustryType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Slot!.CurrentWorkSpeed.ShouldBe(1020);
     }

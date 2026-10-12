@@ -15,16 +15,16 @@ public class UserWorkSpeedBreakdownTest
 
     public UserWorkSpeedBreakdownTest() => GameTableFixture.EnsureLoaded();
 
-    private static (User User, TestUserBuilder B) Fishing(int level)
+    private static (User User, TestUserBuilder B) Excavation(int level)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
         b.Growth.LoadAll();   // 레벨 가산 — 빌더가 기본으로 싣지 않는다
         var user = b.Build(1);
         user.LoadCharacters(new[]
         {
             new CharacterRow { character_id = CharacterId, character_tid = User.DefaultCharacterTid, level = level, exp = 0 },
         });
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
         user.RefreshWorkStationSpeed(Base, notify: false);
         return (user, b);
     }
@@ -38,16 +38,16 @@ public class UserWorkSpeedBreakdownTest
     [Fact]
     public void 내역의_각_항목은_서버가_속도에_더한_값과_같다()
     {
-        var (user, _) = Fishing(level: 10);
+        var (user, _) = Excavation(level: 10);
         user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SetTraitLevel, Arg1 = 0, Arg2 = 99 }, Base);
         user.TryGetCharacter(CharacterId, out var character).ShouldBeTrue();
 
         var info = Info(user);
 
-        info.BaseWorkSpeed.ShouldBe(character.GetBaseWorkSpeed(IndustryType.Fishing));
+        info.BaseWorkSpeed.ShouldBe(character.GetBaseWorkSpeed(IndustryType.Excavation));
         info.LevelAddPermille.ShouldBe(user.GetLevelSpeedAdd(CharacterId));
-        info.TraitAddPermille.ShouldBe(user.GetTraitSpeedAdd(IndustryType.Fishing));
-        info.EquipAddPermille.ShouldBe(user.GetEquipSpeedAdd(CharacterId, IndustryType.Fishing));
+        info.TraitAddPermille.ShouldBe(user.GetTraitSpeedAdd(IndustryType.Excavation));
+        info.EquipAddPermille.ShouldBe(user.GetEquipSpeedAdd(CharacterId, IndustryType.Excavation));
         info.StarAddPermille.ShouldBe(user.GetStarSpeedAdd(CharacterId));
         info.GatherSpeedPermille.ShouldBe(GatherSpeed.DefaultPermille);
 
@@ -59,7 +59,7 @@ public class UserWorkSpeedBreakdownTest
     [Fact]
     public void 내역으로_다시_계산하면_현재_속도와_같다()
     {
-        var (user, _) = Fishing(level: 10);
+        var (user, _) = Excavation(level: 10);
         user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SetTraitLevel, Arg1 = 0, Arg2 = 99 }, Base);
         user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SetGatherSpeed, Arg1 = 1500 }, Base);
 
@@ -74,7 +74,7 @@ public class UserWorkSpeedBreakdownTest
     public void 속도가_같아도_내역이_바뀌면_바뀐_것으로_본다()
     {
         // 합이 우연히 같아도 클라 화면의 줄은 달라진다 — 속도만 비교하면 옛 내역이 남는다.
-        var (user, _) = Fishing(level: 1);
+        var (user, _) = Excavation(level: 1);
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
 
         slot.ApplyWorkSpeed(new WorkSpeedBreakdown(1000, 100, 0, 0, 0, GatherSpeed.DefaultPermille)).ShouldBeTrue();

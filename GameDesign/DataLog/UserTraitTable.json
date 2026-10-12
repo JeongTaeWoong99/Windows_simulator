@@ -12,14 +12,14 @@
   },
   {
     "UserTraitTID": 102,
-    "Name": "낚시 개척",
+    "Name": "발굴 개척",
     "TraitPoint": 1,
     "EffectType": "IndustryUnlock",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
-    "Description": "낚시 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "발굴 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
     "UserTraitTID": 103,
@@ -67,14 +67,14 @@
   },
   {
     "UserTraitTID": 202,
-    "Name": "낚시 속도",
+    "Name": "발굴 속도",
     "TraitPoint": 1,
     "EffectType": "SpeedAdd",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
-    "Description": "낚시 작업속도 레벨당 +5% (테스트값)"
+    "Description": "발굴 작업속도 레벨당 +5% (테스트값)"
   },
   {
     "UserTraitTID": 203,
@@ -133,14 +133,14 @@
   },
   {
     "UserTraitTID": 302,
-    "Name": "낚시 산출량",
+    "Name": "발굴 산출량",
     "TraitPoint": 1,
     "EffectType": "YieldAdd",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
-    "Description": "낚시 산출량 레벨당 +5% (테스트값)"
+    "Description": "발굴 산출량 레벨당 +5% (테스트값)"
   },
   {
     "UserTraitTID": 303,

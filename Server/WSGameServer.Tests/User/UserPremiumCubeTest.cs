@@ -13,7 +13,7 @@ public class UserPremiumCubeTest
     private static readonly EnchantOptionTableRow UncommonFish = Fish(1203, GlobalRarity.Uncommon, 20);
 
     private static EnchantOptionTableRow Fish(int tid, GlobalRarity grade, int value)
-        => new() { EnchantOptionTID = tid, Grade = grade, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = value, Weight = 120 };
+        => new() { EnchantOptionTID = tid, Grade = grade, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Excavation, Value = value, Weight = 120 };
 
     private static readonly EnchantOptionTableRow[] Pools =
     {
@@ -47,11 +47,11 @@ public class UserPremiumCubeTest
 
     private static EquipTableRow RodRow() => new()
     {
-        EquipTID = RodTid, Name = "은사 낚싯대", GlobalRarity = GlobalRarity.Rare, EquipKind = EquipKind.Weapon,
-        Industry = IndustryType.Fishing, SpeedAddPermille = 300, BasePrice = 100,
+        EquipTID = RodTid, Name = "은사 발굴삽", GlobalRarity = GlobalRarity.Rare, EquipKind = EquipKind.Weapon,
+        Industry = IndustryType.Excavation, SpeedAddPermille = 300, BasePrice = 100,
     };
 
-    // 희귀 낚싯대에 일반 낚시 2칸을 심어 둔다 — 이것이 "이전 값"이다.
+    // 희귀 발굴삽에 일반 발굴 2칸을 심어 둔다 — 이것이 "이전 값"이다.
     private static (User User, TestUserBuilder B) UserWithRod(UserEquipRow? row = null)
     {
         var b = new TestUserBuilder();

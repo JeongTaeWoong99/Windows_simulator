@@ -17,7 +17,7 @@ public class WorkStationSlotTest
     private static WorkStationSlot ActiveSlot(
         DateTime startedAt,
         int? currentWorkSpeed = null)
-        => new(slotIndex: 0, IndustryType.Fishing, characterId: 100, startedAt, currentWorkSpeed);
+        => new(slotIndex: 0, IndustryType.Excavation, characterId: 100, startedAt, currentWorkSpeed);
 
     [Fact]
     public void 주기가_안_찼으면_판정하지_않는다()
@@ -171,7 +171,7 @@ public class WorkStationSlotTest
     public void 판정_비용이_큰_레벨은_같은_시간에_판정이_적다()
     {
         // Lv2 = 90초어치 작업량. 30초 상수가 어딘가 남아 있으면 여기서 3회가 나온다.
-        var slot = new WorkStationSlot(0, IndustryType.Fishing, characterId: 100, Base,
+        var slot = new WorkStationSlot(0, IndustryType.Excavation, characterId: 100, Base,
                                        WorkStationSlot.DefaultWorkSpeed,
                                        industryLevel: 2, judgeCostUnits: 90_000_000L);
 
@@ -185,7 +185,7 @@ public class WorkStationSlotTest
     {
         var slot = ActiveSlot(Base);   // 기본 = Lv1 · 30초
 
-        slot.Assign(IndustryType.Fishing, characterId: 100, Base,
+        slot.Assign(IndustryType.Excavation, characterId: 100, Base,
                     industryLevel: 2, judgeCostUnits: 90_000_000L);
 
         slot.IndustryLevel.ShouldBe(2);
@@ -199,7 +199,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 캐릭터가_없으면_시간이_쌓이지_않는다()
     {
-        var empty = new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base);
+        var empty = new WorkStationSlot(0, IndustryType.Excavation, characterId: 0, Base);
 
         empty.IsActive.ShouldBeFalse();
 
@@ -269,7 +269,7 @@ public class WorkStationSlotTest
     [Fact]
     public void 비활성_슬롯은_남은_시간이_없다()
     {
-        var empty = new WorkStationSlot(0, IndustryType.Fishing, characterId: 0, Base);
+        var empty = new WorkStationSlot(0, IndustryType.Excavation, characterId: 0, Base);
 
         empty.TimeUntilNextJudge(Base.AddSeconds(10)).ShouldBe(TimeSpan.Zero);
     }
@@ -321,12 +321,12 @@ public class WorkStationSlotTest
 
     // ─────────────────────────── WorkStation ───────────────────────────
 
-    /// <summary>낚시 기본 레벨 테이블 하나만 등록된 독립 카탈로그.</summary>
+    /// <summary>발굴 기본 레벨 테이블 하나만 등록된 독립 카탈로그.</summary>
     private static DropTableCatalog BuildCatalog()
     {
         var catalog = new DropTableCatalog();
-        catalog.Register(IndustryType.Fishing, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
-            "FishingBasicTable",
+        catalog.Register(IndustryType.Excavation, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
+            "ExcavationBasicTable",
             new[] { (ItemTID: 1001, Weight: 100) },
             r => r.ItemTID, r => r.Weight));
         return catalog;
@@ -338,8 +338,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),                  // 5분 경과 → 10회
-            new WorkStationSlot(1, IndustryType.Fishing, 200, Base.AddSeconds(240)),  // 1분 경과 → 2회
+            new WorkStationSlot(0, IndustryType.Excavation, 100, Base),                  // 5분 경과 → 10회
+            new WorkStationSlot(1, IndustryType.Excavation, 200, Base.AddSeconds(240)),  // 1분 경과 → 2회
         });
 
         var harvests = station.Settle(Base.AddSeconds(300), BuildCatalog());
@@ -358,8 +358,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, IndustryType.Fishing, 100, Base, WorkStationSlot.DefaultWorkSpeed),
-            new WorkStationSlot(1, IndustryType.Fishing, 200, Base, WorkStationSlot.DefaultWorkSpeed * 3),
+            new WorkStationSlot(0, IndustryType.Excavation, 100, Base, WorkStationSlot.DefaultWorkSpeed),
+            new WorkStationSlot(1, IndustryType.Excavation, 200, Base, WorkStationSlot.DefaultWorkSpeed * 3),
         });
 
         var harvests = station.Settle(Base.AddSeconds(300), BuildCatalog());
@@ -374,8 +374,8 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),
-            new WorkStationSlot(1, IndustryType.Fishing, 0,   Base),   // 캐릭터 없음
+            new WorkStationSlot(0, IndustryType.Excavation, 100, Base),
+            new WorkStationSlot(1, IndustryType.Excavation, 0,   Base),   // 캐릭터 없음
         });
 
         var harvests = station.Settle(Base.AddSeconds(60), BuildCatalog());
@@ -390,7 +390,7 @@ public class WorkStationSlotTest
         var station = new WorkStation();
         station.Load(new[]
         {
-            new WorkStationSlot(0, IndustryType.Fishing, 100, Base),
+            new WorkStationSlot(0, IndustryType.Excavation, 100, Base),
             new WorkStationSlot(1, IndustryType.Mining,  200, Base),   // 시트 미작성
         });
 

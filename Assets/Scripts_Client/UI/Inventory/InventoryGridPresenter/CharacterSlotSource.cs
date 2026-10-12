@@ -26,12 +26,12 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 보조 문구를 쓰지 않는다 — 그 자리는 적성 스트립이 쓴다 (T-048)
 // 배치 여부는 '배' 마크가 말하고(T-046), 적성은 하단 5칸 스트립이 말한다.
-// 한때 이 자리에서 '농사7·낚시2' 같은 문구를 지었는데, 5종을 다 가진 캐릭터는 19자가 되어
+// 한때 이 자리에서 '농사7·발굴2' 같은 문구를 지었는데, 5종을 다 가진 캐릭터는 19자가 되어
 // **100px 칸에서 글자가 5px까지 줄었다.** 문구를 짓는 쪽을 남겨 두면 다음에 보는 사람이
 // 어느 표시가 진짜인지 알 수 없으므로 함께 걷어냈다.
 //
 // ※ 적성은 격자가 읽어 칸에 넘긴다('InventoryGridPresenter.Redraw').
-//   배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"낚시를 눌렀더니 내 캐릭터가 없다"의 답이
+//   배치 목록이 적성 0인 캐릭터를 걸러 내므로 **"발굴을 눌렀더니 내 캐릭터가 없다"의 답이
 //   인벤토리 칸밖에 없다** — 그래서 표시 자체는 빠질 수 없다.
 public class CharacterSlotSource : InventorySlotSource
 {
@@ -163,7 +163,7 @@ public class CharacterSlotSource : InventorySlotSource
     public static string GetLevelLabel(int level)
         => GameDataLoader.TryGetRequiredExp(level + 1, out _) ? $"LV.{level}" : "LV.MAX";
 
-    // 어디서 일하는지 — '슬롯 2 · 낚시 Lv.3', 배치돼 있지 않으면 '대기' (BuildTooltip에서 호출).
+    // 어디서 일하는지 — '슬롯 2 · 발굴 Lv.3', 배치돼 있지 않으면 '대기' (BuildTooltip에서 호출).
     //
     // 칸의 '배' 마크는 여부만 말한다 — 여러 슬롯을 돌리면 누가 어디 있는지는 여기서만 알 수 있다.
     private string GetWorkText(long characterId)

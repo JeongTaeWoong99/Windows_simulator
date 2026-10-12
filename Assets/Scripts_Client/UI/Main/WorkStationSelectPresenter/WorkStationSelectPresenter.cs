@@ -22,7 +22,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // ('SyncSelectedIndustryToSlot').
 //
 // ⚠️ 지금 고를 수 없는 캐릭터는 목록에서 뺀다 — 적성 0이거나 다른 슬롯에서 일하는 중이면 걸러진다.
-// 예전에는 "숨기지 않고 잠근다"였다. 16마리를 기르면 낚시를 눌러도 16줄이 그대로 남아
+// 예전에는 "숨기지 않고 잠근다"였다. 16마리를 기르면 발굴을 눌러도 16줄이 그대로 남아
 // **누를 수 있는 것을 골라내는 일을 사람이 하게 되기 때문에** 뒤집었다(T-046).
 // 목록이 통째로 비면 안내 문구 하나만 뜨고(빈 목록은 고장과 구분되지 않는다),
 // "내 캐릭터가 어디 갔나"의 답은 인벤토리 캐릭터 탭이 맡는다 — 거기에 적성 스트립(5칸 · 위치=산업)과 '배' 마크가 있다.
@@ -79,7 +79,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // ※ 버튼마다 위 'Icon (임시)' · 아래 텍스트다. 아이콘은 흰 네모 — 산업 아이콘 스프라이트가 나오면
     //   각 버튼의 Icon Image에 넣는다(일감 'T-054'). 코드는 버튼 바탕색만 칠하므로 고칠 곳이 없다.
-    [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·낚시·채굴·벌목·사냥)")]
+    [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·발굴·채굴·벌목·사냥)")]
     private Button[] industryButtons = new Button[0];
 
     // 산업 레벨 버튼 하나 — 버튼과 그 라벨. 이름이 산업마다 달라('밭'·'저수지') 코드가 갈아 쓴다.
@@ -216,10 +216,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("끼울 장비가 하나도 없을 때만 켜지는 안내. 빈 목록은 고장과 구분되지 않는다")]
     private TMP_Text equipEmptyText = null!;
 
-    // ※ **순서가 곧 산업**이라 산업 버튼 줄과 같은 축이다(농사·낚시·채굴·벌목·사냥).
+    // ※ **순서가 곧 산업**이라 산업 버튼 줄과 같은 축이다(농사·발굴·채굴·벌목·사냥).
     //   색 규칙도 같다 — 고른 것만 노랑이다.
     // ※ '모두'는 두지 않는다(2026-09-24 사용자 결정) — 칸을 열면 **그 슬롯의 산업**이 골라진 채로 뜬다.
-    [SerializeField, NonReorderable, Tooltip("장비 산업 필터 5개. 인스펙터에 넣은 순서가 곧 산업이다(농사·낚시·채굴·벌목·사냥)")]
+    [SerializeField, NonReorderable, Tooltip("장비 산업 필터 5개. 인스펙터에 넣은 순서가 곧 산업이다(농사·발굴·채굴·벌목·사냥)")]
     private Button[] equipFilterButtons = new Button[0];
 
     // 효율 계산 줄 수 — 적성 기본값 · 속도 가산 · 현재 작업속도 · 실효 주기 · 산출량.
@@ -542,7 +542,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"산업 버튼이 {industryButtons.Length}개인데 채취 산업은 {_industries.Count}종이다. " +
-                $"인스펙터의 버튼 목록을 산업 순서(농사·낚시·채굴·벌목·사냥)대로 채울 것.", this);
+                $"인스펙터의 버튼 목록을 산업 순서(농사·발굴·채굴·벌목·사냥)대로 채울 것.", this);
         }
 
         for (int i = 0; i < industryButtons.Length; i++)
@@ -904,7 +904,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 고른 레벨이 지금 산업에서 열려 있지 않으면 기본 레벨로 되돌린다 ('Refresh'가 목록 단계에서 호출).
     //
-    // **산업을 바꾸면 잠금이 통째로 뒤집힌다** — 낚시 Lv3을 고른 채 농사로 옮기면 잠긴 레벨을
+    // **산업을 바꾸면 잠금이 통째로 뒤집힌다** — 발굴 Lv3을 고른 채 농사로 옮기면 잠긴 레벨을
     // 든 채로 배치를 눌러 서버가 'IndustryLevelLocked'로 거절한다. 누르기 전에 여기서 맞춘다.
     private void ClampSelectedIndustryLevel()
     {
@@ -1903,7 +1903,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"장비 필터가 {equipFilterButtons.Length}개인데 필터는 {EquipFilterCount}개다. " +
-                $"인스펙터를 순서(농사·낚시·채굴·벌목·사냥)대로 채울 것.", this);
+                $"인스펙터를 순서(농사·발굴·채굴·벌목·사냥)대로 채울 것.", this);
         }
 
         for (int i = 0; i < equipFilterButtons.Length; i++)

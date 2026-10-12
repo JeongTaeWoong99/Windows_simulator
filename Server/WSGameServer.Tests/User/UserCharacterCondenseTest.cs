@@ -124,7 +124,7 @@ public class UserCharacterCondenseTest
     public void 슬롯에_배치된_재료는_녹일_수_없다()
     {
         var (user, b) = NewUser();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, Target + 1, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, Target + 1, TestUserBuilder.Base) });
 
         user.TryCondenseCharacter(Target, Materials(1), TestUserBuilder.Base);
 
@@ -185,13 +185,13 @@ public class UserCharacterCondenseTest
     public void 별이_오르면_배치된_슬롯이_빨라진다()
     {
         var (user, b) = NewUser();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, Target, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, Target, TestUserBuilder.Base) });
         user.RefreshWorkStationSpeed(TestUserBuilder.Base, notify: false);
         user.WorkStation.TryGet(0, out var slot);
 
         user.TryCondenseCharacter(Target, Materials(2), TestUserBuilder.Base);
 
-        // 램볼 낚시 적성 1 = 1000‰. ★1 +100‰ → 1100 (레벨 곡선은 비어 있어 0 · 장비·특성 없음)
+        // 램볼 발굴 적성 1 = 1000‰. ★1 +100‰ → 1100 (레벨 곡선은 비어 있어 0 · 장비·특성 없음)
         slot!.CurrentWorkSpeed.ShouldBe(1100);
     }
 }

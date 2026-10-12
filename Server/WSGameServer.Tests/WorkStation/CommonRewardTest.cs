@@ -25,12 +25,12 @@ public class CommonRewardTest
     private static CommonRewardOverrideTableRow Override(int tid, IndustryType industry, int level, int itemTid)
         => new() { CommonRewardOverrideTID = tid, IndustryType = industry, IndustryLevel = level, ItemTID = itemTid, Count = 1, ChancePerMillion = 1_000_000 };
 
-    /// <summary>낚시 Lv1 슬롯 하나를 굴리는 유저.</summary>
+    /// <summary>발굴 Lv1 슬롯 하나를 굴리는 유저.</summary>
     private static (User User, TestUserBuilder B) UserWith(
         CommonRewardTableRow[]          commons,
         CommonRewardOverrideTableRow[]? overrides = null)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
         b.CommonRewards.Load(commons, overrides ?? Array.Empty<CommonRewardOverrideTableRow>());
 
         var user = b.Build();
@@ -38,7 +38,7 @@ public class CommonRewardTest
         {
             new CharacterRow { character_id = CharacterId, character_tid = AllRounderTid, level = 1, exp = 0 },
         });
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
         return (user, b);
     }
 
@@ -93,10 +93,10 @@ public class CommonRewardTest
     [Fact]
     public void 덮어쓰기_행이_있으면_그_레벨의_공통_행은_통째로_무시한다()
     {
-        // 낚시 Lv1에 덮어쓰기가 하나라도 있으면 공통 행(확정)은 굴리지 않는다 — 레벨 단위 덮어쓰기.
+        // 발굴 Lv1에 덮어쓰기가 하나라도 있으면 공통 행(확정)은 굴리지 않는다 — 레벨 단위 덮어쓰기.
         var (user, _) = UserWith(
             new[] { Common(101, 1, BoxTid) },
-            new[] { Override(2011, IndustryType.Fishing, 1, BoxTid + 1) });
+            new[] { Override(2011, IndustryType.Excavation, 1, BoxTid + 1) });
 
         user.SettleWorkStation(Base.AddMinutes(5));
 
@@ -107,7 +107,7 @@ public class CommonRewardTest
     [Fact]
     public void 다른_산업의_덮어쓰기는_공통_행을_막지_않는다()
     {
-        // 덮어쓰기는 채굴 Lv1 — 낚시 슬롯은 공통 행을 그대로 굴린다.
+        // 덮어쓰기는 채굴 Lv1 — 발굴 슬롯은 공통 행을 그대로 굴린다.
         var (user, _) = UserWith(
             new[] { Common(101, 1, BoxTid) },
             new[] { Override(3011, IndustryType.Mining, 1, BoxTid + 1) });

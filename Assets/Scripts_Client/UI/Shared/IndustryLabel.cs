@@ -9,7 +9,7 @@ using MikaProtocol;
 // 🔴 **이름이 바뀌면 엑셀과 이 파일을 함께 고쳐야 한다.** 그 이중화를 없애는 것이 일감
 // 'T-047'(엑셀의 표시 이름을 런타임 데이터로) — **끝나면 이 파일은 지운다.**
 //
-// ※ 표기는 기획 단일 진실('게임기획코어.md')을 따른다 — 농사 · 낚시 · 채굴 · 벌목 · 사냥.
+// ※ 표기는 기획 단일 진실('게임기획코어.md')을 따른다 — 농사 · 발굴 · 채굴 · 벌목 · 사냥.
 //   ⚠️ 엑셀·'Enum.cs' 주석은 아직 "채광"이라 **지금 둘이 어긋나 있다**(T-047이 통일한다).
 public static class IndustryLabel
 {
@@ -20,7 +20,7 @@ public static class IndustryLabel
         switch (industry)
         {
             case EIndustryType.Farming: return "농사";
-            case EIndustryType.Fishing: return "낚시";
+            case EIndustryType.Excavation: return "발굴";
             case EIndustryType.Mining:  return "채굴";
             case EIndustryType.Logging: return "벌목";
             case EIndustryType.Hunting: return "사냥";

@@ -12,8 +12,8 @@ public class StorageSortTest
     [Fact]
     public void 등급순은_높은_등급_먼저_같으면_산업_그다음_TID다()
     {
-        // 101(Common·농사) 102(Rare·낚시) 103(Rare·농사) 104(Common·농사)
-        // Rare 먼저 → 103(농사1) 102(낚시2) → Common 101 104
+        // 101(Common·농사) 102(Rare·발굴) 103(Rare·농사) 104(Common·농사)
+        // Rare 먼저 → 103(농사1) 102(발굴2) → Common 101 104
         var entries = new[] { Res(101, 1, 1), Res(102, 3, 2), Res(103, 3, 1), Res(104, 1, 1) };
 
         StorageSort.Order(entries, StorageSortKey.Rarity, ascending: false)

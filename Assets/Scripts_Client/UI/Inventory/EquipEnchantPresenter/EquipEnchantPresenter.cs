@@ -1400,8 +1400,8 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 목표 등급 — '목표 신화 이상' (규칙 줄 첫 줄 — 설정 중 · 도는 중).
     private string DescribeGoal() => $"목표 {GradeText(_autoTarget.Grade)} 이상";
 
-    // 칸 조건 한 줄 — '칸 [전체/낚시/낚시] [전체/전체/전체] · 한 번에 7.41%' (규칙 줄 둘째 줄 — 설정 중 · 도는 중).
-    // 켠 조합끼리 OR. 전부 켰으면 '칸마다 전체 또는 낚시'로 줄인다('EnchantAutoTarget.DescribeCombos').
+    // 칸 조건 한 줄 — '칸 [전체/발굴/발굴] [전체/전체/전체] · 한 번에 7.41%' (규칙 줄 둘째 줄 — 설정 중 · 도는 중).
+    // 켠 조합끼리 OR. 전부 켰으면 '칸마다 전체 또는 발굴'로 줄인다('EnchantAutoTarget.DescribeCombos').
     //   chance : 한 번 굴려 칸 조건이 맞을 확률. null이면 쓰지 않는다
     private string DescribeSlotRule(int slotCount, double? chance)
     {

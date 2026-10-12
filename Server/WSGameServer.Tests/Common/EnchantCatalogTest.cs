@@ -14,12 +14,12 @@ public class EnchantCatalogTest
         GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic,
     };
 
-    // 등급마다 낚시 속도 한 줄. TID = 1000 + 등급×100 + 3 (실데이터 규칙과 같다).
+    // 등급마다 발굴 속도 한 줄. TID = 1000 + 등급×100 + 3 (실데이터 규칙과 같다).
     private static readonly EnchantOptionTableRow[] Options = AllGrades
         .Select(g => new EnchantOptionTableRow
         {
             EnchantOptionTID = 1000 + (int)g * 100 + 3, Grade = g, OptionType = EnchantOptionType.Speed,
-            Industry = IndustryType.Fishing, Value = 10 * (int)g, Weight = 120,
+            Industry = IndustryType.Excavation, Value = 10 * (int)g, Weight = 120,
         })
         .ToArray();
 

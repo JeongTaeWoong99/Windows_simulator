@@ -145,8 +145,8 @@ namespace MikaDummyClient
             string? slotInput = Console.ReadLine();
             int slotIndex = string.IsNullOrWhiteSpace(slotInput) ? 0 : int.Parse(slotInput.Trim());
 
-            // GameData.ItemType — 1=농사 2=낚시 3=채굴 4=벌목 5=사냥 (0=해제)
-            Console.Write("Industry (2=낚시) > ");
+            // GameData.ItemType — 1=농사 2=발굴 3=채굴 4=벌목 5=사냥 (0=해제)
+            Console.Write("Industry (2=발굴) > ");
             if (!byte.TryParse(Console.ReadLine(), out byte industry))
             {
                 Console.WriteLine("[Client] Industry는 숫자여야 합니다.");

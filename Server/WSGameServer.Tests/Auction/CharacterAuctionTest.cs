@@ -83,7 +83,7 @@ public class CharacterAuctionTest : IDisposable
     public void 슬롯에_배치된_캐릭터는_올릴_수_없다()
     {
         var (user, b) = NewUser();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, Now) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharA, Now) });
 
         Register(user, CharA);
 

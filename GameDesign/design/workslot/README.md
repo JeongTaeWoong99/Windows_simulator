@@ -2,7 +2,7 @@
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
 > 상태: **골격 확정 · 서버 해금 구현(T-038) · 수치 미정**
-> **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`낚시`](../gathering/fishing/README.md) · [`산업레벨`](../gathering/산업레벨.md) · [`자원채취`](../gathering/README.md) · [`캐릭터`](../character/README.md)
+> **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`산업레벨`](../gathering/산업레벨.md) · [`유적 발굴`](../gathering/excavation/README.md) · [`자원채취`](../gathering/README.md) · [`캐릭터`](../character/README.md)
 >   [`특성`](../trait/README.md)
 
 채취가 시작되는 지점이다. **플레이어는 슬롯에 산업·레벨을 지정하고 캐릭터를 배치**하며,
@@ -39,7 +39,7 @@ Player
  ├─ IndustryLevel[]          산업별 최대 해금 레벨 (계정 단위)       ← 저장
  └─ WorkStationSlot[]        ← 최대 개수는 레벨 등으로 증가
       ├─ SlotIndex           슬롯 번호 (0-based)
-      ├─ Industry            농사 · 벌목 · 낚시 · 채굴 · 사냥 중 1개  ← 저장
+      ├─ Industry            농사 · 벌목 · 발굴 · 채굴 · 사냥 중 1개  ← 저장
       ├─ IndustryLevel       해금된 레벨 중 1개                      ← 저장
       ├─ Character           배치된 캐릭터 1명 (비어 있을 수 있다)   ← 저장
       ├─ Speed               캐릭터 스탯·버프의 곱 (채취 속도)       ← 접속마다 재계산

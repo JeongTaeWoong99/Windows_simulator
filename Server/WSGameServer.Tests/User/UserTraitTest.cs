@@ -15,14 +15,14 @@ public class UserTraitTest
     private const long CharacterId   = 500;
 
     // 테스트 전용 특성 — 엑셀 값에 기대지 않는다.
-    //   102 낚시 개척  : 기본 Lv1 · 최대 Lv3 · Lv2 계정 5 · Lv3 계정 15
-    //   202 낚시 속도  : 기본 Lv0 · 최대 Lv2 · 레벨당 +10% · 포인트 1
+    //   102 발굴 개척  : 기본 Lv1 · 최대 Lv3 · Lv2 계정 5 · Lv3 계정 15
+    //   202 발굴 속도  : 기본 Lv0 · 최대 Lv2 · 레벨당 +10% · 포인트 1
     //   300 공통 산출량: 기본 Lv0 · 최대 Lv2 · 레벨당 +20%
-    //   302 낚시 산출량: 기본 Lv0 · 최대 Lv2 · 레벨당 +30% · 포인트 2
-    private const int FishingPioneer = 102;
-    private const int FishingSpeed   = 202;
+    //   302 발굴 산출량: 기본 Lv0 · 최대 Lv2 · 레벨당 +30% · 포인트 2
+    private const int ExcavationPioneer = 102;
+    private const int ExcavationSpeed   = 202;
     private const int CommonYield    = 300;
-    private const int FishingYield   = 302;
+    private const int ExcavationYield   = 302;
 
     public UserTraitTest() => GameTableFixture.EnsureLoaded();
 
@@ -38,27 +38,27 @@ public class UserTraitTest
 
     private static (User User, TestUserBuilder B) UserWith(int level, int traitPoint)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
         b.Traits.Load(
             new[]
             {
-                Trait(FishingPioneer, UserTraitEffect.IndustryUnlock, IndustryType.Fishing, 0, baseLevel: 1, maxLevel: 3),
-                Trait(FishingSpeed, UserTraitEffect.SpeedAdd, IndustryType.Fishing, 100, baseLevel: 0, maxLevel: 2),
+                Trait(ExcavationPioneer, UserTraitEffect.IndustryUnlock, IndustryType.Excavation, 0, baseLevel: 1, maxLevel: 3),
+                Trait(ExcavationSpeed, UserTraitEffect.SpeedAdd, IndustryType.Excavation, 100, baseLevel: 0, maxLevel: 2),
                 Trait(CommonYield, UserTraitEffect.YieldAdd, IndustryType.None, 200, baseLevel: 0, maxLevel: 2),
-                Trait(FishingYield, UserTraitEffect.YieldAdd, IndustryType.Fishing, 300, baseLevel: 0, maxLevel: 2, point: 2),
+                Trait(ExcavationYield, UserTraitEffect.YieldAdd, IndustryType.Excavation, 300, baseLevel: 0, maxLevel: 2, point: 2),
             },
             new[]
             {
-                Level(FishingPioneer, 2, accountLevel: 5), Level(FishingPioneer, 3, accountLevel: 15),
-                Level(FishingSpeed, 1), Level(FishingSpeed, 2),
+                Level(ExcavationPioneer, 2, accountLevel: 5), Level(ExcavationPioneer, 3, accountLevel: 15),
+                Level(ExcavationSpeed, 1), Level(ExcavationSpeed, 2),
                 Level(CommonYield, 1), Level(CommonYield, 2),
-                Level(FishingYield, 1), Level(FishingYield, 2),
+                Level(ExcavationYield, 1), Level(ExcavationYield, 2),
             });
         b.Levels.Load(new[]
         {
-            new IndustryLevelTableRow { IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1, Name = "개울", RequiredScore = 30_000 },
-            new IndustryLevelTableRow { IndustryLevelTID = 202, IndustryType = IndustryType.Fishing, Level = 2, Name = "저수지", RequiredScore = 30_000 },
-            new IndustryLevelTableRow { IndustryLevelTID = 203, IndustryType = IndustryType.Fishing, Level = 3, Name = "강", RequiredScore = 30_000 },
+            new IndustryLevelTableRow { IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1, Name = "개울", RequiredScore = 30_000 },
+            new IndustryLevelTableRow { IndustryLevelTID = 202, IndustryType = IndustryType.Excavation, Level = 2, Name = "저수지", RequiredScore = 30_000 },
+            new IndustryLevelTableRow { IndustryLevelTID = 203, IndustryType = IndustryType.Excavation, Level = 3, Name = "강", RequiredScore = 30_000 },
         });
 
         var user = b.Build();
@@ -83,15 +83,15 @@ public class UserTraitTest
     {
         var (user, b) = UserWith(level: 1, traitPoint: 2);
 
-        user.TryLearnTrait(FishingSpeed, Base);
+        user.TryLearnTrait(ExcavationSpeed, Base);
 
         var res = Response(b);
         res.Result.ShouldBe(EResultCode.Ok);
         res.Level.ShouldBe(1);
-        user.GetTraitLevel(FishingSpeed).ShouldBe(1);
+        user.GetTraitLevel(ExcavationSpeed).ShouldBe(1);
         user.TraitPoint.ShouldBe(1);
         var saved = b.DB.PostedOf<SaveUserTraitRepository>().ShouldHaveSingleItem();
-        saved.UserTraitTid.ShouldBe(FishingSpeed);
+        saved.UserTraitTid.ShouldBe(ExcavationSpeed);
         saved.Level.ShouldBe(1);
         b.Channel.SentOf<S_AccountLevelResponse>().Last().TraitPoint.ShouldBe(1);
     }
@@ -101,8 +101,8 @@ public class UserTraitTest
     {
         var (user, _) = UserWith(level: 1, traitPoint: 0);
 
-        user.GetTraitLevel(FishingPioneer).ShouldBe(1);
-        user.GetTraitLevel(FishingSpeed).ShouldBe(0);
+        user.GetTraitLevel(ExcavationPioneer).ShouldBe(1);
+        user.GetTraitLevel(ExcavationSpeed).ShouldBe(0);
     }
 
     [Fact]
@@ -110,12 +110,12 @@ public class UserTraitTest
     {
         var (user, b) = UserWith(level: 1, traitPoint: 0);
 
-        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = FishingSpeed, level = 2 } });
+        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = ExcavationSpeed, level = 2 } });
         user.SendTraitList();
 
-        user.GetTraitSpeedAdd(IndustryType.Fishing).ShouldBe(200);
+        user.GetTraitSpeedAdd(IndustryType.Excavation).ShouldBe(200);
         var info = b.Channel.SentOf<S_UserTraitListResponse>().ShouldHaveSingleItem().Traits.ShouldHaveSingleItem();
-        info.UserTraitTID.ShouldBe(FishingSpeed);
+        info.UserTraitTID.ShouldBe(ExcavationSpeed);
         info.Level.ShouldBe(2);
     }
 
@@ -126,8 +126,8 @@ public class UserTraitTest
     {
         var (user, _) = UserWith(level: 1, traitPoint: 0);
 
-        user.IsIndustryLevelUnlocked(IndustryType.Fishing, 1).ShouldBeTrue();
-        user.IsIndustryLevelUnlocked(IndustryType.Fishing, 2).ShouldBeFalse();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 1).ShouldBeTrue();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 2).ShouldBeFalse();
     }
 
     [Fact]
@@ -135,11 +135,11 @@ public class UserTraitTest
     {
         var (user, _) = UserWith(level: 5, traitPoint: 1);
 
-        user.TryLearnTrait(FishingPioneer, Base);
+        user.TryLearnTrait(ExcavationPioneer, Base);
 
-        user.GetTraitLevel(FishingPioneer).ShouldBe(2);
-        user.IsIndustryLevelUnlocked(IndustryType.Fishing, 2).ShouldBeTrue();
-        user.IsIndustryLevelUnlocked(IndustryType.Fishing, 3).ShouldBeFalse();
+        user.GetTraitLevel(ExcavationPioneer).ShouldBe(2);
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 2).ShouldBeTrue();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 3).ShouldBeFalse();
     }
 
     // ─────────────────────── 속도 ───────────────────────
@@ -149,13 +149,13 @@ public class UserTraitTest
     {
         // 기본 속도 × (1 + 10% × 2레벨)
         var (user, b) = UserWith(level: 1, traitPoint: 2);
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
         user.RefreshWorkStationSpeed(Base, notify: false);
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         var before = slot.CurrentWorkSpeed;
 
-        user.TryLearnTrait(FishingSpeed, Base);
-        user.TryLearnTrait(FishingSpeed, Base);
+        user.TryLearnTrait(ExcavationSpeed, Base);
+        user.TryLearnTrait(ExcavationSpeed, Base);
 
         slot.CurrentWorkSpeed.ShouldBe(before * 12 / 10);
         b.Channel.SentOf<S_WorkStationSlotSyncResponse>().ShouldNotBeEmpty();
@@ -170,7 +170,7 @@ public class UserTraitTest
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         var before = slot.CurrentWorkSpeed;
 
-        user.TryLearnTrait(FishingSpeed, Base);
+        user.TryLearnTrait(ExcavationSpeed, Base);
 
         slot.CurrentWorkSpeed.ShouldBe(before);
     }
@@ -180,26 +180,26 @@ public class UserTraitTest
     [Fact]
     public void 산출량은_공통과_그_산업을_더한다()
     {
-        // 공통 20% × 1 + 낚시 30% × 1 = 50%. 채굴은 공통만.
+        // 공통 20% × 1 + 발굴 30% × 1 = 50%. 채굴은 공통만.
         var (user, _) = UserWith(level: 1, traitPoint: 3);
 
         user.TryLearnTrait(CommonYield, Base);
-        user.TryLearnTrait(FishingYield, Base);
+        user.TryLearnTrait(ExcavationYield, Base);
 
-        user.GetTraitYieldAdd(IndustryType.Fishing).ShouldBe(500);
+        user.GetTraitYieldAdd(IndustryType.Excavation).ShouldBe(500);
         user.GetTraitYieldAdd(IndustryType.Mining).ShouldBe(200);
     }
 
     [Fact]
     public void 산출량이_100퍼센트면_판정마다_자원이_2개씩_나온다()
     {
-        // 공통 20%×2 + 낚시 30%×2 = 100% → 소수부가 없어 난수와 무관하다. 5분 = 10판정 → 20개.
+        // 공통 20%×2 + 발굴 30%×2 = 100% → 소수부가 없어 난수와 무관하다. 5분 = 10판정 → 20개.
         var (user, _) = UserWith(level: 1, traitPoint: 6);
         user.TryLearnTrait(CommonYield, Base);
         user.TryLearnTrait(CommonYield, Base);
-        user.TryLearnTrait(FishingYield, Base);
-        user.TryLearnTrait(FishingYield, Base);
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharacterId, Base) });
+        user.TryLearnTrait(ExcavationYield, Base);
+        user.TryLearnTrait(ExcavationYield, Base);
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharacterId, Base) });
 
         user.SettleWorkStation(Base.AddMinutes(5));
 
@@ -239,10 +239,10 @@ public class UserTraitTest
     {
         var (user, b) = UserWith(level: 5, traitPoint: 1);
 
-        user.TryLearnTrait(FishingYield, Base);   // 비용 2
+        user.TryLearnTrait(ExcavationYield, Base);   // 비용 2
 
         Response(b).Result.ShouldBe(EResultCode.NotEnoughTraitPoint);
-        user.GetTraitLevel(FishingYield).ShouldBe(0);
+        user.GetTraitLevel(ExcavationYield).ShouldBe(0);
         user.TraitPoint.ShouldBe(1);
     }
 
@@ -251,7 +251,7 @@ public class UserTraitTest
     {
         var (user, b) = UserWith(level: 4, traitPoint: 2);
 
-        user.TryLearnTrait(FishingPioneer, Base);   // Lv2는 계정 5
+        user.TryLearnTrait(ExcavationPioneer, Base);   // Lv2는 계정 5
 
         Response(b).Result.ShouldBe(EResultCode.UnlockLocked);
         user.TraitPoint.ShouldBe(2);
@@ -262,9 +262,9 @@ public class UserTraitTest
     public void 최대_레벨이면_TraitMaxLevel이다()
     {
         var (user, b) = UserWith(level: 1, traitPoint: 3);
-        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = FishingSpeed, level = 2 } });
+        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = ExcavationSpeed, level = 2 } });
 
-        user.TryLearnTrait(FishingSpeed, Base);
+        user.TryLearnTrait(ExcavationSpeed, Base);
 
         var res = Response(b);
         res.Result.ShouldBe(EResultCode.TraitMaxLevel);

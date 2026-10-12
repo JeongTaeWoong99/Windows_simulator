@@ -9,7 +9,7 @@ namespace WSGameServer;
 /// </summary>
 public class UserEnchantTest
 {
-    // 등급마다 낚시 속도 한 줄 — 값은 실데이터(EnchantOptionTable)와 같다.
+    // 등급마다 발굴 속도 한 줄 — 값은 실데이터(EnchantOptionTable)와 같다.
     private static readonly EnchantOptionTableRow CommonFish   = Fish(1103, GlobalRarity.Common, 10);
     private static readonly EnchantOptionTableRow UncommonFish = Fish(1203, GlobalRarity.Uncommon, 20);
     private static readonly EnchantOptionTableRow RareFish     = Fish(1303, GlobalRarity.Rare, 40);
@@ -28,7 +28,7 @@ public class UserEnchantTest
         new() { EnchantOptionTID = 1307, Grade = GlobalRarity.Rare, OptionType = EnchantOptionType.CharacterExp, Industry = IndustryType.None, Value = 30, Weight = 100 };
 
     private static EnchantOptionTableRow Fish(int tid, GlobalRarity grade, int value)
-        => new() { EnchantOptionTID = tid, Grade = grade, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Fishing, Value = value, Weight = 120 };
+        => new() { EnchantOptionTID = tid, Grade = grade, OptionType = EnchantOptionType.Speed, Industry = IndustryType.Excavation, Value = value, Weight = 120 };
 
     private static readonly EnchantOptionTableRow[] Pools = { CommonFish, UncommonFish, RareFish, EpicFish, LegendFish, MythicFish };
 
@@ -55,11 +55,11 @@ public class UserEnchantTest
         new() { ItemTID = ZeroOwnedTid, UpRatePermille = 1250 },
     };
 
-    // 희귀 낚싯대(낚시 +30%) — 칸 2개.
+    // 희귀 발굴삽(발굴 +30%) — 칸 2개.
     private static EquipTableRow RodRow(int speedAdd = 300) => new()
     {
-        EquipTID = RodTid, Name = "은사 낚싯대", GlobalRarity = GlobalRarity.Rare, EquipKind = EquipKind.Weapon,
-        Industry = IndustryType.Fishing, SpeedAddPermille = speedAdd,
+        EquipTID = RodTid, Name = "은사 발굴삽", GlobalRarity = GlobalRarity.Rare, EquipKind = EquipKind.Weapon,
+        Industry = IndustryType.Excavation, SpeedAddPermille = speedAdd,
     };
 
     private static Equip RodWith(GlobalRarity grade, params EnchantOptionTableRow[] options)
@@ -74,7 +74,7 @@ public class UserEnchantTest
     [Fact]
     public void 산업이_일치하는_칸과_전_산업_칸이_기본값에_더해진다()
     {
-        RodWith(GlobalRarity.Rare, RareFish, RareAll).SpeedAddPermilleFor(IndustryType.Fishing).ShouldBe(300 + 40 + 20);
+        RodWith(GlobalRarity.Rare, RareFish, RareAll).SpeedAddPermilleFor(IndustryType.Excavation).ShouldBe(300 + 40 + 20);
     }
 
     [Fact]
@@ -82,9 +82,9 @@ public class UserEnchantTest
     {
         var equip = RodWith(GlobalRarity.Uncommon, UncommonFarm, UncommonFish);
 
-        // 장비 자체가 낚시 전용이라 농사 슬롯에서는 기본값도 0이다.
+        // 장비 자체가 발굴 전용이라 농사 슬롯에서는 기본값도 0이다.
         equip.SpeedAddPermilleFor(IndustryType.Farming).ShouldBe(20);
-        equip.SpeedAddPermilleFor(IndustryType.Fishing).ShouldBe(300 + 20);
+        equip.SpeedAddPermilleFor(IndustryType.Excavation).ShouldBe(300 + 20);
     }
 
     [Fact]
@@ -92,7 +92,7 @@ public class UserEnchantTest
     {
         var equip = RodWith(GlobalRarity.Rare, RareExp, RareFish);
 
-        equip.SpeedAddPermilleFor(IndustryType.Fishing).ShouldBe(300 + 40);
+        equip.SpeedAddPermilleFor(IndustryType.Excavation).ShouldBe(300 + 40);
         equip.ExpAddPermille.ShouldBe(30);
     }
 
@@ -103,7 +103,7 @@ public class UserEnchantTest
 
         equip.EnchantGrade.ShouldBe(GlobalRarity.None);
         equip.EnchantLineCount.ShouldBe(0);
-        equip.SpeedAddPermilleFor(IndustryType.Fishing).ShouldBe(300);
+        equip.SpeedAddPermilleFor(IndustryType.Excavation).ShouldBe(300);
     }
 
     // ───────────────────────── 큐브 ─────────────────────────
@@ -296,20 +296,20 @@ public class UserEnchantTest
     [Fact]
     public void 인챈트한_장비를_장착하면_가산이_속도에_실린다()
     {
-        // 낚싯대 +300에 일반 낚시 칸 +10 두 개가 붙는다 → +320.
+        // 발굴삽 +300에 일반 발굴 칸 +10 두 개가 붙는다 → +320.
         var (user, _) = UserWithRod();
         UseCube(user);
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharA, TestUserBuilder.Base) });
 
         user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
 
-        SlotSpeed(user).ShouldBe(ExpectedSpeed(user, IndustryType.Fishing, 320));
+        SlotSpeed(user).ShouldBe(ExpectedSpeed(user, IndustryType.Excavation, 320));
     }
 
     [Fact]
     public void 산업이_다른_장비의_칸도_맞는_슬롯에서는_속도에_실린다()
     {
-        // 낚싯대(낚시 +30%)에 고급 농사 +2% 두 칸. 농사 슬롯에서는 기본값 300이 빠지고 칸만 붙는다 → +40.
+        // 발굴삽(발굴 +30%)에 고급 농사 +2% 두 칸. 농사 슬롯에서는 기본값 300이 빠지고 칸만 붙는다 → +40.
         var (user, _) = UserWithRod();
         RodOf(user).SetEnchant(GlobalRarity.Uncommon, new[] { UncommonFarm, UncommonFarm });
         user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Farming, CharA, TestUserBuilder.Base) });
@@ -320,19 +320,19 @@ public class UserEnchantTest
     }
 
     /// <summary>
-    /// 낚시 슬롯에 캐릭터를 배치하고 속도 가산 0인 낚시대를 채운 뒤 5분 정산한다. 판정당 경험치 100, 레벨업은 일어나지 않는다.
+    /// 발굴 슬롯에 캐릭터를 배치하고 속도 가산 0인 발굴대를 채운 뒤 5분 정산한다. 판정당 경험치 100, 레벨업은 일어나지 않는다.
     /// enchanted면 희귀 경험치 칸(+30‰) 두 개를 심는다.
     /// </summary>
     private static (long Exp, int Judges) SettleWithRod(bool enchanted)
     {
-        var b = new TestUserBuilder().WithFishingDrops();
+        var b = new TestUserBuilder().WithExcavationDrops();
         b.Equips.Load(new[] { RodRow(speedAdd: 0) });
         b.Enchants.Load(Pools, GradeRows, ItemRows);
         b.Levels.Load(new[]
         {
             new IndustryLevelTableRow
             {
-                IndustryLevelTID = 201, IndustryType = IndustryType.Fishing, Level = 1,
+                IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1,
                 Name = "개울", RequiredScore = 30_000, ExpPerJudge = 100,
             },
         });
@@ -350,7 +350,7 @@ public class UserEnchantTest
             RodOf(user).SetEnchant(GlobalRarity.Rare, new[] { RareExp, RareExp });
         }
 
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharA, TestUserBuilder.Base) });
         user.TryEquip(CharA, Rod, EquipSlot.Weapon, TestUserBuilder.Base);
         b.Channel.Sent.Clear();
 

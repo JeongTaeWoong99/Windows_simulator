@@ -109,7 +109,7 @@ public class PacketEnumTest
         // Misc·Special은 아이템 분류일 뿐 배치 대상이 아니다. 섞이면 배치 UI·적성 목록에 뜬다.
         Enum.GetValues<IndustryType>()
             .Select(v => v.ToString())
-            .ShouldBe(new[] { "None", "Farming", "Fishing", "Mining", "Logging", "Hunting", "Max" });
+            .ShouldBe(new[] { "None", "Farming", "Excavation", "Mining", "Logging", "Hunting", "Max" });
     }
 
     [Fact]

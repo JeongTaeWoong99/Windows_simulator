@@ -265,7 +265,7 @@ public class UserUnlockTest
 
         user.OnLoginDataLoaded(LoginData(slotRows: new[]
         {
-            new WorkStationSlotRow { slot_index = 3, industry = (int)IndustryType.Fishing, industry_level = 1, character_id = CharacterId },
+            new WorkStationSlotRow { slot_index = 3, industry = (int)IndustryType.Excavation, industry_level = 1, character_id = CharacterId },
         }), Base);
 
         user.WorkStation.Count.ShouldBe(2);
@@ -281,11 +281,11 @@ public class UserUnlockTest
             unlocked: new[] { SecondSlot },
             slotRows: new[]
             {
-                new WorkStationSlotRow { slot_index = 2, industry = (int)IndustryType.Fishing, industry_level = 1, character_id = CharacterId },
+                new WorkStationSlotRow { slot_index = 2, industry = (int)IndustryType.Excavation, industry_level = 1, character_id = CharacterId },
             }), Base);
 
         user.WorkStation.TryGet(2, out var slot).ShouldBeTrue();
-        slot.Industry.ShouldBe(IndustryType.Fishing);
+        slot.Industry.ShouldBe(IndustryType.Excavation);
         slot.CharacterId.ShouldBe(CharacterId);
     }
 
@@ -310,7 +310,7 @@ public class UserUnlockTest
         user.OnLoginDataLoaded(LoginData(), Base);
         b.Channel.Sent.Clear();
 
-        user.AssignWorkStation(2, IndustryType.Fishing, CharacterId, Base);
+        user.AssignWorkStation(2, IndustryType.Excavation, CharacterId, Base);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidSlotIndex);
     }

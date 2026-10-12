@@ -22,7 +22,7 @@ export const BUILD_TIME = (() => {
 export const SECTION_LABELS: Record<string, string> = {
   '': '최상위',
   gathering: '자원채취',
-  fishing: '낚시',
+  excavation: '유적 발굴',
   farming: '농사',
   logging: '벌목',
   hunting: '사냥',

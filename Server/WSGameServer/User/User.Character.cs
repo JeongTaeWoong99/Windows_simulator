@@ -252,7 +252,7 @@ public partial class User
 
     /// <summary>
     /// 이 캐릭터를 해당 산업에 배치할 수 있는지. <b>적성 0이면 배치하지 못한다.</b>
-    /// 배치 자체를 막아야 "이 캐릭터는 낚시를 못 한다"가 규칙으로 성립한다 —
+    /// 배치 자체를 막아야 "이 캐릭터는 발굴을 못 한다"가 규칙으로 성립한다 —
     /// 허용하고 아주 느리게 두면 슬롯이 남을 때 아무나 꽂게 되어 배치에 선택이 사라진다.
     /// </summary>
     public bool CanAssignCharacter(long characterId, IndustryType industry)

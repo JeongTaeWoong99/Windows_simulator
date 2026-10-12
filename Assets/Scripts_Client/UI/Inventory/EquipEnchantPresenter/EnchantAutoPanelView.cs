@@ -16,7 +16,7 @@ public class EnchantAutoPanelView : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("목표 등급 칩 — 고급 · 희귀 · 영웅 · 전설 · 신화 순서로 5개")]
     private EnchantChipView[] gradeChips = new EnchantChipView[0];
 
-    [SerializeField, NonReorderable, Tooltip("노릴 옵션 칩 — 'EnchantAutoFocus' 순서(없음 · 농사 · 낚시 · 채굴 · 벌목 · 사냥 · 경험치)로 7개")]
+    [SerializeField, NonReorderable, Tooltip("노릴 옵션 칩 — 'EnchantAutoFocus' 순서(없음 · 농사 · 발굴 · 채굴 · 벌목 · 사냥 · 경험치)로 7개")]
     private EnchantChipView[] focusChips = new EnchantChipView[0];
 
     [SerializeField, NonReorderable, Tooltip("조합 칩 4개 — 왼쪽부터 '전체'가 많은 순. 칸 수 + 1개만 켜진다")]

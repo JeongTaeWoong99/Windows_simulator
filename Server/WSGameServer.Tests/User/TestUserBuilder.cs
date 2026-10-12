@@ -163,16 +163,16 @@ internal sealed class TestUserBuilder
     }
 
     /// <summary>
-    /// 낚시 드롭 테이블 하나만 등록한다. 후보가 1종이라 <b>어떤 아이템이 나올지 확정</b>되고,
+    /// 발굴 드롭 테이블 하나만 등록한다. 후보가 1종이라 <b>어떤 아이템이 나올지 확정</b>되고,
     /// 판정 횟수와 획득 개수를 그대로 대조할 수 있다.
     /// </summary>
     public const int FishItemTid = 1001;
 
-    public TestUserBuilder WithFishingDrops()
+    public TestUserBuilder WithExcavationDrops()
     {
         // 슬롯이 레벨 미지정으로 만들어지면 DefaultIndustryLevel로 배치되므로, 같은 레벨에 등록한다.
-        Drops.Register(IndustryType.Fishing, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
-            "FishingBasicTable",
+        Drops.Register(IndustryType.Excavation, WorkStationSlot.DefaultIndustryLevel, DropTable.From(
+            "ExcavationBasicTable",
             new[] { (ItemTID: FishItemTid, Weight: 100) },
             r => r.ItemTID, r => r.Weight));
 

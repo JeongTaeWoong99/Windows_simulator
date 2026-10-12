@@ -26,7 +26,7 @@ public class DropSheetTest
         return industry switch
         {
             IndustryType.Farming => GameTable.FarmingBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
-            IndustryType.Fishing => GameTable.FishingBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
+            IndustryType.Excavation => GameTable.ExcavationBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
             IndustryType.Logging => GameTable.LoggingBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
             IndustryType.Mining  => GameTable.MiningBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
             IndustryType.Hunting => GameTable.HuntingBasicTable.All.Select(r => (r.ItemTID, r.Weight, r.IndustryLevel)),
@@ -40,7 +40,7 @@ public class DropSheetTest
         var data = new TheoryData<IndustryType, int>();
         foreach (var industry in new[]
                  {
-                     IndustryType.Farming, IndustryType.Fishing, IndustryType.Logging, IndustryType.Mining, IndustryType.Hunting,
+                     IndustryType.Farming, IndustryType.Excavation, IndustryType.Logging, IndustryType.Mining, IndustryType.Hunting,
                  })
         {
             for (var level = 1; level <= 5; level++)

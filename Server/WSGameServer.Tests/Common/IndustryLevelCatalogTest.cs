@@ -22,11 +22,11 @@ public class IndustryLevelCatalogTest
     public void 산업과_레벨로_행을_조회한다()
     {
         var catalog = new IndustryLevelCatalog();
-        catalog.Load(new[] { Row(IndustryType.Fishing, 1, 30_000), Row(IndustryType.Fishing, 2, 90_000) });
+        catalog.Load(new[] { Row(IndustryType.Excavation, 1, 30_000), Row(IndustryType.Excavation, 2, 90_000) });
 
         catalog.Count.ShouldBe(2);
-        catalog.Get(IndustryType.Fishing, 1).RequiredScore.ShouldBe(30_000);
-        catalog.Get(IndustryType.Fishing, 2).RequiredScore.ShouldBe(90_000);
+        catalog.Get(IndustryType.Excavation, 1).RequiredScore.ShouldBe(30_000);
+        catalog.Get(IndustryType.Excavation, 2).RequiredScore.ShouldBe(90_000);
     }
 
     [Fact]
@@ -35,13 +35,13 @@ public class IndustryLevelCatalogTest
         // 엑셀 RequiredScore는 초×천분율, 서버 누적은 밀리초×천분율 — ×1000이 단위 환산의 전부다.
         // Lv1 30,000점 = 기존 상수 30초(30,000,000)와 정확히 같아야 한다 (산업레벨.md 2.4).
         var catalog = new IndustryLevelCatalog();
-        catalog.Load(new[] { Row(IndustryType.Fishing, 1, 30_000), Row(IndustryType.Fishing, 5, 2_430_000) });
+        catalog.Load(new[] { Row(IndustryType.Excavation, 1, 30_000), Row(IndustryType.Excavation, 5, 2_430_000) });
 
-        catalog.GetJudgeCostUnits(IndustryType.Fishing, 1).ShouldBe(30_000_000L);
-        catalog.GetJudgeCostUnits(IndustryType.Fishing, 1).ShouldBe(WorkStationSlot.JudgeCost);
+        catalog.GetJudgeCostUnits(IndustryType.Excavation, 1).ShouldBe(30_000_000L);
+        catalog.GetJudgeCostUnits(IndustryType.Excavation, 1).ShouldBe(WorkStationSlot.JudgeCost);
 
         // Lv5는 24억 3천만 — int(21억)를 넘는 값이라 long 환산이 여기서 검증된다.
-        catalog.GetJudgeCostUnits(IndustryType.Fishing, 5).ShouldBe(2_430_000_000L);
+        catalog.GetJudgeCostUnits(IndustryType.Excavation, 5).ShouldBe(2_430_000_000L);
     }
 
     [Fact]
@@ -51,18 +51,18 @@ public class IndustryLevelCatalogTest
 
         // 중복을 허용하면 어느 행의 필요 점수가 이기는지가 로드 순서에 달린다.
         Should.Throw<InvalidOperationException>(() =>
-            catalog.Load(new[] { Row(IndustryType.Fishing, 1, 30_000), Row(IndustryType.Fishing, 1, 90_000) }));
+            catalog.Load(new[] { Row(IndustryType.Excavation, 1, 30_000), Row(IndustryType.Excavation, 1, 90_000) }));
     }
 
     [Fact]
     public void 없는_조합을_조회하면_예외를_던진다()
     {
         var catalog = new IndustryLevelCatalog();
-        catalog.Load(new[] { Row(IndustryType.Fishing, 1, 30_000) });
+        catalog.Load(new[] { Row(IndustryType.Excavation, 1, 30_000) });
 
         // 조용히 기본값을 주면 레벨을 잘못 들고 와도 30초로 돌아 아무도 모른다.
-        Should.Throw<KeyNotFoundException>(() => catalog.Get(IndustryType.Fishing, 2));
-        catalog.TryGet(IndustryType.Fishing, 2, out _).ShouldBeFalse();
+        Should.Throw<KeyNotFoundException>(() => catalog.Get(IndustryType.Excavation, 2));
+        catalog.TryGet(IndustryType.Excavation, 2, out _).ShouldBeFalse();
     }
 
     [Fact]
@@ -75,6 +75,6 @@ public class IndustryLevelCatalogTest
         catalog.Count.ShouldBe(25);
 
         // Lv1의 판정 비용은 기존 전역 상수(30초)와 같다 — "30초 확정은 Lv1의 값으로 살아남았다".
-        catalog.GetJudgeCostUnits(IndustryType.Fishing, 1).ShouldBe(WorkStationSlot.JudgeCost);
+        catalog.GetJudgeCostUnits(IndustryType.Excavation, 1).ShouldBe(WorkStationSlot.JudgeCost);
     }
 }

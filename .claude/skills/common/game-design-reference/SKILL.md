@@ -5,7 +5,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 
 # 게임 기획 참조
 
-> 최종 업데이트: 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-22 (문서 지도에 우편 추가)
+> 최종 업데이트: 2026-10-12 (산업 목록 낚시 → 유적 발굴 — T-142) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-22 (문서 지도에 우편 추가)
 >
 > 게임 시스템·콘텐츠를 만지기 전에 **[`GameDesign/design/게임기획코어.md`](../../../../GameDesign/design/게임기획코어.md)** 를
 > 먼저 읽고, 그 다음 해당 영역의 **상세 기획안**을 읽는다.
@@ -65,7 +65,7 @@ description: 게임의 규칙·수치·콘텐츠(채취·퀘스트·특성·아�
 | `GameDesign/design/character/README.md` | 캐릭터 적성·장비·계정 레벨 |
 | `GameDesign/design/unlock/README.md` | 해금 — `UnlockTable`·해금 행동·잠긴 것의 표시 |
 | `GameDesign/design/gathering/README.md` | 자원 채취·요일 로테이션·오프라인 정산 |
-| `GameDesign/design/gathering/<산업>/README.md` | 1차 산업 5종 — `농사`·`벌목`·`낚시`·`채굴`·`사냥` |
+| `GameDesign/design/gathering/<산업>/README.md` | 1차 산업 5종 — `농사`·`벌목`·`유적 발굴`(`excavation/`)·`채굴`·`사냥` |
 | `GameDesign/design/quest/README.md` | 퀘스트·리셋·보상 |
 | `GameDesign/design/trait/README.md` | 특성·스킬·효율 배수 |
 | `GameDesign/design/item/README.md` | 아이템·인벤토리·가챠·`ItemTable` |

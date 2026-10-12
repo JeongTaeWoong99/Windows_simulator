@@ -21,10 +21,10 @@
     "EnchantOptionTID": 1103,
     "Grade": "Common",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 10,
     "Weight": 120,
-    "Description": "일반 낚시 +1%"
+    "Description": "일반 발굴 +1%"
   },
   {
     "EnchantOptionTID": 1104,
@@ -84,10 +84,10 @@
     "EnchantOptionTID": 1203,
     "Grade": "Uncommon",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 20,
     "Weight": 120,
-    "Description": "고급 낚시 +2%"
+    "Description": "고급 발굴 +2%"
   },
   {
     "EnchantOptionTID": 1204,
@@ -147,10 +147,10 @@
     "EnchantOptionTID": 1303,
     "Grade": "Rare",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 40,
     "Weight": 120,
-    "Description": "희귀 낚시 +4%"
+    "Description": "희귀 발굴 +4%"
   },
   {
     "EnchantOptionTID": 1304,
@@ -210,10 +210,10 @@
     "EnchantOptionTID": 1403,
     "Grade": "Epic",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 90,
     "Weight": 120,
-    "Description": "영웅 낚시 +9%"
+    "Description": "영웅 발굴 +9%"
   },
   {
     "EnchantOptionTID": 1404,
@@ -273,10 +273,10 @@
     "EnchantOptionTID": 1503,
     "Grade": "Legendary",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 180,
     "Weight": 120,
-    "Description": "전설 낚시 +18%"
+    "Description": "전설 발굴 +18%"
   },
   {
     "EnchantOptionTID": 1504,
@@ -336,10 +336,10 @@
     "EnchantOptionTID": 1603,
     "Grade": "Mythic",
     "OptionType": "Speed",
-    "Industry": "Fishing",
+    "Industry": "Excavation",
     "Value": 250,
     "Weight": 120,
-    "Description": "신화 낚시 +25%"
+    "Description": "신화 발굴 +25%"
   },
   {
     "EnchantOptionTID": 1604,

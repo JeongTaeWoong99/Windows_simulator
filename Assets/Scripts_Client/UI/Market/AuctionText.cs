@@ -82,7 +82,7 @@ public static class AuctionText
     public static string GetSellerName(AuctionListingInfo listing)
         => string.IsNullOrEmpty(listing.SellerName) ? UnknownSeller : listing.SellerName;
 
-    // "LV.12 · 낚시 7" — 레벨 + 가장 높은 적성 하나. 캐릭터 정보가 없으면 빈 문자열.
+    // "LV.12 · 발굴 7" — 레벨 + 가장 높은 적성 하나. 캐릭터 정보가 없으면 빈 문자열.
     public static string FormatCharacterSummary(CharacterInfo? character)
     {
         if (character == null)
@@ -93,7 +93,7 @@ public static class AuctionText
         return $"{CharacterSlotSource.GetLevelLabel(character.Level)}{UIRichText.Dot}{FormatTopAptitude(character)}";
     }
 
-    // 가장 높은 적성 — "낚시 7". 같은 값이면 산업 순서(농사·낚시·…)가 앞인 것. 적성이 하나도 없으면 "적성 없음".
+    // 가장 높은 적성 — "발굴 7". 같은 값이면 산업 순서(농사·발굴·…)가 앞인 것. 적성이 하나도 없으면 "적성 없음".
     public static string FormatTopAptitude(CharacterInfo character)
     {
         EIndustryType best      = EIndustryType.None;

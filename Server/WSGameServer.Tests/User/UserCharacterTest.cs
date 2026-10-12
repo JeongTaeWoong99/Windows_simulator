@@ -14,8 +14,8 @@ namespace WSGameServer;
 /// </summary>
 public class UserCharacterTest
 {
-    /// <summary>낚시 적성 0. 0이 빠지지 않는지 보려면 0인 산업이 있는 캐릭터가 필요하다.</summary>
-    private const int NoFishingTid = 1002;
+    /// <summary>발굴 적성 0. 0이 빠지지 않는지 보려면 0인 산업이 있는 캐릭터가 필요하다.</summary>
+    private const int NoExcavationTid = 1002;
 
     private const long CharacterId = 500;
 
@@ -45,13 +45,13 @@ public class UserCharacterTest
     [Fact]
     public void 적성은_1차_산업_5종이_순서대로_실린다()
     {
-        var (user, b) = UserWithCharacter(NoFishingTid);
+        var (user, b) = UserWithCharacter(NoExcavationTid);
 
         user.SendCharacters();
 
         SentAptitudes(b).Select(a => a.Industry).ShouldBe(new[]
         {
-            EIndustryType.Farming, EIndustryType.Fishing, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
+            EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
         });
     }
 
@@ -59,22 +59,22 @@ public class UserCharacterTest
     public void 적성이_0인_산업도_빠지지_않는다()
     {
         // 빠뜨리면 클라가 "적성 0(잠금)"과 "값을 못 받음"을 구분하지 못한다.
-        GameTable.CharacterTable.TryGet(NoFishingTid, out var row).ShouldBeTrue();
-        row.Fishing.ShouldBe(0);   // 이 테스트의 전제 — 엑셀이 바뀌면 여기가 먼저 빨개진다
+        GameTable.CharacterTable.TryGet(NoExcavationTid, out var row).ShouldBeTrue();
+        row.Excavation.ShouldBe(0);   // 이 테스트의 전제 — 엑셀이 바뀌면 여기가 먼저 빨개진다
 
-        var (user, b) = UserWithCharacter(NoFishingTid);
+        var (user, b) = UserWithCharacter(NoExcavationTid);
 
         user.SendCharacters();
 
-        SentAptitudes(b).ShouldContain(a => a.Industry == EIndustryType.Fishing && a.Value == 0);
+        SentAptitudes(b).ShouldContain(a => a.Industry == EIndustryType.Excavation && a.Value == 0);
     }
 
     [Fact]
     public void 적성_값은_캐릭터_테이블과_같다()
     {
-        GameTable.CharacterTable.TryGet(NoFishingTid, out var row).ShouldBeTrue();
+        GameTable.CharacterTable.TryGet(NoExcavationTid, out var row).ShouldBeTrue();
 
-        var (user, b) = UserWithCharacter(NoFishingTid);
+        var (user, b) = UserWithCharacter(NoExcavationTid);
 
         user.SendCharacters();
 

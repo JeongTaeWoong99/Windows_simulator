@@ -98,7 +98,7 @@ public class UserEntitySellTest
     public void 슬롯에_배치된_캐릭터는_팔_수_없다()
     {
         var (user, b) = NewUser();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Fishing, CharA, TestUserBuilder.Base) });
+        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Excavation, CharA, TestUserBuilder.Base) });
 
         user.TrySellEntities(new[] { CharA }, Array.Empty<long>());
 

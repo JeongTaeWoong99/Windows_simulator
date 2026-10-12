@@ -8,7 +8,7 @@ public enum EnchantAutoFocus
 {
     None,
     Farming,
-    Fishing,
+    Excavation,
     Mining,
     Logging,
     Hunting,
@@ -18,7 +18,7 @@ public enum EnchantAutoFocus
 // 큐브 자동의 목표 — 목표 등급 · 칸 조건 · 상한, 그리고 상급 큐브가 무엇을 남길지 (이슈 #53).
 //
 // ■ 칸 조건 = '전체' + 노릴 옵션 하나로 만든 조합을 OR로 켠다
-//   3칸에 낚시면 [전체 전체 전체] [전체 전체 낚시] [전체 낚시 낚시] [낚시 낚시 낚시] — 켠 것 중 하나면 맞다.
+//   3칸에 발굴면 [전체 전체 전체] [전체 전체 발굴] [전체 발굴 발굴] [발굴 발굴 발굴] — 켠 것 중 하나면 맞다.
 //   칸 순서는 보지 않는다 — '전체'가 몇 칸인가로 센다('Combos[전체 칸 수]').
 //
 // 화면을 모른다 — 큐브 창이 칩을 누를 때 값을 바꾸고, 자동 루프가 'Matches'·'PreferNew'를 묻는다.
@@ -157,7 +157,7 @@ public sealed class EnchantAutoTarget
     private static IndustryType ToIndustry(EnchantAutoFocus focus) => focus switch
     {
         EnchantAutoFocus.Farming => IndustryType.Farming,
-        EnchantAutoFocus.Fishing => IndustryType.Fishing,
+        EnchantAutoFocus.Excavation => IndustryType.Excavation,
         EnchantAutoFocus.Mining  => IndustryType.Mining,
         EnchantAutoFocus.Logging => IndustryType.Logging,
         EnchantAutoFocus.Hunting => IndustryType.Hunting,
@@ -172,7 +172,7 @@ public sealed class EnchantAutoTarget
         _                             => IndustryLabel.Get((EIndustryType)(byte)ToIndustry(focus)),
     };
 
-    // 조합 칩 글씨 — '전체/전체/낚시'. 칸마다 '/'로 갈라 무엇을 노리는지 칸 단위로 읽히게 한다(사용자 결정 2026-10-10).
+    // 조합 칩 글씨 — '전체/전체/발굴'. 칸마다 '/'로 갈라 무엇을 노리는지 칸 단위로 읽히게 한다(사용자 결정 2026-10-10).
     // 노릴 옵션이 '없음'이면 칸 조건이 없다 — '—'.
     public static string GetComboLabel(EnchantAutoFocus focus, int slotCount, int allCount)
     {
@@ -197,8 +197,8 @@ public sealed class EnchantAutoTarget
         return text.ToString();
     }
 
-    // 켠 조합 전부 — '칸 [전체/낚시/낚시] [전체/전체/전체]' — 켠 것끼리는 OR (큐브 창 규칙 줄 둘째 줄 — 설정 중 · 도는 중).
-    // 전부 켰으면 줄여 쓴다 — '칸마다 전체 또는 낚시'. 네 묶음을 늘어놓으면 한 줄을 넘는다(사용자 지적 2026-10-11).
+    // 켠 조합 전부 — '칸 [전체/발굴/발굴] [전체/전체/전체]' — 켠 것끼리는 OR (큐브 창 규칙 줄 둘째 줄 — 설정 중 · 도는 중).
+    // 전부 켰으면 줄여 쓴다 — '칸마다 전체 또는 발굴'. 네 묶음을 늘어놓으면 한 줄을 넘는다(사용자 지적 2026-10-11).
     public string DescribeCombos(int slotCount)
     {
         if (IsEveryComboOn(slotCount))

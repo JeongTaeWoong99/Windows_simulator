@@ -23,7 +23,7 @@ namespace DesktopWindowControl.EditorTools
 
         private static readonly EIndustryType[] Industries =
         {
-            EIndustryType.Farming, EIndustryType.Fishing, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
+            EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
         };
 
         [MenuItem(ArtSpec.MenuRoot + "검사", priority = 1)]

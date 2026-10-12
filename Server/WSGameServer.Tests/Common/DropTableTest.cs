@@ -13,14 +13,14 @@ public class DropTableTest
     /// <summary>실제 드롭 시트와 같은 모양의 테스트용 Row.</summary>
     private sealed record Row(int DropTID, int ItemTID, int Weight);
 
-    private static readonly Row[] FishingRows =
+    private static readonly Row[] ExcavationRows =
     {
         new(10001, 1001, 700),
         new(10002, 1002, 300),
     };
 
     private static DropTable BuildTable() =>
-        DropTable.From("FishingBasicTable", FishingRows, r => r.ItemTID, r => r.Weight);
+        DropTable.From("ExcavationBasicTable", ExcavationRows, r => r.ItemTID, r => r.Weight);
 
     /// <summary>지정한 값만 내놓는 난수원.</summary>
     private static Random FixedRoll(int value)
@@ -86,7 +86,7 @@ public class DropTableTest
     public void 이름이_비면_거부한다()
     {
         Should.Throw<ArgumentException>(() =>
-            DropTable.From("", FishingRows, r => r.ItemTID, r => r.Weight));
+            DropTable.From("", ExcavationRows, r => r.ItemTID, r => r.Weight));
     }
 
     // ────────────────────────── DropTableCatalog ──────────────────────────
@@ -101,11 +101,11 @@ public class DropTableTest
     {
         var catalog = new DropTableCatalog();
 
-        catalog.Register(IndustryType.Fishing, level: 1, BuildTable());
+        catalog.Register(IndustryType.Excavation, level: 1, BuildTable());
 
         catalog.Count.ShouldBe(1);
-        catalog.Get(IndustryType.Fishing, 1).Name.ShouldBe("FishingBasicTable");
-        catalog.Get(IndustryType.Fishing, 1).Roll(FixedRoll(0)).ShouldBe(1001);
+        catalog.Get(IndustryType.Excavation, 1).Name.ShouldBe("ExcavationBasicTable");
+        catalog.Get(IndustryType.Excavation, 1).Roll(FixedRoll(0)).ShouldBe(1001);
     }
 
     [Fact]
@@ -120,30 +120,30 @@ public class DropTableTest
         };
 
         var catalog = new DropTableCatalog();
-        catalog.Register(IndustryType.Fishing, "FishingBasicTable", rows,
+        catalog.Register(IndustryType.Excavation, "ExcavationBasicTable", rows,
                          r => r.IndustryLevel, r => r.ItemTID, r => r.Weight);
 
         catalog.Count.ShouldBe(2);
 
         // Lv1을 돌리면 Lv2 아이템(1011)은 절대 나오지 않는다 — 이 격리가 이 구조의 전부다.
-        catalog.Get(IndustryType.Fishing, 1).TotalWeight.ShouldBe(1000);
-        catalog.Get(IndustryType.Fishing, 1).Roll(FixedRoll(999)).ShouldBe(1002);
-        catalog.Get(IndustryType.Fishing, 2).TotalWeight.ShouldBe(700);
-        catalog.Get(IndustryType.Fishing, 2).Roll(FixedRoll(0)).ShouldBe(1011);
+        catalog.Get(IndustryType.Excavation, 1).TotalWeight.ShouldBe(1000);
+        catalog.Get(IndustryType.Excavation, 1).Roll(FixedRoll(999)).ShouldBe(1002);
+        catalog.Get(IndustryType.Excavation, 2).TotalWeight.ShouldBe(700);
+        catalog.Get(IndustryType.Excavation, 2).Roll(FixedRoll(0)).ShouldBe(1011);
     }
 
     [Fact]
     public void 같은_산업_같은_레벨을_두_번_등록하면_막는다()
     {
         var catalog = new DropTableCatalog();
-        catalog.Register(IndustryType.Fishing, level: 1, BuildTable());
+        catalog.Register(IndustryType.Excavation, level: 1, BuildTable());
 
         // 덮어쓰기를 허용하면 등록 순서에 따라 확률이 조용히 바뀐다.
         Should.Throw<InvalidOperationException>(() =>
-            catalog.Register(IndustryType.Fishing, level: 1, BuildTable()));
+            catalog.Register(IndustryType.Excavation, level: 1, BuildTable()));
 
         // 같은 산업이라도 레벨이 다르면 별개 테이블이다.
-        catalog.Register(IndustryType.Fishing, level: 2, BuildTable());
+        catalog.Register(IndustryType.Excavation, level: 2, BuildTable());
         catalog.Count.ShouldBe(2);
     }
 
@@ -151,15 +151,15 @@ public class DropTableTest
     public void 없는_산업이나_레벨을_조회하면_예외를_던진다()
     {
         var catalog = new DropTableCatalog();
-        catalog.Register(IndustryType.Fishing, level: 1, BuildTable());
+        catalog.Register(IndustryType.Excavation, level: 1, BuildTable());
 
         // 조용히 null을 주면 드롭이 비어도 아무도 모른다.
         Should.Throw<KeyNotFoundException>(() => catalog.Get(IndustryType.Mining, 1));
-        Should.Throw<KeyNotFoundException>(() => catalog.Get(IndustryType.Fishing, 2));
+        Should.Throw<KeyNotFoundException>(() => catalog.Get(IndustryType.Excavation, 2));
 
         catalog.TryGet(IndustryType.Mining, 1, out _).ShouldBeFalse();
-        catalog.TryGet(IndustryType.Fishing, 2, out _).ShouldBeFalse();
-        catalog.TryGet(IndustryType.Fishing, 1, out _).ShouldBeTrue();
+        catalog.TryGet(IndustryType.Excavation, 2, out _).ShouldBeFalse();
+        catalog.TryGet(IndustryType.Excavation, 1, out _).ShouldBeTrue();
     }
 
     [Fact]
@@ -167,14 +167,14 @@ public class DropTableTest
     {
         var catalog = new DropTableCatalog();
 
-        catalog.Register(IndustryType.Fishing, level: 1, DropTable.From(
-            "FishingBasicTable", new[] { new Row(1, 1001, 100) }, r => r.ItemTID, r => r.Weight));
+        catalog.Register(IndustryType.Excavation, level: 1, DropTable.From(
+            "ExcavationBasicTable", new[] { new Row(1, 1001, 100) }, r => r.ItemTID, r => r.Weight));
         catalog.Register(IndustryType.Mining, level: 1, DropTable.From(
             "MiningBasicTable", new[] { new Row(1, 2001, 100) }, r => r.ItemTID, r => r.Weight));
 
         catalog.Count.ShouldBe(2);
-        catalog.Get(IndustryType.Fishing, 1).Roll(FixedRoll(0)).ShouldBe(1001);
+        catalog.Get(IndustryType.Excavation, 1).Roll(FixedRoll(0)).ShouldBe(1001);
         catalog.Get(IndustryType.Mining, 1).Roll(FixedRoll(0)).ShouldBe(2001);
-        catalog.All.Select(x => x.Industry).ShouldBe(new[] { IndustryType.Fishing, IndustryType.Mining }, ignoreOrder: true);
+        catalog.All.Select(x => x.Industry).ShouldBe(new[] { IndustryType.Excavation, IndustryType.Mining }, ignoreOrder: true);
     }
 }

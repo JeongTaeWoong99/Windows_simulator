@@ -6,9 +6,9 @@ using MemoryPack;
 
 namespace GameData
 {
-    /// <summary>FishingBasicTable 테이블의 한 행. FishingBasicTable.bytes = MemoryPackSerializer.Serialize(List&lt;FishingBasicTableRow&gt;)</summary>
+    /// <summary>ExcavationBasicTable 테이블의 한 행. ExcavationBasicTable.bytes = MemoryPackSerializer.Serialize(List&lt;ExcavationBasicTableRow&gt;)</summary>
     [MemoryPackable]
-    public partial class FishingBasicTableRow
+    public partial class ExcavationBasicTableRow
     {
         public int    DropTID       { get; set; }        // int
         public int    IndustryLevel { get; set; }        // int [1..5]

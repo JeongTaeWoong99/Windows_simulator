@@ -4,209 +4,209 @@
     "IndustryLevel": 1,
     "ItemTID": 10001,
     "Weight": 6590,
-    "Description": "붕어"
+    "Description": "깨진 토기 조각"
   },
   {
     "DropTID": 200102,
     "IndustryLevel": 1,
     "ItemTID": 10002,
     "Weight": 2000,
-    "Description": "잉어"
+    "Description": "녹슨 동전"
   },
   {
     "DropTID": 200103,
     "IndustryLevel": 1,
     "ItemTID": 10003,
     "Weight": 1000,
-    "Description": "월척 붕어"
+    "Description": "흙 묻은 구슬"
   },
   {
     "DropTID": 200104,
     "IndustryLevel": 1,
     "ItemTID": 10004,
     "Weight": 300,
-    "Description": "향어"
+    "Description": "청동 거울"
   },
   {
     "DropTID": 200105,
     "IndustryLevel": 1,
     "ItemTID": 10005,
     "Weight": 100,
-    "Description": "대물 잉어"
+    "Description": "옛 장인의 도장"
   },
   {
     "DropTID": 200106,
     "IndustryLevel": 1,
     "ItemTID": 10006,
     "Weight": 10,
-    "Description": "전설의 잉어"
+    "Description": "개척자의 일지"
   },
   {
     "DropTID": 200201,
     "IndustryLevel": 2,
     "ItemTID": 10011,
     "Weight": 6590,
-    "Description": "피라미"
+    "Description": "부러진 화살촉"
   },
   {
     "DropTID": 200202,
     "IndustryLevel": 2,
     "ItemTID": 10012,
     "Weight": 2000,
-    "Description": "메기"
+    "Description": "녹슨 투구"
   },
   {
     "DropTID": 200203,
     "IndustryLevel": 2,
     "ItemTID": 10013,
     "Weight": 1000,
-    "Description": "가물치"
+    "Description": "성벽 문장석"
   },
   {
     "DropTID": 200204,
     "IndustryLevel": 2,
     "ItemTID": 10014,
     "Weight": 300,
-    "Description": "백년 메기"
+    "Description": "기사의 방패"
   },
   {
     "DropTID": 200205,
     "IndustryLevel": 2,
     "ItemTID": 10015,
     "Weight": 100,
-    "Description": "저수지의 주인"
+    "Description": "성주의 인장"
   },
   {
     "DropTID": 200206,
     "IndustryLevel": 2,
     "ItemTID": 10016,
     "Weight": 10,
-    "Description": "용왕의 사자"
+    "Description": "수호기사의 검"
   },
   {
     "DropTID": 200301,
     "IndustryLevel": 3,
     "ItemTID": 10021,
     "Weight": 6590,
-    "Description": "모래무지"
+    "Description": "깨진 석판"
   },
   {
     "DropTID": 200302,
     "IndustryLevel": 3,
     "ItemTID": 10022,
     "Weight": 2000,
-    "Description": "쏘가리"
+    "Description": "향로 조각"
   },
   {
     "DropTID": 200303,
     "IndustryLevel": 3,
     "ItemTID": 10023,
     "Weight": 1000,
-    "Description": "황금 잉어"
+    "Description": "신전 촛대"
   },
   {
     "DropTID": 200304,
     "IndustryLevel": 3,
     "ItemTID": 10024,
     "Weight": 300,
-    "Description": "강의 수호자"
+    "Description": "사제의 홀"
   },
   {
     "DropTID": 200305,
     "IndustryLevel": 3,
     "ItemTID": 10025,
     "Weight": 100,
-    "Description": "천년 쏘가리"
+    "Description": "신탁의 석판"
   },
   {
     "DropTID": 200306,
     "IndustryLevel": 3,
     "ItemTID": 10026,
     "Weight": 10,
-    "Description": "강신의 비늘"
+    "Description": "잊힌 신의 우상"
   },
   {
     "DropTID": 200401,
     "IndustryLevel": 4,
     "ItemTID": 10031,
     "Weight": 6590,
-    "Description": "빙어"
+    "Description": "오래된 뼈 조각"
   },
   {
     "DropTID": 200402,
     "IndustryLevel": 4,
     "ItemTID": 10032,
     "Weight": 2000,
-    "Description": "송어"
+    "Description": "장신구 파편"
   },
   {
     "DropTID": 200403,
     "IndustryLevel": 4,
     "ItemTID": 10033,
     "Weight": 1000,
-    "Description": "무지개 송어"
+    "Description": "묘실 등잔"
   },
   {
     "DropTID": 200404,
     "IndustryLevel": 4,
     "ItemTID": 10034,
     "Weight": 300,
-    "Description": "호수의 눈"
+    "Description": "황금 가면"
   },
   {
     "DropTID": 200405,
     "IndustryLevel": 4,
     "ItemTID": 10035,
     "Weight": 100,
-    "Description": "심층 대어"
+    "Description": "왕비의 왕관"
   },
   {
     "DropTID": 200406,
     "IndustryLevel": 4,
     "ItemTID": 10036,
     "Weight": 10,
-    "Description": "호수의 심장"
+    "Description": "불멸의 성배"
   },
   {
     "DropTID": 200501,
     "IndustryLevel": 5,
     "ItemTID": 10041,
     "Weight": 6590,
-    "Description": "심해 새우"
+    "Description": "고대 주화"
   },
   {
     "DropTID": 200502,
     "IndustryLevel": 5,
     "ItemTID": 10042,
     "Weight": 2000,
-    "Description": "아귀"
+    "Description": "옥새 조각"
   },
   {
     "DropTID": 200503,
     "IndustryLevel": 5,
     "ItemTID": 10043,
     "Weight": 1000,
-    "Description": "심해 등불고기"
+    "Description": "왕실 문서"
   },
   {
     "DropTID": 200504,
     "IndustryLevel": 5,
     "ItemTID": 10044,
     "Weight": 300,
-    "Description": "대왕오징어"
+    "Description": "고대 왕의 홀"
   },
   {
     "DropTID": 200505,
     "IndustryLevel": 5,
     "ItemTID": 10045,
     "Weight": 100,
-    "Description": "해구의 지배자"
+    "Description": "왕도의 지도석"
   },
   {
     "DropTID": 200506,
     "IndustryLevel": 5,
     "ItemTID": 10046,
     "Weight": 10,
-    "Description": "리바이어던의 조각"
+    "Description": "태초의 유물"
   }
 ]

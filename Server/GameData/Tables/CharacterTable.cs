@@ -14,7 +14,7 @@ namespace GameData
         public string       Name         { get; set; } = "";  // string
         public GlobalRarity GlobalRarity { get; set; }        // eGlobalRarity
         public int          Farming      { get; set; }        // int
-        public int          Fishing      { get; set; }        // int
+        public int          Excavation   { get; set; }        // int
         public int          Mining       { get; set; }        // int
         public int          Logging      { get; set; }        // int
         public int          Hunting      { get; set; }        // int

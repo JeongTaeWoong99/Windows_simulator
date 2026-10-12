@@ -18,8 +18,8 @@ namespace GameData
         public static TableSet<string, ConstantsTableRow> ConstantsTable { get; private set; } = null!;
         public static TableSet<int, CommonRewardTableRow> CommonRewardTable { get; private set; } = null!;
         public static TableSet<int, CommonRewardOverrideTableRow> CommonRewardOverrideTable { get; private set; } = null!;
+        public static TableSet<int, ExcavationBasicTableRow> ExcavationBasicTable { get; private set; } = null!;
         public static TableSet<int, FarmingBasicTableRow> FarmingBasicTable { get; private set; } = null!;
-        public static TableSet<int, FishingBasicTableRow> FishingBasicTable { get; private set; } = null!;
         public static TableSet<int, HuntingBasicTableRow> HuntingBasicTable { get; private set; } = null!;
         public static TableSet<int, LoggingBasicTableRow> LoggingBasicTable { get; private set; } = null!;
         public static TableSet<int, MiningBasicTableRow> MiningBasicTable { get; private set; } = null!;
@@ -51,8 +51,8 @@ namespace GameData
             ConstantsTable = TableSet<string, ConstantsTableRow>.From(read("ConstantsTable.bytes"), r => r.Name);
             CommonRewardTable = TableSet<int, CommonRewardTableRow>.From(read("CommonRewardTable.bytes"), r => r.CommonRewardTID);
             CommonRewardOverrideTable = TableSet<int, CommonRewardOverrideTableRow>.From(read("CommonRewardOverrideTable.bytes"), r => r.CommonRewardOverrideTID);
+            ExcavationBasicTable = TableSet<int, ExcavationBasicTableRow>.From(read("ExcavationBasicTable.bytes"), r => r.DropTID);
             FarmingBasicTable = TableSet<int, FarmingBasicTableRow>.From(read("FarmingBasicTable.bytes"), r => r.DropTID);
-            FishingBasicTable = TableSet<int, FishingBasicTableRow>.From(read("FishingBasicTable.bytes"), r => r.DropTID);
             HuntingBasicTable = TableSet<int, HuntingBasicTableRow>.From(read("HuntingBasicTable.bytes"), r => r.DropTID);
             LoggingBasicTable = TableSet<int, LoggingBasicTableRow>.From(read("LoggingBasicTable.bytes"), r => r.DropTID);
             MiningBasicTable = TableSet<int, MiningBasicTableRow>.From(read("MiningBasicTable.bytes"), r => r.DropTID);

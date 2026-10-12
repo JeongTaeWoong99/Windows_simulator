@@ -32,28 +32,28 @@
     "UserTraitTID": 102,
     "Level": 2,
     "AccountLevel": 5,
-    "Description": "낚시 개척 Lv2"
+    "Description": "발굴 개척 Lv2"
   },
   {
     "UserTraitLevelTID": 10203,
     "UserTraitTID": 102,
     "Level": 3,
     "AccountLevel": 15,
-    "Description": "낚시 개척 Lv3"
+    "Description": "발굴 개척 Lv3"
   },
   {
     "UserTraitLevelTID": 10204,
     "UserTraitTID": 102,
     "Level": 4,
     "AccountLevel": 30,
-    "Description": "낚시 개척 Lv4"
+    "Description": "발굴 개척 Lv4"
   },
   {
     "UserTraitLevelTID": 10205,
     "UserTraitTID": 102,
     "Level": 5,
     "AccountLevel": 50,
-    "Description": "낚시 개척 Lv5"
+    "Description": "발굴 개척 Lv5"
   },
   {
     "UserTraitLevelTID": 10302,
@@ -214,70 +214,70 @@
     "UserTraitTID": 202,
     "Level": 1,
     "AccountLevel": 0,
-    "Description": "낚시 속도 Lv1"
+    "Description": "발굴 속도 Lv1"
   },
   {
     "UserTraitLevelTID": 20202,
     "UserTraitTID": 202,
     "Level": 2,
     "AccountLevel": 5,
-    "Description": "낚시 속도 Lv2"
+    "Description": "발굴 속도 Lv2"
   },
   {
     "UserTraitLevelTID": 20203,
     "UserTraitTID": 202,
     "Level": 3,
     "AccountLevel": 10,
-    "Description": "낚시 속도 Lv3"
+    "Description": "발굴 속도 Lv3"
   },
   {
     "UserTraitLevelTID": 20204,
     "UserTraitTID": 202,
     "Level": 4,
     "AccountLevel": 15,
-    "Description": "낚시 속도 Lv4"
+    "Description": "발굴 속도 Lv4"
   },
   {
     "UserTraitLevelTID": 20205,
     "UserTraitTID": 202,
     "Level": 5,
     "AccountLevel": 20,
-    "Description": "낚시 속도 Lv5"
+    "Description": "발굴 속도 Lv5"
   },
   {
     "UserTraitLevelTID": 20206,
     "UserTraitTID": 202,
     "Level": 6,
     "AccountLevel": 25,
-    "Description": "낚시 속도 Lv6"
+    "Description": "발굴 속도 Lv6"
   },
   {
     "UserTraitLevelTID": 20207,
     "UserTraitTID": 202,
     "Level": 7,
     "AccountLevel": 30,
-    "Description": "낚시 속도 Lv7"
+    "Description": "발굴 속도 Lv7"
   },
   {
     "UserTraitLevelTID": 20208,
     "UserTraitTID": 202,
     "Level": 8,
     "AccountLevel": 35,
-    "Description": "낚시 속도 Lv8"
+    "Description": "발굴 속도 Lv8"
   },
   {
     "UserTraitLevelTID": 20209,
     "UserTraitTID": 202,
     "Level": 9,
     "AccountLevel": 40,
-    "Description": "낚시 속도 Lv9"
+    "Description": "발굴 속도 Lv9"
   },
   {
     "UserTraitLevelTID": 20210,
     "UserTraitTID": 202,
     "Level": 10,
     "AccountLevel": 45,
-    "Description": "낚시 속도 Lv10"
+    "Description": "발굴 속도 Lv10"
   },
   {
     "UserTraitLevelTID": 20301,
@@ -634,70 +634,70 @@
     "UserTraitTID": 302,
     "Level": 1,
     "AccountLevel": 0,
-    "Description": "낚시 산출량 Lv1"
+    "Description": "발굴 산출량 Lv1"
   },
   {
     "UserTraitLevelTID": 30202,
     "UserTraitTID": 302,
     "Level": 2,
     "AccountLevel": 5,
-    "Description": "낚시 산출량 Lv2"
+    "Description": "발굴 산출량 Lv2"
   },
   {
     "UserTraitLevelTID": 30203,
     "UserTraitTID": 302,
     "Level": 3,
     "AccountLevel": 10,
-    "Description": "낚시 산출량 Lv3"
+    "Description": "발굴 산출량 Lv3"
   },
   {
     "UserTraitLevelTID": 30204,
     "UserTraitTID": 302,
     "Level": 4,
     "AccountLevel": 15,
-    "Description": "낚시 산출량 Lv4"
+    "Description": "발굴 산출량 Lv4"
   },
   {
     "UserTraitLevelTID": 30205,
     "UserTraitTID": 302,
     "Level": 5,
     "AccountLevel": 20,
-    "Description": "낚시 산출량 Lv5"
+    "Description": "발굴 산출량 Lv5"
   },
   {
     "UserTraitLevelTID": 30206,
     "UserTraitTID": 302,
     "Level": 6,
     "AccountLevel": 25,
-    "Description": "낚시 산출량 Lv6"
+    "Description": "발굴 산출량 Lv6"
   },
   {
     "UserTraitLevelTID": 30207,
     "UserTraitTID": 302,
     "Level": 7,
     "AccountLevel": 30,
-    "Description": "낚시 산출량 Lv7"
+    "Description": "발굴 산출량 Lv7"
   },
   {
     "UserTraitLevelTID": 30208,
     "UserTraitTID": 302,
     "Level": 8,
     "AccountLevel": 35,
-    "Description": "낚시 산출량 Lv8"
+    "Description": "발굴 산출량 Lv8"
   },
   {
     "UserTraitLevelTID": 30209,
     "UserTraitTID": 302,
     "Level": 9,
     "AccountLevel": 40,
-    "Description": "낚시 산출량 Lv9"
+    "Description": "발굴 산출량 Lv9"
   },
   {
     "UserTraitLevelTID": 30210,
     "UserTraitTID": 302,
     "Level": 10,
     "AccountLevel": 45,
-    "Description": "낚시 산출량 Lv10"
+    "Description": "발굴 산출량 Lv10"
   },
   {
     "UserTraitLevelTID": 30301,

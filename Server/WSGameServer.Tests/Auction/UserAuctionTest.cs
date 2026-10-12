@@ -12,7 +12,7 @@ public class UserAuctionTest
 {
     private static readonly DateTime Now = TestUserBuilder.Base;
 
-    private const int  Carp      = 10001;   // 붕어 — 낚시 · Common · BasePrice 10
+    private const int  Carp      = 10001;   // 붕어 — 발굴 · Common · BasePrice 10
     private const int  SwordTid  = 1001;
     private const long Sword     = 55;
     private const long CharA     = 500;
@@ -97,7 +97,7 @@ public class UserAuctionTest
 
         var saved = b.DB.PostedOf<RegisterAuctionRepository>().Single();
         (saved.Item.Kind, saved.Item.Tid, saved.Item.Count, saved.Item.Category, saved.Item.Rarity)
-            .ShouldBe((EAuctionKind.Item, Carp, 7, (int)ItemType.Fishing, (int)GlobalRarity.Common));
+            .ShouldBe((EAuctionKind.Item, Carp, 7, (int)ItemType.Excavation, (int)GlobalRarity.Common));
     }
 
     [Fact]

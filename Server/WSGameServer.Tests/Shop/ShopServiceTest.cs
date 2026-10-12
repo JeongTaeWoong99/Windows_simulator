@@ -14,10 +14,10 @@ namespace WSGameServer;
 /// </summary>
 public class ShopServiceTest
 {
-    /// <summary>붕어 — 낚시 Lv1 Common. BasePrice 10.</summary>
+    /// <summary>붕어 — 발굴 Lv1 Common. BasePrice 10.</summary>
     private const int CarpTid = 10001;
 
-    /// <summary>전설의 잉어 — 낚시 Lv1 Mythic. BasePrice 1000.</summary>
+    /// <summary>전설의 잉어 — 발굴 Lv1 Mythic. BasePrice 1000.</summary>
     private const int LegendTid = 10006;
 
     public ShopServiceTest() => GameTableFixture.EnsureLoaded();

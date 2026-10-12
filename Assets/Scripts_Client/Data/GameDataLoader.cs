@@ -530,8 +530,8 @@ public static class GameDataLoader
                 }
                 break;
 
-            case EIndustryType.Fishing:
-                foreach (var row in GameTable.FishingBasicTable.All)
+            case EIndustryType.Excavation:
+                foreach (var row in GameTable.ExcavationBasicTable.All)
                 {
                     if (row.IndustryLevel == level) { list.Add(new IndustryDrop(row.ItemTID, row.Weight)); }
                 }

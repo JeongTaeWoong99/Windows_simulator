@@ -1,6 +1,6 @@
 # CLAUDE.md — 게임 기획 · 데이터
 
-> 최종 업데이트: 2026-10-08 (문서 사이트가 `DataLog/`도 읽는다 — `/data` · T-132) · 2026-10-07 (검사기 `-Fix`가 한글 문서 이름을 지킨다 — T-090) · 2026-10-07 (플레이어용 설명 `Tooltip` · `{컬럼}` 보간 — T-093) · 2026-10-06 (생성물 줄바꿈 LF 고정 — 생성기 `WriteText` · `.gitattributes`) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
+> 최종 업데이트: 2026-10-12 (예시의 낚시 → 유적 발굴 · 폴더 `fishing/` → `excavation/` — T-142) · 2026-10-08 (문서 사이트가 `DataLog/`도 읽는다 — `/data` · T-132) · 2026-10-07 (검사기 `-Fix`가 한글 문서 이름을 지킨다 — T-090) · 2026-10-07 (플레이어용 설명 `Tooltip` · `{컬럼}` 보간 — T-093) · 2026-10-06 (생성물 줄바꿈 LF 고정 — 생성기 `WriteText` · `.gitattributes`) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
 
 게임 시스템·콘텐츠·데이터에 닿는 작업에서 참고하는 문서다.
 공통 규칙(환경·협업·스킬)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -93,7 +93,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
   루트 상대 상수(`ExcelDirRel` 등)에서 조합한다. **프로젝트 폴더 상대(`../GameData`)로 두지 않는다** —
   프로젝트를 옮기면 컴파일은 통과하면서 엉뚱한 위치에 파일을 쓴다.
 - **시트 이름 `<테이블명>.<접미사>`는 병합 규약이다** — 베이스 이름이 같은 시트들이
-  한 테이블로 합쳐진다(예: `FishingBasicTable.Lv1`~`.Lv5` → `FishingBasicTable`).
+  한 테이블로 합쳐진다(예: `ExcavationBasicTable.Lv1`~`.Lv5` → `ExcavationBasicTable`).
   상세는 [`excel-table-creator`](../.claude/skills/common/excel-table-creator/SKILL.md) 스킬 참조.
 - **시트를 지우면 그 테이블의 `.bytes`·`.json`도 자동 삭제된다**(Unity 미러까지 전파).
   생성물을 손으로 지울 필요가 없다.
@@ -177,7 +177,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 | **모든 폴더** | **영문 소문자 · kebab-case** | `GameDesign/design/gathering/farming/`, `tasks/archive/` |
 | 기획·설계 `.md` 파일 | **한글** | `게임기획코어.md`, `산업레벨.md`, `요일로테이션.md` |
 | 일감 파일 | `T-<3자리>-<한글슬러그>.md` | `T-005-드롭테이블.md` |
-| **엑셀 파일 (`.xlsx`)** | **영문 PascalCase** (2026-08-09 변경 — `Drop낚시` 등 한글 5개를 개명) | `Item.xlsx`, `DropFishing.xlsx` |
+| **엑셀 파일 (`.xlsx`)** | **영문 PascalCase** (2026-08-09 변경 — `Drop농사` 등 한글 5개를 개명) | `Item.xlsx`, `DropFarming.xlsx` |
 | 문서 안의 링크·경로 | 실제 경로 그대로 (영문 폴더 + 한글 파일) | `[자원채취](gathering/README.md)` |
 
 **폴더를 영문으로 되돌린 이유:** 문서를 웹으로 배포할 때 한글 폴더가
@@ -189,13 +189,13 @@ percent-encoding(`진행%20및%20성장`)으로 깨지고, 공백이 섞이면 U
 | 옛 이름 | 새 이름 | | 옛 이름 | 새 이름 |
 |---------|---------|---|---------|---------|
 | `일감/` | `tasks/` | | `자원채취/` | `gathering/` |
-| `일감/보관/` | `tasks/archive/` | | `낚시/` `농사/` `벌목/` | `fishing/` `farming/` `logging/` |
+| `일감/보관/` | `tasks/archive/` | | `농사/` `벌목/` | `farming/` `logging/` |
 | `문서/` | `docs/` | | `사냥/` `채굴/` | `hunting/` `mining/` |
 | `Server/문서/` | `Server/docs/` | | `작업슬롯/` | `workslot/` |
 | `GameDesign/기획/` | `GameDesign/design/` | | `진행 및 성장/` | `progression/` |
 | `아키텍처리뷰/` | `architecture-review/` | | `캐릭터/` `퀘스트/` `특성/` | `character/` `quest/` `trait/` |
 | `거래/` `아이템/` | `trade/` `item/` | | `게임UI/` (+`참고 사진/`) | `ui/` (+`references/`) |
-| `리서치/` `방향제안/` | `research/` `proposals/` | | | |
+| `리서치/` `방향제안/` | `research/` `proposals/` | | `fishing/` (2026-10-12 산업 교체 — T-142) | `excavation/` |
 
 ### 그대로 두는 것
 

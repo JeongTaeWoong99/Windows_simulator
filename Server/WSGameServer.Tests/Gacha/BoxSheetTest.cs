@@ -77,7 +77,7 @@ public class BoxSheetTest
         GameTable.CommonRewardTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
         GameTable.CommonRewardOverrideTable.All.ShouldAllBe(r => boxTids.Contains(r.ItemTID));
         GameTable.FarmingBasicTable.All.Select(r => r.ItemTID)
-            .Concat(GameTable.FishingBasicTable.All.Select(r => r.ItemTID))
+            .Concat(GameTable.ExcavationBasicTable.All.Select(r => r.ItemTID))
             .Concat(GameTable.MiningBasicTable.All.Select(r => r.ItemTID))
             .Concat(GameTable.LoggingBasicTable.All.Select(r => r.ItemTID))
             .Concat(GameTable.HuntingBasicTable.All.Select(r => r.ItemTID))
