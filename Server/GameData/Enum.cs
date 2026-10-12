@@ -14,7 +14,9 @@ namespace GameData
         Logging    = 4,  // 벌목
         Hunting    = 5,  // 사냥
         Misc       = 6,  // 기타
-        Special    = 7,  // 특수
+        Special    = 7,  // 사용 안 함 (2026-10-12 상자·소모품을 Box·Consumable로 옮김 — 등급 Special과 겹침)
+        Box        = 8,  // 상자
+        Consumable = 9,  // 소모품
 
         Max       ,
     };

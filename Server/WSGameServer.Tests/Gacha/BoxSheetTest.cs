@@ -19,7 +19,7 @@ public class BoxSheetTest
         Boxes.Count().ShouldBe(15);
         Boxes.GroupBy(r => r.GlobalRarity).Select(g => (g.Key, g.Count())).OrderBy(g => g.Key)
             .ShouldBe(new[] { (GlobalRarity.Common, 5), (GlobalRarity.Uncommon, 5), (GlobalRarity.Rare, 5) });
-        Boxes.ShouldAllBe(r => r.ItemType == ItemType.Special && r.MaxStack == 1000);
+        Boxes.ShouldAllBe(r => r.ItemType == ItemType.Box && r.MaxStack == 1000);
     }
 
     [Fact]
