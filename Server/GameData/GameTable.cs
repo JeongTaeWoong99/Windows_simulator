@@ -24,6 +24,7 @@ namespace GameData
         public static TableSet<int, LoggingBasicTableRow> LoggingBasicTable { get; private set; } = null!;
         public static TableSet<int, MiningBasicTableRow> MiningBasicTable { get; private set; } = null!;
         public static TableSet<int, EquipTableRow> EquipTable { get; private set; } = null!;
+        public static TableSet<GlobalRarity, DisassembleTableRow> DisassembleTable { get; private set; } = null!;
         public static TableSet<int, EnchantOptionTableRow> EnchantOptionTable { get; private set; } = null!;
         public static TableSet<GlobalRarity, EnchantGradeTableRow> EnchantGradeTable { get; private set; } = null!;
         public static TableSet<int, EnchantItemTableRow> EnchantItemTable { get; private set; } = null!;
@@ -57,6 +58,7 @@ namespace GameData
             LoggingBasicTable = TableSet<int, LoggingBasicTableRow>.From(read("LoggingBasicTable.bytes"), r => r.DropTID);
             MiningBasicTable = TableSet<int, MiningBasicTableRow>.From(read("MiningBasicTable.bytes"), r => r.DropTID);
             EquipTable = TableSet<int, EquipTableRow>.From(read("EquipTable.bytes"), r => r.EquipTID);
+            DisassembleTable = TableSet<GlobalRarity, DisassembleTableRow>.From(read("DisassembleTable.bytes"), r => r.Rarity);
             EnchantOptionTable = TableSet<int, EnchantOptionTableRow>.From(read("EnchantOptionTable.bytes"), r => r.EnchantOptionTID);
             EnchantGradeTable = TableSet<GlobalRarity, EnchantGradeTableRow>.From(read("EnchantGradeTable.bytes"), r => r.Grade);
             EnchantItemTable = TableSet<int, EnchantItemTableRow>.From(read("EnchantItemTable.bytes"), r => r.ItemTID);
