@@ -190,6 +190,7 @@ namespace MikaProtocol
         Epic = 4,
         Legendary = 5,
         Mythic = 6,
+        Special = 7,
     }
 
     // 경매 매물 종류. 경매장 서버(auction.proto의 kind)와 값이 같아야 한다.

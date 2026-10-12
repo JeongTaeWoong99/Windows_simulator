@@ -42,6 +42,7 @@ namespace GameData
         Epic      = 4,  // 영웅, 보라 #A335EE
         Legendary = 5,  // 전설, 주황/금색 #FF8000
         Mythic    = 6,  // 신화, 빨강/핑크 #E6CC80
+        Special   = 7,  // 스페셜, 무지개 (공용 최상위 · 유물·아티팩트 — T-150)
 
         Max      ,
     };
