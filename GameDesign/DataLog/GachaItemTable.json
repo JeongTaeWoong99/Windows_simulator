@@ -53,7 +53,7 @@
     "ItemTID": 10001,
     "Count": 27,
     "Weight": 600,
-    "Description": "자원 붕어 x27"
+    "Description": "자원 깨진 토기 조각 x27"
   },
   {
     "GachaItemTID": 9002,
@@ -109,7 +109,7 @@
     "ItemTID": 10002,
     "Count": 33,
     "Weight": 600,
-    "Description": "자원 잉어 x33"
+    "Description": "자원 녹슨 동전 x33"
   },
   {
     "GachaItemTID": 10002,
@@ -173,7 +173,7 @@
     "ItemTID": 10003,
     "Count": 45,
     "Weight": 600,
-    "Description": "자원 월척 붕어 x45"
+    "Description": "자원 흙 묻은 구슬 x45"
   },
   {
     "GachaItemTID": 11002,
@@ -237,7 +237,7 @@
     "ItemTID": 10011,
     "Count": 27,
     "Weight": 600,
-    "Description": "자원 피라미 x27"
+    "Description": "자원 부러진 화살촉 x27"
   },
   {
     "GachaItemTID": 12002,
@@ -293,7 +293,7 @@
     "ItemTID": 10012,
     "Count": 33,
     "Weight": 600,
-    "Description": "자원 메기 x33"
+    "Description": "자원 녹슨 투구 x33"
   },
   {
     "GachaItemTID": 13002,
@@ -357,7 +357,7 @@
     "ItemTID": 10013,
     "Count": 45,
     "Weight": 600,
-    "Description": "자원 가물치 x45"
+    "Description": "자원 성벽 문장석 x45"
   },
   {
     "GachaItemTID": 14002,
@@ -421,7 +421,7 @@
     "ItemTID": 10021,
     "Count": 27,
     "Weight": 600,
-    "Description": "자원 모래무지 x27"
+    "Description": "자원 깨진 석판 x27"
   },
   {
     "GachaItemTID": 15002,
@@ -477,7 +477,7 @@
     "ItemTID": 10022,
     "Count": 33,
     "Weight": 600,
-    "Description": "자원 쏘가리 x33"
+    "Description": "자원 향로 조각 x33"
   },
   {
     "GachaItemTID": 16002,
@@ -541,7 +541,7 @@
     "ItemTID": 10023,
     "Count": 45,
     "Weight": 600,
-    "Description": "자원 황금 잉어 x45"
+    "Description": "자원 신전 촛대 x45"
   },
   {
     "GachaItemTID": 17002,
@@ -605,7 +605,7 @@
     "ItemTID": 10031,
     "Count": 27,
     "Weight": 600,
-    "Description": "자원 빙어 x27"
+    "Description": "자원 오래된 뼈 조각 x27"
   },
   {
     "GachaItemTID": 18002,
@@ -661,7 +661,7 @@
     "ItemTID": 10032,
     "Count": 33,
     "Weight": 600,
-    "Description": "자원 송어 x33"
+    "Description": "자원 장신구 파편 x33"
   },
   {
     "GachaItemTID": 19002,
@@ -725,7 +725,7 @@
     "ItemTID": 10033,
     "Count": 45,
     "Weight": 600,
-    "Description": "자원 무지개 송어 x45"
+    "Description": "자원 묘실 등잔 x45"
   },
   {
     "GachaItemTID": 20002,
@@ -789,7 +789,7 @@
     "ItemTID": 10041,
     "Count": 27,
     "Weight": 600,
-    "Description": "자원 심해 새우 x27"
+    "Description": "자원 고대 주화 x27"
   },
   {
     "GachaItemTID": 21002,
@@ -845,7 +845,7 @@
     "ItemTID": 10042,
     "Count": 33,
     "Weight": 600,
-    "Description": "자원 아귀 x33"
+    "Description": "자원 옥새 조각 x33"
   },
   {
     "GachaItemTID": 22002,
@@ -909,7 +909,7 @@
     "ItemTID": 10043,
     "Count": 45,
     "Weight": 600,
-    "Description": "자원 심해 등불고기 x45"
+    "Description": "자원 왕실 문서 x45"
   },
   {
     "GachaItemTID": 23002,

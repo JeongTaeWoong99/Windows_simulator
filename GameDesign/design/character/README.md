@@ -440,14 +440,15 @@ enum은 **뒤에만 추가한다**.
 ### 5.6 장비 분해 (2026-10-07 확정)
 
 **남는 장비 개체를 분해해 특정 재료 아이템으로 바꾼다.** 이번 결정은 **재료가 나오는 데까지**다 —
-그 재료를 어디에 쓰는지는 아직 정하지 않았다. ❌ 미구현 (일감 [T-131](../../../tasks/T-131-장비분해.md))
+재료와 쓰임은 2026-10-10 정했다([아이템](../item/README.md) 4.3 · T-112 · 이슈 [#61](https://github.com/JeongTaeWoong99/Windows_simulator/issues/61)). ❌ 미구현 (일감 [T-131](../../../tasks/T-131-장비분해.md))
 
 | 항목 | 규칙 |
 | --- | --- |
 | 조건 | 착용 중이 아닌 장비 (인챈트 큐브와 같다 · 1.4) |
 | 결과 | 장비 개체가 사라지고 **분해 재료**가 인벤토리에 들어온다. 인챈트도 함께 사라진다 |
-| 재료 종류 · 수량 | ⚠️ 미정 — 아이템 TID · 장비 등급별 수량은 엑셀 설계 때 정한다 |
-| 재료의 쓰임 | ❌ 미정 → 5.3 |
+| 재료 종류 · 수량 | `100050` **마력의 파편** — 장비 등급(`GlobalRarity`)별 일반 1 · 고급 2 · 희귀 5 · 영웅 15 · 전설 50 · 신화 150개 (2026-10-10) · 데이터 `Equip.xlsx` `DisassembleTable` |
+| 인벤토리 가득 참 | 분해를 거절한다 — 장비만 사라지고 재료가 버려지면 안 된다. 우편 넘침 보관은 쓰지 않는다 (2026-10-12) |
+| 재료의 쓰임 | 큐브 · 비약 · 영약과 교환 → [아이템](../item/README.md) 4.3 (교환 시스템은 T-131 밖) |
 
 ### 5.3 ❌ 미정 — 이 문서에서 결정하지 않은 것
 
@@ -457,7 +458,6 @@ enum은 **뒤에만 추가한다**.
 | --- | --- | --- |
 | 1 | **추가 경험치 획득 경로** (먹이기 등) | 지금은 판정뿐이다(5.2). 먹이기를 두면 하위 아이템의 수요처가 생긴다 → [산업 레벨](../gathering/산업레벨.md) 4.2 |
 | 3 | **가챠 천장 · 확정 지급 경로** | 높은 적성을 얻는 길이 운뿐이다 → 5.1 (콘텐츠 해금과는 무관 → 2.3) |
-| 5 | **장비 분해 재료의 쓰임** | 재료가 쌓이기만 한다 → 5.6 |
 
 > 레벨 효과는 5.4로 확정됐다(2026-10-06 작업속도 가산으로 재확정 · T-003).
 
@@ -472,7 +472,7 @@ enum은 **뒤에만 추가한다**.
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
 | `t_character` | 개체 PK · TID · **레벨 · 경험치**(현재 레벨에서 쌓은 양 → 5.2) |
-| `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · 유저 소유 장비 개체(인벤토리 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
+| `Equip.xlsx` · `t_user_equip` · `t_character_equip` | `EquipTable`(종류 `EquipKind` · 대상 산업 · `SpeedAddPermille`) · `DisassembleTable`(등급 → 분해 재료 · 수량 → 5.6) · 유저 소유 장비 개체(인벤토리 칸 번호 포함) · (캐릭터, 칸 `EquipSlot`) → 개체 매핑 → 1장 #6. 상세는 `docs/superpowers/specs/2026-09-17-equipment-design.md` |
 | `EquipEnchant.xlsx` · `t_user_equip` 인챈트 4열 | `EnchantOptionTable`(등급별 옵션 풀 · 고정 `Value` · `Weight`) · `EnchantGradeTable`(장비 등급별 `SlotCount` · 인챈트 등급별 `UpPermyriad`) · `EnchantItemTable`(큐브 → `UpRatePermille`) · 개체의 `enchant_grade` · `enchant_1~3`(`EnchantOptionTID`, 0 = 빈 칸) → 1.4 |
 | 패킷 | `CharacterInfo.Aptitudes` — `AptitudeInfo{Industry, Value}` 목록 → 7.1 · **`S_CharacterSyncResponse`** — 레벨·경험치가 바뀐 개체 1건 푸시 → 5.2 |
 | 서버 | `User/Character/Character.cs`(`GetAptitude`·`Industries`) · `User.Character.cs` · `User.WorkStation.cs`(`ResolveSlotSpeed` — 착용 장비·특성·**레벨** 가산 · `SettleWorkStation` — 경험치 가산 · 레벨업 시 속도 재계산) · `Common/CharacterLevelCatalog.cs` · `Repository/CharacterGrowthRepository.cs` · `Gacha/GachaService.cs`(지급) · **`User.Equip.cs` · `Common/EquipCatalog.cs` · `Repository/EquipRepository.cs`**(장비 — 패킷 `S_EquipListResponse` · `S_EquipSyncResponse` · `C_EquipRequest` · `C_UnequipRequest` · `S_EquipResponse`) · **`User.Enchant.cs` · `Common/EnchantCatalog.cs`**(인챈트 — 패킷 `C_EquipEnchantRequest` · `S_EquipEnchantResponse`, 개체 갱신은 `S_EquipSyncResponse` · `EquipInfo.EnchantGrade`·`EnchantOptions`) |

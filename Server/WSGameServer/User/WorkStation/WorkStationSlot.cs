@@ -23,6 +23,9 @@ public sealed class WorkStationSlot
     // 실제 판정은 인스턴스의 JudgeCostUnits(레벨별 RequiredScore)를 쓴다 → Server/docs/채취-정산.md 2장
     public static long JudgeCost => (long)BaseCycleSeconds * 1000 * WorkSpeedScale;
 
+    /// <summary>판정 1회 최소 시간(ms). 슬롯 연출 한 바퀴를 보장한다 — Constants.xlsx(T-102).</summary>
+    public static long MinCycleMs => Constants.MinCycleMs;
+
     /// <summary>판정 1회당 산출 개수. 현재 1개 고정(회당 산출 수치 미확정).</summary>
     public const int YieldPerJudge = 1;
 
@@ -44,8 +47,8 @@ public sealed class WorkStationSlot
         JudgeCostUnits   = judgeCostUnits ?? JudgeCost;
         CharacterId      = characterId;
         LastTickAt       = startedAt;
-        CurrentWorkSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed ?? DefaultWorkSpeed);
-        SpeedBreakdown   = WorkSpeedBreakdown.Of(CurrentWorkSpeed);
+        _uncappedSpeed   = Math.Max(MinWorkSpeed, currentWorkSpeed ?? DefaultWorkSpeed);
+        SpeedBreakdown   = WorkSpeedBreakdown.Of(_uncappedSpeed);
     }
 
     public int SlotIndex { get; }
@@ -68,8 +71,15 @@ public sealed class WorkStationSlot
     /// <summary>판정에 못 미친 남은 작업량(0 이상 JudgeCostUnits 미만). 세션 지역 상태. 초가 아니라 작업량으로 든다.</summary>
     public long ProgressUnits { get; private set; }
 
-    /// <summary>현재 작업속도(천분율). 보정을 모두 적용한 확정값이며 접속마다 재계산한다. 테이블 기본값은 입력, 이 값은 결과.</summary>
-    public int CurrentWorkSpeed { get; private set; }
+    // 상한으로 자르기 전 속도. 잘린 값을 들고 있으면 판정 비용이 큰 레벨로 옮겨도 옛 상한에 묶인다.
+    private int _uncappedSpeed;
+
+    /// <summary>현재 작업속도(천분율). 보정을 모두 적용하고 상한(SpeedCap)으로 자른 확정값이며 접속마다 재계산한다.</summary>
+    public int CurrentWorkSpeed => Math.Min(_uncappedSpeed, SpeedCap);
+
+    // 실효 주기 = max(MinCycleMs, 판정 비용 ÷ 속도)를 속도로 옮긴 상한(정수 버림). 넘친 속도는 버린다 → Server/docs/채취-정산.md 3장
+    // 클라 WorkStationProgress.GetSpeedCap과 같은 식이다.
+    public int SpeedCap => (int)Math.Min(int.MaxValue, Math.Max(MinWorkSpeed, JudgeCostUnits / Math.Max(1L, MinCycleMs)));
 
     /// <summary>현재 작업속도를 이루는 항목들. 슬롯 정보로 그대로 나간다(T-055). 세션 지역 상태.</summary>
     public WorkSpeedBreakdown SpeedBreakdown { get; private set; }
@@ -109,17 +119,12 @@ public sealed class WorkStationSlot
     }
 
     /// <summary>채취 속도를 바꾼다. ⚠️ 호출 전에 반드시 정산한다 — 안 그러면 이전 구간까지 새 속도로 소급된다.</summary>
-    /// <returns>값이 실제로 바뀌었으면 true.</returns>
+    /// <returns>확정 속도(상한으로 자른 값)가 실제로 바뀌었으면 true.</returns>
     public bool ApplyWorkSpeed(int currentWorkSpeed)
     {
-        var clamped = Math.Max(MinWorkSpeed, currentWorkSpeed);
-        if (clamped == CurrentWorkSpeed)
-        {
-            return false;
-        }
-
-        CurrentWorkSpeed = clamped;
-        return true;
+        var before = CurrentWorkSpeed;
+        _uncappedSpeed = Math.Max(MinWorkSpeed, currentWorkSpeed);
+        return CurrentWorkSpeed != before;
     }
 
     /// <summary>지난 구간의 작업량을 누적하고 완성된 판정 횟수를 꺼낸다. 못 채운 자투리는 ProgressUnits에 이월된다.</summary>

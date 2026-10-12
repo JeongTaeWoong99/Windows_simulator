@@ -29,6 +29,7 @@ namespace GameData
             ["LoggingBasicTable"] = new(LoggingBasicTablePacker.Pack, LoggingBasicTablePacker.Verify, LoggingBasicTablePacker.Preview, LoggingBasicTablePacker.Dump),
             ["MiningBasicTable"] = new(MiningBasicTablePacker.Pack, MiningBasicTablePacker.Verify, MiningBasicTablePacker.Preview, MiningBasicTablePacker.Dump),
             ["EquipTable"] = new(EquipTablePacker.Pack, EquipTablePacker.Verify, EquipTablePacker.Preview, EquipTablePacker.Dump),
+            ["DisassembleTable"] = new(DisassembleTablePacker.Pack, DisassembleTablePacker.Verify, DisassembleTablePacker.Preview, DisassembleTablePacker.Dump),
             ["EnchantOptionTable"] = new(EnchantOptionTablePacker.Pack, EnchantOptionTablePacker.Verify, EnchantOptionTablePacker.Preview, EnchantOptionTablePacker.Dump),
             ["EnchantGradeTable"] = new(EnchantGradeTablePacker.Pack, EnchantGradeTablePacker.Verify, EnchantGradeTablePacker.Preview, EnchantGradeTablePacker.Dump),
             ["EnchantItemTable"] = new(EnchantItemTablePacker.Pack, EnchantItemTablePacker.Verify, EnchantItemTablePacker.Preview, EnchantItemTablePacker.Dump),
