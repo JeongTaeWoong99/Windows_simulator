@@ -2,8 +2,9 @@
 
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
 > 상태: **실 데이터 183종 입력 · 일회성 소모품 및 상자 보상 체계 확정 (T-112)**
-> **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`농사`](../gathering/farming/README.md) · [`벌목`](../gathering/logging/README.md) · [`사냥`](../gathering/hunting/README.md)
->   [`산업레벨`](../gathering/산업레벨.md) · [`유적 발굴`](../gathering/excavation/README.md) · [`자원채취`](../gathering/README.md) · [`진행 및 성장`](../progression/README.md) · [`캐릭터`](../character/README.md)
+> **바뀌면 갱신:** [`거래`](../trade/README.md) · [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`농사`](../gathering/farming/README.md) · [`벌목`](../gathering/logging/README.md)
+>   [`사냥`](../gathering/hunting/README.md) · [`산업레벨`](../gathering/산업레벨.md) · [`유물감정`](../gathering/excavation/유물감정.md) · [`유적 발굴`](../gathering/excavation/README.md) · [`자원채취`](../gathering/README.md) · [`진행 및 성장`](../progression/README.md)
+>   [`캐릭터`](../character/README.md)
 
 `ItemTable`이 엑셀→`.bytes` 파이프라인으로 돌고 있고, **2026-07-31에 더미가 실 데이터로 교체됐다.**
 
