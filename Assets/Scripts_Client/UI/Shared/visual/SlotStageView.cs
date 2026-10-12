@@ -174,7 +174,7 @@ public class SlotStageView : MonoBehaviour
 
     // 수확 자리 — 판정 경계에서 쓰러지는 대상의 가운데(월드 좌표). 대상 그림이 없으면 false (획득 연출이 호출).
     //
-    // ※ 쓰러지는 대상은 여운 동안 멈춤 자리에 서 있다('DrawTargets'의 dyingX가 주기 처음에 stopX - 반폭) —
+    // ※ 쓰러지는 대상은 처치 타 나머지 동안 멈춤 자리에 서 있다('DrawTargets'의 dyingX가 주기 처음에 stopX - 반폭) —
     //   그래서 시간과 상관없이 같은 자리를 돌려준다.
     public bool TryGetHarvestPoint(out Vector3 worldPoint)
     {
@@ -283,7 +283,7 @@ public class SlotStageView : MonoBehaviour
         float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.RunEnd) - now.RunStart);
         float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.RunEnd - time);
 
-        // 쓰러진 대상 — 그 자리에서 사라진다. 여운이 끝나 땅이 흐르기 시작하면 땅과 같이 흘러간다
+        // 쓰러진 대상 — 그 자리에서 사라진다. 달리기가 시작돼 땅이 흐르면 땅과 같이 흘러간다
         if (settings.FadeSeconds > 0f && time < settings.FadeSeconds)
         {
             float alpha = 1f - time / settings.FadeSeconds;
@@ -430,11 +430,6 @@ public class SlotStageView : MonoBehaviour
             return null;
         }
 
-        if (now.Phase == SlotStageTimeline.EPhase.Idle)
-        {
-            return _characterVisual.IdleFrame;
-        }
-
         Sprite[] frames = now.Phase == SlotStageTimeline.EPhase.Run
             ? _characterVisual.RunFrames
             : _characterVisual.Attacks[now.Combo].frames;
@@ -442,7 +437,7 @@ public class SlotStageView : MonoBehaviour
         return frames.Length > 0 ? frames[Mathf.Clamp(now.Frame, 0, frames.Length - 1)] : null;
     }
 
-    // 공격 이펙트 — 공격·여운일 때 그 공격의 이펙트를 같은 진행도로 (프레임 수가 달라도 비율로 맞춘다)
+    // 공격 이펙트 — 공격·처치 타 나머지일 때 그 공격의 이펙트를 같은 진행도로 (프레임 수가 달라도 비율로 맞춘다)
     private Sprite? PickEffect(SlotStageTimeline.Result now)
     {
         if (_characterVisual == null || (now.Phase != SlotStageTimeline.EPhase.Attack && now.Phase != SlotStageTimeline.EPhase.Recover))

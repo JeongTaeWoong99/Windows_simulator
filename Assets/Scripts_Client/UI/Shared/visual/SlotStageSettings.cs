@@ -19,9 +19,10 @@ using UnityEngine;
 //   대상이 멈추는 자리는 여전히 캐릭터 발에서 'stopGap'(+ 캐릭터 개인 오프셋)만큼 왼쪽이다.
 //
 // ■ 연출 한 바퀴 = 판정 1회의 최소 시간 (2026-10-09 · T-102)
-//   여운 + 숨 + 달리기(다가오기) + 숨 + 공격 1회 = 'RequiredCycleSeconds'. 지금 값이면 0.3 + 0.1 + 1 + 0.1 + 0.6 = 2.1초.
-//   판정 주기가 이보다 짧으면 'SlotStageTimeline'이 여운·숨·달리기를 깎아 공격이 끊긴다 —
-//   그래서 엑셀 'Constants.MinCycleMs'가 이 값 이상이어야 하고, 서버·클라가 그 값으로 주기를 막는다('WorkStationProgress').
+//   달리기(다가오기) + 공격 1회 = 'RequiredCycleSeconds'. 지금 값이면 1 + 0.6 = 1.6초.
+//   공격 1회는 타격 위치와 상관없이 모션 전체다 — 처치 타의 타격 뒤는 다음 주기 맨 앞에서 마저 한다('SlotStageTimeline').
+//   판정 주기가 이보다 짧으면 'SlotStageTimeline'이 달리기를 깎는다 — 그래서 엑셀 'Constants.MinCycleMs'가 이 값 이상이어야 하고,
+//   서버·클라가 그 값으로 주기를 막는다('WorkStationProgress'). 엑셀도 1.6초로 맞춘다(T-149 · 반영 전엔 2.1초라 달리기가 1.5초).
 //   ⚠️ 여기 시간을 늘렸으면 'MinCycleMs'도 함께 올린다. 짧으면 플레이 시작 때 경고가 한 번 뜬다.
 [CreateAssetMenu(menuName = "DesktopWindowControl/Visual/Slot Stage Settings", fileName = "SlotStageSettings")]
 public class SlotStageSettings : ScriptableObject
@@ -36,14 +37,8 @@ public class SlotStageSettings : ScriptableObject
     [SerializeField, Range(0.4f, 1.6f), Tooltip("달리기 한 바퀴. 프레임 수와 무관하게 이 시간에 맞춰 재생한다")]
     private float runLoopSeconds = 0.8f;
 
-    [SerializeField, Range(0.3f, 1.2f), Tooltip("공격 한 번의 기준 길이. 프레임 수와 무관하게 이 시간에 맞춰 재생한다 — 처치 타가 판정에 닿도록 슬롯마다 조금씩 늘거나 준다")]
+    [SerializeField, Range(0.3f, 1.2f), Tooltip("공격 한 번의 길이. 프레임 수와 무관하게 이 시간에 맞춰 끝까지 재생한다 — 주기가 남으면 공격을 늘이지 않고 달리기를 늘린다")]
     private float attackSeconds = 0.6f;
-
-    [SerializeField, Range(0f, 0.6f), Tooltip("처치 뒤 마무리 공격의 여운. 이 동안 배경은 멈춰 있다")]
-    private float recoverSeconds = 0.3f;
-
-    [SerializeField, Range(0f, 0.3f), Tooltip("달리기 ↔ 공격 사이에 끼우는 대기 자세 한순간. 0이면 바로 맞붙는다")]
-    private float idleSeconds = 0.1f;
 
     [SerializeField, Range(0f, 0.6f), Tooltip("쓰러진 대상이 그 자리에서 사라지는 시간. 0이면 즉시")]
     private float fadeSeconds = 0.3f;
@@ -72,8 +67,6 @@ public class SlotStageSettings : ScriptableObject
     public float ApproachSeconds => approachSeconds;
     public float RunLoopSeconds  => runLoopSeconds;
     public float AttackSeconds   => attackSeconds;
-    public float RecoverSeconds  => recoverSeconds;
-    public float IdleSeconds     => idleSeconds;
     public float FadeSeconds     => fadeSeconds;
     public float FlashSeconds    => flashSeconds;
     public float HitEffectSeconds => hitEffectSeconds;
@@ -82,8 +75,8 @@ public class SlotStageSettings : ScriptableObject
     public int   PixelScale      => pixelScale;
     public float FarLayerSpeed   => farLayerSpeed;
 
-    // 연출 한 바퀴에 필요한 초 — 여운 + 숨 + 달리기 + 숨 + 공격 1회 (위 머리 주석)
-    public float RequiredCycleSeconds => recoverSeconds + 2f * idleSeconds + approachSeconds + attackSeconds;
+    // 연출 한 바퀴에 필요한 초 — 달리기 + 공격 1회 (위 머리 주석)
+    public float RequiredCycleSeconds => approachSeconds + attackSeconds;
 
     private static bool _minCycleChecked;
 

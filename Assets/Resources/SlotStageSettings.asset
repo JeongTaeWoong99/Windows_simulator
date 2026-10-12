@@ -15,8 +15,6 @@ MonoBehaviour:
   approachSeconds: 1
   runLoopSeconds: 0.8
   attackSeconds: 0.6
-  recoverSeconds: 0.3
-  idleSeconds: 0.1
   fadeSeconds: 0.3
   flashSeconds: 0.08
   hitEffectSeconds: 0.3
