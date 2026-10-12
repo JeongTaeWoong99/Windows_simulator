@@ -1,0 +1,390 @@
+<title>유물 감정 목업</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
+<style>
+/* 게임 팔레트(UIThemePalette 기본값)를 그대로 쓰는 단일 다크 화면 — 인게임 패널 위에서 보이는 모습을 확인하는 목업이다.
+   레이아웃: 위에서 아래로 ① 아이콘 7종 ② 인벤토리 칸 ③ 감정 연출 무대 ④ 연출 타임라인 ⑤ 레벨별 확률 */
+:root {
+  color-scheme: dark;
+  --page: #0D1117;
+  --pageText: #C9D4E0;
+  --panel: #14202E;
+  --panelSub: #1F3044;
+  --slot: #26394F;
+  --border: #3E5A78;
+  --button: #2B6F9E;
+  --buttonPrimary: #C98314;
+  --highlight: #FFD447;
+  --textMain: #F2F6FA;
+  --textSub: #9FB3C8;
+  --clayHi: #B98858;
+  --clayLo: #5E3B22;
+  --sand: #DCC48E;
+  --display: "Black Han Sans", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+@property --spin { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--pageText); font-family: var(--body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 20px; padding-block: 28px 64px; display: grid; gap: 40px; }
+header { display: grid; gap: 6px; }
+h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 34px; color: var(--textMain); letter-spacing: .02em; text-wrap: balance; }
+h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--textMain); letter-spacing: .02em; }
+.lede { margin: 0; color: var(--textSub); max-width: 68ch; }
+.note { margin: 0 0 14px; color: var(--textSub); font-size: 14px; max-width: 72ch; }
+section { min-width: 0; }
+
+/* ① 아이콘 7종 */
+.relics { display: grid; grid-template-columns: repeat(auto-fill, minmax(138px, 1fr)); gap: 14px; }
+.relic-card { background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 12px 10px 12px; display: grid; justify-items: center; gap: 4px; text-align: center; }
+.relic-card .icon { width: 108px; height: 108px; }
+.relic-card .name { color: var(--textMain); font-weight: 800; font-size: 14px; }
+.relic-card .grade { font-size: 12px; font-weight: 600; letter-spacing: .06em; }
+.relic-card .cost { font-size: 12px; color: var(--textSub); font-variant-numeric: tabular-nums; }
+.relic-card .cost b { color: var(--highlight); }
+
+/* ② 인벤토리 칸 — 게임 칸 크기(64) 그대로 */
+.inv { display: flex; flex-wrap: wrap; gap: 8px; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 14px; }
+.slot { position: relative; width: 72px; height: 72px; border-radius: 10px; background: var(--slot); border: 2px solid var(--rc, var(--border)); display: grid; place-items: center; }
+.slot svg { width: 60px; height: 60px; }
+.slot .cnt { position: absolute; right: 5px; bottom: 2px; font-size: 12px; font-weight: 800; color: var(--textMain); text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
+.slot.plain { border-color: var(--border); }
+/* Special 칸 — 무지개 테두리가 돌고, 빛줄기가 스치고, 반짝임이 깜빡인다 */
+.slot.special { border-color: transparent; background: linear-gradient(var(--slot), var(--slot)) padding-box, conic-gradient(from var(--spin), #ff5d5d, #ffb84d, #fff35c, #6dff8a, #4dd2ff, #8a6dff, #ff6de1, #ff5d5d) border-box; animation: spin 3s linear infinite; }
+.slot.special::after { content: ""; position: absolute; inset: 0; border-radius: 8px; background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.45) 50%, transparent 65%); background-size: 260% 100%; animation: sweep 2.4s ease-in-out infinite; pointer-events: none; }
+.spark { position: absolute; width: 8px; height: 8px; pointer-events: none; background: #fff; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); animation: twinkle 1.8s ease-in-out infinite; }
+@keyframes spin { to { --spin: 360deg; } }
+@keyframes sweep { 0%, 30% { background-position: 130% 0; } 70%, 100% { background-position: -30% 0; } }
+@keyframes twinkle { 0%, 100% { opacity: 0; transform: scale(.3); } 50% { opacity: 1; transform: scale(1); } }
+@keyframes hue { to { filter: hue-rotate(360deg); } }
+.rb-text { background: conic-gradient(from var(--spin), #ff5d5d, #ffb84d, #fff35c, #6dff8a, #4dd2ff, #8a6dff, #ff6de1, #ff5d5d); -webkit-background-clip: text; background-clip: text; color: transparent; animation: spin 3s linear infinite; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 10px; font-size: 13px; color: var(--textSub); }
+
+/* ③ 감정 무대 */
+.lab { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 16px; }
+@media (max-width: 760px) { .lab { grid-template-columns: minmax(0, 1fr); } }
+.stage { position: relative; height: 420px; border-radius: 14px; overflow: hidden; border: 2px solid var(--border);
+  background: radial-gradient(ellipse at 50% 85%, #3a5a73 0%, #1d2f40 45%, #101a25 100%); cursor: pointer; user-select: none; }
+.stage .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 90px; background: linear-gradient(#c8ad78, #9e8150); clip-path: polygon(0 40%, 18% 30%, 40% 38%, 62% 26%, 84% 36%, 100% 28%, 100% 100%, 0 100%); opacity: .55; }
+.stage .relic-big { position: absolute; left: 50%; top: 46%; width: 230px; height: 230px; transform: translate(-50%, -50%); }
+.stage .relic-big svg { width: 100%; height: 100%; overflow: visible; }
+.stage .flash { position: absolute; inset: 0; opacity: 0; pointer-events: none; }
+.stage .rays { position: absolute; left: 50%; top: 46%; width: 520px; height: 520px; margin: -260px 0 0 -260px; opacity: 0; pointer-events: none;
+  background: repeating-conic-gradient(from 0deg, var(--ray, rgba(255,255,255,.18)) 0deg 8deg, transparent 8deg 22deg); border-radius: 50%;
+  mask: radial-gradient(circle, #000 20%, transparent 68%); -webkit-mask: radial-gradient(circle, #000 20%, transparent 68%); }
+.stage .reward { position: absolute; left: 50%; top: 44%; transform: translate(-50%, -50%) scale(0); display: grid; justify-items: center; gap: 8px; text-align: center; }
+.stage .reward .ricon { width: 120px; height: 120px; }
+.stage .reward .rname { font-weight: 800; color: var(--textMain); font-size: 18px; text-shadow: 0 2px 6px #000; }
+.stage .reward .reff { font-size: 13px; color: var(--textSub); }
+.stage .banner { position: absolute; left: 0; right: 0; top: 22px; text-align: center; font-family: var(--display); font-size: 26px; letter-spacing: .08em; opacity: 0; color: var(--highlight); text-shadow: 0 0 14px rgba(255, 212, 71, .6), 0 2px 0 #000; }
+.stage .hint { position: absolute; right: 12px; bottom: 8px; font-size: 12px; color: rgba(242,246,250,.7); }
+.shard { position: absolute; left: 50%; top: 46%; width: 34px; height: 30px; margin: -15px 0 0 -17px; pointer-events: none;
+  background: linear-gradient(140deg, var(--clayHi), var(--clayLo)); }
+.ctrl { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 12px; align-content: start; }
+.ctrl .label { font-size: 12px; color: var(--textSub); letter-spacing: .06em; }
+.picks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.pick { height: 56px; border-radius: 10px; border: 2px solid var(--border); background: var(--slot); display: grid; place-items: center; cursor: pointer; padding: 0; }
+.pick svg { width: 44px; height: 44px; }
+.pick[aria-pressed="true"] { border-color: var(--highlight); box-shadow: 0 0 0 2px rgba(255,212,71,.25); }
+.pick:focus-visible, .btn:focus-visible, .toggle input:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.btn { height: 48px; border-radius: 10px; border: 2px solid #E9A43A; background: var(--buttonPrimary); color: var(--textMain); font: 800 16px var(--body); cursor: pointer; }
+.btn:disabled { opacity: .5; cursor: default; }
+.btn .cost { color: #FFF1B8; font-variant-numeric: tabular-nums; }
+.toggle { display: flex; gap: 8px; align-items: center; font-size: 14px; color: var(--textMain); cursor: pointer; }
+.sel-name { color: var(--textMain); font-weight: 800; }
+.result-log { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--textSub); display: grid; gap: 2px; max-height: 120px; overflow: auto; font-variant-numeric: tabular-nums; }
+
+/* ④ ⑤ 표 */
+.tbl-wrap { overflow-x: auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #263a50; white-space: nowrap; }
+th { color: var(--textSub); font-weight: 600; font-size: 12px; letter-spacing: .06em; background: var(--panelSub); }
+td.n { text-align: right; }
+tr:last-child td { border-bottom: 0; }
+.dash { color: #4b5f74; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slot.special, .slot.special::after, .spark, .rb-text { animation: none; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>미감정 유물 · 감정 목업</h1>
+    <p class="lede">유적 발굴에서 캐는 미감정 유물 7종(희귀도당 1종)과 감정 연출이다. 아이콘은 섬에서 캐낸 느낌 — 모래와 흙, 조개와 산호가 엉긴 덩어리에 <b>?</b>가 새겨져 있다. 구상 문서: <code>GameDesign/design/gathering/excavation/유물감정.md</code> (T-150)</p>
+  </header>
+
+  <section>
+    <h2>유물 아이콘 7종</h2>
+    <p class="note">등급이 오를수록 붙는 것이 늘어난다 — 고급 조개 · 희귀 산호 · 영웅 봉인 문양 · 전설 금속 띠 · 신화 보석. Special은 무지개 테두리와 빛이 계속 돈다. 이름과 감정 비용은 가제다.</p>
+    <div class="relics" id="relics"></div>
+  </section>
+
+  <section>
+    <h2>인벤토리 칸에서</h2>
+    <p class="note">게임 칸 크기에 넣은 모습이다. <b>Special 칸은 칸 자체에서 애니메이션이 돈다</b> — 테두리 회전(3초) · 빛줄기 스침(2.4초) · 반짝임 4개(1.8초, 엇갈림). 다른 등급은 등급 색 테두리만.</p>
+    <div class="inv" id="inv"></div>
+    <div class="legend"><span>칸 72px · 아이콘 60px</span><span>Special 테두리 = 무지개 원뿔 그라데이션 회전</span><span>움직임 줄이기 설정이면 멈춘다</span></div>
+  </section>
+
+  <section>
+    <h2>감정 연출</h2>
+    <p class="note">유물을 고르고 <b>감정</b>을 누른다. 흔들림 → 금이 세 번에 걸쳐 퍼짐 → 번쩍(등급 색, Special은 무지개) → 조각이 흩어지며 아이템이 튀어나온다. 아티팩트가 나오면 띠와 함께 한 번 더 빛난다. 연출 중 무대를 누르면 건너뛴다.</p>
+    <div class="lab">
+      <div class="stage" id="stage" role="button" tabindex="0" aria-label="감정 무대 — 연출 중 누르면 건너뛴다">
+        <div class="floor"></div>
+        <div class="rays" id="rays"></div>
+        <div class="relic-big" id="relicBig"></div>
+        <div class="reward" id="reward"><div class="ricon" id="ricon"></div><div class="rname" id="rname"></div><div class="reff" id="reff"></div></div>
+        <div class="banner" id="banner">아티팩트 발견!</div>
+        <div class="flash" id="flash"></div>
+        <div class="hint" id="hint">유물을 고르고 감정을 누르세요</div>
+      </div>
+      <div class="ctrl">
+        <div class="label">유물 선택</div>
+        <div class="picks" id="picks"></div>
+        <div>선택: <span class="sel-name" id="selName"></span></div>
+        <label class="toggle"><input type="checkbox" id="forceArt" checked> 아티팩트가 나오게 (확인용)</label>
+        <button class="btn" id="go" type="button">감정 · <span class="cost" id="goCost"></span></button>
+        <div class="label">결과</div>
+        <ul class="result-log" id="log"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>연출 타임라인</h2>
+    <p class="note">클라 구현용 기준값이다(DOTween 시퀀스 한 줄 = 표 한 줄). 여러 개를 한 번에 감정하면 가장 높은 결과 하나만 이 연출을 쓰고, 나머지는 결과 목록으로 보인다.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>단계</th><th>시작</th><th>길이</th><th>무엇</th></tr></thead>
+      <tbody>
+        <tr><td>① 흔들림</td><td class="n">0</td><td class="n">600ms</td><td>좌우 회전 ±6° · 점점 세게</td></tr>
+        <tr><td>② 금 1</td><td class="n">600</td><td class="n">220ms</td><td>위에서 가운데로 금 · 짧은 흔들림 + 틈새로 등급 색 빛</td></tr>
+        <tr><td>③ 금 2</td><td class="n">900</td><td class="n">220ms</td><td>왼쪽 아래로 갈라짐 · 빛이 더 세진다</td></tr>
+        <tr><td>④ 금 3</td><td class="n">1200</td><td class="n">220ms</td><td>오른쪽으로 갈라짐 · 유물이 부풀었다 오그라든다</td></tr>
+        <tr><td>⑤ 번쩍</td><td class="n">1500</td><td class="n">250 + 450ms</td><td>화면 덮개 0 → 1 → 0 · 등급 색 (Special = 무지개 회전)</td></tr>
+        <tr><td>⑥ 조각</td><td class="n">1650</td><td class="n">700ms</td><td>유물을 숨기고 조각 12개가 바깥으로 회전하며 떨어진다</td></tr>
+        <tr><td>⑦ 등장</td><td class="n">1700</td><td class="n">450ms</td><td>아이템 크기 0.3 → 1.15 → 1 · 뒤에서 빛살이 돈다</td></tr>
+        <tr><td>⑧ 아티팩트</td><td class="n">2150</td><td class="n">600ms</td><td>아티팩트일 때만 — "아티팩트 발견!" 띠가 내려오고 한 번 더 빛난다</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>레벨별 유물 확률 (모양 예시)</h2>
+    <p class="note">유물은 레벨을 갖지 않는다 — 레벨은 어떤 유물이 나올지의 확률만 바꾼다. 판정당 %이고 값은 테스트값으로 다시 정한다. Special은 모든 레벨에서 뜨며, 시간당 기회가 같도록 판정 비용에 비례시킨다(p · 3p · 9p · 27p · 81p).</p>
+    <div class="tbl-wrap"><table id="probs"></table></div>
+  </section>
+</div>
+
+<script>
+// ───────── 등급 표 (이름·비용·아티팩트는 가제) ─────────
+const G = [
+  { n: '일반', c: '#C4C4C4', relic: '흙 묻은 유물',  cost: 200,    art: ['어부의 낡은 부적', '전 산업 작업속도 +0.5%'] },
+  { n: '고급', c: '#62F06F', relic: '조개 박힌 유물', cost: 600,    art: ['조개 껍데기 목걸이', '발굴 작업속도 +1%'] },
+  { n: '희귀', c: '#58AEFF', relic: '산호 엉긴 유물', cost: 1800,   art: ['산호 왕관 조각', '전 산업 산출량 +1%'] },
+  { n: '영웅', c: '#C784FF', relic: '봉인된 유물',    cost: 5400,   art: ['봉인된 석판', '채굴 산출량 +3%'] },
+  { n: '전설', c: '#FFA040', relic: '황금 띠 유물',   cost: 16000,  art: ['황금 태양 원반', '전 산업 작업속도 +3%'] },
+  { n: '신화', c: '#F2DC95', relic: '왕의 유물',      cost: 48000,  art: ['섬 왕의 홀', '전 산업 산출량 +4%'] },
+  { n: 'Special', c: '#FFFFFF', relic: '무지개 유물', cost: 150000, art: ['무지개 심장', '전 산업 작업속도·산출량 +5%'], special: true },
+];
+const OTHER = [ // 아티팩트가 아닐 때의 보상 예시 (상자와 비슷한 것)
+  ['골드', g => (G[g].cost * 1.4 | 0).toLocaleString() + ' 골드', '#FFD447'],
+  ['큐브', () => '인챈트 큐브 ×' + (1 + Math.random() * 3 | 0), '#4FC8F0'],
+  ['영약', () => '신속의 영약', '#6DDB7A'],
+  ['자원', () => '청동 거울 ×12', '#C784FF'],
+];
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+let uid = 0;
+
+// ───────── 유물 아이콘 (SVG) ─────────
+function relicSVG(g, size) {
+  const id = 'r' + (++uid), gr = G[g], sp = !!gr.special;
+  const rim = sp ? `url(#${id}rb)` : gr.c;
+  let s = `<svg viewBox="0 0 100 100" width="${size}" height="${size}" aria-hidden="true"><defs>
+    <radialGradient id="${id}cl" cx="40%" cy="32%" r="75%"><stop offset="0" stop-color="#C9976A"/><stop offset=".55" stop-color="#8E623D"/><stop offset="1" stop-color="#4E311C"/></radialGradient>
+    <radialGradient id="${id}gl" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="${sp ? '#fff' : gr.c}" stop-opacity=".9"/><stop offset="1" stop-color="${sp ? '#fff' : gr.c}" stop-opacity="0"/></radialGradient>
+    <linearGradient id="${id}rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5d5d"/><stop offset=".2" stop-color="#ffb84d"/><stop offset=".4" stop-color="#fff35c"/><stop offset=".6" stop-color="#6dff8a"/><stop offset=".8" stop-color="#4dd2ff"/><stop offset="1" stop-color="#c46dff"/>
+      ${sp && !reduce ? '<animateTransform attributeName="gradientTransform" type="rotate" from="0 .5 .5" to="360 .5 .5" dur="3s" repeatCount="indefinite"/>' : ''}</linearGradient>
+    <clipPath id="${id}cp"><path d="M20 60 C15 42 27 22 47 19 C65 16 81 28 84 45 C88 63 79 80 61 85 C43 90 24 79 20 60 Z"/></clipPath>
+  </defs>`;
+  // 바닥 그림자 · 등급 후광
+  s += `<ellipse cx="50" cy="88" rx="30" ry="6" fill="#000" opacity=".35"/>`;
+  if (g >= 2) s += `<circle cx="50" cy="52" r="46" fill="url(#${id}gl)" opacity="${.18 + g * .05}"/>`;
+  // 몸통(흙덩이) + 모래층 + 흙 점
+  s += `<path d="M20 60 C15 42 27 22 47 19 C65 16 81 28 84 45 C88 63 79 80 61 85 C43 90 24 79 20 60 Z" fill="url(#${id}cl)" stroke="${rim}" stroke-width="${g >= 4 ? 3.2 : 2.4}"/>`;
+  s += `<g clip-path="url(#${id}cp)"><path d="M10 66 C28 58 40 70 56 63 C70 57 82 66 92 60 L92 95 L10 95 Z" fill="#DCC48E" opacity=".9"/>`;
+  [[30,72,1.4],[41,78,1],[55,74,1.3],[66,80,1],[73,70,1.2],[36,66,.9],[61,68,.8]].forEach(([x,y,r]) => s += `<circle cx="${x}" cy="${y}" r="${r}" fill="#9E7F4C"/>`);
+  [[34,34,1.6],[62,30,1.2],[70,44,1.4],[28,50,1.1]].forEach(([x,y,r]) => s += `<circle cx="${x}" cy="${y}" r="${r}" fill="#5A3A22" opacity=".7"/>`);
+  // 영웅: 봉인 문양 띠 / 전설·신화: 금속 띠
+  if (g === 3) s += `<path d="M18 46 C40 38 62 38 86 46" fill="none" stroke="${gr.c}" stroke-width="2" stroke-dasharray="3 3" opacity=".9"/><path d="M20 56 C42 48 62 48 86 56" fill="none" stroke="${gr.c}" stroke-width="1.4" stroke-dasharray="2 4" opacity=".7"/>`;
+  if (g >= 4) s += `<path d="M14 50 C40 41 62 41 90 50 L90 57 C62 48 40 48 14 57 Z" fill="${sp ? `url(#${id}rb)` : gr.c}" opacity=".85"/><path d="M14 50 C40 41 62 41 90 50" fill="none" stroke="#fff" stroke-width=".8" opacity=".5"/>`;
+  s += `</g>`;
+  // 고급+: 조개 / 희귀+: 산호 / 신화: 보석
+  if (g >= 1) s += `<g transform="translate(66 22) rotate(18)"><path d="M0 12 L-9 2 Q0 -6 9 2 Z" fill="#F3E6D3" stroke="#B49B7A" stroke-width="1"/><path d="M0 12 L-5 1 M0 12 L0 -1 M0 12 L5 1" stroke="#B49B7A" stroke-width=".9"/></g>`;
+  if (g >= 2) s += `<g stroke="#FF8F86" stroke-width="2.6" stroke-linecap="round" fill="none"><path d="M24 74 L18 62 M18 62 L13 56 M18 62 L20 54 M22 70 L28 63"/></g>`;
+  if (g >= 5) [[38,47],[50,44],[62,47]].forEach(([x,y],i) => s += `<path d="M${x} ${y-3.5} L${x+3} ${y} L${x} ${y+3.5} L${x-3} ${y} Z" fill="${['#ff6b8a','#5ef0ff','#a8ff6b'][i]}" stroke="#fff" stroke-width=".6"/>`);
+  // 가운데 ? — 새긴 홈 + 등급 빛
+  const q = sp ? `url(#${id}rb)` : (g >= 1 ? gr.c : '#E8D6B8');
+  s += `<text x="50" y="66" text-anchor="middle" font-family="Black Han Sans, Noto Sans KR, sans-serif" font-size="40" fill="#2E1B0E" opacity=".75">?</text>`;
+  s += `<text x="49" y="64.5" text-anchor="middle" font-family="Black Han Sans, Noto Sans KR, sans-serif" font-size="40" fill="${q}" ${g >= 2 ? `style="filter: drop-shadow(0 0 3px ${sp ? '#fff' : gr.c})"` : ''}>?</text>`;
+  if (sp && !reduce) s += `<g fill="#fff">${[[18,24,0],[84,30,.6],[80,78,1.1],[22,82,1.5]].map(([x,y,d]) => `<path d="M${x} ${y-5} L${x+1.4} ${y-1.4} L${x+5} ${y} L${x+1.4} ${y+1.4} L${x} ${y+5} L${x-1.4} ${y+1.4} L${x-5} ${y} L${x-1.4} ${y-1.4} Z"><animate attributeName="opacity" values="0;1;0" dur="1.8s" begin="${d}s" repeatCount="indefinite"/></path>`).join('')}</g>`;
+  return s + `</svg>`;
+}
+
+// 보상 아이콘 — 아티팩트는 등급 색 메달, 그 밖은 둥근 표식
+function rewardSVG(g, art, color) {
+  const id = 'w' + (++uid), sp = !!G[g].special, c = art ? (sp ? `url(#${id}rb)` : G[g].c) : color;
+  return `<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><defs>
+    <linearGradient id="${id}rb" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ff5d5d"/><stop offset=".25" stop-color="#fff35c"/><stop offset=".5" stop-color="#6dff8a"/><stop offset=".75" stop-color="#4dd2ff"/><stop offset="1" stop-color="#c46dff"/></linearGradient>
+    <radialGradient id="${id}m" cx="38%" cy="32%"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>
+    ${art
+      ? `<path d="M50 6 L88 28 L88 72 L50 94 L12 72 L12 28 Z" fill="#1A2330" stroke="${c}" stroke-width="5"/><path d="M50 22 L74 36 L74 64 L50 78 L26 64 L26 36 Z" fill="${c}" opacity=".9"/><circle cx="50" cy="50" r="11" fill="#1A2330"/><circle cx="50" cy="50" r="5" fill="#fff"/><ellipse cx="40" cy="34" rx="16" ry="9" fill="url(#${id}m)"/>`
+      : `<circle cx="50" cy="50" r="40" fill="#1A2330" stroke="${c}" stroke-width="5"/><circle cx="50" cy="50" r="22" fill="${c}"/><ellipse cx="42" cy="38" rx="14" ry="8" fill="url(#${id}m)"/>`}
+  </svg>`;
+}
+
+// ───────── ① 카드 · ② 칸 ─────────
+const relicsEl = document.getElementById('relics');
+G.forEach((gr, g) => {
+  const d = document.createElement('div');
+  d.className = 'relic-card';
+  d.innerHTML = `<div class="icon">${relicSVG(g, 108)}</div><div class="name">${gr.relic}</div>
+    <div class="grade${gr.special ? ' rb-text' : ''}" style="${gr.special ? '' : 'color:' + gr.c}">${gr.n}</div>
+    <div class="cost">감정 <b>${gr.cost.toLocaleString()}</b> 골드</div>`;
+  relicsEl.appendChild(d);
+});
+const inv = document.getElementById('inv');
+const counts = [128, 41, 9, 3, 1, 1, 1];
+G.forEach((gr, g) => {
+  const d = document.createElement('div');
+  d.className = 'slot' + (gr.special ? ' special' : '');
+  if (!gr.special) d.style.setProperty('--rc', g === 0 ? 'var(--border)' : gr.c);
+  d.innerHTML = relicSVG(g, 60) + `<span class="cnt">${counts[g]}</span>`;
+  if (gr.special && !reduce) [[6,8,0],[56,6,.5],[58,54,1],[4,52,1.4]].forEach(([x,y,dl]) => {
+    const s = document.createElement('i'); s.className = 'spark';
+    s.style.cssText = `left:${x}px;top:${y}px;animation-delay:${dl}s`; d.appendChild(s);
+  });
+  inv.appendChild(d);
+});
+// 비교용 일반 아이템 칸 둘
+['#58AEFF', '#C4C4C4'].forEach((c, i) => {
+  const d = document.createElement('div'); d.className = 'slot'; d.style.setProperty('--rc', c);
+  d.innerHTML = `<svg viewBox="0 0 100 100"><rect x="22" y="22" width="56" height="56" rx="10" fill="${i ? '#7a8592' : '#2f6fb0'}"/></svg><span class="cnt">${i ? 999 : 12}</span>`;
+  inv.appendChild(d);
+});
+
+// ───────── ⑤ 확률 표 ─────────
+const P = [[2,.3,.03,0,0,0,'p'],[2,.6,.1,.01,0,0,'3p'],[1.5,1,.3,.03,.003,0,'9p'],[1,1.5,.6,.1,.01,.001,'27p'],[.5,1.5,1,.3,.03,.003,'81p']];
+document.getElementById('probs').innerHTML =
+  `<thead><tr><th>레벨</th>${G.map(gr => `<th>${gr.n}</th>`).join('')}</tr></thead><tbody>` +
+  P.map((row, i) => `<tr><td>Lv${i + 1}</td>${row.map(v => `<td class="n">${v === 0 ? '<span class="dash">—</span>' : v}</td>`).join('')}</tr>`).join('') + `</tbody>`;
+
+// ───────── ③ 감정 무대 ─────────
+const $ = id => document.getElementById(id);
+const stage = $('stage'), big = $('relicBig'), flash = $('flash'), rays = $('rays'), reward = $('reward'), banner = $('banner'), hint = $('hint');
+let sel = 6, playing = false, skip = false;
+
+const picks = $('picks');
+G.forEach((gr, g) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.className = 'pick'; b.innerHTML = relicSVG(g, 44);
+  b.setAttribute('aria-label', gr.relic); b.setAttribute('aria-pressed', g === sel);
+  b.onclick = () => { if (playing) return; sel = g; render(); };
+  picks.appendChild(b);
+});
+
+const CRACKS = [ // 세 번에 걸쳐 퍼지는 금 (유물 SVG 좌표)
+  'M48 20 L45 30 L51 37 L47 47 L52 53',
+  'M47 47 L38 55 L33 64 L26 68 M38 55 L36 62',
+  'M51 37 L60 43 L66 41 L74 50 M60 43 L63 52 L70 58',
+];
+function render() {
+  [...picks.children].forEach((b, i) => b.setAttribute('aria-pressed', i === sel));
+  $('selName').textContent = `${G[sel].relic} (${G[sel].n})`;
+  $('goCost').textContent = G[sel].cost.toLocaleString() + ' 골드';
+  resetStage();
+}
+function resetStage() {
+  stage.getAnimations({ subtree: true }).forEach(a => a.cancel());
+  stage.querySelectorAll('.shard').forEach(e => e.remove());
+  const col = G[sel].special ? '#fff' : G[sel].c;
+  big.innerHTML = relicSVG(sel, 230).replace('</svg>',
+    `<g id="cracks" fill="none" stroke-linecap="round" stroke-linejoin="round">${CRACKS.map(d =>
+      `<path d="${d}" stroke="${col}" stroke-width="3.2" style="filter:drop-shadow(0 0 3px ${col})" opacity="0"/><path d="${d}" stroke="#1d1007" stroke-width="1.3" opacity="0"/>`).join('')}</g></svg>`);
+  big.style.opacity = 1; big.style.transform = 'translate(-50%, -50%)'; big.style.filter = '';
+  reward.style.transform = 'translate(-50%, -50%) scale(0)';
+  flash.style.opacity = 0; rays.style.opacity = 0; banner.style.opacity = 0;
+  hint.textContent = '감정을 누르세요';
+}
+
+// skip이면 길이 1ms로 바로 끝낸다
+const run = (el, kf, ms, extra = {}) => el.animate(kf, { duration: skip || reduce ? 1 : ms, fill: 'forwards', easing: 'ease-out', ...extra }).finished;
+const wait = ms => skip || reduce ? Promise.resolve() : new Promise(r => setTimeout(r, ms));
+
+async function appraise() {
+  if (playing) return;
+  playing = true; skip = false; resetStage(); $('go').disabled = true;
+  hint.textContent = '누르면 건너뜁니다';
+  const gr = G[sel], sp = !!gr.special;
+  const isArt = $('forceArt').checked || Math.random() < .05;
+  const o = OTHER[Math.random() * OTHER.length | 0];
+
+  // ① 흔들림
+  await run(big, [0, -3, 4, -5, 6, -6, 5, 0].map(r => ({ transform: `translate(-50%, -50%) rotate(${r}deg)` })), 600, { easing: 'linear' });
+  // ②③④ 금 세 번 — 틈새 빛이 점점 세진다
+  const paths = big.querySelectorAll('#cracks path');
+  for (let i = 0; i < 3; i++) {
+    const glow = paths[i * 2], dark = paths[i * 2 + 1];
+    [glow, dark].forEach(p => { const L = p.getTotalLength(); p.style.strokeDasharray = L; p.style.strokeDashoffset = L; p.setAttribute('opacity', 1); });
+    run(big, [{ transform: 'translate(-50%, -50%) scale(1)' }, { transform: `translate(-50%, -50%) scale(${1.03 + i * .02}) rotate(${i % 2 ? 3 : -3}deg)` }, { transform: 'translate(-50%, -50%) scale(1)' }], 220);
+    big.style.filter = `brightness(${1 + i * .18})`;
+    run(dark, [{ strokeDashoffset: dark.style.strokeDashoffset }, { strokeDashoffset: 0 }], 220);
+    await run(glow, [{ strokeDashoffset: glow.style.strokeDashoffset }, { strokeDashoffset: 0 }], 220);
+    await wait(80);
+  }
+  // ⑤ 번쩍
+  flash.style.background = sp
+    ? 'radial-gradient(circle at 50% 46%, #fff 0%, rgba(255,255,255,.85) 20%, transparent 70%), conic-gradient(from 0deg at 50% 46%, #ff5d5d, #ffb84d, #fff35c, #6dff8a, #4dd2ff, #8a6dff, #ff6de1, #ff5d5d)'
+    : `radial-gradient(circle at 50% 46%, #fff 0%, ${gr.c} 35%, transparent 75%)`;
+  await run(flash, [{ opacity: 0 }, { opacity: 1 }], 250);
+  // ⑥ 조각 — 유물을 숨기고 흩뿌린다
+  big.style.opacity = 0;
+  for (let i = 0; i < 12; i++) {
+    const sh = document.createElement('div'); sh.className = 'shard';
+    const a = (i / 12) * Math.PI * 2 + Math.random() * .4, d = 150 + Math.random() * 90;
+    sh.style.clipPath = `polygon(${[0, 1, 2, 3].map(() => `${Math.random() * 100 | 0}% ${Math.random() * 100 | 0}%`).join(',')})`;
+    stage.appendChild(sh);
+    run(sh, [{ transform: 'translate(0,0) rotate(0)', opacity: 1 },
+             { transform: `translate(${Math.cos(a) * d}px, ${Math.sin(a) * d + 60}px) rotate(${(Math.random() - .5) * 540}deg)`, opacity: 0 }], 700, { easing: 'cubic-bezier(.2,.7,.4,1)' });
+  }
+  run(flash, [{ opacity: 1 }, { opacity: 0 }], 450);
+  // ⑦ 등장
+  $('ricon').innerHTML = rewardSVG(sel, isArt, o[2]);
+  $('rname').textContent = isArt ? gr.art[0] : o[1](sel);
+  $('rname').style.color = isArt && !sp ? gr.c : '';
+  $('reff').textContent = isArt ? `${gr.n} 아티팩트 · ${gr.art[1]} (보유 시 영구)` : `${gr.relic}에서 나왔다`;
+  rays.style.setProperty('--ray', sp ? 'rgba(255,255,255,.28)' : (isArt ? gr.c + '55' : 'rgba(255,255,255,.14)'));
+  run(rays, [{ opacity: 0, transform: 'rotate(0)' }, { opacity: 1, transform: 'rotate(40deg)' }], 450);
+  if (!reduce) rays.animate([{ rotate: '0deg' }, { rotate: '360deg' }], { duration: 14000, iterations: Infinity, composite: 'add' });
+  if (sp && !reduce) rays.animate([{ filter: 'hue-rotate(0deg)' }, { filter: 'hue-rotate(360deg)' }], { duration: 3000, iterations: Infinity });
+  await run(reward, [{ transform: 'translate(-50%, -50%) scale(.3)' }, { transform: 'translate(-50%, -50%) scale(1.15)', offset: .7 }, { transform: 'translate(-50%, -50%) scale(1)' }], 450, { easing: 'cubic-bezier(.3,1.4,.5,1)' });
+  // ⑧ 아티팩트
+  if (isArt) {
+    banner.style.color = sp ? '#fff' : 'var(--highlight)';
+    run(banner, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], 350);
+    flash.style.background = sp ? 'radial-gradient(circle at 50% 44%, rgba(255,255,255,.7), transparent 55%)' : `radial-gradient(circle at 50% 44%, ${gr.c}aa, transparent 55%)`;
+    await run(flash, [{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 0 }], 600);
+  }
+  const li = document.createElement('li');
+  li.textContent = `${gr.relic} → ${$('rname').textContent}${isArt ? ' ★' : ''}`;
+  $('log').prepend(li);
+  hint.textContent = '다시 감정하려면 감정을 누르세요';
+  playing = false; $('go').disabled = false;
+}
+$('go').onclick = appraise;
+stage.addEventListener('click', () => { if (playing) skip = true; });
+stage.addEventListener('keydown', e => { if ((e.key === 'Enter' || e.key === ' ') && playing) { e.preventDefault(); skip = true; } });
+render();
+</script>
