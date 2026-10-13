@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-13 미감정 유물 · 감정 · 아티팩트 기획과 첫 데이터 (T-150)](2026-10-13-relic-appraisal-artifact.md) — `#design` `#data` Special은 감정에서만 · 번호 = 도감 실린 순서 · `ArtifactTable` 22종 · 서버 미구현
 - [2026-10-12 낚시 산업 → 유적 발굴 교체 (T-142)](2026-10-12-fishing-to-excavation.md) — `#server` `#data` `#design` enum 2·TID 이어 쓰기 · 마이그레이션 0002로 옛 데이터 삭제 · 클라 글자·아트는 T-148
 - [2026-10-12 판정 최소 주기 — 서버 속도 상한 (T-102)](2026-10-12-min-cycle-speed-cap.md) — `#server` `#test` `CurrentWorkSpeed`를 `JudgeCostUnits ÷ MinCycleMs`로 자른다
 - [2026-10-11 경매장 화면 전체 목업 (T-147 1차)](2026-10-11-auction-fullscreen-mockup.md) — `#design` `#ui` 검색·시세·판매·완료 4탭 HTML 목업
