@@ -195,6 +195,7 @@ tr:last-child td { border-bottom: 0; }
         <div class="picks" id="picks"></div>
         <div>선택: <span class="sel-name" id="selName"></span></div>
         <label class="toggle"><input type="checkbox" id="forceArt" checked> 아티팩트가 나오게 (확인용)</label>
+        <label class="toggle"><input type="checkbox" id="forceSp"> Special 유물이 나오게 (확인용 · 일반~신화)</label>
         <button class="btn" id="go" type="button">감정 · <span class="cost" id="goCost"></span></button>
         <div class="label">결과</div>
         <ul class="result-log" id="log"></ul>
@@ -239,8 +240,10 @@ tr:last-child td { border-bottom: 0; }
 
   <section>
     <h2>레벨별 유물 확률 (모양 예시)</h2>
-    <p class="note">유물은 레벨을 갖지 않는다 — 레벨은 어떤 유물이 나올지의 확률만 바꾼다. <b>발굴에서는 상자 대신 유물이 나오고, 합계는 상자(판정당 2.33%)의 절반쯤</b>이다. 판정당 %이고 값은 테스트값으로 다시 정한다. Special은 모든 레벨에서 뜨며, 시간당 기회가 같도록 판정 비용에 비례시킨다(p · 3p · 9p · 27p · 81p).</p>
+    <p class="note">유물은 레벨을 갖지 않는다 — 레벨은 어떤 유물이 나올지의 확률만 바꾼다. <b>발굴에서는 상자 대신 유물이 나오고, 합계는 상자(판정당 2.33%)의 절반쯤</b>이다. 판정당 %이고 값은 테스트값으로 다시 정한다. <b>Special 유물은 판정에서 나오지 않는다</b> — 아래 표처럼 다른 유물을 감정할 때만 나온다.</p>
     <div class="tbl-wrap"><table id="probs"></table></div>
+    <p class="note" style="margin-top:16px">감정 1회당 <b>Special 미감정 유물</b>이 나올 확률(예시). 감정 비용에 비례시켜 골드 1당 기회를 모든 등급에서 같게 한다. Special 유물을 감정하면 Special 유물은 다시 나오지 않는다.</p>
+    <div class="tbl-wrap"><table id="spProbs"></table></div>
   </section>
 </div>
 
@@ -342,10 +345,16 @@ G.forEach((gr, g) => {
 });
 
 // ───────── ⑤ 확률 표 ─────────
-const P = [[1,.15,.015,0,0,0,'p','≈1.17'],[.8,.3,.05,.005,0,0,'3p','≈1.16'],[.6,.4,.15,.015,.0015,0,'9p','≈1.17'],[.4,.5,.25,.05,.005,.0005,'27p','≈1.21'],[.2,.5,.4,.15,.015,.0015,'81p','≈1.27']];
+const P = [[1,.15,.015,0,0,0,'≈1.17'],[.8,.3,.05,.005,0,0,'≈1.16'],[.6,.4,.15,.015,.0015,0,'≈1.17'],[.4,.5,.25,.05,.005,.0005,'≈1.21'],[.2,.5,.4,.15,.015,.0015,'≈1.27']];
+const SP_CHANCE = [.02, .06, .18, .54, 1.6, 4.8];   // 감정 1회당 Special 유물 확률(%) — 감정 비용에 비례
 document.getElementById('probs').innerHTML =
-  `<thead><tr><th>레벨</th>${G.map(gr => `<th>${gr.n}</th>`).join('')}<th>합계</th></tr></thead><tbody>` +
+  `<thead><tr><th>레벨</th>${G.slice(0, 6).map(gr => `<th>${gr.n}</th>`).join('')}<th>합계</th></tr></thead><tbody>` +
   P.map((row, i) => `<tr><td>Lv${i + 1}</td>${row.map(v => `<td class="n">${v === 0 ? '<span class="dash">—</span>' : v}</td>`).join('')}</tr>`).join('') + `</tbody>`;
+
+document.getElementById('spProbs').innerHTML =
+  `<thead><tr><th>감정하는 유물</th>${G.slice(0, 6).map(gr => `<th style="color:${gr.c}">${gr.n}</th>`).join('')}</tr></thead><tbody>` +
+  `<tr><td>감정 비용</td>${G.slice(0, 6).map(gr => `<td class="n">${gr.cost.toLocaleString()}</td>`).join('')}</tr>` +
+  `<tr><td>Special 유물</td>${SP_CHANCE.map(v => `<td class="n">${v}%</td>`).join('')}</tr></tbody>`;
 
 // ───────── ③ 감정 무대 ─────────
 const $ = id => document.getElementById(id);
@@ -394,7 +403,8 @@ async function appraise() {
   playing = true; skip = false; resetStage(); $('go').disabled = true;
   hint.textContent = '누르면 건너뜁니다';
   const gr = G[sel], sp = !!gr.special;
-  const isArt = $('forceArt').checked || Math.random() < .05;
+  const isSpRelic = !sp && ($('forceSp').checked || Math.random() < SP_CHANCE[sel] / 100);
+  const isArt = !isSpRelic && ($('forceArt').checked || Math.random() < .05);
   const o = OTHER[Math.random() * OTHER.length | 0];
 
   // ① 흔들림
@@ -427,24 +437,25 @@ async function appraise() {
   }
   run(flash, [{ opacity: 1 }, { opacity: 0 }], 450);
   // ⑦ 등장
-  $('ricon').innerHTML = rewardSVG(sel, isArt, o[2]);
-  $('rname').textContent = isArt ? `No.${String(gr.art[1]).padStart(3, '0')} ${gr.art[0]}` : o[1](sel);
+  $('ricon').innerHTML = isSpRelic ? relicSVG(6, 120) : rewardSVG(sel, isArt, o[2]);
+  $('rname').innerHTML = isSpRelic ? '<span class="rb-text">무지개 유물</span>' : isArt ? `No.${String(gr.art[1]).padStart(3, '0')} ${gr.art[0]}` : o[1](sel);
   $('rname').style.color = isArt && !sp ? gr.c : '';
-  $('reff').textContent = isArt ? `${gr.n} 아티팩트 · ${gr.art[2]} (보유 시 영구 · 겹치지 않음)` : `${gr.relic}에서 나왔다`;
-  rays.style.setProperty('--ray', sp ? 'rgba(255,255,255,.28)' : (isArt ? gr.c + '55' : 'rgba(255,255,255,.14)'));
+  $('reff').textContent = isSpRelic ? `Special 미감정 유물 — ${gr.relic}에서 나왔다 (감정 ${G[6].cost.toLocaleString()} 골드)` : isArt ? `${gr.n} 아티팩트 · ${gr.art[2]} (보유 시 영구 · 겹치지 않음)` : `${gr.relic}에서 나왔다`;
+  rays.style.setProperty('--ray', sp || isSpRelic ? 'rgba(255,255,255,.28)' : (isArt ? gr.c + '55' : 'rgba(255,255,255,.14)'));
   run(rays, [{ opacity: 0, transform: 'rotate(0)' }, { opacity: 1, transform: 'rotate(40deg)' }], 450);
   if (!reduce) rays.animate([{ rotate: '0deg' }, { rotate: '360deg' }], { duration: 14000, iterations: Infinity, composite: 'add' });
-  if (sp && !reduce) rays.animate([{ filter: 'hue-rotate(0deg)' }, { filter: 'hue-rotate(360deg)' }], { duration: 3000, iterations: Infinity });
+  if ((sp || isSpRelic) && !reduce) rays.animate([{ filter: 'hue-rotate(0deg)' }, { filter: 'hue-rotate(360deg)' }], { duration: 3000, iterations: Infinity });
   await run(reward, [{ transform: 'translate(-50%, -50%) scale(.3)' }, { transform: 'translate(-50%, -50%) scale(1.15)', offset: .7 }, { transform: 'translate(-50%, -50%) scale(1)' }], 450, { easing: 'cubic-bezier(.3,1.4,.5,1)' });
   // ⑧ 아티팩트
-  if (isArt) {
-    banner.style.color = sp ? '#fff' : 'var(--highlight)';
+  if (isArt || isSpRelic) {
+    banner.textContent = isSpRelic ? 'Special 유물 발견!' : '아티팩트 발견!';
+    banner.style.color = sp || isSpRelic ? '#fff' : 'var(--highlight)';
     run(banner, [{ opacity: 0, transform: 'translateY(-24px)' }, { opacity: 1, transform: 'translateY(0)' }], 350);
-    flash.style.background = sp ? 'radial-gradient(circle at 50% 44%, rgba(255,255,255,.7), transparent 55%)' : `radial-gradient(circle at 50% 44%, ${gr.c}aa, transparent 55%)`;
+    flash.style.background = sp || isSpRelic ? 'radial-gradient(circle at 50% 44%, rgba(255,255,255,.7), transparent 55%)' : `radial-gradient(circle at 50% 44%, ${gr.c}aa, transparent 55%)`;
     await run(flash, [{ opacity: 0 }, { opacity: 1, offset: .3 }, { opacity: 0 }], 600);
   }
   const li = document.createElement('li');
-  li.textContent = `${gr.relic} → ${$('rname').textContent}${isArt ? ' ★' : ''}`;
+  li.textContent = `${gr.relic} → ${$('rname').textContent}${isArt || isSpRelic ? ' ★' : ''}`;
   $('log').prepend(li);
   hint.textContent = '다시 감정하려면 감정을 누르세요';
   playing = false; $('go').disabled = false;
