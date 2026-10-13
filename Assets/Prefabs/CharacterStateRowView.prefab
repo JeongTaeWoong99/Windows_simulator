@@ -1149,7 +1149,7 @@ GameObject:
   - component: {fileID: 8515105979042157311}
   - component: {fileID: 2869497926412042829}
   m_Layer: 5
-  m_Name: Fishing Cell
+  m_Name: Excavation Cell
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

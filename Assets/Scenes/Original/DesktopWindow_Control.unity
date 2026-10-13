@@ -54055,7 +54055,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB09A\uC2DC"
+  m_text: "\uBC1C\uAD74"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
@@ -96383,7 +96383,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uB09A\uC2DC"
+  m_text: "\uBC1C\uAD74"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
@@ -103889,7 +103889,7 @@ GameObject:
   - component: {fileID: 1480106115}
   - component: {fileID: 1480106119}
   m_Layer: 5
-  m_Name: Fishing Button
+  m_Name: Excavation Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -122446,7 +122446,7 @@ GameObject:
   - component: {fileID: 1764968038}
   - component: {fileID: 1764968042}
   m_Layer: 0
-  m_Name: Filter Fishing Button
+  m_Name: Filter Excavation Button
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

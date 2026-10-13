@@ -1,6 +1,6 @@
 # Art 폴더 규칙
 
-> 최종 업데이트: 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
+> 최종 업데이트: 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
 
 **그림은 받은 그대로 쓰지 않는다.** 팩마다 크기·방향·발 위치·임포트 설정이 제각각이라,
 원본은 `_source/`에 그대로 두고 **레시피 → 굽기**로 같은 규격의 결과물을 만든다.
@@ -254,16 +254,16 @@ git checkout -t origin/main
 | `characters/bringer-of-death` (1002) | `_source/bringer-of-death` |
 | `characters/hero-knight` (1003~1016) | `_source/hero-knight` — 3연타 |
 | `characters/warrior` (1017~1030) | `_source/warrior` — 이펙트 포함 시트 |
-| `backgrounds/forest` (기본 배경 · 낚시) | `_source/free-pixel-art-forest` |
+| `backgrounds/forest` (기본 배경 · 발굴 — 옛 낚시 자리 임시) | `_source/free-pixel-art-forest` |
 | `backgrounds/plains` (농사) | `_source/biome-plains` — 아틀라스 스프라이트 `Background5~1` + 땅 띠 `TileGround2`(같은 팩 타일) |
 | `backgrounds/hills` (채광) | `_source/pixel-art-hills` — 미리보기 한 장 |
 | `backgrounds/american-forest` (벌목) | `_source/biome-american-forest` — 〃 + 땅 띠 `TileGround2`(같은 팩) |
 | `backgrounds/dark-forest` (사냥) | `_source/dark-forest-pack` + 땅 띠 `Tiles/Earth`(같은 팩, 축소 2) — ⚠️ L3 이음매가 어긋난다(검사 경고) |
-| `targets/{mining·logging·farming·hunting·fishing}` | `_source/cainos-village-props` — 돌 · 나무 · 허수아비 · 훈련 인형 · 우물 |
+| `targets/{mining·logging·farming·hunting·fishing}` | `_source/cainos-village-props` — 돌 · 나무 · 허수아비 · 훈련 인형 · 우물. ⚠️ `fishing`은 옛 낚시 폴더 — 지금은 발굴(산업 값 2) 임시 그림이다. 발굴 그림을 구울 때 키 `excavation`으로 새로 만든다 (T-148 🎨) |
 | `fx/reveal/` — 6장 | 임시 — `_source/fx-placeholder/make_fx.py`(`reveal`). 번짐 · 광선 · 별 조각 · 빛 줄 · 원뿔 · 테두리 띠. `reveal_frame`은 9-slice 5px |
 | `fx/gain/` — 5장 | 임시 — 〃 (`gain`). 번짐(속이 진함) · 광선 · 별 조각 · 빛 기둥(1:2) · 고리. 작은 위젯 칸(18px)에서도 보이게 공개 연출 것보다 진하다 |
 | `fx/bagfull/` — 2장 | 임시 — 〃 (`bagfull`). 자루(오른쪽 아래가 X 자리만큼 비어 있다) · X. 둘 다 흰색 — 자루는 옅은 회색, X는 `Negative` 빨강을 코드가 입힌다 |
-| `icons/icon_recipe` — 자원 171 · 장비 69 | 채광 = `minerals-icons` 1~30 · 낚시 = 물약 · 농사 = 항아리 · 벌목 = 통 · 사냥 = 하트 · 구슬 = 동전 · 상자 = 상자(나무 빨강 · 은 파랑 · 황금 금색) — `pixel-item-pack`(Light Outline, 등급별 색) · 무기 = `pixel-art-icons-swords` 순환 · 보석 = `minerals-icons` 31~48 순환 · 장신구 = 하트. 지도·나침반·열쇠·큐브 5종은 `item_0` |
+| `icons/icon_recipe` — 자원 171 · 장비 69 | 채광 = `minerals-icons` 1~30 · 발굴 = 물약(옛 낚시 자리 임시) · 농사 = 항아리 · 벌목 = 통 · 사냥 = 하트 · 구슬 = 동전 · 상자 = 상자(나무 빨강 · 은 파랑 · 황금 금색) — `pixel-item-pack`(Light Outline, 등급별 색) · 무기 = `pixel-art-icons-swords` 순환 · 보석 = `minerals-icons` 31~48 순환 · 장신구 = 하트. 지도·나침반·열쇠·큐브 5종은 `item_0` |
 
 캐릭터 TID 나눔(1003~1016 · 1017~1030)은 느낌 보기용 임의 배정이다 — 진짜 짝은 캐릭터 그림이 정해질 때 레시피 `characterTids`에서 고친다.
 

@@ -14,6 +14,7 @@
 
 | ID | 제목 | 담당 | 완료 | 관련 커밋 |
 |----|------|------|------|-----------|
+| [T-031](T-031-클라가챠화면.md) | 클라 — 가챠 화면 · 뽑기 결과 연출 — 하나씩 공개 연출로 끝 · 희귀도 스프라이트는 색 구분으로 대신하고 닫음 · [이슈 #23](https://github.com/JeongTaeWoong99/Windows_simulator/issues/23) | 태웅 | 2026-10-13 | `53f71d3` · `c69e198` · 이 커밋 — 사용자 확인 (art/에서 내림) |
 | [T-102](T-102-판정최소주기.md) | 판정 최소 주기 — 전역 2.1초(`MinCycleMs`) · 서버 속도 상한 `JudgeCostUnits ÷ MinCycleMs` · 넘친 속도는 버린다 · [이슈 #63](https://github.com/JeongTaeWoong99/Windows_simulator/issues/63) | 진우 | 2026-10-12 | `a6f7ae8` · `017d7ad` · 이 커밋 — 사용자 실측 확인 |
 | [T-146](T-146-DB마이그레이션자동적용.md) | 서버 기동 시 DB 마이그레이션 자동 적용 — `Shared/migrations/<번호>` = `user_version` · 백업 · 트랜잭션 · 테스트 스키마도 같은 파일(`SqliteFixture.CreateSchema()`) · 10-07 "마이그레이션 없음"을 뒤집음 | 진우 | 2026-10-11 | `4563a42` · `f7ac376` · 이 커밋 — 사용자 확인(원격 DB) |
 | [T-109](T-109-서버도커외부접속.md) | 게임·경매장 서버를 Docker로 띄워 친구들이 내 서버에 접속 — `appsettings.json` 설정 · 개발 10050·10060 / 원격 30329·30330 · 원격 치트 차단 · 클라 빌드 주소 `ServerSettings.json` · 공유기 포트포워딩 | 진우 | 2026-10-11 | `f7ac376` · `ce40c9a` · 이 커밋 — 사용자 실측(친구 PC 접속) |
