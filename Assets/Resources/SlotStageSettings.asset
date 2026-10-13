@@ -15,7 +15,7 @@ MonoBehaviour:
   approachSeconds: 1
   runLoopSeconds: 0.8
   attackSeconds: 0.6
-  poseSeconds: 0.08
+  poseBeats: 2
   fadeSeconds: 0.3
   flashSeconds: 0.08
   hitEffectSeconds: 0.3

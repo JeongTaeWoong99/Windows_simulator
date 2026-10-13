@@ -40,8 +40,8 @@ public class SlotStageSettings : ScriptableObject
     [SerializeField, Range(0.3f, 1.2f), Tooltip("공격 한 번의 길이. 프레임 수와 무관하게 이 시간에 맞춰 끝까지 재생한다 — 주기가 남으면 공격을 늘이지 않고 달리기를 늘린다")]
     private float attackSeconds = 0.6f;
 
-    [SerializeField, Range(0f, 0.2f), Tooltip("달리기 처음·끝에 대기 그림을 보이는 시간 — 달리기 ↔ 공격 자세가 확 튀지 않게. 달리기 안에서 바꾸므로 주기는 그대로다. 0이면 끈다")]
-    private float poseSeconds = 0.08f;
+    [SerializeField, Range(0f, 4f), Tooltip("달리기 처음·끝에 대기 그림을 보이는 길이 — 그 캐릭터 달리기 그림 몇 장 길이인가. 초는 캐릭터마다 달리기 한 장 길이로 정해진다(새 캐릭터도 자기 리듬). 달리기 안에서 바꾸므로 주기는 그대로다. 0이면 끈다")]
+    private float poseBeats = 2f;
 
     [SerializeField, Range(0f, 0.6f), Tooltip("쓰러진 대상이 그 자리에서 사라지는 시간. 0이면 즉시")]
     private float fadeSeconds = 0.3f;
@@ -70,7 +70,7 @@ public class SlotStageSettings : ScriptableObject
     public float ApproachSeconds => approachSeconds;
     public float RunLoopSeconds  => runLoopSeconds;
     public float AttackSeconds   => attackSeconds;
-    public float PoseSeconds     => poseSeconds;
+    public float PoseBeats       => poseBeats;
     public float FadeSeconds     => fadeSeconds;
     public float FlashSeconds    => flashSeconds;
     public float HitEffectSeconds => hitEffectSeconds;

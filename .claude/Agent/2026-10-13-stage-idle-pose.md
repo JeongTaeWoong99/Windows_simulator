@@ -22,3 +22,8 @@ tags: [client, ui]
 
 ## 후속 작업 / 주의사항
 - 실측 대기 — 0.06~0.1 사이에서 인스펙터로 바로 조정 가능(`Resources/SlotStageSettings`).
+
+## 업데이트 (2026-10-13) — 초 → 장수
+- 0.08초는 그림 한 장 길이와 같아 동작 속에 묻혀 티가 안 났다 → 두 장 길이로.
+- 그림 한 장 길이는 `runLoopSeconds ÷ 달리기 장수`라 캐릭터마다 다르다(0.067~0.1초) — 초로 고정하면 장수가 적은 새 캐릭터는 두 장이 안 된다.
+- `poseSeconds` → `poseBeats`(기본 2). 지금 값: black-knight 0.13 · hero-knight 0.16 · warrior·bringer 0.2초. 1/4 상한은 그대로.

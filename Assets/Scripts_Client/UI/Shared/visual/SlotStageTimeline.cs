@@ -11,9 +11,11 @@ using UnityEngine;
 //   (공격 ↔ 달리기 사이에 대기 자세(숨)·처치 뒤 머무는 시간(여운)을 두었다가 뺐다 — 자세가 한 번 더 바뀌어 뚝뚝 끊겨 보였다.)
 //
 // ■ 달리기 양 끝은 대기 자세 한 장 (2026-10-13)
-//   달리기와 공격은 자세 차이가 커서 바로 바꾸면 확 튄다 — 달리기의 처음·끝 '사이 자세(초)'만 대기 그림으로 보인다.
+//   달리기와 공격은 자세 차이가 커서 바로 바꾸면 확 튄다 — 달리기의 처음·끝 '사이 자세'만 대기 그림으로 보인다.
 //   새 구간이 아니라 달리기 안에서 그림만 바꾼다 — 주기·공격 시작·판정 순간도, 땅 흐름도 그대로다.
-//   길이는 그림 한 장 길이(0.08초 안팎) — 화면 프레임 단위면 FPS마다 길이가 달라지고 너무 짧아 깜빡임으로 보인다.
+//   길이는 초가 아니라 '그림 몇 장'(기본 2장) — 캐릭터마다 달리기 한 장 길이(달리기 한 바퀴 ÷ 장수)를 곱한다.
+//   그래서 장수가 적은(한 장이 긴) 캐릭터가 들어와도 자기 리듬으로 두 장이다. 화면 프레임 단위는 FPS마다 길이가 달라 쓰지 않는다.
+//   달리기의 1/4을 넘지 않는다 — 장수가 아주 적어도 달리기가 사라지거나 선 채로 미끄러져 보이지 않게.
 //
 // ■ 공격은 늘 '공격 한 번(초)' 그대로 끝까지 재생한다 (2026-10-12)
 //   처치 타는 타격에서 주기가 끝나고, 나머지는 다음 주기 맨 앞에서 마저 한다 — 그래서 한 바퀴에 공격 m번이 온전히 들어간다.
@@ -98,8 +100,9 @@ public static class SlotStageTimeline
 
         if (t < runEnd)
         {
-            // 양 끝은 대기 자세 — 달리기가 짧으면 사이 자세도 그만큼 줄인다
-            float pose = Mathf.Min(settings.PoseSeconds, run * 0.25f);
+            // 양 끝은 대기 자세 — 달리기 그림 몇 장 길이. 달리기의 1/4을 넘지 않는다
+            float beat = runFrames > 0 ? settings.RunLoopSeconds / runFrames : 0f;
+            float pose = Mathf.Min(settings.PoseBeats * beat, run * 0.25f);
             bool  idle = t - runStart < pose || runEnd - t <= pose;
 
             return new Result(EPhase.Run, RunFrame(t - runStart, runFrames, settings), 0, t, last, runStart, runEnd, start, idle);
