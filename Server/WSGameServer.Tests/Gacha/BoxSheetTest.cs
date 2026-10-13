@@ -3,14 +3,20 @@ using GameData;
 namespace WSGameServer;
 
 /// <summary>
-/// 실제 상자 데이터 검증 — <c>Item.xlsx</c>의 상자(<c>OpenGachaId</c>)와 <c>Gacha.xlsx</c>의 상자 풀이 맞물리는지 본다.
-/// 깨지면: 열 수 없는 상자가 생기거나, 상자에서 상자가 나와 무한히 까지거나, 상자 풀을 골드로 사게 된다.
+/// 실제 상자 데이터 검증 — <c>Item.xlsx</c>의 여는 아이템(<c>OpenGachaId</c>)과 <c>Gacha.xlsx</c>의 상자 풀이 맞물리는지 본다.
+/// 깨지면: 열 수 없는 상자가 생기거나, 열기가 돌고 돌아 무한히 까지거나, 상자 풀을 골드로 사게 된다.
 /// </summary>
 public class BoxSheetTest
 {
     public BoxSheetTest() => GameTableFixture.EnsureLoaded();
 
-    private static IEnumerable<ItemTableRow> Boxes => GameTable.ItemTable.All.Where(r => r.OpenGachaId != 0);
+    // 레벨 상자는 나무·은·황금 × Lv1~5 = 100019~100033. 황금 열쇠(100012 → 비밀 금고)처럼 여는 아이템이 더 있다.
+    private const int FirstBoxTid = 100019;
+    private const int LastBoxTid  = 100033;
+
+    private static IEnumerable<ItemTableRow> Openables => GameTable.ItemTable.All.Where(r => r.OpenGachaId != 0);
+
+    private static IEnumerable<ItemTableRow> Boxes => Openables.Where(r => r.ItemTID is >= FirstBoxTid and <= LastBoxTid);
 
     [Fact]
     public void 상자는_산업_레벨마다_세_등급이고_최대_1000개다()
@@ -26,7 +32,7 @@ public class BoxSheetTest
     public void 상자_풀은_비용_재화가_None이다()
     {
         // None이면 GachaService.Draw가 거절한다 — 상자를 거치지 않고 내용물을 사는 길을 막는다.
-        foreach (var box in Boxes)
+        foreach (var box in Openables)
         {
             GameTable.GachaInfoTable.TryGet(box.OpenGachaId, out var info).ShouldBeTrue();
             info.CostCurrency.ShouldBe(CurrencyType.None);
@@ -34,22 +40,44 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 상자_풀에서_상자가_나오지_않는다()
+    public void 여는_아이템을_열고_또_열어도_처음_것으로_돌아오지_않는다()
     {
-        var boxTids  = Boxes.Select(r => r.ItemTID).ToHashSet();
-        var boxPools = Boxes.Select(r => r.OpenGachaId).ToHashSet();
+        // 황금 상자 → 황금 열쇠 → 비밀 금고처럼 한 단계 더 여는 건 괜찮다. 다시 처음 것이 나오면 무한히 까진다.
+        var poolOf = Openables.ToDictionary(r => r.ItemTID, r => r.OpenGachaId);
+        var next = poolOf.ToDictionary(
+            kv => kv.Key,
+            kv => GameTable.GachaItemTable.All
+                .Where(r => r.GachaId == kv.Value && poolOf.ContainsKey(r.ItemTID))
+                .Select(r => r.ItemTID)
+                .ToList());
 
-        var looped = GameTable.GachaItemTable.All
-            .Where(r => boxPools.Contains(r.GachaId) && boxTids.Contains(r.ItemTID))
-            .Select(r => r.GachaItemTID);
+        var looped = poolOf.Keys.Where(start => Reaches(next, start, start, new HashSet<int>()));
 
         looped.ShouldBeEmpty();
+    }
+
+    private static bool Reaches(Dictionary<int, List<int>> next, int from, int target, HashSet<int> visited)
+    {
+        foreach (var tid in next[from])
+        {
+            if (tid == target)
+            {
+                return true;
+            }
+
+            if (visited.Add(tid) && Reaches(next, tid, target, visited))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     [Fact]
     public void 상자_풀에서_캐릭터가_나오지_않는다()
     {
-        var boxPools = Boxes.Select(r => r.OpenGachaId).ToHashSet();
+        var boxPools = Openables.Select(r => r.OpenGachaId).ToHashSet();
 
         GameTable.GachaCharacterTable.All.Where(r => boxPools.Contains(r.GachaId)).ShouldBeEmpty();
     }
