@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-13 슬롯 연출 — 달리기 양 끝에 대기 자세 한 장 (T-097)](2026-10-13-stage-idle-pose.md) — `#client` `#ui` Run 안의 플래그라 땅·주기 그대로 · 초 단위(프레임 아님)
 - [2026-10-13 클라 화면 글자·문서의 낚시 → 발굴 (T-148) · art 폴더 정리](2026-10-13-excavation-client-text.md) — `#client` `#docs` 씬 TMP 글자는 XXXX 이스케이프 · targets/fishing은 발굴 임시 · T-031 보관
 - [2026-10-13 미감정 유물 · 감정 · 아티팩트 기획과 첫 데이터 (T-150)](2026-10-13-relic-appraisal-artifact.md) — `#design` `#data` Special은 감정에서만 · 번호 = 도감 실린 순서 · `ArtifactTable` 22종 · 서버 미구현
 - [2026-10-13 치트 창 — 왼쪽 분류 목록 · 검색 · 칸 하나 = 클래스 하나](2026-10-13-cheat-window-categories.md) — `#client` `#editor` 칸을 CheatSection 클래스로 나누고 분류·검색으로 보인다
