@@ -430,6 +430,12 @@ public class SlotStageView : MonoBehaviour
             return null;
         }
 
+        // 달리기 양 끝의 사이 자세 ('SlotStageTimeline' 머리 주석)
+        if (now.IdlePose)
+        {
+            return _characterVisual.IdleFrame;
+        }
+
         Sprite[] frames = now.Phase == SlotStageTimeline.EPhase.Run
             ? _characterVisual.RunFrames
             : _characterVisual.Attacks[now.Combo].frames;

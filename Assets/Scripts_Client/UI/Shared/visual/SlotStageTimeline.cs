@@ -3,12 +3,17 @@ using UnityEngine;
 // 판정 주기 안의 한 순간 → "지금 무슨 동작의 몇 번째 프레임인가". 상태가 없는 계산표다.
 // 무대('SlotStageView')가 매 프레임 부른다. 근거는 게임UI 2.5.
 //
-// ■ 한 주기는 [처치 타 나머지] → [달리기] → [공격] — 대기 자세는 끼우지 않는다 (2026-10-12)
+// ■ 한 주기는 [처치 타 나머지] → [달리기] → [공격] — 대기 자세 구간은 끼우지 않는다 (2026-10-12 · 달리기 양 끝 그림만은 아래)
 //   처치 타 나머지 : 앞 주기를 끝낸 공격(처치 타)의 타격 뒤 프레임. 쓰러진 대상이 그 자리에서 사라진다.
 //   달리기 : 다음 대상이 왼쪽에서 땅과 같이 흘러온다.
 //   공격   : 대상에 닿은 순간부터 **1 → 2 → … → n → 1 → 2 …** 앞에서부터 순서대로 친다.
 //            주기 끝(판정)에 타격이 닿는 공격이 곧 처치 타다 — 빨리 죽으면 1타 하나, 오래 걸리면 1234 1234 ….
 //   (공격 ↔ 달리기 사이에 대기 자세(숨)·처치 뒤 머무는 시간(여운)을 두었다가 뺐다 — 자세가 한 번 더 바뀌어 뚝뚝 끊겨 보였다.)
+//
+// ■ 달리기 양 끝은 대기 자세 한 장 (2026-10-13)
+//   달리기와 공격은 자세 차이가 커서 바로 바꾸면 확 튄다 — 달리기의 처음·끝 '사이 자세(초)'만 대기 그림으로 보인다.
+//   새 구간이 아니라 달리기 안에서 그림만 바꾼다 — 주기·공격 시작·판정 순간도, 땅 흐름도 그대로다.
+//   길이는 그림 한 장 길이(0.08초 안팎) — 화면 프레임 단위면 FPS마다 길이가 달라지고 너무 짧아 깜빡임으로 보인다.
 //
 // ■ 공격은 늘 '공격 한 번(초)' 그대로 끝까지 재생한다 (2026-10-12)
 //   처치 타는 타격에서 주기가 끝나고, 나머지는 다음 주기 맨 앞에서 마저 한다 — 그래서 한 바퀴에 공격 m번이 온전히 들어간다.
@@ -34,10 +39,11 @@ public static class SlotStageTimeline
         public readonly float  RunStart;    // 달리기가 시작되는 순간 — 땅이 흐르기 시작한다
         public readonly float  RunEnd;      // 달리기가 끝나는 순간 — 대상이 멈춤 자리에 닿는다
         public readonly float  AttackStart; // 공격이 시작되는 순간
+        public readonly bool   IdlePose;    // 달리기 양 끝의 사이 자세 — 달리기 그림 대신 대기 그림 (머리 주석)
 
         public bool HitsComing => Phase == EPhase.Attack && SinceHit >= 0f; // 최근 타격이 다가온 대상의 것인가 (아니면 쓰러진 대상)
 
-        public Result(EPhase phase, int frame, int combo, float sinceHit, int hitCombo, float runStart, float runEnd, float attackStart)
+        public Result(EPhase phase, int frame, int combo, float sinceHit, int hitCombo, float runStart, float runEnd, float attackStart, bool idlePose = false)
         {
             Phase       = phase;
             Frame       = frame;
@@ -47,6 +53,7 @@ public static class SlotStageTimeline
             RunStart    = runStart;
             RunEnd      = runEnd;
             AttackStart = attackStart;
+            IdlePose    = idlePose;
         }
     }
 
@@ -91,7 +98,11 @@ public static class SlotStageTimeline
 
         if (t < runEnd)
         {
-            return new Result(EPhase.Run, RunFrame(t - runStart, runFrames, settings), 0, t, last, runStart, runEnd, start);
+            // 양 끝은 대기 자세 — 달리기가 짧으면 사이 자세도 그만큼 줄인다
+            float pose = Mathf.Min(settings.PoseSeconds, run * 0.25f);
+            bool  idle = t - runStart < pose || runEnd - t <= pose;
+
+            return new Result(EPhase.Run, RunFrame(t - runStart, runFrames, settings), 0, t, last, runStart, runEnd, start, idle);
         }
 
         // 몇 번째 공격인가 — 앞에서부터 센다
