@@ -29,9 +29,14 @@ on:
       - 'tasks/**'
       - '.github/workflows/docs-deploy.yml'
   workflow_dispatch:
+  # 회차가 넘어가는 일요일 09:00(KST) — 문서가 안 바뀌어도 지난 회차 일감을 밀고 탭을 갈아 끼운다.
+  schedule:
+    - cron: '0 0 * * 0'
 
+# 회차 자동 이월이 일감 커밋을 push하고(contents) 이슈 마일스톤을 옮긴다(issues).
 permissions:
-  contents: read
+  contents: write
+  issues: write
 
 env:
   PROJECT_NAME: wsdocs
@@ -44,6 +49,25 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      # 지난 회차를 목표로 둔 미완료 일감 → 이번 회차 · 지난 회차 마일스톤의 열린 이슈도 옮기고 마일스톤은 닫는다.
+      # PR은 건너뛴다(main에만 반영). 이 job이 고친 파일로 바로 빌드하므로 사이트에도 곧장 반영된다.
+      # GITHUB_TOKEN으로 한 push는 워크플로를 다시 깨우지 않는다 — 배포가 두 번 돌지 않는다.
+      - name: 회차 자동 이월
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node GameDesign/web/scripts/roll-cycles.mjs --issues
+          if git diff --quiet -- tasks; then
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add tasks
+          git commit -m 'chore: 지난 회차 미완료 일감을 다음 회차로 민다 (자동)'
+          # 그사이 main이 움직였으면 위에 얹는다. 실패해도 배포는 계속한다 — 다음 실행이 다시 민다.
+          git pull --rebase origin main && git push origin HEAD:main || echo "::warning::이월 커밋 push 실패 — 다음 실행에서 다시 시도한다"
 
       - uses: actions/setup-node@v4
         with:

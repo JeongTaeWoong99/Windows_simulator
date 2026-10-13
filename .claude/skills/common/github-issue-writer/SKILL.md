@@ -101,7 +101,7 @@ description: GitHub 이슈(Windows_simulator)를 쓰거나 고친다. 상대 직
 
 - 새 이슈는 **다음 회차 마일스톤**을 단다: `gh issue create … --milestone 261010`
 - 마일스톤이 없으면 만든다: `gh api repos/{owner}/{repo}/milestones -f title=261024 -f due_on=2026-10-24T13:00:00Z`
-- 회차 안에 못 끝나면 다음 회차로 옮긴다: `gh issue edit <번호> --milestone 261024`
+- 회차 안에 못 끝나면 다음 회차로 옮긴다: `gh issue edit <번호> --milestone 261024` — 회차가 지나면 배포 워크플로가 열린 이슈를 자동으로 옮기고 지난 마일스톤을 닫는다(T-154)
 - ⚠️ 회차 이슈 목록은 `gh issue list --search "milestone:261010"`로 본다 — `--milestone 261010`은 숫자 제목을 마일스톤 **번호**로 읽어 실패한다.
 
 ### LABELS = 종류에 맞춰
