@@ -8,7 +8,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10002,
@@ -19,7 +20,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10003,
@@ -30,7 +32,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10004,
@@ -41,7 +44,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10005,
@@ -52,7 +56,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10006,
@@ -63,7 +68,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "옛 집터(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20001,
@@ -74,7 +80,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20002,
@@ -85,7 +92,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20003,
@@ -96,7 +104,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20004,
@@ -107,7 +116,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20005,
@@ -118,7 +128,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20006,
@@ -129,7 +140,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "텃밭(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30001,
@@ -140,7 +152,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30002,
@@ -151,7 +164,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30003,
@@ -162,7 +176,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30004,
@@ -173,7 +188,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30005,
@@ -184,7 +200,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30006,
@@ -195,7 +212,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "잡목림(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40001,
@@ -206,7 +224,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40002,
@@ -217,7 +236,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40003,
@@ -228,7 +248,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40004,
@@ -239,7 +260,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40005,
@@ -250,7 +272,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40006,
@@ -261,7 +284,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "노천 광산(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50001,
@@ -272,7 +296,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50002,
@@ -283,7 +308,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50003,
@@ -294,7 +320,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50004,
@@ -305,7 +332,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50005,
@@ -316,7 +344,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50006,
@@ -327,7 +356,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "들판(Lv1)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10011,
@@ -338,7 +368,8 @@
     "BasePrice": 30,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10012,
@@ -349,7 +380,8 @@
     "BasePrice": 75,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10013,
@@ -360,7 +392,8 @@
     "BasePrice": 180,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10014,
@@ -371,7 +404,8 @@
     "BasePrice": 450,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10015,
@@ -382,7 +416,8 @@
     "BasePrice": 1200,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10016,
@@ -393,7 +428,8 @@
     "BasePrice": 3000,
     "OpenGachaId": 0,
     "Description": "무너진 성벽(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10021,
@@ -404,7 +440,8 @@
     "BasePrice": 90,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10022,
@@ -415,7 +452,8 @@
     "BasePrice": 225,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10023,
@@ -426,7 +464,8 @@
     "BasePrice": 540,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10024,
@@ -437,7 +476,8 @@
     "BasePrice": 1350,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10025,
@@ -448,7 +488,8 @@
     "BasePrice": 3600,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10026,
@@ -459,7 +500,8 @@
     "BasePrice": 9000,
     "OpenGachaId": 0,
     "Description": "고대 신전(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10031,
@@ -470,7 +512,8 @@
     "BasePrice": 270,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10032,
@@ -481,7 +524,8 @@
     "BasePrice": 675,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10033,
@@ -492,7 +536,8 @@
     "BasePrice": 1620,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10034,
@@ -503,7 +548,8 @@
     "BasePrice": 4050,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10035,
@@ -514,7 +560,8 @@
     "BasePrice": 10800,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10036,
@@ -525,7 +572,8 @@
     "BasePrice": 27000,
     "OpenGachaId": 0,
     "Description": "지하 묘실(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10041,
@@ -536,7 +584,8 @@
     "BasePrice": 810,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10042,
@@ -547,7 +596,8 @@
     "BasePrice": 2025,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10043,
@@ -558,7 +608,8 @@
     "BasePrice": 4860,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10044,
@@ -569,7 +620,8 @@
     "BasePrice": 12150,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10045,
@@ -580,7 +632,8 @@
     "BasePrice": 32400,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 10046,
@@ -591,7 +644,8 @@
     "BasePrice": 81000,
     "OpenGachaId": 0,
     "Description": "잊힌 왕도(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20011,
@@ -602,7 +656,8 @@
     "BasePrice": 30,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20012,
@@ -613,7 +668,8 @@
     "BasePrice": 75,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20013,
@@ -624,7 +680,8 @@
     "BasePrice": 180,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20014,
@@ -635,7 +692,8 @@
     "BasePrice": 450,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20015,
@@ -646,7 +704,8 @@
     "BasePrice": 1200,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20016,
@@ -657,7 +716,8 @@
     "BasePrice": 3000,
     "OpenGachaId": 0,
     "Description": "밭(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20021,
@@ -668,7 +728,8 @@
     "BasePrice": 90,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20022,
@@ -679,7 +740,8 @@
     "BasePrice": 225,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20023,
@@ -690,7 +752,8 @@
     "BasePrice": 540,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20024,
@@ -701,7 +764,8 @@
     "BasePrice": 1350,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20025,
@@ -712,7 +776,8 @@
     "BasePrice": 3600,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20026,
@@ -723,7 +788,8 @@
     "BasePrice": 9000,
     "OpenGachaId": 0,
     "Description": "농장(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20031,
@@ -734,7 +800,8 @@
     "BasePrice": 270,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20032,
@@ -745,7 +812,8 @@
     "BasePrice": 675,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20033,
@@ -756,7 +824,8 @@
     "BasePrice": 1620,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20034,
@@ -767,7 +836,8 @@
     "BasePrice": 4050,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20035,
@@ -778,7 +848,8 @@
     "BasePrice": 10800,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20036,
@@ -789,7 +860,8 @@
     "BasePrice": 27000,
     "OpenGachaId": 0,
     "Description": "대농장(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20041,
@@ -800,7 +872,8 @@
     "BasePrice": 810,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20042,
@@ -811,7 +884,8 @@
     "BasePrice": 2025,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20043,
@@ -822,7 +896,8 @@
     "BasePrice": 4860,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20044,
@@ -833,7 +908,8 @@
     "BasePrice": 12150,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20045,
@@ -844,7 +920,8 @@
     "BasePrice": 32400,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 20046,
@@ -855,7 +932,8 @@
     "BasePrice": 81000,
     "OpenGachaId": 0,
     "Description": "신성한 대지(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30011,
@@ -866,7 +944,8 @@
     "BasePrice": 30,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30012,
@@ -877,7 +956,8 @@
     "BasePrice": 75,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30013,
@@ -888,7 +968,8 @@
     "BasePrice": 180,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30014,
@@ -899,7 +980,8 @@
     "BasePrice": 450,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30015,
@@ -910,7 +992,8 @@
     "BasePrice": 1200,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30016,
@@ -921,7 +1004,8 @@
     "BasePrice": 3000,
     "OpenGachaId": 0,
     "Description": "소나무 숲(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30021,
@@ -932,7 +1016,8 @@
     "BasePrice": 90,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30022,
@@ -943,7 +1028,8 @@
     "BasePrice": 225,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30023,
@@ -954,7 +1040,8 @@
     "BasePrice": 540,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30024,
@@ -965,7 +1052,8 @@
     "BasePrice": 1350,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30025,
@@ -976,7 +1064,8 @@
     "BasePrice": 3600,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30026,
@@ -987,7 +1076,8 @@
     "BasePrice": 9000,
     "OpenGachaId": 0,
     "Description": "참나무 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30031,
@@ -998,7 +1088,8 @@
     "BasePrice": 270,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30032,
@@ -1009,7 +1100,8 @@
     "BasePrice": 675,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30033,
@@ -1020,7 +1112,8 @@
     "BasePrice": 1620,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30034,
@@ -1031,7 +1124,8 @@
     "BasePrice": 4050,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30035,
@@ -1042,7 +1136,8 @@
     "BasePrice": 10800,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30036,
@@ -1053,7 +1148,8 @@
     "BasePrice": 27000,
     "OpenGachaId": 0,
     "Description": "흑림(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30041,
@@ -1064,7 +1160,8 @@
     "BasePrice": 810,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30042,
@@ -1075,7 +1172,8 @@
     "BasePrice": 2025,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30043,
@@ -1086,7 +1184,8 @@
     "BasePrice": 4860,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30044,
@@ -1097,7 +1196,8 @@
     "BasePrice": 12150,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30045,
@@ -1108,7 +1208,8 @@
     "BasePrice": 32400,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 30046,
@@ -1119,7 +1220,8 @@
     "BasePrice": 81000,
     "OpenGachaId": 0,
     "Description": "세계수 뿌리(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40011,
@@ -1130,7 +1232,8 @@
     "BasePrice": 30,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40012,
@@ -1141,7 +1244,8 @@
     "BasePrice": 75,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40013,
@@ -1152,7 +1256,8 @@
     "BasePrice": 180,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40014,
@@ -1163,7 +1268,8 @@
     "BasePrice": 450,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40015,
@@ -1174,7 +1280,8 @@
     "BasePrice": 1200,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40016,
@@ -1185,7 +1292,8 @@
     "BasePrice": 3000,
     "OpenGachaId": 0,
     "Description": "갱도(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40021,
@@ -1196,7 +1304,8 @@
     "BasePrice": 90,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40022,
@@ -1207,7 +1316,8 @@
     "BasePrice": 225,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40023,
@@ -1218,7 +1328,8 @@
     "BasePrice": 540,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40024,
@@ -1229,7 +1340,8 @@
     "BasePrice": 1350,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40025,
@@ -1240,7 +1352,8 @@
     "BasePrice": 3600,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40026,
@@ -1251,7 +1364,8 @@
     "BasePrice": 9000,
     "OpenGachaId": 0,
     "Description": "심층 갱도(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40031,
@@ -1262,7 +1376,8 @@
     "BasePrice": 270,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40032,
@@ -1273,7 +1388,8 @@
     "BasePrice": 675,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40033,
@@ -1284,7 +1400,8 @@
     "BasePrice": 1620,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40034,
@@ -1295,7 +1412,8 @@
     "BasePrice": 4050,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40035,
@@ -1306,7 +1424,8 @@
     "BasePrice": 10800,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40036,
@@ -1317,7 +1436,8 @@
     "BasePrice": 27000,
     "OpenGachaId": 0,
     "Description": "지하 대공동(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40041,
@@ -1328,7 +1448,8 @@
     "BasePrice": 810,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40042,
@@ -1339,7 +1460,8 @@
     "BasePrice": 2025,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40043,
@@ -1350,7 +1472,8 @@
     "BasePrice": 4860,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40044,
@@ -1361,7 +1484,8 @@
     "BasePrice": 12150,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40045,
@@ -1372,7 +1496,8 @@
     "BasePrice": 32400,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 40046,
@@ -1383,7 +1508,8 @@
     "BasePrice": 81000,
     "OpenGachaId": 0,
     "Description": "심연(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50011,
@@ -1394,7 +1520,8 @@
     "BasePrice": 30,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50012,
@@ -1405,7 +1532,8 @@
     "BasePrice": 75,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50013,
@@ -1416,7 +1544,8 @@
     "BasePrice": 180,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50014,
@@ -1427,7 +1556,8 @@
     "BasePrice": 450,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50015,
@@ -1438,7 +1568,8 @@
     "BasePrice": 1200,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50016,
@@ -1449,7 +1580,8 @@
     "BasePrice": 3000,
     "OpenGachaId": 0,
     "Description": "야산(Lv2)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50021,
@@ -1460,7 +1592,8 @@
     "BasePrice": 90,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50022,
@@ -1471,7 +1604,8 @@
     "BasePrice": 225,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50023,
@@ -1482,7 +1616,8 @@
     "BasePrice": 540,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50024,
@@ -1493,7 +1628,8 @@
     "BasePrice": 1350,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50025,
@@ -1504,7 +1640,8 @@
     "BasePrice": 3600,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50026,
@@ -1515,7 +1652,8 @@
     "BasePrice": 9000,
     "OpenGachaId": 0,
     "Description": "깊은 숲(Lv3)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50031,
@@ -1526,7 +1664,8 @@
     "BasePrice": 270,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50032,
@@ -1537,7 +1676,8 @@
     "BasePrice": 675,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50033,
@@ -1548,7 +1688,8 @@
     "BasePrice": 1620,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50034,
@@ -1559,7 +1700,8 @@
     "BasePrice": 4050,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50035,
@@ -1570,7 +1712,8 @@
     "BasePrice": 10800,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50036,
@@ -1581,7 +1724,8 @@
     "BasePrice": 27000,
     "OpenGachaId": 0,
     "Description": "설산(Lv4)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50041,
@@ -1592,7 +1736,8 @@
     "BasePrice": 810,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50042,
@@ -1603,7 +1748,8 @@
     "BasePrice": 2025,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50043,
@@ -1614,7 +1760,8 @@
     "BasePrice": 4860,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50044,
@@ -1625,7 +1772,8 @@
     "BasePrice": 12150,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50045,
@@ -1636,7 +1784,8 @@
     "BasePrice": 32400,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 50046,
@@ -1647,7 +1796,8 @@
     "BasePrice": 81000,
     "OpenGachaId": 0,
     "Description": "마수의 영역(Lv5)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100001,
@@ -1658,7 +1808,8 @@
     "BasePrice": 10,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100002,
@@ -1669,7 +1820,8 @@
     "BasePrice": 25,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100003,
@@ -1680,7 +1832,8 @@
     "BasePrice": 60,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100004,
@@ -1691,7 +1844,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100005,
@@ -1702,7 +1856,8 @@
     "BasePrice": 400,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100006,
@@ -1713,7 +1868,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "가챠 전용(테스트)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100010,
@@ -1724,7 +1880,8 @@
     "BasePrice": 50,
     "OpenGachaId": 0,
     "Description": "지정 슬롯 다음 1회 판정 즉시 완료 (시간 스킵)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100011,
@@ -1735,7 +1892,8 @@
     "BasePrice": 150,
     "OpenGachaId": 0,
     "Description": "지정 슬롯 다음 20회 판정 동안 상자 드롭 확률 +100% (2배)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100012,
@@ -1746,7 +1904,8 @@
     "BasePrice": 500,
     "OpenGachaId": 24,
     "Description": "비밀 금고(GachaId 24) 1회 개봉 (고등급 장비·큐브 묶음 확정)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100015,
@@ -1757,7 +1916,8 @@
     "BasePrice": 500,
     "OpenGachaId": 0,
     "Description": "장비 능력치 칸 전부 다시 뽑기 · 확률로 인챈트 등급 한 단계 상승",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100018,
@@ -1768,7 +1928,8 @@
     "BasePrice": 1000,
     "OpenGachaId": 0,
     "Description": "장비 능력치 칸 전부 다시 뽑기 · 인챈트 큐브보다 등급 상승 확률이 높다",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100019,
@@ -1779,7 +1940,8 @@
     "BasePrice": 54,
     "OpenGachaId": 9,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×10",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100020,
@@ -1790,7 +1952,8 @@
     "BasePrice": 163,
     "OpenGachaId": 10,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×30",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100021,
@@ -1801,7 +1964,8 @@
     "BasePrice": 542,
     "OpenGachaId": 11,
     "Description": "상자 — 산업 Lv1 드롭 · 기대 가치 판정 ×100",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100022,
@@ -1812,7 +1976,8 @@
     "BasePrice": 163,
     "OpenGachaId": 12,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×10",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100023,
@@ -1823,7 +1988,8 @@
     "BasePrice": 488,
     "OpenGachaId": 13,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×30",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100024,
@@ -1834,7 +2000,8 @@
     "BasePrice": 1625,
     "OpenGachaId": 14,
     "Description": "상자 — 산업 Lv2 드롭 · 기대 가치 판정 ×100",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100025,
@@ -1845,7 +2012,8 @@
     "BasePrice": 488,
     "OpenGachaId": 15,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×10",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100026,
@@ -1856,7 +2024,8 @@
     "BasePrice": 1463,
     "OpenGachaId": 16,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×30",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100027,
@@ -1867,7 +2036,8 @@
     "BasePrice": 4876,
     "OpenGachaId": 17,
     "Description": "상자 — 산업 Lv3 드롭 · 기대 가치 판정 ×100",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100028,
@@ -1878,7 +2048,8 @@
     "BasePrice": 1463,
     "OpenGachaId": 18,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×10",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100029,
@@ -1889,7 +2060,8 @@
     "BasePrice": 4389,
     "OpenGachaId": 19,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×30",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100030,
@@ -1900,7 +2072,8 @@
     "BasePrice": 14629,
     "OpenGachaId": 20,
     "Description": "상자 — 산업 Lv4 드롭 · 기대 가치 판정 ×100",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100031,
@@ -1911,7 +2084,8 @@
     "BasePrice": 4389,
     "OpenGachaId": 21,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×10",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100032,
@@ -1922,7 +2096,8 @@
     "BasePrice": 13166,
     "OpenGachaId": 22,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×30",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100033,
@@ -1933,7 +2108,8 @@
     "BasePrice": 43886,
     "OpenGachaId": 23,
     "Description": "상자 — 산업 Lv5 드롭 · 기대 가치 판정 ×100",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100041,
@@ -1944,7 +2120,8 @@
     "BasePrice": 50,
     "OpenGachaId": 0,
     "Description": "캐릭터 경험치 +100 Exp 즉시 획득",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100042,
@@ -1955,7 +2132,8 @@
     "BasePrice": 250,
     "OpenGachaId": 0,
     "Description": "캐릭터 경험치 +500 Exp 즉시 획득",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100043,
@@ -1966,7 +2144,8 @@
     "BasePrice": 1250,
     "OpenGachaId": 0,
     "Description": "캐릭터 경험치 +2,500 Exp 즉시 획득",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100044,
@@ -1977,7 +2156,8 @@
     "BasePrice": 500,
     "OpenGachaId": 0,
     "Description": "지정 슬롯 다음 20회 판정 동안 작업속도 +30% (+300‰ 가산)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100045,
@@ -1988,7 +2168,8 @@
     "BasePrice": 500,
     "OpenGachaId": 0,
     "Description": "지정 슬롯 다음 20회 판정 동안 자원 산출량 +30% (+300‰ 가산)",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100046,
@@ -1999,7 +2180,8 @@
     "BasePrice": 10000,
     "OpenGachaId": 0,
     "Description": "투자된 계정 특성 포인트 전액 초기화",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
   },
   {
     "ItemTID": 100050,
@@ -2010,6 +2192,91 @@
     "BasePrice": 0,
     "OpenGachaId": 0,
     "Description": "남는 장비를 분해하여 얻은 마력의 결정체. 큐브나 영약으로 교환할 수 있다",
-    "Tooltip": ""
+    "Tooltip": "",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100061,
+    "Name": "흙 묻은 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Common",
+    "MaxStack": 1000,
+    "BasePrice": 100,
+    "OpenGachaId": 25,
+    "Description": "일반 미감정 유물 · 감정 200골드 (테스트값 — T-150)",
+    "Tooltip": "골드 200을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 200
+  },
+  {
+    "ItemTID": 100062,
+    "Name": "조개 박힌 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 1000,
+    "BasePrice": 300,
+    "OpenGachaId": 26,
+    "Description": "고급 미감정 유물 · 감정 600골드 (테스트값 — T-150)",
+    "Tooltip": "골드 600을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 600
+  },
+  {
+    "ItemTID": 100063,
+    "Name": "산호 엉긴 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Rare",
+    "MaxStack": 1000,
+    "BasePrice": 900,
+    "OpenGachaId": 27,
+    "Description": "희귀 미감정 유물 · 감정 1,800골드 (테스트값 — T-150)",
+    "Tooltip": "골드 1800을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 1800
+  },
+  {
+    "ItemTID": 100064,
+    "Name": "봉인된 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Epic",
+    "MaxStack": 1000,
+    "BasePrice": 2700,
+    "OpenGachaId": 28,
+    "Description": "영웅 미감정 유물 · 감정 5,400골드 (테스트값 — T-150)",
+    "Tooltip": "골드 5400을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 5400
+  },
+  {
+    "ItemTID": 100065,
+    "Name": "황금 띠 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Legendary",
+    "MaxStack": 1000,
+    "BasePrice": 8000,
+    "OpenGachaId": 29,
+    "Description": "전설 미감정 유물 · 감정 16,000골드 (테스트값 — T-150)",
+    "Tooltip": "골드 16000을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 16000
+  },
+  {
+    "ItemTID": 100066,
+    "Name": "왕의 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Mythic",
+    "MaxStack": 1000,
+    "BasePrice": 24000,
+    "OpenGachaId": 30,
+    "Description": "신화 미감정 유물 · 감정 48,000골드 (테스트값 — T-150)",
+    "Tooltip": "골드 48000을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 48000
+  },
+  {
+    "ItemTID": 100067,
+    "Name": "무지개 유물",
+    "ItemType": "Relic",
+    "GlobalRarity": "Special",
+    "MaxStack": 1000,
+    "BasePrice": 75000,
+    "OpenGachaId": 31,
+    "Description": "Special 미감정 유물 · 감정 150,000골드 (테스트값 — T-150)",
+    "Tooltip": "골드 150000을 내고 감정하면 무언가 나온다",
+    "OpenCostGold": 150000
   }
 ]

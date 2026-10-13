@@ -50,6 +50,9 @@ public partial class User
         // 열린 해금이 곧 열린 칸의 근거라 슬롯보다 먼저 적재한다 — 잠긴 칸의 배치 행을 걸러야 한다.
         LoadUnlocks(data.UnlockRows);
         LoadTraits(data.TraitRows ?? new List<UserTraitRow>());
+
+        // 아티팩트도 특성처럼 슬롯 속도의 근거라 슬롯 앞에 적재한다.
+        LoadArtifacts(data.ArtifactRows ?? new List<UserArtifactRow>());
         LoadWorkStation(data.WorkStationSlotRows, startedAt);
     }
 

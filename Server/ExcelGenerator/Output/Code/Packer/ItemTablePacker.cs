@@ -23,6 +23,7 @@ namespace GameData
             OpenGachaId  = cells[6].Length > 0 ? PackerUtil.ParseInt(cells[6], Table, "OpenGachaId", 0, null) : 0,
             Description  = cells[7].Length > 0 ? PackerUtil.RequireString(cells[7], Table, "Description") : "",
             Tooltip      = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Tooltip") : "",
+            OpenCostGold = cells[9].Length > 0 ? PackerUtil.ParseInt(cells[9], Table, "OpenCostGold", 0, null) : 0,
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

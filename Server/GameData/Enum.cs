@@ -17,6 +17,7 @@ namespace GameData
         Special    = 7,  // 사용 안 함 (2026-10-12 상자·소모품을 Box·Consumable로 옮김 — 등급 Special과 겹침)
         Box        = 8,  // 상자
         Consumable = 9,  // 소모품
+        Relic      = 10,  // 미감정 유물 — 골드로 감정(OpenCostGold)하면 OpenGachaId 풀을 돈다 (T-150)
 
         Max       ,
     };
@@ -66,6 +67,7 @@ namespace GameData
         Character = 2,  // 캐릭터 — GachaCharacterTable
         Equip     = 3,  // 장비 — GachaEquipTable
         Gold      = 4,  // 골드 — GachaGoldTable (구간 MinAmount~MaxAmount)
+        Artifact  = 5,  // 아티팩트 — GachaArtifactTable · 인벤토리가 아닌 아티팩트 보관함으로 (T-150)
 
         Max      ,
     };

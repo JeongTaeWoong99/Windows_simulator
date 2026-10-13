@@ -14,7 +14,7 @@ public readonly record struct GachaEntry(
     int              Weight,
     int              MaxCount = 0);
 
-// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터·장비·골드 네 시트이며 같은 GachaId면 한 풀에 섞인다.
+// 가챠 풀 보관소. GachaId별 추첨기. 원본은 Gacha.xlsx의 아이템·캐릭터·장비·골드·아티팩트 시트이며 같은 GachaId면 한 풀에 섞인다.
 // GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md
 public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
 {
@@ -39,7 +39,11 @@ public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
         var golds = GameTable.GachaGoldTable.All.Select(r => new GachaEntry(
             r.GachaId, GachaRewardType.Gold, 0, r.MinAmount, r.Weight, r.MaxAmount));
 
-        Load(items.Concat(characters).Concat(equips).Concat(golds));
+        // 아티팩트는 유물 감정 풀에만 있다 — 인벤토리가 아닌 아티팩트 보관함으로 간다(T-150).
+        var artifacts = ToEntries(GameTable.GachaArtifactTable.All, GachaRewardType.Artifact,
+                                  r => r.GachaId, r => r.ArtifactTID, r => r.Count, r => r.Weight);
+
+        Load(items.Concat(characters).Concat(equips).Concat(golds).Concat(artifacts));
 
         ServerLog.Info("데이터", $"가챠 풀 {Count}개 등록 완료");
     }

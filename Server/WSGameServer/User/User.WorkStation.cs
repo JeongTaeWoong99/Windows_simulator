@@ -159,7 +159,7 @@ public partial class User
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
                 // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
-                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry);
+                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry);
                 if (yieldAdd > 0)
                 {
                     foreach (var itemTid in harvest.Gained.Keys.ToList())
@@ -169,7 +169,9 @@ public partial class User
                 }
 
                 // 상자 — 자원 롤과 따로, 판정 1회마다 그 슬롯 (산업, 레벨)의 행을 굴려 이 슬롯의 수확에 얹는다(T-030).
-                foreach (var (itemTid, count) in _commonRewards.Roll(rolledSlot.Industry, rolledSlot.IndustryLevel, harvest.JudgeCount, Random.Shared))
+                // 발굴은 상자 대신 유물이 나오고, 아티팩트의 유물 발견 확률이 그 확률에 곱해진다(T-150).
+                var chanceAdd = rolledSlot.Industry == IndustryType.Excavation ? GetArtifactEffect(UserTraitEffect.RelicChanceAdd, IndustryType.None) : 0;
+                foreach (var (itemTid, count) in _commonRewards.Roll(rolledSlot.Industry, rolledSlot.IndustryLevel, harvest.JudgeCount, Random.Shared, chanceAdd))
                 {
                     harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
                 }
@@ -349,7 +351,7 @@ public partial class User
         return new WorkSpeedBreakdown(
             BaseWorkSpeed:       character.GetBaseWorkSpeed(slot.Industry),
             LevelAddPermille:    GetLevelSpeedAdd(slot.CharacterId),
-            TraitAddPermille:    GetTraitSpeedAdd(slot.Industry),
+            TraitAddPermille:    GetTraitSpeedAdd(slot.Industry) + GetArtifactEffect(UserTraitEffect.SpeedAdd, slot.Industry),   // 아티팩트는 특성과 같은 자리(T-150)
             EquipAddPermille:    GetEquipSpeedAdd(slot.CharacterId, slot.Industry),
             StarAddPermille:     GetStarSpeedAdd(slot.CharacterId),
             GatherSpeedPermille: _gatherSpeed.Permille);

@@ -1,1 +1,218 @@
-[]
+[
+  {
+    "CommonRewardOverrideTID": 200101,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 1,
+    "ItemTID": 100061,
+    "Count": 1,
+    "ChancePerMillion": 10000,
+    "Description": "발굴 Lv1 흙 묻은 유물 — 판정당 1% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200102,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 1,
+    "ItemTID": 100062,
+    "Count": 1,
+    "ChancePerMillion": 1500,
+    "Description": "발굴 Lv1 조개 박힌 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200103,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 1,
+    "ItemTID": 100063,
+    "Count": 1,
+    "ChancePerMillion": 150,
+    "Description": "발굴 Lv1 산호 엉긴 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200201,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 2,
+    "ItemTID": 100061,
+    "Count": 1,
+    "ChancePerMillion": 8000,
+    "Description": "발굴 Lv2 흙 묻은 유물 — 판정당 0.8% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200202,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 2,
+    "ItemTID": 100062,
+    "Count": 1,
+    "ChancePerMillion": 3000,
+    "Description": "발굴 Lv2 조개 박힌 유물 — 판정당 0.3% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200203,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 2,
+    "ItemTID": 100063,
+    "Count": 1,
+    "ChancePerMillion": 500,
+    "Description": "발굴 Lv2 산호 엉긴 유물 — 판정당 0.05% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200204,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 2,
+    "ItemTID": 100064,
+    "Count": 1,
+    "ChancePerMillion": 50,
+    "Description": "발굴 Lv2 봉인된 유물 — 판정당 0.005% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200301,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 3,
+    "ItemTID": 100061,
+    "Count": 1,
+    "ChancePerMillion": 6000,
+    "Description": "발굴 Lv3 흙 묻은 유물 — 판정당 0.6% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200302,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 3,
+    "ItemTID": 100062,
+    "Count": 1,
+    "ChancePerMillion": 4000,
+    "Description": "발굴 Lv3 조개 박힌 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200303,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 3,
+    "ItemTID": 100063,
+    "Count": 1,
+    "ChancePerMillion": 1500,
+    "Description": "발굴 Lv3 산호 엉긴 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200304,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 3,
+    "ItemTID": 100064,
+    "Count": 1,
+    "ChancePerMillion": 150,
+    "Description": "발굴 Lv3 봉인된 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200305,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 3,
+    "ItemTID": 100065,
+    "Count": 1,
+    "ChancePerMillion": 15,
+    "Description": "발굴 Lv3 황금 띠 유물 — 판정당 0.0015% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200401,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100061,
+    "Count": 1,
+    "ChancePerMillion": 4000,
+    "Description": "발굴 Lv4 흙 묻은 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200402,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100062,
+    "Count": 1,
+    "ChancePerMillion": 5000,
+    "Description": "발굴 Lv4 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200403,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100063,
+    "Count": 1,
+    "ChancePerMillion": 2500,
+    "Description": "발굴 Lv4 산호 엉긴 유물 — 판정당 0.25% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200404,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100064,
+    "Count": 1,
+    "ChancePerMillion": 500,
+    "Description": "발굴 Lv4 봉인된 유물 — 판정당 0.05% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200405,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100065,
+    "Count": 1,
+    "ChancePerMillion": 50,
+    "Description": "발굴 Lv4 황금 띠 유물 — 판정당 0.005% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200406,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 4,
+    "ItemTID": 100066,
+    "Count": 1,
+    "ChancePerMillion": 5,
+    "Description": "발굴 Lv4 왕의 유물 — 판정당 0.0005% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200501,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100061,
+    "Count": 1,
+    "ChancePerMillion": 2000,
+    "Description": "발굴 Lv5 흙 묻은 유물 — 판정당 0.2% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200502,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100062,
+    "Count": 1,
+    "ChancePerMillion": 5000,
+    "Description": "발굴 Lv5 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200503,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100063,
+    "Count": 1,
+    "ChancePerMillion": 4000,
+    "Description": "발굴 Lv5 산호 엉긴 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200504,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100064,
+    "Count": 1,
+    "ChancePerMillion": 1500,
+    "Description": "발굴 Lv5 봉인된 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200505,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100065,
+    "Count": 1,
+    "ChancePerMillion": 150,
+    "Description": "발굴 Lv5 황금 띠 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+  },
+  {
+    "CommonRewardOverrideTID": 200506,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 5,
+    "ItemTID": 100066,
+    "Count": 1,
+    "ChancePerMillion": 15,
+    "Description": "발굴 Lv5 왕의 유물 — 판정당 0.0015% · 상자 대신 (테스트값 — T-150)"
+  }
+]

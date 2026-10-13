@@ -39,6 +39,7 @@ namespace GameData
             ["GachaCharacterTable"] = new(GachaCharacterTablePacker.Pack, GachaCharacterTablePacker.Verify, GachaCharacterTablePacker.Preview, GachaCharacterTablePacker.Dump),
             ["GachaEquipTable"] = new(GachaEquipTablePacker.Pack, GachaEquipTablePacker.Verify, GachaEquipTablePacker.Preview, GachaEquipTablePacker.Dump),
             ["GachaGoldTable"] = new(GachaGoldTablePacker.Pack, GachaGoldTablePacker.Verify, GachaGoldTablePacker.Preview, GachaGoldTablePacker.Dump),
+            ["GachaArtifactTable"] = new(GachaArtifactTablePacker.Pack, GachaArtifactTablePacker.Verify, GachaArtifactTablePacker.Preview, GachaArtifactTablePacker.Dump),
             ["IndustryLevelTable"] = new(IndustryLevelTablePacker.Pack, IndustryLevelTablePacker.Verify, IndustryLevelTablePacker.Preview, IndustryLevelTablePacker.Dump),
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
             ["MailTemplateTable"] = new(MailTemplateTablePacker.Pack, MailTemplateTablePacker.Verify, MailTemplateTablePacker.Preview, MailTemplateTablePacker.Dump),

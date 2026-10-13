@@ -2086,5 +2086,645 @@
     "Count": 1,
     "Weight": 68,
     "Description": "Legendary 야수의 심장"
+  },
+  {
+    "GachaEquipTID": 25101,
+    "GachaId": 25,
+    "EquipTID": 1001,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 목검 (감정)"
+  },
+  {
+    "GachaEquipTID": 25102,
+    "GachaId": 25,
+    "EquipTID": 2001,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 구리 반지 (감정)"
+  },
+  {
+    "GachaEquipTID": 25103,
+    "GachaId": 25,
+    "EquipTID": 3001,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 원석 (감정)"
+  },
+  {
+    "GachaEquipTID": 25104,
+    "GachaId": 25,
+    "EquipTID": 1101,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 나무 호미 (감정)"
+  },
+  {
+    "GachaEquipTID": 25105,
+    "GachaId": 25,
+    "EquipTID": 1201,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 나무 모종삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 25106,
+    "GachaId": 25,
+    "EquipTID": 1301,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 돌 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 25107,
+    "GachaId": 25,
+    "EquipTID": 1401,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 손도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 25108,
+    "GachaId": 25,
+    "EquipTID": 1501,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 사냥용 활 (감정)"
+  },
+  {
+    "GachaEquipTID": 25109,
+    "GachaId": 25,
+    "EquipTID": 3101,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 풍년석 (감정)"
+  },
+  {
+    "GachaEquipTID": 25110,
+    "GachaId": 25,
+    "EquipTID": 3201,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 흙빛 조각석 (감정)"
+  },
+  {
+    "GachaEquipTID": 25111,
+    "GachaId": 25,
+    "EquipTID": 3301,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 철광석 조각 (감정)"
+  },
+  {
+    "GachaEquipTID": 25112,
+    "GachaId": 25,
+    "EquipTID": 3401,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 나무옹이석 (감정)"
+  },
+  {
+    "GachaEquipTID": 25113,
+    "GachaId": 25,
+    "EquipTID": 3501,
+    "Count": 1,
+    "Weight": 690,
+    "Description": "Common 짐승 이빨석 (감정)"
+  },
+  {
+    "GachaEquipTID": 26101,
+    "GachaId": 26,
+    "EquipTID": 2002,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 탐험가의 목걸이 (감정)"
+  },
+  {
+    "GachaEquipTID": 26102,
+    "GachaId": 26,
+    "EquipTID": 1103,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 강철 낫 (감정)"
+  },
+  {
+    "GachaEquipTID": 26103,
+    "GachaId": 26,
+    "EquipTID": 1203,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 강철 삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 26104,
+    "GachaId": 26,
+    "EquipTID": 1303,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 강철 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 26105,
+    "GachaId": 26,
+    "EquipTID": 1403,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 양날 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 26106,
+    "GachaId": 26,
+    "EquipTID": 1503,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 강철 석궁 (감정)"
+  },
+  {
+    "GachaEquipTID": 26107,
+    "GachaId": 26,
+    "EquipTID": 2004,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 노동자의 팔찌 (감정)"
+  },
+  {
+    "GachaEquipTID": 26108,
+    "GachaId": 26,
+    "EquipTID": 3103,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 곡창의 비취 (감정)"
+  },
+  {
+    "GachaEquipTID": 26109,
+    "GachaId": 26,
+    "EquipTID": 3203,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 유적의 호박 (감정)"
+  },
+  {
+    "GachaEquipTID": 26110,
+    "GachaId": 26,
+    "EquipTID": 3303,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 지맥의 흑옥 (감정)"
+  },
+  {
+    "GachaEquipTID": 26111,
+    "GachaId": 26,
+    "EquipTID": 3403,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 고목의 녹옥 (감정)"
+  },
+  {
+    "GachaEquipTID": 26112,
+    "GachaId": 26,
+    "EquipTID": 3503,
+    "Count": 1,
+    "Weight": 750,
+    "Description": "Rare 맹수의 홍옥 (감정)"
+  },
+  {
+    "GachaEquipTID": 27101,
+    "GachaId": 27,
+    "EquipTID": 1105,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 풍년의 괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 27102,
+    "GachaId": 27,
+    "EquipTID": 1205,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 용린 발굴삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 27103,
+    "GachaId": 27,
+    "EquipTID": 1305,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 미스릴 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 27104,
+    "GachaId": 27,
+    "EquipTID": 1405,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 서리강철 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 27105,
+    "GachaId": 27,
+    "EquipTID": 1505,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 폭풍의 장궁 (감정)"
+  },
+  {
+    "GachaEquipTID": 27106,
+    "GachaId": 27,
+    "EquipTID": 2006,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 대장인의 훈장 (감정)"
+  },
+  {
+    "GachaEquipTID": 27107,
+    "GachaId": 27,
+    "EquipTID": 3105,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 대지의 심장 (감정)"
+  },
+  {
+    "GachaEquipTID": 27108,
+    "GachaId": 27,
+    "EquipTID": 3205,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 왕도의 심장 (감정)"
+  },
+  {
+    "GachaEquipTID": 27109,
+    "GachaId": 27,
+    "EquipTID": 3305,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 대지핵 결정 (감정)"
+  },
+  {
+    "GachaEquipTID": 27110,
+    "GachaId": 27,
+    "EquipTID": 3405,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 숲의 심장 (감정)"
+  },
+  {
+    "GachaEquipTID": 27111,
+    "GachaId": 27,
+    "EquipTID": 3505,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Legendary 야수의 심장 (감정)"
+  },
+  {
+    "GachaEquipTID": 28101,
+    "GachaId": 28,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 대지모의 호미 (감정)"
+  },
+  {
+    "GachaEquipTID": 28102,
+    "GachaId": 28,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태초의 발굴삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 28103,
+    "GachaId": 28,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 산신의 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 28104,
+    "GachaId": 28,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수의 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 28105,
+    "GachaId": 28,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월신의 활 (감정)"
+  },
+  {
+    "GachaEquipTID": 28106,
+    "GachaId": 28,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 창세의 고리 (감정)"
+  },
+  {
+    "GachaEquipTID": 28107,
+    "GachaId": 28,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 풍요의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 28108,
+    "GachaId": 28,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태고의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 28109,
+    "GachaId": 28,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 광신의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 28110,
+    "GachaId": 28,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 28111,
+    "GachaId": 28,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월광 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 29101,
+    "GachaId": 29,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 대지모의 호미 (감정)"
+  },
+  {
+    "GachaEquipTID": 29102,
+    "GachaId": 29,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태초의 발굴삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 29103,
+    "GachaId": 29,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 산신의 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 29104,
+    "GachaId": 29,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수의 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 29105,
+    "GachaId": 29,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월신의 활 (감정)"
+  },
+  {
+    "GachaEquipTID": 29106,
+    "GachaId": 29,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 창세의 고리 (감정)"
+  },
+  {
+    "GachaEquipTID": 29107,
+    "GachaId": 29,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 풍요의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 29108,
+    "GachaId": 29,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태고의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 29109,
+    "GachaId": 29,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 광신의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 29110,
+    "GachaId": 29,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 29111,
+    "GachaId": 29,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월광 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 30101,
+    "GachaId": 30,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 대지모의 호미 (감정)"
+  },
+  {
+    "GachaEquipTID": 30102,
+    "GachaId": 30,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태초의 발굴삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 30103,
+    "GachaId": 30,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 산신의 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 30104,
+    "GachaId": 30,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수의 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 30105,
+    "GachaId": 30,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월신의 활 (감정)"
+  },
+  {
+    "GachaEquipTID": 30106,
+    "GachaId": 30,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 창세의 고리 (감정)"
+  },
+  {
+    "GachaEquipTID": 30107,
+    "GachaId": 30,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 풍요의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 30108,
+    "GachaId": 30,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태고의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 30109,
+    "GachaId": 30,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 광신의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 30110,
+    "GachaId": 30,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 30111,
+    "GachaId": 30,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월광 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 31101,
+    "GachaId": 31,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 대지모의 호미 (감정)"
+  },
+  {
+    "GachaEquipTID": 31102,
+    "GachaId": 31,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태초의 발굴삽 (감정)"
+  },
+  {
+    "GachaEquipTID": 31103,
+    "GachaId": 31,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 산신의 곡괭이 (감정)"
+  },
+  {
+    "GachaEquipTID": 31104,
+    "GachaId": 31,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수의 도끼 (감정)"
+  },
+  {
+    "GachaEquipTID": 31105,
+    "GachaId": 31,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월신의 활 (감정)"
+  },
+  {
+    "GachaEquipTID": 31106,
+    "GachaId": 31,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 창세의 고리 (감정)"
+  },
+  {
+    "GachaEquipTID": 31107,
+    "GachaId": 31,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 풍요의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 31108,
+    "GachaId": 31,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 태고의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 31109,
+    "GachaId": 31,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 광신의 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 31110,
+    "GachaId": 31,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 세계수 성석 (감정)"
+  },
+  {
+    "GachaEquipTID": 31111,
+    "GachaId": 31,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 810,
+    "Description": "Mythic 월광 성석 (감정)"
   }
 ]

@@ -40,6 +40,15 @@ namespace MikaProtocol
         public int Count  { get; set; }           // 이번에 획득한 수량
         public EGlobalRarity Rarity { get; set; } // 연출용 등급
         public int EquipTid     { get; set; }     // RewardType=Equip일 때만 유효. 필드 순서가 직렬화 순서라 끝에 붙인다
+        public int ArtifactTid  { get; set; }     // RewardType=Artifact일 때만 유효 (ArtifactTable 고유번호)
+    }
+
+    // 아티팩트 보관함의 번호 칸 하나. 얻은 적 있는 번호만 온다 — Count 0은 "얻었다가 다 내보냄"(도감에는 남는다)
+    [MemoryPackable]
+    public partial class ArtifactInfo
+    {
+        public int ArtifactTid { get; set; }
+        public int Count       { get; set; }   // 1 이상이면 효과가 켜진다. 같은 번호는 몇 개든 효과 1개분
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.

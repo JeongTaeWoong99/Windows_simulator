@@ -118,11 +118,28 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
+        // 유물 감정은 골드가 든다(T-150) — 아티팩트 할인을 붙인 1개 비용 × 개수. 모자라면 아무것도 바뀌지 않는다.
+        var cost = item.OpenCostGold > 0 ? user.GetAppraiseCost(item.OpenCostGold) * count : 0;
+        if (user.Gold < cost)
+        {
+            Reply(EResultCode.NotEnoughCurrency);
+            return;
+        }
+
         if (!user.TryConsumeItems(new Dictionary<int, int> { [itemTid] = count }, out var consumed))
         {
             Reply(EResultCode.NotEnoughItem);
             return;
         }
+
+        if (cost > 0 && !user.TrySpendGold(cost))
+        {
+            // 위에서 잔액을 봤으므로 오지 않는다. 오면 유물만 빠진 셈이라 로그로 남긴다.
+            ServerLog.Error("감정", $"골드 차감 실패 — 유물은 이미 빠졌다. Uid={user.Uid} ItemTID={itemTid} Cost={cost}");
+        }
+
+        // 아티팩트는 창고·우편을 거치지 않고 보관함으로 바로 간다 — 창고가 가득해도 막히지 않는다.
+        GrantArtifacts(user, rolled, now);
 
         if (!fits)
         {
@@ -200,6 +217,7 @@ public sealed class GachaService : Singleton<GachaService>
             }
         }
 
+        // 아티팩트(GachaRewardType.Artifact)는 여기서 지급하지 않는다 — 시각이 필요해 GrantArtifacts가 따로 넣는다.
         var changes = gained.Select(kv => user.GainItem(kv.Key, kv.Value)).ToList();
 
         if (characterTids.Count > 0)
@@ -213,6 +231,19 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         return (rewards, changes);
+    }
+
+    // 굴린 보상 중 아티팩트만 모아 보관함에 넣는다. 같은 번호는 한 번에 더한다.
+    private static void GrantArtifacts(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled, DateTime now)
+    {
+        var gained = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Artifact)
+            .GroupBy(r => r.Entry.RewardTID)
+            .ToDictionary(g => g.Key, g => g.Sum(r => r.Count));
+
+        if (gained.Count > 0)
+        {
+            user.GainArtifacts(gained, now);
+        }
     }
 
     // 캐릭터·장비는 개체 수, 아이템은 종류 수가 칸이다. 개체 수는 구간이 있으면 최대치로 본다 — 지급 때 굴린 값이 검사보다 크면 안 된다.
@@ -271,6 +302,10 @@ public sealed class GachaService : Singleton<GachaService>
             {
                 RewardType = EGachaRewardType.Character, CharacterTid = entry.RewardTID, Count = count, Rarity = CharacterRarityOf(entry.RewardTID),
             },
+            GachaRewardType.Artifact => new GachaRewardInfo
+            {
+                RewardType = EGachaRewardType.Artifact, ArtifactTid = entry.RewardTID, Count = count, Rarity = ArtifactRarityOf(entry.RewardTID),
+            },
             // 골드는 등급이 없다 — 연출은 None을 기본 칸으로 그린다.
             GachaRewardType.Gold => new GachaRewardInfo { RewardType = EGachaRewardType.Gold, Count = count },
             _ => new GachaRewardInfo
@@ -300,6 +335,16 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         return (EGlobalRarity)(byte)equip.GlobalRarity;
+    }
+
+    private static EGlobalRarity ArtifactRarityOf(int artifactTid)
+    {
+        if (!GameTable.ArtifactTable.TryGet(artifactTid, out var artifact))
+        {
+            return EGlobalRarity.None;
+        }
+
+        return (EGlobalRarity)(byte)artifact.GlobalRarity;
     }
 
     private static EGlobalRarity CharacterRarityOf(int characterTid)

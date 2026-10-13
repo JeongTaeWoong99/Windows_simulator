@@ -1478,5 +1478,709 @@
     "Count": 1,
     "Weight": 500,
     "Description": "망각의 묘약 x1"
+  },
+  {
+    "GachaItemTID": 25001,
+    "GachaId": 25,
+    "ItemTID": 10001,
+    "Count": 27,
+    "Weight": 6000,
+    "Description": "자원 깨진 토기 조각 x27 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25002,
+    "GachaId": 25,
+    "ItemTID": 20001,
+    "Count": 27,
+    "Weight": 6000,
+    "Description": "자원 밀 x27 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25003,
+    "GachaId": 25,
+    "ItemTID": 30001,
+    "Count": 27,
+    "Weight": 6000,
+    "Description": "자원 잡목 x27 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25004,
+    "GachaId": 25,
+    "ItemTID": 40001,
+    "Count": 27,
+    "Weight": 6000,
+    "Description": "자원 돌덩어리 x27 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25005,
+    "GachaId": 25,
+    "ItemTID": 50001,
+    "Count": 27,
+    "Weight": 6000,
+    "Description": "자원 질긴 고기 x27 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25006,
+    "GachaId": 25,
+    "ItemTID": 100010,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "상자 전용 낡은 보물 지도 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25007,
+    "GachaId": 25,
+    "ItemTID": 100015,
+    "Count": 1,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x1 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25008,
+    "GachaId": 25,
+    "ItemTID": 100041,
+    "Count": 1,
+    "Weight": 20000,
+    "Description": "성장의 비약 (소) x1 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25009,
+    "GachaId": 25,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 1950,
+    "Description": "신속의 영약 x1 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25010,
+    "GachaId": 25,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 1950,
+    "Description": "풍요의 영약 x1 (감정 · 풀 9에서)"
+  },
+  {
+    "GachaItemTID": 25099,
+    "GachaId": 25,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 21,
+    "Description": "Special 미감정 유물 — 약 0.02% (테스트값)"
+  },
+  {
+    "GachaItemTID": 26001,
+    "GachaId": 26,
+    "ItemTID": 10012,
+    "Count": 33,
+    "Weight": 6000,
+    "Description": "자원 녹슨 투구 x33 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26002,
+    "GachaId": 26,
+    "ItemTID": 20012,
+    "Count": 33,
+    "Weight": 6000,
+    "Description": "자원 고구마 x33 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26003,
+    "GachaId": 26,
+    "ItemTID": 30012,
+    "Count": 33,
+    "Weight": 6000,
+    "Description": "자원 삼나무 목재 x33 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26004,
+    "GachaId": 26,
+    "ItemTID": 40012,
+    "Count": 33,
+    "Weight": 6000,
+    "Description": "자원 주석 광석 x33 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26005,
+    "GachaId": 26,
+    "ItemTID": 50012,
+    "Count": 33,
+    "Weight": 6000,
+    "Description": "자원 멧돼지 엄니 x33 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26006,
+    "GachaId": 26,
+    "ItemTID": 100011,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "상자 전용 은빛 나침반 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26007,
+    "GachaId": 26,
+    "ItemTID": 100015,
+    "Count": 2,
+    "Weight": 4000,
+    "Description": "인챈트 큐브 x2 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26008,
+    "GachaId": 26,
+    "ItemTID": 100018,
+    "Count": 2,
+    "Weight": 2000,
+    "Description": "상급 인챈트 큐브 x2 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26009,
+    "GachaId": 26,
+    "ItemTID": 100041,
+    "Count": 1,
+    "Weight": 8000,
+    "Description": "성장의 비약 (소) x1 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26010,
+    "GachaId": 26,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 5000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26011,
+    "GachaId": 26,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4950,
+    "Description": "신속의 영약 x1 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26012,
+    "GachaId": 26,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4950,
+    "Description": "풍요의 영약 x1 (감정 · 풀 13에서)"
+  },
+  {
+    "GachaItemTID": 26099,
+    "GachaId": 26,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 63,
+    "Description": "Special 미감정 유물 — 약 0.06% (테스트값)"
+  },
+  {
+    "GachaItemTID": 27001,
+    "GachaId": 27,
+    "ItemTID": 10023,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 신전 촛대 x45 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27002,
+    "GachaId": 27,
+    "ItemTID": 20023,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 딸기 x45 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27003,
+    "GachaId": 27,
+    "ItemTID": 30023,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 단풍나무 목재 x45 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27004,
+    "GachaId": 27,
+    "ItemTID": 40023,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 미스릴 광석 x45 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27005,
+    "GachaId": 27,
+    "ItemTID": 50023,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 곰의 이빨 x45 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27006,
+    "GachaId": 27,
+    "ItemTID": 100015,
+    "Count": 3,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x3 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27007,
+    "GachaId": 27,
+    "ItemTID": 100018,
+    "Count": 3,
+    "Weight": 4000,
+    "Description": "상급 인챈트 큐브 x3 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27008,
+    "GachaId": 27,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 6000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27009,
+    "GachaId": 27,
+    "ItemTID": 100043,
+    "Count": 1,
+    "Weight": 4000,
+    "Description": "성장의 비약 (대) x1 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27010,
+    "GachaId": 27,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "신속의 영약 x1 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27011,
+    "GachaId": 27,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "풍요의 영약 x1 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27012,
+    "GachaId": 27,
+    "ItemTID": 100046,
+    "Count": 1,
+    "Weight": 500,
+    "Description": "망각의 묘약 x1 (감정 · 풀 17에서)"
+  },
+  {
+    "GachaItemTID": 27099,
+    "GachaId": 27,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 176,
+    "Description": "Special 미감정 유물 — 약 0.18% (테스트값)"
+  },
+  {
+    "GachaItemTID": 28001,
+    "GachaId": 28,
+    "ItemTID": 10033,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 묘실 등잔 x45 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28002,
+    "GachaId": 28,
+    "ItemTID": 20033,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 커피 열매 x45 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28003,
+    "GachaId": 28,
+    "ItemTID": 30033,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 자단 목재 x45 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28004,
+    "GachaId": 28,
+    "ItemTID": 40033,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 오리하르콘 광석 x45 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28005,
+    "GachaId": 28,
+    "ItemTID": 50033,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 서리곰 모피 x45 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28006,
+    "GachaId": 28,
+    "ItemTID": 100015,
+    "Count": 4,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x4 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28007,
+    "GachaId": 28,
+    "ItemTID": 100018,
+    "Count": 4,
+    "Weight": 4000,
+    "Description": "상급 인챈트 큐브 x4 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28008,
+    "GachaId": 28,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 6000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28009,
+    "GachaId": 28,
+    "ItemTID": 100043,
+    "Count": 1,
+    "Weight": 4000,
+    "Description": "성장의 비약 (대) x1 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28010,
+    "GachaId": 28,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "신속의 영약 x1 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28011,
+    "GachaId": 28,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "풍요의 영약 x1 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28012,
+    "GachaId": 28,
+    "ItemTID": 100046,
+    "Count": 1,
+    "Weight": 500,
+    "Description": "망각의 묘약 x1 (감정 · 풀 20에서)"
+  },
+  {
+    "GachaItemTID": 28099,
+    "GachaId": 28,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 531,
+    "Description": "Special 미감정 유물 — 약 0.54% (테스트값)"
+  },
+  {
+    "GachaItemTID": 29001,
+    "GachaId": 29,
+    "ItemTID": 10043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 왕실 문서 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29002,
+    "GachaId": 29,
+    "ItemTID": 20043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 영약초 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29003,
+    "GachaId": 29,
+    "ItemTID": 30043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 신목 목재 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29004,
+    "GachaId": 29,
+    "ItemTID": 40043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 아다만트 광석 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29005,
+    "GachaId": 29,
+    "ItemTID": 50043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 흉수의 송곳니 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29006,
+    "GachaId": 29,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29007,
+    "GachaId": 29,
+    "ItemTID": 100018,
+    "Count": 5,
+    "Weight": 4000,
+    "Description": "상급 인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29008,
+    "GachaId": 29,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 6000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29009,
+    "GachaId": 29,
+    "ItemTID": 100043,
+    "Count": 1,
+    "Weight": 4000,
+    "Description": "성장의 비약 (대) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29010,
+    "GachaId": 29,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "신속의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29011,
+    "GachaId": 29,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "풍요의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29012,
+    "GachaId": 29,
+    "ItemTID": 100046,
+    "Count": 1,
+    "Weight": 500,
+    "Description": "망각의 묘약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 29099,
+    "GachaId": 29,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 1590,
+    "Description": "Special 미감정 유물 — 약 1.6% (테스트값)"
+  },
+  {
+    "GachaItemTID": 30001,
+    "GachaId": 30,
+    "ItemTID": 10043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 왕실 문서 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30002,
+    "GachaId": 30,
+    "ItemTID": 20043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 영약초 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30003,
+    "GachaId": 30,
+    "ItemTID": 30043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 신목 목재 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30004,
+    "GachaId": 30,
+    "ItemTID": 40043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 아다만트 광석 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30005,
+    "GachaId": 30,
+    "ItemTID": 50043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 흉수의 송곳니 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30006,
+    "GachaId": 30,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30007,
+    "GachaId": 30,
+    "ItemTID": 100018,
+    "Count": 5,
+    "Weight": 4000,
+    "Description": "상급 인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30008,
+    "GachaId": 30,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 6000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30009,
+    "GachaId": 30,
+    "ItemTID": 100043,
+    "Count": 1,
+    "Weight": 4000,
+    "Description": "성장의 비약 (대) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30010,
+    "GachaId": 30,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "신속의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30011,
+    "GachaId": 30,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "풍요의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30012,
+    "GachaId": 30,
+    "ItemTID": 100046,
+    "Count": 1,
+    "Weight": 500,
+    "Description": "망각의 묘약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 30099,
+    "GachaId": 30,
+    "ItemTID": 100067,
+    "Count": 1,
+    "Weight": 4932,
+    "Description": "Special 미감정 유물 — 약 4.8% (테스트값)"
+  },
+  {
+    "GachaItemTID": 31001,
+    "GachaId": 31,
+    "ItemTID": 10043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 왕실 문서 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31002,
+    "GachaId": 31,
+    "ItemTID": 20043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 영약초 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31003,
+    "GachaId": 31,
+    "ItemTID": 30043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 신목 목재 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31004,
+    "GachaId": 31,
+    "ItemTID": 40043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 아다만트 광석 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31005,
+    "GachaId": 31,
+    "ItemTID": 50043,
+    "Count": 45,
+    "Weight": 6000,
+    "Description": "자원 흉수의 송곳니 x45 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31006,
+    "GachaId": 31,
+    "ItemTID": 100015,
+    "Count": 5,
+    "Weight": 5000,
+    "Description": "인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31007,
+    "GachaId": 31,
+    "ItemTID": 100018,
+    "Count": 5,
+    "Weight": 4000,
+    "Description": "상급 인챈트 큐브 x5 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31008,
+    "GachaId": 31,
+    "ItemTID": 100042,
+    "Count": 1,
+    "Weight": 6000,
+    "Description": "성장의 비약 (중) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31009,
+    "GachaId": 31,
+    "ItemTID": 100043,
+    "Count": 1,
+    "Weight": 4000,
+    "Description": "성장의 비약 (대) x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31010,
+    "GachaId": 31,
+    "ItemTID": 100044,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "신속의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31011,
+    "GachaId": 31,
+    "ItemTID": 100045,
+    "Count": 1,
+    "Weight": 4700,
+    "Description": "풍요의 영약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 31012,
+    "GachaId": 31,
+    "ItemTID": 100046,
+    "Count": 1,
+    "Weight": 500,
+    "Description": "망각의 묘약 x1 (감정 · 풀 23에서)"
   }
 ]

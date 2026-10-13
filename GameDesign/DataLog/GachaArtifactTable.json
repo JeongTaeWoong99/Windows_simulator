@@ -1,0 +1,178 @@
+[
+  {
+    "GachaArtifactTID": 25301,
+    "GachaId": 25,
+    "ArtifactTID": 1,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.001 어부의 낡은 부적"
+  },
+  {
+    "GachaArtifactTID": 25302,
+    "GachaId": 25,
+    "ArtifactTID": 2,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.002 깨진 토기 빗"
+  },
+  {
+    "GachaArtifactTID": 25303,
+    "GachaId": 25,
+    "ArtifactTID": 3,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.003 녹슨 쇠못"
+  },
+  {
+    "GachaArtifactTID": 25304,
+    "GachaId": 25,
+    "ArtifactTID": 4,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.004 조개 단추"
+  },
+  {
+    "GachaArtifactTID": 25305,
+    "GachaId": 25,
+    "ArtifactTID": 5,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.005 낡은 동전"
+  },
+  {
+    "GachaArtifactTID": 25306,
+    "GachaId": 25,
+    "ArtifactTID": 6,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.006 닳은 숫돌"
+  },
+  {
+    "GachaArtifactTID": 25307,
+    "GachaId": 25,
+    "ArtifactTID": 7,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.007 흙 구슬"
+  },
+  {
+    "GachaArtifactTID": 25308,
+    "GachaId": 25,
+    "ArtifactTID": 8,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.008 돌 화살촉"
+  },
+  {
+    "GachaArtifactTID": 25309,
+    "GachaId": 25,
+    "ArtifactTID": 9,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.009 짚신 조각"
+  },
+  {
+    "GachaArtifactTID": 25310,
+    "GachaId": 25,
+    "ArtifactTID": 10,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.010 녹슨 열쇠"
+  },
+  {
+    "GachaArtifactTID": 25311,
+    "GachaId": 25,
+    "ArtifactTID": 11,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.011 나무 빗"
+  },
+  {
+    "GachaArtifactTID": 25312,
+    "GachaId": 25,
+    "ArtifactTID": 12,
+    "Count": 1,
+    "Weight": 438,
+    "Description": "일반 아티팩트 No.012 작은 돌 인형"
+  },
+  {
+    "GachaArtifactTID": 26301,
+    "GachaId": 26,
+    "ArtifactTID": 13,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.013 조개 껍데기 목걸이"
+  },
+  {
+    "GachaArtifactTID": 26302,
+    "GachaId": 26,
+    "ArtifactTID": 14,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.014 토기 술잔"
+  },
+  {
+    "GachaArtifactTID": 26303,
+    "GachaId": 26,
+    "ArtifactTID": 15,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.015 뼈 바늘"
+  },
+  {
+    "GachaArtifactTID": 26304,
+    "GachaId": 26,
+    "ArtifactTID": 16,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.016 조약돌 팔찌"
+  },
+  {
+    "GachaArtifactTID": 26305,
+    "GachaId": 26,
+    "ArtifactTID": 17,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.017 그물추"
+  },
+  {
+    "GachaArtifactTID": 26306,
+    "GachaId": 26,
+    "ArtifactTID": 18,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.018 갈대 피리"
+  },
+  {
+    "GachaArtifactTID": 26307,
+    "GachaId": 26,
+    "ArtifactTID": 19,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.019 모래시계 조각"
+  },
+  {
+    "GachaArtifactTID": 26308,
+    "GachaId": 26,
+    "ArtifactTID": 20,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.020 나무 가면"
+  },
+  {
+    "GachaArtifactTID": 26309,
+    "GachaId": 26,
+    "ArtifactTID": 21,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.021 흙 인형"
+  },
+  {
+    "GachaArtifactTID": 26310,
+    "GachaId": 26,
+    "ArtifactTID": 22,
+    "Count": 1,
+    "Weight": 526,
+    "Description": "고급 아티팩트 No.022 돌 도끼"
+  }
+]

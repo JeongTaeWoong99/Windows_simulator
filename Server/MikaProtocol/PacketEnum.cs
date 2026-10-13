@@ -177,6 +177,7 @@ namespace MikaProtocol
         Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
         Equip     = 3,   // GachaRewardInfo.EquipTid를 읽는다
         Gold      = 4,   // GachaRewardInfo.Count가 골드 양이다 (상자 전용)
+        Artifact  = 5,   // GachaRewardInfo.ArtifactTid를 읽는다 (유물 감정 전용 — 인벤토리가 아닌 아티팩트 보관함으로)
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —

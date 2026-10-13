@@ -66,6 +66,13 @@ public sealed record UserTraitRow
     public int level          { get; init; }
 }
 
+// t_user_artifact 조회 전용 Row (얻은 적 있는 번호만 행이 있다 — 수량 0도 남는다)
+public sealed record UserArtifactRow
+{
+    public int artifact_tid { get; init; }
+    public int count        { get; init; }
+}
+
 // t_user_equip 조회 전용 Row. equip_id는 개체 PK(long), equip_tid는 테이블 정의(int).
 public sealed record UserEquipRow
 {
@@ -114,7 +121,8 @@ public sealed record PlayerLoginData(
     List<UserEquipRow> EquipRows,
     List<CharacterEquipRow> CharacterEquipRows,
     AccountRow? Account = null,
-    List<UserTraitRow>? TraitRows = null);
+    List<UserTraitRow>? TraitRows = null,
+    List<UserArtifactRow>? ArtifactRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

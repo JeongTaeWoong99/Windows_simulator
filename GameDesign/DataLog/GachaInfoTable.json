@@ -166,5 +166,61 @@
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "황금 열쇠 전용 — 골드로 뽑을 수 없다"
+  },
+  {
+    "GachaInfoTID": 25,
+    "Name": "감정 — 흙 묻은 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 9)"
+  },
+  {
+    "GachaInfoTID": 26,
+    "Name": "감정 — 조개 박힌 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 13)"
+  },
+  {
+    "GachaInfoTID": 27,
+    "Name": "감정 — 산호 엉긴 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 17)"
+  },
+  {
+    "GachaInfoTID": 28,
+    "Name": "감정 — 봉인된 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 20)"
+  },
+  {
+    "GachaInfoTID": 29,
+    "Name": "감정 — 황금 띠 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 23)"
+  },
+  {
+    "GachaInfoTID": 30,
+    "Name": "감정 — 왕의 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 23)"
+  },
+  {
+    "GachaInfoTID": 31,
+    "Name": "감정 — 무지개 유물",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 23)"
   }
 ]

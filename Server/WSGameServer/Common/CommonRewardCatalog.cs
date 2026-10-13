@@ -48,7 +48,8 @@ public sealed class CommonRewardCatalog : Singleton<CommonRewardCatalog>
     }
 
     /// <summary>(<paramref name="industry"/>, <paramref name="industryLevel"/>)로 판정 <paramref name="judgeCount"/>회분을 굴려 아이템별로 모은다. 아무것도 안 나오면 빈 목록.</summary>
-    public Dictionary<int, int> Roll(IndustryType industry, int industryLevel, int judgeCount, Random random)
+    /// <param name="chanceAddPermille">확률에 곱할 가산(천분율) — 100이면 모든 행의 확률이 1.1배다(아티팩트 유물 발견 확률 · T-150).</param>
+    public Dictionary<int, int> Roll(IndustryType industry, int industryLevel, int judgeCount, Random random, int chanceAddPermille = 0)
     {
         var gained = new Dictionary<int, int>();
         if (!_overrideByIndustryLevel.TryGetValue((industry, industryLevel), out var rows) &&
@@ -59,9 +60,10 @@ public sealed class CommonRewardCatalog : Singleton<CommonRewardCatalog>
 
         foreach (var row in rows)
         {
+            var chance = (long)row.ChancePerMillion * (1000 + chanceAddPermille) / 1000;
             for (var i = 0; i < judgeCount; i++)
             {
-                if (random.Next(ChanceScale) < row.ChancePerMillion)
+                if (random.Next(ChanceScale) < chance)
                 {
                     gained[row.ItemTID] = gained.GetValueOrDefault(row.ItemTID) + row.Count;
                 }

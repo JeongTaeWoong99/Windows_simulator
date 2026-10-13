@@ -101,6 +101,7 @@ namespace MikaProtocol
         S_CharacterCondenseResponse = 71,
         C_EquipEnchantChooseRequest = 72,
         S_EquipEnchantChooseResponse = 73,
+        S_ArtifactListResponse = 74,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -345,6 +346,13 @@ namespace MikaProtocol
     public partial class S_UserTraitListResponse : IPacket
     {
         public List<UserTraitInfo> Traits { get; set; } = new();
+    }
+
+    /// <summary>아티팩트 보관함 스냅샷(T-150). 로그인 직후와 수량이 바뀔 때마다 통째로 온다 — 클라는 덮어쓴다.</summary>
+    [MemoryPackable, Packet(PacketId.S_ArtifactListResponse)]
+    public partial class S_ArtifactListResponse : IPacket
+    {
+        public List<ArtifactInfo> Artifacts { get; set; } = new();
     }
 
     /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>
