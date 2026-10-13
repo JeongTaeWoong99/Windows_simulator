@@ -31,7 +31,7 @@ public class CharacterVisual : ScriptableObject
         public Sprite[] hitEffectFrames;
     }
 
-    [SerializeField, Tooltip("대기 자세 — 달리기 ↔ 공격 사이 숨, 멈춘 슬롯에 쓴다. 비어 있으면 달리기 첫 프레임")]
+    [SerializeField, Tooltip("대기 자세 — 빈·멈춘 슬롯에 쓴다(슬롯 연출은 공격·달리기만). 하우징·방목 같은 나중 콘텐츠용으로 남긴다. 비어 있으면 달리기 첫 프레임")]
     private Sprite[] idleFrames = Array.Empty<Sprite>();
 
     [SerializeField, Tooltip("달리기 한 바퀴 (제자리 달리기 루프)")]

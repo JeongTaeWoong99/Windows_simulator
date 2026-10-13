@@ -5,7 +5,7 @@ namespace WSGameServer;
 /// <summary>
 /// 실제 상자 데이터 검증 — <c>Item.xlsx</c>의 상자와 <c>Gacha.xlsx</c>의 상자 풀이 맞물리는지 본다.
 /// <b>레벨 상자</b>는 <c>ItemType = Box</c> 15종이고, <b>열 수 있는 아이템</b>은 <c>OpenGachaId</c>가 있는 것 전부다
-/// (레벨 상자 + 황금 열쇠 + 미감정 유물 — T-149 · T-150).
+/// (레벨 상자 + 황금 열쇠 + 미감정 유물 — T-153 · T-150).
 /// 깨지면: 열 수 없는 상자가 생기거나, 상자에서 상자가 나와 무한히 까지거나, 상자 풀을 골드로 사게 된다.
 /// </summary>
 public class BoxSheetTest

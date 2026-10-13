@@ -24,8 +24,11 @@
 ## INDEX
 
 - [2026-10-13 미감정 유물 · 감정 · 아티팩트 기획과 첫 데이터 (T-150)](2026-10-13-relic-appraisal-artifact.md) — `#design` `#data` Special은 감정에서만 · 번호 = 도감 실린 순서 · `ArtifactTable` 22종 · 서버 미구현
+- [2026-10-13 치트 창 — 왼쪽 분류 목록 · 검색 · 칸 하나 = 클래스 하나](2026-10-13-cheat-window-categories.md) — `#client` `#editor` 칸을 CheatSection 클래스로 나누고 분류·검색으로 보인다
 - [2026-10-12 낚시 산업 → 유적 발굴 교체 (T-142)](2026-10-12-fishing-to-excavation.md) — `#server` `#data` `#design` enum 2·TID 이어 쓰기 · 마이그레이션 0002로 옛 데이터 삭제 · 클라 글자·아트는 T-148
+- [2026-10-12 슬롯 연출 — 공격은 모션 전체 · 남는 시간은 달리기로 (T-102 후속)](2026-10-12-stage-full-attack-run-fill.md) — `#client` `#ui` 공격과 달리기만 — 최소 주기 2.1초에서 공격 1번
 - [2026-10-12 판정 최소 주기 — 서버 속도 상한 (T-102)](2026-10-12-min-cycle-speed-cap.md) — `#server` `#test` `CurrentWorkSpeed`를 `JudgeCostUnits ÷ MinCycleMs`로 자른다
+- [2026-10-13 상자 테스트가 황금 열쇠를 상자로 세던 문제](2026-10-13-box-sheet-test-key.md) — `#server` `#test` 레벨 상자는 TID 범위로, 무한 열기는 실제 순환으로 검사
 - [2026-10-11 경매장 화면 전체 목업 (T-147 1차)](2026-10-11-auction-fullscreen-mockup.md) — `#design` `#ui` 검색·시세·판매·완료 4탭 HTML 목업
 - [2026-10-11 게임·경매장 서버 Docker 원격 배포](2026-10-11-docker-external-access.md) — `#server` `#infra` `#client` T-109 · compose · `appsettings.json` · 원격 치트 차단 · 클라 주소 `ServerSettings.json`
 - [2026-10-11 서버 기동 시 DB 마이그레이션 자동 적용](2026-10-11-db-auto-migration.md) — `#server` `#test` `#infra` T-146 · `Shared/migrations` + `user_version` · 테스트 스키마도 같은 파일로
@@ -39,6 +42,7 @@
 - [2026-10-10 루트 UI 두 축 — Overlay Canvas (T-140 · T-141)](2026-10-10-overlay-layer.md) — `#client` `#ui` `!System`·`!Login` → `!Overlay Canvas` · 앞뒤 순서 · 로그인 Presenter화 · 폴더 `UI/Overlay`
 - [2026-10-10 프레임 여유 구조 정리 (T-139)](2026-10-10-frame-headroom.md) — `#client` `#ui` `#optimization` 레이아웃 경계(Body·Tool Panel) · 격자 Canvas 숨김 · Raycast Target · 주기 수신 로그 토글
 - [2026-10-10 인벤토리 격자는 보이는 칸만 그린다 (T-138)](2026-10-10-inventory-visible-slots.md) — `#client` `#ui` 열기 스파이크 · 넘침 검사 GC 제거
+- [2026-10-13 판정 최소 주기 1.6초 (T-149)](2026-10-13-min-cycle-1600.md) — `#data` `#server` `#test` `MinCycleMs` 2100 → 1600 · Lv1 상한 18750
 - [2026-10-09 목록 줄 풀을 UIRowList로 (T-133)](2026-10-09-uirowlist-migration.md) — `#client` `#ui` 6개 화면의 복제 줄 풀 삭제
 - [2026-10-09 보상 결과 하나씩 공개 연출 (T-031 · T-033)](2026-10-09-reward-reveal-fx.md) — `#client` `#fx` 칸에 런타임 부착 · 이펙트 그림은 코드 생성(Art 저장소 분리) · 스킵은 칸 클릭도 구독 · reveal 씬 직렬화
 - [2026-10-09 아이템 획득 연출 — 아이콘 뒤 등급 빛](2026-10-09-item-gain-glow.md) — `#client` `#fx` 등급 3단계(번짐/광선/섬광+빛 기둥·겹광선) · 아이콘 묶음 풀 · 배율 조정값 · FxSprites 이름표 — 코드 그리기 삭제·그림만(make_fx.py)

@@ -71,14 +71,14 @@ public class UserCheatGatherSpeedTest
     [Fact]
     public void 배수를_최대로_올려도_판정_간격은_최소_주기_아래로_내려가지_않는다()
     {
-        // ×100이면 0.3초에 1판정이지만 상한 14285에서 잘려 간격이 2,101ms다 → 1분에 60,000 ÷ 2,101 = 28회.
+        // ×100이면 0.3초에 1판정이지만 상한 18750에서 잘려 간격이 1,600ms다 → 1분에 60,000 ÷ 1,600 = 37.5 → 37회.
         // 잘리지 않으면 200회가 나온다.
         var (user, b) = Excavation();
 
         user.ExecuteCheat(Req(User.CheatMaxGatherSpeedPermille), Base);
         user.SettleWorkStation(Base.AddMinutes(1));
 
-        b.Channel.SentOf<S_GatherResultResponse>().Sum(r => r.JudgeCount).ShouldBe(28);
+        b.Channel.SentOf<S_GatherResultResponse>().Sum(r => r.JudgeCount).ShouldBe(37);
     }
 
     [Fact]

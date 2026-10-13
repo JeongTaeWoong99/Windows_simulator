@@ -26,7 +26,7 @@ tags: [design, data, mockup]
 - `User.Artifact.cs` — 처음 켜지는 번호가 속도·산출량·유물 확률을 바꾸면 **넣기 전에 `SettleWorkStation`**(소급 방지), 속도면 `ApplyWorkStationSpeed`. 효과는 `TraitAddPermille`·산출량 가산에 더하고(특성과 같은 자리), 유물 확률은 `CommonRewardCatalog.Roll(chanceAddPermille)`에 곱한다(발굴만).
 - 패킷 `S_ArtifactListResponse`(74) · `ArtifactInfo` · `GachaRewardInfo.ArtifactTid`(끝에 붙임) · `EGachaRewardType.Artifact`.
 - DB `0003-user-artifact.sql` — 로컬 DB는 python으로 같은 SQL + `user_version = 3`을 한 트랜잭션에 적용(서버 기동과 같은 결과).
-- T-149 해결 — `BoxSheetTest`의 상자 = `ItemType.Box`, 무한 개봉은 고리 검사로. 서버 테스트 879/879.
+- T-153(처음 번호 T-149 — main의 T-149와 겹쳐 옮김) 해결 — `BoxSheetTest`의 상자 = `ItemType.Box`, 무한 개봉은 고리 검사로. 서버 테스트 879/879.
 
 ## 후속 / 주의
 - 클라 T-151(태웅) — `S_ArtifactListResponse` 핸들러가 없어 MIKA001 경고. 판매·거래소 T-152.
