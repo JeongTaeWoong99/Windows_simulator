@@ -56,6 +56,9 @@ public sealed class Equip
 
     public bool IsEquipped => EquippedCharacterId != 0;
 
+    /// <summary>잠금(T-137) — 판매·경매 등록에서 빠진다. 장착은 그대로 된다.</summary>
+    public bool IsLocked { get; set; }
+
     public void Wear(long characterId, EquipSlot slot)
     {
         EquippedCharacterId = characterId;

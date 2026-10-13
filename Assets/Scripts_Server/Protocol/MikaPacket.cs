@@ -102,6 +102,8 @@ namespace MikaProtocol
         C_EquipEnchantChooseRequest = 72,
         S_EquipEnchantChooseResponse = 73,
         S_ArtifactListResponse = 74,
+        C_EntityLockRequest = 75,
+        S_EntityLockResponse = 76,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -558,6 +560,25 @@ namespace MikaProtocol
     {
         public EResultCode    Result    { get; set; }
         public CharacterInfo? Character { get; set; }
+    }
+
+    /// <summary>캐릭터·장비 잠금 켜기/끄기(T-137). 잠긴 개체는 판매·경매 등록·응축 재료에서 빠진다 — 장착·배치는 그대로 된다.</summary>
+    [MemoryPackable, Packet(PacketId.C_EntityLockRequest)]
+    public partial class C_EntityLockRequest : IPacket
+    {
+        public ELockTarget Target { get; set; }
+        public long        Id     { get; set; }  // CharacterId 또는 EquipId (개체 PK)
+        public bool        Locked { get; set; }  // true = 잠금 · false = 해제
+    }
+
+    /// <summary>잠금 결과. Ok면 그 개체의 잠금이 <see cref="Locked"/>로 확정됐다 — 이미 같은 상태여도 Ok다.</summary>
+    [MemoryPackable, Packet(PacketId.S_EntityLockResponse)]
+    public partial class S_EntityLockResponse : IPacket
+    {
+        public EResultCode Result { get; set; }
+        public ELockTarget Target { get; set; }
+        public long        Id     { get; set; }
+        public bool        Locked { get; set; }
     }
 
     /// <summary>우편함 전체 스냅샷(로그인 직후). 받은 우편은 7일 동안 함께 실린다.</summary>

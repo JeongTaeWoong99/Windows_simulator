@@ -31,6 +31,7 @@ public partial class User
                 r.pending_grade, new[] { r.pending_1, r.pending_2, r.pending_3 });
             if (equip is not null)
             {
+                equip.IsLocked      = r.is_locked != 0;
                 _equips[r.equip_id] = equip;
             }
         }
@@ -364,6 +365,7 @@ public partial class User
             EnchantOptions        = e.EnchantOptionTids.ToList(),
             PendingEnchantGrade   = (int)e.PendingEnchantGrade,
             PendingEnchantOptions = e.PendingEnchantOptionTids.ToList(),
+            IsLocked              = e.IsLocked,
         };
     }
 }

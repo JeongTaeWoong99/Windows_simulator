@@ -301,6 +301,20 @@ public static class ClientPacketHandler
         user.TryCondenseCharacter(req.CharacterId, req.MaterialIds ?? new List<long>(), GameClock.Instance.UtcNow);
     }
 
+    /// <summary>캐릭터·장비 잠금 켜기/끄기(T-137). 검증은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_EntityLockRequest(ISession session, C_EntityLockRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_EntityLockResponse { Result = EResultCode.NotLoggedIn, Target = req.Target, Id = req.Id });
+            return;
+        }
+
+        user.TrySetLock(req.Target, req.Id, req.Locked);
+    }
+
     /// <summary>우편 수령. MailId = 0이면 모두 받기. 창고 검사·지급은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_MailClaimRequest(ISession session, C_MailClaimRequest req)

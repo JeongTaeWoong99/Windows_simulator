@@ -82,6 +82,8 @@ namespace MikaProtocol
         // 응축(캐릭터 기획 5.5). 진행 바는 CondenseCount와 CharacterStarTable의 누적 기준으로 그린다.
         public int Star          { get; set; }
         public int CondenseCount { get; set; }      // 넣은 재료의 누적 수
+
+        public bool IsLocked { get; set; }          // 잠금(T-137) — 판매·경매 등록·응축 재료에서 빠진다
     }
 
     // 작업슬롯 한 칸의 상태. 주기 대신 진행도·속도·비용을 주어 클라가 카운트다운을 직접 구한다(연출일 뿐, 개수는 서버가 정한다).
@@ -122,6 +124,7 @@ namespace MikaProtocol
         public List<int>  EnchantOptions      { get; set; } = new();  // EnchantOptionTID. 줄 수만큼(0·2·3개)
         public int        PendingEnchantGrade   { get; set; }  // 상급 큐브의 고르기 전 결과. 0=보류 없음
         public List<int>  PendingEnchantOptions { get; set; } = new();
+        public bool       IsLocked              { get; set; }  // 잠금(T-137) — 판매·경매 등록에서 빠진다
     }
 
     /// <summary>우편 한 통. 제목·본문·발신자는 싣지 않는다 — 클라가 <c>MailTemplateTable</c>에서 <c>TemplateTid</c>로 읽는다.</summary>

@@ -51,6 +51,11 @@ public partial class User
                 Reject(EResultCode.EquipNotOwned, $"미보유 장비 {equipId}");
                 return;
             }
+            if (equip.IsLocked)
+            {
+                Reject(EResultCode.EntityLocked, $"잠긴 장비 {equipId}");
+                return;
+            }
             if (equip.IsEquipped)
             {
                 Reject(EResultCode.SellEquipWorn, $"착용 중 장비 {equipId}");
@@ -70,6 +75,11 @@ public partial class User
             if (!TryGetCharacter(characterId, out var character))
             {
                 Reject(EResultCode.CharacterNotOwned, $"미보유 캐릭터 {characterId}");
+                return;
+            }
+            if (character.IsLocked)
+            {
+                Reject(EResultCode.EntityLocked, $"잠긴 캐릭터 {characterId}");
                 return;
             }
             if (IsCharacterBusy(characterId))

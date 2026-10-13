@@ -129,6 +129,11 @@ public partial class User
             return (EResultCode.EquipNotOwned, null, 0);
         }
 
+        if (equip.IsLocked)
+        {
+            return (EResultCode.EntityLocked, null, 0);
+        }
+
         if (equip.IsEquipped)
         {
             return (EResultCode.AuctionEquipped, null, 0);
@@ -158,6 +163,11 @@ public partial class User
         if (!TryGetCharacter(characterId, out var character))
         {
             return (EResultCode.CharacterNotOwned, null, 0);
+        }
+
+        if (character.IsLocked)
+        {
+            return (EResultCode.EntityLocked, null, 0);
         }
 
         if (IsCharacterBusy(characterId))

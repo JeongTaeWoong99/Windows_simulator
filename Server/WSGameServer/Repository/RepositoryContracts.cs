@@ -19,6 +19,7 @@ public sealed record CharacterRow
     public int  exp           { get; init; }
     public int  slot          { get; init; }
     public int  condense_count { get; init; }
+    public int  is_locked      { get; init; }   // 0/1 (T-137)
 }
 
 // t_user_currency 조회 전용 Row. 재화가 늘면 행이 아니라 컬럼이 는다.
@@ -93,6 +94,8 @@ public sealed record UserEquipRow
     public int pending_1     { get; init; }
     public int pending_2     { get; init; }
     public int pending_3     { get; init; }
+
+    public int is_locked { get; init; }   // 0/1 (T-137)
 }
 
 // t_character_equip 조회 전용 Row. slot은 GameData.EquipSlot 정수값.

@@ -352,6 +352,19 @@ namespace MikaNetwork
             CharacterCondenseResponded?.Invoke(res);
         }
 
+        // 잠금 결과 도착 (Handle_S_EntityLockResponse에서 발행)
+        public static event Action<S_EntityLockResponse>? EntityLockResponded;
+
+        // 캐릭터·장비 잠금 결과 (S_EntityLockResponse 수신 시 자동 호출)
+        // ★ Ok면 Target·Id 개체의 잠금이 Locked로 확정됐다 — 목록은 다시 오지 않으니 캐시의 IsLocked를 직접 바꾼다.
+        // ⚠️ 잠긴 개체는 판매·경매 등록·응축 재료에서 EntityLocked로 거절된다. 장착·배치는 그대로 된다.
+        [PacketHandler]
+        public static void Handle_S_EntityLockResponse(ISession session, S_EntityLockResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"잠금 → {res.Result} ({res.Target} #{res.Id} 잠금={res.Locked})");
+            EntityLockResponded?.Invoke(res);
+        }
+
         #endregion
 
         #region 작업슬롯 · 채취

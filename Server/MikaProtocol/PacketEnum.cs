@@ -100,6 +100,10 @@ namespace MikaProtocol
         StorageSlotEmpty      = 1101, // 자리 이동의 출발 칸이 비어 있음
         InvalidStorageSortKey = 1102, // 그 탭에 쓸 수 없는 정렬 기준 (캐릭터·장비 탭의 수량순)
         StorageSlotPending    = 1103, // 도착 칸이 지급 대기(뽑기·우편 수령 응답 전)로 예약돼 있음 — 잠시 뒤 다시
+
+        // ── 1200~: 잠금 (T-137) ── 미보유는 CharacterNotOwned(201) · EquipNotOwned(600)
+        EntityLocked      = 1200, // 잠긴 개체 — 판매·경매 등록·응축 재료로 쓸 수 없다. 아무것도 바꾸지 않았다
+        InvalidLockTarget = 1201, // 잠글 수 없는 대상 종류 (캐릭터·장비만)
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -231,6 +235,14 @@ namespace MikaProtocol
         Rarity = 0,
         Name   = 1,
         Count  = 2,   // 자원 탭만
+    }
+
+    // 잠금 대상 (T-137). 자원은 TID 하나 = 칸 하나라 잠그지 않는다.
+    public enum ELockTarget : byte
+    {
+        None      = 0,
+        Character = 1,
+        Equip     = 2,
     }
 
     public enum EStorageSortOrder : byte

@@ -33,7 +33,7 @@ public partial class User
                 continue;
             }
 
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, r.condense_count) { Slot = r.slot };
+            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, r.condense_count) { Slot = r.slot, IsLocked = r.is_locked != 0 };
         }
     }
 
@@ -186,6 +186,11 @@ public partial class User
                 Reject(EResultCode.CondenseTidMismatch, $"다른 캐릭터 재료 {materialId}(TID {material.Tid})");
                 return;
             }
+            if (material.IsLocked)
+            {
+                Reject(EResultCode.EntityLocked, $"잠긴 재료 {materialId}");
+                return;
+            }
             if (IsCharacterBusy(materialId))
             {
                 Reject(EResultCode.CondenseMaterialBusy, $"배치·착용 중 재료 {materialId}");
@@ -231,6 +236,7 @@ public partial class User
             Slot           = c.Slot,
             Star           = StarOf(c),
             CondenseCount  = c.CondenseCount,
+            IsLocked       = c.IsLocked,
         };
     }
 

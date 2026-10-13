@@ -34,6 +34,9 @@ public sealed class Character
     /// <summary>현재 레벨에서 쌓은 경험치(누적이 아니다). 레벨업하면 필요치를 뺀 나머지가 이월된다.</summary>
     public int Exp { get; private set; }
 
+    /// <summary>잠금(T-137) — 판매·경매 등록·응축 재료에서 빠진다. 배치·장착·응축 대상은 그대로 된다.</summary>
+    public bool IsLocked { get; set; }
+
     /// <summary>응축에 넣은 재료의 누적 수. ★은 이 값으로 <see cref="CharacterStarCatalog"/>에서 읽는다(기획 5.5).</summary>
     public int CondenseCount { get; private set; }
 
