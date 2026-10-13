@@ -28,6 +28,13 @@ tags: [design, data, mockup]
 - DB `0003-user-artifact.sql` — 로컬 DB는 python으로 같은 SQL + `user_version = 3`을 한 트랜잭션에 적용(서버 기동과 같은 결과).
 - T-153(처음 번호 T-149 — main의 T-149와 겹쳐 옮김) 해결 — `BoxSheetTest`의 상자 = `ItemType.Box`, 무한 개봉은 고리 검사로. 서버 테스트 879/879.
 
+## 아티팩트 거래소 (T-152 · 같은 날)
+- 진우 결정: **즉시 판매 없음** — 내보내는 길은 거래소뿐. `BasePrice`는 단가 하한으로만 쓴다.
+- 거래소는 경매장 서버에서 `kind = 1`(자원)로 박혀 있었다 → `ListingKind`/`EAuctionKind.Artifact = 4` · proto `ReserveQuantityRequest`·`MarketItemsRequest`·`PriceLadderRequest`에 `kind`(0 = 자원 — 옛 메인 호환). TID는 종류 안에서만 유일하다(자원 7과 아티팩트 7이 섞이지 않는 테스트).
+- 등록: `User.RemoveArtifact`(마지막 1개면 빼기 전에 정산) → `AuctionDb.RegisterAsync`가 `t_user_artifact` 확정 수량을 **같은 트랜잭션**에 쓴다(`count >= 새 값` 조건 — 행이 없으면 등록 전체 롤백).
+- 구매·반환은 우편: `t_user_mail.artifacts`(마이그레이션 0004 · 로컬 DB 판 4) · `MailAttachment.ArtifactItems` · `MailInfo.Artifacts` · 받을 때 `GainArtifacts`(창고 칸 검사 없음).
+- 메인 891 · 경매장 118 통과.
+
 ## 후속 / 주의
-- 클라 T-151(태웅) — `S_ArtifactListResponse` 핸들러가 없어 MIKA001 경고. 판매·거래소 T-152.
+- 클라 T-151(태웅) — `S_ArtifactListResponse` 핸들러가 없어 MIKA001 경고 · 거래소 아티팩트 탭 · 우편 아티팩트 표시.
 - 남은 결정: 레벨별 확률 값 · Special 확률 · 희귀 이상 아티팩트 — 전부 테스트값으로 돈다.

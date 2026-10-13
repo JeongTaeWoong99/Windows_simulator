@@ -53,6 +53,7 @@ public partial class User
             EAuctionKind.Item  => DescribeItem(itemTid, count),
             EAuctionKind.Equip => DescribeEquip(equipId),
             EAuctionKind.Character => DescribeCharacter(characterId),
+            EAuctionKind.Artifact  => DescribeArtifact(itemTid, count),
             _                  => (EResultCode.AuctionInvalidRequest, null, 0),
         };
         if (code != EResultCode.Ok)
@@ -75,9 +76,15 @@ public partial class User
         }
 
         var changes = new List<ItemChangeInfo>();
+        var artifactCount = 0;
         if (kind == EAuctionKind.Item)
         {
             Inventory.TryRemoveItems(new Dictionary<int, int> { [itemTid] = count }, out changes);
+        }
+        else if (kind == EAuctionKind.Artifact)
+        {
+            // 마지막 1개면 효과가 꺼진다 — 빼기 전에 정산한다(RemoveArtifact).
+            artifactCount = RemoveArtifact(itemTid, count, now);
         }
         else if (kind == EAuctionKind.Equip)
         {
@@ -92,7 +99,7 @@ public partial class User
         _activeListings++;
 
         item = item with { SellerName = NickName };
-        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now));
+        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now, artifactCount));
         Send(new S_CurrencyResponse { Gold = _gold });
         return;
 
@@ -118,6 +125,26 @@ public partial class User
         var item = new AuctionItemSnapshot
         {
             Kind = EAuctionKind.Item, Tid = itemTid, Category = (int)row.ItemType, Rarity = (int)row.GlobalRarity, Count = count,
+        };
+        return (EResultCode.Ok, item, row.BasePrice);
+    }
+
+    // 아티팩트는 보관함 수량에서 뺀다. 분류는 두지 않는다(0) — 거래소 목록은 종류(Artifact)로 거른다. 단가 하한은 ArtifactTable.BasePrice.
+    private (EResultCode, AuctionItemSnapshot?, int BasePrice) DescribeArtifact(int artifactTid, int count)
+    {
+        if (count <= 0 || count > AuctionRules.MaxListingCount || !GameTable.ArtifactTable.TryGet(artifactTid, out var row))
+        {
+            return (EResultCode.AuctionInvalidRequest, null, 0);
+        }
+
+        if (GetArtifactCount(artifactTid) < count)
+        {
+            return (EResultCode.NotEnoughItem, null, 0);
+        }
+
+        var item = new AuctionItemSnapshot
+        {
+            Kind = EAuctionKind.Artifact, Tid = artifactTid, Rarity = (int)row.GlobalRarity, Count = count,
         };
         return (EResultCode.Ok, item, row.BasePrice);
     }

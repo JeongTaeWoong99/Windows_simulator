@@ -67,7 +67,7 @@ public sealed class AuctionStore : IDisposable
         CREATE TABLE IF NOT EXISTS t_listing (
             listing_id    INTEGER PRIMARY KEY,           -- 매물 ID = 메인 t_auction_trade.trade_id. 등록 멱등 키
             seller_id     INTEGER NOT NULL,              -- 판매자 (메인 t_user.user_id)
-            kind          INTEGER NOT NULL,              -- 1=자원(거래소) 2=장비 3=캐릭터(경매장)
+            kind          INTEGER NOT NULL,              -- 1=자원 4=아티팩트(거래소) 2=장비 3=캐릭터(경매장)
             tid           INTEGER NOT NULL,              -- ItemTID 또는 EquipTID
             category      INTEGER NOT NULL,              -- 자원은 ItemType, 장비는 EquipKind
             rarity        INTEGER NOT NULL,              -- GlobalRarity
@@ -366,7 +366,7 @@ public sealed class AuctionStore : IDisposable
     /// 거래소 수량 구매 — 한 종류를 단가 상한 안에서 최저가부터 <paramref name="quantity"/>개 잡는다. 여러 매물에 걸칠 수 있다.
     /// <b>다 채우지 못하면 아무것도 잡지 않는다</b>(NotEnough). 자기 매물은 건너뛴다. 같은 구매 ID의 재시도면 처음 결과를 돌려준다.
     /// </summary>
-    public ReserveOutcome ReserveQuantity(long purchaseId, long buyerId, int tid, int quantity, long maxUnitPrice, DateTime now)
+    public ReserveOutcome ReserveQuantity(long purchaseId, long buyerId, int tid, int quantity, long maxUnitPrice, DateTime now, ListingKind kind = ListingKind.Item)
     {
         if (quantity <= 0 || maxUnitPrice <= 0)
         {
@@ -391,11 +391,11 @@ public sealed class AuctionStore : IDisposable
             $@"SELECT listing_id, seller_id, unit_price, available FROM (
                    SELECT l.listing_id, l.seller_id, l.unit_price, l.count - {ReservedExpr} AS available
                    FROM t_listing l
-                   WHERE l.kind = 1 AND l.tid = @tid AND l.state = 1 AND l.expires_at > @now
+                   WHERE l.kind = @kind AND l.tid = @tid AND l.state = 1 AND l.expires_at > @now
                      AND l.seller_id <> @buyerId AND l.unit_price <= @maxUnitPrice)
                WHERE available > 0
                ORDER BY unit_price, listing_id;",
-            new { tid, now = ToDb(now), buyerId, maxUnitPrice }, tx);
+            new { kind = (int)kind, tid, now = ToDb(now), buyerId, maxUnitPrice }, tx);
 
         var allocations = new List<Allocation>();
         var remaining   = quantity;

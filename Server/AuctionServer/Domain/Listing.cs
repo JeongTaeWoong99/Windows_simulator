@@ -16,6 +16,7 @@ public enum ListingKind
     Item  = 1,
     Equip = 2,
     Character = 3,
+    Artifact  = 4,   // 아티팩트(스택) — 자원처럼 거래소에서 수량으로 팔린다 (T-152)
 }
 
 /// <summary>

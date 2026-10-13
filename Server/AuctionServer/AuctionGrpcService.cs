@@ -25,9 +25,12 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
 
     public override async Task<Proto.ReserveReply> ReserveQuantity(Proto.ReserveQuantityRequest request, ServerCallContext context)
     {
-        var outcome = await engine.ReserveQuantityAsync(request.PurchaseId, request.BuyerId, request.Tid, request.Quantity, request.MaxUnitPrice);
+        var outcome = await engine.ReserveQuantityAsync(request.PurchaseId, request.BuyerId, request.Tid, request.Quantity, request.MaxUnitPrice, MarketKind(request.Kind));
         return ToReply(outcome);
     }
+
+    // 거래소 요청의 종류. 0(옛 메인)은 자원이다 — 아티팩트(T-152) 전에는 거래소가 자원만 다뤘다.
+    private static ListingKind MarketKind(int kind) => kind == 0 ? ListingKind.Item : (ListingKind)kind;
 
     private static Proto.ReserveReply ToReply(ReserveOutcome outcome)
     {
@@ -46,7 +49,7 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
 
     public override async Task<Proto.MarketItemsReply> GetMarketItems(Proto.MarketItemsRequest request, ServerCallContext context)
     {
-        var items = await engine.MarketItemsAsync(request.Category, request.Tids.ToArray());
+        var items = await engine.MarketItemsAsync(request.Category, request.Tids.ToArray(), MarketKind(request.Kind));
 
         var reply = new Proto.MarketItemsReply();
         reply.Items.AddRange(items.Select(m => new Proto.MarketItem
@@ -60,7 +63,7 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
     public override Task<Proto.PriceLadderReply> GetPriceLadder(Proto.PriceLadderRequest request, ServerCallContext context)
     {
         var reply = new Proto.PriceLadderReply();
-        reply.Levels.AddRange(engine.PriceLadder(request.Tid, request.Levels)
+        reply.Levels.AddRange(engine.PriceLadder(request.Tid, request.Levels, MarketKind(request.Kind))
             .Select(l => new Proto.PriceLevel { UnitPrice = l.UnitPrice, Quantity = l.Quantity }));
         return Task.FromResult(reply);
     }

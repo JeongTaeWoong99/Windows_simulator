@@ -406,7 +406,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryGetMarketItems(req.Category, req.Tids, GameClock.Instance.UtcNow);
+        user.TryGetMarketItems(req.Category, req.Tids, GameClock.Instance.UtcNow, req.Kind);
     }
 
     [PacketHandler]
@@ -419,7 +419,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryGetMarketPrice(req.Tid, GameClock.Instance.UtcNow);
+        user.TryGetMarketPrice(req.Tid, GameClock.Instance.UtcNow, req.Kind);
     }
 
     [PacketHandler]
@@ -434,6 +434,6 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryBuyMarket(req.Tid, req.Count, req.MaxUnitPrice, GameClock.Instance.UtcNow);
+        user.TryBuyMarket(req.Tid, req.Count, req.MaxUnitPrice, GameClock.Instance.UtcNow, req.Kind);
     }
 }

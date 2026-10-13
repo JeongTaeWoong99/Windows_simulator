@@ -7,6 +7,7 @@ namespace WSGameServer;
 /// 우편 한 통의 첨부. 아이템은 (TID, 수량), 캐릭터·장비는 한 개체 = 한 원소다.
 /// <c>EquipTids</c>·<c>CharacterTids</c>는 받을 때 <b>새로 만들고</b>, <c>LockedEquips</c>·<c>LockedCharacters</c>는
 /// 이미 있는 개체(경매)의 잠금을 푼다 — 인챈트·레벨이 그대로 간다.
+/// <c>ArtifactItems</c>는 (아티팩트 번호, 수량)이고 받으면 인벤토리가 아니라 아티팩트 보관함으로 간다(T-152).
 /// </summary>
 public sealed record MailAttachment(
     long Gold,
@@ -14,7 +15,8 @@ public sealed record MailAttachment(
     List<int> CharacterTids,
     List<int> EquipTids,
     List<MailEquip>? LockedEquips = null,
-    List<MailCharacter>? LockedCharacters = null)
+    List<MailCharacter>? LockedCharacters = null,
+    List<(int Tid, int Count)>? ArtifactItems = null)
 {
     public static MailAttachment Empty => new(0, new(), new(), new());
 
@@ -22,23 +24,28 @@ public sealed record MailAttachment(
 
     public IReadOnlyList<MailCharacter> Characters => LockedCharacters ?? (IReadOnlyList<MailCharacter>)Array.Empty<MailCharacter>();
 
+    public IReadOnlyList<(int Tid, int Count)> Artifacts => ArtifactItems ?? (IReadOnlyList<(int, int)>)Array.Empty<(int, int)>();
+
     // DB 컬럼(JSON) 왕복. 아이템은 [[TID, 수량], ...] — 튜플은 JSON 배열로 직접 안 나가서 int[]로 옮긴다.
     public string ItemsJson => JsonSerializer.Serialize(Items.Select(i => new[] { i.Tid, i.Count }));
     public string CharacterTidsJson => JsonSerializer.Serialize(CharacterTids);
     public string EquipTidsJson => JsonSerializer.Serialize(EquipTids);
     public string EquipIdsJson => JsonSerializer.Serialize(Equips);
     public string CharacterIdsJson => JsonSerializer.Serialize(Characters);
+    public string ArtifactsJson => JsonSerializer.Serialize(Artifacts.Select(a => new[] { a.Tid, a.Count }));
 
     public static MailAttachment FromRow(UserMailRow row)
     {
-        var items = JsonSerializer.Deserialize<List<int[]>>(row.items) ?? new();
+        var items     = JsonSerializer.Deserialize<List<int[]>>(row.items) ?? new();
+        var artifacts = JsonSerializer.Deserialize<List<int[]>>(row.artifacts) ?? new();
         return new MailAttachment(
             row.gold,
             items.Select(pair => (pair[0], pair[1])).ToList(),
             JsonSerializer.Deserialize<List<int>>(row.character_tids) ?? new(),
             JsonSerializer.Deserialize<List<int>>(row.equip_tids) ?? new(),
             JsonSerializer.Deserialize<List<MailEquip>>(row.equip_ids) ?? new(),
-            JsonSerializer.Deserialize<List<MailCharacter>>(row.character_ids) ?? new());
+            JsonSerializer.Deserialize<List<MailCharacter>>(row.character_ids) ?? new(),
+            artifacts.Select(pair => (pair[0], pair[1])).ToList());
     }
 }
 
@@ -84,6 +91,7 @@ public sealed class Mail(long id, int templateTid, MailAttachment attachment, Da
             EquipTids        = Attachment.EquipTids.ToList(),
             Equips           = Attachment.Equips.Select(e => e.ToInfo()).ToList(),
             Characters       = Attachment.Characters.Select(toCharacter).OfType<CharacterInfo>().ToList(),
+            Artifacts        = Attachment.Artifacts.Select(a => new ArtifactInfo { ArtifactTid = a.Tid, Count = a.Count }).ToList(),
             ReceivedAtUnixMs = ToUnixMs(ReceivedAt),
             ClaimedAtUnixMs  = ClaimedAt.HasValue ? ToUnixMs(ClaimedAt.Value) : 0,
         };

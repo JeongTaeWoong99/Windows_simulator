@@ -110,7 +110,7 @@ public sealed class AuctionEngine : IAsyncDisposable
             return false;
         }
 
-        if (l.Kind is not (ListingKind.Item or ListingKind.Equip or ListingKind.Character))
+        if (l.Kind is not (ListingKind.Item or ListingKind.Equip or ListingKind.Character or ListingKind.Artifact))
         {
             return false;
         }
@@ -154,11 +154,12 @@ public sealed class AuctionEngine : IAsyncDisposable
     }
 
     /// <summary>거래소 수량 구매 — 한 종류를 최저가부터 원하는 수량만큼. 다 못 채우면 아무것도 잡지 않는다.</summary>
-    public Task<ReserveOutcome> ReserveQuantityAsync(long purchaseId, long buyerId, int tid, int quantity, long maxUnitPrice)
+    /// <param name="kind">거래소에 오르는 스택 종류 — 자원(기본)·아티팩트. TID는 종류 안에서만 유일하다.</param>
+    public Task<ReserveOutcome> ReserveQuantityAsync(long purchaseId, long buyerId, int tid, int quantity, long maxUnitPrice, ListingKind kind = ListingKind.Item)
     {
         return Enqueue(() =>
         {
-            var outcome = _store.ReserveQuantity(purchaseId, buyerId, tid, quantity, maxUnitPrice, Now);
+            var outcome = _store.ReserveQuantity(purchaseId, buyerId, tid, quantity, maxUnitPrice, Now, kind);
             Refresh(outcome.Lines.Select(a => a.ListingId));
             return outcome;
         });
@@ -223,18 +224,18 @@ public sealed class AuctionEngine : IAsyncDisposable
     /// 거래소 목록 — 인덱스의 종류별 최저가·수량에 DB의 시세를 붙인다. 요청한 TID는 매물이 없어도 시세만으로 싣는다.
     /// 시세는 DB를 읽으므로 채널을 탄다.
     /// </summary>
-    public Task<IReadOnlyList<MarketItem>> MarketItemsAsync(int category, IReadOnlyCollection<int> tids)
+    public Task<IReadOnlyList<MarketItem>> MarketItemsAsync(int category, IReadOnlyCollection<int> tids, ListingKind kind = ListingKind.Item)
     {
         return Enqueue<IReadOnlyList<MarketItem>>(() =>
         {
             var now     = Now;
-            var summary = _index.Summaries(ListingKind.Item, category, tids, now).ToDictionary(m => m.Tid);
+            var summary = _index.Summaries(kind, category, tids, now).ToDictionary(m => m.Tid);
             foreach (var tid in tids.Where(t => !summary.ContainsKey(t)))
             {
                 summary[tid] = new MarketItem(tid, category, 0, 0, 0, 0, 0);
             }
 
-            var stats = _store.MarketStats(ListingKind.Item, summary.Keys.ToList(), MarketDayStart(now));
+            var stats = _store.MarketStats(kind, summary.Keys.ToList(), MarketDayStart(now));
             return summary.Values
                 .Select(m => stats.TryGetValue(m.Tid, out var s) ? m with { RecentUnitPrice = s.RecentUnitPrice, YesterdayAvgPrice = s.YesterdayAvgPrice } : m)
                 .OrderBy(m => m.Tid)
@@ -243,8 +244,8 @@ public sealed class AuctionEngine : IAsyncDisposable
     }
 
     /// <summary>한 종류의 가격대(단가별 판매 중 수량). 인덱스만 읽는다.</summary>
-    public IReadOnlyList<PriceLevel> PriceLadder(int tid, int levels)
-        => Index.PriceLadder(ListingKind.Item, tid, Math.Clamp(levels, 1, 50), Now);
+    public IReadOnlyList<PriceLevel> PriceLadder(int tid, int levels, ListingKind kind = ListingKind.Item)
+        => Index.PriceLadder(kind, tid, Math.Clamp(levels, 1, 50), Now);
 
     // "오늘"의 시작(UTC) — 게임의 하루 경계(MarketDayOffset, 기본 KST)에 맞춘다. 전일 평균은 이 앞 24시간이다.
     private DateTime MarketDayStart(DateTime nowUtc)

@@ -27,7 +27,7 @@ public sealed record AuctionItemSnapshot
 
     public static AuctionItemSnapshot FromJson(string json) => JsonSerializer.Deserialize<AuctionItemSnapshot>(json)!;
 
-    /// <summary>이 물건을 우편으로 보낼 때의 첨부. 자원은 수량 그대로, 장비·캐릭터는 잠긴 개체 그대로다.</summary>
+    /// <summary>이 물건을 우편으로 보낼 때의 첨부. 자원·아티팩트는 수량 그대로, 장비·캐릭터는 잠긴 개체 그대로다.</summary>
     public MailAttachment ToAttachment(long gold)
     {
         if (Kind == EAuctionKind.Character)
@@ -44,6 +44,11 @@ public sealed record AuctionItemSnapshot
         if (Kind == EAuctionKind.Equip)
         {
             return new MailAttachment(gold, new(), new(), new(), new List<MailEquip> { new(EquipId, Tid, EnchantGrade, Options.ToList()) });
+        }
+
+        if (Kind == EAuctionKind.Artifact)
+        {
+            return new MailAttachment(gold, new(), new(), new(), ArtifactItems: new List<(int, int)> { (Tid, Count) });
         }
 
         return new MailAttachment(gold, new List<(int, int)> { (Tid, Count) }, new(), new());
