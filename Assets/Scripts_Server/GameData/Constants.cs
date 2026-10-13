@@ -76,7 +76,7 @@ namespace GameData
         /// <summary>1.0배 속도의 판정 1회 시간(초)</summary>
         public static long BaseCycleSeconds => GameTable.ConstantsTable["BaseCycleSeconds"].Value;
 
-        /// <summary>판정 1회 최소 시간(ms) — 연출 한 바퀴(여운+숨+달리기+숨+공격 1회)를 보장한다. 실효 주기 = max(이 값, 판정 비용 ÷ 속도)</summary>
+        /// <summary>판정 1회 최소 시간(ms) — 연출 한 바퀴(달리기 1초 + 공격 0.6초)를 보장한다. 실효 주기 = max(이 값, 판정 비용 ÷ 속도)</summary>
         public static long MinCycleMs => GameTable.ConstantsTable["MinCycleMs"].Value;
     }
 }
