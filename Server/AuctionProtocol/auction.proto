@@ -104,6 +104,7 @@ message ReserveQuantityRequest {
   int32 tid = 3;
   int32 quantity = 4;
   int64 max_unit_price = 5;  // 클라가 본 단가 상한 — 이보다 비싼 매물은 잡지 않는다
+  int32 kind = 6;            // 1=자원 4=아티팩트 · 0이면 자원 (T-152)
 }
 
 message ConfirmRequest {
@@ -182,6 +183,7 @@ message SearchReply {
 message MarketItemsRequest {
   int32 category = 1;
   repeated int32 tids = 2;
+  int32 kind = 3;   // 1=자원 4=아티팩트 · 0이면 자원 (T-152)
 }
 
 message MarketItem {
@@ -201,6 +203,7 @@ message MarketItemsReply {
 message PriceLadderRequest {
   int32 tid = 1;
   int32 levels = 2;   // 최대 칸 수(1~50)
+  int32 kind = 3;     // 1=자원 4=아티팩트 · 0이면 자원 (T-152)
 }
 
 message PriceLevel {

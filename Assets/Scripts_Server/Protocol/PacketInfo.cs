@@ -141,6 +141,7 @@ namespace MikaProtocol
         public long            ClaimedAtUnixMs  { get; set; }  // 받은 시각. 0 = 안 받음
         public List<EquipInfo>? Equips          { get; set; }  // 개체 장비(경매 구매·반환) — 인챈트까지 그대로 온다. 창고 칸은 받을 때 정해진다
         public List<CharacterInfo>? Characters  { get; set; }  // 개체 캐릭터(경매 구매·반환) — 레벨·적성까지 그대로 온다
+        public List<ArtifactInfo>?  Artifacts   { get; set; }  // 아티팩트(거래소 구매·반환) — 받으면 보관함으로 간다 (T-152)
     }
 
     /// <summary>거래소 목록 한 줄 — 자원 종류별 요약. 매물·체결이 없으면 해당 값은 0이다.</summary>

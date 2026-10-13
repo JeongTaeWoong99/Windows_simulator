@@ -13,7 +13,7 @@ tags: [server, protocol, db, test]
 ## 변경 내용
 - 패킷 `C_EntityLockRequest { Target, Id, Locked }` / `S_EntityLockResponse` (75·76) · `ELockTarget` · 결과 코드 `EntityLocked` 1200 · `InvalidLockTarget` 1201
 - `CharacterInfo`·`EquipInfo.IsLocked` · 도메인 `Character`·`Equip.IsLocked` · 로그인 적재
-- 마이그레이션 `0004-entity-lock` — `t_character`·`t_user_equip`에 `is_locked`
+- 마이그레이션 `0005-entity-lock` — `t_character`·`t_user_equip`에 `is_locked`
 - 거절: `TrySellEntities` · `DescribeEquip`/`DescribeCharacter`(경매 등록) · `TryCondenseCharacter` 재료
 - Unity `ServerPacketHandler.EntityLockResponded` 이벤트
 
@@ -21,7 +21,7 @@ tags: [server, protocol, db, test]
 - 같은 상태로 다시 요청해도 Ok — 클라가 두 번 눌러도 어긋나지 않게
 - 응축 **대상**·장착·배치는 막지 않는다 — 잠금은 없애는 동작만 막는다
 - `EntityLockRepository`는 `auction_trade_id = 0`만 바꾼다 — 경매로 넘어간 행을 건드리지 않게
-- **브랜치가 T-150 위에 있다** — T-142(0002)·T-150(0003)이 main에 없어서 0004로 그 위에 쌓았다. main 머지는 둘이 들어간 뒤
+- 마이그레이션 번호는 0005 — T-142(0002)·T-150(0003)·T-152(0004) 뒤에 main으로 들어갔다
 
 ## 후속 작업 / 주의사항
 - 장비 분해(T-131) 구현 때 잠긴 장비 거절을 넣는다

@@ -139,6 +139,7 @@ public sealed record UserMailRow
     public string  equip_tids     { get; init; } = "[]";
     public string  equip_ids      { get; init; } = "[]";
     public string  character_ids  { get; init; } = "[]";
+    public string  artifacts      { get; init; } = "[]";   // 첨부 아티팩트 [[번호, 수량], ...] (T-152)
     public string  received_at    { get; init; } = "";
     public string? claimed_at     { get; init; }
 }

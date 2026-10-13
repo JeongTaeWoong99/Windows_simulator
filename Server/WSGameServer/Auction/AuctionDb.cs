@@ -77,12 +77,13 @@ public static class AuctionDb
     public const int Returned = 3;
 
     /// <summary>
-    /// 등록 한 트랜잭션: 인벤 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
+    /// 등록 한 트랜잭션: 인벤 확정 수량 · 아티팩트 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
     /// 하나라도 빠지면 아이템이 증발하거나(차감만) 복제된다(등록만).
     /// </summary>
+    /// <param name="artifactCount">아티팩트 매물이면 등록 뒤 보관함에 남은 수량(확정값) — 0이어도 행은 남긴다(도감).</param>
     public static async Task<long> RegisterAsync(
         DbConnection connection, long sellerId, AuctionItemSnapshot item, long unitPrice, long listingFee,
-        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now)
+        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now, int artifactCount = 0)
     {
         long tradeId = 0;
 
@@ -90,6 +91,17 @@ public static class AuctionDb
         {
             await WriteInventoryAsync(tx, sellerId, inventoryChanges);
             await WriteCurrencyAsync(tx, sellerId, gold);
+
+            if (item.Kind == EAuctionKind.Artifact)
+            {
+                var written = await tx.ExecuteAsync(
+                    "UPDATE t_user_artifact SET count = @count WHERE user_id = @sellerId AND artifact_tid = @tid AND count >= @count;",
+                    new { count = artifactCount, sellerId, tid = item.Tid });
+                if (written != 1)
+                {
+                    throw new InvalidOperationException($"아티팩트 차감 실패 — 보관함에 없거나 수량이 늘었다. 번호 {item.Tid} 판매자 {sellerId}");
+                }
+            }
 
             tradeId = await tx.ExecuteScalarAsync<long>(
                 @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, equip_id, character_id, snapshot, unit_price, listing_fee, state, created_at)
@@ -256,7 +268,7 @@ public static class AuctionDb
     /// </summary>
     public static async Task<AuctionMarketSettleResult> SettleMarketAsync(
         DbConnection connection, long buyerId, long purchaseId, int tid, IReadOnlyList<MarketAllocation> allocations,
-        long buyerGold, DateTime now)
+        long buyerGold, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
         var total = allocations.Sum(a => a.Price);
         var firstTrade = allocations.Count > 0 ? allocations[0].TradeId : 0;
@@ -272,7 +284,7 @@ public static class AuctionDb
                 foreach (var a in allocations)
                 {
                     var trade = await FindTradeAsync(tx, a.TradeId);
-                    if (trade is null || trade.state != Listed || trade.kind != (int)EAuctionKind.Item || trade.tid != tid
+                    if (trade is null || trade.state != Listed || trade.kind != (int)kind || trade.tid != tid
                         || trade.unit_price != a.UnitPrice || trade.count < a.Quantity || trade.seller_id == buyerId || a.Quantity <= 0)
                     {
                         throw new MarketSettleRejected($"거래 {a.TradeId}가 예약과 어긋난다");
@@ -304,7 +316,9 @@ public static class AuctionDb
                 await WriteCurrencyAsync(tx, buyerId, buyerGold);
 
                 var quantity        = allocations.Sum(a => a.Quantity);
-                var buyerAttachment = new MailAttachment(0, new List<(int, int)> { (tid, quantity) }, new(), new());
+                var buyerAttachment = kind == EAuctionKind.Artifact
+                    ? new MailAttachment(0, new(), new(), new(), ArtifactItems: new List<(int, int)> { (tid, quantity) })
+                    : new MailAttachment(0, new List<(int, int)> { (tid, quantity) }, new(), new());
                 var buyerMailId     = await MailDb.InsertMailAsync(tx, buyerId, AuctionMail.PurchasedTemplateTid, buyerAttachment, now);
 
                 var sellerMails = new List<(long, UserMailRow, int)>();

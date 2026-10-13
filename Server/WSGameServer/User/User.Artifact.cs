@@ -85,6 +85,37 @@ public partial class User
         SendArtifactList();
     }
 
+    /// <summary>
+    /// 아티팩트를 보관함에서 뺀다(거래소 등록 — 즉시 판매는 없다). 호출자가 수량을 먼저 확인한다.
+    /// 마지막 1개면 효과가 꺼진다 — <b>빼기 전에 정산</b>하고, 속도면 다시 매긴다. 저장은 호출자가 같은 트랜잭션으로 한다.
+    /// </summary>
+    /// <returns>뺀 뒤 남은 수량(확정값).</returns>
+    public int RemoveArtifact(int artifactTid, int count, DateTime now)
+    {
+        var next = GetArtifactCount(artifactTid) - count;
+        if (count <= 0 || next < 0)
+        {
+            throw new InvalidOperationException($"아티팩트를 가진 것보다 많이 뺀다 — 번호 {artifactTid} 보유 {GetArtifactCount(artifactTid)} 요청 {count}");
+        }
+
+        var turningOff = next == 0 && GameTable.ArtifactTable.TryGet(artifactTid, out var artifact) ? artifact : null;
+        if (turningOff?.EffectType is UserTraitEffect.SpeedAdd or UserTraitEffect.YieldAdd or UserTraitEffect.RelicChanceAdd)
+        {
+            SettleWorkStation(now);
+        }
+
+        _artifacts[artifactTid] = next;
+        ServerLog.Info("아티팩트", $"-{count} → {next} Uid={Uid} ArtifactTID={artifactTid}");
+
+        if (turningOff?.EffectType == UserTraitEffect.SpeedAdd)
+        {
+            ApplyWorkStationSpeed(notify: true);
+        }
+
+        SendArtifactList();
+        return next;
+    }
+
     /// <summary>켜진 아티팩트의 효과 합(천분율). 대상 산업이 <c>None</c>인 아티팩트는 전 산업에 붙는다 — 특성과 같은 규약.</summary>
     public int GetArtifactEffect(UserTraitEffect effect, IndustryType industry)
     {

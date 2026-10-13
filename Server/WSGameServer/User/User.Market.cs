@@ -5,7 +5,7 @@ using Proto = AuctionProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 거래소 — 자원을 종류별로 보고, 원하는 수량을 최저가부터 산다. 등록·취소·내 매물은 경매와 같은 길이다(<see cref="TryRegisterAuction"/>).
+/// 거래소 — 자원·아티팩트를 종류별로 보고, 원하는 수량을 최저가부터 산다. 등록·취소·내 매물은 경매와 같은 길이다(<see cref="TryRegisterAuction"/>).
 /// 흐름은 Server/docs/경매장.md 4.5장.
 /// </summary>
 public partial class User
@@ -26,8 +26,21 @@ public partial class User
     /// <summary>한 요청에 실을 수 있는 TID 수 — 경매장 쓰기 채널 안에서 도는 시세 조회가 밀리지 않게.</summary>
     public const int MaxQueryTids = 100;
 
-    public void TryGetMarketItems(int category, List<int>? tids, DateTime now)
+    // 거래소에 오르는 스택 종류 — None(옛 클라)은 자원이다. 그 밖(장비·캐릭터)은 거래소가 아니라 경매장이다.
+    private static bool TryMarketKind(EAuctionKind requested, out EAuctionKind kind)
     {
+        kind = requested == EAuctionKind.None ? EAuctionKind.Item : requested;
+        return kind is EAuctionKind.Item or EAuctionKind.Artifact;
+    }
+
+    public void TryGetMarketItems(int category, List<int>? tids, DateTime now, EAuctionKind kind = EAuctionKind.Item)
+    {
+        if (!TryMarketKind(kind, out kind))
+        {
+            Send(new S_MarketItemsResponse { Result = EResultCode.AuctionInvalidRequest });
+            return;
+        }
+
         if (tids is { Count: > MaxQueryTids })
         {
             Send(new S_MarketItemsResponse { Result = EResultCode.AuctionInvalidRequest });
@@ -40,7 +53,7 @@ public partial class User
             return;
         }
 
-        var request = new Proto.MarketItemsRequest { Category = category };
+        var request = new Proto.MarketItemsRequest { Category = category, Kind = (int)kind };
         request.Tids.AddRange(tids ?? new List<int>());
 
         _auction.Call(c => c.GetMarketItemsAsync(request), reply =>
@@ -66,15 +79,21 @@ public partial class User
         });
     }
 
-    public void TryGetMarketPrice(int tid, DateTime now)
+    public void TryGetMarketPrice(int tid, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
+        if (!TryMarketKind(kind, out kind))
+        {
+            Send(new S_MarketPriceResponse { Result = EResultCode.AuctionInvalidRequest, Tid = tid });
+            return;
+        }
+
         if (!TakeSearchToken(now))
         {
             Send(new S_MarketPriceResponse { Result = EResultCode.AuctionTooManyRequests, Tid = tid });
             return;
         }
 
-        var request = new Proto.PriceLadderRequest { Tid = tid, Levels = MarketPriceLevels };
+        var request = new Proto.PriceLadderRequest { Tid = tid, Levels = MarketPriceLevels, Kind = (int)kind };
         _auction.Call(c => c.GetPriceLadderAsync(request), reply =>
         {
             if (reply is null)
@@ -96,7 +115,7 @@ public partial class User
     /// 거래소 구매. 최악의 금액(수량 × 단가 상한)을 hold로 잡고 경매장에 수량을 예약한다 —
     /// 결과는 <see cref="OnMarketReserved"/>로 돌아오고, 실제로 잡힌 금액만 빠진다.
     /// </summary>
-    public void TryBuyMarket(int tid, int count, long maxUnitPrice, DateTime now)
+    public void TryBuyMarket(int tid, int count, long maxUnitPrice, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
         if (!_auction.IsAvailable)
         {
@@ -104,7 +123,7 @@ public partial class User
             return;
         }
 
-        if (count <= 0 || count > MarketMaxBuyCount || maxUnitPrice <= 0 || maxUnitPrice > long.MaxValue / MarketMaxBuyCount)
+        if (!TryMarketKind(kind, out kind) || count <= 0 || count > MarketMaxBuyCount || maxUnitPrice <= 0 || maxUnitPrice > long.MaxValue / MarketMaxBuyCount)
         {
             Reply(EResultCode.AuctionInvalidRequest);
             return;
@@ -122,9 +141,9 @@ public partial class User
 
         var request = new Proto.ReserveQuantityRequest
         {
-            PurchaseId = purchaseId, BuyerId = Uid, Tid = tid, Quantity = count, MaxUnitPrice = maxUnitPrice,
+            PurchaseId = purchaseId, BuyerId = Uid, Tid = tid, Quantity = count, MaxUnitPrice = maxUnitPrice, Kind = (int)kind,
         };
-        _auction.Call(c => c.ReserveQuantityAsync(request), reply => OnMarketReserved(purchaseId, tid, count, maxUnitPrice, reply, now));
+        _auction.Call(c => c.ReserveQuantityAsync(request), reply => OnMarketReserved(purchaseId, tid, count, maxUnitPrice, reply, now, kind));
         return;
 
         void Reply(EResultCode result)
@@ -137,7 +156,7 @@ public partial class User
     /// 수량 예약 결과(로직 스레드). 예약이 요청과 맞으면 잡힌 금액만 빼고 정산을 저장한다.
     /// 어긋나면(버그) 골드를 건드리지 않고 멈춘다 — 경매장 예약은 타임아웃으로 풀린다.
     /// </summary>
-    public void OnMarketReserved(long purchaseId, int tid, int count, long maxUnitPrice, Proto.ReserveReply? reply, DateTime now)
+    public void OnMarketReserved(long purchaseId, int tid, int count, long maxUnitPrice, Proto.ReserveReply? reply, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
         _goldHolds.Remove(purchaseId);
 
@@ -182,7 +201,7 @@ public partial class User
         _gold -= total;
         Send(new S_CurrencyResponse { Gold = _gold });
 
-        PostDBTask(new SettleMarketRepository(this, purchaseId, tid, allocations, _gold, now));
+        PostDBTask(new SettleMarketRepository(this, purchaseId, tid, allocations, _gold, now, kind));
         return;
 
         void Reply(EResultCode result)
@@ -228,7 +247,7 @@ public partial class User
 
 /// <summary>거래소 정산 한 트랜잭션 → <see cref="AuctionDb.SettleMarketAsync"/>. 작업 파티션은 구매자다.</summary>
 public sealed class SettleMarketRepository(
-    User buyer, long purchaseId, int tid, List<MarketAllocation> allocations, long gold, DateTime now) : IRepository
+    User buyer, long purchaseId, int tid, List<MarketAllocation> allocations, long gold, DateTime now, EAuctionKind kind = EAuctionKind.Item) : IRepository
 {
     private AuctionMarketSettleResult _result = new(false, null, Array.Empty<(long, UserMailRow, int)>());
 
@@ -239,7 +258,7 @@ public sealed class SettleMarketRepository(
     public IReadOnlyList<MarketAllocation> Allocations => allocations;
 
     public async Task ExecuteAsync(DbConnection connection)
-        => _result = await AuctionDb.SettleMarketAsync(connection, User.Uid, purchaseId, tid, allocations, gold, now);
+        => _result = await AuctionDb.SettleMarketAsync(connection, User.Uid, purchaseId, tid, allocations, gold, now, kind);
 
     public void Apply() => User.OnMarketSettled(tid, allocations.Sum(a => a.Quantity), allocations.Sum(a => a.Price), _result);
 

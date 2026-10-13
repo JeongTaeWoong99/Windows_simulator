@@ -20,7 +20,7 @@ public sealed class LoadAuctionStateRepository(User user) : IRepository
 /// <summary>등록 한 트랜잭션 → <see cref="AuctionDb.RegisterAsync"/>. 끝나면 매물 ID를 알린다.</summary>
 public sealed class RegisterAuctionRepository(
     User user, AuctionItemSnapshot item, long unitPrice, long listingFee,
-    List<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now) : IRepository
+    List<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now, int artifactCount = 0) : IRepository
 {
     private long _tradeId;
 
@@ -31,7 +31,7 @@ public sealed class RegisterAuctionRepository(
     public AuctionItemSnapshot Item => item;
 
     public async Task ExecuteAsync(DbConnection connection)
-        => _tradeId = await AuctionDb.RegisterAsync(connection, User.Uid, item, unitPrice, listingFee, inventoryChanges, gold, expiresAt, now);
+        => _tradeId = await AuctionDb.RegisterAsync(connection, User.Uid, item, unitPrice, listingFee, inventoryChanges, gold, expiresAt, now, artifactCount);
 
     public void Apply() => User.OnAuctionRegistered(_tradeId, item, listingFee, inventoryChanges);
 }

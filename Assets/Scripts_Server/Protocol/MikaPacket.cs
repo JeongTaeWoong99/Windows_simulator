@@ -671,6 +671,7 @@ namespace MikaProtocol
         public long         EquipId   { get; set; }
         public long         UnitPrice { get; set; }
         public long         CharacterId { get; set; }  // Kind = Character일 때. 수량은 1
+        // Kind = Artifact면 ItemTid에 아티팩트 번호(ArtifactTID)를 싣는다 — 보관함에서 Count만큼 빠진다 (T-152)
     }
 
     /// <summary>
@@ -740,6 +741,7 @@ namespace MikaProtocol
     {
         public int        Category { get; set; }
         public List<int>? Tids     { get; set; }
+        public EAuctionKind Kind   { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 (T-152)
     }
 
     [MemoryPackable, Packet(PacketId.S_MarketItemsResponse)]
@@ -754,6 +756,7 @@ namespace MikaProtocol
     public partial class C_MarketPriceRequest : IPacket
     {
         public int Tid { get; set; }
+        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 (T-152)
     }
 
     [MemoryPackable, Packet(PacketId.S_MarketPriceResponse)]
@@ -774,6 +777,7 @@ namespace MikaProtocol
         public int  Tid          { get; set; }
         public int  Count        { get; set; }
         public long MaxUnitPrice { get; set; }
+        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 — 아티팩트는 우편으로 와서 받을 때 보관함에 들어간다 (T-152)
     }
 
     /// <summary>거래소 구매 결과. 산 자원은 우편으로 온다(<see cref="S_MailArrivedResponse"/>), 골드는 <see cref="S_CurrencyResponse"/>.</summary>
