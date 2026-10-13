@@ -159,10 +159,10 @@ public class SlotStageView : MonoBehaviour
 
         float feetX = FeetX(width, settings);
         float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k; // 대상 오른쪽 끝이 멈추는 자리
-        float speed = (stopX + SpawnMargin * k) / settings.ApproachSeconds;            // 화면 단위/초
+        float speed = (stopX + SpawnMargin * k) / ApproachSeconds(now, settings);           // 화면 단위/초
 
-        // 배경은 달리는 동안만 흐른다
-        if (now.Phase == SlotStageTimeline.EPhase.Run)
+        // 배경은 달리는 동안만 흐른다 — 사이 자세(서 있는 그림) 동안은 멈춘다. 미끄러져 보이지 않게
+        if (now.Phase == SlotStageTimeline.EPhase.Run && !now.IdlePose)
         {
             _groundDistance += deltaTime * speed;
         }
@@ -280,8 +280,8 @@ public class SlotStageView : MonoBehaviour
 
         float tk        = TargetScale(k);
         float halfWidth = sprite.rect.width * tk / 2f;
-        float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.RunEnd) - now.RunStart);
-        float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.RunEnd - time);
+        float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.MoveEnd) - now.MoveStart);
+        float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.MoveEnd - time);
 
         // 쓰러진 대상 — 그 자리에서 사라진다. 달리기가 시작돼 땅이 흐르면 땅과 같이 흘러간다
         if (settings.FadeSeconds > 0f && time < settings.FadeSeconds)
@@ -461,6 +461,11 @@ public class SlotStageView : MonoBehaviour
 
         return effects[Mathf.Clamp(now.Frame * effects.Length / motion.frames.Length, 0, effects.Length - 1)];
     }
+
+    // 대상이 화면 밖에서 멈춤 자리까지 오는 초 — 움직이는 구간(사이 자세를 뺀 달리기)이 다가오기보다 짧으면 그 안에 오도록 빨라진다.
+    // 그래야 달리기가 시작될 때 다음 대상이 화면 한가운데에 갑자기 나타나지 않는다.
+    private static float ApproachSeconds(SlotStageTimeline.Result now, SlotStageSettings settings)
+        => Mathf.Max(0.01f, Mathf.Min(settings.ApproachSeconds, now.MoveEnd - now.MoveStart));
 
     // 소수 배율에서 크기를 화면 정수 칸에 맞춘다 — 반 칸 걸친 그림이 흐려지지 않게
     private static Vector2 Snap(Vector2 size) => new Vector2(Mathf.Round(size.x), Mathf.Round(size.y));

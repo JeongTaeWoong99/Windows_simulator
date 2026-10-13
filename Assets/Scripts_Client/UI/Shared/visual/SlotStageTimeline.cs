@@ -12,7 +12,9 @@ using UnityEngine;
 //
 // ■ 달리기 양 끝은 대기 자세 한 장 (2026-10-13)
 //   달리기와 공격은 자세 차이가 커서 바로 바꾸면 확 튄다 — 달리기의 처음·끝 '사이 자세'만 대기 그림으로 보인다.
-//   새 구간이 아니라 달리기 안에서 그림만 바꾼다 — 주기·공격 시작·판정 순간도, 땅 흐름도 그대로다.
+//   새 구간이 아니라 달리기 안에서 바꾼다 — 주기·공격 시작·판정 순간은 그대로다.
+//   서 있는 동안 땅이 흐르면 미끄러져 보인다 — 사이 자세 동안은 땅·대상도 멈추고('MoveStart'~'MoveEnd' 밖),
+//   대신 움직이는 동안 그만큼 빨리 흐른다('SlotStageView'가 속도를 움직이는 구간에 맞춘다).
 //   길이는 초가 아니라 '그림 몇 장'(기본 2장) — 캐릭터마다 달리기 한 장 길이(달리기 한 바퀴 ÷ 장수)를 곱한다.
 //   그래서 장수가 적은(한 장이 긴) 캐릭터가 들어와도 자기 리듬으로 두 장이다. 화면 프레임 단위는 FPS마다 길이가 달라 쓰지 않는다.
 //   달리기의 1/4을 넘지 않는다 — 장수가 아주 적어도 달리기가 사라지거나 선 채로 미끄러져 보이지 않게.
@@ -41,11 +43,13 @@ public static class SlotStageTimeline
         public readonly float  RunStart;    // 달리기가 시작되는 순간 — 땅이 흐르기 시작한다
         public readonly float  RunEnd;      // 달리기가 끝나는 순간 — 대상이 멈춤 자리에 닿는다
         public readonly float  AttackStart; // 공격이 시작되는 순간
+        public readonly float  MoveStart;   // 땅·대상이 실제로 움직이기 시작하는 순간 — 달리기 앞 사이 자세 뒤
+        public readonly float  MoveEnd;     // 움직임이 끝나는 순간 — 대상이 멈춤 자리에 닿는다. 뒤 사이 자세 동안은 멈춰 있다
         public readonly bool   IdlePose;    // 달리기 양 끝의 사이 자세 — 달리기 그림 대신 대기 그림 (머리 주석)
 
         public bool HitsComing => Phase == EPhase.Attack && SinceHit >= 0f; // 최근 타격이 다가온 대상의 것인가 (아니면 쓰러진 대상)
 
-        public Result(EPhase phase, int frame, int combo, float sinceHit, int hitCombo, float runStart, float runEnd, float attackStart, bool idlePose = false)
+        public Result(EPhase phase, int frame, int combo, float sinceHit, int hitCombo, float runStart, float runEnd, float attackStart, float moveStart, float moveEnd, bool idlePose = false)
         {
             Phase       = phase;
             Frame       = frame;
@@ -55,6 +59,8 @@ public static class SlotStageTimeline
             RunStart    = runStart;
             RunEnd      = runEnd;
             AttackStart = attackStart;
+            MoveStart   = moveStart;
+            MoveEnd     = moveEnd;
             IdlePose    = idlePose;
         }
     }
@@ -69,7 +75,7 @@ public static class SlotStageTimeline
         // 공격 그림이 없으면 달리기만 한다
         if (attacks.Length == 0)
         {
-            return new Result(EPhase.Run, RunFrame(t, runFrames, settings), 0, -1f, 0, 0f, cycle, cycle);
+            return new Result(EPhase.Run, RunFrame(t, runFrames, settings), 0, -1f, 0, 0f, cycle, cycle, 0f, cycle);
         }
 
         int n = attacks.Length;
@@ -89,23 +95,26 @@ public static class SlotStageTimeline
         float runEnd   = runStart + run;
         float start    = runEnd;
 
+        // 사이 자세 — 달리기 양 끝, 달리기 그림 몇 장 길이. 이 동안은 서 있으므로 땅·대상도 멈춘다 (머리 주석)
+        float beat      = runFrames > 0 ? settings.RunLoopSeconds / runFrames : 0f;
+        float pose      = Mathf.Min(settings.PoseBeats * beat, run * 0.25f);
+        float moveStart = runStart + pose;
+        float moveEnd   = runEnd - pose;
+
         if (t < runStart)
         {
             // 처치 타를 타격 프레임부터 끝까지 — 끝나면 바로 달린다
             int frames = attacks[last].frames.Length;
             int frame  = Mathf.Min(frames - 1, Mathf.FloorToInt((hit + t) / length * frames));
 
-            return new Result(EPhase.Recover, Mathf.Max(0, frame), last, t, last, runStart, runEnd, start);
+            return new Result(EPhase.Recover, Mathf.Max(0, frame), last, t, last, runStart, runEnd, start, moveStart, moveEnd);
         }
 
         if (t < runEnd)
         {
-            // 양 끝은 대기 자세 — 달리기 그림 몇 장 길이. 달리기의 1/4을 넘지 않는다
-            float beat = runFrames > 0 ? settings.RunLoopSeconds / runFrames : 0f;
-            float pose = Mathf.Min(settings.PoseBeats * beat, run * 0.25f);
-            bool  idle = t - runStart < pose || runEnd - t <= pose;
+            bool idle = t < moveStart || t >= moveEnd;
 
-            return new Result(EPhase.Run, RunFrame(t - runStart, runFrames, settings), 0, t, last, runStart, runEnd, start, idle);
+            return new Result(EPhase.Run, RunFrame(t - moveStart, runFrames, settings), 0, t, last, runStart, runEnd, start, moveStart, moveEnd, idle);
         }
 
         // 몇 번째 공격인가 — 앞에서부터 센다
@@ -120,7 +129,7 @@ public static class SlotStageTimeline
         int   hitIndex = thisHit <= t ? index : index - 1;
         float since    = hitIndex < 0 ? -1f : t - (start + hitIndex * length + HitFraction(attacks[hitIndex % n]) * length);
 
-        return new Result(EPhase.Attack, attackFrame, combo, since, Mathf.Max(0, hitIndex) % n, runStart, runEnd, start);
+        return new Result(EPhase.Attack, attackFrame, combo, since, Mathf.Max(0, hitIndex) % n, runStart, runEnd, start, moveStart, moveEnd);
     }
 
     // 공격 시작 → 타격까지가 공격 한 번의 몇 할인가
