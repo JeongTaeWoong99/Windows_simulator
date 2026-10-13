@@ -14,6 +14,8 @@
 
 | ID | 제목 | 담당 | 완료 | 관련 커밋 |
 |----|------|------|------|-----------|
+| [T-142](T-142-낚시제거대체산업.md) | 낚시 산업 제거 · 유적 발굴로 교체 — enum 2 · TID 이어 쓰기 · 마이그레이션 0002 · 클라 글자·문서([T-148](../art/T-148-클라발굴교체반영.md) — 아트만 남음) · [이슈 #66](https://github.com/JeongTaeWoong99/Windows_simulator/issues/66) | 진우 | 2026-10-13 | `9be637a` · `5e1db5a` · 이 커밋 — 사용자 실측(발굴 배치 → 채취 → 획득) |
+| [T-149](T-149-최소주기1.6초.md) | 판정 최소 주기 2.1초 → 1.6초 — 엑셀 `MinCycleMs` 1600 · 서버 테스트·문서 · [이슈 #70](https://github.com/JeongTaeWoong99/Windows_simulator/issues/70) | 진우 | 2026-10-13 | `a110bc6` · 이 커밋 — 사용자 실측(치트 ×10) |
 | [T-031](T-031-클라가챠화면.md) | 클라 — 가챠 화면 · 뽑기 결과 연출 — 하나씩 공개 연출로 끝 · 희귀도 스프라이트는 색 구분으로 대신하고 닫음 · [이슈 #23](https://github.com/JeongTaeWoong99/Windows_simulator/issues/23) | 태웅 | 2026-10-13 | `53f71d3` · `c69e198` · 이 커밋 — 사용자 확인 (art/에서 내림) |
 | [T-102](T-102-판정최소주기.md) | 판정 최소 주기 — 전역 2.1초(`MinCycleMs`) · 서버 속도 상한 `JudgeCostUnits ÷ MinCycleMs` · 넘친 속도는 버린다 · [이슈 #63](https://github.com/JeongTaeWoong99/Windows_simulator/issues/63) | 진우 | 2026-10-12 | `a6f7ae8` · `017d7ad` · 이 커밋 — 사용자 실측 확인 |
 | [T-146](T-146-DB마이그레이션자동적용.md) | 서버 기동 시 DB 마이그레이션 자동 적용 — `Shared/migrations/<번호>` = `user_version` · 백업 · 트랜잭션 · 테스트 스키마도 같은 파일(`SqliteFixture.CreateSchema()`) · 10-07 "마이그레이션 없음"을 뒤집음 | 진우 | 2026-10-11 | `4563a42` · `f7ac376` · 이 커밋 — 사용자 확인(원격 DB) |
