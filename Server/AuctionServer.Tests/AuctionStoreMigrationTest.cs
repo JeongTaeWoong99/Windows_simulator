@@ -38,6 +38,29 @@ public class AuctionStoreMigrationTest : IDisposable
     }
 
     [Fact]
+    public void 판_3_파일은_속성을_빈_채로_이어_쓰고_새_매물은_속성을_남긴다()
+    {
+        CreateVersion2File();
+        using (var conn = new SqliteConnection($"Data Source={_path};Pooling=False"))
+        {
+            conn.Open();
+            conn.Execute(@"ALTER TABLE t_listing ADD COLUMN seller_name TEXT NOT NULL DEFAULT '';
+                           ALTER TABLE t_listing ADD COLUMN detail TEXT NOT NULL DEFAULT '';
+                           PRAGMA user_version = 3;");
+        }
+
+        using var store = AuctionStore.Open(_path);
+        store.InsertListing(new Listing(2, 100, ListingKind.Equip, 5001, 1, 3, 1, 0, Array.Empty<int>(), 50, new DateTime(2099, 1, 1, 0, 0, 0, DateTimeKind.Utc))
+        {
+            Attrs = new Dictionary<int, long> { [2] = 150 },
+        }, new DateTime(2026, 9, 24, 0, 0, 0, DateTimeKind.Utc));
+
+        var listed = store.LoadListed().ToDictionary(l => l.ListingId);
+        listed[1].Attrs.ShouldBeEmpty();
+        listed[2].Attr(2).ShouldBe(150);
+    }
+
+    [Fact]
     public void 판_2_파일은_판매자_이름을_빈칸으로_이어_쓴다()
     {
         CreateVersion2File();

@@ -38,6 +38,16 @@ public sealed record Listing(
     string              SellerName = "",
     string              Detail     = "")
 {
+    public static readonly IReadOnlyDictionary<int, long> NoAttrs = new Dictionary<int, long>();
+
+    /// <summary>
+    /// 검색용 수치 속성(작업속도 · 레벨 · ★ · 적성 …). 키·뜻은 메인이 정한다(<c>EAuctionAttr</c>) — 경매장은 숫자로만 비교한다.
+    /// 없는 키는 0으로 본다 (T-155).
+    /// </summary>
+    public IReadOnlyDictionary<int, long> Attrs { get; init; } = NoAttrs;
+
+    public long Attr(int key) => Attrs.TryGetValue(key, out var value) ? value : 0;
+
     /// <summary>매물 전체 가격. 매물은 통째로만 팔린다.</summary>
     public long TotalPrice => UnitPrice * Count;
 }

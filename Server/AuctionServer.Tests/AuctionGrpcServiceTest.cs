@@ -222,6 +222,30 @@ public class AuctionGrpcServiceTest : IAsyncLifetime
     }
 
     [Fact]
+    public async Task 속성으로_거르고_정렬해_건수와_다음_커서를_싣는다()
+    {
+        // 레벨(키 10) 5 · 30 · 12 — 10 이상만, 큰 순으로 한 쪽 1개.
+        foreach (var (id, level) in new[] { (1L, 5L), (2L, 30L), (3L, 12L) })
+        {
+            var snapshot = Carp(id, 100, 1, seller: 100);
+            snapshot.Kind = 3;
+            snapshot.Attrs.Add(10, level);
+            await _client.RegisterAsync(new Proto.RegisterRequest { Listing = snapshot });
+        }
+
+        var request = new Proto.SearchRequest { Kind = 3, Sort = 4, SortAttr = 10, PageSize = 1 };
+        request.Attrs.Add(new Proto.AttrRange { Key = 10, Min = 10 });
+        var first = await _client.SearchAsync(request);
+
+        request.CursorUnitPrice = first.NextCursorSortValue;
+        request.CursorListingId = first.NextCursorListingId;
+        var second = await _client.SearchAsync(request);
+
+        (first.Listings.Single().ListingId, first.TotalCount, first.HasMore).ShouldBe((2L, 2, true));
+        (second.Listings.Single().ListingId, second.HasMore).ShouldBe((3L, false));
+    }
+
+    [Fact]
     public async Task 수량_예약이_매물별_판매자와_수량을_싣는다()
     {
         await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(1, 30, 10, seller: 100) });

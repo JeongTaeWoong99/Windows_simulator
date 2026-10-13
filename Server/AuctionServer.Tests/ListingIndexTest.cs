@@ -164,7 +164,7 @@ public class ListingIndexTest
     {
         var index = ListingIndex.Empty.Add(Item(1, 100)).Add(Item(2, 100)).Add(Item(3, 200));
 
-        var page = index.Search(new SearchQuery { CursorUnitPrice = 100, CursorListingId = 1 }, Now);
+        var page = index.Search(new SearchQuery { CursorSortValue = 100, CursorListingId = 1 }, Now);
 
         Ids(page).ShouldBe(new long[] { 2, 3 });
     }
@@ -178,7 +178,7 @@ public class ListingIndexTest
 
         // 첫 페이지를 본 뒤 1번이 팔렸다. 오프셋(2번째부터)이면 3번을 건너뛴다.
         var second = index.Remove(1).Search(
-            new SearchQuery { PageSize = 2, CursorUnitPrice = last.UnitPrice, CursorListingId = last.ListingId }, Now);
+            new SearchQuery { PageSize = 2, CursorSortValue = last.UnitPrice, CursorListingId = last.ListingId }, Now);
 
         Ids(second).ShouldBe(new long[] { 3, 4 });
     }

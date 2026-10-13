@@ -13,7 +13,7 @@ namespace AuctionServer;
 public sealed class AuctionStore : IDisposable
 {
     // 스키마 판. 바뀌면 옛 파일로 조용히 돌지 않고 멈춘다 — 컬럼이 어긋나면 예약 합계가 틀린다.
-    private const int SchemaVersion = 3;
+    private const int SchemaVersion = 4;
 
     // SQLite datetime('now')와 같은 순서로 정렬되는 UTC 문자열 — 문자열 비교가 곧 시각 비교다.
     private const string TimeFormat = "yyyy-MM-dd HH:mm:ss.fff";
@@ -51,6 +51,13 @@ public sealed class AuctionStore : IDisposable
             version = 3;
         }
 
+        // 3 → 4: 검색용 수치 속성 컬럼만 늘었다(T-155) — 옛 매물은 속성이 없어 0으로 보인다.
+        if (hasTable && version == 3)
+        {
+            conn.Execute("ALTER TABLE t_listing ADD COLUMN attrs TEXT NOT NULL DEFAULT '{}' /* 검색용 수치 속성 JSON {키: 값} — 키는 메인이 정한다 */;");
+            version = 4;
+        }
+
         if (hasTable && version != SchemaVersion)
         {
             conn.Dispose();
@@ -81,7 +88,8 @@ public sealed class AuctionStore : IDisposable
             created_at    TEXT    NOT NULL,              -- 등록 시각 (UTC)
             closed_at     TEXT,                          -- 종착 상태가 된 시각 (UTC)
             seller_name   TEXT    NOT NULL DEFAULT '',   -- 등록 순간의 판매자 닉네임 (검색 표시용)
-            detail        TEXT    NOT NULL DEFAULT ''    -- 개체 상세 JSON (캐릭터 레벨·적성 등). 메인만 읽는다
+            detail        TEXT    NOT NULL DEFAULT '',   -- 개체 상세 JSON (캐릭터 레벨·적성 등). 메인만 읽는다
+            attrs         TEXT    NOT NULL DEFAULT '{}'  -- 검색용 수치 속성 JSON {키: 값} — 키는 메인이 정한다 (T-155)
         ) STRICT;
         CREATE INDEX IF NOT EXISTS idx_listing_state_expires ON t_listing (state, expires_at);    -- 재시작 적재·만료 청소
         CREATE INDEX IF NOT EXISTS idx_listing_seller ON t_listing (seller_id, state);            -- 내 매물
@@ -136,7 +144,7 @@ public sealed class AuctionStore : IDisposable
 
     private const string ListingColumns =
         "l.listing_id, l.seller_id, l.kind, l.tid, l.category, l.rarity, l.count, l.enchant_grade, l.options, " +
-        "l.unit_price, l.state, l.expires_at, l.seller_name, l.detail, " + ReservedExpr + " AS reserved";
+        "l.unit_price, l.state, l.expires_at, l.seller_name, l.detail, l.attrs, " + ReservedExpr + " AS reserved";
 
     private sealed record ListingRow
     {
@@ -154,6 +162,7 @@ public sealed class AuctionStore : IDisposable
         public string expires_at    { get; init; } = "";
         public string seller_name   { get; init; } = "";
         public string detail        { get; init; } = "";
+        public string attrs         { get; init; } = "{}";
         public long   reserved      { get; init; }
 
         public long Available => count - reserved;
@@ -164,7 +173,10 @@ public sealed class AuctionStore : IDisposable
             return new Listing(
                 listing_id, seller_id, (ListingKind)kind, (int)tid, (int)category, (int)rarity, (int)quantity,
                 (int)enchant_grade, JsonSerializer.Deserialize<int[]>(options) ?? Array.Empty<int>(),
-                unit_price, FromDb(expires_at), seller_name, detail);
+                unit_price, FromDb(expires_at), seller_name, detail)
+            {
+                Attrs = JsonSerializer.Deserialize<Dictionary<int, long>>(attrs) ?? new Dictionary<int, long>(),
+            };
         }
 
         /// <summary>바깥에 보이는 상태 — 판매 중인데 예약이 걸려 있으면 Reserved다.</summary>
@@ -223,14 +235,15 @@ public sealed class AuctionStore : IDisposable
     {
         var inserted = _conn.Execute(
             @"INSERT INTO t_listing (listing_id, seller_id, kind, tid, category, rarity, count, listed_count, enchant_grade, options,
-                                     unit_price, state, expires_at, created_at, seller_name, detail)
+                                     unit_price, state, expires_at, created_at, seller_name, detail, attrs)
               VALUES (@ListingId, @SellerId, @kind, @Tid, @Category, @Rarity, @Count, @Count, @EnchantGrade, @options,
-                      @UnitPrice, 1, @expiresAt, @createdAt, @SellerName, @Detail)
+                      @UnitPrice, 1, @expiresAt, @createdAt, @SellerName, @Detail, @attrs)
               ON CONFLICT (listing_id) DO NOTHING;",
             new
             {
                 l.ListingId, l.SellerId, kind = (int)l.Kind, l.Tid, l.Category, l.Rarity, l.Count, l.EnchantGrade,
                 options = JsonSerializer.Serialize(l.Options), l.UnitPrice, l.SellerName, l.Detail,
+                attrs = JsonSerializer.Serialize(l.Attrs),
                 expiresAt = ToDb(l.ExpiresAt), createdAt = ToDb(now),
             });
 

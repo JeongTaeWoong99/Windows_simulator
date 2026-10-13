@@ -155,6 +155,15 @@ namespace MikaProtocol
         public long YesterdayAvgPrice { get; set; }  // 전일(한국 시간 자정 기준) 수량 가중 평균 단가
     }
 
+    /// <summary>경매 검색의 수치 속성 범위 (T-155). <see cref="Max"/>가 0이면 상한 없음 — 같은 값만 고르려면 Min = Max.</summary>
+    [MemoryPackable]
+    public partial class AuctionAttrRangeInfo
+    {
+        public EAuctionAttr Attr { get; set; }
+        public long         Min  { get; set; }
+        public long         Max  { get; set; }
+    }
+
     /// <summary>일별 시세 하루치. 체결이 없는 날은 수량·가격이 모두 0이다.</summary>
     [MemoryPackable]
     public partial class MarketDailyPriceInfo

@@ -181,6 +181,7 @@ public partial class User
             EquipId      = equip.Id,
             EnchantGrade = (int)equip.EnchantGrade,
             Options      = equip.EnchantOptionTids.ToList(),
+            Attrs        = EquipAttrs(equip),
         };
         return (EResultCode.Ok, item, equip.Row.BasePrice);
     }
@@ -215,8 +216,39 @@ public partial class User
             Rarity    = (int)character.Row.GlobalRarity,
             Count     = 1,
             Character = new MailCharacter(character.Id, character.Tid, character.Level, character.Exp, character.CondenseCount),
+            Attrs     = CharacterAttrs(character),
         };
         return (EResultCode.Ok, item, character.Row.BasePrice);
+    }
+
+    // 검색 속성 — 경매장은 GameData를 모르니 거를 값을 여기서 숫자로 만든다 (T-155).
+    private static Dictionary<int, long> EquipAttrs(Equip equip)
+    {
+        var enchantSpeed = equip.EnchantOptions.Where(o => o.OptionType == EnchantOptionType.Speed).Sum(o => (long)o.Value);
+        var enchantExp   = equip.EnchantOptions.Where(o => o.OptionType == EnchantOptionType.CharacterExp).Sum(o => (long)o.Value);
+
+        return new Dictionary<int, long>
+        {
+            [(int)EAuctionAttr.EquipIndustry]       = (long)equip.Industry,
+            [(int)EAuctionAttr.EquipSpeed]          = equip.SpeedAddPermille + enchantSpeed,
+            [(int)EAuctionAttr.EnchantSpeed]        = enchantSpeed,
+            [(int)EAuctionAttr.EnchantCharacterExp] = enchantExp,
+        };
+    }
+
+    private Dictionary<int, long> CharacterAttrs(Character character)
+    {
+        var attrs = new Dictionary<int, long>
+        {
+            [(int)EAuctionAttr.CharacterLevel] = character.Level,
+            [(int)EAuctionAttr.CharacterStar]  = StarOf(character),
+        };
+        foreach (var industry in new[] { IndustryType.Farming, IndustryType.Excavation, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
+        {
+            attrs[(int)EAuctionAttr.AptitudeFarming - 1 + (int)industry] = character.GetAptitude(industry);
+        }
+
+        return attrs;
     }
 
     public void OnAuctionRegistered(long tradeId, AuctionItemSnapshot item, long fee, List<ItemChangeInfo> changes)
@@ -423,7 +455,7 @@ public partial class User
     /// <summary>검색 중계. 유저별 빈도 제한을 여기서 건다 — 싼 매물을 긁는 매크로를 막는다.</summary>
     public void TrySearchAuction(C_AuctionSearchRequest req, DateTime now)
     {
-        if (req.Tids is { Count: > MaxQueryTids } || req.OptionTids is { Count: > MaxQueryTids })
+        if (req.Tids is { Count: > MaxQueryTids } || req.OptionTids is { Count: > MaxQueryTids } || req.Attrs is { Count: > MaxSearchAttrs })
         {
             Send(new S_AuctionSearchResponse { Result = EResultCode.AuctionInvalidRequest });
             return;
@@ -442,13 +474,17 @@ public partial class User
             MinRarity       = req.MinRarity,
             MaxRarity       = req.MaxRarity,
             MinEnchantGrade = req.MinEnchantGrade,
+            MinUnitPrice    = req.MinUnitPrice,
             MaxUnitPrice    = req.MaxUnitPrice,
-            CursorUnitPrice = req.CursorUnitPrice,
+            Sort            = (int)req.Sort,
+            SortAttr        = (int)req.SortAttr,
+            CursorUnitPrice = SearchCursor(req),
             CursorListingId = req.CursorListingId,
             PageSize        = req.PageSize,
         };
         request.Tids.AddRange(req.Tids ?? new List<int>());
         request.OptionTids.AddRange(req.OptionTids ?? new List<int>());
+        request.Attrs.AddRange((req.Attrs ?? new List<AuctionAttrRangeInfo>()).Select(a => new Proto.AttrRange { Key = (int)a.Attr, Min = a.Min, Max = a.Max }));
 
         _auction.Call(c => c.SearchAsync(request), reply =>
         {
@@ -460,11 +496,28 @@ public partial class User
 
             Send(new S_AuctionSearchResponse
             {
-                Result   = EResultCode.Ok,
-                Listings = reply.Listings.Select(ToListingInfo).ToList(),
-                HasMore  = reply.HasMore,
+                Result              = EResultCode.Ok,
+                Listings            = reply.Listings.Select(ToListingInfo).ToList(),
+                HasMore             = reply.HasMore,
+                TotalCount          = reply.TotalCount,
+                NextCursorSortValue = reply.NextCursorSortValue,
+                NextCursorListingId = reply.NextCursorListingId,
             });
         });
+    }
+
+    /// <summary>검색 속성 필터 상한 — 목업 상세 옵션을 다 골라도 10개 남짓이다.</summary>
+    public const int MaxSearchAttrs = 16;
+
+    // 옛 클라는 단가 낮은순 커서를 CursorUnitPrice에 싣는다 — 그때 정렬 값이 곧 단가다.
+    private static long SearchCursor(C_AuctionSearchRequest req)
+    {
+        if (req.Sort == EAuctionSort.PriceAsc && req.CursorSortValue == 0)
+        {
+            return req.CursorUnitPrice;
+        }
+
+        return req.CursorSortValue;
     }
 
     public void TryGetMyAuctionListings()

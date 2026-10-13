@@ -176,45 +176,60 @@ public sealed class ListingIndex
     }
 
     /// <summary>
-    /// 단가 오름차순으로 훑으며 조건에 맞는 매물을 한 페이지만큼 모은다. 조건을 코드로 검사하므로 조합 폭발이 없다.
-    /// 만료 시각이 지난 매물은 청소 전이라도 뺀다.
+    /// 조건에 맞는 매물을 전부 골라 정렬한 뒤, 커서 다음부터 한 쪽만큼 돌려준다 — 건수와 아무 정렬의 전체 순서를 주려면 다 봐야 한다.
+    /// 판매 중 매물은 유저당 20건 상한이라 전체를 훑어도 작다. 만료 시각이 지난 매물은 청소 전이라도 뺀다 (T-155).
     /// </summary>
     public SearchPage Search(SearchQuery query, DateTime now)
     {
         var pageSize = query.PageSize <= 0 ? SearchQuery.DefaultPageSize : Math.Min(query.PageSize, SearchQuery.MaxPageSize);
-        var set      = PickSet(query);
-        if (set.IsEmpty)
+        var tids     = query.Tids.Count > 0 ? query.Tids.ToHashSet() : null;
+        var options  = query.OptionTids.Distinct().ToList();
+
+        var matched = PickSet(query)
+            .Select(key => _byId[key.ListingId])
+            .Where(listing => Matches(listing, query, tids, options, now))
+            .Select(listing => (Value: SortValue(listing, query), Listing: listing))
+            .OrderBy(x => x.Value)
+            .ThenBy(x => x.Listing.ListingId)
+            .ToList();
+
+        var start = 0;
+        if (query.CursorSortValue != 0 || query.CursorListingId != 0)
         {
-            return new SearchPage(Array.Empty<Listing>(), false);
+            start = matched.FindIndex(x => x.Value > query.CursorSortValue
+                                         || (x.Value == query.CursorSortValue && x.Listing.ListingId > query.CursorListingId));
+            if (start < 0)
+            {
+                start = matched.Count;
+            }
         }
 
-        var tids    = query.Tids.Count > 0 ? query.Tids.ToHashSet() : null;
-        var options = query.OptionTids.Distinct().ToList();
-        var found   = new List<Listing>(pageSize);
-
-        for (var i = StartAfter(set, query); i < set.Count; i++)
+        var page = matched.Skip(start).Take(pageSize).ToList();
+        if (page.Count == 0)
         {
-            var key = set[i];
-            if (query.MaxUnitPrice > 0 && key.UnitPrice > query.MaxUnitPrice)
-            {
-                break;
-            }
-
-            var listing = _byId[key.ListingId];
-            if (!Matches(listing, query, tids, options, now))
-            {
-                continue;
-            }
-
-            if (found.Count == pageSize)
-            {
-                return new SearchPage(found, true);
-            }
-
-            found.Add(listing);
+            return new SearchPage(Array.Empty<Listing>(), false, matched.Count);
         }
 
-        return new SearchPage(found, false);
+        var last = page[^1];
+        return new SearchPage(page.Select(x => x.Listing).ToList(), start + page.Count < matched.Count, matched.Count, last.Value, last.Listing.ListingId);
+    }
+
+    // 정렬 값 — 작은 것이 먼저다. 내림차순은 부호를 뒤집는다.
+    private static long SortValue(Listing listing, SearchQuery query)
+    {
+        switch (query.Sort)
+        {
+            case SearchSort.PriceDesc:
+                return -listing.UnitPrice;
+            case SearchSort.ExpiresSoon:
+                return new DateTimeOffset(listing.ExpiresAt).ToUnixTimeMilliseconds();
+            case SearchSort.RarityDesc:
+                return -listing.Rarity;
+            case SearchSort.AttrDesc:
+                return -listing.Attr(query.SortAttr);
+            default:
+                return listing.UnitPrice;
+        }
     }
 
     private ImmutableSortedSet<PriceKey> PickSet(SearchQuery query)
@@ -225,23 +240,6 @@ public sealed class ListingIndex
         }
 
         return _byCategory.TryGetValue((kind, query.Category), out var set) ? set : ImmutableSortedSet<PriceKey>.Empty;
-    }
-
-    // 커서보다 큰 첫 위치. 첫 페이지(커서 0, 0)면 0이다. IndexOf는 없으면 "다음 큰 원소 위치"의 보수를 준다.
-    private static int StartAfter(ImmutableSortedSet<PriceKey> set, SearchQuery query)
-    {
-        if (query.CursorUnitPrice == 0 && query.CursorListingId == 0)
-        {
-            return 0;
-        }
-
-        var position = set.IndexOf(new PriceKey(query.CursorUnitPrice, query.CursorListingId));
-        if (position >= 0)
-        {
-            return position + 1;
-        }
-
-        return ~position;
     }
 
     private static bool Matches(Listing listing, SearchQuery query, HashSet<int>? tids, List<int> options, DateTime now)
@@ -274,6 +272,25 @@ public sealed class ListingIndex
         if (query.MinEnchantGrade > 0 && listing.EnchantGrade < query.MinEnchantGrade)
         {
             return false;
+        }
+
+        if (query.MinUnitPrice > 0 && listing.UnitPrice < query.MinUnitPrice)
+        {
+            return false;
+        }
+
+        if (query.MaxUnitPrice > 0 && listing.UnitPrice > query.MaxUnitPrice)
+        {
+            return false;
+        }
+
+        foreach (var range in query.Attrs)
+        {
+            var value = listing.Attr(range.Key);
+            if (value < range.Min || (range.Max > 0 && value > range.Max))
+            {
+                return false;
+            }
         }
 
         foreach (var option in options)

@@ -107,13 +107,23 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
             MaxRarity       = request.MaxRarity,
             MinEnchantGrade = request.MinEnchantGrade,
             OptionTids      = request.OptionTids.ToArray(),
+            MinUnitPrice    = request.MinUnitPrice,
             MaxUnitPrice    = request.MaxUnitPrice,
-            CursorUnitPrice = request.CursorUnitPrice,
+            Attrs           = request.Attrs.Select(a => new AttrRange(a.Key, a.Min, a.Max)).ToArray(),
+            Sort            = (SearchSort)request.Sort,
+            SortAttr        = request.SortAttr,
+            CursorSortValue = request.CursorUnitPrice,
             CursorListingId = request.CursorListingId,
             PageSize        = request.PageSize,
         });
 
-        var reply = new Proto.SearchReply { HasMore = page.HasMore };
+        var reply = new Proto.SearchReply
+        {
+            HasMore             = page.HasMore,
+            TotalCount          = page.TotalCount,
+            NextCursorSortValue = page.NextCursorSortValue,
+            NextCursorListingId = page.NextCursorListingId,
+        };
         reply.Listings.AddRange(page.Listings.Select(l => ToView(l, ListingState.Listed)));
         return Task.FromResult(reply);
     }
@@ -176,7 +186,10 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
     {
         return new Listing(
             s.ListingId, s.SellerId, (ListingKind)s.Kind, s.Tid, s.Category, s.Rarity, s.Count, s.EnchantGrade,
-            s.Options.ToArray(), s.UnitPrice, DateTimeOffset.FromUnixTimeMilliseconds(s.ExpiresAtUnixMs).UtcDateTime, s.SellerName, s.Detail);
+            s.Options.ToArray(), s.UnitPrice, DateTimeOffset.FromUnixTimeMilliseconds(s.ExpiresAtUnixMs).UtcDateTime, s.SellerName, s.Detail)
+        {
+            Attrs = s.Attrs.ToDictionary(a => a.Key, a => a.Value),
+        };
     }
 
     private static Proto.ListingView ToView(Listing l, ListingState state)

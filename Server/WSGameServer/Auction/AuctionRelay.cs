@@ -166,7 +166,7 @@ public sealed class AuctionRelay
         }
     }
 
-    private static Proto.ListingSnapshot ToSnapshot(AuctionRegisterMessage m)
+    public static Proto.ListingSnapshot ToSnapshot(AuctionRegisterMessage m)
     {
         var snapshot = new Proto.ListingSnapshot
         {
@@ -184,6 +184,7 @@ public sealed class AuctionRelay
             ExpiresAtUnixMs = m.ExpiresAtUnixMs,
         };
         snapshot.Options.AddRange(m.Item.Options);
+        snapshot.Attrs.Add(m.Item.Attrs);
         return snapshot;
     }
 

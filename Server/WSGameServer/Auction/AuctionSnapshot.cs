@@ -20,6 +20,9 @@ public sealed record AuctionItemSnapshot
     public string       SellerName   { get; init; } = "";  // 등록 순간의 판매자 닉네임 — 경매장 매물 줄에 보인다
     public MailCharacter? Character  { get; init; }        // 캐릭터 매물의 개체 — 레벨·경험치
 
+    /// <summary>검색용 수치 속성(<see cref="EAuctionAttr"/> → 값). 등록 순간 메인이 계산한다 — 경매장은 GameData를 모른다 (T-155).</summary>
+    public Dictionary<int, long> Attrs { get; init; } = new();
+
     /// <summary>경매장에 맡기는 개체 상세(JSON). 경매장은 읽지 않고 검색 결과에 그대로 돌려준다.</summary>
     public string Detail => Character is null ? "" : JsonSerializer.Serialize(Character);
 

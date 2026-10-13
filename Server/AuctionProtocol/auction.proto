@@ -52,6 +52,7 @@ message ListingSnapshot {
   int64 expires_at_unix_ms = 11;
   string seller_name = 12;  // 등록 순간의 판매자 닉네임 — 검색 결과에 그대로 싣는다
   string detail = 13;       // 개체 상세(캐릭터의 레벨·적성 등) — 메인만 읽는 JSON. 경매장은 그대로 보관·반환한다
+  map<int32, int64> attrs = 14;  // 검색용 수치 속성(작업속도·레벨·★·적성 …). 키는 메인의 EAuctionAttr — 경매장은 숫자로만 비교한다 (T-155)
 }
 
 message RegisterRequest {
@@ -134,7 +135,7 @@ message CancelReply {
   CancelResult result = 1;
 }
 
-// 0은 "조건 없음"이다. 커서는 마지막으로 본 (단가, 매물 ID) — 첫 페이지는 둘 다 0.
+// 0은 "조건 없음"이다. 커서는 마지막으로 본 (정렬 값, 매물 ID) — 첫 페이지는 둘 다 0. 응답의 next_cursor_*를 그대로 돌려보낸다.
 message SearchRequest {
   int32 kind = 1;
   int32 category = 2;
@@ -144,9 +145,20 @@ message SearchRequest {
   int32 min_enchant_grade = 6;
   repeated int32 option_tids = 7;  // 전부 포함해야 한다
   int64 max_unit_price = 8;
-  int64 cursor_unit_price = 9;
+  int64 cursor_unit_price = 9;    // 커서 정렬 값 — 단가 낮은순이면 단가 (이름은 옛 판 그대로)
   int64 cursor_listing_id = 10;
   int32 page_size = 11;
+  int64 min_unit_price = 12;
+  int32 sort = 13;                 // 0 단가 낮은순 · 1 높은순 · 2 마감 임박 · 3 등급 높은순 · 4 속성 큰 순(sort_attr)
+  int32 sort_attr = 14;
+  repeated AttrRange attrs = 15;   // 전부 만족해야 한다
+}
+
+// 수치 속성 범위. max가 0이면 상한 없음. 매물에 없는 키는 0으로 본다.
+message AttrRange {
+  int32 key = 1;
+  int64 min = 2;
+  int64 max = 3;
 }
 
 enum ListingState {
@@ -179,6 +191,9 @@ message ListingView {
 message SearchReply {
   repeated ListingView listings = 1;
   bool has_more = 2;
+  int32 total_count = 3;               // 조건에 맞는 매물 수 — 쪽과 상관없다
+  int64 next_cursor_sort_value = 4;    // 다음 쪽 커서 — 이 쪽 마지막 줄
+  int64 next_cursor_listing_id = 5;
 }
 
 // 0·빈 목록은 조건 없음. 요청한 TID는 매물이 없어도 시세만으로 실린다.

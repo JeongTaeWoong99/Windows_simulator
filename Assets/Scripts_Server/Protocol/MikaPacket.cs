@@ -647,9 +647,16 @@ namespace MikaProtocol
         public int          MinEnchantGrade { get; set; }
         public List<int>?   OptionTids      { get; set; }  // 전부 가진 매물만
         public long         MaxUnitPrice    { get; set; }
-        public long         CursorUnitPrice { get; set; }
+        public long         CursorUnitPrice { get; set; }  // (옛) 단가 낮은순의 커서. 새 클라는 CursorSortValue를 쓴다
         public long         CursorListingId { get; set; }
         public int          PageSize        { get; set; }  // 0이면 20, 최대 50
+
+        // ── T-155 ──
+        public long                         MinUnitPrice    { get; set; }
+        public EAuctionSort                 Sort            { get; set; }
+        public EAuctionAttr                 SortAttr        { get; set; }  // Sort = AttrDesc일 때
+        public List<AuctionAttrRangeInfo>?  Attrs           { get; set; }  // 전부 만족해야 한다 (최대 16개)
+        public long                         CursorSortValue { get; set; }  // 응답의 NextCursorSortValue를 그대로 — 첫 쪽은 0
     }
 
     [MemoryPackable, Packet(PacketId.S_AuctionSearchResponse)]
@@ -658,6 +665,11 @@ namespace MikaProtocol
         public EResultCode               Result   { get; set; }
         public List<AuctionListingInfo>? Listings { get; set; }
         public bool                      HasMore  { get; set; }
+
+        // ── T-155 ──
+        public int  TotalCount          { get; set; }  // 조건에 맞는 매물 수 — 쪽과 상관없다
+        public long NextCursorSortValue { get; set; }  // 다음 쪽을 물을 때 CursorSortValue · CursorListingId로 그대로
+        public long NextCursorListingId { get; set; }
     }
 
     /// <summary>

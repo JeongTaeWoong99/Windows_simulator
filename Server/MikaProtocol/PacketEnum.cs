@@ -238,6 +238,38 @@ namespace MikaProtocol
         Count  = 2,   // 자원 탭만
     }
 
+    // 경매 검색 정렬 (T-155). 같은 값이면 매물 ID 순이다.
+    public enum EAuctionSort : byte
+    {
+        PriceAsc    = 0,   // 단가 낮은순 (기본)
+        PriceDesc   = 1,   // 단가 높은순
+        ExpiresSoon = 2,   // 마감 임박순
+        RarityDesc  = 3,   // 등급 높은순
+        AttrDesc    = 4,   // 속성 큰 순 — SortAttr (작업속도 · 레벨 …)
+    }
+
+    // 경매 매물의 검색용 수치 속성 (T-155). 메인이 등록 때 계산해 싣는다 — 경매장은 숫자로만 비교한다. 없으면 0으로 본다.
+    // 값은 경매장 DB에 남으니 바꾸지 않는다 — 뒤에만 더한다.
+    public enum EAuctionAttr : int
+    {
+        None = 0,
+
+        // 장비
+        EquipIndustry       = 1,   // 장비의 산업(EIndustryType). 0 = 전 산업
+        EquipSpeed          = 2,   // 작업속도 천분율 = 기본 + 인챈트 속도 옵션 합 (산업 한정 옵션도 더한다)
+        EnchantSpeed        = 3,   // 인챈트 속도 옵션 합(천분율)
+        EnchantCharacterExp = 4,   // 인챈트 경험치 옵션 합(천분율)
+
+        // 캐릭터
+        CharacterLevel = 10,
+        CharacterStar  = 11,
+        AptitudeFarming    = 21,   // 산업별 적성 = 20 + EIndustryType
+        AptitudeExcavation = 22,
+        AptitudeMining     = 23,
+        AptitudeLogging    = 24,
+        AptitudeHunting    = 25,
+    }
+
     // 잠금 대상 (T-137). 자원은 TID 하나 = 칸 하나라 잠그지 않는다.
     public enum ELockTarget : byte
     {
