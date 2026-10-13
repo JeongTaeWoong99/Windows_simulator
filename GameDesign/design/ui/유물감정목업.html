@@ -119,6 +119,10 @@ tr:last-child td { border-bottom: 0; }
 .chip { background: var(--panelSub); border: 1px solid var(--border); border-radius: 999px; padding: 2px 10px; font-size: 12px; color: var(--textMain); font-variant-numeric: tabular-nums; }
 .chip b { color: #6DDB7A; }
 .vgroups { display: grid; gap: 16px; }
+.vgrades { display: flex; flex-wrap: wrap; gap: 6px; }
+.vgrades button { background: var(--slot); border: 2px solid var(--border); border-radius: 999px; padding: 2px 12px; font: 700 12px var(--body); color: var(--textSub); cursor: pointer; }
+.vgrades button[aria-pressed="true"] { border-color: var(--gc, var(--highlight)); color: var(--textMain); background: var(--panelSub); }
+.vgrades button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
 .vgroup { display: grid; gap: 8px; }
 .vgroup h3 { margin: 0; font-size: 14px; font-weight: 800; letter-spacing: .04em; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
 .vgroup h3 span { color: var(--textSub); font-weight: 400; font-size: 12px; font-variant-numeric: tabular-nums; }
@@ -175,7 +179,7 @@ tr:last-child td { border-bottom: 0; }
 
   <section>
     <h2>감정 연출</h2>
-    <p class="note">유물을 고르고 <b>감정</b>을 누른다. 흔들림 → 금이 세 번에 걸쳐 퍼짐 → 번쩍(등급 색, Special은 무지개) → 조각이 흩어지며 아이템이 튀어나온다. 아티팩트가 나오면 띠와 함께 한 번 더 빛나고, 인벤토리가 아니라 <b>아티팩트 보관함의 그 번호 칸</b>으로 들어간다(100번대가 한 등급 · Special 0xx ~ 일반 6xx). 연출 중 무대를 누르면 건너뛴다.</p>
+    <p class="note">유물을 고르고 <b>감정</b>을 누른다. 흔들림 → 금이 세 번에 걸쳐 퍼짐 → 번쩍(등급 색, Special은 무지개) → 조각이 흩어지며 아이템이 튀어나온다. 아티팩트가 나오면 띠와 함께 한 번 더 빛나고, 인벤토리가 아니라 <b>아티팩트 보관함의 그 번호 칸</b>으로 들어간다(번호는 도감에 실린 순서 · 등급은 색으로). 연출 중 무대를 누르면 건너뛴다.</p>
     <div class="lab">
       <div class="stage" id="stage" role="button" tabindex="0" aria-label="감정 무대 — 연출 중 누르면 건너뛴다">
         <div class="floor"></div>
@@ -200,19 +204,20 @@ tr:last-child td { border-bottom: 0; }
 
   <section>
     <h2>아티팩트 보관함 (= 도감)</h2>
-    <p class="note">감정으로 얻은 아티팩트는 인벤토리가 아니라 여기 번호 칸으로 바로 들어간다. <b>보관함과 도감은 한 화면이다</b> — 칸은 번호마다 고정이고 100번대(= 등급)별로 묶인다. <b>보유 중</b>을 누르면 가진 칸만 남아 관리 목록이 된다. 칸을 누르면 오른쪽에 상세 · 판매 · 거래소 등록이 나온다 — 마지막 1개를 팔거나 등록해 수량이 0이 되면 효과가 꺼지고 칸이 흐려진다. 종 수·이름·효과는 가제다.</p>
+    <p class="note">감정으로 얻은 아티팩트는 인벤토리가 아니라 여기 번호 칸으로 바로 들어간다. <b>보관함과 도감은 한 화면이다</b> — 칸은 번호마다 고정이고 <b>번호는 도감에 실린 순서</b>라 등급이 섞여 있다 — 등급은 테두리 색으로 보인다. <b>보유 중</b>을 누르면 가진 칸만 남아 관리 목록이 되고, 등급 칩으로 한 등급만 볼 수 있다. 칸을 누르면 오른쪽에 상세 · 판매 · 거래소 등록이 나온다 — 마지막 1개를 팔거나 등록해 수량이 0이 되면 효과가 꺼지고 칸이 흐려진다. 종 수·이름·효과는 가제다.</p>
     <div class="vault">
       <div class="vpanel">
         <div class="vhead">
           <div class="vcount" id="vCount"></div>
           <div class="seg" role="group" aria-label="보기"><button type="button" data-f="all" aria-pressed="true">전체</button><button type="button" data-f="own" aria-pressed="false">보유 중</button></div>
         </div>
+        <div class="vgrades" id="vGrades" role="group" aria-label="등급"></div>
         <div class="vsum" id="vSum"></div>
         <div class="vgroups" id="vGroups"></div>
       </div>
       <div class="vpanel" id="vDetail" aria-live="polite"></div>
     </div>
-    <div class="legend"><span>● 초록 점 = 효과 켜짐 (수량 1 이상)</span><span>흐린 칸 = 얻은 적 있지만 0개</span><span>점선 칸 = 얻은 적 없음 (번호만 — 첫 자리로 등급은 보인다)</span><span>칸 64px</span></div>
+    <div class="legend"><span>● 초록 점 = 효과 켜짐 (수량 1 이상)</span><span>흐린 칸 = 얻은 적 있지만 0개</span><span>점선 칸 = 얻은 적 없음 (번호 · 등급 색만)</span><span>칸 64px</span></div>
   </section>
 
   <section>
@@ -469,13 +474,17 @@ for (let g = 6; g >= 0; g--) ANAMES[g].forEach((name, i) => {
   else { const all = rnd() < .4; k = rnd() < .5 ? '작업속도' : '산출량'; ind = all ? null : INDS[rnd() * 5 | 0]; v = BASEV[g] * (all ? 1 : 2); }
   const own = rnd() < [.8, .65, .5, .4, .3, .25, .5][g];
   const count = own ? 1 + (rnd() < .4 ? rnd() * 4 | 0 : 0) : 0;
-  ART.push({ g, no: (6 - g) * 100 + i + 1, name, k, ind, v, count, listed: 0, seen: own || rnd() < .25, price: G[g].cost * 2 });
+  ART.push({ g, no: 0, name, k, ind, v, count, listed: 0, seen: own || rnd() < .25, price: G[g].cost * 2 });
 });
-ART[0].count = 1; ART[0].seen = true;   // 무지개 심장은 1개 보유로 시작 — 마지막 1개 경고 확인용
+const heart = ART.find(a => a.name === '무지개 심장'); heart.count = 1; heart.seen = true;   // 1개 보유로 시작 — 마지막 1개 경고 확인용
+// 번호 = 도감에 실린 순서 — 등급과 무관하게 섞어 차례로 매긴다
+for (let i = ART.length - 1; i > 0; i--) { const j = rnd() * (i + 1) | 0; [ART[i], ART[j]] = [ART[j], ART[i]]; }
+ART.forEach((a, i) => a.no = i + 1);
+G.forEach(gr => gr.art[1] = ART.find(a => a.name === gr.art[0]).no);   // 감정 무대의 예시 번호도 맞춘다
 const noStr = n => 'No.' + String(n).padStart(3, '0');
 const effStr = a => `${a.ind ?? '전 산업'} ${a.k} +${a.v}%`;
 const unknownSVG = () => `<svg viewBox="0 0 100 100" width="100%" height="100%" aria-hidden="true"><path d="M50 8 L86 29 L86 71 L50 92 L14 71 L14 29 Z" fill="#22344a" stroke="#34495f" stroke-width="3"/><text x="50" y="64" text-anchor="middle" font-family="Black Han Sans, sans-serif" font-size="38" fill="#4b6580">?</text></svg>`;
-let vFilter = 'all', vSel = 0;
+let vFilter = 'all', vGrade = -1, vSel = ART.indexOf(heart);
 
 function vRender() {
   const seen = ART.filter(a => a.seen).length, on = ART.filter(a => a.count > 0);
@@ -487,22 +496,22 @@ function vRender() {
   }));
   $('vSum').innerHTML = [...sum].sort((x, y) => (y[0].startsWith('전') - x[0].startsWith('전')) || y[1] - x[1])
     .map(([key, v]) => `<span class="chip">${key} <b>+${Math.round(v * 10) / 10}%</b></span>`).join('') || '<span class="chip">켜진 효과 없음</span>';
-  // 등급 묶음 — Special(0xx)부터
-  let html = '';
-  for (let g = 6; g >= 0; g--) {
-    const all = ART.filter(a => a.g === g), list = vFilter === 'own' ? all.filter(a => a.count > 0 || a.listed > 0) : all;
-    if (!list.length) continue;
-    const d = 6 - g, gr = G[g];
-    html += `<div class="vgroup"><h3><b class="${gr.special ? 'rb-text' : ''}" style="${gr.special ? '' : 'color:' + gr.c}">${gr.n}</b><span>No.${d}${d ? '00' : '01'} ~ ${d}99 · 수집 ${all.filter(a => a.seen).length} / ${all.length}</span></h3><div class="vcells">` +
-      list.map(a => {
-        const idx = ART.indexOf(a), st = !a.seen ? 'unknown' : a.count > 0 ? 'own' : 'empty';
-        const sp = gr.special && st === 'own';
-        const slot = `<span class="slot${sp ? ' special' : ''}" style="${sp ? '' : '--rc:' + (st === 'unknown' ? '#34495f' : st === 'empty' ? 'var(--border)' : gr.c)}">` +
-          (st === 'unknown' ? unknownSVG() : rewardSVG(g, true)) + (st === 'own' ? `<i class="on-dot"></i><span class="cnt">${a.count}</span>` : '') + `</span>`;
-        return `<button type="button" class="vcell ${st}" data-i="${idx}" aria-pressed="${idx === vSel}" aria-label="${noStr(a.no)} ${a.seen ? a.name : '얻은 적 없음'}">${slot}<span class="no">${String(a.no).padStart(3, '0')}</span></button>`;
-      }).join('') + `</div></div>`;
-  }
-  $('vGroups').innerHTML = html || '<p class="note">보유 중인 아티팩트가 없다.</p>';
+  // 등급 칩 — 칩마다 수집 수
+  $('vGrades').innerHTML = [-1, 6, 5, 4, 3, 2, 1, 0].map(g => {
+    const all = g < 0 ? ART : ART.filter(a => a.g === g), gr = G[g];
+    const label = g < 0 ? '전체 등급' : `<span class="${gr.special ? 'rb-text' : ''}" style="${gr.special ? '' : 'color:' + gr.c}">${gr.n}</span>`;
+    return `<button type="button" data-g="${g}" aria-pressed="${g === vGrade}" style="${g >= 0 && !gr.special ? '--gc:' + gr.c : ''}">${label} ${all.filter(a => a.seen).length}/${all.length}</button>`;
+  }).join('');
+  // 번호 순 한 줄 — 등급은 테두리 색으로
+  const list = ART.filter(a => (vGrade < 0 || a.g === vGrade) && (vFilter === 'all' || a.count > 0 || a.listed > 0));
+  $('vGroups').innerHTML = list.length ? `<div class="vcells">` + list.map(a => {
+    const idx = ART.indexOf(a), gr = G[a.g], st = !a.seen ? 'unknown' : a.count > 0 ? 'own' : 'empty';
+    const sp = gr.special && st === 'own';
+    const rc = st === 'unknown' ? gr.c + '77' : st === 'empty' ? 'var(--border)' : gr.c;
+    const slot = `<span class="slot${sp ? ' special' : ''}" style="${sp ? '' : '--rc:' + rc}">` +
+      (st === 'unknown' ? unknownSVG() : rewardSVG(a.g, true)) + (st === 'own' ? `<i class="on-dot"></i><span class="cnt">${a.count}</span>` : '') + `</span>`;
+    return `<button type="button" class="vcell ${st}" data-i="${idx}" aria-pressed="${idx === vSel}" aria-label="${noStr(a.no)} ${gr.n} ${a.seen ? a.name : '얻은 적 없음'}">${slot}<span class="no">${String(a.no).padStart(3, '0')}</span></button>`;
+  }).join('') + `</div>` : '<p class="note">조건에 맞는 아티팩트가 없다.</p>';
   vDetail();
 }
 
@@ -533,6 +542,7 @@ $('vDetail').addEventListener('click', e => {
   if (act === 'unlist' && a.listed > 0) { a.listed--; a.count++; }
   vRender();
 });
+$('vGrades').addEventListener('click', e => { const b = e.target.closest('[data-g]'); if (!b) return; vGrade = +b.dataset.g; vRender(); });
 document.querySelectorAll('.seg button').forEach(b => b.onclick = () => {
   vFilter = b.dataset.f; document.querySelectorAll('.seg button').forEach(x => x.setAttribute('aria-pressed', x === b)); vRender();
 });
