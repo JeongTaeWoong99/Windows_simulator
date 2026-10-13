@@ -96,6 +96,7 @@ export const STATUS_ORDER: Record<string, number> = {
 };
 
 // 회차 — 2026-10-10(토) 22:00부터 14일 간격. 이름은 YYMMDD.
+// ⚠️ scripts/roll-cycles.mjs(회차 자동 이월)가 같은 계산을 쓴다 — 바꾸면 둘 다 고친다.
 const CYCLE_ANCHOR = Date.UTC(2026, 9, 10);
 const CYCLE_DAYS = 14;
 

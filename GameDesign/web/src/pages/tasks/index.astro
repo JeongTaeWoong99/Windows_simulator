@@ -24,8 +24,12 @@ const live = all.filter((t) => !t.data.done).sort(byRank);
 const closed = all.filter((t) => t.data.done).sort((a, b) => b.data.taskId.localeCompare(a.data.taskId));
 
 // 회차 탭 — 다가오는 두 회차는 비어 있어도 띄우고, 일감에 적힌 다른 회차도 붙인다.
+// 지난 회차는 띄우지 않는다 — 남은 일감은 배포 때 roll-cycles.mjs가 다음 회차로 민다.
 const isCycle = (v: string) => /^\d{6}$/.test(v);
-const cycles = [...new Set([...upcomingCycles(2), ...live.map((t) => t.data.target).filter(isCycle)])].sort();
+const upcoming = upcomingCycles(2);
+const cycles = [...new Set([...upcoming, ...live.map((t) => t.data.target).filter(isCycle)])]
+  .filter((c) => c >= upcoming[0])
+  .sort();
 
 // count는 탭 옆 숫자 — 회차 탭은 닫힌 일감도 담지만 숫자는 남은 것만 센다.
 type Tab = { key: string; label: string; note: string; items: typeof all; count?: number };
