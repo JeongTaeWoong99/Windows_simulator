@@ -12,7 +12,7 @@ using UnityEngine;
 // 'RarityPalette'·'ResultMessages'와 같은 부류 — 캔버스를 가로지르는 표시용 변환이라 여기 둔다.
 //
 // ■ 판정 1회에는 최소 시간이 있다 (2026-10-09 · T-102 · 이슈 #60)
-//   실효 주기 = max('Constants.MinCycleMs', 판정 비용 ÷ 속도). 연출 한 바퀴(여운 → 숨 → 달리기 → 숨 → 공격 1회)를 보장하는 값이다.
+//   실효 주기 = max('Constants.MinCycleMs', 판정 비용 ÷ 속도). 연출 한 바퀴(달리기 → 공격 1회)를 보장하는 값이다.
 //   속도로 바꾸면 **상한 = 판정 비용 ÷ 최소 시간(ms)** (정수 나눗셈 버림) — 서버도 같은 식으로 'CurrentWorkSpeed'를 자른다.
 //   서버가 이미 자른 값을 보내면 여기서 한 번 더 잘라도 그대로다(같은 식이라 멱등).
 //   ※ 최소 시간이 연출 한 바퀴보다 짧으면 'SlotStageSettings.RequiredCycleSeconds'가 경고한다.
