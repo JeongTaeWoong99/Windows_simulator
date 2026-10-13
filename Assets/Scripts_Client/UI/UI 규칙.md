@@ -1,6 +1,6 @@
 # UI 규칙
 
-> 최종 업데이트: 2026-10-11 (아래 열리는 창은 넘치면 늘어난다 — `ContentFloorLayoutElement`) · 2026-10-11 (레이아웃 경계 — `Body Panel` 아래 Presenter는 그룹을 `Xxx Panel`에 · 자주 바뀌는 글씨는 상자로 감싼다) · 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-10-14 (Market → Hub · Auction 폴더 분리 — T-147) · 2026-10-11 (아래 열리는 창은 넘치면 늘어난다 — `ContentFloorLayoutElement`) · 2026-10-11 (레이아웃 경계 — `Body Panel` 아래 Presenter는 그룹을 `Xxx Panel`에 · 자주 바뀌는 글씨는 상자로 감싼다) · 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -131,7 +131,7 @@ topmostToggle.onValueChanged.AddListener(on => {
 
 ```
 !  최상위 · 다른 축      !Horizontal Columns · !Overlay Canvas   (루트 아래 이 둘뿐 — 늘 떠 있는 3열 · 그 위에 겹쳐 뜨는 것)
-@  컬럼                  @Inventory Column · @Main Column · @Market Column
+@  컬럼                  @Inventory Column · @Main Column · @Hub Column
 #  캔버스                #Main Canvas (MAIN VIEW) · #State Canvas (MAIN VIEW)
 (없음)  Presenter·패널·위젯   Menu Presenter (↓ SUB VIEW) · Header Panel · Gold Text
 ```
@@ -302,7 +302,7 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 
 ### 레이아웃 경계 — 캔버스 바로 아래에 줄 세우는 상자를 한 겹 둔다 (2026-10-10 · T-139)
 
-**가운데 열 캔버스(`#Main`·`#Inventory`·`#Market`)는 `LayoutGroup`을 직접 갖지 않는다.** 꽉 채운 자식 `Body Panel`이 갖는다.
+**가운데 열 캔버스(`#Main`·`#Inventory`·`#Hub`)는 `LayoutGroup`을 직접 갖지 않는다.** 꽉 채운 자식 `Body Panel`이 갖는다.
 
 - 이유: 레이아웃 더티는 **부모에 `LayoutGroup`이 있는 동안 위로 번진다.** 캔버스에 그룹이 있으면 탭 하나만 바꿔도
   `@Main Column`까지 올라가 세 열을 통째로 다시 쟀다. 부모(캔버스)에 그룹이 없는 `Body Panel`에서 멈춘다.
@@ -483,15 +483,21 @@ UI/
 │   ├─ StateCanvasView.cs
 │   └─ StatePresenter/
 │       └─ StatePresenter.cs
-├─ Market/
-│   ├─ Market 규칙.md
-│   ├─ MarketCanvasView.cs
-│   ├─ MarketTabPresenter/
-│   │   └─ MarketTabPresenter.cs
+├─ Hub/                          ← 옛 Market — 거점 열 (2026-10-14 · T-147)
+│   ├─ Hub 규칙.md
+│   ├─ HubCanvasView.cs
+│   ├─ HubTabPresenter/
+│   │   └─ HubTabPresenter.cs
 │   └─ GachaPresenter/
 │       ├─ GachaPresenter.cs
 │       ├─ GachaPoolCardView.cs
 │       └─ GachaPoolSummary.cs
+├─ Auction/                      ← 경매장 — !Overlay Canvas 첫째 자식 (2026-10-14 · T-147)
+│   ├─ Auction 규칙.md
+│   ├─ AuctionCanvasView.cs
+│   ├─ AuctionHeaderPresenter/ · AuctionTabPresenter/ · AuctionBuyTabPresenter/
+│   ├─ MarketItemPresenter/ · AuctionSearchPresenter/ · AuctionRegisterPresenter/ · AuctionMyListingPresenter/
+│   └─ AuctionRowView.cs · AuctionRowList.cs · AuctionText.cs · AuctionSort.cs · AuctionInput.cs
 ├─ Widget/
 │   ├─ Widget 규칙.md
 │   ├─ WidgetCanvasView.cs

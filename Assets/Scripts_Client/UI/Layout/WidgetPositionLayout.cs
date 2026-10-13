@@ -32,7 +32,7 @@ public enum WidgetPosition
 //   Column 을 끄면 남은 열들이 가운데로 다시 몰려 위젯 가로 칸이 무의미해진다 — 그래서 안 끈다.
 //
 // ■ 3열 순서 규칙 — 작업슬롯과 인벤토리는 항상 붙어 있다
-//   거래를 작업슬롯에서 가장 먼 끝에 두면 인벤토리가 자동으로 사이에 남는다.
+//   거점을 작업슬롯에서 가장 먼 끝에 두면 인벤토리가 자동으로 사이에 남는다.
 //   → GameDesign/design/ui/README.md 2.1
 //
 // ■ ExecuteAlways
@@ -52,7 +52,8 @@ public class WidgetPositionLayout : MonoBehaviour
     [SerializeField, FormerlySerializedAs("storageColumn")]
     private RectTransform inventoryColumn = null!; // 인벤토리 열 (개명 전 이름: storageColumn)
     [SerializeField] private RectTransform workstationColumn = null!; // 작업슬롯 열 — 위젯의 가로 칸을 따라간다
-    [SerializeField] private RectTransform marketColumn      = null!; // 거래 열
+    [SerializeField, FormerlySerializedAs("marketColumn")]
+    private RectTransform hubColumn = null!; // 거점 열 (개명 전 이름: marketColumn — 거래 열)
 
     [CenterHeader("작업슬롯 열의 위·아래 슬롯")]
     [SerializeField] private RectTransform widgetPanel = null!; // 위젯 — 6칸의 세로가 이 패널의 슬롯을 정한다
@@ -98,6 +99,28 @@ public class WidgetPositionLayout : MonoBehaviour
     // ⚠️ 이 값을 상수로 베껴 두지 말 것. 'widgetWeight'/'stateWeight'를 조정하거나 가운데 칸
     //   높이를 바꾸면 여기가 따라 움직이는데, 베껴 둔 쪽은 안 움직여 맞춤이 조용히 어긋난다.
     public float WidgetSlotHeight => FixedHeightOf(widgetPanel);
+
+    // 3열의 가운데 칸(띠)이 열 위·아래 끝에서 떨어진 거리 — 화면 전체를 쓰는 경매장이 이 띠에 맞춘다('AuctionCanvasView').
+    // 읽을 수 없으면(배선 전 · 열 구성이 다름) false.
+    //
+    // ※ 거점 열의 위·아래 스페이서에서 읽는다 — 그 열의 캔버스가 꺼져 있어도 스페이서는 남아 있고,
+    //   높이는 'ApplySideHeights'가 늘 써 둔다. 작업슬롯 열은 위·아래가 위젯·상태 캔버스라 꺼질 수 있다.
+    // ⚠️ 읽는 값도 'FixedHeightOf'다 — 꺼진 칸의 'LayoutElement'를 건너뛰는 'LayoutUtility'를 쓰지 않는 이유가 같다.
+    public bool TryGetCenterBandInsets(out float top, out float bottom)
+    {
+        top    = 0f;
+        bottom = 0f;
+
+        if (hubColumn == null || hubColumn.childCount != ColumnSlotCount)
+        {
+            return false;
+        }
+
+        top    = FixedHeightOf(hubColumn.GetChild(0) as RectTransform);
+        bottom = FixedHeightOf(hubColumn.GetChild(ColumnSlotCount - 1) as RectTransform);
+
+        return top >= 0f && bottom >= 0f;
+    }
 
     // 위젯 위치를 바꾸고 즉시 반영한다 (설정 드롭다운이 호출). 재생 중이면 저장까지 한다.
     public void SetPosition(WidgetPosition value)
@@ -287,10 +310,10 @@ public class WidgetPositionLayout : MonoBehaviour
 
         float inventory     = inventoryColumn.rect.width;
         float workstation = workstationColumn.rect.width;
-        float market      = marketColumn.rect.width;
+        float hub         = hubColumn.rect.width;
 
-        float max = Mathf.Max(inventory, Mathf.Max(workstation, market));
-        float min = Mathf.Min(inventory, Mathf.Min(workstation, market));
+        float max = Mathf.Max(inventory, Mathf.Max(workstation, hub));
+        float min = Mathf.Min(inventory, Mathf.Min(workstation, hub));
 
         if (max - min <= 1f)
         {
@@ -299,7 +322,7 @@ public class WidgetPositionLayout : MonoBehaviour
             return;
         }
 
-        string detail = $"인벤토리 {inventory:F1} · 작업 {workstation:F1} · 거래 {market:F1} (차이 {max - min:F1}px)";
+        string detail = $"인벤토리 {inventory:F1} · 작업 {workstation:F1} · 거점 {hub:F1} (차이 {max - min:F1}px)";
 
         if (_guardRetried)
         {
@@ -317,11 +340,11 @@ public class WidgetPositionLayout : MonoBehaviour
     private bool ApplyColumnOrder()
     {
         int workstationIndex = (int)position % 3;                  // 작업슬롯은 위젯의 가로 칸 그대로
-        int marketIndex      = workstationIndex == 2 ? 0 : 2;      // 거래는 작업슬롯에서 가장 먼 끝
-                                                                   // (가운데면 양끝이 같으므로 기본 배치 — 거래 오른쪽)
+        int hubIndex         = workstationIndex == 2 ? 0 : 2;      // 거점은 작업슬롯에서 가장 먼 끝
+                                                                   // (가운데면 양끝이 같으므로 기본 배치 — 거점 오른쪽)
         RectTransform[] order = new RectTransform[3];
         order[workstationIndex] = workstationColumn;
-        order[marketIndex]      = marketColumn;
+        order[hubIndex]         = hubColumn;
 
         for (int i = 0; i < order.Length; i++)
         {
@@ -379,7 +402,7 @@ public class WidgetPositionLayout : MonoBehaviour
     // 위젯이 위 칸이면 내용을 위로 붙여 위젯이 창 위 가장자리에 오고, 아래 칸이면 반대다.
     // 조합은 'position'이 정한다 — 고를 여지가 없어 상수로 둔다(UpperAlignment · LowerAlignment).
     //
-    // 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 인벤토리·거래의 배너 줄 높이가 어긋난다
+    // 세 열을 전부 바꾼다 — 작업슬롯 열만 뒤집으면 인벤토리·거점의 배너 줄 높이가 어긋난다
     // (기획 2장 "세 창의 정렬 규칙": 세 배너 줄이 같은 높이에 와야 한다).
     private bool ApplyChildAlignment(bool isUpper)
     {
@@ -388,7 +411,7 @@ public class WidgetPositionLayout : MonoBehaviour
         // ⚠️ '|='다. '||'로 쓰면 앞 열이 바뀐 순간 나머지 열의 정렬을 안 고친다.
         bool changed = SetColumnAlignment(inventoryColumn,     alignment);
         changed     |= SetColumnAlignment(workstationColumn, alignment);
-        changed     |= SetColumnAlignment(marketColumn,      alignment);
+        changed     |= SetColumnAlignment(hubColumn,         alignment);
 
         return changed;
     }
@@ -436,12 +459,12 @@ public class WidgetPositionLayout : MonoBehaviour
 
         float inventory     = ApplyColumnHeights(inventoryColumn,     isUpper, problems, out bool inventoryChanged);
         float workstation = ApplyColumnHeights(workstationColumn, isUpper, problems, out bool workstationChanged);
-        float market      = ApplyColumnHeights(marketColumn,      isUpper, problems, out bool marketChanged);
+        float hub         = ApplyColumnHeights(hubColumn,         isUpper, problems, out bool hubChanged);
 
-        AppendCenterMismatch(inventory, workstation, market, problems);
+        AppendCenterMismatch(inventory, workstation, hub, problems);
         ReportHeightProblems(problems);
 
-        return inventoryChanged || workstationChanged || marketChanged;
+        return inventoryChanged || workstationChanged || hubChanged;
     }
 
     // 한 열의 위·아래 칸에 높이를 써 넣고 그 열의 가운데 높이를 돌려준다.
@@ -560,24 +583,24 @@ public class WidgetPositionLayout : MonoBehaviour
     // 다르면 세 배너 줄이 가로로 어긋난다 (기획 2장 "세 창의 정렬 규칙").
     // 고치지 않고 알리기만 한다 — 어느 값이 맞는지는 이 컴포넌트가 알 수 없다.
     // 한 열의 값을 나머지에 복사하면 사람이 인스펙터에 넣은 숫자가 조용히 사라진다.
-    private static void AppendCenterMismatch(float inventory, float workstation, float market,
+    private static void AppendCenterMismatch(float inventory, float workstation, float hub,
                                              System.Text.StringBuilder problems)
     {
         // 하나라도 못 읽었으면 그 이유가 이미 적혀 있다 — 여기서 또 말할 것이 없다
-        if (float.IsNaN(inventory) || float.IsNaN(workstation) || float.IsNaN(market))
+        if (float.IsNaN(inventory) || float.IsNaN(workstation) || float.IsNaN(hub))
         {
             return;
         }
 
-        float max = Mathf.Max(inventory, Mathf.Max(workstation, market));
-        float min = Mathf.Min(inventory, Mathf.Min(workstation, market));
+        float max = Mathf.Max(inventory, Mathf.Max(workstation, hub));
+        float min = Mathf.Min(inventory, Mathf.Min(workstation, hub));
 
         if (max - min <= 1f)
         {
             return;
         }
 
-        problems.Append($"\n  가운데 칸 높이가 열마다 다르다 — 인벤토리 {inventory:F0} · 작업 {workstation:F0} · 거래 {market:F0}. " +
+        problems.Append($"\n  가운데 칸 높이가 열마다 다르다 — 인벤토리 {inventory:F0} · 작업 {workstation:F0} · 거점 {hub:F0}. " +
                         "세 배너 줄이 가로로 어긋난다.");
     }
 
@@ -601,7 +624,7 @@ public class WidgetPositionLayout : MonoBehaviour
     // 필수 참조가 전부 연결됐는지 확인한다 (Apply 진입 가드)
     private bool HasAllReferences()
     {
-        RectTransform[] references = { columns, inventoryColumn, workstationColumn, marketColumn, widgetPanel, statePanel };
+        RectTransform[] references = { columns, inventoryColumn, workstationColumn, hubColumn, widgetPanel, statePanel };
 
         int linked = 0;
 
@@ -655,13 +678,13 @@ public class WidgetPositionLayout : MonoBehaviour
         var found = new System.Text.StringBuilder();
         CollectOverflow(inventoryColumn,     found);
         CollectOverflow(workstationColumn, found);
-        CollectOverflow(marketColumn,      found);
+        CollectOverflow(hubColumn,         found);
 
         // 3열 묶음이 부모를 넘는지도 함께 본다 — 넘치면 HorizontalLayoutGroup 이 열을 밖으로 민다
         var   group   = columns.GetComponent<HorizontalLayoutGroup>();
         float spacing = group != null ? group.spacing * 2f : 0f;
         float padding = group != null ? group.padding.horizontal : 0f;
-        float used    = inventoryColumn.rect.width + workstationColumn.rect.width + marketColumn.rect.width
+        float used    = inventoryColumn.rect.width + workstationColumn.rect.width + hubColumn.rect.width
                       + spacing + padding;
 
         if (used - columns.rect.width > 1f)

@@ -1,17 +1,17 @@
-# Market 폴더 규칙
+# Auction 폴더 규칙
 
-> 최종 업데이트: 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-06 (단가 상한 1조 · 한 번에 올리는 수량 9,999개 — 이슈 #56) · 2026-10-05 (단가 상한을 x10 → 절대 상한 10조 · 고른 줄의 버튼을 고른 색으로) · 2026-10-03 (검색 줄 2단 — 이름+검색 / 드롭다운+정렬 · 옛 캐릭터 준비 중 자리 삭제) · 2026-10-03 (캐릭터 경매 · 판매자 이름 · 인챈트 등급 검색 · 등록 불가 사유 · 인벤토리 Shift+우클릭 등록 · 내 매물 자동 갱신·배지 · 받은 시각 · 정렬 "받은 것 중" — T-096 · 이슈 #46·#47) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-10-01 (줄 아이콘·툴팁 · 문구 색 구분 · 정렬 2단(낮은/높은 가격순) · [더 보기] 받은 수 — T-096 · T-103) · 2026-09-30 (경매장 탭 — 구매·등록·내 매물 3탭 · 가격 밴드 유지 · 정렬·내 매물 표시 — T-096) · 2026-09-30 (경매장 탭 — 하위 탭 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Market/`
+> 최종 업데이트: 2026-10-14 (거래 열의 탭 → 화면 전체 `#Auction Canvas` · `!Overlay Canvas` 첫째 자식 · 닫기 [X]·Esc — T-147) · 이전 이력은 `Hub 규칙.md`(옛 `Market 규칙.md`)의 git 기록 · 대상: `Assets/Scripts_Client/UI/Auction/`
 
-**`#Market Canvas` — 거래 열. 뽑기 · 경매장 · 창고 3탭이다(2026-09-30, T-101). 창고만 아직 `(기능 없음)`이다.**
+**`#Auction Canvas` — 경매장. 3열 폭 전부 × 가운데 띠를 쓰는 화면이다(2026-10-14 · [T-147](../../../../tasks/T-147-경매장전체화면목업.md)).**
+옛날엔 거래 열(지금 거점 열 — [`Hub 규칙.md`](<../Hub/Hub 규칙.md>))의 탭 하나였다. 탭이 세 겹이라 좁고, 장비 검색 줄이 열 폭을 넘어 두 줄로 쪼개야 했다.
 
 | 폴더 | 무엇 |
 |------|------|
-| `MarketCanvasView.cs` | 캔버스 껍데기 |
-| `MarketTabPresenter/` | 탭 줄 — `MarketTab`(뽑기·경매장·창고)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
-| `GachaPresenter/` | 뽑기 탭의 화면 — 풀마다 카드(`GachaPoolCardView`) · 카드 문구·확률 계산(`GachaPoolSummary`) |
-| `AuctionTabPresenter/` | 경매장 탭 안의 하위 탭 줄 — `AuctionTab`(구매·등록·내 매물)마다 버튼과 화면을 짝짓는다 |
+| `AuctionCanvasView.cs` | 캔버스 — 여닫기 · **판을 3열 가운데 띠에 맞추기** · 경매 등록 바로가기(`OpenRegister`) · 위에 막는 오버레이가 떠 있나(`IsCovered`) |
+| `AuctionHeaderPresenter/` | 머리 줄 — 제목 · [X] · **Esc** 닫기 |
+| `AuctionTabPresenter/` | 하위 탭 줄 — `AuctionTab`(구매·등록·내 매물)마다 버튼과 화면을 짝짓는다 |
 | `AuctionBuyTabPresenter/` | [구매] 안의 축 줄 — `AuctionBuyKind`(자원·장비·캐릭터)마다 버튼과 화면을 짝짓는다 |
-| `MarketItemPresenter/` | 구매 › 자원(거래소) — 자원 목록 · 가격대 · 수량 구매 |
+| `MarketItemPresenter/` | 구매 › 자원(거래소) — 자원 목록 · 가격대 · 수량 구매. ※ 이름의 `Market`은 거래소(`MarketItemInfo` 패킷)다 — 옛 거래 열이 아니다 |
 | `AuctionSearchPresenter/` | 구매 › 장비 · 캐릭터 — 검색 · [더 보기] · 즉시구매. **같은 클래스를 씬에 둘** 놓고 `searchKind`로 가른다 |
 | `AuctionRegisterPresenter/` | 등록 — 인벤토리의 자원·장비·캐릭터를 골라 단가를 정해 올린다 |
 | `AuctionMyListingPresenter/` | 내 매물 — 올린 것 보기 · 취소 |
@@ -22,32 +22,62 @@
 
 ---
 
-## 탭마다 화면이 따로다 — 인벤토리 탭과 다르다
+## 자리 — `!Overlay Canvas`의 첫째 자식 (2026-10-14)
 
-인벤토리 열은 격자 하나가 탭 내용을 갈아 끼우지만, 거래 열의 세 탭은 **내용도 모양도 달라** 화면을 따로 둔다.
+```
+!Overlay Canvas
+├─ [0] #Auction Canvas (MAIN VIEW)   Canvas(중첩) · GraphicRaycaster · 차단막 Image(검정 a 0.35) · AuctionCanvasView — 평소 꺼짐
+│  └─ Body Panel                     3열 가운데 띠에 맞춘다 · 불투명 검정 판 · VLG 5/5
+│     ├─ Background                  ignoreLayout · PanelBg — 다른 창과 같은 바탕색
+│     ├─ Header Presenter (↓ SUB VIEW)       AuctionHeaderPresenter · 'AUCTION' · [X]
+│     ├─ Auction Tab Presenter (↓ SUB VIEW)  구매 · 등록 · 내 매물
+│     └─ Auction Buy Page · Auction Register Presenter · Auction My Listing Presenter
+└─ [1] Gacha Result Presenter …      나머지 오버레이는 그대로 — 전부 경매장보다 앞에 그린다
+```
 
-| 탭 | 화면 | 지금 |
+판별은 [`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>)의 두 축 그대로다.
+
+| 축 | 답 | 그래서 |
 |---|---|---|
-| 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
-| 경매장 | `Auction Page` | 동작 — 하위 탭 3개 ([T-096](../../../../tasks/archive/T-096-클라경매장화면.md), 아래 "경매장 탭") |
-| 창고 | `Warehouse Page` | `(기능 없음)` — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 패킷은 인벤토리 칸 위치([T-058](../../../../tasks/archive/T-058-창고칸위치서버.md)) 뒤에 요청 |
+| ① 차단 범위 | **화면 전체**를 막는다(2026-10-14 사용자 결정 — 상태 줄·위젯까지 차단막이 덮는다) | `!Overlay Canvas`에 산다. 열 캔버스는 Sorting Order 0인 형제라 그 안의 차단막은 다른 열에 닿지 않는다 |
+| ② 생명주기 | 다시 켜 줄 손(`UIManager.ShowAuction`)이 **밖에 있다** | `CanvasGroup`이 아니라 **`SetActive`** — 로그인과 같은 이유. 안의 Presenter들이 열 때마다 `OnEnable`로 다시 받는 동작을 거래 열 시절 그대로 쓴다 |
 
-- 기능을 붙일 때는 **그 page 안에 Presenter를 넣고 `No Feature Text (TMP)`를 지운다.** `MarketTabPresenter`는 안 바뀐다.
-- 아직 기능이 없는 탭도 누를 수 있다 — 화면의 `(기능 없음)`이 고장과 구분해 준다(설정 화면의 표기와 같다).
-- ⚠️ page는 꺼졌다 켜진다. page 안의 Presenter는 `OnEnable`/`OnDisable`로 구독을 잇고 끊는다(`GachaPresenter`가 그렇다).
-- ⚠️ **여기 '창고'는 인벤토리가 아니다.** 인벤토리(옛 이름 창고/Storage)는 **얻은 것이 바로 들어오는** 왼쪽 열이고, 창고는 **두고두고 쓸 것을 맡겨 두는** 곳이다. 코드에서 헷갈리지 않게 이 탭은 `Warehouse`라 부른다.
+- **첫째 자식인 이유** — 오버레이 층은 뒤 형제일수록 앞에 그린다. 경매장이 띄우는 확인·수량 팝업·툴팁·로딩·알림이 전부 경매장 **위**에 떠야 한다.
+- **Presenter 여럿을 담는 캔버스라 `(↓ SUB VIEW)`가 아니라 `(MAIN VIEW)`다** — Presenter 안에 Presenter를 두지 않는다. 자기 `Canvas`를 단 것도 같은 이유다: 그래픽이 수백 개라 오버레이 층(그래픽 49개)과 다시 묶기를 나눈다([`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>) "나누는 조건").
+- **판이 불투명한 이유** — 바탕색 `PanelBg`는 반투명(a 0.92)이라 그대로 두면 뒤의 3열 글자가 비친다. 판을 검정으로 칠하고 그 위에 `Background`(PanelBg)를 깐다.
 
-이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
+### 가운데 띠에 맞춘다 — `AuctionCanvasView.FitBodyToBand`
+
+판(`Body Panel`)은 앵커를 화면 전체로 늘려 두고, **열 때마다** 위·아래 offset을 3열 가운데 칸 자리로 맞춘다.
+위·아래 칸 높이는 위젯 위치(위·아래)에 따라 바뀌어서다 — 값은 `WidgetPositionLayout.TryGetCenterBandInsets`가 거점 열의 위·아래 스페이서에서 읽는다.
+⚠️ 씬에 저장된 offset(아래 96 / 위 64)은 위젯이 아래 칸일 때의 값일 뿐이다 — 고쳐도 열 때 덮인다.
+
+### 여는 길 · 닫는 길
+
+| 길 | 무엇이 | 어디 |
+|---|---|---|
+| 열기 | 하단 메뉴 **[경매장]** | `MenuPresenter.auctionButton` → `UIManager.ShowAuction(true)` — **토글이 아니다**(열리면 메뉴가 가려진다) |
+| 열기 | 인벤토리 칸 **Shift+우클릭** | `AuctionCanvasView.OpenRegister` — 경매장 → [등록] → 그 물건을 골라 둔다 |
+| 닫기 | 머리 줄 **[X]** · **Esc** | `AuctionHeaderPresenter` → `UIManager.ShowAuction(false)` |
+| 닫기 | 전부 접기 | `UIManager.CloseAllExceptWidget`도 닫는다 — 단, 경매장이 열려 있는 동안엔 차단막이 위젯 버튼을 덮는다 |
+
+- ⚠️ **Esc는 경매장 위에 막는 오버레이가 없을 때만 닫는다**(`AuctionCanvasView.IsCovered`) — 확인·수량 팝업이 떠 있을 때 닫으면 팝업만 홀로 남고,
+  **로딩 중에 닫으면 안의 Presenter가 구독을 끊어 응답을 놓친다**(거래 열 시절 가챠 사고와 같은 뿌리 — [`Hub 규칙.md`](<../Hub/Hub 규칙.md>)). 클릭은 로딩 차단막이 막지만 키는 못 막는다.
+- Esc는 `KeyInputManager.WasClosePressed`로만 읽는다 — 키는 그 매니저 한 곳에서 읽는다.
+- 인벤토리는 경매장에 가려진다 — Shift+우클릭은 경매장이 닫힌 상태에서 쓰는 길이다. 목업의 [+ 판매 등록] 창(창 안에 내 인벤토리)이 들어오면 경매장 안에서도 고를 수 있다.
+
+> 🚧 **목업대로의 재배치는 아직이다** — 지금은 거래 열 시절의 하위 탭(구매·등록·내 매물)을 넓은 판에 그대로 옮긴 상태다.
+> 목업([`경매장목업.html`](../../../../GameDesign/design/ui/경매장목업.html))의 검색 · 시세 · 판매 · 완료 탭은 [T-147](../../../../tasks/T-147-경매장전체화면목업.md)에서 이어 간다.
 
 ---
 
-## 경매장 탭 — 구매 · 등록 · 내 매물 (T-096)
+## 하위 탭 — 구매 · 등록 · 내 매물 (T-096)
 
 **탭은 하는 일로 나눈다(2026-09-30).** 파는 축(자원·장비·캐릭터)으로 나누면 축이 늘 때마다 탭이 는다.
 축은 [구매] 안의 축 줄과 [등록]의 종류 드롭다운이 고른다.
 
 ```
-Auction Page
+#Auction Canvas > Body Panel
 ├─ Auction Tab Presenter (↓ SUB VIEW)        구매 · 등록 · 내 매물
 ├─ Auction Buy Page
 │   ├─ Auction Buy Tab Presenter (↓ SUB VIEW) 자원 · 장비 · 캐릭터
@@ -61,14 +91,14 @@ Auction Page
 화면은 탭 Presenter의 자식이 아니라 **형제**다(Presenter 안에 Presenter를 두지 않는다).
 
 **장비·캐릭터 검색 줄은 두 줄이다** — `Search Panel`(이름 입력 + [검색]) / `Filter Panel`(드롭다운들 + `Spacer` + 정렬).
-⚠️ 한 줄에 다 넣으면 min 폭 합(685)이 열 폭(603)을 넘어 **바깥 3열 레이아웃까지 밀린다**(2026-10-03). 두 줄 모두 `LayoutElement.minWidth = 0` — 칸을 더 넣어도 열 폭을 밀지 않는다. 드롭다운을 늘릴 때는 `Filter Panel`에 넣는다.
+⚠️ 거래 열 시절 한 줄에 다 넣으면 min 폭 합(685)이 열 폭(603)을 넘어 **바깥 3열 레이아웃까지 밀렸다**(2026-10-03). 판이 1920으로 넓어진 지금은 목업 재배치 때 다시 정한다. 두 줄 모두 `LayoutElement.minWidth = 0` — 칸을 더 넣어도 열 폭을 밀지 않는다. 드롭다운을 늘릴 때는 `Filter Panel`에 넣는다.
 
 | 탭 · 축 | 화면 | 무엇 |
 |---|---|---|
 | 구매 › 자원 | `MarketItemPresenter` | **거래소** — 자원을 종류별 한 줄로(최저가·판매 중 수량·최근가·전일 평균) → [선택] → 가격대 → "N개, 개당 최대 P" 구매. 다 못 채우면 아무것도 안 산다 |
 | 구매 › 장비 | `AuctionSearchPresenter` | 이름·분류·등급·**인챈트 등급**으로 검색. **서버가 단가 싼 순으로 20개씩**(최대 50) 주고, [더 보기]가 받은 것의 마지막 매물(단가·ID)을 커서로 다음 20개를 잇는다 — 더 있는지는 `HasMore`. 버튼에 받은 수를 적는다(전체 수는 서버가 주지 않는다). 매물은 통째로만 산다 |
 | 구매 › 캐릭터 | `Character Search Presenter` | 이름·등급으로 검색(분류·인챈트 드롭다운은 꺼 둔다). 줄은 레벨, **적성 5종은 툴팁에**([이슈 #47](https://github.com/JeongTaeWoong99/Windows_simulator/issues/47)) |
-| 등록 | `AuctionRegisterPresenter` | 자원·장비·캐릭터. **올릴 수 없는 것도 목록에 흐리게 남기고 툴팁에 사유**(끼고 있는 장비 · 배치 중·장비 낀 캐릭터 · 마지막 캐릭터 — `EntityBlockText`). 인벤토리 칸 **Shift+우클릭**으로 바로 와서 그 물건이 골라진다(`MarketCanvasView.OpenAuctionRegister`) |
+| 등록 | `AuctionRegisterPresenter` | 자원·장비·캐릭터. **올릴 수 없는 것도 목록에 흐리게 남기고 툴팁에 사유**(끼고 있는 장비 · 배치 중·장비 낀 캐릭터 · 마지막 캐릭터 — `EntityBlockText`). 인벤토리 칸 **Shift+우클릭**으로 바로 와서 그 물건이 골라진다(`AuctionCanvasView.OpenRegister`) |
 | 내 매물 | `AuctionMyListingPresenter` | 열 때마다 새로 받는다. 구매 진행 중(`Reserved`)이면 [취소]를 잠근다. 판매·만료로 바뀌면 탭 버튼에 **배지**(`News Badge`) — 열면 꺼진다 |
 
 ### 거래소는 서버 상점이 아니다
@@ -134,74 +164,7 @@ Auction Page
 - ⚠️ **이름 검색에 맞는 것이 없으면 요청을 보내지 않는다.** 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
 - **능력치 칸 표기는 옛 인챈트 필드로 먼저 붙였다**(2026-10-01) — 매물 줄 `능력치 n/N` · 아이콘의 칸 네모 · 툴팁의 칸 목록. 읽는 곳은 `EquipLabel.ReadStatOptions` 한 곳이다.
   검색 필터는 **인챈트 등급 드롭다운 하나**다(2026-10-03 · [이슈 #46](https://github.com/JeongTaeWoong99/Windows_simulator/issues/46)) — 옵션 다중 선택은 매물이 쌓인 뒤에.
-- 처음에는 구매 › 자원 화면만 켜 둔다. 나머지가 켜진 채 저장되면 경매장 탭을 처음 열 때 각자 조회를 보낸다.
+- 처음에는 구매 › 자원 화면만 켜 둔다. 나머지가 켜진 채 저장되면 경매장을 처음 열 때 각자 조회를 보낸다.
 - `AuctionTab`·`AuctionBuyKind`는 씬에 int로 저장된다 — 값을 끼우거나 재정렬하면 씬 배선을 함께 고친다.
 
 ---
-
-## 풀마다 카드 한 장 — 카드는 인스펙터에 줄로 넣는다 (T-143)
-
-`GachaInfoTable`(`Gacha.xlsx`)의 풀을 **카드 한 장씩** 보인다. `GachaId`가 곧 `GachaInfoTID`다.
-버튼 8개를 나열하던 화면을 2026-10-10에 바꿨다 — 어느 버튼이 어느 풀인지 글자를 읽어야 알았다.
-
-```
-Gacha Presenter (↓ SUB VIEW)     VLG 5/5
-└─ Pool Scroll Panel             ScrollRect · flexH 1 — 창이 작아지면 굴린다
-   └─ Viewport (RectMask2D) / Content (VLG 0/5 + ContentSizeFitter)
-      └─ Character · Weapon · Accessory · Gem Pool Card   GachaPoolCardView 프리팹 × 4 · pref 146
-         ├─ Header Panel   제목 "캐릭터 소환 (일꾼)" · 도움말 아이콘(HelpIcon 프리팹)
-         └─ Body Panel     대표 아이콘(ItemIconView) + 종수 · [1회] · [10회](강조색)
-```
-
-| 자리 | 출처 |
-|---|---|
-| 제목 | `GachaInfoTable.Name` + 괄호 — 캐릭터만이면 "일꾼", 장비만이면 "작업속도 증가" |
-| 종수 · 대표 아이콘 | 가챠 시트에서 그 풀의 행 수 · 가장 높은 등급의 첫 항목 |
-| 도움말 아이콘(?) | **올리면 등급 확률 툴팁** — 기능 설명·확률은 도움말 아이콘에 단다([`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>) "툴팁 두 종류"). 처음엔 `[P]` 배지였다 |
-| 비용 | `CostSingle` · `CostMulti` — 모자라면 경고색 + 잠금 |
-
-**확률은 테이블에서 계산한다** (`GachaPoolSummary`). 서버 `GachaPoolCatalog`처럼 **아이템·캐릭터·장비·골드 네 시트를
-같은 GachaId로 섞어** 가중치 합을 분모로 쓴다 — 한 시트만 보면 섞인 풀의 확률이 틀린다. 등급은 각 정의 테이블에서 읽는다.
-
-`GachaPresenter`의 `Pools` 배열에 `{ gachaId, 카드 }`를 **화면과 같은 순서로** 넣는다.
-배선이 비면 콘솔로 알리고, 테이블에 없는 풀의 카드는 **끈다** — 켜 두면 버튼이 고장 난 것처럼 보인다.
-카드를 늘릴 때는 `Content` 아래에 프리팹을 하나 더 놓고 배열에 한 줄 넣는다. **탭은 풀이 늘면** 그때 나눈다.
-
-### ⚠️ 이름과 비용을 코드에 박지 않는다
-
-`Name`·`CostSingle`·`CostMulti`를 테이블에서 읽어 `Start`에서 채운다.
-**10연차가 단차 x 10이라는 보장이 없다** — 컬럼이 따로다. 곱해서 만들면 기획이 할인율을
-넣는 순간 화면과 서버가 다른 값을 말한다.
-
-### 골드가 모자란 버튼만 잠근다
-
-`PlayerDataModel.CurrencyChanged`를 구독해 `Gold >= 비용`인 버튼만 연다(`GachaPoolCardView.SetState`).
-**두 축을 함께 본다** — 대기 중이면 전부 잠기고, 대기가 풀려도 모자란 버튼은 잠긴 채로 남아야 한다.
-한 축만 보면 응답이 온 순간 살 수 없는 버튼까지 함께 열린다.
-
-> **클라 판단은 표시용일 뿐이다.** 실제 거절은 서버가 하고(`NotEnoughCurrency`),
-> 그 사유는 `ResultMessages`를 거쳐 알림으로 뜬다.
-> 재화 축은 골드뿐이라(다이아 폐지 — #41) `CostCurrency`가 골드가 아니면 경고만 남긴다.
-
-## 지금 있는 규칙
-
-- **가챠가 거래 열에 있는 이유**는 기획이다 — 가챠 티켓이 골드 상점 품목이다
-  (`GameDesign/기획/거래/README.md` 3.2). 화면 배치가 아니라 기획이 정한 자리라
-  옮길 때는 기획 쪽을 먼저 본다.
-- **결과 내용은 이 폴더에서 그리지 않는다.** 뽑힌 보상·인벤토리 반영은 `PlayerDataModel`이
-  처리하고, 결과 팝업은 `!Overlay Canvas`의 [`GachaResultPresenter`](<../Overlay/Overlay 규칙.md>)가
-  `GachaCompleted`를 **스스로 구독해서** 띄운다. **여기 자식으로 두지 않는다** — 요청 직후 이 열을
-  닫으면 결과가 통째로 사라지기 때문이다(아래 사고와 같은 뿌리).
-  다만 **성공/실패 도착 여부는 여기서 구독한다** — 요청 중 로딩·버튼 잠금·실패 알림이 필요하기 때문이다.
-
-## ⚠️ 요청 중 열을 닫아 응답을 놓쳤던 사고
-
-가챠 요청을 보낸 직후 하단 [거래]로 이 열을 닫으면, `OnDisable`이 구독을 끊어 응답을
-놓치고 **실제로는 성공한 요청에 5초 뒤 무응답 알림이 떴다.**
-
-대응은 이 폴더가 아니라 오버레이 쪽에 있다 — **대기 차단(`blocksRaycasts`)을 표시보다
-먼저, 요청 즉시 건다.** 근거와 두 축(차단/표시)의 구분은
-[`Overlay 규칙.md`](<../Overlay/Overlay 규칙.md>)의 "로딩은 두 축을 나눠 쓴다".
-
-**전역 차단이 생겼어도 `GachaPresenter`의 개별 버튼 잠금은 남긴다.** 역할이 다르다 —
-차단은 "대기 중 전체"를 막고, 개별 잠금은 "이 버튼은 지금 못 누른다"를 **보이게** 한다.

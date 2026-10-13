@@ -295,7 +295,7 @@ public static class EquipLabel
     //   equipped : '장착' 줄에 적을 문구. null이면 줄을 뺀다(장비 고르기·경매 등록 후보는 전부 인벤토리에 있다)
     //
     // 인벤토리 장비 칸 · 장비 고르기 줄 · 경매 등록 후보가 같은 장비를 **같은 툴팁**으로 읽게 한 곳에 둔다.
-    // ※ 두 가격을 나란히 적는다 — 즉시 판매는 정해진 값, 경매는 그 값 ~ x10 사이에서 직접 정한다('Market 규칙.md').
+    // ※ 두 가격을 나란히 적는다 — 즉시 판매는 정해진 값, 경매는 그 값 ~ x10 사이에서 직접 정한다('Auction 규칙.md').
     public static TooltipContent? BuildTooltip(int equipTid, IReadOnlyList<int>? optionTids, string? equipped = null)
     {
         if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))

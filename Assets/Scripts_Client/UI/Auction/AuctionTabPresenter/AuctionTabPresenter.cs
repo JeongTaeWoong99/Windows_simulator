@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 // 경매장 탭 안의 하위 탭. 값의 순서는 **화면의 탭 순서와 같게 유지한다**.
 //
-// ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다('MarketTab'과 같은 규칙).
+// ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다('HubTab'과 같은 규칙).
 //   2026-09-30 거래소·장비·등록·내 매물(4개) → 구매·등록·내 매물(3개)로 바꾸며 씬을 다시 배선했다.
 public enum AuctionTab
 {
@@ -23,15 +23,15 @@ public enum AuctionTab
 // 파는 축(자원·장비·캐릭터)이 셋이지만 **하는 일**(사기·올리기·관리)로 탭을 나눈다 — 축으로 나누면 축이 늘 때마다 탭이 는다.
 // 축은 [구매] 안의 줄('AuctionBuyTabPresenter')과 [등록]의 종류 드롭다운이 고른다.
 //
-// 탭마다 화면(Presenter)이 따로 있고 지금 탭의 화면만 켠다. 모양은 'MarketTabPresenter'와 같다.
+// 탭마다 화면(Presenter)이 따로 있고 지금 탭의 화면만 켠다. 모양은 'HubTabPresenter'와 같다.
 // 화면들은 이 오브젝트의 자식이 아니라 형제다 — Presenter 안에 Presenter를 두지 않는다('UI 규칙.md').
 //
 // ⚠️ 화면은 꺼졌다 켜진다 — 각 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊는다.
-//   요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Market 규칙.md').
+//   요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Auction 규칙.md').
 //
 // ■ 내 매물 배지: 경매 우편(판매 대금·만료 반환)이 오면 [내 매물] 버튼에 점을 단다('AuctionModel.HasMyListingsNews').
 //   내 매물 화면이 그려지면 모델이 끈다.
-// ■ 밖에서 여는 길: 'ShowTab' — 인벤토리 [경매 등록]이 등록 탭을 열 때 쓴다('MarketCanvasView.OpenAuctionRegister').
+// ■ 밖에서 여는 길: 'ShowTab' — 인벤토리 [경매 등록]이 등록 탭을 열 때 쓴다('AuctionCanvasView.OpenRegister').
 public class AuctionTabPresenter : MonoBehaviour
 {
     // 경매장 탭을 처음 열었을 때의 하위 탭.
@@ -189,7 +189,7 @@ public class AuctionTabPresenter : MonoBehaviour
     #region 탭 전환
 
     // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 인벤토리 [경매 등록]).
-    // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('MarketTabPresenter'와 같다).
+    // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('HubTabPresenter'와 같다).
     public void ShowTab(AuctionTab tab)
     {
         CurrentTab       = tab;

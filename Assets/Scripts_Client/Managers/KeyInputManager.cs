@@ -10,7 +10,8 @@ using UnityEngine.InputSystem;
 //
 // ■ 두 구역 — 지금 어느 쪽인지는 'Scope'
 //   아웃게임 : 로그인 화면(게임에 들어가기 전). 로그인 입력칸 Enter · UI 키 이동이 산다.
-//   인게임   : 로그인이 끝난 뒤. 마우스로만 하는 게임이라 키는 **Shift+우클릭 하나**다(2026-10-11 사용자 결정).
+//   인게임   : 로그인이 끝난 뒤. 마우스로만 하는 게임이라 키는 **Shift+우클릭**(2026-10-11 사용자 결정)과
+//              **Esc**(화면 전체를 덮는 경매장 닫기 — 2026-10-13 · T-147) 둘이다.
 //   로그인이 성공하면 인게임으로 넘어가고 되돌아오지 않는다(로그아웃이 없다 — 종료뿐이다).
 //
 // ■ UI 키 이동(방향키·WASD 선택 이동 · Enter/Space로 선택된 버튼 누르기 · Esc)
@@ -60,6 +61,9 @@ public class KeyInputManager : MonoService<KeyInputManager>
 
     // Shift + 우클릭 — 인벤토리 칸을 경매 등록으로 (우클릭만 하면 판매 목록에 담는다). 우클릭 순간에 묻는다.
     public bool IsQuickAuctionHeld => Scope == KeyScope.InGame && Keyboard.current != null && Keyboard.current.shiftKey.isPressed;
+
+    // Esc — 화면 전체를 덮는 창(경매장)을 닫는다. 이번 프레임에 눌렸는가 — 그 창이 열려 있는 동안 매 프레임 묻는다.
+    public bool WasClosePressed => Scope == KeyScope.InGame && Keyboard.current != null && Keyboard.current.escapeKey.wasPressedThisFrame;
 
     #endregion
 

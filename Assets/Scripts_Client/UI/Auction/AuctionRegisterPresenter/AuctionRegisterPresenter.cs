@@ -142,7 +142,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         }
     }
 
-    // 이 종류·개체를 미리 골라 둔다 — 인벤토리 [경매 등록]이 시장 창을 열며 부른다('MarketCanvasView.OpenAuctionRegister').
+    // 이 종류·개체를 미리 골라 둔다 — 인벤토리 [경매 등록]이 경매장을 열며 부른다('AuctionCanvasView.OpenRegister').
     // ※ 처음 열리는 순간이면 아직 Start 전이다 — 적어 두었다가 Start 끝에서 적용한다.
     public void Preselect(EAuctionKind kind, long key)
     {

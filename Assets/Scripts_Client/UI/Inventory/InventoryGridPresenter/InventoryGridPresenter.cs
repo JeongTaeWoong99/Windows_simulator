@@ -48,7 +48,7 @@ using UnityEngine.UI;
 //   동선은 'Inventory 규칙.md'.
 //
 // ■ Shift+우클릭 = 경매 등록 (2026-10-03)
-//   거래 열을 열어 경매 등록 화면에 그 물건을 골라 둔다('MarketCanvasView.OpenAuctionRegister').
+//   경매장을 열어 등록 화면에 그 물건을 골라 둔다('AuctionCanvasView.OpenRegister').
 //   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
 // ■ 끌어 놓기 = 칸 이동 (세 탭 · 2026-10-06 · T-044)
@@ -875,7 +875,7 @@ public class InventoryGridPresenter : MonoBehaviour
         }
     }
 
-    // 그 물건을 경매 등록 화면에 골라 둔다 — 거래 열을 연다 (OnSlotRightClicked에서 호출).
+    // 그 물건을 경매 등록 화면에 골라 둔다 — 경매장을 연다 (OnSlotRightClicked에서 호출).
     // ※ 올릴 수 없는 개체여도 연다 — 등록 화면이 흐린 줄과 사유로 말한다(한 곳에서만 말하게).
     private void OpenAuctionRegister(long key)
     {
@@ -892,7 +892,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        _ui.Market.OpenAuctionRegister(kind, key);
+        _ui.Auction.OpenRegister(kind, key);
     }
 
     // 캐릭터를 담거나 뺀다 — 팔 수 없으면 사유를 알린다 (OnSlotRightClicked에서 호출).

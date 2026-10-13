@@ -25,7 +25,7 @@ public enum MainScreen
 }
 
 // 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
-// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Market·!Login)와
+// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Hub·#Auction·!Login)와
 // 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
 //
 // ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
@@ -80,8 +80,15 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("인벤토리 열의 본체 — @Inventory Column 안의 #Inventory Canvas")]
     private InventoryCanvasView inventoryCanvas = null!;
 
-    [SerializeField, Tooltip("거래 열의 본체 — @Market Column 안의 #Market Canvas")]
-    private MarketCanvasView marketCanvas = null!;
+    // ※ FormerlySerializedAs — 거래(Market) → 거점(Hub) 개명(2026-10-13 · T-147) 전 씬 값을 잇는다.
+    [FormerlySerializedAs("marketCanvas")]
+    [SerializeField, Tooltip("거점 열의 본체 — @Hub Column 안의 #Hub Canvas (뽑기 · 창고)")]
+    private HubCanvasView hubCanvas = null!;
+
+    // ※ 열이 아니라 '!Overlay Canvas'의 첫째 자식이다 — 3열 폭 전부를 덮고 화면 전체를 막는다('AuctionCanvasView').
+    [CenterHeader("경매장 — 화면 전체")]
+    [SerializeField, Tooltip("경매장 — !Overlay Canvas 안의 #Auction Canvas. 하단 메뉴 [경매장]으로 열고 안쪽 [X]·Esc로 닫는다")]
+    private AuctionCanvasView auctionCanvas = null!;
 
     [CenterHeader("사이드 2개 캔버스")]
     [SerializeField, Tooltip("상태 캔버스 — 위젯의 반대편. 메인 캔버스와 함께 여닫힌다")]
@@ -102,8 +109,9 @@ public class UIManager : MonoService<UIManager>
 
     // ─── 참조 ───
     public InventoryCanvasView Inventory => inventoryCanvas;
-    public MarketCanvasView  Market  => marketCanvas;
-    public WidgetCanvasView  Widget  => widgetCanvas;
+    public HubCanvasView       Hub       => hubCanvas;
+    public AuctionCanvasView   Auction   => auctionCanvas;
+    public WidgetCanvasView    Widget    => widgetCanvas;
 
     // 지금 '#Main Canvas'에 떠 있는 화면. 전부 닫힌 상태에서도 "다음에 열면 이것"을 뜻한다
     // — 그래서 'CloseAllExceptWidget'이 이 값을 기본으로 되돌린다.
@@ -114,7 +122,8 @@ public class UIManager : MonoService<UIManager>
         mainCanvas.gameObject.activeSelf     ||
         stateCanvas.gameObject.activeSelf    ||
         inventoryCanvas.gameObject.activeSelf  ||
-        marketCanvas.gameObject.activeSelf;
+        hubCanvas.gameObject.activeSelf        ||
+        auctionCanvas.IsOpen;
 
     // 필수 참조 검증 → 메인 화면 불변식 정리 (Unity 메시지)
     // ※ 이 매니저는 다른 서비스를 조회하지 않는다 — 인스펙터 참조만 쓰므로 확보 단계가 없다.
@@ -124,7 +133,8 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(mainCanvas,    nameof(mainCanvas));
         this.RequireRef(inventoryCanvas, nameof(inventoryCanvas));
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
-        this.RequireRef(marketCanvas,  nameof(marketCanvas));
+        this.RequireRef(hubCanvas,     nameof(hubCanvas));
+        this.RequireRef(auctionCanvas, nameof(auctionCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
         this.RequireRef(amountInput,   nameof(amountInput));
         this.RequireRef(confirm,       nameof(confirm));
@@ -239,7 +249,7 @@ public class UIManager : MonoService<UIManager>
     #region 전체 여닫기
 
     // 위젯의 열기/닫기 버튼이 부른다 — 열려 있으면 전부 접고, 닫혀 있으면 작업슬롯을 연다.
-    // 진입 순서(위젯 → 작업슬롯 → 인벤토리·거래)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
+    // 진입 순서(위젯 → 작업슬롯 → 인벤토리·거점·경매장)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
     public void ToggleAll()
     {
         if (IsOpen)
@@ -252,7 +262,7 @@ public class UIManager : MonoService<UIManager>
         }
     }
 
-    // 작업슬롯 목록과 상태 캔버스를 연다. 인벤토리·거래는 작업슬롯의 하단 버튼으로 연다.
+    // 작업슬롯 목록과 상태 캔버스를 연다. 인벤토리·거점·경매장은 작업슬롯의 하단 버튼으로 연다.
     public void OpenWorkStation()
     {
         ShowMainScreen(DefaultMainScreen);
@@ -268,7 +278,8 @@ public class UIManager : MonoService<UIManager>
     public void CloseAllExceptWidget()
     {
         inventoryCanvas.Show(false);
-        marketCanvas.Show(false);
+        hubCanvas.Show(false);
+        auctionCanvas.Show(false);
         stateCanvas.Show(false);
         mainCanvas.Show(false);
 
@@ -287,16 +298,24 @@ public class UIManager : MonoService<UIManager>
     // 인벤토리 열을 열고 닫는다.
     public void ShowInventory(bool on) => inventoryCanvas.Show(on);
 
-    // 거래 열을 열고 닫는다.
-    public void ShowMarket(bool on) => marketCanvas.Show(on);
+    // 거점 열을 열고 닫는다.
+    public void ShowHub(bool on) => hubCanvas.Show(on);
 
     // 인벤토리 열을 뒤집는다 (작업슬롯 하단 버튼).
     // 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
     // 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
     public void ToggleInventory() => ShowInventory(!inventoryCanvas.gameObject.activeSelf);
 
-    // 거래 열을 뒤집는다 (작업슬롯 하단 버튼).
-    public void ToggleMarket() => ShowMarket(!marketCanvas.gameObject.activeSelf);
+    // 거점 열을 뒤집는다 (작업슬롯 하단 버튼).
+    public void ToggleHub() => ShowHub(!hubCanvas.gameObject.activeSelf);
+
+    #endregion
+
+    #region 경매장 — 화면 전체
+
+    // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]·Esc).
+    // ※ 토글이 아니다 — 열리면 하단 메뉴가 가려져 같은 버튼을 다시 누를 수 없다. 닫기는 경매장 안에서 한다.
+    public void ShowAuction(bool on) => auctionCanvas.Show(on);
 
     #endregion
 

@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -54,22 +54,27 @@
 
 ```
 !Overlay Canvas                                 화면에서
-├─ [0] Gacha Result Presenter (↓ SUB VIEW)  ┐   맨 뒤
-├─ [1] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
-├─ [2] Confirm Presenter      (↓ SUB VIEW)  ┘
-├─ [3] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
-├─ [4] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
-├─ [5] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
-├─ [6] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
-└─ [7] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
+├─ [0] #Auction Canvas (MAIN VIEW)          ← 맨 뒤 — 경매장(화면 전체). 자기가 띄우는 팝업·툴팁이 전부 그 위에 떠야 한다 (T-147)
+├─ [1] Gacha Result Presenter (↓ SUB VIEW)  ┐
+├─ [2] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
+├─ [3] Confirm Presenter      (↓ SUB VIEW)  ┘
+├─ [4] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
+├─ [5] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
+├─ [6] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
+├─ [7] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [8] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
+
+> **경매장만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,
+> `CanvasGroup`이 아니라 **`SetActive`** 로 여닫는다(다시 켜 줄 손 `UIManager.ShowAuction`이 밖에 있다 — 로그인과 같은 이유).
+> 근거는 [`Auction 규칙.md`](<../Auction/Auction 규칙.md>)의 "자리".
 
 순서의 근거 (2026-10-10 · T-141):
 - **로딩 > 팝업 셋** — 대기 중에는 떠 있는 팝업의 버튼까지 막아야 한다(결과창의 [n회 더 뽑기] 등). 전에는 로딩이 팝업 아래였다.
 - **알림 > 로딩** — 연결 끊김(`RaiseFatal`)은 진행 중 대기를 끝내지 않는다. 로딩이 위면 종료 안내와 그 버튼이 흰 차단막에 덮인다. 알림은 마지막 출구다.
 - **툴팁이 맨 앞** — `blocksRaycasts`를 늘 꺼 아무것도 막지 않고, 커서 밑 **맨 위 하나**에만 뜬다. 로딩이 뜨면 맨 위가 로딩 차단막이 되어 툴팁은 스스로 사라진다 — 맨 앞에 둬도 무엇을 가리지 않고, 알림·로딩 안의 대상에도 툴팁을 달 수 있다.
 - **FPS > 로그인** — 로그인 화면에서도 보인다. 로딩보다 뒤라 대기 중엔 덮인다(진단 표시라 괜찮다).
-- 오버레이를 새로 넣을 때 — **막는 팝업은 `Confirm` 다음(로그인 앞)**, 막지 않는 표시는 성격에 맞춰 끼운다. 알림·툴팁보다 앞에 두지 않는다.
+- 오버레이를 새로 넣을 때 — **화면 전체를 쓰는 창은 경매장 곁(팝업 앞)**, **막는 팝업은 `Confirm` 다음(로그인 앞)**, 막지 않는 표시는 성격에 맞춰 끼운다. 알림·툴팁보다 앞에 두지 않는다.
 
 ### 캔버스를 하나로 둔다 — 나누지 않는 근거 (2026-10-10 · T-141 실측)
 
@@ -117,7 +122,7 @@
 | 캔버스 | Sorting Order |
 |---|---|
 | `!Overlay Canvas` | **100** |
-| `#Widget` · `#Inventory` · `#Market` · `#Main` · `#State` | **0 — 전부 형제** |
+| `#Widget` · `#Inventory` · `#Hub` · `#Main` · `#State` | **0 — 전부 형제** |
 
 열 캔버스는 전부 order 0인 **형제**다. 그 안에 전체화면 차단막을 깔아도 **자기 열만 막고**
 상태바·메인·다른 열은 그대로 눌린다. 화면 전체를 막을 수 있는 것은 이 층뿐이다.
@@ -225,12 +230,12 @@
 > `#Main Canvas`의 `Panel`은 이것과 다른 물건이다 — 거긴 차단이 아니라 **한 자리를 나눠 쓰는
 > 화면들의 정렬 상자**다([`UI 규칙.md`](<../UI 규칙.md>)의 이름 규칙).
 
-## 왜 보상 결과 팝업이 거래 열이 아니라 여기 있는가
+## 왜 보상 결과 팝업이 거래 열(지금 거점 열)이 아니라 여기 있는가
 
 `GachaResultPresenter`는 `PlayerDataModel`의 결과 이벤트를 **스스로 구독해서 뜬다** —
 위 표의 "자기 이벤트로 뜨는 상주 오버레이"에 그대로 해당한다.
 
-거래 열(`#Market Canvas`)의 자식으로 두면 **요청을 보낸 직후 열을 닫는 순간 결과가 통째로
+거래 열(`#Market Canvas` — 지금 `#Hub Canvas`)의 자식으로 두면 **요청을 보낸 직후 열을 닫는 순간 결과가 통째로
 사라진다.** 위 "차단은 즉시" 절이 다루는 사고와 같은 뿌리다 — 다만 그쪽은 0.15초의 틈이
 문제였고, 이쪽은 **사용자가 언제든 열을 닫을 수 있다**는 점이 문제다. 차단으로 막을 수 없다.
 
