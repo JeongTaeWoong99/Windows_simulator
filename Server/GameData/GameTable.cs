@@ -11,6 +11,7 @@ namespace GameData
     /// <summary>모든 데이터 테이블의 로드/조회 진입점. LoadAll에 파일 읽기 델리게이트를 주입한다(서버=File, Unity=StreamingAssets).</summary>
     public static class GameTable
     {
+        public static TableSet<int, ArtifactTableRow> ArtifactTable { get; private set; } = null!;
         public static TableSet<int, CharacterTableRow> CharacterTable { get; private set; } = null!;
         public static TableSet<int, WorkSpeedTableRow> WorkSpeedTable { get; private set; } = null!;
         public static TableSet<int, CharacterLevelTableRow> CharacterLevelTable { get; private set; } = null!;
@@ -45,6 +46,7 @@ namespace GameData
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
         public static void LoadAll(Func<string, byte[]> read)
         {
+            ArtifactTable = TableSet<int, ArtifactTableRow>.From(read("ArtifactTable.bytes"), r => r.ArtifactTID);
             CharacterTable = TableSet<int, CharacterTableRow>.From(read("CharacterTable.bytes"), r => r.CharacterTID);
             WorkSpeedTable = TableSet<int, WorkSpeedTableRow>.From(read("WorkSpeedTable.bytes"), r => r.WorkSpeedTID);
             CharacterLevelTable = TableSet<int, CharacterLevelTableRow>.From(read("CharacterLevelTable.bytes"), r => r.CharacterLevelTID);

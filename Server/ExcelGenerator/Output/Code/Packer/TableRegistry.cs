@@ -16,6 +16,7 @@ namespace GameData
 
         public static readonly IReadOnlyDictionary<string, Entry> Tables = new Dictionary<string, Entry>
         {
+            ["ArtifactTable"] = new(ArtifactTablePacker.Pack, ArtifactTablePacker.Verify, ArtifactTablePacker.Preview, ArtifactTablePacker.Dump),
             ["CharacterTable"] = new(CharacterTablePacker.Pack, CharacterTablePacker.Verify, CharacterTablePacker.Preview, CharacterTablePacker.Dump),
             ["WorkSpeedTable"] = new(WorkSpeedTablePacker.Pack, WorkSpeedTablePacker.Verify, WorkSpeedTablePacker.Preview, WorkSpeedTablePacker.Dump),
             ["CharacterLevelTable"] = new(CharacterLevelTablePacker.Pack, CharacterLevelTablePacker.Verify, CharacterLevelTablePacker.Preview, CharacterLevelTablePacker.Dump),

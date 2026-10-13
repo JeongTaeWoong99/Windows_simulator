@@ -1,0 +1,222 @@
+[
+  {
+    "ArtifactTID": 1,
+    "Name": "어부의 낡은 부적",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 1,
+    "BasePrice": 400,
+    "Description": "일반 · 전 산업 작업속도 0.1% · 실린 순서 001 (테스트값)"
+  },
+  {
+    "ArtifactTID": 2,
+    "Name": "깨진 토기 빗",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 농사 작업속도 0.2% · 실린 순서 002 (테스트값)"
+  },
+  {
+    "ArtifactTID": 3,
+    "Name": "녹슨 쇠못",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "Mining",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 채굴 작업속도 0.2% · 실린 순서 003 (테스트값)"
+  },
+  {
+    "ArtifactTID": 4,
+    "Name": "조개 단추",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "Excavation",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 발굴 작업속도 0.2% · 실린 순서 004 (테스트값)"
+  },
+  {
+    "ArtifactTID": 5,
+    "Name": "낡은 동전",
+    "GlobalRarity": "Common",
+    "EffectType": "AppraiseCostDiscount",
+    "Industry": "None",
+    "EffectValue": 5,
+    "BasePrice": 400,
+    "Description": "일반 · 감정 비용 할인 0.5% · 실린 순서 005 (테스트값)"
+  },
+  {
+    "ArtifactTID": 6,
+    "Name": "닳은 숫돌",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 벌목 작업속도 0.2% · 실린 순서 006 (테스트값)"
+  },
+  {
+    "ArtifactTID": 7,
+    "Name": "흙 구슬",
+    "GlobalRarity": "Common",
+    "EffectType": "YieldAdd",
+    "Industry": "None",
+    "EffectValue": 1,
+    "BasePrice": 400,
+    "Description": "일반 · 전 산업 산출량 0.1% · 실린 순서 007 (테스트값)"
+  },
+  {
+    "ArtifactTID": 8,
+    "Name": "돌 화살촉",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "Hunting",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 사냥 작업속도 0.2% · 실린 순서 008 (테스트값)"
+  },
+  {
+    "ArtifactTID": 9,
+    "Name": "짚신 조각",
+    "GlobalRarity": "Common",
+    "EffectType": "YieldAdd",
+    "Industry": "Farming",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 농사 산출량 0.2% · 실린 순서 009 (테스트값)"
+  },
+  {
+    "ArtifactTID": 10,
+    "Name": "녹슨 열쇠",
+    "GlobalRarity": "Common",
+    "EffectType": "RelicChanceAdd",
+    "Industry": "None",
+    "EffectValue": 5,
+    "BasePrice": 400,
+    "Description": "일반 · 유물 발견 확률 0.5% · 실린 순서 010 (테스트값)"
+  },
+  {
+    "ArtifactTID": 11,
+    "Name": "나무 빗",
+    "GlobalRarity": "Common",
+    "EffectType": "YieldAdd",
+    "Industry": "Logging",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 벌목 산출량 0.2% · 실린 순서 011 (테스트값)"
+  },
+  {
+    "ArtifactTID": 12,
+    "Name": "작은 돌 인형",
+    "GlobalRarity": "Common",
+    "EffectType": "YieldAdd",
+    "Industry": "Excavation",
+    "EffectValue": 2,
+    "BasePrice": 400,
+    "Description": "일반 · 발굴 산출량 0.2% · 실린 순서 012 (테스트값)"
+  },
+  {
+    "ArtifactTID": 13,
+    "Name": "조개 껍데기 목걸이",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "SpeedAdd",
+    "Industry": "Excavation",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 발굴 작업속도 0.4% · 실린 순서 013 (테스트값)"
+  },
+  {
+    "ArtifactTID": 14,
+    "Name": "토기 술잔",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 2,
+    "BasePrice": 1200,
+    "Description": "고급 · 전 산업 작업속도 0.2% · 실린 순서 014 (테스트값)"
+  },
+  {
+    "ArtifactTID": 15,
+    "Name": "뼈 바늘",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Hunting",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 사냥 산출량 0.4% · 실린 순서 015 (테스트값)"
+  },
+  {
+    "ArtifactTID": 16,
+    "Name": "조약돌 팔찌",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Mining",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 채굴 산출량 0.4% · 실린 순서 016 (테스트값)"
+  },
+  {
+    "ArtifactTID": 17,
+    "Name": "그물추",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "AppraiseCostDiscount",
+    "Industry": "None",
+    "EffectValue": 10,
+    "BasePrice": 1200,
+    "Description": "고급 · 감정 비용 할인 1% · 실린 순서 017 (테스트값)"
+  },
+  {
+    "ArtifactTID": 18,
+    "Name": "갈대 피리",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "SpeedAdd",
+    "Industry": "Farming",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 농사 작업속도 0.4% · 실린 순서 018 (테스트값)"
+  },
+  {
+    "ArtifactTID": 19,
+    "Name": "모래시계 조각",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "None",
+    "EffectValue": 2,
+    "BasePrice": 1200,
+    "Description": "고급 · 전 산업 산출량 0.2% · 실린 순서 019 (테스트값)"
+  },
+  {
+    "ArtifactTID": 20,
+    "Name": "나무 가면",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "SpeedAdd",
+    "Industry": "Logging",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 벌목 작업속도 0.4% · 실린 순서 020 (테스트값)"
+  },
+  {
+    "ArtifactTID": 21,
+    "Name": "흙 인형",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "RelicChanceAdd",
+    "Industry": "None",
+    "EffectValue": 10,
+    "BasePrice": 1200,
+    "Description": "고급 · 유물 발견 확률 1% · 실린 순서 021 (테스트값)"
+  },
+  {
+    "ArtifactTID": 22,
+    "Name": "돌 도끼",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Logging",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "고급 · 벌목 산출량 0.4% · 실린 순서 022 (테스트값)"
+  }
+]

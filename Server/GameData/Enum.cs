@@ -95,13 +95,15 @@ namespace GameData
 
     public enum UserTraitEffect : byte
     {
-        None           = 0,
+        None                 = 0,
 
-        SpeedAdd       = 1,  // 작업속도 가산 — EffectValue 천분율, Industry None=전 산업
-        IndustryUnlock = 2,  // 산업 개척 — 특성 레벨 N이면 그 산업 Lv N까지 열린다 (기본 레벨 1)
-        YieldAdd       = 3,  // 산출량 가산 — 레벨당 EffectValue 천분율, Industry None=전 산업
+        SpeedAdd             = 1,  // 작업속도 가산 — EffectValue 천분율, Industry None=전 산업
+        IndustryUnlock       = 2,  // 산업 개척 — 특성 레벨 N이면 그 산업 Lv N까지 열린다 (기본 레벨 1)
+        YieldAdd             = 3,  // 산출량 가산 — 레벨당 EffectValue 천분율, Industry None=전 산업
+        AppraiseCostDiscount = 4,  // 감정 비용 할인 — EffectValue 천분율, 합계 500‰까지 (아티팩트 전용 — T-150)
+        RelicChanceAdd       = 5,  // 유물 발견 확률 — EffectValue 천분율, 유물 롤 확률에 곱한다 (아티팩트 전용 — T-150)
 
-        Max           ,
+        Max                 ,
     };
 
     public enum EnchantOptionType : byte
