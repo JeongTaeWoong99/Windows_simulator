@@ -17,6 +17,28 @@ public sealed class LoadAuctionStateRepository(User user) : IRepository
     public void Apply() => User.OnAuctionStateLoaded((int)_activeListings);
 }
 
+/// <summary>완료 탭 조회 → <see cref="AuctionHistoryDb.QueryAsync"/> (T-156).</summary>
+public sealed class AuctionHistoryRepository(
+    User user, EAuctionHistoryType type, int days, long cursor, int pageSize, bool markSeen, DateTime now) : IRepository
+{
+    private AuctionHistoryPage? _page;
+
+    public long Key => User.DbKey;
+
+    public User User { get; } = user;
+
+    public EAuctionHistoryType Type     => type;
+    public int                 Days     => days;
+    public long                Cursor   => cursor;
+    public int                 PageSize => pageSize;
+    public bool                MarkSeen => markSeen;
+
+    public async Task ExecuteAsync(DbConnection connection)
+        => _page = await AuctionHistoryDb.QueryAsync(connection, User.Uid, type, days, cursor, pageSize, markSeen, now);
+
+    public void Apply() => User.OnAuctionHistoryLoaded(_page!);
+}
+
 /// <summary>등록 한 트랜잭션 → <see cref="AuctionDb.RegisterAsync"/>. 끝나면 매물 ID를 알린다.</summary>
 public sealed class RegisterAuctionRepository(
     User user, AuctionItemSnapshot item, long unitPrice, long listingFee,

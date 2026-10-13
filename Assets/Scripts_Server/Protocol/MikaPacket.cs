@@ -106,6 +106,8 @@ namespace MikaProtocol
         S_EntityLockResponse = 76,
         C_MarketPriceHistoryRequest = 77,
         S_MarketPriceHistoryResponse = 78,
+        C_AuctionHistoryRequest = 79,
+        S_AuctionHistoryResponse = 80,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -779,6 +781,29 @@ namespace MikaProtocol
         public EResultCode                 Result { get; set; }
         public int                         Tid    { get; set; }
         public List<MarketPriceLevelInfo>? Levels { get; set; }
+    }
+
+    /// <summary>
+    /// 거래 기록 — 경매장 완료 탭 (T-156). 최신순 한 쪽. 기록은 30일 보관한다.
+    /// <c>PageSize</c> 0이면 줄 없이 새 기록 수만 센다(탭 배지 — 로그인 · 경매 우편 도착 때). <c>MarkSeen</c>이면 지금까지를 "봤다"로 남긴다(탭을 열 때).
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_AuctionHistoryRequest)]
+    public partial class C_AuctionHistoryRequest : IPacket
+    {
+        public EAuctionHistoryType Type            { get; set; }  // None이면 전부
+        public int                 Days            { get; set; }  // 최근 며칠 — 0이면 보관 기간 전부
+        public long                CursorHistoryId { get; set; }  // 이 쪽 마지막 줄의 HistoryId — 첫 쪽은 0
+        public int                 PageSize        { get; set; }  // 0~50
+        public bool                MarkSeen        { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_AuctionHistoryResponse)]
+    public partial class S_AuctionHistoryResponse : IPacket
+    {
+        public EResultCode               Result      { get; set; }
+        public List<AuctionHistoryInfo>? Entries     { get; set; }
+        public bool                      HasMore     { get; set; }
+        public int                       UnseenCount { get; set; }  // 이번 요청이 "봤다"로 남기기 전의 새 기록 수
     }
 
     /// <summary>일별 시세 — 한 종류의 최근 14일(오늘이 마지막 칸) 체결 수량·평균·최저·최고 단가. 시세 탭 그래프용 (T-118).</summary>

@@ -569,6 +569,9 @@ namespace MikaNetwork
         // 거래소 가격대 도착 (Handle_S_MarketPriceResponse에서 발행)
         public static event Action<S_MarketPriceResponse>? MarketPriceReceived;
 
+        // 거래 기록 도착 (Handle_S_AuctionHistoryResponse에서 발행)
+        public static event Action<S_AuctionHistoryResponse>? AuctionHistoryReceived;
+
         // 일별 시세 도착 (Handle_S_MarketPriceHistoryResponse에서 발행)
         public static event Action<S_MarketPriceHistoryResponse>? MarketPriceHistoryReceived;
 
@@ -636,6 +639,16 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"거래소 가격대 결과={res.Result}, TID={res.Tid}, {res.Levels?.Count ?? 0}칸");
             MarketPriceReceived?.Invoke(res);
+        }
+
+        // 거래 기록 (S_AuctionHistoryResponse 수신 시 자동 호출) — 경매장 완료 탭 (T-156)
+        // ★ PageSize 0으로 물으면 Entries 없이 UnseenCount만 온다 — 탭 배지. 탭을 열 때 MarkSeen = true로 물으면 다음부터 0이다.
+        // ※ 새 기록은 푸시가 없다 — 경매 우편(판매·구매·반환)이 도착하면 배지를 다시 묻는다.
+        [PacketHandler]
+        public static void Handle_S_AuctionHistoryResponse(ISession session, S_AuctionHistoryResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"거래 기록 결과={res.Result}, {res.Entries?.Count ?? 0}줄 · 새 기록 {res.UnseenCount}");
+            AuctionHistoryReceived?.Invoke(res);
         }
 
         // 일별 시세 (S_MarketPriceHistoryResponse 수신 시 자동 호출) — 시세 탭 14일 그래프 (T-118)

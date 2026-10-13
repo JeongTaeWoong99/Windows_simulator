@@ -436,6 +436,20 @@ public static class ClientPacketHandler
         user.TryGetMarketPrice(req.Tid, GameClock.Instance.UtcNow, req.Kind);
     }
 
+    /// <summary>거래 기록(완료 탭). 빈도 제한·조회는 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_AuctionHistoryRequest(ISession session, C_AuctionHistoryRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_AuctionHistoryResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TryGetAuctionHistory(req, GameClock.Instance.UtcNow);
+    }
+
     /// <summary>일별 시세(시세 탭 그래프). 빈도 제한·중계는 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_MarketPriceHistoryRequest(ISession session, C_MarketPriceHistoryRequest req)

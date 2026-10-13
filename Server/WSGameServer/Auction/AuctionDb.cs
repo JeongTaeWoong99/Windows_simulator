@@ -210,6 +210,9 @@ public static class AuctionDb
             var buyerMailId  = await MailDb.InsertMailAsync(tx, buyerId, AuctionMail.PurchasedTemplateTid, buyerAttachment, now);
             var sellerMailId = await MailDb.InsertMailAsync(tx, trade.seller_id, AuctionMail.SoldTemplateTid, sellerAttachment, now);
 
+            await AuctionHistoryDb.InsertAsync(tx, trade.seller_id, EAuctionHistoryType.Sold, item, item.Count, trade.unit_price, totalPrice - saleFee, saleFee, tradeId, now);
+            await AuctionHistoryDb.InsertAsync(tx, buyerId, EAuctionHistoryType.Bought, item, item.Count, trade.unit_price, totalPrice, 0, tradeId, now);
+
             await InsertConfirmAsync(tx, tradeId, purchaseId, true, now);
 
             result = new AuctionSettleResult(
@@ -248,14 +251,30 @@ public static class AuctionDb
 
             // 일부 팔린 매물이면 남은 수량만 돌아가고, 등록비도 팔리지 않은 비율만큼이다.
             var refund     = AuctionMail.RefundsFee(reason) ? trade.UnsoldListingFee : 0;
-            var attachment = (AuctionItemSnapshot.FromJson(trade.snapshot) with { Count = trade.count }).ToAttachment(refund);
+            var item       = AuctionItemSnapshot.FromJson(trade.snapshot) with { Count = trade.count };
+            var attachment = item.ToAttachment(refund);
             var template   = AuctionMail.ReturnTemplate(reason);
             var mailId     = await MailDb.InsertMailAsync(tx, trade.seller_id, template, attachment, now);
+
+            await AuctionHistoryDb.InsertAsync(tx, trade.seller_id, HistoryType(reason), item, trade.count, trade.unit_price, refund, 0, tradeId, now);
 
             result = new AuctionReturnResult(trade.seller_id, MailDb.ToRow(mailId, template, attachment, now));
         });
 
         return result;
+    }
+
+    private static EAuctionHistoryType HistoryType(AuctionReturnReason reason)
+    {
+        switch (reason)
+        {
+            case AuctionReturnReason.Cancelled:
+                return EAuctionHistoryType.Cancelled;
+            case AuctionReturnReason.Expired:
+                return EAuctionHistoryType.Expired;
+            default:
+                return EAuctionHistoryType.Returned;
+        }
     }
 
     // 거래소 정산을 통째로 되돌리는 신호. 트랜잭션 안에서 던져 앞서 줄인 수량까지 롤백한다.
@@ -307,6 +326,8 @@ public static class AuctionDb
                     }
 
                     proceeds[trade.seller_id] = proceeds.GetValueOrDefault(trade.seller_id) + a.Price - fee;
+                    await AuctionHistoryDb.InsertAsync(tx, trade.seller_id, EAuctionHistoryType.Sold, AuctionItemSnapshot.FromJson(trade.snapshot),
+                        a.Quantity, a.UnitPrice, a.Price - fee, fee, a.TradeId, now);
                     if (trade.count == a.Quantity)
                     {
                         closed[trade.seller_id] = closed.GetValueOrDefault(trade.seller_id) + 1;
@@ -328,6 +349,10 @@ public static class AuctionDb
                     var mailId     = await MailDb.InsertMailAsync(tx, sellerId, AuctionMail.SoldTemplateTid, attachment, now);
                     sellerMails.Add((sellerId, MailDb.ToRow(mailId, AuctionMail.SoldTemplateTid, attachment, now), closed.GetValueOrDefault(sellerId)));
                 }
+
+                // 여러 매물에 걸친 구매는 한 줄 — 단가는 평균(내림)이다.
+                await AuctionHistoryDb.InsertAsync(tx, buyerId, EAuctionHistoryType.Bought, new AuctionItemSnapshot { Kind = kind, Tid = tid },
+                    quantity, total / quantity, total, 0, firstTrade, now);
 
                 await InsertConfirmAsync(tx, firstTrade, purchaseId, true, now);
 

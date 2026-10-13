@@ -270,6 +270,17 @@ namespace MikaProtocol
         AptitudeHunting    = 25,
     }
 
+    // 거래 기록 구분 (T-156 · 경매장 완료 탭). 값은 DB(t_auction_history.type)에 남으니 바꾸지 않는다.
+    public enum EAuctionHistoryType : byte
+    {
+        None      = 0,   // 요청에서는 "전부"
+        Sold      = 1,   // 판매 완료 — Amount = 받은 대금(수수료 뺀), Fee = 수수료
+        Bought    = 2,   // 구매 완료 — Amount = 낸 금액
+        Expired   = 3,   // 기간 만료 — Amount = 돌려받은 등록비
+        Cancelled = 4,   // 취소 — 등록비는 돌려받지 않는다(Amount 0)
+        Returned  = 5,   // 반환 — 경매장이 거부했거나 잃어버린 매물(드물다). Amount = 돌려받은 등록비
+    }
+
     // 잠금 대상 (T-137). 자원은 TID 하나 = 칸 하나라 잠그지 않는다.
     public enum ELockTarget : byte
     {

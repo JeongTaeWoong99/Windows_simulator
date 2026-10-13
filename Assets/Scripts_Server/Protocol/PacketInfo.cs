@@ -164,6 +164,22 @@ namespace MikaProtocol
         public long         Max  { get; set; }
     }
 
+    /// <summary>거래 기록 한 줄 (T-156). 금액의 뜻은 <see cref="EAuctionHistoryType"/> 주석을 본다.</summary>
+    [MemoryPackable]
+    public partial class AuctionHistoryInfo
+    {
+        public long                HistoryId    { get; set; }
+        public EAuctionHistoryType Type         { get; set; }
+        public EAuctionKind        Kind         { get; set; }
+        public int                 Tid          { get; set; }
+        public int                 Count        { get; set; }
+        public long                UnitPrice    { get; set; }  // 여러 매물에 걸친 구매는 평균(내림)
+        public long                Amount       { get; set; }
+        public long                Fee          { get; set; }
+        public int                 EnchantGrade { get; set; }  // 장비 표시용
+        public long                AtUnixMs     { get; set; }
+    }
+
     /// <summary>일별 시세 하루치. 체결이 없는 날은 수량·가격이 모두 0이다.</summary>
     [MemoryPackable]
     public partial class MarketDailyPriceInfo
