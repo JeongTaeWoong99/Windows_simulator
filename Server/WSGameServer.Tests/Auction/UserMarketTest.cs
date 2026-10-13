@@ -272,6 +272,67 @@ public class UserMarketTest
         Last<S_MarketPriceResponse>(b).Levels!.Select(l => (l.UnitPrice, l.Count)).ShouldBe(new[] { (30L, 10L) });
     }
 
+    // ── 장비·캐릭터 시세 (T-118) ──
+
+    [Theory]
+    [InlineData(EAuctionKind.Equip)]
+    [InlineData(EAuctionKind.Character)]
+    public void 장비_캐릭터도_종류별_시세와_가격대를_묻는다(EAuctionKind kind)
+    {
+        var (user, b) = NewUser();
+        _client.MarketItems = _ => Task.FromResult(new Proto.MarketItemsReply());
+        _client.PriceLadder = _ => Task.FromResult(new Proto.PriceLadderReply());
+
+        user.TryGetMarketItems(0, new List<int> { 1001 }, Now, kind);
+        user.TryGetMarketPrice(1001, Now, kind);
+
+        Last<S_MarketItemsResponse>(b).Result.ShouldBe(EResultCode.Ok);
+        Last<S_MarketPriceResponse>(b).Result.ShouldBe(EResultCode.Ok);
+        _client.RequestsOf<Proto.MarketItemsRequest>().Single().Kind.ShouldBe((int)kind);
+        _client.RequestsOf<Proto.PriceLadderRequest>().Single().Kind.ShouldBe((int)kind);
+    }
+
+    [Fact]
+    public void 장비는_거래소에서_수량으로_살_수_없다()
+    {
+        // 시세는 보지만 사는 길은 경매장(매물 통째로)이다.
+        var (user, b) = NewUser();
+
+        user.TryBuyMarket(1001, 1, 500, Now, EAuctionKind.Equip);
+
+        Last<S_MarketBuyResponse>(b).Result.ShouldBe(EResultCode.AuctionInvalidRequest);
+    }
+
+    [Fact]
+    public void 일별_시세를_14일치_클라_형식으로_옮긴다()
+    {
+        var (user, b) = NewUser();
+        var reply = new Proto.PriceHistoryReply();
+        reply.Days.Add(new Proto.DailyPrice { DayStartUnixMs = 1000, Quantity = 15, AvgUnitPrice = 33, MinUnitPrice = 30, MaxUnitPrice = 40 });
+        _client.PriceHistory = _ => Task.FromResult(reply);
+
+        user.TryGetMarketPriceHistory(1001, Now, EAuctionKind.Equip);
+
+        var res = Last<S_MarketPriceHistoryResponse>(b);
+        (res.Result, res.Kind, res.Tid).ShouldBe((EResultCode.Ok, EAuctionKind.Equip, 1001));
+        res.Days!.Single().ShouldSatisfyAllConditions(
+            d => d.DayStartUnixMs.ShouldBe(1000),
+            d => (d.Count, d.AvgUnitPrice, d.MinUnitPrice, d.MaxUnitPrice).ShouldBe((15L, 33L, 30L, 40L)));
+        _client.RequestsOf<Proto.PriceHistoryRequest>().Single().ShouldSatisfyAllConditions(
+            r => r.Days.ShouldBe(14),
+            r => r.Kind.ShouldBe((int)EAuctionKind.Equip));
+    }
+
+    [Fact]
+    public void 경매장이_없으면_일별_시세는_Unavailable이다()
+    {
+        var (user, b) = NewUser();
+
+        user.TryGetMarketPriceHistory(Carp, Now);
+
+        Last<S_MarketPriceHistoryResponse>(b).Result.ShouldBe(EResultCode.AuctionUnavailable);
+    }
+
     [Fact]
     public void 목록_가격대_검색은_빈도_제한을_함께_쓴다()
     {

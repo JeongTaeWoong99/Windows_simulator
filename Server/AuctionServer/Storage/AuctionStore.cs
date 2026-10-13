@@ -631,5 +631,45 @@ public sealed class AuctionStore : IDisposable
             r => new MarketStat((int)r.tid, r.recent, r.volume is > 0 ? r.turnover!.Value / r.volume.Value : 0));
     }
 
+    private sealed record DealRow
+    {
+        public long   quantity   { get; init; }
+        public long   unit_price { get; init; }
+        public string dealt_at   { get; init; } = "";
+    }
+
+    /// <summary>
+    /// 일별 시세 — <paramref name="firstDayStart"/>부터 <paramref name="days"/>일, 하루씩 칸을 채운다. 체결이 없는 날도 0으로 온다.
+    /// 평균은 수량 가중이고 내림이다(전일 평균과 같은 식).
+    /// </summary>
+    public List<DailyPrice> DailyPrices(ListingKind kind, int tid, DateTime firstDayStart, int days)
+    {
+        var to   = firstDayStart.AddDays(days);
+        var rows = _conn.Query<DealRow>(
+            "SELECT quantity, unit_price, dealt_at FROM t_deal WHERE kind = @kind AND tid = @tid AND dealt_at >= @from AND dealt_at < @to;",
+            new { kind = (int)kind, tid, from = ToDb(firstDayStart), to = ToDb(to) });
+
+        var byDay = rows
+            .GroupBy(r => (int)((FromDb(r.dealt_at) - firstDayStart).TotalDays))
+            .ToDictionary(g => g.Key, g => g.ToList());
+
+        var result = new List<DailyPrice>(days);
+        for (var i = 0; i < days; i++)
+        {
+            var start = firstDayStart.AddDays(i);
+            if (!byDay.TryGetValue(i, out var deals))
+            {
+                result.Add(new DailyPrice(start, 0, 0, 0, 0));
+                continue;
+            }
+
+            var quantity = deals.Sum(d => d.quantity);
+            var turnover = deals.Sum(d => d.quantity * d.unit_price);
+            result.Add(new DailyPrice(start, quantity, turnover / quantity, deals.Min(d => d.unit_price), deals.Max(d => d.unit_price)));
+        }
+
+        return result;
+    }
+
     public void Dispose() => _conn.Dispose();
 }

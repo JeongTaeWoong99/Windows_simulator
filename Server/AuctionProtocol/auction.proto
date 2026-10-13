@@ -23,6 +23,8 @@ service Auction {
   rpc GetMarketItems (MarketItemsRequest) returns (MarketItemsReply);
   // 거래소 가격대 — 한 종류의 단가별 판매 중 수량.
   rpc GetPriceLadder (PriceLadderRequest) returns (PriceLadderReply);
+  // 일별 시세 — 한 종류의 날마다 체결 수량·평균·최저·최고 단가. 오늘이 마지막 칸이다 (T-118).
+  rpc GetPriceHistory (PriceHistoryRequest) returns (PriceHistoryReply);
   // 한 판매자의 진행 중 매물(Listed·Reserved).
   rpc GetSellerListings (SellerListingsRequest) returns (SellerListingsReply);
   // 메인이 가져갈 이벤트(취소·만료). 처리 후 AckEvents로 지운다.
@@ -213,6 +215,26 @@ message PriceLevel {
 
 message PriceLadderReply {
   repeated PriceLevel levels = 1;
+}
+
+// 종류는 거래소와 같다 — 0이면 자원. 장비·캐릭터(2·3)도 된다.
+message PriceHistoryRequest {
+  int32 kind = 1;
+  int32 tid = 2;
+  int32 days = 3;   // 칸 수(1~60). 오늘을 포함해 거꾸로 센다
+}
+
+// 하루치. 체결이 없는 날은 수량·가격이 모두 0이다.
+message DailyPrice {
+  int64 day_start_unix_ms = 1;  // 그날 시작 — 게임 하루 경계(한국 자정)
+  int64 quantity = 2;
+  int64 avg_unit_price = 3;     // 수량 가중 평균(내림)
+  int64 min_unit_price = 4;
+  int64 max_unit_price = 5;
+}
+
+message PriceHistoryReply {
+  repeated DailyPrice days = 1;  // 오래된 날 → 오늘
 }
 
 message SellerListingsRequest {

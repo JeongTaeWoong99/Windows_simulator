@@ -155,6 +155,17 @@ namespace MikaProtocol
         public long YesterdayAvgPrice { get; set; }  // 전일(한국 시간 자정 기준) 수량 가중 평균 단가
     }
 
+    /// <summary>일별 시세 하루치. 체결이 없는 날은 수량·가격이 모두 0이다.</summary>
+    [MemoryPackable]
+    public partial class MarketDailyPriceInfo
+    {
+        public long DayStartUnixMs { get; set; }  // 그날 시작 — 한국 자정(UTC 전날 15:00)
+        public long Count          { get; set; }  // 체결 수량
+        public long AvgUnitPrice   { get; set; }  // 수량 가중 평균(내림)
+        public long MinUnitPrice   { get; set; }
+        public long MaxUnitPrice   { get; set; }
+    }
+
     /// <summary>거래소 가격대 한 칸 — 이 단가에 판매 중인 수량.</summary>
     [MemoryPackable]
     public partial class MarketPriceLevelInfo

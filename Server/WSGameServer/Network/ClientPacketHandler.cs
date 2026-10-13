@@ -436,6 +436,20 @@ public static class ClientPacketHandler
         user.TryGetMarketPrice(req.Tid, GameClock.Instance.UtcNow, req.Kind);
     }
 
+    /// <summary>일별 시세(시세 탭 그래프). 빈도 제한·중계는 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_MarketPriceHistoryRequest(ISession session, C_MarketPriceHistoryRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_MarketPriceHistoryResponse { Result = EResultCode.NotLoggedIn, Kind = req.Kind, Tid = req.Tid });
+            return;
+        }
+
+        user.TryGetMarketPriceHistory(req.Tid, GameClock.Instance.UtcNow, req.Kind);
+    }
+
     [PacketHandler]
     public static void Handle_C_MarketBuyRequest(ISession session, C_MarketBuyRequest req)
     {

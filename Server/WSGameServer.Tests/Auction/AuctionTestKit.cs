@@ -16,6 +16,7 @@ internal sealed class FakeAuctionClient : IAuctionClient
     public Func<Proto.ReserveQuantityRequest, Task<Proto.ReserveReply>>? ReserveQuantity { get; set; }
     public Func<Proto.MarketItemsRequest, Task<Proto.MarketItemsReply>>? MarketItems     { get; set; }
     public Func<Proto.PriceLadderRequest, Task<Proto.PriceLadderReply>>? PriceLadder     { get; set; }
+    public Func<Proto.PriceHistoryRequest, Task<Proto.PriceHistoryReply>>? PriceHistory  { get; set; }
     public Func<Proto.ConfirmRequest, Task>?                       Confirm  { get; set; }
     public Func<Proto.CancelRequest, Task<Proto.CancelReply>>?     Cancel   { get; set; }
     public Func<Proto.SearchRequest, Task<Proto.SearchReply>>?     Search   { get; set; }
@@ -56,6 +57,7 @@ internal sealed class FakeAuctionClient : IAuctionClient
     public Task<Proto.ReserveReply> ReserveQuantityAsync(Proto.ReserveQuantityRequest request) => Call(ReserveQuantity, request);
     public Task<Proto.MarketItemsReply> GetMarketItemsAsync(Proto.MarketItemsRequest request) => Call(MarketItems, request);
     public Task<Proto.PriceLadderReply> GetPriceLadderAsync(Proto.PriceLadderRequest request) => Call(PriceLadder, request);
+    public Task<Proto.PriceHistoryReply> GetPriceHistoryAsync(Proto.PriceHistoryRequest request) => Call(PriceHistory, request);
     public Task ConfirmAsync(Proto.ConfirmRequest request) => Call(Confirm, request);
     public Task<Proto.CancelReply> CancelAsync(Proto.CancelRequest request) => Call(Cancel, request);
     public Task<Proto.SearchReply> SearchAsync(Proto.SearchRequest request) => Call(Search, request);

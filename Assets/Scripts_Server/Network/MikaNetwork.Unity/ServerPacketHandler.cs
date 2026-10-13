@@ -569,6 +569,9 @@ namespace MikaNetwork
         // 거래소 가격대 도착 (Handle_S_MarketPriceResponse에서 발행)
         public static event Action<S_MarketPriceResponse>? MarketPriceReceived;
 
+        // 일별 시세 도착 (Handle_S_MarketPriceHistoryResponse에서 발행)
+        public static event Action<S_MarketPriceHistoryResponse>? MarketPriceHistoryReceived;
+
         // 거래소 수량 구매 결과 도착 (Handle_S_MarketBuyResponse에서 발행)
         public static event Action<S_MarketBuyResponse>? MarketBought;
 
@@ -633,6 +636,16 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"거래소 가격대 결과={res.Result}, TID={res.Tid}, {res.Levels?.Count ?? 0}칸");
             MarketPriceReceived?.Invoke(res);
+        }
+
+        // 일별 시세 (S_MarketPriceHistoryResponse 수신 시 자동 호출) — 시세 탭 14일 그래프 (T-118)
+        // ★ Days는 오래된 날 → 오늘 순이고, 체결이 없는 날도 0으로 와서 언제나 14칸이다.
+        // ※ 장비·캐릭터도 TID별로 온다 — 인챈트·레벨을 가리지 않은 참고값이다.
+        [PacketHandler]
+        public static void Handle_S_MarketPriceHistoryResponse(ISession session, S_MarketPriceHistoryResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"일별 시세 결과={res.Result}, {res.Kind} TID={res.Tid}, {res.Days?.Count ?? 0}일");
+            MarketPriceHistoryReceived?.Invoke(res);
         }
 
         // 거래소 수량 구매 결과 (S_MarketBuyResponse 수신 시 자동 호출)

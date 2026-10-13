@@ -247,6 +247,15 @@ public sealed class AuctionEngine : IAsyncDisposable
     public IReadOnlyList<PriceLevel> PriceLadder(int tid, int levels, ListingKind kind = ListingKind.Item)
         => Index.PriceLadder(kind, tid, Math.Clamp(levels, 1, 50), Now);
 
+    /// <summary>일별 시세 — 오늘을 마지막 칸으로 <paramref name="days"/>일(1~60). 체결 기록은 SQLite에만 있어 쓰기 채널에서 읽는다.</summary>
+    public Task<IReadOnlyList<DailyPrice>> PriceHistoryAsync(ListingKind kind, int tid, int days)
+    {
+        var span = Math.Clamp(days, 1, MaxHistoryDays);
+        return Enqueue<IReadOnlyList<DailyPrice>>(() => _store.DailyPrices(kind, tid, MarketDayStart(Now).AddDays(1 - span), span));
+    }
+
+    public const int MaxHistoryDays = 60;
+
     // "오늘"의 시작(UTC) — 게임의 하루 경계(MarketDayOffset, 기본 KST)에 맞춘다. 전일 평균은 이 앞 24시간이다.
     private DateTime MarketDayStart(DateTime nowUtc)
     {

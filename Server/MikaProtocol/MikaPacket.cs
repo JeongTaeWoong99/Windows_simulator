@@ -104,6 +104,8 @@ namespace MikaProtocol
         S_ArtifactListResponse = 74,
         C_EntityLockRequest = 75,
         S_EntityLockResponse = 76,
+        C_MarketPriceHistoryRequest = 77,
+        S_MarketPriceHistoryResponse = 78,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -741,7 +743,7 @@ namespace MikaProtocol
     {
         public int        Category { get; set; }
         public List<int>? Tids     { get; set; }
-        public EAuctionKind Kind   { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 (T-152)
+        public EAuctionKind Kind   { get; set; }   // 자원 · 아티팩트 · 장비 · 캐릭터(TID별 시세 요약). None이면 자원 (T-152 · T-118)
     }
 
     [MemoryPackable, Packet(PacketId.S_MarketItemsResponse)]
@@ -756,7 +758,7 @@ namespace MikaProtocol
     public partial class C_MarketPriceRequest : IPacket
     {
         public int Tid { get; set; }
-        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 (T-152)
+        public EAuctionKind Kind { get; set; }   // 자원 · 아티팩트 · 장비 · 캐릭터. None이면 자원 (T-152 · T-118)
     }
 
     [MemoryPackable, Packet(PacketId.S_MarketPriceResponse)]
@@ -765,6 +767,23 @@ namespace MikaProtocol
         public EResultCode                 Result { get; set; }
         public int                         Tid    { get; set; }
         public List<MarketPriceLevelInfo>? Levels { get; set; }
+    }
+
+    /// <summary>일별 시세 — 한 종류의 최근 14일(오늘이 마지막 칸) 체결 수량·평균·최저·최고 단가. 시세 탭 그래프용 (T-118).</summary>
+    [MemoryPackable, Packet(PacketId.C_MarketPriceHistoryRequest)]
+    public partial class C_MarketPriceHistoryRequest : IPacket
+    {
+        public EAuctionKind Kind { get; set; }   // 자원 · 아티팩트 · 장비 · 캐릭터. None이면 자원
+        public int          Tid  { get; set; }
+    }
+
+    [MemoryPackable, Packet(PacketId.S_MarketPriceHistoryResponse)]
+    public partial class S_MarketPriceHistoryResponse : IPacket
+    {
+        public EResultCode                  Result { get; set; }
+        public EAuctionKind                 Kind   { get; set; }
+        public int                          Tid    { get; set; }
+        public List<MarketDailyPriceInfo>?  Days   { get; set; }  // 오래된 날 → 오늘. 체결이 없는 날도 0으로 온다
     }
 
     /// <summary>

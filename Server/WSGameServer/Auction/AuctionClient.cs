@@ -16,6 +16,7 @@ public interface IAuctionClient
     Task<Proto.ReserveReply>        ReserveQuantityAsync(Proto.ReserveQuantityRequest request);
     Task<Proto.MarketItemsReply>    GetMarketItemsAsync(Proto.MarketItemsRequest request);
     Task<Proto.PriceLadderReply>    GetPriceLadderAsync(Proto.PriceLadderRequest request);
+    Task<Proto.PriceHistoryReply>   GetPriceHistoryAsync(Proto.PriceHistoryRequest request);
     Task                            ConfirmAsync(Proto.ConfirmRequest request);
     Task<Proto.CancelReply>         CancelAsync(Proto.CancelRequest request);
     Task<Proto.SearchReply>         SearchAsync(Proto.SearchRequest request);
@@ -103,6 +104,9 @@ public sealed class GrpcAuctionClient : IAuctionClient, IDisposable
 
     public async Task<Proto.PriceLadderReply> GetPriceLadderAsync(Proto.PriceLadderRequest request)
         => await _client.GetPriceLadderAsync(request, Options());
+
+    public async Task<Proto.PriceHistoryReply> GetPriceHistoryAsync(Proto.PriceHistoryRequest request)
+        => await _client.GetPriceHistoryAsync(request, Options());
 
     public async Task ConfirmAsync(Proto.ConfirmRequest request)
         => await _client.ConfirmAsync(request, Options());

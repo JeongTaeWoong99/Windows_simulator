@@ -26,16 +26,26 @@ public partial class User
     /// <summary>한 요청에 실을 수 있는 TID 수 — 경매장 쓰기 채널 안에서 도는 시세 조회가 밀리지 않게.</summary>
     public const int MaxQueryTids = 100;
 
-    // 거래소에 오르는 스택 종류 — None(옛 클라)은 자원이다. 그 밖(장비·캐릭터)은 거래소가 아니라 경매장이다.
+    // 거래소에서 수량으로 사는 스택 종류 — None(옛 클라)은 자원이다. 장비·캐릭터는 경매장(매물 통째로)에서 산다.
     private static bool TryMarketKind(EAuctionKind requested, out EAuctionKind kind)
     {
         kind = requested == EAuctionKind.None ? EAuctionKind.Item : requested;
         return kind is EAuctionKind.Item or EAuctionKind.Artifact;
     }
 
+    // 시세(목록·가격대·일별)는 장비·캐릭터도 TID별로 본다 (T-118).
+    private static bool TryQuoteKind(EAuctionKind requested, out EAuctionKind kind)
+    {
+        kind = requested == EAuctionKind.None ? EAuctionKind.Item : requested;
+        return kind is EAuctionKind.Item or EAuctionKind.Artifact or EAuctionKind.Equip or EAuctionKind.Character;
+    }
+
+    /// <summary>시세 탭 그래프의 날 수 — 목업(T-147)이 14일이다.</summary>
+    public const int PriceHistoryDays = 14;
+
     public void TryGetMarketItems(int category, List<int>? tids, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
-        if (!TryMarketKind(kind, out kind))
+        if (!TryQuoteKind(kind, out kind))
         {
             Send(new S_MarketItemsResponse { Result = EResultCode.AuctionInvalidRequest });
             return;
@@ -81,7 +91,7 @@ public partial class User
 
     public void TryGetMarketPrice(int tid, DateTime now, EAuctionKind kind = EAuctionKind.Item)
     {
-        if (!TryMarketKind(kind, out kind))
+        if (!TryQuoteKind(kind, out kind))
         {
             Send(new S_MarketPriceResponse { Result = EResultCode.AuctionInvalidRequest, Tid = tid });
             return;
@@ -107,6 +117,47 @@ public partial class User
                 Result = EResultCode.Ok,
                 Tid    = tid,
                 Levels = reply.Levels.Select(l => new MarketPriceLevelInfo { UnitPrice = l.UnitPrice, Count = l.Quantity }).ToList(),
+            });
+        });
+    }
+
+    public void TryGetMarketPriceHistory(int tid, DateTime now, EAuctionKind kind = EAuctionKind.Item)
+    {
+        var requested = kind;
+        if (!TryQuoteKind(kind, out kind))
+        {
+            Send(new S_MarketPriceHistoryResponse { Result = EResultCode.AuctionInvalidRequest, Kind = requested, Tid = tid });
+            return;
+        }
+
+        if (!TakeSearchToken(now))
+        {
+            Send(new S_MarketPriceHistoryResponse { Result = EResultCode.AuctionTooManyRequests, Kind = kind, Tid = tid });
+            return;
+        }
+
+        var request = new Proto.PriceHistoryRequest { Kind = (int)kind, Tid = tid, Days = PriceHistoryDays };
+        _auction.Call(c => c.GetPriceHistoryAsync(request), reply =>
+        {
+            if (reply is null)
+            {
+                Send(new S_MarketPriceHistoryResponse { Result = EResultCode.AuctionUnavailable, Kind = kind, Tid = tid });
+                return;
+            }
+
+            Send(new S_MarketPriceHistoryResponse
+            {
+                Result = EResultCode.Ok,
+                Kind   = kind,
+                Tid    = tid,
+                Days   = reply.Days.Select(d => new MarketDailyPriceInfo
+                {
+                    DayStartUnixMs = d.DayStartUnixMs,
+                    Count          = d.Quantity,
+                    AvgUnitPrice   = d.AvgUnitPrice,
+                    MinUnitPrice   = d.MinUnitPrice,
+                    MaxUnitPrice   = d.MaxUnitPrice,
+                }).ToList(),
             });
         });
     }

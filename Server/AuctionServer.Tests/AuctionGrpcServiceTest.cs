@@ -246,6 +246,18 @@ public class AuctionGrpcServiceTest : IAsyncLifetime
         ladder.Levels.Select(l => (l.UnitPrice, l.Quantity)).ShouldBe(new[] { (30L, 10L), (32L, 4L) });
     }
 
+    [Fact]
+    public async Task 일별_시세가_오늘을_마지막_칸으로_실린다()
+    {
+        await _client.RegisterAsync(new Proto.RegisterRequest { Listing = Carp(1, 30, 10, seller: 100) });
+        await _client.ReserveQuantityAsync(new Proto.ReserveQuantityRequest { PurchaseId = 9, BuyerId = 200, Tid = 10001, Quantity = 4, MaxUnitPrice = 30 });
+        await _client.ConfirmAsync(new Proto.ConfirmRequest { PurchaseId = 9, Success = true });
+
+        var reply = await _client.GetPriceHistoryAsync(new Proto.PriceHistoryRequest { Tid = 10001, Days = 3 });
+
+        reply.Days.Select(d => (d.Quantity, d.AvgUnitPrice)).ShouldBe(new[] { (0L, 0L), (0L, 0L), (4L, 30L) });
+    }
+
     // 청소는 백그라운드 타이머라 가짜 시계를 넘긴 뒤 한 박자 늦게 돈다.
     private async Task<IReadOnlyList<Proto.AuctionEvent>> WaitForEvents()
     {

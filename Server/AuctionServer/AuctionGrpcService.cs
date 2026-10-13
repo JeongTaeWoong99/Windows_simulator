@@ -68,6 +68,22 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
         return Task.FromResult(reply);
     }
 
+    public override async Task<Proto.PriceHistoryReply> GetPriceHistory(Proto.PriceHistoryRequest request, ServerCallContext context)
+    {
+        var days = await engine.PriceHistoryAsync(MarketKind(request.Kind), request.Tid, request.Days);
+
+        var reply = new Proto.PriceHistoryReply();
+        reply.Days.AddRange(days.Select(d => new Proto.DailyPrice
+        {
+            DayStartUnixMs = new DateTimeOffset(d.DayStart).ToUnixTimeMilliseconds(),
+            Quantity       = d.Quantity,
+            AvgUnitPrice   = d.AvgUnitPrice,
+            MinUnitPrice   = d.MinUnitPrice,
+            MaxUnitPrice   = d.MaxUnitPrice,
+        }));
+        return reply;
+    }
+
     public override async Task<Proto.ConfirmReply> Confirm(Proto.ConfirmRequest request, ServerCallContext context)
     {
         await engine.ConfirmAsync(request.PurchaseId, request.Success);

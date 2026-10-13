@@ -68,3 +68,6 @@ public sealed record PriceLevel(long UnitPrice, long Quantity);
 
 /// <summary>종류별 시세 — 마지막 체결 단가와 전일 평균 단가(수량 가중).</summary>
 public sealed record MarketStat(int Tid, long RecentUnitPrice, long YesterdayAvgPrice);
+
+/// <summary>하루치 시세 — 체결이 없으면 수량·가격이 모두 0이다. <see cref="DayStart"/>는 그날 시작(UTC, 게임 하루 경계).</summary>
+public sealed record DailyPrice(DateTime DayStart, long Quantity, long AvgUnitPrice, long MinUnitPrice, long MaxUnitPrice);
