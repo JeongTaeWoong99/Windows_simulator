@@ -212,7 +212,6 @@ tr:last-child td { border-bottom: 0; }
           <div class="seg" role="group" aria-label="보기"><button type="button" data-f="all" aria-pressed="true">전체</button><button type="button" data-f="own" aria-pressed="false">보유 중</button></div>
         </div>
         <div class="vgrades" id="vGrades" role="group" aria-label="등급"></div>
-        <div class="vsum" id="vSum"></div>
         <div class="vgroups" id="vGroups"></div>
       </div>
       <div class="vpanel" id="vDetail" aria-live="polite"></div>
@@ -240,7 +239,7 @@ tr:last-child td { border-bottom: 0; }
 
   <section>
     <h2>레벨별 유물 확률 (모양 예시)</h2>
-    <p class="note">유물은 레벨을 갖지 않는다 — 레벨은 어떤 유물이 나올지의 확률만 바꾼다. 판정당 %이고 값은 테스트값으로 다시 정한다. Special은 모든 레벨에서 뜨며, 시간당 기회가 같도록 판정 비용에 비례시킨다(p · 3p · 9p · 27p · 81p).</p>
+    <p class="note">유물은 레벨을 갖지 않는다 — 레벨은 어떤 유물이 나올지의 확률만 바꾼다. <b>발굴에서는 상자 대신 유물이 나오고, 합계는 상자(판정당 2.33%)의 절반쯤</b>이다. 판정당 %이고 값은 테스트값으로 다시 정한다. Special은 모든 레벨에서 뜨며, 시간당 기회가 같도록 판정 비용에 비례시킨다(p · 3p · 9p · 27p · 81p).</p>
     <div class="tbl-wrap"><table id="probs"></table></div>
   </section>
 </div>
@@ -343,9 +342,9 @@ G.forEach((gr, g) => {
 });
 
 // ───────── ⑤ 확률 표 ─────────
-const P = [[2,.3,.03,0,0,0,'p'],[2,.6,.1,.01,0,0,'3p'],[1.5,1,.3,.03,.003,0,'9p'],[1,1.5,.6,.1,.01,.001,'27p'],[.5,1.5,1,.3,.03,.003,'81p']];
+const P = [[1,.15,.015,0,0,0,'p','≈1.17'],[.8,.3,.05,.005,0,0,'3p','≈1.16'],[.6,.4,.15,.015,.0015,0,'9p','≈1.17'],[.4,.5,.25,.05,.005,.0005,'27p','≈1.21'],[.2,.5,.4,.15,.015,.0015,'81p','≈1.27']];
 document.getElementById('probs').innerHTML =
-  `<thead><tr><th>레벨</th>${G.map(gr => `<th>${gr.n}</th>`).join('')}</tr></thead><tbody>` +
+  `<thead><tr><th>레벨</th>${G.map(gr => `<th>${gr.n}</th>`).join('')}<th>합계</th></tr></thead><tbody>` +
   P.map((row, i) => `<tr><td>Lv${i + 1}</td>${row.map(v => `<td class="n">${v === 0 ? '<span class="dash">—</span>' : v}</td>`).join('')}</tr>`).join('') + `</tbody>`;
 
 // ───────── ③ 감정 무대 ─────────
@@ -489,13 +488,6 @@ let vFilter = 'all', vGrade = -1, vSel = ART.indexOf(heart);
 function vRender() {
   const seen = ART.filter(a => a.seen).length, on = ART.filter(a => a.count > 0);
   $('vCount').innerHTML = `수집 ${seen} / ${ART.length}<small>효과 켜짐 ${on.length}종 · 보유 ${ART.reduce((s, a) => s + a.count, 0)}개</small>`;
-  // 합계 효과 — 켜진 번호만, 같은 번호는 한 번
-  const sum = new Map();
-  on.forEach(a => (a.k === '작업속도·산출량' ? ['작업속도', '산출량'] : [a.k]).forEach(k => {
-    const key = `${a.ind ?? '전 산업'} ${k}`; sum.set(key, (sum.get(key) || 0) + a.v);
-  }));
-  $('vSum').innerHTML = [...sum].sort((x, y) => (y[0].startsWith('전') - x[0].startsWith('전')) || y[1] - x[1])
-    .map(([key, v]) => `<span class="chip">${key} <b>+${Math.round(v * 10) / 10}%</b></span>`).join('') || '<span class="chip">켜진 효과 없음</span>';
   // 등급 칩 — 칩마다 수집 수
   $('vGrades').innerHTML = [-1, 6, 5, 4, 3, 2, 1, 0].map(g => {
     const all = g < 0 ? ART : ART.filter(a => a.g === g), gr = G[g];
