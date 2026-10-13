@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-14 경매장 목업대로 재배치](2026-10-14-auction-mockup-relayout.md) — `#client` `#ui` 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 (T-147 2단계)
 - [2026-10-14 경매장을 화면 전체로 — 거래 열 → 거점 열 · #Auction Canvas (T-147 1단계)](2026-10-14-auction-fullscreen-overlay.md) — `#client` `#ui` 오버레이 첫째 자식이지만 SetActive 캔버스 · Esc는 IsCovered일 때 무시
 - [2026-10-13 슬롯 연출 — 달리기 양 끝에 대기 자세 한 장 (T-097)](2026-10-13-stage-idle-pose.md) — `#client` `#ui` Run 안의 플래그라 땅·주기 그대로 · 초 단위(프레임 아님)
 - [2026-10-13 클라 화면 글자·문서의 낚시 → 발굴 (T-148) · art 폴더 정리](2026-10-13-excavation-client-text.md) — `#client` `#docs` 씬 TMP 글자는 XXXX 이스케이프 · targets/fishing은 발굴 임시 · T-031 보관

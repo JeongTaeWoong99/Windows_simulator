@@ -5,41 +5,52 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 내 매물 화면 — 경매장 탭의 '내 매물' 하위 탭. 올린 것(판매 중 · 구매 진행 중)을 보고 취소한다.
+// 판매 탭 — 내가 올린 매물(판매 중 · 구매 진행 중)을 보고 취소한다. [+ 판매 등록]으로 등록 창을 연다 (T-147).
 //
 // ■ 탭을 열 때마다 새로 받는다 — 이 조회는 빈도 제한에 들지 않고, 팔린 것은 푸시가 오지 않아서
 //   (대금이 우편으로 올 뿐이다) 열 때 받지 않으면 이미 팔린 매물이 남아 보인다.
 // ■ 구매 진행 중(Reserved)인 매물은 [취소]를 잠근다 — 서버도 거절한다.
 // ■ 취소하면 물건은 **우편**으로 돌아오고 등록비는 돌려받지 못한다. 확인 창에서 먼저 알린다.
-// ■ 경매 우편이 오면 'AuctionModel'이 조용히 다시 받는다 — 이 화면이 보이는 중이면 그대로 다시 그리고,
-//   그릴 때마다 탭 배지('HasMyListingsNews')를 끈다. 머리 문구에 받은 시각을 붙인다.
-public class AuctionMyListingPresenter : MonoBehaviour
+// ■ 공용 검색창은 받은 목록을 이름으로 거르기만 한다 — 서버에 묻지 않는다.
+// ■ 판매 중이 상한(Constants.AuctionMaxActiveListings)이면 [+ 판매 등록]을 잠근다.
+public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 {
     [CenterHeader("머리")]
-    [SerializeField, Tooltip("'판매 중 n / 상한 · 받은 시각' 문구")]
+    [SerializeField, Tooltip("'판매 중 n / 20'")]
     private TMP_Text countText = null!;
 
-    [SerializeField, Tooltip("새로고침 버튼. OnClick은 코드가 연결한다")]
-    private Button refreshButton = null!;
+    [SerializeField, Tooltip("등록 기간 · 등록비 · 판매 수수료 안내 한 줄")]
+    private TMP_Text infoText = null!;
+
+    [SerializeField, Tooltip("[+ 판매 등록]. OnClick은 코드가 연결한다")]
+    private Button registerButton = null!;
+
+    [SerializeField, Tooltip("판매 등록 창 (경매장 안 모달)")]
+    private AuctionRegisterPresenter register = null!;
 
 
     [CenterHeader("목록")]
-    [SerializeField, Tooltip("매물 한 줄 프리팹")]
-    private AuctionRowView rowPrefab = null!;
+    [SerializeField, Tooltip("판매 중 한 줄 프리팹")]
+    private AuctionTableRowView rowPrefab = null!;
 
     [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
     private Transform rowParent = null!;
 
-    [SerializeField, Tooltip("올린 매물이 없을 때만 보인다")]
-    private GameObject emptyText = null!;
+    [SerializeField, Tooltip("보일 매물이 없을 때만 보인다")]
+    private TMP_Text emptyText = null!;
 
-    private readonly List<AuctionRowContent> _contents = new List<AuctionRowContent>();
+    [SerializeField, Tooltip("표 아래 안내 — '팔리면 대금은 우편으로 옵니다' · 받은 시각")]
+    private TMP_Text noteText = null!;
 
-    private AuctionModel      _auction = null!;
-    private PlayerDataModel   _data    = null!;
-    private ServerWaitManager _wait    = null!;
-    private UIManager         _ui      = null!;
-    private AuctionRowList    _rows    = null!;
+    private readonly List<AuctionTableRowContent> _contents = new List<AuctionTableRowContent>();
+
+    private AuctionModel        _auction = null!;
+    private PlayerDataModel     _data    = null!;
+    private ServerWaitManager   _wait    = null!;
+    private UIManager           _ui      = null!;
+    private AuctionTableRowList _rows    = null!;
+
+    private string _query = "";
 
     // 진행 중인 대기의 손잡이 — 응답이 오면 결과를 보고한다.
     private ServerWaitHandle? _waitHandle;
@@ -47,24 +58,48 @@ public class AuctionMyListingPresenter : MonoBehaviour
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
+    // ─── 공용 검색창 ───
+    public string QueryPlaceholder => "판매 중인 아이템 이름";
+    public string QueryHint        => "치는 대로 아래 목록을 거릅니다";
+    public string Query            => _query;
+
+    public void OnQueryChanged(string text)
+    {
+        _query = text;
+
+        if (_isReady)
+        {
+            Refresh();
+        }
+    }
+
+    public void OnQuerySubmitted(string text) => OnQueryChanged(text);
+
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
     {
-        this.RequireRef(countText,     nameof(countText));
-        this.RequireRef(refreshButton, nameof(refreshButton));
-        this.RequireRef(rowPrefab,     nameof(rowPrefab));
-        this.RequireRef(rowParent,     nameof(rowParent));
-        this.RequireRef(emptyText,     nameof(emptyText));
+        this.RequireRef(countText,      nameof(countText));
+        this.RequireRef(infoText,       nameof(infoText));
+        this.RequireRef(registerButton, nameof(registerButton));
+        this.RequireRef(register,       nameof(register));
+        this.RequireRef(rowPrefab,      nameof(rowPrefab));
+        this.RequireRef(rowParent,      nameof(rowParent));
+        this.RequireRef(emptyText,      nameof(emptyText));
+        this.RequireRef(noteText,       nameof(noteText));
 
         _auction = Services.Get<AuctionModel>();
         _data    = Services.Get<PlayerDataModel>();
         _wait    = Services.Get<ServerWaitManager>();
         _ui      = Services.Get<UIManager>();
-        _rows    = new AuctionRowList(rowPrefab, rowParent, OnRowCancelClicked);
+        _rows    = new AuctionTableRowList(rowPrefab, rowParent, OnRowCancelClicked);
 
         Subscribe();
 
-        refreshButton.onClick.AddListener(RequestListings);
+        registerButton.onClick.AddListener(() => register.OpenEmpty());
+
+        infoText.text = $"{UIRichText.Label("등록 기간")} {Constants.AuctionListingHours}시간" +
+                        $"{UIRichText.Dot}{UIRichText.Label("등록비")} {AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)} (만료되면 돌려받음)" +
+                        $"{UIRichText.Dot}{UIRichText.Label("판매 수수료")} {AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)}";
 
         Refresh();
         RequestListings();
@@ -91,7 +126,7 @@ public class AuctionMyListingPresenter : MonoBehaviour
 
     #region 구독
 
-    // 내 매물·취소 응답 구독 (Start · OnEnable에서 호출)
+    // 내 매물·취소·등록 응답 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -103,6 +138,7 @@ public class AuctionMyListingPresenter : MonoBehaviour
 
         _auction.MyListingsCompleted += OnMyListingsCompleted;
         _auction.CancelCompleted     += OnCancelCompleted;
+        _auction.RegisterCompleted   += OnRegisterCompleted;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -117,13 +153,14 @@ public class AuctionMyListingPresenter : MonoBehaviour
 
         _auction.MyListingsCompleted -= OnMyListingsCompleted;
         _auction.CancelCompleted     -= OnCancelCompleted;
+        _auction.RegisterCompleted   -= OnRegisterCompleted;
     }
 
     #endregion
 
     #region 요청
 
-    // 내 매물을 새로 받는다 (Start · OnEnable · refreshButton OnClick).
+    // 내 매물을 새로 받는다 (Start · OnEnable).
     private void RequestListings()
     {
         if (_waitHandle != null || !_data.IsLoggedIn)
@@ -135,7 +172,7 @@ public class AuctionMyListingPresenter : MonoBehaviour
         BeginWait("내 매물");
     }
 
-    // 줄의 [취소] — 확인을 받고 보낸다 (AuctionRowView.ActionClicked)
+    // 줄의 [취소] — 확인을 받고 보낸다 (AuctionTableRowView.PrimaryClicked)
     private void OnRowCancelClicked(long listingId)
     {
         if (_waitHandle != null)
@@ -183,6 +220,12 @@ public class AuctionMyListingPresenter : MonoBehaviour
         Refresh();
     }
 
+    // 등록 창에서 올렸다 — 모델이 내 매물을 다시 받는다. 그동안 상한 표시만 맞춘다 (AuctionModel.RegisterCompleted 구독)
+    private void OnRegisterCompleted(EResultCode code, long fee)
+    {
+        Refresh();
+    }
+
     #endregion
 
     #region 대기
@@ -218,29 +261,36 @@ public class AuctionMyListingPresenter : MonoBehaviour
 
     #region 표시 갱신
 
-    // 머리 문구와 목록을 지금 상태로 그린다.
+    // 머리 문구와 목록을 지금 상태로 그린다 — 검색어가 있으면 이름으로 거른다.
     private void Refresh()
     {
         _contents.Clear();
 
         foreach (AuctionListingInfo listing in _auction.MyListings)
         {
-            bool canCancel = _waitHandle == null && listing.State != EAuctionListingState.Reserved;
+            if (!AuctionText.MatchesName(listing, _query))
+            {
+                continue;
+            }
 
-            // 전부 내 것이라 '[내 매물]' 표시·판매자 줄은 뺀다 — 이 탭에서는 소음이다.
-            _contents.Add(AuctionText.ToRow(listing, "취소", canCancel, isMine: true, markMine: false));
+            _contents.Add(AuctionText.ToSellRow(listing, canCancel: _waitHandle == null));
         }
 
         _rows.Show(_contents);
-        emptyText.SetActive(_contents.Count == 0);
+
+        int  total  = _auction.MyListings.Count;
+        bool isFull = total >= Constants.AuctionMaxActiveListings;
+
+        emptyText.gameObject.SetActive(_contents.Count == 0);
+        emptyText.text = total == 0 ? "판매 중인 매물이 없습니다" : "이름이 맞는 매물이 없습니다";
+
+        countText.text = $"판매 중 {UIRichText.Paint(total.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
 
         string received = AuctionModel.FormatReceivedAgo(_auction.MyListingsReceivedAt);
 
-        countText.text             = $"판매 중 {_contents.Count:N0} / {Constants.AuctionMaxActiveListings:N0}건"
-                                   + (received.Length > 0 ? UIRichText.Dot + UIRichText.Label(received) : "");
-        refreshButton.interactable = _waitHandle == null;
+        noteText.text = "팔리면 대금은 우편으로 옵니다" + (received.Length > 0 ? UIRichText.Dot + UIRichText.Label(received) : "");
 
-        _auction.ClearMyListingsNews();
+        registerButton.interactable = !isFull;
     }
 
     #endregion

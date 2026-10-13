@@ -1,82 +1,69 @@
+using System;
 using System.Collections.Generic;
+using System.Globalization;
 using GameData;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 개체 구매 화면 — 경매장 [구매] 탭의 '장비' · '캐릭터' 축. 개체 매물을 검색해 통째로 산다(입찰 없음).
+// 검색 탭의 분류 트리 한 칸. 값의 순서는 **화면의 트리 순서와 같게 유지한다** — 씬에 int로 저장된다.
 //
-// ■ 한 스크립트, 두 화면: 'searchKind'로 축을 정한다. 씬에는 축마다 이 Presenter가 하나씩 붙는다.
-//   검색 상태(조건·결과·커서·받은 시각)는 'AuctionModel'이 축마다 따로 든다 — 두 화면이 서로의 [더 보기]를 잇지 않는다.
-// ■ 검색 조건
-//   장비   : 이름 · 분류(무기·장신구·보석) · 희귀도 · 인챈트 등급 하한
-//   캐릭터 : 이름 · 희귀도 — 분류·인챈트 드롭다운은 비워 둔다(연결하지 않는다)
-//   인챈트 등급은 장비 하나에 하나다(이슈 #46 — 칸마다 색이 다르지 않다). 옵션 다중 선택은 매물이 쌓인 뒤에 넣는다.
-// ■ 페이지: 서버는 **단가 낮은 순으로 20개씩** 준다(최대 50). [더 보기]가 받은 것 중 마지막 매물(단가·ID)을 커서로
-//   다음 20개를 이어 받고, 서버가 'HasMore'로 더 있는지 알린다('AuctionModel.SearchNextPage').
-//   버튼 문구에 지금까지 받은 수를 적는다 — 전체가 몇 개인지는 서버가 주지 않는다.
-// ■ 구매: 목록에서 본 총액을 그대로 보낸다. 그사이 가격이 바뀌면 AuctionPriceChanged로 거절된다 —
-//   그때는 사유 알림에 "다시 검색해 주세요"가 뜬다. 산 개체는 **우편**으로 온다(인챈트·레벨·적성 포함).
-// ■ 조회 빈도 제한 때문에 화면을 **처음** 열 때만 자동 검색한다('MarketItemPresenter'와 같다).
-//   대신 받은 시각을 "n분 전에 받음"으로 적어 목록이 얼마나 낡았는지 보인다.
-// ■ 내 매물은 '[내 매물]'로 표시하고 [구매]를 잠근다 — 어디쯤에 있는지 보이게 목록에서 빼지는 않는다.
-//   판별 재료(내 매물 목록)는 화면을 열 때마다 조용히 받는다 — 빈도 제한 밖이다.
-// ■ [가격 정렬]은 받은 결과의 **사본만** 정렬한다('AuctionSort'). [더 보기]는 서버 순서의 마지막 매물로 잇는다.
-//   ⚠️ 높은 가격순은 **받은 페이지 안에서만** 맞다 — 더 받을 것이 남았으면 버튼에 '받은 것 중'을 적는다.
-public class AuctionSearchPresenter : MonoBehaviour
+// 목업은 자원 · 상자 · 기타를 맨 위 단에 두었지만, 서버 분류(Category)는 값 하나라 "산업 자원 5종 전부"를 고를 수 없다.
+// 그래서 아이템을 한 부모로 묶고 산업 5종 · 상자 · 소모품 · 기타 · 유물을 그 아래에 둔다(T-124 · T-150의 ItemType 그대로).
+public enum AuctionSearchNode
 {
-    [CenterHeader("축")]
-    [SerializeField, Tooltip("이 화면이 검색하는 매물 종류 — Equip 또는 Character")]
-    private EAuctionKind searchKind = EAuctionKind.Equip;
+    All,
+    Item, ItemFarming, ItemExcavation, ItemMining, ItemLogging, ItemHunting, ItemBox, ItemConsumable, ItemMisc, ItemRelic,
+    Equip, EquipWeapon, EquipAccessory, EquipGem,
+    Character,
+    Artifact,
+}
 
-
-    [CenterHeader("검색")]
-    [SerializeField, Tooltip("이름 검색 입력칸. 비우면 이름 조건 없음")]
-    private TMP_InputField searchInput = null!;
-
-    [SerializeField, Tooltip("분류 드롭다운 — 전체·무기·장신구·보석. 장비 축에만 연결한다. 항목은 코드가 채운다")]
-    private TMP_Dropdown? kindDropdown;
-
-    [SerializeField, Tooltip("희귀도 드롭다운 — 전체·일반~신화. 항목은 코드가 채운다")]
-    private TMP_Dropdown rarityDropdown = null!;
-
-    [SerializeField, Tooltip("인챈트 등급 하한 드롭다운 — 무관·일반 이상~신화 이상. 장비 축에만 연결한다. 항목은 코드가 채운다")]
-    private TMP_Dropdown? enchantDropdown;
-
-    [SerializeField, Tooltip("검색 버튼. OnClick은 코드가 연결한다")]
-    private Button searchButton = null!;
-
-
-    [CenterHeader("목록")]
-    [SerializeField, Tooltip("매물 한 줄 프리팹")]
-    private AuctionRowView rowPrefab = null!;
-
-    [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
-    private Transform rowParent = null!;
-
-    [SerializeField, Tooltip("목록이 비었을 때만 보인다")]
-    private GameObject emptyText = null!;
-
-    [SerializeField, Tooltip("받은 시각 문구 — \"3분 전에 받음\"")]
-    private TMP_Text receivedText = null!;
-
-    [SerializeField, Tooltip("다음 페이지 버튼 — 결과가 더 있을 때만 누를 수 있다. OnClick은 코드가 연결한다")]
-    private Button moreButton = null!;
-
-    [SerializeField, Tooltip("[더 보기] 버튼 문구 — 받은 수 · 더 있는지")]
-    private TMP_Text moreText = null!;
-
-    [SerializeField, Tooltip("가격 정렬 버튼 — 낮은 가격순 ↔ 높은 가격순(받은 페이지 안에서). OnClick은 코드가 연결한다")]
-    private Button sortButton = null!;
-
-    [SerializeField, Tooltip("정렬 버튼 문구 — 지금 정렬을 적는다")]
-    private TMP_Text sortText = null!;
-
-    // 드롭다운 항목 순서 = 이 배열 순서. 0번이 '전체'(None)다.
-    private static readonly EquipKind[] KindOptions =
+// 검색 탭 — 왼쪽 옵션(분류 트리 · 등급 · 분류별 상세 옵션 · 단가 범위) + 오른쪽 결과(건수 · 적용 조건 · 정렬 · 표).
+// 경매장 목업(T-147)의 메이플식 검색이다. 정렬·건수·속성 필터는 서버가 한다(T-155).
+//
+// ■ 고치는 값과 조회한 값은 다르다
+//   왼쪽에서 고친 값은 [검색]을 눌러야 조회된다 — 조회에 빈도 제한(순간 5회 · 2초마다 1회 회복)이 있어서다.
+//   **분류만은 누르면 바로 조회한다**(목업). 정렬을 바꾸면 마지막으로 조회한 조건('_applied')에 정렬만 바꿔 다시 받는다.
+// ■ 결과는 쭉 내려간다 — 20개씩, 목록 끝에 닿으면 응답이 준 커서로 다음 20개('AuctionModel.SearchNextPage').
+//   다음 쪽은 대기 차단을 걸지 않는다(목록 아래 글자로 알린다). 빈도 제한에 걸리면 다시 내릴 때 받는다.
+// ■ 이름은 공용 검색창에서 온다('IAuctionQueryTarget') — 클라가 TID 목록으로 바꿔 보낸다.
+//   ⚠️ 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
+//   ⚠️ '전체' 분류의 이름 검색은 네 종류의 TID를 합쳐 보낸다 — 장비·캐릭터 TID가 겹쳐 다른 종류가 섞일 수 있어 그릴 때 이름으로 한 번 더 거른다.
+// ■ 구매: 사기 전에 시세를 본다 — 확인 창에 최저가 · 최근가 · 전일 평균과 "전일 평균보다 몇 % 비싼가/싼가".
+//   시세 요약이 없으면 한 번 받고(대기) 연다. 산 물건은 **우편**으로 온다.
+// ■ 내 매물은 꼬리표를 달고 [구매]를 잠근다 — 판별 재료(내 매물 목록)는 화면을 열 때마다 조용히 받는다(빈도 제한 밖).
+public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
+{
+    // 분류 트리 한 칸 — 노드와 그 버튼.
+    [Serializable]
+    private struct NodeEntry
     {
-        EquipKind.None, EquipKind.Weapon, EquipKind.Accessory, EquipKind.Gem,
+        [Tooltip("이 버튼이 어느 분류인가")]
+        public AuctionSearchNode node;
+
+        [Tooltip("트리의 버튼")]
+        public Button button;
+
+        [Tooltip("버튼 글자 — ▸/▾ 펼침 표시를 코드가 붙인다")]
+        public TMP_Text label;
+    }
+
+    // 정렬 드롭다운 항목 — 항목 순서 = 이 순서. 서버 정렬(T-155)만 둔다.
+    private enum SortPreset
+    {
+        PriceAsc,
+        PriceDesc,
+        ExpiresSoon,
+        RarityDesc,
+        SpeedDesc, // 장비 — 작업속도(기본 + 인챈트)
+        LevelDesc, // 캐릭터
+    }
+
+    private static readonly string[] SortLabels =
+    {
+        "단가 낮은순", "단가 높은순", "마감 임박순", "등급 높은순", "작업속도 높은순 (장비)", "레벨 높은순 (캐릭터)",
     };
 
     private static readonly GlobalRarity[] RarityOptions =
@@ -85,84 +72,254 @@ public class AuctionSearchPresenter : MonoBehaviour
         GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic,
     };
 
-    // 인챈트 등급 하한 — 희귀도와 같은 등급 체계다. 0번이 '무관'(None).
-    private static readonly GlobalRarity[] EnchantOptions = RarityOptions;
+    private static readonly EIndustryType[] IndustryOptions =
+    {
+        EIndustryType.None, EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
+    };
 
-    private readonly List<AuctionRowContent> _contents = new List<AuctionRowContent>();
+    // 목록 끝으로 여기는 스크롤 위치(아래 끝 0) — 이보다 내려오면 다음 쪽을 받는다.
+    private const float NextPageThreshold = 0.02f;
+
+    [CenterHeader("분류")]
+    [SerializeField, NonReorderable, Tooltip("분류 트리 버튼 — AuctionSearchNode마다 한 줄. 자식 노드는 부모가 펼쳐졌을 때만 보인다")]
+    private NodeEntry[] nodes = new NodeEntry[0];
+
+    [SerializeField, Tooltip("등급 드롭다운 — 전체·일반~신화. 항목은 코드가 채운다")]
+    private TMP_Dropdown rarityDropdown = null!;
+
+
+    [CenterHeader("장비 옵션")]
+    [SerializeField, Tooltip("장비 분류일 때만 보이는 묶음")]
+    private GameObject equipOptions = null!;
+
+    [SerializeField, Tooltip("산업 드롭다운 — 전체·농사~사냥")]
+    private TMP_Dropdown equipIndustryDropdown = null!;
+
+    [SerializeField, Tooltip("작업속도 % 이상 (기본 + 인챈트)")]
+    private TMP_InputField equipSpeedInput = null!;
+
+    [SerializeField, Tooltip("인챈트 등급 하한 드롭다운 — 전체·일반 이상~신화 이상")]
+    private TMP_Dropdown enchantGradeDropdown = null!;
+
+    [SerializeField, Tooltip("인챈트 작업속도 옵션 합 % 이상")]
+    private TMP_InputField enchantSpeedInput = null!;
+
+    [SerializeField, Tooltip("인챈트 경험치 옵션 합 % 이상")]
+    private TMP_InputField enchantExpInput = null!;
+
+
+    [CenterHeader("캐릭터 옵션")]
+    [SerializeField, Tooltip("캐릭터 분류일 때만 보이는 묶음")]
+    private GameObject characterOptions = null!;
+
+    [SerializeField, Tooltip("레벨 하한")]
+    private TMP_InputField levelMinInput = null!;
+
+    [SerializeField, Tooltip("레벨 상한")]
+    private TMP_InputField levelMaxInput = null!;
+
+    [SerializeField, Tooltip("응축 ★ 하한 드롭다운 — 전체·★1 이상~")]
+    private TMP_Dropdown starDropdown = null!;
+
+    [SerializeField, Tooltip("적성 산업 드롭다운 — 전체·농사~사냥")]
+    private TMP_Dropdown aptitudeDropdown = null!;
+
+    [SerializeField, Tooltip("그 산업 적성 하한")]
+    private TMP_InputField aptitudeMinInput = null!;
+
+
+    [CenterHeader("단가 · 버튼")]
+    [SerializeField, Tooltip("단가 하한")]
+    private TMP_InputField priceMinInput = null!;
+
+    [SerializeField, Tooltip("단가 상한")]
+    private TMP_InputField priceMaxInput = null!;
+
+    [SerializeField, Tooltip("[초기화] — 옵션만 비운다(검색어는 둔다). OnClick은 코드가 연결한다")]
+    private Button resetButton = null!;
+
+    [SerializeField, Tooltip("[검색]. OnClick은 코드가 연결한다")]
+    private Button searchButton = null!;
+
+
+    [CenterHeader("결과 머리")]
+    [SerializeField, Tooltip("'검색 결과 N건'")]
+    private TMP_Text countText = null!;
+
+    [SerializeField, Tooltip("마지막으로 조회한 조건 — 분류 · 이름 · 등급 · 옵션 · 단가")]
+    private TMP_Text appliedText = null!;
+
+    [SerializeField, Tooltip("'n분 전에 받음'")]
+    private TMP_Text receivedText = null!;
+
+    [SerializeField, Tooltip("[새로고침] — 같은 조건으로 첫 쪽부터. OnClick은 코드가 연결한다")]
+    private Button refreshButton = null!;
+
+    [SerializeField, Tooltip("정렬 드롭다운. 항목은 코드가 채운다")]
+    private TMP_Dropdown sortDropdown = null!;
+
+
+    [CenterHeader("열 머리 정렬")]
+    [SerializeField, Tooltip("'아이템 (등급)' 열 머리 — 등급 높은순")]
+    private Button rarityHeaderButton = null!;
+
+    [SerializeField, Tooltip("'단가' 열 머리 — 낮은순 ↔ 높은순")]
+    private Button priceHeaderButton = null!;
+
+    [SerializeField, Tooltip("'남은 시간' 열 머리 — 마감 임박순")]
+    private Button timeHeaderButton = null!;
+
+
+    [CenterHeader("목록")]
+    [SerializeField, Tooltip("검색 결과 한 줄 프리팹 (AuctionSearchRowView)")]
+    private AuctionTableRowView rowPrefab = null!;
+
+    [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
+    private Transform rowParent = null!;
+
+    [SerializeField, Tooltip("결과 스크롤 — 끝에 닿으면 다음 20개를 받는다")]
+    private ScrollRect scrollRect = null!;
+
+    [SerializeField, Tooltip("결과가 없을 때만 보인다")]
+    private GameObject emptyText = null!;
+
+    [SerializeField, Tooltip("목록 아래 — 'n / N건 — 아래로 내리면 20개씩 더 받는다'")]
+    private TMP_Text footText = null!;
+
+
+    [CenterHeader("탭 사이 길")]
+    [SerializeField, Tooltip("경매장 캔버스 — 줄의 [시세]가 시세 탭을 연다")]
+    private AuctionCanvasView canvasView = null!;
+
+    private readonly List<AuctionTableRowContent> _contents = new List<AuctionTableRowContent>();
+    private readonly HashSet<AuctionSearchNode>   _expanded = new HashSet<AuctionSearchNode>();
 
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
     private ServerWaitManager _wait    = null!;
     private UIManager         _ui      = null!;
-    private AuctionRowList    _rows    = null!;
+    private AuctionTableRowList _rows  = null!;
 
-    // 진행 중인 대기의 손잡이 — 응답이 오면 결과를 보고한다.
+    // 고치는 중인 분류와 검색어 — 왼쪽 옵션은 위젯 값 그대로 읽는다.
+    private AuctionSearchNode _node = AuctionSearchNode.All;
+    private string            _query = "";
+
+    // 마지막으로 조회한 조건 — 정렬만 바꿔 다시 받을 때 쓴다. 이름 검색어도 함께 둔다(전체 분류의 이름 거르기).
+    private C_AuctionSearchRequest? _applied;
+    private string                  _appliedQuery = "";
+    private string                  _appliedLabel = "";
+    private AuctionSearchNode       _appliedNode  = AuctionSearchNode.All;
+
+    private SortPreset _sort = SortPreset.PriceAsc;
+
+    // 진행 중인 대기의 손잡이 — 첫 쪽 검색 · 구매 · 구매 전 시세.
     private ServerWaitHandle? _waitHandle;
 
-    // 지금 가격 정렬 — 화면 상태라 저장하지 않는다.
-    private AuctionSortOrder _sortOrder = AuctionSortOrder.Ascending;
+    // 다음 쪽을 기다리는 중 — 대기 차단 없이 받는다. 빈도 제한에 걸렸으면 'IsPageThrottled'.
+    private bool _isPagePending;
+    private bool _isPageThrottled;
+
+    // 구매 전 시세를 기다리는 매물 — 0이면 없다.
+    private long _pendingBuyListingId;
+
+    // Start 전에 들어온 "이 아이템 매물 보기"('SearchFor') — Start 끝에서 검색한다.
+    private bool _hasPendingSearch;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
-    private bool IsEquip => searchKind == EAuctionKind.Equip;
+    // ─── 공용 검색창 ───
+    public string QueryPlaceholder => "아이템 이름 (일부만 쳐도 된다)";
+    public string QueryHint        => "[검색] — 분류·옵션과 함께 조회합니다";
+    public string Query            => _query;
 
-    // 알림·확인창에 쓰는 축 이름
-    private string KindWord => IsEquip ? "장비" : "캐릭터";
+    public void OnQueryChanged(string text) => _query = text;
+
+    public void OnQuerySubmitted(string text)
+    {
+        _query = text;
+        RunSearch();
+    }
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
     {
-        this.RequireRef(searchInput,    nameof(searchInput));
-        this.RequireRef(rarityDropdown, nameof(rarityDropdown));
-        this.RequireRef(searchButton,   nameof(searchButton));
-        this.RequireRef(rowPrefab,      nameof(rowPrefab));
-        this.RequireRef(rowParent,      nameof(rowParent));
-        this.RequireRef(emptyText,      nameof(emptyText));
-        this.RequireRef(receivedText,   nameof(receivedText));
-        this.RequireRef(moreButton,     nameof(moreButton));
-        this.RequireRef(sortButton,     nameof(sortButton));
-        this.RequireRef(sortText,       nameof(sortText));
-        this.RequireRef(moreText,       nameof(moreText));
-
-        if (IsEquip)
-        {
-            this.RequireRef(kindDropdown,    nameof(kindDropdown));
-            this.RequireRef(enchantDropdown, nameof(enchantDropdown));
-        }
+        this.RequireRef(rarityDropdown,        nameof(rarityDropdown));
+        this.RequireRef(equipOptions,          nameof(equipOptions));
+        this.RequireRef(equipIndustryDropdown, nameof(equipIndustryDropdown));
+        this.RequireRef(equipSpeedInput,       nameof(equipSpeedInput));
+        this.RequireRef(enchantGradeDropdown,  nameof(enchantGradeDropdown));
+        this.RequireRef(enchantSpeedInput,     nameof(enchantSpeedInput));
+        this.RequireRef(enchantExpInput,       nameof(enchantExpInput));
+        this.RequireRef(characterOptions,      nameof(characterOptions));
+        this.RequireRef(levelMinInput,         nameof(levelMinInput));
+        this.RequireRef(levelMaxInput,         nameof(levelMaxInput));
+        this.RequireRef(starDropdown,          nameof(starDropdown));
+        this.RequireRef(aptitudeDropdown,      nameof(aptitudeDropdown));
+        this.RequireRef(aptitudeMinInput,      nameof(aptitudeMinInput));
+        this.RequireRef(priceMinInput,         nameof(priceMinInput));
+        this.RequireRef(priceMaxInput,         nameof(priceMaxInput));
+        this.RequireRef(resetButton,           nameof(resetButton));
+        this.RequireRef(searchButton,          nameof(searchButton));
+        this.RequireRef(countText,             nameof(countText));
+        this.RequireRef(appliedText,           nameof(appliedText));
+        this.RequireRef(receivedText,          nameof(receivedText));
+        this.RequireRef(refreshButton,         nameof(refreshButton));
+        this.RequireRef(sortDropdown,          nameof(sortDropdown));
+        this.RequireRef(rarityHeaderButton,    nameof(rarityHeaderButton));
+        this.RequireRef(priceHeaderButton,     nameof(priceHeaderButton));
+        this.RequireRef(timeHeaderButton,      nameof(timeHeaderButton));
+        this.RequireRef(rowPrefab,             nameof(rowPrefab));
+        this.RequireRef(rowParent,             nameof(rowParent));
+        this.RequireRef(scrollRect,            nameof(scrollRect));
+        this.RequireRef(emptyText,             nameof(emptyText));
+        this.RequireRef(footText,              nameof(footText));
+        this.RequireRef(canvasView,            nameof(canvasView));
 
         _auction = Services.Get<AuctionModel>();
         _data    = Services.Get<PlayerDataModel>();
         _wait    = Services.Get<ServerWaitManager>();
         _ui      = Services.Get<UIManager>();
-        _rows    = new AuctionRowList(rowPrefab, rowParent, OnRowBuyClicked);
+        _rows    = new AuctionTableRowList(rowPrefab, rowParent, OnRowBuyClicked, OnRowPriceClicked);
 
+        ValidateNodes();
         FillDropdowns();
         Subscribe();
+        BindWidgets();
 
-        searchButton.onClick.AddListener(OnSearchClicked);
-        moreButton.onClick.AddListener(OnMoreClicked);
-        sortButton.onClick.AddListener(OnSortClicked);
-
+        RefreshTree();
+        RefreshOptions();
         Refresh();
         RequestMyListings();
 
-        if (!_auction.HasSearched(searchKind) && _data.IsLoggedIn)
-        {
-            OnSearchClicked();
-        }
-
         _isReady = true;
+
+        if (_hasPendingSearch || (!_auction.HasSearched && _data.IsLoggedIn))
+        {
+            _hasPendingSearch = false;
+            RunSearch();
+        }
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
+    // ※ 꺼진 동안 다음 쪽 응답을 놓쳤을 수 있다 — 기다림 표시를 풀고 모델의 결과로 다시 그린다.
     private void OnEnable()
     {
-        if (_isReady)
+        if (!_isReady)
         {
-            Subscribe();
-            Refresh();
-            RequestMyListings();
+            return;
+        }
+
+        _isPagePending = false;
+
+        Subscribe();
+        Refresh();
+        RequestMyListings();
+
+        if (_hasPendingSearch)
+        {
+            _hasPendingSearch = false;
+            RunSearch();
         }
     }
 
@@ -174,7 +331,7 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 구독
 
-    // 검색·구매 응답과 재화 변경 구독 (Start · OnEnable에서 호출)
+    // 검색·구매·시세 응답과 재화 변경 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -186,6 +343,7 @@ public class AuctionSearchPresenter : MonoBehaviour
 
         _auction.SearchCompleted     += OnSearchCompleted;
         _auction.BuyCompleted        += OnBuyCompleted;
+        _auction.SummaryCompleted    += OnSummaryCompleted;
         _auction.MyListingsCompleted += OnMyListingsCompleted;
         _data.CurrencyChanged        += Refresh;
     }
@@ -202,6 +360,7 @@ public class AuctionSearchPresenter : MonoBehaviour
 
         _auction.SearchCompleted     -= OnSearchCompleted;
         _auction.BuyCompleted        -= OnBuyCompleted;
+        _auction.SummaryCompleted    -= OnSummaryCompleted;
         _auction.MyListingsCompleted -= OnMyListingsCompleted;
         _data.CurrencyChanged        -= Refresh;
     }
@@ -210,87 +369,495 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 초기화
 
-    // 드롭다운 항목을 채운다 (Start에서 한 번). 이름은 공용 표시 이름을 쓴다. 연결 안 된 드롭다운은 건너뛴다.
+    // 트리 배선이 'AuctionSearchNode'와 맞는지 본다 (Start에서 한 번).
+    private void ValidateNodes()
+    {
+        foreach (AuctionSearchNode node in Enum.GetValues(typeof(AuctionSearchNode)))
+        {
+            if (Array.FindIndex(nodes, entry => entry.node == node && entry.button != null && entry.label != null) < 0)
+            {
+                ClientLogger.Error(ClientLogger.UI, $"검색 분류 '{node}'의 버튼이 없다. Search Presenter의 Nodes를 확인할 것.", this);
+            }
+        }
+    }
+
+    // 드롭다운 항목을 채운다 (Start에서 한 번). 이름은 공용 표시 이름을 쓴다.
     private void FillDropdowns()
     {
-        var rarityNames = new List<string>();
+        var rarities = new List<string>();
+        var grades   = new List<string>();
 
         foreach (GlobalRarity rarity in RarityOptions)
         {
-            rarityNames.Add(rarity == GlobalRarity.None ? "등급 전체" : RarityLabel.Get(rarity));
+            rarities.Add(rarity == GlobalRarity.None ? "전체" : RarityLabel.Get(rarity));
+            grades.Add(rarity == GlobalRarity.None ? "전체" : $"{RarityLabel.Get(rarity)} 이상");
         }
 
-        rarityDropdown.ClearOptions();
-        rarityDropdown.AddOptions(rarityNames);
+        var industries = new List<string>();
 
-        if (kindDropdown != null)
+        foreach (EIndustryType industry in IndustryOptions)
         {
-            var kindNames = new List<string>();
+            industries.Add(industry == EIndustryType.None ? "전체" : IndustryLabel.Get(industry));
+        }
 
-            foreach (EquipKind kind in KindOptions)
+        var stars = new List<string> { "전체" };
+
+        for (int star = 1; star <= GameDataLoader.CondenseMaxStar; star++)
+        {
+            stars.Add($"★{star} 이상");
+        }
+
+        Fill(rarityDropdown,        rarities);
+        Fill(enchantGradeDropdown,  grades);
+        Fill(equipIndustryDropdown, industries);
+        Fill(aptitudeDropdown,      industries);
+        Fill(starDropdown,          stars);
+        Fill(sortDropdown,          new List<string>(SortLabels));
+    }
+
+    private static void Fill(TMP_Dropdown dropdown, List<string> options)
+    {
+        dropdown.ClearOptions();
+        dropdown.AddOptions(options);
+    }
+
+    // 버튼·드롭다운을 배선한다 (Start에서 한 번).
+    private void BindWidgets()
+    {
+        foreach (NodeEntry entry in nodes)
+        {
+            if (entry.button == null)
             {
-                kindNames.Add(kind == EquipKind.None ? "분류 전체" : EquipLabel.GetKindName(kind));
+                continue;
             }
 
-            kindDropdown.ClearOptions();
-            kindDropdown.AddOptions(kindNames);
+            // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
+            AuctionSearchNode node = entry.node;
+            entry.button.onClick.AddListener(() => OnNodeClicked(node));
         }
 
-        if (enchantDropdown != null)
-        {
-            var enchantNames = new List<string>();
+        resetButton.onClick.AddListener(OnResetClicked);
+        searchButton.onClick.AddListener(RunSearch);
+        refreshButton.onClick.AddListener(OnRefreshClicked);
+        sortDropdown.onValueChanged.AddListener(index => ApplySort((SortPreset)index));
+        rarityHeaderButton.onClick.AddListener(() => ApplySort(SortPreset.RarityDesc));
+        priceHeaderButton.onClick.AddListener(() => ApplySort(_sort == SortPreset.PriceAsc ? SortPreset.PriceDesc : SortPreset.PriceAsc));
+        timeHeaderButton.onClick.AddListener(() => ApplySort(SortPreset.ExpiresSoon));
+        scrollRect.onValueChanged.AddListener(_ => OnScrolled());
+    }
 
-            foreach (GlobalRarity grade in EnchantOptions)
+    #endregion
+
+    #region 분류 트리
+
+    // 분류를 눌렀다 — 고르고 바로 조회한다. 부모는 펼친다(이미 고른 부모를 다시 누르면 접는다) (노드 버튼)
+    private void OnNodeClicked(AuctionSearchNode node)
+    {
+        if (IsParent(node))
+        {
+            if (_node == node && _expanded.Contains(node))
             {
-                enchantNames.Add(grade == GlobalRarity.None ? "인챈트 무관" : $"{RarityLabel.Get(grade)} 이상");
+                _expanded.Remove(node);
+            }
+            else
+            {
+                _expanded.Add(node);
+            }
+        }
+
+        _node = node;
+
+        RefreshTree();
+        RefreshOptions();
+        RunSearch();
+    }
+
+    // 트리 글자·선택 표시·펼침을 맞춘다.
+    private void RefreshTree()
+    {
+        foreach (NodeEntry entry in nodes)
+        {
+            if (entry.button == null || entry.label == null)
+            {
+                continue;
             }
 
-            enchantDropdown.ClearOptions();
-            enchantDropdown.AddOptions(enchantNames);
+            AuctionSearchNode? parent = GetParent(entry.node);
+
+            entry.button.gameObject.SetActive(parent == null || _expanded.Contains(parent.Value));
+
+            string caret = IsParent(entry.node) ? (_expanded.Contains(entry.node) ? "▼ " : "▶ ") : parent != null ? "      " : "   ";
+            entry.label.text = caret + GetNodeName(entry.node);
+
+            Color target = UIThemePalette.Of(entry.node == _node ? UIThemeRole.ButtonSelected : UIThemeRole.PanelSub);
+
+            ColorBlock colors = entry.button.colors;
+            colors.normalColor   = target;
+            colors.selectedColor = target;
+            entry.button.colors  = colors;
         }
+    }
+
+    // 분류에 맞는 상세 옵션 묶음만 보인다.
+    private void RefreshOptions()
+    {
+        (EAuctionKind kind, int _) = GetNodeFilter(_node);
+
+        equipOptions.SetActive(kind == EAuctionKind.Equip);
+        characterOptions.SetActive(kind == EAuctionKind.Character);
+    }
+
+    // 노드 → (종류, 분류). 종류 None = 전부, 분류 0 = 그 종류 전부.
+    private static (EAuctionKind kind, int category) GetNodeFilter(AuctionSearchNode node) => node switch
+    {
+        AuctionSearchNode.Item           => (EAuctionKind.Item, 0),
+        AuctionSearchNode.ItemFarming    => (EAuctionKind.Item, (int)ItemType.Farming),
+        AuctionSearchNode.ItemExcavation => (EAuctionKind.Item, (int)ItemType.Excavation),
+        AuctionSearchNode.ItemMining     => (EAuctionKind.Item, (int)ItemType.Mining),
+        AuctionSearchNode.ItemLogging    => (EAuctionKind.Item, (int)ItemType.Logging),
+        AuctionSearchNode.ItemHunting    => (EAuctionKind.Item, (int)ItemType.Hunting),
+        AuctionSearchNode.ItemBox        => (EAuctionKind.Item, (int)ItemType.Box),
+        AuctionSearchNode.ItemConsumable => (EAuctionKind.Item, (int)ItemType.Consumable),
+        AuctionSearchNode.ItemMisc       => (EAuctionKind.Item, (int)ItemType.Misc),
+        AuctionSearchNode.ItemRelic      => (EAuctionKind.Item, (int)ItemType.Relic),
+        AuctionSearchNode.Equip          => (EAuctionKind.Equip, 0),
+        AuctionSearchNode.EquipWeapon    => (EAuctionKind.Equip, (int)EquipKind.Weapon),
+        AuctionSearchNode.EquipAccessory => (EAuctionKind.Equip, (int)EquipKind.Accessory),
+        AuctionSearchNode.EquipGem       => (EAuctionKind.Equip, (int)EquipKind.Gem),
+        AuctionSearchNode.Character      => (EAuctionKind.Character, 0),
+        AuctionSearchNode.Artifact       => (EAuctionKind.Artifact, 0),
+        _                                => (EAuctionKind.None, 0),
+    };
+
+    // 이 아이템이 속하는 가장 좁은 노드 — "이 아이템 매물 보기".
+    private static AuctionSearchNode GetNodeOf(EAuctionKind kind, int tid)
+    {
+        if (kind == EAuctionKind.Character) return AuctionSearchNode.Character;
+        if (kind == EAuctionKind.Artifact)  return AuctionSearchNode.Artifact;
+
+        if (kind == EAuctionKind.Equip)
+        {
+            EquipKind equipKind = GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? row.EquipKind : EquipKind.None;
+
+            return equipKind switch
+            {
+                EquipKind.Weapon    => AuctionSearchNode.EquipWeapon,
+                EquipKind.Accessory => AuctionSearchNode.EquipAccessory,
+                EquipKind.Gem       => AuctionSearchNode.EquipGem,
+                _                   => AuctionSearchNode.Equip,
+            };
+        }
+
+        foreach (AuctionSearchNode node in Enum.GetValues(typeof(AuctionSearchNode)))
+        {
+            (EAuctionKind nodeKind, int category) = GetNodeFilter(node);
+
+            if (nodeKind == EAuctionKind.Item && category != 0 && category == (int)GameDataLoader.GetItemType(tid))
+            {
+                return node;
+            }
+        }
+
+        return AuctionSearchNode.Item;
+    }
+
+    private static bool IsParent(AuctionSearchNode node) => node == AuctionSearchNode.Item || node == AuctionSearchNode.Equip;
+
+    private static AuctionSearchNode? GetParent(AuctionSearchNode node)
+    {
+        if (node > AuctionSearchNode.Item && node <= AuctionSearchNode.ItemRelic)    return AuctionSearchNode.Item;
+        if (node > AuctionSearchNode.Equip && node <= AuctionSearchNode.EquipGem)    return AuctionSearchNode.Equip;
+
+        return null;
+    }
+
+    private static string GetNodeName(AuctionSearchNode node) => node switch
+    {
+        AuctionSearchNode.All            => "전체",
+        AuctionSearchNode.Item           => "아이템",
+        AuctionSearchNode.ItemFarming    => AuctionText.GetItemCategoryName(ItemType.Farming),
+        AuctionSearchNode.ItemExcavation => AuctionText.GetItemCategoryName(ItemType.Excavation),
+        AuctionSearchNode.ItemMining     => AuctionText.GetItemCategoryName(ItemType.Mining),
+        AuctionSearchNode.ItemLogging    => AuctionText.GetItemCategoryName(ItemType.Logging),
+        AuctionSearchNode.ItemHunting    => AuctionText.GetItemCategoryName(ItemType.Hunting),
+        AuctionSearchNode.ItemBox        => AuctionText.GetItemCategoryName(ItemType.Box),
+        AuctionSearchNode.ItemConsumable => AuctionText.GetItemCategoryName(ItemType.Consumable),
+        AuctionSearchNode.ItemMisc       => AuctionText.GetItemCategoryName(ItemType.Misc),
+        AuctionSearchNode.ItemRelic      => AuctionText.GetItemCategoryName(ItemType.Relic),
+        AuctionSearchNode.Equip          => "장비",
+        AuctionSearchNode.EquipWeapon    => EquipLabel.GetKindName(EquipKind.Weapon),
+        AuctionSearchNode.EquipAccessory => EquipLabel.GetKindName(EquipKind.Accessory),
+        AuctionSearchNode.EquipGem       => EquipLabel.GetKindName(EquipKind.Gem),
+        AuctionSearchNode.Character      => "캐릭터",
+        _                                => "아티팩트",
+    };
+
+    // "장비 › 무기" — 적용 조건 칩.
+    private static string GetNodePath(AuctionSearchNode node)
+    {
+        AuctionSearchNode? parent = GetParent(node);
+
+        return parent != null ? $"{GetNodeName(parent.Value)} › {GetNodeName(node)}" : GetNodeName(node);
     }
 
     #endregion
 
     #region 요청
 
-    // 조건으로 첫 페이지를 검색한다 (searchButton OnClick · 화면을 처음 열 때). ※ 입력칸 Enter 검색은 없앴다('KeyInputManager').
-    //
-    // 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
-    private void OnSearchClicked()
+    // 이 아이템의 매물만 찾는다 — 옵션을 비우고 분류·이름을 맞춘다 (AuctionCanvasView.OpenSearchFor).
+    // ※ 탭이 아직 안 켜졌으면 켜질 때 검색한다.
+    public void SearchFor(EAuctionKind kind, int tid)
     {
-        if (_waitHandle != null)
+        _node  = GetNodeOf(kind, tid);
+        _query = AuctionText.GetName(kind, tid);
+
+        AuctionSearchNode? parent = GetParent(_node);
+
+        if (parent != null)
+        {
+            _expanded.Add(parent.Value);
+        }
+
+        if (!_isReady || !isActiveAndEnabled)
+        {
+            _hasPendingSearch = true;
+
+            return;
+        }
+
+        ResetOptions();
+        RefreshTree();
+        RefreshOptions();
+        RunSearch();
+    }
+
+    // 지금 왼쪽 값으로 첫 쪽을 조회한다 (분류 · [검색] · 공용 검색창 · 처음 열 때).
+    private void RunSearch()
+    {
+        if (_waitHandle != null || !_data.IsLoggedIn)
         {
             return;
         }
 
-        List<int>? tids = IsEquip ? AuctionText.FindEquipTids(searchInput.text) : AuctionText.FindCharacterTids(searchInput.text);
+        (EAuctionKind kind, int category) = GetNodeFilter(_node);
+
+        List<int>? tids = AuctionText.FindTids(kind, _query);
 
         if (tids != null && tids.Count == 0)
         {
-            _wait.RaiseNotice($"'{searchInput.text.Trim()}'(이)라는 {KindWord}이(가) 없습니다.");
+            _wait.RaiseNotice($"'{_query.Trim()}'(이)라는 {(kind == EAuctionKind.None ? "아이템" : AuctionText.GetKindName(kind))}이(가) 없습니다.");
 
             return;
+        }
+
+        var labels  = new List<string> { GetNodePath(_node) };
+        var request = new C_AuctionSearchRequest
+        {
+            Kind     = kind,
+            Category = category,
+            Tids     = tids,
+            Attrs    = new List<AuctionAttrRangeInfo>(),
+        };
+
+        if (!string.IsNullOrWhiteSpace(_query))
+        {
+            labels.Add($"\"{_query.Trim()}\"");
         }
 
         GlobalRarity rarity = RarityOptions[rarityDropdown.value];
 
-        if (IsEquip)
+        if (rarity != GlobalRarity.None)
         {
-            EquipKind    kind    = kindDropdown    != null ? KindOptions[kindDropdown.value]       : EquipKind.None;
-            GlobalRarity enchant = enchantDropdown != null ? EnchantOptions[enchantDropdown.value] : GlobalRarity.None;
-
-            _auction.SearchEquips(tids, kind, rarity, enchant);
-        }
-        else
-        {
-            _auction.SearchCharacters(tids, rarity);
+            request.MinRarity = (int)rarity;
+            request.MaxRarity = (int)rarity;
+            labels.Add(RarityLabel.Get(rarity));
         }
 
+        if (kind == EAuctionKind.Equip)
+        {
+            ReadEquipOptions(request, labels);
+        }
+        else if (kind == EAuctionKind.Character)
+        {
+            ReadCharacterOptions(request, labels);
+        }
+
+        long minPrice = ReadLong(priceMinInput);
+        long maxPrice = ReadLong(priceMaxInput);
+
+        request.MinUnitPrice = minPrice;
+        request.MaxUnitPrice = maxPrice;
+
+        if (minPrice > 0L || maxPrice > 0L)
+        {
+            labels.Add($"단가 {minPrice:N0} ~ {(maxPrice > 0L ? maxPrice.ToString("N0") : "∞")}");
+        }
+
+        _applied      = request;
+        _appliedQuery = _query;
+        _appliedNode  = _node;
+        _appliedLabel = string.Join(UIRichText.Dot, labels);
+
+        SendApplied();
+    }
+
+    // 장비 옵션을 요청에 싣는다 — 산업 · 작업속도 · 인챈트 등급 · 인챈트 옵션 합 (RunSearch에서 호출).
+    // ※ 속도·옵션 합은 천분율이다 — 화면의 %에 10을 곱한다.
+    private void ReadEquipOptions(C_AuctionSearchRequest request, List<string> labels)
+    {
+        EIndustryType industry = IndustryOptions[equipIndustryDropdown.value];
+
+        if (industry != EIndustryType.None)
+        {
+            request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = EAuctionAttr.EquipIndustry, Min = (long)industry, Max = (long)industry });
+            labels.Add(IndustryLabel.Get(industry));
+        }
+
+        AddPercentAttr(request, labels, equipSpeedInput,   EAuctionAttr.EquipSpeed,          "작업속도");
+        AddPercentAttr(request, labels, enchantSpeedInput, EAuctionAttr.EnchantSpeed,        "인챈트 속도 합");
+        AddPercentAttr(request, labels, enchantExpInput,   EAuctionAttr.EnchantCharacterExp, "인챈트 경험치 합");
+
+        GlobalRarity grade = RarityOptions[enchantGradeDropdown.value];
+
+        if (grade != GlobalRarity.None)
+        {
+            request.MinEnchantGrade = (int)grade;
+            labels.Add($"인챈트 {RarityLabel.Get(grade)}↑");
+        }
+    }
+
+    // 캐릭터 옵션을 요청에 싣는다 — 레벨 범위 · ★ · 적성 (RunSearch에서 호출).
+    private void ReadCharacterOptions(C_AuctionSearchRequest request, List<string> labels)
+    {
+        long levelMin = ReadLong(levelMinInput);
+        long levelMax = ReadLong(levelMaxInput);
+
+        if (levelMin > 0L || levelMax > 0L)
+        {
+            request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = EAuctionAttr.CharacterLevel, Min = levelMin, Max = levelMax });
+            labels.Add($"Lv.{Math.Max(levelMin, 1L)}~{(levelMax > 0L ? levelMax.ToString() : "")}");
+        }
+
+        int star = starDropdown.value;
+
+        if (star > 0)
+        {
+            request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = EAuctionAttr.CharacterStar, Min = star });
+            labels.Add($"★{star}↑");
+        }
+
+        EIndustryType industry = IndustryOptions[aptitudeDropdown.value];
+
+        if (industry != EIndustryType.None)
+        {
+            long min = Math.Max(ReadLong(aptitudeMinInput), 1L);
+
+            request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = (EAuctionAttr)(20 + (int)industry), Min = min });
+            labels.Add($"{IndustryLabel.Get(industry)} 적성 {min}↑");
+        }
+    }
+
+    // "n % 이상" 입력칸을 천분율 속성 하한으로 싣는다. 비었거나 0이면 싣지 않는다.
+    private static void AddPercentAttr(C_AuctionSearchRequest request, List<string> labels, TMP_InputField input, EAuctionAttr attr, string label)
+    {
+        if (!float.TryParse(input.text, NumberStyles.Float, CultureInfo.InvariantCulture, out float percent) || percent <= 0f)
+        {
+            return;
+        }
+
+        request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = attr, Min = (long)Math.Round(percent * 10f) });
+        labels.Add($"{label} {percent:0.#}%↑");
+    }
+
+    // 마지막으로 조회한 조건에 지금 정렬을 얹어 첫 쪽을 보낸다.
+    private void SendApplied()
+    {
+        if (_applied == null)
+        {
+            return;
+        }
+
+        (_applied.Sort, _applied.SortAttr) = _sort switch
+        {
+            SortPreset.PriceDesc   => (EAuctionSort.PriceDesc,   EAuctionAttr.None),
+            SortPreset.ExpiresSoon => (EAuctionSort.ExpiresSoon, EAuctionAttr.None),
+            SortPreset.RarityDesc  => (EAuctionSort.RarityDesc,  EAuctionAttr.None),
+            SortPreset.SpeedDesc   => (EAuctionSort.AttrDesc,    EAuctionAttr.EquipSpeed),
+            SortPreset.LevelDesc   => (EAuctionSort.AttrDesc,    EAuctionAttr.CharacterLevel),
+            _                      => (EAuctionSort.PriceAsc,    EAuctionAttr.None),
+        };
+
+        _isPagePending   = false;
+        _isPageThrottled = false;
+
+        _auction.Search(_applied);
         BeginWait("경매장 검색");
     }
 
-    // 내 매물을 조용히 받는다 — 대기 없이, 결과가 오면 '[내 매물]' 표시만 다시 그린다 (Start · OnEnable).
+    // 정렬을 바꾼다 — 서버 정렬이라 마지막 조건으로 다시 받는다 (정렬 드롭다운 · 열 머리)
+    private void ApplySort(SortPreset sort)
+    {
+        _sort = sort;
+        sortDropdown.SetValueWithoutNotify((int)sort);
+
+        if (_waitHandle == null)
+        {
+            SendApplied();
+        }
+
+        Refresh();
+    }
+
+    // [새로고침] — 같은 조건으로 첫 쪽부터 다시 받는다
+    private void OnRefreshClicked()
+    {
+        if (_waitHandle == null)
+        {
+            SendApplied();
+        }
+    }
+
+    // [초기화] — 옵션만 비운다. 조회는 [검색]을 눌러야 한다(목업)
+    private void OnResetClicked()
+    {
+        _node = AuctionSearchNode.All;
+
+        ResetOptions();
+        RefreshTree();
+        RefreshOptions();
+    }
+
+    // 왼쪽 옵션 위젯을 처음 값으로 (OnResetClicked · SearchFor)
+    private void ResetOptions()
+    {
+        rarityDropdown.SetValueWithoutNotify(0);
+        equipIndustryDropdown.SetValueWithoutNotify(0);
+        enchantGradeDropdown.SetValueWithoutNotify(0);
+        starDropdown.SetValueWithoutNotify(0);
+        aptitudeDropdown.SetValueWithoutNotify(0);
+
+        foreach (TMP_InputField input in new[] { equipSpeedInput, enchantSpeedInput, enchantExpInput, levelMinInput, levelMaxInput, aptitudeMinInput, priceMinInput, priceMaxInput })
+        {
+            input.SetTextWithoutNotify("");
+        }
+    }
+
+    // 스크롤 — 목록 끝에 닿으면 다음 쪽을 받는다. 대기 차단 없이 (scrollRect.onValueChanged)
+    private void OnScrolled()
+    {
+        if (_waitHandle != null || _isPagePending || !_auction.HasMoreResults || scrollRect.verticalNormalizedPosition > NextPageThreshold)
+        {
+            return;
+        }
+
+        _isPagePending   = true;
+        _isPageThrottled = false;
+
+        _auction.SearchNextPage();
+        RefreshFoot();
+    }
+
+    // 내 매물을 조용히 받는다 — 대기 없이, 결과가 오면 꼬리표만 다시 그린다 (Start · OnEnable).
     private void RequestMyListings()
     {
         if (_data.IsLoggedIn)
@@ -299,26 +866,18 @@ public class AuctionSearchPresenter : MonoBehaviour
         }
     }
 
-    // [가격 정렬] — 다음 정렬로 바꿔 다시 그린다. 요청은 보내지 않는다 (sortButton OnClick)
-    private void OnSortClicked()
+    // 줄의 [시세] — 시세 탭을 연다 (AuctionTableRowView.SecondaryClicked)
+    private void OnRowPriceClicked(long listingId)
     {
-        _sortOrder = AuctionSort.Next(_sortOrder);
-        Refresh();
-    }
+        AuctionListingInfo? listing = FindListing(listingId);
 
-    // [더 보기] — 같은 조건으로 다음 페이지를 받는다 (moreButton OnClick)
-    private void OnMoreClicked()
-    {
-        if (_waitHandle != null || !_auction.HasMoreResults(searchKind))
+        if (listing != null)
         {
-            return;
+            canvasView.OpenPrice(listing.Kind, listing.Tid);
         }
-
-        _auction.SearchNextPage(searchKind);
-        BeginWait("경매장 검색");
     }
 
-    // 줄의 [구매] — 확인을 받고 보낸다 (AuctionRowView.ActionClicked)
+    // 줄의 [구매] — 시세 요약이 있으면 바로, 없으면 한 번 받고 확인 창을 연다 (AuctionTableRowView.PrimaryClicked)
     private void OnRowBuyClicked(long listingId)
     {
         if (_waitHandle != null)
@@ -333,53 +892,98 @@ public class AuctionSearchPresenter : MonoBehaviour
             return;
         }
 
-        string name = AuctionText.GetName(listing.Kind, listing.Tid);
-
-        _ui.AskConfirm($"{name}을(를) {listing.TotalPrice:N0} G에 삽니다.\n보유 {_data.Gold:N0} G · 구매 후 {_data.Gold - listing.TotalPrice:N0} G\n\n산 {KindWord}은(는) 우편으로 옵니다.", () =>
+        if (!_auction.RequestSummary(listing.Kind, listing.Tid))
         {
-            _auction.RequestBuy(listing);
-            BeginWait("경매장 구매");
-        });
+            AskBuy(listing);
+
+            return;
+        }
+
+        _pendingBuyListingId = listingId;
+        BeginWait("시세 확인");
+    }
+
+    // 구매 확인 창 — 시세(최저가 · 최근가 · 전일 평균)와 이 매물이 전일 평균보다 몇 % 비싼지 · 골드.
+    private void AskBuy(AuctionListingInfo listing)
+    {
+        string          name    = AuctionText.GetName(listing.Kind, listing.Tid);
+        MarketItemInfo? summary = _auction.GetSummary(listing.Kind, listing.Tid);
+        long            after   = _data.Gold - listing.TotalPrice;
+
+        string what = listing.Count > 1
+            ? $"<b>{name}</b> {listing.Count:N0}개 — 개당 {listing.UnitPrice:N0} G · 총 {listing.TotalPrice:N0} G"
+            : $"<b>{name}</b> — {listing.TotalPrice:N0} G";
+
+        _ui.AskConfirm(
+            $"{what}\n\n" +
+            $"{AuctionPriceText.FormatSummaryLine(summary)}\n" +
+            $"{AuctionPriceText.FormatCompare(listing.UnitPrice, summary)}\n\n" +
+            $"{UIRichText.Label("보유")} {_data.Gold:N0} G{UIRichText.Dot}{UIRichText.Label("구매 후")} {after:N0} G\n" +
+            UIRichText.Small(UIRichText.Label("매물은 통째로 삽니다 · 산 물건은 우편으로 받습니다")),
+            () =>
+            {
+                _auction.RequestBuy(listing);
+                BeginWait("경매장 구매");
+            });
     }
 
     #endregion
 
     #region 응답 (AuctionModel 구독)
 
-    // 검색 결과 도착 — 다른 축의 응답은 무시한다 (AuctionModel.SearchCompleted 구독)
-    private void OnSearchCompleted(EAuctionKind kind, EResultCode code)
+    // 검색 결과 도착 — 첫 쪽이면 대기를 닫고 맨 위로, 다음 쪽이면 기다림 표시만 푼다 (AuctionModel.SearchCompleted 구독)
+    private void OnSearchCompleted(EResultCode code, bool isNextPage)
     {
-        if (kind != searchKind)
+        if (isNextPage)
+        {
+            _isPagePending   = false;
+            _isPageThrottled = code != EResultCode.Ok;
+        }
+        else
+        {
+            CloseWait(code);
+            scrollRect.verticalNormalizedPosition = 1f;
+        }
+
+        Refresh();
+    }
+
+    // 시세 요약 도착 — 구매 전에 기다리던 것이면 확인 창을 연다. 못 받았어도 연다(시세 없이) (AuctionModel.SummaryCompleted 구독)
+    private void OnSummaryCompleted(EResultCode code)
+    {
+        if (_pendingBuyListingId == 0L)
         {
             return;
         }
 
-        CloseWait(code);
-        Refresh();
+        AuctionListingInfo? listing = FindListing(_pendingBuyListingId);
+
+        _pendingBuyListingId = 0L;
+        _waitHandle?.Succeed();
+
+        if (listing != null)
+        {
+            AskBuy(listing);
+        }
     }
 
-    // 내 매물 도착 — '[내 매물]' 표시를 다시 맞춘다. 조용히 받은 것이라 대기는 없다 (AuctionModel.MyListingsCompleted 구독)
+    // 내 매물 도착 — 꼬리표를 다시 맞춘다. 조용히 받은 것이라 대기는 없다 (AuctionModel.MyListingsCompleted 구독)
     private void OnMyListingsCompleted(EResultCode code)
     {
         Refresh();
     }
 
     // 구매 결과 — 내가 건 대기일 때만 닫고 알린다. 목록에서 빼는 일은 모델이 했다 (AuctionModel.BuyCompleted 구독)
-    // ※ 두 축 화면 중 꺼진 쪽은 구독이 풀려 있어 받지 않는다. 그래도 대기 손잡이로 내 요청인지 가린다.
     private void OnBuyCompleted(EResultCode code)
     {
-        if (_waitHandle == null)
+        if (_waitHandle != null)
         {
-            Refresh();
+            CloseWait(code);
 
-            return;
-        }
-
-        CloseWait(code);
-
-        if (code == EResultCode.Ok)
-        {
-            _wait.RaiseNotice("구매했습니다. 우편함에서 받아 주세요.");
+            if (code == EResultCode.Ok)
+            {
+                _wait.RaiseNotice("구매했습니다. 우편함에서 받아 주세요.");
+            }
         }
 
         Refresh();
@@ -412,7 +1016,8 @@ public class AuctionSearchPresenter : MonoBehaviour
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼을 다시 연다 (ServerWaitManager.Begin의 onClosed)
     private void OnWaitClosed()
     {
-        _waitHandle = null;
+        _waitHandle          = null;
+        _pendingBuyListingId = 0L;
         Refresh();
     }
 
@@ -420,55 +1025,88 @@ public class AuctionSearchPresenter : MonoBehaviour
 
     #region 표시 갱신
 
-    // 목록과 [더 보기]·받은 시각·정렬 문구를 지금 상태로 그린다.
+    // 결과 머리 · 표 · 아래 글자를 지금 상태로 그린다.
     //
-    // [구매]는 세 축을 함께 본다 — 내 매물이면, 누가 구매 중(Reserved)이면, 골드가 모자라면 잠근다.
+    // [구매]는 세 가지를 함께 본다 — 내 매물이면, 누가 구매 중(Reserved)이면, 골드가 모자라면 잠근다.
     // ※ 골드 판단은 표시용이다. 실제 거절은 서버가 한다(NotEnoughCurrency · AuctionOwnListing).
     private void Refresh()
     {
-        IReadOnlyList<AuctionListingInfo> results = _auction.GetSearchResults(searchKind);
-        bool                              hasMore = _auction.HasMoreResults(searchKind);
-
         _contents.Clear();
 
-        foreach (AuctionListingInfo listing in AuctionSort.Apply(results, _sortOrder, l => l.TotalPrice))
+        bool filterName = _appliedNode == AuctionSearchNode.All;
+
+        foreach (AuctionListingInfo listing in _auction.SearchResults)
         {
+            if (filterName && !AuctionText.MatchesName(listing, _appliedQuery))
+            {
+                continue;
+            }
+
             bool isMine = _auction.IsMine(listing.ListingId);
             bool canBuy = _waitHandle == null
-                       && !isMine
                        && listing.State != EAuctionListingState.Reserved
                        && _data.Gold >= listing.TotalPrice;
 
-            _contents.Add(AuctionText.ToRow(listing, isMine ? "내 매물" : "구매", canBuy, isMine));
+            _contents.Add(AuctionText.ToSearchRow(listing, isMine, canBuy));
         }
 
         _rows.Show(_contents);
-        emptyText.SetActive(_contents.Count == 0);
-        receivedText.text       = AuctionModel.FormatReceivedAgo(_auction.GetSearchReceivedAt(searchKind));
-        moreButton.interactable = _waitHandle == null && hasMore;
-        moreText.text           = FormatMoreLabel(results.Count, hasMore);
-        sortText.text           = AuctionSort.GetLabel(_sortOrder, hasMore);
+        emptyText.SetActive(_auction.HasSearched && _contents.Count == 0);
+
+        countText.text    = $"검색 결과 {UIRichText.Paint(_auction.SearchTotalCount.ToString("N0"), UIThemeRole.Highlight)}건";
+        appliedText.text  = _appliedLabel;
+        receivedText.text = AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
+
+        refreshButton.interactable = _waitHandle == null && _applied != null;
+        searchButton.interactable  = _waitHandle == null;
+
+        RefreshHeaders();
+        RefreshFoot();
+    }
+
+    // 열 머리의 정렬 표시 — 지금 정렬인 열에 ▲▼.
+    private void RefreshHeaders()
+    {
+        SetHeader(rarityHeaderButton, "아이템 (등급)", _sort == SortPreset.RarityDesc ? " ▼" : "");
+        SetHeader(priceHeaderButton,  "단가",          _sort == SortPreset.PriceAsc ? " ▲" : _sort == SortPreset.PriceDesc ? " ▼" : "");
+        SetHeader(timeHeaderButton,   "남은 시간",     _sort == SortPreset.ExpiresSoon ? " ▲" : "");
+    }
+
+    private static void SetHeader(Button button, string label, string arrow)
+    {
+        var text = button.GetComponentInChildren<TMP_Text>();
+
+        text.text = arrow.Length > 0 ? UIRichText.Paint(label + arrow, UIThemeRole.Accent) : label;
+    }
+
+    // 목록 아래 글자 — 받은 수 / 전체 · 더 받는 중 · 빈도 제한.
+    private void RefreshFoot()
+    {
+        int loaded = _auction.SearchResults.Count;
+
+        if (loaded == 0)
+        {
+            footText.text = "";
+
+            return;
+        }
+
+        string state = _isPagePending   ? UIRichText.Paint("다음 20개 받는 중…", UIThemeRole.Accent)
+                     : _isPageThrottled ? UIRichText.Paint("조회가 잦습니다 — 잠시 뒤 다시 내려 주세요", UIThemeRole.Negative)
+                     : _auction.HasMoreResults ? "아래로 내리면 20개씩 더 받습니다"
+                     : "끝";
+
+        footText.text = $"{loaded:N0} / {_auction.SearchTotalCount:N0}건{UIRichText.Dot}{state}";
     }
 
     #endregion
 
     #region 보조
 
-    // [더 보기] 문구 — "더 보기 (20개 받음)" · 끝까지 받았으면 "전부 받음 (37개)".
-    private static string FormatMoreLabel(int loaded, bool hasMore)
-    {
-        if (loaded == 0)
-        {
-            return "더 보기";
-        }
-
-        return hasMore ? $"더 보기 ({loaded:N0}개 받음)" : $"전부 받음 ({loaded:N0}개)";
-    }
-
-    // 이 축의 검색 결과에서 매물을 찾는다. 없으면 null.
+    // 검색 결과에서 매물을 찾는다. 없으면 null.
     private AuctionListingInfo? FindListing(long listingId)
     {
-        foreach (AuctionListingInfo listing in _auction.GetSearchResults(searchKind))
+        foreach (AuctionListingInfo listing in _auction.SearchResults)
         {
             if (listing.ListingId == listingId)
             {
@@ -478,6 +1116,9 @@ public class AuctionSearchPresenter : MonoBehaviour
 
         return null;
     }
+
+    // 정수 입력칸 값. 비었거나 숫자가 아니면 0.
+    private static long ReadLong(TMP_InputField input) => long.TryParse(input.text, out long value) && value > 0L ? value : 0L;
 
     #endregion
 }

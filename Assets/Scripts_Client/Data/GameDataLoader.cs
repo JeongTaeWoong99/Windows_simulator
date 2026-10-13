@@ -236,6 +236,12 @@ public static class GameDataLoader
         return GameTable.EquipTable.TryGet(equipTid, out row);
     }
 
+    // 아티팩트 정의 한 행 — 경매장 매물·시세 표시가 쓴다(T-152). 실패를 그대로 돌려준다('TryGetEquip'과 같은 이유).
+    public static bool TryGetArtifact(int artifactTid, out ArtifactTableRow row)
+    {
+        return GameTable.ArtifactTable.TryGet(artifactTid, out row);
+    }
+
     // 장비 능력치 옵션 한 행 — 등급·종류·산업·수치. 장비 칸의 능력치 칸 색과 툴팁 문구가 쓴다.
     // ※ 실패를 그대로 돌려준다 — 모르는 옵션은 칸을 비운 것으로 그릴지 부르는 쪽이 정한다('TryGetEquip'과 같은 이유).
     public static bool TryGetEnchantOption(int optionTid, out EnchantOptionTableRow row)

@@ -1,27 +1,28 @@
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 경매장 탭 안의 하위 탭. 값의 순서는 **화면의 탭 순서와 같게 유지한다**.
+// 경매장 탭. 값의 순서는 **화면의 탭 순서와 같게 유지한다**.
 //
 // ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다('HubTab'과 같은 규칙).
-//   2026-09-30 거래소·장비·등록·내 매물(4개) → 구매·등록·내 매물(3개)로 바꾸며 씬을 다시 배선했다.
+//   2026-10-14 구매·등록·내 매물 → 검색·시세·판매·완료로 바꾸며 씬을 다시 배선했다(T-147 2단계 · 목업).
 public enum AuctionTab
 {
-    // 구매 — 자원·장비·캐릭터 축을 골라 산다('AuctionBuyTabPresenter'). 기본 탭이다.
-    Buy,
+    // 검색 — 왼쪽 옵션(분류·등급·상세 옵션·단가) + 오른쪽 결과('AuctionSearchPresenter'). 기본 탭이다.
+    Search,
 
-    // 등록 — 인벤토리의 자원·장비·캐릭터를 골라 올린다('AuctionRegisterPresenter').
-    Register,
+    // 시세 — 한 아이템의 최저가·판매 중·최근가·전일 평균 · 14일 그래프 · 단가별 수량('AuctionPricePresenter').
+    Price,
 
-    // 내 매물 — 올린 것을 보고 취소한다('AuctionMyListingPresenter').
-    MyListings,
+    // 판매 — 판매 중 목록 · [+ 판매 등록] 창('AuctionMyListingPresenter' · 'AuctionRegisterPresenter').
+    Sell,
+
+    // 완료 — 판매 완료·구매 완료·기간 만료·취소 기록('AuctionHistoryPresenter').
+    History,
 }
 
-// 경매장 탭의 하위 탭 줄 — 구매 · 등록 · 내 매물 (씬 왼쪽부터).
-//
-// 파는 축(자원·장비·캐릭터)이 셋이지만 **하는 일**(사기·올리기·관리)로 탭을 나눈다 — 축으로 나누면 축이 늘 때마다 탭이 는다.
-// 축은 [구매] 안의 줄('AuctionBuyTabPresenter')과 [등록]의 종류 드롭다운이 고른다.
+// 경매장 탭 줄 — 검색 · 시세 · 판매 · 완료 (씬 왼쪽부터). 화면 폭을 넷으로 나누고 칸마다 아이콘 + 글자.
 //
 // 탭마다 화면(Presenter)이 따로 있고 지금 탭의 화면만 켠다. 모양은 'HubTabPresenter'와 같다.
 // 화면들은 이 오브젝트의 자식이 아니라 형제다 — Presenter 안에 Presenter를 두지 않는다('UI 규칙.md').
@@ -29,13 +30,15 @@ public enum AuctionTab
 // ⚠️ 화면은 꺼졌다 켜진다 — 각 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊는다.
 //   요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Auction 규칙.md').
 //
-// ■ 내 매물 배지: 경매 우편(판매 대금·만료 반환)이 오면 [내 매물] 버튼에 점을 단다('AuctionModel.HasMyListingsNews').
-//   내 매물 화면이 그려지면 모델이 끈다.
-// ■ 밖에서 여는 길: 'ShowTab' — 인벤토리 [경매 등록]이 등록 탭을 열 때 쓴다('AuctionCanvasView.OpenRegister').
+// ■ 완료 배지: 안 본 거래 기록 수('AuctionModel.HistoryUnseenCount')를 [완료] 버튼에 단다 — 완료 탭을 열면 모델이 0으로 만든다.
+// ■ 'TabChanged': 공용 검색창('AuctionQueryPresenter')이 지금 탭에 맞춰 안내·검색어를 바꾼다.
 public class AuctionTabPresenter : MonoBehaviour
 {
-    // 경매장 탭을 처음 열었을 때의 하위 탭.
-    private const AuctionTab DefaultTab = AuctionTab.Buy;
+    // 경매장을 처음 열었을 때의 탭.
+    private const AuctionTab DefaultTab = AuctionTab.Search;
+
+    // 배지에 적는 최대 수 — 넘으면 "99+".
+    private const int MaxBadgeCount = 99;
 
     // 탭 하나 — 버튼과 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.
     [Serializable]
@@ -44,7 +47,7 @@ public class AuctionTabPresenter : MonoBehaviour
         [Tooltip("이 줄이 어느 탭인가")]
         public AuctionTab tab;
 
-        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 구매·등록·내 매물)")]
+        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 검색·시세·판매·완료)")]
         public Button button;
 
         [Tooltip("그 탭을 누르면 켜지는 화면. 나머지 탭의 화면은 꺼진다")]
@@ -66,8 +69,11 @@ public class AuctionTabPresenter : MonoBehaviour
 
 
     [CenterHeader("배지")]
-    [SerializeField, Tooltip("[내 매물] 버튼 위의 점 — 안 본 내 매물 소식이 있을 때만 켜진다")]
-    private GameObject myListingsBadge = null!;
+    [SerializeField, Tooltip("[완료] 버튼 위의 배지 — 안 본 거래 기록이 있을 때만 켜진다")]
+    private GameObject historyBadge = null!;
+
+    [SerializeField, Tooltip("배지 안의 수")]
+    private TMP_Text historyBadgeText = null!;
 
     private AuctionModel _auction = null!;
 
@@ -75,14 +81,18 @@ public class AuctionTabPresenter : MonoBehaviour
     private bool _isReady;         // Start 완료 여부 — OnEnable 재구독 가드
     private bool _hasRequestedTab; // Start 전에 밖에서 탭을 골랐나 — Start가 기본 탭으로 덮지 않게 한다
 
-    // 지금 열려 있는 하위 탭. 경매장 탭을 닫아도 유지된다.
+    // 지금 열려 있는 탭. 경매장을 닫아도 유지된다.
     public AuctionTab CurrentTab { get; private set; } = DefaultTab;
 
+    // 탭이 바뀌었다(같은 탭을 다시 골라도 쏜다) — 공용 검색창이 구독한다.
+    public event Action<AuctionTab>? TabChanged;
+
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
-    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 [경매 등록]).
+    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 Shift+우클릭 등록).
     private void Start()
     {
-        this.RequireRef(myListingsBadge, nameof(myListingsBadge));
+        this.RequireRef(historyBadge,     nameof(historyBadge));
+        this.RequireRef(historyBadgeText, nameof(historyBadgeText));
 
         _auction = Services.Get<AuctionModel>();
 
@@ -113,7 +123,7 @@ public class AuctionTabPresenter : MonoBehaviour
 
     #region 구독
 
-    // 내 매물 소식 구독 (Start · OnEnable에서 호출)
+    // 거래 기록 배지 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -123,7 +133,7 @@ public class AuctionTabPresenter : MonoBehaviour
 
         _isSubscribed = true;
 
-        _auction.MyListingsNewsChanged += RefreshBadge;
+        _auction.HistoryBadgeChanged += RefreshBadge;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -136,7 +146,7 @@ public class AuctionTabPresenter : MonoBehaviour
 
         _isSubscribed = false;
 
-        _auction.MyListingsNewsChanged -= RefreshBadge;
+        _auction.HistoryBadgeChanged -= RefreshBadge;
     }
 
     #endregion
@@ -162,7 +172,7 @@ public class AuctionTabPresenter : MonoBehaviour
             if (count != 1)
             {
                 ClientLogger.Error(ClientLogger.UI,
-                    $"경매장 하위 탭 '{tab}'의 버튼·화면 짝이 {count}개다 (정확히 1개여야 한다). " +
+                    $"경매장 탭 '{tab}'의 버튼·화면 짝이 {count}개다 (정확히 1개여야 한다). " +
                     "Auction Tab Presenter의 Tabs를 확인할 것.", this);
             }
         }
@@ -188,7 +198,7 @@ public class AuctionTabPresenter : MonoBehaviour
 
     #region 탭 전환
 
-    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 인벤토리 [경매 등록]).
+    // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 밖에서 여는 길 'AuctionCanvasView').
     // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('HubTabPresenter'와 같다).
     public void ShowTab(AuctionTab tab)
     {
@@ -216,16 +226,35 @@ public class AuctionTabPresenter : MonoBehaviour
             colors.selectedColor = target;
             entry.button.colors  = colors;
         }
+
+        TabChanged?.Invoke(tab);
+    }
+
+    // 그 탭의 화면 오브젝트. 배선이 빠졌으면 null.
+    public GameObject? GetPage(AuctionTab tab)
+    {
+        foreach (TabEntry entry in tabs)
+        {
+            if (entry.tab == tab)
+            {
+                return entry.page;
+            }
+        }
+
+        return null;
     }
 
     #endregion
 
     #region 배지
 
-    // [내 매물] 점을 켜고 끈다 (Start · OnEnable · AuctionModel.MyListingsNewsChanged 구독)
+    // [완료] 배지를 켜고 끈다 (Start · OnEnable · AuctionModel.HistoryBadgeChanged 구독)
     private void RefreshBadge()
     {
-        myListingsBadge.SetActive(_auction.HasMyListingsNews);
+        int count = _auction.HistoryUnseenCount;
+
+        historyBadge.SetActive(count > 0);
+        historyBadgeText.text = count > MaxBadgeCount ? $"{MaxBadgeCount}+" : count.ToString();
     }
 
     #endregion

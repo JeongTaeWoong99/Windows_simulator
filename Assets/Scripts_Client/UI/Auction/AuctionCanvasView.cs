@@ -15,9 +15,9 @@ using UnityEngine;
 //   판('body')은 3열의 가운데 칸과 같은 높이·위치다. 위·아래 칸 높이는 위젯 위치에 따라 바뀌므로('WidgetPositionLayout')
 //   열 때마다 맞춘다. 판 밖(위 상태 칸 · 아래 위젯 칸)은 루트의 차단막이 덮는다.
 //
-// ■ 밖에서 경매 등록으로 바로 오기 ('OpenRegister')
-//   인벤토리 칸 Shift+우클릭이 부른다. 경매장 → 등록 하위 탭 → 그 물건을 미리 골라 둔다.
-//   두 Presenter가 아직 한 번도 안 켜졌을 수 있다 — 각자 Start 전에 받은 요청을 지키므로 순서대로 부르기만 한다.
+// ■ 탭 사이를 건너가는 길 — 화면끼리 서로를 쥐지 않고 여기를 거친다
+//   검색 줄의 [시세] → 시세 탭 · 시세 탭의 [이 아이템 매물 보기] → 검색 탭 · [팔러 가기]·Shift+우클릭 → 판매 탭 + 등록 창.
+//   받는 화면이 아직 한 번도 안 켜졌을 수 있다 — 각자 Start 전에 받은 요청을 지키므로 "요청 → 탭 열기" 순서로 부른다.
 public class AuctionCanvasView : MonoBehaviour
 {
     [CenterHeader("가운데 띠")]
@@ -28,12 +28,18 @@ public class AuctionCanvasView : MonoBehaviour
     private WidgetPositionLayout columnLayout = null!;
 
 
-    [CenterHeader("경매 등록 바로가기")]
-    [SerializeField, Tooltip("경매장의 하위 탭 줄 — 등록 탭을 연다")]
+    [CenterHeader("탭 사이 길")]
+    [SerializeField, Tooltip("탭 줄")]
     private AuctionTabPresenter auctionTabs = null!;
 
-    [SerializeField, Tooltip("경매 등록 화면 — 물건을 미리 골라 둔다")]
-    private AuctionRegisterPresenter auctionRegister = null!;
+    [SerializeField, Tooltip("검색 탭 — 한 아이템의 매물을 바로 찾는다")]
+    private AuctionSearchPresenter search = null!;
+
+    [SerializeField, Tooltip("시세 탭 — 한 아이템의 시세를 연다")]
+    private AuctionPricePresenter price = null!;
+
+    [SerializeField, Tooltip("판매 등록 창 — 물건을 미리 골라 연다")]
+    private AuctionRegisterPresenter register = null!;
 
     // 지금 열려 있는가
     public bool IsOpen => gameObject.activeSelf;
@@ -81,17 +87,47 @@ public class AuctionCanvasView : MonoBehaviour
         gameObject.SetActive(on);
     }
 
-    // 경매 등록 화면을 열고 이 물건을 골라 둔다 (인벤토리 격자 Shift+우클릭).
+    // 판매 탭 + 등록 창을 열고 이 물건을 골라 둔다 (인벤토리 격자 Shift+우클릭).
     //   kind : 자원·장비·캐릭터
     //   key  : 자원 TID · 장비·캐릭터 개체 번호
     public void OpenRegister(EAuctionKind kind, long key)
     {
-        this.RequireRef(auctionTabs,     nameof(auctionTabs));
-        this.RequireRef(auctionRegister, nameof(auctionRegister));
+        this.RequireRef(auctionTabs, nameof(auctionTabs));
+        this.RequireRef(register,    nameof(register));
 
         Show(true);
-        auctionTabs.ShowTab(AuctionTab.Register);
-        auctionRegister.Preselect(kind, key);
+        auctionTabs.ShowTab(AuctionTab.Sell);
+        register.Open(kind, key, byTid: false);
+    }
+
+    // 판매 탭 + 등록 창을 열고 이 종류의 첫 물건을 골라 둔다 (시세 탭 [팔러 가기]).
+    public void OpenRegisterFor(EAuctionKind kind, int tid)
+    {
+        this.RequireRef(auctionTabs, nameof(auctionTabs));
+        this.RequireRef(register,    nameof(register));
+
+        auctionTabs.ShowTab(AuctionTab.Sell);
+        register.Open(kind, tid, byTid: true);
+    }
+
+    // 시세 탭을 열고 이 아이템의 시세를 받는다 (검색 줄 [시세] · 구매 확인 · 등록 창 [시세 보기]).
+    public void OpenPrice(EAuctionKind kind, int tid)
+    {
+        this.RequireRef(auctionTabs, nameof(auctionTabs));
+        this.RequireRef(price,       nameof(price));
+
+        price.Open(kind, tid);
+        auctionTabs.ShowTab(AuctionTab.Price);
+    }
+
+    // 검색 탭을 열고 이 아이템의 매물만 찾는다 (시세 탭 [이 아이템 매물 보기]).
+    public void OpenSearchFor(EAuctionKind kind, int tid)
+    {
+        this.RequireRef(auctionTabs, nameof(auctionTabs));
+        this.RequireRef(search,      nameof(search));
+
+        search.SearchFor(kind, tid);
+        auctionTabs.ShowTab(AuctionTab.Search);
     }
 
     // 판을 3열의 가운데 칸 자리에 맞춘다 (Show에서 호출).
