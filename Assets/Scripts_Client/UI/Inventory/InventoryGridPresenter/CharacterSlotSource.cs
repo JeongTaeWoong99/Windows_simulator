@@ -129,8 +129,10 @@ public class CharacterSlotSource : InventorySlotSource
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         content.Header("조작")
-               .Row("좌클릭", "응축", IsLocked(key) ? "Ctrl 잠금 풀기" : "Ctrl 잠그기", null)
-               .Row("우클릭", "판매 담기", "Shift 경매 등록", null);
+               .Row("좌클릭",       "응축")
+               .Row("우클릭",       "판매 담기")
+               .Row("Ctrl+좌클릭",  IsLocked(key) ? "잠금 풀기" : "잠그기")
+               .Row("Shift+우클릭", "경매 등록");
 
         return content;
     }
