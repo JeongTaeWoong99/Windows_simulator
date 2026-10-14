@@ -220,9 +220,10 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_GatherResultResponse)]
     public partial class S_GatherResultResponse : IPacket
     {
-        public int                   SlotIndex   { get; set; }  // 어느 슬롯에서 나왔는지
-        public int                   JudgeCount  { get; set; }  // 이번에 정산된 판정 횟수(연출용)
-        public List<ItemChangeInfo>? ItemChanges { get; set; }  // 인벤토리 갱신분
+        public int                   SlotIndex     { get; set; }  // 어느 슬롯에서 나왔는지
+        public int                   JudgeCount    { get; set; }  // 이번에 정산된 판정 횟수(연출용)
+        public List<ItemChangeInfo>? ItemChanges   { get; set; }  // 인벤토리 갱신분
+        public bool                  InventoryFull { get; set; }  // 칸이 없거나 최대 수량이라 버린 몫이 있다 — "가득 차서 획득 불가" (T-157)
     }
 
     /// <summary>
