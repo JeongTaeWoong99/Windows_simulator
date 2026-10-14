@@ -287,4 +287,19 @@ public class UserMailTest
             new MailTemplateTableRow { MailTemplateTID = 1, ItemTIDs = new[] { FishTid, 10002 }, ItemCounts = new[] { 1 } },
         }));
     }
+
+    // ─────────────────────── 최대 수량 (T-157) ───────────────────────
+
+    [Fact]
+    public void 우편으로_받아도_최대_수량을_넘는_몫은_버린다()
+    {
+        // 붕어 MaxStack 9999 — 9990 + 20 → 9999에서 멈추고 우편은 받은 것이 된다.
+        var (user, b) = UserWithMails(Mail(1, items: $"[[{FishTid},20]]"));
+        user.GainItem(FishTid, 9990);
+
+        user.TryClaimMail(1, Now);
+
+        ClaimResponse(b).Result.ShouldBe(EResultCode.Ok);
+        user.GetItemCount(FishTid).ShouldBe(9999);
+    }
 }

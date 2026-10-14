@@ -510,6 +510,18 @@ public class UserWorkStationTest
         var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
         result.JudgeCount.ShouldBe(10);
         result.ItemChanges!.ShouldBeEmpty();
+        result.InventoryFull.ShouldBeTrue();
+    }
+
+    [Fact]
+    public void 버린_몫이_없으면_가득_참을_알리지_않는다()
+    {
+        var (user, b) = UserWith(AllRounderTid);
+        GiveSlot(user, Base);
+
+        user.SettleWorkStation(Base.AddMinutes(5));
+
+        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().InventoryFull.ShouldBeFalse();
     }
 
     [Fact]
@@ -554,6 +566,7 @@ public class UserWorkStationTest
         var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
         result.JudgeCount.ShouldBe(10);
         result.ItemChanges!.ShouldHaveSingleItem().Count.ShouldBe(1000);
+        result.InventoryFull.ShouldBeTrue();
     }
 
     [Fact]
@@ -567,7 +580,9 @@ public class UserWorkStationTest
 
         user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1000);
         b.DB.PostedOf<AddItemRepository>().ShouldBeEmpty();
-        b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem().ItemChanges!.ShouldBeEmpty();
+        var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
+        result.ItemChanges!.ShouldBeEmpty();
+        result.InventoryFull.ShouldBeTrue();
     }
 
     // ─────────────────────── 접속 종료 ───────────────────────

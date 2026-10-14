@@ -132,25 +132,25 @@ public class UserAuctionTest
     public void 한_번에_9999개까지_올릴_수_있다()
     {
         var (user, _) = NewUser();
-        user.AddItem(Carp, 9980);   // 20 + 9,980 = 10,000개
+        user.AddItem(Carp, 9979);   // 20 + 9,979 = 9,999개 — 최대 수량
 
         // 단가 10 × 9,999개 = 99,990 → 등록비 1% = 999
         user.TryRegisterAuction(EAuctionKind.Item, Carp, 9999, 0, 10, Now);
 
-        (user.GetItemCount(Carp), user.Gold).ShouldBe((1, 1L));
+        (user.GetItemCount(Carp), user.Gold).ShouldBe((0, 1L));
     }
 
     [Fact]
     public void 한_번에_9999개를_넘기면_아무것도_바꾸지_않는다()
     {
         var (user, b) = NewUser();
-        user.AddItem(Carp, 9980);   // 20 + 9,980 = 10,000개 — 보유량은 충분하다
+        user.AddItem(Carp, 9979);   // 20 + 9,979 = 9,999개 — 최대 수량이라 10,000개는 가질 수 없다
         b.Channel.Sent.Clear();
 
         user.TryRegisterAuction(EAuctionKind.Item, Carp, 10000, 0, 10, Now);
 
         Last<S_AuctionRegisterResponse>(b).Result.ShouldBe(EResultCode.AuctionInvalidRequest);
-        (user.GetItemCount(Carp), user.Gold).ShouldBe((10000, 1000L));
+        (user.GetItemCount(Carp), user.Gold).ShouldBe((9999, 1000L));
         b.DB.PostedOf<RegisterAuctionRepository>().ShouldBeEmpty();
     }
 

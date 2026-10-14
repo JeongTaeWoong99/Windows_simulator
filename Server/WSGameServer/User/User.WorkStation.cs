@@ -178,17 +178,20 @@ public partial class User
             }
 
             // 아이템별로 한 번씩만 인벤토리를 갱신한다(판정 횟수만큼 UPSERT하지 않는다).
-            var changes = new List<ItemChangeInfo>(harvest.Gained.Count);
+            var changes       = new List<ItemChangeInfo>(harvest.Gained.Count);
+            var inventoryFull = false;
             foreach (var (itemTid, count) in harvest.Gained)
             {
                 // 창고가 가득 차면 새 종류는 버린다 — 진행·경험치는 그대로 간다(T-085 기획 결정 가).
                 if (!HasStorageFor(new[] { itemTid }, characterCount: 0, equipCount: 0))
                 {
+                    inventoryFull = true;
                     continue;
                 }
 
                 // 최대 수량(상자 1000개 등)을 넘는 몫은 버린다 — 창고 칸과 같은 방침이다.
                 var granted = ClampToMaxStack(itemTid, count);
+                inventoryFull |= granted < count;
                 if (granted <= 0)
                 {
                     continue;
@@ -217,7 +220,8 @@ public partial class User
             {
                 SlotIndex   = harvest.SlotIndex,
                 JudgeCount  = harvest.JudgeCount,
-                ItemChanges = changes,
+                ItemChanges   = changes,
+                InventoryFull = inventoryFull,
             });
 
             if (WorkStation.TryGet(harvest.SlotIndex, out var settledSlot))
