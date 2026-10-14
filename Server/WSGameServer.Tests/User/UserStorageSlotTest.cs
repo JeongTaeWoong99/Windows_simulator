@@ -64,11 +64,11 @@ public class UserStorageSlotTest
     }
 
     [Fact]
-    public void 창고는_아직_없는_보관함으로_거절한다()
+    public void 없는_보관함은_거절한다()
     {
         var (user, b) = UserWithItems((101, 0));
 
-        user.MoveStorageSlot(EContainer.Warehouse, EStorageTab.Resource, 0, 1);
+        user.MoveStorageSlot((EContainer)9, EStorageTab.Resource, 0, 1);
 
         Last(b).Result.ShouldBe(EResultCode.StorageSlotOutOfRange);
     }

@@ -22,7 +22,7 @@ public class StorageSlotRepositoryTest : IDisposable
     public async Task 자원_교환은_두_행의_칸을_바꾼다()
     {
         _db.Execute("INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES (7, 0, 101, 1, 0), (7, 0, 102, 1, 1)");
-        var repo = new SaveStorageSlotsRepository(NewUser(), EStorageTab.Resource,
+        var repo = new SaveStorageSlotsRepository(NewUser(), EContainer.Inventory, EStorageTab.Resource,
             new[] { new SlotChange(101, 1), new SlotChange(102, 0) });
 
         await repo.ExecuteAsync(new DbConnection(_db.Connection));
@@ -34,7 +34,7 @@ public class StorageSlotRepositoryTest : IDisposable
     public async Task 장비_칸은_slot_position에_쓴다()
     {
         _db.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid, slot_position) VALUES (10, 7, 1101, 0)");
-        var repo = new SaveStorageSlotsRepository(NewUser(), EStorageTab.Equip, new[] { new SlotChange(10, 6) });
+        var repo = new SaveStorageSlotsRepository(NewUser(), EContainer.Inventory, EStorageTab.Equip, new[] { new SlotChange(10, 6) });
 
         await repo.ExecuteAsync(new DbConnection(_db.Connection));
 
@@ -45,7 +45,7 @@ public class StorageSlotRepositoryTest : IDisposable
     public async Task 남의_캐릭터_칸은_바꾸지_않는다()
     {
         _db.Execute("INSERT INTO t_character (character_id, user_id, character_tid, slot) VALUES (40, 8, 1002, 0)");
-        var repo = new SaveStorageSlotsRepository(NewUser(), EStorageTab.Character, new[] { new SlotChange(40, 5) });
+        var repo = new SaveStorageSlotsRepository(NewUser(), EContainer.Inventory, EStorageTab.Character, new[] { new SlotChange(40, 5) });
 
         await repo.ExecuteAsync(new DbConnection(_db.Connection));
 

@@ -227,6 +227,19 @@ namespace MikaProtocol
         public int  Slot { get; set; }
     }
 
+    /// <summary>
+    /// 창고 이동으로 바뀐 칸 하나. Key는 자원이면 ItemId, 캐릭터·장비면 개체 ID.
+    /// 자원의 Count는 그 보관함에 남은 총량이고 0이면 칸이 빈 것이다. 캐릭터·장비는 1 — 그 개체가 Container의 Slot으로 옮겨졌다.
+    /// </summary>
+    [MemoryPackable]
+    public partial class WarehouseChangeInfo
+    {
+        public EContainer Container { get; set; }
+        public long       Key       { get; set; }
+        public int        Slot      { get; set; }
+        public int        Count     { get; set; }
+    }
+
     /// <summary>특성 하나의 레벨.</summary>
     [MemoryPackable]
     public partial class UserTraitInfo

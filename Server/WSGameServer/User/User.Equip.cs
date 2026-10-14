@@ -23,6 +23,7 @@ public partial class User
     public void LoadEquips(IReadOnlyList<UserEquipRow> equipRows, IReadOnlyList<CharacterEquipRow> wornRows)
     {
         _equips.Clear();
+        _warehouseEquips.Clear();
         _worn.Clear();
 
         foreach (var r in equipRows)
@@ -31,8 +32,9 @@ public partial class User
                 r.pending_grade, new[] { r.pending_1, r.pending_2, r.pending_3 });
             if (equip is not null)
             {
-                equip.IsLocked      = r.is_locked != 0;
-                _equips[r.equip_id] = equip;
+                equip.IsLocked = r.is_locked != 0;
+                var target = r.container == (int)EContainer.Warehouse ? _warehouseEquips : _equips;
+                target[r.equip_id] = equip;
             }
         }
 
@@ -53,7 +55,12 @@ public partial class User
     /// <summary>보유 장비 전체 스냅샷(로그인 직후). 캐릭터 목록 뒤·슬롯 스냅샷 앞.</summary>
     public void SendEquipList()
     {
-        Send(new S_EquipListResponse { Equips = _equips.Values.Select(ToEquipInfo).ToList() });
+        Send(new S_EquipListResponse
+        {
+            Equips = _equips.Values.Select(e => ToEquipInfo(e))
+                .Concat(_warehouseEquips.Values.Select(e => ToEquipInfo(e, EContainer.Warehouse)))
+                .ToList(),
+        });
     }
 
     /// <summary>
@@ -128,7 +135,7 @@ public partial class User
 
         ServerLog.Info("장비", $"장착 Uid={Uid} 캐릭터 {characterId} {slot} ← 장비 {equipId}(TID {equip.Tid})");
         Send(new S_EquipResponse { Result = EResultCode.Ok, CharacterId = characterId, Slot = (EEquipSlot)slot });
-        Send(new S_EquipSyncResponse { Equips = changed.Select(ToEquipInfo).ToList() });
+        Send(new S_EquipSyncResponse { Equips = changed.Select(e => ToEquipInfo(e)).ToList() });
         return;
 
         void Reject(EResultCode code, string reason)
@@ -352,10 +359,11 @@ public partial class User
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
     }
 
-    private static EquipInfo ToEquipInfo(Equip e)
+    private static EquipInfo ToEquipInfo(Equip e, EContainer container = EContainer.Inventory)
     {
         return new EquipInfo
         {
+            Container           = container,
             EquipId             = e.Id,
             EquipTid            = e.Tid,
             EquippedCharacterId = e.EquippedCharacterId,

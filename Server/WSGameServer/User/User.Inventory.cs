@@ -5,16 +5,17 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>DB에서 읽은 인벤토리 Row를 도메인(Item)으로 변환해 적재한다(로그인 시 1회).</summary>
+    /// <summary>DB에서 읽은 자원 Row를 보관함별로 적재한다(로그인 시 1회).</summary>
     public void LoadInventory(IReadOnlyList<InventoryRow> rows)
     {
-        Inventory.Load(rows.Select(r => new Item(r.item_id, r.count, r.slot)));
+        Inventory.Load(rows.Where(r => r.container == (int)EContainer.Inventory).Select(r => new Item(r.item_id, r.count, r.slot)));
+        Warehouse.Load(rows.Where(r => r.container == (int)EContainer.Warehouse).Select(r => new Item(r.item_id, r.count, r.slot)));
     }
 
-    // 현재 인벤토리 전체 스냅샷을 클라이언트로 전송한다.
+    // 자원 스냅샷 — 인벤토리와 창고를 한 목록에 싣는다. 클라가 Container로 가른다.
     public void SendInventory()
     {
-        Send(new S_InventoryResponse { Items = Inventory.Snapshot() });
+        Send(new S_InventoryResponse { Items = Inventory.Snapshot().Concat(Warehouse.Snapshot()).ToList() });
     }
 
     // 패킷 전송 없이 메모리 갱신 + DB 반영만 수행하고 변경분을 반환한다.

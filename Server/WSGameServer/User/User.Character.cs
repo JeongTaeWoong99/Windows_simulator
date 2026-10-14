@@ -24,6 +24,7 @@ public partial class User
     public void LoadCharacters(IReadOnlyList<CharacterRow> rows)
     {
         _characters.Clear();
+        _warehouseCharacters.Clear();
         foreach (var r in rows)
         {
             // 테이블에 없는 TID는 건너뛴다. 여기서 예외를 던지면 데이터 한 줄 때문에 로그인이 막힌다.
@@ -33,7 +34,8 @@ public partial class User
                 continue;
             }
 
-            _characters[r.character_id] = new Character(r.character_id, row, r.level, r.exp, r.condense_count) { Slot = r.slot, IsLocked = r.is_locked != 0 };
+            var target = r.container == (int)EContainer.Warehouse ? _warehouseCharacters : _characters;
+            target[r.character_id] = new Character(r.character_id, row, r.level, r.exp, r.condense_count) { Slot = r.slot, IsLocked = r.is_locked != 0 };
         }
     }
 
@@ -106,7 +108,9 @@ public partial class User
     {
         Send(new S_CharacterListResponse
         {
-            Characters = _characters.Values.Select(ToCharacterInfo).ToList(),
+            Characters = _characters.Values.Select(c => ToCharacterInfo(c))
+                .Concat(_warehouseCharacters.Values.Select(c => ToCharacterInfo(c, EContainer.Warehouse)))
+                .ToList(),
         });
     }
 
@@ -224,10 +228,11 @@ public partial class User
         }
     }
 
-    private CharacterInfo ToCharacterInfo(Character c)
+    private CharacterInfo ToCharacterInfo(Character c, EContainer container = EContainer.Inventory)
     {
         return new CharacterInfo
         {
+            Container      = container,
             CharacterId    = c.Id,
             CharacterTid   = c.Tid,
             Level          = c.Level,

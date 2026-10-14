@@ -62,25 +62,30 @@ public sealed class SaveItemChangesRepository : IRepository
         {
             foreach (var change in _changes)
             {
-                if (change.Count == 0)
-                {
-                    await tx.ExecuteAsync(
-                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
-                        new { userId = User.Uid, container = (int)change.Container, itemId = change.ItemId });
-                    continue;
-                }
-
-                await tx.ExecuteAsync(
-                    @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
-                      VALUES (@userId, @container, @itemId, @count, @slot)
-                      ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
-                    new
-                    {
-                        userId = User.Uid, container = (int)change.Container, itemId = change.ItemId,
-                        count  = change.Count, slot = change.Slot,
-                    });
+                await WriteAsync(tx, User.Uid, change);
             }
         });
+    }
+
+    /// <summary>변경 하나를 쓴다. 수량 0이면 행을 지운다 — 창고 이동도 같은 문장을 쓴다.</summary>
+    public static Task WriteAsync(DbConnection tx, long userId, ItemChangeInfo change)
+    {
+        if (change.Count == 0)
+        {
+            return tx.ExecuteAsync(
+                "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
+                new { userId, container = (int)change.Container, itemId = change.ItemId });
+        }
+
+        return tx.ExecuteAsync(
+            @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
+              VALUES (@userId, @container, @itemId, @count, @slot)
+              ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+            new
+            {
+                userId, container = (int)change.Container, itemId = change.ItemId,
+                count  = change.Count, slot = change.Slot,
+            });
     }
 
     public void Apply()

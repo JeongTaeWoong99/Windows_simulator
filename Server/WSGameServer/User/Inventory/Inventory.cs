@@ -2,9 +2,12 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-public sealed class Inventory
+/// <summary>한 보관함(인벤토리 또는 창고)의 자원 탭. 같은 자원은 보관함마다 칸 하나다.</summary>
+public sealed class Inventory(EContainer container = EContainer.Inventory)
 {
     private Dictionary<int, Item> _items = new();
+
+    public EContainer Container { get; } = container;
 
     // 로그인 시 아이템을 적재한다. 칸이 겹치면(마이그레이션 전 행 등) 뒤의 것을 첫 빈 칸으로 옮긴다 —
     // 겹친 채 두면 클라 격자에서 하나가 가려진다. 옮긴 칸은 다음 증분 저장에 함께 실린다.
@@ -38,7 +41,7 @@ public sealed class Inventory
     public List<ItemInfo> Snapshot()
     {
         return _items.Values
-            .Select(item => new ItemInfo { ItemId = item.Id, Count = item.Count, Slot = item.Slot })
+            .Select(item => new ItemInfo { ItemId = item.Id, Count = item.Count, Container = Container, Slot = item.Slot })
             .ToList();
     }
     
@@ -55,7 +58,7 @@ public sealed class Inventory
             item.Count += count;
             return new ItemChangeInfo
             {
-                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Slot = item.Slot
+                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Container = Container, Slot = item.Slot
             };
         }
 
@@ -63,7 +66,7 @@ public sealed class Inventory
         _items[itemId] = added;
         return new ItemChangeInfo
         {
-            ItemId = itemId, Count = added.Count, Kind = EItemChangeKind.Add, Slot = added.Slot
+            ItemId = itemId, Count = added.Count, Kind = EItemChangeKind.Add, Container = Container, Slot = added.Slot
         };
     }
 
@@ -101,17 +104,41 @@ public sealed class Inventory
                 _items.Remove(itemId);
                 changes.Add(new ItemChangeInfo
                 {
-                    ItemId = itemId, Count = 0, Kind = EItemChangeKind.Remove, Slot = item.Slot
+                    ItemId = itemId, Count = 0, Kind = EItemChangeKind.Remove, Container = Container, Slot = item.Slot
                 });
                 continue;
             }
 
             changes.Add(new ItemChangeInfo
             {
-                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Slot = item.Slot
+                ItemId = itemId, Count = item.Count, Kind = EItemChangeKind.Update, Container = Container, Slot = item.Slot
             });
         }
 
         return true;
+    }
+
+    /// <summary>그 칸의 자원. 비었으면 false.</summary>
+    public bool TryGetAt(int slot, out Item item)
+    {
+        item = _items.Values.FirstOrDefault(i => i.Slot == slot)!;
+        return item is not null;
+    }
+
+    /// <summary>
+    /// 수량·칸을 그대로 덮어쓴다(창고 이동). 0이면 지운다 — 칸이 빈다.
+    /// MaxStack·칸 수 검사는 부른 쪽이 먼저 끝낸다.
+    /// </summary>
+    public ItemChangeInfo SetItem(int itemId, int count, int slot)
+    {
+        if (count == 0)
+        {
+            _items.Remove(itemId);
+            return new ItemChangeInfo { ItemId = itemId, Count = 0, Kind = EItemChangeKind.Remove, Container = Container, Slot = slot };
+        }
+
+        var kind = _items.ContainsKey(itemId) ? EItemChangeKind.Update : EItemChangeKind.Add;
+        _items[itemId] = new Item(itemId, count, slot);
+        return new ItemChangeInfo { ItemId = itemId, Count = count, Kind = kind, Container = Container, Slot = slot };
     }
 }
