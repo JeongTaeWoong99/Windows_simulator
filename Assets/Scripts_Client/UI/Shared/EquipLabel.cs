@@ -372,11 +372,19 @@ public static class EquipLabel
         }
     }
 
-    // 툴팁에 '장비' 묶음 — 칸 이름 · 장비 이름 · 등급(줄 바탕 등급색) · 빈 칸은 '비어 있음' (캐릭터 칸 툴팁이 호출, T-104).
+    // 툴팁에 '장비' 묶음 — 칸 이름 · 장비 이름 · 등급(줄 바탕 등급색) · 낀 부위만, 하나도 없으면 '장비 없음' 한 줄 (캐릭터 칸 툴팁이 호출, T-104).
     //
     // 네모는 등급만 말한다 — 무엇을 꼈는지는 여기서 읽는다.
     public static void AddWornRows(TooltipContent content, PlayerDataModel data, long characterId)
     {
+        // 하나도 안 꼈으면 한 줄로 끝낸다 — "비어 있음" 네 줄은 툴팁만 길게 만든다(2026-10-15 사용자 지적). 낀 부위만 적는다.
+        if (!HasAnyWorn(data, characterId))
+        {
+            content.Row("장비", "없음");
+
+            return;
+        }
+
         content.Header("장비");
 
         foreach (EEquipSlot slot in WornSlots)
@@ -385,8 +393,6 @@ public static class EquipLabel
 
             if (equip == null)
             {
-                content.Row(GetSlotName(slot), "비어 있음");
-
                 continue;
             }
 
@@ -394,6 +400,20 @@ public static class EquipLabel
 
             content.Row(GetSlotName(slot), GameDataLoader.GetEquipName(equip.EquipTid), RarityLabel.Get(rarity), RarityPalette.Get(rarity));
         }
+    }
+
+    // 이 캐릭터가 장비를 하나라도 꼈나 (AddWornRows에서 호출).
+    private static bool HasAnyWorn(PlayerDataModel data, long characterId)
+    {
+        foreach (EEquipSlot slot in WornSlots)
+        {
+            if (data.FindWornEquip(characterId, slot) != null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // 장비 칸의 부위 이름 — '무기' · '장신구1' · '장신구2' · '보석'.

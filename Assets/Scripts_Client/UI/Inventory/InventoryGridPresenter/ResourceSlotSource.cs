@@ -108,16 +108,15 @@ public class ResourceSlotSource : InventorySlotSource
             .Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, count):N0} 골드", null)
             .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
 
-        // 조작 안내 — 입력 하나에 한 줄(2026-10-15 사용자 요청 — 한 줄에 몰면 무엇이 무엇인지 읽히지 않는다).
+        // 조작 안내 — 마우스 버튼 하나에 한 줄, 조합키는 오른쪽 칸(2026-10-15 사용자 요청 — 한 줄에 몰면 읽히지 않고, 입력마다 한 줄이면 너무 길다).
         content.Header("조작");
 
         if (GameDataLoader.IsBox(itemId))
         {
-            content.Row("마우스 좌", "열기");
+            content.Row("좌클릭", "열기");
         }
 
-        content.Row("마우스 우", "판매 담기")
-               .Row("쉬프트 + 우", "경매 등록");
+        content.Row("우클릭", "판매 담기", "Shift 경매 등록", null);
 
         return content;
     }

@@ -111,12 +111,7 @@ public class CharacterSlotSource : InventorySlotSource
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
             .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
-            .Row("상태", GetWorkText(key));
-
-        if (IsLocked(key))
-        {
-            content.Row("잠금", "잠김 — 팔거나 재료로 쓸 수 없다");
-        }
+            .Row("상태", IsLocked(key) ? $"{GetWorkText(key)} · 잠김" : GetWorkText(key));
 
         AddCondenseRow(content, key);
 
@@ -134,10 +129,8 @@ public class CharacterSlotSource : InventorySlotSource
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         content.Header("조작")
-               .Row("마우스 좌",   "응축")
-               .Row("마우스 우",   "판매 담기")
-               .Row("컨트롤 + 좌", IsLocked(key) ? "잠금 풀기" : "잠그기")
-               .Row("쉬프트 + 우", "경매 등록");
+               .Row("좌클릭", "응축", IsLocked(key) ? "Ctrl 잠금 풀기" : "Ctrl 잠그기", null)
+               .Row("우클릭", "판매 담기", "Shift 경매 등록", null);
 
         return content;
     }
