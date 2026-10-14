@@ -313,7 +313,7 @@ public class UIManager : MonoService<UIManager>
 
     #region 경매장 — 화면 전체
 
-    // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]·Esc).
+    // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]).
     // ※ 토글이 아니다 — 열리면 하단 메뉴가 가려져 같은 버튼을 다시 누를 수 없다. 닫기는 경매장 안에서 한다.
     public void ShowAuction(bool on) => auctionCanvas.Show(on);
 

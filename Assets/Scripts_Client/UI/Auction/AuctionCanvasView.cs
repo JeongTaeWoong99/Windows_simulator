@@ -27,7 +27,6 @@ public class AuctionCanvasView : MonoBehaviour
     [SerializeField, Tooltip("3열 배치 — 가운데 칸의 위·아래 여백을 여기서 읽는다 (!Horizontal Columns)")]
     private WidgetPositionLayout columnLayout = null!;
 
-
     [CenterHeader("탭 사이 길")]
     [SerializeField, Tooltip("탭 줄")]
     private AuctionTabPresenter auctionTabs = null!;
@@ -43,38 +42,6 @@ public class AuctionCanvasView : MonoBehaviour
 
     // 지금 열려 있는가
     public bool IsOpen => gameObject.activeSelf;
-
-    // 경매장 위에 막는 오버레이가 떠 있는가 — Esc로 닫아도 되는지 본다('AuctionHeaderPresenter').
-    //
-    // ※ 오버레이 층은 뒤 형제일수록 앞에 그린다. 내 뒤 형제 중 클릭을 막고 있는 것(확인·수량 팝업 · 로딩 · 알림)이
-    //   하나라도 있으면 덮인 것이다. 툴팁은 막지 않으니 걸리지 않는다.
-    //   ⚠️ 로딩도 여기 걸린다 — 요청 중에 닫으면 안의 Presenter가 구독을 끊어 응답을 놓친다('Hub 규칙.md'의 사고).
-    public bool IsCovered
-    {
-        get
-        {
-            Transform layer = transform.parent;
-
-            for (int i = transform.GetSiblingIndex() + 1; i < layer.childCount; i++)
-            {
-                Transform sibling = layer.GetChild(i);
-
-                if (!sibling.gameObject.activeInHierarchy)
-                {
-                    continue;
-                }
-
-                var group = sibling.GetComponent<CanvasGroup>();
-
-                if (group != null && group.blocksRaycasts)
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-    }
 
     // 경매장을 열고 닫는다 (UIManager가 호출).
     public void Show(bool on)

@@ -13,7 +13,6 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   인벤토리 [경매 등록]         : 그 개체를 골라 둔다('AuctionCanvasView.OpenRegister').
 //   시세 탭 [팔러 가기]          : 그 TID의 첫 물건(올릴 수 있는 것)을 골라 둔다('OpenRegisterFor').
 //   처음 열리는 순간이면 아직 Start 전이다 — 적어 두었다가 Start 끝에서 적용한다.
-// ■ Esc는 이 창부터 닫는다('AuctionHeaderPresenter'가 'IsOpen'을 본다).
 //
 // ■ 무엇을 올릴 수 있나
 //   자원: 보유한 것 전부 — 수량을 정한다. 매물은 통째로만 팔린다.
@@ -169,9 +168,6 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
     private RegisterKind CurrentKind => (RegisterKind)kindDropdown.value;
 
-    // 창이 떠 있나 — Esc가 이 창부터 닫는다.
-    public bool IsOpen => gameObject.activeSelf;
-
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
     {
@@ -299,8 +295,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
         ApplyOpen(registerKind, key, byTid);
     }
 
-    // 창을 닫는다 — 고른 것과 찾기 글자는 남겨 둔다(다시 열면 이어서) (closeButton · dimButton · Esc).
-    public void Close()
+    // 창을 닫는다 — 고른 것과 찾기 글자는 남겨 둔다(다시 열면 이어서) (closeButton · dimButton).
+    private void Close()
     {
         gameObject.SetActive(false);
     }

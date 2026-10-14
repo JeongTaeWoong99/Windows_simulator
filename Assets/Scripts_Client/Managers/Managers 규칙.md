@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -51,10 +51,10 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 | 아웃게임 | Enter (입력칸) | 로그인 화면 아이디 칸 (`LoginPresenter`) | 로그인 | `BindOutGameSubmit` |
 | 아웃게임 | 방향키·WASD · Enter/Space · Esc | EventSystem 기본 (`InputSystemUIInputModule`) | UI 선택 이동 · 선택된 버튼 누르기 | `Scope` — 아웃게임에서만 켠다 |
 | 인게임 | Shift + 우클릭 | 인벤토리 칸 (`InventoryGridPresenter`) | 경매 등록 (우클릭만 하면 판매 목록) | `IsQuickAuctionHeld` |
-| 인게임 | Esc | 경매장 머리 줄 (`AuctionHeaderPresenter`) | 경매장 닫기 — 위에 막는 오버레이(팝업·로딩·알림)가 없을 때만 | `WasClosePressed` |
 
 - **인게임 키는 Shift+우클릭 하나다** (2026-10-11 사용자 결정 — 마우스로 하는 게임). ESC 종료 · 거래소/경매 검색칸 Enter 검색 · 인게임 UI 키 이동은 없앴다.
-  - **2026-10-14 Esc 하나를 더했다 (T-147 · 사용자 결정)** — 경매장이 가운데 띠를 다 덮어 연 버튼(하단 메뉴)이 가려지므로, 닫는 길로 [X]와 함께 둔다. 앱 종료가 아니라 경매장 닫기다.
+  - ⚠️ **인게임 키는 마우스와 함께 쓰는 것만 둔다.** 키 단독 단축키는 사용자가 정하기 전에는 넣지 않는다 —
+    2026-10-14에 경매장 닫기 Esc를 사용자 지시 없이 넣었다가 2026-10-15 사용자 지시로 뺐다. 경매장은 [X]로 닫는다.
 - 입력칸 글자 입력과 수량·가격 칸의 **포커스가 빠질 때 적용**(`onEndEdit`)은 키 단축이 아니라 입력칸 동작이라 이 표에 넣지 않는다.
 - 에디터 전용(`ServerConsoleWindow`의 Ctrl+C/A)·`Art/_source`의 에셋 데모 스크립트는 게임 키가 아니다.
 

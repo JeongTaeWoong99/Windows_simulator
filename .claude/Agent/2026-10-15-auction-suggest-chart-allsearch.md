@@ -24,4 +24,5 @@ tags: [client, ui, auction, inventory]
 
 ## 후속 작업 / 주의사항
 - 서버 몫은 [이슈 #71](https://github.com/JeongTaeWoong99/Windows_simulator/issues/71)(T-155 후속) — 검색 비용 · 조건 없는 검색 거절 · 빈도 제한 테스트 3개(5회 하드코딩).
-- 사용자 확인으로 T-147 · T-119 종료·보관, 이슈 #69 · #52 닫음. Esc 닫기 · 실제 구매는 사람 손 플레이 때.
+- 사용자 확인으로 T-147 · T-119 종료·보관, 이슈 #69 · #52 닫음. 실제 구매는 사람 손 플레이 때.
+- ⚠️ **경매장 Esc 닫기 삭제** — 2026-10-14에 사용자 지시 없이 넣은 키였다(로그엔 "사용자 결정"으로 잘못 적혀 있었다). 인게임 키는 마우스와 함께 쓰는 것만(`Managers 규칙.md`). Esc 전용으로 있던 `AuctionCanvasView.IsCovered` · `AuctionRegisterPresenter.IsOpen` · `KeyInputManager.WasClosePressed`도 뺐다.

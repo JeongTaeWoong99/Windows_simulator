@@ -1,6 +1,6 @@
 # Auction 폴더 규칙
 
-> 최종 업데이트: 2026-10-15 (조건 없는 '전체' 검색 안 보냄 · 그래프 막대+선 · 후보 목록 공용화(`Shared/SuggestView`) · 빈도 제한 10회·1초) · 2026-10-14 (표를 쪽으로 — 한 쪽 9줄 · [◀][▶] · 검색 후보 목록 — 공용 검색창 · 등록 창 찾기 · 그래프 날짜 간격 · 차단막 0.75) · 2026-10-14 (목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 · 거래소 수량 구매 제거 — T-147 2단계) · 같은 날 (거래 열의 탭 → 화면 전체 `#Auction Canvas` — T-147 1단계) · 이전 이력은 `Hub 규칙.md`(옛 `Market 규칙.md`)의 git 기록 · 대상: `Assets/Scripts_Client/UI/Auction/`
+> 최종 업데이트: 2026-10-15 (Esc 닫기 삭제 — [X]만) · 2026-10-15 (조건 없는 '전체' 검색 안 보냄 · 그래프 막대+선 · 후보 목록 공용화(`Shared/SuggestView`) · 빈도 제한 10회·1초) · 2026-10-14 (표를 쪽으로 — 한 쪽 9줄 · [◀][▶] · 검색 후보 목록 — 공용 검색창 · 등록 창 찾기 · 그래프 날짜 간격 · 차단막 0.75) · 2026-10-14 (목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 · 거래소 수량 구매 제거 — T-147 2단계) · 같은 날 (거래 열의 탭 → 화면 전체 `#Auction Canvas` — T-147 1단계) · 이전 이력은 `Hub 규칙.md`(옛 `Market 규칙.md`)의 git 기록 · 대상: `Assets/Scripts_Client/UI/Auction/`
 
 **`#Auction Canvas` — 경매장. 3열 폭 전부 × 가운데 띠를 쓰는 화면이다(2026-10-14 · [T-147](../../../../tasks/archive/T-147-경매장전체화면목업.md)).**
 배치는 목업([`경매장목업.html`](../../../../GameDesign/design/ui/경매장목업.html))을 따른다 — 공용 검색창 → 탭 4개(검색 · 시세 · 판매 · 완료) → 탭 화면.
@@ -8,7 +8,7 @@
 | 파일 · 폴더 | 무엇 |
 |------|------|
 | `AuctionCanvasView.cs` | 캔버스 — 여닫기 · **판을 3열 가운데 띠에 맞추기** · 탭 사이 길(`OpenRegister`·`OpenRegisterFor`·`OpenPrice`·`OpenSearchFor`) · 위에 막는 오버레이가 떠 있나(`IsCovered`) |
-| `AuctionHeaderPresenter/` | 머리 줄 — 제목 · 보유 골드 · [X] · **Esc**(등록 창부터 닫는다) |
+| `AuctionHeaderPresenter/` | 머리 줄 — 제목 · 보유 골드 · [X] |
 | `AuctionQueryPresenter/` | **공용 검색창** — 입력을 지금 탭의 화면(`IAuctionQueryTarget`)에 넘긴다 |
 | `AuctionTabPresenter/` | 탭 줄 — `AuctionTab`(검색·시세·판매·완료)마다 버튼과 화면을 짝짓는다 · 완료 탭 배지 |
 | `AuctionSearchPresenter/` | 검색 — 왼쪽 옵션(분류 트리·등급·장비/캐릭터 옵션·단가) + 오른쪽 결과 표 · 구매 |
@@ -69,13 +69,10 @@
 |---|---|---|
 | 열기 | 하단 메뉴 **[경매장]** | `MenuPresenter.auctionButton` → `UIManager.ShowAuction(true)` — **토글이 아니다**(열리면 메뉴가 가려진다) |
 | 열기 | 인벤토리 칸 **Shift+우클릭** | `AuctionCanvasView.OpenRegister` — 경매장 → [판매] 탭 → 등록 창을 그 물건이 골라진 채로 연다 |
-| 닫기 | 머리 줄 **[X]** · **Esc** | `AuctionHeaderPresenter` → `UIManager.ShowAuction(false)` |
+| 닫기 | 머리 줄 **[X]** | `AuctionHeaderPresenter` → `UIManager.ShowAuction(false)` |
 | 닫기 | 전부 접기 | `UIManager.CloseAllExceptWidget`도 닫는다 — 단, 경매장이 열려 있는 동안엔 차단막이 위젯 버튼을 덮는다 |
 
-- ⚠️ **Esc는 경매장 위에 막는 오버레이가 없을 때만 닫는다**(`AuctionCanvasView.IsCovered`) — 확인·수량 팝업이 떠 있을 때 닫으면 팝업만 홀로 남고,
-  **로딩 중에 닫으면 안의 Presenter가 구독을 끊어 응답을 놓친다**(거래 열 시절 가챠 사고와 같은 뿌리 — [`Hub 규칙.md`](<../Hub/Hub 규칙.md>)). 클릭은 로딩 차단막이 막지만 키는 못 막는다.
-- **판매 등록 창이 떠 있으면 Esc는 창부터 닫는다** — 창은 경매장 안에 있어 `IsCovered`에 걸리지 않는다.
-- Esc는 `KeyInputManager.WasClosePressed`로만 읽는다 — 키는 그 매니저 한 곳에서 읽는다.
+- **키(Esc)로는 닫지 않는다** — 인게임 키는 마우스와 함께 쓰는 것만 둔다(2026-10-15 사용자 지시 · `Managers 규칙.md` 키 표). 한때 넣었던 Esc 닫기를 뺐다.
 
 ---
 
@@ -105,7 +102,7 @@
 - 닫힘·클릭 규칙은 [`Shared 규칙.md`](../Shared/Shared%20규칙.md)의 `SuggestView` — ⚠️ 줄 버튼의 내비게이션이 None이면 눌러도 이름이 안 들어간다(2026-10-15 수정).
 - ⚠️ **자기 Canvas(override sorting 101)로 탭 줄·표 위에 뜬다.** 정렬 덮어쓰기는 캔버스가 켜져 있을 때만 먹는다 — 꺼진 채 저장된 씬 값은 풀려 있어 탭 버튼 뒤에 깔렸다. `Show`가 켤 때마다 건다.
 
-- ⚠️ **Enter로 검색하지 않는다** — 인게임 키는 Shift+우클릭·Esc뿐이다(2026-10-11 사용자 결정 · `Managers 규칙.md`). 목업의 "이름 + Enter"는 [검색] 버튼이다.
+- ⚠️ **Enter로 검색하지 않는다** — 인게임 키는 Shift+우클릭뿐이다(2026-10-11 사용자 결정 · `Managers 규칙.md`). 목업의 "이름 + Enter"는 [검색] 버튼이다.
 
 ---
 
