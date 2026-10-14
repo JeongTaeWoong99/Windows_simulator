@@ -12,6 +12,7 @@ using UnityEngine.UI;
 // ■ 구매 진행 중(Reserved)인 매물은 [취소]를 잠근다 — 서버도 거절한다.
 // ■ 취소하면 물건은 **우편**으로 돌아오고 등록비는 돌려받지 못한다. 확인 창에서 먼저 알린다.
 // ■ 공용 검색창은 받은 목록을 이름으로 거르기만 한다 — 서버에 묻지 않는다.
+// ■ 쪽으로 나눈다 — 한 쪽 9줄('AuctionModel.RowsPerPage'). 내 매물은 한 번에 다 받으므로 [◀][▶]는 받은 목록을 자르기만 한다.
 // ■ 판매 중이 상한(Constants.AuctionMaxActiveListings)이면 [+ 판매 등록]을 잠근다.
 public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 {
@@ -42,6 +43,9 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     [SerializeField, Tooltip("표 아래 안내 — '팔리면 대금은 우편으로 옵니다' · 받은 시각")]
     private TMP_Text noteText = null!;
 
+    [SerializeField, Tooltip("표 아래 쪽 넘김 줄 — [◀] 'n / N 쪽' [▶]")]
+    private AuctionPagerView pager = null!;
+
     private readonly List<AuctionTableRowContent> _contents = new List<AuctionTableRowContent>();
 
     private AuctionModel        _auction = null!;
@@ -51,6 +55,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     private AuctionTableRowList _rows    = null!;
 
     private string _query = "";
+    private int    _page;   // 지금 쪽 (0부터)
 
     // 진행 중인 대기의 손잡이 — 응답이 오면 결과를 보고한다.
     private ServerWaitHandle? _waitHandle;
@@ -66,6 +71,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     public void OnQueryChanged(string text)
     {
         _query = text;
+        _page  = 0;
 
         if (_isReady)
         {
@@ -74,6 +80,20 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     public void OnQuerySubmitted(string text) => OnQueryChanged(text);
+
+    // 판매 중인 내 매물에서 이름이 맞는 것 — 같은 아이템은 한 번만.
+    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+    {
+        into.Clear();
+
+        foreach (AuctionListingInfo listing in _auction.MyListings)
+        {
+            AuctionText.AddListSuggestion(into, listing.Kind, listing.Tid, query, max);
+        }
+    }
+
+    // 이름으로 거르는 일은 'OnQueryChanged'가 이미 했다.
+    public void OnSuggestionPicked(AuctionSuggestion suggestion) { }
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
@@ -86,6 +106,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         this.RequireRef(rowParent,      nameof(rowParent));
         this.RequireRef(emptyText,      nameof(emptyText));
         this.RequireRef(noteText,       nameof(noteText));
+        this.RequireRef(pager,          nameof(pager));
 
         _auction = Services.Get<AuctionModel>();
         _data    = Services.Get<PlayerDataModel>();
@@ -96,6 +117,8 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         Subscribe();
 
         registerButton.onClick.AddListener(() => register.OpenEmpty());
+        pager.PrevClicked += () => GoToPage(_page - 1);
+        pager.NextClicked += () => GoToPage(_page + 1);
 
         infoText.text = $"{UIRichText.Label("등록 기간")} {Constants.AuctionListingHours}시간" +
                         $"{UIRichText.Dot}{UIRichText.Label("등록비")} {AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)} (만료되면 돌려받음)" +
@@ -261,10 +284,35 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 
     #region 표시 갱신
 
-    // 머리 문구와 목록을 지금 상태로 그린다 — 검색어가 있으면 이름으로 거른다.
+    // 받은 목록에서 그 쪽을 보인다 (pager [◀][▶])
+    private void GoToPage(int page)
+    {
+        _page = page;
+        Refresh();
+    }
+
+    // 머리 문구와 목록을 지금 상태로 그린다 — 검색어가 있으면 이름으로 거르고, 지금 쪽만 그린다.
     private void Refresh()
     {
         _contents.Clear();
+
+        int matched = 0;
+
+        foreach (AuctionListingInfo listing in _auction.MyListings)
+        {
+            if (AuctionText.MatchesName(listing, _query))
+            {
+                matched++;
+            }
+        }
+
+        int pageCount = AuctionPagerView.PageCount(matched, AuctionModel.RowsPerPage);
+        int first;
+
+        _page = Mathf.Clamp(_page, 0, pageCount - 1); // 취소로 줄이 줄면 마지막 쪽이 사라질 수 있다
+        first = _page * AuctionModel.RowsPerPage;
+
+        int index = 0;
 
         foreach (AuctionListingInfo listing in _auction.MyListings)
         {
@@ -273,10 +321,18 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
                 continue;
             }
 
-            _contents.Add(AuctionText.ToSellRow(listing, canCancel: _waitHandle == null));
+            if (index >= first && index < first + AuctionModel.RowsPerPage)
+            {
+                _contents.Add(AuctionText.ToSellRow(listing, canCancel: _waitHandle == null));
+            }
+
+            index++;
         }
 
         _rows.Show(_contents);
+
+        pager.Bind(_page, pageCount, canPrev: _page > 0, canNext: _page < pageCount - 1,
+                   _contents.Count > 0 ? $"{first + 1:N0}–{first + _contents.Count:N0} / {matched:N0}건" : "");
 
         int  total  = _auction.MyListings.Count;
         bool isFull = total >= Constants.AuctionMaxActiveListings;

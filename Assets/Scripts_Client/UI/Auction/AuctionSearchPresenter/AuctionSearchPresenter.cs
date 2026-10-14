@@ -26,8 +26,8 @@ public enum AuctionSearchNode
 // ■ 고치는 값과 조회한 값은 다르다
 //   왼쪽에서 고친 값은 [검색]을 눌러야 조회된다 — 조회에 빈도 제한(순간 5회 · 2초마다 1회 회복)이 있어서다.
 //   **분류만은 누르면 바로 조회한다**(목업). 정렬을 바꾸면 마지막으로 조회한 조건('_applied')에 정렬만 바꿔 다시 받는다.
-// ■ 결과는 쭉 내려간다 — 20개씩, 목록 끝에 닿으면 응답이 준 커서로 다음 20개('AuctionModel.SearchNextPage').
-//   다음 쪽은 대기 차단을 걸지 않는다(목록 아래 글자로 알린다). 빈도 제한에 걸리면 다시 내릴 때 받는다.
+// ■ 결과는 쪽으로 나눈다 — 한 쪽 9줄('AuctionModel.RowsPerPage'), 표 아래 [◀][▶]로 넘긴다(2026-10-14 사용자 결정).
+//   쪽을 넘길 때마다 서버에 묻는다(빈도 제한 안) — 받는 동안 대기를 건다.
 // ■ 이름은 공용 검색창에서 온다('IAuctionQueryTarget') — 클라가 TID 목록으로 바꿔 보낸다.
 //   ⚠️ 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
 //   ⚠️ '전체' 분류의 이름 검색은 네 종류의 TID를 합쳐 보낸다 — 장비·캐릭터 TID가 겹쳐 다른 종류가 섞일 수 있어 그릴 때 이름으로 한 번 더 거른다.
@@ -76,9 +76,6 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     {
         EIndustryType.None, EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
     };
-
-    // 목록 끝으로 여기는 스크롤 위치(아래 끝 0) — 이보다 내려오면 다음 쪽을 받는다.
-    private const float NextPageThreshold = 0.02f;
 
     [CenterHeader("분류")]
     [SerializeField, NonReorderable, Tooltip("분류 트리 버튼 — AuctionSearchNode마다 한 줄. 자식 노드는 부모가 펼쳐졌을 때만 보인다")]
@@ -177,14 +174,14 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
     private Transform rowParent = null!;
 
-    [SerializeField, Tooltip("결과 스크롤 — 끝에 닿으면 다음 20개를 받는다")]
+    [SerializeField, Tooltip("결과 스크롤 — 쪽을 받으면 맨 위로 올린다")]
     private ScrollRect scrollRect = null!;
 
     [SerializeField, Tooltip("결과가 없을 때만 보인다")]
     private GameObject emptyText = null!;
 
-    [SerializeField, Tooltip("목록 아래 — 'n / N건 — 아래로 내리면 20개씩 더 받는다'")]
-    private TMP_Text footText = null!;
+    [SerializeField, Tooltip("표 아래 쪽 넘김 줄 — [◀] 'n / N 쪽' [▶]")]
+    private AuctionPagerView pager = null!;
 
 
     [CenterHeader("탭 사이 길")]
@@ -215,10 +212,6 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     // 진행 중인 대기의 손잡이 — 첫 쪽 검색 · 구매 · 구매 전 시세.
     private ServerWaitHandle? _waitHandle;
 
-    // 다음 쪽을 기다리는 중 — 대기 차단 없이 받는다. 빈도 제한에 걸렸으면 'IsPageThrottled'.
-    private bool _isPagePending;
-    private bool _isPageThrottled;
-
     // 구매 전 시세를 기다리는 매물 — 0이면 없다.
     private long _pendingBuyListingId;
 
@@ -240,6 +233,13 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         _query = text;
         RunSearch();
     }
+
+    // 지금 분류의 종류 안에서 이름이 맞는 것 — '전체'면 네 종류 모두.
+    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+        => AuctionText.CollectCatalogSuggestions(GetNodeFilter(_node).kind, query, into, max);
+
+    // 후보를 고르면 그 이름으로 바로 조회한다 — 왼쪽 옵션은 그대로 둔다.
+    public void OnSuggestionPicked(AuctionSuggestion suggestion) => RunSearch();
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
@@ -273,7 +273,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         this.RequireRef(rowParent,             nameof(rowParent));
         this.RequireRef(scrollRect,            nameof(scrollRect));
         this.RequireRef(emptyText,             nameof(emptyText));
-        this.RequireRef(footText,              nameof(footText));
+        this.RequireRef(pager,                 nameof(pager));
         this.RequireRef(canvasView,            nameof(canvasView));
 
         _auction = Services.Get<AuctionModel>();
@@ -302,15 +302,12 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     // 껐다 켠 경우의 재구독 (Unity 메시지)
-    // ※ 꺼진 동안 다음 쪽 응답을 놓쳤을 수 있다 — 기다림 표시를 풀고 모델의 결과로 다시 그린다.
     private void OnEnable()
     {
         if (!_isReady)
         {
             return;
         }
-
-        _isPagePending = false;
 
         Subscribe();
         Refresh();
@@ -443,7 +440,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         rarityHeaderButton.onClick.AddListener(() => ApplySort(SortPreset.RarityDesc));
         priceHeaderButton.onClick.AddListener(() => ApplySort(_sort == SortPreset.PriceAsc ? SortPreset.PriceDesc : SortPreset.PriceAsc));
         timeHeaderButton.onClick.AddListener(() => ApplySort(SortPreset.ExpiresSoon));
-        scrollRect.onValueChanged.AddListener(_ => OnScrolled());
+        pager.PrevClicked += () => GoToPage(_auction.SearchPage - 1);
+        pager.NextClicked += () => GoToPage(_auction.SearchPage + 1);
     }
 
     #endregion
@@ -787,9 +785,6 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             _                      => (EAuctionSort.PriceAsc,    EAuctionAttr.None),
         };
 
-        _isPagePending   = false;
-        _isPageThrottled = false;
-
         _auction.Search(_applied);
         BeginWait("경매장 검색");
     }
@@ -842,19 +837,15 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         }
     }
 
-    // 스크롤 — 목록 끝에 닿으면 다음 쪽을 받는다. 대기 차단 없이 (scrollRect.onValueChanged)
-    private void OnScrolled()
+    // 같은 조건으로 그 쪽을 받는다 (pager [◀][▶])
+    private void GoToPage(int page)
     {
-        if (_waitHandle != null || _isPagePending || !_auction.HasMoreResults || scrollRect.verticalNormalizedPosition > NextPageThreshold)
+        if (_waitHandle != null || !_auction.SearchGoToPage(page))
         {
             return;
         }
 
-        _isPagePending   = true;
-        _isPageThrottled = false;
-
-        _auction.SearchNextPage();
-        RefreshFoot();
+        BeginWait("경매장 검색");
     }
 
     // 내 매물을 조용히 받는다 — 대기 없이, 결과가 오면 꼬리표만 다시 그린다 (Start · OnEnable).
@@ -931,19 +922,11 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
     #region 응답 (AuctionModel 구독)
 
-    // 검색 결과 도착 — 첫 쪽이면 대기를 닫고 맨 위로, 다음 쪽이면 기다림 표시만 푼다 (AuctionModel.SearchCompleted 구독)
-    private void OnSearchCompleted(EResultCode code, bool isNextPage)
+    // 검색 결과 도착 — 대기를 닫고 맨 위로 (AuctionModel.SearchCompleted 구독)
+    private void OnSearchCompleted(EResultCode code)
     {
-        if (isNextPage)
-        {
-            _isPagePending   = false;
-            _isPageThrottled = code != EResultCode.Ok;
-        }
-        else
-        {
-            CloseWait(code);
-            scrollRect.verticalNormalizedPosition = 1f;
-        }
+        CloseWait(code);
+        scrollRect.verticalNormalizedPosition = 1f;
 
         Refresh();
     }
@@ -1079,24 +1062,20 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         text.text = arrow.Length > 0 ? UIRichText.Paint(label + arrow, UIThemeRole.Accent) : label;
     }
 
-    // 목록 아래 글자 — 받은 수 / 전체 · 더 받는 중 · 빈도 제한.
+    // 표 아래 쪽 넘김 — 'n / N 쪽' · 이 쪽이 몇째 건부터인지.
     private void RefreshFoot()
     {
-        int loaded = _auction.SearchResults.Count;
+        int page  = _auction.SearchPage;
+        int total = _auction.SearchTotalCount;
+        int shown = _auction.SearchResults.Count;
+        int first = page * AuctionModel.RowsPerPage;
 
-        if (loaded == 0)
-        {
-            footText.text = "";
+        string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {total:N0}건" : "";
 
-            return;
-        }
-
-        string state = _isPagePending   ? UIRichText.Paint("다음 20개 받는 중…", UIThemeRole.Accent)
-                     : _isPageThrottled ? UIRichText.Paint("조회가 잦습니다 — 잠시 뒤 다시 내려 주세요", UIThemeRole.Negative)
-                     : _auction.HasMoreResults ? "아래로 내리면 20개씩 더 받습니다"
-                     : "끝";
-
-        footText.text = $"{loaded:N0} / {_auction.SearchTotalCount:N0}건{UIRichText.Dot}{state}";
+        pager.Bind(page, AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage),
+                   canPrev: _waitHandle == null && page > 0,
+                   canNext: _waitHandle == null && _auction.HasMoreResults,
+                   note);
     }
 
     #endregion

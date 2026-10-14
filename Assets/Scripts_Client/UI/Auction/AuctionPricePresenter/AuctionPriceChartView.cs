@@ -8,6 +8,7 @@ using UnityEngine;
 // 'AuctionPricePresenter'가 일별 시세를 'Bind'로 넘긴다(종속 View). 칸은 씬에 14개 만들어 두고 앵커로 자리만 옮긴다.
 //
 // ■ 체결이 없는 날은 띠·점을 숨기고 선은 건너뛴다 — 0을 그리면 그래프가 바닥으로 꺼져 시세가 폭락한 것처럼 보인다.
+// ■ 날짜는 오늘부터 거꾸로 하루 걸러 적는다 — 간격이 늘 같다.
 // ■ 세로 범위는 보이는 날의 최저 × 0.95 ~ 최고 × 1.05 — 목업과 같다.
 public class AuctionPriceChartView : MonoBehaviour
 {
@@ -18,7 +19,7 @@ public class AuctionPriceChartView : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("날마다의 평균 점 — 오래된 날부터")]
     private RectTransform[] dots = new RectTransform[0];
 
-    [SerializeField, NonReorderable, Tooltip("날짜 글자 — 오래된 날부터. 하루 걸러 적는다(마지막 날은 언제나)")]
+    [SerializeField, NonReorderable, Tooltip("날짜 글자 — 오래된 날부터. 오늘부터 거꾸로 하루 걸러 적는다")]
     private TMP_Text[] dateTexts = new TMP_Text[0];
 
     [SerializeField, NonReorderable, Tooltip("가격 눈금 — 아래부터 위로")]
@@ -89,7 +90,8 @@ public class AuctionPriceChartView : MonoBehaviour
 
             if (i < dateTexts.Length)
             {
-                bool label = day != null && (i % 2 == 0 || i == days.Count - 1);
+                // 오늘부터 거꾸로 하루 걸러 — 앞에서 세면 끝에 13·14일이 붙어 간격이 어긋난다.
+                bool label = day != null && (days.Count - 1 - i) % 2 == 0;
 
                 dateTexts[i].text = label ? FormatDate(day!.DayStartUnixMs) : "";
             }

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.UI;
 
 // 시세 탭 — 한 아이템의 최저가 · 판매 중 · 최근 거래가 · 전일 평균, 최근 14일 그래프, 지금 단가별 판매 수량 (T-147 · T-118 · T-119).
 //
-// ■ 볼 아이템을 늘어놓지 않는다(목업 3차) — 공용 검색창에 이름을 치고 [검색], 검색 결과 줄의 [시세],
+// ■ 볼 아이템을 늘어놓지 않는다(목업 3차) — 공용 검색창에 이름을 치면 뜨는 후보 · [검색], 검색 결과 줄의 [시세],
 //   구매 확인·등록 창의 [시세 보기]로만 연다('AuctionCanvasView.OpenPrice').
 // ■ 열 때 세 가지를 받는다 — 요약 · 가격대 · 일별 시세. 셋 다 빈도 제한에 든다(요약은 막 받은 것이 있으면 아낀다).
 //   대기는 하나로 걸고 세 응답이 다 와야 닫는다.
@@ -91,7 +92,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
     // ─── 공용 검색창 ───
     public string QueryPlaceholder => "시세 볼 아이템 이름";
-    public string QueryHint        => "[검색] — 이름이 맞는 첫 아이템의 시세를 엽니다";
+    public string QueryHint        => "치면 아래 후보에서 고릅니다 · [검색]은 이름이 맞는 첫 아이템";
     public string Query            => _query;
 
     public void OnQueryChanged(string text) => _query = text;
@@ -109,6 +110,13 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
         Open(kind, tid);
     }
+
+    // 게임 데이터 전부에서 이름이 맞는 것 — 아직 매물이 없는 아이템도 시세(기록)는 볼 수 있다.
+    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+        => AuctionText.CollectCatalogSuggestions(EAuctionKind.None, query, into, max);
+
+    // 후보를 고르면 그 시세를 바로 연다.
+    public void OnSuggestionPicked(AuctionSuggestion suggestion) => Open(suggestion.Kind, suggestion.Tid);
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()

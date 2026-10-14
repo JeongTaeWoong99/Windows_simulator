@@ -26,6 +26,9 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   빼 버리면 "내 캐릭터가 왜 없지?"가 된다. 사유 문구는 즉시 판매와 같은 'EntityBlockText'다.
 //   ※ 서버도 같은 사유로 거절한다(AuctionEquipWorn · AuctionCharacterBusy · AuctionLastCharacter).
 //
+// ■ '이름으로 찾기'는 종류를 가리지 않는다 — 치면 자원·장비·캐릭터 전부에서 후보를 띄우고, 고르면 그 종류로 바꿔 골라 둔다
+//   (2026-10-14 사용자 요청 — 종류를 먼저 고르고 그 안에서만 찾는 길이 답답했다).
+//
 // ■ 고르면 그 아이템의 시세 요약을 받는다(대기 없이 — 'SummaryCompleted'로 카드만 다시 그린다).
 //   [최저가에 맞춤]은 그 최저가로 단가를 채운다(하한 아래면 하한). [시세 보기]는 시세 탭으로 가며 창을 닫는다.
 //
@@ -60,8 +63,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
     [SerializeField, Tooltip("종류 드롭다운 — 자원·장비·캐릭터. 항목은 코드가 채운다")]
     private TMP_Dropdown kindDropdown = null!;
 
-    [SerializeField, Tooltip("이름 찾기 입력칸 — 치는 대로 목록을 거른다")]
+    [SerializeField, Tooltip("이름 찾기 입력칸 — 치는 대로 목록을 거르고, 아래에 모든 종류의 후보를 띄운다")]
     private TMP_InputField findInput = null!;
+
+    [SerializeField, Tooltip("찾기 입력칸 아래 후보 목록")]
+    private AuctionSuggestView findSuggestView = null!;
 
     [SerializeField, Tooltip("후보 한 줄 프리팹")]
     private AuctionRowView rowPrefab = null!;
@@ -137,7 +143,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
     [SerializeField, Tooltip("[등록]. OnClick은 코드가 연결한다")]
     private Button registerButton = null!;
 
-    private readonly List<AuctionRowContent> _contents = new List<AuctionRowContent>();
+    private readonly List<AuctionRowContent> _contents    = new List<AuctionRowContent>();
+    private readonly List<AuctionSuggestion> _suggestions = new List<AuctionSuggestion>();
 
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
@@ -173,6 +180,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         this.RequireRef(canvasView,     nameof(canvasView));
         this.RequireRef(kindDropdown,   nameof(kindDropdown));
         this.RequireRef(findInput,      nameof(findInput));
+        this.RequireRef(findSuggestView, nameof(findSuggestView));
         this.RequireRef(rowPrefab,      nameof(rowPrefab));
         this.RequireRef(rowParent,      nameof(rowParent));
         this.RequireRef(emptyText,      nameof(emptyText));
@@ -211,7 +219,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
         dimButton.onClick.AddListener(Close);
         priceButton.onClick.AddListener(OnPriceClicked);
         kindDropdown.onValueChanged.AddListener(_ => OnKindChanged());
-        findInput.onValueChanged.AddListener(_ => Refresh());
+        findInput.onValueChanged.AddListener(OnFindChanged);
+        findSuggestView.Picked += OnSuggestionPicked;
         minusButton.onClick.AddListener(() => StepCount(-1L));
         plusButton.onClick.AddListener(() => StepCount(+1L));
         maxButton.onClick.AddListener(() => SetCount(GetMaxCount()));
@@ -403,6 +412,31 @@ public class AuctionRegisterPresenter : MonoBehaviour
     #endregion
 
     #region 입력
+
+    // 찾기 입력 — 지금 종류의 목록을 거르고, 모든 종류에서 후보를 띄운다 (findInput.onValueChanged)
+    private void OnFindChanged(string text)
+    {
+        Refresh();
+        CollectSuggestions(text);
+        findSuggestView.Show(_suggestions);
+    }
+
+    // 후보를 골랐다 — 그 종류로 바꿔 골라 두고, 목록은 그 이름으로 거른다 (AuctionSuggestView.Picked 구독)
+    // ※ 흐린 것(올릴 수 없음)을 고르면 'ApplyOpen'이 사유를 알리고 고르지 않는다.
+    private void OnSuggestionPicked(AuctionSuggestion suggestion)
+    {
+        RegisterKind kind = suggestion.Kind switch
+        {
+            EAuctionKind.Equip     => RegisterKind.Equip,
+            EAuctionKind.Character => RegisterKind.Character,
+            _                      => RegisterKind.Item,
+        };
+
+        ApplyOpen(kind, suggestion.Key, byTid: false);
+
+        findInput.SetTextWithoutNotify(suggestion.Name);
+        Refresh();
+    }
 
     // 종류가 바뀌었다 — 고른 것을 비운다 (kindDropdown.onValueChanged)
     private void OnKindChanged()
@@ -644,6 +678,52 @@ public class AuctionRegisterPresenter : MonoBehaviour
         emptyText.text = string.IsNullOrWhiteSpace(query) ? "올릴 수 있는 것이 없습니다" : "이름이 맞는 것이 없습니다";
 
         RefreshCard();
+    }
+
+    // 내 물건 전부(자원 → 장비 → 캐릭터)에서 이름이 맞는 것을 후보로 모은다 — 장비·캐릭터는 개체마다 한 줄.
+    private void CollectSuggestions(string query)
+    {
+        _suggestions.Clear();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return;
+        }
+
+        int max = findSuggestView.Capacity;
+
+        foreach (ItemInfo item in _data.Inventory)
+        {
+            if (_suggestions.Count >= max) return;
+            if (item.Count <= 0 || !AuctionText.MatchesName(EAuctionKind.Item, item.ItemId, query)) continue;
+
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, item.ItemId, item.ItemId,
+                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {item.Count:N0}개"));
+        }
+
+        foreach (EquipInfo equip in _data.Equips)
+        {
+            if (_suggestions.Count >= max) return;
+            if (!AuctionText.MatchesName(EAuctionKind.Equip, equip.EquipTid, query)) continue;
+
+            string blocked = EntityBlockText.ForEquip(_data, equip.EquipId) != null ? $"{UIRichText.Dot}올릴 수 없음" : "";
+
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Equip, equip.EquipTid, equip.EquipId,
+                $"장비{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{blocked}"));
+        }
+
+        int remainingAfter = _data.Characters.Count - 1;
+
+        foreach (CharacterInfo character in _data.Characters)
+        {
+            if (_suggestions.Count >= max) return;
+            if (!AuctionText.MatchesName(EAuctionKind.Character, character.CharacterTid, query)) continue;
+
+            string blocked = EntityBlockText.ForCharacter(_data, character.CharacterId, remainingAfter) != null ? $"{UIRichText.Dot}올릴 수 없음" : "";
+
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Character, character.CharacterTid, character.CharacterId,
+                $"캐릭터{UIRichText.Dot}{AuctionText.FormatCharacterSummary(character)}{blocked}"));
+        }
     }
 
     // 고른 것이 아직 목록에 있고 흐리지 않은가 — 찾기로 거르기 전에 본다.

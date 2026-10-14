@@ -8,8 +8,8 @@ using MikaProtocol;
 //
 // ■ 왜 이 모델은 송신도 하나
 // 'PlayerDataModel'·'SellCartModel'은 송신하지 않고 요청은 Presenter가 보낸다. 여기는 다르다 —
-// 검색은 **응답이 준 커서(정렬 값, 매물 ID)로** 다음 쪽을 이어 받는다. 검색 조건·커서·누적 결과가 한 곳에
-// 있어야 다음 쪽이 앞 쪽에 이어 붙는다. 조건은 Presenter에, 결과는 모델에 두면 둘이 어긋난 채로 다음 쪽을 부른다.
+// 검색은 **응답이 준 커서(정렬 값, 매물 ID)로** 다음 쪽을 받는다. 검색 조건·쪽마다의 커서·지금 쪽이 한 곳에
+// 있어야 앞뒤 쪽이 같은 조건으로 이어진다. 조건은 Presenter에, 결과는 모델에 두면 둘이 어긋난 채로 다음 쪽을 부른다.
 // 대기 표시('ServerWaitManager')는 여전히 요청을 일으킨 Presenter가 건다.
 //
 // ■ 여기 없는 것
@@ -39,15 +39,16 @@ using MikaProtocol;
 // 팔리거나 만료돼도 푸시는 없고 우편만 온다. 그래서 **로그인할 때와 경매 우편이 올 때** 새 기록 수만 묻는다(PageSize 0).
 // 완료 탭을 열면 "봤다"로 남긴다(MarkSeen) — 그 응답의 새 기록 수가 줄 앞의 점이 된다.
 //
+// ■ 쪽으로 나눈다 (2026-10-14 사용자 결정)
+// 검색 결과·거래 기록은 한 화면에 보이는 줄 수('RowsPerPage')씩 쪽으로 받고, [◀][▶]로 갈아 끼운다 — 이어 붙이지 않는다.
+// 서버 커서는 앞으로만 간다 — 받은 쪽마다 "그 다음 쪽을 받는 커서"를 적어 두었다가 앞 쪽으로 돌아갈 때 다시 쓴다.
+//
 // ■ 받은 시각
 // 목록마다 마지막으로 받은 시각을 둔다 — 화면이 "n분 전에 받음"으로 목록이 얼마나 낡았는지 보인다.
 public class AuctionModel : MonoService<AuctionModel>
 {
-    // 검색 한 쪽의 줄 수 — 목업의 "20개씩 이어 받기".
-    private const int SearchPageSize = 20;
-
-    // 거래 기록 한 쪽의 줄 수 (서버 상한 50).
-    private const int HistoryPageSize = 30;
+    // 한 쪽의 줄 수 — 경매장 표에 스크롤 없이 보이는 줄 수다(줄 높이 62 · 목록 칸 588). 검색 · 거래 기록 · 판매 탭이 함께 쓴다.
+    public const int RowsPerPage = 9;
 
     // 한 요청에 실을 수 있는 TID 수 — 서버 'User.MaxQueryTids'와 같다. 넘으면 서버가 요청째 거절한다.
     public const int MaxQueryTids = 100;
@@ -62,10 +63,11 @@ public class AuctionModel : MonoService<AuctionModel>
     // ─── 검색 ───
     private readonly List<AuctionListingInfo> _searchResults = new List<AuctionListingInfo>();
 
-    private C_AuctionSearchRequest? _searchRequest;    // 마지막 조건 — 다음 쪽은 커서만 바꿔 다시 보낸다
-    private long                    _nextCursorSortValue;
-    private long                    _nextCursorListingId;
-    private bool                    _isNextPagePending;
+    private C_AuctionSearchRequest? _searchRequest;    // 마지막 조건 — 다른 쪽은 커서만 바꿔 다시 보낸다
+
+    // 쪽마다 그 쪽을 받는 커서(정렬 값, 매물 ID) — [0]은 (0, 0). 받은 쪽의 다음 커서를 뒤에 적는다.
+    private readonly List<(long sortValue, long listingId)> _searchCursors = new List<(long, long)>();
+    private int _pendingSearchPage;
 
     // ─── 시세 ───
     private readonly struct SummaryEntry
@@ -93,7 +95,11 @@ public class AuctionModel : MonoService<AuctionModel>
 
     private EAuctionHistoryType _historyType;
     private int                 _historyDays;
-    private bool                _isNextHistoryPending;
+
+    // 쪽마다 그 쪽을 받는 커서(앞 쪽 마지막 기록 ID) — [0]은 0.
+    private readonly List<long> _historyCursors = new List<long>();
+    private int                 _pendingHistoryPage;
+    private bool                _pendingHistorySeen; // 보낸 쪽 요청이 "봤다"로 남기는 첫 쪽인가
 
     // ─── 내 매물 ───
     private readonly List<AuctionListingInfo> _myListings   = new List<AuctionListingInfo>();
@@ -108,8 +114,11 @@ public class AuctionModel : MonoService<AuctionModel>
     // ─── 검색 ───
     public IReadOnlyList<AuctionListingInfo> SearchResults => _searchResults;
 
-    // 검색 결과가 더 있나 — 목록 끝에 닿으면 다음 쪽을 받을지 정한다.
+    // 지금 쪽 뒤에 더 있나 — [▶]를 연다.
     public bool HasMoreResults { get; private set; }
+
+    // 지금 보이는 쪽 (0부터).
+    public int SearchPage { get; private set; }
 
     // 조건에 맞는 매물 수 — 받은 쪽과 상관없는 전체 건수(T-155).
     public int SearchTotalCount { get; private set; }
@@ -139,6 +148,9 @@ public class AuctionModel : MonoService<AuctionModel>
 
     public bool HasMoreHistory { get; private set; }
 
+    // 지금 보이는 기록 쪽 (0부터).
+    public int HistoryPage { get; private set; }
+
     // 안 본 거래 기록 수 — 완료 탭 배지.
     public int HistoryUnseenCount { get; private set; }
 
@@ -158,7 +170,7 @@ public class AuctionModel : MonoService<AuctionModel>
     public bool IsMine(long listingId) => _myListingIds.Contains(listingId);
 
     // 응답 이벤트 — 상태를 먼저 고친 뒤 결과 코드와 함께 쏜다. 받은 Presenter가 대기를 닫고 다시 그린다.
-    public event Action<EResultCode, bool>? SearchCompleted;        // 결과 코드 · 다음 쪽이었나
+    public event Action<EResultCode>?       SearchCompleted;
     public event Action<EResultCode>?       SummaryCompleted;       // 시세 요약 — 'GetSummary'로 읽는다
     public event Action<EResultCode>?       PriceLevelsCompleted;
     public event Action<EResultCode>?       DailyPricesCompleted;
@@ -251,43 +263,47 @@ public class AuctionModel : MonoService<AuctionModel>
     // 새 조건으로 첫 쪽을 검색한다 (AuctionSearchPresenter가 호출). 쪽 크기·커서는 여기서 채운다.
     public void Search(C_AuctionSearchRequest request)
     {
-        request.PageSize = SearchPageSize;
+        request.PageSize = RowsPerPage;
         _searchRequest   = request;
 
-        SendSearch(0L, 0L, isNextPage: false);
+        _searchCursors.Clear();
+        _searchCursors.Add((0L, 0L));
+
+        SendSearch(0);
     }
 
-    // 같은 조건으로 첫 쪽부터 다시 받는다 ([새로고침] · 구매 뒤).
+    // 같은 조건으로 지금 쪽을 다시 받는다 ([새로고침] · 구매 뒤).
     public void RefreshSearch()
     {
         if (_searchRequest != null)
         {
-            SendSearch(0L, 0L, isNextPage: false);
+            SendSearch(SearchPage);
         }
     }
 
-    // 같은 조건으로 다음 쪽을 받는다 — 응답이 준 커서를 그대로 싣는다 (목록 끝에 닿았을 때).
-    public void SearchNextPage()
+    // 같은 조건으로 그 쪽을 받는다 — 받아 본 쪽의 바로 다음까지만 갈 수 있다([◀][▶]). 못 가면 false.
+    public bool SearchGoToPage(int page)
     {
-        if (_searchRequest == null || !HasMoreResults)
+        if (_searchRequest == null || page < 0 || page >= _searchCursors.Count)
         {
-            return;
+            return false;
         }
 
-        SendSearch(_nextCursorSortValue, _nextCursorListingId, isNextPage: true);
+        SendSearch(page);
+
+        return true;
     }
 
-    // 검색 요청을 커서와 함께 보낸다. 첫 쪽은 커서가 둘 다 0이다.
-    private void SendSearch(long cursorSortValue, long cursorListingId, bool isNextPage)
+    // 그 쪽의 커서를 실어 보낸다. 첫 쪽은 커서가 둘 다 0이다.
+    private void SendSearch(int page)
     {
         C_AuctionSearchRequest request = _searchRequest!;
 
-        request.CursorSortValue = cursorSortValue;
-        request.CursorListingId = cursorListingId;
-        _isNextPagePending      = isNextPage;
+        (request.CursorSortValue, request.CursorListingId) = _searchCursors[page];
+        _pendingSearchPage = page;
 
         _network.Send(request);
-        ClientLogger.Info(ClientLogger.Send, $"경매 검색 요청 — {request.Kind} 분류 {request.Category} 정렬 {request.Sort}, 커서 ({cursorSortValue}, {cursorListingId})");
+        ClientLogger.Info(ClientLogger.Send, $"경매 검색 요청 — {request.Kind} 분류 {request.Category} 정렬 {request.Sort}, {page + 1}쪽");
     }
 
     // 매물 하나를 통째로 산다 (AuctionSearchPresenter가 호출).
@@ -363,23 +379,30 @@ public class AuctionModel : MonoService<AuctionModel>
     //   days : 최근 며칠. 0이면 보관 기간(30일) 전부
     public void RequestHistory(EAuctionHistoryType type, int days)
     {
-        _historyType          = type;
-        _historyDays          = days;
-        _isNextHistoryPending = false;
+        _historyType = type;
+        _historyDays = days;
 
-        SendHistory(0L, HistoryPageSize, markSeen: true);
+        _historyCursors.Clear();
+        _historyCursors.Add(0L);
+
+        _pendingHistoryPage = 0;
+        _pendingHistorySeen = true;
+        SendHistory(0L, RowsPerPage, markSeen: true);
     }
 
-    // 같은 조건으로 다음 쪽을 받는다 (완료 탭 목록 끝에 닿았을 때).
-    public void RequestNextHistory()
+    // 같은 조건으로 그 쪽을 받는다 — 받아 본 쪽의 바로 다음까지만 갈 수 있다([◀][▶]). 못 가면 false.
+    public bool RequestHistoryPage(int page)
     {
-        if (!HasMoreHistory || _history.Count == 0)
+        if (page < 0 || page >= _historyCursors.Count)
         {
-            return;
+            return false;
         }
 
-        _isNextHistoryPending = true;
-        SendHistory(_history[_history.Count - 1].HistoryId, HistoryPageSize, markSeen: false);
+        _pendingHistoryPage = page;
+        _pendingHistorySeen = false;
+        SendHistory(_historyCursors[page], RowsPerPage, markSeen: false);
+
+        return true;
     }
 
     // 새 기록 수만 묻는다 — 배지용 (로그인 · 경매 우편 도착).
@@ -447,28 +470,40 @@ public class AuctionModel : MonoService<AuctionModel>
 
     #region 응답 처리 (ServerPacketHandler 구독)
 
-    // 검색 — 다음 쪽이면 이어 붙이고, 첫 쪽이면 갈아 끼운다
+    // 검색 — 받은 쪽으로 갈아 끼우고, 다음 쪽 커서를 적어 둔다
     private void OnAuctionSearched(S_AuctionSearchResponse res)
     {
-        bool isNextPage = _isNextPagePending;
-
         if (res.Result == EResultCode.Ok)
         {
-            if (!isNextPage)
-            {
-                _searchResults.Clear();
-            }
+            int page = _pendingSearchPage;
 
+            _searchResults.Clear();
             _searchResults.AddRange(res.Listings ?? new List<AuctionListingInfo>());
-            HasMoreResults       = res.HasMore;
-            SearchTotalCount     = Math.Max(res.TotalCount, _searchResults.Count); // 건수를 안 주는 옛 경매 서버면 받은 줄 수라도
-            _nextCursorSortValue = res.NextCursorSortValue;
-            _nextCursorListingId = res.NextCursorListingId;
-            SearchReceivedAt     = DateTime.Now;
+
+            SearchPage       = page;
+            HasMoreResults   = res.HasMore;
+            SearchTotalCount = Math.Max(res.TotalCount, page * RowsPerPage + _searchResults.Count); // 건수를 안 주는 옛 경매 서버면 받은 줄 수라도
+            SearchReceivedAt = DateTime.Now;
+
+            // 이 쪽 뒤의 커서는 지금 받은 것으로 다시 쓴다 — 그사이 매물이 바뀌었으면 옛 커서가 어긋난다.
+            TrimAfter(_searchCursors, page);
+
+            if (res.HasMore)
+            {
+                _searchCursors.Add((res.NextCursorSortValue, res.NextCursorListingId));
+            }
         }
 
-        _isNextPagePending = false;
-        SearchCompleted?.Invoke(res.Result, isNextPage);
+        SearchCompleted?.Invoke(res.Result);
+    }
+
+    // 'page' 뒤에 적힌 커서를 지운다.
+    private static void TrimAfter<T>(List<T> cursors, int page)
+    {
+        if (cursors.Count > page + 1)
+        {
+            cursors.RemoveRange(page + 1, cursors.Count - page - 1);
+        }
     }
 
     // 시세 요약 — 보낸 순서의 (종류, TID)에 꽂는다. 요청한 TID는 매물이 없어도 0으로 온다
@@ -547,19 +582,30 @@ public class AuctionModel : MonoService<AuctionModel>
 
         if (res.Result == EResultCode.Ok)
         {
-            if (!_isNextHistoryPending)
+            int page = _pendingHistoryPage;
+
+            if (_pendingHistorySeen)
             {
-                _history.Clear();
-                HistoryNewCount   = res.UnseenCount; // 첫 쪽은 "봤다"로 남기기 전의 새 기록 수를 함께 준다
-                HistoryReceivedAt = DateTime.Now;
+                HistoryNewCount = res.UnseenCount; // "봤다"로 남긴 첫 쪽은 남기기 전의 새 기록 수를 함께 준다
                 SetUnseen(0);
             }
 
+            _history.Clear();
             _history.AddRange(res.Entries ?? new List<AuctionHistoryInfo>());
-            HasMoreHistory = res.HasMore;
+
+            HistoryPage       = page;
+            HasMoreHistory    = res.HasMore;
+            HistoryReceivedAt = DateTime.Now;
+
+            TrimAfter(_historyCursors, page);
+
+            if (res.HasMore && _history.Count > 0)
+            {
+                _historyCursors.Add(_history[_history.Count - 1].HistoryId);
+            }
         }
 
-        _isNextHistoryPending = false;
+        _pendingHistorySeen = false;
         HistoryCompleted?.Invoke(res.Result);
     }
 

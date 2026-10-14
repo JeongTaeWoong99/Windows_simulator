@@ -6,7 +6,7 @@ using MikaProtocol;
 // UnityEngine에도 CharacterInfo(폰트 글리프 정보)가 있어 이름이 겹친다. 우리가 쓰는 건 패킷 쪽이다.
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
-/// 경매장 Presenter들이 함께 쓰는 문구·변환 — 종류별 이름·등급·아이콘, 표 한 줄, 툴팁, 남은 시간, 이름 → TID 검색.
+/// 경매장 Presenter들이 함께 쓰는 문구·변환 — 종류별 이름·등급·아이콘, 표 한 줄, 툴팁, 남은 시간, 이름 → TID 검색 · 검색 후보.
 //
 // 매물 줄은 검색 결과와 판매 중 두 표가 같은 아이템 칸으로 그린다. 각자 만들면 한쪽만 고쳐져 두 화면이 다르게 말한다.
 //
@@ -539,6 +539,109 @@ public static class AuctionText
         ClientLogger.Warn(ClientLogger.UI, $"'{query}'에 맞는 이름이 {tids.Count}개라 앞의 {AuctionModel.MaxQueryTids}개만 찾는다.");
 
         return tids.GetRange(0, AuctionModel.MaxQueryTids);
+    }
+
+    #endregion
+
+    #region 검색 후보
+
+    // 게임 데이터 전부에서 이름이 맞는 것을 후보로 모은다 — 이름이 'query'로 시작하는 것을 먼저, 그다음 이름에 든 것 (검색·시세 탭 검색창).
+    //   kind : None이면 네 종류 모두(자원 → 장비 → 캐릭터 → 아티팩트 순)
+    public static void CollectCatalogSuggestions(EAuctionKind kind, string query, List<AuctionSuggestion> into, int max)
+    {
+        into.Clear();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return;
+        }
+
+        string trimmed = query.Trim();
+
+        AddCatalogMatches(kind, trimmed, startsWith: true,  into, max);
+        AddCatalogMatches(kind, trimmed, startsWith: false, into, max);
+    }
+
+    // 받은 목록(내 매물 · 거래 기록)의 한 줄을 후보로 넣는다 — 이름이 맞고 같은 (종류, TID)가 아직 없을 때만.
+    public static void AddListSuggestion(List<AuctionSuggestion> into, EAuctionKind kind, int tid, string query, int max)
+    {
+        if (into.Count >= max || string.IsNullOrWhiteSpace(query) || !MatchesName(kind, tid, query))
+        {
+            return;
+        }
+
+        foreach (AuctionSuggestion suggestion in into)
+        {
+            if (suggestion.Kind == kind && suggestion.Tid == tid)
+            {
+                return;
+            }
+        }
+
+        into.Add(ToSuggestion(kind, tid));
+    }
+
+    // (종류, TID)를 후보 한 줄로 — 이름은 등급 색, 오른쪽은 종류 · 분류. 'sub'를 주면 그것을 쓴다.
+    public static AuctionSuggestion ToSuggestion(EAuctionKind kind, int tid, long key = 0L, string? sub = null) => new AuctionSuggestion
+    {
+        Kind      = kind,
+        Tid       = tid,
+        Key       = key,
+        Name      = GetName(kind, tid),
+        NameColor = RarityPalette.Get(GetRarity(kind, tid)),
+        Sub       = sub ?? FormatSuggestionSub(kind, tid),
+    };
+
+    // 후보 오른쪽 글자 — "자원 · 농사" · "장비 · 무기" · "캐릭터" · "아티팩트".
+    private static string FormatSuggestionSub(EAuctionKind kind, int tid) => kind switch
+    {
+        EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"장비{UIRichText.Dot}{EquipLabel.GetKindName(row.EquipKind)}" : "장비",
+        EAuctionKind.Character => "캐릭터",
+        EAuctionKind.Artifact  => "아티팩트",
+        _                      => $"자원{UIRichText.Dot}{GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
+    };
+
+    // 한 단계의 후보를 모은다 — 'startsWith'면 이름이 그 글자로 시작하는 것, 아니면 이름 가운데에 든 것.
+    private static void AddCatalogMatches(EAuctionKind kind, string query, bool startsWith, List<AuctionSuggestion> into, int max)
+    {
+        foreach ((EAuctionKind rowKind, int tid, string name) in Catalog(kind))
+        {
+            if (into.Count >= max)
+            {
+                return;
+            }
+
+            bool starts = name.StartsWith(query, StringComparison.OrdinalIgnoreCase);
+
+            if (startsWith ? starts : !starts && Contains(name, query))
+            {
+                into.Add(ToSuggestion(rowKind, tid));
+            }
+        }
+    }
+
+    // 게임 데이터의 (종류, TID, 이름) 전부 — 자원 → 장비 → 캐릭터 → 아티팩트 순.
+    private static IEnumerable<(EAuctionKind kind, int tid, string name)> Catalog(EAuctionKind kind)
+    {
+        if (kind == EAuctionKind.None || kind == EAuctionKind.Item)
+        {
+            foreach (ItemTableRow row in GameTable.ItemTable.All) yield return (EAuctionKind.Item, row.ItemTID, row.Name);
+        }
+
+        if (kind == EAuctionKind.None || kind == EAuctionKind.Equip)
+        {
+            foreach (EquipTableRow row in GameTable.EquipTable.All) yield return (EAuctionKind.Equip, row.EquipTID, row.Name);
+        }
+
+        if (kind == EAuctionKind.None || kind == EAuctionKind.Character)
+        {
+            foreach (CharacterTableRow row in GameTable.CharacterTable.All) yield return (EAuctionKind.Character, row.CharacterTID, row.Name);
+        }
+
+        if (kind == EAuctionKind.None || kind == EAuctionKind.Artifact)
+        {
+            foreach (ArtifactTableRow row in GameTable.ArtifactTable.All) yield return (EAuctionKind.Artifact, row.ArtifactTID, row.Name);
+        }
     }
 
     #endregion

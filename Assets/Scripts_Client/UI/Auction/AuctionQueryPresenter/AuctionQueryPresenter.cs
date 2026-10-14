@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -20,12 +21,20 @@ public interface IAuctionQueryTarget
 
     // [검색] — 검색 탭은 조회, 시세 탭은 그 이름의 시세를 연다.
     void OnQuerySubmitted(string text);
+
+    // 입력칸 아래 후보를 모은다 — 'into'를 비우고 'max'개까지 (칠 때마다).
+    // 검색·시세 탭은 게임 데이터 전부에서, 판매·완료 탭은 받은 목록에서 찾는다.
+    void CollectSuggestions(string query, List<AuctionSuggestion> into, int max);
+
+    // 후보를 골랐다 — 입력칸에는 이미 그 이름이 들어가 있다('OnQueryChanged'도 먼저 불렸다).
+    void OnSuggestionPicked(AuctionSuggestion suggestion);
 }
 
 // 경매장 공용 검색창 — 탭 줄 위에 하나만 두고 네 탭이 함께 쓴다(목업 · T-147).
 //
 // ■ 이 Presenter는 입력을 **지금 탭의 화면에 넘기기만** 한다 — 무엇을 할지는 그 화면('IAuctionQueryTarget')이 정한다.
 //   탭이 바뀌면 그 화면의 안내 문구·검색어로 입력칸을 바꿔 끼운다.
+// ■ 치는 대로 아래에 후보를 띄운다('AuctionSuggestView' · 2026-10-14 사용자 요청) — 무엇을 띄우고 고르면 무엇을 할지는 그 화면이 정한다.
 // ■ Enter로 검색하지 않는다 — 인게임 키는 Shift+우클릭·Esc뿐이다(2026-10-11 사용자 결정 · 'Managers 규칙.md').
 //   목업의 "이름 + Enter"는 [검색] 버튼으로 한다.
 public class AuctionQueryPresenter : MonoBehaviour
@@ -43,6 +52,11 @@ public class AuctionQueryPresenter : MonoBehaviour
     [SerializeField, Tooltip("탭 줄 — 지금 탭과 그 화면을 묻는다")]
     private AuctionTabPresenter tabs = null!;
 
+    [SerializeField, Tooltip("입력칸 아래 후보 목록")]
+    private AuctionSuggestView suggestView = null!;
+
+    private readonly List<AuctionSuggestion> _suggestions = new List<AuctionSuggestion>();
+
     private IAuctionQueryTarget? _target;
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
@@ -52,8 +66,10 @@ public class AuctionQueryPresenter : MonoBehaviour
         this.RequireRef(searchButton, nameof(searchButton));
         this.RequireRef(hintText,     nameof(hintText));
         this.RequireRef(tabs,         nameof(tabs));
+        this.RequireRef(suggestView,  nameof(suggestView));
 
-        tabs.TabChanged += OnTabChanged;
+        tabs.TabChanged     += OnTabChanged;
+        suggestView.Picked  += OnSuggestionPicked;
 
         queryInput.onValueChanged.AddListener(OnValueChanged);
         searchButton.onClick.AddListener(OnSearchClicked);
@@ -68,12 +84,19 @@ public class AuctionQueryPresenter : MonoBehaviour
         {
             tabs.TabChanged -= OnTabChanged;
         }
+
+        if (suggestView != null)
+        {
+            suggestView.Picked -= OnSuggestionPicked;
+        }
     }
 
     // 지금 탭의 화면으로 바꿔 끼운다 — 안내 문구 · 검색어 (AuctionTabPresenter.TabChanged 구독 · Start)
     private void OnTabChanged(AuctionTab tab)
     {
         GameObject? page = tabs.GetPage(tab);
+
+        suggestView.Hide();
 
         _target = page != null ? page.GetComponent<IAuctionQueryTarget>() : null;
 
@@ -93,15 +116,36 @@ public class AuctionQueryPresenter : MonoBehaviour
         queryInput.SetTextWithoutNotify(_target.Query);
     }
 
-    // 칠 때마다 지금 탭에 넘긴다 (queryInput.onValueChanged)
+    // 칠 때마다 지금 탭에 넘기고 후보를 다시 띄운다 (queryInput.onValueChanged)
     private void OnValueChanged(string text)
     {
-        _target?.OnQueryChanged(text);
+        if (_target == null)
+        {
+            return;
+        }
+
+        _target.OnQueryChanged(text);
+        _target.CollectSuggestions(text, _suggestions, suggestView.Capacity);
+        suggestView.Show(_suggestions);
     }
 
     // [검색] — 지금 탭에 넘긴다 (searchButton OnClick)
     private void OnSearchClicked()
     {
+        suggestView.Hide();
         _target?.OnQuerySubmitted(queryInput.text);
+    }
+
+    // 후보를 골랐다 — 입력칸을 그 이름으로 바꾸고 지금 탭에 넘긴다 (AuctionSuggestView.Picked 구독)
+    private void OnSuggestionPicked(AuctionSuggestion suggestion)
+    {
+        if (_target == null)
+        {
+            return;
+        }
+
+        queryInput.SetTextWithoutNotify(suggestion.Name);
+        _target.OnQueryChanged(suggestion.Name);
+        _target.OnSuggestionPicked(suggestion);
     }
 }

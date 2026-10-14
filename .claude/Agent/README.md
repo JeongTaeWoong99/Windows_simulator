@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-14 경매장 실측 피드백 — 쪽 넘김 · 검색 후보 (T-147 3단계)](2026-10-14-auction-feedback-paging-suggest.md) — `#client` `#ui` 커서는 쪽마다 클라가 기억 · 중첩 Canvas override는 켜질 때 건다 · 딤 농도는 UIThemeColor.alpha
 - [2026-10-14 경매장 목업대로 재배치](2026-10-14-auction-mockup-relayout.md) — `#client` `#ui` 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 (T-147 2단계)
 - [2026-10-14 경매장을 화면 전체로 — 거래 열 → 거점 열 · #Auction Canvas (T-147 1단계)](2026-10-14-auction-fullscreen-overlay.md) — `#client` `#ui` 오버레이 첫째 자식이지만 SetActive 캔버스 · Esc는 IsCovered일 때 무시
 - [2026-10-13 슬롯 연출 — 달리기 양 끝에 대기 자세 한 장 (T-097)](2026-10-13-stage-idle-pose.md) — `#client` `#ui` Run 안의 플래그라 땅·주기 그대로 · 초 단위(프레임 아님)

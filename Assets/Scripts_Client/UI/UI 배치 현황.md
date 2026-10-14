@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-14 (경매장 표 쪽 넘김 `Pager View` · 검색 후보 `Suggest View` · 줄 높이 62 · 차단막 검정 0.75 / 로그인 1) · 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -195,20 +195,20 @@ Root Canvas
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
 │
 └─ !Overlay Canvas                                 (스크립트 없음)    Sorting 100 · 상주 — 여닫지 않는다 · 아래로 갈수록 앞에 그린다
-   ├─ #Auction Canvas (MAIN VIEW)                 AuctionCanvasView  평소 꺼짐 · SetActive (UIManager.ShowAuction) · 중첩 Canvas · 차단막 검정 a 0.35 (T-147)
+   ├─ #Auction Canvas (MAIN VIEW)                 AuctionCanvasView  평소 꺼짐 · SetActive (UIManager.ShowAuction) · 중첩 Canvas · 차단막 검정 a 0.75 (T-147)
    │  └─ Body Panel                                3열 가운데 띠에 맞춘다(열 때마다 — 위젯 위치 따라) · 불투명 검정 판 · VLG 5/5
    │     ├─ Background                             ignoreLayout · PanelBg (반투명 바탕 뒤로 3열이 비치지 않게 판은 검정)
    │     ├─ Header Presenter (↓ SUB VIEW)          AuctionHeaderPresenter   pref 54 · '경매장' · 보유 골드 · [X](닫기 · Esc — 등록 창부터)
-   │     ├─ Auction Query Presenter (↓ SUB VIEW)   AuctionQueryPresenter   pref 50 · 입력칸 350 + [검색] 84 (= 440) · 안내 글자 — 네 탭이 함께 쓴다
+   │     ├─ Auction Query Presenter (↓ SUB VIEW)   AuctionQueryPresenter   pref 50 · 입력칸 350 + [검색] 84 (= 440) · 안내 글자 — 네 탭이 함께 쓴다 · 입력칸 안 `Suggest View`(꺼짐 · ignoreLayout · 자기 Canvas — 후보 8줄)
    │     ├─ Auction Tab Presenter (↓ SUB VIEW)     AuctionTabPresenter   pref 60 · 검색 · 시세 · 판매 · 완료(폭을 넷으로 · 버튼 54) · 완료 버튼 안 `History Badge`(ignoreLayout)
    │     ├─ Auction Search Presenter (↓ SUB VIEW)  AuctionSearchPresenter   flexH 1 · HLG 12
    │     │  ├─ Left Panel                          pref 440 · flexW 0 · Option Scroll Panel(분류 트리 17칸 · 등급 · Equip Options · Character Options · 단가) / Left Foot Panel([초기화][검색])
-   │     │  └─ Main Panel                          Result Head Panel(건수 · 적용 조건 · 받은 시각 · [↻ 새로고침] · 정렬) / Cols Panel(열 머리 — 아이템·단가·남은 시간은 버튼) / Result Scroll Panel / Foot Text
+   │     │  └─ Main Panel                          Result Head Panel(건수 · 적용 조건 · 받은 시각 · [↻ 새로고침] · 정렬) / Cols Panel(열 머리 — 아이템·단가·남은 시간은 버튼) / Result Scroll Panel(9줄) / Pager View([◀] n / N 쪽 [▶] · 몇째 건)
    │     ├─ Auction Price Presenter (↓ SUB VIEW)   AuctionPricePresenter   [off] · Empty Panel / Content Panel(Top · Stats 4칸 · Two Panel: Chart Card 1.6 + Levels Card 1 · 받은 시각)
-   │     ├─ Auction Sell Presenter (↓ SUB VIEW)    AuctionMyListingPresenter   [off] · 판매 중 n/20 · 안내 · [+ 판매 등록] · Cols · 목록
-   │     ├─ Auction History Presenter (↓ SUB VIEW) AuctionHistoryPresenter   [off] · 기록 N건 · 구분·기간 드롭다운 · 합계 · Cols · 목록
-   │     └─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   [off] · ignoreLayout · Dim Button(검정 a 0.55) + Window Panel 1240×760(Pick Panel 460 | Card Panel)
-   │        ※ 표 세 개는 Body Scroll Panel(우편함의 것 복제) + 표마다 프리팹 줄 `Auction{Search,Sell,History}RowView` (런타임 생성 · 높이 66 · 열 폭 고정 · 줄 툴팁)
+   │     ├─ Auction Sell Presenter (↓ SUB VIEW)    AuctionMyListingPresenter   [off] · 판매 중 n/20 · 안내 · [+ 판매 등록] · Cols · 목록(9줄) · Pager View
+   │     ├─ Auction History Presenter (↓ SUB VIEW) AuctionHistoryPresenter   [off] · 기록 N건 · 구분·기간 드롭다운 · 합계 · Cols · 목록(9줄) · Pager View
+   │     └─ Auction Register Presenter (↓ SUB VIEW) AuctionRegisterPresenter   [off] · ignoreLayout · Dim Button(검정 a 0.75) + Window Panel 1240×760(Pick Panel 460 | Card Panel) · 찾기 입력칸 안 `Suggest View`
+   │        ※ 표 세 개는 Body Scroll Panel(우편함의 것 복제) + 표마다 프리팹 줄 `Auction{Search,Sell,History}RowView` (런타임 생성 · 높이 62 — 한 쪽 9줄 · 열 폭 고정 · 줄 툴팁)
    │        ※ 등록 창 왼쪽 목록만 옛 `AuctionRowView` 줄([선택])을 쓴다
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
    │                                               가챠·상자 개봉·우편 수령 공용 (T-033 · T-083) — 제목은 코드가 '<출처> 결과'로 바꾼다
@@ -243,7 +243,7 @@ SellCart (MODEL)                                  SellCartModel   판매 목록.
 > ⚠️ `!Overlay Canvas`의 SUB VIEW는 로그인을 빼고 **다른 캔버스와 달리 `SetActive`가 아니라 `CanvasGroup`으로**
 > 여닫는다 — 상주 층이라 자기를 끄면 `Start`가 돌지 않거나 다시 켤 이벤트를 못 받는다. 로그인만 `UIManager`가 `SetActive`로 여닫는다(`Overlay 규칙.md`의 "로그인").
 > 각 SUB VIEW 오브젝트가 스크립트 + `CanvasGroup` + 전체화면 blocker `Image`(raycastTarget 켬)를
-> 함께 갖는다. 차단막 색은 셋이 **검정 a 0.35**, `Loading`만 **흰색 a 0.851**(축이 다르다).
+> 함께 갖는다. 차단막 색은 **검정 a 0.75**, 로그인만 **검정 a 1**(`Overlay 규칙.md`의 "차단막 색").
 > **`Tooltip Presenter`만 차단막이 없다** — 막지 않는 오버레이라 `blocksRaycasts`를 늘 끈다(`Overlay 규칙.md`의 "툴팁").
 > **여기만 다른 게 아니라 기준이 있다** — 판별 축이 둘(차단 범위 / 생명주기)이라는 것과
 > 전부 통일하면 안 되는 이유는 [`Overlay 규칙.md`](<Overlay/Overlay 규칙.md>).

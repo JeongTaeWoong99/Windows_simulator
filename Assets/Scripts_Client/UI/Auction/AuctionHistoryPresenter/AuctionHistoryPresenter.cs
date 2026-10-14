@@ -9,7 +9,8 @@ using UnityEngine.UI;
 // ■ 탭을 열 때마다 첫 쪽을 새로 받고 "봤다"로 남긴다 — 탭 배지('HistoryUnseenCount')가 꺼진다.
 //   그때 새로 들어와 있던 기록 수('HistoryNewCount')만큼 맨 위 줄 일시 앞에 점을 찍는다(구분이 '전체'일 때만 — 걸러 받으면 어느 줄이 새것인지 모른다).
 // ■ 구분·기간을 바꾸면 서버에 다시 묻는다. 이름은 받은 목록을 거르기만 한다(서버에 묻지 않는다).
-// ■ 목록 끝에 닿으면 다음 쪽을 받는다 — 대기 차단 없이.
+// ■ 쪽으로 나눈다 — 한 쪽 9줄('AuctionModel.RowsPerPage'), 표 아래 [◀][▶]로 넘긴다(2026-10-14 사용자 결정).
+//   서버는 건수를 주지 않아 전체 쪽 수는 모른다 — [▶]는 뒤에 더 있을 때만 열린다.
 // ■ 물건·대금·환급은 모두 우편으로 간다 — 이 화면은 기록만 보여 준다. '받는 곳' 열이 그 우편을 가리킨다.
 public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 {
@@ -34,8 +35,11 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     [SerializeField, Tooltip("줄이 쌓이는 Content (VLG + ContentSizeFitter)")]
     private Transform rowParent = null!;
 
-    [SerializeField, Tooltip("목록 스크롤 — 끝에 닿으면 다음 쪽")]
+    [SerializeField, Tooltip("목록 스크롤 — 쪽을 받으면 맨 위로 올린다")]
     private ScrollRect scrollRect = null!;
+
+    [SerializeField, Tooltip("표 아래 쪽 넘김 줄 — [◀] 'n 쪽' [▶]")]
+    private AuctionPagerView pager = null!;
 
     [SerializeField, Tooltip("보일 기록이 없을 때만 보인다")]
     private TMP_Text emptyText = null!;
@@ -65,9 +69,6 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     // 처음 고르는 기간 — 최근 7일(목업).
     private const int DefaultPeriodIndex = 1;
 
-    // 스크롤이 이만큼 아래로 내려오면 다음 쪽을 받는다(0 = 맨 아래).
-    private const float NextPageThreshold = 0.02f;
-
     private readonly List<AuctionTableRowContent> _contents = new List<AuctionTableRowContent>();
 
     private AuctionModel        _auction = null!;
@@ -77,9 +78,8 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
     private string _query = "";
 
-    // 진행 중인 첫 쪽 대기의 손잡이 · 다음 쪽을 받는 중인가.
+    // 진행 중인 쪽 대기의 손잡이.
     private ServerWaitHandle? _waitHandle;
-    private bool              _isPagePending;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -101,6 +101,20 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
     public void OnQuerySubmitted(string text) => OnQueryChanged(text);
 
+    // 지금 쪽의 기록에서 이름이 맞는 것 — 같은 아이템은 한 번만.
+    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+    {
+        into.Clear();
+
+        foreach (AuctionHistoryInfo entry in _auction.History)
+        {
+            AuctionText.AddListSuggestion(into, entry.Kind, entry.Tid, query, max);
+        }
+    }
+
+    // 이름으로 거르는 일은 'OnQueryChanged'가 이미 했다.
+    public void OnSuggestionPicked(AuctionSuggestion suggestion) { }
+
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
     {
@@ -113,6 +127,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         this.RequireRef(scrollRect,     nameof(scrollRect));
         this.RequireRef(emptyText,      nameof(emptyText));
         this.RequireRef(noteText,       nameof(noteText));
+        this.RequireRef(pager,          nameof(pager));
 
         _auction = Services.Get<AuctionModel>();
         _data    = Services.Get<PlayerDataModel>();
@@ -125,7 +140,8 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
         typeDropdown.onValueChanged.AddListener(_ => RequestFirstPage());
         periodDropdown.onValueChanged.AddListener(_ => RequestFirstPage());
-        scrollRect.onValueChanged.AddListener(_ => OnScrolled());
+        pager.PrevClicked += () => GoToPage(_auction.HistoryPage - 1);
+        pager.NextClicked += () => GoToPage(_auction.HistoryPage + 1);
 
         Refresh();
         RequestFirstPage();
@@ -190,25 +206,21 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             return;
         }
 
-        _isPagePending = false;
-
         _auction.RequestHistory(Types[typeDropdown.value].Type, Periods[periodDropdown.value].Days);
 
         _waitHandle = _wait.Begin("거래 기록", onClosed: OnWaitClosed);
         Refresh();
     }
 
-    // 스크롤 — 목록 끝에 닿으면 다음 쪽을 받는다. 대기 차단 없이 (scrollRect.onValueChanged)
-    private void OnScrolled()
+    // 같은 조건으로 그 쪽을 받는다 (pager [◀][▶])
+    private void GoToPage(int page)
     {
-        if (_waitHandle != null || _isPagePending || !_auction.HasMoreHistory || scrollRect.verticalNormalizedPosition > NextPageThreshold)
+        if (_waitHandle != null || !_auction.RequestHistoryPage(page))
         {
             return;
         }
 
-        _isPagePending = true;
-
-        _auction.RequestNextHistory();
+        _waitHandle = _wait.Begin("거래 기록", onClosed: OnWaitClosed);
         Refresh();
     }
 
@@ -216,7 +228,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
     #region 응답 (AuctionModel 구독)
 
-    // 기록 도착 — 첫 쪽이면 대기를 닫고 맨 위로, 다음 쪽이면 뒤에 붙인다 (AuctionModel.HistoryCompleted 구독)
+    // 기록 도착 — 대기를 닫고 맨 위로 (AuctionModel.HistoryCompleted 구독)
     private void OnHistoryCompleted(EResultCode code)
     {
         if (_waitHandle != null)
@@ -233,7 +245,6 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             scrollRect.verticalNormalizedPosition = 1f;
         }
 
-        _isPagePending = false;
         Refresh();
     }
 
@@ -253,7 +264,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     {
         _contents.Clear();
 
-        bool markNew  = typeDropdown.value == 0;
+        bool markNew  = typeDropdown.value == 0 && _auction.HistoryPage == 0;
         long received = 0L;
         long spent    = 0L;
 
@@ -285,16 +296,23 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         emptyText.gameObject.SetActive(_contents.Count == 0);
         emptyText.text = history.Count == 0 ? "이 기간에 거래 기록이 없습니다" : "이름이 맞는 기록이 없습니다";
 
-        countText.text = $"기록 {UIRichText.Paint(_contents.Count.ToString("N0"), UIThemeRole.Highlight)}건" +
+        // 서버가 건수를 주지 않는다 — 지금 쪽까지 받은 수만 알고, 뒤에 더 있으면 '이상'을 붙인다.
+        int known = _auction.HistoryPage * AuctionModel.RowsPerPage + history.Count;
+
+        countText.text = $"기록 {UIRichText.Paint(known.ToString("N0"), UIThemeRole.Highlight)}건" +
                          (_auction.HasMoreHistory ? UIRichText.Label(" 이상") : "");
 
         sumText.text = $"{UIRichText.Label("받은 골드")} {UIRichText.Paint($"+{received:N0} G", UIThemeRole.Positive)}" +
                        $"{UIRichText.Dot}{UIRichText.Label("쓴 골드")} {UIRichText.Paint($"−{spent:N0} G", UIThemeRole.Negative)}";
 
-        string ago  = AuctionModel.FormatReceivedAgo(_auction.HistoryReceivedAt);
-        string more = _isPagePending ? UIRichText.Dot + UIRichText.Label("더 받는 중…") : "";
+        string ago = AuctionModel.FormatReceivedAgo(_auction.HistoryReceivedAt);
 
-        noteText.text = "물건 · 대금 · 환급은 모두 우편으로 갑니다" + (ago.Length > 0 ? UIRichText.Dot + UIRichText.Label(ago) : "") + more;
+        noteText.text = "물건 · 대금 · 환급은 모두 우편으로 갑니다" + (ago.Length > 0 ? UIRichText.Dot + UIRichText.Label(ago) : "");
+
+        pager.Bind(_auction.HistoryPage, pageCount: 0,
+                   canPrev: _waitHandle == null && _auction.HistoryPage > 0,
+                   canNext: _waitHandle == null && _auction.HasMoreHistory,
+                   note: "");
 
         typeDropdown.interactable   = _waitHandle == null;
         periodDropdown.interactable = _waitHandle == null;
