@@ -452,7 +452,7 @@ enum은 **뒤에만 추가한다**.
 
 ### 5.7 잠금 — 캐릭터 · 장비 (2026-10-13 확정)
 
-**아끼는 개체를 실수로 날리지 않게 잠근다.** 잠금은 **개체를 없애는 동작만** 막는다 — 일감 [T-137](../../../tasks/T-137-잠금기능.md) · 이슈 [#65](https://github.com/JeongTaeWoong99/Windows_simulator/issues/65)
+**아끼는 개체를 실수로 날리지 않게 잠근다.** 잠금은 **개체를 없애는 동작만** 막는다 — 일감 [T-137](../../../tasks/archive/T-137-잠금기능.md) · 이슈 [#65](https://github.com/JeongTaeWoong99/Windows_simulator/issues/65)
 
 | 항목 | 규칙 |
 | --- | --- |

@@ -115,14 +115,11 @@ public class InventoryToolPresenter : MonoBehaviour
     // 분류 드롭다운의 항목 순서 — 탭마다 다르다(상자·기타는 자원만). 드롭다운 값 → (산업, 묶음). 0번은 늘 '전체'.
     private readonly List<(byte Industry, InventoryItemGroup Group)> _categoryOptions = new List<(byte, InventoryItemGroup)>();
 
-    // 큐브는 아이템 분류('ItemType')가 아니라 인챈트 표로 가린다 — 분류보다 먼저 본다.
-    private const string CubeGroup = "큐브";
-
     // 일괄 담기 [제외] 항목 — 분류 이름, 보일 순서. 다음은 산업, 그다음 이 표에 없는 분류(표에 새 분류가 생겼을 때).
-    private static readonly string[] ExcludeGroupOrder = { CubeGroup, "상자", "유물", "소모품", "기타" };
+    private static readonly string[] ExcludeGroupOrder = { ResourceSlotSource.CubeGroup, "상자", "유물", "소모품", "기타" };
 
     // 처음(저장값이 없을 때) 체크해 둘 분류.
-    private static readonly string[] DefaultExcludedGroups = { CubeGroup, "상자", "유물" };
+    private static readonly string[] DefaultExcludedGroups = { ResourceSlotSource.CubeGroup, "상자", "유물" };
 
     // [제외] 체크를 남기는 PlayerPrefs 키 — 체크한 분류 이름을 '|'로 잇는다. 빈 문자열 = 아무것도 안 뺀다.
     private const string ExcludePrefsKey = "Inventory.BulkExcludeGroups";
@@ -422,7 +419,7 @@ public class InventoryToolPresenter : MonoBehaviour
                 continue;
             }
 
-            string group = ExcludeGroupOf(item.ItemId);
+            string group = ResourceSlotSource.GroupOf(item.ItemId);
 
             if (_excludedGroups.Contains(group))
             {
@@ -475,11 +472,6 @@ public class InventoryToolPresenter : MonoBehaviour
         return $" ({string.Join(" · ", counts)} 제외 — [제외]에서 체크를 풀면 함께 담깁니다)";
     }
 
-    // 일괄 담기 [제외]의 분류 — 큐브면 '큐브', 아니면 아이템 분류 이름(산업 · 상자 · 유물 · 소모품 · 기타).
-    // ※ 이름은 경매장 분류 이름과 같은 출처다('AuctionText.GetItemCategoryName') — 두 화면이 같은 아이템을 다르게 부르지 않게.
-    private static string ExcludeGroupOf(int itemId)
-        => GameDataLoader.IsCube(itemId) ? CubeGroup : AuctionText.GetItemCategoryName(GameDataLoader.GetItemType(itemId));
-
     // [제외] 항목을 아이템 표에서 만들고 저장된 체크를 읽는다 (Start에서 한 번).
     // ※ 항목은 표에 있는 분류만 — 아이템이 하나도 없는 분류를 체크해 봐야 아무 일이 없다.
     private void BuildExcludeOptions()
@@ -488,7 +480,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (ItemTableRow row in GameTable.ItemTable.All)
         {
-            present.Add(ExcludeGroupOf(row.ItemTID));
+            present.Add(ResourceSlotSource.GroupOf(row.ItemTID));
         }
 
         _excludeGroups.Clear();

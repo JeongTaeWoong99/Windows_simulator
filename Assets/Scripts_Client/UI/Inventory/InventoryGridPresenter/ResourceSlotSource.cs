@@ -83,7 +83,16 @@ public class ResourceSlotSource : InventorySlotSource
         return type >= ItemType.Farming && type <= ItemType.Hunting;
     }
 
-    // 자원 칸 툴팁 — 등급 · 보유 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
+    // 큐브는 아이템 분류('ItemType')가 아니라 인챈트 표로 가린다 — 분류보다 먼저 본다.
+    public const string CubeGroup = "큐브";
+
+    // 자원의 분류 이름 — 큐브면 '큐브', 아니면 아이템 분류 이름(산업 · 상자 · 유물 · 소모품 · 기타).
+    // 칸 툴팁의 '분류' 줄과 일괄 담기 [제외] 항목이 같은 이름을 쓴다 — 툴팁에서 본 이름을 [제외]에서 그대로 찾게.
+    // ※ 이름은 경매장 분류 이름과 같은 출처다('AuctionText.GetItemCategoryName') — 두 화면이 같은 아이템을 다르게 부르지 않게.
+    public static string GroupOf(int itemId)
+        => GameDataLoader.IsCube(itemId) ? CubeGroup : AuctionText.GetItemCategoryName(GameDataLoader.GetItemType(itemId));
+
+    // 자원 칸 툴팁 — 등급 · 분류 · 보유 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
     //
     // ※ 두 가격을 나란히 적는다 — 우클릭 판매는 즉시 판매가(정해진 값), 경매장은 그 값 이상에서 직접 정한다.
     // ※ 판매가를 합계와 함께 적는다 — 칸에는 수량만 있어 "이 칸을 다 팔면 얼마인가"를 알 길이 없었다.
@@ -104,6 +113,7 @@ public class ResourceSlotSource : InventorySlotSource
         var  content   = new TooltipContent(GameDataLoader.GetItemName(itemId));
 
         AddRarityRow(content, GameDataLoader.GetItemRarity(itemId))
+            .Row("분류", GroupOf(itemId))
             .Row("보유", $"{count:N0} 개")
             .Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, count):N0} 골드", null)
             .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
