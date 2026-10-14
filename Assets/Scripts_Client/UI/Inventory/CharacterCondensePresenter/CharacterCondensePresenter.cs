@@ -321,6 +321,13 @@ public class CharacterCondensePresenter : MonoBehaviour
             return;
         }
 
+        if (IsLocked(characterId))
+        {
+            _wait.RaiseNotice("잠긴 캐릭터는 재료로 넣을 수 없습니다 — Ctrl+좌클릭으로 풀 수 있습니다.");
+
+            return;
+        }
+
         AddMaterial(characterId);
         NotifySelection();
     }
@@ -658,7 +665,8 @@ public class CharacterCondensePresenter : MonoBehaviour
     // 대상이 이미 최고 ★인가.
     private bool IsTargetMaxed => _data.GetCharacterStar(_targetId) >= GameDataLoader.CondenseMaxStar;
 
-    // 이 캐릭터를 지금 재료로 넣을 수 있나 — 대상과 같은 종류 · 대상 자신 아님 · 배치·착용 중 아님 · 대상이 최고 ★ 아님.
+    // 이 캐릭터를 지금 재료로 넣을 수 있나 — 대상과 같은 종류 · 대상 자신 아님 · 배치·착용 중 아님 · 잠기지 않음 · 대상이 최고 ★ 아님.
+    // ※ 대상은 잠겨 있어도 된다 — 서버가 재료만 막는다(T-137).
     // ※ 서버 'TryCondenseCharacter'의 거절 조건과 같다. 판정은 서버가 한 번 더 한다.
     private bool CanBeMaterial(long characterId)
     {
@@ -669,8 +677,11 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         int tid = _data.GetCharacterTid(characterId);
 
-        return tid != 0 && tid == _data.GetCharacterTid(_targetId) && !_data.IsCharacterBusy(characterId);
+        return tid != 0 && tid == _data.GetCharacterTid(_targetId) && !_data.IsCharacterBusy(characterId) && !IsLocked(characterId);
     }
+
+    // 잠긴 캐릭터인가 (T-137).
+    private bool IsLocked(long characterId) => _data.FindCharacter(characterId)?.IsLocked == true;
 
     // 인벤토리에 지금 재료로 넣을 수 있는 캐릭터가 하나라도 있나 (DrawWarn에서 호출).
     private bool HasAnyCandidate()

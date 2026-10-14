@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-15 (인게임 Ctrl+좌클릭 — 캐릭터·장비 잠금 · T-137) · 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -51,8 +51,9 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 | 아웃게임 | Enter (입력칸) | 로그인 화면 아이디 칸 (`LoginPresenter`) | 로그인 | `BindOutGameSubmit` |
 | 아웃게임 | 방향키·WASD · Enter/Space · Esc | EventSystem 기본 (`InputSystemUIInputModule`) | UI 선택 이동 · 선택된 버튼 누르기 | `Scope` — 아웃게임에서만 켠다 |
 | 인게임 | Shift + 우클릭 | 인벤토리 칸 (`InventoryGridPresenter`) | 경매 등록 (우클릭만 하면 판매 목록) | `IsQuickAuctionHeld` |
+| 인게임 | Ctrl + 좌클릭 | 인벤토리 칸 (`InventoryGridPresenter`) — 캐릭터·장비 탭 | 잠금 켜기·끄기 (자원 탭은 아무것도 안 한다) | `IsLockToggleHeld` |
 
-- **인게임 키는 Shift+우클릭 하나다** (2026-10-11 사용자 결정 — 마우스로 하는 게임). ESC 종료 · 거래소/경매 검색칸 Enter 검색 · 인게임 UI 키 이동은 없앴다.
+- **인게임 키는 Shift+우클릭(2026-10-11)과 Ctrl+좌클릭(2026-10-15 · T-137) 둘이다** — 둘 다 사용자 결정, 마우스로 하는 게임. ESC 종료 · 거래소/경매 검색칸 Enter 검색 · 인게임 UI 키 이동은 없앴다.
   - ⚠️ **인게임 키는 마우스와 함께 쓰는 것만 둔다.** 키 단독 단축키는 사용자가 정하기 전에는 넣지 않는다 —
     2026-10-14에 경매장 닫기 Esc를 사용자 지시 없이 넣었다가 2026-10-15 사용자 지시로 뺐다. 경매장은 [X]로 닫는다.
   - 키 단독 단축키는 [T-158](../../../tasks/later/T-158-단축키전체설계.md)에서 **한꺼번에** 설계해 넣는다 — 화면마다 하나씩 붙이지 않는다.

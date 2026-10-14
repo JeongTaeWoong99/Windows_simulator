@@ -176,6 +176,9 @@ public abstract class InventorySlotSource
     // 칸에 주의 테두리(깜빡임)를 켤까 — 사용자가 마무리해야 할 일이 남은 칸 (격자가 매번 그릴 때 호출).
     public virtual bool NeedsAttention(long key) => false;
 
+    // 잠긴 개체인가 — 칸에 자물쇠를 그린다(T-137). 잠금이 없는 탭(자원)은 늘 false다.
+    public virtual bool IsLocked(long key) => false;
+
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));

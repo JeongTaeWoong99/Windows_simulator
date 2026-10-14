@@ -81,6 +81,9 @@ public class CharacterSlotSource : InventorySlotSource
     // 각자 훑으면 두 화면이 "누가 배치 중인지"를 다르게 말한다.
     public override bool IsAway(long key) => _data.FindSlotIndexOf(key) >= 0;
 
+    // 잠긴 캐릭터 — 판매·경매 등록·응축 재료에서 빠진다(T-137).
+    public override bool IsLocked(long key) => _data.FindCharacter(key)?.IsLocked == true;
+
     // 이 캐릭터가 낀 장비 4칸의 등급 (격자가 매번 그릴 때 호출 — 칸의 장착 네모, T-104).
     public override IReadOnlyList<GlobalRarity>? GetWornEquips(long key)
     {
@@ -110,6 +113,11 @@ public class CharacterSlotSource : InventorySlotSource
             .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
             .Row("상태", GetWorkText(key));
 
+        if (IsLocked(key))
+        {
+            content.Row("잠금", "잠김 — 팔거나 재료로 쓸 수 없다");
+        }
+
         AddCondenseRow(content, key);
 
         EquipLabel.AddWornRows(content, _data, key);
@@ -126,7 +134,7 @@ public class CharacterSlotSource : InventorySlotSource
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         content.Row("좌클릭 응축 · 우클릭 판매 담기", "")
-               .Row("Shift+우클릭 경매 등록", "");
+               .Row("Shift+우클릭 경매 등록 · Ctrl+좌클릭 잠금", "");
 
         return content;
     }

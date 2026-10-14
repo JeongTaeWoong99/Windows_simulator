@@ -119,6 +119,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("지금 쓰이고 있음을 알리는 표시 — 캐릭터는 작업 중, 장비는 장착 중. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
+    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시가 쓴다. 잠금은 그 둘과 함께 켜질 수 있다(잠긴 채 장착 중).
+    [SerializeField, Tooltip("잠금 표시 — 왼쪽 위 자물쇠(T-137). 평소에는 꺼져 있다")]
+    private GameObject lockMark = null!;
+
     // 적성 칸 수 = 1차 산업 5종. 표기 규칙("0은 X")과 함께 'AptitudeLabel'이 쥔다 —
     // 작업슬롯 선택 화면의 캐릭터 줄도 같은 5칸을 그린다.
     public static readonly int AptitudeCount = AptitudeLabel.Count;
@@ -189,6 +193,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(sellMark,       nameof(sellMark));
         this.RequireRef(assignMark,     nameof(assignMark));
+        this.RequireRef(lockMark,       nameof(lockMark));
         this.RequireRef(enchantGem,      nameof(enchantGem));
         this.RequireRef(equipPips,       nameof(equipPips));
         this.RequireRef(starRow,            nameof(starRow));
@@ -220,6 +225,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         levelBadge.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
+        lockMark.SetActive(false);
         starRow.SetActive(false);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);
@@ -471,6 +477,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(on);
     }
 
+    // 잠긴 개체임을 표시한다 (인벤토리 격자가 매번 그릴 때 호출 — 공급자의 'IsLocked'). 가챠 결과 팝업은 부르지 않는다.
+    public void SetLockMark(bool on)
+    {
+        lockMark.SetActive(on);
+    }
+
     // 이 칸을 어둡게 한다 — 지금 인벤토리 밖에 나가 있다는 뜻 (인벤토리 격자가 매번 그릴 때 호출).
     //
     // '배' 마크와 **짝으로만 쓴다.** 딤만 두면 "왜 어두운가"를 알 수 없고,
@@ -566,6 +578,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         SetLevelBadge(null);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
+        lockMark.SetActive(false);
         SetStars(0);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);

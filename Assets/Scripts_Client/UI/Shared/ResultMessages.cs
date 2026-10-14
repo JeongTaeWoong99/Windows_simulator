@@ -49,6 +49,8 @@ public static class ResultMessages
         EResultCode.CondenseTidMismatch    => "같은 캐릭터만 재료로 넣을 수 있습니다.",
         EResultCode.CondenseMaterialBusy   => "배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.",
         EResultCode.CondenseMaxStar        => "이미 최고 단계입니다.",
+        EResultCode.EntityLocked           => "잠긴 캐릭터·장비가 있습니다. Ctrl+좌클릭으로 잠금을 푼 뒤 다시 시도하세요.",
+        EResultCode.InvalidLockTarget      => "잠글 수 없는 대상입니다.",
         EResultCode.MailNotFound        => "없는 우편입니다.",
         EResultCode.MailAlreadyClaimed  => "이미 받은 우편입니다.",
         // 안 받은 우편에는 삭제 버튼이 없다 — 정상 화면에서는 나오지 않는다.

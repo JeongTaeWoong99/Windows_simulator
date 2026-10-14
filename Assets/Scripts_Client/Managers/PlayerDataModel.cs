@@ -427,6 +427,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<S_EquipEnchantResponse>? EquipEnchantCompleted;      // 큐브 사용 결과 (거절 포함 — 'Result'를 먼저 본다)
     public event Action<S_EquipEnchantChooseResponse>? EquipEnchantChooseCompleted; // 상급 큐브 결과 고르기 (거절 포함 — 'Result'를 먼저 본다)
     public event Action<S_CharacterCondenseResponse>? CharacterCondenseCompleted; // 응축 결과 (거절 포함 — 'Result'를 먼저 본다 · 캐시 반영 뒤에 온다)
+    public event Action<S_EntityLockResponse>?   EntityLockCompleted;        // 잠금 결과 (거절 포함 — 'Result'를 먼저 본다 · 캐시 반영 뒤에 온다)
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
@@ -504,6 +505,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipEnchantResponded    += OnEquipEnchantResponded;
         ServerPacketHandler.EquipEnchantChooseResponded += OnEquipEnchantChooseResponded;
         ServerPacketHandler.CharacterCondenseResponded += OnCharacterCondenseResponded;
+        ServerPacketHandler.EntityLockResponded      += OnEntityLockResponded;
         ServerPacketHandler.WorkStationAssigned      += OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived += OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     += OnGatherResultReceived;
@@ -547,6 +549,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EquipEnchantResponded    -= OnEquipEnchantResponded;
         ServerPacketHandler.EquipEnchantChooseResponded -= OnEquipEnchantChooseResponded;
         ServerPacketHandler.CharacterCondenseResponded -= OnCharacterCondenseResponded;
+        ServerPacketHandler.EntityLockResponded      -= OnEntityLockResponded;
         ServerPacketHandler.WorkStationAssigned      -= OnWorkStationAssigned;
         ServerPacketHandler.WorkStationSlotsReceived -= OnWorkStationSlotsReceived;
         ServerPacketHandler.GatherResultReceived     -= OnGatherResultReceived;
@@ -801,6 +804,33 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         _condensingMaterialIds.Clear();
         CharacterCondenseCompleted?.Invoke(res);
+    }
+
+    // 잠금 응답 — 성공이면 그 개체의 'IsLocked'를 바꾸고 알린다(T-137).
+    //
+    // ★ 목록이 다시 오지 않는다 — 캐시를 여기서 직접 고친다(서버 이슈 #65). 같은 상태로 보내도 Ok가 온다.
+    // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
+    private void OnEntityLockResponded(S_EntityLockResponse res)
+    {
+        if (res.Result == EResultCode.Ok)
+        {
+            if (res.Target == ELockTarget.Character && FindCharacter(res.Id) is CharacterInfo character)
+            {
+                character.IsLocked = res.Locked;
+                CharactersChanged?.Invoke();
+            }
+            else if (res.Target == ELockTarget.Equip && FindEquip(res.Id) is EquipInfo equip)
+            {
+                equip.IsLocked = res.Locked;
+                EquipsChanged?.Invoke();
+            }
+        }
+        else
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"잠금 실패 — 결과={res.Result} 대상={res.Target} id={res.Id}");
+        }
+
+        EntityLockCompleted?.Invoke(res);
     }
 
     // 작업슬롯 스냅샷 — 캐시 교체 후 이벤트 발행

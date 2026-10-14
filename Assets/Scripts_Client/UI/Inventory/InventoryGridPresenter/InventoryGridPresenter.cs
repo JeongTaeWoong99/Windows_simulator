@@ -51,6 +51,10 @@ using UnityEngine.UI;
 //   경매장을 열어 등록 화면에 그 물건을 골라 둔다('AuctionCanvasView.OpenRegister').
 //   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
+// ■ Ctrl+좌클릭 = 잠금 켜기·끄기 (캐릭터·장비 탭 · 2026-10-15 사용자 결정 · T-137)
+//   잠긴 개체는 판매·경매 등록·응축 재료에서 빠진다(판정은 서버 — 클라는 'EntityBlockText'로 미리 막는다). 장착·배치는 그대로 된다.
+//   목록이 다시 오지 않아 응답으로 캐시를 고친다('PlayerDataModel.OnEntityLockResponded'). 응축 창이 열려 있어도 Ctrl이면 잠금이 먼저다.
+//
 // ■ 끌어 놓기 = 칸 이동 (세 탭 · 2026-10-06 · T-044)
 //   빈 칸에 놓으면 옮기고, 찬 칸에 놓으면 자리를 바꾼다. **서버 승인 뒤에 옮긴다** —
 //   놓는 순간에는 이동 요청만 보내고, 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음 · 자리의 주인은 서버 DB).
@@ -152,7 +156,7 @@ public class InventoryGridPresenter : MonoBehaviour
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
     private UIManager         _ui      = null!;
-    private KeyInputManager   _keys    = null!; // Shift+우클릭(경매 등록) 판별 — 키는 이 매니저만 읽는다
+    private KeyInputManager   _keys    = null!; // Shift+우클릭(경매 등록)·Ctrl+좌클릭(잠금) 판별 — 키는 이 매니저만 읽는다
     private NetworkManager    _network = null!;
     private ServerWaitManager _wait    = null!;
 
@@ -160,6 +164,9 @@ public class InventoryGridPresenter : MonoBehaviour
     private ServerWaitHandle? _waitHandle;
 
     private bool _isOpeningBox;   // 개봉 응답을 기다리는 중인가 — 연타로 두 번 나가면 상자가 두 번 빠진다
+
+    // 잠금 응답을 기다리는 개체 — 같은 개체를 연타하면 응답 전에 같은 값을 두 번 보낸다(T-137).
+    private readonly HashSet<long> _lockPending = new HashSet<long>();
 
     // 진행 중인 [정렬]·칸 이동 요청의 대기. 응답 전에는 다음 요청을 보내지 않는다 —
     // 앞 응답이 오기 전의 칸 번호로 다시 보내면 서버와 화면이 엇갈린 칸을 가리킨다.
@@ -262,6 +269,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseCompleted      += OnItemUseCompleted;
         _data.ItemUseFailed         += OnItemUseFailed;
         _data.StorageSlotsResponded += OnStorageSlotsResponded;
+        _data.EntityLockCompleted   += OnEntityLockCompleted;
 
         // 응축 창의 대상·재료가 바뀌면 칸 표시(테두리·체크·흑백)를 다시 그린다.
         // ※ 켜고 끌 때 풀지 않는다 — 응축 창이 닫힐 때의 알림(표시 걷기)을 격자가 꺼져 있어도 놓치면 안 된다.
@@ -326,6 +334,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _data.ItemUseCompleted      -= OnItemUseCompleted;
         _data.ItemUseFailed         -= OnItemUseFailed;
         _data.StorageSlotsResponded -= OnStorageSlotsResponded;
+        _data.EntityLockCompleted   -= OnEntityLockCompleted;
         characterCondense.SelectionChanged -= Redraw;
         equipEnchant.TargetChanged         -= Redraw;
         scrollRect.onValueChanged.RemoveListener(OnScrollChanged);
@@ -700,6 +709,7 @@ public class InventoryGridPresenter : MonoBehaviour
         bool isAway = _current.IsAway(data.Key);
 
         view.SetAssignMark(isAway);
+        view.SetLockMark(_current.IsLocked(data.Key));
         view.SetDimmed(isAway || i == _dragFrom); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
 
         // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
@@ -1314,6 +1324,14 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
+        // Ctrl+좌클릭 — 캐릭터·장비 잠금(T-137). 자원 탭은 잠금이 없어 아무것도 하지 않는다(상자도 열지 않는다).
+        if (_keys.IsLockToggleHeld)
+        {
+            ToggleLock(view.Key);
+
+            return;
+        }
+
         // 장비 칸 — 큐브 창을 그 장비로 연다(T-095). 착용 중이어도 연다 — 창이 [해제하고 사용]으로 말한다.
         if (_currentTab == InventoryTab.Equipment)
         {
@@ -1429,6 +1447,40 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         _isOpeningBox = false;
         _waitHandle   = null;
+    }
+
+    #endregion
+
+    #region 잠금
+
+    // 그 개체의 잠금을 뒤집어 서버에 보낸다 (OnSlotLeftClicked — Ctrl+좌클릭).
+    // ※ 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음) — 자물쇠가 서버와 어긋나면 "잠긴 줄 알았는데 팔렸다"가 된다.
+    private void ToggleLock(long key)
+    {
+        (ELockTarget target, bool? locked) = _currentTab switch
+        {
+            InventoryTab.Character => (ELockTarget.Character, _data.FindCharacter(key)?.IsLocked),
+            InventoryTab.Equipment => (ELockTarget.Equip,     _data.FindEquip(key)?.IsLocked),
+            _                      => (ELockTarget.None,      (bool?)null),
+        };
+
+        if (target == ELockTarget.None || locked == null || !_data.IsLoggedIn || !_lockPending.Add(key))
+        {
+            return; // 자원 탭 · 낡은 칸 · 같은 개체의 응답을 기다리는 중
+        }
+
+        _network.Send(new C_EntityLockRequest { Target = target, Id = key, Locked = !locked.Value });
+    }
+
+    // 잠금 결과 — 칸은 캐시 갱신('CharactersChanged'·'EquipsChanged')으로 다시 그려진다. 여기서는 거절만 알린다 (PlayerDataModel.EntityLockCompleted 구독)
+    private void OnEntityLockCompleted(S_EntityLockResponse res)
+    {
+        _lockPending.Remove(res.Id);
+
+        if (res.Result != EResultCode.Ok)
+        {
+            _wait.RaiseNotice(ResultMessages.ToText(res.Result));
+        }
     }
 
     #endregion

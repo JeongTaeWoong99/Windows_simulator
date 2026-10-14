@@ -6,12 +6,20 @@
 //
 // ■ 서버 판정을 미리 흉내 낸다
 // 진짜 판정은 서버다(장비 착용 → SellEquipWorn·AuctionEquipWorn, 바쁜 캐릭터 → SellCharacterBusy·AuctionCharacterBusy,
-// 마지막 캐릭터 → SellLastCharacter·AuctionLastCharacter). 여기는 보내기 전에 흐리게 막고 이유를 적는 데만 쓴다.
+// 마지막 캐릭터 → SellLastCharacter·AuctionLastCharacter, 잠금 → EntityLocked · T-137). 여기는 보내기 전에 흐리게 막고 이유를 적는 데만 쓴다.
 public static class EntityBlockText
 {
+    // 잠긴 개체의 사유 — 잠금이 가장 먼저다(풀기 전에는 다른 사유를 고쳐도 소용없다). 서버 'EntityLocked'.
+    public const string LockedText = "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다";
+
     // 이 장비를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
     public static string? ForEquip(PlayerDataModel data, long equipId)
     {
+        if (data.FindEquip(equipId)?.IsLocked == true)
+        {
+            return LockedText;
+        }
+
         return data.IsEquipped(equipId) ? "캐릭터가 끼고 있습니다 — 먼저 해제하세요" : null;
     }
 
@@ -20,6 +28,11 @@ public static class EntityBlockText
     //   즉시 판매는 이미 담은 캐릭터를 빼고 세야 해서 호출하는 쪽이 계산한다.
     public static string? ForCharacter(PlayerDataModel data, long characterId, int remainingAfter)
     {
+        if (data.FindCharacter(characterId)?.IsLocked == true)
+        {
+            return LockedText;
+        }
+
         if (data.FindSlotIndexOf(characterId) >= 0)
         {
             return "작업슬롯에 배치 중입니다 — 먼저 빼세요";

@@ -72,6 +72,9 @@ public class EquipSlotSource : InventorySlotSource
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => _data.IsEquipped(key);
 
+    // 잠긴 장비 — 판매·경매 등록에서 빠진다(T-137).
+    public override bool IsLocked(long key) => _data.FindEquip(key)?.IsLocked == true;
+
     // 이 장비의 능력치 칸 — 칸마다 박힌 옵션의 등급, 빈 칸은 'None' (격자가 매번 그릴 때 호출).
     public override IReadOnlyList<GlobalRarity>? GetStatSockets(long key)
     {
@@ -108,9 +111,15 @@ public class EquipSlotSource : InventorySlotSource
             ? "인벤토리"
             : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
 
+        if (equip.IsLocked)
+        {
+            state += " · 잠김";
+        }
+
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state)?
-            .Row("좌클릭 큐브 · 우클릭 판매 · Shift+우클릭 경매", "");
+            .Row("좌클릭 큐브 · 우클릭 판매 · Shift+우클릭 경매", "")
+            .Row("Ctrl+좌클릭 잠금", "");
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).
