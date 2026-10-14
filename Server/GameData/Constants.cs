@@ -10,8 +10,11 @@ namespace GameData
     /// </summary>
     public static class Constants
     {
-        /// <summary>창고 탭마다 칸 수(자원·캐릭터·장비 각각)</summary>
+        /// <summary>인벤토리 탭마다 칸 수(자원·캐릭터·장비 각각)</summary>
         public static long StorageCapacity => GameTable.ConstantsTable["StorageCapacity"].Value;
+
+        /// <summary>창고 탭마다 칸 수(자원·캐릭터·장비 각각) — 클라는 한 줄 5칸 × 10줄로 그린다</summary>
+        public static long WarehouseCapacity => GameTable.ConstantsTable["WarehouseCapacity"].Value;
 
         /// <summary>안 받은 우편 상한 — 넘침 보관이 멈추는 선</summary>
         public static long MailboxCapacity => GameTable.ConstantsTable["MailboxCapacity"].Value;
