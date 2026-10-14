@@ -104,9 +104,9 @@ public class UserMailTest
     [Fact]
     public void 창고가_모자라면_그_우편은_아무것도_지급하지_않는다()
     {
-        // 200종이 찬 창고에 새 종류(붕어) — 골드도 함께 막힌다. 한 통은 원자적이다.
+        // 50종이 찬 창고에 새 종류(붕어) — 골드도 함께 막힌다. 한 통은 원자적이다.
         var (user, b) = UserWithMails(Mail(1, gold: 1000, items: $"[[{FishTid},3]]"));
-        FillItemKinds(user, 200);
+        FillItemKinds(user, 50);
         b.DB.Posted.Clear();
 
         user.TryClaimMail(1, Now);
@@ -141,12 +141,12 @@ public class UserMailTest
     [Fact]
     public void 모두_받기는_오래된_순으로_받다가_막힌_우편에서_멈춘다()
     {
-        // 창고 199종: 1번(붕어 — 새 종류, 200종이 됨) 통과 → 2번(새 종류 하나 더) 막힘 → 3번(골드뿐)은 시도하지 않는다
+        // 창고 49종: 1번(붕어 — 새 종류, 50종이 됨) 통과 → 2번(새 종류 하나 더) 막힘 → 3번(골드뿐)은 시도하지 않는다
         var (user, b) = UserWithMails(
             Mail(1, items: $"[[{FishTid},1]]"),
             Mail(2, items: "[[10002,1]]"),
             Mail(3, gold: 500));
-        FillItemKinds(user, 199);
+        FillItemKinds(user, 49);
 
         user.TryClaimMail(0, Now);
 
@@ -286,5 +286,20 @@ public class UserMailTest
         {
             new MailTemplateTableRow { MailTemplateTID = 1, ItemTIDs = new[] { FishTid, 10002 }, ItemCounts = new[] { 1 } },
         }));
+    }
+
+    // ─────────────────────── 최대 수량 (T-157) ───────────────────────
+
+    [Fact]
+    public void 우편으로_받아도_최대_수량을_넘는_몫은_버린다()
+    {
+        // 붕어 MaxStack 9999 — 9990 + 20 → 9999에서 멈추고 우편은 받은 것이 된다.
+        var (user, b) = UserWithMails(Mail(1, items: $"[[{FishTid},20]]"));
+        user.GainItem(FishTid, 9990);
+
+        user.TryClaimMail(1, Now);
+
+        ClaimResponse(b).Result.ShouldBe(EResultCode.Ok);
+        user.GetItemCount(FishTid).ShouldBe(9999);
     }
 }

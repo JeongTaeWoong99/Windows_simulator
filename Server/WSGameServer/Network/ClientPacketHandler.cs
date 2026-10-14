@@ -222,6 +222,22 @@ public static class ClientPacketHandler
         user.SortStorage(req.Container, req.Tab, req.SortKey, req.Order);
     }
 
+    /// <summary>인벤토리 ↔ 창고 이동(T-107). 놓은 칸이 비었으면 이동, 차 있으면 스왑.</summary>
+    [PacketHandler]
+    public static void Handle_C_WarehouseTransferRequest(ISession session, C_WarehouseTransferRequest req)
+    {
+        ServerLog.Debug("창고", $"이동 {req.From}/{req.Tab} {req.FromSlot}→{req.ToSlot} x{req.Count} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_WarehouseTransferResponse { Result = EResultCode.NotLoggedIn, Tab = req.Tab });
+            return;
+        }
+
+        user.TransferWarehouse(req.From, req.Tab, req.FromSlot, req.ToSlot, req.Count);
+    }
+
     /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)

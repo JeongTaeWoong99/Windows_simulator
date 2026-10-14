@@ -1,8 +1,13 @@
 [
   {
     "Name": "StorageCapacity",
-    "Value": 200,
-    "Description": "창고 탭마다 칸 수(자원·캐릭터·장비 각각)"
+    "Value": 50,
+    "Description": "인벤토리 탭마다 칸 수(자원·캐릭터·장비 각각)"
+  },
+  {
+    "Name": "WarehouseCapacity",
+    "Value": 50,
+    "Description": "창고 탭마다 칸 수(자원·캐릭터·장비 각각) — 클라는 한 줄 5칸 × 10줄로 그린다"
   },
   {
     "Name": "MailboxCapacity",

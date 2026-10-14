@@ -20,6 +20,7 @@ public sealed record CharacterRow
     public int  slot          { get; init; }
     public int  condense_count { get; init; }
     public int  is_locked      { get; init; }   // 0/1 (T-137)
+    public int  container      { get; init; }   // 0=인벤토리, 1=창고 (T-107)
 }
 
 // t_user_currency 조회 전용 Row. 재화가 늘면 행이 아니라 컬럼이 는다.
@@ -32,9 +33,10 @@ public sealed record CurrencyRow
 // t_user_inventory 조회 전용 Row
 public sealed record InventoryRow
 {
-    public int item_id { get; init; }
-    public int count   { get; init; }
-    public int slot    { get; init; }
+    public int item_id   { get; init; }
+    public int count     { get; init; }
+    public int slot      { get; init; }
+    public int container { get; init; }   // 0=인벤토리, 1=창고 (T-107)
 }
 
 // t_user_workstation_slot 조회 전용 Row (배치 설정만 — 진행도는 저장하지 않는다)
@@ -96,6 +98,7 @@ public sealed record UserEquipRow
     public int pending_3     { get; init; }
 
     public int is_locked { get; init; }   // 0/1 (T-137)
+    public int container { get; init; }   // 0=인벤토리, 1=창고 (T-107)
 }
 
 // t_character_equip 조회 전용 Row. slot은 GameData.EquipSlot 정수값.

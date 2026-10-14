@@ -5,23 +5,29 @@ namespace WSGameServer;
 
 public partial class User
 {
-    /// <summary>DB에서 읽은 인벤토리 Row를 도메인(Item)으로 변환해 적재한다(로그인 시 1회).</summary>
+    /// <summary>DB에서 읽은 자원 Row를 보관함별로 적재한다(로그인 시 1회).</summary>
     public void LoadInventory(IReadOnlyList<InventoryRow> rows)
     {
-        Inventory.Load(rows.Select(r => new Item(r.item_id, r.count, r.slot)));
+        Inventory.Load(rows.Where(r => r.container == (int)EContainer.Inventory).Select(r => new Item(r.item_id, r.count, r.slot)));
+        Warehouse.Load(rows.Where(r => r.container == (int)EContainer.Warehouse).Select(r => new Item(r.item_id, r.count, r.slot)));
     }
 
-    // 현재 인벤토리 전체 스냅샷을 클라이언트로 전송한다.
+    // 자원 스냅샷 — 인벤토리와 창고를 한 목록에 싣는다. 클라가 Container로 가른다.
     public void SendInventory()
     {
-        Send(new S_InventoryResponse { Items = Inventory.Snapshot() });
+        Send(new S_InventoryResponse { Items = Inventory.Snapshot().Concat(Warehouse.Snapshot()).ToList() });
     }
 
-    // 패킷 전송 없이 메모리 갱신 + DB 반영만 수행하고 변경분을 반환한다.
-    // 호출자(AddItem, GachaService 등)가 응답 구성을 담당한다.
+    // 메모리 갱신 + DB 반영만 하고 변경분을 돌려준다(응답은 호출자가). 지급 경로는 전부 여기를 지난다.
+    // 최대 수량(MaxStack)을 넘는 몫은 버린다 — 수확·우편·상자·뽑기 모두 같다(T-157).
     public ItemChangeInfo GainItem(int itemId, int count)
     {
-        var itemChangeInfo = Inventory.AddItem(itemId, count);
+        var granted        = ClampToMaxStack(itemId, count);
+        var itemChangeInfo = Inventory.AddItem(itemId, granted);
+        if (granted <= 0)
+        {
+            return itemChangeInfo;
+        }
 
         PostDBTask<AddItemRepository>(new (this, itemChangeInfo));
         return itemChangeInfo;

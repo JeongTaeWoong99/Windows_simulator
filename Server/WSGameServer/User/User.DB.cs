@@ -15,7 +15,8 @@ public partial class User
 
         EnsureUnlockedSlots(now);
 
-        if (_characters.Count == 0)
+        // 창고에만 캐릭터가 있어도 신규 유저가 아니다 — 시작 캐릭터를 또 주지 않는다.
+        if (_characters.Count == 0 && _warehouseCharacters.Count == 0)
         {
             // 만약 캐릭터가 없을 경우, 발급 후 마무리를 이어감.
             // 마무리 시각은 지급이 끝난 뒤 GrantCharacterRepository가 새로 넘긴다 —

@@ -21,7 +21,7 @@ namespace MikaProtocol
         InvalidDrawCount   = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)
         InvalidGachaId     = 101, // 존재하지 않는 가챠 풀
         NotEnoughCurrency  = 102, // 비용을 낼 재화가 모자람 — 아무것도 지급하지 않는다
-        StorageFull        = 103, // 창고 칸(자원 종류·캐릭터·장비 각 200)이 모자람 — 뽑기·상자 개봉 모두. 아무것도 바꾸지 않는다
+        StorageFull        = 103, // 인벤토리 칸(자원 종류·캐릭터·장비 각 50)이 모자람 — 뽑기·상자 개봉 모두. 아무것도 바꾸지 않는다
 
         // ── 200~: 작업슬롯 ──
         InvalidSlotIndex    = 200, // 보유하지 않은 슬롯 번호
@@ -96,10 +96,13 @@ namespace MikaProtocol
         AuctionLastCharacter   = 1015, // 캐릭터를 하나도 남기지 않는 등록
 
         // ── 1100~: 인벤토리 칸 (T-058) ──
-        StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖이거나, 아직 없는 보관함(창고는 T-107)
+        StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖
         StorageSlotEmpty      = 1101, // 자리 이동의 출발 칸이 비어 있음
         InvalidStorageSortKey = 1102, // 그 탭에 쓸 수 없는 정렬 기준 (캐릭터·장비 탭의 수량순)
         StorageSlotPending    = 1103, // 도착 칸이 지급 대기(뽑기·우편 수령 응답 전)로 예약돼 있음 — 잠시 뒤 다시
+        StorageEntityBusy     = 1104, // 창고로 못 보낸다 — 배치 중 캐릭터 · 장비를 입은 캐릭터 · 장착 중 장비
+        WarehousePartialSwap  = 1105, // 다른 자원 칸에 일부 수량을 놓았다 — 스왑은 전량일 때만
+        StorageOverMaxStack   = 1106, // 합치면 그 자원의 최대 수량(ItemTable.MaxStack)을 넘는다
 
         // ── 1200~: 잠금 (T-137) ── 미보유는 CharacterNotOwned(201) · EquipNotOwned(600)
         EntityLocked      = 1200, // 잠긴 개체 — 판매·경매 등록·응축 재료로 쓸 수 없다. 아무것도 바꾸지 않았다

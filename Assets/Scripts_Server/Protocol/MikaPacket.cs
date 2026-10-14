@@ -108,6 +108,8 @@ namespace MikaProtocol
         S_MarketPriceHistoryResponse = 78,
         C_AuctionHistoryRequest = 79,
         S_AuctionHistoryResponse = 80,
+        C_WarehouseTransferRequest = 81,
+        S_WarehouseTransferResponse = 82,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -218,9 +220,10 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.S_GatherResultResponse)]
     public partial class S_GatherResultResponse : IPacket
     {
-        public int                   SlotIndex   { get; set; }  // 어느 슬롯에서 나왔는지
-        public int                   JudgeCount  { get; set; }  // 이번에 정산된 판정 횟수(연출용)
-        public List<ItemChangeInfo>? ItemChanges { get; set; }  // 인벤토리 갱신분
+        public int                   SlotIndex     { get; set; }  // 어느 슬롯에서 나왔는지
+        public int                   JudgeCount    { get; set; }  // 이번에 정산된 판정 횟수(연출용)
+        public List<ItemChangeInfo>? ItemChanges   { get; set; }  // 인벤토리 갱신분
+        public bool                  InventoryFull { get; set; }  // 칸이 없거나 최대 수량이라 버린 몫이 있다 — "가득 차서 획득 불가" (T-157)
     }
 
     /// <summary>
@@ -874,5 +877,27 @@ namespace MikaProtocol
         public EContainer            Container { get; set; }
         public EStorageTab           Tab       { get; set; }
         public List<StorageSlotInfo> Slots     { get; set; } = new();
+    }
+
+    // 인벤토리 ↔ 창고 (T-107). From 보관함의 FromSlot을 반대 보관함의 ToSlot에 놓는다 — 비었으면 이동, 차 있으면 스왑.
+    // 자원은 Count만큼 옮긴다: 같은 자원이 받는 쪽에 있으면 합치고, 다른 자원 칸이면 전량일 때만 스왑한다(일부면 거절).
+    // 캐릭터·장비는 Count를 읽지 않는다. 칸은 응답이 온 뒤에 바꾼다.
+    [MemoryPackable, Packet(PacketId.C_WarehouseTransferRequest)]
+    public partial class C_WarehouseTransferRequest : IPacket
+    {
+        public EContainer  From     { get; set; }
+        public EStorageTab Tab      { get; set; }
+        public int         FromSlot { get; set; }
+        public int         ToSlot   { get; set; }
+        public int         Count    { get; set; }
+    }
+
+    // 양쪽 보관함의 바뀐 칸을 한 번에 싣는다. 거절이면 Changes는 비어 있다.
+    [MemoryPackable, Packet(PacketId.S_WarehouseTransferResponse)]
+    public partial class S_WarehouseTransferResponse : IPacket
+    {
+        public EResultCode               Result  { get; set; }
+        public EStorageTab               Tab     { get; set; }
+        public List<WarehouseChangeInfo> Changes { get; set; } = new();
     }
 }

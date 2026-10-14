@@ -39,9 +39,9 @@ public sealed class LoginRepository : IRepository
     // RepositoryContracts.cs 상단 주석 참조.
     public async Task ExecuteAsync(DbConnection connection)
     {
-        // 1) 인벤토리. 창고(container 1)는 T-107이 따로 적재한다.
+        // 1) 자원 — 인벤토리·창고를 함께 읽고 container로 가른다(T-107).
         _inventoryRows = await connection.QueryAsync<InventoryRow>(
-            "SELECT item_id, count, slot FROM t_user_inventory WHERE user_id = @userId AND container = 0",
+            "SELECT item_id, count, slot, container FROM t_user_inventory WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 2) 재화. 한 번도 벌지 않았으면 행 자체가 없고, 그건 0으로 본다
@@ -52,8 +52,8 @@ public sealed class LoginRepository : IRepository
 
         // 3) 캐릭터. 하나도 없으면(신규 유저) 지급 판단은 로직 스레드가 한다.
         _characterRows = await connection.QueryAsync<CharacterRow>(
-            @"SELECT character_id, character_tid, level, exp, slot, condense_count, is_locked
-              FROM t_character WHERE user_id = @userId AND auction_trade_id = 0 AND container = 0",
+            @"SELECT character_id, character_tid, level, exp, slot, condense_count, is_locked, container
+              FROM t_character WHERE user_id = @userId AND auction_trade_id = 0",
             new { userId = User.Uid });
 
         // 4) 작업슬롯. 슬롯 행에는 진행도가 없다 — 배치 설정(산업·캐릭터)뿐이다.
@@ -88,8 +88,8 @@ public sealed class LoginRepository : IRepository
         // 경매에 잠긴 개체(등록 중·우편 대기)는 싣지 않는다 — 메모리에 있으면 저장이 잠긴 행을 덮는다.
         _equipRows = await connection.QueryAsync<UserEquipRow>(
             @"SELECT equip_id, equip_tid, slot_position, enchant_grade, enchant_1, enchant_2, enchant_3,
-                     pending_grade, pending_1, pending_2, pending_3, is_locked
-              FROM t_user_equip WHERE user_id = @userId AND auction_trade_id = 0 AND container = 0",
+                     pending_grade, pending_1, pending_2, pending_3, is_locked, container
+              FROM t_user_equip WHERE user_id = @userId AND auction_trade_id = 0",
             new { userId = User.Uid });
 
         _characterEquipRows = await connection.QueryAsync<CharacterEquipRow>(
