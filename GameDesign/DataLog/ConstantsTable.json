@@ -61,12 +61,12 @@
   },
   {
     "Name": "AuctionSearchBurst",
-    "Value": 5,
+    "Value": 10,
     "Description": "거래소·경매장 조회 순간 허용 횟수"
   },
   {
     "Name": "AuctionSearchRefillSeconds",
-    "Value": 2,
+    "Value": 1,
     "Description": "조회 1회가 회복되는 간격(초)"
   },
   {
