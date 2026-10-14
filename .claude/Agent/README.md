@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-15 검색 후보 클릭 버그 · 후보 공용화 · 그래프 막대 · 전체 검색 막기 (T-147 4단계)](2026-10-15-auction-suggest-chart-allsearch.md) — `#client` `#ui` 내비게이션 None 버튼은 눌러도 선택 안 됨 · 코드 Graphic에 CanvasRenderer 누락 · 씬 파일 외부 수정은 대화상자로 에디터를 막는다
 - [2026-10-14 경매장 실측 피드백 — 쪽 넘김 · 검색 후보 (T-147 3단계)](2026-10-14-auction-feedback-paging-suggest.md) — `#client` `#ui` 커서는 쪽마다 클라가 기억 · 중첩 Canvas override는 켜질 때 건다 · 딤 농도는 UIThemeColor.alpha
 - [2026-10-14 경매장 목업대로 재배치](2026-10-14-auction-mockup-relayout.md) — `#client` `#ui` 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 (T-147 2단계)
 - [2026-10-14 경매장을 화면 전체로 — 거래 열 → 거점 열 · #Auction Canvas (T-147 1단계)](2026-10-14-auction-fullscreen-overlay.md) — `#client` `#ui` 오버레이 첫째 자식이지만 SetActive 캔버스 · Esc는 IsCovered일 때 무시

@@ -7,7 +7,7 @@ using UnityEngine.UI;
 // 검색 탭은 매물 이름, 시세 탭은 볼 아이템, 판매 탭은 판매 중 매물, 완료 탭은 기록에서 찾는다.
 public interface IAuctionQueryTarget
 {
-    // 입력칸이 비었을 때 보이는 안내 — "아이템 이름 (일부만 쳐도 된다)"
+    // 입력칸이 비었을 때 보이는 안내 — "아이템 이름"
     string QueryPlaceholder { get; }
 
     // 입력칸 옆의 안내 — "[검색] — 분류·옵션과 함께 조회한다"
@@ -24,17 +24,17 @@ public interface IAuctionQueryTarget
 
     // 입력칸 아래 후보를 모은다 — 'into'를 비우고 'max'개까지 (칠 때마다).
     // 검색·시세 탭은 게임 데이터 전부에서, 판매·완료 탭은 받은 목록에서 찾는다.
-    void CollectSuggestions(string query, List<AuctionSuggestion> into, int max);
+    void CollectSuggestions(string query, List<Suggestion> into, int max);
 
     // 후보를 골랐다 — 입력칸에는 이미 그 이름이 들어가 있다('OnQueryChanged'도 먼저 불렸다).
-    void OnSuggestionPicked(AuctionSuggestion suggestion);
+    void OnSuggestionPicked(Suggestion suggestion);
 }
 
 // 경매장 공용 검색창 — 탭 줄 위에 하나만 두고 네 탭이 함께 쓴다(목업 · T-147).
 //
 // ■ 이 Presenter는 입력을 **지금 탭의 화면에 넘기기만** 한다 — 무엇을 할지는 그 화면('IAuctionQueryTarget')이 정한다.
 //   탭이 바뀌면 그 화면의 안내 문구·검색어로 입력칸을 바꿔 끼운다.
-// ■ 치는 대로 아래에 후보를 띄운다('AuctionSuggestView' · 2026-10-14 사용자 요청) — 무엇을 띄우고 고르면 무엇을 할지는 그 화면이 정한다.
+// ■ 치는 대로 아래에 후보를 띄운다('SuggestView' · 2026-10-14 사용자 요청) — 무엇을 띄우고 고르면 무엇을 할지는 그 화면이 정한다.
 // ■ Enter로 검색하지 않는다 — 인게임 키는 Shift+우클릭·Esc뿐이다(2026-10-11 사용자 결정 · 'Managers 규칙.md').
 //   목업의 "이름 + Enter"는 [검색] 버튼으로 한다.
 public class AuctionQueryPresenter : MonoBehaviour
@@ -53,9 +53,9 @@ public class AuctionQueryPresenter : MonoBehaviour
     private AuctionTabPresenter tabs = null!;
 
     [SerializeField, Tooltip("입력칸 아래 후보 목록")]
-    private AuctionSuggestView suggestView = null!;
+    private SuggestView suggestView = null!;
 
-    private readonly List<AuctionSuggestion> _suggestions = new List<AuctionSuggestion>();
+    private readonly List<Suggestion> _suggestions = new List<Suggestion>();
 
     private IAuctionQueryTarget? _target;
 
@@ -136,8 +136,8 @@ public class AuctionQueryPresenter : MonoBehaviour
         _target?.OnQuerySubmitted(queryInput.text);
     }
 
-    // 후보를 골랐다 — 입력칸을 그 이름으로 바꾸고 지금 탭에 넘긴다 (AuctionSuggestView.Picked 구독)
-    private void OnSuggestionPicked(AuctionSuggestion suggestion)
+    // 후보를 골랐다 — 입력칸을 그 이름으로 바꾸고 지금 탭에 넘긴다 (SuggestView.Picked 구독)
+    private void OnSuggestionPicked(Suggestion suggestion)
     {
         if (_target == null)
         {

@@ -24,10 +24,12 @@ public enum AuctionSearchNode
 // 경매장 목업(T-147)의 메이플식 검색이다. 정렬·건수·속성 필터는 서버가 한다(T-155).
 //
 // ■ 고치는 값과 조회한 값은 다르다
-//   왼쪽에서 고친 값은 [검색]을 눌러야 조회된다 — 조회에 빈도 제한(순간 5회 · 2초마다 1회 회복)이 있어서다.
+//   왼쪽에서 고친 값은 [검색]을 눌러야 조회된다 — 조회에 빈도 제한(순간 10회 · 1초마다 1회 회복)이 있어서다.
 //   **분류만은 누르면 바로 조회한다**(목업). 정렬을 바꾸면 마지막으로 조회한 조건('_applied')에 정렬만 바꿔 다시 받는다.
 // ■ 결과는 쪽으로 나눈다 — 한 쪽 9줄('AuctionModel.RowsPerPage'), 표 아래 [◀][▶]로 넘긴다(2026-10-14 사용자 결정).
 //   쪽을 넘길 때마다 서버에 묻는다(빈도 제한 안) — 받는 동안 대기를 건다.
+// ■ 조건 없는 '전체' 검색은 보내지 않는다 — 분류를 고르거나 이름을 넣어야 조회한다 (2026-10-14 사용자 결정).
+//   분류 '전체' · 이름 없음이면 서버가 판매 중 매물 전부를 훑고 정렬한다(서버 확인 이슈). 처음 열 때도 같다 — 안내만 띄운다.
 // ■ 이름은 공용 검색창에서 온다('IAuctionQueryTarget') — 클라가 TID 목록으로 바꿔 보낸다.
 //   ⚠️ 맞는 이름이 없으면 보내지 않는다 — 빈 TID 목록은 서버가 "조건 없음"으로 읽어 전체를 돌려준다.
 //   ⚠️ '전체' 분류의 이름 검색은 네 종류의 TID를 합쳐 보낸다 — 장비·캐릭터 TID가 겹쳐 다른 종류가 섞일 수 있어 그릴 때 이름으로 한 번 더 거른다.
@@ -212,6 +214,15 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     // 진행 중인 대기의 손잡이 — 첫 쪽 검색 · 구매 · 구매 전 시세.
     private ServerWaitHandle? _waitHandle;
 
+    // 조건 없이 [검색]했다 — 결과 자리에 안내를 띄운다. 조건을 넣어 조회하면 풀린다.
+    private bool _needsCondition;
+
+    // 결과 없음 글자 — 평소 문구와 조건 안내를 오간다. 평소 문구는 씬 값을 Start에서 기억한다.
+    private TMP_Text _emptyLabel = null!;
+    private string   _emptyDefault = "";
+
+    private const string NeedsConditionText = "분류를 고르거나 이름을 넣어 검색하세요";
+
     // 구매 전 시세를 기다리는 매물 — 0이면 없다.
     private long _pendingBuyListingId;
 
@@ -222,7 +233,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // ─── 공용 검색창 ───
-    public string QueryPlaceholder => "아이템 이름 (일부만 쳐도 된다)";
+    public string QueryPlaceholder => "아이템 이름";
     public string QueryHint        => "[검색] — 분류·옵션과 함께 조회합니다";
     public string Query            => _query;
 
@@ -235,11 +246,11 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     // 지금 분류의 종류 안에서 이름이 맞는 것 — '전체'면 네 종류 모두.
-    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+    public void CollectSuggestions(string query, List<Suggestion> into, int max)
         => AuctionText.CollectCatalogSuggestions(GetNodeFilter(_node).kind, query, into, max);
 
     // 후보를 고르면 그 이름으로 바로 조회한다 — 왼쪽 옵션은 그대로 둔다.
-    public void OnSuggestionPicked(AuctionSuggestion suggestion) => RunSearch();
+    public void OnSuggestionPicked(Suggestion suggestion) => RunSearch();
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()
@@ -273,6 +284,10 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         this.RequireRef(rowParent,             nameof(rowParent));
         this.RequireRef(scrollRect,            nameof(scrollRect));
         this.RequireRef(emptyText,             nameof(emptyText));
+
+        _emptyLabel = emptyText.GetComponentInChildren<TMP_Text>(true);
+        this.RequireRef(_emptyLabel, nameof(_emptyLabel));
+        _emptyDefault = _emptyLabel.text;
         this.RequireRef(pager,                 nameof(pager));
         this.RequireRef(canvasView,            nameof(canvasView));
 
@@ -637,6 +652,18 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             return;
         }
 
+        // 조건 없는 '전체'는 보내지 않는다 — 머리 주석
+        if (_node == AuctionSearchNode.All && string.IsNullOrWhiteSpace(_query))
+        {
+            _needsCondition = true;
+            _applied        = null;
+            _appliedLabel   = "";
+
+            Refresh();
+
+            return;
+        }
+
         (EAuctionKind kind, int category) = GetNodeFilter(_node);
 
         List<int>? tids = AuctionText.FindTids(kind, _query);
@@ -695,6 +722,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         _appliedQuery = _query;
         _appliedNode  = _node;
         _appliedLabel = string.Join(UIRichText.Dot, labels);
+
+        _needsCondition = false;
 
         SendApplied();
     }
@@ -1018,7 +1047,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         bool filterName = _appliedNode == AuctionSearchNode.All;
 
-        foreach (AuctionListingInfo listing in _auction.SearchResults)
+        foreach (AuctionListingInfo listing in _needsCondition ? Array.Empty<AuctionListingInfo>() : _auction.SearchResults)
         {
             if (filterName && !AuctionText.MatchesName(listing, _appliedQuery))
             {
@@ -1034,11 +1063,14 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         }
 
         _rows.Show(_contents);
-        emptyText.SetActive(_auction.HasSearched && _contents.Count == 0);
+        emptyText.SetActive(_needsCondition || (_auction.HasSearched && _contents.Count == 0));
+        _emptyLabel.text = _needsCondition ? NeedsConditionText : _emptyDefault;
 
-        countText.text    = $"검색 결과 {UIRichText.Paint(_auction.SearchTotalCount.ToString("N0"), UIThemeRole.Highlight)}건";
+        int totalCount = _needsCondition ? 0 : _auction.SearchTotalCount;
+
+        countText.text    = $"검색 결과 {UIRichText.Paint(totalCount.ToString("N0"), UIThemeRole.Highlight)}건";
         appliedText.text  = _appliedLabel;
-        receivedText.text = AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
+        receivedText.text = _needsCondition ? "" : AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
 
         refreshButton.interactable = _waitHandle == null && _applied != null;
         searchButton.interactable  = _waitHandle == null;
@@ -1065,16 +1097,16 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     // 표 아래 쪽 넘김 — 'n / N 쪽' · 이 쪽이 몇째 건부터인지.
     private void RefreshFoot()
     {
-        int page  = _auction.SearchPage;
-        int total = _auction.SearchTotalCount;
-        int shown = _auction.SearchResults.Count;
+        int page  = _needsCondition ? 0 : _auction.SearchPage;
+        int total = _needsCondition ? 0 : _auction.SearchTotalCount;
+        int shown = _needsCondition ? 0 : _auction.SearchResults.Count;
         int first = page * AuctionModel.RowsPerPage;
 
         string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {total:N0}건" : "";
 
         pager.Bind(page, AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage),
                    canPrev: _waitHandle == null && page > 0,
-                   canNext: _waitHandle == null && _auction.HasMoreResults,
+                   canNext: _waitHandle == null && !_needsCondition && _auction.HasMoreResults,
                    note);
     }
 

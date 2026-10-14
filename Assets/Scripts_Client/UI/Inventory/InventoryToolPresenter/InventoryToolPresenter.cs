@@ -40,6 +40,9 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // ■ 분류 드롭다운 — 자원 탭은 산업 뒤에 '상자' · '기타'가 붙는다 (2026-10-05)
 //   상자만 모아 보고 열거나, 큐브·구슬 같은 산업 밖 아이템만 볼 수 있게. 캐릭터 탭은 산업 축이 없어 감춘다.
 //
+// ■ 검색창에 치면 아래에 후보를 띄운다 — 지금 탭이 가진 것 중 이름이 맞는 것 (2026-10-14 · 경매장 검색창과 같은 'SuggestView').
+//   고르면 그 이름으로 검색창을 채우고 거른다.
+//
 // ■ 찾기는 탭을 바꾸거나 인벤토리를 닫으면 비운다
 //   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 인벤토리를 닫을 때도
 //   꺼지므로 'OnDisable' 한 곳에서 비운다.
@@ -92,6 +95,9 @@ public class InventoryToolPresenter : MonoBehaviour
     [SerializeField, Tooltip("이름 검색창. 입력하는 대로 걸러진다")]
     private TMP_InputField searchInput = null!;
 
+    [SerializeField, Tooltip("검색창 아래 후보 목록 — 지금 탭에서 이름이 맞는 것. 고르면 그 이름으로 거른다")]
+    private SuggestView searchSuggestView = null!;
+
     [SerializeField, Tooltip("분류 필터 — '전체' + 5산업 (+ 자원 탭은 상자 · 기타). 캐릭터 탭에서는 감춘다. 목록은 코드가 채운다")]
     private TMP_Dropdown industryDropdown = null!;
 
@@ -113,6 +119,9 @@ public class InventoryToolPresenter : MonoBehaviour
     // 분류 드롭다운의 항목 순서 — 탭마다 다르다(상자·기타는 자원만). 드롭다운 값 → (산업, 묶음). 0번은 늘 '전체'.
     private readonly List<(byte Industry, InventoryItemGroup Group)> _categoryOptions = new List<(byte, InventoryItemGroup)>();
 
+    // 검색 후보를 모을 그릇 — 칠 때마다 다시 채운다.
+    private readonly List<Suggestion> _suggestions = new List<Suggestion>();
+
     private PlayerDataModel   _data = null!;
     private SellCartModel     _cart = null!;
     private ServerWaitManager _wait = null!;
@@ -133,6 +142,7 @@ public class InventoryToolPresenter : MonoBehaviour
         this.RequireRef(grid,               nameof(grid));
         this.RequireRef(sortKeyDropdown,    nameof(sortKeyDropdown));
         this.RequireRef(searchInput,        nameof(searchInput));
+        this.RequireRef(searchSuggestView,  nameof(searchSuggestView));
         this.RequireRef(industryDropdown,   nameof(industryDropdown));
         this.RequireRef(rarityDropdown,     nameof(rarityDropdown));
         this.RequireRef(resetButton,        nameof(resetButton));
@@ -153,7 +163,8 @@ public class InventoryToolPresenter : MonoBehaviour
         bulkSellButton.onClick.AddListener(OnBulkSellClicked);
         sortKeyDropdown.onValueChanged.AddListener(OnSortKeyChanged);
 
-        searchInput.onValueChanged.AddListener(_ => ApplyFilter());
+        searchInput.onValueChanged.AddListener(OnSearchChanged);
+        searchSuggestView.Picked += OnSuggestionPicked;
         industryDropdown.onValueChanged.AddListener(_ => ApplyFilter());
         rarityDropdown.onValueChanged.AddListener(_ => ApplyFilter());
         resetButton.onClick.AddListener(ResetFilter);
@@ -588,12 +599,29 @@ public class InventoryToolPresenter : MonoBehaviour
         grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry, group));
     }
 
+    // 검색창에 쳤다 — 거르고 후보를 띄운다 (searchInput.onValueChanged)
+    private void OnSearchChanged(string text)
+    {
+        ApplyFilter();
+
+        grid.CollectCurrentSuggestions(text, _suggestions, searchSuggestView.Capacity);
+        searchSuggestView.Show(_suggestions);
+    }
+
+    // 후보를 골랐다 — 그 이름으로 채우고 거른다 (SuggestView.Picked 구독)
+    private void OnSuggestionPicked(Suggestion suggestion)
+    {
+        searchInput.SetTextWithoutNotify(suggestion.Name);
+        ApplyFilter();
+    }
+
     // 찾기 조건을 모두 비운다 ([초기화] · 탭 전환 · OnDisable).
     //
     // 위젯은 알림 없이 되돌린다 — 알림을 켜 두면 위젯 셋이 각자 'ApplyFilter'를 불러 격자가 세 번 다시 그린다.
     private void ResetFilter()
     {
         searchInput.SetTextWithoutNotify("");
+        searchSuggestView.Hide();
         industryDropdown.SetValueWithoutNotify(0);
         rarityDropdown.SetValueWithoutNotify(0);
 

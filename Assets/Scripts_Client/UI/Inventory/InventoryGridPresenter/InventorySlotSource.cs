@@ -218,6 +218,50 @@ public abstract class InventorySlotSource
         Changed?.Invoke();
     }
 
+    // 이름에 'query'가 든 칸을 검색 후보로 모은다 — 이름이 그것으로 시작하는 것을 먼저, 같은 이름은 한 번만
+    // (격자의 'CollectCurrentSuggestions' — 도구 줄 검색창 아래 후보 목록).
+    // ※ 지금 찾기 조건(등급·분류)과 상관없이 이 탭이 가진 것 전부에서 찾는다 — 고르면 이름 조건만 바뀐다.
+    public void CollectSuggestions(string query, List<Suggestion> into, int max)
+    {
+        into.Clear();
+
+        if (string.IsNullOrWhiteSpace(query))
+        {
+            return;
+        }
+
+        AddSuggestions(query, startsWith: true,  into, max);
+        AddSuggestions(query, startsWith: false, into, max);
+    }
+
+    // 'CollectSuggestions'의 한 바퀴 — 시작 일치만 또는 중간 일치만 더한다.
+    private void AddSuggestions(string query, bool startsWith, List<Suggestion> into, int max)
+    {
+        foreach (PlacedSlot placed in _filled)
+        {
+            if (into.Count >= max)
+            {
+                return;
+            }
+
+            SlotData slot  = placed.Data;
+            int      index = slot.Name.IndexOf(query, StringComparison.OrdinalIgnoreCase);
+
+            if (index < 0 || (index == 0) != startsWith || into.Exists(s => s.Name == slot.Name))
+            {
+                continue;
+            }
+
+            into.Add(new Suggestion
+            {
+                Key       = slot.Key,
+                Name      = slot.Name,
+                NameColor = RarityPalette.Get(slot.Rarity),
+                Sub       = RarityLabel.Get(slot.Rarity),
+            });
+        }
+    }
+
     // 내용을 다시 채우고 격자에 알린다 (파생 공급자가 데이터 변경 이벤트에서 호출).
     protected void Rebuild()
     {

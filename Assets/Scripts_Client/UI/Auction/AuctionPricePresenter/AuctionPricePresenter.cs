@@ -92,7 +92,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
     // ─── 공용 검색창 ───
     public string QueryPlaceholder => "시세 볼 아이템 이름";
-    public string QueryHint        => "치면 아래 후보에서 고릅니다 · [검색]은 이름이 맞는 첫 아이템";
+    public string QueryHint        => "[검색] — 이름이 맞는 아이템의 시세를 엽니다";
     public string Query            => _query;
 
     public void OnQueryChanged(string text) => _query = text;
@@ -112,11 +112,11 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     // 게임 데이터 전부에서 이름이 맞는 것 — 아직 매물이 없는 아이템도 시세(기록)는 볼 수 있다.
-    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+    public void CollectSuggestions(string query, List<Suggestion> into, int max)
         => AuctionText.CollectCatalogSuggestions(EAuctionKind.None, query, into, max);
 
     // 후보를 고르면 그 시세를 바로 연다.
-    public void OnSuggestionPicked(AuctionSuggestion suggestion) => Open(suggestion.Kind, suggestion.Tid);
+    public void OnSuggestionPicked(Suggestion suggestion) => Open((EAuctionKind)suggestion.Kind, suggestion.Tid);
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()

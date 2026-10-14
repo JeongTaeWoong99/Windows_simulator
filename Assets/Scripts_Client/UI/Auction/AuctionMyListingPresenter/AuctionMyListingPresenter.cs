@@ -82,7 +82,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     public void OnQuerySubmitted(string text) => OnQueryChanged(text);
 
     // 판매 중인 내 매물에서 이름이 맞는 것 — 같은 아이템은 한 번만.
-    public void CollectSuggestions(string query, List<AuctionSuggestion> into, int max)
+    public void CollectSuggestions(string query, List<Suggestion> into, int max)
     {
         into.Clear();
 
@@ -93,7 +93,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     // 이름으로 거르는 일은 'OnQueryChanged'가 이미 했다.
-    public void OnSuggestionPicked(AuctionSuggestion suggestion) { }
+    public void OnSuggestionPicked(Suggestion suggestion) { }
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
     private void Start()

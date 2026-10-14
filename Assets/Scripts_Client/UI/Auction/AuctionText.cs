@@ -547,7 +547,7 @@ public static class AuctionText
 
     // 게임 데이터 전부에서 이름이 맞는 것을 후보로 모은다 — 이름이 'query'로 시작하는 것을 먼저, 그다음 이름에 든 것 (검색·시세 탭 검색창).
     //   kind : None이면 네 종류 모두(자원 → 장비 → 캐릭터 → 아티팩트 순)
-    public static void CollectCatalogSuggestions(EAuctionKind kind, string query, List<AuctionSuggestion> into, int max)
+    public static void CollectCatalogSuggestions(EAuctionKind kind, string query, List<Suggestion> into, int max)
     {
         into.Clear();
 
@@ -563,16 +563,16 @@ public static class AuctionText
     }
 
     // 받은 목록(내 매물 · 거래 기록)의 한 줄을 후보로 넣는다 — 이름이 맞고 같은 (종류, TID)가 아직 없을 때만.
-    public static void AddListSuggestion(List<AuctionSuggestion> into, EAuctionKind kind, int tid, string query, int max)
+    public static void AddListSuggestion(List<Suggestion> into, EAuctionKind kind, int tid, string query, int max)
     {
         if (into.Count >= max || string.IsNullOrWhiteSpace(query) || !MatchesName(kind, tid, query))
         {
             return;
         }
 
-        foreach (AuctionSuggestion suggestion in into)
+        foreach (Suggestion suggestion in into)
         {
-            if (suggestion.Kind == kind && suggestion.Tid == tid)
+            if ((EAuctionKind)suggestion.Kind == kind && suggestion.Tid == tid)
             {
                 return;
             }
@@ -582,9 +582,9 @@ public static class AuctionText
     }
 
     // (종류, TID)를 후보 한 줄로 — 이름은 등급 색, 오른쪽은 종류 · 분류. 'sub'를 주면 그것을 쓴다.
-    public static AuctionSuggestion ToSuggestion(EAuctionKind kind, int tid, long key = 0L, string? sub = null) => new AuctionSuggestion
+    public static Suggestion ToSuggestion(EAuctionKind kind, int tid, long key = 0L, string? sub = null) => new Suggestion
     {
-        Kind      = kind,
+        Kind      = (int)kind,
         Tid       = tid,
         Key       = key,
         Name      = GetName(kind, tid),
@@ -602,7 +602,7 @@ public static class AuctionText
     };
 
     // 한 단계의 후보를 모은다 — 'startsWith'면 이름이 그 글자로 시작하는 것, 아니면 이름 가운데에 든 것.
-    private static void AddCatalogMatches(EAuctionKind kind, string query, bool startsWith, List<AuctionSuggestion> into, int max)
+    private static void AddCatalogMatches(EAuctionKind kind, string query, bool startsWith, List<Suggestion> into, int max)
     {
         foreach ((EAuctionKind rowKind, int tid, string name) in Catalog(kind))
         {

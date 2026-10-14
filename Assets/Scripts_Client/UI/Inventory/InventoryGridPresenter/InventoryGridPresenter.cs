@@ -494,6 +494,21 @@ public class InventoryGridPresenter : MonoBehaviour
         scrollRect.verticalNormalizedPosition = 1f;
     }
 
+    // 지금 탭에서 이름에 'query'가 든 것을 검색 후보로 모은다 ('InventoryToolPresenter'의 검색창이 호출).
+    public void CollectCurrentSuggestions(string query, List<Suggestion> into, int max)
+    {
+        EnsureInitialized();
+
+        if (_current == null)
+        {
+            into.Clear();
+
+            return;
+        }
+
+        _current.CollectSuggestions(query, into, max);
+    }
+
     // 지금 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 기준 목록을 만들 때 호출).
     public bool CurrentSupportsSortKey(InventorySortKey key)
     {

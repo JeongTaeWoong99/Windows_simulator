@@ -67,7 +67,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     private TMP_InputField findInput = null!;
 
     [SerializeField, Tooltip("찾기 입력칸 아래 후보 목록")]
-    private AuctionSuggestView findSuggestView = null!;
+    private SuggestView findSuggestView = null!;
 
     [SerializeField, Tooltip("후보 한 줄 프리팹")]
     private AuctionRowView rowPrefab = null!;
@@ -144,7 +144,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     private Button registerButton = null!;
 
     private readonly List<AuctionRowContent> _contents    = new List<AuctionRowContent>();
-    private readonly List<AuctionSuggestion> _suggestions = new List<AuctionSuggestion>();
+    private readonly List<Suggestion> _suggestions = new List<Suggestion>();
 
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
@@ -421,11 +421,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
         findSuggestView.Show(_suggestions);
     }
 
-    // 후보를 골랐다 — 그 종류로 바꿔 골라 두고, 목록은 그 이름으로 거른다 (AuctionSuggestView.Picked 구독)
+    // 후보를 골랐다 — 그 종류로 바꿔 골라 두고, 목록은 그 이름으로 거른다 (SuggestView.Picked 구독)
     // ※ 흐린 것(올릴 수 없음)을 고르면 'ApplyOpen'이 사유를 알리고 고르지 않는다.
-    private void OnSuggestionPicked(AuctionSuggestion suggestion)
+    private void OnSuggestionPicked(Suggestion suggestion)
     {
-        RegisterKind kind = suggestion.Kind switch
+        RegisterKind kind = (EAuctionKind)suggestion.Kind switch
         {
             EAuctionKind.Equip     => RegisterKind.Equip,
             EAuctionKind.Character => RegisterKind.Character,
