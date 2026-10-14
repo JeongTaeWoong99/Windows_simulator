@@ -486,12 +486,21 @@ public class InventoryToolPresenter : MonoBehaviour
 
         GlobalRarity limit   = SelectedRarity;
         var          picked  = new List<long>();
+        int          locked  = 0;
         int          blocked = 0;
 
         foreach (CharacterInfo character in _data.Characters)
         {
             if (GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
             {
+                continue;
+            }
+
+            // 잠금은 따로 센다 — 알림에서 "잠겨서 빠졌다"를 다른 사유와 나눠 말한다(T-137).
+            if (character.IsLocked)
+            {
+                locked++;
+
                 continue;
             }
 
@@ -509,7 +518,7 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         _cart.AddEntities(picked, System.Array.Empty<long>());
-        NotifyEntityBulk("캐릭터", "명", picked.Count, blocked, "배치 중 · 장비 착용 · 마지막 캐릭터");
+        NotifyEntityBulk("캐릭터", "명", picked.Count, locked, blocked, "배치 중 · 장비 착용 · 마지막 캐릭터");
     }
 
     // 장비 — 고른 등급 이하 중 끼고 있지 않은 것만. 인챈트 등급도 범위 안이어야 한다 (OnBulkSellClicked에서 호출).
@@ -519,6 +528,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         GlobalRarity limit   = SelectedRarity;
         var          picked  = new List<long>();
+        int          locked  = 0;
         int          blocked = 0;
 
         foreach (EquipInfo equip in _data.Equips)
@@ -526,6 +536,13 @@ public class InventoryToolPresenter : MonoBehaviour
             // 'EnchantGrade'는 0(없음) 또는 'GlobalRarity' 값이다 — 장비 등급과 같은 축으로 비교한다.
             if (GameDataLoader.GetEquipRarity(equip.EquipTid) > limit || (GlobalRarity)equip.EnchantGrade > limit)
             {
+                continue;
+            }
+
+            if (equip.IsLocked)
+            {
+                locked++;
+
                 continue;
             }
 
@@ -540,13 +557,31 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         _cart.AddEntities(System.Array.Empty<long>(), picked);
-        NotifyEntityBulk("장비", "개", picked.Count, blocked, "캐릭터가 끼고 있는 장비");
+        NotifyEntityBulk("장비", "개", picked.Count, locked, blocked, "캐릭터가 끼고 있는 장비");
     }
 
     // 개체 일괄 담기 결과를 알린다 — 뺀 것이 있을 때와 하나도 못 담았을 때만 (BulkAddCharacters · BulkAddEquips).
-    private void NotifyEntityBulk(string kind, string unit, int added, int blocked, string blockedReason)
+    // 뺀 것 문구 — " (잠금 2명 · 배치 중 · 장비 착용 · 마지막 캐릭터 1명 제외)". 잠금이 있으면 푸는 방법을 한 줄 덧붙인다.
+    private void NotifyEntityBulk(string kind, string unit, int added, int locked, int blocked, string blockedReason)
     {
-        string blockedText = blocked > 0 ? $" ({blockedReason} {blocked}{unit} 제외)" : "";
+        var reasons = new List<string>();
+
+        if (locked > 0)
+        {
+            reasons.Add($"잠금 {locked}{unit}");
+        }
+
+        if (blocked > 0)
+        {
+            reasons.Add($"{blockedReason} {blocked}{unit}");
+        }
+
+        string blockedText = reasons.Count > 0 ? $" ({string.Join(" · ", reasons)} 제외)" : "";
+
+        if (locked > 0)
+        {
+            blockedText += "\n잠금은 Ctrl+좌클릭으로 풀 수 있습니다.";
+        }
 
         if (added == 0)
         {
@@ -555,12 +590,12 @@ public class InventoryToolPresenter : MonoBehaviour
             return;
         }
 
-        if (blocked > 0)
+        if (locked + blocked > 0)
         {
             _wait.RaiseNotice($"{kind} {added}{unit}을(를) 담았습니다.{blockedText}");
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added}{unit} · 제외 {blocked}{unit}");
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added}{unit} · 잠금 {locked}{unit} · 제외 {blocked}{unit}");
     }
 
     // 드롭다운이 가리키는 범위의 이름 — "일반".

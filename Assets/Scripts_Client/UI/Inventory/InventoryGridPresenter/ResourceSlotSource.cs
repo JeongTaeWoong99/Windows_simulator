@@ -87,7 +87,7 @@ public class ResourceSlotSource : InventorySlotSource
     //
     // ※ 두 가격을 나란히 적는다 — 우클릭 판매는 즉시 판매가(정해진 값), 경매장은 그 값 이상에서 직접 정한다.
     // ※ 판매가를 합계와 함께 적는다 — 칸에는 수량만 있어 "이 칸을 다 팔면 얼마인가"를 알 길이 없었다.
-    // ※ 조작 안내를 한 줄 둔다 — 좌클릭(상자 개봉)·우클릭(판매 담기)은 칸에 아무 표시가 없어 눌러 봐야 안다.
+    // ※ 조작 안내를 입력마다 한 줄씩 둔다 — 좌클릭(상자 개봉)·우클릭(판매 담기)은 칸에 아무 표시가 없어 눌러 봐야 안다.
     // ⚠️ 엑셀 'Description'은 쓰지 않는다 — 기획 메모 컬럼이라 플레이어용 문구가 아니다(T-093).
     public override TooltipContent? BuildTooltip(long key)
     {
@@ -108,8 +108,16 @@ public class ResourceSlotSource : InventorySlotSource
             .Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, count):N0} 골드", null)
             .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
 
-        content.Row(GameDataLoader.IsBox(itemId) ? "좌클릭 열기 · 우클릭 판매 담기" : "우클릭 판매 담기", "")
-               .Row("Shift+우클릭 경매 등록", "");
+        // 조작 안내 — 입력 하나에 한 줄(2026-10-15 사용자 요청 — 한 줄에 몰면 무엇이 무엇인지 읽히지 않는다).
+        content.Header("조작");
+
+        if (GameDataLoader.IsBox(itemId))
+        {
+            content.Row("마우스 좌", "열기");
+        }
+
+        content.Row("마우스 우", "판매 담기")
+               .Row("쉬프트 + 우", "경매 등록");
 
         return content;
     }
