@@ -1,8 +1,8 @@
 # Hub 폴더 규칙
 
-> 최종 업데이트: 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
+> 최종 업데이트: 2026-10-15 (창고 화면 — 종류별 3탭 · 인벤토리 격자와 같은 격자 · 끌어 넣기·꺼내기 — T-126) · 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
 
-**`#Hub Canvas` — 거점 열. 뽑기 · 창고 2탭이다. 창고만 아직 `(기능 없음)`이다.**
+**`#Hub Canvas` — 거점 열. 뽑기 · 창고 2탭이다.**
 
 > 📌 **2026-10-14 개명 (T-147)** — 이 열은 원래 **거래 열(Market)** 이었다. 경매장이 3열 폭 전부를 쓰는 화면으로 빠져
 > [`#Auction Canvas`](<../Auction/Auction 규칙.md>)가 되면서 뽑기·창고만 남아 **거점(Hub)** 으로 바꿨다.
@@ -13,6 +13,7 @@
 | `HubCanvasView.cs` | 캔버스 껍데기 — `Show(bool)`만 |
 | `HubTabPresenter/` | 탭 줄 — `HubTab`(뽑기·창고)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
 | `GachaPresenter/` | 뽑기 탭의 화면 — 풀마다 카드(`GachaPoolCardView`) · 카드 문구·확률 계산(`GachaPoolSummary`) |
+| `WarehousePresenter/` | 창고 탭의 화면 — 종류별 3탭 · [정렬] · 창고 격자. **격자는 인벤토리 격자(`InventoryGridPresenter`)를 `Container = Warehouse`로 둔 것이다** (아래 "창고 화면" 절) |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
 
@@ -25,13 +26,36 @@
 | 탭 | 화면 | 지금 |
 |---|---|---|
 | 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
-| 창고 | `Warehouse Page` | `(기능 없음)` — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버는 [T-107](../../../../tasks/T-107-창고서버.md) · 클라는 [T-126](../../../../tasks/T-126-클라창고화면드래그.md) |
+| 창고 | `Warehouse Presenter (↓ SUB VIEW)` | 동작 — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 [T-107](../../../../tasks/T-107-창고서버.md) · 클라 [T-126](../../../../tasks/T-126-클라창고화면드래그.md) |
 
-- 기능을 붙일 때는 **그 page 안에 Presenter를 넣고 `No Feature Text (TMP)`를 지운다.** `HubTabPresenter`는 안 바뀐다.
+- 탭을 새로 붙일 때는 **그 page 안에 Presenter를 넣는다.** `HubTabPresenter`는 안 바뀐다 (창고 탭도 이렇게 붙였다 — 자리 표시 `No Feature Text (TMP)`를 지우고 page에 `WarehousePresenter`를 달았다).
 - 아직 기능이 없는 탭도 누를 수 있다 — 화면의 `(기능 없음)`이 고장과 구분해 준다(설정 화면의 표기와 같다).
 - ⚠️ page는 꺼졌다 켜진다. page 안의 Presenter는 `OnEnable`/`OnDisable`로 구독을 잇고 끊는다(`GachaPresenter`가 그렇다).
 - ⚠️ **여기 '창고'는 인벤토리가 아니다.** 인벤토리(옛 이름 창고/Storage)는 **얻은 것이 바로 들어오는** 왼쪽 열이고, 창고는 **두고두고 쓸 것을 맡겨 두는** 곳이다. 코드에서 헷갈리지 않게 이 탭은 `Warehouse`라 부른다.
 - ⚠️ `HubTab`은 씬에 int로 저장된다. 경매장 탭(옛 값 1)을 뺄 때 창고가 2 → 1로 당겨져 씬 배선을 다시 넣었다(2026-10-14). 늘릴 때는 끝에 붙인다.
+
+---
+
+## 창고 화면 — 인벤토리 격자를 하나 더 둔다 (2026-10-15 · T-126)
+
+```
+Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter · VLG 0/5 — HubTabPresenter의 창고 page
+├─ Tab Row                         자원 · 캐릭터 · 장비 (인벤토리 탭 줄을 본뜸 · 특성 없음) · pref 50
+├─ Tool Row                        안내 글 + [정렬] · pref 40
+└─ Grid Presenter (↓ SUB VIEW)     InventoryGridPresenter — Container = Warehouse · 프레임 50 · flexH 1
+```
+
+**격자를 새로 짜지 않았다.** 칸·스크롤·끌기·정렬·보이는 칸만 그리기가 인벤토리 격자와 완전히 같고, 다른 것은
+**어느 보관함을 그리고 어디로 요청하나**뿐이라 `InventoryGridPresenter`에 `container` 필드를 두고 같은 컴포넌트를 하나 더 놓았다.
+공급자(`ResourceSlotSource` 등)도 같은 클래스에 보관함만 넘긴다. 상세는 [`Inventory 규칙.md`](<../Inventory/Inventory 규칙.md>)의 "창고 격자" 절.
+
+- **탭은 인벤토리 탭과 늘 같이 바뀐다**(2026-10-06 사용자 결정 → 이슈 #58). 맞닿은 두 격자가 같은 종류여야 끌어 넘길 수 있다.
+  전환의 주인은 `InventoryTabPresenter` 하나다 — 창고 탭 버튼은 `RequestTab`으로 요청하고, 바뀌면 `TabChanged`로 따라온다.
+  인벤토리가 특성 탭이면 창고는 보던 탭에 머문다.
+- **창고 칸에는 클릭 조작이 없다** — 판매·개봉·큐브·응축·잠금은 꺼낸 뒤 인벤토리에서 한다(서버도 인벤토리 것만 받는다).
+  그래서 창고 격자의 큐브 창·응축 창 참조는 비워 둔다. 툴팁 조작 줄은 `끌기 — 인벤토리로 꺼내기` 하나다.
+- **[정렬]은 등급순 하나다** — 맡겨 두는 곳이라 기준·방향 줄은 두지 않았다. 필요해지면 인벤토리 도구 줄을 닮게 늘린다.
+- 칸 수는 `Constants.WarehouseCapacity`(50)다 — `PlayerDataModel.GetStorageCapacity(container, tab)`이 보관함을 보고 답한다.
 
 ---
 

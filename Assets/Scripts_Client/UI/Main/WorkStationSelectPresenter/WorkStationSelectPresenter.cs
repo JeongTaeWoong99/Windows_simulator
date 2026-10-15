@@ -940,7 +940,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         foreach (CharacterInfo character in characters)
         {
-            if (_data.GetAptitude(character.CharacterId, industry) == 0)
+            // 창고에 맡긴 캐릭터는 일하지 않는다 — 인벤토리로 꺼내야 고를 수 있다(T-107).
+            if (character.Container != EContainer.Inventory || _data.GetAptitude(character.CharacterId, industry) == 0)
             {
                 continue;
             }

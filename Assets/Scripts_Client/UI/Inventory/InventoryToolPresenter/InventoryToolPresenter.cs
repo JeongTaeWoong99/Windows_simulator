@@ -409,9 +409,9 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (ItemInfo item in _data.Inventory)
         {
-            if (item.Count <= 0)
+            if (item.Count <= 0 || item.Container != EContainer.Inventory)
             {
-                continue; // 서버가 0개가 된 아이템도 실어 보낸다
+                continue; // 서버가 0개가 된 아이템도 실어 보낸다 · 창고에 맡긴 것은 팔지 않는다(T-107)
             }
 
             if (GameDataLoader.GetItemRarity(item.ItemId) > limit)

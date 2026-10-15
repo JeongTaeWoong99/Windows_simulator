@@ -55,11 +55,16 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 서버가 0개가 된 아이템도 목록에 실어 보내므로(감소도 같은 경로로 온다) 캐시에 남아 있다.
     // 판매 카트와 인벤토리 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
     // 한쪽만 고쳐졌을 때 화면과 요청이 다른 수량을 말한다.
-    public int GetItemCount(int itemId)
+    // ⚠️ 창고(T-107)에 맡긴 것은 세지 않는다 — 판매·개봉·큐브·경매 등록은 인벤토리에 있는 것만 쓴다.
+    //   같은 TID가 두 보관함에 따로 있을 수 있어, 보관함을 안 가리면 창고 줄을 먼저 집는다.
+    public int GetItemCount(int itemId) => GetItemCount(itemId, EContainer.Inventory);
+
+    // 그 보관함에 둔 아이템 하나의 수량. 없으면 0이다 (창고 격자 · 창고 ↔ 인벤토리 이동의 수량 팝업).
+    public int GetItemCount(int itemId, EContainer container)
     {
         foreach (var item in _inventory)
         {
-            if (item.ItemId == itemId)
+            if (item.ItemId == itemId && item.Container == container)
             {
                 return item.Count;
             }
@@ -68,11 +73,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
-    // 인벤토리 탭 하나의 칸 수 — 지금은 모든 유저·모든 탭이 'Constants.StorageCapacity'다.
+    // 보관함 탭 하나의 칸 수 — 지금은 모든 유저·모든 탭이 인벤토리 'Constants.StorageCapacity' · 창고 'Constants.WarehouseCapacity'다.
     //
     // ★ 칸 수를 묻는 곳은 여기 하나다 — 칸 프레임('InventoryGridPresenter')은 이 값만큼 열고 나머지는 끈다.
     //   유저마다 칸이 늘어나는 확장(특성 등)이 생기면 서버가 유저별 칸 수를 보내고, 이 메서드가 그 값을 돌려주면 된다(이슈 #73).
-    public int GetStorageCapacity(EStorageTab tab) => (int)Constants.StorageCapacity;
+    public int GetStorageCapacity(EContainer container, EStorageTab tab)
+        => (int)(container == EContainer.Warehouse ? Constants.WarehouseCapacity : Constants.StorageCapacity);
 
     // 내가 가진 캐릭터들.
     //
@@ -464,6 +470,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 인벤토리 [정렬]·칸 이동 결과 (거절 포함). 성공이면 칸 번호를 캐시에 반영하고 탭의 변경 이벤트를 먼저 발행한 뒤에 온다.
     public event Action<EResultCode>? StorageSlotsResponded;
 
+    // 인벤토리 ↔ 창고 이동 결과 (거절 포함). 성공이면 양쪽 보관함의 바뀐 칸을 캐시에 반영하고 변경 이벤트를 먼저 발행한 뒤에 온다.
+    public event Action<EResultCode>? WarehouseTransferResponded;
+
     // ─── Unity 메시지 ───
 
     // 구독 → 초기화 순서로 진행한다 (매니저 공통 규약 — 이 매니저는 확보할 참조가 없다)
@@ -532,6 +541,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailDeleteResponded      += OnMailDeleteResponded;
         ServerPacketHandler.AuctionRegisterResponded += OnAuctionRegisterResponded;
         ServerPacketHandler.StorageSlotsReceived     += OnStorageSlotsReceived;
+        ServerPacketHandler.WarehouseTransferred     += OnWarehouseTransferred;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -576,6 +586,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.MailDeleteResponded      -= OnMailDeleteResponded;
         ServerPacketHandler.AuctionRegisterResponded -= OnAuctionRegisterResponded;
         ServerPacketHandler.StorageSlotsReceived     -= OnStorageSlotsReceived;
+        ServerPacketHandler.WarehouseTransferred     -= OnWarehouseTransferred;
     }
 
     #endregion
@@ -1311,14 +1322,14 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         InventoryChanged?.Invoke();
     }
 
-    // 인벤토리 [정렬]·칸 이동 결과 — 성공이면 칸 번호를 캐시에 반영하고 그 탭의 변경 이벤트를 발행한다 (ServerPacketHandler 구독)
+    // 인벤토리·창고 [정렬]·칸 이동 결과 — 성공이면 칸 번호를 캐시에 반영하고 그 탭의 변경 이벤트를 발행한다 (ServerPacketHandler 구독)
     //
     // ★ 칸은 **이 응답이 온 뒤에만** 바뀐다 — 놓는 순간 미리 옮기지 않는다(낙관적 갱신 없음 · T-044).
     //   자리의 주인은 서버 DB다. 거절이면 아무것도 바뀌지 않고 결과만 알린다.
     // ※ 정렬이면 탭 전체, 이동이면 바뀐 칸만(교환이면 둘) 온다 — 실린 것만 덮어쓰면 둘 다 맞는다.
     private void OnStorageSlotsReceived(S_StorageSlotsResponse res)
     {
-        if (res.Result == EResultCode.Ok && res.Container == EContainer.Inventory)
+        if (res.Result == EResultCode.Ok)
         {
             _slotByKey.Clear();
 
@@ -1327,21 +1338,22 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 _slotByKey[slot.Key] = slot.Slot;
             }
 
-            ApplySlots(res.Tab);
+            ApplySlots(res.Container, res.Tab);
         }
 
         StorageSlotsResponded?.Invoke(res.Result);
     }
 
-    // 받은 칸 번호('_slotByKey')를 그 탭의 캐시에 덮어쓰고 변경 이벤트를 발행한다 (OnStorageSlotsReceived에서 호출).
-    private void ApplySlots(EStorageTab tab)
+    // 받은 칸 번호('_slotByKey')를 그 보관함·탭의 캐시에 덮어쓰고 변경 이벤트를 발행한다 (OnStorageSlotsReceived에서 호출).
+    // ※ 자원은 같은 TID가 두 보관함에 따로 있을 수 있어 보관함을 가린다. 캐릭터·장비도 같은 규칙으로 가린다.
+    private void ApplySlots(EContainer container, EStorageTab tab)
     {
         switch (tab)
         {
             case EStorageTab.Resource:
                 foreach (ItemInfo item in _inventory)
                 {
-                    if (item.Container == EContainer.Inventory && _slotByKey.TryGetValue(item.ItemId, out int slot))
+                    if (item.Container == container && _slotByKey.TryGetValue(item.ItemId, out int slot))
                     {
                         item.Slot = slot;
                     }
@@ -1353,7 +1365,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             case EStorageTab.Character:
                 foreach (CharacterInfo character in _characters)
                 {
-                    if (_slotByKey.TryGetValue(character.CharacterId, out int slot))
+                    if (character.Container == container && _slotByKey.TryGetValue(character.CharacterId, out int slot))
                     {
                         character.Slot = slot;
                     }
@@ -1365,7 +1377,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             case EStorageTab.Equip:
                 foreach (EquipInfo equip in _equips)
                 {
-                    if (_slotByKey.TryGetValue(equip.EquipId, out int slot))
+                    if (equip.Container == container && _slotByKey.TryGetValue(equip.EquipId, out int slot))
                     {
                         equip.SlotPosition = slot;
                     }
@@ -1373,6 +1385,88 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
                 EquipsChanged?.Invoke();
                 break;
+        }
+    }
+
+    // 인벤토리 ↔ 창고 이동 결과 — 성공이면 양쪽 보관함의 바뀐 칸을 캐시에 반영한다 (ServerPacketHandler 구독)
+    //
+    // ★ 칸 이동과 같이 **응답이 온 뒤에만** 바뀐다(낙관적 갱신 없음). 거절이면 'Changes'가 비어 있다.
+    // ※ 자원의 'Count'는 그 보관함에 남은 총량이다 — 0이면 그 칸이 비었다(캐시에 0으로 남기고 격자가 거른다 · 'ApplyItemChanges'와 같다).
+    //   캐릭터·장비는 그 개체가 'Container'의 'Slot'으로 옮겨졌다는 뜻이다.
+    private void OnWarehouseTransferred(S_WarehouseTransferResponse res)
+    {
+        if (res.Result == EResultCode.Ok && res.Changes.Count > 0)
+        {
+            switch (res.Tab)
+            {
+                case EStorageTab.Resource:
+                    ApplyItemTransfers(res.Changes);
+                    InventoryChanged?.Invoke();
+                    break;
+
+                case EStorageTab.Character:
+                    ApplyCharacterTransfers(res.Changes);
+                    CharactersChanged?.Invoke();
+                    break;
+
+                case EStorageTab.Equip:
+                    ApplyEquipTransfers(res.Changes);
+                    EquipsChanged?.Invoke();
+                    break;
+            }
+        }
+
+        WarehouseTransferResponded?.Invoke(res.Result);
+    }
+
+    // 자원 이동분을 캐시에 덮어쓴다 — 보관함마다 같은 TID는 한 줄이다 (OnWarehouseTransferred에서 호출).
+    private void ApplyItemTransfers(List<WarehouseChangeInfo> changes)
+    {
+        foreach (WarehouseChangeInfo change in changes)
+        {
+            int index = _inventory.FindIndex(item => item.ItemId == change.Key && item.Container == change.Container);
+
+            if (index >= 0)
+            {
+                _inventory[index].Count = change.Count;
+                _inventory[index].Slot  = change.Slot;
+
+                continue;
+            }
+
+            _inventory.Add(new ItemInfo
+            {
+                ItemId    = (int)change.Key,
+                Count     = change.Count,
+                Container = change.Container,
+                Slot      = change.Slot
+            });
+        }
+    }
+
+    // 캐릭터 이동분 — 개체의 보관함과 칸을 바꾼다 (OnWarehouseTransferred에서 호출).
+    private void ApplyCharacterTransfers(List<WarehouseChangeInfo> changes)
+    {
+        foreach (WarehouseChangeInfo change in changes)
+        {
+            if (FindCharacter(change.Key) is CharacterInfo character)
+            {
+                character.Container = change.Container;
+                character.Slot      = change.Slot;
+            }
+        }
+    }
+
+    // 장비 이동분 — 개체의 보관함과 칸을 바꾼다 (OnWarehouseTransferred에서 호출).
+    private void ApplyEquipTransfers(List<WarehouseChangeInfo> changes)
+    {
+        foreach (WarehouseChangeInfo change in changes)
+        {
+            if (FindEquip(change.Key) is EquipInfo equip)
+            {
+                equip.Container    = change.Container;
+                equip.SlotPosition = change.Slot;
+            }
         }
     }
 

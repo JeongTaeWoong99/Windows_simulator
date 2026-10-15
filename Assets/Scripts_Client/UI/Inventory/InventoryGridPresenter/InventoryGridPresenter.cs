@@ -76,8 +76,24 @@ using UnityEngine.UI;
 //     지연은 'MaxShineStagger'칸에서 멈춘다(10연차가 1초 넘게 이어지지 않게).
 //   - 보이는 칸만 돈다(T-138) — 화면 밖 칸은 표시만 남았다가 스크롤로 들어올 때 반짝인다. 칸 하나 = 그림 둘 + Sequence 하나.
 //   - 칸이 다른 개체로 다시 묶이거나(정렬 응답) 꺼지면 끊는다 — 남의 칸에서 반짝임이 이어지지 않게.
+//
+// ■ 창고 격자도 이 클래스다 (2026-10-15 · T-126)
+//   창고 화면(거점 열 창고 탭)의 격자는 **같은 컴포넌트를 'container = Warehouse'로 둔 것**이다. 칸·스크롤·끌기·정렬이 완전히 같고,
+//   다른 것은 어느 보관함을 그리고 어디로 요청하는가뿐이다 — 공급자에 보관함을 넘기고('InventorySlotSource.Container') 요청에 실어 보낸다.
+//   - 창고 칸에는 클릭 조작이 없다 — 판매·개봉·큐브·응축·잠금은 인벤토리에서만 된다(서버도 인벤토리 것만 받는다). 큐브 창·응축 창 참조도 비워 둔다.
+//   - 탭은 창고 화면('WarehousePresenter')이 인벤토리 탭을 따라 넘긴다 — 맞닿은 두 격자가 늘 같은 종류여야 끌어 넘길 수 있다.
+//
+// ■ 다른 격자에 놓으면 보관함 사이 이동이다 (T-126)
+//   켜져 있는 격자들은 서로를 안다('Grids'). 끄는 동안 포인터가 **같은 탭인 다른 보관함 격자** 위에 있으면 그 칸을 덮고,
+//   놓으면 'C_WarehouseTransferRequest'를 보낸다 — 빈 칸이면 그대로 들어가고, 찬 칸이면 서버가 스왑한다.
+//   자원은 2개 이상이면 수량을 묻는다(판매 담기와 같은 팝업). 칸은 응답(양쪽 보관함의 바뀐 칸)이 온 뒤에 바뀐다.
+//   칸이 아니라 격자 빈 곳에 놓으면 그 격자의 첫 빈 칸으로 보낸다.
 public class InventoryGridPresenter : MonoBehaviour
 {
+    [CenterHeader("보관함")]
+    [SerializeField, Tooltip("이 격자가 그리는 보관함 — 인벤토리 열의 격자는 Inventory, 창고 화면의 격자는 Warehouse")]
+    private EContainer container = EContainer.Inventory;
+
     [CenterHeader("참조")]
     [SerializeField, Tooltip("칸 프리팹 (SlotView 포함) — 자원·캐릭터 어느 탭이든 같은 칸이다. 빈 프레임 안에 생성된다")]
     private SlotView slotPrefab = null!;
@@ -91,11 +107,12 @@ public class InventoryGridPresenter : MonoBehaviour
     [SerializeField, Tooltip("이 격자의 스크롤. 찾기 조건이 바뀌면 맨 위로 올린다 — 결과는 앞으로 모인다")]
     private ScrollRect scrollRect = null!;
 
-    [SerializeField, Tooltip("큐브 창 — 장비 칸을 좌클릭하면 그 장비로 연다")]
-    private EquipEnchantPresenter equipEnchant = null!;
+    // ※ 둘은 인벤토리 격자에서만 필수다 — 창고 격자는 클릭 조작이 없어 비워 둔다('EnsureInitialized'가 보관함을 보고 검사한다).
+    [SerializeField, Tooltip("큐브 창 — 장비 칸을 좌클릭하면 그 장비로 연다 (인벤토리 격자만 · 창고 격자는 비운다)")]
+    private EquipEnchantPresenter? equipEnchant;
 
-    [SerializeField, Tooltip("응축 창 — 캐릭터 칸을 좌클릭하면 그 캐릭터로 열고, 열린 동안은 재료를 고른다")]
-    private CharacterCondensePresenter characterCondense = null!;
+    [SerializeField, Tooltip("응축 창 — 캐릭터 칸을 좌클릭하면 그 캐릭터로 열고, 열린 동안은 재료를 고른다 (인벤토리 격자만 · 창고 격자는 비운다)")]
+    private CharacterCondensePresenter? characterCondense;
 
     // ※ 셋 다 이 오브젝트 자신에 붙는다 — 특성 탭에서 격자를 끄지 않고 숨기는 데 쓴다('SetShown').
     [SerializeField, Tooltip("격자 자신의 하위 Canvas — 숨길 때 그리기만 끈다(Override Sorting 끔)")]
@@ -176,12 +193,19 @@ public class InventoryGridPresenter : MonoBehaviour
     // 잠금 응답을 기다리는 개체 — 같은 개체를 연타하면 응답 전에 같은 값을 두 번 보낸다(T-137).
     private readonly HashSet<long> _lockPending = new HashSet<long>();
 
-    // 진행 중인 [정렬]·칸 이동 요청의 대기. 응답 전에는 다음 요청을 보내지 않는다 —
+    // 진행 중인 [정렬]·칸 이동·보관함 사이 이동 요청의 대기. 응답 전에는 다음 요청을 보내지 않는다 —
     // 앞 응답이 오기 전의 칸 번호로 다시 보내면 서버와 화면이 엇갈린 칸을 가리킨다.
-    private ServerWaitHandle? _slotWaitHandle;
+    // ※ 격자끼리 함께 쓴다(static) — 보관함 사이 이동은 두 보관함의 칸을 함께 바꾸므로 한쪽 대기 중에 다른 쪽도 보내면 안 된다.
+    private static ServerWaitHandle? s_slotWaitHandle;
+
+    // 지금 살아 있는 격자들 — 다른 격자 위에 놓았는지 찾을 때 본다('FindDropTarget'). 초기화 때 넣고 파괴될 때 뺀다.
+    private static readonly List<InventoryGridPresenter> Grids = new List<InventoryGridPresenter>();
 
     // 지금 끌고 있는 칸의 프레임 번호. 끌지 않으면 -1.
     private int _dragFrom = -1;
+
+    // 놓을 칸 덮개를 지금 띄운 격자 — 다른 보관함 격자 위를 지나면 그 격자다. 없으면 null.
+    private InventoryGridPresenter? _highlightGrid;
 
     // 끌리는 칸 그림 — 처음 끌 때 한 번 만들어 계속 쓴다. 포인터를 가리지 않게 레이캐스트를 막지 않는다.
     private SlotView?      _ghost;
@@ -209,6 +233,24 @@ public class InventoryGridPresenter : MonoBehaviour
     //
     // ⚠️ 캐릭터·장비 탭의 'Key'는 **개체 PK**라 상자 TID와 우연히 겹칠 수 있다 — 판매처럼 탭을 넓히지 않는다.
     private bool IsItemKeyTab => _currentTab == InventoryTab.Resource;
+
+    // 인벤토리 격자인가. 클릭 조작(판매·개봉·큐브·응축·잠금)은 여기서만 된다 — 창고 칸은 끌어서 꺼내기만 한다.
+    private bool IsInventory => container == EContainer.Inventory;
+
+    // 사람이 읽는 보관함 이름 — 로그·대기 문구에 쓴다.
+    private string ContainerLabel => IsInventory ? "인벤토리" : "창고";
+
+    // 이 격자가 지금 보이고 끌어 놓을 수 있나 — 다른 격자가 놓을 곳을 찾을 때 본다(특성 탭에서는 숨는다 · 'SetShown').
+    private bool IsDropReady => _isReady && isActiveAndEnabled && gridCanvas.enabled && _current != null;
+
+    // 플레이마다 격자끼리 함께 쓰는 값을 비운다 (Unity 런타임 초기화 훅)
+    // ※ 도메인 리로드를 끈 플레이에서도 지난 플레이의 격자·대기가 남지 않게 한다('ServerClock'과 같다).
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetOnPlay()
+    {
+        Grids.Clear();
+        s_slotWaitHandle = null;
+    }
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
     private void Start()
@@ -242,11 +284,16 @@ public class InventoryGridPresenter : MonoBehaviour
         this.RequireRef(slotParent, nameof(slotParent));
         this.RequireRef(emptyNotice, nameof(emptyNotice));
         this.RequireRef(scrollRect,  nameof(scrollRect));
-        this.RequireRef(equipEnchant, nameof(equipEnchant));
-        this.RequireRef(characterCondense, nameof(characterCondense));
         this.RequireRef(gridCanvas,    nameof(gridCanvas));
         this.RequireRef(gridRaycaster, nameof(gridRaycaster));
         this.RequireRef(gridLayout,    nameof(gridLayout));
+
+        // 큐브 창·응축 창은 인벤토리 격자만 쓴다 — 창고 격자는 비워 둔다.
+        if (IsInventory)
+        {
+            this.RequireRef(equipEnchant,      nameof(equipEnchant));
+            this.RequireRef(characterCondense, nameof(characterCondense));
+        }
 
         CacheFrames();
 
@@ -263,9 +310,9 @@ public class InventoryGridPresenter : MonoBehaviour
         //   전환·잠금·격자는 그대로다 ('Inventory 규칙.md'의 "탭 하나를 채우는 절차").
         //
         // ⏸ Trait — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
-        _sources.Add(InventoryTab.Resource,  new ResourceSlotSource(data));
-        _sources.Add(InventoryTab.Character, new CharacterSlotSource(data));
-        _sources.Add(InventoryTab.Equipment, new EquipSlotSource(data));
+        _sources.Add(InventoryTab.Resource,  new ResourceSlotSource(data, container));
+        _sources.Add(InventoryTab.Character, new CharacterSlotSource(data, container));
+        _sources.Add(InventoryTab.Equipment, new EquipSlotSource(data, container));
 
         // ★ 끝까지 왔을 때만 세운다 — 위에서 예외가 나면(참조 미연결·서비스 미등록) 플래그가
         //   안 켜져 다음 호출이 다시 시도하고, 원인도 매번 같은 예외로 드러난다.
@@ -276,16 +323,25 @@ public class InventoryGridPresenter : MonoBehaviour
         //   응답이 늦게 오는 사이 인벤토리를 닫으면 대기 손잡이가 영영 안 닫혀 로딩이 남는다.
         _data.ItemUseCompleted      += OnItemUseCompleted;
         _data.ItemUseFailed         += OnItemUseFailed;
-        _data.StorageSlotsResponded += OnStorageSlotsResponded;
-        _data.EntityLockCompleted   += OnEntityLockCompleted;
+        _data.StorageSlotsResponded      += OnStorageSlotsResponded;
+        _data.WarehouseTransferResponded += OnStorageSlotsResponded; // 대기를 닫는 일은 같다
+        _data.EntityLockCompleted        += OnEntityLockCompleted;
 
         // 응축 창의 대상·재료가 바뀌면 칸 표시(테두리·체크·흑백)를 다시 그린다.
         // ※ 켜고 끌 때 풀지 않는다 — 응축 창이 닫힐 때의 알림(표시 걷기)을 격자가 꺼져 있어도 놓치면 안 된다.
-        characterCondense.SelectionChanged += Redraw;
+        if (characterCondense != null)
+        {
+            characterCondense.SelectionChanged += Redraw;
+        }
 
         // 큐브 창이 장비를 띄우면 그 장비만 색을 남기고 나머지는 흑백으로 — 무엇을 강화하는지 격자에서 보인다(2026-10-11).
         // 응축 창과 같은 이유로 켜고 끌 때 풀지 않는다 — 닫힐 때 흑백을 걷는 알림을 놓치면 안 된다.
-        equipEnchant.TargetChanged += Redraw;
+        if (equipEnchant != null)
+        {
+            equipEnchant.TargetChanged += Redraw;
+        }
+
+        Grids.Add(this);
 
         // 보이는 칸만 그리므로 스크롤·창 크기가 바뀌면 새로 들어온 칸을 그린다('Redraw' 주석).
         scrollRect.onValueChanged.AddListener(OnScrollChanged);
@@ -341,11 +397,22 @@ public class InventoryGridPresenter : MonoBehaviour
 
         _data.ItemUseCompleted      -= OnItemUseCompleted;
         _data.ItemUseFailed         -= OnItemUseFailed;
-        _data.StorageSlotsResponded -= OnStorageSlotsResponded;
-        _data.EntityLockCompleted   -= OnEntityLockCompleted;
-        characterCondense.SelectionChanged -= Redraw;
-        equipEnchant.TargetChanged         -= Redraw;
+        _data.StorageSlotsResponded      -= OnStorageSlotsResponded;
+        _data.WarehouseTransferResponded -= OnStorageSlotsResponded;
+        _data.EntityLockCompleted        -= OnEntityLockCompleted;
+
+        if (characterCondense != null)
+        {
+            characterCondense.SelectionChanged -= Redraw;
+        }
+
+        if (equipEnchant != null)
+        {
+            equipEnchant.TargetChanged -= Redraw;
+        }
+
         scrollRect.onValueChanged.RemoveListener(OnScrollChanged);
+        Grids.Remove(this);
     }
 
     #region 구독
@@ -484,15 +551,15 @@ public class InventoryGridPresenter : MonoBehaviour
 
         _network.Send(new C_StorageSortRequest
         {
-            Container = EContainer.Inventory,
+            Container = container,
             Tab       = tab,
             SortKey   = ToServerSortKey(sortKey),
             Order     = order == InventorySortOrder.Ascending ? EStorageSortOrder.Ascending : EStorageSortOrder.Descending
         });
 
-        ClientLogger.Info(ClientLogger.Send, $"인벤토리 정렬 요청 — {tab} · {sortKey} · {order}");
+        ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 정렬 요청 — {tab} · {sortKey} · {order}");
 
-        _slotWaitHandle = _wait.Begin("인벤토리 정렬", onClosed: OnSlotWaitClosed);
+        s_slotWaitHandle = _wait.Begin($"{ContainerLabel} 정렬", onClosed: OnSlotWaitClosed);
     }
 
     // 지금 탭에 찾기 조건을 건다 ('InventoryToolPresenter'의 검색창 · 드롭다운이 호출).
@@ -723,7 +790,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
         // 큐브 창이 열려 있으면 띄운 장비 말고는 같은 흑백으로 물린다 — 찾기 제외와 같은 표시를 쓴다.
-        bool outOfEnchant = _currentTab == InventoryTab.Equipment && equipEnchant.IsOpen && equipEnchant.EquipId != data.Key;
+        bool outOfEnchant = _currentTab == InventoryTab.Equipment && equipEnchant != null && equipEnchant.IsOpen && equipEnchant.EquipId != data.Key;
 
         view.SetFilteredOut(outOfEnchant || _current.IsFilteredOut(data.Key));
 
@@ -744,7 +811,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
         view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
-        view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
+        view.SetCondenseMark(IsCharacterTab && characterCondense != null ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
 
         SyncShine(i, view, data);
     }
@@ -865,8 +932,8 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 판매 담기
 
-    // 이 칸이 판매 목록에 담겨 있나 — 지금 탭에 맞는 카트 목록을 본다 (Redraw에서 호출).
-    private bool IsInCart(long key) => _currentTab switch
+    // 이 칸이 판매 목록에 담겨 있나 — 지금 탭에 맞는 카트 목록을 본다 (Redraw에서 호출). 창고 칸은 담기지 않는다.
+    private bool IsInCart(long key) => IsInventory && _currentTab switch
     {
         InventoryTab.Resource  => _cart.Contains((int)key),
         InventoryTab.Character => _cart.ContainsCharacter(key),
@@ -880,7 +947,8 @@ public class InventoryGridPresenter : MonoBehaviour
     // 한 조작에 '담기'와 '수량 바꾸기'를 겹쳐 두면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
     private void OnSlotRightClicked(SlotView view)
     {
-        if (view.IsEmpty)
+        // 창고 칸은 팔 수 없다 — 꺼내서 판다(서버도 인벤토리 것만 받는다).
+        if (view.IsEmpty || !IsInventory)
         {
             return;
         }
@@ -894,12 +962,13 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 판매 목록 자리를 큐브 창·응축 창이 쓰고 있으면 돌려준다 — 담은 것이 보여야 한다.
         // ※ 큐브 창이 상급 큐브 결과를 고르기 전이면 닫히지 않는다 — 담지도 않는다(창이 이유를 알린다).
-        if (!equipEnchant.TryClose())
+        // ※ 인벤토리 격자에서는 둘 다 필수 참조다('EnsureInitialized').
+        if (!equipEnchant!.TryClose())
         {
             return;
         }
 
-        characterCondense.Close();
+        characterCondense!.Close();
 
         switch (_currentTab)
         {
@@ -1070,10 +1139,93 @@ public class InventoryGridPresenter : MonoBehaviour
             _ghost.transform.localPosition = local;
         }
 
-        int target = FindFrameAt(eventData.position, eventData.pressEventCamera);
+        FindDropTarget(eventData.position, eventData.pressEventCamera, out InventoryGridPresenter? grid, out int target);
 
         // 제자리는 덮지 않는다 — 놓아도 아무 일이 없는 칸이다.
-        HighlightFrame(target == _dragFrom ? -1 : target);
+        if (grid == this && target == _dragFrom)
+        {
+            grid = null;
+        }
+
+        // 덮개는 격자마다 하나다 — 다른 격자로 넘어가면 앞 격자의 덮개를 걷는다.
+        if (_highlightGrid != null && _highlightGrid != grid)
+        {
+            _highlightGrid.HighlightFrame(-1);
+        }
+
+        _highlightGrid = grid;
+
+        if (grid != null)
+        {
+            grid.HighlightFrame(target);
+        }
+    }
+
+    // 포인터 아래의 놓을 곳 — 자기 격자의 칸이 먼저, 아니면 **같은 탭인 다른 보관함 격자** (MoveSlotDrag · EndSlotDrag에서 호출).
+    //   다른 격자의 칸 사이·빈 곳이면 그 격자의 첫 빈 칸이다(보관함 사이 이동은 "넣는다"가 본뜻이라 칸을 겨누지 않아도 된다).
+    //   놓을 곳이 없으면 grid = null.
+    private void FindDropTarget(Vector2 screenPoint, Camera? eventCamera, out InventoryGridPresenter? grid, out int frame)
+    {
+        frame = FindFrameAt(screenPoint, eventCamera);
+        grid  = frame >= 0 ? this : null;
+
+        if (grid != null)
+        {
+            return;
+        }
+
+        foreach (InventoryGridPresenter other in Grids)
+        {
+            if (other == this || other.container == container || other._currentTab != _currentTab || !other.IsDropReady)
+            {
+                continue;
+            }
+
+            if (!other.ContainsInViewport(screenPoint, eventCamera))
+            {
+                continue;
+            }
+
+            frame = other.FindFrameAt(screenPoint, eventCamera);
+
+            if (frame < 0)
+            {
+                frame = other.FirstEmptyFrame();
+            }
+
+            grid = frame >= 0 ? other : null;
+
+            return;
+        }
+    }
+
+    // 이 격자의 보이는 영역(뷰포트) 안인가 (FindDropTarget · FindFrameAt에서 호출).
+    // 뷰포트를 따로 지정하지 않은 스크롤은 자기 자신이 뷰포트다(ScrollRect 기본 동작).
+    private bool ContainsInViewport(Vector2 screenPoint, Camera? eventCamera)
+    {
+        RectTransform viewport = scrollRect.viewport != null ? scrollRect.viewport : (RectTransform)scrollRect.transform;
+
+        return RectTransformUtility.RectangleContainsScreenPoint(viewport, screenPoint, eventCamera);
+    }
+
+    // 앞에서부터 첫 빈 칸의 프레임 번호. 다 찼으면 -1 (FindDropTarget에서 호출 — 다른 격자의 빈 곳에 놓았을 때).
+    // ※ 거르는 중이면 보이는 순서가 칸 번호가 아니라 -1이다 — 놓는 쪽('EndSlotDrag')이 이유를 알린다.
+    private int FirstEmptyFrame()
+    {
+        if (_current == null || _current.IsFiltering)
+        {
+            return -1;
+        }
+
+        for (int i = 0; i < _openFrames; i++)
+        {
+            if (i >= _current.Count || _current.Get(i) == null)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     // i번째 프레임을 어두운 덮개로 덮는다. -1이면 걷는다 (MoveSlotDrag · CancelSlotDrag에서 호출).
@@ -1137,7 +1289,8 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 놓았다 — 놓은 칸을 찾아 이동을 요청한다 ('InventorySlotDrag.OnEndDrag'가 호출).
     //
-    // 칸 밖·같은 칸이면 아무것도 보내지 않는다. 칸은 응답이 와야 바뀐다 — 여기서는 원래 모습으로 되돌릴 뿐이다.
+    // 칸 밖·같은 칸이면 아무것도 보내지 않는다. 다른 보관함 격자에 놓았으면 보관함 사이 이동이다('TransferTo').
+    // 칸은 응답이 와야 바뀐다 — 여기서는 원래 모습으로 되돌릴 뿐이다.
     internal void EndSlotDrag(int frameIndex, PointerEventData eventData)
     {
         if (_dragFrom != frameIndex)
@@ -1147,24 +1300,136 @@ public class InventoryGridPresenter : MonoBehaviour
 
         CancelSlotDrag();
 
-        int target = FindFrameAt(eventData.position, eventData.pressEventCamera);
+        Camera? eventCamera = eventData.pressEventCamera;
 
-        if (target < 0 || target == frameIndex || !TryGetStorageTab(out EStorageTab tab))
+        FindDropTarget(eventData.position, eventCamera, out InventoryGridPresenter? grid, out int target);
+
+        if (grid == null || !TryGetStorageTab(out EStorageTab tab))
+        {
+            // 다른 격자 위인데 놓을 칸이 없었다 — 다 찼거나 찾기 중이다. 말없이 버리면 고장처럼 보인다.
+            NoticeIfOtherGridRefused(eventData.position, eventCamera);
+
+            return;
+        }
+
+        if (grid != this)
+        {
+            TransferTo(grid, tab, frameIndex, target);
+
+            return;
+        }
+
+        if (target == frameIndex)
         {
             return;
         }
 
         _network.Send(new C_StorageMoveSlotRequest
         {
-            Container = EContainer.Inventory,
+            Container = container,
             Tab       = tab,
             FromSlot  = frameIndex,
             ToSlot    = target
         });
 
-        ClientLogger.Info(ClientLogger.Send, $"인벤토리 칸 이동 요청 — {tab} {frameIndex} → {target}");
+        ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 칸 이동 요청 — {tab} {frameIndex} → {target}");
 
-        _slotWaitHandle = _wait.Begin("인벤토리 칸 이동", onClosed: OnSlotWaitClosed);
+        s_slotWaitHandle = _wait.Begin($"{ContainerLabel} 칸 이동", onClosed: OnSlotWaitClosed);
+    }
+
+    // 다른 보관함 격자 위에 놓았는데 받을 칸이 없었으면 이유를 알린다 (EndSlotDrag에서 호출).
+    private void NoticeIfOtherGridRefused(Vector2 screenPoint, Camera? eventCamera)
+    {
+        foreach (InventoryGridPresenter other in Grids)
+        {
+            if (other == this || other.container == container || !other.IsDropReady || !other.ContainsInViewport(screenPoint, eventCamera))
+            {
+                continue;
+            }
+
+            if (other._currentTab != _currentTab)
+            {
+                return; // 탭이 다른 격자 — 늘 같이 바뀌므로 정상 동선에서는 나오지 않는다
+            }
+
+            _wait.RaiseNotice(other._current!.IsFiltering
+                ? "찾기 중에는 넣을 수 없습니다. 찾기를 비운 뒤 옮겨 주세요."
+                : $"{other.ContainerLabel}에 빈 칸이 없습니다.");
+
+            return;
+        }
+    }
+
+    // 이 격자의 칸을 다른 보관함 격자의 칸으로 옮겨 달라고 서버에 요청한다 (EndSlotDrag에서 호출 · T-126).
+    //
+    // 자원은 2개 이상이면 몇 개 옮길지 묻는다 — 판매 담기와 같은 수량 팝업이다(1개면 묻지 않는다).
+    // ※ 찬 칸에 놓으면 서버가 스왑한다 — 같은 자원이면 놓은 칸과 무관하게 합치고, 다른 자원 칸에 일부만 놓으면 'WarehousePartialSwap'으로 거절한다.
+    private void TransferTo(InventoryGridPresenter target, EStorageTab tab, int fromSlot, int toSlot)
+    {
+        if (target._current != null && target._current.IsFiltering)
+        {
+            _wait.RaiseNotice("찾기 중에는 넣을 수 없습니다. 찾기를 비운 뒤 옮겨 주세요.");
+
+            return;
+        }
+
+        SlotData? cell = _current != null && fromSlot < _current.Count ? _current.Get(fromSlot) : null;
+
+        if (cell == null)
+        {
+            return; // 끄는 사이 칸이 비었다 — 뒤이어 온 변경이 이미 다시 그렸다
+        }
+
+        if (tab != EStorageTab.Resource)
+        {
+            SendTransfer(tab, fromSlot, toSlot, 1);
+
+            return;
+        }
+
+        int itemId = (int)cell.Value.Key;
+        int owned  = _data.GetItemCount(itemId, container);
+
+        if (owned <= 0)
+        {
+            return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
+        }
+
+        if (owned == 1)
+        {
+            SendTransfer(tab, fromSlot, toSlot, 1);
+
+            return;
+        }
+
+        string question = IsInventory ? "몇 개를 창고에 넣을까?" : "몇 개를 꺼낼까?";
+
+        // ※ 팝업이 떠 있는 사이 칸이 바뀌어도 그대로 보낸다 — 어긋났으면 서버가 거절한다(클라가 다시 재지 않는다).
+        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(tab, fromSlot, toSlot, amount));
+    }
+
+    // 보관함 사이 이동 요청을 보낸다 (TransferTo · 수량 팝업 확인에서 호출).
+    private void SendTransfer(EStorageTab tab, int fromSlot, int toSlot, int count)
+    {
+        if (!CanSendSlotRequest("창고 이동"))
+        {
+            return;
+        }
+
+        _network.Send(new C_WarehouseTransferRequest
+        {
+            From     = container,
+            Tab      = tab,
+            FromSlot = fromSlot,
+            ToSlot   = toSlot,
+            Count    = count
+        });
+
+        string label = IsInventory ? "창고에 넣기" : "창고에서 꺼내기";
+
+        ClientLogger.Info(ClientLogger.Send, $"{label} 요청 — {tab} {fromSlot} → {toSlot} · {count}개");
+
+        s_slotWaitHandle = _wait.Begin(label, onClosed: OnSlotWaitClosed);
     }
 
     // 끌기를 접는다 — 그림을 거두고 흐린 칸을 되돌린다 (놓기 · 탭 전환 · 비활성화에서 호출).
@@ -1177,7 +1442,11 @@ public class InventoryGridPresenter : MonoBehaviour
 
         _dragFrom = -1;
 
-        HighlightFrame(-1);
+        if (_highlightGrid != null)
+        {
+            _highlightGrid.HighlightFrame(-1);
+            _highlightGrid = null;
+        }
 
         if (_ghost != null)
         {
@@ -1193,10 +1462,7 @@ public class InventoryGridPresenter : MonoBehaviour
     // ★ 보이는 영역부터 본다 — 스크롤에 가려진 프레임도 좌표는 살아 있어, 영역 밖(도구 줄 등)에 놓아도 걸린다.
     private int FindFrameAt(Vector2 screenPoint, Camera? eventCamera)
     {
-        // 뷰포트를 따로 지정하지 않은 스크롤은 자기 자신이 뷰포트다(ScrollRect 기본 동작).
-        RectTransform viewport = scrollRect.viewport != null ? scrollRect.viewport : (RectTransform)scrollRect.transform;
-
-        if (!RectTransformUtility.RectangleContainsScreenPoint(viewport, screenPoint, eventCamera))
+        if (!ContainsInViewport(screenPoint, eventCamera))
         {
             return -1;
         }
@@ -1261,14 +1527,14 @@ public class InventoryGridPresenter : MonoBehaviour
     // 로그인 전에 보내면 서버가 조용히 버려 응답이 안 온다 — 로딩만 남는다.
     private bool CanSendSlotRequest(string label)
     {
-        if (_slotWaitHandle != null)
+        if (s_slotWaitHandle != null)
         {
-            return false; // 앞 요청의 응답을 기다리는 중 — 연타 방지
+            return false; // 앞 요청의 응답을 기다리는 중 — 연타 방지 (다른 격자의 요청도 함께 막는다)
         }
 
         if (!_data.IsLoggedIn)
         {
-            ClientLogger.Warn(ClientLogger.Send, $"인벤토리 {label} 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+            ClientLogger.Warn(ClientLogger.Send, $"{ContainerLabel} {label} 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
 
             return false;
         }
@@ -1276,23 +1542,25 @@ public class InventoryGridPresenter : MonoBehaviour
         return true;
     }
 
-    // 정렬·칸 이동 결과 도착 — 칸은 'PlayerDataModel'이 이미 반영했다. 대기만 닫는다 (PlayerDataModel.StorageSlotsResponded 구독)
+    // 정렬·칸 이동·보관함 사이 이동 결과 도착 — 칸은 'PlayerDataModel'이 이미 반영했다. 대기만 닫는다
+    // (PlayerDataModel.StorageSlotsResponded · WarehouseTransferResponded 구독)
+    // ※ 격자마다 구독하지만 대기는 하나다 — 먼저 받은 격자가 닫으면 'OnSlotWaitClosed'가 비워 두 번째는 할 일이 없다.
     private void OnStorageSlotsResponded(EResultCode code)
     {
         if (code == EResultCode.Ok)
         {
-            _slotWaitHandle?.Succeed();
+            s_slotWaitHandle?.Succeed();
 
             return;
         }
 
-        _slotWaitHandle?.Fail(ResultMessages.ToText(code));
+        s_slotWaitHandle?.Fail(ResultMessages.ToText(code));
     }
 
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 다음 요청을 받는다 (ServerWaitManager.Begin의 onClosed)
-    private void OnSlotWaitClosed()
+    private static void OnSlotWaitClosed()
     {
-        _slotWaitHandle = null;
+        s_slotWaitHandle = null;
     }
 
     // 지금 탭을 서버의 탭 값으로 옮긴다. 격자 탭이 아니면 false (SortCurrent · EndSlotDrag에서 호출).
@@ -1328,7 +1596,8 @@ public class InventoryGridPresenter : MonoBehaviour
     // 수량을 묻는 동선은 판매 담기와 **똑같이** 간다 — 1개면 묻지 않고, 2개 이상이면 팝업을 띄운다.
     private void OnSlotLeftClicked(SlotView view)
     {
-        if (view.IsEmpty)
+        // 창고 칸에는 클릭 조작이 없다 — 개봉·큐브·응축·잠금은 꺼낸 뒤에 한다.
+        if (view.IsEmpty || !IsInventory)
         {
             return;
         }
@@ -1344,7 +1613,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // 장비 칸 — 큐브 창을 그 장비로 연다(T-095). 착용 중이어도 연다 — 창이 [해제하고 사용]으로 말한다.
         if (_currentTab == InventoryTab.Equipment)
         {
-            equipEnchant.Open(view.Key);
+            equipEnchant!.Open(view.Key);
 
             return;
         }
@@ -1352,7 +1621,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // 캐릭터 칸 — 닫혀 있으면 응축 창을 열고, 열려 있으면 재료를 고른다(T-130). 배치·착용 중이어도 대상으로는 연다.
         if (_currentTab == InventoryTab.Character)
         {
-            characterCondense.OnCharacterClicked(view.Key);
+            characterCondense!.OnCharacterClicked(view.Key);
 
             return;
         }
@@ -1546,7 +1815,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        int capacity = Mathf.Max(0, _data.GetStorageCapacity(tab));
+        int capacity = Mathf.Max(0, _data.GetStorageCapacity(container, tab));
 
         if (capacity == _openFrames)
         {

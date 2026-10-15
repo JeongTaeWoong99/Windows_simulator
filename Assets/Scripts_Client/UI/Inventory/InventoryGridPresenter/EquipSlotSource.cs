@@ -37,18 +37,18 @@ public class EquipSlotSource : InventorySlotSource
     private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
     private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
 
-    public EquipSlotSource(PlayerDataModel data)
+    public EquipSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
         _data = data;
     }
 
-    // 보유 장비를 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
-    // ※ 창고(T-107)에 맡긴 장비는 인벤토리 격자에 그리지 않는다.
+    // 이 보관함의 장비를 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
+    // ※ 다른 보관함(인벤토리 ↔ 창고 · T-107)의 장비는 그리지 않는다.
     protected override void Fill(List<PlacedSlot> into)
     {
         foreach (EquipInfo equip in _data.Equips)
         {
-            if (equip.Container != EContainer.Inventory)
+            if (equip.Container != Container)
             {
                 continue;
             }
@@ -107,22 +107,28 @@ public class EquipSlotSource : InventorySlotSource
             return null; // 목록이 아직 낡았다 — 칸도 이름을 그리지 못한다
         }
 
-        string state = equip.EquippedCharacterId == 0L
-            ? "인벤토리"
-            : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
+        string state = IsWarehouse                    ? "창고 보관"
+                     : equip.EquippedCharacterId == 0L ? "인벤토리"
+                     : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
 
         if (equip.IsLocked)
         {
             state += " · 잠김";
         }
 
+        TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state);
+
+        if (content == null)
+        {
+            return null;
+        }
+
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        return EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state)?
-            .Header("조작")
+        return AddControls(content, rows => rows
             .Row("좌클릭",       "큐브")
             .Row("우클릭",       "판매 담기")
             .Row("Ctrl+좌클릭",  equip.IsLocked ? "잠금 풀기" : "잠그기")
-            .Row("Shift+우클릭", "경매 등록");
+            .Row("Shift+우클릭", "경매 등록"));
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

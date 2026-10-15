@@ -13,15 +13,15 @@ public class ResourceSlotSource : InventorySlotSource
     // ※ 'GetItemCount'를 쓰지 않는다 — 같은 TID가 창고(T-107)에도 있으면 그쪽 줄을 먼저 집을 수 있다.
     private readonly Dictionary<long, int> _counts = new Dictionary<long, int>();
 
-    public ResourceSlotSource(PlayerDataModel data)
+    public ResourceSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
         _data = data;
     }
 
-    // 보유 아이템을 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
+    // 이 보관함의 아이템을 서버 칸 번호와 함께 칸으로 옮긴다 (Rebuild에서 호출).
     //
     // ※ 여기서 거르지 않는다 — 찾기(검색·필터)는 기반 클래스가 칸 번호와 떼어 따로 한다('InventorySlotSource' 주석).
-    // ※ 창고(T-107)에 맡긴 것은 인벤토리 격자에 그리지 않는다 — 같은 TID가 두 보관함에 따로 있을 수 있다.
+    // ※ 다른 보관함(인벤토리 ↔ 창고 · T-107)의 것은 그리지 않는다 — 같은 TID가 두 보관함에 따로 있을 수 있다.
     protected override void Fill(List<PlacedSlot> into)
     {
         _counts.Clear();
@@ -29,7 +29,7 @@ public class ResourceSlotSource : InventorySlotSource
         foreach (ItemInfo item in _data.Inventory)
         {
             // 서버가 0개가 된 아이템도 실어 보낸다(감소도 같은 경로로 온다). 화면에서는 뺀다.
-            if (item.Count <= 0 || item.Container != EContainer.Inventory)
+            if (item.Count <= 0 || item.Container != Container)
             {
                 continue;
             }
@@ -101,7 +101,7 @@ public class ResourceSlotSource : InventorySlotSource
     public override TooltipContent? BuildTooltip(long key)
     {
         int itemId = (int)key;
-        int count  = _data.GetItemCount(itemId);
+        int count  = _data.GetItemCount(itemId, Container);
 
         if (count <= 0)
         {
@@ -120,17 +120,16 @@ public class ResourceSlotSource : InventorySlotSource
 
         // 조작 안내 — 입력 하나에 한 줄, 왼쪽 칸에 입력을 끝까지 적는다(2026-10-15 사용자 지적 — 조합키를 오른쪽 칸에 붙이면 "응축 Ctrl 잠그기"가 한 문장으로 읽혔다).
         // 길이는 다른 줄을 줄여 감당한다(빈 장비 한 줄 · 잠금은 상태 줄).
-        content.Header("조작");
-
-        if (GameDataLoader.IsBox(itemId))
+        return AddControls(content, rows =>
         {
-            content.Row("좌클릭", "열기");
-        }
+            if (GameDataLoader.IsBox(itemId))
+            {
+                rows.Row("좌클릭", "열기");
+            }
 
-        content.Row("우클릭",       "판매 담기")
-               .Row("Shift+우클릭", "경매 등록");
-
-        return content;
+            rows.Row("우클릭",       "판매 담기")
+                .Row("Shift+우클릭", "경매 등록");
+        });
     }
 
     // 인벤토리 변경 구독 (Subscribe에서 호출)

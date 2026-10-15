@@ -581,6 +581,9 @@ namespace MikaNetwork
         // 인벤토리 칸 위치 도착 — 정렬이면 탭 전체, 자리 이동이면 바뀐 칸만 (Handle_S_StorageSlotsResponse에서 발행)
         public static event Action<S_StorageSlotsResponse>? StorageSlotsReceived;
 
+        // 인벤토리 ↔ 창고 이동 결과 도착 — 양쪽 보관함의 바뀐 칸 (Handle_S_WarehouseTransferResponse에서 발행)
+        public static event Action<S_WarehouseTransferResponse>? WarehouseTransferred;
+
         // 경매장 검색 결과 (S_AuctionSearchResponse 수신 시 자동 호출)
         [PacketHandler]
         public static void Handle_S_AuctionSearchResponse(ISession session, S_AuctionSearchResponse res)
@@ -676,6 +679,15 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"칸 위치 결과={res.Result}, {res.Container}/{res.Tab} {res.Slots?.Count ?? 0}칸");
             StorageSlotsReceived?.Invoke(res);
+        }
+
+        // 인벤토리 ↔ 창고 이동 결과 (S_WarehouseTransferResponse 수신 시 자동 호출, T-107)
+        // ※ 거절이면 Changes가 비어 있다. 자원의 Count는 그 보관함에 남은 총량이다(0이면 칸이 비었다).
+        [PacketHandler]
+        public static void Handle_S_WarehouseTransferResponse(ISession session, S_WarehouseTransferResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"창고 이동 결과={res.Result}, {res.Tab} {res.Changes?.Count ?? 0}칸");
+            WarehouseTransferred?.Invoke(res);
         }
 
         #endregion

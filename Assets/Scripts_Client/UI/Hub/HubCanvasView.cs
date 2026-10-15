@@ -1,7 +1,6 @@
 using UnityEngine;
 
-// 거점 열 — 뽑기 · 창고 2탭이 들어간다('HubTabPresenter'). 탭마다 화면이 따로다.
-// 창고는 아직 '(기능 없음)' 자리만 있다.
+// 거점 열 — 뽑기 · 창고 2탭이 들어간다('HubTabPresenter'). 탭마다 화면이 따로다('GachaPresenter' · 'WarehousePresenter').
 //
 // ※ 옛 이름은 거래 열(Market)이다. 경매장이 화면 전체를 쓰는 '#Auction Canvas'로 빠지며(T-147) 뽑기·창고만 남아
 //   거점(Hub)으로 바꿨다 — 경매장은 'AuctionCanvasView'.

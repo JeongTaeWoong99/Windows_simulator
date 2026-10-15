@@ -41,7 +41,7 @@ public class CharacterSlotSource : InventorySlotSource
     // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
 
-    public CharacterSlotSource(PlayerDataModel data)
+    public CharacterSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
         _data = data;
     }
@@ -51,12 +51,12 @@ public class CharacterSlotSource : InventorySlotSource
     // ⚠️ 이름도 등급도 종류(TID)로 읽는다 — 개체 번호를 넣으면 이름은 '?#2'가 되고 등급은 회색('None')이 된다.
     //    칸에 실어 보내는 'Key'만 개체 번호('CharacterId')다.
     // ※ 보조 문구는 빈 문자열이다 — 그 자리를 적성 스트립이 쓴다(위 주석).
-    // ※ 창고(T-107)에 맡긴 캐릭터는 인벤토리 격자에 그리지 않는다.
+    // ※ 다른 보관함(인벤토리 ↔ 창고 · T-107)의 캐릭터는 그리지 않는다.
     protected override void Fill(List<PlacedSlot> into)
     {
         foreach (CharacterInfo character in _data.Characters)
         {
-            if (character.Container != EContainer.Inventory)
+            if (character.Container != Container)
             {
                 continue;
             }
@@ -111,7 +111,7 @@ public class CharacterSlotSource : InventorySlotSource
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
             .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
-            .Row("상태", IsLocked(key) ? $"{GetWorkText(key)} · 잠김" : GetWorkText(key));
+            .Row("상태", GetStateText(key));
 
         AddCondenseRow(content, key);
 
@@ -128,13 +128,19 @@ public class CharacterSlotSource : InventorySlotSource
         }
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        content.Header("조작")
-               .Row("좌클릭",       "응축")
-               .Row("우클릭",       "판매 담기")
-               .Row("Ctrl+좌클릭",  IsLocked(key) ? "잠금 풀기" : "잠그기")
-               .Row("Shift+우클릭", "경매 등록");
+        return AddControls(content, rows => rows
+            .Row("좌클릭",       "응축")
+            .Row("우클릭",       "판매 담기")
+            .Row("Ctrl+좌클릭",  IsLocked(key) ? "잠금 풀기" : "잠그기")
+            .Row("Shift+우클릭", "경매 등록"));
+    }
 
-        return content;
+    // 상태 줄 — 창고에 있으면 '창고 보관', 아니면 어디서 일하나 · 잠김 (BuildTooltip에서 호출).
+    private string GetStateText(long key)
+    {
+        string state = IsWarehouse ? "창고 보관" : GetWorkText(key);
+
+        return IsLocked(key) ? $"{state} · 잠김" : state;
     }
 
     // 응축 줄 — '2성 · 누적 24/44' · 작업속도 가산 (BuildTooltip에서 호출, T-130).

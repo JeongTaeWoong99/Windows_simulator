@@ -255,7 +255,11 @@ public class InventoryTabPresenter : MonoBehaviour
         _leaveGuards.Add(blocks);
     }
 
-    // 탭을 눌렀다 (탭 버튼 OnClick에 코드로 연결)
+    // 밖에서 탭을 바꿔 달라고 한다 — 탭 버튼을 누른 것과 같다(떠나기 막음도 똑같이 본다) ('WarehousePresenter'의 탭 버튼이 호출 · T-126).
+    // ※ 창고 화면의 탭과 인벤토리 탭은 늘 같이 바뀐다 — 전환의 주인은 여기 하나고, 창고 화면은 'TabChanged'로 따라온다.
+    public void RequestTab(InventoryTab tab) => OnTabClicked(tab);
+
+    // 탭을 눌렀다 (탭 버튼 OnClick에 코드로 연결 · RequestTab)
     // ※ 지금 탭을 다시 누른 것은 떠나는 것이 아니다 — 막지 않는다.
     private void OnTabClicked(InventoryTab tab)
     {

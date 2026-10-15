@@ -77,6 +77,10 @@ public static class ResultMessages
         EResultCode.StorageSlotEmpty       => "이미 비어 있는 칸입니다.",
         EResultCode.InvalidStorageSortKey  => "이 탭에서는 쓸 수 없는 정렬 기준입니다.",
         EResultCode.StorageSlotPending     => "새로 받는 아이템이 들어갈 칸입니다. 잠시 뒤 다시 시도해 주세요.",
+        // 창고 (1104~1106 · T-107)
+        EResultCode.StorageEntityBusy      => "배치 중인 캐릭터 · 장비를 낀 캐릭터 · 장착 중인 장비는 창고에 넣을 수 없습니다. 먼저 빼 주세요.",
+        EResultCode.WarehousePartialSwap   => "다른 자원이 있는 칸에는 전부 옮길 때만 자리를 바꿀 수 있습니다. 빈 칸에 놓아 주세요.",
+        EResultCode.StorageOverMaxStack    => "합치면 최대 수량을 넘습니다. 수량을 줄여 옮겨 주세요.",
         _                               => $"알 수 없는 오류가 발생했습니다. (코드 {(ushort)code})",
     };
 }

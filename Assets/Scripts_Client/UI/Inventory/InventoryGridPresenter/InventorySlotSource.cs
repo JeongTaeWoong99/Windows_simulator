@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using GameData;
+using MikaProtocol;
 
 // 인벤토리 [정렬]의 방향. 도구 줄의 화살표 버튼이 둘을 오간다. 서버 'EStorageSortOrder'와 값이 같다.
 //
@@ -80,8 +81,23 @@ public readonly struct PlacedSlot
 // - 화면 밖 칸은 기록만 남았다가 스크롤로 들어올 때 반짝인다. 탭을 떠나 있던 동안 들어온 것도 돌아와 다시 채울 때 반짝인다
 //   (떠날 때 'Unsubscribe'가 기록을 지우지 않는다).
 // - 빠진 개체의 남은 표시는 버린다 — 번호를 다시 쓰는 개체가 엉뚱하게 반짝이지 않게.
+//
+// ■ 보관함을 하나 맡는다 (T-126)
+// 같은 공급자가 인벤토리 격자와 창고 격자를 함께 채운다 — 무엇을 그릴지는 같고 **어느 보관함('Container')에 둔 것인가**만 다르다.
+// 파생 공급자는 'Fill'에서 'Container'가 같은 것만 담는다. 창고 칸에는 판매·개봉·큐브 같은 조작이 없어 툴팁 조작 줄도 갈린다('AddControls').
 public abstract class InventorySlotSource
 {
+    // 이 공급자가 그리는 보관함 — 인벤토리 격자는 'Inventory', 창고 격자는 'Warehouse'.
+    public EContainer Container { get; }
+
+    // 창고 칸인가 — 툴팁 조작 줄 · 상태 문구가 갈린다.
+    protected bool IsWarehouse => Container == EContainer.Warehouse;
+
+    protected InventorySlotSource(EContainer container)
+    {
+        Container = container;
+    }
+
     // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
     private readonly List<SlotData?> _slots = new List<SlotData?>();
 
@@ -182,6 +198,23 @@ public abstract class InventorySlotSource
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
         => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+
+    // 툴팁 끝의 조작 안내 (공급자들의 'BuildTooltip'에서 호출).
+    //   창고 칸 — 끌어서 꺼내는 것뿐이다(클릭 조작이 없다). 인벤토리 칸 — 'addInventoryRows'가 탭마다의 클릭 조작을 적는다.
+    // ※ 끌기 줄은 두 보관함 모두 단다 — 칸에 아무 표시가 없어 눌러 봐야 아는 조작이다.
+    protected TooltipContent AddControls(TooltipContent content, Action<TooltipContent> addInventoryRows)
+    {
+        content.Header("조작");
+
+        if (IsWarehouse)
+        {
+            return content.Row("끌기", "인벤토리로 꺼내기");
+        }
+
+        addInventoryRows(content);
+
+        return content.Row("끌기", "칸 이동 · 창고에 맡기기");
+    }
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //

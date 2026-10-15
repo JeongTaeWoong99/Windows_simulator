@@ -1,3 +1,5 @@
+using MikaProtocol;
+
 // 개체(캐릭터·장비)를 내놓을 수 없는 이유 → 사용자에게 보일 한 줄.
 //
 // ■ 두 화면이 같은 판정을 쓴다
@@ -12,9 +14,17 @@ public static class EntityBlockText
     // 잠긴 개체의 사유 — 잠금이 가장 먼저다(풀기 전에는 다른 사유를 고쳐도 소용없다). 서버 'EntityLocked'.
     public const string LockedText = "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다";
 
+    // 창고에 맡긴 개체의 사유 — 판매·경매 등록은 인벤토리에 있는 것만 된다(T-107). 잠금보다 먼저다(창고 안에서는 잠금을 못 바꾼다).
+    public const string InWarehouseText = "창고에 있습니다 — 먼저 인벤토리로 꺼내세요";
+
     // 이 장비를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
     public static string? ForEquip(PlayerDataModel data, long equipId)
     {
+        if (data.FindEquip(equipId)?.Container == EContainer.Warehouse)
+        {
+            return InWarehouseText;
+        }
+
         if (data.FindEquip(equipId)?.IsLocked == true)
         {
             return LockedText;
@@ -28,6 +38,11 @@ public static class EntityBlockText
     //   즉시 판매는 이미 담은 캐릭터를 빼고 세야 해서 호출하는 쪽이 계산한다.
     public static string? ForCharacter(PlayerDataModel data, long characterId, int remainingAfter)
     {
+        if (data.FindCharacter(characterId)?.Container == EContainer.Warehouse)
+        {
+            return InWarehouseText;
+        }
+
         if (data.FindCharacter(characterId)?.IsLocked == true)
         {
             return LockedText;

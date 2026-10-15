@@ -691,7 +691,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         foreach (ItemInfo item in _data.Inventory)
         {
             if (_suggestions.Count >= max) return;
-            if (item.Count <= 0 || !AuctionText.MatchesName(EAuctionKind.Item, item.ItemId, query)) continue;
+            if (item.Count <= 0 || item.Container != EContainer.Inventory || !AuctionText.MatchesName(EAuctionKind.Item, item.ItemId, query)) continue;
 
             _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, item.ItemId, item.ItemId,
                 $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {item.Count:N0}개"));
@@ -736,12 +736,12 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return false;
     }
 
-    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목은 뺀다.
+    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목과 창고에 맡긴 것은 뺀다(등록은 인벤토리에서만 — T-107).
     private void AddItemRows()
     {
         foreach (ItemInfo item in _data.Inventory)
         {
-            if (item.Count <= 0)
+            if (item.Count <= 0 || item.Container != EContainer.Inventory)
             {
                 continue;
             }
