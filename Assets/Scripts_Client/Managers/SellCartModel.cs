@@ -395,15 +395,19 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 캐릭터·장비·작업슬롯이 바뀌었다 — 사라졌거나 일하게 된 개체를 뺀다
+    // 캐릭터·장비·작업슬롯이 바뀌었다 — 사라졌거나 일하게 됐거나 잠긴 개체를 뺀다
     // (PlayerDataModel.CharactersChanged · EquipsChanged · WorkStationSlotsChanged 구독)
+    //
+    // ※ 담은 뒤에 잠그면 빠진다 — 잠금 응답이 'CharactersChanged'·'EquipsChanged'를 낸다. 남겨 두면 서버가 'EntityLocked'로 판매 전체를 거절한다.
     //
     // ※ 마지막 캐릭터 규칙도 여기서 지킨다 — 다른 경로로 캐릭터가 줄어 담긴 수가 보유 수에 닿으면
     //   뒤에 담은 것부터 뺀다. 그대로 두면 서버가 'SellLastCharacter'로 개체 판매 전체를 거절한다.
     private void OnEntitiesChanged()
     {
-        int removed = _characterIds.RemoveAll(id => _data.GetCharacterTid(id) == 0 || _data.IsCharacterBusy(id))
-                    + _equipIds.RemoveAll(id => _data.GetEquipTid(id) == 0 || _data.IsEquipped(id));
+        int removed = _characterIds.RemoveAll(id => _data.GetCharacterTid(id) == 0 || _data.IsCharacterBusy(id)
+                                                    || _data.FindCharacter(id)?.IsLocked == true)
+                    + _equipIds.RemoveAll(id => _data.GetEquipTid(id) == 0 || _data.IsEquipped(id)
+                                                || _data.FindEquip(id)?.IsLocked == true);
 
         while (_characterIds.Count > 0 && _characterIds.Count >= _data.Characters.Count)
         {

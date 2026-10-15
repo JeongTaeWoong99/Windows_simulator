@@ -132,7 +132,7 @@ public class CharacterSlotSource : InventorySlotSource
             .Row("좌클릭",       "응축")
             .Row("우클릭",       "판매 담기")
             .Row("Ctrl+좌클릭",  IsLocked(key) ? "잠금 풀기" : "잠그기")
-            .Row("Shift+우클릭", "경매 등록"));
+            .Row("Ctrl+우클릭", "경매 등록"));
     }
 
     // 상태 줄 — 창고에 있으면 '창고 보관', 아니면 어디서 일하나 · 잠김 (BuildTooltip에서 호출).

@@ -128,7 +128,7 @@ public class ResourceSlotSource : InventorySlotSource
             }
 
             rows.Row("우클릭",       "판매 담기")
-                .Row("Shift+우클릭", "경매 등록");
+                .Row("Ctrl+우클릭", "경매 등록");
         });
     }
 

@@ -88,7 +88,7 @@ public class AuctionTabPresenter : MonoBehaviour
     public event Action<AuctionTab>? TabChanged;
 
     // 참조 확보 → 구독 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약)
-    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 Shift+우클릭 등록).
+    // ※ 밖에서 'ShowTab'을 Start보다 먼저 불렀으면 그 탭을 지킨다(처음 여는 순간의 Ctrl+우클릭 등록).
     private void Start()
     {
         this.RequireRef(historyBadge,     nameof(historyBadge));

@@ -35,7 +35,7 @@ public interface IAuctionQueryTarget
 // ■ 이 Presenter는 입력을 **지금 탭의 화면에 넘기기만** 한다 — 무엇을 할지는 그 화면('IAuctionQueryTarget')이 정한다.
 //   탭이 바뀌면 그 화면의 안내 문구·검색어로 입력칸을 바꿔 끼운다.
 // ■ 치는 대로 아래에 후보를 띄운다('SuggestView' · 2026-10-14 사용자 요청) — 무엇을 띄우고 고르면 무엇을 할지는 그 화면이 정한다.
-// ■ Enter로 검색하지 않는다 — 인게임 키는 Shift+우클릭·Esc뿐이다(2026-10-11 사용자 결정 · 'Managers 규칙.md').
+// ■ Enter로 검색하지 않는다 — 인게임 키는 Ctrl+우클릭·Esc뿐이다(2026-10-11 사용자 결정 · 'Managers 규칙.md').
 //   목업의 "이름 + Enter"는 [검색] 버튼으로 한다.
 public class AuctionQueryPresenter : MonoBehaviour
 {

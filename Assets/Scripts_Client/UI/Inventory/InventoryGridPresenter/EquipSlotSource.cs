@@ -128,7 +128,7 @@ public class EquipSlotSource : InventorySlotSource
             .Row("좌클릭",       "큐브")
             .Row("우클릭",       "판매 담기")
             .Row("Ctrl+좌클릭",  equip.IsLocked ? "잠금 풀기" : "잠그기")
-            .Row("Shift+우클릭", "경매 등록"));
+            .Row("Ctrl+우클릭", "경매 등록"));
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

@@ -49,7 +49,7 @@ using UnityEngine.UI;
 //   팔 수 없는 개체(일하는 캐릭터·끼고 있는 장비·마지막 캐릭터)는 담지 않고 사유를 알린다('EntityBlockText').
 //   동선은 'Inventory 규칙.md'.
 //
-// ■ Shift+우클릭 = 경매 등록 (2026-10-03)
+// ■ Ctrl+우클릭 = 경매 등록 (2026-10-03)
 //   경매장을 열어 등록 화면에 그 물건을 골라 둔다('AuctionCanvasView.OpenRegister').
 //   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
@@ -181,7 +181,7 @@ public class InventoryGridPresenter : MonoBehaviour
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
     private UIManager         _ui      = null!;
-    private KeyInputManager   _keys    = null!; // Shift+우클릭(경매 등록)·Ctrl+좌클릭(잠금) 판별 — 키는 이 매니저만 읽는다
+    private KeyInputManager   _keys    = null!; // Ctrl+우클릭(경매 등록)·Ctrl+좌클릭(잠금) 판별 — 키는 이 매니저만 읽는다
     private NetworkManager    _network = null!;
     private ServerWaitManager _wait    = null!;
 
@@ -941,7 +941,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _                      => false,
     };
 
-    // 칸을 우클릭했다 — 판매 목록에 담거나 뺀다. Shift를 누르고 있으면 경매 등록으로 간다 (SlotView.RightClicked 구독)
+    // 칸을 우클릭했다 — 판매 목록에 담거나 뺀다. Ctrl을 누르고 있으면 경매 등록으로 간다 (SlotView.RightClicked 구독)
     //
     // 이미 담긴 칸을 다시 누르면 뺀다(토글). 수량을 고치려면 뺐다가 다시 담는다 —
     // 한 조작에 '담기'와 '수량 바꾸기'를 겹쳐 두면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
@@ -979,9 +979,23 @@ public class InventoryGridPresenter : MonoBehaviour
     }
 
     // 그 물건을 경매 등록 화면에 골라 둔다 — 경매장을 연다 (OnSlotRightClicked에서 호출).
-    // ※ 올릴 수 없는 개체여도 연다 — 등록 화면이 흐린 줄과 사유로 말한다(한 곳에서만 말하게).
+    // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
     private void OpenAuctionRegister(long key)
     {
+        string? reason = _currentTab switch
+        {
+            InventoryTab.Character => EntityBlockText.ForCharacter(_data, key, _data.Characters.Count - 1),
+            InventoryTab.Equipment => EntityBlockText.ForEquip(_data, key),
+            _                      => null,
+        };
+
+        if (reason != null)
+        {
+            _wait.RaiseNotice($"올릴 수 없습니다 — {reason}");
+
+            return;
+        }
+
         EAuctionKind kind = _currentTab switch
         {
             InventoryTab.Character => EAuctionKind.Character,

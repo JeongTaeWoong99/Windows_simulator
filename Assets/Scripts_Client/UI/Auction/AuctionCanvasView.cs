@@ -16,7 +16,7 @@ using UnityEngine;
 //   열 때마다 맞춘다. 판 밖(위 상태 칸 · 아래 위젯 칸)은 루트의 차단막이 덮는다.
 //
 // ■ 탭 사이를 건너가는 길 — 화면끼리 서로를 쥐지 않고 여기를 거친다
-//   검색 줄의 [시세] → 시세 탭 · 시세 탭의 [이 아이템 매물 보기] → 검색 탭 · [팔러 가기]·Shift+우클릭 → 판매 탭 + 등록 창.
+//   검색 줄의 [시세] → 시세 탭 · 시세 탭의 [이 아이템 매물 보기] → 검색 탭 · [팔러 가기]·Ctrl+우클릭 → 판매 탭 + 등록 창.
 //   받는 화면이 아직 한 번도 안 켜졌을 수 있다 — 각자 Start 전에 받은 요청을 지키므로 "요청 → 탭 열기" 순서로 부른다.
 public class AuctionCanvasView : MonoBehaviour
 {
@@ -54,7 +54,7 @@ public class AuctionCanvasView : MonoBehaviour
         gameObject.SetActive(on);
     }
 
-    // 판매 탭 + 등록 창을 열고 이 물건을 골라 둔다 (인벤토리 격자 Shift+우클릭).
+    // 판매 탭 + 등록 창을 열고 이 물건을 골라 둔다 (인벤토리 격자 Ctrl+우클릭).
     //   kind : 자원·장비·캐릭터
     //   key  : 자원 TID · 장비·캐릭터 개체 번호
     public void OpenRegister(EAuctionKind kind, long key)
