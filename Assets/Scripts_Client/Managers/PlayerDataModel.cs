@@ -68,6 +68,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return 0;
     }
 
+    // 인벤토리 탭 하나의 칸 수 — 지금은 모든 유저·모든 탭이 'Constants.StorageCapacity'다.
+    //
+    // ★ 칸 수를 묻는 곳은 여기 하나다 — 칸 프레임('InventoryGridPresenter')은 이 값만큼 열고 나머지는 끈다.
+    //   유저마다 칸이 늘어나는 확장(특성 등)이 생기면 서버가 유저별 칸 수를 보내고, 이 메서드가 그 값을 돌려주면 된다(이슈 #73).
+    public int GetStorageCapacity(EStorageTab tab) => (int)Constants.StorageCapacity;
+
     // 내가 가진 캐릭터들.
     //
     // ⚠️ 'CharacterInfo.CharacterId'는 개체 번호이고, 'CharacterInfo.CharacterTid'가

@@ -14,10 +14,12 @@ using UnityEngine.UI;
 // 한쪽만 고쳐지고, 씬 오브젝트도 세 배가 된다('Inventory 규칙.md'의 "탭이 달라도 격자는 하나다").
 // 탭마다 다른 것은 **데이터와 표시 문구뿐**이라 그쪽만 공급자로 갈라 두었다.
 //
-// ■ 칸 프레임은 씬에 미리 깔려 있다
+// ■ 칸 프레임은 씬에 미리 깔려 있고, 칸 수만큼만 연다 (2026-10-15)
 //   'Content' 아래의 'Slot (N)' 들이 프레임이고, 아이템 프리팹은 그 프레임의 자식으로
 //   들어간다. Content 직속으로 만들면 프레임을 벗어나 레이아웃이 무너진다.
-//   프레임은 코드가 만들지도 지우지도 않는다.
+//   몇 칸을 열지는 'PlayerDataModel.GetStorageCapacity'가 답한다('ApplyCapacity') —
+//   깔린 프레임이 모자라면 첫 프레임을 본뜬 원본으로 더 만들고, 넘는 프레임은 끈다. 지우지는 않는다.
+//   씬에는 기본 칸 수(50)만큼 깔아 둔다 — 유저마다 칸이 늘어나는 확장(특성 등)이 와도 이 격자는 고칠 것이 없다.
 //
 // ■ 격자는 자리를 정하지 않는다 — i번째 칸에 i번째 프레임을 쓸 뿐이다
 //   어느 개체가 몇 번 칸인지는 **서버**가 정하고(T-058), 공급자가 그 번호대로 앉힌다('InventorySlotSource.Arrange').
@@ -32,7 +34,7 @@ using UnityEngine.UI;
 //   당겨 오면 장비 하나를 끼울 때마다 인벤토리 전체가 한 칸씩 밀려 보던 자리를 잃는다.
 //
 // ■ 칸은 파괴하지 않고 풀로 되돌린다
-//   탭을 오갈 때마다 200개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
+//   탭을 오갈 때마다 칸 수십 개를 만들고 부수면 상주 앱에서 GC가 쌓인다.
 //   남는 칸은 'Clear()' 후 꺼 두었다가 다음 탭에서 다시 쓴다.
 //
 // ■ 칸의 표시 중 탭을 타는 것은 격자가 정한다
@@ -105,8 +107,14 @@ public class InventoryGridPresenter : MonoBehaviour
     [SerializeField, Tooltip("격자 자신의 LayoutElement — 숨기는 동안 자리를 비워 특성 화면이 쓰게 한다(ignoreLayout)")]
     private LayoutElement gridLayout = null!;
 
-    // 씬에 깔린 칸 프레임들. 개수·순서가 고정이라 매번 훑지 않고 한 번만 모아 둔다.
+    // 칸 프레임들 — 씬에 깔린 것 + 칸 수가 늘어 더 만든 것. 순서 = 칸 번호. 한 번 모아 두고 늘기만 한다.
     private readonly List<Transform> _frames = new List<Transform>();
+
+    // 지금 연 프레임 수 = 칸 수. 그 뒤의 프레임은 꺼져 있다('ApplyCapacity').
+    private int _openFrames;
+
+    // 프레임을 더 만들 때 본뜨는 원본 — 칸(SlotView)이 들어가기 전의 첫 프레임을 복제해 꺼 둔다('CacheFrames').
+    private Transform? _frameTemplate;
 
     // 프레임 i 안에 만들어 둔 칸. 아직 안 만들었으면 null이고, 안 쓰는 동안에는 꺼 둔다.
     private readonly List<SlotView?> _views = new List<SlotView?>();
@@ -399,7 +407,7 @@ public class InventoryGridPresenter : MonoBehaviour
         _sources.TryGetValue(tab, out InventorySlotSource? next);
 
         // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 그 자리는 전용 화면이 쓴다(특성 탭).
-        // ★ 조기 반환보다 먼저 한다. 칸 200개를 하나씩 끄지 않고, 격자 오브젝트도 끄지 않는다('SetShown').
+        // ★ 조기 반환보다 먼저 한다. 칸을 하나씩 끄지 않고, 격자 오브젝트도 끄지 않는다('SetShown').
         SetShown(next != null);
 
         if (_current == next)
@@ -558,15 +566,16 @@ public class InventoryGridPresenter : MonoBehaviour
     //   200칸을 다 켜고 그리면 인벤토리를 열 때 한 프레임에 칸 부품 ~1000개가 켜지고 TMP ~1300개가 글자를 새로 만들어
     //   200ms 가까이 멈췄다(에디터 프로파일). 화면에 보이는 것은 30~40칸뿐이라 나머지는 꺼 두고,
     //   스크롤로 들어올 때 그린다('OnScrollChanged').
-    //   ※ 프레임은 200개 그대로다 — 칸 번호(서버)·끌어 놓기·놓을 칸 덮개는 프레임 기준이라 바뀌지 않는다.
+    //   ※ 프레임은 칸 수만큼 그대로 열려 있다 — 칸 번호(서버)·끌어 놓기·놓을 칸 덮개는 프레임 기준이라 바뀌지 않는다.
     //   ※ 칸은 데이터를 들고 있지 않다 — 들어올 때 공급자에서 지금 값을 읽으므로 화면 밖에서 놓친 변경이 없다.
     private void Redraw()
     {
         _shineOrder = 0;
 
+        ApplyCapacity();
         ComputeVisibleRange(out _visibleFirst, out _visibleLast);
 
-        for (int i = 0; i < _frames.Count; i++)
+        for (int i = 0; i < _openFrames; i++)
         {
             if (i >= _visibleFirst && i <= _visibleLast)
             {
@@ -580,13 +589,13 @@ public class InventoryGridPresenter : MonoBehaviour
 
         int count = _current == null ? 0 : _current.Count;
 
-        if (count > _frames.Count)
+        if (count > _openFrames)
         {
             ClientLogger.Warn(ClientLogger.UI,
-                $"칸 프레임이 {_frames.Count}개인데 표시할 것이 {count}개다 — 뒤쪽이 잘렸다. 프레임을 늘려야 한다.", this);
+                $"칸이 {_openFrames}개인데 표시할 것이 {count}개다 — 뒤쪽이 잘렸다. 서버 칸 수와 'GetStorageCapacity'가 어긋났다.", this);
         }
 
-        // 찾기 결과 0건 — 안내 하나만 켜고 끈다. 프레임 200개는 건드리지 않는다(레이아웃 리빌드 규칙).
+        // 찾기 결과 0건 — 안내 하나만 켜고 끈다. 프레임은 건드리지 않는다(레이아웃 리빌드 규칙).
         emptyNotice.SetActive(_current != null && _current.IsFiltering && _current.MatchCount == 0);
     }
 
@@ -639,7 +648,7 @@ public class InventoryGridPresenter : MonoBehaviour
         first = int.MaxValue;
         last  = -1;
 
-        if (_frames.Count == 0)
+        if (_openFrames == 0)
         {
             return;
         }
@@ -651,7 +660,7 @@ public class InventoryGridPresenter : MonoBehaviour
         float bottom = Corners[0].y;
         float top    = Corners[1].y;
 
-        for (int i = 0; i < _frames.Count; i++)
+        for (int i = 0; i < _openFrames; i++)
         {
             ((RectTransform)_frames[i]).GetWorldCorners(Corners);
 
@@ -1192,7 +1201,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return -1;
         }
 
-        for (int i = 0; i < _frames.Count; i++)
+        for (int i = 0; i < _openFrames; i++)
         {
             if (RectTransformUtility.RectangleContainsScreenPoint((RectTransform)_frames[i], screenPoint, eventCamera))
             {
@@ -1487,14 +1496,16 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 보조
 
-    // 씬에 깔린 프레임을 모아 둔다 (EnsureInitialized에서 호출).
+    // 씬에 깔린 프레임을 모으고, 더 만들 때 본뜰 원본을 떠 둔다 (EnsureInitialized에서 호출).
     //
     // ※ 앞서 예외로 초기화가 끊겼으면 다시 불릴 수 있다 — 비우고 시작해야 중복으로 쌓이지 않는다.
+    // ※ 원본은 칸이 들어가기 전에 뜬다 — 나중에 뜨면 첫 프레임 안의 칸(SlotView)까지 복제된다.
     private void CacheFrames()
     {
         _frames.Clear();
         _views.Clear();
         _shines.Clear();
+        _openFrames = 0;
 
         foreach (Transform frame in slotParent)
         {
@@ -1507,17 +1518,69 @@ public class InventoryGridPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 "칸 프레임이 하나도 없다 — Slot Parent가 Content를 가리키는지 확인할 것.", this);
+
+            return;
         }
-        else if (_frames.Count != Constants.StorageCapacity)
+
+        if (_frameTemplate == null)
         {
-            // 서버 한도는 'Constants.xlsx'의 StorageCapacity(탭마다 따로)다 — 서버와 같은 값을 읽는다(T-085).
-            // 프레임은 씬 오브젝트라 시트를 따라 늘지 않으므로, 값을 바꾸면 프레임 수도 함께 맞춰야 한다.
-            //
-            // 한도가 프레임보다 크면 뒤쪽 칸이 보이지 않아 "아이템이 사라졌다"로 읽히고,
-            // 작으면 서버가 거절할 자리를 그린다. 어느 쪽이든 조용히 지나가면 못 찾는다.
-            ClientLogger.Error(ClientLogger.UI,
-                $"칸 프레임이 {_frames.Count}개인데 서버 인벤토리 한도(Constants.StorageCapacity)는 {Constants.StorageCapacity}칸이다 — 둘을 맞출 것.", this);
+            // 격자 자신 아래에 꺼 둔다 — Content 밖이라 레이아웃·칸 번호에 끼지 않는다.
+            _frameTemplate      = Instantiate(_frames[0], transform, false);
+            _frameTemplate.name = "Slot Template";
+            _frameTemplate.gameObject.SetActive(false);
         }
+
+        // 깔린 프레임은 우선 모두 연 것으로 친다 — 첫 'ApplyCapacity'가 칸 수에 맞춰 넘는 것을 끈다.
+        _openFrames = _frames.Count;
+    }
+
+    // 연 프레임 수를 지금 탭의 칸 수에 맞춘다 (Redraw 첫머리에서 호출).
+    //   모자라면 원본으로 프레임을 더 만들고, 넘는 프레임은 칸을 비우고 끈다. 칸 수가 그대로면 아무것도 하지 않는다.
+    //
+    // ※ 칸 수가 바뀔 때만 프레임을 켜고 끈다 — 'Redraw'마다 'SetActive'를 부르면 레이아웃 리빌드가 매번 돈다.
+    // ※ 공급자가 없는 탭(특성)은 격자가 숨어 있어 칸 수를 묻지 않는다 — 지금 열린 수 그대로 둔다.
+    private void ApplyCapacity()
+    {
+        if (!TryGetStorageTab(out EStorageTab tab))
+        {
+            return;
+        }
+
+        int capacity = Mathf.Max(0, _data.GetStorageCapacity(tab));
+
+        if (capacity == _openFrames)
+        {
+            return;
+        }
+
+        while (_frames.Count < capacity && _frameTemplate != null)
+        {
+            Transform frame = Instantiate(_frameTemplate, slotParent, false);
+
+            frame.name = $"Slot ({_frames.Count + 1})";
+            frame.gameObject.SetActive(true);
+
+            _frames.Add(frame);
+            _views.Add(null);
+            _shines.Add(null);
+        }
+
+        for (int i = 0; i < _frames.Count; i++)
+        {
+            bool open = i < capacity;
+
+            if (!open)
+            {
+                HideView(i);
+            }
+
+            if (_frames[i].gameObject.activeSelf != open)
+            {
+                _frames[i].gameObject.SetActive(open);
+            }
+        }
+
+        _openFrames = Mathf.Min(capacity, _frames.Count);
     }
 
     // 프리팹을 프레임 안에 안착시킨다 — 프레임을 **꽉 채운다**.

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-15 인벤토리 칸 프레임을 칸 수만큼](2026-10-15-inventory-capacity-frames.md) — `#client` `#ui` 칸 수만큼 열고 넘는 프레임은 끈다 · 칸별 묶음은 서버 #73
 - [2026-10-15 수확 "가방 가득"을 서버 InventoryFull로](2026-10-15-gather-inventory-full-flag.md) — `#client` `#ui` 클라 추정을 걷고 응답 필드로 판정
 - [2026-10-15 툴팁 압축 · 일괄 담기 [제외 ▾] 분류 체크 드롭다운 · 자원 잠금 이슈 (T-159)](2026-10-15-bulk-exclude-dropdown.md) — `#client` `#ui` 복제 드롭다운 머리 흰색(ColorBlock 복사) · 일시정지 실측은 서버 연결을 끊는다
 - [2026-10-15 캐릭터·장비 잠금 클라 — Ctrl+좌클릭 · 자물쇠 · 판매·경매·응축 재료 제외 (T-137)](2026-10-15-entity-lock-client.md) — `#client` `#ui` 응답 뒤 갱신(낙관적 갱신 없음) · 막기는 EntityBlockText 맨 앞 · 초기화 전 Presenter 필드를 리플렉션으로 만지면 테스트 부작용
