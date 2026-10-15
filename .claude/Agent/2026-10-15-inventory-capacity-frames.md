@@ -21,5 +21,6 @@ tags: [client, ui]
 - 칸 수가 바뀔 때만 SetActive — Redraw마다 켜고 끄면 레이아웃 리빌드가 매번 돈다.
 
 ## 후속 작업 / 주의사항
-- 씬 프레임 200 → 50 삭제는 자동 권한에서 막혀 남았다(코드는 51번째부터 끄므로 동작은 같다).
+- 씬 프레임 200 → 50 삭제는 사용자 허락 뒤 에디터 eval로 했다(`Undo.DestroyObjectImmediate` + `SaveScene`). 에디터 모드에서는 `Constants`가 안 올라와 NRE — 50을 직접 넣었다.
+- 씬 diff의 '+' 블록 대부분은 줄 맞춤 착시다(같은 fileID가 HEAD에도 있다). 진짜 추가는 레이아웃 값 재직렬화뿐.
 - `Test Copy` 씬도 같은 격자를 쓴다 — 빌드 씬은 `Original`뿐.
