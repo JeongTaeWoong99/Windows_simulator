@@ -29,7 +29,7 @@ using UnityEngine.UI;
 //
 // ■ 가방 가득 (2026-10-11)
 //   받지 못한 몫이 있으면 아이템 줄 끝에 자루 + 빨간 X 하나를 같이 띄운다('Gain.BagFull' · 'ItemGainFx.BuildBagFull').
-//   언제 붙는지는 'ReadGains' 주석 — 지금은 클라 추정이다.
+//   언제 붙는지는 서버가 정한다 — 수확 응답의 'InventoryFull'(T-157).
 //
 // ■ 자리를 따라간다 (선택)
 //   'follow'를 넘기면 매 프레임 그 월드 좌표로 가로 자리를 옮긴다 — 큰 창 칸은 땅이 흐르면 쓰러진 대상이 땅과 함께
@@ -135,22 +135,15 @@ public class ItemGainEffectView : MonoBehaviour
     }
 
     // 채취 결과의 아이템 그림·등급을 담는다 — 같은 아이템은 한 번만, 받은 순서대로 (큰 창·위젯 두 Presenter가 함께 쓴다).
-    // 가방이 가득 차 받지 못한 몫이 있으면 끝에 "가방 가득"을 하나 붙인다.
+    // 칸이 없거나 최대 수량이라 버린 몫이 있으면('InventoryFull' · 서버 T-157) 끝에 "가방 가득"을 하나 붙인다.
     //
     // ※ 'ItemChanges'의 수량은 델타가 아니라 갱신 후 총량이라 얼마나 얻었는지는 모른다 — 무엇을 얻었는지만 띄운다.
     //   한 아이템이 여러 칸(묶음)에 걸쳐 오면 줄이 여럿이라 ItemId로 거른다.
-    //
-    // ■ 가방 가득은 추정이다 — 서버는 칸이 없거나 'MaxStack'을 넘는 몫을 응답에서 **말없이 뺀다**(실패 필드가 없다).
-    //   ① 판정이 있었는데 받은 것이 하나도 없다 — 판정마다 아이템이 반드시 하나 나오므로 전부 버려진 것이다.
-    //   ② 받은 아이템이 최대 수량에 닿았다 — 이번에 넘친 몫이 잘렸거나, 다음 수확부터 버려진다.
-    //   ⚠️ 놓치는 경우: 이미 최대 수량인 아이템이 다른 아이템과 함께 나오면 그 아이템만 빠져 알 수 없다.
-    //   TODO: 서버가 받지 못한 목록(실패 필드)을 실어 주면 그것으로 바꾼다 — 이슈 '최대 수량 아이템 획득'.
     public static void ReadGains(MikaProtocol.S_GatherResultResponse res, List<Gain> into)
     {
         into.Clear();
 
-        var  seen    = new HashSet<int>();
-        bool atLimit = false;
+        var seen = new HashSet<int>();
 
         if (res.ItemChanges != null)
         {
@@ -162,14 +155,10 @@ public class ItemGainEffectView : MonoBehaviour
                 }
 
                 into.Add(new Gain(VisualCatalog.ItemIconOf(change.ItemId), GameDataLoader.GetItemRarity(change.ItemId)));
-
-                atLimit |= change.Count >= GameDataLoader.GetItemMaxStack(change.ItemId);
             }
         }
 
-        bool nothingReceived = res.JudgeCount > 0 && into.Count == 0;
-
-        if (nothingReceived || atLimit)
+        if (res.InventoryFull)
         {
             into.Add(Gain.BagFull);
         }

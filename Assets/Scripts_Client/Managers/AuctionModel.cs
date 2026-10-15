@@ -745,7 +745,7 @@ public class AuctionModel : MonoService<AuctionModel>
 
     // 한 번에 올리는 수량 상한(9,999 · #56). 서버 'AuctionRules.MaxListingCount'와 같다.
     // ※ 단가 상한과 **한 쌍**이다 — 최고 단가 × 이 수량의 수수료가 'long'을 넘지 않는 선이다.
-    //   보유량은 우편·상자로 'MaxStack'을 넘을 수 있어 보유량만으로는 막히지 않는다.
+    //   보유량은 'MaxStack'(9,999)을 넘지 않지만(서버 T-157 — 모든 지급 경로가 자른다) 등록 수량은 이 값으로 따로 자른다.
     public static long MaxListingCount => Constants.AuctionMaxListingCount;
 
     // 경매 등록가 범위 문구 — "12 G 이상". 상한은 터무니없는 값을 막는 선이라 줄마다 적지 않는다(안내 문구에 한 번).
