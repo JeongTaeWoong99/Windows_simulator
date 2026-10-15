@@ -26,7 +26,7 @@
 | 탭 | 화면 | 지금 |
 |---|---|---|
 | 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
-| 창고 | `Warehouse Presenter (↓ SUB VIEW)` | 동작 — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 [T-107](../../../../tasks/T-107-창고서버.md) · 클라 [T-126](../../../../tasks/T-126-클라창고화면드래그.md) |
+| 창고 | `Warehouse Presenter (↓ SUB VIEW)` | 동작 — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 [T-107](../../../../tasks/archive/T-107-창고서버.md) · 클라 [T-126](../../../../tasks/archive/T-126-클라창고화면드래그.md) |
 
 - 탭을 새로 붙일 때는 **그 page 안에 Presenter를 넣는다.** `HubTabPresenter`는 안 바뀐다 (창고 탭도 이렇게 붙였다 — 자리 표시 `No Feature Text (TMP)`를 지우고 page에 `WarehousePresenter`를 달았다).
 - 아직 기능이 없는 탭도 누를 수 있다 — 화면의 `(기능 없음)`이 고장과 구분해 준다(설정 화면의 표기와 같다).
