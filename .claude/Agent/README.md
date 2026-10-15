@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-15 창고 화면 · 인벤토리↔창고 끌어 넣기·꺼내기 (T-126)](2026-10-15-warehouse-screen-drag.md) — `#client` `#ui` 같은 격자를 Container = Warehouse로 재사용 · 탭 주인은 인벤토리 탭 하나 · 대기는 격자끼리 공유
 - [2026-10-15 인벤토리 칸 프레임을 칸 수만큼](2026-10-15-inventory-capacity-frames.md) — `#client` `#ui` 칸 수만큼 열고 넘는 프레임은 끈다 · 칸별 묶음은 서버 #73
 - [2026-10-15 수확 "가방 가득"을 서버 InventoryFull로](2026-10-15-gather-inventory-full-flag.md) — `#client` `#ui` 클라 추정을 걷고 응답 필드로 판정
 - [2026-10-15 툴팁 압축 · 일괄 담기 [제외 ▾] 분류 체크 드롭다운 · 자원 잠금 이슈 (T-159)](2026-10-15-bulk-exclude-dropdown.md) — `#client` `#ui` 복제 드롭다운 머리 흰색(ColorBlock 복사) · 일시정지 실측은 서버 연결을 끊는다
