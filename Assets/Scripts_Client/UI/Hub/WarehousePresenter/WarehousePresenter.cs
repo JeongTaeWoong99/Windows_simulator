@@ -1,8 +1,10 @@
 using System;
+using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 거점 열 창고 탭의 화면 — 종류별 3탭(자원·캐릭터·장비) + [정렬] + 창고 격자 (T-126).
+// 거점 열 창고 탭의 화면 — 종류별 3탭(자원·캐릭터·장비) + 정렬(방향 ▼▲ · 기준) + 창고 격자 (T-126).
 //
 // ■ 격자는 인벤토리 격자와 같은 컴포넌트다
 //   'InventoryGridPresenter'를 'container = Warehouse'로 둔 것이라 칸·스크롤·끌기·정렬이 그대로다.
@@ -39,8 +41,14 @@ public class WarehousePresenter : MonoBehaviour
     [SerializeField, Tooltip("인벤토리 열의 탭 줄 — 탭을 함께 바꾼다")]
     private InventoryTabPresenter inventoryTabs = null!;
 
-    [SerializeField, Tooltip("[정렬] 버튼 — 지금 탭을 등급순으로 줄 세운다(빈 칸도 메운다)")]
+    [SerializeField, Tooltip("정렬 방향 버튼 — 누르면 ▼↔▲를 뒤집고 다시 줄 세운다. OnClick은 코드가 연결한다")]
     private Button sortButton = null!;
+
+    [SerializeField, Tooltip("정렬 방향 화살표 — ▼(높은 순) · ▲(낮은 순)")]
+    private TMP_Text sortArrowText = null!;
+
+    [SerializeField, Tooltip("정렬 기준 — 등급순 · 이름순 · 수량순(자원 탭만). 목록은 코드가 채운다")]
+    private TMP_Dropdown sortKeyDropdown = null!;
 
 
     [CenterHeader("선택 표시")]
@@ -50,8 +58,18 @@ public class WarehousePresenter : MonoBehaviour
     [SerializeField, Tooltip("열려 있지 않은 탭의 버튼 색")]
     private UIThemeRole normalRole = UIThemeRole.Button;
 
+    // 정렬 기준 드롭다운의 문구. 'InventorySortKey' 순서와 같다('InventoryToolPresenter'와 같은 문구).
+    private static readonly string[] SortKeyLabels = { "등급순", "이름순", "수량순" };
+
     // 지금 창고가 보이는 탭. 특성 탭은 되지 않는다.
     private InventoryTab _tab = InventoryTab.Resource;
+
+    // 정렬 방향·기준 — 인벤토리와 따로 든다(맡겨 둔 것과 들고 다니는 것은 보고 싶은 순서가 다를 수 있다).
+    private InventorySortOrder _order   = InventorySortOrder.Descending;
+    private InventorySortKey   _sortKey = InventorySortKey.Rarity;
+
+    // 드롭다운 줄 번호 → 기준. 탭마다 쓸 수 있는 기준이 달라 줄 번호와 enum이 어긋난다.
+    private readonly List<InventorySortKey> _sortKeyOptions = new List<InventorySortKey>();
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -61,9 +79,12 @@ public class WarehousePresenter : MonoBehaviour
     {
         this.RequireRef(grid,          nameof(grid));
         this.RequireRef(inventoryTabs, nameof(inventoryTabs));
-        this.RequireRef(sortButton,    nameof(sortButton));
+        this.RequireRef(sortButton,      nameof(sortButton));
+        this.RequireRef(sortArrowText,   nameof(sortArrowText));
+        this.RequireRef(sortKeyDropdown, nameof(sortKeyDropdown));
 
         BindButtons();
+        RefreshArrow();
 
         _isReady = true;
 
@@ -135,6 +156,7 @@ public class WarehousePresenter : MonoBehaviour
         }
 
         sortButton.onClick.AddListener(OnSortClicked);
+        sortKeyDropdown.onValueChanged.AddListener(OnSortKeyChanged);
     }
 
     // 탭을 눌렀다 — 인벤토리 탭에 요청한다. 바뀌면 'TabChanged'로 돌아와 여기도 바뀐다 (탭 버튼 OnClick에 코드로 연결)
@@ -156,6 +178,7 @@ public class WarehousePresenter : MonoBehaviour
 
         grid.ShowTab(_tab);
         RefreshSelection();
+        RebuildSortKeyOptions();
     }
 
     // 지금 탭의 버튼만 선택 색으로 칠한다 (Follow · OnTabClicked에서 호출).
@@ -182,11 +205,65 @@ public class WarehousePresenter : MonoBehaviour
 
     #region 정렬
 
-    // [정렬] — 지금 탭을 등급 높은 순으로 줄 세운다. 규칙은 서버가 쥔다(인벤토리 [정렬]과 같다) (sortButton OnClick에 코드로 연결)
-    // ※ 기준·방향을 고르는 줄은 두지 않는다 — 맡겨 두는 곳이라 정리 한 번이면 된다. 필요해지면 인벤토리 도구 줄을 닮게 늘린다.
+    // 정렬은 인벤토리 도구 줄과 똑같이 동작한다('InventoryToolPresenter' 정렬 구역) — 규칙은 서버가 쥔다.
+
+    // 정렬 방향을 뒤집고 지금 탭을 다시 줄 세운다 (sortButton OnClick에 코드로 연결)
     private void OnSortClicked()
     {
-        grid.SortCurrent(InventorySortKey.Rarity, InventorySortOrder.Descending);
+        _order = _order == InventorySortOrder.Descending
+            ? InventorySortOrder.Ascending
+            : InventorySortOrder.Descending;
+
+        RefreshArrow();
+        grid.SortCurrent(_sortKey, _order);
+    }
+
+    // 정렬 기준을 골랐다 — 지금 방향 그대로 다시 줄 세운다 (sortKeyDropdown onValueChanged에 코드로 연결)
+    private void OnSortKeyChanged(int index)
+    {
+        if (index < 0 || index >= _sortKeyOptions.Count)
+        {
+            return;
+        }
+
+        _sortKey = _sortKeyOptions[index];
+        grid.SortCurrent(_sortKey, _order);
+    }
+
+    // 이 탭이 쓸 수 있는 기준만 드롭다운에 세운다 (Follow에서 호출).
+    // 쓸 수 없는 기준은 감춘다(캐릭터·장비의 수량순). 지금 기준을 못 쓰면 등급으로 돌린다 — 줄 세우기는 하지 않는다.
+    private void RebuildSortKeyOptions()
+    {
+        _sortKeyOptions.Clear();
+
+        var labels = new List<string>();
+
+        foreach (InventorySortKey key in (InventorySortKey[])Enum.GetValues(typeof(InventorySortKey)))
+        {
+            if (key == InventorySortKey.Count && !grid.CurrentSupportsSortKey(key))
+            {
+                continue;
+            }
+
+            _sortKeyOptions.Add(key);
+            labels.Add(SortKeyLabels[(int)key]);
+        }
+
+        if (!_sortKeyOptions.Contains(_sortKey))
+        {
+            _sortKey = InventorySortKey.Rarity;
+        }
+
+        sortKeyDropdown.ClearOptions();
+        sortKeyDropdown.AddOptions(labels);
+        sortKeyDropdown.SetValueWithoutNotify(_sortKeyOptions.IndexOf(_sortKey));
+        sortKeyDropdown.RefreshShownValue();
+    }
+
+    // 화살표를 지금 방향으로 맞춘다 (Start · 방향을 바꿀 때). ▼가 높은 순이다.
+    private void RefreshArrow()
+    {
+        sortArrowText.text = _order == InventorySortOrder.Descending ? "▼" : "▲";
     }
 
     #endregion

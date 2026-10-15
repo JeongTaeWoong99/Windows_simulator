@@ -1,6 +1,6 @@
 # Hub 폴더 규칙
 
-> 최종 업데이트: 2026-10-15 (창고 화면 — 종류별 3탭 · 인벤토리 격자와 같은 격자 · 끌어 넣기·꺼내기 — T-126) · 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
+> 최종 업데이트: 2026-10-15 (창고 정렬을 인벤토리와 같게 — 방향 ▼▲ · 기준 드롭다운) · 2026-10-15 (창고 화면 — 종류별 3탭 · 인벤토리 격자와 같은 격자 · 끌어 넣기·꺼내기 — T-126) · 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
 
 **`#Hub Canvas` — 거점 열. 뽑기 · 창고 2탭이다.**
 
@@ -13,7 +13,7 @@
 | `HubCanvasView.cs` | 캔버스 껍데기 — `Show(bool)`만 |
 | `HubTabPresenter/` | 탭 줄 — `HubTab`(뽑기·창고)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
 | `GachaPresenter/` | 뽑기 탭의 화면 — 풀마다 카드(`GachaPoolCardView`) · 카드 문구·확률 계산(`GachaPoolSummary`) |
-| `WarehousePresenter/` | 창고 탭의 화면 — 종류별 3탭 · [정렬] · 창고 격자. **격자는 인벤토리 격자(`InventoryGridPresenter`)를 `Container = Warehouse`로 둔 것이다** (아래 "창고 화면" 절) |
+| `WarehousePresenter/` | 창고 탭의 화면 — 종류별 3탭 · 정렬(방향 ▼▲ · 기준) · 창고 격자. **격자는 인벤토리 격자(`InventoryGridPresenter`)를 `Container = Warehouse`로 둔 것이다** (아래 "창고 화면" 절) |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
 
@@ -41,7 +41,7 @@
 ```
 Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter · VLG 0/5 — HubTabPresenter의 창고 page
 ├─ Tab Row                         자원 · 캐릭터 · 장비 (인벤토리 탭 줄을 본뜸 · 특성 없음) · pref 50
-├─ Tool Row                        안내 글 + [정렬] · pref 40
+├─ Tool Row                        ▼▲ 방향 · 정렬 기준 · 안내 글 · pref 40
 └─ Grid Presenter (↓ SUB VIEW)     InventoryGridPresenter — Container = Warehouse · 프레임 50 · flexH 1
 ```
 
@@ -54,7 +54,7 @@ Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter · VLG 0/5 — HubTabPre
   인벤토리가 특성 탭이면 창고는 보던 탭에 머문다.
 - **창고 칸에는 클릭 조작이 없다** — 판매·개봉·큐브·응축·잠금은 꺼낸 뒤 인벤토리에서 한다(서버도 인벤토리 것만 받는다).
   그래서 창고 격자의 큐브 창·응축 창 참조는 비워 둔다. 툴팁 조작 줄은 `끌기 — 인벤토리로 꺼내기` 하나다.
-- **[정렬]은 등급순 하나다** — 맡겨 두는 곳이라 기준·방향 줄은 두지 않았다. 필요해지면 인벤토리 도구 줄을 닮게 늘린다.
+- **정렬은 인벤토리 도구 줄과 똑같다** — 방향 버튼(▼▲)과 기준 드롭다운(등급순·이름순·수량순 — 수량순은 자원 탭만). 위젯은 인벤토리 것을 복제했다. 방향·기준은 인벤토리와 따로 든다.
 - 칸 수는 `Constants.WarehouseCapacity`(50)다 — `PlayerDataModel.GetStorageCapacity(container, tab)`이 보관함을 보고 답한다.
 
 ---
