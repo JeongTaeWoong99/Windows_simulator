@@ -12,6 +12,8 @@ public class Program
     private const string GameDataRel   = "Server/GameData";      // 생성된 정의(.cs)
     private const string BytesDirRel   = "Server/Shared/Data";   // MemoryPack 바이너리
 
+    private const string LocStrictFlag = "--loc-strict";
+
     /// <summary>저장소 루트 표식. 소스 위치에서 위로 올라가며 이 중 하나를 찾는다.</summary>
     private static readonly string[] RepoRootMarkers = { ".git", "GameDesign" };
 
@@ -21,9 +23,13 @@ public class Program
         {
             // 루트는 인자로 받는 것이 우선이고(파이프라인이 넘긴다), 없으면 소스 위치에서 거슬러 올라가 찾는다.
             // 실행 경로(bin/Debug/...)를 쓰지 않으므로 어디서 실행하든 결과가 같다.
-            var repoRoot = args.Length > 0 && args[0].Length > 0
-                ? Path.GetFullPath(args[0])
+            var rootArg  = args.FirstOrDefault(a => a.Length > 0 && !a.StartsWith("--"));
+            var repoRoot = rootArg is not null
+                ? Path.GetFullPath(rootArg)
                 : FindRepoRoot();
+
+            // --loc-strict: 번역 빈 칸을 KR로 대신하지 않고 멈춘다(배포용 생성)
+            var locStrict = args.Contains(LocStrictFlag);
 
             Console.WriteLine($"[경로] 저장소 루트 = {repoRoot}");
 
@@ -53,6 +59,7 @@ public class Program
             //    실제 드랍이 일어나는 순간에야 KeyNotFoundException으로 드러나기 때문이다.
             ExcelGenerator.LoadExcel(excelDir);
             ReferenceValidator.Validate(ExcelGenerator.Tables);
+            ExcelGenerator.ApplyLocalization(excelDir, locStrict);  // 보간 전 원문으로 번역 시트를 맞춘다 — 순서를 바꾸면 KR 칸에 치환된 문장이 들어간다
             TooltipInterpolator.Apply(ExcelGenerator.Tables);   // Tooltip의 {컬럼}을 같은 행 값으로 — .bytes·DataLog에는 치환된 문장이 들어간다
             ExcelGenerator.GenerateCode(gameDataDir, packerDir);
 

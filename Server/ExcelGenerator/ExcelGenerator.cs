@@ -15,7 +15,8 @@ public static class ExcelGenerator
 
         var excels = Directory.EnumerateFiles(excelDir, "*.xlsx")
             .Where(path => !Path.GetFileName(path).StartsWith("~$"))
-            .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase));
+            .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase))
+            .Where(path => !string.Equals(Path.GetFileName(path), Localization.FileName, StringComparison.OrdinalIgnoreCase));   // 다른 테이블을 다 읽은 뒤 Localization이 따로 맞춘다
 
         // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 발굴 …)이고
         // 베이스 이름이 같은 시트들은 한 테이블로 병합된다. '.' 없는 시트는 그대로 시트=테이블.
@@ -35,6 +36,12 @@ public static class ExcelGenerator
         {
             _tables.Add(MergeSheets(group.Key, group.ToList()));
         }
+    }
+
+    /// <summary>lstring 셀을 번역 파일과 맞추고 LocalizationTable을 테이블 목록에 더한다.</summary>
+    public static void ApplyLocalization(string excelDir, bool strict)
+    {
+        Localization.Apply(excelDir, _tables, strict);
     }
 
     /// <summary>시트 이름에서 첫 '.' 앞부분을 테이블명으로 삼는다. 비어 있으면 fail-fast.</summary>
@@ -246,6 +253,9 @@ public static class ExcelGenerator
         string?                 Ref            // "ItemTable.ItemTID" 형식. 값이 대상 테이블에 실재하는지 검사한다(null이면 검사 없음)
         )
     {
+        /// <summary>Type이 lstring — 값이 번역 시트(LocalizationTable.Data)로 나간다</summary>
+        public bool IsLocalized => RawType == Localization.LocalizedType;
+
         public enum RecordType : byte
         {
             Ignore      = 0b00000000,
@@ -279,6 +289,7 @@ public static class ExcelGenerator
             "long"                          => ColumnInfo.RecordType.Long,
             "float"                         => ColumnInfo.RecordType.Float,
             "string"                        => ColumnInfo.RecordType.String,
+            Localization.LocalizedType      => ColumnInfo.RecordType.String,    // 번역 대상 문자열 — 코드에서는 string
             "bool"                          => ColumnInfo.RecordType.Bool,
             "ID"                            => ColumnInfo.RecordType.ID,
             _ when rawType.EndsWith("[]")   => MapArrayType(rawType),           // int[]/long[]/float[]/string[]/eXxx[]

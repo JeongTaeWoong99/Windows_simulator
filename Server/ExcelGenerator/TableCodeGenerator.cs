@@ -70,6 +70,7 @@ public static class TableCodeGenerator
 
         // 공용 상수 시트는 행마다 속성 하나를 가진 Constants 클래스를 따로 만든다(Constants.StorageCapacity).
         ConstantsGenerator.Generate(tables, gameDataDir);
+        LocCodeGenerator.Generate(tables, gameDataDir);
     }
 
     /// <summary>GameTable 생성에 필요한 테이블 요약. Key가 null이면 리스트 전용 접근자로 생성한다.</summary>
@@ -163,8 +164,29 @@ public static class TableCodeGenerator
             sb.AppendLine($"{body.PadRight(bodyWidth)}  // {comment}");
         }
 
+        AppendLocKeys(sb, tableName, columns);
+
         sb.AppendLine("}");
         return CodeGenUtil.BuildFile("GameData", new[] { "MemoryPack" }, sb.ToString());
+    }
+
+    /// <summary>lstring 컬럼마다 번역 키 속성(NameLocKey)을 붙인다. 키 규칙은 Localization.Collect와 같다.</summary>
+    private static void AppendLocKeys(StringBuilder sb, string tableName, List<(int CellIndex, ExcelGenerator.ColumnInfo Col)> columns)
+    {
+        var localized = columns.Where(c => c.Col.IsLocalized).ToList();
+        if (localized.Count == 0)
+        {
+            return;
+        }
+
+        var prefix = Localization.KeyPrefix(tableName);
+        var keyColumn = columns[0].Col.Name;
+        sb.AppendLine();
+        foreach (var (_, col) in localized)
+        {
+            sb.AppendLine($"    /// <summary>{col.Name}의 번역 키 — Loc.Get(row.{col.Name}LocKey)</summary>");
+            sb.AppendLine($"    [MemoryPackIgnore] public string {col.Name}LocKey => \"{prefix}.\" + {keyColumn} + \".{col.Name}\";");
+        }
     }
 
     /// <summary>
@@ -255,7 +277,7 @@ public static class TableCodeGenerator
     {
         var list = MemoryPackSerializer.Deserialize<List<{{tableName}}Row>>(bytes);
         return list is { Count: > 0 }
-            ? System.Text.Json.JsonSerializer.Serialize(list[0])
+            ? System.Text.Json.JsonSerializer.Serialize(list[0], new System.Text.Json.JsonSerializerOptions { IgnoreReadOnlyProperties = true })
             : "(빈 테이블)";
     }
 
@@ -267,6 +289,7 @@ public static class TableCodeGenerator
         {
             WriteIndented = true,
             Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            IgnoreReadOnlyProperties = true,   // NameLocKey 같은 계산 속성은 데이터가 아니다
         };
         options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
         return System.Text.Json.JsonSerializer.Serialize(list, options);

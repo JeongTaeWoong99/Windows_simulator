@@ -53,7 +53,7 @@ namespace GameData
         {
             var list = MemoryPackSerializer.Deserialize<List<GachaCharacterTableRow>>(bytes);
             return list is { Count: > 0 }
-                ? System.Text.Json.JsonSerializer.Serialize(list[0])
+                ? System.Text.Json.JsonSerializer.Serialize(list[0], new System.Text.Json.JsonSerializerOptions { IgnoreReadOnlyProperties = true })
                 : "(빈 테이블)";
         }
 
@@ -65,6 +65,7 @@ namespace GameData
             {
                 WriteIndented = true,
                 Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                IgnoreReadOnlyProperties = true,   // NameLocKey 같은 계산 속성은 데이터가 아니다
             };
             options.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
             return System.Text.Json.JsonSerializer.Serialize(list, options);

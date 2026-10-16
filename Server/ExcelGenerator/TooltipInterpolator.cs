@@ -32,7 +32,8 @@ public static class TooltipInterpolator
         }
     }
 
-    private static string Interpolate(TableData table, string[] row, string template)
+    /// <summary>template의 토큰을 row 값으로 바꾼다. 번역문은 그 언어 값으로 채운 row를 넘긴다.</summary>
+    public static string Interpolate(TableData table, string[] row, string template)
     {
         var sb = new StringBuilder(template.Length);
         var i = 0;
@@ -114,6 +115,35 @@ public static class TooltipInterpolator
 
         // 천분율 → 퍼센트. 15‰ = 1.5%, 500‰ = 50%
         return (permille / 10m).ToString("0.#", CultureInfo.InvariantCulture) + "%";
+    }
+
+    /// <summary>template에 든 토큰("컬럼" · "컬럼:지정자")을 순서 없이 모은다. 번역문이 원문과 같은 값을 쓰는지 비교할 때 쓴다.</summary>
+    public static HashSet<string> Tokens(string template)
+    {
+        var tokens = new HashSet<string>(StringComparer.Ordinal);
+        for (var i = 0; i < template.Length; i++)
+        {
+            if (template[i] != '{')
+            {
+                continue;
+            }
+            if (At(template, i + 1, '{'))
+            {
+                i++;
+                continue;
+            }
+
+            var close = template.IndexOf('}', i + 1);
+            if (close < 0)
+            {
+                break;
+            }
+
+            tokens.Add(string.Join(':', template[(i + 1)..close].Split(':', 2).Select(p => p.Trim())));
+            i = close;
+        }
+
+        return tokens;
     }
 
     private static bool At(string s, int i, char c)

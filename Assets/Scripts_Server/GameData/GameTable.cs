@@ -43,6 +43,7 @@ namespace GameData
         public static TableSet<int, UserTraitTableRow> UserTraitTable { get; private set; } = null!;
         public static TableSet<int, UserTraitLevelTableRow> UserTraitLevelTable { get; private set; } = null!;
         public static TableSet<int, WorkSlotTableRow> WorkSlotTable { get; private set; } = null!;
+        public static TableSet<string, LocalizationTableRow> LocalizationTable { get; private set; } = null!;
 
         /// <summary>read: "테이블명.bytes" → 바이트. 모든 테이블을 로드/인덱싱한다.</summary>
         public static void LoadAll(Func<string, byte[]> read)
@@ -79,6 +80,7 @@ namespace GameData
             UserTraitTable = TableSet<int, UserTraitTableRow>.From(read("UserTraitTable.bytes"), r => r.UserTraitTID);
             UserTraitLevelTable = TableSet<int, UserTraitLevelTableRow>.From(read("UserTraitLevelTable.bytes"), r => r.UserTraitLevelTID);
             WorkSlotTable = TableSet<int, WorkSlotTableRow>.From(read("WorkSlotTable.bytes"), r => r.WorkSlotTID);
+            LocalizationTable = TableSet<string, LocalizationTableRow>.From(read("LocalizationTable.bytes"), r => r.Key);
         }
     }
 }

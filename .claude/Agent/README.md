@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-16 다국어 시트 구조 — lstring · Localization.xlsx (T-135)](2026-10-16-localization-sheet.md) — `#excel` `#generator` 생성기가 번역 시트 행을 채움 · KR 칸이 원문 스냅샷(🔄) · Tooltip 언어별 보간 · 이슈 #64
 - [2026-10-16 섬 산업 건물 — 자원 사용처 기획 초안 (T-105)](2026-10-16-island-buildings-design.md) — `#design` `#docs` 건물 레벨 + 선행 노드 트리 · 노드는 수치·기능 모두 · 자원 비용은 지불 OR 규칙과 충돌
 - [2026-10-16 경매 검색 비용 줄이기 · 조건 없는 검색 거절 (T-155 후속)](2026-10-16-auction-search-cost.md) — `#server` `#auction` 가장 좁은 인덱스 · 단가 낮은순은 커서부터 한 쪽만 · 건수 1,000 상한 · 이슈 #71
 - [2026-10-16 자원 칸별 묶음 — MaxStack은 칸 하나의 상한 (T-160)](2026-10-16-resource-slot-stacks.md) — `#server` 보관함을 칸 단위로 · PK (user_id, container, slot) · 칸 수 검사는 사본에 넣어 본다

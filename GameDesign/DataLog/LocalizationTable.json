@@ -1,0 +1,3342 @@
+[
+  {
+    "Key": "Artifact.1.Name",
+    "KR": "어부의 낡은 부적",
+    "EN": "어부의 낡은 부적"
+  },
+  {
+    "Key": "Artifact.2.Name",
+    "KR": "깨진 토기 빗",
+    "EN": "깨진 토기 빗"
+  },
+  {
+    "Key": "Artifact.3.Name",
+    "KR": "녹슨 쇠못",
+    "EN": "녹슨 쇠못"
+  },
+  {
+    "Key": "Artifact.4.Name",
+    "KR": "조개 단추",
+    "EN": "조개 단추"
+  },
+  {
+    "Key": "Artifact.5.Name",
+    "KR": "낡은 동전",
+    "EN": "낡은 동전"
+  },
+  {
+    "Key": "Artifact.6.Name",
+    "KR": "닳은 숫돌",
+    "EN": "닳은 숫돌"
+  },
+  {
+    "Key": "Artifact.7.Name",
+    "KR": "흙 구슬",
+    "EN": "흙 구슬"
+  },
+  {
+    "Key": "Artifact.8.Name",
+    "KR": "돌 화살촉",
+    "EN": "돌 화살촉"
+  },
+  {
+    "Key": "Artifact.9.Name",
+    "KR": "짚신 조각",
+    "EN": "짚신 조각"
+  },
+  {
+    "Key": "Artifact.10.Name",
+    "KR": "녹슨 열쇠",
+    "EN": "녹슨 열쇠"
+  },
+  {
+    "Key": "Artifact.11.Name",
+    "KR": "나무 빗",
+    "EN": "나무 빗"
+  },
+  {
+    "Key": "Artifact.12.Name",
+    "KR": "작은 돌 인형",
+    "EN": "작은 돌 인형"
+  },
+  {
+    "Key": "Artifact.13.Name",
+    "KR": "조개 껍데기 목걸이",
+    "EN": "조개 껍데기 목걸이"
+  },
+  {
+    "Key": "Artifact.14.Name",
+    "KR": "토기 술잔",
+    "EN": "토기 술잔"
+  },
+  {
+    "Key": "Artifact.15.Name",
+    "KR": "뼈 바늘",
+    "EN": "뼈 바늘"
+  },
+  {
+    "Key": "Artifact.16.Name",
+    "KR": "조약돌 팔찌",
+    "EN": "조약돌 팔찌"
+  },
+  {
+    "Key": "Artifact.17.Name",
+    "KR": "그물추",
+    "EN": "그물추"
+  },
+  {
+    "Key": "Artifact.18.Name",
+    "KR": "갈대 피리",
+    "EN": "갈대 피리"
+  },
+  {
+    "Key": "Artifact.19.Name",
+    "KR": "모래시계 조각",
+    "EN": "모래시계 조각"
+  },
+  {
+    "Key": "Artifact.20.Name",
+    "KR": "나무 가면",
+    "EN": "나무 가면"
+  },
+  {
+    "Key": "Artifact.21.Name",
+    "KR": "흙 인형",
+    "EN": "흙 인형"
+  },
+  {
+    "Key": "Artifact.22.Name",
+    "KR": "돌 도끼",
+    "EN": "돌 도끼"
+  },
+  {
+    "Key": "Character.1001.Name",
+    "KR": "램볼",
+    "EN": "램볼"
+  },
+  {
+    "Key": "Character.1002.Name",
+    "KR": "치키피",
+    "EN": "치키피"
+  },
+  {
+    "Key": "Character.1003.Name",
+    "KR": "펭구렛",
+    "EN": "펭구렛"
+  },
+  {
+    "Key": "Character.1004.Name",
+    "KR": "캐티바",
+    "EN": "캐티바"
+  },
+  {
+    "Key": "Character.1005.Name",
+    "KR": "리프몽",
+    "EN": "리프몽"
+  },
+  {
+    "Key": "Character.1006.Name",
+    "KR": "폭스파크스",
+    "EN": "폭스파크스"
+  },
+  {
+    "Key": "Character.1007.Name",
+    "KR": "밀개비",
+    "EN": "밀개비"
+  },
+  {
+    "Key": "Character.1008.Name",
+    "KR": "물방개미",
+    "EN": "물방개미"
+  },
+  {
+    "Key": "Character.1009.Name",
+    "KR": "두더삽",
+    "EN": "두더삽"
+  },
+  {
+    "Key": "Character.1010.Name",
+    "KR": "톱니쥐",
+    "EN": "톱니쥐"
+  },
+  {
+    "Key": "Character.1011.Name",
+    "KR": "살쾡이",
+    "EN": "살쾡이"
+  },
+  {
+    "Key": "Character.1012.Name",
+    "KR": "갈대오리",
+    "EN": "갈대오리"
+  },
+  {
+    "Key": "Character.1013.Name",
+    "KR": "뿔사슴이",
+    "EN": "뿔사슴이"
+  },
+  {
+    "Key": "Character.1014.Name",
+    "KR": "솔방울곰",
+    "EN": "솔방울곰"
+  },
+  {
+    "Key": "Character.1015.Name",
+    "KR": "해달수",
+    "EN": "해달수"
+  },
+  {
+    "Key": "Character.1016.Name",
+    "KR": "흙두꺼비",
+    "EN": "흙두꺼비"
+  },
+  {
+    "Key": "Character.1017.Name",
+    "KR": "광부오소리",
+    "EN": "광부오소리"
+  },
+  {
+    "Key": "Character.1018.Name",
+    "KR": "도끼늑대",
+    "EN": "도끼늑대"
+  },
+  {
+    "Key": "Character.1019.Name",
+    "KR": "창날매",
+    "EN": "창날매"
+  },
+  {
+    "Key": "Character.1020.Name",
+    "KR": "이삭토끼",
+    "EN": "이삭토끼"
+  },
+  {
+    "Key": "Character.1021.Name",
+    "KR": "산호게",
+    "EN": "산호게"
+  },
+  {
+    "Key": "Character.1022.Name",
+    "KR": "화산도롱뇽",
+    "EN": "화산도롱뇽"
+  },
+  {
+    "Key": "Character.1023.Name",
+    "KR": "파도고래",
+    "EN": "파도고래"
+  },
+  {
+    "Key": "Character.1024.Name",
+    "KR": "대지곰",
+    "EN": "대지곰"
+  },
+  {
+    "Key": "Character.1025.Name",
+    "KR": "강철사마귀",
+    "EN": "강철사마귀"
+  },
+  {
+    "Key": "Character.1026.Name",
+    "KR": "거목정령",
+    "EN": "거목정령"
+  },
+  {
+    "Key": "Character.1027.Name",
+    "KR": "황금기린",
+    "EN": "황금기린"
+  },
+  {
+    "Key": "Character.1028.Name",
+    "KR": "심연이무기",
+    "EN": "심연이무기"
+  },
+  {
+    "Key": "Character.1029.Name",
+    "KR": "흑요석골렘",
+    "EN": "흑요석골렘"
+  },
+  {
+    "Key": "Character.1030.Name",
+    "KR": "별빛드래곤",
+    "EN": "별빛드래곤"
+  },
+  {
+    "Key": "Equip.1001.Name",
+    "KR": "목검",
+    "EN": "목검"
+  },
+  {
+    "Key": "Equip.1001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002.Name",
+    "KR": "무쇠 삽",
+    "EN": "무쇠 삽"
+  },
+  {
+    "Key": "Equip.1002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2001.Name",
+    "KR": "구리 반지",
+    "EN": "구리 반지"
+  },
+  {
+    "Key": "Equip.2001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2002.Name",
+    "KR": "탐험가의 목걸이",
+    "EN": "탐험가의 목걸이"
+  },
+  {
+    "Key": "Equip.2002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3001.Name",
+    "KR": "원석",
+    "EN": "원석"
+  },
+  {
+    "Key": "Equip.3001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1101.Name",
+    "KR": "나무 호미",
+    "EN": "나무 호미"
+  },
+  {
+    "Key": "Equip.1101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1102.Name",
+    "KR": "무쇠 호미",
+    "EN": "무쇠 호미"
+  },
+  {
+    "Key": "Equip.1102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1103.Name",
+    "KR": "강철 낫",
+    "EN": "강철 낫"
+  },
+  {
+    "Key": "Equip.1103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1104.Name",
+    "KR": "은빛 쟁기",
+    "EN": "은빛 쟁기"
+  },
+  {
+    "Key": "Equip.1104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1105.Name",
+    "KR": "풍년의 괭이",
+    "EN": "풍년의 괭이"
+  },
+  {
+    "Key": "Equip.1105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1106.Name",
+    "KR": "대지모의 호미",
+    "EN": "대지모의 호미"
+  },
+  {
+    "Key": "Equip.1106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1201.Name",
+    "KR": "나무 모종삽",
+    "EN": "나무 모종삽"
+  },
+  {
+    "Key": "Equip.1201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1203.Name",
+    "KR": "강철 삽",
+    "EN": "강철 삽"
+  },
+  {
+    "Key": "Equip.1203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1204.Name",
+    "KR": "고고학자의 붓",
+    "EN": "고고학자의 붓"
+  },
+  {
+    "Key": "Equip.1204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1205.Name",
+    "KR": "용린 발굴삽",
+    "EN": "용린 발굴삽"
+  },
+  {
+    "Key": "Equip.1205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1206.Name",
+    "KR": "태초의 발굴삽",
+    "EN": "태초의 발굴삽"
+  },
+  {
+    "Key": "Equip.1206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1301.Name",
+    "KR": "돌 곡괭이",
+    "EN": "돌 곡괭이"
+  },
+  {
+    "Key": "Equip.1301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1302.Name",
+    "KR": "무쇠 곡괭이",
+    "EN": "무쇠 곡괭이"
+  },
+  {
+    "Key": "Equip.1302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1303.Name",
+    "KR": "강철 곡괭이",
+    "EN": "강철 곡괭이"
+  },
+  {
+    "Key": "Equip.1303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1304.Name",
+    "KR": "흑요석 곡괭이",
+    "EN": "흑요석 곡괭이"
+  },
+  {
+    "Key": "Equip.1304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1305.Name",
+    "KR": "미스릴 곡괭이",
+    "EN": "미스릴 곡괭이"
+  },
+  {
+    "Key": "Equip.1305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1306.Name",
+    "KR": "산신의 곡괭이",
+    "EN": "산신의 곡괭이"
+  },
+  {
+    "Key": "Equip.1306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1401.Name",
+    "KR": "손도끼",
+    "EN": "손도끼"
+  },
+  {
+    "Key": "Equip.1401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1402.Name",
+    "KR": "무쇠 도끼",
+    "EN": "무쇠 도끼"
+  },
+  {
+    "Key": "Equip.1402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1403.Name",
+    "KR": "양날 도끼",
+    "EN": "양날 도끼"
+  },
+  {
+    "Key": "Equip.1403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1404.Name",
+    "KR": "백년목 도끼",
+    "EN": "백년목 도끼"
+  },
+  {
+    "Key": "Equip.1404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1405.Name",
+    "KR": "서리강철 도끼",
+    "EN": "서리강철 도끼"
+  },
+  {
+    "Key": "Equip.1405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1406.Name",
+    "KR": "세계수의 도끼",
+    "EN": "세계수의 도끼"
+  },
+  {
+    "Key": "Equip.1406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1501.Name",
+    "KR": "사냥용 활",
+    "EN": "사냥용 활"
+  },
+  {
+    "Key": "Equip.1501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1502.Name",
+    "KR": "참나무 활",
+    "EN": "참나무 활"
+  },
+  {
+    "Key": "Equip.1502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1503.Name",
+    "KR": "강철 석궁",
+    "EN": "강철 석궁"
+  },
+  {
+    "Key": "Equip.1503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1504.Name",
+    "KR": "은빛 장궁",
+    "EN": "은빛 장궁"
+  },
+  {
+    "Key": "Equip.1504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1505.Name",
+    "KR": "폭풍의 장궁",
+    "EN": "폭풍의 장궁"
+  },
+  {
+    "Key": "Equip.1505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1506.Name",
+    "KR": "월신의 활",
+    "EN": "월신의 활"
+  },
+  {
+    "Key": "Equip.1506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2003.Name",
+    "KR": "은 목걸이",
+    "EN": "은 목걸이"
+  },
+  {
+    "Key": "Equip.2003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2004.Name",
+    "KR": "노동자의 팔찌",
+    "EN": "노동자의 팔찌"
+  },
+  {
+    "Key": "Equip.2004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2005.Name",
+    "KR": "장인의 인장",
+    "EN": "장인의 인장"
+  },
+  {
+    "Key": "Equip.2005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2006.Name",
+    "KR": "대장인의 훈장",
+    "EN": "대장인의 훈장"
+  },
+  {
+    "Key": "Equip.2006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.2007.Name",
+    "KR": "창세의 고리",
+    "EN": "창세의 고리"
+  },
+  {
+    "Key": "Equip.2007.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3101.Name",
+    "KR": "풍년석",
+    "EN": "풍년석"
+  },
+  {
+    "Key": "Equip.3101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3102.Name",
+    "KR": "새싹 수정",
+    "EN": "새싹 수정"
+  },
+  {
+    "Key": "Equip.3102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3103.Name",
+    "KR": "곡창의 비취",
+    "EN": "곡창의 비취"
+  },
+  {
+    "Key": "Equip.3103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3104.Name",
+    "KR": "황금 이삭석",
+    "EN": "황금 이삭석"
+  },
+  {
+    "Key": "Equip.3104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3105.Name",
+    "KR": "대지의 심장",
+    "EN": "대지의 심장"
+  },
+  {
+    "Key": "Equip.3105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3106.Name",
+    "KR": "풍요의 성석",
+    "EN": "풍요의 성석"
+  },
+  {
+    "Key": "Equip.3106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3201.Name",
+    "KR": "흙빛 조각석",
+    "EN": "흙빛 조각석"
+  },
+  {
+    "Key": "Equip.3201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3202.Name",
+    "KR": "지층 수정",
+    "EN": "지층 수정"
+  },
+  {
+    "Key": "Equip.3202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3203.Name",
+    "KR": "유적의 호박",
+    "EN": "유적의 호박"
+  },
+  {
+    "Key": "Equip.3203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3204.Name",
+    "KR": "고대 문양석",
+    "EN": "고대 문양석"
+  },
+  {
+    "Key": "Equip.3204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3205.Name",
+    "KR": "왕도의 심장",
+    "EN": "왕도의 심장"
+  },
+  {
+    "Key": "Equip.3205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3206.Name",
+    "KR": "태고의 성석",
+    "EN": "태고의 성석"
+  },
+  {
+    "Key": "Equip.3206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3301.Name",
+    "KR": "철광석 조각",
+    "EN": "철광석 조각"
+  },
+  {
+    "Key": "Equip.3301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3302.Name",
+    "KR": "광맥 수정",
+    "EN": "광맥 수정"
+  },
+  {
+    "Key": "Equip.3302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3303.Name",
+    "KR": "지맥의 흑옥",
+    "EN": "지맥의 흑옥"
+  },
+  {
+    "Key": "Equip.3303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3304.Name",
+    "KR": "용암 결정",
+    "EN": "용암 결정"
+  },
+  {
+    "Key": "Equip.3304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3305.Name",
+    "KR": "대지핵 결정",
+    "EN": "대지핵 결정"
+  },
+  {
+    "Key": "Equip.3305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3306.Name",
+    "KR": "광신의 성석",
+    "EN": "광신의 성석"
+  },
+  {
+    "Key": "Equip.3306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3401.Name",
+    "KR": "나무옹이석",
+    "EN": "나무옹이석"
+  },
+  {
+    "Key": "Equip.3401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3402.Name",
+    "KR": "수액 호박",
+    "EN": "수액 호박"
+  },
+  {
+    "Key": "Equip.3402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3403.Name",
+    "KR": "고목의 녹옥",
+    "EN": "고목의 녹옥"
+  },
+  {
+    "Key": "Equip.3403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3404.Name",
+    "KR": "백년목 결정",
+    "EN": "백년목 결정"
+  },
+  {
+    "Key": "Equip.3404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3405.Name",
+    "KR": "숲의 심장",
+    "EN": "숲의 심장"
+  },
+  {
+    "Key": "Equip.3405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3406.Name",
+    "KR": "세계수 성석",
+    "EN": "세계수 성석"
+  },
+  {
+    "Key": "Equip.3406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3501.Name",
+    "KR": "짐승 이빨석",
+    "EN": "짐승 이빨석"
+  },
+  {
+    "Key": "Equip.3501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3502.Name",
+    "KR": "추적자의 수정",
+    "EN": "추적자의 수정"
+  },
+  {
+    "Key": "Equip.3502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3503.Name",
+    "KR": "맹수의 홍옥",
+    "EN": "맹수의 홍옥"
+  },
+  {
+    "Key": "Equip.3503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3504.Name",
+    "KR": "사냥꾼의 별",
+    "EN": "사냥꾼의 별"
+  },
+  {
+    "Key": "Equip.3504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3505.Name",
+    "KR": "야수의 심장",
+    "EN": "야수의 심장"
+  },
+  {
+    "Key": "Equip.3505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.3506.Name",
+    "KR": "월광 성석",
+    "EN": "월광 성석"
+  },
+  {
+    "Key": "Equip.3506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "GachaInfo.1.Name",
+    "KR": "구슬 상자",
+    "EN": "구슬 상자"
+  },
+  {
+    "Key": "GachaInfo.2.Name",
+    "KR": "캐릭터 소환",
+    "EN": "캐릭터 소환"
+  },
+  {
+    "Key": "GachaInfo.3.Name",
+    "KR": "무기 뽑기",
+    "EN": "무기 뽑기"
+  },
+  {
+    "Key": "GachaInfo.4.Name",
+    "KR": "장신구 뽑기",
+    "EN": "장신구 뽑기"
+  },
+  {
+    "Key": "GachaInfo.5.Name",
+    "KR": "보석 뽑기",
+    "EN": "보석 뽑기"
+  },
+  {
+    "Key": "GachaInfo.9.Name",
+    "KR": "나무 상자 Lv1",
+    "EN": "나무 상자 Lv1"
+  },
+  {
+    "Key": "GachaInfo.10.Name",
+    "KR": "은 상자 Lv1",
+    "EN": "은 상자 Lv1"
+  },
+  {
+    "Key": "GachaInfo.11.Name",
+    "KR": "황금 상자 Lv1",
+    "EN": "황금 상자 Lv1"
+  },
+  {
+    "Key": "GachaInfo.12.Name",
+    "KR": "나무 상자 Lv2",
+    "EN": "나무 상자 Lv2"
+  },
+  {
+    "Key": "GachaInfo.13.Name",
+    "KR": "은 상자 Lv2",
+    "EN": "은 상자 Lv2"
+  },
+  {
+    "Key": "GachaInfo.14.Name",
+    "KR": "황금 상자 Lv2",
+    "EN": "황금 상자 Lv2"
+  },
+  {
+    "Key": "GachaInfo.15.Name",
+    "KR": "나무 상자 Lv3",
+    "EN": "나무 상자 Lv3"
+  },
+  {
+    "Key": "GachaInfo.16.Name",
+    "KR": "은 상자 Lv3",
+    "EN": "은 상자 Lv3"
+  },
+  {
+    "Key": "GachaInfo.17.Name",
+    "KR": "황금 상자 Lv3",
+    "EN": "황금 상자 Lv3"
+  },
+  {
+    "Key": "GachaInfo.18.Name",
+    "KR": "나무 상자 Lv4",
+    "EN": "나무 상자 Lv4"
+  },
+  {
+    "Key": "GachaInfo.19.Name",
+    "KR": "은 상자 Lv4",
+    "EN": "은 상자 Lv4"
+  },
+  {
+    "Key": "GachaInfo.20.Name",
+    "KR": "황금 상자 Lv4",
+    "EN": "황금 상자 Lv4"
+  },
+  {
+    "Key": "GachaInfo.21.Name",
+    "KR": "나무 상자 Lv5",
+    "EN": "나무 상자 Lv5"
+  },
+  {
+    "Key": "GachaInfo.22.Name",
+    "KR": "은 상자 Lv5",
+    "EN": "은 상자 Lv5"
+  },
+  {
+    "Key": "GachaInfo.23.Name",
+    "KR": "황금 상자 Lv5",
+    "EN": "황금 상자 Lv5"
+  },
+  {
+    "Key": "GachaInfo.24.Name",
+    "KR": "비밀 금고",
+    "EN": "비밀 금고"
+  },
+  {
+    "Key": "GachaInfo.25.Name",
+    "KR": "감정 — 흙 묻은 유물",
+    "EN": "감정 — 흙 묻은 유물"
+  },
+  {
+    "Key": "GachaInfo.26.Name",
+    "KR": "감정 — 조개 박힌 유물",
+    "EN": "감정 — 조개 박힌 유물"
+  },
+  {
+    "Key": "GachaInfo.27.Name",
+    "KR": "감정 — 산호 엉긴 유물",
+    "EN": "감정 — 산호 엉긴 유물"
+  },
+  {
+    "Key": "GachaInfo.28.Name",
+    "KR": "감정 — 봉인된 유물",
+    "EN": "감정 — 봉인된 유물"
+  },
+  {
+    "Key": "GachaInfo.29.Name",
+    "KR": "감정 — 황금 띠 유물",
+    "EN": "감정 — 황금 띠 유물"
+  },
+  {
+    "Key": "GachaInfo.30.Name",
+    "KR": "감정 — 왕의 유물",
+    "EN": "감정 — 왕의 유물"
+  },
+  {
+    "Key": "GachaInfo.31.Name",
+    "KR": "감정 — 무지개 유물",
+    "EN": "감정 — 무지개 유물"
+  },
+  {
+    "Key": "IndustryLevel.101.Name",
+    "KR": "텃밭",
+    "EN": "텃밭"
+  },
+  {
+    "Key": "IndustryLevel.102.Name",
+    "KR": "밭",
+    "EN": "밭"
+  },
+  {
+    "Key": "IndustryLevel.103.Name",
+    "KR": "농장",
+    "EN": "농장"
+  },
+  {
+    "Key": "IndustryLevel.104.Name",
+    "KR": "대농장",
+    "EN": "대농장"
+  },
+  {
+    "Key": "IndustryLevel.105.Name",
+    "KR": "신성한 대지",
+    "EN": "신성한 대지"
+  },
+  {
+    "Key": "IndustryLevel.201.Name",
+    "KR": "옛 집터",
+    "EN": "옛 집터"
+  },
+  {
+    "Key": "IndustryLevel.202.Name",
+    "KR": "무너진 성벽",
+    "EN": "무너진 성벽"
+  },
+  {
+    "Key": "IndustryLevel.203.Name",
+    "KR": "고대 신전",
+    "EN": "고대 신전"
+  },
+  {
+    "Key": "IndustryLevel.204.Name",
+    "KR": "지하 묘실",
+    "EN": "지하 묘실"
+  },
+  {
+    "Key": "IndustryLevel.205.Name",
+    "KR": "잊힌 왕도",
+    "EN": "잊힌 왕도"
+  },
+  {
+    "Key": "IndustryLevel.301.Name",
+    "KR": "노천 광산",
+    "EN": "노천 광산"
+  },
+  {
+    "Key": "IndustryLevel.302.Name",
+    "KR": "갱도",
+    "EN": "갱도"
+  },
+  {
+    "Key": "IndustryLevel.303.Name",
+    "KR": "심층 갱도",
+    "EN": "심층 갱도"
+  },
+  {
+    "Key": "IndustryLevel.304.Name",
+    "KR": "지하 대공동",
+    "EN": "지하 대공동"
+  },
+  {
+    "Key": "IndustryLevel.305.Name",
+    "KR": "심연",
+    "EN": "심연"
+  },
+  {
+    "Key": "IndustryLevel.401.Name",
+    "KR": "잡목림",
+    "EN": "잡목림"
+  },
+  {
+    "Key": "IndustryLevel.402.Name",
+    "KR": "소나무 숲",
+    "EN": "소나무 숲"
+  },
+  {
+    "Key": "IndustryLevel.403.Name",
+    "KR": "참나무 숲",
+    "EN": "참나무 숲"
+  },
+  {
+    "Key": "IndustryLevel.404.Name",
+    "KR": "흑림",
+    "EN": "흑림"
+  },
+  {
+    "Key": "IndustryLevel.405.Name",
+    "KR": "세계수 뿌리",
+    "EN": "세계수 뿌리"
+  },
+  {
+    "Key": "IndustryLevel.501.Name",
+    "KR": "들판",
+    "EN": "들판"
+  },
+  {
+    "Key": "IndustryLevel.502.Name",
+    "KR": "야산",
+    "EN": "야산"
+  },
+  {
+    "Key": "IndustryLevel.503.Name",
+    "KR": "깊은 숲",
+    "EN": "깊은 숲"
+  },
+  {
+    "Key": "IndustryLevel.504.Name",
+    "KR": "설산",
+    "EN": "설산"
+  },
+  {
+    "Key": "IndustryLevel.505.Name",
+    "KR": "마수의 영역",
+    "EN": "마수의 영역"
+  },
+  {
+    "Key": "Item.10001.Name",
+    "KR": "깨진 토기 조각",
+    "EN": "깨진 토기 조각"
+  },
+  {
+    "Key": "Item.10001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10002.Name",
+    "KR": "녹슨 동전",
+    "EN": "녹슨 동전"
+  },
+  {
+    "Key": "Item.10002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10003.Name",
+    "KR": "흙 묻은 구슬",
+    "EN": "흙 묻은 구슬"
+  },
+  {
+    "Key": "Item.10003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10004.Name",
+    "KR": "청동 거울",
+    "EN": "청동 거울"
+  },
+  {
+    "Key": "Item.10004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10005.Name",
+    "KR": "옛 장인의 도장",
+    "EN": "옛 장인의 도장"
+  },
+  {
+    "Key": "Item.10005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10006.Name",
+    "KR": "개척자의 일지",
+    "EN": "개척자의 일지"
+  },
+  {
+    "Key": "Item.10006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20001.Name",
+    "KR": "밀",
+    "EN": "밀"
+  },
+  {
+    "Key": "Item.20001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20002.Name",
+    "KR": "감자",
+    "EN": "감자"
+  },
+  {
+    "Key": "Item.20002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20003.Name",
+    "KR": "옥수수",
+    "EN": "옥수수"
+  },
+  {
+    "Key": "Item.20003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20004.Name",
+    "KR": "인삼",
+    "EN": "인삼"
+  },
+  {
+    "Key": "Item.20004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20005.Name",
+    "KR": "변종 인삼",
+    "EN": "변종 인삼"
+  },
+  {
+    "Key": "Item.20005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20006.Name",
+    "KR": "태초의 씨앗",
+    "EN": "태초의 씨앗"
+  },
+  {
+    "Key": "Item.20006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30001.Name",
+    "KR": "잡목",
+    "EN": "잡목"
+  },
+  {
+    "Key": "Item.30001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30002.Name",
+    "KR": "소나무 목재",
+    "EN": "소나무 목재"
+  },
+  {
+    "Key": "Item.30002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30003.Name",
+    "KR": "참나무 목재",
+    "EN": "참나무 목재"
+  },
+  {
+    "Key": "Item.30003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30004.Name",
+    "KR": "흑단 목재",
+    "EN": "흑단 목재"
+  },
+  {
+    "Key": "Item.30004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30005.Name",
+    "KR": "고급 원목",
+    "EN": "고급 원목"
+  },
+  {
+    "Key": "Item.30005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30006.Name",
+    "KR": "세계수 가지",
+    "EN": "세계수 가지"
+  },
+  {
+    "Key": "Item.30006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40001.Name",
+    "KR": "돌덩어리",
+    "EN": "돌덩어리"
+  },
+  {
+    "Key": "Item.40001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40002.Name",
+    "KR": "구리 광석",
+    "EN": "구리 광석"
+  },
+  {
+    "Key": "Item.40002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40003.Name",
+    "KR": "은광석",
+    "EN": "은광석"
+  },
+  {
+    "Key": "Item.40003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40004.Name",
+    "KR": "금광석",
+    "EN": "금광석"
+  },
+  {
+    "Key": "Item.40004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40005.Name",
+    "KR": "보석 원석",
+    "EN": "보석 원석"
+  },
+  {
+    "Key": "Item.40005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40006.Name",
+    "KR": "심연의 원석",
+    "EN": "심연의 원석"
+  },
+  {
+    "Key": "Item.40006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50001.Name",
+    "KR": "질긴 고기",
+    "EN": "질긴 고기"
+  },
+  {
+    "Key": "Item.50001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50002.Name",
+    "KR": "토끼 가죽",
+    "EN": "토끼 가죽"
+  },
+  {
+    "Key": "Item.50002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50003.Name",
+    "KR": "늑대 가죽",
+    "EN": "늑대 가죽"
+  },
+  {
+    "Key": "Item.50003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50004.Name",
+    "KR": "곰 모피",
+    "EN": "곰 모피"
+  },
+  {
+    "Key": "Item.50004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50005.Name",
+    "KR": "거대한 뿔",
+    "EN": "거대한 뿔"
+  },
+  {
+    "Key": "Item.50005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50006.Name",
+    "KR": "마수의 심장",
+    "EN": "마수의 심장"
+  },
+  {
+    "Key": "Item.50006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10011.Name",
+    "KR": "부러진 화살촉",
+    "EN": "부러진 화살촉"
+  },
+  {
+    "Key": "Item.10011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10012.Name",
+    "KR": "녹슨 투구",
+    "EN": "녹슨 투구"
+  },
+  {
+    "Key": "Item.10012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10013.Name",
+    "KR": "성벽 문장석",
+    "EN": "성벽 문장석"
+  },
+  {
+    "Key": "Item.10013.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10014.Name",
+    "KR": "기사의 방패",
+    "EN": "기사의 방패"
+  },
+  {
+    "Key": "Item.10014.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10015.Name",
+    "KR": "성주의 인장",
+    "EN": "성주의 인장"
+  },
+  {
+    "Key": "Item.10015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10016.Name",
+    "KR": "수호기사의 검",
+    "EN": "수호기사의 검"
+  },
+  {
+    "Key": "Item.10016.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10021.Name",
+    "KR": "깨진 석판",
+    "EN": "깨진 석판"
+  },
+  {
+    "Key": "Item.10021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10022.Name",
+    "KR": "향로 조각",
+    "EN": "향로 조각"
+  },
+  {
+    "Key": "Item.10022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10023.Name",
+    "KR": "신전 촛대",
+    "EN": "신전 촛대"
+  },
+  {
+    "Key": "Item.10023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10024.Name",
+    "KR": "사제의 홀",
+    "EN": "사제의 홀"
+  },
+  {
+    "Key": "Item.10024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10025.Name",
+    "KR": "신탁의 석판",
+    "EN": "신탁의 석판"
+  },
+  {
+    "Key": "Item.10025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10026.Name",
+    "KR": "잊힌 신의 우상",
+    "EN": "잊힌 신의 우상"
+  },
+  {
+    "Key": "Item.10026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10031.Name",
+    "KR": "오래된 뼈 조각",
+    "EN": "오래된 뼈 조각"
+  },
+  {
+    "Key": "Item.10031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10032.Name",
+    "KR": "장신구 파편",
+    "EN": "장신구 파편"
+  },
+  {
+    "Key": "Item.10032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10033.Name",
+    "KR": "묘실 등잔",
+    "EN": "묘실 등잔"
+  },
+  {
+    "Key": "Item.10033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10034.Name",
+    "KR": "황금 가면",
+    "EN": "황금 가면"
+  },
+  {
+    "Key": "Item.10034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10035.Name",
+    "KR": "왕비의 왕관",
+    "EN": "왕비의 왕관"
+  },
+  {
+    "Key": "Item.10035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10036.Name",
+    "KR": "불멸의 성배",
+    "EN": "불멸의 성배"
+  },
+  {
+    "Key": "Item.10036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10041.Name",
+    "KR": "고대 주화",
+    "EN": "고대 주화"
+  },
+  {
+    "Key": "Item.10041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10042.Name",
+    "KR": "옥새 조각",
+    "EN": "옥새 조각"
+  },
+  {
+    "Key": "Item.10042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10043.Name",
+    "KR": "왕실 문서",
+    "EN": "왕실 문서"
+  },
+  {
+    "Key": "Item.10043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10044.Name",
+    "KR": "고대 왕의 홀",
+    "EN": "고대 왕의 홀"
+  },
+  {
+    "Key": "Item.10044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10045.Name",
+    "KR": "왕도의 지도석",
+    "EN": "왕도의 지도석"
+  },
+  {
+    "Key": "Item.10045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.10046.Name",
+    "KR": "태초의 유물",
+    "EN": "태초의 유물"
+  },
+  {
+    "Key": "Item.10046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20011.Name",
+    "KR": "보리",
+    "EN": "보리"
+  },
+  {
+    "Key": "Item.20011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20012.Name",
+    "KR": "고구마",
+    "EN": "고구마"
+  },
+  {
+    "Key": "Item.20012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20013.Name",
+    "KR": "호박",
+    "EN": "호박"
+  },
+  {
+    "Key": "Item.20013.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20014.Name",
+    "KR": "백년초",
+    "EN": "백년초"
+  },
+  {
+    "Key": "Item.20014.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20015.Name",
+    "KR": "황금 호박",
+    "EN": "황금 호박"
+  },
+  {
+    "Key": "Item.20015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20016.Name",
+    "KR": "불멸의 뿌리",
+    "EN": "불멸의 뿌리"
+  },
+  {
+    "Key": "Item.20016.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20021.Name",
+    "KR": "벼",
+    "EN": "벼"
+  },
+  {
+    "Key": "Item.20021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20022.Name",
+    "KR": "콩",
+    "EN": "콩"
+  },
+  {
+    "Key": "Item.20022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20023.Name",
+    "KR": "딸기",
+    "EN": "딸기"
+  },
+  {
+    "Key": "Item.20023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20024.Name",
+    "KR": "산삼",
+    "EN": "산삼"
+  },
+  {
+    "Key": "Item.20024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20025.Name",
+    "KR": "천년 산삼",
+    "EN": "천년 산삼"
+  },
+  {
+    "Key": "Item.20025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20026.Name",
+    "KR": "생명의 열매",
+    "EN": "생명의 열매"
+  },
+  {
+    "Key": "Item.20026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20031.Name",
+    "KR": "목화",
+    "EN": "목화"
+  },
+  {
+    "Key": "Item.20031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20032.Name",
+    "KR": "사탕수수",
+    "EN": "사탕수수"
+  },
+  {
+    "Key": "Item.20032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20033.Name",
+    "KR": "커피 열매",
+    "EN": "커피 열매"
+  },
+  {
+    "Key": "Item.20033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20034.Name",
+    "KR": "흑진주 포도",
+    "EN": "흑진주 포도"
+  },
+  {
+    "Key": "Item.20034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20035.Name",
+    "KR": "무지개 밀",
+    "EN": "무지개 밀"
+  },
+  {
+    "Key": "Item.20035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20036.Name",
+    "KR": "세계수의 씨앗",
+    "EN": "세계수의 씨앗"
+  },
+  {
+    "Key": "Item.20036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20041.Name",
+    "KR": "정화된 흙",
+    "EN": "정화된 흙"
+  },
+  {
+    "Key": "Item.20041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20042.Name",
+    "KR": "성스러운 이삭",
+    "EN": "성스러운 이삭"
+  },
+  {
+    "Key": "Item.20042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20043.Name",
+    "KR": "영약초",
+    "EN": "영약초"
+  },
+  {
+    "Key": "Item.20043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20044.Name",
+    "KR": "신월초",
+    "EN": "신월초"
+  },
+  {
+    "Key": "Item.20044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20045.Name",
+    "KR": "신들의 곡식",
+    "EN": "신들의 곡식"
+  },
+  {
+    "Key": "Item.20045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.20046.Name",
+    "KR": "창세의 열매",
+    "EN": "창세의 열매"
+  },
+  {
+    "Key": "Item.20046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30011.Name",
+    "KR": "잔가지",
+    "EN": "잔가지"
+  },
+  {
+    "Key": "Item.30011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30012.Name",
+    "KR": "삼나무 목재",
+    "EN": "삼나무 목재"
+  },
+  {
+    "Key": "Item.30012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30013.Name",
+    "KR": "편백나무 목재",
+    "EN": "편백나무 목재"
+  },
+  {
+    "Key": "Item.30013.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30014.Name",
+    "KR": "홍송 원목",
+    "EN": "홍송 원목"
+  },
+  {
+    "Key": "Item.30014.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30015.Name",
+    "KR": "천년 소나무",
+    "EN": "천년 소나무"
+  },
+  {
+    "Key": "Item.30015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30016.Name",
+    "KR": "숲의 정령목",
+    "EN": "숲의 정령목"
+  },
+  {
+    "Key": "Item.30016.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30021.Name",
+    "KR": "도토리 가지",
+    "EN": "도토리 가지"
+  },
+  {
+    "Key": "Item.30021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30022.Name",
+    "KR": "너도밤나무 목재",
+    "EN": "너도밤나무 목재"
+  },
+  {
+    "Key": "Item.30022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30023.Name",
+    "KR": "단풍나무 목재",
+    "EN": "단풍나무 목재"
+  },
+  {
+    "Key": "Item.30023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30024.Name",
+    "KR": "고목의 심재",
+    "EN": "고목의 심재"
+  },
+  {
+    "Key": "Item.30024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30025.Name",
+    "KR": "백년 참나무",
+    "EN": "백년 참나무"
+  },
+  {
+    "Key": "Item.30025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30026.Name",
+    "KR": "대지의 뿌리",
+    "EN": "대지의 뿌리"
+  },
+  {
+    "Key": "Item.30026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30031.Name",
+    "KR": "그을린 통나무",
+    "EN": "그을린 통나무"
+  },
+  {
+    "Key": "Item.30031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30032.Name",
+    "KR": "흑참나무 목재",
+    "EN": "흑참나무 목재"
+  },
+  {
+    "Key": "Item.30032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30033.Name",
+    "KR": "자단 목재",
+    "EN": "자단 목재"
+  },
+  {
+    "Key": "Item.30033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30034.Name",
+    "KR": "마력 깃든 목재",
+    "EN": "마력 깃든 목재"
+  },
+  {
+    "Key": "Item.30034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30035.Name",
+    "KR": "흑림의 고목",
+    "EN": "흑림의 고목"
+  },
+  {
+    "Key": "Item.30035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30036.Name",
+    "KR": "어둠나무의 핵",
+    "EN": "어둠나무의 핵"
+  },
+  {
+    "Key": "Item.30036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30041.Name",
+    "KR": "세계수 껍질",
+    "EN": "세계수 껍질"
+  },
+  {
+    "Key": "Item.30041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30042.Name",
+    "KR": "빛나는 수액",
+    "EN": "빛나는 수액"
+  },
+  {
+    "Key": "Item.30042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30043.Name",
+    "KR": "신목 목재",
+    "EN": "신목 목재"
+  },
+  {
+    "Key": "Item.30043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30044.Name",
+    "KR": "영원의 나이테",
+    "EN": "영원의 나이테"
+  },
+  {
+    "Key": "Item.30044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30045.Name",
+    "KR": "세계수 심재",
+    "EN": "세계수 심재"
+  },
+  {
+    "Key": "Item.30045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.30046.Name",
+    "KR": "창세목의 조각",
+    "EN": "창세목의 조각"
+  },
+  {
+    "Key": "Item.30046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40011.Name",
+    "KR": "석회암",
+    "EN": "석회암"
+  },
+  {
+    "Key": "Item.40011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40012.Name",
+    "KR": "주석 광석",
+    "EN": "주석 광석"
+  },
+  {
+    "Key": "Item.40012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40013.Name",
+    "KR": "철광석",
+    "EN": "철광석"
+  },
+  {
+    "Key": "Item.40013.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40014.Name",
+    "KR": "백금 광석",
+    "EN": "백금 광석"
+  },
+  {
+    "Key": "Item.40014.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40015.Name",
+    "KR": "청옥 원석",
+    "EN": "청옥 원석"
+  },
+  {
+    "Key": "Item.40015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40016.Name",
+    "KR": "지맥의 결정",
+    "EN": "지맥의 결정"
+  },
+  {
+    "Key": "Item.40016.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40021.Name",
+    "KR": "현무암",
+    "EN": "현무암"
+  },
+  {
+    "Key": "Item.40021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40022.Name",
+    "KR": "아연 광석",
+    "EN": "아연 광석"
+  },
+  {
+    "Key": "Item.40022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40023.Name",
+    "KR": "미스릴 광석",
+    "EN": "미스릴 광석"
+  },
+  {
+    "Key": "Item.40023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40024.Name",
+    "KR": "홍옥 원석",
+    "EN": "홍옥 원석"
+  },
+  {
+    "Key": "Item.40024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40025.Name",
+    "KR": "흑요석 결정",
+    "EN": "흑요석 결정"
+  },
+  {
+    "Key": "Item.40025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40026.Name",
+    "KR": "대지의 핵",
+    "EN": "대지의 핵"
+  },
+  {
+    "Key": "Item.40026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40031.Name",
+    "KR": "수정 파편",
+    "EN": "수정 파편"
+  },
+  {
+    "Key": "Item.40031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40032.Name",
+    "KR": "코발트 광석",
+    "EN": "코발트 광석"
+  },
+  {
+    "Key": "Item.40032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40033.Name",
+    "KR": "오리하르콘 광석",
+    "EN": "오리하르콘 광석"
+  },
+  {
+    "Key": "Item.40033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40034.Name",
+    "KR": "자수정 원석",
+    "EN": "자수정 원석"
+  },
+  {
+    "Key": "Item.40034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40035.Name",
+    "KR": "별빛 광석",
+    "EN": "별빛 광석"
+  },
+  {
+    "Key": "Item.40035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40036.Name",
+    "KR": "공동의 심장",
+    "EN": "공동의 심장"
+  },
+  {
+    "Key": "Item.40036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40041.Name",
+    "KR": "심연의 파편",
+    "EN": "심연의 파편"
+  },
+  {
+    "Key": "Item.40041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40042.Name",
+    "KR": "암흑 광석",
+    "EN": "암흑 광석"
+  },
+  {
+    "Key": "Item.40042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40043.Name",
+    "KR": "아다만트 광석",
+    "EN": "아다만트 광석"
+  },
+  {
+    "Key": "Item.40043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40044.Name",
+    "KR": "심연의 수정",
+    "EN": "심연의 수정"
+  },
+  {
+    "Key": "Item.40044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40045.Name",
+    "KR": "용해된 별의 조각",
+    "EN": "용해된 별의 조각"
+  },
+  {
+    "Key": "Item.40045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.40046.Name",
+    "KR": "세계의 축",
+    "EN": "세계의 축"
+  },
+  {
+    "Key": "Item.40046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50011.Name",
+    "KR": "여우 가죽",
+    "EN": "여우 가죽"
+  },
+  {
+    "Key": "Item.50011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50012.Name",
+    "KR": "멧돼지 엄니",
+    "EN": "멧돼지 엄니"
+  },
+  {
+    "Key": "Item.50012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50013.Name",
+    "KR": "사슴뿔",
+    "EN": "사슴뿔"
+  },
+  {
+    "Key": "Item.50013.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50014.Name",
+    "KR": "산군의 발톱",
+    "EN": "산군의 발톱"
+  },
+  {
+    "Key": "Item.50014.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50015.Name",
+    "KR": "백호의 털",
+    "EN": "백호의 털"
+  },
+  {
+    "Key": "Item.50015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50016.Name",
+    "KR": "산신의 인장",
+    "EN": "산신의 인장"
+  },
+  {
+    "Key": "Item.50016.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50021.Name",
+    "KR": "표범 가죽",
+    "EN": "표범 가죽"
+  },
+  {
+    "Key": "Item.50021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50022.Name",
+    "KR": "큰뿔 사슴뿔",
+    "EN": "큰뿔 사슴뿔"
+  },
+  {
+    "Key": "Item.50022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50023.Name",
+    "KR": "곰의 이빨",
+    "EN": "곰의 이빨"
+  },
+  {
+    "Key": "Item.50023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50024.Name",
+    "KR": "숲괴수의 발톱",
+    "EN": "숲괴수의 발톱"
+  },
+  {
+    "Key": "Item.50024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50025.Name",
+    "KR": "고대 짐승의 뼈",
+    "EN": "고대 짐승의 뼈"
+  },
+  {
+    "Key": "Item.50025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50026.Name",
+    "KR": "숲 지배자의 눈",
+    "EN": "숲 지배자의 눈"
+  },
+  {
+    "Key": "Item.50026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50031.Name",
+    "KR": "설표 가죽",
+    "EN": "설표 가죽"
+  },
+  {
+    "Key": "Item.50031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50032.Name",
+    "KR": "얼음늑대 송곳니",
+    "EN": "얼음늑대 송곳니"
+  },
+  {
+    "Key": "Item.50032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50033.Name",
+    "KR": "서리곰 모피",
+    "EN": "서리곰 모피"
+  },
+  {
+    "Key": "Item.50033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50034.Name",
+    "KR": "빙룡의 비늘",
+    "EN": "빙룡의 비늘"
+  },
+  {
+    "Key": "Item.50034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50035.Name",
+    "KR": "설산 주인의 뿔",
+    "EN": "설산 주인의 뿔"
+  },
+  {
+    "Key": "Item.50035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50036.Name",
+    "KR": "영구동토의 심장",
+    "EN": "영구동토의 심장"
+  },
+  {
+    "Key": "Item.50036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50041.Name",
+    "KR": "마수의 가죽",
+    "EN": "마수의 가죽"
+  },
+  {
+    "Key": "Item.50041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50042.Name",
+    "KR": "마물의 뿔",
+    "EN": "마물의 뿔"
+  },
+  {
+    "Key": "Item.50042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50043.Name",
+    "KR": "흉수의 송곳니",
+    "EN": "흉수의 송곳니"
+  },
+  {
+    "Key": "Item.50043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50044.Name",
+    "KR": "마수왕의 갈기",
+    "EN": "마수왕의 갈기"
+  },
+  {
+    "Key": "Item.50044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50045.Name",
+    "KR": "심연수의 눈",
+    "EN": "심연수의 눈"
+  },
+  {
+    "Key": "Item.50045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.50046.Name",
+    "KR": "마신의 파편",
+    "EN": "마신의 파편"
+  },
+  {
+    "Key": "Item.50046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100001.Name",
+    "KR": "유리 구슬",
+    "EN": "유리 구슬"
+  },
+  {
+    "Key": "Item.100001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100002.Name",
+    "KR": "호박 구슬",
+    "EN": "호박 구슬"
+  },
+  {
+    "Key": "Item.100002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100003.Name",
+    "KR": "진주 구슬",
+    "EN": "진주 구슬"
+  },
+  {
+    "Key": "Item.100003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100004.Name",
+    "KR": "오팔 구슬",
+    "EN": "오팔 구슬"
+  },
+  {
+    "Key": "Item.100004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100005.Name",
+    "KR": "용안 구슬",
+    "EN": "용안 구슬"
+  },
+  {
+    "Key": "Item.100005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100006.Name",
+    "KR": "창세의 구슬",
+    "EN": "창세의 구슬"
+  },
+  {
+    "Key": "Item.100006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100010.Name",
+    "KR": "낡은 보물 지도",
+    "EN": "낡은 보물 지도"
+  },
+  {
+    "Key": "Item.100010.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100011.Name",
+    "KR": "은빛 나침반",
+    "EN": "은빛 나침반"
+  },
+  {
+    "Key": "Item.100011.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100012.Name",
+    "KR": "황금 열쇠",
+    "EN": "황금 열쇠"
+  },
+  {
+    "Key": "Item.100012.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100015.Name",
+    "KR": "인챈트 큐브",
+    "EN": "인챈트 큐브"
+  },
+  {
+    "Key": "Item.100015.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100018.Name",
+    "KR": "상급 인챈트 큐브",
+    "EN": "상급 인챈트 큐브"
+  },
+  {
+    "Key": "Item.100018.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100019.Name",
+    "KR": "나무 상자 Lv1",
+    "EN": "나무 상자 Lv1"
+  },
+  {
+    "Key": "Item.100019.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100020.Name",
+    "KR": "은 상자 Lv1",
+    "EN": "은 상자 Lv1"
+  },
+  {
+    "Key": "Item.100020.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100021.Name",
+    "KR": "황금 상자 Lv1",
+    "EN": "황금 상자 Lv1"
+  },
+  {
+    "Key": "Item.100021.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100022.Name",
+    "KR": "나무 상자 Lv2",
+    "EN": "나무 상자 Lv2"
+  },
+  {
+    "Key": "Item.100022.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100023.Name",
+    "KR": "은 상자 Lv2",
+    "EN": "은 상자 Lv2"
+  },
+  {
+    "Key": "Item.100023.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100024.Name",
+    "KR": "황금 상자 Lv2",
+    "EN": "황금 상자 Lv2"
+  },
+  {
+    "Key": "Item.100024.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100025.Name",
+    "KR": "나무 상자 Lv3",
+    "EN": "나무 상자 Lv3"
+  },
+  {
+    "Key": "Item.100025.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100026.Name",
+    "KR": "은 상자 Lv3",
+    "EN": "은 상자 Lv3"
+  },
+  {
+    "Key": "Item.100026.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100027.Name",
+    "KR": "황금 상자 Lv3",
+    "EN": "황금 상자 Lv3"
+  },
+  {
+    "Key": "Item.100027.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100028.Name",
+    "KR": "나무 상자 Lv4",
+    "EN": "나무 상자 Lv4"
+  },
+  {
+    "Key": "Item.100028.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100029.Name",
+    "KR": "은 상자 Lv4",
+    "EN": "은 상자 Lv4"
+  },
+  {
+    "Key": "Item.100029.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100030.Name",
+    "KR": "황금 상자 Lv4",
+    "EN": "황금 상자 Lv4"
+  },
+  {
+    "Key": "Item.100030.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100031.Name",
+    "KR": "나무 상자 Lv5",
+    "EN": "나무 상자 Lv5"
+  },
+  {
+    "Key": "Item.100031.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100032.Name",
+    "KR": "은 상자 Lv5",
+    "EN": "은 상자 Lv5"
+  },
+  {
+    "Key": "Item.100032.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100033.Name",
+    "KR": "황금 상자 Lv5",
+    "EN": "황금 상자 Lv5"
+  },
+  {
+    "Key": "Item.100033.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100041.Name",
+    "KR": "성장의 비약 (소)",
+    "EN": "성장의 비약 (소)"
+  },
+  {
+    "Key": "Item.100041.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100042.Name",
+    "KR": "성장의 비약 (중)",
+    "EN": "성장의 비약 (중)"
+  },
+  {
+    "Key": "Item.100042.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100043.Name",
+    "KR": "성장의 비약 (대)",
+    "EN": "성장의 비약 (대)"
+  },
+  {
+    "Key": "Item.100043.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100044.Name",
+    "KR": "신속의 영약",
+    "EN": "신속의 영약"
+  },
+  {
+    "Key": "Item.100044.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100045.Name",
+    "KR": "풍요의 영약",
+    "EN": "풍요의 영약"
+  },
+  {
+    "Key": "Item.100045.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100046.Name",
+    "KR": "망각의 묘약",
+    "EN": "망각의 묘약"
+  },
+  {
+    "Key": "Item.100046.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100050.Name",
+    "KR": "마력의 파편",
+    "EN": "마력의 파편"
+  },
+  {
+    "Key": "Item.100050.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100061.Name",
+    "KR": "흙 묻은 유물",
+    "EN": "흙 묻은 유물"
+  },
+  {
+    "Key": "Item.100061.Tooltip",
+    "KR": "골드 200을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 200 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100062.Name",
+    "KR": "조개 박힌 유물",
+    "EN": "조개 박힌 유물"
+  },
+  {
+    "Key": "Item.100062.Tooltip",
+    "KR": "골드 600을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 600 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100063.Name",
+    "KR": "산호 엉긴 유물",
+    "EN": "산호 엉긴 유물"
+  },
+  {
+    "Key": "Item.100063.Tooltip",
+    "KR": "골드 1800을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 1800 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100064.Name",
+    "KR": "봉인된 유물",
+    "EN": "봉인된 유물"
+  },
+  {
+    "Key": "Item.100064.Tooltip",
+    "KR": "골드 5400을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 5400 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100065.Name",
+    "KR": "황금 띠 유물",
+    "EN": "황금 띠 유물"
+  },
+  {
+    "Key": "Item.100065.Tooltip",
+    "KR": "골드 16000을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 16000 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100066.Name",
+    "KR": "왕의 유물",
+    "EN": "왕의 유물"
+  },
+  {
+    "Key": "Item.100066.Tooltip",
+    "KR": "골드 48000을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 48000 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "Item.100067.Name",
+    "KR": "무지개 유물",
+    "EN": "무지개 유물"
+  },
+  {
+    "Key": "Item.100067.Tooltip",
+    "KR": "골드 150000을 내고 감정하면 무언가 나온다",
+    "EN": "Pay 150000 gold to appraise it and see what's inside"
+  },
+  {
+    "Key": "MailTemplate.1.Title",
+    "KR": "점검 보상",
+    "EN": "Maintenance Reward"
+  },
+  {
+    "Key": "MailTemplate.1.Body",
+    "KR": "점검에 협조해 주셔서 감사합니다.",
+    "EN": "Thank you for your patience during maintenance."
+  },
+  {
+    "Key": "MailTemplate.1.Sender",
+    "KR": "운영팀",
+    "EN": "Operations Team"
+  },
+  {
+    "Key": "MailTemplate.2.Title",
+    "KR": "보관된 보상",
+    "EN": "Stored Reward"
+  },
+  {
+    "Key": "MailTemplate.2.Body",
+    "KR": "창고가 가득 차 받지 못한 보상을 보관했습니다.",
+    "EN": "Your storage was full, so we kept these rewards for you."
+  },
+  {
+    "Key": "MailTemplate.2.Sender",
+    "KR": "시스템",
+    "EN": "System"
+  },
+  {
+    "Key": "MailTemplate.3.Title",
+    "KR": "경매 구매",
+    "EN": "Auction Purchase"
+  },
+  {
+    "Key": "MailTemplate.3.Body",
+    "KR": "경매장에서 구매한 물품입니다.",
+    "EN": "Here is the item you bought at the auction house."
+  },
+  {
+    "Key": "MailTemplate.3.Sender",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "MailTemplate.4.Title",
+    "KR": "경매 판매 대금",
+    "EN": "Auction Sale Proceeds"
+  },
+  {
+    "Key": "MailTemplate.4.Body",
+    "KR": "물품이 판매되었습니다. 판매 수수료를 뺀 대금입니다.",
+    "EN": "Your item has sold. Here are the proceeds minus the sales fee."
+  },
+  {
+    "Key": "MailTemplate.4.Sender",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "MailTemplate.5.Title",
+    "KR": "경매 취소 반환",
+    "EN": "Auction Cancelled"
+  },
+  {
+    "Key": "MailTemplate.5.Body",
+    "KR": "판매를 취소한 물품을 돌려드립니다.",
+    "EN": "Here is the item you withdrew from sale."
+  },
+  {
+    "Key": "MailTemplate.5.Sender",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "MailTemplate.6.Title",
+    "KR": "경매 만료 반환",
+    "EN": "Auction Expired"
+  },
+  {
+    "Key": "MailTemplate.6.Body",
+    "KR": "기간 안에 팔리지 않은 물품과 등록비를 돌려드립니다.",
+    "EN": "Your item did not sell in time. Here are the item and the listing fee."
+  },
+  {
+    "Key": "MailTemplate.6.Sender",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "MailTemplate.7.Title",
+    "KR": "경매 등록 실패 반환",
+    "EN": "Auction Listing Failed"
+  },
+  {
+    "Key": "MailTemplate.7.Body",
+    "KR": "경매장에 등록하지 못한 물품과 등록비를 돌려드립니다.",
+    "EN": "We could not list your item. Here are the item and the listing fee."
+  },
+  {
+    "Key": "MailTemplate.7.Sender",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "Unlock.1002.Name",
+    "KR": "작업슬롯 2번",
+    "EN": "작업슬롯 2번"
+  },
+  {
+    "Key": "Unlock.1003.Name",
+    "KR": "작업슬롯 3번",
+    "EN": "작업슬롯 3번"
+  },
+  {
+    "Key": "Unlock.1004.Name",
+    "KR": "작업슬롯 4번",
+    "EN": "작업슬롯 4번"
+  },
+  {
+    "Key": "Unlock.1005.Name",
+    "KR": "작업슬롯 5번",
+    "EN": "작업슬롯 5번"
+  },
+  {
+    "Key": "Unlock.1006.Name",
+    "KR": "작업슬롯 6번",
+    "EN": "작업슬롯 6번"
+  },
+  {
+    "Key": "Unlock.1007.Name",
+    "KR": "작업슬롯 7번",
+    "EN": "작업슬롯 7번"
+  },
+  {
+    "Key": "UserTrait.101.Name",
+    "KR": "농사 개척",
+    "EN": "농사 개척"
+  },
+  {
+    "Key": "UserTrait.102.Name",
+    "KR": "발굴 개척",
+    "EN": "발굴 개척"
+  },
+  {
+    "Key": "UserTrait.103.Name",
+    "KR": "채굴 개척",
+    "EN": "채굴 개척"
+  },
+  {
+    "Key": "UserTrait.104.Name",
+    "KR": "벌목 개척",
+    "EN": "벌목 개척"
+  },
+  {
+    "Key": "UserTrait.105.Name",
+    "KR": "사냥 개척",
+    "EN": "사냥 개척"
+  },
+  {
+    "Key": "UserTrait.201.Name",
+    "KR": "농사 속도",
+    "EN": "농사 속도"
+  },
+  {
+    "Key": "UserTrait.202.Name",
+    "KR": "발굴 속도",
+    "EN": "발굴 속도"
+  },
+  {
+    "Key": "UserTrait.203.Name",
+    "KR": "채굴 속도",
+    "EN": "채굴 속도"
+  },
+  {
+    "Key": "UserTrait.204.Name",
+    "KR": "벌목 속도",
+    "EN": "벌목 속도"
+  },
+  {
+    "Key": "UserTrait.205.Name",
+    "KR": "사냥 속도",
+    "EN": "사냥 속도"
+  },
+  {
+    "Key": "UserTrait.300.Name",
+    "KR": "공통 산출량",
+    "EN": "공통 산출량"
+  },
+  {
+    "Key": "UserTrait.301.Name",
+    "KR": "농사 산출량",
+    "EN": "농사 산출량"
+  },
+  {
+    "Key": "UserTrait.302.Name",
+    "KR": "발굴 산출량",
+    "EN": "발굴 산출량"
+  },
+  {
+    "Key": "UserTrait.303.Name",
+    "KR": "채굴 산출량",
+    "EN": "채굴 산출량"
+  },
+  {
+    "Key": "UserTrait.304.Name",
+    "KR": "벌목 산출량",
+    "EN": "벌목 산출량"
+  },
+  {
+    "Key": "UserTrait.305.Name",
+    "KR": "사냥 산출량",
+    "EN": "사냥 산출량"
+  },
+  {
+    "Key": "UI.Inventory.Sell",
+    "KR": "판매",
+    "EN": "Sell"
+  },
+  {
+    "Key": "UI.Inventory.Lock",
+    "KR": "잠금",
+    "EN": "Lock"
+  }
+]

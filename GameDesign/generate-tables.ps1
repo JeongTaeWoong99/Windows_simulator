@@ -14,6 +14,9 @@
 # 3단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
 #                          (서버는 WSGameServer.csproj의 Content로 .bytes를 bin에 자동 복사)
 
+# -LocStrict: 번역(Localization.xlsx)의 빈 칸을 KR로 대신하지 않고 멈춘다 — 배포용 생성에 쓴다
+param([switch]$LocStrict)
+
 $ErrorActionPreference = "Stop"
 
 # 모든 경로는 이 스크립트 위치(GameDesign/)에서 유도한다.
@@ -89,7 +92,9 @@ try {
     Write-Host "[1/3] ExcelGenerator: 코드 + 바이너리 생성" -ForegroundColor Cyan
     # 저장소 루트를 명시적으로 넘긴다. 인자가 없으면 툴이 소스 위치에서 스스로 찾지만,
     # 파이프라인이 이미 아는 값을 넘겨 두면 탐색 결과가 어긋날 여지가 없다.
-    dotnet run --project (Join-Path $ServerRoot "ExcelGenerator") -- $RepoRoot
+    $genArgs = @($RepoRoot)
+    if ($LocStrict) { $genArgs += "--loc-strict" }
+    dotnet run --project (Join-Path $ServerRoot "ExcelGenerator") -- @genArgs
     if ($LASTEXITCODE -ne 0) { Stop-OnFailure "코드/바이너리 생성 단계에서 중단합니다." $LASTEXITCODE }
 
     Write-Host "[2/3] C# 9 규약 검사: 미러 대상 생성물" -ForegroundColor Cyan

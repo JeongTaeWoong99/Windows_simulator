@@ -11,10 +11,13 @@ namespace GameData
     public partial class GachaInfoTableRow
     {
         public int          GachaInfoTID { get; set; }        // int
-        public string       Name         { get; set; } = "";  // string
+        public string       Name         { get; set; } = "";  // lstring
         public CurrencyType CostCurrency { get; set; }        // eCurrencyType
         public long         CostSingle   { get; set; }        // long [0..-]
         public long         CostMulti    { get; set; }        // long [0..-]
         public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+
+        /// <summary>Name의 번역 키 — Loc.Get(row.NameLocKey)</summary>
+        [MemoryPackIgnore] public string NameLocKey => "GachaInfo." + GachaInfoTID + ".Name";
     }
 }

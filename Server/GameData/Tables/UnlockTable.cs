@@ -11,10 +11,13 @@ namespace GameData
     public partial class UnlockTableRow
     {
         public int    UnlockTID          { get; set; }                               // int [1..-]
-        public string Name               { get; set; } = "";                         // string
+        public string Name               { get; set; } = "";                         // lstring
         public int    Gold               { get; set; }                               // int [0..-]
         public int    AccountLevel       { get; set; }                               // int [0..-]
         public int[]  RequiredUnlockTIDs { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
         public string Description        { get; set; } = "";                         // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+
+        /// <summary>Name의 번역 키 — Loc.Get(row.NameLocKey)</summary>
+        [MemoryPackIgnore] public string NameLocKey => "Unlock." + UnlockTID + ".Name";
     }
 }

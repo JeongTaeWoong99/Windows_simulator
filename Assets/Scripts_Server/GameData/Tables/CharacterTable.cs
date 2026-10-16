@@ -11,7 +11,7 @@ namespace GameData
     public partial class CharacterTableRow
     {
         public int          CharacterTID { get; set; }        // int
-        public string       Name         { get; set; } = "";  // string
+        public string       Name         { get; set; } = "";  // lstring
         public GlobalRarity GlobalRarity { get; set; }        // eGlobalRarity
         public int          Farming      { get; set; }        // int
         public int          Excavation   { get; set; }        // int
@@ -20,5 +20,8 @@ namespace GameData
         public int          Hunting      { get; set; }        // int
         public int          BasePrice    { get; set; }        // int [0..-]
         public string       Description  { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+
+        /// <summary>Name의 번역 키 — Loc.Get(row.NameLocKey)</summary>
+        [MemoryPackIgnore] public string NameLocKey => "Character." + CharacterTID + ".Name";
     }
 }

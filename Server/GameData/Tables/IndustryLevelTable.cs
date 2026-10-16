@@ -13,10 +13,13 @@ namespace GameData
         public int          IndustryLevelTID { get; set; }        // int
         public IndustryType IndustryType     { get; set; }        // eIndustryType
         public int          Level            { get; set; }        // int [1..5]
-        public string       Name             { get; set; } = "";  // string
+        public string       Name             { get; set; } = "";  // lstring
         public int          RequiredScore    { get; set; }        // int [1..-]
         public int          ExpPerJudge      { get; set; }        // int [0..-]
         public int          UnlockTID        { get; set; }        // int [0..-]
         public string       Description      { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+
+        /// <summary>Name의 번역 키 — Loc.Get(row.NameLocKey)</summary>
+        [MemoryPackIgnore] public string NameLocKey => "IndustryLevel." + IndustryLevelTID + ".Name";
     }
 }

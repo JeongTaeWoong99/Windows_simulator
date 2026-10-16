@@ -11,9 +11,9 @@ namespace GameData
     public partial class MailTemplateTableRow
     {
         public int    MailTemplateTID { get; set; }                               // int [1..-]
-        public string Title           { get; set; } = "";                         // string
-        public string Body            { get; set; } = "";                         // string
-        public string Sender          { get; set; } = "";                         // string
+        public string Title           { get; set; } = "";                         // lstring
+        public string Body            { get; set; } = "";                         // lstring
+        public string Sender          { get; set; } = "";                         // lstring
         public int    PeriodDays      { get; set; }                               // int [0..-]
         public long   Gold            { get; set; }                               // long [0..-]
         public int[]  ItemTIDs        { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
@@ -21,5 +21,12 @@ namespace GameData
         public int[]  CharacterTIDs   { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
         public int[]  EquipTIDs       { get; set; } = System.Array.Empty<int>();  // int[] 기본=""
         public string Description     { get; set; } = "";                         // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+
+        /// <summary>Title의 번역 키 — Loc.Get(row.TitleLocKey)</summary>
+        [MemoryPackIgnore] public string TitleLocKey => "MailTemplate." + MailTemplateTID + ".Title";
+        /// <summary>Body의 번역 키 — Loc.Get(row.BodyLocKey)</summary>
+        [MemoryPackIgnore] public string BodyLocKey => "MailTemplate." + MailTemplateTID + ".Body";
+        /// <summary>Sender의 번역 키 — Loc.Get(row.SenderLocKey)</summary>
+        [MemoryPackIgnore] public string SenderLocKey => "MailTemplate." + MailTemplateTID + ".Sender";
     }
 }
