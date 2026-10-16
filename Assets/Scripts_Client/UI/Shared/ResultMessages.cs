@@ -69,6 +69,7 @@ public static class ResultMessages
         EResultCode.AuctionOwnListing      => "내가 올린 매물은 살 수 없습니다.",
         EResultCode.AuctionNotOwner        => "내 매물만 취소할 수 있습니다.",
         EResultCode.AuctionTooManyRequests => "조회가 너무 잦습니다. 잠시 뒤 다시 시도해 주세요.",
+        EResultCode.AuctionSearchNoCondition => "분류를 고르거나 이름을 입력해 주세요.",
         EResultCode.AuctionCharacterBusy   => "배치됐거나 장비를 낀 캐릭터는 올릴 수 없습니다. 빼고 벗긴 뒤 다시 시도해 주세요.",
         EResultCode.AuctionLastCharacter   => "캐릭터를 하나는 남겨야 합니다.",
         EResultCode.MarketNotEnough        => "그 가격으로 원하는 수량을 다 살 수 없습니다. 아무것도 사지 않았습니다.",

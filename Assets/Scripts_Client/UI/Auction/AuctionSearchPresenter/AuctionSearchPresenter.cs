@@ -1066,9 +1066,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         emptyText.SetActive(_needsCondition || (_auction.HasSearched && _contents.Count == 0));
         _emptyLabel.text = _needsCondition ? NeedsConditionText : _emptyDefault;
 
-        int totalCount = _needsCondition ? 0 : _auction.SearchTotalCount;
-
-        countText.text    = $"검색 결과 {UIRichText.Paint(totalCount.ToString("N0"), UIThemeRole.Highlight)}건";
+        countText.text    = $"검색 결과 {UIRichText.Paint(FormatTotalCount(), UIThemeRole.Highlight)}";
         appliedText.text  = _appliedLabel;
         receivedText.text = _needsCondition ? "" : AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
 
@@ -1102,12 +1100,29 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         int shown = _needsCondition ? 0 : _auction.SearchResults.Count;
         int first = page * AuctionModel.RowsPerPage;
 
-        string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {total:N0}건" : "";
+        string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {FormatTotalCount()}" : "";
 
-        pager.Bind(page, AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage),
+        // 건수가 상한에 걸리면 전체 쪽 수를 모른다 — 'n 쪽'만 적는다.
+        bool isCapped  = !_needsCondition && _auction.IsSearchCountCapped;
+        int  pageCount = isCapped ? 0 : AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage);
+
+        pager.Bind(page, pageCount,
                    canPrev: _waitHandle == null && page > 0,
                    canNext: _waitHandle == null && !_needsCondition && _auction.HasMoreResults,
                    note);
+    }
+
+    // 결과 건수 — 'n건', 서버가 세기를 멈췄으면 '1,000건 이상'.
+    private string FormatTotalCount()
+    {
+        if (_needsCondition)
+        {
+            return "0건";
+        }
+
+        return _auction.IsSearchCountCapped
+            ? $"{AuctionModel.SearchCountCap:N0}건 이상"
+            : $"{_auction.SearchTotalCount:N0}건";
     }
 
     #endregion
