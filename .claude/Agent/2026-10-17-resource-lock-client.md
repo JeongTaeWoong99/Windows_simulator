@@ -7,7 +7,7 @@ tags: [client, ui]
 # 자원 잠금 클라 (T-159 · 이슈 #72)
 
 ## 목적 / 배경
-- 서버(`30686e7`)가 자원 잠금을 `ELockTarget.Resource` · `Id = 아이템 TID`로 열었다. 클라 몫(토글·자물쇠·일괄 담기 제외·툴팁)을 붙였다. → `tasks/T-159-자원잠금.md`
+- 서버(`30686e7`)가 자원 잠금을 `ELockTarget.Resource` · `Id = 아이템 TID`로 열었다. 클라 몫(토글·자물쇠·일괄 담기 제외·툴팁)을 붙였다. → `tasks/archive/T-159-자원잠금.md`
 
 ## 주요 결정 / 근거
 - **잠긴 TID는 `PlayerDataModel._lockedItemTids`(HashSet)에 둔다** — `ItemInfo`에 플래그를 달지 않았다. 잠금은 종류 단위이고 보유 0개여도 남아야 해서, 칸(묶음) 캐시에 붙이면 칸이 지워질 때 함께 사라진다.
