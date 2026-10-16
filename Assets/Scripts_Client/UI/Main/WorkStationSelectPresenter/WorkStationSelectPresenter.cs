@@ -940,8 +940,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         foreach (CharacterInfo character in characters)
         {
-            // 창고에 맡긴 캐릭터는 일하지 않는다 — 인벤토리로 꺼내야 고를 수 있다(T-107).
-            if (character.Container != EContainer.Inventory || _data.GetAptitude(character.CharacterId, industry) == 0)
+            // ※ 창고에 맡긴 캐릭터도 고른다 — 창고는 칸의 위치일 뿐이다(T-163 · 이슈 #74).
+            if (_data.GetAptitude(character.CharacterId, industry) == 0)
             {
                 continue;
             }
@@ -967,6 +967,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level, character.Star);
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
+            row.SetWarehouseMark(character.Container == EContainer.Warehouse);
             row.SetAssignable(!IsWaiting);
         }
 
@@ -1090,6 +1091,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
                           _data.GetCharacterLevel(slot.CharacterId), _data.GetCharacterStar(slot.CharacterId));
         assignedCard.SetRarity(GameDataLoader.GetCharacterRarity(assignedTid));
         assignedCard.SetAptitudes(ReadAptitudes(slot.CharacterId), _selectedIndustry);
+        assignedCard.SetWarehouseMark(_data.IsCharacterInWarehouse(slot.CharacterId));
     }
 
     // 진행도 슬라이더만 매 프레임 움직인다 (Unity 메시지).
@@ -1811,7 +1813,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             view.Bind(equip.EquipId, row.Name, EquipLabel.GetEffectText(equip.EquipTid));
             view.SetRarity(row.GlobalRarity);
-            view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+            view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                            () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));
             view.SetPickable(!IsWaiting);
         }

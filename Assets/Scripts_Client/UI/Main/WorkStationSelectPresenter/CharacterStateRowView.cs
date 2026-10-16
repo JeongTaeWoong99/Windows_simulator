@@ -34,6 +34,10 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("캐릭터 상반신 — 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image portraitImage = null!;
 
+    // 창고 캐릭터도 배치할 수 있다(T-163) — 목록에 섞여 서므로 상반신 왼쪽 아래에 상자를 띄워 가른다.
+    [SerializeField, Tooltip("상반신 왼쪽 아래 상자 — 창고에 맡긴 캐릭터일 때만 켜진다. 평소에는 꺼져 있다")]
+    private GameObject warehouseMark = null!;
+
     // 레벨도 이름 뒤에 붙인다 — 레벨마다 작업속도 가산이 붙어 같은 캐릭터라도 레벨에 따라 빨라진다 (이슈 #35).
     [SerializeField, Tooltip("캐릭터 이름 · 레벨 — '이름 Lv27'")]
     private TMP_Text nameText = null!;
@@ -79,6 +83,7 @@ public class CharacterStateRowView : MonoBehaviour
     {
         this.RequireRef(backgroundImage, nameof(backgroundImage));
         this.RequireRef(portraitImage, nameof(portraitImage));
+        this.RequireRef(warehouseMark, nameof(warehouseMark));
         this.RequireRef(nameText,      nameof(nameText));
         this.RequireRef(raceText,      nameof(raceText));
         this.RequireRef(assignButton,  nameof(assignButton));
@@ -155,6 +160,12 @@ public class CharacterStateRowView : MonoBehaviour
         }
     }
 
+    // 창고에 맡긴 캐릭터임을 표시한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출 · T-163).
+    public void SetWarehouseMark(bool on)
+    {
+        warehouseMark.SetActive(on);
+    }
+
     // 버튼 라벨을 정한다 — 목록 줄은 "배치", 세팅의 카드는 "해제" (만들 때 한 번 호출).
     public void SetButtonLabel(string label)
     {
@@ -176,5 +187,6 @@ public class CharacterStateRowView : MonoBehaviour
         backgroundImage.color = RarityPalette.Unknown;
 
         SetPortrait(null);
+        SetWarehouseMark(false);
     }
 }

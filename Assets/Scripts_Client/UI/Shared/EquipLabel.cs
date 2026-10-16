@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -291,12 +292,13 @@ public static class EquipLabel
         return string.Join(" · ", parts);
     }
 
-    // 장비 개체 하나의 툴팁 — 등급 · 종류 · 기본 능력치 · (장착) · 즉시 판매가·경매 등록가 · 능력치 칸. 모르는 TID면 null.
-    //   equipped : '장착' 줄에 적을 문구. null이면 줄을 뺀다(장비 고르기·경매 등록 후보는 전부 인벤토리에 있다)
+    // 장비 개체 하나의 툴팁 — 등급 · 종류 · 기본 능력치 · (보관·상태) · 즉시 판매가·경매 등록가 · 능력치 칸. 모르는 TID면 null.
+    //   addStateRows : 기본 능력치 뒤에 줄을 더한다 — 인벤토리 격자가 '보관' · '상태' 줄을 캐릭터·자원 칸과 같은 자리에 둔다.
+    //                  null이면 더하지 않는다(장비 고르기 · 경매 등록 후보)
     //
     // 인벤토리 장비 칸 · 장비 고르기 줄 · 경매 등록 후보가 같은 장비를 **같은 툴팁**으로 읽게 한 곳에 둔다.
     // ※ 두 가격을 나란히 적는다 — 즉시 판매는 정해진 값, 경매는 그 값 ~ x10 사이에서 직접 정한다('Auction 규칙.md').
-    public static TooltipContent? BuildTooltip(int equipTid, IReadOnlyList<int>? optionTids, string? equipped = null)
+    public static TooltipContent? BuildTooltip(int equipTid, IReadOnlyList<int>? optionTids, Action<TooltipContent>? addStateRows = null)
     {
         if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
         {
@@ -308,10 +310,7 @@ public static class EquipLabel
             .Row("종류", GetKindName(row.EquipKind))
             .Row("기본 능력치", GetEffectText(equipTid));
 
-        if (equipped != null)
-        {
-            content.Row("장착", equipped);
-        }
+        addStateRows?.Invoke(content);
 
         content.Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(row.BasePrice):N0} 골드", "인벤토리 [판매]", null)
                .Row("경매 등록가", AuctionModel.FormatBand(row.BasePrice));

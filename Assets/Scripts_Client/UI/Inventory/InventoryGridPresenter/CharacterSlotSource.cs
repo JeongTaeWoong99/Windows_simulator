@@ -98,7 +98,7 @@ public class CharacterSlotSource : InventorySlotSource
     // ★ 적성을 **산업 이름과 함께** 적는 것이 본론이다 — 칸의 스트립은 숫자만이라 어느 산업인지는
     //   위치로만 안다(T-048). 기본 속도를 곁들이면 "어디로 보낼까"를 여기서 정할 수 있다.
     // ※ 속도는 적성만의 값이다 — 장비·특성 가산은 빠진다. 실제 속도는 작업슬롯 화면이 말한다.
-    public override TooltipContent? BuildTooltip(long key)
+    public override TooltipContent? BuildTooltip(long key, int slot)
     {
         int tid = _data.GetCharacterTid(key);
 
@@ -110,7 +110,9 @@ public class CharacterSlotSource : InventorySlotSource
         var content = new TooltipContent(GameDataLoader.GetCharacterName(tid));
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
-            .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null)
+            .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null);
+
+        AddStorageRow(content)
             .Row("상태", GetStateText(key));
 
         AddCondenseRow(content, key);
@@ -135,10 +137,11 @@ public class CharacterSlotSource : InventorySlotSource
             .Row("Ctrl+우클릭", "경매 등록"));
     }
 
-    // 상태 줄 — 창고에 있으면 '창고 보관', 아니면 어디서 일하나 · 잠김 (BuildTooltip에서 호출).
+    // 상태 줄 — 어디서 일하나 · 잠김 (BuildTooltip에서 호출).
+    // ※ 창고 캐릭터도 일한다(T-163) — 어느 보관함인지는 '보관' 줄이 따로 말한다.
     private string GetStateText(long key)
     {
-        string state = IsWarehouse ? "창고 보관" : GetWorkText(key);
+        string state = GetWorkText(key);
 
         return IsLocked(key) ? $"{state} · 잠김" : state;
     }

@@ -98,7 +98,7 @@ public class EquipSlotSource : InventorySlotSource
 
     // 장비 칸 툴팁 — 공용 장비 툴팁('EquipLabel.BuildTooltip')에 "누가 어느 부위에 끼고 있나"를 더한다 (격자가 칸에 올린 순간 호출).
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
-    public override TooltipContent? BuildTooltip(long key)
+    public override TooltipContent? BuildTooltip(long key, int slot)
     {
         EquipInfo? equip = FindEquip(key);
 
@@ -107,16 +107,19 @@ public class EquipSlotSource : InventorySlotSource
             return null; // 목록이 아직 낡았다 — 칸도 이름을 그리지 못한다
         }
 
-        string state = IsWarehouse                    ? "창고 보관"
-                     : equip.EquippedCharacterId == 0L ? "인벤토리"
-                     : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
+        // 상태 — 누가 어느 부위에 끼었나, 아니면 '대기'. 잠겼으면 뒤에 붙인다(캐릭터 칸과 같은 모양).
+        // ※ 창고 장비도 낄 수 있다(T-163) — 어느 보관함인지는 '보관' 줄이 따로 말한다.
+        string state = equip.EquippedCharacterId != 0L
+            ? $"{_data.GetCharacterName(equip.EquippedCharacterId)} 착용 · {EquipLabel.GetSlotName(equip.EquippedSlot)}"
+            : "대기";
 
         if (equip.IsLocked)
         {
             state += " · 잠김";
         }
 
-        TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state);
+        TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions,
+            rows => AddStorageRow(rows).Row("상태", state));
 
         if (content == null)
         {

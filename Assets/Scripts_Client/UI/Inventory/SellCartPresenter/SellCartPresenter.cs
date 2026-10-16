@@ -314,7 +314,7 @@ public class SellCartPresenter : MonoBehaviour
                      name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
-                     ItemIconContent.ForCharacter(tid),
+                     ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
                      () => BuildEntityTooltip(name, rarity, basePrice));
         }
 
@@ -335,7 +335,7 @@ public class SellCartPresenter : MonoBehaviour
                      name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
-                     ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                     ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                      () => BuildEntityTooltip(name, rarity, basePrice));
         }
 

@@ -145,6 +145,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
     private readonly List<AuctionRowContent> _contents    = new List<AuctionRowContent>();
     private readonly List<Suggestion> _suggestions = new List<Suggestion>();
 
+    // 자원 줄·제안이 훑는 TID — 인벤토리·창고에 같은 TID가 따로 있어도 한 줄로 선다('PlayerDataModel.CollectOwnedItemIds').
+    private readonly List<int> _ownedItemIds = new List<int>();
+
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
     private ServerWaitManager _wait    = null!;
@@ -688,13 +691,15 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         int max = findSuggestView.Capacity;
 
-        foreach (ItemInfo item in _data.Inventory)
+        _data.CollectOwnedItemIds(_ownedItemIds);
+
+        foreach (int itemId in _ownedItemIds)
         {
             if (_suggestions.Count >= max) return;
-            if (item.Count <= 0 || item.Container != EContainer.Inventory || !AuctionText.MatchesName(EAuctionKind.Item, item.ItemId, query)) continue;
+            if (!AuctionText.MatchesName(EAuctionKind.Item, itemId, query)) continue;
 
-            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, item.ItemId, item.ItemId,
-                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {item.Count:N0}개"));
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, itemId, itemId,
+                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {_data.GetItemCount(itemId):N0}개"));
         }
 
         foreach (EquipInfo equip in _data.Equips)
@@ -736,20 +741,16 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return false;
     }
 
-    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목과 창고에 맡긴 것은 뺀다(등록은 인벤토리에서만 — T-107).
+    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목은 뺀다.
+    // ※ 창고에 맡긴 것도 합쳐 한 줄이다 — 서버가 인벤토리 것부터 빼고 모자란 만큼 창고에서 뺀다(T-163 · 이슈 #74).
     private void AddItemRows()
     {
-        foreach (ItemInfo item in _data.Inventory)
+        _data.CollectOwnedItemIds(_ownedItemIds);
+
+        foreach (int itemId in _ownedItemIds)
         {
-            if (item.Count <= 0 || item.Container != EContainer.Inventory)
-            {
-                continue;
-            }
-
-            int basePrice = GameDataLoader.GetItemPrice(item.ItemId);
-
-            int  itemId = item.ItemId;
-            long owned  = item.Count;
+            int  basePrice = GameDataLoader.GetItemPrice(itemId);
+            long owned     = _data.GetItemCount(itemId);
 
             _contents.Add(new AuctionRowContent
             {
@@ -781,7 +782,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
             _contents.Add(new AuctionRowContent
             {
                 Key        = equip.EquipId,
-                Icon       = ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                Icon       = ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                 Title      = row.Name,
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
@@ -807,7 +808,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
             _contents.Add(new AuctionRowContent
             {
                 Key        = character.CharacterId,
-                Icon       = ItemIconContent.ForCharacter(character.CharacterTid),
+                Icon       = ItemIconContent.ForCharacter(character.CharacterTid).WithWarehouse(character.Container == EContainer.Warehouse),
                 Title      = GameDataLoader.GetCharacterName(character.CharacterTid),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetCharacterRarity(character.CharacterTid)),
                 Info       = $"{AuctionText.FormatCharacterSummary(character)}{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(basePrice):N0} G",
@@ -897,12 +898,12 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (CurrentKind == RegisterKind.Character)
         {
-            return ItemIconContent.ForCharacter(_data.GetCharacterTid(_selectedKey));
+            return ItemIconContent.ForCharacter(_data.GetCharacterTid(_selectedKey)).WithWarehouse(_data.IsCharacterInWarehouse(_selectedKey));
         }
 
         EquipInfo? equip = FindEquip(_selectedKey);
 
-        return ItemIconContent.ForEquip(_data.GetEquipTid(_selectedKey), equip?.EnchantOptions);
+        return ItemIconContent.ForEquip(_data.GetEquipTid(_selectedKey), equip?.EnchantOptions).WithWarehouse(equip?.Container == EContainer.Warehouse);
     }
 
     // 카드 이름 아래 한 줄 — 자원: 분류 · 보유 / 장비: 종류 · 능력치 / 캐릭터: 레벨 · 응축 · 적성.

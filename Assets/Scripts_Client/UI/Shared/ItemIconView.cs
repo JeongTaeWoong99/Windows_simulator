@@ -30,6 +30,11 @@ public class ItemIconView : MonoBehaviour
     [SerializeField, Tooltip("오른쪽 아래 인챈트 보석 — 장비일 때만 켜진다('EnchantGemView')")]
     private EnchantGemView enchantGem = null!;
 
+    // ※ 왼쪽 아래 — 오른쪽 아래는 인챈트 보석, 위는 수량이 쓴다.
+    [CenterHeader("창고 표시")]
+    [SerializeField, Tooltip("왼쪽 아래 상자 — 창고에 맡긴 개체일 때만 켜진다(T-163). 평소에는 꺼져 있다")]
+    private GameObject warehouseMark = null!;
+
     private Color _iconPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
 
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
@@ -40,6 +45,7 @@ public class ItemIconView : MonoBehaviour
         this.RequireRef(glyphText,       nameof(glyphText));
         this.RequireRef(countText,       nameof(countText));
         this.RequireRef(enchantGem,      nameof(enchantGem));
+        this.RequireRef(warehouseMark,   nameof(warehouseMark));
 
         _iconPlaceholderColor = iconImage.color;
     }
@@ -63,6 +69,7 @@ public class ItemIconView : MonoBehaviour
         countText.text = content.Count;
 
         enchantGem.Bind(content.Sockets);
+        warehouseMark.SetActive(content.InWarehouse);
     }
 
     // 칸을 비운다 — 줄이 풀로 돌아갈 때 부른다.

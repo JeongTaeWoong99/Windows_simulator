@@ -36,6 +36,10 @@ public class CharacterCondensePresenter : MonoBehaviour
     [SerializeField, Tooltip("대상 상반신 — 그림이 없으면 자리 표시 네모(프리팹 색)")]
     private Image portraitImage = null!;
 
+    // 창고 캐릭터도 응축한다(T-163) — 창고 격자에서 열면 대상이 어느 보관함 것인지 상반신에서 가른다.
+    [SerializeField, Tooltip("상반신 왼쪽 아래 상자 — 대상이 창고에 맡긴 캐릭터일 때만 켜진다. 평소에는 꺼져 있다")]
+    private GameObject warehouseMark = null!;
+
     [SerializeField, Tooltip("대상 이름 — 등급색")]
     private TMP_Text nameText = null!;
 
@@ -144,6 +148,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     {
         this.RequireRef(inventoryTabs,    nameof(inventoryTabs));
         this.RequireRef(portraitImage,    nameof(portraitImage));
+        this.RequireRef(warehouseMark,    nameof(warehouseMark));
         this.RequireRef(nameText,         nameof(nameText));
         this.RequireRef(infoText,         nameof(infoText));
         this.RequireRef(headerStarRow,    nameof(headerStarRow));
@@ -491,6 +496,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         portraitImage.sprite         = portrait;
         portraitImage.preserveAspect = portrait != null;
         portraitImage.color          = portrait != null ? Color.white : UIThemePalette.Of(UIThemeRole.Slot);
+        warehouseMark.SetActive(target.Container == EContainer.Warehouse);
 
         nameText.text  = GameDataLoader.GetCharacterName(target.CharacterTid);
         nameText.color = RarityPalette.Get(GameDataLoader.GetCharacterRarity(target.CharacterTid));
@@ -683,12 +689,12 @@ public class CharacterCondensePresenter : MonoBehaviour
     // 잠긴 캐릭터인가 (T-137).
     private bool IsLocked(long characterId) => _data.FindCharacter(characterId)?.IsLocked == true;
 
-    // 인벤토리에 지금 재료로 넣을 수 있는 캐릭터가 하나라도 있나 (DrawWarn에서 호출).
+    // 지금 재료로 넣을 수 있는 캐릭터가 하나라도 있나 — 창고 캐릭터도 센다(T-163) (DrawWarn에서 호출).
     private bool HasAnyCandidate()
     {
         foreach (CharacterInfo character in _data.Characters)
         {
-            if (character.Container == EContainer.Inventory && CanBeMaterial(character.CharacterId))
+            if (CanBeMaterial(character.CharacterId))
             {
                 return true;
             }
@@ -773,7 +779,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         foreach (CharacterInfo character in _data.Characters)
         {
-            if (character.Container == EContainer.Inventory && CanBeMaterial(character.CharacterId))
+            if (CanBeMaterial(character.CharacterId))
             {
                 _candidates.Add(character);
             }

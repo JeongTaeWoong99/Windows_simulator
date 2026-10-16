@@ -569,7 +569,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 머리 — 아이콘 · 이름(등급색) · 등급·종류·기본 능력치·칸 수 한 줄.
     private void DrawHeader(EquipInfo equip, EquipTableRow row, int slotCount)
     {
-        itemIcon.Bind(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions));
+        itemIcon.Bind(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse));
 
         nameText.text  = row.Name;
         nameText.color = RarityPalette.Get(row.GlobalRarity);

@@ -129,6 +129,9 @@ public class InventoryToolPresenter : MonoBehaviour
     private readonly List<bool>      _excludeChecked = new List<bool>();
     private readonly HashSet<string> _excludedGroups = new HashSet<string>();
 
+    // 일괄 담기가 훑는 자원 TID — 같은 TID가 여러 칸에 있어도 한 번만 담는다('PlayerDataModel.CollectOwnedItemIds').
+    private readonly List<int> _ownedItemIds = new List<int>();
+
     // 검색 후보를 모을 그릇 — 칠 때마다 다시 채운다.
     private readonly List<Suggestion> _suggestions = new List<Suggestion>();
 
@@ -407,19 +410,21 @@ public class InventoryToolPresenter : MonoBehaviour
         int          added   = 0;
         var          skipped = new Dictionary<string, int>(); // 분류 → 뺀 종류 수
 
-        foreach (ItemInfo item in _data.Inventory)
-        {
-            if (item.Count <= 0 || item.Container != EContainer.Inventory)
-            {
-                continue; // 서버가 0개가 된 아이템도 실어 보낸다 · 창고에 맡긴 것은 팔지 않는다(T-107)
-            }
+        // ★ 창고에 맡긴 것은 담지 않는다 — 인벤토리 칸들의 합만 담는다(2026-10-16 사용자 결정).
+        //   창고는 "팔지 않고 남겨 둘 것"을 두는 곳이라 일괄 범위에 끼면 안 된다. 하나씩 담기(창고 칸 우클릭)는 그대로 된다.
+        //   서버는 인벤토리 것부터 빼므로 인벤토리 수량만 담으면 창고 것은 건드리지 않는다.
+        _data.CollectOwnedItemIds(_ownedItemIds);
 
-            if (GameDataLoader.GetItemRarity(item.ItemId) > limit)
+        foreach (int itemId in _ownedItemIds)
+        {
+            int count = _data.GetItemCount(itemId, EContainer.Inventory);
+
+            if (count <= 0 || GameDataLoader.GetItemRarity(itemId) > limit)
             {
                 continue;
             }
 
-            string group = ResourceSlotSource.GroupOf(item.ItemId);
+            string group = ResourceSlotSource.GroupOf(itemId);
 
             if (_excludedGroups.Contains(group))
             {
@@ -428,7 +433,7 @@ public class InventoryToolPresenter : MonoBehaviour
                 continue;
             }
 
-            _cart.Add(item.ItemId, item.Count);
+            _cart.Add(itemId, count);
             added++;
         }
 
@@ -581,7 +586,8 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (CharacterInfo character in _data.Characters)
         {
-            if (GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
+            // 창고 캐릭터는 일괄 범위에서 뺀다 — 자원과 같은 이유('BulkAddItems').
+            if (character.Container == EContainer.Warehouse || GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
             {
                 continue;
             }
@@ -623,6 +629,12 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (EquipInfo equip in _data.Equips)
         {
+            // 창고 장비는 일괄 범위에서 뺀다 — 자원과 같은 이유('BulkAddItems').
+            if (equip.Container == EContainer.Warehouse)
+            {
+                continue;
+            }
+
             // 'EnchantGrade'는 0(없음) 또는 'GlobalRarity' 값이다 — 장비 등급과 같은 축으로 비교한다.
             if (GameDataLoader.GetEquipRarity(equip.EquipTid) > limit || (GlobalRarity)equip.EnchantGrade > limit)
             {
