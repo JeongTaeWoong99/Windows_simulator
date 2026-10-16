@@ -26,11 +26,13 @@ public sealed class ListingIndex
     public static readonly ListingIndex Empty = new(
         ImmutableDictionary<long, Listing>.Empty,
         ImmutableSortedSet<PriceKey>.Empty,
+        ImmutableDictionary<ListingKind, ImmutableSortedSet<PriceKey>>.Empty,
         ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>>.Empty,
         ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>>.Empty);
 
     private readonly ImmutableDictionary<long, Listing>                                  _byId;
     private readonly ImmutableSortedSet<PriceKey>                                        _all;
+    private readonly ImmutableDictionary<ListingKind, ImmutableSortedSet<PriceKey>>        _byKind;
     private readonly ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> _byCategory;
 
     // 종류(TID)별 가격순 — 거래소의 가격대·최저가를 바로 읽는다.
@@ -39,11 +41,13 @@ public sealed class ListingIndex
     private ListingIndex(
         ImmutableDictionary<long, Listing>                                  byId,
         ImmutableSortedSet<PriceKey>                                        all,
+        ImmutableDictionary<ListingKind, ImmutableSortedSet<PriceKey>>        byKind,
         ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> byCategory,
         ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> byTid)
     {
         _byId       = byId;
         _all        = all;
+        _byKind     = byKind;
         _byCategory = byCategory;
         _byTid      = byTid;
     }
@@ -63,6 +67,7 @@ public sealed class ListingIndex
         return new ListingIndex(
             source._byId.SetItem(listing.ListingId, listing),
             source._all.Add(key),
+            With(source._byKind, listing.Kind, key),
             With(source._byCategory, (listing.Kind, listing.Category), key),
             With(source._byTid, (listing.Kind, listing.Tid), key));
     }
@@ -80,19 +85,22 @@ public sealed class ListingIndex
         return new ListingIndex(
             _byId.Remove(listingId),
             _all.Remove(key),
+            Without(_byKind, listing.Kind, key),
             Without(_byCategory, (listing.Kind, listing.Category), key),
             Without(_byTid, (listing.Kind, listing.Tid), key));
     }
 
-    private static ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> With(
-        ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> groups, (ListingKind, int) group, PriceKey key)
+    private static ImmutableDictionary<TGroup, ImmutableSortedSet<PriceKey>> With<TGroup>(
+        ImmutableDictionary<TGroup, ImmutableSortedSet<PriceKey>> groups, TGroup group, PriceKey key)
+        where TGroup : notnull
     {
         var set = groups.TryGetValue(group, out var existing) ? existing : ImmutableSortedSet<PriceKey>.Empty;
         return groups.SetItem(group, set.Add(key));
     }
 
-    private static ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> Without(
-        ImmutableDictionary<(ListingKind, int), ImmutableSortedSet<PriceKey>> groups, (ListingKind, int) group, PriceKey key)
+    private static ImmutableDictionary<TGroup, ImmutableSortedSet<PriceKey>> Without<TGroup>(
+        ImmutableDictionary<TGroup, ImmutableSortedSet<PriceKey>> groups, TGroup group, PriceKey key)
+        where TGroup : notnull
     {
         var set = groups[group].Remove(key);
         return set.IsEmpty ? groups.Remove(group) : groups.SetItem(group, set);
@@ -176,42 +184,173 @@ public sealed class ListingIndex
     }
 
     /// <summary>
-    /// 조건에 맞는 매물을 전부 골라 정렬한 뒤, 커서 다음부터 한 쪽만큼 돌려준다 — 건수와 아무 정렬의 전체 순서를 주려면 다 봐야 한다.
-    /// 판매 중 매물은 유저당 20건 상한이라 전체를 훑어도 작다. 만료 시각이 지난 매물은 청소 전이라도 뺀다 (T-155).
+    /// 조건에 맞는 매물을 커서 다음부터 한 쪽만큼 돌려준다. 만료 시각이 지난 매물은 청소 전이라도 뺀다 (T-155).
+    /// 훑는 범위는 TID → 분류 → 종류 중 가장 좁은 인덱스다(이슈 #71). 단가 낮은순은 인덱스 순서 그대로라 커서부터 한 쪽만 읽고,
+    /// 다른 정렬은 범위를 한 번 훑으며 커서 다음의 앞쪽 한 쪽만 남긴다. 건수는 <see cref="SearchQuery.TotalCountCap"/>에서 멈춘다.
     /// </summary>
     public SearchPage Search(SearchQuery query, DateTime now)
     {
         var pageSize = query.PageSize <= 0 ? SearchQuery.DefaultPageSize : Math.Min(query.PageSize, SearchQuery.MaxPageSize);
         var tids     = query.Tids.Count > 0 ? query.Tids.ToHashSet() : null;
         var options  = query.OptionTids.Distinct().ToList();
+        var sets     = PickSets(query);
 
-        var matched = PickSet(query)
-            .Select(key => _byId[key.ListingId])
-            .Where(listing => Matches(listing, query, tids, options, now))
-            .Select(listing => (Value: SortValue(listing, query), Listing: listing))
-            .OrderBy(x => x.Value)
-            .ThenBy(x => x.Listing.ListingId)
-            .ToList();
+        bool IsMatch(Listing listing) => Matches(listing, query, tids, options, now);
 
-        var start = 0;
-        if (query.CursorSortValue != 0 || query.CursorListingId != 0)
+        return query.Sort == SearchSort.PriceAsc
+            ? SearchByPrice(sets, IsMatch, query, pageSize)
+            : SearchBySortValue(sets, IsMatch, query, pageSize);
+    }
+
+    // 단가 낮은순 — 집합들을 커서 다음부터 합쳐 읽다가 한 쪽 + 1개를 채우면 멈춘다.
+    private SearchPage SearchByPrice(List<ImmutableSortedSet<PriceKey>> sets, Func<Listing, bool> isMatch, SearchQuery query, int pageSize)
+    {
+        var page    = new List<(long Value, Listing Listing)>();
+        var hasMore = false;
+        foreach (var listing in MergeByPrice(sets, query, Cursor(query)))
         {
-            start = matched.FindIndex(x => x.Value > query.CursorSortValue
-                                         || (x.Value == query.CursorSortValue && x.Listing.ListingId > query.CursorListingId));
-            if (start < 0)
+            if (!isMatch(listing))
             {
-                start = matched.Count;
+                continue;
+            }
+
+            if (page.Count == pageSize)
+            {
+                hasMore = true;
+                break;
+            }
+
+            page.Add((listing.UnitPrice, listing));
+        }
+
+        var total = 0;
+        foreach (var listing in sets.SelectMany(set => Walk(set, query, after: null)))
+        {
+            if (isMatch(listing) && ++total == SearchQuery.TotalCountCap)
+            {
+                break;
             }
         }
 
-        var page = matched.Skip(start).Take(pageSize).ToList();
+        return ToPage(page, hasMore, total);
+    }
+
+    // 그 밖의 정렬 — 인덱스 순서와 달라 범위를 다 본다. 정렬은 하지 않고 커서 다음의 앞쪽 한 쪽 + 1개만 큐에 남긴다.
+    private SearchPage SearchBySortValue(List<ImmutableSortedSet<PriceKey>> sets, Func<Listing, bool> isMatch, SearchQuery query, int pageSize)
+    {
+        var cursor = Cursor(query);
+        var keep   = pageSize + 1;
+
+        // 큐의 맨 앞이 남긴 것 중 가장 뒤 순서다 — 넘치면 그것부터 버린다.
+        var best  = new PriorityQueue<(long Value, Listing Listing), (long, long)>(Comparer<(long, long)>.Create((a, b) => b.CompareTo(a)));
+        var total = 0;
+        foreach (var listing in sets.SelectMany(set => Walk(set, query, after: null)))
+        {
+            if (!isMatch(listing))
+            {
+                continue;
+            }
+
+            total++;
+            var value = SortValue(listing, query);
+            if (cursor is { } c && (value, listing.ListingId).CompareTo((c.UnitPrice, c.ListingId)) <= 0)
+            {
+                continue;
+            }
+
+            best.Enqueue((value, listing), (value, listing.ListingId));
+            if (best.Count > keep)
+            {
+                best.Dequeue();
+            }
+        }
+
+        var picked = new List<(long Value, Listing Listing)>();
+        while (best.TryDequeue(out var entry, out _))
+        {
+            picked.Add(entry);
+        }
+        picked.Reverse();
+
+        return ToPage(picked.Take(pageSize).ToList(), picked.Count > pageSize, total);
+    }
+
+    private static SearchPage ToPage(List<(long Value, Listing Listing)> page, bool hasMore, int total)
+    {
+        var totalCount = Math.Min(total, SearchQuery.TotalCountCap);
         if (page.Count == 0)
         {
-            return new SearchPage(Array.Empty<Listing>(), false, matched.Count);
+            return new SearchPage(Array.Empty<Listing>(), false, totalCount);
         }
 
         var last = page[^1];
-        return new SearchPage(page.Select(x => x.Listing).ToList(), start + page.Count < matched.Count, matched.Count, last.Value, last.Listing.ListingId);
+        return new SearchPage(page.Select(x => x.Listing).ToList(), hasMore, totalCount, last.Value, last.Listing.ListingId);
+    }
+
+    // 첫 쪽은 커서가 없다. 정렬 값을 단가 자리에 담는다 — 단가 낮은순이면 둘이 같다.
+    private static PriceKey? Cursor(SearchQuery query)
+    {
+        if (query.CursorSortValue == 0 && query.CursorListingId == 0)
+        {
+            return null;
+        }
+
+        return new PriceKey(query.CursorSortValue, query.CursorListingId);
+    }
+
+    // 집합마다 시작 칸부터 단가순으로 꺼내 하나로 합친다. 집합끼리는 겹치지 않는다.
+    private IEnumerable<Listing> MergeByPrice(List<ImmutableSortedSet<PriceKey>> sets, SearchQuery query, PriceKey? after)
+    {
+        var heads = new PriorityQueue<IEnumerator<Listing>, PriceKey>();
+        foreach (var set in sets)
+        {
+            var walker = Walk(set, query, after).GetEnumerator();
+            if (walker.MoveNext())
+            {
+                heads.Enqueue(walker, new PriceKey(walker.Current.UnitPrice, walker.Current.ListingId));
+            }
+        }
+
+        while (heads.TryDequeue(out var walker, out _))
+        {
+            yield return walker.Current;
+            if (walker.MoveNext())
+            {
+                heads.Enqueue(walker, new PriceKey(walker.Current.UnitPrice, walker.Current.ListingId));
+            }
+        }
+    }
+
+    // 한 집합을 단가순으로 — 단가 하한(과 커서) 다음부터 시작해 단가 상한을 넘으면 멈춘다. 시작 칸은 이진 탐색으로 찾는다.
+    private IEnumerable<Listing> Walk(ImmutableSortedSet<PriceKey> set, SearchQuery query, PriceKey? after)
+    {
+        var start = StartIndex(set, new PriceKey(query.MinUnitPrice, 0), inclusive: true);
+        if (after is { } cursor)
+        {
+            start = Math.Max(start, StartIndex(set, cursor, inclusive: false));
+        }
+
+        for (var i = start; i < set.Count; i++)
+        {
+            var key = set[i];
+            if (query.MaxUnitPrice > 0 && key.UnitPrice > query.MaxUnitPrice)
+            {
+                yield break;
+            }
+
+            yield return _byId[key.ListingId];
+        }
+    }
+
+    private static int StartIndex(ImmutableSortedSet<PriceKey> set, PriceKey key, bool inclusive)
+    {
+        var index = set.IndexOf(key);
+        if (index < 0)
+        {
+            return ~index;
+        }
+
+        return inclusive ? index : index + 1;
     }
 
     // 정렬 값 — 작은 것이 먼저다. 내림차순은 부호를 뒤집는다.
@@ -232,14 +371,34 @@ public sealed class ListingIndex
         }
     }
 
-    private ImmutableSortedSet<PriceKey> PickSet(SearchQuery query)
+    // 훑을 인덱스 — 가장 좁은 것을 고른다. TID가 여럿이거나 종류가 없으면 집합이 여럿이고, 서로 겹치지 않는다.
+    private List<ImmutableSortedSet<PriceKey>> PickSets(SearchQuery query)
     {
-        if (query.Kind is not { } kind || query.Category == 0)
+        if (query.Tids.Count > 0)
         {
-            return _all;
+            var kinds = query.Kind is { } kind ? new[] { kind } : Enum.GetValues<ListingKind>();
+            return query.Tids.Distinct()
+                .SelectMany(tid => kinds.Select(k => (k, tid)))
+                .Where(_byTid.ContainsKey)
+                .Select(group => _byTid[group])
+                .ToList();
         }
 
-        return _byCategory.TryGetValue((kind, query.Category), out var set) ? set : ImmutableSortedSet<PriceKey>.Empty;
+        if (query.Kind is not { } only)
+        {
+            return new List<ImmutableSortedSet<PriceKey>> { _all };
+        }
+
+        if (query.Category != 0)
+        {
+            return _byCategory.TryGetValue((only, query.Category), out var byCategory)
+                ? new List<ImmutableSortedSet<PriceKey>> { byCategory }
+                : new List<ImmutableSortedSet<PriceKey>>();
+        }
+
+        return _byKind.TryGetValue(only, out var byKind)
+            ? new List<ImmutableSortedSet<PriceKey>> { byKind }
+            : new List<ImmutableSortedSet<PriceKey>>();
     }
 
     private static bool Matches(Listing listing, SearchQuery query, HashSet<int>? tids, List<int> options, DateTime now)
@@ -250,6 +409,12 @@ public sealed class ListingIndex
         }
 
         if (query.Kind is { } kind && listing.Kind != kind)
+        {
+            return false;
+        }
+
+        // TID 인덱스로 고르면 분류가 걸러지지 않았다.
+        if (query.Kind is not null && query.Category != 0 && listing.Category != query.Category)
         {
             return false;
         }

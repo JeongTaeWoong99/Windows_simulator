@@ -59,12 +59,12 @@ public class UserAuctionHistoryTest
     {
         var (user, b) = NewUser();
 
-        for (var i = 0; i < 6; i++)
+        for (var i = 0; i <= AuctionRules.SearchBurst; i++)
         {
             user.TryGetAuctionHistory(new C_AuctionHistoryRequest { PageSize = 0 }, Now);
         }
 
-        b.DB.PostedOf<AuctionHistoryRepository>().Count.ShouldBe(5);
+        b.DB.PostedOf<AuctionHistoryRepository>().Count.ShouldBe(AuctionRules.SearchBurst);
         b.Channel.SentOf<S_AuctionHistoryResponse>().Last().Result.ShouldBe(EResultCode.AuctionTooManyRequests);
     }
 }

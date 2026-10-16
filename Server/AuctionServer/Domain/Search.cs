@@ -22,6 +22,9 @@ public sealed record SearchQuery
     public const int DefaultPageSize = 20;
     public const int MaxPageSize     = 50;
 
+    /// <summary>결과 건수는 여기서 세기를 멈춘다 — 이 값이면 "이상"이다 (이슈 #71).</summary>
+    public const int TotalCountCap   = 1000;
+
     public ListingKind?         Kind            { get; init; }
     public int                  Category        { get; init; }
     public IReadOnlyCollection<int> Tids        { get; init; } = Array.Empty<int>();
@@ -39,5 +42,5 @@ public sealed record SearchQuery
     public int                  PageSize        { get; init; } = DefaultPageSize;
 }
 
-/// <summary>한 쪽. <see cref="TotalCount"/>는 쪽과 상관없이 조건에 맞는 전부이고, 다음 쪽은 Next 커서로 묻는다.</summary>
+/// <summary>한 쪽. <see cref="TotalCount"/>는 쪽과 상관없이 조건에 맞는 전부(최대 <see cref="SearchQuery.TotalCountCap"/>)이고, 다음 쪽은 Next 커서로 묻는다.</summary>
 public sealed record SearchPage(IReadOnlyList<Listing> Listings, bool HasMore, int TotalCount = 0, long NextCursorSortValue = 0, long NextCursorListingId = 0);

@@ -334,7 +334,7 @@ public class AuctionEndToEndTest : IAsyncLifetime
         var buyer  = Login(BuyerUid);
         RegisterItem(seller, 10, 30);
 
-        (await Search(buyer, new C_AuctionSearchRequest())).Listings!.ShouldBeEmpty();
+        (await Search(buyer, new C_AuctionSearchRequest { Kind = EAuctionKind.Item })).Listings!.ShouldBeEmpty();
     }
 
     [Fact]

@@ -259,7 +259,7 @@ public class CharacterAuctionTest : IDisposable
         reply.Listings.Add(new Proto.ListingView { ListingId = 3, Kind = (int)EAuctionKind.Character, Tid = 1001, Count = 1, Detail = "{깨짐" });
         _client.Search = _ => Task.FromResult(reply);
 
-        user.TrySearchAuction(new C_AuctionSearchRequest(), Now);
+        user.TrySearchAuction(new C_AuctionSearchRequest { Kind = EAuctionKind.Character }, Now);
 
         var listing = Last<S_AuctionSearchResponse>(b).Listings!.Single();
         (listing.ListingId, listing.Character).ShouldBe((3L, (CharacterInfo?)null));

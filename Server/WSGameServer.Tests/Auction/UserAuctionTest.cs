@@ -500,7 +500,7 @@ public class UserAuctionTest
         reply.Listings.Add(view);
         _client.Search = _ => Task.FromResult(reply);
 
-        user.TrySearchAuction(new C_AuctionSearchRequest(), Now);
+        user.TrySearchAuction(new C_AuctionSearchRequest { Kind = EAuctionKind.Equip }, Now);
 
         var response = Last<S_AuctionSearchResponse>(b);
         var listing  = response.Listings!.Single();
@@ -511,18 +511,44 @@ public class UserAuctionTest
     }
 
     [Fact]
-    public void 검색은_순간_5회를_넘으면_거절한다()
+    public void 검색은_순간_허용_횟수를_넘으면_거절한다()
     {
         var (user, b) = NewUser();
         _client.Search = _ => Task.FromResult(new Proto.SearchReply());
 
-        for (var i = 0; i < 6; i++)
+        for (var i = 0; i <= AuctionRules.SearchBurst; i++)
         {
-            user.TrySearchAuction(new C_AuctionSearchRequest(), Now);
+            user.TrySearchAuction(new C_AuctionSearchRequest { Kind = EAuctionKind.Item }, Now);
         }
 
         b.Channel.SentOf<S_AuctionSearchResponse>().Select(r => r.Result)
-            .ShouldBe(Enumerable.Repeat(EResultCode.Ok, 5).Append(EResultCode.AuctionTooManyRequests));
+            .ShouldBe(Enumerable.Repeat(EResultCode.Ok, AuctionRules.SearchBurst).Append(EResultCode.AuctionTooManyRequests));
+    }
+
+    [Fact]
+    public void 종류도_TID도_없는_검색은_경매장에_묻지_않고_거절한다()
+    {
+        var (user, b) = NewUser();
+
+        user.TrySearchAuction(new C_AuctionSearchRequest { Category = 1, MaxUnitPrice = 100 }, Now);
+
+        Last<S_AuctionSearchResponse>(b).Result.ShouldBe(EResultCode.AuctionSearchNoCondition);
+        _client.RequestsOf<Proto.SearchRequest>().ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 조건_없는_검색은_빈도_한도를_쓰지_않는다()
+    {
+        var (user, b) = NewUser();
+        _client.Search = _ => Task.FromResult(new Proto.SearchReply());
+
+        for (var i = 0; i < AuctionRules.SearchBurst; i++)
+        {
+            user.TrySearchAuction(new C_AuctionSearchRequest(), Now);
+        }
+        user.TrySearchAuction(new C_AuctionSearchRequest { Tids = new() { 1001 } }, Now);
+
+        Last<S_AuctionSearchResponse>(b).Result.ShouldBe(EResultCode.Ok);
     }
 
     [Fact]

@@ -127,4 +127,68 @@ public class SearchSortFilterTest
 
         Ids(index.Search(new SearchQuery { Attrs = new[] { new AttrRange(Level, Min: 10, Max: 0) } }, Now)).ShouldBe(new long[] { 2 });
     }
+
+
+    // ── 범위 좁히기 · 건수 상한 (이슈 #71) ──
+
+    private static Listing Item(long id, long unitPrice, int tid, int category = 1)
+        => new(id, SellerId: 100, ListingKind.Item, tid, category, Rarity: 1, Count: 1, EnchantGrade: 0, Array.Empty<int>(),
+               unitPrice, Now.AddHours(10));
+
+    [Fact]
+    public void 여러_TID를_고르면_TID를_섞어_단가_낮은순으로_쪽을_넘긴다()
+    {
+        var index = Index(Item(1, 300, tid: 10001), Item(2, 100, tid: 10002), Item(3, 200, tid: 10001),
+                          Item(4, 100, tid: 10001), Item(5, 400, tid: 10002), Item(6, 50, tid: 10003));
+
+        AllPages(index, new SearchQuery { Tids = new[] { 10001, 10002 } }).ShouldBe(new long[] { 2, 4, 3, 1, 5 });
+    }
+
+    [Fact]
+    public void TID와_분류를_함께_주면_둘_다_맞아야_한다()
+    {
+        var index = Index(Item(1, 100, tid: 10001, category: 1), Item(2, 200, tid: 10001, category: 2));
+
+        Ids(index.Search(new SearchQuery { Kind = ListingKind.Item, Category = 2, Tids = new[] { 10001 } }, Now)).ShouldBe(new long[] { 2 });
+    }
+
+    [Fact]
+    public void 종류만_고르면_다른_종류는_섞이지_않는다()
+    {
+        var index = Index(Item(1, 100, tid: 10001), Equip(2, 50), Item(3, 200, tid: 10002));
+
+        AllPages(index, new SearchQuery { Kind = ListingKind.Item }).ShouldBe(new long[] { 1, 3 });
+    }
+
+    [Fact]
+    public void 높은_가격순도_TID로_좁힌_범위에서_전체_순서다()
+    {
+        var index = Index(Item(1, 300, tid: 10001), Item(2, 100, tid: 10002), Item(3, 500, tid: 10003), Item(4, 200, tid: 10002));
+
+        AllPages(index, new SearchQuery { Tids = new[] { 10001, 10002 }, Sort = SearchSort.PriceDesc }).ShouldBe(new long[] { 1, 4, 2 });
+    }
+
+    [Fact]
+    public void 결과_건수는_상한까지만_센다()
+    {
+        var index = ListingIndex.Empty;
+        for (var i = 1; i <= SearchQuery.TotalCountCap + 5; i++)
+        {
+            index = index.Add(Item(i, i, tid: 10001));
+        }
+
+        var page = index.Search(new SearchQuery { Tids = new[] { 10001 } }, Now);
+
+        (page.TotalCount, page.HasMore).ShouldBe((1000, true));
+    }
+
+    [Fact]
+    public void 마지막_쪽의_건수도_첫_쪽과_같다()
+    {
+        var index = Index(Item(1, 100, tid: 10001), Item(2, 200, tid: 10001), Item(3, 300, tid: 10001));
+
+        var page = index.Search(new SearchQuery { Tids = new[] { 10001 }, CursorSortValue = 200, CursorListingId = 2 }, Now);
+
+        (Ids(page).Single(), page.TotalCount, page.HasMore).ShouldBe((3L, 3, false));
+    }
 }

@@ -341,11 +341,17 @@ public class UserMarketTest
         _client.PriceLadder = _ => Task.FromResult(new Proto.PriceLadderReply());
         _client.Search      = _ => Task.FromResult(new Proto.SearchReply());
 
-        user.TryGetMarketItems(0, null, Now);
-        user.TryGetMarketPrice(Carp, Now);
-        user.TrySearchAuction(new C_AuctionSearchRequest(), Now);
-        user.TryGetMarketItems(0, null, Now);
-        user.TryGetMarketPrice(Carp, Now);
+        // 세 조회를 돌려 가며 한도를 다 쓴다 — 하나라도 따로 세면 마지막 목록 조회가 통과한다.
+        var calls = new Action[]
+        {
+            () => user.TryGetMarketItems(0, null, Now),
+            () => user.TryGetMarketPrice(Carp, Now),
+            () => user.TrySearchAuction(new C_AuctionSearchRequest { Kind = EAuctionKind.Item }, Now),
+        };
+        for (var i = 0; i < AuctionRules.SearchBurst; i++)
+        {
+            calls[i % calls.Length]();
+        }
         user.TryGetMarketItems(0, null, Now);
 
         Last<S_MarketItemsResponse>(b).Result.ShouldBe(EResultCode.AuctionTooManyRequests);

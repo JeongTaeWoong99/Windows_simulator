@@ -132,7 +132,7 @@ public class AuctionSearchAttrTest
         var (user, _) = NewUser();
         _client.Search = _ => Task.FromResult(new Proto.SearchReply());
 
-        user.TrySearchAuction(new C_AuctionSearchRequest { CursorUnitPrice = 70, CursorListingId = 9 }, Now);
+        user.TrySearchAuction(new C_AuctionSearchRequest { Kind = EAuctionKind.Item, CursorUnitPrice = 70, CursorListingId = 9 }, Now);
 
         _client.RequestsOf<Proto.SearchRequest>().Single().CursorUnitPrice.ShouldBe(70);
     }

@@ -461,6 +461,13 @@ public partial class User
             return;
         }
 
+        // 종류도 TID도 없으면 판매 중 전부가 범위다(이슈 #71). Category는 종류가 있어야 뜻이 있다.
+        if (req.Kind == EAuctionKind.None && req.Tids is not { Count: > 0 })
+        {
+            Send(new S_AuctionSearchResponse { Result = EResultCode.AuctionSearchNoCondition });
+            return;
+        }
+
         if (!TakeSearchToken(now))
         {
             Send(new S_AuctionSearchResponse { Result = EResultCode.AuctionTooManyRequests });

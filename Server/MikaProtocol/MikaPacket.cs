@@ -672,7 +672,7 @@ namespace MikaProtocol
         public bool                      HasMore  { get; set; }
 
         // ── T-155 ──
-        public int  TotalCount          { get; set; }  // 조건에 맞는 매물 수 — 쪽과 상관없다
+        public int  TotalCount          { get; set; }  // 조건에 맞는 매물 수 — 쪽과 상관없다. 1000에서 세기를 멈춘다(1000이면 "1,000건 이상")
         public long NextCursorSortValue { get; set; }  // 다음 쪽을 물을 때 CursorSortValue · CursorListingId로 그대로
         public long NextCursorListingId { get; set; }
     }

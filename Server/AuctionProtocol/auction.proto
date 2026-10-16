@@ -191,7 +191,7 @@ message ListingView {
 message SearchReply {
   repeated ListingView listings = 1;
   bool has_more = 2;
-  int32 total_count = 3;               // 조건에 맞는 매물 수 — 쪽과 상관없다
+  int32 total_count = 3;               // 조건에 맞는 매물 수 — 쪽과 상관없다. 1000에서 세기를 멈춘다
   int64 next_cursor_sort_value = 4;    // 다음 쪽 커서 — 이 쪽 마지막 줄
   int64 next_cursor_listing_id = 5;
 }
