@@ -15,7 +15,11 @@ public partial class User
     // 자원 스냅샷 — 인벤토리와 창고를 한 목록에 싣는다. 클라가 Container로 가른다.
     public void SendInventory()
     {
-        Send(new S_InventoryResponse { Items = Inventory.Snapshot().Concat(Warehouse.Snapshot()).ToList() });
+        Send(new S_InventoryResponse
+        {
+            Items          = Inventory.Snapshot().Concat(Warehouse.Snapshot()).ToList(),
+            LockedItemTids = _lockedItemTids.Order().ToList(),
+        });
     }
 
     // 메모리 갱신 + DB 반영만 하고 변경분(칸마다 한 줄)을 돌려준다(응답은 호출자가). 지급 경로는 전부 여기를 지난다.

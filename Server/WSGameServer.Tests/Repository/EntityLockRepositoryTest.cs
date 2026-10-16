@@ -48,4 +48,21 @@ public class EntityLockRepositoryTest : IDisposable
         Count("SELECT COUNT(*) FROM t_user_equip WHERE is_locked = 1").ShouldBe(1);
         Count("SELECT is_locked FROM t_user_equip WHERE equip_id = 10").ShouldBe(1);
     }
+
+    [Fact]
+    public async Task 자원은_자기_종류_한_줄만_잠그고_두_번_잠가도_한_줄이다()
+    {
+        var user = new TestUserBuilder().Build(uid: 7);
+        _db.Execute("INSERT INTO t_user_item_lock (user_id, item_id) VALUES (8, 10001)");
+
+        await new EntityLockRepository(user, ELockTarget.Resource, 10001, locked: true).ExecuteAsync(new DbConnection(_db.Connection));
+        await new EntityLockRepository(user, ELockTarget.Resource, 10001, locked: true).ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT COUNT(*) FROM t_user_item_lock WHERE user_id = 7 AND item_id = 10001").ShouldBe(1);
+
+        await new EntityLockRepository(user, ELockTarget.Resource, 10001, locked: false).ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT COUNT(*) FROM t_user_item_lock WHERE user_id = 7").ShouldBe(0);
+        Count("SELECT COUNT(*) FROM t_user_item_lock WHERE user_id = 8").ShouldBe(1);
+    }
 }

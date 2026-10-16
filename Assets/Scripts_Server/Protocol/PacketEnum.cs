@@ -107,7 +107,7 @@ namespace MikaProtocol
 
         // ── 1200~: 잠금 (T-137) ── 미보유는 CharacterNotOwned(201) · EquipNotOwned(600)
         EntityLocked      = 1200, // 잠긴 개체 — 판매·경매 등록·응축 재료로 쓸 수 없다. 아무것도 바꾸지 않았다
-        InvalidLockTarget = 1201, // 잠글 수 없는 대상 종류 (캐릭터·장비만)
+        InvalidLockTarget = 1201, // 잠글 수 없는 대상 — 없는 대상 종류 · 아이템 테이블에 없는 자원 TID
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -285,12 +285,13 @@ namespace MikaProtocol
         Returned  = 5,   // 반환 — 경매장이 거부했거나 잃어버린 매물(드물다). Amount = 돌려받은 등록비
     }
 
-    // 잠금 대상 (T-137). 자원은 TID 하나 = 칸 하나라 잠그지 않는다.
+    // 잠금 대상 (T-137). 자원은 개체가 없어 종류(TID) 단위로 잠근다 (T-159).
     public enum ELockTarget : byte
     {
         None      = 0,
         Character = 1,
         Equip     = 2,
+        Resource  = 3,   // Id = 아이템 TID. 보유가 0개여도 잠금은 남는다
     }
 
     public enum EStorageSortOrder : byte

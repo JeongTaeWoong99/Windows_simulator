@@ -34,6 +34,12 @@ public sealed class ShopService : Singleton<ShopService>
                 return;
             }
 
+            if (user.IsItemLocked(item.ItemId))
+            {
+                user.Send(new S_ItemSellResponse { Result = EResultCode.EntityLocked });
+                return;
+            }
+
             request[item.ItemId] = request.GetValueOrDefault(item.ItemId) + item.Count;
 
             // long으로 누적한다 — 일괄 판매는 종류·수량이 커서 int 상한(약 21억)에 닿을 수 있다.

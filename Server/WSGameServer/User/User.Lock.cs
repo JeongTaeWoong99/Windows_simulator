@@ -1,10 +1,11 @@
+using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
 
 public partial class User
 {
-    // 캐릭터·장비 잠금 켜기/끄기(T-137). 이미 같은 상태여도 Ok로 답한다 — 클라가 두 번 눌러도 어긋나지 않게.
+    // 캐릭터·장비·자원 잠금 켜기/끄기(T-137 · T-159). 이미 같은 상태여도 Ok로 답한다 — 클라가 두 번 눌러도 어긋나지 않게.
     // 잠금은 없애는 동작(판매·경매 등록·응축 재료)만 막는다.
     public void TrySetLock(ELockTarget target, long id, bool locked)
     {
@@ -12,6 +13,7 @@ public partial class User
         {
             ELockTarget.Character => SetCharacterLock(id, locked),
             ELockTarget.Equip     => SetEquipLock(id, locked),
+            ELockTarget.Resource  => SetItemLock(id, locked),
             _                     => EResultCode.InvalidLockTarget,
         };
 
@@ -24,6 +26,39 @@ public partial class User
 
         PostDBTask(new EntityLockRepository(this, target, id, locked));
         Send(new S_EntityLockResponse { Result = EResultCode.Ok, Target = target, Id = id, Locked = locked });
+    }
+
+    // 자원은 개체가 없어 종류(TID)로 잠근다(T-159). 보유가 0개가 돼도 지우지 않는다.
+    private readonly HashSet<int> _lockedItemTids = new();
+
+    public bool IsItemLocked(int itemTid) => _lockedItemTids.Contains(itemTid);
+
+    public void LoadItemLocks(IEnumerable<UserItemLockRow> rows)
+    {
+        _lockedItemTids.Clear();
+        foreach (var row in rows)
+        {
+            _lockedItemTids.Add(row.item_id);
+        }
+    }
+
+    private EResultCode SetItemLock(long itemTid, bool locked)
+    {
+        if (itemTid is <= 0 or > int.MaxValue || !GameTable.ItemTable.TryGet((int)itemTid, out _))
+        {
+            return EResultCode.InvalidLockTarget;
+        }
+
+        if (locked)
+        {
+            _lockedItemTids.Add((int)itemTid);
+        }
+        else
+        {
+            _lockedItemTids.Remove((int)itemTid);
+        }
+
+        return EResultCode.Ok;
     }
 
     private EResultCode SetCharacterLock(long characterId, bool locked)
