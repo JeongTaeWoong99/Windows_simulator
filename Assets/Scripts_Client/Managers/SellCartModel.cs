@@ -359,7 +359,9 @@ public class SellCartModel : MonoService<SellCartModel>
 
     #region 보조
 
-    // 인벤토리가 바뀌었다 — 보유량을 넘는 항목을 깎거나 뺀다 (PlayerDataModel.InventoryChanged 구독)
+    // 인벤토리가 바뀌었다 — 보유량을 넘는 항목을 깎거나, 없어졌거나 잠긴 항목을 뺀다 (PlayerDataModel.InventoryChanged 구독)
+    //
+    // ※ 담은 뒤에 잠그면 빠진다 — 자원 잠금 응답이 'InventoryChanged'를 낸다(T-159). 남겨 두면 서버가 'EntityLocked'로 판매 전체를 거절한다.
     //
     // 바뀐 게 없으면 이벤트를 쏘지 않는다. 채취가 도는 동안 이 경로가 계속 불리므로,
     // 매번 발행하면 인벤토리 격자 200칸이 이유 없이 다시 그려진다.
@@ -371,7 +373,7 @@ public class SellCartModel : MonoService<SellCartModel>
         {
             int owned = _data.GetItemCount(_entries[i].ItemId);
 
-            if (owned <= 0)
+            if (owned <= 0 || _data.IsItemLocked(_entries[i].ItemId))
             {
                 _entries.RemoveAt(i);
                 isDirty = true;

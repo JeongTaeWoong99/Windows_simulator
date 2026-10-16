@@ -53,8 +53,9 @@ using UnityEngine.UI;
 //   경매장을 열어 등록 화면에 그 물건을 골라 둔다('AuctionCanvasView.OpenRegister').
 //   우클릭(즉시 판매)과 같은 손가락에 둔 이유 — 둘 다 "이것을 판다"이고, 값을 정할지만 다르다.
 //
-// ■ Ctrl+좌클릭 = 잠금 켜기·끄기 (캐릭터·장비 탭 · 2026-10-15 사용자 결정 · T-137)
+// ■ Ctrl+좌클릭 = 잠금 켜기·끄기 (캐릭터·장비 탭 · 2026-10-15 사용자 결정 · T-137 · 자원 탭 T-159)
 //   잠긴 개체는 판매·경매 등록·응축 재료에서 빠진다(판정은 서버 — 클라는 'EntityBlockText'로 미리 막는다). 장착·배치는 그대로 된다.
+//   자원은 칸이 아니라 종류(TID) 단위로 잠근다 — 수량 전부가 판매·경매에서 빠지고, 개봉·큐브 같은 사용은 그대로 된다.
 //   목록이 다시 오지 않아 응답으로 캐시를 고친다('PlayerDataModel.OnEntityLockResponded'). 응축 창이 열려 있어도 Ctrl이면 잠금이 먼저다.
 //
 // ■ 끌어 놓기 = 칸 이동 (세 탭 · 2026-10-06 · T-044)
@@ -191,7 +192,8 @@ public class InventoryGridPresenter : MonoBehaviour
     private bool _isOpeningBox;   // 개봉 응답을 기다리는 중인가 — 연타로 두 번 나가면 상자가 두 번 빠진다
 
     // 잠금 응답을 기다리는 개체 — 같은 개체를 연타하면 응답 전에 같은 값을 두 번 보낸다(T-137).
-    private readonly HashSet<long> _lockPending = new HashSet<long>();
+    // ※ 대상 종류와 짝으로 둔다 — 자원 TID와 캐릭터·장비 번호는 서로 겹칠 수 있다(T-159).
+    private readonly HashSet<(ELockTarget, long)> _lockPending = new HashSet<(ELockTarget, long)>();
 
     // 진행 중인 [정렬]·칸 이동·보관함 사이 이동 요청의 대기. 응답 전에는 다음 요청을 보내지 않는다 —
     // 앞 응답이 오기 전의 칸 번호로 다시 보내면 서버와 화면이 엇갈린 칸을 가리킨다.
@@ -982,6 +984,7 @@ public class InventoryGridPresenter : MonoBehaviour
         {
             InventoryTab.Character => EntityBlockText.ForCharacter(_data, key, _data.Characters.Count - 1),
             InventoryTab.Equipment => EntityBlockText.ForEquip(_data, key),
+            InventoryTab.Resource  => EntityBlockText.ForItem(_data, (int)key),
             _                      => null,
         };
 
@@ -1070,6 +1073,15 @@ public class InventoryGridPresenter : MonoBehaviour
         if (owned <= 0)
         {
             return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
+        }
+
+        string? blocked = EntityBlockText.ForItem(_data, itemId);
+
+        if (blocked != null)
+        {
+            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+
+            return;
         }
 
         // 1개짜리는 물어볼 것이 없다. 팝업을 띄워 봐야 확인을 한 번 더 누르게 할 뿐이다.
@@ -1613,7 +1625,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        // Ctrl+좌클릭 — 캐릭터·장비 잠금(T-137). 자원 탭은 잠금이 없어 아무것도 하지 않는다(상자도 열지 않는다).
+        // Ctrl+좌클릭 — 잠금(캐릭터·장비 T-137 · 자원 T-159). 상자 칸이어도 열지 않고 잠금만 뒤집는다.
         if (_keys.IsLockToggleHeld)
         {
             ToggleLock(view.Key);
@@ -1744,29 +1756,31 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 잠금
 
-    // 그 개체의 잠금을 뒤집어 서버에 보낸다 (OnSlotLeftClicked — Ctrl+좌클릭).
+    // 그 개체(자원은 종류)의 잠금을 뒤집어 서버에 보낸다 (OnSlotLeftClicked — Ctrl+좌클릭).
     // ※ 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음) — 자물쇠가 서버와 어긋나면 "잠긴 줄 알았는데 팔렸다"가 된다.
+    // ※ 자원은 'Id'가 아이템 TID다(T-159) — 보유 0개여도 잠글 수 있지만 칸이 있어야 누를 수 있다.
     private void ToggleLock(long key)
     {
         (ELockTarget target, bool? locked) = _currentTab switch
         {
             InventoryTab.Character => (ELockTarget.Character, _data.FindCharacter(key)?.IsLocked),
             InventoryTab.Equipment => (ELockTarget.Equip,     _data.FindEquip(key)?.IsLocked),
+            InventoryTab.Resource  => (ELockTarget.Resource,  _data.IsItemLocked((int)key)),
             _                      => (ELockTarget.None,      (bool?)null),
         };
 
-        if (target == ELockTarget.None || locked == null || !_data.IsLoggedIn || !_lockPending.Add(key))
+        if (target == ELockTarget.None || locked == null || !_data.IsLoggedIn || !_lockPending.Add((target, key)))
         {
-            return; // 자원 탭 · 낡은 칸 · 같은 개체의 응답을 기다리는 중
+            return; // 잠금이 없는 탭 · 낡은 칸 · 같은 개체의 응답을 기다리는 중
         }
 
         _network.Send(new C_EntityLockRequest { Target = target, Id = key, Locked = !locked.Value });
     }
 
-    // 잠금 결과 — 칸은 캐시 갱신('CharactersChanged'·'EquipsChanged')으로 다시 그려진다. 여기서는 거절만 알린다 (PlayerDataModel.EntityLockCompleted 구독)
+    // 잠금 결과 — 칸은 캐시 갱신('CharactersChanged'·'EquipsChanged'·'InventoryChanged')으로 다시 그려진다. 여기서는 거절만 알린다 (PlayerDataModel.EntityLockCompleted 구독)
     private void OnEntityLockCompleted(S_EntityLockResponse res)
     {
-        _lockPending.Remove(res.Id);
+        _lockPending.Remove((res.Target, res.Id));
 
         if (res.Result != EResultCode.Ok)
         {

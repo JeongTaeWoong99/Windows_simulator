@@ -408,6 +408,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         GlobalRarity limit   = SelectedRarity;
         int          added   = 0;
+        int          locked  = 0;
         var          skipped = new Dictionary<string, int>(); // 분류 → 뺀 종류 수
 
         // ★ 창고에 맡긴 것은 담지 않는다 — 인벤토리 칸들의 합만 담는다(2026-10-16 사용자 결정).
@@ -424,6 +425,14 @@ public class InventoryToolPresenter : MonoBehaviour
                 continue;
             }
 
+            // 잠금은 [제외]와 따로 센다 — 체크를 풀어도 담기지 않으니 푸는 방법이 다르다(T-159).
+            if (_data.IsItemLocked(itemId))
+            {
+                locked++;
+
+                continue;
+            }
+
             string group = ResourceSlotSource.GroupOf(itemId);
 
             if (_excludedGroups.Contains(group))
@@ -437,7 +446,7 @@ public class InventoryToolPresenter : MonoBehaviour
             added++;
         }
 
-        string skippedText = SkippedText(skipped);
+        string skippedText = SkippedText(skipped) + LockedText(locked);
 
         if (added == 0)
         {
@@ -447,13 +456,18 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 것은 보이지 않는다.
-        if (skipped.Count > 0)
+        if (skipped.Count > 0 || locked > 0)
         {
             _wait.RaiseNotice($"자원 {added}종을 담았습니다.{skippedText}");
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종{skippedText}");
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 잠금 {locked}종{skippedText}");
     }
+
+    // 자원 일괄 담기에서 잠겨 빠진 것을 알릴 꼬리 문구 — " (잠금 2종 제외)\n잠금은 Ctrl+좌클릭으로 풀 수 있습니다." (T-159).
+    // 개체 일괄 담기('NotifyEntityBulk')와 같은 말투다. 없으면 빈 문자열.
+    private static string LockedText(int locked)
+        => locked > 0 ? $" (잠금 {locked}종 제외)\n잠금은 Ctrl+좌클릭으로 풀 수 있습니다." : "";
 
     // 자원 일괄 담기에서 뺀 것을 알릴 꼬리 문구 — " (상자 2종 · 큐브 1종 제외 — [제외]에서 체크를 풀면 함께 담깁니다)".
     // 뺀 것이 없으면 빈 문자열. 분류는 [제외] 목록 순서로 적는다.

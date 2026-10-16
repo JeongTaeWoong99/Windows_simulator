@@ -1,4 +1,4 @@
-// 개체(캐릭터·장비)를 내놓을 수 없는 이유 → 사용자에게 보일 한 줄.
+// 개체(캐릭터·장비)·자원을 내놓을 수 없는 이유 → 사용자에게 보일 한 줄. 자원은 잠금(T-159)만 막는다.
 //
 // ■ 두 화면이 같은 판정을 쓴다
 // 경매 등록('AuctionRegisterPresenter')과 즉시 판매 담기('InventoryGridPresenter')가 같은 개체를 막는다.
@@ -12,6 +12,11 @@ public static class EntityBlockText
 {
     // 잠긴 개체의 사유 — 잠금이 가장 먼저다(풀기 전에는 다른 사유를 고쳐도 소용없다). 서버 'EntityLocked'.
     public const string LockedText = "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다";
+
+    // 이 자원을 내놓을 수 없는 이유. 내놓을 수 있으면 null (T-159).
+    // ※ 자원은 잠금만 본다 — 종류(TID) 단위라 수량 전부가 함께 막힌다.
+    public static string? ForItem(PlayerDataModel data, int itemId)
+        => data.IsItemLocked(itemId) ? LockedText : null;
 
     // 이 장비를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
     public static string? ForEquip(PlayerDataModel data, long equipId)

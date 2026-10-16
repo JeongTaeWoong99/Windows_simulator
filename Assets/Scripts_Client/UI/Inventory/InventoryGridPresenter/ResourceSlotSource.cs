@@ -49,6 +49,9 @@ public class ResourceSlotSource : InventorySlotSource
     // 자원은 보유 수량으로 획득을 본다 — 이미 있는 칸에 더 들어와도 반짝인다 (획득 감지가 호출).
     protected override int AmountOf(long key) => _counts.TryGetValue(key, out int count) ? count : 0;
 
+    // 자원은 종류(TID) 단위로 잠근다(T-159) — 같은 TID의 칸은 모두 자물쇠가 함께 켜진다.
+    public override bool IsLocked(long key) => _data.IsItemLocked((int)key);
+
     // 자원만 보유 수량으로 줄 세울 수 있다 — 캐릭터·장비는 개체라 수량이 늘 1이다 (도구 줄이 호출).
     public override bool SupportsSortKey(InventorySortKey key) => true;
 
@@ -120,9 +123,18 @@ public class ResourceSlotSource : InventorySlotSource
             .Row("분류", GroupOf(itemId))
             .Row("보유", $"{stack.Count:N0} 개", totalText, null);
 
-        AddStorageRow(content)
-            .Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, total):N0} 골드", null)
-            .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
+        AddStorageRow(content);
+
+        // 잠긴 종류는 상태 줄로 말한다(캐릭터·장비 칸과 같은 모양) — 판매·경매에서 빠지는 이유가 툴팁에서 보이게.
+        bool locked = IsLocked(key);
+
+        if (locked)
+        {
+            content.Row("상태", "잠김");
+        }
+
+        content.Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, total):N0} 골드", null)
+               .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
 
         // 조작 안내 — 입력 하나에 한 줄, 왼쪽 칸에 입력을 끝까지 적는다(2026-10-15 사용자 지적 — 조합키를 오른쪽 칸에 붙이면 "응축 Ctrl 잠그기"가 한 문장으로 읽혔다).
         // 길이는 다른 줄을 줄여 감당한다(빈 장비 한 줄 · 잠금은 상태 줄).
@@ -134,6 +146,7 @@ public class ResourceSlotSource : InventorySlotSource
             }
 
             rows.Row("우클릭",       "판매 담기")
+                .Row("Ctrl+좌클릭",  locked ? "잠금 풀기" : "잠그기")
                 .Row("Ctrl+우클릭", "경매 등록");
         });
     }

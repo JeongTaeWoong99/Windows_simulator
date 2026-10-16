@@ -23,6 +23,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
     private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
+    private readonly HashSet<int>              _lockedItemTids   = new HashSet<int>(); // 잠긴 자원 종류(TID) — 보유 0개여도 남는다(T-159)
     private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
@@ -76,6 +77,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         return sum;
     }
+
+    // 그 자원 종류가 잠겼나 (T-159). 잠긴 종류는 수량 전부가 즉시 판매·경매 등록에서 빠진다 — 사용(개봉·큐브)은 된다.
+    // ★ 칸이 아니라 종류(TID) 단위다 — 같은 TID가 인벤토리·창고 여러 칸에 있어도 함께 잠긴다.
+    public bool IsItemLocked(int itemId) => _lockedItemTids.Contains(itemId);
 
     // 그 보관함 그 칸의 묶음. 비었으면 null이다 (창고 ↔ 인벤토리 이동의 수량 팝업 · 자원 칸 툴팁).
     public ItemInfo? FindItemAt(EContainer container, int slot)
@@ -646,13 +651,19 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 인벤토리 스냅샷 — 캐시 교체 후 이벤트 발행
-    // ★ 로그인 시 자동으로 1회 수신.
+    // ★ 로그인 시 자동으로 1회 수신. 잠긴 자원 종류(T-159)도 같은 패킷에 실려 온다 — 보유 0개인 종류까지 온다.
     private void OnInventoryReceived(S_InventoryResponse res)
     {
         _inventory.Clear();
         if (res.Items != null)
         {
             _inventory.AddRange(res.Items.FindAll(item => item.Count > 0));
+        }
+
+        _lockedItemTids.Clear();
+        if (res.LockedItemTids != null)
+        {
+            _lockedItemTids.UnionWith(res.LockedItemTids);
         }
 
         InventoryChanged?.Invoke();
@@ -861,10 +872,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         CharacterCondenseCompleted?.Invoke(res);
     }
 
-    // 잠금 응답 — 성공이면 그 개체의 'IsLocked'를 바꾸고 알린다(T-137).
+    // 잠금 응답 — 성공이면 그 개체의 'IsLocked'(자원은 잠긴 종류 목록)를 바꾸고 알린다(T-137 · T-159).
     //
     // ★ 목록이 다시 오지 않는다 — 캐시를 여기서 직접 고친다(서버 이슈 #65). 같은 상태로 보내도 Ok가 온다.
-    // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
+    // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'·'InventoryChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
+    // ※ 자원은 'Id'가 아이템 TID다. 보유 여부와 상관없이 기록한다 — 0개여도 잠금은 남는다.
     private void OnEntityLockResponded(S_EntityLockResponse res)
     {
         if (res.Result == EResultCode.Ok)
@@ -878,6 +890,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             {
                 equip.IsLocked = res.Locked;
                 EquipsChanged?.Invoke();
+            }
+            else if (res.Target == ELockTarget.Resource)
+            {
+                int itemId = (int)res.Id;
+
+                if (res.Locked ? _lockedItemTids.Add(itemId) : _lockedItemTids.Remove(itemId))
+                {
+                    InventoryChanged?.Invoke();
+                }
             }
         }
         else

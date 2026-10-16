@@ -357,13 +357,19 @@ public static class AuctionText
         }
     }
 
-    // 등록 후보 자원 줄의 툴팁 — 보유 · 가격 기준.
-    public static TooltipContent BuildRegisterItemTooltip(int itemTid, long owned)
+    // 등록 후보 자원 줄의 툴팁 — 보유 · (등록 불가 사유) · 가격 기준.
+    //   blocked : 올릴 수 없는 사유(잠금 · T-159). null이면 사유 줄을 넣지 않는다
+    public static TooltipContent BuildRegisterItemTooltip(int itemTid, long owned, string? blocked)
     {
         var content = new TooltipContent(GameDataLoader.GetItemName(itemTid));
 
         AddRarityRow(content, GameDataLoader.GetItemRarity(itemTid))
             .Row("보유", $"{owned:N0} 개");
+
+        if (blocked != null)
+        {
+            content.Row("등록 불가", blocked);
+        }
 
         AddPriceRules(content, GameDataLoader.GetItemPrice(itemTid));
 

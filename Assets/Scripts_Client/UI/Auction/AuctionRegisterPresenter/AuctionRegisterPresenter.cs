@@ -324,9 +324,12 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (_contents[index].Dimmed)
         {
-            string? reason = kind == RegisterKind.Character
-                ? EntityBlockText.ForCharacter(_data, target, _data.Characters.Count - 1)
-                : EntityBlockText.ForEquip(_data, target);
+            string? reason = kind switch
+            {
+                RegisterKind.Character => EntityBlockText.ForCharacter(_data, target, _data.Characters.Count - 1),
+                RegisterKind.Equip     => EntityBlockText.ForEquip(_data, target),
+                _                      => EntityBlockText.ForItem(_data, (int)target),
+            };
             _wait.RaiseNotice($"올릴 수 없습니다 — {reason}");
 
             return;
@@ -698,8 +701,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
             if (_suggestions.Count >= max) return;
             if (!AuctionText.MatchesName(EAuctionKind.Item, itemId, query)) continue;
 
+            string blocked = EntityBlockText.ForItem(_data, itemId) != null ? $"{UIRichText.Dot}올릴 수 없음" : "";
+
             _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, itemId, itemId,
-                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {_data.GetItemCount(itemId):N0}개"));
+                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {_data.GetItemCount(itemId):N0}개{blocked}"));
         }
 
         foreach (EquipInfo equip in _data.Equips)
@@ -749,8 +754,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         foreach (int itemId in _ownedItemIds)
         {
-            int  basePrice = GameDataLoader.GetItemPrice(itemId);
-            long owned     = _data.GetItemCount(itemId);
+            int     basePrice = GameDataLoader.GetItemPrice(itemId);
+            long    owned     = _data.GetItemCount(itemId);
+            string? blocked   = EntityBlockText.ForItem(_data, itemId); // 잠긴 종류는 흐리게 — 사유는 툴팁에(T-159)
 
             _contents.Add(new AuctionRowContent
             {
@@ -760,8 +766,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 TitleColor = RarityPalette.Get(GameDataLoader.GetItemRarity(itemId)),
                 Info       = $"{UIRichText.Label("보유")} {owned:N0}개{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(basePrice):N0} G",
                 Detail     = $"{UIRichText.Label("경매 단가")} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
-                CanAct     = true,
-                Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId)),
+                CanAct     = blocked == null,
+                Dimmed     = blocked != null,
+                Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId), blocked),
             });
         }
     }
