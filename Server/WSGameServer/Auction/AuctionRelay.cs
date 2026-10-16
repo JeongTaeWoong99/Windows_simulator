@@ -154,6 +154,7 @@ public sealed class AuctionRelay
         {
             var confirm = JsonSerializer.Deserialize<AuctionConfirmMessage>(row.payload)!;
             await _client.ConfirmAsync(new Proto.ConfirmRequest { PurchaseId = confirm.PurchaseId, Success = confirm.Success });
+            ServerLog.Info("경매", $"확정 전송 → 경매장 OK. 구매 {confirm.PurchaseId} 성공 {confirm.Success}");
             return;
         }
 
@@ -163,7 +164,10 @@ public sealed class AuctionRelay
         {
             ServerLog.Warn("경매", $"경매장이 등록을 거부 — 반환한다. 거래 {row.trade_id}");
             await ReturnAsync(row.trade_id, AuctionReturnReason.Rejected, now);
+            return;
         }
+
+        ServerLog.Info("경매", $"등록 전송 → 경매장 {reply.Result}. 거래 {row.trade_id} 판매자 {register.SellerId} TID {register.Item.Tid} x{register.Item.Count} 단가 {register.UnitPrice}");
     }
 
     public static Proto.ListingSnapshot ToSnapshot(AuctionRegisterMessage m)

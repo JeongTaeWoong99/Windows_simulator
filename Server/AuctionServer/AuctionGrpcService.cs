@@ -3,29 +3,37 @@ using Proto = AuctionProtocol;
 
 namespace AuctionServer;
 
-/// <summary>gRPC ↔ 엔진 매핑만 한다. 판정은 전부 엔진·DB가 한다.</summary>
-public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider clock) : Proto.Auction.AuctionBase
+/// <summary>gRPC ↔ 엔진 매핑만 한다. 판정은 전부 엔진·DB가 한다. 상태를 바꾸는 호출은 한 줄씩 로그를 남긴다.</summary>
+public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider clock, ILogger<AuctionGrpcService> log) : Proto.Auction.AuctionBase
 {
     public override async Task<Proto.RegisterReply> Register(Proto.RegisterRequest request, ServerCallContext context)
     {
         if (request.Listing is null)
         {
+            log.LogWarning("등록 거부 — 매물 정보가 비었다");
             return new Proto.RegisterReply { Result = Proto.RegisterResult.Rejected };
         }
 
-        var result = await engine.RegisterAsync(ToListing(request.Listing));
+        var s = request.Listing;
+        var result = await engine.RegisterAsync(ToListing(s));
+        log.LogInformation("등록 매물 {ListingId} 판매자 {SellerId} 종류 {Kind} TID {Tid} x{Count} 단가 {UnitPrice} → {Result}",
+            s.ListingId, s.SellerId, s.Kind, s.Tid, s.Count, s.UnitPrice, result);
         return new Proto.RegisterReply { Result = (Proto.RegisterResult)result };
     }
 
     public override async Task<Proto.ReserveReply> Reserve(Proto.ReserveRequest request, ServerCallContext context)
     {
         var outcome = await engine.ReserveAsync(request.PurchaseId, request.ListingId, request.BuyerId, request.ExpectedTotal);
+        log.LogInformation("구매 예약 {PurchaseId} 매물 {ListingId} 구매자 {BuyerId} → {Result} (총액 {TotalPrice})",
+            request.PurchaseId, request.ListingId, request.BuyerId, outcome.Result, outcome.TotalPrice);
         return ToReply(outcome);
     }
 
     public override async Task<Proto.ReserveReply> ReserveQuantity(Proto.ReserveQuantityRequest request, ServerCallContext context)
     {
         var outcome = await engine.ReserveQuantityAsync(request.PurchaseId, request.BuyerId, request.Tid, request.Quantity, request.MaxUnitPrice, MarketKind(request.Kind));
+        log.LogInformation("거래소 예약 {PurchaseId} 구매자 {BuyerId} TID {Tid} x{Quantity} → {Result} (매물 {Lines}건 · 총액 {TotalPrice})",
+            request.PurchaseId, request.BuyerId, request.Tid, request.Quantity, outcome.Result, outcome.Lines.Count, outcome.TotalPrice);
         return ToReply(outcome);
     }
 
@@ -87,12 +95,14 @@ public sealed class AuctionGrpcService(AuctionEngine engine, GameTimeProvider cl
     public override async Task<Proto.ConfirmReply> Confirm(Proto.ConfirmRequest request, ServerCallContext context)
     {
         await engine.ConfirmAsync(request.PurchaseId, request.Success);
+        log.LogInformation("구매 확정 {PurchaseId} 성공 {Success}", request.PurchaseId, request.Success);
         return new Proto.ConfirmReply();
     }
 
     public override async Task<Proto.CancelReply> Cancel(Proto.CancelRequest request, ServerCallContext context)
     {
         var result = await engine.CancelAsync(request.ListingId, request.SellerId);
+        log.LogInformation("등록 취소 매물 {ListingId} 판매자 {SellerId} → {Result}", request.ListingId, request.SellerId, result);
         return new Proto.CancelReply { Result = (Proto.CancelResult)result };
     }
 
