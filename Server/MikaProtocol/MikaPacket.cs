@@ -182,6 +182,7 @@ namespace MikaProtocol
     public partial class S_InventoryResponse : IPacket
     {
         public List<ItemInfo>? Items { get; set; }  // 로그인 시 인벤토리 전체 스냅샷
+        public List<int>? LockedItemTids { get; set; }  // 잠긴 자원 TID (T-159). 보유 0개인 종류도 실린다
     }
 
     // ───────────────────── 작업슬롯 (WorkStationSlot) ─────────────────────
@@ -569,12 +570,12 @@ namespace MikaProtocol
         public CharacterInfo? Character { get; set; }
     }
 
-    /// <summary>캐릭터·장비 잠금 켜기/끄기(T-137). 잠긴 개체는 판매·경매 등록·응축 재료에서 빠진다 — 장착·배치는 그대로 된다.</summary>
+    /// <summary>캐릭터·장비·자원 잠금 켜기/끄기(T-137 · T-159). 잠긴 것은 판매·경매 등록·응축 재료에서 빠진다 — 장착·배치·소비는 그대로 된다.</summary>
     [MemoryPackable, Packet(PacketId.C_EntityLockRequest)]
     public partial class C_EntityLockRequest : IPacket
     {
         public ELockTarget Target { get; set; }
-        public long        Id     { get; set; }  // CharacterId 또는 EquipId (개체 PK)
+        public long        Id     { get; set; }  // CharacterId · EquipId (개체 PK) · 자원은 아이템 TID
         public bool        Locked { get; set; }  // true = 잠금 · false = 해제
     }
 

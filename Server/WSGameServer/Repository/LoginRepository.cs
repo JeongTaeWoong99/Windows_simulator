@@ -22,6 +22,7 @@ public sealed class LoginRepository : IRepository
     private List<UserArtifactRow>      _artifactRows      = new();
     private List<UserEquipRow>         _equipRows          = new();
     private List<CharacterEquipRow>    _characterEquipRows = new();
+    private List<UserItemLockRow>      _itemLockRows       = new();
 
     // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
     public long Key => User.DbKey;
@@ -42,6 +43,11 @@ public sealed class LoginRepository : IRepository
         // 1) 자원 — 인벤토리·창고를 함께 읽고 container로 가른다(T-107).
         _inventoryRows = await connection.QueryAsync<InventoryRow>(
             "SELECT item_id, count, slot, container FROM t_user_inventory WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        // 1-1) 잠긴 자원 종류(T-159). 보유가 0개인 종류도 행이 남아 있다.
+        _itemLockRows = await connection.QueryAsync<UserItemLockRow>(
+            "SELECT item_id FROM t_user_item_lock WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 2) 재화. 한 번도 벌지 않았으면 행 자체가 없고, 그건 0으로 본다
@@ -109,7 +115,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows),
             GameClock.Instance.UtcNow);
     }
 }

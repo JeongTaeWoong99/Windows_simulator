@@ -2,7 +2,7 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-/// <summary>캐릭터·장비 한 개체의 잠금을 확정값으로 쓴다(T-137). 경매에 넘어간 개체는 건드리지 않는다.</summary>
+/// <summary>캐릭터·장비 한 개체, 또는 자원 한 종류의 잠금을 확정값으로 쓴다(T-137 · T-159). 경매에 넘어간 개체는 건드리지 않는다.</summary>
 public sealed class EntityLockRepository : IRepository
 {
     public EntityLockRepository(User user, ELockTarget target, long id, bool locked)
@@ -23,6 +23,12 @@ public sealed class EntityLockRepository : IRepository
 
     public async Task ExecuteAsync(DbConnection connection)
     {
+        if (Target == ELockTarget.Resource)
+        {
+            await ExecuteItemLockAsync(connection);
+            return;
+        }
+
         // user_id를 함께 거는 이유 — 개체 PK가 새어도 남의 개체를 잠그지 못하게 한다.
         var table = Target == ELockTarget.Character ? "t_character" : "t_user_equip";
         var idCol = Target == ELockTarget.Character ? "character_id" : "equip_id";
@@ -30,6 +36,16 @@ public sealed class EntityLockRepository : IRepository
         await connection.ExecuteAsync(
             $"UPDATE {table} SET is_locked = @locked WHERE {idCol} = @id AND user_id = @userId AND auction_trade_id = 0",
             new { locked = Locked ? 1 : 0, id = Id, userId = User.Uid });
+    }
+
+    // 자원은 잠긴 종류만 행이 있다(T-159) — 잠그면 넣고 풀면 지운다. 두 번 잠가도 한 줄이다.
+    private async Task ExecuteItemLockAsync(DbConnection connection)
+    {
+        var sql = Locked
+            ? "INSERT OR IGNORE INTO t_user_item_lock (user_id, item_id) VALUES (@userId, @id)"
+            : "DELETE FROM t_user_item_lock WHERE user_id = @userId AND item_id = @id";
+
+        await connection.ExecuteAsync(sql, new { userId = User.Uid, id = Id });
     }
 
     public void Apply()

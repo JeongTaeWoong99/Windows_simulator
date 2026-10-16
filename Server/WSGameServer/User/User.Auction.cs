@@ -117,6 +117,11 @@ public partial class User
             return (EResultCode.AuctionInvalidRequest, null, 0);
         }
 
+        if (IsItemLocked(itemTid))
+        {
+            return (EResultCode.EntityLocked, null, 0);
+        }
+
         if (GetItemCount(itemTid) < count)
         {
             return (EResultCode.NotEnoughItem, null, 0);

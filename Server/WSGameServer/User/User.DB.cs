@@ -39,6 +39,7 @@ public partial class User
     private void LoadPlayerData(PlayerLoginData data, DateTime startedAt)
     {
         LoadInventory(data.InventoryRows);
+        LoadItemLocks(data.ItemLockRows ?? new List<UserItemLockRow>());
         LoadCurrency(data.Currency);
 
         // 캐릭터가 슬롯 속도의 근거이므로 슬롯보다 먼저 적재한다.
