@@ -134,7 +134,7 @@ public sealed partial class User
     }
 
     // Inventory
-    private Inventory Inventory { get; init; } = new();
+    private Inventory Inventory { get; init; } = new(EContainer.Inventory, () => StorageCapacity);
 
     /// <summary>
     /// <b>시각을 인자로 받는다</b> — 이 저장소는 순수 코어(<see cref="WorkStationSlot"/>·

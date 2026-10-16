@@ -33,6 +33,12 @@ public partial class User
             return;
         }
 
+        if (tab == EStorageTab.Resource)
+        {
+            MoveResource(container, fromSlot, toSlot);
+            return;
+        }
+
         var changes = StorageSlots.Move(occupied, fromSlot, toSlot);
         ApplySlotChanges(container, tab, changes);
         PostDBTask(new SaveStorageSlotsRepository(this, container, tab, changes));
@@ -54,6 +60,12 @@ public partial class User
             return;
         }
 
+        if (tab == EStorageTab.Resource)
+        {
+            SortResource(container, (StorageSortKey)key, order == EStorageSortOrder.Ascending);
+            return;
+        }
+
         var ordered = StorageSort.Order(SortEntries(container, tab), (StorageSortKey)key, order == EStorageSortOrder.Ascending);
         var changes = StorageSlots.Renumber(ordered, PendingSlots(container, tab));
 
@@ -62,14 +74,65 @@ public partial class User
         SendSlots(EResultCode.Ok, container, tab, changes);
     }
 
+    // 같은 자원 칸에 놓으면 MaxStack까지 합치고 남는 것은 원래 칸에 둔다(T-160). 그 밖에는 이동·교환이다.
+    private void MoveResource(EContainer container, int fromSlot, int toSlot)
+    {
+        var box = ItemsOf(container);
+        box.TryGetAt(fromSlot, out var moving);
+
+        var next = box.Items.Where(i => i.Slot != fromSlot && i.Slot != toSlot).ToList();
+        if (box.TryGetAt(toSlot, out var target) && target.Id == moving.Id && target.Count < MaxStackOf(moving.Id))
+        {
+            var merged = Math.Min(moving.Count, MaxStackOf(moving.Id) - target.Count);
+            next.Add(new Item(moving.Id, target.Count + merged, toSlot));
+            if (moving.Count > merged)
+            {
+                next.Add(new Item(moving.Id, moving.Count - merged, fromSlot));
+            }
+        }
+        else
+        {
+            next.Add(new Item(moving.Id, moving.Count, toSlot));
+            if (target is not null)
+            {
+                next.Add(new Item(target.Id, target.Count, fromSlot));
+            }
+        }
+
+        var changes = box.Rewrite(next);
+        PostDBTask(new SaveItemChangesRepository(this, changes));
+        SendResourceSlots(container, changes, changes.Where(c => c.Count > 0));
+    }
+
+    // 같은 자원의 덜 찬 칸을 먼저 합친 뒤 줄 세워 0부터 다시 놓는다. 자원은 지급 대기 칸이 없다.
+    private void SortResource(EContainer container, StorageSortKey key, bool ascending)
+    {
+        var box     = ItemsOf(container);
+        var stacks  = StorageSort.CompactStacks(box.Items, MaxStackOf);
+        var entries = stacks.Select((stack, index) => ResourceEntry(stack, index)).ToList();
+        var ordered = StorageSort.Order(entries, key, ascending);
+
+        var next    = ordered.Select((index, slot) => new Item(stacks[(int)index].Id, stacks[(int)index].Count, slot)).ToList();
+        var changes = box.Rewrite(next);
+        PostDBTask(new SaveItemChangesRepository(this, changes));
+        SendResourceSlots(container, changes, box.Snapshot().Select(i => new ItemChangeInfo { ItemId = i.ItemId, Slot = i.Slot }));
+    }
+
+    // 키는 묶음 순번이다 — 같은 자원이 여러 칸이라 TID로는 가를 수 없다. 표에 없는 TID는 등급·산업 0, 이름 ""이다.
+    private static StorageSortEntry ResourceEntry((int Id, int Count) stack, int index)
+    {
+        if (!GameTable.ItemTable.TryGet(stack.Id, out var row))
+        {
+            return new StorageSortEntry(index, false, "", stack.Count, StorageSort.ResourceTieBreak(0, 0, stack.Id, index));
+        }
+
+        return new StorageSortEntry(index, false, row.Name, stack.Count,
+            StorageSort.ResourceTieBreak((int)row.GlobalRarity, (int)row.ItemType, stack.Id, index));
+    }
+
     // 표에 없는 TID는 등급·산업 0, 이름 ""이다 — 클라도 같은 칸을 '?#'으로 그리고 뒤로 민다.
     private List<StorageSortEntry> SortEntries(EContainer container, EStorageTab tab)
     {
-        if (tab == EStorageTab.Resource)
-        {
-            return ItemsOf(container).Items.Select(ResourceEntry).ToList();
-        }
-
         if (tab == EStorageTab.Character)
         {
             var placed = WorkStation.Slots.Select(s => s.CharacterId).ToHashSet();
@@ -83,17 +146,6 @@ public partial class User
             .Select(e => new StorageSortEntry(e.Id, e.IsEquipped, e.Row.Name, 1,
                 StorageSort.EquipTieBreak((int)e.Row.GlobalRarity, (int)e.Kind, (int)e.Industry, e.Tid, e.Id)))
             .ToList();
-    }
-
-    private static StorageSortEntry ResourceEntry(Item item)
-    {
-        if (!GameTable.ItemTable.TryGet(item.Id, out var row))
-        {
-            return new StorageSortEntry(item.Id, false, "", item.Count, StorageSort.ResourceTieBreak(0, 0, item.Id));
-        }
-
-        return new StorageSortEntry(item.Id, false, row.Name, item.Count,
-            StorageSort.ResourceTieBreak((int)row.GlobalRarity, (int)row.ItemType, item.Id));
     }
 
     private static bool IsContainer(EContainer container)
@@ -168,11 +220,7 @@ public partial class User
     {
         foreach (var change in changes)
         {
-            if (tab == EStorageTab.Resource && ItemsOf(container).TryGet((int)change.Key, out var item))
-            {
-                item.Slot = change.Slot;
-            }
-            else if (tab == EStorageTab.Character && CharactersOf(container).TryGetValue(change.Key, out var character))
+            if (tab == EStorageTab.Character && CharactersOf(container).TryGetValue(change.Key, out var character))
             {
                 character.Slot = change.Slot;
             }
@@ -181,6 +229,19 @@ public partial class User
                 equip.SlotPosition = change.Slot;
             }
         }
+    }
+
+    // Items가 정본이다. Slots(Key = ItemId)는 다중 칸 표시(T-161) 전 클라를 위한 옛 형식이다.
+    private void SendResourceSlots(EContainer container, List<ItemChangeInfo> changes, IEnumerable<ItemChangeInfo> legacy)
+    {
+        Send(new S_StorageSlotsResponse
+        {
+            Result    = EResultCode.Ok,
+            Container = container,
+            Tab       = EStorageTab.Resource,
+            Slots     = legacy.Select(c => new StorageSlotInfo { Key = c.ItemId, Slot = c.Slot }).ToList(),
+            Items     = changes,
+        });
     }
 
     private void SendSlots(EResultCode result, EContainer container, EStorageTab tab, IReadOnlyList<SlotChange> changes)

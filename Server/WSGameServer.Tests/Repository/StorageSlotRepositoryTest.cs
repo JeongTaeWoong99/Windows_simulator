@@ -19,11 +19,15 @@ public class StorageSlotRepositoryTest : IDisposable
     private long Scalar(string sql) => (long)_db.Query(sql)!;
 
     [Fact]
-    public async Task 자원_교환은_두_행의_칸을_바꾼다()
+    public async Task 자원_교환은_두_칸의_묶음을_맞바꾼다()
     {
+        // 자원은 칸이 키라 칸째 다시 쓴다(T-160) — 교환 중에 칸이 겹쳐 키 충돌이 나면 안 된다
         _db.Execute("INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES (7, 0, 101, 1, 0), (7, 0, 102, 1, 1)");
-        var repo = new SaveStorageSlotsRepository(NewUser(), EContainer.Inventory, EStorageTab.Resource,
-            new[] { new SlotChange(101, 1), new SlotChange(102, 0) });
+        var repo = new SaveItemChangesRepository(NewUser(), new List<ItemChangeInfo>
+        {
+            new() { ItemId = 102, Count = 1, Kind = EItemChangeKind.Update, Slot = 0 },
+            new() { ItemId = 101, Count = 1, Kind = EItemChangeKind.Update, Slot = 1 },
+        });
 
         await repo.ExecuteAsync(new DbConnection(_db.Connection));
 

@@ -182,22 +182,9 @@ public partial class User
             var inventoryFull = false;
             foreach (var (itemTid, count) in harvest.Gained)
             {
-                // 창고가 가득 차면 새 종류는 버린다 — 진행·경험치는 그대로 간다(T-085 기획 결정 가).
-                if (!HasStorageFor(new[] { itemTid }, characterCount: 0, equipCount: 0))
-                {
-                    inventoryFull = true;
-                    continue;
-                }
-
-                // 최대 수량(상자 1000개 등)을 넘는 몫은 버린다 — 창고 칸과 같은 방침이다.
-                var granted = ClampToMaxStack(itemTid, count);
+                // 칸이 전부 차서 못 넣은 몫은 버린다 — 진행·경험치는 그대로 간다(T-085 기획 결정 가 · T-160).
+                changes.AddRange(GainItem(itemTid, count, out var granted));
                 inventoryFull |= granted < count;
-                if (granted <= 0)
-                {
-                    continue;
-                }
-
-                changes.Add(GainItem(itemTid, granted));
             }
 
             // 판정 1회마다 배치된 캐릭터가 (산업, 레벨)의 ExpPerJudge만큼 경험치를 번다 (캐릭터 기획 5.2).

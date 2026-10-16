@@ -9,6 +9,7 @@ namespace WSGameServer;
 public class UserStorageSlotTest
 {
     private const int CharacterTid = 1002;
+    private const int FishTid      = 10001;   // MaxStack 9999
 
     public UserStorageSlotTest() => GameTableFixture.EnsureLoaded();
 
@@ -50,7 +51,43 @@ public class UserStorageSlotTest
 
         user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Resource, 0, 3);
 
-        b.DB.PostedOf<SaveStorageSlotsRepository>().Single().Changes.ShouldBe(new[] { new SlotChange(101, 3) });
+        // 자원은 칸이 키다(T-160) — 새 칸에 묶음을 쓰고 떠난 칸은 비운다
+        b.DB.PostedOf<SaveItemChangesRepository>().Single().Changes
+            .Select(c => (c.Slot, c.ItemId, c.Count)).ShouldBe(new[] { (3, 101, 1), (0, 101, 0) }, ignoreOrder: true);
+    }
+
+    [Fact]
+    public void 같은_자원_칸에_놓으면_한_칸으로_합친다()
+    {
+        var b    = new TestUserBuilder();
+        var user = b.Build();
+        user.LoadInventory(new[]
+        {
+            new InventoryRow { item_id = FishTid, count = 30, slot = 0 },
+            new InventoryRow { item_id = FishTid, count = 40, slot = 4 },
+        });
+
+        user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Resource, 0, 4);
+
+        // 30 + 40 = 70이 칸 4에, 칸 0은 빈다
+        Last(b).Items.Select(c => (c.Slot, c.Count)).ShouldBe(new[] { (4, 70), (0, 0) }, ignoreOrder: true);
+    }
+
+    [Fact]
+    public void 합쳐서_넘치는_몫은_원래_칸에_남는다()
+    {
+        var b    = new TestUserBuilder();
+        var user = b.Build();
+        user.LoadInventory(new[]
+        {
+            new InventoryRow { item_id = FishTid, count = 9000, slot = 0 },
+            new InventoryRow { item_id = FishTid, count = 1500, slot = 4 },
+        });
+
+        user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Resource, 0, 4);
+
+        // 칸 4는 9999까지 8499만 받는다 → 칸 0에 501이 남는다
+        Last(b).Items.Select(c => (c.Slot, c.Count)).ShouldBe(new[] { (4, 9999), (0, 501) }, ignoreOrder: true);
     }
 
     [Fact]

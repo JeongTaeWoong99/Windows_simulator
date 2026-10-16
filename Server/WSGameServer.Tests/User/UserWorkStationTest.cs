@@ -554,31 +554,32 @@ public class UserWorkStationTest
     }
 
     [Fact]
-    public void 최대_수량을_넘는_산출은_버린다()
+    public void 최대_수량을_넘는_산출은_빈_칸에_이어_쌓는다()
     {
-        // 995개 + 10판정 → 1000개에서 멈추고 5개만 지급한다.
+        // 995개 + 10판정 → 칸 하나는 1000에서 차고 남은 5개는 새 칸에(T-160). 칸이 남았으니 가득 참이 아니다.
         var (user, b) = UserWithBoxDrops();
         user.GainItem(WoodBoxLv1Tid, 995);
 
         user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(1);
 
-        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1000);
+        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1005);
         var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
-        result.JudgeCount.ShouldBe(10);
-        result.ItemChanges!.ShouldHaveSingleItem().Count.ShouldBe(1000);
-        result.InventoryFull.ShouldBeTrue();
+        result.ItemChanges!.Select(c => c.Count).ShouldBe(new[] { 1000, 5 });
+        result.InventoryFull.ShouldBeFalse();
     }
 
     [Fact]
-    public void 이미_최대_수량이면_아무것도_지급하지_않고_진행은_계속된다()
+    public void 칸이_전부_차면_아무것도_지급하지_않고_진행은_계속된다()
     {
+        // 상자 1000개짜리 칸으로 인벤토리를 가득 채운다
         var (user, b) = UserWithBoxDrops();
-        user.GainItem(WoodBoxLv1Tid, 1000);
+        user.GainItem(WoodBoxLv1Tid, 1000 * User.StorageCapacity);
+        var held = user.GetItemCount(WoodBoxLv1Tid);
         b.DB.Posted.Clear();
 
         user.SettleWorkStation(Base.AddMinutes(5)).ShouldBe(1);
 
-        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(1000);
+        user.GetItemCount(WoodBoxLv1Tid).ShouldBe(held);
         b.DB.PostedOf<AddItemRepository>().ShouldBeEmpty();
         var result = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
         result.ItemChanges!.ShouldBeEmpty();

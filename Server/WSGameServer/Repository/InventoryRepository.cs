@@ -2,35 +2,36 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-public class AddItemRepository : IRepository
+/// <summary>지급 변경분(칸마다 한 줄)을 한 트랜잭션으로 쓴다 — 한 번의 지급이 여러 칸에 걸칠 수 있다(T-160).</summary>
+public sealed class AddItemRepository : IRepository
 {
-    public long Key => User.DbKey;
+    private readonly List<ItemChangeInfo> _changes;
 
-    public User User { get; init; }
-    public ItemChangeInfo ItemChangeInfo { get; init; }
-
-    public AddItemRepository(User user, ItemChangeInfo itemChangeInfo)
+    public AddItemRepository(User user, List<ItemChangeInfo> changes)
     {
-        User = user;
-        ItemChangeInfo = itemChangeInfo;
+        User     = user;
+        _changes = new List<ItemChangeInfo>(changes);
     }
 
-    public async Task ExecuteAsync(DbConnection connection)
+    public long Key => User.DbKey;
+
+    public User User { get; }
+
+    public IReadOnlyList<ItemChangeInfo> Changes => _changes;
+
+    public Task ExecuteAsync(DbConnection connection)
     {
-        await connection.ExecuteAsync(
-            @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
-              VALUES (@userId, @container, @itemId, @count, @slot)
-              ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
-            new
+        return connection.InTransactionAsync(async tx =>
+        {
+            foreach (var change in _changes)
             {
-                userId = User.Uid, container = (int)ItemChangeInfo.Container, itemId = ItemChangeInfo.ItemId,
-                count  = ItemChangeInfo.Count, slot = ItemChangeInfo.Slot,
-            });
+                await SaveItemChangesRepository.WriteAsync(tx, User.Uid, change);
+            }
+        });
     }
 
     public void Apply()
     {
-
     }
 }
 
@@ -67,20 +68,21 @@ public sealed class SaveItemChangesRepository : IRepository
         });
     }
 
-    /// <summary>변경 하나를 쓴다. 수량 0이면 행을 지운다 — 창고 이동도 같은 문장을 쓴다.</summary>
+    /// <summary>칸 하나의 확정 상태를 쓴다. 수량 0이면 행을 지운다 — 자원을 쓰는 저장은 전부 이 문장을 지난다.</summary>
     public static Task WriteAsync(DbConnection tx, long userId, ItemChangeInfo change)
     {
+        // 칸이 키다(T-160) — 같은 자원이 여러 칸에 있을 수 있고, 한 칸에는 묶음 하나다.
         if (change.Count == 0)
         {
             return tx.ExecuteAsync(
-                "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
-                new { userId, container = (int)change.Container, itemId = change.ItemId });
+                "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND slot = @slot",
+                new { userId, container = (int)change.Container, slot = change.Slot });
         }
 
         return tx.ExecuteAsync(
-            @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
-              VALUES (@userId, @container, @itemId, @count, @slot)
-              ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
+            @"INSERT INTO t_user_inventory (user_id, container, slot, item_id, count)
+              VALUES (@userId, @container, @slot, @itemId, @count)
+              ON CONFLICT (user_id, container, slot) DO UPDATE SET item_id = excluded.item_id, count = excluded.count;",
             new
             {
                 userId, container = (int)change.Container, itemId = change.ItemId,

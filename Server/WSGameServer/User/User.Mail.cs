@@ -152,7 +152,7 @@ public partial class User
     private EResultCode TryGrantMail(Mail mail, DateTime now, List<long> claimed, List<ItemChangeInfo> changes)
     {
         var a = mail.Attachment;
-        if (!HasStorageFor(a.Items.Select(i => i.Tid), a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count))
+        if (!HasStorageFor(a.Items, a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count))
         {
             return EResultCode.StorageFull;
         }
@@ -162,7 +162,7 @@ public partial class User
 
         foreach (var (tid, count) in a.Items)
         {
-            changes.Add(GainItem(tid, count));
+            changes.AddRange(GainItem(tid, count));
         }
 
         if (a.Gold > 0)

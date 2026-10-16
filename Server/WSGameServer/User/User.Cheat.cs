@@ -97,7 +97,7 @@ public partial class User
         }
 
         // 뽑기와 같은 칸 검사 — 넘기면 클라 격자에 칸이 없어 보이지 않는다(#40).
-        if (!HasStorageFor(new[] { (int)itemTid }, characterCount: 0, equipCount: 0))
+        if (!HasStorageFor(new[] { ((int)itemTid, (int)count) }, characterCount: 0, equipCount: 0))
         {
             return (EResultCode.StorageFull, $"창고가 가득 참 (자원 {ItemSlotsUsed}/{StorageCapacity})");
         }
@@ -118,7 +118,7 @@ public partial class User
             return (EResultCode.InvalidCheatArgs, $"CharacterTable에 없는 TID {characterTid}");
         }
 
-        if (!HasStorageFor(Array.Empty<int>(), characterCount: (int)count, equipCount: 0))
+        if (!HasStorageFor(Array.Empty<(int, int)>(), characterCount: (int)count, equipCount: 0))
         {
             return (EResultCode.StorageFull, $"창고가 가득 참 (캐릭터 {CharacterSlotsUsed}/{StorageCapacity})");
         }
@@ -331,7 +331,7 @@ public partial class User
             return (EResultCode.InvalidCheatArgs, $"EquipTable에 없는 TID {equipTid}");
         }
 
-        if (!HasStorageFor(Array.Empty<int>(), characterCount: 0, equipCount: 1))
+        if (!HasStorageFor(Array.Empty<(int, int)>(), characterCount: 0, equipCount: 1))
         {
             return (EResultCode.StorageFull, $"창고가 가득 참 (장비 {EquipSlotsUsed}/{StorageCapacity})");
         }

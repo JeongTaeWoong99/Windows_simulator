@@ -6,6 +6,8 @@ namespace WSGameServer;
 /// </summary>
 public class InventorySlotTest
 {
+    private const int MaxStack = 9999;
+
     [Fact]
     public void 처음_얻는_자원은_첫_빈_칸에_들어간다()
     {
@@ -13,7 +15,7 @@ public class InventorySlotTest
         inventory.Load(new[] { new Item(101, 1, 0), new Item(102, 1, 2) });
 
         // 0·2가 찼다 → 1
-        inventory.AddItem(103, 5).Slot.ShouldBe(1);
+        inventory.AddItem(103, 5, MaxStack, out _).Single().Slot.ShouldBe(1);
     }
 
     [Fact]
@@ -22,7 +24,7 @@ public class InventorySlotTest
         var inventory = new Inventory();
         inventory.Load(new[] { new Item(101, 1, 7) });
 
-        inventory.AddItem(101, 3).Slot.ShouldBe(7);
+        inventory.AddItem(101, 3, MaxStack, out _).Single().Slot.ShouldBe(7);
     }
 
     [Fact]
@@ -34,7 +36,7 @@ public class InventorySlotTest
         inventory.TryRemoveItems(new Dictionary<int, int> { [101] = 2 }, out _);
 
         // 101이 떠난 칸 0이 비었다 → 새 자원은 칸 2가 아니라 0
-        inventory.AddItem(104, 1).Slot.ShouldBe(0);
+        inventory.AddItem(104, 1, MaxStack, out _).Single().Slot.ShouldBe(0);
     }
 
     [Fact]

@@ -38,14 +38,10 @@ public sealed class SaveStorageSlotsRepository : IRepository
     {
     }
 
-    // 키는 자원이면 item_id, 개체면 PK다. 개체 PK는 보관함과 무관하게 유일하지만, 보관함이 어긋난 행을 덮지 않게 함께 건다.
+    // 캐릭터·장비만 온다 — 자원은 칸이 키라 SaveItemChangesRepository로 칸째 쓴다(T-160).
+    // 개체 PK는 보관함과 무관하게 유일하지만, 보관함이 어긋난 행을 덮지 않게 함께 건다.
     private static string SqlFor(EStorageTab tab)
     {
-        if (tab == EStorageTab.Resource)
-        {
-            return "UPDATE t_user_inventory SET slot = @slot WHERE user_id = @userId AND container = @container AND item_id = @key";
-        }
-
         if (tab == EStorageTab.Character)
         {
             return "UPDATE t_character SET slot = @slot WHERE user_id = @userId AND container = @container AND character_id = @key";

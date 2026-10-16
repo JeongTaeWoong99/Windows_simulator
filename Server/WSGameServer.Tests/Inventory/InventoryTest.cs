@@ -11,13 +11,15 @@ namespace WSGameServer.Tests.InventoryTests;
 /// </summary>
 public class InventoryTest
 {
+    private const int MaxStack = 9999;
+
     [Fact]
     public void 같은_아이템을_거듭_얻으면_Count는_누적_총량이다()
     {
         var inventory = new Inventory();
 
-        inventory.AddItem(101, 3);
-        var change = inventory.AddItem(101, 4);
+        inventory.AddItem(101, 3, MaxStack, out _);
+        var change = inventory.AddItem(101, 4, MaxStack, out _).Single();
 
         // 3 + 4 = 7. 델타(4)를 반환하면 클라 덮어쓰기에서 보유량이 4로 깎인다.
         change.Count.ShouldBe(7);
@@ -28,8 +30,8 @@ public class InventoryTest
     {
         var inventory = new Inventory();
 
-        inventory.AddItem(101, 3);
-        var change = inventory.AddItem(101, 4);
+        inventory.AddItem(101, 3, MaxStack, out _);
+        var change = inventory.AddItem(101, 4, MaxStack, out _).Single();
 
         change.Kind.ShouldBe(MikaProtocol.EItemChangeKind.Update);
     }
@@ -39,7 +41,7 @@ public class InventoryTest
     {
         var inventory = new Inventory();
 
-        var change = inventory.AddItem(202, 5);
+        var change = inventory.AddItem(202, 5, MaxStack, out _).Single();
 
         change.Count.ShouldBe(5);
         change.Kind.ShouldBe(MikaProtocol.EItemChangeKind.Add);

@@ -9,12 +9,14 @@ namespace WSGameServer.Tests.InventoryTests;
 /// </summary>
 public class InventoryRemoveTest
 {
+    private const int MaxStack = 9999;
+
     [Fact]
     public void 보유량보다_많이_빼려_하면_아무것도_바뀌지_않는다()
     {
         var inventory = new Inventory();
-        inventory.AddItem(101, 3);
-        inventory.AddItem(202, 5);
+        inventory.AddItem(101, 3, MaxStack, out _);
+        inventory.AddItem(202, 5, MaxStack, out _);
 
         // 101은 3개뿐인데 4개를 요구한다 — 뺄 수 있는 202까지 통째로 거절돼야 한다.
         var ok = inventory.TryRemoveItems(new Dictionary<int, int> { [101] = 4, [202] = 1 }, out _);
@@ -29,7 +31,7 @@ public class InventoryRemoveTest
     public void 전부_빼면_종류는_Remove이고_목록에서_사라진다()
     {
         var inventory = new Inventory();
-        inventory.AddItem(101, 3);
+        inventory.AddItem(101, 3, MaxStack, out _);
 
         inventory.TryRemoveItems(new Dictionary<int, int> { [101] = 3 }, out var changes).ShouldBeTrue();
 
@@ -44,7 +46,7 @@ public class InventoryRemoveTest
     public void 일부만_빼면_종류는_Update이고_남은_총량이_온다()
     {
         var inventory = new Inventory();
-        inventory.AddItem(101, 7);
+        inventory.AddItem(101, 7, MaxStack, out _);
 
         inventory.TryRemoveItems(new Dictionary<int, int> { [101] = 2 }, out var changes).ShouldBeTrue();
 
@@ -57,7 +59,7 @@ public class InventoryRemoveTest
     public void 수량이_0_이하인_요청은_거절된다()
     {
         var inventory = new Inventory();
-        inventory.AddItem(101, 3);
+        inventory.AddItem(101, 3, MaxStack, out _);
 
         inventory.TryRemoveItems(new Dictionary<int, int> { [101] = 0 }, out _).ShouldBeFalse();
         inventory.Snapshot().Single().Count.ShouldBe(3);
@@ -67,7 +69,7 @@ public class InventoryRemoveTest
     public void 가지고_있지_않은_아이템은_거절된다()
     {
         var inventory = new Inventory();
-        inventory.AddItem(101, 3);
+        inventory.AddItem(101, 3, MaxStack, out _);
 
         inventory.TryRemoveItems(new Dictionary<int, int> { [999] = 1 }, out _).ShouldBeFalse();
         inventory.Snapshot().Single().Count.ShouldBe(3);

@@ -56,7 +56,7 @@ public sealed class GachaService : Singleton<GachaService>
 
         // 2) 추첨(순수) → 칸 검사 → 비용 차감 → 지급. 칸 검사에 결과가 필요해 추첨이 차감보다 앞선다.
         var picked = pool.PickMany(drawCount);
-        if (!HasStorageFor(user, picked))
+        if (!HasStorageFor(user, picked.Select(e => (e, MaxCountOf(e))).ToList()))
         {
             user.Send(new S_GachaDrawResponse { Result = EResultCode.StorageFull });
             return;
@@ -106,10 +106,9 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        // 상자를 전부 열면 그 상자 칸이 빈다 — 빈 칸까지 보고 판정한다.
+        // 연 상자가 먼저 빠진다 — 그 칸이 비면 빈 칸까지 보고 판정한다.
         var rolled = Roll(pool.PickMany(count));
-        var freed  = user.FreesInventorySlot(itemTid, count) ? itemTid : 0;
-        var fits   = HasStorageFor(user, rolled.Select(r => r.Entry).ToList(), freed);
+        var fits   = HasStorageFor(user, rolled, new Dictionary<int, int> { [itemTid] = count });
 
         // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.
         if (!fits && !user.HasMailboxRoom)
@@ -218,7 +217,7 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         // 아티팩트(GachaRewardType.Artifact)는 여기서 지급하지 않는다 — 시각이 필요해 GrantArtifacts가 따로 넣는다.
-        var changes = gained.Select(kv => user.GainItem(kv.Key, kv.Value)).ToList();
+        var changes = gained.SelectMany(kv => user.GainItem(kv.Key, kv.Value)).ToList();
 
         if (characterTids.Count > 0)
         {
@@ -246,13 +245,15 @@ public sealed class GachaService : Singleton<GachaService>
         }
     }
 
-    // 캐릭터·장비는 개체 수, 아이템은 종류 수가 칸이다. 개체 수는 구간이 있으면 최대치로 본다 — 지급 때 굴린 값이 검사보다 크면 안 된다.
-    private static bool HasStorageFor(User user, IReadOnlyList<GachaEntry> picked, int freedItemTid = 0)
+    // 캐릭터·장비는 개체 수, 자원은 수량이 묶음으로 차지하는 칸 수가 칸이다(T-160).
+    // 아직 굴리지 않았으면 구간의 최대치를 넘긴다 — 지급 때 굴린 값이 검사보다 크면 안 된다.
+    private static bool HasStorageFor(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled,
+        IReadOnlyDictionary<int, int>? consumed = null)
     {
-        var itemTids   = picked.Where(e => e.RewardType == GachaRewardType.Item).Select(e => e.RewardTID);
-        var characters = picked.Where(e => e.RewardType == GachaRewardType.Character).Sum(MaxCountOf);
-        var equips     = picked.Where(e => e.RewardType == GachaRewardType.Equip).Sum(MaxCountOf);
-        return user.HasStorageFor(itemTids, characters, equips, freedItemTid);
+        var items      = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Item).Select(r => (r.Entry.RewardTID, r.Count));
+        var characters = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Character).Sum(r => r.Count);
+        var equips     = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).Sum(r => r.Count);
+        return user.HasStorageFor(items, characters, equips, consumed);
     }
 
     private static int MaxCountOf(GachaEntry entry) => Math.Max(entry.Count, entry.MaxCount);

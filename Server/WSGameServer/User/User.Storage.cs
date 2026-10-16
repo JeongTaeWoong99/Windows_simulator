@@ -10,8 +10,8 @@ public partial class User
     // DB가 PK를 발급(또는 우편 잠금 해제)하기 전의 캐릭터 칸. 세지 않으면 응답 전 연속 뽑기가 한도와 칸을 지나친다.
     private readonly HashSet<int> _pendingCharacterSlots = new();
 
-    /// <summary>자원 칸 — 보유 수량이 0보다 큰 아이템 종류 수</summary>
-    public int ItemSlotsUsed => Inventory.KindCount;
+    /// <summary>자원 칸 — 찬 칸 수. 같은 자원도 MaxStack을 넘으면 여러 칸이다(T-160).</summary>
+    public int ItemSlotsUsed => Inventory.SlotCount;
 
     /// <summary>캐릭터 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
     public int CharacterSlotsUsed => _characters.Count + _pendingCharacterSlots.Count;
@@ -19,26 +19,49 @@ public partial class User
     /// <summary>장비 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
     public int EquipSlotsUsed => _equips.Count + _pendingEquipPositions.Count;
 
-    // 이번 지급이 새로 차지할 칸이 남은 칸 안에 드는가. 이미 가진 자원 TID는 칸을 더 쓰지 않는다.
-    // freedItemTid — 이번에 전량 소모돼 비는 자원 칸(상자를 전부 여는 경우). 없으면 0.
-    public bool HasStorageFor(IEnumerable<int> itemTids, int characterCount, int equipCount, int freedItemTid = 0)
+    // 이번 지급이 남은 칸 안에 전부 드는가. 자원은 사본에 넣어 본다 — 덜 찬 칸을 채우고 남는 만큼만 새 칸을 쓴다.
+    // consumed — 지급 전에 빠지는 자원(상자를 여는 경우). 인벤토리 것부터 빠지므로 그만큼 칸이 빌 수 있다.
+    public bool HasStorageFor(IEnumerable<(int Tid, int Count)> items, int characterCount, int equipCount,
+        IReadOnlyDictionary<int, int>? consumed = null)
     {
-        var newKinds = itemTids.Distinct().Count(tid => tid != freedItemTid && Inventory.GetCount(tid) == 0);
-        var freed    = freedItemTid != 0 ? 1 : 0;
-
-        return ItemSlotsUsed - freed + newKinds <= StorageCapacity &&
+        return ItemsFit(items, consumed) &&
                CharacterSlotsUsed + characterCount <= StorageCapacity &&
                EquipSlotsUsed + equipCount <= StorageCapacity;
     }
 
-    // 최대 수량(ItemTable.MaxStack)까지 받을 수 있는 개수. 표에 없는 TID는 상한 없이 그대로 준다.
-    public int ClampToMaxStack(int itemTid, int count)
+    private bool ItemsFit(IEnumerable<(int Tid, int Count)> items, IReadOnlyDictionary<int, int>? consumed)
     {
-        if (!GameTable.ItemTable.TryGet(itemTid, out var row))
+        var trial = Inventory.Clone();
+        foreach (var (tid, count) in consumed ?? new Dictionary<int, int>())
         {
-            return count;
+            var fromInventory = Math.Min(count, trial.GetCount(tid));
+            if (fromInventory > 0)
+            {
+                trial.TryRemoveItems(new Dictionary<int, int> { [tid] = fromInventory }, out _);
+            }
         }
 
-        return Math.Min(count, Math.Max(0, row.MaxStack - Inventory.GetCount(itemTid)));
+        foreach (var group in items.GroupBy(i => i.Tid))
+        {
+            var count = group.Sum(i => i.Count);
+            trial.AddItem(group.Key, count, MaxStackOf(group.Key), out var added);
+            if (added < count)
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    // 칸 하나의 최대 수량(ItemTable.MaxStack). 표에 없는 TID는 상한 없이 둔다.
+    public static int MaxStackOf(int itemTid)
+    {
+        if (!GameTable.ItemTable.TryGet(itemTid, out var row) || row.MaxStack <= 0)
+        {
+            return int.MaxValue;
+        }
+
+        return row.MaxStack;
     }
 }

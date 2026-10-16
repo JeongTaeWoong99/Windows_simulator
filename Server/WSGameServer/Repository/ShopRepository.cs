@@ -28,24 +28,7 @@ public sealed class SellItemsRepository : IRepository
         {
             foreach (var change in _itemChanges)
             {
-                // 0개가 된 아이템은 행을 지운다 — 남겨 두면 다음 로그인에 0개짜리로 적재된다.
-                if (change.Count == 0)
-                {
-                    await tx.ExecuteAsync(
-                        "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
-                        new { userId = User.Uid, container = (int)change.Container, itemId = change.ItemId });
-                    continue;
-                }
-
-                await tx.ExecuteAsync(
-                    @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot)
-                      VALUES (@userId, @container, @itemId, @count, @slot)
-                      ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
-                    new
-                    {
-                        userId = User.Uid, container = (int)change.Container, itemId = change.ItemId,
-                        count  = change.Count, slot = change.Slot,
-                    });
+                await SaveItemChangesRepository.WriteAsync(tx, User.Uid, change);
             }
 
             // 델타가 아니라 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 된다.

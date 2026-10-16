@@ -20,7 +20,7 @@ namespace MikaProtocol
     }
 
     [MemoryPackable]
-    public partial class ItemChangeInfo   // Count는 델타가 아니라 갱신 후 누적 총량 — 클라는 덮어쓴다
+    public partial class ItemChangeInfo   // 칸 하나의 변경. Count는 델타가 아니라 그 칸의 갱신 후 수량 — 클라는 (Container, Slot)으로 덮어쓴다
     {
         public int ItemId { get; set; }
         public int Count  { get; set; }
@@ -229,7 +229,7 @@ namespace MikaProtocol
 
     /// <summary>
     /// 창고 이동으로 바뀐 칸 하나. Key는 자원이면 ItemId, 캐릭터·장비면 개체 ID.
-    /// 자원의 Count는 그 보관함에 남은 총량이고 0이면 칸이 빈 것이다. 캐릭터·장비는 1 — 그 개체가 Container의 Slot으로 옮겨졌다.
+    /// 자원의 Count는 그 칸의 수량이고 0이면 칸이 빈 것이다(T-160 — 같은 자원이 여러 칸일 수 있다). 캐릭터·장비는 1 — 그 개체가 Container의 Slot으로 옮겨졌다.
     /// </summary>
     [MemoryPackable]
     public partial class WarehouseChangeInfo

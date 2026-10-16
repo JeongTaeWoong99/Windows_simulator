@@ -5,7 +5,8 @@ namespace WSGameServer;
 
 /// <summary>
 /// 인벤토리 ↔ 창고 이동(T-107 · 이슈 #58). 놓은 칸이 비었으면 이동, 차 있으면 스왑.
-/// 자원은 같은 자원이면 합치고, 다른 자원 칸이면 전량일 때만 스왑한다. 거절이면 아무것도 바꾸지 않는다.
+/// 자원은 같은 자원 칸이면 MaxStack까지 합치고, 다른 자원 칸이면 전량일 때만 스왑한다. 거절이면 아무것도 바꾸지 않는다.
+/// 칸마다 묶음 하나라(T-160) 놓은 칸만 본다 — 받는 쪽 다른 칸에 같은 자원이 있어도 끌려가지 않는다.
 /// </summary>
 public class UserWarehouseTest
 {
@@ -69,7 +70,21 @@ public class UserWarehouseTest
     }
 
     [Fact]
-    public void 같은_자원이_받는_쪽에_있으면_놓은_칸과_무관하게_합친다()
+    public void 같은_자원_칸에_놓으면_합친다()
+    {
+        var (user, b) = NewUser(new[] { Item(FishTid, 10, 0), Item(FishTid, 5, 7, EContainer.Warehouse) });
+
+        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Resource, 0, 7, 10);
+
+        Changes(b).ShouldBe(new[]
+        {
+            (EContainer.Inventory, (long)FishTid, 0, 0),
+            (EContainer.Warehouse, (long)FishTid, 7, 15),
+        });
+    }
+
+    [Fact]
+    public void 같은_자원이_있어도_빈_칸에_놓으면_그_칸에_새_묶음이_선다()
     {
         var (user, b) = NewUser(new[] { Item(FishTid, 10, 0), Item(FishTid, 5, 7, EContainer.Warehouse) });
 
@@ -78,7 +93,7 @@ public class UserWarehouseTest
         Changes(b).ShouldBe(new[]
         {
             (EContainer.Inventory, (long)FishTid, 0, 0),
-            (EContainer.Warehouse, (long)FishTid, 7, 15),
+            (EContainer.Warehouse, (long)FishTid, 2, 10),
         });
     }
 
@@ -108,25 +123,26 @@ public class UserWarehouseTest
     }
 
     [Fact]
-    public void 스왑으로_돌아오는_자원이_이미_있으면_그_칸에_합친다()
-    {
-        // 인벤토리: 붕어(0) · 잉어(1) / 창고: 잉어(4) — 붕어를 창고 잉어 칸에 전량 놓는다
-        var (user, b) = NewUser(new[] { Item(FishTid, 10, 0), Item(CarpTid, 2, 1), Item(CarpTid, 3, 4, EContainer.Warehouse) });
-
-        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Resource, 0, 4, 10);
-
-        user.SendInventory();
-        b.Channel.SentOf<S_InventoryResponse>().Last().Items!
-            .Select(i => (i.Container, i.ItemId, i.Slot, i.Count))
-            .ShouldBe(new[] { (EContainer.Inventory, CarpTid, 1, 5), (EContainer.Warehouse, FishTid, 4, 10) }, ignoreOrder: true);
-    }
-
-    [Fact]
-    public void 합치면_최대_수량을_넘으면_거절한다()
+    public void 합쳐서_넘치는_몫은_원래_칸에_남는다()
     {
         var (user, b) = NewUser(new[] { Item(FishTid, 9000, 0), Item(FishTid, 1000, 2, EContainer.Warehouse) });
 
         user.TransferWarehouse(EContainer.Warehouse, EStorageTab.Resource, 2, 0, 1000);
+
+        // 칸 0은 999만 받는다 → 창고 칸 2에 1개가 남는다
+        Changes(b).ShouldBe(new[]
+        {
+            (EContainer.Warehouse, (long)FishTid, 2, 1),
+            (EContainer.Inventory, (long)FishTid, 0, 9999),
+        });
+    }
+
+    [Fact]
+    public void 꽉_찬_같은_자원_칸에는_놓을_수_없다()
+    {
+        var (user, b) = NewUser(new[] { Item(FishTid, 9999, 0), Item(FishTid, 10, 2, EContainer.Warehouse) });
+
+        user.TransferWarehouse(EContainer.Warehouse, EStorageTab.Resource, 2, 0, 10);
 
         Last(b).Result.ShouldBe(EResultCode.StorageOverMaxStack);
         b.DB.PostedOf<WarehouseTransferRepository>().ShouldBeEmpty();
@@ -184,7 +200,7 @@ public class UserWarehouseTest
         user.MoveStorageSlot(EContainer.Warehouse, EStorageTab.Resource, 0, 49);
 
         b.Channel.SentOf<S_StorageSlotsResponse>().Last().Slots.Single().Slot.ShouldBe(49);
-        b.DB.PostedOf<SaveStorageSlotsRepository>().ShouldHaveSingleItem();
+        b.DB.PostedOf<SaveItemChangesRepository>().Single().Changes.ShouldAllBe(c => c.Container == EContainer.Warehouse);
     }
 
     [Fact]

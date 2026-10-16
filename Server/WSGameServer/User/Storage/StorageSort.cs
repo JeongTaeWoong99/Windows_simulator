@@ -14,9 +14,28 @@ public sealed record StorageSortEntry(long Key, bool IsAway, string Name, long C
 /// <summary>인벤토리 정렬 순서. 클라 InventorySlotSource.CompareByRule과 같은 규칙이어야 한다.</summary>
 public static class StorageSort
 {
-    // 등급은 높은 것이 먼저라 부호를 뒤집어 넣는다.
-    public static long[] ResourceTieBreak(int rarity, int itemType, int tid)
-        => new long[] { -rarity, itemType, tid };
+    // 등급은 높은 것이 먼저라 부호를 뒤집어 넣는다. 같은 자원이 여러 칸이면 묶음 순번이 마지막으로 가른다(T-160).
+    public static long[] ResourceTieBreak(int rarity, int itemType, int tid, int stackIndex = 0)
+        => new long[] { -rarity, itemType, tid, stackIndex };
+
+    /// <summary>같은 자원의 칸들을 합쳐 maxStack짜리 묶음 + 나머지 하나로 다시 나눈다. 찬 묶음이 먼저 온다.</summary>
+    public static List<(int Id, int Count)> CompactStacks(IEnumerable<Item> items, Func<int, int> maxStackOf)
+    {
+        var stacks = new List<(int Id, int Count)>();
+        foreach (var group in items.GroupBy(i => i.Id).OrderBy(g => g.Key))
+        {
+            var maxStack = maxStackOf(group.Key);
+            var left     = group.Sum(i => (long)i.Count);
+            while (left > 0)
+            {
+                var count = (int)Math.Min(left, maxStack);
+                stacks.Add((group.Key, count));
+                left -= count;
+            }
+        }
+
+        return stacks;
+    }
 
     public static long[] CharacterTieBreak(int rarity, int tid, long id)
         => new long[] { -rarity, tid, id };

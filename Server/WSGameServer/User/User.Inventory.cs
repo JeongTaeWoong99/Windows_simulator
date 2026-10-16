@@ -18,30 +18,23 @@ public partial class User
         Send(new S_InventoryResponse { Items = Inventory.Snapshot().Concat(Warehouse.Snapshot()).ToList() });
     }
 
-    // 메모리 갱신 + DB 반영만 하고 변경분을 돌려준다(응답은 호출자가). 지급 경로는 전부 여기를 지난다.
-    // 최대 수량(MaxStack)을 넘는 몫은 버린다 — 수확·우편·상자·뽑기 모두 같다(T-157).
-    public ItemChangeInfo GainItem(int itemId, int count)
+    // 메모리 갱신 + DB 반영만 하고 변경분(칸마다 한 줄)을 돌려준다(응답은 호출자가). 지급 경로는 전부 여기를 지난다.
+    // 칸 하나는 MaxStack까지 채우고 남으면 빈 칸에 잇는다. 칸이 전부 차서 못 넣은 몫은 버린다 — 수확·우편·상자·뽑기 모두 같다(T-160).
+    public List<ItemChangeInfo> GainItem(int itemId, int count, out int granted)
     {
-        var granted        = ClampToMaxStack(itemId, count);
-        var itemChangeInfo = Inventory.AddItem(itemId, granted);
-        if (granted <= 0)
+        var changes = Inventory.AddItem(itemId, count, MaxStackOf(itemId), out granted);
+        if (granted > 0)
         {
-            return itemChangeInfo;
+            PostDBTask(new AddItemRepository(this, changes));
         }
 
-        PostDBTask<AddItemRepository>(new (this, itemChangeInfo));
-        return itemChangeInfo;
+        return changes;
     }
+
+    public List<ItemChangeInfo> GainItem(int itemId, int count) => GainItem(itemId, count, out _);
 
     /// <summary>보유 수량 — 인벤토리와 창고를 합친다. 없으면 0.</summary>
     public int GetItemCount(int itemId) => Inventory.GetCount(itemId) + Warehouse.GetCount(itemId);
-
-    /// <summary>count개를 빼면 인벤토리 칸이 비는가. 인벤토리에서 먼저 빼므로 인벤토리 몫이 count 이하면 빈다.</summary>
-    public bool FreesInventorySlot(int itemId, int count)
-    {
-        var held = Inventory.GetCount(itemId);
-        return held > 0 && held <= count;
-    }
 
     // 인벤토리 먼저, 모자란 만큼 창고에서. 하나라도 모자라면 아무것도 바꾸지 않는다 — 판매·경매·상자·큐브가 모두 여기를 지난다.
     private bool TryRemoveItems(IReadOnlyDictionary<int, int> request, out List<ItemChangeInfo> changes)
@@ -64,8 +57,8 @@ public partial class User
 
     public void AddItem(int itemId, int count)
     {
-        var itemChangeInfo = GainItem(itemId, count);
+        var changes = GainItem(itemId, count);
 
-        Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = [itemChangeInfo] });
+        Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = changes });
     }
 }

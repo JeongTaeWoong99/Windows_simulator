@@ -860,6 +860,7 @@ namespace MikaProtocol
     }
 
     // 목적지가 비었으면 옮기고 차 있으면 교환한다. 칸은 응답이 온 뒤에 바꾼다(낙관적 갱신 없음).
+    // 자원은 같은 아이템 칸에 놓으면 MaxStack까지 합치고, 남는 것은 원래 칸에 둔다(T-160).
     [MemoryPackable, Packet(PacketId.C_StorageMoveSlotRequest)]
     public partial class C_StorageMoveSlotRequest : IPacket
     {
@@ -869,7 +870,9 @@ namespace MikaProtocol
         public int         ToSlot    { get; set; }
     }
 
-    // 정렬이면 격자 전체, 자리 이동이면 바뀐 칸만 싣는다. 거절이면 Slots는 비어 있다.
+    // 정렬이면 격자 전체, 자리 이동이면 바뀐 칸만 싣는다. 거절이면 Slots·Items는 비어 있다.
+    // 자원 탭은 Items가 정본이다(T-160) — 바뀐 칸마다 한 줄, Count 0이면 그 칸이 비었다. 클라는 (Container, Slot)으로 덮어쓴다.
+    // 자원의 Slots(Key = ItemId)는 같은 아이템이 한 칸뿐일 때만 맞는 옛 형식이라 다중 칸 표시(T-161) 뒤에 지운다.
     [MemoryPackable, Packet(PacketId.S_StorageSlotsResponse)]
     public partial class S_StorageSlotsResponse : IPacket
     {
@@ -877,10 +880,12 @@ namespace MikaProtocol
         public EContainer            Container { get; set; }
         public EStorageTab           Tab       { get; set; }
         public List<StorageSlotInfo> Slots     { get; set; } = new();
+        public List<ItemChangeInfo>  Items     { get; set; } = new();
     }
 
     // 인벤토리 ↔ 창고 (T-107). From 보관함의 FromSlot을 반대 보관함의 ToSlot에 놓는다 — 비었으면 이동, 차 있으면 스왑.
-    // 자원은 Count만큼 옮긴다: 같은 자원이 받는 쪽에 있으면 합치고, 다른 자원 칸이면 전량일 때만 스왑한다(일부면 거절).
+    // 자원은 Count만큼 옮긴다: 빈 칸이면 놓고, 같은 자원 칸이면 MaxStack까지 합치고(남는 것은 원래 칸에 · T-160),
+    // 다른 자원 칸이면 전량일 때만 스왑한다(일부면 거절).
     // 캐릭터·장비는 Count를 읽지 않는다. 칸은 응답이 온 뒤에 바꾼다.
     [MemoryPackable, Packet(PacketId.C_WarehouseTransferRequest)]
     public partial class C_WarehouseTransferRequest : IPacket

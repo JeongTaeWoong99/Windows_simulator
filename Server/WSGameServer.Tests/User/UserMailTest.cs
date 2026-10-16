@@ -291,15 +291,27 @@ public class UserMailTest
     // ─────────────────────── 최대 수량 (T-157) ───────────────────────
 
     [Fact]
-    public void 우편으로_받아도_최대_수량을_넘는_몫은_버린다()
+    public void 우편으로_받아도_최대_수량을_넘는_몫은_빈_칸에_이어_쌓는다()
     {
-        // 붕어 MaxStack 9999 — 9990 + 20 → 9999에서 멈추고 우편은 받은 것이 된다.
+        // 붕어 MaxStack 9999 — 9990 + 20 → 한 칸은 9999, 남은 11개는 새 칸에(T-160). 버리는 것이 없다.
         var (user, b) = UserWithMails(Mail(1, items: $"[[{FishTid},20]]"));
         user.GainItem(FishTid, 9990);
 
         user.TryClaimMail(1, Now);
 
         ClaimResponse(b).Result.ShouldBe(EResultCode.Ok);
-        user.GetItemCount(FishTid).ShouldBe(9999);
+        user.GetItemCount(FishTid).ShouldBe(10010);
+    }
+
+    [Fact]
+    public void 칸이_모자라_다_못_받으면_우편을_남긴다()
+    {
+        // 붕어 칸으로 인벤토리를 가득 채운다 — 9999짜리 칸이 꽉 차서 1개도 들어갈 자리가 없다
+        var (user, b) = UserWithMails(Mail(1, items: $"[[{FishTid},1]]"));
+        user.GainItem(FishTid, 9999 * User.StorageCapacity);
+
+        user.TryClaimMail(1, Now);
+
+        ClaimResponse(b).Result.ShouldBe(EResultCode.StorageFull);
     }
 }

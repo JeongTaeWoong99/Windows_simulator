@@ -51,7 +51,28 @@ public class UserStorageSortTest
 
         user.SortStorage(EContainer.Inventory, EStorageTab.Resource, EStorageSortKey.Rarity, EStorageSortOrder.Descending);
 
-        b.DB.PostedOf<SaveStorageSlotsRepository>().Single().Changes.ShouldBe(new[] { new SlotChange(FishTid, 0) });
+        b.DB.PostedOf<SaveItemChangesRepository>().Single().Changes
+            .Select(c => (c.Slot, c.ItemId, c.Count)).ShouldBe(new[] { (0, FishTid, 1), (3, FishTid, 0) }, ignoreOrder: true);
+    }
+
+    [Fact]
+    public void 정렬하면_같은_자원의_덜_찬_칸을_합친다()
+    {
+        var b    = new TestUserBuilder();
+        var user = b.Build();
+        user.LoadInventory(new[]
+        {
+            new InventoryRow { item_id = FishTid, count = 9000, slot = 2 },
+            new InventoryRow { item_id = FishTid, count = 1500, slot = 5 },
+            new InventoryRow { item_id = FishTid, count = 7,    slot = 8 },
+        });
+
+        user.SortStorage(EContainer.Inventory, EStorageTab.Resource, EStorageSortKey.Rarity, EStorageSortOrder.Descending);
+
+        // 10507 = 9999 + 508 — 세 칸이 두 칸이 되고 찬 칸이 앞에 선다
+        user.SendInventory();
+        b.Channel.SentOf<S_InventoryResponse>().Last().Items!
+            .Select(i => (i.Slot, i.Count)).ShouldBe(new[] { (0, 9999), (1, 508) }, ignoreOrder: true);
     }
 
     [Fact]

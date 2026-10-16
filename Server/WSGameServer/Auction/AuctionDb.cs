@@ -462,23 +462,12 @@ public static class AuctionDb
     private static Task InsertConfirmAsync(DbConnection tx, long tradeId, long purchaseId, bool success, DateTime now)
         => InsertOutboxAsync(tx, tradeId, AuctionOutboxKind.Confirm, JsonSerializer.Serialize(new AuctionConfirmMessage(purchaseId, success)), now, purchaseId);
 
-    // 확정 수량을 쓴다(델타 아님) — 즉시 판매(SellItemsRepository)와 같은 방식이다. 0개는 행을 지운다.
+    // 확정 수량을 쓴다(델타 아님) — 즉시 판매(SellItemsRepository)와 같은 문장이다. 0개는 칸을 비운다.
     private static async Task WriteInventoryAsync(DbConnection tx, long userId, IReadOnlyList<ItemChangeInfo> changes)
     {
         foreach (var change in changes)
         {
-            if (change.Count == 0)
-            {
-                await tx.ExecuteAsync(
-                    "DELETE FROM t_user_inventory WHERE user_id = @userId AND container = @container AND item_id = @itemId",
-                    new { userId, container = (int)change.Container, itemId = change.ItemId });
-                continue;
-            }
-
-            await tx.ExecuteAsync(
-                @"INSERT INTO t_user_inventory (user_id, container, item_id, count, slot) VALUES (@userId, @container, @itemId, @count, @slot)
-                  ON CONFLICT (user_id, container, item_id) DO UPDATE SET count = excluded.count, slot = excluded.slot;",
-                new { userId, container = (int)change.Container, itemId = change.ItemId, count = change.Count, slot = change.Slot });
+            await SaveItemChangesRepository.WriteAsync(tx, userId, change);
         }
     }
 
