@@ -253,7 +253,7 @@ public static class ExcelGenerator
         string?                 Ref            // "ItemTable.ItemTID" 형식. 값이 대상 테이블에 실재하는지 검사한다(null이면 검사 없음)
         )
     {
-        /// <summary>Type이 lstring — 값이 번역 시트(LocalizationTable.Data)로 나간다</summary>
+        /// <summary>Type이 lstring — 값이 번역 시트(LocalizationTable.<테이블>)로 나간다</summary>
         public bool IsLocalized => RawType == Localization.LocalizedType;
 
         public enum RecordType : byte

@@ -24,6 +24,11 @@ tags: [excel, generator, localization, pipeline]
 - 워크트리 격리 때문에 `cd`·복합 명령이 거절된다 → 스크립트는 스크래치패드에 Write로 쓰고 절대경로로 실행.
 - 생성기(ClosedXML)가 저장한 시트는 서식이 풀린다 → `format-excel.py Localization.xlsx` 한 번 더. 이후 재생성은 저장하지 않는다(멱등 확인).
 
+## 추가 — 시트 분리 · EN 채움 (같은 날)
+- 사용자 요청: Data가 커지면 나누고 싶다 → **원본 테이블별 자동 분리**(`LocalizationTable.Item` …). 생성기가 키 앞부분으로 시트를 고르고, 없으면 UI 시트를 복사해 만들고, 사라진 테이블 시트는 지운다.
+- `LocalizationTable.Data.Item`은 못 쓴다 — 엑셀 시트 이름 한도 31자(`LocalizationTable.Data.Character` = 32). 사용자 확인 후 `Data`를 뺐다. 라벨 13자 초과면 생성기가 멈춘다.
+- EN 421칸 채움(T-166 해금·건물 행 포함) → `-LocStrict` 통과. 캐릭터 이름은 음역·의역 섞음 — 기획 검수 대상.
+
 ## 후속 작업 / 주의사항
 - 클라(T-136): `Loc.Current` 설정 · 화면 문구를 `Loc.Get(row.NameLocKey)`로 · 고정 문구는 `UI` 시트에 키 추가.
 - EN 386칸 비어 있음 — 배포 전 `-LocStrict`로 막는다.

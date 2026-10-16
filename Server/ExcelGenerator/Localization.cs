@@ -5,16 +5,17 @@ namespace ExcelGenerator;
 
 /// <summary>
 /// 데이터 시트의 lstring 컬럼을 번역 파일(Localization.xlsx)과 맞추고, 언어별 값을 담은 LocalizationTable을 만든다.
-/// - LocalizationTable.Data : 생성기가 행을 채운다(Key · KR · Status). 사람은 언어 칸(EN …)만 쓴다
-/// - LocalizationTable.UI   : 사람이 키까지 쓴다 — 클라 고정 문구
+/// - LocalizationTable.Item 등 : 원본 테이블마다 한 시트. 생성기가 시트와 행을 만든다(Key · KR · Status). 사람은 언어 칸(EN …)만 쓴다
+/// - LocalizationTable.UI      : 사람이 키까지 쓴다 — 클라 고정 문구
 /// </summary>
 public static class Localization
 {
     public const string FileName      = "Localization.xlsx";
     public const string TableName     = "LocalizationTable";
-    public const string DataSheet     = TableName + ".Data";
     public const string UiSheet       = TableName + ".UI";
     public const string LocalizedType = "lstring";
+
+    private const int MaxSheetName = 31;   // 엑셀 시트 이름 한도
 
     private const string KeyColumn    = "Key";
     private const string SourceColumn = "KR";   // 기준 언어 — 데이터 시트에 적힌 원문
@@ -44,16 +45,16 @@ public static class Localization
         var sources = Collect(tables);
 
         using var workbook = OpenWorkbook(path);
-        var dataSheet = RequireSheet(workbook, DataSheet);
-        var data = ParseSheet(dataSheet);
-        var ui   = ParseSheet(RequireSheet(workbook, UiSheet));
+        var uiSheet = RequireSheet(workbook, UiSheet);
+        var ui = ParseSheet(uiSheet);
+        var dataSheets = workbook.Worksheets.Where(IsDataSheet).ToList();
+        var data = Merge(ui, dataSheets.Select(ParseSheet));
 
         var synced = Sync(sources, data);
-        if (!SameRows(data.Rows, synced))
+        if (WriteSheets(uiSheet, dataSheets, data.columnInfos, synced))
         {
-            WriteRows(dataSheet, data.columnInfos, synced);
             workbook.Save();
-            Console.WriteLine($"[번역] {DataSheet} 갱신: {synced.Count}행 → {path}");
+            Console.WriteLine($"[번역] 번역 시트 갱신: {synced.Count}행 → {path}");
         }
 
         tables.Add(Build(sources, data with { Rows = synced }, ui, strict));
@@ -196,6 +197,22 @@ public static class Localization
         return new TableData(TableName, columns, rows);
     }
 
+    /// <summary>키가 들어갈 번역 시트 — 키 앞부분이 시트 라벨이다(Item.100061.Name → LocalizationTable.Item).</summary>
+    public static string SheetOf(string key)
+    {
+        var name = $"{TableName}.{key.Split('.', 2)[0]}";
+        if (name == UiSheet)
+        {
+            throw new InvalidDataException($"번역 키 '{key}'가 {UiSheet} 시트와 겹친다 — 테이블 이름을 바꾼다.");
+        }
+        if (name.Length > MaxSheetName)
+        {
+            throw new InvalidDataException($"번역 시트 이름 '{name}'이 엑셀 한도 {MaxSheetName}자를 넘는다 — 테이블 이름을 줄인다.");
+        }
+
+        return name;
+    }
+
     /// <summary>번역 키 앞부분 — 테이블명에서 끝의 Table을 뺀다(ItemTable → Item). 생성 코드의 LocKey 속성도 이걸 쓴다.</summary>
     public static string KeyPrefix(string tableName)
     {
@@ -280,14 +297,63 @@ public static class Localization
         return a.Count == b.Count && a.Zip(b).All(p => p.First.SequenceEqual(p.Second));
     }
 
-    private static void AssertSameColumns(TableData data, TableData ui)
+    private static void AssertSameColumns(TableData expected, TableData actual)
     {
-        var a = data.columnInfos.Select(c => c.Name);
-        var b = ui.columnInfos.Select(c => c.Name);
+        var a = expected.columnInfos.Select(c => c.Name);
+        var b = actual.columnInfos.Select(c => c.Name);
         if (!a.SequenceEqual(b))
         {
-            throw new InvalidDataException($"{UiSheet}의 컬럼({string.Join(",", b)})이 {DataSheet}({string.Join(",", a)})와 다르다.");
+            throw new InvalidDataException($"{actual.Name}의 컬럼({string.Join(",", b)})이 {expected.Name}({string.Join(",", a)})와 다르다.");
         }
+    }
+
+    private static bool IsDataSheet(IXLWorksheet sheet)
+    {
+        return sheet.Name.StartsWith(TableName + ".", StringComparison.Ordinal) && sheet.Name != UiSheet;
+    }
+
+    /// <summary>번역 시트들을 한 표로 모은다. 컬럼은 UI 시트와 같아야 한다.</summary>
+    private static TableData Merge(TableData ui, IEnumerable<TableData> sheets)
+    {
+        var rows = new List<string[]>();
+        foreach (var sheet in sheets)
+        {
+            AssertSameColumns(ui, sheet);
+            rows.AddRange(sheet.Rows);
+        }
+
+        return new TableData(TableName, ui.columnInfos, rows);
+    }
+
+    /// <summary>
+    /// 행을 키 앞부분별 시트에 나눠 쓴다. 없는 시트는 UI 시트를 복사해 만들고(머리 행·서식), 원본에서 사라진 테이블의 시트는 지운다.
+    /// 내용이 같은 시트는 건드리지 않는다. 하나라도 바뀌면 true.
+    /// </summary>
+    private static bool WriteSheets(IXLWorksheet uiSheet, List<IXLWorksheet> dataSheets, IReadOnlyList<ColumnInfo> columns, List<string[]> rows)
+    {
+        var changed = false;
+        var groups = rows.GroupBy(r => SheetOf(r[0])).ToList();
+        foreach (var group in groups)
+        {
+            var groupRows = group.ToList();
+            var sheet = dataSheets.FirstOrDefault(s => s.Name == group.Key);
+            if (sheet != null && SameRows(ParseSheet(sheet).Rows, groupRows))
+            {
+                continue;
+            }
+
+            sheet ??= uiSheet.CopyTo(group.Key, uiSheet.Position);
+            WriteRows(sheet, columns, groupRows);
+            changed = true;
+        }
+
+        foreach (var orphan in dataSheets.Where(s => groups.All(g => g.Key != s.Name)))
+        {
+            orphan.Delete();
+            changed = true;
+        }
+
+        return changed;
     }
 
     private static IXLWorksheet RequireSheet(XLWorkbook workbook, string name)
