@@ -108,9 +108,7 @@ public partial class User
     {
         Send(new S_CharacterListResponse
         {
-            Characters = _characters.Values.Select(c => ToCharacterInfo(c))
-                .Concat(_warehouseCharacters.Values.Select(c => ToCharacterInfo(c, EContainer.Warehouse)))
-                .ToList(),
+            Characters = _characters.Values.Concat(_warehouseCharacters.Values).Select(ToCharacterInfo).ToList(),
         });
     }
 
@@ -204,7 +202,7 @@ public partial class User
 
         foreach (var materialId in materialIds)
         {
-            _characters.Remove(materialId);
+            RemoveCharacter(materialId);
         }
 
         var starGained = target.Condense(materialIds.Count, _characterStars);
@@ -228,11 +226,12 @@ public partial class User
         }
     }
 
-    private CharacterInfo ToCharacterInfo(Character c, EContainer container = EContainer.Inventory)
+    // 보관함은 개체가 지금 있는 쪽에서 읽는다 — 창고 캐릭터의 싱크에 인벤토리를 실으면 클라는 옮겨진 줄 안다.
+    private CharacterInfo ToCharacterInfo(Character c)
     {
         return new CharacterInfo
         {
-            Container      = container,
+            Container      = _warehouseCharacters.ContainsKey(c.Id) ? EContainer.Warehouse : EContainer.Inventory,
             CharacterId    = c.Id,
             CharacterTid   = c.Tid,
             Level          = c.Level,
@@ -258,8 +257,28 @@ public partial class User
             .ToList();
     }
 
+    /// <summary>인벤토리와 창고를 함께 본다 — 창고는 놓인 자리일 뿐이다(T-164).</summary>
     public bool TryGetCharacter(long characterId, out Character character)
-        => _characters.TryGetValue(characterId, out character!);
+    {
+        if (_characters.TryGetValue(characterId, out character!))
+        {
+            return true;
+        }
+
+        return _warehouseCharacters.TryGetValue(characterId, out character!);
+    }
+
+    /// <summary>보유 캐릭터 수 — 창고까지. 마지막 캐릭터 판매·경매 판정에 쓴다.</summary>
+    public int OwnedCharacterCount => _characters.Count + _warehouseCharacters.Count;
+
+    // 있는 쪽에서 지운다(판매·경매 등록·응축 재료).
+    private void RemoveCharacter(long characterId)
+    {
+        if (!_characters.Remove(characterId))
+        {
+            _warehouseCharacters.Remove(characterId);
+        }
+    }
 
     /// <summary>
     /// 이 캐릭터를 해당 산업에 배치할 수 있는지. <b>적성 0이면 배치하지 못한다.</b>

@@ -115,8 +115,10 @@ public class UserWarehouseTest
 
         user.TransferWarehouse(EContainer.Inventory, EStorageTab.Resource, 0, 4, 10);
 
-        user.GetItemCount(CarpTid).ShouldBe(5);
-        user.GetItemCount(FishTid).ShouldBe(0);
+        user.SendInventory();
+        b.Channel.SentOf<S_InventoryResponse>().Last().Items!
+            .Select(i => (i.Container, i.ItemId, i.Slot, i.Count))
+            .ShouldBe(new[] { (EContainer.Inventory, CarpTid, 1, 5), (EContainer.Warehouse, FishTid, 4, 10) }, ignoreOrder: true);
     }
 
     [Fact]
@@ -127,7 +129,7 @@ public class UserWarehouseTest
         user.TransferWarehouse(EContainer.Warehouse, EStorageTab.Resource, 2, 0, 1000);
 
         Last(b).Result.ShouldBe(EResultCode.StorageOverMaxStack);
-        user.GetItemCount(FishTid).ShouldBe(9000);
+        b.DB.PostedOf<WarehouseTransferRepository>().ShouldBeEmpty();
     }
 
     [Fact]
@@ -138,17 +140,6 @@ public class UserWarehouseTest
         user.TransferWarehouse(EContainer.Inventory, EStorageTab.Resource, 0, 0, 4);
 
         Last(b).Result.ShouldBe(EResultCode.NotEnoughItem);
-    }
-
-    [Fact]
-    public void 창고에_맡긴_자원은_인벤토리_수량으로_세지_않는다()
-    {
-        var (user, _) = NewUser(new[] { Item(FishTid, 10, 0) });
-
-        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Resource, 0, 0, 10);
-
-        // 판매·상자 개봉 등은 인벤토리만 본다 — 창고 물건은 꺼내야 쓴다
-        user.GetItemCount(FishTid).ShouldBe(0);
     }
 
     [Fact]
@@ -214,14 +205,13 @@ public class UserWarehouseTest
     // ── 캐릭터 · 장비 ──
 
     [Fact]
-    public void 캐릭터를_창고로_보내면_인벤토리에서_빠지고_창고_칸에_선다()
+    public void 캐릭터를_창고로_보내면_창고_칸에_선다()
     {
         var (user, b) = NewUser();
 
         user.TransferWarehouse(EContainer.Inventory, EStorageTab.Character, 0, 5, 0);
 
         Changes(b).ShouldBe(new[] { (EContainer.Warehouse, CharA, 5, 1) });
-        user.TryGetCharacter(CharA, out _).ShouldBeFalse();
         b.DB.PostedOf<WarehouseTransferRepository>().Single().Entities
             .ShouldBe(new[] { new EntityMove(CharA, EContainer.Warehouse, 5) });
     }
@@ -240,60 +230,6 @@ public class UserWarehouseTest
         Changes(b).ShouldBe(new[] { (EContainer.Warehouse, CharA, 2, 1), (EContainer.Inventory, StoredC, 0, 1) });
         user.TryGetCharacter(StoredC, out var back).ShouldBeTrue();
         back.Slot.ShouldBe(0);
-    }
-
-    [Fact]
-    public void 배치_중인_캐릭터는_창고로_보낼_수_없다()
-    {
-        var (user, b) = NewUser();
-        user.WorkStation.Load(new[] { new WorkStationSlot(0, IndustryType.Farming, CharA, TestUserBuilder.Base, null) });
-
-        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Character, 0, 0, 0);
-
-        Last(b).Result.ShouldBe(EResultCode.StorageEntityBusy);
-        user.TryGetCharacter(CharA, out _).ShouldBeTrue();
-    }
-
-    [Fact]
-    public void 장비를_입은_캐릭터는_창고로_보낼_수_없다()
-    {
-        var (user, b) = NewUser(
-            equips: new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, slot_position = 0 } },
-            worn: new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon, equip_id = Sword });
-
-        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Character, 0, 0, 0);
-
-        Last(b).Result.ShouldBe(EResultCode.StorageEntityBusy);
-        user.TryGetCharacter(CharA, out _).ShouldBeTrue();
-    }
-
-    [Fact]
-    public void 장착_중인_장비는_창고로_보낼_수_없다()
-    {
-        var (user, b) = NewUser(
-            equips: new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, slot_position = 0 } },
-            worn: new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon, equip_id = Sword });
-
-        user.TransferWarehouse(EContainer.Inventory, EStorageTab.Equip, 0, 0, 0);
-
-        Last(b).Result.ShouldBe(EResultCode.StorageEntityBusy);
-    }
-
-    [Fact]
-    public void 꺼낼_때_스왑으로_나가는_인벤토리_쪽이_사용_중이면_거절한다()
-    {
-        var (user, b) = NewUser(
-            characters: new[]
-            {
-                new CharacterRow { character_id = CharA,   character_tid = 1001, level = 1, slot = 0 },
-                new CharacterRow { character_id = StoredC, character_tid = 1001, level = 1, slot = 0, container = (int)EContainer.Warehouse },
-            },
-            equips: new[] { new UserEquipRow { equip_id = Sword, equip_tid = SwordTid, slot_position = 0 } },
-            worn: new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon, equip_id = Sword });
-
-        user.TransferWarehouse(EContainer.Warehouse, EStorageTab.Character, 0, 0, 0);
-
-        Last(b).Result.ShouldBe(EResultCode.StorageEntityBusy);
     }
 
     [Fact]

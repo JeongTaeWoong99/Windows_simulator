@@ -12,7 +12,7 @@ public partial class User
     /// <returns>판매에 성공했으면 true.</returns>
     public bool TrySellItems(IReadOnlyDictionary<int, int> request, long gold, out List<ItemChangeInfo> changes)
     {
-        if (!Inventory.TryRemoveItems(request, out changes))
+        if (!TryRemoveItems(request, out changes))
         {
             return false;
         }
@@ -92,7 +92,7 @@ public partial class User
         }
 
         // 받을 캐릭터(가챠 지급 대기)는 세지 않는다 — 지급이 실패하면 0명이 된다.
-        if (characterIds.Count > 0 && characterIds.Count >= _characters.Count)
+        if (characterIds.Count > 0 && characterIds.Count >= OwnedCharacterCount)
         {
             Reject(EResultCode.SellLastCharacter, "캐릭터가 하나도 남지 않는다");
             return;
@@ -100,11 +100,11 @@ public partial class User
 
         foreach (var equipId in equipIds)
         {
-            _equips.Remove(equipId);
+            RemoveEquip(equipId);
         }
         foreach (var characterId in characterIds)
         {
-            _characters.Remove(characterId);
+            RemoveCharacter(characterId);
         }
 
         _gold = checked(_gold + gold);

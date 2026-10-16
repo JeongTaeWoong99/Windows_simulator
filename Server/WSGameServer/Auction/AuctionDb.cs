@@ -398,22 +398,22 @@ public static class AuctionDb
             "SELECT COUNT(*) FROM t_auction_trade WHERE seller_id = @sellerId AND state = 1;", new { sellerId });
     }
 
-    /// <summary>우편으로 온 잠긴 장비를 받는다 — 잠금을 풀고 창고 칸을 준다. 이미 풀렸으면 false.</summary>
+    /// <summary>우편으로 온 잠긴 장비를 받는다 — 잠금을 풀고 인벤토리 칸을 준다(창고에서 등록했어도 인벤토리로). 이미 풀렸으면 false.</summary>
     public static async Task<bool> UnlockEquipAsync(DbConnection connection, long equipId, long userId, int slotPosition)
     {
         var changed = await connection.ExecuteAsync(
-            @"UPDATE t_user_equip SET auction_trade_id = 0, slot_position = @slotPosition
+            @"UPDATE t_user_equip SET auction_trade_id = 0, container = 0, slot_position = @slotPosition
               WHERE equip_id = @equipId AND user_id = @userId AND auction_trade_id <> 0;",
             new { equipId, userId, slotPosition });
 
         return changed == 1;
     }
 
-    /// <summary>우편으로 온 잠긴 캐릭터를 받는다 — 잠금을 풀고 인벤토리 칸을 준다. 이미 풀렸거나 남의 캐릭터면 false.</summary>
+    /// <summary>우편으로 온 잠긴 캐릭터를 받는다 — 잠금을 풀고 인벤토리 칸을 준다(창고에서 등록했어도 인벤토리로). 이미 풀렸거나 남의 캐릭터면 false.</summary>
     public static async Task<bool> UnlockCharacterAsync(DbConnection connection, long characterId, long userId, int slot)
     {
         var changed = await connection.ExecuteAsync(
-            @"UPDATE t_character SET auction_trade_id = 0, slot = @slot
+            @"UPDATE t_character SET auction_trade_id = 0, container = 0, slot = @slot
               WHERE character_id = @characterId AND user_id = @userId AND auction_trade_id <> 0;",
             new { characterId, userId, slot });
 

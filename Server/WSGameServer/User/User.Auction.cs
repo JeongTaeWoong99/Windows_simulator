@@ -79,7 +79,7 @@ public partial class User
         var artifactCount = 0;
         if (kind == EAuctionKind.Item)
         {
-            Inventory.TryRemoveItems(new Dictionary<int, int> { [itemTid] = count }, out changes);
+            TryRemoveItems(new Dictionary<int, int> { [itemTid] = count }, out changes);
         }
         else if (kind == EAuctionKind.Artifact)
         {
@@ -88,11 +88,11 @@ public partial class User
         }
         else if (kind == EAuctionKind.Equip)
         {
-            _equips.Remove(equipId);
+            RemoveEquip(equipId);
         }
         else
         {
-            _characters.Remove(characterId);
+            RemoveCharacter(characterId);
         }
 
         _gold -= fee;
@@ -117,7 +117,7 @@ public partial class User
             return (EResultCode.AuctionInvalidRequest, null, 0);
         }
 
-        if (Inventory.GetCount(itemTid) < count)
+        if (GetItemCount(itemTid) < count)
         {
             return (EResultCode.NotEnoughItem, null, 0);
         }
@@ -203,7 +203,7 @@ public partial class User
             return (EResultCode.AuctionCharacterBusy, null, 0);
         }
 
-        if (_characters.Count <= 1)
+        if (OwnedCharacterCount <= 1)
         {
             return (EResultCode.AuctionLastCharacter, null, 0);
         }

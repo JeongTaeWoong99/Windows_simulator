@@ -118,6 +118,42 @@ public sealed class Inventory(EContainer container = EContainer.Inventory)
         return true;
     }
 
+    /// <summary>
+    /// 두 보관함에 걸쳐 뺀다 — first에서 먼저, 모자란 만큼 second에서(T-164). 합쳐도 모자라면 아무것도 바꾸지 않는다.
+    /// </summary>
+    public static bool TryRemoveAcross(Inventory first, Inventory second, IReadOnlyDictionary<int, int> request,
+        out List<ItemChangeInfo> changes)
+    {
+        changes = new List<ItemChangeInfo>();
+
+        var fromFirst  = new Dictionary<int, int>();
+        var fromSecond = new Dictionary<int, int>();
+        foreach (var (itemId, count) in request)
+        {
+            if (count <= 0 || first.GetCount(itemId) + second.GetCount(itemId) < count)
+            {
+                return false;
+            }
+
+            var taken = Math.Min(count, first.GetCount(itemId));
+            if (taken > 0)
+            {
+                fromFirst[itemId] = taken;
+            }
+            if (count > taken)
+            {
+                fromSecond[itemId] = count - taken;
+            }
+        }
+
+        // 위에서 양쪽 수량을 다 확인했으므로 둘 다 성공한다.
+        first.TryRemoveItems(fromFirst, out var firstChanges);
+        second.TryRemoveItems(fromSecond, out var secondChanges);
+        changes.AddRange(firstChanges);
+        changes.AddRange(secondChanges);
+        return true;
+    }
+
     /// <summary>그 칸의 자원. 비었으면 false.</summary>
     public bool TryGetAt(int slot, out Item item)
     {

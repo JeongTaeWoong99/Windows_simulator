@@ -63,7 +63,6 @@ public partial class User
     }
 
     // 표에 없는 TID는 등급·산업 0, 이름 ""이다 — 클라도 같은 칸을 '?#'으로 그리고 뒤로 민다.
-    // 창고의 개체는 배치·장착될 수 없어 "나가 있는 것"이 없다.
     private List<StorageSortEntry> SortEntries(EContainer container, EStorageTab tab)
     {
         if (tab == EStorageTab.Resource)

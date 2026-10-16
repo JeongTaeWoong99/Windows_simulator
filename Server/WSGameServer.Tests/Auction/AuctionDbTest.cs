@@ -298,6 +298,19 @@ public class AuctionDbTest : IDisposable
     }
 
     [Fact]
+    public async Task 창고에서_등록한_장비도_받으면_인벤토리로_들어온다()
+    {
+        // 창고 칸 번호를 들고 인벤토리 칸을 받으면 창고 격자에서 다른 장비와 겹친다
+        var tradeId = await RegisterSword(55);
+        _db.Execute("UPDATE t_user_equip SET container = 1 WHERE equip_id = 55");
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 500, 500, Now);
+
+        await AuctionDb.UnlockEquipAsync(Conn, 55, Buyer, slotPosition: 3);
+
+        Scalar("SELECT container FROM t_user_equip WHERE equip_id = 55").ShouldBe(0);
+    }
+
+    [Fact]
     public async Task 남의_잠긴_장비는_받을_수_없다()
     {
         var tradeId = await RegisterSword(55);

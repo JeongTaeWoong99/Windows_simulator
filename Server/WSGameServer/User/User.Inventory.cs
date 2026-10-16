@@ -33,8 +33,19 @@ public partial class User
         return itemChangeInfo;
     }
 
-    /// <summary>보유 수량. 없으면 0.</summary>
-    public int GetItemCount(int itemId) => Inventory.GetCount(itemId);
+    /// <summary>보유 수량 — 인벤토리와 창고를 합친다. 없으면 0.</summary>
+    public int GetItemCount(int itemId) => Inventory.GetCount(itemId) + Warehouse.GetCount(itemId);
+
+    /// <summary>count개를 빼면 인벤토리 칸이 비는가. 인벤토리에서 먼저 빼므로 인벤토리 몫이 count 이하면 빈다.</summary>
+    public bool FreesInventorySlot(int itemId, int count)
+    {
+        var held = Inventory.GetCount(itemId);
+        return held > 0 && held <= count;
+    }
+
+    // 인벤토리 먼저, 모자란 만큼 창고에서. 하나라도 모자라면 아무것도 바꾸지 않는다 — 판매·경매·상자·큐브가 모두 여기를 지난다.
+    private bool TryRemoveItems(IReadOnlyDictionary<int, int> request, out List<ItemChangeInfo> changes)
+        => Inventory.TryRemoveAcross(Inventory, Warehouse, request, out changes);
 
     /// <summary>
     /// 아이템을 한꺼번에 뺀다(상자 개봉 등). 하나라도 모자라면 아무것도 바꾸지 않고 false.
@@ -42,7 +53,7 @@ public partial class User
     /// </summary>
     public bool TryConsumeItems(IReadOnlyDictionary<int, int> request, out List<ItemChangeInfo> changes)
     {
-        if (!Inventory.TryRemoveItems(request, out changes))
+        if (!TryRemoveItems(request, out changes))
         {
             return false;
         }

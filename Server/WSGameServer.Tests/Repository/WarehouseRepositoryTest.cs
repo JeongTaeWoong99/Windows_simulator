@@ -65,8 +65,6 @@ public class WarehouseRepositoryTest : IDisposable
         b.Channel.SentOf<S_InventoryResponse>().Last().Items!
             .Select(i => (i.Container, i.ItemId, i.Count, i.Slot))
             .ShouldBe(new[] { (EContainer.Warehouse, 10001, 5, 2) });
-        user.GetItemCount(10001).ShouldBe(0);
-        user.TryGetCharacter(41, out _).ShouldBeFalse();
         b.Channel.SentOf<S_CharacterListResponse>().Last().Characters
             .Single(c => c.CharacterId == 41).Container.ShouldBe(EContainer.Warehouse);
     }

@@ -16,8 +16,25 @@ public partial class User
 
     public IReadOnlyCollection<Equip> Equips => _equips.Values;
 
+    /// <summary>인벤토리와 창고를 함께 본다 — 창고는 놓인 자리일 뿐이다(T-164).</summary>
     public bool TryGetEquip(long equipId, out Equip equip)
-        => _equips.TryGetValue(equipId, out equip!);
+    {
+        if (_equips.TryGetValue(equipId, out equip!))
+        {
+            return true;
+        }
+
+        return _warehouseEquips.TryGetValue(equipId, out equip!);
+    }
+
+    // 있는 쪽에서 지운다(판매·경매 등록).
+    private void RemoveEquip(long equipId)
+    {
+        if (!_equips.Remove(equipId))
+        {
+            _warehouseEquips.Remove(equipId);
+        }
+    }
 
     /// <summary>DB에서 읽은 개체·매핑을 적재한다(로그인 시 1회). 캐릭터 적재 뒤, 작업슬롯 적재 앞이다 — 슬롯 속도의 근거다.</summary>
     public void LoadEquips(IReadOnlyList<UserEquipRow> equipRows, IReadOnlyList<CharacterEquipRow> wornRows)
@@ -41,7 +58,7 @@ public partial class User
         foreach (var r in wornRows)
         {
             var slot = (EquipSlot)r.slot;
-            if (!_equips.TryGetValue(r.equip_id, out var equip) || !_characters.ContainsKey(r.character_id) || !EquipCatalog.IsValidSlot(slot))
+            if (!TryGetEquip(r.equip_id, out var equip) || !TryGetCharacter(r.character_id, out _) || !EquipCatalog.IsValidSlot(slot))
             {
                 ServerLog.Warn("로그인", $"착용 매핑이 가리키는 대상이 없어 건너뜀: 캐릭터 {r.character_id} 칸 {r.slot} 장비 {r.equip_id}");
                 continue;
@@ -57,9 +74,7 @@ public partial class User
     {
         Send(new S_EquipListResponse
         {
-            Equips = _equips.Values.Select(e => ToEquipInfo(e))
-                .Concat(_warehouseEquips.Values.Select(e => ToEquipInfo(e, EContainer.Warehouse)))
-                .ToList(),
+            Equips = _equips.Values.Concat(_warehouseEquips.Values).Select(ToEquipInfo).ToList(),
         });
     }
 
@@ -359,11 +374,12 @@ public partial class User
         Send(new S_EquipSyncResponse { Equips = new List<EquipInfo> { ToEquipInfo(equip) } });
     }
 
-    private static EquipInfo ToEquipInfo(Equip e, EContainer container = EContainer.Inventory)
+    // 보관함은 개체가 지금 있는 쪽에서 읽는다 — 창고 장비의 싱크에 인벤토리를 실으면 클라는 옮겨진 줄 안다.
+    private EquipInfo ToEquipInfo(Equip e)
     {
         return new EquipInfo
         {
-            Container           = container,
+            Container           = _warehouseEquips.ContainsKey(e.Id) ? EContainer.Warehouse : EContainer.Inventory,
             EquipId             = e.Id,
             EquipTid            = e.Tid,
             EquippedCharacterId = e.EquippedCharacterId,

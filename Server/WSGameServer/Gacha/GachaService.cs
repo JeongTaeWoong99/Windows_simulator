@@ -108,7 +108,7 @@ public sealed class GachaService : Singleton<GachaService>
 
         // 상자를 전부 열면 그 상자 칸이 빈다 — 빈 칸까지 보고 판정한다.
         var rolled = Roll(pool.PickMany(count));
-        var freed  = user.GetItemCount(itemTid) == count ? itemTid : 0;
+        var freed  = user.FreesInventorySlot(itemTid, count) ? itemTid : 0;
         var fits   = HasStorageFor(user, rolled.Select(r => r.Entry).ToList(), freed);
 
         // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.

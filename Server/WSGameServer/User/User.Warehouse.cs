@@ -4,8 +4,8 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 창고 — 인벤토리 확장 보관소(T-107). 창고의 것은 인벤토리와 다른 묶음에 있어서
-/// 채취·판매·배치·장착·경매가 보지 못한다 — "꺼내야 쓴다"는 검사를 더해서가 아니라 기존 코드가 못 봐서 성립한다.
+/// 창고 — 인벤토리 확장 보관소(T-107). 놓인 자리일 뿐이라 쓰는 데는 인벤토리와 같다(T-164) —
+/// 조회(TryGetCharacter·TryGetEquip)와 자원 차감이 양쪽을 본다. 지급만 언제나 인벤토리로 들어온다.
 /// </summary>
 public partial class User
 {
@@ -46,12 +46,12 @@ public partial class User
         if (tab == EStorageTab.Character)
         {
             TransferEntity(tab, from, to, fromSlot, toSlot, CharactersOf(from), CharactersOf(to),
-                c => c.Id, c => c.Slot, (c, slot) => c.Slot = slot, c => IsCharacterBusy(c.Id));
+                c => c.Id, c => c.Slot, (c, slot) => c.Slot = slot);
             return;
         }
 
         TransferEntity(tab, from, to, fromSlot, toSlot, EquipsOf(from), EquipsOf(to),
-            e => e.Id, e => e.SlotPosition, (e, slot) => e.SlotPosition = slot, e => e.IsEquipped);
+            e => e.Id, e => e.SlotPosition, (e, slot) => e.SlotPosition = slot);
     }
 
     private void TransferResource(EContainer from, EContainer to, int fromSlot, int toSlot, int count)
@@ -151,10 +151,10 @@ public partial class User
         return row.MaxStack;
     }
 
-    // 캐릭터·장비. 인벤토리를 떠나는 쪽만 "사용 중"을 본다 — 창고에서 들어오는 것은 원래 쓰이지 않는 상태다.
+    // 캐릭터·장비. 배치·착용 중이어도 옮긴다 — 슬롯·착용 매핑은 개체 id를 가리키므로 보관함이 바뀌어도 그대로다.
     private void TransferEntity<T>(EStorageTab tab, EContainer from, EContainer to, int fromSlot, int toSlot,
         Dictionary<long, T> src, Dictionary<long, T> dst,
-        Func<T, long> idOf, Func<T, int> slotOf, Action<T, int> setSlot, Func<T, bool> isBusy) where T : class
+        Func<T, long> idOf, Func<T, int> slotOf, Action<T, int> setSlot) where T : class
     {
         var moving = src.Values.FirstOrDefault(e => slotOf(e) == fromSlot);
         if (moving is null)
@@ -163,13 +163,7 @@ public partial class User
             return;
         }
 
-        var other   = dst.Values.FirstOrDefault(e => slotOf(e) == toSlot);
-        var leaving = from == EContainer.Inventory ? moving : other;
-        if (leaving is not null && isBusy(leaving))
-        {
-            SendTransfer(EResultCode.StorageEntityBusy, tab, new List<WarehouseChangeInfo>());
-            return;
-        }
+        var other = dst.Values.FirstOrDefault(e => slotOf(e) == toSlot);
 
         var moves = new List<EntityMove> { new(idOf(moving), to, toSlot) };
         src.Remove(idOf(moving));

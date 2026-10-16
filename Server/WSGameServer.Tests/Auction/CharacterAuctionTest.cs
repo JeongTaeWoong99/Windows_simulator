@@ -181,6 +181,18 @@ public class CharacterAuctionTest : IDisposable
         (await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer, 0)).ShouldBeFalse();
     }
 
+    [Fact]
+    public async Task 창고에서_등록한_캐릭터도_받으면_인벤토리로_들어온다()
+    {
+        var tradeId = await RegisterInDb();
+        _db.Execute($"UPDATE t_character SET container = 1 WHERE character_id = {CharA}");
+        await AuctionDb.SettleAsync(Conn, tradeId, Buyer, 900, 50, 950, Now);
+
+        await AuctionDb.UnlockCharacterAsync(Conn, CharA, Buyer, 0);
+
+        Scalar($"SELECT container FROM t_character WHERE character_id = {CharA}").ShouldBe(0);
+    }
+
     // ── 우편 수령 ──
 
     [Fact]
