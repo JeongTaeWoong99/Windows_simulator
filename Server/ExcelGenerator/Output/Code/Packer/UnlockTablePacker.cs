@@ -19,7 +19,9 @@ namespace GameData
             Gold               = PackerUtil.ParseInt(cells[2], Table, "Gold", 0, null),
             AccountLevel       = PackerUtil.ParseInt(cells[3], Table, "AccountLevel", 0, null),
             RequiredUnlockTIDs = cells[4].Length > 0 ? PackerUtil.ParseIntArray(cells[4], Table, "RequiredUnlockTIDs") : System.Array.Empty<int>(),
-            Description        = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",
+            ItemTIDs           = cells[5].Length > 0 ? PackerUtil.ParseIntArray(cells[5], Table, "ItemTIDs") : System.Array.Empty<int>(),
+            ItemCounts         = cells[6].Length > 0 ? PackerUtil.ParseIntArray(cells[6], Table, "ItemCounts") : System.Array.Empty<int>(),
+            Description        = cells[7].Length > 0 ? PackerUtil.RequireString(cells[7], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

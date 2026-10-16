@@ -1,0 +1,32 @@
+[
+  {
+    "BuildingTID": 1,
+    "Name": "농장",
+    "Industry": "Farming",
+    "Description": "산업당 1개 · TID = IndustryType 값"
+  },
+  {
+    "BuildingTID": 2,
+    "Name": "발굴 캠프",
+    "Industry": "Excavation",
+    "Description": "산업당 1개 · TID = IndustryType 값"
+  },
+  {
+    "BuildingTID": 3,
+    "Name": "광산",
+    "Industry": "Mining",
+    "Description": "산업당 1개 · TID = IndustryType 값"
+  },
+  {
+    "BuildingTID": 4,
+    "Name": "제재소",
+    "Industry": "Logging",
+    "Description": "산업당 1개 · TID = IndustryType 값"
+  },
+  {
+    "BuildingTID": 5,
+    "Name": "사냥꾼 오두막",
+    "Industry": "Hunting",
+    "Description": "산업당 1개 · TID = IndustryType 값"
+  }
+]

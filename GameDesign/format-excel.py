@@ -66,6 +66,11 @@ def style(cell, *, horizontal=None, bold=None, color=None, fill=None, border=Non
 
 
 def fit_widths(ws):
+    # ClosedXML은 너비가 같은 열을 한 묶음(min~max)으로 저장한다. 낱개로 풀지 않으면 옆 열 너비와 범위가 겹쳐
+    # ClosedXML이 그 파일을 다시 저장하지 못한다(생성기의 번역 시트 저장 — "same key" 오류).
+    for dim in ws.column_dimensions.values():
+        if dim.min is not None:
+            dim.max = dim.min
     widths = {}
     for row in ws.iter_rows():
         for cell in row:

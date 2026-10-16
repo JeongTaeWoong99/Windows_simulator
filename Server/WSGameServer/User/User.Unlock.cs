@@ -30,7 +30,7 @@ public partial class User
 
     /// <summary>
     /// 유저의 해금 요청. 판정 순서는 해금 기획 2.1 — <b>차감이 맨 뒤다.</b>
-    /// 무료 조건(선행·레벨·재화 선택)을 먼저 거르고 전부 통과했을 때만 골드를 뺀다. 되돌리는 코드가 없어야 한다.
+    /// 무료 조건(선행·레벨·재화 선택)과 보유량(골드·자원)을 먼저 전부 보고, 그 뒤에만 뺀다. 되돌리는 코드가 없어야 한다.
     /// </summary>
     public void TryUnlock(int unlockTid, CurrencyType currency, DateTime now)
     {
@@ -48,6 +48,7 @@ public partial class User
         }
 
         // 지불 컬럼은 Gold 하나다. 지불 컬럼이 늘면 여기에 분기를 더한다 — 지불 컬럼끼리는 OR(해금 #16).
+        // 자원 비용(ItemTIDs)은 지불 수단이 아니라 함께 내는 조건이다 — 적힌 종을 전부 낸다(건물 3.1).
         if (row.Gold > 0)
         {
             if (currency != CurrencyType.Gold)
@@ -56,11 +57,35 @@ public partial class User
                 return;
             }
 
-            if (!TrySpendGold(row.Gold))
+            if (Gold < row.Gold)
             {
                 Reject(EResultCode.NotEnoughCurrency, $"골드 {Gold} < {row.Gold}");
                 return;
             }
+        }
+
+        var itemCost = ItemCostOf(row);
+        var lacking  = itemCost.FirstOrDefault(kv => GetItemCount(kv.Key) < kv.Value);
+        if (lacking.Value > 0)
+        {
+            Reject(EResultCode.NotEnoughItem, $"자원 {lacking.Key} {GetItemCount(lacking.Key)} < {lacking.Value}");
+            return;
+        }
+
+        // 위에서 둘 다 확인했으므로 여기서는 실패하지 않는다.
+        if (row.Gold > 0 && !TrySpendGold(row.Gold))
+        {
+            throw new InvalidOperationException($"확인한 골드를 빼지 못했다 — Uid={Uid} UnlockTID={unlockTid}");
+        }
+
+        if (itemCost.Count > 0)
+        {
+            if (!TryConsumeItems(itemCost, out var consumed))
+            {
+                throw new InvalidOperationException($"확인한 자원을 빼지 못했다 — Uid={Uid} UnlockTID={unlockTid}");
+            }
+
+            Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = consumed });
         }
 
         ApplyUnlock(unlockTid, now);
@@ -71,6 +96,18 @@ public partial class User
             ServerLog.Warn("해금", $"거절 — {reason}. Uid={Uid} UnlockTID={unlockTid} Currency={currency}");
             Send(new S_UnlockResponse { Result = code, UnlockTID = unlockTid });
         }
+    }
+
+    // 같은 TID가 두 번 적혀도 한 번에 합쳐 센다 — 따로 보면 각각은 충분해도 합이 모자랄 수 있다.
+    private static Dictionary<int, int> ItemCostOf(UnlockTableRow row)
+    {
+        var cost = new Dictionary<int, int>();
+        for (var i = 0; i < row.ItemTIDs.Length; i++)
+        {
+            cost[row.ItemTIDs[i]] = cost.GetValueOrDefault(row.ItemTIDs[i]) + row.ItemCounts[i];
+        }
+
+        return cost;
     }
 
     /// <summary>
@@ -124,6 +161,13 @@ public partial class User
     // 기록 → 저장 → 응답 → 콘텐츠 후속. 해금 시스템은 "열렸다"까지만 알고, 열린 뒤의 변화는 콘텐츠가 자기 패킷으로 알린다.
     private void ApplyUnlock(int unlockTid, DateTime now)
     {
+        // 건물 노드가 속도·산출량을 바꾸면 열기 전에 정산한다 — 새 효과가 지난 구간에 소급되지 않게.
+        var touchesWork = _unlockCatalog.TryGetBuildingNode(unlockTid, out var node) && node.EffectType != BuildingEffectType.None;
+        if (touchesWork)
+        {
+            SettleWorkStation(now);
+        }
+
         _unlocks.Add(unlockTid);
         PostDBTask(new SaveUnlockRepository(this, unlockTid));
 
@@ -131,5 +175,10 @@ public partial class User
         Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
 
         OnWorkSlotUnlocked(unlockTid, now);
+
+        if (touchesWork && node.EffectType == BuildingEffectType.SpeedAdd)
+        {
+            ApplyWorkStationSpeed(notify: true);
+        }
     }
 }

@@ -110,6 +110,31 @@
     "EN": "돌 도끼"
   },
   {
+    "Key": "Building.1.Name",
+    "KR": "농장",
+    "EN": "농장"
+  },
+  {
+    "Key": "Building.2.Name",
+    "KR": "발굴 캠프",
+    "EN": "발굴 캠프"
+  },
+  {
+    "Key": "Building.3.Name",
+    "KR": "광산",
+    "EN": "광산"
+  },
+  {
+    "Key": "Building.4.Name",
+    "KR": "제재소",
+    "EN": "제재소"
+  },
+  {
+    "Key": "Building.5.Name",
+    "KR": "사냥꾼 오두막",
+    "EN": "사냥꾼 오두막"
+  },
+  {
     "Key": "Character.1001.Name",
     "KR": "램볼",
     "EN": "램볼"
@@ -3248,6 +3273,156 @@
     "Key": "Unlock.1007.Name",
     "KR": "작업슬롯 7번",
     "EN": "작업슬롯 7번"
+  },
+  {
+    "Key": "Unlock.4101.Name",
+    "KR": "농장 Lv1",
+    "EN": "농장 Lv1"
+  },
+  {
+    "Key": "Unlock.4102.Name",
+    "KR": "농장 Lv2",
+    "EN": "농장 Lv2"
+  },
+  {
+    "Key": "Unlock.4103.Name",
+    "KR": "농장 Lv3",
+    "EN": "농장 Lv3"
+  },
+  {
+    "Key": "Unlock.4111.Name",
+    "KR": "농장 작업속도 I",
+    "EN": "농장 작업속도 I"
+  },
+  {
+    "Key": "Unlock.4112.Name",
+    "KR": "농장 산출량 I",
+    "EN": "농장 산출량 I"
+  },
+  {
+    "Key": "Unlock.4113.Name",
+    "KR": "농장 작업속도 II",
+    "EN": "농장 작업속도 II"
+  },
+  {
+    "Key": "Unlock.4201.Name",
+    "KR": "발굴 캠프 Lv1",
+    "EN": "발굴 캠프 Lv1"
+  },
+  {
+    "Key": "Unlock.4202.Name",
+    "KR": "발굴 캠프 Lv2",
+    "EN": "발굴 캠프 Lv2"
+  },
+  {
+    "Key": "Unlock.4203.Name",
+    "KR": "발굴 캠프 Lv3",
+    "EN": "발굴 캠프 Lv3"
+  },
+  {
+    "Key": "Unlock.4211.Name",
+    "KR": "발굴 캠프 작업속도 I",
+    "EN": "발굴 캠프 작업속도 I"
+  },
+  {
+    "Key": "Unlock.4212.Name",
+    "KR": "발굴 캠프 산출량 I",
+    "EN": "발굴 캠프 산출량 I"
+  },
+  {
+    "Key": "Unlock.4213.Name",
+    "KR": "발굴 캠프 작업속도 II",
+    "EN": "발굴 캠프 작업속도 II"
+  },
+  {
+    "Key": "Unlock.4301.Name",
+    "KR": "광산 Lv1",
+    "EN": "광산 Lv1"
+  },
+  {
+    "Key": "Unlock.4302.Name",
+    "KR": "광산 Lv2",
+    "EN": "광산 Lv2"
+  },
+  {
+    "Key": "Unlock.4303.Name",
+    "KR": "광산 Lv3",
+    "EN": "광산 Lv3"
+  },
+  {
+    "Key": "Unlock.4311.Name",
+    "KR": "광산 작업속도 I",
+    "EN": "광산 작업속도 I"
+  },
+  {
+    "Key": "Unlock.4312.Name",
+    "KR": "광산 산출량 I",
+    "EN": "광산 산출량 I"
+  },
+  {
+    "Key": "Unlock.4313.Name",
+    "KR": "광산 작업속도 II",
+    "EN": "광산 작업속도 II"
+  },
+  {
+    "Key": "Unlock.4401.Name",
+    "KR": "제재소 Lv1",
+    "EN": "제재소 Lv1"
+  },
+  {
+    "Key": "Unlock.4402.Name",
+    "KR": "제재소 Lv2",
+    "EN": "제재소 Lv2"
+  },
+  {
+    "Key": "Unlock.4403.Name",
+    "KR": "제재소 Lv3",
+    "EN": "제재소 Lv3"
+  },
+  {
+    "Key": "Unlock.4411.Name",
+    "KR": "제재소 작업속도 I",
+    "EN": "제재소 작업속도 I"
+  },
+  {
+    "Key": "Unlock.4412.Name",
+    "KR": "제재소 산출량 I",
+    "EN": "제재소 산출량 I"
+  },
+  {
+    "Key": "Unlock.4413.Name",
+    "KR": "제재소 작업속도 II",
+    "EN": "제재소 작업속도 II"
+  },
+  {
+    "Key": "Unlock.4501.Name",
+    "KR": "사냥꾼 오두막 Lv1",
+    "EN": "사냥꾼 오두막 Lv1"
+  },
+  {
+    "Key": "Unlock.4502.Name",
+    "KR": "사냥꾼 오두막 Lv2",
+    "EN": "사냥꾼 오두막 Lv2"
+  },
+  {
+    "Key": "Unlock.4503.Name",
+    "KR": "사냥꾼 오두막 Lv3",
+    "EN": "사냥꾼 오두막 Lv3"
+  },
+  {
+    "Key": "Unlock.4511.Name",
+    "KR": "사냥꾼 오두막 작업속도 I",
+    "EN": "사냥꾼 오두막 작업속도 I"
+  },
+  {
+    "Key": "Unlock.4512.Name",
+    "KR": "사냥꾼 오두막 산출량 I",
+    "EN": "사냥꾼 오두막 산출량 I"
+  },
+  {
+    "Key": "Unlock.4513.Name",
+    "KR": "사냥꾼 오두막 작업속도 II",
+    "EN": "사냥꾼 오두막 작업속도 II"
   },
   {
     "Key": "UserTrait.101.Name",

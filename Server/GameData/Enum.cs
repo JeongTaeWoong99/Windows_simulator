@@ -117,4 +117,14 @@ namespace GameData
 
         Max         ,
     };
+
+    public enum BuildingEffectType : byte
+    {
+        None     = 0,
+
+        SpeedAdd = 1,  // 작업속도 가산 — EffectValue 천분율, 그 건물의 산업에만
+        YieldAdd = 2,  // 산출량 가산 — EffectValue 천분율, 그 건물의 산업에만
+
+        Max     ,
+    };
 }

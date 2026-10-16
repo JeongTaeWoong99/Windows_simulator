@@ -18,6 +18,21 @@ public class UnlockCatalogTest
         WorkSlotTID = index, UnlockTID = unlockTid,
     };
 
+    private static UnlockTableRow ResourceUnlock(int tid, int[] itemTids, int[] itemCounts) => new()
+    {
+        UnlockTID = tid, Name = $"해금 {tid}", ItemTIDs = itemTids, ItemCounts = itemCounts,
+    };
+
+    private static readonly BuildingTableRow[] Buildings =
+    {
+        new() { BuildingTID = 2, Name = "발굴 캠프", Industry = IndustryType.Excavation },
+    };
+
+    private static BuildingNodeTableRow Node(int unlockTid, int buildingTid, BuildingEffectType effect, int value) => new()
+    {
+        UnlockTID = unlockTid, BuildingTID = buildingTid, Level = 0, EffectType = effect, EffectValue = value,
+    };
+
     [Fact]
     public void 해금_TID로_행을_조회한다()
     {
@@ -112,19 +127,70 @@ public class UnlockCatalogTest
     }
 
     [Fact]
-    public void 실데이터는_해금_6개_작업슬롯_8칸이_등록된다()
+    public void 실데이터는_해금_36개_작업슬롯_8칸이_등록된다()
     {
         GameTableFixture.EnsureLoaded();
         var catalog = new UnlockCatalog();
         catalog.LoadAll();
 
-        // 작업슬롯 6. 특성은 레벨형이 되어 해금을 쓰지 않는다(T-108)
-        catalog.Count.ShouldBe(6);
+        // 작업슬롯 6 + 건물 5개 × (레벨 3 + 노드 3) = 36. 특성은 레벨형이 되어 해금을 쓰지 않는다(T-108)
+        catalog.Count.ShouldBe(36);
         catalog.WorkSlots.Count.ShouldBe(8);
 
         // 상한 칸(7번)은 1007이 연다. 시작 2칸(0·1번)은 해금 0이다.
         catalog.TryGetWorkSlotOf(1007, out var last).ShouldBeTrue();
         last.ShouldBe(7);
         catalog.WorkSlots.Count(s => s.UnlockTID == 0).ShouldBe(2);
+    }
+
+    [Fact]
+    public void 건물_노드는_해금_TID로_그_건물의_산업과_효과를_찾는다()
+    {
+        var catalog = new UnlockCatalog();
+        catalog.Load(new[] { Unlock(9211) }, new[] { Slot(0, 0) },
+                     buildingRows: Buildings, buildingNodeRows: new[] { Node(9211, 2, BuildingEffectType.SpeedAdd, 30) });
+
+        catalog.TryGetBuildingNode(9211, out var node).ShouldBeTrue();
+        node.ShouldBe(new BuildingNodeEffect(IndustryType.Excavation, BuildingEffectType.SpeedAdd, 30));
+        catalog.TryGetBuildingNode(9999, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 건물_노드가_없는_해금을_가리키면_로드를_막는다()
+    {
+        var catalog = new UnlockCatalog();
+
+        Should.Throw<InvalidOperationException>(() =>
+            catalog.Load(new[] { Unlock(9211) }, new[] { Slot(0, 0) },
+                         buildingRows: Buildings, buildingNodeRows: new[] { Node(9999, 2, BuildingEffectType.SpeedAdd, 30) }));
+    }
+
+    [Fact]
+    public void 건물_노드의_건물이_건물_표에_없으면_로드를_막는다()
+    {
+        var catalog = new UnlockCatalog();
+
+        Should.Throw<InvalidOperationException>(() =>
+            catalog.Load(new[] { Unlock(9211) }, new[] { Slot(0, 0) },
+                         buildingRows: Buildings, buildingNodeRows: new[] { Node(9211, 7, BuildingEffectType.SpeedAdd, 30) }));
+    }
+
+    [Fact]
+    public void 자원_TID와_수량의_개수가_다르면_로드를_막는다()
+    {
+        // 짝이 어긋나면 어느 자원을 몇 개 받는지 알 수 없다 — 조용히 돌면 비용이 틀린 채 실린다.
+        var catalog = new UnlockCatalog();
+
+        Should.Throw<InvalidOperationException>(() =>
+            catalog.Load(new[] { ResourceUnlock(9201, new[] { 10001, 10002 }, new[] { 50 }) }, new[] { Slot(0, 0) }));
+    }
+
+    [Fact]
+    public void 자원_수량이_0_이하면_로드를_막는다()
+    {
+        var catalog = new UnlockCatalog();
+
+        Should.Throw<InvalidOperationException>(() =>
+            catalog.Load(new[] { ResourceUnlock(9201, new[] { 10001 }, new[] { 0 }) }, new[] { Slot(0, 0) }));
     }
 }

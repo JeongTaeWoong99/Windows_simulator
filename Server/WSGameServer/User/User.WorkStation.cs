@@ -159,7 +159,8 @@ public partial class User
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
                 // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
-                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry);
+                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry)
+                             + GetBuildingEffect(BuildingEffectType.YieldAdd, rolledSlot.Industry);
                 if (yieldAdd > 0)
                 {
                     foreach (var itemTid in harvest.Gained.Keys.ToList())
@@ -342,7 +343,9 @@ public partial class User
         return new WorkSpeedBreakdown(
             BaseWorkSpeed:       character.GetBaseWorkSpeed(slot.Industry),
             LevelAddPermille:    GetLevelSpeedAdd(slot.CharacterId),
-            TraitAddPermille:    GetTraitSpeedAdd(slot.Industry) + GetArtifactEffect(UserTraitEffect.SpeedAdd, slot.Industry),   // 아티팩트는 특성과 같은 자리(T-150)
+            // 아티팩트(T-150)·건물 노드(T-166)는 특성과 같은 자리 — 계정에 붙는 가산이다
+            TraitAddPermille:    GetTraitSpeedAdd(slot.Industry) + GetArtifactEffect(UserTraitEffect.SpeedAdd, slot.Industry)
+                                 + GetBuildingEffect(BuildingEffectType.SpeedAdd, slot.Industry),
             EquipAddPermille:    GetEquipSpeedAdd(slot.CharacterId, slot.Industry),
             StarAddPermille:     GetStarSpeedAdd(slot.CharacterId),
             GatherSpeedPermille: _gatherSpeed.Permille);
