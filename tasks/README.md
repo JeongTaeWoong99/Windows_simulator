@@ -54,7 +54,7 @@
 | [T-166](T-166-섬건물서버.md) | 서버 — **섬 건물** · 레벨·트리를 해금 행(`4xxx`)으로 · 자원 비용 · 속도·산출량 노드 ✅ 서버 (2026-10-16) · 클라 화면 → 이슈 #75 | 진우 | Resolve | 보통 | 261024 |
 | [T-163](T-163-클라창고물건사용표시.md) | 클라 — **창고 물건 사용 열기** · 제외 처리 걷기 · 좌하단 **창고 상자 아이콘** · ✅ 서버 [T-164](T-164-창고물건사용서버.md) · [이슈 #74](https://github.com/JeongTaeWoong99/Windows_simulator/issues/74) | 태웅 | New | 보통 | 261024 |
 | [T-105](T-105-자원사용처.md) | **검토 요청** — 남는 자원의 사용처 · ✅ 방향 결정: 섬 산업 건물(레벨 + 선행 노드 트리) · 건물 수·비용·노드 미정 (2026-10-16) | 진우 | Resolve | 보통 | 261024 |
-| [T-135](T-135-다국어시트구조.md) | 기획·서버 — **다국어 시트 구조** ✅(2026-10-16) · 문구 컬럼은 `Type = lstring` · 생성기가 `Localization.xlsx`에 행을 채움 · 클라는 `Loc.Get(row.NameLocKey)` · EN은 우편·유물 설명만 · [이슈 #64](https://github.com/JeongTaeWoong99/Windows_simulator/issues/64) | 진우 | Resolve | 보통 | 261024 |
+| [T-135](T-135-다국어시트구조.md) | 기획·서버 — **다국어 시트 구조** ✅(2026-10-16) · 문구 컬럼은 `Type = lstring` · 생성기가 `Excel/Localization/Loc_<테이블>.xlsx`에 행을 채움 · 클라는 `Loc.Get(row.NameLocKey)` · EN 전부 채움 · [이슈 #64](https://github.com/JeongTaeWoong99/Windows_simulator/issues/64) | 진우 | Resolve | 보통 | 261024 |
 | [T-159](T-159-자원잠금.md) | 서버·클라 — **자원 잠금** — 종류(TID) 단위 · 즉시 판매·경매 등록에서 제외 · 사용은 허용 · ✅ 서버(2026-10-16) · 남은 것: 클라 토글·자물쇠·일괄 담기 제외 · [이슈 #72](https://github.com/JeongTaeWoong99/Windows_simulator/issues/72) | 태웅 | New | 보통 | 261024 |
 | [T-160](T-160-자원칸별묶음서버.md) | 서버 — **자원 칸별 묶음** · `MaxStack`을 칸 하나의 상한으로 · 차면 빈 칸에 이어 쌓기 · 칸이 다 찼을 때만 `InventoryFull` · [이슈 #73](https://github.com/JeongTaeWoong99/Windows_simulator/issues/73) | 진우 | Resolve | 보통 | 261024 |
 | [T-161](T-161-클라다중칸표시.md) | 클라 — **같은 자원이 여러 칸에** · 칸 단위 캐시 · 보유량 합산 · ✅ 서버 [T-160](T-160-자원칸별묶음서버.md) · [이슈 #73](https://github.com/JeongTaeWoong99/Windows_simulator/issues/73) | 태웅 | New | 보통 | 261024 |
