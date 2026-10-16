@@ -29,6 +29,9 @@ tags: [excel, generator, localization, pipeline]
 - `LocalizationTable.Data.Item`은 못 쓴다 — 엑셀 시트 이름 한도 31자(`LocalizationTable.Data.Character` = 32). 사용자 확인 후 `Data`를 뺐다. 라벨 13자 초과면 생성기가 멈춘다.
 - EN 421칸 채움(T-166 해금·건물 행 포함) → `-LocStrict` 통과. 캐릭터 이름은 음역·의역 섞음 — 기획 검수 대상.
 
+- 이어서 **시트 → 파일로 다시 바꿨다**(사용자 제안): `Excel/Localization/Loc_<테이블>.xlsx` + `Loc_UI.xlsx`, 시트는 `LocalizationTable` 고정. 이유 — xlsx는 바이너리라 한 파일이면 어느 시트를 고쳐도 머지 충돌 · 31자 한도도 사라짐.
+  `Loc_` 접두는 Excel이 같은 이름 파일 둘을 동시에 못 열어서(원본 `Item.xlsx`와 나란히). 생성기 `LoadExcel`은 최상위만 읽어 하위 폴더는 자동 제외. `format-excel.py`는 인자 없이 돌리면 이 폴더도 포함.
+
 ## 후속 작업 / 주의사항
 - 클라(T-136): `Loc.Current` 설정 · 화면 문구를 `Loc.Get(row.NameLocKey)`로 · 고정 문구는 `UI` 시트에 키 추가.
 - EN 386칸 비어 있음 — 배포 전 `-LocStrict`로 막는다.

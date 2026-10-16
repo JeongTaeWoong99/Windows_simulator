@@ -142,7 +142,9 @@ def format_enum(ws):
 
 def main():
     names = sys.argv[1:]
-    paths = [os.path.join(EXCEL_DIR, n) for n in names] if names else sorted(glob.glob(os.path.join(EXCEL_DIR, "*.xlsx")))
+    # 인자는 Excel/ 기준 경로 (번역 파일은 Localization/Loc_Item.xlsx)
+    paths = [os.path.join(EXCEL_DIR, n) for n in names] if names else sorted(
+        glob.glob(os.path.join(EXCEL_DIR, "*.xlsx")) + glob.glob(os.path.join(EXCEL_DIR, "Localization", "*.xlsx")))
     for path in paths:
         if os.path.basename(path).startswith("~$"):
             continue

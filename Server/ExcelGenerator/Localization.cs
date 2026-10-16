@@ -4,18 +4,18 @@ using static ExcelGenerator.ExcelGenerator;
 namespace ExcelGenerator;
 
 /// <summary>
-/// 데이터 시트의 lstring 컬럼을 번역 파일(Localization.xlsx)과 맞추고, 언어별 값을 담은 LocalizationTable을 만든다.
-/// - LocalizationTable.Item 등 : 원본 테이블마다 한 시트. 생성기가 시트와 행을 만든다(Key · KR · Status). 사람은 언어 칸(EN …)만 쓴다
-/// - LocalizationTable.UI      : 사람이 키까지 쓴다 — 클라 고정 문구
+/// 데이터 시트의 lstring 컬럼을 번역 폴더(Excel/Localization)와 맞추고, 언어별 값을 담은 LocalizationTable을 만든다.
+/// 파일마다 시트 하나(LocalizationTable)이고 모두 테이블 하나로 합쳐진다.
+/// - Loc_Item.xlsx 등 : 원본 테이블마다 한 파일. 생성기가 파일과 행을 만든다(Key · KR · Status). 사람은 언어 칸(EN …)만 쓴다
+/// - Loc_UI.xlsx      : 사람이 키까지 쓴다 — 클라 고정 문구
 /// </summary>
 public static class Localization
 {
-    public const string FileName      = "Localization.xlsx";
+    public const string FolderName    = "Localization";
+    public const string FilePrefix    = "Loc_";
     public const string TableName     = "LocalizationTable";
-    public const string UiSheet       = TableName + ".UI";
+    public const string UiFile        = FilePrefix + "UI.xlsx";
     public const string LocalizedType = "lstring";
-
-    private const int MaxSheetName = 31;   // 엑셀 시트 이름 한도
 
     private const string KeyColumn    = "Key";
     private const string SourceColumn = "KR";   // 기준 언어 — 데이터 시트에 적힌 원문
@@ -35,26 +35,27 @@ public static class Localization
     /// </summary>
     public static void Apply(string excelDir, List<TableData> tables, bool strict)
     {
-        var path = Path.Combine(excelDir, FileName);
-        if (!File.Exists(path))
+        var dir = Path.Combine(excelDir, FolderName);
+        var uiPath = Path.Combine(dir, UiFile);
+        if (!File.Exists(uiPath))
         {
-            Console.WriteLine($"[번역] {FileName}이 없어 번역 테이블을 만들지 않는다.");
+            Console.WriteLine($"[번역] {FolderName}/{UiFile}이 없어 번역 테이블을 만들지 않는다.");
             return;
         }
 
         var sources = Collect(tables);
 
-        using var workbook = OpenWorkbook(path);
-        var uiSheet = RequireSheet(workbook, UiSheet);
-        var ui = ParseSheet(uiSheet);
-        var dataSheets = workbook.Worksheets.Where(IsDataSheet).ToList();
-        var data = Merge(ui, dataSheets.Select(ParseSheet));
+        var ui = ReadFile(uiPath);
+        var files = Directory.EnumerateFiles(dir, FilePrefix + "*.xlsx")
+            .Where(p => !Path.GetFileName(p).StartsWith("~$") && Path.GetFileName(p) != UiFile)
+            .ToDictionary(p => Path.GetFileName(p), ReadFile);
+        var data = Merge(ui, files.Values);
 
         var synced = Sync(sources, data);
-        if (WriteSheets(uiSheet, dataSheets, data.columnInfos, synced))
+        var written = WriteFiles(dir, files, data.columnInfos, synced);
+        if (written > 0)
         {
-            workbook.Save();
-            Console.WriteLine($"[번역] 번역 시트 갱신: {synced.Count}행 → {path}");
+            Console.WriteLine($"[번역] 번역 파일 {written}개 갱신 → {FolderName}/");
         }
 
         tables.Add(Build(sources, data with { Rows = synced }, ui, strict));
@@ -197,17 +198,13 @@ public static class Localization
         return new TableData(TableName, columns, rows);
     }
 
-    /// <summary>키가 들어갈 번역 시트 — 키 앞부분이 시트 라벨이다(Item.100061.Name → LocalizationTable.Item).</summary>
-    public static string SheetOf(string key)
+    /// <summary>키가 들어갈 번역 파일 — 키 앞부분이 파일 이름이다(Item.100061.Name → Loc_Item.xlsx).</summary>
+    public static string FileOf(string key)
     {
-        var name = $"{TableName}.{key.Split('.', 2)[0]}";
-        if (name == UiSheet)
+        var name = $"{FilePrefix}{key.Split('.', 2)[0]}.xlsx";
+        if (name == UiFile)
         {
-            throw new InvalidDataException($"번역 키 '{key}'가 {UiSheet} 시트와 겹친다 — 테이블 이름을 바꾼다.");
-        }
-        if (name.Length > MaxSheetName)
-        {
-            throw new InvalidDataException($"번역 시트 이름 '{name}'이 엑셀 한도 {MaxSheetName}자를 넘는다 — 테이블 이름을 줄인다.");
+            throw new InvalidDataException($"번역 키 '{key}'가 {UiFile}과 겹친다 — 테이블 이름을 바꾼다.");
         }
 
         return name;
@@ -307,12 +304,14 @@ public static class Localization
         }
     }
 
-    private static bool IsDataSheet(IXLWorksheet sheet)
+    /// <summary>번역 파일 하나의 시트를 읽는다. 표 이름은 파일 이름으로 둔다(오류 메시지용).</summary>
+    private static TableData ReadFile(string path)
     {
-        return sheet.Name.StartsWith(TableName + ".", StringComparison.Ordinal) && sheet.Name != UiSheet;
+        using var workbook = OpenWorkbook(path);
+        return ParseSheet(RequireSheet(workbook, path)) with { Name = Path.GetFileName(path) };
     }
 
-    /// <summary>번역 시트들을 한 표로 모은다. 컬럼은 UI 시트와 같아야 한다.</summary>
+    /// <summary>번역 파일들을 한 표로 모은다. 컬럼은 UI 파일과 같아야 한다.</summary>
     private static TableData Merge(TableData ui, IEnumerable<TableData> sheets)
     {
         var rows = new List<string[]>();
@@ -326,41 +325,49 @@ public static class Localization
     }
 
     /// <summary>
-    /// 행을 키 앞부분별 시트에 나눠 쓴다. 없는 시트는 UI 시트를 복사해 만들고(머리 행·서식), 원본에서 사라진 테이블의 시트는 지운다.
-    /// 내용이 같은 시트는 건드리지 않는다. 하나라도 바뀌면 true.
+    /// 행을 키 앞부분별 파일에 나눠 쓴다. 없는 파일은 UI 파일을 복사해 만들고(머리 행·서식), 원본에서 사라진 테이블의 파일은 지운다.
+    /// 내용이 같은 파일은 건드리지 않는다 — 저장하면 xlsx 바이트가 바뀌어 diff가 남는다. 바꾼 파일 수를 돌려준다.
     /// </summary>
-    private static bool WriteSheets(IXLWorksheet uiSheet, List<IXLWorksheet> dataSheets, IReadOnlyList<ColumnInfo> columns, List<string[]> rows)
+    private static int WriteFiles(string dir, Dictionary<string, TableData> files, IReadOnlyList<ColumnInfo> columns, List<string[]> rows)
     {
-        var changed = false;
-        var groups = rows.GroupBy(r => SheetOf(r[0])).ToList();
+        var written = 0;
+        var groups = rows.GroupBy(r => FileOf(r[0])).ToList();
         foreach (var group in groups)
         {
             var groupRows = group.ToList();
-            var sheet = dataSheets.FirstOrDefault(s => s.Name == group.Key);
-            if (sheet != null && SameRows(ParseSheet(sheet).Rows, groupRows))
+            if (files.TryGetValue(group.Key, out var existing) && SameRows(existing.Rows, groupRows))
             {
                 continue;
             }
 
-            sheet ??= uiSheet.CopyTo(group.Key, uiSheet.Position);
-            WriteRows(sheet, columns, groupRows);
-            changed = true;
+            var path = Path.Combine(dir, group.Key);
+            if (existing == null)
+            {
+                File.Copy(Path.Combine(dir, UiFile), path);
+            }
+
+            using (var workbook = OpenWorkbook(path))
+            {
+                WriteRows(RequireSheet(workbook, path), columns, groupRows);
+                workbook.Save();
+            }
+            written++;
         }
 
-        foreach (var orphan in dataSheets.Where(s => groups.All(g => g.Key != s.Name)))
+        foreach (var orphan in files.Keys.Where(name => groups.All(g => g.Key != name)))
         {
-            orphan.Delete();
-            changed = true;
+            File.Delete(Path.Combine(dir, orphan));
+            written++;
         }
 
-        return changed;
+        return written;
     }
 
-    private static IXLWorksheet RequireSheet(XLWorkbook workbook, string name)
+    private static IXLWorksheet RequireSheet(XLWorkbook workbook, string path)
     {
-        if (!workbook.TryGetWorksheet(name, out var sheet))
+        if (!workbook.TryGetWorksheet(TableName, out var sheet))
         {
-            throw new InvalidDataException($"{FileName}에 '{name}' 시트가 없다.");
+            throw new InvalidDataException($"{FolderName}/{Path.GetFileName(path)}에 '{TableName}' 시트가 없다.");
         }
 
         return sheet;

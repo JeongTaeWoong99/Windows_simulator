@@ -14,7 +14,7 @@
 # 3단계: 미러링         — 정의(.cs) → Unity, 데이터(.bytes) → Unity StreamingAssets
 #                          (서버는 WSGameServer.csproj의 Content로 .bytes를 bin에 자동 복사)
 
-# -LocStrict: 번역(Localization.xlsx)의 빈 칸을 KR로 대신하지 않고 멈춘다 — 배포용 생성에 쓴다
+# -LocStrict: 번역(Excel/Localization/Loc_*.xlsx)의 빈 칸을 KR로 대신하지 않고 멈춘다 — 배포용 생성에 쓴다
 param([switch]$LocStrict)
 
 $ErrorActionPreference = "Stop"

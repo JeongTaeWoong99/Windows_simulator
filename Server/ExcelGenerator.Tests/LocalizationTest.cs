@@ -3,7 +3,7 @@ using static ExcelGenerator.ExcelGenerator;
 namespace ExcelGenerator.Tests;
 
 /// <summary>
-/// lstring 컬럼이 번역 시트(LocalizationTable.Item 등)와 맞물리는지 지킨다.
+/// lstring 컬럼이 번역 파일(Localization/Loc_Item.xlsx 등)과 맞물리는지 지킨다.
 /// 틀리면 번역이 사라지거나, 원문이 바뀐 줄을 놓치거나, 영어 화면에 한국어 이름이 섞여 나간다.
 /// </summary>
 public class LocalizationTest
@@ -156,17 +156,16 @@ public class LocalizationTest
     }
 
     [Fact]
-    public void 키_앞부분으로_번역_시트를_고른다()
+    public void 키_앞부분으로_번역_파일을_고른다()
     {
-        Localization.SheetOf("Item.100061.Name").ShouldBe("LocalizationTable.Item");
-        Localization.SheetOf("IndustryLevel.101.Name").ShouldBe("LocalizationTable.IndustryLevel");
+        Localization.FileOf("Item.100061.Name").ShouldBe("Loc_Item.xlsx");
+        Localization.FileOf("IndustryLevel.101.Name").ShouldBe("Loc_IndustryLevel.xlsx");
     }
 
     [Fact]
-    public void 시트_이름이_엑셀_한도를_넘으면_멈춘다()
+    public void UI_파일과_겹치는_테이블은_멈춘다()
     {
-        var ex = Should.Throw<InvalidDataException>(() => Localization.SheetOf("VeryLongTableNameX.1.Name"));
-        ex.Message.ShouldContain("31");
+        Should.Throw<InvalidDataException>(() => Localization.FileOf("UI.1.Name"));
     }
 
     [Fact]
