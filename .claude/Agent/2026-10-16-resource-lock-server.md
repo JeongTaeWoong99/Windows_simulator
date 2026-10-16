@@ -18,7 +18,7 @@ tags: [server, lock, inventory, auction, migration]
 - 아티팩트 경매(`EAuctionKind.Artifact`)는 이번 범위 밖 — 자원이 아니라 별도 보관함이다.
 
 ## 겪은 함정
-- main 트리의 `game.sqlite3`에 다른 세션의 미커밋 변경이 있어, 워크트리에서 DB를 커밋하면 `--ff-only`가 거절된다 → **DB는 커밋하지 않고 마이그레이션 파일만** 넣었다. 서버 기동 시 0008이 자동 적용된다. main DB를 커밋할 때 함께 들어간다.
+- main 트리의 `game.sqlite3`에 다른 세션의 미커밋 변경이 있어, 워크트리에서 DB를 커밋하면 `--ff-only`가 거절된다 → 워크트리에서는 마이그레이션 파일만 커밋하고, 머지 뒤 main DB가 깨끗해진 것을 보고 main에서 0008을 적용해 DB를 따로 커밋했다.
 
 ## 후속 작업 / 주의사항
 - 클라(태웅): `Resource` 토글 · 자물쇠 · 일괄 담기 제외 · 로그인 `LockedItemTids` — `Inventory 규칙.md` 304행의 "자원은 잠그지 않는다"도 클라 몫으로 고칠 것.

@@ -54,7 +54,7 @@
 | [T-163](T-163-클라창고물건사용표시.md) | 클라 — **창고 물건 사용 열기** · 제외 처리 걷기 · 좌하단 **창고 상자 아이콘** · ✅ 서버 [T-164](T-164-창고물건사용서버.md) · [이슈 #74](https://github.com/JeongTaeWoong99/Windows_simulator/issues/74) | 태웅 | New | 보통 | 261024 |
 | [T-105](T-105-자원사용처.md) | **검토 요청** — 남는 자원의 사용처 고민 · 건물 업그레이드 아이디어와 작업슬롯 겹침 | 진우 | New | 보통 | 261024 |
 | [T-135](T-135-다국어시트구조.md) | 기획·서버 — **다국어 시트 구조** — 화면 문구(`Name`·`Tooltip` 등)를 언어별로 · 언어 추가 = 컬럼 추가 · 우선 KR·EN · 생성기·보간 포함 · [이슈 #64](https://github.com/JeongTaeWoong99/Windows_simulator/issues/64) | 진우 | New | 보통 | 261024 |
-| [T-159](T-159-자원잠금.md) | 서버·클라 — **자원 잠금** — 종류(TID) 단위 · 즉시 판매·경매 등록에서 제외 · 사용은 허용 · [이슈 #72](https://github.com/JeongTaeWoong99/Windows_simulator/issues/72) | 진우 | New | 보통 | 261024 |
+| [T-159](T-159-자원잠금.md) | 서버·클라 — **자원 잠금** — 종류(TID) 단위 · 즉시 판매·경매 등록에서 제외 · 사용은 허용 · ✅ 서버(2026-10-16) · 남은 것: 클라 토글·자물쇠·일괄 담기 제외 · [이슈 #72](https://github.com/JeongTaeWoong99/Windows_simulator/issues/72) | 태웅 | New | 보통 | 261024 |
 | [T-160](T-160-자원칸별묶음서버.md) | 서버 — **자원 칸별 묶음** · `MaxStack`을 칸 하나의 상한으로 · 차면 빈 칸에 이어 쌓기 · 칸이 다 찼을 때만 `InventoryFull` · [이슈 #73](https://github.com/JeongTaeWoong99/Windows_simulator/issues/73) | 진우 | Resolve | 보통 | 261024 |
 | [T-161](T-161-클라다중칸표시.md) | 클라 — **같은 자원이 여러 칸에** · 칸 단위 캐시 · 보유량 합산 · ✅ 서버 [T-160](T-160-자원칸별묶음서버.md) · [이슈 #73](https://github.com/JeongTaeWoong99/Windows_simulator/issues/73) | 태웅 | New | 보통 | 261024 |
 | [T-129](T-129-일감정합성검사.md) | 일감 **정합성 검사 스크립트** — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ (T-066에서 뗐다) | 진우 | New | 낮음 | 261024 |
