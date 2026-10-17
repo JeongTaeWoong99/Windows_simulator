@@ -43,14 +43,14 @@ const tabs: Tab[] = [
   })),
   {
     key: 'server',
-    label: '서버·기획 일감',
-    note: '담당 진우 — 회차와 상관없이 남은 전부',
+    label: '서버·수치 일감',
+    note: '담당 진우(서버·기획·밸런스·수치·DB) — 회차와 상관없이 남은 전부',
     items: live.filter((t) => t.data.owner === '진우'),
   },
   {
     key: 'client',
-    label: '클라 구현 일감',
-    note: '담당 태웅 — 회차와 상관없이 남은 전부',
+    label: '클라·UI 일감',
+    note: '담당 태웅(클라·기획·아트·UI) — 회차와 상관없이 남은 전부',
     items: live.filter((t) => t.data.owner === '태웅'),
   },
   {
