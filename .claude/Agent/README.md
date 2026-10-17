@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-18 치트 창에 경매 더미 매물 칸 (T-168 클라)](2026-10-18-auction-dummy-cheat-button.md) — `#client` `#editor` 경매 분류 · SeedAuctionListings 칸
 - [2026-10-17 경매 더미 매물 치트 (T-168)](2026-10-17-auction-dummy-cheat.md) — `#server` `#auction` `#cheat` 원장+outbox로 넣어 릴레이가 보냄 · 삭제는 원장 먼저 → 경매장 판매자 기준 취소
 - [2026-10-17 문서 사이트 기획 제안 (AI) 탭 (T-171)](2026-10-17-ai-proposals-tab.md) — `#docs-site` news.hada.io 모양 목록 `/proposals` · 판정 ▲ 색 · 파일 이름이 회차
 - [2026-10-17 클라 화면 문구 전체를 번역 키로 (T-136)](2026-10-17-client-localization.md) — `#client` `#ui` `#localization` 저장엔 ID · 꺼진 탭은 켜질 때 다시 그림 · 보간 안 문자열 스캔 함정

@@ -10,6 +10,7 @@ namespace DesktopWindowControl.EditorTools
 		Growth,   // 성장 — 경험치·응축·특성·해금
 		World,    // 월드 — 정산·전역 배수·시간
 		Mail,     // 우편
+		Auction,  // 경매 — 더미 매물
 	}
 
 	// 치트 칸 하나. 이 클래스를 상속하기만 하면 'CheatWindow'가 찾아 분류에 넣는다 — 창은 고치지 않는다.
@@ -48,8 +49,9 @@ namespace DesktopWindowControl.EditorTools
 				ECheatCategory.Give   => "지급",
 				ECheatCategory.Growth => "성장",
 				ECheatCategory.World  => "월드",
-				ECheatCategory.Mail   => "우편",
-				_                     => category.ToString(),
+				ECheatCategory.Mail    => "우편",
+				ECheatCategory.Auction => "경매",
+				_                      => category.ToString(),
 			};
 		}
 	}
