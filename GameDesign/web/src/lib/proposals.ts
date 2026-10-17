@@ -35,6 +35,21 @@ function plain(text: string): string {
     .trim();
 }
 
+// 설계 원칙 번호(게임기획코어 1장) — 번호만 보고는 뜻을 모르니 화면에는 짧은 이름으로 쓴다
+const PRINCIPLE_LABEL: Record<string, string> = {
+  '1': '주의 안 뺏기',
+  '2': '띄워 두면 자람',
+  '3': '놓쳐도 손해 없음',
+  '4': '재화 순환',
+};
+
+function namePrinciples(text: string): string {
+  return text
+    .replace(/P1\s*~\s*P4/g, '설계 원칙')
+    .replace(/^(\s*-\s*)P([1-4])\b/gm, (_, lead, n) => `${lead}**${PRINCIPLE_LABEL[n]}**`)
+    .replace(/\bP([1-4])\b/g, (_, n) => PRINCIPLE_LABEL[n]);
+}
+
 function verdictKind(verdict: string, isPick: boolean): Proposal['verdictKind'] {
   if (isPick) return 'pick';
   if (/변형/.test(verdict)) return 'adapt';
@@ -44,9 +59,10 @@ function verdictKind(verdict: string, isPick: boolean): Proposal['verdictKind'] 
 }
 
 /// <summary>문서마다 머리 형식이 조금씩 달라(장르: 접두 유무 · 판정 대신 추천안) 줄 단위로 너그럽게 읽는다</summary>
-function parse(fileName: string, text: string): Proposal | null {
+function parse(fileName: string, raw: string): Proposal | null {
   const m = fileName.match(FILE_RE);
   if (!m) return null;
+  const text = namePrinciples(raw);
   const [, date, hour, slug] = m;
 
   const h1 = text.match(/^#\s+(.+)$/m)?.[1].trim() ?? slug;
