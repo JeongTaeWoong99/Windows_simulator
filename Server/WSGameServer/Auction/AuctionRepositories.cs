@@ -125,3 +125,38 @@ public sealed class UnlockMailEquipRepository(User user, MailEquip equip, int sl
 
     public void Apply() => User.OnMailEquipUnlocked(equip, slotPosition, _unlocked);
 }
+
+/// <summary>더미 매물 원장 쓰기(치트 T-168) → <see cref="AuctionDb.SeedDummyAsync"/>. 작업 파티션은 치트를 쓴 유저다.</summary>
+public sealed class SeedDummyAuctionRepository(User user, List<DummyListing> listings, DateTime now) : IRepository
+{
+    private int _count;
+
+    public long Key => User.DbKey;
+
+    public User User { get; } = user;
+
+    public IReadOnlyList<DummyListing> Listings => listings;
+
+    public async Task ExecuteAsync(DbConnection connection) => _count = await AuctionDb.SeedDummyAsync(connection, listings, now);
+
+    public void Apply() => User.OnDummyAuctionSeeded(_count);
+
+    // 치트 실패로 세션을 끊지 않는다 — 치트를 쓴 유저의 메모리는 바뀐 것이 없다.
+    public void OnFailed(Exception e) => User.OnDummyAuctionFailed(e);
+}
+
+/// <summary>더미 흔적 지우기(치트 T-168) → <see cref="AuctionDb.PurgeDummyAsync"/>. 끝나면 경매장 쪽 매물을 취소한다.</summary>
+public sealed class PurgeDummyAuctionRepository(User user) : IRepository
+{
+    private int _deleted;
+
+    public long Key => User.DbKey;
+
+    public User User { get; } = user;
+
+    public async Task ExecuteAsync(DbConnection connection) => _deleted = await AuctionDb.PurgeDummyAsync(connection);
+
+    public void Apply() => User.OnDummyAuctionPurged(_deleted);
+
+    public void OnFailed(Exception e) => User.OnDummyAuctionFailed(e);
+}

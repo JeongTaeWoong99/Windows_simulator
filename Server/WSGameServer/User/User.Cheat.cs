@@ -49,6 +49,7 @@ public partial class User
             ECheatCommand.ResetTime        => CheatResetTime(now),
             ECheatCommand.SetCondenseCount => CheatSetCondenseCount(req.Arg1, req.Arg2, now),
             ECheatCommand.SetGatherSpeed   => CheatSetGatherSpeed(req.Arg1, now),
+            ECheatCommand.SeedAuctionListings => CheatSeedAuctionListings(req.Arg1, req.Arg2, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -61,6 +62,13 @@ public partial class User
             ServerLog.Warn("치트", $"Uid={Uid} {req.Command}(Arg1:{req.Arg1}, Arg2:{req.Arg2}) → {code} {text}");
             Send(new S_CheatResponse { Result = code, Command = req.Command, Message = text });
         }
+    }
+
+    // DB·경매장을 기다리는 치트의 두 번째 응답 — 접수 응답 뒤에 결과를 한 번 더 보낸다.
+    private void SendCheatDone(ECheatCommand command, EResultCode code, string text)
+    {
+        ServerLog.Warn("치트", $"Uid={Uid} {command} 완료 → {code} {text}");
+        Send(new S_CheatResponse { Result = code, Command = command, Message = text });
     }
 
     private (EResultCode, string) CheatGiveGold(long amount)
@@ -339,5 +347,87 @@ public partial class User
         // 앞으로 생길 획득 경로와 같은 지급 함수 — PK 발급 후 S_EquipSyncResponse까지 동일하다.
         GrantEquip((int)equipTid);
         return (EResultCode.Ok, $"장비 {equipTid} 지급 요청");
+    }
+
+    // 더미 판매자 매물을 원장에 바로 쓴다 — 유저 상한·빈도·등록비를 거치지 않는다(치트 원칙 4의 예외 → 치트.md 4장).
+    private (EResultCode, string) CheatSeedAuctionListings(long count, long itemTid, DateTime now)
+    {
+        if (!_auction.IsAvailable)
+        {
+            return (EResultCode.AuctionUnavailable, "경매장 없음");
+        }
+
+        if (count == 0)
+        {
+            PostDBTask(new PurgeDummyAuctionRepository(this));
+            return (EResultCode.Ok, "더미 매물 삭제 요청");
+        }
+
+        if (count < 0 || count > AuctionDummy.MaxCount)
+        {
+            return (EResultCode.InvalidCheatArgs, $"개수는 1~{AuctionDummy.MaxCount} (0이면 삭제)");
+        }
+
+        IReadOnlyList<ItemTableRow> items;
+        if (itemTid == 0)
+        {
+            items = GameTable.ItemTable.All;
+        }
+        else if (itemTid > 0 && itemTid <= int.MaxValue && GameTable.ItemTable.TryGet((int)itemTid, out var row))
+        {
+            items = new[] { row };
+        }
+        else
+        {
+            return (EResultCode.InvalidCheatArgs, $"ItemTable에 없는 TID {itemTid}");
+        }
+
+        PostDBTask(new SeedDummyAuctionRepository(this, AuctionDummy.Build(items, (int)count, now), now));
+        return (EResultCode.Ok, $"더미 매물 {count}개 등록 요청");
+    }
+
+    public void OnDummyAuctionSeeded(int count)
+    {
+        _auction.KickRelay();
+        SendCheatDone(ECheatCommand.SeedAuctionListings, EResultCode.Ok, $"더미 매물 {count}개 원장 기록 — 릴레이가 경매장에 보낸다(초당 {AuctionRelay.BatchSize}개)");
+    }
+
+    // 원장을 먼저 지웠으니 경매장 매물만 남았다. 판매자 기준으로 경매장에 물어 남은 것을 전부 취소한다 — 다시 부르면 남은 것만 지운다.
+    public void OnDummyAuctionPurged(int deletedTrades)
+    {
+        _auction.Call(CancelDummyListingsAsync, result =>
+        {
+            if (result is null)
+            {
+                SendCheatDone(ECheatCommand.SeedAuctionListings, EResultCode.AuctionUnavailable, $"원장 {deletedTrades}건 삭제 · 경매장 취소 실패 — 다시 실행");
+                return;
+            }
+
+            SendCheatDone(ECheatCommand.SeedAuctionListings, EResultCode.Ok,
+                $"원장 {deletedTrades}건 삭제 · 경매장 취소 {result.Cancelled} · 남음 {result.Remaining}(구매 중)");
+        });
+    }
+
+    private static async Task<DummyCancelResult> CancelDummyListingsAsync(IAuctionClient client)
+    {
+        var listings  = await client.GetSellerListingsAsync(new AuctionProtocol.SellerListingsRequest { SellerId = AuctionDummy.SellerId });
+        var cancelled = 0;
+        foreach (var listing in listings.Listings)
+        {
+            var reply = await client.CancelAsync(new AuctionProtocol.CancelRequest { ListingId = listing.ListingId, SellerId = AuctionDummy.SellerId });
+            if (reply.Result == AuctionProtocol.CancelResult.Ok)
+            {
+                cancelled++;
+            }
+        }
+
+        return new DummyCancelResult(cancelled, listings.Listings.Count - cancelled);
+    }
+
+    private sealed record DummyCancelResult(int Cancelled, int Remaining);
+
+    public void OnDummyAuctionFailed(Exception e)
+    {
+        SendCheatDone(ECheatCommand.SeedAuctionListings, EResultCode.DbError, $"원장 쓰기 실패 — {e.Message}");
     }
 }

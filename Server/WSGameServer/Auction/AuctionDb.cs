@@ -147,6 +147,58 @@ public static class AuctionDb
     }
 
     /// <summary>
+    /// 더미 매물 한 트랜잭션: 거래 행 + 등록 outbox(치트 T-168). 인벤·골드·등록비가 없다 — 판매자가 실제 유저가 아니다.
+    /// 경매장에는 릴레이가 실제 등록과 같은 길로 보낸다.
+    /// </summary>
+    public static async Task<int> SeedDummyAsync(DbConnection connection, IReadOnlyList<DummyListing> listings, DateTime now)
+    {
+        await connection.InTransactionAsync(async tx =>
+        {
+            foreach (var l in listings)
+            {
+                var tradeId = await tx.ExecuteScalarAsync<long>(
+                    @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, snapshot, unit_price, listing_fee, state, created_at)
+                      VALUES (@sellerId, @kind, @tid, @count, @count, @snapshot, @unitPrice, 0, 1, @now)
+                      RETURNING trade_id;",
+                    new
+                    {
+                        sellerId = AuctionDummy.SellerId, kind = (int)l.Item.Kind, tid = l.Item.Tid, count = l.Item.Count,
+                        snapshot = l.Item.ToJson(), unitPrice = l.UnitPrice, now = MailDb.ToDb(now),
+                    });
+
+                var message = new AuctionRegisterMessage(
+                    tradeId, AuctionDummy.SellerId, l.Item, l.UnitPrice, new DateTimeOffset(DateTime.SpecifyKind(l.ExpiresAt, DateTimeKind.Utc)).ToUnixTimeMilliseconds());
+                await InsertOutboxAsync(tx, tradeId, AuctionOutboxKind.Register, JsonSerializer.Serialize(message), now);
+            }
+        });
+
+        return listings.Count;
+    }
+
+    /// <summary>
+    /// 더미 판매자의 흔적을 지운다: 거래 · 아직 안 보낸 등록 · 대금·반환 우편 · 거래 기록. 지운 거래 수를 돌려준다.
+    /// 구매 확정 outbox는 남긴다 — 확정이 안 가면 구매자의 예약이 타임아웃까지 매물을 붙든다.
+    /// 거래가 없어지면 나중에 오는 취소·만료 이벤트는 반환할 것이 없어 그냥 지나간다.
+    /// </summary>
+    public static async Task<int> PurgeDummyAsync(DbConnection connection)
+    {
+        var deleted = 0;
+        await connection.InTransactionAsync(async tx =>
+        {
+            var param = new { sellerId = AuctionDummy.SellerId };
+            await tx.ExecuteAsync(
+                @"DELETE FROM t_auction_outbox WHERE kind = 1
+                  AND trade_id IN (SELECT trade_id FROM t_auction_trade WHERE seller_id = @sellerId);", param);
+            deleted = await tx.ExecuteAsync("DELETE FROM t_auction_trade WHERE seller_id = @sellerId;", param);
+            await tx.ExecuteAsync("DELETE FROM t_user_mail WHERE user_id = @sellerId;", param);
+            await tx.ExecuteAsync("DELETE FROM t_auction_history WHERE user_id = @sellerId;", param);
+            await tx.ExecuteAsync("DELETE FROM t_auction_history_seen WHERE user_id = @sellerId;", param);
+        });
+
+        return deleted;
+    }
+
+    /// <summary>
     /// 정산 한 트랜잭션: 거래 Listed→Settled · 장비·캐릭터 소유 이전 · 구매자 골드 · 구매자 우편(물건) · 판매자 우편(대금) · outbox(확정).
     /// 거래가 이미 끝났거나 가격이 어긋나면 구매자 잔액을 되돌려 쓰고 outbox(실패)만 남긴다.
     /// </summary>

@@ -152,6 +152,7 @@ namespace MikaProtocol
         ResetTime        = 13, // 게임 시계 오프셋을 0으로 — 미래 시각으로 저장된 데이터는 남는다
         SetCondenseCount = 14, // Arg1 = CharacterId(개체) · Arg2 = 응축 누적 재료 수 — 재료 없이 정한다. 0~최고 ★ 기준으로 자른다
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
+        SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
     }
 
     public enum EItemChangeKind : byte

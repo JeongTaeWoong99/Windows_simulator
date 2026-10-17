@@ -477,5 +477,70 @@ public class AuctionEndToEndTest : IAsyncLifetime
 
         (await MarketItem(buyer)).YesterdayAvgPrice.ShouldBe(30);
     }
-}
 
+    // ── 더미 매물 치트 (T-168) ──
+
+    // outbox가 빌 때까지 보낸다 — 한 바퀴에 BatchSize만 나간다.
+    private async Task FlushAll()
+    {
+        while (Scalar("SELECT COUNT(*) FROM t_auction_outbox WHERE sent_at IS NULL") > 0)
+        {
+            await _relay.FlushOutboxAsync(Now);
+        }
+    }
+
+    private async Task<S_CheatResponse> Cheat(User user, long count, long itemTid = 0)
+    {
+        var before = _builders[user.Uid].Channel.SentOf<S_CheatResponse>().Count;
+        user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SeedAuctionListings, Arg1 = count, Arg2 = itemTid }, Now);
+
+        // 접수 응답 하나 + 끝났다는 응답 하나
+        await _logic.Pump(() => _builders[user.Uid].Channel.SentOf<S_CheatResponse>().Count >= before + 2);
+        return _builders[user.Uid].Channel.SentOf<S_CheatResponse>().Last();
+    }
+
+    [Fact]
+    public async Task 더미_매물_1050개를_올리면_검색_건수가_1000에서_멈춘다()
+    {
+        var admin = Login(SellerUid);
+
+        (await Cheat(admin, 1050)).Result.ShouldBe(EResultCode.Ok);
+        await FlushAll();
+
+        var found = await Search(admin, new C_AuctionSearchRequest { Kind = EAuctionKind.Item });
+        found.TotalCount.ShouldBe(1000);
+        found.Listings!.ShouldAllBe(l => l.SellerName == AuctionDummy.SellerName);
+    }
+
+    [Fact]
+    public async Task 더미_매물을_지우면_검색에서_사라지고_실제_유저_매물은_남는다()
+    {
+        var seller = Login(SellerUid);
+        var listingId = RegisterItem(seller, 10, 30);
+        await Cheat(seller, 30, Carp);
+        await FlushAll();
+
+        (await Cheat(seller, 0)).Message.ShouldContain("취소 30");
+        await _relay.DrainEventsAsync(Now);
+
+        var found = await Search(seller, new C_AuctionSearchRequest { Tids = new() { Carp } });
+        found.Listings!.Select(l => l.ListingId).ShouldBe(new[] { listingId });
+        Scalar($"SELECT COUNT(*) FROM t_user_mail WHERE user_id = {AuctionDummy.SellerId}").ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task 더미_매물을_사면_물건은_구매자에게_오고_대금은_실제_유저에게_가지_않는다()
+    {
+        var admin = Login(SellerUid);
+        var buyer = Login(BuyerUid, gold: 100_000, carp: 0);
+        await Cheat(admin, 1, Carp);
+        await FlushAll();
+        var listing = (await Search(buyer, new C_AuctionSearchRequest { Tids = new() { Carp } })).Listings!.Single();
+
+        (await Buy(buyer, listing.ListingId, listing.TotalPrice)).Result.ShouldBe(EResultCode.Ok);
+        ClaimAll(buyer);
+
+        buyer.GetItemCount(Carp).ShouldBe(listing.Count);
+        Scalar($"SELECT COUNT(*) FROM t_user_mail WHERE user_id IN ({SellerUid}, {BuyerUid}) AND gold > 0").ShouldBe(0);
+    }
+}
