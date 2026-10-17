@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-17 경매 더미 매물 치트 (T-168)](2026-10-17-auction-dummy-cheat.md) — `#server` `#auction` `#cheat` 원장+outbox로 넣어 릴레이가 보냄 · 삭제는 원장 먼저 → 경매장 판매자 기준 취소
 - [2026-10-17 문서 사이트 기획 제안 (AI) 탭 (T-171)](2026-10-17-ai-proposals-tab.md) — `#docs-site` news.hada.io 모양 목록 `/proposals` · 판정 ▲ 색 · 파일 이름이 회차
 - [2026-10-17 클라 화면 문구 전체를 번역 키로 (T-136)](2026-10-17-client-localization.md) — `#client` `#ui` `#localization` 저장엔 ID · 꺼진 탭은 켜질 때 다시 그림 · 보간 안 문자열 스캔 함정
 - [2026-10-17 규빈 이탈 — 담당을 태웅·진우 둘로](2026-10-17-team-roles-gyubin-leave.md) — `#docs` `#tasks` T-113·T-114 → 진우 · 역할 설명 갱신 · 기록은 그대로
