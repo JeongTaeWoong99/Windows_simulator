@@ -24,6 +24,12 @@
 ## INDEX
 
 - [2026-10-17 문서 사이트 기획 제안 (AI) 탭 (T-171)](2026-10-17-ai-proposals-tab.md) — `#docs-site` news.hada.io 모양 목록 `/proposals` · 판정 ▲ 색 · 파일 이름이 회차
+- [2026-10-17 클라 화면 문구 전체를 번역 키로 (T-136)](2026-10-17-client-localization.md) — `#client` `#ui` `#localization` 저장엔 ID · 꺼진 탭은 켜질 때 다시 그림 · 보간 안 문자열 스캔 함정
+- [2026-10-17 규빈 이탈 — 담당을 태웅·진우 둘로](2026-10-17-team-roles-gyubin-leave.md) — `#docs` `#tasks` T-113·T-114 → 진우 · 역할 설명 갱신 · 기록은 그대로
+- [2026-10-17 자원 잠금 클라 — 종류(TID) 단위 Ctrl+좌클릭 (T-159)](2026-10-17-resource-lock-client.md) — `#client` `#ui` 잠긴 자원을 판매·경매·일괄 담기에서 뺀다
+- [2026-10-17 경매 검색 — 조건 없는 검색 거절 문구 · "1,000건 이상" (#71)](2026-10-17-auction-search-count-cap.md) — `#client` `#ui` 서버 건수 상한(1000)을 하한으로 보고 표시
+- [2026-10-16 경매 등록·수령 뒤 회색 화면 — 알림 창 접힘 (T-167)](2026-10-16-notice-panel-collapse.md) — `#client` `#ui` stretch + 음수 여백이 좁은 화면에서 폭 음수 · 가운데 고정 앵커로 · eval로 로그인·등록 재현
+- [2026-10-16 창고 물건도 꺼내지 않고 쓴다 · 자원 칸별 묶음 — 클라 (T-163 · T-161)](2026-10-16-warehouse-items-usable-client.md) — `#client` `#ui` 창고 제외 처리 걷기 · 창고 상자 아이콘 · 자원 캐시 열쇠 (보관함, 칸) · 툴팁 줄 통일 · 창고 조작이 인벤토리 열을 연다
 - [2026-10-16 경매 성공 로그 — 메인 릴레이 · 경매장 gRPC (T-167)](2026-10-16-auction-success-log.md) — `#server` `#auction` 성공해도 등록·예약·확정·취소를 한 줄씩 · 조회는 뺌
 - [2026-10-16 섬 건물 서버 — 레벨·트리·속도/산출량 노드·자원 비용 (T-166)](2026-10-16-island-buildings-server.md) — `#server` `#data` 해금 행 재사용 · 자원은 함께 내는 조건 · format-excel 묶인 열 → 번역 저장 실패
 - [2026-10-16 다국어 시트 구조 — lstring · Localization.xlsx (T-135)](2026-10-16-localization-sheet.md) — `#excel` `#generator` 생성기가 번역 시트 행을 채움 · KR 칸이 원문 스냅샷(🔄) · Tooltip 언어별 보간 · 이슈 #64

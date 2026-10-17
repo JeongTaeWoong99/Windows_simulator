@@ -109,13 +109,13 @@ public class WorkStationSlotView : MonoBehaviour
         }
 
         indexText.text     = $"#{DisplayNumber(slot.SlotIndex)}";
-        characterText.text = slot.CharacterId == 0 ? "배치 없음"
+        characterText.text = slot.CharacterId == 0 ? Lang.Get("UI.WorkStation.NoCharacter")
                            : characterLevel > 0     ? $"{characterName} {UIRichText.Small($"Lv{characterLevel}")}"
                            : characterName;
 
         if (!IsRunning)
         {
-            industryText.text    = "대기";
+            industryText.text    = Lang.Get("UI.WorkStation.Idle");
             speedText.text       = "";
             progressSlider.value = 0f;
             remainText.text      = "";
@@ -134,10 +134,10 @@ public class WorkStationSlotView : MonoBehaviour
         // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 금색 '최대'를 붙인다 (T-102)
         float  speedMultiplier = WorkStationProgress.GetEffectiveSpeed(slot) / (float)Constants.WorkSpeedScale;
         string capMark         = WorkStationProgress.IsAtMinCycle(slot)
-                               ? UIRichText.Small(UIRichText.Paint(" 최대", UIThemeRole.Highlight))
+                               ? UIRichText.Small(UIRichText.Paint(" " + Lang.Get("UI.WorkStation.Max"), UIThemeRole.Highlight))
                                : "";
 
-        speedText.text = $"{speedMultiplier:0.00}배{capMark}";
+        speedText.text = Lang.Format("UI.WorkStation.SpeedMul", speedMultiplier.ToString("0.00")) + capMark;
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
@@ -212,6 +212,6 @@ public class WorkStationSlotView : MonoBehaviour
         }
 
         _shownRemainTenths = tenths;
-        remainText.SetText("{0}.{1}초 후 수확", tenths / 10, tenths % 10);
+        remainText.SetText(Lang.Get("UI.WorkStation.HarvestIn"), tenths / 10, tenths % 10);
     }
 }

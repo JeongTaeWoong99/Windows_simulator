@@ -84,13 +84,13 @@ public readonly struct PlacedSlot
 //
 // ■ 보관함을 하나 맡는다 (T-126)
 // 같은 공급자가 인벤토리 격자와 창고 격자를 함께 채운다 — 무엇을 그릴지는 같고 **어느 보관함('Container')에 둔 것인가**만 다르다.
-// 파생 공급자는 'Fill'에서 'Container'가 같은 것만 담는다. 창고 칸에는 판매·개봉·큐브 같은 조작이 없어 툴팁 조작 줄도 갈린다('AddControls').
+// 파생 공급자는 'Fill'에서 'Container'가 같은 것만 담는다. 클릭 조작은 두 보관함이 같고, 끌기 줄의 문구만 갈린다('AddControls').
 public abstract class InventorySlotSource
 {
     // 이 공급자가 그리는 보관함 — 인벤토리 격자는 'Inventory', 창고 격자는 'Warehouse'.
     public EContainer Container { get; }
 
-    // 창고 칸인가 — 툴팁 조작 줄 · 상태 문구가 갈린다.
+    // 창고 칸인가 — 툴팁의 끌기 줄 · 상태 문구가 갈린다.
     protected bool IsWarehouse => Container == EContainer.Warehouse;
 
     protected InventorySlotSource(EContainer container)
@@ -100,6 +100,9 @@ public abstract class InventorySlotSource
 
     // 이번에 그릴 칸 배치. 인덱스가 곧 칸 번호이고, **null이면 빈 칸**이다.
     private readonly List<SlotData?> _slots = new List<SlotData?>();
+
+    // '_slots'와 같은 자리마다 그 칸의 서버 칸 번호(-1 = 빈 칸·제자리 못 찾은 것). 거르는 동안은 보이는 순서 ≠ 칸 번호라 따로 든다.
+    private readonly List<int> _numbers = new List<int>();
 
     // 지금 인벤토리에 있는 것들과 그 칸 번호.
     private readonly List<PlacedSlot> _filled = new List<PlacedSlot>();
@@ -114,8 +117,8 @@ public abstract class InventorySlotSource
     private InventoryFilter _filter;
 
     // 거를 때 맞는 것 · 안 맞는 것을 칸 번호 순으로 모으는 버퍼. 매번 새로 만들지 않는다(상주 앱이라 GC가 쌓인다).
-    private readonly List<SlotData> _matched   = new List<SlotData>();
-    private readonly List<SlotData> _unmatched = new List<SlotData>();
+    private readonly List<PlacedSlot> _matched   = new List<PlacedSlot>();
+    private readonly List<PlacedSlot> _unmatched = new List<PlacedSlot>();
 
     // 지금 찾기 조건에 안 맞는 Key — 격자가 흑백으로 그린다.
     private readonly HashSet<long> _filteredOut = new HashSet<long>();
@@ -161,6 +164,10 @@ public abstract class InventorySlotSource
     // i번째 칸에 그릴 완성값 (격자가 호출). **빈 칸이면 null**이다.
     public SlotData? Get(int index) => _slots[index];
 
+    // i번째 칸의 서버 칸 번호 — 빈 칸이면 -1 (격자가 툴팁을 띄울 때 호출).
+    // ※ 자원은 같은 아이템이 여러 칸에 있어(T-160) Key만으로는 어느 묶음인지 모른다 — 칸 수량을 읽으려면 이 번호가 필요하다.
+    public int SlotNumberAt(int index) => index < _numbers.Count ? _numbers[index] : -1;
+
     // 이 개체가 지금 인벤토리 밖에 나가 있나 — 캐릭터는 작업슬롯 배치 중, 장비는 장착 중 (격자가 호출).
     //
     // ■ 판정의 주인을 공급자 하나로 둔다
@@ -170,12 +177,13 @@ public abstract class InventorySlotSource
     public virtual bool IsAway(long key) => false;
 
     // 이 개체의 칸 툴팁 — 칸에 다 못 담은 것 (격자가 칸에 올린 순간 호출, T-050). 없으면 null이고 툴팁이 뜨지 않는다.
+    //   slot : 그 칸의 서버 칸 번호('SlotNumberAt') — 자원 묶음 수량을 읽는다. 개체 탭은 쓰지 않는다.
     //
     // ■ 'SlotData'에서 만들지 않는다
     //   그건 칸에 그릴 것만 담은 완성값이라 적성·배치처·판매가가 없다. 거기에 끼우면 가챠 결과 칸까지
     //   따라 두꺼워진다. 원본('PlayerDataModel'·테이블)을 쥔 공급자가 **띄우는 순간에** 읽는다.
     // ■ 격자가 아니라 여기인 이유는 'IsAway'와 같다 — 무엇을 보일지가 탭마다 통째로 다르다.
-    public virtual TooltipContent? BuildTooltip(long key) => null;
+    public virtual TooltipContent? BuildTooltip(long key, int slot) => null;
 
     // 이 개체의 능력치 칸 — 길이 = 칸 수, 원소 = 박힌 등급('None'은 빈 칸) (격자가 매번 그릴 때 호출, T-095).
     // 능력치 칸이 없는 탭은 null이고, 칸은 줄을 끈다. 지금은 장비 탭만 값이 있다.
@@ -197,24 +205,33 @@ public abstract class InventorySlotSource
 
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
-        => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+        => content.Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+
+    // 툴팁의 '보관' 줄 — 인벤토리 · 창고 (공급자들의 'BuildTooltip'에서 호출).
+    //
+    // ■ 세 탭이 같은 줄 순서를 쓴다 (2026-10-16 사용자 지적 — 탭마다 창고 표시가 달랐다)
+    //   등급 → 탭 고유 정보 → 보관 → 상태(일하는 곳 · 착용 · 잠김) → 가격 → 조작.
+    //   한때 장비만 '장착' 줄에 "인벤토리"를 적고, 캐릭터는 상태 줄 끝에 "창고 보관"을 붙이고, 자원은 아무것도 적지 않았다.
+    protected TooltipContent AddStorageRow(TooltipContent content)
+        => content.Row(Lang.Get("UI.Inventory.Storage"), Lang.Get(IsWarehouse ? "UI.Inventory.Warehouse" : "UI.Main.Inventory"));
 
     // 툴팁 끝의 조작 안내 (공급자들의 'BuildTooltip'에서 호출).
-    //   창고 칸 — 끌어서 꺼내는 것뿐이다(클릭 조작이 없다). 인벤토리 칸 — 'addInventoryRows'가 탭마다의 클릭 조작을 적는다.
+    //   'addInventoryRows'가 탭마다의 클릭 조작을 적는다 — 창고 칸도 같다(T-163). 끌기 줄만 어디로 가는지가 다르다.
     // ※ 끌기 줄은 두 보관함 모두 단다 — 칸에 아무 표시가 없어 눌러 봐야 아는 조작이다.
     protected TooltipContent AddControls(TooltipContent content, Action<TooltipContent> addInventoryRows)
     {
-        content.Header("조작");
-
-        if (IsWarehouse)
-        {
-            return content.Row("끌기", "인벤토리로 꺼내기");
-        }
+        content.Header(Lang.Get("UI.Inventory.Controls"));
 
         addInventoryRows(content);
 
-        return content.Row("끌기", "칸 이동 · 창고에 맡기기");
+        return content.Row(Lang.Get("UI.Inventory.Drag"), Lang.Get(IsWarehouse ? "UI.Inventory.DragFromWarehouse" : "UI.Inventory.DragToWarehouse"));
     }
+
+    // 세 탭이 같은 조작 줄 — 우클릭 판매 담기 · Ctrl+좌클릭 잠금 · Ctrl+우클릭 경매 등록 (탭별 'BuildTooltip'의 'AddControls' 안에서 호출).
+    protected static TooltipContent AddCommonControls(TooltipContent rows, bool locked)
+        => rows.Row(Lang.Get("UI.Inventory.RightClick"), Lang.Get("UI.Inventory.AddToSell"))
+               .Row(Lang.Get("UI.Inventory.CtrlLeftClick"), Lang.Get(locked ? "UI.Inventory.Unlock" : "UI.Inventory.Lock"))
+               .Row(Lang.Get("UI.Inventory.CtrlRightClick"), Lang.Get("UI.Inventory.ListOnAuction"));
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //
@@ -228,6 +245,7 @@ public abstract class InventorySlotSource
 
         _isSubscribed = true;
         OnSubscribe();
+        Lang.Changed += Rebuild; // 칸 글씨(수량 단위 등)를 새 언어로 다시 만든다
         Rebuild();
     }
 
@@ -241,6 +259,7 @@ public abstract class InventorySlotSource
 
         _isSubscribed = false;
         OnUnsubscribe();
+        Lang.Changed -= Rebuild;
     }
 
     // 찾기 조건을 바꾼다 (격자의 'FilterCurrent' — 도구 줄의 검색창·드롭다운).
@@ -383,6 +402,7 @@ public abstract class InventorySlotSource
         _taken.Clear();
         _stray.Clear();
         _slots.Clear();
+        _numbers.Clear();
 
         foreach (PlacedSlot placed in _filled)
         {
@@ -393,7 +413,7 @@ public abstract class InventorySlotSource
                 continue;
             }
 
-            SetSlot(placed.Slot, placed.Data);
+            SetSlot(placed.Slot, placed.Data, placed.Slot);
         }
 
         if (_stray.Count > 0)
@@ -421,7 +441,7 @@ public abstract class InventorySlotSource
                 cursor++;
             }
 
-            SetSlot(cursor, slot);
+            SetSlot(cursor, slot, -1);
             _taken.Add(cursor);
         }
 
@@ -430,14 +450,16 @@ public abstract class InventorySlotSource
     }
 
     // index번 칸에 놓는다 — 배치가 짧으면 빈 칸(null)으로 늘린다 (Arrange · PlaceStrays에서 호출).
-    private void SetSlot(int index, in SlotData data)
+    private void SetSlot(int index, in SlotData data, int number)
     {
         while (_slots.Count <= index)
         {
             _slots.Add(null);
+            _numbers.Add(-1);
         }
 
-        _slots[index] = data;
+        _slots[index]   = data;
+        _numbers[index] = number;
     }
 
     // 거르는 중이면 맞는 것 → 안 맞는 것 순으로, 각각 칸 번호 순서대로 0번부터 다시 앉힌다 (Arrange 끝에서 호출).
@@ -449,8 +471,10 @@ public abstract class InventorySlotSource
         _matched.Clear();
         _unmatched.Clear();
 
-        foreach (SlotData? slot in _slots)
+        for (int i = 0; i < _slots.Count; i++)
         {
+            SlotData? slot = _slots[i];
+
             if (slot == null)
             {
                 continue;
@@ -458,25 +482,28 @@ public abstract class InventorySlotSource
 
             if (Matches(slot.Value))
             {
-                _matched.Add(slot.Value);
+                _matched.Add(new PlacedSlot(slot.Value, _numbers[i]));
             }
             else
             {
-                _unmatched.Add(slot.Value);
+                _unmatched.Add(new PlacedSlot(slot.Value, _numbers[i]));
                 _filteredOut.Add(slot.Value.Key);
             }
         }
 
         _slots.Clear();
+        _numbers.Clear();
 
-        foreach (SlotData slot in _matched)
+        foreach (PlacedSlot placed in _matched)
         {
-            _slots.Add(slot);
+            _slots.Add(placed.Data);
+            _numbers.Add(placed.Slot);
         }
 
-        foreach (SlotData slot in _unmatched)
+        foreach (PlacedSlot placed in _unmatched)
         {
-            _slots.Add(slot);
+            _slots.Add(placed.Data);
+            _numbers.Add(placed.Slot);
         }
     }
 

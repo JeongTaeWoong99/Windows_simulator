@@ -32,7 +32,7 @@ public static class AuctionText
     {
         EAuctionKind.Equip     => GameDataLoader.GetEquipName(tid),
         EAuctionKind.Character => GameDataLoader.GetCharacterName(tid),
-        EAuctionKind.Artifact  => GameDataLoader.TryGetArtifact(tid, out ArtifactTableRow row) ? row.Name : $"?#{tid}",
+        EAuctionKind.Artifact  => GameDataLoader.TryGetArtifact(tid, out ArtifactTableRow row) ? Loc.Get(row.NameLocKey) : $"?#{tid}",
         _                      => GameDataLoader.GetItemName(tid),
     };
 
@@ -72,25 +72,35 @@ public static class AuctionText
     // 종류 이름 — "자원" · "장비" · "캐릭터" · "아티팩트".
     public static string GetKindName(EAuctionKind kind) => kind switch
     {
-        EAuctionKind.Equip     => "장비",
-        EAuctionKind.Character => "캐릭터",
-        EAuctionKind.Artifact  => "아티팩트",
-        _                      => "자원",
+        EAuctionKind.Equip     => Lang.Get("UI.Equip.Gear"),
+        EAuctionKind.Character => Lang.Get("UI.Common.Character"),
+        EAuctionKind.Artifact  => Lang.Get("UI.Auction.KindArtifact"),
+        _                      => Lang.Get("UI.Auction.KindItem"),
     };
 
     // 아이템 분류 이름 — 산업 5종은 산업 이름, 나머지는 상자 · 소모품 · 기타 · 유물 (T-124 · T-150).
-    public static string GetItemCategoryName(ItemType type) => type switch
+    public static string GetItemCategoryName(ItemType type) => GetItemGroupName(GetItemCategoryId(type));
+
+    // 아이템 분류의 ID — 언어와 무관한 이름이다. 저장·비교는 이 값으로 한다(화면 문구는 언어마다 다르다).
+    // 다섯 산업은 'EIndustryType' 이름과 같다 — 'GetItemGroupName'이 산업 이름으로 읽는다.
+    public static string GetItemCategoryId(ItemType type) => type switch
     {
-        ItemType.Farming    => IndustryLabel.Get(EIndustryType.Farming),
-        ItemType.Excavation => IndustryLabel.Get(EIndustryType.Excavation),
-        ItemType.Mining     => IndustryLabel.Get(EIndustryType.Mining),
-        ItemType.Logging    => IndustryLabel.Get(EIndustryType.Logging),
-        ItemType.Hunting    => IndustryLabel.Get(EIndustryType.Hunting),
-        ItemType.Box        => "상자",
-        ItemType.Consumable => "소모품",
-        ItemType.Relic      => "유물",
-        _                   => "기타",
+        ItemType.Farming    => nameof(EIndustryType.Farming),
+        ItemType.Excavation => nameof(EIndustryType.Excavation),
+        ItemType.Mining     => nameof(EIndustryType.Mining),
+        ItemType.Logging    => nameof(EIndustryType.Logging),
+        ItemType.Hunting    => nameof(EIndustryType.Hunting),
+        ItemType.Box        => "Box",
+        ItemType.Consumable => "Consumable",
+        ItemType.Relic      => "Relic",
+        _                   => "Etc",
     };
+
+    // 분류 ID를 지금 언어의 이름으로 — 산업이면 산업 이름, 아니면 'UI.ItemGroup.<ID>'.
+    public static string GetItemGroupName(string groupId)
+        => Enum.TryParse(groupId, out EIndustryType industry) && industry != EIndustryType.None
+            ? IndustryLabel.Get(industry)
+            : Lang.Get("UI.ItemGroup." + groupId);
 
     // 이름의 첫 글자. 모르는 이름('?#12')이나 빈 이름은 '?'.
     private static string GlyphOf(string name)
@@ -111,10 +121,10 @@ public static class AuctionText
     // 개체 정보 없이 (종류, TID)만으로 쓰는 한 줄 — 시세 탭 머리 · 거래 기록.
     public static string FormatSub(EAuctionKind kind, int tid) => kind switch
     {
-        EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{EquipLabel.GetEffectText(tid)}" : "장비",
-        EAuctionKind.Character => "캐릭터",
-        EAuctionKind.Artifact  => "아티팩트",
-        _                      => $"{UIRichText.Label("자원")} {GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
+        EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{EquipLabel.GetEffectText(tid)}" : Lang.Get("UI.Equip.Gear"),
+        EAuctionKind.Character => Lang.Get("UI.Common.Character"),
+        EAuctionKind.Artifact  => Lang.Get("UI.Auction.KindArtifact"),
+        _                      => $"{UIRichText.Label(Lang.Get("UI.Auction.KindItem"))} {GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
     };
 
     // "LV.12 · ★2 · 발굴 7" — 레벨 · ★(있을 때) · 가장 높은 적성 하나. 캐릭터 정보가 없으면 빈 문자열.
@@ -148,7 +158,7 @@ public static class AuctionText
         }
 
         return bestValue == 0
-            ? UIRichText.Label("적성 없음")
+            ? UIRichText.Label(Lang.Get("UI.Auction.NoAptitude"))
             : $"{UIRichText.Label(IndustryLabel.Get(best))} {AptitudeLabel.GetText(bestValue)}";
     }
 
@@ -174,8 +184,8 @@ public static class AuctionText
         EquipLabel.ReadStatOptions(equipTid, optionTids, options);
 
         return options.Count == 0
-            ? UIRichText.Label("능력치 없음")
-            : $"{UIRichText.Label("능력치")} {EquipLabel.CountFilled(options)}/{options.Count}";
+            ? UIRichText.Label(Lang.Get("UI.Auction.NoStats"))
+            : $"{UIRichText.Label(Lang.Get("UI.Auction.Stats"))} {EquipLabel.CountFilled(options)}/{options.Count}";
     }
 
     // 만료까지 남은 시간 — "23시간 10분" · "15분" · "곧 만료".
@@ -185,15 +195,15 @@ public static class AuctionText
 
         if (left.TotalHours >= 1d)
         {
-            return $"{(int)left.TotalHours}시간 {left.Minutes}분";
+            return Lang.Format("UI.Auction.HoursMinutes", (int)left.TotalHours, left.Minutes);
         }
 
         if (left.TotalMinutes >= 1d)
         {
-            return $"{(int)left.TotalMinutes}분";
+            return Lang.Format("UI.Enchant.Minutes", (int)left.TotalMinutes);
         }
 
-        return "곧 만료";
+        return Lang.Get("UI.Auction.ExpiringSoon");
     }
 
     // 남은 시간 칸 — 6시간 안이면 경고색, 누가 사는 중이면 "구매 진행 중".
@@ -201,7 +211,7 @@ public static class AuctionText
     {
         if (listing.State == EAuctionListingState.Reserved)
         {
-            return UIRichText.Paint("구매 진행 중", UIThemeRole.Negative);
+            return UIRichText.Paint(Lang.Get("UI.Auction.Buying"), UIThemeRole.Negative);
         }
 
         TimeSpan left = DateTimeOffset.FromUnixTimeMilliseconds(listing.ExpiresAtUnixMs) - ServerClock.UtcNow;
@@ -241,7 +251,7 @@ public static class AuctionText
         {
             Key        = listing.ListingId,
             Icon       = ToIcon(listing),
-            Title      = isMine ? $"{title} {UIRichText.Small(UIRichText.Paint("내 매물", UIThemeRole.Highlight))}" : title,
+            Title      = isMine ? $"{title} {UIRichText.Small(UIRichText.Paint(Lang.Get("UI.Auction.MyListing"), UIThemeRole.Highlight))}" : title,
             TitleColor = RarityPalette.Get((GlobalRarity)listing.Rarity),
             Sub        = FormatSub(listing),
             Cells      = new[]
@@ -250,11 +260,11 @@ public static class AuctionText
                 UIRichText.Gold(listing.UnitPrice),
                 FormatTotal(listing),
                 PaintRemaining(listing),
-                isMine ? UIRichText.Paint("나", UIThemeRole.Highlight) : UIRichText.Label(GetSellerName(listing)),
+                isMine ? UIRichText.Paint(Lang.Get("UI.Auction.Me"), UIThemeRole.Highlight) : UIRichText.Label(GetSellerName(listing)),
             },
-            SecondaryLabel = "시세",
+            SecondaryLabel = Lang.Get("UI.Auction.Price"),
             CanSecondary   = true,
-            PrimaryLabel   = isMine ? "내 매물" : "구매",
+            PrimaryLabel   = isMine ? Lang.Get("UI.Auction.MyListing") : Lang.Get("UI.Auction.Buy"),
             CanPrimary     = canBuy && !isMine,
             Highlight      = isMine,
             Tooltip        = () => BuildListingTooltip(listing, isMine),
@@ -280,9 +290,9 @@ public static class AuctionText
                 FormatTotal(listing),
                 UIRichText.Paint($"{AuctionModel.SaleNet(listing.TotalPrice):N0} G", UIThemeRole.Positive),
                 isReserved ? UIRichText.Label("—") : PaintRemaining(listing),
-                isReserved ? UIRichText.Paint("구매 진행 중", UIThemeRole.Negative) : UIRichText.Label("판매 중"),
+                isReserved ? UIRichText.Paint(Lang.Get("UI.Auction.Buying"), UIThemeRole.Negative) : UIRichText.Label(Lang.Get("UI.Auction.OnSale")),
             },
-            PrimaryLabel = "취소",
+            PrimaryLabel = Lang.Get("UI.Common.Cancel"),
             CanPrimary   = canCancel && !isReserved,
             Tooltip      = () => BuildListingTooltip(listing, isMine: true),
         };
@@ -301,29 +311,29 @@ public static class AuctionText
 
         if (listing.Kind == EAuctionKind.Equip)
         {
-            content.Row("종류", EquipLabel.GetKindName((EquipKind)listing.Category))
-                   .Row("기본 능력치", EquipLabel.GetEffectText(listing.Tid));
+            content.Row(Lang.Get("UI.Equip.Kind"), EquipLabel.GetKindName((EquipKind)listing.Category))
+                   .Row(Lang.Get("UI.Equip.BaseStat"), EquipLabel.GetEffectText(listing.Tid));
         }
         else if (listing.Kind == EAuctionKind.Character && listing.Character != null)
         {
-            content.Row("레벨", CharacterSlotSource.GetLevelLabel(listing.Character.Level))
-                   .Row("응축", listing.Character.Star > 0 ? new string('★', listing.Character.Star) : "없음");
+            content.Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(listing.Character.Level))
+                   .Row(Lang.Get("UI.Inventory.Condense"), listing.Character.Star > 0 ? new string('★', listing.Character.Star) : Lang.Get("UI.Equip.None"));
         }
         else
         {
-            content.Row("종류", listing.Kind == EAuctionKind.Item ? $"자원 · {GetItemCategoryName(GameDataLoader.GetItemType(listing.Tid))}" : GetKindName(listing.Kind));
+            content.Row(Lang.Get("UI.Equip.Kind"), listing.Kind == EAuctionKind.Item ? $"{Lang.Get("UI.Auction.KindItem")} · {GetItemCategoryName(GameDataLoader.GetItemType(listing.Tid))}" : GetKindName(listing.Kind));
         }
 
-        content.Row("수량", $"{listing.Count:N0} 개")
-               .Row("단가", $"{listing.UnitPrice:N0} 골드");
+        content.Row(Lang.Get("UI.Common.Amount"), Lang.Format("UI.Inventory.CountUnit", listing.Count.ToString("N0")))
+               .Row(Lang.Get("UI.Auction.UnitPrice"), Lang.Format("UI.Equip.Gold", listing.UnitPrice.ToString("N0")));
 
         if (listing.Count > 1)
         {
-            content.Row("총액", $"{listing.TotalPrice:N0} 골드");
+            content.Row(Lang.Get("UI.Auction.TotalPrice"), Lang.Format("UI.Equip.Gold", listing.TotalPrice.ToString("N0")));
         }
 
-        content.Row("남은 시간", listing.State == EAuctionListingState.Reserved ? "구매 진행 중" : FormatRemaining(listing.ExpiresAtUnixMs))
-               .Row("판매자", GetSellerName(listing), isMine ? "나 — 내 매물은 살 수 없습니다" : "", null);
+        content.Row(Lang.Get("UI.Auction.TimeLeft"), listing.State == EAuctionListingState.Reserved ? Lang.Get("UI.Auction.Buying") : FormatRemaining(listing.ExpiresAtUnixMs))
+               .Row(Lang.Get("UI.Auction.Seller"), GetSellerName(listing), isMine ? Lang.Get("UI.Auction.SellerIsMe") : "", null);
 
         AddPriceRules(content, GetBasePrice(listing.Kind, listing.Tid));
 
@@ -346,24 +356,30 @@ public static class AuctionText
     // ※ 속도는 적성만의 값이다 — 장비·특성 가산은 빠진다.
     public static void AddAptitudeRows(TooltipContent content, CharacterInfo character)
     {
-        content.Header("적성");
+        content.Header(Lang.Get("UI.Inventory.Aptitude"));
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
             byte   aptitude = GetAptitude(character, industry);
-            string speed    = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale:0.00}배";
+            string speed    = aptitude == 0 ? "" : Lang.Format("UI.WorkStation.SpeedMul", (GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale).ToString("0.00"));
 
             content.Row(IndustryLabel.Get(industry), AptitudeLabel.GetText(aptitude), speed, null);
         }
     }
 
-    // 등록 후보 자원 줄의 툴팁 — 보유 · 가격 기준.
-    public static TooltipContent BuildRegisterItemTooltip(int itemTid, long owned)
+    // 등록 후보 자원 줄의 툴팁 — 보유 · (등록 불가 사유) · 가격 기준.
+    //   blocked : 올릴 수 없는 사유(잠금 · T-159). null이면 사유 줄을 넣지 않는다
+    public static TooltipContent BuildRegisterItemTooltip(int itemTid, long owned, string? blocked)
     {
         var content = new TooltipContent(GameDataLoader.GetItemName(itemTid));
 
         AddRarityRow(content, GameDataLoader.GetItemRarity(itemTid))
-            .Row("보유", $"{owned:N0} 개");
+            .Row(Lang.Get("UI.Inventory.Owned"), Lang.Format("UI.Inventory.CountUnit", owned.ToString("N0")));
+
+        if (blocked != null)
+        {
+            content.Row(Lang.Get("UI.Auction.CantList"), blocked);
+        }
 
         AddPriceRules(content, GameDataLoader.GetItemPrice(itemTid));
 
@@ -378,7 +394,7 @@ public static class AuctionText
 
         if (content != null && blocked != null)
         {
-            content.Row("등록 불가", blocked);
+            content.Row(Lang.Get("UI.Auction.CantList"), blocked);
         }
 
         return content;
@@ -390,11 +406,11 @@ public static class AuctionText
         var content = new TooltipContent(GameDataLoader.GetCharacterName(character.CharacterTid));
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(character.CharacterTid))
-            .Row("레벨", CharacterSlotSource.GetLevelLabel(character.Level));
+            .Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(character.Level));
 
         if (blocked != null)
         {
-            content.Row("등록 불가", blocked);
+            content.Row(Lang.Get("UI.Auction.CantList"), blocked);
         }
 
         AddPriceRules(content, GameDataLoader.GetCharacterPrice(character.CharacterTid));
@@ -405,14 +421,14 @@ public static class AuctionText
 
     // 등급 한 줄 — 줄 바탕이 등급색이다('InventorySlotSource.AddRarityRow'와 같은 모양).
     private static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
-        => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+        => content.Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
 
     // 가격 기준 묶음 — 즉시 판매가(정해진 값) · 경매 등록가(그 값 이상). 두 판매 방식을 한눈에 비교하게 둔다.
     private static void AddPriceRules(TooltipContent content, int basePrice)
     {
-        content.Header("가격 기준")
-               .Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(basePrice):N0} 골드", "인벤토리 [판매]", null)
-               .Row("경매 등록가", AuctionModel.FormatBand(basePrice), "개당 단가", null);
+        content.Header(Lang.Get("UI.Auction.PriceRules"))
+               .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", AuctionModel.InstantSellPrice(basePrice).ToString("N0")), Lang.Get("UI.Equip.InventorySell"), null)
+               .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice), Lang.Get("UI.Sell.UnitPrice"), null);
     }
 
     #endregion
@@ -438,7 +454,7 @@ public static class AuctionText
         {
             foreach (ItemTableRow row in GameTable.ItemTable.All)
             {
-                if (Contains(row.Name, trimmed)) tids.Add(row.ItemTID);
+                if (Contains(Loc.Get(row.NameLocKey), trimmed)) tids.Add(row.ItemTID);
             }
         }
 
@@ -446,7 +462,7 @@ public static class AuctionText
         {
             foreach (EquipTableRow row in GameTable.EquipTable.All)
             {
-                if (Contains(row.Name, trimmed)) tids.Add(row.EquipTID);
+                if (Contains(Loc.Get(row.NameLocKey), trimmed)) tids.Add(row.EquipTID);
             }
         }
 
@@ -454,7 +470,7 @@ public static class AuctionText
         {
             foreach (CharacterTableRow row in GameTable.CharacterTable.All)
             {
-                if (Contains(row.Name, trimmed)) tids.Add(row.CharacterTID);
+                if (Contains(Loc.Get(row.NameLocKey), trimmed)) tids.Add(row.CharacterTID);
             }
         }
 
@@ -462,7 +478,7 @@ public static class AuctionText
         {
             foreach (ArtifactTableRow row in GameTable.ArtifactTable.All)
             {
-                if (Contains(row.Name, trimmed)) tids.Add(row.ArtifactTID);
+                if (Contains(Loc.Get(row.NameLocKey), trimmed)) tids.Add(row.ArtifactTID);
             }
         }
 
@@ -499,22 +515,22 @@ public static class AuctionText
 
         foreach (ItemTableRow row in GameTable.ItemTable.All)
         {
-            if (Match(row.Name)) { kind = EAuctionKind.Item; tid = row.ItemTID; return true; }
+            if (Match(Loc.Get(row.NameLocKey))) { kind = EAuctionKind.Item; tid = row.ItemTID; return true; }
         }
 
         foreach (EquipTableRow row in GameTable.EquipTable.All)
         {
-            if (Match(row.Name)) { kind = EAuctionKind.Equip; tid = row.EquipTID; return true; }
+            if (Match(Loc.Get(row.NameLocKey))) { kind = EAuctionKind.Equip; tid = row.EquipTID; return true; }
         }
 
         foreach (CharacterTableRow row in GameTable.CharacterTable.All)
         {
-            if (Match(row.Name)) { kind = EAuctionKind.Character; tid = row.CharacterTID; return true; }
+            if (Match(Loc.Get(row.NameLocKey))) { kind = EAuctionKind.Character; tid = row.CharacterTID; return true; }
         }
 
         foreach (ArtifactTableRow row in GameTable.ArtifactTable.All)
         {
-            if (Match(row.Name)) { kind = EAuctionKind.Artifact; tid = row.ArtifactTID; return true; }
+            if (Match(Loc.Get(row.NameLocKey))) { kind = EAuctionKind.Artifact; tid = row.ArtifactTID; return true; }
         }
 
         kind = EAuctionKind.None;
@@ -595,10 +611,10 @@ public static class AuctionText
     // 후보 오른쪽 글자 — "자원 · 농사" · "장비 · 무기" · "캐릭터" · "아티팩트".
     private static string FormatSuggestionSub(EAuctionKind kind, int tid) => kind switch
     {
-        EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"장비{UIRichText.Dot}{EquipLabel.GetKindName(row.EquipKind)}" : "장비",
-        EAuctionKind.Character => "캐릭터",
-        EAuctionKind.Artifact  => "아티팩트",
-        _                      => $"자원{UIRichText.Dot}{GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
+        EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"{Lang.Get("UI.Equip.Gear")}{UIRichText.Dot}{EquipLabel.GetKindName(row.EquipKind)}" : Lang.Get("UI.Equip.Gear"),
+        EAuctionKind.Character => Lang.Get("UI.Common.Character"),
+        EAuctionKind.Artifact  => Lang.Get("UI.Auction.KindArtifact"),
+        _                      => $"{Lang.Get("UI.Auction.KindItem")}{UIRichText.Dot}{GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
     };
 
     // 한 단계의 후보를 모은다 — 'startsWith'면 이름이 그 글자로 시작하는 것, 아니면 이름 가운데에 든 것.
@@ -625,22 +641,22 @@ public static class AuctionText
     {
         if (kind == EAuctionKind.None || kind == EAuctionKind.Item)
         {
-            foreach (ItemTableRow row in GameTable.ItemTable.All) yield return (EAuctionKind.Item, row.ItemTID, row.Name);
+            foreach (ItemTableRow row in GameTable.ItemTable.All) yield return (EAuctionKind.Item, row.ItemTID, Loc.Get(row.NameLocKey));
         }
 
         if (kind == EAuctionKind.None || kind == EAuctionKind.Equip)
         {
-            foreach (EquipTableRow row in GameTable.EquipTable.All) yield return (EAuctionKind.Equip, row.EquipTID, row.Name);
+            foreach (EquipTableRow row in GameTable.EquipTable.All) yield return (EAuctionKind.Equip, row.EquipTID, Loc.Get(row.NameLocKey));
         }
 
         if (kind == EAuctionKind.None || kind == EAuctionKind.Character)
         {
-            foreach (CharacterTableRow row in GameTable.CharacterTable.All) yield return (EAuctionKind.Character, row.CharacterTID, row.Name);
+            foreach (CharacterTableRow row in GameTable.CharacterTable.All) yield return (EAuctionKind.Character, row.CharacterTID, Loc.Get(row.NameLocKey));
         }
 
         if (kind == EAuctionKind.None || kind == EAuctionKind.Artifact)
         {
-            foreach (ArtifactTableRow row in GameTable.ArtifactTable.All) yield return (EAuctionKind.Artifact, row.ArtifactTID, row.Name);
+            foreach (ArtifactTableRow row in GameTable.ArtifactTable.All) yield return (EAuctionKind.Artifact, row.ArtifactTID, Loc.Get(row.NameLocKey));
         }
     }
 

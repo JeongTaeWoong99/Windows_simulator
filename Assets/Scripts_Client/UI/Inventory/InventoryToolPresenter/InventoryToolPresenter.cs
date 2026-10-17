@@ -47,8 +47,8 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   꺼지므로 'OnDisable' 한 곳에서 비운다.
 public class InventoryToolPresenter : MonoBehaviour
 {
-    // 정렬 기준 드롭다운의 문구. 'InventorySortKey' 순서와 같다.
-    private static readonly string[] SortKeyLabels = { "등급순", "이름순", "수량순" };
+    // 정렬 기준 드롭다운의 문구 키. 'InventorySortKey' 순서와 같다.
+    private static readonly string[] SortKeyLabelKeys = { "UI.Tool.SortRarity", "UI.Tool.SortName", "UI.Tool.SortCount" };
 
     // 드롭다운에 세울 등급. 'None'과 'Max'를 뺀 실제 등급만, 낮은 것부터.
     private static readonly GlobalRarity[] SellRarities =
@@ -115,19 +115,23 @@ public class InventoryToolPresenter : MonoBehaviour
     // 분류 드롭다운의 항목 순서 — 탭마다 다르다(상자·기타는 자원만). 드롭다운 값 → (산업, 묶음). 0번은 늘 '전체'.
     private readonly List<(byte Industry, InventoryItemGroup Group)> _categoryOptions = new List<(byte, InventoryItemGroup)>();
 
-    // 일괄 담기 [제외] 항목 — 분류 이름, 보일 순서. 다음은 산업, 그다음 이 표에 없는 분류(표에 새 분류가 생겼을 때).
-    private static readonly string[] ExcludeGroupOrder = { ResourceSlotSource.CubeGroup, "상자", "유물", "소모품", "기타" };
+    // 일괄 담기 [제외] 항목 — 분류 ID('ResourceSlotSource.GroupOf'), 보일 순서. 다음은 산업, 그다음 이 표에 없는 분류(표에 새 분류가 생겼을 때).
+    private static readonly string[] ExcludeGroupOrder = { ResourceSlotSource.CubeGroup, "Box", "Relic", "Consumable", "Etc" };
 
     // 처음(저장값이 없을 때) 체크해 둘 분류.
-    private static readonly string[] DefaultExcludedGroups = { ResourceSlotSource.CubeGroup, "상자", "유물" };
+    private static readonly string[] DefaultExcludedGroups = { ResourceSlotSource.CubeGroup, "Box", "Relic" };
 
-    // [제외] 체크를 남기는 PlayerPrefs 키 — 체크한 분류 이름을 '|'로 잇는다. 빈 문자열 = 아무것도 안 뺀다.
-    private const string ExcludePrefsKey = "Inventory.BulkExcludeGroups";
+    // [제외] 체크를 남기는 PlayerPrefs 키 — 체크한 분류 ID를 '|'로 잇는다. 빈 문자열 = 아무것도 안 뺀다.
+    // ※ 키 이름이 'GroupIds'인 이유 — 예전 'BulkExcludeGroups'는 한글 이름을 담았다(언어를 고르기 전, T-136). 옛 값은 읽지 않고 기본으로 시작한다.
+    private const string ExcludePrefsKey = "Inventory.BulkExcludeGroupIds";
 
-    // [제외] 항목(분류 이름)과 체크 — 같은 순서. 담기는 집합으로 묻는다.
+    // [제외] 항목(분류 ID)과 체크 — 같은 순서. 담기는 집합으로 묻는다.
     private readonly List<string>    _excludeGroups  = new List<string>();
     private readonly List<bool>      _excludeChecked = new List<bool>();
     private readonly HashSet<string> _excludedGroups = new HashSet<string>();
+
+    // 일괄 담기가 훑는 자원 TID — 같은 TID가 여러 칸에 있어도 한 번만 담는다('PlayerDataModel.CollectOwnedItemIds').
+    private readonly List<int> _ownedItemIds = new List<int>();
 
     // 검색 후보를 모을 그릇 — 칠 때마다 다시 채운다.
     private readonly List<Suggestion> _suggestions = new List<Suggestion>();
@@ -220,6 +224,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         _isSubscribed   = true;
         tabs.TabChanged += ApplyTab;
+        Lang.Changed    += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDestroy에서 호출)
@@ -232,6 +237,31 @@ public class InventoryToolPresenter : MonoBehaviour
 
         _isSubscribed   = false;
         tabs.TabChanged -= ApplyTab;
+        Lang.Changed    -= OnLanguageChanged;
+    }
+
+    // 언어가 바뀌었다 — 드롭다운 문구를 새 언어로 다시 채우되 고른 값은 그대로 둔다 (Lang.Changed 구독)
+    // ※ 이 줄은 꺼져 있어도(특성 탭) 받는다 — 'Start/OnDestroy' 구독이라서다. 다시 켜졌을 때 옛 언어가 남지 않는다.
+    private void OnLanguageChanged()
+    {
+        int bulk     = bulkRarityDropdown.value;
+        int rarity   = rarityDropdown.value;
+        int industry = industryDropdown.value;
+
+        BuildRarityOptions();
+        BuildFilterOptions();
+        RebuildCategoryOptions();
+        RebuildSortKeyOptions();
+
+        bulkRarityDropdown.SetValueWithoutNotify(bulk);
+        bulkRarityDropdown.RefreshShownValue();
+        rarityDropdown.SetValueWithoutNotify(rarity);
+        rarityDropdown.RefreshShownValue();
+        industryDropdown.SetValueWithoutNotify(industry);
+        industryDropdown.RefreshShownValue();
+
+        excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
+        RefreshExcludeHead();
     }
 
     #endregion
@@ -250,7 +280,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (GlobalRarity rarity in SellRarities)
         {
-            options.Add($"{RarityLabel.Get(rarity)} 이하");
+            options.Add(Lang.Format("UI.Tool.RarityOrBelow", RarityLabel.Get(rarity)));
         }
 
         bulkRarityDropdown.AddOptions(options);
@@ -262,7 +292,7 @@ public class InventoryToolPresenter : MonoBehaviour
     // ※ 분류 드롭다운은 탭마다 항목이 달라 탭을 바꿀 때 채운다('RebuildCategoryOptions').
     private void BuildFilterOptions()
     {
-        var rarities = new List<string> { "등급 전체" };
+        var rarities = new List<string> { Lang.Get("UI.Tool.AllRarities") };
 
         foreach (GlobalRarity rarity in SellRarities)
         {
@@ -313,7 +343,7 @@ public class InventoryToolPresenter : MonoBehaviour
         _categoryOptions.Clear();
         _categoryOptions.Add((0, InventoryItemGroup.None));
 
-        var labels = new List<string> { hasGroups ? "분류 전체" : "산업 전체" };
+        var labels = new List<string> { Lang.Get(hasGroups ? "UI.Tool.AllGroups" : "UI.Tool.AllIndustries") };
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
@@ -324,9 +354,9 @@ public class InventoryToolPresenter : MonoBehaviour
         if (hasGroups)
         {
             _categoryOptions.Add((0, InventoryItemGroup.Box));
-            labels.Add("상자");
+            labels.Add(ResourceSlotSource.GroupName("Box"));
             _categoryOptions.Add((0, InventoryItemGroup.Other));
-            labels.Add("기타");
+            labels.Add(ResourceSlotSource.GroupName("Etc"));
         }
 
         industryDropdown.ClearOptions();
@@ -355,7 +385,7 @@ public class InventoryToolPresenter : MonoBehaviour
             }
 
             _sortKeyOptions.Add(key);
-            labels.Add(SortKeyLabels[(int)key]);
+            labels.Add(Lang.Get(SortKeyLabelKeys[(int)key]));
         }
 
         if (!_sortKeyOptions.Contains(_sortKey))
@@ -405,21 +435,32 @@ public class InventoryToolPresenter : MonoBehaviour
 
         GlobalRarity limit   = SelectedRarity;
         int          added   = 0;
+        int          locked  = 0;
         var          skipped = new Dictionary<string, int>(); // 분류 → 뺀 종류 수
 
-        foreach (ItemInfo item in _data.Inventory)
-        {
-            if (item.Count <= 0 || item.Container != EContainer.Inventory)
-            {
-                continue; // 서버가 0개가 된 아이템도 실어 보낸다 · 창고에 맡긴 것은 팔지 않는다(T-107)
-            }
+        // ★ 창고에 맡긴 것은 담지 않는다 — 인벤토리 칸들의 합만 담는다(2026-10-16 사용자 결정).
+        //   창고는 "팔지 않고 남겨 둘 것"을 두는 곳이라 일괄 범위에 끼면 안 된다. 하나씩 담기(창고 칸 우클릭)는 그대로 된다.
+        //   서버는 인벤토리 것부터 빼므로 인벤토리 수량만 담으면 창고 것은 건드리지 않는다.
+        _data.CollectOwnedItemIds(_ownedItemIds);
 
-            if (GameDataLoader.GetItemRarity(item.ItemId) > limit)
+        foreach (int itemId in _ownedItemIds)
+        {
+            int count = _data.GetItemCount(itemId, EContainer.Inventory);
+
+            if (count <= 0 || GameDataLoader.GetItemRarity(itemId) > limit)
             {
                 continue;
             }
 
-            string group = ResourceSlotSource.GroupOf(item.ItemId);
+            // 잠금은 [제외]와 따로 센다 — 체크를 풀어도 담기지 않으니 푸는 방법이 다르다(T-159).
+            if (_data.IsItemLocked(itemId))
+            {
+                locked++;
+
+                continue;
+            }
+
+            string group = ResourceSlotSource.GroupOf(itemId);
 
             if (_excludedGroups.Contains(group))
             {
@@ -428,27 +469,34 @@ public class InventoryToolPresenter : MonoBehaviour
                 continue;
             }
 
-            _cart.Add(item.ItemId, item.Count);
+            _cart.Add(itemId, count);
             added++;
         }
 
-        string skippedText = SkippedText(skipped);
+        string skippedText = SkippedText(skipped) + LockedText(locked);
 
         if (added == 0)
         {
-            _wait.RaiseNotice($"{LimitLabel} 이하로 담을 자원이 없습니다.{skippedText}");
+            _wait.RaiseNotice(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, Lang.Get("UI.Tool.KindResource")) + skippedText);
 
             return;
         }
 
         // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 것은 보이지 않는다.
-        if (skipped.Count > 0)
+        if (skipped.Count > 0 || locked > 0)
         {
-            _wait.RaiseNotice($"자원 {added}종을 담았습니다.{skippedText}");
+            _wait.RaiseNotice(Lang.Format("UI.Tool.Added", Lang.Get("UI.Tool.KindResource"), Lang.Format("UI.Tool.NItem", added)) + skippedText);
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종{skippedText}");
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 잠금 {locked}종{skippedText}");
     }
+
+    // 자원 일괄 담기에서 잠겨 빠진 것을 알릴 꼬리 문구 — " (잠금 2종 제외)\n잠금은 Ctrl+좌클릭으로 풀 수 있습니다." (T-159).
+    // 개체 일괄 담기('NotifyEntityBulk')와 같은 말투다. 없으면 빈 문자열.
+    private static string LockedText(int locked)
+        => locked > 0
+            ? " " + Lang.Format("UI.Tool.ExcludedWrap", Lang.Format("UI.Tool.LockedN", Lang.Format("UI.Tool.NItem", locked))) + "\n" + Lang.Get("UI.Tool.UnlockHint")
+            : "";
 
     // 자원 일괄 담기에서 뺀 것을 알릴 꼬리 문구 — " (상자 2종 · 큐브 1종 제외 — [제외]에서 체크를 풀면 함께 담깁니다)".
     // 뺀 것이 없으면 빈 문자열. 분류는 [제외] 목록 순서로 적는다.
@@ -465,11 +513,11 @@ public class InventoryToolPresenter : MonoBehaviour
         {
             if (skipped.TryGetValue(group, out int n))
             {
-                counts.Add($"{group} {n}종");
+                counts.Add($"{ResourceSlotSource.GroupName(group)} {Lang.Format("UI.Tool.NItem", n)}");
             }
         }
 
-        return $" ({string.Join(" · ", counts)} 제외 — [제외]에서 체크를 풀면 함께 담깁니다)";
+        return " " + Lang.Format("UI.Tool.SkippedWrap", string.Join(" · ", counts));
     }
 
     // [제외] 항목을 아이템 표에서 만들고 저장된 체크를 읽는다 (Start에서 한 번).
@@ -495,11 +543,11 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
-            string name = IndustryLabel.Get(industry);
+            string id = industry.ToString(); // 산업 분류 ID는 산업 enum 이름이다('AuctionText.GetItemCategoryId')
 
-            if (present.Remove(name))
+            if (present.Remove(id))
             {
-                _excludeGroups.Add(name);
+                _excludeGroups.Add(id);
             }
         }
 
@@ -515,8 +563,21 @@ public class InventoryToolPresenter : MonoBehaviour
             _excludeChecked.Add(_excludedGroups.Contains(group));
         }
 
-        excludeDropdown.SetOptions(_excludeGroups, _excludeChecked);
+        excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
         RefreshExcludeHead();
+    }
+
+    // [제외] 줄에 보일 이름 — 분류 ID를 지금 언어로 ('BuildExcludeOptions' · 언어 변경).
+    private List<string> ExcludeGroupNames()
+    {
+        var names = new List<string>(_excludeGroups.Count);
+
+        foreach (string group in _excludeGroups)
+        {
+            names.Add(ResourceSlotSource.GroupName(group));
+        }
+
+        return names;
     }
 
     // 저장된 체크 — 저장값이 없으면 기본(큐브 · 상자 · 유물).
@@ -563,7 +624,7 @@ public class InventoryToolPresenter : MonoBehaviour
             count += on ? 1 : 0;
         }
 
-        excludeDropdown.SetHeadText(count == 0 ? "제외 없음" : $"제외 {count}");
+        excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.ExcludeNone") : Lang.Format("UI.Tool.ExcludeCount", count));
     }
 
     // 캐릭터 — 고른 등급 이하 중 팔 수 있는 것만 (OnBulkSellClicked에서 호출).
@@ -581,7 +642,8 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (CharacterInfo character in _data.Characters)
         {
-            if (GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
+            // 창고 캐릭터는 일괄 범위에서 뺀다 — 자원과 같은 이유('BulkAddItems').
+            if (character.Container == EContainer.Warehouse || GameDataLoader.GetCharacterRarity(character.CharacterTid) > limit)
             {
                 continue;
             }
@@ -608,7 +670,7 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         _cart.AddEntities(picked, System.Array.Empty<long>());
-        NotifyEntityBulk("캐릭터", "명", picked.Count, locked, blocked, "배치 중 · 장비 착용 · 마지막 캐릭터");
+        NotifyEntityBulk(Lang.Get("UI.Tool.KindCharacter"), "UI.Tool.NCharacter", picked.Count, locked, blocked, Lang.Get("UI.Tool.CharacterBlocked"));
     }
 
     // 장비 — 고른 등급 이하 중 끼고 있지 않은 것만. 인챈트 등급도 범위 안이어야 한다 (OnBulkSellClicked에서 호출).
@@ -623,6 +685,12 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (EquipInfo equip in _data.Equips)
         {
+            // 창고 장비는 일괄 범위에서 뺀다 — 자원과 같은 이유('BulkAddItems').
+            if (equip.Container == EContainer.Warehouse)
+            {
+                continue;
+            }
+
             // 'EnchantGrade'는 0(없음) 또는 'GlobalRarity' 값이다 — 장비 등급과 같은 축으로 비교한다.
             if (GameDataLoader.GetEquipRarity(equip.EquipTid) > limit || (GlobalRarity)equip.EnchantGrade > limit)
             {
@@ -647,45 +715,46 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         _cart.AddEntities(System.Array.Empty<long>(), picked);
-        NotifyEntityBulk("장비", "개", picked.Count, locked, blocked, "캐릭터가 끼고 있는 장비");
+        NotifyEntityBulk(Lang.Get("UI.Tool.KindEquip"), "UI.Tool.NEquip", picked.Count, locked, blocked, Lang.Get("UI.Tool.EquipBlocked"));
     }
 
     // 개체 일괄 담기 결과를 알린다 — 뺀 것이 있을 때와 하나도 못 담았을 때만 (BulkAddCharacters · BulkAddEquips).
     // 뺀 것 문구 — " (잠금 2명 · 배치 중 · 장비 착용 · 마지막 캐릭터 1명 제외)". 잠금이 있으면 푸는 방법을 한 줄 덧붙인다.
-    private void NotifyEntityBulk(string kind, string unit, int added, int locked, int blocked, string blockedReason)
+    //   countKey : 개수 문구 키 — 'UI.Tool.NCharacter'("{0}명") · 'UI.Tool.NEquip'("{0}개")
+    private void NotifyEntityBulk(string kind, string countKey, int added, int locked, int blocked, string blockedReason)
     {
         var reasons = new List<string>();
 
         if (locked > 0)
         {
-            reasons.Add($"잠금 {locked}{unit}");
+            reasons.Add(Lang.Format("UI.Tool.LockedN", Lang.Format(countKey, locked)));
         }
 
         if (blocked > 0)
         {
-            reasons.Add($"{blockedReason} {blocked}{unit}");
+            reasons.Add($"{blockedReason} {Lang.Format(countKey, blocked)}");
         }
 
-        string blockedText = reasons.Count > 0 ? $" ({string.Join(" · ", reasons)} 제외)" : "";
+        string blockedText = reasons.Count > 0 ? " " + Lang.Format("UI.Tool.ExcludedWrap", string.Join(" · ", reasons)) : "";
 
         if (locked > 0)
         {
-            blockedText += "\n잠금은 Ctrl+좌클릭으로 풀 수 있습니다.";
+            blockedText += "\n" + Lang.Get("UI.Tool.UnlockHint");
         }
 
         if (added == 0)
         {
-            _wait.RaiseNotice($"{LimitLabel} 이하로 담을 {kind}이(가) 없습니다.{blockedText}");
+            _wait.RaiseNotice(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, kind) + blockedText);
 
             return;
         }
 
         if (locked + blocked > 0)
         {
-            _wait.RaiseNotice($"{kind} {added}{unit}을(를) 담았습니다.{blockedText}");
+            _wait.RaiseNotice(Lang.Format("UI.Tool.Added", kind, Lang.Format(countKey, added)) + blockedText);
         }
 
-        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added}{unit} · 잠금 {locked}{unit} · 제외 {blocked}{unit}");
+        ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added} · 잠금 {locked} · 제외 {blocked}");
     }
 
     // 드롭다운이 가리키는 범위의 이름 — "일반".

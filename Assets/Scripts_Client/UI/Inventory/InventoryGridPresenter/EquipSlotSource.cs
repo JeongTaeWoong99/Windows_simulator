@@ -98,7 +98,7 @@ public class EquipSlotSource : InventorySlotSource
 
     // 장비 칸 툴팁 — 공용 장비 툴팁('EquipLabel.BuildTooltip')에 "누가 어느 부위에 끼고 있나"를 더한다 (격자가 칸에 올린 순간 호출).
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
-    public override TooltipContent? BuildTooltip(long key)
+    public override TooltipContent? BuildTooltip(long key, int slot)
     {
         EquipInfo? equip = FindEquip(key);
 
@@ -107,16 +107,19 @@ public class EquipSlotSource : InventorySlotSource
             return null; // 목록이 아직 낡았다 — 칸도 이름을 그리지 못한다
         }
 
-        string state = IsWarehouse                    ? "창고 보관"
-                     : equip.EquippedCharacterId == 0L ? "인벤토리"
-                     : $"{_data.GetCharacterName(equip.EquippedCharacterId)} · {EquipLabel.GetSlotName(equip.EquippedSlot)}";
+        // 상태 — 누가 어느 부위에 끼었나, 아니면 '대기'. 잠겼으면 뒤에 붙인다(캐릭터 칸과 같은 모양).
+        // ※ 창고 장비도 낄 수 있다(T-163) — 어느 보관함인지는 '보관' 줄이 따로 말한다.
+        string state = equip.EquippedCharacterId != 0L
+            ? $"{Lang.Format("UI.Inventory.WornBy", _data.GetCharacterName(equip.EquippedCharacterId))} · {EquipLabel.GetSlotName(equip.EquippedSlot)}"
+            : Lang.Get("UI.WorkStation.Idle");
 
         if (equip.IsLocked)
         {
-            state += " · 잠김";
+            state += " · " + Lang.Get("UI.WorkStation.Locked");
         }
 
-        TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions, state);
+        TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions,
+            rows => AddStorageRow(rows).Row(Lang.Get("UI.Inventory.State"), state));
 
         if (content == null)
         {
@@ -124,11 +127,8 @@ public class EquipSlotSource : InventorySlotSource
         }
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        return AddControls(content, rows => rows
-            .Row("좌클릭",       "큐브")
-            .Row("우클릭",       "판매 담기")
-            .Row("Ctrl+좌클릭",  equip.IsLocked ? "잠금 풀기" : "잠그기")
-            .Row("Ctrl+우클릭", "경매 등록"));
+        return AddControls(content, rows => AddCommonControls(
+            rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Equip.Cube")), equip.IsLocked));
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

@@ -63,9 +63,10 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         LevelDesc, // 캐릭터
     }
 
-    private static readonly string[] SortLabels =
+    // 정렬 드롭다운의 문구 키 — 'SortPreset' 순서와 같다.
+    private static readonly string[] SortLabelKeys =
     {
-        "단가 낮은순", "단가 높은순", "마감 임박순", "등급 높은순", "작업속도 높은순 (장비)", "레벨 높은순 (캐릭터)",
+        "UI.Auction.SortPriceAsc", "UI.Auction.SortPriceDesc", "UI.Auction.SortExpires", "UI.Auction.SortRarity", "UI.Auction.SortSpeed", "UI.Auction.SortLevel",
     };
 
     private static readonly GlobalRarity[] RarityOptions =
@@ -217,11 +218,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     // 조건 없이 [검색]했다 — 결과 자리에 안내를 띄운다. 조건을 넣어 조회하면 풀린다.
     private bool _needsCondition;
 
-    // 결과 없음 글자 — 평소 문구와 조건 안내를 오간다. 평소 문구는 씬 값을 Start에서 기억한다.
+    // 결과 없음 글자 — 평소 문구와 조건 안내를 오간다.
     private TMP_Text _emptyLabel = null!;
-    private string   _emptyDefault = "";
-
-    private const string NeedsConditionText = "분류를 고르거나 이름을 넣어 검색하세요";
 
     // 구매 전 시세를 기다리는 매물 — 0이면 없다.
     private long _pendingBuyListingId;
@@ -233,8 +231,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // ─── 공용 검색창 ───
-    public string QueryPlaceholder => "아이템 이름";
-    public string QueryHint        => "[검색] — 분류·옵션과 함께 조회합니다";
+    public string QueryPlaceholder => Lang.Get("UI.Auction.SearchPlaceholder");
+    public string QueryHint        => Lang.Get("UI.Auction.SearchHint");
     public string Query            => _query;
 
     public void OnQueryChanged(string text) => _query = text;
@@ -287,7 +285,6 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         _emptyLabel = emptyText.GetComponentInChildren<TMP_Text>(true);
         this.RequireRef(_emptyLabel, nameof(_emptyLabel));
-        _emptyDefault = _emptyLabel.text;
         this.RequireRef(pager,                 nameof(pager));
         this.RequireRef(canvasView,            nameof(canvasView));
 
@@ -325,7 +322,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         }
 
         Subscribe();
-        Refresh();
+        OnLanguageChanged(); // 꺼져 있는 동안 언어가 바뀌었을 수 있다 — 드롭다운·트리까지 다시 쓴다(Refresh 포함)
         RequestMyListings();
 
         if (_hasPendingSearch)
@@ -358,6 +355,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.SummaryCompleted    += OnSummaryCompleted;
         _auction.MyListingsCompleted += OnMyListingsCompleted;
         _data.CurrencyChanged        += Refresh;
+        Lang.Changed                 += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -375,6 +373,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.SummaryCompleted    -= OnSummaryCompleted;
         _auction.MyListingsCompleted -= OnMyListingsCompleted;
         _data.CurrencyChanged        -= Refresh;
+        Lang.Changed                 -= OnLanguageChanged;
     }
 
     #endregion
@@ -401,22 +400,22 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         foreach (GlobalRarity rarity in RarityOptions)
         {
-            rarities.Add(rarity == GlobalRarity.None ? "전체" : RarityLabel.Get(rarity));
-            grades.Add(rarity == GlobalRarity.None ? "전체" : $"{RarityLabel.Get(rarity)} 이상");
+            rarities.Add(rarity == GlobalRarity.None ? Lang.Get("UI.Auction.All") : RarityLabel.Get(rarity));
+            grades.Add(rarity == GlobalRarity.None ? Lang.Get("UI.Auction.All") : Lang.Format("UI.Auction.OrHigher", RarityLabel.Get(rarity)));
         }
 
         var industries = new List<string>();
 
         foreach (EIndustryType industry in IndustryOptions)
         {
-            industries.Add(industry == EIndustryType.None ? "전체" : IndustryLabel.Get(industry));
+            industries.Add(industry == EIndustryType.None ? Lang.Get("UI.Auction.All") : IndustryLabel.Get(industry));
         }
 
-        var stars = new List<string> { "전체" };
+        var stars = new List<string> { Lang.Get("UI.Auction.All") };
 
         for (int star = 1; star <= GameDataLoader.CondenseMaxStar; star++)
         {
-            stars.Add($"★{star} 이상");
+            stars.Add(Lang.Format("UI.Auction.OrHigher", $"★{star}"));
         }
 
         Fill(rarityDropdown,        rarities);
@@ -424,13 +423,26 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         Fill(equipIndustryDropdown, industries);
         Fill(aptitudeDropdown,      industries);
         Fill(starDropdown,          stars);
-        Fill(sortDropdown,          new List<string>(SortLabels));
+        Fill(sortDropdown,          new List<string>(Array.ConvertAll(SortLabelKeys, Lang.Get)));
     }
 
+    // 항목을 바꿔 채운다 — 고른 값은 그대로 둔다(언어 변경 때 다시 채운다).
     private static void Fill(TMP_Dropdown dropdown, List<string> options)
     {
+        int value = dropdown.value;
+
         dropdown.ClearOptions();
         dropdown.AddOptions(options);
+        dropdown.SetValueWithoutNotify(Mathf.Clamp(value, 0, options.Count - 1));
+    }
+
+    // 언어가 바뀌었다 — 드롭다운 · 트리 · 결과 글자를 다시 쓴다 (Lang.Changed 구독).
+    // ※ 적용 조건 칩은 다음 검색 때 새 언어로 바뀐다.
+    private void OnLanguageChanged()
+    {
+        FillDropdowns();
+        RefreshTree();
+        Refresh();
     }
 
     // 버튼·드롭다운을 배선한다 (Start에서 한 번).
@@ -586,8 +598,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
     private static string GetNodeName(AuctionSearchNode node) => node switch
     {
-        AuctionSearchNode.All            => "전체",
-        AuctionSearchNode.Item           => "아이템",
+        AuctionSearchNode.All            => Lang.Get("UI.Auction.All"),
+        AuctionSearchNode.Item           => Lang.Get("UI.Auction.NodeItem"),
         AuctionSearchNode.ItemFarming    => AuctionText.GetItemCategoryName(ItemType.Farming),
         AuctionSearchNode.ItemExcavation => AuctionText.GetItemCategoryName(ItemType.Excavation),
         AuctionSearchNode.ItemMining     => AuctionText.GetItemCategoryName(ItemType.Mining),
@@ -597,12 +609,12 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         AuctionSearchNode.ItemConsumable => AuctionText.GetItemCategoryName(ItemType.Consumable),
         AuctionSearchNode.ItemMisc       => AuctionText.GetItemCategoryName(ItemType.Misc),
         AuctionSearchNode.ItemRelic      => AuctionText.GetItemCategoryName(ItemType.Relic),
-        AuctionSearchNode.Equip          => "장비",
+        AuctionSearchNode.Equip          => Lang.Get("UI.Equip.Gear"),
         AuctionSearchNode.EquipWeapon    => EquipLabel.GetKindName(EquipKind.Weapon),
         AuctionSearchNode.EquipAccessory => EquipLabel.GetKindName(EquipKind.Accessory),
         AuctionSearchNode.EquipGem       => EquipLabel.GetKindName(EquipKind.Gem),
-        AuctionSearchNode.Character      => "캐릭터",
-        _                                => "아티팩트",
+        AuctionSearchNode.Character      => Lang.Get("UI.Common.Character"),
+        _                                => Lang.Get("UI.Auction.KindArtifact"),
     };
 
     // "장비 › 무기" — 적용 조건 칩.
@@ -670,7 +682,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (tids != null && tids.Count == 0)
         {
-            _wait.RaiseNotice($"'{_query.Trim()}'(이)라는 {(kind == EAuctionKind.None ? "아이템" : AuctionText.GetKindName(kind))}이(가) 없습니다.");
+            _wait.RaiseNotice(Lang.Format("UI.Auction.NoSuchKind", _query.Trim(), kind == EAuctionKind.None ? Lang.Get("UI.Auction.ItemWord") : AuctionText.GetKindName(kind)));
 
             return;
         }
@@ -715,7 +727,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (minPrice > 0L || maxPrice > 0L)
         {
-            labels.Add($"단가 {minPrice:N0} ~ {(maxPrice > 0L ? maxPrice.ToString("N0") : "∞")}");
+            labels.Add(Lang.Format("UI.Auction.PriceRange", minPrice.ToString("N0"), maxPrice > 0L ? maxPrice.ToString("N0") : "∞"));
         }
 
         _applied      = request;
@@ -740,16 +752,16 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             labels.Add(IndustryLabel.Get(industry));
         }
 
-        AddPercentAttr(request, labels, equipSpeedInput,   EAuctionAttr.EquipSpeed,          "작업속도");
-        AddPercentAttr(request, labels, enchantSpeedInput, EAuctionAttr.EnchantSpeed,        "인챈트 속도 합");
-        AddPercentAttr(request, labels, enchantExpInput,   EAuctionAttr.EnchantCharacterExp, "인챈트 경험치 합");
+        AddPercentAttr(request, labels, equipSpeedInput,   EAuctionAttr.EquipSpeed,          Lang.Get("UI.Auction.AttrSpeed"));
+        AddPercentAttr(request, labels, enchantSpeedInput, EAuctionAttr.EnchantSpeed,        Lang.Get("UI.Auction.AttrEnchantSpeed"));
+        AddPercentAttr(request, labels, enchantExpInput,   EAuctionAttr.EnchantCharacterExp, Lang.Get("UI.Auction.AttrEnchantExp"));
 
         GlobalRarity grade = RarityOptions[enchantGradeDropdown.value];
 
         if (grade != GlobalRarity.None)
         {
             request.MinEnchantGrade = (int)grade;
-            labels.Add($"인챈트 {RarityLabel.Get(grade)}↑");
+            labels.Add(Lang.Format("UI.Auction.EnchantAtLeast", RarityLabel.Get(grade)));
         }
     }
 
@@ -780,7 +792,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             long min = Math.Max(ReadLong(aptitudeMinInput), 1L);
 
             request.Attrs!.Add(new AuctionAttrRangeInfo { Attr = (EAuctionAttr)(20 + (int)industry), Min = min });
-            labels.Add($"{IndustryLabel.Get(industry)} 적성 {min}↑");
+            labels.Add(Lang.Format("UI.Auction.AptitudeAtLeast", IndustryLabel.Get(industry), min));
         }
     }
 
@@ -815,7 +827,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         };
 
         _auction.Search(_applied);
-        BeginWait("경매장 검색");
+        BeginWait(Lang.Get("UI.Auction.WaitSearch"));
     }
 
     // 정렬을 바꾼다 — 서버 정렬이라 마지막 조건으로 다시 받는다 (정렬 드롭다운 · 열 머리)
@@ -874,7 +886,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             return;
         }
 
-        BeginWait("경매장 검색");
+        BeginWait(Lang.Get("UI.Auction.WaitSearch"));
     }
 
     // 내 매물을 조용히 받는다 — 대기 없이, 결과가 오면 꼬리표만 다시 그린다 (Start · OnEnable).
@@ -920,7 +932,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         }
 
         _pendingBuyListingId = listingId;
-        BeginWait("시세 확인");
+        BeginWait(Lang.Get("UI.Auction.WaitPrice"));
     }
 
     // 구매 확인 창 — 시세(최저가 · 최근가 · 전일 평균)와 이 매물이 전일 평균보다 몇 % 비싼지 · 골드.
@@ -931,19 +943,19 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         long            after   = _data.Gold - listing.TotalPrice;
 
         string what = listing.Count > 1
-            ? $"<b>{name}</b> {listing.Count:N0}개 — 개당 {listing.UnitPrice:N0} G · 총 {listing.TotalPrice:N0} G"
+            ? Lang.Format("UI.Auction.BuyWhatMulti", name, listing.Count.ToString("N0"), listing.UnitPrice.ToString("N0"), listing.TotalPrice.ToString("N0"))
             : $"<b>{name}</b> — {listing.TotalPrice:N0} G";
 
         _ui.AskConfirm(
             $"{what}\n\n" +
             $"{AuctionPriceText.FormatSummaryLine(summary)}\n" +
             $"{AuctionPriceText.FormatCompare(listing.UnitPrice, summary)}\n\n" +
-            $"{UIRichText.Label("보유")} {_data.Gold:N0} G{UIRichText.Dot}{UIRichText.Label("구매 후")} {after:N0} G\n" +
-            UIRichText.Small(UIRichText.Label("매물은 통째로 삽니다 · 산 물건은 우편으로 받습니다")),
+            $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {_data.Gold:N0} G{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.AfterBuy"))} {after:N0} G\n" +
+            UIRichText.Small(UIRichText.Label(Lang.Get("UI.Auction.BuyNote"))),
             () =>
             {
                 _auction.RequestBuy(listing);
-                BeginWait("경매장 구매");
+                BeginWait(Lang.Get("UI.Auction.WaitBuy"));
             });
     }
 
@@ -994,7 +1006,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
             if (code == EResultCode.Ok)
             {
-                _wait.RaiseNotice("구매했습니다. 우편함에서 받아 주세요.");
+                _wait.RaiseNotice(Lang.Get("UI.Auction.Bought"));
             }
         }
 
@@ -1064,11 +1076,9 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         _rows.Show(_contents);
         emptyText.SetActive(_needsCondition || (_auction.HasSearched && _contents.Count == 0));
-        _emptyLabel.text = _needsCondition ? NeedsConditionText : _emptyDefault;
+        _emptyLabel.text = Lang.Get(_needsCondition ? "UI.Auction.NeedsCondition" : "UI.Auction.SearchEmpty");
 
-        int totalCount = _needsCondition ? 0 : _auction.SearchTotalCount;
-
-        countText.text    = $"검색 결과 {UIRichText.Paint(totalCount.ToString("N0"), UIThemeRole.Highlight)}건";
+        countText.text    = Lang.Format("UI.Auction.SearchCount", UIRichText.Paint(FormatTotalCount(), UIThemeRole.Highlight));
         appliedText.text  = _appliedLabel;
         receivedText.text = _needsCondition ? "" : AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
 
@@ -1082,9 +1092,9 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     // 열 머리의 정렬 표시 — 지금 정렬인 열에 ▲▼.
     private void RefreshHeaders()
     {
-        SetHeader(rarityHeaderButton, "아이템 (등급)", _sort == SortPreset.RarityDesc ? " ▼" : "");
-        SetHeader(priceHeaderButton,  "단가",          _sort == SortPreset.PriceAsc ? " ▲" : _sort == SortPreset.PriceDesc ? " ▼" : "");
-        SetHeader(timeHeaderButton,   "남은 시간",     _sort == SortPreset.ExpiresSoon ? " ▲" : "");
+        SetHeader(rarityHeaderButton, Lang.Get("UI.Auction.HeadItemRarity"), _sort == SortPreset.RarityDesc ? " ▼" : "");
+        SetHeader(priceHeaderButton,  Lang.Get("UI.Auction.UnitPrice"),      _sort == SortPreset.PriceAsc ? " ▲" : _sort == SortPreset.PriceDesc ? " ▼" : "");
+        SetHeader(timeHeaderButton,   Lang.Get("UI.Auction.TimeLeft"),       _sort == SortPreset.ExpiresSoon ? " ▲" : "");
     }
 
     private static void SetHeader(Button button, string label, string arrow)
@@ -1102,12 +1112,29 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         int shown = _needsCondition ? 0 : _auction.SearchResults.Count;
         int first = page * AuctionModel.RowsPerPage;
 
-        string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {total:N0}건" : "";
+        string note = shown > 0 ? $"{first + 1:N0}–{first + shown:N0} / {FormatTotalCount()}" : "";
 
-        pager.Bind(page, AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage),
+        // 건수가 상한에 걸리면 전체 쪽 수를 모른다 — 'n 쪽'만 적는다.
+        bool isCapped  = !_needsCondition && _auction.IsSearchCountCapped;
+        int  pageCount = isCapped ? 0 : AuctionPagerView.PageCount(total, AuctionModel.RowsPerPage);
+
+        pager.Bind(page, pageCount,
                    canPrev: _waitHandle == null && page > 0,
                    canNext: _waitHandle == null && !_needsCondition && _auction.HasMoreResults,
                    note);
+    }
+
+    // 결과 건수 — 'n건', 서버가 세기를 멈췄으면 '1,000건 이상'.
+    private string FormatTotalCount()
+    {
+        if (_needsCondition)
+        {
+            return Lang.Format("UI.Auction.Cases", 0);
+        }
+
+        return _auction.IsSearchCountCapped
+            ? Lang.Format("UI.Auction.CasesOrMore", AuctionModel.SearchCountCap.ToString("N0"))
+            : Lang.Format("UI.Auction.Cases", _auction.SearchTotalCount.ToString("N0"));
     }
 
     #endregion

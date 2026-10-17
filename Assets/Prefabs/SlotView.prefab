@@ -102,6 +102,7 @@ GameObject:
   - component: {fileID: 1967651626862117430}
   - component: {fileID: 3306097902131880977}
   - component: {fileID: 7356681516198086555}
+  - component: {fileID: 1190825717079089564}
   m_Layer: 0
   m_Name: Attention Text
   m_TagString: Untagged
@@ -228,6 +229,19 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
+--- !u!114 &1190825717079089564
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 508302511041326829}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8dae3f3178dcef4ca2b10137c53c44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: UI.Inventory.PendingSelect
 --- !u!1 &633960314542465972
 GameObject:
   m_ObjectHideFlags: 0
@@ -3509,6 +3523,7 @@ GameObject:
   - component: {fileID: 4835994153737104199}
   - component: {fileID: 2157525324861663648}
   - component: {fileID: 4573301615154565957}
+  - component: {fileID: 5370882895855819271}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -3649,6 +3664,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 30
   alpha: 1
+--- !u!114 &5370882895855819271
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5594477540386050936}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8dae3f3178dcef4ca2b10137c53c44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: UI.Inventory.MarkAssign
 --- !u!1 &5651297550672457747
 GameObject:
   m_ObjectHideFlags: 0
@@ -5018,6 +5046,7 @@ GameObject:
   - component: {fileID: 2576882576813468342}
   - component: {fileID: 2418823420971640889}
   - component: {fileID: 1178734624343007740}
+  - component: {fileID: 6165835411893798644}
   m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
@@ -5158,6 +5187,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 30
   alpha: 1
+--- !u!114 &6165835411893798644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9089453339248501846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e8dae3f3178dcef4ca2b10137c53c44d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
+  key: UI.Inventory.MarkSell
 --- !u!1 &9214698552788540924
 GameObject:
   m_ObjectHideFlags: 0

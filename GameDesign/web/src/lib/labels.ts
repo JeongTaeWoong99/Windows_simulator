@@ -68,14 +68,12 @@ export const STATUS_STYLE: Record<string, { label: string; cls: string }> = {
 
 // 담당은 사람 한 명이다. 역할은 표시용 보조 정보.
 export const PEOPLE = [
-  { name: '태웅', role: '클라' },
-  { name: '규빈', role: '기획' },
-  { name: '진우', role: '서버·기획' },
+  { name: '태웅', role: '클라·기획·아트·UI' },
+  { name: '진우', role: '서버·기획·수치·DB' },
 ] as const;
 
 export const OWNER_STYLE: Record<string, string> = {
   태웅: 'bg-violet-100 text-violet-800',
-  규빈: 'bg-rose-100 text-rose-800',
   진우: 'bg-sky-100 text-sky-800',
 };
 

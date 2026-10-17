@@ -30,14 +30,23 @@ public readonly struct ItemIconContent
     // 아이콘 그림 — 자원·장비 아이콘 · 캐릭터 상반신. null이면 글자를 적는다.
     public readonly Sprite? Icon;
 
-    public ItemIconContent(GlobalRarity rarity, string glyph, string count, IReadOnlyList<GlobalRarity>? sockets, Sprite? icon = null)
+    // 창고에 맡긴 개체인가 — 왼쪽 아래 상자 아이콘(T-163). 섞여 보이는 목록만 'WithWarehouse'로 켠다.
+    public readonly bool InWarehouse;
+
+    public ItemIconContent(GlobalRarity rarity, string glyph, string count, IReadOnlyList<GlobalRarity>? sockets, Sprite? icon = null, bool inWarehouse = false)
     {
-        Rarity  = rarity;
-        Glyph   = glyph;
-        Count   = count;
-        Sockets = sockets;
-        Icon    = icon;
+        Rarity      = rarity;
+        Glyph       = glyph;
+        Count       = count;
+        Sockets     = sockets;
+        Icon        = icon;
+        InWarehouse = inWarehouse;
     }
+
+    // 창고 표시만 바꾼 값 — 'ForEquip(…).WithWarehouse(_data.IsEquipInWarehouse(id))'처럼 팩토리 뒤에 붙인다.
+    // ※ 팩토리 인자로 받지 않는다 — 우편·경매 매물처럼 보관함이 없는 곳이 더 많다.
+    public ItemIconContent WithWarehouse(bool on)
+        => new ItemIconContent(Rarity, Glyph, Count, Sockets, Icon, on);
 
     // 자원 — 수량이 1보다 크면 모서리에 적는다.
     public static ItemIconContent ForItem(int itemTid, long count)

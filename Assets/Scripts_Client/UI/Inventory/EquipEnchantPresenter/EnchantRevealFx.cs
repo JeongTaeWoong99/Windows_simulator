@@ -403,6 +403,7 @@ public class EnchantRevealFx : MonoBehaviour
         _seq!.InsertCallback(at, () =>
         {
             _stamp.gameObject.SetActive(true);
+            _stampText.text      = Lang.Get("UI.Enchant.GradeUp"); // 켤 때마다 — 언어가 바뀌었을 수 있다
             _stamp.localScale    = Vector3.one * StampFromScale;
             _stampFade.alpha     = 0f;
             _stampText.color     = color;
@@ -680,7 +681,7 @@ public class EnchantRevealFx : MonoBehaviour
         }
 
         _stampText = copy.GetComponent<TMP_Text>();
-        _stampText.text               = "등급 상승!";
+        _stampText.text               = Lang.Get("UI.Enchant.GradeUp");
         _stampText.fontStyle          = FontStyles.Bold;
         _stampText.fontSize           = 17f;
         _stampText.alignment          = TextAlignmentOptions.Center;

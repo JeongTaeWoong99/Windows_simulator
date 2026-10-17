@@ -23,6 +23,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<CharacterInfo>       _characters       = new List<CharacterInfo>();
     private readonly List<EquipInfo>           _equips           = new List<EquipInfo>();
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
+    private readonly HashSet<int>              _lockedItemTids   = new HashSet<int>(); // 잠긴 자원 종류(TID) — 보유 0개여도 남는다(T-159)
     private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
 
@@ -52,25 +53,63 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 아이템 하나의 보유 수량. 없으면 0이다.
     //
-    // 서버가 0개가 된 아이템도 목록에 실어 보내므로(감소도 같은 경로로 온다) 캐시에 남아 있다.
+    // 자원은 칸별 묶음이라(T-160) 같은 아이템이 여러 칸에 있다 — 칸들을 모두 더한다. 0개가 된 칸은 캐시에서 지운다('SetItemSlot').
     // 판매 카트와 인벤토리 격자가 **같은 판정을 봐야 한다** — 각자 'Inventory'를 훑으면
     // 한쪽만 고쳐졌을 때 화면과 요청이 다른 수량을 말한다.
-    // ⚠️ 창고(T-107)에 맡긴 것은 세지 않는다 — 판매·개봉·큐브·경매 등록은 인벤토리에 있는 것만 쓴다.
-    //   같은 TID가 두 보관함에 따로 있을 수 있어, 보관함을 안 가리면 창고 줄을 먼저 집는다.
-    public int GetItemCount(int itemId) => GetItemCount(itemId, EContainer.Inventory);
+    // ★ 인벤토리와 창고(T-107)를 합쳐 센다 — 판매·개봉·큐브·경매 등록은 창고 것도 쓴다(T-164 · 이슈 #74).
+    //   서버도 인벤토리 것부터 빼고 모자란 만큼 창고에서 뺀다('Inventory.TryRemoveAcross').
+    public int GetItemCount(int itemId)
+        => GetItemCount(itemId, EContainer.Inventory) + GetItemCount(itemId, EContainer.Warehouse);
 
-    // 그 보관함에 둔 아이템 하나의 수량. 없으면 0이다 (창고 격자 · 창고 ↔ 인벤토리 이동의 수량 팝업).
+    // 그 보관함에 둔 아이템 하나의 수량 — 칸들의 합이다. 없으면 0이다 (자원 칸 툴팁).
+    // ★ 자원은 칸별 묶음이다(T-160 · T-161) — 'MaxStack'은 칸 하나의 상한이라 같은 아이템이 여러 칸에 나뉜다.
     public int GetItemCount(int itemId, EContainer container)
     {
+        int sum = 0;
+
         foreach (var item in _inventory)
         {
             if (item.ItemId == itemId && item.Container == container)
             {
-                return item.Count;
+                sum += item.Count;
             }
         }
 
-        return 0;
+        return sum;
+    }
+
+    // 그 자원 종류가 잠겼나 (T-159). 잠긴 종류는 수량 전부가 즉시 판매·경매 등록에서 빠진다 — 사용(개봉·큐브)은 된다.
+    // ★ 칸이 아니라 종류(TID) 단위다 — 같은 TID가 인벤토리·창고 여러 칸에 있어도 함께 잠긴다.
+    public bool IsItemLocked(int itemId) => _lockedItemTids.Contains(itemId);
+
+    // 그 보관함 그 칸의 묶음. 비었으면 null이다 (창고 ↔ 인벤토리 이동의 수량 팝업 · 자원 칸 툴팁).
+    public ItemInfo? FindItemAt(EContainer container, int slot)
+    {
+        foreach (var item in _inventory)
+        {
+            if (item.Container == container && item.Slot == slot && item.Count > 0)
+            {
+                return item;
+            }
+        }
+
+        return null;
+    }
+
+    // 지금 하나라도 가진 자원 TID를 캐시 순서대로 한 번씩 담는다 (판매 일괄 담기 · 경매 등록 목록).
+    // ※ 'Inventory'를 그대로 훑지 않는다 — 같은 TID가 여러 칸(인벤토리·창고 · 칸별 묶음)에 있으면 목록에 여러 번 선다.
+    //   수량은 'GetItemCount(itemId)'(두 보관함 합)로 읽는다.
+    public void CollectOwnedItemIds(List<int> into)
+    {
+        into.Clear();
+
+        foreach (var item in _inventory)
+        {
+            if (!into.Contains(item.ItemId) && GetItemCount(item.ItemId) > 0)
+            {
+                into.Add(item.ItemId);
+            }
+        }
     }
 
     // 보관함 탭 하나의 칸 수 — 지금은 모든 유저·모든 탭이 인벤토리 'Constants.StorageCapacity' · 창고 'Constants.WarehouseCapacity'다.
@@ -240,6 +279,10 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // ※ 장착해도 목록에서 빠지지 않는다 — 서버가 장착 시 'SlotPosition'(인벤토리 칸)을 그대로 두므로
     //   인벤토리에 남아 있고, 'IsEquipped'로 구분한다.
     public IReadOnlyList<EquipInfo> Equips => _equips;
+
+    // 창고에 맡긴 개체인가 — 섞여 보이는 목록이 칸 왼쪽 아래 상자 아이콘을 그린다(T-163). 모르는 개체면 false.
+    public bool IsCharacterInWarehouse(long characterId) => FindCharacter(characterId)?.Container == EContainer.Warehouse;
+    public bool IsEquipInWarehouse(long equipId)         => FindEquip(equipId)?.Container == EContainer.Warehouse;
 
     // 장비 개체 하나를 찾는다. 모르는 개체면 null.
     public EquipInfo? FindEquip(long equipId)
@@ -608,13 +651,19 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 인벤토리 스냅샷 — 캐시 교체 후 이벤트 발행
-    // ★ 로그인 시 자동으로 1회 수신.
+    // ★ 로그인 시 자동으로 1회 수신. 잠긴 자원 종류(T-159)도 같은 패킷에 실려 온다 — 보유 0개인 종류까지 온다.
     private void OnInventoryReceived(S_InventoryResponse res)
     {
         _inventory.Clear();
         if (res.Items != null)
         {
-            _inventory.AddRange(res.Items);
+            _inventory.AddRange(res.Items.FindAll(item => item.Count > 0));
+        }
+
+        _lockedItemTids.Clear();
+        if (res.LockedItemTids != null)
+        {
+            _lockedItemTids.UnionWith(res.LockedItemTids);
         }
 
         InventoryChanged?.Invoke();
@@ -729,8 +778,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         Services.Get<ServerWaitManager>().RaiseNotice(
-            $"상급 큐브 결과를 고르지 않은 장비가 {count}개 있습니다.\n" +
-            "인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.");
+            Lang.Format("UI.Common.PendingCube", count));
     }
 
     // 바뀐 장비 개체들 — 지급·장착·해제·자동 이동. 'EquipId'로 찾아 통째로 교체한다(확정값이다).
@@ -823,10 +871,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         CharacterCondenseCompleted?.Invoke(res);
     }
 
-    // 잠금 응답 — 성공이면 그 개체의 'IsLocked'를 바꾸고 알린다(T-137).
+    // 잠금 응답 — 성공이면 그 개체의 'IsLocked'(자원은 잠긴 종류 목록)를 바꾸고 알린다(T-137 · T-159).
     //
     // ★ 목록이 다시 오지 않는다 — 캐시를 여기서 직접 고친다(서버 이슈 #65). 같은 상태로 보내도 Ok가 온다.
-    // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
+    // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'·'InventoryChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
+    // ※ 자원은 'Id'가 아이템 TID다. 보유 여부와 상관없이 기록한다 — 0개여도 잠금은 남는다.
     private void OnEntityLockResponded(S_EntityLockResponse res)
     {
         if (res.Result == EResultCode.Ok)
@@ -840,6 +889,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             {
                 equip.IsLocked = res.Locked;
                 EquipsChanged?.Invoke();
+            }
+            else if (res.Target == ELockTarget.Resource)
+            {
+                int itemId = (int)res.Id;
+
+                if (res.Locked ? _lockedItemTids.Add(itemId) : _lockedItemTids.Remove(itemId))
+                {
+                    InventoryChanged?.Invoke();
+                }
             }
         }
         else
@@ -916,7 +974,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     // 이번 변경으로 늘어난 수량 × 즉시 판매가의 합 (OnGatherResultReceived에서 호출 — 반영 전에 불러야 한다).
     //
-    // ⚠️ 'ItemChangeInfo.Count'는 늘어난 양이 아니라 갱신 후 총량이다 — 캐시의 지금 수량을 빼야 증가분이 나온다.
+    // ⚠️ 'ItemChangeInfo.Count'는 늘어난 양이 아니라 그 칸의 갱신 후 수량이다 — 캐시의 그 칸 수량을 빼야 증가분이 나온다.
     // ※ 기준이 시세가 아니라 'BasePrice'인 이유: 고정값이라 같은 수확이 언제나 같은 숫자로 보인다(2026-10-09 사용자 결정).
     private long SumGainedValue(List<ItemChangeInfo>? changes)
     {
@@ -929,8 +987,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         foreach (var change in changes)
         {
-            int index  = _inventory.FindIndex(item => item.ItemId == change.ItemId && item.Container == change.Container);
-            int before = index >= 0 ? _inventory[index].Count : 0;
+            ItemInfo? held   = FindItemAt(change.Container, change.Slot);
+            int       before = held != null && held.ItemId == change.ItemId ? held.Count : 0;
             int gained = change.Count - before;
 
             if (gained > 0)
@@ -1285,7 +1343,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 아이템 변경분을 인벤토리 캐시에 반영하고 'InventoryChanged'를 발행한다.
-    // Count는 델타가 아니라 갱신 후 누적 총량이다 — 더하지 말고 덮어쓴다
+    // Count는 델타가 아니라 그 칸의 갱신 후 수량이다 — 더하지 말고 덮어쓴다
     // ('PacketInfo.ItemChangeInfo' 주석).
     //
     // 아이템이 늘어나는 모든 경로가 이 하나를 쓴다(채취·즉시 지급·가챠).
@@ -1299,27 +1357,46 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         foreach (var change in changes)
         {
-            // ※ 칸 번호도 함께 덮어쓴다 — 새 자원은 서버가 정한 첫 빈 칸으로 온다(T-058). 빠뜨리면 0번 칸으로 읽혀 겹친다.
-            int index = _inventory.FindIndex(item => item.ItemId == change.ItemId && item.Container == change.Container);
-
-            if (index >= 0)
-            {
-                _inventory[index].Count = change.Count;
-                _inventory[index].Slot  = change.Slot;
-            }
-            else
-            {
-                _inventory.Add(new ItemInfo
-                {
-                    ItemId    = change.ItemId,
-                    Count     = change.Count,
-                    Container = change.Container,
-                    Slot      = change.Slot
-                });
-            }
+            SetItemSlot(change.Container, change.Slot, change.ItemId, change.Count);
         }
 
         InventoryChanged?.Invoke();
+    }
+
+    // 칸 하나를 덮어쓴다 — 0개면 그 칸을 비운다 (아이템 변경 · 정렬·칸 이동 · 창고 이동에서 호출).
+    //
+    // ★ 캐시의 열쇠는 (보관함, 칸)이다 — 아이템 TID가 아니다(T-160 · T-161).
+    //   같은 자원이 여러 칸에 나뉘므로 TID로 찾으면 두 칸이 한 줄로 뭉개진다(9,999개를 넘겨 받은 몫이 화면에서 사라졌다).
+    // ※ 비운 칸은 지운다 — 남겨 두면 그 칸에 다음에 들어오는 다른 자원과 한 칸에 두 줄이 생긴다.
+    private void SetItemSlot(EContainer container, int slot, int itemId, int count)
+    {
+        int index = _inventory.FindIndex(item => item.Container == container && item.Slot == slot);
+
+        if (count <= 0)
+        {
+            if (index >= 0)
+            {
+                _inventory.RemoveAt(index);
+            }
+
+            return;
+        }
+
+        if (index >= 0)
+        {
+            _inventory[index].ItemId = itemId;
+            _inventory[index].Count  = count;
+
+            return;
+        }
+
+        _inventory.Add(new ItemInfo
+        {
+            ItemId    = itemId,
+            Count     = count,
+            Container = container,
+            Slot      = slot
+        });
     }
 
     // 인벤토리·창고 [정렬]·칸 이동 결과 — 성공이면 칸 번호를 캐시에 반영하고 그 탭의 변경 이벤트를 발행한다 (ServerPacketHandler 구독)
@@ -1327,9 +1404,19 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // ★ 칸은 **이 응답이 온 뒤에만** 바뀐다 — 놓는 순간 미리 옮기지 않는다(낙관적 갱신 없음 · T-044).
     //   자리의 주인은 서버 DB다. 거절이면 아무것도 바뀌지 않고 결과만 알린다.
     // ※ 정렬이면 탭 전체, 이동이면 바뀐 칸만(교환이면 둘) 온다 — 실린 것만 덮어쓰면 둘 다 맞는다.
+    // ★ 자원 탭은 'Items'(칸마다 한 줄 · 0개면 빈 칸)가 정본이다(T-160). 'Slots'의 자원 줄은 칸이 하나뿐일 때만 맞는 옛 형식이라 읽지 않는다.
     private void OnStorageSlotsReceived(S_StorageSlotsResponse res)
     {
-        if (res.Result == EResultCode.Ok)
+        if (res.Result == EResultCode.Ok && res.Tab == EStorageTab.Resource)
+        {
+            foreach (ItemChangeInfo change in res.Items)
+            {
+                SetItemSlot(change.Container, change.Slot, change.ItemId, change.Count);
+            }
+
+            InventoryChanged?.Invoke();
+        }
+        else if (res.Result == EResultCode.Ok)
         {
             _slotByKey.Clear();
 
@@ -1345,23 +1432,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     }
 
     // 받은 칸 번호('_slotByKey')를 그 보관함·탭의 캐시에 덮어쓰고 변경 이벤트를 발행한다 (OnStorageSlotsReceived에서 호출).
-    // ※ 자원은 같은 TID가 두 보관함에 따로 있을 수 있어 보관함을 가린다. 캐릭터·장비도 같은 규칙으로 가린다.
+    // ※ 캐릭터·장비만 온다 — 자원은 'Items'로 칸을 덮어쓴다('OnStorageSlotsReceived'). 같은 개체 번호가 두 보관함에 있을 수 없지만 보관함을 가린다.
     private void ApplySlots(EContainer container, EStorageTab tab)
     {
         switch (tab)
         {
-            case EStorageTab.Resource:
-                foreach (ItemInfo item in _inventory)
-                {
-                    if (item.Container == container && _slotByKey.TryGetValue(item.ItemId, out int slot))
-                    {
-                        item.Slot = slot;
-                    }
-                }
-
-                InventoryChanged?.Invoke();
-                break;
-
             case EStorageTab.Character:
                 foreach (CharacterInfo character in _characters)
                 {
@@ -1391,7 +1466,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 인벤토리 ↔ 창고 이동 결과 — 성공이면 양쪽 보관함의 바뀐 칸을 캐시에 반영한다 (ServerPacketHandler 구독)
     //
     // ★ 칸 이동과 같이 **응답이 온 뒤에만** 바뀐다(낙관적 갱신 없음). 거절이면 'Changes'가 비어 있다.
-    // ※ 자원의 'Count'는 그 보관함에 남은 총량이다 — 0이면 그 칸이 비었다(캐시에 0으로 남기고 격자가 거른다 · 'ApplyItemChanges'와 같다).
+    // ※ 자원의 'Count'는 그 칸의 수량이다 — 0이면 그 칸이 비었다(T-160 · 'ApplyItemChanges'와 같다).
     //   캐릭터·장비는 그 개체가 'Container'의 'Slot'으로 옮겨졌다는 뜻이다.
     private void OnWarehouseTransferred(S_WarehouseTransferResponse res)
     {
@@ -1419,28 +1494,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         WarehouseTransferResponded?.Invoke(res.Result);
     }
 
-    // 자원 이동분을 캐시에 덮어쓴다 — 보관함마다 같은 TID는 한 줄이다 (OnWarehouseTransferred에서 호출).
+    // 자원 이동분을 칸마다 덮어쓴다 (OnWarehouseTransferred에서 호출).
     private void ApplyItemTransfers(List<WarehouseChangeInfo> changes)
     {
         foreach (WarehouseChangeInfo change in changes)
         {
-            int index = _inventory.FindIndex(item => item.ItemId == change.Key && item.Container == change.Container);
-
-            if (index >= 0)
-            {
-                _inventory[index].Count = change.Count;
-                _inventory[index].Slot  = change.Slot;
-
-                continue;
-            }
-
-            _inventory.Add(new ItemInfo
-            {
-                ItemId    = (int)change.Key,
-                Count     = change.Count,
-                Container = change.Container,
-                Slot      = change.Slot
-            });
+            SetItemSlot(change.Container, change.Slot, (int)change.Key, change.Count);
         }
     }
 

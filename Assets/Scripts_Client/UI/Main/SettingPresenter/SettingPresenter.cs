@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
@@ -70,8 +71,9 @@ public class SettingPresenter : MonoBehaviour
     private UIThemeRole normalRole = UIThemeRole.Button;
 
     [CenterHeader("일반")]
-    [SerializeField] private Toggle   topmostToggle = null!; // 항상 위에 고정
-    [SerializeField] private TMP_Text versionText   = null!; // 빌드 버전
+    [SerializeField] private TMP_Dropdown languageDropdown = null!; // 화면 언어 (KR·EN)
+    [SerializeField] private Toggle       topmostToggle    = null!; // 항상 위에 고정
+    [SerializeField] private TMP_Text     versionText      = null!; // 빌드 버전
 
     [CenterHeader("그래픽")]
     [SerializeField] private TMP_Dropdown frameRateDropdown       = null!; // 최대 FPS (30·60·90·144·모니터 동기화)
@@ -96,11 +98,16 @@ public class SettingPresenter : MonoBehaviour
     // 지금 열려 있는 탭. 설정을 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     private SettingTab _currentTab = DefaultTab;
 
+    private WindowManager  _window  = null!;
+    private DisplayManager _display = null!;
+    private bool           _isBound;
+
     // 토글/드롭다운을 현재 값으로 맞추고, 조작을 각 담당자에게 연결한다 (Unity 메시지)
     private void Start()
     {
         // 필수 참조 검증 — 미연결(null)이면 조용히 넘어가지 않고 즉시 예외로 어떤 참조인지 알린다.
         this.RequireRef(backButton,              nameof(backButton));
+        this.RequireRef(languageDropdown,        nameof(languageDropdown));
         this.RequireRef(topmostToggle,           nameof(topmostToggle));
         this.RequireRef(versionText,             nameof(versionText));
         this.RequireRef(frameRateDropdown,       nameof(frameRateDropdown));
@@ -117,6 +124,9 @@ public class SettingPresenter : MonoBehaviour
         var ui      = Services.Get<UIManager>();
         var display = Services.Get<DisplayManager>();
 
+        _window  = window;
+        _display = display;
+
         // ─── 헤더 ───
         // 이 화면을 직접 끄지 않는다 — UIManager 가 목록을 켜면서 같은 자리의 이 화면을 끈다.
         // 스스로 끄면 목록이 켜지기 전 빈 칸이 남는다 ('Main 규칙.md'의 "전환 층은 하나다").
@@ -128,6 +138,7 @@ public class SettingPresenter : MonoBehaviour
 
         // ─── 일반 ───
         // 초기값은 WindowManager가 저장에서 복원해 둔 "현재" 값이다.
+        BindDropdown(languageDropdown, GetLanguageLabels(), IndexOf(Lang.Current), index => Lang.Set(Lang.All[index]));
         BindToggle(topmostToggle, window.Topmost, window.SetTopmost);
         versionText.text = Application.version;
 
@@ -171,6 +182,47 @@ public class SettingPresenter : MonoBehaviour
             widgetLayout.SetPosition((WidgetPosition)window.AnchorIndex);
             windowPositionDropdown.SetValueWithoutNotify(window.AnchorIndex);
         });
+
+        _isBound = true;
+        Lang.Changed += RefreshLabels;
+    }
+
+    // 껐다 켜는 경로 — 꺼져 있는 동안 언어가 바뀌었을 수 있다 (Unity 메시지)
+    private void OnEnable()
+    {
+        if (!_isBound)
+        {
+            return;
+        }
+
+        Lang.Changed += RefreshLabels;
+        RefreshLabels();
+    }
+
+    // (Unity 메시지)
+    private void OnDisable()
+    {
+        Lang.Changed -= RefreshLabels;
+    }
+
+    // 언어가 바뀌면 코드가 채운 드롭다운 항목을 다시 채운다 — 고른 값은 그대로 둔다.
+    // 언어 드롭다운은 항목이 그 언어 자신의 표기라 다시 채우지 않는다.
+    private void RefreshLabels()
+    {
+        Refill(frameRateDropdown,       _display.GetFrameRateLabels());
+        Refill(fpsTextPositionDropdown, _display.GetFpsTextPositionLabels());
+        Refill(sizeDropdown,            _window.GetSizeLabels());
+        Refill(windowPositionDropdown,  _window.GetAnchorLabels());
+    }
+
+    private static void Refill(TMP_Dropdown dropdown, List<string> options)
+    {
+        int value = dropdown.value;
+
+        dropdown.ClearOptions();
+        dropdown.AddOptions(options);
+        dropdown.SetValueWithoutNotify(value);
+        dropdown.RefreshShownValue();
     }
 
     #region 탭
@@ -245,6 +297,36 @@ public class SettingPresenter : MonoBehaviour
             colors.selectedColor = target;
             entry.button.colors  = colors;
         }
+    }
+
+    #endregion
+
+    #region 언어
+
+    // 언어 이름은 그 언어 자신의 표기라 언어가 바뀌어도 다시 채우지 않는다.
+    private static List<string> GetLanguageLabels()
+    {
+        var labels = new List<string>();
+
+        foreach (Language language in Lang.All)
+        {
+            labels.Add(Lang.NativeName(language));
+        }
+
+        return labels;
+    }
+
+    private static int IndexOf(Language language)
+    {
+        for (int i = 0; i < Lang.All.Count; i++)
+        {
+            if (Lang.All[i] == language)
+            {
+                return i;
+            }
+        }
+
+        return 0;
     }
 
     #endregion

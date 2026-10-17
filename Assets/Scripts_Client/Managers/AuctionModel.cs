@@ -53,6 +53,9 @@ public class AuctionModel : MonoService<AuctionModel>
     // 한 요청에 실을 수 있는 TID 수 — 서버 'User.MaxQueryTids'와 같다. 넘으면 서버가 요청째 거절한다.
     public const int MaxQueryTids = 100;
 
+    // 검색 건수를 세다 멈추는 수 — 서버가 여기서 세기를 멈춘다. 이 값이 오면 "1,000건 이상"이다(#71).
+    public const int SearchCountCap = 1000;
+
     // 시세 요약을 다시 묻지 않는 시간 — 등록 창에서 이것저것 고를 때 빈도 제한을 아낀다.
     private static readonly TimeSpan SummaryFreshFor = TimeSpan.FromSeconds(60);
 
@@ -122,6 +125,9 @@ public class AuctionModel : MonoService<AuctionModel>
 
     // 조건에 맞는 매물 수 — 받은 쪽과 상관없는 전체 건수(T-155).
     public int SearchTotalCount { get; private set; }
+
+    // 서버가 건수를 끝까지 세지 않았나 — 그러면 'SearchTotalCount'는 하한이다("1,000건 이상").
+    public bool IsSearchCountCapped { get; private set; }
 
     // 한 번이라도 검색했나. 화면을 처음 열 때만 자동으로 검색하려고 본다.
     public bool HasSearched => _searchRequest != null;
@@ -482,7 +488,10 @@ public class AuctionModel : MonoService<AuctionModel>
 
             SearchPage       = page;
             HasMoreResults   = res.HasMore;
-            SearchTotalCount = Math.Max(res.TotalCount, page * RowsPerPage + _searchResults.Count); // 건수를 안 주는 옛 경매 서버면 받은 줄 수라도
+            IsSearchCountCapped = res.TotalCount >= SearchCountCap;
+            SearchTotalCount    = IsSearchCountCapped
+                ? SearchCountCap
+                : Math.Max(res.TotalCount, page * RowsPerPage + _searchResults.Count); // 건수를 안 주는 옛 경매 서버면 받은 줄 수라도
             SearchReceivedAt = DateTime.Now;
 
             // 이 쪽 뒤의 커서는 지금 받은 것으로 다시 쓴다 — 그사이 매물이 바뀌었으면 옛 커서가 어긋난다.
@@ -620,7 +629,8 @@ public class AuctionModel : MonoService<AuctionModel>
                    || res.Result == EResultCode.AuctionClosed
                    || res.Result == EResultCode.AuctionNotFound;
 
-        if (isGone && _searchResults.RemoveAll(listing => listing.ListingId == res.ListingId) > 0)
+        // 상한에 걸린 건수는 하한이라 하나 빠져도 "1,000건 이상"을 그대로 둔다.
+        if (isGone && _searchResults.RemoveAll(listing => listing.ListingId == res.ListingId) > 0 && !IsSearchCountCapped)
         {
             SearchTotalCount = Math.Max(0, SearchTotalCount - 1);
         }
@@ -724,10 +734,12 @@ public class AuctionModel : MonoService<AuctionModel>
 
         if (ago.TotalMinutes < 1d)
         {
-            return "방금 받음";
+            return Lang.Get("UI.Common.ReceivedJustNow");
         }
 
-        return ago.TotalHours >= 1d ? $"{(int)ago.TotalHours}시간 전에 받음" : $"{(int)ago.TotalMinutes}분 전에 받음";
+        return ago.TotalHours >= 1d
+            ? Lang.Format("UI.Common.ReceivedHoursAgo", (int)ago.TotalHours)
+            : Lang.Format("UI.Common.ReceivedMinutesAgo", (int)ago.TotalMinutes);
     }
 
     // 즉시 판매가 — 인벤토리에서 바로 팔 때 받는 정해진 값(BasePrice x SellRatePermille).
@@ -750,14 +762,14 @@ public class AuctionModel : MonoService<AuctionModel>
 
     // 경매 등록가 범위 문구 — "12 G 이상". 상한은 터무니없는 값을 막는 선이라 줄마다 적지 않는다(안내 문구에 한 번).
     // 등록 창·인벤토리 툴팁이 같은 모양으로 말한다.
-    public static string FormatBand(int basePrice) => $"{MinUnitPrice(basePrice):N0} G 이상";
+    public static string FormatBand(int basePrice) => Lang.Format("UI.Common.PriceAtLeast", $"{MinUnitPrice(basePrice):N0}");
 
     // 상한 문구 — "1조". 조 단위로 나누어떨어지면 조로, 아니면 숫자 그대로 적는다.
     public static string FormatMaxUnitPrice()
     {
         const long Jo = 1_000_000_000_000L;
 
-        return MaxUnitPrice % Jo == 0 ? $"{MaxUnitPrice / Jo:N0}조" : MaxUnitPrice.ToString("N0");
+        return MaxUnitPrice % Jo == 0 ? Lang.Format("UI.Common.Trillion", $"{MaxUnitPrice / Jo:N0}") : MaxUnitPrice.ToString("N0");
     }
 
     // 등록비 비율(천분율) — 안내 문구의 '1%'에 쓴다.

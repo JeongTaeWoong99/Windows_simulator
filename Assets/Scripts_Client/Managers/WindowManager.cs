@@ -583,14 +583,16 @@ public class WindowManager : MonoService<WindowManager>
     // 볼 수 있어야 한다. 계산이 안 된 상태면 배율 없이 이름만 내놓는다.
     private string FitTaskbarLabel()
     {
-        return _fitScaleFactor > 0f ? $"작업표시줄 맞춤 ({_fitScaleFactor:0.00}x)" : "작업표시줄 맞춤";
+        return _fitScaleFactor > 0f
+            ? Lang.Format("UI.Setting.FitTaskbarWithScale", _fitScaleFactor.ToString("0.00", CultureInfo.InvariantCulture))
+            : Lang.Get("UI.Setting.FitTaskbar");
     }
 
     // 위치 드롭다운 옵션 라벨(6칸)을 ScreenAnchor enum 순서대로 만든다.
     public List<string> GetAnchorLabels() => new List<string>
     {
-        "Upper Left", "Upper Center", "Upper Right",
-        "Lower Left", "Lower Center", "Lower Right",
+        Lang.Get("UI.Setting.UpperLeft"), Lang.Get("UI.Setting.UpperCenter"), Lang.Get("UI.Setting.UpperRight"),
+        Lang.Get("UI.Setting.LowerLeft"), Lang.Get("UI.Setting.LowerCenter"), Lang.Get("UI.Setting.LowerRight"),
     };
 
     // 크기 프리셋을 인덱스로 적용한다(드롭다운 onValueChanged / 시작 초기화에서 호출).
@@ -881,11 +883,7 @@ public class WindowManager : MonoService<WindowManager>
     // 알림 화면('NoticePresenter')이 'ServerWaitManager'만 구독하므로 그 창구를 쓴다 — Managers → UI 의존을 만들지 않는다.
     private void NotifyTaskbarAvoided()
     {
-        Services.Get<ServerWaitManager>().RaiseNotice(
-            $"'항상 위에 고정'이 꺼져 있으면 {FitTaskbarLabel()} 이하 크기로는\n" +
-            "창을 작업표시줄 위에 둘 수 없습니다.\n" +
-            "작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\n\n" +
-            "작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.");
+        Services.Get<ServerWaitManager>().RaiseNotice(Lang.Format("UI.Setting.TaskbarAvoided", FitTaskbarLabel()));
     }
 #endif
 

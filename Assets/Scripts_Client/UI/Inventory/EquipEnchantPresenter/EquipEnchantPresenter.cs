@@ -208,6 +208,9 @@ public class EquipEnchantPresenter : MonoBehaviour
     private int                        _autoUsed;
     private int                        _autoCap;
     private string?                    _autoSummary;   // 자동이 끝난 뒤 규칙 줄에 남길 한 줄. 다음 조작에서 지운다
+    private string                     _autoSummaryKey = ""; // 그 한 줄의 재료 — 언어가 바뀌면 다시 만든다('BuildAutoSummary')
+    private int                        _autoSummaryCube;
+    private bool                       _autoSummaryReached;
     private Tween?                     _autoPress;     // 자동의 누름 손짓 — 겹치면 크기가 어긋나 다시 누르기 전에 끊는다
     private S_EquipEnchantResponse?    _lastEnchant;   // 자동이 기다린 큐브 응답
     private EResultCode?               _lastChoose;    // 자동이 기다린 고르기 응답
@@ -399,7 +402,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             return false;
         }
 
-        _wait.RaiseNotice("아직 선택하지 않았습니다.\nBEFORE · AFTER 중 하나를 골라 주세요.");
+        _wait.RaiseNotice(Lang.Get("UI.Enchant.NotChosen"));
 
         return true;
     }
@@ -460,6 +463,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _isSubscribed           = true;
         _data.EquipsChanged    += Redraw;
         _data.InventoryChanged += Redraw;
+        Lang.Changed           += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -473,7 +477,24 @@ public class EquipEnchantPresenter : MonoBehaviour
         _isSubscribed           = false;
         _data.EquipsChanged    -= Redraw;
         _data.InventoryChanged -= Redraw;
+        Lang.Changed           -= OnLanguageChanged;
     }
+
+    // 언어가 바뀌었다 — 남겨 둔 자동 결과 줄을 새 언어로 다시 만들고 창을 다시 그린다 (Lang.Changed 구독)
+    private void OnLanguageChanged()
+    {
+        if (_autoSummary != null)
+        {
+            _autoSummary = BuildAutoSummary();
+        }
+
+        Redraw();
+    }
+
+    // 자동 결과 한 줄 — '목표 달성! — 상급 인챈트 큐브 12개 사용.' (자동 끝 · 언어 변경)
+    private string BuildAutoSummary()
+        => Colorize(Lang.Format("UI.Enchant.AutoEndSummary", Lang.Get(_autoSummaryKey), GameDataLoader.GetItemName(_autoSummaryCube), $"{_autoUsed:N0}"),
+                    UIThemePalette.Of(_autoSummaryReached ? UIThemeRole.Positive : UIThemeRole.Highlight));
 
     #endregion
 
@@ -569,17 +590,18 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 머리 — 아이콘 · 이름(등급색) · 등급·종류·기본 능력치·칸 수 한 줄.
     private void DrawHeader(EquipInfo equip, EquipTableRow row, int slotCount)
     {
-        itemIcon.Bind(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions));
+        itemIcon.Bind(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse));
 
-        nameText.text  = row.Name;
+        nameText.text  = Loc.Get(row.NameLocKey);
         nameText.color = RarityPalette.Get(row.GlobalRarity);
 
         string worn = equip.EquippedCharacterId == 0L
             ? ""
-            : $"{UIRichText.Dot}{_data.GetCharacterName(equip.EquippedCharacterId)} 착용 중";
+            : UIRichText.Dot + Lang.Format("UI.Enchant.WornBy", _data.GetCharacterName(equip.EquippedCharacterId));
 
         infoText.text = $"{RarityLabel.Get(row.GlobalRarity)} {EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}"
-                      + $"기본 {EquipLabel.GetEffectText(equip.EquipTid)}{UIRichText.Dot}능력치 칸 {slotCount}개{worn}";
+                      + Lang.Format("UI.Enchant.Base", EquipLabel.GetEffectText(equip.EquipTid)) + UIRichText.Dot
+                      + Lang.Format("UI.Enchant.StatSlotCount", slotCount) + worn;
     }
 
     // 비교 상자 — 왼쪽 BEFORE · 오른쪽 AFTER. 두 상자는 늘 켜 두고 **내용만** 바꾼다(크기가 출렁이지 않게).
@@ -618,7 +640,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         beforeFx.SetResult($"BEFORE{UIRichText.Dot}{GradeOrNone(grade)}",
                            FormatOptions(equip.EquipTid, equip.EnchantOptions), grade);
-        afterFx.SetResult("AFTER", Colorize("결과가 여기에 나옵니다", UIThemePalette.Of(UIThemeRole.TextDisabled)), GlobalRarity.None);
+        afterFx.SetResult("AFTER", Colorize(Lang.Get("UI.Enchant.ResultHere"), UIThemePalette.Of(UIThemeRole.TextDisabled)), GlobalRarity.None);
     }
 
     // AFTER 제목 — 오르면 '영웅 ▶ 전설', 아니면 등급만 (DrawCompare에서 호출).
@@ -632,7 +654,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     }
 
     // 등급 글씨 — 인챈트가 없으면 '인챈트 없음'.
-    private static string GradeOrNone(GlobalRarity grade) => grade == GlobalRarity.None ? "인챈트 없음" : GradeText(grade);
+    private static string GradeOrNone(GlobalRarity grade) => grade == GlobalRarity.None ? Lang.Get("UI.Enchant.NoEnchant") : GradeText(grade);
 
     // 규칙 줄 — 이번에 쓰면 무엇이 되나 한 줄. 전체 규칙·확률은 옆 도움말 아이콘(?)의 툴팁이 펼친다.
     // ※ 문구 끝에 "(올리면 규칙·확률)"을 붙이던 안내는 아이콘으로 대신했다 — 도움말 아이콘 규약('Overlay 규칙.md' "툴팁").
@@ -650,10 +672,10 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 자동이 끝난 뒤 한 줄 — 무엇 때문에 멈췄고 몇 개 썼나. 상급 큐브가 목표에 닿았으면 고르기 안내가 뒤따른다.
         if (IsPending(equip))
         {
-            string pick = Colorize("BEFORE · AFTER 중 하나를 [선택]하세요.", UIThemePalette.Of(UIThemeRole.Highlight));
+            string pick = Colorize(Lang.Get("UI.Enchant.PickOne"), UIThemePalette.Of(UIThemeRole.Highlight));
 
             ruleText.text = _autoSummary == null
-                ? $"{pick}\n고르지 않고 다시 사용하면 BEFORE가 남습니다."
+                ? $"{pick}\n{Lang.Get("UI.Enchant.RerollKeepsBefore")}"
                 : $"{_autoSummary}\n{pick}";
 
             return;
@@ -668,20 +690,20 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (grade == GlobalRarity.None)
         {
-            ruleText.text = $"처음 쓰면 {GradeText(GlobalRarity.Common)} 등급으로 칸 {slotCount}개를 채웁니다.";
+            ruleText.text = Lang.Format("UI.Enchant.RuleFirst", GradeText(GlobalRarity.Common), slotCount);
         }
         else if (grade >= GlobalRarity.Mythic)
         {
-            ruleText.text = $"최고 등급입니다. 쓰면 칸 {slotCount}개를 같은 등급으로 다시 뽑습니다.";
+            ruleText.text = Lang.Format("UI.Enchant.RuleMythic", slotCount);
         }
         else
         {
-            ruleText.text = $"쓰면 칸 {slotCount}개를 전부 다시 뽑고, 확률로 {GradeText(grade + 1)}(으)로 오릅니다. 내려가지 않습니다.";
+            ruleText.text = Lang.Format("UI.Enchant.RuleNormal", slotCount, GradeText(grade + 1));
         }
 
         if (IsKeepCube(_cubeIndex))
         {
-            ruleText.text += "\n굴린 뒤 이전 값을 고를 수 있습니다. 등급이 오르면 새 값을 알아서 고릅니다.";
+            ruleText.text += "\n" + Lang.Get("UI.Enchant.RuleKeep");
         }
     }
 
@@ -714,12 +736,12 @@ public class EquipEnchantPresenter : MonoBehaviour
 
             int    tid   = cubes[i].ItemTID;
             int    owned = _data.GetItemCount(tid);
-            string what  = grade == GlobalRarity.None ? "첫 사용 · 일반 확정"
-                         : grade >= GlobalRarity.Mythic ? "옵션만 다시 뽑기"
-                         : $"{RarityLabel.Get(grade + 1)} 상승 {EquipLabel.FormatPermyriad(GameDataLoader.GetEnchantUpPermyriad(grade, tid))}";
+            string what  = grade == GlobalRarity.None ? Lang.Get("UI.Enchant.CubeFirst")
+                         : grade >= GlobalRarity.Mythic ? Lang.Get("UI.Enchant.CubeOptionsOnly")
+                         : Lang.Format("UI.Enchant.CubeUp", RarityLabel.Get(grade + 1), EquipLabel.FormatPermyriad(GameDataLoader.GetEnchantUpPermyriad(grade, tid)));
 
             cubeViews[i].Bind(GameDataLoader.GetItemName(tid),
-                              $"보유 {owned:N0}개{UIRichText.Dot}{what}",
+                              Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + UIRichText.Dot + what,
                               owned > 0,
                               i == _cubeIndex,
                               EquipLabel.BuildCubeRuleTooltip);
@@ -733,7 +755,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (cubes.Count == 0)
         {
-            confirmLabel.text = "큐브 정보가 없습니다";
+            confirmLabel.text = Lang.Get("UI.Enchant.NoCubeData");
             PaintConfirm(false);
 
             return;
@@ -746,16 +768,16 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 도는 중엔 자동이 이 버튼을 누른다 — 응답 대기 글씨로 깜빡이지 않게 큐브 이름을 둔다.
         if (_auto == AutoState.Running)
         {
-            confirmLabel.text = $"{cube} 사용";
+            confirmLabel.text = Lang.Format("UI.Enchant.UseCube", cube);
             PaintConfirm(true);
 
             return;
         }
 
-        confirmLabel.text = IsWaiting                          ? "응답을 기다리는 중"
-                          : !owned                             ? $"{cube}가 없습니다"
-                          : equip.EquippedCharacterId != 0L    ? $"해제하고 {cube} 사용"
-                          : $"{cube} 사용";
+        confirmLabel.text = IsWaiting                          ? Lang.Get("UI.Common.Waiting")
+                          : !owned                             ? Lang.Format("UI.Enchant.NoCube", cube)
+                          : equip.EquippedCharacterId != 0L    ? Lang.Format("UI.Enchant.UnequipAndUse", cube)
+                          : Lang.Format("UI.Enchant.UseCube", cube);
 
         PaintConfirm(owned && !IsWaiting);
     }
@@ -777,7 +799,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             EnchantOptionTableRow? option = _options[i];
 
             _text.Append(option == null
-                ? Colorize("비어 있음", UIThemePalette.Of(UIThemeRole.TextDisabled))
+                ? Colorize(Lang.Get("UI.Equip.SlotEmpty"), UIThemePalette.Of(UIThemeRole.TextDisabled))
                 : Colorize(EquipLabel.GetOptionText(option), RarityPalette.Get(option.Grade)));
         }
 
@@ -898,7 +920,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (_data.GetItemCount(cubeTid) <= 0)
         {
-            _wait.RaiseNotice($"{GameDataLoader.GetItemName(cubeTid)}가 없습니다.");
+            _wait.RaiseNotice(Lang.Format("UI.Enchant.NoCubeNotice", GameDataLoader.GetItemName(cubeTid)));
 
             return;
         }
@@ -916,7 +938,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             long   equipId   = equip.EquipId;
             string character = _data.GetCharacterName(equip.EquippedCharacterId);
 
-            _ui.AskConfirm($"{character}이(가) 끼고 있는 장비입니다.\n해제한 뒤 큐브를 사용합니다. (사용 후 다시 끼지 않습니다)",
+            _ui.AskConfirm(Lang.Format("UI.Enchant.ConfirmUnequip", character),
                            () => RequestUnequip(equipId, cubeTid));
 
             return;
@@ -943,7 +965,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         _unequipThenEnchantId = equipId;
         _enchantingCubeTid    = cubeTid;
-        _waitHandle           = _wait.Begin("장비 해제", onClosed: OnWaitClosed);
+        _waitHandle           = _wait.Begin(Lang.Get("UI.WorkStation.WaitUnequip"), onClosed: OnWaitClosed);
         Redraw();
     }
 
@@ -991,7 +1013,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"큐브 사용 — 장비 #{equip.EquipId}, 큐브 {cubeTid}, 지금 등급 {equip.EnchantGrade}");
 
         _enchantingEquipId = equip.EquipId;
-        _waitHandle        = _wait.Begin("큐브 사용", onClosed: OnWaitClosed);
+        _waitHandle        = _wait.Begin(Lang.Get("UI.Enchant.WaitUse"), onClosed: OnWaitClosed);
         Redraw();
     }
 
@@ -1087,7 +1109,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _choosingEquipId       = equipId;
         _choosingKeepNew       = keepNew;
         _enchantAfterChooseTid = thenCubeTid;
-        _waitHandle            = _wait.Begin("큐브 결과 고르기", onClosed: OnWaitClosed);
+        _waitHandle            = _wait.Begin(Lang.Get("UI.Enchant.WaitChoose"), onClosed: OnWaitClosed);
         Redraw();
     }
 
@@ -1218,14 +1240,14 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (IsPending(equip))
         {
-            _wait.RaiseNotice("먼저 BEFORE · AFTER 중 하나를 골라 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Enchant.ChooseFirst"));
 
             return;
         }
 
         if (equip.EquippedCharacterId != 0L)
         {
-            _wait.RaiseNotice("착용 중인 장비는 자동으로 돌릴 수 없습니다. 먼저 벗겨 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Enchant.NoAutoWorn"));
 
             return;
         }
@@ -1297,7 +1319,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         }
 
         // 시작 버튼은 초록 — 도는 중의 [■ 멈춤](빨강)과 짝이다(사용자 결정 2026-10-10)
-        confirmLabel.text = "자동 시작 ▶";
+        confirmLabel.text = Lang.Get("UI.Enchant.AutoStart");
         PaintButton(confirmButton, blocked == null && !IsWaiting ? UIThemeRole.Positive : confirmBlockedRole);
         DrawAutoButton();
     }
@@ -1307,17 +1329,17 @@ public class EquipEnchantPresenter : MonoBehaviour
     {
         if (cap <= 0)
         {
-            return $"{GameDataLoader.GetItemName(CurrentCubeTid())}가 없습니다.";
+            return Lang.Format("UI.Enchant.NoCubeNotice", GameDataLoader.GetItemName(CurrentCubeTid()));
         }
 
         if (grade >= GlobalRarity.Mythic && !_autoTarget.UsesSlots)
         {
-            return "이미 신화입니다. 노릴 옵션을 골라 주세요.";
+            return Lang.Get("UI.Enchant.AlreadyMythic");
         }
 
         if (_autoTarget.HasNoCombo(slotCount))
         {
-            return "조합을 하나 이상 켜 주세요.";
+            return Lang.Get("UI.Enchant.NeedCombo");
         }
 
         return null;
@@ -1333,23 +1355,25 @@ public class EquipEnchantPresenter : MonoBehaviour
                          : UIThemeRole.Negative;
 
         string within = Colorize(Percent(forecast.WithinCap), UIThemePalette.Of(tone));
-        string mean   = forecast.Mean > 0 ? $"{forecast.Mean:N0}개 (약 {FormatDuration(forecast.Mean * AutoStepSeconds(cubeTid))})" : "—";
+        string mean   = forecast.Mean > 0 ? Lang.Format("UI.Enchant.MeanCount", $"{forecast.Mean:N0}", FormatDuration(forecast.Mean * AutoStepSeconds(cubeTid))) : "—";
 
-        return $"{cap:N0}개 안에 {within}{UIRichText.Dot}평균 {mean}";
+        return Lang.Format("UI.Enchant.Within", $"{cap:N0}", within) + UIRichText.Dot + Lang.Format("UI.Enchant.Mean", mean);
     }
 
     // 확률 글씨 — 아주 작으면 '0.01% 미만'.
-    private static string Percent(double p) => p > 0 && p < 0.0001 ? "0.01% 미만" : $"{p * 100:0.##}%";
+    private static string Percent(double p) => p > 0 && p < 0.0001 ? Lang.Get("UI.Enchant.UnderMin") : $"{p * 100:0.##}%";
 
     // 걸리는 시간 글씨 — 초 · 분 · 시간.
     private static string FormatDuration(double seconds)
     {
         if (seconds < 60)
         {
-            return $"{Math.Ceiling(seconds):0}초";
+            return Lang.Format("UI.WorkStation.Seconds", Math.Ceiling(seconds).ToString("0"));
         }
 
-        return seconds < 90 * 60 ? $"{seconds / 60:0}분" : $"{seconds / 3600:0.#}시간";
+        return seconds < 90 * 60
+            ? Lang.Format("UI.Enchant.Minutes", (seconds / 60).ToString("0"))
+            : Lang.Format("UI.Enchant.Hours", (seconds / 3600).ToString("0.#"));
     }
 
     // 자동 한 번에 걸리는 시간의 어림 — 결과 보기(+ 상급이면 고르기). 서버 왕복은 뺀다.
@@ -1392,13 +1416,13 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 도는 중 — 규칙 줄에 진행 (DrawRule에서 호출).
     private void DrawAutoProgress()
     {
-        string running = Colorize($"자동 진행 중 {_autoUsed:N0} / {_autoCap:N0}개", UIThemePalette.Of(UIThemeRole.Positive));
+        string running = Colorize(Lang.Format("UI.Enchant.AutoRunning", $"{_autoUsed:N0}", $"{_autoCap:N0}"), UIThemePalette.Of(UIThemeRole.Positive));
 
         ruleText.text = $"{running}{UIRichText.Dot}{DescribeGoal()}\n{DescribeSlotRule(CurrentSlotCount(), null)}";
     }
 
     // 목표 등급 — '목표 신화 이상' (규칙 줄 첫 줄 — 설정 중 · 도는 중).
-    private string DescribeGoal() => $"목표 {GradeText(_autoTarget.Grade)} 이상";
+    private string DescribeGoal() => Lang.Format("UI.Enchant.Goal", GradeText(_autoTarget.Grade));
 
     // 칸 조건 한 줄 — '칸 [전체/발굴/발굴] [전체/전체/전체] · 한 번에 7.41%' (규칙 줄 둘째 줄 — 설정 중 · 도는 중).
     // 켠 조합끼리 OR. 전부 켰으면 '칸마다 전체 또는 발굴'로 줄인다('EnchantAutoTarget.DescribeCombos').
@@ -1407,12 +1431,12 @@ public class EquipEnchantPresenter : MonoBehaviour
     {
         if (!_autoTarget.UsesSlots)
         {
-            return Colorize("칸 조건 없음 — 등급만 봅니다", UIThemePalette.Of(UIThemeRole.TextSub));
+            return Colorize(Lang.Get("UI.Enchant.NoSlotRule"), UIThemePalette.Of(UIThemeRole.TextSub));
         }
 
         string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.Highlight));
 
-        return chance == null ? combos : $"{combos}{UIRichText.Dot}한 번에 {Percent(chance.Value)}";
+        return chance == null ? combos : combos + UIRichText.Dot + Lang.Format("UI.Enchant.PerRoll", Percent(chance.Value));
     }
 
     // 창에 띄운 장비의 칸 수 — 모르면 최대.
@@ -1431,9 +1455,9 @@ public class EquipEnchantPresenter : MonoBehaviour
     {
         autoLabel.text = _auto switch
         {
-            AutoState.Setting => "취소",
-            AutoState.Running => "■ 멈춤",
-            _                 => "자동",
+            AutoState.Setting => Lang.Get("UI.Common.Cancel"),
+            AutoState.Running => Lang.Get("UI.Enchant.AutoStop"),
+            _                 => Lang.Get("UI.Enchant.Auto"),
         };
 
         PaintButton(autoButton, _auto == AutoState.Running ? UIThemeRole.Negative : UIThemeRole.Button);
@@ -1495,7 +1519,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 응답은 평소 핸들러가 받고, 루프는 대기 손잡이가 닫히기를 기다린 뒤 기록('_lastEnchant'·'_lastChoose')을 읽는다.
     private async UniTask RunAutoAsync(long equipId, int cubeTid, CancellationToken ct)
     {
-        string summary   = "자동을 멈췄습니다";
+        string summary   = "UI.Enchant.AutoEndStopped"; // 끝난 이유의 번역 키 — 로그에도 키를 남긴다
         bool   reached   = false;
         var    reveal    = TimeSpan.FromSeconds(ManualRevealSeconds / AutoSpeed);
         var    afterPick = TimeSpan.FromSeconds(ManualChooseSeconds / AutoSpeed);
@@ -1507,7 +1531,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             {
                 if (_autoUsed >= _autoCap)
                 {
-                    summary = "상한에 닿아 멈췄습니다";
+                    summary = "UI.Enchant.AutoEndCap";
 
                     break;
                 }
@@ -1516,7 +1540,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
                 if (equip == null || _data.GetItemCount(cubeTid) <= 0)
                 {
-                    summary = "큐브가 떨어져 멈췄습니다";
+                    summary = "UI.Enchant.AutoEndNoCube";
 
                     break;
                 }
@@ -1537,7 +1561,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
                 if (res == null || res.Result != EResultCode.Ok)
                 {
-                    summary = "서버가 거절해 멈췄습니다";
+                    summary = "UI.Enchant.AutoEndRejected";
 
                     break;
                 }
@@ -1553,7 +1577,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
                 if (_autoTarget.Matches(afterGrade, res.Options))
                 {
-                    summary = "목표 달성!";
+                    summary = "UI.Enchant.AutoEndGoal";
                     reached = true;
                     afterFx.FlashGoal();
 
@@ -1575,7 +1599,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
                 if (_lastChoose != EResultCode.Ok)
                 {
-                    summary = "서버가 거절해 멈췄습니다";
+                    summary = "UI.Enchant.AutoEndRejected";
 
                     break;
                 }
@@ -1594,8 +1618,10 @@ public class EquipEnchantPresenter : MonoBehaviour
             if (this != null && _auto == AutoState.Running)
             {
                 _auto        = AutoState.Off;
-                _autoSummary = Colorize($"{summary} — {GameDataLoader.GetItemName(cubeTid)} {_autoUsed:N0}개 사용.",
-                                        UIThemePalette.Of(reached ? UIThemeRole.Positive : UIThemeRole.Highlight));
+                _autoSummaryKey     = summary;
+                _autoSummaryCube    = cubeTid;
+                _autoSummaryReached = reached;
+                _autoSummary        = BuildAutoSummary();
                 Redraw();
             }
         }

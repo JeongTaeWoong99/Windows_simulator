@@ -34,7 +34,7 @@ public class MainCanvasView : MonoBehaviour
     }
 
     // 머리의 제목을 바꾼다 ('UIManager.ShowMainScreen'이 화면을 갈아 끼울 때 호출).
-    // 문구는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.
+    // 문구의 번역 키는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.
     public void SetTitle(string title)
     {
         titleText.text = title;

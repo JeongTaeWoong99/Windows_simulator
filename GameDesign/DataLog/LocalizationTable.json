@@ -3511,7 +3511,3182 @@
   },
   {
     "Key": "UI.Inventory.Lock",
-    "KR": "잠금",
+    "KR": "잠그기",
     "EN": "Lock"
+  },
+  {
+    "Key": "UI.Setting.TabGeneral",
+    "KR": "일반",
+    "EN": "General"
+  },
+  {
+    "Key": "UI.Setting.TabGraphic",
+    "KR": "그래픽",
+    "EN": "Graphics"
+  },
+  {
+    "Key": "UI.Setting.TabAudio",
+    "KR": "오디오",
+    "EN": "Audio"
+  },
+  {
+    "Key": "UI.Setting.TabEtc",
+    "KR": "기타",
+    "EN": "Other"
+  },
+  {
+    "Key": "UI.Setting.Language",
+    "KR": "언어",
+    "EN": "Language"
+  },
+  {
+    "Key": "UI.Setting.Topmost",
+    "KR": "항상 위에 고정",
+    "EN": "Always on Top"
+  },
+  {
+    "Key": "UI.Setting.AutoStart",
+    "KR": "윈도우 시작 시 자동 실행",
+    "EN": "Launch on Windows Startup"
+  },
+  {
+    "Key": "UI.Setting.NoFeature",
+    "KR": "(기능 없음)",
+    "EN": "(Not available)"
+  },
+  {
+    "Key": "UI.Setting.Version",
+    "KR": "버전",
+    "EN": "Version"
+  },
+  {
+    "Key": "UI.Setting.MaxFps",
+    "KR": "최대 FPS",
+    "EN": "Max FPS"
+  },
+  {
+    "Key": "UI.Setting.FpsTextPosition",
+    "KR": "FPS 표시 위치",
+    "EN": "FPS Display"
+  },
+  {
+    "Key": "UI.Setting.WindowSize",
+    "KR": "창 크기",
+    "EN": "Window Size"
+  },
+  {
+    "Key": "UI.Setting.WindowPosition",
+    "KR": "창·위젯 위치",
+    "EN": "Window Position"
+  },
+  {
+    "Key": "UI.Setting.Opacity",
+    "KR": "화면 투명도",
+    "EN": "Opacity"
+  },
+  {
+    "Key": "UI.Setting.ResetSize",
+    "KR": "창 크기 복원",
+    "EN": "Reset Window Size"
+  },
+  {
+    "Key": "UI.Setting.ResetPosition",
+    "KR": "창 위치 복원",
+    "EN": "Reset Window Position"
+  },
+  {
+    "Key": "UI.Setting.Reset",
+    "KR": "복원",
+    "EN": "Reset"
+  },
+  {
+    "Key": "UI.Setting.MasterVolume",
+    "KR": "전체 볼륨",
+    "EN": "Master Volume"
+  },
+  {
+    "Key": "UI.Setting.BgmVolume",
+    "KR": "배경음 (BGM)",
+    "EN": "Music (BGM)"
+  },
+  {
+    "Key": "UI.Setting.SfxVolume",
+    "KR": "효과음",
+    "EN": "Sound Effects"
+  },
+  {
+    "Key": "UI.Setting.UiSfxVolume",
+    "KR": "UI 효과음",
+    "EN": "UI Sounds"
+  },
+  {
+    "Key": "UI.Setting.BugReport",
+    "KR": "버그 신고",
+    "EN": "Report a Bug"
+  },
+  {
+    "Key": "UI.Setting.BugReportButton",
+    "KR": "신고",
+    "EN": "Report"
+  },
+  {
+    "Key": "UI.Setting.LogFolder",
+    "KR": "로그 폴더 열기",
+    "EN": "Open Log Folder"
+  },
+  {
+    "Key": "UI.Setting.LogFolderButton",
+    "KR": "열기",
+    "EN": "Open"
+  },
+  {
+    "Key": "UI.Setting.ResetAccount",
+    "KR": "계정 데이터 초기화",
+    "EN": "Reset Account Data"
+  },
+  {
+    "Key": "UI.Setting.ResetAccountButton",
+    "KR": "초기화",
+    "EN": "Reset"
+  },
+  {
+    "Key": "UI.Setting.Credits",
+    "KR": "크레딧",
+    "EN": "Credits"
+  },
+  {
+    "Key": "UI.Setting.CreditsButton",
+    "KR": "보기",
+    "EN": "View"
+  },
+  {
+    "Key": "UI.Setting.FrameRateVSync",
+    "KR": "모니터 동기화",
+    "EN": "VSync"
+  },
+  {
+    "Key": "UI.Setting.FpsHidden",
+    "KR": "숨김",
+    "EN": "Hidden"
+  },
+  {
+    "Key": "UI.Setting.UpperLeft",
+    "KR": "Upper Left",
+    "EN": "Upper Left"
+  },
+  {
+    "Key": "UI.Setting.UpperCenter",
+    "KR": "Upper Center",
+    "EN": "Upper Center"
+  },
+  {
+    "Key": "UI.Setting.UpperRight",
+    "KR": "Upper Right",
+    "EN": "Upper Right"
+  },
+  {
+    "Key": "UI.Setting.LowerLeft",
+    "KR": "Lower Left",
+    "EN": "Lower Left"
+  },
+  {
+    "Key": "UI.Setting.LowerCenter",
+    "KR": "Lower Center",
+    "EN": "Lower Center"
+  },
+  {
+    "Key": "UI.Setting.LowerRight",
+    "KR": "Lower Right",
+    "EN": "Lower Right"
+  },
+  {
+    "Key": "UI.Setting.FitTaskbar",
+    "KR": "작업표시줄 맞춤",
+    "EN": "Fit Taskbar"
+  },
+  {
+    "Key": "UI.Setting.FitTaskbarWithScale",
+    "KR": "작업표시줄 맞춤 ({0}x)",
+    "EN": "Fit Taskbar ({0}x)"
+  },
+  {
+    "Key": "UI.Setting.TaskbarAvoided",
+    "KR": "'항상 위에 고정'이 꺼져 있으면 {0} 이하 크기로는\r\n창을 작업표시줄 위에 둘 수 없습니다.\r\n작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\r\n\r\n작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.",
+    "EN": "With 'Always on Top' off, a window at {0} or smaller\r\ncan't sit over the taskbar —\r\nthe taskbar would hide it and you couldn't grab it again.\r\n\r\nTo keep it over the taskbar, turn on 'Always on Top' in Settings > General."
+  },
+  {
+    "Key": "UI.Result.Ok",
+    "KR": "정상 처리되었습니다.",
+    "EN": "Done."
+  },
+  {
+    "Key": "UI.Result.NotLoggedIn",
+    "KR": "로그인이 필요합니다.",
+    "EN": "Please log in."
+  },
+  {
+    "Key": "UI.Result.AlreadyLoggedIn",
+    "KR": "이미 접속 중인 계정입니다. 다른 창을 닫고 다시 시도해 주세요.",
+    "EN": "This account is already signed in. Close the other window and try again."
+  },
+  {
+    "Key": "UI.Result.InvalidDrawCount",
+    "KR": "뽑기 횟수가 올바르지 않습니다.",
+    "EN": "Invalid number of draws."
+  },
+  {
+    "Key": "UI.Result.InvalidGachaId",
+    "KR": "존재하지 않는 뽑기입니다.",
+    "EN": "That draw doesn't exist."
+  },
+  {
+    "Key": "UI.Result.NotEnoughCurrency",
+    "KR": "골드가 부족합니다.",
+    "EN": "Not enough gold."
+  },
+  {
+    "Key": "UI.Result.StorageFull",
+    "KR": "인벤토리가 가득 찼습니다. 정리한 뒤 다시 시도해 주세요.",
+    "EN": "Your inventory is full. Make some room and try again."
+  },
+  {
+    "Key": "UI.Result.InvalidSlotIndex",
+    "KR": "아직 열리지 않은 작업 슬롯입니다.",
+    "EN": "That work slot isn't unlocked yet."
+  },
+  {
+    "Key": "UI.Result.CharacterNotOwned",
+    "KR": "보유하지 않은 캐릭터입니다.",
+    "EN": "You don't own that character."
+  },
+  {
+    "Key": "UI.Result.NoAptitude",
+    "KR": "이 캐릭터는 해당 산업 적성이 없습니다.",
+    "EN": "This character has no aptitude for that industry."
+  },
+  {
+    "Key": "UI.Result.IndustryLevelLocked",
+    "KR": "아직 열지 않은 산업 레벨입니다.",
+    "EN": "That industry level isn't unlocked yet."
+  },
+  {
+    "Key": "UI.Result.InvalidSellRequest",
+    "KR": "판매 요청이 올바르지 않습니다.",
+    "EN": "Invalid sell request."
+  },
+  {
+    "Key": "UI.Result.NotEnoughItem",
+    "KR": "보유량이 부족합니다.",
+    "EN": "You don't have enough."
+  },
+  {
+    "Key": "UI.Result.SellEquipWorn",
+    "KR": "착용 중인 장비는 팔 수 없습니다. 먼저 벗겨 주세요.",
+    "EN": "Equipped gear can't be sold. Unequip it first."
+  },
+  {
+    "Key": "UI.Result.SellCharacterBusy",
+    "KR": "배치됐거나 장비를 낀 캐릭터는 팔 수 없습니다. 빼고 벗긴 뒤 다시 시도해 주세요.",
+    "EN": "Characters that are assigned or wearing gear can't be sold. Remove them and unequip first."
+  },
+  {
+    "Key": "UI.Result.SellLastCharacter",
+    "KR": "캐릭터를 하나는 남겨야 합니다.",
+    "EN": "You must keep at least one character."
+  },
+  {
+    "Key": "UI.Result.ItemNotUsable",
+    "KR": "사용할 수 없는 아이템입니다.",
+    "EN": "That item can't be used."
+  },
+  {
+    "Key": "UI.Result.InvalidUseCount",
+    "KR": "사용 개수가 올바르지 않습니다.",
+    "EN": "Invalid quantity."
+  },
+  {
+    "Key": "UI.Result.InvalidUnlockTID",
+    "KR": "존재하지 않는 해금입니다.",
+    "EN": "That unlock doesn't exist."
+  },
+  {
+    "Key": "UI.Result.AlreadyUnlocked",
+    "KR": "이미 해금되었습니다.",
+    "EN": "Already unlocked."
+  },
+  {
+    "Key": "UI.Result.UnlockLocked",
+    "KR": "해금 조건을 만족하지 않습니다.",
+    "EN": "Unlock requirements not met."
+  },
+  {
+    "Key": "UI.Result.NotEnoughTraitPoint",
+    "KR": "특성 포인트가 부족합니다.",
+    "EN": "Not enough trait points."
+  },
+  {
+    "Key": "UI.Result.InvalidUserTraitTID",
+    "KR": "존재하지 않는 특성입니다.",
+    "EN": "That trait doesn't exist."
+  },
+  {
+    "Key": "UI.Result.TraitOnlyUnlock",
+    "KR": "특성 화면에서만 열 수 있습니다.",
+    "EN": "Can only be unlocked from the Traits screen."
+  },
+  {
+    "Key": "UI.Result.TraitMaxLevel",
+    "KR": "이미 최대 레벨입니다.",
+    "EN": "Already at max level."
+  },
+  {
+    "Key": "UI.Result.EquipNotOwned",
+    "KR": "보유하지 않은 장비입니다.",
+    "EN": "You don't own that gear."
+  },
+  {
+    "Key": "UI.Result.InvalidEquipSlot",
+    "KR": "올바르지 않은 장비 칸입니다.",
+    "EN": "Invalid gear slot."
+  },
+  {
+    "Key": "UI.Result.EquipKindMismatch",
+    "KR": "이 칸에 낄 수 없는 장비입니다.",
+    "EN": "That gear doesn't fit this slot."
+  },
+  {
+    "Key": "UI.Result.EquipSlotEmpty",
+    "KR": "이미 비어 있는 칸입니다.",
+    "EN": "That slot is already empty."
+  },
+  {
+    "Key": "UI.Result.EnchantItemNotOwned",
+    "KR": "큐브가 없습니다.",
+    "EN": "You have no cubes."
+  },
+  {
+    "Key": "UI.Result.EnchantEquipped",
+    "KR": "착용 중인 장비에는 큐브를 쓸 수 없습니다. 먼저 벗겨 주세요.",
+    "EN": "Cubes can't be used on equipped gear. Unequip it first."
+  },
+  {
+    "Key": "UI.Result.EnchantPending",
+    "KR": "큐브 결과를 고르기 전인 장비입니다. 큐브 창에서 먼저 고르세요.",
+    "EN": "This gear has a cube result waiting. Choose it in the cube window first."
+  },
+  {
+    "Key": "UI.Result.EnchantNoPending",
+    "KR": "고를 큐브 결과가 없습니다.",
+    "EN": "No cube result to choose."
+  },
+  {
+    "Key": "UI.Result.CondenseInvalidRequest",
+    "KR": "응축 재료가 올바르지 않습니다.",
+    "EN": "Invalid condense materials."
+  },
+  {
+    "Key": "UI.Result.CondenseTidMismatch",
+    "KR": "같은 캐릭터만 재료로 넣을 수 있습니다.",
+    "EN": "Only the same character can be used as material."
+  },
+  {
+    "Key": "UI.Result.CondenseMaterialBusy",
+    "KR": "배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.",
+    "EN": "Characters that are assigned or wearing gear can't be used as material."
+  },
+  {
+    "Key": "UI.Result.CondenseMaxStar",
+    "KR": "이미 최고 단계입니다.",
+    "EN": "Already at the highest star."
+  },
+  {
+    "Key": "UI.Result.EntityLocked",
+    "KR": "잠긴 물건이 있습니다. Ctrl+좌클릭으로 잠금을 푼 뒤 다시 시도하세요.",
+    "EN": "Some items are locked. Ctrl+Left-click to unlock them and try again."
+  },
+  {
+    "Key": "UI.Result.InvalidLockTarget",
+    "KR": "잠글 수 없는 대상입니다.",
+    "EN": "That can't be locked."
+  },
+  {
+    "Key": "UI.Result.MailNotFound",
+    "KR": "없는 우편입니다.",
+    "EN": "That mail doesn't exist."
+  },
+  {
+    "Key": "UI.Result.MailAlreadyClaimed",
+    "KR": "이미 받은 우편입니다.",
+    "EN": "Already claimed."
+  },
+  {
+    "Key": "UI.Result.MailNotClaimed",
+    "KR": "받지 않은 우편은 지울 수 없습니다.",
+    "EN": "Unclaimed mail can't be deleted."
+  },
+  {
+    "Key": "UI.Result.AuctionUnavailable",
+    "KR": "경매장이 점검 중입니다. 잠시 뒤 다시 시도해 주세요.",
+    "EN": "The auction house is under maintenance. Please try again later."
+  },
+  {
+    "Key": "UI.Result.AuctionInvalidRequest",
+    "KR": "거래 요청이 올바르지 않습니다.",
+    "EN": "Invalid trade request."
+  },
+  {
+    "Key": "UI.Result.AuctionPriceOutOfBand",
+    "KR": "경매 단가는 즉시 판매가 이상, {0} G 이하로 정해 주세요.",
+    "EN": "Set the unit price between the instant sell price and {0} G."
+  },
+  {
+    "Key": "UI.Result.AuctionListingLimit",
+    "KR": "판매 중인 매물이 너무 많습니다. 정리한 뒤 다시 등록해 주세요.",
+    "EN": "You have too many listings. Clear some and try again."
+  },
+  {
+    "Key": "UI.Result.AuctionEquipped",
+    "KR": "착용 중인 장비는 올릴 수 없습니다. 먼저 벗겨 주세요.",
+    "EN": "Equipped gear can't be listed. Unequip it first."
+  },
+  {
+    "Key": "UI.Result.AuctionNotFound",
+    "KR": "없는 매물입니다.",
+    "EN": "That listing doesn't exist."
+  },
+  {
+    "Key": "UI.Result.AuctionInProgress",
+    "KR": "다른 사람이 구매 중인 매물입니다. 잠시 뒤 다시 시도해 주세요.",
+    "EN": "Someone else is buying this listing. Please try again shortly."
+  },
+  {
+    "Key": "UI.Result.AuctionSoldOut",
+    "KR": "이미 팔린 매물입니다.",
+    "EN": "Already sold."
+  },
+  {
+    "Key": "UI.Result.AuctionClosed",
+    "KR": "취소되었거나 기간이 끝난 매물입니다.",
+    "EN": "This listing was canceled or has expired."
+  },
+  {
+    "Key": "UI.Result.AuctionPriceChanged",
+    "KR": "가격이 바뀌었습니다. 다시 검색해 주세요.",
+    "EN": "The price has changed. Please search again."
+  },
+  {
+    "Key": "UI.Result.AuctionOwnListing",
+    "KR": "내가 올린 매물은 살 수 없습니다.",
+    "EN": "You can't buy your own listing."
+  },
+  {
+    "Key": "UI.Result.AuctionNotOwner",
+    "KR": "내 매물만 취소할 수 있습니다.",
+    "EN": "You can only cancel your own listings."
+  },
+  {
+    "Key": "UI.Result.AuctionTooManyRequests",
+    "KR": "조회가 너무 잦습니다. 잠시 뒤 다시 시도해 주세요.",
+    "EN": "Too many requests. Please wait a moment."
+  },
+  {
+    "Key": "UI.Result.AuctionSearchNoCondition",
+    "KR": "분류를 고르거나 이름을 입력해 주세요.",
+    "EN": "Pick a category or enter a name."
+  },
+  {
+    "Key": "UI.Result.AuctionCharacterBusy",
+    "KR": "배치됐거나 장비를 낀 캐릭터는 올릴 수 없습니다. 빼고 벗긴 뒤 다시 시도해 주세요.",
+    "EN": "Characters that are assigned or wearing gear can't be listed. Remove them and unequip first."
+  },
+  {
+    "Key": "UI.Result.AuctionLastCharacter",
+    "KR": "캐릭터를 하나는 남겨야 합니다.",
+    "EN": "You must keep at least one character."
+  },
+  {
+    "Key": "UI.Result.MarketNotEnough",
+    "KR": "그 가격으로 원하는 수량을 다 살 수 없습니다. 아무것도 사지 않았습니다.",
+    "EN": "Not enough stock at that price for the full amount. Nothing was bought."
+  },
+  {
+    "Key": "UI.Result.StorageSlotOutOfRange",
+    "KR": "옮길 수 없는 칸입니다.",
+    "EN": "Can't move to that slot."
+  },
+  {
+    "Key": "UI.Result.StorageSlotEmpty",
+    "KR": "이미 비어 있는 칸입니다.",
+    "EN": "That slot is already empty."
+  },
+  {
+    "Key": "UI.Result.InvalidStorageSortKey",
+    "KR": "이 탭에서는 쓸 수 없는 정렬 기준입니다.",
+    "EN": "That sort order isn't available on this tab."
+  },
+  {
+    "Key": "UI.Result.StorageSlotPending",
+    "KR": "새로 받는 아이템이 들어갈 칸입니다. 잠시 뒤 다시 시도해 주세요.",
+    "EN": "A new item is arriving in that slot. Please try again shortly."
+  },
+  {
+    "Key": "UI.Result.StorageEntityBusy",
+    "KR": "배치 중인 캐릭터 · 장비를 낀 캐릭터 · 장착 중인 장비는 창고에 넣을 수 없습니다. 먼저 빼 주세요.",
+    "EN": "Assigned characters, characters wearing gear, and equipped gear can't go into the warehouse. Remove them first."
+  },
+  {
+    "Key": "UI.Result.WarehousePartialSwap",
+    "KR": "다른 자원이 있는 칸에는 전부 옮길 때만 자리를 바꿀 수 있습니다. 빈 칸에 놓아 주세요.",
+    "EN": "You can only swap with a slot holding another resource when moving the whole stack. Drop it on an empty slot."
+  },
+  {
+    "Key": "UI.Result.StorageOverMaxStack",
+    "KR": "그 칸은 이미 가득 찼습니다. 빈 칸에 놓아 주세요.",
+    "EN": "That slot is full. Drop it on an empty slot."
+  },
+  {
+    "Key": "UI.Result.Unknown",
+    "KR": "알 수 없는 오류가 발생했습니다. (코드 {0})",
+    "EN": "An unknown error occurred. (Code {0})"
+  },
+  {
+    "Key": "UI.Rarity.Common",
+    "KR": "일반",
+    "EN": "Common"
+  },
+  {
+    "Key": "UI.Rarity.Uncommon",
+    "KR": "고급",
+    "EN": "Uncommon"
+  },
+  {
+    "Key": "UI.Rarity.Rare",
+    "KR": "희귀",
+    "EN": "Rare"
+  },
+  {
+    "Key": "UI.Rarity.Epic",
+    "KR": "영웅",
+    "EN": "Epic"
+  },
+  {
+    "Key": "UI.Rarity.Legendary",
+    "KR": "전설",
+    "EN": "Legendary"
+  },
+  {
+    "Key": "UI.Rarity.Mythic",
+    "KR": "신화",
+    "EN": "Mythic"
+  },
+  {
+    "Key": "UI.Industry.Farming",
+    "KR": "농사",
+    "EN": "Farming"
+  },
+  {
+    "Key": "UI.Industry.Excavation",
+    "KR": "발굴",
+    "EN": "Excavation"
+  },
+  {
+    "Key": "UI.Industry.Mining",
+    "KR": "채굴",
+    "EN": "Mining"
+  },
+  {
+    "Key": "UI.Industry.Logging",
+    "KR": "벌목",
+    "EN": "Logging"
+  },
+  {
+    "Key": "UI.Industry.Hunting",
+    "KR": "사냥",
+    "EN": "Hunting"
+  },
+  {
+    "Key": "UI.Industry.None",
+    "KR": "미지정",
+    "EN": "Unassigned"
+  },
+  {
+    "Key": "UI.Industry.All",
+    "KR": "전산업",
+    "EN": "All Industries"
+  },
+  {
+    "Key": "UI.Block.Locked",
+    "KR": "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다",
+    "EN": "Locked — Ctrl+Left-click to unlock"
+  },
+  {
+    "Key": "UI.Block.EquipWorn",
+    "KR": "캐릭터가 끼고 있습니다 — 먼저 해제하세요",
+    "EN": "Equipped by a character — unequip it first"
+  },
+  {
+    "Key": "UI.Block.CharacterAssigned",
+    "KR": "작업슬롯에 배치 중입니다 — 먼저 빼세요",
+    "EN": "Assigned to a work slot — remove it first"
+  },
+  {
+    "Key": "UI.Block.CharacterWearing",
+    "KR": "장비를 끼고 있습니다 — 먼저 해제하세요",
+    "EN": "Wearing gear — unequip first"
+  },
+  {
+    "Key": "UI.Block.LastCharacter",
+    "KR": "마지막 캐릭터는 내놓을 수 없습니다",
+    "EN": "You can't give up your last character"
+  },
+  {
+    "Key": "UI.Equip.Exp",
+    "KR": "경험치",
+    "EN": "EXP"
+  },
+  {
+    "Key": "UI.Equip.StatSlots",
+    "KR": "능력치 칸 {0}/{1}",
+    "EN": "Stat Slots {0}/{1}"
+  },
+  {
+    "Key": "UI.Equip.EnchantGrade",
+    "KR": "인챈트 등급",
+    "EN": "Enchant Grade"
+  },
+  {
+    "Key": "UI.Equip.None",
+    "KR": "없음",
+    "EN": "None"
+  },
+  {
+    "Key": "UI.Equip.SlotEmpty",
+    "KR": "비어 있음",
+    "EN": "Empty"
+  },
+  {
+    "Key": "UI.Equip.NoCube",
+    "KR": "큐브 없음",
+    "EN": "No Cube"
+  },
+  {
+    "Key": "UI.Equip.Cube",
+    "KR": "큐브",
+    "EN": "Cube"
+  },
+  {
+    "Key": "UI.Equip.PendingResult",
+    "KR": "결과 선택 대기",
+    "EN": "Result Pending"
+  },
+  {
+    "Key": "UI.Equip.CubeTitle",
+    "KR": "인챈트 큐브",
+    "EN": "Enchant Cube"
+  },
+  {
+    "Key": "UI.Equip.CubeRuleFirst",
+    "KR": "첫 사용은 일반 · 이후 확률로 한 단계씩 상승",
+    "EN": "First use gives Common · then has a chance to rise one grade"
+  },
+  {
+    "Key": "UI.Equip.CubeRuleReroll",
+    "KR": "매번 칸 전부 다시 뽑기 (옵션 중복 가능)",
+    "EN": "Rerolls every slot each time (options can repeat)"
+  },
+  {
+    "Key": "UI.Equip.CubeRuleUnequip",
+    "KR": "착용 중이면 벗긴 뒤 사용",
+    "EN": "Unequip before use"
+  },
+  {
+    "Key": "UI.Equip.CubeUpChance",
+    "KR": "■ 등급 상승 확률",
+    "EN": "■ Grade Up Chance"
+  },
+  {
+    "Key": "UI.Equip.CubeMythic",
+    "KR": "{0}은 최고 등급 · 옵션만 다시 뽑기",
+    "EN": "{0} is the top grade · only options are rerolled"
+  },
+  {
+    "Key": "UI.Equip.CubeTail",
+    "KR": "인챈트 큐브",
+    "EN": "Enchant Cube"
+  },
+  {
+    "Key": "UI.Equip.CubeBasic",
+    "KR": "기본",
+    "EN": "Basic"
+  },
+  {
+    "Key": "UI.Equip.SlotCount",
+    "KR": "{0} {1}칸",
+    "EN": "{0} {1} slots"
+  },
+  {
+    "Key": "UI.Equip.Grade",
+    "KR": "등급",
+    "EN": "Grade"
+  },
+  {
+    "Key": "UI.Equip.Kind",
+    "KR": "종류",
+    "EN": "Type"
+  },
+  {
+    "Key": "UI.Equip.BaseStat",
+    "KR": "기본 능력치",
+    "EN": "Base Stat"
+  },
+  {
+    "Key": "UI.Equip.InstantSellPrice",
+    "KR": "즉시 판매가",
+    "EN": "Instant Sell Price"
+  },
+  {
+    "Key": "UI.Equip.Gold",
+    "KR": "{0} 골드",
+    "EN": "{0} Gold"
+  },
+  {
+    "Key": "UI.Equip.InventorySell",
+    "KR": "인벤토리 [판매]",
+    "EN": "Inventory [Sell]"
+  },
+  {
+    "Key": "UI.Equip.AuctionPrice",
+    "KR": "경매 등록가",
+    "EN": "Auction Price"
+  },
+  {
+    "Key": "UI.Equip.Weapon",
+    "KR": "무기",
+    "EN": "Weapon"
+  },
+  {
+    "Key": "UI.Equip.Accessory",
+    "KR": "장신구",
+    "EN": "Accessory"
+  },
+  {
+    "Key": "UI.Equip.Gem",
+    "KR": "보석",
+    "EN": "Gem"
+  },
+  {
+    "Key": "UI.Equip.Gear",
+    "KR": "장비",
+    "EN": "Gear"
+  },
+  {
+    "Key": "UI.Equip.Accessory1",
+    "KR": "장신구1",
+    "EN": "Accessory 1"
+  },
+  {
+    "Key": "UI.Equip.Accessory2",
+    "KR": "장신구2",
+    "EN": "Accessory 2"
+  },
+  {
+    "Key": "UI.Common.ReceivedJustNow",
+    "KR": "방금 받음",
+    "EN": "Just received"
+  },
+  {
+    "Key": "UI.Common.ReceivedHoursAgo",
+    "KR": "{0}시간 전에 받음",
+    "EN": "Received {0}h ago"
+  },
+  {
+    "Key": "UI.Common.ReceivedMinutesAgo",
+    "KR": "{0}분 전에 받음",
+    "EN": "Received {0}m ago"
+  },
+  {
+    "Key": "UI.Common.PriceAtLeast",
+    "KR": "{0} G 이상",
+    "EN": "{0} G or more"
+  },
+  {
+    "Key": "UI.Common.Trillion",
+    "KR": "{0}조",
+    "EN": "{0} trillion"
+  },
+  {
+    "Key": "UI.Common.Disconnected",
+    "KR": "서버와의 연결이 끊어졌습니다. 앱을 종료합니다.",
+    "EN": "Lost connection to the server. The app will close."
+  },
+  {
+    "Key": "UI.Common.ConnectFailed",
+    "KR": "서버에 접속하지 못했습니다. 서버 상태를 확인한 뒤 다시 실행해 주세요.",
+    "EN": "Couldn't connect to the server. Check the server status and launch again."
+  },
+  {
+    "Key": "UI.Common.PendingCube",
+    "KR": "상급 큐브 결과를 고르지 않은 장비가 {0}개 있습니다.\r\n인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.",
+    "EN": "{0} gear item(s) have an advanced cube result waiting.\r\nGo to Inventory > Gear and click the glowing item to choose."
+  },
+  {
+    "Key": "UI.Common.RequestTimeout",
+    "KR": "'{0}' 응답이 {1}초 안에 오지 않았습니다. 잠시 후 다시 시도해 주세요.",
+    "EN": "No response for '{0}' within {1}s. Please try again shortly."
+  },
+  {
+    "Key": "UI.Common.AmountTitle",
+    "KR": "{0} — {1} (최대 {2}개)",
+    "EN": "{0} — {1} (max {2})"
+  },
+  {
+    "Key": "UI.Login.Wait",
+    "KR": "로그인",
+    "EN": "Login"
+  },
+  {
+    "Key": "UI.Common.Gold",
+    "KR": "골드",
+    "EN": "Gold"
+  },
+  {
+    "Key": "UI.Common.Character",
+    "KR": "캐릭터",
+    "EN": "Character"
+  },
+  {
+    "Key": "UI.Mail.UnclaimedCount",
+    "KR": "안 받은 우편 {0}통",
+    "EN": "{0} unclaimed"
+  },
+  {
+    "Key": "UI.Mail.UnclaimedTab",
+    "KR": "안 받은 우편 ({0})",
+    "EN": "Unclaimed ({0})"
+  },
+  {
+    "Key": "UI.Mail.ClaimedTab",
+    "KR": "받은 우편 ({0})",
+    "EN": "Claimed ({0})"
+  },
+  {
+    "Key": "UI.Mail.EmptyClaimed",
+    "KR": "받은 우편이 없습니다.",
+    "EN": "No claimed mail."
+  },
+  {
+    "Key": "UI.Mail.EmptyUnclaimed",
+    "KR": "받을 우편이 없습니다.",
+    "EN": "No mail to claim."
+  },
+  {
+    "Key": "UI.Mail.ClaimedNote",
+    "KR": "받은 우편은 받은 뒤 {0}일이 지나면 자동으로 지워집니다.",
+    "EN": "Claimed mail is deleted automatically {0} days after claiming."
+  },
+  {
+    "Key": "UI.Mail.UnclaimedNote",
+    "KR": "안 받은 우편은 기한 없이 남습니다.",
+    "EN": "Unclaimed mail never expires."
+  },
+  {
+    "Key": "UI.Mail.Fallback",
+    "KR": "우편 #{0}",
+    "EN": "Mail #{0}"
+  },
+  {
+    "Key": "UI.Mail.DeleteToday",
+    "KR": "오늘 삭제",
+    "EN": "Deleted today"
+  },
+  {
+    "Key": "UI.Mail.DeleteIn",
+    "KR": "{0}일 뒤 삭제",
+    "EN": "Deleted in {0} days"
+  },
+  {
+    "Key": "UI.Mail.Sender",
+    "KR": "발신",
+    "EN": "From"
+  },
+  {
+    "Key": "UI.Mail.Arrived",
+    "KR": "도착",
+    "EN": "Arrived"
+  },
+  {
+    "Key": "UI.Mail.Claimed",
+    "KR": "받음",
+    "EN": "Claimed"
+  },
+  {
+    "Key": "UI.Mail.Attachment",
+    "KR": "첨부",
+    "EN": "Attachments"
+  },
+  {
+    "Key": "UI.Mail.NoAttachment",
+    "KR": "첨부 없음",
+    "EN": "No attachments"
+  },
+  {
+    "Key": "UI.Mail.WaitClaim",
+    "KR": "우편 받기",
+    "EN": "Claim Mail"
+  },
+  {
+    "Key": "UI.Mail.WaitClaimAll",
+    "KR": "모두 받기",
+    "EN": "Claim All"
+  },
+  {
+    "Key": "UI.Mail.WaitDelete",
+    "KR": "우편 삭제",
+    "EN": "Delete Mail"
+  },
+  {
+    "Key": "UI.Mail.PartialClaim",
+    "KR": "인벤토리가 부족해 우편 {0}통만 받았습니다.\r\n남은 {1}통은 인벤토리를 정리한 뒤 받아 주세요.",
+    "EN": "Inventory is full — only {0} mail claimed.\r\nClear your inventory to claim the remaining {1}."
+  },
+  {
+    "Key": "UI.Mail.InventoryFull",
+    "KR": "인벤토리가 부족합니다.\r\n인벤토리를 정리한 뒤 다시 받아 주세요.",
+    "EN": "Inventory is full.\r\nClear your inventory and try again."
+  },
+  {
+    "Key": "UI.Mail.Delete",
+    "KR": "삭제",
+    "EN": "Delete"
+  },
+  {
+    "Key": "UI.Mail.Claim",
+    "KR": "받기",
+    "EN": "Claim"
+  },
+  {
+    "Key": "UI.WorkStation.Empty",
+    "KR": "비어있음.",
+    "EN": "Empty."
+  },
+  {
+    "Key": "UI.WorkStation.NeedUnlockFirst",
+    "KR": "{0}을(를) 먼저 해금해야 합니다.",
+    "EN": "Unlock {0} first."
+  },
+  {
+    "Key": "UI.WorkStation.NeedAccountLevel",
+    "KR": "계정 레벨 {0}이(가) 필요합니다. (지금 {1})",
+    "EN": "Requires account level {0}. (Current: {1})"
+  },
+  {
+    "Key": "UI.WorkStation.NotEnoughGold",
+    "KR": "골드가 부족합니다. ({0} 골드 필요)",
+    "EN": "Not enough gold. ({0} Gold required)"
+  },
+  {
+    "Key": "UI.WorkStation.ConfirmUnlock",
+    "KR": "{0} 골드가 필요합니다.\r\n해금하시겠습니까?",
+    "EN": "This costs {0} Gold.\r\nUnlock it?"
+  },
+  {
+    "Key": "UI.WorkStation.WaitUnlock",
+    "KR": "작업슬롯 해금",
+    "EN": "Unlock Work Slot"
+  },
+  {
+    "Key": "UI.WorkStation.Locked",
+    "KR": "잠김",
+    "EN": "Locked"
+  },
+  {
+    "Key": "UI.WorkStation.AccountLevel",
+    "KR": "계정 Lv.{0}",
+    "EN": "Account Lv.{0}"
+  },
+  {
+    "Key": "UI.WorkStation.UnlockRequired",
+    "KR": "{0} 해금 필요",
+    "EN": "Requires {0}"
+  },
+  {
+    "Key": "UI.WorkStation.UnlockFallback",
+    "KR": "해금 #{0}",
+    "EN": "Unlock #{0}"
+  },
+  {
+    "Key": "UI.WorkStation.NoCharacter",
+    "KR": "배치 없음",
+    "EN": "No Character"
+  },
+  {
+    "Key": "UI.WorkStation.Idle",
+    "KR": "대기",
+    "EN": "Idle"
+  },
+  {
+    "Key": "UI.WorkStation.Max",
+    "KR": "최대",
+    "EN": "Max"
+  },
+  {
+    "Key": "UI.WorkStation.SpeedMul",
+    "KR": "{0}배",
+    "EN": "{0}x"
+  },
+  {
+    "Key": "UI.WorkStation.HarvestIn",
+    "KR": "{0}.{1}초 후 수확",
+    "EN": "Harvest in {0}.{1}s"
+  },
+  {
+    "Key": "UI.WorkStation.Assign",
+    "KR": "배치",
+    "EN": "Assign"
+  },
+  {
+    "Key": "UI.WorkStation.Unassign",
+    "KR": "해제",
+    "EN": "Remove"
+  },
+  {
+    "Key": "UI.WorkStation.PioneerFallback",
+    "KR": "개척",
+    "EN": "Pioneer"
+  },
+  {
+    "Key": "UI.WorkStation.LevelLocked",
+    "KR": "잠김 — 특성 '{0}' Lv{1} 필요",
+    "EN": "Locked — requires trait '{0}' Lv{1}"
+  },
+  {
+    "Key": "UI.WorkStation.SiteInfo",
+    "KR": "작업지 정보",
+    "EN": "Site Info"
+  },
+  {
+    "Key": "UI.WorkStation.BaseCycle",
+    "KR": "기준 주기",
+    "EN": "Base Cycle"
+  },
+  {
+    "Key": "UI.WorkStation.Seconds",
+    "KR": "{0}초",
+    "EN": "{0}s"
+  },
+  {
+    "Key": "UI.WorkStation.ExpPerJudge",
+    "KR": "판정당 경험치",
+    "EN": "EXP per Roll"
+  },
+  {
+    "Key": "UI.WorkStation.Drops",
+    "KR": "나오는 자원",
+    "EN": "Drops"
+  },
+  {
+    "Key": "UI.WorkStation.LuckyBox",
+    "KR": "럭키 상자",
+    "EN": "Lucky Box"
+  },
+  {
+    "Key": "UI.WorkStation.SlotTitle",
+    "KR": "슬롯 {0} 설정",
+    "EN": "Slot {0} Setup"
+  },
+  {
+    "Key": "UI.WorkStation.BaseAptitude",
+    "KR": "적성 기본값",
+    "EN": "Base Aptitude"
+  },
+  {
+    "Key": "UI.WorkStation.SpeedAdd",
+    "KR": "속도 가산",
+    "EN": "Speed Bonus"
+  },
+  {
+    "Key": "UI.WorkStation.SpeedAddNote",
+    "KR": "레벨 {0} · 응축 {1} · 특성 {2} · 장비 {3}",
+    "EN": "Level {0} · Condense {1} · Trait {2} · Gear {3}"
+  },
+  {
+    "Key": "UI.WorkStation.CurrentSpeed",
+    "KR": "현재 작업속도",
+    "EN": "Current Work Speed"
+  },
+  {
+    "Key": "UI.WorkStation.DevMultiplier",
+    "KR": "개발용 전역 배수 ×{0} 적용 중",
+    "EN": "Dev global multiplier ×{0} active"
+  },
+  {
+    "Key": "UI.WorkStation.EffectiveCycle",
+    "KR": "실효 주기",
+    "EN": "Effective Cycle"
+  },
+  {
+    "Key": "UI.WorkStation.MinMark",
+    "KR": "(최소)",
+    "EN": "(min)"
+  },
+  {
+    "Key": "UI.WorkStation.MinCycleReached",
+    "KR": "최소 주기 {0}초에 닿음 — 속도 상한 {1}, 더 올려도 빨라지지 않는다",
+    "EN": "Reached the {0}s minimum cycle — speed cap {1}; more speed won't help"
+  },
+  {
+    "Key": "UI.WorkStation.MinCycle",
+    "KR": "최소 주기 {0}초",
+    "EN": "Minimum cycle {0}s"
+  },
+  {
+    "Key": "UI.WorkStation.Yield",
+    "KR": "산출량",
+    "EN": "Yield"
+  },
+  {
+    "Key": "UI.WorkStation.YieldNote",
+    "KR": "공통 {0} · 산업 {1}",
+    "EN": "Common {0} · Industry {1}"
+  },
+  {
+    "Key": "UI.WorkStation.WaitAssign",
+    "KR": "작업슬롯 배치",
+    "EN": "Assign to Slot"
+  },
+  {
+    "Key": "UI.WorkStation.WaitReplace",
+    "KR": "작업슬롯 산업 교체",
+    "EN": "Change Slot Industry"
+  },
+  {
+    "Key": "UI.WorkStation.WaitEquip",
+    "KR": "장비 장착",
+    "EN": "Equip Gear"
+  },
+  {
+    "Key": "UI.WorkStation.WaitUnequip",
+    "KR": "장비 해제",
+    "EN": "Unequip Gear"
+  },
+  {
+    "Key": "UI.WorkStation.WaitUnassign",
+    "KR": "작업슬롯 해제",
+    "EN": "Remove from Slot"
+  },
+  {
+    "Key": "UI.WorkStation.PickEquip",
+    "KR": "{0} 고르기",
+    "EN": "Choose {0}"
+  },
+  {
+    "Key": "UI.Main.Title.WorkStationList",
+    "KR": "작업슬롯",
+    "EN": "Work Slots"
+  },
+  {
+    "Key": "UI.Main.Title.WorkStationSelect",
+    "KR": "작업슬롯 배치",
+    "EN": "Assign Work Slot"
+  },
+  {
+    "Key": "UI.Main.Title.Setting",
+    "KR": "설정",
+    "EN": "Settings"
+  },
+  {
+    "Key": "UI.Main.Title.Mail",
+    "KR": "우편함",
+    "EN": "Mailbox"
+  },
+  {
+    "Key": "UI.Main.MailButton",
+    "KR": "우편",
+    "EN": "Mail"
+  },
+  {
+    "Key": "UI.Main.SettingButton",
+    "KR": "세팅",
+    "EN": "Setup"
+  },
+  {
+    "Key": "UI.Main.Tbd",
+    "KR": "미정",
+    "EN": "TBD"
+  },
+  {
+    "Key": "UI.Main.Inventory",
+    "KR": "인벤토리",
+    "EN": "Inventory"
+  },
+  {
+    "Key": "UI.Main.Hub",
+    "KR": "거점",
+    "EN": "Base"
+  },
+  {
+    "Key": "UI.Main.Auction",
+    "KR": "경매장",
+    "EN": "Auction"
+  },
+  {
+    "Key": "UI.Common.Exit",
+    "KR": "종료",
+    "EN": "Exit"
+  },
+  {
+    "Key": "UI.Common.Close",
+    "KR": "닫기",
+    "EN": "Close"
+  },
+  {
+    "Key": "UI.Common.Confirm",
+    "KR": "확인",
+    "EN": "OK"
+  },
+  {
+    "Key": "UI.Common.Cancel",
+    "KR": "취소",
+    "EN": "Cancel"
+  },
+  {
+    "Key": "UI.Common.Amount",
+    "KR": "수량",
+    "EN": "Amount"
+  },
+  {
+    "Key": "UI.Common.CloseNotice",
+    "KR": "알림 닫기",
+    "EN": "Close"
+  },
+  {
+    "Key": "UI.WorkStation.NoAptCharacter",
+    "KR": "해당 적성을 가진 캐릭터가 없습니다.",
+    "EN": "No characters with this aptitude."
+  },
+  {
+    "Key": "UI.WorkStation.RaceTbd",
+    "KR": "종족 추가 예정",
+    "EN": "Race coming soon"
+  },
+  {
+    "Key": "UI.WorkStation.Efficiency",
+    "KR": "효율 계산",
+    "EN": "Efficiency"
+  },
+  {
+    "Key": "UI.WorkStation.Unequip",
+    "KR": "해제",
+    "EN": "Unequip"
+  },
+  {
+    "Key": "UI.WorkStation.NoEquip",
+    "KR": "끼울 장비가 없습니다",
+    "EN": "No gear to equip"
+  },
+  {
+    "Key": "UI.Common.Loading",
+    "KR": "콜백\r\n기다리는 중...",
+    "EN": "Waiting for\r\nresponse..."
+  },
+  {
+    "Key": "UI.ItemGroup.Cube",
+    "KR": "큐브",
+    "EN": "Cube"
+  },
+  {
+    "Key": "UI.ItemGroup.Box",
+    "KR": "상자",
+    "EN": "Box"
+  },
+  {
+    "Key": "UI.ItemGroup.Relic",
+    "KR": "유물",
+    "EN": "Relic"
+  },
+  {
+    "Key": "UI.ItemGroup.Consumable",
+    "KR": "소모품",
+    "EN": "Consumable"
+  },
+  {
+    "Key": "UI.ItemGroup.Etc",
+    "KR": "기타",
+    "EN": "Other"
+  },
+  {
+    "Key": "UI.Inventory.CountUnit",
+    "KR": "{0} 개",
+    "EN": "x{0}"
+  },
+  {
+    "Key": "UI.Inventory.CountUnitShort",
+    "KR": "{0}개",
+    "EN": "x{0}"
+  },
+  {
+    "Key": "UI.Inventory.TotalCount",
+    "KR": "전체 {0} 개",
+    "EN": "Total {0}"
+  },
+  {
+    "Key": "UI.Inventory.Group",
+    "KR": "분류",
+    "EN": "Category"
+  },
+  {
+    "Key": "UI.Inventory.Owned",
+    "KR": "보유",
+    "EN": "Owned"
+  },
+  {
+    "Key": "UI.Inventory.State",
+    "KR": "상태",
+    "EN": "Status"
+  },
+  {
+    "Key": "UI.Inventory.AllGold",
+    "KR": "전부 {0} 골드",
+    "EN": "All: {0} Gold"
+  },
+  {
+    "Key": "UI.Inventory.LeftClick",
+    "KR": "좌클릭",
+    "EN": "Left-click"
+  },
+  {
+    "Key": "UI.Inventory.RightClick",
+    "KR": "우클릭",
+    "EN": "Right-click"
+  },
+  {
+    "Key": "UI.Inventory.CtrlLeftClick",
+    "KR": "Ctrl+좌클릭",
+    "EN": "Ctrl+Left-click"
+  },
+  {
+    "Key": "UI.Inventory.CtrlRightClick",
+    "KR": "Ctrl+우클릭",
+    "EN": "Ctrl+Right-click"
+  },
+  {
+    "Key": "UI.Inventory.Open",
+    "KR": "열기",
+    "EN": "Open"
+  },
+  {
+    "Key": "UI.Inventory.Condense",
+    "KR": "응축",
+    "EN": "Condense"
+  },
+  {
+    "Key": "UI.Inventory.AddToSell",
+    "KR": "판매 담기",
+    "EN": "Add to Sell"
+  },
+  {
+    "Key": "UI.Inventory.Unlock",
+    "KR": "잠금 풀기",
+    "EN": "Unlock"
+  },
+  {
+    "Key": "UI.Inventory.ListOnAuction",
+    "KR": "경매 등록",
+    "EN": "List on Auction"
+  },
+  {
+    "Key": "UI.Inventory.Level",
+    "KR": "레벨",
+    "EN": "Level"
+  },
+  {
+    "Key": "UI.Inventory.Aptitude",
+    "KR": "적성",
+    "EN": "Aptitude"
+  },
+  {
+    "Key": "UI.Inventory.CondenseMax",
+    "KR": "누적 {0} · 최고",
+    "EN": "Total {0} · Max"
+  },
+  {
+    "Key": "UI.Inventory.CondenseProgress",
+    "KR": "누적 {0}/{1}",
+    "EN": "Total {0}/{1}"
+  },
+  {
+    "Key": "UI.Inventory.Star",
+    "KR": "{0}성",
+    "EN": "{0}★"
+  },
+  {
+    "Key": "UI.Inventory.CondenseBonus",
+    "KR": "응축 가산",
+    "EN": "Condense Bonus"
+  },
+  {
+    "Key": "UI.Inventory.WorkSpeedAdd",
+    "KR": "작업속도 +{0}%",
+    "EN": "Work Speed +{0}%"
+  },
+  {
+    "Key": "UI.Inventory.Slot",
+    "KR": "슬롯 {0}",
+    "EN": "Slot {0}"
+  },
+  {
+    "Key": "UI.Inventory.WornBy",
+    "KR": "{0} 착용",
+    "EN": "Worn by {0}"
+  },
+  {
+    "Key": "UI.Inventory.Storage",
+    "KR": "보관",
+    "EN": "Storage"
+  },
+  {
+    "Key": "UI.Inventory.Warehouse",
+    "KR": "창고",
+    "EN": "Warehouse"
+  },
+  {
+    "Key": "UI.Inventory.Controls",
+    "KR": "조작",
+    "EN": "Controls"
+  },
+  {
+    "Key": "UI.Inventory.Drag",
+    "KR": "끌기",
+    "EN": "Drag"
+  },
+  {
+    "Key": "UI.Inventory.DragFromWarehouse",
+    "KR": "칸 이동 · 인벤토리로 꺼내기",
+    "EN": "Move slot · Take out to inventory"
+  },
+  {
+    "Key": "UI.Inventory.DragToWarehouse",
+    "KR": "칸 이동 · 창고에 맡기기",
+    "EN": "Move slot · Store in warehouse"
+  },
+  {
+    "Key": "UI.Inventory.WaitSort",
+    "KR": "{0} 정렬",
+    "EN": "Sort {0}"
+  },
+  {
+    "Key": "UI.Inventory.WaitMove",
+    "KR": "{0} 칸 이동",
+    "EN": "Move {0} Slot"
+  },
+  {
+    "Key": "UI.Inventory.CantList",
+    "KR": "올릴 수 없습니다 — {0}",
+    "EN": "Can't list — {0}"
+  },
+  {
+    "Key": "UI.Inventory.CantSell",
+    "KR": "팔 수 없습니다 — {0}",
+    "EN": "Can't sell — {0}"
+  },
+  {
+    "Key": "UI.Inventory.AskSell",
+    "KR": "몇 개를 팔까?",
+    "EN": "How many to sell?"
+  },
+  {
+    "Key": "UI.Inventory.AskOpen",
+    "KR": "몇 개를 열까?",
+    "EN": "How many to open?"
+  },
+  {
+    "Key": "UI.Inventory.AskStore",
+    "KR": "몇 개를 창고에 넣을까?",
+    "EN": "How many to store?"
+  },
+  {
+    "Key": "UI.Inventory.AskTakeOut",
+    "KR": "몇 개를 꺼낼까?",
+    "EN": "How many to take out?"
+  },
+  {
+    "Key": "UI.Inventory.WaitStore",
+    "KR": "창고에 넣기",
+    "EN": "Store in Warehouse"
+  },
+  {
+    "Key": "UI.Inventory.WaitTakeOut",
+    "KR": "창고에서 꺼내기",
+    "EN": "Take Out of Warehouse"
+  },
+  {
+    "Key": "UI.Inventory.WaitOpenBox",
+    "KR": "상자 개봉 {0}개",
+    "EN": "Open {0} Box(es)"
+  },
+  {
+    "Key": "UI.Inventory.NoMoveWhileFiltering",
+    "KR": "찾기 중에는 칸을 옮길 수 없습니다. 찾기를 비운 뒤 옮겨 주세요.",
+    "EN": "You can't move slots while searching. Clear the search first."
+  },
+  {
+    "Key": "UI.Inventory.NoDropWhileFiltering",
+    "KR": "찾기 중에는 넣을 수 없습니다. 찾기를 비운 뒤 옮겨 주세요.",
+    "EN": "You can't drop items while searching. Clear the search first."
+  },
+  {
+    "Key": "UI.Inventory.NoEmptySlot",
+    "KR": "{0}에 빈 칸이 없습니다.",
+    "EN": "No empty slot in {0}."
+  },
+  {
+    "Key": "UI.Inventory.RewardToMail",
+    "KR": "인벤토리가 가득 차 보상을 우편함에 보관했습니다.\r\n우편함에서 받아 주세요.",
+    "EN": "Inventory is full, so rewards were sent to your mailbox.\r\nClaim them from the mailbox."
+  },
+  {
+    "Key": "UI.Sell.CartCount",
+    "KR": "담은 수량",
+    "EN": "In Cart"
+  },
+  {
+    "Key": "UI.Sell.Each",
+    "KR": "개당",
+    "EN": "each"
+  },
+  {
+    "Key": "UI.Sell.GoldToGet",
+    "KR": "받을 골드",
+    "EN": "Gold to Receive"
+  },
+  {
+    "Key": "UI.Sell.IfAuctioned",
+    "KR": "경매로 올리면",
+    "EN": "If Listed on Auction"
+  },
+  {
+    "Key": "UI.Sell.UnitPrice",
+    "KR": "개당 단가",
+    "EN": "unit price"
+  },
+  {
+    "Key": "UI.Sell.SetInAuction",
+    "KR": "경매장 [등록] 탭에서 직접 정합니다",
+    "EN": "Set it yourself in the Auction [List] tab"
+  },
+  {
+    "Key": "UI.Sell.Total",
+    "KR": "즉시 판매 {0} G",
+    "EN": "Instant Sell {0} G"
+  },
+  {
+    "Key": "UI.Sell.Wait",
+    "KR": "판매",
+    "EN": "Sell"
+  },
+  {
+    "Key": "UI.Tool.SortRarity",
+    "KR": "등급순",
+    "EN": "By Rarity"
+  },
+  {
+    "Key": "UI.Tool.SortName",
+    "KR": "이름순",
+    "EN": "By Name"
+  },
+  {
+    "Key": "UI.Tool.SortCount",
+    "KR": "수량순",
+    "EN": "By Count"
+  },
+  {
+    "Key": "UI.Tool.RarityOrBelow",
+    "KR": "{0} 이하",
+    "EN": "{0} or lower"
+  },
+  {
+    "Key": "UI.Tool.AllRarities",
+    "KR": "등급 전체",
+    "EN": "All Rarities"
+  },
+  {
+    "Key": "UI.Tool.AllGroups",
+    "KR": "분류 전체",
+    "EN": "All Categories"
+  },
+  {
+    "Key": "UI.Tool.AllIndustries",
+    "KR": "산업 전체",
+    "EN": "All Industries"
+  },
+  {
+    "Key": "UI.Tool.NoneToAdd",
+    "KR": "{0} 이하로 담을 {1}이(가) 없습니다.",
+    "EN": "No {1} at {0} or lower to add."
+  },
+  {
+    "Key": "UI.Tool.Added",
+    "KR": "{0} {1}을(를) 담았습니다.",
+    "EN": "Added {1} {0}."
+  },
+  {
+    "Key": "UI.Tool.KindResource",
+    "KR": "자원",
+    "EN": "resources"
+  },
+  {
+    "Key": "UI.Tool.KindCharacter",
+    "KR": "캐릭터",
+    "EN": "characters"
+  },
+  {
+    "Key": "UI.Tool.KindEquip",
+    "KR": "장비",
+    "EN": "gear"
+  },
+  {
+    "Key": "UI.Tool.NItem",
+    "KR": "{0}종",
+    "EN": "{0}"
+  },
+  {
+    "Key": "UI.Tool.NCharacter",
+    "KR": "{0}명",
+    "EN": "{0}"
+  },
+  {
+    "Key": "UI.Tool.NEquip",
+    "KR": "{0}개",
+    "EN": "{0}"
+  },
+  {
+    "Key": "UI.Tool.LockedN",
+    "KR": "잠금 {0}",
+    "EN": "{0} locked"
+  },
+  {
+    "Key": "UI.Tool.ExcludedWrap",
+    "KR": "({0} 제외)",
+    "EN": "(excluded: {0})"
+  },
+  {
+    "Key": "UI.Tool.SkippedWrap",
+    "KR": "({0} 제외 — [제외]에서 체크를 풀면 함께 담깁니다)",
+    "EN": "(excluded: {0} — uncheck them in [Exclude] to include)"
+  },
+  {
+    "Key": "UI.Tool.UnlockHint",
+    "KR": "잠금은 Ctrl+좌클릭으로 풀 수 있습니다.",
+    "EN": "Ctrl+Left-click to unlock."
+  },
+  {
+    "Key": "UI.Tool.CharacterBlocked",
+    "KR": "배치 중 · 장비 착용 · 마지막 캐릭터",
+    "EN": "assigned · wearing gear · last character"
+  },
+  {
+    "Key": "UI.Tool.EquipBlocked",
+    "KR": "캐릭터가 끼고 있는 장비",
+    "EN": "equipped by a character"
+  },
+  {
+    "Key": "UI.Tool.ExcludeNone",
+    "KR": "제외 없음",
+    "EN": "No Exclusions"
+  },
+  {
+    "Key": "UI.Tool.ExcludeCount",
+    "KR": "제외 {0}",
+    "EN": "Exclude {0}"
+  },
+  {
+    "Key": "UI.Inventory.TabResource",
+    "KR": "자원",
+    "EN": "Resources"
+  },
+  {
+    "Key": "UI.Inventory.TabTrait",
+    "KR": "특성",
+    "EN": "Traits"
+  },
+  {
+    "Key": "UI.Tool.BulkAdd",
+    "KR": "판매 등록",
+    "EN": "Add to Sell"
+  },
+  {
+    "Key": "UI.Tool.SearchName",
+    "KR": "이름 검색",
+    "EN": "Search name"
+  },
+  {
+    "Key": "UI.Tool.Reset",
+    "KR": "초기화",
+    "EN": "Reset"
+  },
+  {
+    "Key": "UI.Inventory.NoMatch",
+    "KR": "조건에 맞는 항목이 없습니다",
+    "EN": "Nothing matches"
+  },
+  {
+    "Key": "UI.Sell.Empty",
+    "KR": "자원을 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다",
+    "EN": "Right-click items to add — they sell instantly at the instant sell price"
+  },
+  {
+    "Key": "UI.Sell.Clear",
+    "KR": "비우기",
+    "EN": "Clear"
+  },
+  {
+    "Key": "UI.Sell.HighRarity",
+    "KR": "주의! 상위 등급 포함",
+    "EN": "Caution! Includes high rarity"
+  },
+  {
+    "Key": "UI.Sell.InstantSell",
+    "KR": "즉시 판매",
+    "EN": "Instant Sell"
+  },
+  {
+    "Key": "UI.Inventory.MarkSell",
+    "KR": "판",
+    "EN": "S"
+  },
+  {
+    "Key": "UI.Inventory.MarkAssign",
+    "KR": "배",
+    "EN": "A"
+  },
+  {
+    "Key": "UI.Inventory.PendingSelect",
+    "KR": "선택 대기",
+    "EN": "Pending"
+  },
+  {
+    "Key": "UI.Common.Waiting",
+    "KR": "응답을 기다리는 중",
+    "EN": "Waiting for response"
+  },
+  {
+    "Key": "UI.Condense.AlreadyMax",
+    "KR": "이미 최고 단계입니다 — 더 넣을 수 없습니다.",
+    "EN": "Already at the top stage — nothing more can be added."
+  },
+  {
+    "Key": "UI.Condense.BusyMaterial",
+    "KR": "배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.",
+    "EN": "Assigned or geared characters can't be used as material."
+  },
+  {
+    "Key": "UI.Condense.LockedMaterial",
+    "KR": "잠긴 캐릭터는 재료로 넣을 수 없습니다 — Ctrl+좌클릭으로 풀 수 있습니다.",
+    "EN": "Locked characters can't be used as material — Ctrl+Left-click to unlock."
+  },
+  {
+    "Key": "UI.Condense.Info",
+    "KR": "응축 누적 {0} / {1}",
+    "EN": "Condensed {0} / {1}"
+  },
+  {
+    "Key": "UI.Condense.Now",
+    "KR": "지금 {0}성",
+    "EN": "Now {0}★"
+  },
+  {
+    "Key": "UI.Condense.After",
+    "KR": "응축 후 {0}성",
+    "EN": "After {0}★"
+  },
+  {
+    "Key": "UI.Condense.TotalPlus",
+    "KR": "누적 {0} + {1} = {2}",
+    "EN": "Total {0} + {1} = {2}"
+  },
+  {
+    "Key": "UI.Condense.Total",
+    "KR": "누적 {0}",
+    "EN": "Total {0}"
+  },
+  {
+    "Key": "UI.Condense.MaxStage",
+    "KR": "최고 단계",
+    "EN": "Max Stage"
+  },
+  {
+    "Key": "UI.Condense.Reached",
+    "KR": "{0}성 도달",
+    "EN": "Reaches {0}★"
+  },
+  {
+    "Key": "UI.Condense.ToNext",
+    "KR": "{0}성까지 {1}",
+    "EN": "{1} to {0}★"
+  },
+  {
+    "Key": "UI.Condense.Overflow",
+    "KR": "넘치는 재료 {0}마리는 효과 없이 사라집니다.",
+    "EN": "{0} excess material(s) will be lost with no effect."
+  },
+  {
+    "Key": "UI.Condense.NoMaterialBusy",
+    "KR": "재료로 넣을 {0}이(가) 없습니다 — {1}마리는 배치·착용 중입니다.",
+    "EN": "No {0} to use as material — {1} are assigned or geared."
+  },
+  {
+    "Key": "UI.Condense.NoMaterialSame",
+    "KR": "재료로 넣을 {0}이(가) 없습니다 — 같은 캐릭터끼리만 응축됩니다.",
+    "EN": "No {0} to use as material — only the same character can be condensed."
+  },
+  {
+    "Key": "UI.Condense.BusyCount",
+    "KR": "배치·착용 중인 {0} {1}마리는 재료로 넣을 수 없습니다.",
+    "EN": "{1} assigned or geared {0} can't be used as material."
+  },
+  {
+    "Key": "UI.Condense.PickHint",
+    "KR": "같은 캐릭터 칸을 눌러 재료로 담으세요.",
+    "EN": "Click slots of the same character to add them as material."
+  },
+  {
+    "Key": "UI.Condense.PickMaterial",
+    "KR": "재료를 고르세요",
+    "EN": "Choose Material"
+  },
+  {
+    "Key": "UI.Condense.Confirm",
+    "KR": "응축 ({0}마리)",
+    "EN": "Condense ({0})"
+  },
+  {
+    "Key": "UI.Condense.NoMaterialNotice",
+    "KR": "재료로 넣을 {0}이(가) 없습니다.\r\n같은 캐릭터끼리만 응축됩니다.",
+    "EN": "No {0} to use as material.\r\nOnly the same character can be condensed."
+  },
+  {
+    "Key": "UI.Condense.PickFirst",
+    "KR": "같은 캐릭터 칸을 눌러 재료를 먼저 고르세요.",
+    "EN": "Click slots of the same character to choose material first."
+  },
+  {
+    "Key": "UI.Condense.ConfirmText",
+    "KR": "재료 {0}마리를 녹여 {1}의 단계를 올립니다.",
+    "EN": "Melt {0} material(s) to raise {1}'s stage."
+  },
+  {
+    "Key": "UI.Condense.ConfirmGrown",
+    "KR": "Lv{0} 이상 재료 {1}마리의 레벨·경험치는 사라집니다.",
+    "EN": "Level and EXP of {1} material(s) at Lv{0}+ will be lost."
+  },
+  {
+    "Key": "UI.Condense.FillNext",
+    "KR": "다음 단계까지 채우기",
+    "EN": "Fill to Next Stage"
+  },
+  {
+    "Key": "UI.Trait.Speed",
+    "KR": "속도",
+    "EN": "Speed"
+  },
+  {
+    "Key": "UI.Trait.Common",
+    "KR": "공통",
+    "EN": "Common"
+  },
+  {
+    "Key": "UI.Trait.Condition",
+    "KR": "조건",
+    "EN": "Requires"
+  },
+  {
+    "Key": "UI.Trait.CurrentLevel",
+    "KR": "(지금 {0})",
+    "EN": "(now {0})"
+  },
+  {
+    "Key": "UI.Trait.LevelUp",
+    "KR": "레벨 올리기 ({0}점)",
+    "EN": "Level Up ({0} pt)"
+  },
+  {
+    "Key": "UI.Trait.CurrentEffect",
+    "KR": "현재 효과",
+    "EN": "Current Effect"
+  },
+  {
+    "Key": "UI.Trait.NowLevel",
+    "KR": "지금 (Lv{0})",
+    "EN": "Now (Lv{0})"
+  },
+  {
+    "Key": "UI.Trait.NextLevel",
+    "KR": "다음 (Lv{0})",
+    "EN": "Next (Lv{0})"
+  },
+  {
+    "Key": "UI.Trait.Points",
+    "KR": "보유 포인트 {0}",
+    "EN": "Points {0}"
+  },
+  {
+    "Key": "UI.Trait.UpTo",
+    "KR": "{0}까지",
+    "EN": "Up to {0}"
+  },
+  {
+    "Key": "UI.Trait.Opens",
+    "KR": "{0} 열림",
+    "EN": "Opens {0}"
+  },
+  {
+    "Key": "UI.Trait.DescUnlock",
+    "KR": "그 산업의 다음 레벨 작업지를 엽니다. 작업슬롯에서 고를 수 있게 됩니다.",
+    "EN": "Opens the next-level site for that industry. You can then pick it in a work slot."
+  },
+  {
+    "Key": "UI.Trait.DescSpeed",
+    "KR": "작업 주기가 짧아집니다. 자원 · 상자 · 경험치가 모두 더 빨리 쌓입니다.",
+    "EN": "Shortens the work cycle. Resources, boxes and EXP all accumulate faster."
+  },
+  {
+    "Key": "UI.Trait.DescYield",
+    "KR": "판정 1회에 같은 자원이 더 나옵니다 (120%면 1개 + 20% 확률로 1개 더). 좋은 자원이 나올 확률은 그대로이고, 상자 · 경험치는 늘지 않습니다.",
+    "EN": "Each roll yields more of the same resource (120% = 1 plus a 20% chance of 1 more). The odds of better resources stay the same, and boxes and EXP don't increase."
+  },
+  {
+    "Key": "UI.Trait.DescYieldAll",
+    "KR": "모든 산업에 붙습니다.",
+    "EN": "Applies to all industries."
+  },
+  {
+    "Key": "UI.Trait.AlreadyMax",
+    "KR": "이미 최대 레벨입니다.",
+    "EN": "Already at max level."
+  },
+  {
+    "Key": "UI.Trait.NotEnoughPoints",
+    "KR": "특성 포인트가 부족합니다. ({0}점 필요)",
+    "EN": "Not enough trait points. ({0} pt required)"
+  },
+  {
+    "Key": "UI.Trait.ConfirmLearn",
+    "KR": "특성 포인트 {0}점을 사용합니다.\r\n'{1}'을(를) Lv{2}로 올리시겠습니까?",
+    "EN": "This uses {0} trait point(s).\r\nRaise '{1}' to Lv{2}?"
+  },
+  {
+    "Key": "UI.Trait.WaitLearn",
+    "KR": "특성 레벨 올리기",
+    "EN": "Level Up Trait"
+  },
+  {
+    "Key": "UI.Trait.EmptyDetail",
+    "KR": "특성을 누르면 여기에 펼쳐집니다",
+    "EN": "Click a trait to see details here"
+  },
+  {
+    "Key": "UI.Enchant.Base",
+    "KR": "기본 {0}",
+    "EN": "Base {0}"
+  },
+  {
+    "Key": "UI.Enchant.StatSlotCount",
+    "KR": "능력치 칸 {0}개",
+    "EN": "{0} stat slots"
+  },
+  {
+    "Key": "UI.Enchant.GradeUp",
+    "KR": "등급 상승!",
+    "EN": "Grade Up!"
+  },
+  {
+    "Key": "UI.Enchant.CapAll",
+    "KR": "보유 전부",
+    "EN": "All Owned"
+  },
+  {
+    "Key": "UI.Enchant.All",
+    "KR": "전체",
+    "EN": "All"
+  },
+  {
+    "Key": "UI.Enchant.EveryCombo",
+    "KR": "칸마다 전체 또는 {0}",
+    "EN": "Each slot: All or {0}"
+  },
+  {
+    "Key": "UI.Enchant.NoCombo",
+    "KR": "칸 조합 없음",
+    "EN": "No slot combos"
+  },
+  {
+    "Key": "UI.Enchant.Combos",
+    "KR": "칸 {0}",
+    "EN": "Slots {0}"
+  },
+  {
+    "Key": "UI.Enchant.NotChosen",
+    "KR": "아직 선택하지 않았습니다.\r\nBEFORE · AFTER 중 하나를 골라 주세요.",
+    "EN": "You haven't chosen yet.\r\nPick either BEFORE or AFTER."
+  },
+  {
+    "Key": "UI.Enchant.WornBy",
+    "KR": "{0} 착용 중",
+    "EN": "Worn by {0}"
+  },
+  {
+    "Key": "UI.Enchant.ResultHere",
+    "KR": "결과가 여기에 나옵니다",
+    "EN": "The result appears here"
+  },
+  {
+    "Key": "UI.Enchant.NoEnchant",
+    "KR": "인챈트 없음",
+    "EN": "No Enchant"
+  },
+  {
+    "Key": "UI.Enchant.PickOne",
+    "KR": "BEFORE · AFTER 중 하나를 [선택]하세요.",
+    "EN": "[Select] either BEFORE or AFTER."
+  },
+  {
+    "Key": "UI.Enchant.RerollKeepsBefore",
+    "KR": "고르지 않고 다시 사용하면 BEFORE가 남습니다.",
+    "EN": "Using it again without choosing keeps BEFORE."
+  },
+  {
+    "Key": "UI.Enchant.RuleFirst",
+    "KR": "처음 쓰면 {0} 등급으로 칸 {1}개를 채웁니다.",
+    "EN": "First use fills {1} slot(s) at {0} grade."
+  },
+  {
+    "Key": "UI.Enchant.RuleMythic",
+    "KR": "최고 등급입니다. 쓰면 칸 {0}개를 같은 등급으로 다시 뽑습니다.",
+    "EN": "Top grade reached. Using it rerolls {0} slot(s) at the same grade."
+  },
+  {
+    "Key": "UI.Enchant.RuleNormal",
+    "KR": "쓰면 칸 {0}개를 전부 다시 뽑고, 확률로 {1}(으)로 오릅니다. 내려가지 않습니다.",
+    "EN": "Rerolls all {0} slot(s), with a chance to rise to {1}. It never drops."
+  },
+  {
+    "Key": "UI.Enchant.RuleKeep",
+    "KR": "굴린 뒤 이전 값을 고를 수 있습니다. 등급이 오르면 새 값을 알아서 고릅니다.",
+    "EN": "After rolling you can keep the previous result. On a grade up, the new one is picked for you."
+  },
+  {
+    "Key": "UI.Enchant.CubeFirst",
+    "KR": "첫 사용 · 일반 확정",
+    "EN": "First use · Common guaranteed"
+  },
+  {
+    "Key": "UI.Enchant.CubeOptionsOnly",
+    "KR": "옵션만 다시 뽑기",
+    "EN": "Options reroll only"
+  },
+  {
+    "Key": "UI.Enchant.CubeUp",
+    "KR": "{0} 상승 {1}",
+    "EN": "{0} up {1}"
+  },
+  {
+    "Key": "UI.Enchant.CubeOwned",
+    "KR": "보유 {0}개",
+    "EN": "Owned {0}"
+  },
+  {
+    "Key": "UI.Enchant.NoCubeData",
+    "KR": "큐브 정보가 없습니다",
+    "EN": "No cube data"
+  },
+  {
+    "Key": "UI.Enchant.UseCube",
+    "KR": "{0} 사용",
+    "EN": "Use {0}"
+  },
+  {
+    "Key": "UI.Enchant.NoCube",
+    "KR": "{0}가 없습니다",
+    "EN": "No {0}"
+  },
+  {
+    "Key": "UI.Enchant.UnequipAndUse",
+    "KR": "해제하고 {0} 사용",
+    "EN": "Unequip and Use {0}"
+  },
+  {
+    "Key": "UI.Enchant.NoCubeNotice",
+    "KR": "{0}가 없습니다.",
+    "EN": "You have no {0}."
+  },
+  {
+    "Key": "UI.Enchant.ConfirmUnequip",
+    "KR": "{0}이(가) 끼고 있는 장비입니다.\r\n해제한 뒤 큐브를 사용합니다. (사용 후 다시 끼지 않습니다)",
+    "EN": "{0} is wearing this gear.\r\nIt will be unequipped before using the cube. (It won't be re-equipped.)"
+  },
+  {
+    "Key": "UI.Enchant.WaitUse",
+    "KR": "큐브 사용",
+    "EN": "Use Cube"
+  },
+  {
+    "Key": "UI.Enchant.WaitChoose",
+    "KR": "큐브 결과 고르기",
+    "EN": "Choose Cube Result"
+  },
+  {
+    "Key": "UI.Enchant.ChooseFirst",
+    "KR": "먼저 BEFORE · AFTER 중 하나를 골라 주세요.",
+    "EN": "Pick BEFORE or AFTER first."
+  },
+  {
+    "Key": "UI.Enchant.NoAutoWorn",
+    "KR": "착용 중인 장비는 자동으로 돌릴 수 없습니다. 먼저 벗겨 주세요.",
+    "EN": "Worn gear can't be auto-rolled. Unequip it first."
+  },
+  {
+    "Key": "UI.Enchant.AutoStart",
+    "KR": "자동 시작 ▶",
+    "EN": "Start Auto ▶"
+  },
+  {
+    "Key": "UI.Enchant.AlreadyMythic",
+    "KR": "이미 신화입니다. 노릴 옵션을 골라 주세요.",
+    "EN": "Already Mythic. Pick an option to aim for."
+  },
+  {
+    "Key": "UI.Enchant.NeedCombo",
+    "KR": "조합을 하나 이상 켜 주세요.",
+    "EN": "Turn on at least one combo."
+  },
+  {
+    "Key": "UI.Enchant.MeanCount",
+    "KR": "{0}개 (약 {1})",
+    "EN": "{0} (about {1})"
+  },
+  {
+    "Key": "UI.Enchant.Within",
+    "KR": "{0}개 안에 {1}",
+    "EN": "{1} within {0}"
+  },
+  {
+    "Key": "UI.Enchant.Mean",
+    "KR": "평균 {0}",
+    "EN": "avg {0}"
+  },
+  {
+    "Key": "UI.Enchant.UnderMin",
+    "KR": "0.01% 미만",
+    "EN": "under 0.01%"
+  },
+  {
+    "Key": "UI.Enchant.Minutes",
+    "KR": "{0}분",
+    "EN": "{0}m"
+  },
+  {
+    "Key": "UI.Enchant.Hours",
+    "KR": "{0}시간",
+    "EN": "{0}h"
+  },
+  {
+    "Key": "UI.Enchant.AutoRunning",
+    "KR": "자동 진행 중 {0} / {1}개",
+    "EN": "Auto running {0} / {1}"
+  },
+  {
+    "Key": "UI.Enchant.Goal",
+    "KR": "목표 {0} 이상",
+    "EN": "Goal: {0} or higher"
+  },
+  {
+    "Key": "UI.Enchant.NoSlotRule",
+    "KR": "칸 조건 없음 — 등급만 봅니다",
+    "EN": "No slot condition — grade only"
+  },
+  {
+    "Key": "UI.Enchant.PerRoll",
+    "KR": "한 번에 {0}",
+    "EN": "{0} per roll"
+  },
+  {
+    "Key": "UI.Enchant.AutoStop",
+    "KR": "■ 멈춤",
+    "EN": "■ Stop"
+  },
+  {
+    "Key": "UI.Enchant.Auto",
+    "KR": "자동",
+    "EN": "Auto"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndStopped",
+    "KR": "자동을 멈췄습니다",
+    "EN": "Auto stopped"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndCap",
+    "KR": "상한에 닿아 멈췄습니다",
+    "EN": "Stopped at the limit"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndNoCube",
+    "KR": "큐브가 떨어져 멈췄습니다",
+    "EN": "Stopped — out of cubes"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndRejected",
+    "KR": "서버가 거절해 멈췄습니다",
+    "EN": "Stopped — server rejected"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndGoal",
+    "KR": "목표 달성!",
+    "EN": "Goal reached!"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndSummary",
+    "KR": "{0} — {1} {2}개 사용.",
+    "EN": "{0} — used {2} {1}."
+  },
+  {
+    "Key": "UI.Enchant.TargetGrade",
+    "KR": "목표 등급",
+    "EN": "Target Grade"
+  },
+  {
+    "Key": "UI.Enchant.FocusOption",
+    "KR": "노릴 옵션",
+    "EN": "Aim For"
+  },
+  {
+    "Key": "UI.Enchant.Combo",
+    "KR": "조합",
+    "EN": "Combo"
+  },
+  {
+    "Key": "UI.Enchant.Cap",
+    "KR": "상한",
+    "EN": "Limit"
+  },
+  {
+    "Key": "UI.Enchant.Select",
+    "KR": "선택",
+    "EN": "Select"
+  },
+  {
+    "Key": "UI.Gacha.Times",
+    "KR": "{0}회",
+    "EN": "x{0}"
+  },
+  {
+    "Key": "UI.Gacha.Worker",
+    "KR": "일꾼",
+    "EN": "Worker"
+  },
+  {
+    "Key": "UI.Gacha.WorkSpeedUp",
+    "KR": "작업속도 증가",
+    "EN": "Work Speed Up"
+  },
+  {
+    "Key": "UI.Gacha.Kinds",
+    "KR": "{0} {1}종",
+    "EN": "{1} {0}"
+  },
+  {
+    "Key": "UI.Gacha.KindsOnly",
+    "KR": "{0}종",
+    "EN": "{0} kinds"
+  },
+  {
+    "Key": "UI.Gacha.Item",
+    "KR": "아이템",
+    "EN": "Items"
+  },
+  {
+    "Key": "UI.Gacha.RateTitle",
+    "KR": "{0} 확률",
+    "EN": "{0} Rates"
+  },
+  {
+    "Key": "UI.Gacha.NoEntries",
+    "KR": "뽑을 항목이 없다",
+    "EN": "Nothing to draw"
+  },
+  {
+    "Key": "UI.Gacha.NoRarity",
+    "KR": "등급 없음",
+    "EN": "No Rarity"
+  },
+  {
+    "Key": "UI.Gacha.SameRate",
+    "KR": "10회도 한 번마다 같은 확률",
+    "EN": "x10 uses the same odds for each draw"
+  },
+  {
+    "Key": "UI.Gacha.Wait",
+    "KR": "가챠 {0}회",
+    "EN": "Draw x{0}"
+  },
+  {
+    "Key": "UI.Gacha.Source",
+    "KR": "가챠",
+    "EN": "Draw"
+  },
+  {
+    "Key": "UI.Gacha.SourceBox",
+    "KR": "상자 개봉",
+    "EN": "Box Opening"
+  },
+  {
+    "Key": "UI.Gacha.SourceMail",
+    "KR": "우편 수령",
+    "EN": "Mail Claim"
+  },
+  {
+    "Key": "UI.Gacha.ResultTitle",
+    "KR": "{0} 결과",
+    "EN": "{0} Results"
+  },
+  {
+    "Key": "UI.Gacha.DrawAgain",
+    "KR": "{0}회 더 뽑기",
+    "EN": "Draw x{0} Again"
+  },
+  {
+    "Key": "UI.Gacha.Tab",
+    "KR": "뽑기",
+    "EN": "Draw"
+  },
+  {
+    "Key": "UI.Gacha.CloseResult",
+    "KR": "[결과 닫기]",
+    "EN": "[Close]"
+  },
+  {
+    "Key": "UI.Warehouse.Hint",
+    "KR": "칸을 끌어 인벤토리 ↔ 창고로 옮깁니다",
+    "EN": "Drag slots to move between inventory ↔ warehouse"
+  },
+  {
+    "Key": "UI.Auction.KindItem",
+    "KR": "자원",
+    "EN": "Resource"
+  },
+  {
+    "Key": "UI.Auction.KindArtifact",
+    "KR": "아티팩트",
+    "EN": "Artifact"
+  },
+  {
+    "Key": "UI.Auction.NoAptitude",
+    "KR": "적성 없음",
+    "EN": "No aptitude"
+  },
+  {
+    "Key": "UI.Auction.NoStats",
+    "KR": "능력치 없음",
+    "EN": "No stats"
+  },
+  {
+    "Key": "UI.Auction.Stats",
+    "KR": "능력치",
+    "EN": "Stats"
+  },
+  {
+    "Key": "UI.Auction.HoursMinutes",
+    "KR": "{0}시간 {1}분",
+    "EN": "{0}h {1}m"
+  },
+  {
+    "Key": "UI.Auction.ExpiringSoon",
+    "KR": "곧 만료",
+    "EN": "Expiring soon"
+  },
+  {
+    "Key": "UI.Auction.Buying",
+    "KR": "구매 진행 중",
+    "EN": "Being bought"
+  },
+  {
+    "Key": "UI.Auction.Me",
+    "KR": "나",
+    "EN": "Me"
+  },
+  {
+    "Key": "UI.Auction.Price",
+    "KR": "시세",
+    "EN": "Prices"
+  },
+  {
+    "Key": "UI.Auction.MyListing",
+    "KR": "내 매물",
+    "EN": "Mine"
+  },
+  {
+    "Key": "UI.Auction.Buy",
+    "KR": "구매",
+    "EN": "Buy"
+  },
+  {
+    "Key": "UI.Auction.OnSale",
+    "KR": "판매 중",
+    "EN": "On Sale"
+  },
+  {
+    "Key": "UI.Auction.UnitPrice",
+    "KR": "단가",
+    "EN": "Unit Price"
+  },
+  {
+    "Key": "UI.Auction.TotalPrice",
+    "KR": "총액",
+    "EN": "Total"
+  },
+  {
+    "Key": "UI.Auction.TimeLeft",
+    "KR": "남은 시간",
+    "EN": "Time Left"
+  },
+  {
+    "Key": "UI.Auction.Seller",
+    "KR": "판매자",
+    "EN": "Seller"
+  },
+  {
+    "Key": "UI.Auction.SellerIsMe",
+    "KR": "나 — 내 매물은 살 수 없습니다",
+    "EN": "Me — you can't buy your own listing"
+  },
+  {
+    "Key": "UI.Auction.CantList",
+    "KR": "등록 불가",
+    "EN": "Can't List"
+  },
+  {
+    "Key": "UI.Auction.PriceRules",
+    "KR": "가격 기준",
+    "EN": "Price Basis"
+  },
+  {
+    "Key": "UI.Auction.PageOf",
+    "KR": "{0} / {1} 쪽",
+    "EN": "Page {0} / {1}"
+  },
+  {
+    "Key": "UI.Auction.Page",
+    "KR": "{0} 쪽",
+    "EN": "Page {0}"
+  },
+  {
+    "Key": "UI.Auction.PriceQueryPlaceholder",
+    "KR": "시세 볼 아이템 이름",
+    "EN": "Item name to check prices"
+  },
+  {
+    "Key": "UI.Auction.PriceQueryHint",
+    "KR": "[검색] — 이름이 맞는 아이템의 시세를 엽니다",
+    "EN": "[Search] — opens prices for the matching item"
+  },
+  {
+    "Key": "UI.Auction.NoSuchItem",
+    "KR": "'{0}'(이)라는 아이템이 없습니다.",
+    "EN": "There's no item named '{0}'."
+  },
+  {
+    "Key": "UI.Auction.NoListings",
+    "KR": "매물 없음",
+    "EN": "No listings"
+  },
+  {
+    "Key": "UI.Auction.NoTrades",
+    "KR": "거래 없음",
+    "EN": "No trades"
+  },
+  {
+    "Key": "UI.Auction.CountWord",
+    "KR": "개",
+    "EN": "pcs"
+  },
+  {
+    "Key": "UI.Auction.NoSummary",
+    "KR": "시세를 받지 못했습니다 — 시세 탭에서 다시 볼 수 있습니다",
+    "EN": "Couldn't get prices — you can check again in the Prices tab"
+  },
+  {
+    "Key": "UI.Auction.LowestPrice",
+    "KR": "최저가",
+    "EN": "Lowest"
+  },
+  {
+    "Key": "UI.Auction.RecentPrice",
+    "KR": "최근 거래가",
+    "EN": "Last Sale"
+  },
+  {
+    "Key": "UI.Auction.YesterdayAvg",
+    "KR": "전일 평균",
+    "EN": "Yesterday Avg"
+  },
+  {
+    "Key": "UI.Auction.NoCompare",
+    "KR": "전일 거래가 없어 평균과 비교할 수 없습니다",
+    "EN": "No trades yesterday, so there's no average to compare"
+  },
+  {
+    "Key": "UI.Auction.ThisUnitPrice",
+    "KR": "이 매물 단가는",
+    "EN": "This unit price is"
+  },
+  {
+    "Key": "UI.Auction.SameAsAvg",
+    "KR": "전일 평균과 같습니다",
+    "EN": "the same as yesterday's average"
+  },
+  {
+    "Key": "UI.Auction.PricierBy",
+    "KR": "{0}% 비쌉니다",
+    "EN": "{0}% higher"
+  },
+  {
+    "Key": "UI.Auction.CheaperBy",
+    "KR": "{0}% 쌉니다",
+    "EN": "{0}% lower"
+  },
+  {
+    "Key": "UI.Auction.ThanAvg",
+    "KR": "이 매물 단가는 전일 평균보다",
+    "EN": "Vs. yesterday's average, this unit price is"
+  },
+  {
+    "Key": "UI.Auction.TradeCount",
+    "KR": "{0}개 거래",
+    "EN": "{0} traded"
+  },
+  {
+    "Key": "UI.Auction.GoldOwned",
+    "KR": "보유 골드",
+    "EN": "Gold"
+  },
+  {
+    "Key": "UI.Auction.SortPriceAsc",
+    "KR": "단가 낮은순",
+    "EN": "Price: Low to High"
+  },
+  {
+    "Key": "UI.Auction.SortPriceDesc",
+    "KR": "단가 높은순",
+    "EN": "Price: High to Low"
+  },
+  {
+    "Key": "UI.Auction.SortExpires",
+    "KR": "마감 임박순",
+    "EN": "Ending Soonest"
+  },
+  {
+    "Key": "UI.Auction.SortRarity",
+    "KR": "등급 높은순",
+    "EN": "Rarity: High to Low"
+  },
+  {
+    "Key": "UI.Auction.SortSpeed",
+    "KR": "작업속도 높은순 (장비)",
+    "EN": "Work Speed (Gear)"
+  },
+  {
+    "Key": "UI.Auction.SortLevel",
+    "KR": "레벨 높은순 (캐릭터)",
+    "EN": "Level (Character)"
+  },
+  {
+    "Key": "UI.Auction.NeedsCondition",
+    "KR": "분류를 고르거나 이름을 넣어 검색하세요",
+    "EN": "Pick a category or enter a name to search"
+  },
+  {
+    "Key": "UI.Auction.SearchEmpty",
+    "KR": "검색 결과가 없습니다",
+    "EN": "No results"
+  },
+  {
+    "Key": "UI.Auction.SearchPlaceholder",
+    "KR": "아이템 이름",
+    "EN": "Item name"
+  },
+  {
+    "Key": "UI.Auction.SearchHint",
+    "KR": "[검색] — 분류·옵션과 함께 조회합니다",
+    "EN": "[Search] — searches with the category and options"
+  },
+  {
+    "Key": "UI.Auction.All",
+    "KR": "전체",
+    "EN": "All"
+  },
+  {
+    "Key": "UI.Auction.OrHigher",
+    "KR": "{0} 이상",
+    "EN": "{0}+"
+  },
+  {
+    "Key": "UI.Auction.NodeItem",
+    "KR": "아이템",
+    "EN": "Items"
+  },
+  {
+    "Key": "UI.Auction.ItemWord",
+    "KR": "아이템",
+    "EN": "item"
+  },
+  {
+    "Key": "UI.Auction.NoSuchKind",
+    "KR": "'{0}'(이)라는 {1}이(가) 없습니다.",
+    "EN": "There's no {1} named '{0}'."
+  },
+  {
+    "Key": "UI.Auction.PriceRange",
+    "KR": "단가 {0} ~ {1}",
+    "EN": "Price {0} ~ {1}"
+  },
+  {
+    "Key": "UI.Auction.AttrSpeed",
+    "KR": "작업속도",
+    "EN": "Work Speed"
+  },
+  {
+    "Key": "UI.Auction.AttrEnchantSpeed",
+    "KR": "인챈트 속도 합",
+    "EN": "Enchant Speed Total"
+  },
+  {
+    "Key": "UI.Auction.AttrEnchantExp",
+    "KR": "인챈트 경험치 합",
+    "EN": "Enchant EXP Total"
+  },
+  {
+    "Key": "UI.Auction.EnchantAtLeast",
+    "KR": "인챈트 {0}↑",
+    "EN": "Enchant {0}↑"
+  },
+  {
+    "Key": "UI.Auction.AptitudeAtLeast",
+    "KR": "{0} 적성 {1}↑",
+    "EN": "{0} Aptitude {1}↑"
+  },
+  {
+    "Key": "UI.Auction.WaitSearch",
+    "KR": "경매장 검색",
+    "EN": "Auction Search"
+  },
+  {
+    "Key": "UI.Auction.WaitPrice",
+    "KR": "시세 확인",
+    "EN": "Price Check"
+  },
+  {
+    "Key": "UI.Auction.BuyWhatMulti",
+    "KR": "<b>{0}</b> {1}개 — 개당 {2} G · 총 {3} G",
+    "EN": "<b>{0}</b> x{1} — {2} G each · {3} G total"
+  },
+  {
+    "Key": "UI.Auction.AfterBuy",
+    "KR": "구매 후",
+    "EN": "After Purchase"
+  },
+  {
+    "Key": "UI.Auction.BuyNote",
+    "KR": "매물은 통째로 삽니다 · 산 물건은 우편으로 받습니다",
+    "EN": "You buy the whole listing · purchases arrive by mail"
+  },
+  {
+    "Key": "UI.Auction.WaitBuy",
+    "KR": "경매장 구매",
+    "EN": "Auction Purchase"
+  },
+  {
+    "Key": "UI.Auction.Bought",
+    "KR": "구매했습니다. 우편함에서 받아 주세요.",
+    "EN": "Purchased. Claim it from your mailbox."
+  },
+  {
+    "Key": "UI.Auction.SearchCount",
+    "KR": "검색 결과 {0}",
+    "EN": "Results {0}"
+  },
+  {
+    "Key": "UI.Auction.HeadItemRarity",
+    "KR": "아이템 (등급)",
+    "EN": "Item (Rarity)"
+  },
+  {
+    "Key": "UI.Auction.Cases",
+    "KR": "{0}건",
+    "EN": "{0}"
+  },
+  {
+    "Key": "UI.Auction.CasesOrMore",
+    "KR": "{0}건 이상",
+    "EN": "{0}+"
+  },
+  {
+    "Key": "UI.Auction.TypeSold",
+    "KR": "판매 완료",
+    "EN": "Sold"
+  },
+  {
+    "Key": "UI.Auction.TypeBought",
+    "KR": "구매 완료",
+    "EN": "Bought"
+  },
+  {
+    "Key": "UI.Auction.TypeExpired",
+    "KR": "기간 만료",
+    "EN": "Expired"
+  },
+  {
+    "Key": "UI.Auction.TypeCancelled",
+    "KR": "취소",
+    "EN": "Cancelled"
+  },
+  {
+    "Key": "UI.Auction.TypeReturned",
+    "KR": "반환",
+    "EN": "Returned"
+  },
+  {
+    "Key": "UI.Auction.PeriodToday",
+    "KR": "오늘",
+    "EN": "Today"
+  },
+  {
+    "Key": "UI.Auction.Period7",
+    "KR": "최근 7일",
+    "EN": "Last 7 Days"
+  },
+  {
+    "Key": "UI.Auction.Period30",
+    "KR": "최근 30일",
+    "EN": "Last 30 Days"
+  },
+  {
+    "Key": "UI.Auction.HistoryPlaceholder",
+    "KR": "기록에서 찾을 아이템 이름",
+    "EN": "Item name to find in history"
+  },
+  {
+    "Key": "UI.Auction.HistoryHint",
+    "KR": "치는 대로 아래 기록을 거릅니다",
+    "EN": "Filters the history below as you type"
+  },
+  {
+    "Key": "UI.Auction.WaitHistory",
+    "KR": "거래 기록",
+    "EN": "Trade History"
+  },
+  {
+    "Key": "UI.Auction.HistoryEmpty",
+    "KR": "이 기간에 거래 기록이 없습니다",
+    "EN": "No trades in this period"
+  },
+  {
+    "Key": "UI.Auction.HistoryNoMatch",
+    "KR": "이름이 맞는 기록이 없습니다",
+    "EN": "No records match that name"
+  },
+  {
+    "Key": "UI.Auction.HistoryCount",
+    "KR": "기록 {0}건",
+    "EN": "{0} records"
+  },
+  {
+    "Key": "UI.Auction.OrMore",
+    "KR": "이상",
+    "EN": "or more"
+  },
+  {
+    "Key": "UI.Auction.GoldReceived",
+    "KR": "받은 골드",
+    "EN": "Gold Received"
+  },
+  {
+    "Key": "UI.Auction.GoldSpent",
+    "KR": "쓴 골드",
+    "EN": "Gold Spent"
+  },
+  {
+    "Key": "UI.Auction.HistoryNote",
+    "KR": "물건 · 대금 · 환급은 모두 우편으로 갑니다",
+    "EN": "Items, proceeds and refunds all go to the mailbox"
+  },
+  {
+    "Key": "UI.Auction.Fee",
+    "KR": "수수료 {0}",
+    "EN": "Fee {0}"
+  },
+  {
+    "Key": "UI.Auction.DestProceeds",
+    "KR": "대금 → 우편",
+    "EN": "Proceeds → Mail"
+  },
+  {
+    "Key": "UI.Auction.DestItem",
+    "KR": "물건 → 우편",
+    "EN": "Item → Mail"
+  },
+  {
+    "Key": "UI.Auction.DestItemFee",
+    "KR": "물건 · 등록비 → 우편",
+    "EN": "Item · Fee → Mail"
+  },
+  {
+    "Key": "UI.Auction.MyPlaceholder",
+    "KR": "판매 중인 아이템 이름",
+    "EN": "Name of an item you're selling"
+  },
+  {
+    "Key": "UI.Auction.MyHint",
+    "KR": "치는 대로 아래 목록을 거릅니다",
+    "EN": "Filters the list below as you type"
+  },
+  {
+    "Key": "UI.Auction.ListingPeriod",
+    "KR": "등록 기간",
+    "EN": "Listing Period"
+  },
+  {
+    "Key": "UI.Auction.HoursOnly",
+    "KR": "{0}시간",
+    "EN": "{0}h"
+  },
+  {
+    "Key": "UI.Auction.ListingFee",
+    "KR": "등록비",
+    "EN": "Listing Fee"
+  },
+  {
+    "Key": "UI.Auction.RefundOnExpiry",
+    "KR": "(만료되면 돌려받음)",
+    "EN": "(refunded on expiry)"
+  },
+  {
+    "Key": "UI.Auction.SaleFee",
+    "KR": "판매 수수료",
+    "EN": "Sale Fee"
+  },
+  {
+    "Key": "UI.Auction.WaitMyListings",
+    "KR": "내 매물",
+    "EN": "My Listings"
+  },
+  {
+    "Key": "UI.Auction.ConfirmCancel",
+    "KR": "{0} 판매를 취소합니다.\r\n남은 물건은 우편으로 돌아오고, 등록비는 돌려받지 못합니다.",
+    "EN": "Cancel the sale of {0}.\r\nThe item returns by mail, and the listing fee is not refunded."
+  },
+  {
+    "Key": "UI.Auction.WaitCancel",
+    "KR": "판매 취소",
+    "EN": "Cancel Sale"
+  },
+  {
+    "Key": "UI.Auction.CancelDone",
+    "KR": "판매를 취소했습니다. 물건은 우편함에서 받아 주세요.",
+    "EN": "Sale cancelled. Claim the item from your mailbox."
+  },
+  {
+    "Key": "UI.Auction.RangeOf",
+    "KR": "{0}–{1} / {2}건",
+    "EN": "{0}–{1} / {2}"
+  },
+  {
+    "Key": "UI.Auction.MyEmpty",
+    "KR": "판매 중인 매물이 없습니다",
+    "EN": "You have no listings on sale"
+  },
+  {
+    "Key": "UI.Auction.MyNoMatch",
+    "KR": "이름이 맞는 매물이 없습니다",
+    "EN": "No listings match that name"
+  },
+  {
+    "Key": "UI.Auction.MyNote",
+    "KR": "팔리면 대금은 우편으로 옵니다",
+    "EN": "Proceeds arrive by mail when sold"
+  },
+  {
+    "Key": "UI.Auction.NothingToList",
+    "KR": "올릴 수 있는 것을 갖고 있지 않습니다.",
+    "EN": "You don't have anything that can be listed."
+  },
+  {
+    "Key": "UI.Auction.NotFound",
+    "KR": "그 물건을 찾지 못했습니다.",
+    "EN": "Couldn't find that item."
+  },
+  {
+    "Key": "UI.Auction.RegisterWhatItem",
+    "KR": "{0} {1}개를 개당 {2} G(총 {3} G)에",
+    "EN": "{0} x{1} at {2} G each ({3} G total)"
+  },
+  {
+    "Key": "UI.Auction.RegisterWhatOne",
+    "KR": "{0}을(를) {1} G에",
+    "EN": "{0} at {1} G"
+  },
+  {
+    "Key": "UI.Auction.ConfirmRegister",
+    "KR": "{0} 경매에 올립니다. (즉시 판매하면 {1} G)\r\n등록비 {2} G가 바로 빠집니다 — 취소하면 돌려받지 못하고, 기간이 끝나면 돌려받습니다.",
+    "EN": "List {0} on the auction? (Instant sell: {1} G)\r\nThe {2} G listing fee is charged now — it's lost if you cancel, and refunded when the listing expires."
+  },
+  {
+    "Key": "UI.Auction.WaitRegister",
+    "KR": "경매 등록",
+    "EN": "Auction Listing"
+  },
+  {
+    "Key": "UI.Auction.Registered",
+    "KR": "등록했습니다. (등록비 {0} G)\r\n팔리면 대금이 우편으로 옵니다.",
+    "EN": "Listed. (Fee {0} G)\r\nProceeds arrive by mail when sold."
+  },
+  {
+    "Key": "UI.Auction.ActUnavailable",
+    "KR": "불가",
+    "EN": "N/A"
+  },
+  {
+    "Key": "UI.Auction.ActSelected",
+    "KR": "선택됨",
+    "EN": "Selected"
+  },
+  {
+    "Key": "UI.Auction.RegisterEmpty",
+    "KR": "올릴 수 있는 것이 없습니다",
+    "EN": "Nothing to list"
+  },
+  {
+    "Key": "UI.Auction.RegisterNoMatch",
+    "KR": "이름이 맞는 것이 없습니다",
+    "EN": "Nothing matches that name"
+  },
+  {
+    "Key": "UI.Auction.CantListShort",
+    "KR": "올릴 수 없음",
+    "EN": "Can't list"
+  },
+  {
+    "Key": "UI.Auction.AuctionUnitPrice",
+    "KR": "경매 단가",
+    "EN": "Auction Price"
+  },
+  {
+    "Key": "UI.Auction.CountHelp",
+    "KR": "보유 {0}개 · 한 번에 {1}개까지 · 통째로만 팔립니다",
+    "EN": "Owned {0} · up to {1} per listing · sold only as a whole"
+  },
+  {
+    "Key": "UI.Auction.PriceHelp",
+    "KR": "즉시 판매가 {0} G 이상 ~ {1} G",
+    "EN": "From {0} G (instant sell price) ~ {1} G"
+  },
+  {
+    "Key": "UI.Auction.FormHint",
+    "KR": "수량과 단가를 범위 안에서 넣으세요.",
+    "EN": "Enter an amount and unit price within range."
+  },
+  {
+    "Key": "UI.Auction.AuctionTotal",
+    "KR": "경매 총액",
+    "EN": "Auction Total"
+  },
+  {
+    "Key": "UI.Auction.FeeNow",
+    "KR": "등록비 ({0}, 지금 빠짐)",
+    "EN": "Listing Fee ({0}, charged now)"
+  },
+  {
+    "Key": "UI.Auction.NetIfSold",
+    "KR": "팔리면 받는 금액 (수수료 {0})",
+    "EN": "You Get If Sold (fee {0})"
+  },
+  {
+    "Key": "UI.Auction.IfInstant",
+    "KR": "즉시 판매하면",
+    "EN": "If Sold Instantly"
+  },
+  {
+    "Key": "UI.Auction.InstantVia",
+    "KR": "{0} G — 인벤토리 [판매]",
+    "EN": "{0} G — Inventory [Sell]"
+  },
+  {
+    "Key": "UI.Auction.Search",
+    "KR": "검색",
+    "EN": "Search"
+  },
+  {
+    "Key": "UI.Auction.TabDone",
+    "KR": "완료",
+    "EN": "History"
+  },
+  {
+    "Key": "UI.Auction.EquipOptions",
+    "KR": "장비 옵션",
+    "EN": "Gear Options"
+  },
+  {
+    "Key": "UI.Auction.Industry",
+    "KR": "산업",
+    "EN": "Industry"
+  },
+  {
+    "Key": "UI.Auction.SpeedAtLeast",
+    "KR": "작업속도 % ≥",
+    "EN": "Work Speed % ≥"
+  },
+  {
+    "Key": "UI.Auction.EnchantSpeedAtLeast",
+    "KR": "인챈트 작업속도 합 ≥",
+    "EN": "Enchant Speed Total ≥"
+  },
+  {
+    "Key": "UI.Auction.EnchantExpAtLeast",
+    "KR": "인챈트 경험치 합 ≥",
+    "EN": "Enchant EXP Total ≥"
+  },
+  {
+    "Key": "UI.Auction.CharacterOptions",
+    "KR": "캐릭터 옵션",
+    "EN": "Character Options"
+  },
+  {
+    "Key": "UI.Auction.Min",
+    "KR": "최소",
+    "EN": "Min"
+  },
+  {
+    "Key": "UI.Auction.StarAtLeast",
+    "KR": "응축 ★ ≥",
+    "EN": "Condense ★ ≥"
+  },
+  {
+    "Key": "UI.Auction.UnitPriceGold",
+    "KR": "단가 (골드)",
+    "EN": "Unit Price (Gold)"
+  },
+  {
+    "Key": "UI.Auction.Range",
+    "KR": "범위",
+    "EN": "Range"
+  },
+  {
+    "Key": "UI.Auction.NoListedYet",
+    "KR": "올린 매물이 없습니다",
+    "EN": "No listings yet"
+  },
+  {
+    "Key": "UI.Auction.Refresh",
+    "KR": "↻ 새로고침",
+    "EN": "↻ Refresh"
+  },
+  {
+    "Key": "UI.Auction.PriceEmpty",
+    "KR": "위 검색창에 아이템 이름을 치면 아래에 후보가 뜹니다 — 고르면 시세를 엽니다.\r\n검색 결과 줄의 [시세]로도 열 수 있습니다.",
+    "EN": "Type an item name in the search box above to see suggestions — pick one to open its prices.\r\nYou can also open it with [Prices] on a search result row."
+  },
+  {
+    "Key": "UI.Auction.ShowListings",
+    "KR": "이 아이템 매물 보기",
+    "EN": "View Listings"
+  },
+  {
+    "Key": "UI.Auction.GoSell",
+    "KR": "팔러 가기",
+    "EN": "Go Sell"
+  },
+  {
+    "Key": "UI.Auction.ChartTitle",
+    "KR": "최근 14일 — 막대·선: 그날 평균 단가",
+    "EN": "Last 14 Days — bars/line: daily avg unit price"
+  },
+  {
+    "Key": "UI.Auction.ChartEmpty",
+    "KR": "최근 14일 동안 거래가 없습니다",
+    "EN": "No trades in the last 14 days"
+  },
+  {
+    "Key": "UI.Auction.LevelsTitle",
+    "KR": "지금 단가별 판매 수량 (싼 것부터)",
+    "EN": "Amount on Sale by Unit Price (cheapest first)"
+  },
+  {
+    "Key": "UI.Auction.LevelsEmpty",
+    "KR": "지금 판매 중인 매물이 없습니다",
+    "EN": "Nothing on sale right now"
+  },
+  {
+    "Key": "UI.Auction.RegisterOpen",
+    "KR": "+ 판매 등록",
+    "EN": "+ List Item"
+  },
+  {
+    "Key": "UI.Auction.ColItem",
+    "KR": "아이템",
+    "EN": "Item"
+  },
+  {
+    "Key": "UI.Auction.ColNet",
+    "KR": "팔리면 받는 금액",
+    "EN": "You Get If Sold"
+  },
+  {
+    "Key": "UI.Auction.ColDate",
+    "KR": "일시",
+    "EN": "Date"
+  },
+  {
+    "Key": "UI.Auction.ColType",
+    "KR": "구분",
+    "EN": "Type"
+  },
+  {
+    "Key": "UI.Auction.ColAmount",
+    "KR": "금액",
+    "EN": "Gold"
+  },
+  {
+    "Key": "UI.Auction.ColDest",
+    "KR": "받는 곳",
+    "EN": "Goes To"
+  },
+  {
+    "Key": "UI.Auction.RegisterTitle",
+    "KR": "판매 등록",
+    "EN": "List an Item"
+  },
+  {
+    "Key": "UI.Auction.FindByName",
+    "KR": "이름으로 찾기",
+    "EN": "Find by name"
+  },
+  {
+    "Key": "UI.Auction.RegisterEmptyCard",
+    "KR": "왼쪽에서 올릴 것을 [선택]하세요.\r\n끼고 있는 장비 · 일하는 캐릭터는 흐리게 보이고, 툴팁에 사유가 나옵니다.",
+    "EN": "[Select] something to list on the left.\r\nWorn gear and working characters are dimmed — the tooltip shows why."
+  },
+  {
+    "Key": "UI.Auction.ShowPrice",
+    "KR": "시세 보기",
+    "EN": "View Prices"
+  },
+  {
+    "Key": "UI.Auction.MatchLowest",
+    "KR": "최저가에 맞춤",
+    "EN": "Match Lowest"
+  },
+  {
+    "Key": "UI.Auction.Register",
+    "KR": "등록",
+    "EN": "List"
   }
 ]

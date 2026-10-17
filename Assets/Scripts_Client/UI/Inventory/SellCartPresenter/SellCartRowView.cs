@@ -72,7 +72,7 @@ public class SellCartRowView : MonoBehaviour
         iconView.Bind(icon);
         tooltipTrigger.SetProvider(tooltip);
         nameText.text  = displayName;
-        countText.text = $"{count:N0}개";
+        countText.text = Lang.Format("UI.Inventory.CountUnitShort", $"{count:N0}");
         priceText.text = $"{price:N0} G";
     }
 

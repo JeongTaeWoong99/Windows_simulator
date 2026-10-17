@@ -14,15 +14,15 @@ public static class AuctionPriceText
     {
         if (summary == null)
         {
-            return UIRichText.Label("시세를 받지 못했습니다 — 시세 탭에서 다시 볼 수 있습니다");
+            return UIRichText.Label(Lang.Get("UI.Auction.NoSummary"));
         }
 
         string dot = UIRichText.Dot;
 
-        return $"{UIRichText.Label("최저가")} {FormatPrice(summary.AvailableCount > 0 ? summary.LowestUnitPrice : 0L, "매물 없음")}" +
-               $"{dot}{UIRichText.Label("판매 중")} {summary.AvailableCount:N0}개" +
-               $"{dot}{UIRichText.Label("최근 거래가")} {FormatPrice(summary.RecentUnitPrice, "-")}" +
-               $"{dot}{UIRichText.Label("전일 평균")} {FormatPrice(summary.YesterdayAvgPrice, "-")}";
+        return $"{UIRichText.Label(Lang.Get("UI.Auction.LowestPrice"))} {FormatPrice(summary.AvailableCount > 0 ? summary.LowestUnitPrice : 0L, Lang.Get("UI.Auction.NoListings"))}" +
+               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.OnSale"))} {Lang.Format("UI.Inventory.CountUnitShort", summary.AvailableCount.ToString("N0"))}" +
+               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.RecentPrice"))} {FormatPrice(summary.RecentUnitPrice, "-")}" +
+               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.YesterdayAvg"))} {FormatPrice(summary.YesterdayAvgPrice, "-")}";
     }
 
     // "이 매물 단가는 전일 평균보다 12.5% 비쌉니다" — 비싸면 경고색, 싸면 좋은 색. 전일 거래가 없으면 비교할 수 없다고 적는다.
@@ -30,21 +30,21 @@ public static class AuctionPriceText
     {
         if (summary == null || summary.YesterdayAvgPrice <= 0L)
         {
-            return UIRichText.Label("전일 거래가 없어 평균과 비교할 수 없습니다");
+            return UIRichText.Label(Lang.Get("UI.Auction.NoCompare"));
         }
 
         double percent = (unitPrice - summary.YesterdayAvgPrice) * 100d / summary.YesterdayAvgPrice;
 
         if (Math.Abs(percent) < SameThresholdPercent)
         {
-            return $"{UIRichText.Label("이 매물 단가는")} 전일 평균과 같습니다";
+            return $"{UIRichText.Label(Lang.Get("UI.Auction.ThisUnitPrice"))} {Lang.Get("UI.Auction.SameAsAvg")}";
         }
 
         string diff = percent > 0d
-            ? UIRichText.Paint($"{percent:0.0}% 비쌉니다", UIThemeRole.Negative)
-            : UIRichText.Paint($"{-percent:0.0}% 쌉니다", UIThemeRole.Positive);
+            ? UIRichText.Paint(Lang.Format("UI.Auction.PricierBy", percent.ToString("0.0")), UIThemeRole.Negative)
+            : UIRichText.Paint(Lang.Format("UI.Auction.CheaperBy", (-percent).ToString("0.0")), UIThemeRole.Positive);
 
-        return $"{UIRichText.Label("이 매물 단가는 전일 평균보다")} {diff}";
+        return $"{UIRichText.Label(Lang.Get("UI.Auction.ThanAvg"))} {diff}";
     }
 
     // 최근 거래가가 전일 평균보다 오른 비율 — "▲ 3.2%" · "▼ 1.0%". 둘 중 하나라도 없으면 빈 문자열.

@@ -15,12 +15,12 @@ public static class RarityLabel
     // 빈 문자열로 떨어뜨리면 화면에서 사라져 무엇이 빠졌는지 알 수 없다('IndustryLabel'과 같다).
     public static string Get(GlobalRarity rarity) => rarity switch
     {
-        GlobalRarity.Common    => "일반",
-        GlobalRarity.Uncommon  => "고급",
-        GlobalRarity.Rare      => "희귀",
-        GlobalRarity.Epic      => "영웅",
-        GlobalRarity.Legendary => "전설",
-        GlobalRarity.Mythic    => "신화",
+        GlobalRarity.Common    => Lang.Get("UI.Rarity.Common"),
+        GlobalRarity.Uncommon  => Lang.Get("UI.Rarity.Uncommon"),
+        GlobalRarity.Rare      => Lang.Get("UI.Rarity.Rare"),
+        GlobalRarity.Epic      => Lang.Get("UI.Rarity.Epic"),
+        GlobalRarity.Legendary => Lang.Get("UI.Rarity.Legendary"),
+        GlobalRarity.Mythic    => Lang.Get("UI.Rarity.Mythic"),
         _                      => rarity.ToString(),
     };
 }

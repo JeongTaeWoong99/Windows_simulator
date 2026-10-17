@@ -1,6 +1,6 @@
 # Data 규칙
 
-> 최종 업데이트: 2026-08-12 · 대상: `Assets/Scripts_Client/Data/`
+> 최종 업데이트: 2026-10-17 (화면 언어 `Lang` — 5절 · T-136) · 2026-08-12 · 대상: `Assets/Scripts_Client/Data/`
 
 **엑셀에서 나온 고정 테이블을 읽는 곳.** 아이템명·캐릭터명·수치처럼 **누구에게나 같은 값**이 여기 있다.
 내 계정 상태(인벤토리·슬롯)는 여기가 아니라 [`Managers/PlayerDataModel`](<../Managers/Managers 규칙.md>)이다.
@@ -73,3 +73,34 @@ StreamingAssets를 파일로 직접 읽을 수 없는 플랫폼은 Android·WebG
 
 > 적성도 마찬가지다. `CharacterTable`에 적성 열이 있지만 **값의 주인은 서버**다 —
 > 패킷의 `CharacterInfo.Aptitudes`를 쓴다. 자세한 건 [`패킷 레퍼런스.md`](<../패킷 레퍼런스.md>)의 「적성은 패킷에 실려 온다」.
+
+---
+
+## 5. 화면 언어 — `Lang` (2026-10-17 T-136)
+
+**모든 화면 문구는 번역 테이블(`LocalizationTable`)에서 읽는다.** 원본은 `GameDesign/Excel/Localization/Loc_*.xlsx`다([`GameDesign/CLAUDE.md`](<../../../GameDesign/CLAUDE.md>) "다국어").
+
+| 문구 | 읽는 법 |
+|---|---|
+| 데이터 이름·설명 (아이템·캐릭터·장비 …) | `Loc.Get(row.NameLocKey)` — `row.Name`은 언제나 KR 원문이다 |
+| 클라 고정 문구 (버튼·탭·안내·거절) | `Lang.Get("UI.<화면>.<이름>")` · 자리표시자가 있으면 `Lang.Format(key, 값…)` — 번역문도 같은 `{0}`을 쓴다 |
+| 씬에 박힌 글씨 (코드가 안 쓰는 TMP) | 그 TMP에 `LocalizedText`를 붙이고 키를 적는다 (`UI/Shared`) |
+
+- **키는 `Loc_UI.xlsx`에 사람이 추가한다** — `UI.<화면>.<이름>`, KR·EN을 함께 채운다. 없는 키는 키 문자열이 그대로 화면에 나온다(빠진 번역이 바로 보인다).
+- `Lang`도 `GameDataLoader`처럼 `BeforeSceneLoad`에서 저장된 언어를 건다 — 첫 글씨부터 그 언어다. 저장이 없으면 OS 언어가 한국어일 때 KR, 아니면 EN.
+- **언어가 바뀌면 `Lang.Changed` 하나가 울린다.** 열린 화면은 이걸 받아 스스로 다시 그린다 — 받지 않은 화면의 글씨는 다음에 그릴 때까지 옛 언어로 남는다.
+  ⚠️ 도메인 리로드를 꺼 둔 에디터라 정적 이벤트가 플레이 사이에 남는다 — `SubsystemRegistration`에서 비운다.
+- 저장 키는 `Display.Language`(`Settings/WindowSettings`) — 에디터도 저장값을 읽는다.
+
+### 다시 그리기 — 화면이 지키는 세 가지
+
+- **꺼질 때 구독을 끊는 화면은 켜질 때 한 번 더 그린다.** `OnEnable`에서 `Refresh()`를 부르는 화면은 저절로 맞는다.
+  드롭다운·트리처럼 `Start`에서 한 번 채우는 것은 `OnEnable`에서 언어 처리 함수를 다시 부른다 — 꺼진 사이 바뀐 언어가 남지 않는다.
+  스스로를 끄는 줄(도구 줄 · 가챠 카드)은 `Start`/`OnDestroy`에서 구독해 꺼져 있어도 받는다.
+- **드롭다운은 고른 값을 지킨 채 항목만 바꿔 채운다** — `SetValueWithoutNotify`로 되돌려 선택 이벤트가 울리지 않게 한다.
+- **저장·비교에 화면 문구를 쓰지 않는다** — PlayerPrefs·키에는 언어와 무관한 ID를 넣고, 이름은 그릴 때만 만든다(인벤토리 [제외] 분류 · 경매장 분류).
+- 이미 떠 있는 알림·확인 창과, 조회 때 만들어 둔 조건 칩(경매장 `적용 조건`)은 다음에 띄울 때 새 언어가 된다.
+
+### 일부러 한국어로 둔 것
+
+개발 로그(`ClientLogger`·`Debug.Log`)·에디터 도구·오브젝트 이름·레이아웃 진단 문구, 그리고 언어 이름 `한국어`(그 언어 자기 이름으로 적는다).

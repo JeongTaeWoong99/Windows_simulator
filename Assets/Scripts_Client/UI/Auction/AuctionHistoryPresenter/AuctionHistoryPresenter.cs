@@ -47,23 +47,23 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     [SerializeField, Tooltip("표 아래 안내 — '물건·대금·환급은 모두 우편으로 갑니다' · 받은 시각 · 더 받는 중")]
     private TMP_Text noteText = null!;
 
-    // 구분 드롭다운 순서 — 표시 이름과 서버 값.
-    private static readonly (string Label, EAuctionHistoryType Type)[] Types =
+    // 구분 드롭다운 순서 — 문구 키와 서버 값.
+    private static readonly (string LabelKey, EAuctionHistoryType Type)[] Types =
     {
-        ("전체",      EAuctionHistoryType.None),
-        ("판매 완료", EAuctionHistoryType.Sold),
-        ("구매 완료", EAuctionHistoryType.Bought),
-        ("기간 만료", EAuctionHistoryType.Expired),
-        ("취소",      EAuctionHistoryType.Cancelled),
-        ("반환",      EAuctionHistoryType.Returned),
+        ("UI.Auction.All",           EAuctionHistoryType.None),
+        ("UI.Auction.TypeSold",      EAuctionHistoryType.Sold),
+        ("UI.Auction.TypeBought",    EAuctionHistoryType.Bought),
+        ("UI.Auction.TypeExpired",   EAuctionHistoryType.Expired),
+        ("UI.Auction.TypeCancelled", EAuctionHistoryType.Cancelled),
+        ("UI.Auction.TypeReturned",  EAuctionHistoryType.Returned),
     };
 
-    // 기간 드롭다운 순서 — 표시 이름과 일 수. 서버 보관 기간이 30일이라 그 이상은 없다.
-    private static readonly (string Label, int Days)[] Periods =
+    // 기간 드롭다운 순서 — 문구 키와 일 수. 서버 보관 기간이 30일이라 그 이상은 없다.
+    private static readonly (string LabelKey, int Days)[] Periods =
     {
-        ("오늘",      1),
-        ("최근 7일",  7),
-        ("최근 30일", 30),
+        ("UI.Auction.PeriodToday", 1),
+        ("UI.Auction.Period7",     7),
+        ("UI.Auction.Period30",    30),
     };
 
     // 처음 고르는 기간 — 최근 7일(목업).
@@ -85,8 +85,8 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // ─── 공용 검색창 ───
-    public string QueryPlaceholder => "기록에서 찾을 아이템 이름";
-    public string QueryHint        => "치는 대로 아래 기록을 거릅니다";
+    public string QueryPlaceholder => Lang.Get("UI.Auction.HistoryPlaceholder");
+    public string QueryHint        => Lang.Get("UI.Auction.HistoryHint");
     public string Query            => _query;
 
     public void OnQueryChanged(string text)
@@ -155,7 +155,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         if (_isReady)
         {
             Subscribe();
-            Refresh();
+            OnLanguageChanged(); // 꺼져 있는 동안 언어가 바뀌었을 수 있다 — 드롭다운까지 다시 쓴다(Refresh 포함)
             RequestFirstPage();
         }
     }
@@ -179,6 +179,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         _isSubscribed = true;
 
         _auction.HistoryCompleted += OnHistoryCompleted;
+        Lang.Changed              += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -192,6 +193,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         _isSubscribed = false;
 
         _auction.HistoryCompleted -= OnHistoryCompleted;
+        Lang.Changed              -= OnLanguageChanged;
     }
 
     #endregion
@@ -208,7 +210,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
         _auction.RequestHistory(Types[typeDropdown.value].Type, Periods[periodDropdown.value].Days);
 
-        _waitHandle = _wait.Begin("거래 기록", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Auction.WaitHistory"), onClosed: OnWaitClosed);
         Refresh();
     }
 
@@ -220,7 +222,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             return;
         }
 
-        _waitHandle = _wait.Begin("거래 기록", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Auction.WaitHistory"), onClosed: OnWaitClosed);
         Refresh();
     }
 
@@ -294,20 +296,20 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         _rows.Show(_contents);
 
         emptyText.gameObject.SetActive(_contents.Count == 0);
-        emptyText.text = history.Count == 0 ? "이 기간에 거래 기록이 없습니다" : "이름이 맞는 기록이 없습니다";
+        emptyText.text = Lang.Get(history.Count == 0 ? "UI.Auction.HistoryEmpty" : "UI.Auction.HistoryNoMatch");
 
         // 서버가 건수를 주지 않는다 — 지금 쪽까지 받은 수만 알고, 뒤에 더 있으면 '이상'을 붙인다.
         int known = _auction.HistoryPage * AuctionModel.RowsPerPage + history.Count;
 
-        countText.text = $"기록 {UIRichText.Paint(known.ToString("N0"), UIThemeRole.Highlight)}건" +
-                         (_auction.HasMoreHistory ? UIRichText.Label(" 이상") : "");
+        countText.text = Lang.Format("UI.Auction.HistoryCount", UIRichText.Paint(known.ToString("N0"), UIThemeRole.Highlight)) +
+                         (_auction.HasMoreHistory ? " " + UIRichText.Label(Lang.Get("UI.Auction.OrMore")) : "");
 
-        sumText.text = $"{UIRichText.Label("받은 골드")} {UIRichText.Paint($"+{received:N0} G", UIThemeRole.Positive)}" +
-                       $"{UIRichText.Dot}{UIRichText.Label("쓴 골드")} {UIRichText.Paint($"−{spent:N0} G", UIThemeRole.Negative)}";
+        sumText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldReceived"))} {UIRichText.Paint($"+{received:N0} G", UIThemeRole.Positive)}" +
+                       $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.GoldSpent"))} {UIRichText.Paint($"−{spent:N0} G", UIThemeRole.Negative)}";
 
         string ago = AuctionModel.FormatReceivedAgo(_auction.HistoryReceivedAt);
 
-        noteText.text = "물건 · 대금 · 환급은 모두 우편으로 갑니다" + (ago.Length > 0 ? UIRichText.Dot + UIRichText.Label(ago) : "");
+        noteText.text = Lang.Get("UI.Auction.HistoryNote") + (ago.Length > 0 ? UIRichText.Dot + UIRichText.Label(ago) : "");
 
         pager.Bind(_auction.HistoryPage, pageCount: 0,
                    canPrev: _waitHandle == null && _auction.HistoryPage > 0,
@@ -329,7 +331,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             Icon       = AuctionText.ToIcon(entry.Kind, entry.Tid, entry.Count),
             Title      = AuctionText.GetName(entry.Kind, entry.Tid) + (entry.EnchantGrade > 0 ? $" +{entry.EnchantGrade}" : ""),
             TitleColor = RarityPalette.Get(AuctionText.GetRarity(entry.Kind, entry.Tid)),
-            Sub        = $"{UIRichText.Label("단가")} {UIRichText.Gold(entry.UnitPrice)}",
+            Sub        = $"{UIRichText.Label(Lang.Get("UI.Auction.UnitPrice"))} {UIRichText.Gold(entry.UnitPrice)}",
             Cells      = new[]
             {
                 isNew ? $"{UIRichText.Paint("●", UIThemeRole.Highlight)} {date}" : UIRichText.Label(date),
@@ -345,11 +347,11 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     // 구분 — 판매·구매는 의미색, 나머지는 흐린 글씨.
     private static string PaintType(EAuctionHistoryType type) => type switch
     {
-        EAuctionHistoryType.Sold    => UIRichText.Paint("판매 완료", UIThemeRole.Positive),
-        EAuctionHistoryType.Bought  => UIRichText.Paint("구매 완료", UIThemeRole.Accent),
-        EAuctionHistoryType.Expired => UIRichText.Label("기간 만료"),
-        EAuctionHistoryType.Cancelled => UIRichText.Label("취소"),
-        EAuctionHistoryType.Returned  => UIRichText.Paint("반환", UIThemeRole.Negative),
+        EAuctionHistoryType.Sold    => UIRichText.Paint(Lang.Get("UI.Auction.TypeSold"), UIThemeRole.Positive),
+        EAuctionHistoryType.Bought  => UIRichText.Paint(Lang.Get("UI.Auction.TypeBought"), UIThemeRole.Accent),
+        EAuctionHistoryType.Expired => UIRichText.Label(Lang.Get("UI.Auction.TypeExpired")),
+        EAuctionHistoryType.Cancelled => UIRichText.Label(Lang.Get("UI.Auction.TypeCancelled")),
+        EAuctionHistoryType.Returned  => UIRichText.Paint(Lang.Get("UI.Auction.TypeReturned"), UIThemeRole.Negative),
         _ => UIRichText.Label("-"),
     };
 
@@ -368,17 +370,17 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
         string amount = UIRichText.Paint($"+{entry.Amount:N0} G", UIThemeRole.Positive);
 
-        return entry.Fee > 0L ? $"{amount} {UIRichText.Small(UIRichText.Label($"수수료 {entry.Fee:N0}"))}" : amount;
+        return entry.Fee > 0L ? $"{amount} {UIRichText.Small(UIRichText.Label(Lang.Format("UI.Auction.Fee", entry.Fee.ToString("N0"))))}" : amount;
     }
 
     // 받는 곳 — 무엇이 어디로 갔는지.
     private static string FormatDestination(EAuctionHistoryType type) => type switch
     {
-        EAuctionHistoryType.Sold      => "대금 → 우편",
-        EAuctionHistoryType.Bought    => "물건 → 우편",
-        EAuctionHistoryType.Expired   => "물건 · 등록비 → 우편",
-        EAuctionHistoryType.Cancelled => "물건 → 우편",
-        EAuctionHistoryType.Returned  => "물건 · 등록비 → 우편",
+        EAuctionHistoryType.Sold      => Lang.Get("UI.Auction.DestProceeds"),
+        EAuctionHistoryType.Bought    => Lang.Get("UI.Auction.DestItem"),
+        EAuctionHistoryType.Expired   => Lang.Get("UI.Auction.DestItemFee"),
+        EAuctionHistoryType.Cancelled => Lang.Get("UI.Auction.DestItem"),
+        EAuctionHistoryType.Returned  => Lang.Get("UI.Auction.DestItemFee"),
         _                             => "-",
     };
 
@@ -394,12 +396,12 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
 
         foreach (var (label, _) in Types)
         {
-            types.Add(label);
+            types.Add(Lang.Get(label));
         }
 
         foreach (var (label, _) in Periods)
         {
-            periods.Add(label);
+            periods.Add(Lang.Get(label));
         }
 
         typeDropdown.ClearOptions();
@@ -409,6 +411,19 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         periodDropdown.ClearOptions();
         periodDropdown.AddOptions(periods);
         periodDropdown.SetValueWithoutNotify(DefaultPeriodIndex);
+    }
+
+    // 언어가 바뀌었다 — 드롭다운 문구를 다시 채우되 고른 값은 그대로 두고, 표를 다시 그린다 (Lang.Changed 구독).
+    private void OnLanguageChanged()
+    {
+        int type   = typeDropdown.value;
+        int period = periodDropdown.value;
+
+        FillDropdowns();
+        typeDropdown.SetValueWithoutNotify(type);
+        periodDropdown.SetValueWithoutNotify(period);
+
+        Refresh();
     }
 
     #endregion

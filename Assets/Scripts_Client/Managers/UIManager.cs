@@ -49,10 +49,11 @@ public class UIManager : MonoService<UIManager>
         [Tooltip("그 화면의 Presenter 오브젝트 (WorkStation List Presenter · Setting Presenter …)")]
         public GameObject panel;
 
-        // ※ 제목을 enum이 아니라 여기에 두는 이유 — 문구는 표시용이라 바뀌어도 로직이 안 바뀐다.
-        //   코드에 박으면 문구 하나 고치는 데 컴파일이 필요하고, 화면 목록과 제목 목록이 따로 놀 수 있다.
-        [Tooltip("이 화면일 때 #Main Canvas 머리(Title)에 뜨는 문구")]
-        public string title;
+        // ※ 제목을 enum이 아니라 여기에 두는 이유 — 화면 목록과 제목 목록이 따로 놀지 않게 한 줄에 묶는다.
+        //   문구가 아니라 번역 키다('Loc_UI.xlsx'의 'UI.Main.Title.*') — 언어마다 문구가 다르다.
+        [Tooltip("이 화면일 때 #Main Canvas 머리(Title)에 뜨는 문구의 번역 키 (UI.Main.Title.*)")]
+        [FormerlySerializedAs("title")]
+        public string titleKey;
     }
 
     // ※ 로그인은 3열·위젯과 다른 축이다 — 게임에 들어오기 전까지 이것만 보이고, 성공하면 다시 안 나온다.
@@ -141,6 +142,25 @@ public class UIManager : MonoService<UIManager>
 
         ValidateMainScreens();
         ResetMainScreen();
+
+        Lang.Changed += RefreshTitle;
+    }
+
+    private void OnDestroy()
+    {
+        Lang.Changed -= RefreshTitle;
+    }
+
+    // 지금 화면의 제목을 새 언어로 다시 쓴다 (Lang.Changed 구독)
+    private void RefreshTitle()
+    {
+        foreach (var entry in mainScreens)
+        {
+            if (entry.screen == CurrentMainScreen)
+            {
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
+            }
+        }
     }
 
     #region 로그인 — 게임의 시작점
@@ -204,7 +224,7 @@ public class UIManager : MonoService<UIManager>
             // 제목도 함께 맞춘다 — 씬에 저장된 문구가 실제로 켜진 화면과 다를 수 있다
             if (on)
             {
-                mainCanvas.SetTitle(entry.title);
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
             }
         }
     }
@@ -232,7 +252,7 @@ public class UIManager : MonoService<UIManager>
 
             if (on)
             {
-                mainCanvas.SetTitle(entry.title);
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
             }
         }
     }

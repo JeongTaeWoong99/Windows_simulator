@@ -172,7 +172,7 @@ public class LoginPresenter : MonoBehaviour
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         // 성공·실패·타임아웃 어느 쪽이든 onClosed(OnWaitClosed)로 잠금이 풀린다.
         _isWaiting  = true;
-        _waitHandle = _wait.Begin("로그인", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Login.Wait"), onClosed: OnWaitClosed);
         RefreshButton(); // 응답을 기다리는 동안 잠근다
     }
 

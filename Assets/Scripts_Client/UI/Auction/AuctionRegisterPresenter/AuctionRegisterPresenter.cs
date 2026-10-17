@@ -145,6 +145,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
     private readonly List<AuctionRowContent> _contents    = new List<AuctionRowContent>();
     private readonly List<Suggestion> _suggestions = new List<Suggestion>();
 
+    // 자원 줄·제안이 훑는 TID — 인벤토리·창고에 같은 TID가 따로 있어도 한 줄로 선다('PlayerDataModel.CollectOwnedItemIds').
+    private readonly List<int> _ownedItemIds = new List<int>();
+
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
     private ServerWaitManager _wait    = null!;
@@ -206,8 +209,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _ui      = Services.Get<UIManager>();
         _rows    = new AuctionRowList(rowPrefab, rowParent, OnRowSelected);
 
-        kindDropdown.ClearOptions();
-        kindDropdown.AddOptions(new List<string> { "자원", "장비", "캐릭터" });
+        FillKindOptions();
 
         Subscribe();
 
@@ -245,7 +247,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         if (_isReady)
         {
             Subscribe();
-            Refresh();
+            OnLanguageChanged(); // 꺼져 있는 동안 언어가 바뀌었을 수 있다 — 종류 드롭다운까지 다시 쓴다(Refresh 포함)
         }
     }
 
@@ -314,17 +316,20 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (index < 0)
         {
-            _wait.RaiseNotice(byTid ? "올릴 수 있는 것을 갖고 있지 않습니다." : "그 물건을 찾지 못했습니다.");
+            _wait.RaiseNotice(Lang.Get(byTid ? "UI.Auction.NothingToList" : "UI.Auction.NotFound"));
 
             return;
         }
 
         if (_contents[index].Dimmed)
         {
-            string? reason = kind == RegisterKind.Character
-                ? EntityBlockText.ForCharacter(_data, target, _data.Characters.Count - 1)
-                : EntityBlockText.ForEquip(_data, target);
-            _wait.RaiseNotice($"올릴 수 없습니다 — {reason}");
+            string? reason = kind switch
+            {
+                RegisterKind.Character => EntityBlockText.ForCharacter(_data, target, _data.Characters.Count - 1),
+                RegisterKind.Equip     => EntityBlockText.ForEquip(_data, target),
+                _                      => EntityBlockText.ForItem(_data, (int)target),
+            };
+            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantList", reason ?? ""));
 
             return;
         }
@@ -383,6 +388,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _data.CharactersChanged       += Refresh;
         _data.WorkStationSlotsChanged += Refresh; // 배치가 풀리면 흐린 캐릭터가 살아난다
         _data.CurrencyChanged         += RefreshCard;
+        Lang.Changed                  += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -403,6 +409,24 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _data.CharactersChanged       -= Refresh;
         _data.WorkStationSlotsChanged -= Refresh;
         _data.CurrencyChanged         -= RefreshCard;
+        Lang.Changed                  -= OnLanguageChanged;
+    }
+
+    // 언어가 바뀌었다 — 종류 드롭다운 · 목록 · 카드를 다시 쓴다 (Lang.Changed 구독)
+    private void OnLanguageChanged()
+    {
+        FillKindOptions();
+        Refresh();
+    }
+
+    // 종류 드롭다운을 지금 언어로 채운다 — 'RegisterKind' 순서. 고른 값은 그대로 둔다 (Start · 언어 변경)
+    private void FillKindOptions()
+    {
+        int value = kindDropdown.value;
+
+        kindDropdown.ClearOptions();
+        kindDropdown.AddOptions(new List<string> { Lang.Get("UI.Auction.KindItem"), Lang.Get("UI.Equip.Gear"), Lang.Get("UI.Common.Character") });
+        kindDropdown.SetValueWithoutNotify(value);
     }
 
     #endregion
@@ -563,15 +587,14 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         string what = kind switch
         {
-            RegisterKind.Item  => $"{GameDataLoader.GetItemName((int)key)} {count:N0}개를 개당 {unitPrice:N0} G(총 {total:N0} G)에",
-            RegisterKind.Equip => $"{GameDataLoader.GetEquipName(_data.GetEquipTid(key))}을(를) {unitPrice:N0} G에",
-            _                  => $"{GameDataLoader.GetCharacterName(_data.GetCharacterTid(key))}을(를) {unitPrice:N0} G에",
+            RegisterKind.Item  => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetItemName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
+            RegisterKind.Equip => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetEquipName(_data.GetEquipTid(key)), unitPrice.ToString("N0")),
+            _                  => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetCharacterName(_data.GetCharacterTid(key)), unitPrice.ToString("N0")),
         };
 
         // 즉시 판매했을 때의 값을 함께 적는다 — 경매가 즉시 판매와 무엇이 다른지 마지막으로 비교하는 자리다.
         _ui.AskConfirm(
-            $"{what} 경매에 올립니다. (즉시 판매하면 {instant:N0} G)\n" +
-            $"등록비 {fee:N0} G가 바로 빠집니다 — 취소하면 돌려받지 못하고, 기간이 끝나면 돌려받습니다.",
+            Lang.Format("UI.Auction.ConfirmRegister", what, instant.ToString("N0"), fee.ToString("N0")),
             () =>
             {
                 switch (kind)
@@ -581,7 +604,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                     default:                 _auction.RegisterCharacter(key, unitPrice);        break;
                 }
 
-                _waitHandle = _wait.Begin("경매 등록", onClosed: OnWaitClosed);
+                _waitHandle = _wait.Begin(Lang.Get("UI.Auction.WaitRegister"), onClosed: OnWaitClosed);
                 RefreshCard();
             });
     }
@@ -601,7 +624,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         }
 
         _waitHandle?.Succeed();
-        _wait.RaiseNotice($"등록했습니다. (등록비 {fee:N0} G)\n팔리면 대금이 우편으로 옵니다.");
+        _wait.RaiseNotice(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
 
         _selectedKey = 0L;
         Close();
@@ -664,14 +687,14 @@ public class AuctionRegisterPresenter : MonoBehaviour
             AuctionRowContent content = _contents[i];
             content.Selectable  = true;
             content.Selected    = !content.Dimmed && content.Key == _selectedKey;
-            content.ActionLabel = content.Dimmed ? "불가" : content.Selected ? "선택됨" : "선택";
+            content.ActionLabel = Lang.Get(content.Dimmed ? "UI.Auction.ActUnavailable" : content.Selected ? "UI.Auction.ActSelected" : "UI.Enchant.Select");
             _contents[i]        = content;
         }
 
         _rows.Show(_contents);
 
         emptyText.gameObject.SetActive(_contents.Count == 0);
-        emptyText.text = string.IsNullOrWhiteSpace(query) ? "올릴 수 있는 것이 없습니다" : "이름이 맞는 것이 없습니다";
+        emptyText.text = Lang.Get(string.IsNullOrWhiteSpace(query) ? "UI.Auction.RegisterEmpty" : "UI.Auction.RegisterNoMatch");
 
         RefreshCard();
     }
@@ -688,13 +711,17 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         int max = findSuggestView.Capacity;
 
-        foreach (ItemInfo item in _data.Inventory)
+        _data.CollectOwnedItemIds(_ownedItemIds);
+
+        foreach (int itemId in _ownedItemIds)
         {
             if (_suggestions.Count >= max) return;
-            if (item.Count <= 0 || item.Container != EContainer.Inventory || !AuctionText.MatchesName(EAuctionKind.Item, item.ItemId, query)) continue;
+            if (!AuctionText.MatchesName(EAuctionKind.Item, itemId, query)) continue;
 
-            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, item.ItemId, item.ItemId,
-                $"자원{UIRichText.Dot}{UIRichText.Label("보유")} {item.Count:N0}개"));
+            string blocked = EntityBlockText.ForItem(_data, itemId) != null ? $"{UIRichText.Dot}{Lang.Get("UI.Auction.CantListShort")}" : "";
+
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Item, itemId, itemId,
+                $"{Lang.Get("UI.Auction.KindItem")}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", _data.GetItemCount(itemId).ToString("N0"))}{blocked}"));
         }
 
         foreach (EquipInfo equip in _data.Equips)
@@ -702,10 +729,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
             if (_suggestions.Count >= max) return;
             if (!AuctionText.MatchesName(EAuctionKind.Equip, equip.EquipTid, query)) continue;
 
-            string blocked = EntityBlockText.ForEquip(_data, equip.EquipId) != null ? $"{UIRichText.Dot}올릴 수 없음" : "";
+            string blocked = EntityBlockText.ForEquip(_data, equip.EquipId) != null ? $"{UIRichText.Dot}{Lang.Get("UI.Auction.CantListShort")}" : "";
 
             _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Equip, equip.EquipTid, equip.EquipId,
-                $"장비{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{blocked}"));
+                $"{Lang.Get("UI.Equip.Gear")}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{blocked}"));
         }
 
         int remainingAfter = _data.Characters.Count - 1;
@@ -715,10 +742,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
             if (_suggestions.Count >= max) return;
             if (!AuctionText.MatchesName(EAuctionKind.Character, character.CharacterTid, query)) continue;
 
-            string blocked = EntityBlockText.ForCharacter(_data, character.CharacterId, remainingAfter) != null ? $"{UIRichText.Dot}올릴 수 없음" : "";
+            string blocked = EntityBlockText.ForCharacter(_data, character.CharacterId, remainingAfter) != null ? $"{UIRichText.Dot}{Lang.Get("UI.Auction.CantListShort")}" : "";
 
             _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Character, character.CharacterTid, character.CharacterId,
-                $"캐릭터{UIRichText.Dot}{AuctionText.FormatCharacterSummary(character)}{blocked}"));
+                $"{Lang.Get("UI.Common.Character")}{UIRichText.Dot}{AuctionText.FormatCharacterSummary(character)}{blocked}"));
         }
     }
 
@@ -736,20 +763,17 @@ public class AuctionRegisterPresenter : MonoBehaviour
         return false;
     }
 
-    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목과 창고에 맡긴 것은 뺀다(등록은 인벤토리에서만 — T-107).
+    // 보유한 자원 줄을 모은다 (Refresh에서 호출). 0개로 남은 캐시 항목은 뺀다.
+    // ※ 창고에 맡긴 것도 합쳐 한 줄이다 — 서버가 인벤토리 것부터 빼고 모자란 만큼 창고에서 뺀다(T-163 · 이슈 #74).
     private void AddItemRows()
     {
-        foreach (ItemInfo item in _data.Inventory)
+        _data.CollectOwnedItemIds(_ownedItemIds);
+
+        foreach (int itemId in _ownedItemIds)
         {
-            if (item.Count <= 0 || item.Container != EContainer.Inventory)
-            {
-                continue;
-            }
-
-            int basePrice = GameDataLoader.GetItemPrice(item.ItemId);
-
-            int  itemId = item.ItemId;
-            long owned  = item.Count;
+            int     basePrice = GameDataLoader.GetItemPrice(itemId);
+            long    owned     = _data.GetItemCount(itemId);
+            string? blocked   = EntityBlockText.ForItem(_data, itemId); // 잠긴 종류는 흐리게 — 사유는 툴팁에(T-159)
 
             _contents.Add(new AuctionRowContent
             {
@@ -757,10 +781,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Icon       = ItemIconContent.ForItem(itemId, owned),
                 Title      = GameDataLoader.GetItemName(itemId),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetItemRarity(itemId)),
-                Info       = $"{UIRichText.Label("보유")} {owned:N0}개{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label("경매 단가")} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
-                CanAct     = true,
-                Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId)),
+                Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
+                CanAct     = blocked == null,
+                Dimmed     = blocked != null,
+                Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId), blocked),
             });
         }
     }
@@ -781,11 +806,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
             _contents.Add(new AuctionRowContent
             {
                 Key        = equip.EquipId,
-                Icon       = ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
-                Title      = row.Name,
+                Icon       = ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
+                Title      = Loc.Get(row.NameLocKey),
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
-                Info       = $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
-                Detail     = $"{UIRichText.Label("경매 단가")} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
+                Info       = $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterEquipTooltip(target, blocked),
@@ -807,11 +832,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
             _contents.Add(new AuctionRowContent
             {
                 Key        = character.CharacterId,
-                Icon       = ItemIconContent.ForCharacter(character.CharacterTid),
+                Icon       = ItemIconContent.ForCharacter(character.CharacterTid).WithWarehouse(character.Container == EContainer.Warehouse),
                 Title      = GameDataLoader.GetCharacterName(character.CharacterTid),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetCharacterRarity(character.CharacterTid)),
-                Info       = $"{AuctionText.FormatCharacterSummary(character)}{UIRichText.Dot}{UIRichText.Label("즉시 판매가")} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label("경매 단가")} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
+                Info       = $"{AuctionText.FormatCharacterSummary(character)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterCharacterTooltip(target, blocked),
@@ -825,7 +850,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         long active = _auction.MyListings.Count;
         bool isFull = active >= Constants.AuctionMaxActiveListings;
 
-        slotsText.text = $"{UIRichText.Label("판매 중")} {UIRichText.Paint(active.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
+        slotsText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.OnSale"))} {UIRichText.Paint(active.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
 
         bool has = _selectedKey != 0L;
 
@@ -857,14 +882,14 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (isItem)
         {
-            countHelpText.text = UIRichText.Label($"보유 {_data.GetItemCount(tid):N0}개 · 한 번에 {AuctionModel.MaxListingCount:N0}개까지 · 통째로만 팔립니다");
+            countHelpText.text = UIRichText.Label(Lang.Format("UI.Auction.CountHelp", _data.GetItemCount(tid).ToString("N0"), AuctionModel.MaxListingCount.ToString("N0")));
         }
 
-        priceHelpText.text = UIRichText.Label($"즉시 판매가 {AuctionModel.MinUnitPrice(basePrice):N0} G 이상 ~ {AuctionModel.FormatMaxUnitPrice()} G");
+        priceHelpText.text = UIRichText.Label(Lang.Format("UI.Auction.PriceHelp", AuctionModel.MinUnitPrice(basePrice).ToString("N0"), AuctionModel.FormatMaxUnitPrice()));
 
         if (!TryReadForm(out int count, out long unitPrice))
         {
-            summaryText.text            = UIRichText.Label("수량과 단가를 범위 안에서 넣으세요.");
+            summaryText.text            = UIRichText.Label(Lang.Get("UI.Auction.FormHint"));
             registerButton.interactable = false;
 
             return;
@@ -877,10 +902,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
         bool canPay  = _data.Gold >= fee;
 
         summaryText.text =
-            $"{UIRichText.Label("경매 총액")}<pos=55%>{UIRichText.Gold(total)}\n" +
-            $"{UIRichText.Label($"등록비 ({AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)}, 지금 빠짐)")}<pos=55%>{UIRichText.Paint($"−{fee:N0} G", canPay ? UIThemeRole.TextMain : UIThemeRole.Negative)}\n" +
-            $"{UIRichText.Label($"팔리면 받는 금액 (수수료 {AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)})")}<pos=55%>{UIRichText.Paint($"{net:N0} G", UIThemeRole.Positive)}\n" +
-            UIRichText.Small($"{UIRichText.Label("즉시 판매하면")}<pos=55%>{UIRichText.Label($"{instant:N0} G — 인벤토리 [판매]")}");
+            $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionTotal"))}<pos=55%>{UIRichText.Gold(total)}\n" +
+            $"{UIRichText.Label(Lang.Format("UI.Auction.FeeNow", AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)))}<pos=55%>{UIRichText.Paint($"−{fee:N0} G", canPay ? UIThemeRole.TextMain : UIThemeRole.Negative)}\n" +
+            $"{UIRichText.Label(Lang.Format("UI.Auction.NetIfSold", AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)))}<pos=55%>{UIRichText.Paint($"{net:N0} G", UIThemeRole.Positive)}\n" +
+            UIRichText.Small($"{UIRichText.Label(Lang.Get("UI.Auction.IfInstant"))}<pos=55%>{UIRichText.Label(Lang.Format("UI.Auction.InstantVia", instant.ToString("N0")))}");
 
         registerButton.interactable = _waitHandle == null && canPay && !isFull;
     }
@@ -897,12 +922,12 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (CurrentKind == RegisterKind.Character)
         {
-            return ItemIconContent.ForCharacter(_data.GetCharacterTid(_selectedKey));
+            return ItemIconContent.ForCharacter(_data.GetCharacterTid(_selectedKey)).WithWarehouse(_data.IsCharacterInWarehouse(_selectedKey));
         }
 
         EquipInfo? equip = FindEquip(_selectedKey);
 
-        return ItemIconContent.ForEquip(_data.GetEquipTid(_selectedKey), equip?.EnchantOptions);
+        return ItemIconContent.ForEquip(_data.GetEquipTid(_selectedKey), equip?.EnchantOptions).WithWarehouse(equip?.Container == EContainer.Warehouse);
     }
 
     // 카드 이름 아래 한 줄 — 자원: 분류 · 보유 / 장비: 종류 · 능력치 / 캐릭터: 레벨 · 응축 · 적성.
@@ -912,7 +937,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         {
             int itemId = (int)_selectedKey;
 
-            return $"{AuctionText.FormatSub(EAuctionKind.Item, itemId)}{UIRichText.Dot}{UIRichText.Label("보유")} {_data.GetItemCount(itemId):N0}개";
+            return $"{AuctionText.FormatSub(EAuctionKind.Item, itemId)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", _data.GetItemCount(itemId).ToString("N0"))}";
         }
 
         if (CurrentKind == RegisterKind.Character)

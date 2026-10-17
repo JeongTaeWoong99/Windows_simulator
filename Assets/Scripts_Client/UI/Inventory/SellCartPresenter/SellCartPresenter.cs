@@ -211,6 +211,7 @@ public class SellCartPresenter : MonoBehaviour
 
         _isSubscribed              = true;
         _cart.Changed             += Refresh;
+        Lang.Changed              += Refresh;
         _data.ItemSellCompleted   += OnSellCompleted;
         _data.ItemSellFailed      += OnSellFailed;
         _data.EntitySellCompleted += OnEntitySellCompleted;
@@ -227,6 +228,7 @@ public class SellCartPresenter : MonoBehaviour
 
         _isSubscribed              = false;
         _cart.Changed             -= Refresh;
+        Lang.Changed              -= Refresh;
         _data.ItemSellCompleted   -= OnSellCompleted;
         _data.ItemSellFailed      -= OnSellFailed;
         _data.EntitySellCompleted -= OnEntitySellCompleted;
@@ -260,24 +262,24 @@ public class SellCartPresenter : MonoBehaviour
         int          basePrice = GameDataLoader.GetItemPrice(itemId);
 
         return new TooltipContent(GameDataLoader.GetItemName(itemId))
-            .Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
-            .Row("담은 수량", $"{count:N0} 개", $"보유 {_data.GetItemCount(itemId):N0}", null)
-            .Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(basePrice):N0} 골드", "개당", null)
-            .Row("받을 골드", $"{AuctionModel.InstantSellTotal(basePrice, count):N0} 골드")
-            .Header("경매로 올리면")
-            .Row("경매 등록가", AuctionModel.FormatBand(basePrice), "개당 단가", null)
-            .Row("경매장 [등록] 탭에서 직접 정합니다", "");
+            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+            .Row(Lang.Get("UI.Sell.CartCount"), Lang.Format("UI.Inventory.CountUnit", $"{count:N0}"), $"{Lang.Get("UI.Inventory.Owned")} {_data.GetItemCount(itemId):N0}", null)
+            .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellPrice(basePrice):N0}"), Lang.Get("UI.Sell.Each"), null)
+            .Row(Lang.Get("UI.Sell.GoldToGet"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellTotal(basePrice, count):N0}"))
+            .Header(Lang.Get("UI.Sell.IfAuctioned"))
+            .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice), Lang.Get("UI.Sell.UnitPrice"), null)
+            .Row(Lang.Get("UI.Sell.SetInAuction"), "");
     }
 
     // 개체 줄 툴팁 — 등급 · 즉시 판매가, 그리고 경매로 올리면의 단가 범위.
     private static TooltipContent BuildEntityTooltip(string name, GlobalRarity rarity, int basePrice)
     {
         return new TooltipContent(name)
-            .Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
-            .Row("즉시 판매가", $"{AuctionModel.InstantSellTotal(basePrice, 1):N0} 골드")
-            .Header("경매로 올리면")
-            .Row("경매 등록가", AuctionModel.FormatBand(basePrice), "", null)
-            .Row("경매장 [등록] 탭에서 직접 정합니다", "");
+            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+            .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellTotal(basePrice, 1):N0}"))
+            .Header(Lang.Get("UI.Sell.IfAuctioned"))
+            .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice), "", null)
+            .Row(Lang.Get("UI.Sell.SetInAuction"), "");
     }
 
     // 담긴 목록·합계·경고·버튼 상태를 화면에 반영한다 (Start · OnEnable · SellCartModel.Changed 구독).
@@ -314,7 +316,7 @@ public class SellCartPresenter : MonoBehaviour
                      name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
-                     ItemIconContent.ForCharacter(tid),
+                     ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
                      () => BuildEntityTooltip(name, rarity, basePrice));
         }
 
@@ -326,7 +328,7 @@ public class SellCartPresenter : MonoBehaviour
             }
 
             SellCartRowView row       = _rows.Get(index++);
-            string          name      = equipRow.Name;
+            string          name      = Loc.Get(equipRow.NameLocKey);
             int             basePrice = equipRow.BasePrice;
             GlobalRarity    rarity    = equipRow.GlobalRarity;
 
@@ -335,7 +337,7 @@ public class SellCartPresenter : MonoBehaviour
                      name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
-                     ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions),
+                     ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                      () => BuildEntityTooltip(name, rarity, basePrice));
         }
 
@@ -345,7 +347,7 @@ public class SellCartPresenter : MonoBehaviour
 
         emptyText.gameObject.SetActive(count == 0);
         // '즉시 판매'라고 못 박는다 — 경매장(직접 가격, 즉시 판매가 이상)과 다른 파는 법이라는 걸 합계 줄에서 말한다.
-        totalText.text = $"즉시 판매 {_cart.TotalPrice:N0} G";
+        totalText.text = Lang.Format("UI.Sell.Total", $"{_cart.TotalPrice:N0}");
 
         // 상위 등급은 다시 모으기 어렵다. 목록에서 빼지 않고 눈에 띄게만 알린다 —
         // 빼 버리면 "왜 안 담기지"가 되고, 팔 자유는 남겨 둔다.
@@ -439,7 +441,7 @@ public class SellCartPresenter : MonoBehaviour
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isWaiting  = true;
         ApplySellButton();
-        _waitHandle = _wait.Begin("판매", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Sell.Wait"), onClosed: OnWaitClosed);
     }
 
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼 잠금을 푼다 (ServerWaitManager.Begin의 onClosed)

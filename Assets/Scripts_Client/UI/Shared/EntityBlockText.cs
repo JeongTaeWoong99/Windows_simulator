@@ -1,6 +1,4 @@
-using MikaProtocol;
-
-// 개체(캐릭터·장비)를 내놓을 수 없는 이유 → 사용자에게 보일 한 줄.
+// 개체(캐릭터·장비)·자원을 내놓을 수 없는 이유 → 사용자에게 보일 한 줄. 자원은 잠금(T-159)만 막는다.
 //
 // ■ 두 화면이 같은 판정을 쓴다
 // 경매 등록('AuctionRegisterPresenter')과 즉시 판매 담기('InventoryGridPresenter')가 같은 개체를 막는다.
@@ -9,28 +7,26 @@ using MikaProtocol;
 // ■ 서버 판정을 미리 흉내 낸다
 // 진짜 판정은 서버다(장비 착용 → SellEquipWorn·AuctionEquipWorn, 바쁜 캐릭터 → SellCharacterBusy·AuctionCharacterBusy,
 // 마지막 캐릭터 → SellLastCharacter·AuctionLastCharacter, 잠금 → EntityLocked · T-137). 여기는 보내기 전에 흐리게 막고 이유를 적는 데만 쓴다.
+// ※ 창고에 있는지는 보지 않는다 — 창고 것도 인벤토리 것과 똑같이 내놓는다(T-164 · 이슈 #74).
 public static class EntityBlockText
 {
     // 잠긴 개체의 사유 — 잠금이 가장 먼저다(풀기 전에는 다른 사유를 고쳐도 소용없다). 서버 'EntityLocked'.
-    public const string LockedText = "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다";
+    public static string LockedText => Lang.Get("UI.Block.Locked");
 
-    // 창고에 맡긴 개체의 사유 — 판매·경매 등록은 인벤토리에 있는 것만 된다(T-107). 잠금보다 먼저다(창고 안에서는 잠금을 못 바꾼다).
-    public const string InWarehouseText = "창고에 있습니다 — 먼저 인벤토리로 꺼내세요";
+    // 이 자원을 내놓을 수 없는 이유. 내놓을 수 있으면 null (T-159).
+    // ※ 자원은 잠금만 본다 — 종류(TID) 단위라 수량 전부가 함께 막힌다.
+    public static string? ForItem(PlayerDataModel data, int itemId)
+        => data.IsItemLocked(itemId) ? LockedText : null;
 
     // 이 장비를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
     public static string? ForEquip(PlayerDataModel data, long equipId)
     {
-        if (data.FindEquip(equipId)?.Container == EContainer.Warehouse)
-        {
-            return InWarehouseText;
-        }
-
         if (data.FindEquip(equipId)?.IsLocked == true)
         {
             return LockedText;
         }
 
-        return data.IsEquipped(equipId) ? "캐릭터가 끼고 있습니다 — 먼저 해제하세요" : null;
+        return data.IsEquipped(equipId) ? Lang.Get("UI.Block.EquipWorn") : null;
     }
 
     // 이 캐릭터를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
@@ -38,11 +34,6 @@ public static class EntityBlockText
     //   즉시 판매는 이미 담은 캐릭터를 빼고 세야 해서 호출하는 쪽이 계산한다.
     public static string? ForCharacter(PlayerDataModel data, long characterId, int remainingAfter)
     {
-        if (data.FindCharacter(characterId)?.Container == EContainer.Warehouse)
-        {
-            return InWarehouseText;
-        }
-
         if (data.FindCharacter(characterId)?.IsLocked == true)
         {
             return LockedText;
@@ -50,17 +41,17 @@ public static class EntityBlockText
 
         if (data.FindSlotIndexOf(characterId) >= 0)
         {
-            return "작업슬롯에 배치 중입니다 — 먼저 빼세요";
+            return Lang.Get("UI.Block.CharacterAssigned");
         }
 
         if (data.IsWearingEquip(characterId))
         {
-            return "장비를 끼고 있습니다 — 먼저 해제하세요";
+            return Lang.Get("UI.Block.CharacterWearing");
         }
 
         if (remainingAfter <= 0)
         {
-            return "마지막 캐릭터는 내놓을 수 없습니다";
+            return Lang.Get("UI.Block.LastCharacter");
         }
 
         return null;

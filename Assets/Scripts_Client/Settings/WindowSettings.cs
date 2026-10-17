@@ -48,6 +48,9 @@ public static class WindowSettings
     // UI 투명도(불투명도 %, 10~100) — 설정 슬라이더 값 그대로. 에디터도 저장값을 읽는다('DisplayManager').
     public const string OpacityKey             = "Display.Opacity";
 
+    // 화면 언어('GameData.Language' 값). 에디터도 저장값을 읽는다('Lang').
+    public const string LanguageKey            = "Display.Language";
+
     // 저장된 bool을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
     public static bool LoadBool(string key, bool fallback)
     {

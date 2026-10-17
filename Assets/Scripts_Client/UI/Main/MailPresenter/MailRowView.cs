@@ -77,7 +77,7 @@ public class MailRowView : MonoBehaviour
         titleText.color     = UIThemePalette.Of(isClaimed ? UIThemeRole.TextDisabled : UIThemeRole.TextMain); // 받은 우편은 흐리게
         infoText.text       = info;
         attachmentText.text = attachment;
-        actionText.text     = isClaimed ? "삭제" : "받기";
+        actionText.text     = isClaimed ? Lang.Get("UI.Mail.Delete") : Lang.Get("UI.Mail.Claim");
     }
 
     // 요청을 기다리는 동안 버튼을 잠근다 ('MailPresenter'가 호출) — 같은 우편을 두 번 보내지 않게.

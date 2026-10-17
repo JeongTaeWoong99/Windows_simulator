@@ -91,8 +91,8 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // ─── 공용 검색창 ───
-    public string QueryPlaceholder => "시세 볼 아이템 이름";
-    public string QueryHint        => "[검색] — 이름이 맞는 아이템의 시세를 엽니다";
+    public string QueryPlaceholder => Lang.Get("UI.Auction.PriceQueryPlaceholder");
+    public string QueryHint        => Lang.Get("UI.Auction.PriceQueryHint");
     public string Query            => _query;
 
     public void OnQueryChanged(string text) => _query = text;
@@ -103,7 +103,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (!AuctionText.TryFindByName(text, out EAuctionKind kind, out int tid))
         {
-            _wait.RaiseNotice($"'{text.Trim()}'(이)라는 아이템이 없습니다.");
+            _wait.RaiseNotice(Lang.Format("UI.Auction.NoSuchItem", text.Trim()));
 
             return;
         }
@@ -187,6 +187,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.SummaryCompleted     += OnResponse;
         _auction.PriceLevelsCompleted += OnResponse;
         _auction.DailyPricesCompleted += OnResponse;
+        Lang.Changed                  += Refresh; // 시세 칸 문구를 새 언어로
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -202,6 +203,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.SummaryCompleted     -= OnResponse;
         _auction.PriceLevelsCompleted -= OnResponse;
         _auction.DailyPricesCompleted -= OnResponse;
+        Lang.Changed                  -= Refresh;
     }
 
     #endregion
@@ -255,7 +257,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.RequestPriceLevels(_kind, _tid);
         _auction.RequestDailyPrices(_kind, _tid);
 
-        _waitHandle = _wait.Begin("시세", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Auction.Price"), onClosed: OnWaitClosed);
         Refresh();
     }
 
@@ -355,11 +357,11 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
             return;
         }
 
-        lowestText.text    = summary.AvailableCount > 0 ? Big(summary.LowestUnitPrice, "G") : $"—{Unit(" 매물 없음")}";
-        availableText.text = Big(summary.AvailableCount, "개");
+        lowestText.text    = summary.AvailableCount > 0 ? Big(summary.LowestUnitPrice, "G") : $"—{Unit(" " + Lang.Get("UI.Auction.NoListings"))}";
+        availableText.text = Big(summary.AvailableCount, Lang.Get("UI.Auction.CountWord"));
         recentText.text    = summary.RecentUnitPrice > 0
             ? $"{Big(summary.RecentUnitPrice, "G")} {UIRichText.Small(AuctionPriceText.FormatTrend(summary.RecentUnitPrice, summary.YesterdayAvgPrice))}"
-            : $"—{Unit(" 거래 없음")}";
+            : $"—{Unit(" " + Lang.Get("UI.Auction.NoTrades"))}";
 
         long yesterdayCount = 0L;
 
@@ -369,8 +371,8 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         }
 
         yesterdayText.text = summary.YesterdayAvgPrice > 0
-            ? $"{Big(summary.YesterdayAvgPrice, "G")}{Unit($" · {yesterdayCount:N0}개 거래")}"
-            : $"—{Unit(" 거래 없음")}";
+            ? $"{Big(summary.YesterdayAvgPrice, "G")}{Unit(" · " + Lang.Format("UI.Auction.TradeCount", yesterdayCount.ToString("N0")))}"
+            : $"—{Unit(" " + Lang.Get("UI.Auction.NoTrades"))}";
     }
 
     // "12,345 G" — 값은 강조색, 단위는 작게.

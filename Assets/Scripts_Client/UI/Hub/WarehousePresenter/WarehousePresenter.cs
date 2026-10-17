@@ -58,8 +58,8 @@ public class WarehousePresenter : MonoBehaviour
     [SerializeField, Tooltip("열려 있지 않은 탭의 버튼 색")]
     private UIThemeRole normalRole = UIThemeRole.Button;
 
-    // 정렬 기준 드롭다운의 문구. 'InventorySortKey' 순서와 같다('InventoryToolPresenter'와 같은 문구).
-    private static readonly string[] SortKeyLabels = { "등급순", "이름순", "수량순" };
+    // 정렬 기준 드롭다운의 문구 키. 'InventorySortKey' 순서와 같다('InventoryToolPresenter'와 같은 문구).
+    private static readonly string[] SortKeyLabelKeys = { "UI.Tool.SortRarity", "UI.Tool.SortName", "UI.Tool.SortCount" };
 
     // 지금 창고가 보이는 탭. 특성 탭은 되지 않는다.
     private InventoryTab _tab = InventoryTab.Resource;
@@ -122,6 +122,7 @@ public class WarehousePresenter : MonoBehaviour
 
         _isSubscribed = true;
         inventoryTabs.TabChanged += Follow;
+        Lang.Changed             += RebuildSortKeyOptions; // 기준 문구를 새 언어로
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -134,6 +135,7 @@ public class WarehousePresenter : MonoBehaviour
 
         _isSubscribed = false;
         inventoryTabs.TabChanged -= Follow;
+        Lang.Changed             -= RebuildSortKeyOptions;
     }
 
     #endregion
@@ -246,7 +248,7 @@ public class WarehousePresenter : MonoBehaviour
             }
 
             _sortKeyOptions.Add(key);
-            labels.Add(SortKeyLabels[(int)key]);
+            labels.Add(Lang.Get(SortKeyLabelKeys[(int)key]));
         }
 
         if (!_sortKeyOptions.Contains(_sortKey))
