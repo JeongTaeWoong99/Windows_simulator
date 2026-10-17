@@ -1,6 +1,6 @@
 # Art 폴더 규칙
 
-> 최종 업데이트: 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
+> 최종 업데이트: 2026-10-18 (**원본 정리 규칙** — `_source/<종류>/<팩>/` 선반 · 팩 이름 · 원본 목록 · 새 팩 20개 · **팩은 쓸 재료만 추려 `sprites/`·`anims/`·`audio/` 모양으로** — 정리기 `_source/tidy_source.py` · 음악은 ogg · karsiori 팩별 분리) · 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
 
 **그림은 받은 그대로 쓰지 않는다.** 팩마다 크기·방향·발 위치·임포트 설정이 제각각이라,
 원본은 `_source/`에 그대로 두고 **레시피 → 굽기**로 같은 규격의 결과물을 만든다.
@@ -13,7 +13,7 @@
 
 ```
 Assets/Art/
-├─ _source/                  원본 팩 — 받은 그대로. 손대지 않는다 (임포트 설정도 팩 것 그대로)
+├─ _source/<종류>/<팩>/      원본 팩 — 쓸 재료만 추려 같은 모양으로. 그림은 손대지 않는다 (임포트 설정도 팩 것 그대로). 아래 "원본 정리"
 ├─ characters/<키>/          캐릭터 — 레시피 + 굽기 결과
 ├─ backgrounds/<키>/         배경 — 레시피 + 굽기 결과
 ├─ targets/<키>/             대상 — 레시피 + 굽기 결과 (키 = 산업 이름)
@@ -67,6 +67,112 @@ git checkout -t origin/main
   화면은 `VisualCatalog.Current`(Resources)로 찾는다. 지금 메인에서 그림 GUID를 가리키는 파일은 0개다(2026-10-05 확인).
 - 폴더·파일 이름은 짧게 — Windows 경로 260자 제한에 걸리면 받기가 `Filename too long`으로 실패한다(팩 폴더 안의 긴 이름은 `pack`으로 줄였다).
 - 큰 파일(Git LFS)은 아직 쓰지 않는다 — 지금 21MB. 저장소가 1GB에 가까워지면 다시 본다.
+
+## 원본 정리 (`_source/`)
+
+받은 팩은 **필요한 것만 추려 같은 모양으로** `_source/<종류>/<팩>/`에 둔다. 판단 기준은 하나 — **굽기·화면이 쓸 수 있는 재료인가.**
+데모 씬·프리팹·타일 같은 "팩을 바로 쓰는 장치"는 우리 굽기가 쓰지 않으니 남기지 않는다. 버린 것이 필요해지면 팩을 다시 받는다.
+
+### 종류 — `_source/<종류>/`
+
+종류는 "무엇을 그린(담은) 팩인가"로 고른다 — 어디에 쓸지는 바뀌어도 팩이 담은 것은 안 바뀐다.
+
+| 종류 | 담는 것 | 주로 굽는 곳 |
+|---|---|---|
+| `characters/` | 움직이는 생물 시트 — 영웅·몬스터 구분 없이 (대기·달리기·공격 애니) | `characters/<키>/` |
+| `environment/` | 배경 층 · 땅 타일 그림 · 소품(나무·돌·건물) | `backgrounds/` · `targets/` |
+| `icons/` | 아이템·장비·자원·재화 아이콘 (움직이는 아이콘 포함) | `icons/` |
+| `ui/` | UI 틀(패널·바·슬롯) · 커서 | 아직 없음 |
+| `fx/` | 이펙트 원본 — 팩 · 임시 그림 생성 스크립트 | `fx/<연출 키>/` |
+| `audio/bgm/` · `audio/sfx/` | 배경 음악 · 효과음 | 아직 없음 (사운드 쓰는 코드가 없다) |
+
+### 팩 하나의 모양 — `<팩>/`
+
+```
+<팩>/
+├─ sprites/      그림(.png) — 팩 안 분류(몬스터 이름·색·크기)만 하위 폴더로 남긴다
+├─ anims/        스프라이트 애니(.anim)
+├─ audio/        소리(.ogg)
+└─ License.txt   라이선스·안내 문서는 팩 루트에 (이름은 받은 그대로)
+```
+
+없는 칸은 만들지 않는다(그림만 있는 팩은 `sprites/` 하나). `Sprites`·`Texture`·`PNG`·`Animations`·`Art`·`pack` 같은 **팩의 포장 폴더는 걷어 낸다** — 종류 칸이 대신한다.
+
+| 남긴다 | 버린다 |
+|---|---|
+| `.png` 그림 | 씬(`.unity`) · 프리팹 · 머티리얼 · 셰이더 · 타일·팔레트(`.asset`) · 스프라이트 아틀라스 · 프리셋 · 물리 재질 |
+| 스프라이트 키가 있는 `.anim` | 애니메이터(`.controller`·`.overrideController`) · UI를 움직이는 `.anim`(스프라이트 키 없음) |
+| 소리 → **`.ogg`(Vorbis)로 바꿔서** | 원본 `.wav` — 음악 10곡 182MB → 29MB. Unity도 임포트하며 다시 압축하니 무손실일 필요가 없다 |
+| 라이선스·readme 문서 | 연락처·변경 기록·지원 안내 문서 |
+| | **스크립트(`.cs`·`.asmdef`)** — 게임 빌드에 같이 컴파일되고 asmdef는 저장소 루트에 `.csproj`를 만든다 |
+| | 폰트(`.ttf`·SDF) — 화면 폰트는 Pretendard 하나다 |
+| | PSD · 데모용·미리보기·광고 그림(`Demo/`·`Preview/`·`You may also like/`) |
+| | **같은 그림의 확대본·변형** — 픽셀 아트는 화면이 늘리니 원본 배율 하나만(`addin-weapon-icons`는 16×16만 · `minerals-icons`는 투명 배경만) |
+
+**레시피·목록이 쓰는 원본은 위 표와 무관하게 남긴다** — 미리보기 그림이 배경 원본인 팩(`pixel-art-hills`)처럼. 남긴 애니가 쓰는 그림도 남는다.
+
+### 넣는 순서
+
+1. 받은 팩을 `_source/<종류>/<팩>/`으로 옮긴다 — **`.meta`를 함께**(Unity를 닫고 파일로, 또는 프로젝트 창에서 끌어서). 레시피·목록이 GUID로 원본을 가리키니 `.meta`가 따라가면 참조는 그대로다.
+2. **`python _source/tidy_source.py`** 로 미리 본다 → 목록(`<프로젝트>/Temp/tidy_plan.txt`)이 맞으면 **`--apply`**.
+   위 표대로 버리고 `sprites/`·`anims/`·`audio/`로 다시 놓는다. 버린 것은 지우지 않고 `<프로젝트>/Temp/_source_dropped/`로 옮긴다.
+   이미 정리된 팩은 건드리지 않는다. 팩마다 따로 버릴 것(확대본 등)은 스크립트의 `DROP_EXTRA`에 한 줄 더한다.
+3. 소리가 있으면 `.ogg`로 바꾼다(스크립트는 변환하지 않는다).
+4. **아래 원본 목록에 한 줄** — 라이선스 요지를 함께. 배포 전 확인을 이 표 하나로 한다.
+
+| 이름 규칙 | 왜 |
+|---|---|
+| 팩 폴더는 **팩 공식 이름의 영문 소문자 kebab-case**, 짧게 (`Medieval Warrior Pack 2` → `medieval-warrior-2`) | 경로 260자 제한 |
+| 이름이 겹치면 **뒤에 제작자** (`hero-knight-luizmelo`) | 같은 이름 다른 팩이 이미 있다 |
+| 제작자 폴더에 팩이 여럿 들었으면 **팩마다 나눈다**(`karsiori` → `karsiori-gem` · `-chest` · `-potion` · `-food` · `-rock-pile` · `-spark`) — 하나만 들었으면 껍데기만 벗긴다 | 팩 하나 = 폴더 하나 · 종류도 팩마다 다르다 |
+| 한 팩이 여러 종류를 담으면 **가장 많이 쓸 쪽**에 둔다 — 목록의 "내용"에 나머지를 적는다 | 같은 팩을 둘로 나누지 않는다 |
+
+> ⚠️ **팩을 `Assets/` 바로 아래에 풀어 두지 않는다.** 에셋 스토어·임포트는 기본으로 `Assets/<팩>/`에 풀리는데, 그 자리는 메인(공개) 저장소의 추적 대상이다
+> — 받으면 바로 `_source/<종류>/`로 옮긴다. 메인 `git status`에 그림 팩이 `??`로 보이면 옮길 것이 남은 것이다.
+
+### 원본 목록
+
+라이선스는 팩 루트 문서의 요지다. "—"는 팩에 라이선스 문서가 없다는 뜻 — 받은 곳(스토어 페이지)의 조건을 따른다.
+
+| 종류 | 팩 폴더 | 내용 | 쓰는 곳 | 라이선스 |
+|---|---|---|---|---|
+| characters | `black-knight` | 기사 | `characters/black-knight` | `License.txt` |
+| characters | `bringer-of-death` | 사신 — 이펙트 포함 공격 | `characters/bringer-of-death` | `License.txt` |
+| characters | `hero-knight` | 기사 — 3연타 | `characters/hero-knight` | — |
+| characters | `warrior` | 전사 — 이펙트 포함 시트 | `characters/warrior` | `License.txt` |
+| characters | `hero-knight-luizmelo` | 기사 (LuizMelo) | — | — |
+| characters | `hero-knight-2` | 기사 2 | — | CC0 |
+| characters | `martial-hero` | 무사 | — | CC0 |
+| characters | `medieval-king-2` | 왕 | — | — |
+| characters | `medieval-warrior` · `medieval-warrior-2` | 전사 | — | — |
+| characters | `evil-wizard` · `evil-wizard-2` · `evil-wizard-3` | 마법사 | — | CC0 (1편 문서 기준) |
+| characters | `monsters-creatures` · `monsters-creatures-2` | 몬스터 — 눈알·고블린·버섯·해골 · 박쥐·미믹·쥐·슬라임 | — | — |
+| characters | `enemy-galore-1` | 몬스터 9종 — 게, 박쥐, 골렘(3단계), 쥐, 슬라임, 해골 … · 공격 이펙트 프레임 포함 | — | `Read Me.txt` — 상업 가능 · 재배포 금지 |
+| environment | `free-pixel-art-forest` | 숲 배경 | `backgrounds/forest` | `readme.txt` |
+| environment | `biome-plains` | 평원 배경 + 땅 타일 (한 장 시트) | `backgrounds/plains` | `ReadMe.pdf` |
+| environment | `pixel-art-hills` | 언덕 배경 (미리보기 한 장) | `backgrounds/hills` | `Lisense.txt` — 상업 가능 · 재배포 금지 |
+| environment | `biome-american-forest` | 숲 배경 + 땅 타일 (한 장 시트) | `backgrounds/american-forest` | `ReadMe.pdf` |
+| environment | `dark-forest-pack` | 어두운 숲 배경 · 땅 타일 · 소품 | `backgrounds/dark-forest` | `ReadMe.pdf.txt` |
+| environment | `cainos-village-props` | 마을 소품 — 돌·나무·허수아비·인형·우물 · 상자 애니 | `targets/*` | — |
+| environment | `fantasy-pixel-trees` | 나무 (외곽선 유무 · 평지용) | — | — |
+| environment | `karsiori-rock-pile` | 돌무더기 6색 (→ 대상 후보) | — | `Read Me.txt` |
+| icons | `minerals-icons` | 광물 48 | `icons/` (채광·보석) | `readme.txt` |
+| icons | `pixel-item-pack` | 아이템 (외곽선 3벌) | `icons/` (발굴·농사·벌목·사냥·구슬·상자) | — |
+| icons | `pixel-art-icons-swords` | 검 | `icons/` (무기) | `ReadMe.pdf` |
+| icons | `cainos-rpg-icons` | RPG 아이콘 — 장비·음식·재료·광석·물약·도구 | — | — |
+| icons | `addin-weapon-icons` | 무기 아이콘 325 (16×16) | — | `License.txt` — 상업 가능 · 재배포 금지(수정해도) |
+| icons | `medieval-weapons` | 무기 51 | — | — |
+| icons | `free-pixel-food` | 음식 64 (16×16) | — | `ReadMe.txt` |
+| icons | `pixel-ui-icons` | 소모품·재화 아이콘 20 | — | `Documentation.txt` |
+| icons | `karsiori-gem` | 보석 10종 × 8색 (움직임) | — | `Read Me.txt` |
+| icons | `karsiori-chest` | 상자 9종 (열리는 애니) | — | — |
+| icons | `karsiori-potion` | 물약 13종 (움직임) | — | — |
+| icons | `karsiori-food` | 음식 | — | `Read Me.txt` |
+| ui | `pixel-hud-ui` | HUD 틀 7장 · 아이콘 2 | — | `README.md` |
+| ui | `pixel-cursors` | 커서 56 (색 5벌) | — | — |
+| fx | `fx-placeholder` | 임시 이펙트 생성 스크립트 `make_fx.py` | `fx/*` | 자체 제작 |
+| fx | `karsiori-spark` | 반짝임 (보석 팩 동봉) | — | (`karsiori-gem`과 같음) |
+| audio/bgm | `xdeviruchi-8bit-fantasy` | 8비트 판타지 음악 10곡 (ogg · 인트로/루프/끝 분리본 포함) | — | `How to Set The Loops.pdf` 외 없음 |
 
 ## 규격
 
@@ -134,7 +240,7 @@ git checkout -t origin/main
 
 ## 새 그림 넣기
 
-1. 팩을 `_source/<팩-이름>/`에 넣는다.
+1. 팩을 `_source/<종류>/<팩>/`에 넣는다 — 아래 "원본 정리".
 2. 결과 폴더(`characters/<키>/` 등)를 만들고 **Create > DesktopWindowControl > Art Recipe**로 레시피를 만든다
    — 이름은 `<키>_recipe`.
 3. 레시피에 원본을 끼운다.
@@ -177,7 +283,7 @@ git checkout -t origin/main
 임포트 설정(선형 필터 · 무압축 · 한 장 · 가운데 기준)은 도구가 고정한다 — 픽셀 아트가 아니라 늘리고 돌려 쓰는 부드러운 도형이라 점 필터가 아니다.
 크기는 자유다. 화면이 크기를 정한다(지금 그림은 128~256 · 테두리 띠만 32 · 빛 기둥은 1:2).
 
-> **임시 그림도 여기 둔다.** 지금 이펙트는 전부 생성 스크립트 [`_source/fx-placeholder/make_fx.py`](_source/fx-placeholder/make_fx.py)로 구운
+> **임시 그림도 여기 둔다.** 지금 이펙트는 전부 생성 스크립트 [`_source/fx/fx-placeholder/make_fx.py`](_source/fx/fx-placeholder/make_fx.py)로 구운
 > 임시 그림이다(`python make_fx.py gain` — 연출 키별로). 아트가 같은 이름으로 다시 그려 덮으면 끝이고 코드는 고치지 않는다.
 > 임시 그림이 마음에 들면 그대로 써도 된다. 모양을 다듬을 때는 PNG를 손대지 말고 스크립트를 고쳐 다시 굽는다(원본은 스크립트다).
 
@@ -250,17 +356,17 @@ git checkout -t origin/main
 
 | 키 | 원본 |
 |---|---|
-| `characters/black-knight` (1001 · 대체 캐릭터) | `_source/black-knight` |
-| `characters/bringer-of-death` (1002) | `_source/bringer-of-death` |
-| `characters/hero-knight` (1003~1016) | `_source/hero-knight` — 3연타 |
-| `characters/warrior` (1017~1030) | `_source/warrior` — 이펙트 포함 시트 |
-| `backgrounds/forest` (기본 배경 · 발굴 — 옛 낚시 자리 임시) | `_source/free-pixel-art-forest` |
-| `backgrounds/plains` (농사) | `_source/biome-plains` — 아틀라스 스프라이트 `Background5~1` + 땅 띠 `TileGround2`(같은 팩 타일) |
-| `backgrounds/hills` (채광) | `_source/pixel-art-hills` — 미리보기 한 장 |
-| `backgrounds/american-forest` (벌목) | `_source/biome-american-forest` — 〃 + 땅 띠 `TileGround2`(같은 팩) |
-| `backgrounds/dark-forest` (사냥) | `_source/dark-forest-pack` + 땅 띠 `Tiles/Earth`(같은 팩, 축소 2) — ⚠️ L3 이음매가 어긋난다(검사 경고) |
-| `targets/{mining·logging·farming·hunting·fishing}` | `_source/cainos-village-props` — 돌 · 나무 · 허수아비 · 훈련 인형 · 우물. ⚠️ `fishing`은 옛 낚시 폴더 — 지금은 발굴(산업 값 2) 임시 그림이다. 발굴 그림을 구울 때 키 `excavation`으로 새로 만든다 (T-148 🎨) |
-| `fx/reveal/` — 6장 | 임시 — `_source/fx-placeholder/make_fx.py`(`reveal`). 번짐 · 광선 · 별 조각 · 빛 줄 · 원뿔 · 테두리 띠. `reveal_frame`은 9-slice 5px |
+| `characters/black-knight` (1001 · 대체 캐릭터) | `_source/characters/black-knight` |
+| `characters/bringer-of-death` (1002) | `_source/characters/bringer-of-death` |
+| `characters/hero-knight` (1003~1016) | `_source/characters/hero-knight` — 3연타 |
+| `characters/warrior` (1017~1030) | `_source/characters/warrior` — 이펙트 포함 시트 |
+| `backgrounds/forest` (기본 배경 · 발굴 — 옛 낚시 자리 임시) | `_source/environment/free-pixel-art-forest` |
+| `backgrounds/plains` (농사) | `_source/environment/biome-plains` — 아틀라스 스프라이트 `Background5~1` + 땅 띠 `TileGround2`(같은 팩 타일) |
+| `backgrounds/hills` (채광) | `_source/environment/pixel-art-hills` — 미리보기 한 장 |
+| `backgrounds/american-forest` (벌목) | `_source/environment/biome-american-forest` — 〃 + 땅 띠 `TileGround2`(같은 팩) |
+| `backgrounds/dark-forest` (사냥) | `_source/environment/dark-forest-pack` + 땅 띠 `Tiles/Earth`(같은 팩, 축소 2) — ⚠️ L3 이음매가 어긋난다(검사 경고) |
+| `targets/{mining·logging·farming·hunting·fishing}` | `_source/environment/cainos-village-props` — 돌 · 나무 · 허수아비 · 훈련 인형 · 우물. ⚠️ `fishing`은 옛 낚시 폴더 — 지금은 발굴(산업 값 2) 임시 그림이다. 발굴 그림을 구울 때 키 `excavation`으로 새로 만든다 (T-148 🎨) |
+| `fx/reveal/` — 6장 | 임시 — `_source/fx/fx-placeholder/make_fx.py`(`reveal`). 번짐 · 광선 · 별 조각 · 빛 줄 · 원뿔 · 테두리 띠. `reveal_frame`은 9-slice 5px |
 | `fx/gain/` — 5장 | 임시 — 〃 (`gain`). 번짐(속이 진함) · 광선 · 별 조각 · 빛 기둥(1:2) · 고리. 작은 위젯 칸(18px)에서도 보이게 공개 연출 것보다 진하다 |
 | `fx/bagfull/` — 2장 | 임시 — 〃 (`bagfull`). 자루(오른쪽 아래가 X 자리만큼 비어 있다) · X. 둘 다 흰색 — 자루는 옅은 회색, X는 `Negative` 빨강을 코드가 입힌다 |
 | `icons/icon_recipe` — 자원 171 · 장비 69 | 채광 = `minerals-icons` 1~30 · 발굴 = 물약(옛 낚시 자리 임시) · 농사 = 항아리 · 벌목 = 통 · 사냥 = 하트 · 구슬 = 동전 · 상자 = 상자(나무 빨강 · 은 파랑 · 황금 금색) — `pixel-item-pack`(Light Outline, 등급별 색) · 무기 = `pixel-art-icons-swords` 순환 · 보석 = `minerals-icons` 31~48 순환 · 장신구 = 하트. 지도·나침반·열쇠·큐브 5종은 `item_0` |
