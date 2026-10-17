@@ -19,12 +19,12 @@ public static class IndustryLabel
     {
         switch (industry)
         {
-            case EIndustryType.Farming: return "농사";
-            case EIndustryType.Excavation: return "발굴";
-            case EIndustryType.Mining:  return "채굴";
-            case EIndustryType.Logging: return "벌목";
-            case EIndustryType.Hunting: return "사냥";
-            case EIndustryType.None:    return "미지정";
+            case EIndustryType.Farming:    return Lang.Get("UI.Industry.Farming");
+            case EIndustryType.Excavation: return Lang.Get("UI.Industry.Excavation");
+            case EIndustryType.Mining:     return Lang.Get("UI.Industry.Mining");
+            case EIndustryType.Logging:    return Lang.Get("UI.Industry.Logging");
+            case EIndustryType.Hunting:    return Lang.Get("UI.Industry.Hunting");
+            case EIndustryType.None:       return Lang.Get("UI.Industry.None");
 
             default: return industry.ToString();
         }

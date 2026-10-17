@@ -11,7 +11,7 @@
 public static class EntityBlockText
 {
     // 잠긴 개체의 사유 — 잠금이 가장 먼저다(풀기 전에는 다른 사유를 고쳐도 소용없다). 서버 'EntityLocked'.
-    public const string LockedText = "잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다";
+    public static string LockedText => Lang.Get("UI.Block.Locked");
 
     // 이 자원을 내놓을 수 없는 이유. 내놓을 수 있으면 null (T-159).
     // ※ 자원은 잠금만 본다 — 종류(TID) 단위라 수량 전부가 함께 막힌다.
@@ -26,7 +26,7 @@ public static class EntityBlockText
             return LockedText;
         }
 
-        return data.IsEquipped(equipId) ? "캐릭터가 끼고 있습니다 — 먼저 해제하세요" : null;
+        return data.IsEquipped(equipId) ? Lang.Get("UI.Block.EquipWorn") : null;
     }
 
     // 이 캐릭터를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
@@ -41,17 +41,17 @@ public static class EntityBlockText
 
         if (data.FindSlotIndexOf(characterId) >= 0)
         {
-            return "작업슬롯에 배치 중입니다 — 먼저 빼세요";
+            return Lang.Get("UI.Block.CharacterAssigned");
         }
 
         if (data.IsWearingEquip(characterId))
         {
-            return "장비를 끼고 있습니다 — 먼저 해제하세요";
+            return Lang.Get("UI.Block.CharacterWearing");
         }
 
         if (remainingAfter <= 0)
         {
-            return "마지막 캐릭터는 내놓을 수 없습니다";
+            return Lang.Get("UI.Block.LastCharacter");
         }
 
         return null;

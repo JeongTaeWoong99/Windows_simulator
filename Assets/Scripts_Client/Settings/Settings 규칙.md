@@ -1,6 +1,6 @@
 # Settings 규칙
 
-> 최종 업데이트: 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
+> 최종 업데이트: 2026-10-17 (`Display.Language` — 화면 언어 · T-136) · 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
 
 **창·표시 설정을 `PlayerPrefs`에 저장하고 되읽는 곳.** 키 상수와 읽기·쓰기 헬퍼만 둔다 —
 설정을 **적용**하는 일은 [`Managers/`](<../Managers/Managers 규칙.md>)의 `WindowManager`(창)·`DisplayManager`(표시·성능)가 한다.
@@ -98,6 +98,7 @@ Unity는 **정상 종료 시에만** 자동 저장하는데, 상주 앱은 작�
 | `Display.FrameRate` | 프레임 제한 | `FrameRateOption` — 30 · 60 · 90 · 144 · 모니터 동기화 |
 | `Display.FpsTextPosition` | FPS 텍스트를 창 어느 구석에 띄우나 | `FpsTextPosition` — 숨김 · 좌상 · 우상 · 좌하 · 우하 |
 | `Display.Opacity` | UI 불투명도 | **% 값 그대로** — 10~100 (`DisplayManager.MinOpacityPercent`·`MaxOpacityPercent`) |
+| `Display.Language` | 화면 언어 | `GameData.Language` 값 — 적용은 매니저가 아니라 `Data/Lang`이 한다(씬보다 먼저 걸어야 해서) |
 
 - 창 모양과 다른 축이라 접두사를 `Display.`로 따로 둔다. **에디터에서도 읽는다**(§1 예외).
 - 숫자 항목은 `vSyncCount = 0` + `targetFrameRate = N`, 모니터 동기화는 `vSyncCount = 1`이다

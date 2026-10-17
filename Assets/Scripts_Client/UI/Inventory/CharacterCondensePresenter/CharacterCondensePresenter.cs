@@ -314,21 +314,21 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (IsTargetMaxed)
         {
-            _wait.RaiseNotice("이미 최고 단계입니다 — 더 넣을 수 없습니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
 
         if (_data.IsCharacterBusy(characterId))
         {
-            _wait.RaiseNotice("배치됐거나 장비를 낀 캐릭터는 재료로 넣을 수 없습니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.BusyMaterial"));
 
             return;
         }
 
         if (IsLocked(characterId))
         {
-            _wait.RaiseNotice("잠긴 캐릭터는 재료로 넣을 수 없습니다 — Ctrl+좌클릭으로 풀 수 있습니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.LockedMaterial"));
 
             return;
         }
@@ -415,6 +415,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         _data.CharactersChanged       += OnDataChanged;
         _data.WorkStationSlotsChanged += OnDataChanged;
         _data.EquipsChanged           += OnDataChanged;
+        Lang.Changed                  += OnDataChanged; // 열려 있으면 새 언어로 다시 그린다
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -429,6 +430,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         _data.CharactersChanged       -= OnDataChanged;
         _data.WorkStationSlotsChanged -= OnDataChanged;
         _data.EquipsChanged           -= OnDataChanged;
+        Lang.Changed                  -= OnDataChanged;
     }
 
     // 보유 캐릭터가 바뀌었다 — 못 쓰게 된 재료를 빼고 다시 그린다 (캐릭터·슬롯·장비 변경 구독).
@@ -503,8 +505,8 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         int max = GameDataLoader.CondenseMaxStar;
 
-        infoText.text = $"{CharacterSlotSource.GetLevelLabel(target.Level)}{UIRichText.Dot}응축 누적 {target.CondenseCount} / "
-                      + $"{GameDataLoader.GetCondenseThreshold(max)}";
+        infoText.text = CharacterSlotSource.GetLevelLabel(target.Level) + UIRichText.Dot
+                      + Lang.Format("UI.Condense.Info", target.CondenseCount, GameDataLoader.GetCondenseThreshold(max));
 
         Color filled = UIThemePalette.Of(UIThemeRole.Highlight);
         Color empty  = UIThemePalette.Of(UIThemeRole.TextDisabled);
@@ -521,8 +523,8 @@ public class CharacterCondensePresenter : MonoBehaviour
     // 비교 상자 — 지금 ★의 작업속도, 고른 재료로 ★이 오르면 '▶ 응축 후'.
     private void DrawCompare(int now, int then)
     {
-        beforeTitleText.text = $"지금 {now}성";
-        beforeValueText.text = $"작업속도 +{GameDataLoader.GetStarSpeedAdd(now) / 10f:0.#}%";
+        beforeTitleText.text = Lang.Format("UI.Condense.Now", now);
+        beforeValueText.text = Lang.Format("UI.Inventory.WorkSpeedAdd", (GameDataLoader.GetStarSpeedAdd(now) / 10f).ToString("0.#"));
 
         bool rises = then > now;
 
@@ -534,8 +536,8 @@ public class CharacterCondensePresenter : MonoBehaviour
             return;
         }
 
-        afterTitleText.text = $"응축 후 {then}성";
-        afterValueText.text = $"작업속도 +{GameDataLoader.GetStarSpeedAdd(then) / 10f:0.#}%";
+        afterTitleText.text = Lang.Format("UI.Condense.After", then);
+        afterValueText.text = Lang.Format("UI.Inventory.WorkSpeedAdd", (GameDataLoader.GetStarSpeedAdd(then) / 10f).ToString("0.#"));
     }
 
     // 진행 바 — ★마다 한 칸, 칸마다 그 단계 몫만큼 채운다.
@@ -567,20 +569,20 @@ public class CharacterCondensePresenter : MonoBehaviour
         int max = GameDataLoader.CondenseMaxStar;
 
         captionLeftText.text = n > 0
-            ? $"누적 {count} + {Colorize(n.ToString(), UIThemePalette.Of(UIThemeRole.Highlight))} = {count + n}"
-            : $"누적 {count}";
+            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(n.ToString(), UIThemePalette.Of(UIThemeRole.Highlight)), count + n)
+            : Lang.Format("UI.Condense.Total", count);
 
         if (now >= max)
         {
-            captionRightText.text = "최고 단계";
+            captionRightText.text = Lang.Get("UI.Condense.MaxStage");
         }
         else if (then >= max)
         {
-            captionRightText.text = $"{max}성 도달";
+            captionRightText.text = Lang.Format("UI.Condense.Reached", max);
         }
         else
         {
-            captionRightText.text = $"{then + 1}성까지 {GameDataLoader.GetCondenseThreshold(then + 1) - (count + n)}";
+            captionRightText.text = Lang.Format("UI.Condense.ToNext", then + 1, GameDataLoader.GetCondenseThreshold(then + 1) - (count + n));
         }
     }
 
@@ -593,25 +595,25 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
-            SetWarn("이미 최고 단계입니다 — 더 넣을 수 없습니다.", UIThemeRole.Negative);
+            SetWarn(Lang.Get("UI.Condense.AlreadyMax"), UIThemeRole.Negative);
         }
         else if (overflow > 0)
         {
-            SetWarn($"넘치는 재료 {overflow}마리는 효과 없이 사라집니다.", UIThemeRole.Negative);
+            SetWarn(Lang.Format("UI.Condense.Overflow", overflow), UIThemeRole.Negative);
         }
         else if (_materials.Count == 0 && !HasAnyCandidate())
         {
             int busy = CountBusySameCharacters(target);
 
-            SetWarn(busy > 0 ? $"재료로 넣을 {nameText.text}이(가) 없습니다 — {busy}마리는 배치·착용 중입니다."
-                             : $"재료로 넣을 {nameText.text}이(가) 없습니다 — 같은 캐릭터끼리만 응축됩니다.",
+            SetWarn(busy > 0 ? Lang.Format("UI.Condense.NoMaterialBusy", nameText.text, busy)
+                             : Lang.Format("UI.Condense.NoMaterialSame", nameText.text),
                     UIThemeRole.TextSub);
         }
         else
         {
             int busy = CountBusySameCharacters(target);
 
-            SetWarn(busy > 0 ? $"배치·착용 중인 {nameText.text} {busy}마리는 재료로 넣을 수 없습니다." : "같은 캐릭터 칸을 눌러 재료로 담으세요.",
+            SetWarn(busy > 0 ? Lang.Format("UI.Condense.BusyCount", nameText.text, busy) : Lang.Get("UI.Condense.PickHint"),
                     UIThemeRole.TextSub);
         }
     }
@@ -622,10 +624,10 @@ public class CharacterCondensePresenter : MonoBehaviour
         bool maxed = now >= GameDataLoader.CondenseMaxStar;
         int  n     = _materials.Count;
 
-        confirmLabel.text = IsWaiting ? "응답을 기다리는 중"
-                          : maxed     ? "최고 단계"
-                          : n == 0    ? "재료를 고르세요"
-                          : $"응축 ({n}마리)";
+        confirmLabel.text = IsWaiting ? Lang.Get("UI.Common.Waiting")
+                          : maxed     ? Lang.Get("UI.Condense.MaxStage")
+                          : n == 0    ? Lang.Get("UI.Condense.PickMaterial")
+                          : Lang.Format("UI.Condense.Confirm", n);
 
         PaintConfirm(!IsWaiting && !maxed && n > 0);
     }
@@ -770,7 +772,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
-            _wait.RaiseNotice("이미 최고 단계입니다 — 더 넣을 수 없습니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
@@ -787,7 +789,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (_candidates.Count == 0)
         {
-            _wait.RaiseNotice($"재료로 넣을 {nameText.text}이(가) 없습니다.\n같은 캐릭터끼리만 응축됩니다.");
+            _wait.RaiseNotice(Lang.Format("UI.Condense.NoMaterialNotice", nameText.text));
 
             return;
         }
@@ -838,14 +840,14 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
-            _wait.RaiseNotice("이미 최고 단계입니다 — 더 넣을 수 없습니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
 
         if (_materials.Count == 0)
         {
-            _wait.RaiseNotice("같은 캐릭터 칸을 눌러 재료를 먼저 고르세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Condense.PickFirst"));
 
             return;
         }
@@ -883,16 +885,16 @@ public class CharacterCondensePresenter : MonoBehaviour
             return null;
         }
 
-        string text = $"재료 {_materials.Count}마리를 녹여 {nameText.text}의 단계를 올립니다.";
+        string text = Lang.Format("UI.Condense.ConfirmText", _materials.Count, nameText.text);
 
         if (grown > 0)
         {
-            text += $"\nLv{ConfirmMaterialLevel} 이상 재료 {grown}마리의 레벨·경험치는 사라집니다.";
+            text += "\n" + Lang.Format("UI.Condense.ConfirmGrown", ConfirmMaterialLevel, grown);
         }
 
         if (overflow > 0)
         {
-            text += $"\n넘치는 {overflow}마리는 효과 없이 사라집니다.";
+            text += "\n" + Lang.Format("UI.Condense.Overflow", overflow);
         }
 
         return text;
@@ -915,7 +917,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"응축 — 대상 #{_targetId}, 재료 {materials.Count}마리");
 
         _sentStar   = _data.GetCharacterStar(_targetId);
-        _waitHandle = _wait.Begin("응축", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Get("UI.Inventory.Condense"), onClosed: OnWaitClosed);
         Redraw();
     }
 

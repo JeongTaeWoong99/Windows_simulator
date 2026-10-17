@@ -110,16 +110,16 @@ public class EquipSlotSource : InventorySlotSource
         // 상태 — 누가 어느 부위에 끼었나, 아니면 '대기'. 잠겼으면 뒤에 붙인다(캐릭터 칸과 같은 모양).
         // ※ 창고 장비도 낄 수 있다(T-163) — 어느 보관함인지는 '보관' 줄이 따로 말한다.
         string state = equip.EquippedCharacterId != 0L
-            ? $"{_data.GetCharacterName(equip.EquippedCharacterId)} 착용 · {EquipLabel.GetSlotName(equip.EquippedSlot)}"
-            : "대기";
+            ? $"{Lang.Format("UI.Inventory.WornBy", _data.GetCharacterName(equip.EquippedCharacterId))} · {EquipLabel.GetSlotName(equip.EquippedSlot)}"
+            : Lang.Get("UI.WorkStation.Idle");
 
         if (equip.IsLocked)
         {
-            state += " · 잠김";
+            state += " · " + Lang.Get("UI.WorkStation.Locked");
         }
 
         TooltipContent? content = EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions,
-            rows => AddStorageRow(rows).Row("상태", state));
+            rows => AddStorageRow(rows).Row(Lang.Get("UI.Inventory.State"), state));
 
         if (content == null)
         {
@@ -127,11 +127,8 @@ public class EquipSlotSource : InventorySlotSource
         }
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        return AddControls(content, rows => rows
-            .Row("좌클릭",       "큐브")
-            .Row("우클릭",       "판매 담기")
-            .Row("Ctrl+좌클릭",  equip.IsLocked ? "잠금 풀기" : "잠그기")
-            .Row("Ctrl+우클릭", "경매 등록"));
+        return AddControls(content, rows => AddCommonControls(
+            rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Equip.Cube")), equip.IsLocked));
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

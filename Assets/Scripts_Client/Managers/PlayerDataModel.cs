@@ -778,8 +778,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         Services.Get<ServerWaitManager>().RaiseNotice(
-            $"상급 큐브 결과를 고르지 않은 장비가 {count}개 있습니다.\n" +
-            "인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.");
+            Lang.Format("UI.Common.PendingCube", count));
     }
 
     // 바뀐 장비 개체들 — 지급·장착·해제·자동 이동. 'EquipId'로 찾아 통째로 교체한다(확정값이다).

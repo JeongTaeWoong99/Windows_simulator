@@ -31,7 +31,7 @@ using UnityEngine.UI;
 public class WorkStationListPresenter : MonoBehaviour
 {
     // 열린 빈 칸의 라벨 — 프레임 프리팹('WorkSlotFrame')에 적힌 문구와 같다
-    private const string EmptyLabel = "비어있음.";
+    private static string EmptyLabel => Lang.Get("UI.WorkStation.Empty");
 
     [CenterHeader("참조")]
     [SerializeField, Tooltip("슬롯 한 칸 프리팹 (WorkStationSlotView 포함). 빈 프레임 안에 생성된다")]
@@ -145,6 +145,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
         _data.GatherResultReceived    += OnGatherResultReceived;
+        Lang.Changed                  += Rebuild; // 칸 글자를 새 언어로 다시 쓴다
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -162,6 +163,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
         _data.GatherResultReceived    -= OnGatherResultReceived;
+        Lang.Changed                  -= Rebuild;
     }
 
     #endregion
@@ -238,7 +240,7 @@ public class WorkStationListPresenter : MonoBehaviour
         {
             if (!_data.IsUnlocked(requiredTid))
             {
-                _wait.RaiseNotice($"{DescribeUnlock(requiredTid)}을(를) 먼저 해금해야 합니다.");
+                _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedUnlockFirst", DescribeUnlock(requiredTid)));
 
                 return;
             }
@@ -248,19 +250,19 @@ public class WorkStationListPresenter : MonoBehaviour
         // 시트만 채워도 여기서 막힌다 — 특성 노드가 같은 컬럼을 이미 쓰고 있다.
         if (_data.AccountLevel < unlock.AccountLevel)
         {
-            _wait.RaiseNotice($"계정 레벨 {unlock.AccountLevel}이(가) 필요합니다. (지금 {_data.AccountLevel})");
+            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedAccountLevel", unlock.AccountLevel, _data.AccountLevel));
 
             return;
         }
 
         if (_data.Gold < unlock.Gold)
         {
-            _wait.RaiseNotice($"골드가 부족합니다. ({unlock.Gold:N0} 골드 필요)");
+            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NotEnoughGold", $"{unlock.Gold:N0}"));
 
             return;
         }
 
-        _ui.AskConfirm($"{unlock.Gold:N0} 골드가 필요합니다.\n해금하시겠습니까?",
+        _ui.AskConfirm(Lang.Format("UI.WorkStation.ConfirmUnlock", $"{unlock.Gold:N0}"),
                        () => RequestUnlock(unlockTid, unlock.Gold > 0 ? ECurrencyType.Gold : ECurrencyType.None));
     }
 
@@ -281,7 +283,7 @@ public class WorkStationListPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"해금 요청 — {unlockTid}, 재화={currency}");
 
         NetworkManager.Instance.Send(new C_UnlockRequest { UnlockTID = unlockTid, Currency = currency });
-        _unlockWait = _wait.Begin("작업슬롯 해금", onClosed: () => _unlockWait = null);
+        _unlockWait = _wait.Begin(Lang.Get("UI.WorkStation.WaitUnlock"), onClosed: () => _unlockWait = null);
     }
 
     // 해금 결과 (PlayerDataModel.UnlockCompleted 구독).
@@ -418,7 +420,7 @@ public class WorkStationListPresenter : MonoBehaviour
     // 이미 충족한 선행은 적지 않는다.
     private string BuildLockedLabel(int unlockTid)
     {
-        var sb = new StringBuilder("잠김");
+        var sb = new StringBuilder(Lang.Get("UI.WorkStation.Locked"));
 
         if (!GameDataLoader.TryGetUnlock(unlockTid, out var unlock))
         {
@@ -427,19 +429,19 @@ public class WorkStationListPresenter : MonoBehaviour
 
         if (unlock.Gold > 0)
         {
-            sb.Append($"\n{unlock.Gold:N0} 골드");
+            sb.Append('\n').Append(Lang.Format("UI.Equip.Gold", $"{unlock.Gold:N0}"));
         }
 
         if (unlock.AccountLevel > 0)
         {
-            sb.Append($"\n계정 Lv.{unlock.AccountLevel}");
+            sb.Append('\n').Append(Lang.Format("UI.WorkStation.AccountLevel", unlock.AccountLevel));
         }
 
         foreach (int requiredTid in unlock.RequiredUnlockTIDs)
         {
             if (!_data.IsUnlocked(requiredTid))
             {
-                sb.Append($"\n{DescribeUnlock(requiredTid)} 해금 필요");
+                sb.Append('\n').Append(Lang.Format("UI.WorkStation.UnlockRequired", DescribeUnlock(requiredTid)));
             }
         }
 
@@ -450,7 +452,7 @@ public class WorkStationListPresenter : MonoBehaviour
     // 콘텐츠 테이블을 거꾸로 찾지 않는다 — 선행이 슬롯이 아닌 해금이어도 같은 방식으로 나와야 한다(기획 unlock #13).
     private static string DescribeUnlock(int unlockTid)
     {
-        return GameDataLoader.TryGetUnlock(unlockTid, out var row) && row.Name.Length > 0 ? row.Name : $"해금 #{unlockTid}";
+        return GameDataLoader.TryGetUnlock(unlockTid, out var row) && row.Name.Length > 0 ? Loc.Get(row.NameLocKey) : Lang.Format("UI.WorkStation.UnlockFallback", unlockTid);
     }
 
     // 배치가 풀린 칸의 뷰를 끈다 ('Rebuild'에서 호출).

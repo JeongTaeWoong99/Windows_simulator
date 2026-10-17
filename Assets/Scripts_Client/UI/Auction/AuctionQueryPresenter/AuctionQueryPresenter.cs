@@ -70,6 +70,7 @@ public class AuctionQueryPresenter : MonoBehaviour
 
         tabs.TabChanged     += OnTabChanged;
         suggestView.Picked  += OnSuggestionPicked;
+        Lang.Changed        += RedrawHint;
 
         queryInput.onValueChanged.AddListener(OnValueChanged);
         searchButton.onClick.AddListener(OnSearchClicked);
@@ -84,6 +85,8 @@ public class AuctionQueryPresenter : MonoBehaviour
         {
             tabs.TabChanged -= OnTabChanged;
         }
+
+        Lang.Changed -= RedrawHint;
 
         if (suggestView != null)
         {
@@ -107,13 +110,24 @@ public class AuctionQueryPresenter : MonoBehaviour
             return;
         }
 
+        RedrawHint();
+        queryInput.SetTextWithoutNotify(_target.Query);
+    }
+
+    // 안내 문구(자리 글씨 · 힌트)를 지금 탭 · 지금 언어로 쓴다 (OnTabChanged · Lang.Changed 구독)
+    private void RedrawHint()
+    {
+        if (_target == null)
+        {
+            return;
+        }
+
         if (queryInput.placeholder is TMP_Text placeholder)
         {
             placeholder.text = _target.QueryPlaceholder;
         }
 
         hintText.text = _target.QueryHint;
-        queryInput.SetTextWithoutNotify(_target.Query);
     }
 
     // 칠 때마다 지금 탭에 넘기고 후보를 다시 띄운다 (queryInput.onValueChanged)

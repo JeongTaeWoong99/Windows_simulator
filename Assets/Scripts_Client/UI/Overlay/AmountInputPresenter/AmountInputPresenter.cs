@@ -78,7 +78,7 @@ public class AmountInputPresenter : MonoBehaviour
         _maxCount  = Mathf.Max(1, maxCount);
         _onConfirm = onConfirm;
 
-        titleText.text   = $"{GameDataLoader.GetItemName(itemId)} — {question} (최대 {_maxCount:N0}개)";
+        titleText.text   = Lang.Format("UI.Common.AmountTitle", GameDataLoader.GetItemName(itemId), question, $"{_maxCount:N0}");
         amountInput.text = _maxCount.ToString();
 
         SetVisible(true);

@@ -37,7 +37,7 @@ public class ResourceSlotSource : InventorySlotSource
             var slot = new SlotData(
                 item.ItemId,
                 GameDataLoader.GetItemName(item.ItemId),
-                $"{item.Count} 개", // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
+                Lang.Format("UI.Inventory.CountUnit", item.Count), // 숫자만 두면 수량인지 등급인지 레벨인지 칸만 보고 알 수 없다
                 GameDataLoader.GetItemRarity(item.ItemId),
                 VisualCatalog.ItemIconOf(item.ItemId));
 
@@ -86,14 +86,17 @@ public class ResourceSlotSource : InventorySlotSource
         return type >= ItemType.Farming && type <= ItemType.Hunting;
     }
 
-    // 큐브는 아이템 분류('ItemType')가 아니라 인챈트 표로 가린다 — 분류보다 먼저 본다.
-    public const string CubeGroup = "큐브";
+    // 큐브는 아이템 분류('ItemType')가 아니라 인챈트 표로 가린다 — 분류보다 먼저 본다. 분류 ID다(화면 이름은 'GroupName').
+    public const string CubeGroup = "Cube";
 
-    // 자원의 분류 이름 — 큐브면 '큐브', 아니면 아이템 분류 이름(산업 · 상자 · 유물 · 소모품 · 기타).
-    // 칸 툴팁의 '분류' 줄과 일괄 담기 [제외] 항목이 같은 이름을 쓴다 — 툴팁에서 본 이름을 [제외]에서 그대로 찾게.
-    // ※ 이름은 경매장 분류 이름과 같은 출처다('AuctionText.GetItemCategoryName') — 두 화면이 같은 아이템을 다르게 부르지 않게.
+    // 자원의 분류 ID — 큐브면 'Cube', 아니면 아이템 분류 ID(산업 · Box · Relic · Consumable · Etc).
+    // 칸 툴팁의 '분류' 줄과 일괄 담기 [제외] 항목이 같은 분류를 쓴다 — 툴팁에서 본 이름을 [제외]에서 그대로 찾게.
+    // ※ ID는 언어와 무관하다 — [제외] 체크가 이 값으로 저장된다. 이름은 경매장 분류 이름과 같은 출처다('AuctionText.GetItemGroupName').
     public static string GroupOf(int itemId)
-        => GameDataLoader.IsCube(itemId) ? CubeGroup : AuctionText.GetItemCategoryName(GameDataLoader.GetItemType(itemId));
+        => GameDataLoader.IsCube(itemId) ? CubeGroup : AuctionText.GetItemCategoryId(GameDataLoader.GetItemType(itemId));
+
+    // 분류 ID의 지금 언어 이름.
+    public static string GroupName(string groupId) => AuctionText.GetItemGroupName(groupId);
 
     // 자원 칸 툴팁 — 등급 · 분류 · 보유 · 보관 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
     //
@@ -116,12 +119,12 @@ public class ResourceSlotSource : InventorySlotSource
 
         int    basePrice = GameDataLoader.GetItemPrice(itemId);
         long   price     = AuctionModel.InstantSellPrice(basePrice);
-        string totalText = total > stack.Count ? $"전체 {total:N0} 개" : "";
+        string totalText = total > stack.Count ? Lang.Format("UI.Inventory.TotalCount", $"{total:N0}") : "";
         var    content   = new TooltipContent(GameDataLoader.GetItemName(itemId));
 
         AddRarityRow(content, GameDataLoader.GetItemRarity(itemId))
-            .Row("분류", GroupOf(itemId))
-            .Row("보유", $"{stack.Count:N0} 개", totalText, null);
+            .Row(Lang.Get("UI.Inventory.Group"), GroupName(GroupOf(itemId)))
+            .Row(Lang.Get("UI.Inventory.Owned"), Lang.Format("UI.Inventory.CountUnit", $"{stack.Count:N0}"), totalText, null);
 
         AddStorageRow(content);
 
@@ -130,11 +133,12 @@ public class ResourceSlotSource : InventorySlotSource
 
         if (locked)
         {
-            content.Row("상태", "잠김");
+            content.Row(Lang.Get("UI.Inventory.State"), Lang.Get("UI.WorkStation.Locked"));
         }
 
-        content.Row("즉시 판매가", $"{price:N0} 골드", $"전부 {AuctionModel.InstantSellTotal(basePrice, total):N0} 골드", null)
-               .Row("경매 등록가", AuctionModel.FormatBand(basePrice));
+        content.Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{price:N0}"),
+                    Lang.Format("UI.Inventory.AllGold", $"{AuctionModel.InstantSellTotal(basePrice, total):N0}"), null)
+               .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice));
 
         // 조작 안내 — 입력 하나에 한 줄, 왼쪽 칸에 입력을 끝까지 적는다(2026-10-15 사용자 지적 — 조합키를 오른쪽 칸에 붙이면 "응축 Ctrl 잠그기"가 한 문장으로 읽혔다).
         // 길이는 다른 줄을 줄여 감당한다(빈 장비 한 줄 · 잠금은 상태 줄).
@@ -142,12 +146,10 @@ public class ResourceSlotSource : InventorySlotSource
         {
             if (GameDataLoader.IsBox(itemId))
             {
-                rows.Row("좌클릭", "열기");
+                rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Inventory.Open"));
             }
 
-            rows.Row("우클릭",       "판매 담기")
-                .Row("Ctrl+좌클릭",  locked ? "잠금 풀기" : "잠그기")
-                .Row("Ctrl+우클릭", "경매 등록");
+            AddCommonControls(rows, locked);
         });
     }
 

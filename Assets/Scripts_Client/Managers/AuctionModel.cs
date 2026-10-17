@@ -734,10 +734,12 @@ public class AuctionModel : MonoService<AuctionModel>
 
         if (ago.TotalMinutes < 1d)
         {
-            return "방금 받음";
+            return Lang.Get("UI.Common.ReceivedJustNow");
         }
 
-        return ago.TotalHours >= 1d ? $"{(int)ago.TotalHours}시간 전에 받음" : $"{(int)ago.TotalMinutes}분 전에 받음";
+        return ago.TotalHours >= 1d
+            ? Lang.Format("UI.Common.ReceivedHoursAgo", (int)ago.TotalHours)
+            : Lang.Format("UI.Common.ReceivedMinutesAgo", (int)ago.TotalMinutes);
     }
 
     // 즉시 판매가 — 인벤토리에서 바로 팔 때 받는 정해진 값(BasePrice x SellRatePermille).
@@ -760,14 +762,14 @@ public class AuctionModel : MonoService<AuctionModel>
 
     // 경매 등록가 범위 문구 — "12 G 이상". 상한은 터무니없는 값을 막는 선이라 줄마다 적지 않는다(안내 문구에 한 번).
     // 등록 창·인벤토리 툴팁이 같은 모양으로 말한다.
-    public static string FormatBand(int basePrice) => $"{MinUnitPrice(basePrice):N0} G 이상";
+    public static string FormatBand(int basePrice) => Lang.Format("UI.Common.PriceAtLeast", $"{MinUnitPrice(basePrice):N0}");
 
     // 상한 문구 — "1조". 조 단위로 나누어떨어지면 조로, 아니면 숫자 그대로 적는다.
     public static string FormatMaxUnitPrice()
     {
         const long Jo = 1_000_000_000_000L;
 
-        return MaxUnitPrice % Jo == 0 ? $"{MaxUnitPrice / Jo:N0}조" : MaxUnitPrice.ToString("N0");
+        return MaxUnitPrice % Jo == 0 ? Lang.Format("UI.Common.Trillion", $"{MaxUnitPrice / Jo:N0}") : MaxUnitPrice.ToString("N0");
     }
 
     // 등록비 비율(천분율) — 안내 문구의 '1%'에 쓴다.

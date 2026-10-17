@@ -69,7 +69,7 @@ public static class GameDataLoader
     {
         if (GameTable.ItemTable.TryGet(itemId, out var row))
         {
-            return row.Name;
+            return Loc.Get(row.NameLocKey);
         }
 
         WarnUnknownId("아이템", itemId, _warnedItemIds);
@@ -162,7 +162,7 @@ public static class GameDataLoader
     {
         if (GameTable.CharacterTable.TryGet((int)characterId, out var row))
         {
-            return row.Name;
+            return Loc.Get(row.NameLocKey);
         }
 
         WarnUnknownId("캐릭터", (int)characterId, _warnedCharacterIds);
@@ -206,7 +206,7 @@ public static class GameDataLoader
     {
         if (GameTable.EquipTable.TryGet(equipTid, out var row))
         {
-            return row.Name;
+            return Loc.Get(row.NameLocKey);
         }
 
         WarnUnknownId("장비", equipTid, _warnedEquipTids);

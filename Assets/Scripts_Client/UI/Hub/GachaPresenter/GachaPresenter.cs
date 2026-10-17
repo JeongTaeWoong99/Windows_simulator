@@ -104,6 +104,9 @@ public class GachaPresenter : MonoBehaviour
 
         BuildCards();
 
+        // 카드 글씨는 한 번 그리고 두므로 언어가 바뀔 때만 다시 쓴다 — 꺼져 있어도 받는다(다시 켰을 때 옛 언어가 남지 않게)
+        Lang.Changed += RedrawCardTexts;
+
         Subscribe();
         Refresh(); // 로그인 재화가 이미 와 있을 수 있다
 
@@ -206,16 +209,48 @@ public class GachaPresenter : MonoBehaviour
         }
     }
 
+    // 카드 글씨를 지금 언어로 다시 쓴다 (Lang.Changed 구독). 버튼 배선은 건드리지 않는다.
+    private void RedrawCardTexts()
+    {
+        foreach (PoolEntry entry in pools)
+        {
+            if (entry.card != null && GameDataLoader.TryGetGachaInfo(entry.gachaId, out GachaInfoTableRow info))
+            {
+                DrawCard(entry.gachaId, info, entry.card);
+            }
+        }
+    }
+
+    private void OnDestroy()
+    {
+        Lang.Changed -= RedrawCardTexts;
+    }
+
     // 카드 한 장을 그리고 요청 두 개(1회·10회)를 등록한다 (BuildCards에서 호출).
     // ⚠️ 10연차 비용은 단차 x 10이 아니다. 컬럼이 따로라 각각 읽는다.
     private void BindCard(int gachaId, GachaInfoTableRow info, GachaPoolCardView card)
     {
-        GachaPoolSummary summary = GachaPoolSummary.Build(gachaId, info.Name);
+        DrawCard(gachaId, info, card);
+
+        // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
+        int singleIndex = _requests.Count;
+
+        _requests.Add(new DrawRequest(gachaId, (int)Constants.GachaDrawSingle, info.CostSingle));
+        _requests.Add(new DrawRequest(gachaId, (int)Constants.GachaDrawMulti,  info.CostMulti));
+        _cards.Add(card);
+
+        card.DrawClicked += isMulti => Draw(isMulti ? singleIndex + 1 : singleIndex);
+    }
+
+    // 카드 한 장의 글씨·아이콘·확률 툴팁을 그린다 (BindCard · 언어 변경).
+    private static void DrawCard(int gachaId, GachaInfoTableRow info, GachaPoolCardView card)
+    {
+        GachaPoolSummary summary = GachaPoolSummary.Build(gachaId, Loc.Get(info.NameLocKey));
 
         string subtitle = summary.Subtitle;
         string title    = subtitle.Length > 0
-            ? $"{info.Name} {UIRichText.Small(UIRichText.Label($"({subtitle})"))}"
-            : info.Name;
+            ? $"{Loc.Get(info.NameLocKey)} {UIRichText.Small(UIRichText.Label($"({subtitle})"))}"
+            : Loc.Get(info.NameLocKey);
 
         // 상수는 long으로 생성되지만 패킷의 'DrawCount'가 int다 — 서버가 1·10만 받는다.
         int single = (int)Constants.GachaDrawSingle;
@@ -225,15 +260,6 @@ public class GachaPresenter : MonoBehaviour
                   single, info.CostSingle,
                   multi,  info.CostMulti,
                   summary.BuildRateTooltip);
-
-        // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
-        int singleIndex = _requests.Count;
-
-        _requests.Add(new DrawRequest(gachaId, single, info.CostSingle));
-        _requests.Add(new DrawRequest(gachaId, multi,  info.CostMulti));
-        _cards.Add(card);
-
-        card.DrawClicked += isMulti => Draw(isMulti ? singleIndex + 1 : singleIndex);
     }
 
     #endregion
@@ -273,7 +299,7 @@ public class GachaPresenter : MonoBehaviour
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isWaiting  = true;
         Refresh();
-        _waitHandle = _wait.Begin($"가챠 {request.DrawCount}회", onClosed: OnWaitClosed);
+        _waitHandle = _wait.Begin(Lang.Format("UI.Gacha.Wait", request.DrawCount), onClosed: OnWaitClosed);
     }
 
     // 결과 팝업의 [n회 더 뽑기] — 마지막에 누른 버튼을 다시 누른다 (GachaResultPresenter에서 호출).

@@ -44,7 +44,7 @@ public class AuctionPagerView : MonoBehaviour
     //   pageCount : 전체 쪽 수. 모르면 0 — 'n 쪽'만 적는다(완료 탭은 서버가 건수를 주지 않는다)
     public void Bind(int page, int pageCount, bool canPrev, bool canNext, string note)
     {
-        pageText.text = pageCount > 0 ? $"{page + 1} / {pageCount} 쪽" : $"{page + 1} 쪽";
+        pageText.text = pageCount > 0 ? Lang.Format("UI.Auction.PageOf", page + 1, pageCount) : Lang.Format("UI.Auction.Page", page + 1);
         noteText.text = note;
 
         prevButton.interactable = canPrev;

@@ -114,7 +114,7 @@ public class CharacterStateRowView : MonoBehaviour
 
         if (star > 0)
         {
-            nameText.text += $" {UIRichText.Paint($"{star}성", UIThemeRole.Highlight)}";
+            nameText.text += $" {UIRichText.Paint(Lang.Format("UI.Inventory.Star", star), UIThemeRole.Highlight)}";
         }
 
         SetPortrait(VisualCatalog.PortraitOf(characterTid));

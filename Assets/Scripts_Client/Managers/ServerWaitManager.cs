@@ -94,7 +94,7 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
         handle.Timeout?.Dispose();
         handle.Timeout = null;
 
-        Resolve(handle, $"'{label}' 응답이 {RequestTimeoutSeconds:F0}초 안에 오지 않았습니다. 잠시 후 다시 시도해 주세요.");
+        Resolve(handle, Lang.Format("UI.Common.RequestTimeout", label, RequestTimeoutSeconds.ToString("F0")));
     }
 
     // 연결 계층 치명 오류를 알린다 (최초 접속 실패·게임 중 연결 끊김 — 'PingManager'가 호출).

@@ -81,8 +81,8 @@ public class GachaPoolCardView : MonoBehaviour
     {
         titleText.text       = title;
         kindText.text        = kind;
-        singleCountText.text = $"{singleCount}회";
-        multiCountText.text  = $"{multiCount}회";
+        singleCountText.text = Lang.Format("UI.Gacha.Times", singleCount);
+        multiCountText.text  = Lang.Format("UI.Gacha.Times", multiCount);
 
         icon.Bind(iconContent);
         rateTrigger.SetProvider(rates);

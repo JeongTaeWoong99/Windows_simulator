@@ -67,6 +67,7 @@ public class AuctionHeaderPresenter : MonoBehaviour
         _isSubscribed = true;
 
         _data.CurrencyChanged += RefreshGold;
+        Lang.Changed          += RefreshGold;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -80,12 +81,13 @@ public class AuctionHeaderPresenter : MonoBehaviour
         _isSubscribed = false;
 
         _data.CurrencyChanged -= RefreshGold;
+        Lang.Changed          -= RefreshGold;
     }
 
     // 보유 골드를 그린다 (Start · OnEnable · PlayerDataModel.CurrencyChanged 구독)
     private void RefreshGold()
     {
-        goldText.text = $"{UIRichText.Label("보유 골드")}  {UIRichText.Gold(_data.Gold)}";
+        goldText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldOwned"))}  {UIRichText.Gold(_data.Gold)}";
     }
 
     // 경매장을 닫는다 (closeButton OnClick)

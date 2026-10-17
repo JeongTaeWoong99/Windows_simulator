@@ -205,7 +205,7 @@ public abstract class InventorySlotSource
 
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
-        => content.Row("등급", RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+        => content.Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
 
     // 툴팁의 '보관' 줄 — 인벤토리 · 창고 (공급자들의 'BuildTooltip'에서 호출).
     //
@@ -213,19 +213,25 @@ public abstract class InventorySlotSource
     //   등급 → 탭 고유 정보 → 보관 → 상태(일하는 곳 · 착용 · 잠김) → 가격 → 조작.
     //   한때 장비만 '장착' 줄에 "인벤토리"를 적고, 캐릭터는 상태 줄 끝에 "창고 보관"을 붙이고, 자원은 아무것도 적지 않았다.
     protected TooltipContent AddStorageRow(TooltipContent content)
-        => content.Row("보관", IsWarehouse ? "창고" : "인벤토리");
+        => content.Row(Lang.Get("UI.Inventory.Storage"), Lang.Get(IsWarehouse ? "UI.Inventory.Warehouse" : "UI.Main.Inventory"));
 
     // 툴팁 끝의 조작 안내 (공급자들의 'BuildTooltip'에서 호출).
     //   'addInventoryRows'가 탭마다의 클릭 조작을 적는다 — 창고 칸도 같다(T-163). 끌기 줄만 어디로 가는지가 다르다.
     // ※ 끌기 줄은 두 보관함 모두 단다 — 칸에 아무 표시가 없어 눌러 봐야 아는 조작이다.
     protected TooltipContent AddControls(TooltipContent content, Action<TooltipContent> addInventoryRows)
     {
-        content.Header("조작");
+        content.Header(Lang.Get("UI.Inventory.Controls"));
 
         addInventoryRows(content);
 
-        return content.Row("끌기", IsWarehouse ? "칸 이동 · 인벤토리로 꺼내기" : "칸 이동 · 창고에 맡기기");
+        return content.Row(Lang.Get("UI.Inventory.Drag"), Lang.Get(IsWarehouse ? "UI.Inventory.DragFromWarehouse" : "UI.Inventory.DragToWarehouse"));
     }
+
+    // 세 탭이 같은 조작 줄 — 우클릭 판매 담기 · Ctrl+좌클릭 잠금 · Ctrl+우클릭 경매 등록 (탭별 'BuildTooltip'의 'AddControls' 안에서 호출).
+    protected static TooltipContent AddCommonControls(TooltipContent rows, bool locked)
+        => rows.Row(Lang.Get("UI.Inventory.RightClick"), Lang.Get("UI.Inventory.AddToSell"))
+               .Row(Lang.Get("UI.Inventory.CtrlLeftClick"), Lang.Get(locked ? "UI.Inventory.Unlock" : "UI.Inventory.Lock"))
+               .Row(Lang.Get("UI.Inventory.CtrlRightClick"), Lang.Get("UI.Inventory.ListOnAuction"));
 
     // 데이터 변경 구독을 시작한다 (격자가 이 탭을 켤 때 호출).
     //
@@ -239,6 +245,7 @@ public abstract class InventorySlotSource
 
         _isSubscribed = true;
         OnSubscribe();
+        Lang.Changed += Rebuild; // 칸 글씨(수량 단위 등)를 새 언어로 다시 만든다
         Rebuild();
     }
 
@@ -252,6 +259,7 @@ public abstract class InventorySlotSource
 
         _isSubscribed = false;
         OnUnsubscribe();
+        Lang.Changed -= Rebuild;
     }
 
     // 찾기 조건을 바꾼다 (격자의 'FilterCurrent' — 도구 줄의 검색창·드롭다운).

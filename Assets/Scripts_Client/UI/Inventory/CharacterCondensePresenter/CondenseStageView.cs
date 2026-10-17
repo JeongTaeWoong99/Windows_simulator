@@ -41,7 +41,7 @@ public class CondenseStageView : MonoBehaviour
         SetSpan(currentFill, 0f, now);
         SetSpan(previewFill, now, then);
 
-        labelText.text = $"{star}성 · {Mathf.Min(after, required)}/{required}";
+        labelText.text = $"{Lang.Format("UI.Inventory.Star", star)} · {Mathf.Min(after, required)}/{required}";
     }
 
     // 채움 하나를 [from, to] 비율 구간에 놓는다 — 폭 0이면 끈다 (Bind에서 호출).

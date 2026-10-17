@@ -99,13 +99,15 @@ public class DisplayManager : MonoService<DisplayManager>
     // 프레임 드롭다운 옵션 라벨을 'FrameRateOption' 순서대로 만든다.
     public List<string> GetFrameRateLabels() => new List<string>
     {
-        "30", "60", "90", "144", "모니터 동기화",
+        "30", "60", "90", "144", Lang.Get("UI.Setting.FrameRateVSync"),
     };
 
     // FPS 텍스트 위치 드롭다운 옵션 라벨을 'FpsTextPosition' 순서대로 만든다.
     public List<string> GetFpsTextPositionLabels() => new List<string>
     {
-        "숨김", "Upper Left", "Upper Right", "Lower Left", "Lower Right",
+        Lang.Get("UI.Setting.FpsHidden"),
+        Lang.Get("UI.Setting.UpperLeft"), Lang.Get("UI.Setting.UpperRight"),
+        Lang.Get("UI.Setting.LowerLeft"), Lang.Get("UI.Setting.LowerRight"),
     };
 
     // 프레임 항목을 인덱스로 고른다 (설정 드롭다운 onValueChanged). 저장하고 즉시 건다.

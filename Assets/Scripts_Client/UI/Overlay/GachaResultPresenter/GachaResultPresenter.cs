@@ -182,7 +182,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 가챠 결과 도착 — 뽑힌 순서 그대로 늘어놓는다 (PlayerDataModel.GachaCompleted 구독)
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
-        Show(ToSlots(rewards), "가챠", showCount: false);
+        Show(ToSlots(rewards), Lang.Get("UI.Gacha.Source"), showCount: false);
         ShowDrawAgain(true);
     }
 
@@ -195,7 +195,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
     private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
     {
-        Show(Summarize(rewards), "상자 개봉", showCount: true);
+        Show(Summarize(rewards), Lang.Get("UI.Gacha.SourceBox"), showCount: true);
         ShowDrawAgain(false);
     }
 
@@ -207,7 +207,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
-        Show(SummarizeMails(mails), "우편 수령", showCount: true);
+        Show(SummarizeMails(mails), Lang.Get("UI.Gacha.SourceMail"), showCount: true);
         ShowDrawAgain(false);
     }
 
@@ -242,7 +242,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _slots.HideFrom(slots.Count);
-        titleText.text = $"{source} 결과";
+        titleText.text = Lang.Format("UI.Gacha.ResultTitle", source);
         SetVisible(true);
 
         _revealCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
@@ -371,7 +371,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         if (gold > 0L)
         {
-            slots.Add(new SlotData(0L, "골드", gold.ToString("N0"), GlobalRarity.None));
+            slots.Add(new SlotData(0L, Lang.Get("UI.Common.Gold"), gold.ToString("N0"), GlobalRarity.None));
         }
 
         foreach (var key in order)
@@ -420,7 +420,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         {
             EGachaRewardType.Character => GameDataLoader.GetCharacterName(tid),
             EGachaRewardType.Equip     => GameDataLoader.GetEquipName(tid),
-            EGachaRewardType.Gold      => "골드",
+            EGachaRewardType.Gold      => Lang.Get("UI.Common.Gold"),
             _                          => GameDataLoader.GetItemName(tid),
         };
 
@@ -611,7 +611,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         if (on)
         {
-            drawAgainText.text = $"{gacha.LastDrawCount}회 더 뽑기";
+            drawAgainText.text = Lang.Format("UI.Gacha.DrawAgain", gacha.LastDrawCount);
             RefreshDrawAgain();
         }
     }

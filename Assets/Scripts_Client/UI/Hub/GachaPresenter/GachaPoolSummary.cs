@@ -93,10 +93,10 @@ public sealed class GachaPoolSummary
         {
             if (IsOnly(_characterKinds))
             {
-                return "일꾼";
+                return Lang.Get("UI.Gacha.Worker");
             }
 
-            return IsOnly(_equipKinds) ? "작업속도 증가" : "";
+            return IsOnly(_equipKinds) ? Lang.Get("UI.Gacha.WorkSpeedUp") : "";
         }
     }
 
@@ -109,15 +109,15 @@ public sealed class GachaPoolSummary
 
             if (IsOnly(_characterKinds))
             {
-                return $"캐릭터 {total}종";
+                return Lang.Format("UI.Gacha.Kinds", Lang.Get("UI.Common.Character"), total);
             }
 
             if (IsOnly(_equipKinds))
             {
-                return $"{(_equipKind.HasValue ? EquipLabel.GetKindName(_equipKind.Value) : "장비")} {total}종";
+                return Lang.Format("UI.Gacha.Kinds", _equipKind.HasValue ? EquipLabel.GetKindName(_equipKind.Value) : Lang.Get("UI.Equip.Gear"), total);
             }
 
-            return IsOnly(_itemKinds) ? $"아이템 {total}종" : $"{total}종";
+            return IsOnly(_itemKinds) ? Lang.Format("UI.Gacha.Kinds", Lang.Get("UI.Gacha.Item"), total) : Lang.Format("UI.Gacha.KindsOnly", total);
         }
     }
 
@@ -132,11 +132,11 @@ public sealed class GachaPoolSummary
     // 행이 없는 등급은 적지 않는다. 골드가 섞인 풀이면 골드 줄을 따로 둔다.
     public TooltipContent BuildRateTooltip()
     {
-        var content = new TooltipContent($"{Name} 확률");
+        var content = new TooltipContent(Lang.Format("UI.Gacha.RateTitle", Name));
 
         if (_totalWeight <= 0L)
         {
-            return content.Row("뽑을 항목이 없다", "");
+            return content.Row(Lang.Get("UI.Gacha.NoEntries"), "");
         }
 
         for (GlobalRarity rarity = GlobalRarity.Mythic; rarity >= GlobalRarity.Common; rarity--)
@@ -151,15 +151,15 @@ public sealed class GachaPoolSummary
 
         if (_rarityWeights[(int)GlobalRarity.None] > 0L)
         {
-            content.Row("등급 없음", FormatRate(_rarityWeights[(int)GlobalRarity.None]));
+            content.Row(Lang.Get("UI.Gacha.NoRarity"), FormatRate(_rarityWeights[(int)GlobalRarity.None]));
         }
 
         if (_goldWeight > 0L)
         {
-            content.Row("골드", FormatRate(_goldWeight));
+            content.Row(Lang.Get("UI.Common.Gold"), FormatRate(_goldWeight));
         }
 
-        return content.Row("10회도 한 번마다 같은 확률", "");
+        return content.Row(Lang.Get("UI.Gacha.SameRate"), "");
     }
 
     // 가중치 → '2.7%'. 소수 둘째 자리까지 — 작은 등급(0.3% 남짓)도 0으로 뭉개지지 않는다.

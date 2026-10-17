@@ -239,8 +239,8 @@ public class InventoryGridPresenter : MonoBehaviour
     // 인벤토리 격자인가 — 끌어 옮길 때의 방향 문구에만 쓴다. 클릭 조작은 두 격자가 같다(T-163).
     private bool IsInventory => container == EContainer.Inventory;
 
-    // 사람이 읽는 보관함 이름 — 로그·대기 문구에 쓴다.
-    private string ContainerLabel => IsInventory ? "인벤토리" : "창고";
+    // 사람이 읽는 보관함 이름 — 로그·대기 문구에 쓴다(지금 언어).
+    private string ContainerLabel => Lang.Get(IsInventory ? "UI.Main.Inventory" : "UI.Inventory.Warehouse");
 
     // 이 격자가 지금 보이고 끌어 놓을 수 있나 — 다른 격자가 놓을 곳을 찾을 때 본다(특성 탭에서는 숨는다 · 'SetShown').
     private bool IsDropReady => _isReady && isActiveAndEnabled && gridCanvas.enabled && _current != null;
@@ -544,7 +544,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 정렬 요청 — {tab} · {sortKey} · {order}");
 
-        s_slotWaitHandle = _wait.Begin($"{ContainerLabel} 정렬", onClosed: OnSlotWaitClosed);
+        s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitSort", ContainerLabel), onClosed: OnSlotWaitClosed);
     }
 
     // 지금 탭에 찾기 조건을 건다 ('InventoryToolPresenter'의 검색창 · 드롭다운이 호출).
@@ -990,7 +990,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (reason != null)
         {
-            _wait.RaiseNotice($"올릴 수 없습니다 — {reason}");
+            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantList", reason));
 
             return;
         }
@@ -1027,7 +1027,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
 
             return;
         }
@@ -1049,7 +1049,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
 
             return;
         }
@@ -1079,7 +1079,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice($"팔 수 없습니다 — {blocked}");
+            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
 
             return;
         }
@@ -1095,7 +1095,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!Overlay Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   인벤토리 안에 두면 다른 열이 그대로 눌린다('Overlay 규칙.md').
-        _ui.AskAmount(itemId, owned, "몇 개를 팔까?", amount => _cart.Add(itemId, amount));
+        _ui.AskAmount(itemId, owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.Add(itemId, amount));
     }
 
     #endregion
@@ -1122,7 +1122,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // 거르는 동안 보이는 순서는 칸 번호가 아니다(맞는 것 → 흑백 순으로 모은 배치) — 놓은 자리가 엉뚱한 칸이 된다.
         if (_current.IsFiltering)
         {
-            _wait.RaiseNotice("찾기 중에는 칸을 옮길 수 없습니다. 찾기를 비운 뒤 옮겨 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Inventory.NoMoveWhileFiltering"));
 
             return false;
         }
@@ -1356,7 +1356,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 칸 이동 요청 — {tab} {frameIndex} → {target}");
 
-        s_slotWaitHandle = _wait.Begin($"{ContainerLabel} 칸 이동", onClosed: OnSlotWaitClosed);
+        s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitMove", ContainerLabel), onClosed: OnSlotWaitClosed);
     }
 
     // 다른 보관함 격자 위에 놓았는데 받을 칸이 없었으면 이유를 알린다 (EndSlotDrag에서 호출).
@@ -1375,8 +1375,8 @@ public class InventoryGridPresenter : MonoBehaviour
             }
 
             _wait.RaiseNotice(other._current!.IsFiltering
-                ? "찾기 중에는 넣을 수 없습니다. 찾기를 비운 뒤 옮겨 주세요."
-                : $"{other.ContainerLabel}에 빈 칸이 없습니다.");
+                ? Lang.Get("UI.Inventory.NoDropWhileFiltering")
+                : Lang.Format("UI.Inventory.NoEmptySlot", other.ContainerLabel));
 
             return;
         }
@@ -1392,7 +1392,7 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         if (target._current != null && target._current.IsFiltering)
         {
-            _wait.RaiseNotice("찾기 중에는 넣을 수 없습니다. 찾기를 비운 뒤 옮겨 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Inventory.NoDropWhileFiltering"));
 
             return;
         }
@@ -1426,7 +1426,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        string question = IsInventory ? "몇 개를 창고에 넣을까?" : "몇 개를 꺼낼까?";
+        string question = Lang.Get(IsInventory ? "UI.Inventory.AskStore" : "UI.Inventory.AskTakeOut");
 
         // ※ 팝업이 떠 있는 사이 칸이 바뀌어도 그대로 보낸다 — 어긋났으면 서버가 거절한다(클라가 다시 재지 않는다).
         _ui.AskAmount(itemId, owned, question, amount => SendTransfer(tab, fromSlot, toSlot, amount));
@@ -1449,7 +1449,7 @@ public class InventoryGridPresenter : MonoBehaviour
             Count    = count
         });
 
-        string label = IsInventory ? "창고에 넣기" : "창고에서 꺼내기";
+        string label = Lang.Get(IsInventory ? "UI.Inventory.WaitStore" : "UI.Inventory.WaitTakeOut");
 
         ClientLogger.Info(ClientLogger.Send, $"{label} 요청 — {tab} {fromSlot} → {toSlot} · {count}개");
 
@@ -1688,7 +1688,7 @@ public class InventoryGridPresenter : MonoBehaviour
         int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!Overlay Canvas').
-        _ui.AskAmount(itemId, maxOpen, "몇 개를 열까?", amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, Lang.Get("UI.Inventory.AskOpen"), amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).
@@ -1722,7 +1722,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isOpeningBox = true;
-        _waitHandle   = _wait.Begin($"상자 개봉 {count}개", onClosed: OnWaitClosed);
+        _waitHandle   = _wait.Begin(Lang.Format("UI.Inventory.WaitOpenBox", count), onClosed: OnWaitClosed);
     }
 
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
@@ -1735,7 +1735,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (storedInMail)
         {
-            _wait.RaiseNotice("인벤토리가 가득 차 보상을 우편함에 보관했습니다.\n우편함에서 받아 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Inventory.RewardToMail"));
         }
     }
 

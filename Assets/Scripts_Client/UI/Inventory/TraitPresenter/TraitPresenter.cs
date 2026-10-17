@@ -48,8 +48,8 @@ public class TraitPresenter : MonoBehaviour
         UserTraitEffect.YieldAdd,
     };
 
-    // 열 이름 — 머리 줄과 칸 이름이 함께 쓴다. 'Columns'와 같은 순서다.
-    private static readonly string[] ColumnNames = { "개척", "속도", "산출량" };
+    // 열 이름의 번역 키 — 머리 줄과 칸 이름이 함께 쓴다. 'Columns'와 같은 순서다.
+    private static readonly string[] ColumnNameKeys = { "UI.WorkStation.PioneerFallback", "UI.Trait.Speed", "UI.WorkStation.Yield" };
 
     [CenterHeader("참조")]
     [SerializeField, Tooltip("표 한 줄 프리팹 (TraitRowView — 산업 이름 + 칸 셋). Content 아래에 런타임 생성된다")]
@@ -192,6 +192,7 @@ public class TraitPresenter : MonoBehaviour
         _data.TraitsChanged       += Redraw;      // 특성 레벨 (로그인 목록 · 올리기 응답)
         _data.AccountLevelChanged += Redraw;      // 남은 포인트 · 다음 레벨의 계정 레벨 조건
         _data.TraitLearnCompleted += OnTraitLearnCompleted;
+        Lang.Changed              += OnLanguageChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -206,6 +207,7 @@ public class TraitPresenter : MonoBehaviour
         _data.TraitsChanged       -= Redraw;
         _data.AccountLevelChanged -= Redraw;
         _data.TraitLearnCompleted -= OnTraitLearnCompleted;
+        Lang.Changed              -= OnLanguageChanged;
     }
 
     // 인벤토리 탭이 바뀌었다 ('InventoryTabPresenter.TabChanged' 구독).
@@ -222,10 +224,17 @@ public class TraitPresenter : MonoBehaviour
     // 머리 줄에 열 이름을 적는다 (Start에서 한 번) — 열 순서의 주인이 이 클래스라 이름도 여기서 준다.
     private void BindHeader()
     {
-        for (int i = 0; i < headerTexts.Length && i < ColumnNames.Length; i++)
+        for (int i = 0; i < headerTexts.Length && i < ColumnNameKeys.Length; i++)
         {
-            headerTexts[i].text = ColumnNames[i];
+            headerTexts[i].text = Lang.Get(ColumnNameKeys[i]);
         }
+    }
+
+    // 언어가 바뀌었다 — 머리 줄과 표를 새 언어로 다시 쓴다 (Lang.Changed 구독)
+    private void OnLanguageChanged()
+    {
+        BindHeader();
+        Redraw();
     }
 
     // 표와 정보 영역을 다시 그린다 (칸 선택 · 특성·계정 레벨 변경 구독).
@@ -247,7 +256,7 @@ public class TraitPresenter : MonoBehaviour
 
             TraitRowView row = _rows.Get(used++);
 
-            row.Bind(industry == EIndustryType.None ? "공통" : IndustryLabel.Get(industry));
+            row.Bind(industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry));
 
             for (int column = 0; column < Columns.Length && column < row.CellCount; column++)
             {
@@ -262,7 +271,7 @@ public class TraitPresenter : MonoBehaviour
                 }
 
                 // 칸 이름은 열 이름이다 — 줄이 산업을 말한다. 공통 줄만 특성 이름 그대로('공통 산출량').
-                BindCell(cell, trait, industry == EIndustryType.None ? trait.Name : ColumnNames[column]);
+                BindCell(cell, trait, industry == EIndustryType.None ? Loc.Get(trait.NameLocKey) : Lang.Get(ColumnNameKeys[column]));
             }
         }
 
@@ -370,8 +379,8 @@ public class TraitPresenter : MonoBehaviour
 
         // 최대 레벨은 이름 줄에서 작게 말한다 — 큰 '최대 레벨' 상자는 보기 싫다는 피드백(2026-10-02).
         detailNameText.text = isMax
-            ? $"{trait.Name}  <size=70%><color=#{Hex(UIThemeRole.ButtonSelected)}>Lv {level} / {trait.MaxLevel} · 최대</color></size>"
-            : $"{trait.Name}  <size=70%><color=#{Hex(UIThemeRole.TextSub)}>Lv {level} / {trait.MaxLevel}</color></size>";
+            ? $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.ButtonSelected)}>Lv {level} / {trait.MaxLevel} · {Lang.Get("UI.WorkStation.Max")}</color></size>"
+            : $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.TextSub)}>Lv {level} / {trait.MaxLevel}</color></size>";
         detailDescText.text = DescribeKind(trait);
 
         bool levelOk = isMax || _data.AccountLevel >= GetRequiredAccountLevel(trait, level + 1);
@@ -381,12 +390,12 @@ public class TraitPresenter : MonoBehaviour
 
         requirementText.text = isMax
             ? DescribePoint(null)
-            : $"조건 {Paint($"계정 Lv{GetRequiredAccountLevel(trait, level + 1)}", levelOk)}"
-              + (levelOk ? "" : $" <size=85%><color=#{Hex(UIThemeRole.TextSub)}>(지금 {_data.AccountLevel})</color></size>")
+            : $"{Lang.Get("UI.Trait.Condition")} {Paint(Lang.Format("UI.WorkStation.AccountLevel", GetRequiredAccountLevel(trait, level + 1)), levelOk)}"
+              + (levelOk ? "" : $" <size=85%><color=#{Hex(UIThemeRole.TextSub)}>{Lang.Format("UI.Trait.CurrentLevel", _data.AccountLevel)}</color></size>")
               + $"   ·   {DescribePoint(pointOk)}";
 
         confirmButton.gameObject.SetActive(!isMax);
-        confirmLabel.text = $"레벨 올리기 ({trait.TraitPoint}점)";
+        confirmLabel.text = Lang.Format("UI.Trait.LevelUp", trait.TraitPoint);
         PaintConfirm(levelOk && pointOk);
     }
 
@@ -397,23 +406,23 @@ public class TraitPresenter : MonoBehaviour
     {
         if (isMax)
         {
-            stats.BindMax("현재 효과", DescribeEffect(trait, level));
+            stats.BindMax(Lang.Get("UI.Trait.CurrentEffect"), DescribeEffect(trait, level));
 
             return;
         }
 
         int next = level + 1;
 
-        stats.BindNext($"지금 (Lv{level})", DescribeEffect(trait, level),
-                       $"다음 (Lv{next})",  DescribeNextEffect(trait, next));
+        stats.BindNext(Lang.Format("UI.Trait.NowLevel", level), DescribeEffect(trait, level),
+                       Lang.Format("UI.Trait.NextLevel", next), DescribeNextEffect(trait, next));
     }
 
     // '보유 포인트 13' (조건 줄). ok가 있으면 숫자를 충족/미달 색으로, null이면(고른 것 없음 · 최대 레벨) 그냥 적는다.
     // ※ 충족 여부는 글자색(Positive · Negative)으로 말한다 — '✓'는 아틀라스에 없다.
     private string DescribePoint(bool? ok)
         => ok == null
-            ? $"보유 포인트 {_data.TraitPoint}"
-            : $"보유 포인트 {Paint(_data.TraitPoint.ToString(), ok.Value)}";
+            ? Lang.Format("UI.Trait.Points", _data.TraitPoint)
+            : Lang.Format("UI.Trait.Points", Paint(_data.TraitPoint.ToString(), ok.Value));
 
     // 충족이면 Positive, 아니면 Negative 색으로 감싼다 (조건 줄).
     private static string Paint(string text, bool ok)
@@ -449,14 +458,14 @@ public class TraitPresenter : MonoBehaviour
         {
             case UserTraitEffect.IndustryUnlock:
                 return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, level, out var row)
-                    ? $"Lv{level} {row.Name}까지"
-                    : $"Lv{level}까지";
+                    ? Lang.Format("UI.Trait.UpTo", $"Lv{level} {Loc.Get(row.NameLocKey)}")
+                    : Lang.Format("UI.Trait.UpTo", $"Lv{level}");
 
             case UserTraitEffect.SpeedAdd:
-                return $"속도 {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
+                return $"{Lang.Get("UI.Trait.Speed")} {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
 
             case UserTraitEffect.YieldAdd:
-                return $"산출량 {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
+                return $"{Lang.Get("UI.WorkStation.Yield")} {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
 
             default:
                 return "";
@@ -469,8 +478,8 @@ public class TraitPresenter : MonoBehaviour
         if (trait.EffectType == UserTraitEffect.IndustryUnlock)
         {
             return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, next, out var row)
-                ? $"Lv{next} {row.Name} 열림"
-                : $"Lv{next} 열림";
+                ? Lang.Format("UI.Trait.Opens", $"Lv{next} {Loc.Get(row.NameLocKey)}")
+                : Lang.Format("UI.Trait.Opens", $"Lv{next}");
         }
 
         return DescribeEffect(trait, next);
@@ -486,15 +495,14 @@ public class TraitPresenter : MonoBehaviour
         switch (trait.EffectType)
         {
             case UserTraitEffect.IndustryUnlock:
-                return "그 산업의 다음 레벨 작업지를 엽니다. 작업슬롯에서 고를 수 있게 됩니다.";
+                return Lang.Get("UI.Trait.DescUnlock");
 
             case UserTraitEffect.SpeedAdd:
-                return "작업 주기가 짧아집니다. 자원 · 상자 · 경험치가 모두 더 빨리 쌓입니다.";
+                return Lang.Get("UI.Trait.DescSpeed");
 
             case UserTraitEffect.YieldAdd:
-                return "판정 1회에 같은 자원이 더 나옵니다 (120%면 1개 + 20% 확률로 1개 더). "
-                     + "좋은 자원이 나올 확률은 그대로이고, 상자 · 경험치는 늘지 않습니다."
-                     + (trait.Industry == IndustryType.None ? " 모든 산업에 붙습니다." : "");
+                return Lang.Get("UI.Trait.DescYield")
+                     + (trait.Industry == IndustryType.None ? " " + Lang.Get("UI.Trait.DescYieldAll") : "");
 
             default:
                 return "";
@@ -549,7 +557,7 @@ public class TraitPresenter : MonoBehaviour
 
         if (level >= trait.MaxLevel)
         {
-            _wait.RaiseNotice("이미 최대 레벨입니다.");
+            _wait.RaiseNotice(Lang.Get("UI.Trait.AlreadyMax"));
 
             return;
         }
@@ -558,19 +566,19 @@ public class TraitPresenter : MonoBehaviour
 
         if (_data.AccountLevel < required)
         {
-            _wait.RaiseNotice($"계정 레벨 {required}이(가) 필요합니다. (지금 {_data.AccountLevel})");
+            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedAccountLevel", required, _data.AccountLevel));
 
             return;
         }
 
         if (_data.TraitPoint < trait.TraitPoint)
         {
-            _wait.RaiseNotice($"특성 포인트가 부족합니다. ({trait.TraitPoint}점 필요)");
+            _wait.RaiseNotice(Lang.Format("UI.Trait.NotEnoughPoints", trait.TraitPoint));
 
             return;
         }
 
-        _ui.AskConfirm($"특성 포인트 {trait.TraitPoint}점을 사용합니다.\n'{trait.Name}'을(를) Lv{level + 1}로 올리시겠습니까?",
+        _ui.AskConfirm(Lang.Format("UI.Trait.ConfirmLearn", trait.TraitPoint, Loc.Get(trait.NameLocKey), level + 1),
                        () => RequestLearn(trait.UserTraitTID));
     }
 
@@ -591,7 +599,7 @@ public class TraitPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"특성 레벨 올리기 요청 — {userTraitTid}");
 
         NetworkManager.Instance.Send(new C_UserTraitLearnRequest { UserTraitTID = userTraitTid });
-        _learnWait = _wait.Begin("특성 레벨 올리기", onClosed: () => _learnWait = null);
+        _learnWait = _wait.Begin(Lang.Get("UI.Trait.WaitLearn"), onClosed: () => _learnWait = null);
     }
 
     // 레벨 올리기 결과 (PlayerDataModel.TraitLearnCompleted 구독).

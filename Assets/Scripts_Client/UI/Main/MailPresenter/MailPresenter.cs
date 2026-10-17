@@ -163,7 +163,7 @@ public class MailPresenter : MonoBehaviour
 
     #region 구독
 
-    // 우편함 변경·수령·삭제 결과 구독 (Start · OnEnable에서 호출)
+    // 우편함 변경·수령·삭제 결과 · 언어 변경 구독 (Start · OnEnable에서 호출)
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -173,6 +173,7 @@ public class MailPresenter : MonoBehaviour
 
         _isSubscribed              = true;
         _data.MailsChanged        += Refresh;
+        Lang.Changed              += Refresh;
         _data.MailClaimCompleted  += OnMailClaimCompleted;
         _data.MailDeleteCompleted += OnMailDeleteCompleted;
     }
@@ -187,6 +188,7 @@ public class MailPresenter : MonoBehaviour
 
         _isSubscribed              = false;
         _data.MailsChanged        -= Refresh;
+        Lang.Changed              -= Refresh;
         _data.MailClaimCompleted  -= OnMailClaimCompleted;
         _data.MailDeleteCompleted -= OnMailDeleteCompleted;
     }
@@ -243,18 +245,18 @@ public class MailPresenter : MonoBehaviour
 
         _rows.HideFrom(_sorted.Count);
 
-        countText.text        = $"안 받은 우편 {unclaimedCount}통";
-        unclaimedTabText.text = $"안 받은 우편 ({unclaimedCount})";
-        claimedTabText.text   = $"받은 우편 ({claimedCount})";
+        countText.text        = Lang.Format("UI.Mail.UnclaimedCount", unclaimedCount);
+        unclaimedTabText.text = Lang.Format("UI.Mail.UnclaimedTab", unclaimedCount);
+        claimedTabText.text   = Lang.Format("UI.Mail.ClaimedTab", claimedCount);
 
         emptyText.gameObject.SetActive(_sorted.Count == 0);
-        emptyText.text = showClaimed ? "받은 우편이 없습니다." : "받을 우편이 없습니다.";
+        emptyText.text = showClaimed ? Lang.Get("UI.Mail.EmptyClaimed") : Lang.Get("UI.Mail.EmptyUnclaimed");
 
         // 모두 받기는 안 받은 탭에서만 뜻이 있다 — 받은 탭에서는 자리를 안내 문구에 내준다.
         claimAllButton.gameObject.SetActive(!showClaimed);
         footerNoteText.text = showClaimed
-            ? $"받은 우편은 받은 뒤 {ClaimedKeepDays}일이 지나면 자동으로 지워집니다."
-            : "안 받은 우편은 기한 없이 남습니다.";
+            ? Lang.Format("UI.Mail.ClaimedNote", ClaimedKeepDays)
+            : Lang.Get("UI.Mail.UnclaimedNote");
 
         ApplyTabColors();
         ApplyInteractable();
@@ -305,8 +307,8 @@ public class MailPresenter : MonoBehaviour
     private static string BuildTitle(MailInfo mail)
     {
         return GameDataLoader.TryGetMailTemplate(mail.TemplateTid, out MailTemplateTableRow row)
-            ? row.Title
-            : $"우편 #{mail.TemplateTid}";
+            ? Loc.Get(row.TitleLocKey)
+            : Lang.Format("UI.Mail.Fallback", mail.TemplateTid);
     }
 
     // "발신자 · 도착 시각" — 받은 우편이면 "받음 · n일 뒤 삭제"를 붙인다.
@@ -333,11 +335,11 @@ public class MailPresenter : MonoBehaviour
         DateTimeOffset deleteAt = DateTimeOffset.FromUnixTimeMilliseconds(claimedAtUnixMs).AddDays(ClaimedKeepDays);
         int            days     = (int)Math.Ceiling((deleteAt - ServerClock.UtcNow).TotalDays);
 
-        return days <= 1 ? "오늘 삭제" : $"{days}일 뒤 삭제";
+        return days <= 1 ? Lang.Get("UI.Mail.DeleteToday") : Lang.Format("UI.Mail.DeleteIn", days);
     }
 
     private static string GetSender(MailInfo mail)
-        => GameDataLoader.TryGetMailTemplate(mail.TemplateTid, out MailTemplateTableRow row) ? row.Sender : "";
+        => GameDataLoader.TryGetMailTemplate(mail.TemplateTid, out MailTemplateTableRow row) ? Loc.Get(row.SenderLocKey) : "";
 
     private static string FormatTime(long unixMs)
         => DateTimeOffset.FromUnixTimeMilliseconds(unixMs).ToLocalTime().ToString("yyyy-MM-dd HH:mm");
@@ -414,23 +416,23 @@ public class MailPresenter : MonoBehaviour
 
         if (!string.IsNullOrEmpty(sender))
         {
-            content.Row("발신", sender);
+            content.Row(Lang.Get("UI.Mail.Sender"), sender);
         }
 
-        content.Row("도착", FormatTime(mail.ReceivedAtUnixMs));
+        content.Row(Lang.Get("UI.Mail.Arrived"), FormatTime(mail.ReceivedAtUnixMs));
 
         if (mail.ClaimedAtUnixMs != 0L)
         {
-            content.Row("받음", FormatTime(mail.ClaimedAtUnixMs), FormatDeleteIn(mail.ClaimedAtUnixMs), null);
+            content.Row(Lang.Get("UI.Mail.Claimed"), FormatTime(mail.ClaimedAtUnixMs), FormatDeleteIn(mail.ClaimedAtUnixMs), null);
         }
 
-        content.Header("첨부");
+        content.Header(Lang.Get("UI.Mail.Attachment"));
 
         int before = content.Lines.Count;
 
         if (mail.Gold > 0L)
         {
-            content.Row("골드", $"{mail.Gold:N0}");
+            content.Row(Lang.Get("UI.Common.Gold"), $"{mail.Gold:N0}");
         }
 
         if (mail.Items != null)
@@ -449,7 +451,7 @@ public class MailPresenter : MonoBehaviour
             {
                 GlobalRarity rarity = GameDataLoader.GetCharacterRarity(tid);
 
-                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(tid), RarityPalette.Get(rarity)), "캐릭터", RarityLabel.Get(rarity), null);
+                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(tid), RarityPalette.Get(rarity)), Lang.Get("UI.Common.Character"), RarityLabel.Get(rarity), null);
             }
         }
 
@@ -482,7 +484,7 @@ public class MailPresenter : MonoBehaviour
 
         if (content.Lines.Count == before)
         {
-            content.Row("첨부 없음", "");
+            content.Row(Lang.Get("UI.Mail.NoAttachment"), "");
         }
 
         return content;
@@ -508,7 +510,7 @@ public class MailPresenter : MonoBehaviour
 
         if (mail.Gold > 0L)
         {
-            parts.Add($"골드 {mail.Gold:N0}");
+            parts.Add($"{Lang.Get("UI.Common.Gold")} {mail.Gold:N0}");
         }
 
         if (mail.Items != null)
@@ -538,7 +540,7 @@ public class MailPresenter : MonoBehaviour
             }
         }
 
-        return parts.Count == 0 ? "첨부 없음" : string.Join(" · ", parts);
+        return parts.Count == 0 ? Lang.Get("UI.Mail.NoAttachment") : string.Join(" · ", parts);
     }
 
     // 한 개체 = 한 원소로 오는 TID 목록을 종류별로 묶어 "이름 x수"로 붙인다 (처음 나온 순서를 지킨다).
@@ -578,13 +580,13 @@ public class MailPresenter : MonoBehaviour
     // 한 통 받기 (MailRowView.ClaimClicked 구독)
     private void OnRowClaimClicked(long mailId)
     {
-        SendClaim(mailId, "우편 받기");
+        SendClaim(mailId, Lang.Get("UI.Mail.WaitClaim"));
     }
 
     // 모두 받기 (claimAllButton.onClick) — 'MailId = 0'이 모두 받기다.
     private void OnClaimAllClicked()
     {
-        SendClaim(0L, "모두 받기");
+        SendClaim(0L, Lang.Get("UI.Mail.WaitClaimAll"));
     }
 
     // 받은 우편 지우기 (MailRowView.DeleteClicked 구독)
@@ -599,7 +601,7 @@ public class MailPresenter : MonoBehaviour
         _network.Send(new C_MailDeleteRequest { MailId = mailId });
         ClientLogger.Info(ClientLogger.Send, $"우편 삭제 요청 — 우편={mailId}");
 
-        BeginWait("우편 삭제", isClaimAll: false);
+        BeginWait(Lang.Get("UI.Mail.WaitDelete"), isClaimAll: false);
     }
 
     // 수령 요청을 보낸다 (한 통 · 모두 받기 공통).
@@ -679,8 +681,8 @@ public class MailPresenter : MonoBehaviour
         if (code == EResultCode.StorageFull)
         {
             string message = isClaimAll && claimedCount > 0
-                ? $"인벤토리가 부족해 우편 {claimedCount}통만 받았습니다.\n남은 {remainingCount}통은 인벤토리를 정리한 뒤 받아 주세요."
-                : "인벤토리가 부족합니다.\n인벤토리를 정리한 뒤 다시 받아 주세요.";
+                ? Lang.Format("UI.Mail.PartialClaim", claimedCount, remainingCount)
+                : Lang.Get("UI.Mail.InventoryFull");
 
             _waitHandle.Fail(message);
 

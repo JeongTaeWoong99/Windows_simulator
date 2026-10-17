@@ -167,8 +167,8 @@ public sealed class EnchantAutoTarget
     // 칩 글씨 — '농사' · '경험치'. 산업 이름은 'IndustryLabel'을 따른다.
     public static string GetFocusName(EnchantAutoFocus focus) => focus switch
     {
-        EnchantAutoFocus.None         => "없음",
-        EnchantAutoFocus.CharacterExp => "경험치",
+        EnchantAutoFocus.None         => Lang.Get("UI.Equip.None"),
+        EnchantAutoFocus.CharacterExp => Lang.Get("UI.Equip.Exp"),
         _                             => IndustryLabel.Get((EIndustryType)(byte)ToIndustry(focus)),
     };
 
@@ -183,6 +183,7 @@ public sealed class EnchantAutoTarget
 
         var    text  = new StringBuilder();
         string other = GetFocusName(focus);
+        string all   = Lang.Get("UI.Enchant.All");
 
         for (int i = 0; i < slotCount; i++)
         {
@@ -191,7 +192,7 @@ public sealed class EnchantAutoTarget
                 text.Append('/');
             }
 
-            text.Append(i < allCount ? "전체" : other);
+            text.Append(i < allCount ? all : other);
         }
 
         return text.ToString();
@@ -203,7 +204,7 @@ public sealed class EnchantAutoTarget
     {
         if (IsEveryComboOn(slotCount))
         {
-            return $"칸마다 전체 또는 {GetFocusName(Focus)}";
+            return Lang.Format("UI.Enchant.EveryCombo", GetFocusName(Focus));
         }
 
         var text = new StringBuilder();
@@ -223,7 +224,7 @@ public sealed class EnchantAutoTarget
             text.Append('[').Append(GetComboLabel(Focus, slotCount, allCount)).Append(']');
         }
 
-        return text.Length == 0 ? "칸 조합 없음" : $"칸 {text}";
+        return text.Length == 0 ? Lang.Get("UI.Enchant.NoCombo") : Lang.Format("UI.Enchant.Combos", text);
     }
 
     // 그 칸 수에서 고를 수 있는 조합(전체 0~칸 수)을 전부 켰나 (DescribeCombos에서 호출).

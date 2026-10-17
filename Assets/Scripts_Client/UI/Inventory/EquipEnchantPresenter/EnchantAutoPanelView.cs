@@ -110,7 +110,7 @@ public class EnchantAutoPanelView : MonoBehaviour
         {
             int cap = CapSteps[i];
 
-            capChips[i].Bind(cap == 0 ? "보유 전부" : $"{cap:N0}개", target.Cap == cap, true);
+            capChips[i].Bind(cap == 0 ? Lang.Get("UI.Enchant.CapAll") : Lang.Format("UI.Tool.NEquip", $"{cap:N0}"), target.Cap == cap, true);
         }
     }
 

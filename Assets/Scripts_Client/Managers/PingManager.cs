@@ -231,8 +231,8 @@ public class PingManager : MonoService<PingManager>
         // 치명 알림을 띄운다 — 사용자가 확인하면 앱이 종료된다(에디터에서는 플레이가 멈춘다).
         // 한 번이라도 연결됐었는지로 "도중 끊김"과 "최초 접속 실패"를 갈라 문구를 고른다.
         _wait.RaiseFatal(_everConnected
-            ? "서버와의 연결이 끊어졌습니다. 앱을 종료합니다."
-            : "서버에 접속하지 못했습니다. 서버 상태를 확인한 뒤 다시 실행해 주세요.");
+            ? Lang.Get("UI.Common.Disconnected")
+            : Lang.Get("UI.Common.ConnectFailed"));
     }
 
     #endregion

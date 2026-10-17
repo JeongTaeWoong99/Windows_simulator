@@ -64,8 +64,8 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
     // ─── 공용 검색창 ───
-    public string QueryPlaceholder => "판매 중인 아이템 이름";
-    public string QueryHint        => "치는 대로 아래 목록을 거릅니다";
+    public string QueryPlaceholder => Lang.Get("UI.Auction.MyPlaceholder");
+    public string QueryHint        => Lang.Get("UI.Auction.MyHint");
     public string Query            => _query;
 
     public void OnQueryChanged(string text)
@@ -120,10 +120,6 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         pager.PrevClicked += () => GoToPage(_page - 1);
         pager.NextClicked += () => GoToPage(_page + 1);
 
-        infoText.text = $"{UIRichText.Label("등록 기간")} {Constants.AuctionListingHours}시간" +
-                        $"{UIRichText.Dot}{UIRichText.Label("등록비")} {AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)} (만료되면 돌려받음)" +
-                        $"{UIRichText.Dot}{UIRichText.Label("판매 수수료")} {AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)}";
-
         Refresh();
         RequestListings();
 
@@ -162,6 +158,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.MyListingsCompleted += OnMyListingsCompleted;
         _auction.CancelCompleted     += OnCancelCompleted;
         _auction.RegisterCompleted   += OnRegisterCompleted;
+        Lang.Changed                 += Refresh;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -177,6 +174,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         _auction.MyListingsCompleted -= OnMyListingsCompleted;
         _auction.CancelCompleted     -= OnCancelCompleted;
         _auction.RegisterCompleted   -= OnRegisterCompleted;
+        Lang.Changed                 -= Refresh;
     }
 
     #endregion
@@ -192,7 +190,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         }
 
         _auction.RequestMyListings();
-        BeginWait("내 매물");
+        BeginWait(Lang.Get("UI.Auction.WaitMyListings"));
     }
 
     // 줄의 [취소] — 확인을 받고 보낸다 (AuctionTableRowView.PrimaryClicked)
@@ -212,10 +210,10 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 
         string name = AuctionText.GetName(listing.Kind, listing.Tid);
 
-        _ui.AskConfirm($"{name} 판매를 취소합니다.\n남은 물건은 우편으로 돌아오고, 등록비는 돌려받지 못합니다.", () =>
+        _ui.AskConfirm(Lang.Format("UI.Auction.ConfirmCancel", name), () =>
         {
             _auction.RequestCancel(listingId);
-            BeginWait("판매 취소");
+            BeginWait(Lang.Get("UI.Auction.WaitCancel"));
         });
     }
 
@@ -237,7 +235,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (code == EResultCode.Ok)
         {
-            _wait.RaiseNotice("판매를 취소했습니다. 물건은 우편함에서 받아 주세요.");
+            _wait.RaiseNotice(Lang.Get("UI.Auction.CancelDone"));
         }
 
         Refresh();
@@ -332,21 +330,26 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         _rows.Show(_contents);
 
         pager.Bind(_page, pageCount, canPrev: _page > 0, canNext: _page < pageCount - 1,
-                   _contents.Count > 0 ? $"{first + 1:N0}–{first + _contents.Count:N0} / {matched:N0}건" : "");
+                   _contents.Count > 0 ? Lang.Format("UI.Auction.RangeOf", (first + 1).ToString("N0"), (first + _contents.Count).ToString("N0"), matched.ToString("N0")) : "");
 
         int  total  = _auction.MyListings.Count;
         bool isFull = total >= Constants.AuctionMaxActiveListings;
 
         emptyText.gameObject.SetActive(_contents.Count == 0);
-        emptyText.text = total == 0 ? "판매 중인 매물이 없습니다" : "이름이 맞는 매물이 없습니다";
+        emptyText.text = Lang.Get(total == 0 ? "UI.Auction.MyEmpty" : "UI.Auction.MyNoMatch");
 
-        countText.text = $"판매 중 {UIRichText.Paint(total.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
+        countText.text = $"{Lang.Get("UI.Auction.OnSale")} {UIRichText.Paint(total.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
 
         string received = AuctionModel.FormatReceivedAgo(_auction.MyListingsReceivedAt);
 
-        noteText.text = "팔리면 대금은 우편으로 옵니다" + (received.Length > 0 ? UIRichText.Dot + UIRichText.Label(received) : "");
+        noteText.text = Lang.Get("UI.Auction.MyNote") + (received.Length > 0 ? UIRichText.Dot + UIRichText.Label(received) : "");
 
         registerButton.interactable = !isFull;
+
+        // 등록 규칙 안내 — 값은 고정이지만 언어가 바뀌면 다시 써야 해서 여기서 그린다.
+        infoText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.ListingPeriod"))} {Lang.Format("UI.Auction.HoursOnly", Constants.AuctionListingHours)}" +
+                        $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.ListingFee"))} {AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)} {Lang.Get("UI.Auction.RefundOnExpiry")}" +
+                        $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.SaleFee"))} {AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)}";
     }
 
     #endregion

@@ -345,7 +345,6 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // ※ 아래 'CloseEquipPicker'가 장비 줄을 비우므로 그보다 먼저 만든다.
         _rows = new UIRowList<CharacterStateRowView>(rowPrefab, rowParent, row =>
         {
-            row.SetButtonLabel("배치");
             row.AssignClicked += OnRowAssignClicked;
         }, row => row.Clear());
         _efficiencyRows = new UIRowList<EfficiencyRowView>(efficiencyRowPrefab, efficiencyRowParent, onHide: row => row.Clear());
@@ -369,7 +368,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         CloseEquipPicker();
 
         backButton.onClick.AddListener(BackToSlotList);
-        assignedCard.SetButtonLabel("해제");
+        assignedCard.SetButtonLabel(Lang.Get("UI.WorkStation.Unassign"));
         assignedCard.AssignClicked += OnAssignedCardClicked;
 
         OpenStageForSlot();
@@ -494,6 +493,20 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _data.WorkStationAssignCompleted += OnAssignCompleted;
         _data.EquipsChanged             += OnEquipsChanged;   // 지급·장착·해제가 전부 이 하나로 온다
         _data.EquipCompleted            += OnEquipCompleted;
+        Lang.Changed                    += OnLanguageChanged;
+    }
+
+    // 언어가 바뀌었다 — 한 번만 적는 카드 버튼과 장비 고르기 제목을 고쳐 쓰고 지금 단계를 다시 그린다 (Lang.Changed 구독)
+    private void OnLanguageChanged()
+    {
+        assignedCard.SetButtonLabel(Lang.Get("UI.WorkStation.Unassign"));
+
+        if (equipPickerPanel.activeSelf)
+        {
+            equipPickerTitle.text = Lang.Format("UI.WorkStation.PickEquip", EquipLabel.GetSlotName(_pickingSlot));
+        }
+
+        Refresh();
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -510,6 +523,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         _data.TraitsChanged             -= Refresh;
         _data.WorkStationAssignCompleted -= OnAssignCompleted;
         _data.EquipsChanged             -= OnEquipsChanged;
+        Lang.Changed                    -= OnLanguageChanged;
         _data.EquipCompleted            -= OnEquipCompleted;
     }
 
@@ -797,12 +811,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 이 산업을 여는 개척 특성의 이름 — 잠김 문구용. 표에 없으면 '개척'.
     private static string GetIndustryUnlockTraitName(EIndustryType industry)
-        => GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait) && trait.Name.Length > 0 ? trait.Name : "개척";
+        => GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait) && trait.Name.Length > 0 ? Loc.Get(trait.NameLocKey) : Lang.Get("UI.WorkStation.PioneerFallback");
 
     // 레벨 버튼 라벨 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
     private static string GetIndustryLevelName(EIndustryType industry, int level)
         => GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
-            ? $"Lv{level} {row.Name}"
+            ? $"Lv{level} {Loc.Get(row.NameLocKey)}"
             : $"Lv{level}";
 
     // 레벨 버튼 툴팁 — 그 레벨의 스펙과 나오는 자원 (레벨 버튼의 'TooltipTrigger'가 띄울 때 호출).
@@ -832,14 +846,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         if (!_data.IsIndustryLevelOpen(industry, level))
         {
-            content.Row($"잠김 — 특성 '{GetIndustryUnlockTraitName(industry)}' Lv{level} 필요", "");
+            content.Row(Lang.Format("UI.WorkStation.LevelLocked", GetIndustryUnlockTraitName(industry), level), "");
         }
 
         // 줄이 두 묶음이라 제목을 끼워 가른다 — 앞은 이 레벨 자체의 제원, 뒤는 거기서 나오는 것이다.
-        content.Header("작업지 정보")
-               .Row("기준 주기", $"{spec.RequiredScore / 1000f:0.#}초")
-               .Row("판정당 경험치", $"{spec.ExpPerJudge}")
-               .Header("나오는 자원");
+        content.Header(Lang.Get("UI.WorkStation.SiteInfo"))
+               .Row(Lang.Get("UI.WorkStation.BaseCycle"), Lang.Format("UI.WorkStation.Seconds", (spec.RequiredScore / 1000f).ToString("0.#")))
+               .Row(Lang.Get("UI.WorkStation.ExpPerJudge"), $"{spec.ExpPerJudge}")
+               .Header(Lang.Get("UI.WorkStation.Drops"));
 
         var drops = GameDataLoader.GetIndustryDrops(industry, level);
         var total = 0;
@@ -861,7 +875,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         if (boxes.Count > 0)
         {
-            content.Header("럭키 상자");
+            content.Header(Lang.Get("UI.WorkStation.LuckyBox"));
 
             foreach (var box in boxes)
             {
@@ -883,7 +897,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         var rate  = total > 0 ? $"{drop.Weight * 100f / total:0.##}%" : "—";
         var price = GameDataLoader.GetItemPrice(drop.ItemTid);
 
-        content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, $"{price:N0} 골드",
+        content.Row(GameDataLoader.GetItemName(drop.ItemTid), rate, Lang.Format("UI.Equip.Gold", $"{price:N0}"),
                     RarityPalette.Get(GameDataLoader.GetItemRarity(drop.ItemTid)));
     }
 
@@ -898,7 +912,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         var rate  = $"{box.ChancePerMillion * 100.0 / 1_000_000:0.###}%";
         var price = GameDataLoader.GetItemPrice(box.ItemTid);
 
-        content.Row(label, rate, $"{price:N0} 골드",
+        content.Row(label, rate, Lang.Format("UI.Equip.Gold", $"{price:N0}"),
                     RarityPalette.Get(GameDataLoader.GetItemRarity(box.ItemTid)));
     }
 
@@ -965,6 +979,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             var           row         = _rows.Get(i);
 
             row.Bind(characterId, _data.GetCharacterName(characterId), character.CharacterTid, character.Level, character.Star);
+            row.SetButtonLabel(Lang.Get("UI.WorkStation.Assign"));
             row.SetRarity(GameDataLoader.GetCharacterRarity(character.CharacterTid));
             row.SetAptitudes(ReadAptitudes(characterId), _selectedIndustry);
             row.SetWarehouseMark(character.Container == EContainer.Warehouse);
@@ -1033,7 +1048,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //   이 메서드는 그 단계의 내용만 채운다.
     private void Refresh()
     {
-        titleText.text = $"슬롯 {WorkStationSlotView.DisplayNumber(_slotIndex)} 설정"; // 사람에게는 1번부터
+        titleText.text = Lang.Format("UI.WorkStation.SlotTitle", WorkStationSlotView.DisplayNumber(_slotIndex)); // 사람에게는 1번부터
 
         // 세팅 단계의 불빛은 슬롯에서 파생한다 — 칠하기 전에 맞춘다(순서가 뒤집히면 한 프레임 늦는다).
         if (settingPanel.activeSelf)
@@ -1140,26 +1155,26 @@ public class WorkStationSelectPresenter : MonoBehaviour
         float cycle    = WorkStationProgress.CalculateCycleSeconds(slot);
         int   totalAdd = slot.LevelAddPermille + slot.StarAddPermille + slot.TraitAddPermille + slot.EquipAddPermille;
 
-        _efficiencyRows.Get(0).Bind("적성 기본값", FormatSpeed(slot.BaseWorkSpeed));
+        _efficiencyRows.Get(0).Bind(Lang.Get("UI.WorkStation.BaseAptitude"), FormatSpeed(slot.BaseWorkSpeed));
 
         // 총합을 값에 적고 내역은 주석 줄에 둔다 — "왜 이만큼인가"가 한 줄 아래에 있어야 한다.
         var addRow = _efficiencyRows.Get(1);
-        addRow.Bind("속도 가산", FormatPermille(totalAdd));
+        addRow.Bind(Lang.Get("UI.WorkStation.SpeedAdd"), FormatPermille(totalAdd));
 
         if (totalAdd != 0)
         {
-            addRow.SetNote($"레벨 {FormatPermille(slot.LevelAddPermille)} · 응축 {FormatPermille(slot.StarAddPermille)} · "
-                         + $"특성 {FormatPermille(slot.TraitAddPermille)} · 장비 {FormatPermille(slot.EquipAddPermille)}");
+            addRow.SetNote(Lang.Format("UI.WorkStation.SpeedAddNote", FormatPermille(slot.LevelAddPermille), FormatPermille(slot.StarAddPermille),
+                                       FormatPermille(slot.TraitAddPermille), FormatPermille(slot.EquipAddPermille)));
         }
 
         var speedRow = _efficiencyRows.Get(2);
         bool atMinCycle = WorkStationProgress.IsAtMinCycle(slot);
-        speedRow.Bind("현재 작업속도", FormatSpeed(WorkStationProgress.GetEffectiveSpeed(slot)));
+        speedRow.Bind(Lang.Get("UI.WorkStation.CurrentSpeed"), FormatSpeed(WorkStationProgress.GetEffectiveSpeed(slot)));
 
         // ※ 0은 필드가 없던 옛 서버다 — 배수가 없는 것으로 본다.
         if (slot.GatherSpeedPermille != 0 && slot.GatherSpeedPermille != (int)Constants.WorkSpeedScale)
         {
-            speedRow.SetNote($"개발용 전역 배수 ×{slot.GatherSpeedPermille / (float)Constants.WorkSpeedScale:0.00} 적용 중");
+            speedRow.SetNote(Lang.Format("UI.WorkStation.DevMultiplier", (slot.GatherSpeedPermille / (float)Constants.WorkSpeedScale).ToString("0.00")));
         }
 
         // 상한 안내는 실효 주기 줄에 둔다 — 현재 작업속도 줄의 안내 칸은 전역 배수가 쓴다.
@@ -1167,10 +1182,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
         float minCycle = WorkStationProgress.MinCycleSeconds;
 
         var cycleRow = _efficiencyRows.Get(3);
-        cycleRow.Bind("실효 주기", cycle > 0f ? $"{cycle:0.00}초" + (atMinCycle ? " (최소)" : "") : "—");
+        cycleRow.Bind(Lang.Get("UI.WorkStation.EffectiveCycle"),
+                      cycle > 0f ? Lang.Format("UI.WorkStation.Seconds", cycle.ToString("0.00")) + (atMinCycle ? " " + Lang.Get("UI.WorkStation.MinMark") : "") : "—");
         cycleRow.SetNote(atMinCycle
-            ? $"최소 주기 {minCycle:0.0#}초에 닿음 — 속도 상한 {FormatSpeed(WorkStationProgress.GetSpeedCap(slot))}, 더 올려도 빨라지지 않는다"
-            : $"최소 주기 {minCycle:0.0#}초");
+            ? Lang.Format("UI.WorkStation.MinCycleReached", minCycle.ToString("0.0#"), FormatSpeed(WorkStationProgress.GetSpeedCap(slot)))
+            : Lang.Format("UI.WorkStation.MinCycle", minCycle.ToString("0.0#")));
 
         // ■ 산출량 — 판정 1회에 같은 자원이 몇 개 나오나 (2026-10-02 · T-108)
         // 서버 식은 '100% + 공통 + 그 산업'이다(가산). 서버가 값을 보내지 않으므로 속도 가산과 같은 사본이다.
@@ -1178,11 +1194,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
         int industryYield = _data.GetTraitEffectSum(UserTraitEffect.YieldAdd, slot.Industry) - commonYield;
         var yieldRow      = _efficiencyRows.Get(4);
 
-        yieldRow.Bind("산출량", $"{(1000 + commonYield + industryYield) / 10f:0.#}%");
+        yieldRow.Bind(Lang.Get("UI.WorkStation.Yield"), $"{(1000 + commonYield + industryYield) / 10f:0.#}%");
 
         if (commonYield != 0 || industryYield != 0)
         {
-            yieldRow.SetNote($"공통 {FormatPermille(commonYield)} · 산업 {FormatPermille(industryYield)}");
+            yieldRow.SetNote(Lang.Format("UI.WorkStation.YieldNote", FormatPermille(commonYield), FormatPermille(industryYield)));
         }
 
         _efficiencyRows.HideFrom(EfficiencyRowCount);
@@ -1196,7 +1212,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
     // 천분율 속도를 "2.45배"로 적는다. 0이면 모르는 값이라 "—" (효율 계산에서 호출)
     private static string FormatSpeed(int permille)
-        => permille > 0 ? $"{permille / (float)Constants.WorkSpeedScale:0.00}배" : "—";
+        => permille > 0 ? Lang.Format("UI.WorkStation.SpeedMul", (permille / (float)Constants.WorkSpeedScale).ToString("0.00")) : "—";
 
     // 천분율 가산을 "+25%"로 적는다. 0도 그대로 "+0%"다 — 빈 값은 "못 읽었다"와 구분되지 않는다.
     // ※ 감산 장비·특성이 생길 수 있어 부호를 함께 만든다.
@@ -1407,11 +1423,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private static string WaitLabel(PendingRequest request)
         => request switch
         {
-            PendingRequest.Assign  => "작업슬롯 배치",
-            PendingRequest.Replace => "작업슬롯 산업 교체",
-            PendingRequest.Equip   => "장비 장착",
-            PendingRequest.Unequip => "장비 해제",
-            _                      => "작업슬롯 해제",
+            PendingRequest.Assign  => Lang.Get("UI.WorkStation.WaitAssign"),
+            PendingRequest.Replace => Lang.Get("UI.WorkStation.WaitReplace"),
+            PendingRequest.Equip   => Lang.Get("UI.WorkStation.WaitEquip"),
+            PendingRequest.Unequip => Lang.Get("UI.WorkStation.WaitUnequip"),
+            _                      => Lang.Get("UI.WorkStation.WaitUnassign"),
         };
 
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 잠금을 푼다 (ServerWaitManager.Begin의 onClosed)
@@ -1708,7 +1724,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         efficiencyPanel.SetActive(false);
         equipPickerPanel.SetActive(true);
 
-        equipPickerTitle.text = $"{EquipLabel.GetSlotName(part)} 고르기";
+        equipPickerTitle.text = Lang.Format("UI.WorkStation.PickEquip", EquipLabel.GetSlotName(part));
 
         // 칸을 옮길 때마다 **그 슬롯의 산업**으로 되돌린다 — 앞 칸에서 건 필터가 남아 있으면
         // **다음 칸이 이유 없이 비어 보인다.** 이 캐릭터가 지금 하는 일이 곧 기본값이다.
@@ -1811,7 +1827,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             var view = _equipRows.Get(i);
 
-            view.Bind(equip.EquipId, row.Name, EquipLabel.GetEffectText(equip.EquipTid));
+            view.Bind(equip.EquipId, Loc.Get(row.NameLocKey), EquipLabel.GetEffectText(equip.EquipTid));
             view.SetRarity(row.GlobalRarity);
             view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                            () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));

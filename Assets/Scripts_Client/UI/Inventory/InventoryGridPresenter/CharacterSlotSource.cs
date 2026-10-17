@@ -110,31 +110,28 @@ public class CharacterSlotSource : InventorySlotSource
         var content = new TooltipContent(GameDataLoader.GetCharacterName(tid));
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid))
-            .Row("레벨", GetLevelLabel(_data.GetCharacterLevel(key)), $"경험치 {_data.GetExpProgress(key):0%}", null);
+            .Row(Lang.Get("UI.Inventory.Level"), GetLevelLabel(_data.GetCharacterLevel(key)), $"{Lang.Get("UI.Equip.Exp")} {_data.GetExpProgress(key):0%}", null);
 
         AddStorageRow(content)
-            .Row("상태", GetStateText(key));
+            .Row(Lang.Get("UI.Inventory.State"), GetStateText(key));
 
         AddCondenseRow(content, key);
 
         EquipLabel.AddWornRows(content, _data, key);
 
-        content.Header("적성");
+        content.Header(Lang.Get("UI.Inventory.Aptitude"));
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
             byte aptitude = _data.GetAptitude(key, industry);
-            string speed  = aptitude == 0 ? "" : $"{GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale:0.00}배";
+            string speed  = aptitude == 0 ? "" : Lang.Format("UI.WorkStation.SpeedMul", (GameDataLoader.GetBaseWorkSpeed(aptitude) / (float)Constants.WorkSpeedScale).ToString("0.00"));
 
             content.Row(IndustryLabel.Get(industry), AptitudeLabel.GetText(aptitude), speed, null);
         }
 
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
-        return AddControls(content, rows => rows
-            .Row("좌클릭",       "응축")
-            .Row("우클릭",       "판매 담기")
-            .Row("Ctrl+좌클릭",  IsLocked(key) ? "잠금 풀기" : "잠그기")
-            .Row("Ctrl+우클릭", "경매 등록"));
+        return AddControls(content, rows => AddCommonControls(
+            rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Inventory.Condense")), IsLocked(key)));
     }
 
     // 상태 줄 — 어디서 일하나 · 잠김 (BuildTooltip에서 호출).
@@ -143,7 +140,7 @@ public class CharacterSlotSource : InventorySlotSource
     {
         string state = GetWorkText(key);
 
-        return IsLocked(key) ? $"{state} · 잠김" : state;
+        return IsLocked(key) ? $"{state} · {Lang.Get("UI.WorkStation.Locked")}" : state;
     }
 
     // 응축 줄 — '2성 · 누적 24/44' · 작업속도 가산 (BuildTooltip에서 호출, T-130).
@@ -160,14 +157,14 @@ public class CharacterSlotSource : InventorySlotSource
         int max  = GameDataLoader.CondenseMaxStar;
         int star = character.Star;
         string progress = star >= max
-            ? $"누적 {character.CondenseCount} · 최고"
-            : $"누적 {character.CondenseCount}/{GameDataLoader.GetCondenseThreshold(star + 1)}";
+            ? Lang.Format("UI.Inventory.CondenseMax", character.CondenseCount)
+            : Lang.Format("UI.Inventory.CondenseProgress", character.CondenseCount, GameDataLoader.GetCondenseThreshold(star + 1));
 
-        content.Row("응축", $"{star}성", progress, null);
+        content.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), progress, null);
 
         if (star > 0)
         {
-            content.Row("응축 가산", $"작업속도 +{GameDataLoader.GetStarSpeedAdd(star) / 10f:0.#}%");
+            content.Row(Lang.Get("UI.Inventory.CondenseBonus"), Lang.Format("UI.Inventory.WorkSpeedAdd", (GameDataLoader.GetStarSpeedAdd(star) / 10f).ToString("0.#")));
         }
     }
 
@@ -187,18 +184,18 @@ public class CharacterSlotSource : InventorySlotSource
 
         if (slotIndex < 0)
         {
-            return "대기";
+            return Lang.Get("UI.WorkStation.Idle");
         }
 
         foreach (WorkStationSlotInfo slot in _data.WorkStationSlots)
         {
             if (slot.SlotIndex == slotIndex)
             {
-                return $"슬롯 {WorkStationSlotView.DisplayNumber(slotIndex)} · {IndustryLabel.Get(slot.Industry)} Lv.{slot.IndustryLevel}";
+                return $"{Lang.Format("UI.Inventory.Slot", WorkStationSlotView.DisplayNumber(slotIndex))} · {IndustryLabel.Get(slot.Industry)} Lv.{slot.IndustryLevel}";
             }
         }
 
-        return $"슬롯 {WorkStationSlotView.DisplayNumber(slotIndex)}";
+        return Lang.Format("UI.Inventory.Slot", WorkStationSlotView.DisplayNumber(slotIndex));
     }
 
     // 캐릭터 목록·슬롯·장비 변경 구독 (Subscribe에서 호출)

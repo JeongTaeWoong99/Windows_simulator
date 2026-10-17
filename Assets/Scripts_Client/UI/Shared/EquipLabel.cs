@@ -29,7 +29,7 @@ public static class EquipLabel
         }
 
         string industry = row.Industry == IndustryType.None
-            ? "전산업"
+            ? Lang.Get("UI.Industry.All")
             : IndustryLabel.Get((EIndustryType)(byte)row.Industry);
 
         string sign = row.SpeedAddPermille >= 0 ? "+" : "";
@@ -57,9 +57,9 @@ public static class EquipLabel
         return option.OptionType switch
         {
             EnchantOptionType.Speed => option.Industry == IndustryType.None
-                ? $"전산업 {percent}"
+                ? $"{Lang.Get("UI.Industry.All")} {percent}"
                 : $"{IndustryLabel.Get((EIndustryType)(byte)option.Industry)} {percent}",
-            EnchantOptionType.CharacterExp => $"경험치 {percent}",
+            EnchantOptionType.CharacterExp => $"{Lang.Get("UI.Equip.Exp")} {percent}",
             _                              => "",
         };
     }
@@ -127,13 +127,13 @@ public static class EquipLabel
             return;
         }
 
-        content.Header($"능력치 칸 {CountFilled(options)}/{options.Count}");
+        content.Header(Lang.Format("UI.Equip.StatSlots", CountFilled(options), options.Count));
 
         // 인챈트 등급은 장비 하나에 하나다 — 칸마다 같은 등급이라 첫 칸의 것을 읽는다(이슈 #46).
         GlobalRarity grade = FirstGrade(options);
 
-        content.Row("인챈트 등급",
-                    grade == GlobalRarity.None ? "없음" : RarityLabel.Get(grade),
+        content.Row(Lang.Get("UI.Equip.EnchantGrade"),
+                    grade == GlobalRarity.None ? Lang.Get("UI.Equip.None") : RarityLabel.Get(grade),
                     "",
                     grade == GlobalRarity.None ? null : RarityPalette.Get(grade));
 
@@ -143,7 +143,7 @@ public static class EquipLabel
 
             if (option == null)
             {
-                content.Row($"{i + 1}", "비어 있음");
+                content.Row($"{i + 1}", Lang.Get("UI.Equip.SlotEmpty"));
 
                 continue;
             }
@@ -181,11 +181,11 @@ public static class EquipLabel
 
         if (grade == GlobalRarity.None)
         {
-            sb.Append(UIRichText.Label("큐브 없음"));
+            sb.Append(UIRichText.Label(Lang.Get("UI.Equip.NoCube")));
         }
         else
         {
-            sb.Append(UIRichText.Label("큐브")).Append(' ').Append(RarityLabel.Get(grade));
+            sb.Append(UIRichText.Label(Lang.Get("UI.Equip.Cube"))).Append(' ').Append(RarityLabel.Get(grade));
 
             foreach (EnchantOptionTableRow? option in options)
             {
@@ -198,7 +198,7 @@ public static class EquipLabel
 
         if (equip.PendingEnchantGrade > 0)
         {
-            sb.Append('\n').Append(UIRichText.Paint("결과 선택 대기", UIThemeRole.Highlight));
+            sb.Append('\n').Append(UIRichText.Paint(Lang.Get("UI.Equip.PendingResult"), UIThemeRole.Highlight));
         }
 
         return sb.ToString();
@@ -219,11 +219,11 @@ public static class EquipLabel
     // 문장을 값 칸에 두면 확률 표까지 그 폭을 물려받아 패널이 늘어난다 — 값 칸에는 짧은 확률만 둔다.
     public static TooltipContent BuildCubeRuleTooltip()
     {
-        var content = new TooltipContent("인챈트 큐브")
+        var content = new TooltipContent(Lang.Get("UI.Equip.CubeTitle"))
             .Row(SlotCountSummary(), "")
-            .Row("첫 사용은 일반 · 이후 확률로 한 단계씩 상승", "")
-            .Row("매번 칸 전부 다시 뽑기 (옵션 중복 가능)", "")
-            .Row("착용 중이면 벗긴 뒤 사용", "");
+            .Row(Lang.Get("UI.Equip.CubeRuleFirst"), "")
+            .Row(Lang.Get("UI.Equip.CubeRuleReroll"), "")
+            .Row(Lang.Get("UI.Equip.CubeRuleUnequip"), "");
 
         IReadOnlyList<EnchantItemTableRow> cubes = GameDataLoader.EnchantCubes;
 
@@ -234,7 +234,7 @@ public static class EquipLabel
 
         // 확률 표 — 값 칸이 첫 큐브, 보조 칸이 둘째 큐브다. 큐브가 셋 이상이 되면 표 모양을 다시 정한다.
         // 열 머리는 큐브 이름에서 공통 꼬리('인챈트 큐브')를 뗀 짧은 이름이다 — 긴 이름은 열을 넓힌다.
-        content.Row("■ 등급 상승 확률",
+        content.Row(Lang.Get("UI.Equip.CubeUpChance"),
                     ShortCubeName(cubes[0].ItemTID),
                     cubes.Count > 1 ? ShortCubeName(cubes[1].ItemTID) : "",
                     null);
@@ -249,18 +249,18 @@ public static class EquipLabel
                         RarityPalette.Get(next));
         }
 
-        return content.Row($"{RarityLabel.Get(GlobalRarity.Mythic)}은 최고 등급 · 옵션만 다시 뽑기", "");
+        return content.Row(Lang.Format("UI.Equip.CubeMythic", RarityLabel.Get(GlobalRarity.Mythic)), "");
     }
 
     // 확률 표 열 머리 — '인챈트 큐브' → '기본', '상급 인챈트 큐브' → '상급'. 꼬리가 다르면 이름 그대로.
     private static string ShortCubeName(int cubeTid)
     {
-        const string Tail = "인챈트 큐브";
+        string Tail = Lang.Get("UI.Equip.CubeTail");
 
         string name  = GameDataLoader.GetItemName(cubeTid);
         string front = name.EndsWith(Tail) ? name[..^Tail.Length].Trim() : name;
 
-        return front.Length == 0 ? "기본" : front;
+        return front.Length == 0 ? Lang.Get("UI.Equip.CubeBasic") : front;
     }
 
     // 등급별 칸 수 요약 — '일반·고급 1칸 · 희귀·영웅 2칸 · 전설·신화 3칸'. 같은 칸 수의 등급을 묶는다.
@@ -276,7 +276,7 @@ public static class EquipLabel
 
             if (count != run && names.Count > 0)
             {
-                parts.Add($"{string.Join("·", names)} {run}칸");
+                parts.Add(Lang.Format("UI.Equip.SlotCount", string.Join("·", names), run));
                 names.Clear();
             }
 
@@ -286,7 +286,7 @@ public static class EquipLabel
 
         if (names.Count > 0)
         {
-            parts.Add($"{string.Join("·", names)} {run}칸");
+            parts.Add(Lang.Format("UI.Equip.SlotCount", string.Join("·", names), run));
         }
 
         return string.Join(" · ", parts);
@@ -305,15 +305,15 @@ public static class EquipLabel
             return null;
         }
 
-        var content = new TooltipContent(row.Name)
-            .Row("등급", RarityLabel.Get(row.GlobalRarity), "", RarityPalette.Get(row.GlobalRarity))
-            .Row("종류", GetKindName(row.EquipKind))
-            .Row("기본 능력치", GetEffectText(equipTid));
+        var content = new TooltipContent(Loc.Get(row.NameLocKey))
+            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(row.GlobalRarity), "", RarityPalette.Get(row.GlobalRarity))
+            .Row(Lang.Get("UI.Equip.Kind"), GetKindName(row.EquipKind))
+            .Row(Lang.Get("UI.Equip.BaseStat"), GetEffectText(equipTid));
 
         addStateRows?.Invoke(content);
 
-        content.Row("즉시 판매가", $"{AuctionModel.InstantSellPrice(row.BasePrice):N0} 골드", "인벤토리 [판매]", null)
-               .Row("경매 등록가", AuctionModel.FormatBand(row.BasePrice));
+        content.Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellPrice(row.BasePrice):N0}"), Lang.Get("UI.Equip.InventorySell"), null)
+               .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(row.BasePrice));
 
         var options = new List<EnchantOptionTableRow?>();
 
@@ -337,9 +337,9 @@ public static class EquipLabel
     // 장비 종류의 이름 — '무기' · '장신구' · '보석'. 모르는 값이면 영문 이름 그대로('IndustryLabel'과 같다).
     public static string GetKindName(EquipKind kind) => kind switch
     {
-        EquipKind.Weapon    => "무기",
-        EquipKind.Accessory => "장신구",
-        EquipKind.Gem       => "보석",
+        EquipKind.Weapon    => Lang.Get("UI.Equip.Weapon"),
+        EquipKind.Accessory => Lang.Get("UI.Equip.Accessory"),
+        EquipKind.Gem       => Lang.Get("UI.Equip.Gem"),
         _                   => kind.ToString(),
     };
 
@@ -379,12 +379,12 @@ public static class EquipLabel
         // 하나도 안 꼈으면 한 줄로 끝낸다 — "비어 있음" 네 줄은 툴팁만 길게 만든다(2026-10-15 사용자 지적). 낀 부위만 적는다.
         if (!HasAnyWorn(data, characterId))
         {
-            content.Row("장비", "없음");
+            content.Row(Lang.Get("UI.Equip.Gear"), Lang.Get("UI.Equip.None"));
 
             return;
         }
 
-        content.Header("장비");
+        content.Header(Lang.Get("UI.Equip.Gear"));
 
         foreach (EEquipSlot slot in WornSlots)
         {
@@ -418,10 +418,10 @@ public static class EquipLabel
     // 장비 칸의 부위 이름 — '무기' · '장신구1' · '장신구2' · '보석'.
     public static string GetSlotName(EEquipSlot slot) => slot switch
     {
-        EEquipSlot.Weapon     => "무기",
-        EEquipSlot.Accessory1 => "장신구1",
-        EEquipSlot.Accessory2 => "장신구2",
-        EEquipSlot.Gem        => "보석",
+        EEquipSlot.Weapon     => Lang.Get("UI.Equip.Weapon"),
+        EEquipSlot.Accessory1 => Lang.Get("UI.Equip.Accessory1"),
+        EEquipSlot.Accessory2 => Lang.Get("UI.Equip.Accessory2"),
+        EEquipSlot.Gem        => Lang.Get("UI.Equip.Gem"),
         _                     => "",
     };
 }

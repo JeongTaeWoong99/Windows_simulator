@@ -57,7 +57,7 @@ public class AuctionPriceLevelsView : MonoBehaviour
             }
 
             priceTexts[i].text = UIRichText.Gold(levels[i].UnitPrice);
-            countTexts[i].text = $"{levels[i].Count:N0}개";
+            countTexts[i].text = Lang.Format("UI.Inventory.CountUnitShort", levels[i].Count.ToString("N0"));
             RectTransform bar = bars[i].rectTransform;
             bar.anchorMax = new Vector2(Mathf.Max(MinFill, levels[i].Count / (float)most), bar.anchorMax.y);
         }
