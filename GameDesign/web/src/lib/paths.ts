@@ -14,6 +14,8 @@ export const LATER_DIR = path.join(TASKS_DIR, 'later');
 export const DESIGN_DIR = path.join(REPO_ROOT, 'GameDesign', 'design');
 // 엑셀 → .bytes를 되읽은 덤프 — 데이터 뷰어(/data)가 읽는다. 생성물이라 사이트도 읽기만 한다.
 export const DATALOG_DIR = path.join(REPO_ROOT, 'GameDesign', 'DataLog');
+// 예약 작업이 회차마다 쌓는 레퍼런스 분석(AI 제안 원본) — 기획 제안 탭(/proposals)이 읽는다.
+export const PROPOSALS_DIR = path.join(DESIGN_DIR, 'research', 'references');
 
 /** 목업·이미지가 복사되어 나가는 자리 (public/ 아래). */
 export const ASSET_ROUTE = '/assets';

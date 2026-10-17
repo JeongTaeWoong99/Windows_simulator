@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-17 문서 사이트 기획 제안 (AI) 탭 (T-171)](2026-10-17-ai-proposals-tab.md) — `#docs-site` news.hada.io 모양 목록 `/proposals` · 판정 ▲ 색 · 파일 이름이 회차
 - [2026-10-16 경매 성공 로그 — 메인 릴레이 · 경매장 gRPC (T-167)](2026-10-16-auction-success-log.md) — `#server` `#auction` 성공해도 등록·예약·확정·취소를 한 줄씩 · 조회는 뺌
 - [2026-10-16 섬 건물 서버 — 레벨·트리·속도/산출량 노드·자원 비용 (T-166)](2026-10-16-island-buildings-server.md) — `#server` `#data` 해금 행 재사용 · 자원은 함께 내는 조건 · format-excel 묶인 열 → 번역 저장 실패
 - [2026-10-16 다국어 시트 구조 — lstring · Localization.xlsx (T-135)](2026-10-16-localization-sheet.md) — `#excel` `#generator` 생성기가 번역 시트 행을 채움 · KR 칸이 원문 스냅샷(🔄) · Tooltip 언어별 보간 · 이슈 #64

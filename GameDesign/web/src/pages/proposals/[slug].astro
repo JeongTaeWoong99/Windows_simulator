@@ -1,0 +1,37 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadProposals, ago, type Proposal } from '../../lib/proposals';
+
+export function getStaticPaths() {
+  return loadProposals().map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+
+const { p } = Astro.props as { p: Proposal };
+---
+
+<Layout title={`${p.game} — ${p.system}`}>
+  <div class="gn">
+    <a href="/proposals" class="gn-back">← 기획 제안 목록</a>
+
+    <div class="gn-row gn-topic">
+      <span class="gn-vote" data-kind={p.verdictKind} title={p.verdict}>▲</span>
+      <div class="gn-main">
+        <h1 class="gn-title">
+          {p.system}
+          <span class="gn-domain">({p.game})</span>
+        </h1>
+        <div class="gn-info">
+          <span class="gn-badge" data-kind={p.verdictKind}>{p.verdict}</span>
+          {p.cost && <span>코스트 {p.cost}</span>}
+          <span>
+            {p.date} {p.hour}시 회차 · {ago(p)}
+          </span>
+          <span>읽기 {p.readMinutes}분</span>
+        </div>
+        {p.meta && <p class="gn-meta">{p.meta}</p>}
+      </div>
+    </div>
+
+    <article class="doc gn-body" set:html={p.bodyHtml} />
+  </div>
+</Layout>

@@ -1,0 +1,45 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadProposals, ago } from '../../lib/proposals';
+
+const items = loadProposals();
+---
+
+<Layout title="기획 제안 (AI)">
+  <div class="gn">
+    <header class="gn-head">
+      <h1>기획 제안 <span class="gn-ai">AI</span></h1>
+      <p>
+        예약 작업이 회차마다 인기 게임의 시스템 하나를 골라 분석하고 우리 게임에 옮길 방법을 제안한다.
+        <b>제안 원본이다</b> — 확정은 게임기획코어에서 한다.
+      </p>
+    </header>
+
+    {items.length === 0 && <p class="gn-empty">아직 올라온 제안이 없다.</p>}
+
+    <ol class="gn-list">
+      {
+        items.map((p) => (
+          <li class="gn-row">
+            <span class="gn-vote" data-kind={p.verdictKind} title={p.verdict}>▲</span>
+            <div class="gn-main">
+              <div class="gn-title">
+                <a href={`/proposals/${p.slug}`}>{p.system}</a>
+                <span class="gn-domain">({p.game})</span>
+              </div>
+              {p.summary && <a class="gn-desc" href={`/proposals/${p.slug}`}>{p.summary}</a>}
+              <div class="gn-info">
+                <span class="gn-badge" data-kind={p.verdictKind}>{p.verdict}</span>
+                {p.cost && <span>코스트 {p.cost}</span>}
+                <span>
+                  {p.date} {p.hour}시 회차 · {ago(p)}
+                </span>
+                <span>읽기 {p.readMinutes}분</span>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</Layout>

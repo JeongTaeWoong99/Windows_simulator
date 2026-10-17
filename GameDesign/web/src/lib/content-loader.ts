@@ -63,7 +63,7 @@ function frontmatter(text: string): { data: Record<string, string>; body: string
 }
 
 /// <summary>표는 페이지가 아니라 표 자신이 가로 스크롤하도록 감싼다</summary>
-function renderMd(text: string, fileDir: string): string {
+export function renderMd(text: string, fileDir: string): string {
   return md
     .render(rewriteLinks(text, fileDir))
     .replace(/<table>/g, '<div class="table-scroll"><table>')

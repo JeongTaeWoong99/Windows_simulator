@@ -214,3 +214,95 @@ body { margin: 0; line-height: 1.7; }
 .tasktable .sorthead[data-dir='desc'] .sortmark::after { content: '▼'; opacity: 1; }
 .tasktable td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
 .tasktable tr:last-child td { border-bottom: 0; }
+
+/* ── 기획 제안 (AI) — news.hada.io 목록 모양 ───────────────────────── */
+.navlink { white-space: nowrap; }
+
+.gn { max-width: 56rem; }
+.gn-head { margin-bottom: 1rem; }
+.gn-head h1 { font-size: 1.25rem; font-weight: 800; display: flex; align-items: center; gap: 0.4rem; }
+.gn-head p { font-size: 0.8125rem; color: var(--muted); margin-top: 0.25rem; }
+.gn-ai {
+  font-size: 0.6875rem;
+  font-weight: 800;
+  color: #fff;
+  background: #f97316;
+  border-radius: 0.25rem;
+  padding: 0 0.35rem;
+  line-height: 1.4;
+}
+.gn-empty { color: var(--muted); font-size: 0.875rem; }
+
+.gn-list {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0.25rem 0;
+}
+.gn-row { display: flex; gap: 0.55rem; padding: 0.6rem 0.9rem; }
+.gn-list .gn-row + .gn-row { border-top: 1px solid #f1f5f9; }
+.gn-main { min-width: 0; flex: 1; }
+
+/* 판정 색을 ▲ 하나에 싣는다 — 목록을 훑을 때 색만으로 갈린다 */
+.gn-vote { font-size: 0.7rem; line-height: 1.9rem; color: #cbd5e1; flex-shrink: 0; }
+.gn-vote[data-kind="apply"] { color: #16a34a; }
+.gn-vote[data-kind="adapt"] { color: #f59e0b; }
+.gn-vote[data-kind="pick"] { color: #f97316; }
+.gn-vote[data-kind="reject"] { color: #ef4444; }
+
+.gn-title { font-size: 0.9375rem; font-weight: 700; line-height: 1.5; color: #111827; }
+.gn-title a:hover { text-decoration: underline; }
+.gn-topic .gn-title { font-size: 1.2rem; }
+.gn-domain { font-size: 0.8125rem; font-weight: 400; color: #9ca3af; margin-left: 0.2rem; }
+.gn-desc {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-size: 0.8125rem;
+  line-height: 1.55;
+  color: #4b5563;
+  margin-top: 0.15rem;
+}
+.gn-info {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 0.5rem;
+  font-size: 0.75rem;
+  color: #9ca3af;
+  margin-top: 0.25rem;
+}
+.gn-info > span + span::before { content: "|"; margin-right: 0.5rem; color: #e5e7eb; }
+.gn-info > .gn-badge + span::before { content: none; }
+.gn-badge {
+  font-weight: 700;
+  border-radius: 0.25rem;
+  padding: 0 0.35rem;
+  background: #f1f5f9;
+  color: #475569;
+}
+.gn-badge[data-kind="apply"] { background: #dcfce7; color: #15803d; }
+.gn-badge[data-kind="adapt"] { background: #fef3c7; color: #b45309; }
+.gn-badge[data-kind="pick"] { background: #ffedd5; color: #c2410c; }
+.gn-badge[data-kind="reject"] { background: #fee2e2; color: #b91c1c; }
+
+.gn-back { display: inline-block; font-size: 0.8125rem; color: var(--muted); margin-bottom: 0.5rem; }
+.gn-back:hover { color: var(--brand); }
+.gn-topic {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem 0.5rem 0 0;
+  padding: 0.9rem 1rem;
+}
+.gn-meta { font-size: 0.75rem; color: var(--muted); margin-top: 0.35rem; }
+.gn-body {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-top: 0;
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 1.1rem 1.2rem;
+}
+.gn-body > h2:first-child { border-top: 0; }
