@@ -11,6 +11,11 @@ using UnityEngine;
 //   대상에 닿으면 1타부터 순서대로 치고, 판정 순간에 닿는 것은 언제나 **마지막 공격**(마무리)이다.
 //   칸이 남으면 마무리 전 타들을 1타부터 다시 돈다(1·2·3·1·4). 공격이 하나뿐인 캐릭터는 그것을 반복한다.
 //
+// ■ 개인 조정 칸의 처음 값은 크기 템플릿이 정한다 (2026-10-18)
+//   굽기가 SO를 처음 만들 때 레시피의 크기 템플릿(소·중·대 — 'CharacterSizeTemplate')으로 배율·멈추는 거리를 채운다. 그 뒤는 사람 몫이다.
+//   등급('sizeClass')은 인스펙터 드롭다운으로 바꾼다 — 바꾸면 그 템플릿 값으로 다시 채우고, 손댄 값은 '커스텀'으로 표시된다.
+//   등급은 화면에도 나온다(칸 배지 · 툴팁 — 'CharacterSizeLabel'): 소형은 대상과 비슷하거나 작고, 대형은 큰 대상과 비슷하다.
+//
 // ■ 모든 캐릭터가 같은 규격이다 ('Art 규칙.md')
 //   왼쪽을 본다 · 칸 크기 같음 · 발이 칸 아래 가운데. 그래서 재생 쪽은 캐릭터를 가리지 않고 프레임만 바꾼다.
 [CreateAssetMenu(menuName = "DesktopWindowControl/Visual/Character Visual", fileName = "CharacterVisual")]
@@ -54,8 +59,11 @@ public class CharacterVisual : ScriptableObject
     [SerializeField, Range(0f, 4f), Tooltip("이 캐릭터 슬롯의 확대 배율(소수 가능). 0이면 전체 세팅. 키가 커서 머리가 잘리면 낮춘다(무대 전체가 함께 작아진다). 정수가 아니면 점 크기가 조금 들쭉날쭉하다")]
     private float pixelScaleOverride;
 
-    [SerializeField, Range(0.5f, 2f), Tooltip("캐릭터만 키우거나 줄인다(무대·대상은 그대로). 발 위치 기준. 1 = 굽기 규격 그대로. 키우면 머리가 잘리지 않는지 함께 본다")]
+    [SerializeField, Range(0.25f, 4f), Tooltip("캐릭터만 키우거나 줄인다(무대·대상은 그대로). 발 위치 기준. 1 = 굽기 규격 그대로. 키우면 머리가 잘리지 않는지 함께 본다")]
     private float characterScale = 1f;
+
+    [SerializeField, Tooltip("크기 등급(소·중·대) — 화면에 표시하고, 인스펙터에서 바꾸면 위 세 칸을 그 템플릿 값으로 채운다('CharacterVisualEditor'). 없음이면 다음 굽기가 레시피 템플릿으로 채운다")]
+    private ECharacterSize sizeClass;
 
     public Sprite[]       IdleFrames    => idleFrames;
     public Sprite[]       RunFrames     => runFrames;
@@ -64,6 +72,7 @@ public class CharacterVisual : ScriptableObject
     public Sprite?        Head          => head;
     public int            StopGapOffset => stopGapOffset;
     public float          CharacterScale => characterScale;
+    public ECharacterSize SizeClass     => sizeClass;
 
     // 이 캐릭터 슬롯의 확대 배율 — 개인 값이 있으면 그것, 없으면 전체 세팅
     public float GetPixelScale(SlotStageSettings settings) => pixelScaleOverride > 0f ? pixelScaleOverride : settings.PixelScale;

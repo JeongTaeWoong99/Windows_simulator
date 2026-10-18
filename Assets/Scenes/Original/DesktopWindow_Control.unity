@@ -149797,6 +149797,12 @@ MonoBehaviour:
   - {fileID: 1101143777}
   - {fileID: 993411051}
   - {fileID: 2109673715}
+  industryIcons:
+  - {fileID: 1028716675}
+  - {fileID: 457735915}
+  - {fileID: 559833636}
+  - {fileID: 952750986}
+  - {fileID: 1029925820}
   industryLevelButtons:
   - button: {fileID: 1440400185}
     label: {fileID: 241672225}

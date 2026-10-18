@@ -56,7 +56,7 @@ namespace DesktopWindowControl.EditorTools
             importer.mipmapEnabled       = false;
             importer.alphaIsTransparency = true;
             importer.npotScale           = TextureImporterNPOTScale.None;
-            importer.maxTextureSize      = 4096;
+            importer.maxTextureSize      = 8192;   // 긴 띠(19칸 × 224 = 4256)가 줄어들지 않게 — 4096이면 칸이 224보다 작아진다
         }
 
         // 패럴랙스 층 — RawImage가 uvRect로 가로 반복한다

@@ -180,7 +180,7 @@ public class SlotStageView : MonoBehaviour
     {
         worldPoint = default;
 
-        Sprite? sprite = _target != null ? _target.Sprite : null;
+        Sprite? sprite = _target != null ? _target.GetSprite(_level) : null;
 
         if (_background == null || _characterVisual == null || sprite == null)
         {
@@ -268,7 +268,7 @@ public class SlotStageView : MonoBehaviour
 
     private void DrawTargets(SlotStageTimeline.Result now, float time, float stopX, float speed, SlotStageSettings settings, float k)
     {
-        Sprite? sprite = _target != null ? _target.Sprite : null;
+        Sprite? sprite = _target != null ? _target.GetSprite(_level) : null;
 
         if (_target == null || sprite == null)
         {
@@ -361,7 +361,7 @@ public class SlotStageView : MonoBehaviour
         images.body.color   = new Color(tint.r, tint.g, tint.b, tint.a * alpha);
         Place(images.body.rectTransform, position, size);
 
-        Sprite? flashSprite = _target != null ? _target.Flash : null;
+        Sprite? flashSprite = _target != null ? _target.GetFlash(_level) : null;
 
         // 번쩍임은 몸통의 자식으로 늘여 두어 자리를 따로 잡지 않는다
         if (flash && flashSprite != null)
@@ -488,8 +488,8 @@ public class SlotStageView : MonoBehaviour
         return Mathf.Max(k, _rect.rect.height / _background.StageHeight);
     }
 
-    // 대상 배율 — 배우 배율에 대상 SO의 크기 배율을 곱한다
-    private float TargetScale(float k) => k * (_target != null ? _target.Scale : 1f);
+    // 대상 배율 — 배우 배율에 대상 SO의 크기 배율(전체 × 이 레벨)을 곱한다
+    private float TargetScale(float k) => k * (_target != null ? _target.GetScale(_level) : 1f);
 
     // 땅선 높이 — 무대 그림의 아래를 패널 아래에 붙인다. 땅선은 배경 그림의 값이라 배경 배율로 잰다
     private float GroundY(float k) => _background != null ? Mathf.Round(_background.GroundHeight * BackgroundScale(k)) : 0f;

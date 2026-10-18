@@ -136,38 +136,38 @@
   },
   {
     "Key": "Character.1001.Name",
-    "KR": "램볼",
-    "EN": "Lambol"
+    "KR": "떠돌이 전사",
+    "EN": "Wandering Warrior"
   },
   {
     "Key": "Character.1002.Name",
-    "KR": "치키피",
-    "EN": "Chickipee"
+    "KR": "숲 슬라임",
+    "EN": "Forest Slime"
   },
   {
     "Key": "Character.1003.Name",
-    "KR": "펭구렛",
-    "EN": "Pengulet"
+    "KR": "뿔쥐",
+    "EN": "Horned Rat"
   },
   {
     "Key": "Character.1004.Name",
-    "KR": "캐티바",
-    "EN": "Kattiva"
+    "KR": "가시 슬라임",
+    "EN": "Spiked Slime"
   },
   {
     "Key": "Character.1005.Name",
-    "KR": "리프몽",
-    "EN": "Leafmong"
+    "KR": "방랑 기사",
+    "EN": "Errant Knight"
   },
   {
     "Key": "Character.1006.Name",
-    "KR": "폭스파크스",
-    "EN": "Foxparks"
+    "KR": "날개 눈알",
+    "EN": "Flying Eye"
   },
   {
     "Key": "Character.1007.Name",
-    "KR": "밀개비",
-    "EN": "Wheatbird"
+    "KR": "들쥐",
+    "EN": "Field Rat"
   },
   {
     "Key": "Character.1008.Name",
@@ -176,8 +176,8 @@
   },
   {
     "Key": "Character.1009.Name",
-    "KR": "두더삽",
-    "EN": "Molespade"
+    "KR": "동굴 박쥐",
+    "EN": "Cave Bat"
   },
   {
     "Key": "Character.1010.Name",
@@ -186,18 +186,18 @@
   },
   {
     "Key": "Character.1011.Name",
-    "KR": "살쾡이",
-    "EN": "Wildcat"
+    "KR": "흡혈 박쥐",
+    "EN": "Vampire Bat"
   },
   {
     "Key": "Character.1012.Name",
-    "KR": "갈대오리",
-    "EN": "Reed Duck"
+    "KR": "망령 마법사",
+    "EN": "Wraith Mage"
   },
   {
     "Key": "Character.1013.Name",
-    "KR": "뿔사슴이",
-    "EN": "Hornstag"
+    "KR": "화염 마법사",
+    "EN": "Fire Wizard"
   },
   {
     "Key": "Character.1014.Name",
@@ -206,73 +206,73 @@
   },
   {
     "Key": "Character.1015.Name",
-    "KR": "해달수",
-    "EN": "Sea Otter"
+    "KR": "미믹",
+    "EN": "Mimic"
   },
   {
     "Key": "Character.1016.Name",
-    "KR": "흙두꺼비",
-    "EN": "Mud Toad"
+    "KR": "버섯 인간",
+    "EN": "Mushroom Folk"
   },
   {
     "Key": "Character.1017.Name",
-    "KR": "광부오소리",
-    "EN": "Miner Badger"
+    "KR": "고블린",
+    "EN": "Goblin"
   },
   {
     "Key": "Character.1018.Name",
-    "KR": "도끼늑대",
-    "EN": "Axe Wolf"
+    "KR": "은빛 기사",
+    "EN": "Silver Knight"
   },
   {
     "Key": "Character.1019.Name",
-    "KR": "창날매",
-    "EN": "Spearhawk"
+    "KR": "그림자 마법사",
+    "EN": "Shadow Wizard"
   },
   {
     "Key": "Character.1020.Name",
-    "KR": "이삭토끼",
-    "EN": "Ear-of-Grain Bunny"
+    "KR": "무예가",
+    "EN": "Martial Hero"
   },
   {
     "Key": "Character.1021.Name",
-    "KR": "산호게",
-    "EN": "Coral Crab"
+    "KR": "해골 병사",
+    "EN": "Skeleton Soldier"
   },
   {
     "Key": "Character.1022.Name",
-    "KR": "화산도롱뇽",
-    "EN": "Volcano Salamander"
+    "KR": "바위 골렘",
+    "EN": "Stone Golem"
   },
   {
     "Key": "Character.1023.Name",
-    "KR": "파도고래",
-    "EN": "Wave Whale"
+    "KR": "붉은 집게게",
+    "EN": "Red Crab"
   },
   {
     "Key": "Character.1024.Name",
-    "KR": "대지곰",
-    "EN": "Earth Bear"
+    "KR": "대검 전사",
+    "EN": "Greatsword Warrior"
   },
   {
     "Key": "Character.1025.Name",
-    "KR": "강철사마귀",
-    "EN": "Steel Mantis"
+    "KR": "검왕",
+    "EN": "Sword King"
   },
   {
     "Key": "Character.1026.Name",
-    "KR": "거목정령",
-    "EN": "Great Tree Spirit"
+    "KR": "영웅 기사",
+    "EN": "Hero Knight"
   },
   {
     "Key": "Character.1027.Name",
-    "KR": "황금기린",
-    "EN": "Golden Giraffe"
+    "KR": "죽음의 사신",
+    "EN": "Bringer of Death"
   },
   {
     "Key": "Character.1028.Name",
-    "KR": "심연이무기",
-    "EN": "Abyss Serpent"
+    "KR": "흑기사",
+    "EN": "Black Knight"
   },
   {
     "Key": "Character.1029.Name",
@@ -281,8 +281,8 @@
   },
   {
     "Key": "Character.1030.Name",
-    "KR": "별빛드래곤",
-    "EN": "Starlight Dragon"
+    "KR": "질풍 검호",
+    "EN": "Gale Swordmaster"
   },
   {
     "Key": "Equip.1001.Name",
@@ -4903,6 +4903,41 @@
     "Key": "UI.Inventory.Aptitude",
     "KR": "적성",
     "EN": "Aptitude"
+  },
+  {
+    "Key": "UI.Character.Size",
+    "KR": "크기",
+    "EN": "Size"
+  },
+  {
+    "Key": "UI.Character.SizeSmall",
+    "KR": "소형",
+    "EN": "Small"
+  },
+  {
+    "Key": "UI.Character.SizeMedium",
+    "KR": "중형",
+    "EN": "Medium"
+  },
+  {
+    "Key": "UI.Character.SizeLarge",
+    "KR": "대형",
+    "EN": "Large"
+  },
+  {
+    "Key": "UI.Character.SizeSmallShort",
+    "KR": "소",
+    "EN": "S"
+  },
+  {
+    "Key": "UI.Character.SizeMediumShort",
+    "KR": "중",
+    "EN": "M"
+  },
+  {
+    "Key": "UI.Character.SizeLargeShort",
+    "KR": "대",
+    "EN": "L"
   },
   {
     "Key": "UI.Inventory.CondenseMax",

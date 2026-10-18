@@ -1,6 +1,6 @@
 # Art 폴더 규칙
 
-> 최종 업데이트: 2026-10-18 (**원본 정리 규칙** — `_source/<종류>/<팩>/` 선반 · 팩 이름 · 원본 목록 · 새 팩 20개 · **팩은 쓸 재료만 추려 `sprites/`·`anims/`·`audio/` 모양으로** — 정리기 `_source/tidy_source.py` · 음악은 ogg · karsiori 팩별 분리) · 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
+> 최종 업데이트: 2026-10-18 (**머리·상반신 크롭 점검표 · 좌우로 긴 몬스터는 머리가 앞** · 머리도 `Upscale` — 여백 없음 · 자동 머리 가로 = 머리 가운데) · 2026-10-18 (**몸 영역 `bodyRect`** — 지팡이 연기·큰 무기가 테두리를 키우는 캐릭터 · evil-wizard-2) · 2026-10-18 (**캐릭터 크기 템플릿 소·중·대** `characters/_templates/` — 개인 조정 첫 값 · 작은 캐릭터 크롭은 몸 전체 · **대상 레벨별 배율** `levels[].scale`) · 2026-10-18 (**캐릭터 27종 · 대상 레벨별 그림 `levels` · 산업 아이콘 `icons/industries/`** — 새 팩 캐릭터 23종 · 대체 캐릭터 medieval-warrior · 발굴 대상 `excavation`) · 2026-10-18 (**원본 정리 규칙** — `_source/<종류>/<팩>/` 선반 · 팩 이름 · 원본 목록 · 새 팩 20개 · **팩은 쓸 재료만 추려 `sprites/`·`anims/`·`audio/` 모양으로** — 정리기 `_source/tidy_source.py` · 음악은 ogg · karsiori 팩별 분리) · 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
 
 **그림은 받은 그대로 쓰지 않는다.** 팩마다 크기·방향·발 위치·임포트 설정이 제각각이라,
 원본은 `_source/`에 그대로 두고 **레시피 → 굽기**로 같은 규격의 결과물을 만든다.
@@ -19,7 +19,8 @@ Assets/Art/
 ├─ targets/<키>/             대상 — 레시피 + 굽기 결과 (키 = 산업 이름)
 ├─ icons/
 │  ├─ items/                 자원 아이콘 — item_<ItemTID>.png · item_0.png = 대체 (아이콘 없는 자원)
-│  └─ equips/                장비 아이콘 — equip_<EquipTID>.png · equip_0.png = 대체
+│  ├─ equips/                장비 아이콘 — equip_<EquipTID>.png · equip_0.png = 대체
+│  └─ industries/            산업 아이콘 — industry_<EIndustryType 값>.png (농사 1 · 발굴 2 · 채굴 3 · 벌목 4 · 사냥 5) · 대체는 item_0
 ├─ fx/<연출 키>/             이펙트 — <키>_<부위>.png (흰 도형 · 색은 코드가 입힌다). 굽지 않고 그대로 쓴다
 │  └─ reveal/                보상 공개 연출 — reveal_glow · rays · sparkle · shine · conic · frame
 └─ Resources/VisualCatalog.asset   목록 — "이 TID·이 산업은 어떤 그림으로". 화면이 Resources로 찾는다
@@ -180,12 +181,12 @@ git checkout -t origin/main
 |---|---|---|
 | **캐릭터** | `<키>_idle.png` · `<키>_run.png` · `<키>_attack_1.png` … (가로 띠 — 공격은 연속 공격 타마다 하나) | 한 칸 **224×96** · 발이 **(112, 0)** — 이펙트 든 공격이 발에서 왼쪽으로 100px 넘게 뻗는다 · **왼쪽을 본다**(오른쪽을 보는 원본은 굽기가 뒤집는다) · 칸 이름 `<키>_run_0` … |
 | | `<키>_portrait.png` | 정사각형 · **크롭 × 정수 배(64 이하)** — 캔버스로 채우지 않는다 · 인벤토리용. 크롭은 아래 "상반신 · 머리 크롭" |
-| | `<키>_head.png` | **32×32** · 머리 크롭(16 × 2) — 위젯용. 크롭은 아래 "상반신 · 머리 크롭" |
+| | `<키>_head.png` | 정사각형 · **크롭 × 정수 배(32 이하)** — 캔버스로 채우지 않는다 · 위젯용. 크롭은 아래 "상반신 · 머리 크롭" |
 | | `<키>.asset` (`CharacterVisual`) | 프레임 · 타마다 타격 프레임 · 크롭 |
 | **배경** | `<키>_L0.png` … (먼 층부터) | 높이 **128** · 가로 반복(Repeat) · 양 끝이 이어진다 |
 | | `<키>.asset` (`BackgroundVisual`) | 층별 속도 비율 · 땅 높이. **땅 층 = 속도 1.0**(대상과 같은 속도) |
-| **대상** | `<키>.png` · `<키>_flash.png` | 투명 테두리 잘라 냄 · 흰 실루엣(맞을 때 번쩍임) |
-| | `<키>.asset` (`TargetVisual`) | 레벨별 색 — 1레벨 흰색(원래 색) · 노랑 · 하늘 · 보라 · 빨강 |
+| **대상** | `<키>_L1.png` … · `<키>_L1_flash.png` … (레벨 그림이 없으면 `<키>.png` 한 장) | 투명 테두리 잘라 냄 · 흰 실루엣(맞을 때 번쩍임) |
+| | `<키>.asset` (`TargetVisual`) | 레벨별 그림 — 없으면 한 장에 레벨 색(1레벨 흰색 · 노랑 · 하늘 · 보라 · 빨강) |
 
 공통: PPU 100 · 점 필터 · 무압축 · 밉맵 없음. **임포트 설정은 도구가 고정한다** — 인스펙터에서 바꿔도 다음 임포트에 되돌아온다.
 
@@ -193,10 +194,27 @@ git checkout -t origin/main
 재생한다. 시간·거리 값은 그림과 함께 git 밖에 있으면 안 돼서 `Assets/Resources/SlotStageSettings.asset`(전체 세팅)에 있고,
 캐릭터마다 다른 값은 `<키>.asset`의 **개인 조정** 칸에 있다 — 굽기가 덮지 않는다.
 
+**개인 조정의 첫 값은 크기 템플릿이 정한다** (2026-10-18). 레시피 `sizeTemplate`에 `characters/_templates/size-small·medium·large`를 넣으면
+SO의 등급(`sizeClass`)이 비어 있을 때 굽기가 세 칸과 등급을 채운다. 그 뒤 다듬은 값은 다시 굽기가 덮지 않는다.
+
+**등급은 SO 인스펙터 맨 아래 [크기 템플릿] 드롭다운으로 바꾼다.** 고르면 그 템플릿 값으로 세 칸을 채우고, 그 뒤 손대면
+"커스텀 수치 적용 중"과 템플릿 값이 함께 보인다 — [템플릿 수치로 되돌리기]. 등급은 화면에도 나온다(인벤토리·창고 칸 배지 소·중·대 · 캐릭터 툴팁 · 배치 목록 — 가챠 결과에는 내지 않는다).
+
+| 템플릿 | 누구 | 몸 키 → | 너비 상한 | 화면 배율 | 크롭 |
+|---|---|---|---|---|---|
+| `size-small` | 박쥐·쥐·슬라임·게·눈알·미믹 — 레시피가 비어 있으면 **몸 키 24 이하** | 30 | 40 | 1.4 | **몸 전체**(얼굴이 따로 없다) |
+| `size-medium` | 사람 크기 — 레시피가 비어 있으면 나머지 전부 | 52 | 70 | 1.4 | 머리·상체 |
+| `size-large` | bringer-of-death·골렘 — **손으로만** 고른다(원본 픽셀 크기로는 못 가린다) | 66 | 90 | 1.2 | 머리·상체 |
+
+- `characterScale` = 몸 키(대기 첫 프레임) ÷ 목표 키 — 너비가 상한을 넘으면 그만큼 줄인다 · 0.05 단위.
+- `stopGapOffset` = 공격마다 타격 프레임 사거리의 평균 × 배율 × `reachRatio`(소·중 0.55 · 대 0.5) − 전체 `stopGap`. 몸 앞끝보다는 멀리.
+- 템플릿 값을 바꿨으면 템플릿의 [이 템플릿 캐릭터 전부 다시 적용](그 등급 캐릭터 전부) — **다듬은 값을 덮는다.** 한 캐릭터만은 SO의 [템플릿 수치로 되돌리기].
+- 기준은 사람이 다듬은 값이다 — warrior·hero-knight·black-knight(중)·bringer-of-death(대). 템플릿을 적용해도 그 값과 거의 같다(2026-10-18 비교).
+
 | 개인 조정 | 언제 |
 |---|---|
 | `stopGapOffset` | 대상과 너무 붙거나 떨어진다 — 무기가 길면 +, 맨손이면 − (아트 픽셀) |
-| `characterScale` | **캐릭터만** 작거나 크다 — 0.5~2배(1 = 굽기 규격 그대로). 발 위치 기준으로 그림만 키워서 무대·대상 크기는 그대로다. 키우면 공격이 대상에 더 깊이 들어가 보일 수 있으니 `stopGapOffset`과 함께 본다 |
+| `characterScale` | **캐릭터만** 작거나 크다 — 0.25~4배(1 = 굽기 규격 그대로). 발 위치 기준으로 그림만 키워서 무대·대상 크기는 그대로다. 키우면 공격이 대상에 더 깊이 들어가 보일 수 있으니 `stopGapOffset`과 함께 본다 |
 | `pixelScaleOverride` | **키가 커서 머리가 잘린다** — 낮춘다(소수 가능, 예 1.1 · 0 = 전체 세팅 `pixelScale`). 캐릭터·대상·거리가 함께 작아진다. 정수가 아니면 점 크기가 한 칸씩 들쭉날쭉할 수 있다 |
 
 **배경은 패널 높이보다 작아지지 않는다** (2026-10-10). 배경 배율 = `max(배율, 패널 높이 ÷ stageHeight)` — 배율을 낮춰도 위쪽 단색이 드러나지 않는다.
@@ -206,6 +224,11 @@ git checkout -t origin/main
 | 대상 개인 조정 (`targets/<키>/<키>.asset`) | 언제 |
 |---|---|
 | `scale` | 대상이 너무 작거나 크다 — 0.25~4배(1 = 굽기 결과 그대로). 발 기준으로 키우고, 멈추는 자리는 대상 오른쪽 끝이라 캐릭터와의 간격은 그대로다. 굽기가 덮지 않는다 |
+| `levels[n].scale` | **레벨 하나만** 작거나 크다 — 위 `scale`에 곱한다(1 = 그대로). 굽기는 0인 칸만 1로 채운다 (2026-10-18) |
+
+**대상은 산업 레벨마다 그림이 다르다** (2026-10-18). 레시피 `levels`에 레벨 1부터 원본 스프라이트(+ 레벨마다 `downscale`)를 넣으면
+`<키>_L1.png` … 와 섬광이 구워지고, 결과 SO의 `levels`가 그 그림을 가리킨다(그림 참조라 굽기가 매번 다시 쓴다).
+레벨 그림이 있으면 레벨 색(`levelTints`)은 곱하지 않는다. 표보다 높은 레벨은 마지막 그림. `levels`가 비면 예전처럼 `source` 한 장 + 레벨 색.
 
 **이펙트는 공격마다 두 자리가 있다** (레시피 공격 칸 → 굽기가 `<키>.asset`의 공격 칸에 넣는다). 비우면 그리지 않는다.
 
@@ -255,10 +278,11 @@ git checkout -t origin/main
 6. **목록은 손으로 잇지 않는다** — 전부 다시 굽기의 마지막 단계가 `Resources/VisualCatalog`를 다시 쓴다.
    캐릭터는 레시피의 `characterTids`, 아이콘은 파일 이름의 TID로. 배경·대상(산업마다 하나)만 목록에서 직접 고른다.
 
-### 아이콘 넣기 (자원·장비)
+### 아이콘 넣기 (자원·장비·산업)
 
-두 길 중 하나 — 어느 쪽이든 결과는 `icons/items/item_<ItemTID>.png` · `icons/equips/equip_<EquipTID>.png`
-(TID는 `Item.xlsx`의 `ItemTable.*` · `Equip.xlsx`의 `EquipTable`)이고, **전부 다시 굽기**하면 목록에 올라간다.
+두 길 중 하나 — 어느 쪽이든 결과는 `icons/items/item_<ItemTID>.png` · `icons/equips/equip_<EquipTID>.png` · `icons/industries/industry_<산업 값>.png`
+(TID는 `Item.xlsx`의 `ItemTable.*` · `Equip.xlsx`의 `EquipTable` · 산업은 `EIndustryType` 값)이고, **전부 다시 굽기**하면 목록에 올라간다.
+산업 아이콘은 배치 화면의 산업 버튼이 `VisualCatalog.IndustryIconOf`로 그린다 — 없는 산업은 `item_0`(빈 자루).
 
 - **팩 스프라이트를 고른다** — `icons/icon_recipe.asset`(아이콘 레시피)에 `TID ↔ 원본 스프라이트`를 적는다.
   굽기가 투명 테두리를 잘라 위 이름으로 쓴다. 지금 임시 배치는 전부 이 레시피다.
@@ -305,6 +329,9 @@ git checkout -t origin/main
 
 > **크롭은 자동값을 믿지 말고 눈으로 본다.** 자동 크롭은 무기·이펙트를 몸으로 잡기 쉽다 —
 > 결과가 어긋나면 레시피의 `portraitRect`·`headRect`(기본 idle 첫 프레임 기준 픽셀)를 직접 적는다.
+>
+> **몸이 아닌 것(지팡이 연기·큰 무기)이 테두리를 키우면 레시피 `bodyRect`에 몸만 적는다** (2026-10-18 evil-wizard-2 — 연기까지 47px로 재 배율이 절반, 크롭이 연기에 쏠렸다).
+> 크기 템플릿 배율·자동 상반신·머리가 모두 이 영역을 기준으로 한다. 적은 뒤 SO 드롭다운으로 등급을 다시 고르거나 [템플릿 수치로 되돌리기] → 크롭은 다시 굽기.
 
 ### 상반신 · 머리 크롭 (`portraitRect` · `headRect`) — 사람이 고른 기준 (2026-10-07)
 
@@ -324,12 +351,19 @@ git checkout -t origin/main
 
 | 규칙 | 왜 · 예 |
 |---|---|
-| 크기는 **16** (32 캔버스의 정확히 절반) | 머리 결과는 32 캔버스에 정수 배로 **가운데** 놓인다 — 14를 자르면 2배 28이라 **위아래·좌우 2px**, 12면 4px 여백이 남았다(hero-knight·warrior). 머리가 작아도 **크롭을 16으로 넓힌다** |
-| 위는 머리 꼭대기 + 1px · 가로는 얼굴 가운데 | black-knight · bringer-of-death 기준. 넓혀서 생긴 몫은 아래(목·어깨)로 간다 |
+| 크기는 **16이 기본** (×2 = 32) — 작은 캐릭터는 몸에 맞춰 10~14도 된다 | 결과는 크롭 × 정수 배(32 이하)이고 캔버스로 채우지 않는다(2026-10-18 — 32 캔버스에 가운데 놓던 때는 작은 크롭이 여백 속에 작게 떴다). 16·8은 32에 꼭 맞아 픽셀이 가장 고르다 |
+| 위는 머리 꼭대기 + 1px · 가로는 **얼굴 가운데** | black-knight · bringer-of-death 기준. 넓혀서 생긴 몫은 아래(목·어깨)로 간다. **발 x가 아니다** — 몸을 숙이거나 망토·무기가 한쪽으로 뻗으면 머리가 반쯤 잘린다(2026-10-18 goblin·medieval-king-2) |
 
-- **비우면(너비 0) 자동 크롭** — 상반신은 위쪽 12줄(머리·어깨)의 평균 x를 몸통 가운데로, 키의 60%(최대 32)를 위에서부터 · 머리는 16으로 올려 잡는다(`ArtBaker.AutoPortrait`·`AutoHead`).
-  평균이 무기에 끌릴 수 있으니 **결과 그림을 보고, 어긋나면 레시피에 적는다.** 지금 네 캐릭터는 전부 직접 적었다.
-- **확인 방법** — 결과 PNG 넷을 같은 크기로 나란히 놓고 본다: 머리 높이 · 몸통 위치 · 여백이 서로 맞는지.
+- **작은 캐릭터(템플릿 `size-small`)는 몸 전체를 담는다** (2026-10-18 사용자 — 박쥐는 얼굴이 없다시피 해서 가까이 자르면 알아보지 못했다).
+  자동 크롭이 몸 가운데에 맞춰 상반신은 몸 긴 변 + 2(최대 32) · **머리는 긴 변의 80%** — 머리 칸은 꽉 차야 한다(날개 끝 정도는 잘려도 된다 · 박쥐·게).
+- **좌우로 긴 몬스터(쥐·게·늑대…)는 머리가 앞(왼쪽) 끝이다 — 자동은 몸 가운데를 잡으니 반드시 레시피에 적는다** (2026-10-18 field-rat).
+  상반신·머리 모두 **머리가 잘리면 안 된다 · 몸(꼬리·뒷다리)은 잘려도 된다.** 머리를 칸 가운데나 조금 왼쪽에 두고, 남는 쪽을 몸으로 채운다.
+- **몸이 아닌 것(지팡이·연기·큰 무기)이 머리 옆에 있으면 크롭이 그쪽으로 끌린다** — 가로를 몸 가운데로 적는다(evil-wizard-3 해골 지팡이 · evil-wizard-2 연기 점 · evil-wizard 불꽃).
+- **비우면(너비 0) 자동 크롭** — 상반신은 위쪽 12줄(머리·어깨)의 평균 x를 몸통 가운데로, 키의 60%(최대 32)를 위에서부터 · 머리는 위쪽 (크기의 절반)줄의 평균 x를 가운데로 16(키가 크면 32)(`ArtBaker.AutoPortrait`·`AutoHead`).
+  ⚠️ **x·y만 바꾸고 너비를 0으로 두면 무시된다** — 네 칸(x·y·너비·높이)을 다 적는다. 적은 뒤 레시피 ⋮ → [이 레시피 굽기].
+- **확인 방법 — 새 캐릭터를 구우면 매번 머리·상반신 PNG를 전부 나란히 놓고 본다** (2026-10-18 — 27종 중 13종이 어긋난 채 넘어갔다). 점검표:
+  ① 머리 칸에 **얼굴(눈)이 가운데**, 아래로 **어깨선까지** 보이는가(몸 전체·허리까지 담지 않는다 — 은빛 기사·그림자 마법사 · 2026-10-18) ② 머리 꼭대기·얼굴이 **잘리지 않았는가** ③ 작은 캐릭터가 **칸을 꽉 채우는가**
+  ④ 칸 가장자리에 **떨어진 점(연기·이펙트 조각)** 이 없는가 ⑤ 상반신이 **몸통 가운데**인가(지팡이·무기 쪽으로 쏠리지 않았나)
 
 | 키 | `portraitRect` (x, y, 크기) | `headRect` | 몸(불투명) · 머리 꼭대기 y |
 |---|---|---|---|
@@ -337,13 +371,24 @@ git checkout -t origin/main
 | bringer-of-death | 98, 22, 32 (상체만) | 106, 38, 16 | 40×54 · 53 |
 | hero-knight | 99, 16, 24 (방패·칼 잘림) | 104, 25, 16 | 44×40 · 39 |
 | warrior | 101, 12, 21 | 104, 18, 16 | 18×33 · 32 |
+| evil-wizard | 100, 5, 22 (불꽃 피함) | 103, 11, 16 | 몸 27 |
+| evil-wizard-2 | 106, 10, 16 (연기 점 뺌) | 106, 17, 10 (두건 + 어깨) | `bodyRect` 106, 0, 14×26 |
+| evil-wizard-3 | 98, 21, 32 (지팡이 뺌) | 105, 37, 16 | 33×53 |
+| field-rat | 83, −3, 24 (머리 앞 · 꼬리 잘림) | 84, 5, 16 | 40×20 · 좌우로 긴 몬스터 |
+| horn-rat | 자동 | 105, −1, 12 (머리 앞) | 15×10 |
+| golem | 자동 | 99, 8, 16 | 28×26 |
+| hero-knight-luizmelo | 자동 | 104, 28, 20 (투구 + 어깨) | 47×51 |
+| forest-slime | 자동 | 101, 0, 18 (얼굴 가운데) | 44×18 |
+| medieval-king-2 | 자동 | 94, 39, 16 (망토 쪽으로 쏠림 → 얼굴) | 31×54 |
+| medieval-warrior-2 | 자동 | 96, 27, 16 | 26×41 |
+| skeleton | 자동 | 100, 37, 16 (방패 쪽으로 쏠림 → 해골) | 45×51 |
 
 ## 빠진 그림
 
 | 없는 것 | 대신 |
 |---|---|
-| 캐릭터 그림 | 목록의 **대체 캐릭터** — 레시피 `characterTids`에 `0`을 넣은 그림 (지금 black-knight) |
-| 자원 아이콘 | `item_0` |
+| 캐릭터 그림 | 목록의 **대체 캐릭터** — 레시피 `characterTids`에 `0`을 넣은 그림 (지금 medieval-warrior) |
+| 자원 아이콘 · 산업 아이콘 | `item_0` |
 | 장비 아이콘 | `equip_0` |
 | 산업 배경 | 기본 배경 |
 | 빈 슬롯 전용 배경 | 기본 배경을 멈춘 채로 |
@@ -356,21 +401,30 @@ git checkout -t origin/main
 
 | 키 | 원본 |
 |---|---|
-| `characters/black-knight` (1001 · 대체 캐릭터) | `_source/characters/black-knight` |
-| `characters/bringer-of-death` (1002) | `_source/characters/bringer-of-death` |
-| `characters/hero-knight` (1003~1016) | `_source/characters/hero-knight` — 3연타 |
-| `characters/warrior` (1017~1030) | `_source/characters/warrior` — 이펙트 포함 시트 |
+| `characters/<키>` 27종 — TID는 아래 표 | `_source/characters/<팩>` — `monsters-creatures`·`monsters-creatures-2`·`enemy-galore-1`은 한 팩에서 여러 캐릭터(`goblin`·`mimic`·`golem` …) |
 | `backgrounds/forest` (기본 배경 · 발굴 — 옛 낚시 자리 임시) | `_source/environment/free-pixel-art-forest` |
 | `backgrounds/plains` (농사) | `_source/environment/biome-plains` — 아틀라스 스프라이트 `Background5~1` + 땅 띠 `TileGround2`(같은 팩 타일) |
 | `backgrounds/hills` (채광) | `_source/environment/pixel-art-hills` — 미리보기 한 장 |
 | `backgrounds/american-forest` (벌목) | `_source/environment/biome-american-forest` — 〃 + 땅 띠 `TileGround2`(같은 팩) |
 | `backgrounds/dark-forest` (사냥) | `_source/environment/dark-forest-pack` + 땅 띠 `Tiles/Earth`(같은 팩, 축소 2) — ⚠️ L3 이음매가 어긋난다(검사 경고) |
-| `targets/{mining·logging·farming·hunting·fishing}` | `_source/environment/cainos-village-props` — 돌 · 나무 · 허수아비 · 훈련 인형 · 우물. ⚠️ `fishing`은 옛 낚시 폴더 — 지금은 발굴(산업 값 2) 임시 그림이다. 발굴 그림을 구울 때 키 `excavation`으로 새로 만든다 (T-148 🎨) |
+| `targets/{farming·excavation·mining·logging·hunting}` — 레벨 1~5 그림 | 농사 무 새싹 · 밀(`biome-plains`) → 호박 · 건초 더미(`cainos-village-props`) → 열매 나무(`fantasy-pixel-trees`) · 발굴 항아리 → 무너진 벽 → 석상 → 묘비 → 황금 상자(`cainos`) · 채굴 작은 돌 → 바위(`cainos`) → 석탄·분홍 수정·보라 수정(`minerals-icons` 4·16·13) · 벌목 덤불 나무 → 소나무(`biome-american-forest`) → 참나무(`biome-plains`) → 검은 나무 → 거목(`fantasy-pixel-trees` 20·5) · 사냥 허수아비(`biome-plains`) → 과녁 → 훈련 인형 → 무기 거치대(`cainos`) → 막사(`dark-forest-pack`) |
+| `targets/fishing` | 옛 낚시 폴더 — 목록에서 뺐다(발굴은 `excavation`). 지워도 된다 |
+| `icons/industries/` — 5장 | 농사 = 순무(`free-pixel-food`) · 발굴 = 삽 · 채굴 = 곡괭이 · 벌목 = 도끼 · 사냥 = 활(`cainos-rpg-icons`) |
 | `fx/reveal/` — 6장 | 임시 — `_source/fx/fx-placeholder/make_fx.py`(`reveal`). 번짐 · 광선 · 별 조각 · 빛 줄 · 원뿔 · 테두리 띠. `reveal_frame`은 9-slice 5px |
 | `fx/gain/` — 5장 | 임시 — 〃 (`gain`). 번짐(속이 진함) · 광선 · 별 조각 · 빛 기둥(1:2) · 고리. 작은 위젯 칸(18px)에서도 보이게 공개 연출 것보다 진하다 |
 | `fx/bagfull/` — 2장 | 임시 — 〃 (`bagfull`). 자루(오른쪽 아래가 X 자리만큼 비어 있다) · X. 둘 다 흰색 — 자루는 옅은 회색, X는 `Negative` 빨강을 코드가 입힌다 |
 | `icons/icon_recipe` — 자원 171 · 장비 69 | 채광 = `minerals-icons` 1~30 · 발굴 = 물약(옛 낚시 자리 임시) · 농사 = 항아리 · 벌목 = 통 · 사냥 = 하트 · 구슬 = 동전 · 상자 = 상자(나무 빨강 · 은 파랑 · 황금 금색) — `pixel-item-pack`(Light Outline, 등급별 색) · 무기 = `pixel-art-icons-swords` 순환 · 보석 = `minerals-icons` 31~48 순환 · 장신구 = 하트. 지도·나침반·열쇠·큐브 5종은 `item_0` |
 
-캐릭터 TID 나눔(1003~1016 · 1017~1030)은 느낌 보기용 임의 배정이다 — 진짜 짝은 캐릭터 그림이 정해질 때 레시피 `characterTids`에서 고친다.
+캐릭터 ↔ TID (2026-10-18 — 등급은 공격 모션 수·외형, 산업은 외형으로. 이름은 `Character.xlsx`가 그림에 맞춘다)
+
+| 등급 | TID · 키 |
+|---|---|
+| 신화 | 1030 `medieval-warrior-2` |
+| 전설 | 1027 `bringer-of-death` · 1028 `black-knight` · 1029 `obsidian-golem` |
+| 영웅 | 1022 `golem` · 1023 `crab` · 1024 `warrior` · 1025 `medieval-king-2` · 1026 `hero-knight` |
+| 희귀 | 1015 `mimic` · 1016 `mushroom` · 1017 `goblin` · 1018 `hero-knight-luizmelo` · 1019 `evil-wizard-2` · 1020 `martial-hero` · 1021 `skeleton` |
+| 고급 | 1002 `forest-slime` · 1003 `horn-rat` · 1004 `spiked-slime` · 1005 `hero-knight-2` · 1006 `flying-eye` · 1012 `evil-wizard-3` · 1013 `evil-wizard` |
+| 일반 | 1001 `medieval-warrior`(대체) · 1007 `field-rat` · 1009 `cave-bat` · 1011 `vampire-bat` |
+| 그림 없음 → 대체 | 1008 · 1010 · 1014 |
 
 > ⚠️ 원본 팩의 라이선스는 팩 폴더의 안내를 따른다. 배포 전에 다시 확인한다.

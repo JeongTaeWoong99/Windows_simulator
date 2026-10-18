@@ -77,10 +77,14 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("고르는 중인 장비 칸에 곱하는 색 (어둡게). 다른 칸은 하양이라 등급색 그대로다")]
     private Color pickingEquipSlotColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 
-    // ※ 버튼마다 위 'Icon (임시)' · 아래 텍스트다. 아이콘은 흰 네모 — 산업 아이콘 스프라이트가 나오면
-    //   각 버튼의 Icon Image에 넣는다(일감 'T-054'). 코드는 버튼 바탕색만 칠하므로 고칠 곳이 없다.
+    // ※ 버튼마다 위 'Icon (임시)' · 아래 텍스트다.
     [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·발굴·채굴·벌목·사냥)")]
     private Button[] industryButtons = new Button[0];
+
+    // ※ 그림은 'VisualCatalog.IndustryIconOf'로 넣는다(T-054) — 프리팹이 그림을 직접 물면 그림 저장소가 없는 PC에서 참조가 끊긴다.
+    //   목록이 없으면(그림 저장소 없음) 프리팹의 흰 네모가 그대로 남는다.
+    [SerializeField, NonReorderable, Tooltip("산업 버튼의 아이콘 Image 5개 ('Icon (임시)'). 순서 = 산업 버튼과 같다")]
+    private Image[] industryIcons = new Image[0];
 
     // 산업 레벨 버튼 하나 — 버튼과 그 라벨. 이름이 산업마다 달라('밭'·'저수지') 코드가 갈아 쓴다.
     [Serializable]
@@ -569,6 +573,27 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
             industryButtons[i].onClick.AddListener(() => SelectIndustry(index));
+        }
+
+        ApplyIndustryIcons();
+    }
+
+    // 산업 버튼에 산업 아이콘을 넣는다. 아이콘이 없는 산업은 자원 대체 아이콘(빈 자루)이다
+    private void ApplyIndustryIcons()
+    {
+        for (int i = 0; i < industryIcons.Length && i < _industries.Count; i++)
+        {
+            Image   icon   = industryIcons[i];
+            Sprite? sprite = VisualCatalog.IndustryIconOf(_industries[i]);
+
+            if (icon == null || sprite == null)
+            {
+                continue;
+            }
+
+            icon.sprite         = sprite;
+            icon.color          = Color.white;
+            icon.preserveAspect = true;
         }
     }
 
