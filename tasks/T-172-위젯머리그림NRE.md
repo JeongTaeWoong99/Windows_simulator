@@ -73,4 +73,4 @@ NetworkMessageQueue.Flush (NetworkMessageQueue.cs:17)
 
 ## 관련 커밋
 
-- 없음
+- `ac38ca7d` fix: 그림이 비거나 화면이 터져도 서버 응답이 끊기지 않게 한다
