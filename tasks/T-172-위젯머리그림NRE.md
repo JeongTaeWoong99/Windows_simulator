@@ -30,9 +30,29 @@ public static Sprite? HeadOf(int characterTid) => Current != null ? Current.GetC
 **콜백이 끊기는 것이 더 큰 문제다.** 패킷 처리 흐름 안에서 예외가 나 콜백 디스패치가 멈췄을 가능성이 있다 —
 그림 하나가 없다고 네트워크가 죽으면 안 된다.
 
+## 스택 트레이스 (2026-10-19 진우)
+
+```
+NullReferenceException
+VisualCatalog.HeadOf (VisualCatalog.cs:156)
+WidgetMiniSlotView.Bind (WidgetMiniSlotView.cs:77)
+WidgetPresenter.Rebuild (WidgetPresenter.cs:281)
+PlayerDataModel.OnWorkStationAssigned (PlayerDataModel.cs:955)
+ServerPacketHandler.Handle_S_WorkStationAssignResponse (ServerPacketHandler.cs:391)
+NetworkMessageQueue.Flush (NetworkMessageQueue.cs:17)
+```
+
+**콜백이 끊기는 이유는 이걸로 설명된다.** 작업슬롯 배치 응답에서 `OnWorkStationAssigned`가
+`WorkStationSlotsChanged?.Invoke()` → 위젯 `Rebuild`에서 예외가 나면
+- 같은 이벤트의 **뒤 구독자**가 불리지 않고
+- 그 아래 줄 **`WorkStationAssignCompleted?.Invoke(...)`가 실행되지 않는다** → 배치 결과를 기다리는 화면이 응답을 못 받는다
+
+네트워크 큐(`NetworkMessageQueue.Flush`)는 예외를 잡아 로그만 남기고 다음 패킷을 계속 돌린다 — 연결이 죽은 것은 아니다.
+`HeadOf`가 왜 null을 만나는지(`fallbackCharacter`가 런타임에 비는지)는 에디터에서 확인이 필요하다.
+
 ## 할 일
 
-- [ ] 재현 — 어떤 화면·동작에서 뜨는지 · 스택 트레이스 전체 · 그때 `characterTid` 값
+- [x] 재현 — 작업슬롯 배치 응답 → 위젯 갱신 경로 (위 스택 트레이스) · `characterTid` 값은 아직 모름
 - [ ] `HeadOf` NRE 원인 확인 · 수정 (`PortraitOf`도 같은 모양이라 함께 본다)
 - [ ] 예외 뒤 서버 콜백이 안 오는 원인 — 패킷 핸들러·콜백 디스패치가 예외 하나로 멈추는지 확인하고, 한 콜백의 예외가 다음 콜백을 막지 않게 한다
 - [ ] 실플레이 확인 — NRE 없음 · 오래 플레이해도 응답이 계속 온다
