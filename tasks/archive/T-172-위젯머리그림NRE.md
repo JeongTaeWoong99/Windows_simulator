@@ -2,7 +2,7 @@
 id: T-172
 제목: 플레이 중 VisualCatalog.HeadOf NRE · 이후 서버 콜백이 안 온다
 담당: 태웅
-상태: Resolve
+상태: Closed
 우선순위: 높음
 목표: 261024
 ---
@@ -55,7 +55,7 @@ NetworkMessageQueue.Flush (NetworkMessageQueue.cs:17)
 - [x] 재현 — 작업슬롯 배치 응답 → 위젯 갱신 경로 (위 스택 트레이스) · `characterTid` 값은 아직 모름
 - [x] `HeadOf` NRE 수정 — 대체 그림까지 빠져도 null로 버틴다(`PortraitOf`·크기 등급·배경 함께). 근본 원인은 미확정 — 아래 "원인 조사"
 - [x] 예외 뒤 서버 콜백이 안 오는 원인 — 변경 알림이 첫 구독자 예외에서 멈춰 뒤의 완료 알림이 빠졌다. `PlayerDataModel.Notify`로 구독자마다 따로 부른다
-- [ ] 실플레이 확인 — NRE 없음 · 오래 플레이해도 응답이 계속 온다
+- [x] 실플레이 확인 — NRE 없음 · 오래 플레이해도 응답이 계속 온다 (2026-10-19 사용자 확인)
 
 ## 원인 조사 (2026-10-19)
 
@@ -74,3 +74,4 @@ NetworkMessageQueue.Flush (NetworkMessageQueue.cs:17)
 ## 관련 커밋
 
 - `ac38ca7d` fix: 그림이 비거나 화면이 터져도 서버 응답이 끊기지 않게 한다
+- 사용자 실측 확인 (2026-10-19) · #80 닫힘
