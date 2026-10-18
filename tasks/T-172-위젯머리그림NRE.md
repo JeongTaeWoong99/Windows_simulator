@@ -25,6 +25,8 @@ public static Sprite? HeadOf(int characterTid) => Current != null ? Current.GetC
 - 저장소의 `VisualCatalog.asset`에는 `fallbackCharacter`(medieval-warrior)가 걸려 있다 → 다른 원인일 수 있다.
   캐릭터 그림 27종을 넣은 `e09d37ef` 이후에 생겼는지 본다
 
+[이슈 #80](https://github.com/JeongTaeWoong99/Windows_simulator/issues/80)
+
 **콜백이 끊기는 것이 더 큰 문제다.** 패킷 처리 흐름 안에서 예외가 나 콜백 디스패치가 멈췄을 가능성이 있다 —
 그림 하나가 없다고 네트워크가 죽으면 안 된다.
 
