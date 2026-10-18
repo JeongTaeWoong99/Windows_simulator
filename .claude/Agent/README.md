@@ -23,6 +23,9 @@
 
 ## INDEX
 
+- [2026-10-18 캐릭터 27종 · 산업 아이콘 · 산업 레벨별 대상 그림](2026-10-18-characters-industry-icons-target-levels.md) — `#client` `#art` `#excel` 등급 = 모션 수 · 대체 medieval-warrior · `TargetRecipe.levels` · `IndustryIconOf` · 캐릭터 이름 26종 · 크기 템플릿 소·중·대(SO 드롭다운 · 칸 배지) · 대상 레벨 배율 · 몸 영역 `bodyRect` · 머리·상반신 크롭 점검표
+- [2026-10-18 원본 팩을 _source/<종류>/<팩>/로 정리 · 원본 정리 규칙](2026-10-18-art-source-shelves.md) — `#client` `#art` 새 팩 20개 · 종류 선반 · 팩은 `sprites/`·`anims/`·`audio/`로 추림 · 정리기 `tidy_source.py` · 음악 ogg
+- [2026-10-18 치트 창에 경매 더미 매물 칸 (T-168 클라)](2026-10-18-auction-dummy-cheat-button.md) — `#client` `#editor` 경매 분류 · SeedAuctionListings 칸
 - [2026-10-17 경매 더미 매물 치트 (T-168)](2026-10-17-auction-dummy-cheat.md) — `#server` `#auction` `#cheat` 원장+outbox로 넣어 릴레이가 보냄 · 삭제는 원장 먼저 → 경매장 판매자 기준 취소
 - [2026-10-17 문서 사이트 기획 제안 (AI) 탭 (T-171)](2026-10-17-ai-proposals-tab.md) — `#docs-site` news.hada.io 모양 목록 `/proposals` · 판정 ▲ 색 · 파일 이름이 회차
 - [2026-10-17 클라 화면 문구 전체를 번역 키로 (T-136)](2026-10-17-client-localization.md) — `#client` `#ui` `#localization` 저장엔 ID · 꺼진 탭은 켜질 때 다시 그림 · 보간 안 문자열 스캔 함정

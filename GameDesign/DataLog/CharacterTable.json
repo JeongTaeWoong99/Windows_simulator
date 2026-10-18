@@ -1,7 +1,7 @@
 [
   {
     "CharacterTID": 1001,
-    "Name": "램볼",
+    "Name": "떠돌이 전사",
     "GlobalRarity": "Common",
     "Farming": 1,
     "Excavation": 1,
@@ -13,7 +13,7 @@
   },
   {
     "CharacterTID": 1002,
-    "Name": "치키피",
+    "Name": "숲 슬라임",
     "GlobalRarity": "Uncommon",
     "Farming": 3,
     "Excavation": 0,
@@ -25,7 +25,7 @@
   },
   {
     "CharacterTID": 1003,
-    "Name": "펭구렛",
+    "Name": "뿔쥐",
     "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Excavation": 3,
@@ -37,7 +37,7 @@
   },
   {
     "CharacterTID": 1004,
-    "Name": "캐티바",
+    "Name": "가시 슬라임",
     "GlobalRarity": "Uncommon",
     "Farming": 2,
     "Excavation": 0,
@@ -49,7 +49,7 @@
   },
   {
     "CharacterTID": 1005,
-    "Name": "리프몽",
+    "Name": "방랑 기사",
     "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Excavation": 1,
@@ -61,7 +61,7 @@
   },
   {
     "CharacterTID": 1006,
-    "Name": "폭스파크스",
+    "Name": "날개 눈알",
     "GlobalRarity": "Uncommon",
     "Farming": 0,
     "Excavation": 2,
@@ -73,7 +73,7 @@
   },
   {
     "CharacterTID": 1007,
-    "Name": "밀개비",
+    "Name": "들쥐",
     "GlobalRarity": "Common",
     "Farming": 2,
     "Excavation": 1,
@@ -97,7 +97,7 @@
   },
   {
     "CharacterTID": 1009,
-    "Name": "두더삽",
+    "Name": "동굴 박쥐",
     "GlobalRarity": "Common",
     "Farming": 0,
     "Excavation": 0,
@@ -121,7 +121,7 @@
   },
   {
     "CharacterTID": 1011,
-    "Name": "살쾡이",
+    "Name": "흡혈 박쥐",
     "GlobalRarity": "Common",
     "Farming": 0,
     "Excavation": 1,
@@ -133,7 +133,7 @@
   },
   {
     "CharacterTID": 1012,
-    "Name": "갈대오리",
+    "Name": "망령 마법사",
     "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Excavation": 4,
@@ -145,7 +145,7 @@
   },
   {
     "CharacterTID": 1013,
-    "Name": "뿔사슴이",
+    "Name": "화염 마법사",
     "GlobalRarity": "Uncommon",
     "Farming": 1,
     "Excavation": 0,
@@ -169,7 +169,7 @@
   },
   {
     "CharacterTID": 1015,
-    "Name": "해달수",
+    "Name": "미믹",
     "GlobalRarity": "Rare",
     "Farming": 1,
     "Excavation": 5,
@@ -181,7 +181,7 @@
   },
   {
     "CharacterTID": 1016,
-    "Name": "흙두꺼비",
+    "Name": "버섯 인간",
     "GlobalRarity": "Rare",
     "Farming": 5,
     "Excavation": 1,
@@ -193,7 +193,7 @@
   },
   {
     "CharacterTID": 1017,
-    "Name": "광부오소리",
+    "Name": "고블린",
     "GlobalRarity": "Rare",
     "Farming": 0,
     "Excavation": 0,
@@ -205,7 +205,7 @@
   },
   {
     "CharacterTID": 1018,
-    "Name": "도끼늑대",
+    "Name": "은빛 기사",
     "GlobalRarity": "Rare",
     "Farming": 1,
     "Excavation": 0,
@@ -217,7 +217,7 @@
   },
   {
     "CharacterTID": 1019,
-    "Name": "창날매",
+    "Name": "그림자 마법사",
     "GlobalRarity": "Rare",
     "Farming": 0,
     "Excavation": 2,
@@ -229,7 +229,7 @@
   },
   {
     "CharacterTID": 1020,
-    "Name": "이삭토끼",
+    "Name": "무예가",
     "GlobalRarity": "Rare",
     "Farming": 6,
     "Excavation": 1,
@@ -241,7 +241,7 @@
   },
   {
     "CharacterTID": 1021,
-    "Name": "산호게",
+    "Name": "해골 병사",
     "GlobalRarity": "Rare",
     "Farming": 1,
     "Excavation": 6,
@@ -253,7 +253,7 @@
   },
   {
     "CharacterTID": 1022,
-    "Name": "화산도롱뇽",
+    "Name": "바위 골렘",
     "GlobalRarity": "Epic",
     "Farming": 1,
     "Excavation": 0,
@@ -265,7 +265,7 @@
   },
   {
     "CharacterTID": 1023,
-    "Name": "파도고래",
+    "Name": "붉은 집게게",
     "GlobalRarity": "Epic",
     "Farming": 2,
     "Excavation": 7,
@@ -277,7 +277,7 @@
   },
   {
     "CharacterTID": 1024,
-    "Name": "대지곰",
+    "Name": "대검 전사",
     "GlobalRarity": "Epic",
     "Farming": 7,
     "Excavation": 1,
@@ -289,7 +289,7 @@
   },
   {
     "CharacterTID": 1025,
-    "Name": "강철사마귀",
+    "Name": "검왕",
     "GlobalRarity": "Epic",
     "Farming": 0,
     "Excavation": 2,
@@ -301,7 +301,7 @@
   },
   {
     "CharacterTID": 1026,
-    "Name": "거목정령",
+    "Name": "영웅 기사",
     "GlobalRarity": "Epic",
     "Farming": 3,
     "Excavation": 1,
@@ -313,7 +313,7 @@
   },
   {
     "CharacterTID": 1027,
-    "Name": "황금기린",
+    "Name": "죽음의 사신",
     "GlobalRarity": "Legendary",
     "Farming": 9,
     "Excavation": 2,
@@ -325,7 +325,7 @@
   },
   {
     "CharacterTID": 1028,
-    "Name": "심연이무기",
+    "Name": "흑기사",
     "GlobalRarity": "Legendary",
     "Farming": 1,
     "Excavation": 9,
@@ -349,7 +349,7 @@
   },
   {
     "CharacterTID": 1030,
-    "Name": "별빛드래곤",
+    "Name": "질풍 검호",
     "GlobalRarity": "Mythic",
     "Farming": 7,
     "Excavation": 7,

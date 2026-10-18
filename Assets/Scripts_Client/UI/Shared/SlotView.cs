@@ -66,6 +66,13 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
     private TMP_Text levelText = null!;
 
+    // ※ 레벨 배지 바로 위 — 소형은 대상과 비슷하거나 작고, 대형은 큰 대상과 비슷하다는 것을 칸에서 바로 읽게(2026-10-18).
+    [SerializeField, Tooltip("(선택) 크기 등급 배지 — '소' · '중' · '대'. 캐릭터 칸에서만 켜진다")]
+    private GameObject? sizeBadge;
+
+    [SerializeField, Tooltip("(선택) 크기 등급 배지 안의 문구")]
+    private TMP_Text? sizeText;
+
     // ※ 장비 탭에서는 보조 문구(효과)를 끈다 — 기본 능력치 문구는 툴팁으로 갔다(T-095).
     // ※ 칸 수만큼 네모를 그리던 것을 보석 하나로 바꿨다(2026-10-10 — 'EnchantGemView' 주석).
     [CenterHeader("인챈트 보석 (장비 탭)")]
@@ -223,6 +230,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         equipPips.gameObject.SetActive(false);
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
+        sizeBadge?.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
         lockMark.SetActive(false);
@@ -264,6 +272,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         subText.text  = data.Sub;
 
         SetIcon(data.Icon);
+        SetSizeBadge(data.SizeBadge);
         ApplyTint();
     }
 
@@ -373,6 +382,22 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
 
         levelText.text = label!;
+    }
+
+    // 크기 등급 배지를 그린다('소' · '중' · '대'). 'null'이면 끈다 (Bind에서 호출 — 캐릭터 칸만 'SlotData.SizeBadge'가 있다).
+    private void SetSizeBadge(string? label)
+    {
+        if (sizeBadge == null)
+        {
+            return;
+        }
+
+        sizeBadge.SetActive(label != null);
+
+        if (label != null && sizeText != null)
+        {
+            sizeText.text = label;
+        }
     }
 
     // 경험치 진행(0~1)을 세로 게이지에 그린다. 'null'이면 게이지를 끈다

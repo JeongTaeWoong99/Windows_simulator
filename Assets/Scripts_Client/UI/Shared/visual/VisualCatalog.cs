@@ -17,7 +17,7 @@ using UnityEngine;
 //
 // ■ 빠진 그림은 대체로 버틴다
 //   그림이 아직 없는 캐릭터는 'fallbackCharacter'(TID 0으로 등록한 그림)로, 산업 배경이 없으면 'defaultBackground'로 그린다.
-//   아이콘이 없는 자원·장비는 0번 아이콘('item_0' · 'equip_0')으로 그린다.
+//   아이콘이 없는 자원·장비는 0번 아이콘('item_0' · 'equip_0')으로, 아이콘이 없는 산업은 'item_0'으로 그린다.
 //   빈 슬롯 전용 배경('emptySlotBackground')도 비워 두면 기본 배경이 멈춘 채로 나온다.
 //   빠진 목록은 메뉴 'Window/DesktopWindowControl/아트/검사'가 알려 준다.
 //
@@ -107,6 +107,9 @@ public class VisualCatalog : ScriptableObject
     [SerializeField, Tooltip("장비 아이콘 ('icons/equips/equip_<TID>')")]
     private IconEntry[] equipIcons = Array.Empty<IconEntry>();
 
+    [SerializeField, Tooltip("산업 아이콘 ('icons/industries/industry_<산업 값>') — 없는 산업은 자원 대체 아이콘")]
+    private IconEntry[] industryIcons = Array.Empty<IconEntry>();
+
     [CenterHeader("이펙트")]
     [SerializeField, Tooltip("이펙트 그림 ('fx/<연출 키>/<키>_<부위>') — 흰색으로 그리고 색은 코드가 입힌다")]
     private FxEntry[] fxSprites = Array.Empty<FxEntry>();
@@ -114,6 +117,7 @@ public class VisualCatalog : ScriptableObject
     // 아이콘은 칸마다 찾으므로 표로 바꿔 둔다 (처음 찾을 때 만든다)
     private Dictionary<int, Sprite>? _itemIconMap;
     private Dictionary<int, Sprite>? _equipIconMap;
+    private Dictionary<int, Sprite>? _industryIconMap;
     private Dictionary<string, Sprite>? _fxMap;
 
     #region 화면이 부르는 곳 — 목록이 없으면(그림 저장소 없음) null
@@ -142,6 +146,9 @@ public class VisualCatalog : ScriptableObject
     // 장비 아이콘 — 없으면 0번 아이콘, 목록이 없으면 null
     public static Sprite? EquipIconOf(int equipTid) => Current != null ? Current.GetEquipIcon(equipTid) : null;
 
+    // 산업 아이콘 — 없으면 자원 대체 아이콘(빈 자루), 목록이 없으면 null
+    public static Sprite? IndustryIconOf(EIndustryType industry) => Current != null ? Current.GetIndustryIcon(industry) : null;
+
     // 캐릭터 상반신 (인벤토리) — 그림 없는 캐릭터는 대체 캐릭터의 것
     public static Sprite? PortraitOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid).Portrait : null;
 
@@ -161,6 +168,9 @@ public class VisualCatalog : ScriptableObject
     public Sprite? GetEquipIcon(int equipTid)
         => (_equipIconMap ??= ToMap(equipIcons)).TryGetValue(equipTid, out Sprite icon) ? icon : fallbackEquipIcon;
 
+    public Sprite? GetIndustryIcon(EIndustryType industry)
+        => (_industryIconMap ??= ToMap(industryIcons)).TryGetValue((int)industry, out Sprite icon) ? icon : fallbackItemIcon;
+
     // 이 TID에 전용 아이콘이 있는가 (에디터 검사가 0번으로 버티는 것을 셀 때)
     public bool HasItemIcon(int itemTid)   => (_itemIconMap  ??= ToMap(itemIcons)).ContainsKey(itemTid);
     public bool HasEquipIcon(int equipTid) => (_equipIconMap ??= ToMap(equipIcons)).ContainsKey(equipTid);
@@ -168,9 +178,10 @@ public class VisualCatalog : ScriptableObject
     // 플레이 중에 목록을 다시 써도(굽기) 표가 낡지 않게 (Unity 메시지)
     private void OnValidate()
     {
-        _itemIconMap  = null;
-        _equipIconMap = null;
-        _fxMap        = null;
+        _itemIconMap     = null;
+        _equipIconMap    = null;
+        _industryIconMap = null;
+        _fxMap           = null;
     }
 
     private static Dictionary<string, Sprite> ToFxMap(FxEntry[] entries)

@@ -50,12 +50,21 @@ namespace DesktopWindowControl.EditorTools
         [SerializeField, Tooltip("대기 자세(달리기 ↔ 공격 사이 숨) + 발 위치와 크롭의 기준(첫 프레임). 비우면 달리기 첫 프레임")]
         private AnimationClip? idleClip;
 
+        [SerializeField, Tooltip("대기 원본을 스프라이트로 — 클립이 동작별로 나뉘지 않은 팩용. 차 있으면 클립보다 이긴다")]
+        private Sprite[] idleSprites = System.Array.Empty<Sprite>();
+
         [SerializeField, Tooltip("원본이 오른쪽을 보면 켠다 — 결과물은 언제나 왼쪽을 본다")]
         private bool sourceFacesRight;
 
         [CenterHeader("가공")]
+        [SerializeField, Tooltip("크기 등급(소·중·대)의 **처음 값** — 결과 SO의 등급이 비어 있을 때만 쓴다(그 뒤는 SO 드롭다운). 비우면 몸 키로 소·중을 고른다(대형은 직접 넣는다). 'CharacterSizeTemplate'")]
+        private CharacterSizeTemplate? sizeTemplate;
+
         [SerializeField, Min(1), Tooltip("정수 배 축소. 1이면 원본 픽셀 그대로")]
         private int downscale = 1;
+
+        [SerializeField, Tooltip("몸 영역 — 결과 칸 좌표(왼쪽 아래 0,0 · 발은 x=112). 너비 0이면 대기 첫 프레임의 불투명 테두리. 지팡이 연기·큰 무기처럼 몸이 아닌 것이 테두리를 키우면 적는다 — 크기 템플릿 배율·자동 크롭이 이 영역을 기준으로 한다")]
+        private RectInt bodyRect;
 
         [SerializeField, Tooltip("인벤토리 상반신 크롭 — 결과 칸 좌표(왼쪽 아래 0,0 · 발은 x=112). 정사각형. 너비 0이면 자동")]
         private RectInt portraitRect;
@@ -68,12 +77,18 @@ namespace DesktopWindowControl.EditorTools
         public Sprite[]       RunSprites       => runSprites;
         public AttackSource[] Attacks          => attacks;
         public AnimationClip? IdleClip         => idleClip;
+        public Sprite[]       IdleSprites      => idleSprites;
         public bool           SourceFacesRight => sourceFacesRight;
         public int            Downscale        => downscale;
+        public RectInt        BodyRect         => bodyRect;
         public RectInt        PortraitRect     => portraitRect;
         public RectInt        HeadRect         => headRect;
+        public CharacterSizeTemplate? SizeTemplate => sizeTemplate;
 
         [ContextMenu("이 레시피 굽기")]
         private void Bake() => ArtBaker.Bake(this);
+
+        [ContextMenu("크기 템플릿 다시 적용 (개인 조정을 덮는다)")]
+        private void ReapplySize() => UnityEngine.Debug.Log(ArtBaker.Bake(this, reapplySize: true));
     }
 }

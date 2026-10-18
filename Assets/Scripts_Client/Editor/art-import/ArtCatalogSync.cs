@@ -84,16 +84,17 @@ namespace DesktopWindowControl.EditorTools
                 so.FindProperty("fallbackCharacter").objectReferenceValue = fallback;
             }
 
-            int items  = WriteIcons(so, "itemIcons",  "fallbackItemIcon",  ArtSpec.ItemIconsRoot,  ArtSpec.ItemIconPrefix);
-            int equips = WriteIcons(so, "equipIcons", "fallbackEquipIcon", ArtSpec.EquipIconsRoot, ArtSpec.EquipIconPrefix);
-            int fxs    = WriteFx(so);
+            int items      = WriteIcons(so, "itemIcons",     "fallbackItemIcon",  ArtSpec.ItemIconsRoot,     ArtSpec.ItemIconPrefix);
+            int equips     = WriteIcons(so, "equipIcons",    "fallbackEquipIcon", ArtSpec.EquipIconsRoot,    ArtSpec.EquipIconPrefix);
+            int industries = WriteIcons(so, "industryIcons", null,                ArtSpec.IndustryIconsRoot, ArtSpec.IndustryIconPrefix);
+            int fxs        = WriteFx(so);
 
             so.ApplyModifiedPropertiesWithoutUndo();
             EditorUtility.SetDirty(catalog);
 
             string fallbackName = so.FindProperty("fallbackCharacter").objectReferenceValue is Object f ? f.name : "없음";
 
-            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 이펙트 {fxs}";
+            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 산업 아이콘 {industries} · 이펙트 {fxs}";
         }
 
         // 'fx/' 아래 PNG를 전부 훑어 파일 이름으로 목록에 쓴다. 이름이 겹치면 뒤의 것을 버리고 경고한다
@@ -142,7 +143,7 @@ namespace DesktopWindowControl.EditorTools
         }
 
         // '<접두>_<TID>.png'를 훑어 목록에 쓴다. TID 0은 대체 아이콘 칸으로. 돌려주는 값은 전용 아이콘 수
-        private static int WriteIcons(SerializedObject so, string arrayName, string fallbackName, string root, string prefix)
+        private static int WriteIcons(SerializedObject so, string arrayName, string? fallbackName, string root, string prefix)
         {
             var icons = new List<(int tid, Sprite sprite)>();
             Sprite? fallback = null;
@@ -188,7 +189,11 @@ namespace DesktopWindowControl.EditorTools
                 entry.FindPropertyRelative("icon").objectReferenceValue = icons[i].sprite;
             }
 
-            so.FindProperty(fallbackName).objectReferenceValue = fallback;
+            // 대체 칸이 없는 목록(산업)은 0번 파일을 쓰지 않는다
+            if (fallbackName != null)
+            {
+                so.FindProperty(fallbackName).objectReferenceValue = fallback;
+            }
 
             return icons.Count;
         }
