@@ -125,6 +125,14 @@ public class VisualCatalog : ScriptableObject
     private static VisualCatalog? _current;
     private static bool           _searched;
 
+    // 도메인 리로드를 끈 에디터에서 지난 플레이의 목록을 들고 있지 않게 비운다 — 플레이 사이에 아트를 받아도 새로 찾는다 (Unity 런타임 초기화 훅)
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        _current  = null;
+        _searched = false;
+    }
+
     // 지금 쓰는 목록. 그림 저장소를 받지 않은 PC면 null
     public static VisualCatalog? Current
     {
@@ -149,11 +157,11 @@ public class VisualCatalog : ScriptableObject
     // 산업 아이콘 — 없으면 자원 대체 아이콘(빈 자루), 목록이 없으면 null
     public static Sprite? IndustryIconOf(EIndustryType industry) => Current != null ? Current.GetIndustryIcon(industry) : null;
 
-    // 캐릭터 상반신 (인벤토리) — 그림 없는 캐릭터는 대체 캐릭터의 것
-    public static Sprite? PortraitOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid).Portrait : null;
+    // 캐릭터 상반신 (인벤토리) — 그림 없는 캐릭터는 대체 캐릭터의 것, 대체 그림도 없으면 null
+    public static Sprite? PortraitOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid)?.Portrait : null;
 
-    // 캐릭터 머리 (위젯) — 그림 없는 캐릭터는 대체 캐릭터의 것
-    public static Sprite? HeadOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid).Head : null;
+    // 캐릭터 머리 (위젯) — 그림 없는 캐릭터는 대체 캐릭터의 것, 대체 그림도 없으면 null
+    public static Sprite? HeadOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid)?.Head : null;
 
     // 이펙트 그림 — 파일 이름('reveal_glow')으로 찾는다. 없거나 목록이 없으면 null
     public static Sprite? FxOf(string key) => Current != null ? Current.GetFx(key) : null;
@@ -214,14 +222,25 @@ public class VisualCatalog : ScriptableObject
         return map;
     }
 
-    // 이 종류의 캐릭터 그림. 없으면 1번 그림.
-    public CharacterVisual GetCharacter(int characterTid) => FindCharacter(characterTid) ?? fallbackCharacter;
+    // 이 종류의 캐릭터 그림. 없으면 대체 그림, 대체 그림도 빠졌으면 null.
+    // ⚠️ 'fallbackCharacter'는 인스펙터 참조라 '??'로 고르지 않는다 — 빠진 참조(Unity null)를 걸러야 한다
+    public CharacterVisual? GetCharacter(int characterTid)
+    {
+        CharacterVisual? visual = FindCharacter(characterTid);
+
+        if (visual != null)
+        {
+            return visual;
+        }
+
+        return fallbackCharacter != null ? fallbackCharacter : null;
+    }
 
     // 이 종류에 전용 그림이 있는가 (에디터 검사가 대체 그림으로 버티는 캐릭터를 셀 때)
     public bool HasCharacter(int characterTid) => FindCharacter(characterTid) != null;
 
-    // 이 산업의 배경. 없으면 기본 배경.
-    public BackgroundVisual GetBackground(EIndustryType industry)
+    // 이 산업의 배경. 없으면 기본 배경, 기본 배경도 빠졌으면 null.
+    public BackgroundVisual? GetBackground(EIndustryType industry)
     {
         foreach (IndustryBackground entry in industryBackgrounds)
         {
@@ -231,12 +250,12 @@ public class VisualCatalog : ScriptableObject
             }
         }
 
-        return defaultBackground;
+        return defaultBackground != null ? defaultBackground : null;
     }
 
     // 빈 슬롯의 배경. 전용 배경이 없으면 기본 배경 — 빈 슬롯은 흐르지 않는다.
-    public BackgroundVisual GetEmptySlotBackground()
-        => emptySlotBackground != null ? emptySlotBackground : defaultBackground;
+    public BackgroundVisual? GetEmptySlotBackground()
+        => emptySlotBackground != null ? emptySlotBackground : defaultBackground != null ? defaultBackground : null;
 
     // 이 산업의 대상. 없으면 null — 대상 없이 달리기만 한다.
     public TargetVisual? GetTarget(EIndustryType industry)

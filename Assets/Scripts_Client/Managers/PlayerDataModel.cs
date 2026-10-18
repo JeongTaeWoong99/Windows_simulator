@@ -516,6 +516,49 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 인벤토리 ↔ 창고 이동 결과 (거절 포함). 성공이면 양쪽 보관함의 바뀐 칸을 캐시에 반영하고 변경 이벤트를 먼저 발행한 뒤에 온다.
     public event Action<EResultCode>? WarehouseTransferResponded;
 
+    // 뒤에 다른 알림이 이어지는 이벤트(캐시 변경 'XxxChanged' 등)를 구독자마다 따로 부른다 —
+    // 한 화면이 터져도 다른 화면과 뒤이은 알림('XxxCompleted')은 나간다.
+    // ⚠️ '?.Invoke()'로 되돌리지 않는다 — 첫 예외에서 멈춰 결과를 기다리는 화면이 응답을 못 받는다 (T-172)
+    private static void Notify(Action? evt)
+    {
+        if (evt == null)
+        {
+            return;
+        }
+
+        foreach (Delegate handler in evt.GetInvocationList())
+        {
+            try
+            {
+                ((Action)handler).Invoke();
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+    }
+
+    private static void Notify<T>(Action<T>? evt, T arg)
+    {
+        if (evt == null)
+        {
+            return;
+        }
+
+        foreach (Delegate handler in evt.GetInvocationList())
+        {
+            try
+            {
+                ((Action<T>)handler).Invoke(arg);
+            }
+            catch (Exception e)
+            {
+                Debug.LogException(e);
+            }
+        }
+    }
+
     // ─── Unity 메시지 ───
 
     // 구독 → 초기화 순서로 진행한다 (매니저 공통 규약 — 이 매니저는 확보할 참조가 없다)
@@ -666,7 +709,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             _lockedItemTids.UnionWith(res.LockedItemTids);
         }
 
-        InventoryChanged?.Invoke();
+        Notify(InventoryChanged);
     }
 
     // 가챠 응답 — 인벤토리 반영 후 보상 이벤트 발행
@@ -702,7 +745,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             ClientLogger.Warn(ClientLogger.Recv, "보유 캐릭터가 0마리다 — 작업슬롯 배치가 전부 거절된다(서버 지급 로직 확인)");
         }
 
-        CharactersChanged?.Invoke();
+        Notify(CharactersChanged);
     }
 
     // 캐릭터 1개체 동기화 — 판정 정산으로 레벨·경험치가 바뀌거나, 우편으로 캐릭터를 받으면 요청 없이 도착한다.
@@ -725,7 +768,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         {
             _characters.Add(synced);
             ClientLogger.Info(ClientLogger.Recv, $"새 캐릭터 도착 — 개체={synced.CharacterId}, TID={synced.CharacterTid}");
-            CharactersChanged?.Invoke();
+            Notify(CharactersChanged);
 
             return;
         }
@@ -743,7 +786,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 $"캐릭터 레벨업 — 개체={synced.CharacterId} Lv.{previous.Level} → Lv.{synced.Level}");
         }
 
-        CharactersChanged?.Invoke();
+        Notify(CharactersChanged);
     }
 
     // 보유 장비 스냅샷 — 캐시 교체 후 이벤트 발행
@@ -753,7 +796,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         _equips.Clear();
         _equips.AddRange(res.Equips);
 
-        EquipsChanged?.Invoke();
+        Notify(EquipsChanged);
         NotifyPendingEnchants();
     }
 
@@ -802,7 +845,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             }
         }
 
-        EquipsChanged?.Invoke();
+        Notify(EquipsChanged);
     }
 
     // 장착·해제 응답 — 결과만 알린다.
@@ -860,7 +903,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 }
             }
 
-            CharactersChanged?.Invoke();
+            Notify(CharactersChanged);
         }
         else
         {
@@ -883,12 +926,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             if (res.Target == ELockTarget.Character && FindCharacter(res.Id) is CharacterInfo character)
             {
                 character.IsLocked = res.Locked;
-                CharactersChanged?.Invoke();
+                Notify(CharactersChanged);
             }
             else if (res.Target == ELockTarget.Equip && FindEquip(res.Id) is EquipInfo equip)
             {
                 equip.IsLocked = res.Locked;
-                EquipsChanged?.Invoke();
+                Notify(EquipsChanged);
             }
             else if (res.Target == ELockTarget.Resource)
             {
@@ -896,7 +939,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
                 if (res.Locked ? _lockedItemTids.Add(itemId) : _lockedItemTids.Remove(itemId))
                 {
-                    InventoryChanged?.Invoke();
+                    Notify(InventoryChanged);
                 }
             }
         }
@@ -919,7 +962,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             _workStationSlots.AddRange(res.Slots);
         }
 
-        WorkStationSlotsChanged?.Invoke();
+        Notify(WorkStationSlotsChanged);
     }
 
     // 슬롯 배치 응답 — 변경된 슬롯 하나만 오므로 캐시에 병합한다.
@@ -952,7 +995,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 _workStationSlots.Add(changed);
             }
 
-            WorkStationSlotsChanged?.Invoke();
+            Notify(WorkStationSlotsChanged);
         }
 
         WorkStationAssignCompleted?.Invoke(success, res.Result);
@@ -964,7 +1007,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         long earned = SumGainedValue(res.ItemChanges); // 덮어쓰기 전에 센다 — 지나면 이전 수량이 사라진다
 
         ApplyItemChanges(res.ItemChanges);
-        GatherResultReceived?.Invoke(res);
+        Notify(GatherResultReceived, res);
 
         if (earned > 0)
         {
@@ -1021,7 +1064,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             _workStationSlots.Add(synced);
         }
 
-        WorkStationSlotsChanged?.Invoke();
+        Notify(WorkStationSlotsChanged);
     }
 
     // 아이템 증감 푸시 (가챠·즉시 지급 등)
@@ -1083,12 +1126,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (removedCharacters > 0)
         {
-            CharactersChanged?.Invoke();
+            Notify(CharactersChanged);
         }
 
         if (removedEquips > 0)
         {
-            EquipsChanged?.Invoke();
+            Notify(EquipsChanged);
         }
 
         EntitySellCompleted?.Invoke(res.GainedGold);
@@ -1124,7 +1167,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         Gold = res.Gold;
 
-        CurrencyChanged?.Invoke();
+        Notify(CurrencyChanged);
     }
 
     // 열린 해금 전체 — 로그인 직후 1회. 스냅샷이라 비우고 채운다.
@@ -1134,7 +1177,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         _unlockedTids.Clear();
         _unlockedTids.UnionWith(res.UnlockTIDs);
 
-        UnlocksChanged?.Invoke();
+        Notify(UnlocksChanged);
     }
 
     // 해금 결과 — 성공이면 목록에 더하고 알린다.
@@ -1150,7 +1193,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (success)
         {
             _unlockedTids.Add(res.UnlockTID);
-            UnlocksChanged?.Invoke();
+            Notify(UnlocksChanged);
         }
         else
         {
@@ -1168,7 +1211,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         AccountExp   = res.Exp;
         TraitPoint   = res.TraitPoint;
 
-        AccountLevelChanged?.Invoke();
+        Notify(AccountLevelChanged);
     }
 
     // 특성 레벨 올리기 결과 — 레벨을 반영하고 결과 코드를 나른다.
@@ -1187,7 +1230,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (GameDataLoader.TryGetUserTrait(res.UserTraitTID, out _) && res.Level != GetTraitLevel(res.UserTraitTID))
         {
             _traitLevels[res.UserTraitTID] = res.Level;
-            TraitsChanged?.Invoke();
+            Notify(TraitsChanged);
         }
 
         TraitLearnCompleted?.Invoke(success, res.Result);
@@ -1204,7 +1247,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             _traitLevels[info.UserTraitTID] = info.Level;
         }
 
-        TraitsChanged?.Invoke();
+        Notify(TraitsChanged);
     }
 
     #endregion
@@ -1221,7 +1264,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             _mails.AddRange(res.Mails);
         }
 
-        MailsChanged?.Invoke();
+        Notify(MailsChanged);
     }
 
     // 새 우편 — 더하기만 한다. 같은 id가 이미 있으면 교체한다(두 번 쌓이지 않게).
@@ -1246,7 +1289,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             }
         }
 
-        MailsChanged?.Invoke();
+        Notify(MailsChanged);
     }
 
     // 수령 결과 — 받은 우편을 "받음"으로 바꾸고 아이템을 반영한 뒤 결과를 알린다.
@@ -1282,13 +1325,13 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 }
             }
 
-            MailsChanged?.Invoke();
+            Notify(MailsChanged);
 
             // ※ 응답에는 받은 것의 목록이 없다 — 우편 캐시의 첨부(보낸 순간 복사된 값)가 곧 받은 것이다.
             //   모두 받기가 'StorageFull'로 멈춰도 그 전까지 받은 것은 보여 준다.
             if (claimed.Count > 0)
             {
-                MailRewardsClaimed?.Invoke(claimed);
+                Notify(MailRewardsClaimed, claimed);
             }
         }
 
@@ -1303,7 +1346,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         if (success)
         {
             _mails.RemoveAll(mail => mail.MailId == res.MailId);
-            MailsChanged?.Invoke();
+            Notify(MailsChanged);
         }
         else
         {
@@ -1333,12 +1376,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (res.EquipId != 0L && _equips.RemoveAll(equip => equip.EquipId == res.EquipId) > 0)
         {
-            EquipsChanged?.Invoke();
+            Notify(EquipsChanged);
         }
 
         if (res.CharacterId != 0L && _characters.RemoveAll(character => character.CharacterId == res.CharacterId) > 0)
         {
-            CharactersChanged?.Invoke();
+            Notify(CharactersChanged);
         }
     }
 
@@ -1360,7 +1403,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             SetItemSlot(change.Container, change.Slot, change.ItemId, change.Count);
         }
 
-        InventoryChanged?.Invoke();
+        Notify(InventoryChanged);
     }
 
     // 칸 하나를 덮어쓴다 — 0개면 그 칸을 비운다 (아이템 변경 · 정렬·칸 이동 · 창고 이동에서 호출).
@@ -1414,7 +1457,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 SetItemSlot(change.Container, change.Slot, change.ItemId, change.Count);
             }
 
-            InventoryChanged?.Invoke();
+            Notify(InventoryChanged);
         }
         else if (res.Result == EResultCode.Ok)
         {
@@ -1446,7 +1489,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                     }
                 }
 
-                CharactersChanged?.Invoke();
+                Notify(CharactersChanged);
                 break;
 
             case EStorageTab.Equip:
@@ -1458,7 +1501,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                     }
                 }
 
-                EquipsChanged?.Invoke();
+                Notify(EquipsChanged);
                 break;
         }
     }
@@ -1476,17 +1519,17 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
             {
                 case EStorageTab.Resource:
                     ApplyItemTransfers(res.Changes);
-                    InventoryChanged?.Invoke();
+                    Notify(InventoryChanged);
                     break;
 
                 case EStorageTab.Character:
                     ApplyCharacterTransfers(res.Changes);
-                    CharactersChanged?.Invoke();
+                    Notify(CharactersChanged);
                     break;
 
                 case EStorageTab.Equip:
                     ApplyEquipTransfers(res.Changes);
-                    EquipsChanged?.Invoke();
+                    Notify(EquipsChanged);
                     break;
             }
         }

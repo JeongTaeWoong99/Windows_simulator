@@ -4,7 +4,7 @@
 public static class CharacterSizeLabel
 {
     // 이 캐릭터 종류(TID)의 크기 등급. 그림이 없는 캐릭터는 대체 그림의 등급이다
-    public static ECharacterSize Of(int characterTid) => VisualCatalog.Current != null ? VisualCatalog.Current.GetCharacter(characterTid).SizeClass : ECharacterSize.None;
+    public static ECharacterSize Of(int characterTid) => VisualCatalog.Current != null ? VisualCatalog.Current.GetCharacter(characterTid)?.SizeClass ?? ECharacterSize.None : ECharacterSize.None;
 
     // 툴팁용 — '소형' · '중형' · '대형'
     public static string? Get(ECharacterSize size)
