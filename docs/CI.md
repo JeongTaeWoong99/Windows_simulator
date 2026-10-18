@@ -1,15 +1,16 @@
 # CI (GitHub Actions)
 
-> 최종 업데이트: 2026-08-10
+> 최종 업데이트: 2026-10-18 (일감 정합성 검사 `tasks-check.yml` — T-129)
 > 관련: [`Server/docs/테스트커버리지.md`](../Server/docs/테스트커버리지.md) · [`CLAUDE.md`](../CLAUDE.md)
 
-`.github/workflows/` 아래 워크플로 4개가 있다.
+`.github/workflows/` 아래 워크플로 5개가 있다.
 
 | 파일 | 언제 도나 | 하는 일 |
 | --- | --- | --- |
 | `server-ci.yml` | `Server/**` 변경 시 push·PR | 빌드 → 테스트 → 커버리지 요약 |
 | `client-ci.yml` | `Assets/**`·`Packages/**`·`ProjectSettings/**` 변경 시 push·PR | Unity 빌드 |
 | `docs-deploy.yml` | `GameDesign/web/**`·`GameDesign/design/**`·`tasks/**` 변경 시 push | 문서 사이트 빌드 → Cloudflare Pages 배포 |
+| `tasks-check.yml` | `.md` 변경 시 push·PR · **이슈가 닫힐 때** | 일감 정합성 검사(`GameDesign/web/scripts/check-tasks.mjs`) — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · 옛 경로 링크. 로컬에서도 같은 명령으로 돈다 |
 | `unity-activation.yml` | **수동만** | Unity 라이선스 활성화 파일(.alf) 요청 — 1회용 |
 
 **경로 필터로 갈라 뒀다.** 서버만 고쳤는데 Unity 빌드가 20분 도는 일은 없다.

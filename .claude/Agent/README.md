@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-18 일감 정합성 검사 스크립트 + CI](2026-10-18-tasks-consistency-check.md) — `#infra` `#docs` `check-tasks.mjs` · `tasks-check.yml`(이슈 닫힘에도) · T-132 ID 중복
 - [2026-10-18 캐릭터 27종 · 산업 아이콘 · 산업 레벨별 대상 그림](2026-10-18-characters-industry-icons-target-levels.md) — `#client` `#art` `#excel` 등급 = 모션 수 · 대체 medieval-warrior · `TargetRecipe.levels` · `IndustryIconOf` · 캐릭터 이름 26종 · 크기 템플릿 소·중·대(SO 드롭다운 · 칸 배지) · 대상 레벨 배율 · 몸 영역 `bodyRect` · 머리·상반신 크롭 점검표
 - [2026-10-18 원본 팩을 _source/<종류>/<팩>/로 정리 · 원본 정리 규칙](2026-10-18-art-source-shelves.md) — `#client` `#art` 새 팩 20개 · 종류 선반 · 팩은 `sprites/`·`anims/`·`audio/`로 추림 · 정리기 `tidy_source.py` · 음악 ogg
 - [2026-10-18 치트 창에 경매 더미 매물 칸 (T-168 클라)](2026-10-18-auction-dummy-cheat-button.md) — `#client` `#editor` 경매 분류 · SeedAuctionListings 칸

@@ -1,0 +1,53 @@
+# 일감 정합성 검사 — tasks/ 목록·파일·링크가 서로 어긋났는지 본다 (T-129)
+#
+# 검사 본체는 GameDesign/web/scripts/check-tasks.mjs — 로컬에서도 똑같이 돌린다.
+# 어긋남이 있으면 빨간 X + Discord 알림만 낸다. 문서 사이트 배포(docs-deploy.yml)와 job을 나눠
+# 일감 목록이 어긋나도 배포는 막지 않는다.
+name: 일감 정합성 검사
+
+on:
+  push:
+    branches: [main]
+    paths:
+      # 옛 경로 링크는 저장소 어느 문서에서나 생긴다 — .md 전부를 본다.
+      - '**.md'
+      - 'GameDesign/web/scripts/check-tasks.mjs'
+      - '.github/workflows/tasks-check.yml'
+  pull_request:
+    paths:
+      - '**.md'
+      - 'GameDesign/web/scripts/check-tasks.mjs'
+      - '.github/workflows/tasks-check.yml'
+  # 이슈는 push 없이 닫힌다 — 닫히는 순간 그 이슈를 기다리는 ⏸이 남았는지 본다.
+  issues:
+    types: [closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  check:
+    name: 검사
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      # 닫힌 이슈 목록은 gh로 읽는다 — 러너에 gh가 깔려 있고 GH_TOKEN만 넘기면 된다.
+      - name: 일감 정합성 검사
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node GameDesign/web/scripts/check-tasks.mjs
+
+      # 깨졌을 때만 알린다. 통과·취소에는 울리지 않는다.
+      - name: 실패 알림
+        if: failure()
+        uses: ./.github/actions/discord-notify
+        with:
+          webhook: ${{ secrets.DISCORD_WEBHOOK }}
