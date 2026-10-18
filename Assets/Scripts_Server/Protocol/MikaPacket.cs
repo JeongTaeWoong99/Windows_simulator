@@ -110,6 +110,8 @@ namespace MikaProtocol
         S_AuctionHistoryResponse = 80,
         C_WarehouseTransferRequest = 81,
         S_WarehouseTransferResponse = 82,
+        C_EquipDisassembleRequest = 83,
+        S_EquipDisassembleResponse = 84,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -905,5 +907,21 @@ namespace MikaProtocol
         public EResultCode               Result  { get; set; }
         public EStorageTab               Tab     { get; set; }
         public List<WarehouseChangeInfo> Changes { get; set; } = new();
+    }
+
+    // 장비 분해 (T-131). 장비를 지우고 등급별 재료(DisassembleTable)를 인벤토리에 넣는다 — 판매와 같은 개체 PK 목록 축이다.
+    // 착용 중 · 잠김 · 큐브 결과 고르기 전 · 재료가 인벤토리에 다 안 들어가면 거절한다.
+    [MemoryPackable, Packet(PacketId.C_EquipDisassembleRequest)]
+    public partial class C_EquipDisassembleRequest : IPacket
+    {
+        public List<long>? EquipIds { get; set; }
+    }
+
+    // 분해 결과. 전부 성공하거나 전부 실패한다 — Ok면 요청한 장비가 모두 사라졌으니 클라가 목록에서 지운다.
+    [MemoryPackable, Packet(PacketId.S_EquipDisassembleResponse)]
+    public partial class S_EquipDisassembleResponse : IPacket
+    {
+        public EResultCode          Result          { get; set; }
+        public List<ItemChangeInfo> ItemChangeInfos { get; set; } = new();  // 받은 재료 — 칸마다 갱신 후 수량
     }
 }

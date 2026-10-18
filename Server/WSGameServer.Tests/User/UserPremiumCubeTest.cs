@@ -261,6 +261,18 @@ public class UserPremiumCubeTest
         user.TryGetEquip(Rod, out _).ShouldBeTrue();
     }
 
+    [Fact]
+    public void 보류_중에는_분해할_수_없다()
+    {
+        var (user, b) = UserWithRod();
+        UsePremium(user);
+
+        user.TryDisassembleEquips(new[] { Rod });
+
+        Last<S_EquipDisassembleResponse>(b).Result.ShouldBe(EResultCode.EnchantPending);
+        user.TryGetEquip(Rod, out _).ShouldBeTrue();
+    }
+
     // ───────────────────────── 로드 ─────────────────────────
 
     [Fact]

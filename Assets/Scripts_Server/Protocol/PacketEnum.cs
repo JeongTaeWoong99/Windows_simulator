@@ -108,6 +108,10 @@ namespace MikaProtocol
         // ── 1200~: 잠금 (T-137) ── 미보유는 CharacterNotOwned(201) · EquipNotOwned(600)
         EntityLocked      = 1200, // 잠긴 개체 — 판매·경매 등록·응축 재료로 쓸 수 없다. 아무것도 바꾸지 않았다
         InvalidLockTarget = 1201, // 잠글 수 없는 대상 — 없는 대상 종류 · 아이템 테이블에 없는 자원 TID
+
+        // ── 1300~: 분해 (T-131) ── 미보유 EquipNotOwned(600) · 잠김 EntityLocked(1200) · 고르기 전 EnchantPending(615) · 재료 칸 부족 StorageFull(103)
+        InvalidDisassembleRequest = 1300, // 빈 목록 · 중복 장비
+        DisassembleEquipWorn      = 1301, // 착용 중인 장비 — 벗겨야 분해한다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
