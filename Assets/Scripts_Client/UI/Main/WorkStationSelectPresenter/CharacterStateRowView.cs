@@ -117,6 +117,14 @@ public class CharacterStateRowView : MonoBehaviour
             nameText.text += $" {UIRichText.Paint(Lang.Format("UI.Inventory.Star", star), UIThemeRole.Highlight)}";
         }
 
+        // 크기 등급 — 고를 때 대상과 견줄 몸집이 보이게('CharacterSizeLabel')
+        string? size = CharacterSizeLabel.Get(CharacterSizeLabel.Of(characterTid));
+
+        if (size != null)
+        {
+            nameText.text += $"{UIRichText.Dot}{size}";
+        }
+
         SetPortrait(VisualCatalog.PortraitOf(characterTid));
     }
 

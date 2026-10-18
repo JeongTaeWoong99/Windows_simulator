@@ -316,7 +316,8 @@ public static class AuctionText
         }
         else if (listing.Kind == EAuctionKind.Character && listing.Character != null)
         {
-            content.Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(listing.Character.Level))
+            CharacterSizeLabel.AddRow(content, listing.Tid)
+                   .Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(listing.Character.Level))
                    .Row(Lang.Get("UI.Inventory.Condense"), listing.Character.Star > 0 ? new string('★', listing.Character.Star) : Lang.Get("UI.Equip.None"));
         }
         else
@@ -405,7 +406,8 @@ public static class AuctionText
     {
         var content = new TooltipContent(GameDataLoader.GetCharacterName(character.CharacterTid));
 
-        AddRarityRow(content, GameDataLoader.GetCharacterRarity(character.CharacterTid))
+        AddRarityRow(content, GameDataLoader.GetCharacterRarity(character.CharacterTid));
+        CharacterSizeLabel.AddRow(content, character.CharacterTid)
             .Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(character.Level));
 
         if (blocked != null)

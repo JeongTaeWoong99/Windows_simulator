@@ -28,12 +28,16 @@ public readonly struct SlotData
     // 아이콘 칸 그림 — 자원·장비는 아이콘, 캐릭터는 상반신('VisualCatalog'). null이면 자리 표시 네모 그대로.
     public readonly Sprite? Icon;
 
-    public SlotData(long key, string name, string sub, GlobalRarity rarity, Sprite? icon = null)
+    // 크기 등급 배지 — 캐릭터만 '소' · '중' · '대'('CharacterSizeLabel.GetShort'). null이면 배지를 끈다.
+    public readonly string? SizeBadge;
+
+    public SlotData(long key, string name, string sub, GlobalRarity rarity, Sprite? icon = null, string? sizeBadge = null)
     {
-        Key    = key;
-        Name   = name;
-        Sub    = sub;
-        Rarity = rarity;
-        Icon   = icon;
+        Key       = key;
+        Name      = name;
+        Sub       = sub;
+        Rarity    = rarity;
+        Icon      = icon;
+        SizeBadge = sizeBadge;
     }
 }
