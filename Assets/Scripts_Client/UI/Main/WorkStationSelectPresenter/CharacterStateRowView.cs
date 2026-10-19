@@ -47,13 +47,13 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("종족 (임시 — '종족 추가 예정')")]
     private TMP_Text raceText = null!;
 
-    // ⚠️ **칸의 순서가 곧 산업이다** — 농사 · 발굴 · 채굴 · 벌목 · 사냥. 바로 위 산업 탭과 같은 순서라
+    // ⚠️ **칸의 순서가 곧 산업이다** — 농사 · 채굴 · 벌목 · 사냥 · 발굴. 바로 위 산업 탭과 같은 순서라
     //   위치만으로 읽힌다. **인스펙터에서 순서를 섞으면 값이 조용히 다른 산업 칸에 들어간다.**
     [CenterHeader("적성 5칸")]
-    [SerializeField, NonReorderable, Tooltip("적성 칸 바탕 5개. 순서 = 농사·발굴·채굴·벌목·사냥")]
+    [SerializeField, NonReorderable, Tooltip("적성 칸 바탕 5개. 순서 = 농사·채굴·벌목·사냥·발굴")]
     private Image[] aptitudeCellImages = new Image[0];
 
-    [SerializeField, NonReorderable, Tooltip("적성 값 5개. 순서 = 농사·발굴·채굴·벌목·사냥")]
+    [SerializeField, NonReorderable, Tooltip("적성 값 5개. 순서 = 농사·채굴·벌목·사냥·발굴")]
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
     [SerializeField, Tooltip("지금 고른 산업 칸의 바탕 (산업 탭의 고른 색과 같은 역할)")]

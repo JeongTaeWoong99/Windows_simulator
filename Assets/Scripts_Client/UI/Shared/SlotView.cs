@@ -45,10 +45,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("적성 5칸을 담은 하단 밴드. 자원 탭에서는 꺼진다")]
     private GameObject aptitudeStrip = null!;
 
-    // ⚠️ **칸의 순서가 곧 산업이다** — 농사 · 발굴 · 채굴 · 벌목 · 사냥('EIndustryType'의 None 제외 순서).
+    // ⚠️ **칸의 순서가 곧 산업이다** — 농사 · 채굴 · 벌목 · 사냥 · 발굴('IndustryLabel.DisplayOrder' — enum 값 순서가 아니다).
     //   배치 화면의 산업 버튼도 같은 순서로 만들어지므로(WorkStationSelectPresenter.BuildIndustryList)
     //   두 화면이 저절로 맞는다. **인스펙터에서 순서를 섞으면 값이 조용히 다른 산업 칸에 들어간다.**
-    [SerializeField, NonReorderable, Tooltip("적성 값 칸 5개. 순서 = 농사·발굴·채굴·벌목·사냥")]
+    [SerializeField, NonReorderable, Tooltip("적성 값 칸 5개. 순서 = 농사·채굴·벌목·사냥·발굴")]
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
     // ※ 아이콘 왼쪽 여백(20px)에 세로로 선다 — 아이콘과 높이를 같게 두고, 아래에서 위로 찬다.
@@ -312,7 +312,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 적성의 주인은 서버이고('PlayerDataModel.GetAptitude'), 칸이 테이블을 직접 읽으면
     // 장비가 적성에 얹히는 날 개체마다 값이 갈라진다.
     //
-    // ⚠️ **values의 순서가 곧 산업이다** (농사·발굴·채굴·벌목·사냥). 값 0도 칸을 지우지 않고
+    // ⚠️ **values의 순서가 곧 산업이다** (농사·채굴·벌목·사냥·발굴). 값 0도 칸을 지우지 않고
     //   'X'로 채운다 — 칸을 없애면 위치가 밀려 남은 값이 다른 산업으로 읽힌다.
     //
     // TODO: 산업 아이콘이 생기면 각 칸의 배경 Image에 sprite를 넣는다 — 자리·개수·순서는 그대로다.

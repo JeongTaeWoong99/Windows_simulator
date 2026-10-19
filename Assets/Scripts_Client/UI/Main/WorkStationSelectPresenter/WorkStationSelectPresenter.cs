@@ -78,7 +78,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private Color pickingEquipSlotColor = new Color(0.5f, 0.5f, 0.5f, 1f);
 
     // ※ 버튼마다 위 'Icon (임시)' · 아래 텍스트다.
-    [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·발굴·채굴·벌목·사냥)")]
+    [SerializeField, NonReorderable, Tooltip("산업 버튼 5개. 인스펙터에 넣은 순서가 곧 산업 순서다(농사·채굴·벌목·사냥·발굴)")]
     private Button[] industryButtons = new Button[0];
 
     // ※ 그림은 'VisualCatalog.IndustryIconOf'로 넣는다(T-054) — 프리팹이 그림을 직접 물면 그림 저장소가 없는 PC에서 참조가 끊긴다.
@@ -220,10 +220,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("끼울 장비가 하나도 없을 때만 켜지는 안내. 빈 목록은 고장과 구분되지 않는다")]
     private TMP_Text equipEmptyText = null!;
 
-    // ※ **순서가 곧 산업**이라 산업 버튼 줄과 같은 축이다(농사·발굴·채굴·벌목·사냥).
+    // ※ **순서가 곧 산업**이라 산업 버튼 줄과 같은 축이다(농사·채굴·벌목·사냥·발굴).
     //   색 규칙도 같다 — 고른 것만 노랑이다.
     // ※ '모두'는 두지 않는다(2026-09-24 사용자 결정) — 칸을 열면 **그 슬롯의 산업**이 골라진 채로 뜬다.
-    [SerializeField, NonReorderable, Tooltip("장비 산업 필터 5개. 인스펙터에 넣은 순서가 곧 산업이다(농사·발굴·채굴·벌목·사냥)")]
+    [SerializeField, NonReorderable, Tooltip("장비 산업 필터 5개. 인스펙터에 넣은 순서가 곧 산업이다(농사·채굴·벌목·사냥·발굴)")]
     private Button[] equipFilterButtons = new Button[0];
 
     // 효율 계산 줄 수 — 적성 기본값 · 속도 가산 · 현재 작업속도 · 실효 주기 · 산출량.
@@ -543,11 +543,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     {
         _industries.Clear();
 
-        foreach (EIndustryType industry in Enum.GetValues(typeof(EIndustryType)))
-        {
-            if (industry != EIndustryType.None) // None은 "배치 해제"라 고를 대상이 아니다
-                _industries.Add(industry);
-        }
+        // 화면 공용 표시 순서를 탄다 — enum 값 순서가 아니라 발굴이 맨 끝이다('IndustryLabel.DisplayOrder').
+        // None("배치 해제")은 이 목록에 없다.
+        _industries.AddRange(IndustryLabel.DisplayOrder);
 
         _aptitudes = new byte[_industries.Count];
     }
@@ -560,7 +558,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"산업 버튼이 {industryButtons.Length}개인데 채취 산업은 {_industries.Count}종이다. " +
-                $"인스펙터의 버튼 목록을 산업 순서(농사·발굴·채굴·벌목·사냥)대로 채울 것.", this);
+                $"인스펙터의 버튼 목록을 산업 순서(농사·채굴·벌목·사냥·발굴)대로 채울 것.", this);
         }
 
         for (int i = 0; i < industryButtons.Length; i++)
@@ -1947,7 +1945,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         {
             ClientLogger.Error(ClientLogger.UI,
                 $"장비 필터가 {equipFilterButtons.Length}개인데 필터는 {EquipFilterCount}개다. " +
-                $"인스펙터를 순서(농사·발굴·채굴·벌목·사냥)대로 채울 것.", this);
+                $"인스펙터를 순서(농사·채굴·벌목·사냥·발굴)대로 채울 것.", this);
         }
 
         for (int i = 0; i < equipFilterButtons.Length; i++)

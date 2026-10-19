@@ -12,11 +12,24 @@ public class EnchantAutoPanelView : MonoBehaviour
     // 상한 칩 값 — 마지막 0은 '보유 전부'.
     public static readonly int[] CapSteps = { 100, 300, 1000, 3000, 0 };
 
+    // 노릴 옵션 칩 값 — 산업은 화면 공용 표시 순서('IndustryLabel.DisplayOrder' — 발굴이 맨 끝)를 따른다.
+    // 'EnchantAutoFocus' 값 순서와 다르다 — 칩 자리를 enum 값으로 바로 바꾸면 발굴이 둘째 칸에 온다.
+    public static readonly EnchantAutoFocus[] FocusSteps =
+    {
+        EnchantAutoFocus.None,
+        EnchantAutoFocus.Farming,
+        EnchantAutoFocus.Mining,
+        EnchantAutoFocus.Logging,
+        EnchantAutoFocus.Hunting,
+        EnchantAutoFocus.Excavation,
+        EnchantAutoFocus.CharacterExp,
+    };
+
     [CenterHeader("칩")]
     [SerializeField, NonReorderable, Tooltip("목표 등급 칩 — 고급 · 희귀 · 영웅 · 전설 · 신화 순서로 5개")]
     private EnchantChipView[] gradeChips = new EnchantChipView[0];
 
-    [SerializeField, NonReorderable, Tooltip("노릴 옵션 칩 — 'EnchantAutoFocus' 순서(없음 · 농사 · 발굴 · 채굴 · 벌목 · 사냥 · 경험치)로 7개")]
+    [SerializeField, NonReorderable, Tooltip("노릴 옵션 칩 — 'FocusSteps' 순서(없음 · 농사 · 채굴 · 벌목 · 사냥 · 발굴 · 경험치)로 7개")]
     private EnchantChipView[] focusChips = new EnchantChipView[0];
 
     [SerializeField, NonReorderable, Tooltip("조합 칩 4개 — 왼쪽부터 '전체'가 많은 순. 칸 수 + 1개만 켜진다")]
@@ -36,7 +49,7 @@ public class EnchantAutoPanelView : MonoBehaviour
     private void Awake()
     {
         RequireCount(gradeChips, 5, nameof(gradeChips));
-        RequireCount(focusChips, 7, nameof(focusChips));
+        RequireCount(focusChips, FocusSteps.Length, nameof(focusChips));
         RequireCount(comboChips, EnchantAutoTarget.MaxSlots + 1, nameof(comboChips));
         RequireCount(capChips, CapSteps.Length, nameof(capChips));
 
@@ -48,7 +61,7 @@ public class EnchantAutoPanelView : MonoBehaviour
 
         for (int i = 0; i < focusChips.Length; i++)
         {
-            var focus = (EnchantAutoFocus)i;
+            var focus = FocusSteps[i];
             focusChips[i].Clicked += _ => FocusClicked?.Invoke(focus);
         }
 
@@ -84,7 +97,7 @@ public class EnchantAutoPanelView : MonoBehaviour
 
         for (int i = 0; i < focusChips.Length; i++)
         {
-            var focus = (EnchantAutoFocus)i;
+            var focus = FocusSteps[i];
 
             // 이미 신화면 등급만으로는 목표가 이미 채워져 있다 — '없음'을 막는다
             focusChips[i].Bind(EnchantAutoTarget.GetFocusName(focus), target.Focus == focus, !(atTop && focus == EnchantAutoFocus.None));

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-19 화면 산업 순서 — 발굴을 맨 끝으로](2026-10-19-industry-display-order.md) — `#client` `#ui` `IndustryLabel.DisplayOrder` 단일 출처 · enum 순서는 그대로 · 인스펙터 배열과 형제 순서를 같이
 - [2026-10-19 위젯 머리 그림 NRE · 배치 완료 콜백 끊김](2026-10-19-widget-head-nre-callback.md) — `#client` `#ui` T-172 그림 null 방어 · 변경 알림 구독자별 격리(`Notify`)
 - [2026-10-18 일감 정합성 검사 스크립트 + CI](2026-10-18-tasks-consistency-check.md) — `#infra` `#docs` `check-tasks.mjs` · `tasks-check.yml`(이슈 닫힘에도) · T-132 ID 중복
 - [2026-10-18 캐릭터 27종 · 산업 아이콘 · 산업 레벨별 대상 그림](2026-10-18-characters-industry-icons-target-levels.md) — `#client` `#art` `#excel` 등급 = 모션 수 · 대체 medieval-warrior · `TargetRecipe.levels` · `IndustryIconOf` · 캐릭터 이름 26종 · 크기 템플릿 소·중·대(SO 드롭다운 · 칸 배지) · 대상 레벨 배율 · 몸 영역 `bodyRect` · 머리·상반신 크롭 점검표

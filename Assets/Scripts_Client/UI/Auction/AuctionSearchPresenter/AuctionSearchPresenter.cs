@@ -77,7 +77,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
     private static readonly EIndustryType[] IndustryOptions =
     {
-        EIndustryType.None, EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting,
+        EIndustryType.None, EIndustryType.Farming, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting, EIndustryType.Excavation,
     };
 
     [CenterHeader("분류")]

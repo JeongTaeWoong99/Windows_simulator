@@ -25051,10 +25051,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1455658099}
-  - {fileID: 1764968037}
   - {fileID: 1757144708}
   - {fileID: 157954779}
   - {fileID: 1994799553}
+  - {fileID: 1764968037}
   m_Father: {fileID: 110654698}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
@@ -42034,10 +42034,10 @@ RectTransform:
   - {fileID: 1308440087}
   - {fileID: 1867192454}
   - {fileID: 1789839495}
-  - {fileID: 2068004094}
   - {fileID: 1727466183}
   - {fileID: 1312786787}
   - {fileID: 662833185}
+  - {fileID: 2068004094}
   - {fileID: 986682962}
   - {fileID: 60035790}
   - {fileID: 936155417}
@@ -92655,10 +92655,10 @@ RectTransform:
   m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 808072482}
-  - {fileID: 1480106114}
   - {fileID: 1101143776}
   - {fileID: 993411050}
   - {fileID: 2109673714}
+  - {fileID: 1480106114}
   m_Father: {fileID: 924722309}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -149793,16 +149793,16 @@ MonoBehaviour:
   pickingEquipSlotColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
   industryButtons:
   - {fileID: 808072483}
-  - {fileID: 1480106115}
   - {fileID: 1101143777}
   - {fileID: 993411051}
   - {fileID: 2109673715}
+  - {fileID: 1480106115}
   industryIcons:
   - {fileID: 1028716675}
-  - {fileID: 457735915}
   - {fileID: 559833636}
   - {fileID: 952750986}
   - {fileID: 1029925820}
+  - {fileID: 457735915}
   industryLevelButtons:
   - button: {fileID: 1440400185}
     label: {fileID: 241672225}
@@ -149871,10 +149871,10 @@ MonoBehaviour:
   equipEmptyText: {fileID: 682147125}
   equipFilterButtons:
   - {fileID: 1455658101}
-  - {fileID: 1764968039}
   - {fileID: 1757144710}
   - {fileID: 157954781}
   - {fileID: 1994799555}
+  - {fileID: 1764968039}
 --- !u!114 &1556736156
 MonoBehaviour:
   m_ObjectHideFlags: 0

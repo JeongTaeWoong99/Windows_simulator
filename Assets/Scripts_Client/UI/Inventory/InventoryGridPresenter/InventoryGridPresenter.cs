@@ -158,17 +158,10 @@ public class InventoryGridPresenter : MonoBehaviour
     // — 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있는 쪽이 하나여도 된다.
     private readonly byte[] _aptitudes = new byte[SlotView.AptitudeCount];
 
-    // 적성 칸의 순서 = 산업. 'EIndustryType'의 None 제외 순서와 같고, 배치 화면의 산업 버튼도
+    // 적성 칸의 순서 = 산업. 화면 공용 표시 순서('IndustryLabel.DisplayOrder' — 발굴이 맨 끝)이고, 배치 화면의 산업 버튼도
     // 같은 순서로 만들어진다('WorkStationSelectPresenter.BuildIndustryList') — 두 화면이 맞아야 한다.
     // ※ 칸 툴팁의 적성 줄('CharacterSlotSource.BuildTooltip')도 이 순서를 탄다 — 스트립과 위아래가 같게 읽힌다.
-    public static readonly EIndustryType[] StripIndustries =
-    {
-        EIndustryType.Farming,
-        EIndustryType.Excavation,
-        EIndustryType.Mining,
-        EIndustryType.Logging,
-        EIndustryType.Hunting,
-    };
+    public static readonly EIndustryType[] StripIndustries = IndustryLabel.DisplayOrder;
 
     // 탭별 공급자. 여기 없는 탭은 "아직 데이터가 없는 탭"이고, 탭 줄이 그 버튼을 잠근다.
     private readonly Dictionary<InventoryTab, InventorySlotSource> _sources =

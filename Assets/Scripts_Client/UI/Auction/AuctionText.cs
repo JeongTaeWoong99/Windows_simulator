@@ -140,7 +140,7 @@ public static class AuctionText
         return $"{CharacterSlotSource.GetLevelLabel(character.Level)}{star}{UIRichText.Dot}{FormatTopAptitude(character)}";
     }
 
-    // 가장 높은 적성 — "발굴 7". 같은 값이면 산업 순서(농사·발굴·…)가 앞인 것. 적성이 하나도 없으면 "적성 없음".
+    // 가장 높은 적성 — "발굴 7". 같은 값이면 산업 표시 순서(농사·채굴·…·발굴)가 앞인 것. 적성이 하나도 없으면 "적성 없음".
     public static string FormatTopAptitude(CharacterInfo character)
     {
         EIndustryType best      = EIndustryType.None;

@@ -295,10 +295,10 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2899773221080465086}
-  - {fileID: 309787788696584686}
   - {fileID: 5517233452577522309}
   - {fileID: 2441994042743622645}
   - {fileID: 2368570607074058256}
+  - {fileID: 309787788696584686}
   m_Father: {fileID: 6509808652805479527}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2113,16 +2113,16 @@ MonoBehaviour:
   raceText: {fileID: 8608141684706924477}
   aptitudeCellImages:
   - {fileID: 7336041543392106735}
-  - {fileID: 8515105979042157311}
   - {fileID: 3033692330163506633}
   - {fileID: 1598608023576604177}
   - {fileID: 6371697872770179878}
+  - {fileID: 8515105979042157311}
   aptitudeValueTexts:
   - {fileID: 5651555135591842140}
-  - {fileID: 7196207959489485386}
   - {fileID: 8571629791653740043}
   - {fileID: 7792467644951961609}
   - {fileID: 2999035754212373332}
+  - {fileID: 7196207959489485386}
   highlightCellRole: 11
   normalCellColor: {r: 0, g: 0, b: 0, a: 0.25}
   assignButton: {fileID: 2815736832333793005}
