@@ -760,7 +760,7 @@ public class InventoryGridPresenter : MonoBehaviour
         //
         // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
         //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
-        bool isAway = _current.IsAway(data.Key);
+        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(위 'cell' 판정)
 
         view.SetAssignMark(isAway);
         view.SetLockMark(_current.IsLocked(data.Key));

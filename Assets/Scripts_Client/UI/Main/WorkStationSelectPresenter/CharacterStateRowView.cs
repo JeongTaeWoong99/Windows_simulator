@@ -131,7 +131,7 @@ public class CharacterStateRowView : MonoBehaviour
     // 상반신 — 그림이 있으면 제 색(흰색 곱) · 비율 유지, 없으면 자리 표시 네모 (Bind · Clear에서 호출)
     private void SetPortrait(Sprite? portrait)
     {
-        portraitImage.sprite         = portrait;
+        portraitImage.sprite         = portrait!;
         portraitImage.preserveAspect = portrait != null;
         portraitImage.color          = portrait != null ? Color.white : _portraitPlaceholderColor;
     }

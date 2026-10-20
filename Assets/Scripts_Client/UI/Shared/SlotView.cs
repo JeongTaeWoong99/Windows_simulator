@@ -279,7 +279,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)
     private void SetIcon(Sprite? icon)
     {
-        itemImage.sprite         = icon;
+        itemImage.sprite         = icon!;
         itemImage.preserveAspect = icon != null;
         _itemBaseColor           = icon != null ? Color.white : _itemPlaceholderColor;
     }

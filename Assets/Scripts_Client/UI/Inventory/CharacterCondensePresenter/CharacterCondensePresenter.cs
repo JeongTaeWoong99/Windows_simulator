@@ -500,7 +500,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     {
         Sprite? portrait = VisualCatalog.PortraitOf(target.CharacterTid);
 
-        portraitImage.sprite         = portrait;
+        portraitImage.sprite         = portrait!;
         portraitImage.preserveAspect = portrait != null;
         portraitImage.color          = portrait != null ? Color.white : UIThemePalette.Of(UIThemeRole.Slot);
         warehouseMark.SetActive(target.Container == EContainer.Warehouse);

@@ -1682,7 +1682,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             {
                 Sprite? sprite = worn != null ? VisualCatalog.EquipIconOf(worn.EquipTid) : null;
 
-                entry.icon.sprite         = sprite;
+                entry.icon.sprite         = sprite!;
                 entry.icon.preserveAspect = sprite != null;
 
                 // 'Start'(BindEquipSlotButtons) 전에 불리면 기준 색이 아직 없다 — 그때는 지금 색을 둔다

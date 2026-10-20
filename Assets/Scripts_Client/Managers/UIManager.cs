@@ -146,9 +146,13 @@ public class UIManager : MonoService<UIManager>
         Lang.Changed += RefreshTitle;
     }
 
-    private void OnDestroy()
+    // 구독 해제 (Unity 메시지 — 이어서 MonoService가 서비스 등록을 해제한다)
+    // ⚠️ override로 둔다 — private로 새로 만들면 부모의 등록 해제가 가려져 파괴된 UIManager가 서비스에 남는다(CS0114).
+    protected override void OnDestroy()
     {
         Lang.Changed -= RefreshTitle;
+
+        base.OnDestroy();
     }
 
     // 지금 화면의 제목을 새 언어로 다시 쓴다 (Lang.Changed 구독)
