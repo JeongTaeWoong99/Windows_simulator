@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-20 성장 개체 판매 경고 · 응축 재료 경고](2026-10-20-grown-entity-warnings.md) — `#client` `#ui` T-170 `SellCartModel.IsGrown` · 경고 글씨는 코드가 씀(`LocalizedText` 제거) · 응축 계승은 #84
 - [2026-10-19 화면 산업 순서 — 발굴을 맨 끝으로](2026-10-19-industry-display-order.md) — `#client` `#ui` `IndustryLabel.DisplayOrder` 단일 출처 · enum 순서는 그대로 · 인스펙터 배열과 형제 순서를 같이
 - [2026-10-19 위젯 머리 그림 NRE · 배치 완료 콜백 끊김](2026-10-19-widget-head-nre-callback.md) — `#client` `#ui` T-172 그림 null 방어 · 변경 알림 구독자별 격리(`Notify`)
 - [2026-10-18 일감 정합성 검사 스크립트 + CI](2026-10-18-tasks-consistency-check.md) — `#infra` `#docs` `check-tasks.mjs` · `tasks-check.yml`(이슈 닫힘에도) · T-132 ID 중복

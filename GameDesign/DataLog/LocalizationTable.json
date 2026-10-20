@@ -5280,6 +5280,11 @@
     "EN": "Caution! Includes high rarity"
   },
   {
+    "Key": "UI.Sell.GrownWarning",
+    "KR": "주의! 성장한 개체 {0}개 포함",
+    "EN": "Caution! Includes {0} upgraded"
+  },
+  {
     "Key": "UI.Sell.InstantSell",
     "KR": "즉시 판매",
     "EN": "Instant Sell"
@@ -5413,6 +5418,11 @@
     "Key": "UI.Condense.ConfirmGrown",
     "KR": "Lv{0} 이상 재료 {1}마리의 레벨·경험치는 사라집니다.",
     "EN": "Level and EXP of {1} material(s) at Lv{0}+ will be lost."
+  },
+  {
+    "Key": "UI.Condense.ConfirmCondensed",
+    "KR": "응축을 쌓은 재료 {0}마리의 응축 단계·누적도 사라집니다.",
+    "EN": "Condense progress of {0} material(s) will also be lost."
   },
   {
     "Key": "UI.Condense.FillNext",

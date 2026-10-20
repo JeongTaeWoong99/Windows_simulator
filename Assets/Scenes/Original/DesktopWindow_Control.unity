@@ -9814,7 +9814,7 @@ MonoBehaviour:
   rowParent: {fileID: 1900802501}
   emptyText: {fileID: 1254522945}
   totalText: {fileID: 843422743}
-  highRarityWarning: {fileID: 651695262}
+  warningText: {fileID: 651695265}
   sellButton: {fileID: 213665008}
   clearButton: {fileID: 2048378230}
   inventoryTabs: {fileID: 189796814}
@@ -56127,7 +56127,6 @@ GameObject:
   - component: {fileID: 651695265}
   - component: {fileID: 651695264}
   - component: {fileID: 651695267}
-  - component: {fileID: 651695268}
   m_Layer: 0
   m_Name: High Rarity Warning
   m_TagString: Untagged
@@ -56288,19 +56287,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 21
   alpha: 1
---- !u!114 &651695268
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 651695262}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e8dae3f3178dcef4ca2b10137c53c44d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::LocalizedText
-  key: UI.Sell.HighRarity
 --- !u!1 &651763883
 GameObject:
   m_ObjectHideFlags: 0

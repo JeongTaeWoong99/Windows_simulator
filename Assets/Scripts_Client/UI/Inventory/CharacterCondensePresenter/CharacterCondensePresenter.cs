@@ -864,10 +864,12 @@ public class CharacterCondensePresenter : MonoBehaviour
         _ui.AskConfirm(caution, RequestCondense);
     }
 
-    // 묻고 보낼 이유 — 레벨을 올린 재료 · 넘치는 재료. 없으면 null (OnConfirmClicked에서 호출).
+    // 묻고 보낼 이유 — 레벨을 올린 재료 · 응축을 쌓은 재료 · 넘치는 재료. 없으면 null (OnConfirmClicked에서 호출).
+    // ※ 응축을 쌓은 재료 — ★이 없어도 누적이 1이라도 있으면 묻는다. 지금은 재료의 응축이 그대로 사라진다(계승은 기획 미정).
     private string? BuildCaution(CharacterInfo target)
     {
-        int grown = 0;
+        int grown     = 0;
+        int condensed = 0;
 
         foreach (long id in _materials)
         {
@@ -875,12 +877,17 @@ public class CharacterCondensePresenter : MonoBehaviour
             {
                 grown++;
             }
+
+            if (_data.FindCharacter(id)?.CondenseCount > 0)
+            {
+                condensed++;
+            }
         }
 
         int maxCount = GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar);
         int overflow = Mathf.Max(0, target.CondenseCount + _materials.Count - maxCount);
 
-        if (grown == 0 && overflow == 0)
+        if (grown == 0 && condensed == 0 && overflow == 0)
         {
             return null;
         }
@@ -890,6 +897,11 @@ public class CharacterCondensePresenter : MonoBehaviour
         if (grown > 0)
         {
             text += "\n" + Lang.Format("UI.Condense.ConfirmGrown", ConfirmMaterialLevel, grown);
+        }
+
+        if (condensed > 0)
+        {
+            text += "\n" + Lang.Format("UI.Condense.ConfirmCondensed", condensed);
         }
 
         if (overflow > 0)
