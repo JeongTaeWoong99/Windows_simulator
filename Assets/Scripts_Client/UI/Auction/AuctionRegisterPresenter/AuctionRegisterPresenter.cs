@@ -54,6 +54,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
     [SerializeField, Tooltip("딤 바탕 — 누르면 닫는다. OnClick은 코드가 연결한다")]
     private Button dimButton = null!;
 
+    [SerializeField, Tooltip("제목 옆 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 경매와 즉시 판매의 차이 · 등록 규칙")]
+    private TooltipTrigger helpTooltip = null!;
+
     [SerializeField, Tooltip("경매장 캔버스 — [시세 보기]")]
     private AuctionCanvasView canvasView = null!;
 
@@ -177,6 +180,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         this.RequireRef(closeButton,    nameof(closeButton));
         this.RequireRef(dimButton,      nameof(dimButton));
         this.RequireRef(canvasView,     nameof(canvasView));
+        this.RequireRef(helpTooltip,    nameof(helpTooltip));
         this.RequireRef(kindDropdown,   nameof(kindDropdown));
         this.RequireRef(findInput,      nameof(findInput));
         this.RequireRef(findSuggestView, nameof(findSuggestView));
@@ -208,6 +212,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
         _ui      = Services.Get<UIManager>();
         _rows    = new AuctionRowList(rowPrefab, rowParent, OnRowSelected);
+
+        helpTooltip.SetProvider(AuctionText.BuildRegisterRuleTooltip);
 
         FillKindOptions();
 

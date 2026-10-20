@@ -433,6 +433,35 @@ public static class AuctionText
                .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice), Lang.Get("UI.Sell.UnitPrice"), null);
     }
 
+    // 경매장 제목 옆 도움말 아이콘 — 사는 법과 우편으로 오가는 것 (T-144). 파는 규칙은 판매 등록 창의 '?'에 있다.
+    public static TooltipContent BuildGuideTooltip()
+    {
+        return new TooltipContent(Lang.Get("UI.Auction.GuideTitle"))
+            .Header(Lang.Get("UI.Auction.Buy"))
+            .Row(Lang.Get("UI.Auction.GuideBuyWhole"), "")
+            .Row(Lang.Get("UI.Auction.GuideBuyOwn"), "")
+            .Header(Lang.Get("UI.Auction.GuideMailHeader"))
+            .Row(Lang.Get("UI.Auction.GuideMail"), "")
+            .Row(Lang.Get("UI.Auction.GuideSellHint"), "");
+    }
+
+    // 판매 등록 창 제목 옆 도움말 아이콘 — 경매와 즉시 판매의 차이 · 등록 규칙 (T-144).
+    // 수치는 'Constants'에서 읽는다 — 문구에 박으면 테이블을 바꿔도 안내가 그대로 남는다.
+    public static TooltipContent BuildRegisterRuleTooltip()
+    {
+        return new TooltipContent(Lang.Get("UI.Auction.RegisterTitle"))
+            .Row(Lang.Get("UI.Auction.RuleAuction"), "")
+            .Row(Lang.Get("UI.Auction.RuleInstant"), "")
+            .Header(Lang.Get("UI.Auction.RuleHeader"))
+            .Row(Lang.Get("UI.Auction.UnitPrice"), Lang.Format("UI.Auction.RulePrice", AuctionModel.FormatMaxUnitPrice()))
+            .Row(Lang.Get("UI.Auction.RuleCountLabel"), Lang.Format("UI.Auction.RuleCount", AuctionModel.MaxListingCount.ToString("N0")))
+            .Row(Lang.Get("UI.Auction.OnSale"), Lang.Format("UI.Auction.RuleSlots", Constants.AuctionMaxActiveListings.ToString("N0")))
+            .Row(Lang.Get("UI.Auction.ListingPeriod"), Lang.Format("UI.Auction.HoursOnly", Constants.AuctionListingHours))
+            .Row(Lang.Get("UI.Auction.ListingFee"), AuctionModel.FormatPermille(AuctionModel.ListingFeePermille), Lang.Get("UI.Auction.RuleListingFee"), null)
+            .Row(Lang.Get("UI.Auction.SaleFee"), AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille), Lang.Get("UI.Auction.RuleSaleFee"), null)
+            .Row(Lang.Get("UI.Auction.RuleCantList"), "");
+    }
+
     #endregion
 
     #region 이름 → TID

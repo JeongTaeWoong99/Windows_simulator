@@ -55,6 +55,9 @@ public class CharacterCondensePresenter : MonoBehaviour
     [SerializeField, Tooltip("판매 목록으로 돌아가는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
+    [SerializeField, Tooltip("[닫기] 왼쪽 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 응축 규칙 · 단계별 누적과 작업속도")]
+    private TooltipTrigger helpTooltip = null!;
+
     [CenterHeader("비교 상자")]
     [SerializeField, Tooltip("왼쪽 상자 제목 — '지금 2성'")]
     private TMP_Text beforeTitleText = null!;
@@ -153,6 +156,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         this.RequireRef(infoText,         nameof(infoText));
         this.RequireRef(headerStarRow,    nameof(headerStarRow));
         this.RequireRef(closeButton,      nameof(closeButton));
+        this.RequireRef(helpTooltip,      nameof(helpTooltip));
         this.RequireRef(beforeTitleText,  nameof(beforeTitleText));
         this.RequireRef(beforeValueText,  nameof(beforeValueText));
         this.RequireRef(arrow,            nameof(arrow));
@@ -181,6 +185,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         closeButton.onClick.AddListener(Close);
         fillButton.onClick.AddListener(OnFillClicked);
+        helpTooltip.SetProvider(BuildHelpTooltip);
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
         // ⚠️ 탭·응답 구독은 Start/OnDestroy에 건다 — 이 창은 자기 오브젝트를 끈다('EquipEnchantPresenter'와 같은 이유).
@@ -630,6 +635,29 @@ public class CharacterCondensePresenter : MonoBehaviour
                           : Lang.Format("UI.Condense.Confirm", n);
 
         PaintConfirm(!IsWaiting && !maxed && n > 0);
+    }
+
+    // 머리 줄 도움말 아이콘 — 응축 규칙과 단계별 누적 · 작업속도 표 (T-144).
+    // 알림 줄(warnText)에는 지금 이 대상에 걸린 사유만 남긴다 — 규칙 설명은 여기 둔다.
+    private static TooltipContent BuildHelpTooltip()
+    {
+        var content = new TooltipContent(Lang.Get("UI.Condense.HelpTitle"))
+            .Row(Lang.Get("UI.Condense.HelpSame"), "")
+            .Row(Lang.Get("UI.Condense.HelpStar"), "")
+            .Row(Lang.Get("UI.Condense.HelpLost"), "")
+            .Row(Lang.Get("UI.Condense.HelpOverflow"), "")
+            .Row(Lang.Get("UI.Condense.HelpBusy"), "")
+            .Row(Lang.Get("UI.Condense.HelpStage"), Lang.Get("UI.Condense.HelpTotal"), Lang.Get("UI.Inventory.CondenseBonus"), null);
+
+        for (int star = 1; star <= GameDataLoader.CondenseMaxStar; star++)
+        {
+            content.Row(Lang.Format("UI.Condense.StarN", star),
+                        GameDataLoader.GetCondenseThreshold(star).ToString("N0"),
+                        Lang.Format("UI.Inventory.WorkSpeedAdd", (GameDataLoader.GetStarSpeedAdd(star) / 10f).ToString("0.#")),
+                        null);
+        }
+
+        return content;
     }
 
     private void SetWarn(string text, UIThemeRole role)

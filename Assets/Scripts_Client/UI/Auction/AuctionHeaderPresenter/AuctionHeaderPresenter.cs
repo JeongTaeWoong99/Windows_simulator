@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 경매장 머리 줄 — 제목 · 보유 골드 · [X]. [X]가 경매장을 닫는다 (T-147).
+// 경매장 머리 줄 — 제목 · 도움말(?) · 보유 골드 · [X]. [X]가 경매장을 닫는다 (T-147).
 //
 // ■ 왜 닫는 길이 따로 있나
 //   경매장이 가운데 띠를 다 덮어 하단 메뉴의 [경매장] 버튼이 가려진다 — 연 버튼으로 다시 닫을 수 없다.
@@ -16,6 +16,9 @@ public class AuctionHeaderPresenter : MonoBehaviour
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
+    [SerializeField, Tooltip("제목 옆 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 사는 법 · 우편")]
+    private TooltipTrigger helpTooltip = null!;
+
     private UIManager       _ui   = null!;
     private PlayerDataModel _data = null!;
 
@@ -27,6 +30,7 @@ public class AuctionHeaderPresenter : MonoBehaviour
     {
         this.RequireRef(goldText,       nameof(goldText));
         this.RequireRef(closeButton,    nameof(closeButton));
+        this.RequireRef(helpTooltip,    nameof(helpTooltip));
 
         _ui   = Services.Get<UIManager>();
         _data = Services.Get<PlayerDataModel>();
@@ -34,6 +38,7 @@ public class AuctionHeaderPresenter : MonoBehaviour
         Subscribe();
 
         closeButton.onClick.AddListener(Close);
+        helpTooltip.SetProvider(AuctionText.BuildGuideTooltip);
 
         RefreshGold();
 

@@ -61,6 +61,9 @@ public class TraitPresenter : MonoBehaviour
     [SerializeField, NonReorderable, Tooltip("머리 줄의 열 이름 셋 — 개척 · 속도 · 산출량 순. 스크롤 밖에 고정이다")]
     private TMP_Text[] headerTexts = new TMP_Text[0];
 
+    [SerializeField, Tooltip("머리 줄 왼쪽 빈 모서리의 도움말 아이콘(HelpIcon 프리팹) 툴팁 트리거 — 포인트 · 레벨 조건 · 종류별 효과")]
+    private TooltipTrigger helpTooltip = null!;
+
     [SerializeField, Tooltip("인벤토리 탭 줄. 특성 탭일 때만 이 패널이 켜진다")]
     [FormerlySerializedAs("storageTabs")]
     private InventoryTabPresenter inventoryTabs = null!;
@@ -115,6 +118,7 @@ public class TraitPresenter : MonoBehaviour
         this.RequireRef(rowPrefab,     nameof(rowPrefab));
         this.RequireRef(rowParent,     nameof(rowParent));
         this.RequireRef(inventoryTabs, nameof(inventoryTabs));
+        this.RequireRef(helpTooltip,   nameof(helpTooltip));
 
         this.RequireRef(detailNameText,    nameof(detailNameText));
         this.RequireRef(detailDescText,    nameof(detailDescText));
@@ -133,6 +137,7 @@ public class TraitPresenter : MonoBehaviour
         _rows = new UIRowList<TraitRowView>(rowPrefab, rowParent, OnRowCreated);
 
         confirmButton.onClick.AddListener(OnConfirmClicked);
+        helpTooltip.SetProvider(BuildHelpTooltip);
         BindHeader();
 
         // ⚠️ 인벤토리 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
@@ -490,6 +495,7 @@ public class TraitPresenter : MonoBehaviour
     // ■ 산출량은 이름만으로 뜻이 안 읽힌다 (2026-10-02 사용자 요청)
     // "좋은 게 나올 확률이 오르나?"로 오해되기 쉽다 — 실제로는 **같은 자원이 더** 나오고 희귀도 확률은 그대로다.
     // 속도와 갈리는 점(상자·경험치는 늘지 않는다)까지 적어야 둘 중 무엇을 찍을지 고를 수 있다.
+    // 계산 예(120%)·희귀도 확률은 도움말 아이콘으로 옮겼다 — 여기는 한 줄 요약만 둔다(T-144).
     private static string DescribeKind(UserTraitTableRow trait)
     {
         switch (trait.EffectType)
@@ -507,6 +513,25 @@ public class TraitPresenter : MonoBehaviour
             default:
                 return "";
         }
+    }
+
+    // 머리 줄 도움말 아이콘 — 포인트 얻는 법 · 레벨 조건 · 종류별 효과 (T-144).
+    private static TooltipContent BuildHelpTooltip()
+    {
+        var content = new TooltipContent(Lang.Get("UI.Trait.HelpTitle"))
+            .Row(Lang.Get("UI.Trait.HelpPoint"), "")
+            .Row(Lang.Get("UI.Trait.HelpLevel"), "")
+            .Row(Lang.Get("UI.Trait.HelpChoose"), "")
+            .Header(Lang.Get("UI.Trait.HelpKinds"));
+
+        content.Row($"{Lang.Get(ColumnNameKeys[0])} — {Lang.Get("UI.Trait.DescUnlock")}", "")
+               .Row($"{Lang.Get(ColumnNameKeys[1])} — {Lang.Get("UI.Trait.DescSpeed")}", "")
+               .Row($"{Lang.Get(ColumnNameKeys[2])} — {Lang.Get("UI.Trait.DescYield")}", "")
+               .Row(Lang.Get("UI.Trait.HelpYieldCalc"), "")
+               .Row(Lang.Get("UI.Trait.HelpYieldRarity"), "")
+               .Row($"{Lang.Get("UI.Trait.Common")} — {Lang.Get("UI.Trait.DescYieldAll")}", "");
+
+        return content;
     }
 
     // 이 특성을 'level'로 올릴 때의 계정 레벨 조건. 조건 행이 없으면 0(조건 없음).
