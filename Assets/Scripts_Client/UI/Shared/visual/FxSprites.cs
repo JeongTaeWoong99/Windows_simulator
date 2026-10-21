@@ -48,4 +48,16 @@ public static class FxSprites
     public static Sprite? BagFullBag   => VisualCatalog.FxOf("bagfull_bag");
     // X — 자루 오른쪽 아래에 빨강으로 겹친다
     public static Sprite? BagFullCross => VisualCatalog.FxOf("bagfull_cross");
+
+    // ── levelup — 캐릭터 레벨업 ('LevelUpFx' · 'SlotGainShine' 레벨업 모양) ──
+
+    // 위로 솟는 겹화살표 — 위 꺾쇠가 진하고 아래가 옅다
+    public static Sprite? LevelUpArrow => VisualCatalog.FxOf("levelup_arrow");
+
+    // ── unlock — 작업슬롯 해금 ('SlotUnlockFx') ──
+
+    // 자물쇠 몸통 — 열쇠 구멍이 뚫려 있다
+    public static Sprite? UnlockBody    => VisualCatalog.FxOf("unlock_body");
+    // 자물쇠 고리 — 몸통과 같은 캔버스·같은 자리. 왼쪽 다리 밑동을 축으로 들린다('SlotUnlockFx.ShacklePivot')
+    public static Sprite? UnlockShackle => VisualCatalog.FxOf("unlock_shackle");
 }

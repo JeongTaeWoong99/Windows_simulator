@@ -67,6 +67,12 @@ public class WorkStationListPresenter : MonoBehaviour
     // 이때 온 해금 결과는 치트·퀘스트처럼 서버가 연 것이라 문구를 띄우지 않는다.
     private ServerWaitHandle? _unlockWait;
 
+    // 해금을 요청한 칸 번호 — 성공하면 그 프레임에서 해금 연출을 튼다(T-039). 요청이 없으면 -1
+    private int _unlockingSlot = -1;
+
+    // 칸 번호 → 해금 연출. 처음 해금할 때 프레임에 붙인다
+    private readonly Dictionary<int, SlotUnlockFx> _unlockFx = new Dictionary<int, SlotUnlockFx>();
+
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
@@ -142,6 +148,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.WorkStationSlotsChanged += Rebuild;
         _data.UnlocksChanged          += Rebuild; // 열린 목록이 바뀌면 잠김 표시를 다시 그린다
         _data.CharactersChanged       += Rebuild; // 캐릭터 레벨이 오르면 칸 글자의 'Lv'를 고친다
+        _data.CharacterLeveledUp      += OnCharacterLeveledUp;
         _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
         _data.GatherResultReceived    += OnGatherResultReceived;
@@ -160,6 +167,7 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.WorkStationSlotsChanged -= Rebuild;
         _data.UnlocksChanged          -= Rebuild;
         _data.CharactersChanged       -= Rebuild;
+        _data.CharacterLeveledUp      -= OnCharacterLeveledUp;
         _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
         _data.GatherResultReceived    -= OnGatherResultReceived;
@@ -263,14 +271,15 @@ public class WorkStationListPresenter : MonoBehaviour
         }
 
         _ui.AskConfirm(Lang.Format("UI.WorkStation.ConfirmUnlock", $"{unlock.Gold:N0}"),
-                       () => RequestUnlock(unlockTid, unlock.Gold > 0 ? ECurrencyType.Gold : ECurrencyType.None));
+                       () => RequestUnlock(slotIndex, unlockTid, unlock.Gold > 0 ? ECurrencyType.Gold : ECurrencyType.None));
     }
 
     // 해금 요청을 보내고 응답을 기다린다 (확인 팝업 콜백).
-    //   currency : 지불 재화. 지불 컬럼이 없는 해금이면 None — 서버가 무시한다
+    //   slotIndex : 연출을 틀 칸 — 성공하면 그 프레임에서 자물쇠가 열린다
+    //   currency  : 지불 재화. 지불 컬럼이 없는 해금이면 None — 서버가 무시한다
     //
     // 결과는 'OnUnlockCompleted'가 받는다. 새 칸은 'S_WorkStationSlotSyncResponse' → 'Rebuild'로 따라온다.
-    private void RequestUnlock(int unlockTid, ECurrencyType currency)
+    private void RequestUnlock(int slotIndex, int unlockTid, ECurrencyType currency)
     {
         // 로그인 전에 보내면 서버가 응답 없이 버린다 — 'WorkStationSelectPresenter.CanSend'와 같은 이유
         if (!_data.IsLoggedIn)
@@ -283,7 +292,8 @@ public class WorkStationListPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"해금 요청 — {unlockTid}, 재화={currency}");
 
         NetworkManager.Instance.Send(new C_UnlockRequest { UnlockTID = unlockTid, Currency = currency });
-        _unlockWait = _wait.Begin(Lang.Get("UI.WorkStation.WaitUnlock"), onClosed: () => _unlockWait = null);
+        _unlockingSlot = slotIndex;
+        _unlockWait    = _wait.Begin(Lang.Get("UI.WorkStation.WaitUnlock"), onClosed: () => _unlockWait = null);
     }
 
     // 해금 결과 (PlayerDataModel.UnlockCompleted 구독).
@@ -295,14 +305,39 @@ public class WorkStationListPresenter : MonoBehaviour
             return; // 내가 보낸 요청이 아니다 (치트·퀘스트로 서버가 연 경우)
         }
 
+        int slotIndex = _unlockingSlot;
+
+        _unlockingSlot = -1;
+
         if (success)
         {
             _unlockWait.Succeed();
+            PlayUnlockFx(slotIndex);
         }
         else
         {
             _unlockWait.Fail(ResultMessages.ToText(code));
         }
+    }
+
+    // 그 칸 프레임에서 자물쇠가 열린다 ('OnUnlockCompleted' 성공에서 호출 · T-039).
+    // 라벨은 이미 'UnlocksChanged → Rebuild'가 "비어있음."으로 바꿨을 수 있다 — 연출이 흐렸다가 다시 보여 준다.
+    private void PlayUnlockFx(int slotIndex)
+    {
+        if (slotIndex < 0 || slotIndex >= slotParent.childCount)
+        {
+            return;
+        }
+
+        if (!_unlockFx.TryGetValue(slotIndex, out var fx) || fx == null)
+        {
+            GameObject frame = slotParent.GetChild(slotIndex).gameObject;
+
+            fx = SlotUnlockFx.Attach(frame, _frameLabels.TryGetValue(slotIndex, out var label) ? label : null);
+            _unlockFx[slotIndex] = fx;
+        }
+
+        fx.Play();
     }
 
     // 그 칸의 배치/해제 화면으로 갈아 끼운다 ('OnFrameClicked'에서 열린 칸일 때만 호출).
@@ -388,6 +423,20 @@ public class WorkStationListPresenter : MonoBehaviour
 
         ItemGainEffectView.ReadGains(res, _gains);
         view.PlayGain(_gains);
+    }
+
+    // 배치된 캐릭터의 레벨이 올랐다 — 그 칸에서 레벨업 연출 (CharacterLeveledUp 구독 · T-052).
+    // 배치되지 않은 캐릭터(우편·응축 등)는 칸이 없어 지나간다 — 인벤토리 칸 반짝임이 따로 말한다.
+    private void OnCharacterLeveledUp(long characterId, int previousLevel, int level)
+    {
+        int slotIndex = _data.FindSlotIndexOf(characterId);
+
+        if (slotIndex < 0 || !_views.TryGetValue(slotIndex, out var view) || view == null || !view.isActiveAndEnabled)
+        {
+            return;
+        }
+
+        view.PlayLevelUp(level);
     }
 
     // 장비 줄 툴팁 — 캐릭터 이름 아래 칸마다 낀 장비 (장비 줄에 마우스를 올릴 때 호출).

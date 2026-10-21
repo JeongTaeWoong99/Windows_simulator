@@ -41,6 +41,9 @@ public class CharacterSlotSource : InventorySlotSource
     // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
 
+    // 이번 'Fill'에 담은 캐릭터의 레벨 — 획득 감지('AmountOf')가 읽는다
+    private readonly Dictionary<long, int> _levels = new Dictionary<long, int>();
+
     public CharacterSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
         _data = data;
@@ -54,12 +57,16 @@ public class CharacterSlotSource : InventorySlotSource
     // ※ 다른 보관함(인벤토리 ↔ 창고 · T-107)의 캐릭터는 그리지 않는다.
     protected override void Fill(List<PlacedSlot> into)
     {
+        _levels.Clear();
+
         foreach (CharacterInfo character in _data.Characters)
         {
             if (character.Container != Container)
             {
                 continue;
             }
+
+            _levels[character.CharacterId] = character.Level;
 
             var slot = new SlotData(
                 character.CharacterId,
@@ -72,6 +79,11 @@ public class CharacterSlotSource : InventorySlotSource
             into.Add(new PlacedSlot(slot, character.Slot));
         }
     }
+
+    // 획득 감지의 '수량' 자리에 레벨을 내놓는다 — 레벨이 오른 칸을 격자가 레벨업 모양으로 반짝인다(T-052 · 'InventorySlotSource.TakeRise').
+    // ※ 응축·경험치만 바뀐 동기화는 레벨이 그대로라 반짝이지 않는다.
+    // ※ 'Fill'이 모아 둔 표에서 읽는다 — 칸마다 보유 목록을 훑으면 정산마다 칸 수의 제곱만큼 돈다.
+    protected override int AmountOf(long key) => _levels.TryGetValue(key, out int level) ? level : 1;
 
     // 캐릭터는 산업으로 거르지 않는다 — 적성이 다섯 산업에 걸쳐 있어 "어느 산업 캐릭터"가 없다 (도구 줄이 호출).
     public override bool SupportsIndustryFilter => false;

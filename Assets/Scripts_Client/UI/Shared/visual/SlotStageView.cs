@@ -201,6 +201,26 @@ public class SlotStageView : MonoBehaviour
         return true;
     }
 
+    // 캐릭터 그림의 발 자리와 가운데(월드 좌표). 그림이 꺼져 있으면 false (레벨업 연출이 호출).
+    // ※ 그림 사각형 기준이다 — 그림마다 여백이 달라 몸 가운데와 조금 어긋날 수 있다. 빛을 깔 자리로는 충분하다.
+    public bool TryGetCharacterPoint(out Vector3 feet, out Vector3 center)
+    {
+        feet = center = default;
+
+        if (_character == null || !_character.enabled || _character.sprite == null)
+        {
+            return false;
+        }
+
+        RectTransform rect = _character.rectTransform;
+        Rect          box  = rect.rect;
+
+        feet   = rect.TransformPoint(new Vector3(box.center.x, box.yMin, 0f));
+        center = rect.TransformPoint(box.center);
+
+        return true;
+    }
+
     // 땅이 지금까지 흐른 거리 (무대 로컬 단위) — 획득 연출이 시작 때 값을 잡아 두고 'FollowGround'로 따라간다
     public double GroundDistance => _groundDistance;
 

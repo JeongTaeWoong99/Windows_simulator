@@ -77,6 +77,7 @@ using UnityEngine.UI;
 //     지연은 'MaxShineStagger'칸에서 멈춘다(10연차가 1초 넘게 이어지지 않게).
 //   - 보이는 칸만 돈다(T-138) — 화면 밖 칸은 표시만 남았다가 스크롤로 들어올 때 반짝인다. 칸 하나 = 그림 둘 + Sequence 하나.
 //   - 칸이 다른 개체로 다시 묶이거나(정렬 응답) 꺼지면 끊는다 — 남의 칸에서 반짝임이 이어지지 않게.
+//   - 캐릭터 칸은 레벨이 올라도 반짝인다 — 금색 + 솟는 화살표('SlotGainShine.PlayLevelUp' · T-052).
 //
 // ■ 창고 격자도 이 클래스다 (2026-10-15 · T-126)
 //   창고 화면(거점 열 창고 탭)의 격자는 **같은 컴포넌트를 'container = Warehouse'로 둔 것**이다. 칸·스크롤·끌기·정렬이 완전히 같고,
@@ -807,7 +808,17 @@ public class InventoryGridPresenter : MonoBehaviour
                 _shines[i] = shine;
             }
 
-            shine.Play(data.Key, data.Rarity, Mathf.Min(_shineOrder++, MaxShineStagger) * ShineStagger);
+            float delay = Mathf.Min(_shineOrder++, MaxShineStagger) * ShineStagger;
+
+            // 있던 캐릭터가 늘었다 = 레벨이 올랐다('CharacterSlotSource.AmountOf') — 금색 + 솟는 화살표 (T-052)
+            if (_current.TakeRise(data.Key) && IsCharacterTab)
+            {
+                shine.PlayLevelUp(data.Key, delay);
+            }
+            else
+            {
+                shine.Play(data.Key, data.Rarity, delay);
+            }
 
             return;
         }

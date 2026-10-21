@@ -81,6 +81,8 @@ public readonly struct PlacedSlot
 // - 화면 밖 칸은 기록만 남았다가 스크롤로 들어올 때 반짝인다. 탭을 떠나 있던 동안 들어온 것도 돌아와 다시 채울 때 반짝인다
 //   (떠날 때 'Unsubscribe'가 기록을 지우지 않는다).
 // - 빠진 개체의 남은 표시는 버린다 — 번호를 다시 쓰는 개체가 엉뚱하게 반짝이지 않게.
+// - **새로 생긴 것**과 **있던 것이 늘어난 것**을 가른다('TakeRise'). 캐릭터 탭은 수량 자리에 레벨을 내놓아('CharacterSlotSource.AmountOf')
+//   레벨이 오른 칸을 레벨업 모양으로 반짝인다(T-052).
 //
 // ■ 보관함을 하나 맡는다 (T-126)
 // 같은 공급자가 인벤토리 격자와 창고 격자를 함께 채운다 — 무엇을 그릴지는 같고 **어느 보관함('Container')에 둔 것인가**만 다르다.
@@ -127,6 +129,7 @@ public abstract class InventorySlotSource
     private Dictionary<long, int> _amounts     = new Dictionary<long, int>();
     private Dictionary<long, int> _amountsNext = new Dictionary<long, int>();
     private readonly HashSet<long> _gains      = new HashSet<long>();
+    private readonly HashSet<long> _rises      = new HashSet<long>(); // '_gains' 중 이미 있던 것이 늘어난 Key
     private readonly List<long>    _goneGains  = new List<long>();
 
     private bool _isSubscribed;
@@ -146,6 +149,9 @@ public abstract class InventorySlotSource
 
     // 이 개체가 방금 들어왔거나 늘었나 — 맞으면 표시를 지우고 true (격자가 칸을 그릴 때 호출 · 칸마다 한 번만 반짝인다).
     public bool TakeGain(long key) => _gains.Remove(key);
+
+    // 방금 꺼낸 획득이 새것이 아니라 있던 것이 늘어난 것인가 — 맞으면 표시를 지우고 true ('TakeGain'이 true일 때 이어서 호출).
+    public bool TakeRise(long key) => _rises.Remove(key);
 
     // 이 탭이 이 정렬 기준을 쓸 수 있나 (도구 줄이 드롭다운 목록을 만들 때 호출).
     // 기본은 등급·이름 — 보유 수량은 자원만 뜻이 있다. 서버도 같은 판정으로 거절한다('InvalidStorageSortKey').
@@ -333,7 +339,7 @@ public abstract class InventorySlotSource
     protected abstract void Fill(List<PlacedSlot> into);
 
     // 이 개체의 수량 — 획득 감지가 직전과 비교한다 (DetectGains에서 호출).
-    // 개체(캐릭터·장비)는 늘 1이라 "새로 생겼나"만 본다. 자원만 보유 수량으로 덮어쓴다.
+    // 장비는 늘 1이라 "새로 생겼나"만 본다. 자원은 보유 수량, 캐릭터는 레벨로 덮어쓴다(레벨이 오르면 반짝인다).
     protected virtual int AmountOf(long key) => 1;
 
     // 이 칸이 그 산업에 속하나 (Matches에서 호출). 산업 축이 없는 탭은 늘 true다.
@@ -364,9 +370,25 @@ public abstract class InventorySlotSource
 
             _amountsNext[key] = amount;
 
-            if (hasBaseline && (!_amounts.TryGetValue(key, out int before) || amount > before))
+            if (!hasBaseline)
+            {
+                continue;
+            }
+
+            bool existed = _amounts.TryGetValue(key, out int before);
+
+            if (!existed || amount > before)
             {
                 _gains.Add(key);
+
+                if (existed)
+                {
+                    _rises.Add(key);
+                }
+                else
+                {
+                    _rises.Remove(key); // 같은 번호의 새 개체 — 앞의 늘어남 표시를 남기지 않는다
+                }
             }
         }
 
@@ -386,6 +408,7 @@ public abstract class InventorySlotSource
             foreach (long key in _goneGains)
             {
                 _gains.Remove(key);
+                _rises.Remove(key);
             }
         }
 
