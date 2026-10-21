@@ -10,8 +10,12 @@ using UnityEngine;
 public class InventoryCanvasView : MonoBehaviour
 {
     // 이 열을 열고 닫는다 (UIManager가 호출).
+    // 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition') — 열림 여부는 'IsShown'으로 읽는다.
     public void Show(bool on)
     {
-        gameObject.SetActive(on);
+        PanelTransition.SetActive(gameObject, on);
     }
+
+    // 열려 있는가 — 닫히는 중이면 false
+    public bool IsShown => PanelTransition.IsShown(gameObject);
 }

@@ -123,6 +123,7 @@ public class WorkStationSlotView : MonoBehaviour
         if (!IsRunning)
         {
             industryText.text    = Lang.Get("UI.WorkStation.Idle");
+            NumberRoll.Forget(speedText); // 다시 배치되면 굴리지 않고 바로 쓴다
             speedText.text       = "";
             progressSlider.value = 0f;
             remainText.text      = "";
@@ -144,7 +145,8 @@ public class WorkStationSlotView : MonoBehaviour
                                ? UIRichText.Small(UIRichText.Paint(" " + Lang.Get("UI.WorkStation.Max"), UIThemeRole.Highlight))
                                : "";
 
-        speedText.text = Lang.Format("UI.WorkStation.SpeedMul", speedMultiplier.ToString("0.00")) + capMark;
+        // 배율이 바뀌면(레벨업 · 장비 · 특성) 굴러간다
+        NumberRoll.Set(speedText, speedMultiplier, v => Lang.Format("UI.WorkStation.SpeedMul", v.ToString("0.00")) + capMark);
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).

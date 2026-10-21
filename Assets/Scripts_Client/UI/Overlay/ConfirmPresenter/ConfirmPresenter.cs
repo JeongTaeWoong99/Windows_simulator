@@ -18,6 +18,9 @@ public class ConfirmPresenter : MonoBehaviour
     [SerializeField, Tooltip("자기 CanvasGroup. 이 오브젝트를 끄지 않고 alpha·blocksRaycasts로 여닫는다")]
     private CanvasGroup group = null!;
 
+    [SerializeField, Tooltip("가운데 판 — 열 때 살짝 커지며 나타난다. 비우면 팝업 전체가 커진다")]
+    private RectTransform? panel;
+
     [SerializeField, Tooltip("묻는 문구")]
     private TMP_Text messageText = null!;
 
@@ -41,7 +44,7 @@ public class ConfirmPresenter : MonoBehaviour
         confirmButton.onClick.AddListener(OnConfirmClicked);
         cancelButton.onClick.AddListener(OnCancelClicked);
 
-        Close(); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
+        SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }
 
     #region 여닫기
@@ -68,11 +71,10 @@ public class ConfirmPresenter : MonoBehaviour
     }
 
     // 보이기·차단을 함께 켜고 끈다 (Open · Close에서 호출). 오브젝트는 끄지 않는다.
-    private void SetVisible(bool on)
+    // 연출은 'PanelTransition' — 차단·입력은 여는 즉시 켜고 닫는 즉시 끈다.
+    private void SetVisible(bool on, bool instant = false)
     {
-        group.alpha          = on ? 1f : 0f;
-        group.blocksRaycasts = on;
-        group.interactable   = on;
+        PanelTransition.SetVisible(group, on, panel, instant);
     }
 
     #endregion

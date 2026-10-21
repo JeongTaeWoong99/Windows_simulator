@@ -14284,6 +14284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SellAmountPresenter
   group: {fileID: 158576456}
+  panel: {fileID: 1770162083}
   titleText: {fileID: 1022919096}
   amountInput: {fileID: 478543543}
   confirmButton: {fileID: 1227794612}
@@ -33288,6 +33289,7 @@ GameObject:
   - component: {fileID: 374328668}
   - component: {fileID: 374328667}
   - component: {fileID: 374328666}
+  - component: {fileID: 374328669}
   m_Layer: 0
   m_Name: Event System
   m_TagString: Untagged
@@ -33356,6 +33358,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &374328669
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 374328665}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00681e517fba5014188ef77982e7a854, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ButtonPressFx
 --- !u!1 &374450819
 GameObject:
   m_ObjectHideFlags: 0
@@ -64160,6 +64174,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ConfirmPresenter
   group: {fileID: 731677304}
+  panel: {fileID: 1477422513}
   messageText: {fileID: 695257204}
   confirmButton: {fileID: 1329535538}
   cancelButton: {fileID: 1467241096}

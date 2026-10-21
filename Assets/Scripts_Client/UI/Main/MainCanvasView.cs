@@ -28,10 +28,14 @@ public class MainCanvasView : MonoBehaviour
     }
 
     // 이 캔버스를 통째로 열고 닫는다. 안의 화면을 고르는 건 'UIManager.ShowMainScreen'이다.
+    // 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition') — 열림 여부는 'IsShown'으로 읽는다.
     public void Show(bool on)
     {
-        gameObject.SetActive(on);
+        PanelTransition.SetActive(gameObject, on);
     }
+
+    // 열려 있는가 — 닫히는 중이면 false
+    public bool IsShown => PanelTransition.IsShown(gameObject);
 
     // 머리의 제목을 바꾼다 ('UIManager.ShowMainScreen'이 화면을 갈아 끼울 때 호출).
     // 문구의 번역 키는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.

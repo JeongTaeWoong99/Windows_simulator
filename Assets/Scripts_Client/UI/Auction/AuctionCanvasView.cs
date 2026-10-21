@@ -40,10 +40,11 @@ public class AuctionCanvasView : MonoBehaviour
     [SerializeField, Tooltip("판매 등록 창 — 물건을 미리 골라 연다")]
     private AuctionRegisterPresenter register = null!;
 
-    // 지금 열려 있는가
-    public bool IsOpen => gameObject.activeSelf;
+    // 지금 열려 있는가 — 닫히는 중이면 false
+    public bool IsOpen => PanelTransition.IsShown(gameObject);
 
     // 경매장을 열고 닫는다 (UIManager가 호출).
+    // 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition'). 커졌다 줄어드는 것은 판('body')뿐이다 — 차단막은 제자리에서 흐려진다.
     public void Show(bool on)
     {
         if (on)
@@ -51,7 +52,7 @@ public class AuctionCanvasView : MonoBehaviour
             FitBodyToBand();
         }
 
-        gameObject.SetActive(on);
+        PanelTransition.SetActive(gameObject, on, body);
     }
 
     // 판매 탭 + 등록 창을 열고 이 물건을 골라 둔다 (인벤토리 격자 Ctrl+우클릭).

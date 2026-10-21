@@ -191,7 +191,7 @@ public class WidgetPresenter : MonoBehaviour
         long   elapsed = (long)_earnings.ElapsedSeconds(now);
 
         _shownSecond     = elapsed;
-        totalText.text   = _earnings.TotalGold.ToString("N0");
+        NumberRoll.Set(totalText, _earnings.TotalGold, NumberRoll.Thousands); // 수확으로 늘면 굴러간다 · 같은 값이면 그대로
         perHourText.text = _earnings.TryGetPerHour(now, out long perHour) ? $"{perHour:N0}/h" : "—/h";
         elapsedText.text = $"{elapsed / 3600}:{elapsed / 60 % 60:00}:{elapsed % 60:00}";
     }

@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -92,7 +93,10 @@ public class AuctionHeaderPresenter : MonoBehaviour
     // 보유 골드를 그린다 (Start · OnEnable · PlayerDataModel.CurrencyChanged 구독)
     private void RefreshGold()
     {
-        goldText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldOwned"))}  {UIRichText.Gold(_data.Gold)}";
+        string label = UIRichText.Label(Lang.Get("UI.Auction.GoldOwned"));
+
+        // 사고팔아 바뀌면 굴러간다 — 글자를 튀기지 않는다(머리 줄이라 '보유 골드' 글자까지 함께 커진다)
+        NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.Gold((long)Math.Round(v))}", punch: false);
     }
 
     // 경매장을 닫는다 (closeButton OnClick)

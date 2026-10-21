@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-21 창 여닫기 · 숫자 카운트업 · 버튼 눌림](2026-10-21-ui-polish-panel-number-button.md) — `#client` `#ui` `PanelTransition`·`NumberRoll`·`ButtonPressFx` · 열림은 `IsShown`으로 · 버튼 반응은 Event System 하나
 - [2026-10-21 레벨업 · 해금 연출](2026-10-21-levelup-unlock-fx.md) — `#client` `#ui` T-052·T-039 작업슬롯 칸 레벨업 · 인벤토리 칸 금색 반짝임 · 자물쇠 해금 연출 (임시 그림)
 - [2026-10-21 클라 컴파일 경고 정리](2026-10-21-client-warning-cleanup.md) — `#client` `#cleanup` UIManager가 MonoService 해제를 가리던 것(CS0114) · `Image.sprite = x!` 규칙 · 남은 경고 MIKA001 2개
 - [2026-10-20 도움말 아이콘(?) 넓히기](2026-10-20-help-icon-expansion.md) — `#client` `#ui` T-144 경매장·판매 등록·특성·응축에 `HelpIcon` · 규칙 설명을 `?`로, 이 대상의 사유·값은 화면에 · 위젯 보유 골드 삭제
