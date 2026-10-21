@@ -13,7 +13,9 @@ using UnityEngine.UI;
 // ■ 그림은 'FxSprites'에서 — 기둥·번짐·별 조각은 획득 연출(gain_*) 것을 그대로, 화살표만 'levelup_arrow'
 //   그림이 없으면 그 효과만 빠진다(코드로 그리지 않는다). 글자는 그림이 없어도 나온다.
 //
-// ■ 칸 루트에 붙는다 — 무대('Visible Panel')는 'RectMask2D'라 위로 솟는 기둥이 잘린다. 층은 레이아웃에서 빠진다.
+// ■ 칸 루트에 붙는다 — 층은 레이아웃에서 빠진다.
+//   기둥·번짐은 칸 크기의 자르는 층('Clip') 안에 둔다 — 칸 밖(이웃 칸·목록 위)으로 빛이 새지 않는다.
+//   기둥 높이도 발에서 칸 위 끝까지로 줄인다. 화살표·별·글자는 작아서 자르지 않는다.
 //
 // ■ 수명
 //   Sequence 하나를 칸에 묶는다(KillOnDisable — 배치가 풀리면 칸이 꺼진다). 끝나도 끊겨도 'OnKill'이 그림을 끈다.
@@ -28,28 +30,28 @@ public class LevelUpFx : MonoBehaviour
     private static readonly Color GoldLight = new Color(1f, 0.95f, 0.7f, 1f);
 
     // 번짐 — 크기(칸 높이 대비) · 진하기
-    private const float GlowSize  = 0.85f;
-    private const float GlowAlpha = 0.75f;
+    private const float GlowSize  = 0.7f;
+    private const float GlowAlpha = 0.55f;
 
     // 기둥 — 높이(칸 높이 대비) · 가로(높이 대비 — 그림이 1:2) · 솟는 시간 · 진하기
-    private const float PillarHeight = 0.9f;
-    private const float PillarWidth  = 0.5f;
+    private const float PillarHeight = 0.75f;
+    private const float PillarWidth  = 0.4f;
     private const float PillarRise   = 0.25f;
-    private const float PillarAlpha  = 0.8f;
+    private const float PillarAlpha  = 0.55f;
 
     // 화살표 — 크기(칸 높이 대비) · 가로 자리(화살표 크기 대비) · 시작 지연 · 오르는 거리(칸 높이 대비) · 오르는 시간
-    private const float ArrowSize     = 0.2f;
-    private const float ArrowRise     = 0.26f; // 글자 아래에서 멈춘다 — 더 오르면 'LV.12'와 겹쳐 안 읽힌다
+    private const float ArrowSize     = 0.16f;
+    private const float ArrowRise     = 0.22f; // 글자 아래에서 멈춘다 — 더 오르면 'LV.12'와 겹쳐 안 읽힌다
     private const float ArrowDuration = 0.7f;
     private static readonly Vector2[] ArrowSpots = { new Vector2(-1.1f, 0.05f), new Vector2(0f, 0f), new Vector2(1.1f, 0.12f) };
 
     // 별 조각 — 개수 · 크기(칸 높이 대비) · 퍼지는 거리(칸 높이 대비)
     private const int   SparkCount    = 6;
-    private const float SparkSize     = 0.12f;
-    private const float SparkDistance = 0.36f;
+    private const float SparkSize     = 0.1f;
+    private const float SparkDistance = 0.3f;
 
     // 글자 — 크기(칸 높이 대비) · 캐릭터 가운데보다 위로(칸 높이 대비) · 튀어 오르는 시간 · 사라지기 시작하는 때
-    private const float TextSize     = 0.22f;
+    private const float TextSize     = 0.18f;
     private const float TextOffset   = 0.12f;
     private const float TextPop      = 0.3f;
     private const float TextFadeFrom = 1.05f;
@@ -158,7 +160,13 @@ public class LevelUpFx : MonoBehaviour
         }
 
         RectTransform rect = _pillar.rectTransform;
-        float         h    = height * PillarHeight;
+        float         top  = _rect.rect.height * 0.5f - feet.y;          // 발에서 칸 위 끝까지
+        float         h    = Mathf.Min(height * PillarHeight, top);
+
+        if (h <= 0f)
+        {
+            return;
+        }
 
         _pillar.enabled       = true;
         _pillar.color         = WithAlpha(GoldLight, PillarAlpha);
@@ -274,7 +282,7 @@ public class LevelUpFx : MonoBehaviour
         }
     }
 
-    // 칸 위를 덮는 층 하나 — 기둥 · 번짐 · 화살표 · 별 · 글자 순서 (Attach에서 한 번)
+    // 칸 위를 덮는 층 하나 — 기둥·번짐(자르는 층 안) · 화살표 · 별 · 글자 순서 (Attach에서 한 번)
     private void Build(TMP_Text style)
     {
         RectTransform root = CreateRect("Level Up Fx", transform);
@@ -288,10 +296,18 @@ public class LevelUpFx : MonoBehaviour
 
         _rect = root;
 
-        _pillar = CreateImage("Pillar", root, FxSprites.GainPillar);
+        // 기둥·번짐을 칸 안에서 자르는 층 — 칸과 같은 좌표라 자리 계산은 그대로다
+        RectTransform clip = CreateRect("Clip", root);
+
+        clip.anchorMin = Vector2.zero;
+        clip.anchorMax = Vector2.one;
+        clip.sizeDelta = Vector2.zero;
+        clip.gameObject.AddComponent<RectMask2D>();
+
+        _pillar = CreateImage("Pillar", clip, FxSprites.GainPillar);
         _pillar.rectTransform.pivot = new Vector2(0.5f, 0f); // 발에서 위로 자란다
 
-        _glow = CreateImage("Glow", root, FxSprites.GainGlow);
+        _glow = CreateImage("Glow", clip, FxSprites.GainGlow);
 
         _arrows = new Image[ArrowSpots.Length];
 
