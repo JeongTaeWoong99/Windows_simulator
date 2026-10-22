@@ -682,7 +682,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (tids != null && tids.Count == 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Auction.NoSuchKind", _query.Trim(), kind == EAuctionKind.None ? Lang.Get("UI.Auction.ItemWord") : AuctionText.GetKindName(kind)));
+            _wait.RaiseRefusal(Lang.Format("UI.Auction.NoSuchKind", _query.Trim(), kind == EAuctionKind.None ? Lang.Get("UI.Auction.ItemWord") : AuctionText.GetKindName(kind)));
 
             return;
         }
@@ -1006,7 +1006,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
             if (code == EResultCode.Ok)
             {
-                _wait.RaiseNotice(Lang.Get("UI.Auction.Bought"));
+                _wait.RaiseToast(Lang.Get("UI.Auction.Bought"));
             }
         }
 

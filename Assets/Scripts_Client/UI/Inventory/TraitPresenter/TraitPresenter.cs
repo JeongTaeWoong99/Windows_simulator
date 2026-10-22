@@ -582,7 +582,7 @@ public class TraitPresenter : MonoBehaviour
 
         if (level >= trait.MaxLevel)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Trait.AlreadyMax"));
+            _wait.RaiseRefusal(Lang.Get("UI.Trait.AlreadyMax"));
 
             return;
         }
@@ -591,14 +591,14 @@ public class TraitPresenter : MonoBehaviour
 
         if (_data.AccountLevel < required)
         {
-            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedAccountLevel", required, _data.AccountLevel));
+            _wait.RaiseRefusal(Lang.Format("UI.WorkStation.NeedAccountLevel", required, _data.AccountLevel));
 
             return;
         }
 
         if (_data.TraitPoint < trait.TraitPoint)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Trait.NotEnoughPoints", trait.TraitPoint));
+            _wait.RaiseRefusal(Lang.Format("UI.Trait.NotEnoughPoints", trait.TraitPoint));
 
             return;
         }

@@ -17,6 +17,7 @@ using UnityEngine.UI;
 //   애니메이션 전환('Transition: Animation')을 쓰는 버튼 — 그쪽 크기 연출과 겹친다.
 //
 // ■ 수명 — 트윈은 그 버튼에 묶는다(KillOnDisable). 누른 채 버튼이 꺼져도 'OnKill'이 크기를 되돌린다.
+// ■ 방금 누른 버튼을 알려 준다('RecentlyPressed') — 거절 흔들기가 대상을 찾을 때 본다('ToastPresenter' · T-177).
 public class ButtonPressFx : MonoBehaviour
 {
     // 눌린 크기 · 들어가는 시간 · 돌아오는 시간 · 튕김 세기
@@ -29,10 +30,27 @@ public class ButtonPressFx : MonoBehaviour
     private const float MaxWidth  = 700f;
     private const float MaxHeight = 300f;
 
+    // 이 시간 안에 누른 버튼만 "방금 누른 것"이다 — 오래전에 누른 버튼이 엉뚱하게 흔들리지 않게 (초)
+    private const float RecentWindow = 0.5f;
+
+    private static Transform? s_lastPressed;
+    private static float      s_lastPressedTime;
+
+    // 방금(0.5초 안에) 누른 버튼. 없거나 파괴됐으면 null
+    public static Transform? RecentlyPressed
+        => s_lastPressed != null && Time.unscaledTime - s_lastPressedTime <= RecentWindow ? s_lastPressed : null;
+
     private WindowManager _window = null!;
 
     private Transform? _pressed;
     private Tween?     _tween;
+
+    // 플레이마다 지난 플레이의 버튼을 잊는다 (Unity 런타임 초기화 훅 — 도메인 리로드를 끈 플레이 대비)
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetOnPlay()
+    {
+        s_lastPressed = null;
+    }
 
     // 서비스 확보 (Unity 메시지 — Awake에서 조회하지 않는다)
     private void Start()
@@ -101,8 +119,11 @@ public class ButtonPressFx : MonoBehaviour
             return;
         }
 
-        _pressed = target;
-        _tween   = target.DOScale(PressedScale, PressTime)
+        _pressed          = target;
+        s_lastPressed     = target;
+        s_lastPressedTime = Time.unscaledTime;
+
+        _tween = target.DOScale(PressedScale, PressTime)
                          .SetEase(Ease.OutQuad)
                          .SetUpdate(true)
                          .SetLink(target.gameObject, LinkBehaviour.KillOnDisable)

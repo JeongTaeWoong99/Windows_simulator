@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -16,7 +16,8 @@
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
 | `TooltipPresenter/TooltipPresenter.cs` · `TooltipRowView.cs` | 커서 밑 `TooltipTrigger`(Shared) 옆에 툴팁을 띄운다. **차단하지 않는 오버레이다** — 아래 "툴팁" 절 |
-| `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내 |
+| `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내. 확인 버튼을 눌러야 닫힌다 — **놓치면 안 되는 안내·서버가 거절한 결과만** 여기로 온다 |
+| `ToastPresenter/ToastPresenter.cs` | `ToastRaised`를 구독해 화면 아래에 **확인 없이 잠깐 떴다 사라지는** 안내 한 줄. **막지 않는다**(`blocksRaycasts` 늘 끔). 문구 길이에 맞춰 판 크기를 정한다(최대 560px). 거절(`RaiseRefusal`)이면 누른 것을 흔든다(`Shared/RefusalShake`). 아래 "알림과 토스트" 절 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
 > `ResultMessages`·`RarityPalette`·`IndustryLabel`·`WorkStationProgress`는
@@ -61,8 +62,9 @@
 ├─ [4] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
 ├─ [5] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
 ├─ [6] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
-├─ [7] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
-└─ [8] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
+├─ [7] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
+├─ [8] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [9] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
 
 > **경매장만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,
@@ -296,6 +298,21 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 층을 
 > ⚠️ **팝업이 뜬 채로 부른 화면이 닫히는 경로를 막아야 한다.** 상주라 `OnDisable`이 오지 않아
 > 스스로 정리할 손이 없다 — `UIManager.CloseAllExceptWidget()`이 `Close()`를 부른다.
 > 빠뜨리면 증상이 "가끔 아무것도 없는 바탕에 팝업만 떠 있다"로만 보인다.
+
+## 알림과 토스트 — 어느 쪽으로 보내나 (2026-10-22 · T-177)
+
+전에는 짧은 안내까지 전부 알림(모달)이라 "찾기 중엔 옮길 수 없음" 한 줄에도 확인을 눌러야 했다.
+창구는 셋이고, **부르는 쪽이 문구의 성격으로 고른다** — 모두 `ServerWaitManager`에 있다.
+
+| 창구 | 화면 | 보내는 것 | 예 |
+|---|---|---|---|
+| `RaiseRefusal(문구, 대상?)` | 토스트 + 흔들기 | **클라가 먼저 막은 조작** | 골드 부족 · 계정 레벨 부족 · 찾기 중 이동 · 잠긴 개체 판매 |
+| `RaiseToast(문구)` | 토스트 | **놓쳐도 되는 완료 안내** | 경매 등록·구매·취소 완료 · 일괄 담기 결과 |
+| `RaiseNotice(문구)` · 대기 `Fail` | 알림(확인 버튼) | **놓치면 안 되는 안내 · 서버가 거절한 결과** | 보상이 우편으로 감 · 큐브 대기 · 작업표시줄 밀어냄 · 응답 실패 |
+
+- 흔들 대상은 넘기지 않으면 **방금 누른 버튼**(`ButtonPressFx.RecentlyPressed`)이다. 버튼이 아닌 입력(칸 우클릭·끌기)의 거절은 그 칸을 넘긴다.
+- 서버 응답의 실패 코드는 토스트로 내리지 않는다 — 클라가 몰랐던 사정이라 읽고 넘어가야 한다.
+- 토스트는 알림 아래다 — 알림이 떠 있으면 그 차단막에 덮인다(알림이 우선이다).
 
 ## 툴팁 — 막지 않는 오버레이 (2026-09-25 · T-088)
 

@@ -322,7 +322,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (index < 0)
         {
-            _wait.RaiseNotice(Lang.Get(byTid ? "UI.Auction.NothingToList" : "UI.Auction.NotFound"));
+            _wait.RaiseRefusal(Lang.Get(byTid ? "UI.Auction.NothingToList" : "UI.Auction.NotFound"));
 
             return;
         }
@@ -335,7 +335,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 RegisterKind.Equip     => EntityBlockText.ForEquip(_data, target),
                 _                      => EntityBlockText.ForItem(_data, (int)target),
             };
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantList", reason ?? ""));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", reason ?? ""));
 
             return;
         }
@@ -630,7 +630,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         }
 
         _waitHandle?.Succeed();
-        _wait.RaiseNotice(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
+        _wait.RaiseToast(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
 
         _selectedKey = 0L;
         Close();

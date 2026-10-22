@@ -319,21 +319,21 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (IsTargetMaxed)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
 
         if (_data.IsCharacterBusy(characterId))
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.BusyMaterial"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.BusyMaterial"));
 
             return;
         }
 
         if (IsLocked(characterId))
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.LockedMaterial"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.LockedMaterial"));
 
             return;
         }
@@ -800,7 +800,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
@@ -817,7 +817,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (_candidates.Count == 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Condense.NoMaterialNotice", nameText.text));
+            _wait.RaiseRefusal(Lang.Format("UI.Condense.NoMaterialNotice", nameText.text));
 
             return;
         }
@@ -868,14 +868,14 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.AlreadyMax"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.AlreadyMax"));
 
             return;
         }
 
         if (_materials.Count == 0)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Condense.PickFirst"));
+            _wait.RaiseRefusal(Lang.Get("UI.Condense.PickFirst"));
 
             return;
         }

@@ -248,7 +248,7 @@ public class WorkStationListPresenter : MonoBehaviour
         {
             if (!_data.IsUnlocked(requiredTid))
             {
-                _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedUnlockFirst", DescribeUnlock(requiredTid)));
+                _wait.RaiseRefusal(Lang.Format("UI.WorkStation.NeedUnlockFirst", DescribeUnlock(requiredTid)));
 
                 return;
             }
@@ -258,14 +258,14 @@ public class WorkStationListPresenter : MonoBehaviour
         // 시트만 채워도 여기서 막힌다 — 특성 노드가 같은 컬럼을 이미 쓰고 있다.
         if (_data.AccountLevel < unlock.AccountLevel)
         {
-            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NeedAccountLevel", unlock.AccountLevel, _data.AccountLevel));
+            _wait.RaiseRefusal(Lang.Format("UI.WorkStation.NeedAccountLevel", unlock.AccountLevel, _data.AccountLevel));
 
             return;
         }
 
         if (_data.Gold < unlock.Gold)
         {
-            _wait.RaiseNotice(Lang.Format("UI.WorkStation.NotEnoughGold", $"{unlock.Gold:N0}"));
+            _wait.RaiseRefusal(Lang.Format("UI.WorkStation.NotEnoughGold", $"{unlock.Gold:N0}"));
 
             return;
         }

@@ -402,7 +402,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             return false;
         }
 
-        _wait.RaiseNotice(Lang.Get("UI.Enchant.NotChosen"));
+        _wait.RaiseRefusal(Lang.Get("UI.Enchant.NotChosen"));
 
         return true;
     }
@@ -920,7 +920,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (_data.GetItemCount(cubeTid) <= 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Enchant.NoCubeNotice", GameDataLoader.GetItemName(cubeTid)));
+            _wait.RaiseRefusal(Lang.Format("UI.Enchant.NoCubeNotice", GameDataLoader.GetItemName(cubeTid)));
 
             return;
         }
@@ -1240,14 +1240,14 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (IsPending(equip))
         {
-            _wait.RaiseNotice(Lang.Get("UI.Enchant.ChooseFirst"));
+            _wait.RaiseRefusal(Lang.Get("UI.Enchant.ChooseFirst"));
 
             return;
         }
 
         if (equip.EquippedCharacterId != 0L)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Enchant.NoAutoWorn"));
+            _wait.RaiseRefusal(Lang.Get("UI.Enchant.NoAutoWorn"));
 
             return;
         }
@@ -1479,7 +1479,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice(blocked);
+            _wait.RaiseRefusal(blocked);
 
             return;
         }
