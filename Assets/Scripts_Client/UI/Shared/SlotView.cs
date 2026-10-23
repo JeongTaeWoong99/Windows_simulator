@@ -225,6 +225,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _nameBaseAlpha = nameText.alpha;
         _subBaseAlpha  = subText.alpha;
 
+        ApplyRarityBackground();
+
         aptitudeStrip.SetActive(false);
         enchantGem.gameObject.SetActive(false);
         equipPips.gameObject.SetActive(false);
@@ -263,7 +265,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 자원은 'ItemTable', 캐릭터는 'CharacterTable', 가챠 보상은 패킷이 등급을 실어 온다.
     // 칸이 한쪽을 골라 버리면 다른 쪽이 조용히 무시된다.
     //
-    // TODO: 등급 이미지가 생기면 'rarityImage'도 색 대신 sprite를 넣는다 ('RarityPalette' 참조).
     public void Bind(in SlotData data)
     {
         Key           = data.Key;
@@ -274,6 +275,23 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         SetIcon(data.Icon);
         SetSizeBadge(data.SizeBadge);
         ApplyTint();
+    }
+
+    // 등급 배경 그림을 깐다 (Awake에서 한 번) — 테두리 띠 + 아래로 진해지는 속. 색은 여전히 'ApplyTint'가 등급색으로 입힌다.
+    // 그림이 없으면(그림 저장소 없음) 프리팹 그대로 단색이 칸을 덮는다 — 예전 모양이다.
+    // ※ 칸 프리팹이 아니라 여기서 넣는다 — 메인 저장소 파일이 그림을 직접 가리키면 그림 저장소가 없는 쪽에서 참조가 끊긴다('Art 규칙.md').
+    private void ApplyRarityBackground()
+    {
+        Sprite? background = FxSprites.RarityBackground;
+
+        if (background == null)
+        {
+            return;
+        }
+
+        rarityImage.sprite     = background;
+        rarityImage.type       = Image.Type.Sliced;
+        rarityImage.fillCenter = true;
     }
 
     // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)

@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -18,6 +18,7 @@
 | `TooltipPresenter/TooltipPresenter.cs` · `TooltipRowView.cs` | 커서 밑 `TooltipTrigger`(Shared) 옆에 툴팁을 띄운다. **차단하지 않는 오버레이다** — 아래 "툴팁" 절 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내. 확인 버튼을 눌러야 닫힌다 — **놓치면 안 되는 안내·서버가 거절한 결과만** 여기로 온다 |
 | `ToastPresenter/ToastPresenter.cs` | `ToastRaised`를 구독해 화면 아래에 **확인 없이 잠깐 떴다 사라지는** 안내 한 줄. **막지 않는다**(`blocksRaycasts` 늘 끔). 문구 길이에 맞춰 판 크기를 정한다(최대 560px). 거절(`RaiseRefusal`)이면 누른 것을 흔든다(`Shared/RefusalShake`). 아래 "알림과 토스트" 절 |
+| `CoinFlyPresenter/CoinFlyPresenter.cs` | `ServerWaitManager.GoldGainRaised`를 구독해 **골드를 받은 자리에서 상단 골드 아이콘(`target`)으로 동전**을 날린다(받은 골드의 자릿수만큼 4~12개). 닿으면 아이콘이 튀고 반짝인다. 숫자는 상태바가 따로 굴린다. **막지 않는다**(층에 Graphic 없음). 그림 `FxSprites.CoinBody`가 없으면 날리지 않는다. 지금 부르는 곳은 판매 목록(`SellCartPresenter`) 하나 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
 > `ResultMessages`·`RarityPalette`·`IndustryLabel`·`WorkStationProgress`는
@@ -56,15 +57,16 @@
 ```
 !Overlay Canvas                                 화면에서
 ├─ [0] #Auction Canvas (MAIN VIEW)          ← 맨 뒤 — 경매장(화면 전체). 자기가 띄우는 팝업·툴팁이 전부 그 위에 떠야 한다 (T-147)
-├─ [1] Gacha Result Presenter (↓ SUB VIEW)  ┐
-├─ [2] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
-├─ [3] Confirm Presenter      (↓ SUB VIEW)  ┘
-├─ [4] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
-├─ [5] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
-├─ [6] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
-├─ [7] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
-├─ [8] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
-└─ [9] Tooltip Presenter     (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
+├─ [1] Coin Fly Presenter     (↓ SUB VIEW)  ← 골드 동전 — 열을 건너 날아 3열·경매장 위, 팝업 아래. 막지 않는다 (2026-10-23)
+├─ [2] Gacha Result Presenter (↓ SUB VIEW)  ┐
+├─ [3] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
+├─ [4] Confirm Presenter      (↓ SUB VIEW)  ┘
+├─ [5] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
+├─ [6] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
+├─ [7] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
+├─ [8] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
+├─ [9] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [10] Tooltip Presenter    (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
 
 > **경매장만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,

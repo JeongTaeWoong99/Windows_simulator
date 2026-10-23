@@ -7,9 +7,8 @@ using UnityEngine;
 //
 // 색 값의 주인은 엑셀 'Enum.xlsx'의 등급 주석이다. 등급이 늘면 여기 한 줄을 더한다.
 //
-// TODO: 등급 스프라이트가 만들어지면 색 대신 'Sprite'를 돌려주도록 바꾼다.
-//       지금 호출부('SlotView.Bind')는 'Rarity Image'의 color만 건드리므로,
-//       이 표와 그 한 줄을 sprite 대입으로 갈아끼우면 끝난다.
+// 칸 등급 배경은 그림 한 장('FxSprites.RarityBackground' — 흰 테두리 띠 + 옅은 속)에 이 색을 입힌다(2026-10-23).
+// 등급마다 그림을 따로 두지 않는다 — 색의 주인은 계속 이 표다.
 public static class RarityPalette
 {
     // 등급을 모를 때 쓰는 색. 'None'과 표에 없는 값이 여기로 떨어진다.

@@ -111,6 +111,9 @@ public class TraitPresenter : MonoBehaviour
     // 내가 보낸 레벨 올리기 요청의 대기. null이면 기다리는 요청이 없다.
     private ServerWaitHandle? _learnWait;
 
+    // 그 요청의 특성 — 성공하면 이 칸을 번쩍인다
+    private int _learningTid;
+
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
@@ -624,10 +627,13 @@ public class TraitPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"특성 레벨 올리기 요청 — {userTraitTid}");
 
         NetworkManager.Instance.Send(new C_UserTraitLearnRequest { UserTraitTID = userTraitTid });
-        _learnWait = _wait.Begin(Lang.Get("UI.Trait.WaitLearn"), onClosed: () => _learnWait = null);
+        _learningTid = userTraitTid;
+        _learnWait   = _wait.Begin(Lang.Get("UI.Trait.WaitLearn"), onClosed: () => _learnWait = null);
     }
 
     // 레벨 올리기 결과 (PlayerDataModel.TraitLearnCompleted 구독).
+    //
+    // ※ 칸의 새 레벨은 이미 그려져 있다 — 'PlayerDataModel'이 'TraitsChanged'(→ 'Redraw')를 먼저 쏘고 이 결과를 쏜다.
     private void OnTraitLearnCompleted(bool success, EResultCode code)
     {
         if (_learnWait == null)
@@ -638,11 +644,36 @@ public class TraitPresenter : MonoBehaviour
         if (success)
         {
             _learnWait.Succeed();
+            FindCell(_learningTid)?.PlayLevelUp();
         }
         else
         {
             _learnWait.Fail(ResultMessages.ToText(code));
         }
+    }
+
+    // 이 특성을 그리는 칸 — 표에 없으면 null (OnTraitLearnCompleted에서 호출)
+    private TraitNodeView? FindCell(int userTraitTid)
+    {
+        foreach (TraitRowView row in _rows.All)
+        {
+            if (!row.gameObject.activeSelf)
+            {
+                continue;
+            }
+
+            for (int column = 0; column < row.CellCount; column++)
+            {
+                TraitNodeView cell = row.GetCell(column);
+
+                if (cell.UserTraitTid == userTraitTid)
+                {
+                    return cell;
+                }
+            }
+        }
+
+        return null;
     }
 
     #endregion
