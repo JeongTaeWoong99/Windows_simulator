@@ -1,6 +1,6 @@
 # Widget 폴더 규칙
 
-> 최종 업데이트: 2026-10-09 (상단 줄 아이콘화 · 수익 집계 · 초기화 버튼 `WidgetEarningTracker`) · 2026-10-08 (머리 연출 — 통통 바운스 + 수확 펄쩍 `WidgetHeadMotion`) · 2026-10-08 (수확 때 아이템 획득 연출) · 2026-10-08 (해제된 칸은 파괴하지 않고 끈다) · 대상: `Assets/Scripts_Client/UI/Widget/`
+> 최종 업데이트: 2026-10-20 (상단 줄에서 보유 골드 삭제 — 상태 패널이 보여 준다) · 2026-10-09 (상단 줄 아이콘화 · 수익 집계 · 초기화 버튼 `WidgetEarningTracker`) · 2026-10-08 (머리 연출 — 통통 바운스 + 수확 펄쩍 `WidgetHeadMotion`) · 2026-10-08 (수확 때 아이템 획득 연출) · 2026-10-08 (해제된 칸은 파괴하지 않고 끈다) · 대상: `Assets/Scripts_Client/UI/Widget/`
 
 **`#Widget Canvas` — 다른 화면을 전부 닫아도 남는, 데스크톱 위젯 본체.**
 
@@ -20,7 +20,7 @@
 
 ```
 Widget Presenter        VerticalLayoutGroup
-├─ Top Panel            보유 · 가동 N/M · 누적 · 시간당 · 측정 시간    pref 26
+├─ Top Panel            가동 N/M · 누적 · 시간당 · 측정 시간           pref 26
 │  └─ <X> Stat          아이콘(22) + 숫자 한 쌍. 비율은 그룹의 flexW
 ├─ Strip Panel          배치된 칸이 왼쪽부터. 빈 칸 없음              flexH 1
 │  └─ WidgetMiniSlotView 프리팹 (런타임 생성)                        49×49
@@ -38,6 +38,9 @@ Widget Presenter        VerticalLayoutGroup
 
 수확으로 **늘어난 수량 × `BasePrice`** 의 합이다 (`PlayerDataModel.GatherValueEarned`).
 시세가 아니라 고정값이라 같은 수확이 언제나 같은 숫자다. 보유 골드 증감으로 세지 않는다 — 판매·가챠가 섞인다.
+
+- **보유 골드는 위젯에 두지 않는다 (2026-10-20 사용자 결정).** 수확물은 팔기 전까지 골드가 아니라
+  보유 골드는 그대로인데 추정치만 오른다 — 나란히 두면 "왜 안 늘지?"가 된다. 보유 골드는 상태 패널에서 본다.
 
 - **로그인에 성공한 순간부터 센다**(`LoginCompleted`) — 로그인 전에는 측정 시간이 `0:00:00`에 멈춰 있다.
   앱을 켤 때마다 0에서 시작하고 저장하지 않는다. 초기화 버튼은 확인 창 없이 0으로 되돌린다.

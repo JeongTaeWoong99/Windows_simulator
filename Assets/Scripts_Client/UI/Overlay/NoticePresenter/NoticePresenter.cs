@@ -4,6 +4,7 @@ using UnityEngine.UI;
 
 // 알림 표시 — 요청 실패·타임아웃, 또는 연결 계층 치명 오류의 사유를 화면에 띄운다.
 // 사용자가 닫기(확인)를 눌러야 사라진다(조용히 자동으로 닫지 않는다).
+// 짧은 안내·조작 거절은 여기가 아니라 'ToastPresenter'다 — 확인 없이 사라진다(T-177).
 //
 // ■ 두 갈래
 // - 일반 알림('NoticeRaised') — 닫기로 확인하고 앱은 계속된다.
@@ -18,6 +19,9 @@ public class NoticePresenter : MonoBehaviour
     [CenterHeader("참조")]
     [SerializeField, Tooltip("알림 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
     private CanvasGroup group = null!;
+
+    [SerializeField, Tooltip("가운데 판 — 열 때 살짝 커지며 나타난다. 비우면 알림 전체가 커진다")]
+    private RectTransform? panel;
 
     [SerializeField, Tooltip("알림 사유 문구")]
     private TMP_Text messageText = null!;
@@ -50,7 +54,7 @@ public class NoticePresenter : MonoBehaviour
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
 
-        SetVisible(false); // 시작은 숨김 — 알림이 생기면 켜진다
+        SetVisible(false, instant: true); // 시작은 숨김 — 알림이 생기면 켜진다
         _isReady = true;
     }
 
@@ -134,11 +138,11 @@ public class NoticePresenter : MonoBehaviour
     }
 
     // 몸통을 켜고 끈다 — 오브젝트는 항상 활성이라 이벤트를 계속 받는다(자기를 끄지 않는다).
-    private void SetVisible(bool on)
+    // 연출은 'PanelTransition'(확인 팝업과 같다 · T-177) — 차단(모달)·입력은 여는 즉시 켜고 닫는 즉시 끈다.
+    private void SetVisible(bool on, bool instant = false)
     {
-        _isShown             = on;
-        group.alpha          = on ? 1f : 0f;
-        group.blocksRaycasts = on; // 표시 중 뒤 UI 클릭 차단(모달)
-        group.interactable   = on;
+        _isShown = on;
+
+        PanelTransition.SetVisible(group, on, panel, instant);
     }
 }

@@ -5280,6 +5280,11 @@
     "EN": "Caution! Includes high rarity"
   },
   {
+    "Key": "UI.Sell.GrownWarning",
+    "KR": "주의! 성장한 개체 {0}개 포함",
+    "EN": "Caution! Includes {0} upgraded"
+  },
+  {
     "Key": "UI.Sell.InstantSell",
     "KR": "즉시 판매",
     "EN": "Instant Sell"
@@ -5415,9 +5420,59 @@
     "EN": "Level and EXP of {1} material(s) at Lv{0}+ will be lost."
   },
   {
+    "Key": "UI.Condense.ConfirmCondensed",
+    "KR": "응축을 쌓은 재료 {0}마리의 응축 단계·누적도 사라집니다.",
+    "EN": "Condense progress of {0} material(s) will also be lost."
+  },
+  {
     "Key": "UI.Condense.FillNext",
     "KR": "다음 단계까지 채우기",
     "EN": "Fill to Next Stage"
+  },
+  {
+    "Key": "UI.Condense.HelpTitle",
+    "KR": "응축",
+    "EN": "Condense"
+  },
+  {
+    "Key": "UI.Condense.HelpSame",
+    "KR": "같은 캐릭터를 재료로 녹여 누적을 쌓습니다 — 재료 1마리 = 누적 +1",
+    "EN": "Melt duplicates of the same character to build up the total — 1 material = +1"
+  },
+  {
+    "Key": "UI.Condense.HelpStar",
+    "KR": "누적이 단계 기준에 닿으면 ★이 오르고 작업속도가 늘어납니다",
+    "EN": "Reaching a stage total raises the stars and work speed"
+  },
+  {
+    "Key": "UI.Condense.HelpLost",
+    "KR": "재료의 레벨 · 경험치 · 응축은 사라지고 되돌릴 수 없습니다",
+    "EN": "Materials lose their level, EXP and condense — this can't be undone"
+  },
+  {
+    "Key": "UI.Condense.HelpOverflow",
+    "KR": "최고 단계를 넘는 재료는 효과 없이 사라집니다",
+    "EN": "Materials beyond the top stage are consumed with no effect"
+  },
+  {
+    "Key": "UI.Condense.HelpBusy",
+    "KR": "배치 · 장비 착용 · 잠긴 캐릭터는 재료로 넣을 수 없습니다",
+    "EN": "Assigned, gear-wearing or locked characters can't be materials"
+  },
+  {
+    "Key": "UI.Condense.HelpStage",
+    "KR": "■ 단계",
+    "EN": "■ Stage"
+  },
+  {
+    "Key": "UI.Condense.HelpTotal",
+    "KR": "누적",
+    "EN": "Total"
+  },
+  {
+    "Key": "UI.Condense.StarN",
+    "KR": "{0}성",
+    "EN": "{0}-Star"
   },
   {
     "Key": "UI.Trait.Speed",
@@ -5486,8 +5541,8 @@
   },
   {
     "Key": "UI.Trait.DescYield",
-    "KR": "판정 1회에 같은 자원이 더 나옵니다 (120%면 1개 + 20% 확률로 1개 더). 좋은 자원이 나올 확률은 그대로이고, 상자 · 경험치는 늘지 않습니다.",
-    "EN": "Each roll yields more of the same resource (120% = 1 plus a 20% chance of 1 more). The odds of better resources stay the same, and boxes and EXP don't increase."
+    "KR": "판정 1회에 같은 자원이 더 나옵니다. 상자 · 경험치는 늘지 않습니다.",
+    "EN": "Each roll yields more of the same resource. Boxes and EXP don't increase."
   },
   {
     "Key": "UI.Trait.DescYieldAll",
@@ -5518,6 +5573,41 @@
     "Key": "UI.Trait.EmptyDetail",
     "KR": "특성을 누르면 여기에 펼쳐집니다",
     "EN": "Click a trait to see details here"
+  },
+  {
+    "Key": "UI.Trait.HelpTitle",
+    "KR": "특성",
+    "EN": "Traits"
+  },
+  {
+    "Key": "UI.Trait.HelpPoint",
+    "KR": "계정 레벨이 오르면 특성 포인트를 얻습니다",
+    "EN": "You earn trait points as your account level rises"
+  },
+  {
+    "Key": "UI.Trait.HelpLevel",
+    "KR": "레벨을 올리려면 포인트와 계정 레벨 조건이 함께 필요합니다",
+    "EN": "Leveling up needs both points and the account level requirement"
+  },
+  {
+    "Key": "UI.Trait.HelpChoose",
+    "KR": "포인트로 전부 올릴 수는 없습니다 — 키울 산업을 고르세요",
+    "EN": "Points can't max everything — choose which industries to grow"
+  },
+  {
+    "Key": "UI.Trait.HelpKinds",
+    "KR": "종류",
+    "EN": "Types"
+  },
+  {
+    "Key": "UI.Trait.HelpYieldCalc",
+    "KR": "산출량 120%면 1개 + 20% 확률로 1개 더",
+    "EN": "Yield 120% = 1 plus a 20% chance of 1 more"
+  },
+  {
+    "Key": "UI.Trait.HelpYieldRarity",
+    "KR": "산출량이 올라도 좋은 자원이 나올 확률은 그대로입니다",
+    "EN": "Yield doesn't change the odds of better resources"
   },
   {
     "Key": "UI.Enchant.Base",
@@ -6516,8 +6606,8 @@
   },
   {
     "Key": "UI.Auction.CountHelp",
-    "KR": "보유 {0}개 · 한 번에 {1}개까지 · 통째로만 팔립니다",
-    "EN": "Owned {0} · up to {1} per listing · sold only as a whole"
+    "KR": "보유 {0}개 · 한 번에 {1}개까지",
+    "EN": "Owned {0} · up to {1} per listing"
   },
   {
     "Key": "UI.Auction.PriceHelp",
@@ -6706,8 +6796,8 @@
   },
   {
     "Key": "UI.Auction.RegisterEmptyCard",
-    "KR": "왼쪽에서 올릴 것을 [선택]하세요.\r\n끼고 있는 장비 · 일하는 캐릭터는 흐리게 보이고, 툴팁에 사유가 나옵니다.",
-    "EN": "[Select] something to list on the left.\r\nWorn gear and working characters are dimmed — the tooltip shows why."
+    "KR": "왼쪽에서 올릴 것을 [선택]하세요.",
+    "EN": "[Select] something to list on the left."
   },
   {
     "Key": "UI.Auction.ShowPrice",
@@ -6723,5 +6813,85 @@
     "Key": "UI.Auction.Register",
     "KR": "등록",
     "EN": "List"
+  },
+  {
+    "Key": "UI.Auction.GuideTitle",
+    "KR": "경매장",
+    "EN": "Auction House"
+  },
+  {
+    "Key": "UI.Auction.GuideBuyWhole",
+    "KR": "매물은 통째로 삽니다 — 일부만 살 수 없습니다",
+    "EN": "Listings are bought whole — no partial purchases"
+  },
+  {
+    "Key": "UI.Auction.GuideBuyOwn",
+    "KR": "내 매물은 살 수 없습니다",
+    "EN": "You can't buy your own listings"
+  },
+  {
+    "Key": "UI.Auction.GuideMailHeader",
+    "KR": "우편",
+    "EN": "Mail"
+  },
+  {
+    "Key": "UI.Auction.GuideMail",
+    "KR": "산 물건 · 판매 대금 · 돌아온 물건 · 환급은 모두 우편으로 옵니다",
+    "EN": "Purchases, proceeds, returned items and refunds all arrive by mail"
+  },
+  {
+    "Key": "UI.Auction.GuideSellHint",
+    "KR": "파는 규칙은 [판매] → [+ 판매 등록] 창의 ?에 있습니다",
+    "EN": "Selling rules: [Sell] → [+ List Item] window's ?"
+  },
+  {
+    "Key": "UI.Auction.RuleAuction",
+    "KR": "경매 — 정한 단가로 다른 플레이어에게 팝니다 · 팔릴 때까지 기다립니다",
+    "EN": "Auction — sell to other players at your price · wait until it sells"
+  },
+  {
+    "Key": "UI.Auction.RuleInstant",
+    "KR": "즉시 판매 — 인벤토리 [판매] · 즉시 판매가로 바로 받습니다",
+    "EN": "Instant sell — Inventory [Sell] · get the instant price right away"
+  },
+  {
+    "Key": "UI.Auction.RuleHeader",
+    "KR": "등록 규칙",
+    "EN": "Listing Rules"
+  },
+  {
+    "Key": "UI.Auction.RulePrice",
+    "KR": "즉시 판매가 이상 ~ {0} G",
+    "EN": "From the instant price ~ {0} G"
+  },
+  {
+    "Key": "UI.Auction.RuleCountLabel",
+    "KR": "수량",
+    "EN": "Quantity"
+  },
+  {
+    "Key": "UI.Auction.RuleCount",
+    "KR": "한 번에 {0}개까지 · 통째로만 팔림",
+    "EN": "Up to {0} per listing · sold only whole"
+  },
+  {
+    "Key": "UI.Auction.RuleSlots",
+    "KR": "최대 {0}건",
+    "EN": "Up to {0}"
+  },
+  {
+    "Key": "UI.Auction.RuleListingFee",
+    "KR": "등록할 때 빠짐 · 만료되면 돌려받고 취소하면 못 받음",
+    "EN": "Paid on listing · refunded on expiry, not on cancel"
+  },
+  {
+    "Key": "UI.Auction.RuleSaleFee",
+    "KR": "팔린 금액에서 뗌",
+    "EN": "Deducted from the sale"
+  },
+  {
+    "Key": "UI.Auction.RuleCantList",
+    "KR": "끼고 있는 장비 · 일하는 캐릭터 · 잠긴 것은 올릴 수 없습니다 (흐린 줄 — 올리면 사유)",
+    "EN": "Worn gear, working characters and locked items can't be listed (dimmed — hover for why)"
   }
 ]

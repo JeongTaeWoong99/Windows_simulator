@@ -156,7 +156,7 @@ Root Canvas
 │  │  │     │           ├─ Efficiency Rows Panel  VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
 │  │  │     │           └─ Equip Picker Panel     VLG (평소 꺼짐 — 열리면 캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
 │  │  │     │              ├─ Header Panel        제목 · [해제] · [닫기]           pref 30
-│  │  │     │              ├─ Filter Panel        농사·발굴·채굴·벌목·사냥 (균등 5칸)      pref 26
+│  │  │     │              ├─ Filter Panel        농사·채굴·벌목·사냥·발굴 (균등 5칸)      pref 26
 │  │  │     │              ├─ Equip Rows Panel    VLG · EquipPickRowView 프리팹 (보일 수만큼 런타임 생성)
 │  │  │     │              └─ Empty Text (TMP)    끼울 장비가 없을 때만            pref 28
 │  │  │     ├─ Setting Presenter (↓ SUB VIEW)     SettingPresenter            (평소 꺼짐)
@@ -434,7 +434,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
   **다른 슬롯에서 일하는 중**인 캐릭터는 빠진다. 고를 것이 하나도 없으면 `Empty Text (TMP)`가
   *"해당 적성을 가진 캐릭터가 없습니다."* 로 뜬다 — **판매 목록의 빈 안내와 같은 자리·같은 방식**이다.
   숨긴 캐릭터의 적성은 **인벤토리 캐릭터 탭**이 보여 준다 — 칸 아래 **적성 스트립 5칸**이고
-  **위치가 곧 산업**(농사·발굴·채굴·벌목·사냥)이며 적성 0은 `X`다(2026-09-12 · T-048).
+  **위치가 곧 산업**(농사·채굴·벌목·사냥·발굴)이며 적성 0은 `X`다(2026-09-12 · T-048).
 - **인벤토리 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
   `InventoryTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).

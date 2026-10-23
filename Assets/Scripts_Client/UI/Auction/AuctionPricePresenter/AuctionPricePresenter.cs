@@ -103,7 +103,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (!AuctionText.TryFindByName(text, out EAuctionKind kind, out int tid))
         {
-            _wait.RaiseNotice(Lang.Format("UI.Auction.NoSuchItem", text.Trim()));
+            _wait.RaiseRefusal(Lang.Format("UI.Auction.NoSuchItem", text.Trim()));
 
             return;
         }

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;
@@ -77,6 +78,7 @@ using UnityEngine.UI;
 //     지연은 'MaxShineStagger'칸에서 멈춘다(10연차가 1초 넘게 이어지지 않게).
 //   - 보이는 칸만 돈다(T-138) — 화면 밖 칸은 표시만 남았다가 스크롤로 들어올 때 반짝인다. 칸 하나 = 그림 둘 + Sequence 하나.
 //   - 칸이 다른 개체로 다시 묶이거나(정렬 응답) 꺼지면 끊는다 — 남의 칸에서 반짝임이 이어지지 않게.
+//   - 캐릭터 칸은 레벨이 올라도 반짝인다 — 금색 + 솟는 화살표('SlotGainShine.PlayLevelUp' · T-052).
 //
 // ■ 창고 격자도 이 클래스다 (2026-10-15 · T-126)
 //   창고 화면(거점 열 창고 탭)의 격자는 **같은 컴포넌트를 'container = Warehouse'로 둔 것**이다. 칸·스크롤·끌기·정렬이 완전히 같고,
@@ -158,17 +160,10 @@ public class InventoryGridPresenter : MonoBehaviour
     // — 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있는 쪽이 하나여도 된다.
     private readonly byte[] _aptitudes = new byte[SlotView.AptitudeCount];
 
-    // 적성 칸의 순서 = 산업. 'EIndustryType'의 None 제외 순서와 같고, 배치 화면의 산업 버튼도
+    // 적성 칸의 순서 = 산업. 화면 공용 표시 순서('IndustryLabel.DisplayOrder' — 발굴이 맨 끝)이고, 배치 화면의 산업 버튼도
     // 같은 순서로 만들어진다('WorkStationSelectPresenter.BuildIndustryList') — 두 화면이 맞아야 한다.
     // ※ 칸 툴팁의 적성 줄('CharacterSlotSource.BuildTooltip')도 이 순서를 탄다 — 스트립과 위아래가 같게 읽힌다.
-    public static readonly EIndustryType[] StripIndustries =
-    {
-        EIndustryType.Farming,
-        EIndustryType.Excavation,
-        EIndustryType.Mining,
-        EIndustryType.Logging,
-        EIndustryType.Hunting,
-    };
+    public static readonly EIndustryType[] StripIndustries = IndustryLabel.DisplayOrder;
 
     // 탭별 공급자. 여기 없는 탭은 "아직 데이터가 없는 탭"이고, 탭 줄이 그 버튼을 잠근다.
     private readonly Dictionary<InventoryTab, InventorySlotSource> _sources =
@@ -213,6 +208,16 @@ public class InventoryGridPresenter : MonoBehaviour
     private SlotView?      _ghost;
     private RectTransform? _ghostRoot;   // 그림을 띄우는 최상위 캔버스 — 스크롤 영역의 마스크에 잘리지 않게
     private Canvas?        _ghostCanvas;
+    private CanvasGroup?   _ghostGroup;
+    private Sequence?      _ghostSeq;    // 놓은 뒤 그림이 칸으로 날아가는 연출 ('FlyGhost')
+
+    // 이동 요청이 성공하면 튈 칸 — 놓은 격자와 프레임 (T-177). 대기가 하나라 격자끼리 함께 쓴다.
+    private static (InventoryGridPresenter Grid, int Frame)? s_landing;
+
+    // 끌리는 그림의 투명도 · 놓은 칸으로 빨려 드는 시간 · 원래 칸으로 돌아가는 시간 (T-177)
+    private const float GhostAlpha      = 0.85f;
+    private const float GhostLandTime   = 0.12f;
+    private const float GhostReturnTime = 0.2f;
 
     // 놓을 칸 위에 씌우는 어두운 덮개 — 처음 끌 때 한 번 만들어 계속 쓴다. 지금 덮은 프레임 번호(없으면 -1).
     private RectTransform? _dropHighlight;
@@ -252,6 +257,7 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         Grids.Clear();
         s_slotWaitHandle = null;
+        s_landing        = null;
     }
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
@@ -767,7 +773,7 @@ public class InventoryGridPresenter : MonoBehaviour
         //
         // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
         //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
-        bool isAway = _current.IsAway(data.Key);
+        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(위 'cell' 판정)
 
         view.SetAssignMark(isAway);
         view.SetLockMark(_current.IsLocked(data.Key));
@@ -814,7 +820,17 @@ public class InventoryGridPresenter : MonoBehaviour
                 _shines[i] = shine;
             }
 
-            shine.Play(data.Key, data.Rarity, Mathf.Min(_shineOrder++, MaxShineStagger) * ShineStagger);
+            float delay = Mathf.Min(_shineOrder++, MaxShineStagger) * ShineStagger;
+
+            // 있던 캐릭터가 늘었다 = 레벨이 올랐다('CharacterSlotSource.AmountOf') — 금색 + 솟는 화살표 (T-052)
+            if (_current.TakeRise(data.Key) && IsCharacterTab)
+            {
+                shine.PlayLevelUp(data.Key, delay);
+            }
+            else
+            {
+                shine.Play(data.Key, data.Rarity, delay);
+            }
 
             return;
         }
@@ -940,7 +956,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (_keys.IsQuickAuctionHeld)
         {
-            OpenAuctionRegister(view.Key);
+            OpenAuctionRegister(view.Key, view.transform);
 
             return;
         }
@@ -957,9 +973,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
         switch (_currentTab)
         {
-            case InventoryTab.Resource:  ToggleItem((int)view.Key); break;
-            case InventoryTab.Character: ToggleCharacter(view.Key); break;
-            case InventoryTab.Equipment: ToggleEquip(view.Key);     break;
+            case InventoryTab.Resource:  ToggleItem((int)view.Key, view.transform); break;
+            case InventoryTab.Character: ToggleCharacter(view.Key, view.transform); break;
+            case InventoryTab.Equipment: ToggleEquip(view.Key, view.transform);     break;
         }
     }
 
@@ -978,7 +994,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 그 물건을 경매 등록 화면에 골라 둔다 — 경매장을 연다 (OnSlotRightClicked에서 호출).
     // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
-    private void OpenAuctionRegister(long key)
+    private void OpenAuctionRegister(long key, Transform slot)
     {
         string? reason = _currentTab switch
         {
@@ -990,7 +1006,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (reason != null)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantList", reason));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", reason), slot);
 
             return;
         }
@@ -1013,7 +1029,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 캐릭터를 담거나 뺀다 — 팔 수 없으면 사유를 알린다 (OnSlotRightClicked에서 호출).
     // ※ 마지막 캐릭터 판정은 이미 담은 캐릭터를 빼고 센다 — 서버가 "판 뒤 0명"을 거절한다(SellLastCharacter).
-    private void ToggleCharacter(long characterId)
+    private void ToggleCharacter(long characterId, Transform slot)
     {
         if (_cart.ContainsCharacter(characterId))
         {
@@ -1027,7 +1043,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantSell", blocked), slot);
 
             return;
         }
@@ -1036,7 +1052,7 @@ public class InventoryGridPresenter : MonoBehaviour
     }
 
     // 장비를 담거나 뺀다 — 끼고 있으면 사유를 알린다 (OnSlotRightClicked에서 호출).
-    private void ToggleEquip(long equipId)
+    private void ToggleEquip(long equipId, Transform slot)
     {
         if (_cart.ContainsEquip(equipId))
         {
@@ -1049,7 +1065,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantSell", blocked), slot);
 
             return;
         }
@@ -1058,7 +1074,7 @@ public class InventoryGridPresenter : MonoBehaviour
     }
 
     // 자원을 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
-    private void ToggleItem(int itemId)
+    private void ToggleItem(int itemId, Transform slot)
     {
 
         if (_cart.Contains(itemId))
@@ -1079,7 +1095,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (blocked != null)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantSell", blocked));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantSell", blocked), slot);
 
             return;
         }
@@ -1122,7 +1138,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // 거르는 동안 보이는 순서는 칸 번호가 아니다(맞는 것 → 흑백 순으로 모은 배치) — 놓은 자리가 엉뚱한 칸이 된다.
         if (_current.IsFiltering)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Inventory.NoMoveWhileFiltering"));
+            _wait.RaiseRefusal(Lang.Get("UI.Inventory.NoMoveWhileFiltering"), _views[frameIndex]?.transform);
 
             return false;
         }
@@ -1320,7 +1336,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return; // 끄는 사이 탭이 바뀌었다 — 'CancelSlotDrag'가 이미 정리했다
         }
 
-        CancelSlotDrag();
+        CancelSlotDrag(keepGhost: true);
 
         Camera? eventCamera = eventData.pressEventCamera;
 
@@ -1330,12 +1346,17 @@ public class InventoryGridPresenter : MonoBehaviour
         {
             // 다른 격자 위인데 놓을 칸이 없었다 — 다 찼거나 찾기 중이다. 말없이 버리면 고장처럼 보인다.
             NoticeIfOtherGridRefused(eventData.position, eventCamera);
+            FlyGhost(this, frameIndex, landing: false);
 
             return;
         }
 
         if (grid != this)
         {
+            // 찾기 중인 격자는 받지 않는다('TransferTo'가 이유를 알린다) — 그림은 제자리로
+            bool accepted = grid._current == null || !grid._current.IsFiltering;
+
+            FlyGhost(accepted ? grid : this, accepted ? target : frameIndex, landing: accepted);
             TransferTo(grid, tab, frameIndex, target);
 
             return;
@@ -1343,8 +1364,12 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (target == frameIndex)
         {
+            FlyGhost(this, frameIndex, landing: false);
+
             return;
         }
+
+        FlyGhost(this, target, landing: true);
 
         _network.Send(new C_StorageMoveSlotRequest
         {
@@ -1357,6 +1382,7 @@ public class InventoryGridPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 칸 이동 요청 — {tab} {frameIndex} → {target}");
 
         s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitMove", ContainerLabel), onClosed: OnSlotWaitClosed);
+        s_landing        = (this, target);
     }
 
     // 다른 보관함 격자 위에 놓았는데 받을 칸이 없었으면 이유를 알린다 (EndSlotDrag에서 호출).
@@ -1374,7 +1400,7 @@ public class InventoryGridPresenter : MonoBehaviour
                 return; // 탭이 다른 격자 — 늘 같이 바뀌므로 정상 동선에서는 나오지 않는다
             }
 
-            _wait.RaiseNotice(other._current!.IsFiltering
+            _wait.RaiseRefusal(other._current!.IsFiltering
                 ? Lang.Get("UI.Inventory.NoDropWhileFiltering")
                 : Lang.Format("UI.Inventory.NoEmptySlot", other.ContainerLabel));
 
@@ -1392,7 +1418,7 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         if (target._current != null && target._current.IsFiltering)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Inventory.NoDropWhileFiltering"));
+            _wait.RaiseRefusal(Lang.Get("UI.Inventory.NoDropWhileFiltering"));
 
             return;
         }
@@ -1406,7 +1432,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (tab != EStorageTab.Resource)
         {
-            SendTransfer(tab, fromSlot, toSlot, 1);
+            SendTransfer(target, tab, fromSlot, toSlot, 1);
 
             return;
         }
@@ -1421,7 +1447,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (owned == 1)
         {
-            SendTransfer(tab, fromSlot, toSlot, 1);
+            SendTransfer(target, tab, fromSlot, toSlot, 1);
 
             return;
         }
@@ -1429,11 +1455,12 @@ public class InventoryGridPresenter : MonoBehaviour
         string question = Lang.Get(IsInventory ? "UI.Inventory.AskStore" : "UI.Inventory.AskTakeOut");
 
         // ※ 팝업이 떠 있는 사이 칸이 바뀌어도 그대로 보낸다 — 어긋났으면 서버가 거절한다(클라가 다시 재지 않는다).
-        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(tab, fromSlot, toSlot, amount));
+        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(target, tab, fromSlot, toSlot, amount));
     }
 
     // 보관함 사이 이동 요청을 보낸다 (TransferTo · 수량 팝업 확인에서 호출).
-    private void SendTransfer(EStorageTab tab, int fromSlot, int toSlot, int count)
+    //   target : 받는 격자 — 성공하면 그 칸이 튄다('s_landing')
+    private void SendTransfer(InventoryGridPresenter target, EStorageTab tab, int fromSlot, int toSlot, int count)
     {
         if (!CanSendSlotRequest("창고 이동"))
         {
@@ -1454,10 +1481,12 @@ public class InventoryGridPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.Send, $"{label} 요청 — {tab} {fromSlot} → {toSlot} · {count}개");
 
         s_slotWaitHandle = _wait.Begin(label, onClosed: OnSlotWaitClosed);
+        s_landing        = (target, toSlot);
     }
 
     // 끌기를 접는다 — 그림을 거두고 흐린 칸을 되돌린다 (놓기 · 탭 전환 · 비활성화에서 호출).
-    private void CancelSlotDrag()
+    //   keepGhost : 그림을 남긴다 — 놓기는 그림을 칸으로 날려 보낸 뒤 거둔다('FlyGhost')
+    private void CancelSlotDrag(bool keepGhost = false)
     {
         if (_dragFrom < 0)
         {
@@ -1472,9 +1501,9 @@ public class InventoryGridPresenter : MonoBehaviour
             _highlightGrid = null;
         }
 
-        if (_ghost != null)
+        if (!keepGhost)
         {
-            _ghost.gameObject.SetActive(false);
+            StopGhost();
         }
 
         Redraw(); // 흐리게 했던 칸을 원래 표시로 — 딤은 '나가 있음'과 같은 스위치라 통째로 다시 그린다
@@ -1518,11 +1547,14 @@ public class InventoryGridPresenter : MonoBehaviour
 
             _ghost.gameObject.AddComponent<Canvas>();
 
-            var group = _ghost.gameObject.AddComponent<CanvasGroup>();
-
-            group.blocksRaycasts = false; // 놓을 칸을 가리지 않는다
-            group.alpha          = 0.85f;
+            _ghostGroup                = _ghost.gameObject.AddComponent<CanvasGroup>();
+            _ghostGroup.blocksRaycasts = false; // 놓을 칸을 가리지 않는다
         }
+
+        StopGhost(); // 앞 끌기의 그림이 아직 날아가는 중이다
+
+        _ghostGroup!.alpha          = GhostAlpha;
+        _ghost.transform.localScale = Vector3.one;
 
         var   frame = (RectTransform)_frames[frameIndex];
         var   rect  = (RectTransform)_ghost.transform;
@@ -1545,6 +1577,105 @@ public class InventoryGridPresenter : MonoBehaviour
     // 끌리는 그림을 띄운 캔버스의 카메라 — 오버레이 캔버스면 null이다 (MoveSlotDrag에서 호출).
     private Camera? GhostCamera()
         => _ghostCanvas == null || _ghostCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : _ghostCanvas.worldCamera;
+
+    // 놓은 뒤 그림을 칸으로 날려 보내고 거둔다 (EndSlotDrag에서 호출 · T-177).
+    //   grid · frame : 날아갈 칸 — 놓은 칸, 또는 놓을 곳이 없었으면 원래 칸
+    //   landing      : 놓은 칸으로 빨려 드는가(짧고 살짝 작아진다). 아니면 원래 칸으로 미끄러져 돌아간다
+    // ※ 칸은 서버 응답이 와야 바뀐다 — 그림은 "어디로 갔는지"만 보여 주고 사라진다. 바뀐 칸은 응답 뒤에 튄다('PlayLanding').
+    private void FlyGhost(InventoryGridPresenter grid, int frame, bool landing)
+    {
+        if (_ghost == null || _ghostRoot == null || _ghostGroup == null || frame < 0 || frame >= grid._frames.Count)
+        {
+            StopGhost();
+
+            return;
+        }
+
+        var       to       = (RectTransform)grid._frames[frame];
+        Vector3   local    = _ghostRoot.InverseTransformPoint(to.TransformPoint(to.rect.center));
+        float     duration = landing ? GhostLandTime : GhostReturnTime;
+        Transform ghost    = _ghost.transform;
+
+        StopGhost(hide: false);
+
+        _ghostSeq = DOTween.Sequence()
+                           .SetLink(_ghost.gameObject, LinkBehaviour.KillOnDisable)
+                           .SetUpdate(true);
+
+        _ghostSeq.Insert(0f, ghost.DOLocalMove(local, duration).SetEase(landing ? Ease.OutQuad : Ease.OutCubic));
+        _ghostSeq.Insert(duration * 0.5f, _ghostGroup.DOFade(0f, duration * 0.5f));
+
+        if (landing)
+        {
+            _ghostSeq.Insert(0f, ghost.DOScale(0.9f, duration));
+        }
+
+        _ghostSeq.OnKill(HideGhost);
+    }
+
+    // 날아가던 그림을 끊는다 (ShowGhost · CancelSlotDrag · FlyGhost에서 호출).
+    //   hide : 그림도 거둔다. false면 다음 연출이 지금 자리에서 이어 간다
+    private void StopGhost(bool hide = true)
+    {
+        Sequence? seq = _ghostSeq;
+
+        _ghostSeq = null;
+
+        if (seq != null && seq.IsActive())
+        {
+            seq.OnKill(null);
+            seq.Kill();
+        }
+
+        if (hide)
+        {
+            HideGhost();
+        }
+    }
+
+    // 그림을 거둔다 — 다 날아갔을 때도, 도중에 끊겼을 때도 (OnKill)
+    private void HideGhost()
+    {
+        _ghostSeq = null;
+
+        if (_ghost != null)
+        {
+            _ghost.gameObject.SetActive(false);
+        }
+    }
+
+    // 이동이 성공했다 — 놓은 칸을 한 번 튀게 한다 (OnStorageSlotsResponded에서 호출 · T-177).
+    // ※ 칸(SlotView)이 아니라 프레임을 튀운다 — 칸은 다시 그릴 때 바뀌어도 프레임은 그 자리에 있다.
+    private static void PlayLanding()
+    {
+        if (s_landing == null)
+        {
+            return;
+        }
+
+        (InventoryGridPresenter grid, int frame) = s_landing.Value;
+
+        s_landing = null;
+
+        if (grid == null || frame < 0 || frame >= grid._frames.Count)
+        {
+            return; // 그 사이 격자가 파괴됐거나 칸 수가 줄었다
+        }
+
+        Transform target = grid._frames[frame];
+
+        target.DOKill(complete: true);
+        target.DOPunchScale(Vector3.one * 0.12f, 0.25f, 6, 0.5f)
+              .SetUpdate(true)
+              .SetLink(target.gameObject, LinkBehaviour.KillOnDisable)
+              .OnKill(() =>
+              {
+                  if (target != null)
+                  {
+                      target.localScale = Vector3.one;
+                  }
+              });
+    }
 
     // [정렬]·칸 이동 요청을 지금 보내도 되나 (SortCurrent · BeginSlotDrag에서 호출).
     //
@@ -1573,6 +1704,7 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         if (code == EResultCode.Ok)
         {
+            PlayLanding(); // 대기를 닫기 전에 — 닫히면 'OnSlotWaitClosed'가 튈 칸을 잊는다
             s_slotWaitHandle?.Succeed();
 
             return;
@@ -1585,6 +1717,7 @@ public class InventoryGridPresenter : MonoBehaviour
     private static void OnSlotWaitClosed()
     {
         s_slotWaitHandle = null;
+        s_landing        = null;
     }
 
     // 지금 탭을 서버의 탭 값으로 옮긴다. 격자 탭이 아니면 false (SortCurrent · EndSlotDrag에서 호출).

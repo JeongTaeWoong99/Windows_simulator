@@ -58,7 +58,7 @@ public class ItemIconView : MonoBehaviour
         bool hasIcon = content.Icon != null;
 
         rarityImage.color        = RarityPalette.Get(content.Rarity);
-        iconImage.sprite         = content.Icon;
+        iconImage.sprite         = content.Icon!;
         iconImage.preserveAspect = hasIcon;
         iconImage.color          = hasIcon ? Color.white : _iconPlaceholderColor;
         glyphText.text           = hasIcon ? "" : content.Glyph;

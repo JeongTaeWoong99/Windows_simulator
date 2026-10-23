@@ -101,11 +101,24 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
     // 개별 요청 대기와 달리 앱 종료로 이어지므로 별도 이벤트로 낸다.
     public void RaiseFatal(string message) => FatalRaised?.Invoke(message);
 
-    // 서버 왕복 없이 알림 한 줄만 띄운다 (아직 없는 기능을 눌렀을 때 — 인벤토리 도구 줄의 일괄 판매).
+    // 서버 왕복 없이 알림 한 줄만 띄운다 — 확인 버튼을 눌러야 닫힌다 (놓치면 안 되는 안내 · 서버가 거절한 결과).
     //
     // ※ 대기('Begin')를 열지 않는다 — 보낼 요청이 없어서 로딩을 띄울 것도, 응답을 기다릴 것도 없다.
     //   알림 화면('NoticePresenter')이 이 매니저만 구독하고 있어 창구를 여기 둔다.
+    // ※ 짧은 안내·조작 거절은 여기가 아니라 'RaiseToast'·'RaiseRefusal'이다 — 매번 클릭을 막으면 흐름이 끊긴다(T-177).
     public void RaiseNotice(string message) => NoticeRaised?.Invoke(message);
+
+    // 확인 없이 잠깐 떴다 사라지는 안내 — 완료 안내처럼 놓쳐도 되는 것 ('ToastPresenter'가 구독 · T-177).
+    //   message : 띄울 문구
+    //   refusal : 조작 거절인가 — 그러면 방금 누른 것을 흔든다
+    //   shake   : 흔들 대상. 비우면 방금 누른 버튼 (칸 끌기·우클릭처럼 버튼이 없는 거절은 넘긴다)
+    public event Action<string, bool, Transform?>? ToastRaised;
+
+    // 완료 안내 (경매 등록·구매 완료 등)
+    public void RaiseToast(string message) => ToastRaised?.Invoke(message, false, null);
+
+    // 조작 거절 — 토스트 + 방금 누른 것(또는 'shake')을 흔든다 (골드 부족 · 찾기 중 이동 등 클라가 먼저 막는 것)
+    public void RaiseRefusal(string message, Transform? shake = null) => ToastRaised?.Invoke(message, true, shake);
 }
 
 // 'ServerWaitManager.Begin'이 돌려주는 대기 한 건의 손잡이. 응답을 받은 Presenter가

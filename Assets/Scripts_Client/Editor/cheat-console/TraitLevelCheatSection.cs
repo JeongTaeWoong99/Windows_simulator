@@ -59,8 +59,10 @@ namespace DesktopWindowControl.EditorTools
 			// 공통(산업 없음)을 맨 위에, 그 아래 산업 순서대로 — 특성 화면의 줄 순서와 같다.
 			var isFollowing = false;
 
-			for (var industry = EIndustryType.None; industry <= EIndustryType.Hunting; industry++)
+			for (var i = -1; i < IndustryLabel.DisplayOrder.Length; i++)
 			{
+				var industry = i < 0 ? EIndustryType.None : IndustryLabel.DisplayOrder[i];
+
 				var rows = new List<UserTraitTableRow>();
 
 				foreach (var trait in traits)

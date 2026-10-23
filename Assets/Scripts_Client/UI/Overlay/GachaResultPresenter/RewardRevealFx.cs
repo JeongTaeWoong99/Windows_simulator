@@ -290,7 +290,7 @@ public class RewardRevealFx : MonoBehaviour
         image.raycastTarget = false;
 
         // 그림이 없으면 Image가 흰 네모로 그린다 — 번쩍·덮개는 일부러 그렇게 쓴다(그림 없는 효과는 부르는 쪽이 켜지 않는다)
-        image.sprite = sprite;
+        image.sprite = sprite!;
 
         return image;
     }

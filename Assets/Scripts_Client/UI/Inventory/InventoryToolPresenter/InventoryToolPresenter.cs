@@ -477,7 +477,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         if (added == 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, Lang.Get("UI.Tool.KindResource")) + skippedText);
+            _wait.RaiseRefusal(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, Lang.Get("UI.Tool.KindResource")) + skippedText);
 
             return;
         }
@@ -485,7 +485,7 @@ public class InventoryToolPresenter : MonoBehaviour
         // 뺀 것이 있을 때만 알린다 — 판매 목록이 채워지는 것은 눈에 보이지만, 빠진 것은 보이지 않는다.
         if (skipped.Count > 0 || locked > 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Tool.Added", Lang.Get("UI.Tool.KindResource"), Lang.Format("UI.Tool.NItem", added)) + skippedText);
+            _wait.RaiseToast(Lang.Format("UI.Tool.Added", Lang.Get("UI.Tool.KindResource"), Lang.Format("UI.Tool.NItem", added)) + skippedText);
         }
 
         ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {limit} 이하 자원 {added}종 · 잠금 {locked}종{skippedText}");
@@ -744,14 +744,14 @@ public class InventoryToolPresenter : MonoBehaviour
 
         if (added == 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, kind) + blockedText);
+            _wait.RaiseRefusal(Lang.Format("UI.Tool.NoneToAdd", LimitLabel, kind) + blockedText);
 
             return;
         }
 
         if (locked + blocked > 0)
         {
-            _wait.RaiseNotice(Lang.Format("UI.Tool.Added", kind, Lang.Format(countKey, added)) + blockedText);
+            _wait.RaiseToast(Lang.Format("UI.Tool.Added", kind, Lang.Format(countKey, added)) + blockedText);
         }
 
         ClientLogger.Info(ClientLogger.UI, $"일괄 담기 — {SelectedRarity} 이하 {kind} {added} · 잠금 {locked} · 제외 {blocked}");

@@ -119,11 +119,12 @@ public class UIManager : MonoService<UIManager>
     public MainScreen CurrentMainScreen { get; private set; } = DefaultMainScreen;
 
     // 위젯 말고 하나라도 열려 있는가. 'ToggleAll'의 방향을 정한다.
+    // ※ 'activeSelf'가 아니라 'IsShown'이다 — 닫힘 연출('PanelTransition') 동안은 켜져 있어도 닫힌 것이다.
     public bool IsOpen =>
-        mainCanvas.gameObject.activeSelf     ||
-        stateCanvas.gameObject.activeSelf    ||
-        inventoryCanvas.gameObject.activeSelf  ||
-        hubCanvas.gameObject.activeSelf        ||
+        mainCanvas.IsShown      ||
+        stateCanvas.IsShown     ||
+        inventoryCanvas.IsShown ||
+        hubCanvas.IsShown       ||
         auctionCanvas.IsOpen;
 
     // 필수 참조 검증 → 메인 화면 불변식 정리 (Unity 메시지)
@@ -146,9 +147,13 @@ public class UIManager : MonoService<UIManager>
         Lang.Changed += RefreshTitle;
     }
 
-    private void OnDestroy()
+    // 구독 해제 (Unity 메시지 — 이어서 MonoService가 서비스 등록을 해제한다)
+    // ⚠️ override로 둔다 — private로 새로 만들면 부모의 등록 해제가 가려져 파괴된 UIManager가 서비스에 남는다(CS0114).
+    protected override void OnDestroy()
     {
         Lang.Changed -= RefreshTitle;
+
+        base.OnDestroy();
     }
 
     // 지금 화면의 제목을 새 언어로 다시 쓴다 (Lang.Changed 구독)
@@ -203,7 +208,7 @@ public class UIManager : MonoService<UIManager>
         }
     }
 
-    // 메인 화면을 기본값 하나만 켜진 상태로 되돌린다 (Start · 'CloseAllExceptWidget').
+    // 메인 화면을 기본값 하나만 켜진 상태로 되돌린다 (Start).
     // ★ 캔버스는 건드리지 않는다 — 여기서 켜면 로그인 전에 게임 화면이 비친다.
     // 씬에 무엇이 켜진 채 저장됐든 무시하고 언제나 'DefaultMainScreen'으로 간다
     // (근거는 'Main 규칙.md'의 "전환 층은 하나다").
@@ -235,10 +240,12 @@ public class UIManager : MonoService<UIManager>
     // ※ 꺼져 있던 패널에 넘길 값이 있으면 이걸 부르기 전에 넣는다
     // ('WorkStationListPresenter'가 'Open(slotIndex)'를 먼저 부르는 이유).
     // 꺼진 오브젝트는 'Start()'가 아직 안 돌았을 수 있어, 켠 뒤에 넣으면 초기화가 덮어쓴다.
+    //
+    // ※ 패널을 먼저 고르고 캔버스를 켠다 — 반대로 하면 닫을 때 남아 있던 화면(설정·우편)이 한 번 켜졌다 꺼지며
+    //   'OnEnable'의 요청을 헛되이 보낸다('CloseAllExceptWidget'이 패널 정리를 다음 열림에 맡긴다).
     public void ShowMainScreen(MainScreen screen)
     {
         CurrentMainScreen = screen;
-        mainCanvas.Show(true);
 
         foreach (var entry in mainScreens)
         {
@@ -255,6 +262,8 @@ public class UIManager : MonoService<UIManager>
                 mainCanvas.SetTitle(Lang.Get(entry.titleKey));
             }
         }
+
+        mainCanvas.Show(true);
     }
 
     // 상태 패널의 화면 버튼이 부른다 — 이미 그 화면이면 기본(작업슬롯 목록)으로 되돌린다.
@@ -294,7 +303,7 @@ public class UIManager : MonoService<UIManager>
     // ★ 패널만 끄는 게 아니라 '#Main Canvas'까지 끈다. 캔버스를 켜 둔 채 두면
     // 'LayoutElement'가 열 안에서 900px를 계속 차지해 위젯이 창 가장자리에서 밀린다.
     //
-    // ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다".
+    // ★ 메인 화면도 기본으로 되돌린다 — 이유는 'Main 규칙.md'의 "전환 층은 하나다". 패널 정리는 다음 열림('ShowMainScreen')이 한다.
     public void CloseAllExceptWidget()
     {
         inventoryCanvas.Show(false);
@@ -308,7 +317,9 @@ public class UIManager : MonoService<UIManager>
         amountInput.Close();
         confirm.Close();
 
-        ResetMainScreen(); // 캔버스를 끈 뒤라 안쪽을 정리해도 화면에는 아무 변화가 없다
+        // 패널은 지금 갈아 끼우지 않는다 — 캔버스가 닫힘 연출로 흐려지는 동안 목록이 비쳐 보인다.
+        // 다음에 열 때 'ShowMainScreen'이 기본 화면으로 갈아 끼운다(캔버스를 켜기 전에).
+        CurrentMainScreen = DefaultMainScreen;
     }
 
     #endregion
@@ -324,10 +335,10 @@ public class UIManager : MonoService<UIManager>
     // 인벤토리 열을 뒤집는다 (작업슬롯 하단 버튼).
     // 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
     // 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
-    public void ToggleInventory() => ShowInventory(!inventoryCanvas.gameObject.activeSelf);
+    public void ToggleInventory() => ShowInventory(!inventoryCanvas.IsShown);
 
     // 거점 열을 뒤집는다 (작업슬롯 하단 버튼).
-    public void ToggleHub() => ShowHub(!hubCanvas.gameObject.activeSelf);
+    public void ToggleHub() => ShowHub(!hubCanvas.IsShown);
 
     #endregion
 

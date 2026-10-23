@@ -216,20 +216,9 @@ public class ItemGainEffectView : MonoBehaviour
         {
             BuildSequence(seq, shown, center, rented, spread);
 
-            // 가로는 따라갈 자리로 — 떠오름 트윈은 Y만 바꾸므로(DOAnchorPosY) 여기서 X를 덮어도 부딪치지 않는다
             if (follow != null)
             {
-                seq.OnUpdate(() =>
-                {
-                    float x = layer.InverseTransformPoint(follow()).x + startOffset.x;
-
-                    for (int i = 0; i < rented.Count; i++)
-                    {
-                        var rect = (RectTransform)rented[i].transform;
-
-                        rect.anchoredPosition = new Vector2(x + spread[i], rect.anchoredPosition.y);
-                    }
-                });
+                FollowHorizontally(seq, layer, follow, rented, spread);
             }
 
             handed = true;
@@ -248,6 +237,23 @@ public class ItemGainEffectView : MonoBehaviour
 
             Return(rented);
         }
+    }
+
+    // 가로는 따라갈 자리로 — 떠오름 트윈은 Y만 바꾸므로(DOAnchorPosY) 여기서 X를 덮어도 부딪치지 않는다 (PlayAsync에서 호출).
+    // ※ async 밖에 둔다 — 'BuildSequence'와 같은 이유('seq.OnUpdate'의 반환을 버리면 CS4014).
+    private void FollowHorizontally(Sequence seq, RectTransform layer, System.Func<Vector3> follow, List<ItemGainFx> rented, float[] spread)
+    {
+        seq.OnUpdate(() =>
+        {
+            float x = layer.InverseTransformPoint(follow()).x + startOffset.x;
+
+            for (int i = 0; i < rented.Count; i++)
+            {
+                var rect = (RectTransform)rented[i].transform;
+
+                rect.anchoredPosition = new Vector2(x + spread[i], rect.anchoredPosition.y);
+            }
+        });
     }
 
     // 묶음마다 떠오름 · 아이콘 나타남(튐) · 페이드 · 등급 빛을 'seq'에 넣는다 (PlayAsync에서 호출).

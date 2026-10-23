@@ -95,7 +95,7 @@ public class EquipPipsView : MonoBehaviour
                 continue; // 배선 누락은 Awake가 이미 경고했다
             }
 
-            icon.sprite  = sprite;
+            icon.sprite  = sprite!;
             icon.enabled = sprite != null;
         }
 

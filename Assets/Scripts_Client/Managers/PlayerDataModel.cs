@@ -477,6 +477,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<EResultCode>?           GachaFailed;      // 가챠 실패 (거절 사유)
 
     public event Action?                         CharactersChanged;          // 보유 캐릭터 캐시 갱신됨
+    public event Action<long, int, int>?         CharacterLeveledUp;         // 캐릭터 레벨업 (개체·이전 레벨·새 레벨 — 한 정산에 여러 레벨이 오를 수 있다 · 'CharactersChanged'보다 먼저)
     public event Action?                         EquipsChanged;              // 보유 장비 캐시 갱신됨 (지급·장착·해제 전부)
     public event Action<bool, EResultCode>?      EquipCompleted;             // 장착·해제 완료 (성공 여부·결과 코드)
     public event Action<S_EquipEnchantResponse>? EquipEnchantCompleted;      // 큐브 사용 결과 (거절 포함 — 'Result'를 먼저 본다)
@@ -779,11 +780,12 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         if (synced.Level > previous.Level)
         {
-            // TODO: 레벨업 연출 — 연출 리소스가 오면 여기서 알린다 (T-052 🎨).
-            //       이벤트(예: 'CharacterLeveledUp(long characterId, int level)')를 열고
-            //       인벤토리 칸 반짝임·토스트가 구독한다. 한 정산에 여러 레벨이 오를 수 있어 'previous.Level'도 함께 넘길 것.
             ClientLogger.Info(ClientLogger.Recv,
                 $"캐릭터 레벨업 — 개체={synced.CharacterId} Lv.{previous.Level} → Lv.{synced.Level}");
+
+            // 캐시를 바꾼 뒤 · 'CharactersChanged'보다 먼저 — 받는 쪽(작업슬롯 칸 연출)이 새 레벨을 읽고,
+            // 이어지는 다시 그리기가 연출을 덮지 않는다 (T-052)
+            CharacterLeveledUp?.Invoke(synced.CharacterId, previous.Level, synced.Level);
         }
 
         Notify(CharactersChanged);

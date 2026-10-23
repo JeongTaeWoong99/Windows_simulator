@@ -54,6 +54,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
     [SerializeField, Tooltip("딤 바탕 — 누르면 닫는다. OnClick은 코드가 연결한다")]
     private Button dimButton = null!;
 
+    [SerializeField, Tooltip("제목 옆 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 경매와 즉시 판매의 차이 · 등록 규칙")]
+    private TooltipTrigger helpTooltip = null!;
+
     [SerializeField, Tooltip("경매장 캔버스 — [시세 보기]")]
     private AuctionCanvasView canvasView = null!;
 
@@ -177,6 +180,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         this.RequireRef(closeButton,    nameof(closeButton));
         this.RequireRef(dimButton,      nameof(dimButton));
         this.RequireRef(canvasView,     nameof(canvasView));
+        this.RequireRef(helpTooltip,    nameof(helpTooltip));
         this.RequireRef(kindDropdown,   nameof(kindDropdown));
         this.RequireRef(findInput,      nameof(findInput));
         this.RequireRef(findSuggestView, nameof(findSuggestView));
@@ -208,6 +212,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
         _ui      = Services.Get<UIManager>();
         _rows    = new AuctionRowList(rowPrefab, rowParent, OnRowSelected);
+
+        helpTooltip.SetProvider(AuctionText.BuildRegisterRuleTooltip);
 
         FillKindOptions();
 
@@ -316,7 +322,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (index < 0)
         {
-            _wait.RaiseNotice(Lang.Get(byTid ? "UI.Auction.NothingToList" : "UI.Auction.NotFound"));
+            _wait.RaiseRefusal(Lang.Get(byTid ? "UI.Auction.NothingToList" : "UI.Auction.NotFound"));
 
             return;
         }
@@ -329,7 +335,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 RegisterKind.Equip     => EntityBlockText.ForEquip(_data, target),
                 _                      => EntityBlockText.ForItem(_data, (int)target),
             };
-            _wait.RaiseNotice(Lang.Format("UI.Inventory.CantList", reason ?? ""));
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", reason ?? ""));
 
             return;
         }
@@ -624,7 +630,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         }
 
         _waitHandle?.Succeed();
-        _wait.RaiseNotice(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
+        _wait.RaiseToast(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
 
         _selectedKey = 0L;
         Close();

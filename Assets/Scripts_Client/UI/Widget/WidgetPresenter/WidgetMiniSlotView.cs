@@ -85,7 +85,7 @@ public class WidgetMiniSlotView : MonoBehaviour
         else
         {
             // ⚠️ 칸은 해제 뒤 꺼 두었다가 다시 쓴다 — 되돌리지 않으면 이전 캐릭터의 머리가 남는다
-            characterImage.sprite         = _placeholderSprite;
+            characterImage.sprite         = _placeholderSprite!;
             characterImage.preserveAspect = _placeholderPreserveAspect;
             characterImage.color          = _placeholderColor;
         }

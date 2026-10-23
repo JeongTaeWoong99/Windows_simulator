@@ -235,7 +235,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 
         if (code == EResultCode.Ok)
         {
-            _wait.RaiseNotice(Lang.Get("UI.Auction.CancelDone"));
+            _wait.RaiseToast(Lang.Get("UI.Auction.CancelDone"));
         }
 
         Refresh();

@@ -217,7 +217,7 @@ public class RewardBurstFx : MonoBehaviour
         rect.SetParent(_layer, false);
         rect.anchorMin = rect.anchorMax = new Vector2(0.5f, 0.5f);
 
-        image.sprite        = sprite;
+        image.sprite        = sprite!;
         image.raycastTarget = false;
         image.enabled       = false;
 

@@ -194,7 +194,7 @@ public class StatePresenter : MonoBehaviour
     private void Refresh()
     {
         nickNameText.text = string.IsNullOrEmpty(_data.LoginId) ? "-" : _data.LoginId;
-        goldText.text     = _data.Gold.ToString("N0"); // 천 단위 구분
+        NumberRoll.Set(goldText, _data.Gold, NumberRoll.Thousands); // 천 단위 구분 · 바뀌면 굴러간다
 
         RefreshAccountLevel();
         RefreshMailDot();

@@ -1,0 +1,484 @@
+<title>아티팩트 도감 장착</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
+<style>
+/* 제안 목업 — 아티팩트는 인벤토리 장비 탭의 칸이고, 조작은 장비와 같다. 좌클릭만 다르다(큐브 창 자리에 아티팩트 창).
+   장착하면 경매장 넓이의 도감이 펼쳐진다. 유물감정목업.html의 팔레트·칸 모양을 그대로 쓴다.
+   위에서 아래로 ① 조작 비교 ② 직접 해 보기(인벤토리 열 · 도감 오버레이) ③ 칸 상태 ④ 정할 것 */
+:root {
+  color-scheme: dark;
+  --page: #0D1117;
+  --pageText: #C9D4E0;
+  --panel: #14202E;
+  --panelSub: #1F3044;
+  --overlay: #101A25;
+  --slot: #26394F;
+  --border: #3E5A78;
+  --button: #2B6F9E;
+  --buttonPrimary: #C98314;
+  --highlight: #FFD447;
+  --textMain: #F2F6FA;
+  --textSub: #9FB3C8;
+  --on: #6DDB7A;
+  --warn: #FFA040;
+  --danger: #E05A5A;
+  --display: "Black Han Sans", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--pageText); font-family: var(--body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+header { display: grid; gap: 6px; }
+h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 34px; color: var(--textMain); letter-spacing: .02em; text-wrap: balance; }
+h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--textMain); letter-spacing: .02em; }
+.lede { margin: 0; color: var(--textSub); max-width: 72ch; }
+.note { margin: 0 0 14px; color: var(--textSub); font-size: 14px; max-width: 72ch; }
+code { font-size: 13px; color: var(--textMain); }
+kbd { font: 700 12px var(--body); background: var(--slot); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; padding: 0 6px; color: var(--textMain); white-space: nowrap; }
+section { min-width: 0; }
+.panel { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 14px; min-width: 0; }
+
+/* 표 */
+.tbl-wrap { overflow-x: auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #263a50; vertical-align: top; }
+th { color: var(--textSub); font-weight: 600; font-size: 12px; letter-spacing: .06em; background: var(--panelSub); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.same { color: var(--textSub); }
+td.diff { color: var(--highlight); font-weight: 700; }
+
+/* ② 직접 해 보기 */
+.play { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 860px) { .play { grid-template-columns: minmax(0, 1fr); } }
+.inv-col { display: grid; gap: 8px; }
+.col-title { font-family: var(--display); font-size: 20px; color: var(--textMain); }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs span { font-size: 13px; padding: 3px 14px; border-radius: 8px; background: var(--slot); color: var(--textSub); }
+.tabs span.on { background: var(--button); color: var(--textMain); font-weight: 700; }
+.grid { display: flex; flex-wrap: wrap; gap: 6px; background: var(--overlay); border-radius: 10px; padding: 8px; min-height: 160px; align-content: flex-start; }
+.cell { position: relative; width: 64px; height: 64px; border-radius: 10px; background: var(--slot); border: 2px solid var(--rc, var(--border)); display: grid; place-items: center; padding: 0; cursor: pointer; color: inherit; font: inherit; user-select: none; }
+.cell.blank { cursor: default; border-color: #22344a; background: #1b2a3b; }
+.cell svg { width: 46px; height: 46px; }
+.cell .cnt { position: absolute; right: 5px; bottom: 1px; font-size: 12px; font-weight: 800; color: var(--textMain); text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
+.cell .badge { position: absolute; left: -4px; top: -7px; font-size: 10px; font-weight: 800; padding: 0 5px; border-radius: 6px; line-height: 16px; z-index: 1; }
+.badge.new { background: var(--highlight); color: #1a1300; }
+.cell .lock { position: absolute; right: 3px; top: 2px; font-size: 13px; line-height: 1; }
+.cell .sold { position: absolute; left: 3px; bottom: 2px; font-size: 10px; font-weight: 800; background: var(--danger); color: #fff; border-radius: 4px; padding: 0 4px; line-height: 14px; }
+.cell[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--highlight); }
+.cell .eq-label { font-size: 12px; color: var(--textSub); font-weight: 700; }
+.cell:focus-visible, .btn:focus-visible, .btn2:focus-visible, .seg button:focus-visible, .x:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+
+/* 아래 칸 — 판매 목록 · 큐브 창 · 아티팩트 창이 같은 자리를 나눠 쓴다 */
+.below { background: var(--overlay); border-radius: 10px; padding: 12px 14px; display: grid; gap: 10px; min-height: 230px; align-content: start; }
+.below .empty { color: var(--textSub); font-size: 13px; text-align: center; align-self: center; padding-block: 60px; }
+.where { font-size: 12px; color: var(--textSub); letter-spacing: .04em; }
+.hrow { display: grid; grid-template-columns: 48px minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+.hrow .ic { width: 48px; height: 48px; border-radius: 8px; background: var(--slot); border: 2px solid var(--rc); display: grid; place-items: center; }
+.hrow .ic svg { width: 38px; height: 38px; }
+.hname { font-weight: 800; font-size: 18px; line-height: 1.2; }
+.hinfo { font-size: 13px; color: var(--textSub); font-variant-numeric: tabular-nums; }
+.x { height: 34px; padding: 0 14px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font: 700 13px var(--body); cursor: pointer; }
+.effbox { background: var(--panelSub); border-radius: 10px; padding: 10px 12px; display: grid; gap: 2px; }
+.effbox .t { font-size: 12px; color: var(--textSub); }
+.effbox .v { font-size: 20px; font-weight: 800; color: var(--textMain); }
+.state { font-size: 13px; font-weight: 800; border-radius: 8px; padding: 4px 10px; }
+.state.new { background: rgba(255,212,71,.12); color: var(--highlight); }
+.state.on { background: rgba(109,219,122,.12); color: var(--on); }
+.btn { height: 50px; border-radius: 10px; border: 2px solid #E9A43A; background: var(--buttonPrimary); color: var(--textMain); font: 800 16px var(--body); cursor: pointer; width: 100%; }
+.btn2 { height: 50px; border-radius: 10px; border: 2px solid #3d86bb; background: var(--button); color: var(--textMain); font: 700 15px var(--body); cursor: pointer; width: 100%; }
+.btn:disabled, .btn2:disabled { opacity: .45; cursor: default; }
+.hint { margin: 0; font-size: 12px; color: var(--textSub); }
+.hint.warn { color: var(--warn); }
+.cart-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; font-size: 14px; padding: 4px 0; border-bottom: 1px solid #263a50; font-variant-numeric: tabular-nums; }
+.cart-row .w { color: var(--warn); font-size: 12px; display: block; }
+.cart-sum { display: flex; justify-content: space-between; align-items: center; font-weight: 800; color: var(--textMain); }
+.cube-mock { display: grid; gap: 8px; color: var(--textSub); font-size: 14px; }
+.cube-mock .fake { height: 60px; border-radius: 10px; border: 2px dashed var(--border); display: grid; place-items: center; }
+
+.side { display: grid; gap: 16px; align-content: start; }
+.bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.gold { font-family: var(--display); font-size: 20px; color: var(--highlight); font-variant-numeric: tabular-nums; margin-right: auto; }
+.gold small { font-family: var(--body); font-size: 12px; color: var(--textSub); margin-right: 6px; }
+.bar .btn, .bar .btn2 { width: auto; height: 40px; padding: 0 14px; font-size: 14px; }
+.btn2.ghost { background: var(--slot); border-color: var(--border); }
+.keys { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.keys dt { white-space: nowrap; }
+.keys dd { margin: 0; color: var(--textMain); }
+.keys dd small { color: var(--textSub); }
+.log { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--textSub); display: grid; gap: 2px; max-height: 160px; overflow: auto; font-variant-numeric: tabular-nums; }
+.log li:first-child { color: var(--textMain); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--panelSub); border: 2px solid var(--border); border-radius: 10px; padding: 8px 16px; color: var(--textMain); font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 30; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; }
+
+/* 도감 — 경매장(#Auction Canvas)과 같은 넓이 · 차단막 검정 0.75 */
+.dim { position: fixed; inset: 0; background: rgba(0,0,0,.75); display: none; z-index: 20; padding: 24px 16px; overflow: auto; }
+.dim.open { display: grid; place-items: start center; }
+.codex { width: min(1240px, 100%); background: #000; border: 2px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 12px; }
+.chead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; background: var(--panel); border-radius: 10px; padding: 8px 14px; }
+.chead .t { font-family: var(--display); font-size: 24px; color: var(--textMain); }
+.chead .cnt2 { font-family: var(--display); font-size: 20px; color: var(--textMain); font-variant-numeric: tabular-nums; }
+.chead .cnt2 small { font-family: var(--body); font-size: 12px; color: var(--textSub); margin-left: 6px; }
+.chead .x { margin-left: auto; }
+.seg { display: inline-flex; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; }
+.seg button { background: var(--slot); color: var(--textSub); border: 0; padding: 5px 14px; font: 600 13px var(--body); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--button); color: var(--textMain); }
+.cbody { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 12px; }
+@media (max-width: 760px) { .cbody { grid-template-columns: minmax(0, 1fr); } }
+.cgrid { background: var(--panel); border-radius: 10px; padding: 14px; display: grid; gap: 14px; align-content: start; }
+.cgroup h3 { margin: 0 0 6px; font-size: 14px; font-weight: 800; }
+.cgroup h3 span { color: var(--textSub); font-weight: 400; font-size: 12px; margin-left: 8px; }
+.ccells { display: flex; flex-wrap: wrap; gap: 10px; }
+.ccell { display: grid; justify-items: center; gap: 2px; background: none; border: 0; padding: 0; cursor: pointer; color: inherit; font: inherit; }
+.ccell .cell { pointer-events: none; }
+.ccell .no { font-size: 12px; font-weight: 600; color: var(--textSub); font-variant-numeric: tabular-nums; }
+.ccell.unknown .cell { border-style: dashed; background: #1a2838; }
+.ccell.unknown .cell span { color: #4b5f74; font-weight: 800; font-size: 13px; }
+.ccell[aria-pressed="true"] .cell { box-shadow: 0 0 0 2px #000, 0 0 0 4px var(--highlight); }
+.ccell[aria-pressed="true"] .no { color: var(--highlight); }
+.ccell:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; border-radius: 10px; }
+.on-dot { position: absolute; left: 5px; top: 5px; width: 8px; height: 8px; border-radius: 50%; background: var(--on); box-shadow: 0 0 6px var(--on); }
+.ccell.fresh .cell { animation: pop 1.2s ease-out 2; }
+@keyframes pop { 0% { box-shadow: 0 0 0 0 rgba(255,212,71,.9); transform: scale(1.15); } 100% { box-shadow: 0 0 0 14px rgba(255,212,71,0); transform: scale(1); } }
+.cdetail { background: var(--panel); border-radius: 10px; padding: 14px; display: grid; gap: 12px; align-content: start; text-align: center; }
+.cdetail .big { width: 104px; height: 104px; justify-self: center; }
+.cdetail .nm { font-weight: 800; font-size: 20px; color: var(--textMain); margin-top: -8px; }
+@media (prefers-reduced-motion: reduce) { .ccell.fresh .cell { animation: none; } }
+
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.qs li { color: var(--textMain); }
+.qs li small { display: block; color: var(--textSub); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>아티팩트 도감 장착 — 제안 목업</h1>
+    <p class="lede">감정으로 나온 아티팩트는 <b>인벤토리 장비 탭의 칸</b>이 된다. <b>조작은 장비와 같고 좌클릭만 다르다</b> — 장비는 아래 칸에 큐브 창이 뜨고, 아티팩트는 같은 자리에 <b>설명 + [도감에 장착]</b>이 뜬다. 장착하면 <b>경매장 넓이의 도감</b>이 펼쳐진다. 이미 장착한 번호의 중복은 장비처럼 우클릭(즉시 판매) · Ctrl+우클릭(경매 등록)으로 판다.</p>
+    <p class="note">기존 기획: <code>GameDesign/design/gathering/excavation/유물감정.md</code> 3장 · 기존 목업: <code>유물감정목업.html</code> (T-150 · T-151 · T-152). 이름 · 효과는 3.4 목록(일반 · 고급 22종) · 가격은 가제다. 조작 키는 지금 인게임 기준이다 — T-173(우클릭 메뉴화)이 오면 함께 바뀐다.</p>
+  </header>
+
+  <section>
+    <h2>① 조작 — 장비와 무엇이 같고 무엇이 다른가</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>조작</th><th>장비 칸 (지금)</th><th>아티팩트 칸 (제안)</th></tr></thead>
+        <tbody>
+          <tr><td><kbd>좌클릭</kbd></td><td>아래 칸에 <b>큐브 창</b></td><td class="diff">아래 칸에 <b>아티팩트 창</b> — 설명 · 효과 · [도감에 장착] (이미 장착했으면 [도감 보기])</td></tr>
+          <tr><td><kbd>우클릭</kbd></td><td>판매 목록에 담기 (즉시 판매)</td><td class="same">같다</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>우클릭</kbd></td><td>경매장 → 등록</td><td class="same">같다</td></tr>
+          <tr><td><kbd>Ctrl</kbd>+<kbd>좌클릭</kbd></td><td>잠금 (판매 · 경매에서 빠진다)</td><td class="same">같다</td></tr>
+          <tr><td>장착하면</td><td>캐릭터에 낀다</td><td class="diff">도감 칸에 들어가고 <b>도감(경매장 넓이)이 펼쳐진다</b> · 인벤토리에서 1개 빠진다</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 직접 해 보기</h2>
+    <p class="note">오른쪽 [아티팩트 감정]으로 칸을 채운 뒤, 인벤토리 칸에 직접 <kbd>좌클릭</kbd> · <kbd>우클릭</kbd> · <kbd>Ctrl</kbd>+클릭을 해 본다. 회색 [검] · [반지]는 비교용 장비 칸이다 — 좌클릭하면 큐브 창 자리가 뜬다.</p>
+    <div class="play">
+      <div class="panel inv-col">
+        <div class="col-title">인벤토리</div>
+        <div class="tabs"><span>자원</span><span>캐릭터</span><span class="on">장비</span><span>특성</span></div>
+        <div class="grid" id="inv"></div>
+        <div class="below" id="below"></div>
+      </div>
+
+      <div class="side">
+        <div class="panel bar">
+          <div class="gold"><small>보유 골드</small><span id="gold">0</span></div>
+          <button class="btn" id="roll">아티팩트 감정</button>
+          <button class="btn2 ghost" id="roll10">10번</button>
+          <button class="btn2 ghost" id="openCodex">도감 열기</button>
+          <button class="btn2 ghost" id="reset">처음부터</button>
+        </div>
+        <div class="panel">
+          <div class="where" style="margin-bottom:8px">아티팩트 칸 조작 (툴팁 ■ 조작 절과 같은 내용)</div>
+          <dl class="keys">
+            <dt><kbd>좌클릭</kbd></dt><dd>아티팩트 창 <small>— 큐브 창 자리</small></dd>
+            <dt><kbd>우클릭</kbd></dt><dd>판매 목록에 담기</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>우클릭</kbd></dt><dd>경매 등록</dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>좌클릭</kbd></dt><dd>잠그기 · 풀기</dd>
+          </dl>
+        </div>
+        <div class="panel">
+          <div class="where" style="margin-bottom:6px">기록</div>
+          <ul class="log" id="log"></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>③ 칸 상태 — 지금 기획 vs 제안</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>어디</th><th>지금 기획</th><th>제안</th></tr></thead>
+        <tbody>
+          <tr><td>감정 결과가 가는 곳</td><td>보관함 번호 칸 (인벤토리 칸을 먹지 않는다)</td><td>인벤토리 장비 탭 (칸을 먹는다)</td></tr>
+          <tr><td>도감이 있는 곳</td><td>보관함 = 도감 한 화면</td><td>경매장 넓이의 오버레이 — 장착하면 열린다</td></tr>
+          <tr><td>도감 칸</td><td>3가지 — 보유 · 0개(흐리게 · 효과 꺼짐) · 미획득</td><td><b>2가지</b> — 장착됨(효과 켜짐) · 미획득(점선)</td></tr>
+          <tr><td>도감 칸의 수량</td><td>n개 (중복 = 재고)</td><td>없음 — 번호마다 1개</td></tr>
+          <tr><td>인벤토리 칸 표시</td><td>—</td><td><span class="badge new" style="padding:0 5px;border-radius:6px;font-size:11px;font-weight:800">NEW</span> 도감에 없는 번호만. 중복은 표시 없음 — 보통 장비 칸처럼 보인다</td></tr>
+          <tr><td>중복 출구</td><td>거래소만</td><td>즉시 판매(우클릭) · 경매(Ctrl+우클릭)</td></tr>
+          <tr><td>도감에서 판매</td><td>[판매] · [거래소 등록]</td><td>없다 — 보기만. 판매는 인벤토리에서</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>④ 정할 것</h2>
+    <ol class="qs">
+      <li>도감에 장착한 것을 다시 뺄 수 있는가<small>추천: 못 뺀다 — 실수로 효과를 끌 일이 없고, 도감 칸 상태가 둘로 준다</small></li>
+      <li>장착하지 않고 도감을 여는 길<small>목업은 아티팩트 창의 [도감 보기]만 그렸다 — 하단 메뉴 [인벤토리 · 거점 · 경매장] 옆에 [도감]을 둘지</small></li>
+      <li>인벤토리에서 같은 번호가 스택되는가 · 개체마다 1칸인가<small>목업은 번호별 스택 — 아티팩트에는 강화 · 인챈트가 없어 개체를 나눌 이유가 없다</small></li>
+      <li>즉시 판매가<small>목업 가제: 감정 비용의 절반(일반 100 · 고급 300) — 경매 단가 하한(<code>BasePrice</code> 400 · 1,200)보다 낮아야 "높은 건 경매"가 선다</small></li>
+      <li>NEW(도감에 없는 번호)를 판매 목록에 담을 때<small>목업은 담되 경고한다 — 판매 목록 [High Rarity Warning] 자리 · T-170과 같은 자리</small></li>
+      <li>인벤토리가 가득 찼을 때 감정 결과<small>상자 보상처럼 우편 넘침으로 보낼지</small></li>
+    </ol>
+  </section>
+</div>
+
+<div class="dim" id="dim" role="dialog" aria-modal="true" aria-label="아티팩트 도감">
+  <div class="codex">
+    <div class="chead">
+      <span class="t">아티팩트 도감</span>
+      <span class="cnt2" id="ccount"></span>
+      <div class="seg" role="group" aria-label="보기">
+        <button data-f="all" aria-pressed="true">전체</button>
+        <button data-f="on" aria-pressed="false">장착됨</button>
+      </div>
+      <button class="x" id="closeCodex">닫기</button>
+    </div>
+    <div class="cbody">
+      <div class="cgrid" id="cgrid"></div>
+      <div class="cdetail" id="cdetail"></div>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const GR = [
+  { n: '일반', c: '#C4C4C4', sell: 100, floor: 400 },
+  { n: '고급', c: '#62F06F', sell: 300, floor: 1200 },
+];
+// 유물감정.md 3.4 — 일반 · 고급 22종 (번호 001~022)
+const ART = [{"n": 1, "name": "어부의 낡은 부적", "g": 0, "k": "작업속도", "ind": null, "v": 0.1}, {"n": 2, "name": "깨진 토기 빗", "g": 0, "k": "작업속도", "ind": "농사", "v": 0.2}, {"n": 3, "name": "녹슨 쇠못", "g": 0, "k": "작업속도", "ind": "채굴", "v": 0.2}, {"n": 4, "name": "조개 단추", "g": 0, "k": "작업속도", "ind": "발굴", "v": 0.2}, {"n": 5, "name": "낡은 동전", "g": 0, "k": "감정 비용 할인", "ind": null, "v": 0.5}, {"n": 6, "name": "닳은 숫돌", "g": 0, "k": "작업속도", "ind": "벌목", "v": 0.2}, {"n": 7, "name": "흙 구슬", "g": 0, "k": "산출량", "ind": null, "v": 0.1}, {"n": 8, "name": "돌 화살촉", "g": 0, "k": "작업속도", "ind": "사냥", "v": 0.2}, {"n": 9, "name": "짚신 조각", "g": 0, "k": "산출량", "ind": "농사", "v": 0.2}, {"n": 10, "name": "녹슨 열쇠", "g": 0, "k": "유물 발견", "ind": null, "v": 0.5}, {"n": 11, "name": "나무 빗", "g": 0, "k": "산출량", "ind": "벌목", "v": 0.2}, {"n": 12, "name": "작은 돌 인형", "g": 0, "k": "산출량", "ind": "발굴", "v": 0.2}, {"n": 13, "name": "조개 껍데기 목걸이", "g": 1, "k": "작업속도", "ind": "발굴", "v": 0.4}, {"n": 14, "name": "토기 술잔", "g": 1, "k": "작업속도", "ind": null, "v": 0.2}, {"n": 15, "name": "뼈 바늘", "g": 1, "k": "산출량", "ind": "사냥", "v": 0.4}, {"n": 16, "name": "조약돌 팔찌", "g": 1, "k": "산출량", "ind": "채굴", "v": 0.4}, {"n": 17, "name": "그물추", "g": 1, "k": "감정 비용 할인", "ind": null, "v": 1.0}, {"n": 18, "name": "갈대 피리", "g": 1, "k": "작업속도", "ind": "농사", "v": 0.4}, {"n": 19, "name": "모래시계 조각", "g": 1, "k": "산출량", "ind": null, "v": 0.2}, {"n": 20, "name": "나무 가면", "g": 1, "k": "작업속도", "ind": "벌목", "v": 0.4}, {"n": 21, "name": "흙 인형", "g": 1, "k": "유물 발견", "ind": null, "v": 1.0}, {"n": 22, "name": "돌 도끼", "g": 1, "k": "산출량", "ind": "벌목", "v": 0.4}];
+
+const $ = id => document.getElementById(id);
+const no = n => 'No.' + String(n).padStart(3, '0');
+const eff = a => a.k === '감정 비용 할인' ? `감정 비용 −${a.v}%` : a.k === '유물 발견' ? `유물 발견 확률 +${a.v}%` : `${a.ind ?? '전 산업'} ${a.k} +${a.v}%`;
+const fmt = v => v.toLocaleString('ko-KR');
+
+// 효과 종류마다 모양 하나 — 메달 위에 기호 (아이콘은 가제)
+function icon(a) {
+  const c = GR[a.g].c;
+  const mark = { '작업속도': 'M40 26 L58 26 L49 40 L58 54 L40 54 L49 40 Z', '산출량': 'M37 50 h26 v6 h-26 Z M39 42 h22 v6 h-22 Z M41 34 h18 v6 h-18 Z', '감정 비용 할인': 'M38 38 L62 62 M40 60 a4 4 0 1 0 0.1 0 M60 38 a4 4 0 1 0 0.1 0', '유물 발견': 'M46 44 a9 9 0 1 0 0.1 0 M53 51 L63 61' }[a.k];
+  const fill = a.k === '감정 비용 할인' || a.k === '유물 발견' ? 'none' : c;
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="38" fill="#2b3f56" stroke="${c}" stroke-width="5"/><circle cx="50" cy="50" r="28" fill="#1a2838"/><path d="${mark}" fill="${fill}" stroke="${c}" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// 아래 칸 모드: null(판매 목록 · 비면 안내) · {art:n} 아티팩트 창 · {equip:'검'} 큐브 창 자리
+let S;
+function reset() {
+  S = { gold: 0, inv: {}, locked: new Set(), cart: {}, codex: new Set(), below: null, filter: 'all', sel: null, fresh: null, log: [] };
+  closeCodex();
+  render();
+}
+function log(m) { S.log.unshift(m); S.log = S.log.slice(0, 40); }
+let toastT;
+function toast(m) { const t = $('toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200); }
+
+function roll(times) {
+  for (let i = 0; i < times; i++) {
+    const g = Math.random() < .8 ? 0 : 1;
+    const pool = ART.filter(a => a.g === g);
+    const a = pool[Math.floor(Math.random() * pool.length)];
+    S.inv[a.n] = (S.inv[a.n] || 0) + 1;
+    log(`감정 → ${no(a.n)} ${a.name} (${GR[g].n})${S.codex.has(a.n) ? '' : ' · NEW'}`);
+  }
+  render();
+}
+
+// ───────── 칸 조작 ─────────
+function onArt(n, btn, ctrl) {
+  const a = ART[n - 1];
+  if (btn === 0 && ctrl) {                      // Ctrl+좌클릭 = 잠금
+    S.locked.has(n) ? S.locked.delete(n) : S.locked.add(n);
+    if (S.locked.has(n)) delete S.cart[n];
+    log(`${S.locked.has(n) ? '잠금' : '잠금 해제'} → ${no(n)} ${a.name}`);
+  } else if (btn === 0) {                       // 좌클릭 = 아티팩트 창
+    S.below = { art: n };
+  } else if (btn === 2 && ctrl) {               // Ctrl+우클릭 = 경매 등록
+    if (S.locked.has(n)) { toast('잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다'); return; }
+    log(`경매장 → [등록] 열림 · ${no(n)} ${a.name} 골라짐 · 단가 하한 ${fmt(GR[a.g].floor)}`);
+    toast('경매장(화면 전체) → [등록]이 열리고 이 아티팩트가 골라진다');
+  } else if (btn === 2) {                       // 우클릭 = 판매 목록에 담기
+    if (S.locked.has(n)) { toast('잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다'); return; }
+    const left = S.inv[n] - (S.cart[n] || 0);
+    if (left <= 0) { toast('이미 전부 담았다'); return; }
+    S.cart[n] = (S.cart[n] || 0) + 1;           // 실제 게임은 수량 팝업 — 목업은 1개씩
+    S.below = null;
+    log(`판매 목록에 담기 → ${no(n)} ${a.name}${S.codex.has(n) ? '' : ' · ⚠ 도감에 없는 번호'}`);
+  }
+  render();
+}
+function onEquip(name, btn, ctrl) {
+  if (btn === 0 && !ctrl) { S.below = { equip: name }; render(); }
+  else toast('장비 칸 — 판매 · 경매 · 잠금은 아티팩트와 같다');
+}
+
+function equipToCodex(n) {
+  if (S.codex.has(n) || !S.inv[n]) return;
+  S.codex.add(n);
+  S.inv[n]--;
+  if (S.cart[n] > S.inv[n]) S.cart[n] = S.inv[n];
+  if (!S.cart[n]) delete S.cart[n];
+  if (!S.inv[n]) { delete S.inv[n]; S.locked.delete(n); S.below = null; }
+  log(`도감에 장착 → ${no(n)} ${ART[n - 1].name} · 효과 켜짐`);
+  S.sel = n; S.fresh = n;
+  render();
+  openCodex();
+}
+function sellCart() {
+  let sum = 0, cnt = 0;
+  for (const [k, c] of Object.entries(S.cart)) {
+    const n = +k; sum += GR[ART[n - 1].g].sell * c; cnt += c;
+    S.inv[n] -= c; if (!S.inv[n]) { delete S.inv[n]; S.locked.delete(n); }
+  }
+  S.cart = {}; S.gold += sum;
+  log(`즉시 판매 → ${cnt}개 · +${fmt(sum)} 골드`);
+  render();
+}
+
+// ───────── 그리기 ─────────
+function renderInv() {
+  const keys = Object.keys(S.inv).map(Number).sort((x, y) => x - y);
+  let h = keys.map(n => {
+    const a = ART[n - 1], isNew = !S.codex.has(n), sel = S.below?.art === n;
+    return `<button class="cell" data-art="${n}" style="--rc:${GR[a.g].c}" aria-pressed="${sel}" title="${no(n)} ${a.name} · ${eff(a)}">
+      ${isNew ? '<span class="badge new">NEW</span>' : ''}${icon(a)}<span class="cnt">${S.inv[n]}</span>
+      ${S.locked.has(n) ? '<span class="lock">🔒</span>' : ''}${S.cart[n] ? `<span class="sold">판매 ${S.cart[n]}</span>` : ''}</button>`;
+  }).join('');
+  h += ['검', '반지'].map(t => `<button class="cell" data-eq="${t}" aria-pressed="${S.below?.equip === t}"><span class="eq-label">${t}</span></button>`).join('');
+  const filled = keys.length + 2;
+  h += Array.from({ length: Math.max(0, 14 - filled) }, () => '<span class="cell blank" aria-hidden="true"></span>').join('');
+  $('inv').innerHTML = h;
+}
+
+function renderBelow() {
+  const b = S.below, el = $('below');
+  if (b?.equip) {
+    el.innerHTML = `<div class="hrow"><div class="ic" style="--rc:var(--border)"><span class="eq-label">${b.equip}</span></div><div><div class="hname">${b.equip}</div><div class="hinfo">장비 · 지금 그대로</div></div><button class="x" data-act="close">닫기</button></div>
+      <div class="cube-mock"><div class="fake">큐브 창 (지금 그대로 — BEFORE ▶ AFTER · 큐브 고르기)</div><button class="btn2" disabled>큐브 사용</button></div>`;
+    return;
+  }
+  if (b?.art && S.inv[b.art]) {
+    const n = b.art, a = ART[n - 1], g = GR[a.g], on = S.codex.has(n), cnt = S.inv[n];
+    el.innerHTML = `
+      <div class="where">아티팩트 창 — 큐브 창과 같은 자리</div>
+      <div class="hrow"><div class="ic" style="--rc:${g.c}">${icon(a)}</div>
+        <div><div class="hname" style="color:${g.c}">${a.name}</div><div class="hinfo">${no(n)} · ${g.n} 아티팩트 · 보유 ${cnt}개</div></div>
+        <button class="x" data-act="close">닫기</button></div>
+      <div class="effbox"><span class="t">도감에 장착하면 (계정 영구)</span><span class="v">${eff(a)}</span></div>
+      ${on
+        ? `<span class="state on">도감에 장착됨 · 효과 켜짐 — 이 칸은 중복이다</span>
+           <p class="hint">중복은 <kbd>우클릭</kbd> 즉시 판매 ${fmt(g.sell)} · <kbd>Ctrl</kbd>+<kbd>우클릭</kbd> 경매 (하한 ${fmt(g.floor)})</p>
+           <button class="btn2" data-act="view">도감 보기</button>`
+        : `<span class="state new">NEW — 도감에 없는 번호</span>
+           <p class="hint">장착하면 인벤토리에서 1개 빠지고 도감 칸에 들어간다 · 도감에서 빼지 않는다(제안)${cnt > 1 ? ` · 남는 ${cnt - 1}개는 중복` : ''}</p>
+           <button class="btn" data-act="equip">도감에 장착</button>`}`;
+    return;
+  }
+  const rows = Object.entries(S.cart);
+  if (rows.length) {
+    let sum = 0, hasNew = false;
+    const list = rows.map(([k, c]) => {
+      const n = +k, a = ART[n - 1], p = GR[a.g].sell * c, isNew = !S.codex.has(n);
+      sum += p; hasNew ||= isNew;
+      return `<div class="cart-row"><span>${no(n)} ${a.name} ×${c}${isNew ? '<span class="w">도감에 없는 번호 — 팔면 도감에 남지 않는다</span>' : ''}</span><span>${fmt(p)}</span></div>`;
+    }).join('');
+    el.innerHTML = `<div class="where">판매 목록 — 지금 그대로</div>${list}
+      ${hasNew ? '<p class="hint warn">⚠ 도감에 장착하지 않은 아티팩트가 있다 (High Rarity Warning 자리)</p>' : ''}
+      <div class="cart-sum"><button class="x" data-act="clear">비우기</button><span>즉시 판매 ${fmt(sum)} G</span></div>
+      <button class="btn2" data-act="sell">즉시 판매</button>`;
+    return;
+  }
+  el.innerHTML = '<div class="empty">칸을 눌러 본다 — 아티팩트 좌클릭이면 여기에 아티팩트 창이 뜬다</div>';
+}
+
+function renderCodex() {
+  $('ccount').innerHTML = `${S.codex.size} / ${ART.length}<small>장착한 수 · 효과 합계는 보여 주지 않는다</small>`;
+  document.querySelectorAll('.seg button').forEach(b => b.setAttribute('aria-pressed', b.dataset.f === S.filter));
+  $('cgrid').innerHTML = GR.map((g, gi) => {
+    const list = ART.filter(a => a.g === gi && (S.filter === 'all' || S.codex.has(a.n)));
+    if (!list.length) return '';
+    const got = ART.filter(a => a.g === gi && S.codex.has(a.n)).length;
+    return `<div class="cgroup"><h3 style="color:${g.c}">${g.n}<span>${got} / ${ART.filter(a => a.g === gi).length}</span></h3><div class="ccells">${list.map(a => {
+      const on = S.codex.has(a.n);
+      return `<button class="ccell${on ? '' : ' unknown'}${S.fresh === a.n ? ' fresh' : ''}" data-c="${a.n}" aria-pressed="${S.sel === a.n}" aria-label="${no(a.n)} ${on ? a.name : '미획득'}">
+        <span class="cell" style="--rc:${g.c}">${on ? `<span class="on-dot"></span>${icon(a)}` : '<span>???</span>'}</span><span class="no">${no(a.n)}</span></button>`;
+    }).join('')}</div></div>`;
+  }).join('') || '<p class="hint">아직 장착한 아티팩트가 없다</p>';
+
+  const n = S.sel;
+  if (n == null) { $('cdetail').innerHTML = '<p class="hint">칸을 누르면 상세가 나온다 — 판매 버튼은 없다(보기만)</p>'; return; }
+  const a = ART[n - 1], g = GR[a.g];
+  $('cdetail').innerHTML = S.codex.has(n)
+    ? `<div class="big">${icon(a)}</div><div class="hinfo">${no(n)}</div><div class="nm">${a.name}</div>
+       <div style="color:${g.c};font-size:13px;font-weight:700;margin-top:-10px">${g.n}</div>
+       <div class="effbox"><span class="v" style="font-size:16px">${eff(a)}</span></div>
+       <span class="state on">장착됨 · 효과 켜짐</span>
+       <p class="hint">중복은 인벤토리 장비 탭에서 판다</p>`
+    : `<div class="hinfo">${no(n)}</div><div class="nm" style="margin-top:0">???</div>
+       <div style="color:${g.c};font-size:13px;font-weight:700;margin-top:-10px">${g.n}</div>
+       <p class="hint">아직 장착한 적 없다. ${g.n} 유물을 감정하면 나올 수 있다.</p>`;
+}
+
+function render() {
+  $('gold').textContent = fmt(S.gold);
+  renderInv(); renderBelow(); renderCodex();
+  $('log').innerHTML = S.log.length ? S.log.map(m => `<li>${m}</li>`).join('') : '<li>[아티팩트 감정]으로 시작한다</li>';
+}
+function openCodex() { $('dim').classList.add('open'); renderCodex(); $('closeCodex').focus(); }
+function closeCodex() { $('dim').classList.remove('open'); if (S) S.fresh = null; }
+
+// ───────── 입력 ─────────
+const inv = $('inv');
+inv.addEventListener('contextmenu', e => e.preventDefault());
+inv.addEventListener('mouseup', e => {
+  if (e.button !== 0 && e.button !== 2) return;
+  const c = e.target.closest('[data-art],[data-eq]'); if (!c) return;
+  const ctrl = e.ctrlKey || e.metaKey;
+  c.dataset.art ? onArt(+c.dataset.art, e.button, ctrl) : onEquip(c.dataset.eq, e.button, ctrl);
+});
+inv.addEventListener('keydown', e => {              // 키보드: Enter = 좌클릭 · Shift+F10 = 우클릭
+  const c = e.target.closest('[data-art],[data-eq]'); if (!c) return;
+  if (e.key === 'Enter' || (e.key === 'F10' && e.shiftKey)) {
+    e.preventDefault();
+    const btn = e.key === 'Enter' ? 0 : 2, ctrl = e.ctrlKey;
+    c.dataset.art ? onArt(+c.dataset.art, btn, ctrl) : onEquip(c.dataset.eq, btn, ctrl);
+  }
+});
+$('below').onclick = e => {
+  const act = e.target.closest('[data-act]')?.dataset.act; if (!act) return;
+  if (act === 'close') { S.below = null; render(); }
+  if (act === 'equip') equipToCodex(S.below.art);
+  if (act === 'view') { S.sel = S.below.art; openCodex(); }
+  if (act === 'clear') { S.cart = {}; render(); }
+  if (act === 'sell') sellCart();
+};
+$('roll').onclick = () => roll(1);
+$('roll10').onclick = () => roll(10);
+$('reset').onclick = reset;
+$('openCodex').onclick = openCodex;
+$('closeCodex').onclick = closeCodex;
+document.querySelector('.seg').onclick = e => { const f = e.target.dataset.f; if (f) { S.filter = f; renderCodex(); } };
+$('cgrid').onclick = e => { const c = e.target.closest('[data-c]'); if (c) { S.sel = +c.dataset.c; S.fresh = null; renderCodex(); } };
+$('dim').addEventListener('click', e => { if (e.target === $('dim')) closeCodex(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && $('dim').classList.contains('open')) closeCodex(); });
+
+reset();
+</script>

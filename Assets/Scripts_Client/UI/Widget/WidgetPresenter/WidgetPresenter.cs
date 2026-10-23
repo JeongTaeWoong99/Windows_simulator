@@ -10,14 +10,16 @@ using UnityEngine.UI;
 // 열려 있으면 위젯만 남기고 전부 접는다 → 'UIManager.ToggleAll'
 //
 // ■ 두 축을 섞지 않는다
-// 데이터 갱신은 이벤트(옵저버) — 'CurrencyChanged' · 'WorkStationSlotsChanged' · 'GatherResultReceived' · 'GatherValueEarned'.
+// 데이터 갱신은 이벤트(옵저버) — 'WorkStationSlotsChanged' · 'GatherResultReceived' · 'GatherValueEarned'.
 // 시간 진행은 이 클래스의 'Update' 하나. 칸마다 Update를 두면 상시 실행 앱에서
 // 비용이 슬롯 수만큼 곱해진다 ('WorkStationListPresenter'와 같은 판단).
 // 측정 시간·시간당 골드도 같은 Update에서 초가 바뀔 때만 다시 쓴다.
 //
 // ■ 상단 줄은 아이콘 + 숫자 (2026-10-09 사용자 요청)
-// 보유 · 가동 · 누적 · 시간당 · 측정 시간. 87px 줄에 글자 라벨을 붙이면 숫자가 밀린다.
+// 가동 · 누적 · 시간당 · 측정 시간. 87px 줄에 글자 라벨을 붙이면 숫자가 밀린다.
 // 누적·시간당은 즉시 판매가 환산 추정치다 → 'WidgetEarningTracker'.
+// ※ 보유 골드는 두지 않는다(2026-10-20 사용자 결정) — 수확물은 팔기 전까지 골드가 아니라
+//   보유 골드는 그대로인데 추정치만 오른다. 둘을 나란히 두면 헷갈린다. 보유 골드는 상태 패널이 보여 준다.
 //
 // ■ 스트립은 배치된 칸만, 왼쪽부터
 // 큰 창의 목록은 빈 칸도 프레임으로 남긴다 — 눌러서 배치해야 하기 때문이다.
@@ -42,9 +44,6 @@ public class WidgetPresenter : MonoBehaviour
     private Button resetButton = null!;
 
     [CenterHeader("상단 줄")]
-    [SerializeField, Tooltip("골드 보유량")]
-    private TMP_Text goldText = null!;
-
     [SerializeField, Tooltip("가동 슬롯 — 돌고 있는 칸 / 전체 칸")]
     private TMP_Text activeSlotText = null!;
 
@@ -83,7 +82,6 @@ public class WidgetPresenter : MonoBehaviour
     {
         this.RequireRef(toggleButton,   nameof(toggleButton));
         this.RequireRef(resetButton,    nameof(resetButton));
-        this.RequireRef(goldText,       nameof(goldText));
         this.RequireRef(activeSlotText, nameof(activeSlotText));
         this.RequireRef(totalText,      nameof(totalText));
         this.RequireRef(perHourText,    nameof(perHourText));
@@ -96,7 +94,6 @@ public class WidgetPresenter : MonoBehaviour
         resetButton.onClick.AddListener(ResetEarnings);
 
         Subscribe();
-        RefreshGold();
         BeginEarningsIfLoggedIn(); // 이미 로그인한 뒤에 켜졌을 수 있다
         RefreshEarnings();
         Rebuild(); // 이미 스냅샷을 받은 뒤에 켜졌을 수 있다
@@ -116,7 +113,6 @@ public class WidgetPresenter : MonoBehaviour
         }
 
         Subscribe();
-        RefreshGold();
         BeginEarningsIfLoggedIn();
         RefreshEarnings();
         Rebuild();
@@ -163,7 +159,6 @@ public class WidgetPresenter : MonoBehaviour
         }
 
         _isSubscribed                 = true;
-        _data.CurrencyChanged         += RefreshGold;
         _data.WorkStationSlotsChanged += Rebuild;
         _data.GatherResultReceived    += OnGatherResultReceived;
         _data.GatherValueEarned       += OnGatherValueEarned;
@@ -179,7 +174,6 @@ public class WidgetPresenter : MonoBehaviour
         }
 
         _isSubscribed                 = false;
-        _data.CurrencyChanged         -= RefreshGold;
         _data.WorkStationSlotsChanged -= Rebuild;
         _data.GatherResultReceived    -= OnGatherResultReceived;
         _data.GatherValueEarned       -= OnGatherValueEarned;
@@ -190,12 +184,6 @@ public class WidgetPresenter : MonoBehaviour
 
     #region 표시
 
-    // 골드를 현재 값으로 갱신한다 (CurrencyChanged 구독 · Start · OnEnable)
-    private void RefreshGold()
-    {
-        goldText.text = _data.Gold.ToString("N0"); // 천 단위 구분
-    }
-
     // 누적 · 시간당 · 측정 시간을 다시 쓴다 (Update에서 초가 바뀔 때 · 수확 · 초기화)
     private void RefreshEarnings()
     {
@@ -203,7 +191,7 @@ public class WidgetPresenter : MonoBehaviour
         long   elapsed = (long)_earnings.ElapsedSeconds(now);
 
         _shownSecond     = elapsed;
-        totalText.text   = _earnings.TotalGold.ToString("N0");
+        NumberRoll.Set(totalText, _earnings.TotalGold, NumberRoll.Thousands); // 수확으로 늘면 굴러간다 · 같은 값이면 그대로
         perHourText.text = _earnings.TryGetPerHour(now, out long perHour) ? $"{perHour:N0}/h" : "—/h";
         elapsedText.text = $"{elapsed / 3600}:{elapsed / 60 % 60:00}:{elapsed % 60:00}";
     }

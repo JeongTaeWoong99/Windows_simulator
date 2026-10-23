@@ -23,6 +23,13 @@
 
 ## INDEX
 
+- [2026-10-22 토스트 · 거절 흔들기 · 끌어 놓기 마무리 · 알림 창 연출](2026-10-22-toast-refusal-drag-polish.md) — `#client` `#ui` T-177 · 거절은 `RaiseRefusal` · 흔들기는 회전 · ⚠️ 스크립트 `SaveScene`은 레이아웃 값을 구워 diff 폭증 → `unity cmd save_scene`
+- [2026-10-21 창 여닫기 · 숫자 카운트업 · 버튼 눌림](2026-10-21-ui-polish-panel-number-button.md) — `#client` `#ui` `PanelTransition`·`NumberRoll`·`ButtonPressFx` · 열림은 `IsShown`으로 · 버튼 반응은 Event System 하나
+- [2026-10-21 레벨업 · 해금 연출](2026-10-21-levelup-unlock-fx.md) — `#client` `#ui` T-052·T-039 작업슬롯 칸 레벨업 · 인벤토리 칸 금색 반짝임 · 자물쇠 해금 연출 (임시 그림)
+- [2026-10-21 클라 컴파일 경고 정리](2026-10-21-client-warning-cleanup.md) — `#client` `#cleanup` UIManager가 MonoService 해제를 가리던 것(CS0114) · `Image.sprite = x!` 규칙 · 남은 경고 MIKA001 2개
+- [2026-10-20 도움말 아이콘(?) 넓히기](2026-10-20-help-icon-expansion.md) — `#client` `#ui` T-144 경매장·판매 등록·특성·응축에 `HelpIcon` · 규칙 설명을 `?`로, 이 대상의 사유·값은 화면에 · 위젯 보유 골드 삭제
+- [2026-10-20 성장 개체 판매 경고 · 응축 재료 경고](2026-10-20-grown-entity-warnings.md) — `#client` `#ui` T-170 `SellCartModel.IsGrown` · 경고 글씨는 코드가 씀(`LocalizedText` 제거) · 응축 계승은 #84
+- [2026-10-19 화면 산업 순서 — 발굴을 맨 끝으로](2026-10-19-industry-display-order.md) — `#client` `#ui` `IndustryLabel.DisplayOrder` 단일 출처 · enum 순서는 그대로 · 인스펙터 배열과 형제 순서를 같이
 - [2026-10-19 위젯 머리 그림 NRE · 배치 완료 콜백 끊김](2026-10-19-widget-head-nre-callback.md) — `#client` `#ui` T-172 그림 null 방어 · 변경 알림 구독자별 격리(`Notify`)
 - [2026-10-18 일감 정합성 검사 스크립트 + CI](2026-10-18-tasks-consistency-check.md) — `#infra` `#docs` `check-tasks.mjs` · `tasks-check.yml`(이슈 닫힘에도) · T-132 ID 중복
 - [2026-10-18 캐릭터 27종 · 산업 아이콘 · 산업 레벨별 대상 그림](2026-10-18-characters-industry-icons-target-levels.md) — `#client` `#art` `#excel` 등급 = 모션 수 · 대체 medieval-warrior · `TargetRecipe.levels` · `IndustryIconOf` · 캐릭터 이름 26종 · 크기 템플릿 소·중·대(SO 드롭다운 · 칸 배지) · 대상 레벨 배율 · 몸 영역 `bodyRect` · 머리·상반신 크롭 점검표

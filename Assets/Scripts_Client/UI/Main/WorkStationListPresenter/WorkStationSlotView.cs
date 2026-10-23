@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DG.Tweening;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -66,6 +67,12 @@ public class WorkStationSlotView : MonoBehaviour
 
     private WorkStationSlotInfo? _slot;
 
+    // 레벨업 연출 — 처음 레벨업할 때 붙인다(T-052). 칸 프리팹은 건드리지 않는다
+    private LevelUpFx? _levelUp;
+
+    // 이름 줄 튐 — 연달아 오르면 앞의 것을 끊고 다시
+    private Tween? _namePunch;
+
     // 마지막으로 그린 남은 시간 (0.1초 단위). 같은 값이면 다시 쓰지 않는다 — -1은 "아직 안 썼다"
     private int _shownRemainTenths = -1;
 
@@ -116,6 +123,7 @@ public class WorkStationSlotView : MonoBehaviour
         if (!IsRunning)
         {
             industryText.text    = Lang.Get("UI.WorkStation.Idle");
+            NumberRoll.Forget(speedText); // 다시 배치되면 굴리지 않고 바로 쓴다
             speedText.text       = "";
             progressSlider.value = 0f;
             remainText.text      = "";
@@ -137,7 +145,8 @@ public class WorkStationSlotView : MonoBehaviour
                                ? UIRichText.Small(UIRichText.Paint(" " + Lang.Get("UI.WorkStation.Max"), UIThemeRole.Highlight))
                                : "";
 
-        speedText.text = Lang.Format("UI.WorkStation.SpeedMul", speedMultiplier.ToString("0.00")) + capMark;
+        // 배율이 바뀌면(레벨업 · 장비 · 특성) 굴러간다
+        NumberRoll.Set(speedText, speedMultiplier, v => Lang.Format("UI.WorkStation.SpeedMul", v.ToString("0.00")) + capMark);
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).
@@ -181,6 +190,39 @@ public class WorkStationSlotView : MonoBehaviour
         double        ground    = stageView.GroundDistance;
 
         gainEffect.Play(point, gains, () => stageView.FollowGround(point, ground));
+    }
+
+    // 배치된 캐릭터의 레벨이 올랐다 — 캐릭터 자리에서 금빛 기둥·화살표·'LV.12'가 솟고 이름 줄이 한 번 튄다
+    // (WorkStationListPresenter의 CharacterLeveledUp 구독에서 호출 · T-052).
+    //   level : 새 레벨. 한 정산에 여러 레벨이 올라도 한 번만 재생하고 마지막 레벨을 적는다
+    public void PlayLevelUp(int level)
+    {
+        if (!isActiveAndEnabled)
+        {
+            return;
+        }
+
+        _levelUp ??= LevelUpFx.Attach(gameObject, characterText);
+
+        if (stage != null && stage.TryGetCharacterPoint(out Vector3 feet, out Vector3 center))
+        {
+            _levelUp.Play(feet, center, level);
+        }
+        else
+        {
+            // 캐릭터 그림이 없다 — 무대(없으면 칸) 가운데에서
+            var     area = stage != null ? (RectTransform)stage.transform : (RectTransform)transform;
+            Rect    box  = area.rect;
+            Vector3 feet0   = area.TransformPoint(new Vector3(box.center.x, box.yMin, 0f));
+            Vector3 center0 = area.TransformPoint(box.center);
+
+            _levelUp.Play(feet0, center0, level);
+        }
+
+        _namePunch?.Kill(complete: true);
+        _namePunch = characterText.rectTransform.DOPunchScale(Vector3.one * 0.25f, 0.4f, 6, 0.6f)
+                                                .SetLink(gameObject, LinkBehaviour.KillOnDisable)
+                                                .OnKill(() => characterText.rectTransform.localScale = Vector3.one);
     }
 
     // 진행도를 갱신한다 (WorkStationListPresenter의 Update가 매 프레임 호출).

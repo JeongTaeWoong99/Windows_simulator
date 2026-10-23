@@ -19,6 +19,10 @@ using UnityEngine.UI;
 // ■ 쉬는 동안은 비용이 없다
 //   다 끝나면 그림·마스크를 끈다('Hide') — 켜 둔 RectMask2D는 칸마다 자르기 계산이 돈다.
 //
+// ■ 레벨업 모양 ('PlayLevelUp' · 2026-10-21 · T-052)
+//   캐릭터 칸의 레벨이 오르면 번짐을 등급색 대신 금색으로 깔고, 겹화살표('levelup_arrow')가 칸 아래에서 위로 솟는다.
+//   빛 줄은 같다 — "칸에 무언가 생겼다"는 같은 말에, 무엇이 생겼는지(새 개체 · 레벨)만 색과 화살표로 가른다.
+//
 // ■ 수명
 //   Sequence 하나를 칸에 묶는다(KillOnDisable — 칸은 풀로 꺼졌다 켜진다). 끊기면 'OnKill'이 그림을 끈다.
 //   격자가 칸을 다른 개체로 다시 묶거나 끌 때는 'Stop'을 부른다.
@@ -46,10 +50,16 @@ public class SlotGainShine : MonoBehaviour
     private const float ShineAngle       = 20f;
     private const float ShineAlpha       = 0.9f;
 
+    // 레벨업 — 금색 · 화살표 크기(칸 높이 대비) · 솟는 시간 (초)
+    private static readonly Color LevelUpColor = new Color(1f, 0.84f, 0.32f, 1f);
+    private const float ArrowSizeRatio = 0.45f;
+    private const float ArrowRise      = 0.55f;
+
     private RectTransform _rect  = null!;
     private RectMask2D    _clip  = null!;
     private Image         _glow  = null!;
     private Image         _shine = null!;
+    private Image         _arrow = null!;
 
     private Sequence? _seq;
 
@@ -81,6 +91,17 @@ public class SlotGainShine : MonoBehaviour
     //   delay : 한꺼번에 여러 칸이 들어왔을 때 칸 순서대로 물결지게 하는 지연 (초)
     public void Play(long key, GlobalRarity rarity, float delay)
     {
+        Play(key, Color.Lerp(RarityPalette.Get(rarity), Color.white, GlowWhiten), delay, levelUp: false);
+    }
+
+    // 레벨업 모양으로 한 번 반짝인다 — 금색 번짐 + 솟는 화살표 (격자의 DrawCell에서 호출 · 캐릭터 칸의 레벨이 올랐을 때)
+    public void PlayLevelUp(long key, float delay)
+    {
+        Play(key, LevelUpColor, delay, levelUp: true);
+    }
+
+    private void Play(long key, Color glowColor, float delay, bool levelUp)
+    {
         Stop();
 
         Key = key;
@@ -94,8 +115,9 @@ public class SlotGainShine : MonoBehaviour
 
         bool hasGlow  = _glow.sprite != null;
         bool hasShine = _shine.sprite != null;
+        bool hasArrow = levelUp && _arrow.sprite != null;
 
-        if (!hasGlow && !hasShine)
+        if (!hasGlow && !hasShine && !hasArrow)
         {
             return;
         }
@@ -105,7 +127,7 @@ public class SlotGainShine : MonoBehaviour
 
         if (hasGlow)
         {
-            Color color = Color.Lerp(RarityPalette.Get(rarity), Color.white, GlowWhiten);
+            Color color = glowColor;
 
             color.a = 0f;
 
@@ -132,6 +154,22 @@ public class SlotGainShine : MonoBehaviour
             _seq.Insert(ShineDelay, band.DOAnchorPosX(size.x, ShineDuration).SetEase(Ease.InOutSine));
         }
 
+        if (hasArrow)
+        {
+            RectTransform arrow = _arrow.rectTransform;
+            float         side  = size.y * ArrowSizeRatio;
+            float         from  = -size.y * 0.5f + side * 0.5f;
+
+            _arrow.enabled         = true;
+            _arrow.color           = new Color(LevelUpColor.r, LevelUpColor.g, LevelUpColor.b, 0f);
+            arrow.sizeDelta        = new Vector2(side, side);
+            arrow.anchoredPosition = new Vector2(0f, from);
+
+            _seq.Insert(0f, arrow.DOAnchorPosY(from + size.y * ArrowRise, Duration).SetEase(Ease.OutCubic));
+            _seq.Insert(0f, _arrow.DOFade(1f, GlowIn));
+            _seq.Insert(Duration * 0.5f, _arrow.DOFade(0f, Duration * 0.5f));
+        }
+
         // 끝나도 끊겨도 그림을 끈다 — 완료 뒤 자동 Kill에서도 불린다
         _seq.OnKill(Hide);
     }
@@ -154,6 +192,7 @@ public class SlotGainShine : MonoBehaviour
     {
         _glow.enabled  = false;
         _shine.enabled = false;
+        _arrow.enabled = false;
         _clip.enabled  = false;
     }
 
@@ -184,6 +223,8 @@ public class SlotGainShine : MonoBehaviour
         _shine = CreateImage("Shine", root, FxSprites.RevealShine);
         _shine.rectTransform.localRotation = Quaternion.Euler(0f, 0f, -ShineAngle);
 
+        _arrow = CreateImage("Level Up Arrow", root, FxSprites.LevelUpArrow);
+
         Hide();
     }
 
@@ -193,7 +234,7 @@ public class SlotGainShine : MonoBehaviour
         RectTransform rect  = CreateRect(name, parent);
         Image         image = rect.gameObject.AddComponent<Image>();
 
-        image.sprite        = sprite;
+        image.sprite        = sprite!;
         image.raycastTarget = false;
         image.enabled       = false;
 

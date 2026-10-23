@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using GameData;
 using MikaNetwork;
@@ -44,8 +45,8 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("합계 골드")]
     private TMP_Text totalText = null!;
 
-    [SerializeField, Tooltip("상위 등급이 담겼을 때만 켜지는 경고. 오판매를 막는 자리다")]
-    private GameObject highRarityWarning = null!;
+    [SerializeField, Tooltip("상위 등급·성장 개체가 담겼을 때만 켜지는 경고 글씨. 오판매를 막는 자리다 — 문구는 코드가 쓴다(LocalizedText를 붙이지 않는다)")]
+    private TMP_Text warningText = null!;
 
     [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
@@ -92,7 +93,7 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(rowParent,         nameof(rowParent));
         this.RequireRef(emptyText,         nameof(emptyText));
         this.RequireRef(totalText,         nameof(totalText));
-        this.RequireRef(highRarityWarning, nameof(highRarityWarning));
+        this.RequireRef(warningText,       nameof(warningText));
         this.RequireRef(sellButton,        nameof(sellButton));
         this.RequireRef(clearButton,       nameof(clearButton));
         this.RequireRef(inventoryTabs,     nameof(inventoryTabs));
@@ -271,11 +272,16 @@ public class SellCartPresenter : MonoBehaviour
             .Row(Lang.Get("UI.Sell.SetInAuction"), "");
     }
 
-    // 개체 줄 툴팁 — 등급 · 즉시 판매가, 그리고 경매로 올리면의 단가 범위.
-    private static TooltipContent BuildEntityTooltip(string name, GlobalRarity rarity, int basePrice)
+    // 개체 줄 툴팁 — 등급 · 성장(있을 때) · 즉시 판매가, 그리고 경매로 올리면의 단가 범위.
+    // 'addGrowthRow' — ★ · 인챈트 등급 줄. 성장하지 않은 개체는 null이다.
+    private static TooltipContent BuildEntityTooltip(string name, GlobalRarity rarity, int basePrice, Action<TooltipContent>? addGrowthRow)
     {
-        return new TooltipContent(name)
-            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+        var content = new TooltipContent(name)
+            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+
+        addGrowthRow?.Invoke(content);
+
+        return content
             .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellTotal(basePrice, 1):N0}"))
             .Header(Lang.Get("UI.Sell.IfAuctioned"))
             .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice), "", null)
@@ -310,14 +316,16 @@ public class SellCartPresenter : MonoBehaviour
             string          name      = GameDataLoader.GetCharacterName(tid);
             int             basePrice = GameDataLoader.GetCharacterPrice(tid);
             GlobalRarity    rarity    = GameDataLoader.GetCharacterRarity(tid);
+            int             star      = _data.GetCharacterStar(characterId);
 
+            // ★ 캐릭터는 이름 뒤에 ★를 붙인다 — 응축을 쌓은 개체가 목록에서 바로 보이게(T-170).
             row.Bind(SellCartKind.Character,
                      characterId,
-                     name,
+                     star > 0 ? $"{name} {UIRichText.Paint(new string('★', star), UIThemeRole.Highlight)}" : name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
                      ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
-                     () => BuildEntityTooltip(name, rarity, basePrice));
+                     () => BuildEntityTooltip(name, rarity, basePrice, star > 0 ? c => c.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), "", null) : null));
         }
 
         foreach (EquipInfo equip in _data.Equips)
@@ -331,14 +339,17 @@ public class SellCartPresenter : MonoBehaviour
             string          name      = Loc.Get(equipRow.NameLocKey);
             int             basePrice = equipRow.BasePrice;
             GlobalRarity    rarity    = equipRow.GlobalRarity;
+            var             enchant   = (GlobalRarity)equip.EnchantGrade;
+            bool            isGrown   = SellCartModel.IsGrown(equip);
 
+            // 인챈트 장비는 이름 뒤에 인챈트 등급을 그 등급색으로 붙인다(T-170).
             row.Bind(SellCartKind.Equip,
                      equip.EquipId,
-                     name,
+                     isGrown ? $"{name} {UIRichText.Paint(RarityLabel.Get(enchant), RarityPalette.Get(enchant))}" : name,
                      1,
                      AuctionModel.InstantSellTotal(basePrice, 1),
                      ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
-                     () => BuildEntityTooltip(name, rarity, basePrice));
+                     () => BuildEntityTooltip(name, rarity, basePrice, isGrown ? c => c.Row(Lang.Get("UI.Equip.EnchantGrade"), RarityLabel.Get(enchant), "", RarityPalette.Get(enchant)) : null));
         }
 
         int count = index;
@@ -349,9 +360,9 @@ public class SellCartPresenter : MonoBehaviour
         // '즉시 판매'라고 못 박는다 — 경매장(직접 가격, 즉시 판매가 이상)과 다른 파는 법이라는 걸 합계 줄에서 말한다.
         totalText.text = Lang.Format("UI.Sell.Total", $"{_cart.TotalPrice:N0}");
 
-        // 상위 등급은 다시 모으기 어렵다. 목록에서 빼지 않고 눈에 띄게만 알린다 —
+        // 상위 등급·성장 개체는 다시 모으기 어렵다. 목록에서 빼지 않고 눈에 띄게만 알린다 —
         // 빼 버리면 "왜 안 담기지"가 되고, 팔 자유는 남겨 둔다.
-        highRarityWarning.SetActive(_cart.HasHighRarity);
+        ApplyWarning();
 
         ApplySellButton();
 
@@ -362,6 +373,17 @@ public class SellCartPresenter : MonoBehaviour
         // 여기서 미리 태워 두면 아무도 반쯤 놓인 줄을 보지 않는다.
         // ※ 프리팹 크기를 부모보다 작게 저장해 피하는 방법은 자식 하나만 커도 다시 터진다.
         LayoutRebuilder.ForceRebuildLayoutImmediate(rowParent);
+    }
+
+    // 경고 글씨 — 상위 등급 · 성장 개체(몇 개인지)를 줄로 쌓는다. 둘 다 없으면 끈다.
+    // ※ 별도 확인 창을 띄우지 않는다 — [판매] 바로 위의 이 줄이 확인 절차다(클래스 머리 주석).
+    private void ApplyWarning()
+    {
+        string highRarity = _cart.HasHighRarity ? Lang.Get("UI.Sell.HighRarity") : "";
+        string grown      = _cart.GrownCount > 0 ? Lang.Format("UI.Sell.GrownWarning", _cart.GrownCount) : "";
+
+        warningText.text = highRarity.Length > 0 && grown.Length > 0 ? $"{highRarity}\n{grown}" : highRarity + grown;
+        warningText.gameObject.SetActive(warningText.text.Length > 0);
     }
 
     // 판매 버튼을 열고 닫는다 — 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.

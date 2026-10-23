@@ -750,7 +750,7 @@ public class EnchantRevealFx : MonoBehaviour
         RectTransform rect  = CreateRect(name, parent);
         Image         image = rect.gameObject.AddComponent<Image>();
 
-        image.sprite        = sprite;
+        image.sprite        = sprite!;
         image.raycastTarget = false;
         image.enabled       = false;
 

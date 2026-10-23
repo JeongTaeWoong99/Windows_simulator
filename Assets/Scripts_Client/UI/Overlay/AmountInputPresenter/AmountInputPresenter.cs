@@ -32,6 +32,9 @@ public class AmountInputPresenter : MonoBehaviour
     [SerializeField, Tooltip("자기 CanvasGroup. 이 오브젝트를 끄지 않고 alpha·blocksRaycasts로 여닫는다")]
     private CanvasGroup group = null!;
 
+    [SerializeField, Tooltip("가운데 판 — 열 때 살짝 커지며 나타난다. 비우면 팝업 전체가 커진다")]
+    private RectTransform? panel;
+
     [SerializeField, Tooltip("무엇을 몇 개까지 고를 수 있는지 알리는 문구. 묻는 말은 부르는 쪽이 넘긴다")]
     private TMP_Text titleText = null!;
 
@@ -63,7 +66,7 @@ public class AmountInputPresenter : MonoBehaviour
         cancelButton.onClick.AddListener(OnCancelClicked);
         amountInput.onValueChanged.AddListener(OnAmountChanged);
 
-        Close(); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
+        SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }
 
     #region 여닫기
@@ -103,11 +106,10 @@ public class AmountInputPresenter : MonoBehaviour
     //
     // 오브젝트를 끄지 않는다 — 끄면 'Start'가 돌지 않아 배선이 끊긴다.
     // 'blocksRaycasts'가 전체화면 차단막과 함께 뒤 UI 클릭을 막는다.
-    private void SetVisible(bool on)
+    // 연출은 'PanelTransition' — 차단·입력은 여는 즉시 켜고 닫는 즉시 끈다.
+    private void SetVisible(bool on, bool instant = false)
     {
-        group.alpha          = on ? 1f : 0f;
-        group.blocksRaycasts = on;
-        group.interactable   = on;
+        PanelTransition.SetVisible(group, on, panel, instant);
     }
 
     #endregion
