@@ -10,6 +10,9 @@ public class DBManager : IDBQueue, IDbRunner
     // 커넥션을 만드는 방법만 안다 — 파일 DB냐 :memory:냐는 주입하는 쪽이 정한다.
     private Func<SqliteConnection>? _connectionFactory;
     private readonly ILogicExecutor _logicExecutor;
+
+    // 잠금이 풀리길 기다리는 상한. 경매장 DB(AuctionStore)와 같은 값이다.
+    private const int BusyTimeoutMs = 5000;
     
     public DBManager(ILogicExecutor logicExecutor)
     {
@@ -66,8 +69,7 @@ public class DBManager : IDBQueue, IDbRunner
             try
             {
                 // 작업마다 커넥션을 열어 Repository로 넘겨준다
-                await using var conn = _connectionFactory!();
-                await conn.OpenAsync();
+                await using var conn = await OpenAsync();
 
                 await repository.ExecuteAsync(new DbConnection(conn));
             }
@@ -85,9 +87,21 @@ public class DBManager : IDBQueue, IDbRunner
     /// <summary>유저에 묶이지 않은 DB 작업(경매 릴레이). 호출한 스레드에서 돈다 — 로직 스레드에서 부르지 않는다.</summary>
     public async Task<T> RunAsync<T>(Func<DbConnection, Task<T>> body)
     {
-        await using var conn = _connectionFactory!();
-        await conn.OpenAsync();
+        await using var conn = await OpenAsync();
 
         return await body(new DbConnection(conn));
+    }
+
+    // 잠기면 SQLite가 직접 기다린다 — 드라이버의 재시도는 step만 감싸서, RETURNING 문의 커밋(reset 시점) 잠김은 바로 실패한다.
+    private async Task<SqliteConnection> OpenAsync()
+    {
+        var conn = _connectionFactory!();
+        await conn.OpenAsync();
+
+        await using var cmd = conn.CreateCommand();
+        cmd.CommandText = $"PRAGMA busy_timeout = {BusyTimeoutMs};";
+        await cmd.ExecuteNonQueryAsync();
+
+        return conn;
     }
 }
