@@ -1,8 +1,10 @@
+using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-// 토스트 — 확인 없이 화면 아래에 잠깐 떴다 사라지는 안내 한 줄 (T-177).
+// 토스트 — 확인 없이 안내가 난 열의 가운데에 잠깐 떴다 사라지는 안내 한 줄 (T-177).
 // 'ServerWaitManager.ToastRaised'를 구독한다. 확인 버튼이 있는 알림('NoticePresenter')과 갈래가 다르다.
 //
 // ■ 무엇이 여기로 오나
@@ -11,6 +13,11 @@ using UnityEngine;
 //
 // ■ 거절이면 누른 것을 흔든다
 //   흔들 대상은 넘겨받은 것(칸 끌기·우클릭), 없으면 방금 누른 버튼('ButtonPressFx.RecentlyPressed') — 'RefusalShake'.
+//
+// ■ 안내가 난 열의 가운데에 뜬다
+//   인벤토리 열은 설정에 따라 왼쪽·오른쪽으로 옮겨 간다 — 화면 가운데에 띄우면 다른 열 위에 떠 어디 이야기인지 끊긴다.
+//   출처는 넘겨받은 것(흔들 대상) → 방금 누른 버튼 → 커서 밑 UI 순으로 찾고, 그것을 품은 열('columns')의 가운데에 띄운다.
+//   폭도 그 열 안으로 줄인다. 어느 열에도 없으면(경매장처럼 열을 덮는 화면 · 서버 알림) 씬에 둔 자리(화면 가운데)다.
 //
 // ■ 막지 않는다
 //   'blocksRaycasts'를 늘 끈다 — 떠 있는 동안에도 아래 버튼을 그대로 누를 수 있다.
@@ -45,11 +52,16 @@ public class ToastPresenter : MonoBehaviour
     [SerializeField, Tooltip("안내 문구 — 판에 여백을 두고 꽉 차게 둔다(가운데 정렬 · 줄바꿈 켬)")]
     private TMP_Text messageText = null!;
 
-    private ServerWaitManager _wait = null!;
+    [SerializeField, Tooltip("메인 열 — 안내가 이 안에서 났으면 그 열의 가운데에 뜬다. 어느 열에도 없으면 씬에 둔 자리")]
+    private RectTransform[] columns = System.Array.Empty<RectTransform>();
+
+    private ServerWaitManager _wait   = null!;
+    private WindowManager     _window = null!;
 
     private Sequence? _seq;
     private Tween?    _bump;
-    private float     _restY;   // 판이 머무는 높이 — 씬에 둔 자리
+    private Vector2   _home;    // 열을 모를 때의 자리 — 씬에 둔 자리
+    private Vector2   _rest;    // 지금 판이 머무는 자리
     private string?   _current; // 지금 떠 있는 문구. 숨었으면 null
 
     private bool _isSubscribed;
@@ -62,8 +74,10 @@ public class ToastPresenter : MonoBehaviour
         this.RequireRef(panel,       nameof(panel));
         this.RequireRef(messageText, nameof(messageText));
 
-        _wait  = Services.Get<ServerWaitManager>();
-        _restY = panel.anchoredPosition.y;
+        _wait   = Services.Get<ServerWaitManager>();
+        _window = Services.Get<WindowManager>();
+        _home   = panel.anchoredPosition;
+        _rest   = _home;
 
         Subscribe();
 
@@ -123,17 +137,18 @@ public class ToastPresenter : MonoBehaviour
             }
         }
 
-        Show(message);
+        Show(message, FindColumn(shake));
     }
 
-    private void Show(string message)
+    private void Show(string message, RectTransform? column)
     {
         bool isShown = _current != null;
         bool isSame  = isShown && _current == message;
 
         _current         = message;
         messageText.text = message;
-        FitPanel(message);
+        _rest            = column != null ? CenterOf(column) : _home;
+        FitPanel(message, column);
 
         StopSequence();
 
@@ -145,7 +160,7 @@ public class ToastPresenter : MonoBehaviour
         {
             // 떠 있는 중 — 자리·투명도는 그대로 두고 시간만 다시 잰다
             group.alpha            = 1f;
-            panel.anchoredPosition = new Vector2(panel.anchoredPosition.x, _restY);
+            panel.anchoredPosition = _rest;
 
             if (isSame)
             {
@@ -155,10 +170,10 @@ public class ToastPresenter : MonoBehaviour
         else
         {
             group.alpha            = 0f;
-            panel.anchoredPosition = new Vector2(panel.anchoredPosition.x, _restY - RiseFrom);
+            panel.anchoredPosition = new Vector2(_rest.x, _rest.y - RiseFrom);
 
             _seq.Append(group.DOFade(1f, FadeIn).SetEase(Ease.OutQuad));
-            _seq.Join(panel.DOAnchorPosY(_restY, FadeIn * 1.6f).SetEase(Ease.OutCubic));
+            _seq.Join(panel.DOAnchorPosY(_rest.y, FadeIn * 1.6f).SetEase(Ease.OutCubic));
         }
 
         _seq.AppendInterval(Mathf.Min(HoldBase + HoldPerChar * message.Length, HoldMax));
@@ -166,10 +181,61 @@ public class ToastPresenter : MonoBehaviour
         _seq.OnKill(Settle);
     }
 
-    // 문구 길이에 맞춰 판 크기를 정한다 — 짧으면 좁게, 길면 최대 폭에서 줄을 바꾼다
-    private void FitPanel(string message)
+    // 안내가 난 열 — 넘겨받은 것 → 방금 누른 버튼 → 커서 밑 UI 순으로 출처를 찾는다. 열 밖이면 null
+    private RectTransform? FindColumn(Transform? shake)
     {
-        float screenWidth = ((RectTransform)transform).rect.width - ScreenMargin * 2f;
+        Transform? source = shake != null ? shake : ButtonPressFx.RecentlyPressed;
+
+        if (source == null)
+        {
+            IReadOnlyList<RaycastResult> hits = _window.UIHitsUnderCursor;
+
+            source = hits.Count > 0 ? hits[0].gameObject.transform : null;
+        }
+
+        if (source == null)
+        {
+            return null;
+        }
+
+        foreach (RectTransform column in columns)
+        {
+            if (column != null && source.IsChildOf(column))
+            {
+                return column;
+            }
+        }
+
+        return null;
+    }
+
+    // 열 가운데를 판의 자리(anchoredPosition)로 바꾼다 — 열과 토스트는 다른 캔버스라 화면 좌표를 거친다
+    private Vector2 CenterOf(RectTransform column)
+    {
+        var     area   = (RectTransform)panel.parent;
+        Vector2 screen = RectTransformUtility.WorldToScreenPoint(CameraOf(column), column.TransformPoint(column.rect.center));
+
+        RectTransformUtility.ScreenPointToLocalPointInRectangle(area, screen, CameraOf(area), out Vector2 local);
+
+        // 판의 앵커는 부모 가운데다 — 부모 기준 좌표에서 부모 가운데를 뺀다
+        return local - area.rect.center;
+    }
+
+    // 화면 좌표 변환에 쓸 카메라 — Overlay 캔버스면 null
+    private static Camera? CameraOf(RectTransform target)
+    {
+        Canvas? canvas = target.GetComponentInParent<Canvas>();
+
+        return canvas == null || canvas.rootCanvas.renderMode == RenderMode.ScreenSpaceOverlay ? null : canvas.rootCanvas.worldCamera;
+    }
+
+    // 문구 길이에 맞춰 판 크기를 정한다 — 짧으면 좁게, 길면 최대 폭에서 줄을 바꾼다. 열을 알면 그 열 폭 안으로
+    private void FitPanel(string message, RectTransform? column)
+    {
+        float areaWidth = column != null
+            ? column.rect.width * column.lossyScale.x / panel.parent.lossyScale.x
+            : ((RectTransform)transform).rect.width;
+        float screenWidth = areaWidth - ScreenMargin * 2f;
         float textMax     = Mathf.Min(MaxWidth, screenWidth) - Padding.x * 2f;
 
         float width  = Mathf.Min(messageText.GetPreferredValues(message, textMax, 0f).x, textMax);
@@ -214,6 +280,6 @@ public class ToastPresenter : MonoBehaviour
         _seq                   = null;
         _current               = null;
         group.alpha            = 0f;
-        panel.anchoredPosition = new Vector2(panel.anchoredPosition.x, _restY);
+        panel.anchoredPosition = _rest;
     }
 }

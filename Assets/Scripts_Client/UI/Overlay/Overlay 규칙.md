@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-10-25 (토스트는 안내가 난 열의 가운데 — 출처: 흔들 대상 → 방금 누른 버튼 → 커서 밑 UI · 열 밖이면 화면 가운데) · 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -17,7 +17,7 @@
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
 | `TooltipPresenter/TooltipPresenter.cs` · `TooltipRowView.cs` | 커서 밑 `TooltipTrigger`(Shared) 옆에 툴팁을 띄운다. **차단하지 않는 오버레이다** — 아래 "툴팁" 절 |
 | `NoticePresenter/NoticePresenter.cs` | `NoticeRaised`·`FatalRaised`를 구독해 알림·종료 안내. 확인 버튼을 눌러야 닫힌다 — **놓치면 안 되는 안내·서버가 거절한 결과만** 여기로 온다 |
-| `ToastPresenter/ToastPresenter.cs` | `ToastRaised`를 구독해 화면 아래에 **확인 없이 잠깐 떴다 사라지는** 안내 한 줄. **막지 않는다**(`blocksRaycasts` 늘 끔). 문구 길이에 맞춰 판 크기를 정한다(최대 560px). 거절(`RaiseRefusal`)이면 누른 것을 흔든다(`Shared/RefusalShake`). 아래 "알림과 토스트" 절 |
+| `ToastPresenter/ToastPresenter.cs` | `ToastRaised`를 구독해 **안내가 난 열의 가운데**에 **확인 없이 잠깐 떴다 사라지는** 안내 한 줄. **막지 않는다**(`blocksRaycasts` 늘 끔). 문구 길이에 맞춰 판 크기를 정한다(최대 560px · 그 열 폭 안). 거절(`RaiseRefusal`)이면 누른 것을 흔든다(`Shared/RefusalShake`). 아래 "알림과 토스트" 절 |
 | `CoinFlyPresenter/CoinFlyPresenter.cs` | `ServerWaitManager.GoldGainRaised`를 구독해 **골드를 받은 자리에서 상단 골드 아이콘(`target`)으로 동전**을 날린다(받은 골드의 자릿수만큼 4~12개). 닿으면 아이콘이 튀고 반짝인다. 숫자는 상태바가 따로 굴린다. **막지 않는다**(층에 Graphic 없음). 그림 `FxSprites.CoinBody`가 없으면 날리지 않는다. 지금 부르는 곳은 판매 목록(`SellCartPresenter`) 하나 |
 
 > **캔버스에 붙지 않는 정적 변환표는 여기 없다 (2026-09-12 · T-049).**
@@ -315,6 +315,10 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 층을 
 - 흔들 대상은 넘기지 않으면 **방금 누른 버튼**(`ButtonPressFx.RecentlyPressed`)이다. 버튼이 아닌 입력(칸 우클릭·끌기)의 거절은 그 칸을 넘긴다.
 - 서버 응답의 실패 코드는 토스트로 내리지 않는다 — 클라가 몰랐던 사정이라 읽고 넘어가야 한다.
 - 토스트는 알림 아래다 — 알림이 떠 있으면 그 차단막에 덮인다(알림이 우선이다).
+- **자리 — 안내가 난 열의 가운데** (2026-10-25). 인벤토리 열은 설정에 따라 왼쪽·오른쪽으로 옮겨 가서, 화면 가운데에 띄우면 다른 열 위에 뜬다.
+  출처를 흔들 대상(`RaiseRefusal`의 대상) → 방금 누른 버튼(`ButtonPressFx.RecentlyPressed`) → 커서 밑 UI(`WindowManager.UIHitsUnderCursor`) 순으로 찾고,
+  그것을 품은 열(`columns` — `@Inventory Column` · `@Main Column` · `@Hub Column`)의 가운데에 띄운다. 어느 열에도 없으면(경매장 · 서버 알림) 씬에 둔 자리 = 화면 가운데다.
+  부르는 쪽은 열을 넘기지 않는다 — 새 열을 만들면 `columns`에 넣는다.
 
 ## 툴팁 — 막지 않는 오버레이 (2026-09-25 · T-088)
 
