@@ -1,0 +1,60 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadMockups, sectionLabel } from '../../lib/mockups';
+
+const items = loadMockups();
+const sections = [...new Set(items.map((m) => m.section))];
+---
+
+<Layout title="목업">
+  <div class="mk">
+    <header class="gn-head">
+      <h1>목업</h1>
+      <p>
+        <code>GameDesign/design/</code> 아래 목업(<code>.html</code>)을 모두 모았다. 카드를 누르면 사이트 안에서 바로 열리고,
+        [새 탭]은 목업만 크게 띄운다. 아래 줄은 그 목업을 링크하는 기획 문서 · 일감이다.
+      </p>
+    </header>
+
+    {items.length === 0 && <p class="gn-empty">아직 목업이 없다.</p>}
+
+    {
+      sections.map((section) => (
+        <section class="mk-section">
+          <h2>{sectionLabel(section)}</h2>
+          <ul class="mk-grid">
+            {items
+              .filter((m) => m.section === section)
+              .map((m) => (
+                <li class="mk-card">
+                  <a class="mk-thumb" href={`/mockups/${m.slug}`} aria-label={`${m.title} 열기`}>
+                    <iframe src={m.src} title="" loading="lazy" tabindex="-1" aria-hidden="true" />
+                  </a>
+                  <div class="mk-body">
+                    <a class="mk-title" href={`/mockups/${m.slug}`}>
+                      {m.title}
+                    </a>
+                    {m.summary && <p class="mk-desc">{m.summary}</p>}
+                    <div class="gn-info">
+                      <span>{m.updated}</span>
+                      <span class="mk-path">{m.relPath}</span>
+                      <a href={m.src} target="_blank" rel="noopener">
+                        새 탭 ↗
+                      </a>
+                    </div>
+                    {m.refs.length > 0 && (
+                      <div class="mk-refs">
+                        {m.refs.map((r) => (
+                          <a href={r.href}>{r.label}</a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+          </ul>
+        </section>
+      ))
+    }
+  </div>
+</Layout>

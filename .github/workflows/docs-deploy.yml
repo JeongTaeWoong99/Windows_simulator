@@ -48,7 +48,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # 목업 목록(/mockups)이 파일마다 마지막 커밋 날을 git에서 읽는다 — 얕은 클론이면 전부 같은 날이 된다.
+      # 이력은 받되 파일 내용(blob)은 필요할 때만 받는다(blob:none) — 바이너리 이력까지 내려받지 않는다.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: blob:none
 
       # 지난 회차를 목표로 둔 미완료 일감 → 이번 회차 · 지난 회차 마일스톤의 열린 이슈도 옮기고 마일스톤은 닫는다.
       # PR은 건너뛴다(main에만 반영). 이 job이 고친 파일로 바로 빌드하므로 사이트에도 곧장 반영된다.
