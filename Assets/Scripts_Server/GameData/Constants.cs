@@ -84,5 +84,8 @@ namespace GameData
 
         /// <summary>응축 재료의 누적 응축 중 대상에 넘기는 비율(천분율) — 재료마다 올림. 레벨·경험치는 넘기지 않는다</summary>
         public static long CondenseInheritPermille => GameTable.ConstantsTable["CondenseInheritPermille"].Value;
+
+        /// <summary>인벤토리 아티팩트 탭 칸 하나에 쌓이는 같은 번호의 상한</summary>
+        public static long ArtifactMaxStack => GameTable.ConstantsTable["ArtifactMaxStack"].Value;
     }
 }

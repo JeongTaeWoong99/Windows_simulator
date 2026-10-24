@@ -20,6 +20,7 @@ public sealed class LoginRepository : IRepository
     private List<UserUnlockRow>        _unlockRows        = new();
     private List<UserTraitRow>         _traitRows         = new();
     private List<UserArtifactRow>      _artifactRows      = new();
+    private List<UserArtifactStackRow> _artifactStackRows = new();
     private List<UserEquipRow>         _equipRows          = new();
     private List<CharacterEquipRow>    _characterEquipRows = new();
     private List<UserItemLockRow>      _itemLockRows       = new();
@@ -85,9 +86,13 @@ public sealed class LoginRepository : IRepository
             "SELECT user_trait_tid, level FROM t_user_trait WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 6-2) 아티팩트 보관함. 얻은 적 있는 번호만 행이 있다(수량 0 포함).
+        // 6-2) 아티팩트 도감(장착한 번호)과 인벤토리 아티팩트 탭 (T-181).
         _artifactRows = await connection.QueryAsync<UserArtifactRow>(
-            "SELECT artifact_tid, count FROM t_user_artifact WHERE user_id = @userId",
+            "SELECT artifact_tid, is_active FROM t_user_artifact WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        _artifactStackRows = await connection.QueryAsync<UserArtifactStackRow>(
+            "SELECT slot, artifact_tid, count FROM t_user_artifact_stack WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 7) 장비 개체와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
@@ -115,7 +120,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows),
             GameClock.Instance.UtcNow);
     }
 }

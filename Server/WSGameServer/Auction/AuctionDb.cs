@@ -77,13 +77,14 @@ public static class AuctionDb
     public const int Returned = 3;
 
     /// <summary>
-    /// 등록 한 트랜잭션: 인벤 확정 수량 · 아티팩트 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
+    /// 등록 한 트랜잭션: 인벤 확정 수량 · 아티팩트 칸 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
     /// 하나라도 빠지면 아이템이 증발하거나(차감만) 복제된다(등록만).
     /// </summary>
-    /// <param name="artifactCount">아티팩트 매물이면 등록 뒤 보관함에 남은 수량(확정값) — 0이어도 행은 남긴다(도감).</param>
+    /// <param name="artifactChanges">아티팩트 매물이면 인벤토리 아티팩트 탭의 칸 변경분(확정값) — 비어 있으면 등록 전체를 되돌린다.</param>
     public static async Task<long> RegisterAsync(
         DbConnection connection, long sellerId, AuctionItemSnapshot item, long unitPrice, long listingFee,
-        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now, int artifactCount = 0)
+        IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now,
+        IReadOnlyList<ItemChangeInfo>? artifactChanges = null)
     {
         long tradeId = 0;
 
@@ -94,13 +95,13 @@ public static class AuctionDb
 
             if (item.Kind == EAuctionKind.Artifact)
             {
-                var written = await tx.ExecuteAsync(
-                    "UPDATE t_user_artifact SET count = @count WHERE user_id = @sellerId AND artifact_tid = @tid AND count >= @count;",
-                    new { count = artifactCount, sellerId, tid = item.Tid });
-                if (written != 1)
+                // 차감 없는 아티팩트 등록은 복제다 — 메모리 쪽이 칸을 못 뺐다는 뜻이라 통째로 되돌린다.
+                if (artifactChanges is not { Count: > 0 } || artifactChanges.Any(c => c.ItemId != item.Tid))
                 {
-                    throw new InvalidOperationException($"아티팩트 차감 실패 — 보관함에 없거나 수량이 늘었다. 번호 {item.Tid} 판매자 {sellerId}");
+                    throw new InvalidOperationException($"아티팩트 차감 실패 — 칸 변경이 없거나 다른 번호다. 번호 {item.Tid} 판매자 {sellerId}");
                 }
+
+                await ArtifactStackDb.WriteAllAsync(tx, sellerId, artifactChanges);
             }
 
             tradeId = await tx.ExecuteScalarAsync<long>(

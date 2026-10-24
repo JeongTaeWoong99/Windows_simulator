@@ -112,6 +112,11 @@ namespace MikaProtocol
         // ── 1300~: 분해 (T-131) ── 미보유 EquipNotOwned(600) · 잠김 EntityLocked(1200) · 고르기 전 EnchantPending(615) · 재료 칸 부족 StorageFull(103)
         InvalidDisassembleRequest = 1300, // 빈 목록 · 중복 장비
         DisassembleEquipWorn      = 1301, // 착용 중인 장비 — 벗겨야 분해한다
+
+        // ── 1400~: 아티팩트 도감 (T-181) ── 인벤토리에 없으면 NotEnoughItem · 표에 없는 번호 InvalidArtifact
+        ArtifactAlreadyEquipped = 1400, // 그 번호는 이미 도감에 장착했다 — 남는 것은 판매·거래소로
+        ArtifactNotEquipped     = 1401, // 도감에 장착하지 않은 번호는 켜고 끌 수 없다
+        InvalidArtifact         = 1402, // ArtifactTable에 없는 번호 · 빈 목록 · 0개 이하
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -190,7 +195,7 @@ namespace MikaProtocol
         Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
         Equip     = 3,   // GachaRewardInfo.EquipTid를 읽는다
         Gold      = 4,   // GachaRewardInfo.Count가 골드 양이다 (상자 전용)
-        Artifact  = 5,   // GachaRewardInfo.ArtifactTid를 읽는다 (유물 감정 전용 — 인벤토리가 아닌 아티팩트 보관함으로)
+        Artifact  = 5,   // GachaRewardInfo.ArtifactTid를 읽는다 (유물 감정 전용 — 인벤토리 아티팩트 탭으로 · T-181)
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —
@@ -214,7 +219,7 @@ namespace MikaProtocol
         Item  = 1,   // 자원(스택) — 매물은 통째로만 팔린다
         Equip = 2,   // 장비 개체 — 인챈트까지 그대로 넘어간다
         Character = 3,   // 캐릭터 개체 — 레벨·경험치·찍은 적성까지 그대로 넘어간다
-        Artifact  = 4,   // 아티팩트(스택) — 보관함에서 빠져 거래소에서 수량으로 팔린다. 즉시 판매는 없다 (T-152)
+        Artifact  = 4,   // 아티팩트(스택) — 인벤토리 아티팩트 탭에서 빠져 거래소에서 수량으로 팔린다 (T-152 · T-181)
     }
 
     // 진행 중 매물의 상태. 경매장 서버(auction.proto의 ListingState)와 값이 같아야 한다.
@@ -237,6 +242,7 @@ namespace MikaProtocol
         Resource  = 0,
         Character = 1,
         Equip     = 2,
+        Artifact  = 3,   // 아티팩트 스택(T-181) — 인벤토리에만 있다. 칸 키는 아티팩트 번호(ArtifactTID)
     }
 
     /// <summary>정렬 기준. 서버 StorageSortKey와 이름·값이 같아야 한다(PacketEnumTest).</summary>

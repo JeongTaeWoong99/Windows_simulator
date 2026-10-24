@@ -247,11 +247,11 @@ public static class ClientPacketHandler
         var user = session.GetUser();
         if (user == null)
         {
-            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = EStorageTab.Resource });
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = req.Tab });
             return;
         }
 
-        user.MergeStorage(req.Container);
+        user.MergeStorage(req.Container, req.Tab);
     }
 
     /// <summary>창고에 이미 있는 자원만 인벤토리에서 창고로 쌓는다(T-175).</summary>
@@ -317,6 +317,54 @@ public static class ClientPacketHandler
         }
 
         ShopService.Instance.Sell(user, req.Items);
+    }
+
+    /// <summary>인벤토리 아티팩트 즉시 판매(T-181). 가격은 서버가 정한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_ArtifactSellRequest(ISession session, C_ArtifactSellRequest req)
+    {
+        ServerLog.Debug("상점", $"아티팩트 판매 요청 종류={req.Artifacts?.Count ?? 0} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ArtifactSellResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.TrySellArtifacts(req.Artifacts ?? new List<ArtifactInfo>());
+    }
+
+    /// <summary>인벤토리의 아티팩트 1개를 도감에 장착한다(T-181).</summary>
+    [PacketHandler]
+    public static void Handle_C_ArtifactEquipRequest(ISession session, C_ArtifactEquipRequest req)
+    {
+        ServerLog.Debug("아티팩트", $"장착 요청 번호={req.ArtifactTid} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ArtifactEquipResponse { Result = EResultCode.NotLoggedIn, ArtifactTid = req.ArtifactTid });
+            return;
+        }
+
+        user.TryEquipArtifact(req.ArtifactTid, GameClock.Instance.UtcNow);
+    }
+
+    /// <summary>도감에 장착한 아티팩트의 효과를 켜고 끈다(T-181).</summary>
+    [PacketHandler]
+    public static void Handle_C_ArtifactActiveRequest(ISession session, C_ArtifactActiveRequest req)
+    {
+        ServerLog.Debug("아티팩트", $"켜고 끄기 요청 번호={req.ArtifactTid} 켬={req.IsActive} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ArtifactActiveResponse { Result = EResultCode.NotLoggedIn, ArtifactTid = req.ArtifactTid });
+            return;
+        }
+
+        user.TrySetArtifactActive(req.ArtifactTid, req.IsActive, GameClock.Instance.UtcNow);
     }
 
     /// <summary>캐릭터·장비 개체 판매. 보유·착용·배치 검증은 User가 한다.</summary>

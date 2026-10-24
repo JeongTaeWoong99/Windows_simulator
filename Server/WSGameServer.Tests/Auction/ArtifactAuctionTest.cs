@@ -5,9 +5,8 @@ using Proto = AuctionProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 아티팩트 거래소(T-152) — 보관함에서 빼서 등록 · 거래소 수량 구매 · 우편으로 받아 보관함에 넣기 · 반환.
-/// 아티팩트에는 즉시 판매가 없다 — 내보내는 길은 거래소뿐이다. 틀리면 마지막 1개를 올렸는데 효과가 남거나,
-/// 보관함 수량과 원장이 어긋나 아티팩트가 복제·증발한다.
+/// 아티팩트 거래소(T-152 · T-181) — 인벤토리 아티팩트 탭에서 빼서 등록 · 거래소 수량 구매 · 우편으로 받아 아티팩트 탭에 넣기 · 반환.
+/// 도감에 장착한 1개는 인벤토리에 없어 올릴 수 없다. 틀리면 칸 수량과 원장이 어긋나 아티팩트가 복제·증발한다.
 /// </summary>
 public class ArtifactAuctionTest : IDisposable
 {
@@ -28,7 +27,7 @@ public class ArtifactAuctionTest : IDisposable
 
     public void Dispose() => _db.Dispose();
 
-    private (User User, TestUserBuilder B) NewUser(int charms)
+    private (User User, TestUserBuilder B) NewUser(int charms, bool equipped = false)
     {
         var b = new TestUserBuilder().WithInlineExecutor();
         b.Auction = new AuctionService(_client, b.Executor) { FindOnlineUser = _ => null };
@@ -36,7 +35,9 @@ public class ArtifactAuctionTest : IDisposable
         var user = b.Build(Seller);
         user.OnAuctionStateLoaded(0);
         user.GainGold(1000);
-        user.LoadArtifacts(new[] { new UserArtifactRow { artifact_tid = FishermanCharm, count = charms } });
+        user.LoadArtifacts(
+            equipped ? new[] { new UserArtifactRow { artifact_tid = FishermanCharm, is_active = 1 } } : Array.Empty<UserArtifactRow>(),
+            charms > 0 ? new[] { new UserArtifactStackRow { slot = 0, artifact_tid = FishermanCharm, count = charms } } : Array.Empty<UserArtifactStackRow>());
 
         b.Channel.Sent.Clear();
         b.DB.Posted.Clear();
@@ -51,28 +52,28 @@ public class ArtifactAuctionTest : IDisposable
     // ── 등록 ──
 
     [Fact]
-    public void 마지막_1개를_올리면_보관함에서_빠지고_효과가_꺼진다()
+    public void 올리면_인벤토리_칸에서_빠지고_도감_효과는_그대로다()
     {
-        var (user, b) = NewUser(charms: 1);
+        var (user, b) = NewUser(charms: 1, equipped: true);
 
         Register(user, 1);
 
         user.GetArtifactCount(FishermanCharm).ShouldBe(0);
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
+        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(1);
         var item = b.DB.PostedOf<RegisterAuctionRepository>().Single().Item;
         (item.Kind, item.Tid, item.Count, item.Rarity).ShouldBe((EAuctionKind.Artifact, FishermanCharm, 1, (int)GlobalRarity.Common));
-        Last<S_ArtifactListResponse>(b).Artifacts.Single().Count.ShouldBe(0);   // 도감에는 남는다
+        Last<S_ArtifactInventoryResponse>(b).Stacks.ShouldBeEmpty();
     }
 
     [Fact]
-    public void 남는_것만_올리면_효과는_그대로다()
+    public void 도감에_장착한_것은_올릴_수_없다()
     {
-        var (user, _) = NewUser(charms: 3);
+        var (user, b) = NewUser(charms: 0, equipped: true);
 
-        Register(user, 2);
+        Register(user, 1);
 
-        user.GetArtifactCount(FishermanCharm).ShouldBe(1);
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(1);
+        Last<S_AuctionRegisterResponse>(b).Result.ShouldBe(EResultCode.NotEnoughItem);
+        user.IsArtifactEquipped(FishermanCharm).ShouldBeTrue();
     }
 
     [Fact]
@@ -122,7 +123,7 @@ public class ArtifactAuctionTest : IDisposable
     }
 
     [Fact]
-    public void 아티팩트_우편을_받으면_보관함에_들어간다()
+    public void 아티팩트_우편을_받으면_인벤토리_아티팩트_탭에_들어간다()
     {
         var (user, b) = NewUser(charms: 0);
         var attachment = new MailAttachment(0, new(), new(), new(), ArtifactItems: new List<(int, int)> { (FishermanCharm, 2) });
@@ -132,7 +133,23 @@ public class ArtifactAuctionTest : IDisposable
 
         Last<S_MailClaimResponse>(b).Result.ShouldBe(EResultCode.Ok);
         user.GetArtifactCount(FishermanCharm).ShouldBe(2);
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(1);
+        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);   // 장착 전이라 효과 없음
+    }
+
+    [Fact]
+    public void 아티팩트_탭이_가득_차면_우편을_받지_못한다()
+    {
+        var (user, b) = NewUser(charms: 0);
+        var full = Enumerable.Range(0, User.StorageCapacity)
+            .Select(slot => new UserArtifactStackRow { slot = slot, artifact_tid = 2, count = User.ArtifactMaxStack }).ToList();
+        user.LoadArtifacts(Array.Empty<UserArtifactRow>(), full);
+        var attachment = new MailAttachment(0, new(), new(), new(), ArtifactItems: new List<(int, int)> { (FishermanCharm, 1) });
+        user.OnMailsArrived(new List<UserMailRow> { MailDb.ToRow(41, AuctionMail.PurchasedTemplateTid, attachment, Now) });
+
+        user.TryClaimMail(41, Now);
+
+        Last<S_MailClaimResponse>(b).Result.ShouldBe(EResultCode.StorageFull);
+        user.GetArtifactCount(FishermanCharm).ShouldBe(0);
     }
 
     // ── 원장 ──
@@ -144,26 +161,37 @@ public class ArtifactAuctionTest : IDisposable
     private static AuctionItemSnapshot Snapshot(int count)
         => new() { Kind = EAuctionKind.Artifact, Tid = FishermanCharm, Rarity = 1, Count = count };
 
+    private static List<ItemChangeInfo> StackChange(int left)
+        => new() { new ItemChangeInfo { ItemId = FishermanCharm, Count = left, Slot = 0, Kind = left == 0 ? EItemChangeKind.Remove : EItemChangeKind.Update } };
+
     private Task<long> RegisterInDb(int owned = 3, int count = 2)
     {
-        _db.Execute($"INSERT INTO t_user_artifact (user_id, artifact_tid, count) VALUES ({Seller}, {FishermanCharm}, {owned})");
-        return AuctionDb.RegisterAsync(Conn, Seller, Snapshot(count), 400, 8, new List<ItemChangeInfo>(), gold: 992, Now.AddHours(48), Now, artifactCount: owned - count);
+        _db.Execute($"INSERT INTO t_user_artifact_stack (user_id, slot, artifact_tid, count) VALUES ({Seller}, 0, {FishermanCharm}, {owned})");
+        return AuctionDb.RegisterAsync(Conn, Seller, Snapshot(count), 400, 8, new List<ItemChangeInfo>(), gold: 992, Now.AddHours(48), Now, StackChange(owned - count));
     }
 
     [Fact]
-    public async Task 등록하면_보관함_수량이_같은_트랜잭션에서_준다()
+    public async Task 등록하면_아티팩트_칸_수량이_같은_트랜잭션에서_준다()
     {
         var tradeId = await RegisterInDb(owned: 3, count: 2);
 
-        Scalar($"SELECT count FROM t_user_artifact WHERE user_id = {Seller} AND artifact_tid = {FishermanCharm}").ShouldBe(1);
+        Scalar($"SELECT count FROM t_user_artifact_stack WHERE user_id = {Seller} AND slot = 0").ShouldBe(1);
         Scalar($"SELECT kind FROM t_auction_trade WHERE trade_id = {tradeId}").ShouldBe((long)EAuctionKind.Artifact);
     }
 
     [Fact]
-    public async Task 보관함_행이_없으면_등록_전체가_되돌아간다()
+    public async Task 마지막_칸을_올리면_칸_행이_지워진다()
+    {
+        await RegisterInDb(owned: 2, count: 2);
+
+        Scalar($"SELECT COUNT(*) FROM t_user_artifact_stack WHERE user_id = {Seller}").ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task 칸_변경이_없으면_등록_전체가_되돌아간다()
     {
         await Should.ThrowAsync<InvalidOperationException>(
-            () => AuctionDb.RegisterAsync(Conn, Seller, Snapshot(1), 400, 4, new List<ItemChangeInfo>(), 996, Now.AddHours(48), Now, artifactCount: 0));
+            () => AuctionDb.RegisterAsync(Conn, Seller, Snapshot(1), 400, 4, new List<ItemChangeInfo>(), 996, Now.AddHours(48), Now, new List<ItemChangeInfo>()));
 
         Scalar("SELECT COUNT(*) FROM t_auction_trade").ShouldBe(0);
         Scalar($"SELECT gold FROM t_user_currency WHERE user_id = {Seller}").ShouldBe(0);

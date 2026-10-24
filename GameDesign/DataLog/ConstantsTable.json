@@ -123,5 +123,10 @@
     "Name": "CondenseInheritPermille",
     "Value": 500,
     "Description": "응축 재료의 누적 응축 중 대상에 넘기는 비율(천분율) — 재료마다 올림. 레벨·경험치는 넘기지 않는다"
+  },
+  {
+    "Name": "ArtifactMaxStack",
+    "Value": 1000,
+    "Description": "인벤토리 아티팩트 탭 칸 하나에 쌓이는 같은 번호의 상한"
   }
 ]

@@ -152,7 +152,8 @@ public partial class User
     private EResultCode TryGrantMail(Mail mail, DateTime now, List<long> claimed, List<ItemChangeInfo> changes)
     {
         var a = mail.Attachment;
-        if (!HasStorageFor(a.Items, a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count))
+        if (!HasStorageFor(a.Items, a.CharacterTids.Count + a.Characters.Count, a.EquipTids.Count + a.Equips.Count)
+            || !HasArtifactRoomFor(a.Artifacts))
         {
             return EResultCode.StorageFull;
         }
@@ -190,10 +191,10 @@ public partial class User
             UnlockMailCharacter(character);
         }
 
-        // 아티팩트는 창고 칸을 먹지 않는다 — 칸 검사에 넣지 않고 보관함에 바로 넣는다(T-152).
+        // 아티팩트는 인벤토리 아티팩트 탭으로 간다 — 칸은 위에서 함께 봤다(T-181).
         if (a.Artifacts.Count > 0)
         {
-            GainArtifacts(a.Artifacts.GroupBy(x => x.Tid).ToDictionary(g => g.Key, g => g.Sum(x => x.Count)), now);
+            GainArtifacts(a.Artifacts.GroupBy(x => x.Tid).ToDictionary(g => g.Key, g => g.Sum(x => x.Count)));
         }
 
         ServerLog.Info("우편", $"수령 Uid={Uid} MailId={mail.Id} Template={mail.TemplateTid}");

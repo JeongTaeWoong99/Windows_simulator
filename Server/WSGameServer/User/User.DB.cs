@@ -54,7 +54,7 @@ public partial class User
         LoadTraits(data.TraitRows ?? new List<UserTraitRow>());
 
         // 아티팩트도 특성처럼 슬롯 속도의 근거라 슬롯 앞에 적재한다.
-        LoadArtifacts(data.ArtifactRows ?? new List<UserArtifactRow>());
+        LoadArtifacts(data.ArtifactRows ?? new List<UserArtifactRow>(), data.ArtifactStackRows ?? new List<UserArtifactStackRow>());
         LoadWorkStation(data.WorkStationSlotRows, startedAt);
     }
 

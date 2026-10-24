@@ -43,12 +43,20 @@ namespace MikaProtocol
         public int ArtifactTid  { get; set; }     // RewardType=Artifact일 때만 유효 (ArtifactTable 고유번호)
     }
 
-    // 아티팩트 보관함의 번호 칸 하나. 얻은 적 있는 번호만 온다 — Count 0은 "얻었다가 다 내보냄"(도감에는 남는다)
+    // 아티팩트 번호와 수량 — 우편 첨부(거래소 구매·반환). 받으면 인벤토리 아티팩트 탭으로 간다
     [MemoryPackable]
     public partial class ArtifactInfo
     {
         public int ArtifactTid { get; set; }
-        public int Count       { get; set; }   // 1 이상이면 효과가 켜진다. 같은 번호는 몇 개든 효과 1개분
+        public int Count       { get; set; }
+    }
+
+    // 도감에 장착한 번호 하나(T-181). 장착은 되돌릴 수 없고, 켜 둔 번호만 효과가 붙는다
+    [MemoryPackable]
+    public partial class ArtifactCodexInfo
+    {
+        public int  ArtifactTid { get; set; }
+        public bool IsActive    { get; set; }
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.
@@ -141,7 +149,7 @@ namespace MikaProtocol
         public long            ClaimedAtUnixMs  { get; set; }  // 받은 시각. 0 = 안 받음
         public List<EquipInfo>? Equips          { get; set; }  // 개체 장비(경매 구매·반환) — 인챈트까지 그대로 온다. 창고 칸은 받을 때 정해진다
         public List<CharacterInfo>? Characters  { get; set; }  // 개체 캐릭터(경매 구매·반환) — 레벨·적성까지 그대로 온다
-        public List<ArtifactInfo>?  Artifacts   { get; set; }  // 아티팩트(거래소 구매·반환) — 받으면 보관함으로 간다 (T-152)
+        public List<ArtifactInfo>?  Artifacts   { get; set; }  // 아티팩트(거래소 구매·반환) — 받으면 인벤토리 아티팩트 탭으로 간다 (T-152 · T-181)
     }
 
     /// <summary>거래소 목록 한 줄 — 자원 종류별 요약. 매물·체결이 없으면 해당 값은 0이다.</summary>

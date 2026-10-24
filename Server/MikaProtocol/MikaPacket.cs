@@ -114,6 +114,13 @@ namespace MikaProtocol
         S_EquipDisassembleResponse = 84,
         C_StorageMergeRequest = 85,
         C_WarehouseStackRequest = 86,
+        S_ArtifactInventoryResponse = 87,
+        C_ArtifactEquipRequest = 88,
+        S_ArtifactEquipResponse = 89,
+        C_ArtifactActiveRequest = 90,
+        S_ArtifactActiveResponse = 91,
+        C_ArtifactSellRequest = 92,
+        S_ArtifactSellResponse = 93,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -362,11 +369,71 @@ namespace MikaProtocol
         public List<UserTraitInfo> Traits { get; set; } = new();
     }
 
-    /// <summary>아티팩트 보관함 스냅샷(T-150). 로그인 직후와 수량이 바뀔 때마다 통째로 온다 — 클라는 덮어쓴다.</summary>
+    /// <summary>아티팩트 도감 스냅샷(T-181) — 장착한 번호와 켜짐 여부. 로그인 직후와 장착·켜고 끌 때마다 통째로 온다 — 클라는 덮어쓴다.</summary>
     [MemoryPackable, Packet(PacketId.S_ArtifactListResponse)]
     public partial class S_ArtifactListResponse : IPacket
     {
-        public List<ArtifactInfo> Artifacts { get; set; } = new();
+        public List<ArtifactCodexInfo> Artifacts { get; set; } = new();
+    }
+
+    /// <summary>
+    /// 인벤토리 아티팩트 탭 스냅샷(T-181). 로그인 직후와 칸이 바뀔 때마다(감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동·정렬) 통째로 온다 — 클라는 덮어쓴다.
+    /// <c>ItemInfo.ItemId</c>는 아티팩트 번호(ArtifactTID)다. 같은 번호가 <c>Constants.ArtifactMaxStack</c>을 넘으면 칸이 나뉜다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ArtifactInventoryResponse)]
+    public partial class S_ArtifactInventoryResponse : IPacket
+    {
+        public List<ItemInfo> Stacks { get; set; } = new();
+    }
+
+    /// <summary>인벤토리의 아티팩트 1개를 도감에 장착한다(T-181). 번호마다 한 번 — 되돌릴 수 없고, 장착하면 켜진 채로 시작한다.</summary>
+    [MemoryPackable, Packet(PacketId.C_ArtifactEquipRequest)]
+    public partial class C_ArtifactEquipRequest : IPacket
+    {
+        public int ArtifactTid { get; set; }
+    }
+
+    /// <summary>장착 결과. Ok면 <see cref="S_ArtifactInventoryResponse"/>·<see cref="S_ArtifactListResponse"/>가 함께 온다.</summary>
+    [MemoryPackable, Packet(PacketId.S_ArtifactEquipResponse)]
+    public partial class S_ArtifactEquipResponse : IPacket
+    {
+        public EResultCode Result      { get; set; }
+        public int         ArtifactTid { get; set; }
+    }
+
+    /// <summary>도감에 장착한 번호의 효과를 켜고 끈다(T-181). 빼는 대신 끈다 — 끈 번호는 효과가 없다.</summary>
+    [MemoryPackable, Packet(PacketId.C_ArtifactActiveRequest)]
+    public partial class C_ArtifactActiveRequest : IPacket
+    {
+        public int  ArtifactTid { get; set; }
+        public bool IsActive    { get; set; }
+    }
+
+    /// <summary>켜고 끈 결과. Ok면 <see cref="S_ArtifactListResponse"/>가 함께 온다. 실패면 IsActive는 지금 상태다.</summary>
+    [MemoryPackable, Packet(PacketId.S_ArtifactActiveResponse)]
+    public partial class S_ArtifactActiveResponse : IPacket
+    {
+        public EResultCode Result      { get; set; }
+        public int         ArtifactTid { get; set; }
+        public bool        IsActive    { get; set; }
+    }
+
+    /// <summary>
+    /// 인벤토리의 아티팩트 즉시 판매(T-181). 판매가는 <c>ArtifactTable.BasePrice</c> × <c>SellRatePermille</c>.
+    /// <b>전부 성공하거나 전부 실패한다.</b> 도감에 장착한 것은 인벤토리에 없으니 팔리지 않는다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_ArtifactSellRequest)]
+    public partial class C_ArtifactSellRequest : IPacket
+    {
+        public List<ArtifactInfo>? Artifacts { get; set; }  // 팔 번호와 수량(델타)
+    }
+
+    /// <summary>판매 결과. Ok면 <see cref="S_ArtifactInventoryResponse"/>가, 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 온다.</summary>
+    [MemoryPackable, Packet(PacketId.S_ArtifactSellResponse)]
+    public partial class S_ArtifactSellResponse : IPacket
+    {
+        public EResultCode Result     { get; set; }
+        public long        GainedGold { get; set; }  // 이번 판매로 번 금액(델타)
     }
 
     /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>
@@ -695,7 +762,7 @@ namespace MikaProtocol
         public long         EquipId   { get; set; }
         public long         UnitPrice { get; set; }
         public long         CharacterId { get; set; }  // Kind = Character일 때. 수량은 1
-        // Kind = Artifact면 ItemTid에 아티팩트 번호(ArtifactTID)를 싣는다 — 보관함에서 Count만큼 빠진다 (T-152)
+        // Kind = Artifact면 ItemTid에 아티팩트 번호(ArtifactTID)를 싣는다 — 인벤토리 아티팩트 탭에서 Count만큼 빠진다 (T-152 · T-181)
     }
 
     /// <summary>
@@ -841,7 +908,7 @@ namespace MikaProtocol
         public int  Tid          { get; set; }
         public int  Count        { get; set; }
         public long MaxUnitPrice { get; set; }
-        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 — 아티팩트는 우편으로 와서 받을 때 보관함에 들어간다 (T-152)
+        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 — 아티팩트는 우편으로 와서 받을 때 인벤토리 아티팩트 탭에 들어간다 (T-152 · T-181)
     }
 
     /// <summary>거래소 구매 결과. 산 자원은 우편으로 온다(<see cref="S_MailArrivedResponse"/>), 골드는 <see cref="S_CurrencyResponse"/>.</summary>
@@ -912,11 +979,12 @@ namespace MikaProtocol
     }
 
     // 한 보관함 안의 같은 자원 칸을 앞 칸부터 MaxStack까지 합친다(T-175). 칸 순서는 그대로이고 비게 된 뒤 칸은 빈 칸이 된다.
-    // 응답은 자리 이동과 같은 S_StorageSlotsResponse(Tab = Resource) — 바뀐 칸만, Count 0 = 칸 비움.
+    // 응답은 자리 이동과 같은 S_StorageSlotsResponse(Tab = 요청한 탭) — 바뀐 칸만, Count 0 = 칸 비움.
     [MemoryPackable, Packet(PacketId.C_StorageMergeRequest)]
     public partial class C_StorageMergeRequest : IPacket
     {
-        public EContainer Container { get; set; }
+        public EContainer  Container { get; set; }
+        public EStorageTab Tab       { get; set; }   // Resource(기본) · Artifact(인벤토리만 · T-181)
     }
 
     // 인벤토리 → 창고. 창고에 이미 있는 자원만 창고의 같은 자원 칸으로 MaxStack까지 보낸다(T-175).

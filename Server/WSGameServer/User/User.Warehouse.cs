@@ -25,7 +25,8 @@ public partial class User
     public void TransferWarehouse(EContainer from, EStorageTab tab, int fromSlot, int toSlot, int count)
     {
         var to = from == EContainer.Inventory ? EContainer.Warehouse : EContainer.Inventory;
-        if (!IsInGrid(from, fromSlot) || !IsInGrid(to, toSlot))
+        // 아티팩트 탭은 창고에 없다(T-181).
+        if (!IsInGrid(from, fromSlot) || !IsInGrid(to, toSlot) || tab == EStorageTab.Artifact)
         {
             SendTransfer(EResultCode.StorageSlotOutOfRange, tab, new List<WarehouseChangeInfo>());
             return;

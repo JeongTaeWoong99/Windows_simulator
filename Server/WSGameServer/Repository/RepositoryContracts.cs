@@ -69,9 +69,17 @@ public sealed record UserTraitRow
     public int level          { get; init; }
 }
 
-// t_user_artifact 조회 전용 Row (얻은 적 있는 번호만 행이 있다 — 수량 0도 남는다)
+// t_user_artifact 조회 전용 Row — 도감에 장착한 번호만 행이 있다 (T-181)
 public sealed record UserArtifactRow
 {
+    public int artifact_tid { get; init; }
+    public int is_active    { get; init; }   // 0/1
+}
+
+// t_user_artifact_stack 조회 전용 Row — 인벤토리 아티팩트 탭의 칸 하나 (T-181)
+public sealed record UserArtifactStackRow
+{
+    public int slot         { get; init; }
     public int artifact_tid { get; init; }
     public int count        { get; init; }
 }
@@ -135,7 +143,8 @@ public sealed record PlayerLoginData(
     AccountRow? Account = null,
     List<UserTraitRow>? TraitRows = null,
     List<UserArtifactRow>? ArtifactRows = null,
-    List<UserItemLockRow>? ItemLockRows = null);
+    List<UserItemLockRow>? ItemLockRows = null,
+    List<UserArtifactStackRow>? ArtifactStackRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

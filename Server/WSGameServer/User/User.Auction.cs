@@ -76,15 +76,15 @@ public partial class User
         }
 
         var changes = new List<ItemChangeInfo>();
-        var artifactCount = 0;
+        var artifactChanges = new List<ItemChangeInfo>();
         if (kind == EAuctionKind.Item)
         {
             TryRemoveItems(new Dictionary<int, int> { [itemTid] = count }, out changes);
         }
         else if (kind == EAuctionKind.Artifact)
         {
-            // 마지막 1개면 효과가 꺼진다 — 빼기 전에 정산한다(RemoveArtifact).
-            artifactCount = RemoveArtifact(itemTid, count, now);
+            // 인벤토리 것만 올린다 — 도감에 장착한 1개는 인벤토리에 없어 효과가 꺼지지 않는다(T-181).
+            TryRemoveArtifacts(new Dictionary<int, int> { [itemTid] = count }, out artifactChanges);
         }
         else if (kind == EAuctionKind.Equip)
         {
@@ -99,7 +99,7 @@ public partial class User
         _activeListings++;
 
         item = item with { SellerName = NickName };
-        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now, artifactCount));
+        PostDBTask(new RegisterAuctionRepository(this, item, unitPrice, fee, changes, _gold, now + AuctionRules.ListingDuration, now, artifactChanges));
         Send(new S_CurrencyResponse { Gold = _gold });
         return;
 
@@ -134,7 +134,7 @@ public partial class User
         return (EResultCode.Ok, item, row.BasePrice);
     }
 
-    // 아티팩트는 보관함 수량에서 뺀다. 분류는 두지 않는다(0) — 거래소 목록은 종류(Artifact)로 거른다. 단가 하한은 ArtifactTable.BasePrice.
+    // 아티팩트는 인벤토리 아티팩트 탭에서 뺀다. 분류는 두지 않는다(0) — 거래소 목록은 종류(Artifact)로 거른다. 단가 하한은 ArtifactTable.BasePrice.
     private (EResultCode, AuctionItemSnapshot?, int BasePrice) DescribeArtifact(int artifactTid, int count)
     {
         if (count <= 0 || count > AuctionRules.MaxListingCount || !GameTable.ArtifactTable.TryGet(artifactTid, out var row))

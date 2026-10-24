@@ -4,8 +4,8 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 유물 감정 · 아티팩트 보관함(T-150) 검증 — 유물은 <c>OpenCostGold</c>만큼 골드를 내고 여는 상자다.
-/// 아티팩트는 인벤토리가 아니라 번호별 보관함에 쌓이고, <b>수량 1 이상인 번호만 · 번호당 한 번</b> 효과가 붙는다.
+/// 유물 감정 · 아티팩트(T-150 · T-181) 검증 — 유물은 <c>OpenCostGold</c>만큼 골드를 내고 여는 상자다.
+/// 아티팩트는 인벤토리 아티팩트 탭에 쌓이고, <b>도감에 장착하고 켜 둔 번호만 · 번호당 한 번</b> 효과가 붙는다.
 /// </summary>
 public class RelicAppraiseTest
 {
@@ -35,6 +35,9 @@ public class RelicAppraiseTest
         b.DB.Posted.Clear();
         return (user, b);
     }
+
+    private static UserArtifactRow Equipped(int artifactTid, bool isActive = true)
+        => new() { artifact_tid = artifactTid, is_active = isActive ? 1 : 0 };
 
     private static S_ItemUseResponse Response(TestUserBuilder b)
         => b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem();
@@ -84,7 +87,7 @@ public class RelicAppraiseTest
     public void 감정_비용_할인을_가진_만큼_비용이_준다()
     {
         var (user, b) = UserWithRelics(1, 1000);
-        user.GainArtifacts(new Dictionary<int, int> { [OldCoin] = 1 }, TestUserBuilder.Base);
+        user.LoadArtifacts(new[] { Equipped(OldCoin) }, Array.Empty<UserArtifactStackRow>());
 
         ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 1, TestUserBuilder.Base);
 
@@ -101,10 +104,10 @@ public class RelicAppraiseTest
         User.DiscountAppraiseCost(1000, discountPermille).ShouldBe(expected);
     }
 
-    // ─────────────────────── 아티팩트 보관함 ───────────────────────
+    // ─────────────────────── 아티팩트 ───────────────────────
 
     [Fact]
-    public void 아티팩트가_나오면_인벤토리가_아니라_보관함에_쌓인다()
+    public void 아티팩트가_나오면_인벤토리_아티팩트_탭에_쌓이고_효과는_아직_없다()
     {
         var (user, b) = UserWithRelics(2, 1000);
 
@@ -115,37 +118,57 @@ public class RelicAppraiseTest
         res.Rewards!.ShouldAllBe(r => r.RewardType == EGachaRewardType.Artifact && r.ArtifactTid == FishermanCharm && r.Rarity == EGlobalRarity.Common);
         user.GetArtifactCount(FishermanCharm).ShouldBe(2);
         user.GetItemCount(CommonRelicTid).ShouldBe(0);
-        res.ItemChangeInfos!.ShouldAllBe(c => c.ItemId == CommonRelicTid);   // 인벤토리에는 유물 차감만
+        res.ItemChangeInfos!.ShouldAllBe(c => c.ItemId == CommonRelicTid);   // 자원 탭에는 유물 차감만
 
-        b.DB.PostedOf<SaveUserArtifactRepository>().ShouldHaveSingleItem().Changes.ShouldBe(new[] { (FishermanCharm, 2) });
-        b.Channel.SentOf<S_ArtifactListResponse>().Last().Artifacts
-            .ShouldHaveSingleItem().ShouldSatisfyAllConditions(a => a.ArtifactTid.ShouldBe(FishermanCharm), a => a.Count.ShouldBe(2));
+        var saved = b.DB.PostedOf<SaveArtifactStacksRepository>().ShouldHaveSingleItem().Changes.ShouldHaveSingleItem();
+        (saved.ItemId, saved.Count, saved.Slot).ShouldBe((FishermanCharm, 2, 0));
+        b.Channel.SentOf<S_ArtifactInventoryResponse>().Last().Stacks.ShouldHaveSingleItem().Count.ShouldBe(2);
+        user.IsArtifactEquipped(FishermanCharm).ShouldBeFalse();
+        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
     }
 
     [Fact]
-    public void 같은_아티팩트를_여러_개_가져도_효과는_한_번만_붙는다()
+    public void 아티팩트_탭이_가득_차면_감정_결과가_통째로_우편으로_간다()
+    {
+        var (user, b) = UserWithRelics(1, 1000);
+        var full = Enumerable.Range(0, User.StorageCapacity)
+            .Select(slot => new UserArtifactStackRow { slot = slot, artifact_tid = CrackedComb, count = User.ArtifactMaxStack });
+        user.LoadArtifacts(Array.Empty<UserArtifactRow>(), full.ToList());
+
+        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Artifact, FishermanCharm, 1, 100)).OpenBox(user, CommonRelicTid, 1, TestUserBuilder.Base);
+
+        var res = Response(b);
+        (res.Result, res.StoredInMail).ShouldBe((EResultCode.Ok, true));
+        user.GetArtifactCount(FishermanCharm).ShouldBe(0);
+        b.DB.PostedOf<SaveArtifactStacksRepository>().ShouldBeEmpty();
+        user.Gold.ShouldBe(800);   // 감정 비용은 낸다 — 보상만 우편에 맡긴다
+    }
+
+    [Fact]
+    public void 도감에_장착하고_켜_둔_번호만_효과가_붙는다()
     {
         var b    = new TestUserBuilder();
         var user = b.Build();
 
-        user.GainArtifacts(new Dictionary<int, int> { [FishermanCharm] = 3, [CrackedComb] = 1 }, TestUserBuilder.Base);
+        user.LoadArtifacts(new[] { Equipped(FishermanCharm), Equipped(CrackedComb) },
+            new[] { new UserArtifactStackRow { slot = 0, artifact_tid = FishermanCharm, count = 3 }, new UserArtifactStackRow { slot = 1, artifact_tid = OldCoin, count = 1 } });
 
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(3);   // 전 산업 1 + 농사 2
+        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(3);   // 전 산업 1 + 농사 2 — 인벤토리 3개는 더하지 않는다
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Mining).ShouldBe(1);    // 전 산업 1만
-        user.GetArtifactEffect(UserTraitEffect.YieldAdd, IndustryType.Farming).ShouldBe(0);
+        user.GetArtifactEffect(UserTraitEffect.AppraiseCostDiscount, IndustryType.None).ShouldBe(0);   // 인벤토리에만 있는 낡은 동전
     }
 
     [Fact]
-    public void 수량이_0인_번호는_도감에_남지만_효과가_꺼진다()
+    public void 꺼_둔_번호는_도감에_남지만_효과가_없다()
     {
         var b    = new TestUserBuilder();
         var user = b.Build();
-        user.LoadArtifacts(new[] { new UserArtifactRow { artifact_tid = FishermanCharm, count = 0 } });
+        user.LoadArtifacts(new[] { Equipped(FishermanCharm, isActive: false) }, Array.Empty<UserArtifactStackRow>());
 
         user.SendArtifactList();
 
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
-        b.Channel.SentOf<S_ArtifactListResponse>().Last().Artifacts.ShouldHaveSingleItem().Count.ShouldBe(0);
+        b.Channel.SentOf<S_ArtifactListResponse>().Last().Artifacts.ShouldHaveSingleItem().IsActive.ShouldBeFalse();
     }
 
     [Fact]
@@ -154,9 +177,10 @@ public class RelicAppraiseTest
         var b    = new TestUserBuilder();
         var user = b.Build();
 
-        user.LoadArtifacts(new[] { new UserArtifactRow { artifact_tid = 99_999, count = 1 } });
+        user.LoadArtifacts(new[] { Equipped(99_999) }, new[] { new UserArtifactStackRow { slot = 0, artifact_tid = 99_999, count = 1 } });
 
         user.GetArtifactCount(99_999).ShouldBe(0);
+        user.IsArtifactEquipped(99_999).ShouldBeFalse();
     }
 
     // ─────────────────────── 유물 발견 확률 ───────────────────────

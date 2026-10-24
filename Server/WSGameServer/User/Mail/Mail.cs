@@ -7,7 +7,7 @@ namespace WSGameServer;
 /// 우편 한 통의 첨부. 아이템은 (TID, 수량), 캐릭터·장비는 한 개체 = 한 원소다.
 /// <c>EquipTids</c>·<c>CharacterTids</c>는 받을 때 <b>새로 만들고</b>, <c>LockedEquips</c>·<c>LockedCharacters</c>는
 /// 이미 있는 개체(경매)의 잠금을 푼다 — 인챈트·레벨이 그대로 간다.
-/// <c>ArtifactItems</c>는 (아티팩트 번호, 수량)이고 받으면 인벤토리가 아니라 아티팩트 보관함으로 간다(T-152).
+/// <c>ArtifactItems</c>는 (아티팩트 번호, 수량)이고 받으면 인벤토리 아티팩트 탭으로 간다(T-152 · T-181).
 /// </summary>
 public sealed record MailAttachment(
     long Gold,

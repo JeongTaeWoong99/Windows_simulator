@@ -108,7 +108,7 @@ public sealed class GachaService : Singleton<GachaService>
 
         // 연 상자가 먼저 빠진다 — 그 칸이 비면 빈 칸까지 보고 판정한다.
         var rolled = Roll(pool.PickMany(count));
-        var fits   = HasStorageFor(user, rolled, new Dictionary<int, int> { [itemTid] = count });
+        var fits   = HasStorageFor(user, rolled, new Dictionary<int, int> { [itemTid] = count }) && user.HasArtifactRoomFor(ArtifactsOf(rolled));
 
         // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.
         if (!fits && !user.HasMailboxRoom)
@@ -137,9 +137,6 @@ public sealed class GachaService : Singleton<GachaService>
             ServerLog.Error("감정", $"골드 차감 실패 — 유물은 이미 빠졌다. Uid={user.Uid} ItemTID={itemTid} Cost={cost}");
         }
 
-        // 아티팩트는 창고·우편을 거치지 않고 보관함으로 바로 간다 — 창고가 가득해도 막히지 않는다.
-        GrantArtifacts(user, rolled, now);
-
         if (!fits)
         {
             user.StoreOverflowMail(ToAttachment(rolled), now);
@@ -155,6 +152,7 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         var (rewards, changes) = Grant(user, rolled);
+        GrantArtifacts(user, rolled);
 
         // 상자 차감을 앞에 싣는다 — 클라는 누적 총량으로 덮어쓰기만 하면 된다.
         // ⚠️ 새 목록에 담는다 — consumed는 차감 저장 작업이 DB 스레드에서 순회 중이라 덧붙이면 세션이 끊긴다.
@@ -216,7 +214,7 @@ public sealed class GachaService : Singleton<GachaService>
             }
         }
 
-        // 아티팩트(GachaRewardType.Artifact)는 여기서 지급하지 않는다 — 시각이 필요해 GrantArtifacts가 따로 넣는다.
+        // 아티팩트(GachaRewardType.Artifact)는 여기서 지급하지 않는다 — 감정에서만 나와 GrantArtifacts가 따로 넣는다.
         var changes = gained.SelectMany(kv => user.GainItem(kv.Key, kv.Value)).ToList();
 
         if (characterTids.Count > 0)
@@ -232,18 +230,22 @@ public sealed class GachaService : Singleton<GachaService>
         return (rewards, changes);
     }
 
-    // 굴린 보상 중 아티팩트만 모아 보관함에 넣는다. 같은 번호는 한 번에 더한다.
-    private static void GrantArtifacts(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled, DateTime now)
+    // 굴린 보상 중 아티팩트만 모아 인벤토리 아티팩트 탭에 넣는다(T-181). 칸은 HasStorageFor와 함께 미리 봤다.
+    private static void GrantArtifacts(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled)
     {
-        var gained = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Artifact)
-            .GroupBy(r => r.Entry.RewardTID)
-            .ToDictionary(g => g.Key, g => g.Sum(r => r.Count));
-
+        var gained = ArtifactsOf(rolled).ToDictionary(a => a.ArtifactTid, a => a.Count);
         if (gained.Count > 0)
         {
-            user.GainArtifacts(gained, now);
+            user.GainArtifacts(gained);
         }
     }
+
+    // 같은 번호는 한 번에 모은다.
+    private static List<(int ArtifactTid, int Count)> ArtifactsOf(IReadOnlyList<(GachaEntry Entry, int Count)> rolled)
+        => rolled.Where(r => r.Entry.RewardType == GachaRewardType.Artifact)
+            .GroupBy(r => r.Entry.RewardTID)
+            .Select(g => (g.Key, g.Sum(r => r.Count)))
+            .ToList();
 
     // 캐릭터·장비는 개체 수, 자원은 수량이 묶음으로 차지하는 칸 수가 칸이다(T-160).
     // 아직 굴리지 않았으면 구간의 최대치를 넘긴다 — 지급 때 굴린 값이 검사보다 크면 안 된다.
@@ -274,7 +276,8 @@ public sealed class GachaService : Singleton<GachaService>
             rolled.Where(r => r.Entry.RewardType == GachaRewardType.Gold).Sum(r => (long)r.Count),
             items,
             rolled.Where(r => r.Entry.RewardType == GachaRewardType.Character).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList(),
-            rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList());
+            rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).SelectMany(r => Enumerable.Repeat(r.Entry.RewardTID, r.Count)).ToList(),
+            ArtifactItems: ArtifactsOf(rolled));
     }
 
     // 구간 보상(골드)은 Count~MaxCount에서 고른다. MaxCount가 없거나 작으면 Count 고정이다.
