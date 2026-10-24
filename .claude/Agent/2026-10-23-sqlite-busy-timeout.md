@@ -7,7 +7,7 @@ tags: [server, db, test]
 # 게임 DB 연결에 busy_timeout
 
 ## 목적 / 배경
-- 이슈 #85 · → `tasks/T-178-DB잠김세션끊김.md` (원인 정리는 일감에)
+- 이슈 #85 · → `tasks/T-180-DB잠김세션끊김.md` (원인 정리는 일감에)
 
 ## 변경 내용
 - `Server/WSGameServer/DB/DBManager.cs` — `Post`·`RunAsync`가 공통 `OpenAsync()`로 연결을 열고 `PRAGMA busy_timeout = 5000`
