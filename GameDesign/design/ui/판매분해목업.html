@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>판매 목록 · 장비 분해</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
+<style>
+/* 제안 목업 (이슈 #83 · T-131 · T-173) — 판매 목록은 지금 탭의 종류만 담는다. 탭을 바꾸면 비운다.
+   장비 탭에서만 아래 버튼이 둘이다 — [골드로 판매] · [마석으로 분해]. 각 버튼이 받을 것을 미리 보여 준다.
+   팔레트·칸 모양은 아티팩트도감장착목업.html과 같다.
+   위에서 아래로 ① 지금과 무엇이 다른가 ② 직접 해 보기 ③ 장비가 분해만 남는 경우 ④ 정할 것 */
+:root {
+  color-scheme: dark;
+  --page: #0D1117;
+  --pageText: #C9D4E0;
+  --panel: #14202E;
+  --panelSub: #1F3044;
+  --overlay: #101A25;
+  --slot: #26394F;
+  --border: #3E5A78;
+  --button: #2B6F9E;
+  --buttonPrimary: #C98314;
+  --shard: #8A5CF0;
+  --highlight: #FFD447;
+  --textMain: #F2F6FA;
+  --textSub: #9FB3C8;
+  --on: #6DDB7A;
+  --warn: #FFA040;
+  --danger: #E05A5A;
+  --r-common: #9AA5B1;
+  --r-uncommon: #5CC46A;
+  --r-rare: #4AA3FF;
+  --r-epic: #B06CFF;
+  --r-legendary: #FF9F1A;
+  --r-mythic: #FF4D6D;
+  --display: "Black Han Sans", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--pageText); font-family: var(--body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1100px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+header { display: grid; gap: 6px; }
+h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 34px; color: var(--textMain); letter-spacing: .02em; text-wrap: balance; }
+h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--textMain); letter-spacing: .02em; }
+.lede { margin: 0; color: var(--textSub); max-width: 72ch; }
+.note { margin: 0 0 14px; color: var(--textSub); font-size: 14px; max-width: 72ch; }
+code { font-size: 13px; color: var(--textMain); }
+kbd { font: 700 12px var(--body); background: var(--slot); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; padding: 0 6px; color: var(--textMain); white-space: nowrap; }
+section { min-width: 0; }
+.panel { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 14px; min-width: 0; }
+
+.tbl-wrap { overflow-x: auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #263a50; vertical-align: top; }
+th { color: var(--textSub); font-weight: 600; font-size: 12px; letter-spacing: .06em; background: var(--panelSub); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.same { color: var(--textSub); }
+td.diff { color: var(--highlight); font-weight: 700; }
+
+/* ② 직접 해 보기 */
+.play { display: grid; grid-template-columns: minmax(0, 520px) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 860px) { .play { grid-template-columns: minmax(0, 1fr); } }
+.inv-col { display: grid; gap: 8px; }
+.col-title { font-family: var(--display); font-size: 20px; color: var(--textMain); }
+.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+.tabs button { font: 600 13px var(--body); padding: 3px 14px; border-radius: 8px; background: var(--slot); color: var(--textSub); border: 0; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--button); color: var(--textMain); font-weight: 800; }
+.tabs button:disabled { opacity: .45; cursor: default; }
+.grid { display: flex; flex-wrap: wrap; gap: 6px; background: var(--overlay); border-radius: 10px; padding: 8px; min-height: 156px; align-content: flex-start; }
+.cell { position: relative; width: 64px; height: 64px; border-radius: 10px; background: var(--slot); border: 2px solid var(--rc, var(--border)); display: grid; place-items: center; padding: 0; cursor: pointer; color: var(--textMain); font: 800 12px var(--body); user-select: none; }
+.cell .ab { font-size: 13px; line-height: 1.1; text-align: center; padding: 0 4px; }
+.cell .cnt { position: absolute; right: 5px; bottom: 1px; font-size: 12px; font-weight: 800; color: var(--textMain); text-shadow: 0 1px 2px #000; font-variant-numeric: tabular-nums; }
+.cell .lock { position: absolute; right: 3px; top: 1px; font-size: 12px; line-height: 1; }
+.cell .tag { position: absolute; left: -4px; top: -7px; font-size: 10px; font-weight: 800; padding: 0 5px; border-radius: 6px; line-height: 16px; background: var(--panelSub); color: var(--textSub); border: 1px solid var(--border); }
+.cell .sold { position: absolute; left: 3px; bottom: 2px; font-size: 10px; font-weight: 800; background: var(--danger); color: #fff; border-radius: 4px; padding: 0 4px; line-height: 14px; }
+.cell.in-cart { box-shadow: 0 0 0 2px var(--page), 0 0 0 4px var(--highlight); }
+.cell:focus-visible, button:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+.cell.shake { animation: shake .3s; }
+@keyframes shake { 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@media (prefers-reduced-motion: reduce) { .cell.shake { animation: none; } }
+
+/* 아래 칸 — 판매 목록 */
+.below { background: var(--overlay); border-radius: 10px; padding: 12px 14px; display: grid; gap: 10px; min-height: 250px; align-content: start; }
+.below .empty { color: var(--textSub); font-size: 13px; text-align: center; padding-block: 64px; }
+.chead { display: flex; align-items: center; gap: 10px; }
+.chead .kind { font-family: var(--display); font-size: 18px; color: var(--textMain); }
+.chead .kind b { font-family: var(--body); font-weight: 800; font-size: 13px; color: var(--textSub); margin-left: 6px; }
+.chead .x { margin-left: auto; height: 30px; padding: 0 12px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font: 700 12px var(--body); cursor: pointer; }
+.rows { display: grid; max-height: 156px; overflow: auto; }
+.row { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 14px; padding: 4px 0; border-bottom: 1px solid #263a50; font-variant-numeric: tabular-nums; }
+.row .dot { width: 10px; height: 10px; border-radius: 3px; background: var(--rc); }
+.row .v { color: var(--textSub); font-size: 13px; white-space: nowrap; }
+.row .v .g { color: var(--highlight); }
+.row .v .s { color: #C7B2FF; }
+.warn-line { margin: 0; font-size: 12px; color: var(--warn); font-weight: 700; }
+
+.sum { display: flex; justify-content: space-between; align-items: center; font-weight: 800; color: var(--textMain); }
+.btn { height: 46px; border-radius: 10px; border: 2px solid #E9A43A; background: var(--buttonPrimary); color: var(--textMain); font: 800 15px var(--body); cursor: pointer; width: 100%; }
+.choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.choice.one { grid-template-columns: 1fr; }
+.opt { border-radius: 12px; border: 2px solid; padding: 8px 10px; cursor: pointer; display: grid; gap: 0; text-align: center; color: var(--textMain); font-family: var(--body); }
+.opt .t { font-weight: 800; font-size: 15px; }
+.opt .v { font-family: var(--display); font-size: 22px; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.opt .s { font-size: 11px; color: var(--textSub); }
+.opt.gold { background: #3a2a0c; border-color: #E9A43A; }
+.opt.gold .v { color: var(--highlight); }
+.opt.shard { background: #2a1c4a; border-color: var(--shard); }
+.opt.shard .v { color: #C7B2FF; }
+.opt:hover { filter: brightness(1.12); }
+.hint { margin: 0; font-size: 12px; color: var(--textSub); }
+
+.side { display: grid; gap: 16px; align-content: start; }
+.wallet { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: baseline; }
+.wallet div { font-family: var(--display); font-size: 20px; font-variant-numeric: tabular-nums; }
+.wallet small { font-family: var(--body); font-size: 12px; color: var(--textSub); margin-right: 6px; }
+.wallet .g { color: var(--highlight); }
+.wallet .s { color: #C7B2FF; }
+.wallet button { margin-left: auto; height: 34px; padding: 0 12px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font: 700 13px var(--body); cursor: pointer; }
+.seg { display: inline-flex; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; flex-wrap: wrap; }
+.seg button { background: var(--slot); color: var(--textSub); border: 0; padding: 6px 14px; font: 600 13px var(--body); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--button); color: var(--textMain); }
+.where { font-size: 12px; color: var(--textSub); letter-spacing: .04em; margin-bottom: 6px; }
+.keys { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; font-size: 14px; }
+.keys dt { white-space: nowrap; }
+.keys dd { margin: 0; color: var(--textMain); }
+.keys dd small { color: var(--textSub); }
+.log { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--textSub); display: grid; gap: 2px; max-height: 170px; overflow: auto; font-variant-numeric: tabular-nums; }
+.log li:first-child { color: var(--textMain); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--panelSub); border: 2px solid var(--border); border-radius: 10px; padding: 8px 16px; color: var(--textMain); font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 30; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; }
+
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.qs li { color: var(--textMain); }
+.qs li small { display: block; color: var(--textSub); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>판매 목록 — 종류별로 담고, 장비는 판매 · 분해 중 고른다</h1>
+    <p class="lede">판매 목록은 <b>지금 탭의 종류만</b> 담는다 — 캐릭터는 캐릭터끼리, 장비는 장비끼리, 자원은 자원끼리. <b>다른 탭으로 넘어가면 목록을 비운다.</b> 목록 머리에 무엇을 팔고 있는지 적는다. <b>장비 탭에서만 아래 버튼이 둘이다</b> — [골드로 판매]와 [마석으로 분해]가 각자 받을 것을 보여 주고, 플레이어가 고른다.</p>
+    <p class="note">관련: 이슈 #83 · 분해 서버 <code>C_EquipDisassembleRequest</code>(T-131 — 끝났다) · 입력 정식화 T-173(이 안이면 닫는다). 조작 키는 지금 인게임 기준 그대로다 — 새 입력을 늘리지 않는다. 가격은 <code>BasePrice</code> × 즉시 판매율(지금 100%), 분해 재료는 <code>DisassembleTable</code>의 마력의 파편 수량이다(일반 1 · 고급 2 · 희귀 5 · 영웅 15 · 전설 50 · 신화 150).</p>
+  </header>
+
+  <section>
+    <h2>① 지금과 무엇이 다른가</h2>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>항목</th><th>지금</th><th>제안</th></tr></thead>
+        <tbody>
+          <tr><td>담는 범위</td><td>캐릭터 · 장비 · 자원을 <b>한 목록</b>에 섞어 담고 한 번에 판다</td><td class="diff">지금 탭의 종류만 담는다</td></tr>
+          <tr><td>탭을 바꾸면</td><td>담아 둔 것이 남는다</td><td class="diff">목록을 비우고 "비웠다"를 토스트로 알린다</td></tr>
+          <tr><td>목록 머리</td><td>없음 — 줄을 읽어야 무엇이 담겼는지 안다</td><td class="diff"><b>자원 판매</b> · <b>캐릭터 판매</b> · <b>장비 판매 / 분해</b> + 개수</td></tr>
+          <tr><td>아래 버튼</td><td>[즉시 판매] 하나</td><td class="diff">자원 · 캐릭터는 그대로. <b>장비만 [골드로 판매 +N G] · [마석으로 분해 +파편 N]</b></td></tr>
+          <tr><td>줄 하나</td><td>이름 · 받을 골드</td><td class="diff">장비 줄은 골드와 파편을 함께 적는다</td></tr>
+          <tr><td>담는 입력</td><td><kbd>우클릭</kbd> · 일괄 [판매 등록]</td><td class="same">같다 — 분해 전용 입력을 따로 두지 않는다</td></tr>
+          <tr><td>서버</td><td colspan="2" class="same">바뀌지 않는다 — 판매 <code>C_EntitySellRequest</code> · 분해 <code>C_EquipDisassembleRequest { EquipIds }</code>를 그대로 쓴다</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 직접 해 보기</h2>
+    <p class="note">칸을 <kbd>우클릭</kbd>하면 판매 목록에 담기고, 한 번 더 누르면 빠진다(휴대폰은 탭). 담아 둔 채 다른 탭을 눌러 목록이 비는 것을 본다. 장비 탭에서 아래 두 버튼을 비교한다. 자원은 실제로는 수량 팝업이 뜨지만 여기서는 전량을 담는다.</p>
+    <div class="play">
+      <div class="panel inv-col">
+        <div class="col-title">인벤토리</div>
+        <div class="tabs" role="tablist" id="tabs">
+          <button role="tab" data-tab="res">자원</button>
+          <button role="tab" data-tab="chr">캐릭터</button>
+          <button role="tab" data-tab="eq">장비</button>
+          <button role="tab" disabled>특성</button>
+        </div>
+        <div class="grid" id="inv"></div>
+        <div class="below" id="below"></div>
+      </div>
+
+      <div class="side">
+        <div class="panel wallet">
+          <div class="g"><small>골드</small><span id="gold">0</span></div>
+          <div class="s"><small>마력의 파편</small><span id="shard">0</span></div>
+          <button id="reset">처음부터</button>
+        </div>
+        <div class="panel">
+          <div class="where">장비를 어떻게 내보낼지 — 회의 결론 미리보기 (③ 참고)</div>
+          <div class="seg" id="mode">
+            <button data-mode="both" aria-pressed="true">판매 + 분해</button>
+            <button data-mode="shard" aria-pressed="false">분해만</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="where">칸 조작 (지금 인게임과 같다)</div>
+          <dl class="keys">
+            <dt><kbd>우클릭</kbd></dt><dd>판매 목록에 담기 · 빼기 <small>— 지금 탭 종류만</small></dd>
+            <dt><kbd>좌클릭</kbd></dt><dd>상자 열기 · 큐브 창 · 응축 창 <small>— 이 목업에는 없음</small></dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>좌클릭</kbd></dt><dd>잠금 <small>— 🔒 칸은 담기지 않는다</small></dd>
+            <dt><kbd>Ctrl</kbd>+<kbd>우클릭</kbd></dt><dd>경매 등록</dd>
+          </dl>
+        </div>
+        <div class="panel">
+          <div class="where">기록</div>
+          <ul class="log" id="log"><li>칸을 우클릭해 담아 본다.</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>③ 장비가 분해만 남는 경우</h2>
+    <p class="note">회의에서 "장비는 즉시 판매 없이 마석으로만"이 될 수도 있다고 했다. 위 [분해만]을 누르면 그 화면이 된다 — <b>장비 탭의 버튼이 [마석으로 분해] 하나</b>가 되고, 줄에서 골드가 빠진다. 자원 · 캐릭터는 그대로다.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>결론</th><th>클라</th><th>서버 · 데이터</th></tr></thead>
+        <tbody>
+          <tr><td><b>판매 + 분해</b> (이 목업 기본)</td><td>이 화면 그대로</td><td class="same">변경 없음</td></tr>
+          <tr><td><b>분해만</b></td><td>[골드로 판매]를 빼고 장비 줄의 골드를 지운다 · 일괄 담기 버튼 이름을 [분해 등록]으로</td><td class="diff">장비 즉시 판매를 막는다(<code>C_EntitySellRequest</code>의 장비 거절) · 장비 <code>BasePrice</code>의 쓰임 정리(경매 하한으로만 쓰는지) — 엑셀 · 패킷 반영이 먼저다</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>④ 정할 것</h2>
+    <ol class="qs">
+      <li>장비 — <b>판매 + 분해</b>인가, <b>분해만</b>인가
+        <small>판매 + 분해면 서버 변경 없이 클라만 바뀐다. 분해만이면 서버 · 엑셀이 먼저 바뀌어야 한다.</small></li>
+      <li>탭을 바꿀 때 — <b>비운다</b>(제안) · 탭마다 목록을 따로 기억한다
+        <small>비우면 "지금 무엇이 팔리나"가 늘 화면에 보이는 것과 같다. 기억하면 다시 담는 수고가 없지만 안 보이는 목록이 생긴다.</small></li>
+      <li>분해 결과 — 토스트("마력의 파편 +22")로 충분한가, 결과 창을 띄우나
+        <small>판매는 지금 토스트 + 골드 동전 연출이다. 분해도 같은 무게로 두는 것을 제안한다.</small></li>
+      <li>상위 등급 경고 — 지금처럼 "주의! 상위 등급 포함" 한 줄
+        <small>분해는 되돌릴 수 없다 — 판매와 같은 무게(확인 창 없음)로 둘지.</small></li>
+    </ol>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const RARITY = {
+  C: { name: '일반', color: 'var(--r-common)', shard: 1 },
+  U: { name: '고급', color: 'var(--r-uncommon)', shard: 2 },
+  R: { name: '희귀', color: 'var(--r-rare)', shard: 5 },
+  E: { name: '영웅', color: 'var(--r-epic)', shard: 15 },
+  L: { name: '전설', color: 'var(--r-legendary)', shard: 50 },
+  M: { name: '신화', color: 'var(--r-mythic)', shard: 150 },
+};
+const HIGH = new Set(['R', 'E', 'L', 'M']);
+const KIND = { res: '자원', chr: '캐릭터', eq: '장비' };
+const UNIT = { res: '종', chr: '명', eq: '개' };
+
+// 표본 — 이름 · 등급 · 가격은 엑셀 값이다(EquipTable · ItemTable · CharacterTable BasePrice).
+function seed() {
+  return {
+    res: [
+      { id: 'r1', name: '잡목', r: 'C', price: 10, count: 320 },
+      { id: 'r2', name: '소나무 목재', r: 'U', price: 25, count: 120 },
+      { id: 'r3', name: '참나무 목재', r: 'R', price: 60, count: 45 },
+      { id: 'r4', name: '깨진 토기 조각', r: 'C', price: 8, count: 210 },
+      { id: 'r5', name: '흑단 목재', r: 'E', price: 150, count: 8 },
+      { id: 'r6', name: '고급 원목', r: 'L', price: 400, count: 2, locked: true },
+    ],
+    chr: [
+      { id: 'c1', name: '떠돌이 전사', r: 'C', price: 50 },
+      { id: 'c2', name: '숲 슬라임', r: 'U', price: 100 },
+      { id: 'c3', name: '뿔쥐', r: 'U', price: 100 },
+      { id: 'c4', name: '가시 슬라임', r: 'U', price: 100, busy: '배치 중' },
+      { id: 'c5', name: '방랑 기사', r: 'U', price: 100 },
+    ],
+    eq: [
+      { id: 'e1', name: '목검', r: 'C', price: 70 },
+      { id: 'e2', name: '목검', r: 'C', price: 70 },
+      { id: 'e3', name: '무쇠 삽', r: 'U', price: 250 },
+      { id: 'e4', name: '탐험가의 목걸이', r: 'R', price: 360 },
+      { id: 'e5', name: '은빛 쟁기', r: 'E', price: 1500, busy: '착용 중' },
+      { id: 'e6', name: '풍년의 괭이', r: 'L', price: 4000 },
+      { id: 'e7', name: '목검', r: 'C', price: 70, locked: true },
+    ],
+  };
+}
+
+const state = { tab: 'eq', items: seed(), cart: new Set(), gold: 0, shard: 0, mode: 'both' };
+const $ = (id) => document.getElementById(id);
+const fmt = (n) => n.toLocaleString('ko-KR');
+
+function toast(text) {
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function log(text) {
+  const li = document.createElement('li');
+  li.textContent = text;
+  $('log').prepend(li);
+}
+
+function find(id) { return state.items[state.tab].find((x) => x.id === id); }
+function goldOf(it) { return it.price * (it.count ?? 1); }
+
+function setTab(tab) {
+  if (tab === state.tab) return;
+  if (state.cart.size > 0) {
+    toast(`판매 목록을 비웠습니다 — ${KIND[state.tab]} ${state.cart.size}${UNIT[state.tab]} (목록은 지금 탭 종류만 담습니다)`);
+    log(`탭 전환 → ${KIND[tab]} · 판매 목록 비움`);
+    state.cart.clear();
+  }
+  state.tab = tab;
+  render();
+}
+
+function toggle(id, cellEl) {
+  const it = find(id);
+  if (state.cart.has(id)) {
+    state.cart.delete(id);
+    render();
+    return;
+  }
+  const block = it.locked ? '잠겨 있습니다 — Ctrl+좌클릭으로 풀 수 있습니다' : it.busy ? `${it.busy}이라 담을 수 없습니다` : null;
+  if (block) {
+    toast(block);
+    cellEl.classList.remove('shake');
+    void cellEl.offsetWidth;
+    cellEl.classList.add('shake');
+    return;
+  }
+  state.cart.add(id);
+  render();
+}
+
+function sell(kind) {
+  const list = state.items[state.tab].filter((x) => state.cart.has(x.id));
+  if (list.length === 0) return;
+  if (kind === 'gold') {
+    const g = list.reduce((s, it) => s + goldOf(it), 0);
+    state.gold += g;
+    toast(`즉시 판매 — 골드 +${fmt(g)}`);
+    log(`${KIND[state.tab]} ${list.length}${UNIT[state.tab]} 판매 → +${fmt(g)} G`);
+  } else {
+    const s = list.reduce((a, it) => a + RARITY[it.r].shard, 0);
+    state.shard += s;
+    toast(`분해 — 마력의 파편 +${fmt(s)}`);
+    log(`장비 ${list.length}개 분해 → 마력의 파편 +${fmt(s)}`);
+  }
+  state.items[state.tab] = state.items[state.tab].filter((x) => !state.cart.has(x.id));
+  state.cart.clear();
+  render();
+}
+
+function renderGrid() {
+  const grid = $('inv');
+  grid.replaceChildren();
+  const items = state.items[state.tab];
+  for (let i = 0; i < 16; i++) {
+    const it = items[i];
+    const el = document.createElement('button');
+    el.className = 'cell';
+    if (!it) {
+      el.disabled = true;
+      el.style.cursor = 'default';
+      el.style.background = '#1b2a3b';
+      el.style.borderColor = '#22344a';
+      el.setAttribute('aria-label', '빈 칸');
+      grid.append(el);
+      continue;
+    }
+    el.style.setProperty('--rc', RARITY[it.r].color);
+    el.title = `${it.name} · ${RARITY[it.r].name}`;
+    el.innerHTML = `<span class="ab">${it.name.length > 4 ? it.name.slice(0, 4) + '…' : it.name}</span>`;
+    if (it.count) el.insertAdjacentHTML('beforeend', `<span class="cnt">${fmt(it.count)}</span>`);
+    if (it.locked) el.insertAdjacentHTML('beforeend', '<span class="lock">🔒</span>');
+    if (it.busy) el.insertAdjacentHTML('beforeend', `<span class="tag">${it.busy === '착용 중' ? '착용' : '배치'}</span>`);
+    if (state.cart.has(it.id)) {
+      el.classList.add('in-cart');
+      el.insertAdjacentHTML('beforeend', '<span class="sold">판</span>');
+    }
+    el.addEventListener('contextmenu', (e) => { e.preventDefault(); toggle(it.id, el); });
+    el.addEventListener('click', () => toggle(it.id, el)); // 목업 편의 — 실제 게임의 좌클릭은 상자 · 큐브 · 응축이다
+    grid.append(el);
+  }
+}
+
+function renderBelow() {
+  const below = $('below');
+  below.replaceChildren();
+  const tab = state.tab;
+  const list = state.items[tab].filter((x) => state.cart.has(x.id));
+  const isEq = tab === 'eq';
+  const shardOnly = isEq && state.mode === 'shard';
+
+  if (list.length === 0) {
+    const hint = isEq
+      ? (shardOnly ? '장비를 우클릭해 담으세요 — 마력의 파편으로 분해합니다' : '장비를 우클릭해 담으세요 — 골드로 팔거나 마력의 파편으로 분해합니다')
+      : `${KIND[tab]}을(를) 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다`;
+    below.innerHTML = `<div class="empty">${hint}</div>`;
+    return;
+  }
+
+  const head = document.createElement('div');
+  head.className = 'chead';
+  const title = isEq ? (shardOnly ? '장비 분해' : '장비 판매 / 분해') : `${KIND[tab]} 판매`;
+  head.innerHTML = `<span class="kind">${title}<b>${list.length}${UNIT[tab]}</b></span><button class="x">비우기</button>`;
+  head.querySelector('button').addEventListener('click', () => { state.cart.clear(); render(); });
+  below.append(head);
+
+  const rows = document.createElement('div');
+  rows.className = 'rows';
+  for (const it of list) {
+    const row = document.createElement('div');
+    row.className = 'row';
+    row.style.setProperty('--rc', RARITY[it.r].color);
+    const g = `<span class="g">${fmt(goldOf(it))} G</span>`;
+    const s = `<span class="s">파편 ${RARITY[it.r].shard}</span>`;
+    const value = isEq ? (shardOnly ? s : `${g} · ${s}`) : g;
+    row.innerHTML = `<span class="dot"></span><span>${it.name}${it.count ? ` ×${fmt(it.count)}` : ''}</span><span class="v">${value}</span>`;
+    rows.append(row);
+  }
+  below.append(rows);
+
+  if (list.some((it) => HIGH.has(it.r))) {
+    below.insertAdjacentHTML('beforeend', '<p class="warn-line">주의! 상위 등급 포함</p>');
+  }
+
+  const totalGold = list.reduce((s, it) => s + goldOf(it), 0);
+  const totalShard = list.reduce((s, it) => s + RARITY[it.r].shard, 0);
+
+  if (!isEq) {
+    const sum = document.createElement('div');
+    sum.className = 'sum';
+    sum.innerHTML = `<span>즉시 판매</span><span style="color:var(--highlight)">${fmt(totalGold)} G</span>`;
+    const btn = document.createElement('button');
+    btn.className = 'btn';
+    btn.textContent = '즉시 판매';
+    btn.addEventListener('click', () => sell('gold'));
+    below.append(sum, btn);
+    return;
+  }
+
+  const choice = document.createElement('div');
+  choice.className = 'choice' + (shardOnly ? ' one' : '');
+  if (!shardOnly) {
+    const goldBtn = document.createElement('button');
+    goldBtn.className = 'opt gold';
+    goldBtn.innerHTML = `<span class="t">골드로 판매</span><span class="v">+${fmt(totalGold)} G</span><span class="s">즉시 판매가 합계</span>`;
+    goldBtn.addEventListener('click', () => sell('gold'));
+    choice.append(goldBtn);
+  }
+  const shardBtn = document.createElement('button');
+  shardBtn.className = 'opt shard';
+  shardBtn.innerHTML = `<span class="t">마석으로 분해</span><span class="v">+마력의 파편 ${fmt(totalShard)}</span><span class="s">등급별 1 · 2 · 5 · 15 · 50 · 150개</span>`;
+  shardBtn.addEventListener('click', () => sell('shard'));
+  choice.append(shardBtn);
+  below.append(choice);
+  below.insertAdjacentHTML('beforeend', shardOnly
+    ? '<p class="hint">분해한 장비는 사라지고 인챈트도 함께 없어진다.</p>'
+    : '<p class="hint">같은 목록을 둘 중 하나로 내보낸다 — 누른 쪽만 실행된다. 분해한 장비는 인챈트도 함께 사라진다.</p>');
+}
+
+function render() {
+  for (const b of document.querySelectorAll('#tabs button[data-tab]')) {
+    b.setAttribute('aria-selected', String(b.dataset.tab === state.tab));
+  }
+  $('gold').textContent = fmt(state.gold);
+  $('shard').textContent = fmt(state.shard);
+  renderGrid();
+  renderBelow();
+}
+
+for (const b of document.querySelectorAll('#tabs button[data-tab]')) {
+  b.addEventListener('click', () => setTab(b.dataset.tab));
+}
+for (const b of document.querySelectorAll('#mode button')) {
+  b.addEventListener('click', () => {
+    state.mode = b.dataset.mode;
+    for (const o of document.querySelectorAll('#mode button')) o.setAttribute('aria-pressed', String(o === b));
+    render();
+  });
+}
+$('reset').addEventListener('click', () => {
+  Object.assign(state, { items: seed(), cart: new Set(), gold: 0, shard: 0 });
+  $('log').innerHTML = '<li>처음부터 다시.</li>';
+  render();
+});
+
+render();
+</script>
+</html>
