@@ -24,7 +24,7 @@ public class UserCharacterCondenseTest
     };
 
     // 대상 500 + 같은 캐릭터 재료 501~520 + 다른 캐릭터 900
-    private static (User User, TestUserBuilder B) NewUser(int targetCondenseCount = 0)
+    private static (User User, TestUserBuilder B) NewUser(int targetCondenseCount = 0, int materialCondenseCount = 0)
     {
         var b = new TestUserBuilder();
         b.Stars.Load(Stars());
@@ -36,7 +36,7 @@ public class UserCharacterCondenseTest
         };
         for (var i = 1; i <= 20; i++)
         {
-            rows.Add(new CharacterRow { character_id = Target + i, character_tid = Rambol, level = 1, exp = 0 });
+            rows.Add(new CharacterRow { character_id = Target + i, character_tid = Rambol, level = 1, exp = 0, condense_count = materialCondenseCount });
         }
 
         var user = b.Build();
@@ -61,6 +61,45 @@ public class UserCharacterCondenseTest
         // 1개 → 누적 1, 기준 2에 못 미쳐 ★0
         (Last(b).Result, Last(b).Character!.CondenseCount, Last(b).Character!.Star).ShouldBe((EResultCode.Ok, 1, 0));
         user.TryGetCharacter(Target + 1, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 재료의_누적_응축은_비율만큼_올림해_더_넘긴다()
+    {
+        var (user, b) = NewUser(materialCondenseCount: 3);
+
+        user.TryCondenseCharacter(Target, Materials(2), TestUserBuilder.Base);
+
+        // 재료 2마리 몫 2 + 재료마다 누적 3의 계승분 — 비율은 Constants.CondenseInheritPermille
+        var inherited = Character.InheritedCondense(3, GameData.Constants.CondenseInheritPermille);
+        Last(b).Character!.CondenseCount.ShouldBe(2 + inherited * 2);
+    }
+
+    [Fact]
+    public void 재료의_레벨과_경험치는_넘어가지_않는다()
+    {
+        var (user, b) = NewUser();
+        user.LoadCharacters(new List<CharacterRow>
+        {
+            new() { character_id = Target,     character_tid = Rambol, level = 7,  exp = 3 },
+            new() { character_id = Target + 1, character_tid = Rambol, level = 20, exp = 50 },
+        });
+
+        user.TryCondenseCharacter(Target, Materials(1), TestUserBuilder.Base);
+
+        (Last(b).Character!.Level, Last(b).Character!.Exp).ShouldBe((7, 3));
+    }
+
+    [Theory]
+    [InlineData(3, 500, 2)]    // 1.5 → 올림 2
+    [InlineData(4, 500, 2)]    // 나누어떨어지면 그대로
+    [InlineData(1, 500, 1)]    // 0.5 → 올림 1
+    [InlineData(7, 0, 0)]      // 비율 0 = 계승 없음
+    [InlineData(0, 500, 0)]    // 쌓은 게 없으면 0
+    [InlineData(5, 1000, 5)]   // 100% = 전부
+    public void 계승분은_누적에_비율을_곱해_올림한다(int count, long permille, int expected)
+    {
+        Character.InheritedCondense(count, permille).ShouldBe(expected);
     }
 
     [Fact]

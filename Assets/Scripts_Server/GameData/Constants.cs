@@ -81,5 +81,8 @@ namespace GameData
 
         /// <summary>판정 1회 최소 시간(ms) — 연출 한 바퀴(달리기 1초 + 공격 0.6초)를 보장한다. 실효 주기 = max(이 값, 판정 비용 ÷ 속도)</summary>
         public static long MinCycleMs => GameTable.ConstantsTable["MinCycleMs"].Value;
+
+        /// <summary>응축 재료의 누적 응축 중 대상에 넘기는 비율(천분율) — 재료마다 올림. 레벨·경험치는 넘기지 않는다</summary>
+        public static long CondenseInheritPermille => GameTable.ConstantsTable["CondenseInheritPermille"].Value;
     }
 }

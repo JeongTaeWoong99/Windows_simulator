@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-24 응축 재료의 누적 응축 50% 계승](2026-10-24-condense-inherit.md) — `#server` `#design` `#data` T-179 · 레벨·경험치는 계승 없음 (#84)
 - [2026-10-24 유니티 이펙트 · 해킹 연출 가능성 시험](2026-10-24-hack-vfx-prototype.md) — `#client` `#test` 파티클 4종·퀵해킹 연출 시험 후 폴더 삭제(커밋 없음)
 - [2026-10-23 칸 등급 배경 그림 · 판매 골드 동전 · 특성 배우기 반짝임](2026-10-23-rarity-bg-coin-trait-fx.md) — `#client` `#ui` `#fx` `rarity_bg` 9-slice · `CoinFlyPresenter` · T-052·T-039 실서버 확인 · ⚠️ 씬은 YAML 직접 삽입
 - [2026-10-23 게임 DB 연결에 busy_timeout](2026-10-23-sqlite-busy-timeout.md) — `#server` RETURNING 커밋 잠김으로 세션이 끊기던 문제 (#85)

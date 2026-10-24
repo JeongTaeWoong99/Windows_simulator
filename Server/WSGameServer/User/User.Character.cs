@@ -200,12 +200,20 @@ public partial class User
             }
         }
 
+        // 재료 1마리 몫 + 재료가 쌓아 둔 누적의 계승분. 지우기 전에 센다.
+        var added = 0;
+        foreach (var materialId in materialIds)
+        {
+            TryGetCharacter(materialId, out var material);
+            added += 1 + Character.InheritedCondense(material.CondenseCount, Constants.CondenseInheritPermille);
+        }
+
         foreach (var materialId in materialIds)
         {
             RemoveCharacter(materialId);
         }
 
-        var starGained = target.Condense(materialIds.Count, _characterStars);
+        var starGained = target.Condense(added, _characterStars);
 
         PostDBTask(new CondenseCharacterRepository(this, target, materialIds.ToList()));
 

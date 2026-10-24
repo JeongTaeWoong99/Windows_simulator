@@ -40,13 +40,17 @@ public sealed class Character
     /// <summary>응축에 넣은 재료의 누적 수. ★은 이 값으로 <see cref="CharacterStarCatalog"/>에서 읽는다(기획 5.5).</summary>
     public int CondenseCount { get; private set; }
 
-    /// <summary>재료를 넣는다. 최고 ★을 넘는 몫은 버린다 — 남는 재료도 소모된다. 오른 ★ 수를 돌려준다.</summary>
-    public int Condense(int materialCount, CharacterStarCatalog stars)
+    /// <summary>누적에 더한다(재료 몫 + 계승분). 최고 ★을 넘는 몫은 버린다 — 남는 재료도 소모된다. 오른 ★ 수를 돌려준다.</summary>
+    public int Condense(int addCount, CharacterStarCatalog stars)
     {
         var before = stars.StarAt(CondenseCount);
-        CondenseCount = Math.Min(CondenseCount + materialCount, stars.MaxCount);
+        CondenseCount = Math.Min(CondenseCount + addCount, stars.MaxCount);
         return stars.StarAt(CondenseCount) - before;
     }
+
+    /// <summary>재료 하나가 대상에 더 넘기는 누적 응축 — 누적 × 비율(천분율), 올림. 레벨·경험치는 넘기지 않는다.</summary>
+    public static int InheritedCondense(int condenseCount, long inheritPermille)
+        => (int)((condenseCount * inheritPermille + 999) / 1000);
 
     /// <summary>치트 전용 — 재료 없이 누적을 정한다. 범위는 부른 쪽이 자른다.</summary>
     public void SetCondenseCount(int count) => CondenseCount = count;
