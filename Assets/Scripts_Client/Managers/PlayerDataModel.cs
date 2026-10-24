@@ -112,6 +112,49 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
     }
 
+    // 그 보관함에 [합치기]로 바뀔 칸이 있나 (T-175) — 같은 자원의 덜 찬 칸 **뒤에** 같은 자원 칸이 하나 더 있으면 된다.
+    // 서버 규칙('앞 칸부터 MaxStack까지 채운다')과 같은 판정이다 — 빈 요청을 보내지 않으려고 미리 본다.
+    public bool CanMergeItemSlots(EContainer container)
+    {
+        foreach (var item in _inventory)
+        {
+            if (item.Container != container || item.Count <= 0 || item.Count >= GameDataLoader.GetItemMaxStack(item.ItemId))
+            {
+                continue;
+            }
+
+            foreach (var other in _inventory)
+            {
+                if (other.Container == container && other.ItemId == item.ItemId && other.Count > 0 && other.Slot > item.Slot)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    // [창고에 쌓기]로 옮겨질 것이 있나 (T-175) — 인벤토리에 있는 자원이 창고에 덜 찬 같은 자원 칸을 가지면 된다.
+    // 창고 빈 칸에는 새 묶음을 만들지 않는다(서버 규칙) — 창고에 없는 자원은 세지 않는다.
+    public bool CanStackIntoWarehouse()
+    {
+        foreach (var stored in _inventory)
+        {
+            if (stored.Container != EContainer.Warehouse || stored.Count <= 0 || stored.Count >= GameDataLoader.GetItemMaxStack(stored.ItemId))
+            {
+                continue;
+            }
+
+            if (GetItemCount(stored.ItemId, EContainer.Inventory) > 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // 보관함 탭 하나의 칸 수 — 지금은 모든 유저·모든 탭이 인벤토리 'Constants.StorageCapacity' · 창고 'Constants.WarehouseCapacity'다.
     //
     // ★ 칸 수를 묻는 곳은 여기 하나다 — 칸 프레임('InventoryGridPresenter')은 이 값만큼 열고 나머지는 끈다.

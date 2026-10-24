@@ -7,7 +7,7 @@ using UnityEngine.UI;
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 인벤토리 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
-//   1줄: 정렬 방향 화살표 · 정렬 기준 · 일괄 담기([제외 ▾] + 범위 + 버튼)
+//   1줄: 정렬 방향 화살표 · 정렬 기준 · [합치기](자원 탭만) · 일괄 담기([제외 ▾] + 범위 + 버튼)
 //   2줄: 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
 //
 // 탭 줄보다 낮은 별도 줄이다. 탭은 "무엇을 보는가", 이 줄은 "그것을 어떻게 다루는가"라
@@ -41,6 +41,10 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //
 // ■ 검색창에 치면 아래에 후보를 띄운다 — 지금 탭이 가진 것 중 이름이 맞는 것 (2026-10-14 · 경매장 검색창과 같은 'SuggestView').
 //   고르면 그 이름으로 검색창을 채우고 거른다.
+//
+// ■ [합치기] — 같은 자원의 덜 찬 칸을 앞 칸부터 MaxStack까지 채운다 (2026-10-25 · T-175 · 이슈 #82)
+//   [정렬]과 달리 칸 순서를 흔들지 않는다 — 비게 된 뒤 칸은 빈 칸으로 남는다. 개체 탭은 칸마다 1개라 자원 탭에서만 보인다.
+//   요청·판정은 격자가 한다('InventoryGridPresenter.MergeCurrent') — 칸 요청 대기가 격자끼리 하나라서다.
 //
 // ■ 찾기는 탭을 바꾸거나 인벤토리를 닫으면 비운다
 //   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 인벤토리를 닫을 때도
@@ -86,6 +90,9 @@ public class InventoryToolPresenter : MonoBehaviour
     [CenterHeader("정렬 기준")]
     [SerializeField, Tooltip("정렬 기준 — 등급순 · 이름순 · 수량순(자원 탭만). 목록은 코드가 채운다")]
     private TMP_Dropdown sortKeyDropdown = null!;
+
+    [SerializeField, Tooltip("[합치기] — 같은 자원의 덜 찬 칸을 앞 칸부터 채운다. 자원 탭에서만 보인다. OnClick은 코드가 연결한다")]
+    private Button mergeButton = null!;
 
     [CenterHeader("찾기")]
     [SerializeField, Tooltip("이름 검색창. 입력하는 대로 걸러진다")]
@@ -154,6 +161,7 @@ public class InventoryToolPresenter : MonoBehaviour
         this.RequireRef(tabs,               nameof(tabs));
         this.RequireRef(grid,               nameof(grid));
         this.RequireRef(sortKeyDropdown,    nameof(sortKeyDropdown));
+        this.RequireRef(mergeButton,        nameof(mergeButton));
         this.RequireRef(searchInput,        nameof(searchInput));
         this.RequireRef(searchSuggestView,  nameof(searchSuggestView));
         this.RequireRef(industryDropdown,   nameof(industryDropdown));
@@ -175,6 +183,8 @@ public class InventoryToolPresenter : MonoBehaviour
         sortButton.onClick.AddListener(OnSortClicked);
         bulkSellButton.onClick.AddListener(OnBulkSellClicked);
         sortKeyDropdown.onValueChanged.AddListener(OnSortKeyChanged);
+        mergeButton.onClick.AddListener(grid.MergeCurrent);
+        AttachMergeTooltip();
 
         searchInput.onValueChanged.AddListener(OnSearchChanged);
         searchSuggestView.Picked += OnSuggestionPicked;
@@ -397,6 +407,15 @@ public class InventoryToolPresenter : MonoBehaviour
         sortKeyDropdown.AddOptions(labels);
         sortKeyDropdown.SetValueWithoutNotify(_sortKeyOptions.IndexOf(_sortKey));
         sortKeyDropdown.RefreshShownValue();
+    }
+
+    // [합치기]에 무엇을 하는지 툴팁을 단다 (Start에서 한 번) — 버튼 글자만으로는 [정렬]과 무엇이 다른지 안 보인다.
+    // ※ 띄우는 순간 문구를 만든다 — 언어를 바꿔도 다시 달 필요가 없다.
+    private void AttachMergeTooltip()
+    {
+        var trigger = mergeButton.gameObject.AddComponent<TooltipTrigger>();
+
+        trigger.SetProvider(() => new TooltipContent(Lang.Get("UI.Tool.Merge")).Row(Lang.Get("UI.Tool.MergeTip"), ""));
     }
 
     // 화살표를 지금 방향으로 맞춘다 (Start · 방향을 바꿀 때).
@@ -848,8 +867,9 @@ public class InventoryToolPresenter : MonoBehaviour
         // 산업 축이 없는 탭(캐릭터)은 드롭다운을 감춘다 — 골라도 아무 일이 없으면 고장처럼 보인다.
         industryDropdown.gameObject.SetActive(grid.CurrentSupportsIndustryFilter);
 
-        // 분류 제외는 자원 탭에서만 뜻이 있다.
+        // 분류 제외 · 합치기는 자원 탭에서만 뜻이 있다.
         excludeDropdown.gameObject.SetActive(tab == InventoryTab.Resource);
+        mergeButton.gameObject.SetActive(tab == InventoryTab.Resource);
 
         ResetFilter();
     }
