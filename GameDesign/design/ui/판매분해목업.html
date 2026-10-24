@@ -8,7 +8,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
 <style>
 /* 제안 목업 (이슈 #83 · T-131 · T-173) — 판매 목록은 지금 탭의 종류만 담는다. 탭을 바꾸면 비운다.
-   장비 탭에서만 아래 버튼이 둘이다 — [골드로 판매] · [마석으로 분해]. 각 버튼이 받을 것을 미리 보여 준다.
+   아래 버튼은 세 탭이 같은 모양이다 — 버튼마다 "총 N 골드 획득"처럼 받을 것을 적는다.
+   장비 탭만 버튼이 둘이다 — [골드로 판매] · [마석으로 분해]. 줄에도 "360 G OR 마석 5"로 둘 중 하나임을 적는다.
    팔레트·칸 모양은 아티팩트도감장착목업.html과 같다.
    위에서 아래로 ① 지금과 무엇이 다른가 ② 직접 해 보기 ③ 장비가 분해만 남는 경우 ④ 정할 것 */
 :root {
@@ -94,15 +95,15 @@ td.diff { color: var(--highlight); font-weight: 700; }
 .row .v { color: var(--textSub); font-size: 13px; white-space: nowrap; }
 .row .v .g { color: var(--highlight); }
 .row .v .s { color: #C7B2FF; }
+.or { display: inline-block; margin: 0 6px; padding: 0 5px; border-radius: 4px; background: var(--panelSub); border: 1px solid var(--border); color: var(--textMain); font: 800 10px/14px var(--body); letter-spacing: .06em; vertical-align: 1px; }
 .warn-line { margin: 0; font-size: 12px; color: var(--warn); font-weight: 700; }
 
-.sum { display: flex; justify-content: space-between; align-items: center; font-weight: 800; color: var(--textMain); }
-.btn { height: 46px; border-radius: 10px; border: 2px solid #E9A43A; background: var(--buttonPrimary); color: var(--textMain); font: 800 15px var(--body); cursor: pointer; width: 100%; }
 .choice { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 .choice.one { grid-template-columns: 1fr; }
 .opt { border-radius: 12px; border: 2px solid; padding: 8px 10px; cursor: pointer; display: grid; gap: 0; text-align: center; color: var(--textMain); font-family: var(--body); }
 .opt .t { font-weight: 800; font-size: 15px; }
-.opt .v { font-family: var(--display); font-size: 22px; line-height: 1.25; font-variant-numeric: tabular-nums; }
+.opt .v { font-family: var(--display); font-size: 20px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.opt .v small { font-family: var(--body); font-size: 13px; font-weight: 800; color: var(--textSub); }
 .opt .s { font-size: 11px; color: var(--textSub); }
 .opt.gold { background: #3a2a0c; border-color: #E9A43A; }
 .opt.gold .v { color: var(--highlight); }
@@ -139,8 +140,8 @@ td.diff { color: var(--highlight); font-weight: 700; }
 <div class="wrap">
   <header>
     <h1>판매 목록 — 종류별로 담고, 장비는 판매 · 분해 중 고른다</h1>
-    <p class="lede">판매 목록은 <b>지금 탭의 종류만</b> 담는다 — 캐릭터는 캐릭터끼리, 장비는 장비끼리, 자원은 자원끼리. <b>다른 탭으로 넘어가면 목록을 비운다.</b> 목록 머리에 무엇을 팔고 있는지 적는다. <b>장비 탭에서만 아래 버튼이 둘이다</b> — [골드로 판매]와 [마석으로 분해]가 각자 받을 것을 보여 주고, 플레이어가 고른다.</p>
-    <p class="note">관련: 이슈 #83 · 분해 서버 <code>C_EquipDisassembleRequest</code>(T-131 — 끝났다) · 입력 정식화 T-173(이 안이면 닫는다). 조작 키는 지금 인게임 기준 그대로다 — 새 입력을 늘리지 않는다. 가격은 <code>BasePrice</code> × 즉시 판매율(지금 100%), 분해 재료는 <code>DisassembleTable</code>의 마력의 파편 수량이다(일반 1 · 고급 2 · 희귀 5 · 영웅 15 · 전설 50 · 신화 150).</p>
+    <p class="lede">판매 목록은 <b>지금 탭의 종류만</b> 담는다 — 캐릭터는 캐릭터끼리, 장비는 장비끼리, 자원은 자원끼리. <b>다른 탭으로 넘어가면 목록을 비운다.</b> 목록 머리에 무엇을 팔고 있는지 적는다. 아래 버튼은 <b>세 탭이 같은 모양</b>이고 버튼에 <b>받을 총량</b>을 적는다(<b>총 360 골드 획득</b>). <b>장비 탭만 버튼이 둘</b>이다 — [골드로 판매]와 [마석으로 분해] 중 플레이어가 고른다.</p>
+    <p class="note">관련: 이슈 #83 · 분해 서버 <code>C_EquipDisassembleRequest</code>(T-131 — 끝났다) · 입력 정식화 T-173(이 안이면 닫는다). 조작 키는 지금 인게임 기준 그대로다 — 새 입력을 늘리지 않는다. 가격은 <code>BasePrice</code> × 즉시 판매율(지금 100%), 분해 재료는 <code>DisassembleTable</code>의 마석 수량이다(일반 1 · 고급 2 · 희귀 5 · 영웅 15 · 전설 50 · 신화 150).</p>
   </header>
 
   <section>
@@ -152,8 +153,8 @@ td.diff { color: var(--highlight); font-weight: 700; }
           <tr><td>담는 범위</td><td>캐릭터 · 장비 · 자원을 <b>한 목록</b>에 섞어 담고 한 번에 판다</td><td class="diff">지금 탭의 종류만 담는다</td></tr>
           <tr><td>탭을 바꾸면</td><td>담아 둔 것이 남는다</td><td class="diff">목록을 비우고 "비웠다"를 토스트로 알린다</td></tr>
           <tr><td>목록 머리</td><td>없음 — 줄을 읽어야 무엇이 담겼는지 안다</td><td class="diff"><b>자원 판매</b> · <b>캐릭터 판매</b> · <b>장비 판매 / 분해</b> + 개수</td></tr>
-          <tr><td>아래 버튼</td><td>[즉시 판매] 하나</td><td class="diff">자원 · 캐릭터는 그대로. <b>장비만 [골드로 판매 +N G] · [마석으로 분해 +파편 N]</b></td></tr>
-          <tr><td>줄 하나</td><td>이름 · 받을 골드</td><td class="diff">장비 줄은 골드와 파편을 함께 적는다</td></tr>
+          <tr><td>아래 버튼</td><td>[즉시 판매] 하나</td><td class="diff">세 탭 모두 같은 버튼 — <b>[골드로 판매 · 총 N 골드 획득]</b>. <b>장비만 [마석으로 분해 · 총 마석 N개 획득]</b>이 옆에 하나 더</td></tr>
+          <tr><td>줄 하나</td><td>이름 · 받을 골드</td><td class="diff">장비 줄은 <b>360 G <span class="or">OR</span> 마석 5</b> — 둘 중 하나만 받는다</td></tr>
           <tr><td>담는 입력</td><td><kbd>우클릭</kbd> · 일괄 [판매 등록]</td><td class="same">같다 — 분해 전용 입력을 따로 두지 않는다</td></tr>
           <tr><td>서버</td><td colspan="2" class="same">바뀌지 않는다 — 판매 <code>C_EntitySellRequest</code> · 분해 <code>C_EquipDisassembleRequest { EquipIds }</code>를 그대로 쓴다</td></tr>
         </tbody>
@@ -180,7 +181,7 @@ td.diff { color: var(--highlight); font-weight: 700; }
       <div class="side">
         <div class="panel wallet">
           <div class="g"><small>골드</small><span id="gold">0</span></div>
-          <div class="s"><small>마력의 파편</small><span id="shard">0</span></div>
+          <div class="s"><small>마석</small><span id="shard">0</span></div>
           <button id="reset">처음부터</button>
         </div>
         <div class="panel">
@@ -228,7 +229,7 @@ td.diff { color: var(--highlight); font-weight: 700; }
         <small>판매 + 분해면 서버 변경 없이 클라만 바뀐다. 분해만이면 서버 · 엑셀이 먼저 바뀌어야 한다.</small></li>
       <li>탭을 바꿀 때 — <b>비운다</b>(제안) · 탭마다 목록을 따로 기억한다
         <small>비우면 "지금 무엇이 팔리나"가 늘 화면에 보이는 것과 같다. 기억하면 다시 담는 수고가 없지만 안 보이는 목록이 생긴다.</small></li>
-      <li>분해 결과 — 토스트("마력의 파편 +22")로 충분한가, 결과 창을 띄우나
+      <li>분해 결과 — 토스트("마석 +22")로 충분한가, 결과 창을 띄우나
         <small>판매는 지금 토스트 + 골드 동전 연출이다. 분해도 같은 무게로 두는 것을 제안한다.</small></li>
       <li>상위 등급 경고 — 지금처럼 "주의! 상위 등급 포함" 한 줄
         <small>분해는 되돌릴 수 없다 — 판매와 같은 무게(확인 창 없음)로 둘지.</small></li>
@@ -343,8 +344,8 @@ function sell(kind) {
   } else {
     const s = list.reduce((a, it) => a + RARITY[it.r].shard, 0);
     state.shard += s;
-    toast(`분해 — 마력의 파편 +${fmt(s)}`);
-    log(`장비 ${list.length}개 분해 → 마력의 파편 +${fmt(s)}`);
+    toast(`분해 — 마석 +${fmt(s)}`);
+    log(`장비 ${list.length}개 분해 → 마석 +${fmt(s)}`);
   }
   state.items[state.tab] = state.items[state.tab].filter((x) => !state.cart.has(x.id));
   state.cart.clear();
@@ -394,7 +395,7 @@ function renderBelow() {
 
   if (list.length === 0) {
     const hint = isEq
-      ? (shardOnly ? '장비를 우클릭해 담으세요 — 마력의 파편으로 분해합니다' : '장비를 우클릭해 담으세요 — 골드로 팔거나 마력의 파편으로 분해합니다')
+      ? (shardOnly ? '장비를 우클릭해 담으세요 — 마석으로 분해합니다' : '장비를 우클릭해 담으세요 — 골드로 팔거나 마석으로 분해합니다')
       : `${KIND[tab]}을(를) 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다`;
     below.innerHTML = `<div class="empty">${hint}</div>`;
     return;
@@ -414,8 +415,8 @@ function renderBelow() {
     row.className = 'row';
     row.style.setProperty('--rc', RARITY[it.r].color);
     const g = `<span class="g">${fmt(goldOf(it))} G</span>`;
-    const s = `<span class="s">파편 ${RARITY[it.r].shard}</span>`;
-    const value = isEq ? (shardOnly ? s : `${g} · ${s}`) : g;
+    const s = `<span class="s">마석 ${RARITY[it.r].shard}</span>`;
+    const value = isEq ? (shardOnly ? s : `${g}<span class="or">OR</span>${s}`) : g;
     row.innerHTML = `<span class="dot"></span><span>${it.name}${it.count ? ` ×${fmt(it.count)}` : ''}</span><span class="v">${value}</span>`;
     rows.append(row);
   }
@@ -428,36 +429,31 @@ function renderBelow() {
   const totalGold = list.reduce((s, it) => s + goldOf(it), 0);
   const totalShard = list.reduce((s, it) => s + RARITY[it.r].shard, 0);
 
-  if (!isEq) {
-    const sum = document.createElement('div');
-    sum.className = 'sum';
-    sum.innerHTML = `<span>즉시 판매</span><span style="color:var(--highlight)">${fmt(totalGold)} G</span>`;
-    const btn = document.createElement('button');
-    btn.className = 'btn';
-    btn.textContent = '즉시 판매';
-    btn.addEventListener('click', () => sell('gold'));
-    below.append(sum, btn);
-    return;
-  }
-
+  // 버튼은 세 탭이 같은 모양이다 — 장비만 [마석으로 분해]가 하나 더 붙는다.
   const choice = document.createElement('div');
-  choice.className = 'choice' + (shardOnly ? ' one' : '');
-  if (!shardOnly) {
+  const showGold = !shardOnly;
+  const showShard = isEq;
+  choice.className = 'choice' + (showGold && showShard ? '' : ' one');
+  if (showGold) {
     const goldBtn = document.createElement('button');
     goldBtn.className = 'opt gold';
-    goldBtn.innerHTML = `<span class="t">골드로 판매</span><span class="v">+${fmt(totalGold)} G</span><span class="s">즉시 판매가 합계</span>`;
+    goldBtn.innerHTML = `<span class="t">골드로 판매</span><span class="v"><small>총</small> ${fmt(totalGold)} 골드 <small>획득</small></span><span class="s">즉시 판매가 합계</span>`;
     goldBtn.addEventListener('click', () => sell('gold'));
     choice.append(goldBtn);
   }
-  const shardBtn = document.createElement('button');
-  shardBtn.className = 'opt shard';
-  shardBtn.innerHTML = `<span class="t">마석으로 분해</span><span class="v">+마력의 파편 ${fmt(totalShard)}</span><span class="s">등급별 1 · 2 · 5 · 15 · 50 · 150개</span>`;
-  shardBtn.addEventListener('click', () => sell('shard'));
-  choice.append(shardBtn);
+  if (showShard) {
+    const shardBtn = document.createElement('button');
+    shardBtn.className = 'opt shard';
+    shardBtn.innerHTML = `<span class="t">마석으로 분해</span><span class="v"><small>총</small> 마석 ${fmt(totalShard)}개 <small>획득</small></span><span class="s">등급별 1 · 2 · 5 · 15 · 50 · 150개</span>`;
+    shardBtn.addEventListener('click', () => sell('shard'));
+    choice.append(shardBtn);
+  }
   below.append(choice);
-  below.insertAdjacentHTML('beforeend', shardOnly
-    ? '<p class="hint">분해한 장비는 사라지고 인챈트도 함께 없어진다.</p>'
-    : '<p class="hint">같은 목록을 둘 중 하나로 내보낸다 — 누른 쪽만 실행된다. 분해한 장비는 인챈트도 함께 사라진다.</p>');
+  if (isEq) {
+    below.insertAdjacentHTML('beforeend', shardOnly
+      ? '<p class="hint">분해한 장비는 사라지고 인챈트도 함께 없어진다.</p>'
+      : '<p class="hint">같은 목록을 둘 중 하나로 내보낸다 — 누른 쪽만 실행된다. 분해한 장비는 인챈트도 함께 사라진다.</p>');
+  }
 }
 
 function render() {

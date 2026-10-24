@@ -32,6 +32,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly List<long> _sellingCharacterIds = new List<long>();
     private readonly List<long> _sellingEquipIds     = new List<long>();
 
+    // 응답을 기다리는 장비 분해 — 'S_EquipDisassembleResponse'에도 장비 ID가 없다('BeginDisassemble').
+    private readonly List<long> _disassemblingEquipIds = new List<long>();
+
     // 응답을 기다리는 응축의 재료 — 'S_CharacterCondenseResponse'에는 재료 ID가 없어 보낸 목록을 여기 둔다('BeginCondense').
     private readonly List<long> _condensingMaterialIds = new List<long>();
 
@@ -537,6 +540,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<EResultCode>? ItemSellFailed;      // 판매 실패 (거절 사유)
     public event Action<long>?        EntitySellCompleted; // 개체(캐릭터·장비) 판매 성공 (이번에 번 골드)
     public event Action<EResultCode>? EntitySellFailed;    // 개체 판매 실패 (거절 사유)
+    public event Action?              EquipDisassembleCompleted; // 장비 분해 성공 (재료는 인벤토리에 이미 반영됐다)
+    public event Action<EResultCode>? EquipDisassembleFailed;    // 장비 분해 실패 (거절 사유)
 
     // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
@@ -659,6 +664,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ItemUpdated              += OnItemUpdated;
         ServerPacketHandler.ItemSold                 += OnItemSold;
         ServerPacketHandler.EntitySold               += OnEntitySold;
+        ServerPacketHandler.EquipDisassembled        += OnEquipDisassembled;
         ServerPacketHandler.ItemUsed                 += OnItemUsed;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
@@ -704,6 +710,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ItemUpdated              -= OnItemUpdated;
         ServerPacketHandler.ItemSold                 -= OnItemSold;
         ServerPacketHandler.EntitySold               -= OnEntitySold;
+        ServerPacketHandler.EquipDisassembled        -= OnEquipDisassembled;
         ServerPacketHandler.ItemUsed                 -= OnItemUsed;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
@@ -1180,6 +1187,39 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         EntitySellCompleted?.Invoke(res.GainedGold);
+    }
+
+    // 장비 분해를 보낸다고 적어 둔다 — 응답에 장비 ID가 없어서다 (SellCartPresenter가 'C_EquipDisassembleRequest'를 보내며 호출).
+    public void BeginDisassemble(IReadOnlyList<long> equipIds)
+    {
+        _disassemblingEquipIds.Clear();
+        _disassemblingEquipIds.AddRange(equipIds);
+    }
+
+    // 장비 분해 응답 — 성공이면 보낸 장비를 지우고 받은 재료를 인벤토리에 반영한다(전부 되거나 전혀 안 된다).
+    // ★ 지우는 일은 여기만 한다 — 서버는 장비 제거를 동기화 패킷으로 따로 보내지 않는다('OnEntitySold'와 같다).
+    private void OnEquipDisassembled(S_EquipDisassembleResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"장비 분해 실패 — 결과={res.Result}");
+            _disassemblingEquipIds.Clear();
+            EquipDisassembleFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        int removed = _equips.RemoveAll(equip => _disassemblingEquipIds.Contains(equip.EquipId));
+
+        _disassemblingEquipIds.Clear();
+
+        if (removed > 0)
+        {
+            Notify(EquipsChanged);
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+        EquipDisassembleCompleted?.Invoke();
     }
 
     // 아이템 사용 응답 — 인벤토리 반영 후 보상 이벤트 발행. 'OnGachaDrawn'과 같은 모양이다.

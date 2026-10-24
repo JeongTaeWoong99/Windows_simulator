@@ -468,6 +468,19 @@ namespace MikaNetwork
             EntitySold?.Invoke(res);
         }
 
+        // 장비 분해 결과 도착 (Handle_S_EquipDisassembleResponse에서 발행)
+        public static event Action<S_EquipDisassembleResponse>? EquipDisassembled;
+
+        // 장비 분해 결과 (S_EquipDisassembleResponse 수신 시 자동 호출) — T-131 · #83
+        // ★ 전부 되거나 전혀 안 된다 — 응답에 장비 ID가 없으니 클라가 보낸 목록을 기억했다가 Ok면 지운다(개체 판매와 같다).
+        // ※ ItemChangeInfos는 받은 재료 칸의 "갱신 후 수량"이다(델타 아님).
+        [PacketHandler]
+        public static void Handle_S_EquipDisassembleResponse(ISession session, S_EquipDisassembleResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"장비 분해 결과={res.Result}, 재료 변경 {res.ItemChangeInfos?.Count ?? 0}건");
+            EquipDisassembled?.Invoke(res);
+        }
+
         #endregion
 
         #region 아이템 사용

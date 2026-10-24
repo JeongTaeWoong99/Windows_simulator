@@ -4,7 +4,7 @@ using GameData;
 using MikaProtocol;
 using UnityEngine;
 
-// 판매하려고 담아 둔 것들의 목록 — "장바구니". 자원(수량)과 개체(캐릭터·장비, 1개씩)를 함께 담는다.
+// 판매하려고 담아 둔 것들의 목록 — "장바구니". 자원(수량) · 캐릭터 · 장비(1개씩) 중 **한 종류만** 담는다.
 //
 // ■ 왜 매니저인가
 // 인벤토리 격자('InventoryGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
@@ -21,8 +21,12 @@ using UnityEngine;
 //   'NotEnoughItem'으로 거절되고 아무것도 팔리지 않는다. 방치형이라 담아 둔 사이에도
 //   채취·판매로 인벤토리가 계속 바뀌므로, 여기서 따라가지 않으면 판매가 통째로 막힌다.
 //
-// ■ 개체(캐릭터·장비)는 따로 담는다 (T-075 · 2026-10-03)
-//   서버 패킷이 둘이다 — 자원은 'C_ItemSellRequest', 개체는 'C_EntitySellRequest'. 섞어 담으면 판매 버튼이 둘 다 보낸다.
+// ■ 한 종류만 담는다 (#83 · 2026-10-25 사용자 결정)
+//   다른 종류를 담으면 담겨 있던 종류를 먼저 비운다 — 목록 머리에 "무엇을 파는지" 한 가지만 적고,
+//   장비일 때만 [마석으로 분해]를 함께 내보이려면 목록이 한 종류여야 한다. 탭을 바꿀 때 비우는 일은 'SellCartPresenter'가 한다.
+//
+// ■ 개체(캐릭터·장비)는 패킷이 다르다 (T-075 · 2026-10-03)
+//   서버 패킷이 둘이다 — 자원은 'C_ItemSellRequest', 개체는 'C_EntitySellRequest'.
 //   개체도 같은 이유로 따라간다 — 사라졌거나(경매 등록·판매) 일하게 된(배치·착용) 개체는 목록에서 뺀다.
 //   서버는 일하는 캐릭터·끼고 있는 장비·마지막 캐릭터를 거절하고, 하나라도 걸리면 개체 판매 전체가 막힌다.
 //   ※ 담기 전에 막는 일(사유 알림)은 격자가 한다('EntityBlockText'). 여기는 담긴 뒤의 변화만 따라간다.
@@ -44,6 +48,17 @@ public class SellCartModel : MonoService<SellCartModel>
 
     public bool HasItems    => _entries.Count > 0;
     public bool HasEntities => _characterIds.Count > 0 || _equipIds.Count > 0;
+
+    // 지금 담긴 종류 — 비어 있으면 null. 한 종류만 담기므로 하나로 정해진다.
+    public SellCartKind? Kind => _entries.Count > 0      ? SellCartKind.Item
+                               : _characterIds.Count > 0 ? SellCartKind.Character
+                               : _equipIds.Count > 0     ? SellCartKind.Equip
+                               : null;
+
+    // 담긴 장비를 모두 분해하면 받을 재료 수량 · 그 재료 TID('DisassembleTable'). 장비가 없으면 0.
+    // ※ 미리보기다 — 실제 지급은 서버가 정한다('S_EquipDisassembleResponse').
+    public int TotalShards  { get; private set; }
+    public int ShardItemId  { get; private set; }
 
     // 담긴 것을 다 팔면 받을 골드. 기준가(BasePrice) x 수량에 즉시 판매율을 곱한 값이다('AuctionModel.InstantSellTotal').
     // ※ 미리보기일 뿐이다 — 실제 지급액은 서버가 정한다('S_ItemSellResponse' · 'S_EntitySellResponse'의 'GainedGold').
@@ -146,6 +161,9 @@ public class SellCartModel : MonoService<SellCartModel>
         }
 
         int amount = Mathf.Clamp(count, 1, owned);
+
+        ClearOtherKinds(SellCartKind.Item);
+
         int index  = FindIndex(itemId);
 
         if (index >= 0)
@@ -197,6 +215,7 @@ public class SellCartModel : MonoService<SellCartModel>
             return;
         }
 
+        ClearOtherKinds(SellCartKind.Character);
         _characterIds.Add(characterId);
 
         Recalculate();
@@ -212,6 +231,7 @@ public class SellCartModel : MonoService<SellCartModel>
             return;
         }
 
+        ClearOtherKinds(SellCartKind.Equip);
         _equipIds.Add(equipId);
 
         Recalculate();
@@ -219,10 +239,21 @@ public class SellCartModel : MonoService<SellCartModel>
     }
 
     // 여러 캐릭터·장비를 한 번에 담는다 (일괄 담기). 이미 담긴 것은 건너뛴다.
+    // ※ 한 번에 한 종류만 넘긴다(탭별 일괄 담기) — 둘 다 넘기면 뒤의 장비만 남는다('ClearOtherKinds').
     // ※ 하나씩 'AddCharacter'를 부르면 담을 때마다 'Changed'가 나가 격자·목록이 개체 수만큼 다시 그린다.
     // ⚠️ 팔 수 있는지는 부르는 쪽이 먼저 본다('EntityBlockText').
     public void AddEntities(IReadOnlyList<long> characterIds, IReadOnlyList<long> equipIds)
     {
+        if (characterIds.Count > 0)
+        {
+            ClearOtherKinds(SellCartKind.Character);
+        }
+
+        if (equipIds.Count > 0)
+        {
+            ClearOtherKinds(SellCartKind.Equip);
+        }
+
         int before = _characterIds.Count + _equipIds.Count;
 
         foreach (long id in characterIds)
@@ -289,7 +320,7 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 자원만 비운다 (자원 판매 성공 후 · 일괄 담기가 범위를 다시 잡을 때). 담아 둔 개체는 남긴다.
+    // 자원만 비운다 (자원 판매 성공 후 · 일괄 담기가 범위를 다시 잡을 때).
     public void ClearItems()
     {
         if (_entries.Count == 0)
@@ -303,7 +334,7 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 개체만 비운다 (개체 판매 성공 후). 담아 둔 자원은 남긴다.
+    // 개체만 비운다 (개체 판매 · 분해 성공 후).
     public void ClearEntities()
     {
         if (!HasEntities)
@@ -318,7 +349,7 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 캐릭터만 비운다 (캐릭터 탭 일괄 담기가 범위를 다시 잡을 때). 담아 둔 자원·장비는 남긴다.
+    // 캐릭터만 비운다 (캐릭터 탭 일괄 담기가 범위를 다시 잡을 때).
     public void ClearCharacters()
     {
         if (_characterIds.Count == 0)
@@ -332,7 +363,7 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 장비만 비운다 (장비 탭 일괄 담기가 범위를 다시 잡을 때). 담아 둔 자원·캐릭터는 남긴다.
+    // 장비만 비운다 (장비 탭 일괄 담기가 범위를 다시 잡을 때).
     public void ClearEquips()
     {
         if (_equipIds.Count == 0)
@@ -433,12 +464,14 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 합계 골드 · 상위 등급 포함 여부 · 성장 개체 수를 다시 센다 (담기·빼기·비우기·인벤 변경에서 호출).
+    // 합계 골드 · 분해 재료 · 상위 등급 포함 여부 · 성장 개체 수를 다시 센다 (담기·빼기·비우기·인벤 변경에서 호출).
     private void Recalculate()
     {
         long total          = 0L;
         bool hasHighRarity  = false;
         int  grownCount     = 0;
+        int  shards         = 0;
+        int  shardItemId    = 0;
 
         foreach (var entry in _entries)
         {
@@ -476,6 +509,12 @@ public class SellCartModel : MonoService<SellCartModel>
 
             total += AuctionModel.InstantSellTotal(row.BasePrice, 1);
 
+            if (GameDataLoader.TryGetDisassemble(row.GlobalRarity, out DisassembleTableRow disassemble))
+            {
+                shards      += disassemble.ItemCount;
+                shardItemId  = disassemble.ItemTID;
+            }
+
             if (row.GlobalRarity >= GlobalRarity.Rare)
             {
                 hasHighRarity = true;
@@ -490,6 +529,27 @@ public class SellCartModel : MonoService<SellCartModel>
         TotalPrice    = total;
         HasHighRarity = hasHighRarity;
         GrownCount    = grownCount;
+        TotalShards   = shards;
+        ShardItemId   = shardItemId;
+    }
+
+    // 담으려는 종류가 아닌 것을 비운다 — 한 종류만 담는다(클래스 머리 주석). 이벤트는 부르는 쪽의 담기가 한 번에 낸다.
+    private void ClearOtherKinds(SellCartKind keep)
+    {
+        if (keep != SellCartKind.Item)
+        {
+            _entries.Clear();
+        }
+
+        if (keep != SellCartKind.Character)
+        {
+            _characterIds.Clear();
+        }
+
+        if (keep != SellCartKind.Equip)
+        {
+            _equipIds.Clear();
+        }
     }
 
     // 담긴 목록에서 이 아이템의 자리를 찾는다. 없으면 -1.

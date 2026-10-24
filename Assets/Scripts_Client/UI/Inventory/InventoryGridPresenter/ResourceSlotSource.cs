@@ -98,7 +98,7 @@ public class ResourceSlotSource : InventorySlotSource
     // 분류 ID의 지금 언어 이름.
     public static string GroupName(string groupId) => AuctionText.GetItemGroupName(groupId);
 
-    // 자원 칸 툴팁 — 등급 · 분류 · 보유 · 보관 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
+    // 자원 칸 툴팁 — 등급 · 분류 · 보유(칸 상한) · 보관 · 즉시 판매가(개당 · 전부) · 경매 등록가 범위 · 조작 안내 (격자가 칸에 올린 순간 호출).
     //
     // ※ '보유'는 이 칸의 묶음 수량이고, 같은 아이템이 다른 칸(이 보관함·반대 보관함)에도 있으면 옆에 전체를 적는다(T-160).
     //   판매·경매·개봉은 전체에서 쓴다 — 칸 수량만 보이면 "왜 더 팔리나"가 된다. 판매가 '전부'도 전체 기준이다.
@@ -119,12 +119,18 @@ public class ResourceSlotSource : InventorySlotSource
 
         int    basePrice = GameDataLoader.GetItemPrice(itemId);
         long   price     = AuctionModel.InstantSellPrice(basePrice);
+        int    maxStack  = GameDataLoader.GetItemMaxStack(itemId);
         string totalText = total > stack.Count ? Lang.Format("UI.Inventory.TotalCount", $"{total:N0}") : "";
         var    content   = new TooltipContent(GameDataLoader.GetItemName(itemId));
 
+        // '보유'에 칸 상한을 붙인다('60 / 9,999 개') — 아이템마다 상한이 달라(1,000 · 9,999) 칸이 언제 넘치는지 보여야 한다.
+        string ownedText = maxStack == int.MaxValue
+            ? Lang.Format("UI.Inventory.CountUnit", $"{stack.Count:N0}")
+            : Lang.Format("UI.Inventory.StackOfMax", $"{stack.Count:N0}", $"{maxStack:N0}");
+
         AddRarityRow(content, GameDataLoader.GetItemRarity(itemId))
             .Row(Lang.Get("UI.Inventory.Group"), GroupName(GroupOf(itemId)))
-            .Row(Lang.Get("UI.Inventory.Owned"), Lang.Format("UI.Inventory.CountUnit", $"{stack.Count:N0}"), totalText, null);
+            .Row(Lang.Get("UI.Inventory.Owned"), ownedText, totalText, null);
 
         AddStorageRow(content);
 

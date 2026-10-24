@@ -31,7 +31,7 @@ public class SellCartRowView : MonoBehaviour
     [SerializeField, Tooltip("팔 개수")]
     private TMP_Text countText = null!;
 
-    [SerializeField, Tooltip("이 줄이 받을 골드 (즉시 판매가 x 개수)")]
+    [SerializeField, Tooltip("이 줄이 받을 것 — 골드(즉시 판매가 x 개수), 장비는 'N G OR 마석 N'")]
     private TMP_Text priceText = null!;
 
     [SerializeField, Tooltip("이 줄을 목록에서 빼는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -62,10 +62,10 @@ public class SellCartRowView : MonoBehaviour
     //   kind · key  : 빼기 요청에 그대로 실린다
     //   displayName : 이미 완성된 이름 문구
     //   count       : 팔 개수(보유량이 아니다)
-    //   price       : 이 줄이 받을 골드
+    //   value       : 이 줄이 받을 것 — 완성된 문구(골드 · 장비는 골드 OR 분해 재료)
     //   icon        : 왼쪽 아이콘 칸의 완성값
     //   tooltip     : 줄에 마우스를 올리면 부를 툴팁 함수
-    public void Bind(SellCartKind kind, long key, string displayName, int count, long price, in ItemIconContent icon, Func<TooltipContent?> tooltip)
+    public void Bind(SellCartKind kind, long key, string displayName, int count, string value, in ItemIconContent icon, Func<TooltipContent?> tooltip)
     {
         Kind           = kind;
         Key            = key;
@@ -73,7 +73,7 @@ public class SellCartRowView : MonoBehaviour
         tooltipTrigger.SetProvider(tooltip);
         nameText.text  = displayName;
         countText.text = Lang.Format("UI.Inventory.CountUnitShort", $"{count:N0}");
-        priceText.text = $"{price:N0} G";
+        priceText.text = value;
     }
 
     // 줄을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다 — 판매 목록은 담고 빼기를 반복한다.

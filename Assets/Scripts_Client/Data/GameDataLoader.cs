@@ -236,6 +236,13 @@ public static class GameDataLoader
         return GameTable.EquipTable.TryGet(equipTid, out row);
     }
 
+    // 장비 분해 한 행 — 그 등급 장비를 분해하면 받는 재료 TID·수량(T-131). 판매 목록의 분해 미리보기가 쓴다.
+    // 실패를 그대로 돌려준다 — 표에 없는 등급은 서버도 분해를 거절한다.
+    public static bool TryGetDisassemble(GlobalRarity rarity, out DisassembleTableRow row)
+    {
+        return GameTable.DisassembleTable.TryGet(rarity, out row);
+    }
+
     // 아티팩트 정의 한 행 — 경매장 매물·시세 표시가 쓴다(T-152). 실패를 그대로 돌려준다('TryGetEquip'과 같은 이유).
     public static bool TryGetArtifact(int artifactTid, out ArtifactTableRow row)
     {

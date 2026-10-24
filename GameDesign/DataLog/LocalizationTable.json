@@ -3061,8 +3061,8 @@
   },
   {
     "Key": "Item.100050.Name",
-    "KR": "마력의 파편",
-    "EN": "Mana Shard"
+    "KR": "마석",
+    "EN": "Mana Stone"
   },
   {
     "Key": "Item.100050.Tooltip",
@@ -3783,6 +3783,16 @@
     "Key": "UI.Result.SellEquipWorn",
     "KR": "착용 중인 장비는 팔 수 없습니다. 먼저 벗겨 주세요.",
     "EN": "Equipped gear can't be sold. Unequip it first."
+  },
+  {
+    "Key": "UI.Result.DisassembleEquipWorn",
+    "KR": "착용 중인 장비는 분해할 수 없습니다. 먼저 벗겨 주세요.",
+    "EN": "Equipped gear can't be disassembled. Unequip it first."
+  },
+  {
+    "Key": "UI.Result.InvalidDisassembleRequest",
+    "KR": "분해할 수 없는 요청입니다.",
+    "EN": "This disassemble request is invalid."
   },
   {
     "Key": "UI.Result.SellCharacterBusy",
@@ -4830,6 +4840,11 @@
     "EN": "Total {0}"
   },
   {
+    "Key": "UI.Inventory.StackOfMax",
+    "KR": "{0} / {1} 개",
+    "EN": "x{0} / {1}"
+  },
+  {
     "Key": "UI.Inventory.Group",
     "KR": "분류",
     "EN": "Category"
@@ -5115,11 +5130,6 @@
     "EN": "Set it yourself in the Auction [List] tab"
   },
   {
-    "Key": "UI.Sell.Total",
-    "KR": "즉시 판매 {0} G",
-    "EN": "Instant Sell {0} G"
-  },
-  {
     "Key": "UI.Sell.Wait",
     "KR": "판매",
     "EN": "Sell"
@@ -5305,9 +5315,64 @@
     "EN": "Caution! Includes {0} upgraded"
   },
   {
-    "Key": "UI.Sell.InstantSell",
-    "KR": "즉시 판매",
-    "EN": "Instant Sell"
+    "Key": "UI.Sell.KindItem",
+    "KR": "자원 판매 {0}종",
+    "EN": "Sell Resources ({0})"
+  },
+  {
+    "Key": "UI.Sell.KindCharacter",
+    "KR": "캐릭터 판매 {0}명",
+    "EN": "Sell Characters ({0})"
+  },
+  {
+    "Key": "UI.Sell.KindEquip",
+    "KR": "장비 판매 / 분해 {0}개",
+    "EN": "Sell / Disassemble Gear ({0})"
+  },
+  {
+    "Key": "UI.Sell.ToGold",
+    "KR": "골드로 판매",
+    "EN": "Sell for Gold"
+  },
+  {
+    "Key": "UI.Sell.GoldGain",
+    "KR": "총 {0} 골드 획득",
+    "EN": "Get {0} gold in total"
+  },
+  {
+    "Key": "UI.Sell.ToShard",
+    "KR": "마석으로 분해",
+    "EN": "Disassemble into Mana Stones"
+  },
+  {
+    "Key": "UI.Sell.ShardGain",
+    "KR": "총 {0} {1}개 획득",
+    "EN": "Get {1} {0} in total"
+  },
+  {
+    "Key": "UI.Sell.Or",
+    "KR": "OR",
+    "EN": "OR"
+  },
+  {
+    "Key": "UI.Sell.ShardShort",
+    "KR": "마석 {0}",
+    "EN": "Mana Stone {0}"
+  },
+  {
+    "Key": "UI.Sell.ClearedByTab",
+    "KR": "판매 목록을 비웠습니다 — 지금 탭의 종류만 담습니다",
+    "EN": "Sell list cleared — it holds only the current tab's kind"
+  },
+  {
+    "Key": "UI.Sell.WaitDisassemble",
+    "KR": "분해",
+    "EN": "Disassemble"
+  },
+  {
+    "Key": "UI.Sell.DisassembleDone",
+    "KR": "분해 완료 — {0} +{1}",
+    "EN": "Disassembled — {0} +{1}"
   },
   {
     "Key": "UI.Inventory.MarkSell",

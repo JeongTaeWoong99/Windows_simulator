@@ -8,10 +8,15 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 인벤토리 오른쪽의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다.
+// 인벤토리 아래의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다(장비는 분해도 고른다).
 //
 // ■ 무엇을 보여 주나
-// 자원·캐릭터·장비 칸을 우클릭해 담은 것들('SellCartModel')의 줄 목록·합계 골드·판매 버튼이다.
+// 자원·캐릭터·장비 칸을 우클릭해 담은 것들('SellCartModel')의 머리(무엇을 파는지 · 개수) · 줄 목록 · 아래 버튼이다.
+//
+// ■ 한 종류만 · 탭을 바꾸면 비운다 (#83 · 2026-10-25 사용자 결정 · 목업 'GameDesign/design/ui/판매분해목업.html')
+//   목록은 지금 탭의 종류만 담는다. 인벤토리 탭을 다른 종류로 바꾸면 비우고 토스트로 알린다.
+//   아래 버튼은 세 종류가 같은 모양이다 — [골드로 판매 · 총 N 골드 획득]. 장비일 때만 [마석으로 분해 · 총 재료 N개 획득]이 옆에 붙는다.
+//   장비 줄의 값은 'N G OR 마석 N' — 둘 중 하나만 받는다는 뜻이다.
 // 여기서 파는 값은 **즉시 판매가**(정해진 값)다. 더 비싸게 팔려면 경매장에 올린다(즉시 판매가 이상 — 'Auction 규칙.md').
 // 담고 → 판매 버튼, 이 두 단계가 곧 확인 절차라 별도 확인 모달을 두지 않는다
 // (화면 중앙 팝업을 최소화한다 — 기획 P1).
@@ -42,14 +47,24 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("담긴 것이 없을 때의 안내 문구. 빈 칸은 고장과 구분되지 않는다")]
     private TMP_Text emptyText = null!;
 
-    [SerializeField, Tooltip("합계 골드")]
-    private TMP_Text totalText = null!;
+    [SerializeField, Tooltip("목록 머리 — 무엇을 팔고 있는지 · 개수('장비 판매 / 분해 3개'). 문구는 코드가 쓴다")]
+    [FormerlySerializedAs("totalText")]
+    private TMP_Text kindText = null!;
 
     [SerializeField, Tooltip("상위 등급·성장 개체가 담겼을 때만 켜지는 경고 글씨. 오판매를 막는 자리다 — 문구는 코드가 쓴다(LocalizedText를 붙이지 않는다)")]
     private TMP_Text warningText = null!;
 
-    [SerializeField, Tooltip("판매 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [SerializeField, Tooltip("[골드로 판매] 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button sellButton = null!;
+
+    [SerializeField, Tooltip("[골드로 판매] 글자 — 받을 총 골드를 코드가 쓴다(LocalizedText를 붙이지 않는다)")]
+    private TMP_Text sellButtonText = null!;
+
+    [SerializeField, Tooltip("[마석으로 분해] 버튼 — 장비를 담았을 때만 보인다. OnClick은 코드가 연결한다")]
+    private Button disassembleButton = null!;
+
+    [SerializeField, Tooltip("[마석으로 분해] 글자 — 받을 재료 수량을 코드가 쓴다(LocalizedText를 붙이지 않는다)")]
+    private TMP_Text disassembleButtonText = null!;
 
     [SerializeField, Tooltip("비우기 버튼 — 담은 것을 모두 빼고 패널을 닫는다. OnClick은 코드가 연결한다")]
     private Button clearButton = null!;
@@ -81,7 +96,8 @@ public class SellCartPresenter : MonoBehaviour
     // 아직 안 온 응답 수(자원·개체 각 1) · 그 사이에 받은 실패 — 둘 다 오면 대기를 한 번에 닫는다.
     private int          _pendingResponses;
     private EResultCode? _failedCode;
-    private long         _gainedGold; // 이번 판매로 받은 골드 — 응답이 다 오면 동전을 한 번에 날린다
+    private long         _gainedGold;   // 이번 판매로 받은 골드 — 응답이 다 오면 동전을 한 번에 날린다
+    private int          _gainedShards; // 이번 분해로 받을 재료 수 — 성공 토스트에 쓴다(응답에는 델타가 없다)
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -93,9 +109,12 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(rowPrefab,         nameof(rowPrefab));
         this.RequireRef(rowParent,         nameof(rowParent));
         this.RequireRef(emptyText,         nameof(emptyText));
-        this.RequireRef(totalText,         nameof(totalText));
+        this.RequireRef(kindText,          nameof(kindText));
         this.RequireRef(warningText,       nameof(warningText));
         this.RequireRef(sellButton,        nameof(sellButton));
+        this.RequireRef(sellButtonText,    nameof(sellButtonText));
+        this.RequireRef(disassembleButton, nameof(disassembleButton));
+        this.RequireRef(disassembleButtonText, nameof(disassembleButtonText));
         this.RequireRef(clearButton,       nameof(clearButton));
         this.RequireRef(inventoryTabs,     nameof(inventoryTabs));
         this.RequireRef(equipEnchant,      nameof(equipEnchant));
@@ -109,7 +128,7 @@ public class SellCartPresenter : MonoBehaviour
         // ⚠️ 탭 구독만 Start/OnDestroy에 건다 — 이 패널은 자기 오브젝트를 끄기 때문이다.
         //    'OnDisable'에서 풀면 다시 켤 신호를 받을 길이 사라져 자원 탭에 영영 못 돌아온다
         //    (도구 줄이 같은 이유로 그렇게 한다 → 'Inventory 규칙.md').
-        inventoryTabs.TabChanged  += ApplyTab;
+        inventoryTabs.TabChanged  += OnTabChanged;
         equipEnchant.OpenChanged  += OnEnchantOpenChanged;
         characterCondense.OpenChanged += OnEnchantOpenChanged;
         _cart.Changed             += OnCartChanged; // 비어 있으면 꺼지므로 켜는 신호도 여기서 받는다
@@ -119,6 +138,7 @@ public class SellCartPresenter : MonoBehaviour
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
+        disassembleButton.onClick.AddListener(OnDisassembleClicked);
         clearButton.onClick.AddListener(OnClearClicked);
         Refresh(); // 인벤토리를 닫아 둔 사이에 담긴 것이 있을 수 있다
 
@@ -130,7 +150,7 @@ public class SellCartPresenter : MonoBehaviour
     // 탭 구독 해제 (Unity 메시지). 자기 오브젝트를 끄므로 여기서만 푼다.
     private void OnDestroy()
     {
-        inventoryTabs.TabChanged -= ApplyTab;
+        inventoryTabs.TabChanged -= OnTabChanged;
         equipEnchant.OpenChanged -= OnEnchantOpenChanged;
         characterCondense.OpenChanged -= OnEnchantOpenChanged;
         _cart.Changed             -= OnCartChanged;
@@ -150,6 +170,28 @@ public class SellCartPresenter : MonoBehaviour
         bool hasContent = _cart.Count > 0 || _isWaiting;
 
         gameObject.SetActive(hasContent && tab != InventoryTab.Trait && !equipEnchant.IsOpen && !characterCondense.IsOpen);
+    }
+
+    // 탭이 바뀌었다 — 담긴 종류와 다른 탭이면 목록을 비우고 알린다 (InventoryTabPresenter.TabChanged 구독 · Start/OnDestroy).
+    // ※ 특성 탭은 비우지 않는다 — 파는 탭이 아니라 잠깐 다녀오는 곳이다. 돌아오면 그대로 보인다.
+    // ※ 응답을 기다리는 중이면 비우지 않는다 — 응답이 성공한 쪽을 스스로 비운다.
+    private void OnTabChanged(InventoryTab tab)
+    {
+        SellCartKind? tabKind = tab switch
+        {
+            InventoryTab.Resource  => SellCartKind.Item,
+            InventoryTab.Character => SellCartKind.Character,
+            InventoryTab.Equipment => SellCartKind.Equip,
+            _                      => null,
+        };
+
+        if (!_isWaiting && tabKind != null && _cart.Kind is SellCartKind kind && kind != tabKind)
+        {
+            _cart.Clear();
+            _wait.RaiseToast(Lang.Get("UI.Sell.ClearedByTab"));
+        }
+
+        ApplyTab(tab);
     }
 
     // 카트가 바뀌었다 — 비었으면 물러나고, 처음 담겼으면 나타난다 (SellCartModel.Changed 구독 · Start/OnDestroy).
@@ -218,6 +260,8 @@ public class SellCartPresenter : MonoBehaviour
         _data.ItemSellFailed      += OnSellFailed;
         _data.EntitySellCompleted += OnEntitySellCompleted;
         _data.EntitySellFailed    += OnSellFailed;
+        _data.EquipDisassembleCompleted += OnDisassembleCompleted;
+        _data.EquipDisassembleFailed    += OnSellFailed;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -235,6 +279,8 @@ public class SellCartPresenter : MonoBehaviour
         _data.ItemSellFailed      -= OnSellFailed;
         _data.EntitySellCompleted -= OnEntitySellCompleted;
         _data.EntitySellFailed    -= OnSellFailed;
+        _data.EquipDisassembleCompleted -= OnDisassembleCompleted;
+        _data.EquipDisassembleFailed    -= OnSellFailed;
     }
 
     #endregion
@@ -305,7 +351,7 @@ public class SellCartPresenter : MonoBehaviour
                      itemId,
                      GameDataLoader.GetItemName(itemId),
                      entry.Count,
-                     AuctionModel.InstantSellTotal(basePrice, entry.Count),
+                     UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, entry.Count)),
                      ItemIconContent.ForItem(itemId, 0L),
                      () => BuildRowTooltip(itemId));
         }
@@ -324,7 +370,7 @@ public class SellCartPresenter : MonoBehaviour
                      characterId,
                      star > 0 ? $"{name} {UIRichText.Paint(new string('★', star), UIThemeRole.Highlight)}" : name,
                      1,
-                     AuctionModel.InstantSellTotal(basePrice, 1),
+                     UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, 1)),
                      ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
                      () => BuildEntityTooltip(name, rarity, basePrice, star > 0 ? c => c.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), "", null) : null));
         }
@@ -344,11 +390,12 @@ public class SellCartPresenter : MonoBehaviour
             bool            isGrown   = SellCartModel.IsGrown(equip);
 
             // 인챈트 장비는 이름 뒤에 인챈트 등급을 그 등급색으로 붙인다(T-170).
+            // 값은 'N G OR 마석 N' — 판매와 분해 중 하나만 받는다(#83).
             row.Bind(SellCartKind.Equip,
                      equip.EquipId,
                      isGrown ? $"{name} {UIRichText.Paint(RarityLabel.Get(enchant), RarityPalette.Get(enchant))}" : name,
                      1,
-                     AuctionModel.InstantSellTotal(basePrice, 1),
+                     EquipValueText(AuctionModel.InstantSellTotal(basePrice, 1), rarity),
                      ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                      () => BuildEntityTooltip(name, rarity, basePrice, isGrown ? c => c.Row(Lang.Get("UI.Equip.EnchantGrade"), RarityLabel.Get(enchant), "", RarityPalette.Get(enchant)) : null));
         }
@@ -358,8 +405,7 @@ public class SellCartPresenter : MonoBehaviour
         _rows.HideFrom(count);
 
         emptyText.gameObject.SetActive(count == 0);
-        // '즉시 판매'라고 못 박는다 — 경매장(직접 가격, 즉시 판매가 이상)과 다른 파는 법이라는 걸 합계 줄에서 말한다.
-        totalText.text = Lang.Format("UI.Sell.Total", $"{_cart.TotalPrice:N0}");
+        kindText.text = KindText(count);
 
         // 상위 등급·성장 개체는 다시 모으기 어렵다. 목록에서 빼지 않고 눈에 띄게만 알린다 —
         // 빼 버리면 "왜 안 담기지"가 되고, 팔 자유는 남겨 둔다.
@@ -387,11 +433,53 @@ public class SellCartPresenter : MonoBehaviour
         warningText.gameObject.SetActive(warningText.text.Length > 0);
     }
 
-    // 판매 버튼을 열고 닫는다 — 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.
+    // 아래 버튼 — 받을 총량을 적고, 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.
+    // [마석으로 분해]는 장비를 담았을 때만 보인다(#83).
     private void ApplySellButton()
     {
-        sellButton.interactable  = !_isWaiting && _cart.Count > 0;
-        clearButton.interactable = !_isWaiting;
+        bool isEquip = _cart.Kind == SellCartKind.Equip;
+
+        sellButtonText.text = ButtonText(Lang.Get("UI.Sell.ToGold"),
+                                         Lang.Format("UI.Sell.GoldGain", UIRichText.Paint($"{_cart.TotalPrice:N0}", UIThemeRole.Highlight)));
+        disassembleButton.gameObject.SetActive(isEquip);
+
+        if (isEquip)
+        {
+            disassembleButtonText.text = ButtonText(Lang.Get("UI.Sell.ToShard"),
+                                                    Lang.Format("UI.Sell.ShardGain", GameDataLoader.GetItemName(_cart.ShardItemId),
+                                                                UIRichText.Paint($"{_cart.TotalShards:N0}", UIThemeRole.Highlight)));
+        }
+
+        sellButton.interactable        = !_isWaiting && _cart.Count > 0;
+        disassembleButton.interactable = !_isWaiting && isEquip && _cart.TotalShards > 0;
+        clearButton.interactable       = !_isWaiting;
+    }
+
+    // 버튼 두 줄 — 위는 무엇을 하는지, 아래는 받을 총량.
+    private static string ButtonText(string action, string gain) => $"{action}\n{UIRichText.Small(gain)}";
+
+    // 목록 머리 — '자원 판매 2종' · '캐릭터 판매 3명' · '장비 판매 / 분해 3개'.
+    private string KindText(int count)
+    {
+        string key = _cart.Kind switch
+        {
+            SellCartKind.Character => "UI.Sell.KindCharacter",
+            SellCartKind.Equip     => "UI.Sell.KindEquip",
+            _                      => "UI.Sell.KindItem",
+        };
+
+        return Lang.Format(key, $"{count:N0}");
+    }
+
+    // 장비 줄 값 — 'N G OR 마석 N'. 분해 표에 없는 등급이면 골드만.
+    private static string EquipValueText(long gold, GlobalRarity rarity)
+    {
+        if (!GameDataLoader.TryGetDisassemble(rarity, out DisassembleTableRow row))
+        {
+            return UIRichText.Gold(gold);
+        }
+
+        return $"{UIRichText.Gold(gold)} {UIRichText.Label(Lang.Get("UI.Sell.Or"))} {Lang.Format("UI.Sell.ShardShort", $"{row.ItemCount:N0}")}";
     }
 
     #endregion
@@ -466,6 +554,54 @@ public class SellCartPresenter : MonoBehaviour
         _isWaiting  = true;
         ApplySellButton();
         _waitHandle = _wait.Begin(Lang.Get("UI.Sell.Wait"), onClosed: OnWaitClosed);
+    }
+
+    // 담긴 장비를 분해한다 (disassembleButton OnClick에 코드로 연결) — T-131 · #83.
+    // ※ 확인 창을 두지 않는다 — 판매와 같은 무게다. 목록 머리의 경고(상위 등급 · 성장 개체)가 확인 절차다.
+    private void OnDisassembleClicked()
+    {
+        if (_isWaiting || _cart.Kind != SellCartKind.Equip)
+        {
+            return;
+        }
+
+        if (!_data.IsLoggedIn)
+        {
+            ClientLogger.Warn(ClientLogger.Send, "분해 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
+            return;
+        }
+
+        // 응답에 장비 ID가 없다 — 무엇을 지울지 모델에 먼저 적어 둔다.
+        var equipIds = new List<long>(_cart.EquipIds);
+
+        _pendingResponses = 1;
+        _failedCode       = null;
+        _gainedGold       = 0;
+        _gainedShards     = _cart.TotalShards;
+
+        _data.BeginDisassemble(equipIds);
+        _network.Send(new C_EquipDisassembleRequest { EquipIds = equipIds });
+
+        ClientLogger.Info(ClientLogger.Send, $"분해 요청 — 장비 {equipIds.Count}개, 예상 재료 {_gainedShards}개");
+
+        _isWaiting  = true;
+        ApplySellButton();
+        _waitHandle = _wait.Begin(Lang.Get("UI.Sell.WaitDisassemble"), onClosed: OnWaitClosed);
+    }
+
+    // 분해 성공 — 장비를 비우고 받은 재료를 알린다 (PlayerDataModel.EquipDisassembleCompleted 구독)
+    // ※ 분해한 장비는 'PlayerDataModel'이 이미 지웠다 — 카트도 따라 빼지만, 남은 것이 없게 한 번 더 비운다.
+    // ※ 재료 이름은 비우기 전에 읽는다 — 비우면 'ShardItemId'가 0이 된다.
+    private void OnDisassembleCompleted()
+    {
+        string material = GameDataLoader.GetItemName(_cart.ShardItemId);
+
+        ClientLogger.Info(ClientLogger.Recv, $"분해 완료 — 재료 {_gainedShards}개");
+
+        _cart.ClearEntities();
+        OnResponsePart();
+        _wait.RaiseToast(Lang.Format("UI.Sell.DisassembleDone", material, $"{_gainedShards:N0}"));
     }
 
     // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼 잠금을 푼다 (ServerWaitManager.Begin의 onClosed)

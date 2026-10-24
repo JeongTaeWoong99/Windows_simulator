@@ -450,7 +450,7 @@ public class InventoryToolPresenter : MonoBehaviour
         //   비우지 않으면 영웅 이하로 담았다가 일반 이하로 다시 누를 때 영웅·희귀가 그대로 남아,
         //   화면의 범위(`일반 이하`)와 실제로 팔릴 것이 어긋난다.
         //   ⚠️ 우클릭으로 하나씩 담아 둔 자원도 함께 빠진다. 범위를 다시 잡는다는 뜻이 그것이다.
-        _cart.ClearItems(); // 우클릭으로 담아 둔 캐릭터·장비는 범위와 상관없으니 남긴다
+        _cart.ClearItems(); // 다른 종류는 담기가 스스로 비운다(SellCartModel — 한 종류만 담는다)
 
         GlobalRarity limit   = SelectedRarity;
         int          added   = 0;
@@ -652,7 +652,7 @@ public class InventoryToolPresenter : MonoBehaviour
     // ※ 다 고른 뒤 한 번에 담는다('SellCartModel.AddEntities') — 하나씩 담으면 격자가 개체 수만큼 다시 그린다.
     private void BulkAddCharacters()
     {
-        _cart.ClearCharacters(); // 범위를 다시 잡는다 — 담아 둔 자원·장비는 남긴다
+        _cart.ClearCharacters(); // 범위를 다시 잡는다 — 다른 종류는 담기가 스스로 비운다
 
         GlobalRarity limit   = SelectedRarity;
         var          picked  = new List<long>();
@@ -695,7 +695,7 @@ public class InventoryToolPresenter : MonoBehaviour
     // 장비 — 고른 등급 이하 중 끼고 있지 않은 것만. 인챈트 등급도 범위 안이어야 한다 (OnBulkSellClicked에서 호출).
     private void BulkAddEquips()
     {
-        _cart.ClearEquips(); // 범위를 다시 잡는다 — 담아 둔 자원·캐릭터는 남긴다
+        _cart.ClearEquips(); // 범위를 다시 잡는다 — 다른 종류는 담기가 스스로 비운다
 
         GlobalRarity limit   = SelectedRarity;
         var          picked  = new List<long>();
