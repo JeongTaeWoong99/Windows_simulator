@@ -112,6 +112,8 @@ namespace MikaProtocol
         S_WarehouseTransferResponse = 82,
         C_EquipDisassembleRequest = 83,
         S_EquipDisassembleResponse = 84,
+        C_StorageMergeRequest = 85,
+        C_WarehouseStackRequest = 86,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -907,6 +909,21 @@ namespace MikaProtocol
         public EResultCode               Result  { get; set; }
         public EStorageTab               Tab     { get; set; }
         public List<WarehouseChangeInfo> Changes { get; set; } = new();
+    }
+
+    // 한 보관함 안의 같은 자원 칸을 앞 칸부터 MaxStack까지 합친다(T-175). 칸 순서는 그대로이고 비게 된 뒤 칸은 빈 칸이 된다.
+    // 응답은 자리 이동과 같은 S_StorageSlotsResponse(Tab = Resource) — 바뀐 칸만, Count 0 = 칸 비움.
+    [MemoryPackable, Packet(PacketId.C_StorageMergeRequest)]
+    public partial class C_StorageMergeRequest : IPacket
+    {
+        public EContainer Container { get; set; }
+    }
+
+    // 인벤토리 → 창고. 창고에 이미 있는 자원만 창고의 같은 자원 칸으로 MaxStack까지 보낸다(T-175).
+    // 창고 빈 칸에 새 묶음은 만들지 않고, 남는 몫은 인벤토리에 둔다. 응답은 S_WarehouseTransferResponse(Tab = Resource).
+    [MemoryPackable, Packet(PacketId.C_WarehouseStackRequest)]
+    public partial class C_WarehouseStackRequest : IPacket
+    {
     }
 
     // 장비 분해 (T-131). 장비를 지우고 등급별 재료(DisassembleTable)를 인벤토리에 넣는다 — 판매와 같은 개체 PK 목록 축이다.

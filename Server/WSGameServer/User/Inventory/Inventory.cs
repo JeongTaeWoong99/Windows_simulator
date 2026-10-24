@@ -82,6 +82,25 @@ public sealed class Inventory
     /// </summary>
     public List<ItemChangeInfo> AddItem(int itemId, int count, int maxStack, out int added)
     {
+        var changes = TopUp(itemId, count, maxStack, out var toppedUp);
+        var left    = maxStack > 0 ? Math.Max(0, count) - toppedUp : 0;
+
+        while (left > 0 && FreeSlotCount > 0)
+        {
+            var put  = Math.Min(left, maxStack);
+            var item = new Item(itemId, put, StorageSlots.FirstFree(_slots.Keys));
+            _slots[item.Slot] = item;
+            left -= put;
+            changes.Add(ToChange(item, EItemChangeKind.Add));
+        }
+
+        added = maxStack > 0 ? Math.Max(0, count) - left : 0;
+        return changes;
+    }
+
+    /// <summary>같은 자원의 덜 찬 칸만 칸 번호 앞부터 maxStack까지 채운다. 빈 칸에 새 묶음은 만들지 않는다.</summary>
+    public List<ItemChangeInfo> TopUp(int itemId, int count, int maxStack, out int added)
+    {
         var changes = new List<ItemChangeInfo>();
         var left    = maxStack > 0 ? Math.Max(0, count) : 0;
 
@@ -96,15 +115,6 @@ public sealed class Inventory
             item.Count += put;
             left       -= put;
             changes.Add(ToChange(item, EItemChangeKind.Update));
-        }
-
-        while (left > 0 && FreeSlotCount > 0)
-        {
-            var put  = Math.Min(left, maxStack);
-            var item = new Item(itemId, put, StorageSlots.FirstFree(_slots.Keys));
-            _slots[item.Slot] = item;
-            left -= put;
-            changes.Add(ToChange(item, EItemChangeKind.Add));
         }
 
         added = maxStack > 0 ? Math.Max(0, count) - left : 0;
@@ -239,6 +249,30 @@ public sealed class Inventory
         }
 
         return changes;
+    }
+
+    /// <summary>같은 자원을 칸 번호 앞부터 maxStack까지 다시 채운다. 칸 순서는 그대로이고 비게 된 뒤 칸은 Count 0으로 알린다.</summary>
+    public List<ItemChangeInfo> Merge(Func<int, int> maxStackOf)
+    {
+        var next = new List<Item>();
+        foreach (var group in _slots.Values.GroupBy(i => i.Id))
+        {
+            var maxStack = maxStackOf(group.Key);
+            var left     = group.Sum(i => (long)i.Count);
+            foreach (var slot in group.Select(i => i.Slot).Order())
+            {
+                if (left == 0)
+                {
+                    break;
+                }
+
+                var put = (int)Math.Min(left, maxStack);
+                next.Add(new Item(group.Key, put, slot));
+                left -= put;
+            }
+        }
+
+        return Rewrite(next);
     }
 
     /// <summary>칸 수 검사용 사본 — 지급을 미리 넣어 보고 버린다.</summary>

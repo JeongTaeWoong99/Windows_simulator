@@ -5,7 +5,7 @@ namespace WSGameServer;
 
 /// <summary>
 /// 창고 — 인벤토리 확장 보관소(T-107). 놓인 자리일 뿐이라 쓰는 데는 인벤토리와 같다(T-164) —
-/// 조회(TryGetCharacter·TryGetEquip)와 자원 차감이 양쪽을 본다. 지급만 언제나 인벤토리로 들어온다.
+/// 조회(TryGetCharacter·TryGetEquip)와 자원 차감이 양쪽을 본다. 자원 지급은 창고의 같은 자원 칸부터(T-175), 개체는 인벤토리로 들어온다.
 /// </summary>
 public partial class User
 {
@@ -52,6 +52,36 @@ public partial class User
 
         TransferEntity(tab, from, to, fromSlot, toSlot, EquipsOf(from), EquipsOf(to),
             e => e.Id, e => e.SlotPosition, (e, slot) => e.SlotPosition = slot);
+    }
+
+    /// <summary>
+    /// 인벤토리의 자원을 창고의 같은 자원 칸으로 MaxStack까지 보낸다(T-175). 창고에 없는 자원은 옮기지 않고,
+    /// 창고 칸이 차서 남는 몫은 인벤토리에 그대로 둔다.
+    /// </summary>
+    public void StackToWarehouse()
+    {
+        var changes = new List<ItemChangeInfo>();
+        foreach (var itemId in Inventory.Items.Select(i => i.Id).Distinct().ToList())
+        {
+            var stored = Warehouse.TopUp(itemId, Inventory.GetCount(itemId), MaxStackOf(itemId), out var moved);
+            if (moved == 0)
+            {
+                continue;
+            }
+
+            Inventory.TryRemoveItems(new Dictionary<int, int> { [itemId] = moved }, out var taken);
+            changes.AddRange(taken);
+            changes.AddRange(stored);
+        }
+
+        if (changes.Count > 0)
+        {
+            PostDBTask(new WarehouseTransferRepository(this, EStorageTab.Resource, changes, new List<EntityMove>()));
+        }
+
+        SendTransfer(EResultCode.Ok, EStorageTab.Resource, changes
+            .Select(c => new WarehouseChangeInfo { Container = c.Container, Key = c.ItemId, Slot = c.Slot, Count = c.Count })
+            .ToList());
     }
 
     private void TransferResource(EContainer from, EContainer to, int fromSlot, int toSlot, int count)

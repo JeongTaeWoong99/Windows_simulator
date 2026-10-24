@@ -74,6 +74,24 @@ public partial class User
         SendSlots(EResultCode.Ok, container, tab, changes);
     }
 
+    /// <summary>한 보관함 안의 같은 자원 칸을 앞 칸부터 합친다(T-175). 정렬과 달리 칸 순서를 바꾸지 않는다.</summary>
+    public void MergeStorage(EContainer container)
+    {
+        if (!IsContainer(container))
+        {
+            SendSlots(EResultCode.StorageSlotOutOfRange, container, EStorageTab.Resource, new List<SlotChange>());
+            return;
+        }
+
+        var changes = ItemsOf(container).Merge(MaxStackOf);
+        if (changes.Count > 0)
+        {
+            PostDBTask(new SaveItemChangesRepository(this, changes));
+        }
+
+        SendResourceSlots(container, changes, changes.Where(c => c.Count > 0));
+    }
+
     // 같은 자원 칸에 놓으면 MaxStack까지 합치고 남는 것은 원래 칸에 둔다(T-160). 그 밖에는 이동·교환이다.
     private void MoveResource(EContainer container, int fromSlot, int toSlot)
     {

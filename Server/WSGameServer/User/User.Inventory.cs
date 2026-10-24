@@ -23,10 +23,10 @@ public partial class User
     }
 
     // 메모리 갱신 + DB 반영만 하고 변경분(칸마다 한 줄)을 돌려준다(응답은 호출자가). 지급 경로는 전부 여기를 지난다.
-    // 칸 하나는 MaxStack까지 채우고 남으면 빈 칸에 잇는다. 칸이 전부 차서 못 넣은 몫은 버린다 — 수확·우편·상자·뽑기 모두 같다(T-160).
+    // 창고의 덜 찬 같은 자원 칸부터 채우고(T-175), 남으면 인벤토리 — 칸이 전부 차서 못 넣은 몫은 버린다(T-160).
     public List<ItemChangeInfo> GainItem(int itemId, int count, out int granted)
     {
-        var changes = Inventory.AddItem(itemId, count, MaxStackOf(itemId), out granted);
+        var changes = Deposit(Warehouse, Inventory, itemId, count, out granted);
         if (granted > 0)
         {
             PostDBTask(new AddItemRepository(this, changes));
@@ -36,6 +36,17 @@ public partial class User
     }
 
     public List<ItemChangeInfo> GainItem(int itemId, int count) => GainItem(itemId, count, out _);
+
+    // 창고에는 이미 있는 자원만 쌓는다 — 창고는 플레이어가 고른 것만 두는 곳이다. 칸 수 검사도 사본으로 같은 순서를 밟는다.
+    private static List<ItemChangeInfo> Deposit(Inventory warehouse, Inventory inventory, int itemId, int count, out int granted)
+    {
+        var maxStack = MaxStackOf(itemId);
+        var changes  = warehouse.TopUp(itemId, count, maxStack, out var stored);
+        changes.AddRange(inventory.AddItem(itemId, count - stored, maxStack, out var carried));
+
+        granted = stored + carried;
+        return changes;
+    }
 
     /// <summary>보유 수량 — 인벤토리와 창고를 합친다. 없으면 0.</summary>
     public int GetItemCount(int itemId) => Inventory.GetCount(itemId) + Warehouse.GetCount(itemId);

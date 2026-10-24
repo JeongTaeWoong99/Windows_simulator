@@ -29,22 +29,25 @@ public partial class User
                EquipSlotsUsed + equipCount <= StorageCapacity;
     }
 
+    // 창고 사본도 함께 쓴다 — 지급이 창고의 같은 자원 칸부터 채우므로(T-175) 그 몫은 인벤토리 칸을 쓰지 않는다.
     private bool ItemsFit(IEnumerable<(int Tid, int Count)> items, IReadOnlyDictionary<int, int>? consumed)
     {
-        var trial = Inventory.Clone();
+        var inventory = Inventory.Clone();
+        var warehouse = Warehouse.Clone();
         foreach (var (tid, count) in consumed ?? new Dictionary<int, int>())
         {
-            var fromInventory = Math.Min(count, trial.GetCount(tid));
-            if (fromInventory > 0)
+            var fromInventory = Math.Min(count, inventory.GetCount(tid));
+            var taken         = fromInventory + Math.Min(count - fromInventory, warehouse.GetCount(tid));
+            if (taken > 0)
             {
-                trial.TryRemoveItems(new Dictionary<int, int> { [tid] = fromInventory }, out _);
+                Inventory.TryRemoveAcross(inventory, warehouse, new Dictionary<int, int> { [tid] = taken }, out _);
             }
         }
 
         foreach (var group in items.GroupBy(i => i.Tid))
         {
             var count = group.Sum(i => i.Count);
-            trial.AddItem(group.Key, count, MaxStackOf(group.Key), out var added);
+            Deposit(warehouse, inventory, group.Key, count, out var added);
             if (added < count)
             {
                 return false;

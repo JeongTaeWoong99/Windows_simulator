@@ -238,6 +238,38 @@ public static class ClientPacketHandler
         user.TransferWarehouse(req.From, req.Tab, req.FromSlot, req.ToSlot, req.Count);
     }
 
+    /// <summary>한 보관함 안의 같은 자원 칸 합치기(T-175). 칸 순서는 바꾸지 않는다.</summary>
+    [PacketHandler]
+    public static void Handle_C_StorageMergeRequest(ISession session, C_StorageMergeRequest req)
+    {
+        ServerLog.Debug("인벤토리", $"합치기 {req.Container} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_StorageSlotsResponse { Result = EResultCode.NotLoggedIn, Container = req.Container, Tab = EStorageTab.Resource });
+            return;
+        }
+
+        user.MergeStorage(req.Container);
+    }
+
+    /// <summary>창고에 이미 있는 자원만 인벤토리에서 창고로 쌓는다(T-175).</summary>
+    [PacketHandler]
+    public static void Handle_C_WarehouseStackRequest(ISession session, C_WarehouseStackRequest req)
+    {
+        ServerLog.Debug("창고", $"창고에 쌓기 sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_WarehouseTransferResponse { Result = EResultCode.NotLoggedIn, Tab = EStorageTab.Resource });
+            return;
+        }
+
+        user.StackToWarehouse();
+    }
+
     /// <summary>큐브 사용. 보유·착용 검증은 User가 맡는다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipEnchantRequest(ISession session, C_EquipEnchantRequest req)
