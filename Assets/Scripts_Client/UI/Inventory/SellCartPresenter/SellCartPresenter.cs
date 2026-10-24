@@ -81,6 +81,7 @@ public class SellCartPresenter : MonoBehaviour
     // 아직 안 온 응답 수(자원·개체 각 1) · 그 사이에 받은 실패 — 둘 다 오면 대기를 한 번에 닫는다.
     private int          _pendingResponses;
     private EResultCode? _failedCode;
+    private long         _gainedGold; // 이번 판매로 받은 골드 — 응답이 다 오면 동전을 한 번에 날린다
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -433,6 +434,7 @@ public class SellCartPresenter : MonoBehaviour
 
         _pendingResponses = 0;
         _failedCode       = null;
+        _gainedGold       = 0;
 
         if (_cart.HasItems)
         {
@@ -483,6 +485,7 @@ public class SellCartPresenter : MonoBehaviour
     {
         ClientLogger.Info(ClientLogger.Recv, $"자원 판매 완료 — {gainedGold:N0} G 획득");
 
+        _gainedGold += gainedGold;
         _cart.ClearItems(); // Changed가 발행되어 목록·합계가 다시 그려진다
         OnResponsePart();
     }
@@ -493,6 +496,7 @@ public class SellCartPresenter : MonoBehaviour
     {
         ClientLogger.Info(ClientLogger.Recv, $"개체 판매 완료 — {gainedGold:N0} G 획득");
 
+        _gainedGold += gainedGold;
         _cart.ClearEntities();
         OnResponsePart();
     }
@@ -522,6 +526,12 @@ public class SellCartPresenter : MonoBehaviour
         else
         {
             _waitHandle.Succeed();
+        }
+
+        // 자원·개체 응답이 따로 와도 동전은 한 번만 — 판매 버튼에서 상단 골드로
+        if (_gainedGold > 0)
+        {
+            _wait.RaiseGoldGain(sellButton.transform, _gainedGold);
         }
     }
 

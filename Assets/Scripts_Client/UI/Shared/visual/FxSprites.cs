@@ -60,4 +60,17 @@ public static class FxSprites
     public static Sprite? UnlockBody    => VisualCatalog.FxOf("unlock_body");
     // 자물쇠 고리 — 몸통과 같은 캔버스·같은 자리. 왼쪽 다리 밑동을 축으로 들린다('SlotUnlockFx.ShacklePivot')
     public static Sprite? UnlockShackle => VisualCatalog.FxOf("unlock_shackle");
+
+    // ── rarity — 칸 등급 배경 ('SlotView') ──
+
+    // 테두리 띠 + 안쪽 번짐 + 아래로 진해지는 속 — 등급색을 입힌다.
+    // ⚠️ 9-slice 경계(Border 10)가 .meta에 있다 — 'Image.Type.Sliced'로 늘린다
+    public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
+
+    // ── coin — 골드 획득 동전 ('CoinFlyPresenter') ──
+
+    // 동전 — 금색을 입혀 날린다
+    public static Sprite? CoinBody  => VisualCatalog.FxOf("coin_body");
+    // 네 갈래 반짝 — 동전이 골드 아이콘에 닿을 때
+    public static Sprite? CoinSpark => VisualCatalog.FxOf("coin_spark");
 }

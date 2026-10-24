@@ -72,6 +72,9 @@ public class TraitNodeView : MonoBehaviour
     // 이 칸이 그리고 있는 특성. 미바인딩·빈 칸이면 0.
     public int UserTraitTid { get; private set; }
 
+    // 레벨업 반짝임 — 처음 오를 때 붙인다('PlayLevelUp')
+    private SlotGainShine? _shine;
+
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 패널의 Start가 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
@@ -126,6 +129,15 @@ public class TraitNodeView : MonoBehaviour
         levelText.text = "";
 
         selectedMark.SetActive(false);
+    }
+
+    // 레벨이 올랐다 — 칸이 금빛으로 번쩍이고 화살표가 솟는다 ('TraitPresenter'가 올리기 성공 때 호출).
+    // 인벤토리 캐릭터 칸의 레벨업과 같은 모양('SlotGainShine.PlayLevelUp')이다 — "레벨이 올랐다"를 같은 말로 읽게.
+    // 반짝임 층은 처음 부를 때 붙인다 — 칸 대부분은 한 번도 오르지 않는다.
+    public void PlayLevelUp()
+    {
+        _shine ??= SlotGainShine.Attach(gameObject);
+        _shine.PlayLevelUp(UserTraitTid, 0f);
     }
 
     // 칸 바탕(버튼 그래픽)을 켜고 끈다 (Bind · BindBlank에서 호출).

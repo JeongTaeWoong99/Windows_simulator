@@ -119,6 +119,14 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
 
     // 조작 거절 — 토스트 + 방금 누른 것(또는 'shake')을 흔든다 (골드 부족 · 찾기 중 이동 등 클라가 먼저 막는 것)
     public void RaiseRefusal(string message, Transform? shake = null) => ToastRaised?.Invoke(message, true, shake);
+
+    // 골드를 받았다 — 'from'에서 동전이 상단 골드로 날아간다 ('CoinFlyPresenter'가 구독).
+    // 토스트와 같은 이유로 여기 둔다 — 응답을 받은 Presenter가 화면 맨 위 층의 연출을 부르는 단방향 창구다.
+    //   from   : 동전이 튀어나올 자리 (판매 버튼 등)
+    //   amount : 받은 골드 — 많을수록 동전이 늘어난다
+    public event Action<Transform, long>? GoldGainRaised;
+
+    public void RaiseGoldGain(Transform from, long amount) => GoldGainRaised?.Invoke(from, amount);
 }
 
 // 'ServerWaitManager.Begin'이 돌려주는 대기 한 건의 손잡이. 응답을 받은 Presenter가
