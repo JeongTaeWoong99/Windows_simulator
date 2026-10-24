@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-24 유니티 이펙트 · 해킹 연출 가능성 시험](2026-10-24-hack-vfx-prototype.md) — `#client` `#test` 파티클 4종·퀵해킹 연출 시험 후 폴더 삭제(커밋 없음)
 - [2026-10-23 칸 등급 배경 그림 · 판매 골드 동전 · 특성 배우기 반짝임](2026-10-23-rarity-bg-coin-trait-fx.md) — `#client` `#ui` `#fx` `rarity_bg` 9-slice · `CoinFlyPresenter` · T-052·T-039 실서버 확인 · ⚠️ 씬은 YAML 직접 삽입
 - [2026-10-22 토스트 · 거절 흔들기 · 끌어 놓기 마무리 · 알림 창 연출](2026-10-22-toast-refusal-drag-polish.md) — `#client` `#ui` T-177 · 거절은 `RaiseRefusal` · 흔들기는 회전 · ⚠️ 스크립트 `SaveScene`은 레이아웃 값을 구워 diff 폭증 → `unity cmd save_scene`
 - [2026-10-21 창 여닫기 · 숫자 카운트업 · 버튼 눌림](2026-10-21-ui-polish-panel-number-button.md) — `#client` `#ui` `PanelTransition`·`NumberRoll`·`ButtonPressFx` · 열림은 `IsShown`으로 · 버튼 반응은 Event System 하나
