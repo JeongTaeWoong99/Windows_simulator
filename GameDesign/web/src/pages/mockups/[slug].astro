@@ -1,0 +1,36 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import { loadMockups, sectionLabel, type Mockup } from '../../lib/mockups';
+
+export function getStaticPaths() {
+  return loadMockups().map((m) => ({ params: { slug: m.slug }, props: { m } }));
+}
+
+const { m } = Astro.props as { m: Mockup };
+---
+
+<Layout title={m.title}>
+  <div class="mk-view">
+    <div class="mk-bar">
+      <a href="/mockups" class="gn-back">← 목업 목록</a>
+      <h1>{m.title}</h1>
+      <div class="gn-info">
+        <span>{sectionLabel(m.section)}</span>
+        <span>{m.updated}</span>
+        <span class="mk-path">{m.relPath}</span>
+        <a href={m.src} target="_blank" rel="noopener">새 탭으로 ↗</a>
+      </div>
+      {
+        m.refs.length > 0 && (
+          <div class="mk-refs">
+            <span>연결된 문서</span>
+            {m.refs.map((r) => (
+              <a href={r.href}>{r.label}</a>
+            ))}
+          </div>
+        )
+      }
+    </div>
+    <iframe class="mk-frame" src={m.src} title={m.title}></iframe>
+  </div>
+</Layout>

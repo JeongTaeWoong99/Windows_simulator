@@ -553,6 +553,61 @@ public class InventoryGridPresenter : MonoBehaviour
         s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitSort", ContainerLabel), onClosed: OnSlotWaitClosed);
     }
 
+    // 이 보관함의 같은 자원 칸을 앞 칸부터 MaxStack까지 합쳐 달라고 서버에 요청한다 ('InventoryToolPresenter'의 [합치기]가 호출 · T-175).
+    //
+    // [정렬]과 달리 **칸 순서를 흔들지 않는다** — 비게 된 뒤 칸은 빈 칸으로 남는다. 자원 탭만 된다(개체는 칸마다 1개).
+    // 응답은 칸 이동과 같은 'S_StorageSlotsResponse'(바뀐 칸만)라 'PlayerDataModel'이 반영하고, 대기는 'OnStorageSlotsResponded'가 닫는다.
+    // ※ 합칠 것이 없으면 보내지 않고 토스트로 말한다 — 서버는 빈 목록과 Ok를 돌려주므로, 보내면 눌러도 아무 일이 없어 고장처럼 보인다.
+    public void MergeCurrent()
+    {
+        EnsureInitialized();
+
+        if (_currentTab != InventoryTab.Resource || !CanSendSlotRequest("합치기"))
+        {
+            return;
+        }
+
+        if (!_data.CanMergeItemSlots(container))
+        {
+            _wait.RaiseToast(Lang.Get("UI.Tool.NothingToMerge"));
+
+            return;
+        }
+
+        _network.Send(new C_StorageMergeRequest { Container = container });
+
+        ClientLogger.Info(ClientLogger.Send, $"{ContainerLabel} 합치기 요청");
+
+        s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitMerge", ContainerLabel), onClosed: OnSlotWaitClosed);
+    }
+
+    // 인벤토리의 자원을 창고에 이미 있는 같은 자원 칸으로 채워 달라고 서버에 요청한다 ('WarehousePresenter'의 [창고에 쌓기]가 호출 · T-175).
+    //
+    // 창고 빈 칸에 새 묶음은 만들지 않는다 — 창고는 플레이어가 고른 것만 두는 곳이다. 창고 칸이 차서 남는 몫은 인벤토리에 그대로 있다.
+    // 응답은 끌어 넣기와 같은 'S_WarehouseTransferResponse'(양쪽 바뀐 칸) — 대기를 닫는 것도 같다.
+    public void StackIntoWarehouse()
+    {
+        EnsureInitialized();
+
+        if (_currentTab != InventoryTab.Resource || !CanSendSlotRequest("창고에 쌓기"))
+        {
+            return;
+        }
+
+        if (!_data.CanStackIntoWarehouse())
+        {
+            _wait.RaiseToast(Lang.Get("UI.Warehouse.NothingToStack"));
+
+            return;
+        }
+
+        _network.Send(new C_WarehouseStackRequest());
+
+        ClientLogger.Info(ClientLogger.Send, "창고에 쌓기 요청");
+
+        s_slotWaitHandle = _wait.Begin(Lang.Get("UI.Warehouse.Stack"), onClosed: OnSlotWaitClosed);
+    }
+
     // 지금 탭에 찾기 조건을 건다 ('InventoryToolPresenter'의 검색창 · 드롭다운이 호출).
     //
     // ★ 맨 위로 올린다 — 결과는 앞으로 모이는데, 아래로 내려 둔 채 검색하면 결과가 화면 밖에 있다.

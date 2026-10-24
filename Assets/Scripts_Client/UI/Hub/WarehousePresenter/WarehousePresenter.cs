@@ -4,7 +4,11 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 거점 열 창고 탭의 화면 — 종류별 3탭(자원·캐릭터·장비) + 정렬(방향 ▼▲ · 기준) + 창고 격자 (T-126).
+// 거점 열 창고 탭의 화면 — 종류별 3탭(자원·캐릭터·장비) + 정렬(방향 ▼▲ · 기준) + [창고에 쌓기] + 창고 격자 (T-126).
+//
+// ■ [창고에 쌓기] — 인벤토리 자원을 창고에 **이미 있는** 같은 자원 칸으로 채운다 (2026-10-25 · T-175 · 이슈 #82)
+//   창고 빈 칸에 새 묶음은 만들지 않는다(창고는 플레이어가 고른 것만 둔다). 자원 탭에서만 보인다.
+//   요청은 격자가 보낸다('InventoryGridPresenter.StackIntoWarehouse') — 칸 요청 대기가 격자끼리 하나라서다.
 //
 // ■ 격자는 인벤토리 격자와 같은 컴포넌트다
 //   'InventoryGridPresenter'를 'container = Warehouse'로 둔 것이라 칸·스크롤·끌기·정렬이 그대로다.
@@ -50,6 +54,9 @@ public class WarehousePresenter : MonoBehaviour
     [SerializeField, Tooltip("정렬 기준 — 등급순 · 이름순 · 수량순(자원 탭만). 목록은 코드가 채운다")]
     private TMP_Dropdown sortKeyDropdown = null!;
 
+    [SerializeField, Tooltip("[창고에 쌓기] — 인벤토리 자원을 창고의 같은 자원 칸으로. 자원 탭에서만 보인다. OnClick은 코드가 연결한다")]
+    private Button stackButton = null!;
+
 
     [CenterHeader("선택 표시")]
     [SerializeField, Tooltip("지금 열려 있는 탭의 버튼 색")]
@@ -82,6 +89,7 @@ public class WarehousePresenter : MonoBehaviour
         this.RequireRef(sortButton,      nameof(sortButton));
         this.RequireRef(sortArrowText,   nameof(sortArrowText));
         this.RequireRef(sortKeyDropdown, nameof(sortKeyDropdown));
+        this.RequireRef(stackButton,     nameof(stackButton));
 
         BindButtons();
         RefreshArrow();
@@ -159,6 +167,11 @@ public class WarehousePresenter : MonoBehaviour
 
         sortButton.onClick.AddListener(OnSortClicked);
         sortKeyDropdown.onValueChanged.AddListener(OnSortKeyChanged);
+        stackButton.onClick.AddListener(grid.StackIntoWarehouse);
+
+        // 버튼 글자만으로는 "무엇이 어디로 가는지"가 안 보인다 — 띄우는 순간 문구를 만들어 언어가 바뀌어도 맞는다.
+        stackButton.gameObject.AddComponent<TooltipTrigger>()
+                   .SetProvider(() => new TooltipContent(Lang.Get("UI.Warehouse.Stack")).Row(Lang.Get("UI.Warehouse.StackTip"), ""));
     }
 
     // 탭을 눌렀다 — 인벤토리 탭에 요청한다. 바뀌면 'TabChanged'로 돌아와 여기도 바뀐다 (탭 버튼 OnClick에 코드로 연결)
@@ -181,6 +194,8 @@ public class WarehousePresenter : MonoBehaviour
         grid.ShowTab(_tab);
         RefreshSelection();
         RebuildSortKeyOptions();
+
+        stackButton.gameObject.SetActive(_tab == InventoryTab.Resource); // 개체(캐릭터·장비)는 해당 없다
     }
 
     // 지금 탭의 버튼만 선택 색으로 칠한다 (Follow · OnTabClicked에서 호출).

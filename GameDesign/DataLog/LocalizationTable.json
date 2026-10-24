@@ -5015,6 +5015,11 @@
     "EN": "Move {0} Slot"
   },
   {
+    "Key": "UI.Inventory.WaitMerge",
+    "KR": "{0} 합치기",
+    "EN": "Merge {0}"
+  },
+  {
     "Key": "UI.Inventory.CantList",
     "KR": "올릴 수 없습니다 — {0}",
     "EN": "Can't list — {0}"
@@ -5258,6 +5263,21 @@
     "Key": "UI.Tool.Reset",
     "KR": "초기화",
     "EN": "Reset"
+  },
+  {
+    "Key": "UI.Tool.Merge",
+    "KR": "합치기",
+    "EN": "Merge"
+  },
+  {
+    "Key": "UI.Tool.MergeTip",
+    "KR": "같은 자원이 여러 칸에 나뉘어 있으면 앞 칸부터 가득 채워 합칩니다 — 칸 순서는 그대로이고 비게 된 칸은 빈 칸으로 남습니다",
+    "EN": "Combines split stacks of the same resource, filling the earliest slot first — slot order stays and emptied slots are left blank"
+  },
+  {
+    "Key": "UI.Tool.NothingToMerge",
+    "KR": "합칠 칸이 없습니다.",
+    "EN": "Nothing to merge."
   },
   {
     "Key": "UI.Inventory.NoMatch",
@@ -5993,6 +6013,21 @@
     "Key": "UI.Warehouse.Hint",
     "KR": "칸을 끌어 인벤토리 ↔ 창고로 옮깁니다",
     "EN": "Drag slots to move between inventory ↔ warehouse"
+  },
+  {
+    "Key": "UI.Warehouse.Stack",
+    "KR": "창고에 쌓기",
+    "EN": "Stack in Warehouse"
+  },
+  {
+    "Key": "UI.Warehouse.StackTip",
+    "KR": "인벤토리 자원을 창고에 이미 있는 같은 자원 칸으로 채웁니다 — 창고에 없는 자원은 옮기지 않고, 창고 칸이 차면 남은 몫은 인벤토리에 둡니다",
+    "EN": "Fills warehouse slots that already hold the same resource from your inventory — resources not in the warehouse stay put, and any overflow stays in the inventory"
+  },
+  {
+    "Key": "UI.Warehouse.NothingToStack",
+    "KR": "창고에 쌓을 자원이 없습니다 — 창고에 덜 찬 같은 자원 칸이 있어야 합니다.",
+    "EN": "Nothing to stack — the warehouse needs a partly filled slot of the same resource."
   },
   {
     "Key": "UI.Auction.KindItem",

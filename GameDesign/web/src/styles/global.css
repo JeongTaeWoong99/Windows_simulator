@@ -306,3 +306,28 @@ body { margin: 0; line-height: 1.7; }
   padding: 0.25rem 1.1rem 1.2rem;
 }
 .gn-body > h2:first-child { border-top: 0; }
+
+/* ── 목업 — /mockups ─────────────────────────────────────────────── */
+.mk { max-width: 72rem; }
+.mk-section + .mk-section { margin-top: 1.75rem; }
+.mk-section h2 { font-size: 0.9375rem; font-weight: 800; margin-bottom: 0.6rem; color: #374151; }
+.mk-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr)); gap: 1rem; }
+.mk-card { background: var(--surface); border: 1px solid var(--border); border-radius: 0.5rem; overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.mk-card:hover { border-color: #93c5fd; }
+/* 썸네일 — 목업을 4배 크기로 띄우고 1/4로 줄인다. 누르면 상세로 가도록 iframe은 입력을 받지 않는다 */
+.mk-thumb { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; background: #0d1117; border-bottom: 1px solid var(--border); }
+.mk-thumb iframe { position: absolute; top: 0; left: 0; width: 400%; height: 400%; border: 0; transform: scale(0.25); transform-origin: 0 0; pointer-events: none; }
+.mk-body { padding: 0.7rem 0.9rem 0.85rem; display: flex; flex-direction: column; gap: 0.2rem; min-width: 0; }
+.mk-title { font-size: 0.9375rem; font-weight: 700; color: #111827; }
+.mk-title:hover { text-decoration: underline; }
+.mk-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; font-size: 0.8125rem; line-height: 1.55; color: #4b5563; }
+.mk-path { font-family: ui-monospace, monospace; overflow-wrap: anywhere; }
+.mk .gn-info a, .mk-view .gn-info a { color: var(--brand); }
+.mk-refs { display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.35rem; font-size: 0.75rem; }
+.mk-refs span { color: var(--muted); margin-right: 0.15rem; }
+.mk-refs a { background: #eff6ff; color: #1d4ed8; border-radius: 0.3rem; padding: 0 0.4rem; line-height: 1.6; }
+.mk-refs a:hover { background: #dbeafe; }
+/* 상세 — 목업이 창 높이를 거의 다 쓴다 */
+.mk-view { display: flex; flex-direction: column; gap: 0.6rem; }
+.mk-bar h1 { font-size: 1.2rem; font-weight: 800; }
+.mk-frame { width: 100%; height: calc(100dvh - 9rem); min-height: 32rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #0d1117; }
