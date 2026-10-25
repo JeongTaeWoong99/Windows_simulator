@@ -57,7 +57,7 @@
 | [T-152](T-152-아티팩트거래소.md) | 서버 — **아티팩트 거래소 매물** · 등록 시 아티팩트 칸에서 빠짐 · 우편 첨부 (즉시 판매는 T-181) | 진우 | Resolve | 보통 | 261107 |
 | [T-105](T-105-자원사용처.md) | **검토 요청** — 남는 자원의 사용처 · ✅ 방향 결정: 섬 산업 건물(레벨 + 선행 노드 트리) · 건물 수·비용·노드 미정 (2026-10-16) | 진우 | Resolve | 보통 | 261107 |
 | [T-129](T-129-일감정합성검사.md) | 일감 **정합성 검사 스크립트** — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · CI `tasks-check.yml` ✅ (2026-10-18) · 남은 것: push 뒤 Actions 첫 실행 확인 | 진우 | Resolve | 낮음 | 261107 |
-| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** 화면 · 서버 T-181 받음(2026-10-25) · 아티팩트 화면(메인 버튼 → 도감) · 아티팩트는 장비 탭(좌클릭 아티팩트 창 → 장착 → 도감 반짝) · 감정 연출 — 사용자 확인 대기 · 서버 [이슈 #87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) · [이슈 #81](https://github.com/JeongTaeWoong99/Windows_simulator/issues/81) | 태웅 | In Progress | 보통 | 261107 |
+| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** 화면 · 아티팩트 화면 · 장비 탭 아티팩트 · 감정 연출 — 사용자 확인 끝(2026-10-25) · 남은 것: 🎨 아이콘 · Special 칸 · 거래소 아티팩트 탭 · ⏸ 서버·기획 [#87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) · [#88](https://github.com/JeongTaeWoong99/Windows_simulator/issues/88) 1개씩 감정 · [#89](https://github.com/JeongTaeWoong99/Windows_simulator/issues/89) 분해 마석 · [#90](https://github.com/JeongTaeWoong99/Windows_simulator/issues/90) 끄기 제거 | 태웅 | In Progress | 보통 | 261107 |
 
 ### ⏸ 남이 먼저 해야 한다
 

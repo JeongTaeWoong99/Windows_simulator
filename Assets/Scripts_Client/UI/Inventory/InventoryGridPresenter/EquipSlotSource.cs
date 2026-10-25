@@ -124,11 +124,9 @@ public class EquipSlotSource : InventorySlotSource
     }
 
     // 아티팩트는 칸 수량이 늘면 반짝인다 — 장비는 늘 1이다 (획득 감지가 호출).
+    // ※ 새로 들어온 표시는 장비와 같은 반짝임 하나다 — 칸에 'NEW' 글자를 붙이지 않는다(2026-10-25 사용자 결정).
+    //   도감에 없는 번호라는 경고는 판매 목록이 한다('SellCartPresenter').
     protected override int AmountOf(long key) => IsArtifactKey(key) ? _data.GetArtifactCount(ArtifactTidOf(key)) : 1;
-
-    // 도감에 없는 번호는 칸 위에 'NEW' — 팔면 도감에 남지 않는다 (격자가 매번 그릴 때 호출).
-    public override string? GetBadge(long key)
-        => IsArtifactKey(key) && !_data.IsArtifactEquipped(ArtifactTidOf(key)) ? Lang.Get("UI.Artifact.New") : null;
 
     // 장비의 대상 산업 (Matches에서 호출). 테이블에 없는 TID는 어느 산업에도 속하지 않는다.
     protected override bool MatchesIndustry(SlotData slot, byte industry)

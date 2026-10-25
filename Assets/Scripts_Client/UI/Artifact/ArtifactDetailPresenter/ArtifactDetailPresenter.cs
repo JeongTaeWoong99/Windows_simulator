@@ -5,9 +5,10 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 도감에서 고른 아티팩트의 상세 — 이름 · 등급 · 상태 · 효과와 [효과 끄기·켜기] (T-151).
+// 도감에서 고른 아티팩트의 상세 — 이름 · 등급 · 상태 · 효과 (T-151).
 //
-// ■ 버튼은 도감에 장착한 번호에만 있다 — [효과 끄기] · [효과 켜기]. 빼는 대신 끈다(장착은 되돌릴 수 없다 · #81 합의).
+// ■ [효과 끄기]는 두지 않는다 (2026-10-25 사용자 결정) — 장착하면 계속 켜 둔다. 서버에 끄기 제거를 요청했다.
+//   이미 꺼 둔 번호만 [효과 켜기]가 남는다 — 되살릴 길이 없으면 영영 꺼진 채로 남기 때문이다.
 //   장착하지 않은 번호는 버튼이 없다 — 장착은 인벤토리 장비 탭의 아티팩트 창이 한다('ArtifactEquipPresenter' · 2026-10-25 사용자 결정).
 //   본 적 없는 번호는 이름을 가린다.
 // ■ 판매 버튼을 두지 않는다 (2026-10-25 사용자 결정) — 좋은 것은 경매장에서 즉시 판매가보다 비싸게 팔 수 있다.
@@ -172,8 +173,8 @@ public class ArtifactDetailPresenter : MonoBehaviour
         string effect = ArtifactText.Effect(row);
         effectText.text = isEquipped && !active ? UIRichText.Paint(effect, UIThemeRole.TextDisabled) : effect;
 
-        actionButton.gameObject.SetActive(isEquipped);
-        actionButtonText.text     = Lang.Get(active ? "UI.Artifact.TurnOff" : "UI.Artifact.TurnOn");
+        actionButton.gameObject.SetActive(isEquipped && !active);
+        actionButtonText.text     = Lang.Get("UI.Artifact.TurnOn");
         actionButton.interactable = _waitHandle == null;
     }
 

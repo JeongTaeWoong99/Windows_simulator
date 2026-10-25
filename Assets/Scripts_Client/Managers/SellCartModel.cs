@@ -661,6 +661,12 @@ public class SellCartModel : MonoService<SellCartModel>
             }
         }
 
+        // 아티팩트만 담았으면 분해 표를 거치지 않아 재료 TID가 비어 있다 — 버튼 글자('마석 0개')에 쓸 이름만 가장 낮은 등급 행에서 빌린다
+        if (shardItemId == 0 && _artifacts.Count > 0 && GameDataLoader.TryGetDisassemble(GlobalRarity.Common, out DisassembleTableRow common))
+        {
+            shardItemId = common.ItemTID;
+        }
+
         TotalPrice             = total;
         HasHighRarity          = hasHighRarity;
         HasUncollectedArtifact = uncollected;

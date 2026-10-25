@@ -15,7 +15,7 @@ using UnityEngine.UI;
 //
 // ■ 한 종류만 · 탭을 바꾸면 비운다 (#83 · 2026-10-25 사용자 결정 · 목업 'GameDesign/design/ui/판매분해목업.html')
 //   목록은 지금 탭의 종류만 담는다. 인벤토리 탭을 다른 종류로 바꾸면 비우고 토스트로 알린다.
-//   아래 버튼은 세 종류가 같은 모양이다 — [골드로 판매 · 총 N 골드 획득]. 장비일 때만 [마석으로 분해 · 총 재료 N개 획득]이 옆에 붙는다.
+//   아래 버튼은 세 종류가 같은 모양이다 — [골드로 판매 · 총 N 골드 획득]. 장비 탭(장비 · 아티팩트)일 때만 [마석으로 분해 · 총 재료 N개 획득]이 옆에 붙는다.
 //   장비 줄의 값은 'N G OR 마석 N' — 둘 중 하나만 받는다는 뜻이다.
 // 여기서 파는 값은 **즉시 판매가**(정해진 값)다. 더 비싸게 팔려면 경매장에 올린다(즉시 판매가 이상 — 'Auction 규칙.md').
 // 담고 → 판매 버튼, 이 두 단계가 곧 확인 절차라 별도 확인 모달을 두지 않는다
@@ -38,7 +38,8 @@ using UnityEngine.UI;
 //
 // ■ 아티팩트 (T-151 · 2026-10-25 사용자 결정)
 //   장비 탭의 아티팩트 칸을 우클릭하면 장비와 같은 목록에 담긴다 — 판매는 'C_ArtifactSellRequest'로 따로 나간다.
-//   NEW(도감에 없는 번호)가 담기면 경고한다. 분해는 아직 장비만 된다 — 아티팩트가 섞이면 [마석으로 분해]를 잠그고 이유를 적는다.
+//   NEW(도감에 없는 번호)가 담기면 경고한다. 아티팩트도 장비처럼 [마석으로 분해]가 보이지만 받을 마석은 0이다(임시) —
+//   서버에 아티팩트 분해가 없어 버튼을 잠그고 이유를 적는다(서버 요청 이슈 · 마석 수는 기획이 엑셀로 정한다).
 public class SellCartPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -434,11 +435,12 @@ public class SellCartPresenter : MonoBehaviour
                 name += $" {UIRichText.Paint(Lang.Get("UI.Artifact.New"), UIThemeRole.Highlight)}";
             }
 
+            // 값은 장비와 같은 'N G OR 마석 N' — 아티팩트 분해 마석은 아직 0(임시 · 서버 대기)
             row.Bind(SellCartKind.Artifact,
                      tid,
                      name,
                      entry.Count,
-                     UIRichText.Gold(SellCartModel.ArtifactInstantPrice(tid) * entry.Count),
+                     ShardValueText(SellCartModel.ArtifactInstantPrice(tid) * entry.Count, 0),
                      ItemIconContent.ForArtifact(tid, 0L),
                      () => ArtifactText.BuildTooltip(_data, tid, withControls: false));
         }
@@ -486,8 +488,8 @@ public class SellCartPresenter : MonoBehaviour
             lines.Add(Lang.Get("UI.Artifact.SellUncollected"));
         }
 
-        // 장비와 아티팩트가 섞였으면 분해가 왜 잠겼는지 적는다 — 아티팩트 분해는 아직 서버에 없다
-        if (_cart.HasArtifacts && _cart.EquipIds.Count > 0)
+        // 아티팩트가 담겼으면 분해가 왜 잠겼는지 적는다 — 아티팩트 분해는 아직 서버에 없다
+        if (_cart.HasArtifacts)
         {
             lines.Add(Lang.Get("UI.Sell.ArtifactNoShard"));
         }
@@ -497,10 +499,10 @@ public class SellCartPresenter : MonoBehaviour
     }
 
     // 아래 버튼 — 받을 총량을 적고, 담긴 것이 없거나 응답을 기다리는 중이면 잠근다.
-    // [마석으로 분해]는 장비를 담았을 때만 보인다(#83). 아티팩트만 담았으면 감춘다 — 아직 분해할 수 없다(서버 미지원).
+    // [마석으로 분해]는 장비 탭(장비 · 아티팩트)을 담았을 때 보인다(#83). 아티팩트가 섞이면 잠근다 — 아직 분해할 수 없다(서버 미지원).
     private void ApplySellButton()
     {
-        bool isEquip = _cart.EquipIds.Count > 0;
+        bool isEquip = _cart.Kind == SellCartKind.Equip && _cart.Count > 0;
 
         sellButtonText.text = ButtonText(Lang.Get("UI.Sell.ToGold"),
                                          Lang.Format("UI.Sell.GoldGain", UIRichText.Paint($"{_cart.TotalPrice:N0}", UIThemeRole.Highlight)));
@@ -514,7 +516,7 @@ public class SellCartPresenter : MonoBehaviour
         }
 
         sellButton.interactable        = !_isWaiting && _cart.Count > 0;
-        disassembleButton.interactable = !_isWaiting && isEquip && !_cart.HasArtifacts && _cart.TotalShards > 0;
+        disassembleButton.interactable = !_isWaiting && _cart.EquipIds.Count > 0 && !_cart.HasArtifacts && _cart.TotalShards > 0;
         clearButton.interactable       = !_isWaiting;
     }
 
@@ -542,8 +544,12 @@ public class SellCartPresenter : MonoBehaviour
             return UIRichText.Gold(gold);
         }
 
-        return $"{UIRichText.Gold(gold)} {UIRichText.Label(Lang.Get("UI.Sell.Or"))} {Lang.Format("UI.Sell.ShardShort", $"{row.ItemCount:N0}")}";
+        return ShardValueText(gold, row.ItemCount);
     }
+
+    // 'N G OR 마석 N' — 장비 · 아티팩트 줄이 같이 쓴다
+    private static string ShardValueText(long gold, int shards)
+        => $"{UIRichText.Gold(gold)} {UIRichText.Label(Lang.Get("UI.Sell.Or"))} {Lang.Format("UI.Sell.ShardShort", $"{shards:N0}")}";
 
     #endregion
 
