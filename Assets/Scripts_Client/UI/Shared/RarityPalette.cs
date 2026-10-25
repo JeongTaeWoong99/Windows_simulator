@@ -29,6 +29,7 @@ public static class RarityPalette
         GlobalRarity.Epic      => new Color32(0xA3, 0x35, 0xEE, 0xFF), // 영웅, 보라
         GlobalRarity.Legendary => new Color32(0xFF, 0x80, 0x00, 0xFF), // 전설, 주황/금색
         GlobalRarity.Mythic    => new Color32(0xE6, 0xCC, 0x80, 0xFF), // 신화, 빨강/핑크
+        GlobalRarity.Special   => new Color32(0xFF, 0xFF, 0xFF, 0xFF), // 스페셜(유물·아티팩트), 흰색 — 칸의 무지개 테두리는 따로다(T-151)
         _                      => Unknown,
     };
 

@@ -142,6 +142,14 @@ public class ResourceSlotSource : InventorySlotSource
             content.Row(Lang.Get("UI.Inventory.State"), Lang.Get("UI.WorkStation.Locked"));
         }
 
+        // 유물은 감정 비용(켜 둔 아티팩트 할인 반영)을 적는다 — 왼쪽 클릭이 골드를 쓴다는 것이 눌러 보기 전에 보여야 한다(T-151)
+        long appraiseCost = _data.GetAppraiseCost(itemId);
+
+        if (appraiseCost > 0L)
+        {
+            content.Row(Lang.Get("UI.Inventory.AppraiseCost"), Lang.Format("UI.Equip.Gold", $"{appraiseCost:N0}"));
+        }
+
         content.Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{price:N0}"),
                     Lang.Format("UI.Inventory.AllGold", $"{AuctionModel.InstantSellTotal(basePrice, total):N0}"), null)
                .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice));
@@ -152,7 +160,7 @@ public class ResourceSlotSource : InventorySlotSource
         {
             if (GameDataLoader.IsBox(itemId))
             {
-                rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Inventory.Open"));
+                rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get(appraiseCost > 0L ? "UI.Inventory.Appraise" : "UI.Inventory.Open"));
             }
 
             AddCommonControls(rows, locked);

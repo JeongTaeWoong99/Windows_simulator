@@ -193,9 +193,12 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 사람이 알고 싶은 것도 "무엇을 얼마나 얻었나"이지 몇 번째로 무엇이 나왔는지가 아니다.
     // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
-    private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
+    // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 제목을 '감정'으로 바꾼다.
+    private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
-        Show(Summarize(rewards), Lang.Get("UI.Gacha.SourceBox"), showCount: true);
+        string source = GameDataLoader.GetOpenCostGold(itemId) > 0L ? Lang.Get("UI.Inventory.Appraise") : Lang.Get("UI.Gacha.SourceBox");
+
+        Show(Summarize(rewards), source, showCount: true);
         ShowDrawAgain(false);
     }
 
@@ -398,6 +401,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     {
         EGachaRewardType.Character => reward.CharacterTid,
         EGachaRewardType.Equip     => reward.EquipTid,
+        EGachaRewardType.Artifact  => reward.ArtifactTid,
         EGachaRewardType.Gold      => 0,
         _                          => reward.ItemId,
     };
@@ -420,6 +424,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         {
             EGachaRewardType.Character => GameDataLoader.GetCharacterName(tid),
             EGachaRewardType.Equip     => GameDataLoader.GetEquipName(tid),
+            EGachaRewardType.Artifact  => GameDataLoader.GetArtifactName(tid),
             EGachaRewardType.Gold      => Lang.Get("UI.Common.Gold"),
             _                          => GameDataLoader.GetItemName(tid),
         };
@@ -428,6 +433,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         {
             EGachaRewardType.Character => VisualCatalog.PortraitOf(tid),
             EGachaRewardType.Equip     => VisualCatalog.EquipIconOf(tid),
+            EGachaRewardType.Artifact  => null, // 아티팩트 아이콘 그림이 아직 없다(🎨 T-151) — 칸이 이름 첫 글자로 그린다
             EGachaRewardType.Gold      => null,
             _                          => VisualCatalog.ItemIconOf(tid),
         };

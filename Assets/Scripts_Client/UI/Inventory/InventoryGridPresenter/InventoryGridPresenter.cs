@@ -1863,20 +1863,36 @@ public class InventoryGridPresenter : MonoBehaviour
             return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
         }
 
-        // 1개짜리는 물어볼 것이 없다. 팝업을 띄워 봐야 확인을 한 번 더 누르게 할 뿐이다.
-        if (owned == 1)
+        // 유물 감정은 골드가 든다(T-150 · T-151) — 1개도 못 내면 보내지 않고 칸을 흔든다. 살 수 있는 만큼만 고르게 한다.
+        // ※ 비용은 미리 보기다 — 사이에 골드가 줄면 서버가 'NotEnoughCurrency'로 거절한다.
+        long unitCost   = _data.GetAppraiseCost(itemId);
+        int  affordable = unitCost > 0L ? (int)System.Math.Min(_data.Gold / unitCost, int.MaxValue) : int.MaxValue;
+
+        if (affordable <= 0)
         {
-            OpenBox(itemId, 1);
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.AppraiseNoGold", $"{unitCost:N0}"), view.transform);
 
             return;
         }
 
         // ※ 한 번에 여는 수는 'Constants.BoxOpenMax'까지다 — 넘기면 서버가 'InvalidUseCount'로 거절한다.
         //   지금은 상자 최대 수량(50)과 같아 걸리지 않지만, 두 값은 엑셀에서 따로 바뀐다.
-        int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
+        int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax, affordable);
+
+        // 1개짜리는 물어볼 것이 없다. 팝업을 띄워 봐야 확인을 한 번 더 누르게 할 뿐이다.
+        if (maxOpen == 1)
+        {
+            OpenBox(itemId, 1);
+
+            return;
+        }
+
+        string question = unitCost > 0L
+            ? Lang.Format("UI.Inventory.AskAppraise", $"{unitCost:N0}")
+            : Lang.Get("UI.Inventory.AskOpen");
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!Overlay Canvas').
-        _ui.AskAmount(itemId, maxOpen, Lang.Get("UI.Inventory.AskOpen"), amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, question, amount => OpenBox(itemId, amount));
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).
@@ -1910,14 +1926,15 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isOpeningBox = true;
-        _waitHandle   = _wait.Begin(Lang.Format("UI.Inventory.WaitOpenBox", count), onClosed: OnWaitClosed);
+        _waitHandle   = _wait.Begin(Lang.Format(GameDataLoader.GetOpenCostGold(itemId) > 0L ? "UI.Inventory.WaitAppraise" : "UI.Inventory.WaitOpenBox", count),
+                                    onClosed: OnWaitClosed);
     }
 
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다
     // (PlayerDataModel.ItemUseCompleted 구독)
     // ※ 인벤토리가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 인벤토리에 들어온 줄 안다.
     //   알림은 '!Overlay Canvas'에서 결과창보다 뒤 형제라 그 위에 뜬다.
-    private void OnItemUseCompleted(List<GachaRewardInfo> rewards, bool storedInMail)
+    private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
         _waitHandle?.Succeed();
 

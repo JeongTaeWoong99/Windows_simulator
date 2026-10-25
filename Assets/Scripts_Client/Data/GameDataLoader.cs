@@ -63,6 +63,7 @@ public static class GameDataLoader
     private static readonly HashSet<int> _warnedCharacterIds = new HashSet<int>();
     private static readonly HashSet<int> _warnedEquipTids    = new HashSet<int>();
     private static readonly HashSet<int> _warnedAptitudes    = new HashSet<int>();
+    private static readonly HashSet<int> _warnedArtifactTids = new HashSet<int>();
 
     // 아이템 이름을 조회한다. 표시용이라 예외 없이 '?#Id'로 떨어지고, 처음 한 번만 경고한다.
     public static string GetItemName(int itemId)
@@ -247,6 +248,38 @@ public static class GameDataLoader
     public static bool TryGetArtifact(int artifactTid, out ArtifactTableRow row)
     {
         return GameTable.ArtifactTable.TryGet(artifactTid, out row);
+    }
+
+    // 아티팩트 이름 — 감정 결과·우편 첨부가 쓴다. 모르는 번호는 '?#번호'('GetItemName'과 같다).
+    public static string GetArtifactName(int artifactTid)
+    {
+        if (GameTable.ArtifactTable.TryGet(artifactTid, out var row))
+        {
+            return Loc.Get(row.NameLocKey);
+        }
+
+        WarnUnknownId("아티팩트", artifactTid, _warnedArtifactTids);
+
+        return $"?#{artifactTid}";
+    }
+
+    // 아티팩트 등급. 모르는 번호는 'None'(회색).
+    public static GlobalRarity GetArtifactRarity(int artifactTid)
+    {
+        if (GameTable.ArtifactTable.TryGet(artifactTid, out var row))
+        {
+            return row.GlobalRarity;
+        }
+
+        WarnUnknownId("아티팩트", artifactTid, _warnedArtifactTids);
+
+        return GlobalRarity.None;
+    }
+
+    // 감정 1개의 기본 비용(할인 전) — 0이면 골드 없이 여는 상자다(T-150). 할인은 'PlayerDataModel.GetAppraiseCost'가 붙인다.
+    public static long GetOpenCostGold(int itemId)
+    {
+        return GameTable.ItemTable.TryGet(itemId, out var row) ? row.OpenCostGold : 0L;
     }
 
     // 장비 능력치 옵션 한 행 — 등급·종류·산업·수치. 장비 칸의 능력치 칸 색과 툴팁 문구가 쓴다.

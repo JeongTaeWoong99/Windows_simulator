@@ -83,6 +83,14 @@ public readonly struct ItemIconContent
             null,
             VisualCatalog.PortraitOf(characterTid));
 
+    // 아티팩트 — 아이콘 그림이 아직 없어 이름 첫 글자로 그린다(🎨 T-151). 수량이 1보다 크면 모서리에 적는다.
+    public static ItemIconContent ForArtifact(int artifactTid, long count)
+        => new ItemIconContent(
+            GameDataLoader.GetArtifactRarity(artifactTid),
+            GlyphOf(GameDataLoader.GetArtifactName(artifactTid)),
+            count > 1L ? $"x{count:N0}" : "",
+            null);
+
     // 골드 — 등급이 없다. 글자는 'G'.
     public static ItemIconContent ForGold()
         => new ItemIconContent(GlobalRarity.None, "G", "", null);

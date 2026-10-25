@@ -345,7 +345,7 @@ public class MailPresenter : MonoBehaviour
         => DateTimeOffset.FromUnixTimeMilliseconds(unixMs).ToLocalTime().ToString("yyyy-MM-dd HH:mm");
 
     // 줄 왼쪽 아이콘 — 첫 첨부 하나를 그리고, 첨부 종류가 더 있으면 모서리에 '+n'을 적는다.
-    // 순서는 첨부 요약과 같다 — 골드 → 자원 → 캐릭터 → 장비.
+    // 순서는 첨부 요약과 같다 — 골드 → 자원 → 캐릭터 → 장비 → 아티팩트.
     private static ItemIconContent BuildIcon(MailInfo mail)
     {
         var  icons = new List<ItemIconContent>();
@@ -392,6 +392,14 @@ public class MailPresenter : MonoBehaviour
             foreach (EquipInfo equip in mail.Equips)
             {
                 icons.Add(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions));
+            }
+        }
+
+        if (mail.Artifacts != null)
+        {
+            foreach (ArtifactInfo artifact in mail.Artifacts)
+            {
+                icons.Add(ItemIconContent.ForArtifact(artifact.ArtifactTid, artifact.Count));
             }
         }
 
@@ -482,6 +490,17 @@ public class MailPresenter : MonoBehaviour
             }
         }
 
+        // 아티팩트(거래소 구매·반환) — 받으면 아티팩트 칸으로 간다(T-152 · T-181)
+        if (mail.Artifacts != null)
+        {
+            foreach (ArtifactInfo artifact in mail.Artifacts)
+            {
+                GlobalRarity rarity = GameDataLoader.GetArtifactRarity(artifact.ArtifactTid);
+
+                content.Row(UIRichText.Paint(GameDataLoader.GetArtifactName(artifact.ArtifactTid), RarityPalette.Get(rarity)), $"x{artifact.Count:N0}", RarityLabel.Get(rarity), null);
+            }
+        }
+
         if (content.Lines.Count == before)
         {
             content.Row(Lang.Get("UI.Mail.NoAttachment"), "");
@@ -537,6 +556,14 @@ public class MailPresenter : MonoBehaviour
             foreach (EquipInfo equip in mail.Equips)
             {
                 parts.Add(GameDataLoader.GetEquipName(equip.EquipTid));
+            }
+        }
+
+        if (mail.Artifacts != null)
+        {
+            foreach (ArtifactInfo artifact in mail.Artifacts)
+            {
+                parts.Add($"{GameDataLoader.GetArtifactName(artifact.ArtifactTid)} x{artifact.Count:N0}");
             }
         }
 

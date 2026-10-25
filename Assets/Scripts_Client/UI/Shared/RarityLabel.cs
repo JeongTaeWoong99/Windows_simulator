@@ -21,6 +21,7 @@ public static class RarityLabel
         GlobalRarity.Epic      => Lang.Get("UI.Rarity.Epic"),
         GlobalRarity.Legendary => Lang.Get("UI.Rarity.Legendary"),
         GlobalRarity.Mythic    => Lang.Get("UI.Rarity.Mythic"),
+        GlobalRarity.Special   => Lang.Get("UI.Rarity.Special"),
         _                      => rarity.ToString(),
     };
 }

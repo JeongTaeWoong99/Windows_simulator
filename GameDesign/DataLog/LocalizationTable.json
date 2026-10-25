@@ -4150,6 +4150,11 @@
     "EN": "Mythic"
   },
   {
+    "Key": "UI.Rarity.Special",
+    "KR": "스페셜",
+    "EN": "Special"
+  },
+  {
     "Key": "UI.Industry.Farming",
     "KR": "농사",
     "EN": "Farming"
@@ -5113,6 +5118,31 @@
     "Key": "UI.Inventory.AskOpen",
     "KR": "몇 개를 열까?",
     "EN": "How many to open?"
+  },
+  {
+    "Key": "UI.Inventory.Appraise",
+    "KR": "감정",
+    "EN": "Appraise"
+  },
+  {
+    "Key": "UI.Inventory.AskAppraise",
+    "KR": "몇 개를 감정할까? (1개 {0} 골드)",
+    "EN": "How many to appraise? ({0} gold each)"
+  },
+  {
+    "Key": "UI.Inventory.WaitAppraise",
+    "KR": "유물 감정 {0}개",
+    "EN": "Appraise {0} Relic(s)"
+  },
+  {
+    "Key": "UI.Inventory.AppraiseCost",
+    "KR": "감정 비용",
+    "EN": "Appraisal Cost"
+  },
+  {
+    "Key": "UI.Inventory.AppraiseNoGold",
+    "KR": "골드가 부족합니다 — 감정 1개 {0} 골드",
+    "EN": "Not enough gold — {0} gold per appraisal"
   },
   {
     "Key": "UI.Inventory.AskStore",

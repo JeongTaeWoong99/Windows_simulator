@@ -26,6 +26,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly HashSet<int>              _lockedItemTids   = new HashSet<int>(); // 잠긴 자원 종류(TID) — 보유 0개여도 남는다(T-159)
     private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
+    private readonly Dictionary<int, bool>     _artifactCodex    = new Dictionary<int, bool>(); // 도감에 장착한 번호 → 켜짐 (T-181)
+    private readonly List<ItemInfo>            _artifactStacks   = new List<ItemInfo>(); // 아티팩트 칸 — 'ItemId' = 아티팩트 번호 (T-181)
+
+    // 감정 할인 상한(천분율) — 서버 'User.MaxAppraiseDiscountPermille'의 사본이다(Constants에 없다). 서버가 바꾸면 같이 바꾼다
+    private const int MaxAppraiseDiscountPermille = 500;
 
     // ─── 내부 상태 ───
     // 응답을 기다리는 개체 판매 — 'S_EntitySellResponse'에는 개체 ID가 없어 보낸 목록을 여기 둔다('BeginEntitySell').
@@ -420,6 +425,41 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
     }
 
+    // 아티팩트 도감 — 장착한 번호와 켜짐. 켜 둔 번호만 효과가 있다 (T-181)
+    public IReadOnlyDictionary<int, bool> ArtifactCodex => _artifactCodex;
+
+    // 아티팩트 칸 — 서버 저장('EStorageTab.Artifact')이다. 인벤토리 화면에는 탭이 없고 보여 줄 화면은 T-182에서 정한다
+    public IReadOnlyList<ItemInfo> ArtifactStacks => _artifactStacks;
+
+    // 이 유물 1개의 감정 비용 — 기본 비용에 켜 둔 아티팩트의 감정 할인을 붙인다(서버 'User.GetAppraiseCost'와 같은 식).
+    // 0이면 골드 없이 여는 상자다. 실제 차감은 서버가 정한다 — 이 값은 보여 주고 미리 막는 데만 쓴다.
+    public long GetAppraiseCost(int itemId)
+    {
+        long baseCost = GameDataLoader.GetOpenCostGold(itemId);
+
+        if (baseCost <= 0L)
+        {
+            return 0L;
+        }
+
+        int discount = 0;
+
+        foreach (KeyValuePair<int, bool> entry in _artifactCodex)
+        {
+            if (entry.Value
+                && GameDataLoader.TryGetArtifact(entry.Key, out ArtifactTableRow artifact)
+                && artifact.EffectType == UserTraitEffect.AppraiseCostDiscount
+                && artifact.Industry == IndustryType.None)
+            {
+                discount += artifact.EffectValue;
+            }
+        }
+
+        long scale = Constants.WorkSpeedScale;
+
+        return baseCost * (scale - Mathf.Clamp(discount, 0, MaxAppraiseDiscountPermille)) / scale;
+    }
+
     // 특성의 지금 레벨. 올린 적 없으면 'UserTraitTable.BaseLevel', 없는 특성이면 0 (서버 'User.GetTraitLevel'과 같다).
     public int GetTraitLevel(int userTraitTid)
     {
@@ -543,8 +583,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?              EquipDisassembleCompleted; // 장비 분해 성공 (재료는 인벤토리에 이미 반영됐다)
     public event Action<EResultCode>? EquipDisassembleFailed;    // 장비 분해 실패 (거절 사유)
 
-    // 아이템 사용 성공 (얻은 보상 목록 — 지금은 상자 개봉뿐 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
-    public event Action<List<GachaRewardInfo>, bool>? ItemUseCompleted;
+    // 아이템 사용 성공 (쓴 아이템 TID · 얻은 보상 목록 — 상자 개봉·유물 감정 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
+    public event Action<int, List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
 
     public event Action?                        MailsChanged;        // 우편함 캐시 갱신됨 (목록·도착·수령·삭제)
@@ -558,6 +598,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                    AccountLevelChanged; // 계정 레벨·경험치·특성 포인트 갱신됨
     public event Action?                    TraitsChanged;       // 특성 레벨 갱신됨 (로그인 목록 · 레벨 올리기 응답)
     public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
+
+    public event Action? ArtifactsChanged; // 아티팩트 도감·칸 갱신됨 (두 스냅샷 어느 쪽이든)
 
     // 인벤토리 [정렬]·칸 이동 결과 (거절 포함). 성공이면 칸 번호를 캐시에 반영하고 탭의 변경 이벤트를 먼저 발행한 뒤에 온다.
     public event Action<EResultCode>? StorageSlotsResponded;
@@ -678,6 +720,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.AuctionRegisterResponded += OnAuctionRegisterResponded;
         ServerPacketHandler.StorageSlotsReceived     += OnStorageSlotsReceived;
         ServerPacketHandler.WarehouseTransferred     += OnWarehouseTransferred;
+        ServerPacketHandler.ArtifactListReceived     += OnArtifactListReceived;
+        ServerPacketHandler.ArtifactInventoryReceived += OnArtifactInventoryReceived;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -724,6 +768,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.AuctionRegisterResponded -= OnAuctionRegisterResponded;
         ServerPacketHandler.StorageSlotsReceived     -= OnStorageSlotsReceived;
         ServerPacketHandler.WarehouseTransferred     -= OnWarehouseTransferred;
+        ServerPacketHandler.ArtifactListReceived     -= OnArtifactListReceived;
+        ServerPacketHandler.ArtifactInventoryReceived -= OnArtifactInventoryReceived;
     }
 
     #endregion
@@ -1242,7 +1288,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         ApplyItemChanges(res.ItemChangeInfos);
-        ItemUseCompleted?.Invoke(res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
+        ItemUseCompleted?.Invoke(res.ItemTID, res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
     }
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.
@@ -1333,6 +1379,32 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         Notify(TraitsChanged);
+    }
+
+    #endregion
+
+    #region 아티팩트 (ServerPacketHandler 구독)
+
+    // 도감 스냅샷 — 비우고 채운다 (로그인 직후 · 장착 · 켜고 끌 때)
+    private void OnArtifactListReceived(S_ArtifactListResponse res)
+    {
+        _artifactCodex.Clear();
+
+        foreach (ArtifactCodexInfo info in res.Artifacts)
+        {
+            _artifactCodex[info.ArtifactTid] = info.IsActive;
+        }
+
+        Notify(ArtifactsChanged);
+    }
+
+    // 아티팩트 칸 스냅샷 — 비우고 채운다 (로그인 직후 · 감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동)
+    private void OnArtifactInventoryReceived(S_ArtifactInventoryResponse res)
+    {
+        _artifactStacks.Clear();
+        _artifactStacks.AddRange(res.Stacks);
+
+        Notify(ArtifactsChanged);
     }
 
     #endregion

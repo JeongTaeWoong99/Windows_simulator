@@ -505,6 +505,67 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 아티팩트 (T-151 · T-181)
+
+        // 도감 스냅샷 도착 (Handle_S_ArtifactListResponse에서 발행)
+        public static event Action<S_ArtifactListResponse>? ArtifactListReceived;
+
+        // 아티팩트 칸 스냅샷 도착 (Handle_S_ArtifactInventoryResponse에서 발행)
+        public static event Action<S_ArtifactInventoryResponse>? ArtifactInventoryReceived;
+
+        // 도감 장착 결과 도착 (Handle_S_ArtifactEquipResponse에서 발행)
+        public static event Action<S_ArtifactEquipResponse>? ArtifactEquipResponded;
+
+        // 켜고 끄기 결과 도착 (Handle_S_ArtifactActiveResponse에서 발행)
+        public static event Action<S_ArtifactActiveResponse>? ArtifactActiveResponded;
+
+        // 즉시 판매 결과 도착 (Handle_S_ArtifactSellResponse에서 발행)
+        public static event Action<S_ArtifactSellResponse>? ArtifactSold;
+
+        // 도감 — 장착한 번호와 켜짐 (S_ArtifactListResponse 수신 시 자동 호출)
+        // ※ 스냅샷이다 — 로그인 직후 · 장착 · 켜고 끌 때마다 통째로 온다. 클라는 덮어쓴다.
+        [PacketHandler]
+        public static void Handle_S_ArtifactListResponse(ISession session, S_ArtifactListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 도감 {res.Artifacts.Count}종");
+            ArtifactListReceived?.Invoke(res);
+        }
+
+        // 아티팩트 칸 — 서버 저장 'EStorageTab.Artifact' (S_ArtifactInventoryResponse 수신 시 자동 호출)
+        // ※ 스냅샷이다 — 감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동 때마다 통째로 온다. 'ItemInfo.ItemId'는 아티팩트 번호다.
+        [PacketHandler]
+        public static void Handle_S_ArtifactInventoryResponse(ISession session, S_ArtifactInventoryResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 칸 {res.Stacks.Count}칸");
+            ArtifactInventoryReceived?.Invoke(res);
+        }
+
+        // 도감 장착 결과 (S_ArtifactEquipResponse 수신 시 자동 호출) — Ok면 두 스냅샷이 함께 온다
+        [PacketHandler]
+        public static void Handle_S_ArtifactEquipResponse(ISession session, S_ArtifactEquipResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 장착 결과={res.Result}, 번호={res.ArtifactTid}");
+            ArtifactEquipResponded?.Invoke(res);
+        }
+
+        // 켜고 끄기 결과 (S_ArtifactActiveResponse 수신 시 자동 호출) — 실패면 IsActive가 지금 상태다
+        [PacketHandler]
+        public static void Handle_S_ArtifactActiveResponse(ISession session, S_ArtifactActiveResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 켜고 끄기 결과={res.Result}, 번호={res.ArtifactTid}, 켜짐={res.IsActive}");
+            ArtifactActiveResponded?.Invoke(res);
+        }
+
+        // 즉시 판매 결과 (S_ArtifactSellResponse 수신 시 자동 호출) — 칸은 스냅샷, 골드는 S_CurrencyResponse로 따로 온다
+        [PacketHandler]
+        public static void Handle_S_ArtifactSellResponse(ISession session, S_ArtifactSellResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 판매 결과={res.Result}, +{res.GainedGold} G");
+            ArtifactSold?.Invoke(res);
+        }
+
+        #endregion
+
         #region 우편
 
         // 우편함 전체 도착 (Handle_S_MailListResponse에서 발행)
