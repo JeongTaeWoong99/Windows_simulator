@@ -78,7 +78,7 @@ public class InventoryToolPresenter : MonoBehaviour
     [SerializeField, Tooltip("일괄 담기 버튼 (정사각형). OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button bulkSellButton = null!;
 
-    [SerializeField, Tooltip("일괄 담기에서 뺄 분류 — 여러 개를 고른다. 자원 탭에서만 보인다. 항목은 코드가 채운다")]
+    [SerializeField, Tooltip("일괄 담기에서 뺄 분류 — 여러 개를 고른다. 자원 탭(분류) · 장비 탭(아티팩트)에서 보인다. 항목은 코드가 채운다")]
     private CheckDropdownView excludeDropdown = null!;
 
     [SerializeField, Tooltip("탭 줄 — 지금 어느 탭인지 여기서 듣는다")]
@@ -137,6 +137,10 @@ public class InventoryToolPresenter : MonoBehaviour
     private readonly List<bool>      _excludeChecked = new List<bool>();
     private readonly HashSet<string> _excludedGroups = new HashSet<string>();
 
+    // 장비 탭의 [제외] — 항목은 '아티팩트' 하나다(T-151 · 2026-10-25 사용자 요청). 처음엔 체크해 둔다 — 아티팩트는 경매로 비싸게 팔 수 있다.
+    private const string EquipExcludePrefsKey = "Inventory.BulkExcludeArtifacts";
+    private bool _excludeArtifacts = true;
+
     // 일괄 담기가 훑는 자원 TID — 같은 TID가 여러 칸에 있어도 한 번만 담는다('PlayerDataModel.CollectOwnedItemIds').
     private readonly List<int> _ownedItemIds = new List<int>();
 
@@ -179,6 +183,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         BuildExcludeOptions();
         excludeDropdown.Toggled += OnExcludeToggled;
+        _excludeArtifacts = PlayerPrefs.GetInt(EquipExcludePrefsKey, 1) != 0;
 
         sortButton.onClick.AddListener(OnSortClicked);
         bulkSellButton.onClick.AddListener(OnBulkSellClicked);
@@ -270,8 +275,7 @@ public class InventoryToolPresenter : MonoBehaviour
         industryDropdown.SetValueWithoutNotify(industry);
         industryDropdown.RefreshShownValue();
 
-        excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
-        RefreshExcludeHead();
+        ApplyExcludeOptions();
     }
 
     #endregion
@@ -582,7 +586,21 @@ public class InventoryToolPresenter : MonoBehaviour
             _excludeChecked.Add(_excludedGroups.Contains(group));
         }
 
-        excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
+        ApplyExcludeOptions();
+    }
+
+    // [제외] 항목을 지금 탭에 맞게 채운다 — 자원 탭은 분류, 장비 탭은 '아티팩트' 하나 (BuildExcludeOptions · 탭 전환 · 언어 변경).
+    private void ApplyExcludeOptions()
+    {
+        if (tabs.CurrentTab == InventoryTab.Equipment)
+        {
+            excludeDropdown.SetOptions(new List<string> { Lang.Get("UI.Main.Artifact") }, new List<bool> { _excludeArtifacts });
+        }
+        else
+        {
+            excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
+        }
+
         RefreshExcludeHead();
     }
 
@@ -616,6 +634,15 @@ public class InventoryToolPresenter : MonoBehaviour
     // ※ 저장값에는 지금 목록에 없는 분류도 남긴다 — 표에서 잠시 빠졌다 돌아온 분류의 체크를 잃지 않게.
     private void OnExcludeToggled(int index, bool on)
     {
+        if (tabs.CurrentTab == InventoryTab.Equipment)
+        {
+            _excludeArtifacts = on;
+            PlayerPrefs.SetInt(EquipExcludePrefsKey, on ? 1 : 0);
+            RefreshExcludeHead();
+
+            return;
+        }
+
         string group = _excludeGroups[index];
 
         _excludeChecked[index] = on;
@@ -638,9 +665,16 @@ public class InventoryToolPresenter : MonoBehaviour
     {
         int count = 0;
 
-        foreach (bool on in _excludeChecked)
+        if (tabs.CurrentTab == InventoryTab.Equipment)
         {
-            count += on ? 1 : 0;
+            count = _excludeArtifacts ? 1 : 0;
+        }
+        else
+        {
+            foreach (bool on in _excludeChecked)
+            {
+                count += on ? 1 : 0;
+            }
         }
 
         excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.ExcludeNone") : Lang.Format("UI.Tool.ExcludeCount", count));
@@ -734,13 +768,71 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         _cart.AddEntities(System.Array.Empty<long>(), picked);
-        NotifyEntityBulk(Lang.Get("UI.Tool.KindEquip"), "UI.Tool.NEquip", picked.Count, locked, blocked, Lang.Get("UI.Tool.EquipBlocked"));
+
+        int    artifacts = BulkAddArtifacts(limit, out string artifactTail);
+        string kind      = Lang.Get("UI.Tool.KindEquip");
+
+        NotifyEntityBulk(kind, "UI.Tool.NEquip", picked.Count + artifacts, locked, blocked, Lang.Get("UI.Tool.EquipBlocked"), artifactTail);
+    }
+
+    // 장비 탭의 아티팩트 — 고른 등급 이하를 보유 수량 전부 (BulkAddEquips에서 호출 · T-151).
+    //   반환 : 담은 종류 수.  tail : 뺀 것을 알릴 꼬리 문구(없으면 빈 문자열)
+    // ※ [제외]에 '아티팩트'가 체크돼 있으면 하나도 담지 않는다. 도감에 없는 번호(NEW)는 늘 뺀다 — 일괄로 팔면 도감에 남지 않는다.
+    private int BulkAddArtifacts(GlobalRarity limit, out string tail)
+    {
+        tail = "";
+
+        var tids = new List<int>();
+
+        foreach (ItemInfo stack in _data.ArtifactStacks)
+        {
+            if (stack.Count > 0 && !tids.Contains(stack.ItemId) && GameDataLoader.GetArtifactRarity(stack.ItemId) <= limit)
+            {
+                tids.Add(stack.ItemId);
+            }
+        }
+
+        if (tids.Count == 0)
+        {
+            return 0;
+        }
+
+        if (_excludeArtifacts)
+        {
+            tail = " " + Lang.Format("UI.Tool.SkippedWrap", $"{Lang.Get("UI.Main.Artifact")} {Lang.Format("UI.Tool.NItem", tids.Count)}");
+
+            return 0;
+        }
+
+        int added       = 0;
+        int uncollected = 0;
+
+        foreach (int tid in tids)
+        {
+            if (!_data.IsArtifactEquipped(tid))
+            {
+                uncollected++;
+
+                continue;
+            }
+
+            _cart.AddArtifact(tid, _data.GetArtifactCount(tid));
+            added++;
+        }
+
+        if (uncollected > 0)
+        {
+            tail = " " + Lang.Format("UI.Tool.ExcludedWrap", Lang.Format("UI.Tool.UncollectedN", Lang.Format("UI.Tool.NItem", uncollected)));
+        }
+
+        return added;
     }
 
     // 개체 일괄 담기 결과를 알린다 — 뺀 것이 있을 때와 하나도 못 담았을 때만 (BulkAddCharacters · BulkAddEquips).
     // 뺀 것 문구 — " (잠금 2명 · 배치 중 · 장비 착용 · 마지막 캐릭터 1명 제외)". 잠금이 있으면 푸는 방법을 한 줄 덧붙인다.
     //   countKey : 개수 문구 키 — 'UI.Tool.NCharacter'("{0}명") · 'UI.Tool.NEquip'("{0}개")
-    private void NotifyEntityBulk(string kind, string countKey, int added, int locked, int blocked, string blockedReason)
+    //   tail     : 덧붙일 꼬리 문구 — 장비 탭의 아티팩트 제외 사유('BulkAddArtifacts'). 없으면 빈 문자열
+    private void NotifyEntityBulk(string kind, string countKey, int added, int locked, int blocked, string blockedReason, string tail = "")
     {
         var reasons = new List<string>();
 
@@ -756,6 +848,8 @@ public class InventoryToolPresenter : MonoBehaviour
 
         string blockedText = reasons.Count > 0 ? " " + Lang.Format("UI.Tool.ExcludedWrap", string.Join(" · ", reasons)) : "";
 
+        blockedText += tail;
+
         if (locked > 0)
         {
             blockedText += "\n" + Lang.Get("UI.Tool.UnlockHint");
@@ -768,7 +862,7 @@ public class InventoryToolPresenter : MonoBehaviour
             return;
         }
 
-        if (locked + blocked > 0)
+        if (locked + blocked > 0 || tail.Length > 0)
         {
             _wait.RaiseToast(Lang.Format("UI.Tool.Added", kind, Lang.Format(countKey, added)) + blockedText);
         }
@@ -867,9 +961,14 @@ public class InventoryToolPresenter : MonoBehaviour
         // 산업 축이 없는 탭(캐릭터)은 드롭다운을 감춘다 — 골라도 아무 일이 없으면 고장처럼 보인다.
         industryDropdown.gameObject.SetActive(grid.CurrentSupportsIndustryFilter);
 
-        // 분류 제외 · 합치기는 자원 탭에서만 뜻이 있다.
-        excludeDropdown.gameObject.SetActive(tab == InventoryTab.Resource);
+        // 분류 제외는 자원 탭(분류) · 장비 탭(아티팩트)에서, 합치기는 자원 탭에서만 뜻이 있다.
+        excludeDropdown.gameObject.SetActive(tab == InventoryTab.Resource || tab == InventoryTab.Equipment);
         mergeButton.gameObject.SetActive(tab == InventoryTab.Resource);
+
+        if (excludeDropdown.gameObject.activeSelf)
+        {
+            ApplyExcludeOptions();
+        }
 
         ResetFilter();
     }

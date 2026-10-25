@@ -428,8 +428,27 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 아티팩트 도감 — 장착한 번호와 켜짐. 켜 둔 번호만 효과가 있다 (T-181)
     public IReadOnlyDictionary<int, bool> ArtifactCodex => _artifactCodex;
 
-    // 아티팩트 칸 — 서버 저장('EStorageTab.Artifact')이다. 인벤토리 화면에는 탭이 없고 보여 줄 화면은 T-182에서 정한다
+    // 아티팩트 칸 — 서버 저장('EStorageTab.Artifact')이다. 인벤토리에는 탭이 없고 아티팩트 화면(하단 메뉴 [아티팩트])이 보여 준다
     public IReadOnlyList<ItemInfo> ArtifactStacks => _artifactStacks;
+
+    // 이 번호를 도감에 장착했는가 — 켜고 끈 것과 상관없다.
+    public bool IsArtifactEquipped(int artifactTid) => _artifactCodex.ContainsKey(artifactTid);
+
+    // 아티팩트 칸에 있는 이 번호의 수량 — 'ArtifactMaxStack'을 넘어 칸이 나뉘었으면 합친다. 도감에 장착한 것은 세지 않는다.
+    public int GetArtifactCount(int artifactTid)
+    {
+        int count = 0;
+
+        foreach (ItemInfo stack in _artifactStacks)
+        {
+            if (stack.ItemId == artifactTid)
+            {
+                count += stack.Count;
+            }
+        }
+
+        return count;
+    }
 
     // 이 유물 1개의 감정 비용 — 기본 비용에 켜 둔 아티팩트의 감정 할인을 붙인다(서버 'User.GetAppraiseCost'와 같은 식).
     // 0이면 골드 없이 여는 상자다. 실제 차감은 서버가 정한다 — 이 값은 보여 주고 미리 막는 데만 쓴다.
@@ -600,6 +619,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
 
     public event Action? ArtifactsChanged; // 아티팩트 도감·칸 갱신됨 (두 스냅샷 어느 쪽이든)
+    public event Action<EResultCode, int>?  ArtifactEquipCompleted;  // 도감 장착 결과 (번호) — Ok면 두 스냅샷이 함께 온다
+    public event Action<EResultCode, bool>? ArtifactActiveCompleted; // 켜고 끄기 결과 (지금 켜짐)
+    public event Action<EResultCode, long>? ArtifactSellCompleted;   // 즉시 판매 결과 (번 골드 — 잔액은 'CurrencyChanged')
 
     // 인벤토리 [정렬]·칸 이동 결과 (거절 포함). 성공이면 칸 번호를 캐시에 반영하고 탭의 변경 이벤트를 먼저 발행한 뒤에 온다.
     public event Action<EResultCode>? StorageSlotsResponded;
@@ -722,6 +744,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WarehouseTransferred     += OnWarehouseTransferred;
         ServerPacketHandler.ArtifactListReceived     += OnArtifactListReceived;
         ServerPacketHandler.ArtifactInventoryReceived += OnArtifactInventoryReceived;
+        ServerPacketHandler.ArtifactEquipResponded    += OnArtifactEquipResponded;
+        ServerPacketHandler.ArtifactActiveResponded   += OnArtifactActiveResponded;
+        ServerPacketHandler.ArtifactSold              += OnArtifactSold;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -770,6 +795,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.WarehouseTransferred     -= OnWarehouseTransferred;
         ServerPacketHandler.ArtifactListReceived     -= OnArtifactListReceived;
         ServerPacketHandler.ArtifactInventoryReceived -= OnArtifactInventoryReceived;
+        ServerPacketHandler.ArtifactEquipResponded    -= OnArtifactEquipResponded;
+        ServerPacketHandler.ArtifactActiveResponded   -= OnArtifactActiveResponded;
+        ServerPacketHandler.ArtifactSold              -= OnArtifactSold;
     }
 
     #endregion
@@ -1406,6 +1434,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         Notify(ArtifactsChanged);
     }
+
+    // 장착 · 켜고 끄기 · 판매 결과 — 상태는 뒤이어 오는 스냅샷이 바꾼다. 여기서는 결과만 넘긴다(대기 닫기 · 알림).
+    private void OnArtifactEquipResponded(S_ArtifactEquipResponse res)   => ArtifactEquipCompleted?.Invoke(res.Result, res.ArtifactTid);
+    private void OnArtifactActiveResponded(S_ArtifactActiveResponse res) => ArtifactActiveCompleted?.Invoke(res.Result, res.IsActive);
+    private void OnArtifactSold(S_ArtifactSellResponse res)              => ArtifactSellCompleted?.Invoke(res.Result, res.GainedGold);
 
     #endregion
 

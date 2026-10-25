@@ -4095,6 +4095,21 @@
     "EN": "That sort order isn't available on this tab."
   },
   {
+    "Key": "UI.Result.ArtifactAlreadyEquipped",
+    "KR": "이미 도감에 장착한 아티팩트입니다. 남는 것은 판매하거나 경매에 올려 주세요.",
+    "EN": "That artifact is already in your codex. Sell the extras or list them on the auction."
+  },
+  {
+    "Key": "UI.Result.ArtifactNotEquipped",
+    "KR": "도감에 장착하지 않은 아티팩트는 켜고 끌 수 없습니다.",
+    "EN": "Only artifacts in your codex can be turned on or off."
+  },
+  {
+    "Key": "UI.Result.InvalidArtifact",
+    "KR": "아티팩트 요청이 올바르지 않습니다.",
+    "EN": "This artifact request is invalid."
+  },
+  {
     "Key": "UI.Result.StorageSlotPending",
     "KR": "새로 받는 아이템이 들어갈 칸입니다. 잠시 뒤 다시 시도해 주세요.",
     "EN": "A new item is arriving in that slot. Please try again shortly."
@@ -4805,6 +4820,11 @@
     "EN": "Auction"
   },
   {
+    "Key": "UI.Main.Artifact",
+    "KR": "아티팩트",
+    "EN": "Artifacts"
+  },
+  {
     "Key": "UI.Common.Exit",
     "KR": "종료",
     "EN": "Exit"
@@ -5303,6 +5323,11 @@
     "Key": "UI.Tool.LockedN",
     "KR": "잠금 {0}",
     "EN": "{0} locked"
+  },
+  {
+    "Key": "UI.Tool.UncollectedN",
+    "KR": "도감에 없음 {0}",
+    "EN": "{0} not in codex"
   },
   {
     "Key": "UI.Tool.ExcludedWrap",
@@ -6385,6 +6410,241 @@
     "EN": "Gold"
   },
   {
+    "Key": "UI.Artifact.Title",
+    "KR": "아티팩트",
+    "EN": "Artifacts"
+  },
+  {
+    "Key": "UI.Artifact.HelpTitle",
+    "KR": "아티팩트",
+    "EN": "Artifacts"
+  },
+  {
+    "Key": "UI.Artifact.HelpGet",
+    "KR": "유물을 감정하면 나옵니다 — 인벤토리 자원 탭에서 유물을 좌클릭",
+    "EN": "Appraise relics to get them — left-click a relic in the Inventory Resources tab"
+  },
+  {
+    "Key": "UI.Artifact.HelpEquip",
+    "KR": "도감에 장착해야 효과가 붙습니다 — 번호마다 1개, 장착은 되돌릴 수 없습니다",
+    "EN": "Effects apply only once placed in the codex — one per kind, and it can't be undone"
+  },
+  {
+    "Key": "UI.Artifact.HelpToggle",
+    "KR": "장착한 아티팩트는 효과를 켜고 끌 수 있습니다 — 꺼 두면 효과가 없습니다",
+    "EN": "Codex artifacts can be turned on or off — off means no effect"
+  },
+  {
+    "Key": "UI.Artifact.HelpSell",
+    "KR": "남는 것은 우클릭으로 즉시 판매하거나, Ctrl+우클릭으로 경매에 올려 더 비싸게 팝니다",
+    "EN": "Right-click extras to sell instantly, or Ctrl+right-click to list them on the auction for more"
+  },
+  {
+    "Key": "UI.Artifact.Codex",
+    "KR": "도감",
+    "EN": "Codex"
+  },
+  {
+    "Key": "UI.Artifact.EquippedCount",
+    "KR": "장착 {0} / {1}",
+    "EN": "Placed {0} / {1}"
+  },
+  {
+    "Key": "UI.Artifact.FilterAll",
+    "KR": "전체",
+    "EN": "All"
+  },
+  {
+    "Key": "UI.Artifact.FilterEquipped",
+    "KR": "장착",
+    "EN": "Placed"
+  },
+  {
+    "Key": "UI.Artifact.GroupHead",
+    "KR": "{0}   획득 {1} / {2}",
+    "EN": "{0}   Collected {1} / {2}"
+  },
+  {
+    "Key": "UI.Artifact.Unknown",
+    "KR": "???",
+    "EN": "???"
+  },
+  {
+    "Key": "UI.Artifact.UnknownHint",
+    "KR": "아직 얻지 못한 아티팩트입니다",
+    "EN": "You haven't found this artifact yet"
+  },
+  {
+    "Key": "UI.Artifact.Off",
+    "KR": "꺼짐",
+    "EN": "Off"
+  },
+  {
+    "Key": "UI.Artifact.OwnedShort",
+    "KR": "보유 {0}",
+    "EN": "Owned {0}"
+  },
+  {
+    "Key": "UI.Artifact.Holding",
+    "KR": "보유 아티팩트  {0}종 · {1}개",
+    "EN": "Owned Artifacts  {0} kinds · {1}"
+  },
+  {
+    "Key": "UI.Artifact.HoldingEmpty",
+    "KR": "보유한 아티팩트가 없습니다 — 유물을 감정하면 생깁니다",
+    "EN": "No artifacts yet — appraise relics to get some"
+  },
+  {
+    "Key": "UI.Artifact.New",
+    "KR": "NEW",
+    "EN": "NEW"
+  },
+  {
+    "Key": "UI.Artifact.DetailEmpty",
+    "KR": "아티팩트를 고르면 설명이 여기에 뜹니다",
+    "EN": "Select an artifact to see its details here"
+  },
+  {
+    "Key": "UI.Artifact.Effect",
+    "KR": "효과",
+    "EN": "Effect"
+  },
+  {
+    "Key": "UI.Artifact.StateOn",
+    "KR": "장착 · 켜짐",
+    "EN": "Placed · On"
+  },
+  {
+    "Key": "UI.Artifact.StateOff",
+    "KR": "장착 · 꺼짐",
+    "EN": "Placed · Off"
+  },
+  {
+    "Key": "UI.Artifact.StateNone",
+    "KR": "도감에 없음",
+    "EN": "Not in codex"
+  },
+  {
+    "Key": "UI.Artifact.ShowDetail",
+    "KR": "상세 보기",
+    "EN": "Details"
+  },
+  {
+    "Key": "UI.Artifact.Equip",
+    "KR": "도감에 장착",
+    "EN": "Place in Codex"
+  },
+  {
+    "Key": "UI.Artifact.TurnOff",
+    "KR": "효과 끄기",
+    "EN": "Turn Off"
+  },
+  {
+    "Key": "UI.Artifact.TurnOn",
+    "KR": "효과 켜기",
+    "EN": "Turn On"
+  },
+  {
+    "Key": "UI.Artifact.WaitEquip",
+    "KR": "도감 장착",
+    "EN": "Place in Codex"
+  },
+  {
+    "Key": "UI.Artifact.WaitToggle",
+    "KR": "켜고 끄기",
+    "EN": "Turn On/Off"
+  },
+  {
+    "Key": "UI.Artifact.Equipped",
+    "KR": "도감에 장착했습니다 — {0}",
+    "EN": "Placed in codex — {0}"
+  },
+  {
+    "Key": "UI.Artifact.SellHead",
+    "KR": "아티팩트 판매 {0}종",
+    "EN": "Sell Artifacts ({0})"
+  },
+  {
+    "Key": "UI.Artifact.SellEmpty",
+    "KR": "보유 칸을 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다. 비싸게 팔려면 Ctrl+우클릭(경매)",
+    "EN": "Right-click owned artifacts to add — they sell instantly. Ctrl+right-click to list on the auction for more"
+  },
+  {
+    "Key": "UI.Artifact.SellUncollected",
+    "KR": "주의! 도감에 없는 아티팩트 포함 — 팔면 도감에 남지 않습니다",
+    "EN": "Caution! Includes artifacts not in your codex — selling won't record them"
+  },
+  {
+    "Key": "UI.Artifact.AllIndustry",
+    "KR": "전 산업",
+    "EN": "All industries"
+  },
+  {
+    "Key": "UI.Artifact.EffectSpeed",
+    "KR": "{0} 작업속도 +{1}",
+    "EN": "{0} work speed +{1}"
+  },
+  {
+    "Key": "UI.Artifact.EffectYield",
+    "KR": "{0} 산출량 +{1}",
+    "EN": "{0} yield +{1}"
+  },
+  {
+    "Key": "UI.Artifact.EffectAppraise",
+    "KR": "감정 비용 −{0}",
+    "EN": "Appraisal cost −{0}"
+  },
+  {
+    "Key": "UI.Artifact.EffectRelic",
+    "KR": "유물 발견 확률 +{0}",
+    "EN": "Relic find chance +{0}"
+  },
+  {
+    "Key": "UI.Artifact.Window",
+    "KR": "아티팩트 — 도감에 장착",
+    "EN": "Artifact — Place in Codex"
+  },
+  {
+    "Key": "UI.Artifact.AlreadyEquipped",
+    "KR": "이미 도감에 장착함",
+    "EN": "Already in Codex"
+  },
+  {
+    "Key": "UI.Artifact.OpenCodex",
+    "KR": "도감 보기",
+    "EN": "View Codex"
+  },
+  {
+    "Key": "UI.Artifact.EquipHint",
+    "KR": "장착하면 효과가 켜집니다 — 번호마다 1개, 되돌릴 수 없습니다",
+    "EN": "Placing turns its effect on — one per kind, and it can't be undone"
+  },
+  {
+    "Key": "UI.Artifact.SellHint",
+    "KR": "남는 것은 우클릭 즉시 판매 · Ctrl+우클릭 경매",
+    "EN": "Right-click extras to sell · Ctrl+right-click to auction"
+  },
+  {
+    "Key": "UI.Artifact.NoLock",
+    "KR": "아티팩트는 아직 잠글 수 없습니다",
+    "EN": "Artifacts can't be locked yet"
+  },
+  {
+    "Key": "UI.Artifact.NoMove",
+    "KR": "아티팩트 칸은 아직 옮길 수 없습니다",
+    "EN": "Artifact slots can't be moved yet"
+  },
+  {
+    "Key": "UI.Sell.KindArtifact",
+    "KR": "아티팩트 판매 {0}종",
+    "EN": "Sell Artifacts ({0})"
+  },
+  {
+    "Key": "UI.Sell.ArtifactNoShard",
+    "KR": "아티팩트는 아직 마석으로 분해할 수 없습니다 — 분해는 장비만",
+    "EN": "Artifacts can't be disassembled into shards yet — gear only"
+  },
+  {
     "Key": "UI.Auction.SortPriceAsc",
     "KR": "단가 낮은순",
     "EN": "Price: Low to High"
@@ -6833,6 +7093,11 @@
     "Key": "UI.Auction.InstantVia",
     "KR": "{0} G — 인벤토리 [판매]",
     "EN": "{0} G — Inventory [Sell]"
+  },
+  {
+    "Key": "UI.Auction.InstantViaArtifact",
+    "KR": "{0} G — 아티팩트 [판매]",
+    "EN": "{0} G — Artifacts [Sell]"
   },
   {
     "Key": "UI.Auction.Search",

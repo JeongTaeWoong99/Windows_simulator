@@ -9,6 +9,7 @@ public enum SellCartKind
     Item,      // 자원 — 키는 TID
     Character, // 캐릭터 — 키는 개체 번호
     Equip,     // 장비 — 키는 개체 번호
+    Artifact,  // 아티팩트 — 키는 아티팩트 번호(장비 탭에 함께 보인다 · T-151)
 }
 
 // 판매 목록의 한 줄. 담긴 자원 한 종류 또는 개체 하나를 보여 주고 빼기 버튼을 갖는다.

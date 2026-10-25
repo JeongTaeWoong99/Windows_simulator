@@ -11,7 +11,7 @@ using UnityEngine.UI;
 // ■ 열 때 세 가지를 받는다 — 요약 · 가격대 · 일별 시세. 셋 다 빈도 제한에 든다(요약은 막 받은 것이 있으면 아낀다).
 //   대기는 하나로 걸고 세 응답이 다 와야 닫는다.
 // ■ [이 아이템 매물 보기] → 검색 탭이 그 아이템 매물만 찾는다 · [팔러 가기] → 판매 탭 + 등록 창(그 종류의 첫 물건).
-//   아티팩트는 이 창에서 올리지 않는다 — [팔러 가기]를 잠근다.
+//   아티팩트도 [팔러 가기]로 등록 창을 연다(T-151 · 2026-10-25) — 아티팩트 칸에 있는 것만 오른다.
 public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 {
     [CenterHeader("빈 화면")]
@@ -332,7 +332,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         subText.text   = $"{RarityLabel.Get(rarity)}{UIRichText.Dot}{AuctionText.FormatSub(_kind, _tid)}";
 
         showListingsButton.interactable = _waitHandle == null;
-        sellButton.interactable         = _waitHandle == null && _kind != EAuctionKind.Artifact;
+        sellButton.interactable         = _waitHandle == null;
 
         RefreshSummary();
 

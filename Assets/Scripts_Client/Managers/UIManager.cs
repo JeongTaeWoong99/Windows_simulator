@@ -25,7 +25,7 @@ public enum MainScreen
 }
 
 // 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
-// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Hub·#Auction·!Login)와
+// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Hub·#Auction·#Artifact·!Login)와
 // 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
 //
 // ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
@@ -91,6 +91,10 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("경매장 — !Overlay Canvas 안의 #Auction Canvas. 하단 메뉴 [경매장]으로 열고 안쪽 [X]·Esc로 닫는다")]
     private AuctionCanvasView auctionCanvas = null!;
 
+    // ※ 경매장 바로 다음 형제다 — 같은 넓이 · 같은 차단이고, 둘은 함께 열리지 않는다('ShowArtifact' · 'ShowAuction').
+    [SerializeField, Tooltip("아티팩트 화면 — !Overlay Canvas 안의 #Artifact Canvas. 하단 메뉴 [아티팩트]로 열고 안쪽 [X]로 닫는다")]
+    private ArtifactCanvasView artifactCanvas = null!;
+
     [CenterHeader("사이드 2개 캔버스")]
     [SerializeField, Tooltip("상태 캔버스 — 위젯의 반대편. 메인 캔버스와 함께 여닫힌다")]
     private StateCanvasView stateCanvas = null!;
@@ -112,6 +116,7 @@ public class UIManager : MonoService<UIManager>
     public InventoryCanvasView Inventory => inventoryCanvas;
     public HubCanvasView       Hub       => hubCanvas;
     public AuctionCanvasView   Auction   => auctionCanvas;
+    public ArtifactCanvasView  Artifact  => artifactCanvas;
     public WidgetCanvasView    Widget    => widgetCanvas;
 
     // 지금 '#Main Canvas'에 떠 있는 화면. 전부 닫힌 상태에서도 "다음에 열면 이것"을 뜻한다
@@ -125,7 +130,8 @@ public class UIManager : MonoService<UIManager>
         stateCanvas.IsShown     ||
         inventoryCanvas.IsShown ||
         hubCanvas.IsShown       ||
-        auctionCanvas.IsOpen;
+        auctionCanvas.IsOpen    ||
+        artifactCanvas.IsOpen;
 
     // 필수 참조 검증 → 메인 화면 불변식 정리 (Unity 메시지)
     // ※ 이 매니저는 다른 서비스를 조회하지 않는다 — 인스펙터 참조만 쓰므로 확보 단계가 없다.
@@ -137,6 +143,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
         this.RequireRef(hubCanvas,     nameof(hubCanvas));
         this.RequireRef(auctionCanvas, nameof(auctionCanvas));
+        this.RequireRef(artifactCanvas, nameof(artifactCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
         this.RequireRef(amountInput,   nameof(amountInput));
         this.RequireRef(confirm,       nameof(confirm));
@@ -309,6 +316,7 @@ public class UIManager : MonoService<UIManager>
         inventoryCanvas.Show(false);
         hubCanvas.Show(false);
         auctionCanvas.Show(false);
+        artifactCanvas.Show(false);
         stateCanvas.Show(false);
         mainCanvas.Show(false);
 
@@ -346,7 +354,32 @@ public class UIManager : MonoService<UIManager>
 
     // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]).
     // ※ 토글이 아니다 — 열리면 하단 메뉴가 가려져 같은 버튼을 다시 누를 수 없다. 닫기는 경매장 안에서 한다.
-    public void ShowAuction(bool on) => auctionCanvas.Show(on);
+    // ※ 아티팩트 화면이 열려 있으면 닫는다 — 같은 자리를 덮는 화면이라 둘이 겹치면 아래 것이 가려진 채 남는다.
+    public void ShowAuction(bool on)
+    {
+        if (on)
+        {
+            artifactCanvas.Show(false);
+        }
+
+        auctionCanvas.Show(on);
+    }
+
+    #endregion
+
+    #region 아티팩트 — 화면 전체
+
+    // 아티팩트 화면을 열고 닫는다 (하단 메뉴 [아티팩트] · 화면 안 [X]). 경매장과 같은 이유로 토글이 아니다.
+    // ※ 경매장이 열려 있으면 닫는다 — 'ShowAuction'과 짝이다.
+    public void ShowArtifact(bool on)
+    {
+        if (on)
+        {
+            auctionCanvas.Show(false);
+        }
+
+        artifactCanvas.Show(on);
+    }
 
     #endregion
 
@@ -365,6 +398,12 @@ public class UIManager : MonoService<UIManager>
     public void AskAmount(int itemId, int maxCount, string question, Action<int> onConfirm)
     {
         amountInput.Open(itemId, maxCount, question, onConfirm);
+    }
+
+    // 자원이 아닌 것(아티팩트)의 수량을 묻는다 — 이름을 직접 넘긴다.
+    public void AskAmount(string subject, int maxCount, string question, Action<int> onConfirm)
+    {
+        amountInput.Open(subject, maxCount, question, onConfirm);
     }
 
     // 예/아니오를 묻고, 확인을 누르면 'onConfirm'을 부른다 (취소면 부르지 않는다).

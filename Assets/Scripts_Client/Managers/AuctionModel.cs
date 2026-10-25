@@ -443,6 +443,14 @@ public class AuctionModel : MonoService<AuctionModel>
         ClientLogger.Info(ClientLogger.Send, $"경매 등록 요청 — 자원 {itemTid} x{count}, 단가 {unitPrice}");
     }
 
+    // 아티팩트를 수량으로 올린다 — 아티팩트 칸에서 빠진다(도감에 장착한 것은 칸에 없다) (AuctionRegisterPresenter가 호출 · T-151).
+    // ※ 번호는 'ItemTid' 자리에 싣는다('C_AuctionRegisterRequest' 주석).
+    public void RegisterArtifact(int artifactTid, int count, long unitPrice)
+    {
+        _network.Send(new C_AuctionRegisterRequest { Kind = EAuctionKind.Artifact, ItemTid = artifactTid, Count = count, UnitPrice = unitPrice });
+        ClientLogger.Info(ClientLogger.Send, $"경매 등록 요청 — 아티팩트 {artifactTid} x{count}, 단가 {unitPrice}");
+    }
+
     // 장비 개체 하나를 올린다 — 인챈트까지 그대로 넘어간다 (AuctionRegisterPresenter가 호출).
     public void RegisterEquip(long equipId, long unitPrice)
     {

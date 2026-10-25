@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 
-// 장비 탭 — 보유 장비를 칸으로 내놓는다.
+// 장비 탭 — 보유 장비를 칸으로 내놓는다. 인벤토리 격자에서는 **아티팩트도 함께** 내놓는다(T-151).
 //
 // ※ 목록은 로그인 스냅샷('S_EquipListResponse')이 원본이고, 지급·장착·해제는 개체 단위 푸시
 //   ('S_EquipSyncResponse')로 온다 — 둘 다 'EquipsChanged' 하나로 온다.
@@ -28,14 +28,31 @@ using MikaProtocol;
 // ■ 능력치 칸 (T-095)
 //   칸 수는 장비 등급('EquipLabel.GetStatSlotCount' — 1·1·2·2·3·3), 칸 색은 장비의 인챈트 등급 하나다(이슈 #46).
 //   옵션은 'EquipInfo.EnchantOptions'에서 'EquipLabel.ReadStatOptions'로 읽는다(경매장 매물 줄도 같은 함수를 쓴다).
+//
+// ■ 아티팩트도 장비 칸에 보인다 (2026-10-25 사용자 결정 · 서버 기획 동의 · T-151)
+//   유물을 감정해 나온 아티팩트는 장비 탭에서 장비와 같은 조작으로 다룬다(우클릭 판매 · Ctrl+우클릭 경매).
+//   좌클릭만 다르다 — 큐브 창 대신 아티팩트 창([도감에 장착])이 열린다('InventoryGridPresenter').
+//   ⚠️ 서버는 아직 아티팩트를 장비와 다른 **아티팩트 칸**(칸 번호 · 한도 따로)에 둔다 — 장비 칸으로 합치는 일은 서버 이슈로 넘겼다.
+//   그때까지는 **장비의 마지막 칸 뒤에 번호별로 합쳐 이어 붙인다**. 그래서 아티팩트 칸은 끌어 옮길 수 없고([정렬]도 장비만 줄 세운다),
+//   장비 칸 수 + 아티팩트 종류 수가 격자를 넘으면 넘친 것은 보이지 않는다.
+//   칸의 'Key'는 **음수 = 아티팩트 번호의 음수**다('ArtifactKey') — 장비 개체 번호(DB, 양수)와 겹치지 않는다.
+//   창고 격자에는 붙이지 않는다 — 아티팩트는 창고에 맡길 수 없다(서버).
 public class EquipSlotSource : InventorySlotSource
 {
+    // 칸 Key ↔ 아티팩트 번호 — 음수가 아티팩트다(클래스 머리 주석).
+    public static bool IsArtifactKey(long key)     => key < 0L;
+    public static int  ArtifactTidOf(long key)     => (int)-key;
+    public static long ArtifactKey(int artifactTid) => -artifactTid;
+
     private readonly PlayerDataModel _data;
 
     // 능력치 칸 버퍼 — 칸 200개를 그릴 때마다 새로 만들지 않는다.
     // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
     private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
+
+    // 아티팩트 번호 — 처음 나온 칸 순서. 'Fill'이 매번 다시 채운다(매번 새로 만들지 않는다).
+    private readonly List<int> _artifactOrder = new List<int>();
 
     public EquipSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
@@ -63,17 +80,73 @@ public class EquipSlotSource : InventorySlotSource
 
             into.Add(new PlacedSlot(slot, equip.SlotPosition));
         }
+
+        if (Container == EContainer.Inventory)
+        {
+            FillArtifacts(into);
+        }
     }
+
+    // 아티팩트를 번호별로 합쳐 장비의 마지막 칸 뒤에 이어 붙인다 (Fill에서 호출 — 클래스 머리 주석).
+    // ※ 칸 번호는 화면 자리일 뿐 서버 번호가 아니다 — 그래서 아티팩트 칸은 끌지 못하게 격자가 막는다.
+    private void FillArtifacts(List<PlacedSlot> into)
+    {
+        int next = -1;
+
+        foreach (PlacedSlot placed in into)
+        {
+            next = System.Math.Max(next, placed.Slot);
+        }
+
+        _artifactOrder.Clear();
+
+        foreach (ItemInfo stack in _data.ArtifactStacks)
+        {
+            if (stack.Count > 0 && !_artifactOrder.Contains(stack.ItemId))
+            {
+                _artifactOrder.Add(stack.ItemId);
+            }
+        }
+
+        foreach (int tid in _artifactOrder)
+        {
+            int count = _data.GetArtifactCount(tid);
+
+            var slot = new SlotData(
+                ArtifactKey(tid),
+                GameDataLoader.GetArtifactName(tid),
+                Lang.Format("UI.Inventory.CountUnit", count),
+                GameDataLoader.GetArtifactRarity(tid),
+                null); // 🎨 아이콘 그림 전 — 칸이 이름 첫 글자로 그린다
+
+            into.Add(new PlacedSlot(slot, ++next));
+        }
+    }
+
+    // 아티팩트는 칸 수량이 늘면 반짝인다 — 장비는 늘 1이다 (획득 감지가 호출).
+    protected override int AmountOf(long key) => IsArtifactKey(key) ? _data.GetArtifactCount(ArtifactTidOf(key)) : 1;
+
+    // 도감에 없는 번호는 칸 위에 'NEW' — 팔면 도감에 남지 않는다 (격자가 매번 그릴 때 호출).
+    public override string? GetBadge(long key)
+        => IsArtifactKey(key) && !_data.IsArtifactEquipped(ArtifactTidOf(key)) ? Lang.Get("UI.Artifact.New") : null;
 
     // 장비의 대상 산업 (Matches에서 호출). 테이블에 없는 TID는 어느 산업에도 속하지 않는다.
     protected override bool MatchesIndustry(SlotData slot, byte industry)
-        => GameDataLoader.TryGetEquip(_data.GetEquipTid(slot.Key), out EquipTableRow row) && (byte)row.Industry == industry;
+    {
+        if (IsArtifactKey(slot.Key))
+        {
+            return GameDataLoader.TryGetArtifact(ArtifactTidOf(slot.Key), out ArtifactTableRow artifact) && (byte)artifact.Industry == industry;
+        }
+
+        return GameDataLoader.TryGetEquip(_data.GetEquipTid(slot.Key), out EquipTableRow row) && (byte)row.Industry == industry;
+    }
 
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
-    public override bool IsAway(long key) => _data.IsEquipped(key);
+    public override bool IsAway(long key) => !IsArtifactKey(key) && _data.IsEquipped(key);
 
     // 잠긴 장비 — 판매·경매 등록에서 빠진다(T-137).
-    public override bool IsLocked(long key) => _data.FindEquip(key)?.IsLocked == true;
+    // ※ 아티팩트는 잠금이 없다(서버 미지원 — 서버 이슈로 넘겼다).
+    public override bool IsLocked(long key) => !IsArtifactKey(key) && _data.FindEquip(key)?.IsLocked == true;
 
     // 이 장비의 능력치 칸 — 칸마다 박힌 옵션의 등급, 빈 칸은 'None' (격자가 매번 그릴 때 호출).
     public override IReadOnlyList<GlobalRarity>? GetStatSockets(long key)
@@ -100,6 +173,11 @@ public class EquipSlotSource : InventorySlotSource
     // 칸의 '배' 마크는 장착 여부만 말한다 — 누구의 어느 부위인지는 여기서만 알 수 있다.
     public override TooltipContent? BuildTooltip(long key, int slot)
     {
+        if (IsArtifactKey(key))
+        {
+            return ArtifactText.BuildTooltip(_data, ArtifactTidOf(key), withControls: true);
+        }
+
         EquipInfo? equip = FindEquip(key);
 
         if (equip == null)
@@ -151,12 +229,14 @@ public class EquipSlotSource : InventorySlotSource
     //   'S_EquipSyncResponse'로 와서 'EquipsChanged' 하나로 합쳐지기 때문이다.
     protected override void OnSubscribe()
     {
-        _data.EquipsChanged += Rebuild;
+        _data.EquipsChanged    += Rebuild;
+        _data.ArtifactsChanged += Rebuild; // 아티팩트 칸 · 도감(NEW)
     }
 
     // 구독 해제 (Unsubscribe에서 호출)
     protected override void OnUnsubscribe()
     {
-        _data.EquipsChanged -= Rebuild;
+        _data.EquipsChanged    -= Rebuild;
+        _data.ArtifactsChanged -= Rebuild;
     }
 }

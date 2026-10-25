@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-10-25 (토스트는 안내가 난 열의 가운데 — 출처: 흔들 대상 → 방금 누른 버튼 → 커서 밑 UI · 열 밖이면 화면 가운데) · 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-10-25 (아티팩트 `#Artifact Canvas`를 경매장 다음 형제로 — 경매장과 같은 예외 · T-151) · 2026-10-25 (토스트는 안내가 난 열의 가운데 — 출처: 흔들 대상 → 방금 누른 버튼 → 커서 밑 UI · 열 밖이면 화면 가운데) · 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -57,19 +57,20 @@
 ```
 !Overlay Canvas                                 화면에서
 ├─ [0] #Auction Canvas (MAIN VIEW)          ← 맨 뒤 — 경매장(화면 전체). 자기가 띄우는 팝업·툴팁이 전부 그 위에 떠야 한다 (T-147)
-├─ [1] Coin Fly Presenter     (↓ SUB VIEW)  ← 골드 동전 — 열을 건너 날아 3열·경매장 위, 팝업 아래. 막지 않는다 (2026-10-23)
-├─ [2] Gacha Result Presenter (↓ SUB VIEW)  ┐
-├─ [3] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
-├─ [4] Confirm Presenter      (↓ SUB VIEW)  ┘
-├─ [5] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
-├─ [6] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
-├─ [7] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
-├─ [8] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
-├─ [9] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
-└─ [10] Tooltip Presenter    (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
+├─ [1] #Artifact Canvas (MAIN VIEW)         ← 아티팩트 화면 — 경매장과 같은 자리·같은 예외. 둘 중 하나만 열린다 (2026-10-25)
+├─ [2] Coin Fly Presenter    (↓ SUB VIEW)  ← 골드 동전 — 열을 건너 날아 3열·경매장 위, 팝업 아래. 막지 않는다 (2026-10-23)
+├─ [3] Gacha Result Presenter (↓ SUB VIEW)  ┐
+├─ [4] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
+├─ [5] Confirm Presenter      (↓ SUB VIEW)  ┘
+├─ [6] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
+├─ [7] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
+├─ [8] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
+├─ [9] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
+├─ [10] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [11] Tooltip Presenter    (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
 
-> **경매장만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,
+> **경매장(과 아티팩트)만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,
 > `CanvasGroup`이 아니라 **`SetActive`** 로 여닫는다(다시 켜 줄 손 `UIManager.ShowAuction`이 밖에 있다 — 로그인과 같은 이유).
 > 근거는 [`Auction 규칙.md`](<../Auction/Auction 규칙.md>)의 "자리".
 

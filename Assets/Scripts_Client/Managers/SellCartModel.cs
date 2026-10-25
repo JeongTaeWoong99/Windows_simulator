@@ -5,6 +5,7 @@ using MikaProtocol;
 using UnityEngine;
 
 // 판매하려고 담아 둔 것들의 목록 — "장바구니". 자원(수량) · 캐릭터 · 장비(1개씩) 중 **한 종류만** 담는다.
+// 아티팩트(번호 · 수량)는 장비 탭에 함께 보여서 **장비와 같은 종류**로 센다(T-151 · 2026-10-25 사용자 결정).
 //
 // ■ 왜 매니저인가
 // 인벤토리 격자('InventoryGridPresenter')는 어느 칸에 담김 표시를 켤지 알아야 하고,
@@ -30,6 +31,9 @@ using UnityEngine;
 //   개체도 같은 이유로 따라간다 — 사라졌거나(경매 등록·판매) 일하게 된(배치·착용) 개체는 목록에서 뺀다.
 //   서버는 일하는 캐릭터·끼고 있는 장비·마지막 캐릭터를 거절하고, 하나라도 걸리면 개체 판매 전체가 막힌다.
 //   ※ 담기 전에 막는 일(사유 알림)은 격자가 한다('EntityBlockText'). 여기는 담긴 뒤의 변화만 따라간다.
+//
+// ■ 아티팩트는 패킷이 또 따로다 — 'C_ArtifactSellRequest'(번호 · 수량). 서버 저장도 장비와 다른 아티팩트 칸이다.
+//   장비와 함께 담겼으면 [판매] 한 번에 두 패킷이 나간다(자원 + 개체와 같은 방식). 분해는 아직 장비만 된다(서버 미지원).
 public class SellCartModel : MonoService<SellCartModel>
 {
     // 담긴 항목들. 'ItemInfo.Count'는 "팔 개수"(델타)다 — 보유량이 아니다.
@@ -39,20 +43,25 @@ public class SellCartModel : MonoService<SellCartModel>
     private readonly List<long> _characterIds = new List<long>();
     private readonly List<long> _equipIds     = new List<long>();
 
-    public IReadOnlyList<ItemInfo> Entries      => _entries;
+    // 담긴 아티팩트 — 'ArtifactInfo.Count'는 팔 개수다(보유량이 아니다).
+    private readonly List<ArtifactInfo> _artifacts = new List<ArtifactInfo>();
+
+    public IReadOnlyList<ItemInfo>     Entries      => _entries;
+    public IReadOnlyList<ArtifactInfo> Artifacts    => _artifacts;
     public IReadOnlyList<long>     CharacterIds => _characterIds;
     public IReadOnlyList<long>     EquipIds     => _equipIds;
 
     // 담긴 줄 수 — 자원 종류 + 개체 수. 비어 있으면 판매 버튼을 잠근다.
-    public int Count => _entries.Count + _characterIds.Count + _equipIds.Count;
+    public int Count => _entries.Count + _characterIds.Count + _equipIds.Count + _artifacts.Count;
 
-    public bool HasItems    => _entries.Count > 0;
-    public bool HasEntities => _characterIds.Count > 0 || _equipIds.Count > 0;
+    public bool HasItems     => _entries.Count > 0;
+    public bool HasEntities  => _characterIds.Count > 0 || _equipIds.Count > 0;
+    public bool HasArtifacts => _artifacts.Count > 0;
 
     // 지금 담긴 종류 — 비어 있으면 null. 한 종류만 담기므로 하나로 정해진다.
     public SellCartKind? Kind => _entries.Count > 0      ? SellCartKind.Item
                                : _characterIds.Count > 0 ? SellCartKind.Character
-                               : _equipIds.Count > 0     ? SellCartKind.Equip
+                               : _equipIds.Count > 0 || _artifacts.Count > 0 ? SellCartKind.Equip
                                : null;
 
     // 담긴 장비를 모두 분해하면 받을 재료 수량 · 그 재료 TID('DisassembleTable'). 장비가 없으면 0.
@@ -66,6 +75,9 @@ public class SellCartModel : MonoService<SellCartModel>
 
     // Rare 이상이 담겨 있나. 오판매를 막으려고 화면이 경고를 띄우는 근거다.
     public bool HasHighRarity { get; private set; }
+
+    // 도감에 없는 아티팩트(NEW)가 담겨 있나 — 팔면 도감에 남지 않아 화면이 경고한다.
+    public bool HasUncollectedArtifact { get; private set; }
 
     // 담긴 성장 개체 수 — ★ 캐릭터 · 인챈트 장비(T-170). 다시 키우기 어려워 화면이 몇 개인지 경고한다.
     public int GrownCount { get; private set; }
@@ -123,6 +135,7 @@ public class SellCartModel : MonoService<SellCartModel>
         _data.CharactersChanged       += OnEntitiesChanged;
         _data.EquipsChanged           += OnEntitiesChanged;
         _data.WorkStationSlotsChanged += OnEntitiesChanged;
+        _data.ArtifactsChanged        += OnArtifactsChanged;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -138,6 +151,7 @@ public class SellCartModel : MonoService<SellCartModel>
         _data.CharactersChanged       -= OnEntitiesChanged;
         _data.EquipsChanged           -= OnEntitiesChanged;
         _data.WorkStationSlotsChanged -= OnEntitiesChanged;
+        _data.ArtifactsChanged        -= OnArtifactsChanged;
     }
 
     #endregion
@@ -304,6 +318,86 @@ public class SellCartModel : MonoService<SellCartModel>
     public bool ContainsCharacter(long characterId) => _characterIds.Contains(characterId);
     public bool ContainsEquip(long equipId)         => _equipIds.Contains(equipId);
 
+    // 이 아티팩트를 'count'개 담는다 — 이미 담겨 있으면 수량을 덮어쓴다('Add'와 같은 이유).
+    // ※ 장비와 같은 종류라 담긴 장비는 그대로 둔다(클래스 머리 주석).
+    public void AddArtifact(int artifactTid, int count)
+    {
+        int owned = _data.GetArtifactCount(artifactTid);
+
+        if (owned <= 0)
+        {
+            ClientLogger.Warn(ClientLogger.UI, $"보유하지 않은 아티팩트 {artifactTid}를 판매 목록에 담으려 했다.", this);
+
+            return;
+        }
+
+        ClearOtherKinds(SellCartKind.Equip);
+
+        int amount = Mathf.Clamp(count, 1, owned);
+        int index  = FindArtifactIndex(artifactTid);
+
+        if (index >= 0)
+        {
+            _artifacts[index].Count = amount;
+        }
+        else
+        {
+            _artifacts.Add(new ArtifactInfo { ArtifactTid = artifactTid, Count = amount });
+        }
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 이 아티팩트를 뺀다. 담겨 있지 않으면 아무 일도 하지 않는다.
+    public void RemoveArtifact(int artifactTid)
+    {
+        int index = FindArtifactIndex(artifactTid);
+
+        if (index < 0)
+        {
+            return;
+        }
+
+        _artifacts.RemoveAt(index);
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    public bool ContainsArtifact(int artifactTid) => FindArtifactIndex(artifactTid) >= 0;
+
+    // 아티팩트만 비운다 (아티팩트 판매 성공 후).
+    public void ClearArtifacts()
+    {
+        if (_artifacts.Count == 0)
+        {
+            return;
+        }
+
+        _artifacts.Clear();
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
+    // 아티팩트 판매 요청에 실을 목록 — 패킷이 들고 나가므로 사본이다('ToRequestItems'와 같은 이유).
+    public List<ArtifactInfo> ToRequestArtifacts()
+    {
+        var list = new List<ArtifactInfo>(_artifacts.Count);
+
+        foreach (ArtifactInfo entry in _artifacts)
+        {
+            list.Add(new ArtifactInfo { ArtifactTid = entry.ArtifactTid, Count = entry.Count });
+        }
+
+        return list;
+    }
+
+    // 아티팩트 1개의 즉시 판매가 — 기준가 × 즉시 판매율. 테이블에 없으면 0.
+    public static long ArtifactInstantPrice(int artifactTid)
+        => GameDataLoader.TryGetArtifact(artifactTid, out ArtifactTableRow row) ? AuctionModel.InstantSellPrice(row.BasePrice) : 0L;
+
     // 목록을 통째로 비운다.
     public void Clear()
     {
@@ -315,6 +409,7 @@ public class SellCartModel : MonoService<SellCartModel>
         _entries.Clear();
         _characterIds.Clear();
         _equipIds.Clear();
+        _artifacts.Clear();
 
         Recalculate();
         Changed?.Invoke();
@@ -363,15 +458,16 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 장비만 비운다 (장비 탭 일괄 담기가 범위를 다시 잡을 때).
+    // 장비 탭 것만 비운다 — 장비 · 아티팩트 (장비 탭 일괄 담기가 범위를 다시 잡을 때).
     public void ClearEquips()
     {
-        if (_equipIds.Count == 0)
+        if (_equipIds.Count == 0 && _artifacts.Count == 0)
         {
             return;
         }
 
         _equipIds.Clear();
+        _artifacts.Clear();
 
         Recalculate();
         Changed?.Invoke();
@@ -464,6 +560,33 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
+    // 아티팩트 칸·도감이 바뀌었다 — 담긴 수량을 보유량 안으로 줄이고, 다 빠진 번호는 뺀다 (PlayerDataModel.ArtifactsChanged 구독)
+    // ※ 장착도 여기로 온다 — 칸에서 1개가 빠지고 NEW가 풀린다. 그래서 수량이 그대로여도 다시 센다.
+    private void OnArtifactsChanged()
+    {
+        if (_artifacts.Count == 0)
+        {
+            return;
+        }
+
+        for (int i = _artifacts.Count - 1; i >= 0; i--)
+        {
+            int owned = _data.GetArtifactCount(_artifacts[i].ArtifactTid);
+
+            if (owned <= 0)
+            {
+                _artifacts.RemoveAt(i);
+            }
+            else if (_artifacts[i].Count > owned)
+            {
+                _artifacts[i].Count = owned;
+            }
+        }
+
+        Recalculate();
+        Changed?.Invoke();
+    }
+
     // 합계 골드 · 분해 재료 · 상위 등급 포함 여부 · 성장 개체 수를 다시 센다 (담기·빼기·비우기·인벤 변경에서 호출).
     private void Recalculate()
     {
@@ -526,8 +649,21 @@ public class SellCartModel : MonoService<SellCartModel>
             }
         }
 
-        TotalPrice    = total;
-        HasHighRarity = hasHighRarity;
+        bool uncollected = false;
+
+        foreach (ArtifactInfo entry in _artifacts)
+        {
+            total += ArtifactInstantPrice(entry.ArtifactTid) * entry.Count;
+
+            if (!_data.IsArtifactEquipped(entry.ArtifactTid))
+            {
+                uncollected = true;
+            }
+        }
+
+        TotalPrice             = total;
+        HasHighRarity          = hasHighRarity;
+        HasUncollectedArtifact = uncollected;
         GrownCount    = grownCount;
         TotalShards   = shards;
         ShardItemId   = shardItemId;
@@ -549,8 +685,12 @@ public class SellCartModel : MonoService<SellCartModel>
         if (keep != SellCartKind.Equip)
         {
             _equipIds.Clear();
+            _artifacts.Clear();
         }
     }
+
+    // 담긴 아티팩트에서 이 번호의 자리를 찾는다. 없으면 -1.
+    private int FindArtifactIndex(int artifactTid) => _artifacts.FindIndex(entry => entry.ArtifactTid == artifactTid);
 
     // 담긴 목록에서 이 아이템의 자리를 찾는다. 없으면 -1.
     private int FindIndex(int itemId)

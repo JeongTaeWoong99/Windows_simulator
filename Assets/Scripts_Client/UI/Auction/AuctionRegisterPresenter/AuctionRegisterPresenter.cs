@@ -18,7 +18,8 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   자원: 보유한 것 전부 — 수량을 정한다. 매물은 통째로만 팔린다.
 //   장비: 캐릭터가 끼고 있지 않은 개체 — 수량은 1. 인챈트까지 그대로 넘어간다.
 //   캐릭터: 일하지 않는(작업슬롯 배치·장비 착용이 없는) 개체 — 수량은 1. 레벨·적성까지 넘어간다(T-096 · #47).
-//   아티팩트는 이 창에서 올리지 않는다.
+//   아티팩트: 아티팩트 칸에 있는 것 — 자원처럼 수량을 정한다. 도감에 장착한 것은 칸에 없어 오르지 않는다(T-151 · 2026-10-25).
+//     인벤토리 장비 탭의 아티팩트 칸 Ctrl+우클릭으로 열린다.
 //
 // ■ 올릴 수 없는 것도 목록에 보인다 (2026-10-03)
 //   끼고 있는 장비·일하는 캐릭터·마지막 캐릭터는 줄을 흐리게 두고 [선택]을 잠근다 — 사유는 툴팁에 적는다.
@@ -45,6 +46,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         Item,      // 자원
         Equip,     // 장비
         Character, // 캐릭터
+        Artifact,  // 아티팩트 — 키는 번호(ArtifactTID), 자원처럼 수량을 정한다
     }
 
     [CenterHeader("창")]
@@ -150,6 +152,9 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
     // 자원 줄·제안이 훑는 TID — 인벤토리·창고에 같은 TID가 따로 있어도 한 줄로 선다('PlayerDataModel.CollectOwnedItemIds').
     private readonly List<int> _ownedItemIds = new List<int>();
+
+    // 아티팩트 줄·제안이 훑는 번호 — 칸이 나뉘어 있어도 한 줄로 선다('CollectOwnedArtifactTids').
+    private readonly List<int> _artifactTids = new List<int>();
 
     private AuctionModel      _auction = null!;
     private PlayerDataModel   _data    = null!;
@@ -281,12 +286,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     //   key   : byTid면 TID(그 TID의 첫 물건을 고른다), 아니면 자원 TID · 장비/캐릭터 개체 번호
     public void Open(EAuctionKind kind, long key, bool byTid)
     {
-        RegisterKind registerKind = kind switch
-        {
-            EAuctionKind.Equip     => RegisterKind.Equip,
-            EAuctionKind.Character => RegisterKind.Character,
-            _                      => RegisterKind.Item,
-        };
+        RegisterKind registerKind = FromAuctionKind(kind);
 
         gameObject.SetActive(true);
 
@@ -317,7 +317,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _selectedKey = 0L;
         Refresh();
 
-        long target = byTid && kind != RegisterKind.Item ? FindFirstByTid(kind, (int)key) : key;
+        long target = byTid && !IsStackKind(kind) ? FindFirstByTid(kind, (int)key) : key;
         int  index  = _contents.FindIndex(content => content.Key == target);
 
         if (index < 0)
@@ -393,6 +393,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _data.EquipsChanged           += Refresh;
         _data.CharactersChanged       += Refresh;
         _data.WorkStationSlotsChanged += Refresh; // 배치가 풀리면 흐린 캐릭터가 살아난다
+        _data.ArtifactsChanged        += Refresh;
         _data.CurrencyChanged         += RefreshCard;
         Lang.Changed                  += OnLanguageChanged;
     }
@@ -414,6 +415,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         _data.EquipsChanged           -= Refresh;
         _data.CharactersChanged       -= Refresh;
         _data.WorkStationSlotsChanged -= Refresh;
+        _data.ArtifactsChanged        -= Refresh;
         _data.CurrencyChanged         -= RefreshCard;
         Lang.Changed                  -= OnLanguageChanged;
     }
@@ -431,7 +433,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         int value = kindDropdown.value;
 
         kindDropdown.ClearOptions();
-        kindDropdown.AddOptions(new List<string> { Lang.Get("UI.Auction.KindItem"), Lang.Get("UI.Equip.Gear"), Lang.Get("UI.Common.Character") });
+        kindDropdown.AddOptions(new List<string> { Lang.Get("UI.Auction.KindItem"), Lang.Get("UI.Equip.Gear"), Lang.Get("UI.Common.Character"), Lang.Get("UI.Auction.KindArtifact") });
         kindDropdown.SetValueWithoutNotify(value);
     }
 
@@ -451,12 +453,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     // ※ 흐린 것(올릴 수 없음)을 고르면 'ApplyOpen'이 사유를 알리고 고르지 않는다.
     private void OnSuggestionPicked(Suggestion suggestion)
     {
-        RegisterKind kind = (EAuctionKind)suggestion.Kind switch
-        {
-            EAuctionKind.Equip     => RegisterKind.Equip,
-            EAuctionKind.Character => RegisterKind.Character,
-            _                      => RegisterKind.Item,
-        };
+        RegisterKind kind = FromAuctionKind((EAuctionKind)suggestion.Kind);
 
         ApplyOpen(kind, suggestion.Key, byTid: false);
 
@@ -593,9 +590,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         string what = kind switch
         {
-            RegisterKind.Item  => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetItemName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
-            RegisterKind.Equip => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetEquipName(_data.GetEquipTid(key)), unitPrice.ToString("N0")),
-            _                  => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetCharacterName(_data.GetCharacterTid(key)), unitPrice.ToString("N0")),
+            RegisterKind.Item     => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetItemName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
+            RegisterKind.Artifact => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetArtifactName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
+            RegisterKind.Equip    => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetEquipName(_data.GetEquipTid(key)), unitPrice.ToString("N0")),
+            _                     => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetCharacterName(_data.GetCharacterTid(key)), unitPrice.ToString("N0")),
         };
 
         // 즉시 판매했을 때의 값을 함께 적는다 — 경매가 즉시 판매와 무엇이 다른지 마지막으로 비교하는 자리다.
@@ -605,9 +603,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
             {
                 switch (kind)
                 {
-                    case RegisterKind.Item:  _auction.RegisterItem((int)key, count, unitPrice); break;
-                    case RegisterKind.Equip: _auction.RegisterEquip(key, unitPrice);            break;
-                    default:                 _auction.RegisterCharacter(key, unitPrice);        break;
+                    case RegisterKind.Item:     _auction.RegisterItem((int)key, count, unitPrice);     break;
+                    case RegisterKind.Artifact: _auction.RegisterArtifact((int)key, count, unitPrice); break;
+                    case RegisterKind.Equip:    _auction.RegisterEquip(key, unitPrice);                break;
+                    default:                    _auction.RegisterCharacter(key, unitPrice);            break;
                 }
 
                 _waitHandle = _wait.Begin(Lang.Get("UI.Auction.WaitRegister"), onClosed: OnWaitClosed);
@@ -671,6 +670,10 @@ public class AuctionRegisterPresenter : MonoBehaviour
         else if (CurrentKind == RegisterKind.Equip)
         {
             AddEquipRows();
+        }
+        else if (CurrentKind == RegisterKind.Artifact)
+        {
+            AddArtifactRows();
         }
         else
         {
@@ -752,6 +755,17 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
             _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Character, character.CharacterTid, character.CharacterId,
                 $"{Lang.Get("UI.Common.Character")}{UIRichText.Dot}{AuctionText.FormatCharacterSummary(character)}{blocked}"));
+        }
+
+        CollectOwnedArtifactTids();
+
+        foreach (int tid in _artifactTids)
+        {
+            if (_suggestions.Count >= max) return;
+            if (!AuctionText.MatchesName(EAuctionKind.Artifact, tid, query)) continue;
+
+            _suggestions.Add(AuctionText.ToSuggestion(EAuctionKind.Artifact, tid, tid,
+                $"{Lang.Get("UI.Auction.KindArtifact")}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", _data.GetArtifactCount(tid).ToString("N0"))}"));
         }
     }
 
@@ -850,6 +864,52 @@ public class AuctionRegisterPresenter : MonoBehaviour
         }
     }
 
+    // 아티팩트 줄을 모은다 (Refresh에서 호출) — 번호마다 한 줄. 칸이 나뉘어 있어도 합친다.
+    // ※ 흐린 줄이 없다 — 칸에 있는 것은 모두 올릴 수 있다(도감에 장착한 것은 칸에 없다).
+    private void AddArtifactRows()
+    {
+        CollectOwnedArtifactTids();
+
+        foreach (int tid in _artifactTids)
+        {
+            if (!GameDataLoader.TryGetArtifact(tid, out ArtifactTableRow row))
+            {
+                continue;
+            }
+
+            int owned = _data.GetArtifactCount(tid);
+
+            _contents.Add(new AuctionRowContent
+            {
+                Key        = tid,
+                Icon       = ItemIconContent.ForArtifact(tid, owned),
+                Title      = Loc.Get(row.NameLocKey),
+                TitleColor = RarityPalette.Get(row.GlobalRarity),
+                Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
+                CanAct     = true,
+                Dimmed     = false,
+                Tooltip    = () => ArtifactText.BuildTooltip(_data, tid, withControls: false),
+            });
+        }
+    }
+
+    // 아티팩트 칸에 있는 번호들 — 번호 순 · 중복 없이 (AddArtifactRows · CollectSuggestions에서 호출).
+    private void CollectOwnedArtifactTids()
+    {
+        _artifactTids.Clear();
+
+        foreach (ItemInfo stack in _data.ArtifactStacks)
+        {
+            if (stack.Count > 0 && !_artifactTids.Contains(stack.ItemId))
+            {
+                _artifactTids.Add(stack.ItemId);
+            }
+        }
+
+        _artifactTids.Sort();
+    }
+
     // 카드의 문구·잠금을 맞춘다 (입력 변경 · 재화 변경 · 선택 · 시세 도착 · 대기 시작/종료).
     private void RefreshCard()
     {
@@ -874,7 +934,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         int             tid       = GetSelectedTid();
         int             basePrice = GetBasePrice();
         MarketItemInfo? summary   = GetSelectedSummary();
-        bool            isItem    = CurrentKind == RegisterKind.Item;
+        bool            isItem    = IsStackKind(CurrentKind);
 
         iconView.Bind(BuildIcon());
         nameText.text  = AuctionText.GetName(kind, tid);
@@ -888,7 +948,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         if (isItem)
         {
-            countHelpText.text = UIRichText.Label(Lang.Format("UI.Auction.CountHelp", _data.GetItemCount(tid).ToString("N0"), AuctionModel.MaxListingCount.ToString("N0")));
+            countHelpText.text = UIRichText.Label(Lang.Format("UI.Auction.CountHelp", GetOwnedCount().ToString("N0"), AuctionModel.MaxListingCount.ToString("N0")));
         }
 
         priceHelpText.text = UIRichText.Label(Lang.Format("UI.Auction.PriceHelp", AuctionModel.MinUnitPrice(basePrice).ToString("N0"), AuctionModel.FormatMaxUnitPrice()));
@@ -911,7 +971,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
             $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionTotal"))}<pos=55%>{UIRichText.Gold(total)}\n" +
             $"{UIRichText.Label(Lang.Format("UI.Auction.FeeNow", AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)))}<pos=55%>{UIRichText.Paint($"−{fee:N0} G", canPay ? UIThemeRole.TextMain : UIThemeRole.Negative)}\n" +
             $"{UIRichText.Label(Lang.Format("UI.Auction.NetIfSold", AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)))}<pos=55%>{UIRichText.Paint($"{net:N0} G", UIThemeRole.Positive)}\n" +
-            UIRichText.Small($"{UIRichText.Label(Lang.Get("UI.Auction.IfInstant"))}<pos=55%>{UIRichText.Label(Lang.Format("UI.Auction.InstantVia", instant.ToString("N0")))}");
+            UIRichText.Small($"{UIRichText.Label(Lang.Get("UI.Auction.IfInstant"))}<pos=55%>{UIRichText.Label(Lang.Format(CurrentKind == RegisterKind.Artifact ? "UI.Auction.InstantViaArtifact" : "UI.Auction.InstantVia", instant.ToString("N0")))}");
 
         registerButton.interactable = _waitHandle == null && canPay && !isFull;
     }
@@ -924,6 +984,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
             int itemId = (int)_selectedKey;
 
             return ItemIconContent.ForItem(itemId, _data.GetItemCount(itemId));
+        }
+
+        if (CurrentKind == RegisterKind.Artifact)
+        {
+            return ItemIconContent.ForArtifact((int)_selectedKey, _data.GetArtifactCount((int)_selectedKey));
         }
 
         if (CurrentKind == RegisterKind.Character)
@@ -946,6 +1011,13 @@ public class AuctionRegisterPresenter : MonoBehaviour
             return $"{AuctionText.FormatSub(EAuctionKind.Item, itemId)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", _data.GetItemCount(itemId).ToString("N0"))}";
         }
 
+        if (CurrentKind == RegisterKind.Artifact)
+        {
+            int tid = (int)_selectedKey;
+
+            return $"{AuctionText.FormatSub(EAuctionKind.Artifact, tid)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", _data.GetArtifactCount(tid).ToString("N0"))}";
+        }
+
         if (CurrentKind == RegisterKind.Character)
         {
             return AuctionText.FormatCharacterSummary(FindCharacter(_selectedKey));
@@ -965,7 +1037,27 @@ public class AuctionRegisterPresenter : MonoBehaviour
     {
         RegisterKind.Equip     => EAuctionKind.Equip,
         RegisterKind.Character => EAuctionKind.Character,
+        RegisterKind.Artifact  => EAuctionKind.Artifact,
         _                      => EAuctionKind.Item,
+    };
+
+    private static RegisterKind FromAuctionKind(EAuctionKind kind) => kind switch
+    {
+        EAuctionKind.Equip     => RegisterKind.Equip,
+        EAuctionKind.Character => RegisterKind.Character,
+        EAuctionKind.Artifact  => RegisterKind.Artifact,
+        _                      => RegisterKind.Item,
+    };
+
+    // 수량을 정하는 종류인가 — 자원 · 아티팩트. 키가 곧 TID다.
+    private static bool IsStackKind(RegisterKind kind) => kind == RegisterKind.Item || kind == RegisterKind.Artifact;
+
+    // 고른 것의 보유량 — 자원 · 아티팩트만. 개체는 1.
+    private long GetOwnedCount() => CurrentKind switch
+    {
+        RegisterKind.Item     => _data.GetItemCount((int)_selectedKey),
+        RegisterKind.Artifact => _data.GetArtifactCount((int)_selectedKey),
+        _                     => 1L,
     };
 
     // 고른 것의 TID — 자원은 키 그대로, 장비·캐릭터는 개체에서.
@@ -982,8 +1074,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
     // ※ 넘기면 서버가 'AuctionInvalidRequest'로 거절한다 — 입력 단계에서 먼저 자른다(#56).
     private long GetMaxCount()
     {
-        return CurrentKind == RegisterKind.Item
-            ? System.Math.Min(_data.GetItemCount((int)_selectedKey), AuctionModel.MaxListingCount)
+        return IsStackKind(CurrentKind)
+            ? System.Math.Min(GetOwnedCount(), AuctionModel.MaxListingCount)
             : 1L;
     }
 
@@ -993,6 +1085,11 @@ public class AuctionRegisterPresenter : MonoBehaviour
         if (CurrentKind == RegisterKind.Item)
         {
             return GameDataLoader.GetItemPrice((int)_selectedKey);
+        }
+
+        if (CurrentKind == RegisterKind.Artifact)
+        {
+            return GameDataLoader.TryGetArtifact((int)_selectedKey, out ArtifactTableRow artifact) ? artifact.BasePrice : 0;
         }
 
         if (CurrentKind == RegisterKind.Character)
@@ -1017,7 +1114,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         int basePrice = GetBasePrice();
 
         // 장비·캐릭터는 수량 줄을 숨긴다 — 입력칸 글자와 상관없이 1이다.
-        if (CurrentKind != RegisterKind.Item)
+        if (!IsStackKind(CurrentKind))
         {
             count = 1;
         }

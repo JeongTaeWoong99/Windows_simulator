@@ -68,6 +68,10 @@ using UnityEngine.UI;
 //   우클릭과 같은 구조다. 판매와 **입력 축을 나눠 쓰는 것**이 요점이다 —
 //   한 조작에 두 뜻을 겹치면 눌러 보기 전에는 무엇이 일어날지 알 수 없다.
 //   큐브 창·응축 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
+//
+// ■ 장비 탭의 아티팩트 칸 (T-151 · 2026-10-25 사용자 결정 — 'EquipSlotSource' 머리 주석)
+//   우클릭(판매 담기) · Ctrl+우클릭(경매 등록)은 장비와 같고, 좌클릭만 큐브 창 대신 **아티팩트 창**('ArtifactEquipPresenter')이다.
+//   아직 서버에 없는 것 — Ctrl+좌클릭 잠금 · 끌어 옮기기 — 은 거절 토스트로 말한다(서버 이슈로 넘겼다).
 //   응축 창이 열린 동안 캐릭터 칸 좌클릭은 **재료 고르기**다 — 무엇을 할지는 응축 창이 정하고('OnCharacterClicked'),
 //   칸이 대상·재료·못 넣음 중 무엇인지도 응축 창이 답한다('GetMark'). 격자는 그대로 그린다.
 //
@@ -116,6 +120,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("응축 창 — 캐릭터 칸을 좌클릭하면 그 캐릭터로 열고, 열린 동안은 재료를 고른다 (창고 격자도 인벤토리 열의 같은 창을 넣는다)")]
     private CharacterCondensePresenter characterCondense = null!;
+
+    [SerializeField, Tooltip("아티팩트 창 — 장비 탭의 아티팩트 칸을 좌클릭하면 연다 (창고 격자도 인벤토리 열의 같은 창을 넣는다)")]
+    private ArtifactEquipPresenter artifactWindow = null!;
 
     // ※ 셋 다 이 오브젝트 자신에 붙는다 — 특성 탭에서 격자를 끄지 않고 숨기는 데 쓴다('SetShown').
     [SerializeField, Tooltip("격자 자신의 하위 Canvas — 숨길 때 그리기만 끈다(Override Sorting 끔)")]
@@ -298,6 +305,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         this.RequireRef(equipEnchant,      nameof(equipEnchant));
         this.RequireRef(characterCondense, nameof(characterCondense));
+        this.RequireRef(artifactWindow,    nameof(artifactWindow));
 
         CacheFrames();
 
@@ -994,7 +1002,7 @@ public class InventoryGridPresenter : MonoBehaviour
     {
         InventoryTab.Resource  => _cart.Contains((int)key),
         InventoryTab.Character => _cart.ContainsCharacter(key),
-        InventoryTab.Equipment => _cart.ContainsEquip(key),
+        InventoryTab.Equipment => EquipSlotSource.IsArtifactKey(key) ? _cart.ContainsArtifact(EquipSlotSource.ArtifactTidOf(key)) : _cart.ContainsEquip(key),
         _                      => false,
     };
 
@@ -1024,12 +1032,16 @@ public class InventoryGridPresenter : MonoBehaviour
         }
 
         characterCondense.Close();
+        artifactWindow.Close();
         RevealInventoryColumn();
 
         switch (_currentTab)
         {
             case InventoryTab.Resource:  ToggleItem((int)view.Key, view.transform); break;
             case InventoryTab.Character: ToggleCharacter(view.Key, view.transform); break;
+            case InventoryTab.Equipment when EquipSlotSource.IsArtifactKey(view.Key):
+                ToggleArtifact(EquipSlotSource.ArtifactTidOf(view.Key));
+                break;
             case InventoryTab.Equipment: ToggleEquip(view.Key, view.transform);     break;
         }
     }
@@ -1051,6 +1063,14 @@ public class InventoryGridPresenter : MonoBehaviour
     // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
     private void OpenAuctionRegister(long key, Transform slot)
     {
+        // 아티팩트 — 막을 것이 없다(잠금 · 착용이 없다). 등록 창이 번호로 고른다.
+        if (_currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(key))
+        {
+            _ui.Auction.OpenRegister(EAuctionKind.Artifact, EquipSlotSource.ArtifactTidOf(key));
+
+            return;
+        }
+
         string? reason = _currentTab switch
         {
             InventoryTab.Character => EntityBlockText.ForCharacter(_data, key, _data.Characters.Count - 1),
@@ -1128,6 +1148,34 @@ public class InventoryGridPresenter : MonoBehaviour
         _cart.AddEquip(equipId);
     }
 
+    // 아티팩트를 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
+    // ※ NEW(도감에 없는 번호)도 담는다 — 판매 목록이 경고한다(목업 · 막으면 "왜 안 담기지"가 된다).
+    private void ToggleArtifact(int artifactTid)
+    {
+        if (_cart.ContainsArtifact(artifactTid))
+        {
+            _cart.RemoveArtifact(artifactTid);
+
+            return;
+        }
+
+        int owned = _data.GetArtifactCount(artifactTid);
+
+        if (owned <= 0)
+        {
+            return; // 화면이 아직 낡았다 — 뒤이어 올 ArtifactsChanged가 이 칸을 지운다
+        }
+
+        if (owned == 1)
+        {
+            _cart.AddArtifact(artifactTid, 1);
+
+            return;
+        }
+
+        _ui.AskAmount(GameDataLoader.GetArtifactName(artifactTid), owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.AddArtifact(artifactTid, amount));
+    }
+
     // 자원을 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
     private void ToggleItem(int itemId, Transform slot)
     {
@@ -1187,6 +1235,14 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (cell == null)
         {
+            return false;
+        }
+
+        // 아티팩트 칸은 서버 칸 번호가 아니다(장비 뒤에 이어 붙인 자리 — 'EquipSlotSource') — 아직 옮길 수 없다.
+        if (IsArtifactCell(cell.Value))
+        {
+            _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoMove"), _views[frameIndex]?.transform);
+
             return false;
         }
 
@@ -1419,6 +1475,15 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (target == frameIndex)
         {
+            FlyGhost(this, frameIndex, landing: false);
+
+            return;
+        }
+
+        // 아티팩트 칸 위 — 그 자리는 서버 칸 번호가 아니다('BeginSlotDrag'와 같은 이유). 장비를 거기로 보내지 않는다.
+        if (target < _current!.Count && _current.Get(target) is SlotData onto && IsArtifactCell(onto))
+        {
+            _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoMove"), _views[target]?.transform);
             FlyGhost(this, frameIndex, landing: false);
 
             return;
@@ -1813,10 +1878,34 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
+        bool isArtifact = _currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(view.Key);
+
         // Ctrl+좌클릭 — 잠금(캐릭터·장비 T-137 · 자원 T-159). 상자 칸이어도 열지 않고 잠금만 뒤집는다.
+        // ※ 아티팩트 잠금은 아직 서버에 없다 — 말없이 지나가면 고장처럼 보여 알린다.
         if (_keys.IsLockToggleHeld)
         {
+            if (isArtifact)
+            {
+                _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoLock"), view.transform);
+
+                return;
+            }
+
             ToggleLock(view.Key);
+
+            return;
+        }
+
+        // 아티팩트 칸 — 아티팩트 창을 그 번호로 연다(T-151). 큐브 창은 상급 큐브 결과를 고르기 전이면 닫히지 않는다 — 열지 않는다.
+        if (isArtifact)
+        {
+            if (!equipEnchant.TryClose())
+            {
+                return;
+            }
+
+            RevealInventoryColumn();
+            artifactWindow.Open(EquipSlotSource.ArtifactTidOf(view.Key));
 
             return;
         }
@@ -1825,6 +1914,7 @@ public class InventoryGridPresenter : MonoBehaviour
         if (_currentTab == InventoryTab.Equipment)
         {
             RevealInventoryColumn();
+            artifactWindow.Close();
             equipEnchant.Open(view.Key);
 
             return;
@@ -1960,6 +2050,9 @@ public class InventoryGridPresenter : MonoBehaviour
     #endregion
 
     #region 잠금
+
+    // 장비 탭의 아티팩트 칸인가 (끌기 · 놓기에서 호출).
+    private bool IsArtifactCell(in SlotData cell) => _currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(cell.Key);
 
     // 그 개체(자원은 종류)의 잠금을 뒤집어 서버에 보낸다 (OnSlotLeftClicked — Ctrl+좌클릭).
     // ※ 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음) — 자물쇠가 서버와 어긋나면 "잠긴 줄 알았는데 팔렸다"가 된다.

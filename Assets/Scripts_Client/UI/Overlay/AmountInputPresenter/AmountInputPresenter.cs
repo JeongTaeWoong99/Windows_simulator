@@ -77,11 +77,15 @@ public class AmountInputPresenter : MonoBehaviour
     //   question  : 묻는 말 — "몇 개를 팔까?" · "몇 개를 열까?"
     //   onConfirm : 확인을 눌렀을 때 받을 곳. 취소면 불리지 않는다
     public void Open(int itemId, int maxCount, string question, Action<int> onConfirm)
+        => Open(GameDataLoader.GetItemName(itemId), maxCount, question, onConfirm);
+
+    // 자원이 아닌 것의 수량을 묻는다 — 이름을 직접 받는다(아티팩트 판매 담기).
+    public void Open(string subject, int maxCount, string question, Action<int> onConfirm)
     {
         _maxCount  = Mathf.Max(1, maxCount);
         _onConfirm = onConfirm;
 
-        titleText.text   = Lang.Format("UI.Common.AmountTitle", GameDataLoader.GetItemName(itemId), question, $"{_maxCount:N0}");
+        titleText.text   = Lang.Format("UI.Common.AmountTitle", subject, question, $"{_maxCount:N0}");
         amountInput.text = _maxCount.ToString();
 
         SetVisible(true);
