@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+> 최종 업데이트: 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -73,6 +73,9 @@
   ⚠️ `EnterWorktree`의 `name`에는 **접두 없이 `T-0XX-<슬러그>`만** 넣는다.
   도구가 `worktree-`를 붙여 위 이름을 만든다 — 직접 넣으면 `worktree-worktree-…`가 된다.
 - **워크트리 작업이 끝나면 확인을 기다리지 않고 main에 머지까지 한다 (2026-10-06 사용자 지시).** 푸시는 하지 않는다.
+  **예외 — 서버 작업(`Server/`·`Assets/Scripts_Server/`·데이터 파이프라인)은 main에 머지하지 않고 PR만 연다 (2026-10-25 진우).**
+  끝나면 확인을 기다리지 않고 ① 관련 이슈 코멘트 ② 작업 문서 갱신(일감 파일·기획 문서·`.claude/Agent/` 로그) ③ 브랜치 푸시 → `gh pr create --base main`(draft 아님)까지 한다.
+  INDEX(`tasks/README.md`)는 PR이 머지된 뒤 갱신한다.
   ⚠️ **main 트리에서는 `git merge --ff-only`만 쓴다.** 순서는 ① 워크트리 안에서 `git merge main` → 충돌을 풀고 테스트
   ② main에서 `git merge --ff-only <워크트리 브랜치>` ③ INDEX(`tasks/README.md`) 갱신.
   main 트리에서 머지가 실패하면 git이 작업 트리를 임시 저장했다가 되살리는데, `Server/Shared/game.sqlite3`가 잠겨 있으면
