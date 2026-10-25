@@ -1,0 +1,741 @@
+<!doctype html>
+<html lang="ko">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>거점 건물 목업</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
+<style>
+/* 제안 목업 (이슈 #75 · T-166 · T-182) — 거점 화면 · 건물 5개(분류별) · 업그레이드(자원 + 골드) · 건물별 특성 트리.
+   산업당 건물 5개를 버리고 편의 · 산업 · 거래 · 인력 · 수집 다섯 분류로 둔다. 계정 특성은 '작업장' 트리로 옮긴다.
+   팔레트·글꼴은 판매분해목업.html · 아티팩트도감장착목업.html과 같다 — 게임 화면이 어두운 한 가지 모양이라 테마는 하나로 둔다.
+   위에서 아래로 ① 무엇이 바뀌나 ② 직접 해 보기 ③ 건물 5개 ④ 정할 것 */
+:root {
+  color-scheme: dark;
+  --page: #0D1117;
+  --pageText: #C9D4E0;
+  --panel: #14202E;
+  --panelSub: #1F3044;
+  --overlay: #101A25;
+  --slot: #26394F;
+  --border: #3E5A78;
+  --button: #2B6F9E;
+  --buttonPrimary: #C98314;
+  --highlight: #FFD447;
+  --textMain: #F2F6FA;
+  --textSub: #9FB3C8;
+  --on: #6DDB7A;
+  --warn: #FFA040;
+  --danger: #E05A5A;
+  --grass: #2E4A33;
+  --grassHi: #3A5C3F;
+  --sea: #173247;
+  --seaHi: #1E4560;
+  --path: #6B5A3E;
+  --shadow: #00000066;
+  --t-office: #5CC4B8;
+  --t-workshop: #E9A43A;
+  --t-guild: #E2C35A;
+  --t-lodge: #E07A8F;
+  --t-appraise: #9C7CF0;
+  --display: "Black Han Sans", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Noto Sans KR", "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--pageText); font-family: var(--body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 16px; padding-block: 28px 64px; display: grid; gap: 40px; }
+header { display: grid; gap: 6px; }
+h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 34px; color: var(--textMain); letter-spacing: .02em; text-wrap: balance; }
+h2 { margin: 0 0 4px; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--textMain); letter-spacing: .02em; }
+.lede { margin: 0; color: var(--textSub); max-width: 72ch; }
+.note { margin: 0 0 14px; color: var(--textSub); font-size: 14px; max-width: 72ch; }
+code { font-size: 13px; color: var(--textMain); }
+kbd { font: 700 12px var(--body); background: var(--slot); border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 6px; padding: 0 6px; color: var(--textMain); white-space: nowrap; }
+section { min-width: 0; }
+button { font-family: var(--body); }
+button:focus-visible, .bld:focus-visible, .node:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+
+.tbl-wrap { overflow-x: auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #263a50; vertical-align: top; }
+th { color: var(--textSub); font-weight: 600; font-size: 12px; letter-spacing: .06em; background: var(--panelSub); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+td.same { color: var(--textSub); }
+td.diff { color: var(--highlight); font-weight: 700; }
+.chip { display: inline-block; font: 800 11px/18px var(--body); padding: 0 7px; border-radius: 6px; color: #111; background: var(--tc, var(--slot)); white-space: nowrap; }
+
+/* ② 직접 해 보기 */
+.play { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 16px; align-items: start; }
+@media (max-width: 960px) { .play { grid-template-columns: minmax(0, 1fr); } }
+
+/* 게임 창 — 메인 3열 + 하단 메뉴. 거점 화면은 경매장처럼 3열을 모두 덮는다 */
+.game { position: relative; height: 640px; background: var(--overlay); border: 2px solid var(--border); border-radius: 14px; overflow: hidden; display: grid; grid-template-rows: minmax(0, 1fr) auto; }
+.cols { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; padding: 10px; min-height: 0; }
+.col { background: var(--panel); border: 2px solid var(--border); border-radius: 12px; padding: 10px; color: var(--textSub); font-size: 13px; display: grid; align-content: start; gap: 6px; min-width: 0; }
+.col b { font-family: var(--display); font-weight: 400; font-size: 18px; color: var(--textMain); }
+.col .fake { height: 38px; border-radius: 8px; background: var(--slot); opacity: .5; }
+.menu { display: flex; gap: 6px; padding: 8px 10px; background: var(--panel); border-top: 2px solid var(--border); flex-wrap: wrap; }
+.menu button { height: 38px; padding: 0 16px; border-radius: 9px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font-weight: 800; font-size: 14px; cursor: pointer; }
+.menu button[aria-pressed="true"] { background: var(--buttonPrimary); border-color: #E9A43A; }
+.menu .tag { font-size: 11px; color: var(--textSub); font-weight: 600; margin-left: 4px; }
+
+.hub { position: absolute; inset: 0 0 56px 0; background: var(--overlay); display: grid; grid-template-rows: auto minmax(0, 1fr); z-index: 5; }
+.hub-head { display: flex; align-items: center; gap: 12px; padding: 8px 12px; background: var(--panel); border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.hub-head .t { font-family: var(--display); font-size: 22px; color: var(--textMain); }
+.hub-head .acc { font: 800 12px/22px var(--body); padding: 0 9px; border-radius: 8px; background: var(--panelSub); border: 1px solid var(--border); color: var(--textMain); font-variant-numeric: tabular-nums; }
+.hub-head .sub { font-size: 12px; color: var(--textSub); }
+.hub-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font-weight: 800; cursor: pointer; }
+
+.map { position: relative; overflow: hidden; min-height: 0; }
+.map > svg.ground { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.bld { position: absolute; transform: translate(-50%, -62%); display: grid; justify-items: center; gap: 2px; background: none; border: 0; padding: 4px; cursor: pointer; color: var(--textMain); }
+.bld svg { width: 92px; height: 74px; filter: drop-shadow(0 6px 4px var(--shadow)); transition: transform .15s; }
+.bld:hover svg, .bld[aria-expanded="true"] svg { transform: translateY(-3px) scale(1.04); }
+.bld .plate { display: flex; align-items: center; gap: 6px; background: var(--panel); border: 2px solid var(--tc); border-radius: 9px; padding: 1px 9px; font-weight: 800; font-size: 14px; white-space: nowrap; }
+.bld .plate .lv { font-family: var(--display); font-weight: 400; color: var(--tc); font-size: 15px; font-variant-numeric: tabular-nums; }
+.bld .cat { font-size: 11px; color: var(--textSub); font-weight: 600; }
+.bld .flags { position: absolute; top: 0; right: 6px; display: grid; gap: 3px; justify-items: end; }
+.flag { font: 800 10px/16px var(--body); padding: 0 6px; border-radius: 8px; white-space: nowrap; }
+.flag.up { background: var(--on); color: #0b2a10; }
+.flag.pt { background: var(--highlight); color: #3a2a00; }
+
+.pop { position: absolute; z-index: 6; width: 236px; background: var(--panel); border: 2px solid var(--tc); border-radius: 12px; padding: 10px 12px; display: grid; gap: 8px; box-shadow: 0 10px 24px var(--shadow); }
+.pop .ph { display: flex; align-items: baseline; gap: 8px; }
+.pop .ph b { font-family: var(--display); font-weight: 400; font-size: 20px; color: var(--textMain); }
+.pop .ph span { font-family: var(--display); color: var(--tc); font-size: 17px; }
+.pop p { margin: 0; font-size: 12px; color: var(--textSub); line-height: 1.5; }
+.pop .btns { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.btn { height: 40px; border-radius: 9px; border: 2px solid var(--border); background: var(--button); color: var(--textMain); font-weight: 800; font-size: 14px; cursor: pointer; padding: 0 10px; }
+.btn.primary { background: var(--buttonPrimary); border-color: #E9A43A; }
+.btn:disabled { background: var(--slot); color: var(--textSub); cursor: not-allowed; border-color: var(--border); }
+.btn small { font-weight: 600; font-size: 11px; opacity: .85; margin-left: 4px; }
+
+/* 업그레이드 · 특성 창 — 거점 화면 위 */
+.sheet { position: absolute; inset: 12px; z-index: 8; background: var(--panel); border: 2px solid var(--tc); border-radius: 14px; display: grid; grid-template-rows: auto minmax(0, 1fr); box-shadow: 0 16px 40px var(--shadow); }
+.sh-head { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-bottom: 2px solid var(--border); flex-wrap: wrap; }
+.sh-head .nm { font-family: var(--display); font-size: 22px; color: var(--textMain); }
+.sh-head .lv { font-family: var(--display); font-size: 18px; color: var(--tc); font-variant-numeric: tabular-nums; }
+.seg { display: inline-flex; border: 2px solid var(--border); border-radius: 10px; overflow: hidden; margin-left: 8px; }
+.seg button { background: var(--slot); color: var(--textSub); border: 0; padding: 5px 14px; font: 700 13px var(--body); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--button); color: var(--textMain); }
+.sh-head .close { margin-left: auto; width: 34px; height: 34px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font-weight: 800; cursor: pointer; }
+.sh-body { overflow: auto; padding: 14px; min-height: 0; }
+
+/* 업그레이드 */
+.up { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; max-width: 760px; margin: 0 auto; }
+@media (max-width: 700px) { .up { grid-template-columns: minmax(0, 1fr); } }
+.lvjump { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 18px; padding: 8px 0 4px; }
+.lvjump .n { font-family: var(--display); font-size: 44px; line-height: 1; color: var(--textSub); font-variant-numeric: tabular-nums; }
+.lvjump .n.next { color: var(--tc); }
+.lvjump .n small { font-size: 18px; margin-right: 2px; }
+.lvjump .arrow { font-size: 26px; color: var(--textSub); }
+.box { background: var(--overlay); border-radius: 10px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.box .where { font-size: 12px; color: var(--textSub); letter-spacing: .06em; font-weight: 600; }
+.need { display: grid; grid-template-columns: 14px minmax(0, 1fr) auto; gap: 8px; align-items: center; font-size: 14px; padding: 4px 0; border-bottom: 1px solid #263a50; font-variant-numeric: tabular-nums; }
+.need:last-child { border-bottom: 0; }
+.need .dot { width: 14px; height: 14px; border-radius: 4px; background: var(--rc); }
+.need .have { white-space: nowrap; font-weight: 800; }
+.need .have.ok { color: var(--on); }
+.need .have.short { color: var(--danger); }
+.need .have small { color: var(--textSub); font-weight: 600; }
+.gain { margin: 0; padding-left: 18px; display: grid; gap: 4px; font-size: 14px; color: var(--textMain); }
+.gain li small { color: var(--textSub); }
+.reason { font-size: 13px; color: var(--danger); font-weight: 700; margin: 0; }
+.uprow { grid-column: 1 / -1; display: grid; gap: 6px; justify-items: center; }
+.uprow .btn { width: min(360px, 100%); height: 48px; font-size: 16px; }
+
+/* 특성 트리 — 동그란 노드 + 선. 이름은 노드를 누르면 오른쪽 카드에 나온다 */
+.tree-top { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin-bottom: 10px; }
+.pts { font-family: var(--display); font-size: 20px; color: var(--highlight); font-variant-numeric: tabular-nums; }
+.pts small { font-family: var(--body); font-size: 12px; color: var(--textSub); margin-right: 6px; }
+.tree-top .hint { font-size: 12px; color: var(--textSub); }
+.tree-wrap { display: grid; grid-template-columns: minmax(0, 1fr) 270px; gap: 14px; align-items: start; }
+@media (max-width: 760px) { .tree-wrap { grid-template-columns: minmax(0, 1fr); } }
+.tree-scroll { overflow-x: auto; background: var(--overlay); border-radius: 12px; min-width: 0; }
+.tree { position: relative; margin: 0 auto; }
+.tree > svg { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.tree .head { font: 800 11px var(--body); fill: var(--textSub); text-anchor: middle; }
+.node { position: absolute; width: 52px; height: 52px; margin: -26px 0 0 -26px; border-radius: 50%; border: 0; padding: 0; background: var(--slot); color: var(--textSub); cursor: pointer; display: grid; place-items: center; z-index: 1; }
+.node > svg.ring { position: absolute; inset: -4px; width: 60px; height: 60px; transform: rotate(-90deg); }
+.node .ic { width: 24px; height: 24px; position: relative; }
+.node .nb { position: absolute; top: 50px; left: 50%; transform: translateX(-50%); font: 800 11px/16px var(--body); color: var(--textSub); white-space: nowrap; font-variant-numeric: tabular-nums; background: var(--overlay); padding: 0 4px; border-radius: 6px; }
+.node .lk { position: absolute; right: -4px; top: -4px; width: 18px; height: 18px; border-radius: 50%; background: var(--panel); display: grid; place-items: center; color: var(--danger); }
+.node .lk svg { width: 12px; height: 12px; }
+.node.learned { background: var(--panelSub); color: var(--tc); }
+.node.learned .nb { color: var(--textMain); }
+.node.avail { box-shadow: 0 0 0 2px var(--tc), 0 0 14px var(--tc); }
+.node.max { background: var(--panelSub); color: var(--highlight); }
+.node.max .nb { color: var(--highlight); }
+.node.locked { opacity: .4; }
+.node[aria-pressed="true"] { outline: 3px solid var(--highlight); outline-offset: 4px; }
+.node.root { width: 66px; height: 66px; margin: -33px 0 0 -33px; background: var(--tc); color: var(--panel); }
+.node.root .ic { width: 32px; height: 32px; }
+.node.root .nb { top: 64px; color: var(--tc); font-family: var(--display); font-weight: 400; font-size: 14px; }
+.node.pulse { animation: pulse .35s; }
+@keyframes pulse { 50% { transform: scale(1.15); } }
+@media (prefers-reduced-motion: reduce) { .node.pulse { animation: none; } .bld svg { transition: none; } }
+
+.card { background: var(--overlay); border: 2px solid var(--border); border-radius: 12px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+.card .ch { display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 10px; align-items: center; }
+.card .big { width: 48px; height: 48px; border-radius: 50%; background: var(--panelSub); color: var(--tc); display: grid; place-items: center; }
+.card .big svg { width: 26px; height: 26px; }
+.card .dn { font-family: var(--display); font-size: 19px; color: var(--textMain); line-height: 1.2; }
+.card .dl { font-size: 12px; color: var(--textSub); font-variant-numeric: tabular-nums; }
+.card .dl b { color: var(--tc); }
+.card .ds { margin: 0; font-size: 13px; color: var(--pageText); line-height: 1.55; }
+.card .fx { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 10px; font-size: 13px; margin: 0; }
+.card .fx dt { color: var(--textSub); }
+.card .fx dd { margin: 0; color: var(--textMain); font-weight: 700; }
+.card .fx dd.nx { color: var(--tc); }
+.card .cond { margin: 0; padding: 0; list-style: none; display: grid; gap: 3px; font-size: 12px; }
+.card .cond li.ok { color: var(--on); }
+.card .cond li.no { color: var(--danger); }
+.card .btn { width: 100%; }
+.card .empty { font-size: 13px; color: var(--textSub); margin: 0; }
+
+/* 옆 칸 */
+.side { display: grid; gap: 16px; align-content: start; }
+.panel { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 14px; min-width: 0; display: grid; gap: 8px; }
+.panel .where { font-size: 12px; color: var(--textSub); letter-spacing: .06em; font-weight: 600; }
+.wallet { display: grid; gap: 3px; font-size: 14px; font-variant-numeric: tabular-nums; }
+.wallet div { display: grid; grid-template-columns: 12px minmax(0, 1fr) auto; gap: 8px; align-items: center; }
+.wallet .dot { width: 12px; height: 12px; border-radius: 3px; background: var(--rc); }
+.wallet b { color: var(--textMain); }
+.wallet .gold b { color: var(--highlight); font-family: var(--display); font-weight: 400; font-size: 18px; }
+.cheats { display: flex; flex-wrap: wrap; gap: 6px; }
+.cheats button { height: 32px; padding: 0 10px; border-radius: 8px; border: 2px solid var(--border); background: var(--slot); color: var(--textMain); font: 700 12px var(--body); cursor: pointer; }
+.log { margin: 0; padding: 0; list-style: none; font-size: 13px; color: var(--textSub); display: grid; gap: 2px; max-height: 210px; overflow: auto; font-variant-numeric: tabular-nums; }
+.log li:first-child { color: var(--textMain); }
+.steps { margin: 0; padding-left: 20px; display: grid; gap: 4px; font-size: 13px; color: var(--textMain); }
+.steps small { color: var(--textSub); }
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translateX(-50%); background: var(--panelSub); border: 2px solid var(--border); border-radius: 10px; padding: 8px 16px; color: var(--textMain); font-size: 14px; opacity: 0; transition: opacity .2s; pointer-events: none; z-index: 30; max-width: calc(100vw - 32px); }
+.toast.show { opacity: 1; }
+
+@media (max-width: 700px) {
+  .game { height: 700px; }
+  .bld svg { width: 64px; height: 52px; }
+  .bld .plate { font-size: 12px; padding: 0 6px; }
+  .bld .cat { display: none; }
+  .pop { width: 210px; }
+}
+
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 10px; }
+.qs li { color: var(--textMain); }
+.qs li small { display: block; color: var(--textSub); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>거점 — 건물을 키워 특성을 찍는다</h1>
+    <p class="lede">[거점]을 누르면 메인 3열을 덮는 거점 화면이 열린다. 건물 다섯 채가 2D로 놓여 있고, 건물을 누르면 [업그레이드] · [특성]이 뜬다. 업그레이드는 자원 + 골드로 레벨을 올리고, 레벨이 오르면 그 건물의 특성 포인트가 생겨 트리 노드를 찍는다. 이름 · 분류 · 수치는 모두 가칭과 테스트값이다.</p>
+  </header>
+
+  <section>
+    <h2>① 무엇이 바뀌나</h2>
+    <p class="note">지금 서버(T-166)는 산업마다 건물 하나, 비용은 자원만, 특성은 계정 레벨 포인트로 따로 찍는다. 목업은 이 셋을 바꾼다.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>항목</th><th>지금 (T-166 · 특성 README)</th><th>목업</th></tr></thead>
+        <tbody>
+          <tr><td>건물 나누는 기준</td><td class="same">산업당 1채 — 농장 · 발굴 캠프 · 광산 · 제재소 · 사냥꾼 오두막</td><td class="diff">분류당 1채 — 편의 · 산업 · 거래 · 인력 · 수집</td></tr>
+          <tr><td>레벨 비용</td><td class="same">자원만 (골드 0)</td><td class="diff">자원 + 골드 — 적힌 것을 전부 낸다</td></tr>
+          <tr><td>특성</td><td class="same">계정 레벨 1당 1포인트 · 인벤토리 특성 탭에서 16개를 찍는다</td><td class="diff">건물 Lv1당 그 건물 포인트 1점 · 옛 특성 16개는 <b>작업장</b> 트리로 옮긴다 · 계정 레벨은 포인트를 주지 않고 <b>건물 레벨의 상한</b>이 된다</td></tr>
+          <tr><td>트리 노드</td><td class="same">건물마다 3개 · 한 번 열면 끝(해금 행)</td><td class="diff">노드마다 레벨(0/4 · 0/10) · 앞 노드를 <b>최대까지 다 찍어야</b> 다음 노드가 열린다 · 건물 레벨로는 잠그지 않는다</td></tr>
+          <tr><td>들어가는 곳</td><td class="same">화면 없음 (클라 ❌)</td><td class="diff">하단 메뉴 [거점] → 거점 화면(경매장처럼 3열을 덮는다)</td></tr>
+          <tr><td>되돌리기 · 대기 시간</td><td class="same">없음 · 없음</td><td class="same">그대로 — 바로 오르고, 영구</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 직접 해 보기</h2>
+    <p class="note">건물을 눌러 [업그레이드]·[특성]을 열어 본다. 작업장은 Lv6으로 가려면 관리소 Lv5가 먼저 필요하다 — 다른 건물을 선행으로 거는 예시다. 자원이 모자라면 오른쪽 치트로 채운다.</p>
+    <div class="play">
+      <div class="game" id="game">
+        <div class="cols" aria-hidden="true">
+          <div class="col"><b>인벤토리</b>자원 · 캐릭터 · 장비<div class="fake"></div><div class="fake"></div><div class="fake"></div></div>
+          <div class="col"><b>새 열 (가칭)</b>상점 · 뽑기 · 창고<div class="fake"></div><div class="fake"></div></div>
+          <div class="col"><b>작업슬롯</b>채취 중<div class="fake"></div><div class="fake"></div><div class="fake"></div><div class="fake"></div></div>
+        </div>
+        <nav class="menu" aria-label="하단 메뉴">
+          <button type="button" data-dummy>인벤토리</button>
+          <button type="button" data-dummy>새 열</button>
+          <button type="button" data-dummy>경매장</button>
+          <button type="button" id="hubBtn" aria-pressed="true">거점<span class="tag">이름 미정</span></button>
+        </nav>
+
+        <div class="hub" id="hub">
+          <div class="hub-head">
+            <span class="t">거점</span><span class="acc" id="accLv"></span>
+            <span class="sub">건물을 누르면 [업그레이드] · [특성] · 초록 ▲ = 올릴 수 있음 · 노랑 ● = 남은 포인트</span>
+            <button type="button" class="close" id="hubClose" aria-label="거점 닫기">✕</button>
+          </div>
+          <div class="map" id="map">
+            <svg class="ground" viewBox="0 0 1000 560" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+              <rect width="1000" height="560" fill="var(--sea)"/>
+              <path d="M70 120 C120 40 330 30 500 50 C700 30 900 60 940 160 C990 280 960 420 880 490 C760 560 280 560 140 500 C40 450 20 240 70 120 Z" fill="var(--grass)"/>
+              <path d="M140 160 C200 90 360 90 500 100 C660 90 820 110 860 190 C900 270 880 390 820 440 C700 510 320 510 200 460 C110 420 100 250 140 160 Z" fill="var(--grassHi)"/>
+              <g fill="none" stroke="var(--path)" stroke-width="16" stroke-linecap="round" opacity=".85">
+                <path d="M500 300 C420 260 320 200 220 175"/>
+                <path d="M500 300 C580 250 680 200 780 175"/>
+                <path d="M500 300 C430 350 330 390 240 420"/>
+                <path d="M500 300 C580 350 680 390 770 420"/>
+                <path d="M500 300 L500 540"/>
+              </g>
+              <g fill="var(--seaHi)" opacity=".7">
+                <ellipse cx="60" cy="520" rx="40" ry="8"/><ellipse cx="960" cy="60" rx="34" ry="7"/><ellipse cx="930" cy="530" rx="26" ry="6"/>
+              </g>
+              <g fill="var(--grass)">
+                <circle cx="120" cy="300" r="18"/><circle cx="145" cy="320" r="14"/><circle cx="880" cy="300" r="16"/><circle cx="860" cy="330" r="12"/>
+                <circle cx="360" cy="110" r="12"/><circle cx="640" cy="120" r="14"/><circle cx="380" cy="480" r="13"/><circle cx="620" cy="485" r="15"/>
+              </g>
+            </svg>
+          </div>
+        </div>
+      </div>
+
+      <aside class="side">
+        <div class="panel">
+          <div class="where">보유 (테스트값)</div>
+          <div class="wallet" id="wallet"></div>
+          <div class="cheats">
+            <button type="button" id="cheatRes">자원 +200</button>
+            <button type="button" id="cheatGold">골드 +10,000</button>
+            <button type="button" id="cheatLv">고른 건물 Lv +10</button>
+            <button type="button" id="cheatAcc">계정 Lv +10</button>
+            <button type="button" id="reset">처음으로</button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="where">흐름</div>
+          <ol class="steps">
+            <li>[거점] → 거점 화면</li>
+            <li>건물 누르기 → [업그레이드] · [특성]</li>
+            <li>[업그레이드] → Lv N → N+1 · 필요 자원 · 골드</li>
+            <li>[특성] → 그 건물의 트리<small> — 노드를 누르고 [포인트 1 쓰기]</small></li>
+          </ol>
+          <div class="where">닫기</div>
+          <p class="steps" style="padding:0;margin:0"><kbd>Esc</kbd> 창 → 건물 선택 → 거점 순으로 닫는다</p>
+        </div>
+        <div class="panel">
+          <div class="where">기록</div>
+          <ul class="log" id="log"></ul>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section>
+    <h2>③ 건물 5개 (가칭)</h2>
+    <p class="note">사용자가 정한 셋(편의 · 산업 · 거래)에 인력 · 수집 두 분류를 제안으로 더했다. 노드는 지금 게임에 있는 시스템에서 골랐고, 수치는 정하지 않았다.</p>
+    <div class="tbl-wrap">
+      <table id="bldTable">
+        <thead><tr><th>건물</th><th>분류</th><th>무엇이 좋아지나</th><th>노드 (테스트)</th></tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>④ 정할 것</h2>
+    <ol class="qs">
+      <li>분류 4·5번 — 인력 · 수집이 맞는지<small>사용자는 "편의 / 산업 / 거래 …"까지만 정했다. 다른 분류(예: 의뢰 · 탐험)를 원하면 바꾼다. 건물 이름도 전부 가칭이다</small></li>
+      <li>✅ 포인트 — 건물 Lv1당 그 건물 포인트 1점 (사용자 결정)<small>건물마다 따로 쌓인다. 작업장 포인트는 작업장 트리에만 쓴다</small></li>
+      <li>✅ 계정 레벨 — 특성 포인트(<code>AccountLevelTable.TraitPoint</code>)는 없애고, 건물 레벨의 상한으로 쓴다 (사용자 결정)<small>계정 최대 레벨은 100 → <b>150</b>. 건물은 계정 레벨까지만 올릴 수 있다. 목업은 계정 Lv8에서 시작한다</small></li>
+      <li>✅ 비용에 골드를 넣는다 — 골드의 출구 (사용자 결정 · 건물 README 확정 #8 "자원만"을 바꾼다)<small>남은 것은 비중 — 레벨이 오를수록 자원과 골드 중 무엇이 더 커지는지</small></li>
+      <li>작업장 포인트 총량<small>옛 특성은 전부 찍는 데 130점, 계정 Lv100까지 99점이라 "전부는 못 찍는다"가 선택을 만들었다. 계정 최대 Lv150을 따라 작업장도 Lv150 = 150점이면 130점을 <b>전부 찍을 수 있다</b> — 선택의 긴장을 남기려면 작업장 상한을 130 아래로 두거나 노드를 더 늘린다. 나머지 건물은 노드 레벨 합보다 많게 둬서 전부 찍을 수 있다 — 이것도 막을지 정한다</small></li>
+      <li>최대 레벨 · 다른 건물 선행<small>목업은 계정 Lv150 · 작업장 Lv150 · 관리소 · 상회 Lv20 · 숙소 · 감정소 Lv25 · 작업장 Lv4부터 관리소 레벨(다음 레벨 − 1)이 선행이다. 건물 레벨은 포인트만 주고 노드를 잠그지 않는다 — 깊은 노드는 앞 노드를 다 찍어야 열린다(예: 농사 개척 4/4 → 농사 속도)</small></li>
+      <li>✅ 서버 T-166의 건물 5개(<code>BuildingTID</code> = <code>IndustryType</code>)는 갈아엎는다 (사용자 결정)<small>해금 행(<code>UnlockTable 4xxx</code>)을 그대로 쓸 수 있지만 노드에 레벨이 생기면 해금 행 하나로는 모자란다 — 특성의 <code>t_user_trait</code> 방식에 가깝다</small></li>
+      <li>화면 이름 — [거점]<small>T-182에서 열 · 지도 화면 이름이 아직 미정이다</small></li>
+    </ol>
+  </section>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+const RES = {
+  wheat: { n: '밀', c: '#E8C45A' },
+  wood:  { n: '소나무 목재', c: '#B9824A' },
+  ore:   { n: '철광석', c: '#9AA9B8' },
+  hide:  { n: '가죽', c: '#C9785A' },
+  shard: { n: '깨진 토기 조각', c: '#D59C7A' },
+};
+// 건물 최대 레벨 — 작업장은 계정 최대 레벨(150)을 따른다. 나머지는 노드 레벨 합보다 조금 많게
+const ACC_MAX = 150;
+const MAX_LV = { office: 20, workshop: 150, guild: 20, lodge: 25, appraise: 25 };
+const IND = ['농사', '발굴', '채굴', '벌목', '사냥'];
+
+// 노드: row/col = 트리 칸 · pre = 선행 노드(최대 레벨까지 다 찍어야 다음으로 넘어간다) · 건물 레벨로는 잠그지 않는다
+function workshopNodes() {
+  const n = [{ id: 'w-common', name: '공통 산출량', ic: 'star', row: 0, col: 4, max: 10, fx: l => `모든 산업 산출량 +${l * 2}%`,
+    d: '다섯 산업 모두 같은 자원을 더 받는다. 산출량은 정수부만큼 같은 아이템을 더 주고, 소수부는 확률로 1개 더 준다.' }];
+  IND.forEach((ind, i) => {
+    const c = i + 1;
+    n.push({ id: `w-open${c}`, name: `${ind} 개척`, ic: 'key', row: 1, col: c, max: 4, fx: l => l ? `${ind} 산업 Lv${l + 1}까지 열림` : `${ind} 산업 Lv1만 열림`,
+      d: `${ind} 산업의 다음 레벨을 연다. 산업 레벨이 오르면 더 좋은 자원이 나오는 판이 열린다.` });
+    n.push({ id: `w-speed${c}`, name: `${ind} 속도`, ic: 'speed', row: 2, col: c, max: 10, pre: [`w-open${c}`], fx: l => `${ind} 작업속도 +${l * 5}%`,
+      d: `${ind} 슬롯에 놓인 캐릭터의 작업속도가 오른다. 다른 속도 보너스와 더해서(가산) 들어간다.` });
+    n.push({ id: `w-yield${c}`, name: `${ind} 산출량`, ic: 'yield', row: 3, col: c, max: 10, pre: [`w-speed${c}`], fx: l => `${ind} 산출량 +${l * 5}%`,
+      d: `${ind} 산업에서 같은 자원을 더 받는다. 공통 산출량과 더해진다.` });
+  });
+  return n;
+}
+const pct = (s, u = '%') => l => `${s(l)}${u}`;
+const BUILDINGS = [
+  { id: 'office', name: '관리소', cat: '편의', x: 22, y: 34, ppl: 1, mats: { wood: 20, ore: 8 },
+    desc: '손이 덜 가게 — 칸 · 정산 · 자동화', cols: 2, heads: null,
+    nodes: [
+      { id: 'o-cart', name: '판매 목록 칸', row: 0, col: 1, max: 3, ic: 'plus', d: '판매 목록에 한 번에 담을 수 있는 칸이 늘어난다.', fx: l => `판매 목록 +${l * 5}칸` },
+      { id: 'o-off', name: '오프라인 정산', row: 0, col: 2, max: 4, ic: 'clock', d: '앱을 꺼 둔 동안 쌓이는 정산 시간의 상한이 늘어난다.', fx: l => `최대 정산 시간 +${l}시간` },
+      { id: 'o-slot', name: '작업 슬롯', row: 1, col: 1, max: 2, pre: ['o-cart'], ic: 'grid', d: '캐릭터를 놓을 작업 슬롯이 한 칸 늘어난다.', fx: l => `작업 슬롯 +${l}칸` },
+      { id: 'o-filter', name: '일괄 담기 필터', row: 1, col: 2, max: 1, pre: ['o-off'], ic: 'filter', d: '일괄 담기에서 등급 · 종류로 골라 담을 수 있다.', fx: l => l ? '등급 · 종류 필터 사용' : '필터 없음' },
+      { id: 'o-auto', name: '자동 판매', row: 2, col: 1, max: 1, pre: ['o-slot'], ic: 'auto', d: '지정한 자원이 들어오면 즉시 판매가로 자동 판매한다.', fx: l => l ? '지정한 자원을 자동 판매' : '자동 판매 없음' },
+      { id: 'o-ware', name: '창고 칸', row: 2, col: 2, max: 3, pre: ['o-filter'], ic: 'box', d: '창고 칸이 늘어난다.', fx: l => `창고 +${l * 10}칸` },
+    ] },
+  { id: 'workshop', name: '작업장', cat: '산업', x: 50, y: 56, ppl: 1, mats: { wood: 25, ore: 15, wheat: 10 },
+    desc: '옛 계정 특성 16개가 이 트리로 — 개척 · 속도 · 산출량', cols: 5, heads: IND,
+    req: next => next >= 4 ? { b: 'office', lv: next - 1 } : null,
+    nodes: workshopNodes() },
+  { id: 'guild', name: '상회', cat: '거래', x: 78, y: 34, ppl: 1, mats: { wood: 15, hide: 10 },
+    desc: '팔고 사는 값 — 판매가 · 경매 · 분해', cols: 2, heads: null,
+    nodes: [
+      { id: 'g-price', name: '즉시 판매가', row: 0, col: 1, max: 5, ic: 'coin', d: '인벤토리에서 즉시 판매할 때 받는 골드가 오른다.', fx: l => `즉시 판매가 +${l * 2}%` },
+      { id: 'g-reg', name: '경매 등록 칸', row: 0, col: 2, max: 3, ic: 'tag', d: '경매장에 동시에 올려 둘 수 있는 물건 수가 늘어난다.', fx: l => `경매 등록 +${l}칸` },
+      { id: 'g-shard', name: '마석 분해', row: 1, col: 1, max: 3, pre: ['g-price'], ic: 'gem', d: '장비를 마석으로 분해할 때 받는 마석이 늘어난다.', fx: l => `분해 마석 +${l * 10}%` },
+      { id: 'g-fee', name: '경매 수수료', row: 1, col: 2, max: 5, pre: ['g-reg'], ic: 'percent', d: '경매장에서 팔릴 때 떼는 수수료가 줄어든다.', fx: l => `수수료 −${l}%p` },
+      { id: 'g-chart', name: '시세 기록', row: 2, col: 1, max: 1, pre: ['g-shard'], ic: 'chart', d: '경매장에서 품목별 지난 7일 시세를 그래프로 본다.', fx: l => l ? '7일 시세 그래프' : '시세 그래프 없음' },
+      { id: 'g-res', name: '예약 판매', row: 2, col: 2, max: 1, pre: ['g-fee'], ic: 'target', d: '목표가를 정해 두면 시세가 닿을 때 자동으로 판다.', fx: l => l ? '목표가에 닿으면 자동 판매' : '예약 판매 없음' },
+    ] },
+  { id: 'lodge', name: '숙소', cat: '인력', x: 24, y: 78, ppl: 1, mats: { wheat: 30, hide: 8 },
+    desc: '사람을 키운다 — 경험치 · 보관 · 뽑기', cols: 2, heads: null,
+    nodes: [
+      { id: 'l-exp', name: '캐릭터 경험치', row: 0, col: 1, max: 5, ic: 'up', d: '작업하는 캐릭터가 받는 경험치가 늘어난다.', fx: l => `캐릭터 경험치 +${l * 5}%` },
+      { id: 'l-room', name: '캐릭터 보관 칸', row: 0, col: 2, max: 3, ic: 'person', d: '캐릭터를 보관할 수 있는 칸이 늘어난다.', fx: l => `캐릭터 보관 +${l * 10}칸` },
+      { id: 'l-cond', name: '응축 계승', row: 1, col: 1, max: 3, pre: ['l-exp'], ic: 'link', d: '응축 재료로 넣은 캐릭터의 경험치 일부를 대상이 이어받는다(#84).', fx: l => `재료 경험치 ${l * 10}% 계승` },
+      { id: 'l-cost', name: '뽑기 비용', row: 1, col: 2, max: 5, pre: ['l-room'], ic: 'dice', d: '캐릭터 뽑기에 드는 골드가 줄어든다.', fx: l => `뽑기 골드 −${l * 2}%` },
+      { id: 'l-gear', name: '장비 보관 칸', row: 2, col: 1, max: 3, pre: ['l-cond'], ic: 'bag', d: '장비를 보관할 수 있는 칸이 늘어난다.', fx: l => `장비 보관 +${l * 10}칸` },
+      { id: 'l-rare', name: '희귀 이상 확률', row: 2, col: 2, max: 3, pre: ['l-cost'], ic: 'spark', d: '뽑기에서 희귀 이상이 나올 확률이 오른다.', fx: l => `희귀 이상 +${(l * 0.5).toFixed(1)}%p` },
+    ] },
+  { id: 'appraise', name: '감정소', cat: '수집', x: 77, y: 78, ppl: 1, mats: { shard: 6, ore: 10 },
+    desc: '모으는 재미 — 상자 · 유물 · 도감', cols: 2, heads: null,
+    nodes: [
+      { id: 'a-box', name: '상자 한 번에', row: 0, col: 1, max: 3, ic: 'box', d: '상자를 한 번에 여는 최대 개수가 늘어난다.', fx: l => `한 번에 여는 상자 +${l * 10}개` },
+      { id: 'a-drop', name: '유물 발견', row: 0, col: 2, max: 5, ic: 'eye', d: '발굴에서 유물이 나올 확률이 오른다.', fx: l => `유물 드랍 +${l * 3}%` },
+      { id: 'a-skip', name: '연출 건너뛰기', row: 1, col: 1, max: 1, pre: ['a-box'], ic: 'skip', d: '유물 감정 연출을 건너뛰고 결과만 본다.', fx: l => l ? '감정 연출 건너뛰기' : '건너뛰기 없음' },
+      { id: 'a-art', name: '아티팩트 확률', row: 1, col: 2, max: 5, pre: ['a-drop'], ic: 'hex', d: '유물을 감정할 때 아티팩트가 나올 확률이 오른다.', fx: l => `아티팩트 +${(l * 0.5).toFixed(1)}%p` },
+      { id: 'a-slot', name: '아티팩트 칸', row: 2, col: 1, max: 3, pre: ['a-skip'], ic: 'grid', d: '아티팩트를 보관하는 칸이 늘어난다.', fx: l => `아티팩트 칸 +${l * 10}` },
+      { id: 'a-set', name: '도감 세트 효과', row: 2, col: 2, max: 3, pre: ['a-art'], ic: 'book', d: '도감 세트를 채웠을 때 받는 효과가 커진다.', fx: l => `세트 효과 +${l * 10}%` },
+    ] },
+];
+const BY = Object.fromEntries(BUILDINGS.map(b => [b.id, b]));
+const TONE = { office: '--t-office', workshop: '--t-workshop', guild: '--t-guild', lodge: '--t-lodge', appraise: '--t-appraise' };
+const tone = id => `var(${TONE[id]})`;
+
+const START = () => ({
+  acc: 8,
+  wallet: { gold: 12000, wheat: 180, wood: 240, ore: 90, hide: 60, shard: 40 },
+  lv: { office: 4, workshop: 5, guild: 2, lodge: 1, appraise: 1 },
+  nodes: { 'w-open1': 4, 'o-cart': 1, 'o-off': 1 },
+});
+let S = START();
+let ui = { hub: true, sel: 'workshop', sheet: null, tab: 'up', node: null };
+
+const $ = s => document.querySelector(s);
+const fmt = n => n.toLocaleString('ko-KR');
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+
+// 비용 — 현재 레벨 L에서 L+1로
+function cost(b) {
+  const L = S.lv[b.id];
+  const mats = Object.entries(b.mats).map(([k, v]) => ({ k, need: v * L }));
+  return { mats, gold: 300 * L * L + 200 };
+}
+function upState(b) {
+  const L = S.lv[b.id];
+  if (L >= MAX_LV[b.id]) return { ok: false, reason: '최대 레벨입니다' };
+  const c = cost(b);
+  const req = b.req && b.req(L + 1);
+  if (L + 1 > S.acc) return { ok: false, reason: `계정 Lv${L + 1}이 필요합니다 — 건물 레벨은 계정 레벨을 넘을 수 없습니다`, c, req };
+  if (req && S.lv[req.b] < req.lv) return { ok: false, reason: `${BY[req.b].name} Lv${req.lv}이 먼저 필요합니다`, c, req };
+  if (c.mats.some(m => S.wallet[m.k] < m.need)) return { ok: false, reason: '자원이 부족합니다', c, req };
+  if (S.wallet.gold < c.gold) return { ok: false, reason: '골드가 부족합니다', c, req };
+  return { ok: true, c, req };
+}
+const ptsTotal = b => S.lv[b.id] * b.ppl;
+const ptsUsed = b => b.nodes.reduce((s, n) => s + (S.nodes[n.id] || 0), 0);
+const ptsLeft = b => ptsTotal(b) - ptsUsed(b);
+function nodeState(b, n) {
+  const l = S.nodes[n.id] || 0;
+  if (l >= n.max) return { cls: 'max', reason: '최대 레벨입니다' };
+  const pn = id => b.nodes.find(x => x.id === id);
+  const miss = (n.pre || []).find(p => (S.nodes[p] || 0) < pn(p).max);
+  if (miss) return { cls: 'locked', reason: `먼저 [${pn(miss).name}]을 ${pn(miss).max}까지 다 찍어야 합니다` };
+  if (ptsLeft(b) <= 0) return { cls: 'nopt', reason: '특성 포인트가 없습니다 — 건물 레벨을 올리세요' };
+  return { cls: 'avail', reason: '' };
+}
+
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 1800); }
+function log(t) { const li = document.createElement('li'); li.textContent = t; $('#log').prepend(li); }
+
+// 건물 그림 — 분류마다 지붕 모양만 다르게
+function art(id) {
+  const c = tone(id);
+  const roofs = {
+    office: `<path d="M10 34 L46 10 L82 34 Z" fill="${c}"/><rect x="40" y="2" width="12" height="14" fill="${c}"/>`,
+    workshop: `<path d="M8 36 L30 18 L30 30 L52 14 L52 30 L84 14 L84 36 Z" fill="${c}"/><rect x="66" y="0" width="9" height="20" fill="var(--textSub)"/>`,
+    guild: `<path d="M8 34 L46 12 L84 34 Z" fill="${c}"/><path d="M14 34 h64 v6 h-64z" fill="var(--panelSub)"/>`,
+    lodge: `<path d="M6 38 L46 8 L86 38 Z" fill="${c}"/><circle cx="46" cy="26" r="5" fill="var(--panel)"/>`,
+    appraise: `<path d="M14 34 Q46 -6 78 34 Z" fill="${c}"/><circle cx="46" cy="6" r="4" fill="${c}"/>`,
+  };
+  return `<svg viewBox="0 0 92 74" aria-hidden="true">
+    <ellipse cx="46" cy="70" rx="38" ry="4" fill="var(--shadow)"/>
+    <rect x="16" y="32" width="60" height="38" rx="3" fill="var(--panelSub)" stroke="var(--border)" stroke-width="2"/>
+    <rect x="40" y="48" width="12" height="22" rx="2" fill="var(--overlay)"/>
+    <rect x="22" y="42" width="11" height="9" rx="1" fill="${c}" opacity=".55"/><rect x="59" y="42" width="11" height="9" rx="1" fill="${c}" opacity=".55"/>
+    ${roofs[id]}</svg>`;
+}
+
+function renderWallet() {
+  const rows = [`<div class="gold"><span class="dot" style="--rc:var(--highlight)"></span><span>골드</span><b>${fmt(S.wallet.gold)}</b></div>`];
+  for (const [k, r] of Object.entries(RES)) rows.push(`<div><span class="dot" style="--rc:${r.c}"></span><span>${r.n}</span><b>${fmt(S.wallet[k])}</b></div>`);
+  $('#wallet').innerHTML = rows.join('');
+}
+
+function renderMap() {
+  $('#accLv').textContent = `계정 Lv${S.acc} — 건물 레벨 상한`;
+  const map = $('#map');
+  map.querySelectorAll('.bld, .pop, .sheet').forEach(e => e.remove());
+  for (const b of BUILDINGS) {
+    const up = upState(b).ok, left = ptsLeft(b);
+    const el = document.createElement('button');
+    el.type = 'button'; el.className = 'bld'; el.dataset.id = b.id;
+    el.style.left = b.x + '%'; el.style.top = b.y + '%'; el.style.setProperty('--tc', tone(b.id));
+    el.setAttribute('aria-expanded', ui.sel === b.id ? 'true' : 'false');
+    el.setAttribute('aria-label', `${b.name} Lv${S.lv[b.id]}`);
+    el.innerHTML = `${art(b.id)}
+      <span class="plate">${b.name}<span class="lv">Lv${S.lv[b.id]}</span></span>
+      <span class="cat">${b.cat}</span>
+      <span class="flags">${up ? '<span class="flag up">▲ 올리기</span>' : ''}${left > 0 ? `<span class="flag pt">● ${left}</span>` : ''}</span>`;
+    el.addEventListener('click', e => { e.stopPropagation(); ui.sel = ui.sel === b.id ? null : b.id; renderMap(); });
+    map.append(el);
+  }
+  if (ui.sel) renderPop(map);
+  if (ui.sheet) renderSheet(map);
+}
+
+function renderPop(map) {
+  const b = BY[ui.sel];
+  const pop = document.createElement('div');
+  pop.className = 'pop'; pop.style.setProperty('--tc', tone(b.id));
+  // 건물 옆에 — 오른쪽 건물은 왼쪽으로, 아래쪽 건물은 위로 띄운다
+  if (b.x > 55) pop.style.right = (100 - b.x + 9) + '%'; else pop.style.left = (b.x + 9) + '%';
+  if (b.y > 55) pop.style.bottom = (100 - b.y + 2) + '%'; else pop.style.top = (b.y - 8) + '%';
+  const left = ptsLeft(b);
+  pop.innerHTML = `<div class="ph"><b>${b.name}</b><span>Lv${S.lv[b.id]}</span><span class="chip" style="--tc:${tone(b.id)}">${b.cat}</span></div>
+    <p>${esc(b.desc)}</p>
+    <div class="btns">
+      <button type="button" class="btn primary" data-open="up">업그레이드</button>
+      <button type="button" class="btn" data-open="tree">특성${left > 0 ? `<small>● ${left}</small>` : ''}</button>
+    </div>`;
+  pop.addEventListener('click', e => {
+    e.stopPropagation();
+    const t = e.target.closest('[data-open]'); if (!t) return;
+    ui.sheet = b.id; ui.tab = t.dataset.open; ui.node = null; renderMap();
+  });
+  map.append(pop);
+}
+
+function renderSheet(map) {
+  const b = BY[ui.sheet];
+  const sh = document.createElement('div');
+  sh.className = 'sheet'; sh.style.setProperty('--tc', tone(b.id));
+  sh.setAttribute('role', 'dialog'); sh.setAttribute('aria-label', `${b.name} ${ui.tab === 'up' ? '업그레이드' : '특성'}`);
+  sh.innerHTML = `<div class="sh-head">
+      <span class="nm">${b.name}</span><span class="lv">Lv${S.lv[b.id]}</span><span class="chip" style="--tc:${tone(b.id)}">${b.cat}</span>
+      <span class="seg"><button type="button" data-tab="up" aria-pressed="${ui.tab === 'up'}">업그레이드</button><button type="button" data-tab="tree" aria-pressed="${ui.tab === 'tree'}">특성</button></span>
+      <button type="button" class="close" data-close aria-label="닫기">✕</button>
+    </div>
+    <div class="sh-body">${ui.tab === 'up' ? upHtml(b) : treeHtml(b)}</div>`;
+  sh.addEventListener('click', e => {
+    e.stopPropagation();
+    const tab = e.target.closest('[data-tab]'); if (tab) { ui.tab = tab.dataset.tab; ui.node = null; renderMap(); return; }
+    if (e.target.closest('[data-close]')) { ui.sheet = null; renderMap(); return; }
+    if (e.target.closest('[data-up]')) { doUpgrade(b); return; }
+    const nd = e.target.closest('[data-node]'); if (nd) { ui.node = nd.dataset.node; renderMap(); return; }
+    if (e.target.closest('[data-spend]')) { spend(b); return; }
+  });
+  map.append(sh);
+}
+
+function upHtml(b) {
+  const L = S.lv[b.id];
+  if (L >= MAX_LV[b.id]) return `<div class="up"><div class="lvjump"><span class="n next"><small>Lv</small>${L}</span></div><p class="uprow" style="color:var(--textSub)">최대 레벨입니다.</p></div>`;
+  const st = upState(b), c = st.c || cost(b);
+  const needRows = c.mats.map(m => {
+    const have = S.wallet[m.k], ok = have >= m.need;
+    return `<div class="need"><span class="dot" style="--rc:${RES[m.k].c}"></span><span>${RES[m.k].n}</span><span class="have ${ok ? 'ok' : 'short'}">${fmt(have)}<small> / ${fmt(m.need)}</small></span></div>`;
+  }).join('') + `<div class="need"><span class="dot" style="--rc:var(--highlight)"></span><span>골드</span><span class="have ${S.wallet.gold >= c.gold ? 'ok' : 'short'}">${fmt(S.wallet.gold)}<small> / ${fmt(c.gold)}</small></span></div>`;
+  const req = b.req && b.req(L + 1);
+  const reqRow = req ? `<div class="need"><span class="dot" style="--rc:${tone(req.b)}"></span><span>${BY[req.b].name} Lv${req.lv}</span><span class="have ${S.lv[req.b] >= req.lv ? 'ok' : 'short'}">${S.lv[req.b] >= req.lv ? '충족' : `지금 Lv${S.lv[req.b]}`}</span></div>` : '';
+  const accRow = `<div class="need"><span class="dot" style="--rc:var(--textMain)"></span><span>계정 Lv${L + 1}</span><span class="have ${S.acc >= L + 1 ? 'ok' : 'short'}">${S.acc >= L + 1 ? '충족' : `지금 Lv${S.acc}`}</span></div>`;
+  return `<div class="up">
+    <div class="lvjump"><span class="n"><small>Lv</small>${L}</span><span class="arrow">→</span><span class="n next"><small>Lv</small>${L + 1}</span></div>
+    <div class="box"><div class="where">필요한 것 — 전부 낸다</div>${needRows}<div class="where" style="margin-top:6px">조건</div>${accRow}${reqRow}</div>
+    <div class="box"><div class="where">오르면</div>
+      <ul class="gain">
+        <li>특성 포인트 +${b.ppl} <small>(합계 ${ptsTotal(b)} → ${ptsTotal(b) + b.ppl})</small></li>
+        <li><small>대기 시간 없음 · 되돌릴 수 없음</small></li>
+      </ul></div>
+    <div class="uprow">
+      <button type="button" class="btn primary" data-up ${st.ok ? '' : 'disabled'}>Lv${L + 1}로 업그레이드</button>
+      ${st.ok ? '' : `<p class="reason">${st.reason}</p>`}
+    </div></div>`;
+}
+
+// 트리 아이콘 — 24×24 선 그림
+const ICON = {
+  home: 'M3 11l9-7 9 7M5 10v10h14V10M10 20v-5h4v5',
+  star: 'M12 3l2.6 5.6 6 .7-4.5 4 1.3 6-5.4-3.1-5.4 3.1 1.3-6-4.5-4 6-.7z',
+  key: 'M12 12h9M18 12v3M21 12v2M4 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0',
+  speed: 'M4 7l6 5-6 5M12 7l6 5-6 5',
+  yield: 'M12 3l8 4-8 4-8-4zM4 12l8 4 8-4M4 17l8 4 8-4',
+  plus: 'M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3zM12 8v8M8 12h8',
+  clock: 'M4 12a8 8 0 1 0 16 0a8 8 0 1 0-16 0M12 8v4l3 2',
+  grid: 'M4 4h16v16H4zM4 12h16M12 4v16',
+  filter: 'M4 5h16l-6 7v6l-4 2v-8z',
+  auto: 'M20 8a8 8 0 0 0-15 2M4 16a8 8 0 0 0 15-2M20 4v4h-4M4 20v-4h4',
+  box: 'M4 9h16v11H4zM3 5h18v4H3zM10 13h4',
+  coin: 'M4 12a8 8 0 1 0 16 0a8 8 0 1 0-16 0M12 7v10M14.5 9.5h-4a1.5 1.5 0 0 0 0 3h3a1.5 1.5 0 0 1 0 3h-4',
+  tag: 'M3 12V4h8l10 10-8 8zM7 8h.01',
+  gem: 'M6 4h12l3 5-9 12L3 9zM3 9h18',
+  percent: 'M6 18L18 6M5 7a2 2 0 1 0 4 0a2 2 0 1 0-4 0M15 17a2 2 0 1 0 4 0a2 2 0 1 0-4 0',
+  chart: 'M4 4v16h16M7 15l4-4 3 3 5-6',
+  target: 'M4 12a8 8 0 1 0 16 0a8 8 0 1 0-16 0M8 12a4 4 0 1 0 8 0a4 4 0 1 0-8 0',
+  up: 'M12 20V6M6 12l6-6 6 6',
+  person: 'M8.5 8a3.5 3.5 0 1 0 7 0a3.5 3.5 0 1 0-7 0M5 20c1-4 4-6 7-6s6 2 7 6',
+  link: 'M4 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0M10 12a5 5 0 1 0 10 0a5 5 0 1 0-10 0',
+  dice: 'M4 7a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3H7a3 3 0 0 1-3-3zM9 9h.01M15 15h.01M12 12h.01',
+  bag: 'M4 8h16v12H4zM9 8V5h6v3',
+  spark: 'M12 3v6M12 15v6M3 12h6M15 12h6',
+  eye: 'M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12zM9 12a3 3 0 1 0 6 0a3 3 0 1 0-6 0',
+  skip: 'M5 6l7 6-7 6zM13 6l7 6-7 6z',
+  hex: 'M12 3l8 4.5v9L12 21l-8-4.5v-9z',
+  book: 'M4 5a2 2 0 0 1 2-2h14v16H6a2 2 0 0 0-2 2zM20 19v2H6',
+  lock: 'M6 11h12v9H6zM9 11V8a3 3 0 0 1 6 0v3',
+};
+const svgIcon = (k, cls = 'ic') => `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${ICON[k]}"/></svg>`;
+
+// 트리 배치 — 건물(뿌리)이 맨 위, 선행을 따라 한 줄씩 내려간다
+const CW = 92, RH = 104, PADL = 70, PADT = 52;
+function layout(b) {
+  const off = b.id === 'workshop' ? 0 : 1;
+  const px = c => PADL + (c - 0.5) * CW;
+  const P = { root: { x: px((b.cols + 1) / 2), y: PADT } };
+  for (const n of b.nodes) P[n.id] = { x: px(n.col), y: PADT + (n.row + off) * RH };
+  const rows = Math.max(...b.nodes.map(n => n.row + off)) + 1;
+  const h = PADT + (rows - 1) * RH + (b.heads ? 70 : 50);
+  return { P, w: PADL + b.cols * CW + 20, h, off, px };
+}
+
+function treeHtml(b) {
+  const { P, w, h, off, px } = layout(b);
+  const L = S.lv[b.id];
+  let g = '';
+  // 선 — 선행이 없으면 건물(뿌리)에서 내려온다
+  for (const n of b.nodes) for (const p of (n.pre || ['root'])) {
+    const a = P[p], z = P[n.id];
+    const on = p === 'root' || (S.nodes[p] || 0) >= b.nodes.find(x => x.id === p).max;
+    const full = (S.nodes[n.id] || 0) > 0;
+    const d = a.y === z.y ? `M${a.x} ${a.y} H${z.x}` : `M${a.x} ${a.y} V${(a.y + z.y) / 2 + (p === 'root' ? 6 : 0)} H${z.x} V${z.y}`;
+    g += `<path d="${d}" fill="none" stroke="${on ? tone(b.id) : 'var(--border)'}" stroke-width="${full ? 4 : 2}" opacity="${on ? (full ? 1 : .55) : 1}" stroke-linejoin="round"/>`;
+  }
+  if (b.heads) b.heads.forEach((t, i) => g += `<text class="head" x="${px(i + 1)}" y="${h - 12}">${t}</text>`);
+
+  let nodes = `<button type="button" class="node root" data-node="root" aria-pressed="${ui.node === 'root'}" aria-label="${b.name}" style="left:${P.root.x}px;top:${P.root.y}px">${svgIcon('home')}<span class="nb">Lv${L}</span></button>`;
+  const R = 26, C = 2 * Math.PI * R;
+  for (const n of b.nodes) {
+    const l = S.nodes[n.id] || 0, st = nodeState(b, n);
+    const cls = [st.cls === 'max' ? 'max' : '', st.cls === 'avail' ? 'avail' : '', st.cls === 'locked' ? 'locked' : '', l > 0 ? 'learned' : ''].join(' ');
+    const ring = `<svg class="ring" viewBox="0 0 60 60" aria-hidden="true"><circle cx="30" cy="30" r="${R}" fill="none" stroke="var(--border)" stroke-width="3"/><circle cx="30" cy="30" r="${R}" fill="none" stroke="${st.cls === 'max' ? 'var(--highlight)' : tone(b.id)}" stroke-width="4" stroke-linecap="round" stroke-dasharray="${C * l / n.max} ${C}"/></svg>`;
+    nodes += `<button type="button" class="node ${cls}" data-node="${n.id}" aria-pressed="${ui.node === n.id}" aria-label="${n.name} ${l}/${n.max}" title="${n.name}" style="left:${P[n.id].x}px;top:${P[n.id].y}px">${ring}${svgIcon(n.ic)}<span class="nb">${l}/${n.max}</span>${st.cls === 'locked' ? `<span class="lk">${svgIcon('lock', '')}</span>` : ''}</button>`;
+  }
+  return `<div class="tree-top"><span class="pts"><small>남은 포인트</small>${ptsLeft(b)}<small style="margin-left:6px">/ ${ptsTotal(b)}</small></span>
+      <span class="hint">건물 Lv1당 ${b.ppl}점 · 앞 노드를 다 찍어야 다음 노드로 넘어간다 · 빛나는 노드 = 지금 찍을 수 있음</span></div>
+    <div class="tree-wrap">
+      <div class="tree-scroll"><div class="tree" style="width:${w}px;height:${h}px"><svg width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">${g}</svg>${nodes}</div></div>
+      ${cardHtml(b)}
+    </div>`;
+}
+
+function cardHtml(b) {
+  if (!ui.node) return `<div class="card"><p class="empty">노드를 누르면 이름 · 설명 · 효과 · 조건이 여기에 나온다.</p></div>`;
+  if (ui.node === 'root') {
+    return `<div class="card"><div class="ch"><span class="big">${svgIcon('home', '')}</span><div><div class="dn">${b.name}</div><div class="dl">${b.cat} · <b>Lv${S.lv[b.id]}</b> / ${MAX_LV[b.id]}</div></div></div>
+      <p class="ds">${esc(b.desc)}. 레벨을 올리면 이 트리의 포인트가 ${b.ppl}점씩 는다. 노드는 레벨로 잠기지 않고, 앞 노드를 최대까지 찍어야 다음이 열린다.</p>
+      <button type="button" class="btn primary" data-tab="up">업그레이드 보기</button></div>`;
+  }
+  const n = b.nodes.find(x => x.id === ui.node);
+  const l = S.nodes[n.id] || 0, st = nodeState(b, n);
+  const preOk = (n.pre || []).map(p => { const pn = b.nodes.find(x => x.id === p); return { t: `선행 — ${pn.name} ${S.nodes[p] || 0}/${pn.max} (다 찍어야 함)`, ok: (S.nodes[p] || 0) >= pn.max }; });
+  const conds = [...preOk, { t: `특성 포인트 1 (남은 ${ptsLeft(b)})`, ok: ptsLeft(b) > 0 }];
+  return `<div class="card">
+    <div class="ch"><span class="big">${svgIcon(n.ic, '')}</span><div><div class="dn">${n.name}</div><div class="dl"><b>${l}</b> / ${n.max} 레벨</div></div></div>
+    <p class="ds">${esc(n.d)}</p>
+    <dl class="fx"><dt>지금</dt><dd>${esc(n.fx(l))}</dd>${l < n.max ? `<dt>다음</dt><dd class="nx">${esc(n.fx(l + 1))}</dd>` : ''}<dt>최대</dt><dd>${esc(n.fx(n.max))}</dd></dl>
+    ${st.cls === 'max' ? '' : `<ul class="cond">${conds.map(c => `<li class="${c.ok ? 'ok' : 'no'}">${c.ok ? '✓' : '✗'} ${c.t}</li>`).join('')}</ul>`}
+    <button type="button" class="btn primary" data-spend ${st.cls === 'avail' ? '' : 'disabled'}>${st.cls === 'max' ? '최대 레벨' : '포인트 1 써서 올리기'}</button>
+  </div>`;
+}
+
+function doUpgrade(b) {
+  const st = upState(b);
+  if (!st.ok) { toast(st.reason); return; }
+  for (const m of st.c.mats) S.wallet[m.k] -= m.need;
+  S.wallet.gold -= st.c.gold;
+  S.lv[b.id]++;
+  log(`${b.name} Lv${S.lv[b.id]} · 골드 −${fmt(st.c.gold)} · ${st.c.mats.map(m => `${RES[m.k].n} −${m.need}`).join(' · ')}`);
+  toast(`${b.name} Lv${S.lv[b.id]} — 특성 포인트 +${b.ppl}`);
+  renderWallet(); renderMap();
+}
+function spend(b) {
+  const n = b.nodes.find(x => x.id === ui.node); if (!n) return;
+  const st = nodeState(b, n);
+  if (st.cls !== 'avail') { toast(st.reason); return; }
+  S.nodes[n.id] = (S.nodes[n.id] || 0) + 1;
+  log(`${b.name} · ${n.name} ${S.nodes[n.id]}/${n.max} — ${n.fx(S.nodes[n.id])}`);
+  renderMap();
+  const el = document.querySelector(`[data-node="${n.id}"]`); if (el) el.classList.add('pulse');
+}
+
+function setHub(open) {
+  ui.hub = open; $('#hub').hidden = !open; $('#hubBtn').setAttribute('aria-pressed', open);
+  if (!open) { ui.sel = null; ui.sheet = null; }
+  renderMap();
+}
+$('#hubBtn').addEventListener('click', () => setHub(!ui.hub));
+$('#hubClose').addEventListener('click', () => setHub(false));
+document.querySelectorAll('[data-dummy]').forEach(b => b.addEventListener('click', () => { setHub(false); toast(`${b.textContent} — 목업에서는 그리지 않았다`); }));
+$('#map').addEventListener('click', () => { if (ui.sel && !ui.sheet) { ui.sel = null; renderMap(); } });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape' || !ui.hub) return;
+  if (ui.sheet) ui.sheet = null; else if (ui.sel) ui.sel = null; else { setHub(false); return; }
+  renderMap();
+});
+$('#cheatRes').addEventListener('click', () => { for (const k in RES) S.wallet[k] += 200; renderWallet(); renderMap(); log('치트 — 자원 +200'); });
+$('#cheatLv').addEventListener('click', () => {
+  const b = BY[ui.sheet || ui.sel];
+  if (!b) { toast('먼저 건물을 고르세요'); return; }
+  S.lv[b.id] = Math.min(MAX_LV[b.id], S.acc, S.lv[b.id] + 10); renderMap(); log(`치트 — ${b.name} Lv${S.lv[b.id]}`);
+});
+$('#cheatAcc').addEventListener('click', () => { S.acc = Math.min(ACC_MAX, S.acc + 10); renderMap(); log(`치트 — 계정 Lv${S.acc}`); });
+$('#cheatGold').addEventListener('click', () => { S.wallet.gold += 10000; renderWallet(); renderMap(); log('치트 — 골드 +10,000'); });
+$('#reset').addEventListener('click', () => { S = START(); ui = { hub: true, sel: 'workshop', sheet: null, tab: 'up', node: null }; $('#log').innerHTML = ''; setHub(true); renderWallet(); log('처음 상태'); });
+
+// ③ 표
+$('#bldTable tbody').innerHTML = BUILDINGS.map(b => `<tr><td><b>${b.name}</b></td><td><span class="chip" style="--tc:${tone(b.id)}">${b.cat}</span></td><td>${esc(b.desc)}</td><td>${b.id === 'workshop' ? '공통 산출량 · 산업별 개척 · 속도 · 산출량 (옛 특성 16개)' : b.nodes.map(n => n.name).join(' · ')}</td></tr>`).join('');
+
+renderWallet(); renderMap(); log('처음 상태 — 작업장 Lv5 · 관리소 Lv4');
+</script>
