@@ -6175,6 +6175,16 @@
     "EN": "{0} Results"
   },
   {
+    "Key": "UI.Gacha.ArtifactFound",
+    "KR": "아티팩트 발견!",
+    "EN": "Artifact Found!"
+  },
+  {
+    "Key": "UI.Gacha.SpecialRelicFound",
+    "KR": "Special 유물 발견!",
+    "EN": "Special Relic Found!"
+  },
+  {
     "Key": "UI.Gacha.DrawAgain",
     "KR": "{0}회 더 뽑기",
     "EN": "Draw x{0} Again"

@@ -32,6 +32,10 @@ using UnityEngine.UI;
 // 가챠·상자·우편 세 경로가 같은 연출을 쓴다 — 늘어놓는 방식(낱개·합계)만 갈린다.
 // 칸 하나의 움직임은 'RewardRevealFx', 폭발은 'RewardBurstFx', 조정값은 'RewardRevealSettings'(인스펙터 'reveal')에 있다.
 //
+// ■ 유물 감정은 공개 앞에 무대가 한 번 돈다 (2026-10-25 · T-151 · 목업 '유물감정목업.html')
+// 흔들림 → 금 → 번쩍 → 조각 → 대표 보상 등장 → (아티팩트면) 띠 — 'RelicAppraiseFx'. 그동안 창(Panel)은 투명하고,
+// 무대가 끝나면(또는 눌러 건너뛰면) 창이 나타나 평소처럼 칸을 하나씩 공개한다. 상자 개봉 · 가챠 · 우편은 무대 없이 바로 공개한다.
+//
 // 공개 중에는 [n회 더 뽑기] · 닫기가 잠긴다 — 결과를 다 보기 전에 창을 닫거나 새 결과로 덮지 못한다.
 // 공개 중에 창 아무 곳(칸 포함)을 누르면 **스킵** — 남은 칸이 한꺼번에 끝 모습으로 놓이고 버튼이 풀린다.
 // 칸 클릭은 'SlotView'가 먼저 받으므로('IPointerClickHandler') 칸의 클릭 이벤트도 함께 구독해 스킵으로 읽는다.
@@ -95,6 +99,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private Vector2                  _panelRestPosition; // 흔들기를 끊었을 때 돌아갈 창 자리
     private bool                     _isRevealing;       // 하나씩 공개하는 중인가 — 스킵할 것이 있는가
 
+    private RelicAppraiseFx?         _appraise;
+    private CanvasGroup?             _panelGroup;        // 감정 무대 동안 창을 투명하게
+    private CancellationTokenSource? _appraiseCts;
+    private bool                     _isAppraising;      // 감정 무대가 도는 중인가 — 누르면 건너뛰고 칸 공개로 간다
+
     private PlayerDataModel _data = null!;
 
     private bool _isSubscribed;
@@ -116,6 +125,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         _data              = Services.Get<PlayerDataModel>();
         _burst             = RewardBurstFx.Create(panel, reveal);
+        _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText);
+        _panelGroup        = panel.TryGetComponent(out CanvasGroup existing) ? existing : panel.gameObject.AddComponent<CanvasGroup>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
         _panelRestPosition = panel.anchoredPosition;
         _slots             = new UIRowList<SlotView>(slotPrefab, slotParent, OnSlotCreated, OnSlotHide);
 
@@ -141,6 +152,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     {
         Unsubscribe();
         CancelReveal();
+        CancelAppraise();
     }
 
     #region 구독
@@ -193,13 +205,24 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 사람이 알고 싶은 것도 "무엇을 얼마나 얻었나"이지 몇 번째로 무엇이 나왔는지가 아니다.
     // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
-    // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 제목을 '감정'으로 바꾼다.
+    // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 제목을 '감정'으로 바꾸고, 공개 앞에 감정 무대를 돌린다(T-151).
     private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
-        string source = GameDataLoader.GetOpenCostGold(itemId) > 0L ? Lang.Get("UI.Inventory.Appraise") : Lang.Get("UI.Gacha.SourceBox");
+        bool   isAppraise = GameDataLoader.GetOpenCostGold(itemId) > 0L;
+        string source     = isAppraise ? Lang.Get("UI.Inventory.Appraise") : Lang.Get("UI.Gacha.SourceBox");
 
-        Show(Summarize(rewards), source, showCount: true);
+        List<SlotData> slots = Summarize(rewards);
+
         ShowDrawAgain(false);
+
+        if (isAppraise && rewards.Count > 0)
+        {
+            AppraiseThenShowAsync(itemId, rewards, slots, source).Forget();
+
+            return;
+        }
+
+        Show(slots, source, showCount: true);
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -231,6 +254,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         CancelReveal(); // 공개 중에 [n회 더 뽑기] 결과가 오면 앞의 공개를 끊고 새로 시작한다
+        CancelAppraise();
         _revealRarities.Clear();
 
         for (int i = 0; i < slots.Count; i++)
@@ -470,6 +494,110 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
     #endregion
 
+    #region 감정 무대
+
+    // 감정 무대를 돌리고, 끝나거나 건너뛰면 칸 공개로 넘어간다 (OnItemUseCompleted에서 시작).
+    //   relicTid : 감정한 유물 — 무대에 그린다. 수량은 받은 보상 건수(유물 하나 = 보상 하나)
+    // ※ 건너뛰기는 토큰 취소지만 '_isAppraising'을 그대로 둔다 — 창 닫기 · 새 결과 · 꺼짐은 그것까지 내려 공개로 넘어가지 않는다.
+    private async UniTaskVoid AppraiseThenShowAsync(int relicTid, List<GachaRewardInfo> rewards, List<SlotData> slots, string source)
+    {
+        CancelReveal();
+        CancelAppraise();
+
+        _appraiseCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
+
+        GachaRewardInfo headline  = PickHeadline(rewards);
+        GlobalRarity    rarity    = RarityPalette.ToTableRarity(headline.Rarity);
+        bool            isArt     = headline.RewardType == EGachaRewardType.Artifact;
+        bool            isSpRelic = !isArt && headline.RewardType == EGachaRewardType.Item && rarity == GlobalRarity.Special
+                                    && GameDataLoader.GetOpenCostGold(headline.ItemId) > 0L;
+
+        string? banner = isArt ? Lang.Get("UI.Gacha.ArtifactFound") : isSpRelic ? Lang.Get("UI.Gacha.SpecialRelicFound") : null;
+        Color?  accent = isArt ? RarityPalette.Get(rarity) : isSpRelic ? Color.white : null;
+
+        var relic = new SlotData(relicTid, GameDataLoader.GetItemName(relicTid), rewards.Count.ToString("N0"),
+                                 GameDataLoader.GetItemRarity(relicTid), VisualCatalog.ItemIconOf(relicTid));
+
+        titleText.text               = Lang.Format("UI.Gacha.ResultTitle", source);
+        _panelGroup!.alpha           = 0f;
+        _panelGroup.blocksRaycasts   = false; // 투명한 창의 칸·버튼이 클릭을 가로채지 않게 — 바탕(건너뛰기)이 받는다
+        SetVisible(true);
+        SetAppraising(true);
+
+        await _appraise!.PlayAsync(relic, ToSlotData(headline, headline.Count), banner, accent, _appraiseCts.Token)
+                        .SuppressCancellationThrow();
+
+        if (!_isAppraising)
+        {
+            return; // 닫기 · 새 결과 · 꺼짐 — 정리는 끊은 쪽이 했다
+        }
+
+        CancelAppraise();
+        Show(slots, source, showCount: true);
+    }
+
+    // 무대에 세울 대표 보상 — 아티팩트(높은 등급) → Special 유물 → 가장 높은 등급, 같으면 먼저 나온 것 (AppraiseThenShowAsync에서 호출)
+    private static GachaRewardInfo PickHeadline(List<GachaRewardInfo> rewards)
+    {
+        GachaRewardInfo best      = rewards[0];
+        int             bestScore = int.MinValue;
+
+        foreach (GachaRewardInfo reward in rewards)
+        {
+            int score = (int)RarityPalette.ToTableRarity(reward.Rarity);
+
+            if (reward.RewardType == EGachaRewardType.Artifact)
+            {
+                score += 1000;
+            }
+
+            if (score > bestScore)
+            {
+                best      = reward;
+                bestScore = score;
+            }
+        }
+
+        return best;
+    }
+
+    // 감정 무대 중인가를 바꾸고 닫기 잠금을 맞춘다 — 무대 중에는 닫지 못한다(누르면 건너뛴다)
+    private void SetAppraising(bool on)
+    {
+        _isAppraising            = on;
+        closeButton.interactable = !on;
+    }
+
+    // 감정 무대를 끊고 숨기고 창을 되돌린다 (끝 · 새 결과 · 닫기 · OnDisable)
+    private void CancelAppraise()
+    {
+        if (_isAppraising)
+        {
+            SetAppraising(false);
+        }
+
+        _appraiseCts?.Cancel();
+        _appraiseCts?.Dispose();
+        _appraiseCts = null;
+
+        if (_appraise == null)
+        {
+            return; // Start 전 — 무대가 돈 적이 없다
+        }
+
+        _appraise.Stop();
+        _panelGroup!.alpha          = 1f;
+        _panelGroup.blocksRaycasts  = true;
+    }
+
+    // 건너뛰기 — 무대를 끊는다. 뒤이어 'AppraiseThenShowAsync'가 칸 공개로 넘어간다 (OnPointerClick에서 호출)
+    private void SkipAppraise()
+    {
+        _appraiseCts?.Cancel();
+    }
+
+    #endregion
+
     #region 공개 연출
 
     // 칸을 받은 순서대로 하나씩 공개한다 — 보통은 튀어나오고, 영웅↑은 멈칫 → 차오름 → 폭발 (Show에서 시작).
@@ -589,6 +717,13 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 공개 중이면 스킵한다 — 창 바탕·제목 클릭 (EventSystem 클릭 콜백). 버튼은 자기가 먼저 받는다.
     public void OnPointerClick(PointerEventData eventData)
     {
+        if (_isAppraising)
+        {
+            SkipAppraise();
+
+            return;
+        }
+
         SkipReveal();
     }
 
@@ -643,6 +778,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private void OnCloseClicked()
     {
         CancelReveal();
+        CancelAppraise();
 
         foreach (RewardRevealFx fx in _revealFxs)
         {

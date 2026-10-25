@@ -73,4 +73,13 @@ public static class FxSprites
     public static Sprite? CoinBody  => VisualCatalog.FxOf("coin_body");
     // 네 갈래 반짝 — 동전이 골드 아이콘에 닿을 때
     public static Sprite? CoinSpark => VisualCatalog.FxOf("coin_spark");
+
+    // ── appraise — 유물 감정 무대 ('RelicAppraiseFx') ──
+
+    // 금 세 갈래 — 같은 캔버스 · 유물 칸 위에 겹친다. 'fillAmount'로 자란다(1 위→아래 · 2 오른쪽→왼쪽 · 3 왼쪽→오른쪽)
+    public static Sprite? AppraiseCrack1 => VisualCatalog.FxOf("appraise_crack_1");
+    public static Sprite? AppraiseCrack2 => VisualCatalog.FxOf("appraise_crack_2");
+    public static Sprite? AppraiseCrack3 => VisualCatalog.FxOf("appraise_crack_3");
+    // 유물 파편 — 흙빛을 입혀 돌리며 흩뿌린다
+    public static Sprite? AppraiseShard  => VisualCatalog.FxOf("appraise_shard");
 }

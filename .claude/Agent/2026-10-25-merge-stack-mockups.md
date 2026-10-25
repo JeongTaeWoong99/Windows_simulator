@@ -87,3 +87,11 @@ tags: [client, ui, web, docs]
 - 확인(플레이 · 새 계정 t190 — t180은 창고가 가득 차 감정 결과가 우편으로 가고 수령도 `StorageFull`): 장비 탭 NEW 표시 · 좌클릭 창 · 장착 → 도감 반짝 · 우클릭 수량 팝업 · 판매 Ok · 분해 토스트 '마석 +1' · 일괄 담기 제외 켬/끔 알림 · Ctrl+우 등록 창.
 - ⚠️ 응축 창에서 복제한 이름 글자(22)가 칸 높이 26에서 말줄임으로 통째로 숨었다(글자 0개) → 20. 씬 저장의 무관 블록은 HEAD로 되돌렸고, 저장 직후 `OpenScene`으로 다시 불러 모달을 피했다(씬이 dirty가 아니면 묻지 않는다).
 - 남은 것: 서버 이슈 #87(칸 합치기 · 잠금 · 마석 분해) · 감정 연출 · 🎨 아이콘.
+
+## 추가 9 — 유물 감정 연출 (T-151)
+- 목업 타임라인대로 `Overlay/GachaResultPresenter/RelicAppraiseFx`(코드로 만든 층) — 흔들림 → 금 3갈래(Filled) → 번쩍 → 조각 12 → 광선 · 대표 보상 등장 → 아티팩트/Special 유물이면 띠 → 0.8초 머문 뒤 창이 나타나 평소 칸 공개. 감정(`OpenCostGold>0`)만 · 상자·가챠·우편은 그대로.
+- Presenter: 무대 동안 Panel `CanvasGroup` 투명·레이캐스트 끔 · 닫기 잠금 · 클릭 = 건너뛰기(토큰 취소 · `_isAppraising`은 남겨 칸 공개로 넘어간다) · 닫기/새 결과/OnDisable은 `CancelAppraise`.
+- 그림 `Art/fx/appraise/` 4장(`make_fx.py appraise` · Art 저장소) · Loc_UI 2키(`UI.Gacha.ArtifactFound` · `SpecialRelicFound`).
+- ⚠️ `GetComponent<CanvasGroup>() ?? AddComponent` — Unity 가짜 null을 `??`가 못 걸러 CanvasGroup이 안 붙고 결과 창이 아예 안 떴다 → `TryGetComponent`.
+- 확인(플레이 · t190): 화면 안 녹화 스크립트(`UniTask.Delay(220)`마다 `CaptureScreenshot`)로 단계별 확인 · 아티팩트 띠 · 클릭 건너뛰기. eval 한 번이 ~2.7초라 바깥에서 찍으면 무대가 이미 끝나 있다.
+- 남은 것: 창고 가득 → 우편 알림이 무대 위에 같이 뜬다(그대로 둠) · 🎨 아티팩트 아이콘(대표 보상 칸이 비어 보인다).
