@@ -267,7 +267,7 @@ public class UserPremiumCubeTest
         var (user, b) = UserWithRod();
         UsePremium(user);
 
-        user.TryDisassembleEquips(new[] { Rod });
+        user.TryDisassemble(new[] { Rod }, Array.Empty<ArtifactInfo>());
 
         Last<S_EquipDisassembleResponse>(b).Result.ShouldBe(EResultCode.EnchantPending);
         user.TryGetEquip(Rod, out _).ShouldBeTrue();

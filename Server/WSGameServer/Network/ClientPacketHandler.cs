@@ -399,11 +399,11 @@ public static class ClientPacketHandler
         user.TrySellEntities(req.CharacterIds ?? new List<long>(), req.EquipIds ?? new List<long>());
     }
 
-    /// <summary>장비 분해 — 장비를 재료로 바꾼다. 보유·착용·칸 검증은 User가 한다.</summary>
+    /// <summary>분해 — 장비 · 아티팩트를 재료로 바꾼다. 보유·착용·칸 검증은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_EquipDisassembleRequest(ISession session, C_EquipDisassembleRequest req)
     {
-        ServerLog.Debug("분해", $"장비 분해 요청 장비={req.EquipIds?.Count ?? 0} sid={session.SessionId}");
+        ServerLog.Debug("분해", $"분해 요청 장비={req.EquipIds?.Count ?? 0} 아티팩트={req.Artifacts?.Count ?? 0} sid={session.SessionId}");
 
         var user = session.GetUser();
         if (user == null)
@@ -412,7 +412,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TryDisassembleEquips(req.EquipIds ?? new List<long>());
+        user.TryDisassemble(req.EquipIds ?? new List<long>(), req.Artifacts ?? new List<ArtifactInfo>());
     }
 
     /// <summary>응축 — 같은 캐릭터 재료로 ★을 올린다. 검증·차감은 User가 한다.</summary>

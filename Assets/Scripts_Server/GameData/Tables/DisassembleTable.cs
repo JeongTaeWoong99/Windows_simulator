@@ -10,9 +10,10 @@ namespace GameData
     [MemoryPackable]
     public partial class DisassembleTableRow
     {
-        public GlobalRarity Rarity      { get; set; }        // eGlobalRarity
-        public int          ItemTID     { get; set; }        // int [1..-]
-        public int          ItemCount   { get; set; }        // int [1..-]
-        public string       Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public GlobalRarity Rarity            { get; set; }        // eGlobalRarity
+        public int          ItemTID           { get; set; }        // int [1..-]
+        public int          ItemCount         { get; set; }        // int [1..-]
+        public int          ArtifactItemCount { get; set; }        // int [1..-]
+        public string       Description       { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }
