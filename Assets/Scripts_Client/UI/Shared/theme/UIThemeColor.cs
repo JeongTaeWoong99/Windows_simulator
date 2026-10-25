@@ -89,11 +89,25 @@ public class UIThemeColor : MonoBehaviour
                 return;
             }
 
-            foreach (var target in Apply(UIThemePalette.Current))
+            var changed = Apply(UIThemePalette.Current);
+
+            foreach (var target in changed)
             {
                 UnityEditor.EditorUtility.SetDirty(target);
             }
+
+            // ⚠️ 사람이 고르지 않은 칸이 다시 칠해졌다 = 씬을 열거나 컴파일할 때 태그 역할과 저장된 색이 어긋나 있었다.
+            //   복제한 칸의 색만 손으로 바꾸고 태그 역할을 그대로 둔 경우다. 씬을 열 때마다 색이 바뀌어 저장 표시(*)가 뜬다.
+            //   (2026-10-25 분해 버튼 — 금색인데 역할이 Button)
+            if (changed.Length > 0 && !UnityEditor.Selection.Contains(gameObject))
+            {
+                Debug.LogWarning($"[UI 테마] 태그 역할과 색이 달라 다시 칠했다 — {PathOf(transform)} ({role}). "
+                                 + "의도한 색이면 이 칸의 UIThemeColor 역할을 그 색의 역할로 바꾼다.", this);
+            }
         };
     }
+
+    private static string PathOf(Transform t)
+        => t.parent == null ? t.name : PathOf(t.parent) + "/" + t.name;
 #endif
 }

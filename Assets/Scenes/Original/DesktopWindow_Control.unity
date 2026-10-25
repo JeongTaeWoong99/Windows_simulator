@@ -65602,7 +65602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 10
+  role: 12
   alpha: 1
 --- !u!114 &715196795
 MonoBehaviour:
@@ -81515,7 +81515,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 30
+  role: 21
   alpha: 1
 --- !u!1 &844299139
 GameObject:
@@ -185552,10 +185552,10 @@ RectTransform:
   - {fileID: 715196793}
   m_Father: {fileID: 234211885}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 100, y: 100}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1885240359
 MonoBehaviour:
@@ -187985,7 +187985,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
+  m_fontSize: 24
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -188152,7 +188152,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 30
+  m_fontSize: 24
   m_fontSizeBase: 30
   m_fontWeight: 400
   m_enableAutoSizing: 1
