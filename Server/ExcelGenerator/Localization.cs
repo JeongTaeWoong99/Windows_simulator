@@ -48,6 +48,7 @@ public static class Localization
         var ui = ReadFile(uiPath);
         var files = Directory.EnumerateFiles(dir, FilePrefix + "*.xlsx")
             .Where(p => !Path.GetFileName(p).StartsWith("~$") && Path.GetFileName(p) != UiFile)
+            .OrderBy(p => Path.GetFileName(p), StringComparer.OrdinalIgnoreCase)
             .ToDictionary(p => Path.GetFileName(p), ReadFile);
         var data = Merge(ui, files.Values);
 

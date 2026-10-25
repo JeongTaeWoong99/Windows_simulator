@@ -171,8 +171,8 @@
   },
   {
     "Key": "Character.1008.Name",
-    "KR": "물방개미",
-    "EN": "Diving Beetle"
+    "KR": "견습 발굴꾼",
+    "EN": "Apprentice Digger"
   },
   {
     "Key": "Character.1009.Name",
@@ -181,8 +181,8 @@
   },
   {
     "Key": "Character.1010.Name",
-    "KR": "톱니쥐",
-    "EN": "Gearmouse"
+    "KR": "견습 나무꾼",
+    "EN": "Apprentice Woodcutter"
   },
   {
     "Key": "Character.1011.Name",
@@ -201,8 +201,8 @@
   },
   {
     "Key": "Character.1014.Name",
-    "KR": "솔방울곰",
-    "EN": "Pinecone Bear"
+    "KR": "나무꾼",
+    "EN": "Woodcutter"
   },
   {
     "Key": "Character.1015.Name",
@@ -3711,8 +3711,8 @@
   },
   {
     "Key": "UI.Setting.TaskbarAvoided",
-    "KR": "'항상 위에 고정'이 꺼져 있으면 {0} 이하 크기로는\r\n창을 작업표시줄 위에 둘 수 없습니다.\r\n작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\r\n\r\n작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.",
-    "EN": "With 'Always on Top' off, a window at {0} or smaller\r\ncan't sit over the taskbar —\r\nthe taskbar would hide it and you couldn't grab it again.\r\n\r\nTo keep it over the taskbar, turn on 'Always on Top' in Settings > General."
+    "KR": "'항상 위에 고정'이 꺼져 있으면 {0} 이하 크기로는\n창을 작업표시줄 위에 둘 수 없습니다.\n작업표시줄에 가려져 창을 다시 잡을 수 없기 때문입니다.\n\n작업표시줄 위에 두려면 설정 > 일반에서 '항상 위에 고정'을 켜 주세요.",
+    "EN": "With 'Always on Top' off, a window at {0} or smaller\ncan't sit over the taskbar —\nthe taskbar would hide it and you couldn't grab it again.\n\nTo keep it over the taskbar, turn on 'Always on Top' in Settings > General."
   },
   {
     "Key": "UI.Result.Ok",
@@ -4336,8 +4336,8 @@
   },
   {
     "Key": "UI.Common.PendingCube",
-    "KR": "상급 큐브 결과를 고르지 않은 장비가 {0}개 있습니다.\r\n인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.",
-    "EN": "{0} gear item(s) have an advanced cube result waiting.\r\nGo to Inventory > Gear and click the glowing item to choose."
+    "KR": "상급 큐브 결과를 고르지 않은 장비가 {0}개 있습니다.\n인벤토리 > 장비 탭에서 반짝이는 장비를 눌러 결과를 골라 주세요.",
+    "EN": "{0} gear item(s) have an advanced cube result waiting.\nGo to Inventory > Gear and click the glowing item to choose."
   },
   {
     "Key": "UI.Common.RequestTimeout",
@@ -4456,13 +4456,13 @@
   },
   {
     "Key": "UI.Mail.PartialClaim",
-    "KR": "인벤토리가 부족해 우편 {0}통만 받았습니다.\r\n남은 {1}통은 인벤토리를 정리한 뒤 받아 주세요.",
-    "EN": "Inventory is full — only {0} mail claimed.\r\nClear your inventory to claim the remaining {1}."
+    "KR": "인벤토리가 부족해 우편 {0}통만 받았습니다.\n남은 {1}통은 인벤토리를 정리한 뒤 받아 주세요.",
+    "EN": "Inventory is full — only {0} mail claimed.\nClear your inventory to claim the remaining {1}."
   },
   {
     "Key": "UI.Mail.InventoryFull",
-    "KR": "인벤토리가 부족합니다.\r\n인벤토리를 정리한 뒤 다시 받아 주세요.",
-    "EN": "Inventory is full.\r\nClear your inventory and try again."
+    "KR": "인벤토리가 부족합니다.\n인벤토리를 정리한 뒤 다시 받아 주세요.",
+    "EN": "Inventory is full.\nClear your inventory and try again."
   },
   {
     "Key": "UI.Mail.Delete",
@@ -4496,8 +4496,8 @@
   },
   {
     "Key": "UI.WorkStation.ConfirmUnlock",
-    "KR": "{0} 골드가 필요합니다.\r\n해금하시겠습니까?",
-    "EN": "This costs {0} Gold.\r\nUnlock it?"
+    "KR": "{0} 골드가 필요합니다.\n해금하시겠습니까?",
+    "EN": "This costs {0} Gold.\nUnlock it?"
   },
   {
     "Key": "UI.WorkStation.WaitUnlock",
@@ -4796,8 +4796,8 @@
   },
   {
     "Key": "UI.Common.Loading",
-    "KR": "콜백\r\n기다리는 중...",
-    "EN": "Waiting for\r\nresponse..."
+    "KR": "콜백\n기다리는 중...",
+    "EN": "Waiting for\nresponse..."
   },
   {
     "Key": "UI.ItemGroup.Cube",
@@ -5096,8 +5096,8 @@
   },
   {
     "Key": "UI.Inventory.RewardToMail",
-    "KR": "인벤토리가 가득 차 보상을 우편함에 보관했습니다.\r\n우편함에서 받아 주세요.",
-    "EN": "Inventory is full, so rewards were sent to your mailbox.\r\nClaim them from the mailbox."
+    "KR": "인벤토리가 가득 차 보상을 우편함에 보관했습니다.\n우편함에서 받아 주세요.",
+    "EN": "Inventory is full, so rewards were sent to your mailbox.\nClaim them from the mailbox."
   },
   {
     "Key": "UI.Sell.CartCount",
@@ -5486,8 +5486,8 @@
   },
   {
     "Key": "UI.Condense.NoMaterialNotice",
-    "KR": "재료로 넣을 {0}이(가) 없습니다.\r\n같은 캐릭터끼리만 응축됩니다.",
-    "EN": "No {0} to use as material.\r\nOnly the same character can be condensed."
+    "KR": "재료로 넣을 {0}이(가) 없습니다.\n같은 캐릭터끼리만 응축됩니다.",
+    "EN": "No {0} to use as material.\nOnly the same character can be condensed."
   },
   {
     "Key": "UI.Condense.PickFirst",
@@ -5646,8 +5646,8 @@
   },
   {
     "Key": "UI.Trait.ConfirmLearn",
-    "KR": "특성 포인트 {0}점을 사용합니다.\r\n'{1}'을(를) Lv{2}로 올리시겠습니까?",
-    "EN": "This uses {0} trait point(s).\r\nRaise '{1}' to Lv{2}?"
+    "KR": "특성 포인트 {0}점을 사용합니다.\n'{1}'을(를) Lv{2}로 올리시겠습니까?",
+    "EN": "This uses {0} trait point(s).\nRaise '{1}' to Lv{2}?"
   },
   {
     "Key": "UI.Trait.WaitLearn",
@@ -5736,8 +5736,8 @@
   },
   {
     "Key": "UI.Enchant.NotChosen",
-    "KR": "아직 선택하지 않았습니다.\r\nBEFORE · AFTER 중 하나를 골라 주세요.",
-    "EN": "You haven't chosen yet.\r\nPick either BEFORE or AFTER."
+    "KR": "아직 선택하지 않았습니다.\nBEFORE · AFTER 중 하나를 골라 주세요.",
+    "EN": "You haven't chosen yet.\nPick either BEFORE or AFTER."
   },
   {
     "Key": "UI.Enchant.WornBy",
@@ -5831,8 +5831,8 @@
   },
   {
     "Key": "UI.Enchant.ConfirmUnequip",
-    "KR": "{0}이(가) 끼고 있는 장비입니다.\r\n해제한 뒤 큐브를 사용합니다. (사용 후 다시 끼지 않습니다)",
-    "EN": "{0} is wearing this gear.\r\nIt will be unequipped before using the cube. (It won't be re-equipped.)"
+    "KR": "{0}이(가) 끼고 있는 장비입니다.\n해제한 뒤 큐브를 사용합니다. (사용 후 다시 끼지 않습니다)",
+    "EN": "{0} is wearing this gear.\nIt will be unequipped before using the cube. (It won't be re-equipped.)"
   },
   {
     "Key": "UI.Enchant.WaitUse",
@@ -6606,8 +6606,8 @@
   },
   {
     "Key": "UI.Auction.ConfirmCancel",
-    "KR": "{0} 판매를 취소합니다.\r\n남은 물건은 우편으로 돌아오고, 등록비는 돌려받지 못합니다.",
-    "EN": "Cancel the sale of {0}.\r\nThe item returns by mail, and the listing fee is not refunded."
+    "KR": "{0} 판매를 취소합니다.\n남은 물건은 우편으로 돌아오고, 등록비는 돌려받지 못합니다.",
+    "EN": "Cancel the sale of {0}.\nThe item returns by mail, and the listing fee is not refunded."
   },
   {
     "Key": "UI.Auction.WaitCancel",
@@ -6661,8 +6661,8 @@
   },
   {
     "Key": "UI.Auction.ConfirmRegister",
-    "KR": "{0} 경매에 올립니다. (즉시 판매하면 {1} G)\r\n등록비 {2} G가 바로 빠집니다 — 취소하면 돌려받지 못하고, 기간이 끝나면 돌려받습니다.",
-    "EN": "List {0} on the auction? (Instant sell: {1} G)\r\nThe {2} G listing fee is charged now — it's lost if you cancel, and refunded when the listing expires."
+    "KR": "{0} 경매에 올립니다. (즉시 판매하면 {1} G)\n등록비 {2} G가 바로 빠집니다 — 취소하면 돌려받지 못하고, 기간이 끝나면 돌려받습니다.",
+    "EN": "List {0} on the auction? (Instant sell: {1} G)\nThe {2} G listing fee is charged now — it's lost if you cancel, and refunded when the listing expires."
   },
   {
     "Key": "UI.Auction.WaitRegister",
@@ -6671,8 +6671,8 @@
   },
   {
     "Key": "UI.Auction.Registered",
-    "KR": "등록했습니다. (등록비 {0} G)\r\n팔리면 대금이 우편으로 옵니다.",
-    "EN": "Listed. (Fee {0} G)\r\nProceeds arrive by mail when sold."
+    "KR": "등록했습니다. (등록비 {0} G)\n팔리면 대금이 우편으로 옵니다.",
+    "EN": "Listed. (Fee {0} G)\nProceeds arrive by mail when sold."
   },
   {
     "Key": "UI.Auction.ActUnavailable",
@@ -6816,8 +6816,8 @@
   },
   {
     "Key": "UI.Auction.PriceEmpty",
-    "KR": "위 검색창에 아이템 이름을 치면 아래에 후보가 뜹니다 — 고르면 시세를 엽니다.\r\n검색 결과 줄의 [시세]로도 열 수 있습니다.",
-    "EN": "Type an item name in the search box above to see suggestions — pick one to open its prices.\r\nYou can also open it with [Prices] on a search result row."
+    "KR": "위 검색창에 아이템 이름을 치면 아래에 후보가 뜹니다 — 고르면 시세를 엽니다.\n검색 결과 줄의 [시세]로도 열 수 있습니다.",
+    "EN": "Type an item name in the search box above to see suggestions — pick one to open its prices.\nYou can also open it with [Prices] on a search result row."
   },
   {
     "Key": "UI.Auction.ShowListings",

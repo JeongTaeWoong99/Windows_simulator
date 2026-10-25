@@ -17,13 +17,14 @@ namespace GameData
             CharacterTID = PackerUtil.ParseInt(cells[0], Table, "CharacterTID"),
             Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
             GlobalRarity = PackerUtil.ParseEnum<GlobalRarity>(cells[2], Table, "GlobalRarity"),
-            Farming      = PackerUtil.ParseInt(cells[3], Table, "Farming"),
-            Excavation   = PackerUtil.ParseInt(cells[4], Table, "Excavation"),
-            Mining       = PackerUtil.ParseInt(cells[5], Table, "Mining"),
-            Logging      = PackerUtil.ParseInt(cells[6], Table, "Logging"),
-            Hunting      = PackerUtil.ParseInt(cells[7], Table, "Hunting"),
-            BasePrice    = PackerUtil.ParseInt(cells[8], Table, "BasePrice", 0, null),
-            Description  = cells[9].Length > 0 ? PackerUtil.RequireString(cells[9], Table, "Description") : "",
+            Race         = PackerUtil.ParseEnum<CharacterRace>(cells[3], Table, "Race"),
+            Farming      = PackerUtil.ParseInt(cells[4], Table, "Farming"),
+            Excavation   = PackerUtil.ParseInt(cells[5], Table, "Excavation"),
+            Mining       = PackerUtil.ParseInt(cells[6], Table, "Mining"),
+            Logging      = PackerUtil.ParseInt(cells[7], Table, "Logging"),
+            Hunting      = PackerUtil.ParseInt(cells[8], Table, "Hunting"),
+            BasePrice    = PackerUtil.ParseInt(cells[9], Table, "BasePrice", 0, null),
+            Description  = cells[10].Length > 0 ? PackerUtil.RequireString(cells[10], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

@@ -127,4 +127,16 @@ namespace GameData
 
         Max     ,
     };
+
+    public enum CharacterRace : byte
+    {
+        None    = 0,
+
+        Human   = 1,  // 인간
+        Monster = 2,  // 마물
+        Undead  = 3,  // 언데드
+        Golem   = 4,  // 골렘
+
+        Max    ,
+    };
 }

@@ -322,12 +322,20 @@ DB에 남는 것은 **레벨·경험치**뿐이고, 레벨 가산은 조회 때�
 - **이름은 그림을, 적성은 이름을 따른다.** 그림만 바꾸고 적성을 그대로 두면 "흑기사 = 발굴 9" 같은 어긋남이 생긴다(2026-10-18 실제로 났다).
 - 등급(1.2)은 그림의 공격 모션 수·외형으로 정하고, 주력 산업은 위 표로 정한다 — **두 축은 따로 본다.**
 
-**데이터 영향:** `Character.xlsx`에 `Race` 컬럼 추가 · `Enum.xlsx`에 `CharacterRace` enum 신설.
-enum은 **뒤에만 추가한다**.
+### 4.2 종족 목록 (2026-10-25 · 이슈 #79)
 
-> ⏸ **`Race` 컬럼은 아직 넣지 않았다(2026-09-02 재확인).** 30종의 적성은 **등급과 주력 산업**으로
-> 설계돼 있고(1.2), 종족 축은 아직 그 위에 얹히지 않았다.
-> **외형 리소스가 붙을 때 함께 넣는다** — 지금 넣으면 값이 외형과 따로 놀다가 어긋난다.
+`Character.xlsx`의 `Race` 컬럼(`Enum.xlsx`의 `CharacterRace`)에 캐릭터마다 적는다. **표시용이고 로직은 읽지 않는다.**
+
+| 값 | 종족 | 지금 캐릭터 |
+| --- | --- | --- |
+| 1 `Human` | 인간 | 떠돌이 전사 · 기사·마법사·전사들 · 견습 발굴꾼 · 견습 나무꾼 · 나무꾼 |
+| 2 `Monster` | 마물 | 슬라임 · 쥐 · 박쥐 · 날개 눈알 · 버섯 인간 · 고블린 · 미믹 · 붉은 집게게 |
+| 3 `Undead` | 언데드 | 망령 마법사 · 해골 병사 · 죽음의 사신 |
+| 4 `Golem` | 골렘 | 바위 골렘 · 흑요석골렘 |
+
+- **"드워프는 채굴을 잘한다" 같은 경향은 사람이 캐릭터마다 적성 값으로 조절한다** — 종족에서 적성을 계산하는 규칙은 두지 않는다
+- 캐릭터가 늘면 종족(드워프 등)을 **enum 뒤에만** 덧붙인다
+- 1008·1010·1014는 그림이 없어 기본 캐릭터 그림을 임시로 쓴다 — 그림이 들어오면 같은 TID에 바꿔 끼운다([T-174](../../../tasks/art/T-174-산업별캐릭터그림채우기.md))
 
 ---
 
@@ -497,7 +505,7 @@ enum은 **뒤에만 추가한다**.
 
 | 대상 | 내용 |
 | --- | --- |
-| `Character.xlsx` | `CharacterTable`: `CharacterTID` · `Name` · **`GlobalRarity`** · 산업 적성 5열 · `BasePrice` · `Description` (`Race`는 보류 → 4장) · **`CharacterLevelTable`**: 레벨(=TID) → `RequiredExp` · **`SpeedAddPermille`** (100행 → 5.2 · 5.4) |
+| `Character.xlsx` | `CharacterTable`: `CharacterTID` · `Name` · **`GlobalRarity`** · **`Race`**(종족 — 표시용 → 4.2) · 산업 적성 5열 · `BasePrice` · `Description` · **`CharacterLevelTable`**: 레벨(=TID) → `RequiredExp` · **`SpeedAddPermille`** (100행 → 5.2 · 5.4) |
 | `Gacha.xlsx` | `GachaInfoTable`(풀 이름·비용) · `GachaCharacterTable`(캐릭터 풀) → 5.1 · `GachaEquipTable`(장비 풀 3개) → 5.1.1 |
 | `WorkSpeedTable` | 적성 → 기본 작업속도(천분율). `Ref`로 적성값을 검증한다 |
 | `IndustryLevelTable.ExpPerJudge` | `(산업, 레벨)`별 **판정 1회당 캐릭터 경험치** → 5.2 |
