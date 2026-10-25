@@ -16,7 +16,7 @@ public static class ExcelGenerator
         var excels = Directory.EnumerateFiles(excelDir, "*.xlsx")
             .Where(path => !Path.GetFileName(path).StartsWith("~$"))
             .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase))   // 하위 폴더(Localization/)는 읽지 않는다 — 다른 테이블을 다 읽은 뒤 Localization이 따로 맞춘다
-            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);   // 나열 순서는 파일 시스템마다 다르다(맥 APFS) — 생성물 순서가 OS를 타지 않게 이름순으로 고정한다
+            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);   // 파일 순서 = 생성물 순서 — OS마다 열거 순서가 달라 정렬해 고정한다
 
         // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 발굴 …)이고
         // 베이스 이름이 같은 시트들은 한 테이블로 병합된다. '.' 없는 시트는 그대로 시트=테이블.
