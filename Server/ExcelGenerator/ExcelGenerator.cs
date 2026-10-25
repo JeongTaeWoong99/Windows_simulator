@@ -15,7 +15,8 @@ public static class ExcelGenerator
 
         var excels = Directory.EnumerateFiles(excelDir, "*.xlsx")
             .Where(path => !Path.GetFileName(path).StartsWith("~$"))
-            .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase));   // 하위 폴더(Localization/)는 읽지 않는다 — 다른 테이블을 다 읽은 뒤 Localization이 따로 맞춘다
+            .Where(path => !string.Equals(Path.GetFileName(path), "Enum.xlsx", StringComparison.OrdinalIgnoreCase))   // 하위 폴더(Localization/)는 읽지 않는다 — 다른 테이블을 다 읽은 뒤 Localization이 따로 맞춘다
+            .OrderBy(path => Path.GetFileName(path), StringComparer.OrdinalIgnoreCase);   // 나열 순서는 파일 시스템마다 다르다(맥 APFS) — 생성물 순서가 OS를 타지 않게 이름순으로 고정한다
 
         // 시트 이름 "<테이블명>.<접미사>" 규약: 접미사는 사람용 라벨(Lv1, 발굴 …)이고
         // 베이스 이름이 같은 시트들은 한 테이블로 병합된다. '.' 없는 시트는 그대로 시트=테이블.
@@ -374,7 +375,8 @@ public static class ExcelGenerator
             var cells = new string[columnInfos.Count];
             for (var i = 0; i < columnInfos.Count; i++)
             {
-                cells[i] = ws.Cell(row, colNumbers[i]).GetString().Trim();
+                // 셀 안 줄바꿈은 CRLF로 고정한다 — 읽는 라이브러리가 OS 줄바꿈으로 돌려줘 맥에서는 LF가 되고 생성물이 OS를 탄다
+                cells[i] = ws.Cell(row, colNumbers[i]).GetString().Trim().ReplaceLineEndings("\r\n");
             }
             rows.Add(cells);
         }

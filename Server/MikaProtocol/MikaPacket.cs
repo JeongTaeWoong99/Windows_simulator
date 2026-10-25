@@ -121,6 +121,8 @@ namespace MikaProtocol
         S_ArtifactActiveResponse = 91,
         C_ArtifactSellRequest = 92,
         S_ArtifactSellResponse = 93,
+        C_ShopBuyRequest = 94,
+        S_ShopBuyResponse = 95,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -579,6 +581,26 @@ namespace MikaProtocol
         public List<GachaRewardInfo>? Rewards         { get; set; }
         public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
         public bool                   StoredInMail    { get; set; }  // 창고에 안 들어가 보상 전체를 우편으로 보관했다 — ItemChangeInfos엔 상자 차감만 있다
+    }
+
+    /// <summary>골드 상점 구매(#78). <b>가격은 서버가 정한다</b> — 클라는 어느 품목(<c>ShopTable.ShopTID</c>)을 몇 개 살지만 보낸다.</summary>
+    [MemoryPackable, Packet(PacketId.C_ShopBuyRequest)]
+    public partial class C_ShopBuyRequest : IPacket
+    {
+        public int ShopTID { get; set; }
+        public int Count   { get; set; }  // 1~50 — 한 번에 여는 상자 수와 같다(Constants.BoxOpenMax)
+    }
+
+    /// <summary>
+    /// 구매 결과. <c>ItemChangeInfos</c>는 산 아이템의 누적 총량(칸마다 한 줄).
+    /// 골드 잔액은 <see cref="S_CurrencyResponse"/>가 따로 내려간다. 실패하면 아무것도 바뀌지 않는다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_ShopBuyResponse)]
+    public partial class S_ShopBuyResponse : IPacket
+    {
+        public EResultCode           Result          { get; set; }
+        public int                   ShopTID         { get; set; }
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }
     }
 
     [MemoryPackable, Packet(PacketId.C_ItemSellRequest)]

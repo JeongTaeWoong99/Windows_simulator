@@ -1,0 +1,26 @@
+[
+  {
+    "ShopTID": 1,
+    "ItemTID": 100071,
+    "PriceGold": 1000,
+    "Description": "캐릭터 뽑기권 A"
+  },
+  {
+    "ShopTID": 2,
+    "ItemTID": 100072,
+    "PriceGold": 3000,
+    "Description": "캐릭터 뽑기권 B"
+  },
+  {
+    "ShopTID": 3,
+    "ItemTID": 100073,
+    "PriceGold": 8000,
+    "Description": "캐릭터 뽑기권 C"
+  },
+  {
+    "ShopTID": 4,
+    "ItemTID": 100074,
+    "PriceGold": 20000,
+    "Description": "캐릭터 뽑기권 D"
+  }
+]

@@ -222,5 +222,37 @@
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "유물 감정 전용 — 골드로 뽑을 수 없다 · 비용은 ItemTable.OpenCostGold (원본 상자 풀 23)"
+  },
+  {
+    "GachaInfoTID": 32,
+    "Name": "캐릭터 뽑기권 A",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "뽑기권 전용 — 골드로 뽑을 수 없다 · 희귀 이하 (아이템 100071)"
+  },
+  {
+    "GachaInfoTID": 33,
+    "Name": "캐릭터 뽑기권 B",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "뽑기권 전용 — 골드로 뽑을 수 없다 · 영웅 이하 (아이템 100072)"
+  },
+  {
+    "GachaInfoTID": 34,
+    "Name": "캐릭터 뽑기권 C",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "뽑기권 전용 — 골드로 뽑을 수 없다 · 전설 이하 (아이템 100073)"
+  },
+  {
+    "GachaInfoTID": 35,
+    "Name": "캐릭터 뽑기권 D",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "뽑기권 전용 — 골드로 뽑을 수 없다 · 신화 이하 (아이템 100074)"
   }
 ]

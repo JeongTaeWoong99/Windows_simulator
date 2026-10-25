@@ -68,9 +68,11 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 열_수_있는_아이템의_풀에서_캐릭터가_나오지_않는다()
+    public void 캐릭터는_상점에서_파는_뽑기권에서만_나온다()
     {
-        var pools = Openables.Select(r => r.OpenGachaId).ToHashSet();
+        // 상자·열쇠·유물에서 캐릭터가 나오면 캐릭터를 얻는 길이 뽑기권 말고도 생긴다(#78 — 캐릭터는 뽑기권으로만).
+        var sold  = GameTable.ShopTable.All.Select(r => r.ItemTID).ToHashSet();
+        var pools = Openables.Where(r => !sold.Contains(r.ItemTID)).Select(r => r.OpenGachaId).ToHashSet();
 
         GameTable.GachaCharacterTable.All.Where(r => pools.Contains(r.GachaId)).ShouldBeEmpty();
     }

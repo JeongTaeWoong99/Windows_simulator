@@ -2196,6 +2196,54 @@
     "OpenCostGold": 0
   },
   {
+    "ItemTID": 100071,
+    "Name": "캐릭터 뽑기권 A",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "BasePrice": 500,
+    "OpenGachaId": 32,
+    "Description": "골드 상점 품목(가격은 ShopTable) · 희귀 이하 캐릭터 1명 (#78)",
+    "Tooltip": "열면 희귀 이하 캐릭터 1명이 나온다",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100072,
+    "Name": "캐릭터 뽑기권 B",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Epic",
+    "MaxStack": 9999,
+    "BasePrice": 1500,
+    "OpenGachaId": 33,
+    "Description": "골드 상점 품목(가격은 ShopTable) · 영웅 이하 캐릭터 1명 (#78)",
+    "Tooltip": "열면 영웅 이하 캐릭터 1명이 나온다",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100073,
+    "Name": "캐릭터 뽑기권 C",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Legendary",
+    "MaxStack": 9999,
+    "BasePrice": 4000,
+    "OpenGachaId": 34,
+    "Description": "골드 상점 품목(가격은 ShopTable) · 전설 이하 캐릭터 1명 (#78)",
+    "Tooltip": "열면 전설 이하 캐릭터 1명이 나온다",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100074,
+    "Name": "캐릭터 뽑기권 D",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Mythic",
+    "MaxStack": 9999,
+    "BasePrice": 10000,
+    "OpenGachaId": 35,
+    "Description": "골드 상점 품목(가격은 ShopTable) · 신화 이하 캐릭터 1명 (#78)",
+    "Tooltip": "열면 신화 이하 캐릭터 1명이 나온다",
+    "OpenCostGold": 0
+  },
+  {
     "ItemTID": 100061,
     "Name": "흙 묻은 유물",
     "ItemType": "Relic",

@@ -301,6 +301,22 @@ public static class ClientPacketHandler
         user.TryChooseEnchant(req.EquipId, req.KeepNew);
     }
 
+    /// <summary>골드 상점에서 산다(#78). <b>가격은 서버가 정한다</b> — 클라이언트는 품목과 개수만 보낸다.</summary>
+    [PacketHandler]
+    public static void Handle_C_ShopBuyRequest(ISession session, C_ShopBuyRequest req)
+    {
+        ServerLog.Debug("상점", $"구매 요청 ShopTID={req.ShopTID} Count={req.Count} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_ShopBuyResponse { Result = EResultCode.NotLoggedIn, ShopTID = req.ShopTID });
+            return;
+        }
+
+        ShopService.Instance.Buy(user, req.ShopTID, req.Count);
+    }
+
     /// <summary>
     /// 아이템을 즉시 판매한다. <b>가격은 서버가 정한다</b> — 클라이언트는 무엇을 몇 개 팔지만 보낸다.
     /// </summary>

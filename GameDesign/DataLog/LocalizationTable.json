@@ -1115,6 +1115,26 @@
     "EN": "Appraisal — Rainbow Relic"
   },
   {
+    "Key": "GachaInfo.32.Name",
+    "KR": "캐릭터 뽑기권 A",
+    "EN": "Character Ticket A"
+  },
+  {
+    "Key": "GachaInfo.33.Name",
+    "KR": "캐릭터 뽑기권 B",
+    "EN": "Character Ticket B"
+  },
+  {
+    "Key": "GachaInfo.34.Name",
+    "KR": "캐릭터 뽑기권 C",
+    "EN": "Character Ticket C"
+  },
+  {
+    "Key": "GachaInfo.35.Name",
+    "KR": "캐릭터 뽑기권 D",
+    "EN": "Character Ticket D"
+  },
+  {
     "Key": "IndustryLevel.101.Name",
     "KR": "텃밭",
     "EN": "Garden Plot"
@@ -3068,6 +3088,46 @@
     "Key": "Item.100050.Tooltip",
     "KR": "",
     "EN": ""
+  },
+  {
+    "Key": "Item.100071.Name",
+    "KR": "캐릭터 뽑기권 A",
+    "EN": "Character Ticket A"
+  },
+  {
+    "Key": "Item.100071.Tooltip",
+    "KR": "열면 희귀 이하 캐릭터 1명이 나온다",
+    "EN": "Open to get one character of Rare grade or lower"
+  },
+  {
+    "Key": "Item.100072.Name",
+    "KR": "캐릭터 뽑기권 B",
+    "EN": "Character Ticket B"
+  },
+  {
+    "Key": "Item.100072.Tooltip",
+    "KR": "열면 영웅 이하 캐릭터 1명이 나온다",
+    "EN": "Open to get one character of Epic grade or lower"
+  },
+  {
+    "Key": "Item.100073.Name",
+    "KR": "캐릭터 뽑기권 C",
+    "EN": "Character Ticket C"
+  },
+  {
+    "Key": "Item.100073.Tooltip",
+    "KR": "열면 전설 이하 캐릭터 1명이 나온다",
+    "EN": "Open to get one character of Legendary grade or lower"
+  },
+  {
+    "Key": "Item.100074.Name",
+    "KR": "캐릭터 뽑기권 D",
+    "EN": "Character Ticket D"
+  },
+  {
+    "Key": "Item.100074.Tooltip",
+    "KR": "열면 신화 이하 캐릭터 1명이 나온다",
+    "EN": "Open to get one character of Mythic grade or lower"
   },
   {
     "Key": "Item.100061.Name",

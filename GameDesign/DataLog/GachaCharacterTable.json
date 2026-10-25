@@ -238,5 +238,853 @@
     "Count": 1,
     "Weight": 3,
     "Description": "Mythic 별빛드래곤"
+  },
+  {
+    "GachaCharacterTID": 32001,
+    "GachaId": 32,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 떠돌이 전사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32002,
+    "GachaId": 32,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 들쥐 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32003,
+    "GachaId": 32,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 물방개미 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32004,
+    "GachaId": 32,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 동굴 박쥐 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32005,
+    "GachaId": 32,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 톱니쥐 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32006,
+    "GachaId": 32,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 7700,
+    "Description": "Common 흡혈 박쥐 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32007,
+    "GachaId": 32,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 숲 슬라임 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32008,
+    "GachaId": 32,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 뿔쥐 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32009,
+    "GachaId": 32,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 가시 슬라임 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32010,
+    "GachaId": 32,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 방랑 기사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32011,
+    "GachaId": 32,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 날개 눈알 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32012,
+    "GachaId": 32,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 망령 마법사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32013,
+    "GachaId": 32,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 화염 마법사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32014,
+    "GachaId": 32,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 솔방울곰 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32015,
+    "GachaId": 32,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 미믹 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32016,
+    "GachaId": 32,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 버섯 인간 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32017,
+    "GachaId": 32,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 고블린 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32018,
+    "GachaId": 32,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 은빛 기사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32019,
+    "GachaId": 32,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 그림자 마법사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32020,
+    "GachaId": 32,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 무예가 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 32021,
+    "GachaId": 32,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 해골 병사 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 33001,
+    "GachaId": 33,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 떠돌이 전사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33002,
+    "GachaId": 33,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 들쥐 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33003,
+    "GachaId": 33,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 물방개미 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33004,
+    "GachaId": 33,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 동굴 박쥐 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33005,
+    "GachaId": 33,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 톱니쥐 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33006,
+    "GachaId": 33,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 4480,
+    "Description": "Common 흡혈 박쥐 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33007,
+    "GachaId": 33,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 숲 슬라임 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33008,
+    "GachaId": 33,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 뿔쥐 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33009,
+    "GachaId": 33,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 가시 슬라임 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33010,
+    "GachaId": 33,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 방랑 기사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33011,
+    "GachaId": 33,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 날개 눈알 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33012,
+    "GachaId": 33,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 망령 마법사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33013,
+    "GachaId": 33,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 화염 마법사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33014,
+    "GachaId": 33,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 솔방울곰 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33015,
+    "GachaId": 33,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 미믹 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33016,
+    "GachaId": 33,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 버섯 인간 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33017,
+    "GachaId": 33,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 고블린 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33018,
+    "GachaId": 33,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 은빛 기사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33019,
+    "GachaId": 33,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 그림자 마법사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33020,
+    "GachaId": 33,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 무예가 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33021,
+    "GachaId": 33,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 해골 병사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33022,
+    "GachaId": 33,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 바위 골렘 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33023,
+    "GachaId": 33,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 붉은 집게게 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33024,
+    "GachaId": 33,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 대검 전사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33025,
+    "GachaId": 33,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 검왕 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33026,
+    "GachaId": 33,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 영웅 기사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34001,
+    "GachaId": 34,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 떠돌이 전사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34002,
+    "GachaId": 34,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 들쥐 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34003,
+    "GachaId": 34,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 물방개미 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34004,
+    "GachaId": 34,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 동굴 박쥐 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34005,
+    "GachaId": 34,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 톱니쥐 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34006,
+    "GachaId": 34,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 3080,
+    "Description": "Common 흡혈 박쥐 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34007,
+    "GachaId": 34,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 숲 슬라임 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34008,
+    "GachaId": 34,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 뿔쥐 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34009,
+    "GachaId": 34,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 가시 슬라임 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34010,
+    "GachaId": 34,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 방랑 기사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34011,
+    "GachaId": 34,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 날개 눈알 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34012,
+    "GachaId": 34,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 망령 마법사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34013,
+    "GachaId": 34,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 화염 마법사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34014,
+    "GachaId": 34,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 솔방울곰 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34015,
+    "GachaId": 34,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 미믹 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34016,
+    "GachaId": 34,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 버섯 인간 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34017,
+    "GachaId": 34,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 고블린 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34018,
+    "GachaId": 34,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 은빛 기사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34019,
+    "GachaId": 34,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 그림자 마법사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34020,
+    "GachaId": 34,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 무예가 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34021,
+    "GachaId": 34,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 해골 병사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34022,
+    "GachaId": 34,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 바위 골렘 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34023,
+    "GachaId": 34,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 붉은 집게게 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34024,
+    "GachaId": 34,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 대검 전사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34025,
+    "GachaId": 34,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 검왕 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34026,
+    "GachaId": 34,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 영웅 기사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34027,
+    "GachaId": 34,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 560,
+    "Description": "Legendary 죽음의 사신 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34028,
+    "GachaId": 34,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 560,
+    "Description": "Legendary 흑기사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34029,
+    "GachaId": 34,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 560,
+    "Description": "Legendary 흑요석골렘 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35001,
+    "GachaId": 35,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 떠돌이 전사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35002,
+    "GachaId": 35,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 들쥐 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35003,
+    "GachaId": 35,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 물방개미 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35004,
+    "GachaId": 35,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 동굴 박쥐 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35005,
+    "GachaId": 35,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 톱니쥐 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35006,
+    "GachaId": 35,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 2240,
+    "Description": "Common 흡혈 박쥐 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35007,
+    "GachaId": 35,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 숲 슬라임 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35008,
+    "GachaId": 35,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 뿔쥐 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35009,
+    "GachaId": 35,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 가시 슬라임 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35010,
+    "GachaId": 35,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 방랑 기사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35011,
+    "GachaId": 35,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 날개 눈알 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35012,
+    "GachaId": 35,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 망령 마법사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35013,
+    "GachaId": 35,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 화염 마법사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35014,
+    "GachaId": 35,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 솔방울곰 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35015,
+    "GachaId": 35,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 미믹 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35016,
+    "GachaId": 35,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 버섯 인간 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35017,
+    "GachaId": 35,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 고블린 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35018,
+    "GachaId": 35,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 은빛 기사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35019,
+    "GachaId": 35,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 그림자 마법사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35020,
+    "GachaId": 35,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 무예가 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35021,
+    "GachaId": 35,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 해골 병사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35022,
+    "GachaId": 35,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 바위 골렘 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35023,
+    "GachaId": 35,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 붉은 집게게 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35024,
+    "GachaId": 35,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 대검 전사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35025,
+    "GachaId": 35,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 검왕 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35026,
+    "GachaId": 35,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 영웅 기사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35027,
+    "GachaId": 35,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "Legendary 죽음의 사신 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35028,
+    "GachaId": 35,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "Legendary 흑기사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35029,
+    "GachaId": 35,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "Legendary 흑요석골렘 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35030,
+    "GachaId": 35,
+    "CharacterTID": 1030,
+    "Count": 1,
+    "Weight": 420,
+    "Description": "Mythic 질풍 검호 (뽑기권 D)"
   }
 ]
