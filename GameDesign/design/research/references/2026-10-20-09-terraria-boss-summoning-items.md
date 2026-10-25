@@ -322,7 +322,7 @@
 **연계 시스템**
 - [아이템](../../item/README.md) 1.1 · 4장 · [유물 감정](../../gathering/excavation/유물감정.md) · [사냥](../../gathering/hunting/README.md) 4·5장
 - [거래](../../trade/README.md) 4.1 · [우편](../../mail/README.md) 1장 · [게임 UI](../../ui/README.md) 2.5
-- [T-114](../../../../tasks/T-114-레이드기획.md) · [T-169](../../../../tasks/T-169-중복개체수용재검토.md)
+- [T-114](../../../../tasks/T-114-레이드기획.md) · [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md)
 
 **설계 원칙 체크**
 
