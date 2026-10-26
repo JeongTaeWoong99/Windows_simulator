@@ -158,6 +158,24 @@ public static class GameDataLoader
         return GameTable.GachaInfoTable.TryGet(gachaId, out row);
     }
 
+    // 골드 상점 품목 전부 — 엑셀 순서 그대로 (T-184). 상점 화면이 이 순서로 카드를 놓는다.
+    public static IReadOnlyList<ShopTableRow> GetShopItems()
+    {
+        return GameTable.ShopTable.All;
+    }
+
+    // 상점 품목 한 행. 없으면 false — 응답의 ShopTID로 이름을 찾을 때 쓴다.
+    public static bool TryGetShopItem(int shopTid, out ShopTableRow row)
+    {
+        return GameTable.ShopTable.TryGet(shopTid, out row);
+    }
+
+    // 이 아이템을 열면 도는 풀 — 'OpenGachaId'. 상자가 아니면 0 ('IsOpenableBox'와 같은 판정).
+    public static int GetOpenGachaId(int itemId)
+    {
+        return GameTable.ItemTable.TryGet(itemId, out var row) ? row.OpenGachaId : 0;
+    }
+
     // 캐릭터 이름을 조회한다. 규칙은 'GetItemName'과 같다.
     public static string GetCharacterName(long characterId)
     {

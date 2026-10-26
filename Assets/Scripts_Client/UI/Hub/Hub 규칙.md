@@ -1,8 +1,8 @@
 # Hub 폴더 규칙
 
-> 최종 업데이트: 2026-10-25 ([창고에 쌓기] — 창고에 이미 있는 자원만 인벤토리에서 채운다 — T-175 · 이슈 #82) · 2026-10-16 (창고 칸 클릭 조작이 인벤토리와 같다 — T-163) · 2026-10-15 (창고 정렬을 인벤토리와 같게 — 방향 ▼▲ · 기준 드롭다운) · 2026-10-15 (창고 화면 — 종류별 3탭 · 인벤토리 격자와 같은 격자 · 끌어 넣기·꺼내기 — T-126) · 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
+> 최종 업데이트: 2026-10-26 (상점 탭 — 캐릭터 뽑기권 A~D 구매 · 뽑기 탭에서 캐릭터 카드를 뺐다 — T-184 · 이슈 #78) · 2026-10-25 ([창고에 쌓기] — 창고에 이미 있는 자원만 인벤토리에서 채운다 — T-175 · 이슈 #82) · 2026-10-16 (창고 칸 클릭 조작이 인벤토리와 같다 — T-163) · 2026-10-15 (창고 정렬을 인벤토리와 같게 — 방향 ▼▲ · 기준 드롭다운) · 2026-10-15 (창고 화면 — 종류별 3탭 · 인벤토리 격자와 같은 격자 · 끌어 넣기·꺼내기 — T-126) · 2026-10-14 (거래 열 → 거점 열 · 경매장 탭을 `#Auction Canvas`로 분리 — T-147) · 2026-10-10 (뽑기 화면 — 풀마다 카드 · 도움말 아이콘 확률 툴팁 — T-143) · 2026-10-01 (창고 탭의 정의 — 두고두고 보관하는 곳 · T-101) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-04 (풀 2종 x 단차·10연차 4버튼 · 이름·비용 표시) · 대상: `Assets/Scripts_Client/UI/Hub/`
 
-**`#Hub Canvas` — 거점 열. 뽑기 · 창고 2탭이다.**
+**`#Hub Canvas` — 거점 열. 뽑기 · 창고 · 상점 3탭이다.**
 
 > 📌 **2026-10-14 개명 (T-147)** — 이 열은 원래 **거래 열(Market)** 이었다. 경매장이 3열 폭 전부를 쓰는 화면으로 빠져
 > [`#Auction Canvas`](<../Auction/Auction 규칙.md>)가 되면서 뽑기·창고만 남아 **거점(Hub)** 으로 바꿨다.
@@ -11,8 +11,9 @@
 | 폴더 | 무엇 |
 |------|------|
 | `HubCanvasView.cs` | 캔버스 껍데기 — `Show(bool)`만 |
-| `HubTabPresenter/` | 탭 줄 — `HubTab`(뽑기·창고)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
+| `HubTabPresenter/` | 탭 줄 — `HubTab`(뽑기·창고·상점)마다 버튼과 **화면(page)** 을 짝지어, 지금 탭의 화면만 켠다 |
 | `GachaPresenter/` | 뽑기 탭의 화면 — 풀마다 카드(`GachaPoolCardView`) · 카드 문구·확률 계산(`GachaPoolSummary`) |
+| `ShopPresenter/` | 상점 탭의 화면 — `ShopTable` 품목마다 카드(뽑기 카드 프리팹을 그대로 쓴다) · 1장 · 10장 구매 (아래 "상점 화면" 절) |
 | `WarehousePresenter/` | 창고 탭의 화면 — 종류별 3탭 · 정렬(방향 ▼▲ · 기준) · 창고 격자. **격자는 인벤토리 격자(`InventoryGridPresenter`)를 `Container = Warehouse`로 둔 것이다** (아래 "창고 화면" 절) |
 
 이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>)에 있다.
@@ -26,6 +27,7 @@
 | 탭 | 화면 | 지금 |
 |---|---|---|
 | 뽑기 | `Gacha Presenter (↓ SUB VIEW)` | 동작 |
+| 상점 | `Shop Presenter (↓ SUB VIEW)` | 동작 — 골드로 아이템을 산다. 지금 품목은 캐릭터 뽑기권 A~D. 서버 [T-184](../../../../tasks/T-184-캐릭터뽑기권상점.md) |
 | 창고 | `Warehouse Presenter (↓ SUB VIEW)` | 동작 — 자원·장비·캐릭터를 두고두고 보관하는 곳(2026-10-01 정의). 서버 [T-107](../../../../tasks/archive/T-107-창고서버.md) · 클라 [T-126](../../../../tasks/archive/T-126-클라창고화면드래그.md) |
 
 - 탭을 새로 붙일 때는 **그 page 안에 Presenter를 넣는다.** `HubTabPresenter`는 안 바뀐다 (창고 탭도 이렇게 붙였다 — 자리 표시 `No Feature Text (TMP)`를 지우고 page에 `WarehousePresenter`를 달았다).
@@ -64,6 +66,29 @@ Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter · VLG 0/5 — HubTabPre
 
 ---
 
+## 상점 화면 — 품목마다 뽑기 카드 한 장 (2026-10-26 · T-184 · 이슈 #78)
+
+캐릭터는 골드로 직접 뽑지 않고 **상점에서 뽑기권(A~D)을 사서 인벤토리에서 연다**(2026-10-24 회의). 그래서 뽑기 탭의 캐릭터 카드를 빼고 상점 탭을 붙였다.
+
+```
+Shop Presenter (↓ SUB VIEW)      ShopPresenter · 뽑기 화면을 복제한 모양 (VLG 5/5)
+└─ Pool Scroll Panel / Viewport / Content
+   └─ Shop Card <ShopTID>        GachaPoolCardView 프리팹 — ShopTable 행마다 Start에서 한 번 만든다
+```
+
+| 자리 | 출처 |
+|---|---|
+| 제목 | 아이템 이름 + 괄호 — 여는 풀(`OpenGachaId`)의 `GachaPoolSummary.Subtitle`("일꾼") |
+| 도움말 아이콘(?) | 여는 풀의 등급 확률 — 뽑기 카드와 같은 계산 |
+| 종수 줄 | **보유 n장** — 인벤토리 + 창고 합. `InventoryChanged`에 다시 쓴다 |
+| [1장] · [10장] | `PriceGold × 개수` — 모자라면 경고색 + 잠금 |
+
+- **카드는 인스펙터에 줄로 넣지 않는다** — 뽑기 화면과 다르다. 품목이 엑셀(`Shop.xlsx`)에 늘면 화면도 저절로 는다. 한 번 만들고 두므로 풀링하지 않는다.
+- **가격은 서버가 정한다** — 클라는 `C_ShopBuyRequest { ShopTID, Count }`만 보낸다(1~50장). 곱한 비용은 미리 보기다. 뽑기의 "10연차 ≠ 단차 × 10" 경고는 여기엔 해당 없다 — 서버도 같은 곱으로 받는다.
+- **여기서 열지 않는다.** 산 뽑기권은 인벤토리로 들어오고, 상자와 같은 `C_ItemUseRequest`로 열린다 — 결과 팝업도 상자와 같다. 완료 토스트가 "인벤토리에서 열어 보세요"라고 말한다.
+- 요청 대기·연타 방지·실패 알림은 `GachaPresenter`와 같은 모양이다. 거절 `InvalidShopRequest` 문구는 `UI.Result.InvalidShopRequest`.
+- 카드 프리팹의 버튼 머리줄은 Presenter가 글자로 넘긴다 — 뽑기 `n회` · 상점 `n장`.
+
 ## 풀마다 카드 한 장 — 카드는 인스펙터에 줄로 넣는다 (T-143)
 
 `GachaInfoTable`(`Gacha.xlsx`)의 풀을 **카드 한 장씩** 보인다. `GachaId`가 곧 `GachaInfoTID`다.
@@ -73,8 +98,8 @@ Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter · VLG 0/5 — HubTabPre
 Gacha Presenter (↓ SUB VIEW)     VLG 5/5
 └─ Pool Scroll Panel             ScrollRect · flexH 1 — 창이 작아지면 굴린다
    └─ Viewport (RectMask2D) / Content (VLG 0/5 + ContentSizeFitter)
-      └─ Character · Weapon · Accessory · Gem Pool Card   GachaPoolCardView 프리팹 × 4 · pref 146
-         ├─ Header Panel   제목 "캐릭터 소환 (일꾼)" · 도움말 아이콘(HelpIcon 프리팹)
+      └─ Weapon · Accessory · Gem Pool Card   GachaPoolCardView 프리팹 × 3 · pref 146 (캐릭터 카드는 상점으로 — T-184)
+         ├─ Header Panel   제목 "<풀 이름> (작업속도 증가)" · 도움말 아이콘(HelpIcon 프리팹)
          └─ Body Panel     대표 아이콘(ItemIconView) + 종수 · [1회] · [10회](강조색)
 ```
 

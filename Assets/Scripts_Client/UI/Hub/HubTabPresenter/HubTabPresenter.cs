@@ -8,7 +8,7 @@ using UnityEngine.UI;
 //   늘리기만 할 때는 끝에 붙이면 씬을 안 건드려도 된다('InventoryTab'과 같은 규칙).
 public enum HubTab
 {
-    // 뽑기 — 골드로 자원·캐릭터를 뽑는다('GachaPresenter'). 지금 유일하게 동작하는 탭이라 기본 탭이다.
+    // 뽑기 — 골드로 장비를 뽑는다('GachaPresenter'). 기본 탭이다.
     Gacha,
 
     // ※ 경매장 탭(옛 값 1)은 빠졌다 — 화면 전체를 쓰는 '#Auction Canvas'로 옮겼다(T-147). 씬의 창고 줄을 2 → 1로 고쳤다.
@@ -16,9 +16,12 @@ public enum HubTab
     // 창고 — 자원·장비·캐릭터를 두고두고 맡겨 두는 곳(인벤토리는 얻은 것이 바로 들어오는 곳). 화면은 'WarehousePresenter'(T-126).
     // ※ 인벤토리(옛 이름 창고/Storage)와 헷갈리지 않게 코드 이름은 'Warehouse'다.
     Warehouse,
+
+    // 상점 — 골드로 아이템을 산다. 지금 품목은 캐릭터 뽑기권 A~D뿐이다. 화면은 'ShopPresenter'(T-184 · #78).
+    Shop,
 }
 
-// 거점 열의 탭 줄 — 뽑기 · 창고 2탭 (씬 왼쪽부터).
+// 거점 열의 탭 줄 — 뽑기 · 창고 · 상점 3탭 (씬 왼쪽부터).
 //
 // 탭마다 화면(page)이 따로 있고, 지금 탭의 화면만 켠다. 인벤토리 탭과 달리 격자 하나를
 // 갈아 끼우는 구조가 아니다 — 화면마다 내용도 모양도 다르다.
@@ -41,7 +44,7 @@ public class HubTabPresenter : MonoBehaviour
         [Tooltip("이 줄이 어느 탭인가")]
         public HubTab tab;
 
-        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 뽑기·창고)")]
+        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 뽑기·창고·상점)")]
         public Button button;
 
         [Tooltip("그 탭을 누르면 켜지는 화면. 나머지 탭의 화면은 꺼진다")]

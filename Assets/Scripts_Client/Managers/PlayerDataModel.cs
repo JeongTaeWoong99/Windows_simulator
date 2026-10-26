@@ -606,6 +606,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<int, List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
 
+    public event Action<int>?         ShopBuyCompleted; // 상점 구매 성공 (산 품목 ShopTID — 아이템은 인벤토리에 이미 반영됐다 · 잔액은 'CurrencyChanged')
+    public event Action<EResultCode>? ShopBuyFailed;    // 상점 구매 실패 (거절 사유)
+
     public event Action?                        MailsChanged;        // 우편함 캐시 갱신됨 (목록·도착·수령·삭제)
     public event Action<List<MailInfo>>?        MailRewardsClaimed;  // 이번에 받은 우편들 (첨부 연출용 — 받은 게 있을 때만)
     public event Action<EResultCode, int, int>? MailClaimCompleted;  // 수령 결과 (결과 코드·이번에 받은 수·남은 수)
@@ -730,6 +733,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EntitySold               += OnEntitySold;
         ServerPacketHandler.EquipDisassembled        += OnEquipDisassembled;
         ServerPacketHandler.ItemUsed                 += OnItemUsed;
+        ServerPacketHandler.ShopBought               += OnShopBought;
         ServerPacketHandler.UnlockListReceived       += OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          += OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
@@ -781,6 +785,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.EntitySold               -= OnEntitySold;
         ServerPacketHandler.EquipDisassembled        -= OnEquipDisassembled;
         ServerPacketHandler.ItemUsed                 -= OnItemUsed;
+        ServerPacketHandler.ShopBought               -= OnShopBought;
         ServerPacketHandler.UnlockListReceived       -= OnUnlockListReceived;
         ServerPacketHandler.UnlockResponded          -= OnUnlockResponded;
         ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
@@ -1317,6 +1322,24 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         ApplyItemChanges(res.ItemChangeInfos);
         ItemUseCompleted?.Invoke(res.ItemTID, res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
+    }
+
+    // 상점 구매 응답 — 인벤토리 반영 후 완료 이벤트 발행 (T-184 · #78).
+    //
+    // ★ ItemChangeInfos = 산 아이템 칸의 갱신 후 누적 총량. 골드는 'S_CurrencyResponse'로 따로 온다.
+    // ★ 실패하면 서버가 아무것도 바꾸지 않았다 — 반영할 것이 없다.
+    private void OnShopBought(S_ShopBuyResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"상점 구매 실패 — ShopTID={res.ShopTID}, 결과={res.Result}");
+            ShopBuyFailed?.Invoke(res.Result);
+
+            return;
+        }
+
+        ApplyItemChanges(res.ItemChangeInfos);
+        ShopBuyCompleted?.Invoke(res.ShopTID);
     }
 
     // 재화 통지 — 스냅샷과 변경이 같은 패킷이라 덮어쓰기만 하면 된다.

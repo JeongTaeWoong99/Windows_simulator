@@ -6,6 +6,7 @@ using MikaProtocol;
 using UnityEngine;
 
 // 가챠 패널 — 거점 열의 뽑기 화면. 풀마다 카드 한 장(1회 · 10회)을 둔다 (T-143).
+// ※ 캐릭터 카드는 뺐다 — 캐릭터는 상점에서 뽑기권을 사서 연다('ShopPresenter' · T-184 · #78). 여기는 장비 풀만 남는다.
 //
 // ■ 왜 거점 열인가
 // 가챠는 기획상 상점에 속한다 — 가챠 티켓이 골드 상점 품목이다.
@@ -30,7 +31,7 @@ public class GachaPresenter : MonoBehaviour
     [Serializable]
     private struct PoolEntry
     {
-        [Tooltip("뽑을 풀 Id (= GachaInfoTable의 GachaInfoTID). 2=캐릭터 · 3=무기 · 4=장신구 · 5=보석")]
+        [Tooltip("뽑을 풀 Id (= GachaInfoTable의 GachaInfoTID). 3=무기 · 4=장신구 · 5=보석 (캐릭터는 상점 뽑기권 — T-184)")]
         public int gachaId;
 
         [Tooltip("이 풀의 카드")]
@@ -56,7 +57,7 @@ public class GachaPresenter : MonoBehaviour
     //   [1] 목록 순서를 화면과 나란히 두어야 사람이 한눈에 대조할 수 있다.
     //   [2] reorderable list로 그려지면 Unity가 그 위의 [CenterHeader]를 건너뛴다 ('UI 규칙.md'의 "공통 작성 규약")
     [CenterHeader("참조")]
-    [SerializeField, NonReorderable, Tooltip("풀 카드들. 화면과 같은 순서로 넣는다 (캐릭터 → 무기 → 장신구 → 보석)")]
+    [SerializeField, NonReorderable, Tooltip("풀 카드들. 화면과 같은 순서로 넣는다 (무기 → 장신구 → 보석)")]
     private PoolEntry[] pools = new PoolEntry[0];
 
     // 버튼별 요청 — 카드마다 1회·10회 두 개씩, '_cards'와 같은 순서. 테이블에 없는 풀은 넣지 않는다(카드를 끈다).
@@ -257,8 +258,8 @@ public class GachaPresenter : MonoBehaviour
         int multi  = (int)Constants.GachaDrawMulti;
 
         card.Bind(title, summary.KindText, summary.Icon,
-                  single, info.CostSingle,
-                  multi,  info.CostMulti,
+                  Lang.Format("UI.Gacha.Times", single), info.CostSingle,
+                  Lang.Format("UI.Gacha.Times", multi),  info.CostMulti,
                   summary.BuildRateTooltip);
     }
 

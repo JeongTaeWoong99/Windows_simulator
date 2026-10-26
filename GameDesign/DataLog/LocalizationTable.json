@@ -4130,6 +4130,11 @@
     "EN": "That slot is full. Drop it on an empty slot."
   },
   {
+    "Key": "UI.Result.InvalidShopRequest",
+    "KR": "살 수 없는 품목이거나 개수가 올바르지 않습니다.",
+    "EN": "That item can't be bought in that quantity."
+  },
+  {
     "Key": "UI.Result.Unknown",
     "KR": "알 수 없는 오류가 발생했습니다. (코드 {0})",
     "EN": "An unknown error occurred. (Code {0})"
@@ -6198,6 +6203,31 @@
     "Key": "UI.Gacha.CloseResult",
     "KR": "[결과 닫기]",
     "EN": "[Close]"
+  },
+  {
+    "Key": "UI.Shop.Tab",
+    "KR": "상점",
+    "EN": "Shop"
+  },
+  {
+    "Key": "UI.Shop.Count",
+    "KR": "{0}장",
+    "EN": "x{0}"
+  },
+  {
+    "Key": "UI.Shop.Owned",
+    "KR": "보유 {0}장",
+    "EN": "Owned {0}"
+  },
+  {
+    "Key": "UI.Shop.Wait",
+    "KR": "상점 구매 {0}장",
+    "EN": "Buy x{0}"
+  },
+  {
+    "Key": "UI.Shop.Bought",
+    "KR": "{0} {1}장을 샀습니다. 인벤토리에서 열어 보세요.",
+    "EN": "Bought {0} x{1}. Open it from your inventory."
   },
   {
     "Key": "UI.Warehouse.Hint",

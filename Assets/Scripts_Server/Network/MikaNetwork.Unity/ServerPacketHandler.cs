@@ -505,6 +505,24 @@ namespace MikaNetwork
 
         #endregion
 
+        #region 상점 (T-184 · #78)
+
+        // 상점 구매 결과 도착 (Handle_S_ShopBuyResponse에서 발행)
+        public static event Action<S_ShopBuyResponse>? ShopBought;
+
+        // 상점 구매 결과 (S_ShopBuyResponse 수신 시 자동 호출)
+        // ※ ItemChangeInfos는 산 아이템 칸의 "갱신 후 누적 총량"이다(델타 아님). 실패하면 아무것도 바뀌지 않는다.
+        // ※ 골드 잔액은 S_CurrencyResponse로 **따로** 온다 — 여기에는 없다.
+        [PacketHandler]
+        public static void Handle_S_ShopBuyResponse(ISession session, S_ShopBuyResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"상점 구매 결과={res.Result}, ShopTID={res.ShopTID}, 변경 {res.ItemChangeInfos?.Count ?? 0}건");
+            ShopBought?.Invoke(res);
+        }
+
+        #endregion
+
         #region 아티팩트 (T-151 · T-181)
 
         // 도감 스냅샷 도착 (Handle_S_ArtifactListResponse에서 발행)

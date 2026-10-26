@@ -72,17 +72,18 @@ public class GachaPoolCardView : MonoBehaviour
         multiButton.onClick.AddListener(() => DrawClicked?.Invoke(true));
     }
 
-    // 풀 하나를 그린다 (GachaPresenter.Start에서 한 번).
-    //   title : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기 31종'
-    //   rates : 도움말 아이콘에 올렸을 때 띄울 확률 툴팁을 만드는 함수
+    // 풀 하나를 그린다 (GachaPresenter · ShopPresenter — 처음과 언어 변경 때).
+    //   title       : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기 31종'
+    //   singleLabel : 버튼 머리줄 — 뽑기는 '1회', 상점은 '1장'
+    //   rates       : 도움말 아이콘에 올렸을 때 띄울 확률 툴팁을 만드는 함수
     public void Bind(string title, string kind, in ItemIconContent iconContent,
-                     int singleCount, long singleCost, int multiCount, long multiCost,
+                     string singleLabel, long singleCost, string multiLabel, long multiCost,
                      Func<TooltipContent?> rates)
     {
         titleText.text       = title;
         kindText.text        = kind;
-        singleCountText.text = Lang.Format("UI.Gacha.Times", singleCount);
-        multiCountText.text  = Lang.Format("UI.Gacha.Times", multiCount);
+        singleCountText.text = singleLabel;
+        multiCountText.text  = multiLabel;
 
         icon.Bind(iconContent);
         rateTrigger.SetProvider(rates);
@@ -93,7 +94,13 @@ public class GachaPoolCardView : MonoBehaviour
         _multiShort  = null;
     }
 
-    // 버튼 잠금과 비용 색을 맞춘다 (GachaPresenter.Refresh에서 호출).
+    // 종수 줄만 다시 쓴다 — 상점 카드의 '보유 n장'처럼 Bind 뒤에 바뀌는 글자 (ShopPresenter에서 호출).
+    public void SetKind(string kind)
+    {
+        kindText.text = kind;
+    }
+
+    // 버튼 잠금과 비용 색을 맞춘다 (GachaPresenter · ShopPresenter의 Refresh에서 호출).
     //   isWaiting : 앞 요청의 응답을 기다리는 중 — 둘 다 잠근다. 비용 색은 골드만 본다
     public void SetState(long gold, bool isWaiting)
     {
