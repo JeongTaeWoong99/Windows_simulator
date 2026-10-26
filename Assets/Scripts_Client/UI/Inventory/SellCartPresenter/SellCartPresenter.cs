@@ -385,16 +385,43 @@ public class SellCartPresenter : MonoBehaviour
             string          name      = GameDataLoader.GetCharacterName(tid);
             int             basePrice = GameDataLoader.GetCharacterPrice(tid);
             GlobalRarity    rarity    = GameDataLoader.GetCharacterRarity(tid);
-            int             star      = _data.GetCharacterStar(characterId);
+            MikaProtocol.CharacterInfo? character = _data.FindCharacter(characterId);
+            int             level     = character?.Level ?? 1;
+            int             star      = character?.Star ?? 0;
+            int             condensed = character?.CondenseCount ?? 0;
+            bool            leveled   = level >= SellCartModel.GrownCharacterLevel;
 
-            // ★ 캐릭터는 이름 뒤에 ★를 붙인다 — 응축을 쌓은 개체가 목록에서 바로 보이게(T-170).
+            // 키운 캐릭터는 이름 뒤에 Lv · ★를 붙인다 — 성장 개체가 목록에서 바로 보이게(T-170).
+            string label = name;
+
+            if (leveled)
+            {
+                label += $" {UIRichText.Paint($"Lv{level}", UIThemeRole.Highlight)}";
+            }
+
+            if (star > 0)
+            {
+                label += $" {UIRichText.Paint(new string('★', star), UIThemeRole.Highlight)}";
+            }
+
             row.Bind(SellCartKind.Character,
                      characterId,
-                     star > 0 ? $"{name} {UIRichText.Paint(new string('★', star), UIThemeRole.Highlight)}" : name,
+                     label,
                      1,
                      UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, 1)),
                      ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
-                     () => BuildEntityTooltip(name, rarity, basePrice, star > 0 ? c => c.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), "", null) : null));
+                     () => BuildEntityTooltip(name, rarity, basePrice, leveled || condensed > 0 ? c =>
+                     {
+                         if (leveled)
+                         {
+                             c.Row(Lang.Get("UI.Inventory.Level"), $"Lv{level}", "", null);
+                         }
+
+                         if (condensed > 0)
+                         {
+                             c.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), "", null);
+                         }
+                     } : null));
         }
 
         foreach (EquipInfo equip in _data.Equips)

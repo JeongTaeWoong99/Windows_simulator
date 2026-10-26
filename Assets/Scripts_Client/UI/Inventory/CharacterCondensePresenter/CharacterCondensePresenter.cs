@@ -111,7 +111,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     private const float PreviewStarAlpha = 0.45f;
 
     // 이 레벨부터 재료로 쓰면 한 번 묻는다 — 키운 캐릭터를 실수로 녹이지 않게(T-130 목업 · 정할 것 1).
-    private const int ConfirmMaterialLevel = 2;
+    private const int ConfirmMaterialLevel = SellCartModel.GrownCharacterLevel;
 
     // 창이 열렸는가. 판매 목록이 이걸 보고 물러난다.
     public bool IsOpen => _targetId != 0L;

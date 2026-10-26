@@ -79,11 +79,17 @@ public class SellCartModel : MonoService<SellCartModel>
     // 도감에 없는 아티팩트(NEW)가 담겨 있나 — 팔면 도감에 남지 않아 화면이 경고한다.
     public bool HasUncollectedArtifact { get; private set; }
 
-    // 담긴 성장 개체 수 — ★ 캐릭터 · 인챈트 장비(T-170). 다시 키우기 어려워 화면이 몇 개인지 경고한다.
+    // 담긴 성장 개체 수 — 키운 캐릭터 · 인챈트 장비(T-170). 다시 키우기 어려워 화면이 몇 개인지 경고한다.
     public int GrownCount { get; private set; }
 
-    // 성장한 개체인가 — ★가 있거나 인챈트가 붙었다. 판매 목록 줄 표시와 경고 개수가 같은 기준을 쓴다.
-    public static bool IsGrown(MikaProtocol.CharacterInfo? character) => character != null && character.Star > 0;
+    // 캐릭터를 키웠다고 보는 레벨 — 응축 재료 확인('CharacterCondensePresenter.ConfirmMaterialLevel')과 같은 기준이다.
+    public const int GrownCharacterLevel = 2;
+
+    // 성장한 개체인가 — 캐릭터는 레벨을 올렸거나 응축을 쌓았다(★ 전 누적 포함), 장비는 인챈트가 붙었다.
+    // 판매 목록 줄 표시와 경고 개수가 같은 기준을 쓴다.
+    // ※ ★만 보면 일하며 레벨이 오른 캐릭터와 ★ 직전까지 응축을 쌓은 캐릭터가 경고 없이 팔린다(2026-10-27 사용자 지적).
+    public static bool IsGrown(MikaProtocol.CharacterInfo? character)
+        => character != null && (character.Level >= GrownCharacterLevel || character.CondenseCount > 0);
     public static bool IsGrown(EquipInfo? equip)         => equip != null && equip.EnchantGrade > 0;
 
     // 담긴 내용이 바뀌었다 — 격자(담김 표시)와 정보 칸(목록·합계)이 다시 그린다.

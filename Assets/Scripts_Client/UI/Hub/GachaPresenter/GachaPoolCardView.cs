@@ -4,7 +4,6 @@ using UnityEngine;
 using UnityEngine.UI;
 
 // 뽑기 풀 카드 한 장 — 제목(괄호) · 도움말 아이콘(?) · 대표 아이콘 · 종수 · [1회] · [10회] ('GachaPresenter'가 Bind한다).
-// 상점 카드('ShopPresenter')도 같은 프리팹이다 — 버튼 머리줄이 'n장'이고, 평소 꺼 둔 [열기]를 켠다(T-184).
 //
 // ■ 카드 하나 = 풀 하나 (T-143)
 // 버튼 8개를 나열하던 화면을 풀마다 카드로 묶었다. 카드는 같은 프리팹(`GachaPoolCardView.prefab`)을 풀 수만큼 둔다.
@@ -24,16 +23,6 @@ public class GachaPoolCardView : MonoBehaviour
 
     [SerializeField, Tooltip("나오는 종수 — '무기 31종'")]
     private TMP_Text kindText = null!;
-
-    [CenterHeader("열기 (상점 카드만)")]
-    [SerializeField, Tooltip("열기 버튼 — 평소 꺼져 있고 SetOpen을 부르면 켜진다(상점의 뽑기권 카드). OnClick은 코드가 연결한다")]
-    private Button openButton = null!;
-
-    [SerializeField, Tooltip("열기 버튼 머리줄 — '열기'")]
-    private TMP_Text openLabelText = null!;
-
-    [SerializeField, Tooltip("열기 버튼 아래 줄 — '보유 9장'")]
-    private TMP_Text openOwnedText = null!;
 
     [CenterHeader("1회")]
     [SerializeField, Tooltip("1회 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
@@ -58,9 +47,6 @@ public class GachaPoolCardView : MonoBehaviour
     // 버튼을 눌렀다 — true면 10회 쪽이다.
     public event Action<bool>? DrawClicked;
 
-    // 열기 버튼을 눌렀다 (상점 카드만 — 'SetOpen'으로 켠 카드).
-    public event Action? OpenClicked;
-
     private long _singleCost;
     private long _multiCost;
 
@@ -81,13 +67,9 @@ public class GachaPoolCardView : MonoBehaviour
         this.RequireRef(multiButton,     nameof(multiButton));
         this.RequireRef(multiCountText,  nameof(multiCountText));
         this.RequireRef(multiCostText,   nameof(multiCostText));
-        this.RequireRef(openButton,      nameof(openButton));
-        this.RequireRef(openLabelText,   nameof(openLabelText));
-        this.RequireRef(openOwnedText,   nameof(openOwnedText));
 
         singleButton.onClick.AddListener(() => DrawClicked?.Invoke(false));
         multiButton.onClick.AddListener(() => DrawClicked?.Invoke(true));
-        openButton.onClick.AddListener(() => OpenClicked?.Invoke());
     }
 
     // 풀 하나를 그린다 (GachaPresenter · ShopPresenter — 처음과 언어 변경 때).
@@ -112,15 +94,10 @@ public class GachaPoolCardView : MonoBehaviour
         _multiShort  = null;
     }
 
-    // 열기 버튼을 켜고 글자·잠금을 맞춘다 (ShopPresenter.Refresh에서 호출). 부르지 않으면 꺼진 채로 남는다(뽑기 카드).
-    //   owned       : '보유 9장'처럼 완성된 아래 줄
-    //   interactable: 가진 것이 있고 대기 중이 아닐 때만 true
-    public void SetOpen(string label, string owned, bool interactable)
+    // 종수 줄만 다시 쓴다 — 상점 카드의 '보유 n장'처럼 Bind 뒤에 바뀌는 글자 (ShopPresenter에서 호출).
+    public void SetKind(string kind)
     {
-        openButton.gameObject.SetActive(true);
-        openButton.interactable = interactable;
-        openLabelText.text      = label;
-        openOwnedText.text      = owned;
+        kindText.text = kind;
     }
 
     // 버튼 잠금과 비용 색을 맞춘다 (GachaPresenter · ShopPresenter의 Refresh에서 호출).
