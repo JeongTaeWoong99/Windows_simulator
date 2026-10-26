@@ -170,7 +170,7 @@ public static class GameDataLoader
         return GameTable.ShopTable.TryGet(shopTid, out row);
     }
 
-    // 이 아이템을 열면 도는 풀 — 'OpenGachaId'. 상자가 아니면 0 ('IsOpenableBox'와 같은 판정).
+    // 이 아이템을 열면 도는 풀 — 'OpenGachaId'. 상자가 아니면 0 ('IsBox'와 같은 판정).
     public static int GetOpenGachaId(int itemId)
     {
         return GameTable.ItemTable.TryGet(itemId, out var row) ? row.OpenGachaId : 0;
