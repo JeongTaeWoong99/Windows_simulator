@@ -2024,9 +2024,15 @@ public class InventoryGridPresenter : MonoBehaviour
     // (PlayerDataModel.ItemUseCompleted 구독)
     // ※ 인벤토리가 차서 보상이 우편으로 갔으면 한 줄 알린다 — 결과창만 보면 인벤토리에 들어온 줄 안다.
     //   알림은 '!Overlay Canvas'에서 결과창보다 뒤 형제라 그 위에 뜬다.
+    // ※ 대기 손잡이가 없으면 이 격자가 연 것이 아니다(다른 격자 · 상점 카드의 [열기]) — 알림은 연 쪽이 한다.
     private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
-        _waitHandle?.Succeed();
+        if (_waitHandle == null)
+        {
+            return;
+        }
+
+        _waitHandle.Succeed();
 
         if (storedInMail)
         {

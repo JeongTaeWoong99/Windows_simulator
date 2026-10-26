@@ -13,9 +13,9 @@ using UnityEngine;
 // ■ 가격은 서버가 정한다
 // 클라는 품목과 개수만 보낸다. 10장 비용은 'PriceGold × 10'으로 미리 보여 줄 뿐이다 — 서버도 같은 곱으로 받는다.
 //
-// ■ 산 뽑기권은 인벤토리에서 연다
-// 상자와 같은 'C_ItemUseRequest'로 열리고 결과도 같은 팝업에 뜬다 — 여기서 열지 않는다.
-// 카드의 '보유 n장'이 인벤토리에 들어온 것을 보여 준다.
+// ■ 산 뽑기권은 카드의 [열기]로 바로 연다 (인벤토리 칸 좌클릭도 된다)
+// 상자와 같은 'C_ItemUseRequest'이고 결과도 같은 팝업에 뜬다. 여는 흐름(수량 묻기 → 요청 → 대기)은 인벤토리 격자와 같다.
+// ※ 인벤토리 격자에 맡기지 않는다 — 인벤토리 열이 닫혀 있으면 그 격자는 응답 구독이 풀려 있어 대기를 닫지 못한다.
 public class ShopPresenter : MonoBehaviour
 {
     // 버튼 두 개의 구매 개수. 서버가 받는 범위는 1~50장이다('InvalidShopRequest').
@@ -47,11 +47,12 @@ public class ShopPresenter : MonoBehaviour
     private PlayerDataModel   _data    = null!;
     private NetworkManager    _network = null!;
     private ServerWaitManager _wait    = null!;
+    private UIManager         _ui      = null!;
 
     // 진행 중인 구매 대기의 손잡이. 응답이 오면 결과를 보고하고, 무응답이면 스스로 타임아웃돼 잠금을 푼다.
     private ServerWaitHandle? _waitHandle;
 
-    // 응답을 기다리는 중인가 — 연타로 두 번 나가면 골드가 꼬이므로 버튼을 잠근다.
+    // 응답을 기다리는 중인가(구매·열기 공통) — 연타로 두 번 나가면 골드·수량이 꼬이므로 버튼을 잠근다.
     private bool _isWaiting;
 
     // 마지막 구매의 개수 — 응답에 개수가 없어 완료 토스트에 쓰려고 기억해 둔다.
@@ -69,6 +70,7 @@ public class ShopPresenter : MonoBehaviour
         _data    = Services.Get<PlayerDataModel>();
         _network = NetworkManager.Instance;
         _wait    = Services.Get<ServerWaitManager>();
+        _ui      = Services.Get<UIManager>();
 
         BuildCards();
 
@@ -116,6 +118,8 @@ public class ShopPresenter : MonoBehaviour
         _isSubscribed           = true;
         _data.ShopBuyCompleted += OnShopBuyCompleted;
         _data.ShopBuyFailed    += OnShopBuyFailed;
+        _data.ItemUseCompleted += OnItemUseCompleted;
+        _data.ItemUseFailed    += OnItemUseFailed;
         _data.CurrencyChanged  += Refresh;
         _data.InventoryChanged += Refresh;
     }
@@ -131,6 +135,8 @@ public class ShopPresenter : MonoBehaviour
         _isSubscribed           = false;
         _data.ShopBuyCompleted -= OnShopBuyCompleted;
         _data.ShopBuyFailed    -= OnShopBuyFailed;
+        _data.ItemUseCompleted -= OnItemUseCompleted;
+        _data.ItemUseFailed    -= OnItemUseFailed;
         _data.CurrencyChanged  -= Refresh;
         _data.InventoryChanged -= Refresh;
     }
@@ -156,7 +162,9 @@ public class ShopPresenter : MonoBehaviour
 
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int shopTid = row.ShopTID;
+            int itemId  = row.ItemTID;
             card.DrawClicked += isMulti => Buy(shopTid, isMulti ? MultiCount : SingleCount);
+            card.OpenClicked += () => AskOpen(itemId);
 
             _entries.Add(new ShopEntry(row, card));
             DrawCard(row, card);
@@ -188,7 +196,7 @@ public class ShopPresenter : MonoBehaviour
             ? $"{itemName} {UIRichText.Small(UIRichText.Label($"({subtitle})"))}"
             : itemName;
 
-        card.Bind(title, "", ItemIconContent.ForItem(row.ItemTID, 1L),
+        card.Bind(title, summary?.KindText ?? "", ItemIconContent.ForItem(row.ItemTID, 1L),
                   Lang.Format("UI.Shop.Count", SingleCount), row.PriceGold * SingleCount,
                   Lang.Format("UI.Shop.Count", MultiCount),  row.PriceGold * MultiCount,
                   () => summary?.BuildRateTooltip());
@@ -240,7 +248,7 @@ public class ShopPresenter : MonoBehaviour
     }
 
     // 구매 성공 도착 — 대기를 닫고 무엇을 샀는지 한 줄 알린다 (PlayerDataModel.ShopBuyCompleted 구독)
-    // ※ 산 것은 인벤토리로 바로 들어온다 — 어디서 여는지를 함께 말한다.
+    // ※ 산 것은 인벤토리로 바로 들어오고, 카드의 '보유 n장'과 [열기]가 InventoryChanged로 따라온다.
     private void OnShopBuyCompleted(int shopTid)
     {
         _waitHandle?.Succeed();
@@ -260,6 +268,91 @@ public class ShopPresenter : MonoBehaviour
 
     #endregion
 
+    #region 열기 요청
+
+    // 몇 장 열지 묻고 연다 (카드의 OpenClicked에 코드로 연결). 인벤토리 칸 좌클릭과 같은 흐름이다.
+    // ※ 한 번에 여는 수는 'Constants.BoxOpenMax'까지다 — 넘기면 서버가 'InvalidUseCount'로 거절한다.
+    private void AskOpen(int itemId)
+    {
+        if (_isWaiting)
+        {
+            return;
+        }
+
+        int owned = _data.GetItemCount(itemId);
+
+        if (owned <= 0)
+        {
+            return; // 버튼이 잠겨 있어야 한다 — 화면이 낡았으면 뒤이어 올 InventoryChanged가 맞춘다
+        }
+
+        int maxOpen = Mathf.Min(owned, (int)Constants.BoxOpenMax);
+
+        // 1장짜리는 물어볼 것이 없다
+        if (maxOpen == 1)
+        {
+            Open(itemId, 1);
+
+            return;
+        }
+
+        _ui.AskAmount(itemId, maxOpen, Lang.Get("UI.Inventory.AskOpen"), amount => Open(itemId, amount));
+    }
+
+    // 'itemId'를 'count'장 연다 (AskOpen · 수량 팝업 확인에서 호출).
+    // ⚠️ 팝업이 뜬 사이 보유 수가 줄었으면 서버가 'NotEnoughItem'으로 거절한다 — 클라가 다시 재지 않는다.
+    private void Open(int itemId, int count)
+    {
+        if (_isWaiting)
+        {
+            return;
+        }
+
+        if (!_data.IsLoggedIn)
+        {
+            ClientLogger.Warn(ClientLogger.Send, "뽑기권 열기 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
+            return;
+        }
+
+        _network.Send(new C_ItemUseRequest
+        {
+            ItemTID = itemId,
+            Count   = count
+        });
+
+        ClientLogger.Info(ClientLogger.Send, $"상점 카드에서 열기 요청 — TID={itemId}, {count}개");
+
+        _isWaiting = true;
+        Refresh();
+        _waitHandle = _wait.Begin(Lang.Format("UI.Shop.WaitOpen", GameDataLoader.GetItemName(itemId), count), onClosed: OnWaitClosed);
+    }
+
+    // 열기 성공 도착 — 내가 연 것이면 대기를 닫는다. 결과 팝업은 'GachaResultPresenter'가 띄운다 (PlayerDataModel.ItemUseCompleted 구독)
+    // ※ 대기 손잡이가 없으면 인벤토리 칸에서 연 것이다 — 우편 넘침 알림도 연 쪽이 한다.
+    private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
+    {
+        if (_waitHandle == null)
+        {
+            return;
+        }
+
+        _waitHandle.Succeed();
+
+        if (storedInMail)
+        {
+            _wait.RaiseNotice(Lang.Get("UI.Inventory.RewardToMail"));
+        }
+    }
+
+    // 열기 실패 도착 — 내가 연 것이면 사유를 알린다 (PlayerDataModel.ItemUseFailed 구독)
+    private void OnItemUseFailed(EResultCode code)
+    {
+        _waitHandle?.Fail(ResultMessages.ToText(code));
+    }
+
+    #endregion
+
     #region 표시 갱신
 
     // 버튼 잠금과 보유 수를 지금 상태에 맞춘다 (Start · OnEnable · 재화·인벤토리 변경 · 대기 시작/종료).
@@ -271,7 +364,13 @@ public class ShopPresenter : MonoBehaviour
         foreach (ShopEntry entry in _entries)
         {
             entry.Card.SetState(_data.Gold, _isWaiting);
-            entry.Card.SetKind(Lang.Format("UI.Shop.Owned", _data.GetItemCount(entry.Row.ItemTID)));
+
+            // 여는 풀이 없는 품목(뽑기권이 아닌 것)은 열기 버튼을 켜지 않는다
+            if (GameDataLoader.IsBox(entry.Row.ItemTID))
+            {
+                int owned = _data.GetItemCount(entry.Row.ItemTID);
+                entry.Card.SetOpen(Lang.Get("UI.Shop.Open"), Lang.Format("UI.Shop.Owned", owned), owned > 0 && !_isWaiting);
+            }
         }
     }
 

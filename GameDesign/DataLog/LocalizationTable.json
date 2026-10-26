@@ -6170,6 +6170,11 @@
     "EN": "Box Opening"
   },
   {
+    "Key": "UI.Gacha.SourceItem",
+    "KR": "{0} 개봉",
+    "EN": "{0}"
+  },
+  {
     "Key": "UI.Gacha.SourceMail",
     "KR": "우편 수령",
     "EN": "Mail Claim"
@@ -6226,8 +6231,18 @@
   },
   {
     "Key": "UI.Shop.Bought",
-    "KR": "{0} {1}장을 샀습니다. 인벤토리에서 열어 보세요.",
-    "EN": "Bought {0} x{1}. Open it from your inventory."
+    "KR": "{0} {1}장을 샀습니다.",
+    "EN": "Bought {0} x{1}."
+  },
+  {
+    "Key": "UI.Shop.Open",
+    "KR": "열기",
+    "EN": "Open"
+  },
+  {
+    "Key": "UI.Shop.WaitOpen",
+    "KR": "{0} {1}장 열기",
+    "EN": "Open {0} x{1}"
   },
   {
     "Key": "UI.Warehouse.Hint",

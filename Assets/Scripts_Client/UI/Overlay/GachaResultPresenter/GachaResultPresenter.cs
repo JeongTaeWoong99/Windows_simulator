@@ -206,10 +206,13 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
     // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 제목을 '감정'으로 바꾸고, 공개 앞에 감정 무대를 돌린다(T-151).
+    // ※ 제목은 연 물건을 따른다 — 상자는 '상자 개봉', 상자가 아닌 것(뽑기권·열쇠)은 '<이름> 개봉'(T-184).
     private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
         bool   isAppraise = GameDataLoader.GetOpenCostGold(itemId) > 0L;
-        string source     = isAppraise ? Lang.Get("UI.Inventory.Appraise") : Lang.Get("UI.Gacha.SourceBox");
+        string source     = isAppraise                                       ? Lang.Get("UI.Inventory.Appraise")
+                          : GameDataLoader.GetItemType(itemId) == ItemType.Box ? Lang.Get("UI.Gacha.SourceBox")
+                          : Lang.Format("UI.Gacha.SourceItem", GameDataLoader.GetItemName(itemId));
 
         List<SlotData> slots = Summarize(rewards);
 
