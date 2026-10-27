@@ -4,6 +4,9 @@ description: DOTween으로 움직임·페이드 연출을 짜는 규칙 — 트�
 ---
 
 > 최종 업데이트: 2026-10-27 (함정 — 취소로 깨어난 await 뒤에서 바로 Kill) · 2026-10-08 (`unitask-dotween`에서 분리 · 함정 — 넘긴 트윈을 finally에서 다시 Kill)
+> 🔗 **공동 소유** — Arca Unity Toolkit 마스터가 원본이고, 여러 프로젝트·여러 사람이 함께 쓴다.
+>   이 사본을 고쳤으면 `/unity-skill-sync`로 되돌리되, **마스터 반영 여부는 사용자에게 확인받는다.**
+>   프로젝트 고유 경로·고유명사가 섞인 수정은 마스터로 올리지 않는다.
 
 # 연출 — DOTween
 
@@ -69,7 +72,7 @@ UniTask 쪽은 트윈 콜백에 걸어 **폴링 없이** 깨어나고, 대기 �
 | 트윈이 밖에서 Kill됨(`SetLink`·`DOKill`) | await가 **정상 완료로** 깨어난다 | 토큰을 함께 넘겨 두고, await 뒤에 오브젝트를 만지기 전에 확인한다 |
 | 인자 없는 `await tween` | 그 트윈의 **`onKill`을 덮어쓴다** | `OnKill` 콜백을 건 트윈은 `ToUniTask`로 기다린다 |
 | `KillAndCancelAwait`로 넘긴 트윈을 `finally`에서 또 `Kill()` | 취소되면 UniTask가 Kill하고 **그 Kill 안에서 finally가 동기로 돈다** — 두 번째 Kill이 DOTween 안에서 `IndexOutOfRangeException`(`TweenManager.RemoveActiveTween`) | 넘긴 뒤에는 Kill하지 않는다. 넘기기 전에 예외가 났을 때만 직접 Kill (플래그로 가른다) |
-| 토큰 취소로 깨어난 `await` 뒤에서 바로 정리(`DOTween.Kill(id)` · `DOKill`) | 위와 같은 길이다 — 취소 → UniTask가 Kill → **그 Kill 안에서 await 뒤가 동기로 돈다** → 정리가 죽는 중인 트윈을 다시 Kill해 같은 예외 · 이후 DOTween 전체가 깨진다(2026-10-27 유물 감정 건너뛰기) | 취소로 깨어났으면 `await UniTask.Yield()`로 한 프레임 쉬고 정리한다 |
+| 토큰 취소로 깨어난 `await` 뒤에서 바로 정리(`DOTween.Kill(id)` · `DOKill`) | 위와 같은 길이다 — 취소 → UniTask가 Kill → **그 Kill 안에서 await 뒤가 동기로 돈다** → 정리가 죽는 중인 트윈을 다시 Kill해 같은 예외 · 이후 DOTween 전체가 깨진다(2026-10-27 실측) | 취소로 깨어났으면 `await UniTask.Yield()`로 한 프레임 쉬고 정리한다 · 쉬는 사이 새 흐름이 시작됐는지 토큰으로 가른다 |
 
 ---
 

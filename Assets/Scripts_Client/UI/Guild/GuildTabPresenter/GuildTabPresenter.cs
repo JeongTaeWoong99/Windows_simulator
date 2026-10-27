@@ -11,10 +11,10 @@ using UnityEngine.UI;
 //   경매장 탭(옛 값 1)은 빠졌다 — 화면 전체를 쓰는 '#Auction Canvas'로 옮겼다(T-147).
 public enum GuildTab
 {
-    // 상점 — 골드로 아이템을 산다. 지금 품목은 캐릭터 뽑기권 A~D뿐이다. 화면은 'ShopPresenter'(T-184 · #78).
+    // 상점 — 골드로 아이템을 산다. 지금 품목은 캐릭터 뽑기권 A~D뿐이다. 화면은 'ShopPresenter'(T-184 · #78). 기본 탭이다.
     Shop,
 
-    // 뽑기 — 골드로 장비를 뽑는다('GachaPresenter'). 기본 탭이다.
+    // 뽑기 — 골드로 장비를 뽑는다('GachaPresenter').
     Gacha,
 
     // 창고 — 자원·장비·캐릭터를 두고두고 맡겨 두는 곳(인벤토리는 얻은 것이 바로 들어오는 곳). 화면은 'WarehousePresenter'(T-126).
@@ -36,7 +36,7 @@ public enum GuildTab
 public class GuildTabPresenter : MonoBehaviour
 {
     // 길드 열을 처음 열었을 때의 탭.
-    private const GuildTab DefaultTab = GuildTab.Gacha;
+    private const GuildTab DefaultTab = GuildTab.Shop;
 
     // 탭 하나 — 버튼과 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.
     [Serializable]

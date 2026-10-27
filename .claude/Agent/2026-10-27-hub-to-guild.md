@@ -26,7 +26,7 @@ tags: [client, ui, data, docs]
 
 ## 업데이트 (2026-10-27) — 탭 순서 · 편집 화면 글씨 · 감정 건너뛰기 오류
 
-- 탭 순서 **상점 · 뽑기 · 창고** — `GuildTab` 값도 이 순서(Shop 0 · Gacha 1 · Warehouse 2)로 바꾸고 씬의 탭 줄 값·버튼·화면 형제 순서를 맞췄다. 기본 탭은 그대로 뽑기
+- 탭 순서 **상점 · 뽑기 · 창고** — `GuildTab` 값도 이 순서(Shop 0 · Gacha 1 · Warehouse 2)로 바꾸고 씬의 탭 줄 값·버튼·화면 형제 순서를 맞췄다. 기본 탭은 상점(사용자 확인 후 바꿈)
 - 편집 화면(실행 전) 글씨 — 열 제목 '거점' → '길드' · 하단 메뉴 '[거점]' → '[길드]' · 상점 탭 버튼 '창고' → '상점'(키 `UI.Shop.Tab`이라 실행하면 맞았다) · `Shop Presenter` 안 `Gacha Panel` → `Shop Panel`
 - **오류** — 유물 감정 무대를 클릭으로 건너뛰면 DOTween `IndexOutOfRangeException`(RemoveActiveTween → 이후 Reorganize·`WidgetHeadMotion.KillAll`까지 줄줄이). 토큰 취소 → UniTask가 트윈 Kill → **그 Kill 안에서** `AppraiseThenShowAsync`의 await 뒤가 동기로 깨어나 `CancelAppraise` → `DOTween.Kill(this)`가 죽는 중인 트윈을 또 Kill했다. 건너뛰기로 깨어났으면 `UniTask.Yield` 한 번 쉬고 정리 · 쉬는 사이 새 감정이 시작됐는지 토큰으로 가른다. dotween 스킬 함정 표에 한 줄 더함(툴킷 사본 — 마스터 반영은 확인 후)
-- ⚠️ 건너뛰기 수정은 플레이(로그인 + 유물 감정)로 아직 재현 확인 전
+- 건너뛰기 수정 — 사용자 플레이 확인 끝 · dotween 스킬 함정 줄은 마스터에도 올렸다(프로젝트 이름 뺀 문장 · 마스터에만 있던 '공동 소유' 안내 줄을 사본에도 받아 둘이 같다)
