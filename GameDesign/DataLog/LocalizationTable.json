@@ -5626,8 +5626,8 @@
   },
   {
     "Key": "UI.Condense.ConfirmCondensed",
-    "KR": "응축을 쌓은 재료 {0}마리의 응축 단계·누적도 사라집니다.",
-    "EN": "Condense progress of {0} material(s) will also be lost."
+    "KR": "응축을 쌓은 재료 {0}마리의 누적 응축은 {1}%(올림)만 넘어갑니다.",
+    "EN": "Only {1}% (rounded up) of the condense progress of {0} material(s) carries over."
   },
   {
     "Key": "UI.Condense.FillNext",
@@ -5651,8 +5651,8 @@
   },
   {
     "Key": "UI.Condense.HelpLost",
-    "KR": "재료의 레벨 · 경험치 · 응축은 사라지고 되돌릴 수 없습니다",
-    "EN": "Materials lose their level, EXP and condense — this can't be undone"
+    "KR": "재료의 레벨 · 경험치는 사라지고 누적 응축은 {0}%(올림)만 넘어갑니다 — 되돌릴 수 없습니다",
+    "EN": "Materials lose their level and EXP, and only {0}% (rounded up) of their condense carries over — this can't be undone"
   },
   {
     "Key": "UI.Condense.HelpOverflow",

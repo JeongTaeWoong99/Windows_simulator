@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using DG.Tweening;
+using GameData;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -24,6 +25,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 // ■ 규칙 (서버 'User.TryCondenseCharacter')
 //   - 재료는 대상과 **같은 CharacterTid**만. 배치·착용 중인 재료는 거절된다. 대상은 배치·착용 중이어도 된다.
 //   - 개체는 넣은 재료의 **누적 수**만 기억하고 ★은 표('CharacterStarTable')의 누적 기준으로 정해진다.
+//   - 재료 1마리 몫은 +1 + 그 재료 누적의 계승분('Constants.CondenseInheritPermille' · 올림 — T-179). 레벨·경험치는 넘어가지 않는다.
 //   - 한 번에 넣는 수에 제한이 없다. 최고 ★을 넘는 몫도 **소모된다** — 화면이 넘치는 수를 미리 알린다.
 //
 // ※ '★' 글자를 쓰지 않는다 — 폰트 아틀라스에 없다('UI 규칙.md'). 그림(★ 스프라이트)과 'n성' 글씨로 말한다.
@@ -483,14 +485,15 @@ public class CharacterCondensePresenter : MonoBehaviour
         }
 
         int count  = target.CondenseCount;
-        int after  = Mathf.Min(count + _materials.Count, GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar));
+        int added  = MaterialAddCount();
+        int after  = Mathf.Min(count + added, GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar));
         int now    = target.Star;
         int then   = Mathf.Max(now, GameDataLoader.GetCondenseStarAt(after));
 
         DrawHeader(target, now, then);
         DrawCompare(now, then);
         DrawBar(count, after);
-        DrawCaption(count, now, then);
+        DrawCaption(count, added, now, then);
         DrawWarn(target, count);
         DrawConfirm(now);
     }
@@ -568,13 +571,13 @@ public class CharacterCondensePresenter : MonoBehaviour
     }
 
     // 바 아래 — 왼쪽 '누적 15 + 9 = 24', 오른쪽 '3성까지 20' · '최고 단계'.
-    private void DrawCaption(int count, int now, int then)
+    // ※ 더하는 수는 재료 마리 수가 아니라 계승분까지 합친 누적이다 ('MaterialAddCount').
+    private void DrawCaption(int count, int added, int now, int then)
     {
-        int n   = _materials.Count;
         int max = GameDataLoader.CondenseMaxStar;
 
-        captionLeftText.text = n > 0
-            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(n.ToString(), UIThemePalette.Of(UIThemeRole.Highlight)), count + n)
+        captionLeftText.text = added > 0
+            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(added.ToString(), UIThemePalette.Of(UIThemeRole.Highlight)), count + added)
             : Lang.Format("UI.Condense.Total", count);
 
         if (now >= max)
@@ -587,7 +590,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         }
         else
         {
-            captionRightText.text = Lang.Format("UI.Condense.ToNext", then + 1, GameDataLoader.GetCondenseThreshold(then + 1) - (count + n));
+            captionRightText.text = Lang.Format("UI.Condense.ToNext", then + 1, GameDataLoader.GetCondenseThreshold(then + 1) - (count + added));
         }
     }
 
@@ -595,8 +598,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     // ※ "없음"을 창에 먼저 적는 이유 — 다른 캐릭터도 같은 그림을 쓰는 동안은 흑백 칸이 왜 안 담기는지 칸만 봐서는 모른다.
     private void DrawWarn(CharacterInfo target, int count)
     {
-        int maxCount = GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar);
-        int overflow = Mathf.Max(0, count + _materials.Count - maxCount);
+        int overflow = CountOverflowMaterials(count);
 
         if (target.Star >= GameDataLoader.CondenseMaxStar)
         {
@@ -644,7 +646,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         var content = new TooltipContent(Lang.Get("UI.Condense.HelpTitle"))
             .Row(Lang.Get("UI.Condense.HelpSame"), "")
             .Row(Lang.Get("UI.Condense.HelpStar"), "")
-            .Row(Lang.Get("UI.Condense.HelpLost"), "")
+            .Row(Lang.Format("UI.Condense.HelpLost", InheritPercentText()), "")
             .Row(Lang.Get("UI.Condense.HelpOverflow"), "")
             .Row(Lang.Get("UI.Condense.HelpBusy"), "")
             .Row(Lang.Get("UI.Condense.HelpStage"), Lang.Get("UI.Condense.HelpTotal"), Lang.Get("UI.Inventory.CondenseBonus"), null);
@@ -751,6 +753,45 @@ public class CharacterCondensePresenter : MonoBehaviour
         return busy;
     }
 
+    // 고른 재료가 대상 누적에 더하는 수 — 마리마다 +1 + 계승분.
+    private int MaterialAddCount()
+    {
+        int added = 0;
+
+        foreach (long id in _materials)
+        {
+            added += AddCountOf(_data.FindCharacter(id)?.CondenseCount ?? 0);
+        }
+
+        return added;
+    }
+
+    // 넘치는 재료 수 — 고른 순서대로 더해 최고 누적에 이미 닿은 뒤에 오는 재료. 일부만 넘치는 재료는 세지 않는다.
+    private int CountOverflowMaterials(int count)
+    {
+        int maxCount = GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar);
+        int overflow = 0;
+
+        foreach (long id in _materials)
+        {
+            if (count >= maxCount)
+            {
+                overflow++;
+            }
+
+            count += AddCountOf(_data.FindCharacter(id)?.CondenseCount ?? 0);
+        }
+
+        return overflow;
+    }
+
+    // 재료 1마리 몫 — +1 + 누적 × 계승 비율(천분율) 올림. 서버 'Character.InheritedCondense'와 같은 식이다.
+    private static int AddCountOf(int condenseCount)
+        => 1 + (int)((condenseCount * Constants.CondenseInheritPermille + 999) / 1000);
+
+    // 문구용 계승 비율 — 500‰ → "50".
+    private static string InheritPercentText() => (Constants.CondenseInheritPermille / 10f).ToString("0.#");
+
     private void AddMaterial(long characterId)
     {
         if (_materialSet.Add(characterId))
@@ -830,9 +871,11 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         ClearMaterials();
 
-        for (int i = 0; i < _candidates.Count && i < need; i++)
+        // 계승분이 있는 재료는 1마리가 여러 칸을 채운다 — 마리 수가 아니라 더해지는 누적으로 센다.
+        for (int i = 0; i < _candidates.Count && need > 0; i++)
         {
             AddMaterial(_candidates[i].CharacterId);
+            need -= AddCountOf(_candidates[i].CondenseCount);
         }
 
         NotifySelection();
@@ -893,7 +936,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     }
 
     // 묻고 보낼 이유 — 레벨을 올린 재료 · 응축을 쌓은 재료 · 넘치는 재료. 없으면 null (OnConfirmClicked에서 호출).
-    // ※ 응축을 쌓은 재료 — ★이 없어도 누적이 1이라도 있으면 묻는다. 지금은 재료의 응축이 그대로 사라진다(계승은 기획 미정).
+    // ※ 응축을 쌓은 재료 — ★이 없어도 누적이 1이라도 있으면 묻는다. 누적은 일부(계승 비율 · 올림)만 넘어간다(T-179).
     private string? BuildCaution(CharacterInfo target)
     {
         int grown     = 0;
@@ -912,8 +955,7 @@ public class CharacterCondensePresenter : MonoBehaviour
             }
         }
 
-        int maxCount = GameDataLoader.GetCondenseThreshold(GameDataLoader.CondenseMaxStar);
-        int overflow = Mathf.Max(0, target.CondenseCount + _materials.Count - maxCount);
+        int overflow = CountOverflowMaterials(target.CondenseCount);
 
         if (grown == 0 && condensed == 0 && overflow == 0)
         {
@@ -929,7 +971,7 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         if (condensed > 0)
         {
-            text += "\n" + Lang.Format("UI.Condense.ConfirmCondensed", condensed);
+            text += "\n" + Lang.Format("UI.Condense.ConfirmCondensed", condensed, InheritPercentText());
         }
 
         if (overflow > 0)
