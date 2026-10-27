@@ -34,7 +34,7 @@ public class DisassembleEquipsRepositoryTest : IDisposable
         _db.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid, enchant_grade, enchant_1) VALUES (10, 7, 1001, 1, 1103), (11, 7, 1001, 0, 0), (12, 8, 1001, 0, 0)");
 
         // 12는 남의 장비다 — 요청에 섞여 와도 지우지 않는다.
-        await new DisassembleEquipsRepository(user, new List<long> { 10, 12 }, Shards(16))
+        await new DisassembleEquipsRepository(user, new List<long> { 10, 12 }, new List<ItemChangeInfo>(), Shards(16))
             .ExecuteAsync(new DbConnection(_db.Connection));
 
         Count("SELECT COUNT(*) FROM t_user_equip WHERE equip_id IN (11, 12)").ShouldBe(2);
@@ -43,12 +43,32 @@ public class DisassembleEquipsRepositoryTest : IDisposable
     }
 
     [Fact]
+    public async Task 아티팩트만_분해하면_아티팩트_칸을_줄이고_재료를_쓴다()
+    {
+        // 아티팩트 1번 3개 중 1개 분해 → 칸에 2개 남고 장비 행은 그대로
+        var user = new TestUserBuilder().Build(uid: 7);
+        _db.Execute("INSERT INTO t_user_artifact_stack (user_id, slot, artifact_tid, count) VALUES (7, 0, 1, 3)");
+        _db.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid) VALUES (10, 7, 1001)");
+        var artifacts = new List<ItemChangeInfo>
+        {
+            new() { ItemId = 1, Count = 2, Kind = EItemChangeKind.Update, Container = EContainer.Inventory, Slot = 0 },
+        };
+
+        await new DisassembleEquipsRepository(user, new List<long>(), artifacts, Shards(2))
+            .ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT count FROM t_user_artifact_stack WHERE user_id = 7 AND slot = 0").ShouldBe(2);
+        Count("SELECT COUNT(*) FROM t_user_equip").ShouldBe(1);
+        Count("SELECT count FROM t_user_inventory WHERE user_id = 7 AND item_id = 100050").ShouldBe(2);
+    }
+
+    [Fact]
     public async Task 경매에_잠긴_장비는_지우지_않는다()
     {
         var user = new TestUserBuilder().Build(uid: 7);
         _db.Execute("INSERT INTO t_user_equip (equip_id, user_id, equip_tid, auction_trade_id) VALUES (10, 7, 1001, 99)");
 
-        await new DisassembleEquipsRepository(user, new List<long> { 10 }, Shards(1))
+        await new DisassembleEquipsRepository(user, new List<long> { 10 }, new List<ItemChangeInfo>(), Shards(1))
             .ExecuteAsync(new DbConnection(_db.Connection));
 
         Count("SELECT COUNT(*) FROM t_user_equip").ShouldBe(1);

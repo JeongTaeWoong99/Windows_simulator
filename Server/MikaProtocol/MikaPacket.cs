@@ -1016,12 +1016,14 @@ namespace MikaProtocol
     {
     }
 
-    // 장비 분해 (T-131). 장비를 지우고 등급별 재료(DisassembleTable)를 인벤토리에 넣는다 — 판매와 같은 개체 PK 목록 축이다.
-    // 착용 중 · 잠김 · 큐브 결과 고르기 전 · 재료가 인벤토리에 다 안 들어가면 거절한다.
+    // 분해 (T-131 · T-185). 장비와 아티팩트를 지우고 등급별 재료(DisassembleTable)를 인벤토리에 넣는다 — 둘을 한 요청에 섞어 보낼 수 있다.
+    // 아티팩트는 장비의 2배(ArtifactItemCount). 착용 중 · 잠김 · 큐브 결과 고르기 전 장비, 모자란 아티팩트,
+    // 재료가 인벤토리에 다 안 들어가면 전부 거절한다. 아티팩트가 빠지면 S_ArtifactInventoryResponse가 따라온다.
     [MemoryPackable, Packet(PacketId.C_EquipDisassembleRequest)]
     public partial class C_EquipDisassembleRequest : IPacket
     {
-        public List<long>? EquipIds { get; set; }
+        public List<long>?         EquipIds  { get; set; }
+        public List<ArtifactInfo>? Artifacts { get; set; }  // 분해할 번호와 수량 — 같은 번호가 여러 줄이면 합친다
     }
 
     // 분해 결과. 전부 성공하거나 전부 실패한다 — Ok면 요청한 장비가 모두 사라졌으니 클라가 목록에서 지운다.

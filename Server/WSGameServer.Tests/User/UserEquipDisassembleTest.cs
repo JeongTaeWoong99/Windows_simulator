@@ -64,7 +64,7 @@ public class UserEquipDisassembleTest
         // 일반 1 + 영웅 15 = 16
         var (user, b) = NewUser();
 
-        user.TryDisassembleEquips(new[] { Sword, Crown });
+        user.TryDisassemble(new[] { Sword, Crown }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.Ok);
         user.GetItemCount(ShardTid).ShouldBe(16);
@@ -78,7 +78,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser();
 
-        user.TryDisassembleEquips(new[] { Sword, Ring });
+        user.TryDisassemble(new[] { Sword, Ring }, Array.Empty<ArtifactInfo>());
 
         var change = Last(b).ItemChangeInfos.ShouldHaveSingleItem();
         (change.ItemId, change.Count).ShouldBe((ShardTid, 2));
@@ -89,7 +89,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser();
 
-        user.TryDisassembleEquips(new[] { Sword, Crown });
+        user.TryDisassemble(new[] { Sword, Crown }, Array.Empty<ArtifactInfo>());
 
         var saved = b.DB.PostedOf<DisassembleEquipsRepository>().ShouldHaveSingleItem();
         saved.EquipIds.ShouldBe(new[] { Sword, Crown });
@@ -102,7 +102,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser(swordInWarehouse: true);
 
-        user.TryDisassembleEquips(new[] { Sword });
+        user.TryDisassemble(new[] { Sword }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.Ok);
         user.TryGetEquip(Sword, out _).ShouldBeFalse();
@@ -114,7 +114,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser(new[] { new CharacterEquipRow { character_id = CharA, slot = (int)EquipSlot.Weapon, equip_id = Sword } });
 
-        user.TryDisassembleEquips(new[] { Ring, Sword });
+        user.TryDisassemble(new[] { Ring, Sword }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.DisassembleEquipWorn);
         user.TryGetEquip(Ring, out _).ShouldBeTrue();
@@ -127,7 +127,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser(lockedSword: true);
 
-        user.TryDisassembleEquips(new[] { Sword });
+        user.TryDisassemble(new[] { Sword }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.EntityLocked);
         user.TryGetEquip(Sword, out _).ShouldBeTrue();
@@ -140,7 +140,7 @@ public class UserEquipDisassembleTest
         FillInventory(user);
         b.DB.Posted.Clear();
 
-        user.TryDisassembleEquips(new[] { Sword });
+        user.TryDisassemble(new[] { Sword }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.StorageFull);
         user.TryGetEquip(Sword, out _).ShouldBeTrue();
@@ -156,7 +156,7 @@ public class UserEquipDisassembleTest
         user.GainItem(ShardTid, 1);
         FillInventory(user, leave: 1);
 
-        user.TryDisassembleEquips(new[] { Crown });
+        user.TryDisassemble(new[] { Crown }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.Ok);
         user.GetItemCount(ShardTid).ShouldBe(16);
@@ -167,7 +167,7 @@ public class UserEquipDisassembleTest
     {
         var (user, b) = NewUser();
 
-        user.TryDisassembleEquips(new[] { Sword, 999L });
+        user.TryDisassemble(new[] { Sword, 999L }, Array.Empty<ArtifactInfo>());
 
         Last(b).Result.ShouldBe(EResultCode.EquipNotOwned);
         user.TryGetEquip(Sword, out _).ShouldBeTrue();
@@ -179,10 +179,10 @@ public class UserEquipDisassembleTest
         // 중복을 받으면 재료가 두 번 나온다.
         var (user, b) = NewUser();
 
-        user.TryDisassembleEquips(Array.Empty<long>());
+        user.TryDisassemble(Array.Empty<long>(), Array.Empty<ArtifactInfo>());
         Last(b).Result.ShouldBe(EResultCode.InvalidDisassembleRequest);
 
-        user.TryDisassembleEquips(new[] { Sword, Sword });
+        user.TryDisassemble(new[] { Sword, Sword }, Array.Empty<ArtifactInfo>());
         Last(b).Result.ShouldBe(EResultCode.InvalidDisassembleRequest);
         user.GetItemCount(ShardTid).ShouldBe(0);
     }
