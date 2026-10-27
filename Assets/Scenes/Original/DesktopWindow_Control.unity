@@ -29846,14 +29846,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::MarketTabPresenter
   tabs:
   - tab: 0
-    button: {fileID: 893276656}
-    page: {fileID: 1403388534}
-  - tab: 1
-    button: {fileID: 2057476264}
-    page: {fileID: 1302359058}
-  - tab: 2
     button: {fileID: 1098314244}
     page: {fileID: 1762635502}
+  - tab: 1
+    button: {fileID: 893276656}
+    page: {fileID: 1403388534}
+  - tab: 2
+    button: {fileID: 2057476264}
+    page: {fileID: 1302359058}
   selectedRole: 11
   normalRole: 10
 --- !u!114 &323876470
@@ -34765,7 +34765,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAC70\uC810"
+  m_text: "\uAE38\uB4DC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
@@ -37748,9 +37748,9 @@ RectTransform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 1098314242}
   - {fileID: 893276654}
   - {fileID: 2057476262}
-  - {fileID: 1098314242}
   m_Father: {fileID: 323876468}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -51135,7 +51135,7 @@ GameObject:
   - component: {fileID: 566196533}
   - component: {fileID: 566196534}
   m_Layer: 5
-  m_Name: Gacha Panel
+  m_Name: Shop Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -56883,7 +56883,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uCC3D\uACE0"
+  m_text: "\uC0C1\uC810"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
@@ -140416,7 +140416,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\uAC70\uC810"
+  m_text: "\uAE38\uB4DC"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
   m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
@@ -169149,9 +169149,9 @@ RectTransform:
   m_Children:
   - {fileID: 1860586542}
   - {fileID: 323876468}
+  - {fileID: 1762635503}
   - {fileID: 1403388535}
   - {fileID: 1302359059}
-  - {fileID: 1762635503}
   m_Father: {fileID: 343912103}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

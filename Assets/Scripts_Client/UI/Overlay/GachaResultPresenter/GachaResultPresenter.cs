@@ -527,12 +527,23 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         SetVisible(true);
         SetAppraising(true);
 
-        await _appraise!.PlayAsync(relic, ToSlotData(headline, headline.Count), banner, accent, _appraiseCts.Token)
-                        .SuppressCancellationThrow();
+        CancellationTokenSource cts = _appraiseCts;
 
-        if (!_isAppraising)
+        bool skipped = await _appraise!.PlayAsync(relic, ToSlotData(headline, headline.Count), banner, accent, cts.Token)
+                                       .SuppressCancellationThrow();
+
+        // ⚠️ 건너뛰기면 한 프레임 쉬고 정리한다 — 여기는 UniTask가 트윈을 Kill하는 **그 Kill 안에서** 동기로 깨어난다.
+        //   바로 'CancelAppraise'(→ 'DOTween.Kill(this)')를 부르면 죽는 중인 트윈을 또 Kill해 DOTween 목록이 깨진다
+        //   ('IndexOutOfRangeException' — TweenManager.RemoveActiveTween · dotween 스킬 함정 표).
+        if (skipped && await UniTask.Yield(PlayerLoopTiming.Update, destroyCancellationToken).SuppressCancellationThrow())
         {
-            return; // 닫기 · 새 결과 · 꺼짐 — 정리는 끊은 쪽이 했다
+            return; // 쉬는 사이 파괴됐다
+        }
+
+        // 닫기 · 새 결과 · 꺼짐 — 정리는 끊은 쪽이 했다. 쉬는 사이 새 감정이 시작됐으면 그쪽 것이다
+        if (!_isAppraising || _appraiseCts != cts)
+        {
+            return;
         }
 
         CancelAppraise();
