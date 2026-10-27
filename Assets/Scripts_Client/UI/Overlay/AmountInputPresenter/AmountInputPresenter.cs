@@ -12,7 +12,7 @@ using UnityEngine.UI;
 // 그래서 묻는 말("몇 개를 팔까?"·"몇 개를 열까?")은 부르는 쪽이 넘긴다 — 팝업이 용도를 모른다.
 //
 // ■ 왜 인벤토리 열이 아니라 '!Overlay Canvas'인가
-// 열 캔버스(#Inventory·#Hub·#Main·#State)는 **Sorting Order가 전부 0인 형제**라,
+// 열 캔버스(#Inventory·#Guild·#Main·#State)는 **Sorting Order가 전부 0인 형제**라,
 // 열 안에 둔 전체화면 차단막은 다른 열에 닿지 않는다 — 인벤토리만 막히고 상태바·메인·거래는
 // 그대로 눌린다. 화면 전체를 막아야 하는 것은 order 2인 이 캔버스에만 놓을 수 있다
 // ('Overlay 규칙.md'의 "알림·확인류는 왜 열 캔버스가 아니라 여기인가").

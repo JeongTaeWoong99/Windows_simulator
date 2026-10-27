@@ -40,9 +40,9 @@ using UnityEngine.UI;
 // 공개 중에 창 아무 곳(칸 포함)을 누르면 **스킵** — 남은 칸이 한꺼번에 끝 모습으로 놓이고 버튼이 풀린다.
 // 칸 클릭은 'SlotView'가 먼저 받으므로('IPointerClickHandler') 칸의 클릭 이벤트도 함께 구독해 스킵으로 읽는다.
 //
-// ■ 왜 거점 열이 아니라 '!Overlay Canvas'인가
+// ■ 왜 길드 열이 아니라 '!Overlay Canvas'인가
 // 이 팝업은 'PlayerDataModel'의 결과 이벤트를 스스로 구독해서 뜬다 — 나를 켜 줄 주체가 밖에 없다.
-// 거점 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
+// 길드 열의 자식으로 두면 요청을 보낸 뒤 열을 닫는 순간 결과가 통째로 사라진다.
 // 최상단 상주 오버레이로 두면 어느 열이 열려 있든 결과가 뜬다.
 //
 // ⚠️ 오브젝트를 끄지 않고 'CanvasGroup'으로 표시/숨김한다 — 자기 자신을 끄면 다시 켤 이벤트를
@@ -75,7 +75,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("[n회 더 뽑기] 버튼 문구 — 방금 뽑은 횟수로 코드가 채운다")]
     private TMP_Text drawAgainText = null!;
 
-    [SerializeField, Tooltip("다시 뽑기를 맡길 가챠 패널 (거점 열)")]
+    [SerializeField, Tooltip("다시 뽑기를 맡길 가챠 패널 (길드 열)")]
     private GachaPresenter gacha = null!;
 
     [SerializeField, Tooltip("결과 창 상자(Panel) — 폭발 층을 이 위에 만들고, 전설↑ 공개 때 흔든다")]

@@ -4815,9 +4815,9 @@
     "EN": "Inventory"
   },
   {
-    "Key": "UI.Main.Hub",
-    "KR": "거점",
-    "EN": "Base"
+    "Key": "UI.Main.Guild",
+    "KR": "길드",
+    "EN": "Guild"
   },
   {
     "Key": "UI.Main.Auction",

@@ -25,7 +25,7 @@ public enum MainScreen
 }
 
 // 화면 골격의 단일 출입구 — 3열 + 위젯을 참조로 들고, 무엇을 열고 닫을지 결정한다.
-// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Hub·#Auction·#Artifact·!Login)와
+// 두 축을 다룬다: 캔버스 여닫기(#Main·#State·#Inventory·#Guild·#Auction·#Artifact·!Login)와
 // 메인 화면 전환(#Main Canvas 안의 목록↔선택↔설정, 하나만 남긴다).
 //
 // ⚠️ 캔버스를 켜지 않는다 — 켜면 로그인 전에 게임 화면이 비친다.
@@ -81,10 +81,11 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("인벤토리 열의 본체 — @Inventory Column 안의 #Inventory Canvas")]
     private InventoryCanvasView inventoryCanvas = null!;
 
-    // ※ FormerlySerializedAs — 거래(Market) → 거점(Hub) 개명(2026-10-13 · T-147) 전 씬 값을 잇는다.
+    // ※ FormerlySerializedAs — 거래(Market) → 거점(Hub, 2026-10-13 · T-147) → 길드(Guild, 2026-10-27 · T-182) 개명 전 씬 값을 잇는다.
     [FormerlySerializedAs("marketCanvas")]
-    [SerializeField, Tooltip("거점 열의 본체 — @Hub Column 안의 #Hub Canvas (뽑기 · 창고)")]
-    private HubCanvasView hubCanvas = null!;
+    [FormerlySerializedAs("hubCanvas")]
+    [SerializeField, Tooltip("길드 열의 본체 — @Guild Column 안의 #Guild Canvas (뽑기 · 창고)")]
+    private GuildCanvasView guildCanvas = null!;
 
     // ※ 열이 아니라 '!Overlay Canvas'의 첫째 자식이다 — 3열 폭 전부를 덮고 화면 전체를 막는다('AuctionCanvasView').
     [CenterHeader("경매장 — 화면 전체")]
@@ -114,7 +115,7 @@ public class UIManager : MonoService<UIManager>
 
     // ─── 참조 ───
     public InventoryCanvasView Inventory => inventoryCanvas;
-    public HubCanvasView       Hub       => hubCanvas;
+    public GuildCanvasView     Guild     => guildCanvas;
     public AuctionCanvasView   Auction   => auctionCanvas;
     public ArtifactCanvasView  Artifact  => artifactCanvas;
     public WidgetCanvasView    Widget    => widgetCanvas;
@@ -129,7 +130,7 @@ public class UIManager : MonoService<UIManager>
         mainCanvas.IsShown      ||
         stateCanvas.IsShown     ||
         inventoryCanvas.IsShown ||
-        hubCanvas.IsShown       ||
+        guildCanvas.IsShown       ||
         auctionCanvas.IsOpen    ||
         artifactCanvas.IsOpen;
 
@@ -141,7 +142,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(mainCanvas,    nameof(mainCanvas));
         this.RequireRef(inventoryCanvas, nameof(inventoryCanvas));
         this.RequireRef(stateCanvas,   nameof(stateCanvas));
-        this.RequireRef(hubCanvas,     nameof(hubCanvas));
+        this.RequireRef(guildCanvas,     nameof(guildCanvas));
         this.RequireRef(auctionCanvas, nameof(auctionCanvas));
         this.RequireRef(artifactCanvas, nameof(artifactCanvas));
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
@@ -285,7 +286,7 @@ public class UIManager : MonoService<UIManager>
     #region 전체 여닫기
 
     // 위젯의 열기/닫기 버튼이 부른다 — 열려 있으면 전부 접고, 닫혀 있으면 작업슬롯을 연다.
-    // 진입 순서(위젯 → 작업슬롯 → 인벤토리·거점·경매장)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
+    // 진입 순서(위젯 → 작업슬롯 → 인벤토리·길드·경매장)의 되돌아오는 길이라, 어느 단계에서 눌러도 한 번에 접힌다.
     public void ToggleAll()
     {
         if (IsOpen)
@@ -298,7 +299,7 @@ public class UIManager : MonoService<UIManager>
         }
     }
 
-    // 작업슬롯 목록과 상태 캔버스를 연다. 인벤토리·거점·경매장은 작업슬롯의 하단 버튼으로 연다.
+    // 작업슬롯 목록과 상태 캔버스를 연다. 인벤토리·길드·경매장은 작업슬롯의 하단 버튼으로 연다.
     public void OpenWorkStation()
     {
         ShowMainScreen(DefaultMainScreen);
@@ -314,7 +315,7 @@ public class UIManager : MonoService<UIManager>
     public void CloseAllExceptWidget()
     {
         inventoryCanvas.Show(false);
-        hubCanvas.Show(false);
+        guildCanvas.Show(false);
         auctionCanvas.Show(false);
         artifactCanvas.Show(false);
         stateCanvas.Show(false);
@@ -337,16 +338,16 @@ public class UIManager : MonoService<UIManager>
     // 인벤토리 열을 열고 닫는다.
     public void ShowInventory(bool on) => inventoryCanvas.Show(on);
 
-    // 거점 열을 열고 닫는다.
-    public void ShowHub(bool on) => hubCanvas.Show(on);
+    // 길드 열을 열고 닫는다.
+    public void ShowGuild(bool on) => guildCanvas.Show(on);
 
     // 인벤토리 열을 뒤집는다 (작업슬롯 하단 버튼).
     // 토글이어야 하는 이유 — 여는 일만 하면 이미 열려 있을 때 눌러도 아무 변화가 없어
     // 버튼이 고장 난 것처럼 보인다. 닫는 버튼을 따로 두지 않아도 된다.
     public void ToggleInventory() => ShowInventory(!inventoryCanvas.IsShown);
 
-    // 거점 열을 뒤집는다 (작업슬롯 하단 버튼).
-    public void ToggleHub() => ShowHub(!hubCanvas.IsShown);
+    // 길드 열을 뒤집는다 (작업슬롯 하단 버튼).
+    public void ToggleGuild() => ShowGuild(!guildCanvas.IsShown);
 
     #endregion
 

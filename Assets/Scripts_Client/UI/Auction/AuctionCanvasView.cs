@@ -2,7 +2,7 @@ using MikaProtocol;
 using UnityEngine;
 
 // 경매장 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-147). 하단 메뉴 [경매장]으로 열고, 안쪽 [X]·Esc로 닫는다.
-// 옛날엔 거래 열(지금 거점 열 'HubCanvasView')의 탭 하나였다.
+// 옛날엔 거래 열(지금 길드 열 'GuildCanvasView')의 탭 하나였다.
 //
 // ■ 왜 '!Overlay Canvas' 안인가 — 화면 전체를 막아야 해서다('Overlay 규칙.md' ① 차단 범위).
 //   열 캔버스는 Sorting Order 0인 형제라 그 안의 차단막은 다른 열에 닿지 않는다.

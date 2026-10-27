@@ -5,7 +5,7 @@ using UnityEngine;
 // 창마다 스크립트를 붙이지 않는다 — 여닫는 쪽('XxxCanvasView.Show' · 팝업 'SetVisible')이 정적 함수를 부르면 대상에 저절로 붙는다.
 //
 // ■ 두 가지 여닫기
-//   SetActive  : 'SetActive'로 여닫는 캔버스(작업슬롯·상태·인벤토리·거점·경매장). 닫힘 연출이 끝난 뒤에 끈다.
+//   SetActive  : 'SetActive'로 여닫는 캔버스(작업슬롯·상태·인벤토리·길드·경매장). 닫힘 연출이 끝난 뒤에 끈다.
 //   SetVisible : 상주라 'CanvasGroup'으로 여닫는 팝업(확인·수량 입력). 오브젝트는 끄지 않는다.
 //
 // ■ 닫히는 중에도 "열림"으로 읽히면 안 된다

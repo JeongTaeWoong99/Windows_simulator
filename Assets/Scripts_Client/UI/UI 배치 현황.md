@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-26 (거점 열 상점 탭 `Shop Presenter` · 뽑기 화면 캐릭터 카드 삭제 — T-184) · 2026-10-25 (`#Artifact Canvas` — 경매장 다음 형제 · 메인 메뉴 [아티팩트] 버튼 — T-151) · 2026-10-18 (우편 줄 버튼 폭 고정 · 경매 정렬 드롭다운 목록 줄 높이 가변) · 2026-10-16 (창고 상자 표시 `Warehouse Mark` — `ItemIconView`·`CharacterStateRowView` 프리팹 · 응축 창 상반신 왼쪽 아래 · T-163) · 2026-10-15 (인벤토리 도구 줄 — 상자·큐브 제외 토글 → `[제외 ▾]` 드롭다운) · 2026-10-15 (`SlotView` 프리팹 `Lock Mark` — 오른쪽 위 자물쇠 16px · T-137) · 2026-10-15 (경매장 Esc 닫기 삭제) · 2026-10-15 (인벤토리 찾기 칸 `Suggest View` · 시세 그래프 막대 14개 + `Avg Line` 맨 위 · 점 삭제) · 2026-10-14 (경매장 표 쪽 넘김 `Pager View` · 검색 후보 `Suggest View` · 줄 높이 62 · 차단막 검정 0.75 / 로그인 1) · 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-26 (거점 열 상점 탭 `Shop Presenter` · 뽑기 화면 캐릭터 카드 삭제 — T-184) · 2026-10-25 (`#Artifact Canvas` — 경매장 다음 형제 · 메인 메뉴 [아티팩트] 버튼 — T-151) · 2026-10-18 (우편 줄 버튼 폭 고정 · 경매 정렬 드롭다운 목록 줄 높이 가변) · 2026-10-16 (창고 상자 표시 `Warehouse Mark` — `ItemIconView`·`CharacterStateRowView` 프리팹 · 응축 창 상반신 왼쪽 아래 · T-163) · 2026-10-15 (인벤토리 도구 줄 — 상자·큐브 제외 토글 → `[제외 ▾]` 드롭다운) · 2026-10-15 (`SlotView` 프리팹 `Lock Mark` — 오른쪽 위 자물쇠 16px · T-137) · 2026-10-15 (경매장 Esc 닫기 삭제) · 2026-10-15 (인벤토리 찾기 칸 `Suggest View` · 시세 그래프 막대 14개 + `Avg Line` 맨 위 · 점 삭제) · 2026-10-14 (경매장 표 쪽 넘김 `Pager View` · 검색 후보 `Suggest View` · 줄 높이 62 · 차단막 검정 0.75 / 로그인 1) · 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -172,7 +172,7 @@ Root Canvas
 │  │  │     │  │  └─ Empty Text (TMP)             목록 위에 겹쳐 둔다 (지금 탭에 우편이 없을 때만)
 │  │  │     │  ├─ Guide Text (TMP)                탭마다 보관 규칙 한 줄 (footerNoteText)   pref 28
 │  │  │     │  └─ Footer Panel > Claim All Button [모두 받기] pref W 240 · 안 받은 탭에서만  pref 60
-│  │  │     └─ Menu Presenter (↓ SUB VIEW)        MenuPresenter    인벤토리 · 거점 · 경매장 버튼  pref 100
+│  │  │     └─ Menu Presenter (↓ SUB VIEW)        MenuPresenter    인벤토리 · 길드 · 경매장 버튼  pref 100
 │  │  └─ #Widget Canvas (MAIN VIEW)               WidgetCanvasView   pref  87 · flexH 0 · 상주
 │  │     └─ Widget Presenter (↓ SUB VIEW)         WidgetPresenter    세로 2줄 + 버튼
 │  │        ├─ Top Panel                          (정렬용 — 스크립트 없음)       pref  26
@@ -180,19 +180,19 @@ Root Canvas
 │  │        ├─ Strip Panel                        (정렬용) 왼쪽 정렬 · flexH 1
 │  │        │  └─ WidgetMiniSlotView 프리팹 (배치된 칸만 런타임 생성)
 │  │        └─ Open/Close Button                  ignoreLayout · 우하단 40×40
-│  └─ @Hub Column                                  인벤토리 열과 같은 세 칸 구성 (옛 @Market Column — 2026-10-14 개명 · T-147)
+│  └─ @Guild Column                                  인벤토리 열과 같은 세 칸 구성 (옛 @Market Column → @Hub Column — 2026-10-14 · T-147 · 2026-10-27 · T-182)
 │     ├─ -(Layout)                                 위 스페이서            pref 43/87 ← 계산됨
-│     ├─ #Hub Canvas (MAIN VIEW)                  HubCanvasView      pref 950 · flexH 0
+│     ├─ #Guild Canvas (MAIN VIEW)                  GuildCanvasView      pref 950 · flexH 0
 │     │  └─ Body Panel                     VerticalLayoutGroup(5·5) — 레이아웃 경계 (T-139)
-│     │     ├─ Title                              (정적 요소 — 표기 없음) '거점'
-│     │     ├─ Tab Presenter (↓ SUB VIEW)         HubTabPresenter   pref 50 · 뽑기 · 창고 · 상점 (경매장 탭은 #Auction Canvas로 — T-147)
+│     │     ├─ Title                              (정적 요소 — 표기 없음) '길드'
+│     │     ├─ Tab Presenter (↓ SUB VIEW)         GuildTabPresenter   pref 50 · 뽑기 · 창고 · 상점 (경매장 탭은 #Auction Canvas로 — T-147)
 │     │     ├─ Gacha Presenter (↓ SUB VIEW)       GachaPresenter   뽑기 탭 화면 · VLG 5/5 · 풀마다 카드 (T-143)
 │     │     │  └─ Pool Scroll Panel               ScrollRect · flexH 1 → Viewport(RectMask2D) → Content(VLG 0/5 + CSF)
 │     │     │     └─ Weapon · Accessory · Gem Pool Card   GachaPoolCardView 프리팹 · pref 146 (캐릭터는 상점 — T-184)
 │     │     │                                        제목 · 도움말 아이콘(확률 툴팁) · 아이콘+종수 · [1회] · [10회]
 │     │     │                                        이름·비용·종수·확률은 Start 가 테이블에서 채운다
 │     │     │                                        ※ 구슬(아이템) 풀은 2026-09-20 화면에서 뺐다 → 이슈 #30
-│     │     ├─ Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter   창고 탭 화면 (T-126 — 상세는 'Hub 규칙.md')
+│     │     ├─ Warehouse Presenter (↓ SUB VIEW)   WarehousePresenter   창고 탭 화면 (T-126 — 상세는 'Guild 규칙.md')
 │     │     └─ Shop Presenter (↓ SUB VIEW)        ShopPresenter   상점 탭 화면 · 뽑기 화면과 같은 모양 (T-184)
 │     │        └─ Pool Scroll Panel / Viewport / Content   카드는 Start 가 ShopTable 행마다 GachaPoolCardView 프리팹에서 만든다
 │     └─ -(Layout)                                 아래 스페이서          pref 87/43 ← 계산됨
@@ -463,7 +463,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **`xxx Button (1)`~`(3)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았고
   **씬에서도 꺼 두었다**(2026-09-21) — 빈 버튼이 줄의 가로 몫을 먹고 있었다.
 - **`Title`만 Presenter 없이 캔버스 직속이다.** `#Main Canvas`의 것만 문구가 바뀌고
-  (`MainCanvasView.SetTitle`), 인벤토리·거점의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
+  (`MainCanvasView.SetTitle`), 인벤토리·길드의 것은 고정이다. 어느 쪽이든 표기는 붙이지 않는다.
 - ✅ **`Sell Cart Presenter`로 개명했다 (2026-09-12 · T-049).** 예전 `Information Presenter`는
   아이템 상세를 띄우는 자리였는데 2026-09-04에 판매 목록이 들어와 **이름이 거짓이 된 상태**였다.
   **좌클릭 상세 표시는 이 패널로 돌아오지 않는다** — 칸 정보는 칸에 올리면 뜨는 툴팁으로 갔다

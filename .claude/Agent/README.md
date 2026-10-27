@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-27 거점 열 → 길드 열 (Hub → Guild) 개명](2026-10-27-hub-to-guild.md) — `#client` `#ui` `#data` `#docs` 클래스·폴더·씬 오브젝트·Loc 키를 Guild로 · 씬 필드는 FormerlySerializedAs로 (T-182)
 - [2026-10-27 응축 창 — 재료 누적 응축 계승분 반영](2026-10-27-condense-inherit-client.md) — `#client` `#ui` `#data` 미리보기·넘침·채우기가 계승분까지 세고 확인 문구를 "N%만 넘어갑니다"로 (T-179)
 - [2026-10-26 클라 상점 탭 — 캐릭터 뽑기권 구매](2026-10-26-client-shop-tab.md) — `#client` `#ui` `#data` 거점 열 상점 탭 · 뽑기 카드 프리팹 재사용 · 뽑기 탭 캐릭터 카드 삭제
 - [2026-10-25 캐릭터 뽑기권 A~D · 골드 상점 구매](2026-10-25-character-ticket-shop.md) — `#design` `#data` `#server` 뽑기권은 상자 경로로 열고 상점 구매만 새로 짰다 · 맥 파이프라인 함정

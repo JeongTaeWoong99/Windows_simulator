@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 // 경매장 탭. 값의 순서는 **화면의 탭 순서와 같게 유지한다**.
 //
-// ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다('HubTab'과 같은 규칙).
+// ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다('GuildTab'과 같은 규칙).
 //   2026-10-14 구매·등록·내 매물 → 검색·시세·판매·완료로 바꾸며 씬을 다시 배선했다(T-147 2단계 · 목업).
 public enum AuctionTab
 {
@@ -24,7 +24,7 @@ public enum AuctionTab
 
 // 경매장 탭 줄 — 검색 · 시세 · 판매 · 완료 (씬 왼쪽부터). 화면 폭을 넷으로 나누고 칸마다 아이콘 + 글자.
 //
-// 탭마다 화면(Presenter)이 따로 있고 지금 탭의 화면만 켠다. 모양은 'HubTabPresenter'와 같다.
+// 탭마다 화면(Presenter)이 따로 있고 지금 탭의 화면만 켠다. 모양은 'GuildTabPresenter'와 같다.
 // 화면들은 이 오브젝트의 자식이 아니라 형제다 — Presenter 안에 Presenter를 두지 않는다('UI 규칙.md').
 //
 // ⚠️ 화면은 꺼졌다 켜진다 — 각 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊는다.
@@ -199,7 +199,7 @@ public class AuctionTabPresenter : MonoBehaviour
     #region 탭 전환
 
     // 그 탭의 화면만 켜고 버튼 선택 표시를 맞춘다 (Start · 탭 버튼 · 밖에서 여는 길 'AuctionCanvasView').
-    // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('HubTabPresenter'와 같다).
+    // ⚠️ Image.color를 직접 건드리지 않는다 — 색의 주인은 ColorBlock이다('GuildTabPresenter'와 같다).
     public void ShowTab(AuctionTab tab)
     {
         CurrentTab       = tab;
