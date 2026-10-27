@@ -33,7 +33,8 @@ using UnityEngine;
 //   ※ 담기 전에 막는 일(사유 알림)은 격자가 한다('EntityBlockText'). 여기는 담긴 뒤의 변화만 따라간다.
 //
 // ■ 아티팩트는 패킷이 또 따로다 — 'C_ArtifactSellRequest'(번호 · 수량). 서버 저장도 장비와 다른 아티팩트 칸이다.
-//   장비와 함께 담겼으면 [판매] 한 번에 두 패킷이 나간다(자원 + 개체와 같은 방식). 분해는 아직 장비만 된다(서버 미지원).
+//   장비와 함께 담겼으면 [판매] 한 번에 두 패킷이 나간다(자원 + 개체와 같은 방식).
+//   분해는 장비와 한 요청이다 — 'C_EquipDisassembleRequest.Artifacts'(#89 · 마석 수는 'DisassembleTable.ArtifactItemCount').
 public class SellCartModel : MonoService<SellCartModel>
 {
     // 담긴 항목들. 'ItemInfo.Count'는 "팔 개수"(델타)다 — 보유량이 아니다.
@@ -404,6 +405,19 @@ public class SellCartModel : MonoService<SellCartModel>
     public static long ArtifactInstantPrice(int artifactTid)
         => GameDataLoader.TryGetArtifact(artifactTid, out ArtifactTableRow row) ? AuctionModel.InstantSellPrice(row.BasePrice) : 0L;
 
+    // 아티팩트 1개를 분해하면 받을 마석 수 — 등급의 'DisassembleTable.ArtifactItemCount'. 테이블에 없으면 0.
+    public static int ArtifactShards(int artifactTid)
+        => TryGetArtifactDisassemble(artifactTid, out DisassembleTableRow row) ? row.ArtifactItemCount : 0;
+
+    // 아티팩트 등급의 분해 행 — 마석 수 · 재료 TID를 함께 읽는다.
+    private static bool TryGetArtifactDisassemble(int artifactTid, out DisassembleTableRow row)
+    {
+        row = null!;
+
+        return GameDataLoader.TryGetArtifact(artifactTid, out ArtifactTableRow artifact)
+            && GameDataLoader.TryGetDisassemble(artifact.GlobalRarity, out row);
+    }
+
     // 목록을 통째로 비운다.
     public void Clear()
     {
@@ -661,16 +675,16 @@ public class SellCartModel : MonoService<SellCartModel>
         {
             total += ArtifactInstantPrice(entry.ArtifactTid) * entry.Count;
 
+            if (TryGetArtifactDisassemble(entry.ArtifactTid, out DisassembleTableRow disassemble))
+            {
+                shards      += disassemble.ArtifactItemCount * entry.Count;
+                shardItemId  = disassemble.ItemTID;
+            }
+
             if (!_data.IsArtifactEquipped(entry.ArtifactTid))
             {
                 uncollected = true;
             }
-        }
-
-        // 아티팩트만 담았으면 분해 표를 거치지 않아 재료 TID가 비어 있다 — 버튼 글자('마석 0개')에 쓸 이름만 가장 낮은 등급 행에서 빌린다
-        if (shardItemId == 0 && _artifacts.Count > 0 && GameDataLoader.TryGetDisassemble(GlobalRarity.Common, out DisassembleTableRow common))
-        {
-            shardItemId = common.ItemTID;
         }
 
         TotalPrice             = total;

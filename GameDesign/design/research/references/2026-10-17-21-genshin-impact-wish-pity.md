@@ -187,7 +187,7 @@
   - 대표가 ★4(누적 76)면 `CharacterTable.BasePrice × SellRatePermille`만큼 골드.
   - `GachaRewardInfo`에 "응축 +1 / 골드 +N" 표시 필드.
 - 적용 범위: 골드 뽑기 지급에만. 경매 구매·우편 개체는 ★·레벨을 들고 오므로 지금처럼 개체로 받는다.
-- 클라: 결과 연출에 ★ 진행 표시([T-170](../../../../tasks/T-170-성장개체판매경고.md) 할 일 중 결과 표시 부분).
+- 클라: 결과 연출에 ★ 진행 표시([T-170](../../../../tasks/archive/T-170-성장개체판매경고.md) 할 일 중 결과 표시 부분).
 - 2단계: 종류별 "보관(개체로 받기)" 설정 · 장비 등급 이하 자동 판매 또는 자동 분해(분해는 T-131 서버 선행).
 
 **왜 이렇게 만들어야 하는가**
@@ -202,7 +202,7 @@
 - [거래](../../trade/README.md) 3.1 즉시 판매 · 4.2 경매장(★째 거래)
 - [아이템](../../item/README.md) 4.3 마력의 파편 — 2단계 장비 자동 분해의 산출물
 - [게임기획코어](../../게임기획코어.md) 5장 "캐릭터 중복 = 개체를 늘린다 · 정원 없음"(✅ 확정 행) · "중복의 출구" 행
-- [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-170](../../../../tasks/T-170-성장개체판매경고.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md)
+- [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-170](../../../../tasks/archive/T-170-성장개체판매경고.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md)
 
 **설계 원칙 체크**
 - P1 ✅ "칸 비우기"라는 강제 정리 작업이 사라진다. 결과는 결과 화면 안에서만 보인다.
@@ -331,7 +331,7 @@
 ### 6.3 추천과 결정 필요
 
 **추천: B — 운명의 자리식 자동 응축** (MVP는 캐릭터만, 설정 화면 없이)
-1. **지금 막혀 있는 일을 푼다.** [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md)(높음 · 261024)가 이 결정을 기다리고, [T-170](../../../../tasks/T-170-성장개체판매경고.md)의 결과 표시·설정 화면도 여기서 멈춰 있다.
+1. **지금 막혀 있는 일을 푼다.** [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md)(높음 · 261024)가 이 결정을 기다리고, [T-170](../../../../tasks/archive/T-170-성장개체판매경고.md)의 결과 표시·설정 화면도 여기서 멈춰 있다.
 2. **원신에서 가장 옮기기 쉬운 재미이고 재료가 이미 있다.** "중복이 진척이 된다"를 `condense_count`, `CharacterStarTable`, 수동 응축의 속도 재계산 경로 위에 얹는다. 새 재화·새 축이 없다.
 3. **다른 안의 전제다.** 천장(A)과 공고(D)는 같은 캐릭터를 더 많이 뽑게 만들어 칸 문제를 키우고, 교역소(C)는 재화 원천이 필요하다.
 
@@ -384,4 +384,4 @@
 - [Pro Game Guides — Genshin Impact character Constellations](https://progameguides.com/genshin-impact/genshin-impact-character-constellations/)
 - [GameWith — Starglitter & Stardust](https://gamewith.net/genshin-impact/article/show/22418)
 - [Beebom — Capturing Radiance banner mechanic](https://beebom.com/genshin-impact-capturing-radiance-banner-mechanic/amp/)
-- 우리 문서: [캐릭터](../../character/README.md) · [거래](../../trade/README.md) · [아이템](../../item/README.md) · [진행 및 성장](../../progression/README.md) · [게임 UI](../../ui/README.md) · [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md) · [T-170](../../../../tasks/T-170-성장개체판매경고.md) · GitHub 이슈 #78
+- 우리 문서: [캐릭터](../../character/README.md) · [거래](../../trade/README.md) · [아이템](../../item/README.md) · [진행 및 성장](../../progression/README.md) · [게임 UI](../../ui/README.md) · [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md) · [T-170](../../../../tasks/archive/T-170-성장개체판매경고.md) · GitHub 이슈 #78

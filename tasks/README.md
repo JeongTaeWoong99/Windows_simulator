@@ -37,7 +37,6 @@
 |----|------|------|------|----------|------|
 | [T-183](T-183-거점건물특성트리개편.md) | 기획·서버 — **거점 개편** · 분류별 건물 5개 · 업그레이드 자원+골드 · 건물별 특성 트리(Lv1당 1점 · 앞 노드 다 찍어야 다음) · 계정 레벨 = 건물 레벨 상한(최대 150) · [목업](../GameDesign/design/ui/거점목업.html) · [이슈 #75](https://github.com/JeongTaeWoong99/Windows_simulator/issues/75) | 진우 | In Progress | 높음 | 261107 |
 | [T-184](T-184-캐릭터뽑기권상점.md) | 기획·데이터·서버 — **캐릭터 뽑기권 A~D · 골드 상점** · 장마다 최고 등급 고정 · 데이터·서버 ✅ (2026-10-25) · 클라 상점 탭 ✅ (2026-10-26) · 남은 것: 골드 직접 캐릭터 풀(`GachaInfoTable` 2) 닫기 · 뽑기권 단계 유지 여부 [이슈 #93](https://github.com/JeongTaeWoong99/Windows_simulator/issues/93) · [이슈 #78](https://github.com/JeongTaeWoong99/Windows_simulator/issues/78) | 진우 | Resolve | **높음** | 261107 |
-| [T-170](T-170-성장개체판매경고.md) | 클라 — **성장한 개체 즉시 판매 경고** · 판매 목록 표시·경고 ✅ (2026-10-20) · 자동 판매·자동 응축은 취소(#78 — 2026-10-24 회의) · 확인되면 닫는다 | 태웅 | Resolve | 보통 | 261107 |
 | [T-085](T-085-공용상수소유권.md) | 🔴 **공용 값의 소유권 정리** — `Constants.xlsx`로 서버·클라 이관 · 채취·치트 한도 검사 **완료(2026-09-26)**. 클라 교체 **완료(2026-09-27)**. 기획 결정 **완료(2026-10-10)** — 인벤토리 200 · 판매가 100% · 시트 전부 기획 소관. 남은 것: 산업·희귀도 표시 이름(옛 T-047) · [이슈 #34](https://github.com/JeongTaeWoong99/Windows_simulator/issues/34)(닫힘) | 진우 | In Progress | **높음** | 261107 |
 | [T-108](T-108-레벨형특성산출량.md) | 특성을 **레벨형**으로 · **산출량** 특성 신설(공통 · 산업별) — 포인트는 계정 레벨마다 1점 · 마일스톤 역산에서 나옴 | 진우 | In Progress | 높음 | 261107 |
 | [T-181](T-181-아티팩트인벤토리도감장착.md) | 기획·서버 — **아티팩트를 인벤토리로 받아 도감에 장착** · 켜고 끄기 · 중복 즉시 판매 ✅ (2026-10-24) · 남은 것: 클라 [T-151](T-151-클라유물감정보관함.md) · DB 0009 적용본 커밋 · [이슈 #81](https://github.com/JeongTaeWoong99/Windows_simulator/issues/81) | 진우 | Resolve | 보통 | 261107 |
@@ -57,7 +56,7 @@
 | [T-152](T-152-아티팩트거래소.md) | 서버 — **아티팩트 거래소 매물** · 등록 시 아티팩트 칸에서 빠짐 · 우편 첨부 (즉시 판매는 T-181) | 진우 | Resolve | 보통 | 261107 |
 | [T-105](T-105-자원사용처.md) | **검토 요청** — 남는 자원의 사용처 · ✅ 방향 결정: 섬 산업 건물(레벨 + 선행 노드 트리) · 건물 수·비용·노드 미정 (2026-10-16) | 진우 | Resolve | 보통 | 261107 |
 | [T-129](T-129-일감정합성검사.md) | 일감 **정합성 검사 스크립트** — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · CI `tasks-check.yml` ✅ (2026-10-18) · 남은 것: push 뒤 Actions 첫 실행 확인 | 진우 | Resolve | 낮음 | 261107 |
-| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** 화면 · 아티팩트 화면 · 장비 탭 아티팩트 · 감정 연출 — 사용자 확인 끝(2026-10-25) · 남은 것: 🎨 아이콘 · Special 칸 · 거래소 아티팩트 탭 · ⏸ 서버·기획 [#87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) · [#88](https://github.com/JeongTaeWoong99/Windows_simulator/issues/88) 1개씩 감정 · [#89](https://github.com/JeongTaeWoong99/Windows_simulator/issues/89) 분해 마석 · [#90](https://github.com/JeongTaeWoong99/Windows_simulator/issues/90) 끄기 제거 | 태웅 | In Progress | 보통 | 261107 |
+| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** 화면 · 아티팩트 화면 · 장비 탭 아티팩트 · 감정 연출 — 사용자 확인 끝(2026-10-25) · 남은 것: 🎨 아이콘 · Special 칸 · ⏸ 서버·기획 [#87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) · [#88](https://github.com/JeongTaeWoong99/Windows_simulator/issues/88) 1개씩 감정 · [#90](https://github.com/JeongTaeWoong99/Windows_simulator/issues/90) 끄기 제거 | 태웅 | In Progress | 보통 | 261107 |
 
 ### ⏸ 남이 먼저 해야 한다
 
@@ -77,7 +76,7 @@
 > 지금은 비어 있다. 🎨만 남은 **클라** 일감(T-031·T-015·T-052·T-039)은 [`art/`](art/README.md)로, T-051은 [`later/`](later/README.md)로 옮겼다(2026-09-28).
 > 나머지 🎨는 항목 하나로 다른 일감 안에 산다 — 지금은 없다(T-033 연출 2026-10-09 끝).
 
-> 끝난 일감 144건은 [`archive/README.md`](archive/README.md)에 있다.
+> 끝난 일감 146건은 [`archive/README.md`](archive/README.md)에 있다.
 
 ---
 
