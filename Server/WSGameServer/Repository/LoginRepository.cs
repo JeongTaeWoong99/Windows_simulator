@@ -24,6 +24,7 @@ public sealed class LoginRepository : IRepository
     private List<UserEquipRow>         _equipRows          = new();
     private List<CharacterEquipRow>    _characterEquipRows = new();
     private List<UserItemLockRow>      _itemLockRows       = new();
+    private List<UserArtifactLockRow>  _artifactLockRows   = new();
 
     // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
     public long Key => User.DbKey;
@@ -95,6 +96,10 @@ public sealed class LoginRepository : IRepository
             "SELECT slot, artifact_tid, count FROM t_user_artifact_stack WHERE user_id = @userId",
             new { userId = User.Uid });
 
+        _artifactLockRows = await connection.QueryAsync<UserArtifactLockRow>(
+            "SELECT artifact_tid FROM t_user_artifact_lock WHERE user_id = @userId",
+            new { userId = User.Uid });
+
         // 7) 장비 개체와 착용 매핑. 매핑은 유저 컬럼이 없어 개체 테이블과 JOIN으로 유저를 가른다.
         // 경매에 잠긴 개체(등록 중·우편 대기)는 싣지 않는다 — 메모리에 있으면 저장이 잠긴 행을 덮는다.
         _equipRows = await connection.QueryAsync<UserEquipRow>(
@@ -120,7 +125,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows),
             GameClock.Instance.UtcNow);
     }
 }

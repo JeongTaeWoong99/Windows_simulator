@@ -198,14 +198,14 @@ public class ArtifactCodexTest : IDisposable
     // ── 아티팩트 탭 ──
 
     [Fact]
-    public void 아티팩트_탭에서_칸을_옮기면_아티팩트_칸으로_저장된다()
+    public void 아티팩트_탭에서_칸을_옮기면_장비_격자_응답으로_아티팩트_칸에_저장된다()
     {
         var (user, b) = NewUser(new[] { (FishermanCharm, 3) });
 
         user.MoveStorageSlot(EContainer.Inventory, EStorageTab.Artifact, 0, 4);
 
         var res = Last<S_StorageSlotsResponse>(b);
-        (res.Result, res.Tab).ShouldBe((EResultCode.Ok, EStorageTab.Artifact));
+        (res.Result, res.Tab).ShouldBe((EResultCode.Ok, EStorageTab.Equip));   // 장비 칸과 한 격자다(T-188)
         user.Artifacts.TryGetAt(4, out var moved).ShouldBeTrue();
         moved.Id.ShouldBe(FishermanCharm);
         b.DB.PostedOf<SaveArtifactStacksRepository>().ShouldHaveSingleItem();

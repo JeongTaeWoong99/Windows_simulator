@@ -16,8 +16,8 @@ public partial class User
     /// <summary>캐릭터 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
     public int CharacterSlotsUsed => _characters.Count + _pendingCharacterSlots.Count;
 
-    /// <summary>장비 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
-    public int EquipSlotsUsed => _equips.Count + _pendingEquipPositions.Count;
+    /// <summary>장비 칸 — 보유 개체 + 지급 대기 중인 개체 + 같은 격자의 아티팩트 칸(T-188)</summary>
+    public int EquipSlotsUsed => _equips.Count + _pendingEquipPositions.Count + Artifacts.SlotCount;
 
     // 이번 지급이 남은 칸 안에 전부 드는가. 자원은 사본에 넣어 본다 — 덜 찬 칸을 채우고 남는 만큼만 새 칸을 쓴다.
     // consumed — 지급 전에 빠지는 자원(상자를 여는 경우). 인벤토리 것부터 빠지므로 그만큼 칸이 빌 수 있다.

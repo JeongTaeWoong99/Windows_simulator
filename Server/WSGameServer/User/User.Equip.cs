@@ -242,11 +242,15 @@ public partial class User
         return sum;
     }
 
-    /// <summary>창고 장비 탭의 첫 빈 칸(0부터). 지급 대기 중인 칸도 찬 것으로 본다.</summary>
+    /// <summary>인벤토리 장비 탭의 첫 빈 칸(0부터). 지급 대기 칸과 아티팩트 칸(T-188)도 찬 것으로 본다.</summary>
     public int NextFreeEquipPosition()
     {
-        return StorageSlots.FirstFree(_equips.Values.Select(e => e.SlotPosition).Concat(_pendingEquipPositions));
+        return StorageSlots.FirstFree(InventoryEquipSlots().Concat(Artifacts.Items.Select(a => a.Slot)));
     }
+
+    // 인벤토리 장비 탭에서 장비가 잡은 칸 — 보유 + 지급 대기. 아티팩트 칸이 이 칸을 비켜 간다.
+    private IEnumerable<int> InventoryEquipSlots()
+        => _equips.Values.Select(e => e.SlotPosition).Concat(_pendingEquipPositions);
 
     /// <summary>장비 개체 1개를 지급한다(치트·앞으로의 획득 경로가 같은 길을 쓴다). 개체 PK는 <see cref="OnEquipGranted"/>로 돌아온다.</summary>
     /// <returns>지급을 요청했으면 true. 테이블에 없는 TID면 false.</returns>

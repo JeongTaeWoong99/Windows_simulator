@@ -105,10 +105,11 @@ namespace MikaProtocol
         StorageEntityBusy     = 1104, // 창고로 못 보낸다 — 배치 중 캐릭터 · 장비를 입은 캐릭터 · 장착 중 장비
         WarehousePartialSwap  = 1105, // 다른 자원 칸에 일부 수량을 놓았다 — 스왑은 전량일 때만
         StorageOverMaxStack   = 1106, // 합치면 그 자원의 최대 수량(ItemTable.MaxStack)을 넘는다
+        StorageSlotArtifact   = 1107, // 도착 칸에 아티팩트가 있다 — 아티팩트는 창고에 못 가 맞바꿀 수 없다 (T-188)
 
         // ── 1200~: 잠금 (T-137) ── 미보유는 CharacterNotOwned(201) · EquipNotOwned(600)
         EntityLocked      = 1200, // 잠긴 개체 — 판매·경매 등록·응축 재료로 쓸 수 없다. 아무것도 바꾸지 않았다
-        InvalidLockTarget = 1201, // 잠글 수 없는 대상 — 없는 대상 종류 · 아이템 테이블에 없는 자원 TID
+        InvalidLockTarget = 1201, // 잠글 수 없는 대상 — 없는 대상 종류 · 아이템 테이블에 없는 자원 TID · 아티팩트 표에 없는 번호
 
         // ── 1300~: 분해 (T-131) ── 미보유 EquipNotOwned(600) · 잠김 EntityLocked(1200) · 고르기 전 EnchantPending(615) · 재료 칸 부족 StorageFull(103)
         InvalidDisassembleRequest = 1300, // 빈 목록 · 중복 장비
@@ -304,6 +305,7 @@ namespace MikaProtocol
         Character = 1,
         Equip     = 2,
         Resource  = 3,   // Id = 아이템 TID. 보유가 0개여도 잠금은 남는다
+        Artifact  = 4,   // Id = 아티팩트 번호(ArtifactTID). 자원 잠금과 번호 공간이 따로다 (T-188)
     }
 
     public enum EStorageSortOrder : byte

@@ -38,6 +38,13 @@ public partial class User
             return;
         }
 
+        // 인벤토리 장비 칸에 선 아티팩트는 창고로 못 가 맞바꿀 수 없다(T-188).
+        if (tab == EStorageTab.Equip && to == EContainer.Inventory && Artifacts.TryGetAt(toSlot, out _))
+        {
+            SendTransfer(EResultCode.StorageSlotArtifact, tab, new List<WarehouseChangeInfo>());
+            return;
+        }
+
         if (tab == EStorageTab.Resource)
         {
             TransferResource(from, to, fromSlot, toSlot, count);

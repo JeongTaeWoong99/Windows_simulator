@@ -90,6 +90,12 @@ public sealed record UserItemLockRow
     public int item_id { get; init; }
 }
 
+// t_user_artifact_lock 조회 전용 Row (T-188). 잠긴 번호만 행이 있다.
+public sealed record UserArtifactLockRow
+{
+    public int artifact_tid { get; init; }
+}
+
 // t_user_equip 조회 전용 Row. equip_id는 개체 PK(long), equip_tid는 테이블 정의(int).
 public sealed record UserEquipRow
 {
@@ -144,7 +150,8 @@ public sealed record PlayerLoginData(
     List<UserTraitRow>? TraitRows = null,
     List<UserArtifactRow>? ArtifactRows = null,
     List<UserItemLockRow>? ItemLockRows = null,
-    List<UserArtifactStackRow>? ArtifactStackRows = null);
+    List<UserArtifactStackRow>? ArtifactStackRows = null,
+    List<UserArtifactLockRow>? ArtifactLockRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

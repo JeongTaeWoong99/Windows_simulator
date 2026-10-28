@@ -14,6 +14,12 @@ public partial class User
             return;
         }
 
+        if (IsSharedEquipGrid(container, tab))
+        {
+            MoveEquipGrid(fromSlot, toSlot);
+            return;
+        }
+
         var occupied = OccupiedSlots(container, tab);
         if (!occupied.ContainsKey(fromSlot))
         {
@@ -60,6 +66,12 @@ public partial class User
             return;
         }
 
+        if (IsSharedEquipGrid(container, tab))
+        {
+            SortEquipGrid((StorageSortKey)key, order == EStorageSortOrder.Ascending);
+            return;
+        }
+
         if (IsStackTab(tab))
         {
             SortResource(container, tab, (StorageSortKey)key, order == EStorageSortOrder.Ascending);
@@ -92,15 +104,23 @@ public partial class User
         SendResourceSlots(container, tab, changes, changes.Where(c => c.Count > 0));
     }
 
-    // 같은 자원 칸에 놓으면 MaxStack까지 합치고 남는 것은 원래 칸에 둔다(T-160). 그 밖에는 이동·교환이다.
     private void MoveResource(EContainer container, EStorageTab tab, int fromSlot, int toSlot)
     {
-        var box      = StacksOf(container, tab);
-        var maxStack = StackLimitOf(tab);
+        var box     = StacksOf(container, tab);
+        var changes = box.Rewrite(MoveStacks(box, fromSlot, toSlot, StackLimitOf(tab)));
+        SaveStacks(tab, changes);
+        SendResourceSlots(container, tab, changes, changes.Where(c => c.Count > 0));
+    }
+
+    // 같은 종류 칸에 놓으면 MaxStack까지 합치고 남는 것은 원래 칸에 둔다(T-160). 그 밖에는 이동·교환이다.
+    // 한쪽 칸이 비었으면 그쪽은 빈 채로 간다 — 장비와 맞바꾸는 아티팩트 칸(T-188).
+    private static List<Item> MoveStacks(Inventory box, int fromSlot, int toSlot, Func<int, int> maxStack)
+    {
         box.TryGetAt(fromSlot, out var moving);
+        box.TryGetAt(toSlot, out var target);
 
         var next = box.Items.Where(i => i.Slot != fromSlot && i.Slot != toSlot).ToList();
-        if (box.TryGetAt(toSlot, out var target) && target.Id == moving.Id && target.Count < maxStack(moving.Id))
+        if (moving is not null && target is not null && target.Id == moving.Id && target.Count < maxStack(moving.Id))
         {
             var merged = Math.Min(moving.Count, maxStack(moving.Id) - target.Count);
             next.Add(new Item(moving.Id, target.Count + merged, toSlot));
@@ -108,19 +128,96 @@ public partial class User
             {
                 next.Add(new Item(moving.Id, moving.Count - merged, fromSlot));
             }
-        }
-        else
-        {
-            next.Add(new Item(moving.Id, moving.Count, toSlot));
-            if (target is not null)
-            {
-                next.Add(new Item(target.Id, target.Count, fromSlot));
-            }
+
+            return next;
         }
 
-        var changes = box.Rewrite(next);
-        SaveStacks(tab, changes);
-        SendResourceSlots(container, tab, changes, changes.Where(c => c.Count > 0));
+        if (moving is not null)
+        {
+            next.Add(new Item(moving.Id, moving.Count, toSlot));
+        }
+        if (target is not null)
+        {
+            next.Add(new Item(target.Id, target.Count, fromSlot));
+        }
+
+        return next;
+    }
+
+    // 인벤토리 장비 탭 — 장비와 아티팩트 묶음이 한 격자에 선다(T-188). 장비끼리·아티팩트끼리·서로 맞바꾸기가 다 된다.
+    private void MoveEquipGrid(int fromSlot, int toSlot)
+    {
+        var equips       = OccupiedSlots(EContainer.Inventory, EStorageTab.Equip);
+        var fromArtifact = Artifacts.TryGetAt(fromSlot, out _);
+        var hasArtifacts = fromArtifact || Artifacts.TryGetAt(toSlot, out _);
+        if (!equips.ContainsKey(fromSlot) && !fromArtifact)
+        {
+            SendSlots(EResultCode.StorageSlotEmpty, EContainer.Inventory, EStorageTab.Equip, new List<SlotChange>());
+            return;
+        }
+
+        if (fromSlot == toSlot)
+        {
+            SendSlots(EResultCode.Ok, EContainer.Inventory, EStorageTab.Equip, new List<SlotChange>());
+            return;
+        }
+
+        if (PendingSlots(EContainer.Inventory, EStorageTab.Equip).Contains(toSlot))
+        {
+            SendSlots(EResultCode.StorageSlotPending, EContainer.Inventory, EStorageTab.Equip, new List<SlotChange>());
+            return;
+        }
+
+        var equipChanges = new List<SlotChange>();
+        if (equips.TryGetValue(fromSlot, out var moving))
+        {
+            equipChanges.Add(new SlotChange(moving, toSlot));
+        }
+        if (equips.TryGetValue(toSlot, out var other))
+        {
+            equipChanges.Add(new SlotChange(other, fromSlot));
+        }
+
+        SaveEquipSlots(equipChanges);
+        if (hasArtifacts)
+        {
+            SaveStacks(EStorageTab.Artifact, Artifacts.Rewrite(MoveStacks(Artifacts, fromSlot, toSlot, StackLimitOf(EStorageTab.Artifact))));
+        }
+
+        SendSlots(EResultCode.Ok, EContainer.Inventory, EStorageTab.Equip, equipChanges);
+        if (hasArtifacts)
+        {
+            SendArtifactInventory();
+        }
+    }
+
+    // 장비를 지금 기준으로 앞에 세우고, 아티팩트는 같은 기준으로 그 뒤에 잇는다. 지급 대기 칸은 둘 다 건너뛴다.
+    private void SortEquipGrid(StorageSortKey key, bool ascending)
+    {
+        var pending      = PendingSlots(EContainer.Inventory, EStorageTab.Equip);
+        var equipOrder   = StorageSort.Order(SortEntries(EContainer.Inventory, EStorageTab.Equip), key, ascending);
+        var equipChanges = StorageSlots.Renumber(equipOrder, pending);
+        SaveEquipSlots(equipChanges);
+
+        var stacks = StorageSort.CompactStacks(Artifacts.Items, StackLimitOf(EStorageTab.Artifact));
+        var order  = StorageSort.Order(stacks.Select((stack, index) => ArtifactEntry(stack, index)).ToList(), key, ascending);
+        var placed = StorageSlots.Renumber(order, equipChanges.Select(c => c.Slot).Concat(pending));
+        var next   = placed.Select(p => new Item(stacks[(int)p.Key].Id, stacks[(int)p.Key].Count, p.Slot)).ToList();
+        SaveStacks(EStorageTab.Artifact, Artifacts.Rewrite(next));
+
+        SendSlots(EResultCode.Ok, EContainer.Inventory, EStorageTab.Equip, equipChanges);
+        SendArtifactInventory();
+    }
+
+    private void SaveEquipSlots(List<SlotChange> changes)
+    {
+        if (changes.Count == 0)
+        {
+            return;
+        }
+
+        ApplySlotChanges(EContainer.Inventory, EStorageTab.Equip, changes);
+        PostDBTask(new SaveStorageSlotsRepository(this, EContainer.Inventory, EStorageTab.Equip, changes));
     }
 
     // 같은 자원의 덜 찬 칸을 먼저 합친 뒤 줄 세워 0부터 다시 놓는다. 자원은 지급 대기 칸이 없다.
@@ -187,6 +284,10 @@ public partial class User
     // 아티팩트 탭은 인벤토리에만 있다(T-181).
     private static bool HasTab(EContainer container, EStorageTab tab)
         => IsContainer(container) && (tab != EStorageTab.Artifact || container == EContainer.Inventory);
+
+    // 인벤토리 장비 탭은 아티팩트 칸과 한 격자다(T-188) — 아티팩트 탭으로 온 이동·정렬도 여기로 간다.
+    private static bool IsSharedEquipGrid(EContainer container, EStorageTab tab)
+        => container == EContainer.Inventory && tab is EStorageTab.Equip or EStorageTab.Artifact;
 
     // 칸이 개체가 아니라 (종류, 수량) 묶음인 탭.
     private static bool IsStackTab(EStorageTab tab) => tab is EStorageTab.Resource or EStorageTab.Artifact;

@@ -19,8 +19,8 @@ public partial class User
     // 도감에 장착한 번호 → 켜짐.
     private readonly Dictionary<int, bool> _codex = new();
 
-    /// <summary>인벤토리 아티팩트 탭. 키(<c>Item.Id</c>)는 아티팩트 번호다. 창고에는 아티팩트 탭이 없다.</summary>
-    public Inventory Artifacts { get; } = new(EContainer.Inventory, () => StorageCapacity);
+    /// <summary>인벤토리 아티팩트 칸. 키(<c>Item.Id</c>)는 아티팩트 번호다. 장비 칸과 한 격자를 쓴다(T-188). 창고에는 없다.</summary>
+    public Inventory Artifacts { get; }
 
     /// <summary>DB에서 읽은 도감·아티팩트 칸을 적재한다(로그인 시 1회). 표에 없는 번호는 경고 후 버린다.</summary>
     public void LoadArtifacts(IReadOnlyList<UserArtifactRow> codexRows, IReadOnlyList<UserArtifactStackRow> stackRows)
@@ -34,9 +34,15 @@ public partial class User
             }
         }
 
-        Artifacts.Load(stackRows
+        // 장비 적재 뒤에 온다 — 장비와 겹친 칸을 비켜 저장한다(T-188).
+        var moved = Artifacts.Load(stackRows
             .Where(r => r.count > 0 && IsKnownArtifact(r.artifact_tid, "칸"))
             .Select(r => new Item(r.artifact_tid, r.count, r.slot)));
+        if (moved.Count > 0)
+        {
+            ServerLog.Warn("아티팩트", $"겹친 칸을 옮겼다 Uid={Uid} {moved.Count(c => c.Count > 0)}칸");
+            PostDBTask(new SaveArtifactStacksRepository(this, moved));
+        }
     }
 
     private bool IsKnownArtifact(int artifactTid, string where)
@@ -71,7 +77,7 @@ public partial class User
     /// <summary>인벤토리 아티팩트 탭 스냅샷을 보낸다(로그인 직후 · 칸이 바뀐 뒤).</summary>
     public void SendArtifactInventory()
     {
-        Send(new S_ArtifactInventoryResponse { Stacks = Artifacts.Snapshot() });
+        Send(new S_ArtifactInventoryResponse { Stacks = Artifacts.Snapshot(), LockedArtifactTids = _lockedArtifactTids.Order().ToList() });
     }
 
     /// <summary>아티팩트 탭에 전부 들어가는지 — 지급 전에 본다. 같은 번호의 덜 찬 칸부터 채우고 남으면 빈 칸을 쓴다.</summary>
@@ -215,6 +221,12 @@ public partial class User
             if (a.Count <= 0 || !GameTable.ArtifactTable.TryGet(a.ArtifactTid, out var row))
             {
                 Reject(EResultCode.InvalidArtifact);
+                return;
+            }
+
+            if (IsArtifactLocked(a.ArtifactTid))
+            {
+                Reject(EResultCode.EntityLocked);
                 return;
             }
 

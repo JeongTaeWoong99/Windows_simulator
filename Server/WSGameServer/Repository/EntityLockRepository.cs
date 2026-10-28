@@ -2,7 +2,7 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-/// <summary>캐릭터·장비 한 개체, 또는 자원 한 종류의 잠금을 확정값으로 쓴다(T-137 · T-159). 경매에 넘어간 개체는 건드리지 않는다.</summary>
+/// <summary>캐릭터·장비 한 개체, 또는 자원 한 종류·아티팩트 한 번호의 잠금을 확정값으로 쓴다(T-137 · T-159 · T-188). 경매에 넘어간 개체는 건드리지 않는다.</summary>
 public sealed class EntityLockRepository : IRepository
 {
     public EntityLockRepository(User user, ELockTarget target, long id, bool locked)
@@ -29,6 +29,12 @@ public sealed class EntityLockRepository : IRepository
             return;
         }
 
+        if (Target == ELockTarget.Artifact)
+        {
+            await ExecuteArtifactLockAsync(connection);
+            return;
+        }
+
         // user_id를 함께 거는 이유 — 개체 PK가 새어도 남의 개체를 잠그지 못하게 한다.
         var table = Target == ELockTarget.Character ? "t_character" : "t_user_equip";
         var idCol = Target == ELockTarget.Character ? "character_id" : "equip_id";
@@ -44,6 +50,15 @@ public sealed class EntityLockRepository : IRepository
         var sql = Locked
             ? "INSERT OR IGNORE INTO t_user_item_lock (user_id, item_id) VALUES (@userId, @id)"
             : "DELETE FROM t_user_item_lock WHERE user_id = @userId AND item_id = @id";
+
+        await connection.ExecuteAsync(sql, new { userId = User.Uid, id = Id });
+    }
+
+    private async Task ExecuteArtifactLockAsync(DbConnection connection)
+    {
+        var sql = Locked
+            ? "INSERT OR IGNORE INTO t_user_artifact_lock (user_id, artifact_tid) VALUES (@userId, @id)"
+            : "DELETE FROM t_user_artifact_lock WHERE user_id = @userId AND artifact_tid = @id";
 
         await connection.ExecuteAsync(sql, new { userId = User.Uid, id = Id });
     }

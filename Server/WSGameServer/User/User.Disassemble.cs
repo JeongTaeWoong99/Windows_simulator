@@ -8,7 +8,7 @@ public partial class User
     /// <summary>
     /// 장비와 아티팩트를 지우고 등급별 재료(<c>DisassembleTable</c>)를 인벤토리에 넣는다(T-131 · T-185). 아티팩트는 <c>ArtifactItemCount</c>를 쓴다.
     /// 전부 검증한 뒤에만 지운다 — 하나라도 걸리면 아무것도 바뀌지 않는다.
-    /// 착용 중 · 잠김 · 큐브 결과 고르기 전 장비, 모자란 아티팩트, 재료가 인벤토리에 다 안 들어가면 거절한다.
+    /// 착용 중 · 잠김 · 큐브 결과 고르기 전 장비, 모자라거나 잠긴 아티팩트, 재료가 인벤토리에 다 안 들어가면 거절한다.
     /// </summary>
     public void TryDisassemble(IReadOnlyList<long> equipIds, IReadOnlyList<ArtifactInfo> artifacts)
     {
@@ -63,6 +63,11 @@ public partial class User
             if (!GameTable.ArtifactTable.TryGet(a.ArtifactTid, out var artifact))
             {
                 Reject(EResultCode.InvalidArtifact, $"표에 없는 아티팩트 {a.ArtifactTid}");
+                return;
+            }
+            if (IsArtifactLocked(a.ArtifactTid))
+            {
+                Reject(EResultCode.EntityLocked, $"잠긴 아티팩트 {a.ArtifactTid}");
                 return;
             }
             if (!GameTable.DisassembleTable.TryGet(artifact.GlobalRarity, out var row))

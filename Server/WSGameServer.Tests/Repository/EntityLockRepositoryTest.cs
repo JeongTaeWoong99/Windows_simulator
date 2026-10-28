@@ -65,4 +65,20 @@ public class EntityLockRepositoryTest : IDisposable
         Count("SELECT COUNT(*) FROM t_user_item_lock WHERE user_id = 7").ShouldBe(0);
         Count("SELECT COUNT(*) FROM t_user_item_lock WHERE user_id = 8").ShouldBe(1);
     }
+
+    [Fact]
+    public async Task 아티팩트는_자기_번호_한_줄만_잠그고_자원_잠금과_섞이지_않는다()
+    {
+        var user = new TestUserBuilder().Build(uid: 7);
+
+        await new EntityLockRepository(user, ELockTarget.Artifact, 1, locked: true).ExecuteAsync(new DbConnection(_db.Connection));
+        await new EntityLockRepository(user, ELockTarget.Artifact, 1, locked: true).ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT COUNT(*) FROM t_user_artifact_lock WHERE user_id = 7 AND artifact_tid = 1").ShouldBe(1);
+        Count("SELECT COUNT(*) FROM t_user_item_lock").ShouldBe(0);
+
+        await new EntityLockRepository(user, ELockTarget.Artifact, 1, locked: false).ExecuteAsync(new DbConnection(_db.Connection));
+
+        Count("SELECT COUNT(*) FROM t_user_artifact_lock").ShouldBe(0);
+    }
 }
