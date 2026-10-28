@@ -9,13 +9,17 @@ public sealed class Inventory
 {
     private readonly Func<int> _capacity;
 
+    // 같은 격자를 함께 쓰는 남의 칸(아티팩트 탭이면 장비 칸 — T-188). 빈 칸·남은 칸 수를 셀 때 찬 것으로 본다.
+    private readonly Func<IEnumerable<int>> _reserved;
+
     private Dictionary<int, Item> _slots = new();
 
     // 칸 수는 쓸 때 읽는다 — User가 표(Constants)보다 먼저 만들어질 수 있다.
-    public Inventory(EContainer container, Func<int> capacity)
+    public Inventory(EContainer container, Func<int> capacity, Func<IEnumerable<int>>? reserved = null)
     {
         Container = container;
         _capacity = capacity;
+        _reserved = reserved ?? Array.Empty<int>;
     }
 
     public Inventory(EContainer container = EContainer.Inventory, int capacity = int.MaxValue)
@@ -27,26 +31,37 @@ public sealed class Inventory
 
     public int Capacity => _capacity();
 
-    // 로그인 시 묶음을 적재한다. 칸이 겹치거나 격자 밖이면(마이그레이션이 비켜 둔 행 등) 첫 빈 칸으로 옮긴다 —
-    // 그대로 두면 클라 격자에서 하나가 가려진다. 옮긴 칸은 다음 저장에 함께 실린다.
-    public void Load(IEnumerable<Item> items)
+    // 로그인 시 묶음을 적재한다. 칸이 겹치거나 격자 밖이거나 남의 칸이면 첫 빈 칸으로 옮긴다 — 그대로 두면 클라 격자에서 하나가 가려진다.
+    // 돌려주는 변경분(옛 칸 비움 + 새 칸)을 저장해야 다음 로그인에 같은 묶음이 두 칸으로 살아나지 않는다.
+    public List<ItemChangeInfo> Load(IEnumerable<Item> items)
     {
         // 제자리인 칸을 먼저 전부 잡는다 — 한 번에 돌면 비켜 갈 것이 뒤 항목의 제 칸을 빼앗는다.
         _slots = new Dictionary<int, Item>();
+        var reserved  = _reserved().ToHashSet();
         var misplaced = new List<Item>();
         foreach (var item in items)
         {
-            if (!IsInGrid(item.Slot) || !_slots.TryAdd(item.Slot, item))
+            if (!IsInGrid(item.Slot) || reserved.Contains(item.Slot) || !_slots.TryAdd(item.Slot, item))
             {
                 misplaced.Add(item);
             }
         }
 
+        var changes = new List<ItemChangeInfo>();
         foreach (var item in misplaced)
         {
-            var slot = StorageSlots.FirstFree(_slots.Keys);
-            _slots[slot] = new Item(item.Id, item.Count, slot);
+            // 겹쳐서 밀려난 것이면 옛 칸은 먼저 잡은 묶음의 행이다 — 지우지 않는다.
+            if (!_slots.ContainsKey(item.Slot))
+            {
+                changes.Add(new ItemChangeInfo { ItemId = item.Id, Count = 0, Kind = EItemChangeKind.Remove, Container = Container, Slot = item.Slot });
+            }
+
+            var moved = new Item(item.Id, item.Count, StorageSlots.FirstFree(_slots.Keys.Concat(reserved)));
+            _slots[moved.Slot] = moved;
+            changes.Add(ToChange(moved, EItemChangeKind.Add));
         }
+
+        return changes;
     }
 
     public IReadOnlyCollection<Item> Items => _slots.Values;
@@ -73,8 +88,12 @@ public sealed class Inventory
         return partial + (long)FreeSlotCount * maxStack;
     }
 
-    // capacity가 int.MaxValue(테스트 기본)여도 넘치지 않게 뺀다.
-    private int FreeSlotCount => Math.Max(0, Capacity - _slots.Count);
+    // capacity가 int.MaxValue(테스트 기본)여도 넘치지 않게 뺀다. 남의 칸은 격자 안·내 칸과 안 겹치는 것만 센다.
+    private int FreeSlotCount
+        => Math.Max(0, Capacity - _slots.Count - _reserved().Distinct().Count(s => IsInGrid(s) && !_slots.ContainsKey(s)));
+
+    // 새 묶음을 놓을 첫 빈 칸 — 남의 칸을 건너뛴다.
+    private int FirstFreeSlot() => StorageSlots.FirstFree(_slots.Keys.Concat(_reserved()));
 
     /// <summary>
     /// 덜 찬 칸부터 maxStack까지 채우고, 남으면 첫 빈 칸부터 새 묶음을 놓는다. 칸이 모자라 못 넣은 몫은 버린다.
@@ -88,7 +107,7 @@ public sealed class Inventory
         while (left > 0 && FreeSlotCount > 0)
         {
             var put  = Math.Min(left, maxStack);
-            var item = new Item(itemId, put, StorageSlots.FirstFree(_slots.Keys));
+            var item = new Item(itemId, put, FirstFreeSlot());
             _slots[item.Slot] = item;
             left -= put;
             changes.Add(ToChange(item, EItemChangeKind.Add));
@@ -278,7 +297,7 @@ public sealed class Inventory
     /// <summary>칸 수 검사용 사본 — 지급을 미리 넣어 보고 버린다.</summary>
     public Inventory Clone()
     {
-        var copy = new Inventory(Container, _capacity);
+        var copy = new Inventory(Container, _capacity, _reserved);
         copy._slots = _slots.Values.ToDictionary(i => i.Slot, i => new Item(i.Id, i.Count, i.Slot));
         return copy;
     }

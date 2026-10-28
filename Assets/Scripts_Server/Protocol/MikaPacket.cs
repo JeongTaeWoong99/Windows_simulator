@@ -384,11 +384,13 @@ namespace MikaProtocol
     /// <summary>
     /// 인벤토리 아티팩트 탭 스냅샷(T-181). 로그인 직후와 칸이 바뀔 때마다(감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동·정렬) 통째로 온다 — 클라는 덮어쓴다.
     /// <c>ItemInfo.ItemId</c>는 아티팩트 번호(ArtifactTID)다. 같은 번호가 <c>Constants.ArtifactMaxStack</c>을 넘으면 칸이 나뉜다.
+    /// <c>ItemInfo.Slot</c>은 장비 탭과 같은 번호 공간이다(T-188) — 한 칸에는 장비 1개 또는 아티팩트 묶음 하나만 선다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_ArtifactInventoryResponse)]
     public partial class S_ArtifactInventoryResponse : IPacket
     {
         public List<ItemInfo> Stacks { get; set; } = new();
+        public List<int>? LockedArtifactTids { get; set; }  // 잠긴 아티팩트 번호 (T-188). 보유 0개인 번호도 실린다
     }
 
     /// <summary>인벤토리의 아티팩트 1개를 도감에 장착한다(T-181). 번호마다 한 번 — 되돌릴 수 없고, 장착하면 켜진 채로 시작한다.</summary>
@@ -666,12 +668,12 @@ namespace MikaProtocol
         public CharacterInfo? Character { get; set; }
     }
 
-    /// <summary>캐릭터·장비·자원 잠금 켜기/끄기(T-137 · T-159). 잠긴 것은 판매·경매 등록·응축 재료에서 빠진다 — 장착·배치·소비는 그대로 된다.</summary>
+    /// <summary>캐릭터·장비·자원·아티팩트 잠금 켜기/끄기(T-137 · T-159 · T-188). 잠긴 것은 판매·경매 등록·응축 재료에서 빠진다 — 장착·배치·소비는 그대로 된다.</summary>
     [MemoryPackable, Packet(PacketId.C_EntityLockRequest)]
     public partial class C_EntityLockRequest : IPacket
     {
         public ELockTarget Target { get; set; }
-        public long        Id     { get; set; }  // CharacterId · EquipId (개체 PK) · 자원은 아이템 TID
+        public long        Id     { get; set; }  // CharacterId · EquipId (개체 PK) · 자원은 아이템 TID · 아티팩트는 번호
         public bool        Locked { get; set; }  // true = 잠금 · false = 해제
     }
 

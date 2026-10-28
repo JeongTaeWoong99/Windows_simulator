@@ -185,6 +185,7 @@ public sealed partial class User
         _clock = clock ?? GameClock.Instance;
         _characterStars = characterStars ?? CharacterStarCatalog.Instance;
         _gatherSpeed = gatherSpeed ?? GatherSpeed.Instance;
+        Artifacts    = new Inventory(EContainer.Inventory, () => StorageCapacity, InventoryEquipSlots);
 
         SessionId  = channel.SessionId;
         Pid        = pid;

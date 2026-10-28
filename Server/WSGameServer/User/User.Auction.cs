@@ -142,6 +142,11 @@ public partial class User
             return (EResultCode.AuctionInvalidRequest, null, 0);
         }
 
+        if (IsArtifactLocked(artifactTid))
+        {
+            return (EResultCode.EntityLocked, null, 0);
+        }
+
         if (GetArtifactCount(artifactTid) < count)
         {
             return (EResultCode.NotEnoughItem, null, 0);
