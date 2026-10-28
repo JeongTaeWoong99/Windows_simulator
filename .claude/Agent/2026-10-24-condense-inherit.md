@@ -22,3 +22,10 @@ tags: [server, design, data]
 ## 후속 작업 / 주의사항
 - 연결 테스트의 기대값은 `Constants.CondenseInheritPermille`을 읽어 만든다 — 엑셀 값을 바꿔도 테스트가 깨지지 않게. 올림 규칙 자체는 리터럴 표(`계승분은_누적에_비율을_곱해_올림한다`)가 지킨다
 - 클라 경고 문구는 아직 "사라집니다" — #84로 태웅에게 넘겼다
+
+## 업데이트 (2026-10-28)
+
+- #84 재검토 결론 — 계승 비율을 **25%로 확정**(진우).
+- `GameDesign/Excel/Constants.xlsx` `CondenseInheritPermille` 500 → 250 · 파이프라인 재생성(`ConstantsTable` `.bytes`·`DataLog`).
+- 기획 문서(게임기획코어 5장 · 캐릭터 5.5)·T-179 일감의 50% → 25%.
+- 서버 코드·클라 코드는 그대로 — 둘 다 상수를 읽는다. 응축 테스트 20/20 통과.

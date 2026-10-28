@@ -121,7 +121,7 @@
   },
   {
     "Name": "CondenseInheritPermille",
-    "Value": 500,
+    "Value": 250,
     "Description": "응축 재료의 누적 응축 중 대상에 넘기는 비율(천분율) — 재료마다 올림. 레벨·경험치는 넘기지 않는다"
   },
   {

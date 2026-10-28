@@ -186,6 +186,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 껐다 켤 때마다 점점 검어진다.
     private Color _rarityColor = RarityPalette.Unknown;
 
+    // Special 등급을 그리고 있나 — 무지개 테두리('SpecialSlotFx')를 켠다(T-151). 연출은 처음 켤 때 코드로 붙인다
+    private bool            _isSpecial;
+    private SpecialSlotFx?  _specialFx;
+
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 부르는 Presenter가 Bind를 부르기 전에 이미 검증돼 있다 (Unity 메시지)
     private void Awake()
@@ -269,6 +273,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     {
         Key           = data.Key;
         _rarityColor  = RarityPalette.Get(data.Rarity);
+        _isSpecial    = data.Rarity == GlobalRarity.Special;
         nameText.text = data.Name;
         subText.text  = data.Sub;
 
@@ -576,6 +581,27 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         nameText.alpha = _nameBaseAlpha * textAlpha;
         subText.alpha  = _subBaseAlpha  * textAlpha;
+
+        ApplySpecialFx();
+    }
+
+    // Special 무지개 — 흐리게 그리는 칸(딤 · 흑백)에서는 끈다. 도감의 꺼진·미장착 칸이 무지개로 돌면 켜진 칸과 구분되지 않는다
+    // ※ 처음 켜야 할 때만 붙인다 — 칸 대부분은 Special이 아니다
+    private void ApplySpecialFx()
+    {
+        bool on = _isSpecial && !_isDimmed && !IsGray;
+
+        if (_specialFx == null)
+        {
+            if (!on)
+            {
+                return;
+            }
+
+            _specialFx = gameObject.AddComponent<SpecialSlotFx>();
+        }
+
+        _specialFx.SetOn(on, rarityImage.transform, itemImage.transform);
     }
 
     // 원래 색에 이 칸의 흑백·딤을 입힌다 (ApplyTint에서 호출).
@@ -605,6 +631,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     {
         Key            = 0;
         _rarityColor   = RarityPalette.Unknown;
+        _isSpecial     = false;
         _isDimmed      = false;
         _isFilteredOut = false;
         _isCondenseExcluded = false;

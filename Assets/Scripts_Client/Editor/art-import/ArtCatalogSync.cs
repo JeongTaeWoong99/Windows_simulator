@@ -11,7 +11,7 @@ namespace DesktopWindowControl.EditorTools
     // ■ 목록은 손으로 채우지 않는다
     //   캐릭터 = 레시피의 'characterTids'(CharacterTable TID). TID 0을 넣은 그림이 그림 없는 캐릭터의 대체 그림이다.
     //   아이콘 = 'icons/items/item_<TID>.png' · 'icons/equips/equip_<TID>.png' — 파일 이름의 TID가 곧 ItemTable·EquipTable TID.
-    //            'item_0' · 'equip_0'이 아이콘 없는 것의 대체 아이콘이다.
+    //            'item_0' · 'equip_0'이 아이콘 없는 것의 대체 아이콘이다. 아티팩트('icons/artifacts/artifact_<TID>')는 대체가 없다 — 칸이 이름 첫 글자로 그린다.
     //   이펙트 = 'fx/**/<키>_<부위>.png' — 파일 이름 그대로가 찾는 이름('VisualCatalog.FxOf').
     //   배경·대상은 산업마다 하나라 목록에서 직접 고른다(여기서 건드리지 않는다).
     //
@@ -87,6 +87,7 @@ namespace DesktopWindowControl.EditorTools
             int items      = WriteIcons(so, "itemIcons",     "fallbackItemIcon",  ArtSpec.ItemIconsRoot,     ArtSpec.ItemIconPrefix);
             int equips     = WriteIcons(so, "equipIcons",    "fallbackEquipIcon", ArtSpec.EquipIconsRoot,    ArtSpec.EquipIconPrefix);
             int industries = WriteIcons(so, "industryIcons", null,                ArtSpec.IndustryIconsRoot, ArtSpec.IndustryIconPrefix);
+            int artifacts  = WriteIcons(so, "artifactIcons", null,                ArtSpec.ArtifactIconsRoot, ArtSpec.ArtifactIconPrefix);
             int fxs        = WriteFx(so);
 
             so.ApplyModifiedPropertiesWithoutUndo();
@@ -94,7 +95,7 @@ namespace DesktopWindowControl.EditorTools
 
             string fallbackName = so.FindProperty("fallbackCharacter").objectReferenceValue is Object f ? f.name : "없음";
 
-            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 산업 아이콘 {industries} · 이펙트 {fxs}";
+            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 산업 아이콘 {industries} · 아티팩트 아이콘 {artifacts} · 이펙트 {fxs}";
         }
 
         // 'fx/' 아래 PNG를 전부 훑어 파일 이름으로 목록에 쓴다. 이름이 겹치면 뒤의 것을 버리고 경고한다

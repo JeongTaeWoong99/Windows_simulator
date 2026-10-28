@@ -19,7 +19,7 @@ namespace WSGameServer;
 public class GachaServiceTest
 {
     private const int ItemPoolId      = 1;   // GachaInfoTable에 메타가 있는 아이템 풀
-    private const int CharacterPoolId = 2;   // GachaInfoTable에 메타가 있는 캐릭터 풀
+    private const int CharacterPoolId = 4;   // 캐릭터 지급 경로 확인용 — 실제 캐릭터 풀(2)은 닫혀(T-184) 장신구 풀의 비용 메타를 빌린다
     private const int EquipPoolId     = 3;   // GachaInfoTable에 메타가 있는 장비(무기) 풀
     private const int NoMetaPoolId    = 999; // 추첨 풀만 있고 메타가 없는 풀
 

@@ -1,6 +1,6 @@
 # Art 폴더 규칙
 
-> 최종 업데이트: 2026-10-27 (미감정 유물 아이콘 7종 — 임시 · T-151) · 2026-10-25 (**`fx/appraise/`** — 유물 감정 금 3갈래 · 파편 임시 그림 · `make_fx.py appraise`) · 2026-10-23 (**`fx/rarity/`·`fx/coin/`** — 칸 등급 배경 9-slice(Border 10) · 골드 동전·반짝 임시 그림 · `make_fx.py rarity coin`) · 2026-10-21 (**`fx/levelup/`·`fx/unlock/`** — 레벨업 화살표 · 자물쇠 임시 그림 · `make_fx.py levelup unlock`) · 2026-10-19 (**새 캐릭터 그림은 캐릭터 기획 4.1 매칭 기준으로** — 이슈 #79) · 2026-10-18 (**머리·상반신 크롭 점검표 · 좌우로 긴 몬스터는 머리가 앞** · 머리도 `Upscale` — 여백 없음 · 자동 머리 가로 = 머리 가운데) · 2026-10-18 (**몸 영역 `bodyRect`** — 지팡이 연기·큰 무기가 테두리를 키우는 캐릭터 · evil-wizard-2) · 2026-10-18 (**캐릭터 크기 템플릿 소·중·대** `characters/_templates/` — 개인 조정 첫 값 · 작은 캐릭터 크롭은 몸 전체 · **대상 레벨별 배율** `levels[].scale`) · 2026-10-18 (**캐릭터 27종 · 대상 레벨별 그림 `levels` · 산업 아이콘 `icons/industries/`** — 새 팩 캐릭터 23종 · 대체 캐릭터 medieval-warrior · 발굴 대상 `excavation`) · 2026-10-18 (**원본 정리 규칙** — `_source/<종류>/<팩>/` 선반 · 팩 이름 · 원본 목록 · 새 팩 20개 · **팩은 쓸 재료만 추려 `sprites/`·`anims/`·`audio/` 모양으로** — 정리기 `_source/tidy_source.py` · 음악은 ogg · karsiori 팩별 분리) · 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
+> 최종 업데이트: 2026-10-28 (**아티팩트 아이콘 `icons/artifacts/`** 22종 임시 · 레시피 `artifacts` · **`fx/special/`** — Special 칸 무지개 · 흰색 규칙의 예외 · T-151) · 2026-10-27 (미감정 유물 아이콘 7종 — 임시 · T-151) · 2026-10-25 (**`fx/appraise/`** — 유물 감정 금 3갈래 · 파편 임시 그림 · `make_fx.py appraise`) · 2026-10-23 (**`fx/rarity/`·`fx/coin/`** — 칸 등급 배경 9-slice(Border 10) · 골드 동전·반짝 임시 그림 · `make_fx.py rarity coin`) · 2026-10-21 (**`fx/levelup/`·`fx/unlock/`** — 레벨업 화살표 · 자물쇠 임시 그림 · `make_fx.py levelup unlock`) · 2026-10-19 (**새 캐릭터 그림은 캐릭터 기획 4.1 매칭 기준으로** — 이슈 #79) · 2026-10-18 (**머리·상반신 크롭 점검표 · 좌우로 긴 몬스터는 머리가 앞** · 머리도 `Upscale` — 여백 없음 · 자동 머리 가로 = 머리 가운데) · 2026-10-18 (**몸 영역 `bodyRect`** — 지팡이 연기·큰 무기가 테두리를 키우는 캐릭터 · evil-wizard-2) · 2026-10-18 (**캐릭터 크기 템플릿 소·중·대** `characters/_templates/` — 개인 조정 첫 값 · 작은 캐릭터 크롭은 몸 전체 · **대상 레벨별 배율** `levels[].scale`) · 2026-10-18 (**캐릭터 27종 · 대상 레벨별 그림 `levels` · 산업 아이콘 `icons/industries/`** — 새 팩 캐릭터 23종 · 대체 캐릭터 medieval-warrior · 발굴 대상 `excavation`) · 2026-10-18 (**원본 정리 규칙** — `_source/<종류>/<팩>/` 선반 · 팩 이름 · 원본 목록 · 새 팩 20개 · **팩은 쓸 재료만 추려 `sprites/`·`anims/`·`audio/` 모양으로** — 정리기 `_source/tidy_source.py` · 음악은 ogg · karsiori 팩별 분리) · 2026-10-13 (**대기 첫 프레임이 달리기 ↔ 공격 사이 자세** — 달리기 처음·끝 그림 2장 길이 · `poseBeats`) · 2026-10-13 (낚시 → 발굴 — `targets/fishing`은 발굴 임시 · 새 키 `excavation` · T-148) · 2026-10-12 (**슬롯 연출은 공격·달리기만** — 대기 클립은 하우징·방목용으로 계속 굽는다) · 2026-10-11 (**`fx/bagfull/`** — 가방 가득 자루·X 임시 그림) · 2026-10-10 (**대상 크기 배율 `scale`** · **배경은 패널 높이보다 작아지지 않는다** — `pixelScaleOverride`를 낮춰도 단색이 드러나지 않는다) · 2026-10-09 (**이펙트는 그림만 쓴다** — 코드로 그리던 대체 모양 삭제 · 없으면 그 효과만 빠짐 · `fx/gain/` 5장 · 임시 그림 생성기 `_source/fx-placeholder/make_fx.py`) · 2026-10-09 (**이펙트 `fx/<연출 키>/`** — 흰 도형 · 목록 자동 등록 · 메뉴 '목록만 다시 쓰기' · 공개 연출 6장 · T-031) · 2026-10-07 (**굽기는 결과 SO를 다시 덮지 않는다 — 캐릭터 프레임·공격 순서·타격 프레임·상반신·머리·무대 높이까지** · black-knight·hero-knight 상반신 24) · 2026-10-07 (상반신·머리 크롭 기준 — 상반신은 머리·상체 중심 · 가로는 몸통 가운데 · 머리는 16으로 아래 여백 없이 · 상반신은 64 캔버스로 채우지 않는다 · hero-knight·warrior 다시 굽기) · 2026-10-05 (굽기가 결과 SO의 조정값을 덮지 않는다 — 땅 높이·층 속도·레벨 색은 처음 한 번만) · 2026-10-05 (그림 저장소 분리 — 받는 법 · T-121 · 칸 224×96 · 이펙트 자리 · 소수 배율 · 아이콘 폴더 · 목록 자동 등록 · 캐릭터 크기 배수 · 아이콘 레시피 · 배경 스프라이트 원본 · `skipBottom` · 땅 띠 `groundTiles` · 새 팩 임시 배치 · T-097) · 2026-10-04 (연속 공격 · 시간 값을 `SlotStageSettings`로 · 대기 띠 · 개인 배율 · 타격 맞추기 · T-097) · 대상: `Assets/Art/`
 
 **그림은 받은 그대로 쓰지 않는다.** 팩마다 크기·방향·발 위치·임포트 설정이 제각각이라,
 원본은 `_source/`에 그대로 두고 **레시피 → 굽기**로 같은 규격의 결과물을 만든다.
@@ -20,7 +20,8 @@ Assets/Art/
 ├─ icons/
 │  ├─ items/                 자원 아이콘 — item_<ItemTID>.png · item_0.png = 대체 (아이콘 없는 자원)
 │  ├─ equips/                장비 아이콘 — equip_<EquipTID>.png · equip_0.png = 대체
-│  └─ industries/            산업 아이콘 — industry_<EIndustryType 값>.png (농사 1 · 발굴 2 · 채굴 3 · 벌목 4 · 사냥 5) · 대체는 item_0
+│  ├─ industries/            산업 아이콘 — industry_<EIndustryType 값>.png (농사 1 · 발굴 2 · 채굴 3 · 벌목 4 · 사냥 5) · 대체는 item_0
+│  └─ artifacts/             아티팩트 아이콘 — artifact_<ArtifactTID>.png · 대체 없음(칸이 이름 첫 글자)
 ├─ fx/<연출 키>/             이펙트 — <키>_<부위>.png (흰 도형 · 색은 코드가 입힌다). 굽지 않고 그대로 쓴다
 │  ├─ reveal/                보상 공개 연출 — reveal_glow · rays · sparkle · shine · conic · frame
 │  ├─ levelup/               캐릭터 레벨업 — levelup_arrow (기둥·번짐·별은 gain_* 재사용)
@@ -285,7 +286,7 @@ SO의 등급(`sizeClass`)이 비어 있을 때 굽기가 세 칸과 등급을 �
 
 ### 아이콘 넣기 (자원·장비·산업)
 
-두 길 중 하나 — 어느 쪽이든 결과는 `icons/items/item_<ItemTID>.png` · `icons/equips/equip_<EquipTID>.png` · `icons/industries/industry_<산업 값>.png`
+두 길 중 하나 — 어느 쪽이든 결과는 `icons/items/item_<ItemTID>.png` · `icons/equips/equip_<EquipTID>.png` · `icons/industries/industry_<산업 값>.png` · `icons/artifacts/artifact_<ArtifactTID>.png`
 (TID는 `Item.xlsx`의 `ItemTable.*` · `Equip.xlsx`의 `EquipTable` · 산업은 `EIndustryType` 값)이고, **전부 다시 굽기**하면 목록에 올라간다.
 산업 아이콘은 배치 화면의 산업 버튼이 `VisualCatalog.IndustryIconOf`로 그린다 — 없는 산업은 `item_0`(빈 자루).
 
@@ -303,6 +304,7 @@ SO의 등급(`sizeClass`)이 비어 있을 때 굽기가 세 칸과 등급을 �
 | 규칙 | 왜 |
 |---|---|
 | **흰색으로 그린다** — 모양은 알파로만 | 색은 코드가 `Image.color`로 입힌다(등급색 등). 색을 넣어 그리면 등급마다 그림이 따로 필요하다 |
+| 예외 — **`special_rainbow`** (Special 칸 무지개 원뿔)는 색을 넣어 그린다 | Special 한 등급만 쓰는 고정색이다. 코드는 흰색을 곱한다(`SpecialSlotFx`) |
 | 파일 이름 = `<연출 키>_<부위>` (예: `reveal_glow`) | **파일 이름이 곧 코드가 찾는 이름**이다(`VisualCatalog.FxOf("reveal_glow")`). 폴더가 달라도 이름이 겹치면 목록에 하나만 들어간다 — 그래서 연출 키를 앞에 붙인다 |
 | 넣거나 바꾸면 메뉴 **아트/목록만 다시 쓰기** | 목록(`VisualCatalog`)에 등록된다. 전부 다시 굽기에서도 같이 돈다 |
 | 이름을 바꾸거나 지우면 코드가 못 찾는다 | **그 효과만 빠진다**(그림 저장소 없는 PC와 같은 길) — 오류는 나지 않고 연출의 움직임은 돈다. 코드가 대신 그리지 않는다 |
@@ -414,6 +416,7 @@ SO의 등급(`sizeClass`)이 비어 있을 때 굽기가 세 칸과 등급을 �
 | `backgrounds/dark-forest` (사냥) | `_source/environment/dark-forest-pack` + 땅 띠 `Tiles/Earth`(같은 팩, 축소 2) — ⚠️ L3 이음매가 어긋난다(검사 경고) |
 | `targets/{farming·excavation·mining·logging·hunting}` — 레벨 1~5 그림 | 농사 무 새싹 · 밀(`biome-plains`) → 호박 · 건초 더미(`cainos-village-props`) → 열매 나무(`fantasy-pixel-trees`) · 발굴 항아리 → 무너진 벽 → 석상 → 묘비 → 황금 상자(`cainos`) · 채굴 작은 돌 → 바위(`cainos`) → 석탄·분홍 수정·보라 수정(`minerals-icons` 4·16·13) · 벌목 덤불 나무 → 소나무(`biome-american-forest`) → 참나무(`biome-plains`) → 검은 나무 → 거목(`fantasy-pixel-trees` 20·5) · 사냥 허수아비(`biome-plains`) → 과녁 → 훈련 인형 → 무기 거치대(`cainos`) → 막사(`dark-forest-pack`) |
 | `targets/fishing` | 옛 낚시 폴더 — 목록에서 뺐다(발굴은 `excavation`). 지워도 된다 |
+| `icons/artifacts/` — 22장 (2026-10-28 · T-151) | 이름에 맞춘 임시 — 부적 = 두루마리 · 토기 = 빈 병 · 쇠못 = 톱니 · 조개 = 진주 · 동전 = 구리 동전 · 숫돌 = 흑요석 · 구슬 = 구리 원석 · 화살촉 = 화살 · 짚신 = 가죽 신 · 열쇠 = 쇠 열쇠 · 나무 빗 = 판자 · 돌 인형 = 해골 · 목걸이 = 토파즈 · 술잔 = 와인 · 뼈 바늘 = 뼈 · 팔찌 = 은 원석 · 그물추 = 밧줄 · 피리 = 나무 지팡이 · 모래시계 = 물병 · 가면 = 가죽 투구 · 흙 인형 = 몬스터 알 · 돌 도끼 = 도끼 (전부 `cainos-rpg-icons`) |
 | `icons/industries/` — 5장 | 농사 = 순무(`free-pixel-food`) · 발굴 = 삽 · 채굴 = 곡괭이 · 벌목 = 도끼 · 사냥 = 활(`cainos-rpg-icons`) |
 | `fx/reveal/` — 6장 | 임시 — `_source/fx/fx-placeholder/make_fx.py`(`reveal`). 번짐 · 광선 · 별 조각 · 빛 줄 · 원뿔 · 테두리 띠. `reveal_frame`은 9-slice 5px |
 | `fx/gain/` — 5장 | 임시 — 〃 (`gain`). 번짐(속이 진함) · 광선 · 별 조각 · 빛 기둥(1:2) · 고리. 작은 위젯 칸(18px)에서도 보이게 공개 연출 것보다 진하다 |

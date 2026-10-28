@@ -18,6 +18,7 @@ using UnityEngine;
 // ■ 빠진 그림은 대체로 버틴다
 //   그림이 아직 없는 캐릭터는 'fallbackCharacter'(TID 0으로 등록한 그림)로, 산업 배경이 없으면 'defaultBackground'로 그린다.
 //   아이콘이 없는 자원·장비는 0번 아이콘('item_0' · 'equip_0')으로, 아이콘이 없는 산업은 'item_0'으로 그린다.
+//   아티팩트는 대체 아이콘이 없다 — null을 돌려주고 칸이 이름 첫 글자로 그린다.
 //   빈 슬롯 전용 배경('emptySlotBackground')도 비워 두면 기본 배경이 멈춘 채로 나온다.
 //   빠진 목록은 메뉴 'Window/DesktopWindowControl/아트/검사'가 알려 준다.
 //
@@ -110,6 +111,9 @@ public class VisualCatalog : ScriptableObject
     [SerializeField, Tooltip("산업 아이콘 ('icons/industries/industry_<산업 값>') — 없는 산업은 자원 대체 아이콘")]
     private IconEntry[] industryIcons = Array.Empty<IconEntry>();
 
+    [SerializeField, Tooltip("아티팩트 아이콘 ('icons/artifacts/artifact_<TID>') — 대체가 없다. 없는 번호는 칸이 이름 첫 글자로 그린다")]
+    private IconEntry[] artifactIcons = Array.Empty<IconEntry>();
+
     [CenterHeader("이펙트")]
     [SerializeField, Tooltip("이펙트 그림 ('fx/<연출 키>/<키>_<부위>') — 흰색으로 그리고 색은 코드가 입힌다")]
     private FxEntry[] fxSprites = Array.Empty<FxEntry>();
@@ -118,6 +122,7 @@ public class VisualCatalog : ScriptableObject
     private Dictionary<int, Sprite>? _itemIconMap;
     private Dictionary<int, Sprite>? _equipIconMap;
     private Dictionary<int, Sprite>? _industryIconMap;
+    private Dictionary<int, Sprite>? _artifactIconMap;
     private Dictionary<string, Sprite>? _fxMap;
 
     #region 화면이 부르는 곳 — 목록이 없으면(그림 저장소 없음) null
@@ -157,6 +162,9 @@ public class VisualCatalog : ScriptableObject
     // 산업 아이콘 — 없으면 자원 대체 아이콘(빈 자루), 목록이 없으면 null
     public static Sprite? IndustryIconOf(EIndustryType industry) => Current != null ? Current.GetIndustryIcon(industry) : null;
 
+    // 아티팩트 아이콘 — 없거나 목록이 없으면 null(칸이 이름 첫 글자로 그린다)
+    public static Sprite? ArtifactIconOf(int artifactTid) => Current != null ? Current.GetArtifactIcon(artifactTid) : null;
+
     // 캐릭터 상반신 (인벤토리) — 그림 없는 캐릭터는 대체 캐릭터의 것, 대체 그림도 없으면 null
     public static Sprite? PortraitOf(int characterTid) => Current != null ? Current.GetCharacter(characterTid)?.Portrait : null;
 
@@ -179,6 +187,9 @@ public class VisualCatalog : ScriptableObject
     public Sprite? GetIndustryIcon(EIndustryType industry)
         => (_industryIconMap ??= ToMap(industryIcons)).TryGetValue((int)industry, out Sprite icon) ? icon : fallbackItemIcon;
 
+    public Sprite? GetArtifactIcon(int artifactTid)
+        => (_artifactIconMap ??= ToMap(artifactIcons)).TryGetValue(artifactTid, out Sprite icon) ? icon : null;
+
     // 이 TID에 전용 아이콘이 있는가 (에디터 검사가 0번으로 버티는 것을 셀 때)
     public bool HasItemIcon(int itemTid)   => (_itemIconMap  ??= ToMap(itemIcons)).ContainsKey(itemTid);
     public bool HasEquipIcon(int equipTid) => (_equipIconMap ??= ToMap(equipIcons)).ContainsKey(equipTid);
@@ -189,6 +200,7 @@ public class VisualCatalog : ScriptableObject
         _itemIconMap     = null;
         _equipIconMap    = null;
         _industryIconMap = null;
+        _artifactIconMap = null;
         _fxMap           = null;
     }
 

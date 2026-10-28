@@ -44,28 +44,28 @@ public class RelicAppraiseTest
     // ─────────────────────── 감정 비용 ───────────────────────
 
     [Fact]
-    public void 유물을_감정하면_개수만큼_감정_비용이_빠진다()
+    public void 유물을_감정하면_감정_비용이_빠진다()
     {
         var (user, b) = UserWithRelics(3, 1000);
 
-        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 3, TestUserBuilder.Base);
+        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 1, TestUserBuilder.Base);
 
         Response(b).Result.ShouldBe(EResultCode.Ok);
-        user.Gold.ShouldBe(400);   // 1000 − 200 × 3
-        user.GetItemCount(CommonRelicTid).ShouldBe(0);
-        user.GetItemCount(ShardTid).ShouldBe(3);
+        user.Gold.ShouldBe(800);   // 1000 − 200
+        user.GetItemCount(CommonRelicTid).ShouldBe(2);
+        user.GetItemCount(ShardTid).ShouldBe(1);
     }
 
     [Fact]
     public void 골드가_모자라면_NotEnoughCurrency이고_유물과_골드가_그대로다()
     {
-        var (user, b) = UserWithRelics(3, 599);
+        var (user, b) = UserWithRelics(1, 199);
 
-        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 3, TestUserBuilder.Base);
+        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 1, TestUserBuilder.Base);
 
         Response(b).Result.ShouldBe(EResultCode.NotEnoughCurrency);
-        user.Gold.ShouldBe(599);
-        user.GetItemCount(CommonRelicTid).ShouldBe(3);
+        user.Gold.ShouldBe(199);
+        user.GetItemCount(CommonRelicTid).ShouldBe(1);
         user.GetItemCount(ShardTid).ShouldBe(0);
     }
 
@@ -80,6 +80,19 @@ public class RelicAppraiseTest
 
         Response(b).Result.ShouldBe(EResultCode.Ok);
         user.Gold.ShouldBe(0);
+    }
+
+    [Fact]
+    public void 유물은_한_번에_하나만_감정하고_여러_개면_아무것도_바뀌지_않는다()
+    {
+        var (user, b) = UserWithRelics(2, 1000);
+
+        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, CommonRelicTid, 2, TestUserBuilder.Base);
+
+        Response(b).Result.ShouldBe(EResultCode.InvalidUseCount);
+        user.Gold.ShouldBe(1000);
+        user.GetItemCount(CommonRelicTid).ShouldBe(2);
+        user.GetItemCount(ShardTid).ShouldBe(0);
     }
 
     [Fact]
@@ -108,9 +121,9 @@ public class RelicAppraiseTest
     [Fact]
     public void 아티팩트가_나오면_인벤토리_아티팩트_탭에_쌓이고_효과는_아직_없다()
     {
-        var (user, b) = UserWithRelics(2, 1000);
+        var (user, b) = UserWithRelics(1, 1000);
 
-        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Artifact, FishermanCharm, 1, 100)).OpenBox(user, CommonRelicTid, 2, TestUserBuilder.Base);
+        ServiceWith(new GachaEntry(CommonRelicPool, GachaRewardType.Artifact, FishermanCharm, 2, 100)).OpenBox(user, CommonRelicTid, 1, TestUserBuilder.Base);
 
         var res = Response(b);
         res.Result.ShouldBe(EResultCode.Ok);
