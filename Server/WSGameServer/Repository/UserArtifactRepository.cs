@@ -83,39 +83,9 @@ public sealed class EquipArtifactRepository : IRepository
         {
             await ArtifactStackDb.WriteAllAsync(tx, User.Uid, _changes);
             await tx.ExecuteAsync(
-                "INSERT INTO t_user_artifact (user_id, artifact_tid, is_active) VALUES (@userId, @artifactTid, 1);",
+                "INSERT INTO t_user_artifact (user_id, artifact_tid) VALUES (@userId, @artifactTid);",
                 new { userId = User.Uid, artifactTid = ArtifactTid });
         });
-    }
-
-    public void Apply()
-    {
-    }
-}
-
-/// <summary>도감에 장착한 번호의 켜짐 여부를 쓴다.</summary>
-public sealed class SaveArtifactActiveRepository : IRepository
-{
-    public SaveArtifactActiveRepository(User user, int artifactTid, bool isActive)
-    {
-        User        = user;
-        ArtifactTid = artifactTid;
-        IsActive    = isActive;
-    }
-
-    public int ArtifactTid { get; }
-
-    public bool IsActive { get; }
-
-    public long Key => User.DbKey;
-
-    public User User { get; }
-
-    public async Task ExecuteAsync(DbConnection connection)
-    {
-        await connection.ExecuteAsync(
-            "UPDATE t_user_artifact SET is_active = @isActive WHERE user_id = @userId AND artifact_tid = @artifactTid;",
-            new { userId = User.Uid, artifactTid = ArtifactTid, isActive = IsActive ? 1 : 0 });
     }
 
     public void Apply()

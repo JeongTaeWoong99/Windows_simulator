@@ -93,7 +93,7 @@ public sealed class LoginRepository : IRepository
 
         // 6-2) 아티팩트 도감(장착한 번호)과 인벤토리 아티팩트 탭 (T-181).
         _artifactRows = await connection.QueryAsync<UserArtifactRow>(
-            "SELECT artifact_tid, is_active FROM t_user_artifact WHERE user_id = @userId",
+            "SELECT artifact_tid FROM t_user_artifact WHERE user_id = @userId",
             new { userId = User.Uid });
 
         _artifactStackRows = await connection.QueryAsync<UserArtifactStackRow>(

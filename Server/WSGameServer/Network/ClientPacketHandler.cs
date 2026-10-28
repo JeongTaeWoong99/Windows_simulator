@@ -383,7 +383,7 @@ public static class ClientPacketHandler
         user.TryEquipArtifact(req.ArtifactTid, GameClock.Instance.UtcNow);
     }
 
-    /// <summary>도감에 장착한 아티팩트의 효과를 켜고 끈다(T-181).</summary>
+    /// <summary>옛 켜고 끄기 요청 — 바꾸지 않고 지금 상태로 답한다(#90 · 클라 전환 뒤 삭제).</summary>
     [PacketHandler]
     public static void Handle_C_ArtifactActiveRequest(ISession session, C_ArtifactActiveRequest req)
     {
@@ -396,7 +396,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TrySetArtifactActive(req.ArtifactTid, req.IsActive, GameClock.Instance.UtcNow);
+        user.ReplyArtifactActive(req.ArtifactTid);
     }
 
     /// <summary>캐릭터·장비 개체 판매. 보유·착용·배치 검증은 User가 한다.</summary>

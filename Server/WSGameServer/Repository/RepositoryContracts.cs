@@ -79,7 +79,6 @@ public sealed record UserBuildingRow
 public sealed record UserArtifactRow
 {
     public int artifact_tid { get; init; }
-    public int is_active    { get; init; }   // 0/1
 }
 
 // t_user_artifact_stack 조회 전용 Row — 인벤토리 아티팩트 탭의 칸 하나 (T-181)

@@ -406,7 +406,7 @@ namespace MikaProtocol
         public int         ArtifactTid { get; set; }
     }
 
-    /// <summary>도감에 장착한 번호의 효과를 켜고 끈다(T-181). 빼는 대신 끈다 — 끈 번호는 효과가 없다.</summary>
+    /// <summary>폐기 예정(#90) — 장착한 번호는 항상 켜져 있다. 서버는 바꾸지 않고 지금 상태로 답한다. 클라 전환 뒤 지운다.</summary>
     [MemoryPackable, Packet(PacketId.C_ArtifactActiveRequest)]
     public partial class C_ArtifactActiveRequest : IPacket
     {
@@ -414,7 +414,7 @@ namespace MikaProtocol
         public bool IsActive    { get; set; }
     }
 
-    /// <summary>켜고 끈 결과. Ok면 <see cref="S_ArtifactListResponse"/>가 함께 온다. 실패면 IsActive는 지금 상태다.</summary>
+    /// <summary>폐기 예정(#90). 장착한 번호면 Ok · IsActive = true, 아니면 ArtifactNotEquipped.</summary>
     [MemoryPackable, Packet(PacketId.S_ArtifactActiveResponse)]
     public partial class S_ArtifactActiveResponse : IPacket
     {
