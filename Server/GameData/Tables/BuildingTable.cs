@@ -10,10 +10,10 @@ namespace GameData
     [MemoryPackable]
     public partial class BuildingTableRow
     {
-        public int          BuildingTID { get; set; }        // int [1..-]
-        public string       Name        { get; set; } = "";  // lstring
-        public IndustryType Industry    { get; set; }        // eIndustryType
-        public string       Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
+        public int    BuildingTID { get; set; }        // int [1..-]
+        public string Name        { get; set; } = "";  // lstring
+        public int    MaxLevel    { get; set; }        // int [1..-]
+        public string Description { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
 
         /// <summary>Name의 번역 키 — Loc.Get(row.NameLocKey)</summary>
         [MemoryPackIgnore] public string NameLocKey => "Building." + BuildingTID + ".Name";

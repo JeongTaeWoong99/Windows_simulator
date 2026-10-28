@@ -255,4 +255,12 @@ namespace MikaProtocol
         public int UserTraitTID { get; set; }
         public int Level        { get; set; }
     }
+
+    /// <summary>건물 하나의 레벨(T-183).</summary>
+    [MemoryPackable]
+    public partial class BuildingInfo
+    {
+        public int BuildingTID { get; set; }
+        public int Level       { get; set; }
+    }
 }

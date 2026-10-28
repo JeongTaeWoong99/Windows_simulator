@@ -16,7 +16,7 @@ namespace GameData
         {
             BuildingTID = PackerUtil.ParseInt(cells[0], Table, "BuildingTID", 1, null),
             Name        = PackerUtil.RequireString(cells[1], Table, "Name"),
-            Industry    = PackerUtil.ParseEnum<IndustryType>(cells[2], Table, "Industry"),
+            MaxLevel    = PackerUtil.ParseInt(cells[2], Table, "MaxLevel", 1, null),
             Description = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",
         };
 

@@ -48,7 +48,7 @@ public partial class User
         }
 
         // 지불 컬럼은 Gold 하나다. 지불 컬럼이 늘면 여기에 분기를 더한다 — 지불 컬럼끼리는 OR(해금 #16).
-        // 자원 비용(ItemTIDs)은 지불 수단이 아니라 함께 내는 조건이다 — 적힌 종을 전부 낸다(건물 3.1).
+        // 자원 비용(ItemTIDs)은 지불 수단이 아니라 함께 내는 조건이다 — 적힌 종을 전부 낸다.
         if (row.Gold > 0)
         {
             if (currency != CurrencyType.Gold)
@@ -64,7 +64,7 @@ public partial class User
             }
         }
 
-        var itemCost = ItemCostOf(row);
+        var itemCost = ItemCostOf(row.ItemTIDs, row.ItemCounts);
         var lacking  = itemCost.FirstOrDefault(kv => GetItemCount(kv.Key) < kv.Value);
         if (lacking.Value > 0)
         {
@@ -99,12 +99,12 @@ public partial class User
     }
 
     // 같은 TID가 두 번 적혀도 한 번에 합쳐 센다 — 따로 보면 각각은 충분해도 합이 모자랄 수 있다.
-    private static Dictionary<int, int> ItemCostOf(UnlockTableRow row)
+    private static Dictionary<int, int> ItemCostOf(int[] itemTids, int[] itemCounts)
     {
         var cost = new Dictionary<int, int>();
-        for (var i = 0; i < row.ItemTIDs.Length; i++)
+        for (var i = 0; i < itemTids.Length; i++)
         {
-            cost[row.ItemTIDs[i]] = cost.GetValueOrDefault(row.ItemTIDs[i]) + row.ItemCounts[i];
+            cost[itemTids[i]] = cost.GetValueOrDefault(itemTids[i]) + itemCounts[i];
         }
 
         return cost;
@@ -161,13 +161,6 @@ public partial class User
     // 기록 → 저장 → 응답 → 콘텐츠 후속. 해금 시스템은 "열렸다"까지만 알고, 열린 뒤의 변화는 콘텐츠가 자기 패킷으로 알린다.
     private void ApplyUnlock(int unlockTid, DateTime now)
     {
-        // 건물 노드가 속도·산출량을 바꾸면 열기 전에 정산한다 — 새 효과가 지난 구간에 소급되지 않게.
-        var touchesWork = _unlockCatalog.TryGetBuildingNode(unlockTid, out var node) && node.EffectType != BuildingEffectType.None;
-        if (touchesWork)
-        {
-            SettleWorkStation(now);
-        }
-
         _unlocks.Add(unlockTid);
         PostDBTask(new SaveUnlockRepository(this, unlockTid));
 
@@ -175,10 +168,5 @@ public partial class User
         Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
 
         OnWorkSlotUnlocked(unlockTid, now);
-
-        if (touchesWork && node.EffectType == BuildingEffectType.SpeedAdd)
-        {
-            ApplyWorkStationSpeed(notify: true);
-        }
     }
 }

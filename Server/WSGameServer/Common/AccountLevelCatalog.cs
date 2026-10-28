@@ -4,7 +4,7 @@ using MikaUtils;
 namespace WSGameServer;
 
 /// <summary>
-/// <c>AccountLevelTable</c> 보관소 — 계정 레벨 곡선과 레벨별 특성 포인트. <b>마지막 행이 곧 만렙이다</b>.
+/// <c>AccountLevelTable</c> 보관소 — 계정 레벨 곡선. <b>마지막 행이 곧 만렙이다</b>.
 /// 서버 시작 시 <c>GameTable.LoadAll</c> 다음에 <see cref="LoadAll"/>을 한 번 부르고, 이후에는 읽기만 한다.
 /// </summary>
 public sealed class AccountLevelCatalog : Singleton<AccountLevelCatalog>
@@ -53,8 +53,4 @@ public sealed class AccountLevelCatalog : Singleton<AccountLevelCatalog>
         requiredExp = 0;
         return false;
     }
-
-    /// <summary>이 레벨에 도달하면 주는 특성 포인트. 행이 없으면 0.</summary>
-    public int TraitPointAt(int level)
-        => _byLevel.TryGetValue(level, out var row) ? row.TraitPoint : 0;
 }

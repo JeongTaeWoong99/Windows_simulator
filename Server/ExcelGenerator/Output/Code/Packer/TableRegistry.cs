@@ -18,7 +18,7 @@ namespace GameData
         {
             ["ArtifactTable"] = new(ArtifactTablePacker.Pack, ArtifactTablePacker.Verify, ArtifactTablePacker.Preview, ArtifactTablePacker.Dump),
             ["BuildingTable"] = new(BuildingTablePacker.Pack, BuildingTablePacker.Verify, BuildingTablePacker.Preview, BuildingTablePacker.Dump),
-            ["BuildingNodeTable"] = new(BuildingNodeTablePacker.Pack, BuildingNodeTablePacker.Verify, BuildingNodeTablePacker.Preview, BuildingNodeTablePacker.Dump),
+            ["BuildingLevelTable"] = new(BuildingLevelTablePacker.Pack, BuildingLevelTablePacker.Verify, BuildingLevelTablePacker.Preview, BuildingLevelTablePacker.Dump),
             ["CharacterTable"] = new(CharacterTablePacker.Pack, CharacterTablePacker.Verify, CharacterTablePacker.Preview, CharacterTablePacker.Dump),
             ["WorkSpeedTable"] = new(WorkSpeedTablePacker.Pack, WorkSpeedTablePacker.Verify, WorkSpeedTablePacker.Preview, WorkSpeedTablePacker.Dump),
             ["CharacterLevelTable"] = new(CharacterLevelTablePacker.Pack, CharacterLevelTablePacker.Verify, CharacterLevelTablePacker.Preview, CharacterLevelTablePacker.Dump),

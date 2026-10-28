@@ -1,0 +1,11520 @@
+[
+  {
+    "BuildingLevelTID": 1001,
+    "BuildingTID": 1,
+    "Level": 1,
+    "Gold": 200,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1002,
+    "BuildingTID": 1,
+    "Level": 2,
+    "Gold": 500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      20,
+      8
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1003,
+    "BuildingTID": 1,
+    "Level": 3,
+    "Gold": 1400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      40,
+      16
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1004,
+    "BuildingTID": 1,
+    "Level": 4,
+    "Gold": 2900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      60,
+      24
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1005,
+    "BuildingTID": 1,
+    "Level": 5,
+    "Gold": 5000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      80,
+      32
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1006,
+    "BuildingTID": 1,
+    "Level": 6,
+    "Gold": 7700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      100,
+      40
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1007,
+    "BuildingTID": 1,
+    "Level": 7,
+    "Gold": 11000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      120,
+      48
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1008,
+    "BuildingTID": 1,
+    "Level": 8,
+    "Gold": 14900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      140,
+      56
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1009,
+    "BuildingTID": 1,
+    "Level": 9,
+    "Gold": 19400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      160,
+      64
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1010,
+    "BuildingTID": 1,
+    "Level": 10,
+    "Gold": 24500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      180,
+      72
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1011,
+    "BuildingTID": 1,
+    "Level": 11,
+    "Gold": 30200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      200,
+      80
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1012,
+    "BuildingTID": 1,
+    "Level": 12,
+    "Gold": 36500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      220,
+      88
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1013,
+    "BuildingTID": 1,
+    "Level": 13,
+    "Gold": 43400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      240,
+      96
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1014,
+    "BuildingTID": 1,
+    "Level": 14,
+    "Gold": 50900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      260,
+      104
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1015,
+    "BuildingTID": 1,
+    "Level": 15,
+    "Gold": 59000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      280,
+      112
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1016,
+    "BuildingTID": 1,
+    "Level": 16,
+    "Gold": 67700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      300,
+      120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1017,
+    "BuildingTID": 1,
+    "Level": 17,
+    "Gold": 77000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      320,
+      128
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1018,
+    "BuildingTID": 1,
+    "Level": 18,
+    "Gold": 86900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      340,
+      136
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1019,
+    "BuildingTID": 1,
+    "Level": 19,
+    "Gold": 97400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      360,
+      144
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1020,
+    "BuildingTID": 1,
+    "Level": 20,
+    "Gold": 108500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      380,
+      152
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1021,
+    "BuildingTID": 1,
+    "Level": 21,
+    "Gold": 120200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      400,
+      160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1022,
+    "BuildingTID": 1,
+    "Level": 22,
+    "Gold": 132500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      420,
+      168
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1023,
+    "BuildingTID": 1,
+    "Level": 23,
+    "Gold": 145400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      440,
+      176
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1024,
+    "BuildingTID": 1,
+    "Level": 24,
+    "Gold": 158900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      460,
+      184
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1025,
+    "BuildingTID": 1,
+    "Level": 25,
+    "Gold": 173000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      480,
+      192
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1026,
+    "BuildingTID": 1,
+    "Level": 26,
+    "Gold": 187700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      500,
+      200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1027,
+    "BuildingTID": 1,
+    "Level": 27,
+    "Gold": 203000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      520,
+      208
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1028,
+    "BuildingTID": 1,
+    "Level": 28,
+    "Gold": 218900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      540,
+      216
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1029,
+    "BuildingTID": 1,
+    "Level": 29,
+    "Gold": 235400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      560,
+      224
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1030,
+    "BuildingTID": 1,
+    "Level": 30,
+    "Gold": 252500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      580,
+      232
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1031,
+    "BuildingTID": 1,
+    "Level": 31,
+    "Gold": 270200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      600,
+      240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1032,
+    "BuildingTID": 1,
+    "Level": 32,
+    "Gold": 288500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      620,
+      248
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1033,
+    "BuildingTID": 1,
+    "Level": 33,
+    "Gold": 307400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      640,
+      256
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1034,
+    "BuildingTID": 1,
+    "Level": 34,
+    "Gold": 326900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      660,
+      264
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1035,
+    "BuildingTID": 1,
+    "Level": 35,
+    "Gold": 347000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      680,
+      272
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1036,
+    "BuildingTID": 1,
+    "Level": 36,
+    "Gold": 367700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      700,
+      280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1037,
+    "BuildingTID": 1,
+    "Level": 37,
+    "Gold": 389000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      720,
+      288
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1038,
+    "BuildingTID": 1,
+    "Level": 38,
+    "Gold": 410900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      740,
+      296
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1039,
+    "BuildingTID": 1,
+    "Level": 39,
+    "Gold": 433400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      760,
+      304
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1040,
+    "BuildingTID": 1,
+    "Level": 40,
+    "Gold": 456500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      780,
+      312
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1041,
+    "BuildingTID": 1,
+    "Level": 41,
+    "Gold": 480200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      800,
+      320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1042,
+    "BuildingTID": 1,
+    "Level": 42,
+    "Gold": 504500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      820,
+      328
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1043,
+    "BuildingTID": 1,
+    "Level": 43,
+    "Gold": 529400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      840,
+      336
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1044,
+    "BuildingTID": 1,
+    "Level": 44,
+    "Gold": 554900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      860,
+      344
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1045,
+    "BuildingTID": 1,
+    "Level": 45,
+    "Gold": 581000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      880,
+      352
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1046,
+    "BuildingTID": 1,
+    "Level": 46,
+    "Gold": 607700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      900,
+      360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1047,
+    "BuildingTID": 1,
+    "Level": 47,
+    "Gold": 635000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      920,
+      368
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1048,
+    "BuildingTID": 1,
+    "Level": 48,
+    "Gold": 662900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      940,
+      376
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1049,
+    "BuildingTID": 1,
+    "Level": 49,
+    "Gold": 691400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      960,
+      384
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1050,
+    "BuildingTID": 1,
+    "Level": 50,
+    "Gold": 720500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      980,
+      392
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1051,
+    "BuildingTID": 1,
+    "Level": 51,
+    "Gold": 750200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1000,
+      400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1052,
+    "BuildingTID": 1,
+    "Level": 52,
+    "Gold": 780500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1020,
+      408
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1053,
+    "BuildingTID": 1,
+    "Level": 53,
+    "Gold": 811400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1040,
+      416
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1054,
+    "BuildingTID": 1,
+    "Level": 54,
+    "Gold": 842900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1060,
+      424
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1055,
+    "BuildingTID": 1,
+    "Level": 55,
+    "Gold": 875000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1080,
+      432
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1056,
+    "BuildingTID": 1,
+    "Level": 56,
+    "Gold": 907700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1100,
+      440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1057,
+    "BuildingTID": 1,
+    "Level": 57,
+    "Gold": 941000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1120,
+      448
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1058,
+    "BuildingTID": 1,
+    "Level": 58,
+    "Gold": 974900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1140,
+      456
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1059,
+    "BuildingTID": 1,
+    "Level": 59,
+    "Gold": 1009400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1160,
+      464
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1060,
+    "BuildingTID": 1,
+    "Level": 60,
+    "Gold": 1044500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1180,
+      472
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1061,
+    "BuildingTID": 1,
+    "Level": 61,
+    "Gold": 1080200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1200,
+      480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1062,
+    "BuildingTID": 1,
+    "Level": 62,
+    "Gold": 1116500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1220,
+      488
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1063,
+    "BuildingTID": 1,
+    "Level": 63,
+    "Gold": 1153400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1240,
+      496
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1064,
+    "BuildingTID": 1,
+    "Level": 64,
+    "Gold": 1190900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1260,
+      504
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1065,
+    "BuildingTID": 1,
+    "Level": 65,
+    "Gold": 1229000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1280,
+      512
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1066,
+    "BuildingTID": 1,
+    "Level": 66,
+    "Gold": 1267700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1300,
+      520
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1067,
+    "BuildingTID": 1,
+    "Level": 67,
+    "Gold": 1307000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1320,
+      528
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1068,
+    "BuildingTID": 1,
+    "Level": 68,
+    "Gold": 1346900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1340,
+      536
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1069,
+    "BuildingTID": 1,
+    "Level": 69,
+    "Gold": 1387400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1360,
+      544
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1070,
+    "BuildingTID": 1,
+    "Level": 70,
+    "Gold": 1428500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1380,
+      552
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1071,
+    "BuildingTID": 1,
+    "Level": 71,
+    "Gold": 1470200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1400,
+      560
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1072,
+    "BuildingTID": 1,
+    "Level": 72,
+    "Gold": 1512500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1420,
+      568
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1073,
+    "BuildingTID": 1,
+    "Level": 73,
+    "Gold": 1555400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1440,
+      576
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1074,
+    "BuildingTID": 1,
+    "Level": 74,
+    "Gold": 1598900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1460,
+      584
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1075,
+    "BuildingTID": 1,
+    "Level": 75,
+    "Gold": 1643000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1480,
+      592
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1076,
+    "BuildingTID": 1,
+    "Level": 76,
+    "Gold": 1687700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1500,
+      600
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1077,
+    "BuildingTID": 1,
+    "Level": 77,
+    "Gold": 1733000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1520,
+      608
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1078,
+    "BuildingTID": 1,
+    "Level": 78,
+    "Gold": 1778900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1540,
+      616
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1079,
+    "BuildingTID": 1,
+    "Level": 79,
+    "Gold": 1825400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1560,
+      624
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1080,
+    "BuildingTID": 1,
+    "Level": 80,
+    "Gold": 1872500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1580,
+      632
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1081,
+    "BuildingTID": 1,
+    "Level": 81,
+    "Gold": 1920200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1600,
+      640
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1082,
+    "BuildingTID": 1,
+    "Level": 82,
+    "Gold": 1968500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1620,
+      648
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1083,
+    "BuildingTID": 1,
+    "Level": 83,
+    "Gold": 2017400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1640,
+      656
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1084,
+    "BuildingTID": 1,
+    "Level": 84,
+    "Gold": 2066900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1660,
+      664
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1085,
+    "BuildingTID": 1,
+    "Level": 85,
+    "Gold": 2117000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1680,
+      672
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1086,
+    "BuildingTID": 1,
+    "Level": 86,
+    "Gold": 2167700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1700,
+      680
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1087,
+    "BuildingTID": 1,
+    "Level": 87,
+    "Gold": 2219000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1720,
+      688
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1088,
+    "BuildingTID": 1,
+    "Level": 88,
+    "Gold": 2270900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1740,
+      696
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1089,
+    "BuildingTID": 1,
+    "Level": 89,
+    "Gold": 2323400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1760,
+      704
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1090,
+    "BuildingTID": 1,
+    "Level": 90,
+    "Gold": 2376500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1780,
+      712
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1091,
+    "BuildingTID": 1,
+    "Level": 91,
+    "Gold": 2430200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1800,
+      720
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1092,
+    "BuildingTID": 1,
+    "Level": 92,
+    "Gold": 2484500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1820,
+      728
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1093,
+    "BuildingTID": 1,
+    "Level": 93,
+    "Gold": 2539400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1840,
+      736
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1094,
+    "BuildingTID": 1,
+    "Level": 94,
+    "Gold": 2594900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1860,
+      744
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1095,
+    "BuildingTID": 1,
+    "Level": 95,
+    "Gold": 2651000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1880,
+      752
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1096,
+    "BuildingTID": 1,
+    "Level": 96,
+    "Gold": 2707700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1900,
+      760
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1097,
+    "BuildingTID": 1,
+    "Level": 97,
+    "Gold": 2765000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1920,
+      768
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1098,
+    "BuildingTID": 1,
+    "Level": 98,
+    "Gold": 2822900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1940,
+      776
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1099,
+    "BuildingTID": 1,
+    "Level": 99,
+    "Gold": 2881400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1960,
+      784
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1100,
+    "BuildingTID": 1,
+    "Level": 100,
+    "Gold": 2940500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      1980,
+      792
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1101,
+    "BuildingTID": 1,
+    "Level": 101,
+    "Gold": 3000200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2000,
+      800
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1102,
+    "BuildingTID": 1,
+    "Level": 102,
+    "Gold": 3060500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2020,
+      808
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1103,
+    "BuildingTID": 1,
+    "Level": 103,
+    "Gold": 3121400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2040,
+      816
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1104,
+    "BuildingTID": 1,
+    "Level": 104,
+    "Gold": 3182900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2060,
+      824
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1105,
+    "BuildingTID": 1,
+    "Level": 105,
+    "Gold": 3245000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2080,
+      832
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1106,
+    "BuildingTID": 1,
+    "Level": 106,
+    "Gold": 3307700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2100,
+      840
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1107,
+    "BuildingTID": 1,
+    "Level": 107,
+    "Gold": 3371000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2120,
+      848
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1108,
+    "BuildingTID": 1,
+    "Level": 108,
+    "Gold": 3434900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2140,
+      856
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1109,
+    "BuildingTID": 1,
+    "Level": 109,
+    "Gold": 3499400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2160,
+      864
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1110,
+    "BuildingTID": 1,
+    "Level": 110,
+    "Gold": 3564500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2180,
+      872
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1111,
+    "BuildingTID": 1,
+    "Level": 111,
+    "Gold": 3630200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2200,
+      880
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1112,
+    "BuildingTID": 1,
+    "Level": 112,
+    "Gold": 3696500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2220,
+      888
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1113,
+    "BuildingTID": 1,
+    "Level": 113,
+    "Gold": 3763400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2240,
+      896
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1114,
+    "BuildingTID": 1,
+    "Level": 114,
+    "Gold": 3830900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2260,
+      904
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1115,
+    "BuildingTID": 1,
+    "Level": 115,
+    "Gold": 3899000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2280,
+      912
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1116,
+    "BuildingTID": 1,
+    "Level": 116,
+    "Gold": 3967700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2300,
+      920
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1117,
+    "BuildingTID": 1,
+    "Level": 117,
+    "Gold": 4037000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2320,
+      928
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1118,
+    "BuildingTID": 1,
+    "Level": 118,
+    "Gold": 4106900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2340,
+      936
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1119,
+    "BuildingTID": 1,
+    "Level": 119,
+    "Gold": 4177400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2360,
+      944
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1120,
+    "BuildingTID": 1,
+    "Level": 120,
+    "Gold": 4248500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2380,
+      952
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1121,
+    "BuildingTID": 1,
+    "Level": 121,
+    "Gold": 4320200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2400,
+      960
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1122,
+    "BuildingTID": 1,
+    "Level": 122,
+    "Gold": 4392500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2420,
+      968
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1123,
+    "BuildingTID": 1,
+    "Level": 123,
+    "Gold": 4465400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2440,
+      976
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1124,
+    "BuildingTID": 1,
+    "Level": 124,
+    "Gold": 4538900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2460,
+      984
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1125,
+    "BuildingTID": 1,
+    "Level": 125,
+    "Gold": 4613000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2480,
+      992
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1126,
+    "BuildingTID": 1,
+    "Level": 126,
+    "Gold": 4687700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2500,
+      1000
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1127,
+    "BuildingTID": 1,
+    "Level": 127,
+    "Gold": 4763000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2520,
+      1008
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1128,
+    "BuildingTID": 1,
+    "Level": 128,
+    "Gold": 4838900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2540,
+      1016
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1129,
+    "BuildingTID": 1,
+    "Level": 129,
+    "Gold": 4915400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2560,
+      1024
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1130,
+    "BuildingTID": 1,
+    "Level": 130,
+    "Gold": 4992500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2580,
+      1032
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1131,
+    "BuildingTID": 1,
+    "Level": 131,
+    "Gold": 5070200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2600,
+      1040
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1132,
+    "BuildingTID": 1,
+    "Level": 132,
+    "Gold": 5148500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2620,
+      1048
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1133,
+    "BuildingTID": 1,
+    "Level": 133,
+    "Gold": 5227400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2640,
+      1056
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1134,
+    "BuildingTID": 1,
+    "Level": 134,
+    "Gold": 5306900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2660,
+      1064
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1135,
+    "BuildingTID": 1,
+    "Level": 135,
+    "Gold": 5387000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2680,
+      1072
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1136,
+    "BuildingTID": 1,
+    "Level": 136,
+    "Gold": 5467700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2700,
+      1080
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1137,
+    "BuildingTID": 1,
+    "Level": 137,
+    "Gold": 5549000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2720,
+      1088
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1138,
+    "BuildingTID": 1,
+    "Level": 138,
+    "Gold": 5630900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2740,
+      1096
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1139,
+    "BuildingTID": 1,
+    "Level": 139,
+    "Gold": 5713400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2760,
+      1104
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1140,
+    "BuildingTID": 1,
+    "Level": 140,
+    "Gold": 5796500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2780,
+      1112
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1141,
+    "BuildingTID": 1,
+    "Level": 141,
+    "Gold": 5880200,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2800,
+      1120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1142,
+    "BuildingTID": 1,
+    "Level": 142,
+    "Gold": 5964500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2820,
+      1128
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1143,
+    "BuildingTID": 1,
+    "Level": 143,
+    "Gold": 6049400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2840,
+      1136
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1144,
+    "BuildingTID": 1,
+    "Level": 144,
+    "Gold": 6134900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2860,
+      1144
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1145,
+    "BuildingTID": 1,
+    "Level": 145,
+    "Gold": 6221000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2880,
+      1152
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1146,
+    "BuildingTID": 1,
+    "Level": 146,
+    "Gold": 6307700,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2900,
+      1160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1147,
+    "BuildingTID": 1,
+    "Level": 147,
+    "Gold": 6395000,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2920,
+      1168
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1148,
+    "BuildingTID": 1,
+    "Level": 148,
+    "Gold": 6482900,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2940,
+      1176
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1149,
+    "BuildingTID": 1,
+    "Level": 149,
+    "Gold": 6571400,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2960,
+      1184
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 1150,
+    "BuildingTID": 1,
+    "Level": 150,
+    "Gold": 6660500,
+    "ItemTIDs": [
+      30001,
+      40001
+    ],
+    "ItemCounts": [
+      2980,
+      1192
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2001,
+    "BuildingTID": 2,
+    "Level": 1,
+    "Gold": 200,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2002,
+    "BuildingTID": 2,
+    "Level": 2,
+    "Gold": 500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      25,
+      15,
+      10
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2003,
+    "BuildingTID": 2,
+    "Level": 3,
+    "Gold": 1400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      50,
+      30,
+      20
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2004,
+    "BuildingTID": 2,
+    "Level": 4,
+    "Gold": 2900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      75,
+      45,
+      30
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2005,
+    "BuildingTID": 2,
+    "Level": 5,
+    "Gold": 5000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      100,
+      60,
+      40
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2006,
+    "BuildingTID": 2,
+    "Level": 6,
+    "Gold": 7700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      125,
+      75,
+      50
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2007,
+    "BuildingTID": 2,
+    "Level": 7,
+    "Gold": 11000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      150,
+      90,
+      60
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2008,
+    "BuildingTID": 2,
+    "Level": 8,
+    "Gold": 14900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      175,
+      105,
+      70
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2009,
+    "BuildingTID": 2,
+    "Level": 9,
+    "Gold": 19400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      200,
+      120,
+      80
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2010,
+    "BuildingTID": 2,
+    "Level": 10,
+    "Gold": 24500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      225,
+      135,
+      90
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2011,
+    "BuildingTID": 2,
+    "Level": 11,
+    "Gold": 30200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      250,
+      150,
+      100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2012,
+    "BuildingTID": 2,
+    "Level": 12,
+    "Gold": 36500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      275,
+      165,
+      110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2013,
+    "BuildingTID": 2,
+    "Level": 13,
+    "Gold": 43400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      300,
+      180,
+      120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2014,
+    "BuildingTID": 2,
+    "Level": 14,
+    "Gold": 50900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      325,
+      195,
+      130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2015,
+    "BuildingTID": 2,
+    "Level": 15,
+    "Gold": 59000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      350,
+      210,
+      140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2016,
+    "BuildingTID": 2,
+    "Level": 16,
+    "Gold": 67700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      375,
+      225,
+      150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2017,
+    "BuildingTID": 2,
+    "Level": 17,
+    "Gold": 77000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      400,
+      240,
+      160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2018,
+    "BuildingTID": 2,
+    "Level": 18,
+    "Gold": 86900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      425,
+      255,
+      170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2019,
+    "BuildingTID": 2,
+    "Level": 19,
+    "Gold": 97400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      450,
+      270,
+      180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2020,
+    "BuildingTID": 2,
+    "Level": 20,
+    "Gold": 108500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      475,
+      285,
+      190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2021,
+    "BuildingTID": 2,
+    "Level": 21,
+    "Gold": 120200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      500,
+      300,
+      200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2022,
+    "BuildingTID": 2,
+    "Level": 22,
+    "Gold": 132500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      525,
+      315,
+      210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2023,
+    "BuildingTID": 2,
+    "Level": 23,
+    "Gold": 145400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      550,
+      330,
+      220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2024,
+    "BuildingTID": 2,
+    "Level": 24,
+    "Gold": 158900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      575,
+      345,
+      230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2025,
+    "BuildingTID": 2,
+    "Level": 25,
+    "Gold": 173000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      600,
+      360,
+      240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2026,
+    "BuildingTID": 2,
+    "Level": 26,
+    "Gold": 187700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      625,
+      375,
+      250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2027,
+    "BuildingTID": 2,
+    "Level": 27,
+    "Gold": 203000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      650,
+      390,
+      260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2028,
+    "BuildingTID": 2,
+    "Level": 28,
+    "Gold": 218900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      675,
+      405,
+      270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2029,
+    "BuildingTID": 2,
+    "Level": 29,
+    "Gold": 235400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      700,
+      420,
+      280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2030,
+    "BuildingTID": 2,
+    "Level": 30,
+    "Gold": 252500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      725,
+      435,
+      290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2031,
+    "BuildingTID": 2,
+    "Level": 31,
+    "Gold": 270200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      750,
+      450,
+      300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2032,
+    "BuildingTID": 2,
+    "Level": 32,
+    "Gold": 288500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      775,
+      465,
+      310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2033,
+    "BuildingTID": 2,
+    "Level": 33,
+    "Gold": 307400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      800,
+      480,
+      320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2034,
+    "BuildingTID": 2,
+    "Level": 34,
+    "Gold": 326900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      825,
+      495,
+      330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2035,
+    "BuildingTID": 2,
+    "Level": 35,
+    "Gold": 347000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      850,
+      510,
+      340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2036,
+    "BuildingTID": 2,
+    "Level": 36,
+    "Gold": 367700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      875,
+      525,
+      350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2037,
+    "BuildingTID": 2,
+    "Level": 37,
+    "Gold": 389000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      900,
+      540,
+      360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2038,
+    "BuildingTID": 2,
+    "Level": 38,
+    "Gold": 410900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      925,
+      555,
+      370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2039,
+    "BuildingTID": 2,
+    "Level": 39,
+    "Gold": 433400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      950,
+      570,
+      380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2040,
+    "BuildingTID": 2,
+    "Level": 40,
+    "Gold": 456500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      975,
+      585,
+      390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2041,
+    "BuildingTID": 2,
+    "Level": 41,
+    "Gold": 480200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1000,
+      600,
+      400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2042,
+    "BuildingTID": 2,
+    "Level": 42,
+    "Gold": 504500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1025,
+      615,
+      410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2043,
+    "BuildingTID": 2,
+    "Level": 43,
+    "Gold": 529400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1050,
+      630,
+      420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2044,
+    "BuildingTID": 2,
+    "Level": 44,
+    "Gold": 554900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1075,
+      645,
+      430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2045,
+    "BuildingTID": 2,
+    "Level": 45,
+    "Gold": 581000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1100,
+      660,
+      440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2046,
+    "BuildingTID": 2,
+    "Level": 46,
+    "Gold": 607700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1125,
+      675,
+      450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2047,
+    "BuildingTID": 2,
+    "Level": 47,
+    "Gold": 635000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1150,
+      690,
+      460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2048,
+    "BuildingTID": 2,
+    "Level": 48,
+    "Gold": 662900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1175,
+      705,
+      470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2049,
+    "BuildingTID": 2,
+    "Level": 49,
+    "Gold": 691400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1200,
+      720,
+      480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2050,
+    "BuildingTID": 2,
+    "Level": 50,
+    "Gold": 720500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1225,
+      735,
+      490
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2051,
+    "BuildingTID": 2,
+    "Level": 51,
+    "Gold": 750200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1250,
+      750,
+      500
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2052,
+    "BuildingTID": 2,
+    "Level": 52,
+    "Gold": 780500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1275,
+      765,
+      510
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2053,
+    "BuildingTID": 2,
+    "Level": 53,
+    "Gold": 811400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1300,
+      780,
+      520
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2054,
+    "BuildingTID": 2,
+    "Level": 54,
+    "Gold": 842900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1325,
+      795,
+      530
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2055,
+    "BuildingTID": 2,
+    "Level": 55,
+    "Gold": 875000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1350,
+      810,
+      540
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2056,
+    "BuildingTID": 2,
+    "Level": 56,
+    "Gold": 907700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1375,
+      825,
+      550
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2057,
+    "BuildingTID": 2,
+    "Level": 57,
+    "Gold": 941000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1400,
+      840,
+      560
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2058,
+    "BuildingTID": 2,
+    "Level": 58,
+    "Gold": 974900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1425,
+      855,
+      570
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2059,
+    "BuildingTID": 2,
+    "Level": 59,
+    "Gold": 1009400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1450,
+      870,
+      580
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2060,
+    "BuildingTID": 2,
+    "Level": 60,
+    "Gold": 1044500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1475,
+      885,
+      590
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2061,
+    "BuildingTID": 2,
+    "Level": 61,
+    "Gold": 1080200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1500,
+      900,
+      600
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2062,
+    "BuildingTID": 2,
+    "Level": 62,
+    "Gold": 1116500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1525,
+      915,
+      610
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2063,
+    "BuildingTID": 2,
+    "Level": 63,
+    "Gold": 1153400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1550,
+      930,
+      620
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2064,
+    "BuildingTID": 2,
+    "Level": 64,
+    "Gold": 1190900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1575,
+      945,
+      630
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2065,
+    "BuildingTID": 2,
+    "Level": 65,
+    "Gold": 1229000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1600,
+      960,
+      640
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2066,
+    "BuildingTID": 2,
+    "Level": 66,
+    "Gold": 1267700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1625,
+      975,
+      650
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2067,
+    "BuildingTID": 2,
+    "Level": 67,
+    "Gold": 1307000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1650,
+      990,
+      660
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2068,
+    "BuildingTID": 2,
+    "Level": 68,
+    "Gold": 1346900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1675,
+      1005,
+      670
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2069,
+    "BuildingTID": 2,
+    "Level": 69,
+    "Gold": 1387400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1700,
+      1020,
+      680
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2070,
+    "BuildingTID": 2,
+    "Level": 70,
+    "Gold": 1428500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1725,
+      1035,
+      690
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2071,
+    "BuildingTID": 2,
+    "Level": 71,
+    "Gold": 1470200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1750,
+      1050,
+      700
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2072,
+    "BuildingTID": 2,
+    "Level": 72,
+    "Gold": 1512500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1775,
+      1065,
+      710
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2073,
+    "BuildingTID": 2,
+    "Level": 73,
+    "Gold": 1555400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1800,
+      1080,
+      720
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2074,
+    "BuildingTID": 2,
+    "Level": 74,
+    "Gold": 1598900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1825,
+      1095,
+      730
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2075,
+    "BuildingTID": 2,
+    "Level": 75,
+    "Gold": 1643000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1850,
+      1110,
+      740
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2076,
+    "BuildingTID": 2,
+    "Level": 76,
+    "Gold": 1687700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1875,
+      1125,
+      750
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2077,
+    "BuildingTID": 2,
+    "Level": 77,
+    "Gold": 1733000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1900,
+      1140,
+      760
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2078,
+    "BuildingTID": 2,
+    "Level": 78,
+    "Gold": 1778900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1925,
+      1155,
+      770
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2079,
+    "BuildingTID": 2,
+    "Level": 79,
+    "Gold": 1825400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1950,
+      1170,
+      780
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2080,
+    "BuildingTID": 2,
+    "Level": 80,
+    "Gold": 1872500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      1975,
+      1185,
+      790
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2081,
+    "BuildingTID": 2,
+    "Level": 81,
+    "Gold": 1920200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2000,
+      1200,
+      800
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2082,
+    "BuildingTID": 2,
+    "Level": 82,
+    "Gold": 1968500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2025,
+      1215,
+      810
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2083,
+    "BuildingTID": 2,
+    "Level": 83,
+    "Gold": 2017400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2050,
+      1230,
+      820
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2084,
+    "BuildingTID": 2,
+    "Level": 84,
+    "Gold": 2066900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2075,
+      1245,
+      830
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2085,
+    "BuildingTID": 2,
+    "Level": 85,
+    "Gold": 2117000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2100,
+      1260,
+      840
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2086,
+    "BuildingTID": 2,
+    "Level": 86,
+    "Gold": 2167700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2125,
+      1275,
+      850
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2087,
+    "BuildingTID": 2,
+    "Level": 87,
+    "Gold": 2219000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2150,
+      1290,
+      860
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2088,
+    "BuildingTID": 2,
+    "Level": 88,
+    "Gold": 2270900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2175,
+      1305,
+      870
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2089,
+    "BuildingTID": 2,
+    "Level": 89,
+    "Gold": 2323400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2200,
+      1320,
+      880
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2090,
+    "BuildingTID": 2,
+    "Level": 90,
+    "Gold": 2376500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2225,
+      1335,
+      890
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2091,
+    "BuildingTID": 2,
+    "Level": 91,
+    "Gold": 2430200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2250,
+      1350,
+      900
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2092,
+    "BuildingTID": 2,
+    "Level": 92,
+    "Gold": 2484500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2275,
+      1365,
+      910
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2093,
+    "BuildingTID": 2,
+    "Level": 93,
+    "Gold": 2539400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2300,
+      1380,
+      920
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2094,
+    "BuildingTID": 2,
+    "Level": 94,
+    "Gold": 2594900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2325,
+      1395,
+      930
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2095,
+    "BuildingTID": 2,
+    "Level": 95,
+    "Gold": 2651000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2350,
+      1410,
+      940
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2096,
+    "BuildingTID": 2,
+    "Level": 96,
+    "Gold": 2707700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2375,
+      1425,
+      950
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2097,
+    "BuildingTID": 2,
+    "Level": 97,
+    "Gold": 2765000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2400,
+      1440,
+      960
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2098,
+    "BuildingTID": 2,
+    "Level": 98,
+    "Gold": 2822900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2425,
+      1455,
+      970
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2099,
+    "BuildingTID": 2,
+    "Level": 99,
+    "Gold": 2881400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2450,
+      1470,
+      980
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2100,
+    "BuildingTID": 2,
+    "Level": 100,
+    "Gold": 2940500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2475,
+      1485,
+      990
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2101,
+    "BuildingTID": 2,
+    "Level": 101,
+    "Gold": 3000200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2500,
+      1500,
+      1000
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2102,
+    "BuildingTID": 2,
+    "Level": 102,
+    "Gold": 3060500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2525,
+      1515,
+      1010
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2103,
+    "BuildingTID": 2,
+    "Level": 103,
+    "Gold": 3121400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2550,
+      1530,
+      1020
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2104,
+    "BuildingTID": 2,
+    "Level": 104,
+    "Gold": 3182900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2575,
+      1545,
+      1030
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2105,
+    "BuildingTID": 2,
+    "Level": 105,
+    "Gold": 3245000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2600,
+      1560,
+      1040
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2106,
+    "BuildingTID": 2,
+    "Level": 106,
+    "Gold": 3307700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2625,
+      1575,
+      1050
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2107,
+    "BuildingTID": 2,
+    "Level": 107,
+    "Gold": 3371000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2650,
+      1590,
+      1060
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2108,
+    "BuildingTID": 2,
+    "Level": 108,
+    "Gold": 3434900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2675,
+      1605,
+      1070
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2109,
+    "BuildingTID": 2,
+    "Level": 109,
+    "Gold": 3499400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2700,
+      1620,
+      1080
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2110,
+    "BuildingTID": 2,
+    "Level": 110,
+    "Gold": 3564500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2725,
+      1635,
+      1090
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2111,
+    "BuildingTID": 2,
+    "Level": 111,
+    "Gold": 3630200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2750,
+      1650,
+      1100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2112,
+    "BuildingTID": 2,
+    "Level": 112,
+    "Gold": 3696500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2775,
+      1665,
+      1110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2113,
+    "BuildingTID": 2,
+    "Level": 113,
+    "Gold": 3763400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2800,
+      1680,
+      1120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2114,
+    "BuildingTID": 2,
+    "Level": 114,
+    "Gold": 3830900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2825,
+      1695,
+      1130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2115,
+    "BuildingTID": 2,
+    "Level": 115,
+    "Gold": 3899000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2850,
+      1710,
+      1140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2116,
+    "BuildingTID": 2,
+    "Level": 116,
+    "Gold": 3967700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2875,
+      1725,
+      1150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2117,
+    "BuildingTID": 2,
+    "Level": 117,
+    "Gold": 4037000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2900,
+      1740,
+      1160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2118,
+    "BuildingTID": 2,
+    "Level": 118,
+    "Gold": 4106900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2925,
+      1755,
+      1170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2119,
+    "BuildingTID": 2,
+    "Level": 119,
+    "Gold": 4177400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2950,
+      1770,
+      1180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2120,
+    "BuildingTID": 2,
+    "Level": 120,
+    "Gold": 4248500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      2975,
+      1785,
+      1190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2121,
+    "BuildingTID": 2,
+    "Level": 121,
+    "Gold": 4320200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3000,
+      1800,
+      1200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2122,
+    "BuildingTID": 2,
+    "Level": 122,
+    "Gold": 4392500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3025,
+      1815,
+      1210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2123,
+    "BuildingTID": 2,
+    "Level": 123,
+    "Gold": 4465400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3050,
+      1830,
+      1220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2124,
+    "BuildingTID": 2,
+    "Level": 124,
+    "Gold": 4538900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3075,
+      1845,
+      1230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2125,
+    "BuildingTID": 2,
+    "Level": 125,
+    "Gold": 4613000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3100,
+      1860,
+      1240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2126,
+    "BuildingTID": 2,
+    "Level": 126,
+    "Gold": 4687700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3125,
+      1875,
+      1250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2127,
+    "BuildingTID": 2,
+    "Level": 127,
+    "Gold": 4763000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3150,
+      1890,
+      1260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2128,
+    "BuildingTID": 2,
+    "Level": 128,
+    "Gold": 4838900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3175,
+      1905,
+      1270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2129,
+    "BuildingTID": 2,
+    "Level": 129,
+    "Gold": 4915400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3200,
+      1920,
+      1280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2130,
+    "BuildingTID": 2,
+    "Level": 130,
+    "Gold": 4992500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3225,
+      1935,
+      1290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2131,
+    "BuildingTID": 2,
+    "Level": 131,
+    "Gold": 5070200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3250,
+      1950,
+      1300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2132,
+    "BuildingTID": 2,
+    "Level": 132,
+    "Gold": 5148500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3275,
+      1965,
+      1310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2133,
+    "BuildingTID": 2,
+    "Level": 133,
+    "Gold": 5227400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3300,
+      1980,
+      1320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2134,
+    "BuildingTID": 2,
+    "Level": 134,
+    "Gold": 5306900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3325,
+      1995,
+      1330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2135,
+    "BuildingTID": 2,
+    "Level": 135,
+    "Gold": 5387000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3350,
+      2010,
+      1340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2136,
+    "BuildingTID": 2,
+    "Level": 136,
+    "Gold": 5467700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3375,
+      2025,
+      1350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2137,
+    "BuildingTID": 2,
+    "Level": 137,
+    "Gold": 5549000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3400,
+      2040,
+      1360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2138,
+    "BuildingTID": 2,
+    "Level": 138,
+    "Gold": 5630900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3425,
+      2055,
+      1370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2139,
+    "BuildingTID": 2,
+    "Level": 139,
+    "Gold": 5713400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3450,
+      2070,
+      1380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2140,
+    "BuildingTID": 2,
+    "Level": 140,
+    "Gold": 5796500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3475,
+      2085,
+      1390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2141,
+    "BuildingTID": 2,
+    "Level": 141,
+    "Gold": 5880200,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3500,
+      2100,
+      1400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2142,
+    "BuildingTID": 2,
+    "Level": 142,
+    "Gold": 5964500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3525,
+      2115,
+      1410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2143,
+    "BuildingTID": 2,
+    "Level": 143,
+    "Gold": 6049400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3550,
+      2130,
+      1420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2144,
+    "BuildingTID": 2,
+    "Level": 144,
+    "Gold": 6134900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3575,
+      2145,
+      1430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2145,
+    "BuildingTID": 2,
+    "Level": 145,
+    "Gold": 6221000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3600,
+      2160,
+      1440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2146,
+    "BuildingTID": 2,
+    "Level": 146,
+    "Gold": 6307700,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3625,
+      2175,
+      1450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2147,
+    "BuildingTID": 2,
+    "Level": 147,
+    "Gold": 6395000,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3650,
+      2190,
+      1460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2148,
+    "BuildingTID": 2,
+    "Level": 148,
+    "Gold": 6482900,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3675,
+      2205,
+      1470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2149,
+    "BuildingTID": 2,
+    "Level": 149,
+    "Gold": 6571400,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3700,
+      2220,
+      1480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 2150,
+    "BuildingTID": 2,
+    "Level": 150,
+    "Gold": 6660500,
+    "ItemTIDs": [
+      30001,
+      40001,
+      20001
+    ],
+    "ItemCounts": [
+      3725,
+      2235,
+      1490
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3001,
+    "BuildingTID": 3,
+    "Level": 1,
+    "Gold": 200,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3002,
+    "BuildingTID": 3,
+    "Level": 2,
+    "Gold": 500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      15,
+      10
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3003,
+    "BuildingTID": 3,
+    "Level": 3,
+    "Gold": 1400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      30,
+      20
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3004,
+    "BuildingTID": 3,
+    "Level": 4,
+    "Gold": 2900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      45,
+      30
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3005,
+    "BuildingTID": 3,
+    "Level": 5,
+    "Gold": 5000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      60,
+      40
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3006,
+    "BuildingTID": 3,
+    "Level": 6,
+    "Gold": 7700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      75,
+      50
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3007,
+    "BuildingTID": 3,
+    "Level": 7,
+    "Gold": 11000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      90,
+      60
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3008,
+    "BuildingTID": 3,
+    "Level": 8,
+    "Gold": 14900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      105,
+      70
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3009,
+    "BuildingTID": 3,
+    "Level": 9,
+    "Gold": 19400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      120,
+      80
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3010,
+    "BuildingTID": 3,
+    "Level": 10,
+    "Gold": 24500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      135,
+      90
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3011,
+    "BuildingTID": 3,
+    "Level": 11,
+    "Gold": 30200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      150,
+      100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3012,
+    "BuildingTID": 3,
+    "Level": 12,
+    "Gold": 36500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      165,
+      110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3013,
+    "BuildingTID": 3,
+    "Level": 13,
+    "Gold": 43400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      180,
+      120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3014,
+    "BuildingTID": 3,
+    "Level": 14,
+    "Gold": 50900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      195,
+      130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3015,
+    "BuildingTID": 3,
+    "Level": 15,
+    "Gold": 59000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      210,
+      140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3016,
+    "BuildingTID": 3,
+    "Level": 16,
+    "Gold": 67700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      225,
+      150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3017,
+    "BuildingTID": 3,
+    "Level": 17,
+    "Gold": 77000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      240,
+      160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3018,
+    "BuildingTID": 3,
+    "Level": 18,
+    "Gold": 86900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      255,
+      170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3019,
+    "BuildingTID": 3,
+    "Level": 19,
+    "Gold": 97400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      270,
+      180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3020,
+    "BuildingTID": 3,
+    "Level": 20,
+    "Gold": 108500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      285,
+      190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3021,
+    "BuildingTID": 3,
+    "Level": 21,
+    "Gold": 120200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      300,
+      200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3022,
+    "BuildingTID": 3,
+    "Level": 22,
+    "Gold": 132500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      315,
+      210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3023,
+    "BuildingTID": 3,
+    "Level": 23,
+    "Gold": 145400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      330,
+      220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3024,
+    "BuildingTID": 3,
+    "Level": 24,
+    "Gold": 158900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      345,
+      230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3025,
+    "BuildingTID": 3,
+    "Level": 25,
+    "Gold": 173000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      360,
+      240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3026,
+    "BuildingTID": 3,
+    "Level": 26,
+    "Gold": 187700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      375,
+      250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3027,
+    "BuildingTID": 3,
+    "Level": 27,
+    "Gold": 203000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      390,
+      260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3028,
+    "BuildingTID": 3,
+    "Level": 28,
+    "Gold": 218900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      405,
+      270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3029,
+    "BuildingTID": 3,
+    "Level": 29,
+    "Gold": 235400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      420,
+      280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3030,
+    "BuildingTID": 3,
+    "Level": 30,
+    "Gold": 252500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      435,
+      290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3031,
+    "BuildingTID": 3,
+    "Level": 31,
+    "Gold": 270200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      450,
+      300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3032,
+    "BuildingTID": 3,
+    "Level": 32,
+    "Gold": 288500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      465,
+      310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3033,
+    "BuildingTID": 3,
+    "Level": 33,
+    "Gold": 307400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      480,
+      320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3034,
+    "BuildingTID": 3,
+    "Level": 34,
+    "Gold": 326900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      495,
+      330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3035,
+    "BuildingTID": 3,
+    "Level": 35,
+    "Gold": 347000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      510,
+      340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3036,
+    "BuildingTID": 3,
+    "Level": 36,
+    "Gold": 367700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      525,
+      350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3037,
+    "BuildingTID": 3,
+    "Level": 37,
+    "Gold": 389000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      540,
+      360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3038,
+    "BuildingTID": 3,
+    "Level": 38,
+    "Gold": 410900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      555,
+      370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3039,
+    "BuildingTID": 3,
+    "Level": 39,
+    "Gold": 433400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      570,
+      380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3040,
+    "BuildingTID": 3,
+    "Level": 40,
+    "Gold": 456500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      585,
+      390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3041,
+    "BuildingTID": 3,
+    "Level": 41,
+    "Gold": 480200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      600,
+      400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3042,
+    "BuildingTID": 3,
+    "Level": 42,
+    "Gold": 504500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      615,
+      410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3043,
+    "BuildingTID": 3,
+    "Level": 43,
+    "Gold": 529400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      630,
+      420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3044,
+    "BuildingTID": 3,
+    "Level": 44,
+    "Gold": 554900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      645,
+      430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3045,
+    "BuildingTID": 3,
+    "Level": 45,
+    "Gold": 581000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      660,
+      440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3046,
+    "BuildingTID": 3,
+    "Level": 46,
+    "Gold": 607700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      675,
+      450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3047,
+    "BuildingTID": 3,
+    "Level": 47,
+    "Gold": 635000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      690,
+      460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3048,
+    "BuildingTID": 3,
+    "Level": 48,
+    "Gold": 662900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      705,
+      470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3049,
+    "BuildingTID": 3,
+    "Level": 49,
+    "Gold": 691400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      720,
+      480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3050,
+    "BuildingTID": 3,
+    "Level": 50,
+    "Gold": 720500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      735,
+      490
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3051,
+    "BuildingTID": 3,
+    "Level": 51,
+    "Gold": 750200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      750,
+      500
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3052,
+    "BuildingTID": 3,
+    "Level": 52,
+    "Gold": 780500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      765,
+      510
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3053,
+    "BuildingTID": 3,
+    "Level": 53,
+    "Gold": 811400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      780,
+      520
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3054,
+    "BuildingTID": 3,
+    "Level": 54,
+    "Gold": 842900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      795,
+      530
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3055,
+    "BuildingTID": 3,
+    "Level": 55,
+    "Gold": 875000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      810,
+      540
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3056,
+    "BuildingTID": 3,
+    "Level": 56,
+    "Gold": 907700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      825,
+      550
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3057,
+    "BuildingTID": 3,
+    "Level": 57,
+    "Gold": 941000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      840,
+      560
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3058,
+    "BuildingTID": 3,
+    "Level": 58,
+    "Gold": 974900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      855,
+      570
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3059,
+    "BuildingTID": 3,
+    "Level": 59,
+    "Gold": 1009400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      870,
+      580
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3060,
+    "BuildingTID": 3,
+    "Level": 60,
+    "Gold": 1044500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      885,
+      590
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3061,
+    "BuildingTID": 3,
+    "Level": 61,
+    "Gold": 1080200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      900,
+      600
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3062,
+    "BuildingTID": 3,
+    "Level": 62,
+    "Gold": 1116500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      915,
+      610
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3063,
+    "BuildingTID": 3,
+    "Level": 63,
+    "Gold": 1153400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      930,
+      620
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3064,
+    "BuildingTID": 3,
+    "Level": 64,
+    "Gold": 1190900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      945,
+      630
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3065,
+    "BuildingTID": 3,
+    "Level": 65,
+    "Gold": 1229000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      960,
+      640
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3066,
+    "BuildingTID": 3,
+    "Level": 66,
+    "Gold": 1267700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      975,
+      650
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3067,
+    "BuildingTID": 3,
+    "Level": 67,
+    "Gold": 1307000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      990,
+      660
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3068,
+    "BuildingTID": 3,
+    "Level": 68,
+    "Gold": 1346900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1005,
+      670
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3069,
+    "BuildingTID": 3,
+    "Level": 69,
+    "Gold": 1387400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1020,
+      680
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3070,
+    "BuildingTID": 3,
+    "Level": 70,
+    "Gold": 1428500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1035,
+      690
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3071,
+    "BuildingTID": 3,
+    "Level": 71,
+    "Gold": 1470200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1050,
+      700
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3072,
+    "BuildingTID": 3,
+    "Level": 72,
+    "Gold": 1512500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1065,
+      710
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3073,
+    "BuildingTID": 3,
+    "Level": 73,
+    "Gold": 1555400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1080,
+      720
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3074,
+    "BuildingTID": 3,
+    "Level": 74,
+    "Gold": 1598900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1095,
+      730
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3075,
+    "BuildingTID": 3,
+    "Level": 75,
+    "Gold": 1643000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1110,
+      740
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3076,
+    "BuildingTID": 3,
+    "Level": 76,
+    "Gold": 1687700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1125,
+      750
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3077,
+    "BuildingTID": 3,
+    "Level": 77,
+    "Gold": 1733000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1140,
+      760
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3078,
+    "BuildingTID": 3,
+    "Level": 78,
+    "Gold": 1778900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1155,
+      770
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3079,
+    "BuildingTID": 3,
+    "Level": 79,
+    "Gold": 1825400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1170,
+      780
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3080,
+    "BuildingTID": 3,
+    "Level": 80,
+    "Gold": 1872500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1185,
+      790
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3081,
+    "BuildingTID": 3,
+    "Level": 81,
+    "Gold": 1920200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1200,
+      800
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3082,
+    "BuildingTID": 3,
+    "Level": 82,
+    "Gold": 1968500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1215,
+      810
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3083,
+    "BuildingTID": 3,
+    "Level": 83,
+    "Gold": 2017400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1230,
+      820
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3084,
+    "BuildingTID": 3,
+    "Level": 84,
+    "Gold": 2066900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1245,
+      830
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3085,
+    "BuildingTID": 3,
+    "Level": 85,
+    "Gold": 2117000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1260,
+      840
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3086,
+    "BuildingTID": 3,
+    "Level": 86,
+    "Gold": 2167700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1275,
+      850
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3087,
+    "BuildingTID": 3,
+    "Level": 87,
+    "Gold": 2219000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1290,
+      860
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3088,
+    "BuildingTID": 3,
+    "Level": 88,
+    "Gold": 2270900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1305,
+      870
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3089,
+    "BuildingTID": 3,
+    "Level": 89,
+    "Gold": 2323400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1320,
+      880
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3090,
+    "BuildingTID": 3,
+    "Level": 90,
+    "Gold": 2376500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1335,
+      890
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3091,
+    "BuildingTID": 3,
+    "Level": 91,
+    "Gold": 2430200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1350,
+      900
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3092,
+    "BuildingTID": 3,
+    "Level": 92,
+    "Gold": 2484500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1365,
+      910
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3093,
+    "BuildingTID": 3,
+    "Level": 93,
+    "Gold": 2539400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1380,
+      920
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3094,
+    "BuildingTID": 3,
+    "Level": 94,
+    "Gold": 2594900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1395,
+      930
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3095,
+    "BuildingTID": 3,
+    "Level": 95,
+    "Gold": 2651000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1410,
+      940
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3096,
+    "BuildingTID": 3,
+    "Level": 96,
+    "Gold": 2707700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1425,
+      950
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3097,
+    "BuildingTID": 3,
+    "Level": 97,
+    "Gold": 2765000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1440,
+      960
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3098,
+    "BuildingTID": 3,
+    "Level": 98,
+    "Gold": 2822900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1455,
+      970
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3099,
+    "BuildingTID": 3,
+    "Level": 99,
+    "Gold": 2881400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1470,
+      980
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3100,
+    "BuildingTID": 3,
+    "Level": 100,
+    "Gold": 2940500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1485,
+      990
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3101,
+    "BuildingTID": 3,
+    "Level": 101,
+    "Gold": 3000200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1500,
+      1000
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3102,
+    "BuildingTID": 3,
+    "Level": 102,
+    "Gold": 3060500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1515,
+      1010
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3103,
+    "BuildingTID": 3,
+    "Level": 103,
+    "Gold": 3121400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1530,
+      1020
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3104,
+    "BuildingTID": 3,
+    "Level": 104,
+    "Gold": 3182900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1545,
+      1030
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3105,
+    "BuildingTID": 3,
+    "Level": 105,
+    "Gold": 3245000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1560,
+      1040
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3106,
+    "BuildingTID": 3,
+    "Level": 106,
+    "Gold": 3307700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1575,
+      1050
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3107,
+    "BuildingTID": 3,
+    "Level": 107,
+    "Gold": 3371000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1590,
+      1060
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3108,
+    "BuildingTID": 3,
+    "Level": 108,
+    "Gold": 3434900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1605,
+      1070
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3109,
+    "BuildingTID": 3,
+    "Level": 109,
+    "Gold": 3499400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1620,
+      1080
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3110,
+    "BuildingTID": 3,
+    "Level": 110,
+    "Gold": 3564500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1635,
+      1090
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3111,
+    "BuildingTID": 3,
+    "Level": 111,
+    "Gold": 3630200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1650,
+      1100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3112,
+    "BuildingTID": 3,
+    "Level": 112,
+    "Gold": 3696500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1665,
+      1110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3113,
+    "BuildingTID": 3,
+    "Level": 113,
+    "Gold": 3763400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1680,
+      1120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3114,
+    "BuildingTID": 3,
+    "Level": 114,
+    "Gold": 3830900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1695,
+      1130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3115,
+    "BuildingTID": 3,
+    "Level": 115,
+    "Gold": 3899000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1710,
+      1140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3116,
+    "BuildingTID": 3,
+    "Level": 116,
+    "Gold": 3967700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1725,
+      1150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3117,
+    "BuildingTID": 3,
+    "Level": 117,
+    "Gold": 4037000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1740,
+      1160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3118,
+    "BuildingTID": 3,
+    "Level": 118,
+    "Gold": 4106900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1755,
+      1170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3119,
+    "BuildingTID": 3,
+    "Level": 119,
+    "Gold": 4177400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1770,
+      1180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3120,
+    "BuildingTID": 3,
+    "Level": 120,
+    "Gold": 4248500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1785,
+      1190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3121,
+    "BuildingTID": 3,
+    "Level": 121,
+    "Gold": 4320200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1800,
+      1200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3122,
+    "BuildingTID": 3,
+    "Level": 122,
+    "Gold": 4392500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1815,
+      1210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3123,
+    "BuildingTID": 3,
+    "Level": 123,
+    "Gold": 4465400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1830,
+      1220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3124,
+    "BuildingTID": 3,
+    "Level": 124,
+    "Gold": 4538900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1845,
+      1230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3125,
+    "BuildingTID": 3,
+    "Level": 125,
+    "Gold": 4613000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1860,
+      1240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3126,
+    "BuildingTID": 3,
+    "Level": 126,
+    "Gold": 4687700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1875,
+      1250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3127,
+    "BuildingTID": 3,
+    "Level": 127,
+    "Gold": 4763000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1890,
+      1260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3128,
+    "BuildingTID": 3,
+    "Level": 128,
+    "Gold": 4838900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1905,
+      1270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3129,
+    "BuildingTID": 3,
+    "Level": 129,
+    "Gold": 4915400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1920,
+      1280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3130,
+    "BuildingTID": 3,
+    "Level": 130,
+    "Gold": 4992500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1935,
+      1290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3131,
+    "BuildingTID": 3,
+    "Level": 131,
+    "Gold": 5070200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1950,
+      1300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3132,
+    "BuildingTID": 3,
+    "Level": 132,
+    "Gold": 5148500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1965,
+      1310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3133,
+    "BuildingTID": 3,
+    "Level": 133,
+    "Gold": 5227400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1980,
+      1320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3134,
+    "BuildingTID": 3,
+    "Level": 134,
+    "Gold": 5306900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      1995,
+      1330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3135,
+    "BuildingTID": 3,
+    "Level": 135,
+    "Gold": 5387000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2010,
+      1340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3136,
+    "BuildingTID": 3,
+    "Level": 136,
+    "Gold": 5467700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2025,
+      1350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3137,
+    "BuildingTID": 3,
+    "Level": 137,
+    "Gold": 5549000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2040,
+      1360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3138,
+    "BuildingTID": 3,
+    "Level": 138,
+    "Gold": 5630900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2055,
+      1370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3139,
+    "BuildingTID": 3,
+    "Level": 139,
+    "Gold": 5713400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2070,
+      1380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3140,
+    "BuildingTID": 3,
+    "Level": 140,
+    "Gold": 5796500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2085,
+      1390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3141,
+    "BuildingTID": 3,
+    "Level": 141,
+    "Gold": 5880200,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2100,
+      1400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3142,
+    "BuildingTID": 3,
+    "Level": 142,
+    "Gold": 5964500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2115,
+      1410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3143,
+    "BuildingTID": 3,
+    "Level": 143,
+    "Gold": 6049400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2130,
+      1420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3144,
+    "BuildingTID": 3,
+    "Level": 144,
+    "Gold": 6134900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2145,
+      1430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3145,
+    "BuildingTID": 3,
+    "Level": 145,
+    "Gold": 6221000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2160,
+      1440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3146,
+    "BuildingTID": 3,
+    "Level": 146,
+    "Gold": 6307700,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2175,
+      1450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3147,
+    "BuildingTID": 3,
+    "Level": 147,
+    "Gold": 6395000,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2190,
+      1460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3148,
+    "BuildingTID": 3,
+    "Level": 148,
+    "Gold": 6482900,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2205,
+      1470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3149,
+    "BuildingTID": 3,
+    "Level": 149,
+    "Gold": 6571400,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2220,
+      1480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 3150,
+    "BuildingTID": 3,
+    "Level": 150,
+    "Gold": 6660500,
+    "ItemTIDs": [
+      30001,
+      50001
+    ],
+    "ItemCounts": [
+      2235,
+      1490
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4001,
+    "BuildingTID": 4,
+    "Level": 1,
+    "Gold": 200,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4002,
+    "BuildingTID": 4,
+    "Level": 2,
+    "Gold": 500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      30,
+      8
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4003,
+    "BuildingTID": 4,
+    "Level": 3,
+    "Gold": 1400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      60,
+      16
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4004,
+    "BuildingTID": 4,
+    "Level": 4,
+    "Gold": 2900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      90,
+      24
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4005,
+    "BuildingTID": 4,
+    "Level": 5,
+    "Gold": 5000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      120,
+      32
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4006,
+    "BuildingTID": 4,
+    "Level": 6,
+    "Gold": 7700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      150,
+      40
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4007,
+    "BuildingTID": 4,
+    "Level": 7,
+    "Gold": 11000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      180,
+      48
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4008,
+    "BuildingTID": 4,
+    "Level": 8,
+    "Gold": 14900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      210,
+      56
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4009,
+    "BuildingTID": 4,
+    "Level": 9,
+    "Gold": 19400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      240,
+      64
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4010,
+    "BuildingTID": 4,
+    "Level": 10,
+    "Gold": 24500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      270,
+      72
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4011,
+    "BuildingTID": 4,
+    "Level": 11,
+    "Gold": 30200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      300,
+      80
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4012,
+    "BuildingTID": 4,
+    "Level": 12,
+    "Gold": 36500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      330,
+      88
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4013,
+    "BuildingTID": 4,
+    "Level": 13,
+    "Gold": 43400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      360,
+      96
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4014,
+    "BuildingTID": 4,
+    "Level": 14,
+    "Gold": 50900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      390,
+      104
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4015,
+    "BuildingTID": 4,
+    "Level": 15,
+    "Gold": 59000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      420,
+      112
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4016,
+    "BuildingTID": 4,
+    "Level": 16,
+    "Gold": 67700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      450,
+      120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4017,
+    "BuildingTID": 4,
+    "Level": 17,
+    "Gold": 77000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      480,
+      128
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4018,
+    "BuildingTID": 4,
+    "Level": 18,
+    "Gold": 86900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      510,
+      136
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4019,
+    "BuildingTID": 4,
+    "Level": 19,
+    "Gold": 97400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      540,
+      144
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4020,
+    "BuildingTID": 4,
+    "Level": 20,
+    "Gold": 108500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      570,
+      152
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4021,
+    "BuildingTID": 4,
+    "Level": 21,
+    "Gold": 120200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      600,
+      160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4022,
+    "BuildingTID": 4,
+    "Level": 22,
+    "Gold": 132500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      630,
+      168
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4023,
+    "BuildingTID": 4,
+    "Level": 23,
+    "Gold": 145400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      660,
+      176
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4024,
+    "BuildingTID": 4,
+    "Level": 24,
+    "Gold": 158900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      690,
+      184
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4025,
+    "BuildingTID": 4,
+    "Level": 25,
+    "Gold": 173000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      720,
+      192
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4026,
+    "BuildingTID": 4,
+    "Level": 26,
+    "Gold": 187700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      750,
+      200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4027,
+    "BuildingTID": 4,
+    "Level": 27,
+    "Gold": 203000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      780,
+      208
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4028,
+    "BuildingTID": 4,
+    "Level": 28,
+    "Gold": 218900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      810,
+      216
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4029,
+    "BuildingTID": 4,
+    "Level": 29,
+    "Gold": 235400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      840,
+      224
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4030,
+    "BuildingTID": 4,
+    "Level": 30,
+    "Gold": 252500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      870,
+      232
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4031,
+    "BuildingTID": 4,
+    "Level": 31,
+    "Gold": 270200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      900,
+      240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4032,
+    "BuildingTID": 4,
+    "Level": 32,
+    "Gold": 288500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      930,
+      248
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4033,
+    "BuildingTID": 4,
+    "Level": 33,
+    "Gold": 307400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      960,
+      256
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4034,
+    "BuildingTID": 4,
+    "Level": 34,
+    "Gold": 326900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      990,
+      264
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4035,
+    "BuildingTID": 4,
+    "Level": 35,
+    "Gold": 347000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1020,
+      272
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4036,
+    "BuildingTID": 4,
+    "Level": 36,
+    "Gold": 367700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1050,
+      280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4037,
+    "BuildingTID": 4,
+    "Level": 37,
+    "Gold": 389000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1080,
+      288
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4038,
+    "BuildingTID": 4,
+    "Level": 38,
+    "Gold": 410900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1110,
+      296
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4039,
+    "BuildingTID": 4,
+    "Level": 39,
+    "Gold": 433400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1140,
+      304
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4040,
+    "BuildingTID": 4,
+    "Level": 40,
+    "Gold": 456500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1170,
+      312
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4041,
+    "BuildingTID": 4,
+    "Level": 41,
+    "Gold": 480200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1200,
+      320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4042,
+    "BuildingTID": 4,
+    "Level": 42,
+    "Gold": 504500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1230,
+      328
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4043,
+    "BuildingTID": 4,
+    "Level": 43,
+    "Gold": 529400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1260,
+      336
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4044,
+    "BuildingTID": 4,
+    "Level": 44,
+    "Gold": 554900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1290,
+      344
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4045,
+    "BuildingTID": 4,
+    "Level": 45,
+    "Gold": 581000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1320,
+      352
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4046,
+    "BuildingTID": 4,
+    "Level": 46,
+    "Gold": 607700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1350,
+      360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4047,
+    "BuildingTID": 4,
+    "Level": 47,
+    "Gold": 635000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1380,
+      368
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4048,
+    "BuildingTID": 4,
+    "Level": 48,
+    "Gold": 662900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1410,
+      376
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4049,
+    "BuildingTID": 4,
+    "Level": 49,
+    "Gold": 691400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1440,
+      384
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4050,
+    "BuildingTID": 4,
+    "Level": 50,
+    "Gold": 720500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1470,
+      392
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4051,
+    "BuildingTID": 4,
+    "Level": 51,
+    "Gold": 750200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1500,
+      400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4052,
+    "BuildingTID": 4,
+    "Level": 52,
+    "Gold": 780500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1530,
+      408
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4053,
+    "BuildingTID": 4,
+    "Level": 53,
+    "Gold": 811400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1560,
+      416
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4054,
+    "BuildingTID": 4,
+    "Level": 54,
+    "Gold": 842900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1590,
+      424
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4055,
+    "BuildingTID": 4,
+    "Level": 55,
+    "Gold": 875000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1620,
+      432
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4056,
+    "BuildingTID": 4,
+    "Level": 56,
+    "Gold": 907700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1650,
+      440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4057,
+    "BuildingTID": 4,
+    "Level": 57,
+    "Gold": 941000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1680,
+      448
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4058,
+    "BuildingTID": 4,
+    "Level": 58,
+    "Gold": 974900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1710,
+      456
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4059,
+    "BuildingTID": 4,
+    "Level": 59,
+    "Gold": 1009400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1740,
+      464
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4060,
+    "BuildingTID": 4,
+    "Level": 60,
+    "Gold": 1044500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1770,
+      472
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4061,
+    "BuildingTID": 4,
+    "Level": 61,
+    "Gold": 1080200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1800,
+      480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4062,
+    "BuildingTID": 4,
+    "Level": 62,
+    "Gold": 1116500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1830,
+      488
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4063,
+    "BuildingTID": 4,
+    "Level": 63,
+    "Gold": 1153400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1860,
+      496
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4064,
+    "BuildingTID": 4,
+    "Level": 64,
+    "Gold": 1190900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1890,
+      504
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4065,
+    "BuildingTID": 4,
+    "Level": 65,
+    "Gold": 1229000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1920,
+      512
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4066,
+    "BuildingTID": 4,
+    "Level": 66,
+    "Gold": 1267700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1950,
+      520
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4067,
+    "BuildingTID": 4,
+    "Level": 67,
+    "Gold": 1307000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      1980,
+      528
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4068,
+    "BuildingTID": 4,
+    "Level": 68,
+    "Gold": 1346900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2010,
+      536
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4069,
+    "BuildingTID": 4,
+    "Level": 69,
+    "Gold": 1387400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2040,
+      544
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4070,
+    "BuildingTID": 4,
+    "Level": 70,
+    "Gold": 1428500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2070,
+      552
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4071,
+    "BuildingTID": 4,
+    "Level": 71,
+    "Gold": 1470200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2100,
+      560
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4072,
+    "BuildingTID": 4,
+    "Level": 72,
+    "Gold": 1512500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2130,
+      568
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4073,
+    "BuildingTID": 4,
+    "Level": 73,
+    "Gold": 1555400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2160,
+      576
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4074,
+    "BuildingTID": 4,
+    "Level": 74,
+    "Gold": 1598900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2190,
+      584
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4075,
+    "BuildingTID": 4,
+    "Level": 75,
+    "Gold": 1643000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2220,
+      592
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4076,
+    "BuildingTID": 4,
+    "Level": 76,
+    "Gold": 1687700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2250,
+      600
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4077,
+    "BuildingTID": 4,
+    "Level": 77,
+    "Gold": 1733000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2280,
+      608
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4078,
+    "BuildingTID": 4,
+    "Level": 78,
+    "Gold": 1778900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2310,
+      616
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4079,
+    "BuildingTID": 4,
+    "Level": 79,
+    "Gold": 1825400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2340,
+      624
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4080,
+    "BuildingTID": 4,
+    "Level": 80,
+    "Gold": 1872500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2370,
+      632
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4081,
+    "BuildingTID": 4,
+    "Level": 81,
+    "Gold": 1920200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2400,
+      640
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4082,
+    "BuildingTID": 4,
+    "Level": 82,
+    "Gold": 1968500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2430,
+      648
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4083,
+    "BuildingTID": 4,
+    "Level": 83,
+    "Gold": 2017400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2460,
+      656
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4084,
+    "BuildingTID": 4,
+    "Level": 84,
+    "Gold": 2066900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2490,
+      664
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4085,
+    "BuildingTID": 4,
+    "Level": 85,
+    "Gold": 2117000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2520,
+      672
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4086,
+    "BuildingTID": 4,
+    "Level": 86,
+    "Gold": 2167700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2550,
+      680
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4087,
+    "BuildingTID": 4,
+    "Level": 87,
+    "Gold": 2219000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2580,
+      688
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4088,
+    "BuildingTID": 4,
+    "Level": 88,
+    "Gold": 2270900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2610,
+      696
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4089,
+    "BuildingTID": 4,
+    "Level": 89,
+    "Gold": 2323400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2640,
+      704
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4090,
+    "BuildingTID": 4,
+    "Level": 90,
+    "Gold": 2376500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2670,
+      712
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4091,
+    "BuildingTID": 4,
+    "Level": 91,
+    "Gold": 2430200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2700,
+      720
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4092,
+    "BuildingTID": 4,
+    "Level": 92,
+    "Gold": 2484500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2730,
+      728
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4093,
+    "BuildingTID": 4,
+    "Level": 93,
+    "Gold": 2539400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2760,
+      736
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4094,
+    "BuildingTID": 4,
+    "Level": 94,
+    "Gold": 2594900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2790,
+      744
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4095,
+    "BuildingTID": 4,
+    "Level": 95,
+    "Gold": 2651000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2820,
+      752
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4096,
+    "BuildingTID": 4,
+    "Level": 96,
+    "Gold": 2707700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2850,
+      760
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4097,
+    "BuildingTID": 4,
+    "Level": 97,
+    "Gold": 2765000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2880,
+      768
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4098,
+    "BuildingTID": 4,
+    "Level": 98,
+    "Gold": 2822900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2910,
+      776
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4099,
+    "BuildingTID": 4,
+    "Level": 99,
+    "Gold": 2881400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2940,
+      784
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4100,
+    "BuildingTID": 4,
+    "Level": 100,
+    "Gold": 2940500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      2970,
+      792
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4101,
+    "BuildingTID": 4,
+    "Level": 101,
+    "Gold": 3000200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3000,
+      800
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4102,
+    "BuildingTID": 4,
+    "Level": 102,
+    "Gold": 3060500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3030,
+      808
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4103,
+    "BuildingTID": 4,
+    "Level": 103,
+    "Gold": 3121400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3060,
+      816
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4104,
+    "BuildingTID": 4,
+    "Level": 104,
+    "Gold": 3182900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3090,
+      824
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4105,
+    "BuildingTID": 4,
+    "Level": 105,
+    "Gold": 3245000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3120,
+      832
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4106,
+    "BuildingTID": 4,
+    "Level": 106,
+    "Gold": 3307700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3150,
+      840
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4107,
+    "BuildingTID": 4,
+    "Level": 107,
+    "Gold": 3371000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3180,
+      848
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4108,
+    "BuildingTID": 4,
+    "Level": 108,
+    "Gold": 3434900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3210,
+      856
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4109,
+    "BuildingTID": 4,
+    "Level": 109,
+    "Gold": 3499400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3240,
+      864
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4110,
+    "BuildingTID": 4,
+    "Level": 110,
+    "Gold": 3564500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3270,
+      872
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4111,
+    "BuildingTID": 4,
+    "Level": 111,
+    "Gold": 3630200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3300,
+      880
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4112,
+    "BuildingTID": 4,
+    "Level": 112,
+    "Gold": 3696500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3330,
+      888
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4113,
+    "BuildingTID": 4,
+    "Level": 113,
+    "Gold": 3763400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3360,
+      896
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4114,
+    "BuildingTID": 4,
+    "Level": 114,
+    "Gold": 3830900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3390,
+      904
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4115,
+    "BuildingTID": 4,
+    "Level": 115,
+    "Gold": 3899000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3420,
+      912
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4116,
+    "BuildingTID": 4,
+    "Level": 116,
+    "Gold": 3967700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3450,
+      920
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4117,
+    "BuildingTID": 4,
+    "Level": 117,
+    "Gold": 4037000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3480,
+      928
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4118,
+    "BuildingTID": 4,
+    "Level": 118,
+    "Gold": 4106900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3510,
+      936
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4119,
+    "BuildingTID": 4,
+    "Level": 119,
+    "Gold": 4177400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3540,
+      944
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4120,
+    "BuildingTID": 4,
+    "Level": 120,
+    "Gold": 4248500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3570,
+      952
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4121,
+    "BuildingTID": 4,
+    "Level": 121,
+    "Gold": 4320200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3600,
+      960
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4122,
+    "BuildingTID": 4,
+    "Level": 122,
+    "Gold": 4392500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3630,
+      968
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4123,
+    "BuildingTID": 4,
+    "Level": 123,
+    "Gold": 4465400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3660,
+      976
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4124,
+    "BuildingTID": 4,
+    "Level": 124,
+    "Gold": 4538900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3690,
+      984
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4125,
+    "BuildingTID": 4,
+    "Level": 125,
+    "Gold": 4613000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3720,
+      992
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4126,
+    "BuildingTID": 4,
+    "Level": 126,
+    "Gold": 4687700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3750,
+      1000
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4127,
+    "BuildingTID": 4,
+    "Level": 127,
+    "Gold": 4763000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3780,
+      1008
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4128,
+    "BuildingTID": 4,
+    "Level": 128,
+    "Gold": 4838900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3810,
+      1016
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4129,
+    "BuildingTID": 4,
+    "Level": 129,
+    "Gold": 4915400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3840,
+      1024
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4130,
+    "BuildingTID": 4,
+    "Level": 130,
+    "Gold": 4992500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3870,
+      1032
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4131,
+    "BuildingTID": 4,
+    "Level": 131,
+    "Gold": 5070200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3900,
+      1040
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4132,
+    "BuildingTID": 4,
+    "Level": 132,
+    "Gold": 5148500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3930,
+      1048
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4133,
+    "BuildingTID": 4,
+    "Level": 133,
+    "Gold": 5227400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3960,
+      1056
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4134,
+    "BuildingTID": 4,
+    "Level": 134,
+    "Gold": 5306900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      3990,
+      1064
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4135,
+    "BuildingTID": 4,
+    "Level": 135,
+    "Gold": 5387000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4020,
+      1072
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4136,
+    "BuildingTID": 4,
+    "Level": 136,
+    "Gold": 5467700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4050,
+      1080
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4137,
+    "BuildingTID": 4,
+    "Level": 137,
+    "Gold": 5549000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4080,
+      1088
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4138,
+    "BuildingTID": 4,
+    "Level": 138,
+    "Gold": 5630900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4110,
+      1096
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4139,
+    "BuildingTID": 4,
+    "Level": 139,
+    "Gold": 5713400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4140,
+      1104
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4140,
+    "BuildingTID": 4,
+    "Level": 140,
+    "Gold": 5796500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4170,
+      1112
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4141,
+    "BuildingTID": 4,
+    "Level": 141,
+    "Gold": 5880200,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4200,
+      1120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4142,
+    "BuildingTID": 4,
+    "Level": 142,
+    "Gold": 5964500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4230,
+      1128
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4143,
+    "BuildingTID": 4,
+    "Level": 143,
+    "Gold": 6049400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4260,
+      1136
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4144,
+    "BuildingTID": 4,
+    "Level": 144,
+    "Gold": 6134900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4290,
+      1144
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4145,
+    "BuildingTID": 4,
+    "Level": 145,
+    "Gold": 6221000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4320,
+      1152
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4146,
+    "BuildingTID": 4,
+    "Level": 146,
+    "Gold": 6307700,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4350,
+      1160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4147,
+    "BuildingTID": 4,
+    "Level": 147,
+    "Gold": 6395000,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4380,
+      1168
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4148,
+    "BuildingTID": 4,
+    "Level": 148,
+    "Gold": 6482900,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4410,
+      1176
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4149,
+    "BuildingTID": 4,
+    "Level": 149,
+    "Gold": 6571400,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4440,
+      1184
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 4150,
+    "BuildingTID": 4,
+    "Level": 150,
+    "Gold": 6660500,
+    "ItemTIDs": [
+      20001,
+      50001
+    ],
+    "ItemCounts": [
+      4470,
+      1192
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5001,
+    "BuildingTID": 5,
+    "Level": 1,
+    "Gold": 200,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5002,
+    "BuildingTID": 5,
+    "Level": 2,
+    "Gold": 500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      6,
+      10
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5003,
+    "BuildingTID": 5,
+    "Level": 3,
+    "Gold": 1400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      12,
+      20
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5004,
+    "BuildingTID": 5,
+    "Level": 4,
+    "Gold": 2900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      18,
+      30
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5005,
+    "BuildingTID": 5,
+    "Level": 5,
+    "Gold": 5000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      24,
+      40
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5006,
+    "BuildingTID": 5,
+    "Level": 6,
+    "Gold": 7700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      30,
+      50
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5007,
+    "BuildingTID": 5,
+    "Level": 7,
+    "Gold": 11000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      36,
+      60
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5008,
+    "BuildingTID": 5,
+    "Level": 8,
+    "Gold": 14900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      42,
+      70
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5009,
+    "BuildingTID": 5,
+    "Level": 9,
+    "Gold": 19400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      48,
+      80
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5010,
+    "BuildingTID": 5,
+    "Level": 10,
+    "Gold": 24500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      54,
+      90
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5011,
+    "BuildingTID": 5,
+    "Level": 11,
+    "Gold": 30200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      60,
+      100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5012,
+    "BuildingTID": 5,
+    "Level": 12,
+    "Gold": 36500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      66,
+      110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5013,
+    "BuildingTID": 5,
+    "Level": 13,
+    "Gold": 43400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      72,
+      120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5014,
+    "BuildingTID": 5,
+    "Level": 14,
+    "Gold": 50900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      78,
+      130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5015,
+    "BuildingTID": 5,
+    "Level": 15,
+    "Gold": 59000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      84,
+      140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5016,
+    "BuildingTID": 5,
+    "Level": 16,
+    "Gold": 67700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      90,
+      150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5017,
+    "BuildingTID": 5,
+    "Level": 17,
+    "Gold": 77000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      96,
+      160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5018,
+    "BuildingTID": 5,
+    "Level": 18,
+    "Gold": 86900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      102,
+      170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5019,
+    "BuildingTID": 5,
+    "Level": 19,
+    "Gold": 97400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      108,
+      180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5020,
+    "BuildingTID": 5,
+    "Level": 20,
+    "Gold": 108500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      114,
+      190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5021,
+    "BuildingTID": 5,
+    "Level": 21,
+    "Gold": 120200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      120,
+      200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5022,
+    "BuildingTID": 5,
+    "Level": 22,
+    "Gold": 132500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      126,
+      210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5023,
+    "BuildingTID": 5,
+    "Level": 23,
+    "Gold": 145400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      132,
+      220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5024,
+    "BuildingTID": 5,
+    "Level": 24,
+    "Gold": 158900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      138,
+      230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5025,
+    "BuildingTID": 5,
+    "Level": 25,
+    "Gold": 173000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      144,
+      240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5026,
+    "BuildingTID": 5,
+    "Level": 26,
+    "Gold": 187700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      150,
+      250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5027,
+    "BuildingTID": 5,
+    "Level": 27,
+    "Gold": 203000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      156,
+      260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5028,
+    "BuildingTID": 5,
+    "Level": 28,
+    "Gold": 218900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      162,
+      270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5029,
+    "BuildingTID": 5,
+    "Level": 29,
+    "Gold": 235400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      168,
+      280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5030,
+    "BuildingTID": 5,
+    "Level": 30,
+    "Gold": 252500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      174,
+      290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5031,
+    "BuildingTID": 5,
+    "Level": 31,
+    "Gold": 270200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      180,
+      300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5032,
+    "BuildingTID": 5,
+    "Level": 32,
+    "Gold": 288500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      186,
+      310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5033,
+    "BuildingTID": 5,
+    "Level": 33,
+    "Gold": 307400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      192,
+      320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5034,
+    "BuildingTID": 5,
+    "Level": 34,
+    "Gold": 326900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      198,
+      330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5035,
+    "BuildingTID": 5,
+    "Level": 35,
+    "Gold": 347000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      204,
+      340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5036,
+    "BuildingTID": 5,
+    "Level": 36,
+    "Gold": 367700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      210,
+      350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5037,
+    "BuildingTID": 5,
+    "Level": 37,
+    "Gold": 389000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      216,
+      360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5038,
+    "BuildingTID": 5,
+    "Level": 38,
+    "Gold": 410900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      222,
+      370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5039,
+    "BuildingTID": 5,
+    "Level": 39,
+    "Gold": 433400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      228,
+      380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5040,
+    "BuildingTID": 5,
+    "Level": 40,
+    "Gold": 456500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      234,
+      390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5041,
+    "BuildingTID": 5,
+    "Level": 41,
+    "Gold": 480200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      240,
+      400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5042,
+    "BuildingTID": 5,
+    "Level": 42,
+    "Gold": 504500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      246,
+      410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5043,
+    "BuildingTID": 5,
+    "Level": 43,
+    "Gold": 529400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      252,
+      420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5044,
+    "BuildingTID": 5,
+    "Level": 44,
+    "Gold": 554900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      258,
+      430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5045,
+    "BuildingTID": 5,
+    "Level": 45,
+    "Gold": 581000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      264,
+      440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5046,
+    "BuildingTID": 5,
+    "Level": 46,
+    "Gold": 607700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      270,
+      450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5047,
+    "BuildingTID": 5,
+    "Level": 47,
+    "Gold": 635000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      276,
+      460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5048,
+    "BuildingTID": 5,
+    "Level": 48,
+    "Gold": 662900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      282,
+      470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5049,
+    "BuildingTID": 5,
+    "Level": 49,
+    "Gold": 691400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      288,
+      480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5050,
+    "BuildingTID": 5,
+    "Level": 50,
+    "Gold": 720500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      294,
+      490
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5051,
+    "BuildingTID": 5,
+    "Level": 51,
+    "Gold": 750200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      300,
+      500
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5052,
+    "BuildingTID": 5,
+    "Level": 52,
+    "Gold": 780500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      306,
+      510
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5053,
+    "BuildingTID": 5,
+    "Level": 53,
+    "Gold": 811400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      312,
+      520
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5054,
+    "BuildingTID": 5,
+    "Level": 54,
+    "Gold": 842900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      318,
+      530
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5055,
+    "BuildingTID": 5,
+    "Level": 55,
+    "Gold": 875000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      324,
+      540
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5056,
+    "BuildingTID": 5,
+    "Level": 56,
+    "Gold": 907700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      330,
+      550
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5057,
+    "BuildingTID": 5,
+    "Level": 57,
+    "Gold": 941000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      336,
+      560
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5058,
+    "BuildingTID": 5,
+    "Level": 58,
+    "Gold": 974900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      342,
+      570
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5059,
+    "BuildingTID": 5,
+    "Level": 59,
+    "Gold": 1009400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      348,
+      580
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5060,
+    "BuildingTID": 5,
+    "Level": 60,
+    "Gold": 1044500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      354,
+      590
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5061,
+    "BuildingTID": 5,
+    "Level": 61,
+    "Gold": 1080200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      360,
+      600
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5062,
+    "BuildingTID": 5,
+    "Level": 62,
+    "Gold": 1116500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      366,
+      610
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5063,
+    "BuildingTID": 5,
+    "Level": 63,
+    "Gold": 1153400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      372,
+      620
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5064,
+    "BuildingTID": 5,
+    "Level": 64,
+    "Gold": 1190900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      378,
+      630
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5065,
+    "BuildingTID": 5,
+    "Level": 65,
+    "Gold": 1229000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      384,
+      640
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5066,
+    "BuildingTID": 5,
+    "Level": 66,
+    "Gold": 1267700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      390,
+      650
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5067,
+    "BuildingTID": 5,
+    "Level": 67,
+    "Gold": 1307000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      396,
+      660
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5068,
+    "BuildingTID": 5,
+    "Level": 68,
+    "Gold": 1346900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      402,
+      670
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5069,
+    "BuildingTID": 5,
+    "Level": 69,
+    "Gold": 1387400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      408,
+      680
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5070,
+    "BuildingTID": 5,
+    "Level": 70,
+    "Gold": 1428500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      414,
+      690
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5071,
+    "BuildingTID": 5,
+    "Level": 71,
+    "Gold": 1470200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      420,
+      700
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5072,
+    "BuildingTID": 5,
+    "Level": 72,
+    "Gold": 1512500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      426,
+      710
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5073,
+    "BuildingTID": 5,
+    "Level": 73,
+    "Gold": 1555400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      432,
+      720
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5074,
+    "BuildingTID": 5,
+    "Level": 74,
+    "Gold": 1598900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      438,
+      730
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5075,
+    "BuildingTID": 5,
+    "Level": 75,
+    "Gold": 1643000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      444,
+      740
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5076,
+    "BuildingTID": 5,
+    "Level": 76,
+    "Gold": 1687700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      450,
+      750
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5077,
+    "BuildingTID": 5,
+    "Level": 77,
+    "Gold": 1733000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      456,
+      760
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5078,
+    "BuildingTID": 5,
+    "Level": 78,
+    "Gold": 1778900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      462,
+      770
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5079,
+    "BuildingTID": 5,
+    "Level": 79,
+    "Gold": 1825400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      468,
+      780
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5080,
+    "BuildingTID": 5,
+    "Level": 80,
+    "Gold": 1872500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      474,
+      790
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5081,
+    "BuildingTID": 5,
+    "Level": 81,
+    "Gold": 1920200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      480,
+      800
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5082,
+    "BuildingTID": 5,
+    "Level": 82,
+    "Gold": 1968500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      486,
+      810
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5083,
+    "BuildingTID": 5,
+    "Level": 83,
+    "Gold": 2017400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      492,
+      820
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5084,
+    "BuildingTID": 5,
+    "Level": 84,
+    "Gold": 2066900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      498,
+      830
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5085,
+    "BuildingTID": 5,
+    "Level": 85,
+    "Gold": 2117000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      504,
+      840
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5086,
+    "BuildingTID": 5,
+    "Level": 86,
+    "Gold": 2167700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      510,
+      850
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5087,
+    "BuildingTID": 5,
+    "Level": 87,
+    "Gold": 2219000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      516,
+      860
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5088,
+    "BuildingTID": 5,
+    "Level": 88,
+    "Gold": 2270900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      522,
+      870
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5089,
+    "BuildingTID": 5,
+    "Level": 89,
+    "Gold": 2323400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      528,
+      880
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5090,
+    "BuildingTID": 5,
+    "Level": 90,
+    "Gold": 2376500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      534,
+      890
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5091,
+    "BuildingTID": 5,
+    "Level": 91,
+    "Gold": 2430200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      540,
+      900
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5092,
+    "BuildingTID": 5,
+    "Level": 92,
+    "Gold": 2484500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      546,
+      910
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5093,
+    "BuildingTID": 5,
+    "Level": 93,
+    "Gold": 2539400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      552,
+      920
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5094,
+    "BuildingTID": 5,
+    "Level": 94,
+    "Gold": 2594900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      558,
+      930
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5095,
+    "BuildingTID": 5,
+    "Level": 95,
+    "Gold": 2651000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      564,
+      940
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5096,
+    "BuildingTID": 5,
+    "Level": 96,
+    "Gold": 2707700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      570,
+      950
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5097,
+    "BuildingTID": 5,
+    "Level": 97,
+    "Gold": 2765000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      576,
+      960
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5098,
+    "BuildingTID": 5,
+    "Level": 98,
+    "Gold": 2822900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      582,
+      970
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5099,
+    "BuildingTID": 5,
+    "Level": 99,
+    "Gold": 2881400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      588,
+      980
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5100,
+    "BuildingTID": 5,
+    "Level": 100,
+    "Gold": 2940500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      594,
+      990
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5101,
+    "BuildingTID": 5,
+    "Level": 101,
+    "Gold": 3000200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      600,
+      1000
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5102,
+    "BuildingTID": 5,
+    "Level": 102,
+    "Gold": 3060500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      606,
+      1010
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5103,
+    "BuildingTID": 5,
+    "Level": 103,
+    "Gold": 3121400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      612,
+      1020
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5104,
+    "BuildingTID": 5,
+    "Level": 104,
+    "Gold": 3182900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      618,
+      1030
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5105,
+    "BuildingTID": 5,
+    "Level": 105,
+    "Gold": 3245000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      624,
+      1040
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5106,
+    "BuildingTID": 5,
+    "Level": 106,
+    "Gold": 3307700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      630,
+      1050
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5107,
+    "BuildingTID": 5,
+    "Level": 107,
+    "Gold": 3371000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      636,
+      1060
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5108,
+    "BuildingTID": 5,
+    "Level": 108,
+    "Gold": 3434900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      642,
+      1070
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5109,
+    "BuildingTID": 5,
+    "Level": 109,
+    "Gold": 3499400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      648,
+      1080
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5110,
+    "BuildingTID": 5,
+    "Level": 110,
+    "Gold": 3564500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      654,
+      1090
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5111,
+    "BuildingTID": 5,
+    "Level": 111,
+    "Gold": 3630200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      660,
+      1100
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5112,
+    "BuildingTID": 5,
+    "Level": 112,
+    "Gold": 3696500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      666,
+      1110
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5113,
+    "BuildingTID": 5,
+    "Level": 113,
+    "Gold": 3763400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      672,
+      1120
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5114,
+    "BuildingTID": 5,
+    "Level": 114,
+    "Gold": 3830900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      678,
+      1130
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5115,
+    "BuildingTID": 5,
+    "Level": 115,
+    "Gold": 3899000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      684,
+      1140
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5116,
+    "BuildingTID": 5,
+    "Level": 116,
+    "Gold": 3967700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      690,
+      1150
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5117,
+    "BuildingTID": 5,
+    "Level": 117,
+    "Gold": 4037000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      696,
+      1160
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5118,
+    "BuildingTID": 5,
+    "Level": 118,
+    "Gold": 4106900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      702,
+      1170
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5119,
+    "BuildingTID": 5,
+    "Level": 119,
+    "Gold": 4177400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      708,
+      1180
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5120,
+    "BuildingTID": 5,
+    "Level": 120,
+    "Gold": 4248500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      714,
+      1190
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5121,
+    "BuildingTID": 5,
+    "Level": 121,
+    "Gold": 4320200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      720,
+      1200
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5122,
+    "BuildingTID": 5,
+    "Level": 122,
+    "Gold": 4392500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      726,
+      1210
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5123,
+    "BuildingTID": 5,
+    "Level": 123,
+    "Gold": 4465400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      732,
+      1220
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5124,
+    "BuildingTID": 5,
+    "Level": 124,
+    "Gold": 4538900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      738,
+      1230
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5125,
+    "BuildingTID": 5,
+    "Level": 125,
+    "Gold": 4613000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      744,
+      1240
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5126,
+    "BuildingTID": 5,
+    "Level": 126,
+    "Gold": 4687700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      750,
+      1250
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5127,
+    "BuildingTID": 5,
+    "Level": 127,
+    "Gold": 4763000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      756,
+      1260
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5128,
+    "BuildingTID": 5,
+    "Level": 128,
+    "Gold": 4838900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      762,
+      1270
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5129,
+    "BuildingTID": 5,
+    "Level": 129,
+    "Gold": 4915400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      768,
+      1280
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5130,
+    "BuildingTID": 5,
+    "Level": 130,
+    "Gold": 4992500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      774,
+      1290
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5131,
+    "BuildingTID": 5,
+    "Level": 131,
+    "Gold": 5070200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      780,
+      1300
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5132,
+    "BuildingTID": 5,
+    "Level": 132,
+    "Gold": 5148500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      786,
+      1310
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5133,
+    "BuildingTID": 5,
+    "Level": 133,
+    "Gold": 5227400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      792,
+      1320
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5134,
+    "BuildingTID": 5,
+    "Level": 134,
+    "Gold": 5306900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      798,
+      1330
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5135,
+    "BuildingTID": 5,
+    "Level": 135,
+    "Gold": 5387000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      804,
+      1340
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5136,
+    "BuildingTID": 5,
+    "Level": 136,
+    "Gold": 5467700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      810,
+      1350
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5137,
+    "BuildingTID": 5,
+    "Level": 137,
+    "Gold": 5549000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      816,
+      1360
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5138,
+    "BuildingTID": 5,
+    "Level": 138,
+    "Gold": 5630900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      822,
+      1370
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5139,
+    "BuildingTID": 5,
+    "Level": 139,
+    "Gold": 5713400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      828,
+      1380
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5140,
+    "BuildingTID": 5,
+    "Level": 140,
+    "Gold": 5796500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      834,
+      1390
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5141,
+    "BuildingTID": 5,
+    "Level": 141,
+    "Gold": 5880200,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      840,
+      1400
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5142,
+    "BuildingTID": 5,
+    "Level": 142,
+    "Gold": 5964500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      846,
+      1410
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5143,
+    "BuildingTID": 5,
+    "Level": 143,
+    "Gold": 6049400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      852,
+      1420
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5144,
+    "BuildingTID": 5,
+    "Level": 144,
+    "Gold": 6134900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      858,
+      1430
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5145,
+    "BuildingTID": 5,
+    "Level": 145,
+    "Gold": 6221000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      864,
+      1440
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5146,
+    "BuildingTID": 5,
+    "Level": 146,
+    "Gold": 6307700,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      870,
+      1450
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5147,
+    "BuildingTID": 5,
+    "Level": 147,
+    "Gold": 6395000,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      876,
+      1460
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5148,
+    "BuildingTID": 5,
+    "Level": 148,
+    "Gold": 6482900,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      882,
+      1470
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5149,
+    "BuildingTID": 5,
+    "Level": 149,
+    "Gold": 6571400,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      888,
+      1480
+    ],
+    "Description": ""
+  },
+  {
+    "BuildingLevelTID": 5150,
+    "BuildingTID": 5,
+    "Level": 150,
+    "Gold": 6660500,
+    "ItemTIDs": [
+      10001,
+      40001
+    ],
+    "ItemCounts": [
+      894,
+      1490
+    ],
+    "Description": ""
+  }
+]

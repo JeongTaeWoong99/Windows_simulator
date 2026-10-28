@@ -123,6 +123,9 @@ namespace MikaProtocol
         S_ArtifactSellResponse = 93,
         C_ShopBuyRequest = 94,
         S_ShopBuyResponse = 95,
+        S_BuildingListResponse = 96,
+        C_BuildingUpgradeRequest = 97,
+        S_BuildingUpgradeResponse = 98,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -345,7 +348,7 @@ namespace MikaProtocol
     /// 해금 결과. 열린 뒤 무엇이 달라지는가는 <b>콘텐츠별 기존 패킷</b>이 따로 밀어 준다
     /// (작업슬롯이면 <see cref="S_WorkStationSlotSyncResponse"/>). 서버가 직접 연 경우(퀘스트·치트)도 같은 패킷이 온다.
     /// </summary>
-    /// <summary>특성을 1레벨 올린다. 조건은 다음 레벨의 <c>UserTraitLevelTable</c> 행(계정 레벨) + 특성 포인트다.</summary>
+    /// <summary>건물 트리 노드(특성)를 1레벨 올린다. 조건은 앞 노드 최대 레벨 + 그 건물의 남은 포인트다(T-183).</summary>
     [MemoryPackable, Packet(PacketId.C_UserTraitLearnRequest)]
     public partial class C_UserTraitLearnRequest : IPacket
     {
@@ -353,8 +356,8 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 특성 레벨업 결과. 성공하면 이 앞에 <see cref="S_AccountLevelResponse"/>(남은 포인트)가 온다.
-    /// 속도 특성이면 바뀐 슬롯이 <see cref="S_WorkStationSlotSyncResponse"/>로 따로 온다.
+    /// 노드 레벨업 결과. 남은 포인트는 오지 않는다 — 클라가 건물 레벨 − 찍은 레벨 × <c>TraitPoint</c>로 센다.
+    /// 속도 노드면 바뀐 슬롯이 <see cref="S_WorkStationSlotSyncResponse"/>로 따로 온다.
     /// </summary>
     [MemoryPackable, Packet(PacketId.S_UserTraitLearnResponse)]
     public partial class S_UserTraitLearnResponse : IPacket
@@ -444,7 +447,7 @@ namespace MikaProtocol
     {
         public int  Level      { get; set; }
         public long Exp        { get; set; }   // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 int를 넘는다
-        public int  TraitPoint { get; set; }   // 남은(안 쓴) 특성 포인트
+        public int  TraitPoint { get; set; }   // 폐기 예정 — 항상 0. 포인트는 건물마다 따로다(T-183). 클라 전환 뒤 지운다
     }
 
     [MemoryPackable, Packet(PacketId.S_UnlockResponse)]
@@ -1032,5 +1035,31 @@ namespace MikaProtocol
     {
         public EResultCode          Result          { get; set; }
         public List<ItemChangeInfo> ItemChangeInfos { get; set; } = new();  // 받은 재료 — 칸마다 갱신 후 수량
+    }
+
+    /// <summary>건물 레벨 스냅샷(로그인 직후). 지은(Lv1 이상) 건물만 싣는다 — 없는 건물은 Lv0이다.</summary>
+    [MemoryPackable, Packet(PacketId.S_BuildingListResponse)]
+    public partial class S_BuildingListResponse : IPacket
+    {
+        public List<BuildingInfo> Buildings { get; set; } = new();
+    }
+
+    /// <summary>건물을 1레벨 올린다. 비용은 <c>BuildingLevelTable</c>의 다음 레벨 행(골드 + 자원)이다.</summary>
+    [MemoryPackable, Packet(PacketId.C_BuildingUpgradeRequest)]
+    public partial class C_BuildingUpgradeRequest : IPacket
+    {
+        public int BuildingTID { get; set; }
+    }
+
+    /// <summary>
+    /// 건물 업그레이드 결과. 성공하면 이 앞에 골드(<see cref="S_CurrencyResponse"/>)와
+    /// 빠진 자원(<see cref="S_UpdateItemResponse"/> — 인벤토리 먼저, 모자란 만큼 창고)이 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_BuildingUpgradeResponse)]
+    public partial class S_BuildingUpgradeResponse : IPacket
+    {
+        public EResultCode Result      { get; set; }
+        public int         BuildingTID { get; set; }
+        public int         Level       { get; set; }   // 성공이면 올린 뒤 레벨, 실패면 지금 레벨
     }
 }

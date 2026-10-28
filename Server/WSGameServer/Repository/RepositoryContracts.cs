@@ -51,9 +51,8 @@ public sealed record WorkStationSlotRow
 // t_user_account 조회 전용 Row. 행이 없으면 레벨 1로 본다(재화와 같은 규약).
 public sealed record AccountRow
 {
-    public int  level       { get; init; }
-    public long exp         { get; init; }
-    public int  trait_point { get; init; }
+    public int  level { get; init; }
+    public long exp   { get; init; }
 }
 
 // t_user_unlock 조회 전용 Row (열린 해금만 행이 있다 — 해금은 영구다)
@@ -67,6 +66,13 @@ public sealed record UserTraitRow
 {
     public int user_trait_tid { get; init; }
     public int level          { get; init; }
+}
+
+// t_user_building 조회 전용 Row (지은 건물만 행이 있다 — 없으면 Lv0)
+public sealed record UserBuildingRow
+{
+    public int building_tid { get; init; }
+    public int level        { get; init; }
 }
 
 // t_user_artifact 조회 전용 Row — 도감에 장착한 번호만 행이 있다 (T-181)
@@ -144,7 +150,8 @@ public sealed record PlayerLoginData(
     List<UserTraitRow>? TraitRows = null,
     List<UserArtifactRow>? ArtifactRows = null,
     List<UserItemLockRow>? ItemLockRows = null,
-    List<UserArtifactStackRow>? ArtifactStackRows = null);
+    List<UserArtifactStackRow>? ArtifactStackRows = null,
+    List<UserBuildingRow>? BuildingRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

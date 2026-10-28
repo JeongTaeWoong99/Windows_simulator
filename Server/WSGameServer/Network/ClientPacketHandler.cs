@@ -126,7 +126,23 @@ public static class ClientPacketHandler
         GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, GameClock.Instance.UtcNow);
     }
 
-    /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>
+    /// <summary>건물 업그레이드. 상한·골드·자원 판정과 차감은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_BuildingUpgradeRequest(ISession session, C_BuildingUpgradeRequest req)
+    {
+        ServerLog.Debug("건물", $"요청 BuildingTID={req.BuildingTID} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_BuildingUpgradeResponse { Result = EResultCode.NotLoggedIn, BuildingTID = req.BuildingTID });
+            return;
+        }
+
+        user.TryUpgradeBuilding(req.BuildingTID);
+    }
+
+    /// <summary>건물 트리 노드(특성) 찍기. 선행·포인트 판정은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_UserTraitLearnRequest(ISession session, C_UserTraitLearnRequest req)
     {
