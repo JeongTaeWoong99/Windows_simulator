@@ -776,14 +776,15 @@ namespace DesktopWindowControl.EditorTools
 
         // ── 아이콘 ──────────────────────────────────────────
 
-        // 레시피의 TID마다 스프라이트의 그림 부분만 잘라 'item_<TID>' · 'equip_<TID>' · 'industry_<산업>'으로 쓴다
+        // 레시피의 TID마다 스프라이트의 그림 부분만 잘라 'item_<TID>' · 'equip_<TID>' · 'industry_<산업>' · 'artifact_<TID>'로 쓴다
         public static string Bake(IconRecipe recipe)
         {
             int items      = BakeIcons(recipe.Items,      ArtSpec.ItemIconsRoot,     ArtSpec.ItemIconPrefix);
             int equips     = BakeIcons(recipe.Equips,     ArtSpec.EquipIconsRoot,    ArtSpec.EquipIconPrefix);
             int industries = BakeIcons(recipe.Industries, ArtSpec.IndustryIconsRoot, ArtSpec.IndustryIconPrefix);
+            int artifacts  = BakeIcons(recipe.Artifacts,  ArtSpec.ArtifactIconsRoot, ArtSpec.ArtifactIconPrefix);
 
-            return $"✅ 아이콘: 자원 {items} · 장비 {equips} · 산업 {industries}";
+            return $"✅ 아이콘: 자원 {items} · 장비 {equips} · 산업 {industries} · 아티팩트 {artifacts}";
         }
 
         private static int BakeIcons(IconRecipe.Entry[] entries, string root, string prefix)

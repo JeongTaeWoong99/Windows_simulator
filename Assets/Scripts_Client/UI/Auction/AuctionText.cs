@@ -61,7 +61,7 @@ public static class AuctionText
     {
         EAuctionKind.Equip     => ItemIconContent.ForEquip(tid, enchantOptions),
         EAuctionKind.Character => ItemIconContent.ForCharacter(tid),
-        EAuctionKind.Artifact  => new ItemIconContent(GetRarity(kind, tid), GlyphOf(GetName(kind, tid)), count > 1L ? $"x{count:N0}" : "", null),
+        EAuctionKind.Artifact  => ItemIconContent.ForArtifact(tid, count),
         _                      => ItemIconContent.ForItem(tid, count),
     };
 
@@ -101,10 +101,6 @@ public static class AuctionText
         => Enum.TryParse(groupId, out EIndustryType industry) && industry != EIndustryType.None
             ? IndustryLabel.Get(industry)
             : Lang.Get("UI.ItemGroup." + groupId);
-
-    // 이름의 첫 글자. 모르는 이름('?#12')이나 빈 이름은 '?'.
-    private static string GlyphOf(string name)
-        => string.IsNullOrEmpty(name) || name[0] == '?' ? "?" : name.Substring(0, 1);
 
     #endregion
 

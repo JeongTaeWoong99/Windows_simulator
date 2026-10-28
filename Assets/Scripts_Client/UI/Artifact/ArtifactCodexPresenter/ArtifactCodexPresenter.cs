@@ -299,7 +299,10 @@ public class ArtifactCodexPresenter : MonoBehaviour
                     : owned > 0  ? Lang.Format("UI.Artifact.OwnedShort", owned.ToString("N0"))
                     : "";
 
-        slot.Bind(new SlotData(tid, name, sub, isKnown ? GameDataLoader.GetArtifactRarity(tid) : GlobalRarity.None));
+        // 본 적 없는 번호는 그림도 가린다 — 이름을 가리는 것과 같은 이유
+        slot.Bind(new SlotData(tid, name, sub,
+                               isKnown ? GameDataLoader.GetArtifactRarity(tid) : GlobalRarity.None,
+                               isKnown ? VisualCatalog.ArtifactIconOf(tid) : null));
         slot.SetDimmed(isEquipped && !active);
         slot.SetFilteredOut(!isEquipped);
 

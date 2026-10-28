@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -104,7 +105,12 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private CancellationTokenSource? _appraiseCts;
     private bool                     _isAppraising;      // 감정 무대가 도는 중인가 — 누르면 건너뛰고 칸 공개로 간다
 
-    private PlayerDataModel _data = null!;
+    // 이번 결과의 골드 칸 — 그 칸이 공개되면 동전이 상단 골드로 날아간다. 날렸거나 골드가 없으면 -1
+    private int  _goldSlot = -1;
+    private long _gold;
+
+    private PlayerDataModel   _data = null!;
+    private ServerWaitManager _wait = null!;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -124,6 +130,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         this.RequireRef(panel,           nameof(panel));
 
         _data              = Services.Get<PlayerDataModel>();
+        _wait              = Services.Get<ServerWaitManager>();
         _burst             = RewardBurstFx.Create(panel, reveal);
         _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText);
         _panelGroup        = panel.TryGetComponent(out CanvasGroup existing) ? existing : panel.gameObject.AddComponent<CanvasGroup>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
@@ -194,7 +201,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 가챠 결과 도착 — 뽑힌 순서 그대로 늘어놓는다 (PlayerDataModel.GachaCompleted 구독)
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
-        Show(ToSlots(rewards), Lang.Get("UI.Gacha.Source"), showCount: false);
+        Show(ToSlots(rewards), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards));
         ShowDrawAgain(true);
     }
 
@@ -225,7 +232,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        Show(slots, source, showCount: true);
+        Show(slots, source, showCount: true, GoldOf(rewards));
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -236,7 +243,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
-        Show(SummarizeMails(mails), Lang.Get("UI.Gacha.SourceMail"), showCount: true);
+        Show(SummarizeMails(mails), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold));
         ShowDrawAgain(false);
     }
 
@@ -247,7 +254,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     //   source    : 출처 — 제목('<출처> 결과')과 경고에 쓴다. 여러 경로가 같은 팝업을 쓰므로 어느 쪽인지 갈린다
     //   showCount : 칸에 수량을 적는가. 가챠는 뽑힌 것을 한 건씩 늘어놓아 개수가 목록 길이로 드러나지만,
     //               종류별로 합친 상자·우편은 수량을 적지 않으면 "골드"만 보이고 얼마인지 모른다
-    private void Show(List<SlotData> slots, string source, bool showCount)
+    //   gold      : 받은 골드 합계 — 골드 칸이 공개되면 그 칸에서 동전이 날아간다(0이면 없음)
+    private void Show(List<SlotData> slots, string source, bool showCount, long gold)
     {
         if (slots.Count == 0)
         {
@@ -272,6 +280,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _slots.HideFrom(slots.Count);
+
+        // ※ 골드 칸은 'Key'가 0이다 — 골드는 TID가 없어 0으로 떨어뜨린다('TidOf' · 'SummarizeMails'). 0번 아이템·캐릭터는 없다
+        _gold     = gold;
+        _goldSlot = gold > 0L ? slots.FindIndex(slot => slot.Key == 0L) : -1;
+
         titleText.text = Lang.Format("UI.Gacha.ResultTitle", source);
         SetVisible(true);
 
@@ -279,6 +292,22 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         SetRevealing(true);
         RevealAsync(_revealCts.Token).Forget();
+    }
+
+    // 보상 중 골드의 합계 (결과 도착 때 호출 — 동전 연출의 양)
+    private static long GoldOf(List<GachaRewardInfo> rewards)
+    {
+        long gold = 0L;
+
+        foreach (GachaRewardInfo reward in rewards)
+        {
+            if (reward.RewardType == EGachaRewardType.Gold)
+            {
+                gold += reward.Count;
+            }
+        }
+
+        return gold;
     }
 
     // 보상 목록을 받은 순서 그대로 칸 값으로 옮긴다 (OnGachaCompleted에서 호출).
@@ -460,7 +489,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         {
             EGachaRewardType.Character => VisualCatalog.PortraitOf(tid),
             EGachaRewardType.Equip     => VisualCatalog.EquipIconOf(tid),
-            EGachaRewardType.Artifact  => null, // 아티팩트 아이콘 그림이 아직 없다(🎨 T-151) — 칸이 이름 첫 글자로 그린다
+            EGachaRewardType.Artifact  => VisualCatalog.ArtifactIconOf(tid), // 없는 번호는 칸이 이름 첫 글자로 그린다
             EGachaRewardType.Gold      => null,
             _                          => VisualCatalog.ItemIconOf(tid),
         };
@@ -547,7 +576,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         CancelAppraise();
-        Show(slots, source, showCount: true);
+        Show(slots, source, showCount: true, GoldOf(rewards));
     }
 
     // 무대에 세울 대표 보상 — 아티팩트(높은 등급) → Special 유물 → 가장 높은 등급, 같으면 먼저 나온 것 (AppraiseThenShowAsync에서 호출)
@@ -630,7 +659,9 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             RewardRevealFx fx     = _revealFxs[i];
             GlobalRarity   rarity = _revealRarities[i];
 
-            reveals.Add(RewardRevealSettings.IsBig(rarity) ? RevealBigAsync(fx, rarity, ct) : fx.PopAsync(rarity, ct));
+            UniTask pop = RewardRevealSettings.IsBig(rarity) ? RevealBigAsync(fx, rarity, ct) : fx.PopAsync(rarity, ct);
+
+            reveals.Add(i == _goldSlot ? FlyGoldAfterAsync(pop) : pop);
 
             await DelayAsync(reveal.Gap, ct);
         }
@@ -638,6 +669,28 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         await UniTask.WhenAll(reveals);
 
         SetRevealing(false);
+    }
+
+    // 골드 칸이 튀어나온 뒤 동전을 날린다 (RevealAsync에서 호출). 끊기면 날리지 않는다 — 스킵이 대신 날린다
+    private async UniTask FlyGoldAfterAsync(UniTask pop)
+    {
+        await pop;
+
+        FlyGold();
+    }
+
+    // 골드 칸에서 동전이 상단 골드로 날아간다 — 결과 하나에 한 번 (골드 칸 공개 · 스킵에서 호출)
+    private void FlyGold()
+    {
+        if (_goldSlot < 0)
+        {
+            return;
+        }
+
+        Transform from = _revealFxs[_goldSlot].transform;
+
+        _goldSlot = -1;
+        _wait.RaiseGoldGain(from, _gold);
     }
 
     // 고등급 칸 하나 — 멈칫 → 차오름 → 폭발(+ 전설↑ 창 흔들기)과 함께 튀어나옴 (RevealAsync에서 호출)
@@ -703,6 +756,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         {
             _revealFxs[i].ShowAtRest(_revealRarities[i]);
         }
+
+        FlyGold(); // 골드 칸이 아직 안 나왔으면 지금 — 건너뛰어도 받은 골드는 보여 준다
     }
 
     // 공개를 끊는다 — 칸은 그 자리 모습에 멈춘다. 끝 모습으로 놓는 것은 부르는 쪽 몫이다

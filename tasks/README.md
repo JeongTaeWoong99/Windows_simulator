@@ -55,7 +55,6 @@
 | [T-152](T-152-아티팩트거래소.md) | 서버 — **아티팩트 거래소 매물** · 등록 시 아티팩트 칸에서 빠짐 · 우편 첨부 (즉시 판매는 T-181) | 진우 | Resolve | 보통 | 261107 |
 | [T-105](T-105-자원사용처.md) | **검토 요청** — 남는 자원의 사용처 · ✅ 방향 결정: 섬 산업 건물(레벨 + 선행 노드 트리) · 건물 수·비용·노드 미정 (2026-10-16) | 진우 | Resolve | 보통 | 261107 |
 | [T-129](T-129-일감정합성검사.md) | 일감 **정합성 검사 스크립트** — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · CI `tasks-check.yml` ✅ (2026-10-18) · 남은 것: push 뒤 Actions 첫 실행 확인 | 진우 | Resolve | 낮음 | 261107 |
-| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** 화면 · 아티팩트 화면 · 장비 탭 아티팩트 · 감정 연출 — 사용자 확인 끝(2026-10-25) · 남은 것: 🎨 아이콘 · Special 칸 · ⏸ 서버·기획 [#87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) · [#88](https://github.com/JeongTaeWoong99/Windows_simulator/issues/88) 1개씩 감정 · [#90](https://github.com/JeongTaeWoong99/Windows_simulator/issues/90) 끄기 제거 | 태웅 | In Progress | 보통 | 261107 |
 
 ### ⏸ 남이 먼저 해야 한다
 
@@ -63,6 +62,7 @@
 
 | ID | 제목 | 담당 | 상태 | **무엇을 기다리나** | 우선순위 |
 |----|------|------|------|--------------------|----------|
+| [T-151](T-151-클라유물감정보관함.md) | 클라 — **미감정 유물 감정 · 아티팩트 도감** — 화면 · 연출 · 아이콘 · Special 칸 ✅ (2026-10-28 임시) | 태웅 | In Progress | 서버·기획 (진우) — [#87](https://github.com/JeongTaeWoong99/Windows_simulator/issues/87) 칸 합치기·잠금 · [#88](https://github.com/JeongTaeWoong99/Windows_simulator/issues/88) 1개씩 감정 · [#90](https://github.com/JeongTaeWoong99/Windows_simulator/issues/90) 끄기 제거 | 보통 |
 | [T-182](T-182-거점열개편마을지도.md) | 클라 — **'거점' 열 → 길드(Guild)** 개명 ✅ (2026-10-27) · 남은 것: 지도 화면 · 특성을 건물 창으로 → 인벤토리 특성 탭 빼기 | 태웅 | In Progress | [T-183](T-183-거점건물특성트리개편.md) 거점 개편 (진우) — 특성이 건물로 옮겨 가는 구조가 서야 한다 · #75 "화면은 아직 만들지 말라" | 보통 |
 
 ### 🎨 뒤로 미뤘다

@@ -67,6 +67,11 @@ public static class FxSprites
     // ⚠️ 9-slice 경계(Border 10)가 .meta에 있다 — 'Image.Type.Sliced'로 늘린다
     public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
 
+    // ── special — Special 칸 ('SpecialSlotFx') · 테두리 띠는 'RevealFrame' · 빛줄기는 'RevealShine' · 반짝임은 'RevealSparkle'을 빌린다 ──
+
+    // 무지개 원뿔 — ⚠️ 흰색 규칙의 예외. Special 한 등급만 쓰는 고정색이라 색이 그림에 들어 있다(흰색을 곱한다)
+    public static Sprite? SpecialRainbow => VisualCatalog.FxOf("special_rainbow");
+
     // ── coin — 골드 획득 동전 ('CoinFlyPresenter') ──
 
     // 동전 — 금색을 입혀 날린다
