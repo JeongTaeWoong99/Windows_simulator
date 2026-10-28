@@ -19,6 +19,9 @@ public sealed class GachaService : Singleton<GachaService>
     /// <summary>한 번에 여는 상자 수 상한 — Constants.xlsx(50). 상자 최대 수량(MaxStack 1000)보다 작아 여러 번 나눠 연다.</summary>
     public static int MaxOpenCount => (int)Constants.BoxOpenMax;
 
+    /// <summary>유물은 한 번에 1개만 감정한다(T-186 · #88) — 상자의 <see cref="MaxOpenCount"/>와 따로 둔다.</summary>
+    public const int RelicAppraiseCount = 1;
+
     private readonly GachaPoolCatalog _pools;
 
     public GachaService() : this(null)
@@ -97,6 +100,13 @@ public sealed class GachaService : Singleton<GachaService>
             !_pools.TryGet(item.OpenGachaId, out var pool))
         {
             Reply(EResultCode.ItemNotUsable);
+            return;
+        }
+
+        // 유물은 1개씩 감정한다(T-186) — 낮은 확률의 아티팩트를 한 번씩 기대하게 한다.
+        if (item.ItemType == ItemType.Relic && count != RelicAppraiseCount)
+        {
+            Reply(EResultCode.InvalidUseCount);
             return;
         }
 
