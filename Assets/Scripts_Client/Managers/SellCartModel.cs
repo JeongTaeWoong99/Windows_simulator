@@ -580,8 +580,9 @@ public class SellCartModel : MonoService<SellCartModel>
         Changed?.Invoke();
     }
 
-    // 아티팩트 칸·도감이 바뀌었다 — 담긴 수량을 보유량 안으로 줄이고, 다 빠진 번호는 뺀다 (PlayerDataModel.ArtifactsChanged 구독)
+    // 아티팩트 칸·도감이 바뀌었다 — 담긴 수량을 보유량 안으로 줄이고, 다 빠졌거나 잠긴 번호는 뺀다 (PlayerDataModel.ArtifactsChanged 구독)
     // ※ 장착도 여기로 온다 — 칸에서 1개가 빠지고 NEW가 풀린다. 그래서 수량이 그대로여도 다시 센다.
+    // ※ 담은 뒤에 잠그면 빠진다 — 아티팩트 잠금 응답이 'ArtifactsChanged'를 낸다(T-188). 남겨 두면 서버가 'EntityLocked'로 판매 전체를 거절한다.
     private void OnArtifactsChanged()
     {
         if (_artifacts.Count == 0)
@@ -593,7 +594,7 @@ public class SellCartModel : MonoService<SellCartModel>
         {
             int owned = _data.GetArtifactCount(_artifacts[i].ArtifactTid);
 
-            if (owned <= 0)
+            if (owned <= 0 || _data.IsArtifactLocked(_artifacts[i].ArtifactTid))
             {
                 _artifacts.RemoveAt(i);
             }

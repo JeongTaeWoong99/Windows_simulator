@@ -33,9 +33,10 @@ using UnityEngine.UI;
 // 가챠·상자·우편 세 경로가 같은 연출을 쓴다 — 늘어놓는 방식(낱개·합계)만 갈린다.
 // 칸 하나의 움직임은 'RewardRevealFx', 폭발은 'RewardBurstFx', 조정값은 'RewardRevealSettings'(인스펙터 'reveal')에 있다.
 //
-// ■ 유물 감정은 공개 앞에 무대가 한 번 돈다 (2026-10-25 · T-151 · 목업 '유물감정목업.html')
-// 흔들림 → 금 → 번쩍 → 조각 → 대표 보상 등장 → (아티팩트면) 띠 — 'RelicAppraiseFx'. 그동안 창(Panel)은 투명하고,
-// 무대가 끝나면(또는 눌러 건너뛰면) 창이 나타나 평소처럼 칸을 하나씩 공개한다. 상자 개봉 · 가챠 · 우편은 무대 없이 바로 공개한다.
+// ■ 유물 감정은 창 대신 무대가 결과다 (2026-10-25 · T-151 · 목업 '유물감정목업.html' · #88 2026-10-28)
+// 흔들림 → 금 → 번쩍 → 조각 → 보상 등장 → (아티팩트면) 띠 — 'RelicAppraiseFx'. 그동안 창(Panel)은 투명하다.
+// 유물은 1개씩 감정하므로 나온 1개가 결과 전부다 — 무대가 끝나면(또는 눌러 건너뛰면) 보상이 놓인 채로 머물고,
+// 한 번 더 누르면 닫힌다. 결과 칸 목록은 띄우지 않는다. 상자 개봉 · 가챠 · 우편은 무대 없이 바로 칸을 공개한다.
 //
 // 공개 중에는 [n회 더 뽑기] · 닫기가 잠긴다 — 결과를 다 보기 전에 창을 닫거나 새 결과로 덮지 못한다.
 // 공개 중에 창 아무 곳(칸 포함)을 누르면 **스킵** — 남은 칸이 한꺼번에 끝 모습으로 놓이고 버튼이 풀린다.
@@ -103,7 +104,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private RelicAppraiseFx?         _appraise;
     private CanvasGroup?             _panelGroup;        // 감정 무대 동안 창을 투명하게
     private CancellationTokenSource? _appraiseCts;
-    private bool                     _isAppraising;      // 감정 무대가 도는 중인가 — 누르면 건너뛰고 칸 공개로 간다
+    private bool                     _isAppraising;      // 감정 무대가 도는 중인가 — 누르면 건너뛰고 끝 모습으로 간다
+    private bool                     _isAppraiseHeld;    // 감정 무대가 끝 모습으로 머무는 중인가 — 누르면 닫는다
 
     // 이번 결과의 골드 칸 — 그 칸이 공개되면 동전이 상단 골드로 날아간다. 날렸거나 골드가 없으면 -1
     private int  _goldSlot = -1;
@@ -212,7 +214,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 사람이 알고 싶은 것도 "무엇을 얼마나 얻었나"이지 몇 번째로 무엇이 나왔는지가 아니다.
     // 가챠 쪽을 함께 합치지 않는 이유는, 거기가 **뽑힌 순서대로 하나씩 공개하는 연출**이
     // 들어올 자리이기 때문이다(T-031) — 지금 합쳐 두면 그때 되돌려야 한다.
-    // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 제목을 '감정'으로 바꾸고, 공개 앞에 감정 무대를 돌린다(T-151).
+    // ※ 유물 감정도 같은 요청이다(T-150) — 골드를 낸 것이면 칸 대신 감정 무대가 결과를 보여 준다(T-151 · #88).
     // ※ 제목은 연 물건을 따른다 — 상자는 '상자 개봉', 상자가 아닌 것(뽑기권·열쇠)은 '<이름> 개봉'(T-184).
     private void OnItemUseCompleted(int itemId, List<GachaRewardInfo> rewards, bool storedInMail)
     {
@@ -221,18 +223,16 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
                           : GameDataLoader.GetItemType(itemId) == ItemType.Box ? Lang.Get("UI.Gacha.SourceBox")
                           : Lang.Format("UI.Gacha.SourceItem", GameDataLoader.GetItemName(itemId));
 
-        List<SlotData> slots = Summarize(rewards);
-
         ShowDrawAgain(false);
 
         if (isAppraise && rewards.Count > 0)
         {
-            AppraiseThenShowAsync(itemId, rewards, slots, source).Forget();
+            AppraiseAsync(itemId, rewards, source).Forget();
 
             return;
         }
 
-        Show(slots, source, showCount: true, GoldOf(rewards));
+        Show(Summarize(rewards), source, showCount: true, GoldOf(rewards));
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -528,10 +528,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
     #region 감정 무대
 
-    // 감정 무대를 돌리고, 끝나거나 건너뛰면 칸 공개로 넘어간다 (OnItemUseCompleted에서 시작).
+    // 감정 무대를 돌리고, 끝나거나 건너뛰면 보상이 놓인 채로 머문다 — 누르면 닫힌다 (OnItemUseCompleted에서 시작).
     //   relicTid : 감정한 유물 — 무대에 그린다. 수량은 받은 보상 건수(유물 하나 = 보상 하나)
-    // ※ 건너뛰기는 토큰 취소지만 '_isAppraising'을 그대로 둔다 — 창 닫기 · 새 결과 · 꺼짐은 그것까지 내려 공개로 넘어가지 않는다.
-    private async UniTaskVoid AppraiseThenShowAsync(int relicTid, List<GachaRewardInfo> rewards, List<SlotData> slots, string source)
+    // ※ 건너뛰기는 토큰 취소지만 '_isAppraising'을 그대로 둔다 — 창 닫기 · 새 결과 · 꺼짐은 그것까지 내려 머물지 않는다.
+    // ※ 보상이 여럿 와도(서버가 1개씩만 받는다 — 생길 일은 없다) 대표 하나만 세운다.
+    private async UniTaskVoid AppraiseAsync(int relicTid, List<GachaRewardInfo> rewards, string source)
     {
         CancelReveal();
         CancelAppraise();
@@ -558,7 +559,9 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         CancellationTokenSource cts = _appraiseCts;
 
-        bool skipped = await _appraise!.PlayAsync(relic, ToSlotData(headline, headline.Count), banner, accent, cts.Token)
+        SlotData reward = ToSlotData(headline, headline.Count);
+
+        bool skipped = await _appraise!.PlayAsync(relic, reward, banner, accent, cts.Token)
                                        .SuppressCancellationThrow();
 
         // ⚠️ 건너뛰기면 한 프레임 쉬고 정리한다 — 여기는 UniTask가 트윈을 Kill하는 **그 Kill 안에서** 동기로 깨어난다.
@@ -575,11 +578,24 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        CancelAppraise();
-        Show(slots, source, showCount: true, GoldOf(rewards));
+        if (skipped)
+        {
+            _appraise.ShowEnd(relic, reward, banner, accent);
+        }
+
+        // 무대는 그대로 두고 감정 중만 내린다 — 다음 클릭이 닫기다('OnPointerClick')
+        SetAppraising(false);
+        _isAppraiseHeld = true;
+
+        long gold = GoldOf(rewards);
+
+        if (gold > 0L)
+        {
+            _wait.RaiseGoldGain(_appraise.RewardTransform, gold);
+        }
     }
 
-    // 무대에 세울 대표 보상 — 아티팩트(높은 등급) → Special 유물 → 가장 높은 등급, 같으면 먼저 나온 것 (AppraiseThenShowAsync에서 호출)
+    // 무대에 세울 대표 보상 — 아티팩트(높은 등급) → Special 유물 → 가장 높은 등급, 같으면 먼저 나온 것 (AppraiseAsync에서 호출)
     private static GachaRewardInfo PickHeadline(List<GachaRewardInfo> rewards)
     {
         GachaRewardInfo best      = rewards[0];
@@ -611,13 +627,15 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         closeButton.interactable = !on;
     }
 
-    // 감정 무대를 끊고 숨기고 창을 되돌린다 (끝 · 새 결과 · 닫기 · OnDisable)
+    // 감정 무대를 끊고 숨기고 창을 되돌린다 (새 결과 · 닫기 · OnDisable)
     private void CancelAppraise()
     {
         if (_isAppraising)
         {
             SetAppraising(false);
         }
+
+        _isAppraiseHeld = false;
 
         _appraiseCts?.Cancel();
         _appraiseCts?.Dispose();
@@ -633,7 +651,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _panelGroup.blocksRaycasts  = true;
     }
 
-    // 건너뛰기 — 무대를 끊는다. 뒤이어 'AppraiseThenShowAsync'가 칸 공개로 넘어간다 (OnPointerClick에서 호출)
+    // 건너뛰기 — 무대를 끊는다. 뒤이어 'AppraiseAsync'가 끝 모습으로 놓는다 (OnPointerClick에서 호출)
     private void SkipAppraise()
     {
         _appraiseCts?.Cancel();
@@ -784,11 +802,19 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     }
 
     // 공개 중이면 스킵한다 — 창 바탕·제목 클릭 (EventSystem 클릭 콜백). 버튼은 자기가 먼저 받는다.
+    // 감정 무대가 끝 모습으로 머무는 중이면 닫는다 — 창(닫기 버튼)이 투명해 누를 곳이 바탕뿐이다.
     public void OnPointerClick(PointerEventData eventData)
     {
         if (_isAppraising)
         {
             SkipAppraise();
+
+            return;
+        }
+
+        if (_isAppraiseHeld)
+        {
+            OnCloseClicked();
 
             return;
         }

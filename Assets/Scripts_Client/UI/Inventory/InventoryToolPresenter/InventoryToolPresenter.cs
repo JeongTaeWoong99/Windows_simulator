@@ -769,16 +769,16 @@ public class InventoryToolPresenter : MonoBehaviour
 
         _cart.AddEntities(System.Array.Empty<long>(), picked);
 
-        int    artifacts = BulkAddArtifacts(limit, out string artifactTail);
+        int    artifacts = BulkAddArtifacts(limit, ref locked, out string artifactTail);
         string kind      = Lang.Get("UI.Tool.KindEquip");
 
         NotifyEntityBulk(kind, "UI.Tool.NEquip", picked.Count + artifacts, locked, blocked, Lang.Get("UI.Tool.EquipBlocked"), artifactTail);
     }
 
     // 장비 탭의 아티팩트 — 고른 등급 이하를 보유 수량 전부 (BulkAddEquips에서 호출 · T-151).
-    //   반환 : 담은 종류 수.  tail : 뺀 것을 알릴 꼬리 문구(없으면 빈 문자열)
+    //   반환 : 담은 종류 수.  locked : 잠겨 뺀 번호 수를 더한다(장비 잠금과 한 줄로 알린다 · T-188).  tail : 뺀 것을 알릴 꼬리 문구(없으면 빈 문자열)
     // ※ [제외]에 '아티팩트'가 체크돼 있으면 하나도 담지 않는다. 도감에 없는 번호(NEW)는 늘 뺀다 — 일괄로 팔면 도감에 남지 않는다.
-    private int BulkAddArtifacts(GlobalRarity limit, out string tail)
+    private int BulkAddArtifacts(GlobalRarity limit, ref int locked, out string tail)
     {
         tail = "";
 
@@ -809,6 +809,13 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (int tid in tids)
         {
+            if (_data.IsArtifactLocked(tid))
+            {
+                locked++;
+
+                continue;
+            }
+
             if (!_data.IsArtifactEquipped(tid))
             {
                 uncollected++;

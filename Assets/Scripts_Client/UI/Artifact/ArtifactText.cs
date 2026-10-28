@@ -23,20 +23,12 @@ public static class ArtifactText
         };
     }
 
-    // 도감 상태 한 마디 — 장착 · 켜짐 / 장착 · 꺼짐 / 도감에 없음.
+    // 도감 상태 한 마디 — 장착 / 도감에 없음. 장착하면 항상 켜져 있다(#90).
     public static string State(PlayerDataModel data, int artifactTid)
-    {
-        if (!data.ArtifactCodex.TryGetValue(artifactTid, out bool active))
-        {
-            return Lang.Get("UI.Artifact.StateNone");
-        }
+        => Lang.Get(data.IsArtifactEquipped(artifactTid) ? "UI.Artifact.FilterEquipped" : "UI.Artifact.StateNone");
 
-        return Lang.Get(active ? "UI.Artifact.StateOn" : "UI.Artifact.StateOff");
-    }
-
-    // 칸 툴팁 — 등급 · 효과 · 상태 · 보유, 그리고 조작(인벤토리 칸만).
-    //   withControls : 인벤토리 장비 탭 칸이면 true — 조작 줄을 붙인다. 도감 칸은 보기만 해 붙이지 않는다.
-    public static TooltipContent? BuildTooltip(PlayerDataModel data, int artifactTid, bool withControls)
+    // 칸 툴팁 — 등급 · 효과 · 상태 · 보유 · 값. 조작 줄은 인벤토리 장비 탭 칸만 붙인다('EquipSlotSource.BuildTooltip').
+    public static TooltipContent? BuildTooltip(PlayerDataModel data, int artifactTid)
     {
         if (!GameDataLoader.TryGetArtifact(artifactTid, out ArtifactTableRow row))
         {
@@ -45,23 +37,13 @@ public static class ArtifactText
 
         int owned = data.GetArtifactCount(artifactTid);
 
-        var content = new TooltipContent(Loc.Get(row.NameLocKey))
+        return new TooltipContent(Loc.Get(row.NameLocKey))
             .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(row.GlobalRarity), "", RarityPalette.Get(row.GlobalRarity))
             .Row(Lang.Get("UI.Artifact.Effect"), Effect(row))
             .Row(Lang.Get("UI.Artifact.Codex"), State(data, artifactTid))
             .Row(Lang.Get("UI.Inventory.Owned"), Lang.Format("UI.Inventory.CountUnit", $"{owned:N0}"))
             .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{SellCartModel.ArtifactInstantPrice(artifactTid):N0}"), Lang.Get("UI.Sell.Each"), null)
             .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(row.BasePrice), Lang.Get("UI.Sell.UnitPrice"), null);
-
-        if (!withControls)
-        {
-            return content;
-        }
-
-        return content.Header(Lang.Get("UI.Inventory.Controls"))
-                      .Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Artifact.Window"))
-                      .Row(Lang.Get("UI.Inventory.RightClick"), Lang.Get("UI.Inventory.AddToSell"))
-                      .Row(Lang.Get("UI.Inventory.CtrlRightClick"), Lang.Get("UI.Inventory.ListOnAuction"));
     }
 
     // 효과가 붙는 산업 — None은 '전 산업'.

@@ -10,12 +10,11 @@ using UnityEngine.UI;
 
 // 아티팩트 도감 — 번호 순 · 등급별 묶음으로 전 종류를 늘어놓는다. **보기만 한다** (#81 합의 · 목업 'GameDesign/design/ui/아티팩트도감장착목업.html').
 //
-// ■ 칸 상태 셋
-//   장착 · 켜짐   : 그대로.
-//   장착 · 꺼짐   : 어둡게('SetDimmed') — 효과가 없다.
-//   미장착       : 흑백('SetFilteredOut'). 갖고 있으면 이름과 '보유 n'을, 본 적도 없으면 '???'를 적는다.
+// ■ 칸 상태 둘 — 장착하면 효과가 항상 붙는다(켜고 끄기 없음 · #90)
+//   장착   : 그대로.
+//   미장착 : 흑백('SetFilteredOut'). 갖고 있으면 이름과 '보유 n'을, 본 적도 없으면 '???'를 적는다.
 // ■ 장착 · 판매는 여기서 하지 않는다 — 인벤토리 장비 탭의 아티팩트 칸이 한다(2026-10-25 사용자 결정).
-//   좌클릭은 고르기만 한다('ArtifactModel.Select') — 켜고 끄기는 상세 칸의 버튼이 한다.
+//   좌클릭은 고르기만 한다('ArtifactModel.Select') — 상세 칸이 그 번호를 보여 준다.
 // ■ 장착하면 반짝인다 — 인벤토리 아티팩트 창이 장착에 성공하면 이 화면을 열고('UIManager.ShowArtifact') 번호를 맡긴다('ArtifactModel.Highlight').
 //   그 칸까지 스크롤하고 획득 반짝임('SlotGainShine')을 두 번 + 칸을 한 번 튕긴다. 화면이 막 켜지는 중이면 그릴 준비가 된 뒤 꺼낸다('TakeHighlight').
 // ■ 효과 합계는 적지 않는다(#81 합의) — "장착 n / 전체"만 적는다.
@@ -219,7 +218,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
             slot.SetSubVisible(true);
             slot.LeftClicked += _ => _model.Select(tid);
 
-            // 툴팁은 올리는 순간에 만든다 — 장착 · 켜짐이 그 사이에 바뀌었을 수 있다
+            // 툴팁은 올리는 순간에 만든다 — 장착 · 보유가 그 사이에 바뀌었을 수 있다
             slot.gameObject.AddComponent<TooltipTrigger>().SetProvider(() => BuildTooltip(tid));
 
             _groupCells[group].Add(new CodexCell(slot, tid));
@@ -245,7 +244,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
             {
                 SlotView slot       = cell.Slot;
                 int      tid        = cell.Tid;
-                bool     isEquipped = _data.ArtifactCodex.TryGetValue(tid, out bool active);
+                bool     isEquipped = _data.IsArtifactEquipped(tid);
                 bool     visible    = _filter == CodexFilter.All || isEquipped;
 
                 if (isEquipped)
@@ -264,7 +263,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
                 }
 
                 shown++;
-                DrawSlot(slot, tid, isEquipped, active);
+                DrawSlot(slot, tid, isEquipped);
             }
 
             equippedTotal += equipped;
@@ -288,14 +287,14 @@ public class ArtifactCodexPresenter : MonoBehaviour
                                      _cellCount.ToString("N0"));
     }
 
-    // 칸 하나 — 상태 셋(클래스 머리 주석)과 고름 표시.
-    private void DrawSlot(SlotView slot, int tid, bool isEquipped, bool active)
+    // 칸 하나 — 상태 둘(클래스 머리 주석)과 고름 표시.
+    private void DrawSlot(SlotView slot, int tid, bool isEquipped)
     {
         int  owned   = _data.GetArtifactCount(tid);
         bool isKnown = isEquipped || owned > 0;
 
         string name = isKnown ? GameDataLoader.GetArtifactName(tid) : Lang.Get("UI.Artifact.Unknown");
-        string sub  = isEquipped ? (active ? "" : Lang.Get("UI.Artifact.Off"))
+        string sub  = isEquipped ? ""
                     : owned > 0  ? Lang.Format("UI.Artifact.OwnedShort", owned.ToString("N0"))
                     : "";
 
@@ -303,7 +302,6 @@ public class ArtifactCodexPresenter : MonoBehaviour
         slot.Bind(new SlotData(tid, name, sub,
                                isKnown ? GameDataLoader.GetArtifactRarity(tid) : GlobalRarity.None,
                                isKnown ? VisualCatalog.ArtifactIconOf(tid) : null));
-        slot.SetDimmed(isEquipped && !active);
         slot.SetFilteredOut(!isEquipped);
 
         // ※ 고름 표시는 응축 대상 테두리(파랑)를 빌려 쓴다 — 칸 프리팹에 "고름" 표시가 따로 없다.
@@ -320,7 +318,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
             return new TooltipContent(Lang.Get("UI.Artifact.Unknown")).Row(Lang.Get("UI.Artifact.UnknownHint"), "");
         }
 
-        return ArtifactText.BuildTooltip(_data, tid, withControls: false);
+        return ArtifactText.BuildTooltip(_data, tid);
     }
 
     #endregion

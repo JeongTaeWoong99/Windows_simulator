@@ -26,8 +26,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly HashSet<int>              _lockedItemTids   = new HashSet<int>(); // 잠긴 자원 종류(TID) — 보유 0개여도 남는다(T-159)
     private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
-    private readonly Dictionary<int, bool>     _artifactCodex    = new Dictionary<int, bool>(); // 도감에 장착한 번호 → 켜짐 (T-181)
+    private readonly HashSet<int>              _artifactCodex    = new HashSet<int>(); // 도감에 장착한 번호 — 장착하면 항상 켜짐 (T-181 · #90)
     private readonly List<ItemInfo>            _artifactStacks   = new List<ItemInfo>(); // 아티팩트 칸 — 'ItemId' = 아티팩트 번호 (T-181)
+    private readonly HashSet<int>              _lockedArtifactTids = new HashSet<int>(); // 잠긴 아티팩트 번호 — 보유 0개여도 남는다 (T-188 · #87)
 
     // 감정 할인 상한(천분율) — 서버 'User.MaxAppraiseDiscountPermille'의 사본이다(Constants에 없다). 서버가 바꾸면 같이 바꾼다
     private const int MaxAppraiseDiscountPermille = 500;
@@ -425,14 +426,17 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return unlockTid == 0 || _unlockedTids.Contains(unlockTid);
     }
 
-    // 아티팩트 도감 — 장착한 번호와 켜짐. 켜 둔 번호만 효과가 있다 (T-181)
-    public IReadOnlyDictionary<int, bool> ArtifactCodex => _artifactCodex;
+    // 아티팩트 도감 — 장착한 번호. 장착하면 효과가 항상 붙는다(켜고 끄기 없음 · #90)
+    public IReadOnlyCollection<int> ArtifactCodex => _artifactCodex;
 
-    // 아티팩트 칸 — 서버 저장('EStorageTab.Artifact')이다. 인벤토리에는 탭이 없고 아티팩트 화면(하단 메뉴 [아티팩트])이 보여 준다
+    // 아티팩트 칸 — 서버 저장('EStorageTab.Artifact')이다. 'Slot'은 인벤토리 장비 탭과 같은 칸 번호다(장비와 한 격자 · T-188)
     public IReadOnlyList<ItemInfo> ArtifactStacks => _artifactStacks;
 
-    // 이 번호를 도감에 장착했는가 — 켜고 끈 것과 상관없다.
-    public bool IsArtifactEquipped(int artifactTid) => _artifactCodex.ContainsKey(artifactTid);
+    // 이 아티팩트 번호를 잠갔는가 — 번호 단위라 같은 번호의 칸이 함께 잠긴다. 잠긴 번호는 판매·경매·분해에서 빠진다(T-188)
+    public bool IsArtifactLocked(int artifactTid) => _lockedArtifactTids.Contains(artifactTid);
+
+    // 이 번호를 도감에 장착했는가.
+    public bool IsArtifactEquipped(int artifactTid) => _artifactCodex.Contains(artifactTid);
 
     // 아티팩트 칸에 있는 이 번호의 수량 — 'ArtifactMaxStack'을 넘어 칸이 나뉘었으면 합친다. 도감에 장착한 것은 세지 않는다.
     public int GetArtifactCount(int artifactTid)
@@ -450,7 +454,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return count;
     }
 
-    // 이 유물 1개의 감정 비용 — 기본 비용에 켜 둔 아티팩트의 감정 할인을 붙인다(서버 'User.GetAppraiseCost'와 같은 식).
+    // 이 유물 1개의 감정 비용 — 기본 비용에 장착한 아티팩트의 감정 할인을 붙인다(서버 'User.GetAppraiseCost'와 같은 식).
     // 0이면 골드 없이 여는 상자다. 실제 차감은 서버가 정한다 — 이 값은 보여 주고 미리 막는 데만 쓴다.
     public long GetAppraiseCost(int itemId)
     {
@@ -463,10 +467,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
         int discount = 0;
 
-        foreach (KeyValuePair<int, bool> entry in _artifactCodex)
+        foreach (int artifactTid in _artifactCodex)
         {
-            if (entry.Value
-                && GameDataLoader.TryGetArtifact(entry.Key, out ArtifactTableRow artifact)
+            if (GameDataLoader.TryGetArtifact(artifactTid, out ArtifactTableRow artifact)
                 && artifact.EffectType == UserTraitEffect.AppraiseCostDiscount
                 && artifact.Industry == IndustryType.None)
             {
@@ -623,7 +626,6 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     public event Action? ArtifactsChanged; // 아티팩트 도감·칸 갱신됨 (두 스냅샷 어느 쪽이든)
     public event Action<EResultCode, int>?  ArtifactEquipCompleted;  // 도감 장착 결과 (번호) — Ok면 두 스냅샷이 함께 온다
-    public event Action<EResultCode, bool>? ArtifactActiveCompleted; // 켜고 끄기 결과 (지금 켜짐)
     public event Action<EResultCode, long>? ArtifactSellCompleted;   // 즉시 판매 결과 (번 골드 — 잔액은 'CurrencyChanged')
 
     // 인벤토리 [정렬]·칸 이동 결과 (거절 포함). 성공이면 칸 번호를 캐시에 반영하고 탭의 변경 이벤트를 먼저 발행한 뒤에 온다.
@@ -749,7 +751,6 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ArtifactListReceived     += OnArtifactListReceived;
         ServerPacketHandler.ArtifactInventoryReceived += OnArtifactInventoryReceived;
         ServerPacketHandler.ArtifactEquipResponded    += OnArtifactEquipResponded;
-        ServerPacketHandler.ArtifactActiveResponded   += OnArtifactActiveResponded;
         ServerPacketHandler.ArtifactSold              += OnArtifactSold;
     }
 
@@ -801,7 +802,6 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.ArtifactListReceived     -= OnArtifactListReceived;
         ServerPacketHandler.ArtifactInventoryReceived -= OnArtifactInventoryReceived;
         ServerPacketHandler.ArtifactEquipResponded    -= OnArtifactEquipResponded;
-        ServerPacketHandler.ArtifactActiveResponded   -= OnArtifactActiveResponded;
         ServerPacketHandler.ArtifactSold              -= OnArtifactSold;
     }
 
@@ -1049,7 +1049,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     //
     // ★ 목록이 다시 오지 않는다 — 캐시를 여기서 직접 고친다(서버 이슈 #65). 같은 상태로 보내도 Ok가 온다.
     // ★ 캐시를 먼저 고치고 'CharactersChanged'·'EquipsChanged'·'InventoryChanged'를 낸 뒤 완료를 알린다 — 자물쇠가 바로 그려진다.
-    // ※ 자원은 'Id'가 아이템 TID다. 보유 여부와 상관없이 기록한다 — 0개여도 잠금은 남는다.
+    // ※ 자원·아티팩트는 'Id'가 TID·번호다. 보유 여부와 상관없이 기록한다 — 0개여도 잠금은 남는다.
     private void OnEntityLockResponded(S_EntityLockResponse res)
     {
         if (res.Result == EResultCode.Ok)
@@ -1071,6 +1071,15 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
                 if (res.Locked ? _lockedItemTids.Add(itemId) : _lockedItemTids.Remove(itemId))
                 {
                     Notify(InventoryChanged);
+                }
+            }
+            else if (res.Target == ELockTarget.Artifact)
+            {
+                int artifactTid = (int)res.Id;
+
+                if (res.Locked ? _lockedArtifactTids.Add(artifactTid) : _lockedArtifactTids.Remove(artifactTid))
+                {
+                    Notify(ArtifactsChanged);
                 }
             }
         }
@@ -1436,31 +1445,38 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
 
     #region 아티팩트 (ServerPacketHandler 구독)
 
-    // 도감 스냅샷 — 비우고 채운다 (로그인 직후 · 장착 · 켜고 끌 때)
+    // 도감 스냅샷 — 비우고 채운다 (로그인 직후 · 장착)
     private void OnArtifactListReceived(S_ArtifactListResponse res)
     {
         _artifactCodex.Clear();
 
         foreach (ArtifactCodexInfo info in res.Artifacts)
         {
-            _artifactCodex[info.ArtifactTid] = info.IsActive;
+            _artifactCodex.Add(info.ArtifactTid);
         }
 
         Notify(ArtifactsChanged);
     }
 
-    // 아티팩트 칸 스냅샷 — 비우고 채운다 (로그인 직후 · 감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동)
+    // 아티팩트 칸 스냅샷 — 비우고 채운다 (로그인 직후 · 감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동 · 정렬)
+    // ※ 잠긴 번호도 함께 온다(T-188). 잠금 응답 때는 오지 않는다 — 그때는 'OnEntityLockResponded'가 고친다.
     private void OnArtifactInventoryReceived(S_ArtifactInventoryResponse res)
     {
         _artifactStacks.Clear();
         _artifactStacks.AddRange(res.Stacks);
 
+        _lockedArtifactTids.Clear();
+
+        if (res.LockedArtifactTids != null)
+        {
+            _lockedArtifactTids.UnionWith(res.LockedArtifactTids);
+        }
+
         Notify(ArtifactsChanged);
     }
 
-    // 장착 · 켜고 끄기 · 판매 결과 — 상태는 뒤이어 오는 스냅샷이 바꾼다. 여기서는 결과만 넘긴다(대기 닫기 · 알림).
+    // 장착 · 판매 결과 — 상태는 뒤이어 오는 스냅샷이 바꾼다. 여기서는 결과만 넘긴다(대기 닫기 · 알림).
     private void OnArtifactEquipResponded(S_ArtifactEquipResponse res)   => ArtifactEquipCompleted?.Invoke(res.Result, res.ArtifactTid);
-    private void OnArtifactActiveResponded(S_ArtifactActiveResponse res) => ArtifactActiveCompleted?.Invoke(res.Result, res.IsActive);
     private void OnArtifactSold(S_ArtifactSellResponse res)              => ArtifactSellCompleted?.Invoke(res.Result, res.GainedGold);
 
     #endregion

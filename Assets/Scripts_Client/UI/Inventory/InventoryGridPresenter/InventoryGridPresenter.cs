@@ -70,8 +70,8 @@ using UnityEngine.UI;
 //   큐브 창·응축 창은 판매 목록 자리를 빌려 쓴다 — 우클릭(판매 담기)을 하면 닫아 판매 목록을 돌려준다.
 //
 // ■ 장비 탭의 아티팩트 칸 (T-151 · 2026-10-25 사용자 결정 — 'EquipSlotSource' 머리 주석)
-//   우클릭(판매 담기) · Ctrl+우클릭(경매 등록)은 장비와 같고, 좌클릭만 큐브 창 대신 **아티팩트 창**('ArtifactEquipPresenter')이다.
-//   아직 서버에 없는 것 — Ctrl+좌클릭 잠금 · 끌어 옮기기 — 은 거절 토스트로 말한다(서버 이슈로 넘겼다).
+//   우클릭(판매 담기) · Ctrl+좌클릭(잠금 — 번호 단위) · Ctrl+우클릭(경매 등록) · 끌어 옮기기는 장비와 같고,
+//   좌클릭만 큐브 창 대신 **아티팩트 창**('ArtifactEquipPresenter')이다. 칸 번호는 장비와 한 격자다(T-188 · #87).
 //   응축 창이 열린 동안 캐릭터 칸 좌클릭은 **재료 고르기**다 — 무엇을 할지는 응축 창이 정하고('OnCharacterClicked'),
 //   칸이 대상·재료·못 넣음 중 무엇인지도 응축 창이 답한다('GetMark'). 격자는 그대로 그린다.
 //
@@ -1040,7 +1040,7 @@ public class InventoryGridPresenter : MonoBehaviour
             case InventoryTab.Resource:  ToggleItem((int)view.Key, view.transform); break;
             case InventoryTab.Character: ToggleCharacter(view.Key, view.transform); break;
             case InventoryTab.Equipment when EquipSlotSource.IsArtifactKey(view.Key):
-                ToggleArtifact(EquipSlotSource.ArtifactTidOf(view.Key));
+                ToggleArtifact(EquipSlotSource.ArtifactTidOf(view.Key), view.transform);
                 break;
             case InventoryTab.Equipment: ToggleEquip(view.Key, view.transform);     break;
         }
@@ -1063,10 +1063,20 @@ public class InventoryGridPresenter : MonoBehaviour
     // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
     private void OpenAuctionRegister(long key, Transform slot)
     {
-        // 아티팩트 — 막을 것이 없다(잠금 · 착용이 없다). 등록 창이 번호로 고른다.
+        // 아티팩트 — 잠금만 막는다(착용이 없다 · T-188). 등록 창이 번호로 고른다.
         if (_currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(key))
         {
-            _ui.Auction.OpenRegister(EAuctionKind.Artifact, EquipSlotSource.ArtifactTidOf(key));
+            int     artifactTid = EquipSlotSource.ArtifactTidOf(key);
+            string? blocked     = EntityBlockText.ForArtifact(_data, artifactTid);
+
+            if (blocked != null)
+            {
+                _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", blocked), slot);
+
+                return;
+            }
+
+            _ui.Auction.OpenRegister(EAuctionKind.Artifact, artifactTid);
 
             return;
         }
@@ -1148,13 +1158,22 @@ public class InventoryGridPresenter : MonoBehaviour
         _cart.AddEquip(equipId);
     }
 
-    // 아티팩트를 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
+    // 아티팩트를 담거나 뺀다 — 잠긴 번호면 사유를 알리고, 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
     // ※ NEW(도감에 없는 번호)도 담는다 — 판매 목록이 경고한다(목업 · 막으면 "왜 안 담기지"가 된다).
-    private void ToggleArtifact(int artifactTid)
+    private void ToggleArtifact(int artifactTid, Transform slot)
     {
         if (_cart.ContainsArtifact(artifactTid))
         {
             _cart.RemoveArtifact(artifactTid);
+
+            return;
+        }
+
+        string? blocked = EntityBlockText.ForArtifact(_data, artifactTid);
+
+        if (blocked != null)
+        {
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantSell", blocked), slot);
 
             return;
         }
@@ -1235,14 +1254,6 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (cell == null)
         {
-            return false;
-        }
-
-        // 아티팩트 칸은 서버 칸 번호가 아니다(장비 뒤에 이어 붙인 자리 — 'EquipSlotSource') — 아직 옮길 수 없다.
-        if (IsArtifactCell(cell.Value))
-        {
-            _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoMove"), _views[frameIndex]?.transform);
-
             return false;
         }
 
@@ -1464,6 +1475,15 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (grid != this)
         {
+            // 아티팩트는 창고에 못 간다(서버) — 아티팩트 칸을 창고로 끌었거나, 창고 장비를 아티팩트 칸 위에 놓았다(맞바꿀 수 없다 · T-188).
+            if (IsArtifactAt(this, frameIndex) || IsArtifactAt(grid, target))
+            {
+                _wait.RaiseRefusal(Lang.Get(IsArtifactAt(this, frameIndex) ? "UI.Artifact.NoWarehouse" : "UI.Result.StorageSlotArtifact"));
+                FlyGhost(this, frameIndex, landing: false);
+
+                return;
+            }
+
             // 찾기 중인 격자는 받지 않는다('TransferTo'가 이유를 알린다) — 그림은 제자리로
             bool accepted = grid._current == null || !grid._current.IsFiltering;
 
@@ -1475,15 +1495,6 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (target == frameIndex)
         {
-            FlyGhost(this, frameIndex, landing: false);
-
-            return;
-        }
-
-        // 아티팩트 칸 위 — 그 자리는 서버 칸 번호가 아니다('BeginSlotDrag'와 같은 이유). 장비를 거기로 보내지 않는다.
-        if (target < _current!.Count && _current.Get(target) is SlotData onto && IsArtifactCell(onto))
-        {
-            _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoMove"), _views[target]?.transform);
             FlyGhost(this, frameIndex, landing: false);
 
             return;
@@ -1504,6 +1515,12 @@ public class InventoryGridPresenter : MonoBehaviour
         s_slotWaitHandle = _wait.Begin(Lang.Format("UI.Inventory.WaitMove", ContainerLabel), onClosed: OnSlotWaitClosed);
         s_landing        = (this, target);
     }
+
+    // 그 격자의 그 칸이 장비 탭의 아티팩트 칸인가 (EndSlotDrag에서 호출 — 창고와 오가는 끌기를 막는다).
+    private static bool IsArtifactAt(InventoryGridPresenter grid, int slot)
+        => grid._currentTab == InventoryTab.Equipment
+           && grid._current != null && slot >= 0 && slot < grid._current.Count
+           && grid._current.Get(slot) is SlotData cell && EquipSlotSource.IsArtifactKey(cell.Key);
 
     // 다른 보관함 격자 위에 놓았는데 받을 칸이 없었으면 이유를 알린다 (EndSlotDrag에서 호출).
     private void NoticeIfOtherGridRefused(Vector2 screenPoint, Camera? eventCamera)
@@ -1880,17 +1897,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
         bool isArtifact = _currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(view.Key);
 
-        // Ctrl+좌클릭 — 잠금(캐릭터·장비 T-137 · 자원 T-159). 상자 칸이어도 열지 않고 잠금만 뒤집는다.
-        // ※ 아티팩트 잠금은 아직 서버에 없다 — 말없이 지나가면 고장처럼 보여 알린다.
+        // Ctrl+좌클릭 — 잠금(캐릭터·장비 T-137 · 자원 T-159 · 아티팩트 T-188). 상자 칸이어도 열지 않고 잠금만 뒤집는다.
         if (_keys.IsLockToggleHeld)
         {
-            if (isArtifact)
-            {
-                _wait.RaiseRefusal(Lang.Get("UI.Artifact.NoLock"), view.transform);
-
-                return;
-            }
-
             ToggleLock(view.Key);
 
             return;
@@ -1953,7 +1962,7 @@ public class InventoryGridPresenter : MonoBehaviour
             return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
         }
 
-        // 유물 감정은 골드가 든다(T-150 · T-151) — 1개도 못 내면 보내지 않고 칸을 흔든다. 살 수 있는 만큼만 고르게 한다.
+        // 유물 감정은 골드가 든다(T-150 · T-151) — 1개도 못 내면 보내지 않고 칸을 흔든다. 골드 든 상자는 살 수 있는 만큼만 고르게 한다.
         // ※ 비용은 미리 보기다 — 사이에 골드가 줄면 서버가 'NotEnoughCurrency'로 거절한다.
         long unitCost   = _data.GetAppraiseCost(itemId);
         int  affordable = unitCost > 0L ? (int)System.Math.Min(_data.Gold / unitCost, int.MaxValue) : int.MaxValue;
@@ -1961,6 +1970,17 @@ public class InventoryGridPresenter : MonoBehaviour
         if (affordable <= 0)
         {
             _wait.RaiseRefusal(Lang.Format("UI.Inventory.AppraiseNoGold", $"{unitCost:N0}"), view.transform);
+
+            return;
+        }
+
+        // 유물은 1개씩 감정한다(#88 · T-186) — 수량 없이 확인만 묻는다. 서버가 2개 이상을 'InvalidUseCount'로 거절한다.
+        //   상자는 50개씩 까는 자원 보너스, 유물은 1개씩 까는 도감 채우기다 — 결과 창도 연출에 나온 1개만 보여 준다.
+        //   묻는 이유 — 유물은 드물고 감정에 골드가 든다. 바로 열면 잘못 누른 한 번이 되돌릴 수 없다(2026-10-29 사용자 결정).
+        if (GameDataLoader.GetItemType(itemId) == ItemType.Relic)
+        {
+            _ui.AskConfirm(Lang.Format("UI.Inventory.AskAppraiseOne", GameDataLoader.GetItemName(itemId), $"{unitCost:N0}"),
+                           () => OpenBox(itemId, 1));
 
             return;
         }
@@ -2057,20 +2077,25 @@ public class InventoryGridPresenter : MonoBehaviour
 
     #region 잠금
 
-    // 장비 탭의 아티팩트 칸인가 (끌기 · 놓기에서 호출).
-    private bool IsArtifactCell(in SlotData cell) => _currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(cell.Key);
-
     // 그 개체(자원은 종류)의 잠금을 뒤집어 서버에 보낸다 (OnSlotLeftClicked — Ctrl+좌클릭).
     // ※ 칸은 응답이 온 뒤에 바뀐다(낙관적 갱신 없음) — 자물쇠가 서버와 어긋나면 "잠긴 줄 알았는데 팔렸다"가 된다.
-    // ※ 자원은 'Id'가 아이템 TID다(T-159) — 보유 0개여도 잠글 수 있지만 칸이 있어야 누를 수 있다.
+    // ※ 자원은 'Id'가 아이템 TID다(T-159) — 보유 0개여도 잠글 수 있지만 칸이 있어야 누를 수 있다. 아티팩트는 번호다(T-188).
     private void ToggleLock(long key)
     {
+        bool isArtifact = _currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(key);
+
+        if (isArtifact)
+        {
+            key = EquipSlotSource.ArtifactTidOf(key); // 칸 Key(음수) → 서버가 받는 번호
+        }
+
         (ELockTarget target, bool? locked) = _currentTab switch
         {
-            InventoryTab.Character => (ELockTarget.Character, _data.FindCharacter(key)?.IsLocked),
-            InventoryTab.Equipment => (ELockTarget.Equip,     _data.FindEquip(key)?.IsLocked),
-            InventoryTab.Resource  => (ELockTarget.Resource,  _data.IsItemLocked((int)key)),
-            _                      => (ELockTarget.None,      (bool?)null),
+            InventoryTab.Character                => (ELockTarget.Character, _data.FindCharacter(key)?.IsLocked),
+            InventoryTab.Equipment when isArtifact => (ELockTarget.Artifact,  _data.IsArtifactLocked((int)key)),
+            InventoryTab.Equipment                => (ELockTarget.Equip,     _data.FindEquip(key)?.IsLocked),
+            InventoryTab.Resource                 => (ELockTarget.Resource,  _data.IsItemLocked((int)key)),
+            _                                     => (ELockTarget.None,      (bool?)null),
         };
 
         if (target == ELockTarget.None || locked == null || !_data.IsLoggedIn || !_lockPending.Add((target, key)))

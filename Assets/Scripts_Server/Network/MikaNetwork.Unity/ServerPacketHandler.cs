@@ -534,14 +534,11 @@ namespace MikaNetwork
         // 도감 장착 결과 도착 (Handle_S_ArtifactEquipResponse에서 발행)
         public static event Action<S_ArtifactEquipResponse>? ArtifactEquipResponded;
 
-        // 켜고 끄기 결과 도착 (Handle_S_ArtifactActiveResponse에서 발행)
-        public static event Action<S_ArtifactActiveResponse>? ArtifactActiveResponded;
-
         // 즉시 판매 결과 도착 (Handle_S_ArtifactSellResponse에서 발행)
         public static event Action<S_ArtifactSellResponse>? ArtifactSold;
 
         // 도감 — 장착한 번호와 켜짐 (S_ArtifactListResponse 수신 시 자동 호출)
-        // ※ 스냅샷이다 — 로그인 직후 · 장착 · 켜고 끌 때마다 통째로 온다. 클라는 덮어쓴다.
+        // ※ 스냅샷이다 — 로그인 직후 · 장착할 때마다 통째로 온다. 클라는 덮어쓴다. 'IsActive'는 항상 true라 읽지 않는다(#90).
         [PacketHandler]
         public static void Handle_S_ArtifactListResponse(ISession session, S_ArtifactListResponse res)
         {
@@ -566,12 +563,12 @@ namespace MikaNetwork
             ArtifactEquipResponded?.Invoke(res);
         }
 
-        // 켜고 끄기 결과 (S_ArtifactActiveResponse 수신 시 자동 호출) — 실패면 IsActive가 지금 상태다
+        // 켜고 끄기 결과 (S_ArtifactActiveResponse 수신 시 자동 호출) — 클라는 더 보내지 않는다(#90 · 장착하면 항상 켜짐).
+        // ※ 서버가 패킷(90·91)을 지울 때까지 핸들러만 남긴다 — 없으면 MIKA001이 난다.
         [PacketHandler]
         public static void Handle_S_ArtifactActiveResponse(ISession session, S_ArtifactActiveResponse res)
         {
-            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 켜고 끄기 결과={res.Result}, 번호={res.ArtifactTid}, 켜짐={res.IsActive}");
-            ArtifactActiveResponded?.Invoke(res);
+            ClientLogger.Info(ClientLogger.Recv, $"아티팩트 켜고 끄기 결과={res.Result}, 번호={res.ArtifactTid} (보내지 않는 요청 — 무시)");
         }
 
         // 즉시 판매 결과 (S_ArtifactSellResponse 수신 시 자동 호출) — 칸은 스냅샷, 골드는 S_CurrencyResponse로 따로 온다

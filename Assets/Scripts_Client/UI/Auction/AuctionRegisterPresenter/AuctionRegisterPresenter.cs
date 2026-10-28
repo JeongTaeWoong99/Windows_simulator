@@ -333,6 +333,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
             {
                 RegisterKind.Character => EntityBlockText.ForCharacter(_data, target, _data.Characters.Count - 1),
                 RegisterKind.Equip     => EntityBlockText.ForEquip(_data, target),
+                RegisterKind.Artifact  => EntityBlockText.ForArtifact(_data, (int)target),
                 _                      => EntityBlockText.ForItem(_data, (int)target),
             };
             _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", reason ?? ""));
@@ -865,7 +866,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
     }
 
     // 아티팩트 줄을 모은다 (Refresh에서 호출) — 번호마다 한 줄. 칸이 나뉘어 있어도 합친다.
-    // ※ 흐린 줄이 없다 — 칸에 있는 것은 모두 올릴 수 있다(도감에 장착한 것은 칸에 없다).
+    // ※ 잠긴 번호는 흐리게 — 사유는 툴팁에(T-188). 도감에 장착한 것은 칸에 없어 따로 막을 것이 없다.
     private void AddArtifactRows()
     {
         CollectOwnedArtifactTids();
@@ -877,7 +878,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 continue;
             }
 
-            int owned = _data.GetArtifactCount(tid);
+            int     owned   = _data.GetArtifactCount(tid);
+            string? blocked = EntityBlockText.ForArtifact(_data, tid);
 
             _contents.Add(new AuctionRowContent
             {
@@ -887,11 +889,19 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
                 Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
-                CanAct     = true,
-                Dimmed     = false,
-                Tooltip    = () => ArtifactText.BuildTooltip(_data, tid, withControls: false),
+                CanAct     = blocked == null,
+                Dimmed     = blocked != null,
+                Tooltip    = () => BuildArtifactRowTooltip(tid, blocked),
             });
         }
+    }
+
+    // 아티팩트 줄 툴팁 — 막힌 번호면 사유를 한 줄 붙인다 (AddArtifactRows의 줄이 올린 순간 호출).
+    private TooltipContent? BuildArtifactRowTooltip(int tid, string? blocked)
+    {
+        TooltipContent? content = ArtifactText.BuildTooltip(_data, tid);
+
+        return blocked == null ? content : content?.Row(Lang.Get("UI.Inventory.State"), blocked);
     }
 
     // 아티팩트 칸에 있는 번호들 — 번호 순 · 중복 없이 (AddArtifactRows · CollectSuggestions에서 호출).

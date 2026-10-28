@@ -7,13 +7,12 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 유물 감정 연출 — 결과 칸을 공개하기 전에 한 번 도는 무대 (T-151 · 목업 'GameDesign/design/ui/유물감정목업.html' 타임라인).
-// ① 흔들림 → ②③④ 금 세 번 → ⑤ 번쩍 → ⑥ 조각 → ⑦ 대표 보상 등장 → ⑧ (아티팩트 · Special 유물이면) 띠 + 한 번 더 빛남.
+// 유물 감정 연출 — 감정 결과를 보여 주는 무대 (T-151 · 목업 'GameDesign/design/ui/유물감정목업.html' 타임라인).
+// ① 흔들림 → ②③④ 금 세 번 → ⑤ 번쩍 → ⑥ 조각 → ⑦ 보상 등장 → ⑧ (아티팩트 · Special 유물이면) 띠 + 한 번 더 빛남.
 // 결과 팝업 위에 덮은 층 하나에서 그린다 — 'GachaResultPresenter'가 처음에 코드로 만든다('Create'). 'RewardBurstFx'와 같은 방식.
 //
-// ■ 여러 개를 한꺼번에 감정해도 무대는 한 번이다
-//   대표 보상 하나만 등장시킨다(고르는 것은 Presenter — 아티팩트 → Special 유물 → 가장 높은 등급). 나머지는 이어지는 결과 칸 공개가 보여 준다.
-//   감정할 때마다 무대를 한 번씩 돌리면 50개 감정이 수십 초가 된다.
+// ■ 이 무대가 결과 전부다 (#88 · 2026-10-28) — 유물은 1개씩 감정하고, 나온 1개가 놓인 채로 머문다. 결과 칸 목록은 없다.
+//   끝까지 가면 그대로 멈춰 있고('PlayAsync'), 건너뛰면 끝 모습으로 바로 놓는다('ShowEnd'). 내리는 것은 Presenter('Stop')다.
 //
 // ■ 클릭을 막지 않는다 — 층의 'CanvasGroup'이 레이캐스트를 통과시켜, 팝업 바탕 클릭(스킵)을 Presenter가 그대로 받는다.
 //
@@ -31,7 +30,6 @@ public class RelicAppraiseFx : MonoBehaviour
     private const float PopTime    = 0.45f;
     private const float BannerTime = 0.35f;
     private const float AfterFlash = 0.6f;
-    private const float HoldTime   = 0.8f;  // 다 나온 뒤 결과 칸으로 넘어가기 전에 머문다 — 무엇이 나왔는지 읽을 틈
     private const float RaysTurn   = 14f;   // 광선이 한 바퀴 도는 시간
     private const float RainbowLap = 3f;    // Special 무지개가 한 바퀴 도는 시간
 
@@ -132,9 +130,12 @@ public class RelicAppraiseFx : MonoBehaviour
         return fx;
     }
 
-    // 무대를 한 번 돌린다 — 끝까지 가면 대표 보상이 놓인 채로 'HoldTime'만큼 머물고 돌아온다.
-    //   relic  : 감정한 유물 칸 값(수량은 감정한 개수)
-    //   reward : 대표 보상 칸 값
+    // 보상이 놓인 자리 — 골드 동전이 여기서 날아간다
+    public Transform RewardTransform => _reward.transform;
+
+    // 무대를 한 번 돌린다 — 끝까지 가면 보상이 놓인 채로 돌아온다(층은 그대로 보인다 · 광선은 계속 돈다).
+    //   relic  : 감정한 유물 칸 값
+    //   reward : 보상 칸 값
     //   banner : ⑧ 띠 글자 — 아티팩트 · Special 유물이 아니면 null(띠 없이 끝난다)
     //   accent : ⑧ 띠 · 두 번째 빛 · 광선 색. null이면 옅은 흰빛
     // ※ 취소되면 그 자리에서 멈춘다 — 숨기는 것은 부르는 쪽('Stop') 몫이다.
@@ -173,8 +174,43 @@ public class RelicAppraiseFx : MonoBehaviour
         {
             await BannerAsync(banner, accent ?? Color.white, ct);
         }
+    }
 
-        await UniTask.Delay(System.TimeSpan.FromSeconds(HoldTime), cancellationToken: ct);
+    // 끝 모습으로 바로 놓는다 — 건너뛰었을 때 'PlayAsync'의 끝과 같은 모습 (Presenter가 스킵 뒤에 호출)
+    // ⚠️ 스킵 직후 같은 프레임에 부르지 않는다 — 'DOTween.Kill(this)'가 죽는 중인 트윈을 또 Kill한다(Presenter가 한 프레임 쉰다).
+    public void ShowEnd(SlotData relic, SlotData reward, string? banner, Color? accent)
+    {
+        bool isSpecial = relic.Rarity == GlobalRarity.Special || reward.Rarity == GlobalRarity.Special;
+
+        DOTween.Kill(this);
+
+        _group.alpha = 1f;
+        _relic.gameObject.SetActive(false);
+        _flash.color = Transparent(Color.white);
+
+        foreach (Image shard in _shards)
+        {
+            shard.enabled = false;
+        }
+
+        _reward.gameObject.SetActive(true);
+        _reward.Bind(reward);
+        _reward.SetSubVisible(true);
+        ResetTransform(_reward.transform, StageScale);
+
+        SpinRays(accent ?? PlainRays, isSpecial);
+
+        if (banner == null)
+        {
+            _banner.alpha = 0f;
+
+            return;
+        }
+
+        _banner.text  = banner;
+        _banner.color = WithAlpha(accent ?? Color.white, 1f);
+
+        _banner.rectTransform.anchoredPosition = BannerPos;
     }
 
     // 모든 움직임을 끊고 층을 숨긴다 (끝 · 스킵 · 창 닫기 · 새 결과 — Presenter가 호출)

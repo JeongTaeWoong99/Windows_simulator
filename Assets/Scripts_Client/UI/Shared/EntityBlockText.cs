@@ -18,6 +18,11 @@ public static class EntityBlockText
     public static string? ForItem(PlayerDataModel data, int itemId)
         => data.IsItemLocked(itemId) ? LockedText : null;
 
+    // 이 아티팩트를 내놓을 수 없는 이유. 내놓을 수 있으면 null (T-188).
+    // ※ 잠금만 본다 — 번호 단위라 같은 번호의 칸 전부가 함께 막힌다. 도감에 장착한 1개는 칸에 없어 따질 것이 없다.
+    public static string? ForArtifact(PlayerDataModel data, int artifactTid)
+        => data.IsArtifactLocked(artifactTid) ? LockedText : null;
+
     // 이 장비를 내놓을 수 없는 이유. 내놓을 수 있으면 null.
     public static string? ForEquip(PlayerDataModel data, long equipId)
     {

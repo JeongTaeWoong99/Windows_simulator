@@ -32,10 +32,11 @@ using MikaProtocol;
 // ■ 아티팩트도 장비 칸에 보인다 (2026-10-25 사용자 결정 · 서버 기획 동의 · T-151)
 //   유물을 감정해 나온 아티팩트는 장비 탭에서 장비와 같은 조작으로 다룬다(우클릭 판매 · Ctrl+우클릭 경매).
 //   좌클릭만 다르다 — 큐브 창 대신 아티팩트 창([도감에 장착])이 열린다('InventoryGridPresenter').
-//   ⚠️ 서버는 아직 아티팩트를 장비와 다른 **아티팩트 칸**(칸 번호 · 한도 따로)에 둔다 — 장비 칸으로 합치는 일은 서버 이슈로 넘겼다.
-//   그때까지는 **장비의 마지막 칸 뒤에 번호별로 합쳐 이어 붙인다**. 그래서 아티팩트 칸은 끌어 옮길 수 없고([정렬]도 장비만 줄 세운다),
-//   장비 칸 수 + 아티팩트 종류 수가 격자를 넘으면 넘친 것은 보이지 않는다.
-//   칸의 'Key'는 **음수 = 아티팩트 번호의 음수**다('ArtifactKey') — 장비 개체 번호(DB, 양수)와 겹치지 않는다.
+// ■ 아티팩트 칸과 장비 칸은 **한 격자**다 (T-188 · #87 · 2026-10-28 서버 반영)
+//   서버가 두 칸을 같은 칸 번호로 둔다 — 아티팩트 칸('ItemInfo.Slot')을 그대로 앉힌다. 그래서 끌어 옮기기 · [정렬] · Ctrl+좌클릭 잠금이 장비와 같다.
+//   칸 하나 = 아티팩트 번호 하나 + 수량(최대 'ArtifactMaxStack') — 넘치면 같은 번호가 여러 칸에 선다(자원 칸과 같다).
+//   칸의 'Key'는 **음수 = 아티팩트 번호의 음수**다('ArtifactKey') — 장비 개체 번호(DB, 양수)와 겹치지 않는다. 같은 번호의 칸은 Key가 같다.
+//   잠금은 번호 단위다('PlayerDataModel.IsArtifactLocked') — 같은 번호의 칸이 함께 잠긴다.
 //   창고 격자에는 붙이지 않는다 — 아티팩트는 창고에 맡길 수 없다(서버).
 public class EquipSlotSource : InventorySlotSource
 {
@@ -50,9 +51,6 @@ public class EquipSlotSource : InventorySlotSource
     // ※ 격자가 칸에 넘기는 즉시 쓰임이 끝난다('InventoryGridPresenter.ReadAptitudes'와 같은 규약).
     private readonly List<GlobalRarity>           _sockets = new List<GlobalRarity>();
     private readonly List<EnchantOptionTableRow?> _options = new List<EnchantOptionTableRow?>();
-
-    // 아티팩트 번호 — 처음 나온 칸 순서. 'Fill'이 매번 다시 채운다(매번 새로 만들지 않는다).
-    private readonly List<int> _artifactOrder = new List<int>();
 
     public EquipSlotSource(PlayerDataModel data, EContainer container) : base(container)
     {
@@ -87,39 +85,24 @@ public class EquipSlotSource : InventorySlotSource
         }
     }
 
-    // 아티팩트를 번호별로 합쳐 장비의 마지막 칸 뒤에 이어 붙인다 (Fill에서 호출 — 클래스 머리 주석).
-    // ※ 칸 번호는 화면 자리일 뿐 서버 번호가 아니다 — 그래서 아티팩트 칸은 끌지 못하게 격자가 막는다.
+    // 아티팩트 칸을 서버 칸 번호에 앉힌다 — 장비와 같은 번호 공간이다 (Fill에서 호출 — 클래스 머리 주석).
     private void FillArtifacts(List<PlacedSlot> into)
     {
-        int next = -1;
-
-        foreach (PlacedSlot placed in into)
-        {
-            next = System.Math.Max(next, placed.Slot);
-        }
-
-        _artifactOrder.Clear();
-
         foreach (ItemInfo stack in _data.ArtifactStacks)
         {
-            if (stack.Count > 0 && !_artifactOrder.Contains(stack.ItemId))
+            if (stack.Count <= 0)
             {
-                _artifactOrder.Add(stack.ItemId);
+                continue;
             }
-        }
-
-        foreach (int tid in _artifactOrder)
-        {
-            int count = _data.GetArtifactCount(tid);
 
             var slot = new SlotData(
-                ArtifactKey(tid),
-                GameDataLoader.GetArtifactName(tid),
-                Lang.Format("UI.Inventory.CountUnit", count),
-                GameDataLoader.GetArtifactRarity(tid),
-                VisualCatalog.ArtifactIconOf(tid)); // 아이콘이 없는 번호는 칸이 이름 첫 글자로 그린다
+                ArtifactKey(stack.ItemId),
+                GameDataLoader.GetArtifactName(stack.ItemId),
+                Lang.Format("UI.Inventory.CountUnit", stack.Count),
+                GameDataLoader.GetArtifactRarity(stack.ItemId),
+                VisualCatalog.ArtifactIconOf(stack.ItemId)); // 아이콘이 없는 번호는 칸이 이름 첫 글자로 그린다
 
-            into.Add(new PlacedSlot(slot, ++next));
+            into.Add(new PlacedSlot(slot, stack.Slot));
         }
     }
 
@@ -142,9 +125,9 @@ public class EquipSlotSource : InventorySlotSource
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => !IsArtifactKey(key) && _data.IsEquipped(key);
 
-    // 잠긴 장비 — 판매·경매 등록에서 빠진다(T-137).
-    // ※ 아티팩트는 잠금이 없다(서버 미지원 — 서버 이슈로 넘겼다).
-    public override bool IsLocked(long key) => !IsArtifactKey(key) && _data.FindEquip(key)?.IsLocked == true;
+    // 잠긴 장비 — 판매·경매 등록에서 빠진다(T-137). 아티팩트는 번호 단위다(T-188).
+    public override bool IsLocked(long key)
+        => IsArtifactKey(key) ? _data.IsArtifactLocked(ArtifactTidOf(key)) : _data.FindEquip(key)?.IsLocked == true;
 
     // 이 장비의 능력치 칸 — 칸마다 박힌 옵션의 등급, 빈 칸은 'None' (격자가 매번 그릴 때 호출).
     public override IReadOnlyList<GlobalRarity>? GetStatSockets(long key)
@@ -173,7 +156,7 @@ public class EquipSlotSource : InventorySlotSource
     {
         if (IsArtifactKey(key))
         {
-            return ArtifactText.BuildTooltip(_data, ArtifactTidOf(key), withControls: true);
+            return BuildArtifactTooltip(ArtifactTidOf(key));
         }
 
         EquipInfo? equip = FindEquip(key);
@@ -205,6 +188,29 @@ public class EquipSlotSource : InventorySlotSource
         // 조작 안내 — 칸에는 표시가 없어 눌러 봐야 안다('ResourceSlotSource'와 같다).
         return AddControls(content, rows => AddCommonControls(
             rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Equip.Cube")), equip.IsLocked));
+    }
+
+    // 아티팩트 칸 툴팁 — 공용 아티팩트 툴팁에 잠금 상태와 조작 줄을 붙인다 (BuildTooltip에서 호출).
+    // ※ 끌기 줄은 '칸 이동'이다 — 아티팩트는 창고에 못 가 장비 칸의 '창고로 끌기' 문구를 쓰지 않는다.
+    private TooltipContent? BuildArtifactTooltip(int artifactTid)
+    {
+        TooltipContent? content = ArtifactText.BuildTooltip(_data, artifactTid);
+
+        if (content == null)
+        {
+            return null;
+        }
+
+        bool locked = _data.IsArtifactLocked(artifactTid);
+
+        if (locked)
+        {
+            content.Row(Lang.Get("UI.Inventory.State"), Lang.Get("UI.WorkStation.Locked"));
+        }
+
+        content.Header(Lang.Get("UI.Inventory.Controls"));
+
+        return AddCommonControls(content.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.Artifact.Window")), locked);
     }
 
     // 개체 번호로 장비를 찾는다. 모르는 개체면 null (BuildTooltip에서 호출).

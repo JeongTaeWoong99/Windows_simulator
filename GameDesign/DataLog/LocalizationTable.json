@@ -3975,6 +3975,11 @@
     "EN": "You can only swap with a slot holding another resource when moving the whole stack. Drop it on an empty slot."
   },
   {
+    "Key": "UI.Result.StorageSlotArtifact",
+    "KR": "아티팩트가 있는 칸입니다. 아티팩트는 창고에 갈 수 없어 자리를 바꿀 수 없습니다. 빈 칸에 놓아 주세요.",
+    "EN": "An artifact is in that slot. Artifacts can't go to the warehouse, so they can't be swapped. Drop it on an empty slot."
+  },
+  {
     "Key": "UI.Result.StorageOverMaxStack",
     "KR": "그 칸은 이미 가득 찼습니다. 빈 칸에 놓아 주세요.",
     "EN": "That slot is full. Drop it on an empty slot."
@@ -5003,6 +5008,11 @@
     "Key": "UI.Inventory.AskAppraise",
     "KR": "몇 개를 감정할까? (1개 {0} 골드)",
     "EN": "How many to appraise? ({0} gold each)"
+  },
+  {
+    "Key": "UI.Inventory.AskAppraiseOne",
+    "KR": "{0} — 감정할까? ({1} 골드)",
+    "EN": "{0} — Appraise? ({1} gold)"
   },
   {
     "Key": "UI.Inventory.WaitAppraise",
@@ -6325,11 +6335,6 @@
     "EN": "Effects apply only once placed in the codex — one per kind, and it can't be undone"
   },
   {
-    "Key": "UI.Artifact.HelpToggle",
-    "KR": "장착한 아티팩트는 효과를 켜고 끌 수 있습니다 — 꺼 두면 효과가 없습니다",
-    "EN": "Codex artifacts can be turned on or off — off means no effect"
-  },
-  {
     "Key": "UI.Artifact.HelpSell",
     "KR": "남는 것은 우클릭으로 즉시 판매하거나, Ctrl+우클릭으로 경매에 올려 더 비싸게 팝니다",
     "EN": "Right-click extras to sell instantly, or Ctrl+right-click to list them on the auction for more"
@@ -6370,11 +6375,6 @@
     "EN": "You haven't found this artifact yet"
   },
   {
-    "Key": "UI.Artifact.Off",
-    "KR": "꺼짐",
-    "EN": "Off"
-  },
-  {
     "Key": "UI.Artifact.OwnedShort",
     "KR": "보유 {0}",
     "EN": "Owned {0}"
@@ -6405,16 +6405,6 @@
     "EN": "Effect"
   },
   {
-    "Key": "UI.Artifact.StateOn",
-    "KR": "장착 · 켜짐",
-    "EN": "Placed · On"
-  },
-  {
-    "Key": "UI.Artifact.StateOff",
-    "KR": "장착 · 꺼짐",
-    "EN": "Placed · Off"
-  },
-  {
     "Key": "UI.Artifact.StateNone",
     "KR": "도감에 없음",
     "EN": "Not in codex"
@@ -6430,24 +6420,9 @@
     "EN": "Place in Codex"
   },
   {
-    "Key": "UI.Artifact.TurnOff",
-    "KR": "효과 끄기",
-    "EN": "Turn Off"
-  },
-  {
-    "Key": "UI.Artifact.TurnOn",
-    "KR": "효과 켜기",
-    "EN": "Turn On"
-  },
-  {
     "Key": "UI.Artifact.WaitEquip",
     "KR": "도감 장착",
     "EN": "Place in Codex"
-  },
-  {
-    "Key": "UI.Artifact.WaitToggle",
-    "KR": "켜고 끄기",
-    "EN": "Turn On/Off"
   },
   {
     "Key": "UI.Artifact.Equipped",
@@ -6520,14 +6495,9 @@
     "EN": "Right-click extras to sell · Ctrl+right-click to auction"
   },
   {
-    "Key": "UI.Artifact.NoLock",
-    "KR": "아티팩트는 아직 잠글 수 없습니다",
-    "EN": "Artifacts can't be locked yet"
-  },
-  {
-    "Key": "UI.Artifact.NoMove",
-    "KR": "아티팩트 칸은 아직 옮길 수 없습니다",
-    "EN": "Artifact slots can't be moved yet"
+    "Key": "UI.Artifact.NoWarehouse",
+    "KR": "아티팩트는 창고에 맡길 수 없습니다",
+    "EN": "Artifacts can't be stored in the warehouse"
   },
   {
     "Key": "UI.Sell.KindArtifact",

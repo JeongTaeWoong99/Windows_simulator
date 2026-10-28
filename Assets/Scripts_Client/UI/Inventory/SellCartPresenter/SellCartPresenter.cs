@@ -473,7 +473,7 @@ public class SellCartPresenter : MonoBehaviour
                      entry.Count,
                      ShardValueText(SellCartModel.ArtifactInstantPrice(tid) * entry.Count, SellCartModel.ArtifactShards(tid) * entry.Count),
                      ItemIconContent.ForArtifact(tid, 0L),
-                     () => ArtifactText.BuildTooltip(_data, tid, withControls: false));
+                     () => ArtifactText.BuildTooltip(_data, tid));
         }
 
         int count = index;

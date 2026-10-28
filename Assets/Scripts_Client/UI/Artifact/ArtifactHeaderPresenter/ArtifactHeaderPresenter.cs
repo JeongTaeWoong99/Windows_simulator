@@ -96,11 +96,10 @@ public class ArtifactHeaderPresenter : MonoBehaviour
         NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.Gold((long)Math.Round(v))}", punch: false);
     }
 
-    // 도움말 — 얻는 법 · 장착 · 켜고 끄기 · 파는 법.
+    // 도움말 — 얻는 법 · 장착 · 파는 법. 켜고 끄기는 없다 — 장착하면 항상 켜짐(#90).
     private static TooltipContent BuildGuideTooltip()
         => new TooltipContent(Lang.Get("UI.Artifact.HelpTitle"))
             .Row(Lang.Get("UI.Artifact.HelpGet"), "")
             .Row(Lang.Get("UI.Artifact.HelpEquip"), "")
-            .Row(Lang.Get("UI.Artifact.HelpToggle"), "")
             .Row(Lang.Get("UI.Artifact.HelpSell"), "");
 }
