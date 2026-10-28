@@ -45,6 +45,7 @@ public partial class User
             ECheatCommand.GiveAccountExp   => CheatGiveAccountExp(req.Arg1),
             ECheatCommand.SendMail         => CheatSendMail(req.Arg1, req.Arg2, now),
             ECheatCommand.SetTraitLevel    => CheatSetTraitLevel(req.Arg1, req.Arg2, now),
+            ECheatCommand.SetBuildingLevel => CheatSetBuildingLevel(req.Arg1, req.Arg2),
             ECheatCommand.AdvanceTime      => CheatAdvanceTime(req.Arg1, now),
             ECheatCommand.ResetTime        => CheatResetTime(now),
             ECheatCommand.SetCondenseCount => CheatSetCondenseCount(req.Arg1, req.Arg2, now),
@@ -228,7 +229,7 @@ public partial class User
 
         // 캐릭터 경험치가 계정으로 흘러드는 것과 같은 함수 — 레벨업·포인트·저장·푸시가 같다.
         GainAccountExp(amount, notify: true);
-        return (EResultCode.Ok, $"계정 Lv{AccountLevel} Exp{AccountExp} 특성포인트{TraitPoint}");
+        return (EResultCode.Ok, $"계정 Lv{AccountLevel} Exp{AccountExp}");
     }
 
     private (EResultCode, string) CheatSendMail(long templateTid, long recipientUid, DateTime now)
@@ -266,6 +267,31 @@ public partial class User
         // 최대 레벨을 넘는 값은 어차피 최대로 잘린다 — int로 좁힐 때 넘침만 막는다.
         var changed = SetTraitLevels(targets, (int)Math.Min(level, int.MaxValue), now);
         return (EResultCode.Ok, $"특성 {targets.Count}개 중 {changed}개 변경 (요청 Lv{level})");
+    }
+
+    private (EResultCode, string) CheatSetBuildingLevel(long buildingTid, long level)
+    {
+        if (level < 0)
+        {
+            return (EResultCode.InvalidCheatArgs, "레벨이 음수");
+        }
+
+        List<BuildingTableRow> targets;
+        if (buildingTid == 0)
+        {
+            targets = _traitCatalog.Buildings.ToList();
+        }
+        else if (buildingTid > 0 && buildingTid <= int.MaxValue && _traitCatalog.TryGetBuilding((int)buildingTid, out var building))
+        {
+            targets = new List<BuildingTableRow> { building };
+        }
+        else
+        {
+            return (EResultCode.InvalidCheatArgs, $"BuildingTable에 없는 TID {buildingTid}");
+        }
+
+        var changed = SetBuildingLevels(targets, (int)Math.Min(level, int.MaxValue));
+        return (EResultCode.Ok, $"건물 {targets.Count}개 중 {changed}개 변경 (요청 Lv{level})");
     }
 
     private (EResultCode, string) CheatAdvanceTime(long seconds, DateTime now)

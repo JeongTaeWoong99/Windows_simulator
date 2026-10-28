@@ -8,6 +8,10 @@
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
+    "BuildingTID": 2,
+    "Column": 1,
+    "Row": 1,
+    "RequiredTraitTIDs": [],
     "Description": "농사 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
@@ -19,6 +23,10 @@
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
+    "BuildingTID": 2,
+    "Column": 2,
+    "Row": 1,
+    "RequiredTraitTIDs": [],
     "Description": "발굴 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
@@ -30,6 +38,10 @@
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
+    "BuildingTID": 2,
+    "Column": 3,
+    "Row": 1,
+    "RequiredTraitTIDs": [],
     "Description": "채굴 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
@@ -41,6 +53,10 @@
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
+    "BuildingTID": 2,
+    "Column": 4,
+    "Row": 1,
+    "RequiredTraitTIDs": [],
     "Description": "벌목 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
@@ -52,6 +68,10 @@
     "EffectValue": 0,
     "BaseLevel": 1,
     "MaxLevel": 5,
+    "BuildingTID": 2,
+    "Column": 5,
+    "Row": 1,
+    "RequiredTraitTIDs": [],
     "Description": "사냥 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
   },
   {
@@ -63,6 +83,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 1,
+    "Row": 2,
+    "RequiredTraitTIDs": [
+      101
+    ],
     "Description": "농사 작업속도 레벨당 +5% (테스트값)"
   },
   {
@@ -74,6 +100,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 2,
+    "Row": 2,
+    "RequiredTraitTIDs": [
+      102
+    ],
     "Description": "발굴 작업속도 레벨당 +5% (테스트값)"
   },
   {
@@ -85,6 +117,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 3,
+    "Row": 2,
+    "RequiredTraitTIDs": [
+      103
+    ],
     "Description": "채굴 작업속도 레벨당 +5% (테스트값)"
   },
   {
@@ -96,6 +134,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 4,
+    "Row": 2,
+    "RequiredTraitTIDs": [
+      104
+    ],
     "Description": "벌목 작업속도 레벨당 +5% (테스트값)"
   },
   {
@@ -107,6 +151,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 5,
+    "Row": 2,
+    "RequiredTraitTIDs": [
+      105
+    ],
     "Description": "사냥 작업속도 레벨당 +5% (테스트값)"
   },
   {
@@ -118,6 +168,10 @@
     "EffectValue": 20,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 3,
+    "Row": 0,
+    "RequiredTraitTIDs": [],
     "Description": "전 산업 산출량 레벨당 +2% (테스트값)"
   },
   {
@@ -129,6 +183,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 1,
+    "Row": 3,
+    "RequiredTraitTIDs": [
+      201
+    ],
     "Description": "농사 산출량 레벨당 +5% (테스트값)"
   },
   {
@@ -140,6 +200,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 2,
+    "Row": 3,
+    "RequiredTraitTIDs": [
+      202
+    ],
     "Description": "발굴 산출량 레벨당 +5% (테스트값)"
   },
   {
@@ -151,6 +217,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 3,
+    "Row": 3,
+    "RequiredTraitTIDs": [
+      203
+    ],
     "Description": "채굴 산출량 레벨당 +5% (테스트값)"
   },
   {
@@ -162,6 +234,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 4,
+    "Row": 3,
+    "RequiredTraitTIDs": [
+      204
+    ],
     "Description": "벌목 산출량 레벨당 +5% (테스트값)"
   },
   {
@@ -173,6 +251,12 @@
     "EffectValue": 50,
     "BaseLevel": 0,
     "MaxLevel": 10,
+    "BuildingTID": 2,
+    "Column": 5,
+    "Row": 3,
+    "RequiredTraitTIDs": [
+      205
+    ],
     "Description": "사냥 산출량 레벨당 +5% (테스트값)"
   }
 ]

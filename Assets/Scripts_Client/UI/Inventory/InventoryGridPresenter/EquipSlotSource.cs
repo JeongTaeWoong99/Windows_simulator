@@ -117,7 +117,7 @@ public class EquipSlotSource : InventorySlotSource
                 GameDataLoader.GetArtifactName(tid),
                 Lang.Format("UI.Inventory.CountUnit", count),
                 GameDataLoader.GetArtifactRarity(tid),
-                null); // 🎨 아이콘 그림 전 — 칸이 이름 첫 글자로 그린다
+                VisualCatalog.ArtifactIconOf(tid)); // 아이콘이 없는 번호는 칸이 이름 첫 글자로 그린다
 
             into.Add(new PlacedSlot(slot, ++next));
         }

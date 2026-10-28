@@ -111,27 +111,27 @@
   },
   {
     "Key": "Building.1.Name",
-    "KR": "농장",
+    "KR": "관리소",
     "EN": "Farm"
   },
   {
     "Key": "Building.2.Name",
-    "KR": "발굴 캠프",
+    "KR": "작업장",
     "EN": "Dig Camp"
   },
   {
     "Key": "Building.3.Name",
-    "KR": "광산",
+    "KR": "상회",
     "EN": "Mine"
   },
   {
     "Key": "Building.4.Name",
-    "KR": "제재소",
+    "KR": "숙소",
     "EN": "Sawmill"
   },
   {
     "Key": "Building.5.Name",
-    "KR": "사냥꾼 오두막",
+    "KR": "감정소",
     "EN": "Hunter's Hut"
   },
   {
@@ -3333,156 +3333,6 @@
     "Key": "Unlock.1007.Name",
     "KR": "작업슬롯 7번",
     "EN": "Work Slot 7"
-  },
-  {
-    "Key": "Unlock.4101.Name",
-    "KR": "농장 Lv1",
-    "EN": "Farm Lv1"
-  },
-  {
-    "Key": "Unlock.4102.Name",
-    "KR": "농장 Lv2",
-    "EN": "Farm Lv2"
-  },
-  {
-    "Key": "Unlock.4103.Name",
-    "KR": "농장 Lv3",
-    "EN": "Farm Lv3"
-  },
-  {
-    "Key": "Unlock.4111.Name",
-    "KR": "농장 작업속도 I",
-    "EN": "Farm Work Speed I"
-  },
-  {
-    "Key": "Unlock.4112.Name",
-    "KR": "농장 산출량 I",
-    "EN": "Farm Yield I"
-  },
-  {
-    "Key": "Unlock.4113.Name",
-    "KR": "농장 작업속도 II",
-    "EN": "Farm Work Speed II"
-  },
-  {
-    "Key": "Unlock.4201.Name",
-    "KR": "발굴 캠프 Lv1",
-    "EN": "Dig Camp Lv1"
-  },
-  {
-    "Key": "Unlock.4202.Name",
-    "KR": "발굴 캠프 Lv2",
-    "EN": "Dig Camp Lv2"
-  },
-  {
-    "Key": "Unlock.4203.Name",
-    "KR": "발굴 캠프 Lv3",
-    "EN": "Dig Camp Lv3"
-  },
-  {
-    "Key": "Unlock.4211.Name",
-    "KR": "발굴 캠프 작업속도 I",
-    "EN": "Dig Camp Work Speed I"
-  },
-  {
-    "Key": "Unlock.4212.Name",
-    "KR": "발굴 캠프 산출량 I",
-    "EN": "Dig Camp Yield I"
-  },
-  {
-    "Key": "Unlock.4213.Name",
-    "KR": "발굴 캠프 작업속도 II",
-    "EN": "Dig Camp Work Speed II"
-  },
-  {
-    "Key": "Unlock.4301.Name",
-    "KR": "광산 Lv1",
-    "EN": "Mine Lv1"
-  },
-  {
-    "Key": "Unlock.4302.Name",
-    "KR": "광산 Lv2",
-    "EN": "Mine Lv2"
-  },
-  {
-    "Key": "Unlock.4303.Name",
-    "KR": "광산 Lv3",
-    "EN": "Mine Lv3"
-  },
-  {
-    "Key": "Unlock.4311.Name",
-    "KR": "광산 작업속도 I",
-    "EN": "Mine Work Speed I"
-  },
-  {
-    "Key": "Unlock.4312.Name",
-    "KR": "광산 산출량 I",
-    "EN": "Mine Yield I"
-  },
-  {
-    "Key": "Unlock.4313.Name",
-    "KR": "광산 작업속도 II",
-    "EN": "Mine Work Speed II"
-  },
-  {
-    "Key": "Unlock.4401.Name",
-    "KR": "제재소 Lv1",
-    "EN": "Sawmill Lv1"
-  },
-  {
-    "Key": "Unlock.4402.Name",
-    "KR": "제재소 Lv2",
-    "EN": "Sawmill Lv2"
-  },
-  {
-    "Key": "Unlock.4403.Name",
-    "KR": "제재소 Lv3",
-    "EN": "Sawmill Lv3"
-  },
-  {
-    "Key": "Unlock.4411.Name",
-    "KR": "제재소 작업속도 I",
-    "EN": "Sawmill Work Speed I"
-  },
-  {
-    "Key": "Unlock.4412.Name",
-    "KR": "제재소 산출량 I",
-    "EN": "Sawmill Yield I"
-  },
-  {
-    "Key": "Unlock.4413.Name",
-    "KR": "제재소 작업속도 II",
-    "EN": "Sawmill Work Speed II"
-  },
-  {
-    "Key": "Unlock.4501.Name",
-    "KR": "사냥꾼 오두막 Lv1",
-    "EN": "Hunter's Hut Lv1"
-  },
-  {
-    "Key": "Unlock.4502.Name",
-    "KR": "사냥꾼 오두막 Lv2",
-    "EN": "Hunter's Hut Lv2"
-  },
-  {
-    "Key": "Unlock.4503.Name",
-    "KR": "사냥꾼 오두막 Lv3",
-    "EN": "Hunter's Hut Lv3"
-  },
-  {
-    "Key": "Unlock.4511.Name",
-    "KR": "사냥꾼 오두막 작업속도 I",
-    "EN": "Hunter's Hut Work Speed I"
-  },
-  {
-    "Key": "Unlock.4512.Name",
-    "KR": "사냥꾼 오두막 산출량 I",
-    "EN": "Hunter's Hut Yield I"
-  },
-  {
-    "Key": "Unlock.4513.Name",
-    "KR": "사냥꾼 오두막 작업속도 II",
-    "EN": "Hunter's Hut Work Speed II"
   },
   {
     "Key": "UserTrait.101.Name",

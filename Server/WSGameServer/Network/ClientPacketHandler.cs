@@ -126,7 +126,23 @@ public static class ClientPacketHandler
         GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, GameClock.Instance.UtcNow);
     }
 
-    /// <summary>특성 찍기. 조건(해금 행)·포인트 판정은 User가 한다.</summary>
+    /// <summary>건물 업그레이드. 상한·골드·자원 판정과 차감은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_BuildingUpgradeRequest(ISession session, C_BuildingUpgradeRequest req)
+    {
+        ServerLog.Debug("건물", $"요청 BuildingTID={req.BuildingTID} sid={session.SessionId}");
+
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_BuildingUpgradeResponse { Result = EResultCode.NotLoggedIn, BuildingTID = req.BuildingTID });
+            return;
+        }
+
+        user.TryUpgradeBuilding(req.BuildingTID);
+    }
+
+    /// <summary>건물 트리 노드(특성) 찍기. 선행·포인트 판정은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_UserTraitLearnRequest(ISession session, C_UserTraitLearnRequest req)
     {
@@ -367,7 +383,7 @@ public static class ClientPacketHandler
         user.TryEquipArtifact(req.ArtifactTid, GameClock.Instance.UtcNow);
     }
 
-    /// <summary>도감에 장착한 아티팩트의 효과를 켜고 끈다(T-181).</summary>
+    /// <summary>옛 켜고 끄기 요청 — 바꾸지 않고 지금 상태로 답한다(#90 · 클라 전환 뒤 삭제).</summary>
     [PacketHandler]
     public static void Handle_C_ArtifactActiveRequest(ISession session, C_ArtifactActiveRequest req)
     {
@@ -380,7 +396,7 @@ public static class ClientPacketHandler
             return;
         }
 
-        user.TrySetArtifactActive(req.ArtifactTid, req.IsActive, GameClock.Instance.UtcNow);
+        user.ReplyArtifactActive(req.ArtifactTid);
     }
 
     /// <summary>캐릭터·장비 개체 판매. 보유·착용·배치 검증은 User가 한다.</summary>

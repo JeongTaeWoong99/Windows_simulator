@@ -14,9 +14,11 @@ namespace DesktopWindowControl.EditorTools
         public const string ItemIconsRoot   = IconsRoot + "/items";    // 'item_<ItemTID>.png' · 'item_0' = 대체
         public const string EquipIconsRoot  = IconsRoot + "/equips";   // 'equip_<EquipTID>.png' · 'equip_0' = 대체
         public const string IndustryIconsRoot = IconsRoot + "/industries"; // 'industry_<EIndustryType 값>.png' · 대체는 'item_0'
+        public const string ArtifactIconsRoot = IconsRoot + "/artifacts";  // 'artifact_<ArtifactTID>.png' · 대체 없음(이름 첫 글자)
         public const string ItemIconPrefix  = "item_";
         public const string EquipIconPrefix = "equip_";
         public const string IndustryIconPrefix = "industry_";
+        public const string ArtifactIconPrefix = "artifact_";
         public const string IconRecipePath  = IconsRoot + "/icon_recipe.asset";
 
         // 이펙트 — 'fx/<연출 키>/<키>_<부위>.png'. 굽지 않고 그린(또는 만든) 그대로 쓴다. 파일 이름이 목록의 찾는 이름이다

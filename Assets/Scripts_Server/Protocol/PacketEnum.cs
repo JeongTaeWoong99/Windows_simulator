@@ -68,10 +68,11 @@ namespace MikaProtocol
         CondenseMaxStar        = 705, // 이미 최고 ★ — 아무것도 바꾸지 않는다
 
         // ── 800~: 특성 ──
-        InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 최대 레벨 → TraitMaxLevel · 계정 레벨 미달 → UnlockLocked
-        NotEnoughTraitPoint = 801, // 남은 특성 포인트가 비용보다 적다 — 아무것도 바꾸지 않는다
+        InvalidUserTraitTID = 800, // UserTraitTable에 없는 TID. 최대 레벨 → TraitMaxLevel · 앞 노드 미완 → TraitPrerequisite
+        NotEnoughTraitPoint = 801, // 그 건물의 남은 포인트(건물 레벨 − 찍은 노드)가 비용보다 적다 — 아무것도 바꾸지 않는다
         TraitOnlyUnlock     = 802, // (쓰지 않음) 특성이 해금 노드이던 시절의 값 — 번호는 결번으로 남긴다
         TraitMaxLevel       = 803, // 이미 최대 레벨 — 아무것도 바꾸지 않는다
+        TraitPrerequisite   = 804, // 앞 노드(RequiredTraitTIDs)를 최대 레벨까지 찍지 않았다 (T-183)
 
         // ── 900~: 우편 ── 창고가 모자라 못 받으면 StorageFull(103)
         MailNotFound       = 900, // 없는(남의) 우편
@@ -119,6 +120,11 @@ namespace MikaProtocol
         ArtifactAlreadyEquipped = 1400, // 그 번호는 이미 도감에 장착했다 — 남는 것은 판매·거래소로
         ArtifactNotEquipped     = 1401, // 도감에 장착하지 않은 번호는 켜고 끌 수 없다
         InvalidArtifact         = 1402, // ArtifactTable에 없는 번호 · 빈 목록 · 0개 이하
+
+        // ── 1500~: 건물 (T-183) ── 골드 부족은 NotEnoughCurrency(102) · 자원 부족은 NotEnoughItem(301)
+        InvalidBuildingTID      = 1500, // BuildingTable에 없는 건물
+        BuildingMaxLevel        = 1501, // 이미 최대 레벨 — 아무것도 바꾸지 않는다
+        BuildingAccountLevelCap = 1502, // 다음 레벨이 계정 레벨을 넘는다 — 건물 레벨의 상한은 계정 레벨이다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -156,7 +162,7 @@ namespace MikaProtocol
         Settle           = 6,  // 작업슬롯 판정을 Arg1회 앞당겨 정산 (0이면 1회)
         Unlock           = 7,  // Arg1 = UnlockTID — 조건·차감 없이 연다(GrantUnlock)
         GiveEquip        = 8,  // Arg1 = EquipTID — 개체 1개 지급, 창고 첫 빈 칸
-        GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업·특성 포인트까지 실제 경로와 같다
+        GiveAccountExp   = 9,  // Arg1 = 계정 경험치 — 레벨업까지 실제 경로와 같다
         SendMail         = 10, // Arg1 = MailTemplateTID · Arg2 = 받는 UID(0이면 전체 우편 — 템플릿의 PeriodDays 동안)
         SetTraitLevel    = 11, // Arg1 = UserTraitTID(0이면 전 특성) · Arg2 = 레벨 — 조건·포인트 없이 정한다. 기본~최대로 자른다
         AdvanceTime      = 12, // Arg1 = 넘길 초 (> 0, 누적) — 서버 전체의 게임 시계를 앞으로. 채취는 쌓이지 않는다
@@ -164,6 +170,7 @@ namespace MikaProtocol
         SetCondenseCount = 14, // Arg1 = CharacterId(개체) · Arg2 = 응축 누적 재료 수 — 재료 없이 정한다. 0~최고 ★ 기준으로 자른다
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
         SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
+        SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
     }
 
     public enum EItemChangeKind : byte

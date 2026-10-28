@@ -45,6 +45,16 @@ public class CharacterTicketSheetTest
     }
 
     [Fact]
+    public void 캐릭터를_주는_풀은_전부_골드로_직접_뽑을_수_없다()
+    {
+        // 캐릭터는 상점 뽑기권으로만 얻는다(T-184) — 골드 직접 풀이 남으면 뽑기권 가격이 우회된다.
+        foreach (var gachaId in GameTable.GachaCharacterTable.All.Select(r => r.GachaId).Distinct())
+        {
+            GameTable.GachaInfoTable[gachaId].CostCurrency.ShouldBe(CurrencyType.None, $"캐릭터 풀 {gachaId}");
+        }
+    }
+
+    [Fact]
     public void 상점_가격은_기대_판매가와_되팔기_값보다_비싸다()
     {
         foreach (var (shop, item, pool) in Tickets())

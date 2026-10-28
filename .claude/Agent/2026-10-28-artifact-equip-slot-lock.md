@@ -26,3 +26,9 @@ tags: [server, artifact, storage, lock, migration]
 - 클라 `EquipSlotSource.FillArtifacts`(임시 자리 계산)를 서버 칸 번호로 바꿔야 한다. 이슈 #87로 넘겼다.
 - 자원 탭 `Inventory.Load`의 비킴도 저장하지 않는 것은 예전과 같다. 같은 복제 위험이 있지만 손대지 않았다.
 - 아티팩트 지급 치트는 없다. `GiveItem`으로 미감정 유물을 받아 감정해 확인한다.
+
+## 업데이트 (2026-10-28) — main 머지
+
+- T-183(#96)의 `0010-building-trait-tree` · T-181의 `0011-artifact-always-active`와 번호가 겹쳐 이 작업의 마이그레이션을 **`0012-artifact-equip-slot-lock.sql`** 로 옮겼다. 내용은 그대로(서로 독립).
+- `game.sqlite3`는 main 판(11)에 0012를 적용해 판 12로 맞췄다.
+- `PlayerLoginData`에 `ArtifactLockRows` 뒤 `BuildingRows`를 이어 붙였다. 유물감정 문서는 "항상 켜짐"(#90) 기준으로 합쳤다.

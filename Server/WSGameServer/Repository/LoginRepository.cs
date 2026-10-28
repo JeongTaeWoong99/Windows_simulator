@@ -19,6 +19,7 @@ public sealed class LoginRepository : IRepository
     private AccountRow?                _account;
     private List<UserUnlockRow>        _unlockRows        = new();
     private List<UserTraitRow>         _traitRows         = new();
+    private List<UserBuildingRow>      _buildingRows      = new();
     private List<UserArtifactRow>      _artifactRows      = new();
     private List<UserArtifactStackRow> _artifactStackRows = new();
     private List<UserEquipRow>         _equipRows          = new();
@@ -72,9 +73,9 @@ public sealed class LoginRepository : IRepository
               FROM t_user_workstation_slot WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 5) 계정 레벨·특성 포인트. 한 번도 경험치를 번 적 없으면 행이 없고, 레벨 1로 본다(재화와 같은 규약).
+        // 5) 계정 레벨. 한 번도 경험치를 번 적 없으면 행이 없고, 레벨 1로 본다(재화와 같은 규약).
         _account = await connection.QueryFirstOrDefaultAsync<AccountRow>(
-            "SELECT level, exp, trait_point FROM t_user_account WHERE user_id = @userId",
+            "SELECT level, exp FROM t_user_account WHERE user_id = @userId",
             new { userId = User.Uid });
 
         // 6) 열린 해금. 열린 것만 행이 있다 — 작업슬롯의 열린 칸이 이 목록으로 정해진다.
@@ -82,14 +83,18 @@ public sealed class LoginRepository : IRepository
             "SELECT unlock_tid FROM t_user_unlock WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 6-1) 특성 레벨. 기본 레벨보다 올린 특성만 행이 있다.
+        // 6-1) 건물 트리 노드(특성) 레벨과 건물 레벨. 기본 레벨보다 올린 노드 · 지은 건물만 행이 있다.
         _traitRows = await connection.QueryAsync<UserTraitRow>(
             "SELECT user_trait_tid, level FROM t_user_trait WHERE user_id = @userId",
             new { userId = User.Uid });
 
+        _buildingRows = await connection.QueryAsync<UserBuildingRow>(
+            "SELECT building_tid, level FROM t_user_building WHERE user_id = @userId",
+            new { userId = User.Uid });
+
         // 6-2) 아티팩트 도감(장착한 번호)과 인벤토리 아티팩트 탭 (T-181).
         _artifactRows = await connection.QueryAsync<UserArtifactRow>(
-            "SELECT artifact_tid, is_active FROM t_user_artifact WHERE user_id = @userId",
+            "SELECT artifact_tid FROM t_user_artifact WHERE user_id = @userId",
             new { userId = User.Uid });
 
         _artifactStackRows = await connection.QueryAsync<UserArtifactStackRow>(
@@ -125,7 +130,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows, _buildingRows),
             GameClock.Instance.UtcNow);
     }
 }

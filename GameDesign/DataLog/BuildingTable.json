@@ -1,32 +1,32 @@
 [
   {
     "BuildingTID": 1,
-    "Name": "농장",
-    "Industry": "Farming",
-    "Description": "산업당 1개 · TID = IndustryType 값"
+    "Name": "관리소",
+    "MaxLevel": 150,
+    "Description": "편의 — 판매 목록 · 정산 · 슬롯 · 창고 (트리는 기능이 생기면)"
   },
   {
     "BuildingTID": 2,
-    "Name": "발굴 캠프",
-    "Industry": "Excavation",
-    "Description": "산업당 1개 · TID = IndustryType 값"
+    "Name": "작업장",
+    "MaxLevel": 150,
+    "Description": "산업 — 옛 계정 특성 16개(개척 · 속도 · 산출량)"
   },
   {
     "BuildingTID": 3,
-    "Name": "광산",
-    "Industry": "Mining",
-    "Description": "산업당 1개 · TID = IndustryType 값"
+    "Name": "상회",
+    "MaxLevel": 150,
+    "Description": "거래 — 판매가 · 경매 (트리는 기능이 생기면)"
   },
   {
     "BuildingTID": 4,
-    "Name": "제재소",
-    "Industry": "Logging",
-    "Description": "산업당 1개 · TID = IndustryType 값"
+    "Name": "숙소",
+    "MaxLevel": 150,
+    "Description": "인력 — 캐릭터 · 뽑기 (트리는 기능이 생기면)"
   },
   {
     "BuildingTID": 5,
-    "Name": "사냥꾼 오두막",
-    "Industry": "Hunting",
-    "Description": "산업당 1개 · TID = IndustryType 값"
+    "Name": "감정소",
+    "MaxLevel": 150,
+    "Description": "수집 — 유물 · 아티팩트 (트리는 기능이 생기면)"
   }
 ]

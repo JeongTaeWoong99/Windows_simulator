@@ -3,11 +3,8 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-/// <summary>건물 노드 하나의 효과. 대상 산업은 노드가 속한 건물의 산업이다.</summary>
-public readonly record struct BuildingNodeEffect(IndustryType Industry, BuildingEffectType EffectType, int EffectValue);
-
 /// <summary>
-/// <c>UnlockTable</c>·<c>WorkSlotTable</c>·건물 표 보관소. 해금 TID로 조건 행을, 작업슬롯 칸을, 건물 노드 효과를 찾아 준다.
+/// <c>UnlockTable</c>·<c>WorkSlotTable</c> 보관소. 해금 TID로 조건 행과 작업슬롯 칸을 찾아 준다.
 ///
 /// <para>
 /// 서버 시작 시 <c>GameTable.LoadAll</c> 다음에 <see cref="LoadAll"/>을 한 번 부르고, 이후에는 조회만 한다.
@@ -20,7 +17,6 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     private readonly Dictionary<int, UnlockTableRow> _unlocks = new();
     private readonly List<WorkSlotTableRow> _workSlots = new();
     private readonly Dictionary<int, int> _workSlotByUnlock = new();
-    private readonly Dictionary<int, BuildingNodeEffect> _buildingNodes = new();
 
     /// <summary>등록된 해금 수.</summary>
     public int Count => _unlocks.Count;
@@ -34,8 +30,7 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
         // 작업슬롯 말고도 해금을 참조하는 콘텐츠. 산업 레벨은 특성(개척)으로 열려 지금은 0이다(T-108).
         var otherReferences = GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID);
 
-        Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All, otherReferences,
-             GameTable.BuildingTable.All, GameTable.BuildingNodeTable.All);
+        Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All, otherReferences);
     }
 
     /// <summary>행 목록으로 인덱스를 만들고 검증한다. 데이터 오류면 예외 — 조용히 돌면 영영 못 여는 해금이 생긴다.</summary>
@@ -43,9 +38,7 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     public void Load(
         IEnumerable<UnlockTableRow>   unlockRows,
         IEnumerable<WorkSlotTableRow> workSlotRows,
-        IEnumerable<int>?             otherReferences = null,
-        IEnumerable<BuildingTableRow>?     buildingRows     = null,
-        IEnumerable<BuildingNodeTableRow>? buildingNodeRows = null)
+        IEnumerable<int>?             otherReferences = null)
     {
         ArgumentNullException.ThrowIfNull(unlockRows);
         ArgumentNullException.ThrowIfNull(workSlotRows);
@@ -53,7 +46,6 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
         _unlocks.Clear();
         _workSlots.Clear();
         _workSlotByUnlock.Clear();
-        _buildingNodes.Clear();
 
         foreach (var row in unlockRows)
         {
@@ -68,7 +60,6 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
         ValidateRequirements();
         ValidateItemCosts();
         IndexWorkSlots();
-        IndexBuildingNodes(buildingRows ?? Array.Empty<BuildingTableRow>(), buildingNodeRows ?? Array.Empty<BuildingNodeTableRow>());
         WarnUnreferenced(otherReferences?.ToHashSet() ?? new HashSet<int>());
     }
 
@@ -78,10 +69,6 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     /// <summary>이 해금이 여는 작업슬롯 칸 번호. 슬롯이 아닌 해금(산업 레벨 등)이나 0이면 false.</summary>
     public bool TryGetWorkSlotOf(int unlockTid, out int slotIndex)
         => _workSlotByUnlock.TryGetValue(unlockTid, out slotIndex);
-
-    /// <summary>이 해금이 건물 레벨·노드면 그 효과. 레벨 행은 효과가 <c>None</c>이다.</summary>
-    public bool TryGetBuildingNode(int unlockTid, out BuildingNodeEffect node)
-        => _buildingNodes.TryGetValue(unlockTid, out node);
 
     // 선행 그래프를 깊이 우선으로 돌며 순환·자기 참조·없는 TID를 잡는다.
     private void ValidateRequirements()
@@ -165,40 +152,11 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
         }
     }
 
-    // 건물 노드를 해금 TID로 역색인하고, 노드의 산업을 건물 표에서 정한다.
-    private void IndexBuildingNodes(IEnumerable<BuildingTableRow> buildingRows, IEnumerable<BuildingNodeTableRow> nodeRows)
-    {
-        var industryByBuilding = buildingRows.ToDictionary(b => b.BuildingTID, b => b.Industry);
-
-        foreach (var node in nodeRows)
-        {
-            if (!_unlocks.ContainsKey(node.UnlockTID))
-            {
-                throw new InvalidOperationException($"BuildingNodeTable의 UnlockTID {node.UnlockTID}이(가) UnlockTable에 없습니다");
-            }
-
-            if (!industryByBuilding.TryGetValue(node.BuildingTID, out var industry))
-            {
-                throw new InvalidOperationException($"BuildingNodeTable {node.UnlockTID}의 건물 {node.BuildingTID}이(가) BuildingTable에 없습니다");
-            }
-
-            if (!_buildingNodes.TryAdd(node.UnlockTID, new BuildingNodeEffect(industry, node.EffectType, node.EffectValue)))
-            {
-                throw new InvalidOperationException($"UnlockTID {node.UnlockTID}을(를) 건물 노드 두 행이 함께 참조합니다 (해금 1:1 위반)");
-            }
-
-            if (_workSlotByUnlock.ContainsKey(node.UnlockTID))
-            {
-                throw new InvalidOperationException($"UnlockTID {node.UnlockTID}을(를) 작업슬롯과 건물 노드가 함께 참조합니다 (해금 1:1 위반)");
-            }
-        }
-    }
-
     private void WarnUnreferenced(HashSet<int> otherReferences)
     {
         foreach (var tid in _unlocks.Keys)
         {
-            if (!_workSlotByUnlock.ContainsKey(tid) && !_buildingNodes.ContainsKey(tid) && !otherReferences.Contains(tid))
+            if (!_workSlotByUnlock.ContainsKey(tid) && !otherReferences.Contains(tid))
             {
                 ServerLog.Warn("해금", $"어느 콘텐츠도 참조하지 않는 UnlockTID {tid} — 오타이거나 죽은 행일 수 있습니다");
             }

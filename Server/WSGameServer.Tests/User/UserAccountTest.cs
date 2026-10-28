@@ -4,8 +4,8 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 계정 레벨 검증 — <b>캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다</b>, 레벨이 오르면 그 레벨의 특성 포인트를 준다.
-/// 깨지면: 계정이 안 자라 특성 트리가 영영 안 열리거나, 포인트가 두 번 들어와 트리가 공짜가 된다.
+/// 계정 레벨 검증 — <b>캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다</b>. 계정 레벨은 건물 레벨의 상한이다(T-183).
+/// 깨지면: 계정이 안 자라 건물이 영영 Lv1에 묶인다.
 /// </summary>
 public class UserAccountTest
 {
@@ -17,7 +17,7 @@ public class UserAccountTest
     public UserAccountTest() => GameTableFixture.EnsureLoaded();
 
     /// <summary>
-    /// 테스트 전용 곡선 — Lv2 = 10 · Lv3 = 20 · Lv4 = 30. 특성 포인트는 Lv2에서 1, Lv4에서 2.
+    /// 테스트 전용 곡선 — Lv2 = 10 · Lv3 = 20 · Lv4 = 30.
     /// 캐릭터 곡선은 Lv2 = 1000으로 멀리 둬 캐릭터 레벨업이 끼어들지 않게 한다.
     /// </summary>
     private static (User User, TestUserBuilder B) NewUser()
@@ -25,10 +25,10 @@ public class UserAccountTest
         var b = new TestUserBuilder();
         b.Accounts.Load(new[]
         {
-            new AccountLevelTableRow { AccountLevelTID = 1, RequiredExp = 0,  TraitPoint = 0 },
-            new AccountLevelTableRow { AccountLevelTID = 2, RequiredExp = 10, TraitPoint = 1 },
-            new AccountLevelTableRow { AccountLevelTID = 3, RequiredExp = 20, TraitPoint = 0 },
-            new AccountLevelTableRow { AccountLevelTID = 4, RequiredExp = 30, TraitPoint = 2 },
+            new AccountLevelTableRow { AccountLevelTID = 1, RequiredExp = 0 },
+            new AccountLevelTableRow { AccountLevelTID = 2, RequiredExp = 10 },
+            new AccountLevelTableRow { AccountLevelTID = 3, RequiredExp = 20 },
+            new AccountLevelTableRow { AccountLevelTID = 4, RequiredExp = 30 },
         });
         b.Growth.Load(new[]
         {
@@ -51,13 +51,12 @@ public class UserAccountTest
     }
 
     [Fact]
-    public void 계정은_레벨1_경험치0_포인트0에서_시작한다()
+    public void 계정은_레벨1_경험치0에서_시작한다()
     {
         var (user, _) = NewUser();
 
         user.AccountLevel.ShouldBe(1);
         user.AccountExp.ShouldBe(0);
-        user.TraitPoint.ShouldBe(0);
     }
 
     [Fact]
@@ -72,16 +71,15 @@ public class UserAccountTest
     }
 
     [Fact]
-    public void 계정_레벨이_오르면_도달한_레벨의_특성_포인트를_준다()
+    public void 경험치가_차면_여러_레벨을_한_번에_오른다()
     {
-        // 10(Lv2) + 20(Lv3) + 30(Lv4) = 60 → Lv4, 남은 0. 포인트는 Lv2의 1 + Lv4의 2 = 3
+        // 10(Lv2) + 20(Lv3) + 25 = 55 → Lv3, 남은 25
         var (user, _) = NewUser();
 
-        user.GrantCharacterExp(Worker(user), 60, notify: true);
+        user.GrantCharacterExp(Worker(user), 55, notify: true);
 
-        user.AccountLevel.ShouldBe(4);
-        user.AccountExp.ShouldBe(0);
-        user.TraitPoint.ShouldBe(3);
+        user.AccountLevel.ShouldBe(3);
+        user.AccountExp.ShouldBe(25);
     }
 
     [Fact]
@@ -107,7 +105,6 @@ public class UserAccountTest
         var pushed = b.Channel.SentOf<S_AccountLevelResponse>().Last();
         pushed.Level.ShouldBe(2);
         pushed.Exp.ShouldBe(5);
-        pushed.TraitPoint.ShouldBe(1);
     }
 
     [Fact]
@@ -115,11 +112,10 @@ public class UserAccountTest
     {
         var (user, _) = NewUser();
 
-        user.LoadAccount(new AccountRow { level = 3, exp = 4, trait_point = 2 });
+        user.LoadAccount(new AccountRow { level = 3, exp = 4 });
 
         user.AccountLevel.ShouldBe(3);
         user.AccountExp.ShouldBe(4);
-        user.TraitPoint.ShouldBe(2);
     }
 
     [Fact]
@@ -131,6 +127,6 @@ public class UserAccountTest
         user.LoadAccount(null);
 
         user.AccountLevel.ShouldBe(1);
-        user.TraitPoint.ShouldBe(0);
+        user.AccountExp.ShouldBe(0);
     }
 }

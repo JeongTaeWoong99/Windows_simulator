@@ -10,10 +10,10 @@
   {
     "GachaInfoTID": 2,
     "Name": "캐릭터 소환",
-    "CostCurrency": "Gold",
-    "CostSingle": 1000,
-    "CostMulti": 10000,
-    "Description": "캐릭터 풀 30종"
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "캐릭터 풀 30종 — 닫음: 캐릭터는 상점 뽑기권으로(T-184)"
   },
   {
     "GachaInfoTID": 3,

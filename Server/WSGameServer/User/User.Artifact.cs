@@ -5,8 +5,8 @@ namespace WSGameServer;
 
 /// <summary>
 /// 아티팩트(T-150 · T-181). 감정한 아티팩트는 <b>인벤토리 아티팩트 탭</b>에 번호별로 쌓이고, 번호마다 1개를 <b>도감에 장착</b>한다.
-/// <b>도감에 장착하고 켜 둔 번호만 효과가 붙는다</b> — 인벤토리에 몇 개가 있든 효과는 없다. 효과는 특성과 같은 자리에 더한다.
-/// 장착은 되돌릴 수 없다 — 빼는 대신 끈다.
+/// <b>도감에 장착한 번호만 효과가 붙는다</b> — 인벤토리에 몇 개가 있든 효과는 없다. 효과는 특성과 같은 자리에 더한다.
+/// 장착은 되돌릴 수 없고, 장착한 번호는 항상 켜져 있다(#90).
 /// </summary>
 public partial class User
 {
@@ -16,8 +16,8 @@ public partial class User
     /// <summary>아티팩트 칸 하나에 쌓이는 같은 번호의 상한 — Constants.xlsx.</summary>
     public static int ArtifactMaxStack => (int)Constants.ArtifactMaxStack;
 
-    // 도감에 장착한 번호 → 켜짐.
-    private readonly Dictionary<int, bool> _codex = new();
+    // 도감에 장착한 번호.
+    private readonly HashSet<int> _codex = new();
 
     /// <summary>인벤토리 아티팩트 칸. 키(<c>Item.Id</c>)는 아티팩트 번호다. 장비 칸과 한 격자를 쓴다(T-188). 창고에는 없다.</summary>
     public Inventory Artifacts { get; }
@@ -30,7 +30,7 @@ public partial class User
         {
             if (IsKnownArtifact(row.artifact_tid, "도감"))
             {
-                _codex[row.artifact_tid] = row.is_active != 0;
+                _codex.Add(row.artifact_tid);
             }
         }
 
@@ -59,17 +59,15 @@ public partial class User
     /// <summary>인벤토리에 있는 그 번호의 수량(칸 합계). 도감에 장착한 1개는 세지 않는다.</summary>
     public int GetArtifactCount(int artifactTid) => Artifacts.GetCount(artifactTid);
 
-    public bool IsArtifactEquipped(int artifactTid) => _codex.ContainsKey(artifactTid);
+    public bool IsArtifactEquipped(int artifactTid) => _codex.Contains(artifactTid);
 
-    public bool IsArtifactActive(int artifactTid) => _codex.GetValueOrDefault(artifactTid);
-
-    /// <summary>도감 스냅샷을 보낸다(로그인 직후 · 장착 · 켜고 끄기).</summary>
+    /// <summary>도감 스냅샷을 보낸다(로그인 직후 · 장착).</summary>
     public void SendArtifactList()
     {
         Send(new S_ArtifactListResponse
         {
-            Artifacts = _codex.OrderBy(p => p.Key)
-                .Select(p => new ArtifactCodexInfo { ArtifactTid = p.Key, IsActive = p.Value })
+            Artifacts = _codex.Order()
+                .Select(tid => new ArtifactCodexInfo { ArtifactTid = tid, IsActive = true })
                 .ToList(),
         });
     }
@@ -144,7 +142,7 @@ public partial class User
     }
 
     /// <summary>
-    /// 인벤토리의 아티팩트 1개를 도감에 장착한다. 번호마다 한 번이고 켜진 채로 시작한다.
+    /// 인벤토리의 아티팩트 1개를 도감에 장착한다. 번호마다 한 번이다.
     /// 새 효과가 속도·산출량을 바꾸면 <b>켜기 전에 정산</b>한다 — 지난 구간에 소급되지 않게.
     /// </summary>
     public void TryEquipArtifact(int artifactTid, DateTime now)
@@ -167,7 +165,7 @@ public partial class User
             return;
         }
 
-        SwitchArtifactEffect(artifact, now, () => _codex[artifactTid] = true);
+        SwitchArtifactEffect(artifact, now, () => _codex.Add(artifactTid));
         PostDBTask(new EquipArtifactRepository(this, artifactTid, changes));
 
         ServerLog.Info("아티팩트", $"도감 장착 Uid={Uid} ArtifactTID={artifactTid}");
@@ -187,25 +185,19 @@ public partial class User
         }
     }
 
-    /// <summary>도감에 장착한 번호의 효과를 켜고 끈다. 지금과 같으면 아무것도 바꾸지 않고 Ok다.</summary>
-    public void TrySetArtifactActive(int artifactTid, bool isActive, DateTime now)
+    /// <summary>
+    /// 옛 켜고 끄기 요청에 지금 상태로만 답한다 — 장착한 번호는 항상 켜져 있다(#90).
+    /// 클라가 요청을 지우면 패킷과 함께 없앤다.
+    /// </summary>
+    public void ReplyArtifactActive(int artifactTid)
     {
-        if (!_codex.TryGetValue(artifactTid, out var current) || !GameTable.ArtifactTable.TryGet(artifactTid, out var artifact))
+        var equipped = IsArtifactEquipped(artifactTid);
+        Send(new S_ArtifactActiveResponse
         {
-            ServerLog.Warn("아티팩트", $"켜고 끄기 거절 — 장착 안 한 번호. Uid={Uid} ArtifactTID={artifactTid}");
-            Send(new S_ArtifactActiveResponse { Result = EResultCode.ArtifactNotEquipped, ArtifactTid = artifactTid });
-            return;
-        }
-
-        if (current != isActive)
-        {
-            SwitchArtifactEffect(artifact, now, () => _codex[artifactTid] = isActive);
-            PostDBTask(new SaveArtifactActiveRepository(this, artifactTid, isActive));
-            ServerLog.Info("아티팩트", $"{(isActive ? "켬" : "끔")} Uid={Uid} ArtifactTID={artifactTid}");
-        }
-
-        Send(new S_ArtifactActiveResponse { Result = EResultCode.Ok, ArtifactTid = artifactTid, IsActive = isActive });
-        SendArtifactList();
+            Result      = equipped ? EResultCode.Ok : EResultCode.ArtifactNotEquipped,
+            ArtifactTid = artifactTid,
+            IsActive    = equipped,
+        });
     }
 
     /// <summary>
@@ -263,7 +255,7 @@ public partial class User
         }
     }
 
-    // 효과가 켜지거나 꺼지는 순간 — 작업에 닿는 효과면 바꾸기 전에 정산하고, 속도면 바꾼 뒤 다시 매긴다.
+    // 효과가 붙는 순간(장착) — 작업에 닿는 효과면 바꾸기 전에 정산하고, 속도면 바꾼 뒤 다시 매긴다.
     private void SwitchArtifactEffect(ArtifactTableRow artifact, DateTime now, Action apply)
     {
         if (artifact.EffectType is UserTraitEffect.SpeedAdd or UserTraitEffect.YieldAdd or UserTraitEffect.RelicChanceAdd)
@@ -279,13 +271,13 @@ public partial class User
         }
     }
 
-    /// <summary>도감에 장착하고 켜 둔 아티팩트의 효과 합(천분율). 대상 산업이 <c>None</c>인 아티팩트는 전 산업에 붙는다 — 특성과 같은 규약.</summary>
+    /// <summary>도감에 장착한 아티팩트의 효과 합(천분율). 대상 산업이 <c>None</c>인 아티팩트는 전 산업에 붙는다 — 특성과 같은 규약.</summary>
     public int GetArtifactEffect(UserTraitEffect effect, IndustryType industry)
     {
         var sum = 0;
-        foreach (var (artifactTid, isActive) in _codex)
+        foreach (var artifactTid in _codex)
         {
-            if (!isActive || !GameTable.ArtifactTable.TryGet(artifactTid, out var artifact) || artifact.EffectType != effect)
+            if (!GameTable.ArtifactTable.TryGet(artifactTid, out var artifact) || artifact.EffectType != effect)
             {
                 continue;
             }

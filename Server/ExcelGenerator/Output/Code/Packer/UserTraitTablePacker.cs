@@ -14,15 +14,19 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static UserTraitTableRow Parse(string[] cells) => new()
         {
-            UserTraitTID = PackerUtil.ParseInt(cells[0], Table, "UserTraitTID", 1, null),
-            Name         = PackerUtil.RequireString(cells[1], Table, "Name"),
-            TraitPoint   = PackerUtil.ParseInt(cells[2], Table, "TraitPoint", 1, null),
-            EffectType   = PackerUtil.ParseEnum<UserTraitEffect>(cells[3], Table, "EffectType"),
-            Industry     = PackerUtil.ParseEnum<IndustryType>(cells[4], Table, "Industry"),
-            EffectValue  = PackerUtil.ParseInt(cells[5], Table, "EffectValue", 0, null),
-            BaseLevel    = PackerUtil.ParseInt(cells[6], Table, "BaseLevel", 0, null),
-            MaxLevel     = PackerUtil.ParseInt(cells[7], Table, "MaxLevel", 1, null),
-            Description  = cells[8].Length > 0 ? PackerUtil.RequireString(cells[8], Table, "Description") : "",
+            UserTraitTID      = PackerUtil.ParseInt(cells[0], Table, "UserTraitTID", 1, null),
+            Name              = PackerUtil.RequireString(cells[1], Table, "Name"),
+            TraitPoint        = PackerUtil.ParseInt(cells[2], Table, "TraitPoint", 1, null),
+            EffectType        = PackerUtil.ParseEnum<UserTraitEffect>(cells[3], Table, "EffectType"),
+            Industry          = PackerUtil.ParseEnum<IndustryType>(cells[4], Table, "Industry"),
+            EffectValue       = PackerUtil.ParseInt(cells[5], Table, "EffectValue", 0, null),
+            BaseLevel         = PackerUtil.ParseInt(cells[6], Table, "BaseLevel", 0, null),
+            MaxLevel          = PackerUtil.ParseInt(cells[7], Table, "MaxLevel", 1, null),
+            BuildingTID       = PackerUtil.ParseInt(cells[8], Table, "BuildingTID", 1, null),
+            Column            = PackerUtil.ParseInt(cells[9], Table, "Column", 0, null),
+            Row               = PackerUtil.ParseInt(cells[10], Table, "Row", 0, null),
+            RequiredTraitTIDs = cells[11].Length > 0 ? PackerUtil.ParseIntArray(cells[11], Table, "RequiredTraitTIDs") : System.Array.Empty<int>(),
+            Description       = cells[12].Length > 0 ? PackerUtil.RequireString(cells[12], Table, "Description") : "",
         };
 
         /// <summary>모든 행을 파싱해 MemoryPack 바이너리로 직렬화한다. 실패 시 행 번호를 포함해 예외를 던진다.</summary>

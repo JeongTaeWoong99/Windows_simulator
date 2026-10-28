@@ -52,8 +52,8 @@ public partial class User
     }
 
     /// <summary>
-    /// 특성을 1레벨 올린다. 조건은 다음 레벨의 계정 레벨 + 특성 포인트다.
-    /// <b>포인트는 조건을 전부 통과한 뒤에만 빠진다</b> — 거절 경로에서 포인트가 움직이지 않는다.
+    /// 건물 트리 노드를 1레벨 올린다(T-183). 조건은 앞 노드 최대 레벨 + 그 건물의 남은 포인트다 — 계정 레벨로는 잠그지 않는다.
+    /// 포인트는 저장하지 않고 레벨에서 센다 — 레벨이 오르는 것이 곧 포인트를 쓰는 것이다.
     /// </summary>
     public void TryLearnTrait(int userTraitTid, DateTime now)
     {
@@ -65,21 +65,25 @@ public partial class User
 
         var current = GetTraitLevel(userTraitTid);
         var next    = current + 1;
-        if (next > trait.MaxLevel || !_traitCatalog.TryGetLevel(userTraitTid, next, out var levelRow))
+        if (next > trait.MaxLevel)
         {
             Reject(EResultCode.TraitMaxLevel, $"최대 레벨 {trait.MaxLevel}", current);
             return;
         }
 
-        if (AccountLevel < levelRow.AccountLevel)
+        foreach (var required in trait.RequiredTraitTIDs)
         {
-            Reject(EResultCode.UnlockLocked, $"계정 Lv{AccountLevel} < {levelRow.AccountLevel}", current);
-            return;
+            if (_traitCatalog.TryGet(required, out var pre) && GetTraitLevel(required) < pre.MaxLevel)
+            {
+                Reject(EResultCode.TraitPrerequisite, $"앞 노드 {required} Lv{GetTraitLevel(required)} < {pre.MaxLevel}", current);
+                return;
+            }
         }
 
-        if (!TrySpendTraitPoint(trait.TraitPoint))
+        var points = GetBuildingPoints(trait.BuildingTID);
+        if (points < trait.TraitPoint)
         {
-            Reject(EResultCode.NotEnoughTraitPoint, $"포인트 {TraitPoint} < {trait.TraitPoint}", current);
+            Reject(EResultCode.NotEnoughTraitPoint, $"건물 {trait.BuildingTID} 포인트 {points} < {trait.TraitPoint}", current);
             return;
         }
 
@@ -108,7 +112,7 @@ public partial class User
         }
     }
 
-    /// <summary>조건·포인트 없이 특성 레벨을 정한다(치트 전용). 특성마다 기본~최대 레벨로 자르고, 바뀐 개수를 돌려준다.</summary>
+    /// <summary>선행·포인트 없이 특성 레벨을 정한다(치트 전용). 특성마다 기본~최대 레벨로 자르고, 바뀐 개수를 돌려준다.</summary>
     private int SetTraitLevels(IReadOnlyList<UserTraitTableRow> traits, int level, DateTime now)
     {
         var changes = traits

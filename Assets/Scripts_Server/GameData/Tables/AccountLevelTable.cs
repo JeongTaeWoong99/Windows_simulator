@@ -12,7 +12,6 @@ namespace GameData
     {
         public int    AccountLevelTID { get; set; }        // int [1..-]
         public long   RequiredExp     { get; set; }        // long [0..-]
-        public int    TraitPoint      { get; set; }        // int [0..-]
         public string Description     { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
     }
 }
