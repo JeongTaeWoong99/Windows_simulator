@@ -36,7 +36,7 @@ public class ArtifactAuctionTest : IDisposable
         user.OnAuctionStateLoaded(0);
         user.GainGold(1000);
         user.LoadArtifacts(
-            equipped ? new[] { new UserArtifactRow { artifact_tid = FishermanCharm, is_active = 1 } } : Array.Empty<UserArtifactRow>(),
+            equipped ? new[] { new UserArtifactRow { artifact_tid = FishermanCharm } } : Array.Empty<UserArtifactRow>(),
             charms > 0 ? new[] { new UserArtifactStackRow { slot = 0, artifact_tid = FishermanCharm, count = charms } } : Array.Empty<UserArtifactStackRow>());
 
         b.Channel.Sent.Clear();

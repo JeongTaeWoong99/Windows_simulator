@@ -4,7 +4,7 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 특성 레벨 치트(<c>SetTraitLevel</c> · T-115) — 계정 레벨 조건·포인트 없이 특성 레벨을 정한다.
+/// 특성 레벨 치트(<c>SetTraitLevel</c> · T-115) — 선행·건물 포인트 없이 특성 레벨을 정한다.
 /// 레벨형 특성(T-108) 이후 <c>Unlock</c> 치트로는 특성이 오르지 않아, 이것이 없으면 산업 Lv5 확인에 계정 Lv50이 필요하다.
 /// </summary>
 public class UserCheatTraitTest
@@ -12,7 +12,7 @@ public class UserCheatTraitTest
     private static readonly DateTime Base = TestUserBuilder.Base;
 
     // 테스트 전용 특성 — 엑셀 값에 기대지 않는다.
-    //   102 발굴 개척: 기본 Lv1 · 최대 Lv3 · Lv2 계정 5 · Lv3 계정 15
+    //   102 발굴 개척: 기본 Lv1 · 최대 Lv3
     //   202 발굴 속도: 기본 Lv0 · 최대 Lv2 · 레벨당 +10%
     //   302 발굴 산출량: 기본 Lv0 · 최대 Lv2 · 레벨당 +100%
     private const int ExcavationPioneer = 102;
@@ -29,12 +29,10 @@ public class UserCheatTraitTest
         {
             UserTraitTID = tid, Name = $"특성 {tid}", TraitPoint = 1, EffectType = effect,
             Industry = IndustryType.Excavation, EffectValue = value, BaseLevel = baseLevel, MaxLevel = maxLevel,
+            BuildingTID = TestBuildings.Workshop,
         };
 
-    private static UserTraitLevelTableRow Level(int tid, int level, int accountLevel = 0)
-        => new() { UserTraitLevelTID = tid * 100 + level, UserTraitTID = tid, Level = level, AccountLevel = accountLevel };
-
-    /// <summary>계정 Lv1 · 특성 포인트 0 — 정상 경로로는 아무 특성도 못 올린다.</summary>
+    /// <summary>작업장 Lv0(포인트 0) — 정상 경로로는 아무 특성도 못 올린다.</summary>
     private static (User User, TestUserBuilder B) Admin()
     {
         var b = new TestUserBuilder().WithExcavationDrops();
@@ -45,12 +43,7 @@ public class UserCheatTraitTest
                 Trait(ExcavationSpeed, UserTraitEffect.SpeedAdd, 100, baseLevel: 0, maxLevel: 2),
                 Trait(ExcavationYield, UserTraitEffect.YieldAdd, 1000, baseLevel: 0, maxLevel: 2),
             },
-            new[]
-            {
-                Level(ExcavationPioneer, 2, accountLevel: 5), Level(ExcavationPioneer, 3, accountLevel: 15),
-                Level(ExcavationSpeed, 1), Level(ExcavationSpeed, 2),
-                Level(ExcavationYield, 1), Level(ExcavationYield, 2),
-            });
+            TestBuildings.TwoFree().Buildings, TestBuildings.TwoFree().Levels);
 
         var user = b.Build();
         user.AdminLevel = 1;
@@ -58,7 +51,6 @@ public class UserCheatTraitTest
         {
             new CharacterRow { character_id = CharacterId, character_tid = AllRounderTid, level = 1, exp = 0 },
         });
-        user.LoadAccount(new AccountRow { level = 1, exp = 0, trait_point = 0 });
 
         b.Channel.Sent.Clear();
         b.DB.Posted.Clear();
@@ -72,15 +64,14 @@ public class UserCheatTraitTest
         => b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem();
 
     [Fact]
-    public void 계정_레벨과_포인트가_모자라도_특성_레벨을_정한다()
+    public void 건물_포인트가_없어도_특성_레벨을_정한다()
     {
         var (user, b) = Admin();
 
-        user.ExecuteCheat(Req(ExcavationPioneer, 3), Base);   // Lv3는 계정 15가 조건이다
+        user.ExecuteCheat(Req(ExcavationPioneer, 3), Base);
 
         Response(b).Result.ShouldBe(EResultCode.Ok);
         user.GetTraitLevel(ExcavationPioneer).ShouldBe(3);
-        user.TraitPoint.ShouldBe(0);
     }
 
     [Fact]

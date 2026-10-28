@@ -36,8 +36,7 @@ public class RelicAppraiseTest
         return (user, b);
     }
 
-    private static UserArtifactRow Equipped(int artifactTid, bool isActive = true)
-        => new() { artifact_tid = artifactTid, is_active = isActive ? 1 : 0 };
+    private static UserArtifactRow Equipped(int artifactTid) => new() { artifact_tid = artifactTid };
 
     private static S_ItemUseResponse Response(TestUserBuilder b)
         => b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem();
@@ -169,19 +168,6 @@ public class RelicAppraiseTest
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(3);   // 전 산업 1 + 농사 2 — 인벤토리 3개는 더하지 않는다
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Mining).ShouldBe(1);    // 전 산업 1만
         user.GetArtifactEffect(UserTraitEffect.AppraiseCostDiscount, IndustryType.None).ShouldBe(0);   // 인벤토리에만 있는 낡은 동전
-    }
-
-    [Fact]
-    public void 꺼_둔_번호는_도감에_남지만_효과가_없다()
-    {
-        var b    = new TestUserBuilder();
-        var user = b.Build();
-        user.LoadArtifacts(new[] { Equipped(FishermanCharm, isActive: false) }, Array.Empty<UserArtifactStackRow>());
-
-        user.SendArtifactList();
-
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
-        b.Channel.SentOf<S_ArtifactListResponse>().Last().Artifacts.ShouldHaveSingleItem().IsActive.ShouldBeFalse();
     }
 
     [Fact]

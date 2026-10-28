@@ -51,12 +51,12 @@ namespace MikaProtocol
         public int Count       { get; set; }
     }
 
-    // 도감에 장착한 번호 하나(T-181). 장착은 되돌릴 수 없고, 켜 둔 번호만 효과가 붙는다
+    // 도감에 장착한 번호 하나(T-181). 장착은 되돌릴 수 없고, 장착한 번호는 항상 효과가 붙는다(#90)
     [MemoryPackable]
     public partial class ArtifactCodexInfo
     {
         public int  ArtifactTid { get; set; }
-        public bool IsActive    { get; set; }
+        public bool IsActive    { get; set; }   // 폐기 예정(#90) — 항상 true. 클라 전환 뒤 지운다
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.
@@ -254,5 +254,13 @@ namespace MikaProtocol
     {
         public int UserTraitTID { get; set; }
         public int Level        { get; set; }
+    }
+
+    /// <summary>건물 하나의 레벨(T-183).</summary>
+    [MemoryPackable]
+    public partial class BuildingInfo
+    {
+        public int BuildingTID { get; set; }
+        public int Level       { get; set; }
     }
 }

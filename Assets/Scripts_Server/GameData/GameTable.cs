@@ -13,7 +13,7 @@ namespace GameData
     {
         public static TableSet<int, ArtifactTableRow> ArtifactTable { get; private set; } = null!;
         public static TableSet<int, BuildingTableRow> BuildingTable { get; private set; } = null!;
-        public static TableSet<int, BuildingNodeTableRow> BuildingNodeTable { get; private set; } = null!;
+        public static TableSet<int, BuildingLevelTableRow> BuildingLevelTable { get; private set; } = null!;
         public static TableSet<int, CharacterTableRow> CharacterTable { get; private set; } = null!;
         public static TableSet<int, WorkSpeedTableRow> WorkSpeedTable { get; private set; } = null!;
         public static TableSet<int, CharacterLevelTableRow> CharacterLevelTable { get; private set; } = null!;
@@ -53,7 +53,7 @@ namespace GameData
         {
             ArtifactTable = TableSet<int, ArtifactTableRow>.From(read("ArtifactTable.bytes"), r => r.ArtifactTID);
             BuildingTable = TableSet<int, BuildingTableRow>.From(read("BuildingTable.bytes"), r => r.BuildingTID);
-            BuildingNodeTable = TableSet<int, BuildingNodeTableRow>.From(read("BuildingNodeTable.bytes"), r => r.UnlockTID);
+            BuildingLevelTable = TableSet<int, BuildingLevelTableRow>.From(read("BuildingLevelTable.bytes"), r => r.BuildingLevelTID);
             CharacterTable = TableSet<int, CharacterTableRow>.From(read("CharacterTable.bytes"), r => r.CharacterTID);
             WorkSpeedTable = TableSet<int, WorkSpeedTableRow>.From(read("WorkSpeedTable.bytes"), r => r.WorkSpeedTID);
             CharacterLevelTable = TableSet<int, CharacterLevelTableRow>.From(read("CharacterLevelTable.bytes"), r => r.CharacterLevelTID);

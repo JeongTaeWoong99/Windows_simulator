@@ -24,12 +24,12 @@ public class ArtifactCodexTest : IDisposable
 
     public void Dispose() => _db.Dispose();
 
-    private static (User User, TestUserBuilder B) NewUser(IEnumerable<(int Tid, int Count)> stacks, params (int Tid, bool Active)[] equipped)
+    private static (User User, TestUserBuilder B) NewUser(IEnumerable<(int Tid, int Count)> stacks, params int[] equipped)
     {
         var b    = new TestUserBuilder();
         var user = b.Build();
         user.LoadArtifacts(
-            equipped.Select(e => new UserArtifactRow { artifact_tid = e.Tid, is_active = e.Active ? 1 : 0 }).ToList(),
+            equipped.Select(tid => new UserArtifactRow { artifact_tid = tid }).ToList(),
             stacks.Select((s, slot) => new UserArtifactStackRow { slot = slot, artifact_tid = s.Tid, count = s.Count }).ToList());
         b.Channel.Sent.Clear();
         b.DB.Posted.Clear();
@@ -49,7 +49,7 @@ public class ArtifactCodexTest : IDisposable
 
         Last<S_ArtifactEquipResponse>(b).Result.ShouldBe(EResultCode.Ok);
         user.GetArtifactCount(FishermanCharm).ShouldBe(2);
-        user.IsArtifactActive(FishermanCharm).ShouldBeTrue();
+        user.IsArtifactEquipped(FishermanCharm).ShouldBeTrue();
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(1);
 
         var saved = b.DB.PostedOf<EquipArtifactRepository>().ShouldHaveSingleItem();
@@ -63,7 +63,7 @@ public class ArtifactCodexTest : IDisposable
     [Fact]
     public void 이미_장착한_번호는_다시_장착할_수_없다()
     {
-        var (user, b) = NewUser(new[] { (FishermanCharm, 2) }, (FishermanCharm, true));
+        var (user, b) = NewUser(new[] { (FishermanCharm, 2) }, FishermanCharm);
 
         user.TryEquipArtifact(FishermanCharm, Now);
 
@@ -94,44 +94,29 @@ public class ArtifactCodexTest : IDisposable
         Last<S_ArtifactEquipResponse>(b).Result.ShouldBe(EResultCode.InvalidArtifact);
     }
 
-    // ── 켜고 끄기 ──
+    // ── 항상 켜짐 (#90) ──
 
     [Fact]
-    public void 끄면_효과가_꺼지고_다시_켜면_돌아온다()
+    public void 옛_켜고_끄기_요청은_바꾸지_않고_켜짐으로_답한다()
     {
-        var (user, b) = NewUser(Array.Empty<(int, int)>(), (CrackedComb, true));
+        var (user, b) = NewUser(Array.Empty<(int, int)>(), CrackedComb);
 
-        user.TrySetArtifactActive(CrackedComb, false, Now);
+        user.ReplyArtifactActive(CrackedComb);
 
-        Last<S_ArtifactActiveResponse>(b).ShouldSatisfyAllConditions(r => r.Result.ShouldBe(EResultCode.Ok), r => r.IsActive.ShouldBeFalse());
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
-        b.DB.PostedOf<SaveArtifactActiveRepository>().ShouldHaveSingleItem().IsActive.ShouldBeFalse();
-
-        user.TrySetArtifactActive(CrackedComb, true, Now);
-
+        Last<S_ArtifactActiveResponse>(b).ShouldSatisfyAllConditions(r => r.Result.ShouldBe(EResultCode.Ok), r => r.IsActive.ShouldBeTrue());
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(2);
-        Last<S_ArtifactListResponse>(b).Artifacts.ShouldHaveSingleItem().IsActive.ShouldBeTrue();
-    }
-
-    [Fact]
-    public void 지금과_같은_상태로_바꾸면_저장하지_않는다()
-    {
-        var (user, b) = NewUser(Array.Empty<(int, int)>(), (CrackedComb, true));
-
-        user.TrySetArtifactActive(CrackedComb, true, Now);
-
-        Last<S_ArtifactActiveResponse>(b).Result.ShouldBe(EResultCode.Ok);
         b.DB.Posted.ShouldBeEmpty();
     }
 
     [Fact]
-    public void 장착하지_않은_번호는_켜고_끌_수_없다()
+    public void 장착하지_않은_번호의_켜고_끄기_요청은_거절한다()
     {
         var (user, b) = NewUser(new[] { (CrackedComb, 1) });
 
-        user.TrySetArtifactActive(CrackedComb, true, Now);
+        user.ReplyArtifactActive(CrackedComb);
 
-        Last<S_ArtifactActiveResponse>(b).Result.ShouldBe(EResultCode.ArtifactNotEquipped);
+        Last<S_ArtifactActiveResponse>(b).ShouldSatisfyAllConditions(
+            r => r.Result.ShouldBe(EResultCode.ArtifactNotEquipped), r => r.IsActive.ShouldBeFalse());
         user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
     }
 
@@ -175,7 +160,7 @@ public class ArtifactCodexTest : IDisposable
     [Fact]
     public void 도감에_장착한_것은_팔리지_않는다()
     {
-        var (user, b) = NewUser(Array.Empty<(int, int)>(), (FishermanCharm, true));
+        var (user, b) = NewUser(Array.Empty<(int, int)>(), FishermanCharm);
 
         user.TrySellArtifacts(new[] { new ArtifactInfo { ArtifactTid = FishermanCharm, Count = 1 } });
 
@@ -239,7 +224,7 @@ public class ArtifactCodexTest : IDisposable
         await new EquipArtifactRepository(user, FishermanCharm, removed).ExecuteAsync(Conn);
 
         Scalar("SELECT COUNT(*) FROM t_user_artifact_stack").ShouldBe(0);
-        Scalar($"SELECT is_active FROM t_user_artifact WHERE user_id = 1 AND artifact_tid = {FishermanCharm}").ShouldBe(1);
+        Scalar($"SELECT COUNT(*) FROM t_user_artifact WHERE user_id = 1 AND artifact_tid = {FishermanCharm}").ShouldBe(1);
     }
 
     [Fact]
@@ -252,8 +237,21 @@ public class ArtifactCodexTest : IDisposable
         DbMigrator.Apply(_db.Connection, all);
 
         Scalar("SELECT COUNT(*) FROM t_user_artifact").ShouldBe(2);   // 수량 0이던 번호는 장착한 적 없는 것으로
-        Scalar($"SELECT is_active FROM t_user_artifact WHERE artifact_tid = {CrackedComb}").ShouldBe(1);
+        Scalar($"SELECT COUNT(*) FROM t_user_artifact WHERE artifact_tid = {CrackedComb}").ShouldBe(1);
         Scalar($"SELECT count FROM t_user_artifact_stack WHERE artifact_tid = {FishermanCharm}").ShouldBe(2);
         Scalar("SELECT COUNT(*) FROM t_user_artifact_stack").ShouldBe(1);
+    }
+
+    [Fact]
+    public void 마이그레이션은_꺼_둔_번호도_장착한_채로_켜짐_칸을_지운다()
+    {
+        var all = DbMigrator.LoadFrom(DbMigrator.DefaultDirectory);
+        DbMigrator.Apply(_db.Connection, all.Where(m => m.Version < 11).ToList());
+        _db.Execute($"INSERT INTO t_user_artifact (user_id, artifact_tid, is_active) VALUES (1, {FishermanCharm}, 0), (1, {CrackedComb}, 1)");
+
+        DbMigrator.Apply(_db.Connection, all);
+
+        Scalar("SELECT COUNT(*) FROM t_user_artifact").ShouldBe(2);
+        Scalar("SELECT COUNT(*) FROM pragma_table_info('t_user_artifact') WHERE name = 'is_active'").ShouldBe(0);
     }
 }

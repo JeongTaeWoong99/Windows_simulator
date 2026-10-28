@@ -234,7 +234,7 @@ public sealed partial class User
         
         SendInventory();   // S_InventoryResponse
         SendCurrency();    // S_CurrencyResponse
-        SendAccountLevel(); // S_AccountLevelResponse — 특성 트리 화면이 남은 포인트를 안다
+        SendAccountLevel(); // S_AccountLevelResponse — 건물 레벨의 상한
 
         // 캐릭터를 슬롯보다 먼저 보낸다 — 슬롯이 CharacterId를 참조하므로,
         // 클라이언트가 슬롯을 그릴 때 캐릭터를 이미 알고 있어야 한다.
@@ -245,6 +245,7 @@ public sealed partial class User
 
         // 열린 해금을 슬롯보다 먼저 보낸다 — 클라가 8칸 중 어느 칸이 잠겼는지 그릴 때 이미 알고 있어야 한다.
         SendUnlockList();  // S_UnlockListResponse
+        SendBuildingList(); // S_BuildingListResponse — 건물 레벨 = 트리 포인트
         SendTraitList();   // S_UserTraitListResponse — 산업 레벨이 열렸는지도 여기서 정해진다
         SendArtifactList();      // S_ArtifactListResponse — 아티팩트 도감(장착한 번호)
         SendArtifactInventory(); // S_ArtifactInventoryResponse — 인벤토리 아티팩트 탭

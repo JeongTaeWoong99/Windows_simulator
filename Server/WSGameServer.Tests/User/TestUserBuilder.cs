@@ -207,7 +207,8 @@ internal sealed class TestUserBuilder
             Accounts.LoadAll();
         }
 
-        if (Traits.Count == 0)
+        // 건물만 있고 노드가 없는 표(건물 테스트)도 로드한 것이다.
+        if (Traits.Count == 0 && !Traits.Buildings.Any())
         {
             GameTableFixture.EnsureLoaded();
             Traits.LoadAll();
