@@ -2,6 +2,7 @@
 //
 //   node GameDesign/web/scripts/check-tasks.mjs              전수 검사 — 어긋남이 있으면 exit 1
 //   node GameDesign/web/scripts/check-tasks.mjs --no-issues  닫힌 이슈 검사를 건너뛴다 (gh 없이·오프라인)
+//   node GameDesign/web/scripts/check-tasks.mjs --pr         PR 검사 — INDEX 쪽 2·3번을 건너뛴다 (INDEX는 머지 뒤에 맞춘다 — 루트 CLAUDE.md)
 //
 // 검사 항목:
 //   1. 목록 → 파일   INDEX·art·later·archive 목록의 일감 링크가 그 폴더의 파일을 가리키는가 (보관된 일감이 INDEX에 남았나)
@@ -38,6 +39,8 @@ const HISTORY_PREFIXES = ['tasks/archive/', '.claude/Agent/'];
 const KNOWN_DUPLICATES = new Set(['T-132']);
 
 const args = new Set(process.argv.slice(2));
+// PR에서는 INDEX를 고치지 않는다 — 새 일감·상태 변경이 INDEX와 어긋나는 것이 정상이다
+const PR_MODE = args.has('--pr');
 const findings = [];
 
 function report(check, file, line, message) {
@@ -140,14 +143,14 @@ for (const { dir, label } of LISTS) {
     listed.add(task.file);
     // 보관 목록에는 상태 칸이 없다 — 보관됐으면 Closed다
     const cell = row.cells['상태'];
-    if (cell !== undefined && clean(cell) !== task.status) {
+    if (cell !== undefined && clean(cell) !== task.status && !(PR_MODE && dir === '')) {
       report('2 파일 → 목록', listFile, row.line, `${row.id} 상태가 다르다 — 목록 \`${clean(cell)}\` · 파일 \`${task.status}\``);
     }
   }
 
   for (const name of taskFilesIn(dir)) {
     const file = path.join(TASKS_DIR, dir, name);
-    if (!listed.has(file)) {
+    if (!listed.has(file) && !(PR_MODE && dir === '')) {
       report('2 파일 → 목록', file, 1, `${tasks.get(file).id}가 ${label} 목록에 없다`);
     }
   }
@@ -155,7 +158,7 @@ for (const { dir, label } of LISTS) {
 
 // ── 3. 보관 건수 ─────────────────────────────────────────────────────────────
 
-{
+if (!PR_MODE) {
   const text = read(indexFile);
   const m = text.match(/끝난 일감 (\d+)건/);
   const actual = taskFilesIn('archive').length;

@@ -43,7 +43,8 @@ jobs:
       - name: 일감 정합성 검사
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node GameDesign/web/scripts/check-tasks.mjs
+        # PR에서는 INDEX를 고치지 않는다(머지 뒤에 맞춘다) — INDEX 쪽 검사를 건너뛴다
+        run: node GameDesign/web/scripts/check-tasks.mjs ${{ github.event_name == 'pull_request' && '--pr' || '' }}
 
       # 깨졌을 때만 알린다. 통과·취소에는 울리지 않는다.
       - name: 실패 알림
