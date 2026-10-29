@@ -170,6 +170,82 @@ namespace DesktopWindowControl.EditorTools
             return result;
         }
 
+        // 긴 변이 'maxSize'를 넘으면 그 안으로 줄인다(소수 배율 · 칸 평균). 알파는 반을 기준으로 0·255로 갈라
+        // 픽셀 아트처럼 가장자리를 딱 떨어지게 한다. 'maxSize' 이하면 그대로 — 작은 그림을 키우지 않는다(픽셀 크기가 어긋난다)
+        public ArtImage FitPixelGrid(int maxSize)
+        {
+            int longest = Mathf.Max(Width, Height);
+
+            if (longest <= maxSize)
+            {
+                return this;
+            }
+
+            float scale  = (float)longest / maxSize;
+            var   result = new ArtImage(Mathf.Max(1, Mathf.RoundToInt(Width / scale)), Mathf.Max(1, Mathf.RoundToInt(Height / scale)));
+
+            for (int y = 0; y < result.Height; y++)
+            {
+                for (int x = 0; x < result.Width; x++)
+                {
+                    int x0 = Mathf.FloorToInt(x * scale), x1 = Mathf.Max(x0 + 1, Mathf.FloorToInt((x + 1) * scale));
+                    int y0 = Mathf.FloorToInt(y * scale), y1 = Mathf.Max(y0 + 1, Mathf.FloorToInt((y + 1) * scale));
+                    float r = 0f, g = 0f, b = 0f, a = 0f;
+                    int   count = 0;
+
+                    for (int sy = y0; sy < Mathf.Min(y1, Height); sy++)
+                    {
+                        for (int sx = x0; sx < Mathf.Min(x1, Width); sx++)
+                        {
+                            Color32 c  = this[sx, sy];
+                            float   ca = c.a / 255f;
+                            r += c.r * ca;
+                            g += c.g * ca;
+                            b += c.b * ca;
+                            a += ca;
+                            count++;
+                        }
+                    }
+
+                    result[x, y] = a <= 0f || a / count < 0.5f
+                        ? new Color32(0, 0, 0, 0)
+                        : new Color32((byte)(r / a), (byte)(g / a), (byte)(b / a), 255);
+                }
+            }
+
+            return result;
+        }
+
+        // 1px 외곽선 — 사방 1칸을 넓히고, 그림에 상하좌우로 닿은 빈 칸을 'color'로 칠한다
+        public ArtImage Outline(Color32 color)
+        {
+            var result = new ArtImage(Width + 2, Height + 2);
+            result.AlphaOver(this, 1, 1);
+
+            for (int y = 0; y < result.Height; y++)
+            {
+                for (int x = 0; x < result.Width; x++)
+                {
+                    int sx = x - 1, sy = y - 1;
+
+                    if (InBounds(sx, sy) && IsOpaque(sx, sy))
+                    {
+                        continue;
+                    }
+
+                    bool touches = (InBounds(sx + 1, sy) && IsOpaque(sx + 1, sy)) || (InBounds(sx - 1, sy) && IsOpaque(sx - 1, sy))
+                                || (InBounds(sx, sy + 1) && IsOpaque(sx, sy + 1)) || (InBounds(sx, sy - 1) && IsOpaque(sx, sy - 1));
+
+                    if (touches)
+                    {
+                        result[x, y] = color;
+                    }
+                }
+            }
+
+            return result;
+        }
+
         // 위에 겹쳐 그린다 (보통 알파 합성)
         public void AlphaOver(ArtImage top, int offsetX = 0, int offsetY = 0)
         {

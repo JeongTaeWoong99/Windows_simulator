@@ -1,6 +1,6 @@
 # art-import 규칙
 
-> 최종 업데이트: 2026-10-18 (머리도 `Upscale` · 자동 머리 가로 = 머리 가운데 · 작은 캐릭터 머리 80%) · 2026-10-18 (레시피 몸 영역 `bodyRect` — 템플릿 배율·자동 크롭 기준) · 2026-10-18 (크기 템플릿 `CharacterSizeTemplate` — 개인 조정 첫 값 · 작은 캐릭터 몸 전체 크롭 · 대상 레벨 배율) · 2026-10-18 (대상 레벨별 그림 `TargetRecipe.levels` → `<키>_L<n>` · 산업 아이콘 `industry_<값>` · 대기 `idleSprites`) · 2026-10-12 (대기 띠는 슬롯 연출에 안 쓰지만 계속 굽는다 — 하우징·방목용) · 2026-10-09 (이펙트 `fx/` — 임포트 설정 · 목록 등록 · 메뉴 '목록만 다시 쓰기') · 2026-10-07 (굽기는 결과 SO를 덮지 않는다 — 빈 칸만 채움) · 2026-10-07 (상반신 — 캔버스로 채우지 않는 `Upscale` · 자동 크롭은 몸통 가운데·머리 16 · T-104) · 2026-10-05 (칸 224 · 공격 이펙트 띠 · 타격 이펙트 · 목록 자동 등록 `ArtCatalogSync` · 아이콘 레시피 `IconRecipe` · 배경 `spriteSources`·`skipBottom`·`groundTiles` · 아틀라스 스프라이트 읽기 · T-097) · 2026-10-04 (연속 공격 · 대기 띠 · 공격 자르기 · T-097) · 대상: `Assets/Scripts_Client/Editor/art-import/`
+> 최종 업데이트: 2026-10-29 (아이콘 화풍 통일 — `FitPixelGrid` · `Outline` · TID 0 = 대체 아이콘 · 검사에 해상도 기준) · 2026-10-18 (머리도 `Upscale` · 자동 머리 가로 = 머리 가운데 · 작은 캐릭터 머리 80%) · 2026-10-18 (레시피 몸 영역 `bodyRect` — 템플릿 배율·자동 크롭 기준) · 2026-10-18 (크기 템플릿 `CharacterSizeTemplate` — 개인 조정 첫 값 · 작은 캐릭터 몸 전체 크롭 · 대상 레벨 배율) · 2026-10-18 (대상 레벨별 그림 `TargetRecipe.levels` → `<키>_L<n>` · 산업 아이콘 `industry_<값>` · 대기 `idleSprites`) · 2026-10-12 (대기 띠는 슬롯 연출에 안 쓰지만 계속 굽는다 — 하우징·방목용) · 2026-10-09 (이펙트 `fx/` — 임포트 설정 · 목록 등록 · 메뉴 '목록만 다시 쓰기') · 2026-10-07 (굽기는 결과 SO를 덮지 않는다 — 빈 칸만 채움) · 2026-10-07 (상반신 — 캔버스로 채우지 않는 `Upscale` · 자동 크롭은 몸통 가운데·머리 16 · T-104) · 2026-10-05 (칸 224 · 공격 이펙트 띠 · 타격 이펙트 · 목록 자동 등록 `ArtCatalogSync` · 아이콘 레시피 `IconRecipe` · 배경 `spriteSources`·`skipBottom`·`groundTiles` · 아틀라스 스프라이트 읽기 · T-097) · 2026-10-04 (연속 공격 · 대기 띠 · 공격 자르기 · T-097) · 대상: `Assets/Scripts_Client/Editor/art-import/`
 
 `Assets/Art/`의 원본 그림을 같은 규격의 결과물로 굽는 에디터 도구다.
 **규격·폴더·새 그림 넣는 절차는 [`Art 규칙.md`](<../../../Art/Art 규칙.md>)에 있다** — 여기는 코드 쪽만 적는다.
@@ -8,7 +8,7 @@
 | 파일 | 하는 일 |
 |---|---|
 | `ArtSpec.cs` | 경로 · 메뉴 뿌리 · 규격 상수(칸 크기 · PPU · 불투명 기준) — **규격을 바꾸면 여기와 `Art 규칙.md`를 함께 고치고 전부 다시 굽는다** |
-| `ArtImage.cs` | 픽셀 버퍼 — 자르기 · 뒤집기 · 축소(가장 가까운 픽셀 / 알파 가중 평균) · 겹치기 · 테두리 · 발 위치 · 흰 실루엣 · PNG 저장 |
+| `ArtImage.cs` | 픽셀 버퍼 — 자르기 · 뒤집기 · 축소(가장 가까운 픽셀 / 알파 가중 평균) · 겹치기 · 테두리 · 발 위치 · 흰 실루엣 · 픽셀 격자 맞춤 · 1px 외곽선 · PNG 저장 |
 | `CharacterRecipe.cs` · `BackgroundRecipe.cs` · `TargetRecipe.cs` | 레시피 SO — 무엇을 어떻게 가공할지. 우클릭 **이 레시피 굽기** |
 | `ArtBaker.cs` | 굽기 — 레시피 → PNG + 결과 SO(`CharacterVisual`·`BackgroundVisual`·`TargetVisual`). 메뉴 **아트/전부 다시 굽기** |
 | `ArtImportPostprocessor.cs` | `characters/`·`backgrounds/`·`targets/`·`icons/`·`fx/`의 임포트 설정 고정. `_source/`는 건드리지 않는다. `fx/`는 선형 필터이고 9-slice 경계는 두고 간다 |
@@ -36,7 +36,7 @@
 - **대상 레시피에 `levels`가 있으면 레벨마다 굽는다** — `<키>_L1.png` … · 섬광 `_L1_flash`. 결과 SO의 `levels`(그림 참조)는 매번 다시 쓰고, `scale`·`levelTints`·레벨 배율(`levels[n].scale` — 0이면 1로)은 건드리지 않는다.
 - **캐릭터 크기 템플릿 `CharacterSizeTemplate`** (`Art/characters/_templates/`) — SO 등급(`CharacterVisual.sizeClass` — `ECharacterSize`)이 있으면 그 등급 템플릿, 없으면 레시피 `sizeTemplate`(비면 몸 키로 `autoMaxHeight`가 가장 작은 것). 등급이 비어 있을 때만 굽기가 `characterScale`·`pixelScaleOverride`·`stopGapOffset`·등급을 채운다. `cropWholeBody`면 자동 크롭이 몸 전체. 몸은 레시피 `bodyRect`(비면 대기 첫 프레임의 불투명 테두리 — `ArtBaker.BodyOf`). 값 계산은 `ArtBaker.ComputeSize` 하나 — 굽기·SO 인스펙터 드롭다운(`CharacterVisualEditor` · 커스텀 표시 · 되돌리기)·템플릿 [전부 다시 적용]이 같이 쓴다.
 - **목록(`Resources/VisualCatalog`)은 굽기가 다시 쓴다(`ArtCatalogSync`)** — 캐릭터·아이콘 칸을 손으로 고치면 다음 굽기에 덮인다. 배경·대상 칸만 손으로 둔다.
-- **아이콘(`icons/`)은 `IconRecipe`(`icons/icon_recipe.asset`)가 있으면 굽는다** — TID마다 원본 스프라이트의 그림 부분만 잘라 `item_<TID>`·`equip_<TID>`·`industry_<EIndustryType 값>`으로 쓴다(축소 없음). 산업 아이콘은 대체 칸이 없다 — 없으면 화면이 `item_0`을 쓴다. 레시피에 없는 TID의 손으로 넣은 파일은 건드리지 않는다. 전부 다시 굽기에서 목록 동기화 바로 전에 돈다.
+- **아이콘(`icons/`)은 `IconRecipe`(`icons/icon_recipe.asset`)가 있으면 굽는다** — TID마다 원본 스프라이트의 그림 부분만 잘라 `item_<TID>`·`equip_<TID>`·`industry_<EIndustryType 값>`으로 쓴다. 쓰기 전에 화풍을 맞춘다 — 긴 변 32 안으로(`FitPixelGrid` — 넘을 때만) · 어두운 1px 외곽선(`Outline`) — 값은 `ArtSpec.Icon*`, 기준은 `Art 규칙.md`. TID 0은 대체 아이콘(`item_0`·`equip_0`). 산업 아이콘은 대체 칸이 없다 — 없으면 화면이 `item_0`을 쓴다. 레시피에 없는 TID의 손으로 넣은 파일은 건드리지 않는다. 전부 다시 굽기에서 목록 동기화 바로 전에 돈다.
   임포트 설정은 고정(한 장 · 가운데 기준). 처음 넣은 순간 도구가 아직 컴파일 전이면 기본 설정으로 들어가니, 이상하면 재임포트.
 - **배경 원본이 아틀라스 스프라이트면 `spriteSources`** — 차 있으면 텍스처(`sources`) 대신 쓴다. 자르기 순서는 `skipBottom`(아래 버림) → `cropBottom`(남길 높이) → `downscale`.
 - **땅 띠(`groundTiles`)는 마지막 층으로 따로 굽는다** — 층은 모두 무대 높이로 늘려 그리므로, 띠를 바닥에 붙인 무대 높이 그림(위는 투명)으로 만든다. 속도 1.0 고정.

@@ -56,6 +56,7 @@ namespace DesktopWindowControl.EditorTools
             }
 
             CheckCatalog(report);
+            CheckResolution(report);
 
             return report.Length > 0 ? report.ToString() : "✅ 문제 없음";
         }
@@ -232,6 +233,46 @@ namespace DesktopWindowControl.EditorTools
             if (noItemIcon + noEquipIcon > 0)
             {
                 report.AppendLine($"ℹ️ 목록: 아이콘 없는 자원 {noItemIcon}종 · 장비 {noEquipIcon}종 — 0번 아이콘으로 그린다");
+            }
+        }
+
+        // 해상도 기준 미달 — 칸·무대가 크게 늘려 픽셀이 굵어 보인다. 다시 그리거나(AI) 바꿀 후보 ('Art 규칙.md' 에셋 고르는 기준)
+        private static void CheckResolution(StringBuilder report)
+        {
+            var lowIcons = new List<string>();
+
+            foreach (IconRecipe recipe in FindAll<IconRecipe>())
+            {
+                foreach ((string kind, IconRecipe.Entry[] entries) in new[] { ("자원", recipe.Items), ("장비", recipe.Equips), ("산업", recipe.Industries), ("아티팩트", recipe.Artifacts) })
+                {
+                    foreach (IconRecipe.Entry entry in entries.Where(e => e.sprite != null))
+                    {
+                        RectInt bounds = ArtImage.FromSprite(entry.sprite!).OpaqueBounds();
+
+                        if (Mathf.Max(bounds.width, bounds.height) < ArtSpec.IconMinSource)
+                        {
+                            lowIcons.Add($"{kind} {entry.tid}({Mathf.Max(bounds.width, bounds.height)}px)");
+                        }
+                    }
+                }
+            }
+
+            ArtImage.ClearCache();
+
+            if (lowIcons.Count > 0)
+            {
+                report.AppendLine($"ℹ️ 해상도: 원본이 {ArtSpec.IconMinSource}px 미만인 아이콘 {lowIcons.Count}개 — 칸이 크게 늘려 픽셀이 굵다\n   {string.Join(" · ", lowIcons)}");
+            }
+
+            var lowCharacters = FindAll<CharacterVisual>()
+                .Where(visual => visual.CharacterScale > ArtSpec.CharacterMaxScale)
+                .OrderByDescending(visual => visual.CharacterScale)
+                .Select(visual => $"{visual.name}(×{visual.CharacterScale:0.##})")
+                .ToList();
+
+            if (lowCharacters.Count > 0)
+            {
+                report.AppendLine($"ℹ️ 해상도: 배율이 ×{ArtSpec.CharacterMaxScale}를 넘는 캐릭터 {lowCharacters.Count}명 — 원본이 작아 뭉툭하다\n   {string.Join(" · ", lowCharacters)}");
             }
         }
 

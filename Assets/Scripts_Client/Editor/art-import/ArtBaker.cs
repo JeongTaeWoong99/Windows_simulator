@@ -776,7 +776,7 @@ namespace DesktopWindowControl.EditorTools
 
         // ── 아이콘 ──────────────────────────────────────────
 
-        // 레시피의 TID마다 스프라이트의 그림 부분만 잘라 'item_<TID>' · 'equip_<TID>' · 'industry_<산업>' · 'artifact_<TID>'로 쓴다
+        // 레시피의 TID마다 스프라이트의 그림 부분만 잘라 화풍을 맞춰 'item_<TID>' · 'equip_<TID>' · 'industry_<산업>' · 'artifact_<TID>'로 쓴다
         public static string Bake(IconRecipe recipe)
         {
             int items      = BakeIcons(recipe.Items,      ArtSpec.ItemIconsRoot,     ArtSpec.ItemIconPrefix);
@@ -795,7 +795,8 @@ namespace DesktopWindowControl.EditorTools
 
             foreach (IconRecipe.Entry entry in entries)
             {
-                if (entry.sprite == null || entry.tid <= 0)
+                // TID 0 = 대체 아이콘('item_0' · 'equip_0') — 원본은 '_source/icons/fallback/'
+                if (entry.sprite == null || entry.tid < 0)
                 {
                     continue;
                 }
@@ -803,7 +804,11 @@ namespace DesktopWindowControl.EditorTools
                 ArtImage raw  = ArtImage.FromSprite(entry.sprite);
                 string   path = $"{root}/{prefix}{entry.tid}.png";
 
-                raw.Crop(raw.OpaqueBounds()).SavePng(path);
+                // 화풍 통일 — 32px 넘으면 줄이고 어두운 외곽선 (ArtSpec.IconMaxSize)
+                raw.Crop(raw.OpaqueBounds())
+                    .FitPixelGrid(ArtSpec.IconMaxSize)
+                    .Outline(ArtSpec.IconOutline)
+                    .SavePng(path);
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
                 count++;
             }

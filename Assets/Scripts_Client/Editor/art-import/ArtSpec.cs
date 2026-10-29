@@ -21,6 +21,16 @@ namespace DesktopWindowControl.EditorTools
         public const string ArtifactIconPrefix = "artifact_";
         public const string IconRecipePath  = IconsRoot + "/icon_recipe.asset";
 
+        // 아이콘 화풍 통일 (2026-10-29) — 기준 32px. 긴 변이 32를 넘을 때만 줄이고, 어두운 1px 외곽선을 두른다.
+        // 캔버스는 그림에 딱 맞춘다 — 칸이 비율을 지켜 꽉 채운다. (16px 고정 캔버스는 큰 그림이 흐려지고 작은 그림이 칸 속에 작게 떠서 되돌렸다)
+        // 원본 긴 변이 'IconMinSource' 미만이면 칸이 크게 늘려 픽셀이 굵어진다 — 검사가 알린다(다시 그리거나 바꿀 후보)
+        public const int IconMaxSize   = 32;
+        public const int IconMinSource = 24;
+        public static readonly Color32 IconOutline = new Color32(25, 20, 30, 255);
+
+        // 캐릭터 해상도 기준 — 결과 SO의 'characterScale'(원본을 정한 크기까지 몇 배로 키우나)이 이보다 크면 뭉툭해 보인다. 검사가 알린다
+        public const float CharacterMaxScale = 1.5f;
+
         // 이펙트 — 'fx/<연출 키>/<키>_<부위>.png'. 굽지 않고 그린(또는 만든) 그대로 쓴다. 파일 이름이 목록의 찾는 이름이다
         public const string FxRoot          = Root + "/fx";
 
