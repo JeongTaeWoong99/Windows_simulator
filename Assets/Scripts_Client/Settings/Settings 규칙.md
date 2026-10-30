@@ -112,7 +112,7 @@ Unity는 **정상 종료 시에만** 자동 저장하는데, 상주 앱은 작�
 
 | 키 | 무엇 | 값 |
 |---|---|---|
-| `Audio.Master` · `Audio.Bgm` · `Audio.Sfx` · `Audio.Ui` | 채널 음량 | **% 값 그대로** — 0~100. 키는 `WindowSettings.AudioKey(SoundChannel)`이 만든다 |
+| `Audio.Master` · `Audio.Bgm` · `Audio.Sfx` · `Audio.Ui` | 채널 음량 | **% 값 그대로** — 0~100. 키는 Common `SoundManager.PrefsKey(SoundChannel)` — `WindowSettings`에 두지 않는다(Common이 게임 폴더를 참조하면 안 된다) |
 
 - 적용·저장은 `SoundManager`. **에디터에서도 읽는다**(§1 예외 — 소리는 에디터에서도 실제로 들린다). 첫 실행 기본값은 인스펙터 `setStart*`(80 · 30 · 70 · 50).
 - 투명도와 같이 **끄는 동안은 적용만, 손을 뗄 때 한 번 저장**한다.

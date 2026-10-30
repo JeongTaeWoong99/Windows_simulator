@@ -1,14 +1,14 @@
 # Audio 규칙
 
-> 최종 업데이트: 2026-10-31 (아트/검사가 `Sounds` 이름표를 목록에서 못 찾으면 ❌ · 신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
+> 최종 업데이트: 2026-10-31 (`SoundManager`·`SoundCatalog`를 Common `sound/`로 옮김 — 여기는 이름표 `Sounds`만 · 시작 배경 음악은 씬 `startBgmKey`) · 2026-10-31 (아트/검사가 `Sounds` 이름표를 목록에서 못 찾으면 ❌ · 신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
 
-**어떤 소리를 쓰는지 아는 곳.** 소리를 **트는** 것은 `Managers/SoundManager`, 음량 저장 키는 `Settings/WindowSettings.AudioKey`다.
+**어떤 소리를 쓰는지 아는 곳.** 소리를 **트는** 것·음량 저장·소리 목록은 Common [`sound/`](<../Common/sound/sound 규칙.md>)(`SoundManager` · `SoundCatalog`)이고, 여기는 이 게임의 이름표 `Sounds`만 둔다.
 
 ## 1. 무엇이 여기 있나
 
 | 파일 | 역할 |
 |------|------|
-| `SoundCatalog.cs` | 키 → `AudioClip` 목록(SO). `Resources/SoundCatalog`에서 한 번 읽는다. 에셋은 그림 저장소 `Assets/Art/Resources/SoundCatalog.asset` — **손으로 채우지 않는다**(메뉴 **아트/목록만 다시 쓰기**가 `Art/audio/`를 훑어 쓴다) |
+| (Common) `SoundCatalog` 에셋 | 그림 저장소 `Assets/Art/Resources/SoundCatalog.asset` — **손으로 채우지 않는다**(메뉴 **아트/목록만 다시 쓰기**가 `Art/audio/`를 훑어 쓴다) |
 | `Sounds.cs` | 코드가 쓰는 소리 이름 — `Sounds.UiClick`처럼 부른다. 키 문자열은 여기에만 |
 
 ## 2. 소리 하나 넣기
@@ -24,7 +24,7 @@
 
 | 채널 | 무엇 | 지금 부르는 곳 |
 |------|------|----------------|
-| `Bgm` | 반복 배경 음악 | `SoundManager.Start` — `BgmIdle` |
+| `Bgm` | 반복 배경 음악 | 씬 `Sound Manager`의 `startBgmKey` = `bgm_idle` |
 | `Sfx` | 게임 사건 | 골드 획득 `CoinGain`(`CoinFlyPresenter` — 첫 동전이 닿을 때) · 보상 공개·레벨 업 `RewardChime`(`GachaResultPresenter` · `LevelUpFx`) |
 | `Ui` | 버튼 | `ButtonPressFx` — 누르는 연출이 붙은 버튼 전부 `UiClick` |
 | `Master` | 셋 모두에 곱한다 | — |

@@ -1,6 +1,6 @@
 # Managers 규칙
 
-> 최종 업데이트: 2026-10-31 (`SoundManager` — 배경 음악·효과음·버튼 소리 · 채널 음량 · 에디터도 저장값) · 2026-10-25 (아티팩트 판매는 `SellCartModel`로 — `ArtifactModel`은 고른 번호·반짝일 번호만 · T-151) · 2026-10-25 (`ArtifactModel` — 아티팩트 화면의 고른 번호·판매 목록 · T-151) · 2026-10-25 (`SellCartModel`은 한 종류만 담는다 — 이슈 #83) · 2026-10-15 (경매 등록 키 Shift+우클릭 → Ctrl+우클릭 — 인게임 조합은 좌·우·Ctrl+좌·Ctrl+우 넷) · 2026-10-15 (인게임 Ctrl+좌클릭 — 캐릭터·장비 잠금 · T-137) · 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-10-31 (`SoundManager`는 Common `sound/`로 — 게임을 모르는 서비스라 여기 두지 않는다) · 2026-10-25 (아티팩트 판매는 `SellCartModel`로 — `ArtifactModel`은 고른 번호·반짝일 번호만 · T-151) · 2026-10-25 (`ArtifactModel` — 아티팩트 화면의 고른 번호·판매 목록 · T-151) · 2026-10-25 (`SellCartModel`은 한 종류만 담는다 — 이슈 #83) · 2026-10-15 (경매 등록 키 Shift+우클릭 → Ctrl+우클릭 — 인게임 조합은 좌·우·Ctrl+좌·Ctrl+우 넷) · 2026-10-15 (인게임 Ctrl+좌클릭 — 캐릭터·장비 잠금 · T-137) · 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -23,7 +23,9 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 
 ---
 
-## 2. 현재 매니저 10개
+## 2. 현재 매니저 9개
+
+> 소리(`SoundManager`)도 서비스지만 게임을 모르므로 Common [`sound/`](<../Common/sound/sound 규칙.md>)에 있다.
 
 | 클래스 | 역할 | 경계 — 하지 않는 것 |
 |--------|------|--------------------|
@@ -38,7 +40,6 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 > "왜 이것만 `UIManager`를 거치는가".
 | **`WindowManager`** | 데스크톱 창 제어(투명·항상 위·클릭 스루·크기·위치) | Win32 **선언**은 갖지 않는다 → `DesktopWindow/Win32Native` |
 | **`DisplayManager`** | **표시·성능 설정의 주인.** 지금은 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 위치를 정해 `FpsTextPositionChanged` 발행. **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/Overlay/FpsTextPresenter` |
-| **`SoundManager`** | **소리의 주인.** 채널(`SoundChannel` — 마스터·배경 음악·효과음·UI)마다 자식 `AudioSource` 하나 · `PlayBgm`·`PlaySfx`·`PlayUi` · 채널 음량(실제 = 마스터 × 채널)을 정해 저장. **에디터에서도 저장값을 읽는다**(`DisplayManager`와 같다) | **무엇을 틀지 모른다** — 부르는 쪽이 `Sounds.Xxx`로 고른다([`Audio 규칙.md`](<../Audio/Audio 규칙.md>)). 소리가 없으면(null) 조용히 건너뛴다 |
 | **`PingManager`** | 연결 생존 확인(5초 Ping / 15초 무응답 감지). **송신은 백그라운드 타이머, 판정은 `Update`** | **소켓을 끊지 않는다.** 알리고 앱을 내릴 뿐 — 세션 정리는 서버 폴더의 것 |
 | **`SellCartModel`** | **판매하려고 담아 둔 목록.** 담긴 자원 종류·수량 **또는** 캐릭터·장비 개체 번호(한 종류만 — 2026-10-25 · 이슈 #83 · 아티팩트 번호·수량은 장비 종류로 센다 — T-151), 합계 골드, 분해 재료 수, 상위 등급 포함 여부를 들고 `Changed`를 발행. 인벤토리 격자(담김 표시)와 `SellCartPresenter`(목록·합계)가 같은 것을 보게 하는 자리다 | **송신하지 않는다** — 판매 요청은 버튼을 누른 Presenter가 보낸다. **보유량의 주인도 아니다** — `PlayerDataModel.InventoryChanged`를 구독해 초과분만 깎고, 개체 목록 변경으로 사라졌거나 나가 있는 개체를 뺀다. 아티팩트는 `ArtifactsChanged`로 같은 일을 한다 |
 | **`ArtifactModel`** | **아티팩트 화면(도감)이 함께 보는 상태.** 고른 번호(`SelectionChanged`) · 방금 장착해 반짝일 번호(`Highlight` → `HighlightRequested` · 도감이 `TakeHighlight`로 한 번 꺼낸다) | **송신하지 않는다** — 장착·켜고 끄기 요청은 Presenter가 보낸다. 보유·장착의 주인은 `PlayerDataModel`. 판매 목록은 여기 없다 — 아티팩트도 `SellCartModel`에 담는다 |

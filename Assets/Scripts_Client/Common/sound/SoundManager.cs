@@ -1,42 +1,37 @@
 using System;
 using UnityEngine;
 
-// 소리 채널 — 설정 화면의 음량 줄과 1:1이다. 저장 키도 이 이름을 쓴다('WindowSettings.AudioKey').
-public enum SoundChannel
-{
-    Master,
-    Bgm,
-    Sfx,
-    Ui,
-}
-
-// 소리의 주인 — 배경 음악·효과음·버튼 소리를 틀고, 채널별 음량을 정해 저장한다.
-// 무엇을 틀지는 부르는 쪽이 'Sounds.Xxx'로 고른다. 소리 파일은 그림 저장소에 있다('SoundCatalog').
+// 소리의 주인 — 배경 음악·효과음·버튼 소리를 틀고, 채널별 음량을 정해 PlayerPrefs에 저장한다.
+// 무엇을 틀지는 부르는 쪽이 고른다(보통 프로젝트의 이름표 클래스 — 'XxxSounds.Click' → 'SoundCatalog.Of("click")').
 //
 // ■ 채널 = AudioSource 하나씩 (자식 오브젝트)
-//   Bgm Source — 반복 재생 한 곡 · Sfx Source — 게임 사건(골드·보상) · Ui Source — 버튼.
-//   효과음 둘을 가른 것은 음량을 따로 조절하려고다 — 버튼 소리만 끄고 싶은 사람이 있다.
-//   실제 음량 = 마스터 × 채널.
+//   Bgm Source — 반복 재생 한 곡 · Sfx Source — 게임 사건 · Ui Source — 버튼.
+//   Master는 소스가 없고 셋에 곱한다.
 //
-// ■ 권위 소스 — 에디터·빌드 모두 저장값 ('DisplayManager'와 같다 · 'Settings 규칙.md' 1장)
+// ■ 음량 저장 — 'Audio.<채널>' (% 0~100). 에디터·빌드 모두 저장값을 읽는다
 //   소리는 에디터에서도 실제로 들리는 값이라 마지막 선택이 유지되는 편이 테스트에 맞다. 인스펙터 'setStart*'는 첫 실행 기본값.
+//   설정 슬라이더는 끄는 동안 'SetVolume'(적용만), 손을 떼면 'SaveVolume'(한 번 저장)을 부른다 — 드래그마다 디스크에 쓰지 않는다.
 //
-// ■ 소리가 없어도 돈다 — 그림 저장소를 받지 않은 PC면 'Sounds.Xxx'가 null이고, 그때는 조용히 건너뛴다.
+// ■ 소리가 없어도 돈다 — 'Play*'는 null을 조용히 건너뛴다. 소리 파일이 없는 PC(별도 저장소 등)에서도 게임은 그대로다.
 public class SoundManager : MonoService<SoundManager>
 {
-    public const int MaxVolumePercent = 100;
+    public const int    MaxVolumePercent = 100;
+    public const string PrefsPrefix      = "Audio.";
 
     [CenterHeader("채널")]
     [SerializeField, Tooltip("배경 음악 — 반복 재생. 자식 'Bgm Source'")]
     private AudioSource bgmSource = null!;
 
-    [SerializeField, Tooltip("게임 사건 효과음 — 골드·보상. 자식 'Sfx Source'")]
+    [SerializeField, Tooltip("게임 사건 효과음. 자식 'Sfx Source'")]
     private AudioSource sfxSource = null!;
 
     [SerializeField, Tooltip("버튼 소리. 자식 'Ui Source'")]
     private AudioSource uiSource = null!;
 
-    // 바탕화면에 늘 떠 있는 앱이다 — 배경 음악은 낮게 시작한다(일하는 중에 거슬리지 않게)
+    [CenterHeader("시작 배경 음악")]
+    [SerializeField, Tooltip("시작하면 틀 배경 음악의 'SoundCatalog' 키. 비우면 틀지 않는다")]
+    private string startBgmKey = "";
+
     [CenterHeader("첫 실행 기본값 (저장값이 있으면 그걸 따른다) · %")]
     [SerializeField, Range(0, MaxVolumePercent)] private int setStartMaster = 80;
     [SerializeField, Range(0, MaxVolumePercent)] private int setStartBgm    = 30;
@@ -45,6 +40,9 @@ public class SoundManager : MonoService<SoundManager>
 
     // 'SoundChannel' 순서의 음량(%)
     private readonly int[] _volumes = new int[Enum.GetValues(typeof(SoundChannel)).Length];
+
+    // 채널의 저장 키 — 'Audio.Master' · 'Audio.Bgm' · 'Audio.Sfx' · 'Audio.Ui'
+    public static string PrefsKey(SoundChannel channel) => PrefsPrefix + channel;
 
     // 저장값을 읽는다. 다른 서비스를 건드리지 않는 순수 값 로드라 Awake에서 안전하다 (Unity 메시지)
     protected override void Awake()
@@ -55,11 +53,11 @@ public class SoundManager : MonoService<SoundManager>
 
         foreach (SoundChannel channel in Enum.GetValues(typeof(SoundChannel)))
         {
-            _volumes[(int)channel] = Mathf.Clamp(WindowSettings.LoadInt(WindowSettings.AudioKey(channel), fallbacks[(int)channel]), 0, MaxVolumePercent);
+            _volumes[(int)channel] = Mathf.Clamp(PlayerPrefs.GetInt(PrefsKey(channel), fallbacks[(int)channel]), 0, MaxVolumePercent);
         }
     }
 
-    // 참조 검증 → 음량 적용 → 배경 음악 (Unity 메시지)
+    // 참조 검증 → 음량 적용 → 시작 배경 음악 (Unity 메시지)
     private void Start()
     {
         this.RequireRef(bgmSource, nameof(bgmSource));
@@ -67,7 +65,11 @@ public class SoundManager : MonoService<SoundManager>
         this.RequireRef(uiSource,  nameof(uiSource));
 
         ApplyVolumes();
-        PlayBgm(Sounds.BgmIdle);
+
+        if (startBgmKey.Length > 0)
+        {
+            PlayBgm(SoundCatalog.Of(startBgmKey));
+        }
     }
 
     #region 재생
@@ -83,6 +85,13 @@ public class SoundManager : MonoService<SoundManager>
         bgmSource.clip = clip;
         bgmSource.loop = true;
         bgmSource.Play();
+    }
+
+    // 배경 음악을 멈춘다
+    public void StopBgm()
+    {
+        bgmSource.Stop();
+        bgmSource.clip = null;
     }
 
     // 게임 사건 효과음 — 겹쳐 울린다
@@ -110,17 +119,25 @@ public class SoundManager : MonoService<SoundManager>
     // 채널 음량(%) — 설정 슬라이더의 시작값
     public int GetVolume(SoundChannel channel) => _volumes[(int)channel];
 
-    // 끄는 동안 매 프레임 불리므로 저장하지 않는다 — 손을 떼면 'SaveVolume'이 한 번 저장한다(투명도 슬라이더와 같다)
+    // 적용만 한다 — 슬라이더를 끄는 동안 매 프레임 불린다
     public void SetVolume(SoundChannel channel, int percent)
     {
         _volumes[(int)channel] = Mathf.Clamp(percent, 0, MaxVolumePercent);
         ApplyVolumes();
     }
 
-    // 지금 음량을 저장한다 (설정 슬라이더에서 손을 뗐을 때)
+    // 지금 음량을 저장한다 (슬라이더에서 손을 뗐을 때). 값이 그대로면 쓰지 않는다
     public void SaveVolume(SoundChannel channel)
     {
-        WindowSettings.SaveInt(WindowSettings.AudioKey(channel), _volumes[(int)channel]);
+        string key = PrefsKey(channel);
+
+        if (PlayerPrefs.HasKey(key) && PlayerPrefs.GetInt(key) == _volumes[(int)channel])
+        {
+            return;
+        }
+
+        PlayerPrefs.SetInt(key, _volumes[(int)channel]);
+        PlayerPrefs.Save();
     }
 
     // 실제 음량 = 마스터 × 채널

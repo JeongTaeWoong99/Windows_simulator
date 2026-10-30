@@ -1,6 +1,6 @@
 # Common 규칙
 
-> 최종 업데이트: 2026-10-11 (`ugui-layout`에 `ContentFloorLayoutElement`) · 2026-10-08 (`object-pool` 추가) · 대상: `Assets/Scripts_Client/Common/`
+> 최종 업데이트: 2026-10-31 (`sound` 추가 — `SoundManager` · `SoundChannel` · `SoundCatalog`) · 2026-10-11 (`ugui-layout`에 `ContentFloorLayoutElement`) · 2026-10-08 (`object-pool` 추가) · 대상: `Assets/Scripts_Client/Common/`
 
 **이 폴더는 이 프로젝트의 것이 아니다.** [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)이라는
 별도 저장소에서 관리하는 범용 코드의 **사본**이고, 스킬 두 개가 심고 되돌린다.
@@ -65,7 +65,8 @@ Common/
 ├── editor-shared/      Editor/  EditorGit.cs · EditorIcons.cs · ProjectPreferences.cs
 ├── memory-meter/       Editor/  EditorMemoryMeter.cs · EditorMemoryToolbarButton.cs
 ├── scene-dirty-tracer/ Editor/  SceneDirtyTracer.cs · SceneDirtyTracerSettings.cs
-└── object-pool/        PrefabPool.cs · PooledObject.cs · IPoolable.cs · UIRowList.cs
+├── object-pool/        PrefabPool.cs · PooledObject.cs · IPoolable.cs · UIRowList.cs
+└── sound/              SoundManager.cs · SoundChannel.cs · SoundCatalog.cs
 ```
 
 - 자산 폴더명은 **영문 소문자 kebab-case**. `Editor`만 Unity 예약어라 PascalCase 그대로다.
@@ -93,6 +94,7 @@ Common/
 | **EditorShared** | `editor-shared/` | 에디터 툴 공용 — git 실행 · 아이콘 캐시 · 환경 설정 뿌리. [`editor-shared 규칙.md`](<editor-shared/editor-shared 규칙.md>) |
 | **MemoryMeter** | `memory-meter/` | 상단 툴바 메모리 표시 + 정리. [`memory-meter 규칙.md`](<memory-meter/memory-meter 규칙.md>) |
 | **ObjectPool** | `object-pool/` | 프리팹 풀(`PrefabPool`) · 대여 토큰(`PooledObject`) · 목록 줄 제자리 풀(`UIRowList`). [`object-pool 규칙.md`](<object-pool/object-pool 규칙.md>) |
+| **Sound** | `sound/` | 배경 음악·효과음·버튼 소리 채널과 음량 저장(`Audio.*`) · 키로 찾는 소리 목록. [`sound 규칙.md`](<sound/sound 규칙.md>) |
 | **SceneDirtyTracer** | `scene-dirty-tracer/` | 씬이 저절로 더티가 될 때 범인 추적(기본 꺼짐). [`scene-dirty-tracer 규칙.md`](<scene-dirty-tracer/scene-dirty-tracer 규칙.md>) |
 
 ---

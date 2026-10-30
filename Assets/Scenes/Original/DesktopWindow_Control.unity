@@ -684,7 +684,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 20
   alpha: 1
 --- !u!114 &3052158
 MonoBehaviour:
@@ -23366,7 +23366,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 30
   alpha: 1
 --- !u!114 &238402747
 MonoBehaviour:
@@ -58328,7 +58328,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 20
   alpha: 1
 --- !u!114 &639503911
 MonoBehaviour:
@@ -98319,7 +98319,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 30
   alpha: 1
 --- !u!114 &993023482
 MonoBehaviour:
@@ -113100,7 +113100,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 30
   alpha: 1
 --- !u!114 &1159686109
 MonoBehaviour:
@@ -155457,7 +155457,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 20
   alpha: 1
 --- !u!114 &1534775843
 MonoBehaviour:
@@ -178314,7 +178314,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 20
   alpha: 1
 --- !u!114 &1807614832
 MonoBehaviour:
@@ -181058,6 +181058,7 @@ MonoBehaviour:
   bgmSource: {fileID: 1675227241}
   sfxSource: {fileID: 776112376}
   uiSource: {fileID: 73362963}
+  startBgmKey: bgm_idle
   setStartMaster: 80
   setStartBgm: 30
   setStartSfx: 70
@@ -210531,7 +210532,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 32
+  role: 30
   alpha: 1
 --- !u!114 &2144234152
 MonoBehaviour:
