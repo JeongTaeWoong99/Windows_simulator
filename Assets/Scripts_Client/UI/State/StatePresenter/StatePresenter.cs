@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
@@ -42,6 +42,9 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, Tooltip("골드 보유량")]
     private TMP_Text goldText = null!;
 
+    [SerializeField, Tooltip("골드 아이콘 — 동전 그림('FxSprites.CoinBody')을 금색으로 입힌다. 그림이 없으면 씬의 자리표시 그대로")]
+    private Image goldIcon = null!;
+
     [CenterHeader("계정 레벨")]
     [SerializeField, Tooltip("닉 아이콘 아래쪽에 겹치는 레벨 배지 문구")]
     private TMP_Text levelText = null!;
@@ -82,6 +85,7 @@ public class StatePresenter : MonoBehaviour
         // 필수 참조 검증 — 미연결이면 여기서 멈춘다(SettingPresenter와 같은 규칙).
         this.RequireRef(nickNameText,   nameof(nickNameText));
         this.RequireRef(goldText,       nameof(goldText));
+        this.RequireRef(goldIcon,       nameof(goldIcon));
         this.RequireRef(levelText,      nameof(levelText));
         this.RequireRef(expFill,        nameof(expFill));
         this.RequireRef(expPercentText, nameof(expPercentText));
@@ -91,6 +95,7 @@ public class StatePresenter : MonoBehaviour
         _data = Services.Get<PlayerDataModel>();
         _ui   = Services.Get<UIManager>();
 
+        ApplyGoldIcon();
         Subscribe();
         BindScreenButtons();
         quitButton.onClick.AddListener(Services.Get<WindowManager>().QuitApplication); // 종료는 WindowManager가 단일 경로
@@ -198,6 +203,22 @@ public class StatePresenter : MonoBehaviour
 
         RefreshAccountLevel();
         RefreshMailDot();
+    }
+
+    // 골드 아이콘을 날아오는 동전과 같은 그림·색으로 (Start에서 한 번).
+    // ※ 그림 저장소(Assets/Art)가 없는 환경에선 그림이 없다 — 씬의 자리표시를 그대로 둔다.
+    private void ApplyGoldIcon()
+    {
+        Sprite? coin = FxSprites.CoinBody;
+
+        if (coin == null)
+        {
+            return;
+        }
+
+        goldIcon.sprite         = coin;
+        goldIcon.color          = FxSprites.CoinColor;
+        goldIcon.preserveAspect = true;
     }
 
     // 안 받은 우편이 있으면 점을 켠다 (MailsChanged 구독 · Refresh에서 호출)

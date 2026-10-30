@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEditor;
@@ -13,6 +13,7 @@ namespace DesktopWindowControl.EditorTools
     //   아이콘 = 'icons/items/item_<TID>.png' · 'icons/equips/equip_<TID>.png' — 파일 이름의 TID가 곧 ItemTable·EquipTable TID.
     //            'item_0' · 'equip_0'이 아이콘 없는 것의 대체 아이콘이다. 아티팩트('icons/artifacts/artifact_<TID>')는 대체가 없다 — 칸이 이름 첫 글자로 그린다.
     //   이펙트 = 'fx/**/<키>_<부위>.png' — 파일 이름 그대로가 찾는 이름('VisualCatalog.FxOf').
+    //   소리   = 'audio/**/<키>.wav' — 파일 이름 그대로가 찾는 이름. 그림 목록이 아니라 'SoundCatalog'에 쓴다.
     //   배경·대상은 산업마다 하나라 목록에서 직접 고른다(여기서 건드리지 않는다).
     //
     // ■ 메뉴 '목록만 다시 쓰기' — 굽지 않고 목록만
@@ -95,7 +96,66 @@ namespace DesktopWindowControl.EditorTools
 
             string fallbackName = so.FindProperty("fallbackCharacter").objectReferenceValue is Object f ? f.name : "없음";
 
-            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 산업 아이콘 {industries} · 아티팩트 아이콘 {artifacts} · 이펙트 {fxs}";
+            int sounds = WriteSounds();
+
+            return $"✅ 목록: 캐릭터 {characters.Count} (대체 {fallbackName}) · 자원 아이콘 {items} · 장비 아이콘 {equips} · 산업 아이콘 {industries} · 아티팩트 아이콘 {artifacts} · 이펙트 {fxs} · 소리 {sounds}";
+        }
+
+        // 'audio/' 아래 소리를 전부 훑어 파일 이름으로 소리 목록에 쓴다. 목록이 없으면 만든다
+        private static int WriteSounds()
+        {
+            var catalog = AssetDatabase.LoadAssetAtPath<SoundCatalog>(ArtSpec.SoundCatalogPath);
+
+            if (catalog == null)
+            {
+                catalog = ScriptableObject.CreateInstance<SoundCatalog>();
+                AssetDatabase.CreateAsset(catalog, ArtSpec.SoundCatalogPath);
+            }
+
+            var sounds = new List<(string key, AudioClip clip)>();
+
+            if (Directory.Exists(ArtSpec.AudioRoot))
+            {
+                foreach (string file in Directory.GetFiles(ArtSpec.AudioRoot, "*.*", SearchOption.AllDirectories).Where(f => !f.EndsWith(".meta")))
+                {
+                    string path = file.Replace('\\', '/');
+                    var    clip = AssetDatabase.LoadAssetAtPath<AudioClip>(path);
+
+                    if (clip == null)
+                    {
+                        continue;
+                    }
+
+                    string key = Path.GetFileNameWithoutExtension(path);
+
+                    if (sounds.Any(s => s.key == key))
+                    {
+                        Debug.LogWarning($"[아트] 소리 이름이 겹친다 — {path}는 목록에 넣지 않는다.");
+
+                        continue;
+                    }
+
+                    sounds.Add((key, clip));
+                }
+            }
+
+            sounds.Sort((a, b) => string.CompareOrdinal(a.key, b.key));
+
+            var so    = new SerializedObject(catalog);
+            var array = so.FindProperty("sounds");
+            array.arraySize = sounds.Count;
+
+            for (int i = 0; i < sounds.Count; i++)
+            {
+                SerializedProperty entry = array.GetArrayElementAtIndex(i);
+                entry.FindPropertyRelative("key").stringValue           = sounds[i].key;
+                entry.FindPropertyRelative("clip").objectReferenceValue = sounds[i].clip;
+            }
+
+            so.ApplyModifiedPropertiesWithoutUndo();
+            EditorUtility.SetDirty(catalog);
+
+            return sounds.Count;
         }
 
         // 'fx/' 아래 PNG를 전부 훑어 파일 이름으로 목록에 쓴다. 이름이 겹치면 뒤의 것을 버리고 경고한다

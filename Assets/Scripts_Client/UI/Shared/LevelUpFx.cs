@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -115,6 +115,8 @@ public class LevelUpFx : MonoBehaviour
         AddText(centerLocal, height, level);
 
         _seq.OnKill(Hide);
+
+        Services.Get<SoundManager>().PlaySfx(Sounds.RewardChime); // 런타임에 붙는 부품이라 Start가 없다 — 쓸 때 꺼낸다
     }
 
     // 끊고 그림을 끈다

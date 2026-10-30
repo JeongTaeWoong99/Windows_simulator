@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DG.Tweening;
 using UnityEngine;
 using UnityEngine.UI;
@@ -43,8 +43,7 @@ public class CoinFlyPresenter : MonoBehaviour
     private const float PunchTime   = 0.22f;
     private const float SparkTime   = 0.35f;
 
-    // 동전 색 — 흰 그림에 입힌다
-    private static readonly Color CoinColor  = new Color(1f, 0.8f, 0.25f, 1f);
+    // 반짝 색 — 흰 그림에 입힌다 (동전 색은 'FxSprites.CoinColor' — 상단 골드 아이콘과 같다)
     private static readonly Color SparkColor = new Color(1f, 0.95f, 0.7f, 1f);
 
     [CenterHeader("참조")]
@@ -52,6 +51,7 @@ public class CoinFlyPresenter : MonoBehaviour
     private RectTransform target = null!;
 
     private ServerWaitManager _wait = null!;
+    private SoundManager      _sound = null!;
 
     private RectTransform _rect   = null!;
     private Image[]       _coins  = Array.Empty<Image>();
@@ -71,6 +71,7 @@ public class CoinFlyPresenter : MonoBehaviour
         this.RequireRef(target, nameof(target));
 
         _wait        = Services.Get<ServerWaitManager>();
+        _sound       = Services.Get<SoundManager>();
         _rect        = (RectTransform)transform;
         _targetScale = target.localScale;
 
@@ -125,7 +126,7 @@ public class CoinFlyPresenter : MonoBehaviour
 
         for (int i = 0; i < MaxCoins; i++)
         {
-            _coins[i] = CreateImage($"Coin {i}", CoinSize, CoinColor);
+            _coins[i] = CreateImage($"Coin {i}", CoinSize, FxSprites.CoinColor);
         }
 
         _spark = CreateImage("Spark", SparkSize, SparkColor);
@@ -179,7 +180,7 @@ public class CoinFlyPresenter : MonoBehaviour
 
             image.sprite  = coin;
             image.enabled = true;
-            image.color   = CoinColor;
+            image.color   = FxSprites.CoinColor;
 
             rect.anchoredPosition = source;
             rect.localScale       = Vector3.zero;
@@ -202,6 +203,12 @@ public class CoinFlyPresenter : MonoBehaviour
                                         .SetEase(Ease.InQuad));
             _seq.Insert(flyAt + FlyTime * 0.6f, rect.DOScale(ArriveScale, FlyTime * 0.4f).SetEase(Ease.InQuad));
             _seq.InsertCallback(flyAt + FlyTime, () => Arrive(image));
+
+            // 소리는 첫 동전이 닿을 때 한 번 — 동전마다 울리면 12번 겹친다
+            if (i == 0)
+            {
+                _seq.InsertCallback(flyAt + FlyTime, () => _sound.PlaySfx(Sounds.CoinGain));
+            }
         }
     }
 

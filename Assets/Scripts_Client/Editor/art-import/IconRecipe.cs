@@ -20,6 +20,24 @@ namespace DesktopWindowControl.EditorTools
 
             [Tooltip("원본 스프라이트 — 투명 테두리는 굽기가 잘라 낸다")]
             public Sprite? sprite;
+
+            [Tooltip("그림이 이름과 맞는가 — 사람이 눈으로 본 판정. 검사가 '대체' 수를 센다")]
+            public IconFit fit;
+
+            [Tooltip("판정할 때의 엑셀 이름 — 지금 이름과 다르면 검사가 '이름 바뀜'으로 알린다. 산업은 비운다")]
+            public string? checkedName;
+
+            [Tooltip("판정한 날 (yyyy-MM-dd)")]
+            public string? checkedOn;
+        }
+
+        // 그림과 이름이 맞는가 — 점검 목록은 'tasks/art/T-189'
+        public enum IconFit
+        {
+            [InspectorName("미확인")] Unchecked,
+            [InspectorName("맞음")]   Match,
+            [InspectorName("근사 — 같은 갈래의 그림")] Near,
+            [InspectorName("대체 — 갈래만 맞춘 자리표시")] Placeholder,
         }
 
         [SerializeField, Tooltip("자원·특수 아이템 (ItemTable TID)")]

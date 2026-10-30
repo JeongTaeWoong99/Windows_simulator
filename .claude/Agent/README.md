@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-10-31 소리 구조 · 아이콘 흰 테두리·이름 점검 · 캐릭터 2명](2026-10-31-sound-icons-characters.md) — `#client` `#editor` `#ui` `#data` SoundManager·SoundCatalog와 음량 설정, 아이콘 판정을 레시피에 기록
 - [2026-10-29 아이콘 화풍 통일 — 32px 기준 · 어두운 외곽선 · 해상도 검사](2026-10-29-icon-style-unify.md) — `#client` `#editor` 굽기가 아이콘 외곽선·크기를 맞추고 검사가 저해상도를 알린다
 - [2026-10-29 아티팩트 클라 묶음 — 켜고 끄기 제거 · 유물 1개씩 감정 · 한 격자 · 잠금](2026-10-29-artifact-client-87-88-90.md) — `#client` `#ui` `#data` #90 · #88 · #87 클라 몫 (T-151)
 - [2026-10-28 아티팩트 도감 — 장착하면 항상 켜짐](2026-10-28-artifact-always-active.md) — `#server` `#design` 켜고 끄기 제거 · is_active 칸 삭제(0011) · 옛 패킷은 클라 전환까지 응답만 (T-181 · #90)

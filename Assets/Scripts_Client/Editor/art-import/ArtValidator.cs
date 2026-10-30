@@ -57,6 +57,7 @@ namespace DesktopWindowControl.EditorTools
 
             CheckCatalog(report);
             CheckResolution(report);
+            CheckIconNames(report);
 
             return report.Length > 0 ? report.ToString() : "✅ 문제 없음";
         }
@@ -273,6 +274,70 @@ namespace DesktopWindowControl.EditorTools
             if (lowCharacters.Count > 0)
             {
                 report.AppendLine($"ℹ️ 해상도: 배율이 ×{ArtSpec.CharacterMaxScale}를 넘는 캐릭터 {lowCharacters.Count}명 — 원본이 작아 뭉툭하다\n   {string.Join(" · ", lowCharacters)}");
+            }
+        }
+
+        // 아이콘 점검 기록 — 판정 뒤 엑셀 이름이 바뀌었으면 그림을 다시 봐야 한다. 대체 그림 수도 센다 ('tasks/art/T-189')
+        private static void CheckIconNames(StringBuilder report)
+        {
+            var recipe = AssetDatabase.LoadAssetAtPath<IconRecipe>(ArtSpec.IconRecipePath);
+
+            if (recipe == null)
+            {
+                return;
+            }
+
+            var names = new Dictionary<string, Dictionary<int, string>>
+            {
+                ["자원"]     = GameTable.ItemTable.All.ToDictionary(row => row.ItemTID, row => row.Name),
+                ["장비"]     = GameTable.EquipTable.All.ToDictionary(row => row.EquipTID, row => row.Name),
+                ["아티팩트"] = GameTable.ArtifactTable.All.ToDictionary(row => row.ArtifactTID, row => row.Name),
+            };
+
+            var renamed     = new List<string>();
+            var notChecked  = new List<string>();
+            var placeholder = 0;
+
+            foreach ((string kind, IconRecipe.Entry[] entries) in new[] { ("자원", recipe.Items), ("장비", recipe.Equips), ("아티팩트", recipe.Artifacts) })
+            {
+                foreach (IconRecipe.Entry entry in entries.Where(e => e.tid > 0))
+                {
+                    if (entry.fit == IconRecipe.IconFit.Placeholder)
+                    {
+                        placeholder++;
+                    }
+
+                    if (entry.fit == IconRecipe.IconFit.Unchecked)
+                    {
+                        notChecked.Add($"{kind} {entry.tid}");
+                    }
+                    else if (names[kind].TryGetValue(entry.tid, out string now) && now != entry.checkedName)
+                    {
+                        renamed.Add($"{kind} {entry.tid}: {entry.checkedName} → {now} ({entry.checkedOn} 판정)");
+                    }
+                }
+            }
+
+            if (renamed.Count > 0)
+            {
+                report.AppendLine($"⚠️ 아이콘: 판정 뒤 이름이 바뀐 {renamed.Count}개 — 그림이 새 이름에 맞는지 다시 보고 레시피 판정을 고친다\n   {string.Join("\n   ", renamed)}");
+            }
+
+            if (notChecked.Count > 0)
+            {
+                report.AppendLine($"ℹ️ 아이콘: 판정 안 한 {notChecked.Count}개 — 레시피 'fit'·'checkedName'·'checkedOn'을 채운다\n   {string.Join(" · ", notChecked)}");
+            }
+
+            if (placeholder > 0)
+            {
+                report.AppendLine($"ℹ️ 아이콘: 이름과 안 맞는 대체 그림 {placeholder}개 — 다시 그릴 목록은 tasks/art/T-189");
+            }
+
+            var noIcon = GameTable.ItemTable.All.Where(row => recipe.Items.All(e => e.tid != row.ItemTID)).Select(row => $"{row.ItemTID} {row.Name}").ToList();
+
+            if (noIcon.Count > 0)
+            {
+                report.AppendLine($"ℹ️ 아이콘: 레시피에 줄이 없는 자원 {noIcon.Count}종 — 0번 아이콘으로 보인다\n   {string.Join(" · ", noIcon)}");
             }
         }
 

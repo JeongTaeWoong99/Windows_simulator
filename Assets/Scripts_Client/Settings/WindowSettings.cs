@@ -51,6 +51,9 @@ public static class WindowSettings
     // 화면 언어('GameData.Language' 값). 에디터도 저장값을 읽는다('Lang').
     public const string LanguageKey            = "Display.Language";
 
+    // 소리 채널 음량(%, 0~100) — 'Audio.Master' · 'Audio.Bgm' · 'Audio.Sfx' · 'Audio.Ui'. 에디터도 저장값을 읽는다('SoundManager')
+    public static string AudioKey(SoundChannel channel) => $"Audio.{channel}";
+
     // 저장된 bool을 읽는다. 키가 없으면(첫 실행) 'fallback'을 돌려준다.
     public static bool LoadBool(string key, bool fallback)
     {

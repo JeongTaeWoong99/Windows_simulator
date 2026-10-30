@@ -804,9 +804,10 @@ namespace DesktopWindowControl.EditorTools
                 ArtImage raw  = ArtImage.FromSprite(entry.sprite);
                 string   path = $"{root}/{prefix}{entry.tid}.png";
 
-                // 화풍 통일 — 32px 넘으면 줄이고 어두운 외곽선 (ArtSpec.IconMaxSize)
+                // 화풍 통일 — 32px 넘으면 줄이고, 원본의 흰 외곽선은 벗기고, 어두운 외곽선 (ArtSpec.IconMaxSize)
                 raw.Crop(raw.OpaqueBounds())
                     .FitPixelGrid(ArtSpec.IconMaxSize)
+                    .StripLightRim(ArtSpec.IconLightRimRatio)
                     .Outline(ArtSpec.IconOutline)
                     .SavePng(path);
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);

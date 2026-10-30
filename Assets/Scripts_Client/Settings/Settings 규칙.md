@@ -1,6 +1,6 @@
 # Settings 규칙
 
-> 최종 업데이트: 2026-10-17 (`Display.Language` — 화면 언어 · T-136) · 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
+> 최종 업데이트: 2026-10-31 (`Audio.*` — 채널 음량 · 에디터도 저장값 · 손을 뗄 때 저장) · 2026-10-17 (`Display.Language` — 화면 언어 · T-136) · 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
 
 **창·표시 설정을 `PlayerPrefs`에 저장하고 되읽는 곳.** 키 상수와 읽기·쓰기 헬퍼만 둔다 —
 설정을 **적용**하는 일은 [`Managers/`](<../Managers/Managers 규칙.md>)의 `WindowManager`(창)·`DisplayManager`(표시·성능)가 한다.
@@ -107,6 +107,15 @@ Unity는 **정상 종료 시에만** 자동 저장하는데, 상주 앱은 작�
   투명을 균일 알파로 덮어 창을 검게 만든다. 창 모양이 아니라 그려지는 UI를 바꾸고 에디터에서도 먹어서 `Window.*`가 아니라 `Display.*`다(T-070).
 - 투명도는 설정 슬라이더로 고른다. **끄는 동안은 적용만 하고, 손을 뗄 때 한 번 저장한다**(§3 "즉시 저장"의 예외 — 드래그마다 디스크에 쓰지 않는다).
   범위 밖 저장값은 불투명(100)으로 돌린다 — 흐린 쪽으로 틀리면 UI를 못 찾는다.
+
+### `Audio.*` — 채널 음량 (2026-10-31)
+
+| 키 | 무엇 | 값 |
+|---|---|---|
+| `Audio.Master` · `Audio.Bgm` · `Audio.Sfx` · `Audio.Ui` | 채널 음량 | **% 값 그대로** — 0~100. 키는 `WindowSettings.AudioKey(SoundChannel)`이 만든다 |
+
+- 적용·저장은 `SoundManager`. **에디터에서도 읽는다**(§1 예외 — 소리는 에디터에서도 실제로 들린다). 첫 실행 기본값은 인스펙터 `setStart*`(80 · 30 · 70 · 50).
+- 투명도와 같이 **끄는 동안은 적용만, 손을 뗄 때 한 번 저장**한다.
 
 ### `Window.WidgetSlotHeight`는 설정이 아니라 관측값 캐시다
 

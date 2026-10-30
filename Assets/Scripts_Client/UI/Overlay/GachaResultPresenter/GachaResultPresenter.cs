@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -113,6 +113,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
     private PlayerDataModel   _data = null!;
     private ServerWaitManager _wait = null!;
+    private SoundManager      _sound = null!;
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -133,6 +134,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         _data              = Services.Get<PlayerDataModel>();
         _wait              = Services.Get<ServerWaitManager>();
+        _sound             = Services.Get<SoundManager>();
         _burst             = RewardBurstFx.Create(panel, reveal);
         _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText);
         _panelGroup        = panel.TryGetComponent(out CanvasGroup existing) ? existing : panel.gameObject.AddComponent<CanvasGroup>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
@@ -287,6 +289,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         titleText.text = Lang.Format("UI.Gacha.ResultTitle", source);
         SetVisible(true);
+        _sound.PlaySfx(Sounds.RewardChime);
 
         _revealCts = CancellationTokenSource.CreateLinkedTokenSource(destroyCancellationToken);
 

@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -17,6 +17,7 @@ using UnityEngine.UI;
 //   애니메이션 전환('Transition: Animation')을 쓰는 버튼 — 그쪽 크기 연출과 겹친다.
 //
 // ■ 수명 — 트윈은 그 버튼에 묶는다(KillOnDisable). 누른 채 버튼이 꺼져도 'OnKill'이 크기를 되돌린다.
+// ■ 버튼 소리도 여기서 낸다 — 같은 이유(버튼마다 붙이면 빠뜨린다). 줄어드는 버튼에만 난다 — 차단막·잠긴 버튼은 조용하다.
 // ■ 방금 누른 버튼을 알려 준다('RecentlyPressed') — 거절 흔들기가 대상을 찾을 때 본다('ToastPresenter' · T-177).
 public class ButtonPressFx : MonoBehaviour
 {
@@ -41,6 +42,7 @@ public class ButtonPressFx : MonoBehaviour
         => s_lastPressed != null && Time.unscaledTime - s_lastPressedTime <= RecentWindow ? s_lastPressed : null;
 
     private WindowManager _window = null!;
+    private SoundManager  _sound  = null!;
 
     private Transform? _pressed;
     private Tween?     _tween;
@@ -56,6 +58,7 @@ public class ButtonPressFx : MonoBehaviour
     private void Start()
     {
         _window = Services.Get<WindowManager>();
+        _sound  = Services.Get<SoundManager>();
     }
 
     // 누름·뗌을 본다 (Unity 메시지)
@@ -122,6 +125,8 @@ public class ButtonPressFx : MonoBehaviour
         _pressed          = target;
         s_lastPressed     = target;
         s_lastPressedTime = Time.unscaledTime;
+
+        _sound.PlayUi(Sounds.UiClick);
 
         _tween = target.DOScale(PressedScale, PressTime)
                          .SetEase(Ease.OutQuad)

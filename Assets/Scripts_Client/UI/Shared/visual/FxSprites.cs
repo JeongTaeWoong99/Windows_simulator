@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // 연출이 쓰는 이펙트 그림의 이름표 — 어떤 연출이 어떤 그림 파일을 쓰는지 한 곳에 모은다.
 // 그림은 그림 저장소 'Assets/Art/fx/<연출 키>/<이름>.png'에 있고 목록('VisualCatalog.FxOf')으로 찾는다.
@@ -74,8 +74,9 @@ public static class FxSprites
 
     // ── coin — 골드 획득 동전 ('CoinFlyPresenter') ──
 
-    // 동전 — 금색을 입혀 날린다
+    // 동전 — 금색('CoinColor')을 입혀 날린다. 상단 골드 아이콘도 같은 그림·색이다('StatePresenter')
     public static Sprite? CoinBody  => VisualCatalog.FxOf("coin_body");
+    public static readonly Color CoinColor = new Color(1f, 0.8f, 0.25f, 1f);
     // 네 갈래 반짝 — 동전이 골드 아이콘에 닿을 때
     public static Sprite? CoinSpark => VisualCatalog.FxOf("coin_spark");
 
