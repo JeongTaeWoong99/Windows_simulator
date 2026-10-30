@@ -332,6 +332,7 @@ Setting Presenter (↓ SUB VIEW)
 - 투명도 슬라이더의 범위(10~100)는 코드가 `DisplayManager` 상수로 채운다 — 인스펙터 min·max는 덮어써진다.
 - 슬라이더 줄은 `이름 · Spacer · Value Text(지금 값 %) · Slider`다. 투명도의 값 글씨는 코드가 갱신한다.
   **오디오 탭 슬라이더 넷**(전체·배경 음악·효과음·UI 효과음)은 인스펙터 `volumeRows`에 (채널 · 슬라이더 · 값 글씨) 한 줄씩 — 끄는 동안 `SoundManager.SetVolume`, 손을 떼면 `SaveVolume`(2026-10-31).
+  ⚠️ 색은 `UIThemeColor` **역할**로 정한다(채움 `Accent` · 값 글씨 `TextMain`) — Graphic 색만 바꾸면 테마가 다시 구울 때 되돌린다. 처음엔 `(기능 없음)` 시절의 `TextDisabled`가 남아 꺼진 것처럼 보였다.
 - 슬라이더 채움은 `Fill Area` 좌우 여백 0 · `Fill` 폭 0이다 — 유니티 기본값(`Fill` 폭 10)이면 최소값에서도 채움이 남는다.
 - 체크 표시는 `Assets/Sprites/ui/checkmark.png`(흰색 픽셀 체크 · 🎨 임시)다. ⚠️ 유니티 기본 `Checkmark` 스프라이트는 **어두운 회색**(평균 밝기 0.28)이라
   테마 색을 곱하면 흐려진다 — 색을 입힐 스프라이트는 흰색이어야 한다.
