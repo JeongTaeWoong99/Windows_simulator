@@ -1,6 +1,6 @@
 # Audio 규칙
 
-> 최종 업데이트: 2026-10-31 (신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
+> 최종 업데이트: 2026-10-31 (아트/검사가 `Sounds` 이름표를 목록에서 못 찾으면 ❌ · 신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
 
 **어떤 소리를 쓰는지 아는 곳.** 소리를 **트는** 것은 `Managers/SoundManager`, 음량 저장 키는 `Settings/WindowSettings.AudioKey`다.
 
@@ -33,6 +33,8 @@
 
 그림 저장소를 받지 않은 PC면 목록이 없어 `Sounds.Xxx`가 **null**이다. `SoundManager.Play*`는 null을 조용히 건너뛴다 —
 부르는 쪽이 null을 따로 막지 않는다.
+
+대신 **파일 이름을 바꾸거나 키를 잘못 적어도 조용하다** — 그래서 **아트/검사**가 `Sounds`의 이름표를 하나씩 불러 보고, 목록에서 못 찾으면 `❌ 소리`로 알린다.
 
 ## 5. 넣지 않는 소리
 

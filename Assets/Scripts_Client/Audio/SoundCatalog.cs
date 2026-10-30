@@ -30,10 +30,15 @@ public class SoundCatalog : ScriptableObject
     private static SoundCatalog? _current;
     private static bool          _searched;
 
-    // 도메인 리로드를 끈 에디터에서 지난 플레이의 목록을 들고 있지 않게 비운다 (Unity 런타임 초기화 훅)
+    // 도메인 리로드를 끈 에디터에서 지난 플레이의 목록을 들고 있지 않게 비운다 (Unity 런타임 초기화 훅 · 아트 검사도 부른다)
     [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
     private static void ResetStatics()
     {
+        if (_current != null)
+        {
+            _current._map = null;
+        }
+
         _current  = null;
         _searched = false;
     }

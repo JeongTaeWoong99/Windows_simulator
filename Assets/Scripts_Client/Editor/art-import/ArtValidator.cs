@@ -58,6 +58,7 @@ namespace DesktopWindowControl.EditorTools
             CheckCatalog(report);
             CheckResolution(report);
             CheckIconNames(report);
+            CheckSounds(report);
 
             return report.Length > 0 ? report.ToString() : "✅ 문제 없음";
         }
@@ -338,6 +339,23 @@ namespace DesktopWindowControl.EditorTools
             if (noIcon.Count > 0)
             {
                 report.AppendLine($"ℹ️ 아이콘: 레시피에 줄이 없는 자원 {noIcon.Count}종 — 0번 아이콘으로 보인다\n   {string.Join(" · ", noIcon)}");
+            }
+        }
+
+        // 'Sounds'의 이름표가 모두 목록에서 찾아지는가 — 파일 이름을 바꾸거나 키를 잘못 적으면 게임은 조용히 소리 없이 돈다
+        private static void CheckSounds(StringBuilder report)
+        {
+            // 목록을 방금 다시 썼을 수 있다 — 지난 찾기 결과를 비우고 다시 읽게 한다
+            typeof(SoundCatalog).GetMethod("ResetStatics", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static)!.Invoke(null, null);
+
+            var missing = typeof(Sounds).GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static)
+                .Where(property => property.PropertyType == typeof(AudioClip) && property.GetValue(null) == null)
+                .Select(property => property.Name)
+                .ToList();
+
+            if (missing.Count > 0)
+            {
+                report.AppendLine($"❌ 소리: 목록에서 못 찾는 이름표 {missing.Count}개 — 'audio/' 파일 이름과 'Sounds'의 키가 같은지 본다 · 목록만 다시 쓰기\n   {string.Join(" · ", missing)}");
             }
         }
 
