@@ -101,7 +101,7 @@
     "Logging": 0,
     "Hunting": 1,
     "BasePrice": 50,
-    "Description": "발굴 입문 — 그림 없음, 기본 캐릭터 임시"
+    "Description": "발굴 입문 — 삽"
   },
   {
     "CharacterTID": 1009,
@@ -388,5 +388,18 @@
     "Hunting": 7,
     "BasePrice": 4000,
     "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다"
+  },
+  {
+    "CharacterTID": 1031,
+    "Name": "숙련 채굴꾼",
+    "GlobalRarity": "Uncommon",
+    "Race": "Human",
+    "Farming": 0,
+    "Excavation": 1,
+    "Mining": 4,
+    "Logging": 0,
+    "Hunting": 1,
+    "BasePrice": 100,
+    "Description": "채굴 담당 — 견습 발굴꾼(1008)과 같은 생김새에 곡괭이"
   }
 ]

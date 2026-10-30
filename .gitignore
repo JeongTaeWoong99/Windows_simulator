@@ -130,3 +130,6 @@ Assets/Resources/PerformanceTestRunSettings.json.meta
 /Assets/Art/*
 !/Assets/Art/Art 규칙.md
 !/Assets/Art/Art 규칙.md.meta
+
+# Unity AI 생성 캐시 — 쓸 원본은 Assets/Art/_source/<팩>/raw/로 옮겨 그림 저장소에 둔다
+/GeneratedAssets/
