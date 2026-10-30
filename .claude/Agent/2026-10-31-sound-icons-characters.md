@@ -29,3 +29,9 @@ tags: [client, editor, ui, data, docs]
 - 게임 안 실측 대기: 큐브·골드 아이콘 · 소리·음량 슬라이더 · 두 캐릭터 모션. 1031은 PR #101 머지 후 보인다.
 - 공격 아래쪽이 칸 밖으로 잘린다는 굽기 경고(두 캐릭터) — 사소, 남겨 둠.
 - 아이콘 대체 174 · 아이콘 없는 10종 → T-189.
+
+## 업데이트 (2026-10-31) — SoundManager Common 이동 · 슬라이더 색 · 크롭 편집
+- **SoundManager·SoundCatalog → `Common/sound/`** (git mv로 GUID 유지 — 씬 컴포넌트·`SoundCatalog.asset` 참조가 산다). 게임 의존 둘을 뗐다: 음량 키는 `SoundManager.PrefsKey`(`Audio.<채널>` 그대로 — 저장값 유지), 시작 BGM은 `Sounds.BgmIdle` 대신 인스펙터 `startBgmKey`. 마스터에 복사·문서 등록만 하고 **툴킷 커밋은 안 했다**.
+- **오디오 슬라이더가 회색이던 원인은 색이 아니라 `UIThemeColor.role`(TextDisabled)** — Graphic 색을 바꿔도 테마가 런타임에 되돌린다. 색을 바꿀 땐 역할을 바꾼다(채움 Accent · 값 TextMain).
+- RunCommand에서 `result.RegisterObjectModification`을 쓰면 `SceneDirtyTracer` 경고가 실패로 잡혀 변경이 되돌아간다 — `SerializedObject`/직접 대입 + `SaveScene`으로 한다.
+- **크롭 편집 `CharacterCropPanel`** — 크롭 사각형의 진실은 레시피라 [적용]이 레시피에 쓰고 그 캐릭터만 굽는다. 자동과 같으면 0으로 둬서 템플릿 변화를 계속 따른다.
