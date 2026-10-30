@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
-    // 캐릭터 그림 SO의 인스펙터 — 맨 아래에 크기 템플릿 드롭다운(소·중·대)을 단다.
+    // 캐릭터 그림 SO의 인스펙터 — 맨 아래에 크기 템플릿 드롭다운(소·중·대)과 크롭 편집('CharacterCropPanel')을 단다.
     //
     // ■ 드롭다운을 고르면 그 템플릿 값으로 개인 조정 세 칸(배율·화면 배율·멈추는 거리)을 채운다
     //   그 뒤 세 칸을 손대면 '커스텀 수치'로 표시되고, [템플릿 수치로 되돌리기]로 돌아간다.
@@ -18,6 +18,17 @@ namespace DesktopWindowControl.EditorTools
         private ECharacterSize          _cachedSize = (ECharacterSize)(-1);
         private CharacterSizeTemplate?  _template;
         private ArtBaker.SizeValues?    _values;
+        private CharacterCropPanel?     _crop;
+
+        private void OnEnable()
+        {
+            _crop = targets.Length == 1 ? new CharacterCropPanel((CharacterVisual)target) : null;
+        }
+
+        private void OnDisable()
+        {
+            _crop?.Dispose();
+        }
 
         public override void OnInspectorGUI()
         {
@@ -27,11 +38,14 @@ namespace DesktopWindowControl.EditorTools
 
             if (targets.Length > 1)
             {
-                return; // 여러 개를 함께 고를 때는 템플릿 칸을 그리지 않는다 — 캐릭터마다 계산값이 다르다
+                return; // 여러 개를 함께 고를 때는 템플릿·크롭 칸을 그리지 않는다 — 캐릭터마다 계산값이 다르다
             }
 
             EditorGUILayout.Space();
             DrawSizeTemplate();
+
+            EditorGUILayout.Space(8);
+            _crop?.Draw();
         }
 
         private void DrawSizeTemplate()

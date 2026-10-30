@@ -561,6 +561,60 @@ namespace DesktopWindowControl.EditorTools
             return strip;
         }
 
+        // ── 크롭 편집 미리보기 ('CharacterVisualEditor') ────────────
+
+        // 크롭을 고르는 바탕 — 굽기와 같은 기준 칸(대기 첫 프레임을 발 기준으로 놓은 224×96)과 자동 크롭
+        public readonly struct CropSource
+        {
+            public readonly ArtImage Cell;
+            public readonly RectInt  AutoPortrait;
+            public readonly RectInt  AutoHead;
+
+            public CropSource(ArtImage cell, RectInt autoPortrait, RectInt autoHead)
+            {
+                Cell         = cell;
+                AutoPortrait = autoPortrait;
+                AutoHead     = autoHead;
+            }
+        }
+
+        // 결과 SO 옆의 레시피 — '<키>_recipe.asset'이 없으면 폴더에서 찾는다
+        public static CharacterRecipe? FindRecipe(CharacterVisual visual)
+        {
+            string folder = Path.GetDirectoryName(AssetDatabase.GetAssetPath(visual))!.Replace('\\', '/');
+
+            return AssetDatabase.FindAssets($"t:{nameof(CharacterRecipe)}", new[] { folder })
+                .Select(guid => AssetDatabase.LoadAssetAtPath<CharacterRecipe>(AssetDatabase.GUIDToAssetPath(guid)))
+                .FirstOrDefault(recipe => recipe != null && Path.GetDirectoryName(AssetDatabase.GetAssetPath(recipe))!.Replace('\\', '/') == folder);
+        }
+
+        // 'Bake'의 앞부분과 같은 계산으로 기준 칸과 자동 크롭을 만든다 — 파일을 쓰지 않는다
+        public static CropSource? LoadCropSource(CharacterRecipe recipe, ECharacterSize size)
+        {
+            Sprite[] run  = Resolve(recipe.RunSprites, recipe.RunClip);
+            Sprite[] idle = Resolve(recipe.IdleSprites ?? System.Array.Empty<Sprite>(), recipe.IdleClip);
+
+            if (run.Length == 0 && idle.Length == 0)
+            {
+                return null;
+            }
+
+            Sprite     anchor      = idle.Length > 0 ? idle[0] : run[0];
+            ArtImage   anchorImage = Prepare(anchor, recipe);
+            Vector2Int feet        = anchorImage.FeetPoint();
+            var        offset      = new Vector2Int(ArtSpec.CharacterCell.x / 2 - feet.x, -feet.y);
+            ArtImage   cell        = Place(anchor, recipe, anchorImage, offset, new List<string>());
+
+            RectInt                body      = BodyOf(recipe, cell);
+            CharacterSizeTemplate? template  = ResolveSizeTemplate(recipe, size, body);
+            bool                   wholeBody = template != null && template.CropWholeBody;
+
+            return new CropSource(cell, AutoPortrait(cell, body, wholeBody), AutoHead(cell, body, wholeBody));
+        }
+
+        // 굽기가 만들 상반신·머리 그림 그대로 — 미리보기용
+        public static ArtImage CropResult(ArtImage cell, RectInt rect, bool head) => Upscale(cell.Crop(rect), head ? HeadMaxSize : PortraitMaxSize);
+
         // 크롭을 정수 배로만 키운다 — 캔버스를 덧대지 않아 결과 크기 = 크롭 × 배수 (상반신·머리).
         //
         // ■ 왜 'Fit'을 쓰지 않나 (2026-10-07)
