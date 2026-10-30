@@ -33,6 +33,11 @@ namespace DesktopWindowControl.EditorTools
 
         private const float HandleSize = 10f;
 
+        // 보는 창 — 캐릭터 둘레만 크게 본다(224×96 전체를 그리면 캐릭터가 작아 상자를 고르기 힘들다)
+        private const int   ViewPadding   = 6;
+        private const int   ViewMinSize   = 40;
+        private const float ViewMaxHeight = 320f;
+
         private readonly CharacterVisual _visual;
         private CharacterRecipe?         _recipe;
         private ArtBaker.CropSource?     _source;
@@ -44,6 +49,7 @@ namespace DesktopWindowControl.EditorTools
         private RectInt _head;
         private RectInt _savedPortrait;
         private RectInt _savedHead;
+        private RectInt _view;
         private Target  _target;
         private bool    _open = true;
 
@@ -118,6 +124,7 @@ namespace DesktopWindowControl.EditorTools
             _savedHead     = _recipe.HeadRect.width > 0     ? _recipe.HeadRect     : source.AutoHead;
             _portrait      = _savedPortrait;
             _head          = _savedHead;
+            _view          = ViewAround(source.Cell.OpaqueBounds(), source.AutoPortrait, source.AutoHead, _savedPortrait, _savedHead);
             RebuildAfter();
 
             return true;
@@ -151,32 +158,75 @@ namespace DesktopWindowControl.EditorTools
 
         #region 그림 위 상자
 
+        // 캐릭터 몸과 크롭 상자들을 모두 담는 창 — 여백을 두고 너무 작지 않게
+        private static RectInt ViewAround(params RectInt[] rects)
+        {
+            int xMin = int.MaxValue, yMin = int.MaxValue, xMax = int.MinValue, yMax = int.MinValue;
+
+            foreach (RectInt r in rects)
+            {
+                if (r.width <= 0)
+                {
+                    continue;
+                }
+
+                xMin = Mathf.Min(xMin, r.xMin);
+                yMin = Mathf.Min(yMin, r.yMin);
+                xMax = Mathf.Max(xMax, r.xMax);
+                yMax = Mathf.Max(yMax, r.yMax);
+            }
+
+            var view = new RectInt(xMin - ViewPadding, yMin - ViewPadding, xMax - xMin + ViewPadding * 2, yMax - yMin + ViewPadding * 2);
+            int grow = Mathf.Max(0, ViewMinSize - view.width);
+            view.xMin -= grow / 2;
+            view.width += grow;
+            grow = Mathf.Max(0, ViewMinSize - view.height);
+            view.yMin -= grow / 2;
+            view.height += grow;
+
+            return view;
+        }
+
         private void DrawCanvas(ArtBaker.CropSource source)
         {
             Vector2Int cell  = ArtSpec.CharacterCell;
             float      width = EditorGUIUtility.currentViewWidth - 40f;
-            float      scale = Mathf.Max(1f, Mathf.Floor(width / cell.x));
-            Rect       area  = GUILayoutUtility.GetRect(cell.x * scale, cell.y * scale, GUILayout.ExpandWidth(false));
+            float      scale = Mathf.Max(2f, Mathf.Floor(Mathf.Min(width / _view.width, ViewMaxHeight / _view.height)));
+            Rect       outer = GUILayoutUtility.GetRect(_view.width * scale, _view.height * scale, GUILayout.ExpandWidth(false));
+
+            // 창 밖으로 나간 상자·손잡이가 인스펙터 위에 그려지지 않게 자른다 — 안쪽 좌표는 (0,0)부터
+            GUI.BeginClip(outer);
+            var area = new Rect(0f, 0f, outer.width, outer.height);
 
             EditorGUI.DrawRect(area, new Color(0.12f, 0.12f, 0.14f));
-            GUI.DrawTexture(area, _cellTexture);
+
+            // 그림은 칸 안에 걸친 부분만 — 창이 칸 밖(발 아래 등)으로 나가면 그 자리는 바탕색
+            var inside = new RectInt(Mathf.Max(_view.xMin, 0), Mathf.Max(_view.yMin, 0), 0, 0);
+            inside.xMax = Mathf.Min(_view.xMax, cell.x);
+            inside.yMax = Mathf.Min(_view.yMax, cell.y);
+
+            if (inside.width > 0 && inside.height > 0)
+            {
+                var uv = new Rect((float)inside.x / cell.x, (float)inside.y / cell.y, (float)inside.width / cell.x, (float)inside.height / cell.y);
+                GUI.DrawTextureWithTexCoords(ToGui(area, scale, inside), _cellTexture, uv);
+            }
 
             // 발 위치(가운데 세로줄)
-            EditorGUI.DrawRect(new Rect(area.x + cell.x / 2f * scale, area.y, 1f, area.height), new Color(1f, 1f, 1f, 0.15f));
+            EditorGUI.DrawRect(new Rect((cell.x / 2f - _view.x) * scale, 0f, 1f, area.height), new Color(1f, 1f, 1f, 0.15f));
 
-            DrawBox(area, scale, _portrait, PortraitColor, _target == Target.Portrait);
-            DrawBox(area, scale, _head,     HeadColor,     _target == Target.Head);
+            DrawBox(ToGui(area, scale, _portrait), PortraitColor, _target == Target.Portrait);
+            DrawBox(ToGui(area, scale, _head),     HeadColor,     _target == Target.Head);
 
             HandleMouse(area, scale);
+            GUI.EndClip();
         }
 
-        // 칸 좌표(왼쪽 아래 원점) → 화면 사각형(왼쪽 위 원점)
-        private static Rect ToGui(Rect area, float scale, RectInt rect)
-            => new(area.x + rect.x * scale, area.y + (ArtSpec.CharacterCell.y - rect.yMax) * scale, rect.width * scale, rect.height * scale);
+        // 칸 좌표(왼쪽 아래 원점) → 보는 창 안의 화면 사각형(왼쪽 위 원점)
+        private Rect ToGui(Rect area, float scale, RectInt rect)
+            => new(area.x + (rect.x - _view.x) * scale, area.y + (_view.yMax - rect.yMax) * scale, rect.width * scale, rect.height * scale);
 
-        private static void DrawBox(Rect area, float scale, RectInt rect, Color color, bool active)
+        private static void DrawBox(Rect r, Color color, bool active)
         {
-            Rect  r = ToGui(area, scale, rect);
             float t = active ? 2f : 1f;
             Color c = active ? color : new Color(color.r, color.g, color.b, 0.45f);
 
