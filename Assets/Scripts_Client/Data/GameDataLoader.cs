@@ -485,6 +485,20 @@ public static class GameDataLoader
         return GameTable.BuildingTable.TryGet(buildingTid, out row);
     }
 
+    // 이 건물에 트리 노드가 있는가 — 없으면 특성 탭을 열지 않는다(1차는 작업장뿐 · T-183).
+    public static bool HasBuildingNodes(int buildingTid)
+    {
+        foreach (var node in UserTraits)
+        {
+            if (node.BuildingTID == buildingTid)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // 건물을 'level'로 올릴 때의 비용 행을 조회한다. 그 레벨이 없으면 false.
     //
     // ※ 시트 키는 'BuildingLevelTID'(= 건물 × 1000 + 레벨)지만 그 계산식을 여기 베끼지 않는다 —

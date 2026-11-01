@@ -517,6 +517,43 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return GetBuildingLevel(buildingTid) - spent;
     }
 
+    // 이 건물을 지금 올릴 수 있는가 — 안 되면 그 이유. 서버 'User.TryUpgradeBuilding'의 판정 순서와 같다.
+    // ※ 안내일 뿐이다. 통과해도 서버가 다시 검사한다(게임기획코어 P4).
+    public EResultCode CheckBuildingUpgrade(int buildingTid)
+    {
+        if (!GameDataLoader.TryGetBuilding(buildingTid, out var building))
+        {
+            return EResultCode.InvalidBuildingTID;
+        }
+
+        int next = GetBuildingLevel(buildingTid) + 1;
+
+        if (next > building.MaxLevel || !GameDataLoader.TryGetBuildingLevel(buildingTid, next, out var cost))
+        {
+            return EResultCode.BuildingMaxLevel;
+        }
+
+        if (next > AccountLevel)
+        {
+            return EResultCode.BuildingAccountLevelCap;
+        }
+
+        if (Gold < cost.Gold)
+        {
+            return EResultCode.NotEnoughCurrency;
+        }
+
+        for (int i = 0; i < cost.ItemTIDs.Length && i < cost.ItemCounts.Length; i++)
+        {
+            if (GetItemCount(cost.ItemTIDs[i]) < cost.ItemCounts[i])
+            {
+                return EResultCode.NotEnoughItem;
+            }
+        }
+
+        return EResultCode.Ok;
+    }
+
     // 아직 최대 레벨이 아닌 앞 노드 — 없으면 false(이 노드는 열려 있다). 서버 'User.TryLearnTrait'의 앞 노드 판정과 같다.
     public bool TryGetUnmetPrerequisite(UserTraitTableRow trait, out UserTraitTableRow prerequisite)
     {
