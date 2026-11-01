@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 거점 화면 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-182 · T-183). 하단 메뉴 [거점]으로 열고, 안쪽 [X]로 닫는다.
+// 거점 화면 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-182 · T-183). 하단 메뉴 [거점]으로 열고, 안쪽 [X]·판 밖 차단막으로 닫는다.
 // 경매장('AuctionCanvasView') · 아티팩트('ArtifactCanvasView')와 같은 틀이다 — 지도 위에 건물 5채가 서고, 건물을 누르면 그 창이 뜬다.
 //
 // ■ 왜 '!Overlay Canvas' 안인가 — 경매장과 같다(화면 전체를 막는다 · 'Overlay 규칙.md' ① 차단 범위).
@@ -16,8 +16,33 @@ public class OutpostCanvasView : MonoBehaviour
     [SerializeField, Tooltip("3열 배치 — 가운데 칸의 위·아래 여백을 여기서 읽는다 (!Horizontal Columns)")]
     private WidgetPositionLayout columnLayout = null!;
 
+    [CenterHeader("차단막")]
+    [SerializeField, Tooltip("건물 창 — 떠 있으면 판 밖 차단막이 화면 대신 이 창부터 닫는다")]
+    private OutpostBuildingPresenter buildingWindow = null!;
+
     // 지금 열려 있는가 — 닫히는 중이면 false
     public bool IsOpen => PanelTransition.IsShown(gameObject);
+
+    // 판 밖 차단막을 누르면 닫는다 (Unity 메시지 — 처음 켜질 때 한 번)
+    private void Awake()
+    {
+        this.RequireRef(buildingWindow, nameof(buildingWindow));
+
+        BackdropClose.Bind(gameObject, OnBackdropClicked);
+    }
+
+    // 맨 위 창부터 하나씩 닫는다 — 건물 창이 떠 있으면 그것만.
+    private void OnBackdropClicked()
+    {
+        if (buildingWindow.IsOpen)
+        {
+            buildingWindow.Close();
+
+            return;
+        }
+
+        Services.Get<UIManager>().ShowOutpost(false);
+    }
 
     // 화면을 열고 닫는다 (UIManager가 호출). 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition').
     public void Show(bool on)

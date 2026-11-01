@@ -102,6 +102,7 @@ public class OutpostBuildingPresenter : MonoBehaviour
         upgradeTabButton.onClick.AddListener(() => ShowTab(Tab.Upgrade));
         traitTabButton.onClick.AddListener(() => ShowTab(Tab.Trait));
         closeButton.onClick.AddListener(Close);
+        BackdropClose.Bind(window, Close); // 창 뒤 어두운 바탕('Building Window' 자신)
     }
 
     // 켜져 있는 동안만 머리 줄을 구독한다 (Unity 메시지)
@@ -128,7 +129,9 @@ public class OutpostBuildingPresenter : MonoBehaviour
         Lang.Changed           -= Redraw;
     }
 
-    // 화면이 닫히면 창도 함께 닫는다 — 다시 열었을 때 지도부터 보이게 한다 ('OutpostMapPresenter'가 부른다)
+    public bool IsOpen => window.activeSelf;
+
+    // 창을 닫는다 — [X] · 창 뒤 바탕 · 화면이 닫힐 때('OutpostMapPresenter' — 다시 열었을 때 지도부터 보이게)
     public void Close()
     {
         window.SetActive(false);

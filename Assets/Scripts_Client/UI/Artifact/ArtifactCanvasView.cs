@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 아티팩트 화면 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-151 · T-182). 하단 메뉴 [아티팩트]로 열고, 안쪽 [X]로 닫는다.
+// 아티팩트 화면 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-151 · T-182). 하단 메뉴 [아티팩트]로 열고, 안쪽 [X]·판 밖 차단막으로 닫는다.
 // 경매장('AuctionCanvasView')과 같은 틀이다 — 왼쪽 도감 · 오른쪽 상세. 보유·판매는 인벤토리 장비 탭에서 한다('Artifact 규칙.md' 흐름).
 //
 // ■ 왜 경매장 넓이인가 (2026-10-25 사용자 결정 · 목업 'GameDesign/design/ui/아티팩트도감장착목업.html')
@@ -22,6 +22,12 @@ public class ArtifactCanvasView : MonoBehaviour
 
     // 지금 열려 있는가 — 닫히는 중이면 false
     public bool IsOpen => PanelTransition.IsShown(gameObject);
+
+    // 판 밖 차단막을 누르면 닫는다 (Unity 메시지 — 처음 켜질 때 한 번)
+    private void Awake()
+    {
+        BackdropClose.Bind(gameObject, () => Services.Get<UIManager>().ShowArtifact(false));
+    }
 
     // 화면을 열고 닫는다 (UIManager가 호출). 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition').
     public void Show(bool on)

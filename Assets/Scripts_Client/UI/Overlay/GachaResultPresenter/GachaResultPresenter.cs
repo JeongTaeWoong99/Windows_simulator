@@ -55,6 +55,9 @@ using UnityEngine.UI;
 // 여기서 다시 더하면 수량이 두 배가 된다 — 이 팝업은 오직 보여 주기만 한다.
 public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 {
+    // 공개가 끝나고 이만큼(초) 지나야 차단막으로 닫힌다 — 스킵하려고 연타하다 결과를 못 보고 닫히지 않게
+    private const float BackdropCloseDelay = 0.4f;
+
     [CenterHeader("참조")]
     [SerializeField, Tooltip("팝업 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
     private CanvasGroup group = null!;
@@ -100,6 +103,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private Tween?                   _panelShake;
     private Vector2                  _panelRestPosition; // 흔들기를 끊었을 때 돌아갈 창 자리
     private bool                     _isRevealing;       // 하나씩 공개하는 중인가 — 스킵할 것이 있는가
+    private float                    _backdropCloseAt;   // 차단막으로 닫을 수 있는 시각('BackdropCloseDelay')
 
     private RelicAppraiseFx?         _appraise;
     private CanvasGroup?             _panelGroup;        // 감정 무대 동안 창을 투명하게
@@ -738,6 +742,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     {
         _isRevealing = on;
 
+        if (!on)
+        {
+            _backdropCloseAt = Time.unscaledTime + BackdropCloseDelay;
+        }
+
         closeButton.interactable = !on;
         RefreshDrawAgain();
     }
@@ -805,6 +814,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     }
 
     // 공개 중이면 스킵한다 — 창 바탕·제목 클릭 (EventSystem 클릭 콜백). 버튼은 자기가 먼저 받는다.
+    // 공개가 끝났으면 창 뒤 차단막을 눌러 닫는다('BackdropClose') — 창을 눌러서는 닫히지 않는다.
     // 감정 무대가 끝 모습으로 머무는 중이면 닫는다 — 창(닫기 버튼)이 투명해 누를 곳이 바탕뿐이다.
     public void OnPointerClick(PointerEventData eventData)
     {
@@ -822,7 +832,17 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        SkipReveal();
+        if (_isRevealing)
+        {
+            SkipReveal();
+
+            return;
+        }
+
+        if (BackdropClose.IsDirectClick(eventData, gameObject) && Time.unscaledTime >= _backdropCloseAt)
+        {
+            OnCloseClicked();
+        }
     }
 
     // 칸 클릭 — 결과 창에서 칸의 뜻은 스킵 하나다 (SlotView.LeftClicked · RightClicked 구독)
