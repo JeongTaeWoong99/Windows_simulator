@@ -4,9 +4,9 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 특성 표의 한 칸 — 종류 이름 · 'Lv 2/5' · 레벨 눈금. 눌리면 'Clicked'만 쏜다.
+// 특성 트리의 노드 — 이름 · 'Lv 2/5' · 레벨 눈금. 눌리면 'Clicked'만 쏜다.
 //
-// 이 칸은 레벨 조건도, 포인트가 남았는지도 모른다 — 완성된 문구와 상태만 'Bind'로 받는다.
+// 이 칸은 앞 노드도, 포인트가 남았는지도 모른다 — 완성된 문구와 상태만 'Bind'로 받는다.
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
 //
 // ■ 눈금은 최대 레벨만큼만 켠다
@@ -20,15 +20,15 @@ public class TraitNodeView : MonoBehaviour
         // 최대 레벨까지 올렸다
         MaxLevel,
 
-        // 다음 레벨의 계정 레벨 조건을 채웠다 (포인트 부족은 여기 포함 — 모든 칸에 똑같이 걸려 색으로 가르지 않는다)
+        // 앞 노드를 다 찍었다 (포인트 부족은 여기 포함 — 모든 칸에 똑같이 걸려 색으로 가르지 않는다)
         Available,
 
-        // 다음 레벨의 계정 레벨이 모자란다
+        // 앞 노드를 아직 다 찍지 않았다
         Locked,
     }
 
     [CenterHeader("참조")]
-    [SerializeField, Tooltip("종류 이름 (예: '개척' · 공통 줄은 '공통 산출량')")]
+    [SerializeField, Tooltip("특성 이름 (예: '농사 개척')")]
     private TMP_Text nameText = null!;
 
     [SerializeField, Tooltip("레벨 한 줄 (예: 'Lv 2/5')")]
@@ -54,7 +54,7 @@ public class TraitNodeView : MonoBehaviour
     [SerializeField, Tooltip("다음 레벨을 올릴 수 있는 칸")]
     private UIThemeRole availableRole = UIThemeRole.Button;
 
-    [SerializeField, Tooltip("다음 레벨의 계정 레벨이 모자란 칸")]
+    [SerializeField, Tooltip("앞 노드를 아직 다 찍지 않은 칸")]
     private UIThemeRole lockedRole = UIThemeRole.ButtonDisabled;
 
     [SerializeField, Tooltip("채운 눈금 (지금 레벨까지)")]
@@ -106,19 +106,6 @@ public class TraitNodeView : MonoBehaviour
 
         ApplyState(state);
         ApplyPips(level, max, state == NodeState.MaxLevel);
-    }
-
-    // 줄 맞추기용 빈 칸으로 만든다 ('TraitPresenter'가 호출) — 자리만 차지하고 보이지도 눌리지도 않는다.
-    //
-    // ※ 칸을 빼지 않고 비우는 이유: 줄의 칸이 열(개척·속도·산출량) 자리를 지켜야 머리 줄과 맞는다.
-    //   회색으로 두면 "잠긴 특성"으로 읽혀 바탕째 끈다.
-    public void BindBlank()
-    {
-        Clear();
-        SetBackgroundVisible(false);
-        ApplyPips(0, 0, false);
-
-        button.interactable = false;
     }
 
     // 칸을 비운다. 오브젝트는 살려 두고 재사용한다.
