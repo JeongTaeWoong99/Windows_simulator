@@ -26,7 +26,7 @@ using UnityEngine.UI;
 //
 // ■ 특성은 레벨형이다
 // 특성 하나가 기본 레벨 → 최대 레벨을 1씩 오른다. 레벨은 'PlayerDataModel.GetTraitLevel',
-// 레벨마다의 조건(계정 레벨)은 'UserTraitLevelTable', 비용·효과는 레벨마다 같다('UserTraitTable').
+// 비용·효과는 레벨마다 같다('UserTraitTable'). 조건은 앞 노드를 최대까지 찍는 것과 건물 포인트다(T-183).
 public class TraitPresenter : MonoBehaviour
 {
     // 표의 줄 = 산업. 'None'은 전 산업에 붙는 공통 특성 줄이다.
@@ -198,7 +198,7 @@ public class TraitPresenter : MonoBehaviour
 
         _isSubscribed              = true;
         _data.TraitsChanged       += Redraw;      // 특성 레벨 (로그인 목록 · 올리기 응답)
-        _data.AccountLevelChanged += Redraw;      // 남은 포인트 · 다음 레벨의 계정 레벨 조건
+        _data.BuildingsChanged    += Redraw;      // 건물 레벨이 곧 포인트다
         _data.TraitLearnCompleted += OnTraitLearnCompleted;
         Lang.Changed              += OnLanguageChanged;
     }
@@ -213,7 +213,7 @@ public class TraitPresenter : MonoBehaviour
 
         _isSubscribed              = false;
         _data.TraitsChanged       -= Redraw;
-        _data.AccountLevelChanged -= Redraw;
+        _data.BuildingsChanged    -= Redraw;
         _data.TraitLearnCompleted -= OnTraitLearnCompleted;
         Lang.Changed              -= OnLanguageChanged;
     }
@@ -323,7 +323,7 @@ public class TraitPresenter : MonoBehaviour
                   GetNodeState(trait, level), isSelected: trait.UserTraitTID == _selectedTraitTid);
     }
 
-    // 칸의 색 — 최대 레벨 · 올릴 수 있음 · 다음 레벨의 계정 레벨 미달.
+    // 칸의 색 — 최대 레벨 · 올릴 수 있음 · 앞 노드 미완.
     //
     // ※ 포인트 부족은 색으로 가르지 않는다 — 모든 칸에 똑같이 걸려 전부 회색이 되면 아무것도 읽히지 않는다.
     //   누르면 알림으로 말한다.
@@ -334,9 +334,9 @@ public class TraitPresenter : MonoBehaviour
             return TraitNodeView.NodeState.MaxLevel;
         }
 
-        return _data.AccountLevel >= GetRequiredAccountLevel(trait, level + 1)
-            ? TraitNodeView.NodeState.Available
-            : TraitNodeView.NodeState.Locked;
+        return _data.TryGetUnmetPrerequisite(trait, out _)
+            ? TraitNodeView.NodeState.Locked
+            : TraitNodeView.NodeState.Available;
     }
 
     // 줄을 만들 때 한 번 — 칸 클릭을 건다. 줄은 파괴하지 않으므로 다시 걸면 중복으로 쌓인다.
@@ -361,10 +361,8 @@ public class TraitPresenter : MonoBehaviour
     //   조건은 "버튼을 누를 수 있나"의 정보라 버튼 바로 위에 둔다.
     // ※ 보유 포인트도 이 줄이 말한다 — 표 위에 따로 두던 '특성 포인트 n'은 걷어냈다(같은 숫자가 두 번).
     //
-    // ※ 레벨별 계정 Lv 조건(사다리)은 두지 않는다(2026-10-02 사용자 피드백) — 다음 레벨 조건이 칩에 있으면 충분하고,
-    //   한 줄을 더 읽게 할 만큼 계획에 쓰이지 않았다.
     // [레벨 올리기]는 **최대 레벨에서만** 숨긴다. 조건 미달·포인트 부족이면 회색이지만 눌리게 둔다 —
-    // 누르면 이유("계정 레벨 n이 필요합니다" 등)가 알림으로 뜬다.
+    // 누르면 이유(앞 노드 · 포인트)가 알림으로 뜬다.
     private void RedrawDetail()
     {
         bool hasSelection = GameDataLoader.TryGetUserTrait(_selectedTraitTid, out var trait);
@@ -376,7 +374,7 @@ public class TraitPresenter : MonoBehaviour
 
         if (!hasSelection)
         {
-            requirementText.text = DescribePoint(null);
+            requirementText.text = DescribePoint(WorkshopBuildingTid(), null);
             confirmButton.gameObject.SetActive(false);
 
             return;
@@ -391,20 +389,18 @@ public class TraitPresenter : MonoBehaviour
             : $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.TextSub)}>Lv {level} / {trait.MaxLevel}</color></size>";
         detailDescText.text = DescribeKind(trait);
 
-        bool levelOk = isMax || _data.AccountLevel >= GetRequiredAccountLevel(trait, level + 1);
-        bool pointOk = _data.TraitPoint >= trait.TraitPoint;
+        bool hasUnmet = _data.TryGetUnmetPrerequisite(trait, out var unmet);
+        bool pointOk  = _data.GetBuildingPoints(trait.BuildingTID) >= trait.TraitPoint;
 
         BindStats(trait, level, isMax);
 
-        requirementText.text = isMax
-            ? DescribePoint(null)
-            : $"{Lang.Get("UI.Trait.Condition")} {Paint(Lang.Format("UI.WorkStation.AccountLevel", GetRequiredAccountLevel(trait, level + 1)), levelOk)}"
-              + (levelOk ? "" : $" <size=85%><color=#{Hex(UIThemeRole.TextSub)}>{Lang.Format("UI.Trait.CurrentLevel", _data.AccountLevel)}</color></size>")
-              + $"   ·   {DescribePoint(pointOk)}";
+        requirementText.text = isMax || trait.RequiredTraitTIDs.Length == 0
+            ? DescribePoint(trait.BuildingTID, isMax ? (bool?)null : pointOk)
+            : $"{Lang.Get("UI.Trait.Condition")} {Paint(DescribeRequired(trait, hasUnmet ? unmet : null), !hasUnmet)}   ·   {DescribePoint(trait.BuildingTID, pointOk)}";
 
         confirmButton.gameObject.SetActive(!isMax);
         confirmLabel.text = Lang.Format("UI.Trait.LevelUp", trait.TraitPoint);
-        PaintConfirm(levelOk && pointOk);
+        PaintConfirm(!hasUnmet && pointOk);
     }
 
     // 비교 상자를 채운다 (RedrawDetail에서 호출).
@@ -427,10 +423,29 @@ public class TraitPresenter : MonoBehaviour
 
     // '보유 포인트 13' (조건 줄). ok가 있으면 숫자를 충족/미달 색으로, null이면(고른 것 없음 · 최대 레벨) 그냥 적는다.
     // ※ 충족 여부는 글자색(Positive · Negative)으로 말한다 — '✓'는 아틀라스에 없다.
-    private string DescribePoint(bool? ok)
-        => ok == null
-            ? Lang.Format("UI.Trait.Points", _data.TraitPoint)
-            : Lang.Format("UI.Trait.Points", Paint(_data.TraitPoint.ToString(), ok.Value));
+    private string DescribePoint(int buildingTid, bool? ok)
+    {
+        int points = _data.GetBuildingPoints(buildingTid);
+
+        return ok == null
+            ? Lang.Format("UI.Trait.Points", points)
+            : Lang.Format("UI.Trait.Points", Paint(points.ToString(), ok.Value));
+    }
+
+    // 조건 줄의 앞 노드 — '농사 개척 최대'. 다 찍었으면(unmet = null) 첫 앞 노드를 충족으로 보여 준다.
+    private static string DescribeRequired(UserTraitTableRow trait, UserTraitTableRow? unmet)
+    {
+        if (unmet == null && !GameDataLoader.TryGetUserTrait(trait.RequiredTraitTIDs[0], out unmet))
+        {
+            return "";
+        }
+
+        return Lang.Format("UI.Trait.RequiredNode", Loc.Get(unmet.NameLocKey));
+    }
+
+    // 고른 것이 없을 때 조건 줄이 말할 건물 — 이 표의 노드가 속한 건물이다.
+    private static int WorkshopBuildingTid()
+        => GameDataLoader.UserTraits.Count > 0 ? GameDataLoader.UserTraits[0].BuildingTID : 0;
 
     // 충족이면 Positive, 아니면 Negative 색으로 감싼다 (조건 줄).
     private static string Paint(string text, bool ok)
@@ -518,7 +533,7 @@ public class TraitPresenter : MonoBehaviour
         }
     }
 
-    // 머리 줄 도움말 아이콘 — 포인트 얻는 법 · 레벨 조건 · 종류별 효과 (T-144).
+    // 머리 줄 도움말 아이콘 — 포인트 얻는 법 · 앞 노드 조건 · 종류별 효과 (T-144).
     private static TooltipContent BuildHelpTooltip()
     {
         var content = new TooltipContent(Lang.Get("UI.Trait.HelpTitle"))
@@ -536,10 +551,6 @@ public class TraitPresenter : MonoBehaviour
 
         return content;
     }
-
-    // 이 특성을 'level'로 올릴 때의 계정 레벨 조건. 조건 행이 없으면 0(조건 없음).
-    private static int GetRequiredAccountLevel(UserTraitTableRow trait, int level)
-        => GameDataLoader.TryGetUserTraitLevel(trait.UserTraitTID, level, out var row) ? row.AccountLevel : 0;
 
     // 천분율 가산을 "+15%"로 적는다 (EffectValue는 천분율).
     private static string FormatPermille(int permille)
@@ -567,7 +578,7 @@ public class TraitPresenter : MonoBehaviour
 
     // [레벨 올리기]를 눌렀다 — 고른 특성을 1레벨 올린다 (confirmButton.onClick).
     //
-    // 순서는 서버 판정과 같다 — 최대 레벨 → 계정 레벨 → 포인트.
+    // 순서는 서버 판정과 같다 — 최대 레벨 → 앞 노드 → 포인트.
     // ※ 클라 판정은 안내일 뿐이다. 통과해도 서버가 다시 검사한다(게임기획코어 P4).
     private void OnConfirmClicked()
     {
@@ -590,16 +601,14 @@ public class TraitPresenter : MonoBehaviour
             return;
         }
 
-        int required = GetRequiredAccountLevel(trait, level + 1);
-
-        if (_data.AccountLevel < required)
+        if (_data.TryGetUnmetPrerequisite(trait, out var unmet))
         {
-            _wait.RaiseRefusal(Lang.Format("UI.WorkStation.NeedAccountLevel", required, _data.AccountLevel));
+            _wait.RaiseRefusal(Lang.Format("UI.Trait.NeedPrerequisite", Loc.Get(unmet.NameLocKey)));
 
             return;
         }
 
-        if (_data.TraitPoint < trait.TraitPoint)
+        if (_data.GetBuildingPoints(trait.BuildingTID) < trait.TraitPoint)
         {
             _wait.RaiseRefusal(Lang.Format("UI.Trait.NotEnoughPoints", trait.TraitPoint));
 

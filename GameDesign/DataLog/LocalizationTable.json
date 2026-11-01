@@ -112,27 +112,27 @@
   {
     "Key": "Building.1.Name",
     "KR": "관리소",
-    "EN": "Farm"
+    "EN": "Office"
   },
   {
     "Key": "Building.2.Name",
     "KR": "작업장",
-    "EN": "Dig Camp"
+    "EN": "Workshop"
   },
   {
     "Key": "Building.3.Name",
     "KR": "상회",
-    "EN": "Mine"
+    "EN": "Trading House"
   },
   {
     "Key": "Building.4.Name",
     "KR": "숙소",
-    "EN": "Sawmill"
+    "EN": "Lodge"
   },
   {
     "Key": "Building.5.Name",
     "KR": "감정소",
-    "EN": "Hunter's Hut"
+    "EN": "Appraisal Hall"
   },
   {
     "Key": "Character.1001.Name",
@@ -3745,6 +3745,26 @@
     "EN": "Not enough trait points."
   },
   {
+    "Key": "UI.Result.TraitPrerequisite",
+    "KR": "앞 노드를 최대 레벨까지 올려야 합니다.",
+    "EN": "Max out the previous node first."
+  },
+  {
+    "Key": "UI.Result.InvalidBuildingTID",
+    "KR": "알 수 없는 건물입니다.",
+    "EN": "Unknown building."
+  },
+  {
+    "Key": "UI.Result.BuildingMaxLevel",
+    "KR": "이미 최대 레벨입니다.",
+    "EN": "Already at max level."
+  },
+  {
+    "Key": "UI.Result.BuildingAccountLevelCap",
+    "KR": "계정 레벨보다 높이 올릴 수 없습니다.",
+    "EN": "A building can't exceed your account level."
+  },
+  {
     "Key": "UI.Result.InvalidUserTraitTID",
     "KR": "존재하지 않는 특성입니다.",
     "EN": "That trait doesn't exist."
@@ -5625,6 +5645,16 @@
     "EN": "Not enough trait points. ({0} pt required)"
   },
   {
+    "Key": "UI.Trait.NeedPrerequisite",
+    "KR": "앞 노드 '{0}'을(를) 최대 레벨까지 올려야 합니다.",
+    "EN": "Max out '{0}' first."
+  },
+  {
+    "Key": "UI.Trait.RequiredNode",
+    "KR": "{0} 최대",
+    "EN": "{0} maxed"
+  },
+  {
     "Key": "UI.Trait.ConfirmLearn",
     "KR": "특성 포인트 {0}점을 사용합니다.\r\n'{1}'을(를) Lv{2}로 올리시겠습니까?",
     "EN": "This uses {0} trait point(s).\r\nRaise '{1}' to Lv{2}?"
@@ -5646,18 +5676,18 @@
   },
   {
     "Key": "UI.Trait.HelpPoint",
-    "KR": "계정 레벨이 오르면 특성 포인트를 얻습니다",
-    "EN": "You earn trait points as your account level rises"
+    "KR": "건물 레벨 1당 그 건물의 특성 포인트 1점을 얻습니다",
+    "EN": "Each building level gives 1 trait point for that building"
   },
   {
     "Key": "UI.Trait.HelpLevel",
-    "KR": "레벨을 올리려면 포인트와 계정 레벨 조건이 함께 필요합니다",
-    "EN": "Leveling up needs both points and the account level requirement"
+    "KR": "앞 노드를 최대 레벨까지 올려야 다음 노드가 열립니다",
+    "EN": "Max out the previous node to open the next one"
   },
   {
     "Key": "UI.Trait.HelpChoose",
-    "KR": "포인트로 전부 올릴 수는 없습니다 — 키울 산업을 고르세요",
-    "EN": "Points can't max everything — choose which industries to grow"
+    "KR": "먼저 키울 산업을 고르세요 — 건물 레벨이 오를수록 더 찍을 수 있습니다",
+    "EN": "Choose which industry to grow first — higher building levels give more points"
   },
   {
     "Key": "UI.Trait.HelpKinds",
