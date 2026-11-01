@@ -3,7 +3,7 @@ name: unity-editor-ops
 description: 유니티 에디터를 조작해야 할 때 연다 — 씬·프리팹·인스펙터·컴포넌트 변경, SO 생성, 플레이 모드·테스트·빌드, 콘솔 확인. 어떤 경로로 실행할지(Unity CLI → MCP → 사람 인계)와, 복구가 불가능해 실행 전 확인이 필요한 작업을 정한다. 코드 파일만 고치고 끝나면 해당 없음.
 ---
 
-> 최종 업데이트: 2026-10-03
+> 최종 업데이트: 2026-11-02 (AI 에셋 생성을 `unity-ai-assets`로 분리) · 2026-10-03
 
 # 유니티 에디터 작업
 
@@ -54,7 +54,7 @@ unity cmd set_component_properties  →  save_prefab_contents / save_scene
 
 | 작업 | 명령 | 왜 |
 |------|------|-----|
-| AI 에셋 생성 | `Unity_AssetGeneration_GenerateAsset` | 쓴 크레딧이 돌아오지 않는다 (3절) |
+| AI 에셋 생성 | `Unity_AssetGeneration_GenerateAsset` | 쓴 크레딧이 돌아오지 않는다 ([`unity-ai-assets`](../../common/unity-ai-assets/SKILL.md)) |
 | git이 추적하지 않는 것을 지우기 | `delete_*` · `remove_*` · `DestroyImmediate` · `AssetDatabase.Delete*` · `File`/`Directory.Delete` 등이 **미추적·미커밋 파일**이나 저장소 밖을 건드릴 때 | 복구할 사본이 없다 |
 
 알릴 때는 **무엇을·왜** 한 줄이면 된다.
@@ -91,7 +91,7 @@ auto 모드에서는 사용자에게 도달하지 않는다**(2026-09-20 실측)
 호출을 막는** 것이라 "물어보고 하기"가 되지 않는다.
 
 **그래서 이 표는 순전히 이 문서를 읽은 쪽이 지키는 약속이다.** git이 안전망을
-맡고, AI 에셋 생성만 크레딧 때문에 3절에서 한 번 더 조인다.
+맡고, AI 에셋 생성만 크레딧 때문에 `unity-ai-assets`에서 한 번 더 조인다.
 
 > ⚠️ **모델은 자기 권한 규칙을 지울 수 없다.** `deny`·`allow` 줄을 빼려 하면
 > 분류기가 `[Self-Modification]`으로 막는다. 설정 변경이 필요하면 **어느 파일의
@@ -99,43 +99,10 @@ auto 모드에서는 사용자에게 도달하지 않는다**(2026-09-20 실측)
 
 ---
 
-## 3. AI 에셋 생성 — 되돌릴 수 없다
+## 3. AI 에셋 생성 — 별도 스킬
 
-이미지·스프라이트·사운드 생성은 **git으로 되돌려도 쓴 크레딧이 돌아오지 않는다.**
-그래서 2절 중에서도 **프롬프트·저장 경로·개수를 먼저 보여주고 답을 기다린다.**
-
-### ⚠️ 모델 목록이 비어도 "패키지가 없다"는 뜻이 아니다
-
-**패키지가 전부 제대로 깔려 있어도, 계정에 Unity AI 크레딧이 없으면
-모델 목록은 빈 채로 온다.** `{"Models": []}`는 설치 상태를 말해 주지 않는다 —
-둘은 아무 관계가 없다. 이걸 "패키지가 없어서"로 읽는 것이 전형적인 오진이다.
-
-그래서 **빈 목록을 봤으면 콘솔부터 읽는다.**
-
-```
-Unity_GetConsoleLogs(logType: "error")
-→ Error reason is 'NoSubscription' (https://generators.ai.unity.com)
-```
-
-| 콘솔에 나온 것 | 뜻 | 할 일 |
-|----------------|-----|-------|
-| `NoSubscription` | **크레딧 문제다. 패키지는 멀쩡하다** | 사용자에게 알린다 — 여기서 할 수 있는 게 없다 |
-| 아무 것도 없음 | 그때 비로소 패키지·로그인을 본다 (`package_list`) | 순서가 이쪽이다 |
-
-> 📌 **"패키지가 없어서 안 된다"는 `package_list`로 확인하기 전에는 말하지 않는다.**
-> 2026-09-20에 확인 없이 `com.unity.ai.generators`가 없다고 단정했다가 틀렸다 —
-> 실제로는 **다 깔려 있었고** 진짜 원인은 `NoSubscription`이었다.
-> 사용자는 보통 관련 패키지를 다 깔아 둔다.
-
-> 💡 `Unity_AssetGeneration_GenerateAsset`은 **도구 설명 자체가** 대화당 첫 호출 전
-> 사용자 동의를 요구한다. 무엇을 만들지 나열하고, 생성 중에는 응답이 막힌다는 점과
-> 수십 초~수 분이 걸린다는 점을 알린 뒤 답을 기다린다.
-
-### ⛔ `com.unity.ai.generators`는 다시 깔지 않는다
-
-deprecated 패키지이고 기능은 **`com.unity.ai.assistant`에 전부 통합**됐다.
-둘을 함께 두면 어셈블리 이름(`Unity.AI.Generators.IO.Srp`)과 GUID가 충돌해
-**프로젝트 전체 컴파일이 깨진다**(2026-09-20 실제 발생, 콘솔 에러 1,500건 이상).
+Unity AI로 리소스를 만들거나 고치면 [`unity-ai-assets`](../../common/unity-ai-assets/SKILL.md)를 연다.
+실행 전 동의 · 구독·크레딧 상태 진단 · 리소스별 크레딧 보고가 거기 있다.
 
 ---
 
@@ -146,7 +113,7 @@ deprecated 패키지이고 기능은 **`com.unity.ai.assistant`에 전부 통합
 - **시각적 판단** — "이 배치가 보기 좋은가", 애니메이션 느낌, 색감
 - **에디터 GUI 전용** — 일부 Project Settings, 패키지 Import 창
 - **플레이 중 인터랙션** — 직접 조작해봐야 아는 것
-- **AI 에셋 생성이 `NoSubscription`으로 막힐 때** (3절) — 사람이 다른 수단으로 만든다
+- **AI 에셋 생성이 구독·크레딧 문제로 막힐 때** (`unity-ai-assets`) — 사람이 다른 수단으로 만든다
 
 ### 하지 않을 것
 

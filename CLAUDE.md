@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+> 최종 업데이트: 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -131,6 +131,7 @@
 | [`game-design-reference`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 **규칙·수치가 바뀔 때** — 화면 배치·배선만 바꾸면 해당 없음 | `게임기획코어.md` + 상세 기획안 |
 | [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx`를 **고칠 때마다 — 기억으로 대신하지 않고 매번 연다** (행 추가·수정·시트·컬럼·시트 이동). 엑셀을 읽기만 하면 해당 없음 | 행 추가 절차·서식 기준·TID·`Ref` 규칙 · 이름 확인 · 열린 엑셀 닫기 |
 | [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
+| [`unity-ai-assets`](.claude/skills/common/unity-ai-assets/SKILL.md) | Unity AI로 리소스(이미지·사운드 등)를 **만들거나 고칠 때** — 있는 그림을 쓰거나 파일만 고치면 해당 없음 | 실행 전 동의 · 구독·크레딧 상태 진단과 안내 · 리소스별 사용 크레딧과 전후 잔액 보고 |
 | [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
 | [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
 | [`github-issue-writer`](.claude/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) · **이슈·일감 작업이 끝났을 때 — 조건 없이 항상**(관련 이슈·일감 공돌리기 + 넘긴 번호 보고) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 · 공돌리기(3장) |
