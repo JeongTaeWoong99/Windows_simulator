@@ -209819,6 +209819,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OutpostCanvasView
   body: {fileID: 34626485}
   columnLayout: {fileID: 1479551846}
+  buildingWindow: {fileID: 918189088}
 --- !u!1 &2073903504
 GameObject:
   m_ObjectHideFlags: 0
