@@ -130,31 +130,14 @@ namespace DesktopWindowControl.EditorTools
 			string Mark(Step step) => missing.HasFlag(step) ? "✗" : "✓";
 		}
 
-		// 서버가 포트에서 대기 중인지. 서버 콘솔로 켰든 터미널·IDE로 켰든 같이 잡힌다.
+		// 서버가 포트에서 대기 중인지 — 판정은 'ServerRunner.IsPortListening'.
 		// ※ 'ServerRunner.IsRunning'(PID 추적)은 서버 콘솔로 켠 것만 안다 — 그래서 포트를 본다.
-		private static bool IsServerListening()
-		{
-			try
-			{
-				foreach (var endPoint in IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpListeners())
-				{
-					if (endPoint.Port == ServerRunner.ServerPort)
-					{
-						return true;
-					}
-				}
-			}
-			catch (NetworkInformationException)
-			{
-				// 조회 실패는 '꺼짐'으로 본다 — 0.5초마다 도는 자리라 로그를 남기지 않는다.
-			}
-
-			return false;
-		}
+		private static bool IsServerListening() => ServerRunner.IsPortListening(ServerRunner.ServerPort);
 
 		// 서버 포트로 맺어진 TCP 연결이 있는지. Play 중일 때만 묻는다(창의 상태 줄 · CanSend).
 		// ★ 'NetworkManager'가 연결 상태를 드러내지 않고 그 파일은 서버 담당 폴더라, OS의 연결 목록으로 판정한다.
-		//   더미 클라이언트(MikaDummyClient)가 같은 서버에 붙어 있으면 에디터가 끊겨도 '연결됨'으로 보인다 —
+		// ★ 상태값은 보지 않는다 — 이 PC는 맺어진 연결도 FinWait1 등으로 보고한다('ServerRunner.IsPortListening').
+		//   그래서 방금 끊긴 연결이 남아 있거나 더미 클라이언트(MikaDummyClient)가 붙어 있으면 에디터가 끊겨도 '연결됨'으로 보인다 —
 		//   그 경우는 보낸 뒤 응답 시간 초과('CheatSender')가 잡는다.
 		private static bool IsClientConnected()
 		{
@@ -162,7 +145,7 @@ namespace DesktopWindowControl.EditorTools
 			{
 				foreach (var connection in IPGlobalProperties.GetIPGlobalProperties().GetActiveTcpConnections())
 				{
-					if (connection.RemoteEndPoint.Port == ServerRunner.ServerPort && connection.State == TcpState.Established)
+					if (connection.RemoteEndPoint.Port == ServerRunner.ServerPort)
 					{
 						return true;
 					}
@@ -170,7 +153,7 @@ namespace DesktopWindowControl.EditorTools
 			}
 			catch (NetworkInformationException)
 			{
-				// 조회 실패는 '끊김'으로 본다 — 위와 같은 이유로 로그를 남기지 않는다.
+				// 조회 실패는 '끊김'으로 본다 — 0.5초마다 도는 자리라 로그를 남기지 않는다.
 			}
 
 			return false;
