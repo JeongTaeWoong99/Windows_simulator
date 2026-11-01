@@ -11,11 +11,7 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   2줄: 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
 //
 // 탭 줄보다 낮은 별도 줄이다. 탭은 "무엇을 보는가", 이 줄은 "그것을 어떻게 다루는가"라
-// 같은 줄에 두면 네 탭 사이에 성격이 다른 버튼이 끼어든다.
-//
-// ■ 특성 탭에서는 줄째 숨는다
-//   특성은 정렬할 목록도, 팔 것도 없다. 잠긴 버튼만 남겨 두면 "지금 못 하는 것"이 계속 눈에 남는다
-//   (탭 버튼을 잠그는 것과는 판단이 다르다 — 거기서는 **탭 자체가 선택지**라 사라지면 무엇이 있는지 알 수 없다).
+// 같은 줄에 두면 탭 사이에 성격이 다른 버튼이 끼어든다.
 //
 // ■ 일괄 담기는 '담기'까지다
 //   버튼을 눌러도 팔리지 않는다. 판매 목록에 **보유 수량 전부**를 담을 뿐이고, 파는 것은 아래 [판매]다.
@@ -47,8 +43,8 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 //   요청·판정은 격자가 한다('InventoryGridPresenter.MergeCurrent') — 칸 요청 대기가 격자끼리 하나라서다.
 //
 // ■ 찾기는 탭을 바꾸거나 인벤토리를 닫으면 비운다
-//   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 이 줄은 특성 탭에서도, 인벤토리를 닫을 때도
-//   꺼지므로 'OnDisable' 한 곳에서 비운다.
+//   거른 채로 남으면 다음에 열었을 때 "아이템이 사라졌다"가 된다. 인벤토리를 닫을 때
+//   이 줄이 꺼지므로 'OnDisable' 한 곳에서 비운다.
 public class InventoryToolPresenter : MonoBehaviour
 {
     // 정렬 기준 드롭다운의 문구 키. 'InventorySortKey' 순서와 같다.
@@ -206,7 +202,7 @@ public class InventoryToolPresenter : MonoBehaviour
         ApplyTab(tabs.CurrentTab);
     }
 
-    // 찾기 조건을 비운다 (Unity 메시지) — 특성 탭으로 가거나 인벤토리를 닫으면 이 줄이 꺼진다.
+    // 찾기 조건을 비운다 (Unity 메시지) — 인벤토리를 닫으면 이 줄이 꺼진다.
     private void OnDisable()
     {
         if (!_isReady)
@@ -227,9 +223,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
     // 탭 전환 구독 (Start에서 한 번).
     //
-    // ⚠️ 'OnEnable/OnDisable'이 아니라 'Start/OnDestroy'다 — 이 줄은 **특성 탭에서 스스로 꺼진다.**
-    //   꺼질 때 구독을 놓으면 다시 켤 신호('TabChanged')를 받을 길이 사라져 영영 안 돌아온다
-    //   ('InventoryGridPresenter'가 로그인 구독을 'OnDestroy'에서 푸는 것과 같은 이유다).
+    // ※ 'Start/OnDestroy'다 — 인벤토리가 닫힌 동안에도 탭·언어 변경을 받아 다시 열 때 옛 값이 남지 않는다.
     private void Subscribe()
     {
         if (_isSubscribed)
@@ -256,7 +250,7 @@ public class InventoryToolPresenter : MonoBehaviour
     }
 
     // 언어가 바뀌었다 — 드롭다운 문구를 새 언어로 다시 채우되 고른 값은 그대로 둔다 (Lang.Changed 구독)
-    // ※ 이 줄은 꺼져 있어도(특성 탭) 받는다 — 'Start/OnDestroy' 구독이라서다. 다시 켜졌을 때 옛 언어가 남지 않는다.
+    // ※ 이 줄은 꺼져 있어도 받는다 — 'Start/OnDestroy' 구독이라서다. 다시 켜졌을 때 옛 언어가 남지 않는다.
     private void OnLanguageChanged()
     {
         int bulk     = bulkRarityDropdown.value;
@@ -946,22 +940,11 @@ public class InventoryToolPresenter : MonoBehaviour
 
     #region 표시
 
-    // 이 탭에서 도구 줄을 보일지 정하고, 탭에 맞게 위젯을 다시 세운다 (Start · TabChanged 구독).
+    // 탭에 맞게 위젯을 다시 세운다 (Start · TabChanged 구독).
     //
-    // 특성 탭에서는 **줄째** 감춘다 — 정렬할 목록도 팔 것도 없다.
-    // 자식만 끄면 배경과 줄 높이가 빈 띠로 남는다. 자기를 끄면 부모 세로 배치에서 아예 빠진다.
-    //
-    // 스스로 꺼져도 구독은 살아 있다 — 구독을 'Start/OnDestroy'에 건 이유가 이것이다('Subscribe' 주석).
     // ※ 찾기 조건은 탭마다 비운다 — 떠난 탭의 조건은 격자가 이미 풀었고('ShowTab'), 위젯만 남아 있으면 거짓말이 된다.
     private void ApplyTab(InventoryTab tab)
     {
-        gameObject.SetActive(tab != InventoryTab.Trait);
-
-        if (tab == InventoryTab.Trait)
-        {
-            return; // OnDisable이 비운다
-        }
-
         RebuildSortKeyOptions();
         RebuildCategoryOptions();
 

@@ -18,7 +18,6 @@ using UnityEngine.UI;
 //   맞닿은 두 격자가 같은 종류여야 끌어 넘길 수 있다. 전환의 주인은 'InventoryTabPresenter' 하나다 —
 //   여기 탭 버튼은 그쪽에 요청하고('RequestTab'), 그쪽이 바뀌면 'TabChanged'로 따라온다.
 //   두 곳이 각자 탭을 들면 한쪽만 바뀌는 순간이 생긴다.
-//   - 인벤토리가 특성 탭이면 창고는 보던 탭에 머문다 — 특성에는 창고가 없다.
 //
 // ※ 화면(page)이 꺼졌다 켜진다('GuildTabPresenter'). 꺼져 있는 동안은 따라가지 않고, 켜질 때 지금 탭을 읽어 맞춘다.
 public class WarehousePresenter : MonoBehaviour
@@ -68,7 +67,7 @@ public class WarehousePresenter : MonoBehaviour
     // 정렬 기준 드롭다운의 문구 키. 'InventorySortKey' 순서와 같다('InventoryToolPresenter'와 같은 문구).
     private static readonly string[] SortKeyLabelKeys = { "UI.Tool.SortRarity", "UI.Tool.SortName", "UI.Tool.SortCount" };
 
-    // 지금 창고가 보이는 탭. 특성 탭은 되지 않는다.
+    // 지금 창고가 보이는 탭.
     private InventoryTab _tab = InventoryTab.Resource;
 
     // 정렬 방향·기준 — 인벤토리와 따로 든다(맡겨 둔 것과 들고 다니는 것은 보고 싶은 순서가 다를 수 있다).
@@ -183,13 +182,9 @@ public class WarehousePresenter : MonoBehaviour
     }
 
     // 인벤토리 탭을 따라간다 (InventoryTabPresenter.TabChanged 구독 · Start · OnEnable)
-    // 특성 탭이면 보던 탭에 머문다 — 특성에는 창고가 없다.
     private void Follow(InventoryTab tab)
     {
-        if (tab != InventoryTab.Trait)
-        {
-            _tab = tab;
-        }
+        _tab = tab;
 
         grid.ShowTab(_tab);
         RefreshSelection();
