@@ -433,7 +433,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         if (gold > 0L)
         {
-            slots.Add(new SlotData(0L, Lang.Get("UI.Common.Gold"), gold.ToString("N0"), GlobalRarity.None));
+            slots.Add(new SlotData(0L, Lang.Get("UI.Common.Gold"), gold.ToString("N0"), GlobalRarity.None, FxSprites.CoinBody));
         }
 
         foreach (var key in order)
@@ -493,7 +493,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             EGachaRewardType.Character => VisualCatalog.PortraitOf(tid),
             EGachaRewardType.Equip     => VisualCatalog.EquipIconOf(tid),
             EGachaRewardType.Artifact  => VisualCatalog.ArtifactIconOf(tid), // 없는 번호는 칸이 이름 첫 글자로 그린다
-            EGachaRewardType.Gold      => null,
+            EGachaRewardType.Gold      => FxSprites.CoinBody,
             _                          => VisualCatalog.ItemIconOf(tid),
         };
 

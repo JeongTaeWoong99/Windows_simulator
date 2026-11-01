@@ -42,7 +42,7 @@ public class StatePresenter : MonoBehaviour
     [SerializeField, Tooltip("골드 보유량")]
     private TMP_Text goldText = null!;
 
-    [SerializeField, Tooltip("골드 아이콘 — 동전 그림('FxSprites.CoinBody')을 금색으로 입힌다. 그림이 없으면 씬의 자리표시 그대로")]
+    [SerializeField, Tooltip("골드 아이콘 — 동전 그림('FxSprites.CoinBody'). 그림이 없으면 씬의 자리표시 그대로")]
     private Image goldIcon = null!;
 
     [CenterHeader("계정 레벨")]
@@ -205,7 +205,7 @@ public class StatePresenter : MonoBehaviour
         RefreshMailDot();
     }
 
-    // 골드 아이콘을 날아오는 동전과 같은 그림·색으로 (Start에서 한 번).
+    // 골드 아이콘을 날아오는 동전과 같은 그림으로 (Start에서 한 번).
     // ※ 그림 저장소(Assets/Art)가 없는 환경에선 그림이 없다 — 씬의 자리표시를 그대로 둔다.
     private void ApplyGoldIcon()
     {
@@ -217,7 +217,7 @@ public class StatePresenter : MonoBehaviour
         }
 
         goldIcon.sprite         = coin;
-        goldIcon.color          = FxSprites.CoinColor;
+        goldIcon.color          = Color.white;
         goldIcon.preserveAspect = true;
     }
 

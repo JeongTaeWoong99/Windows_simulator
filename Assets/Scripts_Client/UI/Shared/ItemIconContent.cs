@@ -92,9 +92,9 @@ public readonly struct ItemIconContent
             null,
             VisualCatalog.ArtifactIconOf(artifactTid));
 
-    // 골드 — 등급이 없다. 글자는 'G'.
+    // 골드 — 등급이 없다. 그림은 동전('FxSprites.CoinBody') — 그림 저장소가 없으면 글자 'G'.
     public static ItemIconContent ForGold()
-        => new ItemIconContent(GlobalRarity.None, "G", "", null);
+        => new ItemIconContent(GlobalRarity.None, "G", "", null, FxSprites.CoinBody);
 
     // 이름의 첫 글자. 모르는 이름('?#12')이나 빈 이름은 '?'.
     private static string GlyphOf(string name)

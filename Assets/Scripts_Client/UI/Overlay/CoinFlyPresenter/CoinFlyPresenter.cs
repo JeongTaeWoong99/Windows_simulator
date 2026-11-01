@@ -43,7 +43,7 @@ public class CoinFlyPresenter : MonoBehaviour
     private const float PunchTime   = 0.22f;
     private const float SparkTime   = 0.35f;
 
-    // 반짝 색 — 흰 그림에 입힌다 (동전 색은 'FxSprites.CoinColor' — 상단 골드 아이콘과 같다)
+    // 반짝 색 — 흰 그림에 입힌다 (동전은 색이 그림에 들어 있다)
     private static readonly Color SparkColor = new Color(1f, 0.95f, 0.7f, 1f);
 
     [CenterHeader("참조")]
@@ -126,7 +126,7 @@ public class CoinFlyPresenter : MonoBehaviour
 
         for (int i = 0; i < MaxCoins; i++)
         {
-            _coins[i] = CreateImage($"Coin {i}", CoinSize, FxSprites.CoinColor);
+            _coins[i] = CreateImage($"Coin {i}", CoinSize, Color.white);
         }
 
         _spark = CreateImage("Spark", SparkSize, SparkColor);
@@ -180,7 +180,7 @@ public class CoinFlyPresenter : MonoBehaviour
 
             image.sprite  = coin;
             image.enabled = true;
-            image.color   = FxSprites.CoinColor;
+            image.color   = Color.white;
 
             rect.anchoredPosition = source;
             rect.localScale       = Vector3.zero;
