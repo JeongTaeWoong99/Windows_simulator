@@ -285,6 +285,11 @@
     "EN": "Gale Swordmaster"
   },
   {
+    "Key": "Character.1031.Name",
+    "KR": "숙련 채굴꾼",
+    "EN": "Skilled Miner"
+  },
+  {
     "Key": "Equip.1001.Name",
     "KR": "목검",
     "EN": "Wooden Sword"

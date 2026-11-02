@@ -408,6 +408,14 @@
     "Description": "Rare 해골 병사 (뽑기권 A)"
   },
   {
+    "GachaCharacterTID": 32031,
+    "GachaId": 32,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 숙련 채굴꾼 (뽑기권 A)"
+  },
+  {
     "GachaCharacterTID": 33001,
     "GachaId": 33,
     "CharacterTID": 1001,
@@ -614,6 +622,14 @@
     "Count": 1,
     "Weight": 672,
     "Description": "Epic 영웅 기사 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 33031,
+    "GachaId": 33,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 숙련 채굴꾼 (뽑기권 B)"
   },
   {
     "GachaCharacterTID": 34001,
@@ -846,6 +862,14 @@
     "Count": 1,
     "Weight": 560,
     "Description": "Legendary 흑요석골렘 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 34031,
+    "GachaId": 34,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 숙련 채굴꾼 (뽑기권 C)"
   },
   {
     "GachaCharacterTID": 35001,
@@ -1086,5 +1110,13 @@
     "Count": 1,
     "Weight": 420,
     "Description": "Mythic 질풍 검호 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 35031,
+    "GachaId": 35,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 숙련 채굴꾼 (뽑기권 D)"
   }
 ]
