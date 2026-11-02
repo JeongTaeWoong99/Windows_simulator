@@ -271,6 +271,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
     #region 열기 · 닫기
 
     // 빈 카드로 연다 — 판매 탭 [+ 판매 등록].
+    public bool IsOpen => gameObject.activeSelf;
+
     public void OpenEmpty()
     {
         gameObject.SetActive(true);
@@ -303,8 +305,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
         ApplyOpen(registerKind, key, byTid);
     }
 
-    // 창을 닫는다 — 고른 것과 찾기 글자는 남겨 둔다(다시 열면 이어서) (closeButton · dimButton).
-    private void Close()
+    // 창을 닫는다 — 고른 것과 찾기 글자는 남겨 둔다(다시 열면 이어서) (closeButton · dimButton · 경매장 판 밖 차단막).
+    public void Close()
     {
         gameObject.SetActive(false);
     }

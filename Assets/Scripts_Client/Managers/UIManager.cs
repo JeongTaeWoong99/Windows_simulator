@@ -96,6 +96,10 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("아티팩트 화면 — !Overlay Canvas 안의 #Artifact Canvas. 하단 메뉴 [아티팩트]로 열고 안쪽 [X]로 닫는다")]
     private ArtifactCanvasView artifactCanvas = null!;
 
+    // ※ 아티팩트 바로 다음 형제다 — 같은 넓이 · 같은 차단이고, 셋은 함께 열리지 않는다.
+    [SerializeField, Tooltip("거점 화면 — !Overlay Canvas 안의 #Outpost Canvas. 하단 메뉴 [거점]으로 열고 안쪽 [X]로 닫는다")]
+    private OutpostCanvasView outpostCanvas = null!;
+
     [CenterHeader("사이드 2개 캔버스")]
     [SerializeField, Tooltip("상태 캔버스 — 위젯의 반대편. 메인 캔버스와 함께 여닫힌다")]
     private StateCanvasView stateCanvas = null!;
@@ -355,12 +359,13 @@ public class UIManager : MonoService<UIManager>
 
     // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]).
     // ※ 토글이 아니다 — 열리면 하단 메뉴가 가려져 같은 버튼을 다시 누를 수 없다. 닫기는 경매장 안에서 한다.
-    // ※ 아티팩트 화면이 열려 있으면 닫는다 — 같은 자리를 덮는 화면이라 둘이 겹치면 아래 것이 가려진 채 남는다.
+    // ※ 아티팩트 · 거점 화면이 열려 있으면 닫는다 — 같은 자리를 덮는 화면이라 겹치면 아래 것이 가려진 채 남는다.
     public void ShowAuction(bool on)
     {
         if (on)
         {
             artifactCanvas.Show(false);
+            outpostCanvas.Show(false);
         }
 
         auctionCanvas.Show(on);
@@ -371,15 +376,33 @@ public class UIManager : MonoService<UIManager>
     #region 아티팩트 — 화면 전체
 
     // 아티팩트 화면을 열고 닫는다 (하단 메뉴 [아티팩트] · 화면 안 [X]). 경매장과 같은 이유로 토글이 아니다.
-    // ※ 경매장이 열려 있으면 닫는다 — 'ShowAuction'과 짝이다.
+    // ※ 경매장 · 거점 화면이 열려 있으면 닫는다 — 'ShowAuction'과 짝이다.
     public void ShowArtifact(bool on)
     {
         if (on)
         {
             auctionCanvas.Show(false);
+            outpostCanvas.Show(false);
         }
 
         artifactCanvas.Show(on);
+    }
+
+    #endregion
+
+    #region 거점 — 화면 전체
+
+    // 거점 화면을 열고 닫는다 (하단 메뉴 [거점] · 화면 안 [X]). 경매장과 같은 이유로 토글이 아니다.
+    // ※ 경매장 · 아티팩트 화면이 열려 있으면 닫는다 — 'ShowAuction'과 짝이다.
+    public void ShowOutpost(bool on)
+    {
+        if (on)
+        {
+            auctionCanvas.Show(false);
+            artifactCanvas.Show(false);
+        }
+
+        outpostCanvas.Show(on);
     }
 
     #endregion

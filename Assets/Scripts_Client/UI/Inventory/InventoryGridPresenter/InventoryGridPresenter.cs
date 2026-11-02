@@ -124,14 +124,14 @@ public class InventoryGridPresenter : MonoBehaviour
     [SerializeField, Tooltip("아티팩트 창 — 장비 탭의 아티팩트 칸을 좌클릭하면 연다 (창고 격자도 인벤토리 열의 같은 창을 넣는다)")]
     private ArtifactEquipPresenter artifactWindow = null!;
 
-    // ※ 셋 다 이 오브젝트 자신에 붙는다 — 특성 탭에서 격자를 끄지 않고 숨기는 데 쓴다('SetShown').
+    // ※ 셋 다 이 오브젝트 자신에 붙는다 — 공급자가 없는 탭에서 격자를 끄지 않고 숨기는 데 쓴다('SetShown').
     [SerializeField, Tooltip("격자 자신의 하위 Canvas — 숨길 때 그리기만 끈다(Override Sorting 끔)")]
     private Canvas gridCanvas = null!;
 
     [SerializeField, Tooltip("격자 자신의 GraphicRaycaster — 숨기는 동안 클릭·휠을 받지 않게 함께 끈다")]
     private GraphicRaycaster gridRaycaster = null!;
 
-    [SerializeField, Tooltip("격자 자신의 LayoutElement — 숨기는 동안 자리를 비워 특성 화면이 쓰게 한다(ignoreLayout)")]
+    [SerializeField, Tooltip("격자 자신의 LayoutElement — 숨기는 동안 자리를 비운다(ignoreLayout)")]
     private LayoutElement gridLayout = null!;
 
     // 칸 프레임들 — 씬에 깔린 것 + 칸 수가 늘어 더 만든 것. 순서 = 칸 번호. 한 번 모아 두고 늘기만 한다.
@@ -254,7 +254,7 @@ public class InventoryGridPresenter : MonoBehaviour
     // 사람이 읽는 보관함 이름 — 로그·대기 문구에 쓴다(지금 언어).
     private string ContainerLabel => Lang.Get(IsInventory ? "UI.Main.Inventory" : "UI.Inventory.Warehouse");
 
-    // 이 격자가 지금 보이고 끌어 놓을 수 있나 — 다른 격자가 놓을 곳을 찾을 때 본다(특성 탭에서는 숨는다 · 'SetShown').
+    // 이 격자가 지금 보이고 끌어 놓을 수 있나 — 다른 격자가 놓을 곳을 찾을 때 본다(숨은 격자는 빠진다 · 'SetShown').
     private bool IsDropReady => _isReady && isActiveAndEnabled && gridCanvas.enabled && _current != null;
 
     // 플레이마다 격자끼리 함께 쓰는 값을 비운다 (Unity 런타임 초기화 훅)
@@ -321,7 +321,6 @@ public class InventoryGridPresenter : MonoBehaviour
         // ★ 탭을 하나 채우는 일은 여기 한 줄로 끝난다 — 공급자를 만들어 등록하면
         //   전환·잠금·격자는 그대로다 ('Inventory 규칙.md'의 "탭 하나를 채우는 절차").
         //
-        // ⏸ Trait — 기획은 있으나 서버 구현·패킷이 없다 (T-043).
         _sources.Add(InventoryTab.Resource,  new ResourceSlotSource(data, container));
         _sources.Add(InventoryTab.Character, new CharacterSlotSource(data, container));
         _sources.Add(InventoryTab.Equipment, new EquipSlotSource(data, container));
@@ -472,7 +471,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         _sources.TryGetValue(tab, out InventorySlotSource? next);
 
-        // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 그 자리는 전용 화면이 쓴다(특성 탭).
+        // 공급자가 없는 탭에서는 격자가 통째로 물러난다 — 지금은 그런 탭이 없다(옛 특성 탭 · T-182).
         // ★ 조기 반환보다 먼저 한다. 칸을 하나씩 끄지 않고, 격자 오브젝트도 끄지 않는다('SetShown').
         SetShown(next != null);
 
@@ -505,8 +504,8 @@ public class InventoryGridPresenter : MonoBehaviour
     //
     // ■ 오브젝트를 끄지 않고 하위 Canvas를 끈다 (2026-10-10 · T-139)
     //   'SetActive'로 끄면 다시 켤 때 프레임 200개의 부품이 전부 OnEnable → 다시 그리기·레이아웃을 탄다.
-    //   특성 탭에서 돌아올 때 그것만으로 34ms였다. Canvas만 끄면 그리기만 멈추고 상태가 그대로라 8ms다.
-    //   - 클릭·휠은 'GraphicRaycaster'를, 자리는 'LayoutElement.ignoreLayout'을 함께 끈다 — 특성 화면이 그 자리를 쓴다.
+    //   옛 특성 탭에서 돌아올 때 그것만으로 34ms였다. Canvas만 끄면 그리기만 멈추고 상태가 그대로라 8ms다.
+    //   - 클릭·휠은 'GraphicRaycaster'를, 자리는 'LayoutElement.ignoreLayout'을 함께 끈다.
     //   - 켜져 있는 채라 'OnDisable'이 돌지 않는다 — 숨기는 탭에는 공급자가 없어(_current = null) 그릴 것도 끌 것도 없다.
     //     끌기는 'ShowTab'이 이미 끊었다.
     // ※ 꺼진 채 씬에 저장돼도 여기서 켠다 — 탭 줄이 깨우지 않는 화면이다('Inventory 규칙.md'의 "꺼진 채 저장돼도 깨어난다").

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
@@ -215,6 +216,48 @@ namespace DesktopWindowControl.EditorTools
 
             return result;
         }
+
+        // 원본에 그려진 밝은 외곽선을 벗긴다 — 가장자리(빈 칸에 닿은) 픽셀이 'minRatio' 이상 밝은 무채색일 때만.
+        // 몇 개만 밝으면 그건 외곽선이 아니라 하이라이트라 건드리지 않는다. 벗긴 뒤 'Outline'이 어두운 선을 두른다(cainos 팩)
+        public ArtImage StripLightRim(float minRatio)
+        {
+            var rim = new List<int>();
+
+            for (int y = 0; y < Height; y++)
+            {
+                for (int x = 0; x < Width; x++)
+                {
+                    bool edge = IsOpaque(x, y)
+                        && (!InBounds(x + 1, y) || !IsOpaque(x + 1, y) || !InBounds(x - 1, y) || !IsOpaque(x - 1, y)
+                         || !InBounds(x, y + 1) || !IsOpaque(x, y + 1) || !InBounds(x, y - 1) || !IsOpaque(x, y - 1));
+
+                    if (edge)
+                    {
+                        rim.Add(y * Width + x);
+                    }
+                }
+            }
+
+            int light = rim.Count(i => IsLightGray(Pixels[i]));
+
+            if (rim.Count == 0 || light < rim.Count * minRatio)
+            {
+                return this;
+            }
+
+            var result = new ArtImage(Width, Height);
+            Pixels.CopyTo(result.Pixels, 0);
+
+            foreach (int i in rim.Where(i => IsLightGray(Pixels[i])))
+            {
+                result.Pixels[i] = new Color32(0, 0, 0, 0);
+            }
+
+            return result;
+        }
+
+        private static bool IsLightGray(Color32 c)
+            => Mathf.Min(c.r, Mathf.Min(c.g, c.b)) > 185 && Mathf.Max(c.r, Mathf.Max(c.g, c.b)) - Mathf.Min(c.r, Mathf.Min(c.g, c.b)) < 40;
 
         // 1px 외곽선 — 사방 1칸을 넓히고, 그림에 상하좌우로 닿은 빈 칸을 'color'로 칠한다
         public ArtImage Outline(Color32 color)

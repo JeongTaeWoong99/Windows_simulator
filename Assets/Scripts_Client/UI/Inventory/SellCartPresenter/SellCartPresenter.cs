@@ -76,7 +76,7 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("비우기 버튼 — 담은 것을 모두 빼고 패널을 닫는다. OnClick은 코드가 연결한다")]
     private Button clearButton = null!;
 
-    [SerializeField, Tooltip("인벤토리 탭 줄. 특성 탭에서는 이 패널이 물러난다")]
+    [SerializeField, Tooltip("인벤토리 탭 줄")]
     [FormerlySerializedAs("storageTabs")]
     private InventoryTabPresenter inventoryTabs = null!;
 
@@ -178,18 +178,15 @@ public class SellCartPresenter : MonoBehaviour
     // 격자가 반으로 줄어든다. 꺼지면 격자(flexH 1)가 그 자리까지 넓힌다.
     // 칸을 우클릭해 담는 순간 나타나고, 마지막 줄을 빼거나 [비우기]·판매를 마치면 사라진다.
     // ※ 판매 응답을 기다리는 동안은 비어도 남는다 — 응답 전에 카트가 먼저 비워진다.
-    // ※ 특성 탭에서는 사라진다 — 격자 자체가 물러나고 트리가 그 자리를 쓴다.
-    //   담아 둔 목록은 'SellCartModel'에 남아 있으므로 돌아오면 그대로 보인다.
     // ※ 큐브 창·응축 창·아티팩트 창이 열려 있어도 물러난다 — 같은 자리를 빌려 쓴다(T-095 · T-130 · T-151).
     private void ApplyTab(InventoryTab tab)
     {
         bool hasContent = _cart.Count > 0 || _isWaiting;
 
-        gameObject.SetActive(hasContent && tab != InventoryTab.Trait && !equipEnchant.IsOpen && !characterCondense.IsOpen && !artifactWindow.IsOpen);
+        gameObject.SetActive(hasContent && !equipEnchant.IsOpen && !characterCondense.IsOpen && !artifactWindow.IsOpen);
     }
 
     // 탭이 바뀌었다 — 담긴 종류와 다른 탭이면 목록을 비우고 알린다 (InventoryTabPresenter.TabChanged 구독 · Start/OnDestroy).
-    // ※ 특성 탭은 비우지 않는다 — 파는 탭이 아니라 잠깐 다녀오는 곳이다. 돌아오면 그대로 보인다.
     // ※ 응답을 기다리는 중이면 비우지 않는다 — 응답이 성공한 쪽을 스스로 비운다.
     private void OnTabChanged(InventoryTab tab)
     {

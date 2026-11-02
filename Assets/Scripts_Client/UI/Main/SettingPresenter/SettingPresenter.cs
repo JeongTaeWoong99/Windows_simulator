@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using TMPro;
@@ -51,6 +51,20 @@ public class SettingPresenter : MonoBehaviour
         public GameObject page;
     }
 
+    // 음량 줄 하나 — 채널과 그 줄의 슬라이더·값 글씨. 인스펙터에서 짝지어 넣는다.
+    [Serializable]
+    private struct VolumeRow
+    {
+        [Tooltip("이 줄이 정하는 채널")]
+        public SoundChannel channel;
+
+        [Tooltip("음량 슬라이더 (0~100 — 범위는 코드가 정한다)")]
+        public Slider slider;
+
+        [Tooltip("슬라이더 왼쪽 — 지금 값 (예: 80%)")]
+        public TMP_Text valueText;
+    }
+
     // ※ 아래는 인스펙터에서 반드시 연결해야 하는 "필수" 참조다.
     //   nullable:enable 상태라 ? 없이 두면 "생성자 종료 시 non-null" 검사(CS8618)에 걸리는데,
     //   ? 로 두면 미연결 시 조용히 무시돼 "왜 안 되지?"가 되어버린다. 그래서 = null! 로 non-null
@@ -86,6 +100,11 @@ public class SettingPresenter : MonoBehaviour
     [SerializeField] private TMP_Text     opacityValueText        = null!; // 슬라이더 왼쪽 — 지금 값 (예: 80%)
     [SerializeField] private Button       resetSizeButton         = null!; // 창 크기 복원
     [SerializeField] private Button       resetPositionButton     = null!; // 창 위치 복원
+
+    // ※ NonReorderable — 위 헤더가 사라지지 않게('UI 규칙.md')
+    [CenterHeader("오디오")]
+    [SerializeField, NonReorderable, Tooltip("음량 줄. SoundChannel 값마다 한 줄씩 (마스터 · 배경 음악 · 효과음 · UI 효과음)")]
+    private VolumeRow[] volumeRows = new VolumeRow[0];
 
     // ※ WidgetPositionLayout은 Services에 등록되지 않는다([ExecuteAlways] 레이아웃 컴포넌트라
     //   에디터에서도 돌아야 해서 서비스 로케이터에 묶지 않았다). 그래서 인스펙터로 직접 받는다.
@@ -182,6 +201,10 @@ public class SettingPresenter : MonoBehaviour
             widgetLayout.SetPosition((WidgetPosition)window.AnchorIndex);
             windowPositionDropdown.SetValueWithoutNotify(window.AnchorIndex);
         });
+
+        // ─── 오디오 ───
+        // 'DisplayManager'처럼 에디터에서도 저장값이 시작값이고, 끄는 즉시 들리고 손을 떼면 저장된다('SoundManager').
+        BindVolumeRows(Services.Get<SoundManager>());
 
         _isBound = true;
         Lang.Changed += RefreshLabels;
@@ -371,6 +394,41 @@ public class SettingPresenter : MonoBehaviour
         var entry   = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
         entry.callback.AddListener(_ => display.SaveOpacity());
         trigger.triggers.Add(entry);
+    }
+
+    // 음량 슬라이더 — 투명도 슬라이더와 같은 방식(끌면 즉시 반영 · 손을 떼면 저장).
+    private void BindVolumeRows(SoundManager sound)
+    {
+        foreach (VolumeRow row in volumeRows)
+        {
+            if (row.slider == null || row.valueText == null)
+            {
+                ClientLogger.Warn(ClientLogger.UI, $"음량 줄에 슬라이더·값 글씨가 비어 있다 (채널={row.channel}). 인스펙터를 확인할 것.", this);
+
+                continue;
+            }
+
+            SoundChannel channel = row.channel;
+            TMP_Text     value   = row.valueText;
+
+            row.slider.wholeNumbers = true;
+            row.slider.minValue     = 0;
+            row.slider.maxValue     = SoundManager.MaxVolumePercent;
+            row.slider.SetValueWithoutNotify(sound.GetVolume(channel));
+            value.text = $"{sound.GetVolume(channel)}%";
+
+            row.slider.onValueChanged.AddListener(v =>
+            {
+                int percent = Mathf.RoundToInt(v);
+                sound.SetVolume(channel, percent);
+                value.text = $"{percent}%";
+            });
+
+            var trigger = row.slider.gameObject.AddComponent<EventTrigger>();
+            var entry   = new EventTrigger.Entry { eventID = EventTriggerType.PointerUp };
+            entry.callback.AddListener(_ => sound.SaveVolume(channel));
+            trigger.triggers.Add(entry);
+        }
     }
 
     // 투명도 값 글씨를 갱신한다 (BindOpacitySlider · 슬라이더 onValueChanged).

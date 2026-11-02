@@ -1,6 +1,6 @@
 # UI 배치 현황
 
-> 최종 업데이트: 2026-10-27 (탭 순서 상점 · 뽑기 · 창고 — `GuildTab` 값도 이 순서 · T-182) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-26 (거점 열 상점 탭 `Shop Presenter` · 뽑기 화면 캐릭터 카드 삭제 — T-184) · 2026-10-25 (`#Artifact Canvas` — 경매장 다음 형제 · 메인 메뉴 [아티팩트] 버튼 — T-151) · 2026-10-18 (우편 줄 버튼 폭 고정 · 경매 정렬 드롭다운 목록 줄 높이 가변) · 2026-10-16 (창고 상자 표시 `Warehouse Mark` — `ItemIconView`·`CharacterStateRowView` 프리팹 · 응축 창 상반신 왼쪽 아래 · T-163) · 2026-10-15 (인벤토리 도구 줄 — 상자·큐브 제외 토글 → `[제외 ▾]` 드롭다운) · 2026-10-15 (`SlotView` 프리팹 `Lock Mark` — 오른쪽 위 자물쇠 16px · T-137) · 2026-10-15 (경매장 Esc 닫기 삭제) · 2026-10-15 (인벤토리 찾기 칸 `Suggest View` · 시세 그래프 막대 14개 + `Avg Line` 맨 위 · 점 삭제) · 2026-10-14 (경매장 표 쪽 넘김 `Pager View` · 검색 후보 `Suggest View` · 줄 높이 62 · 차단막 검정 0.75 / 로그인 1) · 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
+> 최종 업데이트: 2026-11-01 (#Outpost Canvas · 인벤토리 특성 탭 제거 · T-182) · 2026-10-27 (탭 순서 상점 · 뽑기 · 창고 — `GuildTab` 값도 이 순서 · T-182) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-26 (거점 열 상점 탭 `Shop Presenter` · 뽑기 화면 캐릭터 카드 삭제 — T-184) · 2026-10-25 (`#Artifact Canvas` — 경매장 다음 형제 · 메인 메뉴 [아티팩트] 버튼 — T-151) · 2026-10-18 (우편 줄 버튼 폭 고정 · 경매 정렬 드롭다운 목록 줄 높이 가변) · 2026-10-16 (창고 상자 표시 `Warehouse Mark` — `ItemIconView`·`CharacterStateRowView` 프리팹 · 응축 창 상반신 왼쪽 아래 · T-163) · 2026-10-15 (인벤토리 도구 줄 — 상자·큐브 제외 토글 → `[제외 ▾]` 드롭다운) · 2026-10-15 (`SlotView` 프리팹 `Lock Mark` — 오른쪽 위 자물쇠 16px · T-137) · 2026-10-15 (경매장 Esc 닫기 삭제) · 2026-10-15 (인벤토리 찾기 칸 `Suggest View` · 시세 그래프 막대 14개 + `Avg Line` 맨 위 · 점 삭제) · 2026-10-14 (경매장 표 쪽 넘김 `Pager View` · 검색 후보 `Suggest View` · 줄 높이 62 · 차단막 검정 0.75 / 로그인 1) · 2026-10-14 (경매장 목업대로 재배치 — 공용 검색창 · 검색·시세·판매·완료 탭 · 판매 등록 모달 — T-147 2단계) · 2026-10-14 (거래 열 → 거점 열 `@Hub Column` · 경매장을 `!Overlay Canvas` 첫째 자식 `#Auction Canvas`로 · 하단 메뉴 [거점]·[경매장] — T-147) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-11 (작업슬롯 칸 A안 — 머리 줄 칩 · 무대 위 이름·초록 진행 막대 · 아래 줄 남은 시간 + 장비 · 번호 #1부터 · 위젯 막대는 칸 바닥·좌우에 붙인다) · 2026-10-10 (장비 칸 능력치 칸 네모 → `Enchant Gem` 하나) · 2026-10-10 (뽑기 화면 풀마다 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` 개명 · 오버레이 순서 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · 로그인을 오버레이 Presenter로 — T-140 · 가운데 캔버스 `Body Panel`·도구 줄 `Tool Panel` — T-139) · 2026-10-09 (판매 목록은 담긴 것이 있을 때만 · 합계 줄 `Clear Button`) · 2026-10-09 (응축 창 — 판매 목록 자리 · 캐릭터 칸 `Star Row`·응축 표시 둘 — T-130) · 2026-10-08 (위젯 `Character Image`에 `WidgetHeadMotion` · 획득 연출이 땅과 함께 흐른다) · 2026-10-08 (아이템 획득 연출 — 작업슬롯 칸·위젯 칸 루트의 `ItemGainEffectView`) · 2026-10-08 (툴팁 — 작업슬롯 칸 장비 줄 · 슬롯 설정 장비 칸 · T-103) · 2026-10-07 (장착 네모 — 캐릭터 칸 LV 배지 줄 · 게이지·적성 띠·네모 벽에서 4px · 작업슬롯 칸 장비 아이콘 4칸 · 슬롯 설정 장비 칸 아이콘 · T-104) · 2026-10-03 (큐브 창 — 판매 목록 자리를 빌려 쓴다 · T-095) · 2026-10-03 (장비·캐릭터 검색 줄 2단 · 등록 안내문 60·힌트 66 · 옛 캐릭터 준비 중 자리 삭제 — T-096) · 2026-10-03 (특성 화면 — 산업 이름 열 · 머리 줄 · 눈금 · 비교 상자 · 조건 줄 · [레벨 올리기] — T-116) · 2026-10-01 (우편함 탭 줄 · 목록 줄 4종 아이콘 칸 · 정렬 버튼 130 · 드롭다운 라벨 화살표 여백 — T-096 · T-103) · 2026-09-30 (경매장 탭 구매·등록·내 매물 3개 · 구매 안 축 줄 · 정렬 버튼 · 판매자 줄 — T-096) · 2026-09-30 (경매장 탭 화면 4개 — T-096) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-29 (장비 칸 능력치 칸 줄 — T-095) · 2026-09-29 (인벤토리 도구 줄 두 줄 · 찾기 — T-073 · T-069) · 2026-09-29 (특성 정보 영역 · 노드 선택 테두리 — T-079) · 2026-09-26 (우편함 화면 · 상태바 우편 버튼 — T-083) · 2026-09-26 (인벤토리 칸 툴팁 — T-050) · 2026-09-25 (툴팁 — 산업 레벨 정보를 펼침 패널에서 툴팁으로 · T-088) · 2026-09-24 (장비 장착 UI — T-074 · Body Scroll Panel로 스크롤 통합 — T-078) · 대상: `Assets/Scenes/Original/`
 
 **지금 씬에 무엇이 어떻게 놓여 있는가**의 스냅샷이다.
 규칙이 아니라 **현황**이라, 씬을 고치면 여기도 함께 갱신한다.
@@ -34,34 +34,12 @@ Root Canvas
 │  │  ├─ #Inventory Canvas (MAIN VIEW)              InventoryCanvasView   pref 950 · flexH 0
 │  │  │  └─ Body Panel                     VerticalLayoutGroup(5·5) — 레이아웃 경계 (T-139)
 │  │  │     ├─ Title                              (정적 요소 — 표기 없음)
-│  │  │     ├─ Tab Presenter (↓ SUB VIEW)         InventoryTabPresenter   자원·캐릭터·장비·특성 순
-│  │  │     ├─ Trait Presenter (↓ SUB VIEW)       TraitPresenter        특성 탭에서만 켜진다 (격자를 쓰지 않는 유일한 탭) · 패딩 0 · 간격 5
-│  │  │     │  ├─ Trait Header Row                머리 줄 개척·속도·산출량 15 · pref 22 · 여백 좌우 6 · 간격 6
-│  │  │     │  │                                     Spacer 64 + 열 이름 셋(flex 1) — 줄 프리팹과 같은 폭 규칙
-│  │  │     │  ├─ Trait Table Panel               flexH 1 · 스크롤 없음(6줄이 다 들어간다)
-│  │  │     │  │  └─ Viewport > Content                      VerticalLayoutGroup 여백 6 · 간격 4 · 줄 = 공통·산업 5
-│  │  │     │  │     └─ TraitRowView 프리팹 (줄 수만큼 런타임 생성 · 풀) · 60 · 간격 6
-│  │  │     │  │        ├─ Industry Label         산업 이름 열 64 (PanelSub) · 17
-│  │  │     │  │        └─ TraitNodeView 프리팹 ×3   이름 18 · Lv x/y 13 · 눈금 10(Pip Bar) · 빈 칸은 바탕째 꺼짐
-│  │  │     │  │           └─ Selected Mark       고른 칸 테두리(4변 · Highlight). 평소 꺼짐
-│  │  │     │  └─ Trait Detail Panel              고른 특성 정보 · pref 357.5 고정 (= 판매 목록 높이)
-│  │  │     │     ├─ Detail Info Panel            VerticalLayoutGroup 여백 14/14/12/12 · 간격 10
-│  │  │     │     │  ├─ Detail Name Text (TMP)    이름 24 + Lv x / y (최대면 '· 최대' 노랑) · 32
-│  │  │     │     │  ├─ Detail Desc Text (TMP)    종류 설명 16
-│  │  │     │     │  ├─ Detail Stats              TraitDetailStatsView
-│  │  │     │     │  │  └─ Compare Row            68 · flexH 0 — Now Box ▶ Next Box(파랑). 최대 레벨이면 Now Box만 (제목 14 · 값 24)
-│  │  │     │     │  ├─ Spacer                    flexH 1 — 변화와 조건 사이를 벌려 조건 줄을 버튼 쪽으로 민다
-│  │  │     │     │  ├─ Requirement Divider       2 (Slot)
-│  │  │     │     │  ├─ Requirement Text (TMP)    17 · 24 — "조건 계정 Lv35 · 보유 포인트 13" (고른 것 없음·최대 레벨이면 보유 포인트만)
-│  │  │     │     │  └─ Detail Empty Text (TMP)   고른 것 없을 때 안내 (ignoreLayout)
-│  │  │     │     └─ Confirm Button               [레벨 올리기 (n점)] 50 (= [판매]) — 최대 레벨에서만 숨는다 · 못 올리면 회색
+│  │  │     ├─ Tab Presenter (↓ SUB VIEW)         InventoryTabPresenter   자원·캐릭터·장비 순
 │  │  │     ├─ Tool Presenter (↓ SUB VIEW)        InventoryToolPresenter  pref 75 — 두 줄 (VerticalLayoutGroup)
 │  │  │     │  └─ Tool Panel                  VerticalLayoutGroup — 레이아웃 경계 (T-139)
 │  │  │     │     ├─ Tool Row 1                   30 — 정렬 화살표 · 정렬 기준 · -(Layout) · [제외 ▾](자원 탭만 · `CheckDropdownView` · 목록 `List`에 Canvas) · 일괄 범위 드롭다운 · [판매 등록]
 │  │  │     │     └─ Tool Row 2                   30 — 이름 검색(flex — 안에 `Suggest View` 꺼짐 · 후보 8줄) · 산업 · 등급 · [초기화]
-│  │  │     │                                           특성 탭에서는 자식이 전부 꺼진다
 │  │  │     ├─ Grid Presenter (↓ SUB VIEW)        InventoryGridPresenter  자원·캐릭터·장비를 이 격자 하나가 그린다
-│  │  │     │                                        특성 탭에서는 자기 오브젝트를 끈다
 │  │  │     │  ├─ Empty Notice > Empty Text (TMP)   찾기 결과 0건일 때만 · 격자 가운데 440x70 · Overlay 바탕
 │  │  │     │  └─ Content > Slot (1..200)         빈 프레임. 그 안에 런타임 생성:
 │  │  │     │     └─ SlotView 프리팹     Sell Mark(자원 탭) · Assign Mark(캐릭터 탭)
@@ -78,7 +56,7 @@ Root Canvas
 │  │  │     │        ├─ Lock Mark                 잠긴 캐릭터·장비 — 오른쪽 위 자물쇠 16px. 평소 꺼짐 (T-137)
 │  │  │     │        └─ Sell Mark · Assign Mark   맨 뒤로 옮겼다 — 체크 덮개 위에 '배' 마크가 보이게
 │  │  │     ├─ Sell Cart Presenter (↓ SUB VIEW)   SellCartPresenter            판매 목록 · 합계 · [판매]
-│  │  │     │                                        담긴 것이 없거나 특성 탭·큐브 창·응축 창이면 자기 오브젝트를 끈다
+│  │  │     │                                        담긴 것이 없거나 큐브 창·응축 창이면 자기 오브젝트를 끈다
 │  │  │     │  ├─ Sell Scroll View Panel          Content 에 SellCartRowView 프리팹이 쌓인다
 │  │  │     │  │  └─ Empty Text (TMP)             목록 위에 겹쳐 둔다 (담긴 게 없을 때만)
 │  │  │     │  ├─ Summary Panel                   Clear Button 72([비우기] — 응축 창 Close Button 복제) · High Rarity Warning(평소 꺼짐) · Total Text
@@ -214,6 +192,14 @@ Root Canvas
    │        ※ 표 세 개는 Body Scroll Panel(우편함의 것 복제) + 표마다 프리팹 줄 `Auction{Search,Sell,History}RowView` (런타임 생성 · 높이 62 — 한 쪽 9줄 · 열 폭 고정 · 줄 툴팁)
    │        ※ 등록 창 왼쪽 목록만 옛 `AuctionRowView` 줄([선택])을 쓴다
    ├─ #Artifact Canvas (MAIN VIEW)                ArtifactCanvasView  평소 꺼짐 · SetActive (UIManager.ShowArtifact) · 경매장 복제 — 배치는 `Artifact 규칙.md` "자리"
+   ├─ #Outpost Canvas (MAIN VIEW)                 OutpostCanvasView  평소 꺼짐 · SetActive (UIManager.ShowOutpost) · 아티팩트 복제 — `Outpost 규칙.md`
+   │  └─ Body Panel
+   │     ├─ Header Presenter (↓ SUB VIEW)         OutpostHeaderPresenter  제목 · 도움말 · 계정 레벨 · 골드 · [X]
+   │     ├─ Map Presenter (↓ SUB VIEW)            OutpostMapPresenter  Ground Button(Envelope) > 건물 5채(앵커 = 지도 %) + Building Menu Panel · Hint Plate
+   │     └─ Building Window                       평소 꺼짐 · ignoreLayout · 어둡게 막는 바탕 > Window Panel
+   │        ├─ Building Presenter (↓ SUB VIEW)    OutpostBuildingPresenter  이름 · 레벨 · 탭 · [X] (창 여닫기)
+   │        ├─ Upgrade Presenter (↓ SUB VIEW)     OutpostUpgradePresenter
+   │        └─ Trait Presenter (↓ SUB VIEW)       TraitPresenter  Tree Area(Link Area · Node Area) + Trait Detail Panel(폭 420)
    ├─ Gacha Result Presenter (↓ SUB VIEW)          GachaResultPresenter  CanvasGroup 토글 · 5열 x n
    │                                               가챠·상자 개봉·우편 수령 공용 (T-033 · T-083) — 제목은 코드가 '<출처> 결과'로 바꾼다
    │  └─ Panel                                    제목 · Content(5열 그리드) · 닫기 버튼
@@ -387,7 +373,7 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **레벨은 슬롯마다 따로다.** 전역이 아니라 `t_user_workstation_slot.industry_level`에 저장된다 —
   특성으로 Lv3을 열어도 **이미 배치된 칸은 그대로다.** 올리려면 그 칸에서 다시 고른다.
 - 잠금은 **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이다(`PlayerDataModel.IsIndustryLevelOpen` · 2026-10-02).
-  **Lv1은 늘 열려 있다.** 개척은 인벤토리 **특성 탭 → 그 산업 줄의 개척 칸**에서 올린다.
+  **Lv1은 늘 열려 있다.** 개척은 **거점 → 작업장 → 특성 트리의 그 산업 개척 노드**에서 올린다.
 - **산업이 바뀌면 레벨 줄을 다시 그리고, 잠긴 레벨이 골라져 있으면 Lv1로 되돌린다.**
   산업마다 열어 둔 레벨이 다르기 때문이다.
 - 3에서 레벨 버튼을 누르면 **산업 교체와 똑같이 재배치 요청 1회**다(같은 레벨이면 보내지 않는다).
@@ -441,23 +427,18 @@ EventSystem이 클릭한 버튼을 계속 잡고 있어 **고른 표시가 엉�
 - **인벤토리 탭은 화면 왼쪽부터 `자원 · 캐릭터 · 장비 · 특성`이고,
   `InventoryTab` enum과 인스펙터 `Tabs` 배열도 같은 순서다.** 셋을 나란히 맞춰 둔다 —
   ⚠️ **enum을 재정렬할 때는 씬 배선을 함께 고친다**(씬에 int로 저장된다).
-- ✅ **네 탭이 모두 실재한다** (기본 탭은 자원 · 장비는 2026-09-19 · 특성은 2026-09-20 · T-043).
-  잠금 판정은 `InventoryTabPresenter.HasScreen` **한 곳**에서 갈린다 —
-  셋은 격자가 공급자를 갖고 있는지로, **특성 하나는 전용 화면(`TraitPresenter`)이 배선돼 있는지로** 본다.
+- ✅ **세 탭이 모두 실재한다** (기본 탭은 자원 · 특성 탭은 거점 건물 창으로 옮겼다 — 2026-11-01 · T-182).
+  잠금 판정은 `InventoryTabPresenter.HasScreen` **한 곳**에서 — 격자가 공급자를 갖고 있는지로 본다.
   - 장비 칸은 **이름 + 효과 한 줄**(`발굴 +30%`)이고, 캐릭터가 끼고 있으면 **'배' 마크**가 켜진다
     (캐릭터 탭의 배치 마크와 같은 표시다). 지금 장비를 넣는 경로는 **치트 창의 `장비 지급`뿐**이다 —
     뽑기는 서버·엑셀 선행(`tasks/archive/T-067-장비뽑기.md`).
-- **탭이 달라도 격자는 하나다 — 단 특성 탭은 예외다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만
-  갈아 끼우지만, 특성은 칸 목록이 아니라 산업 × 종류 표라 `Trait Presenter`가 따로 그린다.
+- **탭이 달라도 격자는 하나다.** `Grid Presenter`가 칸 200개를 쥐고 공급자만 갈아 끼운다.
   구조와 "탭 하나를 채우는 절차"는 [`Inventory 규칙.md`](<Inventory/Inventory 규칙.md>).
-- **특성 탭에서 꺼지는 것은 셋이다** — 도구 줄 · 격자 · 판매 목록. **각자 스스로 끈다**
-  (탭 줄이 목록을 들고 있지 않다). 셋 다 `TabChanged` 구독을 **`Start`/`OnDestroy`** 에 건다 —
-  `OnDisable`에서 풀면 자기를 끈 순간 **다시 켤 신호를 받을 길이 사라진다.**
 - **상태 패널의 계정 경험치는 `Nick Image`를 두르는 원형 진행도다**(2026-09-21 · `Image.fillAmount` · Slider가 아니다).
   처음엔 줄 아래 가로 띠였는데 43px을 위아래로 나누니 재화 줄이 눌려서, **줄을 건드리지 않고 아이콘 안으로** 옮겼다.
   🔴 **고리 스프라이트가 없어 원반 두 장 + 가운데를 덮는 `Nick Icon (임시)`으로 만든다** —
   그 칸을 지우면 진행도가 고리가 아니라 파이 차트가 된다(근거는 [`State 규칙.md`](<State/State 규칙.md>)).
-  **남은 특성 포인트는 상태 패널이 아니라 특성 정보 영역의 조건 줄**(`Requirement Text`)에 있다 — 43px에 더 넣으면 배치가 깨진다.
+  **남은 특성 포인트는 상태 패널이 아니라 건물 창 특성 정보 영역의 조건 줄**(`Requirement Text`)에 있다 — 43px에 더 넣으면 배치가 깨진다.
   (2026-10-03까지 표 위 `Point Text`에 있었는데, 조건 줄과 같은 숫자가 두 번 나와 걷어냈다.)
 - **특성 표의 줄을 씬에 깔지 않는다** — `TraitRowView` 프리팹(칸 `TraitNodeView` 셋)을 찍어 풀로 쓴다(캐릭터 줄과 같은 판단).
 - **`xxx Button (1)`~`(3)`(상태 패널)는 아직 열 화면이 없다.** `Screen Buttons` 배열에 넣지 않았고

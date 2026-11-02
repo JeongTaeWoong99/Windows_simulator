@@ -94,7 +94,7 @@ namespace DesktopWindowControl.EditorTools
 			// 추적하는 서버는 없는데 포트가 열려 있다 = 이전 세션(에디터 크래시 등)의 orphan 서버가 남아 있다.
 			// SessionState는 Unity 재시작 때 비워져 PID를 잃으므로, 크래시 후엔 이 툴이 orphan을 추적하지 못한다.
 			// 그대로 새로 띄우면 포트 바인딩에 실패하니, 정리할지 물어보고 진행한다.
-			if (IsServerPortInUse())
+			if (IsPortListening(ServerPort))
 			{
 				var cleanup = EditorUtility.DisplayDialog(
 					"서버 콘솔",
@@ -257,30 +257,41 @@ namespace DesktopWindowControl.EditorTools
 			return false;
 		}
 
-		// 서버 포트가 이미 LISTENING 상태인지 검사한다(외부 라이브러리·프로세스 없이 판별).
-		private static bool IsServerPortInUse()
+		// 이 포트를 대기 중인 소켓이 있는가 — 서버 콘솔로 켰든 터미널·IDE로 켰든 잡힌다 ('CheatGuard'도 쓴다).
+		// ★ TCP 상태값을 믿지 않고 **원격 포트 0**(아직 상대가 없는 소켓)으로 판정한다.
+		//   이 PC(Windows 11 빌드 26300)는 대기 소켓의 상태를 Closed·FinWait1 등으로 잘못 보고해
+		//   'GetActiveTcpListeners'에 나오지 않는다(2026-11-02 실측 — 서버는 정상인데 치트 창 불이 안 켜졌다).
+		public static bool IsPortListening(int port)
 		{
 			try
 			{
-				var listeners = System.Net.NetworkInformation.IPGlobalProperties
-					.GetIPGlobalProperties().GetActiveTcpListeners();
-				foreach (var ep in listeners)
+				var properties = System.Net.NetworkInformation.IPGlobalProperties.GetIPGlobalProperties();
+
+				foreach (var endPoint in properties.GetActiveTcpListeners())
 				{
-					if (ep.Port == ServerPort)
+					if (endPoint.Port == port)
+					{
+						return true;
+					}
+				}
+
+				foreach (var connection in properties.GetActiveTcpConnections())
+				{
+					if (connection.LocalEndPoint.Port == port && connection.RemoteEndPoint.Port == 0)
 					{
 						return true;
 					}
 				}
 			}
-			catch (Exception e)
+			catch (System.Net.NetworkInformation.NetworkInformationException)
 			{
-				Debug.LogWarning($"[서버 콘솔] 포트 사용 여부 확인 실패(무시): {e.Message}");
+				// 조회 실패는 '꺼짐'으로 본다 — 0.5초마다 도는 자리라 로그를 남기지 않는다.
 			}
 
 			return false;
 		}
 
-		// 포트를 LISTENING으로 점유한 프로세스를 netstat로 찾아 트리 종료한다(추적 PID를 잃은 orphan 정리용).
+		// 포트를 대기 중인 프로세스를 찾아 트리 종료한다(추적 PID를 잃은 orphan 정리용).
 		private static void KillByPort(int port)
 		{
 			foreach (var pid in FindListeningPids(port))
@@ -289,46 +300,35 @@ namespace DesktopWindowControl.EditorTools
 			}
 		}
 
-		// 'netstat -ano'를 파싱해 해당 포트를 LISTENING 중인 PID들을 모은다.
+		// 해당 포트를 대기 중인 PID들을 모은다.
+		// ★ netstat를 쓰지 않는다 — 대기 소켓의 상태를 잘못 보고하거나 줄을 아예 빼먹는다('IsPortListening').
 		private static IEnumerable<int> FindListeningPids(int port)
 		{
 			var pids = new HashSet<int>();
 
 			try
 			{
-				var psi = new ProcessStartInfo("netstat")
+				var psi = new ProcessStartInfo("powershell.exe")
 				{
-					Arguments              = "-ano -p tcp",
+					Arguments              = $"-NoProfile -Command \"(Get-NetTCPConnection -LocalPort {port} -ErrorAction SilentlyContinue | Where-Object RemotePort -eq 0).OwningProcess\"",
 					UseShellExecute        = false,
 					RedirectStandardOutput = true,
 					CreateNoWindow         = true,
 				};
 
 				using var p = Process.Start(psi);
+
 				if (p == null)
 				{
 					return pids;
 				}
 
 				var output = p.StandardOutput.ReadToEnd();
-				p.WaitForExit(3000);
+				p.WaitForExit(5000);
 
-				// 예: "  TCP    0.0.0.0:10050    0.0.0.0:0    LISTENING    12345"
-				//   LISTENING 줄의 로컬 주소에만 ':<port>'가 나타난다(원격 주소는 :0).
 				foreach (var line in output.Split('\n'))
 				{
-					if (line.IndexOf("LISTENING", StringComparison.OrdinalIgnoreCase) < 0)
-					{
-						continue;
-					}
-					if (!line.Contains($":{port}"))
-					{
-						continue;
-					}
-
-					var parts = line.Split(new[] { ' ', '\t', '\r' }, StringSplitOptions.RemoveEmptyEntries);
-
-					if (parts.Length > 0 && int.TryParse(parts[^1], out var pid) && pid > 0)
+					if (int.TryParse(line.Trim(), out var pid) && pid > 0)
 					{
 						pids.Add(pid);
 					}

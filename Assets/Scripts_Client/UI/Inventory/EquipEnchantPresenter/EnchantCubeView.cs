@@ -1,9 +1,9 @@
-using System;
+﻿using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 큐브 창의 큐브 고르기 버튼 하나 — 큐브 이름 · 보유 수 · 이번에 쓰면 무엇이 되나. 눌리면 'Clicked'만 쏜다.
+// 큐브 창의 큐브 고르기 버튼 하나 — 큐브 아이콘 · 이름 · 보유 수 · 이번에 쓰면 무엇이 되나. 눌리면 'Clicked'만 쏜다.
 //
 // 이 칸은 확률도 보유량도 계산하지 않는다 — 완성된 문구만 'Bind'로 받는다.
 // (종속 View 규약은 'UI 규칙.md'의 "종속 View 쪽 규약")
@@ -15,6 +15,9 @@ public class EnchantCubeView : MonoBehaviour
     private const float LockedDarken = 0.35f;
 
     [CenterHeader("참조")]
+    [SerializeField, Tooltip("버튼 왼쪽의 큐브 아이콘 — 이 큐브가 소모된다는 표시. 그림이 없으면 끈다")]
+    private Image iconImage = null!;
+
     [SerializeField, Tooltip("큐브 이름 (예: '인챈트 큐브')")]
     private TMP_Text nameText = null!;
 
@@ -45,6 +48,7 @@ public class EnchantCubeView : MonoBehaviour
     // 그래야 패널의 Start가 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
     {
+        this.RequireRef(iconImage,      nameof(iconImage));
         this.RequireRef(nameText,       nameof(nameText));
         this.RequireRef(detailText,     nameof(detailText));
         this.RequireRef(button,         nameof(button));
@@ -56,16 +60,19 @@ public class EnchantCubeView : MonoBehaviour
 
     // 이 버튼이 그릴 큐브를 정한다 ('EquipEnchantPresenter'가 호출).
     //   displayName : 큐브 이름
+    //   icon        : 큐브 아이콘 (그림 저장소가 없으면 null — 아이콘 칸을 끈다)
     //   detail      : 두 번째 줄 완성 문구
     //   hasAny      : 하나라도 가졌는지 — 색을 정한다
     //   isSelected  : 지금 고른 큐브인지
     //   tooltip     : 올리면 부를 툴팁 함수
-    public void Bind(string displayName, string detail, bool hasAny, bool isSelected, Func<TooltipContent?> tooltip)
+    public void Bind(string displayName, Sprite? icon, string detail, bool hasAny, bool isSelected, Func<TooltipContent?> tooltip)
     {
         gameObject.SetActive(true);
 
-        nameText.text   = displayName;
-        detailText.text = detail;
+        iconImage.sprite  = icon!;
+        iconImage.enabled = icon != null;
+        nameText.text     = displayName;
+        detailText.text   = detail;
         selectedMark.SetActive(isSelected);
         tooltipTrigger.SetProvider(tooltip);
 

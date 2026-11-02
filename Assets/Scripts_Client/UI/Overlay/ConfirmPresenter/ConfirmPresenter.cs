@@ -43,6 +43,7 @@ public class ConfirmPresenter : MonoBehaviour
 
         confirmButton.onClick.AddListener(OnConfirmClicked);
         cancelButton.onClick.AddListener(OnCancelClicked);
+        BackdropClose.Bind(gameObject, OnCancelClicked); // 차단막을 누르면 취소
 
         SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }
@@ -93,7 +94,7 @@ public class ConfirmPresenter : MonoBehaviour
         callback?.Invoke();
     }
 
-    // 취소 — 아무것도 하지 않고 닫는다 (cancelButton OnClick에 코드로 연결)
+    // 취소 — 아무것도 하지 않고 닫는다 (cancelButton OnClick · 차단막에 코드로 연결)
     private void OnCancelClicked()
     {
         Close();

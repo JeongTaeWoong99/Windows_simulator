@@ -1,8 +1,9 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // 연출이 쓰는 이펙트 그림의 이름표 — 어떤 연출이 어떤 그림 파일을 쓰는지 한 곳에 모은다.
 // 그림은 그림 저장소 'Assets/Art/fx/<연출 키>/<이름>.png'에 있고 목록('VisualCatalog.FxOf')으로 찾는다.
 // 흰색 + 투명도만 담은 그림이다 — 색은 'Image.color'로 입힌다(등급색 등). 등급마다 그림을 따로 두지 않는다.
+// ※ 예외 — 색이 그림에 들어 있는 둘: 'SpecialRainbow' · 'CoinBody'.
 //
 // ■ 그림을 바꾸려면
 //   같은 파일 이름으로 덮는다 — 코드는 고치지 않는다. 새 부위를 더하면 여기에 이름을 하나 늘린다.
@@ -72,9 +73,9 @@ public static class FxSprites
     // 무지개 원뿔 — ⚠️ 흰색 규칙의 예외. Special 한 등급만 쓰는 고정색이라 색이 그림에 들어 있다(흰색을 곱한다)
     public static Sprite? SpecialRainbow => VisualCatalog.FxOf("special_rainbow");
 
-    // ── coin — 골드 획득 동전 ('CoinFlyPresenter') ──
+    // ── coin — 골드 그림 하나 ('CoinFlyPresenter' · 'StatePresenter' · 'ItemIconContent.ForGold' · 'GachaResultPresenter') ──
 
-    // 동전 — 금색을 입혀 날린다
+    // 동전 — ⚠️ 흰색 규칙의 예외. 금색이 그림에 들어 있다(색을 입히지 않는다). 골드를 그리는 곳은 전부 이 그림이다
     public static Sprite? CoinBody  => VisualCatalog.FxOf("coin_body");
     // 네 갈래 반짝 — 동전이 골드 아이콘에 닿을 때
     public static Sprite? CoinSpark => VisualCatalog.FxOf("coin_spark");

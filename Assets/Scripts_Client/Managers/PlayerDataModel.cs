@@ -25,6 +25,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private readonly HashSet<int>              _unlockedTids     = new HashSet<int>(); // 열린 해금 — 영구라 줄지 않는다
     private readonly HashSet<int>              _lockedItemTids   = new HashSet<int>(); // 잠긴 자원 종류(TID) — 보유 0개여도 남는다(T-159)
     private readonly Dictionary<int, int>      _traitLevels      = new Dictionary<int, int>(); // 기본 레벨보다 올린 특성만 (특성 TID → 레벨)
+    private readonly Dictionary<int, int>      _buildingLevels   = new Dictionary<int, int>(); // 지은(Lv1 이상) 건물만 (건물 TID → 레벨)
     private readonly List<MailInfo>            _mails            = new List<MailInfo>();
     private readonly HashSet<int>              _artifactCodex    = new HashSet<int>(); // 도감에 장착한 번호 — 장착하면 항상 켜짐 (T-181 · #90)
     private readonly List<ItemInfo>            _artifactStacks   = new List<ItemInfo>(); // 아티팩트 칸 — 'ItemId' = 아티팩트 번호 (T-181)
@@ -493,6 +494,82 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return GameDataLoader.TryGetUserTrait(userTraitTid, out var trait) ? trait.BaseLevel : 0;
     }
 
+    // 건물의 지금 레벨. 지은 적 없으면 0 (서버 'User.GetBuildingLevel'과 같다).
+    public int GetBuildingLevel(int buildingTid)
+        => _buildingLevels.TryGetValue(buildingTid, out int level) ? level : 0;
+
+    // 이 건물 트리에 남은 포인트 = 건물 레벨 − Σ((노드 레벨 − 기본 레벨) × 레벨당 포인트).
+    //
+    // ⚠️ 서버 'User.GetBuildingPoints'의 사본이다 — 서버가 보내 주지 않아 클라가 레벨에서 센다(T-183).
+    //   치트로 건물 레벨을 내리면 음수일 수 있다.
+    public int GetBuildingPoints(int buildingTid)
+    {
+        int spent = 0;
+
+        foreach (var node in GameDataLoader.UserTraits)
+        {
+            if (node.BuildingTID == buildingTid)
+            {
+                spent += (GetTraitLevel(node.UserTraitTID) - node.BaseLevel) * node.TraitPoint;
+            }
+        }
+
+        return GetBuildingLevel(buildingTid) - spent;
+    }
+
+    // 이 건물을 지금 올릴 수 있는가 — 안 되면 그 이유. 서버 'User.TryUpgradeBuilding'의 판정 순서와 같다.
+    // ※ 안내일 뿐이다. 통과해도 서버가 다시 검사한다(게임기획코어 P4).
+    public EResultCode CheckBuildingUpgrade(int buildingTid)
+    {
+        if (!GameDataLoader.TryGetBuilding(buildingTid, out var building))
+        {
+            return EResultCode.InvalidBuildingTID;
+        }
+
+        int next = GetBuildingLevel(buildingTid) + 1;
+
+        if (next > building.MaxLevel || !GameDataLoader.TryGetBuildingLevel(buildingTid, next, out var cost))
+        {
+            return EResultCode.BuildingMaxLevel;
+        }
+
+        if (next > AccountLevel)
+        {
+            return EResultCode.BuildingAccountLevelCap;
+        }
+
+        if (Gold < cost.Gold)
+        {
+            return EResultCode.NotEnoughCurrency;
+        }
+
+        for (int i = 0; i < cost.ItemTIDs.Length && i < cost.ItemCounts.Length; i++)
+        {
+            if (GetItemCount(cost.ItemTIDs[i]) < cost.ItemCounts[i])
+            {
+                return EResultCode.NotEnoughItem;
+            }
+        }
+
+        return EResultCode.Ok;
+    }
+
+    // 아직 최대 레벨이 아닌 앞 노드 — 없으면 false(이 노드는 열려 있다). 서버 'User.TryLearnTrait'의 앞 노드 판정과 같다.
+    public bool TryGetUnmetPrerequisite(UserTraitTableRow trait, out UserTraitTableRow prerequisite)
+    {
+        foreach (int requiredTid in trait.RequiredTraitTIDs)
+        {
+            if (GameDataLoader.TryGetUserTrait(requiredTid, out prerequisite) && GetTraitLevel(requiredTid) < prerequisite.MaxLevel)
+            {
+                return true;
+            }
+        }
+
+        prerequisite = null!;
+
+        return false;
+    }
+
     // 이 산업 레벨이 열렸는가 — **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이면 열린다 (2026-10-02 · T-108).
     //
     // ※ 개척 특성이 없는 산업이면 Lv1만 연다 — 표가 비었을 때 상위 레벨을 열어 두면 서버 거절로만 드러난다.
@@ -562,12 +639,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public long Gold { get; private set; }  // 유일한 재화 — 유료 재화(다이아)는 폐지했다(#41)
 
     // 계정 레벨 — 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다(캐릭터가 만렙이어도 계정은 자란다).
-    // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때 · 특성 포인트를 쓸 때.
+    // 재화와 같은 관례로 스냅샷이 통째로 온다 — 로그인 직후 · 경험치가 오를 때.
     //
     // ※ 특성 레벨은 여기 없다 — 'GetTraitLevel'이 따로 든다(S_UserTraitListResponse · 2026-10-02).
     public int  AccountLevel { get; private set; } = 1;
     public long AccountExp   { get; private set; }  // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 long이다
-    public int  TraitPoint   { get; private set; }  // 남은(안 쓴) 특성 포인트
 
     // 로그인 요청에 쓴 Id를 표시용으로 기억한다 (로그인을 보낸 UI가 호출).
     //
@@ -620,9 +696,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action?                   UnlocksChanged;  // 열린 해금 목록 갱신됨 (로그인 목록 · 해금 성공 후)
     public event Action<bool, EResultCode>? UnlockCompleted; // 해금 결과 (성공 여부·결과 코드)
 
-    public event Action?                    AccountLevelChanged; // 계정 레벨·경험치·특성 포인트 갱신됨
+    public event Action?                    AccountLevelChanged; // 계정 레벨·경험치 갱신됨
     public event Action?                    TraitsChanged;       // 특성 레벨 갱신됨 (로그인 목록 · 레벨 올리기 응답)
     public event Action<bool, EResultCode>? TraitLearnCompleted; // 특성 레벨 올리기 결과 (성공 여부·결과 코드)
+    public event Action?                    BuildingsChanged;    // 건물 레벨 갱신됨 (로그인 목록 · 치트 · 업그레이드 응답)
+    public event Action<int, EResultCode>?  BuildingUpgradeCompleted; // 건물 업그레이드 결과 (건물 TID·결과 코드)
 
     public event Action? ArtifactsChanged; // 아티팩트 도감·칸 갱신됨 (두 스냅샷 어느 쪽이든)
     public event Action<EResultCode, int>?  ArtifactEquipCompleted;  // 도감 장착 결과 (번호) — Ok면 두 스냅샷이 함께 온다
@@ -741,6 +819,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.AccountLevelReceived     += OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  += OnUserTraitLearnResponded;
         ServerPacketHandler.UserTraitListReceived    += OnUserTraitListReceived;
+        ServerPacketHandler.BuildingListReceived     += OnBuildingListReceived;
+        ServerPacketHandler.BuildingUpgradeResponded += OnBuildingUpgradeResponded;
         ServerPacketHandler.MailListReceived         += OnMailListReceived;
         ServerPacketHandler.MailArrived              += OnMailArrived;
         ServerPacketHandler.MailClaimResponded       += OnMailClaimResponded;
@@ -792,6 +872,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ServerPacketHandler.AccountLevelReceived     -= OnAccountLevelReceived;
         ServerPacketHandler.UserTraitLearnResponded  -= OnUserTraitLearnResponded;
         ServerPacketHandler.UserTraitListReceived    -= OnUserTraitListReceived;
+        ServerPacketHandler.BuildingListReceived     -= OnBuildingListReceived;
+        ServerPacketHandler.BuildingUpgradeResponded -= OnBuildingUpgradeResponded;
         ServerPacketHandler.MailListReceived         -= OnMailListReceived;
         ServerPacketHandler.MailArrived              -= OnMailArrived;
         ServerPacketHandler.MailClaimResponded       -= OnMailClaimResponded;
@@ -1400,7 +1482,6 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     {
         AccountLevel = res.Level;
         AccountExp   = res.Exp;
-        TraitPoint   = res.TraitPoint;
 
         Notify(AccountLevelChanged);
     }
@@ -1408,7 +1489,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 특성 레벨 올리기 결과 — 레벨을 반영하고 결과 코드를 나른다.
     //
     // ★ 실패여도 'Level'(지금 레벨)을 반영한다 — 서버가 "지금 이 레벨이다"라고 알려 준 것이라
-    //   캐시가 어긋나 있었다면 여기서 맞는다. 남은 포인트는 앞서 온 'S_AccountLevelResponse'가 채운다.
+    //   캐시가 어긋나 있었다면 여기서 맞는다. 남은 포인트는 이 레벨에서 센다('GetBuildingPoints').
     private void OnUserTraitLearnResponded(S_UserTraitLearnResponse res)
     {
         bool success = res.Result == EResultCode.Ok;
@@ -1439,6 +1520,36 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         Notify(TraitsChanged);
+    }
+
+    // 건물 레벨 전체 — 로그인 직후 · 레벨 치트 뒤. 스냅샷이라 비우고 채운다.
+    private void OnBuildingListReceived(S_BuildingListResponse res)
+    {
+        _buildingLevels.Clear();
+
+        foreach (var info in res.Buildings)
+        {
+            _buildingLevels[info.BuildingTID] = info.Level;
+        }
+
+        Notify(BuildingsChanged);
+    }
+
+    // 건물 업그레이드 결과 — 실패여도 'Level'(지금 레벨)을 반영한다. 'OnUserTraitLearnResponded'와 같은 이유다.
+    private void OnBuildingUpgradeResponded(S_BuildingUpgradeResponse res)
+    {
+        if (res.Result != EResultCode.Ok)
+        {
+            ClientLogger.Warn(ClientLogger.Recv, $"건물 업그레이드 실패 — {res.BuildingTID}, 결과={res.Result}");
+        }
+
+        if (GameDataLoader.TryGetBuilding(res.BuildingTID, out _) && res.Level != GetBuildingLevel(res.BuildingTID))
+        {
+            _buildingLevels[res.BuildingTID] = res.Level;
+            Notify(BuildingsChanged);
+        }
+
+        BuildingUpgradeCompleted?.Invoke(res.BuildingTID, res.Result);
     }
 
     #endregion

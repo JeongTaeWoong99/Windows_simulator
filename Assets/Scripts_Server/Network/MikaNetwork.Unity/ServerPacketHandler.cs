@@ -22,7 +22,7 @@ namespace MikaNetwork
     ///
     /// S_LoginResponse             로그인 결과
     /// S_CurrencyResponse          재화 잔액
-    /// S_AccountLevelResponse      계정 레벨·경험치·남은 특성 포인트
+    /// S_AccountLevelResponse      계정 레벨·경험치
     /// S_InventoryResponse         인벤토리 전체 스냅샷
     /// S_GatherResultResponse      오프라인 누적 채취분 (있을 때만)
     /// S_CharacterListResponse     보유 캐릭터 (슬롯보다 먼저 온다)
@@ -235,6 +235,12 @@ namespace MikaNetwork
         // 특성 레벨 스냅샷 도착 (Handle_S_UserTraitListResponse에서 발행) — 로그인 직후 1회
         public static event Action<S_UserTraitListResponse>? UserTraitListReceived;
 
+        // 건물 레벨 스냅샷 도착 (Handle_S_BuildingListResponse에서 발행) — 로그인 직후 · 레벨 치트 뒤
+        public static event Action<S_BuildingListResponse>? BuildingListReceived;
+
+        // 건물 업그레이드 결과 도착 (Handle_S_BuildingUpgradeResponse에서 발행)
+        public static event Action<S_BuildingUpgradeResponse>? BuildingUpgradeResponded;
+
         // 계정 레벨 스냅샷 (S_AccountLevelResponse 수신 시 자동 호출)
         // ★ 캐릭터가 얻은 경험치가 그대로 계정 경험치가 된다 — 캐릭터가 만렙이어도 계정은 자란다.
         [PacketHandler]
@@ -252,7 +258,7 @@ namespace MikaNetwork
 
         // 특성 레벨 올리기 결과 (S_UserTraitLearnResponse 수신 시 자동 호출)
         // ※ 'Level'은 성공이면 올린 뒤 레벨, 실패면 지금 레벨이다 — 이 패킷이 특성 레벨을 바꾼다(2026-10-02 · T-108).
-        //   남은 포인트는 앞서 온 S_AccountLevelResponse가 채운다.
+        //   남은 포인트는 레벨에서 센다('PlayerDataModel.GetBuildingPoints') — 서버가 보내지 않는다(T-183).
         //   속도 특성이면 바뀐 슬롯이 S_WorkStationSlotSyncResponse로 따로 온다.
         [PacketHandler]
         public static void Handle_S_UserTraitLearnResponse(ISession session, S_UserTraitLearnResponse res)
@@ -269,6 +275,25 @@ namespace MikaNetwork
         {
             ClientLogger.Info(ClientLogger.Recv, $"특성 레벨 목록 — {res.Traits.Count}개");
             UserTraitListReceived?.Invoke(res);
+        }
+
+        // 건물 레벨 스냅샷 (S_BuildingListResponse 수신 시 자동 호출)
+        // ※ 지은(Lv1 이상) 건물만 실린다 — 없는 건물은 Lv0이다. S_UserTraitListResponse 앞에 온다.
+        [PacketHandler]
+        public static void Handle_S_BuildingListResponse(ISession session, S_BuildingListResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"건물 레벨 목록 — {res.Buildings.Count}개");
+            BuildingListReceived?.Invoke(res);
+        }
+
+        // 건물 업그레이드 결과 (S_BuildingUpgradeResponse 수신 시 자동 호출)
+        // ※ 'Level'은 성공이면 올린 뒤 레벨, 실패면 지금 레벨이다.
+        //   성공이면 이 앞에 S_CurrencyResponse(골드) · S_UpdateItemResponse(자원)가 온다.
+        [PacketHandler]
+        public static void Handle_S_BuildingUpgradeResponse(ISession session, S_BuildingUpgradeResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv, $"건물 업그레이드 {res.BuildingTID} → {res.Result} (Lv{res.Level})");
+            BuildingUpgradeResponded?.Invoke(res);
         }
 
         #endregion

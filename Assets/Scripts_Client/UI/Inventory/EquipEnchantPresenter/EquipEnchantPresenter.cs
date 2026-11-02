@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
@@ -741,6 +741,7 @@ public class EquipEnchantPresenter : MonoBehaviour
                          : Lang.Format("UI.Enchant.CubeUp", RarityLabel.Get(grade + 1), EquipLabel.FormatPermyriad(GameDataLoader.GetEnchantUpPermyriad(grade, tid)));
 
             cubeViews[i].Bind(GameDataLoader.GetItemName(tid),
+                              VisualCatalog.ItemIconOf(tid),
                               Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + UIRichText.Dot + what,
                               owned > 0,
                               i == _cubeIndex,

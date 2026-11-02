@@ -133,3 +133,8 @@ Assets/Resources/PerformanceTestRunSettings.json.meta
 
 # Unity AI 생성 캐시 — 쓸 원본은 Assets/Art/_source/<팩>/raw/로 옮겨 그림 저장소에 둔다
 /GeneratedAssets/
+# Unity AI 생성 임시 폴더 — 생성할 때마다 다시 생긴다
+/Assets/AI Toolkit/
+/Assets/AI Toolkit.meta
+# 워크트리 작업 폴더
+/.claude/worktrees/

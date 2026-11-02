@@ -23,18 +23,19 @@ namespace DesktopWindowControl.EditorTools
             }
             else if (path.StartsWith(ArtSpec.FxRoot + "/"))
             {
-                ApplyFx((TextureImporter)assetImporter);
+                ApplyFx((TextureImporter)assetImporter, System.IO.Path.GetFileNameWithoutExtension(path));
             }
         }
 
         // 이펙트 — 부드러운 흰 도형을 늘리고 돌려 쓰므로 픽셀 아트와 달리 선형 필터다. 한 장 · 가운데 기준.
+        // ※ 동전('coin_body')만 예외 — 아이콘 칸에도 쓰는 픽셀 그림이라 점 필터다.
         // ※ 9-slice 경계(spriteBorder)는 건드리지 않는다 — 테두리 띠 같은 그림은 인스펙터(Sprite Editor)에서 정하고 .meta에 남는다.
-        private static void ApplyFx(TextureImporter importer)
+        private static void ApplyFx(TextureImporter importer, string fileName)
         {
             importer.textureType         = TextureImporterType.Sprite;
             importer.spriteImportMode    = SpriteImportMode.Single;
             importer.spritePixelsPerUnit = ArtSpec.PixelsPerUnit;
-            importer.filterMode          = FilterMode.Bilinear;
+            importer.filterMode          = fileName == "coin_body" ? FilterMode.Point : FilterMode.Bilinear;
             importer.textureCompression  = TextureImporterCompression.Uncompressed;
             importer.mipmapEnabled       = false;
             importer.alphaIsTransparency = true;

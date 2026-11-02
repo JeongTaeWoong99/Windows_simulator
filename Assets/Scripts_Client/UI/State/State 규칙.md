@@ -1,6 +1,6 @@
 # State 폴더 규칙
 
-> 최종 업데이트: 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
+> 최종 업데이트: 2026-10-31 (골드 아이콘 — `Gold Image`에 동전 그림 `FxSprites.CoinBody` + `FxSprites.CoinColor`) · 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
 
 **`#State Canvas` — 계정 레벨 · 닉네임 · 재화(골드)를 늘 보여 주고, 메인 화면을 여는 버튼을 쥔다.**
 
@@ -117,6 +117,8 @@
 > 넘치는 쪽이 조용히 잘린다.
 
 ## 재화는 골드 하나다
+
+`Gold Image`의 그림은 코드가 넣는다(`StatePresenter.ApplyGoldIcon`) — 날아오는 동전(`CoinFlyPresenter`)과 **같은 그림·같은 색**(`FxSprites.CoinBody` · `FxSprites.CoinColor`)이라 동전이 제 자리로 들어가 보인다. 그림이 없으면 씬의 그림 그대로 둔다.
 
 유료 재화 `Dia`는 **폐지했다**([#41](https://github.com/JeongTaeWoong99/Windows_simulator/issues/41)) —
 과금은 게임 밖(DLC · 스팀 마켓 수수료)에서 한다. 상태바에 재화 칸을 다시 늘릴 일은 없다.

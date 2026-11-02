@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
@@ -28,6 +28,10 @@ namespace DesktopWindowControl.EditorTools
         public const int IconMinSource = 24;
         public static readonly Color32 IconOutline = new Color32(25, 20, 30, 255);
 
+        // 가장자리 픽셀의 이 비율 이상이 밝은 무채색이면 원본에 흰 외곽선이 그려진 것으로 보고 벗긴다 ('ArtImage.StripLightRim').
+        // 실측 — cainos 팩 0.73~1.0 · 밝은 파랑 통·상자(pixel-item-pack) 0.37~0.5 · 보석(karsiori) 0.41
+        public const float IconLightRimRatio = 0.7f;
+
         // 캐릭터 해상도 기준 — 결과 SO의 'characterScale'(원본을 정한 크기까지 몇 배로 키우나)이 이보다 크면 뭉툭해 보인다. 검사가 알린다
         public const float CharacterMaxScale = 1.5f;
 
@@ -36,6 +40,10 @@ namespace DesktopWindowControl.EditorTools
 
         // 런타임이 'Resources.Load'로 찾는다 — 그림과 같이 git 밖이라 'Art/' 안의 Resources에 둔다
         public const string CatalogPath     = Root + "/Resources/VisualCatalog.asset";
+
+        // 소리 — 'audio/<채널>/<키>.wav' (bgm · ui · sfx). 파일 이름이 곧 찾는 이름('Sounds' · 'SoundCatalog.Of')
+        public const string AudioRoot        = Root + "/audio";
+        public const string SoundCatalogPath = Root + "/Resources/" + SoundCatalog.ResourcePath + ".asset";
 
         public const string MenuRoot = "Window/DesktopWindowControl/아트/";
 

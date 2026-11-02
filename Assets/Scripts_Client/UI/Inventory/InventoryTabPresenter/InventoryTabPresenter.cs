@@ -25,13 +25,10 @@ public enum InventoryTab
     // ※ 자원이 아니라 캐릭터와 같은 모양이다 — 개체마다 번호가 있고 정의는 'EquipTable'에 따로 있다.
     Equipment,
 
-    // 특성 — 계정 레벨로 얻은 포인트로 레벨을 올리는 산업 × 종류 표.
-    // ⚠️ **이 탭만 격자를 쓰지 않는다** — 칸 목록이 아니라 선으로 이어진 트리라
-    //    'TraitPresenter'가 따로 그린다 ('Inventory 규칙.md'의 "탭이 달라도 격자는 하나다" 예외).
-    Trait,
+    // ※ 특성 탭(3)은 거점 건물 창으로 옮겼다(T-182). 씬에 int로 저장되므로 앞 값은 바꾸지 않는다.
 }
 
-// 인벤토리 열의 탭 줄 — 자원 · 캐릭터 · 장비 · 특성 4탭 (씬 왼쪽부터). (기획 2.2)
+// 인벤토리 열의 탭 줄 — 자원 · 캐릭터 · 장비 3탭 (씬 왼쪽부터). (기획 2.2)
 //
 // **전환은 여기 한 곳이다.** 탭마다 화면을 두지 않고 격자('InventoryGridPresenter') 하나가
 // 내용을 갈아 끼우므로, 이 클래스는 "어느 탭인가"만 넘긴다
@@ -41,8 +38,6 @@ public enum InventoryTab
 //   잠금 여부를 여기 적어 두지 않고 **그릴 것이 있는지**로 판정한다('HasScreen').
 //   두 곳에 적으면 공급자를 붙이고도 버튼이 잠긴 채 남는다 — 탭을 채우는 사람이
 //   이 파일을 안 열어도 되게 한다.
-//   ⚠️ 특성 탭만은 격자가 아니라 'TraitPresenter'가 그린다. 판정이 갈리는 곳은
-//   'HasScreen' 한 군데뿐이고, 화면을 여닫는 일은 각 Presenter가 스스로 한다.
 public class InventoryTabPresenter : MonoBehaviour
 {
     // 인벤토리를 열었을 때의 탭. 자원이 실제 내용물이 가장 많은 탭이라 여기서 시작한다.
@@ -70,9 +65,6 @@ public class InventoryTabPresenter : MonoBehaviour
     [SerializeField, Tooltip("탭 내용을 그리는 격자. 같은 캔버스의 Grid Presenter")]
     private InventoryGridPresenter grid = null!;
 
-    [SerializeField, Tooltip("특성 탭을 그리는 화면. 같은 캔버스의 Trait Presenter (격자를 쓰지 않는 유일한 탭)")]
-    private TraitPresenter traitScreen = null!;
-
 
     [CenterHeader("선택 표시")]
     [SerializeField, Tooltip("지금 열려 있는 탭의 버튼 색")]
@@ -93,7 +85,7 @@ public class InventoryTabPresenter : MonoBehaviour
     // 지금 열려 있는 탭. 인벤토리를 닫아도 유지된다 — 다시 열면 보던 탭이 그대로 있다.
     public InventoryTab CurrentTab { get; private set; } = DefaultTab;
 
-    // 탭이 바뀌었다 ('InventoryToolPresenter'가 구독 — 특성 탭에서는 도구 줄이 숨는다).
+    // 탭이 바뀌었다 ('InventoryToolPresenter'가 구독).
     //
     // ※ 격자에게는 이 이벤트로 알리지 않는다 — 여기서 직접 'ShowTab'을 부른다.
     //   내용을 갈아 끼우는 일은 전환의 본체라 구독으로 돌리면 순서가 흐려진다.
@@ -201,11 +193,10 @@ public class InventoryTabPresenter : MonoBehaviour
 
     // 이 탭에 그릴 것이 있는가 (BindButtons에서 호출).
     //
-    // 셋은 격자가 공급자를 갖고 있는지로, 특성 하나는 전용 화면이 배선돼 있는지로 갈린다.
-    // **판정이 갈리는 곳은 여기 하나뿐이다.**
+    // 격자가 공급자를 갖고 있는지로 갈린다.
     private bool HasScreen(InventoryTab tab)
     {
-        return tab == InventoryTab.Trait ? traitScreen != null : grid.HasSource(tab);
+        return grid.HasSource(tab);
     }
 
     // 탭을 타는 화면들을 일단 켠다 (Start에서 'ShowTab'보다 먼저).
@@ -214,7 +205,7 @@ public class InventoryTabPresenter : MonoBehaviour
     //   이 화면들은 자기 탭이 아니면 **스스로 꺼진다.** 그래서 꺼진 채로 씬에 저장되기 쉬운데,
     //   꺼진 오브젝트는 'Start'가 돌지 않아 'TabChanged'를 **구독하지 못한다.**
     //   그 상태로는 자기 탭을 눌러도 켜 줄 사람이 없어 영영 안 돌아온다
-    //   (2026-09-22: 특성 화면이 꺼진 채 저장돼 특성 탭이 빈 화면이 됐다).
+    //   (2026-09-22: 옛 특성 화면이 꺼진 채 저장돼 그 탭이 빈 화면이 됐다).
     //
     // ■ 그래서 최초 진입도 탭 전환과 같은 경로를 탄다
     //   켜 둔 뒤 'ShowTab'을 부르면 각 화면이 자기 'Start'에서 현재 탭을 보고 스스로 물러난다.
@@ -229,7 +220,6 @@ public class InventoryTabPresenter : MonoBehaviour
         // 탭 줄과 화면들은 모두 같은 부모(Body Panel) 아래 형제다. 부모가 없으면(테스트 등) 자기를 기준으로 본다.
         Transform root = transform.parent != null ? transform.parent : transform;
 
-        WakeScreen(traitScreen);
         WakeScreen(root.GetComponentInChildren<InventoryToolPresenter>(true));
         WakeScreen(root.GetComponentInChildren<SellCartPresenter>(true));
     }

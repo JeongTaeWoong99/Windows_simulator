@@ -1,7 +1,7 @@
 using MikaProtocol;
 using UnityEngine;
 
-// 경매장 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-147). 하단 메뉴 [경매장]으로 열고, 안쪽 [X]·Esc로 닫는다.
+// 경매장 — 3열 폭 전부 × 가운데 띠를 쓰는 화면 (T-147). 하단 메뉴 [경매장]으로 열고, 안쪽 [X]·판 밖 차단막으로 닫는다.
 // 옛날엔 거래 열(지금 길드 열 'GuildCanvasView')의 탭 하나였다.
 //
 // ■ 왜 '!Overlay Canvas' 안인가 — 화면 전체를 막아야 해서다('Overlay 규칙.md' ① 차단 범위).
@@ -42,6 +42,25 @@ public class AuctionCanvasView : MonoBehaviour
 
     // 지금 열려 있는가 — 닫히는 중이면 false
     public bool IsOpen => PanelTransition.IsShown(gameObject);
+
+    // 판 밖 차단막을 누르면 닫는다 (Unity 메시지 — 처음 켜질 때 한 번)
+    private void Awake()
+    {
+        BackdropClose.Bind(gameObject, OnBackdropClicked);
+    }
+
+    // 맨 위 창부터 하나씩 닫는다 — 등록 창이 떠 있으면 그것만.
+    private void OnBackdropClicked()
+    {
+        if (register.IsOpen)
+        {
+            register.Close();
+
+            return;
+        }
+
+        Services.Get<UIManager>().ShowAuction(false);
+    }
 
     // 경매장을 열고 닫는다 (UIManager가 호출).
     // 닫힘은 연출이 끝난 뒤에 꺼진다('PanelTransition'). 커졌다 줄어드는 것은 판('body')뿐이다 — 차단막은 제자리에서 흐려진다.

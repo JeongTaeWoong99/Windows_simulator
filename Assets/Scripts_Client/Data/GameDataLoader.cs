@@ -470,33 +470,56 @@ public static class GameDataLoader
 
     // 특성 한 줄(이름·레벨당 비용·레벨당 효과·기본/최대 레벨)을 조회한다. 없는 TID면 false.
     //
-    // ※ 레벨마다 다른 것은 계정 레벨 조건뿐이다 — 그건 'TryGetUserTraitLevel'이 준다.
+    // ※ 비용·효과는 레벨마다 같다. 조건은 앞 노드('RequiredTraitTIDs')와 건물 포인트다(T-183).
     public static bool TryGetUserTrait(int userTraitTid, out UserTraitTableRow row)
     {
         return GameTable.UserTraitTable.TryGet(userTraitTid, out row);
     }
 
-    // 특성을 'level'로 올릴 때의 조건 행(계정 레벨)을 조회한다. 그 레벨이 없으면 false.
-    //
-    // ※ 시트 키는 'UserTraitLevelTID'(= 특성 × 100 + 레벨)지만 그 계산식을 여기 베끼지 않는다 —
-    //   (특성, 레벨)로 한 번 뒤집어 둔다('TryGetIndustryLevel'과 같은 이유).
-    public static bool TryGetUserTraitLevel(int userTraitTid, int level, out UserTraitLevelTableRow row)
-    {
-        if (_userTraitLevels == null)
-        {
-            _userTraitLevels = new Dictionary<(int, int), UserTraitLevelTableRow>();
+    // 거점 건물 전체 (엑셀 순서 그대로).
+    public static IReadOnlyList<BuildingTableRow> Buildings => GameTable.BuildingTable.All;
 
-            foreach (var candidate in GameTable.UserTraitLevelTable.All)
+    // 건물 한 줄(이름 · 최대 레벨)을 조회한다. 없는 TID면 false.
+    public static bool TryGetBuilding(int buildingTid, out BuildingTableRow row)
+    {
+        return GameTable.BuildingTable.TryGet(buildingTid, out row);
+    }
+
+    // 이 건물에 트리 노드가 있는가 — 없으면 특성 탭을 열지 않는다(1차는 작업장뿐 · T-183).
+    public static bool HasBuildingNodes(int buildingTid)
+    {
+        foreach (var node in UserTraits)
+        {
+            if (node.BuildingTID == buildingTid)
             {
-                _userTraitLevels[(candidate.UserTraitTID, candidate.Level)] = candidate;
+                return true;
             }
         }
 
-        return _userTraitLevels.TryGetValue((userTraitTid, level), out row!);
+        return false;
     }
 
-    // (특성, 레벨) → 레벨 조건 행. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
-    private static Dictionary<(int Trait, int Level), UserTraitLevelTableRow>? _userTraitLevels;
+    // 건물을 'level'로 올릴 때의 비용 행을 조회한다. 그 레벨이 없으면 false.
+    //
+    // ※ 시트 키는 'BuildingLevelTID'(= 건물 × 1000 + 레벨)지만 그 계산식을 여기 베끼지 않는다 —
+    //   (건물, 레벨)로 한 번 뒤집어 둔다('TryGetIndustryLevel'과 같은 이유).
+    public static bool TryGetBuildingLevel(int buildingTid, int level, out BuildingLevelTableRow row)
+    {
+        if (_buildingLevels == null)
+        {
+            _buildingLevels = new Dictionary<(int, int), BuildingLevelTableRow>();
+
+            foreach (var candidate in GameTable.BuildingLevelTable.All)
+            {
+                _buildingLevels[(candidate.BuildingTID, candidate.Level)] = candidate;
+            }
+        }
+
+        return _buildingLevels.TryGetValue((buildingTid, level), out row!);
+    }
+
+    // (건물, 레벨) → 비용 행. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
+    private static Dictionary<(int Building, int Level), BuildingLevelTableRow>? _buildingLevels;
 
     // 이 산업의 개척 특성('IndustryUnlock')을 찾는다. 없으면 false.
     //
