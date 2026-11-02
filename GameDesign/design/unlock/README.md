@@ -30,7 +30,7 @@
 | 14 | **서버 지급 경로 `GrantUnlock`** | 퀘스트 보상·튜토리얼·운영이 조건 없이 연다. 통지는 유저 행동과 같다 (2026-09-16) → 2.4 |
 | 15 | **로드 시 검증 3종** | 선행 순환·자기 참조 → 기동 실패 · 한 `UnlockTID`를 두 콘텐츠가 참조 → 기동 실패 · 미참조 → 경고 (2026-09-16) → 2.5 |
 | 16 | **지불 컬럼끼리는 OR** | 지불 컬럼이 둘 이상 생기면 유저가 하나를 골라 낸다. 나머지 조건과는 AND (2026-09-16). 지금 지불 컬럼은 `Gold` 하나다 — 다이아 폐지(2026-09-28). 자원 비용(`ItemTIDs`)은 지불 컬럼이 아니라 **함께 내는 조건**이다(2026-10-16) → 3장 |
-| 17 | **계정 레벨은 `S_AccountLevelResponse`** | 재화처럼 스냅샷·푸시가 같은 패킷 `{Level, Exp, TraitPoint}` — 서버 구현 완료 (2026-09-19) · `TraitPoint`는 항상 0(폐기 예정 — T-183) → 6장 |
+| 17 | **계정 레벨은 `S_AccountLevelResponse`** | 재화처럼 스냅샷·푸시가 같은 패킷 `{Level, Exp}` — 서버 구현 완료 (2026-09-19) → 6장 |
 | 18 | **잠긴 칸의 배치 행은 경고 후 무시** | "열렸다"의 원본은 `t_user_unlock` 하나 (2026-09-16) → 4.1 |
 
 > **왜 한 표인가** — 해금이 "엄청 많이 쓰일" 것이라서다. 콘텐츠마다 조건 컬럼과 판정 코드를 파면
@@ -224,7 +224,7 @@ UnlockTable (엑셀)                     콘텐츠 테이블 (엑셀)
 | `C_UnlockRequest` | `{ int UnlockTID, ECurrencyType Currency }` — 지불 컬럼이 없는 해금은 `Currency`를 무시한다 |
 | `S_UnlockResponse` | `{ EResultCode Result, int UnlockTID }` |
 | `S_UnlockListResponse` | `{ List<int> UnlockTIDs }` — 로그인 직후 열린 목록 전체 |
-| `S_AccountLevelResponse` | `{ int Level, long Exp, int TraitPoint }` — 계정 레벨 스냅샷·푸시 (재화와 같은 관례). `TraitPoint`는 항상 0 — 클라 전환 뒤 지운다(T-183) |
+| `S_AccountLevelResponse` | `{ int Level, long Exp }` — 계정 레벨 스냅샷·푸시 (재화와 같은 관례) |
 | 특성 패킷 | 해금과 따로 간다 — `C_UserTraitLearnRequest` · `S_UserTraitLearnResponse` · `S_UserTraitListResponse` → [특성](../trait/README.md) 2.1 |
 | 결과 코드 | `InvalidUnlockTID` · `AlreadyUnlocked` · `UnlockLocked`(선행·레벨 미충족 · 이 해금에 없는 재화 선택) · `NotEnoughCurrency`(있음). `TraitOnlyUnlock`(802)은 쓰지 않는 결번 |
 | 서버 | `UnlockCatalog`(테이블 인덱스 + 로드 검증 2.5) · `User.Unlock.cs`(`TryUnlock` · `GrantUnlock` · `IsUnlocked`) · `SaveUnlockRepository` |

@@ -191,7 +191,7 @@ public partial class User
             UnlockMailCharacter(character);
         }
 
-        // 아티팩트는 인벤토리 아티팩트 탭으로 간다 — 칸은 위에서 함께 봤다(T-181).
+        // 아티팩트는 아티팩트 칸(인벤토리 장비 탭)으로 간다 — 칸은 위에서 함께 봤다(T-181).
         if (a.Artifacts.Count > 0)
         {
             GainArtifacts(a.Artifacts.GroupBy(x => x.Tid).ToDictionary(g => g.Key, g => g.Sum(x => x.Count)));

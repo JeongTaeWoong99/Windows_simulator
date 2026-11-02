@@ -171,6 +171,7 @@ namespace MikaProtocol
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
         SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
+        GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
     }
 
     public enum EItemChangeKind : byte
@@ -204,7 +205,7 @@ namespace MikaProtocol
         Character = 2,   // GachaRewardInfo.CharacterTid를 읽는다
         Equip     = 3,   // GachaRewardInfo.EquipTid를 읽는다
         Gold      = 4,   // GachaRewardInfo.Count가 골드 양이다 (상자 전용)
-        Artifact  = 5,   // GachaRewardInfo.ArtifactTid를 읽는다 (유물 감정 전용 — 인벤토리 아티팩트 탭으로 · T-181)
+        Artifact  = 5,   // GachaRewardInfo.ArtifactTid를 읽는다 (유물 감정 전용 — 아티팩트 칸(인벤토리 장비 탭)으로 · T-181)
     }
 
     // 아이템 등급(전역 공통). GameData.GlobalRarity(Enum.xlsx)와 값이 1:1이어야 한다 —
@@ -228,7 +229,7 @@ namespace MikaProtocol
         Item  = 1,   // 자원(스택) — 매물은 통째로만 팔린다
         Equip = 2,   // 장비 개체 — 인챈트까지 그대로 넘어간다
         Character = 3,   // 캐릭터 개체 — 레벨·경험치·찍은 적성까지 그대로 넘어간다
-        Artifact  = 4,   // 아티팩트(스택) — 인벤토리 아티팩트 탭에서 빠져 거래소에서 수량으로 팔린다 (T-152 · T-181)
+        Artifact  = 4,   // 아티팩트(스택) — 아티팩트 칸(인벤토리 장비 탭)에서 빠져 거래소에서 수량으로 팔린다 (T-152 · T-181)
     }
 
     // 진행 중 매물의 상태. 경매장 서버(auction.proto의 ListingState)와 값이 같아야 한다.

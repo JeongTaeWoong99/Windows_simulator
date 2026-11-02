@@ -81,7 +81,7 @@ public sealed record UserArtifactRow
     public int artifact_tid { get; init; }
 }
 
-// t_user_artifact_stack 조회 전용 Row — 인벤토리 아티팩트 탭의 칸 하나 (T-181)
+// t_user_artifact_stack 조회 전용 Row — 아티팩트 칸(인벤토리 장비 탭)의 칸 하나 (T-181)
 public sealed record UserArtifactStackRow
 {
     public int slot         { get; init; }

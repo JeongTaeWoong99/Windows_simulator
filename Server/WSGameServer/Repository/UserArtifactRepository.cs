@@ -2,7 +2,7 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-/// <summary>인벤토리 아티팩트 탭(<c>t_user_artifact_stack</c>)의 칸 쓰기 — 아티팩트 칸을 바꾸는 저장은 전부 이 문장을 지난다 (T-181).</summary>
+/// <summary>아티팩트 칸(인벤토리 장비 탭)(<c>t_user_artifact_stack</c>)의 칸 쓰기 — 아티팩트 칸을 바꾸는 저장은 전부 이 문장을 지난다 (T-181).</summary>
 public static class ArtifactStackDb
 {
     /// <summary>칸 하나의 확정 상태를 쓴다. 수량 0이면 행을 지운다. <c>ItemId</c>는 아티팩트 번호다.</summary>

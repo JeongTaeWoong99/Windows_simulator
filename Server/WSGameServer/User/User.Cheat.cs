@@ -51,6 +51,7 @@ public partial class User
             ECheatCommand.SetCondenseCount => CheatSetCondenseCount(req.Arg1, req.Arg2, now),
             ECheatCommand.SetGatherSpeed   => CheatSetGatherSpeed(req.Arg1, now),
             ECheatCommand.SeedAuctionListings => CheatSeedAuctionListings(req.Arg1, req.Arg2, now),
+            ECheatCommand.GiveAllCharacters => CheatGiveAllCharacters(now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -135,6 +136,33 @@ public partial class User
         // 가챠와 같은 지급 경로 — 개체 PK 발급 후 목록 재전송까지 동일하다.
         GrantGachaCharacters(Enumerable.Repeat((int)characterTid, (int)count).ToList());
         return (EResultCode.Ok, $"캐릭터 {characterTid} × {count} 지급 요청");
+    }
+
+    // 그림·모션 확인용(T-190). 칸을 넘기지 않게 창고 빈 칸 → 인벤토리 빈 칸 → 넘침 우편 한 통 순서로 나눈다.
+    // 우편은 받을 때 칸 검사(HasStorageFor)를 다시 하므로 여기서 나누지 않는다.
+    private (EResultCode, string) CheatGiveAllCharacters(DateTime now)
+    {
+        var tids        = GameTable.CharacterTable.All.Select(r => r.CharacterTID).ToList();
+        var toWarehouse = tids.Take(Math.Max(0, WarehouseCapacity - WarehouseCharacterSlotsUsed)).ToList();
+        var toInventory = tids.Skip(toWarehouse.Count).Take(Math.Max(0, StorageCapacity - CharacterSlotsUsed)).ToList();
+        var toMail      = tids.Skip(toWarehouse.Count + toInventory.Count).ToList();
+
+        if (toWarehouse.Count > 0)
+        {
+            GrantCharacters(toWarehouse, EContainer.Warehouse);
+        }
+
+        if (toInventory.Count > 0)
+        {
+            GrantCharacters(toInventory, EContainer.Inventory);
+        }
+
+        if (toMail.Count > 0)
+        {
+            StoreOverflowMail(new MailAttachment(0, new(), toMail, new()), now);
+        }
+
+        return (EResultCode.Ok, $"창고 {toWarehouse.Count} · 인벤토리 {toInventory.Count} · 우편 {toMail.Count}");
     }
 
     private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount, DateTime now)

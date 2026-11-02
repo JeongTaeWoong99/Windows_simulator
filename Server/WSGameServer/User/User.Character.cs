@@ -41,29 +41,36 @@ public partial class User
 
     /// <summary>
     /// 가챠로 뽑은 캐릭터를 지급한다. 개체 PK는 DB가 발급하므로 결과는
-    /// <see cref="OnGachaCharactersGranted"/>로 돌아온다. <b>같은 TID가 여러 번 들어와도 된다</b> —
+    /// <see cref="OnCharactersGranted"/>로 돌아온다. <b>같은 TID가 여러 번 들어와도 된다</b> —
     /// 중복은 개체를 늘리는 것으로 처리한다(캐릭터 기획 1.1).
     /// </summary>
     public void GrantGachaCharacters(IReadOnlyList<int> characterTids)
     {
-        var slots = ReserveCharacterSlots(characterTids.Count);
-        PostDBTask(new GrantCharacterRepository(this, characterTids, slots, CharacterGrantReason.Gacha));
+        GrantCharacters(characterTids, EContainer.Inventory);
+    }
+
+    /// <summary>가챠와 같은 지급을 보관함을 골라 한다. 남은 칸 검사는 부른 쪽이 한다.</summary>
+    public void GrantCharacters(IReadOnlyList<int> characterTids, EContainer container)
+    {
+        var slots = ReserveCharacterSlots(characterTids.Count, container);
+        PostDBTask(new GrantCharacterRepository(this, characterTids, slots, CharacterGrantReason.Gacha, container));
     }
 
     /// <summary>캐릭터 탭의 첫 빈 칸. 지급 대기 중인 칸도 찬 것으로 본다.</summary>
-    public int NextFreeCharacterSlot()
+    public int NextFreeCharacterSlot(EContainer container = EContainer.Inventory)
     {
-        return StorageSlots.FirstFree(_characters.Values.Select(c => c.Slot).Concat(_pendingCharacterSlots));
+        return StorageSlots.FirstFree(CharactersOf(container).Values.Select(c => c.Slot).Concat(PendingCharacterSlotsOf(container)));
     }
 
     // 지급할 장수만큼 칸을 차례로 예약한다.
-    private List<int> ReserveCharacterSlots(int count)
+    private List<int> ReserveCharacterSlots(int count, EContainer container = EContainer.Inventory)
     {
-        var slots = new List<int>(count);
+        var pending = PendingCharacterSlotsOf(container);
+        var slots   = new List<int>(count);
         for (var i = 0; i < count; i++)
         {
-            var slot = NextFreeCharacterSlot();
-            _pendingCharacterSlots.Add(slot);
+            var slot = NextFreeCharacterSlot(container);
+            pending.Add(slot);
             slots.Add(slot);
         }
 
@@ -71,15 +78,15 @@ public partial class User
     }
 
     /// <summary>
-    /// 가챠 지급이 끝나면 불린다(로직 스레드). 적재 후 목록을 다시 내려보낸다 —
+    /// 가챠·치트 지급이 끝나면 불린다(로직 스레드). 적재 후 목록을 다시 내려보낸다 —
     /// 클라이언트가 <b>재로그인 없이</b> 뽑은 캐릭터를 배치할 수 있어야 한다.
     /// </summary>
-    public void OnGachaCharactersGranted(IReadOnlyList<(long Id, int Tid, int Slot)> granted)
+    public void OnCharactersGranted(IReadOnlyList<(long Id, int Tid, int Slot)> granted, EContainer container = EContainer.Inventory)
     {
         foreach (var (characterId, characterTid, slot) in granted)
         {
-            _pendingCharacterSlots.Remove(slot);
-            AddCharacter(characterId, characterTid, slot);
+            PendingCharacterSlotsOf(container).Remove(slot);
+            AddCharacter(characterId, characterTid, slot, container);
         }
 
         SendCharacters();
@@ -89,7 +96,7 @@ public partial class User
     /// 지급받은 캐릭터 하나를 메모리에 올린다.
     /// 테이블에 없는 TID는 <see cref="LoadCharacters"/>와 같은 정책으로 경고만 남기고 건너뛴다.
     /// </summary>
-    private void AddCharacter(long characterId, int characterTid, int slot)
+    private void AddCharacter(long characterId, int characterTid, int slot, EContainer container = EContainer.Inventory)
     {
         if (!GameTable.CharacterTable.TryGet(characterTid, out var row))
         {
@@ -97,7 +104,7 @@ public partial class User
             return;
         }
 
-        _characters[characterId] = new Character(characterId, row, level: 1, exp: 0) { Slot = slot };
+        CharactersOf(container)[characterId] = new Character(characterId, row, level: 1, exp: 0) { Slot = slot };
     }
 
     /// <summary>

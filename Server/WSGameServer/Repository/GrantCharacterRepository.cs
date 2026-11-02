@@ -1,3 +1,5 @@
+using MikaProtocol;
+
 namespace WSGameServer;
 
 /// <summary>
@@ -29,6 +31,9 @@ public sealed class GrantCharacterRepository : IRepository
     private readonly CharacterGrantReason _reason;
     private readonly List<(long Id, int Tid, int Slot)> _granted = new();
 
+    /// <summary>들어갈 보관함. 창고 지급은 전 캐릭터 치트뿐이다(T-190).</summary>
+    public EContainer Container { get; }
+
     public long Key => User.DbKey;
 
     public User User { get; }
@@ -39,12 +44,14 @@ public sealed class GrantCharacterRepository : IRepository
     /// <summary>TID와 같은 순서로 예약된 인벤토리 칸.</summary>
     public IReadOnlyList<int> Slots => _slots;
 
-    public GrantCharacterRepository(User user, IReadOnlyList<int> characterTids, IReadOnlyList<int> slots, CharacterGrantReason reason)
+    public GrantCharacterRepository(User user, IReadOnlyList<int> characterTids, IReadOnlyList<int> slots, CharacterGrantReason reason,
+        EContainer container = EContainer.Inventory)
     {
         User           = user;
         _characterTids = characterTids;
         _slots         = slots;
         _reason        = reason;
+        Container      = container;
     }
 
     // === DB 스레드에서 실행 ===
@@ -55,9 +62,9 @@ public sealed class GrantCharacterRepository : IRepository
             var tid  = _characterTids[i];
             var slot = _slots[i];
             var characterId = await connection.ExecuteScalarAsync<long>(
-                @"INSERT INTO t_character (user_id, character_tid, slot)
-                  VALUES (@userId, @tid, @slot) RETURNING character_id;",
-                new { userId = User.Uid, tid, slot });
+                @"INSERT INTO t_character (user_id, character_tid, container, slot)
+                  VALUES (@userId, @tid, @container, @slot) RETURNING character_id;",
+                new { userId = User.Uid, tid, container = (int)Container, slot });
 
             _granted.Add((characterId, tid, slot));
         }
@@ -72,6 +79,6 @@ public sealed class GrantCharacterRepository : IRepository
             return;
         }
 
-        User.OnGachaCharactersGranted(_granted);
+        User.OnCharactersGranted(_granted, Container);
     }
 }

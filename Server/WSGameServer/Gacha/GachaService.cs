@@ -240,7 +240,7 @@ public sealed class GachaService : Singleton<GachaService>
         return (rewards, changes);
     }
 
-    // 굴린 보상 중 아티팩트만 모아 인벤토리 아티팩트 탭에 넣는다(T-181). 칸은 HasStorageFor와 함께 미리 봤다.
+    // 굴린 보상 중 아티팩트만 모아 아티팩트 칸(인벤토리 장비 탭)에 넣는다(T-181). 칸은 HasStorageFor와 함께 미리 봤다.
     private static void GrantArtifacts(User user, IReadOnlyList<(GachaEntry Entry, int Count)> rolled)
     {
         var gained = ArtifactsOf(rolled).ToDictionary(a => a.ArtifactTid, a => a.Count);

@@ -347,17 +347,17 @@ public partial class User
     }
 
     // 지급 대기 칸 — PK가 오기 전이라 개체는 없지만 칸은 이미 주인이 있다. 자원은 지급이 즉시라 없다.
-    // 지급은 언제나 인벤토리로 들어오므로 창고에는 대기 칸이 없다.
+    // 창고로 바로 받는 지급은 전 캐릭터 치트(T-190)뿐이라 창고 대기 칸은 캐릭터 탭에만 있다.
     private IReadOnlyCollection<int> PendingSlots(EContainer container, EStorageTab tab)
     {
+        if (tab == EStorageTab.Character)
+        {
+            return PendingCharacterSlotsOf(container);
+        }
+
         if (container != EContainer.Inventory)
         {
             return Array.Empty<int>();
-        }
-
-        if (tab == EStorageTab.Character)
-        {
-            return _pendingCharacterSlots;
         }
 
         if (tab == EStorageTab.Equip)
