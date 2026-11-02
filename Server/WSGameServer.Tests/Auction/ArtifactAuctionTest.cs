@@ -5,7 +5,7 @@ using Proto = AuctionProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 아티팩트 거래소(T-152 · T-181) — 인벤토리 아티팩트 탭에서 빼서 등록 · 거래소 수량 구매 · 우편으로 받아 아티팩트 탭에 넣기 · 반환.
+/// 아티팩트 거래소(T-152 · T-181) — 아티팩트 칸(인벤토리 장비 탭)에서 빼서 등록 · 거래소 수량 구매 · 우편으로 받아 아티팩트 탭에 넣기 · 반환.
 /// 도감에 장착한 1개는 인벤토리에 없어 올릴 수 없다. 틀리면 칸 수량과 원장이 어긋나 아티팩트가 복제·증발한다.
 /// </summary>
 public class ArtifactAuctionTest : IDisposable

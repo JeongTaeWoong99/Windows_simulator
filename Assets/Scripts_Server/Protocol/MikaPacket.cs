@@ -382,7 +382,7 @@ namespace MikaProtocol
     }
 
     /// <summary>
-    /// 인벤토리 아티팩트 탭 스냅샷(T-181). 로그인 직후와 칸이 바뀔 때마다(감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동·정렬) 통째로 온다 — 클라는 덮어쓴다.
+    /// 아티팩트 칸(인벤토리 장비 탭) 스냅샷(T-181). 로그인 직후와 칸이 바뀔 때마다(감정 · 우편 수령 · 장착 · 판매 · 경매 등록 · 이동·정렬) 통째로 온다 — 클라는 덮어쓴다.
     /// <c>ItemInfo.ItemId</c>는 아티팩트 번호(ArtifactTID)다. 같은 번호가 <c>Constants.ArtifactMaxStack</c>을 넘으면 칸이 나뉜다.
     /// <c>ItemInfo.Slot</c>은 장비 탭과 같은 번호 공간이다(T-188) — 한 칸에는 장비 1개 또는 아티팩트 묶음 하나만 선다.
     /// </summary>
@@ -789,7 +789,7 @@ namespace MikaProtocol
         public long         EquipId   { get; set; }
         public long         UnitPrice { get; set; }
         public long         CharacterId { get; set; }  // Kind = Character일 때. 수량은 1
-        // Kind = Artifact면 ItemTid에 아티팩트 번호(ArtifactTID)를 싣는다 — 인벤토리 아티팩트 탭에서 Count만큼 빠진다 (T-152 · T-181)
+        // Kind = Artifact면 ItemTid에 아티팩트 번호(ArtifactTID)를 싣는다 — 아티팩트 칸(인벤토리 장비 탭)에서 Count만큼 빠진다 (T-152 · T-181)
     }
 
     /// <summary>
@@ -935,7 +935,7 @@ namespace MikaProtocol
         public int  Tid          { get; set; }
         public int  Count        { get; set; }
         public long MaxUnitPrice { get; set; }
-        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 — 아티팩트는 우편으로 와서 받을 때 인벤토리 아티팩트 탭에 들어간다 (T-152 · T-181)
+        public EAuctionKind Kind { get; set; }   // 자원(Item) · 아티팩트(Artifact). None이면 자원 — 아티팩트는 우편으로 와서 받을 때 아티팩트 칸(인벤토리 장비 탭)에 들어간다 (T-152 · T-181)
     }
 
     /// <summary>거래소 구매 결과. 산 자원은 우편으로 온다(<see cref="S_MailArrivedResponse"/>), 골드는 <see cref="S_CurrencyResponse"/>.</summary>

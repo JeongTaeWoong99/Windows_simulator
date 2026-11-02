@@ -134,7 +134,7 @@ public partial class User
         return (EResultCode.Ok, item, row.BasePrice);
     }
 
-    // 아티팩트는 인벤토리 아티팩트 탭에서 뺀다. 분류는 두지 않는다(0) — 거래소 목록은 종류(Artifact)로 거른다. 단가 하한은 ArtifactTable.BasePrice.
+    // 아티팩트는 아티팩트 칸(인벤토리 장비 탭)에서 뺀다. 분류는 두지 않는다(0) — 거래소 목록은 종류(Artifact)로 거른다. 단가 하한은 ArtifactTable.BasePrice.
     private (EResultCode, AuctionItemSnapshot?, int BasePrice) DescribeArtifact(int artifactTid, int count)
     {
         if (count <= 0 || count > AuctionRules.MaxListingCount || !GameTable.ArtifactTable.TryGet(artifactTid, out var row))

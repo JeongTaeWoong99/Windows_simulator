@@ -92,7 +92,7 @@ public sealed class LoginRepository : IRepository
             "SELECT building_tid, level FROM t_user_building WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 6-2) 아티팩트 도감(장착한 번호)과 인벤토리 아티팩트 탭 (T-181).
+        // 6-2) 아티팩트 도감(장착한 번호)과 아티팩트 칸(인벤토리 장비 탭) (T-181).
         _artifactRows = await connection.QueryAsync<UserArtifactRow>(
             "SELECT artifact_tid FROM t_user_artifact WHERE user_id = @userId",
             new { userId = User.Uid });
