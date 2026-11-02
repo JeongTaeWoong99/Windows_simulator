@@ -443,13 +443,12 @@ namespace MikaProtocol
         public long        GainedGold { get; set; }  // 이번 판매로 번 금액(델타)
     }
 
-    /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때, 특성 포인트를 쓸 때 온다(재화와 같은 관례).</summary>
+    /// <summary>계정 레벨 스냅샷·푸시. 로그인 직후, 경험치가 오를 때 온다(재화와 같은 관례).</summary>
     [MemoryPackable, Packet(PacketId.S_AccountLevelResponse)]
     public partial class S_AccountLevelResponse : IPacket
     {
-        public int  Level      { get; set; }
-        public long Exp        { get; set; }   // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 int를 넘는다
-        public int  TraitPoint { get; set; }   // 폐기 예정 — 항상 0. 포인트는 건물마다 따로다(T-183). 클라 전환 뒤 지운다
+        public int  Level { get; set; }
+        public long Exp   { get; set; }   // 현재 레벨에서 쌓은 양. 곡선이 캐릭터의 8배라 int를 넘는다
     }
 
     [MemoryPackable, Packet(PacketId.S_UnlockResponse)]

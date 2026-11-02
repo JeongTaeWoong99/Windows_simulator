@@ -226,7 +226,7 @@ namespace MikaNetwork
         #region 계정 레벨 · 특성
 
         // 계정 레벨 스냅샷 도착 (Handle_S_AccountLevelResponse에서 발행).
-        // 로그인 직후 1회 + 경험치가 오를 때 + 특성 포인트를 쓸 때 온다 (재화와 같은 관례)
+        // 로그인 직후 1회 + 경험치가 오를 때 온다 (재화와 같은 관례)
         public static event Action<S_AccountLevelResponse>? AccountLevelReceived;
 
         // 특성 레벨 올리기 결과 도착 (Handle_S_UserTraitLearnResponse에서 발행)
@@ -250,7 +250,7 @@ namespace MikaNetwork
             if (ClientLogger.ShowPeriodic)
             {
                 ClientLogger.Info(ClientLogger.Recv,
-                    $"계정 레벨 — Lv{res.Level}, 경험치={res.Exp}, 남은 특성 포인트={res.TraitPoint}");
+                    $"계정 레벨 — Lv{res.Level}, 경험치={res.Exp}");
             }
 
             AccountLevelReceived?.Invoke(res);

@@ -49,7 +49,6 @@ namespace GameData
             ["UnlockTable"] = new(UnlockTablePacker.Pack, UnlockTablePacker.Verify, UnlockTablePacker.Preview, UnlockTablePacker.Dump),
             ["AccountLevelTable"] = new(AccountLevelTablePacker.Pack, AccountLevelTablePacker.Verify, AccountLevelTablePacker.Preview, AccountLevelTablePacker.Dump),
             ["UserTraitTable"] = new(UserTraitTablePacker.Pack, UserTraitTablePacker.Verify, UserTraitTablePacker.Preview, UserTraitTablePacker.Dump),
-            ["UserTraitLevelTable"] = new(UserTraitLevelTablePacker.Pack, UserTraitLevelTablePacker.Verify, UserTraitLevelTablePacker.Preview, UserTraitLevelTablePacker.Dump),
             ["WorkSlotTable"] = new(WorkSlotTablePacker.Pack, WorkSlotTablePacker.Verify, WorkSlotTablePacker.Preview, WorkSlotTablePacker.Dump),
             ["LocalizationTable"] = new(LocalizationTablePacker.Pack, LocalizationTablePacker.Verify, LocalizationTablePacker.Preview, LocalizationTablePacker.Dump),
         };
