@@ -51,7 +51,7 @@ public class UserCharacterSlotTest
         var (user, b) = UserWith((1, 0));
         user.GrantGachaCharacters(new[] { CharacterTid });
 
-        user.OnGachaCharactersGranted(new[] { (Id: 50L, Tid: CharacterTid, Slot: 1) });
+        user.OnCharactersGranted(new[] { (Id: 50L, Tid: CharacterTid, Slot: 1) });
 
         b.Channel.SentOf<S_CharacterListResponse>().Last()
             .Characters!.Single(c => c.CharacterId == 50).Slot.ShouldBe(1);

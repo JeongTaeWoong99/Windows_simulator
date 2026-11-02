@@ -1,4 +1,5 @@
 using GameData;
+using MikaProtocol;
 
 namespace WSGameServer;
 
@@ -10,11 +11,20 @@ public partial class User
     // DB가 PK를 발급(또는 우편 잠금 해제)하기 전의 캐릭터 칸. 세지 않으면 응답 전 연속 뽑기가 한도와 칸을 지나친다.
     private readonly HashSet<int> _pendingCharacterSlots = new();
 
+    // 창고로 바로 받는 지급(전 캐릭터 치트 · T-190)의 대기 칸.
+    private readonly HashSet<int> _pendingWarehouseCharacterSlots = new();
+
+    private HashSet<int> PendingCharacterSlotsOf(EContainer container)
+        => container == EContainer.Warehouse ? _pendingWarehouseCharacterSlots : _pendingCharacterSlots;
+
     /// <summary>자원 칸 — 찬 칸 수. 같은 자원도 MaxStack을 넘으면 여러 칸이다(T-160).</summary>
     public int ItemSlotsUsed => Inventory.SlotCount;
 
     /// <summary>캐릭터 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
     public int CharacterSlotsUsed => _characters.Count + _pendingCharacterSlots.Count;
+
+    /// <summary>창고 캐릭터 칸 — 보유 개체 + 지급 대기 중인 개체</summary>
+    public int WarehouseCharacterSlotsUsed => _warehouseCharacters.Count + _pendingWarehouseCharacterSlots.Count;
 
     /// <summary>장비 칸 — 보유 개체 + 지급 대기 중인 개체 + 같은 격자의 아티팩트 칸(T-188)</summary>
     public int EquipSlotsUsed => _equips.Count + _pendingEquipPositions.Count + Artifacts.SlotCount;

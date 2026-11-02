@@ -171,6 +171,7 @@ namespace MikaProtocol
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
         SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
+        GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
     }
 
     public enum EItemChangeKind : byte

@@ -70,6 +70,16 @@ public class WarehouseRepositoryTest : IDisposable
     }
 
     [Fact]
+    public async Task 창고로_지급한_캐릭터는_창고_보관함과_칸으로_저장된다()
+    {
+        // 전 캐릭터 치트(T-190) — 보관함을 빼먹으면 기본값 0(인벤토리)으로 들어가 재로그인 때 인벤토리로 옮겨진다
+        await new GrantCharacterRepository(NewUser(), new[] { User.DefaultCharacterTid }, new[] { 6 }, CharacterGrantReason.Gacha, EContainer.Warehouse)
+            .ExecuteAsync(new DbConnection(_db.Connection));
+
+        Scalar("SELECT container * 100 + slot FROM t_character WHERE user_id = 7").ShouldBe(106);
+    }
+
+    [Fact]
     public async Task 창고에만_캐릭터가_있으면_시작_캐릭터를_또_주지_않는다()
     {
         const long uid = 7;
