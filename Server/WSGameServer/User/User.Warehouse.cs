@@ -5,7 +5,7 @@ namespace WSGameServer;
 
 /// <summary>
 /// 창고 — 인벤토리 확장 보관소(T-107). 놓인 자리일 뿐이라 쓰는 데는 인벤토리와 같다(T-164) —
-/// 조회(TryGetCharacter·TryGetEquip)와 자원 차감이 양쪽을 본다. 자원 지급은 창고의 같은 자원 칸부터(T-175), 개체는 인벤토리로 들어온다.
+/// 조회(TryGetCharacter·TryGetEquip)와 자원 차감이 양쪽을 본다. 자원 지급은 창고의 같은 자원 칸부터(T-175), 개체는 인벤토리로 들어온다(전 캐릭터 치트만 창고로 — T-190).
 /// </summary>
 public partial class User
 {
