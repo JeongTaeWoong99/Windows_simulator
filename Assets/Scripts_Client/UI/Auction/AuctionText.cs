@@ -118,12 +118,12 @@ public static class AuctionText
     public static string FormatSub(EAuctionKind kind, int tid) => kind switch
     {
         EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{EquipLabel.GetEffectText(tid)}" : Lang.Get("UI.Equip.Gear"),
-        EAuctionKind.Character => Lang.Get("UI.Common.Character"),
+        EAuctionKind.Character => RaceLabel.Append(Lang.Get("UI.Common.Character"), tid),
         EAuctionKind.Artifact  => Lang.Get("UI.Auction.KindArtifact"),
         _                      => $"{UIRichText.Label(Lang.Get("UI.Auction.KindItem"))} {GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
     };
 
-    // "LV.12 · ★2 · 발굴 7" — 레벨 · ★(있을 때) · 가장 높은 적성 하나. 캐릭터 정보가 없으면 빈 문자열.
+    // "인간 · LV.12 · ★2 · 발굴 7" — 종족 · 레벨 · ★(있을 때) · 가장 높은 적성 하나. 캐릭터 정보가 없으면 빈 문자열.
     public static string FormatCharacterSummary(CharacterInfo? character)
     {
         if (character == null)
@@ -133,7 +133,10 @@ public static class AuctionText
 
         string star = character.Star > 0 ? $"{UIRichText.Dot}{UIRichText.Paint(new string('★', character.Star), UIThemeRole.Highlight)}" : "";
 
-        return $"{CharacterSlotSource.GetLevelLabel(character.Level)}{star}{UIRichText.Dot}{FormatTopAptitude(character)}";
+        string? race = RaceLabel.Of(character.CharacterTid);
+        string  head = race != null ? $"{race}{UIRichText.Dot}" : "";
+
+        return $"{head}{CharacterSlotSource.GetLevelLabel(character.Level)}{star}{UIRichText.Dot}{FormatTopAptitude(character)}";
     }
 
     // 가장 높은 적성 — "발굴 7". 같은 값이면 산업 표시 순서(농사·채굴·…·발굴)가 앞인 것. 적성이 하나도 없으면 "적성 없음".
@@ -312,6 +315,7 @@ public static class AuctionText
         }
         else if (listing.Kind == EAuctionKind.Character && listing.Character != null)
         {
+            RaceLabel.AddRow(content, listing.Tid);
             CharacterSizeLabel.AddRow(content, listing.Tid)
                    .Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(listing.Character.Level))
                    .Row(Lang.Get("UI.Inventory.Condense"), listing.Character.Star > 0 ? new string('★', listing.Character.Star) : Lang.Get("UI.Equip.None"));
@@ -397,12 +401,13 @@ public static class AuctionText
         return content;
     }
 
-    // 등록 후보 캐릭터 줄의 툴팁 — 등급 · 레벨 · (등록 불가 사유) · 가격 기준 · 적성 5종.
+    // 등록 후보 캐릭터 줄의 툴팁 — 등급 · 종족 · 레벨 · (등록 불가 사유) · 가격 기준 · 적성 5종.
     public static TooltipContent BuildRegisterCharacterTooltip(CharacterInfo character, string? blocked)
     {
         var content = new TooltipContent(GameDataLoader.GetCharacterName(character.CharacterTid));
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(character.CharacterTid));
+        RaceLabel.AddRow(content, character.CharacterTid);
         CharacterSizeLabel.AddRow(content, character.CharacterTid)
             .Row(Lang.Get("UI.Inventory.Level"), CharacterSlotSource.GetLevelLabel(character.Level));
 
@@ -639,7 +644,7 @@ public static class AuctionText
     private static string FormatSuggestionSub(EAuctionKind kind, int tid) => kind switch
     {
         EAuctionKind.Equip     => GameDataLoader.TryGetEquip(tid, out EquipTableRow row) ? $"{Lang.Get("UI.Equip.Gear")}{UIRichText.Dot}{EquipLabel.GetKindName(row.EquipKind)}" : Lang.Get("UI.Equip.Gear"),
-        EAuctionKind.Character => Lang.Get("UI.Common.Character"),
+        EAuctionKind.Character => RaceLabel.Append(Lang.Get("UI.Common.Character"), tid),
         EAuctionKind.Artifact  => Lang.Get("UI.Auction.KindArtifact"),
         _                      => $"{Lang.Get("UI.Auction.KindItem")}{UIRichText.Dot}{GetItemCategoryName(GameDataLoader.GetItemType(tid))}",
     };

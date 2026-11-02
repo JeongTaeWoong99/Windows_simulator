@@ -459,7 +459,7 @@ public class MailPresenter : MonoBehaviour
             {
                 GlobalRarity rarity = GameDataLoader.GetCharacterRarity(tid);
 
-                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(tid), RarityPalette.Get(rarity)), Lang.Get("UI.Common.Character"), RarityLabel.Get(rarity), null);
+                content.Row(UIRichText.Paint(GameDataLoader.GetCharacterName(tid), RarityPalette.Get(rarity)), RaceLabel.Append(Lang.Get("UI.Common.Character"), tid), RarityLabel.Get(rarity), null);
             }
         }
 

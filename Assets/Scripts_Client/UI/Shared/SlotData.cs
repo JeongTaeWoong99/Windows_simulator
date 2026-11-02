@@ -31,7 +31,10 @@ public readonly struct SlotData
     // 크기 등급 배지 — 캐릭터만 '소' · '중' · '대'('CharacterSizeLabel.GetShort'). null이면 배지를 끈다.
     public readonly string? SizeBadge;
 
-    public SlotData(long key, string name, string sub, GlobalRarity rarity, Sprite? icon = null, string? sizeBadge = null)
+    // 종족 배지 — 캐릭터만 '인' · '마' · '언' · '골'('RaceLabel.GetShort'). null이면 배지를 끈다.
+    public readonly string? RaceBadge;
+
+    public SlotData(long key, string name, string sub, GlobalRarity rarity, Sprite? icon = null, string? sizeBadge = null, string? raceBadge = null)
     {
         Key       = key;
         Name      = name;
@@ -39,5 +42,6 @@ public readonly struct SlotData
         Rarity    = rarity;
         Icon      = icon;
         SizeBadge = sizeBadge;
+        RaceBadge = raceBadge;
     }
 }

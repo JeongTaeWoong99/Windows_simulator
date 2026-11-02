@@ -446,7 +446,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
             slots.Add(key.Kind switch
             {
-                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid), VisualCatalog.PortraitOf(key.Tid)),
+                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid), VisualCatalog.PortraitOf(key.Tid), null, RaceLabel.ShortOf(key.Tid)),
                 'E' => new SlotData(key.Tid, GameDataLoader.GetEquipName(key.Tid),     count, GameDataLoader.GetEquipRarity(key.Tid),     VisualCatalog.EquipIconOf(key.Tid)),
                 _   => new SlotData(key.Tid, GameDataLoader.GetItemName(key.Tid),      count, GameDataLoader.GetItemRarity(key.Tid),      VisualCatalog.ItemIconOf(key.Tid)),
             });
@@ -501,7 +501,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             _                          => VisualCatalog.ItemIconOf(tid),
         };
 
-        return new SlotData(tid, name, count.ToString("N0"), rarity, icon);
+        // 종족 배지는 캐릭터만 — 칸에 툴팁이 없어 여기서 보여 준다
+        string? race = reward.RewardType == EGachaRewardType.Character ? RaceLabel.ShortOf(tid) : null;
+
+        return new SlotData(tid, name, count.ToString("N0"), rarity, icon, null, race);
     }
 
     // 칸을 만들 때 한 번 — 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다.

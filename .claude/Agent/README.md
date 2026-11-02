@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-03 캐릭터 종족 표시 · 전 캐릭터 지급 치트 버튼](2026-11-03-character-race-display.md) — `#client` `#ui` `#cheat` 칸 배지 · 툴팁 · 작업슬롯 · 응축 · 경매 · 우편에 종족, 적성 칸 산업 그림
 - [2026-11-02 차단막을 눌러 닫기 · 골드 그림 교체 · AI 크레딧 보고 스킬](2026-11-02-backdrop-close-gold-coin.md) — `#client` `#ui` `#docs` 큰 화면·팝업을 차단막으로 닫고 골드 그림을 하나로 모은다
 - [2026-11-01 거점 화면 구현 — 지도 · 건물 창 · 작업장 특성 트리, 인벤토리 특성 탭 제거](2026-11-01-outpost-screen.md) — `#client` `#ui` T-182 · 건물 창은 형제 구조 · 선은 부모부터 재배치
 - [2026-10-31 소리 구조 · 아이콘 흰 테두리·이름 점검 · 캐릭터 2명](2026-10-31-sound-icons-characters.md) — `#client` `#editor` `#ui` `#data` SoundManager·SoundCatalog와 음량 설정, 아이콘 판정을 레시피에 기록

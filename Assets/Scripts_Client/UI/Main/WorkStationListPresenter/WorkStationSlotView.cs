@@ -117,7 +117,7 @@ public class WorkStationSlotView : MonoBehaviour
 
         indexText.text     = $"#{DisplayNumber(slot.SlotIndex)}";
         characterText.text = slot.CharacterId == 0 ? Lang.Get("UI.WorkStation.NoCharacter")
-                           : characterLevel > 0     ? $"{characterName} {UIRichText.Small($"Lv{characterLevel}")}"
+                           : characterLevel > 0     ? $"{characterName} {UIRichText.Small(RaceLabel.Append($"Lv{characterLevel}", characterTid))}"
                            : characterName;
 
         if (!IsRunning)

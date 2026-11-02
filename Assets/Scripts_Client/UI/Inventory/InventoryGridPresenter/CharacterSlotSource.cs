@@ -74,7 +74,8 @@ public class CharacterSlotSource : InventorySlotSource
                 "",
                 GameDataLoader.GetCharacterRarity(character.CharacterTid),
                 VisualCatalog.PortraitOf(character.CharacterTid),
-                CharacterSizeLabel.GetShort(CharacterSizeLabel.Of(character.CharacterTid)));
+                CharacterSizeLabel.GetShort(CharacterSizeLabel.Of(character.CharacterTid)),
+                RaceLabel.ShortOf(character.CharacterTid));
 
             into.Add(new PlacedSlot(slot, character.Slot));
         }
@@ -105,7 +106,7 @@ public class CharacterSlotSource : InventorySlotSource
         return _wornGrades;
     }
 
-    // 캐릭터 칸 툴팁 — 등급 · 크기(소·중·대) · 레벨 · 어디서 일하나 · 장비 4칸 · 적성 5종(산업 이름 + 기본 속도) (격자가 칸에 올린 순간 호출).
+    // 캐릭터 칸 툴팁 — 등급 · 종족 · 크기(소·중·대) · 레벨 · 어디서 일하나 · 장비 4칸 · 적성 5종(산업 이름 + 기본 속도) (격자가 칸에 올린 순간 호출).
     // ※ 장비는 칸의 네모가 등급만 말하므로 이름을 여기서 적는다(T-104).
     //
     // ★ 적성을 **산업 이름과 함께** 적는 것이 본론이다 — 칸의 스트립은 숫자만이라 어느 산업인지는
@@ -123,6 +124,7 @@ public class CharacterSlotSource : InventorySlotSource
         var content = new TooltipContent(GameDataLoader.GetCharacterName(tid));
 
         AddRarityRow(content, GameDataLoader.GetCharacterRarity(tid));
+        RaceLabel.AddRow(content, tid);
         CharacterSizeLabel.AddRow(content, tid)
             .Row(Lang.Get("UI.Inventory.Level"), GetLevelLabel(_data.GetCharacterLevel(key)), $"{Lang.Get("UI.Equip.Exp")} {_data.GetExpProgress(key):0%}", null);
 

@@ -194,6 +194,12 @@ public static class GameDataLoader
     // ※ 인벤토리 캐릭터 목록이 쓰는 값이다. 가챠 결과창은 이 함수를 쓰지 않는다 —
     //   패킷('GachaRewardInfo.Rarity')이 등급을 실어 오므로 그 값을 그대로 쓴다('GetItemRarity'와 같은 이유).
     // ⚠️ 종류(TID)를 넣는다 — 개체 번호('CharacterInfo.CharacterId')를 넣으면 조회가 빗나가 'None'이 나온다.
+    // 캐릭터 종족 — 표시 전용('RaceLabel'). 모르는 번호는 'None'이다.
+    public static CharacterRace GetCharacterRace(int characterTid)
+    {
+        return GameTable.CharacterTable.TryGet(characterTid, out var row) ? row.Race : CharacterRace.None;
+    }
+
     public static GlobalRarity GetCharacterRarity(int characterTid)
     {
         if (GameTable.CharacterTable.TryGet(characterTid, out var row))
