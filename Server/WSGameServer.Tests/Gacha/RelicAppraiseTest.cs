@@ -5,7 +5,7 @@ namespace WSGameServer;
 
 /// <summary>
 /// 유물 감정 · 아티팩트(T-150 · T-181) 검증 — 유물은 <c>OpenCostGold</c>만큼 골드를 내고 여는 상자다.
-/// 아티팩트는 인벤토리 아티팩트 탭에 쌓이고, <b>도감에 장착하고 켜 둔 번호만 · 번호당 한 번</b> 효과가 붙는다.
+/// 아티팩트는 아티팩트 칸(인벤토리 장비 탭)에 쌓이고, <b>도감에 장착하고 켜 둔 번호만 · 번호당 한 번</b> 효과가 붙는다.
 /// </summary>
 public class RelicAppraiseTest
 {

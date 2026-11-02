@@ -249,7 +249,7 @@ public sealed partial class User
         SendBuildingList(); // S_BuildingListResponse — 건물 레벨 = 트리 포인트
         SendTraitList();   // S_UserTraitListResponse — 산업 레벨이 열렸는지도 여기서 정해진다
         SendArtifactList();      // S_ArtifactListResponse — 아티팩트 도감(장착한 번호)
-        SendArtifactInventory(); // S_ArtifactInventoryResponse — 인벤토리 아티팩트 탭
+        SendArtifactInventory(); // S_ArtifactInventoryResponse — 아티팩트 칸(인벤토리 장비 탭)
 
         // 오프라인 진행이 없으므로 로그인 시점에 정산할 구간이 없다.
         // 슬롯은 로그인 흐름에서 이미 "지금부터" 시작하도록 만들어져 있다.

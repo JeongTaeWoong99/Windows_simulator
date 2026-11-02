@@ -4,7 +4,7 @@ using MikaProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 아티팩트(T-150 · T-181). 감정한 아티팩트는 <b>인벤토리 아티팩트 탭</b>에 번호별로 쌓이고, 번호마다 1개를 <b>도감에 장착</b>한다.
+/// 아티팩트(T-150 · T-181). 감정한 아티팩트는 <b>아티팩트 칸(인벤토리 장비 탭)</b>에 번호별로 쌓이고, 번호마다 1개를 <b>도감에 장착</b>한다.
 /// <b>도감에 장착한 번호만 효과가 붙는다</b> — 인벤토리에 몇 개가 있든 효과는 없다. 효과는 특성과 같은 자리에 더한다.
 /// 장착은 되돌릴 수 없고, 장착한 번호는 항상 켜져 있다(#90).
 /// </summary>
@@ -72,7 +72,7 @@ public partial class User
         });
     }
 
-    /// <summary>인벤토리 아티팩트 탭 스냅샷을 보낸다(로그인 직후 · 칸이 바뀐 뒤).</summary>
+    /// <summary>아티팩트 칸(인벤토리 장비 탭) 스냅샷을 보낸다(로그인 직후 · 칸이 바뀐 뒤).</summary>
     public void SendArtifactInventory()
     {
         Send(new S_ArtifactInventoryResponse { Stacks = Artifacts.Snapshot(), LockedArtifactTids = _lockedArtifactTids.Order().ToList() });
@@ -95,7 +95,7 @@ public partial class User
     }
 
     /// <summary>
-    /// 아티팩트를 인벤토리 아티팩트 탭에 넣는다(감정 보상 · 우편 수령). 칸 검사는 부른 쪽이 <see cref="HasArtifactRoomFor"/>로 먼저 끝낸다.
+    /// 아티팩트를 아티팩트 칸(인벤토리 장비 탭)에 넣는다(감정 보상 · 우편 수령). 칸 검사는 부른 쪽이 <see cref="HasArtifactRoomFor"/>로 먼저 끝낸다.
     /// 인벤토리에 들어온 것만으로는 효과가 켜지지 않는다 — 도감 장착이 따로다.
     /// </summary>
     public void GainArtifacts(IReadOnlyDictionary<int, int> gained)

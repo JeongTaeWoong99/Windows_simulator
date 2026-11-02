@@ -80,7 +80,7 @@ public static class AuctionDb
     /// 등록 한 트랜잭션: 인벤 확정 수량 · 아티팩트 칸 확정 수량 · 골드 확정 잔액 · 거래 행 · 장비·캐릭터 잠금 · outbox.
     /// 하나라도 빠지면 아이템이 증발하거나(차감만) 복제된다(등록만).
     /// </summary>
-    /// <param name="artifactChanges">아티팩트 매물이면 인벤토리 아티팩트 탭의 칸 변경분(확정값) — 비어 있으면 등록 전체를 되돌린다.</param>
+    /// <param name="artifactChanges">아티팩트 매물이면 아티팩트 칸(인벤토리 장비 탭)의 칸 변경분(확정값) — 비어 있으면 등록 전체를 되돌린다.</param>
     public static async Task<long> RegisterAsync(
         DbConnection connection, long sellerId, AuctionItemSnapshot item, long unitPrice, long listingFee,
         IReadOnlyList<ItemChangeInfo> inventoryChanges, long gold, DateTime expiresAt, DateTime now,
