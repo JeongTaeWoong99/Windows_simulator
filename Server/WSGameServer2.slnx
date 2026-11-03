@@ -17,6 +17,7 @@
   <Project Path="ExcelGenerator/ExcelGenerator.csproj" />
   <Project Path="GameData/GameData.csproj" />
   <Project Path="MikaDummyClient/MikaDummyClient.csproj" />
+  <Project Path="MikaLoadTest/MikaLoadTest.csproj" />
   <Project Path="MikaProtocol/MikaProtocol.csproj" />
   <Project Path="WSGameServer.Tests/WSGameServer.Tests.csproj" />
   <Project Path="WSGameServer/WSGameServer.csproj" />
