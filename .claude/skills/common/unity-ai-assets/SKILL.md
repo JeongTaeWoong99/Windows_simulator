@@ -3,7 +3,7 @@ name: unity-ai-assets
 description: Unity AI로 이미지·스프라이트·사운드·음악 등 리소스를 만들거나 고칠 때 연다 — 실행 전 동의, 구독 없음·크레딧 소진 구분과 안내, 리소스별 사용 크레딧과 전후 잔액 보고. 이미 있는 그림을 잘라 쓰거나 기존 파일만 고치는 작업은 해당 없음.
 ---
 
-> 최종 업데이트: 2026-11-02 (`unity-editor-ops`에서 분리 · 구독·크레딧 상태 구분 · 크레딧 보고)
+> 최종 업데이트: 2026-11-05 (크레딧 읽기를 `unity cmd eval`로) · 2026-11-02 (`unity-editor-ops`에서 분리 · 구독·크레딧 상태 구분 · 크레딧 보고)
 
 # Unity AI 리소스 생성
 
@@ -15,8 +15,8 @@ description: Unity AI로 이미지·스프라이트·사운드·음악 등 리�
 
 ## 1. 상태 확인 — 생성을 제안하기 전에
 
-아래를 `Unity_RunCommand`로 **두 번** 실행한다. 첫 호출이 새로 고침을 걸고, 잠시 뒤 다음 호출에서 최신값이 나온다.
-`Account`가 internal이라 리플렉션으로 읽는다. `using System.Reflection`은 막혀 있으니 쓰지 않는다.
+아래를 `unity cmd eval --code`로 **두 번** 실행한다. 첫 호출이 새로 고침을 걸고, 잠시 뒤 다음 호출에서 최신값이 나온다.
+`Account`가 internal이라 리플렉션으로 읽는다. `Unity_RunCommand`는 Undo 기록을 남겨 재컴파일 뒤 씬에 `*`를 켜므로 쓰지 않는다 → [`unity-editor-ops`](../../client/unity-editor-ops/SKILL.md) 1절.
 
 ```csharp
 var acc = System.Type.GetType("Unity.AI.Toolkit.Accounts.Services.Account, Unity.AI.Toolkit.Accounts");
@@ -24,10 +24,12 @@ var st  = acc.GetField("settings").GetValue(null);
 var pb  = acc.GetField("pointsBalance").GetValue(null);
 st.GetType().GetMethod("Refresh").Invoke(st, null);
 pb.GetType().GetMethod("Refresh").Invoke(pb, null);
+var o = "";
 foreach (var n in new[] { "HasSubscription", "CanSpendPoints", "AiGeneratorsEnabled" })
-    result.Log(n + " = " + st.GetType().GetProperty(n).GetValue(st));
-result.Log("Settings = " + st.GetType().GetProperty("Value").GetValue(st));
-result.Log("Balance = " + pb.GetType().GetProperty("Value").GetValue(pb)); // PointsAvailable = 잔액 · PointsAllocated = 할당
+    o += n + " = " + st.GetType().GetProperty(n).GetValue(st) + "\n";
+o += "Settings = " + st.GetType().GetProperty("Value").GetValue(st) + "\n";
+o += "Balance = " + pb.GetType().GetProperty("Value").GetValue(pb); // PointsAvailable = 잔액 · PointsAllocated = 할당
+return o;
 ```
 
 **위에서부터 처음 맞는 줄이 답이다.** 패키지의 상태 배너(`SessionStatusBanner`)와 같은 순서다.
