@@ -11,7 +11,7 @@ tags: [client, art, icons, unity-ai, T-189, T-148, T-195]
 - 사용자 지시: 싼 모델로 충분하면 바로 쓰고, 비싼 모델이 필요하거나 결과에 불만이 나오면 올릴지 먼저 묻는다.
 
 ## 변경 내용
-- 그림 저장소 `4fecd1ba`: 자원 126 · 장비 37 · 아티팩트 11 + `100034`~`100037` · `_source/grid_to_icons.py` · `icons/unity-ai/grid_manifest.json` · 레시피 · `VisualCatalog`
+- 그림 저장소 `4fecd1ba`(2026-11-07 기록을 다시 써 `6451b3c9`): 자원 126 · 장비 37 · 아티팩트 11 + `100034`~`100037` · `_source/grid_to_icons.py` · `icons/unity-ai/grid_manifest.json` · 레시피 · `VisualCatalog`
 - 메인: `unity-ai-assets` 모델 고르기(마스터 `7d832f3`도) · `Art 규칙.md` · T-189 · T-148 · T-174 · T-194 · 새 T-195 · INDEX(T-192 · T-195 추가)
 
 ## 주요 결정 / 근거
