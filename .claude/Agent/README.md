@@ -23,6 +23,8 @@
 
 ## INDEX
 
+- [2026-11-07 AI 원본 1536 줄이기 · 캐릭터 시트 격자 시험](2026-11-07-raw-shrink-char-sheet.md) — `#client` `#docs` T-174 · `asset-compression` 스킬 · 원본 228MB → 37MB · 이미지 모델 격자는 움직임이 안 나온다
+- [2026-11-06 대체 아이콘 174개 격자 생성 교체](2026-11-06-ai-icon-grid-replace.md) — `#client` `#docs` T-189 · Seedream 9칸 격자 · AI 모델 고르는 지침
 - [2026-11-05 재컴파일 뒤 씬 더티의 원인](2026-11-05-scene-dirty-undo-group.md) — `#editor` `#docs` 현재 Undo 그룹에 남은 기록이 원인 · 대처는 `IncrementCurrentGroup`
 - [2026-11-04 아티팩트 거래·칸 실측 · 우편 팝업 수정](2026-11-04-artifact-mail-popup-qa.md) — `#client` T-152 · T-188 · 아티팩트만 든 우편의 결과 창
 - [2026-11-03 비약·영약·묘약 아이콘 6종](2026-11-03-potion-icons-ai.md) — `#client` `#editor` T-189 · Unity AI로 만들어 레시피에 넣었다
