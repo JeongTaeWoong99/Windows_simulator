@@ -225,7 +225,7 @@ git checkout -t origin/main
 | fx | `karsiori-spark` | 반짝임 (보석 팩 동봉) | — | (`karsiori-gem`과 같음) |
 | audio/bgm | `xdeviruchi-8bit-fantasy` | 8비트 판타지 음악 10곡 (ogg · 인트로/루프/끝 분리본 포함) | — | `How to Set The Loops.pdf` 외 없음 |
 | icons | `unity-ai` | **AI 생성** — 대체 아이콘 174개 · 지도·나침반 4종 · 비약·영약 6종 (`raw/`·`sprites/`) | `icons/*` | Unity AI |
-| characters | `unity-ai-lumberjack` | **AI 생성** — 견습 나무꾼 1010 시험 시트(이미지 모델 격자 · 아직 굽지 않음) | — | Unity AI |
+| characters | `unity-ai-lumberjack` | **AI 생성** — 견습 나무꾼 1010 — 기준 그림 `lumberjack_base`(이미지 격자 첫 칸) · 도끼질 영상 시트 `lumberjack_chop`(Kling 3초) · 아직 굽지 않음 | — | Unity AI |
 | characters | `unity-ai-digger` | **AI 생성** — 견습 발굴꾼(대기 4 · 달리기 6 · 삽으로 퍼 올리기 5 — `raw/digger_scoop`) | `characters/apprentice-digger` | Unity AI — 상업 가능 · 침해 검토는 우리 몫 |
 | characters | `unity-ai-miner` | **AI 생성** — 숙련 채굴꾼(견습 발굴꾼 그림의 삽을 곡괭이로 바꿈 · 대기 4 · 달리기 6 · 내려찍기 5) | `characters/skilled-miner` | 〃 |
 | icons | `unity-ai` | **AI 생성** — 지도 · 나침반 · 황금 열쇠 · 인챈트 큐브 2 · 비약 3 · 영약 2 · 묘약 | `icons/` (100010·100011·100012·100015·100018·100041~100046) | 〃 |
@@ -403,12 +403,12 @@ AI는 1024px에 **가짜 픽셀**(큰 덩어리)로 그린다. 그대로 쓰면 
   `python _source/pick_frames.py raw/x.png sprites 이름 4 4 <배율> 4,6,8,10,12,14`
 - **권장 프레임 — 대기 4 · 달리기 6 · 공격 5(타격 3번째 · `hitFrameOverride 2`)** (2026-10-31). 지금 캐릭터 27종은 대기·달리기 평균 7 · 공격 8이지만
   4프레임짜리(cave-bat · golem · skeleton · medieval-king-2 공격 4)도 어색하지 않았다. 최소는 4 · 4 · 4.
-  - ⚠️ **프레임 수는 크레딧을 줄이지 않는다** — 시트 1장(16칸)이 한 번 값이다. 아끼려면 **시트 수**를 줄인다: 같은 생김새의 변형(도구만 다름)은 기준 그림을 고쳐(`EditSpriteWithPrompt` ≈ 3) 시트를 다시 받고, 동작 하나만 바꿀 때는 그 시트만 다시 받는다(≈ 18).
+  - ⚠️ **프레임 수는 크레딧을 줄이지 않는다** — 시트 1장(16칸)이 한 번 값이다. 아끼려면 **시트 수**를 줄인다: 같은 생김새의 변형(도구만 다름)은 기준 그림을 고쳐(`EditSpriteWithPrompt` ≈ 3) 시트를 다시 받고, 동작 하나만 바꿀 때는 그 시트만 다시 받는다(≈ 107).
   - **이미지 모델 격자로 시트를 그리면 생김새는 맞지만 움직임이 안 나온다** (2026-11-07 견습 나무꾼 1010 · `seedream-4-5` 4×4 · 7 크레딧 · `characters/unity-ai-lumberjack/raw/lumberjack_sheet.png`) — 대기 줄은 1칸만 그리고 3칸은 비웠고, 달리기 8칸은 같은 자세였다. 도끼 찍기 4칸만 자세가 달랐다(통나무까지 그려 넣음). 시트 대신 **기준 그림 1장**(첫 칸)을 받는 데 쓴다.
   - ⚠️ `EditSpriteWithPrompt`는 `savePath`를 무시하고 **원본 그림을 덮어쓴다** — 원본을 먼저 복사해 두거나 git에서 되살린다.
 - 프레임 수를 바꿔 다시 구우면 **결과 SO의 프레임 배열이 예전 개수를 그대로 쥔다**(굽기는 비어 있을 때만 채운다) — `idleFrames`·`runFrames`·`attacks`를 비우고 다시 굽는다. 배율·크롭은 그대로 남는다.
 - 도구 모션은 도구답게 — 삽은 **아래에서 위로 퍼 올리기**, 곡괭이는 **위에서 내려찍기**(2026-10-31 사용자 지적).
-- 비용(2026-11-06 실측): 그림 1장 `seedream-4-5` 7 · `gemini-3.0-pro` 23. 스프라이트시트는 옛 실측 약 18이지만 공식 문서의 영상 생성은 5초 약 95~480이라 **한 장을 잰 뒤** 진행한다 · 음악 30~60초 · 효과음 — 잔액 읽기와 보고 형식은 `unity-ai-assets` 스킬.
+- 비용(2026-11-06 실측): 그림 1장 `seedream-4-5` 7 · `gemini-3.0-pro` 23. 스프라이트시트 `video-kling-v3-i2v-standard` 3초 **107**(2026-11-07 견습 나무꾼 도끼질 — 옛 기록 "약 18"은 지금 값이 아니다). 영상은 길이·모델·해상도에 비례하므로 **가장 짧은 길이**로 받는다 · 음악 30~60초 · 효과음 — 잔액 읽기와 보고 형식은 `unity-ai-assets` 스킬.
 - AI 그림도 저작권 침해 검토는 우리 몫이다. 출시 때 Steam AI 사용 공개 — 위 원본 목록의 "AI 생성" 줄이 근거다.
 
 ### 소리 넣기 (`audio/`) — 2026-10-31
