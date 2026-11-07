@@ -62,6 +62,7 @@ public class SlotStageView : MonoBehaviour
     private BackgroundVisual? _background;
     private TargetVisual?     _target;
     private int               _level;
+    private Sprite[]          _industryHitFrames = System.Array.Empty<Sprite>(); // 캐릭터 공격에 타격 이펙트가 없을 때 쓰는 산업 타격
 
     // 땅이 흐른 거리 (화면 단위). 하루 내내 쌓여도 정밀도가 무너지지 않게 double.
     private double _groundDistance;
@@ -89,6 +90,8 @@ public class SlotStageView : MonoBehaviour
         }
 
         bool empty = characterTid == 0;
+
+        _industryHitFrames = empty ? System.Array.Empty<Sprite>() : catalog.GetHitFx(industry);
 
         Show(empty ? null : catalog.GetCharacter(characterTid),
              empty ? catalog.GetEmptySlotBackground() : catalog.GetBackground(industry),
@@ -340,7 +343,13 @@ public class SlotStageView : MonoBehaviour
             return;
         }
 
+        // 캐릭터 공격에 든 타격(팩 그림)이 먼저, 없으면 산업 타격
         Sprite[]? frames = _characterVisual.Attacks[now.HitCombo].hitEffectFrames;
+
+        if (frames == null || frames.Length == 0)
+        {
+            frames = _industryHitFrames;
+        }
 
         if (frames == null || frames.Length == 0)
         {
