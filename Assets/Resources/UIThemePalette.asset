@@ -12,20 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc57ec442d7d494c851a57e3efa8356, type: 3}
   m_Name: UIThemePalette
   m_EditorClassIdentifier: Assembly-CSharp::UIThemePalette
-  panelBg: {r: 0.078431375, g: 0.1254902, b: 0.18039216, a: 0.92156863}
-  panelSub: {r: 0.12156863, g: 0.1882353, b: 0.26666668, a: 1}
-  slot: {r: 0.14901961, g: 0.22352941, b: 0.30980393, a: 1}
-  border: {r: 0.24313726, g: 0.3529412, b: 0.47058824, a: 1}
-  button: {r: 0.16862746, g: 0.43529412, b: 0.61960787, a: 1}
-  buttonSelected: {r: 0.72156864, g: 0.45490196, b: 0.101960786, a: 1}
-  buttonPrimary: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
-  buttonDisabled: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
-  accent: {r: 0.30980393, g: 0.78431374, b: 0.9411765, a: 1}
-  highlight: {r: 1, g: 0.83137256, b: 0.2784314, a: 1}
-  textMain: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
-  textSub: {r: 0.62352943, g: 0.7019608, b: 0.78431374, a: 1}
-  textDisabled: {r: 0.36862746, g: 0.43529412, b: 0.5019608, a: 1}
-  textDark: {r: 0.101960786, g: 0.13725491, b: 0.1882353, a: 1}
-  positive: {r: 0.42745098, g: 0.85882354, b: 0.47843137, a: 1}
-  negative: {r: 1, g: 0.41960785, b: 0.36862746, a: 1}
+  panelBg: {r: 0.165, g: 0.157, b: 0.153, a: 0.97}
+  panelSub: {r: 0.212, g: 0.2, b: 0.192, a: 1}
+  slot: {r: 0.11, g: 0.106, b: 0.106, a: 1}
+  border: {r: 0.42, g: 0.4, b: 0.38, a: 1}
+  header: {r: 0.545, g: 0.106, b: 0.098, a: 1}
+  button: {r: 0.353, g: 0.165, b: 0.102, a: 1}
+  buttonSelected: {r: 0.784, g: 0.392, b: 0.118, a: 1}
+  buttonPrimary: {r: 0.6, g: 0.137, b: 0.122, a: 1}
+  buttonDisabled: {r: 0.227, g: 0.212, b: 0.204, a: 1}
+  accent: {r: 0.941, g: 0.627, b: 0.188, a: 1}
+  highlight: {r: 1, g: 0.831, b: 0.353, a: 1}
+  textMain: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  textSub: {r: 0.84, g: 0.81, b: 0.77, a: 1}
+  textDisabled: {r: 0.52, g: 0.5, b: 0.48, a: 1}
+  textDark: {r: 0.18, g: 0.129, b: 0.098, a: 1}
+  positive: {r: 0.624, g: 0.839, b: 0.42, a: 1}
+  negative: {r: 0.941, g: 0.416, b: 0.314, a: 1}
   overlay: {r: 0, g: 0, b: 0, a: 1}

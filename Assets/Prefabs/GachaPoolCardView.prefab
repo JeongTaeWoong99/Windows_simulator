@@ -248,7 +248,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
+  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -420,7 +420,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
+  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -443,7 +443,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -657,7 +657,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
+  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -747,7 +747,6 @@ GameObject:
   - component: {fileID: 8489374035965331888}
   - component: {fileID: 3882625239123185025}
   - component: {fileID: 776289775437105489}
-  - component: {fileID: 2931844737973144211}
   m_Layer: 5
   m_Name: Multi Draw Button
   m_TagString: Untagged
@@ -881,11 +880,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
-    m_HighlightedColor: {r: 0.82, g: 0.5866667, b: 0.21666667, a: 1}
-    m_PressedColor: {r: 0.63058823, g: 0.4109804, b: 0.0627451, a: 1}
-    m_SelectedColor: {r: 0.7882353, g: 0.5137255, b: 0.078431375, a: 1}
-    m_DisabledColor: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
+    m_NormalColor: {r: 0.29, g: 0.204, b: 0.141, a: 1}
+    m_HighlightedColor: {r: 0.3965, g: 0.3234, b: 0.26985002, a: 1}
+    m_PressedColor: {r: 0.232, g: 0.16319999, b: 0.1128, a: 1}
+    m_SelectedColor: {r: 0.29, g: 0.204, b: 0.141, a: 1}
+    m_DisabledColor: {r: 0.2, g: 0.149, b: 0.11, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -904,20 +903,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2931844737973144211
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3578313785372897936}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 12
-  alpha: 1
 --- !u!1 &4299875731848279828
 GameObject:
   m_ObjectHideFlags: 0
@@ -994,7 +979,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.62352943, g: 0.7019608, b: 0.78431374, a: 1}
+  m_fontColor: {r: 0.84, g: 0.81, b: 0.77, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1146,7 +1131,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
+  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1298,7 +1283,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.9490196, g: 0.9647059, b: 0.98039216, a: 1}
+  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1321,7 +1306,7 @@ MonoBehaviour:
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
   m_fontSizeMax: 72
-  m_fontStyle: 1
+  m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
   m_textAlignment: 65535
@@ -1388,7 +1373,6 @@ GameObject:
   - component: {fileID: 1542602243570274900}
   - component: {fileID: 8614167999206323892}
   - component: {fileID: 1936555839403695868}
-  - component: {fileID: 2710588240612113653}
   m_Layer: 5
   m_Name: Single Draw Button
   m_TagString: Untagged
@@ -1522,11 +1506,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.16862746, g: 0.43529412, b: 0.61960787, a: 1}
-    m_HighlightedColor: {r: 0.29333335, g: 0.52, b: 0.6766667, a: 1}
-    m_PressedColor: {r: 0.13490197, g: 0.3482353, b: 0.4956863, a: 1}
-    m_SelectedColor: {r: 0.16862746, g: 0.43529412, b: 0.61960787, a: 1}
-    m_DisabledColor: {r: 0.22745098, g: 0.27450982, b: 0.32941177, a: 1}
+    m_NormalColor: {r: 0.29, g: 0.204, b: 0.141, a: 1}
+    m_HighlightedColor: {r: 0.3965, g: 0.3234, b: 0.26985002, a: 1}
+    m_PressedColor: {r: 0.232, g: 0.16319999, b: 0.1128, a: 1}
+    m_SelectedColor: {r: 0.29, g: 0.204, b: 0.141, a: 1}
+    m_DisabledColor: {r: 0.2, g: 0.149, b: 0.11, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1545,20 +1529,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &2710588240612113653
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6330842370472375187}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 10
-  alpha: 1
 --- !u!1 &6760292735004667737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1643,7 +1613,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.14901961, g: 0.22352941, b: 0.30980393, a: 1}
+  m_Color: {r: 0.11, g: 0.106, b: 0.106, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -1730,9 +1700,29 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 5255326085715881522}
     m_Modifications:
+    - target: {fileID: 1497379372094278245, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_Color.b
+      value: 0.192
+      objectReference: {fileID: 0}
+    - target: {fileID: 1497379372094278245, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_Color.g
+      value: 0.2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1497379372094278245, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_Color.r
+      value: 0.212
+      objectReference: {fileID: 0}
     - target: {fileID: 2028566351374556331, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_Name
       value: Item Icon View
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474450450048740420, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.353
+      objectReference: {fileID: 0}
+    - target: {fileID: 3474450450048740420, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.831
       objectReference: {fileID: 0}
     - target: {fileID: 3748153243695424144, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_Pivot.x
@@ -1814,6 +1804,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3783836223152693268, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 3783836223152693268, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 3783836223152693268, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.98
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -1871,6 +1873,30 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 1346300212192104877}
     m_Modifications:
+    - target: {fileID: 1672001133300533397, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_fontColor.b
+      value: 0.95
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672001133300533397, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_fontColor.g
+      value: 0.97
+      objectReference: {fileID: 0}
+    - target: {fileID: 1672001133300533397, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_fontColor.r
+      value: 0.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 3249728784104338153, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_Color.b
+      value: 0.188
+      objectReference: {fileID: 0}
+    - target: {fileID: 3249728784104338153, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_Color.g
+      value: 0.627
+      objectReference: {fileID: 0}
+    - target: {fileID: 3249728784104338153, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: m_Color.r
+      value: 0.941
+      objectReference: {fileID: 0}
     - target: {fileID: 6321330786843894709, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -1954,6 +1980,10 @@ PrefabInstance:
     - target: {fileID: 8191927037121064531, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
       propertyPath: m_Name
       value: Help Icon
+      objectReference: {fileID: 0}
+    - target: {fileID: 8355863029698611195, guid: 18755da9186a59446bfae328fbd5a3dc, type: 3}
+      propertyPath: role
+      value: 30
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
