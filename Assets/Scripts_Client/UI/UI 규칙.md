@@ -1,6 +1,6 @@
-# UI 규칙
+﻿# UI 규칙
 
-> 최종 업데이트: 2026-11-01 (`UI/Outpost/` 추가 · T-182) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (Artifact 폴더 — 아티팩트 화면 · T-151) · 2026-10-14 (Auction 폴더 — 검색·시세·판매·완료 탭 · 공용 검색창 · 표 한 줄 — T-147 2단계) · 2026-10-14 (Market → Hub · Auction 폴더 분리 — T-147) · 2026-10-11 (아래 열리는 창은 넘치면 늘어난다 — `ContentFloorLayoutElement`) · 2026-10-11 (레이아웃 경계 — `Body Panel` 아래 Presenter는 그룹을 `Xxx Panel`에 · 자주 바뀌는 글씨는 상자로 감싼다) · 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
+> 최종 업데이트: 2026-11-08 (UI 틀 `UiSkin` — 기본 스프라이트를 실행 중 픽셀 틀로 · 창 액자 `Ui Frame` · 제목 띠 `Header` 역할) · 2026-11-01 (`UI/Outpost/` 추가 · T-182) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (Artifact 폴더 — 아티팩트 화면 · T-151) · 2026-10-14 (Auction 폴더 — 검색·시세·판매·완료 탭 · 공용 검색창 · 표 한 줄 — T-147 2단계) · 2026-10-14 (Market → Hub · Auction 폴더 분리 — T-147) · 2026-10-11 (아래 열리는 창은 넘치면 늘어난다 — `ContentFloorLayoutElement`) · 2026-10-11 (레이아웃 경계 — `Body Panel` 아래 Presenter는 그룹을 `Xxx Panel`에 · 자주 바뀌는 글씨는 상자로 감싼다) · 2026-10-10 (기능 설명은 도움말 아이콘으로) · 2026-10-10 (폴더 트리에 뽑기 카드 — T-143) · 2026-10-10 (`!Overlay Canvas` — 캔버스인데 `(MAIN VIEW)`가 없는 이유 — T-141) · 2026-10-10 (루트 두 축 `!Horizontal Columns` · `!Overlay Canvas` · `UI/System`·`UI/Login` → `UI/Overlay` — T-140) · 2026-10-10 (가운데 캔버스는 `Body Panel`이 줄 세운다 · Presenter에 단 `Canvas` · 클릭 안 받는 글자·장식은 Raycast Target을 끈다 — T-139) · 2026-09-30 (창고/Storage → 인벤토리/Inventory 개명 · 거래 열 탭 3개 — T-101) · 2026-09-25 (부가 정보는 툴팁으로 — T-088) · 2026-09-16 (여백 예외 — 격자 프레임 안의 칸은 꽉 채운다) · 2026-09-14 (폴더 트리에 `EfficiencyRowView`·`AptitudeLabel` 추가 — T-053) · 대상: `Assets/Scripts_Client/UI/`
 
 이 폴더에 스크립트를 새로 만들기 전에 읽는다. **이름을 뭐라고 붙일지 · 어느 오브젝트에 붙일지 ·
 어느 폴더에 넣을지**를 여기서 정한다.
@@ -291,6 +291,12 @@ XxxPresenter · XxxView                 ← 내 스크립트는 언제나 맨 �
 | **누르는 것** — Button · Toggle · Dropdown · Scrollbar `Handle` | `UISprite` (Sliced) | 누를 수 있음이 생김새로 드러난다 |
 | 뷰포트 | `UIMask` (Sliced) | ⚠️ `Simple`이면 마스크가 통째로 둥글어진다 (아래) |
 | 입력칸 | `InputFieldBackground` (Sliced) | — |
+
+> **실행 중에는 우리 픽셀 틀로 바뀐다 (2026-11-08)** — [`UiSkin`](Shared/visual/UiSkin.cs)이 씬이 열릴 때 기본 스프라이트를 바꾼다(Sliced인 것만 · 색은 그대로). `UISprite`→`ui_button` · `InputFieldBackground`→`ui_input` · `Background`는 **역할로 갈린다** — `Header`(제목 띠)→`ui_header` · 그 밖→`ui_input`(파인 칸). 장식은 **첫 자식 `Ui Trim`**(레이아웃 제외 · 클릭 안 받음) · 바탕이 투명한 버튼에는 깔지 않는다.
+> **창 액자** — 열·오버레이 창의 `Body Panel`(부모가 `(MAIN VIEW)` 캔버스)과 큰 팝업 바탕(세로 레이아웃 · `ContentSizeFitter` 없음)에는 무늬 띠를 **마지막 자식 `Ui Frame`**(Tiled)으로 덮고 레이아웃 여백을 24씩 늘린다. ⚠️ 창 안 줄은 가로 여백이 48 줄어든 폭에 들어가야 한다 — 넘치면 `[UI] 자식이 부모보다 넓다` 경고가 뜬다(2026-11-08 인벤토리 도구줄 1을 줄였다).
+> **에디터에서도 보인다** — [`UiSkinPreview`](Shared/visual/Editor/UiSkinPreview.cs)가 플레이 전 씬에도 같은 틀을 입힌다(장식은 계층 창에 안 보이고 저장되지 않음). **저장·플레이·컴파일 직전에 되돌리고 직후에 다시 입혀** 씬 파일은 기본 스프라이트 그대로다. 끄기: 메뉴 `Window/DesktopWindowControl/UI 테마/스킨 미리보기 (에디터)`. ⚠️ 미리보기가 켜진 채 인스펙터에서 보이는 `ui_*` 스프라이트는 임시다 — 그 자리를 손으로 바꾸지 않는다.
+> ⚠️ 자식 순서(`GetChild(0)`)로 칸을 찾는 컨테이너에 `Background`·`UISprite`를 달면 장식이 0번이 된다 — 그런 컨테이너는 스프라이트를 `null`로 둔다(지금 해당 없음 · 2026-11-08 확인).
+> 씬·프리팹은 기본 스프라이트 그대로 둔다(그림 저장소 참조 금지). **실행 중 프리팹으로 만드는 UI는 `UiSkin.Apply(this)`를 `Awake`에서 부른다** — 지금은 `GachaPoolCardView`만.
 
 ⚠️ **`Background`·`UISprite`·`UIMask`는 반드시 `Sliced`다.** `Simple`이면 9-slice가 풀려
 모서리가 크기에 비례해 늘어난다.
