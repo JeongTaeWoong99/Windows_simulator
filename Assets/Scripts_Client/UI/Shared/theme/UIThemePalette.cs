@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 // 역할('UIThemeRole') → 색 표. 아트가 들어오기 전까지 화면 톤을 한 곳에서 맞추는 임시 팔레트다.
-// 톤은 Palworld식 — 반투명 짙은 남색 패널 · 흰 글씨 · 하늘색 강조 · 노랑 선택.
+// 톤은 에셋 값이 정한다 — 지금은 Taskbar Heroes 결(돌회색 창 · 진홍 제목 띠 · 적갈색 버튼 + 구리 테 · 흰 글씨). 'Art 규칙.md' UI 절.
 //
 // 에셋은 'Resources/UIThemePalette' 하나다. 값을 고치면 열린 씬의 'UIThemeColor'가 바로 따라온다
 // (에디터 쪽 'UIThemeBaker'). 프리팹은 메뉴 'Window/DesktopWindowControl/UI 테마/적용'으로 굽는다.
@@ -17,6 +17,7 @@ public class UIThemePalette : ScriptableObject
     [SerializeField] private Color panelSub = new Color32(0x1F, 0x30, 0x44, 0xFF);
     [SerializeField] private Color slot     = new Color32(0x26, 0x39, 0x4F, 0xFF);
     [SerializeField] private Color border   = new Color32(0x3E, 0x5A, 0x78, 0xFF);
+    [SerializeField] private Color header   = new Color32(0x8B, 0x1B, 0x19, 0xFF);
 
     [CenterHeader("버튼")]
     [SerializeField] private Color button         = new Color32(0x2B, 0x6F, 0x9E, 0xFF);
@@ -74,6 +75,7 @@ public class UIThemePalette : ScriptableObject
         UIThemeRole.PanelSub       => panelSub,
         UIThemeRole.Slot           => slot,
         UIThemeRole.Border         => border,
+        UIThemeRole.Header         => header,
         UIThemeRole.Button         => button,
         UIThemeRole.ButtonSelected => buttonSelected,
         UIThemeRole.ButtonPrimary  => buttonPrimary,

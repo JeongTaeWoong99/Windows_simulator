@@ -8,6 +8,7 @@ public enum UIThemeRole
     PanelSub = 1,  // 패널 안 구획·행 바탕
     Slot     = 2,  // 슬롯·칸 바탕
     Border   = 3,  // 테두리·구분선
+    Header   = 4,  // 창 제목 띠 (진홍)
 
     // 버튼
     Button         = 10, // 일반 버튼

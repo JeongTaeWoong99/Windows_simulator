@@ -80,6 +80,22 @@ public static class FxSprites
     // 네 갈래 반짝 — 동전이 골드 아이콘에 닿을 때
     public static Sprite? CoinSpark => VisualCatalog.FxOf("coin_spark");
 
+    // ── ui — UI 틀 9-slice ('UiSkin') · 코드로 그린다('Art/_source/ui/claude-ui/make_ui.py') ──
+    //   바탕 = 흰 판(깎은 모서리) — Image 색이 그대로 입혀진다 · 장식(_trim) = 색이 든 덧그림(외곽선·무늬 띠·구리 테) — 색을 곱하지 않는다
+
+    // 영역 상자(창·구획) — 기본 'Background' 자리 중 바탕 역할(PanelBg·PanelSub). 장식은 무늬 띠라 Tiled로 깐다
+    public static Sprite? UiPanel      => VisualCatalog.FxOf("ui_panel");
+    public static Sprite? UiPanelTrim  => VisualCatalog.FxOf("ui_panel_trim");
+    // 누르는 것(버튼·토글·드롭다운) — 기본 'UISprite' 자리
+    public static Sprite? UiButton     => VisualCatalog.FxOf("ui_button");
+    public static Sprite? UiButtonTrim => VisualCatalog.FxOf("ui_button_trim");
+    // 입력칸 — 기본 'InputFieldBackground' 자리
+    public static Sprite? UiInput      => VisualCatalog.FxOf("ui_input");
+    public static Sprite? UiInputTrim  => VisualCatalog.FxOf("ui_input_trim");
+    // 창 제목 띠(진홍 + 구리 테) — 'Background' 자리 중 Header 역할
+    public static Sprite? UiHeader     => VisualCatalog.FxOf("ui_header");
+    public static Sprite? UiHeaderTrim => VisualCatalog.FxOf("ui_header_trim");
+
     // ── appraise — 유물 감정 무대 ('RelicAppraiseFx') ──
 
     // 금 세 갈래 — 같은 캔버스 · 유물 칸 위에 겹친다. 'fillAmount'로 자란다(1 위→아래 · 2 오른쪽→왼쪽 · 3 왼쪽→오른쪽)

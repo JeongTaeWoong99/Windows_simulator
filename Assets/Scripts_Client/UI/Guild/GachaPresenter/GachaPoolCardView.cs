@@ -70,6 +70,9 @@ public class GachaPoolCardView : MonoBehaviour
 
         singleButton.onClick.AddListener(() => DrawClicked?.Invoke(false));
         multiButton.onClick.AddListener(() => DrawClicked?.Invoke(true));
+
+        // 실행 중에 프리팹으로 만들어져 씬 시작 때의 틀 입히기를 놓친다 — 여기서 입힌다
+        UiSkin.Apply(this);
     }
 
     // 풀 하나를 그린다 (GachaPresenter · ShopPresenter — 처음과 언어 변경 때).
