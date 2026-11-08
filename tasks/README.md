@@ -45,7 +45,8 @@
 | [T-195](T-195-소모품효과적용.md) | 서버 — **소모품 효과 적용** · 지도·나침반 3단계 · 사용 패킷 · [이슈 #110](https://github.com/JeongTaeWoong99/Windows_simulator/issues/110) · [#111](https://github.com/JeongTaeWoong99/Windows_simulator/issues/111) · [#113](https://github.com/JeongTaeWoong99/Windows_simulator/issues/113) | 진우 | New | 보통 | 261121 |
 | [T-192](T-192-서버비용계산.md) | 서버 — **서버 비용** · 동접 100명당 AWS 한 달 · 회차마다 갱신 · [이슈 #109](https://github.com/JeongTaeWoong99/Windows_simulator/issues/109) | 진우 | In Progress | 보통 | 261121 |
 | [T-113](T-113-특성다양화.md) | 기획 — **특성 다양화** · 콘텐츠 특화 · 특별한 특성 · 다른 종류 (레벨형 T-108 위에) | 진우 | New | 보통 | 261121 |
-| [T-114](T-114-레이드기획.md) | 기획 — **레이드 콘텐츠** · 사냥 보스 자리만 있고 전부 미정 | 진우 | New | 보통 | 261121 |
+| [T-197](T-197-전투시스템기획.md) | 기획 — **전투 시스템** · 서버 즉시 계산 · 공격력·체력 · 프리셋 편성 확정(2026-11-09) · 남은 것: 파티·보스·승패·보상 · [이슈 #118](https://github.com/JeongTaeWoong99/Windows_simulator/issues/118) · 레이드(T-114)의 선행 | 진우 | In Progress | 높음 | 261121 |
+| [T-114](T-114-레이드기획.md) | 기획 — **레이드 콘텐츠** · 보스 = 레이드 + 전투로 결정 (2026-11-07) · 허수아비형([#116](https://github.com/JeongTaeWoong99/Windows_simulator/issues/116)) 보류 · 선행 [T-197](T-197-전투시스템기획.md) | 진우 | New | 보통 | 261121 |
 | [T-019](T-019-온보딩.md) | 온보딩 1일차 시나리오 설계 — **초안 작성(2026-10-10)**: 개방 시점 · 가이드 퀘스트 G1~G12 · 강제 튜토리얼 없음 ([진행 및 성장](../GameDesign/design/progression/README.md) 2.7) · 남은 것: 확정 · 계정 Lv10 곡선 역산 | 진우 | In Progress | 높음 | 261121 |
 | [T-093](T-093-설명보간.md) | 아이템 설명 보간 — **플레이어용 `Tooltip` 컬럼**(아이템·장비)의 `{컬럼}`·`{컬럼:permille}`을 생성 시점에 치환 · **완료(2026-10-07)** — 남은 것: 확인 · 문구 채우기와 클라 표시는 일감 밖 | 진우 | Resolve | 보통 | 261121 |
 | [T-076](T-076-성장재료소비처.md) | 기획 — 자원·캐릭터·장비를 성장 재료로 쓸지 (중복 개체의 출구) — ✅ 캐릭터 = **응축 ★** · 장비 = **분해 → 재료** (2026-10-07) · 남은 것: 자원 먹이기 · A안(산업 자원 → 장비 강화) 판단 — [T-125](archive/T-125-산업특성화.md) ✅ 끝남 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | In Progress | 보통 | 261121 |
