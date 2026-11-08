@@ -3,7 +3,7 @@ name: unity-editor-ops
 description: 유니티 에디터를 조작해야 할 때 연다 — 씬·프리팹·인스펙터·컴포넌트 변경, SO 생성, 플레이 모드·테스트·빌드, 콘솔 확인. 어떤 경로로 실행할지(Unity CLI → MCP → 사람 인계)와, 복구가 불가능해 실행 전 확인이 필요한 작업을 정한다. 코드 파일만 고치고 끝나면 해당 없음.
 ---
 
-> 최종 업데이트: 2026-11-02 (AI 에셋 생성을 `unity-ai-assets`로 분리) · 2026-10-03
+> 최종 업데이트: 2026-11-05 (C#은 `unity cmd eval` 우선 · 재컴파일 뒤 씬 더티의 원인과 대처) · 2026-11-02 (AI 에셋 생성을 `unity-ai-assets`로 분리) · 2026-10-03
 
 # 유니티 에디터 작업
 
@@ -20,8 +20,9 @@ description: 유니티 에디터를 조작해야 할 때 연다 — 씬·프리�
 | 순위 | 경로 | 쓸 때 |
 |------|------|-------|
 | ① | `unity cmd <명령>` | **기본.** 등록된 명령(151개)에 있으면 무조건 이것 |
-| ② | `Unity_RunCommand` (C#) | ①에 없는 조작일 때만 |
-| ③ | 핸드오프 프롬프트 | ①②로 안 되는 것 — 4절 |
+| ② | `unity cmd eval` (C#) | ①에 없는 조작일 때 |
+| ③ | `Unity_RunCommand` (C#) | ②로 안 될 때만 — 예: `eval`이 런타임 필드를 빈 값으로 읽을 때. 쓴 뒤에는 아래 "재컴파일 뒤 씬 더티"의 대처를 한다 |
+| ④ | 핸드오프 프롬프트 | ①②③으로 안 되는 것 — 4절 |
 
 **①을 먼저 확인하는 법** — 기억으로 넘겨짚지 말고 찾는다.
 
@@ -44,6 +45,35 @@ unity cmd set_component_properties  →  save_prefab_contents / save_scene
 
 > ⚠️ `create_script`로 만든 타입은 **리컴파일 전에는 존재하지 않는다.**
 > `recompile` → `recompile_status`가 끝난 뒤에 `attach_script`를 부른다.
+
+### 재컴파일 뒤 씬 더티 — 자동화가 Undo 기록을 남긴 경우
+
+**증상:** 씬을 고치지 않았거나 이미 저장했는데, 재컴파일 뒤 씬 탭에 `*`가 뜬다.
+
+**원인:** `DrivenRectTransformTracker`는 **현재 Undo 그룹에 기록이 있을 때만** 자기 변경도 Undo에 기록한다(`CanRecordModifications`).
+재컴파일 때 켜진 Scrollbar·Slider가 핸들 앵커를 다시 쓰면서 이 기록이 씬을 더티로 만든다.
+사람이 Hierarchy를 클릭하면 Undo 그룹이 넘어가 조건이 꺼지지만, 입력이 없는 자동화에서는 그대로 남는다.
+
+| 재컴파일 전에 한 일 | 재컴파일 후 `*` |
+|---|---|
+| `Unity_RunCommand` — 읽기만 해도. 실행 때 `Undo.SetCurrentGroupName`을 부른다 | 뜸 |
+| `unity cmd`의 씬 수정 명령 뒤 저장 (`create_gameobject`로 시험) | 뜸 |
+| 코드로 `Selection` 변경 · `Undo.SetCurrentGroupName` 호출 | 뜸 |
+| `unity cmd`·`eval`의 조회만 · 사람이 Hierarchy 클릭 | 안 뜸 |
+| 위 "뜸" 뒤에 사람이 클릭하거나 아래 대처를 함 | 안 뜸 |
+
+플레이 모드 왕복은 Undo 기록이 있어도 `*`를 켜지 않았다(1회 시험).
+
+**대처:** 위 "뜸"에 해당하는 작업을 마치면 재컴파일 전에 Undo 그룹을 넘긴다. 되돌리기 기록은 지워지지 않는다.
+
+```bash
+unity cmd eval --code 'UnityEditor.Undo.IncrementCurrentGroup(); return "ok";'
+```
+
+- `Undo.ClearAll`은 쓰지 않는다 — 되돌리기 기록이 사라진다.
+- 저장 경로(`save_scene` · `eval` · `RunCommand` · 에디터 저장)로는 파일 내용이 달라지지 않았다. **더티 자체가 내용 변경은 아니다.**
+- ⚠️ 저장 전에는 `git diff --stat`으로 규모를 본다. 씬에 레이아웃 구동 값이 숫자로 들어 있으면 저장 때 0으로 바뀌어 diff가 크게 난다.
+- ⚠️ 꺼진 Canvas를 편집 모드에서 켰다 끄고 저장하면 프리팹 오버라이드가 대량으로 추가되고(시험에서 883줄), 다시 저장해도 빠지지 않는다. 그 저장은 되돌린다.
 
 ---
 

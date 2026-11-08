@@ -411,8 +411,10 @@ public class SellCartPresenter : MonoBehaviour
                      1,
                      UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, 1)),
                      ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
-                     () => BuildEntityTooltip(name, rarity, basePrice, leveled || condensed > 0 ? c =>
+                     () => BuildEntityTooltip(name, rarity, basePrice, c =>
                      {
+                         RaceLabel.AddRow(c, tid);
+
                          if (leveled)
                          {
                              c.Row(Lang.Get("UI.Inventory.Level"), $"Lv{level}", "", null);
@@ -422,7 +424,7 @@ public class SellCartPresenter : MonoBehaviour
                          {
                              c.Row(Lang.Get("UI.Inventory.Condense"), Lang.Format("UI.Inventory.Star", star), "", null);
                          }
-                     } : null));
+                     }));
         }
 
         foreach (EquipInfo equip in _data.Equips)

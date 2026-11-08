@@ -289,6 +289,20 @@ namespace DesktopWindowControl.EditorTools
             return result;
         }
 
+        // 왼쪽에 투명 여백을 더한다 — 칸은 캔버스 가운데를 맞추므로 그림이 그만큼 오른쪽으로 간다
+        public ArtImage PadLeft(int pixels)
+        {
+            if (pixels <= 0)
+            {
+                return this;
+            }
+
+            var result = new ArtImage(Width + pixels, Height);
+            result.AlphaOver(this, pixels);
+
+            return result;
+        }
+
         // 위에 겹쳐 그린다 (보통 알파 합성)
         public void AlphaOver(ArtImage top, int offsetX = 0, int offsetY = 0)
         {

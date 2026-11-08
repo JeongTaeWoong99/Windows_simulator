@@ -244,7 +244,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
     //
     // ■ 왜 'GachaRewardInfo'로 바꾸지 않고 칸 값을 바로 만드나
-    // 우편 첨부는 종류마다 필드가 따로 온다(Gold · Items · CharacterTids · EquipTids · Equips). 한 목록으로 옮겼다 되읽느니 바로 합친다.
+    // 우편 첨부는 종류마다 필드가 따로 온다(Gold · Items · CharacterTids · EquipTids · Equips · Artifacts). 한 목록으로 옮겼다 되읽느니 바로 합친다.
     // ※ 모두 받기로 여러 통을 받으면 상자와 같은 이유로 합친다 — 몇 번째 우편에서 무엇이 나왔나는 우편함 목록에 남아 있다.
     // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
     private void OnMailRewardsClaimed(List<MailInfo> mails)
@@ -423,6 +423,15 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
                 }
             }
 
+            // 아티팩트(거래소 구매·반환) — 번호와 수량으로 온다 (T-152).
+            if (mail.Artifacts != null)
+            {
+                foreach (ArtifactInfo artifact in mail.Artifacts)
+                {
+                    Add('A', artifact.ArtifactTid, artifact.Count);
+                }
+            }
+
             // 개체 장비(경매 구매·반환)도 칸으로는 종류가 같으면 합친다 — 인챈트 차이는 인벤토리에서 본다.
             if (mail.Equips != null)
             {
@@ -446,8 +455,9 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
             slots.Add(key.Kind switch
             {
-                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid), VisualCatalog.PortraitOf(key.Tid)),
+                'C' => new SlotData(key.Tid, GameDataLoader.GetCharacterName(key.Tid), count, GameDataLoader.GetCharacterRarity(key.Tid), VisualCatalog.PortraitOf(key.Tid), null, RaceLabel.ShortOf(key.Tid)),
                 'E' => new SlotData(key.Tid, GameDataLoader.GetEquipName(key.Tid),     count, GameDataLoader.GetEquipRarity(key.Tid),     VisualCatalog.EquipIconOf(key.Tid)),
+                'A' => new SlotData(key.Tid, GameDataLoader.GetArtifactName(key.Tid),  count, GameDataLoader.GetArtifactRarity(key.Tid),  VisualCatalog.ArtifactIconOf(key.Tid)),
                 _   => new SlotData(key.Tid, GameDataLoader.GetItemName(key.Tid),      count, GameDataLoader.GetItemRarity(key.Tid),      VisualCatalog.ItemIconOf(key.Tid)),
             });
         }
@@ -501,7 +511,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             _                          => VisualCatalog.ItemIconOf(tid),
         };
 
-        return new SlotData(tid, name, count.ToString("N0"), rarity, icon);
+        // 종족 배지는 캐릭터만 — 칸에 툴팁이 없어 여기서 보여 준다
+        string? race = reward.RewardType == EGachaRewardType.Character ? RaceLabel.ShortOf(tid) : null;
+
+        return new SlotData(tid, name, count.ToString("N0"), rarity, icon, null, race);
     }
 
     // 칸을 만들 때 한 번 — 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다.

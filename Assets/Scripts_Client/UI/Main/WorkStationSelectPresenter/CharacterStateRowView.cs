@@ -42,9 +42,8 @@ public class CharacterStateRowView : MonoBehaviour
     [SerializeField, Tooltip("캐릭터 이름 · 레벨 — '이름 Lv27'")]
     private TMP_Text nameText = null!;
 
-    // 임시 — 종족은 데이터에 없다('CharacterTable'에 컬럼이 없다). 프리팹에 "종족 추가 예정"이 적혀 있고,
-    // 엑셀 · 기획이 나오면 'Bind'가 값을 채운다(일감 'T-054').
-    [SerializeField, Tooltip("종족 (임시 — '종족 추가 예정')")]
+    // 'Bind'가 'RaceLabel'로 채운다 — 프리팹에 'LocalizedText'를 붙이지 않는다(켜질 때 값을 덮는다).
+    [SerializeField, Tooltip("종족 — 'Bind'가 채운다")]
     private TMP_Text raceText = null!;
 
     // ⚠️ **칸의 순서가 곧 산업이다** — 농사 · 채굴 · 벌목 · 사냥 · 발굴. 바로 위 산업 탭과 같은 순서라
@@ -125,6 +124,8 @@ public class CharacterStateRowView : MonoBehaviour
             nameText.text += $"{UIRichText.Dot}{size}";
         }
 
+        raceText.text = RaceLabel.Of(characterTid) ?? "";
+
         SetPortrait(VisualCatalog.PortraitOf(characterTid));
     }
 
@@ -192,6 +193,7 @@ public class CharacterStateRowView : MonoBehaviour
     {
         CharacterId           = 0;
         nameText.text         = "";
+        raceText.text         = "";
         backgroundImage.color = RarityPalette.Unknown;
 
         SetPortrait(null);

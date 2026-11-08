@@ -29,6 +29,9 @@ namespace DesktopWindowControl.EditorTools
 
             [Tooltip("판정한 날 (yyyy-MM-dd)")]
             public string? checkedOn;
+
+            [Tooltip("왼쪽 투명 여백(px) — 한쪽으로 삐져나온 장식 때문에 몸통이 쏠릴 때 칸 가운데로 민다. 보통 0")]
+            public int padLeft;
         }
 
         // 그림과 이름이 맞는가 — 점검 목록은 'tasks/art/T-189'

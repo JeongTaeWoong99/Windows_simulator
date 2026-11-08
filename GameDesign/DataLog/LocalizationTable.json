@@ -4895,11 +4895,6 @@
     "EN": "No characters with this aptitude."
   },
   {
-    "Key": "UI.WorkStation.RaceTbd",
-    "KR": "종족 추가 예정",
-    "EN": "Race coming soon"
-  },
-  {
     "Key": "UI.WorkStation.Efficiency",
     "KR": "효율 계산",
     "EN": "Efficiency"
@@ -5073,6 +5068,51 @@
     "Key": "UI.Character.SizeLargeShort",
     "KR": "대",
     "EN": "L"
+  },
+  {
+    "Key": "UI.Character.Race",
+    "KR": "종족",
+    "EN": "Race"
+  },
+  {
+    "Key": "UI.Character.RaceHuman",
+    "KR": "인간",
+    "EN": "Human"
+  },
+  {
+    "Key": "UI.Character.RaceMonster",
+    "KR": "마물",
+    "EN": "Monster"
+  },
+  {
+    "Key": "UI.Character.RaceUndead",
+    "KR": "언데드",
+    "EN": "Undead"
+  },
+  {
+    "Key": "UI.Character.RaceGolem",
+    "KR": "골렘",
+    "EN": "Golem"
+  },
+  {
+    "Key": "UI.Character.RaceHumanShort",
+    "KR": "인",
+    "EN": "H"
+  },
+  {
+    "Key": "UI.Character.RaceMonsterShort",
+    "KR": "마",
+    "EN": "M"
+  },
+  {
+    "Key": "UI.Character.RaceUndeadShort",
+    "KR": "언",
+    "EN": "U"
+  },
+  {
+    "Key": "UI.Character.RaceGolemShort",
+    "KR": "골",
+    "EN": "G"
   },
   {
     "Key": "UI.Inventory.CondenseMax",
@@ -5661,8 +5701,8 @@
   },
   {
     "Key": "UI.Condense.ConfirmCondensed",
-    "KR": "응축을 쌓은 재료 {0}마리의 누적 응축은 {1}%(올림)만 넘어갑니다.",
-    "EN": "Only {1}% (rounded up) of the condense progress of {0} material(s) carries over."
+    "KR": "응축을 쌓은 재료 {0}마리: 재료의 누적 응축 중 {1}%(올림)만 대상에 더해지고, 나머지는 사라집니다.",
+    "EN": "{0} condensed material(s): only {1}% (rounded up) of their condense progress is added to the target; the rest is lost."
   },
   {
     "Key": "UI.Condense.FillNext",
@@ -5686,8 +5726,8 @@
   },
   {
     "Key": "UI.Condense.HelpLost",
-    "KR": "재료의 레벨 · 경험치는 사라지고 누적 응축은 {0}%(올림)만 넘어갑니다 — 되돌릴 수 없습니다",
-    "EN": "Materials lose their level and EXP, and only {0}% (rounded up) of their condense carries over — this can't be undone"
+    "KR": "재료의 레벨 · 경험치는 사라집니다. 누적 응축은 {0}%(올림)만 대상에 더해지고 나머지는 사라집니다 — 되돌릴 수 없습니다",
+    "EN": "Materials lose their level and EXP. Only {0}% (rounded up) of their condense is added to the target; the rest is lost — this can't be undone"
   },
   {
     "Key": "UI.Condense.HelpOverflow",

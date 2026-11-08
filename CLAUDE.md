@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+> 최종 업데이트: 2026-11-08 (`pixel-fx` 스킬 — Claude가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -131,7 +131,7 @@
 | [`game-design-reference`](.claude/skills/common/game-design-reference/SKILL.md) | 게임 **규칙·수치가 바뀔 때** — 화면 배치·배선만 바꾸면 해당 없음 | `게임기획코어.md` + 상세 기획안 |
 | [`excel-table-creator`](.claude/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx`를 **고칠 때마다 — 기억으로 대신하지 않고 매번 연다** (행 추가·수정·시트·컬럼·시트 이동). 엑셀을 읽기만 하면 해당 없음 | 행 추가 절차·서식 기준·TID·`Ref` 규칙 · 이름 확인 · 열린 엑셀 닫기 |
 | [`commit-convention`](.claude/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
-| [`unity-ai-assets`](.claude/skills/common/unity-ai-assets/SKILL.md) | Unity AI로 리소스(이미지·사운드 등)를 **만들거나 고칠 때** — 있는 그림을 쓰거나 파일만 고치면 해당 없음 | 실행 전 동의 · 구독·크레딧 상태 진단과 안내 · 리소스별 사용 크레딧과 전후 잔액 보고 |
+| [`unity-ai-assets`](.claude/skills/common/unity-ai-assets/SKILL.md) | Unity AI로 리소스(이미지·사운드 등)를 **만들거나 고칠 때** · 리소스를 무엇으로 만들지(AI 크레딧·Claude 코드 그리기·구매) 고를 때 — 있는 그림을 쓰거나 파일만 고치면 해당 없음 | 실행 전 동의 · 구독·크레딧 상태 진단과 안내 · 리소스별 사용 크레딧과 전후 잔액 보고 |
 | [`task-reader`](.claude/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
 | [`task-writer`](.claude/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
 | [`github-issue-writer`](.claude/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) · **이슈·일감 작업이 끝났을 때 — 조건 없이 항상**(관련 이슈·일감 공돌리기 + 넘긴 번호 보고) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 · 공돌리기(3장) |
@@ -147,6 +147,8 @@
 | [`unitask`](.claude/skills/client/unitask/SKILL.md) | 기다림(지연·다음 프레임·응답 대기)을 짤 때 · 코루틴이 있는 파일을 고칠 때 — 기다림이 없는 작업은 해당 없음 | 코루틴 대신 UniTask · 취소 토큰 · `async void` 금지 · 코루틴 전환표 |
 | [`dotween`](.claude/skills/client/dotween/SKILL.md) | 움직임·페이드 연출을 짜거나 트윈 끝을 기다릴 때 — 연출이 없는 작업은 해당 없음 | 트윈 수명(`SetLink`·Kill) · UniTask의 DOTween 전용 대기 API(`ToUniTask`) |
 | [`object-pool`](.claude/skills/client/object-pool/SKILL.md) | `Instantiate`/`Destroy`를 새로 쓰거나(연출·이펙트·목록 줄) 생성·삭제가 잦은 화면을 고칠 때 — 한 번 만들고 두는 오브젝트는 해당 없음 | `Common/object-pool` 사용법 · 대여 토큰 · 반납·초기화 · UI 함정 |
+| [`asset-compression`](.claude/skills/client/asset-compression/SKILL.md) | 그림·소리를 저장소에 새로 넣을 때(특히 AI 원본·큰 팩) · 저장소·빌드 용량이 커졌을 때 · 텍스처·오디오 임포트 압축을 정할 때 — 있는 파일을 쓰기만 하면 해당 없음 | 저장소·빌드·메모리 용량의 차이 · 원본 줄이기(`shrink_raw.py`) · 형식 고르기 · 임포트 설정 |
+| [`pixel-fx`](.claude/skills/client/pixel-fx/SKILL.md) | 픽셀 이펙트(타격·불똥·파편·마법 등 움직이는 효과)를 새로 만들거나 고칠 때 — 있는 이펙트 PNG를 쓰기만 하거나 UI 흰 도형(`make_fx.py`)을 고치면 해당 없음 | pixelfx(코드 이펙트 라이브러리)로 그리기 · 렌더해서 보고 고치기 · Unity로 내보내기 — Unity AI 크레딧 0 |
 | [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
 | [`unity-editor-ops`](.claude/skills/client/unity-editor-ops/SKILL.md) | 에디터를 조작할 때 — 씬·프리팹·인스펙터·SO·플레이 모드·테스트·빌드 · 코드 파일만 고치면 해당 없음 | 실행 경로(Unity CLI → MCP → 사람 인계) · 실행 전 확인받을 작업 · 핸드오프 프롬프트 |
 

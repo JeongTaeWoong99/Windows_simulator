@@ -863,6 +863,7 @@ namespace DesktopWindowControl.EditorTools
                     .FitPixelGrid(ArtSpec.IconMaxSize)
                     .StripLightRim(ArtSpec.IconLightRimRatio)
                     .Outline(ArtSpec.IconOutline)
+                    .PadLeft(entry.padLeft)
                     .SavePng(path);
                 AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
                 count++;

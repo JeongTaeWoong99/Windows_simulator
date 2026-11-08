@@ -51,6 +51,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, NonReorderable, Tooltip("적성 값 칸 5개. 순서 = 농사·채굴·벌목·사냥·발굴")]
     private TMP_Text[] aptitudeValueTexts = new TMP_Text[0];
 
+    // ※ 숫자 뒤에 옅게 깐다 — 값이 먼저 읽히고 어느 산업 칸인지는 그림이 거든다.
+    // ⚠️ **칸의 순서가 곧 산업이다** — 값 칸과 같은 순서('IndustryLabel.DisplayOrder').
+    [SerializeField, NonReorderable, Tooltip("(선택) 적성 칸의 산업 그림 5개. 순서 = 농사·채굴·벌목·사냥·발굴")]
+    private Image[] aptitudeIconImages = new Image[0];
+
     // ※ 아이콘 왼쪽 여백(20px)에 세로로 선다 — 아이콘과 높이를 같게 두고, 아래에서 위로 찬다.
     //   높이는 고정값이 아니라 위아래 20px 안쪽 스트레치다 — 인벤토리 격자가 칸을 프레임 크기로 늘려도 아이콘과 함께 늘어난다.
     //   조작하는 슬라이더가 아니라 표시 전용이다(interactable 꺼짐 · 핸들 없음 · raycast 끔 — 우클릭을 가로채지 않는다).
@@ -72,6 +77,13 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     [SerializeField, Tooltip("(선택) 크기 등급 배지 안의 문구")]
     private TMP_Text? sizeText;
+
+    // ※ 크기 배지 바로 위 — 왼쪽 아래 배지 묶음(레벨 · 크기 · 종족)으로 한 덩어리로 읽는다.
+    [SerializeField, Tooltip("(선택) 종족 배지 — '인' · '마' · '언' · '골'. 캐릭터 칸에서만 켜진다")]
+    private GameObject? raceBadge;
+
+    [SerializeField, Tooltip("(선택) 종족 배지 안의 문구")]
+    private TMP_Text? raceText;
 
     // ※ 장비 탭에서는 보조 문구(효과)를 끈다 — 기본 능력치 문구는 툴팁으로 갔다(T-095).
     // ※ 칸 수만큼 네모를 그리던 것을 보석 하나로 바꿨다(2026-10-10 — 'EnchantGemView' 주석).
@@ -237,6 +249,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
         sizeBadge?.SetActive(false);
+        raceBadge?.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
         lockMark.SetActive(false);
@@ -279,6 +292,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         SetIcon(data.Icon);
         SetSizeBadge(data.SizeBadge);
+        SetRaceBadge(data.RaceBadge);
         ApplyTint();
     }
 
@@ -337,8 +351,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     //
     // ⚠️ **values의 순서가 곧 산업이다** (농사·채굴·벌목·사냥·발굴). 값 0도 칸을 지우지 않고
     //   'X'로 채운다 — 칸을 없애면 위치가 밀려 남은 값이 다른 산업으로 읽힌다.
-    //
-    // TODO: 산업 아이콘이 생기면 각 칸의 배경 Image에 sprite를 넣는다 — 자리·개수·순서는 그대로다.
     public void SetAptitudes(byte[]? values)
     {
         bool on = values != null;
@@ -366,6 +378,27 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
             text.text  = AptitudeLabel.GetText(value);
             text.color = AptitudeLabel.GetColor(value);
+        }
+
+        ApplyAptitudeIcons();
+    }
+
+    // 적성 칸에 산업 그림을 넣는다 (SetAptitudes에서 호출). 그림 저장소가 없으면 칸을 끄고 숫자만 남긴다.
+    private void ApplyAptitudeIcons()
+    {
+        for (int i = 0; i < aptitudeIconImages.Length && i < IndustryLabel.DisplayOrder.Length; i++)
+        {
+            Image? image = aptitudeIconImages[i];
+
+            if (image == null)
+            {
+                continue;
+            }
+
+            Sprite? icon = VisualCatalog.IndustryIconOf(IndustryLabel.DisplayOrder[i]);
+
+            image.sprite  = icon!;
+            image.enabled = icon != null;
         }
     }
 
@@ -420,6 +453,22 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         if (label != null && sizeText != null)
         {
             sizeText.text = label;
+        }
+    }
+
+    // 종족 배지를 그린다('인' · '마' · '언' · '골'). 'null'이면 끈다 (Bind에서 호출 — 캐릭터 칸만 'SlotData.RaceBadge'가 있다).
+    private void SetRaceBadge(string? label)
+    {
+        if (raceBadge == null)
+        {
+            return;
+        }
+
+        raceBadge.SetActive(label != null);
+
+        if (label != null && raceText != null)
+        {
+            raceText.text = label;
         }
     }
 

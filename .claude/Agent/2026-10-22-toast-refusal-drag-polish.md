@@ -26,6 +26,7 @@ tags: [client, ui, fx]
 
 ## 후속 작업 / 주의사항
 - ⚠️ **씬을 `RunCommand` 안에서 `EditorSceneManager.SaveScene`으로 저장하면 레이아웃 구동 값(앵커·크기)이 전부 구워져 diff가 3,000줄이 된다.** 기존 씬은 그 값을 0으로 저장한다. 씬을 되돌리고 `unity cmd save_scene`으로 저장하니 추가 310줄만 남았다.
+  - **2026-11-05 정정:** 재현되지 않았다. `RunCommand` 저장도 다른 경로와 결과가 같았다 → [`2026-11-05-scene-dirty-undo-group.md`](2026-11-05-scene-dirty-undo-group.md)
 - ⚠️ 씬 오브젝트를 복제(`Instantiate`)하면 하위 `LocalizedText`가 편집 중에 켜져 NRE가 콘솔에 남는다(언어표 미로드) — 판·글자를 새로 만들고 `UIThemeColor`만 `CopySerialized`로 옮겼다.
 - `unity cmd eval`은 일부 런타임 필드를 빈 값으로 읽는다(`_frames` 0개) — 직렬화 필드(`slotParent`)로 우회했다. MCP `RunCommand`는 `System.Reflection`을 막는다.
 - 치트 창 안전장치(`CheatGuard`)는 직접 띄운 서버를 인식하지 못해 모달을 띄우고 에디터를 멈춘다 — 테스트는 `C_CheatRequest`를 직접 보냈다.

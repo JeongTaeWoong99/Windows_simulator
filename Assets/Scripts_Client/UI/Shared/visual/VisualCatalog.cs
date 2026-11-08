@@ -124,6 +124,7 @@ public class VisualCatalog : ScriptableObject
     private Dictionary<int, Sprite>? _industryIconMap;
     private Dictionary<int, Sprite>? _artifactIconMap;
     private Dictionary<string, Sprite>? _fxMap;
+    private Dictionary<EIndustryType, Sprite[]>? _hitFxMap;
 
     #region 화면이 부르는 곳 — 목록이 없으면(그림 저장소 없음) null
 
@@ -178,6 +179,28 @@ public class VisualCatalog : ScriptableObject
 
     public Sprite? GetFx(string key) => (_fxMap ??= ToFxMap(fxSprites)).TryGetValue(key, out Sprite sprite) ? sprite : null;
 
+    // 산업 타격 이펙트 — 'fx/hit/hit_<산업 소문자>_0.png' … 번호가 끊기는 데까지. 없으면 빈 배열(그 효과만 빠진다).
+    // 캐릭터 공격에 타격 이펙트가 없을 때 대상 쪽에서 쓴다 — 맞는 대상의 반응은 캐릭터가 아니라 대상(산업)이 정한다(2026-11-08).
+    public Sprite[] GetHitFx(EIndustryType industry)
+    {
+        _hitFxMap ??= new Dictionary<EIndustryType, Sprite[]>();
+
+        if (_hitFxMap.TryGetValue(industry, out Sprite[] cached))
+        {
+            return cached;
+        }
+
+        string prefix = $"hit_{industry.ToString().ToLowerInvariant()}_";
+        var    frames = new List<Sprite>();
+
+        for (Sprite? frame = GetFx(prefix + 0); frame != null; frame = GetFx(prefix + frames.Count))
+        {
+            frames.Add(frame);
+        }
+
+        return _hitFxMap[industry] = frames.ToArray();
+    }
+
     public Sprite? GetItemIcon(int itemTid)
         => (_itemIconMap ??= ToMap(itemIcons)).TryGetValue(itemTid, out Sprite icon) ? icon : fallbackItemIcon;
 
@@ -202,6 +225,7 @@ public class VisualCatalog : ScriptableObject
         _industryIconMap = null;
         _artifactIconMap = null;
         _fxMap           = null;
+        _hitFxMap        = null;
     }
 
     private static Dictionary<string, Sprite> ToFxMap(FxEntry[] entries)

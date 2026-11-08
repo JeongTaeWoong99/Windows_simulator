@@ -513,7 +513,10 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         int max = GameDataLoader.CondenseMaxStar;
 
-        infoText.text = CharacterSlotSource.GetLevelLabel(target.Level) + UIRichText.Dot
+        string? race = RaceLabel.Of(target.CharacterTid);
+
+        infoText.text = (race != null ? race + UIRichText.Dot : "")
+                      + CharacterSlotSource.GetLevelLabel(target.Level) + UIRichText.Dot
                       + Lang.Format("UI.Condense.Info", target.CondenseCount, GameDataLoader.GetCondenseThreshold(max));
 
         Color filled = UIThemePalette.Of(UIThemeRole.Highlight);

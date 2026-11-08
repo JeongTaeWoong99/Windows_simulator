@@ -1,9 +1,9 @@
 ---
 name: unity-ai-assets
-description: Unity AI로 이미지·스프라이트·사운드·음악 등 리소스를 만들거나 고칠 때 연다 — 실행 전 동의, 구독 없음·크레딧 소진 구분과 안내, 리소스별 사용 크레딧과 전후 잔액 보고. 이미 있는 그림을 잘라 쓰거나 기존 파일만 고치는 작업은 해당 없음.
+description: Unity AI로 이미지·스프라이트·사운드·음악 등 리소스를 만들거나 고칠 때, 또는 리소스를 무엇으로 만들지(AI 크레딧·Claude 코드 그리기·구매) 고를 때 연다 — 실행 전 동의, 구독 없음·크레딧 소진 구분과 안내, 리소스별 사용 크레딧과 전후 잔액 보고. 이미 있는 그림을 잘라 쓰거나 기존 파일만 고치는 작업은 해당 없음.
 ---
 
-> 최종 업데이트: 2026-11-02 (`unity-editor-ops`에서 분리 · 구독·크레딧 상태 구분 · 크레딧 보고)
+> 최종 업데이트: 2026-11-08 (0절 길 고르기 — Unity AI 크레딧 · Claude 사용량으로 코드 그리기 · 구매) · 2026-11-08 (영상 모델 값 — Kling 3초 107 · Seedance 4초 196 · 이미지 격자 동작 실패) · 2026-11-07 (캐릭터 시트 — 캐릭터와 무기·궤적만 · 맞는 대상·타격 이펙트 금지) · 2026-11-06 (모델 고르기 — 충분하면 싼 모델로 바로 · 필요하거나 불만이 나오면 올릴지 묻는다) · 2026-11-05 (크레딧 읽기를 `unity cmd eval`로) · 2026-11-02 (`unity-editor-ops`에서 분리 · 구독·크레딧 상태 구분 · 크레딧 보고)
 
 # Unity AI 리소스 생성
 
@@ -13,10 +13,25 @@ description: Unity AI로 이미지·스프라이트·사운드·음악 등 리�
 
 ---
 
+## 0. 길 고르기 — 크레딧이 유일한 길이 아니다 (2026-11-08)
+
+리소스를 만들 때 쓸 수 있는 **지갑이 셋**이다. 만들기 전에 어느 지갑이 맞는지 한 번 떠올리고, 애매하면 사용자에게 고르게 한다.
+
+| 길 | 쓰는 것 | 잘 맞는 것 |
+|---|---|---|
+| **Unity AI** (이 문서) | Unity AI 크레딧 — 월 할당, 남아도 이월 안 됨 | 캐릭터 생김새·동작(영상 모델), 아이콘, 소리·음악 |
+| **Claude가 코드로 그리기** | Claude 요금제 사용량 — 5시간 창마다 남는 몫을 쓸 수 있다 | 이펙트(입자·번쩍임·파편·연기), 도형·UI 장식처럼 규칙으로 그릴 수 있는 것. 그리고 → 렌더 → 눈으로 보고 → 고치기를 반복한다 |
+| **사서 쓰기** | 돈 | 화풍이 정해진 팩이 있을 때 |
+
+- 코드 길은 **화풍에 맞는 도구를 고른다.** 도트(픽셀 아트)는 [pixelfx](https://github.com/patch-gg/pixelfx)(MIT · JS 코드 → PNG 프레임)를 실제로 써 봤다(2026-11-08 타격 이펙트 5종). 도트가 아닌 프로젝트에서 쓸 도구는 아직 시험하지 않았다 — 그때 고르고 이 표에 적는다.
+- 프로젝트에 코드 길 스킬이 있으면 그쪽을 연다(예: 클라이언트 `pixel-fx`).
+
+---
+
 ## 1. 상태 확인 — 생성을 제안하기 전에
 
-아래를 `Unity_RunCommand`로 **두 번** 실행한다. 첫 호출이 새로 고침을 걸고, 잠시 뒤 다음 호출에서 최신값이 나온다.
-`Account`가 internal이라 리플렉션으로 읽는다. `using System.Reflection`은 막혀 있으니 쓰지 않는다.
+아래를 `unity cmd eval --code`로 **두 번** 실행한다. 첫 호출이 새로 고침을 걸고, 잠시 뒤 다음 호출에서 최신값이 나온다.
+`Account`가 internal이라 리플렉션으로 읽는다. `Unity_RunCommand`는 Undo 기록을 남겨 재컴파일 뒤 씬에 `*`를 켜므로 쓰지 않는다 → [`unity-editor-ops`](../../client/unity-editor-ops/SKILL.md) 1절.
 
 ```csharp
 var acc = System.Type.GetType("Unity.AI.Toolkit.Accounts.Services.Account, Unity.AI.Toolkit.Accounts");
@@ -24,10 +39,12 @@ var st  = acc.GetField("settings").GetValue(null);
 var pb  = acc.GetField("pointsBalance").GetValue(null);
 st.GetType().GetMethod("Refresh").Invoke(st, null);
 pb.GetType().GetMethod("Refresh").Invoke(pb, null);
+var o = "";
 foreach (var n in new[] { "HasSubscription", "CanSpendPoints", "AiGeneratorsEnabled" })
-    result.Log(n + " = " + st.GetType().GetProperty(n).GetValue(st));
-result.Log("Settings = " + st.GetType().GetProperty("Value").GetValue(st));
-result.Log("Balance = " + pb.GetType().GetProperty("Value").GetValue(pb)); // PointsAvailable = 잔액 · PointsAllocated = 할당
+    o += n + " = " + st.GetType().GetProperty(n).GetValue(st) + "\n";
+o += "Settings = " + st.GetType().GetProperty("Value").GetValue(st) + "\n";
+o += "Balance = " + pb.GetType().GetProperty("Value").GetValue(pb); // PointsAvailable = 잔액 · PointsAllocated = 할당
+return o;
 ```
 
 **위에서부터 처음 맞는 줄이 답이다.** 패키지의 상태 배너(`SessionStatusBanner`)와 같은 순서다.
@@ -57,6 +74,33 @@ result.Log("Balance = " + pb.GetType().GetProperty("Value").GetValue(pb)); // Po
 - 생성 중에는 응답이 막히고, 수십 초~수 분 걸린다는 점
 
 > 도구 설명 자체가 대화당 첫 호출 전 동의를 요구한다. 같은 대화에서 이미 동의받은 범위를 넘으면 다시 묻는다.
+
+### 모델 고르기 — 기본은 제일 싼 모델 (2026-11-06 사용자 지시)
+
+- **싼 모델로 충분하다고 판단하면 묻지 않고 그 모델로 만든다.** 지난 기록의 모델을 그대로 쓰지 않는다 — 비용은 [공식 문서](https://docs.unity.com/en-us/ai/credits/credits-about)에서 다시 확인한다. 문서 값은 예시이고 바뀔 수 있다.
+- **더 비싼 모델이 필요해 보이는 작업이면, 만들기 전에** "모델을 올릴까요?"라고 묻는다.
+- 사용자가 결과를 두고 **마음에 안 든다·이상하다·별로다·다시 해라**라고 하면, 다시 만들기 전에 같은 질문을 한다.
+- 물을 때는 **모델 이름과 예상 크레딧**을 함께 적는다. 답을 받기 전에는 올리지 않는다.
+- 실제 비용이 예상과 크게 다르면 **다음 생성을 멈추고 알린다.** 같은 모델로 다시 뽑아 확인하지 않는다.
+
+### 캐릭터 시트 — 캐릭터와 무기만 그린다 (2026-11-07 사용자 지시 · 모든 프로젝트)
+
+- **넣는다:** 캐릭터 몸 · 들고 있는 무기·도구 · **무기 궤적**(칼을 휘두를 때 남는 호 같은 잔상)
+- **넣지 않는다:** 타격 이펙트(불꽃·충격파·파편) · **맞는 대상**(나무·통나무·그루터기·바위·적) · 바닥에 튀는 조각
+- 이유: 맞는 대상과 타격 이펙트는 게임이 따로 그린다. 시트에 들어가면 대상이 바뀌어도 같이 따라다니고, 지우려면 칸마다 손이 간다.
+- 프롬프트에 적는다: `swinging at empty air, no target object, no impact effects, no debris, nothing on the ground` — 영상 모델은 "나무를 찍는다"고 쓰면 나무를 그린다. **동작만** 적는다("swings the axe down").
+- 그래도 그려졌으면 그 칸을 쓰지 않거나 지운다. 다시 뽑기 전에 비용을 알린다.
+
+### 캐릭터 동작 — 영상 모델 값 (2026-11-08 실측)
+
+| 길 | 값 | 결과 |
+|---|---|---|
+| `video-kling-v3-i2v-standard` 3초 | **107** | 기본. 16칸 |
+| `video-seedance-2-5` 4초(최소) | 196 | 깨끗하지만 비싸다. `width`·`height`를 작게 줘도 1024로 나오고 값이 줄지 않았다 |
+| 이미지 모델 격자로 동작 그리기 | 7 | **실패** — 자세가 동작이 아니거나 칸을 복사한다. 기준 그림 1장에만 쓴다 |
+
+- 대기는 영상으로 받지 않는다 — 공격·달리기 시트의 서 있는 칸을 쓴다(그 프로젝트가 대기를 연출에 쓰지 않을 때).
+- 맞는 쪽 반응(타격·파편)은 AI 크레딧을 쓰지 않고 코드로 그릴 수 있다 — 0절.
 
 ### 크레딧 보고 — 생성했으면 항상
 
