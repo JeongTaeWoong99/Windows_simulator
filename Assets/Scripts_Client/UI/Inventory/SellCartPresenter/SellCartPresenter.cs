@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using MikaNetwork;
@@ -73,6 +73,12 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("[마석으로 분해] 글자 — 받을 재료 수량을 코드가 쓴다(LocalizedText를 붙이지 않는다)")]
     private TMP_Text disassembleButtonText = null!;
 
+    [SerializeField, Tooltip("[골드로 판매] 왼쪽 아이콘 — 동전. 그림은 코드가 넣는다(그림 저장소가 없으면 숨긴다)")]
+    private Image sellIcon = null!;
+
+    [SerializeField, Tooltip("[마석으로 분해] 왼쪽 아이콘 — 받을 재료(마석)의 아이템 아이콘. 그림은 코드가 넣는다")]
+    private Image disassembleIcon = null!;
+
     [SerializeField, Tooltip("비우기 버튼 — 담은 것을 모두 빼고 패널을 닫는다. OnClick은 코드가 연결한다")]
     private Button clearButton = null!;
 
@@ -127,6 +133,8 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(sellButtonText,    nameof(sellButtonText));
         this.RequireRef(disassembleButton, nameof(disassembleButton));
         this.RequireRef(disassembleButtonText, nameof(disassembleButtonText));
+        this.RequireRef(sellIcon,              nameof(sellIcon));
+        this.RequireRef(disassembleIcon,       nameof(disassembleIcon));
         this.RequireRef(clearButton,       nameof(clearButton));
         this.RequireRef(inventoryTabs,     nameof(inventoryTabs));
         this.RequireRef(equipEnchant,      nameof(equipEnchant));
@@ -531,9 +539,11 @@ public class SellCartPresenter : MonoBehaviour
         sellButtonText.text = ButtonText(Lang.Get("UI.Sell.ToGold"),
                                          Lang.Format("UI.Sell.GoldGain", UIRichText.Paint($"{_cart.TotalPrice:N0}", UIThemeRole.Highlight)));
         disassembleButton.gameObject.SetActive(isEquip);
+        SetIcon(sellIcon, FxSprites.CoinBody);
 
         if (isEquip)
         {
+            SetIcon(disassembleIcon, VisualCatalog.ItemIconOf(_cart.ShardItemId));
             disassembleButtonText.text = ButtonText(Lang.Get("UI.Sell.ToShard"),
                                                     Lang.Format("UI.Sell.ShardGain", GameDataLoader.GetItemName(_cart.ShardItemId),
                                                                 UIRichText.Paint($"{_cart.TotalShards:N0}", UIThemeRole.Highlight)));
@@ -542,6 +552,13 @@ public class SellCartPresenter : MonoBehaviour
         sellButton.interactable        = !_isWaiting && _cart.Count > 0;
         disassembleButton.interactable = !_isWaiting && isEquip && _cart.TotalShards > 0;
         clearButton.interactable       = !_isWaiting;
+    }
+
+    // 버튼 왼쪽 아이콘 — 그림이 없으면(그림 저장소 없음) 숨긴다
+    private static void SetIcon(Image icon, Sprite? sprite)
+    {
+        icon.sprite = sprite!;
+        icon.gameObject.SetActive(sprite != null);
     }
 
     // 버튼 두 줄 — 위는 무엇을 하는지, 아래는 받을 총량.

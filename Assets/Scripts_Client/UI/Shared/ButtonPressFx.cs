@@ -1,4 +1,5 @@
 ﻿using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem;
@@ -10,7 +11,7 @@ using UnityEngine.UI;
 //
 // ■ 어떤 버튼을 찾나 — EventSystem이 클릭을 줄 대상과 같다
 //   커서 밑 맨 위 UI(WindowManager.UIHitsUnderCursor[0])에서 클릭을 받는 부모('IPointerClickHandler')를 찾는다.
-//   그게 누를 수 있는 'Button'일 때만 반응한다(Toggle · 드롭다운 · 입력창은 빠진다).
+//   그게 누르는 것('IsPressable' — 버튼 · 드롭다운 · 체크)일 때만 반응한다. 입력칸 · 슬라이더 · 스크롤바는 빠진다 (2026-11-09 드롭다운·체크 추가).
 //
 // ■ 빠지는 것
 //   너무 큰 버튼 — 창 뒤를 덮는 차단막(경매 등록 창의 'Dim Button' 1920×920)이 통째로 줄면 화면이 출렁인다.
@@ -93,7 +94,7 @@ public class ButtonPressFx : MonoBehaviour
 
         GameObject? handler = ExecuteEvents.GetEventHandler<IPointerClickHandler>(hits[0].gameObject);
 
-        if (handler == null || !handler.TryGetComponent(out Button button))
+        if (handler == null || !handler.TryGetComponent(out Selectable button) || !IsPressable(button))
         {
             return null;
         }
@@ -112,6 +113,10 @@ public class ButtonPressFx : MonoBehaviour
 
         return button.transform;
     }
+
+    // 누르는 것 — 버튼 · 드롭다운 머리 · 체크(드롭다운 목록 줄·탭). 입력칸 · 슬라이더 · 스크롤바는 끌거나 쓰는 것이라 빠진다
+    private static bool IsPressable(Selectable selectable)
+        => selectable is Button or TMP_Dropdown or Toggle;
 
     private void Press(Transform? target)
     {

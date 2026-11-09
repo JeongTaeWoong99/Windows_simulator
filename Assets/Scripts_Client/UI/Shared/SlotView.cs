@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameData;
@@ -194,9 +194,16 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private float _nameBaseAlpha = 1f;
     private float _subBaseAlpha  = 1f;
 
+    // 등급 틀 그림 한 칸 = 화면 2칸 — 'UiSkin'과 같은 픽셀 크기
+    private const float  RarityPixelScale = 0.5f;
+    private const string RarityFrameName  = "Rarity Frame";
+
     // 딤을 걷었을 때 돌아갈 등급색. 'rarityImage.color'를 그대로 읽으면 이미 어두워진 값이라
     // 껐다 켤 때마다 점점 검어진다.
     private Color _rarityColor = RarityPalette.Unknown;
+
+    // 등급 틀 장식 — 그림이 있을 때만 생긴다. 등급에 따라 쇠(일반~희귀) · 금(영웅 이상)으로 갈아 낀다
+    private Image? _rarityFrame;
 
     // Special 등급을 그리고 있나 — 무지개 테두리('SpecialSlotFx')를 켠다(T-151). 연출은 처음 켤 때 코드로 붙인다
     private bool            _isSpecial;
@@ -287,6 +294,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         Key           = data.Key;
         _rarityColor  = RarityPalette.Get(data.Rarity);
         _isSpecial    = data.Rarity == GlobalRarity.Special;
+        SetRarityFrame(data.Rarity);
         nameText.text = data.Name;
         subText.text  = data.Sub;
 
@@ -298,7 +306,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 등급 배경 그림을 깐다 (Awake에서 한 번) — 테두리 띠 + 아래로 진해지는 속. 색은 여전히 'ApplyTint'가 등급색으로 입힌다.
     // 그림이 없으면(그림 저장소 없음) 프리팹 그대로 단색이 칸을 덮는다 — 예전 모양이다.
-    // ※ 칸 프리팹이 아니라 여기서 넣는다 — 메인 저장소 파일이 그림을 직접 가리키면 그림 저장소가 없는 쪽에서 참조가 끊긴다('Art 규칙.md').
+    // ※ 칸 프리팹이 아니라 여기서 넣는다 — 칸은 실행 중에만 생기고, 그림이 없으면(그림 저장소 없음) 예전 단색으로 남는다.
     private void ApplyRarityBackground()
     {
         Sprite? background = FxSprites.RarityBackground;
@@ -308,9 +316,69 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        rarityImage.sprite     = background;
-        rarityImage.type       = Image.Type.Sliced;
-        rarityImage.fillCenter = true;
+        rarityImage.sprite                  = background;
+        rarityImage.type                    = Image.Type.Sliced;
+        rarityImage.fillCenter              = true;
+        rarityImage.pixelsPerUnitMultiplier = RarityPixelScale;
+
+        AddRarityFrame();
+    }
+
+    // 등급 틀 장식(쇠 귀퉁이 · 홈 그늘) — 바탕 바로 위 형제. 색을 곱하지 않아 어떤 등급색 위에서도 쇠가 산다 (2026-11-10)
+    private void AddRarityFrame()
+    {
+        Sprite? frame = FxSprites.RarityFrame;
+
+        if (frame == null)
+        {
+            return;
+        }
+
+        Transform? found = rarityImage.transform.parent.Find(RarityFrameName);
+
+        if (found != null)
+        {
+            _rarityFrame = found.GetComponent<Image>();
+
+            return;
+        }
+
+        var go   = new GameObject(RarityFrameName, typeof(RectTransform), typeof(Image));
+        var rect = (RectTransform)go.transform;
+        var src  = rarityImage.rectTransform;
+
+        go.layer = gameObject.layer;
+        rect.SetParent(src.parent, false);
+        rect.SetSiblingIndex(src.GetSiblingIndex() + 1);
+        rect.anchorMin        = src.anchorMin;
+        rect.anchorMax        = src.anchorMax;
+        rect.pivot            = src.pivot;
+        rect.anchoredPosition = src.anchoredPosition;
+        rect.sizeDelta        = src.sizeDelta;
+
+        var image = go.GetComponent<Image>();
+        image.sprite                  = frame;
+        image.type                    = Image.Type.Sliced;
+        image.fillCenter              = false;
+        image.raycastTarget           = false;
+        image.pixelsPerUnitMultiplier = RarityPixelScale;
+        _rarityFrame                  = image;
+    }
+
+    // 등급에 맞는 틀 장식 — 영웅 이상은 금 귀퉁이, 그 아래는 쇠 꺾쇠 (Bind · Clear에서 호출). 금 그림이 없으면 쇠 그대로
+    private void SetRarityFrame(GlobalRarity rarity)
+    {
+        if (_rarityFrame == null)
+        {
+            return;
+        }
+
+        Sprite? frame = rarity >= GlobalRarity.Epic ? FxSprites.RarityFrameGold ?? FxSprites.RarityFrame : FxSprites.RarityFrame;
+
+        if (frame != null)
+        {
+            _rarityFrame.sprite = frame;
+        }
     }
 
     // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)
@@ -680,6 +748,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     {
         Key            = 0;
         _rarityColor   = RarityPalette.Unknown;
+        SetRarityFrame(GlobalRarity.None);
         _isSpecial     = false;
         _isDimmed      = false;
         _isFilteredOut = false;

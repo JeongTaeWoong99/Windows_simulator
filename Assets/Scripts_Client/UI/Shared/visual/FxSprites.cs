@@ -10,7 +10,7 @@
 //   지금 그림은 임시다 — 'Art/_source/fx/fx-placeholder/make_fx.py'가 구웠다(모양을 다듬으려면 그 스크립트를 고쳐 다시 굽는다).
 //
 // ■ 그림이 없으면 그 효과만 빠진다
-//   씬·프리팹이 그림을 직접 가리키면 그림 저장소를 안 받은 사람 쪽에서 참조가 끊기므로('Art 규칙.md') 목록으로만 찾는다.
+//   코드가 키로 고르는 그림은 목록으로 찾는다(UI 틀처럼 씬에 구운 것은 예외 — 'Art 규칙.md').
 //   목록이 없거나(그림 저장소 없음) 그 그림이 빠졌으면 null — 쓰는 쪽은 그 Image를 켜지 않는다(빈 Image는 흰 네모로 그려진다).
 //   ※ 찾을 때마다 목록을 본다(캐시하지 않는다) — 목록의 사전 조회라 가볍고, 플레이 중 그림을 바꿔도 다음 연출부터 따라온다.
 public static class FxSprites
@@ -67,6 +67,9 @@ public static class FxSprites
     // 테두리 띠 + 안쪽 번짐 + 아래로 진해지는 속 — 등급색을 입힌다.
     // ⚠️ 9-slice 경계(Border 10)가 .meta에 있다 — 'Image.Type.Sliced'로 늘린다
     public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
+    // 등급 틀 장식 — 색을 곱하지 않는 덧그림(쇠 귀퉁이 · 홈 그늘). 바탕 바로 위에 깐다('SlotView')
+    public static Sprite? RarityFrame      => VisualCatalog.FxOf("rarity_frame");
+    public static Sprite? RarityFrameGold  => VisualCatalog.FxOf("rarity_frame_gold");
 
     // ── special — Special 칸 ('SpecialSlotFx') · 테두리 띠는 'RevealFrame' · 빛줄기는 'RevealShine' · 반짝임은 'RevealSparkle'을 빌린다 ──
 
@@ -95,6 +98,12 @@ public static class FxSprites
     // 창 제목 띠(진홍 + 구리 테) — 'Background' 자리 중 Header 역할
     public static Sprite? UiHeader     => VisualCatalog.FxOf("ui_header");
     public static Sprite? UiHeaderTrim => VisualCatalog.FxOf("ui_header_trim");
+
+    // 작업슬롯 칸 — 빈 칸(파인 돌 + 구리 꺾쇠) · 잠긴 칸(쇠판 빗금, Tiled) · 가운데 표시 아이콘 ('WorkSlotFrameView')
+    public static Sprite? UiSlotEmpty  => VisualCatalog.FxOf("ui_slot_empty");
+    public static Sprite? UiSlotLocked => VisualCatalog.FxOf("ui_slot_locked");
+    public static Sprite? UiIconPlus   => VisualCatalog.FxOf("ui_icon_plus");
+    public static Sprite? UiIconLock   => VisualCatalog.FxOf("ui_icon_lock");
 
     // ── appraise — 유물 감정 무대 ('RelicAppraiseFx') ──
 

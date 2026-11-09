@@ -216,9 +216,12 @@ public class StatePresenter : MonoBehaviour
             return;
         }
 
-        goldIcon.sprite         = coin;
-        goldIcon.color          = Color.white;
-        goldIcon.preserveAspect = true;
+        // 그림 한 장 그대로 — 늘려 쓰는 틀(Sliced)이면 비율 맞춤이 안 먹어 동전이 잘린다
+        goldIcon.sprite                  = coin;
+        goldIcon.type                    = Image.Type.Simple;
+        goldIcon.pixelsPerUnitMultiplier = 1f;
+        goldIcon.color                   = Color.white;
+        goldIcon.preserveAspect          = true;
     }
 
     // 안 받은 우편이 있으면 점을 켠다 (MailsChanged 구독 · Refresh에서 호출)

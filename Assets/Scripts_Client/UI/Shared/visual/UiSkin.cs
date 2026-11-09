@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
@@ -21,12 +22,13 @@ using UnityEngine.UI;
 //   그래서 따로 첫 자식 Image('Ui Trim')로 깐다. 글씨·아이콘(뒤 형제)이 그 위에 그려진다.
 //   레이아웃에 끼지 않고(LayoutElement.ignoreLayout) 클릭을 막지 않는다(raycastTarget 끔).
 //
-// ■ 씬·프리팹을 고치지 않고 실행 중에 바꾼다
-//   씬이 그림 저장소의 그림을 직접 가리키면 그림 저장소를 안 받은 쪽에서 참조가 끊긴다('Art 규칙.md').
-//   그림이 없으면(그림 저장소 없음 · 'fx/ui/' 없음) 아무것도 안 바꾼다 — 예전 모양이다.
+// ■ 씬·프리팹에 구워 두고, 실행 중에도 한 번 더 입힌다(안 구운 새 UI의 안전망)
+//   구운 씬은 그림 저장소를 직접 가리킨다 — 그림 저장소가 없으면 흰 상자로 보인다(허용 · 'Art 규칙.md').
+//   실행 중 입히기는 그림이 없으면(그림 저장소 없음 · 'fx/ui/' 없음) 아무것도 안 바꾼다.
 //
 // ■ 언제 — 씬이 열릴 때 한 번, 꺼진 오브젝트까지. 실행 중에 프리팹으로 만드는 UI는 그 뷰의 Awake에서 'Apply(this)'.
-//   에디터(플레이 전)에서도 미리 보인다 — 'UiSkinPreview'(Editor)가 'Recorder'로 바꾼 것을 적어 두고, 저장·플레이·컴파일 직전에 되돌린다.
+//   ★ 씬·프리팹에 구워 둔다 (2026-11-10) — 메뉴 'UI 테마/스킨 굽기'('UiSkinBaker' · Editor). 구운 것은 그림 이름이 'ui_*'라 실행 중 다시 바꾸지 않는다.
+//     실행 중 입히기는 안 구운 새 UI를 위한 안전망이다. 그림 저장소가 없으면 구운 자리는 흰 상자로 보인다(사용자 허용).
 public static class UiSkin
 {
     // 픽셀 하나를 캔버스 2칸으로 — 1이면 테두리가 너무 가늘어 픽셀 느낌이 안 난다
@@ -35,18 +37,18 @@ public static class UiSkin
     private const string TrimName  = "Ui Trim";
     private const string FrameName = "Ui Frame";
 
-    // 액자 띠 두께(캔버스 픽셀) — 'ui_panel_trim' 경계 12px ÷ PixelsPerUnitMultiplier
-    private const int FramePadding = 24;
+    // 액자 여백(캔버스 픽셀) — 띠 두께('ui_panel_trim' 경계 12px ÷ PixelsPerUnitMultiplier = 24) + 띠와 내용 사이 틈 8.
+    //   틈이 없으면 버튼이 띠에 붙어 겹쳐 보인다(2026-11-10 사용자).
+    private const int FramePadding = 32;
 
-    // 바꾼 것을 적는 쪽 — 에디터 미리보기가 저장 전에 되돌리려고 건다. 실행 중에는 null
-    public interface IRecorder
-    {
-        void SpriteSwapped(Image image, Sprite oldSprite, float oldMultiplier);
-        void Created(GameObject go);
-        void PaddingChanged(LayoutGroup layout, RectOffset oldPadding);
-    }
+    // 이보다 가는 것(선택 테두리 선 3px · 슬라이더 막대 8px)에는 틀을 입히지 않는다 — 틀 경계(버튼 10px)보다 얇아 뭉개진다
+    private const float MinSkinSize = 14f;
 
-    public static IRecorder? Recorder { get; set; }
+    // 드롭다운 목록 틀 안쪽 여백(캔버스 픽셀) — 줄 바탕(불투명)이 목록 테두리를 덮지 않게
+    private const float ListInset = 4f;
+
+    // 건너뛸 오브젝트 — 굽기('UiSkinBaker')가 씬 안 프리팹 인스턴스를 거른다(프리팹 원본에서 굽는다). 실행 중에는 null
+    public static System.Func<GameObject, bool>? Skip { get; set; }
 
     private readonly struct Skin
     {
@@ -73,6 +75,8 @@ public static class UiSkin
 
     private static void OnSceneLoaded(Scene scene, LoadSceneMode mode) => ApplyAll();
 
+    private static bool Skipped(GameObject go) => Skip != null && Skip(go);
+
     // 열린 씬의 Image 전부(꺼진 것 포함) — 씬이 열릴 때 · 에디터 미리보기('UiSkinPreview')
     public static void ApplyAll()
     {
@@ -85,13 +89,33 @@ public static class UiSkin
 
         foreach (Image image in Object.FindObjectsByType<Image>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
-            Swap(image, map);
+            if (!Skipped(image.gameObject))
+            {
+                Swap(image, map);
+            }
+        }
+
+        // 드롭다운 목록
+        foreach (TMP_Dropdown dropdown in Object.FindObjectsByType<TMP_Dropdown>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (!Skipped(dropdown.gameObject))
+            {
+                InsetList(dropdown.template, false);
+            }
+        }
+
+        foreach (CheckDropdownView dropdown in Object.FindObjectsByType<CheckDropdownView>(FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            if (!Skipped(dropdown.gameObject))
+            {
+                InsetList(dropdown.ListRect, true);
+            }
         }
 
         // 열·오버레이 창 몸통 — Image가 없어도 액자를 두른다
         foreach (RectTransform rect in Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
-            if (rect.name == "Body Panel" && rect.parent != null && rect.parent.name.EndsWith("(MAIN VIEW)"))
+            if (rect.name == "Body Panel" && rect.parent != null && rect.parent.name.EndsWith("(MAIN VIEW)") && !Skipped(rect.gameObject))
             {
                 AddFrame(rect);
             }
@@ -110,8 +134,44 @@ public static class UiSkin
 
         foreach (Image image in root.GetComponentsInChildren<Image>(true))
         {
-            Swap(image, map);
+            if (!Skipped(image.gameObject))
+            {
+                Swap(image, map);
+            }
         }
+
+        foreach (TMP_Dropdown dropdown in root.GetComponentsInChildren<TMP_Dropdown>(true))
+        {
+            if (!Skipped(dropdown.gameObject))
+            {
+                InsetList(dropdown.template, false);
+            }
+        }
+    }
+
+    // 드롭다운 목록의 보이는 칸(Viewport)을 틀 안쪽으로 들인다 — 왼쪽, 스크롤바가 없는 오른쪽, 'vertical'이면 위·아래도. 한 번만 들인다.
+    //   'TMP_Dropdown'은 위·아래를 들이지 않는다(false) — 목록 높이를 내용 높이에 맞춰 줄여서 들인 만큼 마지막 줄이 잘린다.
+    //   위·아래 여백은 템플릿의 내용 칸이 이미 갖고 있다(줄 템플릿 위아래 4px).
+    private static void InsetList(RectTransform? list, bool vertical)
+    {
+        if (list == null || list.Find("Viewport") is not RectTransform viewport || viewport.offsetMin.x >= ListInset)
+        {
+            return;
+        }
+
+        float right = viewport.offsetMax.x < 0f ? viewport.offsetMax.x : -ListInset; // 스크롤바 자리는 그대로
+
+        // '숨기며 넓히기' 스크롤바는 보이는 칸 크기를 덮어써 여백이 사라진다 — 숨기기만 하고, 오른쪽도 틀만큼만 들인다(스크롤바는 필요할 때 위에 뜬다)
+        if (list.TryGetComponent(out ScrollRect scroll) && scroll.verticalScrollbarVisibility == ScrollRect.ScrollbarVisibility.AutoHideAndExpandViewport)
+        {
+            scroll.verticalScrollbarVisibility = ScrollRect.ScrollbarVisibility.AutoHide;
+            right                              = -ListInset;
+        }
+
+        float vy = vertical ? ListInset : 0f;
+
+        viewport.offsetMin = new Vector2(viewport.offsetMin.x + ListInset, viewport.offsetMin.y + vy);
+        viewport.offsetMax = new Vector2(right, viewport.offsetMax.y - vy);
     }
 
     // 'Background' 자리를 역할로 가를 때 쓰는 키
@@ -171,6 +231,11 @@ public static class UiSkin
             }
         }
 
+        if (IsThin(image))
+        {
+            return;
+        }
+
         // 창 바탕 — 액자를 두를 창이 아니면 파인 칸으로
         if (skin.TrimTiled)
         {
@@ -197,15 +262,36 @@ public static class UiSkin
 
     private static void SetSprite(Image image, Sprite body)
     {
-        Recorder?.SpriteSwapped(image, image.sprite, image.pixelsPerUnitMultiplier);
-
         image.sprite                  = body;
         image.pixelsPerUnitMultiplier = PixelsPerUnitMultiplier;
     }
 
+    // 크기를 아는데(꺼져서 0인 것은 모른다) 틀보다 가는 것
+    private static bool IsThin(Image image)
+    {
+        Rect  rect = image.rectTransform.rect;
+        float min  = Mathf.Min(rect.width, rect.height);
+
+        return min > 0.5f && min < MinSkinSize;
+    }
+
     // 액자를 두를 팝업 바탕 — 세로로 쌓는 창이고 내용 크기에 맞춰 줄지 않는다(툴팁처럼 작아지는 것 제외)
+    //   열·오버레이 창('(MAIN VIEW)'의 'Body Panel') 안의 구획은 빠진다 — 액자 안에 액자가 겹친다(길드 창고 · 2026-11-10)
     private static bool IsWindow(Image image)
-        => image.TryGetComponent(out VerticalLayoutGroup _) && !image.TryGetComponent(out ContentSizeFitter _);
+        => image.TryGetComponent(out VerticalLayoutGroup _) && !image.TryGetComponent(out ContentSizeFitter _) && !IsInsideColumn(image.transform);
+
+    private static bool IsInsideColumn(Transform node)
+    {
+        for (Transform? t = node.parent; t != null; t = t.parent)
+        {
+            if (t.name == "Body Panel" && t.parent != null && t.parent.name.EndsWith("(MAIN VIEW)"))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // 창 액자 — 마지막 자식으로 덮고, 레이아웃 여백을 띠만큼 늘린다
     private static void AddFrame(RectTransform window)
@@ -223,7 +309,6 @@ public static class UiSkin
         if (window.TryGetComponent(out LayoutGroup layout))
         {
             RectOffset pad = layout.padding;
-            Recorder?.PaddingChanged(layout, new RectOffset(pad.left, pad.right, pad.top, pad.bottom));
             layout.padding = new RectOffset(pad.left + FramePadding, pad.right + FramePadding, pad.top + FramePadding, pad.bottom + FramePadding);
             LayoutRebuilder.MarkLayoutForRebuild(window);
         }
@@ -260,7 +345,6 @@ public static class UiSkin
     {
         var go = new GameObject(name, typeof(RectTransform), typeof(Image), typeof(LayoutElement));
         go.layer = parent.gameObject.layer;
-        Recorder?.Created(go);
 
         var rect = (RectTransform)go.transform;
         rect.SetParent(parent, false);

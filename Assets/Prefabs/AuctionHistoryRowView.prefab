@@ -1455,6 +1455,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
   text: 
+  label: {fileID: 0}
 --- !u!114 &646940102871532221
 MonoBehaviour:
   m_ObjectHideFlags: 0

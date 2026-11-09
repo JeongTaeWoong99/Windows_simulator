@@ -86,3 +86,28 @@ tags: [client, art, ui]
 - `TooltipTrigger.label`(숨긴 글씨) 추가 — 메뉴 5 · 상태바 3 버튼에 연결, 메뉴 아이콘 48px(3배) 가운데 · 글씨 끔.
 - 사고: 사용자 플레이 중 재컴파일을 또 걸었다 — 이번엔 컴파일 오류로 실패해 리로드가 없어 세션은 무사. 고친 파일은 플레이가 끝난 뒤 넣음.
 - 바운스: 코드에 누름·호버 바운스가 없다(DOTween 스케일은 강화·합치기 같은 결과 연출뿐). 드롭다운 차이는 TMP_Dropdown(열 때 0.15초 페이드) vs 제외 `CheckDropdownView`(페이드 없음)뿐 — 사용자에게 어떤 움직임인지 확인 요청.
+
+## 10차 — 눌림 반응 전수 · 드롭다운 목록 크기 · 골드 아이콘 (2026-11-09)
+- 9차 바운스 보고는 틀렸다 — 누름 반응 `ButtonPressFx`(Event System에 하나)가 이미 있었고 **`Button`만** 잡아 Unity 드롭다운·체크가 빠졌다. 제외 드롭다운만 튄 이유(머리가 `Button`). → `Button · TMP_Dropdown · Toggle`로 넓힘.
+- 드롭다운 전수(씬 TMP 21 + 제외 1): 제외 목록이 머리보다 10px 넓음 · 줄 바탕이 목록 틀을 덮어 테두리가 안 보임 · 체크 표시가 칸 색(`Slot`)이라 안 보임 · 템플릿 높이 150이라 8줄부터 스크롤.
+  - `CheckDropdownView.FitList`: 가로 늘이기 + 높이에 틀 여백 포함, 열 때마다 다시 잼. `ListPadding` 4→5(딱 맞으면 스크롤바가 뜸).
+  - `UiSkin.InsetList`: 실행 중에 `Viewport`를 4px 들임. TMP는 좌우만 — 위아래까지 들였더니 TMP가 목록 높이를 내용 높이로 줄여 마지막 줄이 잘렸다. 제외 목록은 `AutoHideAndExpandViewport`가 보이는 칸 크기를 덮어써 여백이 사라져 `AutoHide`로.
+  - 씬(YAML 직접): 체크 22개 `Slot`→`Highlight` · 템플릿 21개 높이 150→260.
+- 골드 아이콘 잘림: 자리표시가 `UISprite` Sliced라 `UiSkin`이 버튼 틀·장식을 입혔고, 동전을 넣어도 Sliced라 비율 맞춤이 안 먹었다. 씬 `Gold Image` Simple + `StatePresenter.ApplyGoldIcon`이 Simple·배율 1로.
+- 씬을 Unity로 저장하면 레이아웃 구동값 1,230줄이 같이 바뀌어(그 전부터 묵은 값) 되돌리고 YAML을 직접 고친 뒤 씬을 다시 열었다.
+- 확인: 플레이에서 열린 드롭다운 전부 너비=머리 · 내용 ≤ 보이는 칸 · 캡처로 틀·체크·골드 확인.
+
+## 11차 — 틀 굽기 · 액자 틈 · 칸 그림 · 버그 (2026-11-10)
+- 사용자: 씬에서 실행 전에 안 보여 불편 — 그림 저장소가 없을 때 흰 상자여도 된다. → 에디터 미리보기(`UiSkinPreview`)를 지우고 **굽기**(`UiSkinBaker`, 메뉴 `UI 테마/스킨 굽기`)로. 프리팹 24개 + 씬. `UiSkin.Recorder` → `UiSkin.Skip`(씬 안 프리팹 인스턴스 거르기). `Art 규칙.md` 참조 규칙을 UI 틀·칸 그림만 예외로.
+- 굽고 보니: 3px 선택 테두리 선 · 8px 슬라이더 막대 19개에 버튼 틀이 입혀짐 → 되돌리고 `IsThin`(14px 미만 제외). 길드 창고(창 안 구획)에 액자가 겹침 → `IsInsideColumn`이면 액자 안 두름.
+- 액자 틈: 띠(24)에 버튼이 딱 붙어 겹쳐 보임 → `FramePadding` 32(틈 8). 구운 창 11개 여백 +8. 확인·수량 입력 팝업이 내용 선호 높이보다 작아 띠를 덮음 → 280. 로그인 창 200×400 → 300×250. 플레이로 메인·인벤·길드·경매·아티팩트·거점·설정을 돌며 겹침 0(띠 31px 기준) 확인.
+- 판매 카트 버튼에 아이콘(`sellIcon` 동전 · `disassembleIcon` 마석 아이템 아이콘, 코드가 넣음).
+- 칸 그림(`make_slots.py`, 크레딧 0): `rarity_bg`를 경사 판으로 덮어씀 + `rarity_frame` 덧그림(`SlotView.AddRarityFrame`) · 작업슬롯 `ui_slot_empty`/`ui_slot_locked`(Tiled 빗금) + `ui_icon_plus`/`ui_icon_lock` → 씬 8칸에 `Slot Art`·`State Icon` + `WorkSlotFrameView`. 임포트: `rarity_*` 점 필터 · 경계(`UiBorders`).
+- 버그: 아티팩트 메뉴 툴팁이 'Button' — 꺼진 글씨라 `LocalizedText`가 안 돌았다 → `TooltipTrigger`가 키로 읽음. 씬에 남은 낡은 번역 글씨 10개를 표 값으로. 로그인 입력칸 자리표시 'Enter text...'는 키가 없어 엑셀 추가 필요(이름 확인 대기).
+- 확인용으로 테스트 계정(taewoong)에 치트로 캐릭터 전체 · 골드 500만 · 구슬 6등급 각 3개를 줬다(로컬 DB).
+
+### 12차 (2026-11-10) — 칸 디자인 2차 ("너무 밋밋하다")
+- `make_slots.py` 다시 그림(크레딧 0): `rarity_bg` 가운데가 빛나는 등급색 판 + 굵은 외곽선·안쪽 밝은 테 · 틀 장식을 등급 둘로 — 쇠 꺾쇠(일반~희귀) / `rarity_frame_gold` 금 귀퉁이 + 루비(영웅 이상, `SlotView.SetRarityFrame`).
+- 작업슬롯: 빈 칸 돌바닥 벽돌 + 구리 꺾쇠·바느질 선 + 돋을새김 영웅 실루엣·구리 '+' 배지 / 잠긴 칸 리벳 쇠 띠 + 귀퉁이 볼트 + 육각 쇠판 자물쇠. 둘 다 Tiled(무늬 주기 = 가운데 칸 12의 약수).
+- 플레이 캡처로 확인 — 바탕화면 `UI 작업 캡처 2026-11-10/07·08`.
+- 로그인 입력칸 자리표시: `Loc_UI`에 `UI.Login.Placeholder`(아이디 입력 / Enter ID) 추가 → 파이프라인 · 씬 `Placeholder`에 `LocalizedText`.

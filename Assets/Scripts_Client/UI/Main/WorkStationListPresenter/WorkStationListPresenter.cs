@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 using GameData;
 using MikaNetwork;
@@ -48,6 +48,9 @@ public class WorkStationListPresenter : MonoBehaviour
 
     // 칸 번호 → 프레임 라벨("비어있음." 자리). 잠긴 칸은 여기에 해금 조건을 적는다.
     private readonly Dictionary<int, TMP_Text> _frameLabels = new Dictionary<int, TMP_Text>();
+
+    // 칸 프레임 그림(빈 칸 · 잠긴 칸) — 프레임에 'WorkSlotFrameView'가 있으면 문구와 그림을 함께 바꾼다
+    private readonly Dictionary<int, WorkSlotFrameView> _frameViews = new Dictionary<int, WorkSlotFrameView>();
 
     // 장착 네모 버퍼 — 칸마다 새로 만들지 않는다. 뷰가 받는 즉시 쓰임이 끝난다.
     private readonly List<GlobalRarity> _wornGrades = new List<GlobalRarity>();
@@ -189,6 +192,12 @@ public class WorkStationListPresenter : MonoBehaviour
         for (int i = 0; i < slotParent.childCount; i++)
         {
             var label = slotParent.GetChild(i).GetComponentInChildren<TMP_Text>(true);
+
+            if (slotParent.GetChild(i).TryGetComponent(out WorkSlotFrameView frameView))
+            {
+                _frameViews[i] = frameView;
+                label          = frameView.Label;
+            }
 
             if (label != null)
             {
@@ -461,7 +470,17 @@ public class WorkStationListPresenter : MonoBehaviour
         {
             int unlockTid = GameDataLoader.GetWorkSlotUnlockTid(pair.Key);
 
-            pair.Value.text = _data.IsUnlocked(unlockTid) ? EmptyLabel : BuildLockedLabel(unlockTid);
+            bool   unlocked  = _data.IsUnlocked(unlockTid);
+            string text      = unlocked ? EmptyLabel : BuildLockedLabel(unlockTid);
+
+            if (_frameViews.TryGetValue(pair.Key, out var frameView))
+            {
+                frameView.SetState(unlocked, text);
+            }
+            else
+            {
+                pair.Value.text = text;
+            }
         }
     }
 

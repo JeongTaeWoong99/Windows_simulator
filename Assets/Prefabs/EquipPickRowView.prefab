@@ -392,6 +392,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
   text: 
+  label: {fileID: 0}
 --- !u!1 &7970974225878446889
 GameObject:
   m_ObjectHideFlags: 0

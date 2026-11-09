@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -40,8 +40,8 @@ public class CheckDropdownView : MonoBehaviour
     private const int ListSortingOrder    = 101;
     private const int BlockerSortingOrder = 100;
 
-    // 목록 위아래 여백 합.
-    private const float ListPadding = 4f;
+    // 목록 위아래 여백 합 — 줄 높이 합과 딱 같으면 소수점 차이로 스크롤바가 뜬다, 1을 더 둔다.
+    private const float ListPadding = 5f;
 
     // 줄의 체크가 바뀌었다 — (항목 번호, 켜짐) (부르는 Presenter가 구독).
     public event Action<int, bool>? Toggled;
@@ -50,9 +50,13 @@ public class CheckDropdownView : MonoBehaviour
     private readonly List<TMP_Text> _rowTexts = new List<TMP_Text>();
 
     private Canvas      _listCanvas = null!;
+    private int         _shownRows;
     private GameObject? _blocker;
 
     public bool IsOpen => list.gameObject.activeSelf;
+
+    // 펼쳐지는 목록 — 'UiSkin'이 틀 안쪽으로 줄을 들인다
+    public RectTransform ListRect => list;
 
     // 자기 참조만 확인하고 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
     private void Awake()
@@ -112,8 +116,21 @@ public class CheckDropdownView : MonoBehaviour
             _rows[i].SetIsOnWithoutNotify(isChecked[i]);
         }
 
-        float height = Mathf.Min(labels.Count * rowHeight + ListPadding, maxListHeight);
-        list.sizeDelta = new Vector2(list.sizeDelta.x, height);
+        _shownRows = labels.Count;
+        FitList();
+    }
+
+    // 목록 크기 — 너비는 머리와 같게, 높이는 줄 수만큼(+ 틀 안쪽 여백 · 'UiSkin.InsetList'). 열 때마다 다시 잰다 — 안 구운 씬은 틀이 씬이 열린 뒤에 입혀진다
+    private void FitList()
+    {
+        list.anchorMin = new Vector2(0f, list.anchorMin.y);
+        list.anchorMax = new Vector2(1f, list.anchorMax.y);
+
+        var   viewport = (RectTransform)rowTemplate.transform.parent.parent;
+        float frame    = list.rect.height - viewport.rect.height;
+        float height   = Mathf.Min(_shownRows * rowHeight + ListPadding + frame, maxListHeight);
+
+        list.sizeDelta = new Vector2(0f, height);
     }
 
     public void SetHeadText(string text)
@@ -155,6 +172,7 @@ public class CheckDropdownView : MonoBehaviour
         blocker.GetComponent<Canvas>().overrideSorting = true;
         blocker.GetComponent<Canvas>().sortingOrder    = BlockerSortingOrder;
 
+        FitList();
         list.gameObject.SetActive(true);
         _listCanvas.overrideSorting = true;
         _listCanvas.sortingOrder    = ListSortingOrder;

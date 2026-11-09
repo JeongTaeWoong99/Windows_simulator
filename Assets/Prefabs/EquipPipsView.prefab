@@ -240,6 +240,7 @@ MonoBehaviour:
   - {fileID: 8332205367573132438}
   - {fileID: 4171751893834809660}
   iconImages: []
+  gemViews: []
 --- !u!1 &1655781644006494659
 GameObject:
   m_ObjectHideFlags: 0
