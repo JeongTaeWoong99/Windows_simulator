@@ -4320,6 +4320,11 @@
     "EN": "Login"
   },
   {
+    "Key": "UI.Login.Placeholder",
+    "KR": "아이디 입력",
+    "EN": "Enter ID"
+  },
+  {
     "Key": "UI.Common.Gold",
     "KR": "골드",
     "EN": "Gold"

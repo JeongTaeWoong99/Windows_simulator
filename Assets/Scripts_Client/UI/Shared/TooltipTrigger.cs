@@ -44,6 +44,19 @@ public class TooltipTrigger : MonoBehaviour
             return new TooltipContent(text);
         }
 
-        return label != null && label.text.Length > 0 ? new TooltipContent(label.text) : null;
+        string shown = LabelText();
+
+        return shown.Length > 0 ? new TooltipContent(shown) : null;
+    }
+
+    // 숨긴 글씨 — 꺼진 오브젝트라 'LocalizedText'가 돌지 않는다. 키가 있으면 키로 직접 읽는다(씬에 남은 글씨는 낡았을 수 있다)
+    private string LabelText()
+    {
+        if (label == null)
+        {
+            return "";
+        }
+
+        return label.TryGetComponent(out LocalizedText localized) && localized.Key.Length > 0 ? Lang.Get(localized.Key) : label.text;
     }
 }
