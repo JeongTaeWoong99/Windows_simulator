@@ -129,4 +129,19 @@ namespace GameData
 
         Max    ,
     };
+
+    public enum ItemUseEffect : byte
+    {
+        None               = 0,
+
+        CharacterExp       = 1,  // 캐릭터 경험치 — EffectValue만큼 × 개수 (캐릭터 지정)
+        SlotWorkSpeed      = 2,  // 슬롯 작업속도 가산 — EffectValue 천분율, EffectCount회 판정 (슬롯 지정)
+        SlotYield          = 3,  // 슬롯 산출량 가산 — EffectValue 천분율, EffectCount회 판정 (슬롯 지정)
+        TraitReset         = 4,  // 모든 건물 특성 트리 초기화 (대상 없음)
+        InstantJudge       = 5,  // 판정 즉시 완료 — EffectValue번, 슬롯 SlotCount개까지 (#111)
+        SlotBoxChance      = 6,  // 상자 확률 가산 — EffectValue 천분율, EffectCount회 판정, 슬롯 SlotCount개까지 (#111)
+        SlotBoxRelicChance = 7,  // 상자·유물 확률 가산 — EffectValue 천분율, EffectCount회 판정, 슬롯 SlotCount개까지 (#111)
+
+        Max               ,
+    };
 }

@@ -1879,7 +1879,7 @@
     "MaxStack": 9999,
     "BasePrice": 50,
     "OpenGachaId": 0,
-    "Description": "지정 슬롯 다음 1회 판정 즉시 완료 (시간 스킵)",
+    "Description": "지정 슬롯 판정 1번 즉시 완료 · 슬롯 1개 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1891,7 +1891,7 @@
     "MaxStack": 9999,
     "BasePrice": 150,
     "OpenGachaId": 0,
-    "Description": "지정 슬롯 다음 20회 판정 동안 상자 드롭 확률 +100% (2배)",
+    "Description": "지정 슬롯 다음 20회 판정 동안 상자 확률 +100% · 슬롯 2개까지 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2119,7 +2119,7 @@
     "MaxStack": 9999,
     "BasePrice": 150,
     "OpenGachaId": 0,
-    "Description": "지도 은빛 단계 — 효과 미정 (이슈 #111)",
+    "Description": "지정 슬롯 판정 3번 즉시 완료 · 슬롯 2개까지 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2131,7 +2131,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "지도 황금 단계 — 효과 미정 (이슈 #111)",
+    "Description": "지정 슬롯 판정 5번 즉시 완료 · 슬롯 3개까지 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2143,7 +2143,7 @@
     "MaxStack": 9999,
     "BasePrice": 50,
     "OpenGachaId": 0,
-    "Description": "나침반 낡은 단계 — 효과 미정 (이슈 #111)",
+    "Description": "지정 슬롯 다음 20회 판정 동안 상자 확률 +50% · 슬롯 1개 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2155,7 +2155,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "나침반 황금 단계 — 효과 미정 (이슈 #111)",
+    "Description": "지정 슬롯 다음 20회 판정 동안 상자·유물 확률 +100% · 슬롯 3개까지 (#111)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
