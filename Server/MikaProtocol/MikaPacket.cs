@@ -570,7 +570,11 @@ namespace MikaProtocol
     public partial class C_ItemUseRequest : IPacket
     {
         public int ItemTID { get; set; }
-        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다
+        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다 (망각의 묘약은 1)
+
+        // 소모품 대상(T-195) — ItemUseTable.UseEffect가 정한다. 상자는 둘 다 비운다
+        public long       TargetCharacterId { get; set; }        // 성장의 비약 — 캐릭터 개체
+        public List<int>? TargetSlotIndexes { get; set; }        // 영약·지도·나침반 — 1~SlotCount개, 중복 없이
     }
 
     /// <summary>
@@ -585,6 +589,10 @@ namespace MikaProtocol
         public List<GachaRewardInfo>? Rewards         { get; set; }
         public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
         public bool                   StoredInMail    { get; set; }  // 창고에 안 들어가 보상 전체를 우편으로 보관했다 — ItemChangeInfos엔 상자 차감만 있다
+
+        // 실제로 빠진 개수(T-195). 성장의 비약은 만렙에 필요한 만큼만 빠져 요청보다 적을 수 있다.
+        // 소모품 효과는 기존 푸시로 온다 — 캐릭터 S_CharacterSyncResponse · 슬롯 S_WorkStationSlotSyncResponse · 특성 S_UserTraitListResponse · 지도 S_GatherResultResponse
+        public int                    UsedCount       { get; set; }
     }
 
     /// <summary>골드 상점 구매(#78). <b>가격은 서버가 정한다</b> — 클라는 어느 품목(<c>ShopTable.ShopTID</c>)을 몇 개 살지만 보낸다.</summary>

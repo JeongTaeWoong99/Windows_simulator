@@ -54,6 +54,7 @@ public class GameServer : IDisposable
             UserTraitCatalog.Instance.LoadAll();
             CommonRewardCatalog.Instance.LoadAll();
             MailCatalog.Instance.LoadAll();   // ItemTIDs·ItemCounts 개수가 다르면 여기서 기동이 멈춘다
+            ItemUseCatalog.Instance.LoadAll();   // 효과 없는 행·슬롯 수 0인 슬롯 효과면 여기서 기동이 멈춘다
 
             // 실행기 예외 훅. Lib은 로그 정책이 없다 — 여기서 채우지 않으면 예외가 조용히 사라진다.
             DBExecutor.JobFailed    = e => ServerLog.Error("DB", "DB 작업 예외", e);

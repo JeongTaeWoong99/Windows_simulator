@@ -123,7 +123,14 @@ public static class ClientPacketHandler
             return;
         }
 
-        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, GameClock.Instance.UtcNow);
+        // 소모품(ItemUseTable에 있는 아이템)이 아니면 상자다 — 상자 검사가 ItemNotUsable로 답한다.
+        var now = GameClock.Instance.UtcNow;
+        if (user.TryUseConsumable(req.ItemTID, req.Count, req.TargetCharacterId, req.TargetSlotIndexes, now))
+        {
+            return;
+        }
+
+        GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, now);
     }
 
     /// <summary>건물 업그레이드. 상한·골드·자원 판정과 차감은 User가 한다.</summary>

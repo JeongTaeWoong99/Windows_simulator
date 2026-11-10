@@ -115,6 +115,18 @@ namespace MikaProtocol
         public int EquipAddPermille    { get; set; }  // 장비 가산 (인챈트 포함)
         public int StarAddPermille     { get; set; }  // ★ 가산
         public int GatherSpeedPermille { get; set; }  // 전역 배수 (1000 = ×1.0, 치트 SetGatherSpeed)
+        public int BuffAddPermille     { get; set; }  // 슬롯 버프(신속의 영약) 가산 (T-195)
+
+        // 이 슬롯에 걸린 소모품 버프(T-195) — 아이템마다 한 줄. 캐릭터를 빼도 슬롯에 남고, 이 슬롯의 판정 1회마다 1씩 준다
+        public List<SlotBuffInfo>? Buffs { get; set; }
+    }
+
+    // 슬롯 버프 한 줄. 효과(속도·산출·상자 확률)와 값은 ItemUseTable[ItemTID]에서 읽는다.
+    [MemoryPackable]
+    public partial class SlotBuffInfo
+    {
+        public int ItemTID   { get; set; }
+        public int Remaining { get; set; }  // 남은 판정 횟수 (> 0)
     }
 
     // 장비 개체 하나. 유저 소유이며 EquippedCharacterId가 0이면 창고에 있다. SlotPosition은 창고 장비 탭의 칸 번호(0부터).

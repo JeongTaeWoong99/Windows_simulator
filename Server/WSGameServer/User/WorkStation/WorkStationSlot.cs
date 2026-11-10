@@ -84,6 +84,52 @@ public sealed class WorkStationSlot
     /// <summary>현재 작업속도를 이루는 항목들. 슬롯 정보로 그대로 나간다(T-055). 세션 지역 상태.</summary>
     public WorkSpeedBreakdown SpeedBreakdown { get; private set; }
 
+    // 소모품 버프(T-195) — 아이템 TID → 남은 판정 횟수. 캐릭터를 바꾸거나 빼도 슬롯에 남는다(Assign이 건드리지 않는다).
+    private readonly SortedDictionary<int, int> _buffs = new();
+
+    /// <summary>걸린 버프. 아이템 TID → 남은 판정 횟수(> 0). 효과·값은 ItemUseTable에서 읽는다.</summary>
+    public IReadOnlyDictionary<int, int> Buffs => _buffs;
+
+    /// <summary>버프를 건다. 같은 아이템이면 남은 횟수에 합산하고, 다른 아이템은 따로 동시에 걸린다.</summary>
+    public void AddBuff(int itemTid, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        _buffs[itemTid] = _buffs.GetValueOrDefault(itemTid) + count;
+    }
+
+    /// <summary>판정 <paramref name="judgeCount"/>회분 버프를 깎는다. 0이 된 버프는 빠진다.</summary>
+    /// <returns>아이템마다 이번 판정 중 앞에서부터 몇 번에 적용됐는가 — 남은 횟수가 판정 수보다 적으면 그 수만큼만.</returns>
+    public Dictionary<int, int> ConsumeBuffs(int judgeCount)
+    {
+        var applied = new Dictionary<int, int>();
+        if (judgeCount <= 0)
+        {
+            return applied;
+        }
+
+        foreach (var itemTid in _buffs.Keys.ToList())
+        {
+            var used = Math.Min(judgeCount, _buffs[itemTid]);
+            applied[itemTid] = used;
+
+            var left = _buffs[itemTid] - used;
+            if (left > 0)
+            {
+                _buffs[itemTid] = left;
+            }
+            else
+            {
+                _buffs.Remove(itemTid);
+            }
+        }
+
+        return applied;
+    }
+
     /// <summary>이 슬롯의 실효 채취 주기. 표시·로그용이며 계산에는 쓰지 않는다.</summary>
     public TimeSpan EffectiveCycle
         => TimeSpan.FromMilliseconds((double)JudgeCostUnits / CurrentWorkSpeed);
@@ -158,7 +204,7 @@ public sealed class WorkStationSlot
         return (int)judgeCount;
     }
 
-    /// <summary>판정 count회분의 작업량을 진행도에 얹는다(치트 전용). 다음 정산이 꺼내 간다.</summary>
+    /// <summary>판정 count회분의 작업량을 진행도에 얹는다(치트 · 보물 지도). 다음 정산이 꺼내 간다.</summary>
     /// <returns>얹었으면 true. 비활성 슬롯은 건너뛴다 — 배치하는 순간 한꺼번에 터지기 때문.</returns>
     public bool AdvanceJudges(int count)
     {
@@ -214,5 +260,7 @@ public sealed class WorkStationSlot
         EquipAddPermille    = SpeedBreakdown.EquipAddPermille,
         StarAddPermille     = SpeedBreakdown.StarAddPermille,
         GatherSpeedPermille = SpeedBreakdown.GatherSpeedPermille,
+        BuffAddPermille     = SpeedBreakdown.BuffAddPermille,
+        Buffs               = _buffs.Select(b => new SlotBuffInfo { ItemTID = b.Key, Remaining = b.Value }).ToList(),
     };
 }

@@ -68,6 +68,14 @@ public sealed record UserTraitRow
     public int level          { get; init; }
 }
 
+// t_user_slot_buff 조회 전용 Row (남은 횟수가 있는 버프만 행이 있다 · T-195)
+public sealed record SlotBuffRow
+{
+    public int slot_index { get; init; }
+    public int item_tid   { get; init; }
+    public int remaining  { get; init; }
+}
+
 // t_user_building 조회 전용 Row (지은 건물만 행이 있다 — 없으면 Lv0)
 public sealed record UserBuildingRow
 {
@@ -157,7 +165,8 @@ public sealed record PlayerLoginData(
     List<UserItemLockRow>? ItemLockRows = null,
     List<UserArtifactStackRow>? ArtifactStackRows = null,
     List<UserArtifactLockRow>? ArtifactLockRows = null,
-    List<UserBuildingRow>? BuildingRows = null);
+    List<UserBuildingRow>? BuildingRows = null,
+    List<SlotBuffRow>? SlotBuffRows = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.
