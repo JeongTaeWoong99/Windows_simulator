@@ -172,6 +172,7 @@ namespace MikaProtocol
         SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
         GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
+        GiveArtifact     = 19, // Arg1 = ArtifactTID · Arg2 = 개수 (1~칸 하나 상한) — 아티팩트 칸, 없으면 우편 (T-198)
     }
 
     public enum EItemChangeKind : byte

@@ -52,6 +52,7 @@ public partial class User
             ECheatCommand.SetGatherSpeed   => CheatSetGatherSpeed(req.Arg1, now),
             ECheatCommand.SeedAuctionListings => CheatSeedAuctionListings(req.Arg1, req.Arg2, now),
             ECheatCommand.GiveAllCharacters => CheatGiveAllCharacters(now),
+            ECheatCommand.GiveArtifact     => CheatGiveArtifact(req.Arg1, req.Arg2, now),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
@@ -163,6 +164,36 @@ public partial class User
         }
 
         return (EResultCode.Ok, $"창고 {toWarehouse.Count} · 인벤토리 {toInventory.Count} · 우편 {toMail.Count}");
+    }
+
+    // 감정과 같은 길(T-198) — 아티팩트 칸에 넣고, 칸이 없으면 우편 한 통. 우편함도 가득이면 거절한다.
+    private (EResultCode, string) CheatGiveArtifact(long artifactTid, long count, DateTime now)
+    {
+        if (count <= 0 || count > ArtifactMaxStack || artifactTid <= 0 || artifactTid > int.MaxValue)
+        {
+            return (EResultCode.InvalidCheatArgs, $"아티팩트 TID·개수 범위 밖 (1~{ArtifactMaxStack})");
+        }
+
+        if (!GameTable.ArtifactTable.TryGet((int)artifactTid, out _))
+        {
+            return (EResultCode.InvalidCheatArgs, $"ArtifactTable에 없는 TID {artifactTid}");
+        }
+
+        var tid = (int)artifactTid;
+        var n   = (int)count;
+        if (HasArtifactRoomFor(new[] { (tid, n) }))
+        {
+            GainArtifacts(new Dictionary<int, int> { [tid] = n });
+            return (EResultCode.Ok, $"아티팩트 {tid} × {n} → 인벤토리");
+        }
+
+        if (!HasMailboxRoom)
+        {
+            return (EResultCode.StorageFull, "아티팩트 칸·우편함이 가득 참");
+        }
+
+        StoreOverflowMail(new MailAttachment(0, new(), new(), new(), ArtifactItems: new() { (tid, n) }), now);
+        return (EResultCode.Ok, $"아티팩트 {tid} × {n} → 우편");
     }
 
     private (EResultCode, string) CheatGiveCharacterExp(long characterId, long amount, DateTime now)
