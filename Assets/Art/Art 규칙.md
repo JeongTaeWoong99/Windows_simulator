@@ -278,6 +278,7 @@ git checkout -t origin/main
 | characters | `unity-ai-lumberjack` | **AI 생성** — 견습 나무꾼 1010 — 기준 그림 `lumberjack_base`(이미지 격자 첫 칸) · 도끼질 영상 시트 `lumberjack_chop`(Kling 3초 · 장작이 그려져 규칙 위반) · 달리기 영상 시트 `lumberjack_run_seedance`(Seedance 4초 · 깨끗함) · 2026-11-08 구움 `apprentice-lumberjack` — 공격 = 도끼질 칸 4·5·7·9·11(9·11의 장작·나무 조각 지움 · 타격 3번째) · 달리기 = 2·4·…·12 · 대기 = 도끼질 0~3 · 배율 3.2 | — | Unity AI |
 | characters | `unity-ai-digger` | **AI 생성** — 견습 발굴꾼(대기 4 · 달리기 6 · 삽으로 퍼 올리기 5 — `raw/digger_scoop`) | `characters/apprentice-digger` | Unity AI — 상업 가능 · 침해 검토는 우리 몫 |
 | characters | `unity-ai-miner` | **AI 생성** — 숙련 채굴꾼(견습 발굴꾼 그림의 삽을 곡괭이로 바꿈 · 대기 4 · 달리기 6 · 내려찍기 5) | `characters/skilled-miner` | 〃 |
+| characters | `claude-mandrake` | **Claude가 코드로 그린 몬스터 시험** (크레딧 0 · 2026-11-11) — 뿌리 정령(만드라고라) 대기 4 · 달리기 6(깡충) · 공격 5(박치기) · 48×48 · `make_mandrake.py` · 농사 영웅 후보 — TID가 없어 아직 굽지 않았다 | — | 자체 제작 |
 | icons | `unity-ai` | **AI 생성** — 지도 · 나침반 · 황금 열쇠 · 인챈트 큐브 2 · 비약 3 · 영약 2 · 묘약 | `icons/` (100010·100011·100012·100015·100018·100041~100046) | 〃 |
 | fx | `unity-ai` | **AI 생성** — 동전 (흰 도형으로 변환 · 2026-11-02부터 안 쓴다) | — | 〃 |
 | ui | `unity-ai` | **AI 생성** — 9-slice 패널 배경 (64px · 화면 연결 없음) | — | 〃 |
