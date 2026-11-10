@@ -62,12 +62,12 @@ public static class FxSprites
     // 자물쇠 고리 — 몸통과 같은 캔버스·같은 자리. 왼쪽 다리 밑동을 축으로 들린다('SlotUnlockFx.ShacklePivot')
     public static Sprite? UnlockShackle => VisualCatalog.FxOf("unlock_shackle");
 
-    // ── rarity — 칸 등급 배경 ('SlotView') ──
+    // ── rarity — 칸 등급 바탕 ('RaritySkin' — 칸 · 아이콘 · 작업슬롯 · 위젯 · 배치 줄) ──
 
-    // 테두리 띠 + 안쪽 번짐 + 아래로 진해지는 속 — 등급색을 입힌다.
-    // ⚠️ 9-slice 경계(Border 10)가 .meta에 있다 — 'Image.Type.Sliced'로 늘린다
+    // 밝은 테두리 + 어두운 속(가운데만 은은히) — 등급색을 곱하면 등급색 테두리 · 어두운 등급색 속.
+    // ⚠️ 9-slice 경계(Border 8)는 임포트가 넣는다('ArtImportPostprocessor.UiBorders') — 'Image.Type.Sliced'로 늘린다
     public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
-    // 등급 틀 장식 — 색을 곱하지 않는 덧그림(쇠 귀퉁이 · 홈 그늘). 바탕 바로 위에 깐다('SlotView')
+    // 등급 틀 장식 — 색을 곱하지 않는 덧그림(쇠 꺾쇠 · 금 귀퉁이). 바탕의 첫 자식으로 깐다('RaritySkin')
     public static Sprite? RarityFrame      => VisualCatalog.FxOf("rarity_frame");
     public static Sprite? RarityFrameGold  => VisualCatalog.FxOf("rarity_frame_gold");
 

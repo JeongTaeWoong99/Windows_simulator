@@ -28,6 +28,9 @@ public class EquipPickRowView : MonoBehaviour
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
 
+    // 등급 귀퉁이 장식 — 바탕 그림과 한 벌('RaritySkin'). 그림 저장소가 없으면 null(단색 바탕)
+    private Image? _rarityFrame;
+
     [SerializeField, Tooltip("왼쪽 아이콘 칸 (ItemIconView 프리팹) — 능력치 칸이 보인다")]
     private ItemIconView iconView = null!;
 
@@ -60,6 +63,8 @@ public class EquipPickRowView : MonoBehaviour
         this.RequireRef(effectText,      nameof(effectText));
         this.RequireRef(pickButton,      nameof(pickButton));
 
+        _rarityFrame = RaritySkin.Dress(backgroundImage);
+
         pickButton.onClick.AddListener(() => PickClicked?.Invoke(this));
     }
 
@@ -78,7 +83,7 @@ public class EquipPickRowView : MonoBehaviour
     //   rarity : 종류(TID)로 읽은 등급. 개체 번호로 읽으면 'None'이 되어 회색으로 칠해진다
     public void SetRarity(GlobalRarity rarity)
     {
-        backgroundImage.color = RarityPalette.Get(rarity);
+        RaritySkin.Set(backgroundImage, _rarityFrame, rarity);
     }
 
     // 아이콘과 툴팁을 정한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
@@ -105,6 +110,6 @@ public class EquipPickRowView : MonoBehaviour
         tooltipTrigger.SetProvider(null);
         nameText.text         = "";
         effectText.text       = "";
-        backgroundImage.color = RarityPalette.Unknown;
+        RaritySkin.Set(backgroundImage, _rarityFrame, GlobalRarity.None);
     }
 }

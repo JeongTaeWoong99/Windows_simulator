@@ -7,7 +7,7 @@ using UnityEngine;
 //
 // 색 값의 주인은 엑셀 'Enum.xlsx'의 등급 주석이다. 등급이 늘면 여기 한 줄을 더한다.
 //
-// 칸 등급 배경은 그림 한 장('FxSprites.RarityBackground' — 흰 테두리 띠 + 옅은 속)에 이 색을 입힌다(2026-10-23).
+// 칸 등급 바탕은 그림 한 장('FxSprites.RarityBackground' — 밝은 테두리 + 어두운 속)에 이 색을 입힌다('RaritySkin' · 2026-11-11).
 // 등급마다 그림을 따로 두지 않는다 — 색의 주인은 계속 이 표다.
 public static class RarityPalette
 {

@@ -21,9 +21,11 @@ public class WidgetMiniSlotView : MonoBehaviour
     [CenterHeader("참조")]
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 캐릭터 그림('characterImage')과 다른 이미지다 —
     // 그림 자리에 색을 입히면 나중에 들어올 스프라이트가 물든다.
-    // 🎨 등급 이미지가 나오면 색 대신 여기에 스프라이트를 넣는다.
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
+
+    // 등급 귀퉁이 장식 — 바탕 그림과 한 벌('RaritySkin'). 그림 저장소가 없으면 null(단색 바탕)
+    private Image? _rarityFrame;
 
     [SerializeField, Tooltip("캐릭터 머리 그림 자리 — 'VisualCatalog'의 머리 크롭. 그림이 없으면 자리 표시 네모")]
     private Image characterImage = null!;
@@ -58,6 +60,8 @@ public class WidgetMiniSlotView : MonoBehaviour
         this.RequireRef(characterImage, nameof(characterImage));
         this.RequireRef(harvestText,    nameof(harvestText));
         this.RequireRef(progressSlider, nameof(progressSlider));
+
+        _rarityFrame = RaritySkin.Dress(backgroundImage);
 
         harvestText.text = string.Empty;
 
@@ -103,7 +107,7 @@ public class WidgetMiniSlotView : MonoBehaviour
     //   rarity : 종류(TID)로 읽은 등급. 모르는 개체면 'None' → 회색('Unknown')
     public void SetRarity(GlobalRarity rarity)
     {
-        backgroundImage.color = RarityPalette.Get(rarity);
+        RaritySkin.Set(backgroundImage, _rarityFrame, rarity);
     }
 
     // 진행도를 갱신한다 (WidgetPresenter의 Update가 매 프레임 호출).

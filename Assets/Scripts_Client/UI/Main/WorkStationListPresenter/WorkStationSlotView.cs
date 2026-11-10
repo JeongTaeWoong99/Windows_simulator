@@ -31,9 +31,11 @@ public class WorkStationSlotView : MonoBehaviour
 {
     [CenterHeader("참조")]
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 인벤토리 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
-    // 🎨 등급 이미지가 나오면 색 대신 여기에 스프라이트를 넣는다.
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
+
+    // 등급 귀퉁이 장식 — 바탕 그림과 한 벌('RaritySkin'). 그림 저장소가 없으면 null(단색 바탕)
+    private Image? _rarityFrame;
 
     [SerializeField, Tooltip("머리 줄 왼쪽 칩 — 슬롯 번호 '#2'")]
     private TMP_Text indexText = null!;
@@ -97,6 +99,8 @@ public class WorkStationSlotView : MonoBehaviour
         this.RequireRef(progressSlider, nameof(progressSlider));
         this.RequireRef(remainText,     nameof(remainText));
         this.RequireRef(equipPips,      nameof(equipPips));
+
+        _rarityFrame = RaritySkin.Dress(backgroundImage);
     }
 
     // 슬롯 스냅샷을 반영한다 (WorkStationListPresenter가 호출).
@@ -153,7 +157,7 @@ public class WorkStationSlotView : MonoBehaviour
     //   rarity : 종류(TID)로 읽은 등급. 모르는 개체면 'None' → 회색('Unknown')
     public void SetRarity(GlobalRarity rarity)
     {
-        backgroundImage.color = RarityPalette.Get(rarity);
+        RaritySkin.Set(backgroundImage, _rarityFrame, rarity);
     }
 
     // 배치된 캐릭터의 장착 네모를 그린다 (WorkStationListPresenter가 Bind 뒤에 호출).
