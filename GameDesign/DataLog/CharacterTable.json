@@ -401,5 +401,44 @@
     "Hunting": 1,
     "BasePrice": 100,
     "Description": "채굴 담당 — 견습 발굴꾼(1008)과 같은 생김새에 곡괭이"
+  },
+  {
+    "CharacterTID": 1032,
+    "Name": "탐험가",
+    "GlobalRarity": "Uncommon",
+    "Race": "Human",
+    "Farming": 0,
+    "Excavation": 4,
+    "Mining": 1,
+    "Logging": 0,
+    "Hunting": 1,
+    "BasePrice": 100,
+    "Description": "발굴 담당 — 삽 든 탐험가 (#115)"
+  },
+  {
+    "CharacterTID": 1033,
+    "Name": "드워프 발굴꾼",
+    "GlobalRarity": "Epic",
+    "Race": "Dwarf",
+    "Farming": 1,
+    "Excavation": 7,
+    "Mining": 3,
+    "Logging": 1,
+    "Hunting": 1,
+    "BasePrice": 600,
+    "Description": "발굴 정예 (#115)"
+  },
+  {
+    "CharacterTID": 1034,
+    "Name": "보물 사냥꾼",
+    "GlobalRarity": "Legendary",
+    "Race": "Human",
+    "Farming": 1,
+    "Excavation": 9,
+    "Mining": 2,
+    "Logging": 2,
+    "Hunting": 1,
+    "BasePrice": 1500,
+    "Description": "발굴 최상위 (#115)"
   }
 ]
