@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using MikaNetwork;
@@ -412,7 +412,7 @@ public class MailPresenter : MonoBehaviour
 
         return icons.Count == 1
             ? first
-            : new ItemIconContent(first.Rarity, first.Glyph, $"+{icons.Count - 1}", first.Sockets);
+            : new ItemIconContent(first.Rarity, first.Glyph, $"+{icons.Count - 1}", first.Sockets, first.Icon); // 그림을 빼먹으면 첨부가 여럿인 우편만 글자로 보인다
     }
 
     // 우편 툴팁 — 발신 · 도착 · (받은 시각 · 삭제까지) · 첨부 전부(이름은 등급색, 장비는 능력치 칸 수).
