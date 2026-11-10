@@ -2112,6 +2112,54 @@
     "OpenCostGold": 0
   },
   {
+    "ItemTID": 100034,
+    "Name": "은빛 보물 지도",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Uncommon",
+    "MaxStack": 9999,
+    "BasePrice": 150,
+    "OpenGachaId": 0,
+    "Description": "지도 은빛 단계 — 효과 미정 (이슈 #111)",
+    "Tooltip": "",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100035,
+    "Name": "황금 보물 지도",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "BasePrice": 500,
+    "OpenGachaId": 0,
+    "Description": "지도 황금 단계 — 효과 미정 (이슈 #111)",
+    "Tooltip": "",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100036,
+    "Name": "낡은 나침반",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Common",
+    "MaxStack": 9999,
+    "BasePrice": 50,
+    "OpenGachaId": 0,
+    "Description": "나침반 낡은 단계 — 효과 미정 (이슈 #111)",
+    "Tooltip": "",
+    "OpenCostGold": 0
+  },
+  {
+    "ItemTID": 100037,
+    "Name": "황금 나침반",
+    "ItemType": "Consumable",
+    "GlobalRarity": "Rare",
+    "MaxStack": 9999,
+    "BasePrice": 500,
+    "OpenGachaId": 0,
+    "Description": "나침반 황금 단계 — 효과 미정 (이슈 #111)",
+    "Tooltip": "",
+    "OpenCostGold": 0
+  },
+  {
     "ItemTID": 100041,
     "Name": "성장의 비약 (소)",
     "ItemType": "Consumable",
@@ -2179,7 +2227,7 @@
     "MaxStack": 9999,
     "BasePrice": 10000,
     "OpenGachaId": 0,
-    "Description": "투자된 계정 특성 포인트 전액 초기화",
+    "Description": "모든 건물 특성 트리 초기화 (포인트는 건물 레벨에서 다시 센다)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
