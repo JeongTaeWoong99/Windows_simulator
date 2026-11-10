@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-11 연출 이펙트 전부 도트로](2026-11-11-fx-pixel-art.md) — `#client` `#art` T-178 · `fx/` 22장을 Claude 코드 도트로(`claude-fx/make_fx.py`) · `fx/` 전부 점 필터
 - [2026-11-08 UI 픽셀 틀 · Taskbar Heroes 결](2026-11-08-ui-skin-pixel-frames.md) — `#client` `#ui` `#art` Claude가 코드로 그린 UI 틀·버튼 아이콘(크레딧 0) · `UiSkin` 두 겹 + 창 액자 · 에디터 미리보기 · `Header` 역할 · 레퍼런스 `_source/reference/taskbar-hero/` · 스프라이트 아틀라스 4개 · 눌림 반응 드롭다운·체크까지 · 드롭다운 목록 크기
 - [2026-11-08 pixelfx 타격 이펙트 · 캐릭터 시트 점검 · 영상 비용 실험](2026-11-08-pixelfx-hit-fx.md) — `#client` `#editor` `#docs` T-174 · `pixel-fx` 스킬 · 산업별 타격 5종(크레딧 0) · Seedance 4초 196 · 이미지 격자 달리기 실패
 - [2026-11-07 AI 원본 1536 줄이기 · 캐릭터 시트 격자 시험](2026-11-07-raw-shrink-char-sheet.md) — `#client` `#docs` T-174 · `asset-compression` 스킬 · 원본 228MB → 37MB · 이미지 모델 격자는 움직임이 안 나온다

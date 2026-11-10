@@ -27,8 +27,7 @@ namespace DesktopWindowControl.EditorTools
             }
         }
 
-        // 이펙트 — 부드러운 흰 도형을 늘리고 돌려 쓰므로 픽셀 아트와 달리 선형 필터다. 한 장 · 가운데 기준.
-        // ※ 동전('coin_body')과 타격('hit_*' — 'fx/hit/', pixelfx로 구운 픽셀 그림)은 예외 — 점 필터다.
+        // 이펙트 — 전부 도트(픽셀 아트)라 점 필터다(2026-11-11 · 부드러운 흰 도형을 도트로 바꿨다). 한 장 · 가운데 기준.
         // ※ 9-slice 경계(spriteBorder)는 건드리지 않는다 — 테두리 띠 같은 그림은 인스펙터(Sprite Editor)에서 정하고 .meta에 남는다.
         // ※ UI 틀('ui_*' — 'fx/ui/', 코드로 그린 픽셀 9-slice)은 예외 — 점 필터 + 경계를 여기서 넣는다('UiBorders' = 'make_ui.py'의 BORDER).
         private static readonly System.Collections.Generic.Dictionary<string, int> UiBorders = new()
@@ -44,7 +43,7 @@ namespace DesktopWindowControl.EditorTools
             importer.textureType         = TextureImporterType.Sprite;
             importer.spriteImportMode    = SpriteImportMode.Single;
             importer.spritePixelsPerUnit = ArtSpec.PixelsPerUnit;
-            importer.filterMode          = fileName == "coin_body" || fileName.StartsWith("hit_") || fileName.StartsWith("ui_") || fileName.StartsWith("rarity_") ? FilterMode.Point : FilterMode.Bilinear;
+            importer.filterMode          = FilterMode.Point;
             importer.textureCompression  = TextureImporterCompression.Uncompressed;
             importer.mipmapEnabled       = false;
             importer.alphaIsTransparency = true;
