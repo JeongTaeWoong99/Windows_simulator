@@ -198,9 +198,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 껐다 켤 때마다 점점 검어진다.
     private Color _rarityColor = RarityPalette.Unknown;
 
-    // 등급 틀 장식 — 그림이 있을 때만 생긴다. 등급에 따라 쇠(일반~희귀) · 금(영웅 이상)으로 갈아 낀다
-    private Image? _rarityFrame;
-
     // Special 등급을 그리고 있나 — 무지개 테두리('SpecialSlotFx')를 켠다(T-151). 연출은 처음 켤 때 코드로 붙인다
     private bool            _isSpecial;
     private SpecialSlotFx?  _specialFx;
@@ -290,7 +287,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         Key           = data.Key;
         _rarityColor  = RarityPalette.Get(data.Rarity);
         _isSpecial    = data.Rarity == GlobalRarity.Special;
-        SetRarityFrame(data.Rarity);
         nameText.text = data.Name;
         subText.text  = data.Sub;
 
@@ -300,12 +296,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         ApplyTint();
     }
 
-    // 등급 바탕 그림을 깐다 (Awake에서 한 번) — 어두운 판 + 등급색 테두리 + 귀퉁이 장식('RaritySkin').
+    // 등급 바탕 그림을 깐다 (Awake에서 한 번) — 어두운 판 + 등급색 테두리('RaritySkin').
     // 색은 여전히 'ApplyTint'가 등급색으로 입힌다(딤·흑백을 섞어야 해서). 그림이 없으면 프리팹 그대로 단색이다.
-    private void ApplyRarityBackground() => _rarityFrame = RaritySkin.Dress(rarityImage);
-
-    // 등급에 맞는 틀 장식 — 영웅 이상은 금 귀퉁이, 그 아래는 쇠 꺾쇠 (Bind · Clear에서 호출)
-    private void SetRarityFrame(GlobalRarity rarity) => RaritySkin.SetFrame(_rarityFrame, rarity);
+    private void ApplyRarityBackground() => RaritySkin.Dress(rarityImage);
 
     // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)
     private void SetIcon(Sprite? icon)
@@ -674,7 +667,6 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     {
         Key            = 0;
         _rarityColor   = RarityPalette.Unknown;
-        SetRarityFrame(GlobalRarity.None);
         _isSpecial     = false;
         _isDimmed      = false;
         _isFilteredOut = false;

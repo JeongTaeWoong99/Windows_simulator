@@ -37,8 +37,6 @@ public class ItemIconView : MonoBehaviour
 
     private Color _iconPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
 
-    // 등급 귀퉁이 장식 — 인벤토리 칸과 같은 바탕 한 벌('RaritySkin'). 그림 저장소가 없으면 null(단색 바탕)
-    private Image? _rarityFrame;
 
     // 필수 참조 검증 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
     private void Awake()
@@ -51,7 +49,7 @@ public class ItemIconView : MonoBehaviour
         this.RequireRef(warehouseMark,   nameof(warehouseMark));
 
         _iconPlaceholderColor = iconImage.color;
-        _rarityFrame          = RaritySkin.Dress(rarityImage);
+        RaritySkin.Dress(rarityImage);
     }
 
     // 완성값을 그린다 (줄 View가 자기 Bind에서 호출).
@@ -61,7 +59,7 @@ public class ItemIconView : MonoBehaviour
     {
         bool hasIcon = content.Icon != null;
 
-        RaritySkin.Set(rarityImage, _rarityFrame, content.Rarity);
+        RaritySkin.Set(rarityImage, content.Rarity);
         iconImage.sprite         = content.Icon!;
         iconImage.preserveAspect = hasIcon;
         iconImage.color          = hasIcon ? Color.white : _iconPlaceholderColor;

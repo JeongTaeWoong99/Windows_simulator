@@ -67,9 +67,6 @@ public static class FxSprites
     // 밝은 테두리 + 어두운 속(가운데만 은은히) — 등급색을 곱하면 등급색 테두리 · 어두운 등급색 속.
     // ⚠️ 9-slice 경계(Border 8)는 임포트가 넣는다('ArtImportPostprocessor.UiBorders') — 'Image.Type.Sliced'로 늘린다
     public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
-    // 등급 틀 장식 — 색을 곱하지 않는 덧그림(쇠 꺾쇠 · 금 귀퉁이). 바탕의 첫 자식으로 깐다('RaritySkin')
-    public static Sprite? RarityFrame      => VisualCatalog.FxOf("rarity_frame");
-    public static Sprite? RarityFrameGold  => VisualCatalog.FxOf("rarity_frame_gold");
 
     // ── special — Special 칸 ('SpecialSlotFx') · 테두리 띠는 'RevealFrame' · 빛줄기는 'RevealShine' · 반짝임은 'RevealSparkle'을 빌린다 ──
 
