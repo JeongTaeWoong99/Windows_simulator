@@ -35,7 +35,7 @@ namespace DesktopWindowControl.EditorTools
             { "ui_panel", 12 }, { "ui_button", 5 }, { "ui_input", 4 }, { "ui_header", 6 },
             { "ui_panel_trim", 12 }, { "ui_button_trim", 5 }, { "ui_input_trim", 4 }, { "ui_header_trim", 6 },
             // 칸 그림 — 'make_slots.py'의 BORDER (2026-11-10)
-            { "ui_slot_empty", 10 }, { "ui_slot_locked", 10 }, { "rarity_bg", 8 }, { "rarity_frame", 8 }, { "rarity_frame_gold", 8 },
+            { "ui_slot_empty", 10 }, { "ui_slot_locked", 10 }, { "rarity_bg", 12 }, { "rarity_frame", 8 }, { "rarity_frame_gold", 8 },
         };
 
         private static void ApplyFx(TextureImporter importer, string fileName)

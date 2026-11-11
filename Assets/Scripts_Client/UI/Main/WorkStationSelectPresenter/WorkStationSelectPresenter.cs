@@ -815,7 +815,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             if (entry.label != null)
             {
-                entry.label.text = GetIndustryLevelName(industry, level);
+                entry.label.text = GetIndustryLevelName(industry, level, "\n");
             }
 
             var tint   = UIThemePalette.Of(level == _selectedIndustryLevel ? selectedIndustryRole : unselectedIndustryRole);
@@ -835,10 +835,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
     private static string GetIndustryUnlockTraitName(EIndustryType industry)
         => GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait) && trait.Name.Length > 0 ? Loc.Get(trait.NameLocKey) : Lang.Get("UI.WorkStation.PioneerFallback");
 
-    // 레벨 버튼 라벨 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
-    private static string GetIndustryLevelName(EIndustryType industry, int level)
+    // 레벨 이름 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
+    //   separator : 'Lv2'와 이름 사이. 버튼은 줄바꿈(두 줄), 툴팁 제목은 빈칸
+    // ※ 버튼을 두 줄로 나눈다(2026-11-12) — 한 줄이면 버튼 폭(100)에 '무너진 성벽'까지 들어가지 않아 글자가 12까지 줄었다.
+    private static string GetIndustryLevelName(EIndustryType industry, int level, string separator = " ")
         => GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
-            ? $"Lv{level} {Loc.Get(row.NameLocKey)}"
+            ? $"Lv{level}{separator}{Loc.Get(row.NameLocKey)}"
             : $"Lv{level}";
 
     // 레벨 버튼 툴팁 — 그 레벨의 스펙과 나오는 자원 (레벨 버튼의 'TooltipTrigger'가 띄울 때 호출).
