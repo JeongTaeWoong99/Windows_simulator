@@ -2003,6 +2003,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.212
       objectReference: {fileID: 0}
+    - target: {fileID: 1497379372094278245, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_PreserveAspect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2028566351374556331, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_Name
       value: Item Icon View
@@ -2106,6 +2110,14 @@ PrefabInstance:
     - target: {fileID: 3783836223152693268, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_fontColor.r
       value: 0.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697113342902959100, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697113342902959100, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
