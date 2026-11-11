@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-11 갈무리 폰트 · 등급 귀퉁이 장식 제거](2026-11-11-galmuri-font-no-rarity-corners.md) — `#client` `#ui` `#font` 이슈 #121 화면 폰트 갈무리11(OFL, 빠진 기호는 Pretendard 폴백) · `RaritySkin` 귀퉁이 장식 제거(작업슬롯 위 빈 줄 원인) · 등급 프레임 시안 4종
 - [2026-11-11 등급 바탕 한 벌 · 칸 여백 · 우편 아이콘 · 그루터기 정령](2026-11-11-rarity-skin-slot-padding-stump.md) — `#client` `#ui` `#art` `RaritySkin`(어두운 판 + 등급색 테두리)을 칸·아이콘·작업슬롯·위젯·배치 줄에 · `SlotView` 여백 · 우편 첨부 여럿이면 글자로 보이던 것 · 만드라고라 → 그루터기 정령
 - [2026-11-11 아티팩트 지급 치트 칸 · 뽑기권 아이콘 · 코드 몬스터](2026-11-11-artifact-cheat-ticket-icons-mandrake.md) — `#client` `#editor` `#art` T-193 `GiveArtifact` 칸 실서버 왕복 · T-189 뽑기권 4종 코드 도트 · 만드라고라 시험
 - [2026-11-11 연출 이펙트 전부 도트로](2026-11-11-fx-pixel-art.md) — `#client` `#art` T-178 · `fx/` 22장을 Claude 코드 도트로(`claude-fx/make_fx.py`) · `fx/` 전부 점 필터
