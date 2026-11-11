@@ -17,6 +17,7 @@ public partial class User
 
         // 버프는 열린 칸 전부가 생긴 뒤에 얹는다 — 배치 행이 없는 칸은 EnsureUnlockedSlots에서야 생긴다.
         LoadSlotBuffs(data.SlotBuffRows ?? new List<SlotBuffRow>());
+        LoadSlotAutoUse(data.SlotAutoUseRows ?? new List<SlotAutoUseRow>());
 
         // 창고에만 캐릭터가 있어도 신규 유저가 아니다 — 시작 캐릭터를 또 주지 않는다.
         if (_characters.Count == 0 && _warehouseCharacters.Count == 0)

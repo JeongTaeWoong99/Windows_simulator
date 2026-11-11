@@ -154,20 +154,25 @@ public partial class User
         }
 
         var leveledUp      = false;
-        var speedBuffEnded = false;
+        var speedChanged   = false;
         var buffChanges    = new List<SlotBuffChange>();
+        var autoUseChanges = new List<SlotAutoUseChange>();
         foreach (var harvest in harvests)
         {
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
                 // 소모품 버프(T-195) — 이번 판정 수만큼 깎고, 앞쪽 판정부터 붙인다. 속도 버프는 이미 판정 수에 들어 있다.
-                var applied = rolledSlot.ConsumeBuffs(harvest.JudgeCount);
+                // 버프가 다 되면 자동 사용 칸에서 이어서 꺼낸다(이슈 #113). 속도 가산이 달라졌을 때만 속도를 다시 매긴다.
+                var cellsBefore = rolledSlot.AutoUse.ToDictionary();
+                var speedBefore = GetSlotBuffSpeedAdd(rolledSlot);
+                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount, AutoUseEffectCount);
                 foreach (var (itemTid, _) in applied)
                 {
-                    var left = rolledSlot.Buffs.GetValueOrDefault(itemTid);
-                    buffChanges.Add(new SlotBuffChange(rolledSlot.SlotIndex, itemTid, left));
-                    speedBuffEnded |= left == 0 && _itemUses.TryGet(itemTid, out var ended) && ended.UseEffect == ItemUseEffect.SlotWorkSpeed;
+                    buffChanges.Add(new SlotBuffChange(rolledSlot.SlotIndex, itemTid, rolledSlot.Buffs.GetValueOrDefault(itemTid)));
                 }
+
+                autoUseChanges.AddRange(AutoUseChanges(rolledSlot, cellsBefore));
+                speedChanged |= GetSlotBuffSpeedAdd(rolledSlot) != speedBefore;
 
                 // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
                 var yieldAdd  = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry);
@@ -230,14 +235,19 @@ public partial class User
             }
         }
 
-        if (buffChanges.Count > 0)
+        // 칸에서 꺼낸 것과 그 버프는 한 트랜잭션으로 저장한다 — 하나만 남으면 영약이 사라지거나 두 번 쓰인다.
+        if (autoUseChanges.Count > 0)
+        {
+            PostDBTask(new SaveSlotAutoUseRepository(this, autoUseChanges, buffChanges));
+        }
+        else if (buffChanges.Count > 0)
         {
             PostDBTask(new SaveSlotBuffRepository(this, buffChanges));
         }
 
         // 레벨이 오르거나 속도 버프가 끝나면 속도가 바뀐다. 정산이 방금 구간을 끊었으므로 새 속도는 소급되지 않는다(이슈 #35).
         // 버프가 판정 도중에 끝나도 그 정산 구간은 버프 속도로 센다 — 정산은 짧게 자주 돌아 차이가 판정 1회를 넘지 않는다.
-        if (leveledUp || speedBuffEnded)
+        if (leveledUp || speedChanged)
         {
             ApplyWorkStationSpeed(notify);
         }
@@ -296,6 +306,7 @@ public partial class User
         SettleWorkStation(now);
 
         slot.Assign(industry, characterId, now, industryLevel, ResolveJudgeCost(industry, industryLevel));
+        RefillAutoUseAndSave(slot);
 
         // 배치가 바뀌면 그 캐릭터의 속도로 갈아탄다. Assign이 방금 구간을 끊었으므로
         // 여기서 바꾸는 것은 소급되지 않는다.

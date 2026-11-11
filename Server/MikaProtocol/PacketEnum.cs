@@ -131,6 +131,8 @@ namespace MikaProtocol
         UseTargetIdle     = 1601, // 보물 지도 — 돌고 있지 않은(산업·캐릭터가 없는) 슬롯
         CharacterMaxLevel = 1602, // 성장의 비약 — 이미 만렙
         NothingToReset    = 1603, // 망각의 묘약 — 기본 레벨보다 올린 노드가 하나도 없다
+        NotAutoUsable     = 1604, // 자동 사용 칸 — 신속·풍요의 영약이 아니다 (이슈 #113)
+        AutoUseSlotFull   = 1605, // 자동 사용 칸 — 넣으면 ItemTable.MaxStack을 넘는다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —

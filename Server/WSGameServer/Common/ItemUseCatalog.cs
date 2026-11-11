@@ -54,6 +54,12 @@ public sealed class ItemUseCatalog : Singleton<ItemUseCatalog>
             or ItemUseEffect.SlotBoxChance or ItemUseEffect.SlotBoxRelicChance;
     }
 
+    /// <summary>자동 사용 칸에 넣을 수 있는가 — 신속·풍요의 영약(이슈 #113). 나침반은 직접 쓴다.</summary>
+    public static bool IsAutoUsable(ItemUseEffect effect)
+    {
+        return effect is ItemUseEffect.SlotWorkSpeed or ItemUseEffect.SlotYield;
+    }
+
     /// <summary>슬롯을 대상으로 쓰는가 — 버프와 보물 지도.</summary>
     public static bool NeedsSlot(ItemUseEffect effect)
     {

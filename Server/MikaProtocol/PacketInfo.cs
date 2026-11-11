@@ -119,6 +119,17 @@ namespace MikaProtocol
 
         // 이 슬롯에 걸린 소모품 버프(T-195) — 아이템마다 한 줄. 캐릭터를 빼도 슬롯에 남고, 이 슬롯의 판정 1회마다 1씩 준다
         public List<SlotBuffInfo>? Buffs { get; set; }
+
+        // 자동 사용 칸(이슈 #113) — 아이템마다 한 줄. 같은 아이템의 버프가 0이 되면 다음 판정 전에 1개씩 꺼내 쓴다
+        public List<SlotAutoUseInfo>? AutoUse { get; set; }
+    }
+
+    // 자동 사용 칸 한 줄. 넣을 수 있는 것은 신속·풍요의 영약뿐이다(ItemUseEffect SlotWorkSpeed·SlotYield).
+    [MemoryPackable]
+    public partial class SlotAutoUseInfo
+    {
+        public int ItemTID { get; set; }
+        public int Count   { get; set; }  // 넣어 둔 개수 (1 ~ ItemTable.MaxStack)
     }
 
     // 슬롯 버프 한 줄. 효과(속도·산출·상자 확률)와 값은 ItemUseTable[ItemTID]에서 읽는다.

@@ -133,6 +133,26 @@ public static class ClientPacketHandler
         GachaService.Instance.OpenBox(user, req.ItemTID, req.Count, now);
     }
 
+    /// <summary>작업슬롯 자동 사용 칸에 영약을 넣거나 꺼낸다(이슈 #113). 검사·이동은 User가 한다.</summary>
+    [PacketHandler]
+    public static void Handle_C_SlotAutoUseRequest(ISession session, C_SlotAutoUseRequest req)
+    {
+        var user = session.GetUser();
+        if (user == null)
+        {
+            session.SendPacket(new S_SlotAutoUseResponse { Result = EResultCode.NotLoggedIn, SlotIndex = req.SlotIndex, ItemTID = req.ItemTID });
+            return;
+        }
+
+        if (req.Take)
+        {
+            user.TakeSlotAutoUse(req.SlotIndex, req.ItemTID, req.Count);
+            return;
+        }
+
+        user.PutSlotAutoUse(req.SlotIndex, req.ItemTID, req.Count, GameClock.Instance.UtcNow);
+    }
+
     /// <summary>건물 업그레이드. 상한·골드·자원 판정과 차감은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_BuildingUpgradeRequest(ISession session, C_BuildingUpgradeRequest req)
