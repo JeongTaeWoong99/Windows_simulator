@@ -112,8 +112,8 @@ public partial class User
         }
     }
 
-    /// <summary>선행·포인트 없이 특성 레벨을 정한다(치트 전용). 특성마다 기본~최대 레벨로 자르고, 바뀐 개수를 돌려준다.</summary>
-    private int SetTraitLevels(IReadOnlyList<UserTraitTableRow> traits, int level, DateTime now)
+    /// <summary>선행·포인트 없이 특성 레벨을 정한다(치트 · 망각의 묘약). 특성마다 기본~최대 레벨로 자르고, 바뀐 개수를 돌려준다.</summary>
+    private int SetTraitLevels(IReadOnlyList<UserTraitTableRow> traits, int level, DateTime now, string reason = "치트")
     {
         var changes = traits
             .Select(trait => (Trait: trait, Next: Math.Clamp(level, trait.BaseLevel, trait.MaxLevel)))
@@ -138,7 +138,7 @@ public partial class User
             }
 
             PostDBTask(new SaveUserTraitRepository(this, trait.UserTraitTID, next));
-            ServerLog.Info("특성", $"치트 Lv{next} Uid={Uid} UserTraitTID={trait.UserTraitTID}");
+            ServerLog.Info("특성", $"{reason} Lv{next} Uid={Uid} UserTraitTID={trait.UserTraitTID}");
         }
 
         if (changes.Any(c => c.Trait.EffectType == UserTraitEffect.SpeedAdd))

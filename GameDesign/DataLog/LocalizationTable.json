@@ -3040,6 +3040,46 @@
     "EN": ""
   },
   {
+    "Key": "Item.100034.Name",
+    "KR": "은빛 보물 지도",
+    "EN": "은빛 보물 지도"
+  },
+  {
+    "Key": "Item.100034.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100035.Name",
+    "KR": "황금 보물 지도",
+    "EN": "황금 보물 지도"
+  },
+  {
+    "Key": "Item.100035.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100036.Name",
+    "KR": "낡은 나침반",
+    "EN": "낡은 나침반"
+  },
+  {
+    "Key": "Item.100036.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Item.100037.Name",
+    "KR": "황금 나침반",
+    "EN": "황금 나침반"
+  },
+  {
+    "Key": "Item.100037.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
     "Key": "Item.100041.Name",
     "KR": "성장의 비약 (소)",
     "EN": "Growth Potion (S)"

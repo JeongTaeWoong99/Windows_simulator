@@ -145,6 +145,9 @@ internal sealed class TestUserBuilder
     /// <summary>이 테스트만의 게임 시계. 전역 <see cref="GameClock.Instance"/>의 오프셋을 병렬 테스트끼리 공유하지 않게.</summary>
     public GameClock Clock { get; } = new();
 
+    /// <summary>소모품 효과(T-195). 비워 둔 채 <see cref="Build"/>하면 실제 엑셀 데이터가 들어간다. 기대값을 고정하려면 먼저 <c>Load</c>한다.</summary>
+    public ItemUseCatalog ItemUses { get; } = new();
+
     /// <summary>이 테스트만의 전역 배수. 다른 유저와 함께 쓰려면 같은 인스턴스를 넣는다.</summary>
     public GatherSpeed GatherSpeed { get; set; } = new();
 
@@ -226,9 +229,16 @@ internal sealed class TestUserBuilder
             Stars.LoadAll();
         }
 
+        if (ItemUses.Count == 0)
+        {
+            GameTableFixture.EnsureLoaded();
+            ItemUses.LoadAll();
+        }
+
         var user = new User(Channel, QueueOverride ?? DB, ExecutorOverride ?? Executor,
                             pid: _pid, nickname: "테스터", loggedInAt: Base, Drops, Levels, Growth, Unlocks, Equips,
-                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online, Clock, Stars, GatherSpeed);
+                            Accounts, Traits, CommonRewards, Mails, Enchants, Auction ?? new AuctionService(null, null), Online, Clock, Stars, GatherSpeed,
+                            ItemUses);
         user.Uid = uid;
         return user;
     }
