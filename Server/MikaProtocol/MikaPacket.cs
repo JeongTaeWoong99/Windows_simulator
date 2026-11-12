@@ -126,6 +126,8 @@ namespace MikaProtocol
         S_BuildingListResponse = 96,
         C_BuildingUpgradeRequest = 97,
         S_BuildingUpgradeResponse = 98,
+        C_SlotAutoUseRequest = 99,
+        S_SlotAutoUseResponse = 100,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -570,7 +572,11 @@ namespace MikaProtocol
     public partial class C_ItemUseRequest : IPacket
     {
         public int ItemTID { get; set; }
-        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다
+        public int Count   { get; set; }  // 1~99 — 상자 최대 수량과 같다 (망각의 묘약은 1)
+
+        // 소모품 대상(T-195) — ItemUseTable.UseEffect가 정한다. 상자는 둘 다 비운다
+        public long       TargetCharacterId { get; set; }        // 성장의 비약 — 캐릭터 개체
+        public List<int>? TargetSlotIndexes { get; set; }        // 영약·지도·나침반 — 1~SlotCount개, 중복 없이
     }
 
     /// <summary>
@@ -585,6 +591,10 @@ namespace MikaProtocol
         public List<GachaRewardInfo>? Rewards         { get; set; }
         public List<ItemChangeInfo>?  ItemChangeInfos { get; set; }
         public bool                   StoredInMail    { get; set; }  // 창고에 안 들어가 보상 전체를 우편으로 보관했다 — ItemChangeInfos엔 상자 차감만 있다
+
+        // 실제로 빠진 개수(T-195). 성장의 비약은 만렙에 필요한 만큼만 빠져 요청보다 적을 수 있다.
+        // 소모품 효과는 기존 푸시로 온다 — 캐릭터 S_CharacterSyncResponse · 슬롯 S_WorkStationSlotSyncResponse · 특성 S_UserTraitListResponse · 지도 S_GatherResultResponse
+        public int                    UsedCount       { get; set; }
     }
 
     /// <summary>골드 상점 구매(#78). <b>가격은 서버가 정한다</b> — 클라는 어느 품목(<c>ShopTable.ShopTID</c>)을 몇 개 살지만 보낸다.</summary>
@@ -1062,5 +1072,31 @@ namespace MikaProtocol
         public EResultCode Result      { get; set; }
         public int         BuildingTID { get; set; }
         public int         Level       { get; set; }   // 성공이면 올린 뒤 레벨, 실패면 지금 레벨
+    }
+
+    /// <summary>
+    /// 작업슬롯의 자동 사용 칸에 영약을 넣거나 꺼낸다(이슈 #113). 넣으면 인벤토리 먼저, 모자란 만큼 창고에서 빠진다.
+    /// 꺼낸 것은 다른 획득과 같은 길(창고의 같은 자원 칸 → 인벤토리)로 돌아가고, 자리가 모자라면 StorageFull로 거절한다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.C_SlotAutoUseRequest)]
+    public partial class C_SlotAutoUseRequest : IPacket
+    {
+        public int  SlotIndex { get; set; }
+        public int  ItemTID   { get; set; }
+        public int  Count     { get; set; }  // 1 이상
+        public bool Take      { get; set; }  // false = 넣기 · true = 꺼내기
+    }
+
+    /// <summary>
+    /// 자동 사용 칸 결과. 성공하면 바뀐 슬롯(칸 내용·버프 잔여 횟수)이 S_WorkStationSlotSyncResponse로 먼저 온다.
+    /// 칸에서 꺼내 쓴 것(자동 사용)은 응답 없이 슬롯 푸시만 온다.
+    /// </summary>
+    [MemoryPackable, Packet(PacketId.S_SlotAutoUseResponse)]
+    public partial class S_SlotAutoUseResponse : IPacket
+    {
+        public EResultCode           Result          { get; set; }
+        public int                   SlotIndex       { get; set; }
+        public int                   ItemTID         { get; set; }
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 인벤토리·창고 변화 (넣으면 차감 · 꺼내면 지급)
     }
 }

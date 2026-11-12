@@ -92,7 +92,7 @@
     "GachaId": 9,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -148,7 +148,7 @@
     "GachaId": 10,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 은빛 나침반"
   },
   {
@@ -212,7 +212,7 @@
     "GachaId": 11,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 70,
     "Description": "상자 전용 황금 열쇠"
   },
   {
@@ -276,7 +276,7 @@
     "GachaId": 12,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -332,7 +332,7 @@
     "GachaId": 13,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 은빛 나침반"
   },
   {
@@ -396,7 +396,7 @@
     "GachaId": 14,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 70,
     "Description": "상자 전용 황금 열쇠"
   },
   {
@@ -460,7 +460,7 @@
     "GachaId": 15,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -516,7 +516,7 @@
     "GachaId": 16,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 은빛 나침반"
   },
   {
@@ -580,7 +580,7 @@
     "GachaId": 17,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 70,
     "Description": "상자 전용 황금 열쇠"
   },
   {
@@ -644,7 +644,7 @@
     "GachaId": 18,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -700,7 +700,7 @@
     "GachaId": 19,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 은빛 나침반"
   },
   {
@@ -764,7 +764,7 @@
     "GachaId": 20,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 70,
     "Description": "상자 전용 황금 열쇠"
   },
   {
@@ -828,7 +828,7 @@
     "GachaId": 21,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -884,7 +884,7 @@
     "GachaId": 22,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 105,
     "Description": "상자 전용 은빛 나침반"
   },
   {
@@ -948,7 +948,7 @@
     "GachaId": 23,
     "ItemTID": 100012,
     "Count": 1,
-    "Weight": 210,
+    "Weight": 70,
     "Description": "상자 전용 황금 열쇠"
   },
   {
@@ -1524,7 +1524,7 @@
     "GachaId": 25,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 2100,
+    "Weight": 1050,
     "Description": "상자 전용 낡은 보물 지도 (감정 · 풀 9에서)"
   },
   {
@@ -1612,7 +1612,7 @@
     "GachaId": 26,
     "ItemTID": 100011,
     "Count": 1,
-    "Weight": 2100,
+    "Weight": 1050,
     "Description": "상자 전용 은빛 나침반 (감정 · 풀 13에서)"
   },
   {
@@ -2182,5 +2182,181 @@
     "Count": 1,
     "Weight": 500,
     "Description": "망각의 묘약 x1 (감정 · 풀 23에서)"
+  },
+  {
+    "GachaItemTID": 9020,
+    "GachaId": 9,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 낡은 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 10020,
+    "GachaId": 10,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 은빛 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 11020,
+    "GachaId": 11,
+    "ItemTID": 100035,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 11021,
+    "GachaId": 11,
+    "ItemTID": 100037,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 12020,
+    "GachaId": 12,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 낡은 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 13020,
+    "GachaId": 13,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 은빛 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 14020,
+    "GachaId": 14,
+    "ItemTID": 100035,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 14021,
+    "GachaId": 14,
+    "ItemTID": 100037,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 15020,
+    "GachaId": 15,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 낡은 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 16020,
+    "GachaId": 16,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 은빛 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 17020,
+    "GachaId": 17,
+    "ItemTID": 100035,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 17021,
+    "GachaId": 17,
+    "ItemTID": 100037,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 18020,
+    "GachaId": 18,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 낡은 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 19020,
+    "GachaId": 19,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 은빛 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 20020,
+    "GachaId": 20,
+    "ItemTID": 100035,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 20021,
+    "GachaId": 20,
+    "ItemTID": 100037,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 21020,
+    "GachaId": 21,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 낡은 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 22020,
+    "GachaId": 22,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 105,
+    "Description": "상자 전용 은빛 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 23020,
+    "GachaId": 23,
+    "ItemTID": 100035,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 보물 지도 (#111)"
+  },
+  {
+    "GachaItemTID": 23021,
+    "GachaId": 23,
+    "ItemTID": 100037,
+    "Count": 1,
+    "Weight": 70,
+    "Description": "상자 전용 황금 나침반 (#111)"
+  },
+  {
+    "GachaItemTID": 25020,
+    "GachaId": 25,
+    "ItemTID": 100036,
+    "Count": 1,
+    "Weight": 1050,
+    "Description": "상자 전용 낡은 나침반 (감정 · 풀 9에서) (#111)"
+  },
+  {
+    "GachaItemTID": 26020,
+    "GachaId": 26,
+    "ItemTID": 100034,
+    "Count": 1,
+    "Weight": 1050,
+    "Description": "상자 전용 은빛 보물 지도 (감정 · 풀 13에서) (#111)"
   }
 ]

@@ -26,6 +26,8 @@ public sealed class LoginRepository : IRepository
     private List<CharacterEquipRow>    _characterEquipRows = new();
     private List<UserItemLockRow>      _itemLockRows       = new();
     private List<UserArtifactLockRow>  _artifactLockRows   = new();
+    private List<SlotBuffRow>          _slotBuffRows       = new();
+    private List<SlotAutoUseRow>       _slotAutoUseRows    = new();
 
     // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
     public long Key => User.DbKey;
@@ -119,6 +121,16 @@ public sealed class LoginRepository : IRepository
               JOIN t_user_equip ue ON ue.equip_id = ce.equip_id
               WHERE ue.user_id = @userId",
             new { userId = User.Uid });
+
+        // 8) 작업슬롯 소모품 버프(T-195). 남은 횟수가 있는 것만 행이 있다.
+        _slotBuffRows = await connection.QueryAsync<SlotBuffRow>(
+            "SELECT slot_index, item_tid, remaining FROM t_user_slot_buff WHERE user_id = @userId",
+            new { userId = User.Uid });
+
+        // 9) 작업슬롯 자동 사용 칸(이슈 #113). 넣어 둔 것이 있는 칸만 행이 있다.
+        _slotAutoUseRows = await connection.QueryAsync<SlotAutoUseRow>(
+            "SELECT slot_index, item_tid, count FROM t_user_slot_auto_use WHERE user_id = @userId",
+            new { userId = User.Uid });
     }
 
     // === 로직 스레드에서 실행 ===
@@ -130,7 +142,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows, _buildingRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows, _buildingRows, _slotBuffRows, _slotAutoUseRows),
             GameClock.Instance.UtcNow);
     }
 }

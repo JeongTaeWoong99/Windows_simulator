@@ -84,6 +84,144 @@ public sealed class WorkStationSlot
     /// <summary>현재 작업속도를 이루는 항목들. 슬롯 정보로 그대로 나간다(T-055). 세션 지역 상태.</summary>
     public WorkSpeedBreakdown SpeedBreakdown { get; private set; }
 
+    // 소모품 버프(T-195) — 아이템 TID → 남은 판정 횟수. 캐릭터를 바꾸거나 빼도 슬롯에 남는다(Assign이 건드리지 않는다).
+    private readonly SortedDictionary<int, int> _buffs = new();
+
+    /// <summary>걸린 버프. 아이템 TID → 남은 판정 횟수(> 0). 효과·값은 ItemUseTable에서 읽는다.</summary>
+    public IReadOnlyDictionary<int, int> Buffs => _buffs;
+
+    /// <summary>버프를 건다. 같은 아이템이면 남은 횟수에 합산하고, 다른 아이템은 따로 동시에 걸린다.</summary>
+    public void AddBuff(int itemTid, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        _buffs[itemTid] = _buffs.GetValueOrDefault(itemTid) + count;
+    }
+
+    /// <summary>판정 <paramref name="judgeCount"/>회분 버프를 깎는다. 0이 된 버프는 빠진다.</summary>
+    /// <param name="effectCountOf">자동 사용 칸의 아이템 1개가 거는 횟수(ItemUseTable.EffectCount). null이면 칸에서 꺼내지 않는다.</param>
+    /// <returns>아이템마다 이번 판정 중 앞에서부터 몇 번에 적용됐는가 — 남은 횟수가 판정 수보다 적으면 그 수만큼만.
+    /// 버프가 다 되면 그 자리에서 칸의 것을 꺼내 이어 가므로 적용 구간은 늘 앞에서부터 이어진다.</returns>
+    public Dictionary<int, int> ConsumeBuffs(int judgeCount, Func<int, int>? effectCountOf = null)
+    {
+        var applied = new Dictionary<int, int>();
+        if (judgeCount <= 0)
+        {
+            return applied;
+        }
+
+        foreach (var itemTid in _buffs.Keys.Union(_autoUse.Keys).ToList())
+        {
+            var used = 0;
+            while (used < judgeCount)
+            {
+                if (_buffs.GetValueOrDefault(itemTid) == 0 && !TryRefill(itemTid, effectCountOf))
+                {
+                    break;
+                }
+
+                var take = Math.Min(judgeCount - used, _buffs[itemTid]);
+                used += take;
+                SetBuff(itemTid, _buffs[itemTid] - take);
+            }
+
+            if (used > 0)
+            {
+                applied[itemTid] = used;
+            }
+        }
+
+        // 다음 판정 앞에서 비어 있지 않게 바로 채운다 — 속도 버프는 다음 판정 시간부터 줄여야 한다.
+        RefillAutoUse(effectCountOf);
+        return applied;
+    }
+
+    // ───────── 자동 사용 칸 (이슈 #113) ─────────
+
+    // 아이템 TID → 칸에 넣어 둔 개수. 같은 아이템의 버프가 0이 되면 1개씩 꺼내 쓴다. 캐릭터를 바꾸거나 빼도 남는다.
+    private readonly SortedDictionary<int, int> _autoUse = new();
+
+    /// <summary>자동 사용 칸. 아이템 TID → 넣어 둔 개수(> 0).</summary>
+    public IReadOnlyDictionary<int, int> AutoUse => _autoUse;
+
+    /// <summary>칸에 넣는다(로그인 적재 포함). 수량·종류 검사는 호출자가 한다.</summary>
+    public void PutAutoUse(int itemTid, int count)
+    {
+        if (count <= 0)
+        {
+            return;
+        }
+
+        _autoUse[itemTid] = _autoUse.GetValueOrDefault(itemTid) + count;
+    }
+
+    /// <summary>칸에서 꺼낸다. 넣어 둔 것보다 많으면 아무것도 바꾸지 않고 false.</summary>
+    public bool TryTakeAutoUse(int itemTid, int count)
+    {
+        var have = _autoUse.GetValueOrDefault(itemTid);
+        if (count <= 0 || count > have)
+        {
+            return false;
+        }
+
+        SetAutoUse(itemTid, have - count);
+        return true;
+    }
+
+    /// <summary>
+    /// 돌고 있는 슬롯이면 버프가 다 된 아이템마다 칸에서 1개를 꺼내 건다. 쉬는 슬롯은 판정이 없으므로 꺼내지 않는다.
+    /// </summary>
+    /// <returns>꺼낸 것이 있으면 true.</returns>
+    public bool RefillAutoUse(Func<int, int>? effectCountOf)
+    {
+        if (!IsActive)
+        {
+            return false;
+        }
+
+        var refilled = false;
+        foreach (var itemTid in _autoUse.Keys.ToList())
+        {
+            if (_buffs.GetValueOrDefault(itemTid) == 0)
+            {
+                refilled |= TryRefill(itemTid, effectCountOf);
+            }
+        }
+
+        return refilled;
+    }
+
+    private bool TryRefill(int itemTid, Func<int, int>? effectCountOf)
+    {
+        var count = effectCountOf?.Invoke(itemTid) ?? 0;
+        if (count <= 0 || !TryTakeAutoUse(itemTid, 1))
+        {
+            return false;
+        }
+
+        AddBuff(itemTid, count);
+        return true;
+    }
+
+    private void SetBuff(int itemTid, int count) => SetOrRemove(_buffs, itemTid, count);
+
+    private void SetAutoUse(int itemTid, int count) => SetOrRemove(_autoUse, itemTid, count);
+
+    private static void SetOrRemove(SortedDictionary<int, int> map, int key, int count)
+    {
+        if (count > 0)
+        {
+            map[key] = count;
+        }
+        else
+        {
+            map.Remove(key);
+        }
+    }
+
     /// <summary>이 슬롯의 실효 채취 주기. 표시·로그용이며 계산에는 쓰지 않는다.</summary>
     public TimeSpan EffectiveCycle
         => TimeSpan.FromMilliseconds((double)JudgeCostUnits / CurrentWorkSpeed);
@@ -158,7 +296,7 @@ public sealed class WorkStationSlot
         return (int)judgeCount;
     }
 
-    /// <summary>판정 count회분의 작업량을 진행도에 얹는다(치트 전용). 다음 정산이 꺼내 간다.</summary>
+    /// <summary>판정 count회분의 작업량을 진행도에 얹는다(치트 · 보물 지도). 다음 정산이 꺼내 간다.</summary>
     /// <returns>얹었으면 true. 비활성 슬롯은 건너뛴다 — 배치하는 순간 한꺼번에 터지기 때문.</returns>
     public bool AdvanceJudges(int count)
     {
@@ -214,5 +352,8 @@ public sealed class WorkStationSlot
         EquipAddPermille    = SpeedBreakdown.EquipAddPermille,
         StarAddPermille     = SpeedBreakdown.StarAddPermille,
         GatherSpeedPermille = SpeedBreakdown.GatherSpeedPermille,
+        BuffAddPermille     = SpeedBreakdown.BuffAddPermille,
+        Buffs               = _buffs.Select(b => new SlotBuffInfo { ItemTID = b.Key, Remaining = b.Value }).ToList(),
+        AutoUse             = _autoUse.Select(a => new SlotAutoUseInfo { ItemTID = a.Key, Count = a.Value }).ToList(),
     };
 }

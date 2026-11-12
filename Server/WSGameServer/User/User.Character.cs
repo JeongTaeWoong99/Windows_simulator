@@ -124,10 +124,14 @@ public partial class User
     /// 만렙이라 아무것도 안 바뀌면 저장도 푸시도 하지 않는다.
     /// 레벨이 오르면 true — 속도 가산이 바뀌므로 부른 쪽이 정산 뒤 슬롯 속도를 다시 매긴다(이슈 #35).
     /// </summary>
-    public bool GrantCharacterExp(Character character, int amount, bool notify)
+    /// <param name="accountExp">false면 계정 경험치를 올리지 않는다 — 성장의 비약(계정은 작업으로만 자란다 · T-195).</param>
+    public bool GrantCharacterExp(Character character, int amount, bool notify, bool accountExp = true)
     {
         // 캐릭터가 얻은 경험치는 그대로 계정 경험치가 된다(특성 3장). 캐릭터가 만렙이어도 계정은 자란다.
-        GainAccountExp(amount, notify);
+        if (accountExp)
+        {
+            GainAccountExp(amount, notify);
+        }
 
         var levelBefore = character.Level;
         var expBefore   = character.Exp;

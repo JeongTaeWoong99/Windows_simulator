@@ -153,27 +153,45 @@ public partial class User
             return 0;
         }
 
-        var leveledUp = false;
+        var leveledUp      = false;
+        var speedChanged   = false;
+        var buffChanges    = new List<SlotBuffChange>();
+        var autoUseChanges = new List<SlotAutoUseChange>();
         foreach (var harvest in harvests)
         {
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
-                // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
-                var yieldAdd = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry);
-                if (yieldAdd > 0)
+                // 소모품 버프(T-195) — 이번 판정 수만큼 깎고, 앞쪽 판정부터 붙인다. 속도 버프는 이미 판정 수에 들어 있다.
+                // 버프가 다 되면 자동 사용 칸에서 이어서 꺼낸다(이슈 #113). 속도 가산이 달라졌을 때만 속도를 다시 매긴다.
+                var cellsBefore = rolledSlot.AutoUse.ToDictionary();
+                var speedBefore = GetSlotBuffSpeedAdd(rolledSlot);
+                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount, AutoUseEffectCount);
+                foreach (var (itemTid, _) in applied)
                 {
-                    foreach (var itemTid in harvest.Gained.Keys.ToList())
-                    {
-                        harvest.Gained[itemTid] = ApplyYield(harvest.Gained[itemTid], yieldAdd, Random.Shared);
-                    }
+                    buffChanges.Add(new SlotBuffChange(rolledSlot.SlotIndex, itemTid, rolledSlot.Buffs.GetValueOrDefault(itemTid)));
+                }
+
+                autoUseChanges.AddRange(AutoUseChanges(rolledSlot, cellsBefore));
+                speedChanged |= GetSlotBuffSpeedAdd(rolledSlot) != speedBefore;
+
+                // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
+                var yieldAdd  = GetTraitYieldAdd(rolledSlot.Industry) + GetArtifactEffect(UserTraitEffect.YieldAdd, rolledSlot.Industry);
+                var yieldBuff = SlotBuffAddsPerJudge(applied, harvest.JudgeCount, effect => effect == ItemUseEffect.SlotYield);
+                if (yieldAdd > 0 || yieldBuff.Any(add => add > 0))
+                {
+                    ApplyYieldPerJudge(harvest.Gained, yieldAdd, yieldBuff, Random.Shared);
                 }
 
                 // 상자 — 자원 롤과 따로, 판정 1회마다 그 슬롯 (산업, 레벨)의 행을 굴려 이 슬롯의 수확에 얹는다(T-030).
-                // 발굴은 상자 대신 유물이 나오고, 아티팩트의 유물 발견 확률이 그 확률에 곱해진다(T-150).
+                // 발굴은 상자 대신 유물이 나오고, 아티팩트의 유물 발견 확률이 그 확률에 곱해진다(T-150). 나침반은 판정마다 더 얹는다.
                 var chanceAdd = rolledSlot.Industry == IndustryType.Excavation ? GetArtifactEffect(UserTraitEffect.RelicChanceAdd, IndustryType.None) : 0;
-                foreach (var (itemTid, count) in _commonRewards.Roll(rolledSlot.Industry, rolledSlot.IndustryLevel, harvest.JudgeCount, Random.Shared, chanceAdd))
+                var boxBuff   = SlotBuffAddsPerJudge(applied, harvest.JudgeCount, BoxBuffMatcher(rolledSlot.Industry));
+                foreach (var (judges, buffAdd) in RunsOf(boxBuff))
                 {
-                    harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
+                    foreach (var (itemTid, count) in _commonRewards.Roll(rolledSlot.Industry, rolledSlot.IndustryLevel, judges, Random.Shared, chanceAdd + buffAdd))
+                    {
+                        harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
+                    }
                 }
             }
 
@@ -217,8 +235,19 @@ public partial class User
             }
         }
 
-        // 레벨이 오르면 속도 가산이 바뀐다. 정산이 방금 구간을 끊었으므로 새 속도는 소급되지 않는다(이슈 #35).
-        if (leveledUp)
+        // 칸에서 꺼낸 것과 그 버프는 한 트랜잭션으로 저장한다 — 하나만 남으면 영약이 사라지거나 두 번 쓰인다.
+        if (autoUseChanges.Count > 0)
+        {
+            PostDBTask(new SaveSlotAutoUseRepository(this, autoUseChanges, buffChanges));
+        }
+        else if (buffChanges.Count > 0)
+        {
+            PostDBTask(new SaveSlotBuffRepository(this, buffChanges));
+        }
+
+        // 레벨이 오르거나 속도 버프가 끝나면 속도가 바뀐다. 정산이 방금 구간을 끊었으므로 새 속도는 소급되지 않는다(이슈 #35).
+        // 버프가 판정 도중에 끝나도 그 정산 구간은 버프 속도로 센다 — 정산은 짧게 자주 돌아 차이가 판정 1회를 넘지 않는다.
+        if (leveledUp || speedChanged)
         {
             ApplyWorkStationSpeed(notify);
         }
@@ -277,6 +306,7 @@ public partial class User
         SettleWorkStation(now);
 
         slot.Assign(industry, characterId, now, industryLevel, ResolveJudgeCost(industry, industryLevel));
+        RefillAutoUseAndSave(slot);
 
         // 배치가 바뀌면 그 캐릭터의 속도로 갈아탄다. Assign이 방금 구간을 끊었으므로
         // 여기서 바꾸는 것은 소급되지 않는다.
@@ -329,6 +359,39 @@ public partial class User
         return total;
     }
 
+    // 판정마다 산출량을 붙인다 — i번째 판정의 자원에는 기본 가산 + 그 판정의 버프 가산(T-195). 판정당 자원은 YieldPerJudge개다.
+    // 자원은 판정마다 같은 표에서 독립으로 뽑히므로 어느 자원이 어느 판정 몫인지는 순서대로 나눠도 같다.
+    private static void ApplyYieldPerJudge(Dictionary<int, int> gained, int baseAdd, int[] buffAdds, Random random)
+    {
+        var unit = 0;
+        foreach (var itemTid in gained.Keys.ToList())
+        {
+            var total = 0;
+            for (var i = 0; i < gained[itemTid]; i++, unit++)
+            {
+                var judge = unit / WorkStationSlot.YieldPerJudge;
+                var extra = judge < buffAdds.Length ? buffAdds[judge] : 0;
+                total += ApplyYield(1, baseAdd + extra, random);
+            }
+
+            gained[itemTid] = total;
+        }
+    }
+
+    // 판정마다의 가산을 같은 값이 이어지는 구간(판정 수, 가산)으로 묶는다 — 구간마다 한 번만 굴린다.
+    private static IEnumerable<(int Judges, int Add)> RunsOf(int[] perJudge)
+    {
+        var start = 0;
+        for (var i = 1; i <= perJudge.Length; i++)
+        {
+            if (i == perJudge.Length || perJudge[i] != perJudge[start])
+            {
+                yield return (i - start, perJudge[start]);
+                start = i;
+            }
+        }
+    }
+
     // 이 슬롯의 채취 속도 내역. 속도에 관여하는 것은 전부 여기로 모은다 — 정산 → ApplyWorkSpeed 순서를 타는 유일한 경로라
     // 여기서 곱하면 소급이 불가능하다. 합성 규칙은 WorkSpeedBreakdown.Resolve → Server/docs/채취-정산.md 5장
     private WorkSpeedBreakdown ResolveSlotSpeed(WorkStationSlot slot)
@@ -346,7 +409,8 @@ public partial class User
             TraitAddPermille:    GetTraitSpeedAdd(slot.Industry) + GetArtifactEffect(UserTraitEffect.SpeedAdd, slot.Industry),
             EquipAddPermille:    GetEquipSpeedAdd(slot.CharacterId, slot.Industry),
             StarAddPermille:     GetStarSpeedAdd(slot.CharacterId),
-            GatherSpeedPermille: _gatherSpeed.Permille);
+            GatherSpeedPermille: _gatherSpeed.Permille,
+            BuffAddPermille:     GetSlotBuffSpeedAdd(slot));
     }
 
     /// <summary>지정한 슬롯들의 <b>배치 설정</b>을 DB에 반영한다(진행도는 저장하지 않는다).</summary>

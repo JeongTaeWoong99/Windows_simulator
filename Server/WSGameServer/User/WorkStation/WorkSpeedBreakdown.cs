@@ -10,7 +10,8 @@ public readonly record struct WorkSpeedBreakdown(
     int TraitAddPermille,
     int EquipAddPermille,
     int StarAddPermille,
-    int GatherSpeedPermille)
+    int GatherSpeedPermille,
+    int BuffAddPermille = 0)
 {
     /// <summary>보정 없이 기본값만 있는 내역. 빈 슬롯·옛 경로가 쓴다.</summary>
     public static WorkSpeedBreakdown Of(int baseWorkSpeed)
@@ -25,6 +26,7 @@ public readonly record struct WorkSpeedBreakdown(
             .Add(TraitAddPermille)
             .Add(EquipAddPermille)
             .Add(StarAddPermille)
+            .Add(BuffAddPermille)
             .Multiply(GatherSpeedPermille)
             .Resolve();
     }

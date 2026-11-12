@@ -125,6 +125,14 @@ namespace MikaProtocol
         InvalidBuildingTID      = 1500, // BuildingTable에 없는 건물
         BuildingMaxLevel        = 1501, // 이미 최대 레벨 — 아무것도 바꾸지 않는다
         BuildingAccountLevelCap = 1502, // 다음 레벨이 계정 레벨을 넘는다 — 건물 레벨의 상한은 계정 레벨이다
+
+        // ── 1600~: 소모품 사용 (T-195) ── 개수는 InvalidUseCount(303) · 보유 부족은 NotEnoughItem(301)
+        InvalidUseTarget  = 1600, // 대상이 없거나 잘못됐다 — 미보유 캐릭터 · 없는 슬롯 · 슬롯 수가 0개이거나 SlotCount 초과 · 중복
+        UseTargetIdle     = 1601, // 보물 지도 — 돌고 있지 않은(산업·캐릭터가 없는) 슬롯
+        CharacterMaxLevel = 1602, // 성장의 비약 — 이미 만렙
+        NothingToReset    = 1603, // 망각의 묘약 — 기본 레벨보다 올린 노드가 하나도 없다
+        NotAutoUsable     = 1604, // 자동 사용 칸 — 신속·풍요의 영약이 아니다 (이슈 #113)
+        AutoUseSlotFull   = 1605, // 자동 사용 칸 — 넣으면 ItemTable.MaxStack을 넘는다
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
