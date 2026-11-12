@@ -11,6 +11,8 @@ public enum CellAspectRatio
     [InspectorName("1 : 2 (세로가 2배)")]     OneToTwo,
     [InspectorName("3 : 1 (가로가 3배)")]     ThreeToOne,
     [InspectorName("1 : 3 (세로가 3배)")]     OneToThree,
+    // ※ 값은 뒤에만 붙인다 — 씬·프리팹에는 순번(정수)으로 저장된다
+    [InspectorName("1.25 : 1 (가로가 1.25배)")] OneAndQuarterToOne,
 }
 
 // 열 개수를 고정한 채, 자기 너비에 맞춰 셀 크기를 자동으로 역산하는 그리드 레이아웃입니다.
@@ -92,6 +94,7 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
             CellAspectRatio.OneToTwo        => 2f,
             CellAspectRatio.ThreeToOne      => 1f / 3f,
             CellAspectRatio.OneToThree      => 3f,
+            CellAspectRatio.OneAndQuarterToOne => 1f / 1.25f,
             _                               => 1f,
         };
     }
