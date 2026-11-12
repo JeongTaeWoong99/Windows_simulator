@@ -240,8 +240,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "\uD480 \uC774\uB984 (\uC124\uBA85)"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -508,8 +508,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0 G
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -745,8 +745,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "1\uD68C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -943,10 +943,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
   m_Padding:
-    m_Left: 6
-    m_Right: 6
-    m_Top: 6
-    m_Bottom: 6
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 4
   m_Spacing: 2
   m_ChildForceExpandWidth: 1
@@ -1068,8 +1068,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "N\uC885"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1316,8 +1316,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: "10\uD68C"
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1468,8 +1468,8 @@ MonoBehaviour:
       m_Calls: []
   m_text: 0 G
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
-  m_sharedMaterial: {fileID: 402744672245609894, guid: dfb6405c7e6ceb4478d09b0b81c3726f, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
+  m_sharedMaterial: {fileID: -4350194311916247388, guid: 9e77a83fa1474f344bf2e9f26ed347d9, type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -1666,10 +1666,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
   m_Padding:
-    m_Left: 6
-    m_Right: 6
-    m_Top: 6
-    m_Bottom: 6
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 4
   m_Spacing: 2
   m_ChildForceExpandWidth: 1
@@ -1783,7 +1783,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 0
   m_PreferredWidth: -1
-  m_PreferredHeight: 146
+  m_PreferredHeight: 150
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
@@ -1852,10 +1852,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
   m_Padding:
-    m_Left: 8
-    m_Right: 8
-    m_Top: 8
-    m_Bottom: 8
+    m_Left: 10
+    m_Right: 10
+    m_Top: 10
+    m_Bottom: 10
   m_ChildAlignment: 0
   m_Spacing: 6
   m_ChildForceExpandWidth: 1
@@ -2003,6 +2003,10 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.212
       objectReference: {fileID: 0}
+    - target: {fileID: 1497379372094278245, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_PreserveAspect
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 2028566351374556331, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_Name
       value: Item Icon View
@@ -2106,6 +2110,14 @@ PrefabInstance:
     - target: {fileID: 3783836223152693268, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
       propertyPath: m_fontColor.r
       value: 0.98
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697113342902959100, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: -20
+      objectReference: {fileID: 0}
+    - target: {fileID: 5697113342902959100, guid: 9c2851e358b51464bba79db22036c1b0, type: 3}
+      propertyPath: m_SizeDelta.y
+      value: -16
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

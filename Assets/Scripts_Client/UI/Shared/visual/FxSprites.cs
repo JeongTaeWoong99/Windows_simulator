@@ -2,12 +2,12 @@
 
 // 연출이 쓰는 이펙트 그림의 이름표 — 어떤 연출이 어떤 그림 파일을 쓰는지 한 곳에 모은다.
 // 그림은 그림 저장소 'Assets/Art/fx/<연출 키>/<이름>.png'에 있고 목록('VisualCatalog.FxOf')으로 찾는다.
-// 흰색 + 투명도만 담은 그림이다 — 색은 'Image.color'로 입힌다(등급색 등). 등급마다 그림을 따로 두지 않는다.
+// 도트 그림이다 — 흰색·회색 명암 + 투명도만 담고, 색은 'Image.color'로 곱한다(등급색 등). 등급마다 그림을 따로 두지 않는다.
 // ※ 예외 — 색이 그림에 들어 있는 둘: 'SpecialRainbow' · 'CoinBody'.
 //
 // ■ 그림을 바꾸려면
 //   같은 파일 이름으로 덮는다 — 코드는 고치지 않는다. 새 부위를 더하면 여기에 이름을 하나 늘린다.
-//   지금 그림은 임시다 — 'Art/_source/fx/fx-placeholder/make_fx.py'가 구웠다(모양을 다듬으려면 그 스크립트를 고쳐 다시 굽는다).
+//   연출 이펙트는 'Art/_source/fx/claude-fx/make_fx.py'가 굽는다(모양을 다듬으려면 그 스크립트를 고쳐 다시 굽는다).
 //
 // ■ 그림이 없으면 그 효과만 빠진다
 //   코드가 키로 고르는 그림은 목록으로 찾는다(UI 틀처럼 씬에 구운 것은 예외 — 'Art 규칙.md').
@@ -62,14 +62,11 @@ public static class FxSprites
     // 자물쇠 고리 — 몸통과 같은 캔버스·같은 자리. 왼쪽 다리 밑동을 축으로 들린다('SlotUnlockFx.ShacklePivot')
     public static Sprite? UnlockShackle => VisualCatalog.FxOf("unlock_shackle");
 
-    // ── rarity — 칸 등급 배경 ('SlotView') ──
+    // ── rarity — 칸 등급 바탕 ('RaritySkin' — 칸 · 아이콘 · 작업슬롯 · 위젯 · 배치 줄) ──
 
-    // 테두리 띠 + 안쪽 번짐 + 아래로 진해지는 속 — 등급색을 입힌다.
-    // ⚠️ 9-slice 경계(Border 10)가 .meta에 있다 — 'Image.Type.Sliced'로 늘린다
+    // 밝은 테두리 + 어두운 속(가운데만 은은히) — 등급색을 곱하면 등급색 테두리 · 어두운 등급색 속.
+    // ⚠️ 9-slice 경계(Border 8)는 임포트가 넣는다('ArtImportPostprocessor.UiBorders') — 'Image.Type.Sliced'로 늘린다
     public static Sprite? RarityBackground => VisualCatalog.FxOf("rarity_bg");
-    // 등급 틀 장식 — 색을 곱하지 않는 덧그림(쇠 귀퉁이 · 홈 그늘). 바탕 바로 위에 깐다('SlotView')
-    public static Sprite? RarityFrame      => VisualCatalog.FxOf("rarity_frame");
-    public static Sprite? RarityFrameGold  => VisualCatalog.FxOf("rarity_frame_gold");
 
     // ── special — Special 칸 ('SpecialSlotFx') · 테두리 띠는 'RevealFrame' · 빛줄기는 'RevealShine' · 반짝임은 'RevealSparkle'을 빌린다 ──
 

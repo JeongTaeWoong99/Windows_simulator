@@ -11,7 +11,7 @@
 | `ArtImage.cs` | 픽셀 버퍼 — 자르기 · 뒤집기 · 축소(가장 가까운 픽셀 / 알파 가중 평균) · 겹치기 · 테두리 · 발 위치 · 흰 실루엣 · 픽셀 격자 맞춤 · 1px 외곽선 · PNG 저장 |
 | `CharacterRecipe.cs` · `BackgroundRecipe.cs` · `TargetRecipe.cs` | 레시피 SO — 무엇을 어떻게 가공할지. 우클릭 **이 레시피 굽기** |
 | `ArtBaker.cs` | 굽기 — 레시피 → PNG + 결과 SO(`CharacterVisual`·`BackgroundVisual`·`TargetVisual`). 메뉴 **아트/전부 다시 굽기** |
-| `ArtImportPostprocessor.cs` | `characters/`·`backgrounds/`·`targets/`·`icons/`·`fx/`의 임포트 설정 고정. `_source/`는 건드리지 않는다. `fx/`는 선형 필터이고 9-slice 경계는 두고 간다 |
+| `ArtImportPostprocessor.cs` | `characters/`·`backgrounds/`·`targets/`·`icons/`·`fx/`의 임포트 설정 고정. `_source/`는 건드리지 않는다. `fx/`는 점 필터(전부 도트 · 2026-11-11)이고 9-slice 경계는 두고 간다(`UiBorders`만 넣는다) |
 | `ArtCatalogSync.cs` | 목록(`Resources/VisualCatalog`)을 폴더에서 다시 쓴다 — 캐릭터 · 아이콘 · 이펙트(`fx/**/<키>_<부위>.png` → 파일 이름) · **소리**(`audio/**/<키>.wav` → `Resources/SoundCatalog` — 없으면 만든다). 굽기 끝에 돌고, 메뉴 **아트/목록만 다시 쓰기**로 따로도 돈다 |
 | `ArtValidator.cs` | 결과물·목록 검사 — 고치지 않고 알린다(❌ · ⚠️ · ℹ️). 메뉴 **아트/검사**. 아이콘 이름 판정(레시피 `fit`·`checkedName` ↔ 지금 엑셀 이름) · `Sounds` 이름표가 목록에서 안 찾아지면 ❌ |
 | `FxPreviewWindow.cs` | 메뉴 **아트/이펙트 미리보기** — Project 창에서 번호 붙은 PNG(`<이름>_0.png`) 하나를 누르면 같은 묶음을 게임과 같은 규칙(길이 ÷ 장 수)으로 이어 재생한다. 길이·속도·확대·배경·한 장씩 넘기기 |

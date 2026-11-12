@@ -23,6 +23,13 @@
 
 ## INDEX
 
+- [2026-11-12 제목 폰트 되돌림 · 등급 빛 칸 전체 · 뽑기권 여백](2026-11-12-title-font-revert-rarity-full-glow.md) — `#client` `#ui` `#art` `#font` 제목 갈무리로 · FW 삭제 · rarity_bg 계단빛 바닥→위 · 상점 뽑기권 아이콘 여백 10 · 저주곰 8프레임·이펙트(기술 시험)
+- [2026-11-12 버튼 글씨 크기 3단 · 등급 바탕 A+B · 저주곰 마수](2026-11-12-button-text-size-rarity-ab-ursabeast.md) — `#client` `#ui` `#art` `#font` 버튼 높이별 글씨 16·22·높이−22 고정 · 도구 줄 폭 · 산업 레벨 두 줄 · 칸 글씨를 등급 테두리 안으로 · rarity_bg 입체 테두리 + 계단빛 · 제목 Fantasy Warrior(CC-BY — 같은 날 되돌림) · 곰 2족 마수
+- [2026-11-11 테두리 상자 여백 10 · 가시등 멧돼지 마수](2026-11-11-frame-padding-10-thornboar.md) — `#client` `#ui` `#art` 틀 테두리 + 틈 2 = 여백 10(제목 띠 14) · 버튼 글씨 좌우 10 위아래 4 · 얇은 띠는 높이를 늘림 · 그루터기 정령 → 96×64 멧돼지 마수 · 폰트 후보(도스명조 · Fantasy Warrior)
+- [2026-11-11 갈무리 폰트 · 등급 귀퉁이 장식 제거](2026-11-11-galmuri-font-no-rarity-corners.md) — `#client` `#ui` `#font` 이슈 #121 화면 폰트 갈무리11(OFL, 빠진 기호는 Pretendard 폴백) · `RaritySkin` 귀퉁이 장식 제거(작업슬롯 위 빈 줄 원인) · 등급 프레임 시안 4종
+- [2026-11-11 등급 바탕 한 벌 · 칸 여백 · 우편 아이콘 · 그루터기 정령](2026-11-11-rarity-skin-slot-padding-stump.md) — `#client` `#ui` `#art` `RaritySkin`(어두운 판 + 등급색 테두리)을 칸·아이콘·작업슬롯·위젯·배치 줄에 · `SlotView` 여백 · 우편 첨부 여럿이면 글자로 보이던 것 · 만드라고라 → 그루터기 정령
+- [2026-11-11 아티팩트 지급 치트 칸 · 뽑기권 아이콘 · 코드 몬스터](2026-11-11-artifact-cheat-ticket-icons-mandrake.md) — `#client` `#editor` `#art` T-193 `GiveArtifact` 칸 실서버 왕복 · T-189 뽑기권 4종 코드 도트 · 만드라고라 시험
+- [2026-11-11 연출 이펙트 전부 도트로](2026-11-11-fx-pixel-art.md) — `#client` `#art` T-178 · `fx/` 22장을 Claude 코드 도트로(`claude-fx/make_fx.py`) · `fx/` 전부 점 필터
 - [2026-11-08 UI 픽셀 틀 · Taskbar Heroes 결](2026-11-08-ui-skin-pixel-frames.md) — `#client` `#ui` `#art` Claude가 코드로 그린 UI 틀·버튼 아이콘(크레딧 0) · `UiSkin` 두 겹 + 창 액자 · 에디터 미리보기 · `Header` 역할 · 레퍼런스 `_source/reference/taskbar-hero/` · 스프라이트 아틀라스 4개 · 눌림 반응 드롭다운·체크까지 · 드롭다운 목록 크기
 - [2026-11-08 pixelfx 타격 이펙트 · 캐릭터 시트 점검 · 영상 비용 실험](2026-11-08-pixelfx-hit-fx.md) — `#client` `#editor` `#docs` T-174 · `pixel-fx` 스킬 · 산업별 타격 5종(크레딧 0) · Seedance 4초 196 · 이미지 격자 달리기 실패
 - [2026-11-07 AI 원본 1536 줄이기 · 캐릭터 시트 격자 시험](2026-11-07-raw-shrink-char-sheet.md) — `#client` `#docs` T-174 · `asset-compression` 스킬 · 원본 228MB → 37MB · 이미지 모델 격자는 움직임이 안 나온다

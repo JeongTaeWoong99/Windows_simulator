@@ -25,9 +25,9 @@ public class CharacterStateRowView : MonoBehaviour
 {
     [CenterHeader("캐릭터")]
     // 줄 바탕을 등급 색으로 칠한다('SetRarity'). 인벤토리 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
-    // 🎨 등급 테두리 스프라이트가 나오면 색 대신 여기에 스프라이트를 넣는다.
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
     private Image backgroundImage = null!;
+
 
     // 캐릭터 상반신 — 인벤토리 캐릭터 칸과 같은 그림('VisualCatalog.PortraitOf', TID로 찾는다).
     // 그림 저장소가 없는 PC면 null이라 프리팹의 자리 표시 네모를 그대로 둔다.
@@ -88,6 +88,8 @@ public class CharacterStateRowView : MonoBehaviour
         this.RequireRef(assignButton,  nameof(assignButton));
         this.RequireRef(assignLabel,   nameof(assignLabel));
 
+        RaritySkin.Dress(backgroundImage);
+
         _portraitPlaceholderColor = portraitImage.color;
 
         if (aptitudeCellImages.Length != AptitudeLabel.Count || aptitudeValueTexts.Length != AptitudeLabel.Count)
@@ -141,7 +143,7 @@ public class CharacterStateRowView : MonoBehaviour
     //   rarity : 종류(TID)로 읽은 등급. 개체 번호로 읽으면 'None'이 되어 회색으로 칠해진다
     public void SetRarity(GlobalRarity rarity)
     {
-        backgroundImage.color = RarityPalette.Get(rarity);
+        RaritySkin.Set(backgroundImage, rarity);
     }
 
     // 적성 5칸을 그린다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
@@ -194,7 +196,7 @@ public class CharacterStateRowView : MonoBehaviour
         CharacterId           = 0;
         nameText.text         = "";
         raceText.text         = "";
-        backgroundImage.color = RarityPalette.Unknown;
+        RaritySkin.Set(backgroundImage, GlobalRarity.None);
 
         SetPortrait(null);
         SetWarehouseMark(false);
