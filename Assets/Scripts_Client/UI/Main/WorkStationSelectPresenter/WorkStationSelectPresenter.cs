@@ -219,6 +219,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("끼울 장비가 하나도 없을 때만 켜지는 안내. 빈 목록은 고장과 구분되지 않는다")]
     private TMP_Text equipEmptyText = null!;
 
+    // 줄마다 붙는 ▲▼가 무엇과 비교한 값인지 알려 준다 — 기준이 안 보이면 +25%가 어디서 나온 수인지 모른다(2026-11-13 A안).
+    [SerializeField, Tooltip("(선택) 고르는 칸에 지금 낀 장비 한 줄 '▶ 목검 · 전산업 +5%'. 비우면 적지 않는다")]
+    private TMP_Text? equipCurrentText;
+
     // ※ **순서가 곧 산업**이라 산업 버튼 줄과 같은 축이다(농사·채굴·벌목·사냥·발굴).
     //   색 규칙도 같다 — 고른 것만 노랑이다.
     // ※ '모두'는 두지 않는다(2026-09-24 사용자 결정) — 칸을 열면 **그 슬롯의 산업**이 골라진 채로 뜬다.
@@ -1628,6 +1632,15 @@ public class WorkStationSelectPresenter : MonoBehaviour
                                           : null);
         }
 
+        // 칸 바탕은 인벤토리 칸과 같은 등급 그림(입체 테두리 + 계단빛)이다 — 위 이름표 띠와 함께 B안(2026-11-13)
+        foreach (var entry in equipSlotButtons)
+        {
+            if (entry.background != null)
+            {
+                RaritySkin.Dress(entry.background);
+            }
+        }
+
         _equipIconPlaceholderColors = new Color[equipSlotButtons.Length];
 
         for (int i = 0; i < equipSlotButtons.Length; i++)
@@ -1706,9 +1719,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 인벤토리 칸·캐릭터 카드와 같은 표('RarityPalette')다. 빈 칸은 회색('Unknown').
             if (entry.background != null)
             {
-                entry.background.color = worn != null
-                    ? RarityPalette.Get(GameDataLoader.GetEquipRarity(worn.EquipTid))
-                    : RarityPalette.Unknown;
+                RaritySkin.Set(entry.background, worn != null ? GameDataLoader.GetEquipRarity(worn.EquipTid) : GlobalRarity.None);
             }
         }
     }
@@ -1842,7 +1853,23 @@ public class WorkStationSelectPresenter : MonoBehaviour
             _pickCandidates.Add(equip);
         }
 
-        _pickCandidates.Sort(CompareEquips);
+        // 이 산업에서 많이 오르는 것이 위 — 같으면 예전 순서(속도 · 전 산업 · 번호)
+        _pickCandidates.Sort(_compareForSlot ??= (a, b) =>
+        {
+            int byGain = SlotBonusPermille(b.EquipTid).CompareTo(SlotBonusPermille(a.EquipTid));
+
+            return byGain != 0 ? byGain : CompareEquips(a, b);
+        });
+
+        var worn    = FindWornEquip(_pickingSlot);
+        int current = worn != null ? SlotBonusPermille(worn.EquipTid) : 0;
+
+        if (equipCurrentText != null)
+        {
+            equipCurrentText.text = worn != null
+                ? $"▶ {GameDataLoader.GetEquipName(worn.EquipTid)} · {EquipLabel.GetEffectText(worn.EquipTid)}"
+                : $"▶ {Lang.Get("UI.Equip.SlotEmpty")}";
+        }
 
         for (int i = 0; i < _pickCandidates.Count; i++)
         {
@@ -1851,7 +1878,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             var view = _equipRows.Get(i);
 
-            view.Bind(equip.EquipId, Loc.Get(row.NameLocKey), EquipLabel.GetEffectText(equip.EquipTid));
+            // 이 산업 전용 효과는 금색 — 전 산업 효과보다 먼저 눈에 걸린다
+            string effect = EquipLabel.GetEffectText(equip.EquipTid);
+
+            if (row.Industry != IndustryType.None && (EIndustryType)(byte)row.Industry == SelectedIndustry)
+            {
+                effect = UIRichText.Paint(effect, UIThemeRole.Highlight);
+            }
+
+            view.Bind(equip.EquipId, Loc.Get(row.NameLocKey), effect);
+            view.SetCompare(FormatGain(SlotBonusPermille(equip.EquipTid) - current));
             view.SetRarity(row.GlobalRarity);
             view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                            () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));
@@ -1897,6 +1933,37 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //
     // ※ 개체 번호까지 가서 **동점을 없앤다** — 'List.Sort'는 안정 정렬이 아니라 동점이면
     //   다시 그릴 때마다 줄 순서가 바뀐다(배치 목록 'CompareRows'와 같은 이유).
+    // 고르는 칸 정렬 — 'SelectedIndustry'를 읽어 정적일 수 없어 한 번 만들어 둔다
+    private Comparison<EquipInfo>? _compareForSlot;
+
+    // 이 장비가 지금 고른 산업에 더하는 속도(천분율). 다른 산업 전용이면 0 — 서버 계산과 같은 축이다.
+    private int SlotBonusPermille(int equipTid)
+    {
+        if (!GameDataLoader.TryGetEquip(equipTid, out var row))
+        {
+            return 0;
+        }
+
+        bool applies = row.Industry == IndustryType.None || (EIndustryType)(byte)row.Industry == SelectedIndustry;
+
+        return applies ? row.SpeedAddPermille : 0;
+    }
+
+    // 지금 낀 것 대비 차이 '▲ +25%' · '▼ −5%' · 같으면 '='. 천분율 → %.
+    private static string FormatGain(int diffPermille)
+    {
+        if (diffPermille == 0)
+        {
+            return UIRichText.Paint("=", UIThemeRole.TextSub);
+        }
+
+        string value = $"{Mathf.Abs(diffPermille) / 10f:0.#}%";
+
+        return diffPermille > 0
+            ? UIRichText.Paint($"▲ +{value}", UIThemeRole.Positive)
+            : UIRichText.Paint($"▼ −{value}", UIThemeRole.Negative);
+    }
+
     private static int CompareEquips(EquipInfo a, EquipInfo b)
     {
         GameDataLoader.TryGetEquip(a.EquipTid, out var rowA);

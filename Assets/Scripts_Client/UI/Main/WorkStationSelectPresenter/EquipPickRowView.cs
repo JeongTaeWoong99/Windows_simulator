@@ -4,7 +4,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 장비 고르기 목록의 한 줄 — 아이콘(능력치 칸 포함) · 이름 · 효과 한 줄. 바탕은 등급 색이다.
+// 장비 고르기 목록의 한 줄 — 아이콘(능력치 칸 포함) · 이름 · 효과 한 줄 · 오른쪽 비교값. 바탕은 등급 색이다.
+// 비교값은 '지금 낀 것보다 이 산업 속도가 얼마나 오르나'다(▲ +25% · ▼ −5%) — 같은 종류 여럿 중 고르는 근거를 한눈에(2026-11-13 사용자 A안).
 // 마우스를 올리면 인벤토리 장비 칸과 같은 툴팁(기본 능력치 · 능력치 칸 전부)이 뜬다 — 같은 종류 여럿 중 무엇을 낄지 고르는 자리다.
 //
 // 눌리면 'PickClicked'만 쏜다 — 어느 캐릭터의 어느 칸에 끼우는지는 이 줄이 모른다.
@@ -40,6 +41,9 @@ public class EquipPickRowView : MonoBehaviour
 
     [SerializeField, Tooltip("효과 한 줄 — '발굴 +30%' · '전산업 +5%'")]
     private TMP_Text effectText = null!;
+
+    [SerializeField, Tooltip("(선택) 오른쪽 비교값 — 지금 낀 것 대비 이 산업 속도 차이 '▲ +25%'. 비우면 적지 않는다")]
+    private TMP_Text? deltaText;
 
     [SerializeField, Tooltip("줄 전체를 덮는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button pickButton = null!;
@@ -77,6 +81,16 @@ public class EquipPickRowView : MonoBehaviour
         effectText.text = effect;
     }
 
+    // 지금 낀 것과 비교한 값을 적는다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
+    //   delta : 색까지 입힌 완성 문자열 — 무엇과 비교할지는 패널이 안다
+    public void SetCompare(string delta)
+    {
+        if (deltaText != null)
+        {
+            deltaText.text = delta;
+        }
+    }
+
     // 줄 바탕을 이 장비의 등급 색으로 칠한다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
     //   rarity : 종류(TID)로 읽은 등급. 개체 번호로 읽으면 'None'이 되어 회색으로 칠해진다
     public void SetRarity(GlobalRarity rarity)
@@ -108,6 +122,7 @@ public class EquipPickRowView : MonoBehaviour
         tooltipTrigger.SetProvider(null);
         nameText.text         = "";
         effectText.text       = "";
+        SetCompare("");
         RaritySkin.Set(backgroundImage, GlobalRarity.None);
     }
 }

@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-13 작업슬롯 B · 장비 고르기 A · 장착 칸 B](2026-11-13-workslot-b-equip-picker-a-slot-b.md) — `#client` `#ui` 무대가 칸 전체 · 빨간 배율 리본 · 장비 줄 ▲▼ 비교 · 이 산업 효과 금색 · 장착 칸 이름표 띠 · PR #120·#122 머지
 - [2026-11-12 제목 폰트 되돌림 · 등급 빛 칸 전체 · 뽑기권 여백](2026-11-12-title-font-revert-rarity-full-glow.md) — `#client` `#ui` `#art` `#font` 제목 갈무리로 · FW 삭제 · rarity_bg 계단빛 바닥→위 · 상점 뽑기권 아이콘 여백 10 · 저주곰 8프레임·이펙트(기술 시험)
 - [2026-11-12 버튼 글씨 크기 3단 · 등급 바탕 A+B · 저주곰 마수](2026-11-12-button-text-size-rarity-ab-ursabeast.md) — `#client` `#ui` `#art` `#font` 버튼 높이별 글씨 16·22·높이−22 고정 · 도구 줄 폭 · 산업 레벨 두 줄 · 칸 글씨를 등급 테두리 안으로 · rarity_bg 입체 테두리 + 계단빛 · 제목 Fantasy Warrior(CC-BY — 같은 날 되돌림) · 곰 2족 마수
 - [2026-11-11 테두리 상자 여백 10 · 가시등 멧돼지 마수](2026-11-11-frame-padding-10-thornboar.md) — `#client` `#ui` `#art` 틀 테두리 + 틈 2 = 여백 10(제목 띠 14) · 버튼 글씨 좌우 10 위아래 4 · 얇은 띠는 높이를 늘림 · 그루터기 정령 → 96×64 멧돼지 마수 · 폰트 후보(도스명조 · Fantasy Warrior)
