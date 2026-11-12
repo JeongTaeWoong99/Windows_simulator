@@ -290,6 +290,21 @@
     "EN": "Skilled Miner"
   },
   {
+    "Key": "Character.1032.Name",
+    "KR": "탐험가",
+    "EN": "Explorer"
+  },
+  {
+    "Key": "Character.1033.Name",
+    "KR": "드워프 발굴꾼",
+    "EN": "Dwarf Digger"
+  },
+  {
+    "Key": "Character.1034.Name",
+    "KR": "보물 사냥꾼",
+    "EN": "Treasure Hunter"
+  },
+  {
     "Key": "Equip.1001.Name",
     "KR": "목검",
     "EN": "Wooden Sword"
@@ -5140,6 +5155,11 @@
     "EN": "Golem"
   },
   {
+    "Key": "UI.Character.RaceDwarf",
+    "KR": "드워프",
+    "EN": "Dwarf"
+  },
+  {
     "Key": "UI.Character.RaceHumanShort",
     "KR": "인",
     "EN": "H"
@@ -5158,6 +5178,11 @@
     "Key": "UI.Character.RaceGolemShort",
     "KR": "골",
     "EN": "G"
+  },
+  {
+    "Key": "UI.Character.RaceDwarfShort",
+    "KR": "드",
+    "EN": "D"
   },
   {
     "Key": "UI.Inventory.CondenseMax",

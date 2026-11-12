@@ -1118,5 +1118,77 @@
     "Count": 1,
     "Weight": 2835,
     "Description": "Uncommon 숙련 채굴꾼 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 32032,
+    "GachaId": 32,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 탐험가 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 33032,
+    "GachaId": 33,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 탐험가 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34032,
+    "GachaId": 34,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 탐험가 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35032,
+    "GachaId": 35,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 탐험가 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 33033,
+    "GachaId": 33,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 드워프 발굴꾼 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34033,
+    "GachaId": 34,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 드워프 발굴꾼 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35033,
+    "GachaId": 35,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 드워프 발굴꾼 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 34034,
+    "GachaId": 34,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 560,
+    "Description": "Legendary 보물 사냥꾼 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35034,
+    "GachaId": 35,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "Legendary 보물 사냥꾼 (뽑기권 D)"
   }
 ]

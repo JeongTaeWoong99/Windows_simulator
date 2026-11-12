@@ -126,6 +126,7 @@ namespace GameData
         Monster = 2,  // 마물
         Undead  = 3,  // 언데드
         Golem   = 4,  // 골렘
+        Dwarf   = 5,  // 드워프
 
         Max    ,
     };
