@@ -13,14 +13,15 @@ using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 응축 창 — 같은 캐릭터를 재료로 녹여 대상의 ★을 올린다 (T-130 · 이슈 #59 · 캐릭터 기획 5.5).
 //
-// ■ 판매 목록 자리를 빌려 쓴다 — 큐브 창('EquipEnchantPresenter')과 같은 방식
-// 캐릭터 탭에서 캐릭터를 **좌클릭**하면 판매 목록이 비워지며 물러나고 이 창이 그 자리에 열린다.
-// 닫기 · 다른 탭 · 우클릭(판매 담기)이면 물러나고 판매 목록이 돌아온다.
+// ■ 화면 가운데 팝업이다 (2026-11-15 사용자 · T-201)
+// 캐릭터 탭에서 캐릭터를 **좌클릭**하면 '!Overlay Canvas'에 어두운 바탕과 함께 뜬다 — 창 하나에 집중시킨다.
+// 한때 판매 목록 자리(인벤토리 아래)를 빌려 썼는데, 격자가 두 줄 남짓만 남고 창 안 글자가 잘렸다.
+// 닫기 · 바탕 클릭 · 다른 탭이면 닫힌다.
 //
-// ■ 재료는 인벤토리 격자에서 고른다 — 팰월드처럼 목록을 따로 두지 않는다
-// 열려 있는 동안 격자가 재료 고르기 화면이 된다. 칸이 무엇인지('GetMark')는 이 창이 답하고, 격자는 그대로 그린다.
-//   대상 = 파랑 테두리 · 고른 재료 = 노랑 테두리 + 체크 · 못 넣는 칸(다른 캐릭터 · 배치·착용 중) = 흑백.
-// 칸 순서는 그대로 둔다 — 같은 캐릭터만 앞으로 모으면 눈이 기억한 자리를 잃는다.
+// ■ 재료는 창 안 목록에서 고른다
+// 바탕이 인벤토리를 덮으므로 격자를 누를 수 없다. 대상과 같은 캐릭터를 모두 창 안 칸 목록에 늘어놓는다 —
+//   넣을 수 있는 것 → 못 넣는 것(배치·착용·잠김) 순, 각자 낮은 레벨부터. 칸 표시는 격자와 같다('GetMark').
+//   고른 재료 = 노랑 테두리 + 체크 · 못 넣는 칸 = 흐림.
 //
 // ■ 규칙 (서버 'User.TryCondenseCharacter')
 //   - 재료는 대상과 **같은 CharacterTid**만. 배치·착용 중인 재료는 거절된다. 대상은 배치·착용 중이어도 된다.
@@ -102,6 +103,13 @@ public class CharacterCondensePresenter : MonoBehaviour
     [SerializeField, Tooltip("[응축] 글씨 — '응축 (9마리)'. 코드가 채운다")]
     private TMP_Text confirmLabel = null!;
 
+    [CenterHeader("재료 목록")]
+    [SerializeField, Tooltip("재료 칸이 쌓이는 부모(GridLayoutGroup이 있는 스크롤 Content)")]
+    private RectTransform materialParent = null!;
+
+    [SerializeField, Tooltip("재료 칸 프리팹 — 인벤토리와 같은 SlotView")]
+    private SlotView slotPrefab = null!;
+
     [CenterHeader("색")]
     [SerializeField, Tooltip("[응축] — 보낼 수 있을 때")]
     private UIThemeRole confirmReadyRole = UIThemeRole.ButtonPrimary;
@@ -144,6 +152,12 @@ public class CharacterCondensePresenter : MonoBehaviour
 
     private Tween? _starPunch;
 
+    // 재료 칸 — 열 때마다 개수가 달라 꺼 두었다가 다시 쓴다
+    private UIRowList<SlotView> _materialSlots = null!;
+
+    // 재료 칸에 늘어놓을 같은 캐릭터 — 그릴 때마다 새로 만들지 않는다
+    private readonly List<CharacterInfo> _sameCharacters = new List<CharacterInfo>();
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -171,6 +185,8 @@ public class CharacterCondensePresenter : MonoBehaviour
         this.RequireRef(fillButton,       nameof(fillButton));
         this.RequireRef(confirmButton,    nameof(confirmButton));
         this.RequireRef(confirmLabel,     nameof(confirmLabel));
+        this.RequireRef(materialParent,   nameof(materialParent));
+        this.RequireRef(slotPrefab,       nameof(slotPrefab));
 
         if (headerStars.Length == 0 || stageViews.Length == 0)
         {
@@ -189,6 +205,9 @@ public class CharacterCondensePresenter : MonoBehaviour
         fillButton.onClick.AddListener(OnFillClicked);
         helpTooltip.SetProvider(BuildHelpTooltip);
         confirmButton.onClick.AddListener(OnConfirmClicked);
+
+        _materialSlots = new UIRowList<SlotView>(slotPrefab, materialParent, onCreated: slot => slot.LeftClicked += OnMaterialSlotClicked);
+        BackdropClose.Bind(gameObject, Close);
 
         // ⚠️ 탭·응답 구독은 Start/OnDestroy에 건다 — 이 창은 자기 오브젝트를 끈다('EquipEnchantPresenter'와 같은 이유).
         inventoryTabs.TabChanged         += OnTabChanged;
@@ -496,8 +515,51 @@ public class CharacterCondensePresenter : MonoBehaviour
         DrawCaption(count, added, now, then);
         DrawWarn(target, count);
         DrawConfirm(now);
+        DrawMaterials(target);
     }
 
+    // 재료 칸 — 대상과 같은 캐릭터 전부. 넣을 수 있는 것 먼저, 각자 낮은 레벨부터 (Redraw에서 호출).
+    private void DrawMaterials(CharacterInfo target)
+    {
+        _sameCharacters.Clear();
+
+        foreach (CharacterInfo character in _data.Characters)
+        {
+            if (character.CharacterId != target.CharacterId && character.CharacterTid == target.CharacterTid)
+            {
+                _sameCharacters.Add(character);
+            }
+        }
+
+        _sameCharacters.Sort((a, b) =>
+        {
+            bool okA = CanBeMaterial(a.CharacterId) || _materialSet.Contains(a.CharacterId);
+            bool okB = CanBeMaterial(b.CharacterId) || _materialSet.Contains(b.CharacterId);
+
+            return okA != okB          ? (okA ? -1 : 1)
+                 : a.Level != b.Level ? a.Level.CompareTo(b.Level)
+                 : a.CharacterId.CompareTo(b.CharacterId);
+        });
+
+        for (int i = 0; i < _sameCharacters.Count; i++)
+        {
+            CharacterInfo character = _sameCharacters[i];
+            SlotView      slot      = _materialSlots.Get(i);
+            long          id        = character.CharacterId;
+
+            slot.Bind(new SlotData(id,
+                                   GameDataLoader.GetCharacterName(character.CharacterTid),
+                                   "",
+                                   GameDataLoader.GetCharacterRarity(character.CharacterTid),
+                                   VisualCatalog.PortraitOf(character.CharacterTid)));
+            slot.SetLevelBadge(CharacterSlotSource.GetLevelLabel(character.Level));
+            slot.SetStars(character.Star);
+            slot.SetCondenseMark(GetMark(id));
+            slot.SetDimmed(!_materialSet.Contains(id) && !CanBeMaterial(id));
+        }
+
+        _materialSlots.HideFrom(_sameCharacters.Count);
+    }
     // 머리 — 상반신 · 이름(등급색) · 레벨·누적 한 줄 · ★ 그림.
     private void DrawHeader(CharacterInfo target, int now, int then)
     {
@@ -580,7 +642,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         int max = GameDataLoader.CondenseMaxStar;
 
         captionLeftText.text = added > 0
-            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(added.ToString(), UIThemePalette.Of(UIThemeRole.HighlightDark)), count + added)
+            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(added.ToString(), UIThemePalette.Of(UIThemeRole.Highlight)), count + added)
             : Lang.Format("UI.Condense.Total", count);
 
         if (now >= max)
@@ -700,6 +762,12 @@ public class CharacterCondensePresenter : MonoBehaviour
     #endregion
 
     #region 재료
+
+    // 창 안 재료 칸을 눌렀다 — 격자 칸을 누른 것과 같다(담기·빼기·못 넣는 이유) (재료 칸 LeftClicked 구독)
+    private void OnMaterialSlotClicked(SlotView slot)
+    {
+        OnCharacterClicked(slot.Key);
+    }
 
     private bool IsWaiting => _waitHandle != null;
 

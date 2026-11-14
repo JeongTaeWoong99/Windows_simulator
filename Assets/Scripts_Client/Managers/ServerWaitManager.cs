@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
@@ -86,9 +86,19 @@ public class ServerWaitManager : MonoService<ServerWaitManager>
     // 제한 시간까지 성공·실패 보고가 없으면 스스로 끝내고 알린다 (Begin이 시작).
     // 타임스케일이 0이어도(일시정지 연출 등) 대기는 실제 시간으로 흘러야 한다.
     // 응답이 먼저 오면 'Resolve'가 토큰을 취소해 여기서 조용히 끝난다(취소는 Forget이 삼킨다).
+    //
+    // ⚠️ 시간이 다 돼도 그 프레임의 응답 처리를 먼저 기다린다(PostLateUpdate) — 메인 스레드가 5초 넘게 멈췄다 깨어나면
+    //   지연(Update 맨 앞)이 'NetworkManager.Update'의 큐 비우기보다 먼저 돌아, **이미 와 있는 응답**을 두고 시간 초과를 냈다.
+    //   로그인이 성공하는데 "'로그인' 응답이 5초 안에…" 알림이 뜬 원인이다(2026-11-15 재현 — 큐에 응답을 넣고 6초 멈춤).
     private async UniTask WatchTimeoutAsync(ServerWaitHandle handle, string label, CancellationToken ct)
     {
         await UniTask.Delay(TimeSpan.FromSeconds(RequestTimeoutSeconds), ignoreTimeScale: true, cancellationToken: ct);
+        await UniTask.Yield(PlayerLoopTiming.PostLateUpdate, ct);
+
+        if (handle.IsClosed)
+        {
+            return;
+        }
 
         // 이 감시는 이미 끝났다 — 'Resolve'가 자기 토큰을 다시 취소하지 않게 먼저 떼어 낸다
         handle.Timeout?.Dispose();

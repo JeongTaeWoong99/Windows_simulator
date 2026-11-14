@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-15 응축·큐브 팝업 · 글자 넘침 규칙 · 도움말 아이콘 · 무응답 오알림](2026-11-15-ui-popups-overflow.md) — `#client` `#ui` `#art` T-201 가운데 팝업·재료 목록 · `Josa` · 한 줄+자동 축소 · `ui_help` · 멈춘 뒤 시간 초과 판정 순서 · 한글 줄바꿈
 - [2026-11-14 소모품 사용 창 · 영약 자동 사용 칸](2026-11-14-consumable-use-autouse.md) — `#client` `#ui` T-194 사용 창·슬롯 버프 칩·자동 사용 칸 · 드워프 종족 이름
 - [2026-11-14 작업슬롯 2.5줄 · UI 정리 · 크기 등급 · sprite-gen 후처리](2026-11-14-ui-polish-sprite-gen.md) — `#client` `#ui` `#art` 그리드 소수 줄 · 칸 모서리 8px · 카드 문구 제거 · 숲 배경 원본 위쪽 · 키 1:1.5:2 · `sprite_post.py`
 - [2026-11-14 작업슬롯 2줄 보기 · PixelOE·Codixel](2026-11-14-workslot-two-rows.md) — `#client` `#ui` `#art` 그리드 줄 맞춤 · 배경 위쪽 잇기 · 캐릭터 크기 전부 중형 · `pixeloe_lite.py` · `codixel~`

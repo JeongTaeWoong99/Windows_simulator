@@ -13,9 +13,8 @@ using UnityEngine.UI;
 
 // 큐브 창 — 장비 하나에 인챈트 큐브를 써서 능력치 칸을 다시 뽑는다 (T-095 · 이슈 #46).
 //
-// ■ 판매 목록 자리를 빌려 쓴다 (2026-10-03 사용자 결정)
-// 장비 탭에서 장비를 **좌클릭**하면 판매 목록이 비워지며 물러나고 이 창이 그 자리에 열린다.
-// 닫기 · 다른 탭 · 우클릭(판매 담기)이면 물러나고 판매 목록이 돌아온다.
+// ■ 화면 가운데 팝업이다 (2026-11-15 · T-201 — 그전에는 판매 목록 자리를 빌려 썼다)
+// 장비 탭에서 장비를 **좌클릭**하면 '!Overlay Canvas' 가운데에 열린다. 어두운 바탕을 누르면 [닫기]와 같다(고르기 전이면 막는다).
 // 판매 목록은 'OpenChanged'를 듣고 스스로 물러난다 — 이 창이 판매 목록을 쥐지 않는다.
 //
 // ■ 규칙 (서버 'EnchantCatalog' · 이슈 #46 서버 코멘트)
@@ -255,6 +254,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _wait    = Services.Get<ServerWaitManager>();
 
         closeButton.onClick.AddListener(() => TryClose());
+        BackdropClose.Bind(gameObject, () => TryClose());
         confirmButton.onClick.AddListener(OnConfirmClicked);
         keepBeforeButton.onClick.AddListener(() => OnKeepClicked(false));
         keepAfterButton.onClick.AddListener(() => OnKeepClicked(true));

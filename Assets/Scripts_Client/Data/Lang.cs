@@ -64,9 +64,11 @@ public static class Lang
     }
 
     // 자리표시자('{0}' …)가 있는 문구를 채운다. 번역문도 같은 번호를 쓴다.
+    // ※ 한국어 조사 '이(가)'·'은(는)'·'을(를)'·'와(과)'·'(으)로'는 앞 글자의 받침을 보고 하나로 고른다('Josa') —
+    //   이름이 끼워지는 문구라 표에는 둘 다 적어 두고, 화면에는 맞는 것 하나만 보인다(2026-11-15 · T-201).
     public static string Format(string key, params object[] args)
     {
-        return string.Format(Loc.Get(key), args);
+        return Josa.Resolve(string.Format(Loc.Get(key), args));
     }
 
     // 드롭다운에 쓰는 언어 이름 — 그 언어 자신의 표기라 어느 언어로 보고 있어도 찾을 수 있다.
