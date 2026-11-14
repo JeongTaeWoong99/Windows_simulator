@@ -16,7 +16,7 @@ using UnityEngine.UI;
 //   진행 막대는 연출이고 판정은 서버가 한다. 어긋나도 다음 스냅샷이 교정한다.
 //
 // ■ 칸의 생김새 (2026-11-13 B안 — 리본·칩은 B안, 글자 줄은 무대 밖)
-//   머리 줄  : [#번호] [산업 Lv]      빨간 리본 속도(최대)   — 어디서 · 얼마나 빠른지
+//   머리 줄  : [#번호] [산업 Lv] [버프 칩…]  빨간 리본 속도(최대)   — 어디서 · 얼마나 빠른지 · 무엇이 걸렸는지(T-194)
 //   무대     : 글자를 얹지 않는다 · 아래 가장자리 진행 막대만 — 대상과 캐릭터가 늘 다 보인다
 //   아래 두 줄: 캐릭터 이름 / 남은 시간 '3.1초 후 수확' + 장비 4칸(+보석)
 //   ⚠️ 글자를 무대 위에 띄우면 대상·캐릭터를 가린다(같은 날 사용자 지적) — 그만큼 칸을 1.25:1로 키웠다
@@ -45,6 +45,9 @@ public class WorkStationSlotView : MonoBehaviour
 
     [SerializeField, Tooltip("머리 줄 오른쪽 끝 — 속도 배율 '6.86배' (최소 주기에 걸리면 금색 '최대')")]
     private TMP_Text speedText = null!;
+
+    [SerializeField, Tooltip("머리 줄 산업 칩 오른쪽 — 걸린 소모품 버프마다 아이콘 + 남은 판정 횟수 칩 (T-194)")]
+    private SlotBuffChipsView buffChips = null!;
 
     [SerializeField, Tooltip("무대 왼쪽 아래 — 캐릭터 이름 + 레벨")]
     private TMP_Text characterText = null!;
@@ -95,6 +98,7 @@ public class WorkStationSlotView : MonoBehaviour
         this.RequireRef(indexText,      nameof(indexText));
         this.RequireRef(industryText,   nameof(industryText));
         this.RequireRef(speedText,      nameof(speedText));
+        this.RequireRef(buffChips,      nameof(buffChips));
         this.RequireRef(characterText,  nameof(characterText));
         this.RequireRef(progressSlider, nameof(progressSlider));
         this.RequireRef(remainText,     nameof(remainText));
@@ -123,6 +127,9 @@ public class WorkStationSlotView : MonoBehaviour
         characterText.text = slot.CharacterId == 0 ? Lang.Get("UI.WorkStation.NoCharacter")
                            : characterLevel > 0     ? $"{characterName} {UIRichText.Small(RaceLabel.Append($"Lv{characterLevel}", characterTid))}"
                            : characterName;
+
+        // 버프는 캐릭터를 빼도 슬롯에 남는다(T-195) — 도는지와 상관없이 그린다
+        buffChips.Bind(slot.Buffs, slot.AutoUse);
 
         if (!IsRunning)
         {
