@@ -528,6 +528,20 @@ namespace MikaNetwork
             ItemUsed?.Invoke(res);
         }
 
+        // 자동 사용 칸 넣기·꺼내기 결과 도착 (Handle_S_SlotAutoUseResponse에서 발행 · 이슈 #113 · T-194)
+        public static event Action<S_SlotAutoUseResponse>? SlotAutoUsed;
+
+        // 자동 사용 칸 넣기·꺼내기 결과 (S_SlotAutoUseResponse 수신 시 자동 호출)
+        // ※ 성공하면 바뀐 슬롯(칸 내용·버프)이 S_WorkStationSlotSyncResponse로 **먼저** 온다 — 여기에는 인벤토리·창고 변화만 있다.
+        // ※ 칸에서 자동으로 꺼내 쓴 것은 이 응답 없이 슬롯 푸시로만 온다.
+        [PacketHandler]
+        public static void Handle_S_SlotAutoUseResponse(ISession session, S_SlotAutoUseResponse res)
+        {
+            ClientLogger.Info(ClientLogger.Recv,
+                $"자동 사용 칸 결과={res.Result}, 슬롯={res.SlotIndex}, TID={res.ItemTID}, 변경 {res.ItemChangeInfos?.Count ?? 0}건");
+            SlotAutoUsed?.Invoke(res);
+        }
+
         #endregion
 
         #region 상점 (T-184 · #78)

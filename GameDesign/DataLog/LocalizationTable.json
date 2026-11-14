@@ -7673,5 +7673,10 @@
     "Key": "UI.WorkStation.WaitAutoUse",
     "KR": "자동 사용 칸 정리",
     "EN": "Update auto-use slot"
+  },
+  {
+    "Key": "UI.WorkStation.SpeedAddNoteBuff",
+    "KR": "{0} · 영약 {1}",
+    "EN": "{0} · Elixir {1}"
   }
 ]

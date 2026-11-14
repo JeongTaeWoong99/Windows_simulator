@@ -201,6 +201,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     [SerializeField, Tooltip("Equip Picker Panel 오브젝트. 평소 꺼져 있다")]
     private GameObject equipPickerPanel = null!;
 
+    // 슬롯 번호만 넘겨받고 혼자 돈다 — 영약 넣기·꺼내기 (이슈 #113 · T-194). 장비를 고르는 동안에는 접는다
+    [SerializeField, Tooltip("자동 사용 칸 (Auto Use Panel — SlotAutoUsePresenter). 효율 계산 아래")]
+    private SlotAutoUsePresenter autoUse = null!;
+
     [SerializeField, Tooltip("'무기 고르기' — 어느 칸을 고르는 중인지 알리는 유일한 단서다")]
     private TMP_Text equipPickerTitle = null!;
 
@@ -325,6 +329,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         this.RequireRef(rowParent,           nameof(rowParent));
         this.RequireRef(emptyText,           nameof(emptyText));
         this.RequireRef(settingPanel,        nameof(settingPanel));
+        this.RequireRef(autoUse,             nameof(autoUse));
         this.RequireRef(assignedCard,        nameof(assignedCard));
         this.RequireRef(characterLabel,      nameof(characterLabel));
         this.RequireRef(efficiencyRowPrefab, nameof(efficiencyRowPrefab));
@@ -467,6 +472,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 3단계 — 배치된 캐릭터의 세팅을 보여 준다.
     private void ShowSetting()
     {
+        autoUse.SetSlot(_slotIndex);
         assignPanel.SetActive(false);
         settingPanel.SetActive(true);
         Refresh();
@@ -1181,7 +1187,8 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         float cycle    = WorkStationProgress.CalculateCycleSeconds(slot);
-        int   totalAdd = slot.LevelAddPermille + slot.StarAddPermille + slot.TraitAddPermille + slot.EquipAddPermille;
+        // 영약(신속의 영약 — T-195)도 같은 가산 합에 들어간다(서버 'WorkSpeedBreakdown'). 빼면 총합과 현재 작업속도가 어긋나 보인다
+        int   totalAdd = slot.LevelAddPermille + slot.StarAddPermille + slot.TraitAddPermille + slot.EquipAddPermille + slot.BuffAddPermille;
 
         _efficiencyRows.Get(0).Bind(Lang.Get("UI.WorkStation.BaseAptitude"), FormatSpeed(slot.BaseWorkSpeed));
 
@@ -1191,8 +1198,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         if (totalAdd != 0)
         {
-            addRow.SetNote(Lang.Format("UI.WorkStation.SpeedAddNote", FormatPermille(slot.LevelAddPermille), FormatPermille(slot.StarAddPermille),
-                                       FormatPermille(slot.TraitAddPermille), FormatPermille(slot.EquipAddPermille)));
+            string note = Lang.Format("UI.WorkStation.SpeedAddNote", FormatPermille(slot.LevelAddPermille), FormatPermille(slot.StarAddPermille),
+                                      FormatPermille(slot.TraitAddPermille), FormatPermille(slot.EquipAddPermille));
+
+            // 영약은 걸렸을 때만 붙인다 — 늘 '영약 +0%'를 적으면 줄이 길어진다(T-194)
+            if (slot.BuffAddPermille != 0)
+            {
+                note = Lang.Format("UI.WorkStation.SpeedAddNoteBuff", note, FormatPermille(slot.BuffAddPermille));
+            }
+
+            addRow.SetNote(note);
         }
 
         var speedRow = _efficiencyRows.Get(2);
@@ -1757,6 +1772,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         efficiencyLabel.SetActive(false);
         progressPanel.SetActive(false);
         efficiencyPanel.SetActive(false);
+        autoUse.gameObject.SetActive(false);
         equipPickerPanel.SetActive(true);
 
         equipPickerTitle.text = Lang.Format("UI.WorkStation.PickEquip", EquipLabel.GetSlotName(part));
@@ -1784,6 +1800,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         efficiencyLabel.SetActive(true);
         progressPanel.SetActive(true);
         efficiencyPanel.SetActive(true);
+        autoUse.gameObject.SetActive(true);
 
         _equipRows.HideFrom(0);
 

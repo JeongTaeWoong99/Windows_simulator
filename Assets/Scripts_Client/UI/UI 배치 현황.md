@@ -133,6 +133,10 @@ Root Canvas
 │  │  │     │           ├─ Efficiency Label       "효율 계산"                      pref 30   ┐ 장비를
 │  │  │     │           ├─ Progress Panel > Progress Slider  목록 칸의 슬라이더를 떼어 왔다 (표시 전용) pref 22 │ 고르는
 │  │  │     │           ├─ Efficiency Rows Panel  VLG · EfficiencyRowView 프리팹 4줄 (기본값·가산·현재·주기) │ 동안
+│  │  │     │           ├─ Auto Use Panel         SlotAutoUsePresenter · VLG — 장비를 고르는 동안 접힌다 (T-194)
+│  │  │     │           │  ├─ Auto Use Label      "자동 사용" · 올리면 동작 안내 툴팁                pref 30
+│  │  │     │           │  └─ Cell Row            HLG 균등 · Auto Use Cell(견본 · 꺼짐) — 영약 종류마다 런타임 복제  pref 48
+│  │  │     │           │                         칸 = Icon 32 · Name Text(자동 크기) · Count Text "×n" 40 · 좌클릭 넣기 · 우클릭 꺼내기
 │  │  │     │           └─ Equip Picker Panel     VLG (평소 꺼짐 — 열리면 캐릭터 칸까지 접힌다) ┘ 뒤바뀐다
 │  │  │     │              ├─ Header Panel        제목 · [해제] · [닫기]           pref 30
 │  │  │     │              ├─ Filter Panel        농사·채굴·벌목·사냥·발굴 (균등 5칸)      pref 26
