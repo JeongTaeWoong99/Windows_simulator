@@ -684,6 +684,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 아이템 사용 성공 (쓴 아이템 TID · 얻은 보상 목록 — 상자 개봉·유물 감정 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<int, List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
+    public event Action<int, int>?                    ConsumableUsed; // 소모품 사용 성공 (TID · 실제로 빠진 개수 — 비약은 요청보다 적을 수 있다 · T-194). 'ItemUseCompleted'는 오지 않는다
 
     public event Action<int>?         ShopBuyCompleted; // 상점 구매 성공 (산 품목 ShopTID — 아이템은 인벤토리에 이미 반영됐다 · 잔액은 'CurrencyChanged')
     public event Action<EResultCode>? ShopBuyFailed;    // 상점 구매 실패 (거절 사유)
@@ -1412,6 +1413,16 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         ApplyItemChanges(res.ItemChangeInfos);
+
+        // 소모품(T-195)은 보상이 없다 — 결과창('ItemUseCompleted' 구독)을 띄우지 않고 따로 알린다.
+        // 효과는 기존 푸시로 이미 왔거나 온다(캐릭터 · 슬롯 · 특성 · 채취 결과).
+        if (ItemUseLabel.IsUsable(res.ItemTID))
+        {
+            ConsumableUsed?.Invoke(res.ItemTID, res.UsedCount);
+
+            return;
+        }
+
         ItemUseCompleted?.Invoke(res.ItemTID, res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
     }
 

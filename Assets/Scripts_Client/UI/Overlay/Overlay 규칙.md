@@ -1,6 +1,6 @@
 # Overlay 폴더 규칙
 
-> 최종 업데이트: 2026-11-02 (차단막을 누르면 닫힌다 — `BackdropClose`) · 2026-11-01 (#Outpost Canvas 추가 · T-182) · 2026-10-31 (동전 — 첫 동전이 닿을 때 `CoinGain` 소리 · 부르는 곳에 뽑기·감정 골드 · 색은 `FxSprites.CoinColor`) · 2026-10-29 (유물 감정은 무대가 결과 전부 — 목록 창 없이 보상이 머물고 누르면 닫힌다 · #88) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (유물 감정 무대 `RelicAppraiseFx` — 감정 결과는 공개 앞에 무대가 한 번 돈다 · T-151) · 2026-10-25 (아티팩트 `#Artifact Canvas`를 경매장 다음 형제로 — 경매장과 같은 예외 · T-151) · 2026-10-25 (토스트는 안내가 난 열의 가운데 — 출처: 흔들 대상 → 방금 누른 버튼 → 커서 밑 UI · 열 밖이면 화면 가운데) · 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
+> 최종 업데이트: 2026-11-14 (소모품 사용 창 `ItemUsePresenter` — 수량 팝업 다음 · 대상·개수를 골라 돌려주는 왕복형 · `UIManager.AskItemUse` · T-194) · 2026-11-02 (차단막을 누르면 닫힌다 — `BackdropClose`) · 2026-11-01 (#Outpost Canvas 추가 · T-182) · 2026-10-31 (동전 — 첫 동전이 닿을 때 `CoinGain` 소리 · 부르는 곳에 뽑기·감정 골드 · 색은 `FxSprites.CoinColor`) · 2026-10-29 (유물 감정은 무대가 결과 전부 — 목록 창 없이 보상이 머물고 누르면 닫힌다 · #88) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (유물 감정 무대 `RelicAppraiseFx` — 감정 결과는 공개 앞에 무대가 한 번 돈다 · T-151) · 2026-10-25 (아티팩트 `#Artifact Canvas`를 경매장 다음 형제로 — 경매장과 같은 예외 · T-151) · 2026-10-25 (토스트는 안내가 난 열의 가운데 — 출처: 흔들 대상 → 방금 누른 버튼 → 커서 밑 UI · 열 밖이면 화면 가운데) · 2026-10-23 (동전 `CoinFlyPresenter` 추가 — 골드를 받으면 상단 골드로 동전이 난다 · 경매장 바로 위) · 2026-10-22 (토스트 `ToastPresenter` 추가 — 알림 앞 · 짧은 안내·조작 거절을 확인 없이 · 알림 창에 `PanelTransition` — T-177) · 2026-10-20 (도움말 아이콘 넓히기 — 경매장 · 판매 등록 · 특성 · 응축 — T-144) · 2026-10-16 (`Panel`은 가운데 고정 앵커 — 알림 창이 좁은 화면에서 접혀 회색 가림막이 안 걷혔다 — T-167) · 2026-10-14 (차단막 농도 — 로그인 검정 1 · 나머지 검정 0.75) · 2026-10-14 (경매장 `#Auction Canvas`를 첫째 자식으로 — 이 층의 유일한 캔버스·SetActive · T-147) · 2026-10-11 (ESC 종료 삭제 — 로그인 화면의 출구는 종료 버튼뿐) · 2026-10-10 (툴팁 두 종류 — 대상 툴팁 · 도움말 아이콘 `HelpIcon` · 전수 조사) · 2026-10-10 (`!Overlay Layer` → `!Overlay Canvas` · 순서 — 팝업 < 로그인 < FPS < 로딩 < 알림 < 툴팁 · 한 캔버스로 두는 근거 — T-141) · 2026-10-10 (`System` → `Overlay` 개명 · 로그인을 이 층의 첫 Presenter로 · Sorting Order 100 · 예약 View 삭제 — T-140) · 2026-10-09 (연출 도형 `RevealSprites` → `Shared/visual/FxSprites`로 옮김 — 획득 연출과 같이 쓴다) · 2026-10-09 (보상 결과 하나씩 공개 연출 — T-031 · T-033) · 2026-09-25 (툴팁 — T-088 · 수량 팝업의 묻는 말을 부르는 쪽이 넘긴다) · 2026-09-20 (보상 결과 팝업을 상자 개봉과 공유 — T-033) · 대상: `Assets/Scripts_Client/UI/Overlay/`
 
 **`!Overlay Canvas` — 3열(`!Horizontal Columns`) 위에 겹쳐 뜨는 것 전부.** 루트 UI의 두 축 중 하나다.
 로그인 화면 · 로딩 표시 · 실패 알림 · 연결 끊김 종료, 그리고 **어느 열이 열려 있든 떠야 하는 결과 팝업**을 담는다.
@@ -14,6 +14,7 @@
 | `GachaResultPresenter/RewardRevealFx.cs` · `RewardBurstFx.cs` · `RewardRevealSettings.cs` | 결과 칸을 **하나씩 공개**하는 연출 — 칸 하나의 팝·차오름·강조(칸에 코드로 붙인다) · 고등급 빛 폭발(창 위 층) · 조정값(Presenter 인스펙터 `reveal`) · 이펙트 그림은 `Shared/visual/FxSprites`의 `reveal_*`(그림 저장소 `Art/fx/reveal/` — 없으면 그 효과만 빠진다). 고등급 연출은 뒤 칸을 막지 않는다 · 공개 중 [n회 더 뽑기]·닫기 잠금 · 창·칸 클릭 = 스킵 |
 | `GachaResultPresenter/RelicAppraiseFx.cs` | **유물 감정 무대** — 감정 결과(골드를 낸 아이템 사용)만 칸 공개 앞에 한 번 돈다: 흔들림 → 금 3갈래 → 번쩍 → 조각 → 대표 보상 등장 · 아티팩트/Special 유물이면 띠. 코드로 만든 층(팝업 바탕 위) · 그동안 창(Panel)은 투명 · 클릭 = 건너뛰고 끝 모습으로. **무대가 결과 전부다**(#88 — 유물은 1개씩) — 끝나면 보상이 놓인 채 머물고, 한 번 더 누르면 닫힌다. 결과 칸 목록은 띄우지 않는다. 그림은 `appraise_*`(`Art/fx/appraise/`) + `reveal_glow`·`reveal_rays` |
 | `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
+| `ItemUsePresenter/ItemUsePresenter.cs` | 소모품의 대상(슬롯·캐릭터)과 개수를 고르고 고른 것을 돌려준다(T-194). 요청은 부른 쪽(인벤토리 격자)이 보낸다 — `AmountInputPresenter`와 같은 왕복형, `UIManager.AskItemUse`가 중개 |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개 |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
 | `TooltipPresenter/TooltipPresenter.cs` · `TooltipRowView.cs` | 커서 밑 `TooltipTrigger`(Shared) 옆에 툴팁을 띄운다. **차단하지 않는 오버레이다** — 아래 "툴팁" 절 |
@@ -63,13 +64,14 @@
 ├─ [3] Coin Fly Presenter    (↓ SUB VIEW)  ← 골드 동전 — 열을 건너 날아 3열·경매장 위, 팝업 아래. 막지 않는다 (2026-10-23)
 ├─ [4] Gacha Result Presenter (↓ SUB VIEW)  ┐
 ├─ [5] Amount Input Presenter (↓ SUB VIEW)  │ 로그인 뒤에 쓰는 팝업 — 로딩이 이 위를 덮어야 한다
-├─ [6] Confirm Presenter      (↓ SUB VIEW)  ┘
-├─ [7] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
-├─ [8] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
-├─ [9] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
-├─ [10] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
-├─ [11] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
-└─ [12] Tooltip Presenter    (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
+├─ [6] Item Use Presenter     (↓ SUB VIEW)  │ 소모품 사용 창 — 묘약 확인(Confirm)이 이 위에 떠야 한다 (T-194)
+├─ [7] Confirm Presenter      (↓ SUB VIEW)  ┘
+├─ [8] Login Presenter       (↓ SUB VIEW)   ← 게임 앞의 화면 — FPS·로딩·알림·툴팁이 그 위에 뜬다
+├─ [9] Fps Text Presenter    (↓ SUB VIEW)   ← 로그인 화면에서도 보인다
+├─ [10] Loading Presenter     (↓ SUB VIEW)   ← 서버 대기 중 아래 전부(팝업 포함)를 막는다
+├─ [11] Toast Presenter       (↓ SUB VIEW)   ← 막지 않는 안내 — 로딩 위, 알림 아래 (T-177)
+├─ [12] Notice Presenter      (↓ SUB VIEW)   ← 실패·종료 — 로딩에도 가려지면 안 된다
+└─ [13] Tooltip Presenter    (↓ SUB VIEW)   ↓   맨 앞 — 막지 않으니 무엇 위에 떠도 된다
 ```
 
 > **경매장(과 아티팩트)만 이 층의 예외 둘을 갖는다 (2026-10-14 · T-147)** — Presenter 여럿을 담는 **캔버스**(`(MAIN VIEW)` · 자기 `Canvas`)이고,
@@ -285,8 +287,9 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 층을 
 |---|---|
 | `LoadingPresenter` | `ServerWaitManager.BusyChanged` |
 | `NoticePresenter` | `ServerWaitManager.NoticeRaised` · `FatalRaised` |
-| `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` · `ItemUseCompleted` |
+| `GachaResultPresenter` | `PlayerDataModel.GachaCompleted` · `ItemUseCompleted` (소모품은 오지 않는다 — `ConsumableUsed`로 따로 · T-194) |
 | `AmountInputPresenter` | **없다 — 구독형이 아니다** |
+| `ItemUsePresenter` | **없다 — 같은 왕복형이다** (`UIManager.AskItemUse`) |
 | `ConfirmPresenter` | **없다 — 같은 왕복형이다** (`UIManager.AskConfirm`) |
 | `LoginPresenter` | `PlayerDataModel.LoginCompleted` — 여닫기는 `UIManager.ShowLogin`(아래 "로그인") |
 

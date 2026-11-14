@@ -120,6 +120,9 @@ public class UIManager : MonoService<UIManager>
     [SerializeField, Tooltip("확인 팝업(예/아니오). !Overlay Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
     private ConfirmPresenter confirm = null!;
 
+    [SerializeField, Tooltip("소모품 사용 창(대상·개수 고르기 · T-194). !Overlay Canvas 아래에 있다 — 화면 전체를 막아야 해서다")]
+    private ItemUsePresenter itemUse = null!;
+
     // ─── 참조 ───
     public InventoryCanvasView Inventory => inventoryCanvas;
     public GuildCanvasView     Guild     => guildCanvas;
@@ -155,6 +158,7 @@ public class UIManager : MonoService<UIManager>
         this.RequireRef(widgetCanvas,  nameof(widgetCanvas));
         this.RequireRef(amountInput,   nameof(amountInput));
         this.RequireRef(confirm,       nameof(confirm));
+        this.RequireRef(itemUse,       nameof(itemUse));
 
         ValidateMainScreens();
         ResetMainScreen();
@@ -332,6 +336,7 @@ public class UIManager : MonoService<UIManager>
         //   아무 화면도 없는 바탕에 홀로 떠 있게 되고, 그때 들고 있던 콜백은 이미 의미가 없다.
         amountInput.Close();
         confirm.Close();
+        itemUse.Close();
 
         // 패널은 지금 갈아 끼우지 않는다 — 캔버스가 닫힘 연출로 흐려지는 동안 목록이 비쳐 보인다.
         // 다음에 열 때 'ShowMainScreen'이 기본 화면으로 갈아 끼운다(캔버스를 켜기 전에).
@@ -438,6 +443,14 @@ public class UIManager : MonoService<UIManager>
     public void AskConfirm(string message, Action onConfirm)
     {
         confirm.Open(message, onConfirm);
+    }
+
+    // 소모품의 대상·개수를 묻고, [사용]을 누르면 고른 것을 돌려준다 (취소면 부르지 않는다 · T-194).
+    // 중개하는 이유는 'AskAmount'와 같다 — 요청은 부른 쪽이 보낸다.
+    //   owned : 보유 개수 — 개수 상한이 된다
+    public void AskItemUse(int itemId, int owned, Action<ItemUsePresenter.Choice> onConfirm)
+    {
+        itemUse.Open(itemId, owned, onConfirm);
     }
 
     #endregion

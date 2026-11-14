@@ -150,6 +150,14 @@ public class ResourceSlotSource : InventorySlotSource
             content.Row(Lang.Get("UI.Inventory.AppraiseCost"), Lang.Format("UI.Equip.Gold", $"{appraiseCost:N0}"));
         }
 
+        // 소모품은 효과 한 줄 — 칸만 보고 무엇에 쓰는지 알게(T-194). 엑셀 'Tooltip'이 비어 있어도 효과는 표에서 읽는다
+        string useEffect = ItemUseLabel.Effect(itemId);
+
+        if (useEffect.Length > 0)
+        {
+            content.Row(useEffect, "");
+        }
+
         content.Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{price:N0}"),
                     Lang.Format("UI.Inventory.AllGold", $"{AuctionModel.InstantSellTotal(basePrice, total):N0}"), null)
                .Row(Lang.Get("UI.Equip.AuctionPrice"), AuctionModel.FormatBand(basePrice));
@@ -158,7 +166,11 @@ public class ResourceSlotSource : InventorySlotSource
         // 길이는 다른 줄을 줄여 감당한다(빈 장비 한 줄 · 잠금은 상태 줄).
         return AddControls(content, rows =>
         {
-            if (GameDataLoader.IsBox(itemId))
+            if (ItemUseLabel.IsUsable(itemId))
+            {
+                rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get("UI.ItemUse.Use"));
+            }
+            else if (GameDataLoader.IsBox(itemId))
             {
                 rows.Row(Lang.Get("UI.Inventory.LeftClick"), Lang.Get(appraiseCost > 0L ? "UI.Inventory.Appraise" : "UI.Inventory.Open"));
             }

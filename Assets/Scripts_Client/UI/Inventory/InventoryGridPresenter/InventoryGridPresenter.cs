@@ -334,6 +334,7 @@ public class InventoryGridPresenter : MonoBehaviour
         //   응답이 늦게 오는 사이 인벤토리를 닫으면 대기 손잡이가 영영 안 닫혀 로딩이 남는다.
         _data.ItemUseCompleted      += OnItemUseCompleted;
         _data.ItemUseFailed         += OnItemUseFailed;
+        _data.ConsumableUsed        += OnConsumableUsed;
         _data.StorageSlotsResponded      += OnStorageSlotsResponded;
         _data.WarehouseTransferResponded += OnStorageSlotsResponded; // 대기를 닫는 일은 같다
         _data.EntityLockCompleted        += OnEntityLockCompleted;
@@ -402,6 +403,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         _data.ItemUseCompleted      -= OnItemUseCompleted;
         _data.ItemUseFailed         -= OnItemUseFailed;
+        _data.ConsumableUsed        -= OnConsumableUsed;
         _data.StorageSlotsResponded      -= OnStorageSlotsResponded;
         _data.WarehouseTransferResponded -= OnStorageSlotsResponded;
         _data.EntityLockCompleted        -= OnEntityLockCompleted;
@@ -1966,6 +1968,14 @@ public class InventoryGridPresenter : MonoBehaviour
 
         int itemId = (int)view.Key;
 
+        // 소모품 — 사용 창에서 대상·개수를 고른다(T-194). 서버도 소모품을 상자보다 먼저 본다('TryUseConsumable')
+        if (ItemUseLabel.IsUsable(itemId))
+        {
+            AskItemUse(itemId);
+
+            return;
+        }
+
         if (!GameDataLoader.IsBox(itemId))
         {
             return;
@@ -2059,6 +2069,82 @@ public class InventoryGridPresenter : MonoBehaviour
         _isOpeningBox = true;
         _waitHandle   = _wait.Begin(Lang.Format(GameDataLoader.GetOpenCostGold(itemId) > 0L ? "UI.Inventory.WaitAppraise" : "UI.Inventory.WaitOpenBox", count),
                                     onClosed: OnWaitClosed);
+    }
+
+    // 소모품 칸 좌클릭 — 사용 창을 띄운다 (OnSlotLeftClicked에서 호출 · T-194).
+    // 묘약(특성 초기화)은 되돌릴 수 없어 [사용] 뒤에 한 번 더 묻는다(2026-11-14 사용자 결정 — 유물 감정 확인과 같은 방식).
+    private void AskItemUse(int itemId)
+    {
+        if (_isOpeningBox)
+        {
+            return; // 앞 요청의 응답을 기다리는 중 — 연타 방지
+        }
+
+        int owned = _data.GetItemCount(itemId);
+
+        if (owned <= 0)
+        {
+            return; // 화면이 아직 낡았다 — 뒤이어 올 InventoryChanged가 이 칸을 지운다
+        }
+
+        _ui.AskItemUse(itemId, owned, choice =>
+        {
+            bool isReset = ItemUseLabel.TryGet(itemId, out var use) && use.UseEffect == GameData.ItemUseEffect.TraitReset;
+
+            if (isReset)
+            {
+                _ui.AskConfirm(Lang.Get("UI.ItemUse.AskReset"), () => SendItemUse(choice));
+
+                return;
+            }
+
+            SendItemUse(choice);
+        });
+    }
+
+    // 소모품을 쓴다 — 상자 개봉과 같은 'C_ItemUseRequest'다 (AskItemUse의 사용 창 · 확인 팝업에서 호출).
+    // 대기 손잡이도 개봉과 한 벌이다 — 실패는 'OnItemUseFailed'가 그대로 받는다.
+    private void SendItemUse(ItemUsePresenter.Choice choice)
+    {
+        if (_isOpeningBox)
+        {
+            return;
+        }
+
+        if (!_data.IsLoggedIn)
+        {
+            ClientLogger.Warn(ClientLogger.Send, "소모품 사용 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+
+            return;
+        }
+
+        _network.Send(new C_ItemUseRequest
+        {
+            ItemTID           = choice.ItemTid,
+            Count             = choice.Count,
+            TargetCharacterId = choice.TargetCharacterId,
+            TargetSlotIndexes = choice.TargetSlots,
+        });
+
+        ClientLogger.Info(ClientLogger.Send, $"소모품 사용 요청 — TID={choice.ItemTid}, {choice.Count}개, 캐릭터={choice.TargetCharacterId}, 슬롯={(choice.TargetSlots != null ? string.Join(",", choice.TargetSlots) : "-")}");
+
+        _isOpeningBox = true;
+        _waitHandle   = _wait.Begin(Lang.Format("UI.ItemUse.Wait", GameDataLoader.GetItemName(choice.ItemTid)), onClosed: OnWaitClosed);
+    }
+
+    // 소모품 사용 성공 도착 — 대기를 닫고 몇 개를 썼는지 한 줄 알린다 (PlayerDataModel.ConsumableUsed 구독 · T-194).
+    // 효과는 화면에 조용히 드러난다(슬롯 칩 · 캐릭터 레벨) — 알림이 없으면 눌렀는지 모른다.
+    // ※ 비약은 만렙에 필요한 만큼만 빠진다 — 그래서 요청 개수가 아니라 'usedCount'를 적는다.
+    // ※ 대기 손잡이가 없으면 이 격자가 보낸 것이 아니다(인벤토리·창고 격자가 함께 받는다).
+    private void OnConsumableUsed(int itemId, int usedCount)
+    {
+        if (_waitHandle == null)
+        {
+            return;
+        }
+
+        _waitHandle.Succeed();
+        _wait.RaiseToast(Lang.Format("UI.ItemUse.Used", GameDataLoader.GetItemName(itemId), usedCount));
     }
 
     // 개봉 성공 도착 — 대기를 조용히 닫는다. 보상 표시는 'GachaResultPresenter'가 맡는다

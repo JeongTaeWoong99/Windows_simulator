@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 작업슬롯 칸 머리 줄의 버프 칩 하나 — 아이콘 + 남은 판정 횟수 '12' (T-194).
+// 작업슬롯 칸 무대 왼쪽 위의 버프 칩 하나 — 아이콘 + 남은 판정 횟수 '12' (T-194).
 // 'SlotBuffChipsView'가 꺼 둔 견본을 복제해 버프 수만큼 띄운다. 칩은 값만 그리고 무엇을 띄울지는 묶음이 정한다.
 public class SlotBuffChipView : MonoBehaviour
 {
