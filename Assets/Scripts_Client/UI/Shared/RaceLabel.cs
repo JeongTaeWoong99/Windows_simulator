@@ -22,6 +22,7 @@ public static class RaceLabel
             case CharacterRace.Monster: return Lang.Get("UI.Character.RaceMonster");
             case CharacterRace.Undead:  return Lang.Get("UI.Character.RaceUndead");
             case CharacterRace.Golem:   return Lang.Get("UI.Character.RaceGolem");
+            case CharacterRace.Dwarf:   return Lang.Get("UI.Character.RaceDwarf");
 
             default: return null;
         }
@@ -35,6 +36,7 @@ public static class RaceLabel
             case CharacterRace.Monster: return Lang.Get("UI.Character.RaceMonsterShort");
             case CharacterRace.Undead:  return Lang.Get("UI.Character.RaceUndeadShort");
             case CharacterRace.Golem:   return Lang.Get("UI.Character.RaceGolemShort");
+            case CharacterRace.Dwarf:   return Lang.Get("UI.Character.RaceDwarfShort");
 
             default: return null;
         }
