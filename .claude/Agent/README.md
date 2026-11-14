@@ -23,7 +23,7 @@
 
 ## INDEX
 
-- [2026-11-14 작업슬롯 2.5줄 · UI 정리 · sprite-gen 후처리](2026-11-14-ui-polish-sprite-gen.md) — `#client` `#ui` `#art` 그리드 소수 줄 · 칸 표시 모서리 · 카드 문구 제거 · `sprite_post.py`
+- [2026-11-14 작업슬롯 2.5줄 · UI 정리 · 크기 등급 · sprite-gen 후처리](2026-11-14-ui-polish-sprite-gen.md) — `#client` `#ui` `#art` 그리드 소수 줄 · 칸 모서리 8px · 카드 문구 제거 · 숲 배경 원본 위쪽 · 키 1:1.5:2 · `sprite_post.py`
 - [2026-11-14 작업슬롯 2줄 보기 · PixelOE·Codixel](2026-11-14-workslot-two-rows.md) — `#client` `#ui` `#art` 그리드 줄 맞춤 · 배경 위쪽 잇기 · 캐릭터 크기 전부 중형 · `pixeloe_lite.py` · `codixel~`
 - [2026-11-14 코드 그리기 파이프라인 · 팰월드식 칸](2026-11-14-claude-gen-pipeline-palworld.md) — `#client` `#ui` `#art` `claude_gen.py` · 팰월드식 칸 · 툴팁 묶음 색 · 등급 계단빛 되살림
 - [2026-11-14 UI 양피지 4차](2026-11-14-ui-parchment-v4.md) — `#client` `#ui` `#art` 화면 제목 아이콘 · 드롭다운 너비/체크 · 신화색 FF3D6E · 칸 종족/크기 배지 제거 · 팰월드식 제안

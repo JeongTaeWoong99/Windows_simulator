@@ -252,8 +252,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         equipPips.gameObject.SetActive(false);
         expGauge.gameObject.SetActive(false);
         levelBadge.SetActive(false);
-        sizeBadge?.SetActive(false);
-        raceBadge?.SetActive(false);
+        // ※ 선택 참조는 '?.'로 거르지 않는다 — 비운 직렬화 필드는 C# null이 아니라 Unity 가짜 null이라 '?.'를 지나쳐 UnassignedReferenceException이 난다
+        if (sizeBadge != null) sizeBadge.SetActive(false);
+        if (raceBadge != null) raceBadge.SetActive(false);
         sellMark.SetActive(false);
         assignMark.SetActive(false);
         lockMark.SetActive(false);
