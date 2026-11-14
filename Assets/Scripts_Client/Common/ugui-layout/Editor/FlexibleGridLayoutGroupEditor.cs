@@ -16,6 +16,7 @@ public class FlexibleGridLayoutGroupEditor : GridLayoutGroupEditor
 {
     // OnEnable에서 채운다. 그 전에 쓰이는 경로가 없어 non-null로 둔다(CS8618 회피).
     private SerializedProperty _cellAspectRatioProperty = null!;
+    private SerializedProperty _fitRowsInParentProperty = null!;
 
     // 인스펙터가 열릴 때 (Unity 에디터가 호출)
     protected override void OnEnable()
@@ -23,6 +24,7 @@ public class FlexibleGridLayoutGroupEditor : GridLayoutGroupEditor
         base.OnEnable();
 
         _cellAspectRatioProperty = serializedObject.FindProperty("_cellAspectRatio");
+        _fitRowsInParentProperty = serializedObject.FindProperty("_fitRowsInParent");
     }
 
     // 인스펙터 본문을 그린다 (Unity 에디터가 호출)
@@ -32,6 +34,7 @@ public class FlexibleGridLayoutGroupEditor : GridLayoutGroupEditor
         // PropertyField 가 필드에 붙은 데코레이터([CenterHeader])까지 함께 그려 준다.
         serializedObject.Update();
         EditorGUILayout.PropertyField(_cellAspectRatioProperty);
+        EditorGUILayout.PropertyField(_fitRowsInParentProperty);
         serializedObject.ApplyModifiedProperties();
 
         base.OnInspectorGUI();

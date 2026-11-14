@@ -21,16 +21,13 @@ using UnityEngine.UI;
 //   목록이 없으면(그림 저장소를 받지 않은 PC) 무대 자식을 만들지 않고 패널 바탕만 남는다.
 //   프리팹의 'catalog'는 비워 둔다 — 메인 저장소가 그림 저장소의 GUID를 가리키지 않게 Resources로 찾는다.
 //
-// ■ 배경은 패널 높이보다 작아지지 않는다 (2026-10-10)
-//   패널 높이(H)는 창 크기를 따라 변하고(레이아웃의 flexible), 배경 높이는 'stageHeight × 배율'이다.
-//   키 큰 캐릭터의 'pixelScaleOverride'를 낮추면 배경이 H보다 낮아져 위쪽에 패널 단색이 드러났다.
-//   그래서 배율을 둘로 가른다 —
-//     배우 배율 k  = 캐릭터 개인 값 또는 전체 세팅 (캐릭터·대상·거리)
-//     배경 배율 kb = max(k, H ÷ stageHeight)    → 배경 높이 ≥ H 가 늘 성립한다 ('BackgroundScale')
-//   땅선(groundHeight)은 배경 그림의 값이라 kb로 잰다 — 배우는 그 땅선 위에 k 크기로 선다.
-//   땅이 흐르는 거리는 화면 단위라 kb가 달라도 대상과 땅이 미끄러지지 않는다('DrawLayers').
-//   ※ kb > k 이면 배경 점이 배우 점보다 크다 — 단색이 드러나는 것보다 낫다고 본 절충이다.
-//   ※ 머리가 잘리는 조건은 '땅선 + 캐릭터 키 × k × characterScale > H' — 배경과 무관하게 이것만 보고 k를 고르면 된다.
+// ■ 배경은 배우와 같은 배율이고, 모자란 위쪽은 그림 맨 윗줄을 늘려 잇는다 (2026-11-14)
+//   패널 높이(H)는 창 크기를 따라 변하고(레이아웃의 flexible), 배경 높이는 'stageHeight × k'다.
+//   예전(2026-10-10)에는 배경이 H보다 낮으면 배경만 키웠다(kb = max(k, H ÷ stageHeight)) — 칸이 높아지자
+//   배경 점이 배우 점보다 굵어지고 화면이 확대돼 보였다. 이제 배율은 k 하나다.
+//   층을 H까지 늘리고 uv 세로를 1 너머로 준다 — 배경 텍스처는 세로 Clamp라 맨 윗줄(하늘·나무 기둥)이 위로 이어진다('DrawLayers').
+//   땅선(groundHeight)도 k로 잰다. 높아진 칸은 확대가 아니라 위쪽이 더 보이는 것이다.
+//   ※ 머리가 잘리는 조건은 '땅선 + 캐릭터 키 × k × characterScale > H' — 이것만 보고 k를 고르면 된다.
 [RequireComponent(typeof(RectTransform))]
 public class SlotStageView : MonoBehaviour
 {
@@ -40,6 +37,7 @@ public class SlotStageView : MonoBehaviour
     [CenterHeader("참조")]
     [SerializeField, Tooltip("그림 목록. 비우면 'VisualCatalog.Current'(Resources)를 쓴다 — 그것도 없으면 무대를 그리지 않는다")]
     private VisualCatalog? catalog;
+
 
     // 무대 자식 — 대상은 둘이다(쓰러지는 것 · 다가오는 것)
     private struct TargetImages
@@ -282,10 +280,14 @@ public class SlotStageView : MonoBehaviour
             float ratio     = Mathf.Approximately(layers[i].speedRatio, 1f) ? 1f : layers[i].speedRatio * settings.FarLayerSpeed;
             float shift     = (float)(_groundDistance * ratio % tileWidth);
 
-            RectTransform rect = _layers[i].rectTransform;
-            rect.sizeDelta = new Vector2(0f, Mathf.Round(_background.StageHeight * kb));
+            // 그림 높이가 패널보다 낮으면 층을 패널까지 늘리고 uv를 1 너머로 — 세로 Clamp라 맨 윗줄이 위로 이어진다
+            float artHeight   = Mathf.Round(_background.StageHeight * kb);
+            float layerHeight = Mathf.Max(artHeight, Mathf.Ceil(_rect.rect.height));
 
-            _layers[i].uvRect = new Rect(-shift / tileWidth, 0f, width / tileWidth, 1f);
+            RectTransform rect = _layers[i].rectTransform;
+            rect.sizeDelta = new Vector2(0f, layerHeight);
+
+            _layers[i].uvRect = new Rect(-shift / tileWidth, 0f, width / tileWidth, layerHeight / artHeight);
         }
     }
 
@@ -506,16 +508,8 @@ public class SlotStageView : MonoBehaviour
     // 캐릭터 발의 가로 자리 — 패널 폭의 비율이라 창 폭이 바뀌어도 같은 자리에 선다. 반 칸 걸치지 않게 정수로 맞춘다
     private static float FeetX(float width, SlotStageSettings settings) => Mathf.Round(width * settings.CharacterAnchor);
 
-    // 배경 배율 — 배우 배율 k 이상이면서 배경 높이가 패널 높이를 채우는 가장 작은 값 (머리 주석 '배경은 패널 높이보다 작아지지 않는다')
-    private float BackgroundScale(float k)
-    {
-        if (_background == null || _background.StageHeight <= 0)
-        {
-            return k;
-        }
-
-        return Mathf.Max(k, _rect.rect.height / _background.StageHeight);
-    }
+    // 배경 배율 — 배우와 같다. 패널이 더 높으면 'DrawLayers'가 위쪽을 이어 그린다 (머리 주석 '배경은 배우와 같은 배율')
+    private static float BackgroundScale(float k) => k;
 
     // 대상 배율 — 배우 배율에 대상 SO의 크기 배율(전체 × 이 레벨)을 곱한다
     private float TargetScale(float k) => k * (_target != null ? _target.GetScale(_level) : 1f);

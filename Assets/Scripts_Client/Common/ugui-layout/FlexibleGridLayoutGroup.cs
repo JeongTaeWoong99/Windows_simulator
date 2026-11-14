@@ -28,6 +28,12 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
     [SerializeField, Tooltip("셀의 가로 : 세로 비율입니다. 가로는 열 개수에 맞춰 자동 계산되고, 세로가 이 비율로 정해집니다.")]
     private CellAspectRatio _cellAspectRatio = CellAspectRatio.OneToOne;
 
+    [SerializeField, Min(0f), Tooltip("0보다 크면 비율 대신, 부모(스크롤 뷰포트) 높이에 이 줄 수가 꼭 차게 셀 세로를 정합니다. 2.5처럼 소수도 된다 — 다음 줄이 반쯤 보여 스크롤할 것이 있음을 알린다. 창 높이가 바뀌면 따라갑니다.")]
+    private float _fitRowsInParent;
+
+    // 줄 맞춤일 때 지난 부모 높이 — 부모 높이만 바뀌면 자기 크기 변화 알림이 오지 않아 직접 살핀다
+    private float _lastParentHeight = -1f;
+
     // 가로 배치 입력 계산 (UGUI 레이아웃 시스템이 호출).
     //
     // ⚠️ 부모에게 가로 폭을 요구하지 않는다. 'GridLayoutGroup'은 최소 폭을
@@ -79,7 +85,29 @@ public class FlexibleGridLayoutGroup : GridLayoutGroup
         float cellWidth   = Mathf.Max(0f, usableWidth / columnCount);
 
         // cellSize 프로퍼티는 SetDirty 를 유발해 레이아웃 재계산 중에 쓰면 위험하므로 필드에 직접 대입한다
-        m_CellSize = new Vector2(cellWidth, cellWidth * GetHeightPerWidth());
+        m_CellSize = new Vector2(cellWidth, _fitRowsInParent > 0 ? FitRowHeight() : cellWidth * GetHeightPerWidth());
+    }
+
+    // 부모 높이에 '_fitRowsInParent'줄이 꼭 차는 셀 세로 — 위아래 패딩과 줄 사이 간격을 뺀 나머지를 나눈다
+    private float FitRowHeight()
+    {
+        float parentHeight = transform.parent is RectTransform parent ? parent.rect.height : rectTransform.rect.height;
+        _lastParentHeight  = parentHeight;
+
+        // 보이는 줄 사이 간격 — 소수 줄이면 마지막 반 줄 앞의 간격까지 센다
+        float usable = parentHeight - padding.vertical - spacing.y * (Mathf.Ceil(_fitRowsInParent) - 1);
+
+        return Mathf.Max(0f, usable / _fitRowsInParent);
+    }
+
+    // 줄 맞춤일 때 부모 높이가 바뀌었으면 다시 배치한다 (Unity 메시지)
+    private void Update()
+    {
+        if (_fitRowsInParent > 0 && transform.parent is RectTransform parent && !Mathf.Approximately(parent.rect.height, _lastParentHeight))
+        {
+            _lastParentHeight = parent.rect.height;
+            SetDirty();
+        }
     }
 
     // 가로 1 에 대한 세로 배수를 돌려줍니다.

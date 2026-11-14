@@ -15,7 +15,7 @@ using UnityEngine;
 //
 // ■ 산 뽑기권은 인벤토리에서 연다
 // 상자와 같은 'C_ItemUseRequest'로 열리고 결과도 같은 팝업에 뜬다 — 여기서 열지 않는다.
-// 카드의 '보유 n장'이 인벤토리에 들어온 것을 보여 준다.
+// 보유 수는 카드에 적지 않는다(2026-11-14 — 인벤토리와 겹치는 정보). 산 뽑기권은 인벤토리에서 본다.
 public class ShopPresenter : MonoBehaviour
 {
     // 버튼 두 개의 구매 개수. 서버가 받는 범위는 1~50장이다('InvalidShopRequest').
@@ -262,7 +262,7 @@ public class ShopPresenter : MonoBehaviour
 
     #region 표시 갱신
 
-    // 버튼 잠금과 보유 수를 지금 상태에 맞춘다 (Start · OnEnable · 재화·인벤토리 변경 · 대기 시작/종료).
+    // 버튼 잠금을 지금 상태에 맞춘다 (Start · OnEnable · 재화·인벤토리 변경 · 대기 시작/종료).
     //
     // 두 축을 함께 본다 — 대기 중이면 전부 잠기고, 대기가 풀려도 골드가 모자란 버튼은 잠긴 채로 남는다.
     // ※ 클라 판단은 표시용일 뿐이다. 실제 거절은 서버가 한다('NotEnoughCurrency' · 'StorageFull').
@@ -271,7 +271,6 @@ public class ShopPresenter : MonoBehaviour
         foreach (ShopEntry entry in _entries)
         {
             entry.Card.SetState(_data.Gold, _isWaiting);
-            entry.Card.SetKind(Lang.Format("UI.Shop.Owned", _data.GetItemCount(entry.Row.ItemTID)));
         }
     }
 

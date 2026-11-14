@@ -1,6 +1,6 @@
 # ugui-layout 규칙
 
-> 최종 업데이트: 2026-10-11 (`ContentFloorLayoutElement` 추가) · 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
+> 최종 업데이트: 2026-11-14 (`FlexibleGridLayoutGroup` 줄 맞춤 `_fitRowsInParent` — 부모 높이에 N줄이 꼭 차게 셀 세로를 정한다 · 소수 가능 — 2.5면 셋째 줄이 반만 걸친다) · 2026-10-11 (`ContentFloorLayoutElement` 추가) · 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
 
 **기본 UGUI로는 표현할 수 없는 배치를 채워 주는 컴포넌트.** 게임을 전혀 모르므로
 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit) 사본인 `Common/` 아래에 있다.
@@ -8,7 +8,7 @@ Common 전체에 걸리는 규칙은 상위 폴더의 `Common 규칙.md`에 있�
 
 | 파일 | 하는 일 |
 |------|---------|
-| `FlexibleGridLayoutGroup.cs` | 열 개수를 고정한 채, 자기 폭에 맞춰 셀 크기를 역산하는 그리드 |
+| `FlexibleGridLayoutGroup.cs` | 열 개수를 고정한 채, 자기 폭에 맞춰 셀 크기를 역산하는 그리드. 세로는 비율, 또는 `Fit Rows In Parent`(>0)면 부모(뷰포트) 높이에 그 줄 수가 꼭 차게 — 창 높이를 따라간다. 소수(2.5)면 마지막 줄이 걸쳐 '더 있음'을 보인다 |
 | `SquareLayoutElement.cs` | 부모 높이를 보고 가로를 주장한다 — "높이만큼 정사각형" |
 | `ContentFloorLayoutElement.cs` | 형제와 남는 자리를 나눠 받는 칸이, 안 내용이 제 몫보다 크면 내용만큼 늘어난다 — "기본은 몫, 넘치면 내용만큼" |
 | `Editor/FlexibleGridLayoutGroupEditor.cs` | 위 그리드의 인스펙터. 기본 에디터를 그대로 두면 추가 필드가 아예 안 나온다 |

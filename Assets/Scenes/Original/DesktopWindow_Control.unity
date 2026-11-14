@@ -25877,6 +25877,7 @@ MonoBehaviour:
   m_Constraint: 1
   m_ConstraintCount: 2
   _cellAspectRatio: 7
+  _fitRowsInParent: 2.5
 --- !u!114 &210718560
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -26439,6 +26440,7 @@ MonoBehaviour:
   m_Constraint: 1
   m_ConstraintCount: 5
   _cellAspectRatio: 0
+  _fitRowsInParent: 0
 --- !u!114 &213943212
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -58982,6 +58984,10 @@ PrefabInstance:
     - target: {fileID: 2699216483116693831, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
       propertyPath: m_TextStyleHashCode
       value: -1183493901
+      objectReference: {fileID: 0}
+    - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
       propertyPath: m_fontColor32.rgba
@@ -141286,6 +141292,10 @@ PrefabInstance:
       value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 3641976890
       objectReference: {fileID: 0}
@@ -174340,6 +174350,10 @@ PrefabInstance:
       value: -1183493901
       objectReference: {fileID: 0}
     - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
+      propertyPath: m_overflowMode
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 4346131036902673826, guid: e0182afbc9e5cf94d8b5df4d4fb13f7e, type: 3}
       propertyPath: m_fontColor32.rgba
       value: 3641976890
       objectReference: {fileID: 0}
@@ -188652,6 +188666,7 @@ MonoBehaviour:
   m_Constraint: 1
   m_ConstraintCount: 5
   _cellAspectRatio: 0
+  _fitRowsInParent: 0
 --- !u!114 &1521986189
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -206089,6 +206104,7 @@ MonoBehaviour:
   m_Constraint: 1
   m_ConstraintCount: 5
   _cellAspectRatio: 0
+  _fitRowsInParent: 0
 --- !u!1 &1680966815
 GameObject:
   m_ObjectHideFlags: 0

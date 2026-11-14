@@ -21,7 +21,7 @@ public class GachaPoolCardView : MonoBehaviour
     [SerializeField, Tooltip("풀 대표 아이콘 — 가장 높은 등급의 첫 항목")]
     private ItemIconView icon = null!;
 
-    [SerializeField, Tooltip("나오는 것의 이름 — '무기' (종수는 확률 툴팁 · 상점은 '보유 n장')")]
+    [SerializeField, Tooltip("나오는 것의 이름 — '무기'. 프리팹에서 꺼 두었다(2026-11-14 — 아이콘·제목과 겹친다). 종수는 확률 툴팁")]
     private TMP_Text kindText = null!;
 
     [CenterHeader("1회")]
@@ -76,7 +76,7 @@ public class GachaPoolCardView : MonoBehaviour
     }
 
     // 풀 하나를 그린다 (GachaPresenter · ShopPresenter — 처음과 언어 변경 때).
-    //   title       : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기' (상점은 '보유 n장')
+    //   title       : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기' (글자 칸은 꺼져 있다)
     //   singleLabel : 버튼 머리줄 — 뽑기는 '1회', 상점은 '1장'
     //   rates       : 도움말 아이콘에 올렸을 때 띄울 확률 툴팁을 만드는 함수
     public void Bind(string title, string kind, in ItemIconContent iconContent,
@@ -95,12 +95,6 @@ public class GachaPoolCardView : MonoBehaviour
         _multiCost   = multiCost;
         _singleShort = null;
         _multiShort  = null;
-    }
-
-    // 종수 줄만 다시 쓴다 — 상점 카드의 '보유 n장'처럼 Bind 뒤에 바뀌는 글자 (ShopPresenter에서 호출).
-    public void SetKind(string kind)
-    {
-        kindText.text = kind;
     }
 
     // 버튼 잠금과 비용 색을 맞춘다 (GachaPresenter · ShopPresenter의 Refresh에서 호출).

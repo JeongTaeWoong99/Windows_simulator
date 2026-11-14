@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-11-11 (`pixel-fx` 발동 조건 — 연출 이펙트 한 장은 `claude-fx/make_fx.py`) · 2026-11-08 (`pixel-fx` 스킬 — Claude가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+> 최종 업데이트: 2026-11-14 (`codixel` 스킬 — 정지 그림을 뼈로 움직이기 · PixelOE 경량판) · 2026-11-11 (`pixel-fx` 발동 조건 — 연출 이펙트 한 장은 `claude-fx/make_fx.py`) · 2026-11-08 (`pixel-fx` 스킬 — Claude가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -149,6 +149,7 @@
 | [`object-pool`](.claude/skills/client/object-pool/SKILL.md) | `Instantiate`/`Destroy`를 새로 쓰거나(연출·이펙트·목록 줄) 생성·삭제가 잦은 화면을 고칠 때 — 한 번 만들고 두는 오브젝트는 해당 없음 | `Common/object-pool` 사용법 · 대여 토큰 · 반납·초기화 · UI 함정 |
 | [`asset-compression`](.claude/skills/client/asset-compression/SKILL.md) | 그림·소리를 저장소에 새로 넣을 때(특히 AI 원본·큰 팩) · 저장소·빌드 용량이 커졌을 때 · 텍스처·오디오 임포트 압축을 정할 때 — 있는 파일을 쓰기만 하면 해당 없음 | 저장소·빌드·메모리 용량의 차이 · 원본 줄이기(`shrink_raw.py`) · 형식 고르기 · 임포트 설정 |
 | [`pixel-fx`](.claude/skills/client/pixel-fx/SKILL.md) | 픽셀 이펙트(타격·불똥·파편·마법 등 움직이는 효과)를 새로 만들거나 고칠 때 — 있는 이펙트 PNG를 쓰기만 하거나 움직임 없는 연출 이펙트 한 장(`claude-fx/make_fx.py`)을 고치면 해당 없음 | pixelfx(코드 이펙트 라이브러리)로 그리기 · 렌더해서 보고 고치기 · Unity로 내보내기 — Unity AI 크레딧 0 |
+| [`codixel`](.claude/skills/client/codixel/SKILL.md) | 정지 그림(대상·소품·몬스터)을 뼈로 흔들기·맞음·숨쉬기로 움직일 때 · 보석·불·나무 같은 소재를 코드로 그릴 때 · 큰 그림을 픽셀로 줄이는 방식을 고를 때 — 입자 이펙트는 `pixel-fx`, 있는 PNG를 쓰기만 하면 해당 없음 | codixel(뼈·굽힘·보석·불) · PixelOE 방식 줄이기(`ai_to_pixel.py --oe`) — Unity AI 크레딧 0 |
 | [`optimization`](.claude/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
 | [`unity-editor-ops`](.claude/skills/client/unity-editor-ops/SKILL.md) | 에디터를 조작할 때 — 씬·프리팹·인스펙터·SO·플레이 모드·테스트·빌드 · 코드 파일만 고치면 해당 없음 | 실행 경로(Unity CLI → MCP → 사람 인계) · 실행 전 확인받을 작업 · 핸드오프 프롬프트 |
 
