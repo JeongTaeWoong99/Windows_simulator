@@ -43,6 +43,7 @@
 | [T-181](T-181-아티팩트인벤토리도감장착.md) | 기획·서버 — **아티팩트를 인벤토리로 받아 도감에 장착** · 켜고 끄기 · 중복 즉시 판매 ✅ (2026-10-24) · 클라 [T-151](archive/T-151-클라유물감정보관함.md) ✅ (2026-10-29) · 남은 것: DB 0009 적용본 커밋 · [이슈 #81](https://github.com/JeongTaeWoong99/Windows_simulator/issues/81) | 진우 | Resolve | 보통 | 261121 |
 | [T-132](T-132-데이터뷰어.md) | **문서 사이트 데이터 뷰어** — wsdocs `데이터` 탭에서 DataLog 테이블 전부 보기 · 배포 후 확인만 남음 | 진우 | Resolve | 보통 | 261121 |
 | [T-154](T-154-회차자동이월.md) | **회차 자동 이월** — 지난 회차의 미완료 일감·이슈 마일스톤을 배포 때 다음 회차로 · 지난 회차 탭 숨김 · 남은 것: 첫 실행 확인(10/25) | 진우 | Resolve | 보통 | 261121 |
+| [T-194](T-194-소모품사용화면자동사용.md) | 클라 — **소모품 사용 화면 · 영약 자동 사용 칸** · 사용 창 · 버프 칩 · 자동 칸 ✅ (2026-11-14) · 남은 것: 실측 · [이슈 #111](https://github.com/JeongTaeWoong99/Windows_simulator/issues/111) · [#113](https://github.com/JeongTaeWoong99/Windows_simulator/issues/113) | 태웅 | Resolve | 보통 | 261121 |
 | [T-195](T-195-소모품효과적용.md) | 서버 — **소모품 효과 적용** · 지도·나침반 3단계 · 사용 패킷 · [이슈 #110](https://github.com/JeongTaeWoong99/Windows_simulator/issues/110) · [#111](https://github.com/JeongTaeWoong99/Windows_simulator/issues/111) · [#113](https://github.com/JeongTaeWoong99/Windows_simulator/issues/113) | 진우 | New | 보통 | 261121 |
 | [T-192](T-192-서버비용계산.md) | 서버 — **서버 비용** · 동접 100명당 AWS 한 달 · 회차마다 갱신 · [이슈 #109](https://github.com/JeongTaeWoong99/Windows_simulator/issues/109) | 진우 | In Progress | 보통 | 261121 |
 | [T-113](T-113-특성다양화.md) | 기획 — **특성 다양화** · 콘텐츠 특화 · 특별한 특성 · 다른 종류 (레벨형 T-108 위에) | 진우 | New | 보통 | 261121 |
@@ -68,7 +69,8 @@
 
 | ID | 제목 | 담당 | 상태 | **무엇을 기다리나** | 우선순위 |
 |----|------|------|------|--------------------|----------|
-| [T-194](T-194-소모품사용화면자동사용.md) | 클라 — **소모품 사용 화면 · 영약 자동 사용 칸** | 태웅 | New | 서버 패킷 [T-195](T-195-소모품효과적용.md) · 자동 사용 판단 [이슈 #113](https://github.com/JeongTaeWoong99/Windows_simulator/issues/113) | 보통 |
+
+> 지금은 비어 있다 — T-194는 T-195(PR #120) 머지로 풀려 ▶로 옮겼다(2026-11-14).
 
 ### 🎨 뒤로 미뤘다
 
