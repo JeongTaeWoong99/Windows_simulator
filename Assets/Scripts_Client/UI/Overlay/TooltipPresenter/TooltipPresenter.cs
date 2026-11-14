@@ -184,10 +184,7 @@ public class TooltipPresenter : MonoBehaviour
         //   꺼진 TMP는 글자 폭도 제대로 못 잰다.
         rowParent.gameObject.SetActive(lines.Count > 0);
 
-        for (int i = 0; i < lines.Count; i++)
-        {
-            _rows.Get(i).Bind(lines[i]);
-        }
+        PaintRows(lines);
 
         _rows.HideFrom(lines.Count);
 
@@ -195,6 +192,79 @@ public class TooltipPresenter : MonoBehaviour
 
         // 크기를 지금 확정해야 아래 'Place'가 넘침을 잴 수 있다('UI 규칙.md' "만든 자리에서 바로 태운다").
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+    }
+
+    // 줄 바탕을 묶음별로 칠한다 (Render에서 호출 — 2026-11-14 사용자: 등급 묶음은 등급색으로 다 · 조작 묶음은 연한 흰 줄무늬).
+    //   ■ 묶음 = 첫 줄부터 · 'Header' 줄(■)부터 다음 'Header' 전까지.
+    //   ■ 묶음 안에 바탕색을 준 줄(등급 줄)이 있으면 그 색이 묶음의 색이다 — 준 줄은 진하게, 나머지 줄은 옅게 번갈아.
+    //   ■ 색 준 줄이 없는 묶음(조작 안내 등)은 연한 흰색을 번갈아 깐다 — 줄만 갈린다.
+    private void PaintRows(IReadOnlyList<TooltipContent.Line> lines)
+    {
+        Color? section = null;
+        int    stripe  = 0;
+
+        for (int i = 0; i < lines.Count; i++)
+        {
+            TooltipContent.Line line = lines[i];
+
+            if (i == 0 || IsHeader(line))
+            {
+                section = FindSectionTint(lines, i);
+                stripe  = 0;
+            }
+
+            TooltipRowView row = _rows.Get(i);
+
+            if (IsHeader(line))
+            {
+                row.Bind(line, null, 0f);
+
+                continue;
+            }
+
+            bool odd = stripe++ % 2 == 1;
+
+            if (line.Background is Color own)
+            {
+                row.Bind(line, own, OwnTintBlend);
+            }
+            else if (section is Color tint)
+            {
+                row.Bind(line, tint, odd ? SectionTintBlendOdd : SectionTintBlend);
+            }
+            else
+            {
+                row.Bind(line, Color.white, odd ? StripeBlendOdd : StripeBlend);
+            }
+        }
+    }
+
+    // 줄 바탕 섞는 비율 — 판 색(줄 프리팹 기본색)에 얼마나 섞나
+    private const float OwnTintBlend        = 0.55f; // 색을 직접 준 줄(등급 줄)
+    private const float SectionTintBlend    = 0.30f; // 같은 묶음의 나머지 줄
+    private const float SectionTintBlendOdd = 0.20f;
+    private const float StripeBlend         = 0.22f; // 색 없는 묶음 — 연한 흰 줄무늬
+    private const float StripeBlendOdd      = 0.08f;
+
+    private static bool IsHeader(TooltipContent.Line line) => line.Label.StartsWith(TooltipContent.HeaderMark);
+
+    // 'start'에서 시작하는 묶음 안의 첫 바탕색. 없으면 null
+    private static Color? FindSectionTint(IReadOnlyList<TooltipContent.Line> lines, int start)
+    {
+        for (int i = start; i < lines.Count; i++)
+        {
+            if (i > start && IsHeader(lines[i]))
+            {
+                break;
+            }
+
+            if (lines[i].Background is Color tint)
+            {
+                return tint;
+            }
+        }
+
+        return null;
     }
 
     // 값 · 보조 값 열 폭을 이 툴팁에서 가장 긴 글자에 맞춘다 (Render에서 호출).

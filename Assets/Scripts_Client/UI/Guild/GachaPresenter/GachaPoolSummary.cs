@@ -121,6 +121,26 @@ public sealed class GachaPoolSummary
         }
     }
 
+    // 카드 아이콘 아래 이름 — '캐릭터' · '무기'. 섞인 풀은 빈 문자열.
+    // ※ 종수('31종')는 확률 툴팁 첫 줄로 뺐다 — 칸이 좁아 '무기 3…'로 잘렸다(2026-11-14).
+    public string KindName
+    {
+        get
+        {
+            if (IsOnly(_characterKinds))
+            {
+                return Lang.Get("UI.Common.Character");
+            }
+
+            if (IsOnly(_equipKinds))
+            {
+                return _equipKind.HasValue ? EquipLabel.GetKindName(_equipKind.Value) : Lang.Get("UI.Equip.Gear");
+            }
+
+            return IsOnly(_itemKinds) ? Lang.Get("UI.Gacha.Item") : "";
+        }
+    }
+
     // 카드 왼쪽 아이콘 — 가장 높은 등급의 첫 항목.
     public ItemIconContent Icon => _icon;
 
@@ -128,11 +148,13 @@ public sealed class GachaPoolSummary
 
     #region 확률 툴팁
 
-    // 등급 확률 툴팁 — 카드 제목 옆 도움말 아이콘(?)에 올리면 뜬다 (카드의 'TooltipTrigger.SetProvider'로 넘긴다).
+    // 등급 확률 툴팁(첫 줄은 종수) — 카드 제목 옆 도움말 아이콘(?)에 올리면 뜬다 (카드의 'TooltipTrigger.SetProvider'로 넘긴다).
     // 행이 없는 등급은 적지 않는다. 골드가 섞인 풀이면 골드 줄을 따로 둔다.
     public TooltipContent BuildRateTooltip()
     {
         var content = new TooltipContent(Lang.Format("UI.Gacha.RateTitle", Name));
+
+        content.Row(KindText, ""); // 나오는 종수 — 카드에는 이름만 적는다('KindName')
 
         if (_totalWeight <= 0L)
         {

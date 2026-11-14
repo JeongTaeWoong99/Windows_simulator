@@ -54,6 +54,9 @@ public class UIManager : MonoService<UIManager>
         [Tooltip("이 화면일 때 #Main Canvas 머리(Title)에 뜨는 문구의 번역 키 (UI.Main.Title.*)")]
         [FormerlySerializedAs("title")]
         public string titleKey;
+
+        [Tooltip("제목 왼쪽 아이콘 — 그 화면을 여는 버튼의 아이콘과 같은 그림. 비우면 아이콘 없이 제목만")]
+        public Sprite? titleIcon;
     }
 
     // ※ 로그인은 3열·위젯과 다른 축이다 — 게임에 들어오기 전까지 이것만 보이고, 성공하면 다시 안 나온다.
@@ -175,7 +178,7 @@ public class UIManager : MonoService<UIManager>
         {
             if (entry.screen == CurrentMainScreen)
             {
-                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey), entry.titleIcon);
             }
         }
     }
@@ -241,7 +244,7 @@ public class UIManager : MonoService<UIManager>
             // 제목도 함께 맞춘다 — 씬에 저장된 문구가 실제로 켜진 화면과 다를 수 있다
             if (on)
             {
-                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey), entry.titleIcon);
             }
         }
     }
@@ -271,7 +274,7 @@ public class UIManager : MonoService<UIManager>
 
             if (on)
             {
-                mainCanvas.SetTitle(Lang.Get(entry.titleKey));
+                mainCanvas.SetTitle(Lang.Get(entry.titleKey), entry.titleIcon);
             }
         }
 

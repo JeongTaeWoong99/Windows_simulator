@@ -324,6 +324,37 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         RefreshSubText();
     }
 
+    // 이름 줄을 켜고 끈다 (칸을 만든 화면이 한 번 부른다 — 'SetSubVisible'과 같은 스위치).
+    //   인벤토리 격자는 끈다 — 팰월드식: 칸은 그림 + 숫자 하나, 이름은 툴팁 제목이 말한다(2026-11-14 사용자).
+    //   가챠 결과 · 아티팩트 도감은 켜 둔다 — 처음 보는 것을 늘어놓는 자리라 이름이 곧 내용이다.
+    // ※ 끄면 아이콘이 이름 자리까지 위로 커진다.
+    public void SetNameVisible(bool on)
+    {
+        nameText.gameObject.SetActive(on);
+
+        var icon = itemImage.rectTransform;
+
+        if (_iconTopBase == null)
+        {
+            _iconTopBase = icon.offsetMax.y;
+        }
+
+        float grow = on ? 0f : Mathf.Max(0f, nameText.rectTransform.rect.height * NameFreedShare);
+
+        icon.offsetMax = new Vector2(icon.offsetMax.x, _iconTopBase.Value + grow);
+    }
+
+    // 이름을 끈 칸에서 아이콘이 이름 자리를 얼마나 먹나 — 다 먹으면 아이콘이 위 테두리에 닿는다
+    private const float NameFreedShare = 0.8f;
+
+    private float? _iconTopBase; // 아이콘의 원래 위 여백 — 이름을 다시 켤 때 돌아갈 값
+
+    // 보조 문구를 바꾼다 — 'Bind'가 준 문구 대신 화면이 지은 한 줄(캐릭터 칸의 가장 높은 적성 '채굴 9').
+    public void SetSubText(string text)
+    {
+        subText.text = text;
+    }
+
     // 하단 밴드의 주인을 정한다 — 적성 스트립이 켜져 있거나 장비 칸(보석)이면 문구는 비킨다
     // (SetSubVisible · SetAptitudes · SetStatSockets에서 호출).
     // ※ 셋이 같은 자리라 판정을 한 곳에 둔다 — 셋에 흩어 두면 하나를 더할 때 한 곳이 빠진다.

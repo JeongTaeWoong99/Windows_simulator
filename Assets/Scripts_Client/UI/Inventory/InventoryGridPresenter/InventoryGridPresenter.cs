@@ -847,9 +847,14 @@ public class InventoryGridPresenter : MonoBehaviour
 
         view.SetFilteredOut(outOfEnchant || _current.IsFilteredOut(data.Key));
 
-        // 적성 스트립도 캐릭터 탭에서만이다 — 자원에는 적성이라는 개념이 없다.
-        // 자원 탭에서 null을 넘기면 칸이 스트립을 끄고 수량 문구에게 자리를 돌려준다.
-        view.SetAptitudes(IsCharacterTab ? ReadAptitudes(data.Key) : null);
+        // 팰월드식(2026-11-14 사용자) — 칸은 그림 + 숫자 하나. 적성 5칸 스트립은 끄고 **가장 높은 적성 하나**만 보조 문구에 적는다.
+        // 다섯 산업 전부 · 기본 속도는 칸 툴팁이 말한다('CharacterSlotSource.BuildTooltip').
+        view.SetAptitudes(null);
+
+        if (IsCharacterTab)
+        {
+            view.SetSubText(BestAptitudeText(ReadAptitudes(data.Key)));
+        }
 
         // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다. 다른 탭은 같은 배지 자리에 공급자의 표시를 싣는다(장비: 상급 큐브 결과 고르기 전 '선택').
         view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key));
@@ -859,8 +864,8 @@ public class InventoryGridPresenter : MonoBehaviour
         // 능력치 칸 — 장비 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-095).
         view.SetStatSockets(_current.GetStatSockets(data.Key));
 
-        // 장착 네모 — 캐릭터 탭만 값을 준다. 다른 탭은 null이라 칸이 줄을 끈다(T-104).
-        view.SetEquipPips(_current.GetWornEquips(data.Key));
+        // 장착 네모 — 팰월드식으로 칸에서 뺐다(2026-11-14). 낀 장비는 툴팁의 장비 줄이 말하고, 일하는 중인지는 '배' 표시가 말한다.
+        view.SetEquipPips(null);
 
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
         view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
@@ -908,6 +913,22 @@ public class InventoryGridPresenter : MonoBehaviour
     // 값의 주인은 서버다 — 'CharacterTable'을 직접 읽지 않는다('PlayerDataModel.GetAptitude' 주석).
     // ※ 돌려주는 배열은 재사용되는 하나다. 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있어도 된다 —
     //   나중에 보관해 두는 쪽이 생기면 그때는 복사해야 한다.
+    // 가장 높은 적성 하나 — '채굴 9'. 같으면 앞(표시 순서) 산업. 전부 0이면 빈 문자열 (DrawCell에서 호출).
+    private static string BestAptitudeText(byte[] aptitudes)
+    {
+        int best = -1;
+
+        for (int i = 0; i < aptitudes.Length; i++)
+        {
+            if (aptitudes[i] > 0 && (best < 0 || aptitudes[i] > aptitudes[best]))
+            {
+                best = i;
+            }
+        }
+
+        return best < 0 ? "" : $"{IndustryLabel.Get(StripIndustries[best])} {AptitudeLabel.GetText(aptitudes[best])}";
+    }
+
     private byte[] ReadAptitudes(long characterId)
     {
         for (int i = 0; i < _aptitudes.Length; i++)
@@ -938,6 +959,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
         view = Instantiate(slotPrefab, _frames[index]);
         SnapToFrame(view.transform as RectTransform);
+        view.SetNameVisible(false); // 팰월드식 — 이름은 툴팁 제목
 
         // 칸은 파괴하지 않고 풀로 되돌리므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
         view.RightClicked += OnSlotRightClicked;

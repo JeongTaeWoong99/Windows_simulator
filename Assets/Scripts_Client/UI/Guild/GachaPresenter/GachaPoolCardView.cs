@@ -21,7 +21,7 @@ public class GachaPoolCardView : MonoBehaviour
     [SerializeField, Tooltip("풀 대표 아이콘 — 가장 높은 등급의 첫 항목")]
     private ItemIconView icon = null!;
 
-    [SerializeField, Tooltip("나오는 종수 — '무기 31종'")]
+    [SerializeField, Tooltip("나오는 것의 이름 — '무기' (종수는 확률 툴팁 · 상점은 '보유 n장')")]
     private TMP_Text kindText = null!;
 
     [CenterHeader("1회")]
@@ -76,7 +76,7 @@ public class GachaPoolCardView : MonoBehaviour
     }
 
     // 풀 하나를 그린다 (GachaPresenter · ShopPresenter — 처음과 언어 변경 때).
-    //   title       : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기 31종'
+    //   title       : '캐릭터 뽑기 (일꾼)'처럼 완성된 제목 · kind : '무기' (상점은 '보유 n장')
     //   singleLabel : 버튼 머리줄 — 뽑기는 '1회', 상점은 '1장'
     //   rates       : 도움말 아이콘에 올렸을 때 띄울 확률 툴팁을 만드는 함수
     public void Bind(string title, string kind, in ItemIconContent iconContent,

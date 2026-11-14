@@ -37,8 +37,11 @@ public sealed class TooltipContent
         Title = title;
     }
 
+    // 묶음 제목 줄의 머리 표시 — 'TooltipPresenter'가 이것으로 묶음을 가른다(줄 바탕 칠하기).
+    public const string HeaderMark = "■ ";
+
     // 묶음 제목 줄 — 줄이 여러 묶음일 때 사이에 끼워 가른다.
-    public TooltipContent Header(string text) => Row($"■ {text}", "", "", null);
+    public TooltipContent Header(string text) => Row(HeaderMark + text, "", "", null);
 
     // 라벨 · 값 한 줄.
     public TooltipContent Row(string label, string value) => Row(label, value, "", null);

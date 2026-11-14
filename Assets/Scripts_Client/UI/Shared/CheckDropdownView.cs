@@ -50,6 +50,7 @@ public class CheckDropdownView : MonoBehaviour
     private readonly List<TMP_Text> _rowTexts = new List<TMP_Text>();
 
     private Canvas      _listCanvas = null!;
+    private float       _labelExtra; // 목록 너비 − 줄 글자 칸 너비 (체크 자리 · 틀 안쪽) — 씬에 놓인 그대로 한 번 잰다
     private int         _shownRows;
     private GameObject? _blocker;
 
@@ -68,6 +69,9 @@ public class CheckDropdownView : MonoBehaviour
 
         _listCanvas = list.GetComponent<Canvas>();
         this.RequireRef(_listCanvas, nameof(_listCanvas));
+
+        TMP_Text? templateLabel = rowTemplate.GetComponentInChildren<TMP_Text>(true);
+        _labelExtra = templateLabel != null ? list.rect.width - templateLabel.rectTransform.rect.width : 0f;
 
         rowTemplate.gameObject.SetActive(false);
         list.gameObject.SetActive(false);
@@ -120,7 +124,7 @@ public class CheckDropdownView : MonoBehaviour
         FitList();
     }
 
-    // 목록 크기 — 너비는 머리와 같게, 높이는 줄 수만큼(+ 틀 안쪽 여백 · 'UiSkin.InsetList'). 열 때마다 다시 잰다 — 안 구운 씬은 틀이 씬이 열린 뒤에 입혀진다
+    // 목록 크기 — 너비는 머리 이상 · 가장 긴 줄까지('DropdownListFit'), 높이는 줄 수만큼(+ 틀 안쪽 여백 · 'UiSkin.InsetList'). 열 때마다 다시 잰다 — 안 구운 씬은 틀이 씬이 열린 뒤에 입혀진다
     private void FitList()
     {
         list.anchorMin = new Vector2(0f, list.anchorMin.y);
@@ -131,6 +135,15 @@ public class CheckDropdownView : MonoBehaviour
         float height   = Mathf.Min(_shownRows * rowHeight + ListPadding + frame, maxListHeight);
 
         list.sizeDelta = new Vector2(0f, height);
+
+        var shown = new List<TMP_Text>();
+
+        for (int i = 0; i < _shownRows && i < _rowTexts.Count; i++)
+        {
+            shown.Add(_rowTexts[i]);
+        }
+
+        DropdownListFit.SetWidth(list, ((RectTransform)transform).rect.width, DropdownListFit.Widest(shown) + _labelExtra);
     }
 
     public void SetHeadText(string text)

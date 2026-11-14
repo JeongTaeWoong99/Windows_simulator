@@ -23,6 +23,8 @@
 
 ## INDEX
 
+- [2026-11-14 코드 그리기 파이프라인 · 팰월드식 칸](2026-11-14-claude-gen-pipeline-palworld.md) — `#client` `#ui` `#art` `claude_gen.py` · 팰월드식 칸 · 툴팁 묶음 색 · 등급 계단빛 되살림
+- [2026-11-14 UI 양피지 4차](2026-11-14-ui-parchment-v4.md) — `#client` `#ui` `#art` 화면 제목 아이콘 · 드롭다운 너비/체크 · 신화색 FF3D6E · 칸 종족/크기 배지 제거 · 팰월드식 제안
 - [2026-11-14 UI 양피지 3차](2026-11-14-ui-parchment-v3.md) — `#client` `#ui` `#art` 특성 선 버그 · 노드 자물쇠/금테 · 툴팁 액자 · 열 제목 진갈 띠 · HUD 알약 · 빈 목록 아이콘 · 메뉴 이름
 - [2026-11-14 UI 양피지 2차](2026-11-14-ui-parchment-v2.md) — `#client` `#ui` `#art` 참고 이미지 색감에 맞춤 · 얇은 진갈 테두리·종이 결 · 칸 중갈색+등급 테두리 · Paint 색 이어받기 · GoldOnDark · OfFor
 - [2026-11-13 UI 양피지 시험](2026-11-13-ui-parchment-trial.md) — `#client` `#ui` `#art` 나무 액자·양피지 창·붉은 리본 · 글씨 역할을 바탕 밝기로 · `HighlightDark` · 인스턴스 색 덮어쓰기 걷기

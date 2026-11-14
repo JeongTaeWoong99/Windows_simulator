@@ -1,4 +1,4 @@
-using GameData;
+﻿using GameData;
 using MikaProtocol;
 using UnityEngine;
 
@@ -29,7 +29,7 @@ public static class RarityPalette
         GlobalRarity.Rare      => new Color32(0x00, 0x70, 0xDD, 0xFF), // 희귀, 파랑
         GlobalRarity.Epic      => new Color32(0xA3, 0x35, 0xEE, 0xFF), // 영웅, 보라
         GlobalRarity.Legendary => new Color32(0xFF, 0x80, 0x00, 0xFF), // 전설, 주황/금색
-        GlobalRarity.Mythic    => new Color32(0xE6, 0xCC, 0x80, 0xFF), // 신화, 빨강/핑크
+        GlobalRarity.Mythic    => new Color32(0xFF, 0x3D, 0x6E, 0xFF), // 신화, 빨강/핑크 — 옛 E6CC80(옅은 금)은 양피지 바탕에 묻혀 바꿨다(2026-11-14)
         GlobalRarity.Special   => new Color32(0xFF, 0xFF, 0xFF, 0xFF), // 스페셜(유물·아티팩트), 흰색 — 칸의 무지개 테두리는 따로다(T-151)
         _                      => Unknown,
     };

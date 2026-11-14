@@ -257,7 +257,7 @@ public class GachaPresenter : MonoBehaviour
         int single = (int)Constants.GachaDrawSingle;
         int multi  = (int)Constants.GachaDrawMulti;
 
-        card.Bind(title, summary.KindText, summary.Icon,
+        card.Bind(title, summary.KindName, summary.Icon,
                   Lang.Format("UI.Gacha.Times", single), info.CostSingle,
                   Lang.Format("UI.Gacha.Times", multi),  info.CostMulti,
                   summary.BuildRateTooltip);

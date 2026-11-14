@@ -1,5 +1,6 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 // 메인 캔버스 — '@Main Column'의 가운데 칸. 여러 화면(목록·선택·설정)이 이 안에서 자리를 나눠 쓰고
 // 'Title'과 'Menu Presenter'는 항상 남는다. 무엇을 띄울지는 'UIManager'가 'MainScreen'으로 정한다.
@@ -21,6 +22,9 @@ public class MainCanvasView : MonoBehaviour
     [SerializeField, Tooltip("캔버스 머리의 제목 — Title > Ttitle Text (TMP)")]
     private TMP_Text titleText = null!;
 
+    [SerializeField, Tooltip("제목 왼쪽 아이콘 — 화면마다 'UI Manager'의 'Main Screens'에 적힌 그림으로 바뀐다. 비우면 아이콘 없이 제목만")]
+    private Image? titleIcon;
+
     // 참조 확보만 한다 (클라 공통 규약. 구독할 이벤트도 배선할 입력도 없다)
     private void Start()
     {
@@ -39,8 +43,15 @@ public class MainCanvasView : MonoBehaviour
 
     // 머리의 제목을 바꾼다 ('UIManager.ShowMainScreen'이 화면을 갈아 끼울 때 호출).
     // 문구의 번역 키는 'UI Manager'의 'Main Screens'에 화면별로 적혀 있다.
-    public void SetTitle(string title)
+    // 아이콘이 없는 화면이면 아이콘 자리를 끈다.
+    public void SetTitle(string title, Sprite? icon)
     {
         titleText.text = title;
+
+        if (titleIcon != null)
+        {
+            titleIcon.sprite = icon;
+            titleIcon.gameObject.SetActive(icon != null);
+        }
     }
 }

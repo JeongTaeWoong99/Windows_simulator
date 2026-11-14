@@ -107,8 +107,10 @@ public class TooltipRowView : MonoBehaviour
         return layout;
     }
 
-    // 줄을 채운다 ('TooltipPresenter.Render'에서 호출).
-    public void Bind(TooltipContent.Line line)
+    // 줄을 채운다 ('TooltipPresenter.PaintRows'에서 호출).
+    //   tint  : 줄 바탕에 섞을 색 — null이면 프리팹 기본색 그대로
+    //   blend : 판 색(기본색)에 섞는 비율 0~1. 원색 그대로면 양피지 위에서 형광 띠가 떠 보여 묶음별로 옅게 섞는다
+    public void Bind(TooltipContent.Line line, Color? tint, float blend)
     {
         EnsureInitialized();
 
@@ -117,9 +119,8 @@ public class TooltipRowView : MonoBehaviour
         subValueText.text = line.SubValue;
 
         subValueText.gameObject.SetActive(line.SubValue.Length > 0);
-        // 줄 바탕색(등급색 등)은 판 색에 반쯤 섞는다 — 원색 그대로면 양피지 위에서 회색·형광 띠가 떠 보인다
-        backgroundImage.color = line.Background is Color tint
-                                    ? Color.Lerp(_defaultColor, new Color(tint.r, tint.g, tint.b, 1f), 0.45f)
+        backgroundImage.color = tint is Color c
+                                    ? Color.Lerp(_defaultColor, new Color(c.r, c.g, c.b, 1f), blend)
                                     : _defaultColor;
     }
 }
