@@ -1280,8 +1280,9 @@ public class InventoryGridPresenter : MonoBehaviour
             return false;
         }
 
-        // 거르는 동안 보이는 순서는 칸 번호가 아니다(맞는 것 → 흑백 순으로 모은 배치) — 놓은 자리가 엉뚱한 칸이 된다.
-        if (_current.IsFiltering)
+        // 거르는 동안 보이는 순서는 칸 번호가 아니다(맞는 것 → 흑백 순으로 모은 배치) — 같은 격자 안 자리 바꾸기는 막는다.
+        // 다른 보관함(창고 ↔ 인벤토리)으로 넣는 것은 된다 — 받는 쪽 칸만 겨누고, 보내는 칸은 'SlotNumberAt'으로 서버 칸 번호를 찾는다(2026-11-15 사용자).
+        if (_current.IsFiltering && !HasOtherDropGrid())
         {
             _wait.RaiseRefusal(Lang.Get("UI.Inventory.NoMoveWhileFiltering"), _views[frameIndex]?.transform);
 
@@ -1347,9 +1348,10 @@ public class InventoryGridPresenter : MonoBehaviour
     // 포인터 아래의 놓을 곳 — 자기 격자의 칸이 먼저, 아니면 **같은 탭인 다른 보관함 격자** (MoveSlotDrag · EndSlotDrag에서 호출).
     //   다른 격자의 칸 사이·빈 곳이면 그 격자의 첫 빈 칸이다(보관함 사이 이동은 "넣는다"가 본뜻이라 칸을 겨누지 않아도 된다).
     //   놓을 곳이 없으면 grid = null.
+    //   ※ 이 격자가 찾기 중이면 자기 칸은 겨누지 않는다 — 보이는 순서가 칸 번호가 아니다('BeginSlotDrag').
     private void FindDropTarget(Vector2 screenPoint, Camera? eventCamera, out InventoryGridPresenter? grid, out int frame)
     {
-        frame = FindFrameAt(screenPoint, eventCamera);
+        frame = _current != null && _current.IsFiltering ? -1 : FindFrameAt(screenPoint, eventCamera);
         grid  = frame >= 0 ? this : null;
 
         if (grid != null)
@@ -1380,6 +1382,20 @@ public class InventoryGridPresenter : MonoBehaviour
 
             return;
         }
+    }
+
+    // 같은 탭으로 넣어 줄 다른 보관함 격자가 열려 있나 (BeginSlotDrag에서 호출 — 찾기 중 끌기를 허락할지)
+    private bool HasOtherDropGrid()
+    {
+        foreach (InventoryGridPresenter other in Grids)
+        {
+            if (other != this && other.container != container && other._currentTab == _currentTab && other.IsDropReady)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // 이 격자의 보이는 영역(뷰포트) 안인가 (FindDropTarget · FindFrameAt에서 호출).
@@ -1489,6 +1505,12 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (grid == null || !TryGetStorageTab(out EStorageTab tab))
         {
+            // 찾기 중에 자기 격자 안에 놓았다 — 자리 바꾸기는 막혀 있다('FindDropTarget')
+            if (_current != null && _current.IsFiltering && ContainsInViewport(eventData.position, eventCamera))
+            {
+                _wait.RaiseRefusal(Lang.Get("UI.Inventory.NoMoveWhileFiltering"), _views[frameIndex]?.transform);
+            }
+
             // 다른 격자 위인데 놓을 칸이 없었다 — 다 찼거나 찾기 중이다. 말없이 버리면 고장처럼 보인다.
             NoticeIfOtherGridRefused(eventData.position, eventCamera);
             FlyGhost(this, frameIndex, landing: false);
@@ -1511,7 +1533,7 @@ public class InventoryGridPresenter : MonoBehaviour
             bool accepted = grid._current == null || !grid._current.IsFiltering;
 
             FlyGhost(accepted ? grid : this, accepted ? target : frameIndex, landing: accepted);
-            TransferTo(grid, tab, frameIndex, target);
+            TransferTo(grid, tab, frameIndex, _current!.SlotNumberAt(frameIndex), target);
 
             return;
         }
@@ -1574,7 +1596,8 @@ public class InventoryGridPresenter : MonoBehaviour
     // ※ 수량은 끈 칸 하나의 묶음이다 — 같은 자원이 여러 칸에 있어도 한 칸씩 옮긴다(T-160).
     // ※ 빈 칸에 놓으면 그 칸에 새 묶음이 된다. 같은 자원 칸이면 'MaxStack'까지 합치고 남는 것은 원래 칸에 둔다(가득 찬 칸이면 'StorageOverMaxStack').
     //   다른 자원 칸이면 스왑하되, 일부만 놓으면 'WarehousePartialSwap'으로 거절한다.
-    private void TransferTo(InventoryGridPresenter target, EStorageTab tab, int fromSlot, int toSlot)
+    //   fromFrame : 끈 칸의 보이는 자리 — 찾기 중이면 서버 칸 번호('fromSlot')와 다르다
+    private void TransferTo(InventoryGridPresenter target, EStorageTab tab, int fromFrame, int fromSlot, int toSlot)
     {
         if (target._current != null && target._current.IsFiltering)
         {
@@ -1583,9 +1606,9 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        SlotData? cell = _current != null && fromSlot < _current.Count ? _current.Get(fromSlot) : null;
+        SlotData? cell = _current != null && fromFrame < _current.Count ? _current.Get(fromFrame) : null;
 
-        if (cell == null)
+        if (cell == null || fromSlot < 0)
         {
             return; // 끄는 사이 칸이 비었다 — 뒤이어 온 변경이 이미 다시 그렸다
         }

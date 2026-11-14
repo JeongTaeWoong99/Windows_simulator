@@ -42,8 +42,19 @@ public class RelicAppraiseFx : MonoBehaviour
 
     // ── 크기 (칸 프리팹 배율 · px)
     private const float StageScale  = 2f;     // 결과 칸을 키워 무대 아이콘으로 쓴다
-    private const float FlashSize   = 900f;
-    private const float RaysSize    = 560f;
+    // ※ 빛 그림은 도트 하나가 화면 2.5~3px쯤 되는 크기로 쓴다 — 한때 48px 번짐을 900px로 늘려 계단 진 네모 덩어리가 됐다(2026-11-15 사용자)
+    private const float FlashSize   = 460f;
+    private const float RaysSize    = 540f;
+    private const float RingSize    = 420f;
+    private const float HaloSize    = 440f;
+    private const float FlashFrom   = 0.5f;   // 번쩍이 이 크기에서 부풀어 오른다
+    private const float FlashAfter  = 1.3f;   // 걷히며 이만큼 더 퍼진다
+    private const float RingFrom    = 0.3f;
+    private const float RingTo      = 1.6f;
+    private const float RingTime    = 0.55f;
+    private const float HaloAlpha   = 0.6f;   // 보상 뒤 후광 세기
+    private const float HaloPulse   = 1.07f;  // 후광이 숨 쉬는 폭
+    private const float HaloBreath  = 1.2f;   // 한 번 숨 쉬는 시간
     private const float ShardSize   = 34f;
     private const int   ShardCount  = 12;
     private const float ShardFall   = 60f;    // 조각이 바깥으로 가며 떨어지는 만큼
@@ -76,6 +87,8 @@ public class RelicAppraiseFx : MonoBehaviour
     private CanvasGroup _group  = null!;
     private RectTransform _layer = null!;
     private Image       _rays   = null!;
+    private Image       _halo   = null!;
+    private Image       _ring   = null!;
     private SlotView    _relic  = null!;
     private SlotView    _reward = null!;
     private Image       _flash  = null!;
@@ -109,8 +122,9 @@ public class RelicAppraiseFx : MonoBehaviour
         fx._group.interactable   = false;
         fx._group.alpha          = 0f;
 
-        // 그리는 순서 = 만드는 순서 — 광선 · 유물 · 보상 · 조각 · 번짐 · 띠
-        fx._rays   = fx.CreateImage("Rays", FxSprites.RevealRays, RaysSize);
+        // 그리는 순서 = 만드는 순서 — 광선 · 후광 · 유물 · 보상 · 조각 · 고리 · 번짐 · 띠
+        fx._rays   = fx.CreateImage("Rays", FxSprites.AppraiseRays ?? FxSprites.RevealRays, RaysSize);
+        fx._halo   = fx.CreateImage("Halo", FxSprites.AppraiseBurst ?? FxSprites.RevealGlow, HaloSize);
         fx._relic  = fx.CreateSlot("Relic", slotPrefab);
         fx._reward = fx.CreateSlot("Reward", slotPrefab);
 
@@ -124,7 +138,8 @@ public class RelicAppraiseFx : MonoBehaviour
             fx._shards.Add(fx.CreateImage("Shard", FxSprites.AppraiseShard, ShardSize));
         }
 
-        fx._flash  = fx.CreateImage("Flash", FxSprites.RevealGlow, FlashSize);
+        fx._ring   = fx.CreateImage("Ring", FxSprites.AppraiseRing, RingSize);
+        fx._flash  = fx.CreateImage("Flash", FxSprites.AppraiseBurst ?? FxSprites.RevealGlow, FlashSize);
         fx._banner = fx.CreateBanner(bannerTemplate);
 
         return fx;
@@ -156,17 +171,20 @@ public class RelicAppraiseFx : MonoBehaviour
             await UniTask.Delay(System.TimeSpan.FromSeconds(CrackGap), cancellationToken: ct);
         }
 
-        // ⑤ 번쩍 — 등급 색 (Special = 흰빛 · 광선이 무지개로 돈다)
-        _flash.color = Transparent(isSpecial ? Color.white : relicColor);
-        await Track(_flash.DOFade(1f, FlashIn)).ToUniTask(TweenCancelBehaviour.KillAndCancelAwait, ct);
+        // ⑤ 번쩍 — 등급 색 번짐이 부풀어 오르고 고리가 퍼진다 (Special = 흰빛 · 광선이 무지개로 돈다)
+        Color flashColor = isSpecial ? Color.white : relicColor;
 
-        // ⑥ 조각 — 유물을 숨기고 흩뿌린다 · 번짐은 걷힌다 (기다리지 않는다 — ⑦과 겹친다)
+        await FlashAsync(flashColor, ct);
+
+        // ⑥ 조각 — 유물을 숨기고 흩뿌린다 · 번짐은 퍼지며 걷힌다 (기다리지 않는다 — ⑦과 겹친다)
         _relic.gameObject.SetActive(false);
         ScatterShards();
-        _ = Track(_flash.DOFade(0f, FlashOut));
+        _ = Track(_flash.DOFade(0f, FlashOut).SetEase(Ease.InQuad));
+        _ = Track(_flash.rectTransform.DOScale(FlashAfter, FlashOut).SetEase(Ease.OutQuad));
 
-        // ⑦ 등장 — 뒤에서 광선이 돈다
+        // ⑦ 등장 — 뒤에서 광선이 돌고 후광이 숨 쉰다
         SpinRays(accent ?? PlainRays, isSpecial);
+        ShowHalo(accent ?? flashColor, animate: true);
         await PopRewardAsync(ct);
 
         // ⑧ 아티팩트 · Special 유물 — 띠가 내려오고 한 번 더 빛난다
@@ -199,6 +217,7 @@ public class RelicAppraiseFx : MonoBehaviour
         ResetTransform(_reward.transform, StageScale);
 
         SpinRays(accent ?? PlainRays, isSpecial);
+        ShowHalo(accent ?? (isSpecial ? Color.white : RarityPalette.Get(relic.Rarity)), animate: false);
 
         if (banner == null)
         {
@@ -261,9 +280,14 @@ public class RelicAppraiseFx : MonoBehaviour
         }
 
         _rays.color   = Transparent(PlainRays);
+        _halo.color   = Transparent(Color.white);
+        _ring.color   = Transparent(Color.white);
         _flash.color  = Transparent(Color.white);
         _banner.alpha = 0f;
         ResetTransform(_rays.transform, 1f);
+        ResetTransform(_halo.transform, 1f);
+        ResetTransform(_ring.transform, RingFrom);
+        ResetTransform(_flash.transform, FlashFrom);
     }
 
     // ① 좌우로 흔든다 — 점점 세게 (목업 ±6°)
@@ -293,6 +317,43 @@ public class RelicAppraiseFx : MonoBehaviour
         seq.Insert(0f, _relic.transform.DOLocalRotate(new Vector3(0f, 0f, tilt), CrackTime * 0.5f).SetLoops(2, LoopType.Yoyo));
 
         return seq.ToUniTask(TweenCancelBehaviour.KillAndCancelAwait, ct);
+    }
+
+    // ⑤ 번쩍 — 번짐이 작게 시작해 부풀며 밝아지고, 같은 때 고리가 바깥으로 퍼지며 사라진다
+    //   번짐이 다 밝아지면 돌아온다 — 걷히는 것은 ⑥과 겹친다(PlayAsync)
+    private UniTask FlashAsync(Color color, CancellationToken ct)
+    {
+        _flash.color  = Transparent(color);
+        _ring.color   = WithAlpha(color, 1f);
+        _ring.enabled = _ring.sprite != null;
+
+        ResetTransform(_flash.transform, FlashFrom);
+        ResetTransform(_ring.transform, RingFrom);
+
+        Track(_ring.rectTransform.DOScale(RingTo, RingTime).SetEase(Ease.OutCubic));
+        Track(_ring.DOFade(0f, RingTime).SetEase(Ease.InQuad));
+
+        Sequence seq = Track(DOTween.Sequence());
+
+        seq.Insert(0f, _flash.DOFade(1f, FlashIn).SetEase(Ease.OutQuad));
+        seq.Insert(0f, _flash.rectTransform.DOScale(1f, FlashIn).SetEase(Ease.OutBack));
+
+        return seq.ToUniTask(TweenCancelBehaviour.KillAndCancelAwait, ct);
+    }
+
+    // ⑦ 보상 뒤 후광 — 등급색으로 옅게 깔리고 천천히 숨 쉰다(끝 모습에도 남는다)
+    //   animate : 등장과 함께 서서히 켠다. false면 바로 놓는다(ShowEnd)
+    private void ShowHalo(Color color, bool animate)
+    {
+        _halo.color = WithAlpha(color, animate ? 0f : HaloAlpha);
+        ResetTransform(_halo.transform, 1f);
+
+        if (animate)
+        {
+            Track(_halo.DOFade(HaloAlpha, PopTime));
+        }
+
+        Track(_halo.rectTransform.DOScale(HaloPulse, HaloBreath).SetEase(Ease.InOutSine).SetLoops(-1, LoopType.Yoyo));
     }
 
     // ⑥ 조각 12개를 가운데에서 바깥으로 — 돌며 떨어지고 흐려진다 (기다리지 않는다)
@@ -358,6 +419,7 @@ public class RelicAppraiseFx : MonoBehaviour
         _banner.color         = WithAlpha(color, 0f);
         rect.anchoredPosition = BannerPos + Vector2.up * BannerRise;
         _flash.color          = Transparent(color);
+        _flash.rectTransform.localScale = Vector3.one;
 
         Sequence seq = Track(DOTween.Sequence());
 

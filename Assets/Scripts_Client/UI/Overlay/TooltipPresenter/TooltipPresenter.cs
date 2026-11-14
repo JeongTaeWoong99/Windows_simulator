@@ -194,30 +194,24 @@ public class TooltipPresenter : MonoBehaviour
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
     }
 
-    // 줄 바탕을 묶음별로 칠한다 (Render에서 호출 — 2026-11-14 사용자: 등급 묶음은 등급색으로 다 · 조작 묶음은 연한 흰 줄무늬).
-    //   ■ 묶음 = 첫 줄부터 · 'Header' 줄(■)부터 다음 'Header' 전까지.
-    //   ■ 묶음 안에 바탕색을 준 줄(등급 줄)이 있으면 그 색이 묶음의 색이다 — 준 줄은 진하게, 나머지 줄은 옅게 번갈아.
-    //   ■ 색 준 줄이 없는 묶음(조작 안내 등)은 연한 흰색을 번갈아 깐다 — 줄만 갈린다.
+    // 줄을 묶음별로 그린다 (Render에서 호출).
+    //   ■ 묶음 제목('Header' 줄 — 적성 · 조작 등)은 진갈색 띠 + 밝은 굵은 글씨다 — 묶음이 어디서 시작하는지가 먼저 보인다
+    //     (2026-11-15 사용자: 묶음마다 제목과 그 아래 내용이 갈려 보여야 한다. 묶음 전체를 등급색으로 칠하던 것은 걷었다).
+    //   ■ 내용 줄은 판 색 그대로 번갈아 옅게 — 줄만 갈린다. 묶음 제목이 나오면 번갈이를 처음부터 센다.
+    //   ■ 바탕색을 직접 준 줄(등급 줄)만 그 색을 섞는다.
     private void PaintRows(IReadOnlyList<TooltipContent.Line> lines)
     {
-        Color? section = null;
-        int    stripe  = 0;
+        int stripe = 0;
 
         for (int i = 0; i < lines.Count; i++)
         {
             TooltipContent.Line line = lines[i];
-
-            if (i == 0 || IsHeader(line))
-            {
-                section = FindSectionTint(lines, i);
-                stripe  = 0;
-            }
-
-            TooltipRowView row = _rows.Get(i);
+            TooltipRowView      row  = _rows.Get(i);
 
             if (IsHeader(line))
             {
-                row.Bind(line, null, 0f);
+                row.BindHeader(line.Label.Substring(TooltipContent.HeaderMark.Length), HeaderBand, HeaderText);
+                stripe = 0;
 
                 continue;
             }
@@ -228,10 +222,6 @@ public class TooltipPresenter : MonoBehaviour
             {
                 row.Bind(line, own, OwnTintBlend);
             }
-            else if (section is Color tint)
-            {
-                row.Bind(line, tint, odd ? SectionTintBlendOdd : SectionTintBlend);
-            }
             else
             {
                 row.Bind(line, Color.white, odd ? StripeBlendOdd : StripeBlend);
@@ -239,33 +229,16 @@ public class TooltipPresenter : MonoBehaviour
         }
     }
 
+    // 묶음 제목 띠 — 화면 제목 띠(진갈)와 같은 축의 색
+    private static readonly Color HeaderBand = new Color32(0x5A, 0x3E, 0x2B, 0xFF);
+    private static readonly Color HeaderText = new Color32(0xF6, 0xE7, 0xC1, 0xFF);
+
     // 줄 바탕 섞는 비율 — 판 색(줄 프리팹 기본색)에 얼마나 섞나
-    private const float OwnTintBlend        = 0.55f; // 색을 직접 준 줄(등급 줄)
-    private const float SectionTintBlend    = 0.30f; // 같은 묶음의 나머지 줄
-    private const float SectionTintBlendOdd = 0.20f;
-    private const float StripeBlend         = 0.22f; // 색 없는 묶음 — 연한 흰 줄무늬
-    private const float StripeBlendOdd      = 0.08f;
+    private const float OwnTintBlend   = 0.55f; // 색을 직접 준 줄(등급 줄)
+    private const float StripeBlend    = 0.18f; // 내용 줄 — 연한 흰 줄무늬
+    private const float StripeBlendOdd = 0.0f;
 
     private static bool IsHeader(TooltipContent.Line line) => line.Label.StartsWith(TooltipContent.HeaderMark);
-
-    // 'start'에서 시작하는 묶음 안의 첫 바탕색. 없으면 null
-    private static Color? FindSectionTint(IReadOnlyList<TooltipContent.Line> lines, int start)
-    {
-        for (int i = start; i < lines.Count; i++)
-        {
-            if (i > start && IsHeader(lines[i]))
-            {
-                break;
-            }
-
-            if (lines[i].Background is Color tint)
-            {
-                return tint;
-            }
-        }
-
-        return null;
-    }
 
     // 값 · 보조 값 열 폭을 이 툴팁에서 가장 긴 글자에 맞춘다 (Render에서 호출).
     //

@@ -112,4 +112,10 @@ public static class FxSprites
     public static Sprite? AppraiseCrack3 => VisualCatalog.FxOf("appraise_crack_3");
     // 유물 파편 — 흙빛을 입혀 돌리며 흩뿌린다
     public static Sprite? AppraiseShard  => VisualCatalog.FxOf("appraise_shard");
+    // 번쩍 · 보상 뒤 후광 — 무대 크기에 맞춘 160px 번짐(공개용 'reveal_glow' 48px는 크게 늘리면 계단이 진다)
+    public static Sprite? AppraiseBurst  => VisualCatalog.FxOf("appraise_burst");
+    // 보상 뒤에서 도는 광선 16줄(긴 줄 · 짧은 줄 번갈아)
+    public static Sprite? AppraiseRays   => VisualCatalog.FxOf("appraise_rays");
+    // 번쩍과 함께 퍼지는 충격파 고리
+    public static Sprite? AppraiseRing   => VisualCatalog.FxOf("appraise_ring");
 }

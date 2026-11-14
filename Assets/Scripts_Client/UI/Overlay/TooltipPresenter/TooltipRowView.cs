@@ -33,6 +33,9 @@ public class TooltipRowView : MonoBehaviour
     // 프리팹에 찍힌 기본 바탕색. 풀에서 재사용될 때 이전 줄의 색이 남지 않게 여기로 되돌린다.
     private Color _defaultColor;
 
+    // 프리팹에 찍힌 라벨 글자색 — 묶음 제목 줄이 바꾼 것을 되돌린다
+    private Color _defaultLabelColor;
+
     // 값 · 보조 값 칸의 폭을 정하는 레이아웃 요소 — 줄의 HorizontalLayoutGroup이 이 값으로 칸을 나눈다.
     private LayoutElement _valueLayout    = null!;
     private LayoutElement _subValueLayout = null!;
@@ -61,7 +64,8 @@ public class TooltipRowView : MonoBehaviour
         this.RequireRef(subValueText,    nameof(subValueText));
         this.RequireRef(backgroundImage, nameof(backgroundImage));
 
-        _defaultColor   = backgroundImage.color;
+        _defaultColor      = backgroundImage.color;
+        _defaultLabelColor = labelText.color;
         _valueLayout    = RequireLayout(valueText);
         _subValueLayout = RequireLayout(subValueText);
 
@@ -114,13 +118,30 @@ public class TooltipRowView : MonoBehaviour
     {
         EnsureInitialized();
 
-        labelText.text    = line.Label;
-        valueText.text    = line.Value;
-        subValueText.text = line.SubValue;
+        labelText.text      = line.Label;
+        labelText.color     = _defaultLabelColor;
+        labelText.fontStyle = FontStyles.Normal;
+        valueText.text      = line.Value;
+        subValueText.text   = line.SubValue;
 
         subValueText.gameObject.SetActive(line.SubValue.Length > 0);
         backgroundImage.color = tint is Color c
                                     ? Color.Lerp(_defaultColor, new Color(c.r, c.g, c.b, 1f), blend)
                                     : _defaultColor;
+    }
+
+    // 묶음 제목 줄을 채운다 — 진한 띠 + 밝은 굵은 글씨, 값 칸은 비운다 ('TooltipPresenter.PaintRows'에서 호출)
+    public void BindHeader(string title, Color band, Color text)
+    {
+        EnsureInitialized();
+
+        labelText.text      = title;
+        labelText.color     = text;
+        labelText.fontStyle = FontStyles.Bold;
+        valueText.text      = "";
+        subValueText.text   = "";
+
+        subValueText.gameObject.SetActive(false);
+        backgroundImage.color = band;
     }
 }
