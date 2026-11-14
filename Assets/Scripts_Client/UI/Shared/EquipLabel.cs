@@ -198,7 +198,7 @@ public static class EquipLabel
 
         if (equip.PendingEnchantGrade > 0)
         {
-            sb.Append('\n').Append(UIRichText.Paint(Lang.Get("UI.Equip.PendingResult"), UIThemeRole.Highlight));
+            sb.Append('\n').Append(UIRichText.Paint(Lang.Get("UI.Equip.PendingResult"), UIThemeRole.HighlightDark));
         }
 
         return sb.ToString();

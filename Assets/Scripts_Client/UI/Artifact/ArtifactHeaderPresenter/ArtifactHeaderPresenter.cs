@@ -93,7 +93,7 @@ public class ArtifactHeaderPresenter : MonoBehaviour
     {
         string label = UIRichText.Label(Lang.Get("UI.Auction.GoldOwned"));
 
-        NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.Gold((long)Math.Round(v))}", punch: false);
+        NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.GoldOnDark((long)Math.Round(v))}", punch: false);
     }
 
     // 도움말 — 얻는 법 · 장착 · 파는 법. 켜고 끄기는 없다 — 장착하면 항상 켜짐(#90).

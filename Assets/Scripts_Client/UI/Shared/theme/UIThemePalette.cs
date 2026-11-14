@@ -2,7 +2,8 @@ using System;
 using UnityEngine;
 
 // 역할('UIThemeRole') → 색 표. 아트가 들어오기 전까지 화면 톤을 한 곳에서 맞추는 임시 팔레트다.
-// 톤은 에셋 값이 정한다 — 지금은 Taskbar Heroes 결(돌회색 창 · 진홍 제목 띠 · 적갈색 버튼 + 구리 테 · 흰 글씨). 'Art 규칙.md' UI 절.
+// 톤은 에셋 값이 정한다 — 지금은 양피지 시험(양피지 창·버튼 + 진한 글씨 · 어두운 칸 + 밝은 글씨 · 진홍 제목 띠). 'Art 규칙.md' UI 절.
+// 글씨 역할은 바탕 밝기로 고른다 — 밝은 바탕 위는 TextDark·HighlightDark, 어두운 바탕 위는 TextMain·Highlight.
 //
 // 에셋은 'Resources/UIThemePalette' 하나다. 값을 고치면 열린 씬의 'UIThemeColor'가 바로 따라온다
 // (에디터 쪽 'UIThemeBaker'). 프리팹은 메뉴 'Window/DesktopWindowControl/UI 테마/적용'으로 굽는다.
@@ -28,6 +29,7 @@ public class UIThemePalette : ScriptableObject
     [CenterHeader("강조")]
     [SerializeField] private Color accent    = new Color32(0x4F, 0xC8, 0xF0, 0xFF);
     [SerializeField] private Color highlight = new Color32(0xFF, 0xD4, 0x47, 0xFF);
+    [SerializeField] private Color highlightDark = new Color32(0x8A, 0x4A, 0x00, 0xFF);
 
     [CenterHeader("글씨")]
     [SerializeField] private Color textMain     = new Color32(0xF2, 0xF6, 0xFA, 0xFF);
@@ -69,6 +71,29 @@ public class UIThemePalette : ScriptableObject
     // 역할의 색 (Presenter가 상태 색을 칠할 때 호출)
     public static Color Of(UIThemeRole role) => Current.Get(role);
 
+    // 그 글씨의 바탕에 맞춘 역할 색 — 글씨 태그가 TextDark(밝은 바탕 위)면 글씨·금 역할을 밝은 바탕용으로 바꾼다 (양피지 · 2026-11-14).
+    //   Presenter가 상태로 글씨색을 칠할 때('warnText.color = …') 바탕을 몰라도 묻히지 않게 한다.
+    public static Color OfFor(Component text, UIThemeRole role)
+    {
+        bool onLight = text.TryGetComponent(out UIThemeColor tag) && tag.Role == UIThemeRole.TextDark;
+
+        if (!onLight)
+        {
+            return Of(role);
+        }
+
+        Color dark = Of(UIThemeRole.TextDark);
+
+        return role switch
+        {
+            UIThemeRole.TextMain     => dark,
+            UIThemeRole.TextSub      => new Color(dark.r, dark.g, dark.b, 0.72f),
+            UIThemeRole.TextDisabled => new Color(dark.r, dark.g, dark.b, 0.47f),
+            UIThemeRole.Highlight    => Of(UIThemeRole.HighlightDark),
+            _                        => Of(role),
+        };
+    }
+
     public Color Get(UIThemeRole role) => role switch
     {
         UIThemeRole.PanelBg        => panelBg,
@@ -82,6 +107,7 @@ public class UIThemePalette : ScriptableObject
         UIThemeRole.ButtonDisabled => buttonDisabled,
         UIThemeRole.Accent         => accent,
         UIThemeRole.Highlight      => highlight,
+        UIThemeRole.HighlightDark  => highlightDark,
         UIThemeRole.TextMain       => textMain,
         UIThemeRole.TextSub        => textSub,
         UIThemeRole.TextDisabled   => textDisabled,

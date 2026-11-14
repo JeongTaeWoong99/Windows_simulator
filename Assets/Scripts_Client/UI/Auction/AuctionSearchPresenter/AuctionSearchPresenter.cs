@@ -1078,7 +1078,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         emptyText.SetActive(_needsCondition || (_auction.HasSearched && _contents.Count == 0));
         _emptyLabel.text = Lang.Get(_needsCondition ? "UI.Auction.NeedsCondition" : "UI.Auction.SearchEmpty");
 
-        countText.text    = Lang.Format("UI.Auction.SearchCount", UIRichText.Paint(FormatTotalCount(), UIThemeRole.Highlight));
+        countText.text    = Lang.Format("UI.Auction.SearchCount", UIRichText.Paint(FormatTotalCount(), UIThemeRole.HighlightDark));
         appliedText.text  = _appliedLabel;
         receivedText.text = _needsCondition ? "" : AuctionModel.FormatReceivedAgo(_auction.SearchReceivedAt);
 

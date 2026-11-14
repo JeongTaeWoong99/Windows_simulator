@@ -376,7 +376,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     // "12,345 G" — 값은 강조색, 단위는 작게.
-    private static string Big(long value, string unit) => $"{UIRichText.Paint(value.ToString("N0"), UIThemeRole.Highlight)}{Unit(" " + unit)}";
+    private static string Big(long value, string unit) => $"{UIRichText.Paint(value.ToString("N0"), UIThemeRole.HighlightDark)}{Unit(" " + unit)}";
 
     private static string Unit(string text) => $"<size=55%>{UIRichText.Label(text)}</size>";
 

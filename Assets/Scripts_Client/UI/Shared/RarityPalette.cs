@@ -13,7 +13,8 @@ public static class RarityPalette
 {
     // 등급을 모를 때 쓰는 색. 'None'과 표에 없는 값이 여기로 떨어진다.
     // 'SlotView.Clear'가 칸을 비울 때 되돌리는 색이기도 하다.
-    public static readonly Color Unknown = new Color32(0x4A, 0x4A, 0x4A, 0xFF);
+    // 양피지 결에 맞춰 회색 대신 어두운 갈색이다(2026-11-14).
+    public static readonly Color Unknown = new Color32(0x5E, 0x4A, 0x34, 0xFF);
 
     // 빈 네모의 색 — 캐릭터의 빈 장착 칸(T-104). (장비 능력치 칸 네모는 2026-10-10 인챈트 보석 하나로 바뀌었다 — 'EnchantGemView')
     // 일반 등급 회색(#9D9D9D)보다 확실히 어둡게 둔다 — 둘이 비슷하면 "박혔나·꼈나"가 안 읽힌다.

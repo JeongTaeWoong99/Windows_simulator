@@ -188,7 +188,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 아이콘의 원래 색. 딤을 되돌릴 기준값이라 프리팹 값을 한 번만 읽어 둔다.
     private Color _itemBaseColor = Color.white;
-    private Color _itemPlaceholderColor; // 그림이 없을 때의 네모 색 — 프리팹 값
+    private Color _itemPlaceholderColor; // 그림이 없을 때의 네모 색 — 'PlaceholderColor'
+
+    // 그림이 없는 칸(본 적 없는 아티팩트 등)의 자리 네모 — 등급 바탕 위에 파인 어두운 홈으로 보이게.
+    // 밝은 단색이면 양피지 결에서 회색 판처럼 떠 보였다(2026-11-14).
+    private static readonly Color PlaceholderColor = new Color(0f, 0f, 0f, 0.3f);
 
     // 이름·보조 문구의 원래 투명도. 흑백을 걷을 때 돌아갈 값이다 — 1로 되돌리면 테마가 준 투명도를 덮는다.
     private float _nameBaseAlpha = 1f;
@@ -236,7 +240,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
                 $"적성 칸이 {aptitudeValueTexts.Length}개다 — 1차 산업은 {AptitudeCount}종이라 자리가 어긋난다.", this);
         }
 
-        _itemPlaceholderColor = itemImage.color;
+        _itemPlaceholderColor = PlaceholderColor;
         _itemBaseColor        = _itemPlaceholderColor;
         _nameBaseAlpha = nameText.alpha;
         _subBaseAlpha  = subText.alpha;
@@ -300,7 +304,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 색은 여전히 'ApplyTint'가 등급색으로 입힌다(딤·흑백을 섞어야 해서). 그림이 없으면 프리팹 그대로 단색이다.
     private void ApplyRarityBackground() => RaritySkin.Dress(rarityImage);
 
-    // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 프리팹의 자리 표시 네모로 (Bind · Clear에서 호출)
+    // 아이콘 칸 — 그림이 있으면 제 색(흰색 곱)으로, 없으면 어두운 자리 표시 네모로 (Bind · Clear에서 호출)
     private void SetIcon(Sprite? icon)
     {
         itemImage.sprite         = icon!;
@@ -653,7 +657,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         {
             float gray = (color.r * 0.299f + color.g * 0.587f + color.b * 0.114f) * FilteredOutTint;
 
-            color = new Color(gray, gray, gray, color.a);
+            // 순회색 대신 바랜 갈색(세피아)으로 — 양피지 화면에서 회색 칸만 떠 보이지 않게
+            color = new Color(gray, gray * 0.9f, gray * 0.74f, color.a);
         }
 
         float dim = dimmed ? AwayTint : 1f;

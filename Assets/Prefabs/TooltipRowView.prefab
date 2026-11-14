@@ -77,7 +77,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294637298
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -171,7 +171,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 30
+  role: 33
   alpha: 1
 --- !u!1 &4739993525028783016
 GameObject:
@@ -250,7 +250,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294637298
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -344,7 +344,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 30
+  role: 33
   alpha: 1
 --- !u!1 &8390899621317528962
 GameObject:
@@ -423,7 +423,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294637298
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -517,7 +517,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 30
+  role: 33
   alpha: 1
 --- !u!1 &8508307960074250870
 GameObject:
@@ -584,7 +584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.212, g: 0.2, b: 0.192, a: 0.35}
+  m_Color: {r: 0.79607844, g: 0.6862745, b: 0.5019608, a: 0.35}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

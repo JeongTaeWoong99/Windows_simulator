@@ -11,8 +11,15 @@ using UnityEngine;
 public static class UIRichText
 {
     // 'text'를 역할의 색으로 칠한다.
-    public static string Paint(string text, UIThemeRole role)
-        => $"<color=#{ColorUtility.ToHtmlStringRGB(UIThemePalette.Of(role))}>{text}</color>";
+    //   글씨 역할(TextMain·TextSub·TextDisabled)은 색을 박지 않고 **바탕 글씨색을 이어받아 투명도만** 준다 (양피지 · 2026-11-14).
+    //   한 화면에 밝은 양피지 바탕과 어두운 칸이 섞여, 색을 박으면 어느 한쪽에서 글씨가 묻힌다 — 바탕 글씨색은 태그('UIThemeColor')가 이미 바탕에 맞췄다.
+    public static string Paint(string text, UIThemeRole role) => role switch
+    {
+        UIThemeRole.TextMain     => text,
+        UIThemeRole.TextSub      => $"<alpha=#B8>{text}<alpha=#FF>",
+        UIThemeRole.TextDisabled => $"<alpha=#78>{text}<alpha=#FF>",
+        _                        => $"<color=#{ColorUtility.ToHtmlStringRGB(UIThemePalette.Of(role))}>{text}</color>",
+    };
 
     // 'text'를 임의의 색으로 칠한다 — 등급색처럼 테마 밖의 의미 색.
     public static string Paint(string text, Color color)
@@ -21,8 +28,11 @@ public static class UIRichText
     // 라벨 — 흐린 글씨. "라벨 값"에서 앞쪽.
     public static string Label(string text) => Paint(text, UIThemeRole.TextSub);
 
-    // 골드 금액 — 강조색 '1,234 G'.
-    public static string Gold(long amount) => Paint($"{amount:N0} G", UIThemeRole.Highlight);
+    // 골드 금액 — 강조색 '1,234 G'. 기본은 밝은 양피지 바탕용 진한 금(HighlightDark)
+    public static string Gold(long amount) => Paint($"{amount:N0} G", UIThemeRole.HighlightDark);
+
+    // 골드 금액 — 어두운 바탕(진홍 제목 띠·어두운 칸) 위 밝은 금
+    public static string GoldOnDark(long amount) => Paint($"{amount:N0} G", UIThemeRole.Highlight);
 
     // 조금 작은 글씨 — 부연 설명 줄.
     public static string Small(string text) => $"<size=85%>{text}</size>";

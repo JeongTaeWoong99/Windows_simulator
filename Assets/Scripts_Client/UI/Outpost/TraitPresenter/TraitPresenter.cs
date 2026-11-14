@@ -92,6 +92,9 @@ public class TraitPresenter : MonoBehaviour
     private bool _isWired;
     private bool _isSubscribed;
 
+    // 선을 마지막으로 잰 영역 크기 — 레이아웃이 늦게 돌아 크기가 바뀌면 'LateUpdate'가 다시 잰다
+    private Vector2 _drawnLinkSize;
+
     // 내가 보낸 레벨 올리기 요청의 대기. null이면 기다리는 요청이 없다.
     private ServerWaitHandle? _learnWait;
 
@@ -175,6 +178,16 @@ public class TraitPresenter : MonoBehaviour
     private void OnDisable()
     {
         Unsubscribe();
+    }
+
+    // ⚠️ 판이 켜진 프레임에는 영역이 아직 기본 크기(100×100)라 선이 왼쪽 아래 구석에 몰린다.
+    //    부모 레이아웃이 뒤늦게 크기를 정해도 이 오브젝트의 크기 변경 메시지는 오지 않을 수 있어 직접 본다 (Unity 메시지)
+    private void LateUpdate()
+    {
+        if (_isWired && linkArea.rect.size != _drawnLinkSize)
+        {
+            DrawLinks();
+        }
     }
 
     // 판 크기가 바뀌면 선을 다시 잰다 — 노드는 앵커 비율이라 따라가지만 선 길이는 픽셀이다 (Unity 메시지)
@@ -288,6 +301,8 @@ public class TraitPresenter : MonoBehaviour
         int     used = 0;
         Vector2 size = linkArea.rect.size;
 
+        _drawnLinkSize = size;
+
         foreach (var trait in _treeNodes)
         {
             foreach (int requiredTid in trait.RequiredTraitTIDs)
@@ -378,7 +393,7 @@ public class TraitPresenter : MonoBehaviour
         // 최대 레벨은 이름 줄에서 작게 말한다 — 큰 '최대 레벨' 상자는 보기 싫다는 피드백(2026-10-02).
         detailNameText.text = isMax
             ? $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.ButtonSelected)}>Lv {level} / {trait.MaxLevel} · {Lang.Get("UI.WorkStation.Max")}</color></size>"
-            : $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.TextSub)}>Lv {level} / {trait.MaxLevel}</color></size>";
+            : $"{Loc.Get(trait.NameLocKey)}  <size=70%>{UIRichText.Paint($"Lv {level} / {trait.MaxLevel}", UIThemeRole.TextSub)}</size>";
         detailDescText.text = DescribeKind(trait);
 
         bool hasUnmet = _data.TryGetUnmetPrerequisite(trait, out var unmet);

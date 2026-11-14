@@ -128,5 +128,5 @@ public class GachaPoolCardView : MonoBehaviour
 
     // 비용 글자 — 모자라면 경고색, 아니면 재화색.
     private static string CostText(long cost, bool isShort)
-        => UIRichText.Paint($"{cost:N0} G", isShort ? UIThemeRole.Negative : UIThemeRole.Highlight);
+        => UIRichText.Paint($"{cost:N0} G", isShort ? UIThemeRole.Negative : UIThemeRole.HighlightDark); // 양피지 버튼 위 — 진한 금
 }

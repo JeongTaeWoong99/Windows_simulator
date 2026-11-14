@@ -117,6 +117,9 @@ public class TooltipRowView : MonoBehaviour
         subValueText.text = line.SubValue;
 
         subValueText.gameObject.SetActive(line.SubValue.Length > 0);
-        backgroundImage.color = line.Background ?? _defaultColor;
+        // 줄 바탕색(등급색 등)은 판 색에 반쯤 섞는다 — 원색 그대로면 양피지 위에서 회색·형광 띠가 떠 보인다
+        backgroundImage.color = line.Background is Color tint
+                                    ? Color.Lerp(_defaultColor, new Color(tint.r, tint.g, tint.b, 1f), 0.45f)
+                                    : _defaultColor;
     }
 }

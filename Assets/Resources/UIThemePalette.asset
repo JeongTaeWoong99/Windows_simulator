@@ -12,21 +12,22 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1fc57ec442d7d494c851a57e3efa8356, type: 3}
   m_Name: UIThemePalette
   m_EditorClassIdentifier: Assembly-CSharp::UIThemePalette
-  panelBg: {r: 0.165, g: 0.157, b: 0.153, a: 0.97}
-  panelSub: {r: 0.212, g: 0.2, b: 0.192, a: 1}
-  slot: {r: 0.11, g: 0.106, b: 0.106, a: 1}
-  border: {r: 0.42, g: 0.4, b: 0.38, a: 1}
-  header: {r: 0.545, g: 0.106, b: 0.098, a: 1}
-  button: {r: 0.353, g: 0.165, b: 0.102, a: 1}
-  buttonSelected: {r: 0.784, g: 0.392, b: 0.118, a: 1}
-  buttonPrimary: {r: 0.6, g: 0.137, b: 0.122, a: 1}
-  buttonDisabled: {r: 0.227, g: 0.212, b: 0.204, a: 1}
-  accent: {r: 0.941, g: 0.627, b: 0.188, a: 1}
-  highlight: {r: 1, g: 0.831, b: 0.353, a: 1}
-  textMain: {r: 0.98, g: 0.97, b: 0.95, a: 1}
-  textSub: {r: 0.84, g: 0.81, b: 0.77, a: 1}
-  textDisabled: {r: 0.52, g: 0.5, b: 0.48, a: 1}
-  textDark: {r: 0.18, g: 0.129, b: 0.098, a: 1}
-  positive: {r: 0.624, g: 0.839, b: 0.42, a: 1}
-  negative: {r: 0.941, g: 0.416, b: 0.314, a: 1}
+  panelBg: {r: 0.8392157, g: 0.7372549, b: 0.5568628, a: 1}
+  panelSub: {r: 0.79607844, g: 0.6862745, b: 0.5019608, a: 1}
+  slot: {r: 0.48235294, g: 0.3882353, b: 0.27058825, a: 1}
+  border: {r: 0.2901961, g: 0.20392157, b: 0.1254902, a: 1}
+  header: {r: 0.6313726, g: 0.21568628, b: 0.19607843, a: 1}
+  button: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
+  buttonSelected: {r: 0.7882353, g: 0.63529414, b: 0.4, a: 1}
+  buttonPrimary: {r: 0.6313726, g: 0.21568628, b: 0.19607843, a: 1}
+  buttonDisabled: {r: 0.5882353, g: 0.5176471, b: 0.38039216, a: 1}
+  accent: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 1}
+  highlight: {r: 0.9490196, g: 0.75686276, b: 0.30588236, a: 1}
+  highlightDark: {r: 0.5411765, g: 0.2901961, b: 0, a: 1}
+  textMain: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 1}
+  textSub: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  textDisabled: {r: 0.65882355, g: 0.59607846, b: 0.47058824, a: 1}
+  textDark: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
+  positive: {r: 0.24313726, g: 0.5411765, b: 0.21176471, a: 1}
+  negative: {r: 0.6901961, g: 0.1882353, b: 0.16470589, a: 1}
   overlay: {r: 0, g: 0, b: 0, a: 1}

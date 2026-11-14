@@ -162,7 +162,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -325,7 +325,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.11, g: 0.106, b: 0.106, a: 1}
+  m_Color: {r: 0.48235294, g: 0.3882353, b: 0.27058825, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -512,7 +512,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 0.831, b: 0.353, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.75686276, b: 0.30588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -781,7 +781,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1050,7 +1050,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.98, g: 0.97, b: 0.95, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -1247,11 +1247,11 @@ MonoBehaviour:
     m_SelectOnRight: {fileID: 0}
   m_Transition: 1
   m_Colors:
-    m_NormalColor: {r: 0.6, g: 0.137, b: 0.122, a: 1}
-    m_HighlightedColor: {r: 0.66, g: 0.26645, b: 0.25370002, a: 1}
-    m_PressedColor: {r: 0.48000002, g: 0.10959999, b: 0.0976, a: 1}
-    m_SelectedColor: {r: 0.6, g: 0.137, b: 0.122, a: 1}
-    m_DisabledColor: {r: 0.227, g: 0.212, b: 0.204, a: 1}
+    m_NormalColor: {r: 0.6313726, g: 0.21568628, b: 0.19607843, a: 1}
+    m_HighlightedColor: {r: 0.68666667, g: 0.33333334, b: 0.31666666, a: 1}
+    m_PressedColor: {r: 0.50509804, g: 0.17254902, b: 0.15686275, a: 1}
+    m_SelectedColor: {r: 0.6313726, g: 0.21568628, b: 0.19607843, a: 1}
+    m_DisabledColor: {r: 0.5882353, g: 0.5176471, b: 0.38039216, a: 1}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:

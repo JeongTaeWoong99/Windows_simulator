@@ -338,7 +338,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         emptyText.gameObject.SetActive(_contents.Count == 0);
         emptyText.text = Lang.Get(total == 0 ? "UI.Auction.MyEmpty" : "UI.Auction.MyNoMatch");
 
-        countText.text = $"{Lang.Get("UI.Auction.OnSale")} {UIRichText.Paint(total.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
+        countText.text = $"{Lang.Get("UI.Auction.OnSale")} {UIRichText.Paint(total.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.HighlightDark)} / {Constants.AuctionMaxActiveListings:N0}";
 
         string received = AuctionModel.FormatReceivedAgo(_auction.MyListingsReceivedAt);
 

@@ -36,6 +36,7 @@ public static class UiSkin
 
     private const string TrimName  = "Ui Trim";
     private const string FrameName = "Ui Frame";
+    private const string PaperName = "Ui Paper";
 
     // 액자 여백(캔버스 픽셀) — 띠 두께('ui_panel_trim' 경계 12px ÷ PixelsPerUnitMultiplier = 24) + 띠와 내용 사이 틈 8.
     //   틈이 없으면 버튼이 띠에 붙어 겹쳐 보인다(2026-11-10 사용자).
@@ -118,6 +119,7 @@ public static class UiSkin
             if (rect.name == "Body Panel" && rect.parent != null && rect.parent.name.EndsWith("(MAIN VIEW)") && !Skipped(rect.gameObject))
             {
                 AddFrame(rect);
+                AddPaper(rect);
             }
         }
     }
@@ -243,6 +245,7 @@ public static class UiSkin
             {
                 SetSprite(image, skin.Body);
                 AddFrame((RectTransform)image.transform);
+                AddPaper((RectTransform)image.transform);
                 return;
             }
 
@@ -277,8 +280,14 @@ public static class UiSkin
 
     // 액자를 두를 팝업 바탕 — 세로로 쌓는 창이고 내용 크기에 맞춰 줄지 않는다(툴팁처럼 작아지는 것 제외)
     //   열·오버레이 창('(MAIN VIEW)'의 'Body Panel') 안의 구획은 빠진다 — 액자 안에 액자가 겹친다(길드 창고 · 2026-11-10)
+    // 툴팁 판은 내용 길이로 크기가 바뀌지만(ContentSizeFitter) 떠 있는 창이라 액자·종이 결을 두른다
     private static bool IsWindow(Image image)
-        => image.TryGetComponent(out VerticalLayoutGroup _) && !image.TryGetComponent(out ContentSizeFitter _) && !IsInsideColumn(image.transform);
+        => image.TryGetComponent(out VerticalLayoutGroup _)
+           && (!image.TryGetComponent(out ContentSizeFitter _) || IsTooltipPanel(image.transform))
+           && !IsInsideColumn(image.transform);
+
+    private static bool IsTooltipPanel(Transform node)
+        => node.parent != null && node.parent.GetComponent<TooltipPresenter>() != null;
 
     private static bool IsInsideColumn(Transform node)
     {
@@ -312,6 +321,21 @@ public static class UiSkin
             layout.padding = new RectOffset(pad.left + FramePadding, pad.right + FramePadding, pad.top + FramePadding, pad.bottom + FramePadding);
             LayoutRebuilder.MarkLayoutForRebuild(window);
         }
+    }
+
+    // 종이 결 — 창 바탕 위 첫 자식(내용 아래)으로 되풀이해 깐다. 그림이 없으면(양피지가 아닌 스타일) 깔지 않는다
+    private static void AddPaper(RectTransform window)
+    {
+        Sprite? paper = FxSprites.UiPaper;
+
+        if (paper == null || window.Find(PaperName) != null)
+        {
+            return;
+        }
+
+        Image image = CreateOverlay(window, PaperName, paper, true);
+        image.fillCenter = true; // 경계 없는 그림 — 가운데가 전부다
+        image.transform.SetAsFirstSibling();
     }
 
     // 바탕이 투명한 것(표 머리의 정렬 버튼처럼 글씨만 누르는 자리)에는 장식을 깔지 않는다 — 없던 상자가 생긴다

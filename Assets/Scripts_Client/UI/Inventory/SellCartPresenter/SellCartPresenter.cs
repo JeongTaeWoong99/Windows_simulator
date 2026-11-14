@@ -382,7 +382,7 @@ public class SellCartPresenter : MonoBehaviour
                      itemId,
                      GameDataLoader.GetItemName(itemId),
                      entry.Count,
-                     UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, entry.Count)),
+                     UIRichText.GoldOnDark(AuctionModel.InstantSellTotal(basePrice, entry.Count)),
                      ItemIconContent.ForItem(itemId, 0L),
                      () => BuildRowTooltip(itemId));
         }
@@ -417,7 +417,7 @@ public class SellCartPresenter : MonoBehaviour
                      characterId,
                      label,
                      1,
-                     UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, 1)),
+                     UIRichText.GoldOnDark(AuctionModel.InstantSellTotal(basePrice, 1)),
                      ItemIconContent.ForCharacter(tid).WithWarehouse(_data.IsCharacterInWarehouse(characterId)),
                      () => BuildEntityTooltip(name, rarity, basePrice, c =>
                      {
@@ -582,7 +582,7 @@ public class SellCartPresenter : MonoBehaviour
     {
         if (!GameDataLoader.TryGetDisassemble(rarity, out DisassembleTableRow row))
         {
-            return UIRichText.Gold(gold);
+            return UIRichText.GoldOnDark(gold);
         }
 
         return ShardValueText(gold, row.ItemCount);
@@ -590,7 +590,7 @@ public class SellCartPresenter : MonoBehaviour
 
     // 'N G OR 마석 N' — 장비 · 아티팩트 줄이 같이 쓴다
     private static string ShardValueText(long gold, int shards)
-        => $"{UIRichText.Gold(gold)} {UIRichText.Label(Lang.Get("UI.Sell.Or"))} {Lang.Format("UI.Sell.ShardShort", $"{shards:N0}")}";
+        => $"{UIRichText.GoldOnDark(gold)} {UIRichText.Label(Lang.Get("UI.Sell.Or"))} {Lang.Format("UI.Sell.ShardShort", $"{shards:N0}")}";
 
     #endregion
 

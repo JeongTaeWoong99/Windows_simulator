@@ -101,7 +101,7 @@ public class OutpostHeaderPresenter : MonoBehaviour
 
         string label = UIRichText.Label(Lang.Get("UI.Auction.GoldOwned"));
 
-        NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.Gold((long)Math.Round(v))}", punch: false);
+        NumberRoll.Set(goldText, _data.Gold, v => $"{label}  {UIRichText.GoldOnDark((long)Math.Round(v))}", punch: false);
     }
 
     // 도움말 — 올리는 법 · 상한 · 포인트 · 보유량 기준.

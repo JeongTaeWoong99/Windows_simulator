@@ -131,7 +131,7 @@ public static class AuctionText
             return "";
         }
 
-        string star = character.Star > 0 ? $"{UIRichText.Dot}{UIRichText.Paint(new string('★', character.Star), UIThemeRole.Highlight)}" : "";
+        string star = character.Star > 0 ? $"{UIRichText.Dot}{UIRichText.Paint(new string('★', character.Star), UIThemeRole.HighlightDark)}" : "";
 
         string? race = RaceLabel.Of(character.CharacterTid);
         string  head = race != null ? $"{race}{UIRichText.Dot}" : "";
@@ -250,7 +250,7 @@ public static class AuctionText
         {
             Key        = listing.ListingId,
             Icon       = ToIcon(listing),
-            Title      = isMine ? $"{title} {UIRichText.Small(UIRichText.Paint(Lang.Get("UI.Auction.MyListing"), UIThemeRole.Highlight))}" : title,
+            Title      = isMine ? $"{title} {UIRichText.Small(UIRichText.Paint(Lang.Get("UI.Auction.MyListing"), UIThemeRole.HighlightDark))}" : title,
             TitleColor = RarityPalette.Get((GlobalRarity)listing.Rarity),
             Sub        = FormatSub(listing),
             Cells      = new[]
@@ -259,7 +259,7 @@ public static class AuctionText
                 UIRichText.Gold(listing.UnitPrice),
                 FormatTotal(listing),
                 PaintRemaining(listing),
-                isMine ? UIRichText.Paint(Lang.Get("UI.Auction.Me"), UIThemeRole.Highlight) : UIRichText.Label(GetSellerName(listing)),
+                isMine ? UIRichText.Paint(Lang.Get("UI.Auction.Me"), UIThemeRole.HighlightDark) : UIRichText.Label(GetSellerName(listing)),
             },
             SecondaryLabel = Lang.Get("UI.Auction.Price"),
             CanSecondary   = true,

@@ -51,7 +51,10 @@ public class UIThemeColor : MonoBehaviour
             colors.highlightedColor = Color.Lerp(color, Color.white, 0.15f);
             colors.pressedColor     = Color.Lerp(color, Color.black, 0.2f);
             colors.selectedColor    = color;
-            colors.disabledColor    = palette.Get(UIThemeRole.ButtonDisabled);
+            // 밝은 버튼(Button)은 잠겨도 밝은 쪽에 둔다 — 진한 글씨가 그대로 읽히게. 그 밖(강조 버튼 등)은 팔레트 잠김색
+            colors.disabledColor    = role == UIThemeRole.Button
+                                          ? Color.Lerp(palette.Get(UIThemeRole.ButtonDisabled), color, 0.5f)
+                                          : palette.Get(UIThemeRole.ButtonDisabled);
             colors.colorMultiplier  = 1f;
 
             if (graphic.color == Color.white && selectable.colors == colors)

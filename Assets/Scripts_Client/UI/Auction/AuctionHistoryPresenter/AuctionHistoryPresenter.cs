@@ -301,7 +301,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         // 서버가 건수를 주지 않는다 — 지금 쪽까지 받은 수만 알고, 뒤에 더 있으면 '이상'을 붙인다.
         int known = _auction.HistoryPage * AuctionModel.RowsPerPage + history.Count;
 
-        countText.text = Lang.Format("UI.Auction.HistoryCount", UIRichText.Paint(known.ToString("N0"), UIThemeRole.Highlight)) +
+        countText.text = Lang.Format("UI.Auction.HistoryCount", UIRichText.Paint(known.ToString("N0"), UIThemeRole.HighlightDark)) +
                          (_auction.HasMoreHistory ? " " + UIRichText.Label(Lang.Get("UI.Auction.OrMore")) : "");
 
         sumText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldReceived"))} {UIRichText.Paint($"+{received:N0} G", UIThemeRole.Positive)}" +
@@ -334,7 +334,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             Sub        = $"{UIRichText.Label(Lang.Get("UI.Auction.UnitPrice"))} {UIRichText.Gold(entry.UnitPrice)}",
             Cells      = new[]
             {
-                isNew ? $"{UIRichText.Paint("●", UIThemeRole.Highlight)} {date}" : UIRichText.Label(date),
+                isNew ? $"{UIRichText.Paint("●", UIThemeRole.HighlightDark)} {date}" : UIRichText.Label(date),
                 PaintType(entry.Type),
                 $"{entry.Count:N0}",
                 FormatAmount(entry),

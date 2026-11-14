@@ -74,7 +74,7 @@ public class MailRowView : MonoBehaviour
         tooltipTrigger.SetProvider(tooltip);
 
         titleText.text      = title;
-        titleText.color     = UIThemePalette.Of(isClaimed ? UIThemeRole.TextDisabled : UIThemeRole.TextMain); // 받은 우편은 흐리게
+        titleText.color     = UIThemePalette.OfFor(titleText, isClaimed ? UIThemeRole.TextDisabled : UIThemeRole.TextMain); // 받은 우편은 흐리게
         infoText.text       = info;
         attachmentText.text = attachment;
         actionText.text     = isClaimed ? Lang.Get("UI.Mail.Delete") : Lang.Get("UI.Mail.Claim");

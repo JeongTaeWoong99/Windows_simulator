@@ -44,6 +44,12 @@ public class TraitNodeView : MonoBehaviour
     [SerializeField, Tooltip("지금 고른 칸 표시(테두리). 평소 꺼져 있다")]
     private GameObject selectedMark = null!;
 
+    [SerializeField, Tooltip("최대 레벨 칸의 금테. 비워 두면 색으로만 가른다")]
+    private GameObject? maxMark;
+
+    [SerializeField, Tooltip("잠긴 칸(앞 노드 미완) 귀퉁이 자물쇠. 비워 두면 색으로만 가른다")]
+    private GameObject? lockMark;
+
     [CenterHeader("색")]
     // ⚠️ 'Image.color'가 아니라 'ColorBlock'을 칠한다 — 'Selectable'이 실행 중 'Image.color'를
     //    덮어써서, 마우스가 스치기만 해도 색이 돌아간다(산업 버튼과 같은 함정).
@@ -103,6 +109,7 @@ public class TraitNodeView : MonoBehaviour
         SetBackgroundVisible(true);
 
         button.interactable = true;
+        SetMarks(state == NodeState.MaxLevel, state == NodeState.Locked);
 
         ApplyState(state);
         ApplyPips(level, max, state == NodeState.MaxLevel);
@@ -116,6 +123,21 @@ public class TraitNodeView : MonoBehaviour
         levelText.text = "";
 
         selectedMark.SetActive(false);
+        SetMarks(false, false);
+    }
+
+    // 금테(최대 레벨) · 자물쇠(잠김)를 켜고 끈다 — 색만으로는 단계가 한눈에 안 읽혀 모양으로도 가른다 (Bind · Clear에서 호출)
+    private void SetMarks(bool isMax, bool isLocked)
+    {
+        if (maxMark != null)
+        {
+            maxMark.SetActive(isMax);
+        }
+
+        if (lockMark != null)
+        {
+            lockMark.SetActive(isLocked);
+        }
     }
 
     // 레벨이 올랐다 — 칸이 금빛으로 번쩍이고 화살표가 솟는다 ('TraitPresenter'가 올리기 성공 때 호출).

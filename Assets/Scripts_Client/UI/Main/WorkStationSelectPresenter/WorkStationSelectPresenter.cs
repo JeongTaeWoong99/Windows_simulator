@@ -1883,7 +1883,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             if (row.Industry != IndustryType.None && (EIndustryType)(byte)row.Industry == SelectedIndustry)
             {
-                effect = UIRichText.Paint(effect, UIThemeRole.Highlight);
+                effect = UIRichText.Paint(effect, UIThemeRole.HighlightDark);
             }
 
             view.Bind(equip.EquipId, Loc.Get(row.NameLocKey), effect);

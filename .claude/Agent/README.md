@@ -23,6 +23,9 @@
 
 ## INDEX
 
+- [2026-11-14 UI 양피지 3차](2026-11-14-ui-parchment-v3.md) — `#client` `#ui` `#art` 특성 선 버그 · 노드 자물쇠/금테 · 툴팁 액자 · 열 제목 진갈 띠 · HUD 알약 · 빈 목록 아이콘 · 메뉴 이름
+- [2026-11-14 UI 양피지 2차](2026-11-14-ui-parchment-v2.md) — `#client` `#ui` `#art` 참고 이미지 색감에 맞춤 · 얇은 진갈 테두리·종이 결 · 칸 중갈색+등급 테두리 · Paint 색 이어받기 · GoldOnDark · OfFor
+- [2026-11-13 UI 양피지 시험](2026-11-13-ui-parchment-trial.md) — `#client` `#ui` `#art` 나무 액자·양피지 창·붉은 리본 · 글씨 역할을 바탕 밝기로 · `HighlightDark` · 인스턴스 색 덮어쓰기 걷기
 - [2026-11-13 작업슬롯 B · 장비 고르기 A · 장착 칸 B](2026-11-13-workslot-b-equip-picker-a-slot-b.md) — `#client` `#ui` 무대가 칸 전체 · 빨간 배율 리본 · 장비 줄 ▲▼ 비교 · 이 산업 효과 금색 · 장착 칸 이름표 띠 · PR #120·#122 머지
 - [2026-11-12 제목 폰트 되돌림 · 등급 빛 칸 전체 · 뽑기권 여백](2026-11-12-title-font-revert-rarity-full-glow.md) — `#client` `#ui` `#art` `#font` 제목 갈무리로 · FW 삭제 · rarity_bg 계단빛 바닥→위 · 상점 뽑기권 아이콘 여백 10 · 저주곰 8프레임·이펙트(기술 시험)
 - [2026-11-12 버튼 글씨 크기 3단 · 등급 바탕 A+B · 저주곰 마수](2026-11-12-button-text-size-rarity-ab-ursabeast.md) — `#client` `#ui` `#art` `#font` 버튼 높이별 글씨 16·22·높이−22 고정 · 도구 줄 폭 · 산업 레벨 두 줄 · 칸 글씨를 등급 테두리 안으로 · rarity_bg 입체 테두리 + 계단빛 · 제목 Fantasy Warrior(CC-BY — 같은 날 되돌림) · 곰 2족 마수

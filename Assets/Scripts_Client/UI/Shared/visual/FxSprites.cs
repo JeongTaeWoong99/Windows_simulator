@@ -95,6 +95,8 @@ public static class FxSprites
     // 창 제목 띠(진홍 + 구리 테) — 'Background' 자리 중 Header 역할
     public static Sprite? UiHeader     => VisualCatalog.FxOf("ui_header");
     public static Sprite? UiHeaderTrim => VisualCatalog.FxOf("ui_header_trim");
+    // 종이 결(옅은 점박이 · 투명 바탕) — 창 바탕 위에 Tiled로 깐다 (양피지 · 2026-11-14). 없으면 깔지 않는다
+    public static Sprite? UiPaper      => VisualCatalog.FxOf("ui_paper");
 
     // 작업슬롯 칸 — 빈 칸(파인 돌 + 구리 꺾쇠) · 잠긴 칸(쇠판 빗금, Tiled) · 가운데 표시 아이콘 ('WorkSlotFrameView')
     public static Sprite? UiSlotEmpty  => VisualCatalog.FxOf("ui_slot_empty");

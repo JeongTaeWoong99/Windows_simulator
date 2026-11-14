@@ -580,7 +580,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         int max = GameDataLoader.CondenseMaxStar;
 
         captionLeftText.text = added > 0
-            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(added.ToString(), UIThemePalette.Of(UIThemeRole.Highlight)), count + added)
+            ? Lang.Format("UI.Condense.TotalPlus", count, Colorize(added.ToString(), UIThemePalette.Of(UIThemeRole.HighlightDark)), count + added)
             : Lang.Format("UI.Condense.Total", count);
 
         if (now >= max)
@@ -668,7 +668,7 @@ public class CharacterCondensePresenter : MonoBehaviour
     private void SetWarn(string text, UIThemeRole role)
     {
         warnText.text  = text;
-        warnText.color = UIThemePalette.Of(role);
+        warnText.color = UIThemePalette.OfFor(warnText, role);
     }
 
     // [응축] 색 — 'EquipEnchantPresenter.PaintConfirm'과 같은 공식. 'interactable'은 끄지 않는다(눌러서 이유를 듣는다).

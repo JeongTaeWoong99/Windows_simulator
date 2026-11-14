@@ -283,7 +283,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
         }
 
         countText.text = Lang.Format("UI.Artifact.EquippedCount",
-                                     UIRichText.Paint(equippedTotal.ToString("N0"), UIThemeRole.Highlight),
+                                     UIRichText.Paint(equippedTotal.ToString("N0"), UIThemeRole.HighlightDark),
                                      _cellCount.ToString("N0"));
     }
 

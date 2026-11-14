@@ -805,7 +805,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = GameDataLoader.GetItemName(itemId),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetItemRarity(itemId)),
                 Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.HighlightDark)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId), blocked),
@@ -833,7 +833,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = Loc.Get(row.NameLocKey),
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.HighlightDark)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterEquipTooltip(target, blocked),
@@ -859,7 +859,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = GameDataLoader.GetCharacterName(character.CharacterTid),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetCharacterRarity(character.CharacterTid)),
                 Info       = $"{AuctionText.FormatCharacterSummary(character)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.HighlightDark)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterCharacterTooltip(target, blocked),
@@ -890,7 +890,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = Loc.Get(row.NameLocKey),
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.HighlightDark)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => BuildArtifactRowTooltip(tid, blocked),
@@ -928,7 +928,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
         long active = _auction.MyListings.Count;
         bool isFull = active >= Constants.AuctionMaxActiveListings;
 
-        slotsText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.OnSale"))} {UIRichText.Paint(active.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.Highlight)} / {Constants.AuctionMaxActiveListings:N0}";
+        slotsText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.OnSale"))} {UIRichText.Paint(active.ToString("N0"), isFull ? UIThemeRole.Negative : UIThemeRole.HighlightDark)} / {Constants.AuctionMaxActiveListings:N0}";
 
         bool has = _selectedKey != 0L;
 

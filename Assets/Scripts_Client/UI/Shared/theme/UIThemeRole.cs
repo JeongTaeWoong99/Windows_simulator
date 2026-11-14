@@ -18,7 +18,8 @@ public enum UIThemeRole
 
     // 강조
     Accent    = 20, // 하늘색 강조·진행 바
-    Highlight = 21, // 노랑 — 재화 수치·중요 문구
+    Highlight = 21, // 노랑 — 재화 수치·중요 문구 (어두운 바탕 위)
+    HighlightDark = 22, // 진한 황토 — 밝은 바탕(양피지 패널·버튼) 위 재화 수치·중요 문구
 
     // 글씨
     TextMain     = 30,

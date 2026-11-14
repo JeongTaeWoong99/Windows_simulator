@@ -494,7 +494,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 자동 결과 한 줄 — '목표 달성! — 상급 인챈트 큐브 12개 사용.' (자동 끝 · 언어 변경)
     private string BuildAutoSummary()
         => Colorize(Lang.Format("UI.Enchant.AutoEndSummary", Lang.Get(_autoSummaryKey), GameDataLoader.GetItemName(_autoSummaryCube), $"{_autoUsed:N0}"),
-                    UIThemePalette.Of(_autoSummaryReached ? UIThemeRole.Positive : UIThemeRole.Highlight));
+                    UIThemePalette.Of(_autoSummaryReached ? UIThemeRole.Positive : UIThemeRole.HighlightDark));
 
     #endregion
 
@@ -640,7 +640,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
         beforeFx.SetResult($"BEFORE{UIRichText.Dot}{GradeOrNone(grade)}",
                            FormatOptions(equip.EquipTid, equip.EnchantOptions), grade);
-        afterFx.SetResult("AFTER", Colorize(Lang.Get("UI.Enchant.ResultHere"), UIThemePalette.Of(UIThemeRole.TextDisabled)), GlobalRarity.None);
+        afterFx.SetResult("AFTER", UIRichText.Paint(Lang.Get("UI.Enchant.ResultHere"), UIThemeRole.TextDisabled), GlobalRarity.None);
     }
 
     // AFTER 제목 — 오르면 '영웅 ▶ 전설', 아니면 등급만 (DrawCompare에서 호출).
@@ -672,7 +672,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 자동이 끝난 뒤 한 줄 — 무엇 때문에 멈췄고 몇 개 썼나. 상급 큐브가 목표에 닿았으면 고르기 안내가 뒤따른다.
         if (IsPending(equip))
         {
-            string pick = Colorize(Lang.Get("UI.Enchant.PickOne"), UIThemePalette.Of(UIThemeRole.Highlight));
+            string pick = Colorize(Lang.Get("UI.Enchant.PickOne"), UIThemePalette.Of(UIThemeRole.HighlightDark));
 
             ruleText.text = _autoSummary == null
                 ? $"{pick}\n{Lang.Get("UI.Enchant.RerollKeepsBefore")}"
@@ -800,7 +800,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             EnchantOptionTableRow? option = _options[i];
 
             _text.Append(option == null
-                ? Colorize(Lang.Get("UI.Equip.SlotEmpty"), UIThemePalette.Of(UIThemeRole.TextDisabled))
+                ? UIRichText.Paint(Lang.Get("UI.Equip.SlotEmpty"), UIThemeRole.TextDisabled)
                 : Colorize(EquipLabel.GetOptionText(option), RarityPalette.Get(option.Grade)));
         }
 
@@ -1308,7 +1308,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 첫 줄 = 목표 등급 + 예상(막혔으면 이유) · 둘째 줄 = 칸 조건(+ 한 번에 맞을 확률). 두 줄 고정
         if (blocked != null)
         {
-            ruleText.text = $"{DescribeGoal()}{UIRichText.Dot}{Colorize(blocked, UIThemePalette.Of(UIThemeRole.Highlight))}\n"
+            ruleText.text = $"{DescribeGoal()}{UIRichText.Dot}{Colorize(blocked, UIThemePalette.Of(UIThemeRole.HighlightDark))}\n"
                           + DescribeSlotRule(slotCount, null);
         }
         else
@@ -1352,7 +1352,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     private string FormatForecast(EnchantForecast.Result forecast, int cap, int cubeTid)
     {
         UIThemeRole tone = forecast.WithinCap >= 0.9 ? UIThemeRole.Positive
-                         : forecast.WithinCap >= 0.5 ? UIThemeRole.Highlight
+                         : forecast.WithinCap >= 0.5 ? UIThemeRole.HighlightDark
                          : UIThemeRole.Negative;
 
         string within = Colorize(Percent(forecast.WithinCap), UIThemePalette.Of(tone));
@@ -1432,10 +1432,10 @@ public class EquipEnchantPresenter : MonoBehaviour
     {
         if (!_autoTarget.UsesSlots)
         {
-            return Colorize(Lang.Get("UI.Enchant.NoSlotRule"), UIThemePalette.Of(UIThemeRole.TextSub));
+            return UIRichText.Paint(Lang.Get("UI.Enchant.NoSlotRule"), UIThemeRole.TextSub);
         }
 
-        string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.Highlight));
+        string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.HighlightDark));
 
         return chance == null ? combos : combos + UIRichText.Dot + Lang.Format("UI.Enchant.PerRoll", Percent(chance.Value));
     }

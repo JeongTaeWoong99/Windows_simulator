@@ -115,7 +115,7 @@ public class CharacterStateRowView : MonoBehaviour
 
         if (star > 0)
         {
-            nameText.text += $" {UIRichText.Paint(Lang.Format("UI.Inventory.Star", star), UIThemeRole.Highlight)}";
+            nameText.text += $" {UIRichText.Paint(Lang.Format("UI.Inventory.Star", star), UIThemeRole.HighlightDark)}";
         }
 
         // 크기 등급 — 고를 때 대상과 견줄 몸집이 보이게('CharacterSizeLabel')
