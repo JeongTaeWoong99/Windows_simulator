@@ -306,7 +306,7 @@ public static class EquipLabel
         }
 
         var content = new TooltipContent(Loc.Get(row.NameLocKey))
-            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(row.GlobalRarity), "", RarityPalette.Get(row.GlobalRarity))
+            .Grade(row.GlobalRarity)
             .Row(Lang.Get("UI.Equip.Kind"), GetKindName(row.EquipKind))
             .Row(Lang.Get("UI.Equip.BaseStat"), GetEffectText(equipTid));
 

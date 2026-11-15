@@ -11,7 +11,7 @@ using UnityEngine.UI;
 //   단 '창'(아래 액자)인 창 바탕(PanelBg · PanelSub + 세로 레이아웃 · 크기 맞춤 없음 — 확인·안내 팝업)은 'UiPanel' 바탕 + 액자.
 //
 // ■ 창 액자 — 무늬 띠('ui_panel_trim', Tiled)를 창 맨 위(마지막 자식)에 덮는다
-//   창 = 열 · 오버레이 창의 'Body Panel'(부모가 '(MAIN VIEW)' 캔버스) + 위의 팝업 바탕.
+//   창 = 열 · 오버레이 창의 'Body Panel'(부모가 '(MAIN VIEW)' 캔버스) + 몸통 없는 띠 열(상태줄 · 위젯 — 캔버스 자체) + 위의 팝업 바탕.
 //   띠가 내용을 가리지 않게 레이아웃 여백을 띠 두께('FramePadding')만큼 늘린다. 작은 구획에는 두르지 않는다 — 칸이 테두리로 꽉 찬다.
 //   'UISprite'(누르는 것) → 'UiButton' · 'InputFieldBackground'(입력칸) → 'UiInput'.
 //   'null'(캔버스 본체 · 격자 칸) · 'UIMask'(뷰포트)는 건드리지 않는다.
@@ -117,6 +117,14 @@ public static class UiSkin
         foreach (RectTransform rect in Object.FindObjectsByType<RectTransform>(FindObjectsInactive.Include, FindObjectsSortMode.None))
         {
             if (rect.name == "Body Panel" && rect.parent != null && rect.parent.name.EndsWith("(MAIN VIEW)") && !Skipped(rect.gameObject))
+            {
+                AddFrame(rect);
+                AddPaper(rect);
+            }
+
+            // 몸통 없는 얇은 띠 열(상태줄 · 위젯)도 같은 액자 · 종이 결 — 캔버스 자체에 두른다(2026-11-15 사용자: 진갈 테두리가 없어
+            // 옆 열과 밝기 차가 어긋나 보였다). 캔버스에는 레이아웃이 없어 여백을 늘리지 않는다 — 안쪽 여백은 씬의 레이아웃이 쥔다.
+            if (rect.name.EndsWith("(MAIN VIEW)") && rect.GetComponent<Canvas>() != null && rect.Find("Body Panel") == null && !Skipped(rect.gameObject))
             {
                 AddFrame(rect);
                 AddPaper(rect);

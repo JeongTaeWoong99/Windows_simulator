@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GameData;
 using UnityEngine;
 
 // 툴팁 한 장에 그릴 내용 — 제목 한 줄과 그 아래 줄 목록.
@@ -32,6 +33,9 @@ public sealed class TooltipContent
     public string             Title { get; }
     public IReadOnlyList<Line> Lines => _lines;
 
+    // 무엇의 등급인가 — 있으면 툴팁 테두리가 그 등급색이 된다(칸 테두리와 같은 말 · 2026-11-15 시안 2). 'Grade'가 정한다.
+    public GlobalRarity? Rarity { get; private set; }
+
     public TooltipContent(string title)
     {
         Title = title;
@@ -45,6 +49,14 @@ public sealed class TooltipContent
 
     // 라벨 · 값 한 줄.
     public TooltipContent Row(string label, string value) => Row(label, value, "", null);
+
+    // 등급 줄 — 줄 바탕을 칸과 같은 등급색으로 칠하고, 툴팁 테두리도 그 색으로 두른다.
+    public TooltipContent Grade(GlobalRarity rarity)
+    {
+        Rarity = rarity;
+
+        return Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+    }
 
     // 라벨 · 값 · 보조 값 한 줄. 'background'로 줄 바탕을 칠한다(등급색 등).
     public TooltipContent Row(string label, string value, string subValue, Color? background)

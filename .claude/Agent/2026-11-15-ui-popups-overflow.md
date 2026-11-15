@@ -53,3 +53,14 @@ tags: [client, ui, art, editor]
 - 바탕화면 `UI_샘플_등급테두리_칸배치.html` — 등급 테두리 A(지금)~G 7종 × 6등급, 캐릭터 칸 배치 지금/시안 1/시안 2. 실제 그림(rarity_bg · 상반신 · 산업 아이콘 · 자물쇠)으로 PIL 렌더(크레딧 0). 생성 스크립트는 scratchpad `mock/make_mock.py`.
 - 어두운 속 스타일(B~G)에서 검은 기사처럼 어두운 그림은 묻힌다 — 고를 때 판단 거리.
 - 열 오른쪽 1~2px 틈(633.33 폭 · 0.5 ppu 9-slice 반올림)은 pixelPerfect/정수 폭 시험을 사용자 결정 뒤에.
+
+## 이어서 — 시안 2 적용 (`7e15eaa6`)
+
+- 사용자가 시안 2를 골랐다 + "계단 그라데이션이 더 위까지" → `make_slots.py rarity_bg`를 불투명 짙은 속(0.10) + 계단빛 5단(속의 아래 15/24)으로. 9-slice 경계 12 → 4 — 경계 12이던 때는 가운데 8줄만 늘어 큰 칸에서 계단 비율이 바뀌었다. `ArtImportPostprocessor.UiBorders`도 4.
+- 곱셈 한 장이라 속이 아주 옅게 등급색을 띤다(초록 칸은 초록빛 검정). 시안의 중성 어둠과 같게 하려면 바탕을 두 장(어두운 판 + 색 입힌 테)으로 나눠야 하는데, 부르는 쪽 6곳이 `background.color`를 직접 쓰고 있어 한 장으로 두었다.
+- `SlotView`: `bestAptitudeChip`(산업 그림 + 숫자) · `SetBestAptitude` · 이름을 끈 칸은 그림 inset 6. 경험치 게이지를 LV 알약 바닥 가로 막대로 옮겼다(세로 막대는 꽉 찬 그림을 가린다).
+- 툴팁: `TooltipContent.Grade(rarity)`(등급 줄 7곳을 이걸로) → `TooltipPresenter.PaintRim`이 판 가장자리 4px 등급색 테.
+- 상태줄·위젯: 캔버스에 `Ui Frame`·`Ui Paper`가 없어(몸통 `Body Panel`이 없는 띠 열이라 `UiSkin` 규칙에 안 걸렸다) 옆 열과 밝기 차가 어긋나 보였다 → `UiSkin.ApplyAll`에 규칙 추가 + 씬에 구움. 여백 좌우 10 · 위아래 8, 위젯 버튼 (-10, 8)·(-54, 8).
+- 씬 잡음은 scenefix로 되돌렸다. ⚠️ `scenefix.py --report`는 파일을 쓰지 않는다 — 예전 출력 파일을 그대로 복사해 씬이 HEAD로 돌아갔다가, 에디터 메모리의 씬을 다시 저장해 되살렸다.
+- 효과음: `Art/_source/audio/claude-sfx/make_sfx.py`(numpy 합성 · 크레딧 0) — 지금 소리 셋의 후보 8개 + 새 사건 8개. 바탕화면 `효과음_시안/효과음_시안.html`로 들어 보게 했다. 사각파는 최고값만 맞추면 지금 소리보다 서너 배 커서 평균 세기(RMS 0.09)로 맞춘다. 게임에는 아직 넣지 않았다.
+- 검사기 0건(장비 탭).

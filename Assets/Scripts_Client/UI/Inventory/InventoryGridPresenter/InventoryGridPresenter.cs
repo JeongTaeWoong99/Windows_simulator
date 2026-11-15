@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using DG.Tweening;
 using GameData;
 using MikaNetwork;
@@ -853,10 +853,10 @@ public class InventoryGridPresenter : MonoBehaviour
         // 다섯 산업 전부 · 기본 속도는 칸 툴팁이 말한다('CharacterSlotSource.BuildTooltip').
         view.SetAptitudes(null);
 
-        if (IsCharacterTab)
-        {
-            view.SetSubText(BestAptitudeText(ReadAptitudes(data.Key)));
-        }
+        // 가장 높은 적성은 알약(산업 그림 + 숫자)으로 — 오른쪽 아래(시안 2 · 2026-11-15).
+        int best = IsCharacterTab ? BestAptitudeIndex(ReadAptitudes(data.Key)) : -1;
+
+        view.SetBestAptitude(best < 0 ? null : StripIndustries[best], best < 0 ? (byte)0 : _aptitudes[best]);
 
         // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다. 다른 탭은 같은 배지 자리에 공급자의 표시를 싣는다(장비: 상급 큐브 결과 고르기 전 '선택').
         view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key));
@@ -915,8 +915,8 @@ public class InventoryGridPresenter : MonoBehaviour
     // 값의 주인은 서버다 — 'CharacterTable'을 직접 읽지 않는다('PlayerDataModel.GetAptitude' 주석).
     // ※ 돌려주는 배열은 재사용되는 하나다. 칸이 받아 그리는 즉시 쓰임이 끝나므로 들고 있어도 된다 —
     //   나중에 보관해 두는 쪽이 생기면 그때는 복사해야 한다.
-    // 가장 높은 적성 하나 — '채굴 9'. 같으면 앞(표시 순서) 산업. 전부 0이면 빈 문자열 (DrawCell에서 호출).
-    private static string BestAptitudeText(byte[] aptitudes)
+    // 가장 높은 적성의 칸 번호(스트립 순서). 같으면 앞(표시 순서) 산업. 전부 0이면 -1 (DrawCell에서 호출).
+    private static int BestAptitudeIndex(byte[] aptitudes)
     {
         int best = -1;
 
@@ -928,7 +928,7 @@ public class InventoryGridPresenter : MonoBehaviour
             }
         }
 
-        return best < 0 ? "" : $"{IndustryLabel.Get(StripIndustries[best])} {AptitudeLabel.GetText(aptitudes[best])}";
+        return best;
     }
 
     private byte[] ReadAptitudes(long characterId)

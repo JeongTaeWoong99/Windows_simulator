@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -211,7 +211,7 @@ public abstract class InventorySlotSource
 
     // 툴팁 첫 줄 — 등급. 줄 바탕을 칸과 같은 등급색으로 칠한다 (공급자들의 'BuildTooltip'에서 호출).
     protected static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
-        => content.Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+        => content.Grade(rarity);
 
     // 툴팁의 '보관' 줄 — 인벤토리 · 창고 (공급자들의 'BuildTooltip'에서 호출).
     //

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using DG.Tweening;
 using GameData;
+using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -71,6 +72,18 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
     private TMP_Text levelText = null!;
 
+    // ※ 오른쪽 아래 — 산업 그림 + 숫자 알약 하나(시안 2 · 2026-11-15 사용자). 다섯 산업 전부는 칸 툴팁이 말한다.
+    //   글자('사냥 7')로 두던 보조 문구 자리를 그림으로 바꿨다 — 그림 위 맨 글자는 초상화 색에 묻혔다.
+    [CenterHeader("최고 적성 알약 (캐릭터 탭)")]
+    [SerializeField, Tooltip("가장 높은 적성 알약 — 어두운 바탕 + 산업 그림 + 숫자. 캐릭터 탭에서만 켜진다")]
+    private GameObject bestAptitudeChip = null!;
+
+    [SerializeField, Tooltip("알약 안의 산업 그림")]
+    private Image bestAptitudeIcon = null!;
+
+    [SerializeField, Tooltip("알약 안의 적성 숫자")]
+    private TMP_Text bestAptitudeText = null!;
+
     // ※ 레벨 배지 바로 위 — 소형은 대상과 비슷하거나 작고, 대형은 큰 대상과 비슷하다는 것을 칸에서 바로 읽게(2026-10-18).
     [SerializeField, Tooltip("(선택) 크기 등급 배지 — '소' · '중' · '대'. 캐릭터 칸에서만 켜진다")]
     private GameObject? sizeBadge;
@@ -100,7 +113,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // ※ 글자가 아니라 그림이다 — 옛 폰트에 '★' 글리프가 없어 그림으로 정했다('Inventory 규칙.md').
     // ※ 얻은 ★만 켠다. ★0이면 줄째 꺼져 대부분의 칸이 깨끗하게 남는다(T-130 목업).
     [CenterHeader("응축 ★ (캐릭터 탭)")]
-    [SerializeField, Tooltip("★ 줄 — 이름 아래 왼쪽. ★0이면 꺼진다")]
+    [SerializeField, Tooltip("★ 줄 — 위 가운데(자물쇠와 '배' 사이). ★0이면 꺼진다")]
     private GameObject starRow = null!;
 
     [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 왼쪽부터 ★ 수만큼 켜진다")]
@@ -138,7 +151,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("지금 쓰이고 있음을 알리는 표시 — 캐릭터는 작업 중, 장비는 장착 중. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
-    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시가 쓴다. 잠금은 그 둘과 함께 켜질 수 있다(잠긴 채 장착 중).
+    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시, 위 가운데는 ★ 줄이 쓴다(시안 2 · 2026-11-15). 잠금은 셋과 함께 켜질 수 있다(잠긴 채 장착 중).
     [SerializeField, Tooltip("잠금 표시 — 왼쪽 위 자물쇠(T-137). 평소에는 꺼져 있다")]
     private GameObject lockMark = null!;
 
@@ -226,6 +239,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         this.RequireRef(starRow,            nameof(starRow));
         this.RequireRef(condenseTargetMark, nameof(condenseTargetMark));
         this.RequireRef(condensePickMark,   nameof(condensePickMark));
+        this.RequireRef(bestAptitudeChip,   nameof(bestAptitudeChip));
+        this.RequireRef(bestAptitudeIcon,   nameof(bestAptitudeIcon));
+        this.RequireRef(bestAptitudeText,   nameof(bestAptitudeText));
 
         // ★ 그림이 최고 ★보다 적으면 높은 ★이 덜 그려진다 — 조용히 틀리므로 경고한다.
         if (starImages.Length < MaxStarImages)
@@ -259,6 +275,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(false);
         lockMark.SetActive(false);
         starRow.SetActive(false);
+        bestAptitudeChip.SetActive(false);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);
     }
@@ -328,32 +345,58 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 이름 줄을 켜고 끈다 (칸을 만든 화면이 한 번 부른다 — 'SetSubVisible'과 같은 스위치).
     //   인벤토리 격자는 끈다 — 팰월드식: 칸은 그림 + 숫자 하나, 이름은 툴팁 제목이 말한다(2026-11-14 사용자).
     //   가챠 결과 · 아티팩트 도감은 켜 둔다 — 처음 보는 것을 늘어놓는 자리라 이름이 곧 내용이다.
-    // ※ 끄면 아이콘이 이름 자리까지 위로 커진다.
+    // ※ 끄면 아이콘이 칸을 꽉 채운다 — 등급 테두리 안쪽(FullBleedInset)까지(시안 2 · 2026-11-15). 표시들은 그림 위에 얹힌다.
     public void SetNameVisible(bool on)
     {
         nameText.gameObject.SetActive(on);
 
         var icon = itemImage.rectTransform;
 
-        if (_iconTopBase == null)
+        if (_iconOffsetBase == null)
         {
-            _iconTopBase = icon.offsetMax.y;
+            _iconOffsetBase = (icon.offsetMin, icon.offsetMax);
         }
 
-        float grow = on ? 0f : Mathf.Max(0f, nameText.rectTransform.rect.height * NameFreedShare);
+        if (on)
+        {
+            (icon.offsetMin, icon.offsetMax) = _iconOffsetBase.Value;
 
-        icon.offsetMax = new Vector2(icon.offsetMax.x, _iconTopBase.Value + grow);
+            return;
+        }
+
+        icon.offsetMin = new Vector2(FullBleedInset, FullBleedInset);
+        icon.offsetMax = new Vector2(-FullBleedInset, -FullBleedInset);
     }
 
-    // 이름을 끈 칸에서 아이콘이 이름 자리를 얼마나 먹나 — 다 먹으면 아이콘이 위 테두리에 닿는다
-    private const float NameFreedShare = 0.8f;
+    // 이름을 끈 칸의 그림 여백 — 등급 바탕 테두리(그림 4칸 × 0.5배 = 화면 8)의 안쪽 홈까지만 비운다
+    private const float FullBleedInset = 6f;
 
-    private float? _iconTopBase; // 아이콘의 원래 위 여백 — 이름을 다시 켤 때 돌아갈 값
+    private (Vector2 Min, Vector2 Max)? _iconOffsetBase; // 아이콘의 원래 여백 — 이름을 다시 켤 때 돌아갈 값
 
     // 보조 문구를 바꾼다 — 'Bind'가 준 문구 대신 화면이 지은 한 줄(캐릭터 칸의 가장 높은 적성 '채굴 9').
     public void SetSubText(string text)
     {
         subText.text = text;
+    }
+
+    // 가장 높은 적성 알약을 그린다 — 산업 그림 + 숫자. 'null'이면 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
+    // 어느 산업이 가장 높은지는 격자가 고른다 — 이 칸은 캐릭터를 모른다('SetAptitudes'와 같은 이유).
+    public void SetBestAptitude(EIndustryType? industry, byte value)
+    {
+        bool on = industry.HasValue;
+
+        bestAptitudeChip.SetActive(on);
+
+        if (!on)
+        {
+            return;
+        }
+
+        Sprite? icon = VisualCatalog.IndustryIconOf(industry!.Value);
+
+        bestAptitudeIcon.sprite  = icon!;
+        bestAptitudeIcon.enabled = icon != null;
+        bestAptitudeText.text    = AptitudeLabel.GetText(value);
     }
 
     // 하단 밴드의 주인을 정한다 — 적성 스트립이 켜져 있거나 장비 칸(보석)이면 문구는 비킨다
@@ -723,6 +766,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         assignMark.SetActive(false);
         lockMark.SetActive(false);
         SetStars(0);
+        SetBestAptitude(null, 0);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);
         SetAttention(false);

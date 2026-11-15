@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameData;
@@ -209,7 +209,11 @@ public class CharacterCondensePresenter : MonoBehaviour
         helpTooltip.SetProvider(BuildHelpTooltip);
         confirmButton.onClick.AddListener(OnConfirmClicked);
 
-        _materialSlots = new UIRowList<SlotView>(slotPrefab, materialParent, onCreated: slot => slot.LeftClicked += OnMaterialSlotClicked);
+        _materialSlots = new UIRowList<SlotView>(slotPrefab, materialParent, onCreated: slot =>
+        {
+            slot.LeftClicked += OnMaterialSlotClicked;
+            slot.SetNameVisible(false); // 같은 캐릭터만 늘어놓아 이름이 다 같다 — 인벤토리 칸처럼 그림을 꽉 채운다(시안 2)
+        });
         BackdropClose.Bind(gameObject, Close);
 
         // ⚠️ 탭·응답 구독은 Start/OnDestroy에 건다 — 이 창은 자기 오브젝트를 끈다('EquipEnchantPresenter'와 같은 이유).

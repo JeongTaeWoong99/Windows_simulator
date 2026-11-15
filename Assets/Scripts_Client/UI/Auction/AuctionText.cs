@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -424,7 +424,7 @@ public static class AuctionText
 
     // 등급 한 줄 — 줄 바탕이 등급색이다('InventorySlotSource.AddRarityRow'와 같은 모양).
     private static TooltipContent AddRarityRow(TooltipContent content, GlobalRarity rarity)
-        => content.Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+        => content.Grade(rarity);
 
     // 가격 기준 묶음 — 즉시 판매가(정해진 값) · 경매 등록가(그 값 이상). 두 판매 방식을 한눈에 비교하게 둔다.
     private static void AddPriceRules(TooltipContent content, int basePrice)

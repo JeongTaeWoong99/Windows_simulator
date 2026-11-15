@@ -1,4 +1,4 @@
-using GameData;
+﻿using GameData;
 using MikaProtocol;
 
 // 아티팩트 글자 — 효과 한 줄 · 상태 · 칸 툴팁. 도감 · 인벤토리 장비 탭 칸 · 아티팩트 창 · 판매 목록이 같은 문구를 쓴다.
@@ -38,7 +38,7 @@ public static class ArtifactText
         int owned = data.GetArtifactCount(artifactTid);
 
         return new TooltipContent(Loc.Get(row.NameLocKey))
-            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(row.GlobalRarity), "", RarityPalette.Get(row.GlobalRarity))
+            .Grade(row.GlobalRarity)
             .Row(Lang.Get("UI.Artifact.Effect"), Effect(row))
             .Row(Lang.Get("UI.Artifact.Codex"), State(data, artifactTid))
             .Row(Lang.Get("UI.Inventory.Owned"), Lang.Format("UI.Inventory.CountUnit", $"{owned:N0}"))

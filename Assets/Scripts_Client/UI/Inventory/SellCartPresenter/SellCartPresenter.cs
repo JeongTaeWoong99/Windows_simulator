@@ -341,7 +341,7 @@ public class SellCartPresenter : MonoBehaviour
         int          basePrice = GameDataLoader.GetItemPrice(itemId);
 
         return new TooltipContent(GameDataLoader.GetItemName(itemId))
-            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity))
+            .Grade(rarity)
             .Row(Lang.Get("UI.Sell.CartCount"), Lang.Format("UI.Inventory.CountUnit", $"{count:N0}"), $"{Lang.Get("UI.Inventory.Owned")} {_data.GetItemCount(itemId):N0}", null)
             .Row(Lang.Get("UI.Equip.InstantSellPrice"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellPrice(basePrice):N0}"), Lang.Get("UI.Sell.Each"), null)
             .Row(Lang.Get("UI.Sell.GoldToGet"), Lang.Format("UI.Equip.Gold", $"{AuctionModel.InstantSellTotal(basePrice, count):N0}"))
@@ -355,7 +355,7 @@ public class SellCartPresenter : MonoBehaviour
     private static TooltipContent BuildEntityTooltip(string name, GlobalRarity rarity, int basePrice, Action<TooltipContent>? addGrowthRow)
     {
         var content = new TooltipContent(name)
-            .Row(Lang.Get("UI.Equip.Grade"), RarityLabel.Get(rarity), "", RarityPalette.Get(rarity));
+            .Grade(rarity);
 
         addGrowthRow?.Invoke(content);
 

@@ -1,4 +1,5 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -176,6 +177,8 @@ public class TooltipPresenter : MonoBehaviour
     {
         titleText.text = content.Title;
 
+        PaintRim(content.Rarity);
+
         var lines = content.Lines;
 
         // ★ 줄을 만들고 채우기 **전에** 줄 영역을 켠다.
@@ -192,6 +195,77 @@ public class TooltipPresenter : MonoBehaviour
 
         // 크기를 지금 확정해야 아래 'Place'가 넘침을 잴 수 있다('UI 규칙.md' "만든 자리에서 바로 태운다").
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+    }
+
+    // 등급 테 — 등급이 있는 툴팁(칸·장비·아티팩트)은 판 가장자리에 등급색 테를 두른다. 칸 테두리와 같은 말이다(시안 2 · 2026-11-15).
+    //   등급이 없는 툴팁(버튼·설명)은 테를 끈다. 테는 처음 필요할 때 코드로 만든다 — 판의 레이아웃에서 빠진 막대 넷.
+    private void PaintRim(GlobalRarity? rarity)
+    {
+        if (rarity == null)
+        {
+            if (_rim != null)
+            {
+                _rim.SetActive(false);
+            }
+
+            return;
+        }
+
+        _rim ??= BuildRim();
+        _rim.SetActive(true);
+
+        Color color = RarityPalette.Get(rarity.Value);
+
+        foreach (Image bar in _rimBars)
+        {
+            bar.color = color;
+        }
+    }
+
+    // 테 두께 (px) — 칸의 등급 테(그림 2칸 × 0.5배)와 같은 굵기
+    private const float RimWidth = 4f;
+
+    private GameObject? _rim;
+    private readonly List<Image> _rimBars = new List<Image>();
+
+    private GameObject BuildRim()
+    {
+        var rim = new GameObject("Rarity Rim", typeof(RectTransform), typeof(LayoutElement));
+        var rt  = (RectTransform)rim.transform;
+
+        rim.layer = panel.gameObject.layer;
+        rim.GetComponent<LayoutElement>().ignoreLayout = true;
+        rt.SetParent(panel, false);
+        rt.anchorMin = Vector2.zero;
+        rt.anchorMax = Vector2.one;
+        rt.offsetMin = rt.offsetMax = Vector2.zero;
+
+        // (앵커 최소, 앵커 최대, 크기) — 위 · 아래 · 왼쪽 · 오른쪽
+        (Vector2, Vector2, Vector2)[] sides =
+        {
+            (new Vector2(0f, 1f), new Vector2(1f, 1f), new Vector2(0f, RimWidth)),
+            (new Vector2(0f, 0f), new Vector2(1f, 0f), new Vector2(0f, RimWidth)),
+            (new Vector2(0f, 0f), new Vector2(0f, 1f), new Vector2(RimWidth, 0f)),
+            (new Vector2(1f, 0f), new Vector2(1f, 1f), new Vector2(RimWidth, 0f)),
+        };
+
+        foreach (var (min, max, size) in sides)
+        {
+            var go  = new GameObject("Bar", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+            var bar = go.GetComponent<Image>();
+
+            go.layer = rim.layer;
+            bar.raycastTarget = false;
+            bar.rectTransform.SetParent(rt, false);
+            bar.rectTransform.anchorMin = min;
+            bar.rectTransform.anchorMax = max;
+            bar.rectTransform.pivot     = (min + max) * 0.5f;
+            bar.rectTransform.sizeDelta = size;
+            bar.rectTransform.anchoredPosition = Vector2.zero;
+            _rimBars.Add(bar);
+        }
+
+        return rim;
     }
 
     // 줄을 묶음별로 그린다 (Render에서 호출).
