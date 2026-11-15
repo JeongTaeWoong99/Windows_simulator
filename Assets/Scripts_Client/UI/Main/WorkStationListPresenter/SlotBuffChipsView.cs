@@ -7,7 +7,9 @@ using UnityEngine;
 //
 // ■ 무엇을 띄우나
 // 'WorkStationSlotInfo.Buffs' 한 줄 = 칩 하나 — 아이콘 + 남은 판정 횟수. 버프가 없으면 칩이 없다(줄이 비어 칸이 덜 붐빈다).
-// 효과·남은 횟수·자동 사용 칸에 넣어 둔 개수는 툴팁으로 읽는다 — 칩에 다 적으면 무대를 가린다.
+// 자동 사용이 켜진 영약(이슈 #123)은 남은 횟수 뒤에 작게 '+보유 개수'를 붙인다 — 남은 횟수와 섞이지 않게.
+// 켜졌는데 버프가 없으면(보유분이 떨어졌다) 흐린 칩 '0 +0'으로 남겨 켜져 있다는 것을 보인다.
+// 효과·남은 횟수·보유 개수는 툴팁으로도 읽는다.
 //
 // ■ 칩은 지우지 않고 끈다
 // 버프는 판정마다 숫자만 바뀌고 종류는 거의 그대로다. 매번 만들고 지우면 칸 8개 × 판정마다 GC가 난다 —
@@ -22,7 +24,9 @@ public class SlotBuffChipsView : MonoBehaviour
 
     // 툴팁이 띄우는 순간에 읽을 값 — 칩마다 넘긴 함수가 이 표를 본다(다시 그리면 함수를 새로 만들지 않아도 된다)
     private readonly Dictionary<int, int> _remaining = new Dictionary<int, int>();
-    private readonly Dictionary<int, int> _autoCount = new Dictionary<int, int>();
+    private readonly HashSet<int>         _autoOn    = new HashSet<int>();
+
+    private PlayerDataModel? _data; // 보유 개수 — 처음 그릴 때 찾는다(견본 복제 순서와 상관없게)
 
     // 필수 참조 검증 · 견본은 꺼 둔다 (Unity 메시지)
     private void Awake()
@@ -34,17 +38,22 @@ public class SlotBuffChipsView : MonoBehaviour
 
     // 슬롯의 버프를 칩으로 그린다 ('WorkStationSlotView.Bind'가 호출).
     //   buffs   : 걸린 버프 — 아이템마다 한 줄. null·빈 목록이면 칩을 모두 끈다
-    //   autoUse : 자동 사용 칸 — 툴팁에 '자동 사용 칸에 n개'로만 붙인다
+    //   autoUse : 자동 사용이 켜진 영약 — 칩에 '+보유 개수'를 붙인다
     public void Bind(IReadOnlyList<SlotBuffInfo>? buffs, IReadOnlyList<SlotAutoUseInfo>? autoUse)
     {
+        _data ??= Services.Get<PlayerDataModel>();
+
         _remaining.Clear();
-        _autoCount.Clear();
+        _autoOn.Clear();
 
         if (autoUse != null)
         {
             foreach (SlotAutoUseInfo auto in autoUse)
             {
-                _autoCount[auto.ItemTID] = auto.Count;
+                if (auto.On)
+                {
+                    _autoOn.Add(auto.ItemTID);
+                }
             }
         }
 
@@ -62,9 +71,21 @@ public class SlotBuffChipsView : MonoBehaviour
                 int itemTid = buff.ItemTID;
 
                 _remaining[itemTid] = buff.Remaining;
-                ChipAt(shown).Bind(itemTid, buff.Remaining, () => BuildTooltip(itemTid));
+                ChipAt(shown).Bind(itemTid, buff.Remaining, OwnedIfOn(itemTid), () => BuildTooltip(itemTid));
                 shown++;
             }
+        }
+
+        // 켜졌는데 버프가 없는 영약 — 보유분이 떨어졌다. 흐린 칩으로 남긴다
+        foreach (int itemTid in _autoOn)
+        {
+            if (_remaining.ContainsKey(itemTid))
+            {
+                continue;
+            }
+
+            ChipAt(shown).Bind(itemTid, 0, OwnedIfOn(itemTid), () => BuildTooltip(itemTid));
+            shown++;
         }
 
         for (int i = 0; i < _chips.Count; i++)
@@ -72,6 +93,9 @@ public class SlotBuffChipsView : MonoBehaviour
             _chips[i].gameObject.SetActive(i < shown);
         }
     }
+
+    // 자동 사용이 켜졌으면 보유 개수, 아니면 -1 (칩이 '+n'을 붙일지 정한다)
+    private int OwnedIfOn(int itemTid) => _autoOn.Contains(itemTid) ? _data!.GetItemCount(itemTid) : -1;
 
     // 'index'번째 칩 — 모자라면 견본을 복제한다 (Bind에서 호출)
     private SlotBuffChipView ChipAt(int index)
@@ -91,7 +115,7 @@ public class SlotBuffChipsView : MonoBehaviour
         return found;
     }
 
-    // 칩 툴팁 — 이름 / 효과 / 판정 n회 남음 / 자동 사용 칸에 n개 (칩의 TooltipTrigger가 띄우는 순간에 호출)
+    // 칩 툴팁 — 이름 / 효과 / 판정 n회 남음 / 자동 사용 켜짐 · 보유 n개 (칩의 TooltipTrigger가 띄우는 순간에 호출)
     private TooltipContent? BuildTooltip(int itemTid)
     {
         var content = new TooltipContent(GameDataLoader.GetItemName(itemTid));
@@ -108,9 +132,9 @@ public class SlotBuffChipsView : MonoBehaviour
             content.Row(Lang.Format("UI.WorkStation.BuffTooltip", remaining), "");
         }
 
-        if (_autoCount.TryGetValue(itemTid, out int auto) && auto > 0)
+        if (_autoOn.Contains(itemTid))
         {
-            content.Row(Lang.Format("UI.WorkStation.AutoUseInSlot", $"{auto:N0}"), "");
+            content.Row(Lang.Format("UI.WorkStation.AutoUseInSlot", $"{_data!.GetItemCount(itemTid):N0}"), "");
         }
 
         return content;

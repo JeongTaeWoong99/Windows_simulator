@@ -684,7 +684,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     // 아이템 사용 성공 (쓴 아이템 TID · 얻은 보상 목록 — 상자 개봉·유물 감정 · 인벤토리가 차서 보상 전체가 우편으로 갔는가)
     public event Action<int, List<GachaRewardInfo>, bool>? ItemUseCompleted;
     public event Action<EResultCode>?                 ItemUseFailed; // 아이템 사용 실패 (거절 사유)
-    public event Action<EResultCode>?                 SlotAutoUseResponded; // 자동 사용 칸 넣기·꺼내기 결과 (거절 포함 — 인벤토리 반영 뒤 · 이슈 #113 · T-194)
+    public event Action<EResultCode>?                 SlotAutoUseResponded; // 자동 사용 켜기·끄기 결과 (거절 포함 — 인벤토리 반영 뒤 · 이슈 #113 · #123 · T-194)
     public event Action<int, int>?                    ConsumableUsed; // 소모품 사용 성공 (TID · 실제로 빠진 개수 — 비약은 요청보다 적을 수 있다 · T-194). 'ItemUseCompleted'는 오지 않는다
 
     public event Action<int>?         ShopBuyCompleted; // 상점 구매 성공 (산 품목 ShopTID — 아이템은 인벤토리에 이미 반영됐다 · 잔액은 'CurrencyChanged')
@@ -1429,8 +1429,9 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         ItemUseCompleted?.Invoke(res.ItemTID, res.Rewards ?? new List<GachaRewardInfo>(), res.StoredInMail);
     }
 
-    // 자동 사용 칸 넣기·꺼내기 응답 — 인벤토리 반영 후 결과를 알린다 (이슈 #113 · T-194).
-    // ★ 칸 내용은 여기 없다 — 'S_WorkStationSlotSyncResponse'가 먼저 와서 슬롯 캐시를 이미 바꿨다.
+    // 자동 사용 켜기·끄기 응답 — 인벤토리 반영 후 결과를 알린다 (이슈 #113 · #123 · T-194).
+    // ★ 켜짐 상태는 여기 없다 — 'S_WorkStationSlotSyncResponse'가 먼저 와서 슬롯 캐시를 이미 바꿨다.
+    // ★ 'ItemChangeInfos'는 켜자마자 1개를 쓴 경우(버프가 없던 활동 슬롯)의 보유분 확정값이다.
     private void OnSlotAutoUsed(S_SlotAutoUseResponse res)
     {
         if (res.Result == EResultCode.Ok)
@@ -1439,7 +1440,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
         else
         {
-            ClientLogger.Warn(ClientLogger.Recv, $"자동 사용 칸 실패 — 슬롯={res.SlotIndex}, TID={res.ItemTID}, 결과={res.Result}");
+            ClientLogger.Warn(ClientLogger.Recv, $"자동 사용 설정 실패 — 슬롯={res.SlotIndex}, TID={res.ItemTID}, 결과={res.Result}");
         }
 
         SlotAutoUseResponded?.Invoke(res.Result);

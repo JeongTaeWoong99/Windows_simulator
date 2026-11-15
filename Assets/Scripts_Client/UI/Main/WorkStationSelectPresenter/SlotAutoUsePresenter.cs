@@ -4,11 +4,11 @@ using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
 
-// 작업슬롯 설정의 **자동 사용 칸** — 슬롯마다 영약 종류별 한 칸 (이슈 #113 · T-194 · 2026-11-14 사용자 결정).
+// 작업슬롯 설정의 **자동 사용 칸** — 슬롯마다 영약 종류별 한 칸 (이슈 #113 · #123 · T-194).
 //
 // ■ 무엇을 하나
-// 영약을 칸에 넣어 두면, 그 영약의 버프가 끝날 때 서버가 칸에서 1개씩 꺼내 쓴다. 칸은 넣기·꺼내기만 한다.
-// 좌클릭 = 넣기(수량 팝업 — 인벤토리·창고 보유량까지) · 우클릭 = 꺼내기(수량 팝업 — 넣어 둔 만큼).
+// 칸을 켜 두면, 그 영약의 버프가 없을 때 서버가 인벤토리 → 창고 보유분에서 1개씩 쓴다. 칸은 켜고 끄기만 한다.
+// 클릭 = 켜기·끄기(2026-11-15 사용자 결정 — 개수를 넣고 빼는 단계가 어색했다). 보유분이 0이어도 켜 둘 수 있다 — 다시 생기면 쓴다.
 // 넣을 수 있는 영약은 'ItemUseTable'에서 읽는다('ItemUseLabel.IsAutoUsable' — 지금은 신속·풍요). 종류가 늘면 칸도 는다.
 //
 // ■ 왜 'WorkStationSelectPresenter'에 넣지 않았나
@@ -17,7 +17,7 @@ using UnityEngine;
 //
 // ■ 칸 내용의 진실은 슬롯 캐시다
 // 성공하면 'S_WorkStationSlotSyncResponse'가 응답보다 먼저 와 'WorkStationSlotsChanged'로 다시 그린다.
-// 이 화면은 개수를 계산하지 않는다 — 한도(MaxStack)·꺼낼 자리 부족은 서버가 거절한다('AutoUseSlotFull' · 'StorageFull').
+// 켜진 영약만 'WorkStationSlotInfo.AutoUse'에 온다. 보유 개수는 서버가 주지 않는다 — 인벤토리·창고 합('GetItemCount')을 읽는다.
 public class SlotAutoUsePresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -143,14 +143,13 @@ public class SlotAutoUsePresenter : MonoBehaviour
 
             cell.name = $"Auto Use Cell {tid}";
             cell.gameObject.SetActive(true);
-            cell.LeftClicked  += OnCellLeftClicked;
-            cell.RightClicked += OnCellRightClicked;
-            cell.Bind(tid, 0, () => null);
+            cell.Clicked += OnCellClicked;
+            cell.Bind(tid, false, 0, () => null);
             _cells.Add(cell);
         }
     }
 
-    // 칸마다 넣어 둔 개수를 다시 그린다 (슬롯·인벤토리 변경 · 열기 · 응답)
+    // 칸마다 켜짐·보유 개수를 다시 그린다 (슬롯·인벤토리 변경 · 열기 · 응답)
     private void Refresh()
     {
         if (!_isReady)
@@ -165,19 +164,20 @@ public class SlotAutoUsePresenter : MonoBehaviour
         {
             int tid = cell.ItemTid;
 
-            cell.Bind(tid, StoredCount(slot, tid), () => BuildTooltip(tid));
+            cell.Bind(tid, IsOn(slot, tid), _data.GetItemCount(tid), () => BuildTooltip(tid));
             cell.SetInteractable(idle && slot != null);
         }
     }
 
-    // 칸 툴팁 — 이름 / 효과 / 자동 사용 칸에 n개 / 보유 n개 / 조작 안내 (칸의 TooltipTrigger가 띄우는 순간에 호출)
+    // 칸 툴팁 — 이름 / 효과 / 켜짐·보유 n개 / 조작 안내 (칸의 TooltipTrigger가 띄우는 순간에 호출)
     private TooltipContent BuildTooltip(int tid)
     {
-        int stored = StoredCount(FindSlot(), tid);
+        string state = Lang.Format(IsOn(FindSlot(), tid) ? "UI.WorkStation.AutoUseInSlot" : "UI.WorkStation.AutoUseOff",
+                                   $"{_data.GetItemCount(tid):N0}");
 
         return new TooltipContent(GameDataLoader.GetItemName(tid))
               .Row(ItemUseLabel.Effect(tid), "")
-              .Row(Lang.Format("UI.WorkStation.AutoUseInSlot", $"{stored:N0}"), "")
+              .Row(state, "")
               .Row(Lang.Get("UI.WorkStation.AutoUseHint"), "");
     }
 
@@ -194,72 +194,37 @@ public class SlotAutoUsePresenter : MonoBehaviour
         return null;
     }
 
-    private static int StoredCount(WorkStationSlotInfo? slot, int tid)
+    // 그 영약의 자동 사용이 켜졌나 — 켜진 것만 목록에 오지만 'On'도 함께 본다
+    private static bool IsOn(WorkStationSlotInfo? slot, int tid)
     {
         if (slot?.AutoUse == null)
         {
-            return 0;
+            return false;
         }
 
         foreach (SlotAutoUseInfo auto in slot.AutoUse)
         {
             if (auto.ItemTID == tid)
             {
-                return auto.Count;
+                return auto.On;
             }
         }
 
-        return 0;
+        return false;
     }
 
     #endregion
 
-    #region 넣기 · 꺼내기
+    #region 켜기 · 끄기
 
-    // 좌클릭 — 넣기. 보유량이 0이면 묻지 않고 칸을 흔든다 (칸 LeftClicked 구독)
-    private void OnCellLeftClicked(AutoUseCellView cell)
+    // 클릭 — 지금 상태를 뒤집어 보낸다 (칸 Clicked 구독)
+    private void OnCellClicked(AutoUseCellView cell)
     {
-        int owned = _data.GetItemCount(cell.ItemTid);
-
-        if (owned <= 0)
-        {
-            _wait.RaiseRefusal(Lang.Format("UI.WorkStation.AutoUseNoItem", GameDataLoader.GetItemName(cell.ItemTid)), cell.transform);
-
-            return;
-        }
-
-        if (owned == 1)
-        {
-            Send(cell.ItemTid, 1, take: false);
-
-            return;
-        }
-
-        _ui.AskAmount(cell.ItemTid, owned, Lang.Get("UI.WorkStation.AskAutoPut"), amount => Send(cell.ItemTid, amount, take: false));
+        Send(cell.ItemTid, !IsOn(FindSlot(), cell.ItemTid));
     }
 
-    // 우클릭 — 꺼내기. 넣어 둔 것이 없으면 아무것도 하지 않는다 (칸 RightClicked 구독)
-    private void OnCellRightClicked(AutoUseCellView cell)
-    {
-        int stored = StoredCount(FindSlot(), cell.ItemTid);
-
-        if (stored <= 0)
-        {
-            return;
-        }
-
-        if (stored == 1)
-        {
-            Send(cell.ItemTid, 1, take: true);
-
-            return;
-        }
-
-        _ui.AskAmount(cell.ItemTid, stored, Lang.Get("UI.WorkStation.AskAutoTake"), amount => Send(cell.ItemTid, amount, take: true));
-    }
-
-    // 넣기·꺼내기 요청을 보낸다 (좌·우클릭 · 수량 팝업 확인에서 호출)
-    private void Send(int itemTid, int count, bool take)
+    // 켜기·끄기 요청을 보낸다 (칸 클릭에서 호출)
+    private void Send(int itemTid, bool on)
     {
         if (_waitHandle != null || _slotIndex < 0)
         {
@@ -268,7 +233,7 @@ public class SlotAutoUsePresenter : MonoBehaviour
 
         if (!_data.IsLoggedIn)
         {
-            ClientLogger.Warn(ClientLogger.Send, "자동 사용 칸 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
+            ClientLogger.Warn(ClientLogger.Send, "자동 사용 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
 
             return;
         }
@@ -277,11 +242,10 @@ public class SlotAutoUsePresenter : MonoBehaviour
         {
             SlotIndex = _slotIndex,
             ItemTID   = itemTid,
-            Count     = count,
-            Take      = take,
+            On        = on,
         });
 
-        ClientLogger.Info(ClientLogger.Send, $"자동 사용 칸 {(take ? "꺼내기" : "넣기")} 요청 — 슬롯={_slotIndex}, TID={itemTid}, {count}개");
+        ClientLogger.Info(ClientLogger.Send, $"자동 사용 {(on ? "켜기" : "끄기")} 요청 — 슬롯={_slotIndex}, TID={itemTid}");
 
         _waitHandle = _wait.Begin(Lang.Get("UI.WorkStation.WaitAutoUse"), onClosed: OnWaitClosed);
         Refresh();

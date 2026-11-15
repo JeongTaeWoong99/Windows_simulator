@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-16 영약 자동 사용 ON/OFF — 클라 연동](2026-11-16-auto-use-toggle-client.md) — `#client` `#ui` `#data` T-194 클릭 토글 · 칸 ON ×보유 · 칩 +보유 · 문구 정리
 - [2026-11-15 영약 자동 사용 ON/OFF 전환](2026-11-15-auto-use-toggle.md) — `#server` `#test` #123 공유 재고 소비·기존 보관분 환급
 
 - [2026-11-15 응축·큐브 팝업 · 글자 넘침 규칙 · 도움말 아이콘 · 무응답 오알림](2026-11-15-ui-popups-overflow.md) — `#client` `#ui` `#art` T-201 가운데 팝업·재료 목록 · `Josa` · 한 줄+자동 축소 · `ui_help` · 멈춘 뒤 시간 초과 판정 순서 · 한글 줄바꿈

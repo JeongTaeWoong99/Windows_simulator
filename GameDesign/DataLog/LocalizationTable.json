@@ -7545,11 +7545,6 @@
     "EN": "This item can't go in an auto-use slot."
   },
   {
-    "Key": "UI.Result.AutoUseSlotFull",
-    "KR": "자동 사용 칸이 가득 찼습니다.",
-    "EN": "The auto-use slot is full."
-  },
-  {
     "Key": "UI.ItemUse.EffectExp",
     "KR": "캐릭터 경험치 +{0}",
     "EN": "Character EXP +{0}"
@@ -7651,8 +7646,8 @@
   },
   {
     "Key": "UI.WorkStation.AutoUseInSlot",
-    "KR": "자동 사용 칸에 {0}개",
-    "EN": "{0} in the auto-use slot"
+    "KR": "자동 사용 켜짐 · 보유 {0}개",
+    "EN": "Auto use on · {0} owned"
   },
   {
     "Key": "UI.WorkStation.AutoUse",
@@ -7661,28 +7656,18 @@
   },
   {
     "Key": "UI.WorkStation.AutoUseHint",
-    "KR": "효과가 끝나면 넣어 둔 영약을 1개씩 씁니다 · 좌클릭 넣기 · 우클릭 꺼내기",
-    "EN": "When the effect ends, one stored elixir is used · Left-click to add · Right-click to take out"
+    "KR": "켜 두면 효과가 끝날 때 인벤토리·창고의 영약을 1개씩 씁니다 · 클릭으로 켜고 끄기",
+    "EN": "When on, one elixir from inventory or warehouse is used when the effect ends · Click to toggle"
   },
   {
-    "Key": "UI.WorkStation.AskAutoPut",
-    "KR": "몇 개를 넣을까?",
-    "EN": "How many to add?"
-  },
-  {
-    "Key": "UI.WorkStation.AskAutoTake",
-    "KR": "몇 개를 꺼낼까?",
-    "EN": "How many to take out?"
-  },
-  {
-    "Key": "UI.WorkStation.AutoUseNoItem",
-    "KR": "넣을 {0}이(가) 없습니다",
-    "EN": "You have no {0}"
+    "Key": "UI.WorkStation.AutoUseOff",
+    "KR": "자동 사용 꺼짐 · 보유 {0}개",
+    "EN": "Auto use off · {0} owned"
   },
   {
     "Key": "UI.WorkStation.WaitAutoUse",
-    "KR": "자동 사용 칸 정리",
-    "EN": "Update auto-use slot"
+    "KR": "자동 사용 설정",
+    "EN": "Update auto use"
   },
   {
     "Key": "UI.WorkStation.SpeedAddNoteBuff",
