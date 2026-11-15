@@ -41,6 +41,7 @@ using UnityEngine.UI;
 // ■ 자동 — 사람이 누르는 흐름을 그대로, 2배 빠르기로 (이슈 #53)
 // [자동]이 비교 상자 자리에 설정 칸('EnchantAutoPanelView' — 목표 등급 · 노릴 옵션 · 조합 · 상한)을 같은 높이로 갈아 끼우고,
 // 규칙 줄은 예상 확률('EnchantForecast')을 보인다. [자동 시작]이면 **수동과 같은 요청**(큐브 사용 → 상급이면 고르기)을 차례로 보낸다.
+// 규칙 줄은 짙은 바탕(`Border`) 위다 — 강조색은 밝은 `Highlight`를 쓴다(2026-11-15 · 중갈 바탕 위 진황토가 안 읽혔다).
 //   - 목표 판정 · 상급 큐브의 남기기는 'EnchantAutoTarget'이 한다(오르면 새 값, 같으면 노린 칸이 많을 때만).
 //   - 멈춤: 목표 달성 · 상한 · 큐브 소진 · [■ 멈춤] · 창 닫기·탭 · 서버 거절. 상급 큐브가 목표에 닿으면 보류를 남기고 멈춘다 — 사람이 [선택]한다.
 //   - 착용 중 · 고르기 전 장비는 자동을 열지 않는다(먼저 벗기거나 고르게 알린다).
@@ -494,7 +495,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 자동 결과 한 줄 — '목표 달성! — 상급 인챈트 큐브 12개 사용.' (자동 끝 · 언어 변경)
     private string BuildAutoSummary()
         => Colorize(Lang.Format("UI.Enchant.AutoEndSummary", Lang.Get(_autoSummaryKey), GameDataLoader.GetItemName(_autoSummaryCube), $"{_autoUsed:N0}"),
-                    UIThemePalette.Of(_autoSummaryReached ? UIThemeRole.Positive : UIThemeRole.HighlightDark));
+                    UIThemePalette.Of(_autoSummaryReached ? UIThemeRole.Positive : UIThemeRole.Highlight));
 
     #endregion
 
@@ -672,7 +673,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 자동이 끝난 뒤 한 줄 — 무엇 때문에 멈췄고 몇 개 썼나. 상급 큐브가 목표에 닿았으면 고르기 안내가 뒤따른다.
         if (IsPending(equip))
         {
-            string pick = Colorize(Lang.Get("UI.Enchant.PickOne"), UIThemePalette.Of(UIThemeRole.HighlightDark));
+            string pick = Colorize(Lang.Get("UI.Enchant.PickOne"), UIThemePalette.Of(UIThemeRole.Highlight));
 
             ruleText.text = _autoSummary == null
                 ? $"{pick}\n{Lang.Get("UI.Enchant.RerollKeepsBefore")}"
@@ -1308,7 +1309,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         // 첫 줄 = 목표 등급 + 예상(막혔으면 이유) · 둘째 줄 = 칸 조건(+ 한 번에 맞을 확률). 두 줄 고정
         if (blocked != null)
         {
-            ruleText.text = $"{DescribeGoal()}{UIRichText.Dot}{Colorize(blocked, UIThemePalette.Of(UIThemeRole.HighlightDark))}\n"
+            ruleText.text = $"{DescribeGoal()}{UIRichText.Dot}{Colorize(blocked, UIThemePalette.Of(UIThemeRole.Highlight))}\n"
                           + DescribeSlotRule(slotCount, null);
         }
         else
@@ -1352,7 +1353,7 @@ public class EquipEnchantPresenter : MonoBehaviour
     private string FormatForecast(EnchantForecast.Result forecast, int cap, int cubeTid)
     {
         UIThemeRole tone = forecast.WithinCap >= 0.9 ? UIThemeRole.Positive
-                         : forecast.WithinCap >= 0.5 ? UIThemeRole.HighlightDark
+                         : forecast.WithinCap >= 0.5 ? UIThemeRole.Highlight
                          : UIThemeRole.Negative;
 
         string within = Colorize(Percent(forecast.WithinCap), UIThemePalette.Of(tone));
@@ -1435,7 +1436,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             return UIRichText.Paint(Lang.Get("UI.Enchant.NoSlotRule"), UIThemeRole.TextSub);
         }
 
-        string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.HighlightDark));
+        string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.Highlight));
 
         return chance == null ? combos : combos + UIRichText.Dot + Lang.Format("UI.Enchant.PerRoll", Percent(chance.Value));
     }

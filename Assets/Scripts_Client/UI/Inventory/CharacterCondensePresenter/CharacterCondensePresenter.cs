@@ -150,6 +150,9 @@ public class CharacterCondensePresenter : MonoBehaviour
     private ServerWaitHandle? _waitHandle;
     private int               _sentStar; // 보낼 때의 ★ — 응답에서 올랐는지 비교한다
 
+    // 응축 성공 빛 — 레벨업 연출('LevelUpFx')과 같은 금빛
+    private static readonly Color CondenseGold = new Color(1f, 0.84f, 0.32f, 1f);
+
     private Tween? _starPunch;
 
     // 재료 칸 — 열 때마다 개수가 달라 꺼 두었다가 다시 쓴다
@@ -757,6 +760,21 @@ public class CharacterCondensePresenter : MonoBehaviour
                                   .SetLink(gameObject, LinkBehaviour.KillOnDisable);
     }
 
+    // 응축 성공 연출 — 상반신에서 금빛이 터진다. ★이 올랐으면 크게(빛살 두 겹 · 고리 두 번) + ★ 묶음도 터지고 튄다 (응축 성공 응답에서 호출).
+    // ※ 기본 성공은 작게 — 재료만 쌓이는 응축이 대부분이라 매번 크게 터지면 ★ 상승이 묻힌다(사용자 요청 2026-11-15 "기본 / 단계 업").
+    private void PlayCondenseFx(bool rankedUp)
+    {
+        var portrait = (RectTransform)portraitImage.rectTransform.parent;
+
+        CelebrationFx.On(portrait).Play(CondenseGold, rankedUp ? 1f : 0.35f);
+
+        if (rankedUp)
+        {
+            CelebrationFx.On(headerStarRow).Play(CondenseGold, 0.5f);
+            PunchStars();
+        }
+    }
+
     private static string Colorize(string text, Color color) => $"<color=#{ColorUtility.ToHtmlStringRGB(color)}>{text}</color>";
 
     #endregion
@@ -1092,9 +1110,11 @@ public class CharacterCondensePresenter : MonoBehaviour
 
         ClearMaterials();
 
-        if (res.Character != null && res.Character.CharacterId == _targetId && res.Character.Star > _sentStar && gameObject.activeInHierarchy)
+        bool rankedUp = res.Character != null && res.Character.CharacterId == _targetId && res.Character.Star > _sentStar;
+
+        if (gameObject.activeInHierarchy)
         {
-            PunchStars();
+            PlayCondenseFx(rankedUp);
         }
 
         _waitHandle.Succeed();

@@ -1244,6 +1244,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
             yieldRow.SetNote(Lang.Format("UI.WorkStation.YieldNote", FormatPermille(commonYield), FormatPermille(industryYield)));
         }
 
+        // 줄에 올리면 항목 뜻을 알려 준다 — 숫자만으로는 무엇을 더하고 나누는지 읽히지 않았다(사용자 지적 2026-11-15)
+        string[] tipKeys = { "BaseAptitude", "SpeedAdd", "CurrentSpeed", "EffectiveCycle", "Yield" };
+
+        for (int i = 0; i < tipKeys.Length; i++)
+        {
+            string name = tipKeys[i];
+
+            _efficiencyRows.Get(i).SetTooltip(Lang.Get($"UI.WorkStation.{name}"), Lang.Get($"UI.WorkStation.Tip.{name}"));
+        }
+
         _efficiencyRows.HideFrom(EfficiencyRowCount);
 
         // 캐릭터 줄과 같은 이유 — 방금 켠 줄은 이 프레임 끝까지 프리팹 크기 그대로다('RefreshRows' 끝 주석).

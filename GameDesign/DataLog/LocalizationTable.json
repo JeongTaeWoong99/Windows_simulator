@@ -7678,5 +7678,30 @@
     "Key": "UI.WorkStation.SpeedAddNoteBuff",
     "KR": "{0} · 영약 {1}",
     "EN": "{0} · Elixir {1}"
+  },
+  {
+    "Key": "UI.WorkStation.Tip.BaseAptitude",
+    "KR": "캐릭터 적성이 정한 이 산업의 기본 작업속도입니다. 적성이 높을수록 빠릅니다.",
+    "EN": "Base work speed for this industry, set by the character's aptitude. Higher aptitude works faster."
+  },
+  {
+    "Key": "UI.WorkStation.Tip.SpeedAdd",
+    "KR": "기본 작업속도에 더하는 비율의 합입니다 — 레벨 · 응축 · 특성 · 장비 · 영약.",
+    "EN": "Total bonus added to base speed — level, condense, traits, gear and elixirs."
+  },
+  {
+    "Key": "UI.WorkStation.Tip.CurrentSpeed",
+    "KR": "지금 실제로 쓰는 작업속도입니다. 적성 기본값 × (1 + 속도 가산)이고, 최소 주기에 닿으면 더 오르지 않습니다.",
+    "EN": "The work speed in use now: base aptitude × (1 + speed bonus). It stops rising once the minimum cycle is reached."
+  },
+  {
+    "Key": "UI.WorkStation.Tip.EffectiveCycle",
+    "KR": "자원 판정 1회에 걸리는 시간입니다. 산업 레벨의 기본 주기를 현재 작업속도로 나눈 값이며, 최소 주기보다 짧아지지 않습니다.",
+    "EN": "Time for one resource roll: the industry level's base cycle divided by current work speed. Never shorter than the minimum cycle."
+  },
+  {
+    "Key": "UI.WorkStation.Tip.Yield",
+    "KR": "판정 1회에 같은 자원이 나오는 양입니다. 기본 100%이고 특성(공통 · 산업)으로 늘어납니다.",
+    "EN": "How much of the same resource one roll gives. 100% by default, raised by traits (common · industry)."
   }
 ]

@@ -198,6 +198,20 @@ public sealed class EnchantAutoTarget
         return text.ToString();
     }
 
+    // 조합 칩 글씨(짧은 꼴) — 노린 옵션이어야 하는 칸 수만 적는다: '전체' · '경험치×1' · '경험치×3'.
+    // '/'로 칸마다 늘어놓으면 칩 폭(약 100)을 넘어 잘렸다(사용자 지적 2026-11-15) — 칸별 꼴은 규칙 줄('DescribeCombos')이 계속 쓴다.
+    public static string GetComboChipLabel(EnchantAutoFocus focus, int slotCount, int allCount)
+    {
+        if (focus == EnchantAutoFocus.None)
+        {
+            return "—";
+        }
+
+        int need = slotCount - allCount;
+
+        return need <= 0 ? Lang.Get("UI.Enchant.All") : $"{GetFocusName(focus)}×{need}";
+    }
+
     // 켠 조합 전부 — '칸 [전체/발굴/발굴] [전체/전체/전체]' — 켠 것끼리는 OR (큐브 창 규칙 줄 둘째 줄 — 설정 중 · 도는 중).
     // 전부 켰으면 줄여 쓴다 — '칸마다 전체 또는 발굴'. 네 묶음을 늘어놓으면 한 줄을 넘는다(사용자 지적 2026-10-11).
     public string DescribeCombos(int slotCount)

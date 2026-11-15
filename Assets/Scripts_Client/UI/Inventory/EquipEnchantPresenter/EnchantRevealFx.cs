@@ -20,6 +20,7 @@ using UnityEngine.UI;
 //   돌기   : 칸 줄마다 **같은 등급**의 아무 옵션을 흐린 색으로 빠르게 바꿔 끼운다. 제목은 등급을 감춘다('…')
 //   멈춤   : 첫 줄부터 차례로 진짜 값으로 멈추고, 멈춘 줄은 잠깐 굵게 튄다
 //   상승   : 마지막 줄이 멈추면 테두리가 하얗게 번쩍였다 등급색으로 · 번짐 · '등급 상승!' 도장
+//            + 터짐(빛살 · 고리 · 별 조각 — 'CelebrationFx', 등급이 높을수록 크게) · 상자가 한 번 튄다 (2026-11-15)
 //            영웅↑은 입자가 터지고(신화는 더 많이) 신화는 빛 줄이 훑는다
 //   목표   : 자동이 목표에 닿으면 초록 테두리 두 번 + 초록 입자 ('FlashGoal')
 //   고름   : [선택]으로 고른 값이 남은 상자가 금색으로 번쩍 ('FlashChosen')
@@ -44,10 +45,10 @@ public class EnchantRevealFx : MonoBehaviour
 
     // 상승 — 테두리 번쩍 · 번짐 · 도장
     private const float FlashSeconds   = 1.0f;
-    private const float GlowSeconds    = 1.0f;
-    private const float GlowAlpha      = 0.45f;
+    private const float GlowSeconds    = 0.6f;
+    private const float GlowAlpha      = 0.25f; // 0.45는 상자 속이 뿌옇게 남았다(2026-11-15)
     private const float GlowStartScale = 0.9f;
-    private const float GlowEndScale   = 1.2f;
+    private const float GlowEndScale   = 1.08f;
     private const float GlowWhiten     = 0.2f;
     private const float StampSeconds   = 0.45f;
     private const float StampFromScale = 3f;
@@ -365,6 +366,13 @@ public class EnchantRevealFx : MonoBehaviour
         InsertGlow(at, color, GlowSeconds / _speed, GlowAlpha);
         InsertStamp(at, color);
 
+        // 터짐 — 빛살 · 고리 · 별 조각. 등급이 높을수록 크다(고급 0.35 → 신화 1). 상자도 한 번 튄다
+        // ※ 번짐만으로는 상자 속이 뿌옇게 남아 '애매하다'는 지적(사용자 2026-11-15) — 번짐은 줄이고 이것을 주연으로
+        float power = Mathf.Clamp01(0.35f + ((int)grade - (int)GlobalRarity.Uncommon) * 0.17f);
+
+        _seq!.InsertCallback(at, () => CelebrationFx.On(_rect).Play(color, power, _speed));
+        _seq.Insert(at, _rect.DOPunchScale(Vector3.one * (0.04f + 0.04f * power), 0.35f / _speed, 6, 0.5f));
+
         if (grade >= GlobalRarity.Epic)
         {
             InsertSparks(at, grade >= GlobalRarity.Mythic ? MythicSparks : EpicSparks, color, 1f);
@@ -558,6 +566,8 @@ public class EnchantRevealFx : MonoBehaviour
     // 끝 — 쥔 결과를 쓰고 번쩍임 층을 끈다 (OnKill · Stop). 도장 · 등급 테두리는 남긴다.
     private void Finish()
     {
+        transform.localScale = Vector3.one; // 상승 때 튄 상자가 중간에 끊겨도 제 크기로
+
         if (IsSpinning)
         {
             Lock();

@@ -97,7 +97,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.5411765, g: 0.2901961, b: 0, a: 1}
+  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 0.75}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -114,8 +114,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -171,8 +171,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 22
-  alpha: 1
+  role: 31
+  alpha: 0.75
 --- !u!1 &2614938046849638945
 GameObject:
   m_ObjectHideFlags: 0
@@ -355,7 +355,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4281479730
-  m_fontColor: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
+  m_fontColor: {r: 0.9490196, g: 0.75686276, b: 0.30588236, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -372,8 +372,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -429,7 +429,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 33
+  role: 21
   alpha: 1
 --- !u!1 &7307515501914141967
 GameObject:
@@ -528,7 +528,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4281479730
-  m_fontColor: {r: 0.22745098, g: 0.15686275, b: 0.078431375, a: 1}
+  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -545,8 +545,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 20
-  m_fontSizeBase: 20
+  m_fontSize: 19
+  m_fontSizeBase: 19
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -602,7 +602,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 33
+  role: 31
   alpha: 1
 --- !u!1 &9034237393612007449
 GameObject:
@@ -618,6 +618,7 @@ GameObject:
   - component: {fileID: 7252062277964753132}
   - component: {fileID: 6865581932452753862}
   - component: {fileID: 8778518357657213194}
+  - component: {fileID: 5323078206983439072}
   m_Layer: 5
   m_Name: EfficiencyRowView
   m_TagString: Untagged
@@ -667,8 +668,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.79607844, g: 0.6862745, b: 0.5019608, a: 0.35}
-  m_RaycastTarget: 0
+  m_Color: {r: 0.79607844, g: 0.6862745, b: 0.5019608, a: 0}
+  m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
@@ -697,8 +698,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.VerticalLayoutGroup
   m_Padding:
-    m_Left: 8
-    m_Right: 8
+    m_Left: 4
+    m_Right: 4
     m_Top: 3
     m_Bottom: 3
   m_ChildAlignment: 0
@@ -726,6 +727,7 @@ MonoBehaviour:
   valueText: {fileID: 8103621994490724321}
   noteText: {fileID: 4484072629315882676}
   backgroundImage: {fileID: 3684643304953942993}
+  tooltip: {fileID: 5323078206983439072}
 --- !u!114 &8778518357657213194
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -739,4 +741,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 1
-  alpha: 0.35
+  alpha: 0
+--- !u!114 &5323078206983439072
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9034237393612007449}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 59c2b3fb72f475c4fa2fc89ccbae5d6f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TooltipTrigger
+  text: 
+  label: {fileID: 0}

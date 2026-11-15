@@ -114,7 +114,7 @@ public class EnchantAutoPanelView : MonoBehaviour
 
             int allCount = slotCount - i;
 
-            comboChips[i].Bind(EnchantAutoTarget.GetComboLabel(target.Focus, slotCount, allCount),
+            comboChips[i].Bind(EnchantAutoTarget.GetComboChipLabel(target.Focus, slotCount, allCount),
                                target.UsesSlots && target.IsComboOn(allCount),
                                target.UsesSlots);
         }

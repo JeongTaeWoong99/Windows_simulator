@@ -24,6 +24,9 @@ public class EfficiencyRowView : MonoBehaviour
     [SerializeField, Tooltip("줄 바탕 — 프리팹 루트의 Image. 평소 색은 그대로 두고 'SetRarity'일 때만 칠해진다")]
     private Image backgroundImage = null!;
 
+    [SerializeField, Tooltip("줄에 올리면 뜨는 설명 툴팁 — 이 항목이 무슨 뜻인지(2026-11-15). 바탕 Image가 레이를 받아야 뜬다")]
+    private TooltipTrigger tooltip = null!;
+
     // 씬에 찍힌 기본 바탕색. 'Clear'가 여기로 되돌린다 — 풀에서 재사용될 때 이전 등급 색이 남지 않게.
     private Color _defaultColor;
 
@@ -34,6 +37,7 @@ public class EfficiencyRowView : MonoBehaviour
         this.RequireRef(valueText, nameof(valueText));
         this.RequireRef(noteText,  nameof(noteText));
         this.RequireRef(backgroundImage, nameof(backgroundImage));
+        this.RequireRef(tooltip,         nameof(tooltip));
 
         _defaultColor = backgroundImage.color;
     }
@@ -53,6 +57,14 @@ public class EfficiencyRowView : MonoBehaviour
         noteText.gameObject.SetActive(note.Length > 0);
     }
 
+    // 줄에 올리면 뜰 설명을 단다. 빈 문자열이면 툴팁을 끈다 ('WorkStationSelectPresenter'가 Bind 뒤에 호출).
+    //   title : 툴팁 제목 — 보통 항목 이름
+    //   body  : 이 항목이 무슨 뜻인지 한두 문장
+    public void SetTooltip(string title, string body)
+    {
+        tooltip.SetProvider(body.Length > 0 ? () => new TooltipContent(title).Row(body, "") : null);
+    }
+
     // 줄 바탕을 등급 색으로 칠한다 (산업 레벨 정보의 자원 줄만 호출).
     //   rarity : 아이템 종류(TID)로 읽은 등급. 인벤토리 칸과 같은 표('RarityPalette')다
     public void SetRarity(GlobalRarity rarity)
@@ -65,6 +77,7 @@ public class EfficiencyRowView : MonoBehaviour
     public void Clear()
     {
         Bind("", "");
+        SetTooltip("", "");
         backgroundImage.color = _defaultColor;
     }
 }
