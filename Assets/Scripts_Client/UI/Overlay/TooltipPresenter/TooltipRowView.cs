@@ -33,6 +33,11 @@ public class TooltipRowView : MonoBehaviour
     // 프리팹에 찍힌 기본 바탕색. 풀에서 재사용될 때 이전 줄의 색이 남지 않게 여기로 되돌린다.
     private Color _defaultColor;
 
+    // 프리팹에 찍힌 바탕 그림 — Special 무지개 띠('BindSprite')를 쓴 줄이 재사용될 때 되돌린다
+    private Sprite?          _defaultSprite;
+    private Image.Type       _defaultType;
+    private float            _defaultPpuMultiplier;
+
     // 프리팹에 찍힌 라벨 글자색 — 묶음 제목 줄이 바꾼 것을 되돌린다
     private Color _defaultLabelColor;
 
@@ -65,6 +70,9 @@ public class TooltipRowView : MonoBehaviour
         this.RequireRef(backgroundImage, nameof(backgroundImage));
 
         _defaultColor      = backgroundImage.color;
+        _defaultSprite     = backgroundImage.sprite;
+        _defaultType       = backgroundImage.type;
+        _defaultPpuMultiplier = backgroundImage.pixelsPerUnitMultiplier;
         _defaultLabelColor = labelText.color;
         _valueLayout    = RequireLayout(valueText);
         _subValueLayout = RequireLayout(subValueText);
@@ -125,6 +133,7 @@ public class TooltipRowView : MonoBehaviour
         subValueText.text   = line.SubValue;
 
         subValueText.gameObject.SetActive(line.SubValue.Length > 0);
+        RestoreBackground();
         backgroundImage.color = tint is Color c
                                     ? Color.Lerp(_defaultColor, new Color(c.r, c.g, c.b, 1f), blend)
                                     : _defaultColor;
@@ -142,6 +151,31 @@ public class TooltipRowView : MonoBehaviour
         subValueText.text   = "";
 
         subValueText.gameObject.SetActive(false);
+        RestoreBackground();
         backgroundImage.color = band;
+    }
+
+    // 줄 바탕을 그림으로 칠한다 — Special 등급 줄의 무지개 띠 ('TooltipPresenter.PaintRows'에서 Bind 뒤에 호출).
+    //   blend : 판 색에서 흰색 쪽으로 얼마나 — 그림 색을 그만큼 살린다
+    //   ※ 9-slice(위·아래 1px 경계)로 늘린다 — 위 밝은 줄·아래 그늘이 줄 높이와 상관없이 픽셀 하나(캔버스 2)로 남는다(UI 틀과 같은 배율)
+    public void BindSprite(Sprite sprite, float blend)
+    {
+        EnsureInitialized();
+
+        backgroundImage.sprite                  = sprite;
+        backgroundImage.type                    = Image.Type.Sliced;
+        backgroundImage.pixelsPerUnitMultiplier = SpritePpuMultiplier;
+        backgroundImage.color                   = Color.Lerp(_defaultColor, Color.white, blend);
+    }
+
+    // 그림 한 픽셀 = 캔버스 2칸 ('UiSkin'과 같은 배율)
+    private const float SpritePpuMultiplier = 0.5f;
+
+    // 바탕을 프리팹 모양으로 되돌린다 — 풀에서 재사용될 때 무지개 띠가 남지 않게 (Bind · BindHeader에서 호출)
+    private void RestoreBackground()
+    {
+        backgroundImage.sprite                  = _defaultSprite;
+        backgroundImage.type                    = _defaultType;
+        backgroundImage.pixelsPerUnitMultiplier = _defaultPpuMultiplier;
     }
 }

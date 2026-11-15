@@ -72,6 +72,8 @@ public static class FxSprites
 
     // 무지개 원뿔 — ⚠️ 흰색 규칙의 예외. Special 한 등급만 쓰는 고정색이라 색이 그림에 들어 있다(흰색을 곱한다)
     public static Sprite? SpecialRainbow => VisualCatalog.FxOf("special_rainbow");
+    // 가로 무지개 띠 — 툴팁의 Special 등급 줄 바탕('TooltipRowView.BindSprite'). ⚠️ 흰색 규칙의 예외 — 색이 그림에 들어 있다
+    public static Sprite? SpecialStrip   => VisualCatalog.FxOf("special_strip");
 
     // ── coin — 골드 그림 하나 ('CoinFlyPresenter' · 'StatePresenter' · 'ItemIconContent.ForGold' · 'GachaResultPresenter') ──
 

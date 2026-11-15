@@ -113,3 +113,40 @@ tags: [client, ui, art, editor]
 - 검색 후보 클릭이 자주 안 먹힘 — 원인: 후보 줄 버튼엔 `IDragHandler`가 없어 드래그 대상이 **부모 입력칸**으로 잡혔다(`GetEventHandler<IDragHandler>` 실측). 누른 채 10px(`pixelDragThreshold`) 움직이면 입력칸이 드래그를 시작하고, 누른 대상 ≠ 드래그 대상이라 `InputSystemUIInputModule`이 클릭을 취소한다. → `SuggestView`가 드래그를 받고(`OnEndDrag`에서 놓은 줄을 고른다). 폭은 `sizeDelta.x` 120 → 0(3곳), 이름 색 `RarityPalette.OnLight`.
 - 씬 잡음: `scenefix.py` — ID는 `GlobalObjectId.targetObjectId`로 뽑는다(`TryGetGUIDAndLocalFileIdentifier`는 씬 오브젝트에 0을 줘 전부 되돌렸다).
 - 툴킷 마스터: task-writer(`art/`·`later/` · 완료 때 공돌리기) · task-reader(INDEX 표 셋) · github-issue-writer(공돌리기) — `a9b27a6`, 푸시는 사용자.
+
+## 이어서 — 경매 등급 드롭다운에 Special
+
+- 사용자: 무지개(유물) 등급이 등급 드롭다운에 없다.
+- `AuctionSearchPresenter.RarityOptions`에 `GlobalRarity.Special` 추가. 인챈트 등급 '이상' 드롭다운은 같은 배열을 쓰고 있었는데 인챈트는 Mythic이 끝이라 `EnchantGradeOptions`로 갈랐다(Special 미포함).
+- 서버 필터는 숫자 비교(`ListingIndex` Min/MaxRarity)라 7도 그대로 통한다. 문구는 기존 `UI.Rarity.Special`.
+- 컴파일 확인. 드롭다운은 Start에서 채우므로 씬 변경 없음.
+- 툴팁의 Special(흰 테·흰 등급 줄)은 시안만 제안 — 사용자 선택 대기.
+
+## 이어서 — Special 툴팁 A+B (무지개 테 · 무지개 등급 줄)
+
+- 사용자: 시안(바탕화면 `스페셜 툴팁 시안.html`) 중 추천 A+B로, 툴팁 테두리는 모든 등급 동일하게.
+- 해석: 테 모양·굵기(4px)는 모든 등급 같게 두고 Special만 그 테 위로 무지개가 흐른다. 다른 등급은 지금처럼 등급색 테.
+- `TooltipPresenter.BuildRim` — 막대 넷에 `RectMask2D` + 무지개 원뿔(`special_rainbow`). 원뿔은 판 가운데·판 대각선×1.05 크기(`FitRainbow`, 레이아웃 확정 뒤), `Update`에서 3초 한 바퀴(`SpinRainbow` — 떠 있을 때만). 넷이 같은 각도라 한 장이 도는 것처럼 보인다.
+- 등급 줄 — `PaintRows(lines, isSpecial)`가 바탕색을 준 줄에 `TooltipRowView.BindSprite(special_strip, 0.55)`. 줄 재사용 때 그림을 되돌리려고 `_defaultSprite`를 둔다.
+- 새 그림 `Assets/Art/fx/special/special_strip.png`(28×4, 7색 4px씩 · 점 필터) — `VisualCatalog` 목록 다시 쓰기로 등록.
+- 플레이에서 Render를 직접 불러 캡처 — 무지개 테·띠 확인. 실제 호버로 도는 것은 사용자 실측.
+- 사용자: 등급 줄 무지개 띠가 "너무 구리다"(7색 4px 덩어리 + 판 색 55% 섞여 탁함).
+  → `special_strip`을 128×4 부드러운 파스텔 그라데이션(밝기 0.78 · 채도 0.85, 빨강→보라)으로 다시 그렸고, 섞는 비율을 `StripBlend` 0.9로 따로 뒀다. 캡처로 확인.
+
+## 이어서 — 세 열 여백 절반 · 메뉴 [보스] · 정사각 버튼
+
+- 사용자: 세 열 가운데 판 여백이 10 넘게 넓다(상태줄·위젯은 5 정도). 일부러인가?
+  - 원인: `UiSkin.FramePadding` 32 — 옛 돌 액자(그림 12px × 2 = 24 + 틈 8) 기준. 양피지 2차로 띠가 그림 4px(= 8)로 얇아졌는데 여백은 그대로 남아 씬에 37(5 + 32)로 구워져 있었다. 의도한 값이 아니다.
+  - 세 열 `Body Panel` 37 → 18, 상수 32 → 13(띠 8 + 틈 5). 오버레이 창(경매장·아티팩트·거점·수량·소모품·안내·로그인)은 37 그대로 — 요청 범위 밖, 따로 묻는다. Confirm은 손으로 맞춘 30/26 그대로.
+  - 확인: 인벤토리 5열 그대로 칸만 커짐 · 작업슬롯 2열 그대로 · 길드 깨짐 없음(캡처).
+- 메뉴: 맨 왼쪽 `Boss Button (0)` — 인벤토리 버튼 복제 · `menu_boss`(make_icons.py에 추가) · `interactable` 끔 · 아이콘 알파 0.4 · 툴팁은 끈 글씨 "보스"(번역 키 없음 — LocalizedText 제거).
+  - 6개 모두 글씨 끔 + `TooltipTrigger.label` = 끈 글씨, 정사각 90(`LayoutElement` · 줄 폭 확장 끔 · 가운데), 아이콘 64(16 × 4).
+  - 기존 규칙 "잠긴 버튼을 미리 두지 않는다"의 예외로 Main 규칙·MenuPresenter 주석에 적었다.
+- 씬 노이즈: scenefix로 의도한 35개 문서 + 새 27개만 남겼다(레이아웃이 다시 계산하는 RectTransform 244개 되돌림).
+
+## 이어서 (2026-11-16) — 도트 무지개 띠 · 여백 전부 · 레이드 · 커밋
+
+- 사용자: 매끈한 그라데이션은 도트와 결이 다르다는 제안대로 → `special_strip`을 48×6(12단 × 4px · 위 1px 밝은 줄 · 아래 1px 그늘)으로 다시 그림. 9-slice 위아래 1(.meta) · `TooltipRowView.BindSprite`가 Sliced + 배율 0.5, `RestoreBackground`로 줄 재사용 때 되돌림. `StripBlend` 1(그림 색 그대로). 캡처 확인.
+- 여백 전부: 액자 둘린 창 8곳(경매장·아티팩트·거점 Body Panel · 확인·수량·소모품·안내·로그인 Panel) → 18. Confirm은 30/26 손값이던 것도 18로 통일. 캡처로 경매장·아티팩트·거점·확인 팝업 깨짐 없음 확인.
+- 보스 → 레이드: `Raid Button (6)` 맨 오른쪽 · 끈 글씨 "레이드" · 아이콘 `menu_raid`(make_icons.py 함수·파일 이름 변경).
+- 씬 노이즈: scenefix로 18개 문서만 남김(196 되돌림).

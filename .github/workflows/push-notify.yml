@@ -1,0 +1,41 @@
+# main 푸시 알림 — main에 커밋이 올라갔을 때만 Discord로 알린다.
+#
+# 예전에는 저장소 설정의 웹후크(Discord `/github` 주소, 이벤트 전체)가 알림을 보냈다.
+# 그 방식은 브랜치를 가리지 못해 워크트리·PR 브랜치 푸시와 CI·이슈 이벤트까지 전부 울렸다.
+# 그래서 저장소 웹후크는 끄고, main 푸시만 여기서 보낸다.
+#
+# ⚠️ 선행 조건: 시크릿 DISCORD_PUSH_WEBHOOK (#github-push-notify 채널 웹후크).
+#    CI 실패 알림(DISCORD_WEBHOOK, #ci-cd)과 채널을 나눈다.
+#    없으면 경고만 남기고 조용히 끝난다.
+name: main 푸시 알림
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  notify:
+    name: Discord 알림
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Discord 전송
+        env:
+          # 시크릿을 run 스크립트에 직접 펼치지 않는다(로그 노출). env로만 넘긴다.
+          WEBHOOK: ${{ secrets.DISCORD_PUSH_WEBHOOK }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::DISCORD_PUSH_WEBHOOK 시크릿이 없어 알림을 건너뜁니다."
+            exit 0
+          fi
+
+          # 커밋 없는 푸시(태그 이동 등)는 알리지 않는다.
+          [ "$(jq '.commits | length' "$GITHUB_EVENT_PATH")" -gt 0 ] || exit 0
+
+          # GitHub 푸시 이벤트 원본을 Discord의 GitHub 호환 주소(`/github`)로 그대로 넘긴다.
+          # 예전 저장소 웹후크와 같은 모양(푸시한 사람 이름·아이콘, 커밋 목록)으로 나온다.
+          curl -sS -f -X POST             -H 'content-type: application/json'             -H 'X-GitHub-Event: push'             --data-binary "@$GITHUB_EVENT_PATH"             "${WEBHOOK%/}/github"

@@ -81,6 +81,8 @@ public class TooltipPresenter : MonoBehaviour
     // 커서 밑 대상을 확인하고 띄우거나 끈다 (Unity 메시지)
     private void Update()
     {
+        SpinRainbow();
+
         var target = FindTrigger();
 
         if (target != _hovered)
@@ -187,7 +189,7 @@ public class TooltipPresenter : MonoBehaviour
         //   꺼진 TMP는 글자 폭도 제대로 못 잰다.
         rowParent.gameObject.SetActive(lines.Count > 0);
 
-        PaintRows(lines);
+        PaintRows(lines, content.Rarity == GlobalRarity.Special);
 
         _rows.HideFrom(lines.Count);
 
@@ -195,6 +197,8 @@ public class TooltipPresenter : MonoBehaviour
 
         // 크기를 지금 확정해야 아래 'Place'가 넘침을 잴 수 있다('UI 규칙.md' "만든 자리에서 바로 태운다").
         LayoutRebuilder.ForceRebuildLayoutImmediate(panel);
+
+        FitRainbow();
     }
 
     // 등급 테 — 등급이 있는 툴팁(칸·장비·아티팩트)은 판 가장자리에 등급색 테를 두른다. 칸 테두리와 같은 말이다(시안 2 · 2026-11-15).
@@ -219,6 +223,60 @@ public class TooltipPresenter : MonoBehaviour
         foreach (Image bar in _rimBars)
         {
             bar.color = color;
+        }
+
+        // Special — 같은 굵기의 테 위로 무지개가 흐른다. 칸의 Special 테두리('SpecialSlotFx')와 같은 그림·같은 속도다(2026-11-15 사용자).
+        //   다른 등급은 지금처럼 등급색 테 그대로 — 테 모양·굵기는 모든 등급이 같다
+        _rainbowOn = rarity.Value == GlobalRarity.Special && FxSprites.SpecialRainbow != null;
+
+        foreach (RectTransform cone in _rainbowCones)
+        {
+            cone.gameObject.SetActive(_rainbowOn);
+        }
+    }
+
+    // 무지개 한 바퀴 (초) — 'SpecialSlotFx.TurnDuration'과 같다
+    private const float RainbowTurn = 3f;
+
+    // 테 막대마다 하나씩 든 무지개 원뿔 — 넷이 판 가운데를 같은 각도로 돌아 한 장이 도는 것처럼 보인다
+    private readonly List<RectTransform> _rainbowCones = new List<RectTransform>();
+    private bool  _rainbowOn;
+    private float _rainbowAngle;
+
+    // 원뿔을 판 가운데에 놓고 판 대각선보다 크게 키운다 — 크기가 정해진 뒤 (Render에서 호출)
+    private void FitRainbow()
+    {
+        if (!_rainbowOn)
+        {
+            return;
+        }
+
+        Rect    rect   = panel.rect;
+        Vector3 center = panel.TransformPoint(rect.center);
+        float   size   = rect.size.magnitude * 1.05f;
+
+        foreach (RectTransform cone in _rainbowCones)
+        {
+            cone.sizeDelta = new Vector2(size, size);
+            cone.position  = center;
+        }
+    }
+
+    // 무지개를 돌린다 — Special 툴팁이 떠 있을 때만 (Update에서 호출)
+    private void SpinRainbow()
+    {
+        if (!_rainbowOn || _shown == null)
+        {
+            return;
+        }
+
+        _rainbowAngle = Mathf.Repeat(_rainbowAngle - 360f / RainbowTurn * Time.unscaledDeltaTime, 360f);
+
+        var rotation = Quaternion.Euler(0f, 0f, _rainbowAngle);
+
+        foreach (RectTransform cone in _rainbowCones)
+        {
+            cone.rotation = rotation;
         }
     }
 
@@ -263,6 +321,24 @@ public class TooltipPresenter : MonoBehaviour
             bar.rectTransform.sizeDelta = size;
             bar.rectTransform.anchoredPosition = Vector2.zero;
             _rimBars.Add(bar);
+
+            // Special 무지개 — 막대 모양으로 잘린(RectMask2D) 원뿔. 그림이 없으면 만들지 않는다(등급색 테만 남는다)
+            if (FxSprites.SpecialRainbow is Sprite rainbow)
+            {
+                go.AddComponent<RectMask2D>();
+
+                var cone  = new GameObject("Rainbow", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
+                var image = cone.GetComponent<Image>();
+
+                cone.layer          = rim.layer;
+                image.raycastTarget = false;
+                image.sprite        = rainbow;
+                image.rectTransform.SetParent(bar.rectTransform, false);
+                image.rectTransform.anchorMin = image.rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+                cone.SetActive(false);
+
+                _rainbowCones.Add(image.rectTransform);
+            }
         }
 
         return rim;
@@ -273,7 +349,8 @@ public class TooltipPresenter : MonoBehaviour
     //     (2026-11-15 사용자: 묶음마다 제목과 그 아래 내용이 갈려 보여야 한다. 묶음 전체를 등급색으로 칠하던 것은 걷었다).
     //   ■ 내용 줄은 판 색 그대로 번갈아 옅게 — 줄만 갈린다. 묶음 제목이 나오면 번갈이를 처음부터 센다.
     //   ■ 바탕색을 직접 준 줄(등급 줄)만 그 색을 섞는다.
-    private void PaintRows(IReadOnlyList<TooltipContent.Line> lines)
+    //   ■ Special 툴팁의 등급 줄은 무지개 띠 그림이다(2026-11-15 사용자) — 흰 줄은 다른 줄과 구분이 안 됐다.
+    private void PaintRows(IReadOnlyList<TooltipContent.Line> lines, bool isSpecial)
     {
         int stripe = 0;
 
@@ -295,6 +372,11 @@ public class TooltipPresenter : MonoBehaviour
             if (line.Background is Color own)
             {
                 row.Bind(line, own, OwnTintBlend);
+
+                if (isSpecial && FxSprites.SpecialStrip is Sprite strip)
+                {
+                    row.BindSprite(strip, StripBlend);
+                }
             }
             else
             {
@@ -311,6 +393,7 @@ public class TooltipPresenter : MonoBehaviour
     private const float OwnTintBlend   = 0.55f; // 색을 직접 준 줄(등급 줄)
     private const float StripeBlend    = 0.34f; // 내용 줄 — 흰 줄무늬. 0.18은 너무 옅어 줄이 안 갈렸다(2026-11-15 사용자)
     private const float StripeBlendOdd = 0.0f;
+    private const float StripBlend     = 1f;    // Special 무지개 띠 — 그림 색 그대로(위 밝은 줄·아래 그늘이 든 12단 도트 띠 · 2026-11-16). 0.55는 탁해 보였다
 
     private static bool IsHeader(TooltipContent.Line line) => line.Label.StartsWith(TooltipContent.HeaderMark);
 
