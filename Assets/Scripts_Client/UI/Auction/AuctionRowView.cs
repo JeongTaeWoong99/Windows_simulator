@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 // 경매장 탭의 목록 한 줄에 그릴 완성값. Presenter가 만들어 'AuctionRowView.Bind'에 넘긴다.
@@ -28,7 +29,7 @@ public struct AuctionRowContent
 //
 // 네 목록이 모양이 같아서 줄 하나를 같이 쓴다 — 무엇을 적을지는 각 Presenter가 'AuctionRowContent'로 완성해 넘긴다.
 // 버튼이 무엇을 하는지도 모른다. 눌리면 'Key'만 위로 던진다 (종속 View 규약은 'UI 규칙.md').
-public class AuctionRowView : MonoBehaviour
+public class AuctionRowView : MonoBehaviour, IPointerClickHandler
 {
     [CenterHeader("참조")]
     [SerializeField, Tooltip("왼쪽 아이콘 칸 (ItemIconView 프리팹)")]
@@ -71,6 +72,8 @@ public class AuctionRowView : MonoBehaviour
     private Color _normalTextColor;
 
     private long _key;
+
+    private bool _selectable; // 고르는 목록의 줄 — 줄 아무 데나 눌러도 고른다
 
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
     private void Awake()
@@ -115,6 +118,8 @@ public class AuctionRowView : MonoBehaviour
         actionButton.interactable = content.CanAct;
         _group.alpha              = content.Dimmed ? DimmedAlpha : 1f;
 
+        _selectable = content.Selectable;
+
         PaintSelection(content.Selectable, content.Selected);
     }
 
@@ -146,6 +151,16 @@ public class AuctionRowView : MonoBehaviour
     }
 
     // 버튼 눌림 — 이 줄의 키를 위로 던진다 (actionButton.onClick)
+    // 고르는 목록이면 줄 아무 데나 눌러도 고른다 — 작은 [선택] 버튼만 눌러야 해서 불편했다(2026-11-15 사용자: 판매 편의성) (Unity 이벤트)
+    //   구매·취소 줄은 버튼으로만 — 잘못 눌러 사는 일이 없게
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (_selectable && eventData.button == PointerEventData.InputButton.Left && actionButton.interactable)
+        {
+            ActionClicked?.Invoke(_key);
+        }
+    }
+
     private void OnActionClicked()
     {
         ActionClicked?.Invoke(_key);

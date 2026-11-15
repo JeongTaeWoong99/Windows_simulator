@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -636,7 +636,7 @@ public static class AuctionText
         Tid       = tid,
         Key       = key,
         Name      = GetName(kind, tid),
-        NameColor = RarityPalette.Get(GetRarity(kind, tid)),
+        NameColor = RarityPalette.OnLight(GetRarity(kind, tid)),
         Sub       = sub ?? FormatSuggestionSub(kind, tid),
     };
 

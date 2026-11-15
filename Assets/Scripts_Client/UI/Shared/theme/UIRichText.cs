@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 
 // 한 줄 안에서 **라벨과 값을 색으로 가르는** TMP 리치 텍스트 조각 — 색은 테마 역할에서 읽는다.
 //

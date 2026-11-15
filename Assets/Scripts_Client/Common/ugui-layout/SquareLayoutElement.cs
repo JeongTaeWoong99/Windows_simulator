@@ -26,7 +26,7 @@ public class SquareLayoutElement : UIBehaviour, ILayoutElement
     private float sizeAdjust = 0f;
 
     // ─── ILayoutElement — 가로만 주장한다. 세로는 부모 레이아웃이 정하는 대로 둔다 ───
-    public float minWidth       => -1f;
+    public float minWidth       => CalculateSide(); // 줄이 좁아도 줄어들지 않는다 — 옆 글씨가 길면 가로가 깎여 정사각형이 깨졌다
     public float preferredWidth => CalculateSide();
     public float flexibleWidth  => 0f; // 남는 폭을 받으면 정사각형이 깨진다
 

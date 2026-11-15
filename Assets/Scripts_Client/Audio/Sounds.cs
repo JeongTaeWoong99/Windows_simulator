@@ -1,4 +1,4 @@
-﻿using GameData;
+using GameData;
 using UnityEngine;
 
 // 어떤 소리를 어디서 쓰는지 한 곳에 모은 이름표(트는 쪽은 Common 'SoundManager') — 파일은 그림 저장소 'Assets/Art/audio/<채널>/<키>.wav'.

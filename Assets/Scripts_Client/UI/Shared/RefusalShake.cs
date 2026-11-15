@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
 
 // 거절 흔들기 — 안 되는 조작을 하면 누른 버튼·칸이 좌우로 짧게 갸웃거린다 (T-177).

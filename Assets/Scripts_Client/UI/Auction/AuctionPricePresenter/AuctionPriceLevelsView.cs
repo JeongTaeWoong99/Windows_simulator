@@ -56,7 +56,7 @@ public class AuctionPriceLevelsView : MonoBehaviour
                 continue;
             }
 
-            priceTexts[i].text = UIRichText.Gold(levels[i].UnitPrice);
+            priceTexts[i].text = UIRichText.GoldOnDark(levels[i].UnitPrice); // 어두운 칸 위 — 진한 금은 묻혔다
             countTexts[i].text = Lang.Format("UI.Inventory.CountUnitShort", levels[i].Count.ToString("N0"));
             RectTransform bar = bars[i].rectTransform;
             bar.anchorMax = new Vector2(Mathf.Max(MinFill, levels[i].Count / (float)most), bar.anchorMax.y);

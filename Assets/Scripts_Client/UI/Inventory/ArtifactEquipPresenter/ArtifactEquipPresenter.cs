@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;

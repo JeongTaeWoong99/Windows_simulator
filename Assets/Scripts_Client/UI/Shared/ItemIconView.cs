@@ -50,7 +50,30 @@ public class ItemIconView : MonoBehaviour
 
         _iconPlaceholderColor = iconImage.color;
         RaritySkin.Dress(rarityImage);
+        FitIconInside();
     }
+
+    // 그림 자리를 등급 테 안쪽으로 맞춘다 — 크기에 비례(한 변의 IconInset)라 64·72·92 어느 칸이든 테를 덮지 않는다 (Awake에서 한 번).
+    //   그림이 칸 끝까지 그려진 것(하트·뽑기권)이 테 위로 '삐져' 보였다 — 고정 4px 여백은 큰 칸에서 테 두께보다 얇았다(2026-11-15 사용자).
+    //   남는 쪽은 자른다(RectMask2D) — 넘치면 넘쳐 보이지 말고 잘려야 한다.
+    private void FitIconInside()
+    {
+        var rect = (RectTransform)iconImage.transform;
+
+        rect.anchorMin        = new Vector2(IconInset, IconInset);
+        rect.anchorMax        = new Vector2(1f - IconInset, 1f - IconInset);
+        rect.offsetMin        = Vector2.zero;
+        rect.offsetMax        = Vector2.zero;
+        rect.localScale       = Vector3.one;
+
+        if (!TryGetComponent(out RectMask2D _))
+        {
+            gameObject.AddComponent<RectMask2D>();
+        }
+    }
+
+    // 그림 여백 — 한 변의 비율. 등급 테(바깥 테 + 안쪽 어두운 선)가 칸의 약 7%라 그보다 조금 넓게
+    private const float IconInset = 0.09f;
 
     // 완성값을 그린다 (줄 View가 자기 Bind에서 호출).
     //

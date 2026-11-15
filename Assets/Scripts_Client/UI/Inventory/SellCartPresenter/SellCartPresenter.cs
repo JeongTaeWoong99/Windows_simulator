@@ -646,13 +646,17 @@ public class SellCartPresenter : MonoBehaviour
             return;
         }
 
-        _ui.AskConfirm($"{Lang.Format("UI.Sell.GrownWarning", _cart.GrownCount)}\n\n{buttonText}", () =>
-        {
-            if (!_isWaiting && _cart.Count > 0)
+        // 누른 버튼 글자는 진홍 버튼 위에 맞춘 밝은 금색이라 밝은 팝업에서 안 보였다 — 어두운 상세 상자에 그대로 옮긴다(2026-11-15 사용자)
+        _ui.AskConfirm(
+            Lang.Format("UI.Sell.GrownWarning", _cart.GrownCount),
+            () =>
             {
-                send();
-            }
-        });
+                if (!_isWaiting && _cart.Count > 0)
+                {
+                    send();
+                }
+            },
+            $"<align=center>{buttonText}</align>");
     }
 
     // 담긴 것을 판매 요청으로 보낸다 (OnSellClicked · 확인 팝업에서 호출).

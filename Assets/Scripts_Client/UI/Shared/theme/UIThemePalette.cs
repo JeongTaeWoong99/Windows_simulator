@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 
 // 역할('UIThemeRole') → 색 표. 아트가 들어오기 전까지 화면 톤을 한 곳에서 맞추는 임시 팔레트다.

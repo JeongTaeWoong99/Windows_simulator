@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using MikaProtocol;
 
 // 시세 요약 문구 — 구매 확인 창 · 등록 창 · 시세 탭이 같은 말로 시세를 적는다 (T-119 · T-147).
@@ -52,7 +52,8 @@ public static class AuctionPriceText
     }
 
     // 최근 거래가가 전일 평균보다 오른 비율 — "▲ 3.2%" · "▼ 1.0%". 둘 중 하나라도 없으면 빈 문자열.
-    public static string FormatTrend(long recent, long yesterdayAvg)
+    //   onDark : 어두운 칸 위 — 빨강·초록을 밝은 쪽으로
+    public static string FormatTrend(long recent, long yesterdayAvg, bool onDark = false)
     {
         if (recent <= 0L || yesterdayAvg <= 0L)
         {
@@ -62,8 +63,8 @@ public static class AuctionPriceText
         double percent = (recent - yesterdayAvg) * 100d / yesterdayAvg;
 
         return percent >= 0d
-            ? UIRichText.Paint($"▲ {percent:0.0}%", UIThemeRole.Positive)
-            : UIRichText.Paint($"▼ {-percent:0.0}%", UIThemeRole.Negative);
+            ? UIRichText.Paint($"▲ {percent:0.0}%", onDark ? UIThemePalette.PositiveOnDark : UIThemePalette.Of(UIThemeRole.Positive))
+            : UIRichText.Paint($"▼ {-percent:0.0}%", onDark ? UIThemePalette.NegativeOnDark : UIThemePalette.Of(UIThemeRole.Negative));
     }
 
     // 가격 — 0이면 'empty' 문구.

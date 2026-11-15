@@ -1,4 +1,4 @@
-﻿using GameData;
+using GameData;
 using MikaProtocol;
 
 // 아티팩트 글자 — 효과 한 줄 · 상태 · 칸 툴팁. 도감 · 인벤토리 장비 탭 칸 · 아티팩트 창 · 판매 목록이 같은 문구를 쓴다.

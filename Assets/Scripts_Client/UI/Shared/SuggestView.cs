@@ -15,7 +15,7 @@ public struct Suggestion
     public int    Tid;
     public long   Key;
     public string Name;      // 고르면 입력칸에 들어갈 이름
-    public Color  NameColor; // 등급 색
+    public Color  NameColor; // 등급 색 — 줄 바탕이 밝으니 'RarityPalette.OnLight' (밝은 등급색은 연두·하양이 안 읽혔다, 2026-11-15)
     public string Sub;       // 오른쪽 흐린 글자 — 종류 · 분류 · 보유
 }
 
@@ -28,9 +28,13 @@ public struct Suggestion
 //   누르는 순간 포커스가 줄로 옮겨 가 입력칸의 Deselect가 클릭보다 먼저 온다. 한 프레임 뒤 포커스가 어디 있는지 보고 정한다.
 //   ⚠️ 그래서 줄 버튼은 **눌렀을 때 선택(포커스)돼야 한다** — 내비게이션이 None이면 uGUI가 선택하지 않아 포커스가 비고,
 //   목록이 클릭보다 먼저 닫혀 눌러도 아무 일이 없었다(2026-10-14). Awake가 Explicit(이웃 없음)으로 맞춘다.
+// ■ 줄을 누른 채 조금 끌어도 고른다 (2026-11-15 사용자: 클릭이 자주 안 먹힌다).
+//   드래그 대상은 누른 줄에서 부모 쪽으로 처음 만나는 'IDragHandler'인데, 줄 버튼에는 없어 **부모 입력칸**이 잡혔다.
+//   누른 채 10px만 움직여도 입력칸이 드래그를 시작하고, 누른 대상과 드래그 대상이 달라 EventSystem이 클릭을 취소했다.
+//   그래서 이 목록이 드래그를 받는다(입력칸까지 올라가지 않는다) — 놓은 자리의 줄을 고른다.
 // ■ 다른 패널 위에 떠야 한다 — 자기 Canvas(override sorting)를 둔다. 레이아웃에서는 빠진다(LayoutElement.ignoreLayout).
 //   ⚠️ 정렬 덮어쓰기는 캔버스가 켜져 있을 때만 먹는다 — 꺼진 채 저장된 씬 값은 풀려 있어 탭 버튼 뒤에 깔렸다. 켤 때마다 건다.
-public class SuggestView : MonoBehaviour
+public class SuggestView : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
     // 후보 한 줄 — 누르는 버튼과 두 글자.
     [Serializable]
@@ -141,6 +145,32 @@ public class SuggestView : MonoBehaviour
 
         Hide();
         Picked?.Invoke(picked);
+    }
+
+    // 드래그를 여기서 받아 부모 입력칸이 가로채지 않게 한다 — 시작·진행은 할 일이 없다 (EventSystem 드래그)
+    public void OnBeginDrag(PointerEventData eventData) { }
+
+    public void OnDrag(PointerEventData eventData) { }
+
+    // 끌다 놓았다 — 놓은 자리가 줄 위면 그 줄을 고른다. 클릭은 드래그가 시작되며 취소됐으므로 여기서 대신한다 (EventSystem 드래그)
+    public void OnEndDrag(PointerEventData eventData)
+    {
+        GameObject? over = eventData.pointerCurrentRaycast.gameObject;
+
+        if (over == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < rows.Length; i++)
+        {
+            if (rows[i].button.gameObject.activeSelf && over.transform.IsChildOf(rows[i].button.transform))
+            {
+                OnRowClicked(i);
+
+                return;
+            }
+        }
     }
 
     // 입력칸의 포커스가 빠졌다 — 한 프레임 뒤에도 포커스가 이 목록 안에 없으면 닫는다 (input.onDeselect)

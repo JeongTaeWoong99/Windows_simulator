@@ -1,6 +1,6 @@
 # ugui-layout 규칙
 
-> 최종 업데이트: 2026-11-14 (`FlexibleGridLayoutGroup` 줄 맞춤 `_fitRowsInParent` — 부모 높이에 N줄이 꼭 차게 셀 세로를 정한다 · 소수 가능 — 2.5면 셋째 줄이 반만 걸친다) · 2026-10-11 (`ContentFloorLayoutElement` 추가) · 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
+> 최종 업데이트: 2026-11-15 (`SquareLayoutElement` 최소 폭도 한 변 — 옆 칸 글씨가 길면 가로가 깎여 정사각형이 깨졌다) · 2026-11-14 (`FlexibleGridLayoutGroup` 줄 맞춤 `_fitRowsInParent` — 부모 높이에 N줄이 꼭 차게 셀 세로를 정한다 · 소수 가능 — 2.5면 셋째 줄이 반만 걸친다) · 2026-10-11 (`ContentFloorLayoutElement` 추가) · 2026-08-26 (`UI/Layout/` → `Common/ugui-layout/` 이관) · 대상: `Common/ugui-layout/`
 
 **기본 UGUI로는 표현할 수 없는 배치를 채워 주는 컴포넌트.** 게임을 전혀 모르므로
 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit) 사본인 `Common/` 아래에 있다.

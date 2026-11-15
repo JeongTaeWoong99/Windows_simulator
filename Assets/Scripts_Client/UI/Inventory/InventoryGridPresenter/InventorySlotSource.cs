@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
@@ -323,7 +323,7 @@ public abstract class InventorySlotSource
             {
                 Key       = slot.Key,
                 Name      = slot.Name,
-                NameColor = RarityPalette.Get(slot.Rarity),
+                NameColor = RarityPalette.OnLight(slot.Rarity),
                 Sub       = RarityLabel.Get(slot.Rarity),
             });
         }

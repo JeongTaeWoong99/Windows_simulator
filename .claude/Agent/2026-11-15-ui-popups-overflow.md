@@ -95,3 +95,21 @@ tags: [client, ui, art, editor]
 - 판매 등록: 금액 표를 `Summary Box`(어두운 상자)로 · 확인 팝업도 같은 표(`BuildMoneyTable`). 수량/단가 줄을 라벨 70 · 입력 묶음 256 · 오른쪽 버튼 140(글씨 18 자동 축소)으로 세로 맞춤 · 도움말 15(입력 아래로 78 들여쓰기). 고르는 목록 [선택]은 양피지 버튼 위 밝은 글씨라 안 읽혔다 → `AuctionRowView`가 고르는 목록이면 글씨를 TextDark로. 줄의 '경매 단가 n G 이상'은 진갈 칸 위 HighlightDark → Highlight.
 - 상단: `Nick Panel`·`Gold Panel`·위젯 `Top Panel`의 Image `enabled=false` + `Ui Trim` 끔. 지우면 `UiSkin.ApplyAll`이 테를 다시 만든다.
 - 커밋 정리: 사용자 "오늘 커밋이 너무 많다 — 8개 이하로" → 오늘 커밋 25개를 주제별 7개로 묶었다(푸시 전이라 기록만 바뀐다). 그림 저장소는 오늘 커밋이 없어 한 개로 넣었다.
+
+## 이어서 — 아이콘 삐져나옴 · 시세 탭 · 판매 편의 · 성장 개체 판매 확인 · 슬롯 확장 이슈
+
+- 아이콘: `ItemIconView`의 `Icon Image`가 칸에서 4px 안쪽 고정이라 92px 칸에서 등급 테(약 7%) 위로 그림이 덮였다(하트·뽑기권처럼 끝까지 그린 그림). → `Awake`에서 앵커 9% 안쪽 비율 + 칸에 `RectMask2D`. 경매 줄·판매 등록·시세·아티팩트 팝업·도감 상세가 한 번에 맞는다. 프리팹·씬 값은 실행 때 덮인다.
+- 정사각형: 판매 등록 줄 일부가 89~91×92 — 옆 글씨가 길면 `HorizontalLayoutGroup`이 최소 폭(-1)까지 깎았다. `SquareLayoutElement.minWidth`도 한 변으로(Common — 마스터 반영은 `/unity-skill-sync`로 확인 필요).
+- 판매 등록: 종류 드롭다운 150 + 글씨 자동 축소('아티팩트'가 '아…'로 잘렸다). 고르는 줄은 아무 데나 눌러도 고른다(`AuctionRowView.OnPointerClick` — 구매·취소 줄은 버튼만).
+- 시세 탭: 요약 칸·단가별 수량은 어두운 칸 위인데 금액이 진한 금(HighlightDark)이었다 → 밝은 금. 라벨 17 · 값 30(자동 축소) · 축/날짜 14 · 단가별 줄 28 · 머리 버튼 230/150 + 자동 축소(“이 아이템 매물 보기”가 칸을 넘쳤다) · 이름 OnLight.
+- 성장 개체 판매 확인: 진홍 버튼 글자(밝은 금 `Highlight`)를 그대로 밝은 팝업에 써서 골드가 안 보였다 → 경고만 문구로, 버튼 글자는 어두운 상세 상자로.
+- BOM: 오늘 파이썬 편집(`utf-8-sig`로 쓰기)이 BOM 없던 .cs 27개에 BOM을 붙였다 — 전부 되돌렸다. 앞으로 BOM 없는 파일은 `utf-8`로 쓴다.
+- 이슈 #125 [기획·서버 확인] 작업슬롯 8 → 10칸 건의(진우). 클라는 칸 수를 씬의 칸 개수로 그린다(`slotParent.childCount`) — 확정되면 칸 2개를 씬에 더한다.
+
+## 이어서 — 머지 정리 · 시세 그래프 툴팁 · 검색 후보 클릭
+
+- 머지: 원격 `b4e66b9c`는 로컬 `9acfa134`의 이전판(푸시된 1차)이라 로컬이 상위집합이었다 → 충돌 4건을 로컬 쪽으로, 원격 위에 한 커밋으로 올렸다(머지 커밋 없음).
+- 14일 그래프: 막대가 `Accent` 35%라 밝은 판 위에서 회색처럼 흐렸다 → 80% · 선은 `HighlightDark`(같은 하늘색이면 막대 위에 묻힌다). 툴팁은 막대가 아니라 칸 전체 높이 투명 그림(`Awake`가 막대 부모 맨 뒤에 만든다) — 낮은 막대·빈 날도 뜬다. 문구는 기존 키(`PeriodToday`·`UnitPrice`·`PriceRange`·`TradeCount`·`NoTrades`)만 써서 번역 테이블은 안 건드렸다.
+- 검색 후보 클릭이 자주 안 먹힘 — 원인: 후보 줄 버튼엔 `IDragHandler`가 없어 드래그 대상이 **부모 입력칸**으로 잡혔다(`GetEventHandler<IDragHandler>` 실측). 누른 채 10px(`pixelDragThreshold`) 움직이면 입력칸이 드래그를 시작하고, 누른 대상 ≠ 드래그 대상이라 `InputSystemUIInputModule`이 클릭을 취소한다. → `SuggestView`가 드래그를 받고(`OnEndDrag`에서 놓은 줄을 고른다). 폭은 `sizeDelta.x` 120 → 0(3곳), 이름 색 `RarityPalette.OnLight`.
+- 씬 잡음: `scenefix.py` — ID는 `GlobalObjectId.targetObjectId`로 뽑는다(`TryGetGUIDAndLocalFileIdentifier`는 씬 오브젝트에 0을 줘 전부 되돌렸다).
+- 툴킷 마스터: task-writer(`art/`·`later/` · 완료 때 공돌리기) · task-reader(INDEX 표 셋) · github-issue-writer(공돌리기) — `a9b27a6`, 푸시는 사용자.

@@ -1,4 +1,4 @@
-﻿using GameData;
+using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;

@@ -726,7 +726,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -2729,8 +2729,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &23850729
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2761,7 +2761,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -2778,8 +2778,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -5607,8 +5607,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &51262080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5639,7 +5639,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5656,8 +5656,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -13420,9 +13420,9 @@ MonoBehaviour:
   m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 1
-  m_fontSizeMax: 30
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 13
+  m_fontSizeMax: 19
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -15789,8 +15789,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &126233438
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15821,7 +15821,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -15838,8 +15838,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -16253,8 +16253,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 13
-  m_fontSizeBase: 13
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -18284,7 +18284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &151450700
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18298,7 +18298,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -19791,7 +19791,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 36
   m_PreferredWidth: -1
-  m_PreferredHeight: 36
+  m_PreferredHeight: 40
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -19856,12 +19856,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 4096
@@ -20183,7 +20183,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -21884,8 +21884,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &178042470
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -21916,7 +21916,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -21933,8 +21933,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -23069,7 +23069,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -23135,8 +23135,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -24751,7 +24751,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: -2}
-  m_SizeDelta: {x: 120, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &196356139
 MonoBehaviour:
@@ -26908,7 +26908,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -29294,7 +29294,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -29360,8 +29360,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -30192,9 +30192,9 @@ MonoBehaviour:
   m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 1
-  m_fontSizeMax: 30
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 13
+  m_fontSizeMax: 20
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -35883,7 +35883,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -35949,8 +35949,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -36806,7 +36806,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &311518465
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -36820,7 +36820,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -37164,7 +37164,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -37230,8 +37230,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -38693,8 +38693,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &331962409
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38725,7 +38725,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -38742,8 +38742,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -42418,7 +42418,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -42484,8 +42484,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -46148,8 +46148,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &392475067
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -46180,7 +46180,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -46197,8 +46197,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -50080,7 +50080,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -53211,8 +53211,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &463542711
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -53243,7 +53243,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -53260,8 +53260,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -54161,8 +54161,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &471280126
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54193,7 +54193,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -54210,8 +54210,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -54492,8 +54492,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &471663424
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -54524,7 +54524,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -54541,8 +54541,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -62438,7 +62438,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -63706,8 +63706,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &536589824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -63738,7 +63738,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -63755,8 +63755,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -65982,7 +65982,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -66036,8 +66036,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &572149065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66068,7 +66068,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -66085,8 +66085,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -66911,7 +66911,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -66967,7 +66967,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 76
   m_MinHeight: -1
-  m_PreferredWidth: 76
+  m_PreferredWidth: 84
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: 1
@@ -69533,7 +69533,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: -2}
-  m_SizeDelta: {x: 120, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &600853128
 MonoBehaviour:
@@ -69947,7 +69947,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 36
   m_PreferredWidth: -1
-  m_PreferredHeight: 36
+  m_PreferredHeight: 40
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -70012,12 +70012,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 4096
@@ -70660,7 +70660,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -73490,7 +73490,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 20
   m_PreferredWidth: -1
-  m_PreferredHeight: 20
+  m_PreferredHeight: 22
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -73555,8 +73555,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 16
+  m_fontSizeBase: 16
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -74745,7 +74745,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -74995,7 +74995,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -75061,8 +75061,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -81030,7 +81030,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -81096,8 +81096,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -81578,8 +81578,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &710687201
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -81610,7 +81610,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -81627,8 +81627,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -84903,7 +84903,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &733189319
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -84917,7 +84917,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -89137,7 +89137,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
   m_AnchoredPosition: {x: 0, y: -2}
-  m_SizeDelta: {x: 120, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &756205817
 MonoBehaviour:
@@ -93262,7 +93262,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -95251,7 +95251,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 22
+  m_PreferredHeight: 26
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -95267,8 +95267,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &801786279
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -95299,7 +95299,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -95316,8 +95316,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -97202,8 +97202,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &809768759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -97234,7 +97234,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -97251,8 +97251,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -98269,7 +98269,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 36
   m_PreferredWidth: -1
-  m_PreferredHeight: 36
+  m_PreferredHeight: 40
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -98334,12 +98334,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 4096
@@ -99121,8 +99121,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &821610528
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -99153,7 +99153,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -99170,8 +99170,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -102263,8 +102263,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &843184479
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -102295,7 +102295,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -102312,8 +102312,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -116224,8 +116224,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &932794657
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -116256,7 +116256,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -116273,8 +116273,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -118157,7 +118157,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -121776,7 +121776,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 120
   m_MinHeight: 36
-  m_PreferredWidth: 120
+  m_PreferredWidth: 150
   m_PreferredHeight: 36
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -121937,7 +121937,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &980931024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -121951,7 +121951,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -127269,7 +127269,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1030016269
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127283,7 +127283,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -128559,8 +128559,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1037632652
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128591,7 +128591,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -128608,8 +128608,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -130288,7 +130288,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 22
   m_PreferredWidth: -1
-  m_PreferredHeight: 22
+  m_PreferredHeight: 24
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -133125,8 +133125,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &1072621548
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -133157,7 +133157,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -133174,8 +133174,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -135765,8 +135765,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: 42
-  m_PreferredWidth: 130
-  m_PreferredHeight: 42
+  m_PreferredWidth: 150
+  m_PreferredHeight: 44
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -137710,8 +137710,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &1118392588
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137742,7 +137742,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -137759,8 +137759,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -137862,8 +137862,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1118525086
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -137894,7 +137894,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -137911,8 +137911,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -141349,8 +141349,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &1144214874
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141381,7 +141381,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -141398,8 +141398,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -145146,7 +145146,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -146679,8 +146679,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &1182569862
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -146711,7 +146711,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -146728,8 +146728,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -149443,7 +149443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1207617005
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -149457,7 +149457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -156134,7 +156134,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -156200,8 +156200,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -156676,7 +156676,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1269334014
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156690,7 +156690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -157972,7 +157972,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -166581,7 +166581,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -170487,7 +170487,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -174399,8 +174399,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1409989423
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -174431,7 +174431,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -174448,8 +174448,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -175114,7 +175114,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1413326125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -175128,7 +175128,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -188310,7 +188310,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -189303,7 +189303,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -189596,8 +189596,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1502800812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -189628,7 +189628,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -189645,8 +189645,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -191203,8 +191203,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1511594678
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191235,7 +191235,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -191252,8 +191252,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -193947,8 +193947,8 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 190
   m_MinHeight: 42
-  m_PreferredWidth: 190
-  m_PreferredHeight: 42
+  m_PreferredWidth: 230
+  m_PreferredHeight: 44
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -200041,7 +200041,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1580885264
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200055,7 +200055,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -200443,7 +200443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1582694274
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -200457,7 +200457,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -204383,7 +204383,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 36
   m_PreferredWidth: -1
-  m_PreferredHeight: 36
+  m_PreferredHeight: 40
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -204448,12 +204448,12 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 26
-  m_fontSizeBase: 26
+  m_fontSize: 30
+  m_fontSizeBase: 30
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 0
-  m_fontSizeMax: 0
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 16
+  m_fontSizeMax: 30
   m_fontStyle: 1
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 4096
@@ -207413,7 +207413,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -209085,8 +209085,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1665916531
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -209117,7 +209117,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -209134,8 +209134,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -209441,9 +209441,9 @@ MonoBehaviour:
   m_fontSize: 22
   m_fontSizeBase: 22
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 1
-  m_fontSizeMax: 40
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 13
+  m_fontSizeMax: 20
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -209457,7 +209457,7 @@ MonoBehaviour:
   m_charWidthMaxAdj: 0
   m_TextWrappingMode: 0
   m_wordWrappingRatios: 0.4
-  m_overflowMode: 1
+  m_overflowMode: 0
   m_linkedTextComponent: {fileID: 0}
   parentLinkedComponent: {fileID: 0}
   m_enableKerning: 0
@@ -220671,7 +220671,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 96
   m_PreferredWidth: -1
-  m_PreferredHeight: 96
+  m_PreferredHeight: 104
   m_FlexibleWidth: -1
   m_FlexibleHeight: 0
   m_LayoutPriority: 1
@@ -225204,8 +225204,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1803347864
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225236,7 +225236,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -225253,8 +225253,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -225452,8 +225452,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1805715454
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -225484,7 +225484,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -225501,8 +225501,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -226466,7 +226466,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1814123824
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226480,7 +226480,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -230474,7 +230474,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -230540,8 +230540,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -233707,7 +233707,7 @@ MonoBehaviour:
     m_Top: 14
     m_Bottom: 14
   m_ChildAlignment: 0
-  m_Spacing: 6
+  m_Spacing: 4
   m_ChildForceExpandWidth: 1
   m_ChildForceExpandHeight: 0
   m_ChildControlWidth: 1
@@ -233840,7 +233840,7 @@ MonoBehaviour:
   m_MinWidth: 0
   m_MinHeight: 14
   m_PreferredWidth: 0
-  m_PreferredHeight: 14
+  m_PreferredHeight: 16
   m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -234246,7 +234246,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: -1
   m_PreferredWidth: -1
-  m_PreferredHeight: 22
+  m_PreferredHeight: 26
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -234262,8 +234262,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &1884455486
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -234295,7 +234295,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -234312,8 +234312,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 15
-  m_fontSizeBase: 15
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -235227,8 +235227,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &1890850583
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -235259,7 +235259,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -235276,8 +235276,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -238907,7 +238907,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 20
+  role: 22
   alpha: 1
 --- !u!114 &1921357652
 MonoBehaviour:
@@ -238922,7 +238922,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AuctionPriceLineGraphic
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 1}
+  m_Color: {r: 0.5411765, g: 0.2901961, b: 0, a: 1}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -242215,7 +242215,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1952739813
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242229,7 +242229,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -242500,7 +242500,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &1954530239
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -242514,7 +242514,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -250067,7 +250067,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
   role: 20
-  alpha: 0.35
+  alpha: 0.8
 --- !u!114 &2036384310
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250081,7 +250081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.35}
+  m_Color: {r: 0.2901961, g: 0.5254902, b: 0.78431374, a: 0.8}
   m_RaycastTarget: 0
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -250263,8 +250263,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.9
 --- !u!114 &2036773396
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250295,7 +250295,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.9}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -250312,8 +250312,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -250914,8 +250914,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &2041695542
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -250946,7 +250946,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -250963,8 +250963,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -255058,8 +255058,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &2068598799
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -255090,7 +255090,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -255107,8 +255107,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -256005,7 +256005,7 @@ MonoBehaviour:
   m_IgnoreLayout: 0
   m_MinWidth: 130
   m_MinHeight: -1
-  m_PreferredWidth: 130
+  m_PreferredWidth: 140
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
@@ -256071,8 +256071,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 14
-  m_fontSizeBase: 14
+  m_fontSize: 17
+  m_fontSizeBase: 17
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0
@@ -259446,7 +259446,7 @@ MonoBehaviour:
   m_MinWidth: -1
   m_MinHeight: 26
   m_PreferredWidth: -1
-  m_PreferredHeight: 26
+  m_PreferredHeight: 28
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
@@ -262903,8 +262903,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6a1d314a3b0cfc44bc88a5e6b4ddbbf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::UIThemeColor
-  role: 31
-  alpha: 1
+  role: 30
+  alpha: 0.85
 --- !u!114 &2129978609
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262935,7 +262935,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 0.84705883, g: 0.78431374, b: 0.6431373, a: 1}
+  m_fontColor: {r: 0.95686275, g: 0.9098039, b: 0.80784315, a: 0.85}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -262952,8 +262952,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 12
-  m_fontSizeBase: 12
+  m_fontSize: 14
+  m_fontSizeBase: 14
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 0

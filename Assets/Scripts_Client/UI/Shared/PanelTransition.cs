@@ -1,4 +1,4 @@
-﻿using DG.Tweening;
+using DG.Tweening;
 using UnityEngine;
 
 // 창 여닫기 연출 — 열 때 살짝 커지며 나타나고, 닫을 때 줄며 사라진다.

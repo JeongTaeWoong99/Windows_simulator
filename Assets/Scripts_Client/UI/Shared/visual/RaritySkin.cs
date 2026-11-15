@@ -1,4 +1,4 @@
-﻿using GameData;
+using GameData;
 using UnityEngine.UI;
 
 // 등급 바탕 한 벌 — 입체 테두리 + 바닥에서 속의 60%까지 오르는 계단빛 + 어두운 속('rarity_bg')에 등급색을 입힌다.

@@ -328,7 +328,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
 
         iconView.Bind(AuctionText.ToIcon(_kind, _tid));
         nameText.text  = AuctionText.GetName(_kind, _tid);
-        nameText.color = RarityPalette.Get(rarity);
+        nameText.color = RarityPalette.OnLight(rarity); // 밝은 양피지 위
         subText.text   = $"{RarityLabel.Get(rarity)}{UIRichText.Dot}{AuctionText.FormatSub(_kind, _tid)}";
 
         showListingsButton.interactable = _waitHandle == null;
@@ -360,7 +360,7 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
         lowestText.text    = summary.AvailableCount > 0 ? Big(summary.LowestUnitPrice, "G") : $"—{Unit(" " + Lang.Get("UI.Auction.NoListings"))}";
         availableText.text = Big(summary.AvailableCount, Lang.Get("UI.Auction.CountWord"));
         recentText.text    = summary.RecentUnitPrice > 0
-            ? $"{Big(summary.RecentUnitPrice, "G")} {UIRichText.Small(AuctionPriceText.FormatTrend(summary.RecentUnitPrice, summary.YesterdayAvgPrice))}"
+            ? $"{Big(summary.RecentUnitPrice, "G")} {UIRichText.Small(AuctionPriceText.FormatTrend(summary.RecentUnitPrice, summary.YesterdayAvgPrice, onDark: true))}"
             : $"—{Unit(" " + Lang.Get("UI.Auction.NoTrades"))}";
 
         long yesterdayCount = 0L;
@@ -375,10 +375,10 @@ public class AuctionPricePresenter : MonoBehaviour, IAuctionQueryTarget
             : $"—{Unit(" " + Lang.Get("UI.Auction.NoTrades"))}";
     }
 
-    // "12,345 G" — 값은 강조색, 단위는 작게.
-    private static string Big(long value, string unit) => $"{UIRichText.Paint(value.ToString("N0"), UIThemeRole.HighlightDark)}{Unit(" " + unit)}";
+    // "12,345 G" — 값은 밝은 금(노랑), 단위는 작게. 요약 칸은 어두운 칸('Slot')이다 — 진한 금은 묻혔다(2026-11-15 사용자)
+    private static string Big(long value, string unit) => $"{UIRichText.Paint(value.ToString("N0"), UIThemeRole.Highlight)}{Unit(" " + unit)}";
 
-    private static string Unit(string text) => $"<size=55%>{UIRichText.Label(text)}</size>";
+    private static string Unit(string text) => $"<size=65%>{UIRichText.Label(text)}</size>";
 
     #endregion
 }
