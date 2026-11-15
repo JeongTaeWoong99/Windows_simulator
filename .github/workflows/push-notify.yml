@@ -1,0 +1,65 @@
+# main 푸시 알림 — main에 커밋이 올라갔을 때만 Discord로 알린다.
+#
+# 예전에는 저장소 설정의 웹후크(Discord `/github` 주소, 이벤트 전체)가 알림을 보냈다.
+# 그 방식은 브랜치를 가리지 못해 워크트리·PR 브랜치 푸시와 CI·이슈 이벤트까지 전부 울렸다.
+# 그래서 저장소 웹후크는 끄고, main 푸시만 여기서 보낸다.
+#
+# ⚠️ 선행 조건: 시크릿 DISCORD_WEBHOOK (CI 실패 알림과 같은 채널).
+#    없으면 경고만 남기고 조용히 끝난다.
+name: main 푸시 알림
+
+on:
+  push:
+    branches: [main]
+
+permissions: {}
+
+jobs:
+  notify:
+    name: Discord 알림
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Discord 전송
+        env:
+          # 시크릿을 run 스크립트에 직접 펼치지 않는다(로그 노출). env로만 넘긴다.
+          WEBHOOK:  ${{ secrets.DISCORD_WEBHOOK }}
+          REPO:     ${{ github.repository }}
+          PUSHER:   ${{ github.event.pusher.name }}
+          COMPARE:  ${{ github.event.compare }}
+          FORCED:   ${{ github.event.forced }}
+          COMMITS:  ${{ toJSON(github.event.commits) }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::DISCORD_WEBHOOK 시크릿이 없어 알림을 건너뜁니다."
+            exit 0
+          fi
+
+          count=$(jq 'length' <<< "$COMMITS")
+          # 커밋 없는 푸시(태그 이동 등)는 알리지 않는다.
+          [ "$count" -gt 0 ] || exit 0
+
+          # 커밋 한 줄씩: `abc1234` 제목 — 작성자 (최근 10개, Discord 설명 길이 제한 안쪽)
+          lines=$(jq -r '.[-10:] | .[] |
+            "[`\(.id[0:7])`](\(.url)) \(.message | split("\n")[0] | .[0:80]) — \(.author.name)"' <<< "$COMMITS")
+          [ "$count" -le 10 ] || lines="… 외 $((count - 10))개"$'\n'"$lines"
+
+          title="[${REPO##*/}:main] 새 커밋 ${count}개"
+          [ "$FORCED" != "true" ] || title="⚠️ 강제 푸시 — $title"
+
+          payload=$(jq -n \
+            --arg title "$title" \
+            --arg url   "$COMPARE" \
+            --arg desc  "$lines" \
+            --arg actor "$PUSHER" \
+            '{embeds: [{
+                title:       $title,
+                url:         $url,
+                color:       7506394,
+                description: $desc,
+                footer:      {text: ("푸시: " + $actor)}
+              }]}')
+
+          curl -sS -f -X POST -H 'content-type: application/json' -d "$payload" "$WEBHOOK"
