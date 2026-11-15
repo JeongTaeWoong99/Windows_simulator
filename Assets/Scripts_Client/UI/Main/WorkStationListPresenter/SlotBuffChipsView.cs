@@ -7,8 +7,8 @@ using UnityEngine;
 //
 // ■ 무엇을 띄우나
 // 'WorkStationSlotInfo.Buffs' 한 줄 = 칩 하나 — 아이콘 + 남은 판정 횟수. 버프가 없으면 칩이 없다(줄이 비어 칸이 덜 붐빈다).
-// 자동 사용이 켜진 영약(이슈 #123)은 남은 횟수 뒤에 작게 '+보유 개수'를 붙인다 — 남은 횟수와 섞이지 않게.
-// 켜졌는데 버프가 없으면(보유분이 떨어졌다) 흐린 칩 '0 +0'으로 남겨 켜져 있다는 것을 보인다.
+// 자동 사용이 켜진 영약(이슈 #123)은 남은 횟수 뒤에 괄호로 보유 개수를 붙인다 '20(5)' — 더하기로 읽히지 않게.
+// 켜졌는데 버프가 없으면(보유분이 떨어졌다) 흐린 칩 '0(0)'으로 남겨 켜져 있다는 것을 보인다.
 // 효과·남은 횟수·보유 개수는 툴팁으로도 읽는다.
 //
 // ■ 칩은 지우지 않고 끈다
@@ -38,7 +38,7 @@ public class SlotBuffChipsView : MonoBehaviour
 
     // 슬롯의 버프를 칩으로 그린다 ('WorkStationSlotView.Bind'가 호출).
     //   buffs   : 걸린 버프 — 아이템마다 한 줄. null·빈 목록이면 칩을 모두 끈다
-    //   autoUse : 자동 사용이 켜진 영약 — 칩에 '+보유 개수'를 붙인다
+    //   autoUse : 자동 사용이 켜진 영약 — 칩에 '(보유 개수)'를 붙인다
     public void Bind(IReadOnlyList<SlotBuffInfo>? buffs, IReadOnlyList<SlotAutoUseInfo>? autoUse)
     {
         _data ??= Services.Get<PlayerDataModel>();
@@ -94,7 +94,7 @@ public class SlotBuffChipsView : MonoBehaviour
         }
     }
 
-    // 자동 사용이 켜졌으면 보유 개수, 아니면 -1 (칩이 '+n'을 붙일지 정한다)
+    // 자동 사용이 켜졌으면 보유 개수, 아니면 -1 (칩이 '(n)'을 붙일지 정한다)
     private int OwnedIfOn(int itemTid) => _autoOn.Contains(itemTid) ? _data!.GetItemCount(itemTid) : -1;
 
     // 'index'번째 칩 — 모자라면 견본을 복제한다 (Bind에서 호출)
