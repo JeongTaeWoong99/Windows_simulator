@@ -34,6 +34,13 @@ public static class UIRichText
     // 골드 금액 — 어두운 바탕(진홍 제목 띠·어두운 칸) 위 밝은 금
     public static string GoldOnDark(long amount) => Paint($"{amount:N0} G", UIThemeRole.Highlight);
 
+    // 표 한 줄 — 왼쪽 라벨 · 오른쪽 끝에 붙인 값. 상세 상자(확인 팝업)처럼 값을 세로로 맞춰 읽게 한다.
+    //   줄 높이 1.6em — 값을 키운 줄(총액 120%)이 위 줄과 겹치지 않게
+    public static string Row(string label, string value) => $"{Label(label)}<line-height=0>\n<align=right>{value}</align><line-height=1.6em>\n";
+
+    // 상자 안 묶음 사이 빈 줄 — 반 줄 높이
+    public static string Gap => "<size=45%>\n</size>";
+
     // 조금 작은 글씨 — 부연 설명 줄.
     public static string Small(string text) => $"<size=85%>{text}</size>";
 

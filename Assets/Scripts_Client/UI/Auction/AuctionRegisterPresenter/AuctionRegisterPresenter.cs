@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -591,17 +591,19 @@ public class AuctionRegisterPresenter : MonoBehaviour
         long         fee     = AuctionModel.ListingFee(total);
         long         instant = AuctionModel.InstantSellTotal(GetBasePrice(), count);
 
-        string what = kind switch
-        {
-            RegisterKind.Item     => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetItemName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
-            RegisterKind.Artifact => Lang.Format("UI.Auction.RegisterWhatItem", GameDataLoader.GetArtifactName((int)key), count.ToString("N0"), unitPrice.ToString("N0"), total.ToString("N0")),
-            RegisterKind.Equip    => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetEquipName(_data.GetEquipTid(key)), unitPrice.ToString("N0")),
-            _                     => Lang.Format("UI.Auction.RegisterWhatOne", GameDataLoader.GetCharacterName(_data.GetCharacterTid(key)), unitPrice.ToString("N0")),
-        };
+        // 문구는 무엇을 올리는지만 크게 — 값은 아래 어두운 상자에 표로. 글씨가 한 덩어리라 잘 안 보였다(2026-11-15 사용자)
+        EAuctionKind auctionKind = ToAuctionKind(kind);
+        int          tid         = GetSelectedTid();
+        string       countText   = IsStackKind(kind) ? $" ×{count:N0}" : "";
+        string message =
+            $"<size=125%><b>{UIRichText.Paint(AuctionText.GetName(auctionKind, tid), RarityPalette.OnLight(AuctionText.GetRarity(auctionKind, tid)))}</b>{countText}</size>\n" +
+            UIRichText.Small(UIRichText.Label($"{Lang.Get("UI.Auction.ListingFee")} — {Lang.Get("UI.Auction.RuleListingFee")}"));
 
-        // 즉시 판매했을 때의 값을 함께 적는다 — 경매가 즉시 판매와 무엇이 다른지 마지막으로 비교하는 자리다.
+        string detail = (IsStackKind(kind) ? UIRichText.Row(Lang.Get("UI.Auction.UnitPrice"), UIRichText.GoldOnDark(unitPrice)) : "") +
+                        BuildMoneyTable(total, fee, AuctionModel.SaleNet(total), instant, _data.Gold >= fee);
+
         _ui.AskConfirm(
-            Lang.Format("UI.Auction.ConfirmRegister", what, instant.ToString("N0"), fee.ToString("N0")),
+            message,
             () =>
             {
                 switch (kind)
@@ -614,7 +616,8 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
                 _waitHandle = _wait.Begin(Lang.Get("UI.Auction.WaitRegister"), onClosed: OnWaitClosed);
                 RefreshCard();
-            });
+            },
+            detail);
     }
 
     #endregion
@@ -805,7 +808,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = GameDataLoader.GetItemName(itemId),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetItemRarity(itemId)),
                 Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.HighlightDark)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterItemTooltip(itemId, _data.GetItemCount(itemId), blocked),
@@ -833,7 +836,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = Loc.Get(row.NameLocKey),
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{EquipLabel.GetKindName(row.EquipKind)}{UIRichText.Dot}{AuctionText.FormatStatSummary(equip.EquipTid, equip.EnchantOptions)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.HighlightDark)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterEquipTooltip(target, blocked),
@@ -859,7 +862,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = GameDataLoader.GetCharacterName(character.CharacterTid),
                 TitleColor = RarityPalette.Get(GameDataLoader.GetCharacterRarity(character.CharacterTid)),
                 Info       = $"{AuctionText.FormatCharacterSummary(character)}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(basePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.HighlightDark)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(basePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => AuctionText.BuildRegisterCharacterTooltip(target, blocked),
@@ -890,7 +893,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
                 Title      = Loc.Get(row.NameLocKey),
                 TitleColor = RarityPalette.Get(row.GlobalRarity),
                 Info       = $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Equip.InstantSellPrice"))} {AuctionModel.InstantSellPrice(row.BasePrice):N0} G",
-                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.HighlightDark)}",
+                Detail     = $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionUnitPrice"))} {UIRichText.Paint(AuctionModel.FormatBand(row.BasePrice), UIThemeRole.Highlight)}",
                 CanAct     = blocked == null,
                 Dimmed     = blocked != null,
                 Tooltip    = () => BuildArtifactRowTooltip(tid, blocked),
@@ -950,7 +953,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         iconView.Bind(BuildIcon());
         nameText.text  = AuctionText.GetName(kind, tid);
-        nameText.color = RarityPalette.Get(AuctionText.GetRarity(kind, tid));
+        nameText.color = RarityPalette.OnDark(AuctionText.GetRarity(kind, tid));
         subText.text   = BuildSubText();
 
         marketText.text          = AuctionPriceText.FormatSummaryLine(summary);
@@ -979,13 +982,24 @@ public class AuctionRegisterPresenter : MonoBehaviour
         long instant = AuctionModel.InstantSellTotal(basePrice, count);
         bool canPay  = _data.Gold >= fee;
 
-        summaryText.text =
-            $"{UIRichText.Label(Lang.Get("UI.Auction.AuctionTotal"))}<pos=55%>{UIRichText.Gold(total)}\n" +
-            $"{UIRichText.Label(Lang.Format("UI.Auction.FeeNow", AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)))}<pos=55%>{UIRichText.Paint($"−{fee:N0} G", canPay ? UIThemeRole.TextMain : UIThemeRole.Negative)}\n" +
-            $"{UIRichText.Label(Lang.Format("UI.Auction.NetIfSold", AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)))}<pos=55%>{UIRichText.Paint($"{net:N0} G", UIThemeRole.Positive)}\n" +
-            UIRichText.Small($"{UIRichText.Label(Lang.Get("UI.Auction.IfInstant"))}<pos=55%>{UIRichText.Label(Lang.Format(CurrentKind == RegisterKind.Artifact ? "UI.Auction.InstantViaArtifact" : "UI.Auction.InstantVia", instant.ToString("N0")))}");
+        summaryText.text = BuildMoneyTable(total, fee, net, instant, canPay);
 
         registerButton.interactable = _waitHandle == null && canPay && !isFull;
+    }
+
+    // 경매 총액 · 등록비 · 팔리면 받는 금액 · 즉시 판매하면 — 어두운 상자 위 표(카드 아래 · 등록 확인 팝업 둘 다).
+    //   금액은 노랑(밝은 금), 빠지는 돈은 밝은 빨강, 받는 돈은 밝은 초록 — 밝은 양피지 위에서는 금·초록이 묻혔다(2026-11-15 사용자)
+    private string BuildMoneyTable(long total, long fee, long net, long instant, bool canPay)
+    {
+        string instantVia = Lang.Format(CurrentKind == RegisterKind.Artifact ? "UI.Auction.InstantViaArtifact" : "UI.Auction.InstantVia", instant.ToString("N0"));
+
+        return UIRichText.Row(Lang.Get("UI.Auction.AuctionTotal"), $"<b>{UIRichText.GoldOnDark(total)}</b>") +
+               UIRichText.Row(Lang.Format("UI.Auction.FeeNow", AuctionModel.FormatPermille(AuctionModel.ListingFeePermille)),
+                              canPay ? $"−{fee:N0} G" : UIRichText.Paint($"−{fee:N0} G", UIThemePalette.NegativeOnDark)) +
+               UIRichText.Row(Lang.Format("UI.Auction.NetIfSold", AuctionModel.FormatPermille(Constants.AuctionSaleFeePermille)),
+                              UIRichText.Paint($"{net:N0} G", UIThemePalette.PositiveOnDark)) +
+               UIRichText.Gap +
+               UIRichText.Small($"{UIRichText.Label(Lang.Get("UI.Auction.IfInstant"))}  {UIRichText.Label(instantVia)}");
     }
 
     // 카드 아이콘 — 자원은 보유 수량, 장비는 인챈트 칸까지.

@@ -75,15 +75,6 @@ public class PanelTransition : MonoBehaviour
         return fx == null || !fx._closing;
     }
 
-    // 팝업 소리 — 가운데 팝업(CanvasGroup으로 여닫는 것 · 판만 키우는 오버레이 창)만. 열 화면은 버튼 소리로 충분하다
-    private void PlayPopupSound(AudioClip? clip)
-    {
-        if (_keepActive || _pop != transform)
-        {
-            Services.Get<SoundManager>().PlayUi(clip);
-        }
-    }
-
     private static PanelTransition Get(GameObject target, RectTransform? pop, bool keepActive)
     {
         var fx = target.GetComponent<PanelTransition>();
@@ -134,8 +125,6 @@ public class PanelTransition : MonoBehaviour
     {
         bool wasHidden = !_shown || _closing;
 
-        PlayPopupSound(Sounds.PopupOpen);
-
         Stop();
 
         _shown = true;
@@ -169,8 +158,6 @@ public class PanelTransition : MonoBehaviour
 
     private void Close()
     {
-        PlayPopupSound(Sounds.PopupClose);
-
         Stop();
 
         _shown   = false;

@@ -6,8 +6,8 @@ using UnityEngine.UI;
 // 확인 팝업 — 문구를 띄우고 [확인]을 누르면 콜백을 부른다. [취소]면 부르지 않는다.
 //
 // ■ 지금 누가 쓰나
-// 잠긴 작업슬롯의 해금("N 골드가 필요합니다. 해금하시겠습니까?")뿐이다.
-// 해금 전용이 아니라 **예/아니오를 묻는 자리면 어디서든** 쓰라고 이 이름·이 캔버스에 둔다.
+// 예/아니오를 묻는 자리 전부 — 작업슬롯 해금 · 경매 구매/등록/취소 등.
+// 값이 여럿인 확인(경매 구매·등록)은 문구는 짧게 두고, 값 표는 아래 어두운 상자('detail')에 따로 적는다.
 //
 // ■ 'AmountInputPresenter'와 같은 모양이다
 // 화면 전체를 막아야 해서 '!Overlay Canvas'에 살고, 상주라 'CanvasGroup'으로 여닫으며,
@@ -24,6 +24,12 @@ public class ConfirmPresenter : MonoBehaviour
     [SerializeField, Tooltip("묻는 문구")]
     private TMP_Text messageText = null!;
 
+    [SerializeField, Tooltip("문구 아래 어두운 상자 — 상세(가격·골드 표)가 있을 때만 켠다")]
+    private GameObject detailBox = null!;
+
+    [SerializeField, Tooltip("상자 안 상세 글씨 — 밝은 글씨 · 금액은 노랑")]
+    private TMP_Text detailText = null!;
+
     [SerializeField, Tooltip("확인 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button confirmButton = null!;
 
@@ -38,6 +44,8 @@ public class ConfirmPresenter : MonoBehaviour
     {
         this.RequireRef(group,         nameof(group));
         this.RequireRef(messageText,   nameof(messageText));
+        this.RequireRef(detailBox,     nameof(detailBox));
+        this.RequireRef(detailText,    nameof(detailText));
         this.RequireRef(confirmButton, nameof(confirmButton));
         this.RequireRef(cancelButton,  nameof(cancelButton));
 
@@ -53,10 +61,13 @@ public class ConfirmPresenter : MonoBehaviour
     // 묻는다 ('UIManager.AskConfirm'이 호출).
     //   message   : 묻는 문구
     //   onConfirm : 확인을 눌렀을 때 받을 곳. 취소면 불리지 않는다
-    public void Open(string message, Action onConfirm)
+    //   detail    : 어두운 상자에 적을 표 — 글씨만 길게 이어지면 무엇이 값인지 안 보였다(2026-11-15 사용자: 경매 구매 확인). 비우면 상자를 숨긴다
+    public void Open(string message, Action onConfirm, string? detail = null)
     {
         _onConfirm       = onConfirm;
         messageText.text = message;
+        detailText.text  = detail ?? "";
+        detailBox.SetActive(!string.IsNullOrEmpty(detail));
 
         SetVisible(true);
     }

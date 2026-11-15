@@ -1,6 +1,6 @@
-# State 폴더 규칙
+﻿# State 폴더 규칙
 
-> 최종 업데이트: 2026-11-15 (열 화면처럼 진갈 액자(`Ui Frame` · `ui_panel_trim`) + 종이 결 — 캔버스 자체에 두른다(`UiSkin` 몸통 없는 띠 열) · 안쪽 여백 좌우 10 · 위아래 8 — 내용이 액자에 붙지 않게) · 2026-10-31 (골드 아이콘 — `Gold Image`에 동전 그림 `FxSprites.CoinBody` + `FxSprites.CoinColor`) · 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
+> 최종 업데이트: 2026-11-15 (`Nick Panel`·`Gold Panel`의 칸 바탕·테 끔 — 열 종이 위에 바로 놓인다 · Image `enabled=false` + `Ui Trim` 끔(지우면 `UiSkin`이 다시 만든다)) · 2026-11-15 (열 화면처럼 진갈 액자(`Ui Frame` · `ui_panel_trim`) + 종이 결 — 캔버스 자체에 두른다(`UiSkin` 몸통 없는 띠 열) · 안쪽 여백 좌우 10 · 위아래 8 — 내용이 액자에 붙지 않게) · 2026-10-31 (골드 아이콘 — `Gold Image`에 동전 그림 `FxSprites.CoinBody` + `FxSprites.CoinColor`) · 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
 
 **`#State Canvas` — 계정 레벨 · 닉네임 · 재화(골드)를 늘 보여 주고, 메인 화면을 여는 버튼을 쥔다.**
 

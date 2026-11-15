@@ -22,9 +22,7 @@ public static class Sounds
     // 안 됨 — 거절 흔들기와 함께 ('RefusalShake')
     public static AudioClip? Error => SoundCatalog.Of("error");
 
-    // 팝업 열기 · 닫기 — 가운데 팝업(확인 · 수량 · 응축 · 큐브 · 아티팩트) ('PanelTransition.SetVisible' · 각 팝업의 Open/Close)
-    public static AudioClip? PopupOpen  => SoundCatalog.Of("popup_open");
-    public static AudioClip? PopupClose => SoundCatalog.Of("popup_close");
+    // 팝업 열기 · 닫기는 따로 소리를 두지 않는다 — 여닫는 버튼 소리로 충분하다(두루마리 소리가 버튼과 겹쳐 이상했다 · 2026-11-15 사용자)
 
     // ── sfx — 게임 사건 ──
 
@@ -57,6 +55,9 @@ public static class Sounds
         >= GlobalRarity.Legendary => "gacha_burst_legendary",
         _                         => "gacha_burst_epic",
     });
+
+    // 도감 새 등록 — 장착한 아티팩트 칸이 반짝일 때 '띠링' ('ArtifactCodexPresenter')
+    public static AudioClip? CodexRegister => SoundCatalog.Of("codex_register");
 
     // 판매 완료 ('SellCartPresenter')
     public static AudioClip? Sell => SoundCatalog.Of("sell");

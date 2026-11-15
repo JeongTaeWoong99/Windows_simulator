@@ -440,9 +440,10 @@ public class UIManager : MonoService<UIManager>
 
     // 예/아니오를 묻고, 확인을 누르면 'onConfirm'을 부른다 (취소면 부르지 않는다).
     // 중개하는 이유는 'AskAmount'와 같다.
-    public void AskConfirm(string message, Action onConfirm)
+    //   detail : 문구 아래 어두운 상자에 적을 표(가격 · 골드처럼 줄마다 값이 있는 것). 비우면 상자를 숨긴다
+    public void AskConfirm(string message, Action onConfirm, string? detail = null)
     {
-        confirm.Open(message, onConfirm);
+        confirm.Open(message, onConfirm, detail);
     }
 
     // 소모품의 대상·개수를 묻고, [사용]을 누르면 고른 것을 돌려준다 (취소면 부르지 않는다 · T-194).

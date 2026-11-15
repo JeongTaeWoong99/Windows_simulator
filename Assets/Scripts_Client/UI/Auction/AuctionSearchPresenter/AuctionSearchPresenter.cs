@@ -942,21 +942,29 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         MarketItemInfo? summary = _auction.GetSummary(listing.Kind, listing.Tid);
         long            after   = _data.Gold - listing.TotalPrice;
 
-        string what = listing.Count > 1
-            ? Lang.Format("UI.Auction.BuyWhatMulti", name, listing.Count.ToString("N0"), listing.UnitPrice.ToString("N0"), listing.TotalPrice.ToString("N0"))
-            : $"<b>{name}</b> — {listing.TotalPrice:N0} G";
+        // 문구는 무엇을 사는지만 크게 — 값은 아래 어두운 상자에 표로(가격 · 시세 · 골드 세 묶음). 글씨가 한 덩어리라 무엇이 값인지 안 보였다(2026-11-15 사용자)
+        string count   = listing.Count > 1 ? $" ×{listing.Count:N0}" : "";
+        string message =
+            $"<size=125%><b>{UIRichText.Paint(name, RarityPalette.OnLight(AuctionText.GetRarity(listing.Kind, listing.Tid)))}</b>{count}</size>\n" +
+            UIRichText.Small(UIRichText.Label(Lang.Get("UI.Auction.BuyNote")));
+
+        string detail =
+            (listing.Count > 1 ? UIRichText.Row(Lang.Get("UI.Auction.UnitPrice"), UIRichText.GoldOnDark(listing.UnitPrice)) : "") +
+            UIRichText.Row(Lang.Get("UI.Auction.TotalPrice"), $"<size=120%><b>{UIRichText.GoldOnDark(listing.TotalPrice)}</b></size>") +
+            UIRichText.Gap +
+            UIRichText.Small($"{AuctionPriceText.FormatSummaryLine(summary, onDark: true, twoLines: true)}\n{AuctionPriceText.FormatCompare(listing.UnitPrice, summary, onDark: true)}") + "\n" +
+            UIRichText.Gap +
+            UIRichText.Row(Lang.Get("UI.Auction.GoldOwned"), UIRichText.GoldOnDark(_data.Gold)) +
+            UIRichText.Row(Lang.Get("UI.Auction.AfterBuy"), after >= 0L ? UIRichText.GoldOnDark(after) : UIRichText.Paint($"{after:N0} G", UIThemePalette.NegativeOnDark));
 
         _ui.AskConfirm(
-            $"{what}\n\n" +
-            $"{AuctionPriceText.FormatSummaryLine(summary)}\n" +
-            $"{AuctionPriceText.FormatCompare(listing.UnitPrice, summary)}\n\n" +
-            $"{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {_data.Gold:N0} G{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.AfterBuy"))} {after:N0} G\n" +
-            UIRichText.Small(UIRichText.Label(Lang.Get("UI.Auction.BuyNote"))),
+            message,
             () =>
             {
                 _auction.RequestBuy(listing);
                 BeginWait(Lang.Get("UI.Auction.WaitBuy"));
-            });
+            },
+            detail);
     }
 
     #endregion

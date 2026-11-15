@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -67,6 +67,9 @@ public class AuctionRowView : MonoBehaviour
     // 프리팹에 구워 둔 버튼 색 — 고르지 않은 줄은 이 색으로 되돌린다('구매'·'취소' 줄도 같은 프리팹이라 색을 지어내지 않는다).
     private ColorBlock _normalColors;
 
+    // 프리팹에 구워 둔 버튼 글씨색 — 진홍 버튼 위 밝은 글씨. 고르는 목록의 밝은 양피지 버튼에서는 진한 글씨로 바꾼다
+    private Color _normalTextColor;
+
     private long _key;
 
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하다 (Unity 메시지)
@@ -88,7 +91,8 @@ public class AuctionRowView : MonoBehaviour
             _group = gameObject.AddComponent<CanvasGroup>();
         }
 
-        _normalColors = actionButton.colors;
+        _normalColors    = actionButton.colors;
+        _normalTextColor = actionText.color;
 
         actionButton.onClick.AddListener(OnActionClicked);
     }
@@ -124,9 +128,13 @@ public class AuctionRowView : MonoBehaviour
         if (!selectable)
         {
             actionButton.colors = _normalColors;
+            actionText.color    = _normalTextColor;
 
             return;
         }
+
+        // 양피지 테마에서 'Button'·'ButtonSelected'는 둘 다 밝다 — 밝은 글씨가 묻혀 [선택]이 안 읽혔다(2026-11-15 사용자)
+        actionText.color = UIThemePalette.Of(UIThemeRole.TextDark);
 
         Color      target = UIThemePalette.Of(selected ? UIThemeRole.ButtonSelected : UIThemeRole.Button);
         ColorBlock colors = _normalColors;

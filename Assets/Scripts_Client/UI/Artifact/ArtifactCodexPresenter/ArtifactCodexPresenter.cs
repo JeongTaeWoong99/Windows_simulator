@@ -374,6 +374,8 @@ public class ArtifactCodexPresenter : MonoBehaviour
         GlobalRarity rarity = GameDataLoader.GetArtifactRarity(tid);
         SlotGainShine shine = GetShine(tid, slot);
 
+        Services.Get<SoundManager>().PlaySfx(Sounds.CodexRegister);
+
         slot.transform.DOKill(complete: true);
         _ = slot.transform.DOPunchScale(Vector3.one * PunchScale, PunchDuration, 6, 0.6f).SetLink(slot.gameObject); // 기다리지 않는다 — 반짝임과 함께 간다
 

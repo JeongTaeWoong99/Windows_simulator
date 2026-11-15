@@ -32,14 +32,14 @@ tags: [client, ui, art, editor]
 - `make_icons.py` 변경은 그림 저장소(`Assets/Art`) 쪽 — 이 저장소 커밋에 없다.
 - 사용자 실측.
 
-## 이어서 — 사용자 피드백 반영 (`f4e2aa4c`)
+## 이어서 — 사용자 피드백 반영 (`86cf5367`)
 
 - '?' 아이콘: 양피지 동전이 어색하다는 피드백 → 바탕 없는 금빛 물음표(`make_icons.py ui_help` · 그림 저장소 쪽 스크립트는 미커밋).
 - 응축 창: 위쪽이 비어 보인다 → 머리 줄 48→88(상반신을 `Portrait Frame`(Border) 액자에 넣음 · 이름 30 · ★ 26), 머리 줄 `childForceExpandHeight` 끔(닫기 48 유지), 비교 상자 `Border` 바탕, 단계 막대 28, 창 760→680.
 - 큐브 창: BEFORE/AFTER 상자가 바깥 패널과 같은 `Slot`색이라 구분이 없었다 → 두 상자 `Border` + `ui_input` 슬라이스. 가운데 Spacer(flex 1)를 끄고 비교 줄이 남은 세로를 채움(최소 132). 머리 아이콘 64(안쪽 그림은 늘이기 앵커라 sizeDelta -8). 창 540→500.
 - 씬 저장 잡음 245곳은 두 팝업 하위 fileID만 남기고 HEAD로 되돌렸다(scenefix). 검사기 0건.
 
-## 이어서 — 피드백 2차 (`0c964b79`)
+## 이어서 — 피드백 2차 (`86cf5367`)
 
 - '?' 아이콘: 금빛 고리 + 어두운 원 + 22px 금 '?'. 가챠 카드 도움말에 파란 틴트(0.29,0.525,0.784)가 남아 '?'가 초록으로 보였다 → 흰색.
 - 팝업 딤 0.75 → 0.985(11곳 · 경매·아티팩트·거점 포함). 프로젝트가 Linear 색공간이라 알파 0.75로는 배경이 ~53% 밝기로 남았다 — 실측 203→25.
@@ -54,7 +54,7 @@ tags: [client, ui, art, editor]
 - 어두운 속 스타일(B~G)에서 검은 기사처럼 어두운 그림은 묻힌다 — 고를 때 판단 거리.
 - 열 오른쪽 1~2px 틈(633.33 폭 · 0.5 ppu 9-slice 반올림)은 pixelPerfect/정수 폭 시험을 사용자 결정 뒤에.
 
-## 이어서 — 시안 2 적용 (`7e15eaa6`)
+## 이어서 — 시안 2 적용 (`4219a30f`)
 
 - 사용자가 시안 2를 골랐다 + "계단 그라데이션이 더 위까지" → `make_slots.py rarity_bg`를 불투명 짙은 속(0.10) + 계단빛 5단(속의 아래 15/24)으로. 9-slice 경계 12 → 4 — 경계 12이던 때는 가운데 8줄만 늘어 큰 칸에서 계단 비율이 바뀌었다. `ArtImportPostprocessor.UiBorders`도 4.
 - 곱셈 한 장이라 속이 아주 옅게 등급색을 띤다(초록 칸은 초록빛 검정). 시안의 중성 어둠과 같게 하려면 바탕을 두 장(어두운 판 + 색 입힌 테)으로 나눠야 하는데, 부르는 쪽 6곳이 `background.color`를 직접 쓰고 있어 한 장으로 두었다.
@@ -65,7 +65,7 @@ tags: [client, ui, art, editor]
 - 효과음: `Art/_source/audio/claude-sfx/make_sfx.py`(numpy 합성 · 크레딧 0) — 지금 소리 셋의 후보 8개 + 새 사건 8개. 바탕화면 `효과음_시안/효과음_시안.html`로 들어 보게 했다. 사각파는 최고값만 맞추면 지금 소리보다 서너 배 커서 평균 세기(RMS 0.09)로 맞춘다. 게임에는 아직 넣지 않았다.
 - 검사기 0건(장비 탭).
 
-## 이어서 — 효과음 설치 · 분류 필터 · 아티팩트 팝업 (`829ac3c9` · `27834b13`)
+## 이어서 — 효과음 설치 · 분류 필터 · 아티팩트 팝업 (`72bc2fd6` · `72bc2fd6`)
 
 - 효과음: `make_sfx.py`에 `coin_c` + RMS 0.09 맞춤. `Art/audio`에 ui 4 · sfx 10(coin_gain_1~3). `Sounds.Pick(key, n)` — 있는 벌만 돌린다. 검사기(`ArtValidator.CheckSounds`)는 프로퍼티 값을 보므로 Pick도 통과한다.
 - 분류 필터: `InventoryItemGroup` enum을 지우고 `InventoryFilter.Group`을 분류 ID 문자열로. 공급자가 `FilterGroups`·`GroupLabel`·`MatchesGroup`을 답한다. 자원 = `ResourceSlotSource.GroupOrder`([제외]와 같은 표 — 기준이 둘이면 "유물은 어디?"가 된다), 장비 = 장비·아티팩트. 맞는 칸이 앞, 나머지는 흐리게(기존 찾기 방식).
@@ -75,7 +75,7 @@ tags: [client, ui, art, editor]
 - 원인 조사(코드 변경 없음): 캐릭터 2장 = 10-02 보유분 + 치트(`CheatGiveAllCharacters`는 종류마다 1장). 경매 더미 = `Kind=Item`만 만든다(`AuctionDummy.Build`) → 분류=아티팩트로는 0건. 경매 DB 1050건 state 1 확인.
 - 씬 잡음 246건 scenefix로 되돌림(유지 49 · 새 5).
 
-## 이어서 — 효과음 2차 · 글씨 대비 전수 (`c2eee375` · `8569e78f`)
+## 이어서 — 효과음 2차 · 글씨 대비 전수 (`f0e44ada` · `f0e44ada`)
 
 - 효과음: 사용자 "뾱뾱 · 아케이드 · 하이톤" → `make_sfx.py`를 하프(Karplus-Strong)·종·양피지 바스락·나무·북으로 다시 짰다. 잡음은 두 번 거른다(`soft`) — 한 번만 거르면 중심 주파수가 3~7kHz로 '쉬' 소리가 남았다. 지금 중심 130~1100Hz. 버튼·보상은 그림 저장소 HEAD의 예전 파일로 되돌렸다. 시안은 바탕화면 `효과음_시안2/`.
 - 큐브: 자동은 `CubeRollAuto`(0.08초 · 크기 0.35). 뽑기: `GachaCharge`(영웅 0.45 · 전설↑ 0.7초 — `RewardRevealSettings` 값) · `GachaBurst`(영웅 0.9 · 전설 1.4 · 신화 2.2초).
@@ -84,3 +84,14 @@ tags: [client, ui, art, editor]
 - 진갈 글씨 0.85 → 1: 씬 80 · `GachaPoolCardView` 3. 0.62 → 0.85(6). 라벨 리치 텍스트 72 → 82%.
 - 원인 조사(코드 변경 없음): 경매 더미는 자원만 → 이슈 #124(진우)로 전 종류 요청.
 - 그림 저장소(`Assets/Art`)는 커밋하지 않았다 — 소리 파일 · `make_sfx.py` 등.
+
+## 이어서 — 팝업 소리 삭제 · 경매 확인 팝업 표 · 판매 등록 정리 · 상단 칸 바탕 끔 · 도감 띠링
+
+- 팝업 열기·닫기 소리: 사용자 "버튼 소리와 같이 나서 이상하다" → `PanelTransition`·응축·큐브·아티팩트 창의 `PopupOpen/Close` 호출과 `Sounds` 항목, `Art/audio/ui/popup_*.wav`, `make_sfx.py` 항목을 지웠다. 여닫는 버튼의 `UiClick`만 남는다. 차단막으로 닫을 때는 소리가 없다.
+- 도감 새 등록: `Sounds.CodexRegister`(`codex_register.wav` · 미→시 종 두 음 + 하프 · 1.1초) — `ArtifactCodexPresenter`가 칸을 튕길 때 한 번.
+- 확인 팝업: `ConfirmPresenter`에 `Detail Box`(Border 0.92 · 글씨 19 TextMain) + `AskConfirm(…, detail)`. 판 560 폭 · `ContentSizeFitter`로 높이를 내용에 맞춤 · 문구 자동 축소 끔(22). 기존 호출(해금 등)은 상자가 숨고 문구만.
+- 표 한 줄 `UIRichText.Row` = 라벨 + `<line-height=0>` 줄바꿈 + `<align=right>`값 — 1em이면 120% 키운 총액이 위 줄과 겹쳐 1.6em.
+- 경매 구매: 이름(등급색 OnLight) ×개수만 크게, 상자에 단가 · 총액 / 시세 두 줄 / 보유 골드 · 구매 후. 금액은 노랑(`GoldOnDark`). `AuctionPriceText`에 `onDark`·`twoLines`.
+- 판매 등록: 금액 표를 `Summary Box`(어두운 상자)로 · 확인 팝업도 같은 표(`BuildMoneyTable`). 수량/단가 줄을 라벨 70 · 입력 묶음 256 · 오른쪽 버튼 140(글씨 18 자동 축소)으로 세로 맞춤 · 도움말 15(입력 아래로 78 들여쓰기). 고르는 목록 [선택]은 양피지 버튼 위 밝은 글씨라 안 읽혔다 → `AuctionRowView`가 고르는 목록이면 글씨를 TextDark로. 줄의 '경매 단가 n G 이상'은 진갈 칸 위 HighlightDark → Highlight.
+- 상단: `Nick Panel`·`Gold Panel`·위젯 `Top Panel`의 Image `enabled=false` + `Ui Trim` 끔. 지우면 `UiSkin.ApplyAll`이 테를 다시 만든다.
+- 커밋 정리: 사용자 "오늘 커밋이 너무 많다 — 8개 이하로" → 오늘 커밋 25개를 주제별 7개로 묶었다(푸시 전이라 기록만 바뀐다). 그림 저장소는 오늘 커밋이 없어 한 개로 넣었다.

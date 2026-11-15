@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using MikaProtocol;
 
 // 시세 요약 문구 — 구매 확인 창 · 등록 창 · 시세 탭이 같은 말로 시세를 적는다 (T-119 · T-147).
@@ -10,7 +10,9 @@ public static class AuctionPriceText
     private const double SameThresholdPercent = 1d;
 
     // "최저가 120 G · 판매 중 340개 · 최근 거래가 118 G · 전일 평균 121 G". 요약이 없으면 받지 못했다고 적는다.
-    public static string FormatSummaryLine(MarketItemInfo? summary)
+    //   onDark : 어두운 상자 위 — 금액을 밝은 금(노랑)으로 칠한다 (확인 팝업의 상세 상자)
+    //   twoLines : 최근 거래가부터 줄을 바꾼다 — 좁은 상자에서 한 줄이 너무 길다
+    public static string FormatSummaryLine(MarketItemInfo? summary, bool onDark = false, bool twoLines = false)
     {
         if (summary == null)
         {
@@ -19,14 +21,16 @@ public static class AuctionPriceText
 
         string dot = UIRichText.Dot;
 
-        return $"{UIRichText.Label(Lang.Get("UI.Auction.LowestPrice"))} {FormatPrice(summary.AvailableCount > 0 ? summary.LowestUnitPrice : 0L, Lang.Get("UI.Auction.NoListings"))}" +
+        return $"{UIRichText.Label(Lang.Get("UI.Auction.LowestPrice"))} {FormatPrice(summary.AvailableCount > 0 ? summary.LowestUnitPrice : 0L, Lang.Get("UI.Auction.NoListings"), onDark)}" +
                $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.OnSale"))} {Lang.Format("UI.Inventory.CountUnitShort", summary.AvailableCount.ToString("N0"))}" +
-               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.RecentPrice"))} {FormatPrice(summary.RecentUnitPrice, "-")}" +
-               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.YesterdayAvg"))} {FormatPrice(summary.YesterdayAvgPrice, "-")}";
+               (twoLines ? "\n" : dot) +
+               $"{UIRichText.Label(Lang.Get("UI.Auction.RecentPrice"))} {FormatPrice(summary.RecentUnitPrice, "-", onDark)}" +
+               $"{dot}{UIRichText.Label(Lang.Get("UI.Auction.YesterdayAvg"))} {FormatPrice(summary.YesterdayAvgPrice, "-", onDark)}";
     }
 
     // "이 매물 단가는 전일 평균보다 12.5% 비쌉니다" — 비싸면 경고색, 싸면 좋은 색. 전일 거래가 없으면 비교할 수 없다고 적는다.
-    public static string FormatCompare(long unitPrice, MarketItemInfo? summary)
+    //   onDark : 어두운 상자 위 — 빨강·초록을 밝은 쪽으로
+    public static string FormatCompare(long unitPrice, MarketItemInfo? summary, bool onDark = false)
     {
         if (summary == null || summary.YesterdayAvgPrice <= 0L)
         {
@@ -41,8 +45,8 @@ public static class AuctionPriceText
         }
 
         string diff = percent > 0d
-            ? UIRichText.Paint(Lang.Format("UI.Auction.PricierBy", percent.ToString("0.0")), UIThemeRole.Negative)
-            : UIRichText.Paint(Lang.Format("UI.Auction.CheaperBy", (-percent).ToString("0.0")), UIThemeRole.Positive);
+            ? UIRichText.Paint(Lang.Format("UI.Auction.PricierBy", percent.ToString("0.0")), onDark ? UIThemePalette.NegativeOnDark : UIThemePalette.Of(UIThemeRole.Negative))
+            : UIRichText.Paint(Lang.Format("UI.Auction.CheaperBy", (-percent).ToString("0.0")), onDark ? UIThemePalette.PositiveOnDark : UIThemePalette.Of(UIThemeRole.Positive));
 
         return $"{UIRichText.Label(Lang.Get("UI.Auction.ThanAvg"))} {diff}";
     }
@@ -63,6 +67,6 @@ public static class AuctionPriceText
     }
 
     // 가격 — 0이면 'empty' 문구.
-    private static string FormatPrice(long price, string empty)
-        => price > 0L ? UIRichText.Gold(price) : UIRichText.Label(empty);
+    private static string FormatPrice(long price, string empty, bool onDark)
+        => price > 0L ? (onDark ? UIRichText.GoldOnDark(price) : UIRichText.Gold(price)) : UIRichText.Label(empty);
 }

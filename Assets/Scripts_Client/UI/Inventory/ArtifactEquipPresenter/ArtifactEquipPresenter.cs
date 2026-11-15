@@ -145,11 +145,6 @@ public class ArtifactEquipPresenter : MonoBehaviour
 
         _tid = artifactTid;
 
-        if (!wasOpen)
-        {
-            Services.Get<SoundManager>().PlayUi(Sounds.PopupOpen);
-        }
-
         gameObject.SetActive(true);
 
         if (_isReady)
@@ -174,7 +169,6 @@ public class ArtifactEquipPresenter : MonoBehaviour
 
         _tid = 0;
 
-        Services.Get<SoundManager>().PlayUi(Sounds.PopupClose);
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
     }
