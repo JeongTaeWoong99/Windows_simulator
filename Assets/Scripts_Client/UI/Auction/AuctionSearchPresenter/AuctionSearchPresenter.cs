@@ -69,7 +69,15 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         "UI.Auction.SortPriceAsc", "UI.Auction.SortPriceDesc", "UI.Auction.SortExpires", "UI.Auction.SortRarity", "UI.Auction.SortSpeed", "UI.Auction.SortLevel",
     };
 
+    // 아이템 등급 — Special(유물·아티팩트, 무지개)까지 (2026-11-15 사용자: 드롭다운에 없었다).
     private static readonly GlobalRarity[] RarityOptions =
+    {
+        GlobalRarity.None, GlobalRarity.Common, GlobalRarity.Uncommon, GlobalRarity.Rare,
+        GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic, GlobalRarity.Special,
+    };
+
+    // 인챈트 등급 '이상' — 인챈트는 Mythic이 끝이라 Special을 넣지 않는다 ('GameDataLoader' 인챈트 상한).
+    private static readonly GlobalRarity[] EnchantGradeOptions =
     {
         GlobalRarity.None, GlobalRarity.Common, GlobalRarity.Uncommon, GlobalRarity.Rare,
         GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic,
@@ -401,7 +409,11 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         foreach (GlobalRarity rarity in RarityOptions)
         {
             rarities.Add(rarity == GlobalRarity.None ? Lang.Get("UI.Auction.All") : RarityLabel.Get(rarity));
-            grades.Add(rarity == GlobalRarity.None ? Lang.Get("UI.Auction.All") : Lang.Format("UI.Auction.OrHigher", RarityLabel.Get(rarity)));
+        }
+
+        foreach (GlobalRarity grade in EnchantGradeOptions)
+        {
+            grades.Add(grade == GlobalRarity.None ? Lang.Get("UI.Auction.All") : Lang.Format("UI.Auction.OrHigher", RarityLabel.Get(grade)));
         }
 
         var industries = new List<string>();
@@ -756,7 +768,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
         AddPercentAttr(request, labels, enchantSpeedInput, EAuctionAttr.EnchantSpeed,        Lang.Get("UI.Auction.AttrEnchantSpeed"));
         AddPercentAttr(request, labels, enchantExpInput,   EAuctionAttr.EnchantCharacterExp, Lang.Get("UI.Auction.AttrEnchantExp"));
 
-        GlobalRarity grade = RarityOptions[enchantGradeDropdown.value];
+        GlobalRarity grade = EnchantGradeOptions[enchantGradeDropdown.value];
 
         if (grade != GlobalRarity.None)
         {

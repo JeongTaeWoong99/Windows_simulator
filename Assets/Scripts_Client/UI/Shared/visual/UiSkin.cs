@@ -38,9 +38,10 @@ public static class UiSkin
     private const string FrameName = "Ui Frame";
     private const string PaperName = "Ui Paper";
 
-    // 액자 여백(캔버스 픽셀) — 띠 두께('ui_panel_trim' 경계 12px ÷ PixelsPerUnitMultiplier = 24) + 띠와 내용 사이 틈 8.
-    //   틈이 없으면 버튼이 띠에 붙어 겹쳐 보인다(2026-11-10 사용자).
-    private const int FramePadding = 32;
+    // 액자 여백(캔버스 픽셀) — 보이는 띠 두께 8(양피지 띠는 그림 4px ÷ PixelsPerUnitMultiplier) + 틈 5.
+    //   옛 돌 띠(그림 12px = 24)에 맞춘 32가 양피지로 바꾼 뒤에도 남아, 열 안 여백이 37로 넓었다(2026-11-15 사용자 — 절반으로).
+    //   ⚠️ 씬에는 구운 값이 들어 있다 — 액자 둘린 창 전부(세 열 · 경매장 · 아티팩트 · 거점 · 팝업)를 5 + 13 = 18로 고쳤다(2026-11-16).
+    private const int FramePadding = 13;
 
     // 이보다 가는 것(선택 테두리 선 3px · 슬라이더 막대 8px)에는 틀을 입히지 않는다 — 틀 경계(버튼 10px)보다 얇아 뭉개진다
     private const float MinSkinSize = 14f;
