@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 
 // 한 줄 안에서 **라벨과 값을 색으로 가르는** TMP 리치 텍스트 조각 — 색은 테마 역할에서 읽는다.
 //
@@ -16,8 +16,8 @@ public static class UIRichText
     public static string Paint(string text, UIThemeRole role) => role switch
     {
         UIThemeRole.TextMain     => text,
-        UIThemeRole.TextSub      => $"<alpha=#B8>{text}<alpha=#FF>",
-        UIThemeRole.TextDisabled => $"<alpha=#78>{text}<alpha=#FF>",
+        UIThemeRole.TextSub      => $"<alpha=#D0>{text}<alpha=#FF>", // B8(72%)은 양피지 위에서 너무 흐렸다 — 82%로(2026-11-15 사용자: 회색 글씨가 안 보인다)
+        UIThemeRole.TextDisabled => $"<alpha=#A0>{text}<alpha=#FF>",
         _                        => $"<color=#{ColorUtility.ToHtmlStringRGB(UIThemePalette.Of(role))}>{text}</color>",
     };
 

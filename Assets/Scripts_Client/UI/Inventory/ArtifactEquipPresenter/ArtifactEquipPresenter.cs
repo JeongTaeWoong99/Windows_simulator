@@ -224,8 +224,8 @@ public class ArtifactEquipPresenter : MonoBehaviour
 
         iconView.Bind(ItemIconContent.ForArtifact(_tid, owned));
         nameText.text  = Loc.Get(row.NameLocKey);
-        nameText.color = RarityPalette.Get(row.GlobalRarity);
-        infoText.text  = $"{UIRichText.Paint(RarityLabel.Get(row.GlobalRarity), RarityPalette.Get(row.GlobalRarity))}" +
+        nameText.color = RarityPalette.OnDark(row.GlobalRarity);
+        infoText.text  = $"{UIRichText.Paint(RarityLabel.Get(row.GlobalRarity), RarityPalette.OnDark(row.GlobalRarity))}" +
                          $"{UIRichText.Dot}{ArtifactText.State(_data, _tid)}" +
                          $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}";
         effectText.text = ArtifactText.Effect(row);

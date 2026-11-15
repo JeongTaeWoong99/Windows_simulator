@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using GameData;
 using MikaNetwork;
@@ -1252,6 +1252,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             string name = tipKeys[i];
 
             _efficiencyRows.Get(i).SetTooltip(Lang.Get($"UI.WorkStation.{name}"), Lang.Get($"UI.WorkStation.Tip.{name}"));
+            _efficiencyRows.Get(i).SetStripe(i % 2 == 1); // 줄마다 바탕을 번갈아 — 다 같은 갈색이면 줄이 구분되지 않는다(2026-11-15 사용자)
         }
 
         _efficiencyRows.HideFrom(EfficiencyRowCount);

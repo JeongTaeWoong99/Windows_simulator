@@ -1,4 +1,4 @@
-using GameData;
+﻿using GameData;
 using TMPro;
 using UnityEngine;
 
@@ -130,7 +130,7 @@ public class ArtifactDetailPresenter : MonoBehaviour
         {
             iconView.Bind(new ItemIconContent(GlobalRarity.None, "?", "", null));
             nameText.text   = Lang.Get("UI.Artifact.Unknown");
-            nameText.color  = RarityPalette.Get(GlobalRarity.None);
+            nameText.color  = RarityPalette.OnLight(GlobalRarity.None);
             infoText.text   = UIRichText.Label(Lang.Get("UI.Artifact.UnknownHint"));
             effectText.text = "";
 
@@ -139,8 +139,8 @@ public class ArtifactDetailPresenter : MonoBehaviour
 
         iconView.Bind(ItemIconContent.ForArtifact(tid, 0));
         nameText.text   = Loc.Get(row.NameLocKey);
-        nameText.color  = RarityPalette.Get(row.GlobalRarity);
-        infoText.text   = $"{UIRichText.Paint(RarityLabel.Get(row.GlobalRarity), RarityPalette.Get(row.GlobalRarity))}" +
+        nameText.color  = RarityPalette.OnLight(row.GlobalRarity); // 밝은 패널 위 글씨
+        infoText.text   = $"{UIRichText.Paint(RarityLabel.Get(row.GlobalRarity), RarityPalette.OnLight(row.GlobalRarity))}" +
                           $"{UIRichText.Dot}{ArtifactText.State(_data, tid)}" +
                           $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}";
         effectText.text = ArtifactText.Effect(row);

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using UnityEngine;
 
 // 역할('UIThemeRole') → 색 표. 아트가 들어오기 전까지 화면 톤을 한 곳에서 맞추는 임시 팔레트다.
@@ -68,6 +68,10 @@ public class UIThemePalette : ScriptableObject
         }
     }
 
+    // 어두운 바탕 위 경고·성공 글씨 — 'OfFor'가 쓴다
+    public static readonly Color NegativeOnDark = new Color32(0xFF, 0x7A, 0x66, 0xFF);
+    public static readonly Color PositiveOnDark = new Color32(0x8C, 0xE0, 0x6E, 0xFF);
+
     // 역할의 색 (Presenter가 상태 색을 칠할 때 호출)
     public static Color Of(UIThemeRole role) => Current.Get(role);
 
@@ -79,7 +83,13 @@ public class UIThemePalette : ScriptableObject
 
         if (!onLight)
         {
-            return Of(role);
+            // 어두운 바탕 위 빨강·초록 — 팔레트 값은 밝은 양피지에 맞춘 진한 색이라 짙은 갈색 위에서는 묻힌다(2026-11-15 사용자: 응축 경고 빨간 글씨)
+            return role switch
+            {
+                UIThemeRole.Negative => NegativeOnDark,
+                UIThemeRole.Positive => PositiveOnDark,
+                _                    => Of(role),
+            };
         }
 
         Color dark = Of(UIThemeRole.TextDark);

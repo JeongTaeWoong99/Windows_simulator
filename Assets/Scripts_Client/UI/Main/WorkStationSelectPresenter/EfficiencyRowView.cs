@@ -1,4 +1,4 @@
-using GameData;
+﻿using GameData;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -63,6 +63,15 @@ public class EfficiencyRowView : MonoBehaviour
     public void SetTooltip(string title, string body)
     {
         tooltip.SetProvider(body.Length > 0 ? () => new TooltipContent(title).Row(body, "") : null);
+    }
+
+    // 줄무늬 — 홀수 줄 바탕을 조금 밝힌다. 툴팁 줄무늬와 같은 생각(2026-11-15 사용자: 효율 계산이 다 같은 갈색이라 구분이 안 됐다).
+    private const float StripeLighten = 0.12f;
+
+    // 번갈아 칠한다 (효율 계산 줄만 호출 — 'WorkStationSelectPresenter.RefreshEfficiency').
+    public void SetStripe(bool odd)
+    {
+        backgroundImage.color = odd ? Color.Lerp(_defaultColor, Color.white, StripeLighten) : _defaultColor;
     }
 
     // 줄 바탕을 등급 색으로 칠한다 (산업 레벨 정보의 자원 줄만 호출).

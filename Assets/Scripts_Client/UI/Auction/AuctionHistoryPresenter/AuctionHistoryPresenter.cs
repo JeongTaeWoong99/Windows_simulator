@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MikaProtocol;
 using TMPro;
 using UnityEngine;
@@ -330,7 +330,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
             Key        = entry.HistoryId,
             Icon       = AuctionText.ToIcon(entry.Kind, entry.Tid, entry.Count),
             Title      = AuctionText.GetName(entry.Kind, entry.Tid) + (entry.EnchantGrade > 0 ? $" +{entry.EnchantGrade}" : ""),
-            TitleColor = RarityPalette.Get(AuctionText.GetRarity(entry.Kind, entry.Tid)),
+            TitleColor = RarityPalette.OnLight(AuctionText.GetRarity(entry.Kind, entry.Tid)), // 표 줄은 밝은 바탕
             Sub        = $"{UIRichText.Label(Lang.Get("UI.Auction.UnitPrice"))} {UIRichText.Gold(entry.UnitPrice)}",
             Cells      = new[]
             {
@@ -348,7 +348,7 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     private static string PaintType(EAuctionHistoryType type) => type switch
     {
         EAuctionHistoryType.Sold    => UIRichText.Paint(Lang.Get("UI.Auction.TypeSold"), UIThemeRole.Positive),
-        EAuctionHistoryType.Bought  => UIRichText.Paint(Lang.Get("UI.Auction.TypeBought"), UIThemeRole.Accent),
+        EAuctionHistoryType.Bought  => UIRichText.Paint(Lang.Get("UI.Auction.TypeBought"), new Color32(0x1F, 0x55, 0x9A, 0xFF)), // 밝은 줄 위 — 하늘색(Accent)은 묻힌다
         EAuctionHistoryType.Expired => UIRichText.Label(Lang.Get("UI.Auction.TypeExpired")),
         EAuctionHistoryType.Cancelled => UIRichText.Label(Lang.Get("UI.Auction.TypeCancelled")),
         EAuctionHistoryType.Returned  => UIRichText.Paint(Lang.Get("UI.Auction.TypeReturned"), UIThemeRole.Negative),

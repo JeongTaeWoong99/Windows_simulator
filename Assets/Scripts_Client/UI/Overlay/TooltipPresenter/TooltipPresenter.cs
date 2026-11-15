@@ -309,7 +309,7 @@ public class TooltipPresenter : MonoBehaviour
 
     // 줄 바탕 섞는 비율 — 판 색(줄 프리팹 기본색)에 얼마나 섞나
     private const float OwnTintBlend   = 0.55f; // 색을 직접 준 줄(등급 줄)
-    private const float StripeBlend    = 0.18f; // 내용 줄 — 연한 흰 줄무늬
+    private const float StripeBlend    = 0.34f; // 내용 줄 — 흰 줄무늬. 0.18은 너무 옅어 줄이 안 갈렸다(2026-11-15 사용자)
     private const float StripeBlendOdd = 0.0f;
 
     private static bool IsHeader(TooltipContent.Line line) => line.Label.StartsWith(TooltipContent.HeaderMark);

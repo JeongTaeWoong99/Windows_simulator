@@ -737,8 +737,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         bool isTop = RewardRevealSettings.IsTop(rarity);
 
         await DelayAsync(reveal.BigPause, ct);
+
+        _sound.PlaySfx(Sounds.GachaCharge(rarity)); // 차오름 길이에 맞춘 소리 — 높은 등급일수록 길고 세다
         await fx.ChargeAsync(rarity, ct);
 
+        _sound.PlaySfx(Sounds.GachaBurst(rarity));
         _burst!.Play(fx.transform.position, RarityPalette.Get(rarity), isTop);
 
         if (isTop)

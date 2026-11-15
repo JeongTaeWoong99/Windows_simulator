@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using Cysharp.Threading.Tasks;
@@ -269,7 +269,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
             equippedTotal += equipped;
 
             _groups[g].SetHead(Lang.Format("UI.Artifact.GroupHead",
-                                           UIRichText.Paint(RarityLabel.Get(_groupRarity[g]), RarityPalette.Get(_groupRarity[g])),
+                                           UIRichText.Paint(RarityLabel.Get(_groupRarity[g]), RarityPalette.OnDark(_groupRarity[g])),
                                            equipped.ToString("N0"),
                                            _groupCells[g].Count.ToString("N0")));
 
@@ -303,6 +303,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
                                isKnown ? GameDataLoader.GetArtifactRarity(tid) : GlobalRarity.None,
                                isKnown ? VisualCatalog.ArtifactIconOf(tid) : null));
         slot.SetFilteredOut(!isEquipped);
+        slot.SetNameVisible(false); // 인벤토리 칸처럼 그림만 — 이름은 툴팁 · 오른쪽 상세에 있다(2026-11-15 사용자)
 
         // ※ 고름 표시는 응축 대상 테두리(파랑)를 빌려 쓴다 — 칸 프리팹에 "고름" 표시가 따로 없다.
         slot.SetCondenseMark(_model.SelectedTid == tid ? SlotCondenseMark.Target : SlotCondenseMark.None);

@@ -251,7 +251,7 @@ public static class AuctionText
             Key        = listing.ListingId,
             Icon       = ToIcon(listing),
             Title      = isMine ? $"{title} {UIRichText.Small(UIRichText.Paint(Lang.Get("UI.Auction.MyListing"), UIThemeRole.HighlightDark))}" : title,
-            TitleColor = RarityPalette.Get((GlobalRarity)listing.Rarity),
+            TitleColor = RarityPalette.OnLight((GlobalRarity)listing.Rarity), // 표 줄은 밝은 바탕
             Sub        = FormatSub(listing),
             Cells      = new[]
             {
@@ -280,7 +280,7 @@ public static class AuctionText
             Key        = listing.ListingId,
             Icon       = ToIcon(listing),
             Title      = GetName(listing.Kind, listing.Tid),
-            TitleColor = RarityPalette.Get((GlobalRarity)listing.Rarity),
+            TitleColor = RarityPalette.OnLight((GlobalRarity)listing.Rarity), // 표 줄은 밝은 바탕
             Sub        = FormatSub(listing),
             Cells      = new[]
             {

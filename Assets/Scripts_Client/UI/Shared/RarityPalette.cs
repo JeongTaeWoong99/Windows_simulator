@@ -34,6 +34,23 @@ public static class RarityPalette
         _                      => Unknown,
     };
 
+    // 중간 갈색 패널(응축 · 큐브 · 아티팩트 팝업) 위 **글씨**용 등급색 — 일반 회색(9D)만 밝힌다. 나머지는 'Get' 그대로
+    public static Color OnDark(GlobalRarity rarity) => rarity == GlobalRarity.Common ? new Color32(0xD8, 0xD4, 0xCC, 0xFF) : Get(rarity);
+
+    // 밝은 양피지 바탕 위 **글씨**용 등급색 — 같은 색상을 진하게 (2026-11-15 사용자: 경매장 회색 이름이 안 보였다).
+    // 칸 바탕 · 테두리 · 어두운 패널 · 툴팁(어두운 판)은 그대로 'Get'을 쓴다. 바탕이 밝은 글씨만 이것.
+    public static Color OnLight(GlobalRarity rarity) => rarity switch
+    {
+        GlobalRarity.Common    => new Color32(0x4E, 0x4A, 0x44, 0xFF),
+        GlobalRarity.Uncommon  => new Color32(0x1C, 0x7A, 0x0C, 0xFF),
+        GlobalRarity.Rare      => new Color32(0x00, 0x4E, 0xA8, 0xFF),
+        GlobalRarity.Epic      => new Color32(0x74, 0x1C, 0xB8, 0xFF),
+        GlobalRarity.Legendary => new Color32(0xB0, 0x52, 0x00, 0xFF),
+        GlobalRarity.Mythic    => new Color32(0xC0, 0x1A, 0x48, 0xFF),
+        GlobalRarity.Special   => new Color32(0x3A, 0x28, 0x14, 0xFF), // 흰색은 양피지에 사라진다 — 글씨 기본 진갈
+        _                      => new Color32(0x3A, 0x28, 0x14, 0xFF),
+    };
+
     // 패킷 등급('EGlobalRarity')을 테이블 등급으로 옮긴다. 가챠 보상('GachaRewardInfo.Rarity')이 이쪽으로 온다.
     //
     // 두 enum은 이름·값이 1:1로 맞춰져 있고 'PacketEnumTest'(서버 테스트)가 그것을 강제한다.

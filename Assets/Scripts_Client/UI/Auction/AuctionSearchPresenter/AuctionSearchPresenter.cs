@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
 using GameData;
@@ -1101,7 +1101,8 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
     {
         var text = button.GetComponentInChildren<TMP_Text>();
 
-        text.text = arrow.Length > 0 ? UIRichText.Paint(label + arrow, UIThemeRole.Accent) : label;
+        // 정렬 중인 열은 진한 금 + 굵게 — 하늘색(Accent)은 갈색 머리 줄 위에서 묻혔다(2026-11-15 사용자)
+        text.text = arrow.Length > 0 ? $"<b>{UIRichText.Paint(label + arrow, UIThemeRole.HighlightDark)}</b>" : label;
     }
 
     // 표 아래 쪽 넘김 — 'n / N 쪽' · 이 쪽이 몇째 건부터인지.

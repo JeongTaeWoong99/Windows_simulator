@@ -1,10 +1,12 @@
+﻿using GameData;
 using UnityEngine;
 
 // 어떤 소리를 어디서 쓰는지 한 곳에 모은 이름표(트는 쪽은 Common 'SoundManager') — 파일은 그림 저장소 'Assets/Art/audio/<채널>/<키>.wav'.
 // 소리를 바꾸려면 같은 이름으로 파일을 덮는다(코드는 그대로). 새 소리는 파일을 넣고 여기 한 줄을 더한다.
 //
-// ■ 소리 출처 — 2026-11-15부터 코드 합성(8비트 · Unity AI 크레딧 0): 'Art/_source/audio/claude-sfx/make_sfx.py'.
-//   배경 음악 'bgm_idle'만 Unity AI(Lyria)다.
+// ■ 소리 출처 — 2026-11-15부터 코드 합성(Unity AI 크레딧 0): 'Art/_source/audio/claude-sfx/make_sfx.py'.
+//   결은 판타지 · 양피지(하프 · 종 · 종이 바스락 · 나무) — 높은 8비트 '뾱뾱'은 쓰지 않는다(2026-11-15 사용자).
+//   버튼 'ui_click' · 보상 'reward_chime'은 예전 소리 그대로다(사용자가 예전 것이 낫다고 했다). 배경 음악 'bgm_idle'은 Unity AI(Lyria).
 // ■ 여러 벌 중 하나 — 자주 나는 소리(골드)는 '<키>_1' · '_2' · '_3'을 두고 매번 하나를 고른다. 같은 소리만 반복되면 지루하다(2026-11-15 사용자).
 public static class Sounds
 {
@@ -39,8 +41,22 @@ public static class Sounds
     public static AudioClip? Condense => SoundCatalog.Of("condense");
     public static AudioClip? RankUp   => SoundCatalog.Of("rank_up");
 
-    // 큐브 굴림 — 새 값 공개가 시작될 때 ('EnchantRevealFx')
-    public static AudioClip? CubeRoll => SoundCatalog.Of("cube_roll");
+    // 큐브 굴림 — 새 값 공개가 시작될 때 ('EquipEnchantPresenter'). 수동은 한 번 '띡', 자동은 더 짧고 작은 '톡'
+    //   자동은 빠르게 연달아 나서, 같은 소리면 정신없다(2026-11-15 사용자)
+    public static AudioClip? CubeRoll     => SoundCatalog.Of("cube_roll");
+    public static AudioClip? CubeRollAuto => SoundCatalog.Of("cube_roll_auto");
+
+    // 뽑기 고등급 공개 — 차오름(영웅 0.45초 · 전설↑ 0.7초) · 터짐(영웅 < 전설 < 신화) ('GachaResultPresenter.RevealBigAsync')
+    //   차오름 길이는 'RewardRevealSettings'의 Epic/TopChargeDuration에 맞춰 만들었다 — 그 값을 바꾸면 소리도 다시 굽는다
+    public static AudioClip? GachaCharge(GlobalRarity rarity)
+        => SoundCatalog.Of(rarity >= GlobalRarity.Legendary ? "gacha_charge_top" : "gacha_charge_epic");
+
+    public static AudioClip? GachaBurst(GlobalRarity rarity) => SoundCatalog.Of(rarity switch
+    {
+        >= GlobalRarity.Mythic    => "gacha_burst_mythic",
+        >= GlobalRarity.Legendary => "gacha_burst_legendary",
+        _                         => "gacha_burst_epic",
+    });
 
     // 판매 완료 ('SellCartPresenter')
     public static AudioClip? Sell => SoundCatalog.Of("sell");

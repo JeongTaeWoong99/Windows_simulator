@@ -1,8 +1,9 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
 // 드롭다운 목록 너비를 글자에 맞춘다 — 최소는 머리 너비, 넘치면 가장 긴 항목까지 (2026-11-14).
+// 높이도 항목 전부에 맞춘다 — 스크롤 없이 한 번에 보인다(2026-11-15 사용자). 단 'MaxHeight'를 넘으면 그때만 스크롤.
 // 'TMP_Dropdown'에 붙인다. 'CheckDropdownView'는 목록을 직접 만들므로 아래 정적 메서드만 빌려 쓴다.
 //
 // ■ 'TMP_Dropdown'은 펼칠 때마다 템플릿을 복제해 'Dropdown List'를 새로 만든다 — 그래서 펼쳐진 것을 보고 그때 잰다.
@@ -13,6 +14,9 @@ public class DropdownListFit : MonoBehaviour
 {
     // 가장 긴 글자가 딱 맞으면 소수점 차이로 줄임표가 붙는다 — 조금 더 둔다.
     private const float Slack = 6f;
+
+    // 목록이 이보다 길면 스크롤로 둔다 — 화면 밖으로 넘치지 않게
+    private const float MaxHeight = 640f;
 
     private TMP_Dropdown   _dropdown = null!;
     private RectTransform? _fitted;
@@ -58,6 +62,25 @@ public class DropdownListFit : MonoBehaviour
         float extra = list.rect.width - labels[0].rectTransform.rect.width;
 
         SetWidth(list, ((RectTransform)transform).rect.width, Widest(labels) + extra);
+        FitHeight(list);
+    }
+
+    // 목록 높이를 내용 전부에 맞춘다 — 'TMP_Dropdown.Show'가 내용(Content) 높이를 항목 수만큼 이미 잡아 둔다.
+    //   틀 여백 = 목록 높이 − 보이는 칸(Viewport) 높이
+    public static void FitHeight(RectTransform list)
+    {
+        if (list.GetComponent<UnityEngine.UI.ScrollRect>() is not { } scroll || scroll.viewport == null || scroll.content == null)
+        {
+            return;
+        }
+
+        float frame  = list.rect.height - scroll.viewport.rect.height;
+        float wanted = Mathf.Min(scroll.content.rect.height + frame, MaxHeight);
+
+        if (wanted > list.rect.height)
+        {
+            list.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, wanted);
+        }
     }
 
     // 글자들 중 가장 긴 것의 너비 (자기 글꼴·크기 그대로 잰다)

@@ -584,7 +584,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         warehouseMark.SetActive(target.Container == EContainer.Warehouse);
 
         nameText.text  = GameDataLoader.GetCharacterName(target.CharacterTid);
-        nameText.color = RarityPalette.Get(GameDataLoader.GetCharacterRarity(target.CharacterTid));
+        nameText.color = RarityPalette.OnDark(GameDataLoader.GetCharacterRarity(target.CharacterTid));
 
         int max = GameDataLoader.CondenseMaxStar;
 

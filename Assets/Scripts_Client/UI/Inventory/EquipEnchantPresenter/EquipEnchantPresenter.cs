@@ -600,7 +600,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         itemIcon.Bind(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse));
 
         nameText.text  = Loc.Get(row.NameLocKey);
-        nameText.color = RarityPalette.Get(row.GlobalRarity);
+        nameText.color = RarityPalette.OnDark(row.GlobalRarity);
 
         string worn = equip.EquippedCharacterId == 0L
             ? ""
@@ -1057,7 +1057,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             int        lineCount  = shown == null ? 0 : EquipLabel.GetStatSlotCount(GameDataLoader.GetEquipRarity(shown.EquipTid));
             var        afterGrade = (GlobalRarity)res.AfterGrade;
 
-            Services.Get<SoundManager>().PlaySfx(Sounds.CubeRoll);
+            Services.Get<SoundManager>().PlaySfx(_auto == AutoState.Running ? Sounds.CubeRollAuto : Sounds.CubeRoll);
             afterFx.Play(afterGrade,
                          res.AfterGrade > res.BeforeGrade,
                          Math.Max(lineCount, res.Options.Count),
