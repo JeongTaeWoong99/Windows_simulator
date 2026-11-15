@@ -24,12 +24,7 @@ jobs:
       - name: Discord 전송
         env:
           # 시크릿을 run 스크립트에 직접 펼치지 않는다(로그 노출). env로만 넘긴다.
-          WEBHOOK:  ${{ secrets.DISCORD_PUSH_WEBHOOK }}
-          REPO:     ${{ github.repository }}
-          PUSHER:   ${{ github.event.pusher.name }}
-          COMPARE:  ${{ github.event.compare }}
-          FORCED:   ${{ github.event.forced }}
-          COMMITS:  ${{ toJSON(github.event.commits) }}
+          WEBHOOK: ${{ secrets.DISCORD_PUSH_WEBHOOK }}
         run: |
           set -euo pipefail
 
@@ -38,29 +33,9 @@ jobs:
             exit 0
           fi
 
-          count=$(jq 'length' <<< "$COMMITS")
           # 커밋 없는 푸시(태그 이동 등)는 알리지 않는다.
-          [ "$count" -gt 0 ] || exit 0
+          [ "$(jq '.commits | length' "$GITHUB_EVENT_PATH")" -gt 0 ] || exit 0
 
-          # 커밋 한 줄씩: `abc1234` 제목 — 작성자 (최근 10개, Discord 설명 길이 제한 안쪽)
-          lines=$(jq -r '.[-10:] | .[] |
-            "[`\(.id[0:7])`](\(.url)) \(.message | split("\n")[0] | .[0:80]) — \(.author.name)"' <<< "$COMMITS")
-          [ "$count" -le 10 ] || lines="… 외 $((count - 10))개"$'\n'"$lines"
-
-          title="[${REPO##*/}:main] 새 커밋 ${count}개"
-          [ "$FORCED" != "true" ] || title="⚠️ 강제 푸시 — $title"
-
-          payload=$(jq -n \
-            --arg title "$title" \
-            --arg url   "$COMPARE" \
-            --arg desc  "$lines" \
-            --arg actor "$PUSHER" \
-            '{embeds: [{
-                title:       $title,
-                url:         $url,
-                color:       7506394,
-                description: $desc,
-                footer:      {text: ("푸시: " + $actor)}
-              }]}')
-
-          curl -sS -f -X POST -H 'content-type: application/json' -d "$payload" "$WEBHOOK"
+          # GitHub 푸시 이벤트 원본을 Discord의 GitHub 호환 주소(`/github`)로 그대로 넘긴다.
+          # 예전 저장소 웹후크와 같은 모양(푸시한 사람 이름·아이콘, 커밋 목록)으로 나온다.
+          curl -sS -f -X POST             -H 'content-type: application/json'             -H 'X-GitHub-Event: push'             --data-binary "@$GITHUB_EVENT_PATH"             "${WEBHOOK%/}/github"
