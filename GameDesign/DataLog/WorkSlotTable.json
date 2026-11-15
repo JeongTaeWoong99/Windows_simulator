@@ -37,6 +37,16 @@
   {
     "WorkSlotTID": 7,
     "UnlockTID": 1007,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 8,
+    "UnlockTID": 1008,
+    "Description": ""
+  },
+  {
+    "WorkSlotTID": 9,
+    "UnlockTID": 1009,
     "Description": "상한"
   }
 ]

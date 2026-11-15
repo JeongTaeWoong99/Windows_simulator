@@ -69,6 +69,62 @@ public class UserUnlockTest
         new List<UserEquipRow>(),
         new List<CharacterEquipRow>());
 
+    [Theory]
+    [InlineData(8, 20_000_000)]
+    [InlineData(9, 40_000_000)]
+    public void 확장_슬롯은_실데이터로_해금_배치_정산하고_재접속해도_복원된다(int index, int cost)
+    {
+        var b = new TestUserBuilder().WithExcavationDrops();
+        var user = b.Build();
+        // 바로 이전 슬롯만 잠긴 상태로 시작해 선행 조건과 잠긴 칸 배치 거절도 검증한다.
+        user.OnLoginDataLoaded(LoginData(unlocked: Enumerable.Range(1002, index - 3)), Base);
+        user.GainGold(cost);
+        b.Channel.Sent.Clear();
+        b.DB.Posted.Clear();
+
+        user.TryUnlock(1000 + index, CurrencyType.Gold, Base);
+        b.Channel.SentOf<S_UnlockResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.UnlockLocked);
+        user.Gold.ShouldBe(cost);
+        user.AssignWorkStation(index, IndustryType.Excavation, CharacterId, Base);
+        b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidSlotIndex);
+        b.DB.PostedOf<SaveUnlockRepository>().ShouldBeEmpty();
+
+        user.GrantUnlock(999 + index, Base).ShouldBeTrue();
+        b.Channel.Sent.Clear();
+        b.DB.Posted.Clear();
+        user.TryUnlock(1000 + index, CurrencyType.Gold, Base);
+
+        user.Gold.ShouldBe(0);
+        b.Channel.SentOf<S_UnlockResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        b.Channel.SentOf<S_WorkStationSlotSyncResponse>().ShouldHaveSingleItem().Slot!.SlotIndex.ShouldBe(index);
+        b.DB.PostedOf<SaveUnlockRepository>().ShouldHaveSingleItem().UnlockTid.ShouldBe(1000 + index);
+
+        user.AssignWorkStation(index, IndustryType.Excavation, CharacterId, Base);
+        b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        b.DB.PostedOf<SaveWorkStationSlotRepository>().ShouldHaveSingleItem().Slots.ShouldHaveSingleItem().SlotIndex.ShouldBe(index);
+        user.SettleWorkStation(Base.AddMinutes(10)).ShouldBe(1);
+        var harvest = b.Channel.SentOf<S_GatherResultResponse>().ShouldHaveSingleItem();
+        harvest.SlotIndex.ShouldBe(index);
+        harvest.JudgeCount.ShouldBeGreaterThan(0);
+
+        var reconnect = new TestUserBuilder();
+        var restored = reconnect.Build();
+        restored.OnLoginDataLoaded(LoginData(
+            unlocked: Enumerable.Range(1002, index - 1),
+            slotRows: new[]
+            {
+                new WorkStationSlotRow { slot_index = index, industry = (int)IndustryType.Excavation, industry_level = 1, character_id = CharacterId },
+            }), Base.AddMinutes(11));
+
+        restored.WorkStation.TryGet(index, out var slot).ShouldBeTrue();
+        slot.CharacterId.ShouldBe(CharacterId);
+        slot.Industry.ShouldBe(IndustryType.Excavation);
+        reconnect.Channel.SentOf<S_WorkStationSlotsResponse>().ShouldHaveSingleItem().Slots!
+            .Select(s => s.SlotIndex).ShouldBe(Enumerable.Range(0, index + 1));
+        restored.AssignWorkStation(10, IndustryType.Excavation, CharacterId, Base.AddMinutes(11));
+        reconnect.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidSlotIndex);
+    }
+
     // ─────────────────────── 거절 경로 ───────────────────────
 
     [Fact]

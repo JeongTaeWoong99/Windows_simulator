@@ -67,6 +67,30 @@
     ],
     "ItemTIDs": [],
     "ItemCounts": [],
-    "Description": "작업슬롯 7번 · 상한"
+    "Description": "작업슬롯 7번"
+  },
+  {
+    "UnlockTID": 1008,
+    "Name": "작업슬롯 8번",
+    "Gold": 20000000,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [
+      1007
+    ],
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": "작업슬롯 8번"
+  },
+  {
+    "UnlockTID": 1009,
+    "Name": "작업슬롯 9번",
+    "Gold": 40000000,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [
+      1008
+    ],
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": "작업슬롯 9번 · 상한"
   }
 ]

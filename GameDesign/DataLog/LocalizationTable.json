@@ -3395,6 +3395,16 @@
     "EN": "Work Slot 7"
   },
   {
+    "Key": "Unlock.1008.Name",
+    "KR": "작업슬롯 8번",
+    "EN": "Work Slot 8"
+  },
+  {
+    "Key": "Unlock.1009.Name",
+    "KR": "작업슬롯 9번",
+    "EN": "Work Slot 9"
+  },
+  {
     "Key": "UserTrait.101.Name",
     "KR": "농사 개척",
     "EN": "Farming Pioneer"

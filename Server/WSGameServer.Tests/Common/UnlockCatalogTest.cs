@@ -117,20 +117,36 @@ public class UnlockCatalogTest
     }
 
     [Fact]
-    public void 실데이터는_해금_6개_작업슬롯_8칸이_등록된다()
+    public void 실데이터는_해금_8개_작업슬롯_10칸이_등록된다()
     {
         GameTableFixture.EnsureLoaded();
         var catalog = new UnlockCatalog();
         catalog.LoadAll();
 
-        // 작업슬롯 6. 특성은 레벨형(T-108), 건물은 자기 표(T-183)라 해금을 쓰지 않는다
-        catalog.Count.ShouldBe(6);
-        catalog.WorkSlots.Count.ShouldBe(8);
+        // 작업슬롯 8. 특성은 레벨형(T-108), 건물은 자기 표(T-183)라 해금을 쓰지 않는다
+        catalog.Count.ShouldBe(8);
+        catalog.WorkSlots.Select(s => s.WorkSlotTID).ShouldBe(Enumerable.Range(0, 10));
 
-        // 상한 칸(7번)은 1007이 연다. 시작 2칸(0·1번)은 해금 0이다.
-        catalog.TryGetWorkSlotOf(1007, out var last).ShouldBeTrue();
-        last.ShouldBe(7);
+        // 상한 칸(9번)은 1009가 연다. 시작 2칸(0·1번)은 해금 0이다.
+        catalog.TryGetWorkSlotOf(1009, out var last).ShouldBeTrue();
+        last.ShouldBe(9);
         catalog.WorkSlots.Count(s => s.UnlockTID == 0).ShouldBe(2);
+    }
+
+    [Theory]
+    [InlineData(8, 1008, 1007, 20_000_000)]
+    [InlineData(9, 1009, 1008, 40_000_000)]
+    public void 확장_슬롯의_실데이터는_이전_슬롯을_선행으로_요구한다(int slot, int tid, int required, int gold)
+    {
+        GameTableFixture.EnsureLoaded();
+        var catalog = new UnlockCatalog();
+        catalog.LoadAll();
+
+        catalog.TryGetWorkSlotOf(tid, out var index).ShouldBeTrue();
+        index.ShouldBe(slot);
+        catalog.TryGetUnlock(tid, out var row).ShouldBeTrue();
+        row.RequiredUnlockTIDs.ShouldBe(new[] { required });
+        row.Gold.ShouldBe(gold);
     }
 
     [Fact]

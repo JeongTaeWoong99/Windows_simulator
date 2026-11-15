@@ -5,13 +5,13 @@ namespace MikaLoadTest;
 
 /// <summary>
 /// 유저 한 명을 흉내 내는 봇. 로그인 → 슬롯 배치 → 5초마다 핑(실제 클라 PingManager와 같은 주기).
-/// heavy면 치트로 슬롯 7칸을 열고 캐릭터를 받아 전부 돌린다 — 판정·저장·푸시가 가장 많은 유저다.
+/// heavy면 치트로 슬롯 10칸을 열고 캐릭터를 받아 전부 돌린다 — 판정·저장·푸시가 가장 많은 유저다.
 /// </summary>
 public sealed class Bot
 {
     private const int  DefaultCharacterTid = 1001;
-    private const int  SlotCount           = 7;
-    private const int  FirstSlotUnlockTid  = 1002;   // 작업슬롯 2~7번 칸 = 1002~1007
+    private const int  SlotCount           = 10;
+    private const int  FirstSlotUnlockTid  = 1002;   // 작업슬롯 2~9번 칸 = 1002~1009
 
     private static readonly EIndustryType[] Industries =
         { EIndustryType.Farming, EIndustryType.Excavation, EIndustryType.Mining, EIndustryType.Logging, EIndustryType.Hunting };
@@ -72,7 +72,7 @@ public sealed class Bot
         }
 
         // 다시 돌릴 때 이미 열린 칸·받은 캐릭터는 서버가 거절하거나 늘리기만 한다 — 배치는 목록이 차면 한 번만 한다.
-        for (var i = 0; i < SlotCount - 1; i++)
+        for (var i = 0; i < SlotCount - 2; i++)
         {
             _client.Send(new C_CheatRequest { Command = ECheatCommand.Unlock, Arg1 = FirstSlotUnlockTid + i });
         }
