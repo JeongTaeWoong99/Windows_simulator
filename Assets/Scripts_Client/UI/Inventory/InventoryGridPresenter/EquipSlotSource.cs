@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 
@@ -110,6 +110,20 @@ public class EquipSlotSource : InventorySlotSource
     // ※ 새로 들어온 표시는 장비와 같은 반짝임 하나다 — 칸에 'NEW' 글자를 붙이지 않는다(2026-10-25 사용자 결정).
     //   도감에 없는 번호라는 경고는 판매 목록이 한다('SellCartPresenter').
     protected override int AmountOf(long key) => IsArtifactKey(key) ? _data.GetArtifactCount(ArtifactTidOf(key)) : 1;
+
+    // 장비 탭의 분류 — 장비만 · 아티팩트만 (2026-11-15 사용자: 장비 탭에 아티팩트만 보는 길이 없었다). 산업과 같은 드롭다운에 선다.
+    public const string EquipGroup    = "Equip";
+    public const string ArtifactGroup = "Artifact";
+
+    private static readonly string[] Groups = { EquipGroup, ArtifactGroup };
+
+    public override IReadOnlyList<string> FilterGroups => Groups;
+
+    public override string GroupLabel(string groupId)
+        => groupId == ArtifactGroup ? Lang.Get("UI.Auction.KindArtifact") : Lang.Get("UI.Equip.Gear");
+
+    protected override bool MatchesGroup(SlotData slot, string group)
+        => IsArtifactKey(slot.Key) == (group == ArtifactGroup);
 
     // 장비의 대상 산업 (Matches에서 호출). 테이블에 없는 TID는 어느 산업에도 속하지 않는다.
     protected override bool MatchesIndustry(SlotData slot, byte industry)

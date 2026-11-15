@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 
@@ -61,30 +61,16 @@ public class ResourceSlotSource : InventorySlotSource
     protected override bool MatchesIndustry(SlotData slot, byte industry)
         => (byte)GameDataLoader.GetItemType((int)slot.Key) == industry;
 
-    // 자원 탭은 상자 · 기타 묶음으로도 거른다 (2026-10-05).
-    public override bool SupportsGroupFilter => true;
+    // 자원 탭은 산업 아닌 분류로도 거른다 — 큐브 · 상자 · 유물 · 소모품 · 기타. [제외] 목록과 같은 분류 ID다(2026-11-15 사용자:
+    // 분류 드롭다운이 '상자 · 기타'뿐이라 큐브·유물·소모품이 '기타'에 섞여 헷갈렸다).
+    public static readonly string[] GroupOrder = { CubeGroup, "Box", "Relic", "Consumable", "Etc" };
 
-    // 상자 = 열 수 있는 것('OpenGachaId' — 서버와 같은 판정). 기타 = 산업 자원도 상자도 아닌 것(큐브 · 구슬 등) (Matches에서 호출).
-    protected override bool MatchesGroup(SlotData slot, InventoryItemGroup group)
-    {
-        int  itemId = (int)slot.Key;
-        bool isBox  = GameDataLoader.IsBox(itemId);
+    public override IReadOnlyList<string> FilterGroups => GroupOrder;
 
-        return group switch
-        {
-            InventoryItemGroup.Box   => isBox,
-            InventoryItemGroup.Other => !isBox && !IsIndustryItem(itemId),
-            _                        => true,
-        };
-    }
+    public override string GroupLabel(string groupId) => GroupName(groupId);
 
-    // 산업 자원인가 — 'ItemType' 1~5(농사 ~ 사냥). 기타 · 특수는 아니다.
-    private static bool IsIndustryItem(int itemId)
-    {
-        ItemType type = GameDataLoader.GetItemType(itemId);
-
-        return type >= ItemType.Farming && type <= ItemType.Hunting;
-    }
+    // 칸의 분류 ID가 고른 분류와 같은가 (Matches에서 호출).
+    protected override bool MatchesGroup(SlotData slot, string group) => GroupOf((int)slot.Key) == group;
 
     // 큐브는 아이템 분류('ItemType')가 아니라 인챈트 표로 가린다 — 분류보다 먼저 본다. 분류 ID다(화면 이름은 'GroupName').
     public const string CubeGroup = "Cube";

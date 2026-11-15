@@ -161,8 +161,14 @@ public abstract class InventorySlotSource
     // 캐릭터는 산업 축이 없다(적성이 다섯 산업에 걸쳐 있다).
     public virtual bool SupportsIndustryFilter => true;
 
-    // 이 탭이 산업 아닌 묶음(상자 · 기타)으로 거를 수 있나 (도구 줄이 분류 드롭다운 항목을 만들 때 호출). 자원 탭만 된다.
-    public virtual bool SupportsGroupFilter => false;
+    // 이 탭이 산업 아닌 분류로 거를 때의 분류 ID 목록 — 보일 순서 (도구 줄이 분류 드롭다운 항목을 만들 때 호출).
+    //   자원: 큐브 · 상자 · 유물 · 소모품 · 기타([제외]와 같은 목록) · 장비: 장비 · 아티팩트. 없으면 산업으로만 거른다.
+    public virtual IReadOnlyList<string> FilterGroups => Array.Empty<string>();
+
+    // 분류 ID의 지금 언어 이름 (도구 줄이 호출).
+    public virtual string GroupLabel(string groupId) => groupId;
+
+    public bool SupportsGroupFilter => FilterGroups.Count > 0;
 
     // 내용이 바뀌었다 — 격자가 다시 그린다.
     public event Action? Changed;
@@ -347,8 +353,8 @@ public abstract class InventorySlotSource
     protected virtual bool MatchesIndustry(SlotData slot, byte industry) => true;
 
     // 이 칸이 그 묶음에 속하나 (Matches에서 호출). 묶음 축이 없는 탭은 늘 true다.
-    //   group : 'None'은 호출 전에 걸러진다
-    protected virtual bool MatchesGroup(SlotData slot, InventoryItemGroup group) => true;
+    //   group : 분류 ID — null은 호출 전에 걸러진다
+    protected virtual bool MatchesGroup(SlotData slot, string group) => true;
 
     // 데이터 변경 이벤트를 구독한다 (Subscribe에서 호출).
     protected abstract void OnSubscribe();
@@ -543,7 +549,7 @@ public abstract class InventorySlotSource
             return false;
         }
 
-        if (_filter.Group != InventoryItemGroup.None && !MatchesGroup(slot, _filter.Group))
+        if (_filter.Group != null && !MatchesGroup(slot, _filter.Group))
         {
             return false;
         }

@@ -116,7 +116,7 @@ public class LevelUpFx : MonoBehaviour
 
         _seq.OnKill(Hide);
 
-        Services.Get<SoundManager>().PlaySfx(Sounds.RewardChime); // 런타임에 붙는 부품이라 Start가 없다 — 쓸 때 꺼낸다
+        Services.Get<SoundManager>().PlaySfx(Sounds.LevelUp); // 런타임에 붙는 부품이라 Start가 없다 — 쓸 때 꺼낸다
     }
 
     // 끊고 그림을 끈다

@@ -391,6 +391,11 @@ public class CharacterCondensePresenter : MonoBehaviour
         _targetId = characterId;
         ClearMaterials();
 
+        if (!wasOpen)
+        {
+            Services.Get<SoundManager>().PlayUi(Sounds.PopupOpen);
+        }
+
         gameObject.SetActive(true);
 
         if (_isReady)
@@ -418,6 +423,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         _targetId = 0L;
         ClearMaterials();
 
+        Services.Get<SoundManager>().PlayUi(Sounds.PopupClose);
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
         NotifySelection();
@@ -771,6 +777,7 @@ public class CharacterCondensePresenter : MonoBehaviour
         var portrait = (RectTransform)portraitImage.rectTransform.parent;
 
         CelebrationFx.On(portrait).Play(CondenseGold, rankedUp ? 1f : 0.35f);
+        Services.Get<SoundManager>().PlaySfx(rankedUp ? Sounds.RankUp : Sounds.Condense);
 
         if (rankedUp)
         {

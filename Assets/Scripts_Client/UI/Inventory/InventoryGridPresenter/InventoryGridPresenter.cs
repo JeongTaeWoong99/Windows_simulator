@@ -667,16 +667,18 @@ public class InventoryGridPresenter : MonoBehaviour
         }
     }
 
-    // 지금 탭이 상자 · 기타 묶음으로 거를 수 있나 (도구 줄이 분류 드롭다운 항목을 만들 때 호출).
-    public bool CurrentSupportsGroupFilter
+    // 지금 탭의 산업 아닌 분류 ID 목록 · 이름 (도구 줄이 분류 드롭다운 항목을 만들 때 호출).
+    public IReadOnlyList<string> CurrentFilterGroups
     {
         get
         {
             EnsureInitialized();
 
-            return _current != null && _current.SupportsGroupFilter;
+            return _current != null ? _current.FilterGroups : System.Array.Empty<string>();
         }
     }
+
+    public string CurrentGroupLabel(string groupId) => _current != null ? _current.GroupLabel(groupId) : groupId;
 
     #endregion
 

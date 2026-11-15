@@ -362,6 +362,11 @@ public class EquipEnchantPresenter : MonoBehaviour
         _autoSummary = null;
         _autoTarget.ResetCombos(); // 칸 수가 다를 수 있다
 
+        if (!wasOpen)
+        {
+            Services.Get<SoundManager>().PlayUi(Sounds.PopupOpen);
+        }
+
         gameObject.SetActive(true);
 
         if (_isReady)
@@ -435,6 +440,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _auto          = AutoState.Off;
         _autoSummary   = null;
 
+        Services.Get<SoundManager>().PlayUi(Sounds.PopupClose);
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
         TargetChanged?.Invoke();
@@ -1051,6 +1057,7 @@ public class EquipEnchantPresenter : MonoBehaviour
             int        lineCount  = shown == null ? 0 : EquipLabel.GetStatSlotCount(GameDataLoader.GetEquipRarity(shown.EquipTid));
             var        afterGrade = (GlobalRarity)res.AfterGrade;
 
+            Services.Get<SoundManager>().PlaySfx(Sounds.CubeRoll);
             afterFx.Play(afterGrade,
                          res.AfterGrade > res.BeforeGrade,
                          Math.Max(lineCount, res.Options.Count),

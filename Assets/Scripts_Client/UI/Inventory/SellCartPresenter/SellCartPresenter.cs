@@ -92,7 +92,7 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("응축 창 — 이 자리를 빌려 쓴다. 열리면 판매 목록을 비우고 물러난다")]
     private CharacterCondensePresenter characterCondense = null!;
 
-    [SerializeField, Tooltip("아티팩트 창 — 이 자리를 빌려 쓴다. 열리면 판매 목록은 물러난다(비우지 않는다)")]
+    [SerializeField, Tooltip("아티팩트 창(가운데 팝업) — 열려 있는 동안 판매 목록은 물러난다(비우지 않는다)")]
     private ArtifactEquipPresenter artifactWindow = null!;
 
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
@@ -835,6 +835,7 @@ public class SellCartPresenter : MonoBehaviour
         else
         {
             _waitHandle.Succeed();
+            Services.Get<SoundManager>().PlaySfx(Sounds.Sell);
         }
 
         // 자원·개체 응답이 따로 와도 동전은 한 번만 — 판매 버튼에서 상단 골드로

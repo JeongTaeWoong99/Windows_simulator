@@ -64,3 +64,13 @@ tags: [client, ui, art, editor]
 - 씬 잡음은 scenefix로 되돌렸다. ⚠️ `scenefix.py --report`는 파일을 쓰지 않는다 — 예전 출력 파일을 그대로 복사해 씬이 HEAD로 돌아갔다가, 에디터 메모리의 씬을 다시 저장해 되살렸다.
 - 효과음: `Art/_source/audio/claude-sfx/make_sfx.py`(numpy 합성 · 크레딧 0) — 지금 소리 셋의 후보 8개 + 새 사건 8개. 바탕화면 `효과음_시안/효과음_시안.html`로 들어 보게 했다. 사각파는 최고값만 맞추면 지금 소리보다 서너 배 커서 평균 세기(RMS 0.09)로 맞춘다. 게임에는 아직 넣지 않았다.
 - 검사기 0건(장비 탭).
+
+## 이어서 — 효과음 설치 · 분류 필터 · 아티팩트 팝업 (`829ac3c9` · `27834b13`)
+
+- 효과음: `make_sfx.py`에 `coin_c` + RMS 0.09 맞춤. `Art/audio`에 ui 4 · sfx 10(coin_gain_1~3). `Sounds.Pick(key, n)` — 있는 벌만 돌린다. 검사기(`ArtValidator.CheckSounds`)는 프로퍼티 값을 보므로 Pick도 통과한다.
+- 분류 필터: `InventoryItemGroup` enum을 지우고 `InventoryFilter.Group`을 분류 ID 문자열로. 공급자가 `FilterGroups`·`GroupLabel`·`MatchesGroup`을 답한다. 자원 = `ResourceSlotSource.GroupOrder`([제외]와 같은 표 — 기준이 둘이면 "유물은 어디?"가 된다), 장비 = 장비·아티팩트. 맞는 칸이 앞, 나머지는 흐리게(기존 찾기 방식).
+- 아티팩트 창: 판매 목록 자리 → `!Overlay Canvas` 가운데 팝업(응축 창의 딤을 CopySerialized · 원래 바탕은 새 `Window` 640×280으로). `LayoutElement`·`ContentFloorLayoutElement`는 뗐다. 판매 목록이 물러나는 동작은 응축·큐브와 같게 유지.
+- 도감 창: `Codex Presenter` VLG 간격 0 → 8 · `Right Panel` 위 여백 = Filter Row 높이 + 8 = 48.
+- 어두운 글씨: 팔레트 휘도 비교 스캔은 버튼 그림 위 틴트를 몰라 오탐이 많다 — 실제 캡처로 확인했다.
+- 원인 조사(코드 변경 없음): 캐릭터 2장 = 10-02 보유분 + 치트(`CheatGiveAllCharacters`는 종류마다 1장). 경매 더미 = `Kind=Item`만 만든다(`AuctionDummy.Build`) → 분류=아티팩트로는 0건. 경매 DB 1050건 state 1 확인.
+- 씬 잡음 246건 scenefix로 되돌림(유지 49 · 새 5).

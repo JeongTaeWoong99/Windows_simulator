@@ -1,6 +1,6 @@
-# Audio 규칙
+﻿# Audio 규칙
 
-> 최종 업데이트: 2026-10-31 (`SoundManager`·`SoundCatalog`를 Common `sound/`로 옮김 — 여기는 이름표 `Sounds`만 · 시작 배경 음악은 씬 `startBgmKey`) · 2026-10-31 (아트/검사가 `Sounds` 이름표를 목록에서 못 찾으면 ❌ · 신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
+> 최종 업데이트: 2026-11-15 (코드 합성 효과음 — 팝업 열기·닫기 · 거절 · 레벨 업 · 응축 · ★/등급 상승 · 큐브 굴림 · 판매 · 골드는 세 벌 중 하나 `<키>_1~3`) · 2026-10-31 (`SoundManager`·`SoundCatalog`를 Common `sound/`로 옮김 — 여기는 이름표 `Sounds`만 · 시작 배경 음악은 씬 `startBgmKey`) · 2026-10-31 (아트/검사가 `Sounds` 이름표를 목록에서 못 찾으면 ❌ · 신설 — 소리 목록 `SoundCatalog` · 찾는 이름 `Sounds`) · 대상: `Assets/Scripts_Client/Audio/`
 
 **어떤 소리를 쓰는지 아는 곳.** 소리를 **트는** 것·음량 저장·소리 목록은 Common [`sound/`](<../Common/sound/sound 규칙.md>)(`SoundManager` · `SoundCatalog`)이고, 여기는 이 게임의 이름표 `Sounds`만 둔다.
 
@@ -25,8 +25,8 @@
 | 채널 | 무엇 | 지금 부르는 곳 |
 |------|------|----------------|
 | `Bgm` | 반복 배경 음악 | 씬 `Sound Manager`의 `startBgmKey` = `bgm_idle` |
-| `Sfx` | 게임 사건 | 골드 획득 `CoinGain`(`CoinFlyPresenter` — 첫 동전이 닿을 때) · 보상 공개·레벨 업 `RewardChime`(`GachaResultPresenter` · `LevelUpFx`) |
-| `Ui` | 버튼 | `ButtonPressFx` — 누르는 연출이 붙은 버튼 전부 `UiClick` |
+| `Sfx` | 게임 사건 | 골드 획득 `CoinGain`(`CoinFlyPresenter` — 첫 동전이 닿을 때 · `coin_gain_1~3` 중 하나) · 보상 공개 `RewardChime`(`GachaResultPresenter`) · 레벨 업 `LevelUp`(`LevelUpFx`) · 응축 `Condense` · ★/등급 상승 `RankUp`(`CharacterCondensePresenter` · `EnchantRevealFx`) · 큐브 굴림 `CubeRoll`(`EquipEnchantPresenter`) · 판매 `Sell`(`SellCartPresenter`) |
+| `Ui` | 버튼 · 창 | `ButtonPressFx` — 누르는 연출이 붙은 버튼 전부 `UiClick` · 거절 `Error`(`RefusalShake`) · 가운데 팝업 열기·닫기 `PopupOpen`·`PopupClose`(`PanelTransition` · 응축 · 큐브 · 아티팩트 창) |
 | `Master` | 셋 모두에 곱한다 | — |
 
 ## 4. ⚠️ 소리가 없어도 돈다

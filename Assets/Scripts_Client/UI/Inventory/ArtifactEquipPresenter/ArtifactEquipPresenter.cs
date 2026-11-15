@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;
@@ -6,7 +6,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 아티팩트 창 — 장비 탭에서 아티팩트 칸을 좌클릭하면 판매 목록 자리에 열린다 (T-151 · 2026-10-25 사용자 결정).
+// 아티팩트 창 — 장비 탭에서 아티팩트 칸을 좌클릭하면 화면 가운데 팝업으로 열린다 (T-151 · 2026-10-25 사용자 결정).
+// ※ 2026-11-15부터 응축 · 큐브 창과 같은 가운데 팝업이다('!Overlay Canvas' — 배경 딤 · 배경 클릭으로 닫기 · 팝업 소리 · T-201 사용자).
 //
 // ■ 장비와 무엇이 다른가 — 좌클릭 하나
 //   장비 칸 좌클릭은 큐브 창, 아티팩트 칸 좌클릭은 이 창이다. 우클릭(판매 담기) · Ctrl+우클릭(경매 등록)은 장비와 같다('InventoryGridPresenter').
@@ -16,7 +17,7 @@ using UnityEngine.UI;
 // ■ 이미 장착한 번호는 장착할 수 없다 — 버튼을 잠그고 '이미 도감에 장착함'으로 적는다. 남는 것은 팔거나 경매에 올린다.
 // ■ 확인 창을 두지 않는다 — 번호마다 1개만 들어가고 남는 것은 그대로 칸에 있다(화면 중앙 팝업 최소화 · P1).
 //
-// ■ 판매 목록 자리를 빌려 쓴다 — 큐브 창과 같다. 판매 목록은 'OpenChanged'를 듣고 스스로 물러난다.
+// ■ 열려 있는 동안 판매 목록은 물러난다 — 응축 · 큐브 창과 같다. 판매 목록은 'OpenChanged'를 듣는다.
 //   큐브 창과 달리 판매 목록을 비우지 않는다 — 이 창은 칸을 바꾸지 않아 담아 둔 것과 다툴 일이 없다.
 //   닫기 · 장비 탭을 떠남 · 우클릭 담기 · 장비 칸 좌클릭(큐브 창)이면 물러난다.
 public class ArtifactEquipPresenter : MonoBehaviour
@@ -101,6 +102,7 @@ public class ArtifactEquipPresenter : MonoBehaviour
         equipButton.onClick.AddListener(OnEquipClicked);
         codexButton.onClick.AddListener(OnCodexClicked);
         closeButton.onClick.AddListener(Close);
+        BackdropClose.Bind(gameObject, Close); // 딤 바탕을 누르면 닫힌다(응축 · 큐브 창과 같다)
 
         _isReady = true;
 
@@ -143,6 +145,11 @@ public class ArtifactEquipPresenter : MonoBehaviour
 
         _tid = artifactTid;
 
+        if (!wasOpen)
+        {
+            Services.Get<SoundManager>().PlayUi(Sounds.PopupOpen);
+        }
+
         gameObject.SetActive(true);
 
         if (_isReady)
@@ -167,6 +174,7 @@ public class ArtifactEquipPresenter : MonoBehaviour
 
         _tid = 0;
 
+        Services.Get<SoundManager>().PlayUi(Sounds.PopupClose);
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
     }

@@ -1,4 +1,4 @@
-using GameData;
+﻿using GameData;
 
 // 인벤토리 찾기 조건 — 이름 일부 · 등급 · 산업 · 묶음 (T-069). 도구 줄이 만들고 공급자가 거른다.
 //
@@ -14,10 +14,11 @@ public readonly struct InventoryFilter
     // 이 산업만 남긴다('IndustryType' 값). 0이면 전체 — 산업 축이 없는 탭(캐릭터)은 늘 0이다.
     public readonly byte Industry;
 
-    // 산업이 아닌 묶음(상자 · 기타)만 남긴다. 'None'이면 전체 — 자원 탭만 쓴다. 산업과 함께 걸리지 않는다(같은 드롭다운).
-    public readonly InventoryItemGroup Group;
+    // 산업이 아닌 분류 ID만 남긴다 — 자원: 'ResourceSlotSource.GroupOf'(큐브 · 상자 · 유물 · 소모품 · 기타) · 장비: 장비/아티팩트.
+    //   null이면 전체. 산업과 함께 걸리지 않는다(같은 드롭다운). 분류 ID는 [제외] 목록과 같은 값이다(2026-11-15 — 두 목록의 기준을 맞췄다).
+    public readonly string? Group;
 
-    public InventoryFilter(string text, GlobalRarity rarity, byte industry, InventoryItemGroup group = InventoryItemGroup.None)
+    public InventoryFilter(string text, GlobalRarity rarity, byte industry, string? group = null)
     {
         Text     = text.Trim();
         Rarity   = rarity;
@@ -26,13 +27,6 @@ public readonly struct InventoryFilter
     }
 
     // 하나라도 걸려 있나. 'default'의 Text는 null이라 그것도 비었다고 본다.
-    public bool IsActive => !string.IsNullOrEmpty(Text) || Rarity != GlobalRarity.None || Industry != 0 || Group != InventoryItemGroup.None;
+    public bool IsActive => !string.IsNullOrEmpty(Text) || Rarity != GlobalRarity.None || Industry != 0 || Group != null;
 }
 
-// 자원 탭의 산업 아닌 묶음 — 분류 드롭다운의 산업 뒤에 붙는다 (2026-10-05).
-public enum InventoryItemGroup : byte
-{
-    None  = 0,
-    Box   = 1, // 열 수 있는 상자 ('GameDataLoader.IsBox')
-    Other = 2, // 산업 자원도 상자도 아닌 것 — 인챈트 큐브 · 구슬 · 상자 전용 아이템
-}

@@ -1,4 +1,4 @@
-using DG.Tweening;
+﻿using DG.Tweening;
 using UnityEngine;
 
 // 거절 흔들기 — 안 되는 조작을 하면 누른 버튼·칸이 좌우로 짧게 갸웃거린다 (T-177).
@@ -21,6 +21,7 @@ public static class RefusalShake
 
     public static void Play(Transform target)
     {
+        Services.Get<SoundManager>().PlayUi(Sounds.Error); // 안 됨 소리 — 흔들기와 짝
         if (s_tween != null && s_tween.IsActive())
         {
             s_tween.Kill(); // OnKill이 앞 대상의 회전을 되돌린다

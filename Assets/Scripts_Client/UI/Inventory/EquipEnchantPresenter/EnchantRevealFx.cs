@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using DG.Tweening;
 using GameData;
 using TMPro;
@@ -352,6 +352,8 @@ public class EnchantRevealFx : MonoBehaviour
     private void InsertRankUp(float at, GlobalRarity grade)
     {
         Color color = Color.Lerp(RarityPalette.Get(grade), Color.white, GlowWhiten);
+
+        _seq!.InsertCallback(at, () => Services.Get<SoundManager>().PlaySfx(Sounds.RankUp)); // 등급 상승 팡파르 — 테두리가 바뀌는 순간
 
         if (_flash.sprite != null)
         {

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -115,11 +115,11 @@ public class InventoryToolPresenter : MonoBehaviour
     // 기준 드롭다운의 항목 순서 — 탭마다 다르다(수량은 자원만). 드롭다운 값 → 기준.
     private readonly List<InventorySortKey> _sortKeyOptions = new List<InventorySortKey>();
 
-    // 분류 드롭다운의 항목 순서 — 탭마다 다르다(상자·기타는 자원만). 드롭다운 값 → (산업, 묶음). 0번은 늘 '전체'.
-    private readonly List<(byte Industry, InventoryItemGroup Group)> _categoryOptions = new List<(byte, InventoryItemGroup)>();
+    // 분류 드롭다운의 항목 순서 — 탭마다 다르다. 드롭다운 값 → (산업, 분류 ID). 0번은 늘 '전체'.
+    private readonly List<(byte Industry, string? Group)> _categoryOptions = new List<(byte, string?)>();
 
     // 일괄 담기 [제외] 항목 — 분류 ID('ResourceSlotSource.GroupOf'), 보일 순서. 다음은 산업, 그다음 이 표에 없는 분류(표에 새 분류가 생겼을 때).
-    private static readonly string[] ExcludeGroupOrder = { ResourceSlotSource.CubeGroup, "Box", "Relic", "Consumable", "Etc" };
+    private static readonly string[] ExcludeGroupOrder = ResourceSlotSource.GroupOrder; // 분류 드롭다운과 같은 순서
 
     // 처음(저장값이 없을 때) 체크해 둘 분류.
     private static readonly string[] DefaultExcludedGroups = { ResourceSlotSource.CubeGroup, "Box", "Relic" };
@@ -342,29 +342,29 @@ public class InventoryToolPresenter : MonoBehaviour
 
     // 이 탭이 거를 수 있는 분류만 드롭다운에 세운다 (ApplyTab에서 호출). 0번은 늘 '전체'다.
     //
-    // ※ 산업 순서는 격자의 적성 스트립('InventoryGridPresenter.StripIndustries')과 같다 — 화면마다 순서가 다르면 헷갈린다.
-    // ※ 묶음(상자 · 기타)이 붙는 탭은 '산업 전체'가 아니라 '분류 전체'라고 적는다 — 상자는 산업이 아니다.
+    // ※ 순서는 [제외] 목록과 같다 — 분류(큐브 · 상자 · 유물 · 소모품 · 기타 / 장비 · 아티팩트)가 먼저, 산업이 뒤(2026-11-15 사용자).
+    //   두 목록이 다른 기준이면 "상자는 여기, 유물은 어디?"가 된다.
+    // ※ 산업 순서는 격자의 적성 스트립('InventoryGridPresenter.StripIndustries')과 같다.
+    // ※ 분류가 붙는 탭은 '산업 전체'가 아니라 '분류 전체'라고 적는다 — 상자는 산업이 아니다.
     private void RebuildCategoryOptions()
     {
-        bool hasGroups = grid.CurrentSupportsGroupFilter;
+        IReadOnlyList<string> groups = grid.CurrentFilterGroups;
 
         _categoryOptions.Clear();
-        _categoryOptions.Add((0, InventoryItemGroup.None));
+        _categoryOptions.Add((0, null));
 
-        var labels = new List<string> { Lang.Get(hasGroups ? "UI.Tool.AllGroups" : "UI.Tool.AllIndustries") };
+        var labels = new List<string> { Lang.Get(groups.Count > 0 ? "UI.Tool.AllGroups" : "UI.Tool.AllIndustries") };
+
+        foreach (string group in groups)
+        {
+            _categoryOptions.Add((0, group));
+            labels.Add(grid.CurrentGroupLabel(group));
+        }
 
         foreach (EIndustryType industry in InventoryGridPresenter.StripIndustries)
         {
-            _categoryOptions.Add(((byte)industry, InventoryItemGroup.None));
+            _categoryOptions.Add(((byte)industry, null));
             labels.Add(IndustryLabel.Get(industry));
-        }
-
-        if (hasGroups)
-        {
-            _categoryOptions.Add((0, InventoryItemGroup.Box));
-            labels.Add(ResourceSlotSource.GroupName("Box"));
-            _categoryOptions.Add((0, InventoryItemGroup.Other));
-            labels.Add(ResourceSlotSource.GroupName("Etc"));
         }
 
         industryDropdown.ClearOptions();
@@ -899,10 +899,10 @@ public class InventoryToolPresenter : MonoBehaviour
             ? SellRarities[rarityIndex]
             : GlobalRarity.None;
 
-        (byte industry, InventoryItemGroup group) = industryDropdown.gameObject.activeSelf
-                                                     && categoryIndex >= 0 && categoryIndex < _categoryOptions.Count
+        (byte industry, string? group) = industryDropdown.gameObject.activeSelf
+                                         && categoryIndex >= 0 && categoryIndex < _categoryOptions.Count
             ? _categoryOptions[categoryIndex]
-            : ((byte)0, InventoryItemGroup.None);
+            : ((byte)0, null);
 
         grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry, group));
     }
