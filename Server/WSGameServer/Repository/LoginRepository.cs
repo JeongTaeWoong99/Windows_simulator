@@ -45,6 +45,8 @@ public sealed class LoginRepository : IRepository
     // RepositoryContracts.cs 상단 주석 참조.
     public async Task ExecuteAsync(DbConnection connection)
     {
+        await LegacySlotAutoUseRefund.RefundAsync(connection, User.Uid, GameClock.Instance.UtcNow);
+
         // 1) 자원 — 인벤토리·창고를 함께 읽고 container로 가른다(T-107).
         _inventoryRows = await connection.QueryAsync<InventoryRow>(
             "SELECT item_id, count, slot, container FROM t_user_inventory WHERE user_id = @userId",
@@ -127,9 +129,9 @@ public sealed class LoginRepository : IRepository
             "SELECT slot_index, item_tid, remaining FROM t_user_slot_buff WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 9) 작업슬롯 자동 사용 칸(이슈 #113). 넣어 둔 것이 있는 칸만 행이 있다.
+        // 9) ON인 자동 사용 설정. 재고가 0이어도 남는다.
         _slotAutoUseRows = await connection.QueryAsync<SlotAutoUseRow>(
-            "SELECT slot_index, item_tid, count FROM t_user_slot_auto_use WHERE user_id = @userId",
+            "SELECT slot_index, item_tid FROM t_user_slot_auto_use WHERE user_id = @userId",
             new { userId = User.Uid });
     }
 

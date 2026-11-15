@@ -76,12 +76,11 @@ public sealed record SlotBuffRow
     public int remaining  { get; init; }
 }
 
-// t_user_slot_auto_use 조회 전용 Row (넣어 둔 것이 있는 칸만 행이 있다 · 이슈 #113)
+// t_user_slot_auto_use 조회 전용 Row (ON인 영약만 행이 있다)
 public sealed record SlotAutoUseRow
 {
     public int slot_index { get; init; }
     public int item_tid   { get; init; }
-    public int count      { get; init; }
 }
 
 // t_user_building 조회 전용 Row (지은 건물만 행이 있다 — 없으면 Lv0)

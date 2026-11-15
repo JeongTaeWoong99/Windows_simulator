@@ -1074,29 +1074,22 @@ namespace MikaProtocol
         public int         Level       { get; set; }   // 성공이면 올린 뒤 레벨, 실패면 지금 레벨
     }
 
-    /// <summary>
-    /// 작업슬롯의 자동 사용 칸에 영약을 넣거나 꺼낸다(이슈 #113). 넣으면 인벤토리 먼저, 모자란 만큼 창고에서 빠진다.
-    /// 꺼낸 것은 다른 획득과 같은 길(창고의 같은 자원 칸 → 인벤토리)로 돌아가고, 자리가 모자라면 StorageFull로 거절한다.
-    /// </summary>
+    // 슬롯·영약별 자동 사용 ON/OFF. ON이고 버프가 없으면 인벤토리 → 창고에서 1개를 쓴다.
     [MemoryPackable, Packet(PacketId.C_SlotAutoUseRequest)]
     public partial class C_SlotAutoUseRequest : IPacket
     {
         public int  SlotIndex { get; set; }
         public int  ItemTID   { get; set; }
-        public int  Count     { get; set; }  // 1 이상
-        public bool Take      { get; set; }  // false = 넣기 · true = 꺼내기
+        public bool On        { get; set; }  // true = 자동 사용 켜기 · false = 끄기
     }
 
-    /// <summary>
-    /// 자동 사용 칸 결과. 성공하면 바뀐 슬롯(칸 내용·버프 잔여 횟수)이 S_WorkStationSlotSyncResponse로 먼저 온다.
-    /// 칸에서 꺼내 쓴 것(자동 사용)은 응답 없이 슬롯 푸시만 온다.
-    /// </summary>
+    // 설정 결과. 성공하면 슬롯 동기화가 먼저 온다. 자동 소비는 슬롯·아이템 푸시로 통지한다.
     [MemoryPackable, Packet(PacketId.S_SlotAutoUseResponse)]
     public partial class S_SlotAutoUseResponse : IPacket
     {
         public EResultCode           Result          { get; set; }
         public int                   SlotIndex       { get; set; }
         public int                   ItemTID         { get; set; }
-        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 인벤토리·창고 변화 (넣으면 차감 · 꺼내면 지급)
+        public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 설정 즉시 자동 소비한 보유분의 확정값
     }
 }

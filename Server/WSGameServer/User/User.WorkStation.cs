@@ -156,22 +156,20 @@ public partial class User
         var leveledUp      = false;
         var speedChanged   = false;
         var buffChanges    = new List<SlotBuffChange>();
-        var autoUseChanges = new List<SlotAutoUseChange>();
+        var autoUseItems = new List<ItemChangeInfo>();
         foreach (var harvest in harvests)
         {
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
                 // 소모품 버프(T-195) — 이번 판정 수만큼 깎고, 앞쪽 판정부터 붙인다. 속도 버프는 이미 판정 수에 들어 있다.
-                // 버프가 다 되면 자동 사용 칸에서 이어서 꺼낸다(이슈 #113). 속도 가산이 달라졌을 때만 속도를 다시 매긴다.
-                var cellsBefore = rolledSlot.AutoUse.ToDictionary();
+                // 버프가 다 되면 ON인 영약을 보유분에서 이어 쓴다. 속도 가산이 달라졌을 때만 속도를 다시 매긴다.
                 var speedBefore = GetSlotBuffSpeedAdd(rolledSlot);
-                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount, AutoUseEffectCount);
+                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount, tid => ConsumeAutoUseItem(tid, autoUseItems));
                 foreach (var (itemTid, _) in applied)
                 {
                     buffChanges.Add(new SlotBuffChange(rolledSlot.SlotIndex, itemTid, rolledSlot.Buffs.GetValueOrDefault(itemTid)));
                 }
 
-                autoUseChanges.AddRange(AutoUseChanges(rolledSlot, cellsBefore));
                 speedChanged |= GetSlotBuffSpeedAdd(rolledSlot) != speedBefore;
 
                 // 산출량 — 자원에만 붙는다. 상자를 얹기 전에 곱해야 상자가 늘지 않는다(T-108).
@@ -235,10 +233,15 @@ public partial class User
             }
         }
 
-        // 칸에서 꺼낸 것과 그 버프는 한 트랜잭션으로 저장한다 — 하나만 남으면 영약이 사라지거나 두 번 쓰인다.
-        if (autoUseChanges.Count > 0)
+        // 영약 차감·버프를 함께 저장한다. 정산 보상이 차감한 인벤토리 칸을 다시 채울 수도 있다.
+        if (autoUseItems.Count > 0)
         {
-            PostDBTask(new SaveSlotAutoUseRepository(this, autoUseChanges, buffChanges));
+            var items = ItemChangeSnapshot(autoUseItems);
+            PostDBTask(new SaveSlotAutoUseRepository(this, Array.Empty<SlotAutoUseChange>(), buffChanges, items));
+            if (notify)
+            {
+                Send(new S_UpdateItemResponse { Result = EResultCode.Ok, ItemChangeInfos = items });
+            }
         }
         else if (buffChanges.Count > 0)
         {

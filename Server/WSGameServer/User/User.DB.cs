@@ -99,6 +99,11 @@ public partial class User
     /// <summary>적재·지급이 모두 끝난 뒤 속도를 확정하고 응답을 보낸다.</summary>
     private void FinishLogin(DateTime now)
     {
+        foreach (var slot in WorkStation.Slots.OrderBy(s => s.SlotIndex))
+        {
+            RefillAutoUseAndSave(slot, notify: false);
+        }
+
         // 배치된 캐릭터의 적성으로 각 슬롯의 속도를 맞춘다.
         // 접속마다 다시 계산하므로 그동안 밸런스가 바뀌었어도 반영된다.
         RefreshWorkStationSpeed(now, notify: false);

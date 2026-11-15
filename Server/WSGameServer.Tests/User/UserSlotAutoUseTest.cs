@@ -3,70 +3,51 @@ using MikaProtocol;
 
 namespace WSGameServer;
 
-/// <summary>
-/// 작업슬롯 자동 사용 칸(이슈 #113) — 칸에 넣어 둔 영약을 같은 영약의 버프가 끝날 때 1개씩 꺼내 쓴다.
-/// 틀리면 넣은 영약이 사라지거나 두 번 쓰이고, 쉬는 슬롯에서 영약이 줄거나, 꺼낸 영약이 자리가 없어 버려진다.
-/// </summary>
+/// <summary>ON/OFF 설정·공유 재고 소비·버프 유지를 검증해 중복 소비와 OFF 뒤 추가 소비를 막는다.</summary>
 public class UserSlotAutoUseTest
 {
     private static readonly DateTime Base = TestUserBuilder.Base;
-
-    private const int  SpeedElix   = 100044;   // 신속의 영약 — 속도 +300‰ · 3회
-    private const int  YieldElix   = 100045;   // 풍요의 영약 — 산출 +1000‰ · 3회 · MaxStack 9999(실제 표)
-    private const int  Potion      = 100041;   // 성장의 비약 — 칸에 못 넣는다
-    private const int  Compass     = 100036;   // 낡은 나침반 — 칸에 못 넣는다
+    private const int SpeedElix = 100044;
+    private const int YieldElix = 100045;
+    private const int Potion = 100041;
+    private const int Compass = 100036;
     private const long CharacterId = 500;
     private const long SecondCharacterId = 501;
-    private const int  WorkingSlot = 0;
-    private const int  IdleSlot    = 1;
+    private const int WorkingSlot = 0;
+    private const int IdleSlot = 1;
 
     public UserSlotAutoUseTest() => GameTableFixture.EnsureLoaded();
 
     private static readonly ItemUseTableRow[] Uses =
     {
-        new() { ItemTID = Potion,    UseEffect = ItemUseEffect.CharacterExp,  EffectValue = 5 },
-        new() { ItemTID = SpeedElix, UseEffect = ItemUseEffect.SlotWorkSpeed, EffectValue = 300,  EffectCount = 3, SlotCount = 1 },
-        new() { ItemTID = YieldElix, UseEffect = ItemUseEffect.SlotYield,     EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
-        new() { ItemTID = Compass,   UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
+        new() { ItemTID = Potion, UseEffect = ItemUseEffect.CharacterExp, EffectValue = 5 },
+        new() { ItemTID = SpeedElix, UseEffect = ItemUseEffect.SlotWorkSpeed, EffectValue = 300, EffectCount = 3, SlotCount = 1 },
+        new() { ItemTID = YieldElix, UseEffect = ItemUseEffect.SlotYield, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
+        new() { ItemTID = Compass, UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
     };
 
-    /// <summary>발굴 슬롯 0(캐릭터 배치) · 빈 슬롯 1. 영약·비약·나침반을 10개씩 가진다. extraRows는 그 뒤 칸에 더 싣는다.</summary>
-    private static (User User, TestUserBuilder B) NewUser(params InventoryRow[] extraRows)
+    private static (User User, TestUserBuilder B) NewUser(int rewardTid = TestUserBuilder.FishItemTid)
     {
-        var b = new TestUserBuilder().WithExcavationDrops();
+        var b = new TestUserBuilder();
+        b.Drops.Register(IndustryType.Excavation, 1, DropTable.From(
+            "test", new[] { (ItemTID: rewardTid, Weight: 100) }, r => r.ItemTID, r => r.Weight));
         b.ItemUses.Load(Uses);
-
         var user = b.Build();
         user.LoadCharacters(new[]
         {
-            new CharacterRow { character_id = CharacterId,       character_tid = 1001, level = 1 },
+            new CharacterRow { character_id = CharacterId, character_tid = 1001, level = 1 },
             new CharacterRow { character_id = SecondCharacterId, character_tid = 1001, level = 1 },
         });
         user.LoadInventory(new[] { SpeedElix, YieldElix, Potion, Compass }
-            .Select((tid, i) => new InventoryRow { item_id = tid, count = 10, slot = i })
-            .Concat(extraRows)
-            .ToList());
+            .Select((tid, i) => new InventoryRow { item_id = tid, count = 10, slot = i }).ToList());
         user.WorkStation.Load(new[]
         {
             new WorkStationSlot(WorkingSlot, IndustryType.Excavation, CharacterId, Base),
             new WorkStationSlot(IdleSlot, IndustryType.None, 0, Base),
         });
-
         b.Channel.Sent.Clear();
         b.DB.Posted.Clear();
         return (user, b);
-    }
-
-    private static S_SlotAutoUseResponse Put(User user, TestUserBuilder b, int slot, int itemTid, int count)
-    {
-        user.PutSlotAutoUse(slot, itemTid, count, Base);
-        return b.Channel.SentOf<S_SlotAutoUseResponse>().Last();
-    }
-
-    private static S_SlotAutoUseResponse Take(User user, TestUserBuilder b, int slot, int itemTid, int count)
-    {
-        user.TakeSlotAutoUse(slot, itemTid, count);
-        return b.Channel.SentOf<S_SlotAutoUseResponse>().Last();
     }
 
     private static WorkStationSlot Slot(User user, int index)
@@ -75,239 +56,263 @@ public class UserSlotAutoUseTest
         return slot;
     }
 
-    // ───────────────────────── 넣기 ─────────────────────────
-
-    [Fact]
-    public void 넣으면_보유에서_빠지고_칸에_쌓인다()
+    private static S_SlotAutoUseResponse Toggle(User user, TestUserBuilder b, int slot, int tid, bool on = true)
     {
-        var (user, b) = NewUser();
-
-        Put(user, b, IdleSlot, YieldElix, 4).Result.ShouldBe(EResultCode.Ok);
-
-        user.GetItemCount(YieldElix).ShouldBe(6);
+        user.SetSlotAutoUse(slot, tid, on, Base);
+        return b.Channel.SentOf<S_SlotAutoUseResponse>().Last();
     }
 
     [Fact]
-    public void 쉬는_슬롯에서는_칸의_영약을_쓰지_않는다()
+    public void 쉬는_슬롯의_자동_사용을_켜도_보유_영약을_옮기지_않는다()
     {
         var (user, b) = NewUser();
-
-        Put(user, b, IdleSlot, YieldElix, 4);
-
-        Slot(user, IdleSlot).AutoUse[YieldElix].ShouldBe(4);
-    }
-
-    [Fact]
-    public void 돌고_있는_슬롯에_넣으면_버프가_없을_때_바로_하나를_쓴다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, WorkingSlot, YieldElix, 4);
-
-        // 4개 중 1개를 써서 3회 — 칸에는 3개
-        Slot(user, WorkingSlot).AutoUse[YieldElix].ShouldBe(3);
-        Slot(user, WorkingSlot).Buffs[YieldElix].ShouldBe(3);
-    }
-
-    [Fact]
-    public void 신속의_영약을_넣으면_속도_가산이_바로_붙는다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, WorkingSlot, SpeedElix, 1);
-
-        Slot(user, WorkingSlot).SpeedBreakdown.BuffAddPermille.ShouldBe(300);
-    }
-
-    [Fact]
-    public void 직접_쓴_횟수가_남아_있으면_칸의_영약은_기다린다()
-    {
-        var (user, b) = NewUser();
-        user.TryUseConsumable(YieldElix, 1, 0, new[] { WorkingSlot }, Base);
-
-        Put(user, b, WorkingSlot, YieldElix, 1);
-
-        Slot(user, WorkingSlot).AutoUse[YieldElix].ShouldBe(1);
-    }
-
-    [Fact]
-    public void 넣으면_칸_버프_인벤토리를_함께_저장한다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, WorkingSlot, YieldElix, 4);
-
-        var saved = b.DB.PostedOf<SaveSlotAutoUseRepository>().Single();
-        saved.Changes.ShouldBe(new[] { new SlotAutoUseChange(WorkingSlot, YieldElix, 3) });
-        saved.BuffChanges.ShouldBe(new[] { new SlotBuffChange(WorkingSlot, YieldElix, 3) });
-        saved.ItemChanges.Single().Count.ShouldBe(6);
-    }
-
-    [Fact]
-    public void 신속_풍요의_영약이_아니면_넣을_수_없다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, IdleSlot, Compass, 1).Result.ShouldBe(EResultCode.NotAutoUsable);
-        Put(user, b, IdleSlot, Potion, 1).Result.ShouldBe(EResultCode.NotAutoUsable);
-
-        user.GetItemCount(Compass).ShouldBe(10);
-    }
-
-    [Fact]
-    public void 가진_것보다_많이_넣으면_거절하고_아무것도_빠지지_않는다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, IdleSlot, YieldElix, 11).Result.ShouldBe(EResultCode.NotEnoughItem);
-
+        Toggle(user, b, IdleSlot, YieldElix).Result.ShouldBe(EResultCode.Ok);
         user.GetItemCount(YieldElix).ShouldBe(10);
+        Slot(user, IdleSlot).ToInfo().AutoUse!.ShouldHaveSingleItem().On.ShouldBeTrue();
     }
 
     [Fact]
-    public void 칸은_MaxStack까지만_들어간다()
-    {
-        // 9989 + 10 = 9999개 보유. 9999개를 넣으면 한도가 차서 1개도 더 못 넣는다.
-        var (user, b) = NewUser(new InventoryRow { item_id = YieldElix, count = 9989, slot = 10 });
-        Put(user, b, IdleSlot, YieldElix, 9998).Result.ShouldBe(EResultCode.Ok);
-        user.GainItem(YieldElix, 5);
-
-        Put(user, b, IdleSlot, YieldElix, 2).Result.ShouldBe(EResultCode.AutoUseSlotFull);
-    }
-
-    [Fact]
-    public void 없는_슬롯에는_넣을_수_없다()
+    public void 돌고_있는_슬롯은_켜는_즉시_하나만_써서_버프를_건다()
     {
         var (user, b) = NewUser();
-
-        Put(user, b, 99, YieldElix, 1).Result.ShouldBe(EResultCode.InvalidUseTarget);
-    }
-
-    [Fact]
-    public void 개수가_0이면_거절한다()
-    {
-        var (user, b) = NewUser();
-
-        Put(user, b, IdleSlot, YieldElix, 0).Result.ShouldBe(EResultCode.InvalidUseCount);
-    }
-
-    // ───────────────────────── 자동 사용 ─────────────────────────
-
-    [Fact]
-    public void 버프가_다_되면_칸에서_다음_영약을_꺼내_이어간다()
-    {
-        var (user, b) = NewUser();
-        Put(user, b, WorkingSlot, YieldElix, 2);
-
-        // 판정 5번 모두 +1000‰(2개씩) → 10. 이어 쓰지 않으면 3 × 2 + 2 = 8
-        Slot(user, WorkingSlot).AdvanceJudges(5);
-        user.SettleWorkStation(Base);
-
-        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(10);
-    }
-
-    [Fact]
-    public void 칸을_다_쓰면_효과_없이_계속_돈다()
-    {
-        var (user, b) = NewUser();
-        Put(user, b, WorkingSlot, YieldElix, 1);
-
-        // 앞 3번만 +1000‰ → 3 × 2 + 2 = 8
-        Slot(user, WorkingSlot).AdvanceJudges(5);
-        user.SettleWorkStation(Base);
-
-        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(8);
-    }
-
-    [Fact]
-    public void 직접_쓴_횟수가_끝나면_칸의_영약을_이어서_쓴다()
-    {
-        var (user, b) = NewUser();
-        user.TryUseConsumable(YieldElix, 1, 0, new[] { WorkingSlot }, Base);
-        Put(user, b, WorkingSlot, YieldElix, 1);
-
-        // 직접 쓴 3회가 끝나는 판정 직후 칸의 1개를 꺼내 다시 3회
-        Slot(user, WorkingSlot).AdvanceJudges(3);
-        user.SettleWorkStation(Base);
-
+        Toggle(user, b, WorkingSlot, YieldElix);
+        user.GetItemCount(YieldElix).ShouldBe(9);
         Slot(user, WorkingSlot).Buffs[YieldElix].ShouldBe(3);
     }
 
     [Fact]
-    public void 정산이_칸에서_꺼내면_칸과_버프를_함께_저장한다()
+    public void 같은_ON을_다시_보내도_추가로_소비하지_않는다()
     {
         var (user, b) = NewUser();
-        Put(user, b, WorkingSlot, YieldElix, 2);
-        b.DB.Posted.Clear();
-
-        Slot(user, WorkingSlot).AdvanceJudges(3);
-        user.SettleWorkStation(Base);
-
-        var saved = b.DB.PostedOf<SaveSlotAutoUseRepository>().Single();
-        saved.Changes.ShouldBe(new[] { new SlotAutoUseChange(WorkingSlot, YieldElix, 0) });
-        saved.BuffChanges.ShouldBe(new[] { new SlotBuffChange(WorkingSlot, YieldElix, 3) });
-    }
-
-    [Fact]
-    public void 신속의_영약이_칸에서_이어지면_속도_가산이_유지된다()
-    {
-        var (user, b) = NewUser();
-        Put(user, b, WorkingSlot, SpeedElix, 2);
-
-        Slot(user, WorkingSlot).AdvanceJudges(3);
-        user.SettleWorkStation(Base);
-
-        Slot(user, WorkingSlot).SpeedBreakdown.BuffAddPermille.ShouldBe(300);
-    }
-
-    [Fact]
-    public void 쉬던_슬롯에_캐릭터를_배치하면_칸에서_바로_꺼낸다()
-    {
-        var (user, b) = NewUser();
-        Put(user, b, IdleSlot, YieldElix, 2);
-
-        user.AssignWorkStation(IdleSlot, IndustryType.Excavation, SecondCharacterId, Base);
-
-        Slot(user, IdleSlot).Buffs[YieldElix].ShouldBe(3);
-    }
-
-    // ───────────────────────── 꺼내기 ─────────────────────────
-
-    [Fact]
-    public void 꺼내면_보유로_돌아온다()
-    {
-        var (user, b) = NewUser();
-        Put(user, b, IdleSlot, YieldElix, 4);
-
-        Take(user, b, IdleSlot, YieldElix, 3).Result.ShouldBe(EResultCode.Ok);
-
+        Toggle(user, b, WorkingSlot, YieldElix);
+        Toggle(user, b, WorkingSlot, YieldElix);
         user.GetItemCount(YieldElix).ShouldBe(9);
     }
 
     [Fact]
-    public void 칸에_넣은_것보다_많이_꺼낼_수_없다()
+    public void 보유가_없어도_ON이고_재고가_생기면_자동으로_쓴다()
     {
         var (user, b) = NewUser();
-        Put(user, b, IdleSlot, YieldElix, 2);
-
-        Take(user, b, IdleSlot, YieldElix, 3).Result.ShouldBe(EResultCode.NotEnoughItem);
-
-        Slot(user, IdleSlot).AutoUse[YieldElix].ShouldBe(2);
+        user.LoadInventory(Array.Empty<InventoryRow>());
+        Toggle(user, b, WorkingSlot, YieldElix).Result.ShouldBe(EResultCode.Ok);
+        Slot(user, WorkingSlot).AutoUse.ShouldContain(YieldElix);
+        b.Channel.Sent.Clear();
+        user.GainItem(YieldElix, 1);
+        Slot(user, WorkingSlot).AdvanceJudges(1);
+        user.SettleWorkStation(Base);
+        user.GetItemCount(YieldElix).ShouldBe(0);
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(2);
+        b.Channel.SentOf<S_SlotAutoUseResponse>().ShouldBeEmpty();
     }
 
     [Fact]
-    public void 꺼낼_자리가_없으면_거절하고_칸에_남긴다()
+    public void 신속의_영약은_바로_속도에_붙는다()
     {
-        // 영약 칸 + 다른 자원 49칸 = 50칸. 영약을 전부 넣어 빈 칸을 다른 자원으로 채우면 꺼낼 자리가 없다.
-        var fillers = Enumerable.Range(0, User.StorageCapacity - 4)
-            .Select(i => new InventoryRow { item_id = 900_000 + i, count = 1, slot = 4 + i })
-            .ToArray();
-        var (user, b) = NewUser(fillers);
-        Put(user, b, IdleSlot, YieldElix, 10);
-        user.GainItem(999_999, 1);
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, SpeedElix);
+        Slot(user, WorkingSlot).SpeedBreakdown.BuffAddPermille.ShouldBe(300);
+    }
 
-        Take(user, b, IdleSlot, YieldElix, 1).Result.ShouldBe(EResultCode.StorageFull);
+    [Fact]
+    public void 직접_쓴_버프가_남아_있으면_자동_소비를_기다린다()
+    {
+        var (user, b) = NewUser();
+        user.TryUseConsumable(YieldElix, 1, 0, new[] { WorkingSlot }, Base);
+        Toggle(user, b, WorkingSlot, YieldElix);
+        user.GetItemCount(YieldElix).ShouldBe(9);
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+        user.SettleWorkStation(Base);
+        user.GetItemCount(YieldElix).ShouldBe(8);
+        Slot(user, WorkingSlot).Buffs[YieldElix].ShouldBe(3);
+    }
 
-        Slot(user, IdleSlot).AutoUse[YieldElix].ShouldBe(10);
+    [Fact]
+    public void OFF는_현재_버프를_남기고_이후_자동_소비만_멈춘다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, YieldElix);
+        Toggle(user, b, WorkingSlot, YieldElix, false);
+        Slot(user, WorkingSlot).AutoUse.ShouldBeEmpty();
+        Slot(user, WorkingSlot).AdvanceJudges(5);
+        user.SettleWorkStation(Base);
+        // 앞 3회는 2개, 뒤 2회는 1개 → 8개.
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(8);
+        user.GetItemCount(YieldElix).ShouldBe(9);
+    }
+
+    [Theory]
+    [InlineData(Potion)]
+    [InlineData(Compass)]
+    [InlineData(999999)]
+    public void 영약이_아니면_자동_사용을_설정하지_못한다(int tid)
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, IdleSlot, tid).Result.ShouldBe(EResultCode.NotAutoUsable);
+        Slot(user, IdleSlot).AutoUse.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 없는_슬롯에는_자동_사용을_설정하지_못한다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, 99, YieldElix).Result.ShouldBe(EResultCode.InvalidUseTarget);
+        user.GetItemCount(YieldElix).ShouldBe(10);
+    }
+
+    [Fact]
+    public void 한_정산에_여러_버프가_끝나도_보유분에서_이어_쓴다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, YieldElix);
+        Slot(user, WorkingSlot).AdvanceJudges(7);
+        user.SettleWorkStation(Base);
+        // 3회짜리 영약 3개로 7회 모두 두 배, 잔여 2회.
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(14);
+        user.GetItemCount(YieldElix).ShouldBe(7);
+        Slot(user, WorkingSlot).Buffs[YieldElix].ShouldBe(2);
+    }
+
+    [Fact]
+    public void 인벤토리를_먼저_쓰고_소진되면_창고에서_쓴다()
+    {
+        var (user, b) = NewUser();
+        user.LoadInventory(new[]
+        {
+            new InventoryRow { item_id = YieldElix, count = 1, slot = 0 },
+            new InventoryRow { item_id = YieldElix, count = 2, slot = 0, container = (int)EContainer.Warehouse },
+        });
+        var first = Toggle(user, b, WorkingSlot, YieldElix).ItemChangeInfos!.ShouldHaveSingleItem();
+        first.Container.ShouldBe(EContainer.Inventory);
+        first.Count.ShouldBe(0);
+        user.GetItemCount(YieldElix).ShouldBe(2);
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+        user.SettleWorkStation(Base);
+        var next = b.Channel.SentOf<S_UpdateItemResponse>().Last().ItemChangeInfos!.ShouldHaveSingleItem();
+        next.Container.ShouldBe(EContainer.Warehouse);
+        next.Count.ShouldBe(1);
+    }
+
+    [Fact]
+    public void 여러_슬롯이_같은_재고를_두_번_쓰지_않는다()
+    {
+        var (user, b) = NewUser();
+        user.LoadInventory(new[] { new InventoryRow { item_id = YieldElix, count = 1, slot = 0 } });
+        user.AssignWorkStation(IdleSlot, IndustryType.Excavation, SecondCharacterId, Base);
+        Toggle(user, b, WorkingSlot, YieldElix);
+        Toggle(user, b, IdleSlot, YieldElix);
+        Slot(user, WorkingSlot).AdvanceJudges(4);
+        Slot(user, IdleSlot).AdvanceJudges(4);
+        user.SettleWorkStation(Base);
+        // 첫 슬롯 3×2+1=7, 두 번째 슬롯은 4 → 11개.
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(11);
+        user.GetItemCount(YieldElix).ShouldBe(0);
+        Slot(user, IdleSlot).AutoUse.ShouldContain(YieldElix);
+    }
+
+    [Fact]
+    public void 쉬던_슬롯에_배치하면_ON인_영약을_보유분에서_쓴다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, IdleSlot, YieldElix);
+        user.AssignWorkStation(IdleSlot, IndustryType.Excavation, SecondCharacterId, Base);
+        Slot(user, IdleSlot).Buffs[YieldElix].ShouldBe(3);
+        user.GetItemCount(YieldElix).ShouldBe(9);
+    }
+
+    [Fact]
+    public void 켜기_전_구간에_버프를_소급하지_않는다()
+    {
+        var (user, _) = NewUser();
+        user.SetSlotAutoUse(WorkingSlot, YieldElix, true, Base.AddSeconds(90));
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(3);
+    }
+
+    [Fact]
+    public void ON_설정과_버프와_보유_차감을_같이_저장한다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, YieldElix);
+        var saved = b.DB.PostedOf<SaveSlotAutoUseRepository>().ShouldHaveSingleItem();
+        saved.Changes.ShouldBe(new[] { new SlotAutoUseChange(WorkingSlot, YieldElix, true) });
+        saved.BuffChanges.ShouldBe(new[] { new SlotBuffChange(WorkingSlot, YieldElix, 3) });
+        saved.ItemChanges.ShouldHaveSingleItem().Count.ShouldBe(9);
+    }
+
+    [Fact]
+    public void 직접_사용_중_자동_사용도_발생하면_최종_보유량을_응답한다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, SpeedElix);
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+
+        user.TryUseConsumable(SpeedElix, 1, 0, new[] { WorkingSlot }, Base);
+
+        user.GetItemCount(SpeedElix).ShouldBe(7);
+        b.Channel.SentOf<S_ItemUseResponse>().ShouldHaveSingleItem().ItemChangeInfos!
+            .ShouldHaveSingleItem().Count.ShouldBe(7);
+    }
+
+    [Fact]
+    public void 자동_소비는_버프와_보유_차감을_함께_저장하고_통지한다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, YieldElix);
+        b.DB.Posted.Clear();
+        b.Channel.Sent.Clear();
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+        user.SettleWorkStation(Base);
+        var saved = b.DB.PostedOf<SaveSlotAutoUseRepository>().ShouldHaveSingleItem();
+        saved.ItemChanges.ShouldHaveSingleItem().Count.ShouldBe(8);
+        saved.BuffChanges.ShouldBe(new[] { new SlotBuffChange(WorkingSlot, YieldElix, 3) });
+        b.Channel.SentOf<S_UpdateItemResponse>().ShouldHaveSingleItem().ItemChangeInfos!.ShouldHaveSingleItem().Count.ShouldBe(8);
+    }
+
+    [Fact]
+    public void 종료_정산에서도_소비를_저장하지만_패킷은_보내지_않는다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, YieldElix);
+        b.Channel.Sent.Clear();
+        b.DB.Posted.Clear();
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+        user.SettleWorkStation(Base, notify: false);
+        user.GetItemCount(YieldElix).ShouldBe(8);
+        b.DB.PostedOf<SaveSlotAutoUseRepository>().ShouldHaveSingleItem().ItemChanges.ShouldHaveSingleItem().Count.ShouldBe(8);
+        b.Channel.Sent.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 자동으로_쓴_영약을_같은_정산의_보상으로_얻어도_최종값을_저장한다()
+    {
+        var (user, b) = NewUser(YieldElix);
+        Toggle(user, b, WorkingSlot, YieldElix);
+        b.DB.Posted.Clear();
+        Slot(user, WorkingSlot).AdvanceJudges(3);
+        user.SettleWorkStation(Base);
+
+        // 시작 10 - ON 때 1 - 이어 쓰기 1 + 판정 3회의 두 배 보상 6 = 14.
+        user.GetItemCount(YieldElix).ShouldBe(14);
+        b.DB.PostedOf<SaveSlotAutoUseRepository>().ShouldHaveSingleItem().ItemChanges
+            .ShouldHaveSingleItem().Count.ShouldBe(14);
+    }
+
+    [Fact]
+    public void 재접속하면_ON을_복원하고_오프라인_시간은_판정하지_않는다()
+    {
+        var b = new TestUserBuilder().WithExcavationDrops();
+        b.ItemUses.Load(Uses);
+        var user = b.Build();
+        var data = new PlayerLoginData(
+            new() { new InventoryRow { item_id = YieldElix, count = 10, slot = 0 } }, null,
+            new() { new CharacterRow { character_id = CharacterId, character_tid = 1001, level = 1 } },
+            new() { new WorkStationSlotRow { slot_index = WorkingSlot, industry = (int)IndustryType.Excavation, industry_level = 1, character_id = CharacterId } },
+            new(), new(), new(), SlotAutoUseRows: new() { new SlotAutoUseRow { slot_index = WorkingSlot, item_tid = YieldElix } });
+        user.OnLoginDataLoaded(data, Base.AddDays(1));
+        Slot(user, WorkingSlot).AutoUse.ShouldContain(YieldElix);
+        Slot(user, WorkingSlot).Buffs[YieldElix].ShouldBe(3);
+        user.GetItemCount(YieldElix).ShouldBe(9);
+        user.GetItemCount(TestUserBuilder.FishItemTid).ShouldBe(0);
+        b.Channel.SentOf<S_WorkStationSlotsResponse>().ShouldHaveSingleItem().Slots!
+            .Single(s => s.SlotIndex == WorkingSlot).AutoUse!.ShouldHaveSingleItem().On.ShouldBeTrue();
     }
 }

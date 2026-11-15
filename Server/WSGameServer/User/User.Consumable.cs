@@ -228,7 +228,7 @@ public partial class User
         {
             Result          = EResultCode.Ok,
             ItemTID         = itemTid,
-            ItemChangeInfos = new List<ItemChangeInfo>(consumed),
+            ItemChangeInfos = ItemChangeSnapshot(consumed),
             UsedCount       = used,
         });
     }

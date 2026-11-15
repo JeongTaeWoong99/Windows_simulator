@@ -102,9 +102,9 @@ public sealed class WorkStationSlot
     }
 
     /// <summary>판정 <paramref name="judgeCount"/>회분 버프를 깎는다. 0이 된 버프는 빠진다.</summary>
-    /// <param name="effectCountOf">자동 사용 칸의 아이템 1개가 거는 횟수(ItemUseTable.EffectCount). null이면 칸에서 꺼내지 않는다.</param>
+    /// <param name="effectCountOf">영약 1개를 소비하고 지속 판정 수를 반환한다. 재고가 없으면 0, null이면 자동 사용 안 함.</param>
     /// <returns>아이템마다 이번 판정 중 앞에서부터 몇 번에 적용됐는가 — 남은 횟수가 판정 수보다 적으면 그 수만큼만.
-    /// 버프가 다 되면 그 자리에서 칸의 것을 꺼내 이어 가므로 적용 구간은 늘 앞에서부터 이어진다.</returns>
+    /// 버프가 다 되면 보유분에서 이어 쓰므로 적용 구간은 늘 앞에서부터 이어진다.</returns>
     public Dictionary<int, int> ConsumeBuffs(int judgeCount, Func<int, int>? effectCountOf = null)
     {
         var applied = new Dictionary<int, int>();
@@ -113,7 +113,7 @@ public sealed class WorkStationSlot
             return applied;
         }
 
-        foreach (var itemTid in _buffs.Keys.Union(_autoUse.Keys).ToList())
+        foreach (var itemTid in _buffs.Keys.Union(_autoUse).Order().ToList())
         {
             var used = 0;
             while (used < judgeCount)
@@ -139,40 +139,26 @@ public sealed class WorkStationSlot
         return applied;
     }
 
-    // ───────── 자동 사용 칸 (이슈 #113) ─────────
+    // ───────── 자동 사용 ON/OFF ─────────
 
-    // 아이템 TID → 칸에 넣어 둔 개수. 같은 아이템의 버프가 0이 되면 1개씩 꺼내 쓴다. 캐릭터를 바꾸거나 빼도 남는다.
-    private readonly SortedDictionary<int, int> _autoUse = new();
+    private readonly SortedSet<int> _autoUse = new();
 
-    /// <summary>자동 사용 칸. 아이템 TID → 넣어 둔 개수(> 0).</summary>
-    public IReadOnlyDictionary<int, int> AutoUse => _autoUse;
+    public IReadOnlyCollection<int> AutoUse => _autoUse;
 
-    /// <summary>칸에 넣는다(로그인 적재 포함). 수량·종류 검사는 호출자가 한다.</summary>
-    public void PutAutoUse(int itemTid, int count)
+    public void SetAutoUse(int itemTid, bool on)
     {
-        if (count <= 0)
+        if (on)
         {
-            return;
+            _autoUse.Add(itemTid);
         }
-
-        _autoUse[itemTid] = _autoUse.GetValueOrDefault(itemTid) + count;
-    }
-
-    /// <summary>칸에서 꺼낸다. 넣어 둔 것보다 많으면 아무것도 바꾸지 않고 false.</summary>
-    public bool TryTakeAutoUse(int itemTid, int count)
-    {
-        var have = _autoUse.GetValueOrDefault(itemTid);
-        if (count <= 0 || count > have)
+        else
         {
-            return false;
+            _autoUse.Remove(itemTid);
         }
-
-        SetAutoUse(itemTid, have - count);
-        return true;
     }
 
     /// <summary>
-    /// 돌고 있는 슬롯이면 버프가 다 된 아이템마다 칸에서 1개를 꺼내 건다. 쉬는 슬롯은 판정이 없으므로 꺼내지 않는다.
+    /// 돌고 있는 슬롯의 ON인 영약만 보유분에서 소비한다. 쉬는 슬롯은 쓰지 않는다.
     /// </summary>
     /// <returns>꺼낸 것이 있으면 true.</returns>
     public bool RefillAutoUse(Func<int, int>? effectCountOf)
@@ -183,7 +169,7 @@ public sealed class WorkStationSlot
         }
 
         var refilled = false;
-        foreach (var itemTid in _autoUse.Keys.ToList())
+        foreach (var itemTid in _autoUse)
         {
             if (_buffs.GetValueOrDefault(itemTid) == 0)
             {
@@ -196,8 +182,8 @@ public sealed class WorkStationSlot
 
     private bool TryRefill(int itemTid, Func<int, int>? effectCountOf)
     {
-        var count = effectCountOf?.Invoke(itemTid) ?? 0;
-        if (count <= 0 || !TryTakeAutoUse(itemTid, 1))
+        var count = _autoUse.Contains(itemTid) ? effectCountOf?.Invoke(itemTid) ?? 0 : 0;
+        if (count <= 0)
         {
             return false;
         }
@@ -207,8 +193,6 @@ public sealed class WorkStationSlot
     }
 
     private void SetBuff(int itemTid, int count) => SetOrRemove(_buffs, itemTid, count);
-
-    private void SetAutoUse(int itemTid, int count) => SetOrRemove(_autoUse, itemTid, count);
 
     private static void SetOrRemove(SortedDictionary<int, int> map, int key, int count)
     {
@@ -354,6 +338,6 @@ public sealed class WorkStationSlot
         GatherSpeedPermille = SpeedBreakdown.GatherSpeedPermille,
         BuffAddPermille     = SpeedBreakdown.BuffAddPermille,
         Buffs               = _buffs.Select(b => new SlotBuffInfo { ItemTID = b.Key, Remaining = b.Value }).ToList(),
-        AutoUse             = _autoUse.Select(a => new SlotAutoUseInfo { ItemTID = a.Key, Count = a.Value }).ToList(),
+        AutoUse             = _autoUse.Select(tid => new SlotAutoUseInfo { ItemTID = tid, On = true }).ToList(),
     };
 }
