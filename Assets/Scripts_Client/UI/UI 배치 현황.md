@@ -99,7 +99,7 @@ Root Canvas
 │  │  │     ├─ WorkStation List Presenter (↓ SUB VIEW) WorkStationListPresenter   [기본]
 │  │  │     │  └─ Content > Work Slot (0..7)      WorkSlotFrame 프리팹 [Button]
 │  │  │     │     └─ WorkStationSlotView 프리팹 (배치된 칸에만 런타임 생성)
-│  │  │     │        ├─ Head Panel                 HLG · pref 22 — Index Chip(#N) · Industry Chip(산업 Lv) · Spacer(flex 0) · Speed Ribbon(pref 40 · flex 1 — 남는 폭만 받는다) > Speed Text(배속 · 최대 · 자동 축소 10~17)
+│  │  │     │        ├─ Head Panel                 HLG · pref 22 — Index Chip(#N) · Industry Chip(산업 Lv) · Spacer(flex 0) · Speed Ribbon(pref 40 · flex 1 — 남는 폭만 받는다) > Speed Text(실효 주기 "4.4초"·"2.4분" · 최대 · 자동 축소 10~17)
 │  │  │     │        ├─ Stage Frame                flex 1 — 무대가 칸의 남는 높이를 다 쓴다
 │  │  │     │        │  ├─ Visible Panel           SlotStageView (무대)
 │  │  │     │        │  └─ Stage Overlay           무대 위에 겹친다 — Character Text(이름 Lv, 왼쪽 아래) · Progress Slider(바닥 6px · 초록 · 칸 폭 끝까지)

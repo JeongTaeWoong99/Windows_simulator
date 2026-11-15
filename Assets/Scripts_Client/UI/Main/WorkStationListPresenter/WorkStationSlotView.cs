@@ -16,7 +16,7 @@ using UnityEngine.UI;
 //   진행 막대는 연출이고 판정은 서버가 한다. 어긋나도 다음 스냅샷이 교정한다.
 //
 // ■ 칸의 생김새 (2026-11-13 B안 — 리본·칩은 B안, 글자 줄은 무대 밖)
-//   머리 줄  : [#번호] [산업 Lv]      빨간 리본 속도(최대)   — 어디서 · 얼마나 빠른지
+//   머리 줄  : [#번호] [산업 Lv]      빨간 리본 실효 주기(최대) — 어디서 · 한 번에 몇 초
 //   무대 왼쪽 위: 버프 칩 [아이콘 남은 횟수]… — 걸린 소모품(T-194). 머리 줄은 폭이 모자라(칸 약 150px) 무대 모서리에 작게 둔다
 //   무대     : 글자를 얹지 않는다 · 아래 가장자리 진행 막대만 — 대상과 캐릭터가 늘 다 보인다
 //   아래 두 줄: 캐릭터 이름 / 남은 시간 '3.1초 후 수확' + 장비 4칸(+보석)
@@ -32,6 +32,8 @@ using UnityEngine.UI;
 //      무대는 실행 중에 배우 그림을 자기 자식 맨 뒤에 만들어서, 안에 두면 배우에게 가려진다.
 public class WorkStationSlotView : MonoBehaviour
 {
+    private const double SecondsPerMinute = 60.0;
+
     [CenterHeader("참조")]
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다('SetRarity'). 인벤토리 칸('SlotView')과 같은 표('RarityPalette')를 쓴다.
     [SerializeField, Tooltip("칸 바탕 — 프리팹 루트의 Image. 등급 색으로 칠해진다")]
@@ -44,7 +46,7 @@ public class WorkStationSlotView : MonoBehaviour
     [SerializeField, Tooltip("머리 줄 칩 — 산업 + 레벨 '채굴 Lv1'. 돌지 않는 칸은 '대기'")]
     private TMP_Text industryText = null!;
 
-    [SerializeField, Tooltip("머리 줄 오른쪽 끝 — 속도 배율 '6.86배' (최소 주기에 걸리면 금색 '최대')")]
+    [SerializeField, Tooltip("머리 줄 오른쪽 끝 — 실효 주기 '4.4초'·'2.4분' (최소 주기에 걸리면 금색 '최대')")]
     private TMP_Text speedText = null!;
 
     [SerializeField, Tooltip("무대 왼쪽 위(Stage Overlay) — 걸린 소모품 버프마다 아이콘 + 남은 판정 횟수 칩 (T-194)")]
@@ -151,14 +153,24 @@ public class WorkStationSlotView : MonoBehaviour
 
         industryText.text = slot.IndustryLevel > 0 ? $"{industry} Lv{slot.IndustryLevel}" : industry;
 
-        // 천분율 → 배율 ('Constants.WorkSpeedScale' = 1.0배). 최소 주기로 잘린 속도를 적고, 잘렸으면 금색 '최대'를 붙인다 (T-102)
-        float  speedMultiplier = WorkStationProgress.GetEffectiveSpeed(slot) / (float)Constants.WorkSpeedScale;
-        string capMark         = WorkStationProgress.IsAtMinCycle(slot)
-                               ? UIRichText.Small(UIRichText.Paint(" " + Lang.Get("UI.WorkStation.Max"), UIThemeRole.Highlight))
-                               : "";
+        // 리본 = 실효 주기(판정 1회에 걸리는 시간). 최소 주기에 닿았으면 금색 '최대'를 붙인다 (T-102 · 2026-11-16 사용자 결정).
+        // ※ 배율을 적지 않는다 — 배율은 산업 레벨과 무관한 캐릭터 속도라, 같은 배율이라도 Lv1은 1.6초 · Lv5는 수 분이다.
+        //   최대에 닿는 배율도 레벨마다 18.75~1,518배로 달라 숫자로 비교가 안 된다. 배율은 효율 계산 '현재 작업속도'에 남긴다.
+        float  cycle   = WorkStationProgress.CalculateCycleSeconds(slot);
+        string capMark = WorkStationProgress.IsAtMinCycle(slot)
+                       ? UIRichText.Small(UIRichText.Paint(" " + Lang.Get("UI.WorkStation.Max"), UIThemeRole.Highlight))
+                       : "";
 
-        // 배율이 바뀌면(레벨업 · 장비 · 특성) 굴러간다
-        NumberRoll.Set(speedText, speedMultiplier, v => Lang.Format("UI.WorkStation.SpeedMul", v.ToString("0.00")) + capMark);
+        // 주기가 바뀌면(레벨업 · 장비 · 특성 · 영약) 굴러간다
+        NumberRoll.Set(speedText, cycle, v => FormatCycle(v) + capMark);
+    }
+
+    // 실효 주기 표기 — 1분 미만은 '1.6초', 이상은 '2.4분' (산업 Lv5는 기본 40분이라 초로 적으면 길다)
+    private static string FormatCycle(double seconds)
+    {
+        return seconds < SecondsPerMinute
+             ? Lang.Format("UI.WorkStation.Seconds", seconds.ToString("0.0"))
+             : Lang.Format("UI.WorkStation.Minutes", (seconds / SecondsPerMinute).ToString("0.0"));
     }
 
     // 칸 바탕을 배치된 캐릭터의 등급 색으로 칠한다 (WorkStationListPresenter가 Bind 뒤에 호출).

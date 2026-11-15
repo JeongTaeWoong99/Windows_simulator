@@ -4620,6 +4620,11 @@
     "EN": "{0}s"
   },
   {
+    "Key": "UI.WorkStation.Minutes",
+    "KR": "{0}분",
+    "EN": "{0}m"
+  },
+  {
     "Key": "UI.WorkStation.ExpPerJudge",
     "KR": "판정당 경험치",
     "EN": "EXP per Roll"
