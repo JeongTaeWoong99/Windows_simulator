@@ -23,4 +23,5 @@ tags: [docs, research, automation]
 
 - 초기 연구 3편, Astro check 0 오류·0 경고, build 338페이지.
 - Node 검증·게시 테스트 6개 통과. 별도 검토의 차단 문제는 수정 완료.
-- Windows 예약·실제 실행·공개 배포 확인 결과는 작업 종료 때 아래에 기록한다.
+- Windows 예약·실제 실행·공개 배포 확인 완료. 최초 실행은 Chillquarium 연구를 `00aaf947`로 게시했고, 종료 코드 0과 다음 06시 실행을 확인했다. GitHub Actions 배포 `43908350490` 성공 및 공개 /proposals 페이지의 연구 4편 링크를 확인했다.
+- T-203은 사용자 열람 확인만 남아 Resolve로 인계한다. 정기 실행 장애는 운영 문서의 latest.json과 로그를 먼저 확인한다.
