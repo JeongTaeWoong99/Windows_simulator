@@ -11,14 +11,14 @@ const { p } = Astro.props as { p: Proposal };
 
 <Layout title={`${p.game} — ${p.system}`}>
   <div class="gn">
-    <a href="/proposals" class="gn-back">← 기획 제안 목록</a>
+    <a href="/proposals" class="gn-back">← 기획 (AI) 목록</a>
 
     <div class="gn-row gn-topic">
       <span class="gn-vote" data-kind={p.verdictKind} title={p.verdict}>▲</span>
       <div class="gn-main">
         <h1 class="gn-title">
-          {p.system}
-          <span class="gn-domain">({p.game})</span>
+          {p.kind === 'study' ? p.game : p.system}
+          <span class="gn-domain">({p.kind === 'study' ? p.system : p.game})</span>
         </h1>
         <div class="gn-info">
           <span class="gn-badge" data-kind={p.verdictKind}>{p.verdict}</span>

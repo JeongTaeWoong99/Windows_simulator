@@ -215,7 +215,7 @@ body { margin: 0; line-height: 1.7; }
 .tasktable td { padding: 0.5rem 0.75rem; border-bottom: 1px solid #f1f5f9; vertical-align: top; }
 .tasktable tr:last-child td { border-bottom: 0; }
 
-/* ── 기획 제안 (AI) — news.hada.io 목록 모양 ───────────────────────── */
+/* ── 기획 (AI) — 게임 연구·시스템 제안 목록 ──────────────────────── */
 .navlink { white-space: nowrap; }
 
 .gn { max-width: 56rem; }

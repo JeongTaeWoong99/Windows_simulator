@@ -1,9 +1,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { PROPOSALS_DIR } from './paths';
+import { PROPOSALS_DIR, GAME_STUDIES_DIR } from './paths';
 import { renderMd } from './content-loader';
 
 export type Proposal = {
+  kind: 'study' | 'proposal';
   slug: string;
   /** YYYY-MM-DD */
   date: string;
@@ -59,7 +60,7 @@ function verdictKind(verdict: string, isPick: boolean): Proposal['verdictKind'] 
 }
 
 /// <summary>문서마다 머리 형식이 조금씩 달라(장르: 접두 유무 · 판정 대신 추천안) 줄 단위로 너그럽게 읽는다</summary>
-function parse(fileName: string, raw: string): Proposal | null {
+function parse(fileName: string, raw: string, sourceDir: string, kind: Proposal['kind']): Proposal | null {
   const m = fileName.match(FILE_RE);
   if (!m) return null;
   const text = namePrinciples(raw);
@@ -100,28 +101,34 @@ function parse(fileName: string, raw: string): Proposal | null {
 
   const body = afterH1.split(/\r?\n/).slice(head.length).join('\n');
   return {
+    kind,
     slug,
     date,
     hour: Number(hour),
     game: game.trim(),
     system,
     meta,
-    verdict: verdict || '판정 없음',
-    verdictKind: verdictKind(verdict, isPick),
+    verdict: verdict || (kind === 'study' ? '학습 자료' : '판정 없음'),
+    verdictKind: kind === 'study' ? 'reference' : verdictKind(verdict, isPick),
     cost,
     summary,
     readMinutes: Math.max(1, Math.round(text.length / 900)),
-    bodyHtml: renderMd(body, PROPOSALS_DIR),
+    bodyHtml: renderMd(body, sourceDir),
   };
 }
 
 /** 최신 회차가 위 — 같은 회차 안에서는 파일 이름순 */
 export function loadProposals(): Proposal[] {
-  if (!fs.existsSync(PROPOSALS_DIR)) return [];
   const out: Proposal[] = [];
-  for (const name of fs.readdirSync(PROPOSALS_DIR)) {
-    const p = parse(name, fs.readFileSync(path.join(PROPOSALS_DIR, name), 'utf8'));
-    if (p) out.push(p);
+  for (const { dir, kind } of [
+    { dir: GAME_STUDIES_DIR, kind: 'study' as const },
+    { dir: PROPOSALS_DIR, kind: 'proposal' as const },
+  ]) {
+    if (!fs.existsSync(dir)) continue;
+    for (const name of fs.readdirSync(dir)) {
+      const p = parse(name, fs.readFileSync(path.join(dir, name), 'utf8'), dir, kind);
+      if (p) out.push(p);
+    }
   }
   return out.sort(
     (a, b) => b.date.localeCompare(a.date) || b.hour - a.hour || a.slug.localeCompare(b.slug),
