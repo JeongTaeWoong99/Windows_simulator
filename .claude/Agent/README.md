@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-16 작업슬롯 10칸 — 씬 칸 틀 2개 추가](2026-11-16-workslot-ten-frames.md) — `#client` `#editor` T-202 Work Slot (7) 복제 · 레이아웃 노이즈 없이 새 블록만
 - [2026-11-16 영약 자동 사용 ON/OFF — 클라 연동](2026-11-16-auto-use-toggle-client.md) — `#client` `#ui` `#data` T-194 클릭 토글 · 칸 ON ×보유 · 칩 +보유 · 문구 정리
 - [2026-11-15 영약 자동 사용 ON/OFF 전환](2026-11-15-auto-use-toggle.md) — `#server` `#test` #123 공유 재고 소비·기존 보관분 환급
 
