@@ -1,0 +1,11 @@
+{
+  "type": "object",
+  "properties": {
+    "game_id": { "type": "string" },
+    "title": { "type": "string" },
+    "markdown": { "type": "string" },
+    "source_urls": { "type": "array", "items": { "type": "string" } }
+  },
+  "required": ["game_id", "title", "markdown", "source_urls"],
+  "additionalProperties": false
+}

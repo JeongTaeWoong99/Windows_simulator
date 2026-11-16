@@ -1,7 +1,7 @@
 {
   "name": "windows-simulator-docs",
   "type": "module",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "private": true,
   "scripts": {
     "predev": "node scripts/sync-assets.mjs",
@@ -21,6 +21,7 @@
     "@tailwindcss/typography": "^0.5.16",
     "@tailwindcss/vite": "^4.1.0",
     "@types/markdown-it": "^14.1.2",
+    "@types/node": "^22.20.5",
     "tailwindcss": "^4.1.0",
     "typescript": "^5.8.0"
   }
