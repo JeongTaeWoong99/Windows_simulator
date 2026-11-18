@@ -305,6 +305,16 @@
     "EN": "Treasure Hunter"
   },
   {
+    "Key": "Character.1035.Name",
+    "KR": "화염 군주",
+    "EN": "Flame Lord"
+  },
+  {
+    "Key": "Character.1036.Name",
+    "KR": "심연의 눈 사제",
+    "EN": "Abyssal Eye Priest"
+  },
+  {
     "Key": "Equip.1001.Name",
     "KR": "목검",
     "EN": "Wooden Sword"
