@@ -12,6 +12,8 @@ using UnityEngine;
 //
 // ■ 타격 섬광
 //   곱하기 색으로는 하얗게 만들 수 없어서, 같은 모양의 흰 실루엣('flash')을 위에 겹쳐 알파를 줄인다.
+//   레벨에 맞는 자세('hit' — 원본 옆 '<이름>_hit.png')가 있으면 움찔하는 동안 몸을 그 자세로 바꾸고, 번쩍임도 그 자세의 실루엣('hitFlash')을 쓴다(사냥 · 2026-11-18).
+//   맞는 자세 캔버스는 서 있는 그림보다 위·양옆이 넓다(아래·가운데는 같다) — 발 자리(아래 가운데)를 맞추면 그대로 겹친다.
 //
 // ■ 크기 배율은 사람 몫이다 (2026-10-10)
 //   'scale'은 굽기가 건드리지 않는다('ArtBaker'는 그림·레벨 색만 쓴다). 발(아래 가운데)을 땅선에 둔 채 그림만 키운다.
@@ -28,6 +30,10 @@ public class TargetVisual : ScriptableObject
 
         [Tooltip("같은 모양의 흰 실루엣")]
         public Sprite? flash;
+
+        [Tooltip("(선택) 맞는 그림 — 서 있는 그림과 같은 크기. 있으면 맞는 순간 흰 실루엣 대신 이것을 보인다")]
+        public Sprite? hit;
+        public Sprite? hitFlash;
 
         [Range(0.25f, 4f), Tooltip("이 레벨 그림만의 크기 배율 — 아래 'scale'에 곱한다. 굽기가 덮지 않는다(0은 1로 본다)")]
         public float scale;
@@ -66,6 +72,10 @@ public class TargetVisual : ScriptableObject
 
     // 이 레벨의 섬광. 레벨 그림이 없으면 한 장짜리.
     public Sprite? GetFlash(int level) => levels.Length > 0 ? LevelAt(level).flash : flash;
+
+    // 이 레벨의 맞는 그림 — 없으면 null(흰 실루엣을 쓴다). 레벨 그림이 없는 대상은 없다.
+    public Sprite? GetHit(int level)      => levels.Length > 0 ? LevelAt(level).hit : null;
+    public Sprite? GetHitFlash(int level) => levels.Length > 0 ? LevelAt(level).hitFlash : null;
 
     // 산업 레벨의 색. 레벨 그림이 있거나 표가 비어 있으면 원래 색 — 표에 없는 레벨이면 가장 가까운 끝값.
     public Color GetTint(int level)
