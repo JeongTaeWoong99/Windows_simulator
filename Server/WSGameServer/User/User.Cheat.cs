@@ -435,7 +435,7 @@ public partial class User
     }
 
     // 더미 판매자 매물을 원장에 바로 쓴다 — 유저 상한·빈도·등록비를 거치지 않는다(치트 원칙 4의 예외 → 치트.md 4장).
-    private (EResultCode, string) CheatSeedAuctionListings(long count, long itemTid, DateTime now)
+    private (EResultCode, string) CheatSeedAuctionListings(long count, long kindOrItemTid, DateTime now)
     {
         if (!_auction.IsAvailable)
         {
@@ -453,22 +453,56 @@ public partial class User
             return (EResultCode.InvalidCheatArgs, $"개수는 1~{AuctionDummy.MaxCount} (0이면 삭제)");
         }
 
-        IReadOnlyList<ItemTableRow> items;
-        if (itemTid == 0)
+        var (pool, error) = DummyPoolOf(kindOrItemTid);
+        if (pool is null)
         {
-            items = GameTable.ItemTable.All;
-        }
-        else if (itemTid > 0 && itemTid <= int.MaxValue && GameTable.ItemTable.TryGet((int)itemTid, out var row))
-        {
-            items = new[] { row };
-        }
-        else
-        {
-            return (EResultCode.InvalidCheatArgs, $"ItemTable에 없는 TID {itemTid}");
+            return (EResultCode.InvalidCheatArgs, error);
         }
 
-        PostDBTask(new SeedDummyAuctionRepository(this, AuctionDummy.Build(items, (int)count, now), now));
+        PostDBTask(new SeedDummyAuctionRepository(this, AuctionDummy.Build(pool, (int)count, now), now));
         return (EResultCode.Ok, $"더미 매물 {count}개 등록 요청");
+    }
+
+    // Arg2: 0 = 네 종류 전부 · 1~4 = 그 종류만(EAuctionKind) · 그 밖 = 그 ItemTID 하나 (T-204 전 클라 치트 창이 쓰던 값 — ItemTID는 1만대부터다).
+    private (DummyPool?, string) DummyPoolOf(long kindOrItemTid)
+    {
+        var all = new DummyPool
+        {
+            Items      = GameTable.ItemTable.All,
+            Equips     = GameTable.EquipTable.All,
+            Characters = GameTable.CharacterTable.All,
+            Artifacts  = GameTable.ArtifactTable.All,
+            Enchants   = _enchantCatalog,
+            Stars      = _characterStars,
+            MaxLevel   = _characterLevels.MaxLevel,
+        };
+
+        var pool = kindOrItemTid switch
+        {
+            0                            => all,
+            (long)EAuctionKind.Item      => all with { Equips = [], Characters = [], Artifacts = [] },
+            (long)EAuctionKind.Equip     => all with { Items = [], Characters = [], Artifacts = [] },
+            (long)EAuctionKind.Character => all with { Items = [], Equips = [], Artifacts = [] },
+            (long)EAuctionKind.Artifact  => all with { Items = [], Equips = [], Characters = [] },
+            _                            => null,
+        };
+
+        if (pool is null)
+        {
+            if (kindOrItemTid > 0 && kindOrItemTid <= int.MaxValue && GameTable.ItemTable.TryGet((int)kindOrItemTid, out var row))
+            {
+                return (new DummyPool { Items = new[] { row } }, "");
+            }
+
+            return (null, $"Arg2는 0(전체)·1~4(종류) 또는 ItemTID — {kindOrItemTid}은 ItemTable에 없다");
+        }
+
+        if (pool.Items.Count + pool.Equips.Count + pool.Characters.Count + pool.Artifacts.Count == 0)
+        {
+            return (null, $"{(EAuctionKind)kindOrItemTid} 테이블이 비었다");
+        }
+
+        return (pool, "");
     }
 
     public void OnDummyAuctionSeeded(int count)

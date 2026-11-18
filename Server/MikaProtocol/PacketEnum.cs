@@ -177,7 +177,7 @@ namespace MikaProtocol
         ResetTime        = 13, // 게임 시계 오프셋을 0으로 — 미래 시각으로 저장된 데이터는 남는다
         SetCondenseCount = 14, // Arg1 = CharacterId(개체) · Arg2 = 응축 누적 재료 수 — 재료 없이 정한다. 0~최고 ★ 기준으로 자른다
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
-        SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
+        SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = 0 전체 섞기 · 1~4 그 종류만(EAuctionKind) · 그 밖 = 그 ItemTID 하나 (T-204)
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
         GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
         GiveArtifact     = 19, // Arg1 = ArtifactTID · Arg2 = 개수 (1~칸 하나 상한) — 아티팩트 칸, 없으면 우편 (T-198)
