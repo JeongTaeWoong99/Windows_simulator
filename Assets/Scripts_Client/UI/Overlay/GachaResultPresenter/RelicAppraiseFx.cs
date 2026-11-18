@@ -9,6 +9,7 @@ using UnityEngine.UI;
 
 // 유물 감정 연출 — 감정 결과를 보여 주는 무대 (T-151 · 목업 'GameDesign/design/ui/유물감정목업.html' 타임라인).
 // ① 흔들림 → ②③④ 금 세 번 → ⑤ 번쩍 → ⑥ 조각 → ⑦ 보상 등장 → ⑧ (아티팩트 · Special 유물이면) 띠 + 한 번 더 빛남.
+// 소리(2026-11-18): 금마다 껍질 갈라지는 '쩍'(갈수록 길고 크게) · 번쩍에 깨짐 · ⑦ 공개 종 — 띠가 있으면 ⑦ 대신 ⑧에 경쾌한 팡파르('Sounds.Relic*').
 // 결과 팝업 위에 덮은 층 하나에서 그린다 — 'GachaResultPresenter'가 처음에 코드로 만든다('Create'). 'RewardBurstFx'와 같은 방식.
 //
 // ■ 이 무대가 결과 전부다 (#88 · 2026-10-28) — 유물은 1개씩 감정하고, 나온 1개가 놓인 채로 머문다. 결과 칸 목록은 없다.
@@ -95,12 +96,15 @@ public class RelicAppraiseFx : MonoBehaviour
     private TMP_Text    _banner = null!;
 
     private readonly List<Image> _cracks = new List<Image>();
+
+    // 소리 — 'Create'를 부르는 Presenter의 것(같은 서비스). 없으면 조용히 돈다
+    private SoundManager? _sound;
     private readonly List<Image> _shards = new List<Image>();
 
     // 'root'(팝업 몸통)을 꽉 채우는 층을 맨 앞에 만든다 ('GachaResultPresenter.Start'가 한 번 호출)
     //   slotPrefab     : 결과 칸 프리팹 — 유물·보상 그림을 그린다
     //   bannerTemplate : 띠 글자를 복제할 원본(결과 창 제목) — 서체·외곽선을 맞춘다
-    public static RelicAppraiseFx Create(RectTransform root, SlotView slotPrefab, TMP_Text bannerTemplate)
+    public static RelicAppraiseFx Create(RectTransform root, SlotView slotPrefab, TMP_Text bannerTemplate, SoundManager? sound = null)
     {
         var go    = new GameObject("Relic Appraise Layer", typeof(RectTransform), typeof(CanvasGroup), typeof(LayoutElement));
         var layer = (RectTransform)go.transform;
@@ -117,6 +121,7 @@ public class RelicAppraiseFx : MonoBehaviour
         var fx = go.AddComponent<RelicAppraiseFx>();
 
         fx._layer = layer;
+        fx._sound = sound;
         fx._group = go.GetComponent<CanvasGroup>();
         fx._group.blocksRaycasts = false; // 클릭은 팝업 바탕(스킵)이 받는다
         fx._group.interactable   = false;
@@ -171,9 +176,10 @@ public class RelicAppraiseFx : MonoBehaviour
             await UniTask.Delay(System.TimeSpan.FromSeconds(CrackGap), cancellationToken: ct);
         }
 
-        // ⑤ 번쩍 — 등급 색 번짐이 부풀어 오르고 고리가 퍼진다 (Special = 흰빛 · 광선이 무지개로 돈다)
+        // ⑤ 번쩍 — 껍데기가 깨지는 소리와 함께. 등급 색 번짐이 부풀어 오르고 고리가 퍼진다 (Special = 흰빛 · 광선이 무지개로 돈다)
         Color flashColor = isSpecial ? Color.white : relicColor;
 
+        PlaySfx(Sounds.RelicBreak);
         await FlashAsync(flashColor, ct);
 
         // ⑥ 조각 — 유물을 숨기고 흩뿌린다 · 번짐은 퍼지며 걷힌다 (기다리지 않는다 — ⑦과 겹친다)
@@ -185,11 +191,19 @@ public class RelicAppraiseFx : MonoBehaviour
         // ⑦ 등장 — 뒤에서 광선이 돌고 후광이 숨 쉰다
         SpinRays(accent ?? PlainRays, isSpecial);
         ShowHalo(accent ?? flashColor, animate: true);
+
+        // 띠가 내려올 보상(아티팩트 · Special 유물)은 띠와 함께 팡파르가 난다 — 여기서 평범한 공개 소리를 겹치지 않는다
+        if (banner == null)
+        {
+            PlaySfx(Sounds.RelicReveal);
+        }
+
         await PopRewardAsync(ct);
 
         // ⑧ 아티팩트 · Special 유물 — 띠가 내려오고 한 번 더 빛난다
         if (banner != null)
         {
+            PlaySfx(Sounds.RelicArtifact);
             await BannerAsync(banner, accent ?? Color.white, ct);
         }
     }
@@ -307,6 +321,8 @@ public class RelicAppraiseFx : MonoBehaviour
     // ②③④ 금 한 갈래 — 그림이 자라는 동안 유물이 살짝 부풀었다 돌아온다
     private UniTask CrackAsync(int index, CancellationToken ct)
     {
+        PlaySfx(Sounds.RelicCrack(index)); // 금마다 소리 — 갈수록 높고 세다(2026-11-18 사용자)
+
         float punch = CrackPunch + CrackPunchStep * index;
         float tilt  = index % 2 == 0 ? -3f : 3f;
 
@@ -536,6 +552,14 @@ public class RelicAppraiseFx : MonoBehaviour
         tween.SetId(this).SetLink(gameObject, LinkBehaviour.KillOnDisable);
 
         return tween;
+    }
+
+    private void PlaySfx(AudioClip? clip)
+    {
+        if (_sound != null)
+        {
+            _sound.PlaySfx(clip);
+        }
     }
 
     private static void ResetTransform(Transform target, float scale)
