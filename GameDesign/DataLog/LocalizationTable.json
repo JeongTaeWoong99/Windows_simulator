@@ -1156,28 +1156,28 @@
   },
   {
     "Key": "IndustryLevel.101.Name",
-    "KR": "텃밭",
-    "EN": "Garden Plot"
+    "KR": "밀밭",
+    "EN": "Wheat Field"
   },
   {
     "Key": "IndustryLevel.102.Name",
-    "KR": "밭",
-    "EN": "Field"
+    "KR": "호박밭",
+    "EN": "Pumpkin Patch"
   },
   {
     "Key": "IndustryLevel.103.Name",
-    "KR": "농장",
-    "EN": "Farm"
+    "KR": "산삼밭",
+    "EN": "Ginseng Patch"
   },
   {
     "Key": "IndustryLevel.104.Name",
-    "KR": "대농장",
-    "EN": "Great Farm"
+    "KR": "포도원",
+    "EN": "Vineyard"
   },
   {
     "Key": "IndustryLevel.105.Name",
-    "KR": "신성한 대지",
-    "EN": "Sacred Land"
+    "KR": "달빛 약초원",
+    "EN": "Moonlit Herb Garden"
   },
   {
     "Key": "IndustryLevel.201.Name",
@@ -1186,8 +1186,8 @@
   },
   {
     "Key": "IndustryLevel.202.Name",
-    "KR": "무너진 성벽",
-    "EN": "Fallen Rampart"
+    "KR": "옛 전쟁터",
+    "EN": "Old Battlefield"
   },
   {
     "Key": "IndustryLevel.203.Name",
@@ -1196,8 +1196,8 @@
   },
   {
     "Key": "IndustryLevel.204.Name",
-    "KR": "지하 묘실",
-    "EN": "Underground Crypt"
+    "KR": "지하 묘지",
+    "EN": "Catacombs"
   },
   {
     "Key": "IndustryLevel.205.Name",
@@ -1206,28 +1206,28 @@
   },
   {
     "Key": "IndustryLevel.301.Name",
-    "KR": "노천 광산",
-    "EN": "Open-Pit Mine"
+    "KR": "채석장",
+    "EN": "Quarry"
   },
   {
     "Key": "IndustryLevel.302.Name",
-    "KR": "갱도",
-    "EN": "Mine Shaft"
+    "KR": "철광맥",
+    "EN": "Iron Vein"
   },
   {
     "Key": "IndustryLevel.303.Name",
-    "KR": "심층 갱도",
-    "EN": "Deep Shaft"
+    "KR": "미스릴 광맥",
+    "EN": "Mithril Vein"
   },
   {
     "Key": "IndustryLevel.304.Name",
-    "KR": "지하 대공동",
-    "EN": "Great Cavern"
+    "KR": "수정 동굴",
+    "EN": "Crystal Cavern"
   },
   {
     "Key": "IndustryLevel.305.Name",
-    "KR": "심연",
-    "EN": "The Abyss"
+    "KR": "심연 광맥",
+    "EN": "Abyssal Vein"
   },
   {
     "Key": "IndustryLevel.401.Name",
@@ -1236,13 +1236,13 @@
   },
   {
     "Key": "IndustryLevel.402.Name",
-    "KR": "소나무 숲",
-    "EN": "Pine Forest"
+    "KR": "삼나무 숲",
+    "EN": "Cedar Forest"
   },
   {
     "Key": "IndustryLevel.403.Name",
-    "KR": "참나무 숲",
-    "EN": "Oak Forest"
+    "KR": "단풍나무 숲",
+    "EN": "Maple Forest"
   },
   {
     "Key": "IndustryLevel.404.Name",
@@ -1251,8 +1251,8 @@
   },
   {
     "Key": "IndustryLevel.405.Name",
-    "KR": "세계수 뿌리",
-    "EN": "World Tree Roots"
+    "KR": "세계수 숲",
+    "EN": "World Tree Grove"
   },
   {
     "Key": "IndustryLevel.501.Name",

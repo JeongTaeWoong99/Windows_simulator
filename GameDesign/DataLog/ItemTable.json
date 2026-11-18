@@ -79,7 +79,7 @@
     "MaxStack": 9999,
     "BasePrice": 10,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -91,7 +91,7 @@
     "MaxStack": 9999,
     "BasePrice": 25,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -103,7 +103,7 @@
     "MaxStack": 9999,
     "BasePrice": 60,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -115,7 +115,7 @@
     "MaxStack": 9999,
     "BasePrice": 150,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -127,7 +127,7 @@
     "MaxStack": 9999,
     "BasePrice": 400,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -139,7 +139,7 @@
     "MaxStack": 9999,
     "BasePrice": 1000,
     "OpenGachaId": 0,
-    "Description": "텃밭(Lv1)",
+    "Description": "밀밭(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -223,7 +223,7 @@
     "MaxStack": 9999,
     "BasePrice": 10,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -235,7 +235,7 @@
     "MaxStack": 9999,
     "BasePrice": 25,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -247,7 +247,7 @@
     "MaxStack": 9999,
     "BasePrice": 60,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -259,7 +259,7 @@
     "MaxStack": 9999,
     "BasePrice": 150,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -271,7 +271,7 @@
     "MaxStack": 9999,
     "BasePrice": 400,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -283,7 +283,7 @@
     "MaxStack": 9999,
     "BasePrice": 1000,
     "OpenGachaId": 0,
-    "Description": "노천 광산(Lv1)",
+    "Description": "채석장(Lv1)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -367,7 +367,7 @@
     "MaxStack": 9999,
     "BasePrice": 30,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -379,7 +379,7 @@
     "MaxStack": 9999,
     "BasePrice": 75,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -391,7 +391,7 @@
     "MaxStack": 9999,
     "BasePrice": 180,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -403,7 +403,7 @@
     "MaxStack": 9999,
     "BasePrice": 450,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -415,7 +415,7 @@
     "MaxStack": 9999,
     "BasePrice": 1200,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -427,7 +427,7 @@
     "MaxStack": 9999,
     "BasePrice": 3000,
     "OpenGachaId": 0,
-    "Description": "무너진 성벽(Lv2)",
+    "Description": "옛 전쟁터(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -511,7 +511,7 @@
     "MaxStack": 9999,
     "BasePrice": 270,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -523,7 +523,7 @@
     "MaxStack": 9999,
     "BasePrice": 675,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -535,7 +535,7 @@
     "MaxStack": 9999,
     "BasePrice": 1620,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -547,7 +547,7 @@
     "MaxStack": 9999,
     "BasePrice": 4050,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -559,7 +559,7 @@
     "MaxStack": 9999,
     "BasePrice": 10800,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -571,7 +571,7 @@
     "MaxStack": 9999,
     "BasePrice": 27000,
     "OpenGachaId": 0,
-    "Description": "지하 묘실(Lv4)",
+    "Description": "지하 묘지(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -655,7 +655,7 @@
     "MaxStack": 9999,
     "BasePrice": 30,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -667,7 +667,7 @@
     "MaxStack": 9999,
     "BasePrice": 75,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -679,7 +679,7 @@
     "MaxStack": 9999,
     "BasePrice": 180,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -691,7 +691,7 @@
     "MaxStack": 9999,
     "BasePrice": 450,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -703,7 +703,7 @@
     "MaxStack": 9999,
     "BasePrice": 1200,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -715,7 +715,7 @@
     "MaxStack": 9999,
     "BasePrice": 3000,
     "OpenGachaId": 0,
-    "Description": "밭(Lv2)",
+    "Description": "호박밭(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -727,7 +727,7 @@
     "MaxStack": 9999,
     "BasePrice": 90,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -739,7 +739,7 @@
     "MaxStack": 9999,
     "BasePrice": 225,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -751,7 +751,7 @@
     "MaxStack": 9999,
     "BasePrice": 540,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -763,7 +763,7 @@
     "MaxStack": 9999,
     "BasePrice": 1350,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -775,7 +775,7 @@
     "MaxStack": 9999,
     "BasePrice": 3600,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -787,7 +787,7 @@
     "MaxStack": 9999,
     "BasePrice": 9000,
     "OpenGachaId": 0,
-    "Description": "농장(Lv3)",
+    "Description": "산삼밭(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -799,7 +799,7 @@
     "MaxStack": 9999,
     "BasePrice": 270,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -811,7 +811,7 @@
     "MaxStack": 9999,
     "BasePrice": 675,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -823,7 +823,7 @@
     "MaxStack": 9999,
     "BasePrice": 1620,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -835,7 +835,7 @@
     "MaxStack": 9999,
     "BasePrice": 4050,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -847,7 +847,7 @@
     "MaxStack": 9999,
     "BasePrice": 10800,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -859,7 +859,7 @@
     "MaxStack": 9999,
     "BasePrice": 27000,
     "OpenGachaId": 0,
-    "Description": "대농장(Lv4)",
+    "Description": "포도원(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -871,7 +871,7 @@
     "MaxStack": 9999,
     "BasePrice": 810,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -883,7 +883,7 @@
     "MaxStack": 9999,
     "BasePrice": 2025,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -895,7 +895,7 @@
     "MaxStack": 9999,
     "BasePrice": 4860,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -907,7 +907,7 @@
     "MaxStack": 9999,
     "BasePrice": 12150,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -919,7 +919,7 @@
     "MaxStack": 9999,
     "BasePrice": 32400,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -931,7 +931,7 @@
     "MaxStack": 9999,
     "BasePrice": 81000,
     "OpenGachaId": 0,
-    "Description": "신성한 대지(Lv5)",
+    "Description": "달빛 약초원(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -943,7 +943,7 @@
     "MaxStack": 9999,
     "BasePrice": 30,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -955,7 +955,7 @@
     "MaxStack": 9999,
     "BasePrice": 75,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -967,7 +967,7 @@
     "MaxStack": 9999,
     "BasePrice": 180,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -979,7 +979,7 @@
     "MaxStack": 9999,
     "BasePrice": 450,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -991,7 +991,7 @@
     "MaxStack": 9999,
     "BasePrice": 1200,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1003,7 +1003,7 @@
     "MaxStack": 9999,
     "BasePrice": 3000,
     "OpenGachaId": 0,
-    "Description": "소나무 숲(Lv2)",
+    "Description": "삼나무 숲(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1015,7 +1015,7 @@
     "MaxStack": 9999,
     "BasePrice": 90,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1027,7 +1027,7 @@
     "MaxStack": 9999,
     "BasePrice": 225,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1039,7 +1039,7 @@
     "MaxStack": 9999,
     "BasePrice": 540,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1051,7 +1051,7 @@
     "MaxStack": 9999,
     "BasePrice": 1350,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1063,7 +1063,7 @@
     "MaxStack": 9999,
     "BasePrice": 3600,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1075,7 +1075,7 @@
     "MaxStack": 9999,
     "BasePrice": 9000,
     "OpenGachaId": 0,
-    "Description": "참나무 숲(Lv3)",
+    "Description": "단풍나무 숲(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1159,7 +1159,7 @@
     "MaxStack": 9999,
     "BasePrice": 810,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1171,7 +1171,7 @@
     "MaxStack": 9999,
     "BasePrice": 2025,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1183,7 +1183,7 @@
     "MaxStack": 9999,
     "BasePrice": 4860,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1195,7 +1195,7 @@
     "MaxStack": 9999,
     "BasePrice": 12150,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1207,7 +1207,7 @@
     "MaxStack": 9999,
     "BasePrice": 32400,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1219,7 +1219,7 @@
     "MaxStack": 9999,
     "BasePrice": 81000,
     "OpenGachaId": 0,
-    "Description": "세계수 뿌리(Lv5)",
+    "Description": "세계수 숲(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1231,7 +1231,7 @@
     "MaxStack": 9999,
     "BasePrice": 30,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1243,7 +1243,7 @@
     "MaxStack": 9999,
     "BasePrice": 75,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1255,7 +1255,7 @@
     "MaxStack": 9999,
     "BasePrice": 180,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1267,7 +1267,7 @@
     "MaxStack": 9999,
     "BasePrice": 450,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1279,7 +1279,7 @@
     "MaxStack": 9999,
     "BasePrice": 1200,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1291,7 +1291,7 @@
     "MaxStack": 9999,
     "BasePrice": 3000,
     "OpenGachaId": 0,
-    "Description": "갱도(Lv2)",
+    "Description": "철광맥(Lv2)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1303,7 +1303,7 @@
     "MaxStack": 9999,
     "BasePrice": 90,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1315,7 +1315,7 @@
     "MaxStack": 9999,
     "BasePrice": 225,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1327,7 +1327,7 @@
     "MaxStack": 9999,
     "BasePrice": 540,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1339,7 +1339,7 @@
     "MaxStack": 9999,
     "BasePrice": 1350,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1351,7 +1351,7 @@
     "MaxStack": 9999,
     "BasePrice": 3600,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1363,7 +1363,7 @@
     "MaxStack": 9999,
     "BasePrice": 9000,
     "OpenGachaId": 0,
-    "Description": "심층 갱도(Lv3)",
+    "Description": "미스릴 광맥(Lv3)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1375,7 +1375,7 @@
     "MaxStack": 9999,
     "BasePrice": 270,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1387,7 +1387,7 @@
     "MaxStack": 9999,
     "BasePrice": 675,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1399,7 +1399,7 @@
     "MaxStack": 9999,
     "BasePrice": 1620,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1411,7 +1411,7 @@
     "MaxStack": 9999,
     "BasePrice": 4050,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1423,7 +1423,7 @@
     "MaxStack": 9999,
     "BasePrice": 10800,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1435,7 +1435,7 @@
     "MaxStack": 9999,
     "BasePrice": 27000,
     "OpenGachaId": 0,
-    "Description": "지하 대공동(Lv4)",
+    "Description": "수정 동굴(Lv4)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1447,7 +1447,7 @@
     "MaxStack": 9999,
     "BasePrice": 810,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1459,7 +1459,7 @@
     "MaxStack": 9999,
     "BasePrice": 2025,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1471,7 +1471,7 @@
     "MaxStack": 9999,
     "BasePrice": 4860,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1483,7 +1483,7 @@
     "MaxStack": 9999,
     "BasePrice": 12150,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1495,7 +1495,7 @@
     "MaxStack": 9999,
     "BasePrice": 32400,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -1507,7 +1507,7 @@
     "MaxStack": 9999,
     "BasePrice": 81000,
     "OpenGachaId": 0,
-    "Description": "심연(Lv5)",
+    "Description": "심연 광맥(Lv5)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
