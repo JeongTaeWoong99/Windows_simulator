@@ -55,6 +55,7 @@ public partial class User
 
         // 열린 해금이 곧 열린 칸의 근거라 슬롯보다 먼저 적재한다 — 잠긴 칸의 배치 행을 걸러야 한다.
         LoadUnlocks(data.UnlockRows);
+        _raid = data.Raid;
         LoadTraits(data.TraitRows ?? new List<UserTraitRow>());
         LoadBuildings(data.BuildingRows ?? new List<UserBuildingRow>());
 
@@ -108,6 +109,7 @@ public partial class User
         // 접속마다 다시 계산하므로 그동안 밸런스가 바뀌었어도 반영된다.
         RefreshWorkStationSpeed(now, notify: false);
 
+        InitializeRaid(now);
         Login(now);   // S_LoginResponse + 인벤·재화·슬롯 스냅샷 전송
     }
 }

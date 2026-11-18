@@ -110,12 +110,16 @@ namespace GameData
 
     public enum EnchantOptionType : byte
     {
-        None         = 0,
+        None          = 0,
 
-        Speed        = 1,  // 작업속도 가산 — Value 천분율, Industry None=전 산업
-        CharacterExp = 2,  // 캐릭터 경험치 가산 — Value 천분율
+        Speed         = 1,  // 작업속도 가산 — Value 천분율, Industry None=전 산업
+        CharacterExp  = 2,  // 캐릭터 경험치 가산 — Value 천분율
+        AttackFlat    = 3,  // 공격력 고정 가산
+        AttackPercent = 4,  // 공격력 기본값 배율(‰)
+        HealthFlat    = 5,  // 체력 고정 가산
+        HealthPercent = 6,  // 체력 기본값 배율(‰)
 
-        Max         ,
+        Max          ,
     };
 
     public enum CharacterRace : byte
@@ -144,5 +148,27 @@ namespace GameData
         SlotBoxRelicChance = 7,  // 상자·유물 확률 가산 — EffectValue 천분율, EffectCount회 판정, 슬롯 SlotCount개까지 (#111)
 
         Max               ,
+    };
+
+    public enum RaidStatSource : byte
+    {
+        None      = 0,
+
+        Character = 1,  // 캐릭터 기본값
+        Level     = 2,  // 캐릭터 레벨
+        Star      = 3,  // 캐릭터 응축 별
+        Equip     = 4,  // 착용 장비
+
+        Max      ,
+    };
+
+    public enum RaidStatType : byte
+    {
+        None   = 0,
+
+        Attack = 1,  // 공격력
+        Health = 2,  // 체력
+
+        Max   ,
     };
 }

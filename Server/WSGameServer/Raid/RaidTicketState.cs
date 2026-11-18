@@ -6,6 +6,9 @@ public readonly record struct RaidTicketState(int Count, DateOnly LastRechargeDa
 
     private static readonly TimeSpan KoreaStandardTimeOffset = TimeSpan.FromHours(9);
 
+    public DateTimeOffset NextRechargeAt
+        => new(LastRechargeDate.AddDays(1).ToDateTime(TimeOnly.MinValue), KoreaStandardTimeOffset);
+
     public static RaidTicketState FirstUnlock(DateTimeOffset now)
     {
         return new RaidTicketState(Capacity, KoreanDate(now));

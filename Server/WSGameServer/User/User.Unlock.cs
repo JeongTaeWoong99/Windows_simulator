@@ -141,7 +141,7 @@ public partial class User
     /// 서버가 직접 연다 — 퀘스트 보상·튜토리얼·치트용(해금 2.4). <b>조건 검사·차감이 없고</b> 기록·통지·콘텐츠 후속은 유저 행동과 같다.
     /// </summary>
     /// <returns>새로 열었으면 true. 없는 TID거나 이미 열려 있으면 아무것도 하지 않고 false.</returns>
-    public bool GrantUnlock(int unlockTid, DateTime now)
+    public bool GrantUnlock(int unlockTid, DateTime now, bool notify = true)
     {
         if (!_unlockCatalog.TryGetUnlock(unlockTid, out _))
         {
@@ -154,18 +154,21 @@ public partial class User
             return false;
         }
 
-        ApplyUnlock(unlockTid, now);
+        ApplyUnlock(unlockTid, now, notify);
         return true;
     }
 
     // 기록 → 저장 → 응답 → 콘텐츠 후속. 해금 시스템은 "열렸다"까지만 알고, 열린 뒤의 변화는 콘텐츠가 자기 패킷으로 알린다.
-    private void ApplyUnlock(int unlockTid, DateTime now)
+    private void ApplyUnlock(int unlockTid, DateTime now, bool notify = true)
     {
         _unlocks.Add(unlockTid);
         PostDBTask(new SaveUnlockRepository(this, unlockTid));
 
         ServerLog.Info("해금", $"열림 Uid={Uid} UnlockTID={unlockTid}");
-        Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
+        if (notify)
+        {
+            Send(new S_UnlockResponse { Result = EResultCode.Ok, UnlockTID = unlockTid });
+        }
 
         OnWorkSlotUnlocked(unlockTid, now);
     }

@@ -23,15 +23,17 @@ public sealed class GachaService : Singleton<GachaService>
     public const int RelicAppraiseCount = 1;
 
     private readonly GachaPoolCatalog _pools;
+    private readonly RaidCatalog _raids;
 
     public GachaService() : this(null)
     {
     }
 
     /// <summary>풀 보관소를 생략하면 전역 인스턴스를 쓴다 — <see cref="User"/>의 카탈로그 규약과 같다.</summary>
-    public GachaService(GachaPoolCatalog? pools)
+    public GachaService(GachaPoolCatalog? pools, RaidCatalog? raids = null)
     {
         _pools = pools ?? GachaPoolCatalog.Instance;
+        _raids = raids ?? RaidCatalog.Instance;
     }
 
     public void Draw(User user, int gachaId, int drawCount)
@@ -96,8 +98,15 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        if (!GameTable.ItemTable.TryGet(itemTid, out var item) || item.OpenGachaId == 0 ||
-            !_pools.TryGet(item.OpenGachaId, out var pool))
+        if (!GameTable.ItemTable.TryGet(itemTid, out var item) || item.OpenGachaId == 0)
+        {
+            Reply(EResultCode.ItemNotUsable);
+            return;
+        }
+
+        bool raidBox = _raids.TryGetBoxReward(itemTid, out var raidReward);
+        bool hasPool = _pools.TryGet(item.OpenGachaId, out var pool);
+        if (!raidBox && !hasPool)
         {
             Reply(EResultCode.ItemNotUsable);
             return;
@@ -117,7 +126,7 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         // 연 상자가 먼저 빠진다 — 그 칸이 비면 빈 칸까지 보고 판정한다.
-        var rolled = Roll(pool.PickMany(count));
+        var rolled = raidBox ? RollRaidBoxes(raidReward, count) : Roll(pool.PickMany(count));
         var fits   = HasStorageFor(user, rolled, new Dictionary<int, int> { [itemTid] = count }) && user.HasArtifactRoomFor(ArtifactsOf(rolled));
 
         // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.
@@ -224,7 +233,7 @@ public sealed class GachaService : Singleton<GachaService>
             }
         }
 
-        // 아티팩트(GachaRewardType.Artifact)는 여기서 지급하지 않는다 — 감정에서만 나와 GrantArtifacts가 따로 넣는다.
+        // 아티팩트(GachaRewardType.Artifact)는 GrantArtifacts가 아티팩트 칸에 넣는다.
         var changes = gained.SelectMany(kv => user.GainItem(kv.Key, kv.Value)).ToList();
 
         if (characterTids.Count > 0)
@@ -269,6 +278,22 @@ public sealed class GachaService : Singleton<GachaService>
     }
 
     private static int MaxCountOf(GachaEntry entry) => Math.Max(entry.Count, entry.MaxCount);
+
+    private static List<(GachaEntry Entry, int Count)> RollRaidBoxes(RaidBoxReward reward, int count)
+    {
+        var rolled = new List<(GachaEntry Entry, int Count)>(count * 2);
+        for (int index = 0; index < count; index++)
+        {
+            var opened = reward.Open(Random.Shared.Next(RaidBoxReward.RollCount));
+            rolled.Add((new GachaEntry(0, GachaRewardType.Gold, 0, opened.Gold, 0), opened.Gold));
+            if (opened.ArtifactTid is int artifactTid)
+            {
+                rolled.Add((new GachaEntry(0, GachaRewardType.Artifact, artifactTid, 1, 0), 1));
+            }
+        }
+
+        return rolled;
+    }
 
     // 수량을 한 번만 굴린다 — 창고로 지급하든 우편에 담든 같은 값이어야 한다.
     private static List<(GachaEntry Entry, int Count)> Roll(IReadOnlyList<GachaEntry> entries)

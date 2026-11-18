@@ -93,5 +93,18 @@
     "CharacterTIDs": [],
     "EquipTIDs": [],
     "Description": "등록 거부·유실 반환 — 등록비 환급(T-087)"
+  },
+  {
+    "MailTemplateTID": 8,
+    "Title": "레이드 승리 보상",
+    "Body": "레이드에서 승리해 받은 보스 상자입니다.",
+    "Sender": "레이드",
+    "PeriodDays": 0,
+    "Gold": 0,
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "CharacterTIDs": [],
+    "EquipTIDs": [],
+    "Description": "레이드 승리 — 보스 상자는 서버가 첨부한다"
   }
 ]

@@ -41,6 +41,8 @@ namespace GameData
         public static TableSet<int, ItemTableRow> ItemTable { get; private set; } = null!;
         public static TableSet<int, ItemUseTableRow> ItemUseTable { get; private set; } = null!;
         public static TableSet<int, MailTemplateTableRow> MailTemplateTable { get; private set; } = null!;
+        public static TableSet<int, RaidBossTableRow> RaidBossTable { get; private set; } = null!;
+        public static TableSet<int, RaidStatTableRow> RaidStatTable { get; private set; } = null!;
         public static TableSet<int, ShopTableRow> ShopTable { get; private set; } = null!;
         public static TableSet<int, UnlockTableRow> UnlockTable { get; private set; } = null!;
         public static TableSet<int, AccountLevelTableRow> AccountLevelTable { get; private set; } = null!;
@@ -81,6 +83,8 @@ namespace GameData
             ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
             ItemUseTable = TableSet<int, ItemUseTableRow>.From(read("ItemUseTable.bytes"), r => r.ItemTID);
             MailTemplateTable = TableSet<int, MailTemplateTableRow>.From(read("MailTemplateTable.bytes"), r => r.MailTemplateTID);
+            RaidBossTable = TableSet<int, RaidBossTableRow>.From(read("RaidBossTable.bytes"), r => r.RaidBossTID);
+            RaidStatTable = TableSet<int, RaidStatTableRow>.From(read("RaidStatTable.bytes"), r => r.RaidStatTID);
             ShopTable = TableSet<int, ShopTableRow>.From(read("ShopTable.bytes"), r => r.ShopTID);
             UnlockTable = TableSet<int, UnlockTableRow>.From(read("UnlockTable.bytes"), r => r.UnlockTID);
             AccountLevelTable = TableSet<int, AccountLevelTableRow>.From(read("AccountLevelTable.bytes"), r => r.AccountLevelTID);

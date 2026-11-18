@@ -254,5 +254,13 @@
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "뽑기권 전용 — 골드로 뽑을 수 없다 · 신화 이하 (아이템 100074)"
+  },
+  {
+    "GachaInfoTID": 36,
+    "Name": "돌문 수호자 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "레이드 전용 상자 — 내용물은 RaidBossTable 참조"
   }
 ]

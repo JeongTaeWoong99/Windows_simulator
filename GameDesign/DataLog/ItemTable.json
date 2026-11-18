@@ -2292,6 +2292,18 @@
     "OpenCostGold": 0
   },
   {
+    "ItemTID": 100075,
+    "Name": "돌문 수호자 상자",
+    "ItemType": "Box",
+    "GlobalRarity": "Rare",
+    "MaxStack": 1000,
+    "BasePrice": 0,
+    "OpenGachaId": 36,
+    "Description": "입문 레이드 보상",
+    "Tooltip": "골드를 받고 낮은 확률로 아티팩트를 얻는다.",
+    "OpenCostGold": 0
+  },
+  {
     "ItemTID": 100061,
     "Name": "흙 묻은 유물",
     "ItemType": "Relic",

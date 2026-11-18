@@ -174,7 +174,8 @@ public sealed record PlayerLoginData(
     List<UserArtifactLockRow>? ArtifactLockRows = null,
     List<UserBuildingRow>? BuildingRows = null,
     List<SlotBuffRow>? SlotBuffRows = null,
-    List<SlotAutoUseRow>? SlotAutoUseRows = null);
+    List<SlotAutoUseRow>? SlotAutoUseRows = null,
+    RaidProfile? Raid = null);
 
 // t_user_mail 조회 전용 Row. 첨부는 JSON 텍스트 그대로 — 해석은 MailAttachment.FromRow가 한다.
 // 시각은 SQLite datetime 형식 문자열(UTC). claimed_at이 null이면 안 받은 우편이다.

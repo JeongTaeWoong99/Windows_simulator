@@ -128,6 +128,12 @@ namespace MikaProtocol
         S_BuildingUpgradeResponse = 98,
         C_SlotAutoUseRequest = 99,
         S_SlotAutoUseResponse = 100,
+        C_RaidStatusRequest = 101,
+        S_RaidStatusResponse = 102,
+        C_RaidSavePartyRequest = 103,
+        S_RaidSavePartyResponse = 104,
+        C_RaidChallengeRequest = 105,
+        S_RaidChallengeResponse = 106,
     }
 
     [MemoryPackable, Packet(PacketId.C_EchoRequest)]
@@ -1091,5 +1097,59 @@ namespace MikaProtocol
         public int                   SlotIndex       { get; set; }
         public int                   ItemTID         { get; set; }
         public List<ItemChangeInfo>? ItemChangeInfos { get; set; }  // 설정 즉시 자동 소비한 보유분의 확정값
+    }
+
+    [MemoryPackable, Packet(PacketId.C_RaidStatusRequest)]
+    public partial class C_RaidStatusRequest : IPacket
+    {
+    }
+
+    [MemoryPackable, Packet(PacketId.S_RaidStatusResponse)]
+    public partial class S_RaidStatusResponse : IPacket
+    {
+        public EResultCode        Result             { get; set; }
+        public bool               Unlocked           { get; set; }
+        public int                TicketCount        { get; set; }
+        public long               NextRechargeUnixMs { get; set; }  // 다음 충전 시각, 한국 자정
+        public List<long>         PartyCharacterIds  { get; set; } = new();
+        public List<RaidBossInfo> Bosses             { get; set; } = new();
+    }
+
+    [MemoryPackable, Packet(PacketId.C_RaidSavePartyRequest)]
+    public partial class C_RaidSavePartyRequest : IPacket
+    {
+        public List<long> CharacterIds { get; set; } = new();  // 앞에서부터 보스 공격을 받는 순서
+    }
+
+    [MemoryPackable, Packet(PacketId.S_RaidSavePartyResponse)]
+    public partial class S_RaidSavePartyResponse : IPacket
+    {
+        public EResultCode Result       { get; set; }
+        public List<long>  CharacterIds { get; set; } = new();
+    }
+
+    [MemoryPackable, Packet(PacketId.C_RaidChallengeRequest)]
+    public partial class C_RaidChallengeRequest : IPacket
+    {
+        public int  BossTID   { get; set; }
+        public Guid RequestId { get; set; }  // 같은 도전의 재전송에는 같은 ID를 쓴다
+    }
+
+    /// <summary>처리 성공과 전투 승패는 별개다. 성공 결과에는 서버가 확정한 로그와 상자 지급 정보가 담긴다.</summary>
+    [MemoryPackable, Packet(PacketId.S_RaidChallengeResponse)]
+    public partial class S_RaidChallengeResponse : IPacket
+    {
+        public EResultCode              Result              { get; set; }
+        public Guid                     RequestId           { get; set; }
+        public int                      BossTID             { get; set; }
+        public List<RaidParticipantInfo> Party               { get; set; } = new();
+        public int                      BossInitialHealth   { get; set; }
+        public int                      BossRemainingHealth { get; set; }
+        public ERaidBattleOutcome       Outcome             { get; set; }
+        public int                      DurationMs          { get; set; }
+        public List<RaidHitInfo>        Hits                { get; set; } = new();
+        public int                      TicketCount         { get; set; }
+        public int                      RewardBoxItemTID    { get; set; }  // 0이면 상자 지급 없음
+        public bool                     StoredInMail        { get; set; }
     }
 }

@@ -286,4 +286,34 @@ namespace MikaProtocol
         public int BuildingTID { get; set; }
         public int Level       { get; set; }
     }
+
+    [MemoryPackable]
+    public partial class RaidBossInfo
+    {
+        public int    BossTID          { get; set; }
+        public string Name             { get; set; } = "";  // 보스 이름의 다국어 키
+        public int    Level            { get; set; }
+        public int    Attack           { get; set; }
+        public int    Health           { get; set; }
+        public int    AttackIntervalMs { get; set; }
+    }
+
+    [MemoryPackable]
+    public partial class RaidParticipantInfo
+    {
+        public long CharacterId     { get; set; }
+        public int  InitialHealth   { get; set; }
+        public int  RemainingHealth { get; set; }
+    }
+
+    /// <summary>인덱스는 파티 순서 0부터 시작한다. 보스의 인덱스는 파티 인원수다.</summary>
+    [MemoryPackable]
+    public partial class RaidHitInfo
+    {
+        public int ElapsedMs     { get; set; }
+        public int AttackerIndex { get; set; }
+        public int TargetIndex   { get; set; }
+        public int Damage        { get; set; }
+        public int TargetHealth  { get; set; }
+    }
 }

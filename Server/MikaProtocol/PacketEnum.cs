@@ -133,6 +133,22 @@ namespace MikaProtocol
         NothingToReset    = 1603, // 망각의 묘약 — 기본 레벨보다 올린 노드가 하나도 없다
         NotAutoUsable     = 1604, // 자동 사용 대상인 신속·풍요의 영약이 아니다
         // 1605는 이전 자동 사용 보관 칸 한도 오류의 결번이다.
+
+        // ── 1700~: 레이드 ──
+        InvalidRaidBossTID    = 1700, // 등록되지 않은 보스
+        InvalidRaidParty      = 1701, // 인원 범위·중복 등 편성 오류
+        RaidCharacterBusy     = 1702, // 작업슬롯에 배치된 캐릭터
+        NotEnoughRaidTicket   = 1703, // 남은 도전권 없음
+        InvalidRaidRequestId  = 1704, // 비어 있거나 다른 도전에 이미 사용한 요청 ID
+        RaidInProgress        = 1705, // 이전 레이드 요청의 저장이 진행 중
+    }
+
+    public enum ERaidBattleOutcome : byte
+    {
+        None             = 0,
+        Victory          = 1,
+        PartyDefeated    = 2,
+        TimeLimitReached = 3,
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —

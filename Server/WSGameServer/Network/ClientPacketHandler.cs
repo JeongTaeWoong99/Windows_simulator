@@ -28,6 +28,48 @@ public static class ClientPacketHandler
         session.SendPacket(new S_PongResponse());
     }
 
+    [PacketHandler]
+    public static void Handle_C_RaidStatusRequest(ISession session, C_RaidStatusRequest req)
+    {
+        var user = session.GetUser();
+        if (user is not { IsLoggedIn: true })
+        {
+            session.SendPacket(new S_RaidStatusResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.SendRaidStatus(GameClock.Instance.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_RaidSavePartyRequest(ISession session, C_RaidSavePartyRequest req)
+    {
+        var user = session.GetUser();
+        if (user is not { IsLoggedIn: true })
+        {
+            session.SendPacket(new S_RaidSavePartyResponse { Result = EResultCode.NotLoggedIn });
+            return;
+        }
+
+        user.SaveRaidParty(req.CharacterIds, GameClock.Instance.UtcNow);
+    }
+
+    [PacketHandler]
+    public static void Handle_C_RaidChallengeRequest(ISession session, C_RaidChallengeRequest req)
+    {
+        var user = session.GetUser();
+        if (user is not { IsLoggedIn: true })
+        {
+            session.SendPacket(new S_RaidChallengeResponse
+            {
+                Result = EResultCode.NotLoggedIn, RequestId = req.RequestId, BossTID = req.BossTID,
+            });
+            return;
+        }
+
+        user.ChallengeRaid(req.BossTID, req.RequestId, GameClock.Instance.UtcNow);
+    }
+
 
     [PacketHandler]
     public static void Handle_C_LoginRequest(ISession session, C_LoginRequest req)

@@ -28,7 +28,8 @@ public sealed class UnlockCatalog : Singleton<UnlockCatalog>
     public void LoadAll()
     {
         // 작업슬롯 말고도 해금을 참조하는 콘텐츠. 산업 레벨은 특성(개척)으로 열려 지금은 0이다(T-108).
-        var otherReferences = GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID);
+        var otherReferences = GameTable.IndustryLevelTable.All.Select(r => r.UnlockTID)
+            .Concat(GameTable.RaidBossTable.All.Select(r => r.UnlockTID));
 
         Load(GameTable.UnlockTable.All, GameTable.WorkSlotTable.All, otherReferences);
     }
