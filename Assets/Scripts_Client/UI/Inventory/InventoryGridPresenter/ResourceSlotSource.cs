@@ -81,6 +81,18 @@ public class ResourceSlotSource : InventorySlotSource
     public static string GroupOf(int itemId)
         => GameDataLoader.IsCube(itemId) ? CubeGroup : AuctionText.GetItemCategoryId(GameDataLoader.GetItemType(itemId));
 
+    // 칸 왼쪽 아래 — 상자는 레벨('LV.3'), 나머지는 분류 이름(아래 'GetCategoryLabel') (격자가 호출 · 2026-11-18 사용자).
+    //   상자는 나무·은·황금 세 모양이 레벨마다 같아 툴팁을 열어야 몇 레벨인지 알았다. 상자는 그림이 곧 분류라 분류 이름 대신 레벨을 적는다
+    public override string? GetBadge(long key)
+    {
+        int level = GameDataLoader.GetBoxLevel((int)key);
+
+        return level > 0 ? $"LV.{level}" : null; // 캐릭터 칸 레벨 배지와 같은 모양('CharacterSlotSource.GetLevelLabel')
+    }
+
+    // 분류 이름 — 산업 · 큐브 · 유물 · 소모품 · 기타 (툴팁 '분류' 줄과 같은 이름)
+    public override string? GetCategoryLabel(long key) => GroupName(GroupOf((int)key));
+
     // 분류 ID의 지금 언어 이름.
     public static string GroupName(string groupId) => AuctionText.GetItemGroupName(groupId);
 

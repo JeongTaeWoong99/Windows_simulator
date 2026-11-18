@@ -690,6 +690,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         itemImage.color   = Tint(_itemBaseColor);
 
         enchantGem.SetTint(_isDimmed, IsGray);
+
         equipPips.SetTint(_isDimmed, IsGray);
 
         float textAlpha = IsGray ? FilteredOutTextAlpha : 1f;

@@ -136,6 +136,25 @@ public class EquipSlotSource : InventorySlotSource
         return GameDataLoader.TryGetEquip(_data.GetEquipTid(slot.Key), out EquipTableRow row) && (byte)row.Industry == industry;
     }
 
+    // 칸 왼쪽 아래 분류 이름 (격자가 호출 · 2026-11-18 사용자) — 아티팩트는 '아티팩트', 장비는 대상 산업 · 산업이 없으면 '공통'.
+    // ※ 아티팩트에 올려 주는 산업을 적거나 산업 없음을 '미지정'으로 적지 않는다(사용자 반려 — 분류가 아니라 효과처럼 읽힌다)
+    public override string? GetCategoryLabel(long key)
+    {
+        if (IsArtifactKey(key))
+        {
+            return Lang.Get("UI.Auction.KindArtifact");
+        }
+
+        if (!GameDataLoader.TryGetEquip(_data.GetEquipTid(key), out EquipTableRow row))
+        {
+            return null;
+        }
+
+        var industry = (EIndustryType)(byte)row.Industry;
+
+        return industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry);
+    }
+
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).
     public override bool IsAway(long key) => !IsArtifactKey(key) && _data.IsEquipped(key);
 
