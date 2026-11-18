@@ -27,7 +27,7 @@
     "ItemTID": 100044,
     "UseEffect": "SlotWorkSpeed",
     "EffectValue": 300,
-    "EffectCount": 20,
+    "EffectCount": 1,
     "SlotCount": 1,
     "Description": "신속의 영약 — 작업속도 ‰ 가산"
   },
@@ -35,7 +35,7 @@
     "ItemTID": 100045,
     "UseEffect": "SlotYield",
     "EffectValue": 300,
-    "EffectCount": 20,
+    "EffectCount": 1,
     "SlotCount": 1,
     "Description": "풍요의 영약 — 산출량 ‰ 가산"
   },

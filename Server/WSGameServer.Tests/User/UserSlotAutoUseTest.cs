@@ -26,12 +26,20 @@ public class UserSlotAutoUseTest
         new() { ItemTID = Compass, UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
     };
 
-    private static (User User, TestUserBuilder B) NewUser(int rewardTid = TestUserBuilder.FishItemTid)
+    private static (User User, TestUserBuilder B) NewUser(
+        int rewardTid = TestUserBuilder.FishItemTid, int elixirEffectCount = 3)
     {
         var b = new TestUserBuilder();
         b.Drops.Register(IndustryType.Excavation, 1, DropTable.From(
             "test", new[] { (ItemTID: rewardTid, Weight: 100) }, r => r.ItemTID, r => r.Weight));
-        b.ItemUses.Load(Uses);
+        b.ItemUses.Load(Uses.Select(use => new ItemUseTableRow
+        {
+            ItemTID = use.ItemTID,
+            UseEffect = use.UseEffect,
+            EffectValue = use.EffectValue,
+            EffectCount = ItemUseCatalog.IsAutoUsable(use.UseEffect) ? elixirEffectCount : use.EffectCount,
+            SlotCount = use.SlotCount,
+        }));
         var user = b.Build();
         user.LoadCharacters(new[]
         {
@@ -60,6 +68,34 @@ public class UserSlotAutoUseTest
     {
         user.SetSlotAutoUse(slot, tid, on, Base);
         return b.Channel.SentOf<S_SlotAutoUseResponse>().Last();
+    }
+
+    [Fact]
+    public void 배치를_해제하면_영약_효과만_사라진다()
+    {
+        var (user, b) = NewUser(elixirEffectCount: 1);
+        var slot = Slot(user, WorkingSlot);
+        Toggle(user, b, WorkingSlot, SpeedElix);
+        slot.AddBuff(Compass, 3);
+
+        user.AssignWorkStation(WorkingSlot, IndustryType.None, 0, Base);
+
+        slot.Buffs.ShouldNotContainKey(SpeedElix);
+        slot.Buffs[Compass].ShouldBe(3);
+        slot.AutoUse.ShouldContain(SpeedElix);
+    }
+
+    [Fact]
+    public void 산출_영약은_판정한_만큼만_쓰고_다음_것을_예약하지_않는다()
+    {
+        var (user, b) = NewUser(elixirEffectCount: 1);
+        Toggle(user, b, WorkingSlot, YieldElix);
+
+        user.GetItemCount(YieldElix).ShouldBe(10);
+        Slot(user, WorkingSlot).AdvanceJudges(2).ShouldBeTrue();
+        user.SettleWorkStation(Base);
+        user.GetItemCount(YieldElix).ShouldBe(8);
+        Slot(user, WorkingSlot).Buffs.ShouldBeEmpty();
     }
 
     [Fact]
