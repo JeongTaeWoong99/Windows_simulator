@@ -440,5 +440,31 @@
     "Hunting": 1,
     "BasePrice": 1500,
     "Description": "발굴 최상위 (#115)"
+  },
+  {
+    "CharacterTID": 1035,
+    "Name": "화염 군주",
+    "GlobalRarity": "Legendary",
+    "Race": "Human",
+    "Farming": 1,
+    "Excavation": 2,
+    "Mining": 2,
+    "Logging": 3,
+    "Hunting": 9,
+    "BasePrice": 1500,
+    "Description": "사냥 최상위 — 뿔 투구 기사 · 불꽃 베기 (T-174)"
+  },
+  {
+    "CharacterTID": 1036,
+    "Name": "심연의 눈 사제",
+    "GlobalRarity": "Epic",
+    "Race": "Monster",
+    "Farming": 2,
+    "Excavation": 3,
+    "Mining": 1,
+    "Logging": 1,
+    "Hunting": 7,
+    "BasePrice": 600,
+    "Description": "사냥 정예 — 눈 달린 두건 술사 (T-174)"
   }
 ]
