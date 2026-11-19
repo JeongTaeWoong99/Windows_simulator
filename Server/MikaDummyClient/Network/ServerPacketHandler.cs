@@ -194,7 +194,7 @@ namespace MikaDummyClient
         [PacketHandler]
         public static void Handle_S_AccountLevelResponse(ISession session, S_AccountLevelResponse res)
         {
-            Console.WriteLine($"[Client] Recv 계정: Lv{res.Level} Exp={res.Exp} 특성포인트={res.TraitPoint}");
+            Console.WriteLine($"[Client] Recv 계정: Lv{res.Level} Exp={res.Exp}");
         }
 
         // 로그인 직후 슬롯 스냅샷보다 먼저 온다. 잠긴 칸의 조건 문구는 UnlockTable로 클라가 만든다.
@@ -378,6 +378,66 @@ namespace MikaDummyClient
         {
             Console.WriteLine($"[Client] Recv 칸 위치: {res.Result} {res.Container}/{res.Tab} " +
                 string.Join(", ", res.Slots.Select(s => $"{s.Key}→{s.Slot}")));
+        }
+
+        [PacketHandler]
+        public static void Handle_S_RaidStatusResponse(ISession session, S_RaidStatusResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 레이드 상태: {res.Result}");
+            if (res.Result != EResultCode.Ok)
+            {
+                return;
+            }
+
+            Console.WriteLine($"  - 해금: {res.Unlocked}, 티켓 {res.TicketCount}장, 편성 [{string.Join(", ", res.PartyCharacterIds)}]");
+            if (res.NextRechargeUnixMs > 0)
+            {
+                var nextRecharge = DateTimeOffset.FromUnixTimeMilliseconds(res.NextRechargeUnixMs).ToOffset(TimeSpan.FromHours(9));
+                Console.WriteLine($"  - 다음 충전: {nextRecharge:yyyy-MM-dd HH:mm} KST");
+            }
+
+            foreach (RaidBossInfo boss in res.Bosses)
+            {
+                Console.WriteLine($"  - 보스 {boss.BossTID} {boss.Name} Lv{boss.Level}: 공격력 {boss.Attack}, 체력 {boss.Health}, 주기 {boss.AttackIntervalMs}ms");
+            }
+        }
+
+        [PacketHandler]
+        public static void Handle_S_RaidSavePartyResponse(ISession session, S_RaidSavePartyResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 레이드 편성 저장: {res.Result}");
+            if (res.Result == EResultCode.Ok)
+            {
+                Console.WriteLine($"  - 편성 [{string.Join(", ", res.CharacterIds)}]");
+            }
+        }
+
+        [PacketHandler]
+        public static void Handle_S_RaidChallengeResponse(ISession session, S_RaidChallengeResponse res)
+        {
+            Console.WriteLine($"[Client] Recv 레이드 도전: {res.Result}, 요청 ID={res.RequestId}");
+            if (res.Result != EResultCode.Ok)
+            {
+                return;
+            }
+
+            Console.WriteLine($"  - 보스 {res.BossTID} {res.Outcome} ({res.DurationMs}ms), 남은 티켓 {res.TicketCount}장");
+            Console.WriteLine($"  - 보스 체력 {res.BossInitialHealth} → {res.BossRemainingHealth}");
+            for (int index = 0; index < res.Party.Count; index++)
+            {
+                RaidParticipantInfo member = res.Party[index];
+                Console.WriteLine($"  - 파티 {index}: 캐릭터 {member.CharacterId}, 체력 {member.InitialHealth} → {member.RemainingHealth}");
+            }
+
+            foreach (RaidHitInfo hit in res.Hits)
+            {
+                Console.WriteLine($"  - {hit.ElapsedMs}ms: {hit.AttackerIndex} → {hit.TargetIndex}, 피해 {hit.Damage}, 남은 체력 {hit.TargetHealth}");
+            }
+
+            if (res.RewardBoxItemTID != 0)
+            {
+                Console.WriteLine($"  - 상자 {res.RewardBoxItemTID}, 우편 보관: {res.StoredInMail}");
+            }
         }
 }
 }

@@ -28,6 +28,7 @@ public sealed class LoginRepository : IRepository
     private List<UserArtifactLockRow>  _artifactLockRows   = new();
     private List<SlotBuffRow>          _slotBuffRows       = new();
     private List<SlotAutoUseRow>       _slotAutoUseRows    = new();
+    private RaidProfile?              _raid;
 
     // DBExecutor 파티션 키 — 같은 계정의 작업은 직렬 처리
     public long Key => User.DbKey;
@@ -133,6 +134,7 @@ public sealed class LoginRepository : IRepository
         _slotAutoUseRows = await connection.QueryAsync<SlotAutoUseRow>(
             "SELECT slot_index, item_tid FROM t_user_slot_auto_use WHERE user_id = @userId",
             new { userId = User.Uid });
+        _raid = await RaidDb.LoadAsync(connection, User.Uid);
     }
 
     // === 로직 스레드에서 실행 ===
@@ -144,7 +146,7 @@ public sealed class LoginRepository : IRepository
         User.OnLoginDataLoaded(
             new PlayerLoginData(_inventoryRows, _currency, _characterRows,
                                 _workStationSlotRows, _unlockRows,
-                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows, _buildingRows, _slotBuffRows, _slotAutoUseRows),
+                                _equipRows, _characterEquipRows, _account, _traitRows, _artifactRows, _itemLockRows, _artifactStackRows, _artifactLockRows, _buildingRows, _slotBuffRows, _slotAutoUseRows, _raid),
             GameClock.Instance.UtcNow);
     }
 }

@@ -12,6 +12,8 @@ public sealed class MailCatalog : Singleton<MailCatalog>
     /// <summary>창고가 가득 차 보관한 보상의 우편 템플릿. 첨부는 비어 있고 서버가 채운다 → 기획 우편 2.4.</summary>
     public const int OverflowTemplateTid = 2;
 
+    public const int RaidRewardTemplateTid = 8;
+
     private readonly Dictionary<int, MailTemplateTableRow> _templates = new();
 
     public int Count => _templates.Count;
@@ -25,6 +27,11 @@ public sealed class MailCatalog : Singleton<MailCatalog>
         if (!_templates.ContainsKey(OverflowTemplateTid))
         {
             throw new InvalidDataException($"MailTemplateTable에 넘침 보관 템플릿 {OverflowTemplateTid}이 없다");
+        }
+
+        if (GameTable.RaidBossTable.All.Count > 0 && !_templates.ContainsKey(RaidRewardTemplateTid))
+        {
+            throw new InvalidDataException($"MailTemplateTable에 레이드 보상 템플릿 {RaidRewardTemplateTid}이 없습니다.");
         }
 
         // 경매 정산·반환 우편 템플릿. 없으면 거래가 끝난 물건을 보낼 곳이 없다.

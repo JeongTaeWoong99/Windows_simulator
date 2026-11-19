@@ -46,6 +46,8 @@ namespace GameData
             ["ItemTable"] = new(ItemTablePacker.Pack, ItemTablePacker.Verify, ItemTablePacker.Preview, ItemTablePacker.Dump),
             ["ItemUseTable"] = new(ItemUseTablePacker.Pack, ItemUseTablePacker.Verify, ItemUseTablePacker.Preview, ItemUseTablePacker.Dump),
             ["MailTemplateTable"] = new(MailTemplateTablePacker.Pack, MailTemplateTablePacker.Verify, MailTemplateTablePacker.Preview, MailTemplateTablePacker.Dump),
+            ["RaidBossTable"] = new(RaidBossTablePacker.Pack, RaidBossTablePacker.Verify, RaidBossTablePacker.Preview, RaidBossTablePacker.Dump),
+            ["RaidStatTable"] = new(RaidStatTablePacker.Pack, RaidStatTablePacker.Verify, RaidStatTablePacker.Preview, RaidStatTablePacker.Dump),
             ["ShopTable"] = new(ShopTablePacker.Pack, ShopTablePacker.Verify, ShopTablePacker.Preview, ShopTablePacker.Dump),
             ["UnlockTable"] = new(UnlockTablePacker.Pack, UnlockTablePacker.Verify, UnlockTablePacker.Preview, UnlockTablePacker.Dump),
             ["AccountLevelTable"] = new(AccountLevelTablePacker.Pack, AccountLevelTablePacker.Verify, AccountLevelTablePacker.Preview, AccountLevelTablePacker.Dump),

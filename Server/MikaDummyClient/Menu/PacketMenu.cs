@@ -45,6 +45,9 @@ namespace MikaDummyClient
                 new ClientAction("MarketBuy (거래소 구매 — TID · 수량 · 단가 상한)", SendMarketBuy),
                 new ClientAction("StorageSort (인벤토리 정렬 — 탭 0자원/1캐릭터/2장비 · 기준 0등급/1이름/2수량 · 0내림/1오름)", SendStorageSort),
                 new ClientAction("StorageMoveSlot (인벤토리 자리 이동 — 탭 · 출발 칸 · 도착 칸)", SendStorageMoveSlot),
+                new ClientAction("RaidStatus (레이드 상태 조회)", SendRaidStatus),
+                new ClientAction("RaidSaveParty (레이드 편성 저장)", SendRaidSaveParty),
+                new ClientAction("RaidChallenge (보스 도전)", SendRaidChallenge),
             };
         }
 
@@ -439,6 +442,62 @@ namespace MikaDummyClient
             {
                 Container = EContainer.Inventory, Tab = tab, FromSlot = from, ToSlot = (int)ReadLong("도착 칸 > "),
             });
+        }
+
+        private void SendRaidStatus()
+        {
+            NetworkManager.Instance.Send(new C_RaidStatusRequest());
+        }
+
+        private void SendRaidSaveParty()
+        {
+            Console.Write("캐릭터ID를 공격받는 순서대로 입력 (쉼표로 구분) > ");
+            var parts = (Console.ReadLine() ?? "").Split(',');
+            if (parts.Length is < 1 or > 3)
+            {
+                Console.WriteLine("[Client] 캐릭터ID는 1~3개를 입력하세요.");
+                return;
+            }
+
+            var ids = new List<long>(parts.Length);
+            foreach (string part in parts)
+            {
+                if (!long.TryParse(part, out long id) || id <= 0 || ids.Contains(id))
+                {
+                    Console.WriteLine("[Client] 양수인 캐릭터ID를 중복 없이 입력하세요.");
+                    return;
+                }
+
+                ids.Add(id);
+            }
+
+            NetworkManager.Instance.Send(new C_RaidSavePartyRequest { CharacterIds = ids });
+        }
+
+        private void SendRaidChallenge()
+        {
+            Console.Write("보스 TID > ");
+            if (!int.TryParse(Console.ReadLine(), out int bossTid) || bossTid <= 0)
+            {
+                Console.WriteLine("[Client] 보스 TID는 양수를 입력하세요.");
+                return;
+            }
+
+            Console.Write("요청 ID (새 도전은 비움, 재전송은 이전 GUID) > ");
+            string? input = Console.ReadLine();
+            Guid requestId;
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                requestId = Guid.NewGuid();
+            }
+            else if (!Guid.TryParse(input, out requestId) || requestId == Guid.Empty)
+            {
+                Console.WriteLine("[Client] 비어 있지 않은 GUID를 입력하세요.");
+                return;
+            }
+
+            Console.WriteLine($"[Client] Send 레이드 도전: 요청 ID={requestId}");
+            NetworkManager.Instance.Send(new C_RaidChallengeRequest { BossTID = bossTid, RequestId = requestId });
         }
 }
 }

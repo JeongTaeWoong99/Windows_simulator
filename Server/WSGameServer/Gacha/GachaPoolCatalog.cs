@@ -39,7 +39,7 @@ public sealed class GachaPoolCatalog : Singleton<GachaPoolCatalog>
         var golds = GameTable.GachaGoldTable.All.Select(r => new GachaEntry(
             r.GachaId, GachaRewardType.Gold, 0, r.MinAmount, r.Weight, r.MaxAmount));
 
-        // 아티팩트는 유물 감정 풀에만 있다 — 인벤토리가 아닌 아티팩트 보관함으로 간다(T-150).
+        // 가챠 풀의 아티팩트는 전용 보관함으로 간다. 레이드 상자는 확정 보상과 별도 추첨을 사용한다.
         var artifacts = ToEntries(GameTable.GachaArtifactTable.All, GachaRewardType.Artifact,
                                   r => r.GachaId, r => r.ArtifactTID, r => r.Count, r => r.Weight);
 

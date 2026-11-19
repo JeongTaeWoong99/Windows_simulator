@@ -110,6 +110,11 @@
     "EN": "Stone Axe"
   },
   {
+    "Key": "Artifact.23.Name",
+    "KR": "돌문 수호자의 인장",
+    "EN": "Stonegate Guardian Seal"
+  },
+  {
     "Key": "Building.1.Name",
     "KR": "관리소",
     "EN": "Office"
@@ -1163,6 +1168,11 @@
     "Key": "GachaInfo.35.Name",
     "KR": "캐릭터 뽑기권 D",
     "EN": "Character Ticket D"
+  },
+  {
+    "Key": "GachaInfo.36.Name",
+    "KR": "돌문 수호자 상자",
+    "EN": "Stonegate Guardian Chest"
   },
   {
     "Key": "IndustryLevel.101.Name",
@@ -3200,6 +3210,16 @@
     "EN": "Open to get one character of Mythic grade or lower"
   },
   {
+    "Key": "Item.100075.Name",
+    "KR": "돌문 수호자 상자",
+    "EN": "Stonegate Guardian Chest"
+  },
+  {
+    "Key": "Item.100075.Tooltip",
+    "KR": "골드를 받고 낮은 확률로 아티팩트를 얻는다.",
+    "EN": "Contains gold and a small chance of an artifact."
+  },
+  {
     "Key": "Item.100061.Name",
     "KR": "흙 묻은 유물",
     "EN": "Muddy Relic"
@@ -3375,6 +3395,26 @@
     "EN": "Auction House"
   },
   {
+    "Key": "MailTemplate.8.Title",
+    "KR": "레이드 승리 보상",
+    "EN": "Raid Victory Reward"
+  },
+  {
+    "Key": "MailTemplate.8.Body",
+    "KR": "레이드에서 승리해 받은 보스 상자입니다.",
+    "EN": "Your boss chest for winning the raid is attached."
+  },
+  {
+    "Key": "MailTemplate.8.Sender",
+    "KR": "레이드",
+    "EN": "Raid"
+  },
+  {
+    "Key": "RaidBoss.1.Name",
+    "KR": "돌문 수호자",
+    "EN": "Stonegate Guardian"
+  },
+  {
     "Key": "Unlock.1002.Name",
     "KR": "작업슬롯 2번",
     "EN": "Work Slot 2"
@@ -3413,6 +3453,11 @@
     "Key": "Unlock.1009.Name",
     "KR": "작업슬롯 9번",
     "EN": "Work Slot 9"
+  },
+  {
+    "Key": "Unlock.2001.Name",
+    "KR": "레이드",
+    "EN": "Raid"
   },
   {
     "Key": "UserTrait.101.Name",

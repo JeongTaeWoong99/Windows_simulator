@@ -164,7 +164,8 @@ public sealed partial class User
         GameClock?            clock = null,
         CharacterStarCatalog? characterStars = null,
         GatherSpeed?          gatherSpeed = null,
-        ItemUseCatalog?       itemUses = null)
+        ItemUseCatalog?       itemUses = null,
+        RaidCatalog?          raids = null)
     {
         ArgumentNullException.ThrowIfNull(channel);
         ArgumentNullException.ThrowIfNull(db);
@@ -188,6 +189,7 @@ public sealed partial class User
         _characterStars = characterStars ?? CharacterStarCatalog.Instance;
         _gatherSpeed = gatherSpeed ?? GatherSpeed.Instance;
         _itemUses    = itemUses ?? ItemUseCatalog.Instance;
+        _raids       = raids ?? RaidCatalog.Instance;
         Artifacts    = new Inventory(EContainer.Inventory, () => StorageCapacity, InventoryEquipSlots);
 
         SessionId  = channel.SessionId;

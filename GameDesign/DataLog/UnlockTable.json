@@ -92,5 +92,15 @@
     "ItemTIDs": [],
     "ItemCounts": [],
     "Description": "작업슬롯 9번 · 상한"
+  },
+  {
+    "UnlockTID": 2001,
+    "Name": "레이드",
+    "Gold": 0,
+    "AccountLevel": 0,
+    "RequiredUnlockTIDs": [],
+    "ItemTIDs": [],
+    "ItemCounts": [],
+    "Description": "첫 접속 시 자동 해금"
   }
 ]

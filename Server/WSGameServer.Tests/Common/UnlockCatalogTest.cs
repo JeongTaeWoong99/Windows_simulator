@@ -117,14 +117,15 @@ public class UnlockCatalogTest
     }
 
     [Fact]
-    public void 실데이터는_해금_8개_작업슬롯_10칸이_등록된다()
+    public void 실데이터는_작업슬롯_10칸과_레이드_해금을_등록한다()
     {
         GameTableFixture.EnsureLoaded();
         var catalog = new UnlockCatalog();
         catalog.LoadAll();
 
-        // 작업슬롯 8. 특성은 레벨형(T-108), 건물은 자기 표(T-183)라 해금을 쓰지 않는다
-        catalog.Count.ShouldBe(8);
+        // 작업슬롯 해금 8개와 레이드 해금 1개다.
+        catalog.Count.ShouldBe(9);
+        catalog.TryGetUnlock(2001, out _).ShouldBeTrue();
         catalog.WorkSlots.Select(s => s.WorkSlotTID).ShouldBe(Enumerable.Range(0, 10));
 
         // 상한 칸(9번)은 1009가 연다. 시작 2칸(0·1번)은 해금 0이다.

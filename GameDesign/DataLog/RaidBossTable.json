@@ -1,0 +1,16 @@
+[
+  {
+    "RaidBossTID": 1,
+    "Name": "돌문 수호자",
+    "UnlockTID": 2001,
+    "Level": 1,
+    "Attack": 8,
+    "Health": 230,
+    "AttackIntervalMs": 3200,
+    "RewardBoxItemTID": 100075,
+    "RewardGold": 250,
+    "RewardArtifactTID": 23,
+    "ArtifactChancePermille": 5,
+    "Description": "입문 레이드"
+  }
+]

@@ -10,7 +10,8 @@
     "Logging": 1,
     "Hunting": 1,
     "BasePrice": 50,
-    "Description": "시작 지급. 전 산업 1 — 어떤 산업이든 시작할 수 있어야 한다"
+    "Description": "시작 지급. 전 산업 1 — 어떤 산업이든 시작할 수 있어야 한다",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1002,
@@ -23,7 +24,8 @@
     "Logging": 2,
     "Hunting": 0,
     "BasePrice": 100,
-    "Description": "농사 담당"
+    "Description": "농사 담당",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1003,
@@ -36,7 +38,8 @@
     "Logging": 3,
     "Hunting": 2,
     "BasePrice": 100,
-    "Description": "벌목 담당"
+    "Description": "벌목 담당",
+    "AttackIntervalMs": 1200
   },
   {
     "CharacterTID": 1004,
@@ -49,7 +52,8 @@
     "Logging": 1,
     "Hunting": 1,
     "BasePrice": 100,
-    "Description": "채굴 담당"
+    "Description": "채굴 담당",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1005,
@@ -62,7 +66,8 @@
     "Logging": 0,
     "Hunting": 3,
     "BasePrice": 100,
-    "Description": "사냥 담당"
+    "Description": "사냥 담당",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1006,
@@ -75,7 +80,8 @@
     "Logging": 0,
     "Hunting": 3,
     "BasePrice": 100,
-    "Description": "사냥 담당"
+    "Description": "사냥 담당",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1007,
@@ -88,7 +94,8 @@
     "Logging": 1,
     "Hunting": 0,
     "BasePrice": 50,
-    "Description": "농사 입문"
+    "Description": "농사 입문",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1008,
@@ -101,7 +108,8 @@
     "Logging": 0,
     "Hunting": 1,
     "BasePrice": 50,
-    "Description": "발굴 입문 — 삽"
+    "Description": "발굴 입문 — 삽",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1009,
@@ -114,7 +122,8 @@
     "Logging": 1,
     "Hunting": 1,
     "BasePrice": 50,
-    "Description": "채굴 입문"
+    "Description": "채굴 입문",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1010,
@@ -127,7 +136,8 @@
     "Logging": 2,
     "Hunting": 0,
     "BasePrice": 50,
-    "Description": "벌목 입문 — 그림 없음, 기본 캐릭터 임시"
+    "Description": "벌목 입문 — 그림 없음, 기본 캐릭터 임시",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1011,
@@ -140,7 +150,8 @@
     "Logging": 1,
     "Hunting": 2,
     "BasePrice": 50,
-    "Description": "사냥 입문"
+    "Description": "사냥 입문",
+    "AttackIntervalMs": 1200
   },
   {
     "CharacterTID": 1012,
@@ -153,7 +164,8 @@
     "Logging": 1,
     "Hunting": 4,
     "BasePrice": 100,
-    "Description": "사냥 담당"
+    "Description": "사냥 담당",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1013,
@@ -166,7 +178,8 @@
     "Logging": 1,
     "Hunting": 4,
     "BasePrice": 100,
-    "Description": "사냥 담당"
+    "Description": "사냥 담당",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1014,
@@ -179,7 +192,8 @@
     "Logging": 4,
     "Hunting": 1,
     "BasePrice": 100,
-    "Description": "벌목 담당 — 그림 없음, 기본 캐릭터 임시"
+    "Description": "벌목 담당 — 그림 없음, 기본 캐릭터 임시",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1015,
@@ -192,7 +206,8 @@
     "Logging": 1,
     "Hunting": 1,
     "BasePrice": 250,
-    "Description": "발굴 특화"
+    "Description": "발굴 특화",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1016,
@@ -205,7 +220,8 @@
     "Logging": 0,
     "Hunting": 0,
     "BasePrice": 250,
-    "Description": "농사 특화"
+    "Description": "농사 특화",
+    "AttackIntervalMs": 1200
   },
   {
     "CharacterTID": 1017,
@@ -218,7 +234,8 @@
     "Logging": 2,
     "Hunting": 2,
     "BasePrice": 250,
-    "Description": "채굴 특화"
+    "Description": "채굴 특화",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1018,
@@ -231,7 +248,8 @@
     "Logging": 1,
     "Hunting": 5,
     "BasePrice": 250,
-    "Description": "사냥 특화"
+    "Description": "사냥 특화",
+    "AttackIntervalMs": 1200
   },
   {
     "CharacterTID": 1019,
@@ -244,7 +262,8 @@
     "Logging": 1,
     "Hunting": 5,
     "BasePrice": 250,
-    "Description": "사냥 특화"
+    "Description": "사냥 특화",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1020,
@@ -257,7 +276,8 @@
     "Logging": 1,
     "Hunting": 6,
     "BasePrice": 250,
-    "Description": "사냥 특화"
+    "Description": "사냥 특화",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1021,
@@ -270,7 +290,8 @@
     "Logging": 0,
     "Hunting": 1,
     "BasePrice": 250,
-    "Description": "발굴 특화"
+    "Description": "발굴 특화",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1022,
@@ -283,7 +304,8 @@
     "Logging": 2,
     "Hunting": 2,
     "BasePrice": 600,
-    "Description": "채굴 정예"
+    "Description": "채굴 정예",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1023,
@@ -296,7 +318,8 @@
     "Logging": 7,
     "Hunting": 1,
     "BasePrice": 600,
-    "Description": "벌목 정예"
+    "Description": "벌목 정예",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1024,
@@ -309,7 +332,8 @@
     "Logging": 2,
     "Hunting": 7,
     "BasePrice": 600,
-    "Description": "사냥 정예"
+    "Description": "사냥 정예",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1025,
@@ -322,7 +346,8 @@
     "Logging": 2,
     "Hunting": 7,
     "BasePrice": 600,
-    "Description": "사냥 정예"
+    "Description": "사냥 정예",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1026,
@@ -335,7 +360,8 @@
     "Logging": 1,
     "Hunting": 7,
     "BasePrice": 600,
-    "Description": "사냥 정예"
+    "Description": "사냥 정예",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1027,
@@ -348,7 +374,8 @@
     "Logging": 3,
     "Hunting": 2,
     "BasePrice": 1500,
-    "Description": "농사 최상위"
+    "Description": "농사 최상위",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1028,
@@ -361,7 +388,8 @@
     "Logging": 1,
     "Hunting": 9,
     "BasePrice": 1500,
-    "Description": "사냥 최상위"
+    "Description": "사냥 최상위",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1029,
@@ -374,7 +402,8 @@
     "Logging": 4,
     "Hunting": 2,
     "BasePrice": 1500,
-    "Description": "채굴 최상위"
+    "Description": "채굴 최상위",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1030,
@@ -387,7 +416,8 @@
     "Logging": 7,
     "Hunting": 7,
     "BasePrice": 4000,
-    "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다"
+    "Description": "만능형 — 전 산업 7. 단일 산업 최고는 전설 특화가 유지한다",
+    "AttackIntervalMs": 1400
   },
   {
     "CharacterTID": 1031,
@@ -400,7 +430,8 @@
     "Logging": 0,
     "Hunting": 1,
     "BasePrice": 100,
-    "Description": "채굴 담당 — 견습 발굴꾼(1008)과 같은 생김새에 곡괭이"
+    "Description": "채굴 담당 — 견습 발굴꾼(1008)과 같은 생김새에 곡괭이",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1032,
@@ -413,7 +444,8 @@
     "Logging": 0,
     "Hunting": 1,
     "BasePrice": 100,
-    "Description": "발굴 담당 — 삽 든 탐험가 (#115)"
+    "Description": "발굴 담당 — 삽 든 탐험가 (#115)",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1033,
@@ -426,7 +458,8 @@
     "Logging": 1,
     "Hunting": 1,
     "BasePrice": 600,
-    "Description": "발굴 정예 (#115)"
+    "Description": "발굴 정예 (#115)",
+    "AttackIntervalMs": 1800
   },
   {
     "CharacterTID": 1034,
@@ -439,7 +472,8 @@
     "Logging": 2,
     "Hunting": 1,
     "BasePrice": 1500,
-    "Description": "발굴 최상위 (#115)"
+    "Description": "발굴 최상위 (#115)",
+    "AttackIntervalMs": 1600
   },
   {
     "CharacterTID": 1035,
@@ -452,7 +486,8 @@
     "Logging": 3,
     "Hunting": 9,
     "BasePrice": 1500,
-    "Description": "사냥 최상위 — 뿔 투구 기사 · 불꽃 베기 (T-174)"
+    "Description": "사냥 최상위 — 뿔 투구 기사 · 불꽃 베기 (T-174)",
+    "AttackIntervalMs": 2000
   },
   {
     "CharacterTID": 1036,
@@ -465,6 +500,7 @@
     "Logging": 1,
     "Hunting": 7,
     "BasePrice": 600,
-    "Description": "사냥 정예 — 눈 달린 두건 술사 (T-174)"
+    "Description": "사냥 정예 — 눈 달린 두건 술사 (T-174)",
+    "AttackIntervalMs": 1400
   }
 ]

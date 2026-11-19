@@ -218,5 +218,15 @@
     "EffectValue": 4,
     "BasePrice": 1200,
     "Description": "고급 · 벌목 산출량 0.4% · 실린 순서 022 (테스트값)"
+  },
+  {
+    "ArtifactTID": 23,
+    "Name": "돌문 수호자의 인장",
+    "GlobalRarity": "Rare",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 3,
+    "BasePrice": 2000,
+    "Description": "돌문 수호자 상자 전용"
   }
 ]
