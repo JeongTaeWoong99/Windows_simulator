@@ -232,6 +232,28 @@ public static class GameDataLoader
         return GameTable.CharacterTable.TryGet(characterTid, out var row) ? row.Race : CharacterRace.None;
     }
 
+    // 캐릭터 종류의 테이블 적성(0~10) — 새로 받은 캐릭터의 적성이다. 키운 개체의 적성은 서버 값('PlayerDataModel.GetAptitude')을 쓴다.
+    // 결과 창처럼 개체 번호가 없는 화면이 인벤토리 칸과 같은 최고 적성 알약을 그릴 때 쓴다. 모르는 번호는 0.
+    public static byte GetCharacterBaseAptitude(int characterTid, EIndustryType industry)
+    {
+        if (!GameTable.CharacterTable.TryGet(characterTid, out var row))
+        {
+            return 0;
+        }
+
+        int value = industry switch
+        {
+            EIndustryType.Farming    => row.Farming,
+            EIndustryType.Excavation => row.Excavation,
+            EIndustryType.Mining     => row.Mining,
+            EIndustryType.Logging    => row.Logging,
+            EIndustryType.Hunting    => row.Hunting,
+            _                        => 0,
+        };
+
+        return (byte)Mathf.Clamp(value, 0, byte.MaxValue);
+    }
+
     public static GlobalRarity GetCharacterRarity(int characterTid)
     {
         if (GameTable.CharacterTable.TryGet(characterTid, out var row))
