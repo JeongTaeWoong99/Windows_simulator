@@ -164,7 +164,8 @@ public partial class User
                 // 소모품 버프(T-195) — 이번 판정 수만큼 깎고, 앞쪽 판정부터 붙인다. 속도 버프는 이미 판정 수에 들어 있다.
                 // 버프가 다 되면 ON인 영약을 보유분에서 이어 쓴다. 속도 가산이 달라졌을 때만 속도를 다시 매긴다.
                 var speedBefore = GetSlotBuffSpeedAdd(rolledSlot);
-                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount, tid => ConsumeAutoUseItem(tid, autoUseItems));
+                var applied     = rolledSlot.ConsumeBuffs(harvest.JudgeCount,
+                    tid => ConsumeAutoUseItem(tid, autoUseItems), ShouldPreloadAutoUse);
                 foreach (var (itemTid, _) in applied)
                 {
                     buffChanges.Add(new SlotBuffChange(rolledSlot.SlotIndex, itemTid, rolledSlot.Buffs.GetValueOrDefault(itemTid)));
@@ -309,13 +310,25 @@ public partial class User
         SettleWorkStation(now);
 
         slot.Assign(industry, characterId, now, industryLevel, ResolveJudgeCost(industry, industryLevel));
-        RefillAutoUseAndSave(slot);
+        var clearedBuffs = new List<SlotBuffChange>();
+        if (slot.IsActive)
+        {
+            RefillAutoUseAndSave(slot);
+        }
+        else
+        {
+            foreach (var itemTid in slot.Buffs.Keys.Where(tid => AutoUseEffectCount(tid) == 1).ToList())
+            {
+                slot.RemoveBuff(itemTid);
+                clearedBuffs.Add(new SlotBuffChange(slotIndex, itemTid, 0));
+            }
+        }
 
         // 배치가 바뀌면 그 캐릭터의 속도로 갈아탄다. Assign이 방금 구간을 끊었으므로
         // 여기서 바꾸는 것은 소급되지 않는다.
         slot.ApplyWorkSpeed(ResolveSlotSpeed(slot));
 
-        SaveWorkStationSlots(new[] { slotIndex });
+        SaveWorkStationSlots(new[] { slotIndex }, clearedBuffs);
 
         Send(new S_WorkStationAssignResponse { Result = EResultCode.Ok, Slot = slot.ToInfo() });
     }
@@ -417,7 +430,7 @@ public partial class User
     }
 
     /// <summary>지정한 슬롯들의 <b>배치 설정</b>을 DB에 반영한다(진행도는 저장하지 않는다).</summary>
-    private void SaveWorkStationSlots(IEnumerable<int> slotIndexes)
+    private void SaveWorkStationSlots(IEnumerable<int> slotIndexes, IReadOnlyList<SlotBuffChange> buffChanges)
     {
         var targets = slotIndexes
             .Select(i => WorkStation.TryGet(i, out var s) ? s : null)
@@ -427,7 +440,7 @@ public partial class User
 
         if (targets.Count > 0)
         {
-            PostDBTask(new SaveWorkStationSlotRepository(this, targets));
+            PostDBTask(new SaveWorkStationSlotRepository(this, targets, buffChanges));
         }
     }
 }

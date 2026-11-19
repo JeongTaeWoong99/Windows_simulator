@@ -2203,7 +2203,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "지정 슬롯 다음 20회 판정 동안 작업속도 +30% (+300‰ 가산)",
+    "Description": "지정 슬롯 다음 1회 판정에 작업속도 +30% (+300‰ 가산)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2215,7 +2215,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 0,
-    "Description": "지정 슬롯 다음 20회 판정 동안 자원 산출량 +30% (+300‰ 가산)",
+    "Description": "지정 슬롯 다음 1회 판정에 자원 산출량 +30% (+300‰ 가산)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
