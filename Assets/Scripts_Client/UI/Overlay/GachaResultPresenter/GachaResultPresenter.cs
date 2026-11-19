@@ -140,7 +140,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _wait              = Services.Get<ServerWaitManager>();
         _sound             = Services.Get<SoundManager>();
         _burst             = RewardBurstFx.Create(panel, reveal);
-        _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText);
+        _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText, _sound);
         _panelGroup        = panel.TryGetComponent(out CanvasGroup existing) ? existing : panel.gameObject.AddComponent<CanvasGroup>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
         _panelRestPosition = panel.anchoredPosition;
         _slots             = new UIRowList<SlotView>(slotPrefab, slotParent, OnSlotCreated, OnSlotHide);

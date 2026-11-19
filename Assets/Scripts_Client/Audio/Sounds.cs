@@ -4,7 +4,7 @@ using UnityEngine;
 // 어떤 소리를 어디서 쓰는지 한 곳에 모은 이름표(트는 쪽은 Common 'SoundManager') — 파일은 그림 저장소 'Assets/Art/audio/<채널>/<키>.wav'.
 // 소리를 바꾸려면 같은 이름으로 파일을 덮는다(코드는 그대로). 새 소리는 파일을 넣고 여기 한 줄을 더한다.
 //
-// ■ 소리 출처 — 2026-11-15부터 코드 합성(Unity AI 크레딧 0): 'Art/_source/audio/claude-sfx/make_sfx.py'.
+// ■ 소리 출처 — 2026-11-15부터 코드 합성(2026-11-18 유물 감정 6종 추가)(Unity AI 크레딧 0): 'Art/_source/audio/claude-sfx/make_sfx.py'.
 //   결은 판타지 · 양피지(하프 · 종 · 종이 바스락 · 나무) — 높은 8비트 '뾱뾱'은 쓰지 않는다(2026-11-15 사용자).
 //   버튼 'ui_click' · 보상 'reward_chime'은 예전 소리 그대로다(사용자가 예전 것이 낫다고 했다). 배경 음악 'bgm_idle'은 Unity AI(Lyria).
 // ■ 여러 벌 중 하나 — 자주 나는 소리(골드)는 '<키>_1' · '_2' · '_3'을 두고 매번 하나를 고른다. 같은 소리만 반복되면 지루하다(2026-11-15 사용자).
@@ -55,6 +55,12 @@ public static class Sounds
         >= GlobalRarity.Legendary => "gacha_burst_legendary",
         _                         => "gacha_burst_epic",
     });
+
+    // 유물 감정 ('RelicAppraiseFx') — 금 세 번(갈수록 높고 세다) · 깨짐 · 보상 공개 · 아티팩트 발견(더 경쾌한 팡파르 · 2026-11-18 사용자)
+    public static AudioClip? RelicCrack(int index) => SoundCatalog.Of($"relic_crack_{Mathf.Clamp(index, 0, 2) + 1}");
+    public static AudioClip? RelicBreak    => SoundCatalog.Of("relic_break");
+    public static AudioClip? RelicReveal   => SoundCatalog.Of("relic_reveal");
+    public static AudioClip? RelicArtifact => SoundCatalog.Of("relic_artifact");
 
     // 도감 새 등록 — 장착한 아티팩트 칸이 반짝일 때 '띠링' ('ArtifactCodexPresenter')
     public static AudioClip? CodexRegister => SoundCatalog.Of("codex_register");

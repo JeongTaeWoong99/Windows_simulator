@@ -142,6 +142,38 @@ public static class GameDataLoader
         return GameTable.ItemTable.TryGet(itemId, out var row) && row.OpenGachaId != 0;
     }
 
+    // 상자의 레벨 — 이 상자를 떨어뜨리는 산업 레벨(공통 보상 · 산업별 대체 표 중 가장 낮은 것). 상자가 아니거나 어디서도 안 나오면 0.
+    // ※ 아이템 표에 레벨 컬럼이 없다 — 이름('나무 상자 Lv3')을 읽지 않고, 어디서 나오는지로 정한다(인벤토리 칸 레벨 배지 · 2026-11-18).
+    public static int GetBoxLevel(int itemId)
+    {
+        if (BoxLevels == null)
+        {
+            BoxLevels = new Dictionary<int, int>();
+
+            foreach (var row in GameTable.CommonRewardTable.All)
+            {
+                AddBoxLevel(row.ItemTID, row.IndustryLevel);
+            }
+
+            foreach (var row in GameTable.CommonRewardOverrideTable.All)
+            {
+                AddBoxLevel(row.ItemTID, row.IndustryLevel);
+            }
+        }
+
+        return GetItemType(itemId) == ItemType.Box && BoxLevels.TryGetValue(itemId, out int level) ? level : 0; // 유물·뽑기권도 'OpenGachaId'가 있어 'IsBox'로는 못 가른다
+    }
+
+    private static Dictionary<int, int>? BoxLevels;
+
+    private static void AddBoxLevel(int itemId, int level)
+    {
+        if (!BoxLevels!.TryGetValue(itemId, out int known) || level < known)
+        {
+            BoxLevels[itemId] = level;
+        }
+    }
+
     // 이 아이템이 **인챈트 큐브**인가 — 'EnchantItemTable'에 행이 있으면 큐브다. 큐브 창의 버튼 목록('EnchantCubes')과 같은 출처다.
     // ※ 없는 Id는 '큐브가 아니다'로 떨어진다 — 'IsBox'와 같은 이유로 경고를 내지 않는다.
     public static bool IsCube(int itemId)

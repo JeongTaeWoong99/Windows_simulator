@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MikaProtocol;
 using UnityEngine;
 using UnityEngine.UI;
@@ -34,6 +34,16 @@ public class SlotStageView : MonoBehaviour
     // 다가오는 대상이 처음 나타나는 자리 — 화면 왼쪽 끝에서 이만큼 더 밖 (아트 픽셀)
     private const int SpawnMargin = 40;
 
+    // 맞으면 움찔 — 모든 대상 공통(2026-11-18 사용자: 히트 모션을 하나로). 캐릭터 반대쪽(왼쪽)으로 밀렸다 돌아오며 잠깐 납작해진다.
+    // 값은 그림 픽셀·비율 — 화면 배율 k를 곱해 쓴다.
+    private const float FlinchSeconds = 0.16f;
+    private const float FlinchPush    = 2f;    // 밀리는 거리(그림 픽셀)
+    private const float FlinchSquash  = 0.08f; // 납작해지는 비율(세로 −, 가로 +)
+    private const float HurtSeconds   = 0.24f; // 맞는 자세('TargetVisual.GetHit')를 보이는 시간 — 흰 번쩍(0.08초) 뒤에도 자세가 읽히게 움찔보다 길게
+
+    // 대상은 땅선보다 이만큼(그림 픽셀) 아래에 선다 — 밑동이 땅 앞면에 가려 '땅에 박힌' 것처럼 보인다(2026-11-18 사용자: 뿌리가 바닥 앞에 있어 어색)
+    private const float TargetSink = 3f;
+
     [CenterHeader("참조")]
     [SerializeField, Tooltip("그림 목록. 비우면 'VisualCatalog.Current'(Resources)를 쓴다 — 그것도 없으면 무대를 그리지 않는다")]
     private VisualCatalog? catalog;
@@ -55,6 +65,7 @@ public class SlotStageView : MonoBehaviour
     private Image?               _character;
     private Image?               _effect;     // 공격 이펙트 — 캐릭터 위
     private Image?               _hitEffect;  // 타격 이펙트 — 대상 위
+    private RawImage?            _groundFront; // 맨 앞 층의 땅선 아래만 대상 위에 한 번 더 — 대상 밑동이 땅 뒤로 들어가 보인다
 
     private CharacterVisual?  _characterVisual;
     private BackgroundVisual? _background;
@@ -288,6 +299,17 @@ public class SlotStageView : MonoBehaviour
             rect.sizeDelta = new Vector2(0f, layerHeight);
 
             _layers[i].uvRect = new Rect(-shift / tileWidth, 0f, width / tileWidth, layerHeight / artHeight);
+
+            // 맨 앞 층(땅)은 땅선 아래만 대상 위에 다시 덮는다 — 같은 uv라 이음매가 없다
+            if (i == _layerCount - 1 && _groundFront != null)
+            {
+                float coverHeight = GroundY(k);
+
+                _groundFront.texture = texture;
+                _groundFront.enabled = coverHeight > 0f;
+                _groundFront.rectTransform.sizeDelta = new Vector2(0f, coverHeight);
+                _groundFront.uvRect = new Rect(-shift / tileWidth, 0f, width / tileWidth, coverHeight / artHeight);
+            }
         }
     }
 
@@ -305,6 +327,8 @@ public class SlotStageView : MonoBehaviour
 
         float tk        = TargetScale(k);
         float halfWidth = sprite.rect.width * tk / 2f;
+        float flinch    = FlinchAmount(now.SinceHit);
+        bool  hurt      = now.SinceHit >= 0f && now.SinceHit < HurtSeconds;
         float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.MoveEnd) - now.MoveStart);
         float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.MoveEnd - time);
 
@@ -313,7 +337,7 @@ public class SlotStageView : MonoBehaviour
         {
             float alpha = 1f - time / settings.FadeSeconds;
 
-            PlaceTarget(_dying, sprite, dyingX, alpha, time < settings.FlashSeconds, k);
+            PlaceTarget(_dying, sprite, dyingX, alpha, time < settings.FlashSeconds, now.HitsComing ? 0f : flinch, !now.HitsComing && hurt, k);
         }
         else
         {
@@ -325,7 +349,7 @@ public class SlotStageView : MonoBehaviour
         {
             bool flash = now.HitsComing && now.SinceHit < settings.FlashSeconds;
 
-            PlaceTarget(_coming, sprite, comingX, 1f, flash, k);
+            PlaceTarget(_coming, sprite, comingX, 1f, flash, now.HitsComing ? flinch : 0f, now.HitsComing && hurt, k);
         }
         else
         {
@@ -380,19 +404,41 @@ public class SlotStageView : MonoBehaviour
         }
     }
 
-    // 대상 하나를 놓는다 — 발이 땅선, x는 가운데
-    private void PlaceTarget(TargetImages images, Sprite sprite, float centerX, float alpha, bool flash, float k)
+    // 맞은 뒤 움찔 세기 1 → 0 — 맞은 순간 가장 세고 빠르게 풀린다
+    private static float FlinchAmount(float sinceHit)
     {
-        Vector2 position = new Vector2(Mathf.Round(centerX), GroundY(k));
-        Vector2 size     = Snap(sprite.rect.size * TargetScale(k));
+        if (sinceHit < 0f || sinceHit >= FlinchSeconds)
+        {
+            return 0f;
+        }
+
+        float rest = 1f - sinceHit / FlinchSeconds;
+
+        return rest * rest;
+    }
+
+    // 대상 하나를 놓는다 — 발이 땅선, x는 가운데. flinch(0~1)만큼 왼쪽으로 밀리고 납작해진다(발은 땅에 붙은 채)
+    //   hurt : 맞는 자세가 있으면 그 자세로 그린다
+    private void PlaceTarget(TargetImages images, Sprite sprite, float centerX, float alpha, bool flash, float flinch, bool hurt, float k)
+    {
+        // 맞는 자세가 있는 대상(사냥)은 움찔하는 동안 몸을 그 자세로 바꾼다 — 캔버스가 위·양옆만 넓어 발 자리(아래 가운데)는 그대로다
+        Sprite? hitSprite = hurt && _target != null ? _target.GetHit(_level) : null;
+        Sprite  body      = hitSprite != null ? hitSprite : sprite;
+
+        Vector2 squash   = new Vector2(1f + FlinchSquash * flinch, 1f - FlinchSquash * flinch);
+        Vector2 position = new Vector2(Mathf.Round(centerX - FlinchPush * k * flinch), GroundY(k) - Mathf.Round(TargetSink * k));
+        Vector2 size     = Snap(Vector2.Scale(body.rect.size * TargetScale(k), squash));
         Color   tint     = _target != null ? _target.GetTint(_level) : Color.white;
 
         images.body.enabled = true;
-        images.body.sprite  = sprite;
+        images.body.sprite  = body;
         images.body.color   = new Color(tint.r, tint.g, tint.b, tint.a * alpha);
         Place(images.body.rectTransform, position, size);
 
-        Sprite? flashSprite = _target != null ? _target.GetFlash(_level) : null;
+        // 번쩍임 — 다른 대상과 같은 흰 실루엣. 맞는 자세일 땐 그 자세 모양 실루엣
+        Sprite? flashSprite = _target == null ? null
+                            : hitSprite != null ? _target.GetHitFlash(_level)
+                            : _target.GetFlash(_level);
 
         // 번쩍임은 몸통의 자식으로 늘여 두어 자리를 따로 잡지 않는다
         if (flash && flashSprite != null)
@@ -538,6 +584,11 @@ public class SlotStageView : MonoBehaviour
         {
             HideLayersFrom(0);
 
+            if (_groundFront != null)
+            {
+                _groundFront.enabled = false;
+            }
+
             return;
         }
 
@@ -584,7 +635,7 @@ public class SlotStageView : MonoBehaviour
         }
     }
 
-    // 대상 둘 · 캐릭터 · 이펙트 둘을 한 번만 만든다 — 층보다 앞, 이펙트가 맨 앞
+    // 대상 둘 · 땅 덮개 · 캐릭터 · 이펙트 둘을 한 번만 만든다 — 층보다 앞, 이펙트가 맨 앞
     private void EnsureActors()
     {
         if (_character != null)
@@ -594,6 +645,14 @@ public class SlotStageView : MonoBehaviour
 
         _dying     = CreateTarget("Dying Target");
         _coming    = CreateTarget("Coming Target");
+
+        RectTransform cover = CreateChild("Ground Front", transform);
+        cover.anchorMin = new Vector2(0f, 0f);
+        cover.anchorMax = new Vector2(1f, 0f);
+        cover.pivot     = new Vector2(0.5f, 0f);
+        _groundFront = cover.gameObject.AddComponent<RawImage>();
+        _groundFront.raycastTarget = false;
+        _groundFront.enabled       = false;
         _character = CreateImage("Character", transform);
         _effect    = CreateImage("Attack Effect", transform);
         _hitEffect = CreateImage("Hit Effect", transform);

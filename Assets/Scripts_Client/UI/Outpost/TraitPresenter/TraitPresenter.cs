@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;
@@ -391,8 +391,9 @@ public class TraitPresenter : MonoBehaviour
         bool isMax = level >= trait.MaxLevel;
 
         // 최대 레벨은 이름 줄에서 작게 말한다 — 큰 '최대 레벨' 상자는 보기 싫다는 피드백(2026-10-02).
+        // 색은 양피지용 진한 황토 — 고른 탭 노랑(ButtonSelected)은 밝은 바탕에서 안 보였다(2026-11-18).
         detailNameText.text = isMax
-            ? $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.ButtonSelected)}>Lv {level} / {trait.MaxLevel} · {Lang.Get("UI.WorkStation.Max")}</color></size>"
+            ? $"{Loc.Get(trait.NameLocKey)}  <size=70%><color=#{Hex(UIThemeRole.HighlightDark)}>Lv {level} / {trait.MaxLevel} · {Lang.Get("UI.WorkStation.Max")}</color></size>"
             : $"{Loc.Get(trait.NameLocKey)}  <size=70%>{UIRichText.Paint($"Lv {level} / {trait.MaxLevel}", UIThemeRole.TextSub)}</size>";
         detailDescText.text = DescribeKind(trait);
 

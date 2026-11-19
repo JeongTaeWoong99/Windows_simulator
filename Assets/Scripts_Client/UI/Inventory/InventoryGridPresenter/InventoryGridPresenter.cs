@@ -861,7 +861,10 @@ public class InventoryGridPresenter : MonoBehaviour
         view.SetBestAptitude(best < 0 ? null : StripIndustries[best], best < 0 ? (byte)0 : _aptitudes[best]);
 
         // 레벨 배지 · 경험치 게이지도 캐릭터 탭에서만이다. 다른 탭은 같은 배지 자리에 공급자의 표시를 싣는다(장비: 상급 큐브 결과 고르기 전 '선택').
-        view.SetLevelBadge(IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key));
+        // 배지가 없는 칸은 같은 자리에 분류 이름('채굴' · '유물' …)을 적는다 — 종류가 많아 그림만으로 못 가른다(2026-11-18 사용자)
+        string? badge = IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key);
+
+        view.SetLevelBadge(badge ?? _current.GetCategoryLabel(data.Key));
         view.SetAttention(_current.NeedsAttention(data.Key));
         view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
 

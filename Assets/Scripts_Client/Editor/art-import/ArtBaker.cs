@@ -771,7 +771,7 @@ namespace DesktopWindowControl.EditorTools
                 return $"❌ {key}: 원본 스프라이트가 비어 있다";
             }
 
-            var baked = new List<(Sprite sprite, Sprite flash, ArtImage image)>();
+            var baked = new List<(Sprite sprite, Sprite flash, Sprite? hit, Sprite? hitFlash, ArtImage image)>();
 
             foreach ((Sprite? source, int downscale, string name) in sources)
             {
@@ -783,7 +783,27 @@ namespace DesktopWindowControl.EditorTools
 
                 image.SavePng(spritePath);
                 image.WhiteSilhouette().SavePng(flashPath);
-                baked.Add((ImportSingle(spritePath), ImportSingle(flashPath), image));
+
+                // 맞는 자세 — 원본 옆 '<원본 이름>_hit.png'가 있으면 자르지 않고 축소만 한다.
+                //   그 캔버스는 서 있는 그림보다 위·양옆이 넓고 아래·가운데가 같아, 발 자리를 맞추면 겹친다(자르면 기준이 어긋난다)
+                Sprite? hit       = null;
+                Sprite? hitFlash  = null;
+                string  hitSource = System.IO.Path.ChangeExtension(AssetDatabase.GetAssetPath(source), null) + "_hit.png";
+                Texture2D? hitTex = AssetDatabase.LoadAssetAtPath<Texture2D>(hitSource);
+
+                if (hitTex != null)
+                {
+                    ArtImage hitImage = ArtImage.FromTexture(hitTex).DownscaleNearest(Mathf.Max(1, downscale));
+                    string hitPath      = $"{folder}/{name}_hit.png";
+                    string hitFlashPath = $"{folder}/{name}_hit_flash.png";
+
+                    hitImage.SavePng(hitPath);
+                    hitImage.WhiteSilhouette().SavePng(hitFlashPath);
+                    hit      = ImportSingle(hitPath);
+                    hitFlash = ImportSingle(hitFlashPath);
+                }
+
+                baked.Add((ImportSingle(spritePath), ImportSingle(flashPath), hit, hitFlash, image));
             }
 
             TargetVisual visual = LoadOrCreate<TargetVisual>($"{folder}/{key}.asset", out bool created);
@@ -801,6 +821,8 @@ namespace DesktopWindowControl.EditorTools
                 SerializedProperty level = levels.GetArrayElementAtIndex(i);
                 level.FindPropertyRelative("sprite").objectReferenceValue = baked[i].sprite;
                 level.FindPropertyRelative("flash").objectReferenceValue  = baked[i].flash;
+                level.FindPropertyRelative("hit").objectReferenceValue      = baked[i].hit;
+                level.FindPropertyRelative("hitFlash").objectReferenceValue = baked[i].hitFlash;
 
                 SerializedProperty levelScale = level.FindPropertyRelative("scale");
                 if (levelScale.floatValue <= 0f)

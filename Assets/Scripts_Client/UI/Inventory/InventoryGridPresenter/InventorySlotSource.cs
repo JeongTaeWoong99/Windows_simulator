@@ -209,6 +209,11 @@ public abstract class InventorySlotSource
     // 칸 위쪽 배지 문구 — 없으면 null (격자가 매번 그릴 때 호출). 캐릭터 탭은 격자가 레벨을 직접 싣는다.
     public virtual string? GetBadge(long key) => null;
 
+    // 칸 왼쪽 아래 분류 이름('채굴' · '유물' …) — 없으면 null (격자가 매번 그릴 때 호출). 자원 · 장비 탭만 값이 있다.
+    // 레벨 배지 자리에 쓴다 — 같은 자리를 위 배지(상자 레벨 · '선택')가 쓰면 격자가 그쪽을 먼저 쓴다.
+    // ※ 2026-11-18 처음엔 작은 그림 아이콘이었는데 "알아보기 쉽지 않다"(사용자) — 글자로 바꿨다.
+    public virtual string? GetCategoryLabel(long key) => null;
+
     // 칸에 주의 테두리(깜빡임)를 켤까 — 사용자가 마무리해야 할 일이 남은 칸 (격자가 매번 그릴 때 호출).
     public virtual bool NeedsAttention(long key) => false;
 

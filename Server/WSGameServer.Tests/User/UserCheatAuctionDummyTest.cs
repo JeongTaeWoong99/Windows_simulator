@@ -4,7 +4,7 @@ using Proto = AuctionProtocol;
 namespace WSGameServer;
 
 /// <summary>
-/// 경매 더미 매물 치트(<c>SeedAuctionListings</c>, T-168). 치트를 쓴 유저의 골드·판매 중 건수가 움직이면
+/// 경매 더미 매물 치트(<c>SeedAuctionListings</c>, T-168 · T-204 종류 고르기). 치트를 쓴 유저의 골드·판매 중 건수가 움직이면
 /// 실제 등록 경로를 탄 것이고, 지울 때 경매장 매물을 남기면 검색에 주인 없는 매물이 남는다.
 /// </summary>
 public class UserCheatAuctionDummyTest
@@ -34,8 +34,8 @@ public class UserCheatAuctionDummyTest
         return (user, b);
     }
 
-    private static C_CheatRequest Seed(long count, long itemTid = 0)
-        => new() { Command = ECheatCommand.SeedAuctionListings, Arg1 = count, Arg2 = itemTid };
+    private static C_CheatRequest Seed(long count, long kindOrItemTid = 0)
+        => new() { Command = ECheatCommand.SeedAuctionListings, Arg1 = count, Arg2 = kindOrItemTid };
 
     private static EResultCode LastResult(TestUserBuilder b) => b.Channel.SentOf<S_CheatResponse>().Last().Result;
 
@@ -86,13 +86,30 @@ public class UserCheatAuctionDummyTest
     }
 
     [Fact]
-    public void ItemTID가_0이면_여러_자원을_섞는다()
+    public void Arg2가_0이면_네_종류를_모두_섞는다()
     {
         var (user, b) = Admin();
 
         user.ExecuteCheat(Seed(25), Now);
 
-        b.DB.PostedOf<SeedDummyAuctionRepository>().Single().Listings.Select(l => l.Item.Tid).Distinct().Count().ShouldBeGreaterThan(1);
+        b.DB.PostedOf<SeedDummyAuctionRepository>().Single().Listings.Select(l => l.Item.Kind).Distinct().OrderBy(k => k)
+            .ShouldBe(new[] { EAuctionKind.Item, EAuctionKind.Equip, EAuctionKind.Character, EAuctionKind.Artifact });
+    }
+
+    [Theory]
+    [InlineData(EAuctionKind.Item)]
+    [InlineData(EAuctionKind.Equip)]
+    [InlineData(EAuctionKind.Character)]
+    [InlineData(EAuctionKind.Artifact)]
+    public void Arg2가_종류면_그_종류만_여러_TID로_올린다(EAuctionKind kind)
+    {
+        var (user, b) = Admin();
+
+        user.ExecuteCheat(Seed(25, (long)kind), Now);
+
+        var listings = b.DB.PostedOf<SeedDummyAuctionRepository>().Single().Listings;
+        listings.ShouldAllBe(l => l.Item.Kind == kind);
+        listings.Select(l => l.Item.Tid).Distinct().Count().ShouldBeGreaterThan(1);
     }
 
     [Fact]

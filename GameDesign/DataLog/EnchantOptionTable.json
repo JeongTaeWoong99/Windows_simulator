@@ -376,5 +376,221 @@
     "Value": 200,
     "Weight": 100,
     "Description": "신화 경험치 +20%"
+  },
+  {
+    "EnchantOptionTID": 1108,
+    "Grade": "Common",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 1,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1109,
+    "Grade": "Common",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 20,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1110,
+    "Grade": "Common",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 4,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1111,
+    "Grade": "Common",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 20,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1208,
+    "Grade": "Uncommon",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 2,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1209,
+    "Grade": "Uncommon",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 40,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1210,
+    "Grade": "Uncommon",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 8,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1211,
+    "Grade": "Uncommon",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 40,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1308,
+    "Grade": "Rare",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 3,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1309,
+    "Grade": "Rare",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 60,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1310,
+    "Grade": "Rare",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 12,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1311,
+    "Grade": "Rare",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 60,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1408,
+    "Grade": "Epic",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 4,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1409,
+    "Grade": "Epic",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 80,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1410,
+    "Grade": "Epic",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 16,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1411,
+    "Grade": "Epic",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 80,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1508,
+    "Grade": "Legendary",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 5,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1509,
+    "Grade": "Legendary",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 100,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1510,
+    "Grade": "Legendary",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 20,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1511,
+    "Grade": "Legendary",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 100,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1608,
+    "Grade": "Mythic",
+    "OptionType": "AttackFlat",
+    "Industry": "None",
+    "Value": 6,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1609,
+    "Grade": "Mythic",
+    "OptionType": "AttackPercent",
+    "Industry": "None",
+    "Value": 120,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1610,
+    "Grade": "Mythic",
+    "OptionType": "HealthFlat",
+    "Industry": "None",
+    "Value": 24,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
+  },
+  {
+    "EnchantOptionTID": 1611,
+    "Grade": "Mythic",
+    "OptionType": "HealthPercent",
+    "Industry": "None",
+    "Value": 120,
+    "Weight": 12,
+    "Description": "레이드 전투 스탯"
   }
 ]

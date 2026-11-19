@@ -489,10 +489,10 @@ public class AuctionEndToEndTest : IAsyncLifetime
         }
     }
 
-    private async Task<S_CheatResponse> Cheat(User user, long count, long itemTid = 0)
+    private async Task<S_CheatResponse> Cheat(User user, long count, long kindOrItemTid = 0)
     {
         var before = _builders[user.Uid].Channel.SentOf<S_CheatResponse>().Count;
-        user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SeedAuctionListings, Arg1 = count, Arg2 = itemTid }, Now);
+        user.ExecuteCheat(new C_CheatRequest { Command = ECheatCommand.SeedAuctionListings, Arg1 = count, Arg2 = kindOrItemTid }, Now);
 
         // 접수 응답 하나 + 끝났다는 응답 하나
         await _logic.Pump(() => _builders[user.Uid].Channel.SentOf<S_CheatResponse>().Count >= before + 2);
@@ -504,7 +504,7 @@ public class AuctionEndToEndTest : IAsyncLifetime
     {
         var admin = Login(SellerUid);
 
-        (await Cheat(admin, 1050)).Result.ShouldBe(EResultCode.Ok);
+        (await Cheat(admin, 1050, (long)EAuctionKind.Item)).Result.ShouldBe(EResultCode.Ok);
         await FlushAll();
 
         var found = await Search(admin, new C_AuctionSearchRequest { Kind = EAuctionKind.Item });
@@ -542,5 +542,62 @@ public class AuctionEndToEndTest : IAsyncLifetime
 
         buyer.GetItemCount(Carp).ShouldBe(listing.Count);
         Scalar($"SELECT COUNT(*) FROM t_user_mail WHERE user_id IN ({SellerUid}, {BuyerUid}) AND gold > 0").ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task 전체_무작위로_올리면_장비_캐릭터_아티팩트_분류에도_검색된다()
+    {
+        var admin = Login(SellerUid);
+
+        await Cheat(admin, 40);
+        await FlushAll();
+
+        foreach (var kind in new[] { EAuctionKind.Item, EAuctionKind.Equip, EAuctionKind.Character, EAuctionKind.Artifact })
+        {
+            (await Search(admin, new C_AuctionSearchRequest { Kind = kind })).TotalCount.ShouldBe(10);
+        }
+    }
+
+    [Fact]
+    public async Task 더미_장비를_사면_인챈트까지_구매자의_장비로_들어온다()
+    {
+        var admin = Login(SellerUid);
+        var buyer = Login(BuyerUid, gold: 10_000_000);
+        _builders[SellerUid].Enchants.LoadAll();
+        _builders[BuyerUid].Enchants.LoadAll();
+        await Cheat(admin, 1, (long)EAuctionKind.Equip);
+        await FlushAll();
+        var listing = (await Search(buyer, new C_AuctionSearchRequest { Kind = EAuctionKind.Equip })).Listings!.Single();
+        var equipId = Scalar("SELECT equip_id FROM t_auction_trade");
+        var options = Scalar($"SELECT (enchant_1 <> 0) + (enchant_2 <> 0) + (enchant_3 <> 0) FROM t_user_equip WHERE equip_id = {equipId}");
+
+        (await Buy(buyer, listing.ListingId, listing.TotalPrice)).Result.ShouldBe(EResultCode.Ok);
+        ClaimAll(buyer);
+
+        buyer.TryGetEquip(equipId, out var equip).ShouldBeTrue();
+        equip.Tid.ShouldBe(listing.Tid);
+        equip.EnchantLineCount.ShouldBe((int)options);
+        Scalar($"SELECT auction_trade_id FROM t_user_equip WHERE equip_id = {equipId}").ShouldBe(0);
+    }
+
+    [Fact]
+    public async Task 더미_캐릭터를_사면_레벨과_응축까지_구매자의_캐릭터로_들어온다()
+    {
+        var admin = Login(SellerUid);
+        var buyer = Login(BuyerUid, gold: 10_000_000);
+        _builders[SellerUid].Growth.LoadAll();
+        _builders[SellerUid].Stars.LoadAll();
+        await Cheat(admin, 1, (long)EAuctionKind.Character);
+        await FlushAll();
+        var listing = (await Search(buyer, new C_AuctionSearchRequest { Kind = EAuctionKind.Character })).Listings!.Single();
+        var characterId = Scalar("SELECT character_id FROM t_auction_trade");
+        var level       = Scalar($"SELECT level FROM t_character WHERE character_id = {characterId}");
+        var condense    = Scalar($"SELECT condense_count FROM t_character WHERE character_id = {characterId}");
+
+        (await Buy(buyer, listing.ListingId, listing.TotalPrice)).Result.ShouldBe(EResultCode.Ok);
+        ClaimAll(buyer);
+
+        buyer.TryGetCharacter(characterId, out var character).ShouldBeTrue();
+        (character.Tid, character.Level, character.CondenseCount).ShouldBe((listing.Tid, (int)level, (int)condense));
     }
 }

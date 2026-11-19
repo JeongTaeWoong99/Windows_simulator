@@ -133,6 +133,22 @@ namespace MikaProtocol
         NothingToReset    = 1603, // 망각의 묘약 — 기본 레벨보다 올린 노드가 하나도 없다
         NotAutoUsable     = 1604, // 자동 사용 대상인 신속·풍요의 영약이 아니다
         // 1605는 이전 자동 사용 보관 칸 한도 오류의 결번이다.
+
+        // ── 1700~: 레이드 ──
+        InvalidRaidBossTID    = 1700, // 등록되지 않은 보스
+        InvalidRaidParty      = 1701, // 인원 범위·중복 등 편성 오류
+        RaidCharacterBusy     = 1702, // 작업슬롯에 배치된 캐릭터
+        NotEnoughRaidTicket   = 1703, // 남은 도전권 없음
+        InvalidRaidRequestId  = 1704, // 비어 있거나 다른 도전에 이미 사용한 요청 ID
+        RaidInProgress        = 1705, // 이전 레이드 요청의 저장이 진행 중
+    }
+
+    public enum ERaidBattleOutcome : byte
+    {
+        None             = 0,
+        Victory          = 1,
+        PartyDefeated    = 2,
+        TimeLimitReached = 3,
     }
 
     // 지불 재화 선택. GameData.CurrencyType(Enum.xlsx)과 이름·값이 1:1이어야 한다 —
@@ -177,7 +193,7 @@ namespace MikaProtocol
         ResetTime        = 13, // 게임 시계 오프셋을 0으로 — 미래 시각으로 저장된 데이터는 남는다
         SetCondenseCount = 14, // Arg1 = CharacterId(개체) · Arg2 = 응축 누적 재료 수 — 재료 없이 정한다. 0~최고 ★ 기준으로 자른다
         SetGatherSpeed   = 15, // Arg1 = 채취 전역 배수 천분율 (1000 = ×1.0) — 서버 전체 · 저장 안 함(재시작하면 ×1.0)
-        SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = ItemTID (0이면 자원을 돌아가며)
+        SeedAuctionListings = 16, // Arg1 = 더미 매물 개수 (0이면 더미 매물 전부 삭제) · Arg2 = 0 전체 섞기 · 1~4 그 종류만(EAuctionKind) · 그 밖 = 그 ItemTID 하나 (T-204)
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
         GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
         GiveArtifact     = 19, // Arg1 = ArtifactTID · Arg2 = 개수 (1~칸 하나 상한) — 아티팩트 칸, 없으면 우편 (T-198)

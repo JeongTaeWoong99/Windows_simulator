@@ -120,4 +120,5 @@ public static class FxSprites
     public static Sprite? AppraiseRays   => VisualCatalog.FxOf("appraise_rays");
     // 번쩍과 함께 퍼지는 충격파 고리
     public static Sprite? AppraiseRing   => VisualCatalog.FxOf("appraise_ring");
+
 }

@@ -1,0 +1,159 @@
+# AGENTS.md
+
+> 최종 업데이트: 2026-11-14 (`codixel` 스킬 — 정지 그림을 뼈로 움직이기 · PixelOE 경량판) · 2026-11-11 (`pixel-fx` 발동 조건 — 연출 이펙트 한 장은 `Codex-fx/make_fx.py`) · 2026-11-08 (`pixel-fx` 스킬 — Codex가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+
+이 문서는 Codex로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
+데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
+클라이언트와 서버를 한 저장소에서 영역을 나눠 협업한다.
+
+## 영역별 진입점
+
+**이 표는 지도다** — 전부 읽는 곳이 아니라, 지금 만지는 영역의 문을 찾는 곳이다.
+해당 영역에 손댈 때 그 문서를 연다.
+
+| 작업 영역 | 진입점 |
+|-----------|--------|
+| **게임 시스템·콘텐츠·데이터** (채취·퀘스트·특성·아이템·거래·성장곡선 로직, 엑셀 변경, 테이블/패킷/DB 스키마 설계, 기획 문서 수정) | [`GameDesign/AGENTS.md`](GameDesign/AGENTS.md) — 게임 **규칙·수치가 바뀔 때** [`게임기획코어.md`](GameDesign/design/게임기획코어.md)를 먼저 읽는다 |
+| **서버** (`Server/`, `Assets/Scripts_Server/`) | [`Server/AGENTS.md`](Server/AGENTS.md) |
+| **클라이언트** (`Assets/Scripts_Client/`) | [`Assets/Scripts_Client/폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md) — 폴더마다 `<폴더명> 규칙.md`가 있다 |
+
+---
+
+## 환경
+
+| 항목 | 내용 |
+|------|------|
+| Unity 버전 | 6000.3.10f1 |
+| 렌더 파이프라인 | Built-in |
+| 서버 런타임 | .NET 10 (WSGameServer) — 상세는 [`Server/AGENTS.md`](Server/AGENTS.md) |
+| DB | SQLite (`Server/Shared/game.sqlite3`) |
+| 비동기·연출 (클라) | UniTask + DOTween (`UNITASK_DOTWEEN_SUPPORT`) — **새 클라 코드에 코루틴을 쓰지 않는다** ([`unitask`](.Codex/skills/client/unitask/SKILL.md) · [`dotween`](.Codex/skills/client/dotween/SKILL.md)) |
+
+---
+
+## 폴더 구조
+
+| 경로 | 담당 | 내용 |
+|------|------|------|
+| `tasks/` | 공용 | **할 일의 단일 목록** — 일감 1개 = 파일 1개, `README.md`가 현황 표. 담당(사람 한 명 — 태웅·진우)·상태(New→In Progress→Resolve→Feedback/Closed)·우선순위·목표 회차(2주)·관련 커밋 |
+| `tasks/art/` | 공용 | **🎨 아트·연출만 남은 일감** — INDEX에서 뺐다. 아트 작업 때만 연다 |
+| `tasks/later/` | 공용 | **먼 훗날 할 일감**(배포 전 게이트 등) — INDEX에서 뺐다. 배포 준비 때 연다 |
+| `tasks/archive/` | 공용 | **끝난 일감** — 완료되면 여기로 내려간다. INDEX에는 굴러가는 것만 남는다. 평소 탐색하지 않는다 |
+| `docs/` | 공용 | **개발 인프라 문서** — 서버·클라 양쪽에 걸치는 것. 현재 [`CI.md`](docs/CI.md) |
+| `.github/workflows/` | 공용 | GitHub Actions — 서버 CI · 클라 CI · Unity 라이선스 활성화 |
+| `GameDesign/` | 공용 | **게임 기획·데이터 단일 진실** — 기획 문서(`design/`)·엑셀(`Excel/`)·파이프라인 스크립트·문서 사이트(`web/`). 상세는 [`GameDesign/AGENTS.md`](GameDesign/AGENTS.md) |
+| `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 상세는 [`Server/AGENTS.md`](Server/AGENTS.md) |
+| `Assets/Scripts_Server/` | 서버 | Unity 측 네트워크/서버 연동 코드 + `Server/`에서 자동 복사되는 미러(`Protocol`·`GameData`) |
+| `Assets/Scripts_Client/` | 클라이언트 | 클라이언트 코드. **폴더 구성·클라 코딩 규약은 [`폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md)** |
+| `Assets/Scripts_Client/Common/` | 클라이언트 | **Arca Unity Toolkit의 사본** — 게임을 모르는 범용 코드. **자산 하나 = 폴더 하나**(에디터 전용 파일만 각 자산 안 `Editor/`에 — ⚠️ 펴면 빌드가 깨진다). 마스터는 `~/.Codex/skills`(저장소)이고, 여기서 고쳤으면 `/unity-skill-sync`로 되돌린다. 특정 프로젝트 이름을 주석에 남기지 않는다 |
+| `Assets/Art/` | 클라이언트 | **그림 원본·가공 결과** — 원본은 `_source/`에 그대로, 화면은 굽기로 규격을 맞춘 결과물만 쓴다. [`Art 규칙.md`](Assets/Art/Art%20규칙.md) |
+| `Assets/Scenes/` | 공용 | 씬 파일 |
+
+> 서버 → Unity 미러링(패킷 정의·GameData·`.bytes`·Roslyn 분석기)과
+> 엑셀 → 서버/Unity 데이터 파이프라인은 각각 [`Server/AGENTS.md`](Server/AGENTS.md)·[`GameDesign/AGENTS.md`](GameDesign/AGENTS.md)에 있다.
+
+---
+
+## 협업 규칙
+
+- 각자 자기 담당 폴더(`Scripts_Client` / `Scripts_Server`·`Server`)만 수정한다. 상대 폴더 변경은 합의 후.
+- **엑셀(`GameDesign/Excel/*.xlsx`)을 고칠 때는 매번 [`excel-table-creator`](.Codex/skills/common/excel-table-creator/SKILL.md) 스킬을 열고 그 절차대로 한다.**
+  한 번 읽은 기억으로 진행하면 절차가 빠진다 — 2026-09-19 시트·파일 이름을 확인받기 전에 만든 일이 있었다.
+  특히 **파일명·시트명·컬럼명은 만들기 전에 사용자에게 확인받는다.** 엑셀을 읽기만 할 때는 열지 않아도 된다.
+- **미러·생성물은 직접 수정하지 않는다** — `Assets/Scripts_Server/Protocol`·`GameData`,
+  `Server/GameData`, `Server/Shared/Data`, `Assets/StreamingAssets/Data`, `GameDesign/DataLog`.
+  원본(`Server/MikaProtocol`, `GameDesign/Excel`)에서 고치고 파이프라인을 돌린다.
+- 커밋은 `commit-convention` 규칙을 따른다.
+- **워크트리는 기본적으로 만들지 않는다.** 사용자가 "워크트리"를 명시했을 때만 만든다.
+  **예외 — 진우의 일감 작업은 워크트리를 기본으로 만든다 (2026-10-06).** 같은 트리에서 세션 여럿이
+  동시에 작업하다 작업 트리가 통째로 되돌아간 일이 있었다. 질문 답변·이슈 코멘트처럼 파일을 거의 안 고치는 일은 해당 없음.
+  만들 때 이름은 **`worktree-T-0XX-<영문-kebab-슬러그>`** 로 고정한다 (예: `worktree-T-028-baseprice-shop`).
+  `git worktree list`에서 일감 ID가 보여야 어느 작업의 것인지 알 수 있다 —
+  해당 일감이 없으면 `tasks/`에 먼저 등록하고 그 ID를 쓴다.
+  ⚠️ `EnterWorktree`의 `name`에는 **접두 없이 `T-0XX-<슬러그>`만** 넣는다.
+  도구가 `worktree-`를 붙여 위 이름을 만든다 — 직접 넣으면 `worktree-worktree-…`가 된다.
+- **워크트리 작업이 끝나면 확인을 기다리지 않고 main에 머지까지 한다 (2026-10-06 사용자 지시).** 푸시는 하지 않는다.
+  **예외 — 서버 작업(`Server/`·`Assets/Scripts_Server/`·데이터 파이프라인)은 main에 머지하지 않고 PR만 연다 (2026-10-25 진우).**
+  끝나면 확인을 기다리지 않고 ① 관련 이슈 코멘트 ② 작업 문서 갱신(일감 파일·기획 문서·`.Codex/Agent/` 로그) ③ 브랜치 푸시 → `gh pr create --base main`(draft 아님)까지 한다.
+  INDEX(`tasks/README.md`)는 PR이 머지된 뒤 갱신한다.
+  ⚠️ **main 트리에서는 `git merge --ff-only`만 쓴다.** 순서는 ① 워크트리 안에서 `git merge main` → 충돌을 풀고 테스트
+  ② main에서 `git merge --ff-only <워크트리 브랜치>` ③ INDEX(`tasks/README.md`) 갱신.
+  main 트리에서 머지가 실패하면 git이 작업 트리를 임시 저장했다가 되살리는데, `Server/Shared/game.sqlite3`가 잠겨 있으면
+  되살리기가 실패해 **다른 세션의 미커밋 변경이 통째로 사라진다**(2026-10-06 세 번 났다). 사라진 상태는
+  `git fsck --no-reflogs --dangling`의 "WIP on main" 커밋에 남는다 — `git restore --source=<해시> --worktree -- <파일>`로 꺼낸다.
+  `--ff-only`가 거절되면(main의 미커밋 변경과 겹침) 억지로 풀지 말고 멈춰서 알린다.
+- **워크트리 안에서는 [`tasks/README.md`](tasks/README.md)를 수정하지 않는다.**
+  INDEX 표는 모든 일감이 한 곳에 모이는 파일이라, 워크트리마다 인접한 줄을 고쳐
+  **머지할 때마다 충돌한다.**
+  워크트리에서는 **일감 파일(`tasks/T-0XX-*.md`)만** 고치고 — 이건 워크트리끼리 겹치지 않는다 —
+  INDEX 갱신은 **main으로 머지한 뒤 한 번에** 한다.
+  머지 중 이 파일에서 충돌이 났다면 표를 손으로 깁지 말고 main 쪽을 남긴 뒤
+  일감 파일의 프론트매터를 보고 다시 맞춘다:
+  `git checkout --ours tasks/README.md && git add tasks/README.md`
+- Unity에서 새 스크립트·에셋을 만들면 에디터를 갱신해 `.meta`를 생성한 뒤 원본과 함께 커밋한다.
+  `.meta` 누락 시 GUID·참조 충돌이 발생할 수 있다.
+- `.Codex/settings.local.json`은 개인 설정이라 커밋하지 않는다(`.gitignore` 처리됨).
+- **`Common/`과 `.Codex/skills/`는 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)의 사본이다.**
+  여러 프로젝트·여러 사람이 함께 쓰는 물건이라 **양방향으로 어긋날 수 있다.** 여기서 고쳤으면
+  `/unity-skill-sync`로 되돌리되 **마스터 반영은 확인을 받는다.** 프로젝트 고유 경로·고유명사가
+  섞인 수정은 마스터로 올리지 않는다.
+- 코드는 한글 주석을 사용한다.
+- **폴더는 영문 소문자 kebab-case, 문서(`.md`) 파일명은 한글이다.**
+  상세 규칙·개명 대응표는 [`GameDesign/AGENTS.md`](GameDesign/AGENTS.md#이름-규칙-문서폴더).
+  **예외 — 폴더별 `<폴더명> 규칙.md`는 폴더 이름을 그대로 따른다**(`memory-meter 규칙.md`).
+  기준은 [`Scripts_Client/폴더 구조.md`](Assets/Scripts_Client/폴더%20구조.md) 3-5절.
+- CLAUDE.md·스킬 문서를 수정하면 문서 상단의 `최종 업데이트` 날짜를 그날 날짜로 갱신한다.
+- **`README.md`에는 `최종 업데이트` 줄을 두지 않는다** (2026-09-16 전부 삭제). 세션마다 같은 줄을 고쳐
+  머지할 때마다 충돌했다. 기획 README는 `> 상태:` 줄만 남긴다 — 갱신 이력은 git이 갖는다.
+- **문서·스킬에 "필독·반드시·항상·모든"을 쓸 때는 그것이 정말 예외 없는지 확인한다.**
+  조건이 있으면 조건을 적고, **읽지 않아도 되는 경우를 함께 명시한다.**
+  강한 단어 한 줄이 "필요할 때만"이라는 완화 문장을 덮어써서, 매 작업이 문서를 통째로
+  읽는 비용을 물게 된다. 특히 스킬 `description`은 발동 조건 자체이므로 더 엄격히 본다.
+- **사용자가 특별한 요구를 하지 않는 한, 간단하고 명료하게 설명한다.**
+  물은 것에 답하고 끝낸다. 배경·대안·파생 논점을 묻지 않았는데 늘어놓지 않는다.
+  중요한 위험이나 결정 사항이 있으면 **한두 줄로 짚고** 넘어간다.
+
+---
+
+## Skills 참조
+
+**스킬은 항상 적용하는 게 아니라, 아래 "언제" 칸에 해당할 때만 연다.**
+이 표는 무엇을 담았는지가 아니라 **언제 발동하는지**의 명세다.
+작업하는 폴더에 맞춰 해당 그룹과 **공용** 스킬을 함께 본다.
+(클라이언트 작업 = 공용 + 클라이언트 / 서버 작업 = 공용 + 서버)
+
+### 공용 (`common/`)
+
+| 스킬 | 언제 | 무엇을 |
+|------|------|--------|
+| [`agent-log-writer`](.Codex/skills/common/agent-log-writer/SKILL.md) | **코드 작업 종료 후 — 조건 없이 항상** | `.Codex/Agent/`에 로그 기록 |
+| [`agent-log-reader`](.Codex/skills/common/agent-log-reader/SKILL.md) | 기존 결정을 뒤집을 때 · 원인 불명 버그 · "예전에 왜?" 의문이 생겼을 때 · 미완 작업을 이어받을 때 — **일반 작업엔 열지 않는다** | `.Codex/Agent/`에서 과거 경위 확인 |
+| [`game-design-reference`](.Codex/skills/common/game-design-reference/SKILL.md) | 게임 **규칙·수치가 바뀔 때** — 화면 배치·배선만 바꾸면 해당 없음 | `게임기획코어.md` + 상세 기획안 |
+| [`excel-table-creator`](.Codex/skills/common/excel-table-creator/SKILL.md) | `GameDesign/Excel/*.xlsx`를 **고칠 때마다 — 기억으로 대신하지 않고 매번 연다** (행 추가·수정·시트·컬럼·시트 이동). 엑셀을 읽기만 하면 해당 없음 | 행 추가 절차·서식 기준·TID·`Ref` 규칙 · 이름 확인 · 열린 엑셀 닫기 |
+| [`commit-convention`](.Codex/skills/common/commit-convention/SKILL.md) | 커밋할 때 | Git 커밋 메시지 규칙 |
+| [`unity-ai-assets`](.Codex/skills/common/unity-ai-assets/SKILL.md) | Unity AI로 리소스(이미지·사운드 등)를 **만들거나 고칠 때** · 리소스를 무엇으로 만들지(AI 크레딧·Codex 코드 그리기·구매) 고를 때 — 있는 그림을 쓰거나 파일만 고치면 해당 없음 | 실행 전 동의 · 구독·크레딧 상태 진단과 안내 · 리소스별 사용 크레딧과 전후 잔액 보고 |
+| [`task-reader`](.Codex/skills/common/task-reader/SKILL.md) | 사용자가 할 일을 묻거나 `T-0XX`를 언급할 때 · 일감 상태 갱신 전 | `tasks/` 현황 확인 |
+| [`task-writer`](.Codex/skills/common/task-writer/SKILL.md) | 할 일이 새로 생겼을 때 · 작업을 시작/완료했을 때 | `tasks/` 등록·갱신 |
+| [`github-issue-writer`](.Codex/skills/common/github-issue-writer/SKILL.md) | **상대 직군**(서버·클라·기획)에게 요청·확인·공유할 일이 생겼을 때 · 버그를 넘길 때 — 내 영역에서 내가 처리하는 일은 해당 없음(`task-writer`) · **이슈·일감 작업이 끝났을 때 — 조건 없이 항상**(관련 이슈·일감 공돌리기 + 넘긴 번호 보고) | 이슈 제목 규칙 · assignee/label(필수) · 본문 뼈대 · 공돌리기(3장) |
+
+### 클라이언트 (`client/`) — `Assets/Scripts_Client` 작업 시
+
+| 스킬 | 언제 | 무엇을 |
+|------|------|--------|
+| [`clean-code-style`](.Codex/skills/client/clean-code-style/SKILL.md) | C# 코드를 쓰거나 리뷰할 때 | 명명·포맷·주석 스타일 규칙 |
+| [`feature-design`](.Codex/skills/client/feature-design/SKILL.md) | 새 기능·클래스·시스템을 **설계**할 때 | OOP·SOLID·디자인 패턴 |
+| [`ugui-mvp`](.Codex/skills/client/ugui-mvp/SKILL.md) | 화면·위젯을 **새로 만들** 때 · 이름/부착 위치/폴더를 정할 때 | MVP 역할 분담 · 이름 규칙 · Presenter 뼈대 |
+| [`ugui-layout`](.Codex/skills/client/ugui-layout/SKILL.md) | 배치를 짜거나, **배치가 의도대로 안 나올 때** · UI 프레임이 튈 때(탭 전환·화면 켜기 멈춤) | Canvas·LayoutGroup 함정과 정석 구조 · UI 성능 함정(§7) |
+| [`unitask`](.Codex/skills/client/unitask/SKILL.md) | 기다림(지연·다음 프레임·응답 대기)을 짤 때 · 코루틴이 있는 파일을 고칠 때 — 기다림이 없는 작업은 해당 없음 | 코루틴 대신 UniTask · 취소 토큰 · `async void` 금지 · 코루틴 전환표 |
+| [`dotween`](.Codex/skills/client/dotween/SKILL.md) | 움직임·페이드 연출을 짜거나 트윈 끝을 기다릴 때 — 연출이 없는 작업은 해당 없음 | 트윈 수명(`SetLink`·Kill) · UniTask의 DOTween 전용 대기 API(`ToUniTask`) |
+| [`object-pool`](.Codex/skills/client/object-pool/SKILL.md) | `Instantiate`/`Destroy`를 새로 쓰거나(연출·이펙트·목록 줄) 생성·삭제가 잦은 화면을 고칠 때 — 한 번 만들고 두는 오브젝트는 해당 없음 | `Common/object-pool` 사용법 · 대여 토큰 · 반납·초기화 · UI 함정 |
+| [`asset-compression`](.Codex/skills/client/asset-compression/SKILL.md) | 그림·소리를 저장소에 새로 넣을 때(특히 AI 원본·큰 팩) · 저장소·빌드 용량이 커졌을 때 · 텍스처·오디오 임포트 압축을 정할 때 — 있는 파일을 쓰기만 하면 해당 없음 | 저장소·빌드·메모리 용량의 차이 · 원본 줄이기(`shrink_raw.py`) · 형식 고르기 · 임포트 설정 |
+| [`pixel-fx`](.Codex/skills/client/pixel-fx/SKILL.md) | 픽셀 이펙트(타격·불똥·파편·마법 등 움직이는 효과)를 새로 만들거나 고칠 때 — 있는 이펙트 PNG를 쓰기만 하거나 움직임 없는 연출 이펙트 한 장(`Codex-fx/make_fx.py`)을 고치면 해당 없음 | pixelfx(코드 이펙트 라이브러리)로 그리기 · 렌더해서 보고 고치기 · Unity로 내보내기 — Unity AI 크레딧 0 |
+| [`codixel`](.Codex/skills/client/codixel/SKILL.md) | 정지 그림(대상·소품·몬스터)을 뼈로 흔들기·맞음·숨쉬기로 움직일 때 · 보석·불·나무 같은 소재를 코드로 그릴 때 · 큰 그림을 픽셀로 줄이는 방식을 고를 때 — 입자 이펙트는 `pixel-fx`, 있는 PNG를 쓰기만 하면 해당 없음 | codixel(뼈·굽힘·보석·불) · PixelOE 방식 줄이기(`ai_to_pixel.py --oe`) — Unity AI 크레딧 0 |
+| [`optimization`](.Codex/skills/client/optimization/SKILL.md) | 성능 문제가 **실제로 관측됐을 때** | 최적화 판단·적용 가이드 |
+| [`unity-editor-ops`](.Codex/skills/client/unity-editor-ops/SKILL.md) | 에디터를 조작할 때 — 씬·프리팹·인스펙터·SO·플레이 모드·테스트·빌드 · 코드 파일만 고치면 해당 없음 | 실행 경로(Unity CLI → MCP → 사람 인계) · 실행 전 확인받을 작업 · 핸드오프 프롬프트 |
+
+### 서버 — `Server/.Codex/skills/`
+
+`packet-creator`·`sqlite-sql-creator`·`server-tdd`·`server-code-style`.
+디렉터리 스코프라 `Server/` 아래 파일을 다룰 때 적용된다. 상세는 [`Server/AGENTS.md`](Server/AGENTS.md#서버-스킬).
