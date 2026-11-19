@@ -2,7 +2,8 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 작업슬롯 칸 무대 왼쪽 위의 버프 칩 하나 — 아이콘 + 남은 판정 횟수 '12' · 자동 사용이 켜졌으면 '20(5)' — 남은 횟수(보유 영약 개수) (T-194 · 이슈 #123).
+// 작업슬롯 칸 무대 왼쪽 위의 버프 칩 하나 — 아이콘 + 남은 판정 횟수 '12' · 자동 사용이 켜진 영약은 보유 개수 '5' (T-194 · 이슈 #123).
+// ※ 영약은 1개 = 판정 1회라(PR #130) 남은 횟수가 늘 1이다 — 켜진 영약은 남은 횟수 대신 보유 개수만 보인다.
 // 'SlotBuffChipsView'가 꺼 둔 견본을 복제해 버프 수만큼 띄운다. 칩은 값만 그리고 무엇을 띄울지는 묶음이 정한다.
 public class SlotBuffChipView : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class SlotBuffChipView : MonoBehaviour
     [SerializeField, Tooltip("소모품 아이콘 — 그림이 없으면 끈다")]
     private Image iconImage = null!;
 
-    [SerializeField, Tooltip("남은 판정 횟수 + 자동 사용 보유 개수 '20(5)'")]
+    [SerializeField, Tooltip("남은 판정 횟수 '12' · 자동 사용이 켜진 영약은 보유 개수")]
     private TMP_Text countText = null!;
 
     [SerializeField, Tooltip("마우스를 올리면 효과·남은 횟수·자동 사용 보유 개수를 띄운다")]
@@ -37,7 +38,7 @@ public class SlotBuffChipView : MonoBehaviour
         iconImage.sprite  = icon!;
         iconImage.enabled = icon != null;
         iconImage.color   = new Color(1f, 1f, 1f, remaining > 0 ? 1f : NoBuffAlpha);
-        countText.text    = autoOwned < 0 ? remaining.ToString() : $"{remaining}{UIRichText.Small($"({autoOwned})")}";
+        countText.text    = autoOwned < 0 ? remaining.ToString() : autoOwned.ToString("N0");
         tooltip.SetProvider(provider);
     }
 }
