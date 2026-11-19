@@ -315,7 +315,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _rarityColor  = RarityPalette.Get(data.Rarity);
         _isSpecial    = data.Rarity == GlobalRarity.Special;
         nameText.text = data.Name;
-        subText.text  = data.Sub;
+        subText.text  = PillOf(data.Sub);
 
         SetIcon(data.Icon);
         SetSizeBadge(data.SizeBadge);
@@ -382,7 +382,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 보조 문구를 바꾼다 — 'Bind'가 준 문구 대신 화면이 지은 한 줄(캐릭터 칸의 가장 높은 적성 '채굴 9').
     public void SetSubText(string text)
     {
-        subText.text = text;
+        subText.text = PillOf(text);
 
         RefreshLabelShade();
     }
@@ -400,12 +400,19 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        Sprite? icon = VisualCatalog.IndustryIconOf(industry!.Value);
-
-        bestAptitudeIcon.sprite  = icon!;
-        bestAptitudeIcon.enabled = icon != null;
-        bestAptitudeText.text    = AptitudeLabel.GetText(value);
+        // 글자로 — '농사 5'(2026-11-20 사용자). 16px 산업 그림 + 숫자는 초상화 위에서 너무 작아 읽히지 않았다.
+        // 그림 자리는 끄고 알약이 글자 폭으로 줄어든다(알약의 HorizontalLayoutGroup + ContentSizeFitter).
+        bestAptitudeIcon.enabled                 = false;
+        bestAptitudeIcon.gameObject.SetActive(false);
+        bestAptitudeText.text = $"{IndustryLabel.Get(industry!.Value)} {AptitudeLabel.GetText(value)}";
     }
+
+    // 보조 문구(수량)에 어두운 알약을 깐다 — 왼쪽 아래 분류·LV 배지와 같은 바탕이라 둘이 한 짝으로 읽힌다(2026-11-20 사용자).
+    // TMP '<mark>'로 글자 폭만큼만 칠한다 — 칸 폭 전체 띠는 아래 'Label Shade'가 맡는다. 빈 문구는 그대로 비운다.
+    private const string PillOpen  = "<mark=#000000D1 padding=\"3,3,0,0\">";
+    private const string PillClose = "</mark>";
+
+    private static string PillOf(string text) => text.Length == 0 ? text : PillOpen + text + PillClose;
 
     // 하단 밴드의 주인을 정한다 — 적성 스트립이 켜져 있거나 장비 칸(보석)이면 문구는 비킨다
     // (SetSubVisible · SetAptitudes · SetStatSockets에서 호출).
