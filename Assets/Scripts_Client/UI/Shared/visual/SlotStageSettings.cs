@@ -67,6 +67,11 @@ public class SlotStageSettings : ScriptableObject
     [SerializeField, Range(0f, 2f), Tooltip("먼 층(땅이 아닌 층)의 속도에 곱한다. 땅은 대상과 같아야 해서 곱하지 않는다")]
     private float farLayerSpeed = 1f;
 
+    // ※ 캐릭터마다 다듬은 개인 배율('CharacterVisual.characterScale')을 덮지 않고 전부에 한 번 더 곱한다(2026-11-20 사용자 — "소·중·대 다 1.2배 정도, 부피를").
+    //   멈추는 거리도 같이 곱한다 — 몸이 커지면 무기 끝도 그만큼 앞으로 나와 대상에 파묻히기 때문이다.
+    [SerializeField, Range(0.5f, 2f), Tooltip("모든 캐릭터 크기에 곱한다 — 개인 배율 위에 한 번 더. 멈추는 거리(전체 + 개인)도 같이 곱해 무기가 대상에 파묻히지 않는다. 대상·배경은 그대로")]
+    private float characterSize = 1.2f;
+
     public float ApproachSeconds => approachSeconds;
     public float RunLoopSeconds  => runLoopSeconds;
     public float AttackSeconds   => attackSeconds;
@@ -78,6 +83,7 @@ public class SlotStageSettings : ScriptableObject
     public float CharacterAnchor => characterAnchor;
     public int   PixelScale      => pixelScale;
     public float FarLayerSpeed   => farLayerSpeed;
+    public float CharacterSize   => characterSize;
 
     // 연출 한 바퀴에 필요한 초 — 달리기 + 공격 1회 (위 머리 주석)
     public float RequiredCycleSeconds => approachSeconds + attackSeconds;

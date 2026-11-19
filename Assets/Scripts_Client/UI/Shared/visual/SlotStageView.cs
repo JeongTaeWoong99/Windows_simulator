@@ -170,7 +170,7 @@ public class SlotStageView : MonoBehaviour
         SlotStageTimeline.Result now = SlotStageTimeline.Evaluate(time, cycle, _characterVisual, settings);
 
         float feetX = FeetX(width, settings);
-        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k; // 대상 오른쪽 끝이 멈추는 자리
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * settings.CharacterSize * k; // 대상 오른쪽 끝이 멈추는 자리
         float speed = (stopX + SpawnMargin * k) / ApproachSeconds(now, settings);           // 화면 단위/초
 
         // 배경은 달리는 동안만 흐른다 — 사이 자세(서 있는 그림) 동안은 멈춘다. 미끄러져 보이지 않게
@@ -202,7 +202,7 @@ public class SlotStageView : MonoBehaviour
         SlotStageSettings settings = SlotStageSettings.Current;
         float k     = Scale(settings);
         float feetX = FeetX(_rect.rect.width, settings);
-        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * settings.CharacterSize * k;
         Vector2 size = sprite.rect.size * TargetScale(k);
 
         // 무대 좌표는 왼쪽 아래 기준('Place') — 피벗 기준 로컬로 옮긴 뒤 월드로
@@ -488,7 +488,7 @@ public class SlotStageView : MonoBehaviour
 
         _character.sprite = frame;
         // 캐릭터 크기 배수 — 발 자리는 그대로 두고 그림만 키운다(피벗이 발이라 땅에서 뜨지 않는다)
-        float size = k * (_characterVisual != null ? _characterVisual.CharacterScale : 1f);
+        float size = k * settings.CharacterSize * (_characterVisual != null ? _characterVisual.CharacterScale : 1f);
 
         Place(_character.rectTransform, feet, Snap(frame.rect.size * size));
 
