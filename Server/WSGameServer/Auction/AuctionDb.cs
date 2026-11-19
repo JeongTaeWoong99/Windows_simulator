@@ -148,8 +148,8 @@ public static class AuctionDb
     }
 
     /// <summary>
-    /// 더미 매물 한 트랜잭션: 거래 행 + 등록 outbox(치트 T-168). 인벤·골드·등록비가 없다 — 판매자가 실제 유저가 아니다.
-    /// 경매장에는 릴레이가 실제 등록과 같은 길로 보낸다.
+    /// 더미 매물 한 트랜잭션: (장비·캐릭터면 더미 판매자 소유의 개체 행) + 거래 행 + 등록 outbox(치트 T-168 · T-204).
+    /// 인벤·골드·등록비가 없다 — 판매자가 실제 유저가 아니다. 경매장에는 릴레이가 실제 등록과 같은 길로 보낸다.
     /// </summary>
     public static async Task<int> SeedDummyAsync(DbConnection connection, IReadOnlyList<DummyListing> listings, DateTime now)
     {
@@ -157,23 +157,70 @@ public static class AuctionDb
         {
             foreach (var l in listings)
             {
+                var item = await InsertDummyEntityAsync(tx, l.Item);
+
                 var tradeId = await tx.ExecuteScalarAsync<long>(
-                    @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, snapshot, unit_price, listing_fee, state, created_at)
-                      VALUES (@sellerId, @kind, @tid, @count, @count, @snapshot, @unitPrice, 0, 1, @now)
+                    @"INSERT INTO t_auction_trade (seller_id, kind, tid, count, listed_count, equip_id, character_id, snapshot, unit_price, listing_fee, state, created_at)
+                      VALUES (@sellerId, @kind, @tid, @count, @count, @equipId, @characterId, @snapshot, @unitPrice, 0, 1, @now)
                       RETURNING trade_id;",
                     new
                     {
-                        sellerId = AuctionDummy.SellerId, kind = (int)l.Item.Kind, tid = l.Item.Tid, count = l.Item.Count,
-                        snapshot = l.Item.ToJson(), unitPrice = l.UnitPrice, now = MailDb.ToDb(now),
+                        sellerId = AuctionDummy.SellerId, kind = (int)item.Kind, tid = item.Tid, count = item.Count, equipId = item.EquipId,
+                        characterId = item.Character?.CharacterId ?? 0,
+                        snapshot = item.ToJson(), unitPrice = l.UnitPrice, now = MailDb.ToDb(now),
                     });
 
+                // 실제 등록과 같은 잠금 — 정산이 auction_trade_id로 소유를 넘기고, 구매자가 우편을 받을 때 푼다.
+                if (item.Kind == EAuctionKind.Equip)
+                {
+                    await tx.ExecuteAsync("UPDATE t_user_equip SET auction_trade_id = @tradeId WHERE equip_id = @equipId;", new { tradeId, equipId = item.EquipId });
+                }
+
+                if (item.Kind == EAuctionKind.Character)
+                {
+                    await tx.ExecuteAsync("UPDATE t_character SET auction_trade_id = @tradeId WHERE character_id = @characterId;",
+                        new { tradeId, characterId = item.Character!.CharacterId });
+                }
+
                 var message = new AuctionRegisterMessage(
-                    tradeId, AuctionDummy.SellerId, l.Item, l.UnitPrice, new DateTimeOffset(DateTime.SpecifyKind(l.ExpiresAt, DateTimeKind.Utc)).ToUnixTimeMilliseconds());
+                    tradeId, AuctionDummy.SellerId, item, l.UnitPrice, new DateTimeOffset(DateTime.SpecifyKind(l.ExpiresAt, DateTimeKind.Utc)).ToUnixTimeMilliseconds());
                 await InsertOutboxAsync(tx, tradeId, AuctionOutboxKind.Register, JsonSerializer.Serialize(message), now);
             }
         });
 
         return listings.Count;
+    }
+
+    // 장비·캐릭터 매물의 개체 행을 더미 판매자 소유로 만들고, 발급된 PK를 스냅샷에 넣어 돌려준다. 자원·아티팩트는 그대로다.
+    private static async Task<AuctionItemSnapshot> InsertDummyEntityAsync(DbConnection tx, AuctionItemSnapshot item)
+    {
+        if (item.Kind == EAuctionKind.Equip)
+        {
+            var options = item.Options;
+            var equipId = await tx.ExecuteScalarAsync<long>(
+                @"INSERT INTO t_user_equip (user_id, equip_tid, enchant_grade, enchant_1, enchant_2, enchant_3)
+                  VALUES (@sellerId, @tid, @grade, @e1, @e2, @e3)
+                  RETURNING equip_id;",
+                new
+                {
+                    sellerId = AuctionDummy.SellerId, tid = item.Tid, grade = item.EnchantGrade,
+                    e1 = options.ElementAtOrDefault(0), e2 = options.ElementAtOrDefault(1), e3 = options.ElementAtOrDefault(2),
+                });
+            return item with { EquipId = equipId };
+        }
+
+        if (item.Kind == EAuctionKind.Character)
+        {
+            var c = item.Character!;
+            var characterId = await tx.ExecuteScalarAsync<long>(
+                @"INSERT INTO t_character (user_id, character_tid, level, exp, condense_count)
+                  VALUES (@sellerId, @tid, @level, @exp, @condense)
+                  RETURNING character_id;",
+                new { sellerId = AuctionDummy.SellerId, tid = c.CharacterTid, level = c.Level, exp = c.Exp, condense = c.CondenseCount });
+            return item with { Character = c with { CharacterId = characterId } };
+        }
+
+        return item;
     }
 
     /// <summary>
@@ -191,6 +238,9 @@ public static class AuctionDb
                 @"DELETE FROM t_auction_outbox WHERE kind = 1
                   AND trade_id IN (SELECT trade_id FROM t_auction_trade WHERE seller_id = @sellerId);", param);
             deleted = await tx.ExecuteAsync("DELETE FROM t_auction_trade WHERE seller_id = @sellerId;", param);
+            // 팔린 개체는 이미 구매자 소유라 남는다 — 판매 중이거나 반환돼 더미에게 남은 것만 지운다.
+            await tx.ExecuteAsync("DELETE FROM t_user_equip WHERE user_id = @sellerId;", param);
+            await tx.ExecuteAsync("DELETE FROM t_character WHERE user_id = @sellerId;", param);
             await tx.ExecuteAsync("DELETE FROM t_user_mail WHERE user_id = @sellerId;", param);
             await tx.ExecuteAsync("DELETE FROM t_auction_history WHERE user_id = @sellerId;", param);
             await tx.ExecuteAsync("DELETE FROM t_auction_history_seen WHERE user_id = @sellerId;", param);

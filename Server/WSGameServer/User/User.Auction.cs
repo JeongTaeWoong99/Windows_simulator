@@ -191,7 +191,7 @@ public partial class User
             EquipId      = equip.Id,
             EnchantGrade = (int)equip.EnchantGrade,
             Options      = equip.EnchantOptionTids.ToList(),
-            Attrs        = EquipAttrs(equip),
+            Attrs        = AuctionAttrs.Of(equip),
         };
         return (EResultCode.Ok, item, equip.Row.BasePrice);
     }
@@ -226,39 +226,9 @@ public partial class User
             Rarity    = (int)character.Row.GlobalRarity,
             Count     = 1,
             Character = new MailCharacter(character.Id, character.Tid, character.Level, character.Exp, character.CondenseCount),
-            Attrs     = CharacterAttrs(character),
+            Attrs     = AuctionAttrs.Of(character, StarOf(character)),
         };
         return (EResultCode.Ok, item, character.Row.BasePrice);
-    }
-
-    // 검색 속성 — 경매장은 GameData를 모르니 거를 값을 여기서 숫자로 만든다 (T-155).
-    private static Dictionary<int, long> EquipAttrs(Equip equip)
-    {
-        var enchantSpeed = equip.EnchantOptions.Where(o => o.OptionType == EnchantOptionType.Speed).Sum(o => (long)o.Value);
-        var enchantExp   = equip.EnchantOptions.Where(o => o.OptionType == EnchantOptionType.CharacterExp).Sum(o => (long)o.Value);
-
-        return new Dictionary<int, long>
-        {
-            [(int)EAuctionAttr.EquipIndustry]       = (long)equip.Industry,
-            [(int)EAuctionAttr.EquipSpeed]          = equip.SpeedAddPermille + enchantSpeed,
-            [(int)EAuctionAttr.EnchantSpeed]        = enchantSpeed,
-            [(int)EAuctionAttr.EnchantCharacterExp] = enchantExp,
-        };
-    }
-
-    private Dictionary<int, long> CharacterAttrs(Character character)
-    {
-        var attrs = new Dictionary<int, long>
-        {
-            [(int)EAuctionAttr.CharacterLevel] = character.Level,
-            [(int)EAuctionAttr.CharacterStar]  = StarOf(character),
-        };
-        foreach (var industry in new[] { IndustryType.Farming, IndustryType.Excavation, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
-        {
-            attrs[(int)EAuctionAttr.AptitudeFarming - 1 + (int)industry] = character.GetAptitude(industry);
-        }
-
-        return attrs;
     }
 
     public void OnAuctionRegistered(long tradeId, AuctionItemSnapshot item, long fee, List<ItemChangeInfo> changes)
