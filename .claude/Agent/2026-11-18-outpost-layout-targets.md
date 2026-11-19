@@ -8,7 +8,7 @@ tags: [art, ui, client]
 
 ## 목적 / 배경
 - 사용자 지적 넷 — 거점 지도가 아래로 쏠림 · 건물 창 크기가 애매함 · 특성 값 글자 잘림 · 산업 대상 25종이 제각각.
-- 일감 → `tasks/art/T-191` (거점) · `tasks/art/T-204` (대상)
+- 일감 → `tasks/art/T-191` (거점) · `tasks/art/T-205` (대상)
 
 ## 변경 내용
 - `Assets/Art/_source/environment/claude-outpost/make_outpost.py` — `SPOTS` · 광장 · 큰길 · 풍차·밭 · 개울 자리 → `outpost/ground.png` 다시 뽑음 (건물 그림은 그대로)
