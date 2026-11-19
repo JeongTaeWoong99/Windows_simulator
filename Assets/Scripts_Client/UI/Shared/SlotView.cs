@@ -40,6 +40,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("이름 아래 보조 문구 — 자원은 수량. 캐릭터 탭에서는 적성 스트립이 이 자리를 쓴다")]
     private TMP_Text subText = null!;
 
+    // ※ 아이콘이 칸을 거의 채워 아래 글자가 그림 위에 얹힌다 — 밝은 그림(뿔·늑대·알)에서 크림색 글자가 묻혔다(2026-11-19).
+    //   글자가 있을 때만 켠다 — 빈 칸·글자 없는 칸에 그늘만 남지 않게.
+    [SerializeField, Tooltip("(선택) 아래 글자 띠 — 보조 문구·레벨 배지 밑에 까는 그늘('ui_label_shade'). 둘 중 하나가 켜졌을 때만 켜진다")]
+    private GameObject? labelShade;
+
     // ※ 보조 문구와 **같은 밴드**를 쓴다 — 자원은 수량 한 줄, 캐릭터는 5칸 스트립.
     //   자리가 하나라는 것은 프리팹의 사실이라, 어느 쪽을 켤지는 이 칸이 쥔다('SetAptitudes').
     [CenterHeader("적성 스트립 (캐릭터 탭)")]
@@ -316,6 +321,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         SetSizeBadge(data.SizeBadge);
         SetRaceBadge(data.RaceBadge);
         ApplyTint();
+        RefreshLabelShade();
     }
 
     // 등급 바탕 그림을 깐다 (Awake에서 한 번) — 어두운 판 + 등급색 테두리('RaritySkin').
@@ -377,6 +383,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     public void SetSubText(string text)
     {
         subText.text = text;
+
+        RefreshLabelShade();
     }
 
     // 가장 높은 적성 알약을 그린다 — 산업 그림 + 숫자. 'null'이면 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
@@ -405,6 +413,21 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private void RefreshSubText()
     {
         subText.gameObject.SetActive(_isSubAllowed && !aptitudeStrip.activeSelf && !enchantGem.gameObject.activeSelf);
+
+        RefreshLabelShade();
+    }
+
+    // 아래 글자 띠 — 보조 문구나 레벨 배지가 켜졌을 때만 (RefreshSubText · SetLevelBadge에서 호출)
+    private void RefreshLabelShade()
+    {
+        if (labelShade == null)
+        {
+            return;
+        }
+
+        bool hasLabel = (subText.gameObject.activeSelf && subText.text.Length > 0) || levelBadge.activeSelf;
+
+        labelShade.SetActive(hasLabel);
     }
 
     // 적성 5종을 스트립에 그린다. 'null'이면 스트립을 끄고 보조 문구 자리를 돌려준다
@@ -497,6 +520,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         bool on = label != null;
 
         levelBadge.SetActive(on);
+        RefreshLabelShade();
 
         if (!on)
         {
