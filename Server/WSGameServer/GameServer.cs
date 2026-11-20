@@ -16,6 +16,7 @@ public class GameServer : IDisposable
     // 경매장 연결. 경매장이 꺼져 있어도 게임은 돈다 — 경매 요청만 AuctionUnavailable로 돌아가고 릴레이가 재시도한다.
     private GrpcAuctionClient? _auctionClient;
     private readonly CancellationTokenSource _auctionStop = new();
+    private bool _dbOpened;
 
     // 매니저, Executor 등 전역 싱글톤은 한번 생성하고 이후는 생성자 주입
     public GameServer(GameSettings settings)
@@ -65,7 +66,7 @@ public class GameServer : IDisposable
             _logicExecutor.Start();
 
             User.CheatAdminLevel = _settings.CheatAdminLevel;
-            ServerLog.Info("설정", $"포트 {_settings.ListenPort} · DB {_settings.DbPath} · 경매장 {_settings.Auction.Address} · 치트 레벨 {_settings.CheatAdminLevel}");
+            ServerLog.Info("설정", $"포트 {_settings.ListenPort} · DB {_settings.DbPath} · 경매장 {_settings.Auction.Address} · 치트 레벨 {_settings.CheatAdminLevel} · 로그 {_settings.LogLevel}");
 
             // 스키마를 서버 판까지 올린 뒤에 연다 — 판이 더 높은 DB(더 새 서버가 쓰던 것)면 여기서 기동이 멈춘다.
             // 파일이 없으면(원격 첫 기동) 빈 DB를 만들고 마이그레이션이 스키마를 채운다.
@@ -74,6 +75,7 @@ public class GameServer : IDisposable
 
             // 테스트는 팩토리 오버로드로 :memory:를 넣는다.
             _dbManager.Initialize(dbPath);
+            _dbOpened = true;
             _networkManager.Initialize();
 
             // 접속 중인 플레이어의 채취를 주기적으로 정산해 밀어 준다(서버 권위).
@@ -102,5 +104,21 @@ public class GameServer : IDisposable
     {
         _auctionStop.Cancel();
         _auctionClient?.Dispose();
+
+        // 기동 도중 실패했으면 DB를 연 적이 없다
+        if (!_dbOpened)
+        {
+            return;
+        }
+
+        // 실패해도 데이터는 -wal에 남아 다음 기동이 합친다 — 종료를 막지 않는다.
+        try
+        {
+            _dbManager.Checkpoint();
+        }
+        catch (Exception e)
+        {
+            ServerLog.Warn("DB", $"종료 체크포인트 실패 — -wal이 남는다: {e.Message}");
+        }
     }
 }

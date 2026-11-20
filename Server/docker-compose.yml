@@ -15,6 +15,7 @@ services:
       Game__DbPath: /data/game.sqlite3                  # 볼륨. 없으면 빈 DB를 만들고 마이그레이션이 채운다
       Game__Auction__Address: http://auction:30330      # 컨테이너 안의 127.0.0.1은 게임 컨테이너 자신이다
       Game__CheatAdminLevel: "1"                        # 원격은 admin_level 1 이상만 치트
+      # Game__LogLevel: Info                            # 로그 하한(Trace·Debug·Info·Warn·Error·None). 빼면 appsettings의 Debug — 패킷마다 찍힌다
       TZ: Asia/Seoul                                    # 로그 시각
     volumes:
       - game-data:/data
