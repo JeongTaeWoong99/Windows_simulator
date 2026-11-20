@@ -11,12 +11,20 @@ namespace WSGameServer;
 /// </summary>
 public sealed class SaveWorkStationSlotRepository : IRepository
 {
-    private readonly IReadOnlyList<WorkStationSlot> _slots;
+    private sealed record SlotAssignment(long UserId, int SlotIndex, int Industry, int IndustryLevel, long CharacterId);
 
-    public SaveWorkStationSlotRepository(User user, IReadOnlyList<WorkStationSlot> slots)
+    private readonly IReadOnlyList<WorkStationSlot> _slots;
+    private readonly IReadOnlyList<SlotAssignment> _assignments;
+    private readonly IReadOnlyList<SlotBuffChange> _buffChanges;
+
+    public SaveWorkStationSlotRepository(User user, IReadOnlyList<WorkStationSlot> slots,
+        IReadOnlyList<SlotBuffChange>? buffChanges = null)
     {
-        User   = user;
+        User = user;
         _slots = slots;
+        _assignments = slots.Select(s =>
+            new SlotAssignment(user.Uid, s.SlotIndex, (int)s.Industry, s.IndustryLevel, s.CharacterId)).ToList();
+        _buffChanges = buffChanges ?? Array.Empty<SlotBuffChange>();
     }
 
     public long Key => User.DbKey;
@@ -25,28 +33,23 @@ public sealed class SaveWorkStationSlotRepository : IRepository
 
     public IReadOnlyList<WorkStationSlot> Slots => _slots;
 
-    public async Task ExecuteAsync(DbConnection connection)
-    {
-        // 슬롯 여러 개를 한 번의 왕복으로 처리한다. Dapper는 배열을 넘기면 문장을 반복 실행한다.
-        var rows = _slots.Select(s => new
+    public Task ExecuteAsync(DbConnection connection)
+        => connection.InTransactionAsync(async tx =>
         {
-            // user_id 기준은 t_user.user_id(User.Uid)다. 로드(LoginRepository)와 반드시 같아야 한다.
-            userId        = User.Uid,
-            slotIndex     = s.SlotIndex,
-            industry      = (int)s.Industry,
-            industryLevel = s.IndustryLevel,
-            characterId   = s.CharacterId,
-        }).ToList();
+            await tx.ExecuteAsync(
+                @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, industry_level, character_id)
+                  VALUES (@UserId, @SlotIndex, @Industry, @IndustryLevel, @CharacterId)
+                  ON CONFLICT (user_id, slot_index) DO UPDATE SET
+                      industry       = excluded.industry,
+                      industry_level = excluded.industry_level,
+                      character_id   = excluded.character_id;",
+                _assignments);
 
-        await connection.ExecuteAsync(
-            @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, industry_level, character_id)
-              VALUES (@userId, @slotIndex, @industry, @industryLevel, @characterId)
-              ON CONFLICT (user_id, slot_index) DO UPDATE SET
-                  industry       = excluded.industry,
-                  industry_level = excluded.industry_level,
-                  character_id   = excluded.character_id;",
-            rows);
-    }
+            foreach (var change in _buffChanges)
+            {
+                await SaveSlotBuffRepository.WriteAsync(tx, User.Uid, change);
+            }
+        });
 
     public void Apply()
     {

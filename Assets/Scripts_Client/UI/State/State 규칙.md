@@ -1,6 +1,6 @@
 ﻿# State 폴더 규칙
 
-> 최종 업데이트: 2026-11-15 (`Nick Panel`·`Gold Panel`의 칸 바탕·테 끔 — 열 종이 위에 바로 놓인다 · Image `enabled=false` + `Ui Trim` 끔(지우면 `UiSkin`이 다시 만든다)) · 2026-11-15 (열 화면처럼 진갈 액자(`Ui Frame` · `ui_panel_trim`) + 종이 결 — 캔버스 자체에 두른다(`UiSkin` 몸통 없는 띠 열) · 안쪽 여백 좌우 10 · 위아래 8 — 내용이 액자에 붙지 않게) · 2026-10-31 (골드 아이콘 — `Gold Image`에 동전 그림 `FxSprites.CoinBody` + `FxSprites.CoinColor`) · 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
+> 최종 업데이트: 2026-11-19 (닉 원 안 얼굴 `Nick Face` — `hud_profile` 32px · 원반 `Nick Icon (임시)` 위에 얹는다 · 원반을 그림으로 바꾸면 투명 귀퉁이로 진행도가 비쳐 파이 차트가 된다) · 2026-11-15 (`Nick Panel`·`Gold Panel`의 칸 바탕·테 끔 — 열 종이 위에 바로 놓인다 · Image `enabled=false` + `Ui Trim` 끔(지우면 `UiSkin`이 다시 만든다)) · 2026-11-15 (열 화면처럼 진갈 액자(`Ui Frame` · `ui_panel_trim`) + 종이 결 — 캔버스 자체에 두른다(`UiSkin` 몸통 없는 띠 열) · 안쪽 여백 좌우 10 · 위아래 8 — 내용이 액자에 붙지 않게) · 2026-10-31 (골드 아이콘 — `Gold Image`에 동전 그림 `FxSprites.CoinBody` + `FxSprites.CoinColor`) · 2026-09-28 (다이아 폐지 — #41) · 대상: `Assets/Scripts_Client/UI/State/`
 
 **`#State Canvas` — 계정 레벨 · 닉네임 · 재화(골드)를 늘 보여 주고, 메인 화면을 여는 버튼을 쥔다.**
 
@@ -22,6 +22,7 @@
     │   └─ Nick Image                           ← 원형 바탕. 아래 넷이 이 안에 겹친다
     │       ├─ Exp Ring Fill    계정 경험치 (Filled · Radial360)
     │       ├─ Nick Icon (임시) 가운데를 덮어 원반을 고리로 만든다
+    │       ├─ Nick Face        원반 위 얼굴 그림 `hud_profile` 32px (2026-11-19) — 그림은 원반이 아니라 여기에
     │       ├─ Percent Text     ⏸ 꺼 둔 상태 — 배선만 살아 있다
     │       └─ Lv Text          "Lv.n" (가장 위)
     ├─ Gold Panel   ─ Gold Image · Gold Text

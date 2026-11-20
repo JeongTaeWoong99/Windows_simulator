@@ -36,9 +36,12 @@ public class SlotStageView : MonoBehaviour
 
     // 맞으면 움찔 — 모든 대상 공통(2026-11-18 사용자: 히트 모션을 하나로). 캐릭터 반대쪽(왼쪽)으로 밀렸다 돌아오며 잠깐 납작해진다.
     // 값은 그림 픽셀·비율 — 화면 배율 k를 곱해 쓴다.
-    private const float FlinchSeconds = 0.16f;
-    private const float FlinchPush    = 2f;    // 밀리는 거리(그림 픽셀)
-    private const float FlinchSquash  = 0.08f; // 납작해지는 비율(세로 −, 가로 +)
+    // 2026-11-20 타격감 — 밀림 2 → 4 · 납작 0.08 → 0.14 · 0.16 → 0.2초 · 처음 0.08초는 좌우로 흔들린다('타격이 잘 안 보인다')
+    private const float FlinchSeconds = 0.2f;
+    private const float FlinchPush    = 4f;    // 밀리는 거리(그림 픽셀)
+    private const float FlinchSquash  = 0.14f; // 납작해지는 비율(세로 −, 가로 +)
+    private const float ShakeSeconds  = 0.08f; // 맞은 순간 좌우 흔들림 길이
+    private const float ShakePixels   = 1f;    // 흔들림 폭(그림 픽셀) — 프레임마다 방향이 바뀐다
     private const float HurtSeconds   = 0.24f; // 맞는 자세('TargetVisual.GetHit')를 보이는 시간 — 흰 번쩍(0.08초) 뒤에도 자세가 읽히게 움찔보다 길게
 
     // 대상은 땅선보다 이만큼(그림 픽셀) 아래에 선다 — 밑동이 땅 앞면에 가려 '땅에 박힌' 것처럼 보인다(2026-11-18 사용자: 뿌리가 바닥 앞에 있어 어색)
@@ -170,7 +173,7 @@ public class SlotStageView : MonoBehaviour
         SlotStageTimeline.Result now = SlotStageTimeline.Evaluate(time, cycle, _characterVisual, settings);
 
         float feetX = FeetX(width, settings);
-        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k; // 대상 오른쪽 끝이 멈추는 자리
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * settings.CharacterSize * k; // 대상 오른쪽 끝이 멈추는 자리
         float speed = (stopX + SpawnMargin * k) / ApproachSeconds(now, settings);           // 화면 단위/초
 
         // 배경은 달리는 동안만 흐른다 — 사이 자세(서 있는 그림) 동안은 멈춘다. 미끄러져 보이지 않게
@@ -202,7 +205,7 @@ public class SlotStageView : MonoBehaviour
         SlotStageSettings settings = SlotStageSettings.Current;
         float k     = Scale(settings);
         float feetX = FeetX(_rect.rect.width, settings);
-        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * k;
+        float stopX = feetX - (settings.StopGap + _characterVisual.StopGapOffset) * settings.CharacterSize * k;
         Vector2 size = sprite.rect.size * TargetScale(k);
 
         // 무대 좌표는 왼쪽 아래 기준('Place') — 피벗 기준 로컬로 옮긴 뒤 월드로
@@ -328,6 +331,7 @@ public class SlotStageView : MonoBehaviour
         float tk        = TargetScale(k);
         float halfWidth = sprite.rect.width * tk / 2f;
         float flinch    = FlinchAmount(now.SinceHit);
+        float shake     = ShakeOffset(now.SinceHit) * k;
         bool  hurt      = now.SinceHit >= 0f && now.SinceHit < HurtSeconds;
         float dyingX    = stopX - halfWidth + speed * Mathf.Max(0f, Mathf.Min(time, now.MoveEnd) - now.MoveStart);
         float comingX   = stopX - halfWidth - speed * Mathf.Max(0f, now.MoveEnd - time);
@@ -349,7 +353,7 @@ public class SlotStageView : MonoBehaviour
         {
             bool flash = now.HitsComing && now.SinceHit < settings.FlashSeconds;
 
-            PlaceTarget(_coming, sprite, comingX, 1f, flash, now.HitsComing ? flinch : 0f, now.HitsComing && hurt, k);
+            PlaceTarget(_coming, sprite, comingX + (now.HitsComing ? shake : 0f), 1f, flash, now.HitsComing ? flinch : 0f, now.HitsComing && hurt, k);
         }
         else
         {
@@ -402,6 +406,17 @@ public class SlotStageView : MonoBehaviour
         {
             _hitEffect.enabled = false;
         }
+    }
+
+    // 맞은 순간 좌우 흔들림 — 30fps 한 칸마다 방향을 바꾼다(그림 픽셀 단위 · 이후 0)
+    private static float ShakeOffset(float sinceHit)
+    {
+        if (sinceHit < 0f || sinceHit >= ShakeSeconds)
+        {
+            return 0f;
+        }
+
+        return (Mathf.FloorToInt(sinceHit * 30f) % 2 == 0 ? 1f : -1f) * ShakePixels;
     }
 
     // 맞은 뒤 움찔 세기 1 → 0 — 맞은 순간 가장 세고 빠르게 풀린다
@@ -488,7 +503,7 @@ public class SlotStageView : MonoBehaviour
 
         _character.sprite = frame;
         // 캐릭터 크기 배수 — 발 자리는 그대로 두고 그림만 키운다(피벗이 발이라 땅에서 뜨지 않는다)
-        float size = k * (_characterVisual != null ? _characterVisual.CharacterScale : 1f);
+        float size = k * settings.CharacterSize * (_characterVisual != null ? _characterVisual.CharacterScale : 1f);
 
         Place(_character.rectTransform, feet, Snap(frame.rect.size * size));
 

@@ -98,6 +98,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 이번 결과의 칸별 등급 — 공개 순서와 스킵이 읽는다
     private readonly List<GlobalRarity> _revealRarities = new List<GlobalRarity>();
 
+    // 이번 결과의 칸별 종류·레벨 — 칸을 인벤토리처럼 꾸미는 데 쓴다('Decorate' · 2026-11-20 사용자: "인벤에서 보는 것처럼").
+    //   Kind : 'I' 아이템 · 'C' 캐릭터 · 'E' 장비 · 'A' 아티팩트 · 'G' 골드 / Level : 캐릭터 레벨(새로 받은 캐릭터는 1)
+    // ※ 'SlotData'는 인벤토리와 공유하는 값이라 종류를 싣지 않고 여기 나란히 둔다. 칸 만들기 함수가 채우고 'Show'가 읽는다.
+    private readonly List<(char Kind, int Level)> _cellKinds = new List<(char Kind, int Level)>();
+
     private RewardBurstFx?           _burst;
     private CancellationTokenSource? _revealCts;
     private Tween?                   _panelShake;
@@ -209,7 +214,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 가챠 결과 도착 — 뽑힌 순서 그대로 늘어놓는다 (PlayerDataModel.GachaCompleted 구독)
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
-        Show(ToSlots(rewards), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards));
+        _cellKinds.Clear();
+        Show(ToSlots(rewards, _cellKinds), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards));
         ShowDrawAgain(true);
     }
 
@@ -238,7 +244,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        Show(Summarize(rewards), source, showCount: true, GoldOf(rewards));
+        _cellKinds.Clear();
+        Show(Summarize(rewards, _cellKinds), source, showCount: true, GoldOf(rewards));
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -249,7 +256,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // ※ 등급은 테이블에서 읽는다 — 우편 첨부에는 등급이 실려 오지 않는다(가챠 보상과 다른 점).
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
-        Show(SummarizeMails(mails), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold));
+        _cellKinds.Clear();
+        Show(SummarizeMails(mails, _cellKinds), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold));
         ShowDrawAgain(false);
     }
 
@@ -280,6 +288,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
             slot.SetSubVisible(showCount);
             slot.Bind(slots[i]);
+
+            if (i < _cellKinds.Count)
+            {
+                Decorate(slot, slots[i], _cellKinds[i].Kind, _cellKinds[i].Level, showCount);
+            }
 
             _revealFxs[i].Hide(); // 자리는 지키되 투명 — 창이 처음부터 다 자란 크기로 뜬다
             _revealRarities.Add(slots[i].Rarity);
@@ -318,13 +331,14 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     }
 
     // 보상 목록을 받은 순서 그대로 칸 값으로 옮긴다 (OnGachaCompleted에서 호출).
-    private static List<SlotData> ToSlots(List<GachaRewardInfo> rewards)
+    private static List<SlotData> ToSlots(List<GachaRewardInfo> rewards, List<(char Kind, int Level)> kinds)
     {
         var slots = new List<SlotData>(rewards.Count);
 
         foreach (GachaRewardInfo reward in rewards)
         {
             slots.Add(ToSlotData(reward, reward.Count));
+            kinds.Add((KindOf(reward.RewardType), 1));
         }
 
         return slots;
@@ -337,7 +351,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     //   TID만으로 묶으면 조용히 한 칸으로 합쳐진다. 골드는 TID가 없어 종류 하나로 전부 모인다.
     // ※ 순서는 처음 나온 순서를 지킨다 — 등급이나 이름으로 정렬하면 "무엇이 먼저 나왔나"가 사라진다.
     //   받은 보상('GachaRewardInfo')은 고쳐 쓰지 않는다. 다른 구독자도 같은 객체를 보고 있다.
-    private static List<SlotData> Summarize(List<GachaRewardInfo> rewards)
+    private static List<SlotData> Summarize(List<GachaRewardInfo> rewards, List<(char Kind, int Level)> kinds)
     {
         // 종류마다 처음 나온 보상(이름·등급의 출처)과 그 종류의 합계 수량을 나란히 쌓는다.
         var firsts  = new List<GachaRewardInfo>();
@@ -365,6 +379,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         for (int i = 0; i < firsts.Count; i++)
         {
             slots.Add(ToSlotData(firsts[i], totals[i]));
+            kinds.Add((KindOf(firsts[i].RewardType), 1));
         }
 
         return slots;
@@ -373,12 +388,13 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 우편 첨부를 종류별로 합쳐 칸 값으로 옮긴다 (OnMailRewardsClaimed에서 호출).
     // 순서는 골드 → 아이템 → 캐릭터 → 장비, 각 안에서는 처음 나온 순서다.
     // ⚠️ 묶는 열쇠는 'Summarize'와 같이 **종류 + TID**다 — 아이템 1001과 장비 1001은 다른 물건이다.
-    private static List<SlotData> SummarizeMails(List<MailInfo> mails)
+    private static List<SlotData> SummarizeMails(List<MailInfo> mails, List<(char Kind, int Level)> kinds)
     {
         long gold = 0L;
 
         var order  = new List<(char Kind, int Tid)>();
         var totals = new Dictionary<(char Kind, int Tid), long>();
+        var levels = new Dictionary<int, int>(); // 캐릭터 TID → 레벨(개체로 온 캐릭터는 그 레벨 · 같은 종류가 여럿이면 가장 높은 것)
 
         void Add(char kind, int tid, long count)
         {
@@ -415,6 +431,19 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
                 }
             }
 
+            // 개체 캐릭터(경매 구매·반환) — 레벨까지 온다. 빠져 있어 경매로 산 캐릭터가 결과 창에 안 보였다(2026-11-20)
+            if (mail.Characters != null)
+            {
+                foreach (MikaProtocol.CharacterInfo character in mail.Characters)
+                {
+                    Add('C', character.CharacterTid, 1L);
+
+                    int known = levels.TryGetValue(character.CharacterTid, out int lv) ? lv : 1;
+
+                    levels[character.CharacterTid] = Math.Max(known, character.Level);
+                }
+            }
+
             if (mail.EquipTids != null)
             {
                 foreach (int tid in mail.EquipTids)
@@ -447,11 +476,14 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         if (gold > 0L)
         {
             slots.Add(new SlotData(0L, Lang.Get("UI.Common.Gold"), gold.ToString("N0"), GlobalRarity.None, FxSprites.CoinBody));
+            kinds.Add(('G', 0));
         }
 
         foreach (var key in order)
         {
             string count = totals[key].ToString("N0");
+
+            kinds.Add((key.Kind, key.Kind == 'C' && levels.TryGetValue(key.Tid, out int level) ? level : 1));
 
             slots.Add(key.Kind switch
             {
@@ -517,6 +549,83 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         return new SlotData(tid, name, count.ToString("N0"), rarity, icon, null, race);
     }
 
+    // 보상 종류를 결과 칸의 종류 글자로 ('_cellKinds').
+    private static char KindOf(EGachaRewardType type) => type switch
+    {
+        EGachaRewardType.Character => 'C',
+        EGachaRewardType.Equip     => 'E',
+        EGachaRewardType.Artifact  => 'A',
+        EGachaRewardType.Gold      => 'G',
+        _                          => 'I',
+    };
+
+    // 결과 칸을 인벤토리 칸처럼 꾸민다 — 왼쪽 아래 배지(분류 · 상자 LV · 캐릭터 LV) · 캐릭터 최고 적성 알약 · 수량 문구 (Show에서 호출).
+    // ※ 인벤토리와 같은 함수를 쓴다('ResourceSlotSource.GroupName' · 'CharacterSlotSource.GetLevelLabel') — 두 곳이 같은 칸을 다르게 말하지 않게.
+    // ※ 캐릭터 적성은 테이블 값이다 — 결과 창에는 개체 번호가 없다. 새로 받은 캐릭터라 서버 값과 같다.
+    private static void Decorate(SlotView slot, in SlotData data, char kind, int level, bool showCount)
+    {
+        int  tid   = (int)data.Key;
+        long count = long.TryParse(data.Sub.Replace(",", ""), out long parsed) ? parsed : 0L;
+
+        switch (kind)
+        {
+            case 'C':
+            {
+                slot.SetLevelBadge(CharacterSlotSource.GetLevelLabel(level));
+
+                EIndustryType? best  = null;
+                byte           value = 0;
+
+                foreach (EIndustryType industry in IndustryLabel.DisplayOrder)
+                {
+                    byte v = GameDataLoader.GetCharacterBaseAptitude(tid, industry);
+
+                    if (v > value)
+                    {
+                        best  = industry;
+                        value = v;
+                    }
+                }
+
+                slot.SetBestAptitude(best, value);
+                slot.SetSubText(showCount && count > 1 ? $"×{count:N0}" : ""); // 인벤토리 캐릭터 칸은 수량이 없다 — 여럿 받았을 때만
+                break;
+            }
+
+            case 'E':
+                slot.SetLevelBadge(EquipCategoryOf(tid));
+                slot.SetSubText(showCount && count > 1 ? $"×{count:N0}" : "");
+                break;
+
+            case 'A':
+                slot.SetLevelBadge(Lang.Get("UI.Auction.KindArtifact"));
+                slot.SetSubText(showCount ? Lang.Format("UI.Inventory.CountUnit", $"{count:N0}") : "");
+                break;
+
+            case 'I':
+            {
+                int boxLevel = GameDataLoader.GetBoxLevel(tid);
+
+                slot.SetLevelBadge(boxLevel > 0 ? $"LV.{boxLevel}" : ResourceSlotSource.GroupName(ResourceSlotSource.GroupOf(tid)));
+                slot.SetSubText(showCount ? Lang.Format("UI.Inventory.CountUnit", $"{count:N0}") : "");
+                break;
+            }
+        }
+    }
+
+    // 장비 종류의 분류 배지 — 산업 이름, 공용이면 '공통' ('EquipSlotSource.GetCategoryLabel'과 같은 규칙 · 그쪽은 개체 번호를 받는다).
+    private static string? EquipCategoryOf(int equipTid)
+    {
+        if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
+        {
+            return null;
+        }
+
+        var industry = (EIndustryType)(byte)row.Industry;
+
+        return industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry);
+    }
+
     // 칸을 만들 때 한 번 — 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다.
     // 칸 프리팹은 인벤토리와 공유라 손대지 않는다.
     //
@@ -527,6 +636,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         RewardRevealFx fx = slot.gameObject.AddComponent<RewardRevealFx>();
 
         fx.Init(reveal);
+
+        slot.SetNameVisible(false); // 인벤토리 칸처럼 그림을 꽉 채운다 — 이름은 인벤토리·툴팁에서 본다(2026-11-20 사용자)
 
         slot.LeftClicked  += OnSlotClicked;
         slot.RightClicked += OnSlotClicked;

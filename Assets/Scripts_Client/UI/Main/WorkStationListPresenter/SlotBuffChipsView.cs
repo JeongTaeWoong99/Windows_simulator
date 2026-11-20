@@ -7,8 +7,8 @@ using UnityEngine;
 //
 // ■ 무엇을 띄우나
 // 'WorkStationSlotInfo.Buffs' 한 줄 = 칩 하나 — 아이콘 + 남은 판정 횟수. 버프가 없으면 칩이 없다(줄이 비어 칸이 덜 붐빈다).
-// 자동 사용이 켜진 영약(이슈 #123)은 남은 횟수 뒤에 괄호로 보유 개수를 붙인다 '20(5)' — 더하기로 읽히지 않게.
-// 켜졌는데 버프가 없으면(보유분이 떨어졌다) 흐린 칩 '0(0)'으로 남겨 켜져 있다는 것을 보인다.
+// 자동 사용이 켜진 영약(이슈 #123)은 남은 횟수 대신 보유 개수만 보인다 '5' — 영약은 1개 = 판정 1회라 남은 횟수가 늘 1이다(PR #130).
+// 켜졌는데 버프가 없으면(보유분이 떨어졌다) 흐린 칩 '0'으로 남겨 켜져 있다는 것을 보인다.
 // 효과·남은 횟수·보유 개수는 툴팁으로도 읽는다.
 //
 // ■ 칩은 지우지 않고 끈다
@@ -38,7 +38,7 @@ public class SlotBuffChipsView : MonoBehaviour
 
     // 슬롯의 버프를 칩으로 그린다 ('WorkStationSlotView.Bind'가 호출).
     //   buffs   : 걸린 버프 — 아이템마다 한 줄. null·빈 목록이면 칩을 모두 끈다
-    //   autoUse : 자동 사용이 켜진 영약 — 칩에 '(보유 개수)'를 붙인다
+    //   autoUse : 자동 사용이 켜진 영약 — 칩이 남은 횟수 대신 보유 개수를 보인다
     public void Bind(IReadOnlyList<SlotBuffInfo>? buffs, IReadOnlyList<SlotAutoUseInfo>? autoUse)
     {
         _data ??= Services.Get<PlayerDataModel>();
@@ -94,7 +94,7 @@ public class SlotBuffChipsView : MonoBehaviour
         }
     }
 
-    // 자동 사용이 켜졌으면 보유 개수, 아니면 -1 (칩이 '(n)'을 붙일지 정한다)
+    // 자동 사용이 켜졌으면 보유 개수, 아니면 -1 (칩이 보유 개수를 보일지 정한다)
     private int OwnedIfOn(int itemTid) => _autoOn.Contains(itemTid) ? _data!.GetItemCount(itemTid) : -1;
 
     // 'index'번째 칩 — 모자라면 견본을 복제한다 (Bind에서 호출)
@@ -115,7 +115,7 @@ public class SlotBuffChipsView : MonoBehaviour
         return found;
     }
 
-    // 칩 툴팁 — 이름 / 효과 / 판정 n회 남음 / 자동 사용 켜짐 · 보유 n개 (칩의 TooltipTrigger가 띄우는 순간에 호출)
+    // 칩 툴팁 — 이름 / 효과 / 판정 n회 남음(자동 사용이 꺼진 것만) / 자동 사용 켜짐 · 보유 n개 (칩의 TooltipTrigger가 띄우는 순간에 호출)
     private TooltipContent? BuildTooltip(int itemTid)
     {
         var content = new TooltipContent(GameDataLoader.GetItemName(itemTid));
@@ -127,7 +127,7 @@ public class SlotBuffChipsView : MonoBehaviour
             content.Row(effect, "");
         }
 
-        if (_remaining.TryGetValue(itemTid, out int remaining))
+        if (!_autoOn.Contains(itemTid) && _remaining.TryGetValue(itemTid, out int remaining))
         {
             content.Row(Lang.Format("UI.WorkStation.BuffTooltip", remaining), "");
         }

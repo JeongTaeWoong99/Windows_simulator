@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace DesktopWindowControl.EditorTools
 {
-	// 경매장에 더미 매물을 한 번에 깐다 — 서버 'SeedAuctionListings'(Arg1 = 개수 1~5,000, 0이면 더미 전부 삭제 · Arg2 = ItemTID, 0이면 자원을 돌아가며).
+	// 경매장에 더미 매물을 한 번에 깐다 — 서버 'SeedAuctionListings'(Arg1 = 개수 1~5,000, 0이면 더미 전부 삭제 ·
+	// Arg2 = 0 전체 섞기 · 1~4 그 종류만(EAuctionKind) · 그 밖 = 그 ItemTID 하나) (T-204 · 이슈 #124).
 	// 판매자는 실제 계정이 아닌 '더미상점'이라 경매장을 보는 모두에게 보인다 — 서버 전체 칸이다.
 	//
 	// ※ 응답이 두 번 온다(접수 · 끝남). 두 번째 줄의 Message가 결과다 — 로그에 그대로 두 줄이 남는다.
@@ -19,9 +20,13 @@ namespace DesktopWindowControl.EditorTools
 		// 단축 버튼 — 1,050은 검색 결과 상한(1,000) 넘김 확인용이다.
 		private static readonly int[] QuickCounts = { 100, 1_050 };
 
-		[SerializeField] private TidPicker _picker  = new();
-		[SerializeField] private bool      _isMixed = true;   // 참이면 Arg2 = 0 (자원을 돌아가며)
-		[SerializeField] private int       _count   = 1_050;
+		// 종류 고르기 — 앞 다섯은 Arg2 값 그대로(0 전체 · 1~4 EAuctionKind), 마지막은 자원 하나를 TID로 고른다.
+		private static readonly string[] KindLabels = { "전체 섞기", "자원", "장비", "캐릭터", "아티팩트", "자원 하나" };
+		private const int SingleItemIndex = 5;
+
+		[SerializeField] private TidPicker _picker    = new();
+		[SerializeField] private int       _kindIndex = 0;   // KindLabels 위치
+		[SerializeField] private int       _count     = 1_050;
 
 		public override ECheatCategory Category     => ECheatCategory.Auction;
 		public override string         Title        => "더미 매물";
@@ -30,7 +35,7 @@ namespace DesktopWindowControl.EditorTools
 		public override string         Keywords     => "auction 경매 매물 더미 seed 검색 부하";
 		public override bool           IsServerWide => true;
 		public override string         Hint         =>
-			"판매자 '더미상점' — 팔려도 대금이 아무에게도 가지 않는다 · 자원 매물만 만든다\n" +
+			"판매자 '더미상점' — 팔려도 대금이 아무에게도 가지 않는다 · 장비·캐릭터는 사면 우편으로 온다\n" +
 			"유저 상한 · 빈도 제한 · 등록비를 거치지 않는다\n" +
 			"응답이 두 번 온다 — 두 번째 줄이 결과다\n" +
 			"1초에 100개씩 올라간다 — 1,000개면 약 10초 뒤 검색에 다 보인다\n" +
@@ -40,17 +45,18 @@ namespace DesktopWindowControl.EditorTools
 		{
 			using (new EditorGUILayout.HorizontalScope())
 			{
-				CheatGui.FieldLabel("자원");
-				_isMixed = EditorGUILayout.ToggleLeft("여러 종 돌아가며", _isMixed);
+				CheatGui.FieldLabel("종류");
+				_kindIndex = EditorGUILayout.Popup(_kindIndex, KindLabels);
 			}
 
-			if (!_isMixed)
+			var isSingleItem = _kindIndex == SingleItemIndex;
+			if (isSingleItem)
 			{
 				var rows = GameDataLoader.IsLoaded ? GameTable.ItemTable.All : null;
 				_picker.Draw(rows, row => row.ItemTID, row => row.Name);
 			}
 
-			var itemTid = _isMixed ? 0L : _picker.Tid;
+			long kindArg = isSingleItem ? _picker.Tid : _kindIndex;   // 0 전체 · 1~4 (long)EAuctionKind · 그 밖 ItemTID
 
 			using (new EditorGUILayout.HorizontalScope())
 			{
@@ -60,7 +66,7 @@ namespace DesktopWindowControl.EditorTools
 				{
 					if (GUILayout.Button($"+{count:N0}", EditorStyles.miniButton))
 					{
-						CheatGui.Request(ECheatCommand.SeedAuctionListings, count, itemTid);
+						CheatGui.Request(ECheatCommand.SeedAuctionListings, count, kindArg);
 					}
 				}
 			}
@@ -72,7 +78,7 @@ namespace DesktopWindowControl.EditorTools
 
 				if (CheatGui.ActionButton("올리기"))
 				{
-					CheatGui.Request(ECheatCommand.SeedAuctionListings, _count, itemTid);
+					CheatGui.Request(ECheatCommand.SeedAuctionListings, _count, kindArg);
 				}
 			}
 

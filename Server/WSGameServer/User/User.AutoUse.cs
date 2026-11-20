@@ -24,7 +24,7 @@ public partial class User
         slot.SetAutoUse(itemTid, on);
         var before = slot.Buffs.ToDictionary();
         var items = new List<ItemChangeInfo>();
-        slot.RefillAutoUse(tid => ConsumeAutoUseItem(tid, items));
+        slot.RefillAutoUse(tid => ConsumeAutoUseItem(tid, items), ShouldPreloadAutoUse);
         slot.ApplyWorkSpeed(ResolveSlotSpeed(slot));
 
         PostDBTask(new SaveSlotAutoUseRepository(this,
@@ -59,6 +59,12 @@ public partial class User
         return effectCount;
     }
 
+    private bool ShouldPreloadAutoUse(int itemTid)
+    {
+        return _itemUses.TryGet(itemTid, out var use) &&
+            (use.UseEffect == ItemUseEffect.SlotWorkSpeed || use.EffectCount > 1);
+    }
+
     private void LoadSlotAutoUse(IReadOnlyList<SlotAutoUseRow> rows)
     {
         foreach (var row in rows)
@@ -74,7 +80,7 @@ public partial class User
     {
         var before = slot.Buffs.ToDictionary();
         var items = new List<ItemChangeInfo>();
-        if (!slot.RefillAutoUse(tid => ConsumeAutoUseItem(tid, items)))
+        if (!slot.RefillAutoUse(tid => ConsumeAutoUseItem(tid, items), ShouldPreloadAutoUse))
         {
             return;
         }

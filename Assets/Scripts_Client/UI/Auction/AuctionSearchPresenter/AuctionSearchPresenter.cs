@@ -523,10 +523,18 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
 
             entry.button.gameObject.SetActive(parent == null || _expanded.Contains(parent.Value));
 
-            string caret = IsParent(entry.node) ? (_expanded.Contains(entry.node) ? "▼ " : "▶ ") : parent != null ? "      " : "   ";
-            entry.label.text = caret + GetNodeName(entry.node);
+            // ■ 맨 위 줄(전체·아이템·장비·캐릭터·아티팩트)과 하위 분류를 바탕부터 가른다(2026-11-20 사용자 — "같은 색이라 가시성이 너무 안 좋다").
+            //   맨 위 줄 = 진갈 띠 + 밝은 굵은 글씨(열 제목 띠와 같은 결) · 하위 = 양피지 + 들여쓰기 '·' · 고른 줄 = 고른 탭 색.
+            bool isTop      = parent == null;
+            bool isSelected = entry.node == _node;
 
-            Color target = UIThemePalette.Of(entry.node == _node ? UIThemeRole.ButtonSelected : UIThemeRole.PanelSub);
+            string caret = IsParent(entry.node) ? (_expanded.Contains(entry.node) ? "▼ " : "▶ ") : isTop ? "" : "· ";
+            entry.label.text      = caret + GetNodeName(entry.node);
+            entry.label.fontStyle = isTop || isSelected ? FontStyles.Bold : FontStyles.Normal;
+            entry.label.margin    = new Vector4(isTop ? 6f : 20f, 0f, 4f, 0f);
+            entry.label.color     = UIThemePalette.Of(isTop && !isSelected ? UIThemeRole.TextMain : UIThemeRole.TextDark);
+
+            Color target = UIThemePalette.Of(isSelected ? UIThemeRole.ButtonSelected : isTop ? UIThemeRole.Border : UIThemeRole.PanelSub);
 
             ColorBlock colors = entry.button.colors;
             colors.normalColor   = target;
