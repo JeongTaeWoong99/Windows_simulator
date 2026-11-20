@@ -163,6 +163,22 @@ public class UserEquipDisassembleTest
     }
 
     [Fact]
+    public void 인벤토리_자원_칸이_가득_차도_창고의_파편_칸에_쌓여_분해된다()
+    {
+        // 칸 검사는 창고의 같은 자원 칸부터 채워 보고 통과시킨다(T-175) — 지급도 같은 순서여야 재료가 증발하지 않는다.
+        // 창고 파편 1 + 영웅 15 = 16, 바뀐 칸은 창고 칸 하나
+        var (user, b) = NewUser();
+        user.LoadInventory(new[] { new InventoryRow { item_id = ShardTid, count = 1, slot = 0, container = (int)EContainer.Warehouse } });
+        FillInventory(user);
+
+        user.TryDisassemble(new[] { Crown }, Array.Empty<ArtifactInfo>());
+
+        Last(b).Result.ShouldBe(EResultCode.Ok);
+        user.GetItemCount(ShardTid).ShouldBe(16);
+        Last(b).ItemChangeInfos.ShouldHaveSingleItem().Container.ShouldBe(EContainer.Warehouse);
+    }
+
+    [Fact]
     public void 미보유_장비는_거부된다()
     {
         var (user, b) = NewUser();

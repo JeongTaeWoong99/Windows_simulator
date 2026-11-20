@@ -13,6 +13,7 @@ public class UserWarehouseUseTest
 
     private const int  FishTid  = 10001;
     private const int  SwordTid = 9101;
+    private const int  CubeTid  = 100015;
     private const long Sword    = 11;
     private const long CharA    = 500;
     private const long StoredC  = 502;
@@ -34,17 +35,32 @@ public class UserWarehouseUseTest
 
     private static (User User, TestUserBuilder B) NewUser(
         InventoryRow[]? items = null, CharacterRow[]? characters = null, UserEquipRow[]? equips = null,
-        params CharacterEquipRow[] worn)
+        CharacterEquipRow[]? worn = null, bool enchants = false, bool auction = false)
     {
-        var b    = Builder();
+        var b = Builder();
+        if (enchants)
+        {
+            b.Enchants.LoadAll();
+        }
+        if (auction)
+        {
+            b.WithInlineExecutor();
+            b.Auction = new AuctionService(new FakeAuctionClient(), b.Executor) { FindOnlineUser = _ => null };
+        }
+
         var user = b.Build();
+        if (auction)
+        {
+            user.OnAuctionStateLoaded(0);
+            user.GainGold(100_000);
+        }
         user.LoadInventory(items ?? Array.Empty<InventoryRow>());
         user.LoadCharacters(characters ?? new[]
         {
             Character(CharA, 0),
             Character(StoredC, 0, Wh),
         });
-        user.LoadEquips(equips ?? Array.Empty<UserEquipRow>(), worn);
+        user.LoadEquips(equips ?? Array.Empty<UserEquipRow>(), worn ?? Array.Empty<CharacterEquipRow>());
 
         b.Channel.Sent.Clear();
         b.DB.Posted.Clear();
@@ -59,6 +75,13 @@ public class UserWarehouseUseTest
 
     private static InventoryRow Item(int tid, int count, int slot, int container = Inv)
         => new() { item_id = tid, count = count, slot = slot, container = container };
+
+    // 단가 하한(BasePrice) — 가격 밴드는 이 테스트의 관심사가 아니다.
+    private static long AuctionUnitPriceOf(int itemTid)
+    {
+        GameTable.ItemTable.TryGet(itemTid, out var row).ShouldBeTrue();
+        return AuctionRules.MinUnitPrice(row.BasePrice);
+    }
 
     private static CharacterEquipRow Wearing(long characterId)
         => new() { character_id = characterId, slot = (int)EquipSlot.Weapon, equip_id = Sword };
@@ -81,7 +104,7 @@ public class UserWarehouseUseTest
     [Fact]
     public void 장착_중인_장비도_창고로_보내고_착용은_그대로다()
     {
-        var (user, b) = NewUser(equips: new[] { SwordRow() }, worn: Wearing(CharA));
+        var (user, b) = NewUser(equips: new[] { SwordRow() }, worn: new[] { Wearing(CharA) });
 
         user.TransferWarehouse(EContainer.Inventory, EStorageTab.Equip, 0, 0, 0);
 
@@ -166,6 +189,69 @@ public class UserWarehouseUseTest
         b.Channel.SentOf<S_EntitySellResponse>().Single().Result.ShouldBe(EResultCode.SellLastCharacter);
     }
 
+    [Fact]
+    public void 창고의_장비에_창고의_큐브를_쓴다()
+    {
+        // 100015 = 일반 큐브. 장비·큐브 모두 창고에 있다 — 큐브는 창고 칸에서 빠지고 장비 싱크는 창고로 간다
+        var (user, b) = NewUser(new[] { Item(CubeTid, 2, 3, Wh) }, equips: new[] { SwordRow(Wh) }, enchants: true);
+
+        user.TryEnchant(Sword, CubeTid, new Random(1));
+
+        b.Channel.SentOf<S_EquipEnchantResponse>().Single().Result.ShouldBe(EResultCode.Ok);
+        b.Channel.SentOf<S_UpdateItemResponse>().Single().ItemChangeInfos.Single()
+            .ShouldSatisfyAllConditions(c => c.Container.ShouldBe(EContainer.Warehouse), c => c.Count.ShouldBe(1));
+        b.Channel.SentOf<S_EquipSyncResponse>().Single().Equips.Single().Container.ShouldBe(EContainer.Warehouse);
+    }
+
+    [Fact]
+    public void 창고의_캐릭터를_창고의_재료로_응축하고_창고_칸으로_알린다()
+    {
+        // 컨테이너를 잘못 실으면 클라는 응축한 캐릭터가 인벤토리로 옮겨진 줄 안다
+        var (user, b) = NewUser(characters: new[] { Character(CharA, 0), Character(StoredC, 0, Wh), Character(StoredC + 1, 1, Wh) });
+
+        user.TryCondenseCharacter(StoredC, new[] { StoredC + 1 }, Base);
+
+        var response = b.Channel.SentOf<S_CharacterCondenseResponse>().Single();
+        (response.Result, response.Character!.Container, response.Character.CondenseCount).ShouldBe((EResultCode.Ok, EContainer.Warehouse, 1));
+        user.TryGetCharacter(StoredC + 1, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 창고의_장비를_경매에_올리면_창고에서_빠진다()
+    {
+        var (user, b) = NewUser(equips: new[] { SwordRow(Wh) }, auction: true);
+
+        user.TryRegisterAuction(EAuctionKind.Equip, 0, 0, Sword, 70, Base);
+
+        b.DB.PostedOf<RegisterAuctionRepository>().Single().Item.EquipId.ShouldBe(Sword);
+        user.TryGetEquip(Sword, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 창고의_캐릭터를_경매에_올리면_창고에서_빠진다()
+    {
+        var (user, b) = NewUser(auction: true);
+
+        user.TryRegisterAuction(EAuctionKind.Character, 0, 0, 0, 50, Base, StoredC);
+
+        b.DB.PostedOf<RegisterAuctionRepository>().Single().Item.Character!.CharacterId.ShouldBe(StoredC);
+        user.TryGetCharacter(StoredC, out _).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 창고의_자원을_경매에_올리면_창고_칸에서_뺀다()
+    {
+        // 인벤토리 2 + 창고 5 에서 4 → 인벤토리 칸 비움 · 창고 3
+        var (user, b) = NewUser(new[] { Item(FishTid, 2, 0), Item(FishTid, 5, 2, Wh) }, auction: true);
+
+        user.TryRegisterAuction(EAuctionKind.Item, FishTid, 4, 0, AuctionUnitPriceOf(FishTid), Base);
+
+        b.DB.PostedOf<RegisterAuctionRepository>().ShouldHaveSingleItem();
+        user.GetItemCount(FishTid).ShouldBe(3);
+        user.TryConsumeItems(new Dictionary<int, int> { [FishTid] = 3 }, out var rest).ShouldBeTrue();
+        rest.Single().Container.ShouldBe(EContainer.Warehouse);
+    }
+
     // ── 자원 ──
 
     [Fact]
@@ -221,7 +307,7 @@ public class UserWarehouseUseTest
         var (user, _) = NewUser(
             characters: new[] { Character(StoredC, 0, Wh) },
             equips: new[] { SwordRow(Wh) },
-            worn: Wearing(StoredC));
+            worn: new[] { Wearing(StoredC) });
 
         user.TryGetEquip(Sword, out var sword).ShouldBeTrue();
         sword.EquippedCharacterId.ShouldBe(StoredC);
