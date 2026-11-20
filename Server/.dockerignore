@@ -6,5 +6,7 @@
 **/*.user
 .claude/
 Shared/game.sqlite3
+Shared/game.sqlite3-wal
+Shared/game.sqlite3-shm
 Shared/*.bak
 **/auction.sqlite3*

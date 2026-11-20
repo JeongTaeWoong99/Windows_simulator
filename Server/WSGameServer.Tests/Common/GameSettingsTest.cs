@@ -46,6 +46,21 @@ public class GameSettingsTest : IDisposable
     }
 
     [Fact]
+    public void 설정이_없으면_로그는_패킷까지_보이는_Debug부터_찍는다()
+    {
+        Empty().LogLevel.ShouldBe(LogLevel.Debug);
+    }
+
+    [Fact]
+    public void 로그_수준은_Game_절에서_이름으로_읽는다()
+    {
+        // Docker는 Game__LogLevel 환경 변수로 덮는다
+        var settings = From(new() { ["Game:LogLevel"] = "Info" });
+
+        settings.LogLevel.ShouldBe(LogLevel.Info);
+    }
+
+    [Fact]
     public void Game_절의_값이_기본값을_덮는다()
     {
         var settings = From(new() { ["Game:ListenPort"] = "30329" });

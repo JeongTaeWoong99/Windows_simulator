@@ -5,8 +5,9 @@ class Program
     private static async Task Main(string[] args)
     {
         var settings = GameSettings.Load(AppContext.BaseDirectory, args);
+        ServerLog.MinLevel = settings.LogLevel;
 
-        var gameServer = new GameServer(settings);
+        using var gameServer = new GameServer(settings);
         gameServer.Initialize();
         await gameServer.Run();
 

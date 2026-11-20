@@ -14,6 +14,9 @@ public sealed class GameSettings
     /// <summary>치트를 쓸 수 있는 최소 admin_level. 개발 0(모든 계정) · 원격 1.</summary>
     public int CheatAdminLevel { get; set; }
 
+    /// <summary>서버 로그 출력 하한(<see cref="ServerLog.MinLevel"/>). 개발은 패킷까지 보이는 Debug · 이름으로 쓴다("Info").</summary>
+    public LogLevel LogLevel { get; set; } = LogLevel.Debug;
+
     public AuctionClientSettings Auction { get; set; } = new();
 
     /// <summary><paramref name="directory"/>의 appsettings.json → 환경 변수 → 명령줄 순으로 덮어 읽는다.</summary>

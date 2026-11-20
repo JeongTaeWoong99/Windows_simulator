@@ -35,6 +35,13 @@ public class DBManager : IDBQueue, IDbRunner
         }.ToString();
 
         _connectionFactory = () => new SqliteConnection(connectionString);
+
+        // WAL은 DB 파일에 남는 속성이라 한 번만 켠다. 기본(rollback) 모드는 동접 500명에서 잠금으로 세션이 끊긴다 (T-192).
+        using var conn = _connectionFactory();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "PRAGMA journal_mode = WAL;";
+        cmd.ExecuteNonQuery();
     }
 
     // 절대 경로(Docker 볼륨)는 그대로 쓴다 — 없으면 마이그레이터가 새로 만든다.
@@ -59,6 +66,18 @@ public class DBManager : IDBQueue, IDbRunner
         }
 
         throw new FileNotFoundException($"DB 파일을 찾을 수 없습니다: Shared/{dbFileName}");
+    }
+
+    // 끌 때 부른다 — WAL에 쌓인 쓰기를 본체에 합치고 풀의 연결을 닫는다. 안 하면 git의 game.sqlite3가 -wal 없이는 낡은 파일이 된다.
+    public void Checkpoint()
+    {
+        using var conn = _connectionFactory!();
+        conn.Open();
+        using var cmd = conn.CreateCommand();
+        cmd.CommandText = "PRAGMA wal_checkpoint(TRUNCATE);";
+        cmd.ExecuteNonQuery();
+
+        SqliteConnection.ClearPool(conn);
     }
 
     public void Post<TRepository>(TRepository repository) where TRepository : IRepository
@@ -99,7 +118,8 @@ public class DBManager : IDBQueue, IDbRunner
         await conn.OpenAsync();
 
         await using var cmd = conn.CreateCommand();
-        cmd.CommandText = $"PRAGMA busy_timeout = {BusyTimeoutMs};";
+        // synchronous는 연결마다다. WAL의 NORMAL은 전원이 나가도 DB가 깨지지 않고 마지막 커밋 몇 개만 잃을 수 있다.
+        cmd.CommandText = $"PRAGMA busy_timeout = {BusyTimeoutMs}; PRAGMA synchronous = NORMAL;";
         await cmd.ExecuteNonQueryAsync();
 
         return conn;
