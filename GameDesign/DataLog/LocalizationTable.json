@@ -115,6 +115,31 @@
     "EN": "Stonegate Guardian Seal"
   },
   {
+    "Key": "Artifact.24.Name",
+    "KR": "장인의 나무 자",
+    "EN": "Artisan's Wooden Ruler"
+  },
+  {
+    "Key": "Artifact.25.Name",
+    "KR": "은빛 수확패",
+    "EN": "Silver Harvest Plaque"
+  },
+  {
+    "Key": "Artifact.26.Name",
+    "KR": "청동 감정 인장",
+    "EN": "Bronze Appraisal Seal"
+  },
+  {
+    "Key": "Artifact.27.Name",
+    "KR": "묻힌 길잡이의 나침반",
+    "EN": "Buried Pathfinder's Compass"
+  },
+  {
+    "Key": "Artifact.28.Name",
+    "KR": "개척자의 문장",
+    "EN": "Pioneer's Crest"
+  },
+  {
     "Key": "Building.1.Name",
     "KR": "관리소",
     "EN": "Office"

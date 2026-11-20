@@ -556,7 +556,7 @@
     "GachaId": 9,
     "EquipTID": 1001,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 목검"
   },
   {
@@ -564,7 +564,7 @@
     "GachaId": 9,
     "EquipTID": 2001,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 구리 반지"
   },
   {
@@ -572,7 +572,7 @@
     "GachaId": 9,
     "EquipTID": 3001,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 원석"
   },
   {
@@ -580,7 +580,7 @@
     "GachaId": 9,
     "EquipTID": 1101,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 나무 호미"
   },
   {
@@ -588,7 +588,7 @@
     "GachaId": 9,
     "EquipTID": 1201,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 나무 모종삽"
   },
   {
@@ -596,7 +596,7 @@
     "GachaId": 9,
     "EquipTID": 1301,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 돌 곡괭이"
   },
   {
@@ -604,7 +604,7 @@
     "GachaId": 9,
     "EquipTID": 1401,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 손도끼"
   },
   {
@@ -612,7 +612,7 @@
     "GachaId": 9,
     "EquipTID": 1501,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 사냥용 활"
   },
   {
@@ -620,7 +620,7 @@
     "GachaId": 9,
     "EquipTID": 3101,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 풍년석"
   },
   {
@@ -628,7 +628,7 @@
     "GachaId": 9,
     "EquipTID": 3201,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 흙빛 조각석"
   },
   {
@@ -636,7 +636,7 @@
     "GachaId": 9,
     "EquipTID": 3301,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 철광석 조각"
   },
   {
@@ -644,7 +644,7 @@
     "GachaId": 9,
     "EquipTID": 3401,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 나무옹이석"
   },
   {
@@ -652,7 +652,7 @@
     "GachaId": 9,
     "EquipTID": 3501,
     "Count": 1,
-    "Weight": 69,
+    "Weight": 8556,
     "Description": "Common 짐승 이빨석"
   },
   {
@@ -660,7 +660,7 @@
     "GachaId": 10,
     "EquipTID": 1002,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 무쇠 삽"
   },
   {
@@ -668,7 +668,7 @@
     "GachaId": 10,
     "EquipTID": 1102,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 무쇠 호미"
   },
   {
@@ -676,7 +676,7 @@
     "GachaId": 10,
     "EquipTID": 1302,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 무쇠 곡괭이"
   },
   {
@@ -684,7 +684,7 @@
     "GachaId": 10,
     "EquipTID": 1402,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 무쇠 도끼"
   },
   {
@@ -692,7 +692,7 @@
     "GachaId": 10,
     "EquipTID": 1502,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 참나무 활"
   },
   {
@@ -700,7 +700,7 @@
     "GachaId": 10,
     "EquipTID": 2003,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 은 목걸이"
   },
   {
@@ -708,7 +708,7 @@
     "GachaId": 10,
     "EquipTID": 3102,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 새싹 수정"
   },
   {
@@ -716,7 +716,7 @@
     "GachaId": 10,
     "EquipTID": 3202,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 지층 수정"
   },
   {
@@ -724,7 +724,7 @@
     "GachaId": 10,
     "EquipTID": 3302,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 광맥 수정"
   },
   {
@@ -732,7 +732,7 @@
     "GachaId": 10,
     "EquipTID": 3402,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 수액 호박"
   },
   {
@@ -740,7 +740,7 @@
     "GachaId": 10,
     "EquipTID": 3502,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Uncommon 추적자의 수정"
   },
   {
@@ -844,7 +844,7 @@
     "GachaId": 12,
     "EquipTID": 1002,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 무쇠 삽"
   },
   {
@@ -852,7 +852,7 @@
     "GachaId": 12,
     "EquipTID": 1102,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 무쇠 호미"
   },
   {
@@ -860,7 +860,7 @@
     "GachaId": 12,
     "EquipTID": 1302,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 무쇠 곡괭이"
   },
   {
@@ -868,7 +868,7 @@
     "GachaId": 12,
     "EquipTID": 1402,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 무쇠 도끼"
   },
   {
@@ -876,7 +876,7 @@
     "GachaId": 12,
     "EquipTID": 1502,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 참나무 활"
   },
   {
@@ -884,7 +884,7 @@
     "GachaId": 12,
     "EquipTID": 2003,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 은 목걸이"
   },
   {
@@ -892,7 +892,7 @@
     "GachaId": 12,
     "EquipTID": 3102,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 새싹 수정"
   },
   {
@@ -900,7 +900,7 @@
     "GachaId": 12,
     "EquipTID": 3202,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 지층 수정"
   },
   {
@@ -908,7 +908,7 @@
     "GachaId": 12,
     "EquipTID": 3302,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 광맥 수정"
   },
   {
@@ -916,7 +916,7 @@
     "GachaId": 12,
     "EquipTID": 3402,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 수액 호박"
   },
   {
@@ -924,7 +924,7 @@
     "GachaId": 12,
     "EquipTID": 3502,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Uncommon 추적자의 수정"
   },
   {
@@ -932,7 +932,7 @@
     "GachaId": 13,
     "EquipTID": 2002,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 탐험가의 목걸이"
   },
   {
@@ -940,7 +940,7 @@
     "GachaId": 13,
     "EquipTID": 1103,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 강철 낫"
   },
   {
@@ -948,7 +948,7 @@
     "GachaId": 13,
     "EquipTID": 1203,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 강철 삽"
   },
   {
@@ -956,7 +956,7 @@
     "GachaId": 13,
     "EquipTID": 1303,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 강철 곡괭이"
   },
   {
@@ -964,7 +964,7 @@
     "GachaId": 13,
     "EquipTID": 1403,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 양날 도끼"
   },
   {
@@ -972,7 +972,7 @@
     "GachaId": 13,
     "EquipTID": 1503,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 강철 석궁"
   },
   {
@@ -980,7 +980,7 @@
     "GachaId": 13,
     "EquipTID": 2004,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 노동자의 팔찌"
   },
   {
@@ -988,7 +988,7 @@
     "GachaId": 13,
     "EquipTID": 3103,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 곡창의 비취"
   },
   {
@@ -996,7 +996,7 @@
     "GachaId": 13,
     "EquipTID": 3203,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 유적의 호박"
   },
   {
@@ -1004,7 +1004,7 @@
     "GachaId": 13,
     "EquipTID": 3303,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 지맥의 흑옥"
   },
   {
@@ -1012,7 +1012,7 @@
     "GachaId": 13,
     "EquipTID": 3403,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 고목의 녹옥"
   },
   {
@@ -1020,7 +1020,7 @@
     "GachaId": 13,
     "EquipTID": 3503,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 7425,
     "Description": "Rare 맹수의 홍옥"
   },
   {
@@ -1116,7 +1116,7 @@
     "GachaId": 15,
     "EquipTID": 2002,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 탐험가의 목걸이"
   },
   {
@@ -1124,7 +1124,7 @@
     "GachaId": 15,
     "EquipTID": 1103,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 강철 낫"
   },
   {
@@ -1132,7 +1132,7 @@
     "GachaId": 15,
     "EquipTID": 1203,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 강철 삽"
   },
   {
@@ -1140,7 +1140,7 @@
     "GachaId": 15,
     "EquipTID": 1303,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 강철 곡괭이"
   },
   {
@@ -1148,7 +1148,7 @@
     "GachaId": 15,
     "EquipTID": 1403,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 양날 도끼"
   },
   {
@@ -1156,7 +1156,7 @@
     "GachaId": 15,
     "EquipTID": 1503,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 강철 석궁"
   },
   {
@@ -1164,7 +1164,7 @@
     "GachaId": 15,
     "EquipTID": 2004,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 노동자의 팔찌"
   },
   {
@@ -1172,7 +1172,7 @@
     "GachaId": 15,
     "EquipTID": 3103,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 곡창의 비취"
   },
   {
@@ -1180,7 +1180,7 @@
     "GachaId": 15,
     "EquipTID": 3203,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 유적의 호박"
   },
   {
@@ -1188,7 +1188,7 @@
     "GachaId": 15,
     "EquipTID": 3303,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 지맥의 흑옥"
   },
   {
@@ -1196,7 +1196,7 @@
     "GachaId": 15,
     "EquipTID": 3403,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 고목의 녹옥"
   },
   {
@@ -1204,7 +1204,7 @@
     "GachaId": 15,
     "EquipTID": 3503,
     "Count": 1,
-    "Weight": 75,
+    "Weight": 2325,
     "Description": "Rare 맹수의 홍옥"
   },
   {
@@ -1212,7 +1212,7 @@
     "GachaId": 16,
     "EquipTID": 1104,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 은빛 쟁기"
   },
   {
@@ -1220,7 +1220,7 @@
     "GachaId": 16,
     "EquipTID": 1204,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 고고학자의 붓"
   },
   {
@@ -1228,7 +1228,7 @@
     "GachaId": 16,
     "EquipTID": 1304,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 흑요석 곡괭이"
   },
   {
@@ -1236,7 +1236,7 @@
     "GachaId": 16,
     "EquipTID": 1404,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 백년목 도끼"
   },
   {
@@ -1244,7 +1244,7 @@
     "GachaId": 16,
     "EquipTID": 1504,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 은빛 장궁"
   },
   {
@@ -1252,7 +1252,7 @@
     "GachaId": 16,
     "EquipTID": 2005,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 장인의 인장"
   },
   {
@@ -1260,7 +1260,7 @@
     "GachaId": 16,
     "EquipTID": 3104,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 황금 이삭석"
   },
   {
@@ -1268,7 +1268,7 @@
     "GachaId": 16,
     "EquipTID": 3204,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 고대 문양석"
   },
   {
@@ -1276,7 +1276,7 @@
     "GachaId": 16,
     "EquipTID": 3304,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 용암 결정"
   },
   {
@@ -1284,7 +1284,7 @@
     "GachaId": 16,
     "EquipTID": 3404,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 백년목 결정"
   },
   {
@@ -1292,7 +1292,7 @@
     "GachaId": 16,
     "EquipTID": 3504,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Epic 사냥꾼의 별"
   },
   {
@@ -1388,7 +1388,7 @@
     "GachaId": 18,
     "EquipTID": 1104,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 은빛 쟁기"
   },
   {
@@ -1396,7 +1396,7 @@
     "GachaId": 18,
     "EquipTID": 1204,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 고고학자의 붓"
   },
   {
@@ -1404,7 +1404,7 @@
     "GachaId": 18,
     "EquipTID": 1304,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 흑요석 곡괭이"
   },
   {
@@ -1412,7 +1412,7 @@
     "GachaId": 18,
     "EquipTID": 1404,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 백년목 도끼"
   },
   {
@@ -1420,7 +1420,7 @@
     "GachaId": 18,
     "EquipTID": 1504,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 은빛 장궁"
   },
   {
@@ -1428,7 +1428,7 @@
     "GachaId": 18,
     "EquipTID": 2005,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 장인의 인장"
   },
   {
@@ -1436,7 +1436,7 @@
     "GachaId": 18,
     "EquipTID": 3104,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 황금 이삭석"
   },
   {
@@ -1444,7 +1444,7 @@
     "GachaId": 18,
     "EquipTID": 3204,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 고대 문양석"
   },
   {
@@ -1452,7 +1452,7 @@
     "GachaId": 18,
     "EquipTID": 3304,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 용암 결정"
   },
   {
@@ -1460,7 +1460,7 @@
     "GachaId": 18,
     "EquipTID": 3404,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 백년목 결정"
   },
   {
@@ -1468,7 +1468,7 @@
     "GachaId": 18,
     "EquipTID": 3504,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Epic 사냥꾼의 별"
   },
   {
@@ -1476,7 +1476,7 @@
     "GachaId": 19,
     "EquipTID": 1105,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 풍년의 괭이"
   },
   {
@@ -1484,7 +1484,7 @@
     "GachaId": 19,
     "EquipTID": 1205,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 용린 발굴삽"
   },
   {
@@ -1492,7 +1492,7 @@
     "GachaId": 19,
     "EquipTID": 1305,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 미스릴 곡괭이"
   },
   {
@@ -1500,7 +1500,7 @@
     "GachaId": 19,
     "EquipTID": 1405,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 서리강철 도끼"
   },
   {
@@ -1508,7 +1508,7 @@
     "GachaId": 19,
     "EquipTID": 1505,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 폭풍의 장궁"
   },
   {
@@ -1516,7 +1516,7 @@
     "GachaId": 19,
     "EquipTID": 2006,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 대장인의 훈장"
   },
   {
@@ -1524,7 +1524,7 @@
     "GachaId": 19,
     "EquipTID": 3105,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 대지의 심장"
   },
   {
@@ -1532,7 +1532,7 @@
     "GachaId": 19,
     "EquipTID": 3205,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 왕도의 심장"
   },
   {
@@ -1540,7 +1540,7 @@
     "GachaId": 19,
     "EquipTID": 3305,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 대지핵 결정"
   },
   {
@@ -1548,7 +1548,7 @@
     "GachaId": 19,
     "EquipTID": 3405,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 숲의 심장"
   },
   {
@@ -1556,7 +1556,7 @@
     "GachaId": 19,
     "EquipTID": 3505,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Legendary 야수의 심장"
   },
   {
@@ -1652,7 +1652,7 @@
     "GachaId": 21,
     "EquipTID": 1105,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 풍년의 괭이"
   },
   {
@@ -1660,7 +1660,7 @@
     "GachaId": 21,
     "EquipTID": 1205,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 용린 발굴삽"
   },
   {
@@ -1668,7 +1668,7 @@
     "GachaId": 21,
     "EquipTID": 1305,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 미스릴 곡괭이"
   },
   {
@@ -1676,7 +1676,7 @@
     "GachaId": 21,
     "EquipTID": 1405,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 서리강철 도끼"
   },
   {
@@ -1684,7 +1684,7 @@
     "GachaId": 21,
     "EquipTID": 1505,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 폭풍의 장궁"
   },
   {
@@ -1692,7 +1692,7 @@
     "GachaId": 21,
     "EquipTID": 2006,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 대장인의 훈장"
   },
   {
@@ -1700,7 +1700,7 @@
     "GachaId": 21,
     "EquipTID": 3105,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 대지의 심장"
   },
   {
@@ -1708,7 +1708,7 @@
     "GachaId": 21,
     "EquipTID": 3205,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 왕도의 심장"
   },
   {
@@ -1716,7 +1716,7 @@
     "GachaId": 21,
     "EquipTID": 3305,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 대지핵 결정"
   },
   {
@@ -1724,7 +1724,7 @@
     "GachaId": 21,
     "EquipTID": 3405,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 숲의 심장"
   },
   {
@@ -1732,7 +1732,7 @@
     "GachaId": 21,
     "EquipTID": 3505,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 10044,
     "Description": "Legendary 야수의 심장"
   },
   {
@@ -1740,7 +1740,7 @@
     "GachaId": 22,
     "EquipTID": 1106,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 대지모의 호미"
   },
   {
@@ -1748,7 +1748,7 @@
     "GachaId": 22,
     "EquipTID": 1206,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 태초의 발굴삽"
   },
   {
@@ -1756,7 +1756,7 @@
     "GachaId": 22,
     "EquipTID": 1306,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 산신의 곡괭이"
   },
   {
@@ -1764,7 +1764,7 @@
     "GachaId": 22,
     "EquipTID": 1406,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 세계수의 도끼"
   },
   {
@@ -1772,7 +1772,7 @@
     "GachaId": 22,
     "EquipTID": 1506,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 월신의 활"
   },
   {
@@ -1780,7 +1780,7 @@
     "GachaId": 22,
     "EquipTID": 2007,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 창세의 고리"
   },
   {
@@ -1788,7 +1788,7 @@
     "GachaId": 22,
     "EquipTID": 3106,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 풍요의 성석"
   },
   {
@@ -1796,7 +1796,7 @@
     "GachaId": 22,
     "EquipTID": 3206,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 태고의 성석"
   },
   {
@@ -1804,7 +1804,7 @@
     "GachaId": 22,
     "EquipTID": 3306,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 광신의 성석"
   },
   {
@@ -1812,7 +1812,7 @@
     "GachaId": 22,
     "EquipTID": 3406,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 세계수 성석"
   },
   {
@@ -1820,7 +1820,7 @@
     "GachaId": 22,
     "EquipTID": 3506,
     "Count": 1,
-    "Weight": 81,
+    "Weight": 8019,
     "Description": "Mythic 월광 성석"
   },
   {
@@ -2292,7 +2292,7 @@
     "GachaId": 27,
     "EquipTID": 1105,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 풍년의 괭이 (감정)"
   },
   {
@@ -2300,7 +2300,7 @@
     "GachaId": 27,
     "EquipTID": 1205,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 용린 발굴삽 (감정)"
   },
   {
@@ -2308,7 +2308,7 @@
     "GachaId": 27,
     "EquipTID": 1305,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 미스릴 곡괭이 (감정)"
   },
   {
@@ -2316,7 +2316,7 @@
     "GachaId": 27,
     "EquipTID": 1405,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 서리강철 도끼 (감정)"
   },
   {
@@ -2324,7 +2324,7 @@
     "GachaId": 27,
     "EquipTID": 1505,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 폭풍의 장궁 (감정)"
   },
   {
@@ -2332,7 +2332,7 @@
     "GachaId": 27,
     "EquipTID": 2006,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 대장인의 훈장 (감정)"
   },
   {
@@ -2340,7 +2340,7 @@
     "GachaId": 27,
     "EquipTID": 3105,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 대지의 심장 (감정)"
   },
   {
@@ -2348,7 +2348,7 @@
     "GachaId": 27,
     "EquipTID": 3205,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 왕도의 심장 (감정)"
   },
   {
@@ -2356,7 +2356,7 @@
     "GachaId": 27,
     "EquipTID": 3305,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 대지핵 결정 (감정)"
   },
   {
@@ -2364,7 +2364,7 @@
     "GachaId": 27,
     "EquipTID": 3405,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 숲의 심장 (감정)"
   },
   {
@@ -2372,7 +2372,7 @@
     "GachaId": 27,
     "EquipTID": 3505,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 50220,
     "Description": "Legendary 야수의 심장 (감정)"
   },
   {
@@ -2380,7 +2380,7 @@
     "GachaId": 28,
     "EquipTID": 1106,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 대지모의 호미 (감정)"
   },
   {
@@ -2388,7 +2388,7 @@
     "GachaId": 28,
     "EquipTID": 1206,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 태초의 발굴삽 (감정)"
   },
   {
@@ -2396,7 +2396,7 @@
     "GachaId": 28,
     "EquipTID": 1306,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 산신의 곡괭이 (감정)"
   },
   {
@@ -2404,7 +2404,7 @@
     "GachaId": 28,
     "EquipTID": 1406,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 세계수의 도끼 (감정)"
   },
   {
@@ -2412,7 +2412,7 @@
     "GachaId": 28,
     "EquipTID": 1506,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 월신의 활 (감정)"
   },
   {
@@ -2420,7 +2420,7 @@
     "GachaId": 28,
     "EquipTID": 2007,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 창세의 고리 (감정)"
   },
   {
@@ -2428,7 +2428,7 @@
     "GachaId": 28,
     "EquipTID": 3106,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 풍요의 성석 (감정)"
   },
   {
@@ -2436,7 +2436,7 @@
     "GachaId": 28,
     "EquipTID": 3206,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 태고의 성석 (감정)"
   },
   {
@@ -2444,7 +2444,7 @@
     "GachaId": 28,
     "EquipTID": 3306,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 광신의 성석 (감정)"
   },
   {
@@ -2452,7 +2452,7 @@
     "GachaId": 28,
     "EquipTID": 3406,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 세계수 성석 (감정)"
   },
   {
@@ -2460,7 +2460,7 @@
     "GachaId": 28,
     "EquipTID": 3506,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 100440,
     "Description": "Mythic 월광 성석 (감정)"
   },
   {
@@ -2468,7 +2468,7 @@
     "GachaId": 29,
     "EquipTID": 1106,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 대지모의 호미 (감정)"
   },
   {
@@ -2476,7 +2476,7 @@
     "GachaId": 29,
     "EquipTID": 1206,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 태초의 발굴삽 (감정)"
   },
   {
@@ -2484,7 +2484,7 @@
     "GachaId": 29,
     "EquipTID": 1306,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 산신의 곡괭이 (감정)"
   },
   {
@@ -2492,7 +2492,7 @@
     "GachaId": 29,
     "EquipTID": 1406,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 세계수의 도끼 (감정)"
   },
   {
@@ -2500,7 +2500,7 @@
     "GachaId": 29,
     "EquipTID": 1506,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 월신의 활 (감정)"
   },
   {
@@ -2508,7 +2508,7 @@
     "GachaId": 29,
     "EquipTID": 2007,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 창세의 고리 (감정)"
   },
   {
@@ -2516,7 +2516,7 @@
     "GachaId": 29,
     "EquipTID": 3106,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 풍요의 성석 (감정)"
   },
   {
@@ -2524,7 +2524,7 @@
     "GachaId": 29,
     "EquipTID": 3206,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 태고의 성석 (감정)"
   },
   {
@@ -2532,7 +2532,7 @@
     "GachaId": 29,
     "EquipTID": 3306,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 광신의 성석 (감정)"
   },
   {
@@ -2540,7 +2540,7 @@
     "GachaId": 29,
     "EquipTID": 3406,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 세계수 성석 (감정)"
   },
   {
@@ -2548,7 +2548,7 @@
     "GachaId": 29,
     "EquipTID": 3506,
     "Count": 1,
-    "Weight": 810,
+    "Weight": 25110,
     "Description": "Mythic 월광 성석 (감정)"
   },
   {

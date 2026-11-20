@@ -228,5 +228,55 @@
     "EffectValue": 3,
     "BasePrice": 2000,
     "Description": "돌문 수호자 상자 전용"
+  },
+  {
+    "ArtifactTID": 24,
+    "Name": "장인의 나무 자",
+    "GlobalRarity": "Common",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 1,
+    "BasePrice": 400,
+    "Description": "나무 상자 보상 (#107)"
+  },
+  {
+    "ArtifactTID": 25,
+    "Name": "은빛 수확패",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "None",
+    "EffectValue": 2,
+    "BasePrice": 1200,
+    "Description": "은 상자 보상 (#107)"
+  },
+  {
+    "ArtifactTID": 26,
+    "Name": "청동 감정 인장",
+    "GlobalRarity": "Rare",
+    "EffectType": "AppraiseCostDiscount",
+    "Industry": "None",
+    "EffectValue": 15,
+    "BasePrice": 3600,
+    "Description": "희귀 유물 감정 보상 (#107)"
+  },
+  {
+    "ArtifactTID": 27,
+    "Name": "묻힌 길잡이의 나침반",
+    "GlobalRarity": "Epic",
+    "EffectType": "RelicChanceAdd",
+    "Industry": "None",
+    "EffectValue": 20,
+    "BasePrice": 10800,
+    "Description": "영웅 유물 감정 보상 (#107)"
+  },
+  {
+    "ArtifactTID": 28,
+    "Name": "개척자의 문장",
+    "GlobalRarity": "Legendary",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 4,
+    "BasePrice": 32000,
+    "Description": "전설 유물 감정 보상 (#107)"
   }
 ]
