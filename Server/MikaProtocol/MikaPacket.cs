@@ -117,8 +117,7 @@ namespace MikaProtocol
         S_ArtifactInventoryResponse = 87,
         C_ArtifactEquipRequest = 88,
         S_ArtifactEquipResponse = 89,
-        C_ArtifactActiveRequest = 90,
-        S_ArtifactActiveResponse = 91,
+        // 90·91은 옛 아티팩트 켜고 끄기(C_ArtifactActiveRequest·S_ArtifactActiveResponse)의 결번이다 — 2026-11-20 철거(이슈 #90). 재사용하지 않는다
         C_ArtifactSellRequest = 92,
         S_ArtifactSellResponse = 93,
         C_ShopBuyRequest = 94,
@@ -414,23 +413,6 @@ namespace MikaProtocol
     {
         public EResultCode Result      { get; set; }
         public int         ArtifactTid { get; set; }
-    }
-
-    /// <summary>폐기 예정(#90) — 장착한 번호는 항상 켜져 있다. 서버는 바꾸지 않고 지금 상태로 답한다. 클라 전환 뒤 지운다.</summary>
-    [MemoryPackable, Packet(PacketId.C_ArtifactActiveRequest)]
-    public partial class C_ArtifactActiveRequest : IPacket
-    {
-        public int  ArtifactTid { get; set; }
-        public bool IsActive    { get; set; }
-    }
-
-    /// <summary>폐기 예정(#90). 장착한 번호면 Ok · IsActive = true, 아니면 ArtifactNotEquipped.</summary>
-    [MemoryPackable, Packet(PacketId.S_ArtifactActiveResponse)]
-    public partial class S_ArtifactActiveResponse : IPacket
-    {
-        public EResultCode Result      { get; set; }
-        public int         ArtifactTid { get; set; }
-        public bool        IsActive    { get; set; }
     }
 
     /// <summary>

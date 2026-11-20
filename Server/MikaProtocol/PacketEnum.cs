@@ -118,7 +118,7 @@ namespace MikaProtocol
 
         // ── 1400~: 아티팩트 도감 (T-181) ── 인벤토리에 없으면 NotEnoughItem · 표에 없는 번호 InvalidArtifact
         ArtifactAlreadyEquipped = 1400, // 그 번호는 이미 도감에 장착했다 — 남는 것은 판매·거래소로
-        ArtifactNotEquipped     = 1401, // 도감에 장착하지 않은 번호는 켜고 끌 수 없다
+        // 1401은 옛 켜고 끄기 거절(ArtifactNotEquipped)의 결번이다 — 2026-11-20 철거(이슈 #90)
         InvalidArtifact         = 1402, // ArtifactTable에 없는 번호 · 빈 목록 · 0개 이하
 
         // ── 1500~: 건물 (T-183) ── 골드 부족은 NotEnoughCurrency(102) · 자원 부족은 NotEnoughItem(301)
