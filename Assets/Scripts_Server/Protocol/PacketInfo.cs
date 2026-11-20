@@ -55,8 +55,7 @@ namespace MikaProtocol
     [MemoryPackable]
     public partial class ArtifactCodexInfo
     {
-        public int  ArtifactTid { get; set; }
-        public bool IsActive    { get; set; }   // 폐기 예정(#90) — 항상 true. 클라 전환 뒤 지운다
+        public int ArtifactTid { get; set; }
     }
 
     // 산업 하나에 대한 캐릭터 적성. 값의 주인은 서버다 — 클라는 CharacterTable을 직접 읽지 않는다.

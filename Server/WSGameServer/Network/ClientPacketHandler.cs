@@ -446,22 +446,6 @@ public static class ClientPacketHandler
         user.TryEquipArtifact(req.ArtifactTid, GameClock.Instance.UtcNow);
     }
 
-    /// <summary>옛 켜고 끄기 요청 — 바꾸지 않고 지금 상태로 답한다(#90 · 클라 전환 뒤 삭제).</summary>
-    [PacketHandler]
-    public static void Handle_C_ArtifactActiveRequest(ISession session, C_ArtifactActiveRequest req)
-    {
-        ServerLog.Debug("아티팩트", $"켜고 끄기 요청 번호={req.ArtifactTid} 켬={req.IsActive} sid={session.SessionId}");
-
-        var user = session.GetUser();
-        if (user == null)
-        {
-            session.SendPacket(new S_ArtifactActiveResponse { Result = EResultCode.NotLoggedIn, ArtifactTid = req.ArtifactTid });
-            return;
-        }
-
-        user.ReplyArtifactActive(req.ArtifactTid);
-    }
-
     /// <summary>캐릭터·장비 개체 판매. 보유·착용·배치 검증은 User가 한다.</summary>
     [PacketHandler]
     public static void Handle_C_EntitySellRequest(ISession session, C_EntitySellRequest req)

@@ -55,8 +55,7 @@ public class ArtifactCodexTest : IDisposable
         var saved = b.DB.PostedOf<EquipArtifactRepository>().ShouldHaveSingleItem();
         saved.ArtifactTid.ShouldBe(FishermanCharm);
         saved.Changes.ShouldHaveSingleItem().Count.ShouldBe(2);
-        Last<S_ArtifactListResponse>(b).Artifacts.ShouldHaveSingleItem().ShouldSatisfyAllConditions(
-            a => a.ArtifactTid.ShouldBe(FishermanCharm), a => a.IsActive.ShouldBeTrue());
+        Last<S_ArtifactListResponse>(b).Artifacts.ShouldHaveSingleItem().ArtifactTid.ShouldBe(FishermanCharm);
         Last<S_ArtifactInventoryResponse>(b).Stacks.ShouldHaveSingleItem().Count.ShouldBe(2);
     }
 
@@ -92,32 +91,6 @@ public class ArtifactCodexTest : IDisposable
         user.TryEquipArtifact(99_999, Now);
 
         Last<S_ArtifactEquipResponse>(b).Result.ShouldBe(EResultCode.InvalidArtifact);
-    }
-
-    // ── 항상 켜짐 (#90) ──
-
-    [Fact]
-    public void 옛_켜고_끄기_요청은_바꾸지_않고_켜짐으로_답한다()
-    {
-        var (user, b) = NewUser(Array.Empty<(int, int)>(), CrackedComb);
-
-        user.ReplyArtifactActive(CrackedComb);
-
-        Last<S_ArtifactActiveResponse>(b).ShouldSatisfyAllConditions(r => r.Result.ShouldBe(EResultCode.Ok), r => r.IsActive.ShouldBeTrue());
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(2);
-        b.DB.Posted.ShouldBeEmpty();
-    }
-
-    [Fact]
-    public void 장착하지_않은_번호의_켜고_끄기_요청은_거절한다()
-    {
-        var (user, b) = NewUser(new[] { (CrackedComb, 1) });
-
-        user.ReplyArtifactActive(CrackedComb);
-
-        Last<S_ArtifactActiveResponse>(b).ShouldSatisfyAllConditions(
-            r => r.Result.ShouldBe(EResultCode.ArtifactNotEquipped), r => r.IsActive.ShouldBeFalse());
-        user.GetArtifactEffect(UserTraitEffect.SpeedAdd, IndustryType.Farming).ShouldBe(0);
     }
 
     // ── 즉시 판매 ──

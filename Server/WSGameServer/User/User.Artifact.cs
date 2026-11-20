@@ -67,7 +67,7 @@ public partial class User
         Send(new S_ArtifactListResponse
         {
             Artifacts = _codex.Order()
-                .Select(tid => new ArtifactCodexInfo { ArtifactTid = tid, IsActive = true })
+                .Select(tid => new ArtifactCodexInfo { ArtifactTid = tid })
                 .ToList(),
         });
     }
@@ -183,21 +183,6 @@ public partial class User
 
             Send(new S_ArtifactEquipResponse { Result = code, ArtifactTid = artifactTid });
         }
-    }
-
-    /// <summary>
-    /// 옛 켜고 끄기 요청에 지금 상태로만 답한다 — 장착한 번호는 항상 켜져 있다(#90).
-    /// 클라가 요청을 지우면 패킷과 함께 없앤다.
-    /// </summary>
-    public void ReplyArtifactActive(int artifactTid)
-    {
-        var equipped = IsArtifactEquipped(artifactTid);
-        Send(new S_ArtifactActiveResponse
-        {
-            Result      = equipped ? EResultCode.Ok : EResultCode.ArtifactNotEquipped,
-            ArtifactTid = artifactTid,
-            IsActive    = equipped,
-        });
     }
 
     /// <summary>
