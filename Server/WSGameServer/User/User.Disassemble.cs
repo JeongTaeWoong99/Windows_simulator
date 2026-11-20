@@ -6,7 +6,7 @@ namespace WSGameServer;
 public partial class User
 {
     /// <summary>
-    /// 장비와 아티팩트를 지우고 등급별 재료(<c>DisassembleTable</c>)를 인벤토리에 넣는다(T-131 · T-185). 아티팩트는 <c>ArtifactItemCount</c>를 쓴다.
+    /// 장비와 아티팩트를 지우고 등급별 재료(<c>DisassembleTable</c>)를 넣는다(T-131 · T-185 — 창고의 같은 자원 칸부터). 아티팩트는 <c>ArtifactItemCount</c>를 쓴다.
     /// 전부 검증한 뒤에만 지운다 — 하나라도 걸리면 아무것도 바뀌지 않는다.
     /// 착용 중 · 잠김 · 큐브 결과 고르기 전 장비, 모자라거나 잠긴 아티팩트, 재료가 인벤토리에 다 안 들어가면 거절한다.
     /// </summary>
@@ -106,10 +106,11 @@ public partial class User
             RemoveEquip(equipId);
         }
 
+        // 칸 검사(HasStorageFor)와 같은 순서로 넣는다 — 창고의 같은 자원 칸부터(T-175). 다르면 검사를 통과한 재료가 버려진다.
         var changes = new List<ItemChangeInfo>();
         foreach (var (tid, count) in materials)
         {
-            changes.AddRange(Inventory.AddItem(tid, count, MaxStackOf(tid), out _));
+            changes.AddRange(Deposit(Warehouse, Inventory, tid, count, out _));
         }
 
         PostDBTask(new DisassembleEquipsRepository(this, equipIds.ToList(), artifactChanges, changes));

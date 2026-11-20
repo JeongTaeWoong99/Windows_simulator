@@ -70,6 +70,38 @@ public class WarehouseRepositoryTest : IDisposable
     }
 
     [Fact]
+    public async Task 장착하고_배치한_채_창고로_옮겨도_재로그인하면_그대로다()
+    {
+        // 캐릭터 40(장비 10 착용 · 슬롯 0 배치)과 장비 10을 창고로 옮긴다(T-164). 이동이 매핑·배치 행을 건드리면 재접속에서 풀린다.
+        const long uid = 7;
+        _db.Execute($"INSERT INTO t_character (character_id, user_id, character_tid, slot) VALUES (40, {uid}, {User.DefaultCharacterTid}, 0)");
+        _db.Execute($"INSERT INTO t_user_equip (equip_id, user_id, equip_tid, slot_position) VALUES (10, {uid}, 9101, 0)");
+        _db.Execute("INSERT INTO t_character_equip VALUES (40, 1, 10)");
+        _db.Execute($"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, industry_level, character_id) VALUES ({uid}, 0, 4, 1, 40)");
+        var conn = new DbConnection(_db.Connection);
+        await new WarehouseTransferRepository(NewUser(), EStorageTab.Character, new List<ItemChangeInfo>(),
+            new List<EntityMove> { new(40, EContainer.Warehouse, 3) }).ExecuteAsync(conn);
+        await new WarehouseTransferRepository(NewUser(), EStorageTab.Equip, new List<ItemChangeInfo>(),
+            new List<EntityMove> { new(10, EContainer.Warehouse, 5) }).ExecuteAsync(conn);
+
+        var b = new TestUserBuilder();
+        b.Equips.Load(new[]
+        {
+            new GameData.EquipTableRow { EquipTID = 9101, Name = "검", GlobalRarity = GameData.GlobalRarity.Common, EquipKind = GameData.EquipKind.Weapon,
+                                         Industry = GameData.IndustryType.None, SpeedAddPermille = 100 },
+        });
+        var user  = b.Build(uid);
+        var login = new LoginRepository(user);
+        await login.ExecuteAsync(conn);
+        login.Apply();
+
+        var equip = b.Channel.SentOf<S_EquipListResponse>().Last().Equips.Single();
+        (equip.Container, equip.EquippedCharacterId).ShouldBe((EContainer.Warehouse, 40L));
+        user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
+        slot.CharacterId.ShouldBe(40);
+    }
+
+    [Fact]
     public async Task 창고로_지급한_캐릭터는_창고_보관함과_칸으로_저장된다()
     {
         // 전 캐릭터 치트(T-190) — 보관함을 빼먹으면 기본값 0(인벤토리)으로 들어가 재로그인 때 인벤토리로 옮겨진다
