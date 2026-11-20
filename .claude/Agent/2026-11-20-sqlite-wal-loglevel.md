@@ -20,3 +20,5 @@ tags: [server, db, infra]
 - 다음에 개발 서버를 한 번 띄우면 `Shared/game.sqlite3` 헤더가 WAL로 바뀌어 바이너리 diff가 생긴다 — 정상, 커밋한다
 - 운영(Docker) 로그 기본을 Info로 둘지는 미결 — compose에 주석으로만 자리를 둠
 - 1000명 잠금 오류 11건(쓰기 묶기)은 남은 과제
+- 부하 봇은 프로세스 이름으로 첫 프로세스를 잰다 — main 트리 개발 서버가 떠 있으면 그걸 잰다(CPU 0.3%로 나옴). exe 복사본 `WSLoadServer.exe` + `--process WSLoadServer`로 피했다 → `서버-비용.md` 5장
+- 실측 확인: 엔터 종료 시 `-wal`·`-shm`이 사라지고 본체에 합쳐짐 · 강제 종료(taskkill)면 `-wal`이 남음
