@@ -2758,5 +2758,85 @@
     "StatType": "Health",
     "Value": 21,
     "Description": ""
+  },
+  {
+    "RaidStatTID": 102075,
+    "Source": "Character",
+    "SourceTID": 1037,
+    "StatType": "Attack",
+    "Value": 13,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102076,
+    "Source": "Character",
+    "SourceTID": 1037,
+    "StatType": "Health",
+    "Value": 126,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102077,
+    "Source": "Character",
+    "SourceTID": 1038,
+    "StatType": "Attack",
+    "Value": 12,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102078,
+    "Source": "Character",
+    "SourceTID": 1038,
+    "StatType": "Health",
+    "Value": 116,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102079,
+    "Source": "Character",
+    "SourceTID": 1039,
+    "StatType": "Attack",
+    "Value": 14,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102080,
+    "Source": "Character",
+    "SourceTID": 1039,
+    "StatType": "Health",
+    "Value": 138,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102081,
+    "Source": "Character",
+    "SourceTID": 1040,
+    "StatType": "Attack",
+    "Value": 12,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102082,
+    "Source": "Character",
+    "SourceTID": 1040,
+    "StatType": "Health",
+    "Value": 112,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102083,
+    "Source": "Character",
+    "SourceTID": 1041,
+    "StatType": "Attack",
+    "Value": 13,
+    "Description": ""
+  },
+  {
+    "RaidStatTID": 102084,
+    "Source": "Character",
+    "SourceTID": 1041,
+    "StatType": "Health",
+    "Value": 126,
+    "Description": ""
   }
 ]
