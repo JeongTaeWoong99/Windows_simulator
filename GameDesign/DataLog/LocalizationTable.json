@@ -320,6 +320,31 @@
     "EN": "Abyssal Eye Priest"
   },
   {
+    "Key": "Character.1037.Name",
+    "KR": "농부",
+    "EN": "Farmer"
+  },
+  {
+    "Key": "Character.1038.Name",
+    "KR": "숙련 벌목꾼",
+    "EN": "Skilled Lumberjack"
+  },
+  {
+    "Key": "Character.1039.Name",
+    "KR": "백기사",
+    "EN": "White Knight"
+  },
+  {
+    "Key": "Character.1040.Name",
+    "KR": "독 슬라임",
+    "EN": "Poison Slime"
+  },
+  {
+    "Key": "Character.1041.Name",
+    "KR": "얼음 골렘",
+    "EN": "Ice Golem"
+  },
+  {
     "Key": "Equip.1001.Name",
     "KR": "목검",
     "EN": "Wooden Sword"

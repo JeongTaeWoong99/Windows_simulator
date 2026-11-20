@@ -1230,5 +1230,133 @@
     "Count": 1,
     "Weight": 2100,
     "Description": "Legendary 화염 군주 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 33037,
+    "GachaId": 33,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 농부 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34037,
+    "GachaId": 34,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 농부 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35037,
+    "GachaId": 35,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 농부 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 32038,
+    "GachaId": 32,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 960,
+    "Description": "Rare 숙련 벌목꾼 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 33038,
+    "GachaId": 33,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 3120,
+    "Description": "Rare 숙련 벌목꾼 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34038,
+    "GachaId": 34,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 3600,
+    "Description": "Rare 숙련 벌목꾼 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35038,
+    "GachaId": 35,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 3720,
+    "Description": "Rare 숙련 벌목꾼 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 34039,
+    "GachaId": 34,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 560,
+    "Description": "Legendary 백기사 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35039,
+    "GachaId": 35,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 2100,
+    "Description": "Legendary 백기사 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 32040,
+    "GachaId": 32,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 3885,
+    "Description": "Uncommon 독 슬라임 (뽑기권 A)"
+  },
+  {
+    "GachaCharacterTID": 33040,
+    "GachaId": 33,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 3990,
+    "Description": "Uncommon 독 슬라임 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34040,
+    "GachaId": 34,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 3360,
+    "Description": "Uncommon 독 슬라임 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35040,
+    "GachaId": 35,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 2835,
+    "Description": "Uncommon 독 슬라임 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 33041,
+    "GachaId": 33,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 672,
+    "Description": "Epic 얼음 골렘 (뽑기권 B)"
+  },
+  {
+    "GachaCharacterTID": 34041,
+    "GachaId": 34,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 2352,
+    "Description": "Epic 얼음 골렘 (뽑기권 C)"
+  },
+  {
+    "GachaCharacterTID": 35041,
+    "GachaId": 35,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 3024,
+    "Description": "Epic 얼음 골렘 (뽑기권 D)"
   }
 ]
