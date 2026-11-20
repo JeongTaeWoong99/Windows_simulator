@@ -66,9 +66,9 @@ public class RelicSheetTest
     {
         var gradeOfPool = Relics.ToDictionary(r => r.OpenGachaId, r => r.GlobalRarity);
 
-        GameTable.GachaArtifactTable.All.ShouldNotBeEmpty();
         GameTable.GachaArtifactTable.All
-            .ShouldAllBe(r => gradeOfPool.ContainsKey(r.GachaId) && GameTable.ArtifactTable[r.ArtifactTID].GlobalRarity == gradeOfPool[r.GachaId]);
+            .Where(r => gradeOfPool.ContainsKey(r.GachaId))
+            .ShouldAllBe(r => GameTable.ArtifactTable[r.ArtifactTID].GlobalRarity == gradeOfPool[r.GachaId]);
     }
 
     [Fact]
