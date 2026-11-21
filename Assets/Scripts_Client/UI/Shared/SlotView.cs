@@ -40,6 +40,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("이름 아래 보조 문구 — 자원은 수량. 캐릭터 탭에서는 적성 스트립이 이 자리를 쓴다")]
     private TMP_Text subText = null!;
 
+    // ※ 2026-11-21 — 수량도 LV·적성과 같은 어두운 배지 상자에 담는다. 예전 TMP '<mark>' 알약은 높이·어둡기가 배지와 달라
+    //   "오른쪽 아래만 바탕 밝기가 다르다"는 지적을 받았다. 보조 문구는 이 상자의 자식이고, 상자 폭은 'FitBottomRow'가 정한다.
+    [SerializeField, Tooltip("(선택) 보조 문구를 담는 어두운 배지 상자 — 오른쪽 아래 · LV 배지와 같은 바탕")]
+    private GameObject? subBadge;
+
     // ※ 아이콘이 칸을 거의 채워 아래 글자가 그림 위에 얹힌다 — 밝은 그림(뿔·늑대·알)에서 크림색 글자가 묻혔다(2026-11-19).
     //   글자가 있을 때만 켠다 — 빈 칸·글자 없는 칸에 그늘만 남지 않게.
     [SerializeField, Tooltip("(선택) 아래 글자 띠 — 보조 문구·레벨 배지 밑에 까는 그늘('ui_label_shade'). 둘 중 하나가 켜졌을 때만 켜진다")]
@@ -266,6 +271,12 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _nameBaseAlpha = nameText.alpha;
         _subBaseAlpha  = subText.alpha;
 
+        // 아래 글자들을 픽셀 경계에 — 소수 좌표면 갈무리 1px 획이 회색으로 번진다(이슈 #132 · 'UIPixelSnap').
+        // 배지는 글자가 아니라 배지 상자를 맞춘다 — 글자는 상자 안 정수 여백에 붙어 있어 함께 맞는다('FitBottomRow').
+        AddPixelSnap(subBadge != null ? subBadge : subText.gameObject);
+        AddPixelSnap(levelBadge);
+        AddPixelSnap(bestAptitudeChip);
+
         ApplyRarityBackground();
 
         aptitudeStrip.SetActive(false);
@@ -315,7 +326,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         _rarityColor  = RarityPalette.Get(data.Rarity);
         _isSpecial    = data.Rarity == GlobalRarity.Special;
         nameText.text = data.Name;
-        subText.text  = PillOf(data.Sub);
+        subText.text  = data.Sub;
 
         SetIcon(data.Icon);
         SetSizeBadge(data.SizeBadge);
@@ -382,7 +393,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 보조 문구를 바꾼다 — 'Bind'가 준 문구 대신 화면이 지은 한 줄(캐릭터 칸의 가장 높은 적성 '채굴 9').
     public void SetSubText(string text)
     {
-        subText.text = PillOf(text);
+        subText.text = text;
 
         RefreshLabelShade();
     }
@@ -405,14 +416,127 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         bestAptitudeIcon.enabled                 = false;
         bestAptitudeIcon.gameObject.SetActive(false);
         bestAptitudeText.text = $"{IndustryLabel.Get(industry!.Value)} {AptitudeLabel.GetText(value)}";
+
+        FitBottomRow();
     }
 
-    // 보조 문구(수량)에 어두운 알약을 깐다 — 왼쪽 아래 분류·LV 배지와 같은 바탕이라 둘이 한 짝으로 읽힌다(2026-11-20 사용자).
-    // TMP '<mark>'로 글자 폭만큼만 칠한다 — 칸 폭 전체 띠는 아래 'Label Shade'가 맡는다. 빈 문구는 그대로 비운다.
-    private const string PillOpen  = "<mark=#000000D1 padding=\"3,3,0,0\">";
-    private const string PillClose = "</mark>";
+    private static void AddPixelSnap(GameObject target)
+    {
+        if (!target.TryGetComponent(out UIPixelSnap _))
+        {
+            target.AddComponent<UIPixelSnap>();
+        }
+    }
 
-    private static string PillOf(string text) => text.Length == 0 ? text : PillOpen + text + PillClose;
+    // ── 아래 줄 글자(왼쪽 레벨·분류 배지 / 오른쪽 최고 적성·수량) ─────────────────────────────
+    // 셋은 한 줄에 나란히 읽히므로 **글꼴·크기·그림자가 같아야 한다**(2026-11-21 사용자 — "한글 굵기도 숫자도 다르다").
+    // 예전에는 14(적성) · 12(수량) · 자동 11.2(레벨)로 제각각이었다 — 갈무리는 12의 배수에서만 획이 1px로 또렷해서 크기가 다르면 굵기까지 달라 보인다.
+    // 영어처럼 이름이 길면 둘이 겹쳤다("LVHunting 3") → 칸을 넓히지 않고 **두 글자를 같은 크기로 함께 줄인다**(UI 글자 넘침 규칙).
+    private const float LabelFontSize = 12f; // 갈무리 1점 = 1px
+    private const float LabelFontMin  = 8f;  // 이보다 작으면 읽히지 않는다
+    private const int   BadgePadX     = 3;   // 배지 좌우 여백 — 정수라야 글자가 픽셀 경계에 남는다
+    private const int   CornerInset   = 7;   // 칸 모서리에서 배지까지 — 등급 테두리 안쪽 홈보다 1px 안(2026-11-21 사용자 "테두리와 겹친다")
+    private const int   BadgeGap      = 2;   // 왼쪽 배지와 오른쪽 글자 사이
+
+    private void OnRectTransformDimensionsChange()
+    {
+        // 격자가 칸 크기를 정하기 전(0)에 그린 줄을 크기가 정해진 뒤 다시 맞춘다
+        if (levelBadge != null)
+        {
+            FitBottomRow();
+        }
+    }
+
+    // 아래 줄 두 글자의 크기와 배지 폭을 정한다 (RefreshLabelShade · SetBestAptitude · 칸 크기가 바뀔 때).
+    private void FitBottomRow()
+    {
+        float width = ((RectTransform)transform).rect.width;
+        float scale = transform.lossyScale.x; // 오버레이 캔버스면 캔버스 배율 — 창 크기에 따라 1이 아니다(ScaleWithScreenSize)
+
+        if (width <= 0f || scale <= 0f)
+        {
+            return;
+        }
+
+        _fitScale = scale;
+
+        TMP_Text? left  = levelBadge.activeSelf ? levelText : null;
+        TMP_Text? right = bestAptitudeChip.activeSelf ? bestAptitudeText
+                        : subText.gameObject.activeSelf && subText.text.Length > 0 ? subText
+                        : null;
+
+        // ■ 화면 픽셀로 잰다 — 캔버스 배율이 0.9면 글꼴 12가 10.8px로 그려져 획이 1px·2px로 섞인다(2026-11-21 사용자 "굵기가 다르다").
+        //   그래서 글꼴·여백·배지 크기를 '화면 px ÷ 배율'로 넣어, 어느 창 크기에서도 화면에는 12px · 여백 3px · 높이 18px로 그려지게 한다.
+        float room   = (width - CornerInset * 2 - (left != null && right != null ? BadgeGap : 0)) * scale; // 화면 px
+        float sizePx = LabelFontSize;
+        float leftPx, rightPx;
+
+        while (true)
+        {
+            leftPx  = left  != null ? BadgeWidthPx(left,  sizePx, scale) : 0f;
+            rightPx = right != null ? BadgeWidthPx(right, sizePx, scale) : 0f;
+
+            if (leftPx + rightPx <= room || sizePx <= LabelFontMin)
+            {
+                break;
+            }
+
+            sizePx -= 1f;
+        }
+
+        // 배지 상자 — 글자 폭 + 좌우 여백. 셋 다 같은 어두운 상자라 바탕 밝기도 같다
+        if (left != null)
+        {
+            SetBadgeSize(levelBadge, leftPx, scale);
+        }
+
+        if (right == bestAptitudeText)
+        {
+            SetBadgeSize(bestAptitudeChip, rightPx, scale);
+        }
+
+        if (subBadge != null)
+        {
+            subBadge.SetActive(right == subText);
+
+            if (right == subText)
+            {
+                SetBadgeSize(subBadge, rightPx, scale);
+            }
+        }
+    }
+
+    private float _fitScale; // 마지막으로 맞춘 캔버스 배율 — 창 크기가 바뀌면 다시 맞춘다
+
+    private void LateUpdate()
+    {
+        if (!Mathf.Approximately(transform.lossyScale.x, _fitScale) && levelBadge != null)
+        {
+            FitBottomRow();
+        }
+    }
+
+    // 글자를 화면 sizePx 크기로 놓고 배지 폭을 화면 px로 돌려준다
+    private static float BadgeWidthPx(TMP_Text text, float sizePx, float scale)
+    {
+        float pad = BadgePadX / scale;
+
+        text.enableAutoSizing = false;
+        text.fontSize         = sizePx / scale;
+        text.margin           = new Vector4(pad, 0f, pad, 0f);
+
+        return Mathf.Ceil(text.GetPreferredValues(text.text).x * scale) + BadgePadX * 2;
+    }
+
+    private static void SetBadgeSize(GameObject badge, float widthPx, float scale)
+    {
+        var rect = (RectTransform)badge.transform;
+
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, widthPx / scale);
+        rect.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical,   BadgeHeightPx / scale);
+    }
+
+    private const float BadgeHeightPx = 18f; // 화면 px
 
     // 하단 밴드의 주인을 정한다 — 적성 스트립이 켜져 있거나 장비 칸(보석)이면 문구는 비킨다
     // (SetSubVisible · SetAptitudes · SetStatSockets에서 호출).
@@ -427,6 +551,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     // 아래 글자 띠 — 보조 문구나 레벨 배지가 켜졌을 때만 (RefreshSubText · SetLevelBadge에서 호출)
     private void RefreshLabelShade()
     {
+        FitBottomRow();
+
         if (labelShade == null)
         {
             return;
