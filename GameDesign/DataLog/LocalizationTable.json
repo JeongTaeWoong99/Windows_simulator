@@ -5130,6 +5130,66 @@
     "EN": "Other"
   },
   {
+    "Key": "UI.SlotTag.Farming",
+    "KR": "농사",
+    "EN": "Farm"
+  },
+  {
+    "Key": "UI.SlotTag.Excavation",
+    "KR": "발굴",
+    "EN": "Dig"
+  },
+  {
+    "Key": "UI.SlotTag.Mining",
+    "KR": "채굴",
+    "EN": "Mine"
+  },
+  {
+    "Key": "UI.SlotTag.Logging",
+    "KR": "벌목",
+    "EN": "Wood"
+  },
+  {
+    "Key": "UI.SlotTag.Hunting",
+    "KR": "사냥",
+    "EN": "Hunt"
+  },
+  {
+    "Key": "UI.SlotTag.Cube",
+    "KR": "큐브",
+    "EN": "Cube"
+  },
+  {
+    "Key": "UI.SlotTag.Box",
+    "KR": "상자",
+    "EN": "Box"
+  },
+  {
+    "Key": "UI.SlotTag.Relic",
+    "KR": "유물",
+    "EN": "Relic"
+  },
+  {
+    "Key": "UI.SlotTag.Consumable",
+    "KR": "소모",
+    "EN": "Cons"
+  },
+  {
+    "Key": "UI.SlotTag.Etc",
+    "KR": "기타",
+    "EN": "Etc"
+  },
+  {
+    "Key": "UI.SlotTag.Artifact",
+    "KR": "아티",
+    "EN": "Arti"
+  },
+  {
+    "Key": "UI.SlotTag.Common",
+    "KR": "공통",
+    "EN": "All"
+  },
+  {
     "Key": "UI.Inventory.CountUnit",
     "KR": "{0} 개",
     "EN": "x{0}"
@@ -5665,6 +5725,16 @@
     "EN": "Add to Sell"
   },
   {
+    "Key": "UI.Tool.SellMode",
+    "KR": "일괄 판매",
+    "EN": "Bulk Sell"
+  },
+  {
+    "Key": "UI.Tool.SellModeTip",
+    "KR": "판매 창을 엽니다. 칸을 눌러 담거나, 등급 · 분류로 한꺼번에 담아 팝니다.",
+    "EN": "Opens the sell window. Click items to add them, or add many at once by rarity and category."
+  },
+  {
     "Key": "UI.Tool.SearchName",
     "KR": "이름 검색",
     "EN": "Search name"
@@ -5696,13 +5766,18 @@
   },
   {
     "Key": "UI.Sell.Empty",
-    "KR": "자원을 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다",
-    "EN": "Right-click items to add — they sell instantly at the instant sell price"
+    "KR": "위 칸을 눌러 담으세요 — 즉시 판매가로 바로 팝니다",
+    "EN": "Click items above to add — they sell instantly at the instant sell price"
   },
   {
     "Key": "UI.Sell.Clear",
     "KR": "비우기",
     "EN": "Clear"
+  },
+  {
+    "Key": "UI.Sell.Title",
+    "KR": "판매",
+    "EN": "Sell"
   },
   {
     "Key": "UI.Sell.HighRarity",

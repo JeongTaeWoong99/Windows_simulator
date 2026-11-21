@@ -415,10 +415,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
 
         // 글자로 — '농사 5'(2026-11-20 사용자). 16px 산업 그림 + 숫자는 초상화 위에서 너무 작아 읽히지 않았다.
-        // → 2026-11-21 산업 그림을 산업마다 다른 색으로 다시 칠하고(`claude-icons/recolor_industries.py`) 늘 그림 + 숫자로 — 'FitBottomRow'.
-        _aptitudeLabel  = $"{IndustryLabel.Get(industry!.Value)} {AptitudeLabel.GetText(value)}";
+        // → 2026-11-21 산업 그림 + 숫자로 바꿨다가, 같은 날 다시 글자로(사용자 — 칸 아래 줄이 그림·글자로 섞여 통일성이 없다).
+        //   산업 이름은 짧은 칸 표기('UI.SlotTag.*' — 농사 · Farm)를 쓴다. 왼쪽 분류 배지와 같은 표기다.
+        _aptitudeLabel  = $"{Lang.Get("UI.SlotTag." + industry!.Value)} {AptitudeLabel.GetText(value)}";
         _aptitudeNumber = AptitudeLabel.GetText(value);
-        _aptitudeIcon   = VisualCatalog.IndustryIconOf(industry.Value);
+        _aptitudeIcon   = null;
 
         FitBottomRow();
     }

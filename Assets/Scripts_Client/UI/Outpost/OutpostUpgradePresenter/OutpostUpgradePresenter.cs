@@ -253,8 +253,8 @@ public class OutpostUpgradePresenter : MonoBehaviour
         ColorBlock colors = upgradeButton.colors;
 
         colors.normalColor      = color;
-        colors.highlightedColor = Color.Lerp(color, Color.white, 0.15f);
-        colors.pressedColor     = Color.Lerp(color, Color.black, 0.2f);
+        colors.highlightedColor = UIThemePalette.HoverOf(color);
+        colors.pressedColor     = UIThemePalette.PressedOf(color);
         colors.selectedColor    = color;
 
         upgradeButton.colors = colors;

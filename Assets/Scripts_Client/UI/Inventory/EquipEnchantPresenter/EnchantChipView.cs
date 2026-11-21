@@ -68,8 +68,8 @@ public class EnchantChipView : MonoBehaviour
         ColorBlock colors = button.colors;
 
         colors.normalColor      = target;
-        colors.highlightedColor = Color.Lerp(target, Color.white, 0.1f);
-        colors.pressedColor     = Color.Lerp(target, Color.black, 0.2f);
+        colors.highlightedColor = UIThemePalette.HoverOf(target);
+        colors.pressedColor     = UIThemePalette.PressedOf(target);
         colors.selectedColor    = target;
         colors.disabledColor    = UIThemePalette.Of(lockedRole);
 

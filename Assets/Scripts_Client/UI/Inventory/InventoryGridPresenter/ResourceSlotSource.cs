@@ -92,16 +92,18 @@ public class ResourceSlotSource : InventorySlotSource
     }
 
     // 분류 이름 — 산업 · 큐브 · 유물 · 소모품 · 기타 (툴팁 '분류' 줄과 같은 이름)
-    public override string? GetCategoryLabel(long key) => GroupName(GroupOf((int)key));
+    // ※ 칸에는 짧은 이름('UI.SlotTag.*')을 쓴다 — 툴팁·목록은 다 적는 이름('GroupName')이다.
+    public override string? GetCategoryLabel(long key) => GroupTag(GroupOf((int)key));
 
-    // 산업 자원이면 산업 그림 (분류 ID가 'EIndustryType' 이름과 같다 — 'AuctionText.GetItemCategoryId')
-    public override Sprite? GetCategoryIcon(long key) => GroupIcon(GroupOf((int)key));
+    // 칸 왼쪽 아래에 적을 짧은 분류 이름 — '아티팩트' → '아티' · 'Excavation' → 'Dig' (2026-11-21 사용자).
+    // ■ 왜 글자인가 — 산업은 그림, 나머지는 글자로 적었더니 같은 자리가 칸마다 달라 통일성이 없었다(사용자). 모든 분류의 그림을 그릴 수는 없다.
+    // ■ 왜 짧게 — 칸 폭이 좁아 긴 이름은 글자가 8px까지 줄거나 오른쪽 수량과 닿았다. 잘라서 'Arti…'로 보이느니 처음부터 약자로 쓴다.
+    //   분류 ID는 산업이면 'EIndustryType' 이름이다('AuctionText.GetItemCategoryId'). 장비가 쓰는 '공통'·'아티팩트'도 같은 표에 있다.
+    public static string GroupTag(string groupId) => Lang.Get("UI.SlotTag." + groupId);
 
-    // 분류 ID가 산업이면 그 산업 그림, 아니면 null (가챠 결과 칸도 같이 쓴다)
-    public static Sprite? GroupIcon(string groupId)
-        => System.Enum.TryParse(groupId, out EIndustryType industry) && industry != EIndustryType.None
-            ? VisualCatalog.IndustryIconOf(industry)
-            : null;
+    // 분류 ID가 산업인가 ([판매 제외] 목록이 '산업' 묶음을 나눌 때)
+    public static bool IsIndustryGroup(string groupId)
+        => System.Enum.TryParse(groupId, out EIndustryType industry) && industry != EIndustryType.None;
 
     // 분류 ID의 지금 언어 이름.
     public static string GroupName(string groupId) => AuctionText.GetItemGroupName(groupId);

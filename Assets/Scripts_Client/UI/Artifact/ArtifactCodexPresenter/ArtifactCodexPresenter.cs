@@ -524,6 +524,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
         ColorBlock colors = button.colors;
         colors.normalColor   = target;
+        colors.highlightedColor = UIThemePalette.HoverOf(target);
         colors.selectedColor = target;
         button.colors        = colors;
     }
