@@ -307,6 +307,7 @@ public class OutpostUpgradePresenter : MonoBehaviour
         if (code == EResultCode.Ok)
         {
             _upgradeWait.Succeed();
+            Services.Get<SoundManager>().PlaySfx(Sounds.LevelUp); // 캐릭터 레벨 업과 같은 소리 — 건물도 '레벨이 올랐다'(2026-11-22 사용자)
         }
         else
         {
