@@ -1225,6 +1225,56 @@
     "EN": "Stonegate Guardian Chest"
   },
   {
+    "Key": "Industry.1.Name",
+    "KR": "농사",
+    "EN": "Farming"
+  },
+  {
+    "Key": "Industry.1.Tooltip",
+    "KR": "거둔 작물로 새참을 지어 일꾼을 먹인다. 꾸준하고 흔들림이 없다.",
+    "EN": "Cook the harvest into meals for your workers. Steady, with no surprises."
+  },
+  {
+    "Key": "Industry.2.Name",
+    "KR": "유적 발굴",
+    "EN": "Excavation"
+  },
+  {
+    "Key": "Industry.2.Tooltip",
+    "KR": "상자 대신 미감정 유물이 나온다. 골드를 내고 감정하면 무엇이 들었는지 알 수 있다.",
+    "EN": "Unappraised relics turn up instead of chests. Pay gold to appraise one and see what is inside."
+  },
+  {
+    "Key": "Industry.3.Name",
+    "KR": "채굴",
+    "EN": "Mining"
+  },
+  {
+    "Key": "Industry.3.Tooltip",
+    "KR": "캐낸 광물로 설비를 올린다. 목재와 함께 쓰면 한 번에 거두는 양이 영구히 늘어난다.",
+    "EN": "Spend ore on equipment. Combined with timber it permanently raises how much each haul yields."
+  },
+  {
+    "Key": "Industry.4.Name",
+    "KR": "벌목",
+    "EN": "Logging"
+  },
+  {
+    "Key": "Industry.4.Tooltip",
+    "KR": "베어 낸 목재로 작업장을 넓힌다. 광물과 함께 쓰면 일하는 속도가 영구히 오른다.",
+    "EN": "Spend timber on expanding the workshop. Combined with ore it permanently raises work speed."
+  },
+  {
+    "Key": "Industry.5.Name",
+    "KR": "사냥",
+    "EN": "Hunting"
+  },
+  {
+    "Key": "Industry.5.Tooltip",
+    "KR": "사냥터마다 다른 것이 나온다. 무엇을 모을지 골라서 간다.",
+    "EN": "Each hunting ground drops something different. Pick what you want to collect."
+  },
+  {
     "Key": "IndustryLevel.101.Name",
     "KR": "밀밭",
     "EN": "Wheat Field"
