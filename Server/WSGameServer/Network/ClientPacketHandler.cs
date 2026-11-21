@@ -74,10 +74,15 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_LoginRequest(ISession session, C_LoginRequest req)
     {
-        // DB 스레드에서 조회/자동가입 → 로직 스레드에서 User 등록·응답 (LoginRepository.Apply)
-        ServerLog.Info("로그인", $"요청 Id={req.Id} sessionId={session.SessionId}");
+        // 관문이 계정(pid)을 정한다 — 스팀 티켓은 스팀에 확인한 뒤, 개발용 Id는 설정이 허락할 때만(T-207).
+        // 그 뒤는 그대로: DB 스레드에서 조회/자동가입 → 로직 스레드에서 User 등록·응답 (LoginRepository.Apply)
+        var hasTicket = !string.IsNullOrEmpty(req.SteamTicket);
+        ServerLog.Info("로그인", $"요청 {(hasTicket ? "스팀 티켓" : $"Id={req.Id}")} sessionId={session.SessionId}");
 
-        UserManager.Instance.CreateUser(session, req.Id, req.Id);
+        // 스팀 확인은 HTTP를 기다린다 — 로직 스레드를 붙잡지 않게 끝을 기다리지 않는다. 예외만 남긴다.
+        _ = LoginGate.Current!.HandleAsync(session, req).ContinueWith(
+            t => ServerLog.Error("로그인", $"로그인 처리 예외 sid={session.SessionId}", t.Exception!),
+            TaskContinuationOptions.OnlyOnFaulted);
     }
 
     [PacketHandler]

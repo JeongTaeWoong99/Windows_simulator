@@ -16,6 +16,8 @@ namespace MikaProtocol
         Banned          = 3,    // 밴된 계정 — 서버가 세션을 끊는다
         Deleted         = 4,    // 삭제된 계정 — 서버가 세션을 끊는다
         DbError         = 5,    // 로그인 중 DB 작업 실패 — 서버가 세션을 끊는다. 재접속하면 된다
+        SteamAuthFailed  = 6,   // 스팀 티켓이 없거나·틀렸거나·만료됐다 — 새 티켓으로 다시 로그인한다 (T-207)
+        SteamUnavailable = 7,   // 스팀 확인 서버에 닿지 못했다(시간 초과·서버 설정) — 잠시 뒤 다시 시도한다 (T-207)
 
         // ── 100~: 가챠 ──
         InvalidDrawCount   = 100, // 허용되지 않는 뽑기 횟수 (1·10만 허용)
