@@ -3,7 +3,7 @@ name: ugui-layout
 description: uGUI로 화면을 배치할 때의 Canvas·LayoutGroup 함정과 정석 구조. 레이아웃 그룹·스크롤 뷰·중첩 캔버스를 짜거나, 배치가 의도와 다르게 나올 때(칸이 안 줄어든다·형제를 껐더니 늘어난다·버튼이 안 눌린다·빌드에서만 어긋난다), UI 프레임이 튈 때(탭 전환·화면 켜기가 멈춘다·레이아웃 재계산이 크다) 적용한다. 배치를 건드리지 않는 로직·데이터 작업에는 적용하지 않는다.
 ---
 
-> 최종 업데이트: 2026-10-11 (§7 경계 아래 내용이 넘친다 → `ContentFloorLayoutElement` · 자주 바뀌는 글씨는 상자로 · Auto Size · 도는 연출은 자기 Canvas) · 2026-10-10 (§7 성능 함정 — 레이아웃 더티 전파 · 큰 화면 숨기기 · Raycast Target · 매 프레임 SetText)
+> 최종 업데이트: 2026-11-21 (§7 진행 막대 — 막대 폭 1칸 단위로 끊어 넣는다(`SliderSnap`) · 계속 움직이는 무대는 자기 `Canvas`로(작업 칸 `Stage Frame`) — 위젯 막대 재빌드 300프레임에 3000 → 90) · 2026-10-11 (§7 경계 아래 내용이 넘친다 → `ContentFloorLayoutElement` · 자주 바뀌는 글씨는 상자로 · Auto Size · 도는 연출은 자기 Canvas) · 2026-10-10 (§7 성능 함정 — 레이아웃 더티 전파 · 큰 화면 숨기기 · Raycast Target · 매 프레임 SetText)
 
 # uGUI 배치 — 함정과 정석
 
@@ -170,6 +170,7 @@ private void LateUpdate() { if (_pendingApply) { _pendingApply = false; Apply();
 | **`RectMask2D`로 바꿨더니 CPU가 늘었다** | `RectMask2D`는 자식마다 매 프레임 잘림 판정(`ClipperRegistry.Cull`)을 한다. 자식이 많고 거의 다 보이는 목록이면 `Mask`(스텐실)보다 비싸다 | 재 보고 고른다. 보이는 칸만 켜는 목록(가상화)이 아니면 `Mask`가 싼 경우가 많다 |
 | **마우스만 움직여도 `EventSystem.Update`가 크다** | `GraphicRaycaster`는 `Raycast Target`이 켜진 그래픽을 **전부** 훑는다 | 클릭을 받지 않는 글자·장식은 끈다. 단 클릭을 대신 받을 조상(같은 캔버스·덮음·켜짐)이 있고, 그 사이에 입력 핸들러·`CanvasGroup`이 없고, `Selectable`의 대상이 아닐 때만. 프리팹 안의 것은 원본에서 끈다 |
 | **값이 그대로인데 TMP가 매 프레임 다시 그린다** | 인자를 받는 `SetText("{0}", v)`는 값이 같아도 **매번** 글자를 다시 만든다. (`.text = 같은 문자열`은 비교 후 건너뛴다) | **보이는 값**(예: 소수 첫째 자리)을 정수로 들고 있다가 바뀐 프레임에만 `SetText` |
+| **진행 막대가 1px도 안 늘었는데 매 프레임 다시 그린다** | `Slider.value`에 매 프레임 실수 값을 넣으면 조금만 달라도 채움 그래픽을 다시 짠다 | `SliderSnap.SetSnapped` — 막대 폭 1칸 단위로 끊어 넣는다. 같은 값이면 `Slider`가 건너뛴다 |
 | **처음 한 번만 프레임이 튄다 (연출·풀 첫 사용)** | 첫 사용 때 오브젝트를 `Instantiate`한다 | 로딩·`Start`에서 미리 만들어 둔다(풀이면 미리 채우기) |
 
 > 매 프레임 갱신 자체(진행 바·남은 시간)는 문제가 아니다 — **바뀐 것만** 다시 그리게 하면 된다.

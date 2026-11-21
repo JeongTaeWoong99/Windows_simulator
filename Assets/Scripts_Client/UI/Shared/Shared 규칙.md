@@ -1,131 +1,262 @@
-﻿# Shared 폴더 규칙
-
-> 최종 업데이트: 2026-11-21 (`CheckDropdownView` **묶음 머리** — `SetOptions(…, sections)`이면 묶음마다 흐린 머리 줄 + 두 번째부터 얇은 구분선 · 칸을 나누지 않고 목록 하나 — 사용자 "종류별로 보기 힘들다") · 2026-11-21 (**칸 아래 줄 4차** — 산업은 언어와 상관없이 **늘 그림**(적성 그림 + 숫자 · 분류 그림만) — 영어만 그림이 되어 한글·영어가 달랐다 · 가챠 결과 칸도 같게 · 산업 그림은 산업마다 다른 색 — 사용자) · 2026-11-21 (**칸 아래 줄 3차** — 배지 폭을 글자에 딱 맞춤(TMP 선호 폭에 margin이 이미 들어 있어 여백이 두 번 붙었다) · 12px로 안 들어가면 **산업 그림으로**(적성: 그림 + 숫자 · 분류: 그림만 — `SetLevelBadge(label, icon)` · 공급자 `GetCategoryIcon`) → 그래도 안 되면 함께 줄임 · 장비 칸은 오른쪽 아래 인챈트 보석 자리를 비운다 · 보석을 아래 줄 가운데로(-19, 19) · 경험치 게이지는 자물쇠 아래까지 · 자물쇠 9px — 사용자) · 2026-11-21 (**칸 아래 줄 2차** — 수량도 LV·적성과 같은 어두운 배지 상자 `Sub Badge`(TMP `<mark>` 알약을 걷음 — 바탕 밝기가 달랐다) · 오른쪽 아래는 오른쪽 정렬 · 글꼴·여백·배지 높이를 **화면 픽셀**로 맞춘다(캔버스 배율 ÷ — 배율 0.9에서 12가 10.8px로 그려져 굵기가 달라 보였다) · 경험치 게이지를 왼쪽 벽 세로 막대로 되돌림 · 모서리 표시는 테두리(8) 안 1px = 9 — 사용자) · 2026-11-21 (**`SlotView` 아래 줄 글자 셋(LV·분류 배지 / 최고 적성 / 수량)을 한 벌로** — 갈무리 12 · 그림자 재질 · 픽셀 맞춤 · `FitBottomRow`가 배지 폭을 글자에 맞추고, 왼쪽·오른쪽이 겹치면 둘을 같은 크기로 함께 줄인다(영어 "LVHunting 3") · 예전 14·12·11.2 제각각이라 굵기·숫자 모양이 달랐다 · 모서리 배지·마크를 1px 안으로(등급 테두리와 겹침) — 사용자) · 2026-11-20 (`UIPixelSnap` — 칸 수량 글자를 픽셀 경계에 · 수량 글자 최대 12(갈무리는 12의 배수만 또렷) · 수량 글자색 `Highlight` 노랑 — 흰 1px 획이 얇아 안 보였다 · 이슈 #132) · 2026-11-20 (`SlotView` 최고 적성 알약을 글자로 '농사 5' — 산업 그림 끔 · 수량 문구 뒤 진갈 알약(TMP `<mark>`) · `SlotStageSettings.characterSize` 1.2 — 모든 캐릭터 크기·멈춤 거리에 곱한다) · 2026-11-19 (`SlotView` 아래 글자 띠 `Label Shade` — 보조 문구·LV 배지가 켜졌을 때만 · 그림 `ui_label_shade` · 개수·LV 글씨에 그림자 재질 `Galmuri EN SDF - Shadow` — 밝은 아이콘 위에서 글자가 묻혔다) · 2026-11-15 (`SuggestView` — 드래그를 받아 입력칸이 클릭을 가로채지 않게 · 이름 색 OnLight · 폭은 입력칸과 같게) · 2026-11-15 (`ItemIconView` 그림 자리를 칸의 9% 안쪽 비율로 + `RectMask2D` — 그림이 등급 테 위로 삐져 보였다 · 넘치면 잘린다) · 2026-11-15 (글씨 대비 — 등급 글씨색 `RarityPalette.OnLight`(양피지 위) · `OnDark`(갈색 패널 위 · 일반만 밝게) · `OfFor`가 어두운 바탕의 빨강·초록을 밝힌다 · 라벨 투명도 82% · 진갈 글씨 0.85 → 1 · 드롭다운 목록 높이도 항목 전부에) · 2026-11-15 (등급 바탕 시안 2 — 불투명 어두운 속 + 계단빛 60% · 9-slice 4 · 칸 최고 적성 알약 · 툴팁 등급 테 `TooltipContent.Grade`) · 2026-11-15 (`CelebrationFx` 추가 — 응축 성공·★ 상승·큐브 등급 상승 터짐) · 2026-11-15 (툴팁 묶음 제목 띠 — 묶음 전체 등급색 칠하기를 걷음) · 2026-11-14 (`SlotStageView` 배경은 배우와 같은 배율 — 칸이 높으면 그림 맨 윗줄을 늘려 위쪽을 잇는다(세로 Clamp)) · 2026-11-14 (툴팁 줄 바탕 묶음별 — 등급 묶음은 등급색 전부 · 색 없는 묶음은 연한 흰 줄무늬 · `SlotView.SetNameVisible`) · 2026-11-14 (신화 등급색 E6CC80 → FF3D6E — 양피지에 묻혔다 · 드롭다운 목록 너비 `DropdownListFit` · 칸의 종족·크기 배지와 적성 산업 그림 제거) · 2026-11-14 (양피지 3차 — 툴팁 액자 · 줄 바탕색 반쯤 섞기 · 그림 없는 칸 어두운 홈 · 모르는 등급 갈색) · 2026-11-14 (양피지 2차 — `Paint`는 글씨 기본색을 이어받는다 · `OfFor` · `GoldOnDark` · 안쪽 상자는 `Slot`) · 2026-11-13 (**양피지 시험** — 글씨 역할은 바탕 밝기로 · `HighlightDark` 역할 추가) · 2026-11-12 (등급 빛을 바닥에서 위까지 칸 전체로) · 2026-11-12 (등급 바탕 A+B — 입체 테두리 + 아래 계단빛 · 검정 반투명 속 · 9-slice 12 · 칸 글씨를 테두리 안으로) · 2026-11-11 (`RaritySkin` 귀퉁이 장식 제거 — 보기에 거슬렸고 `LayoutGroup` 루트(작업슬롯)에서 자식이 한 줄을 차지했다) · 2026-11-11 (**등급 바탕 한 벌 `visual/RaritySkin`** — 어두운 판 + 등급색 테두리를 칸·아이콘·작업슬롯·위젯·배치 줄이 함께 · `SlotView` 여백 — 이름 띠·아이콘·적성 띠가 겹치지 않게) · 2026-11-10 (`SlotView` 등급 틀 — 경사 바탕 + 쇠 귀퉁이 덧그림 · `TooltipTrigger` 숨긴 글씨는 키로 읽는다) · 2026-11-09 (`ButtonPressFx` — 드롭다운·체크도 눌림 반응) · 2026-11-08 (테마 톤 — Taskbar Heroes 결 · `Header` 역할 · 글씨 흰색 통일) · 2026-11-03 (`RaceLabel` 추가 · T-054) · 2026-11-02 (`BackdropClose` 추가) · 2026-10-28 (`SpecialSlotFx` 추가 — Special 칸 무지개 테두리·빛줄기·반짝임 · `VisualCatalog.ArtifactIconOf` · T-151) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (임시 테마 — 태그가 붙은 칸은 역할로 색을 바꾼다 · 어긋나면 경고) · 2026-10-22 (`RefusalShake` 추가 · `ButtonPressFx.RecentlyPressed` · `PanelTransition`을 알림 창에도 — T-177) · 2026-10-21 (`PanelTransition`·`NumberRoll`·`ButtonPressFx` 추가 — 창 여닫기 · 숫자 카운트업 · 버튼 눌림) · 2026-10-21 (`LevelUpFx` 추가 — 작업슬롯 칸 캐릭터 레벨업 · `SlotGainShine.PlayLevelUp` 금색 + 솟는 화살표 · `FxSprites` levelup·unlock — T-052 · T-039) · 2026-10-15 (`CheckDropdownView` 추가 — 여러 개를 고르는 드롭다운, 인벤토리 일괄 담기 [제외]) · 2026-10-15 (`SlotView.lockMark` — 칸 오른쪽 위 자물쇠 · `EntityBlockText`가 잠금을 먼저 말한다 — T-137) · 2026-10-15 (`SuggestView` 추가 — 검색칸 아래 후보 목록, 경매장과 인벤토리가 함께) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-10 (`EnchantGemView` 추가 — 능력치 칸 네모 1~3을 인챈트 보석 하나로) · 2026-10-10 (`TooltipTrigger` — 기능 설명은 `HelpIcon`) · 2026-10-10 (`SlotGainShine` 추가 — 인벤토리 칸 획득 반짝임 · 무대 배경 배율 보정 · `TargetVisual.scale`) · 2026-10-10 (`ItemGainEffectView` 아이콘 층·풀을 `Start`에 만들고 미리 채운다 — T-139) · 2026-10-09 (`ItemGainEffectView` 아이콘 뒤 등급 빛 — `ItemGainFx`·`ItemGainGlowSettings` · 이펙트 그림 이름표 `visual/FxSprites` — 그림만 쓰고 코드로 그리지 않는다) · 2026-10-08 (`ItemGainEffectView` 따라가기 — 땅이 흐르면 대상과 함께) · 2026-10-08 (`ItemGainEffectView` 추가 — 아이템 획득 연출 · `EquipPipsView.SetTooltip`) · 2026-10-07 (`EquipPipsView` 추가 — 캐릭터가 낀 장비 4칸을 네모로 · 인벤토리 캐릭터 칸·작업슬롯 칸 · `EquipLabel`에 장착 읽기 · `RarityPalette.EmptySocket` · T-104) · 2026-10-05 (`VisualCatalog.Current` — 인벤토리 상반신·위젯 머리·자원·장비 아이콘을 목록에서 찾는다 · T-097) · 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · 슬롯 무대 `SlotStageView`·전체 세팅 `SlotStageSettings` · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
-
-**여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
-(`#Inventory Canvas` → `Inventory/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
-
-## 왜 이 폴더가 있나
-
-`UI/`의 폴더 규칙은 **`<캔버스>/<Presenter>/`** — 폴더가 하이어라키의 거울이다
-([`UI 규칙.md`](<../UI 규칙.md>) §5). 그런데 **씬·프리팹에 붙지 않는 파일에는 비칠 대상이 없다.**
-자리가 정해져 있지 않으면 결국 *"처음 쓴 화면"* 의 폴더에 놓이고, 그 순간 **위치가 소유권을
-거짓으로 주장한다** — 다른 화면이 그걸 참조하는데도.
-
-| 예전 | 무엇이 거짓이었나 |
-|------|------------------|
-| `Inventory/InventoryGridPresenter/InventorySlotView.cs` | 인벤토리 소유처럼 보이지만 **가챠 결과 팝업이 같은 클래스·같은 프리팹을 쓴다.** 인벤토리를 고치다 팝업을 조용히 바꾸게 된다. **이름의 `Inventory`도 거짓이었다** → `SlotView`로 개명 |
-| `System/RarityPalette.cs` 등 4개 | `!Overlay Canvas`와 **무관**한데 그 폴더에 있었다. `Overlay 규칙.md`가 *"어디에도 속하지 않는 것들"* 이라 적어 두고도 자리를 못 만들어 준 상태였다 |
-
-**소유자가 여럿이면 자리도 공용이어야 한다.** 그게 이 폴더다.
-
-## 여기 있는 것
-
-| 파일 | 하는 일 | 누가 쓰나 |
-|------|---------|-----------|
-| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View). 등급 바탕은 `RaritySkin`이 `Awake`에서 깐다(아래 줄). 여백(2026-11-12 · 100칸 기준 — 등급 테두리가 8이라 그 안으로) — 이름을 켠 칸(가챠 결과 · 도감): 이름 위 9~26 좌우 8 · 아이콘 위 24 아래 20 좌우 10 · 개수 아래 8~24. 이름을 끈 칸(인벤토리 · 응축 재료 — 시안 2 · 2026-11-15): 그림이 테 안쪽 6까지 꽉 차고 표시는 네 모서리 — 자물쇠 왼쪽 위 · ★ 위 가운데 · 배·판 오른쪽 위 · LV 배지 왼쪽 아래 · 최고 적성 배지(`SetBestAptitude`)·수량 배지(`Sub Badge`) 오른쪽 아래(오른쪽 정렬) · 경험치 게이지 왼쪽 벽 세로(LV 배지 위부터 · 아래→위). 아래 줄 배지 셋은 같은 어두운 상자·같은 글꼴이고 크기는 `FitBottomRow`가 화면 픽셀로 정한다. **겹치면 글자가 안 읽힌다 — 새 표시를 더할 때 이 자리들을 비워 둔다**. 그림이 꽉 차 아래 글자가 그림 위에 얹히므로 아래 34px에 그늘 띠(`Label Shade`)를 깐다 — 글자가 있을 때만 켜진다(2026-11-19) | `#Inventory Canvas`의 격자 · `!Overlay Canvas`의 가챠 결과 |
-| `UIPixelSnap.cs` | **글자를 화면 픽셀 경계에** — 그리기 직전 월드 좌표의 소수 부분만큼 민다. 갈무리 1px 획이 소수 좌표·12의 배수가 아닌 크기에서 회색으로 번졌다(이슈 #132 — 크기 12 + 자리 맞춤 둘 다 있어야 또렷) | `SlotView`(수량 글자 · LV 배지 · 최고 적성 배지 — `Awake`에서 붙인다. 레이아웃 그룹이 자리를 정하는 자식에는 달지 않는다 — 처음 자리를 기억해 되돌리므로 그룹과 다툰다) |
-| `visual/RaritySkin.cs` | **등급 바탕 한 벌** — `rarity_bg`(입체 테두리 + 바닥에서 속의 60%까지 오르는 계단빛 5단 × 등급색 · 속은 **불투명** 짙은 회색이라 곱하면 거의 검정 — 뒤 양피지가 비치지 않는다 · 9-slice 4(속이 칸 높이에 비례해 늘어 계단빛 비율이 같다) · 0.5배율 — 2026-11-15 시안 2 · 그림은 `make_slots.py`). `Dress`(Awake 한 번) · `Set`(등급). 귀퉁이 장식은 두지 않는다(2026-11-11 사용자) — 바탕에 무엇을 얹을 때는 `LayoutGroup` 자식이 되지 않게 한다(작업슬롯 위 빈 줄). **등급색 바탕을 새로 두면 단색으로 칠하지 말고 이걸 쓴다** — 단색판은 그림·글자를 묻는다(2026-11-11) | `SlotView` · `ItemIconView` · `WorkStationSlotView` · `CharacterStateRowView` · `EquipPickRowView` · `WidgetMiniSlotView` · (툴팁은 같은 등급색으로 테만 — `TooltipContent.Grade`) |
-| `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
-| `ItemIconView.cs` + `Assets/Prefabs/ItemIconView.prefab` | **목록 줄 왼쪽의 작은 아이콘 칸** — 등급 바탕 · 이름 첫 글자(🎨 아이콘 전 임시) · 모서리 수량 · 인챈트 보석. 줄에서는 `SquareLayoutElement`로 줄 높이만큼 정사각형(옆 글씨가 길어도 줄지 않게 최소 폭도 같다). **그림 자리는 `Awake`가 칸의 9% 안쪽으로 맞추고 칸에 `RectMask2D`를 붙인다** — 고정 4px 여백은 큰 칸에서 테 두께보다 얇아 하트·뽑기권처럼 끝까지 그린 그림이 테를 덮었다(2026-11-15 사용자). 프리팹·씬의 `Icon Image` 여백 값은 실행 때 덮인다 | Market(경매장 줄) · Main(우편 · 장비 고르기) · Inventory(판매 목록) |
-| `EnchantGemView.cs` | **장비 칸 오른쪽 아래의 인챈트 보석 하나** — 색 = 인챈트 등급, 인챈트 전이면 빈 보석. 인챈트 등급이 장비 하나에 하나라 칸 수만큼 네모를 그리면 같은 색 네모가 정보 하나만 말했다(2026-10-10 A안). 칸 수는 툴팁에 · 딤·흑백은 `SlotView.TintColor` | `SlotView`(장비 탭) · `ItemIconView` — 두 프리팹 안에 자식으로 |
-| `EquipPipsView.cs` + 프리팹 둘 | **캐릭터가 낀 장비 4칸** — 빈 칸은 어두운 네모 · 낀 칸은 장비 등급색. **4자리 고정**(무기·장신구1·장신구2·보석). `EquipPipsView.prefab` = 색 네모만(11px · 14 간격) · `EquipIconsView.prefab` = 등급 바탕 + 장비 아이콘(줄 높이 정사각형). 딤·흑백은 `SlotView.TintColor` 하나로 | Inventory(캐릭터 칸 — 색 네모) · Main(작업슬롯 칸 — 아이콘) — 슬롯 설정 캐릭터 카드에는 두지 않는다(장비 칸이 바로 보인다) |
-| `ItemIconContent.cs` | 아이콘 칸의 완성값 + 팩토리(`ForItem`·`ForEquip`·`ForCharacter`·`ForArtifact`·`ForGold`) — 이름·등급 조회를 한 곳에 | 위 아이콘을 채우는 모두 |
-| `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Inventory + `PlayerDataModel` |
-| `RarityPalette.cs` | 등급 → 표시 색(신화는 FF3D6E — 서버 enum 주석의 E6CC80은 옅은 금이라 양피지 바탕에 묻혀 클라만 바꿨다 · 2026-11-14) · 빈 네모 색(`EmptySocket` — 장착 칸 `EquipPipsView`가 쓴다) | Inventory · System |
-| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
-| `RaceLabel.cs` | 캐릭터 종족 → 이름 · 칸 배지 한 글자 · 툴팁 줄. 표시 전용 | Inventory · Main · Auction · Overlay |
-| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
-| `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Inventory(칸 스트립) · Main(캐릭터 줄·카드) |
-| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
-| `EquipLabel.cs` | 장비 → 효과 한 줄(`발굴 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`) · **캐릭터의 장착 읽기**(`WornSlots` 순서 · `ReadWornGrades` · 툴팁 `AddWornRows` — T-104). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
-| `EntityBlockText.cs` | 캐릭터·장비 개체 → **팔거나 올릴 수 없는 사유** 한 줄(잠김 — 맨 먼저 · 끼고 있음 · 배치 중 · 장비 낌 · 마지막 캐릭터), 없으면 null. ⚠️ **표시용이고 거절은 서버가 한다** | Inventory(즉시 판매 담기) · Market(경매 등록 흐린 줄) |
-| `ItemGainEffectView.cs` | **아이템 획득 연출** — 넘겨받은 월드 위치에서 아이콘이 나타나 떠오르며 사라진다. 여러 개면 좌우 대칭(간격 = 크기 + 빈틈). DOTween `Sequence` + UniTask(`KillAndCancelAwait`) · 아이콘은 `PrefabPool` — 층·풀은 `Start`에 만들고 `maxIcons`만큼 미리 채운다(첫 수확 프레임이 8~9ms 튀었다 · T-139). `follow`를 넘기면 매 프레임 가로 위치를 그 자리에 맞춘다 — 큰 창 칸은 `SlotStageView.FollowGround`로 땅과 함께 뒤로 흐른다. 꺼지거나 파괴되면 끊긴다. 채취 푸시 → 그림·등급 읽기(`ReadGains`)도 여기. **아이콘 뒤 등급 빛** — 일반·고급 번짐 · 희귀·영웅 + 광선 · 전설·신화 + 섬광·빛 기둥(또는 겹광선·고리)·아이콘 튐. 조정값은 인스펙터 `glow`(아이콘 대비 배율 — 큰 창·위젯 같은 값). ⚠️ 칸 **루트**에 붙인다 — 무대는 `RectMask2D`라 잘린다 |
-| `ItemGainFx.cs` · `ItemGainGlowSettings.cs` | 위 연출의 **아이콘 한 개 묶음**(아이콘 + 뒤·앞 빛 — 코드가 원본을 만들어 풀로 돌린다) · **빛 조정값**(`[Serializable]`, 등급 → 3단계 `TierOf`) | 위와 같음 | Main(작업슬롯 칸 — 쓰러지는 대상 자리) · Widget(미니 칸 — 머리 자리, 작게) |
-| `SlotGainShine.cs` | **칸 획득 반짝임** — 칸 위에서 등급색 번짐(`gain_glow`) + 사선 빛 줄(`reveal_shine`)이 한 번 지나간다. 칸 안만 그린다(`RectMask2D`) · 끝나면 그림·마스크를 끈다. 무엇이 들어왔는지는 인벤토리 공급자가 감지하고(`InventorySlotSource.TakeGain`) 격자가 칸마다 처음 반짝일 때 코드로 붙인다 — 칸 프리팹은 손대지 않는다. **레벨업 모양**(`PlayLevelUp` — T-052): 캐릭터 칸의 레벨이 오르면 금색 번짐 + 겹화살표(`levelup_arrow`)가 솟는다 — 공급자가 수량 자리에 레벨을 내놓고 `TakeRise`로 "있던 것이 늘었다"를 가른다 | Inventory(격자 칸) |
-| `SpecialSlotFx.cs` | **Special 칸** — 무지개 테두리가 돌고(3초) · 빛줄기가 스치고(2.4초) · 반짝임 4개가 엇갈려 깜빡인다(1.8초). 목업 `유물감정목업.html`. `SlotView`가 Special 등급을 그릴 때 처음 한 번 코드로 붙인다(칸 프리팹은 손대지 않는다) · 딤·흑백 칸에서는 끈다(도감의 꺼진·미장착 칸). 테두리 = `reveal_frame` 마스크 안에서 `special_rainbow`가 돈다 · 빛줄기 `reveal_shine` · 반짝임 `reveal_sparkle` — 없는 그림의 효과는 빠진다 | `SlotView`를 쓰는 모두(인벤토리 · 가챠 결과 · 아티팩트 도감) |
-| `LevelUpFx.cs` | **캐릭터 레벨업 연출** — 작업슬롯 칸의 캐릭터 자리(`SlotStageView.TryGetCharacterPoint` · 없으면 무대 가운데)에서 금빛 기둥(`gain_pillar`)·번짐·겹화살표(`levelup_arrow`)·별이 솟고 `LV.12`가 튀어 오른다. 토스트는 따로 없다 — 칸 위 글자가 그 몫(주의를 뺏지 않는다 · P1). 글자는 칸 안에 머물게 자리를 죈다. 칸이 처음 레벨업할 때 코드로 붙인다 · ⚠️ 칸 **루트**에 붙인다(무대는 `RectMask2D`) | Main(작업슬롯 칸 — `WorkStationSlotView.PlayLevelUp`) |
-| `CelebrationFx.cs` | **축하 터짐** — 대상 가운데서 빛살(`reveal_rays`)이 돌며 펴지고 · 고리(`gain_ring`)가 퍼지고 · 별 조각(`reveal_sparkle`)이 사방으로 튄다 + 짧은 번짐. 세기 `power` 0~1(빛살 0.3부터 · 두 겹·고리 둘 0.6~0.8부터 · 별 6→28) · 빠르기 `speed`. `CelebrationFx.On(대상).Play(색, 세기)` — 처음 부를 때 대상에 붙어 층을 만든다(맨 위 형제 · ignoreLayout · 자르지 않는다). 연달아 오면 처음부터 다시 | Inventory(응축 성공 0.35 · ★ 상승 1 · 큐브 등급 상승 — 2026-11-15) |
-| `PanelTransition.cs` | **창 여닫기 연출** — 열 때 0.95 → 1로 살짝 커지며 나타나고, 닫을 때 줄며 사라진다. 창마다 붙이지 않는다 — 여닫는 쪽이 `PanelTransition.SetActive(go, on)`(캔버스) · `SetVisible(group, on, panel)`(상주 팝업)을 부르면 대상에 저절로 붙는다(`CanvasGroup`도). ⚠️ 닫힘은 연출 뒤에 꺼지므로 **열림 여부는 `activeSelf`가 아니라 `IsShown`**으로 읽는다 — 토글이 닫는 중을 열림으로 읽으면 또 닫는다 | Main · State · Inventory · Guild · Auction(캔버스 `Show`) · Overlay(확인·수량 팝업·알림) |
-| `NumberRoll.cs` | **숫자 카운트업** — `text.text = …` 대신 `NumberRoll.Set(text, 값, 문구)`. 바뀌면 0.5초 굴러가며 글자가 한 번 튄다. 처음 값 · 꺼진 글자 · 같은 값은 바로 쓴다(접속할 때마다 돈이 굴러 들어오지 않게 · 초마다 다시 쓰는 곳도 그대로). 값이 없는 상태(쉬는 칸)로 돌아가면 `Forget` | State(골드) · Widget(누적 골드) · Auction(머리 줄 골드) · Main(작업슬롯 배율) |
-| `ButtonPressFx.cs` | **버튼 눌림 반응** — 누르는 동안 0.94로 들어가고 떼면 튕기듯 돌아온다. ★ 버튼마다 붙이지 않는다 — `Event System` 오브젝트에 하나. 누른 순간 커서 밑에서 클릭을 받을 **버튼 · 드롭다운 · 체크(목록 줄·탭)**를 찾는다(`WindowManager.UIHitsUnderCursor` · 입력칸·슬라이더·스크롤바는 빠진다). 빠지는 것: 700×300보다 큰 버튼(차단막) · 애니메이션 전환 버튼 · 누를 수 없는 버튼. 방금(0.5초 안에) 누른 버튼을 `RecentlyPressed`로 알려 준다 — 거절 흔들기의 기본 대상 | 전 캔버스(씬 `Event System`) |
-| `BackdropClose.cs` | **차단막을 누르면 닫기** — 차단막 오브젝트에 코드로 붙인다(`Bind`). 자식이 아니라 차단막 자신을 눌렀다 뗀 왼쪽 클릭만 받는다 |
-| `RefusalShake.cs` | **거절 흔들기** — 안 되는 조작을 하면 누른 버튼·칸이 좌우로 짧게 갸웃거린다(회전 7° · 0.35초). 직접 부르지 않는다 — `ServerWaitManager.RaiseRefusal(문구, 대상?)`를 부르면 `ToastPresenter`가 토스트와 함께 부른다(대상을 비우면 방금 누른 버튼). ⚠️ **위치가 아니라 회전**이다 — 레이아웃 그룹 아래 칸은 위치를 그룹이 다시 잡는다 | Overlay(`ToastPresenter`) |
-| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!Overlay Canvas`의 `TooltipPresenter`. 숨긴 글씨(`label` — 아이콘만 있는 버튼)는 `LocalizedText` 키가 있으면 **키로 직접 읽는다** — 꺼진 글씨는 번역이 돌지 않아 씬에 남은 글씨('Button')가 뜬 일이 있다(2026-11-10). **기능 설명은 대상이 아니라 `HelpIcon` 프리팹(`?`)에 붙은 트리거로** — `Overlay 규칙.md` "툴팁 두 종류" | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
-| `DropdownListFit.cs` | **드롭다운 목록 너비·높이** — 너비는 최소 머리 너비, 넘치면 가장 긴 항목까지 · 높이는 항목 전부(스크롤 없이 · 640 넘으면 그때만 스크롤 · 2026-11-15). 씬의 `TMP_Dropdown`마다 붙인다(펼쳐질 때 `LateUpdate`에서 잰다). `CheckDropdownView`는 정적 메서드만 빌려 쓴다 | 드롭다운 전체 |
-| `CheckDropdownView.cs` | **여러 개를 고르는 드롭다운** — 머리를 누르면 체크 목록이 펼쳐지고 줄을 눌러도 닫히지 않는다(`TMP_Dropdown`은 하나만 고르고 바로 닫힌다). 줄은 템플릿을 복제해 만든다 · 묶음(`sections`)을 주면 묶음마다 누를 수 없는 머리 줄(템플릿 복제 — 체크·바탕·Toggle 뗌 · 높이 `headerHeight`) · 목록에 자기 Canvas(override 101, 켤 때마다 건다) · 바깥 클릭은 루트 캔버스에 까는 투명 막(100)이 받아 닫는다. 씬 모양은 다른 드롭다운의 `Template`을 복사했다 — ⚠️ 머리 `Button`의 색은 원본 드롭다운의 `ColorBlock`을 복사해야 한다(바탕 Image는 흰색) | Inventory(일괄 담기 [제외]) |
-| `SuggestView.cs` | **검색칸 아래 후보 목록** + 후보 한 줄 완성값(`Suggestion` — `Kind`·`Tid`·`Key`는 부르는 쪽이 뜻을 정한다). 씬의 줄 수(8)까지만 보인다 · 자기 Canvas(override sorting 101, 켤 때마다 건다) · 입력칸 포커스가 빠지면 한 프레임 뒤 닫는다(줄을 누르는 중이면 둔다). ⚠️ **줄 버튼 내비게이션이 None이면 눌러도 선택되지 않아 클릭 전에 닫힌다** — `Awake`가 Explicit으로 맞춘다(2026-10-15) · ⚠️ **목록이 드래그를 받는다**(`IDragHandler`) — 줄 버튼엔 드래그 처리기가 없어 부모 입력칸이 잡혔고, 누른 채 10px만 움직여도 클릭이 취소됐다. 끌다 놓으면 놓은 줄을 고른다(2026-11-15) · 이름 색은 `RarityPalette.OnLight`(줄 바탕이 밝다) · 폭은 입력칸과 같게(`sizeDelta.x` 0) | Market(공용 검색창 · 등록 창 찾기) · Inventory(찾기) |
-| `LocalizedText.cs` | **씬에 고정된 글씨 하나를 번역 키로 채운다** — 켤 때와 언어가 바뀔 때(`Lang.Changed`). ⚠️ 코드가 `text`를 쓰는 글씨에는 붙이지 않는다 — 언어를 바꿀 때 코드가 쓴 값을 덮는다 | 모든 캔버스 (T-136) |
-| `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색). 등급 줄은 `Grade(rarity)`로 — 줄 바탕과 툴팁 테가 그 등급색이 된다(2026-11-15) | 위 트리거에 내용을 넘기는 모두 |
-| `theme/UIRichText.cs` | 한 줄 안에서 **라벨은 흐린 색 · 가격은 강조색**으로 가르는 TMP 리치 텍스트 조각. 색은 팔레트 역할에서 읽는다 | Market · Main(우편) |
-| `visual/` (`VisualCatalog`·`CharacterVisual`·`BackgroundVisual`·`TargetVisual`) | **연출 그림** — 캐릭터 프레임·크롭 · 패럴랙스 층 · 대상과 레벨 색. 빠진 그림은 대체로 버틴다(캐릭터 = 대체 그림, 아이콘 = 0번). 화면은 `VisualCatalog.Current`(Resources)로 찾고, 목록이 없는 PC면 자리 표시를 그린다. 굽는 쪽은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) | Main(큰 창 슬롯) · Widget(머리) · Inventory·가챠·목록 줄(상반신·아이콘) |
-| `visual/FxSprites.cs` | **이펙트 그림 이름표** — 어떤 연출이 어떤 그림(`Art/fx/<연출 키>/`)을 쓰는지 한 곳에. 목록(`VisualCatalog.FxOf`)으로 찾고 **없으면 null — 그 효과만 빠진다**(코드로 그리지 않는다). 그림은 흰색, 색은 `Image.color`로 | System(보상 하나씩 공개 — `reveal_*`) · Main·Widget(획득 연출 — `gain_*`) |
-| `visual/` (`SlotStageView`·`SlotStageTimeline`·`SlotStageSettings`·`SlotStagePreview`) | **슬롯 무대** — 판정 주기 안의 순간을 그린다(배경만 누적). 시간·거리는 전체 세팅 `Resources/SlotStageSettings`, 캐릭터별 값은 `CharacterVisual`의 개인 조정 칸 — 플레이 중 고쳐도 바로 보인다. 미리보기는 서버 없이 돌려 볼 때. 배경은 배우와 같은 배율이고, 패널이 그림보다 높으면 층의 uv 세로를 1 너머로 줘 맨 윗줄(하늘·나무 기둥)이 위로 이어진다 — 칸이 높아져도 확대가 아니라 위쪽이 더 보인다. ⚠️ 배경 텍스처는 세로 Clamp여야 한다 | Main(큰 창 슬롯 `Visible Panel`) |
-| `theme/` (`UIThemeRole`·`UIThemePalette`·`UIThemeColor`) | 🎨 **아트 전 임시 색** — 역할 → 색 표 하나. 아래 "임시 테마" 절 | 모든 캔버스·프리팹 |
-
-> ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").
-> 쓰는 곳이 늘며 모양이 굳을 때까지 여기서 다듬고, 굳으면 툴킷으로 올린다(마스터 반영은 확인을 받는다).
-
-## 임시 테마 — `theme/`
-
-아트가 없는 동안 색을 **역할**(`PanelBg`·`Button`·`TextMain`…)로만 적고, 색 값은
-`Assets/Resources/UIThemePalette.asset` 하나가 정한다. **지금은 양피지 시험**(2026-11-13 — 양피지 창·버튼 · 어두운 칸 · 진홍 제목 띠 · 아래 "양피지" 줄). 직전 톤은 **Taskbar Heroes 결 — 돌회색 창 · 진홍 제목 띠(`Header` 역할 · 금 글씨) · 적갈색 버튼 · 구리 주황 선택 · 흰 글씨**(2026-11-08 · 기준은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) "레퍼런스"·"UI 색"). 창 제목 띠 바탕은 `Header`(4)를 쓴다.
-
-- **양피지 시험(2026-11-13) — 글씨 역할은 바탕 밝기로 고른다.** 밝은 바탕(`PanelBg`·`PanelSub`·`Button`·`ButtonSelected`·`ButtonDisabled`) 위는 `TextDark`(보조는 투명도 0.72 · 흐림 0.45)·`HighlightDark`, 어두운 바탕(`Slot`·`Header`·`ButtonPrimary`·딤·등급 칸) 위는 `TextMain`·`Highlight`. Presenter가 `Paint`로 칠하는 금색도 같은 기준이다. 씬 안 프리팹 인스턴스에 색 덮어쓰기(`m_Color`·TMP `m_fontColor`)가 남으면 프리팹 색을 따라오지 않는다 — 걷어 낸다.
-  - (2차 · 2026-11-14) `UIRichText.Paint`의 `TextMain`·`TextSub`·`TextDisabled`는 색을 박지 않고 **글씨 기본색을 이어받는다**(보조·흐림은 투명도만) — 같은 문장이 밝은 바탕·어두운 바탕 어디서나 읽힌다.
-  - 금액: 밝은 바탕은 `UIRichText.Gold`(`HighlightDark`), 어두운 바탕(제목 띠·칸·판매 줄)은 `GoldOnDark`.
-  - 코드가 글씨 색을 직접 고를 때 바탕을 모르면 `UIThemePalette.OfFor(text, role)` — 글씨 태그가 `TextDark`면 어두운 짝으로 바꿔 준다.
-  - **등급색 글씨는 바탕에 맞춰 고른다 (2026-11-15).** 칸 바탕·테·툴팁(어두운 판)은 `RarityPalette.Get`, 밝은 양피지 위 글씨(경매 표 줄 · 아티팩트 상세)는 `OnLight`(같은 색상을 진하게 · 흰 스페셜은 진갈), 중간 갈색 패널 위 이름(응축 · 큐브 · 아티팩트 팝업)은 `OnDark`(일반 회색만 밝힌다). 일반 회색 9D·고급 형광 초록이 양피지에서 안 읽혔다.
-  - `OfFor`는 어두운 바탕(태그가 `TextDark`가 아닌 글씨)의 `Negative`·`Positive`를 밝은 짝(`NegativeOnDark`·`PositiveOnDark`)으로 바꾼다 — 팔레트 빨강은 양피지용이라 갈색 패널 위 경고가 묻혔다.
-  - 흐린 글씨의 바닥: `UIRichText.Label` 82%(예전 72%) · 진갈 글씨(`TextDark`)는 투명도 1 — 0.85·0.62는 "회색 글씨가 안 보인다"(사용자)로 올렸다. 계층은 투명도가 아니라 크기로 낸다.
-  - 창 안 작은 상자(정보 상자·안내판·배지)는 `Overlay`가 아니라 `Slot`(중갈색)이다. `Overlay`는 화면을 덮는 딤에만.
-  - (3차) 툴팁 판도 창으로 본다(`UiSkin.IsTooltipPanel` — 액자·종이 결). 툴팁은 **묶음 제목 띠**로 가른다(2026-11-15 · `TooltipPresenter.PaintRows`) — `Header`(■) 줄은 진갈 띠(5A3E2B) + 밝은 굵은 글씨(`TooltipRowView.BindHeader`), 내용 줄은 연한 흰색 18/0% 번갈아, 등급 줄만 등급색 55%. 묶음 전체를 등급색으로 칠하던 4차 방식은 묶음 경계가 안 보여 걷었다. 그림 없는 칸 자리 네모는 프리팹 색이 아니라 `SlotView.PlaceholderColor`(검정 30%). 모르는 등급(`RarityPalette.Unknown`)은 회색 대신 어두운 갈색.
-  - 밝은 버튼(`Button`)은 잠기면 버튼색과 잠김색의 반반 — 진한 글씨가 그대로 읽힌다(`UIThemeColor`). 찾기 제외 칸은 회색이 아니라 세피아(`SlotView.TintColor`).
-- (Taskbar 결 기준) **글씨는 흰색(`TextMain`)으로 통일한다** — 버튼 위 글씨도 흰 굵은 글씨. 골드(`Highlight`)·등급색·부족(`Negative`)·증가(`Positive`)처럼 뜻이 있는 색만 예외. `TextDark`는 밝은 바탕(등급 배지 등) 위 글씨에만.
-- 예외 — 상점·뽑기 카드(`GachaPoolCardView`)의 가격 버튼은 태그를 떼고 어두운 나무색을 `ColorBlock`에 직접 넣었다. 팔레트를 바꿔도 이 둘은 따라오지 않는다.
-
-| 색이 | 누가 칠하나 |
-|---|---|
-| 고정이다 (패널·글씨·일반 버튼) | Image·TMP에 붙은 **`UIThemeColor` 태그** — 에디터에서 씬·프리팹에 **구워 둔다**. 실행 중엔 아무것도 안 한다 |
-| 상태로 바뀐다 (고른 탭·찍은 노드·흐린 글씨) | 그 Presenter가 **`UIThemePalette.Of(역할)`** 로 칠한다. 색 필드 대신 `UIThemeRole` 필드를 둔다 |
-
-- 팔레트 값을 고치면 열린 씬은 바로 따라온다. **프리팹은 메뉴 `Window/DesktopWindowControl/UI 테마/적용`** 을 눌러야 한다.
-- ⚠️ **버튼 바탕은 흰색이고 색은 `ColorBlock`에 있다** — 틴트가 `Image.color`에 곱해지므로 바탕에 색을 넣으면 탁해진다.
-- 새 화면은 Image·TMP에 태그를 붙이고 역할만 고르면 된다. 자동 태그 메뉴는 처음 한 번 쓴 도구다(색을 보고 역할을 짐작).
-- ⚠️ **태그가 붙은 칸의 색은 색 값이 아니라 역할로 바꾼다.** 칸을 복제해 색만 손으로 바꾸면 태그는 원본 역할을 그대로 들고 있다.
-  그러면 씬을 열거나 컴파일할 때마다 태그가 원래 색으로 다시 칠해서, 안 만진 씬에 저장 표시(`*`)가 뜬다.
-  그대로 저장하면 의도한 색이 사라진다(2026-10-25 분해 버튼). 어긋나면 콘솔에 `[UI 테마] 태그 역할과 색이 달라` 경고가 뜬다.
-- 등급색(`RarityPalette`)은 게임 규칙의 의미라 팔레트에 넣지 않는다.
-- 🎨 **아트가 들어오면 태그를 걷고 이 폴더를 지운다.**
-
-## 들어올 자격
-
-**둘을 다 만족해야 한다.**
-
-1. **캔버스 하나에 속하지 않는다** — 두 캔버스 이상이 쓰거나, 애초에 화면과 무관한 변환이다.
-2. **화면 표현에 쓰인다** — 그리는 값·색·문구·칸. 상태를 들고 있지 않는다.
-
-## 들어올 수 없는 것
-
-| 무엇 | 어디로 | 왜 |
-|------|--------|-----|
-| **상태를 들고 있는 서비스** (모델·매니저) | `Managers/` | 여기는 표현만이다. 데이터의 주인이 UI 폴더에 살면 화면을 지울 때 주인이 함께 사라진다 |
-| **게임을 모르는 범용 코드** (확장 메서드·툴) | `Common/` | 거기는 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)의 사본이라 **프로젝트 이름을 담지 않는다**. 여기 있는 것은 전부 이 게임의 개념(등급·산업·슬롯)을 안다 |
-| **한 캔버스만 쓰는 종속 View** (`SellCartRowView`·`WorkStationSlotView`) | 그 Presenter 폴더 | 주인이 하나면 그 옆이 맞다. 여기로 올리면 **찾을 때 화면 폴더를 열었는데 없다** |
-| **캔버스 껍데기·Presenter** | `<캔버스>/` | 씬에 붙는 것은 비칠 대상이 있다 |
-
-> ⚠️ **"두 곳에서 쓰니까"만으로는 부족하다.** 한 캔버스의 두 Presenter가 함께 쓰는 것은
-> 그 **캔버스 폴더**에 둔다 — 캔버스를 넘지 않으면 소유자가 아직 하나다.
-
-## 고칠 때
-
-- 🔴 **여기 있는 파일을 고치면 여러 화면이 동시에 바뀐다.** 인벤토리를 보며 고쳐도 가챠 결과 팝업이
-  함께 움직인다 — **양쪽을 다 확인하고 커밋한다.**
-- **화면마다 달라야 하는 것은 분기하지 않고 스위치로 뺀다** — 부품이 화면을 알아보면
-  화면이 늘 때마다 부품을 고치게 된다. `SlotView.SetSubVisible`이 그 형태다
-  (인벤토리는 보조 문구를 켜고, 가챠 결과는 끈다). 상세는 [`Inventory 규칙.md`](<../Inventory/Inventory 규칙.md>).
-- **파일이 하나의 캔버스만 쓰게 줄어들면 그 폴더로 내린다.** 공용 폴더는 **지금의 사실**을
-  적는 자리다 — 예전에 공유했다는 이유로 남겨 두면 다음 사람이 못 건드린다.
-
-이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 캔버스·레이아웃 함정은
-[`Layout 규칙.md`](<../Layout/Layout 규칙.md>)에 있다.
+﻿# Shared 폴더 규칙
+
+
+
+> 최종 업데이트: 2026-11-21 (**칸 아래 줄 5차 — 그림을 걷고 다시 글자로** — 그림·글자가 섞여 통일성이 없었다(사용자) · 캐릭터 칸 오른쪽 아래 최고 적성도 글자(`사냥 2`/`Hunt 2` — 같은 약칭) · 긴 이름은 자르지 않고 약칭 `UI.SlotTag.*`(아티팩트 → 아티/Arti · 공통 → 공통/All · 농사 → Farm 등) · `GetCategoryIcon` 삭제 · **마우스 올림 색은 `UIThemePalette.HoverOf`**(밝은 버튼은 흰색 50% · 어두운 버튼 25%) — 상태색을 칠하는 Presenter도 `highlightedColor`를 같이 칠한다 · **버튼·토글·드롭다운 `Navigation` None** — 클릭한 버튼이 Selected로 남아 올림 색을 가렸다 · 드롭다운 항목 selected = highlighted(항목은 올리면 Selected가 된다) · **진행 막대는 `SliderSnap.SetSnapped`** — 막대 폭 1칸 단위로 끊어 칸이 바뀔 때만 다시 그린다) · 2026-11-21 (`CheckDropdownView` **묶음 머리** — `SetOptions(…, sections)`이면 묶음마다 흐린 머리 줄 + 두 번째부터 얇은 구분선 · 칸을 나누지 않고 목록 하나 — 사용자 "종류별로 보기 힘들다") · 2026-11-21 (**칸 아래 줄 4차** — 산업은 언어와 상관없이 **늘 그림**(적성 그림 + 숫자 · 분류 그림만) — 영어만 그림이 되어 한글·영어가 달랐다 · 가챠 결과 칸도 같게 · 산업 그림은 산업마다 다른 색 — 사용자) · 2026-11-21 (**칸 아래 줄 3차** — 배지 폭을 글자에 딱 맞춤(TMP 선호 폭에 margin이 이미 들어 있어 여백이 두 번 붙었다) · 12px로 안 들어가면 **산업 그림으로**(적성: 그림 + 숫자 · 분류: 그림만 — `SetLevelBadge(label, icon)` · 공급자 `GetCategoryIcon`) → 그래도 안 되면 함께 줄임 · 장비 칸은 오른쪽 아래 인챈트 보석 자리를 비운다 · 보석을 아래 줄 가운데로(-19, 19) · 경험치 게이지는 자물쇠 아래까지 · 자물쇠 9px — 사용자) · 2026-11-21 (**칸 아래 줄 2차** — 수량도 LV·적성과 같은 어두운 배지 상자 `Sub Badge`(TMP `<mark>` 알약을 걷음 — 바탕 밝기가 달랐다) · 오른쪽 아래는 오른쪽 정렬 · 글꼴·여백·배지 높이를 **화면 픽셀**로 맞춘다(캔버스 배율 ÷ — 배율 0.9에서 12가 10.8px로 그려져 굵기가 달라 보였다) · 경험치 게이지를 왼쪽 벽 세로 막대로 되돌림 · 모서리 표시는 테두리(8) 안 1px = 9 — 사용자) · 2026-11-21 (**`SlotView` 아래 줄 글자 셋(LV·분류 배지 / 최고 적성 / 수량)을 한 벌로** — 갈무리 12 · 그림자 재질 · 픽셀 맞춤 · `FitBottomRow`가 배지 폭을 글자에 맞추고, 왼쪽·오른쪽이 겹치면 둘을 같은 크기로 함께 줄인다(영어 "LVHunting 3") · 예전 14·12·11.2 제각각이라 굵기·숫자 모양이 달랐다 · 모서리 배지·마크를 1px 안으로(등급 테두리와 겹침) — 사용자) · 2026-11-20 (`UIPixelSnap` — 칸 수량 글자를 픽셀 경계에 · 수량 글자 최대 12(갈무리는 12의 배수만 또렷) · 수량 글자색 `Highlight` 노랑 — 흰 1px 획이 얇아 안 보였다 · 이슈 #132) · 2026-11-20 (`SlotView` 최고 적성 알약을 글자로 '농사 5' — 산업 그림 끔 · 수량 문구 뒤 진갈 알약(TMP `<mark>`) · `SlotStageSettings.characterSize` 1.2 — 모든 캐릭터 크기·멈춤 거리에 곱한다) · 2026-11-19 (`SlotView` 아래 글자 띠 `Label Shade` — 보조 문구·LV 배지가 켜졌을 때만 · 그림 `ui_label_shade` · 개수·LV 글씨에 그림자 재질 `Galmuri EN SDF - Shadow` — 밝은 아이콘 위에서 글자가 묻혔다) · 2026-11-15 (`SuggestView` — 드래그를 받아 입력칸이 클릭을 가로채지 않게 · 이름 색 OnLight · 폭은 입력칸과 같게) · 2026-11-15 (`ItemIconView` 그림 자리를 칸의 9% 안쪽 비율로 + `RectMask2D` — 그림이 등급 테 위로 삐져 보였다 · 넘치면 잘린다) · 2026-11-15 (글씨 대비 — 등급 글씨색 `RarityPalette.OnLight`(양피지 위) · `OnDark`(갈색 패널 위 · 일반만 밝게) · `OfFor`가 어두운 바탕의 빨강·초록을 밝힌다 · 라벨 투명도 82% · 진갈 글씨 0.85 → 1 · 드롭다운 목록 높이도 항목 전부에) · 2026-11-15 (등급 바탕 시안 2 — 불투명 어두운 속 + 계단빛 60% · 9-slice 4 · 칸 최고 적성 알약 · 툴팁 등급 테 `TooltipContent.Grade`) · 2026-11-15 (`CelebrationFx` 추가 — 응축 성공·★ 상승·큐브 등급 상승 터짐) · 2026-11-15 (툴팁 묶음 제목 띠 — 묶음 전체 등급색 칠하기를 걷음) · 2026-11-14 (`SlotStageView` 배경은 배우와 같은 배율 — 칸이 높으면 그림 맨 윗줄을 늘려 위쪽을 잇는다(세로 Clamp)) · 2026-11-14 (툴팁 줄 바탕 묶음별 — 등급 묶음은 등급색 전부 · 색 없는 묶음은 연한 흰 줄무늬 · `SlotView.SetNameVisible`) · 2026-11-14 (신화 등급색 E6CC80 → FF3D6E — 양피지에 묻혔다 · 드롭다운 목록 너비 `DropdownListFit` · 칸의 종족·크기 배지와 적성 산업 그림 제거) · 2026-11-14 (양피지 3차 — 툴팁 액자 · 줄 바탕색 반쯤 섞기 · 그림 없는 칸 어두운 홈 · 모르는 등급 갈색) · 2026-11-14 (양피지 2차 — `Paint`는 글씨 기본색을 이어받는다 · `OfFor` · `GoldOnDark` · 안쪽 상자는 `Slot`) · 2026-11-13 (**양피지 시험** — 글씨 역할은 바탕 밝기로 · `HighlightDark` 역할 추가) · 2026-11-12 (등급 빛을 바닥에서 위까지 칸 전체로) · 2026-11-12 (등급 바탕 A+B — 입체 테두리 + 아래 계단빛 · 검정 반투명 속 · 9-slice 12 · 칸 글씨를 테두리 안으로) · 2026-11-11 (`RaritySkin` 귀퉁이 장식 제거 — 보기에 거슬렸고 `LayoutGroup` 루트(작업슬롯)에서 자식이 한 줄을 차지했다) · 2026-11-11 (**등급 바탕 한 벌 `visual/RaritySkin`** — 어두운 판 + 등급색 테두리를 칸·아이콘·작업슬롯·위젯·배치 줄이 함께 · `SlotView` 여백 — 이름 띠·아이콘·적성 띠가 겹치지 않게) · 2026-11-10 (`SlotView` 등급 틀 — 경사 바탕 + 쇠 귀퉁이 덧그림 · `TooltipTrigger` 숨긴 글씨는 키로 읽는다) · 2026-11-09 (`ButtonPressFx` — 드롭다운·체크도 눌림 반응) · 2026-11-08 (테마 톤 — Taskbar Heroes 결 · `Header` 역할 · 글씨 흰색 통일) · 2026-11-03 (`RaceLabel` 추가 · T-054) · 2026-11-02 (`BackdropClose` 추가) · 2026-10-28 (`SpecialSlotFx` 추가 — Special 칸 무지개 테두리·빛줄기·반짝임 · `VisualCatalog.ArtifactIconOf` · T-151) · 2026-10-27 (거점 열 → 길드 열 · `Hub` → `Guild` 개명 — 거점은 지도 화면 이름으로 간다 · T-182) · 2026-10-25 (임시 테마 — 태그가 붙은 칸은 역할로 색을 바꾼다 · 어긋나면 경고) · 2026-10-22 (`RefusalShake` 추가 · `ButtonPressFx.RecentlyPressed` · `PanelTransition`을 알림 창에도 — T-177) · 2026-10-21 (`PanelTransition`·`NumberRoll`·`ButtonPressFx` 추가 — 창 여닫기 · 숫자 카운트업 · 버튼 눌림) · 2026-10-21 (`LevelUpFx` 추가 — 작업슬롯 칸 캐릭터 레벨업 · `SlotGainShine.PlayLevelUp` 금색 + 솟는 화살표 · `FxSprites` levelup·unlock — T-052 · T-039) · 2026-10-15 (`CheckDropdownView` 추가 — 여러 개를 고르는 드롭다운, 인벤토리 일괄 담기 [제외]) · 2026-10-15 (`SlotView.lockMark` — 칸 오른쪽 위 자물쇠 · `EntityBlockText`가 잠금을 먼저 말한다 — T-137) · 2026-10-15 (`SuggestView` 추가 — 검색칸 아래 후보 목록, 경매장과 인벤토리가 함께) · 2026-10-13 (낚시 → 발굴 — T-148) · 2026-10-10 (`EnchantGemView` 추가 — 능력치 칸 네모 1~3을 인챈트 보석 하나로) · 2026-10-10 (`TooltipTrigger` — 기능 설명은 `HelpIcon`) · 2026-10-10 (`SlotGainShine` 추가 — 인벤토리 칸 획득 반짝임 · 무대 배경 배율 보정 · `TargetVisual.scale`) · 2026-10-10 (`ItemGainEffectView` 아이콘 층·풀을 `Start`에 만들고 미리 채운다 — T-139) · 2026-10-09 (`ItemGainEffectView` 아이콘 뒤 등급 빛 — `ItemGainFx`·`ItemGainGlowSettings` · 이펙트 그림 이름표 `visual/FxSprites` — 그림만 쓰고 코드로 그리지 않는다) · 2026-10-08 (`ItemGainEffectView` 따라가기 — 땅이 흐르면 대상과 함께) · 2026-10-08 (`ItemGainEffectView` 추가 — 아이템 획득 연출 · `EquipPipsView.SetTooltip`) · 2026-10-07 (`EquipPipsView` 추가 — 캐릭터가 낀 장비 4칸을 네모로 · 인벤토리 캐릭터 칸·작업슬롯 칸 · `EquipLabel`에 장착 읽기 · `RarityPalette.EmptySocket` · T-104) · 2026-10-05 (`VisualCatalog.Current` — 인벤토리 상반신·위젯 머리·자원·장비 아이콘을 목록에서 찾는다 · T-097) · 2026-10-04 (`visual/` 추가 — 슬롯 연출 그림의 런타임 SO · 슬롯 무대 `SlotStageView`·전체 세팅 `SlotStageSettings` · T-097) · 2026-10-03 (`EntityBlockText` 추가 — 팔거나 올릴 수 없는 개체의 사유를 판매·경매 등록이 함께 쓴다 · T-075 · T-096) · 2026-10-01 (`ItemIconView`·`ItemIconContent` 추가 — 목록 줄 아이콘 칸 · `UIRichText` · `EquipLabel`에 능력치 칸 읽기·장비 툴팁 — T-103) · 2026-09-26 (`theme/` 추가 — 아트 전 임시 색을 팔레트 한 곳에서 맞춘다) · 2026-09-26 (`RarityLabel` 추가 — 등급 이름을 도구 줄과 칸 툴팁이 함께 쓴다 · T-050) · 2026-09-25 (`TooltipTrigger`·`TooltipContent` 추가 — 어느 캔버스의 버튼이든 툴팁을 단다 · T-088) · 대상: `Assets/Scripts_Client/UI/Shared/`
+
+
+
+**여기는 캔버스가 아니다.** `UI/` 아래의 다른 폴더는 전부 하이어라키의 캔버스 하나를 비추지만
+
+(`#Inventory Canvas` → `Inventory/`), 이 폴더에는 대응하는 오브젝트가 **없다.**
+
+
+
+## 왜 이 폴더가 있나
+
+
+
+`UI/`의 폴더 규칙은 **`<캔버스>/<Presenter>/`** — 폴더가 하이어라키의 거울이다
+
+([`UI 규칙.md`](<../UI 규칙.md>) §5). 그런데 **씬·프리팹에 붙지 않는 파일에는 비칠 대상이 없다.**
+
+자리가 정해져 있지 않으면 결국 *"처음 쓴 화면"* 의 폴더에 놓이고, 그 순간 **위치가 소유권을
+
+거짓으로 주장한다** — 다른 화면이 그걸 참조하는데도.
+
+
+
+| 예전 | 무엇이 거짓이었나 |
+
+|------|------------------|
+
+| `Inventory/InventoryGridPresenter/InventorySlotView.cs` | 인벤토리 소유처럼 보이지만 **가챠 결과 팝업이 같은 클래스·같은 프리팹을 쓴다.** 인벤토리를 고치다 팝업을 조용히 바꾸게 된다. **이름의 `Inventory`도 거짓이었다** → `SlotView`로 개명 |
+
+| `System/RarityPalette.cs` 등 4개 | `!Overlay Canvas`와 **무관**한데 그 폴더에 있었다. `Overlay 규칙.md`가 *"어디에도 속하지 않는 것들"* 이라 적어 두고도 자리를 못 만들어 준 상태였다 |
+
+
+
+**소유자가 여럿이면 자리도 공용이어야 한다.** 그게 이 폴더다.
+
+
+
+## 여기 있는 것
+
+
+
+| 파일 | 하는 일 | 누가 쓰나 |
+
+|------|---------|-----------|
+
+| `SlotView.cs` | **칸 하나** — 완성된 값을 받아 그린다 (종속 View). 등급 바탕은 `RaritySkin`이 `Awake`에서 깐다(아래 줄). 여백(2026-11-12 · 100칸 기준 — 등급 테두리가 8이라 그 안으로) — 이름을 켠 칸(가챠 결과 · 도감): 이름 위 9~26 좌우 8 · 아이콘 위 24 아래 20 좌우 10 · 개수 아래 8~24. 이름을 끈 칸(인벤토리 · 응축 재료 — 시안 2 · 2026-11-15): 그림이 테 안쪽 6까지 꽉 차고 표시는 네 모서리 — 자물쇠 왼쪽 위 · ★ 위 가운데 · 배·판 오른쪽 위 · LV 배지 왼쪽 아래 · 최고 적성 배지(`SetBestAptitude`)·수량 배지(`Sub Badge`) 오른쪽 아래(오른쪽 정렬) · 경험치 게이지 왼쪽 벽 세로(LV 배지 위부터 · 아래→위). 아래 줄 배지 셋은 같은 어두운 상자·같은 글꼴이고 크기는 `FitBottomRow`가 화면 픽셀로 정한다. **겹치면 글자가 안 읽힌다 — 새 표시를 더할 때 이 자리들을 비워 둔다**. 그림이 꽉 차 아래 글자가 그림 위에 얹히므로 아래 34px에 그늘 띠(`Label Shade`)를 깐다 — 글자가 있을 때만 켜진다(2026-11-19) | `#Inventory Canvas`의 격자 · `!Overlay Canvas`의 가챠 결과 |
+
+| `UIPixelSnap.cs` | **글자를 화면 픽셀 경계에** — 그리기 직전 월드 좌표의 소수 부분만큼 민다. 갈무리 1px 획이 소수 좌표·12의 배수가 아닌 크기에서 회색으로 번졌다(이슈 #132 — 크기 12 + 자리 맞춤 둘 다 있어야 또렷) | `SlotView`(수량 글자 · LV 배지 · 최고 적성 배지 — `Awake`에서 붙인다. 레이아웃 그룹이 자리를 정하는 자식에는 달지 않는다 — 처음 자리를 기억해 되돌리므로 그룹과 다툰다) |
+
+| `visual/RaritySkin.cs` | **등급 바탕 한 벌** — `rarity_bg`(입체 테두리 + 바닥에서 속의 60%까지 오르는 계단빛 5단 × 등급색 · 속은 **불투명** 짙은 회색이라 곱하면 거의 검정 — 뒤 양피지가 비치지 않는다 · 9-slice 4(속이 칸 높이에 비례해 늘어 계단빛 비율이 같다) · 0.5배율 — 2026-11-15 시안 2 · 그림은 `make_slots.py`). `Dress`(Awake 한 번) · `Set`(등급). 귀퉁이 장식은 두지 않는다(2026-11-11 사용자) — 바탕에 무엇을 얹을 때는 `LayoutGroup` 자식이 되지 않게 한다(작업슬롯 위 빈 줄). **등급색 바탕을 새로 두면 단색으로 칠하지 말고 이걸 쓴다** — 단색판은 그림·글자를 묻는다(2026-11-11) | `SlotView` · `ItemIconView` · `WorkStationSlotView` · `CharacterStateRowView` · `EquipPickRowView` · `WidgetMiniSlotView` · (툴팁은 같은 등급색으로 테만 — `TooltipContent.Grade`) |
+
+| `SlotData.cs` | 칸에 넘기는 **완성값 struct** | 위 칸을 채우는 모두 |
+
+| `ItemIconView.cs` + `Assets/Prefabs/ItemIconView.prefab` | **목록 줄 왼쪽의 작은 아이콘 칸** — 등급 바탕 · 이름 첫 글자(🎨 아이콘 전 임시) · 모서리 수량 · 인챈트 보석. 줄에서는 `SquareLayoutElement`로 줄 높이만큼 정사각형(옆 글씨가 길어도 줄지 않게 최소 폭도 같다). **그림 자리는 `Awake`가 칸의 9% 안쪽으로 맞추고 칸에 `RectMask2D`를 붙인다** — 고정 4px 여백은 큰 칸에서 테 두께보다 얇아 하트·뽑기권처럼 끝까지 그린 그림이 테를 덮었다(2026-11-15 사용자). 프리팹·씬의 `Icon Image` 여백 값은 실행 때 덮인다 | Market(경매장 줄) · Main(우편 · 장비 고르기) · Inventory(판매 목록) |
+
+| `EnchantGemView.cs` | **장비 칸 오른쪽 아래의 인챈트 보석 하나** — 색 = 인챈트 등급, 인챈트 전이면 빈 보석. 인챈트 등급이 장비 하나에 하나라 칸 수만큼 네모를 그리면 같은 색 네모가 정보 하나만 말했다(2026-10-10 A안). 칸 수는 툴팁에 · 딤·흑백은 `SlotView.TintColor` | `SlotView`(장비 탭) · `ItemIconView` — 두 프리팹 안에 자식으로 |
+
+| `EquipPipsView.cs` + 프리팹 둘 | **캐릭터가 낀 장비 4칸** — 빈 칸은 어두운 네모 · 낀 칸은 장비 등급색. **4자리 고정**(무기·장신구1·장신구2·보석). `EquipPipsView.prefab` = 색 네모만(11px · 14 간격) · `EquipIconsView.prefab` = 등급 바탕 + 장비 아이콘(줄 높이 정사각형). 딤·흑백은 `SlotView.TintColor` 하나로 | Inventory(캐릭터 칸 — 색 네모) · Main(작업슬롯 칸 — 아이콘) — 슬롯 설정 캐릭터 카드에는 두지 않는다(장비 칸이 바로 보인다) |
+
+| `ItemIconContent.cs` | 아이콘 칸의 완성값 + 팩토리(`ForItem`·`ForEquip`·`ForCharacter`·`ForArtifact`·`ForGold`) — 이름·등급 조회를 한 곳에 | 위 아이콘을 채우는 모두 |
+
+| `ResultMessages.cs` | 결과 코드 → 사용자 문구 | Login · Main · Market · Inventory + `PlayerDataModel` |
+
+| `RarityPalette.cs` | 등급 → 표시 색(신화는 FF3D6E — 서버 enum 주석의 E6CC80은 옅은 금이라 양피지 바탕에 묻혀 클라만 바꿨다 · 2026-11-14) · 빈 네모 색(`EmptySocket` — 장착 칸 `EquipPipsView`가 쓴다) | Inventory · System |
+
+| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
+
+| `RaceLabel.cs` | 캐릭터 종족 → 이름 · 칸 배지 한 글자 · 툴팁 줄. 표시 전용 | Inventory · Main · Auction · Overlay |
+
+| `WorkStationProgress.cs` | 슬롯 스냅샷 → 진행도·남은 초·실효 주기. **복사하면 서버 판정식이 두 벌이 된다** | Main(큰 창) · Widget(상주 위젯) |
+
+| `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Inventory(칸 스트립) · Main(캐릭터 줄·카드) |
+
+| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
+
+| `EquipLabel.cs` | 장비 → 효과 한 줄(`발굴 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`) · **캐릭터의 장착 읽기**(`WornSlots` 순서 · `ReadWornGrades` · 툴팁 `AddWornRows` — T-104). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
+
+| `EntityBlockText.cs` | 캐릭터·장비 개체 → **팔거나 올릴 수 없는 사유** 한 줄(잠김 — 맨 먼저 · 끼고 있음 · 배치 중 · 장비 낌 · 마지막 캐릭터), 없으면 null. ⚠️ **표시용이고 거절은 서버가 한다** | Inventory(즉시 판매 담기) · Market(경매 등록 흐린 줄) |
+
+| `ItemGainEffectView.cs` | **아이템 획득 연출** — 넘겨받은 월드 위치에서 아이콘이 나타나 떠오르며 사라진다. 여러 개면 좌우 대칭(간격 = 크기 + 빈틈). DOTween `Sequence` + UniTask(`KillAndCancelAwait`) · 아이콘은 `PrefabPool` — 층·풀은 `Start`에 만들고 `maxIcons`만큼 미리 채운다(첫 수확 프레임이 8~9ms 튀었다 · T-139). `follow`를 넘기면 매 프레임 가로 위치를 그 자리에 맞춘다 — 큰 창 칸은 `SlotStageView.FollowGround`로 땅과 함께 뒤로 흐른다. 꺼지거나 파괴되면 끊긴다. 채취 푸시 → 그림·등급 읽기(`ReadGains`)도 여기. **아이콘 뒤 등급 빛** — 일반·고급 번짐 · 희귀·영웅 + 광선 · 전설·신화 + 섬광·빛 기둥(또는 겹광선·고리)·아이콘 튐. 조정값은 인스펙터 `glow`(아이콘 대비 배율 — 큰 창·위젯 같은 값). ⚠️ 칸 **루트**에 붙인다 — 무대는 `RectMask2D`라 잘린다 |
+
+| `ItemGainFx.cs` · `ItemGainGlowSettings.cs` | 위 연출의 **아이콘 한 개 묶음**(아이콘 + 뒤·앞 빛 — 코드가 원본을 만들어 풀로 돌린다) · **빛 조정값**(`[Serializable]`, 등급 → 3단계 `TierOf`) | 위와 같음 | Main(작업슬롯 칸 — 쓰러지는 대상 자리) · Widget(미니 칸 — 머리 자리, 작게) |
+
+| `SlotGainShine.cs` | **칸 획득 반짝임** — 칸 위에서 등급색 번짐(`gain_glow`) + 사선 빛 줄(`reveal_shine`)이 한 번 지나간다. 칸 안만 그린다(`RectMask2D`) · 끝나면 그림·마스크를 끈다. 무엇이 들어왔는지는 인벤토리 공급자가 감지하고(`InventorySlotSource.TakeGain`) 격자가 칸마다 처음 반짝일 때 코드로 붙인다 — 칸 프리팹은 손대지 않는다. **레벨업 모양**(`PlayLevelUp` — T-052): 캐릭터 칸의 레벨이 오르면 금색 번짐 + 겹화살표(`levelup_arrow`)가 솟는다 — 공급자가 수량 자리에 레벨을 내놓고 `TakeRise`로 "있던 것이 늘었다"를 가른다 | Inventory(격자 칸) |
+
+| `SpecialSlotFx.cs` | **Special 칸** — 무지개 테두리가 돌고(3초) · 빛줄기가 스치고(2.4초) · 반짝임 4개가 엇갈려 깜빡인다(1.8초). 목업 `유물감정목업.html`. `SlotView`가 Special 등급을 그릴 때 처음 한 번 코드로 붙인다(칸 프리팹은 손대지 않는다) · 딤·흑백 칸에서는 끈다(도감의 꺼진·미장착 칸). 테두리 = `reveal_frame` 마스크 안에서 `special_rainbow`가 돈다 · 빛줄기 `reveal_shine` · 반짝임 `reveal_sparkle` — 없는 그림의 효과는 빠진다 | `SlotView`를 쓰는 모두(인벤토리 · 가챠 결과 · 아티팩트 도감) |
+
+| `LevelUpFx.cs` | **캐릭터 레벨업 연출** — 작업슬롯 칸의 캐릭터 자리(`SlotStageView.TryGetCharacterPoint` · 없으면 무대 가운데)에서 금빛 기둥(`gain_pillar`)·번짐·겹화살표(`levelup_arrow`)·별이 솟고 `LV.12`가 튀어 오른다. 토스트는 따로 없다 — 칸 위 글자가 그 몫(주의를 뺏지 않는다 · P1). 글자는 칸 안에 머물게 자리를 죈다. 칸이 처음 레벨업할 때 코드로 붙인다 · ⚠️ 칸 **루트**에 붙인다(무대는 `RectMask2D`) | Main(작업슬롯 칸 — `WorkStationSlotView.PlayLevelUp`) |
+
+| `CelebrationFx.cs` | **축하 터짐** — 대상 가운데서 빛살(`reveal_rays`)이 돌며 펴지고 · 고리(`gain_ring`)가 퍼지고 · 별 조각(`reveal_sparkle`)이 사방으로 튄다 + 짧은 번짐. 세기 `power` 0~1(빛살 0.3부터 · 두 겹·고리 둘 0.6~0.8부터 · 별 6→28) · 빠르기 `speed`. `CelebrationFx.On(대상).Play(색, 세기)` — 처음 부를 때 대상에 붙어 층을 만든다(맨 위 형제 · ignoreLayout · 자르지 않는다). 연달아 오면 처음부터 다시 | Inventory(응축 성공 0.35 · ★ 상승 1 · 큐브 등급 상승 — 2026-11-15) |
+
+| `PanelTransition.cs` | **창 여닫기 연출** — 열 때 0.95 → 1로 살짝 커지며 나타나고, 닫을 때 줄며 사라진다. 창마다 붙이지 않는다 — 여닫는 쪽이 `PanelTransition.SetActive(go, on)`(캔버스) · `SetVisible(group, on, panel)`(상주 팝업)을 부르면 대상에 저절로 붙는다(`CanvasGroup`도). ⚠️ 닫힘은 연출 뒤에 꺼지므로 **열림 여부는 `activeSelf`가 아니라 `IsShown`**으로 읽는다 — 토글이 닫는 중을 열림으로 읽으면 또 닫는다 | Main · State · Inventory · Guild · Auction(캔버스 `Show`) · Overlay(확인·수량 팝업·알림) |
+
+| `NumberRoll.cs` | **숫자 카운트업** — `text.text = …` 대신 `NumberRoll.Set(text, 값, 문구)`. 바뀌면 0.5초 굴러가며 글자가 한 번 튄다. 처음 값 · 꺼진 글자 · 같은 값은 바로 쓴다(접속할 때마다 돈이 굴러 들어오지 않게 · 초마다 다시 쓰는 곳도 그대로). 값이 없는 상태(쉬는 칸)로 돌아가면 `Forget` | State(골드) · Widget(누적 골드) · Auction(머리 줄 골드) · Main(작업슬롯 배율) |
+
+| `ButtonPressFx.cs` | **버튼 눌림 반응** — 누르는 동안 0.94로 들어가고 떼면 튕기듯 돌아온다. ★ 버튼마다 붙이지 않는다 — `Event System` 오브젝트에 하나. 누른 순간 커서 밑에서 클릭을 받을 **버튼 · 드롭다운 · 체크(목록 줄·탭)**를 찾는다(`WindowManager.UIHitsUnderCursor` · 입력칸·슬라이더·스크롤바는 빠진다). 빠지는 것: 700×300보다 큰 버튼(차단막) · 애니메이션 전환 버튼 · 누를 수 없는 버튼. 방금(0.5초 안에) 누른 버튼을 `RecentlyPressed`로 알려 준다 — 거절 흔들기의 기본 대상 | 전 캔버스(씬 `Event System`) |
+
+| `BackdropClose.cs` | **차단막을 누르면 닫기** — 차단막 오브젝트에 코드로 붙인다(`Bind`). 자식이 아니라 차단막 자신을 눌렀다 뗀 왼쪽 클릭만 받는다 |
+
+| `RefusalShake.cs` | **거절 흔들기** — 안 되는 조작을 하면 누른 버튼·칸이 좌우로 짧게 갸웃거린다(회전 7° · 0.35초). 직접 부르지 않는다 — `ServerWaitManager.RaiseRefusal(문구, 대상?)`를 부르면 `ToastPresenter`가 토스트와 함께 부른다(대상을 비우면 방금 누른 버튼). ⚠️ **위치가 아니라 회전**이다 — 레이아웃 그룹 아래 칸은 위치를 그룹이 다시 잡는다 | Overlay(`ToastPresenter`) |
+
+| `TooltipTrigger.cs` | 툴팁을 띄울 대상에 붙는다 — 고정 문구(인스펙터) 또는 Presenter가 넘긴 내용 함수. 띄우는 일은 `!Overlay Canvas`의 `TooltipPresenter`. 숨긴 글씨(`label` — 아이콘만 있는 버튼)는 `LocalizedText` 키가 있으면 **키로 직접 읽는다** — 꺼진 글씨는 번역이 돌지 않아 씬에 남은 글씨('Button')가 뜬 일이 있다(2026-11-10). **기능 설명은 대상이 아니라 `HelpIcon` 프리팹(`?`)에 붙은 트리거로** — `Overlay 규칙.md` "툴팁 두 종류" | State · Inventory · Main (버튼마다) · Inventory 격자(칸마다 — 코드가 붙인다, T-050) |
+
+| `DropdownListFit.cs` | **드롭다운 목록 너비·높이** — 너비는 최소 머리 너비, 넘치면 가장 긴 항목까지 · 높이는 항목 전부(스크롤 없이 · 640 넘으면 그때만 스크롤 · 2026-11-15). 씬의 `TMP_Dropdown`마다 붙인다(펼쳐질 때 `LateUpdate`에서 잰다). `CheckDropdownView`는 정적 메서드만 빌려 쓴다 | 드롭다운 전체 |
+
+| `CheckDropdownView.cs` | **여러 개를 고르는 드롭다운** — 머리를 누르면 체크 목록이 펼쳐지고 줄을 눌러도 닫히지 않는다(`TMP_Dropdown`은 하나만 고르고 바로 닫힌다). 줄은 템플릿을 복제해 만든다 · 묶음(`sections`)을 주면 묶음마다 누를 수 없는 머리 줄(템플릿 복제 — 체크·바탕·Toggle 뗌 · 높이 `headerHeight`) · 목록에 자기 Canvas(override 101, 켤 때마다 건다) · 바깥 클릭은 루트 캔버스에 까는 투명 막(100)이 받아 닫는다. 씬 모양은 다른 드롭다운의 `Template`을 복사했다 — ⚠️ 머리 `Button`의 색은 원본 드롭다운의 `ColorBlock`을 복사해야 한다(바탕 Image는 흰색) | Inventory(일괄 담기 [제외]) |
+
+| `SuggestView.cs` | **검색칸 아래 후보 목록** + 후보 한 줄 완성값(`Suggestion` — `Kind`·`Tid`·`Key`는 부르는 쪽이 뜻을 정한다). 씬의 줄 수(8)까지만 보인다 · 자기 Canvas(override sorting 101, 켤 때마다 건다) · 입력칸 포커스가 빠지면 한 프레임 뒤 닫는다(줄을 누르는 중이면 둔다). ⚠️ **줄 버튼 내비게이션이 None이면 눌러도 선택되지 않아 클릭 전에 닫힌다** — `Awake`가 Explicit으로 맞춘다(2026-10-15) · ⚠️ **목록이 드래그를 받는다**(`IDragHandler`) — 줄 버튼엔 드래그 처리기가 없어 부모 입력칸이 잡혔고, 누른 채 10px만 움직여도 클릭이 취소됐다. 끌다 놓으면 놓은 줄을 고른다(2026-11-15) · 이름 색은 `RarityPalette.OnLight`(줄 바탕이 밝다) · 폭은 입력칸과 같게(`sizeDelta.x` 0) | Market(공용 검색창 · 등록 창 찾기) · Inventory(찾기) |
+
+| `LocalizedText.cs` | **씬에 고정된 글씨 하나를 번역 키로 채운다** — 켤 때와 언어가 바뀔 때(`Lang.Changed`). ⚠️ 코드가 `text`를 쓰는 글씨에는 붙이지 않는다 — 언어를 바꿀 때 코드가 쓴 값을 덮는다 | 모든 캔버스 (T-136) |
+
+| `TooltipContent.cs` | 툴팁 한 장의 내용 — 제목 + 줄(라벨 · 값 · 보조 값 · 바탕색). 등급 줄은 `Grade(rarity)`로 — 줄 바탕과 툴팁 테가 그 등급색이 된다(2026-11-15) | 위 트리거에 내용을 넘기는 모두 |
+
+| `theme/UIRichText.cs` | 한 줄 안에서 **라벨은 흐린 색 · 가격은 강조색**으로 가르는 TMP 리치 텍스트 조각. 색은 팔레트 역할에서 읽는다 | Market · Main(우편) |
+
+| `visual/` (`VisualCatalog`·`CharacterVisual`·`BackgroundVisual`·`TargetVisual`) | **연출 그림** — 캐릭터 프레임·크롭 · 패럴랙스 층 · 대상과 레벨 색. 빠진 그림은 대체로 버틴다(캐릭터 = 대체 그림, 아이콘 = 0번). 화면은 `VisualCatalog.Current`(Resources)로 찾고, 목록이 없는 PC면 자리 표시를 그린다. 굽는 쪽은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) | Main(큰 창 슬롯) · Widget(머리) · Inventory·가챠·목록 줄(상반신·아이콘) |
+
+| `visual/FxSprites.cs` | **이펙트 그림 이름표** — 어떤 연출이 어떤 그림(`Art/fx/<연출 키>/`)을 쓰는지 한 곳에. 목록(`VisualCatalog.FxOf`)으로 찾고 **없으면 null — 그 효과만 빠진다**(코드로 그리지 않는다). 그림은 흰색, 색은 `Image.color`로 | System(보상 하나씩 공개 — `reveal_*`) · Main·Widget(획득 연출 — `gain_*`) |
+
+| `visual/` (`SlotStageView`·`SlotStageTimeline`·`SlotStageSettings`·`SlotStagePreview`) | **슬롯 무대** — 판정 주기 안의 순간을 그린다(배경만 누적). 시간·거리는 전체 세팅 `Resources/SlotStageSettings`, 캐릭터별 값은 `CharacterVisual`의 개인 조정 칸 — 플레이 중 고쳐도 바로 보인다. 미리보기는 서버 없이 돌려 볼 때. 배경은 배우와 같은 배율이고, 패널이 그림보다 높으면 층의 uv 세로를 1 너머로 줘 맨 윗줄(하늘·나무 기둥)이 위로 이어진다 — 칸이 높아져도 확대가 아니라 위쪽이 더 보인다. ⚠️ 배경 텍스처는 세로 Clamp여야 한다 | Main(큰 창 슬롯 `Visible Panel`) |
+
+| `theme/` (`UIThemeRole`·`UIThemePalette`·`UIThemeColor`) | 🎨 **아트 전 임시 색** — 역할 → 색 표 하나. 아래 "임시 테마" 절 | 모든 캔버스·프리팹 |
+
+
+
+> ⚠️ **툴팁 두 파일은 게임을 모른다** — 원래 자리는 `Common/`이다(아래 "들어올 수 없는 것").
+
+> 쓰는 곳이 늘며 모양이 굳을 때까지 여기서 다듬고, 굳으면 툴킷으로 올린다(마스터 반영은 확인을 받는다).
+
+
+
+## 임시 테마 — `theme/`
+
+
+
+아트가 없는 동안 색을 **역할**(`PanelBg`·`Button`·`TextMain`…)로만 적고, 색 값은
+
+`Assets/Resources/UIThemePalette.asset` 하나가 정한다. **지금은 양피지 시험**(2026-11-13 — 양피지 창·버튼 · 어두운 칸 · 진홍 제목 띠 · 아래 "양피지" 줄). 직전 톤은 **Taskbar Heroes 결 — 돌회색 창 · 진홍 제목 띠(`Header` 역할 · 금 글씨) · 적갈색 버튼 · 구리 주황 선택 · 흰 글씨**(2026-11-08 · 기준은 [`Art 규칙.md`](<../../../Art/Art 규칙.md>) "레퍼런스"·"UI 색"). 창 제목 띠 바탕은 `Header`(4)를 쓴다.
+
+
+
+- **양피지 시험(2026-11-13) — 글씨 역할은 바탕 밝기로 고른다.** 밝은 바탕(`PanelBg`·`PanelSub`·`Button`·`ButtonSelected`·`ButtonDisabled`) 위는 `TextDark`(보조는 투명도 0.72 · 흐림 0.45)·`HighlightDark`, 어두운 바탕(`Slot`·`Header`·`ButtonPrimary`·딤·등급 칸) 위는 `TextMain`·`Highlight`. Presenter가 `Paint`로 칠하는 금색도 같은 기준이다. 씬 안 프리팹 인스턴스에 색 덮어쓰기(`m_Color`·TMP `m_fontColor`)가 남으면 프리팹 색을 따라오지 않는다 — 걷어 낸다.
+
+  - (2차 · 2026-11-14) `UIRichText.Paint`의 `TextMain`·`TextSub`·`TextDisabled`는 색을 박지 않고 **글씨 기본색을 이어받는다**(보조·흐림은 투명도만) — 같은 문장이 밝은 바탕·어두운 바탕 어디서나 읽힌다.
+
+  - 금액: 밝은 바탕은 `UIRichText.Gold`(`HighlightDark`), 어두운 바탕(제목 띠·칸·판매 줄)은 `GoldOnDark`.
+
+  - 코드가 글씨 색을 직접 고를 때 바탕을 모르면 `UIThemePalette.OfFor(text, role)` — 글씨 태그가 `TextDark`면 어두운 짝으로 바꿔 준다.
+
+  - **등급색 글씨는 바탕에 맞춰 고른다 (2026-11-15).** 칸 바탕·테·툴팁(어두운 판)은 `RarityPalette.Get`, 밝은 양피지 위 글씨(경매 표 줄 · 아티팩트 상세)는 `OnLight`(같은 색상을 진하게 · 흰 스페셜은 진갈), 중간 갈색 패널 위 이름(응축 · 큐브 · 아티팩트 팝업)은 `OnDark`(일반 회색만 밝힌다). 일반 회색 9D·고급 형광 초록이 양피지에서 안 읽혔다.
+
+  - `OfFor`는 어두운 바탕(태그가 `TextDark`가 아닌 글씨)의 `Negative`·`Positive`를 밝은 짝(`NegativeOnDark`·`PositiveOnDark`)으로 바꾼다 — 팔레트 빨강은 양피지용이라 갈색 패널 위 경고가 묻혔다.
+
+  - 흐린 글씨의 바닥: `UIRichText.Label` 82%(예전 72%) · 진갈 글씨(`TextDark`)는 투명도 1 — 0.85·0.62는 "회색 글씨가 안 보인다"(사용자)로 올렸다. 계층은 투명도가 아니라 크기로 낸다.
+
+  - 창 안 작은 상자(정보 상자·안내판·배지)는 `Overlay`가 아니라 `Slot`(중갈색)이다. `Overlay`는 화면을 덮는 딤에만.
+
+  - (3차) 툴팁 판도 창으로 본다(`UiSkin.IsTooltipPanel` — 액자·종이 결). 툴팁은 **묶음 제목 띠**로 가른다(2026-11-15 · `TooltipPresenter.PaintRows`) — `Header`(■) 줄은 진갈 띠(5A3E2B) + 밝은 굵은 글씨(`TooltipRowView.BindHeader`), 내용 줄은 연한 흰색 18/0% 번갈아, 등급 줄만 등급색 55%. 묶음 전체를 등급색으로 칠하던 4차 방식은 묶음 경계가 안 보여 걷었다. 그림 없는 칸 자리 네모는 프리팹 색이 아니라 `SlotView.PlaceholderColor`(검정 30%). 모르는 등급(`RarityPalette.Unknown`)은 회색 대신 어두운 갈색.
+
+  - 밝은 버튼(`Button`)은 잠기면 버튼색과 잠김색의 반반 — 진한 글씨가 그대로 읽힌다(`UIThemeColor`). 찾기 제외 칸은 회색이 아니라 세피아(`SlotView.TintColor`).
+
+- (Taskbar 결 기준) **글씨는 흰색(`TextMain`)으로 통일한다** — 버튼 위 글씨도 흰 굵은 글씨. 골드(`Highlight`)·등급색·부족(`Negative`)·증가(`Positive`)처럼 뜻이 있는 색만 예외. `TextDark`는 밝은 바탕(등급 배지 등) 위 글씨에만.
+
+- 예외 — 상점·뽑기 카드(`GachaPoolCardView`)의 가격 버튼은 태그를 떼고 어두운 나무색을 `ColorBlock`에 직접 넣었다. 팔레트를 바꿔도 이 둘은 따라오지 않는다.
+
+
+
+| 색이 | 누가 칠하나 |
+
+|---|---|
+
+| 고정이다 (패널·글씨·일반 버튼) | Image·TMP에 붙은 **`UIThemeColor` 태그** — 에디터에서 씬·프리팹에 **구워 둔다**. 실행 중엔 아무것도 안 한다 |
+
+| 상태로 바뀐다 (고른 탭·찍은 노드·흐린 글씨) | 그 Presenter가 **`UIThemePalette.Of(역할)`** 로 칠한다. 색 필드 대신 `UIThemeRole` 필드를 둔다 |
+
+
+
+- 팔레트 값을 고치면 열린 씬은 바로 따라온다. **프리팹은 메뉴 `Window/DesktopWindowControl/UI 테마/적용`** 을 눌러야 한다.
+
+- ⚠️ **버튼 바탕은 흰색이고 색은 `ColorBlock`에 있다** — 틴트가 `Image.color`에 곱해지므로 바탕에 색을 넣으면 탁해진다.
+
+- 새 화면은 Image·TMP에 태그를 붙이고 역할만 고르면 된다. 자동 태그 메뉴는 처음 한 번 쓴 도구다(색을 보고 역할을 짐작).
+
+- ⚠️ **태그가 붙은 칸의 색은 색 값이 아니라 역할로 바꾼다.** 칸을 복제해 색만 손으로 바꾸면 태그는 원본 역할을 그대로 들고 있다.
+
+  그러면 씬을 열거나 컴파일할 때마다 태그가 원래 색으로 다시 칠해서, 안 만진 씬에 저장 표시(`*`)가 뜬다.
+
+  그대로 저장하면 의도한 색이 사라진다(2026-10-25 분해 버튼). 어긋나면 콘솔에 `[UI 테마] 태그 역할과 색이 달라` 경고가 뜬다.
+
+- 등급색(`RarityPalette`)은 게임 규칙의 의미라 팔레트에 넣지 않는다.
+
+- 🎨 **아트가 들어오면 태그를 걷고 이 폴더를 지운다.**
+
+
+
+## 들어올 자격
+
+
+
+**둘을 다 만족해야 한다.**
+
+
+
+1. **캔버스 하나에 속하지 않는다** — 두 캔버스 이상이 쓰거나, 애초에 화면과 무관한 변환이다.
+
+2. **화면 표현에 쓰인다** — 그리는 값·색·문구·칸. 상태를 들고 있지 않는다.
+
+
+
+## 들어올 수 없는 것
+
+
+
+| 무엇 | 어디로 | 왜 |
+
+|------|--------|-----|
+
+| **상태를 들고 있는 서비스** (모델·매니저) | `Managers/` | 여기는 표현만이다. 데이터의 주인이 UI 폴더에 살면 화면을 지울 때 주인이 함께 사라진다 |
+
+| **게임을 모르는 범용 코드** (확장 메서드·툴) | `Common/` | 거기는 [Arca Unity Toolkit](https://github.com/JeongTaeWoong99/Arca_Unity_Toolkit)의 사본이라 **프로젝트 이름을 담지 않는다**. 여기 있는 것은 전부 이 게임의 개념(등급·산업·슬롯)을 안다 |
+
+| **한 캔버스만 쓰는 종속 View** (`SellCartRowView`·`WorkStationSlotView`) | 그 Presenter 폴더 | 주인이 하나면 그 옆이 맞다. 여기로 올리면 **찾을 때 화면 폴더를 열었는데 없다** |
+
+| **캔버스 껍데기·Presenter** | `<캔버스>/` | 씬에 붙는 것은 비칠 대상이 있다 |
+
+
+
+> ⚠️ **"두 곳에서 쓰니까"만으로는 부족하다.** 한 캔버스의 두 Presenter가 함께 쓰는 것은
+
+> 그 **캔버스 폴더**에 둔다 — 캔버스를 넘지 않으면 소유자가 아직 하나다.
+
+
+
+## 고칠 때
+
+
+
+- 🔴 **여기 있는 파일을 고치면 여러 화면이 동시에 바뀐다.** 인벤토리를 보며 고쳐도 가챠 결과 팝업이
+
+  함께 움직인다 — **양쪽을 다 확인하고 커밋한다.**
+
+- **화면마다 달라야 하는 것은 분기하지 않고 스위치로 뺀다** — 부품이 화면을 알아보면
+
+  화면이 늘 때마다 부품을 고치게 된다. `SlotView.SetSubVisible`이 그 형태다
+
+  (인벤토리는 보조 문구를 켜고, 가챠 결과는 끈다). 상세는 [`Inventory 규칙.md`](<../Inventory/Inventory 규칙.md>).
+
+- **파일이 하나의 캔버스만 쓰게 줄어들면 그 폴더로 내린다.** 공용 폴더는 **지금의 사실**을
+
+  적는 자리다 — 예전에 공유했다는 이유로 남겨 두면 다음 사람이 못 건드린다.
+
+
+
+이름·부착·작성 규약은 [`UI 규칙.md`](<../UI 규칙.md>), 캔버스·레이아웃 함정은
+
+[`Layout 규칙.md`](<../Layout/Layout 규칙.md>)에 있다.
+
