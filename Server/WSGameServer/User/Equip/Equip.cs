@@ -22,6 +22,9 @@ public sealed class Equip
     public IndustryType Industry         => Row.Industry;
     public int          SpeedAddPermille => Row.SpeedAddPermille;
 
+    /// <summary>아이템 레벨 — 캐릭터 레벨이 이 값 이상이어야 장착한다 (T-200).</summary>
+    public int          ItemLevel        => Row.ItemLevel;
+
     /// <summary>인챈트 등급. 모든 칸이 이 등급의 수치를 쓴다. None이면 인챈트가 없다.</summary>
     public GlobalRarity EnchantGrade { get; private set; }
 

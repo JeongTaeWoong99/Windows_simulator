@@ -14,14 +14,17 @@ public class UserEquipTest
     private const int  AllRounderTid = 1001;   // 전 산업 적성 ≥ 1
     private const long CharA = 500;
     private const long CharB = 501;
+    private const long CharLv9  = 502;
+    private const long CharLv10 = 503;
 
     // 테스트 전용 장비 표 — 엑셀 값에 기대지 않는다.
     private const int SwordTid = 1001;  // 무기 · 전 산업 +10%
     private const int RodTid   = 1002;  // 무기 · 발굴 +30%
     private const int RingTid  = 2001;  // 장신구 · 전 산업 +5%
     private const int GemTid   = 3001;  // 보석 · 농사 +50% (발굴 슬롯엔 0)
+    private const int Lv10Tid  = 101101; // 무기 · 아이템 레벨 10 (T-200)
 
-    private const long Sword = 10, Rod = 11, Ring = 12, Gem = 13;
+    private const long Sword = 10, Rod = 11, Ring = 12, Gem = 13, Lv10Sword = 14;
 
     public UserEquipTest() => GameTableFixture.EnsureLoaded();
 
@@ -34,6 +37,7 @@ public class UserEquipTest
             new EquipTableRow { EquipTID = RodTid,   Name = "대", EquipKind = EquipKind.Weapon,    Industry = IndustryType.Excavation, SpeedAddPermille = 300 },
             new EquipTableRow { EquipTID = RingTid,  Name = "링", EquipKind = EquipKind.Accessory, Industry = IndustryType.None,    SpeedAddPermille = 50 },
             new EquipTableRow { EquipTID = GemTid,   Name = "석", EquipKind = EquipKind.Gem,       Industry = IndustryType.Farming, SpeedAddPermille = 500 },
+            new EquipTableRow { EquipTID = Lv10Tid,  Name = "십", EquipKind = EquipKind.Weapon,    Industry = IndustryType.None,    SpeedAddPermille = 100, ItemLevel = 10 },
         });
         var user = b.Build();
 
@@ -41,6 +45,8 @@ public class UserEquipTest
         {
             new CharacterRow { character_id = CharA, character_tid = AllRounderTid, level = 1, exp = 0 },
             new CharacterRow { character_id = CharB, character_tid = AllRounderTid, level = 1, exp = 0 },
+            new CharacterRow { character_id = CharLv9,  character_tid = AllRounderTid, level = 9,  exp = 0 },
+            new CharacterRow { character_id = CharLv10, character_tid = AllRounderTid, level = 10, exp = 0 },
         });
         user.LoadEquips(
             new[]
@@ -49,6 +55,7 @@ public class UserEquipTest
                 new UserEquipRow { equip_id = Rod,   equip_tid = RodTid,   slot_position = 1 },
                 new UserEquipRow { equip_id = Ring,  equip_tid = RingTid,  slot_position = 2 },
                 new UserEquipRow { equip_id = Gem,   equip_tid = GemTid,   slot_position = 3 },
+                new UserEquipRow { equip_id = Lv10Sword, equip_tid = Lv10Tid, slot_position = 4 },
             },
             worn);
 
@@ -123,6 +130,32 @@ public class UserEquipTest
         user.TryEquip(CharA, Sword, EquipSlot.None, Base);
 
         b.Channel.SentOf<S_EquipResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.InvalidEquipSlot);
+    }
+
+    [Fact]
+    public void 캐릭터_레벨이_아이템_레벨보다_낮으면_EquipLevelTooLow다()
+    {
+        var (user, b) = UserWithEquips();
+
+        // 아이템 레벨 10 장비를 9레벨 캐릭터에 — 한 레벨 모자란다.
+        user.TryEquip(CharLv9, Lv10Sword, EquipSlot.Weapon, Base);
+
+        b.Channel.SentOf<S_EquipResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.EquipLevelTooLow);
+        user.TryGetEquip(Lv10Sword, out var sword).ShouldBeTrue();
+        sword.IsEquipped.ShouldBeFalse();
+        b.DB.Posted.ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 캐릭터_레벨이_아이템_레벨과_같으면_장착된다()
+    {
+        var (user, b) = UserWithEquips();
+
+        user.TryEquip(CharLv10, Lv10Sword, EquipSlot.Weapon, Base);
+
+        b.Channel.SentOf<S_EquipResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        user.TryGetEquip(Lv10Sword, out var sword).ShouldBeTrue();
+        sword.EquippedCharacterId.ShouldBe(CharLv10);
     }
 
     [Fact]
@@ -311,13 +344,13 @@ public class UserEquipTest
     [Fact]
     public void 지급_대기_중인_칸은_찬_것으로_본다()
     {
-        var (user, b) = UserWithEquips();   // 칸 0~3
+        var (user, b) = UserWithEquips();   // 칸 0~4
 
         user.GrantEquip(SwordTid);
         user.GrantEquip(RingTid);
 
         b.DB.PostedOf<GrantEquipRepository>().Count.ShouldBe(2);
-        user.NextFreeEquipPosition().ShouldBe(6);
+        user.NextFreeEquipPosition().ShouldBe(7);
     }
 
     [Fact]

@@ -18,9 +18,12 @@ namespace WSGameServer;
 /// </summary>
 public class GachaServiceTest
 {
-    private const int ItemPoolId      = 1;   // GachaInfoTable에 메타가 있는 아이템 풀
-    private const int CharacterPoolId = 4;   // 캐릭터 지급 경로 확인용 — 실제 캐릭터 풀(2)은 닫혀(T-184) 장신구 풀의 비용 메타를 빌린다
-    private const int EquipPoolId     = 3;   // GachaInfoTable에 메타가 있는 장비(무기) 풀
+    // 캐릭터(T-184)·장비(T-200) 골드 풀이 닫혀 골드로 뽑히는 풀은 구슬 상자(1)뿐이다.
+    // 지급 경로마다 이 풀의 비용 메타를 빌리고, 추첨 후보만 바꿔 끼운다.
+    private const int PaidPoolId      = 1;
+    private const int ItemPoolId      = PaidPoolId;
+    private const int CharacterPoolId = PaidPoolId;
+    private const int EquipPoolId     = PaidPoolId;
     private const int NoMetaPoolId    = 999; // 추첨 풀만 있고 메타가 없는 풀
 
     private const int RewardItemTid      = 100001;
@@ -29,16 +32,21 @@ public class GachaServiceTest
 
     public GachaServiceTest() => GameTableFixture.EnsureLoaded();
 
-    /// <summary>풀마다 후보를 1종만 두어 추첨 결과를 확정시킨다.</summary>
-    private static GachaService BuildService()
+    /// <summary>유료 풀에 후보를 1종만 두어 추첨 결과를 확정시킨다. 기본은 캐릭터 후보.</summary>
+    private static GachaService BuildService(GachaRewardType type = GachaRewardType.Character)
     {
+        var tid = type switch
+        {
+            GachaRewardType.Item  => RewardItemTid,
+            GachaRewardType.Equip => RewardEquipTid,
+            _                     => RewardCharacterTid,
+        };
+
         var catalog = new GachaPoolCatalog();
         catalog.Load(new[]
         {
-            new GachaEntry(ItemPoolId,      GachaRewardType.Item,      RewardItemTid,      1, 100),
-            new GachaEntry(CharacterPoolId, GachaRewardType.Character, RewardCharacterTid, 1, 100),
-            new GachaEntry(EquipPoolId,     GachaRewardType.Equip,     RewardEquipTid,     1, 100),
-            new GachaEntry(NoMetaPoolId,    GachaRewardType.Item,      RewardItemTid,      1, 100),
+            new GachaEntry(PaidPoolId,   type,                 tid,           1, 100),
+            new GachaEntry(NoMetaPoolId, GachaRewardType.Item, RewardItemTid, 1, 100),
         });
 
         return new GachaService(catalog);
@@ -67,7 +75,7 @@ public class GachaServiceTest
     {
         var (user, b) = RichUser();
 
-        BuildService().Draw(user, ItemPoolId, 10);
+        BuildService(GachaRewardType.Item).Draw(user, ItemPoolId, 10);
 
         var res = LastDrawResponse(b);
         res.Result.ShouldBe(EResultCode.Ok);
@@ -110,7 +118,7 @@ public class GachaServiceTest
     {
         var (user, b) = RichUser();
 
-        BuildService().Draw(user, EquipPoolId, 10);
+        BuildService(GachaRewardType.Equip).Draw(user, EquipPoolId, 10);
 
         var res = LastDrawResponse(b);
         res.Result.ShouldBe(EResultCode.Ok);
