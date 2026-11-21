@@ -1,6 +1,6 @@
 # CLAUDE.md — 게임 기획 · 데이터
 
-> 최종 업데이트: 2026-10-16 (번역을 `Excel/Localization/Loc_<테이블>.xlsx` 파일로 분리 · EN 전부 채움) · 2026-10-16 (다국어 — `lstring` · `Localization.xlsx` — T-135) · 2026-10-12 (예시의 낚시 → 유적 발굴 · 폴더 `fishing/` → `excavation/` — T-142) · 2026-10-08 (문서 사이트가 `DataLog/`도 읽는다 — `/data` · T-132) · 2026-10-07 (검사기 `-Fix`가 한글 문서 이름을 지킨다 — T-090) · 2026-10-07 (플레이어용 설명 `Tooltip` · `{컬럼}` 보간 — T-093) · 2026-10-06 (생성물 줄바꿈 LF 고정 — 생성기 `WriteText` · `.gitattributes`) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
+> 최종 업데이트: 2026-11-21 (`generate-tables.sh` — macOS·Linux용 파이프라인 사본 · T-150) · 2026-10-16 (번역을 `Excel/Localization/Loc_<테이블>.xlsx` 파일로 분리 · EN 전부 채움) · 2026-10-16 (다국어 — `lstring` · `Localization.xlsx` — T-135) · 2026-10-12 (예시의 낚시 → 유적 발굴 · 폴더 `fishing/` → `excavation/` — T-142) · 2026-10-08 (문서 사이트가 `DataLog/`도 읽는다 — `/data` · T-132) · 2026-10-07 (검사기 `-Fix`가 한글 문서 이름을 지킨다 — T-090) · 2026-10-07 (플레이어용 설명 `Tooltip` · `{컬럼}` 보간 — T-093) · 2026-10-06 (생성물 줄바꿈 LF 고정 — 생성기 `WriteText` · `.gitattributes`) · 2026-10-01 (창고 → 인벤토리 용어 정리 — T-101) · 2026-09-26 (공용 상수 시트 `Constants.xlsx` — T-085 · 속도 스케일·기준 주기도 시트로)
 
 게임 시스템·콘텐츠·데이터에 닿는 작업에서 참고하는 문서다.
 공통 규칙(환경·협업·스킬)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -37,6 +37,7 @@
 | `check-doc-graph.ps1` | **문서 그래프 검사기.** 깨진 링크·헤더 블록 불일치·**갱신일 역전**(전파 누락)을 잡는다. 역전 검사는 `최종 업데이트`가 있는 문서(게임기획코어·산업레벨 등)만 — README에는 날짜가 없다 |
 | `format-excel.py` | **엑셀 서식 정리.** 모든 시트를 서식 기준(정렬·칠·열 너비)에 맞춘다. 값은 건드리지 않는다 — [`excel-table-creator`](../.claude/skills/common/excel-table-creator/SKILL.md) "서식" |
 | `generate-tables.ps1` | **데이터 파이프라인 실행 스크립트.** 입력(엑셀) 옆에 두어 기획자가 그 자리에서 돌린다 |
+| `generate-tables.sh` | **같은 파이프라인의 macOS·Linux용 사본** (2026-11-21 · T-150). `Server/sync-protocol-to-unity.sh`를 함께 쓴다. **둘 중 하나를 고치면 다른 하나도 고친다** — 갈리면 생성물이 머신에 따라 달라진다 |
 | `web/` | **문서 사이트(Astro).** `tasks/`·`GameDesign/design/`·`DataLog/`(→ `/data` 데이터 뷰어)를 그대로 읽어 정적 사이트로 만든다 — 문서를 복사하지 않는다. 사용법은 [`사이트.md`](web/사이트.md) |
 
 ---
@@ -75,7 +76,8 @@ powershell -File GameDesign/check-doc-graph.ps1 -Changed
 
 ## 게임 데이터 파이프라인
 
-엑셀 하나를 고치고 `GameDesign/generate-tables.ps1`을 돌리면 서버·Unity 양쪽 산출물이 한 번에 갱신된다.
+엑셀 하나를 고치고 `GameDesign/generate-tables.ps1`(윈도우) 또는 `./GameDesign/generate-tables.sh`(macOS·Linux)를
+돌리면 서버·Unity 양쪽 산출물이 한 번에 갱신된다. **둘은 같은 생성물을 낸다.**
 
 ```
 GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
@@ -172,7 +174,7 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
 - 원본에서 행을 지우면 그 키는 파일에서도 빠진다(테이블이 통째로 사라지면 그 파일도 지운다). 원문이 빈 셀(빈 `Tooltip`)은 올리지 않는다
 - 새 `lstring` 테이블은 파일이 자동으로 생긴다(`Loc_UI.xlsx`를 복사). 내용이 같은 파일은 다시 저장하지 않는다
 - 서식: `python GameDesign/format-excel.py Localization/Loc_Item.xlsx` (인자 없이 돌리면 이 폴더도 포함)
-- **빈 번역은 KR로 대신하고 경고만 낸다.** 배포용은 `generate-tables.ps1 -LocStrict` — 빈 칸이 하나라도 있으면 멈춘다
+- **빈 번역은 KR로 대신하고 경고만 낸다.** 배포용은 `generate-tables.ps1 -LocStrict`(또는 `generate-tables.sh --loc-strict`) — 빈 칸이 하나라도 있으면 멈춘다
 - **`Tooltip`은 언어마다 보간한다.** 번역문에도 같은 토큰을 쓴다(`Pay {OpenCostGold} gold …`). `{Name}`은 그 언어의 이름으로 들어간다.
   **토큰이 KR과 다르면 멈춘다**
 - 클라는 `Loc.Get(row.NameLocKey)`로 지금 언어(`Loc.Current`) 문구를 읽는다. 없는 키는 키 문자열이 그대로 나온다
@@ -189,7 +191,9 @@ GameDesign/Excel/*.xlsx            ← 사람이 편집하는 유일한 원본
   **`문서관계도.md`의 역참조를 따라 재귀적으로 전파한 뒤 `check-doc-graph.ps1 -Changed`로 검사한다.**
 - 게임 데이터는 `GameDesign/Excel`의 엑셀에서만 수정한다. 여긴 **공용**이라 서버·클라 모두 편집해도 된다.
   생성물(`Server/GameData`, `Server/Shared/Data`, `GameDesign/DataLog`, Unity 미러)은 직접 고치지 않는다.
-- 엑셀을 수정했으면 `GameDesign/generate-tables.ps1`을 돌려 **엑셀과 생성물을 같은 커밋에** 담는다.
+- 엑셀을 수정했으면 `GameDesign/generate-tables.ps1`(또는 `.sh`)를 돌려 **엑셀과 생성물을 같은 커밋에** 담는다.
+  **새 미러 파일(`.cs`·`.bytes`)에는 `.meta`가 따라붙어야 한다** — 윈도우에서 Unity를 열면 생기고,
+  Unity 없는 머신에서는 형제 파일 형식을 따라 손으로 만든 뒤 GUID 중복을 확인한다.
   `GameDesign/DataLog/*.json`의 diff가 데이터 변경 내역 리뷰 수단이므로 함께 커밋한다.
 
 ---

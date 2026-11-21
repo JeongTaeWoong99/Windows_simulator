@@ -37,6 +37,7 @@ namespace GameData
         public static TableSet<int, GachaEquipTableRow> GachaEquipTable { get; private set; } = null!;
         public static TableSet<int, GachaGoldTableRow> GachaGoldTable { get; private set; } = null!;
         public static TableSet<int, GachaArtifactTableRow> GachaArtifactTable { get; private set; } = null!;
+        public static TableSet<int, IndustryTableRow> IndustryTable { get; private set; } = null!;
         public static TableSet<int, IndustryLevelTableRow> IndustryLevelTable { get; private set; } = null!;
         public static TableSet<int, ItemTableRow> ItemTable { get; private set; } = null!;
         public static TableSet<int, ItemUseTableRow> ItemUseTable { get; private set; } = null!;
@@ -79,6 +80,7 @@ namespace GameData
             GachaEquipTable = TableSet<int, GachaEquipTableRow>.From(read("GachaEquipTable.bytes"), r => r.GachaEquipTID);
             GachaGoldTable = TableSet<int, GachaGoldTableRow>.From(read("GachaGoldTable.bytes"), r => r.GachaGoldTID);
             GachaArtifactTable = TableSet<int, GachaArtifactTableRow>.From(read("GachaArtifactTable.bytes"), r => r.GachaArtifactTID);
+            IndustryTable = TableSet<int, IndustryTableRow>.From(read("IndustryTable.bytes"), r => r.IndustryTID);
             IndustryLevelTable = TableSet<int, IndustryLevelTableRow>.From(read("IndustryLevelTable.bytes"), r => r.IndustryLevelTID);
             ItemTable = TableSet<int, ItemTableRow>.From(read("ItemTable.bytes"), r => r.ItemTID);
             ItemUseTable = TableSet<int, ItemUseTableRow>.From(read("ItemUseTable.bytes"), r => r.ItemTID);
