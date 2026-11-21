@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using UnityEngine;
 
 // 인벤토리 [정렬]의 방향. 도구 줄의 화살표 버튼이 둘을 오간다. 서버 'EStorageSortOrder'와 값이 같다.
 //
@@ -213,6 +214,9 @@ public abstract class InventorySlotSource
     // 레벨 배지 자리에 쓴다 — 같은 자리를 위 배지(상자 레벨 · '선택')가 쓰면 격자가 그쪽을 먼저 쓴다.
     // ※ 2026-11-18 처음엔 작은 그림 아이콘이었는데 "알아보기 쉽지 않다"(사용자) — 글자로 바꿨다.
     public virtual string? GetCategoryLabel(long key) => null;
+
+    // 분류가 산업이면 그 산업 그림 — 칸이 좁아 분류 이름이 안 들어가면 글자 대신 쓴다('SlotView.FitBottomRow' · 2026-11-21)
+    public virtual Sprite? GetCategoryIcon(long key) => null;
 
     // 칸에 주의 테두리(깜빡임)를 켤까 — 사용자가 마무리해야 할 일이 남은 칸 (격자가 매번 그릴 때 호출).
     public virtual bool NeedsAttention(long key) => false;

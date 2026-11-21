@@ -829,7 +829,16 @@ public class InventoryGridPresenter : MonoBehaviour
 
         view.gameObject.SetActive(true);
         view.Bind(data);
+        DrawMarks(view, data, i, isGhost: false);
 
+        SyncShine(i, view, data);
+    }
+
+    // 칸 위의 표시들(담김 · 배치 · 잠금 · 배지 · 능력치 칸 · ★ …)을 그린다 (DrawCell · ShowGhost에서 호출).
+    // ※ 끌리는 그림도 이 함수로 그린다 — 따로 그리면 칸과 다르게 보인다(2026-11-21 사용자 "드래그할 때 다르게 보인다").
+    //   끌리는 그림은 흐림·흑백만 뺀다 — 집어 든 칸 자체를 보여 주는 것이라서다.
+    private void DrawMarks(SlotView view, in SlotData data, int frameIndex, bool isGhost)
+    {
         // 담김 표시의 주인은 카트다 — 탭마다 카트의 다른 목록을 본다.
         view.SetSellMark(IsInCart(data.Key));
 
@@ -839,17 +848,17 @@ public class InventoryGridPresenter : MonoBehaviour
         //
         // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
         //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
-        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(위 'cell' 판정)
+        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(DrawCell · BeginSlotDrag가 칸이 있을 때만 부른다)
 
         view.SetAssignMark(isAway);
         view.SetLockMark(_current.IsLocked(data.Key));
-        view.SetDimmed(isAway || i == _dragFrom); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
+        view.SetDimmed(!isGhost && (isAway || frameIndex == _dragFrom)); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
 
         // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
         // 큐브 창이 열려 있으면 띄운 장비 말고는 같은 흑백으로 물린다 — 찾기 제외와 같은 표시를 쓴다.
         bool outOfEnchant = _currentTab == InventoryTab.Equipment && equipEnchant.IsOpen && equipEnchant.EquipId != data.Key;
 
-        view.SetFilteredOut(outOfEnchant || _current.IsFilteredOut(data.Key));
+        view.SetFilteredOut(!isGhost && (outOfEnchant || _current.IsFilteredOut(data.Key)));
 
         // 팰월드식(2026-11-14 사용자) — 칸은 그림 + 숫자 하나. 적성 5칸 스트립은 끄고 **가장 높은 적성 하나**만 보조 문구에 적는다.
         // 다섯 산업 전부 · 기본 속도는 칸 툴팁이 말한다('CharacterSlotSource.BuildTooltip').
@@ -864,7 +873,7 @@ public class InventoryGridPresenter : MonoBehaviour
         // 배지가 없는 칸은 같은 자리에 분류 이름('채굴' · '유물' …)을 적는다 — 종류가 많아 그림만으로 못 가른다(2026-11-18 사용자)
         string? badge = IsCharacterTab ? ReadLevelLabel(data.Key) : _current.GetBadge(data.Key);
 
-        view.SetLevelBadge(badge ?? _current.GetCategoryLabel(data.Key));
+        view.SetLevelBadge(badge ?? _current.GetCategoryLabel(data.Key), badge == null ? _current.GetCategoryIcon(data.Key) : null);
         view.SetAttention(_current.NeedsAttention(data.Key));
         view.SetExpGauge(IsCharacterTab ? _data.GetExpProgress(data.Key) : null);
 
@@ -877,8 +886,6 @@ public class InventoryGridPresenter : MonoBehaviour
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
         view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
         view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
-
-        SyncShine(i, view, data);
     }
 
     // 방금 들어온 개체면 칸을 한 번 반짝이고, 칸이 다른 개체로 다시 묶였으면 이전 반짝임을 끊는다 (DrawCell에서 호출).
@@ -1752,8 +1759,10 @@ public class InventoryGridPresenter : MonoBehaviour
         rect.sizeDelta = frame.rect.size * scale;
 
         _ghost.Clear();
+        _ghost.SetNameVisible(false); // 격자 칸과 같게 — 'GetOrCreateView'
         _ghost.Bind(data);
         _ghost.gameObject.SetActive(true);
+        DrawMarks(_ghost, data, frameIndex, isGhost: true);
 
         // ※ 켠 뒤에 건다 — 꺼진 채로 넣은 'overrideSorting'은 켤 때 풀리는 경우가 있다.
         var canvas = _ghost.GetComponent<Canvas>();

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using UnityEngine;
 
 // 장비 탭 — 보유 장비를 칸으로 내놓는다. 인벤토리 격자에서는 **아티팩트도 함께** 내놓는다(T-151).
 //
@@ -153,6 +154,19 @@ public class EquipSlotSource : InventorySlotSource
         var industry = (EIndustryType)(byte)row.Industry;
 
         return industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry);
+    }
+
+    // 장비의 대상 산업 그림 — 공용·아티팩트는 null
+    public override Sprite? GetCategoryIcon(long key)
+    {
+        if (IsArtifactKey(key) || !GameDataLoader.TryGetEquip(_data.GetEquipTid(key), out EquipTableRow row))
+        {
+            return null;
+        }
+
+        var industry = (EIndustryType)(byte)row.Industry;
+
+        return industry == EIndustryType.None ? null : VisualCatalog.IndustryIconOf(industry);
     }
 
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).

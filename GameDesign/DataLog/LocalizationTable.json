@@ -4290,6 +4290,16 @@
     "EN": "EXP"
   },
   {
+    "Key": "UI.Equip.Attack",
+    "KR": "공격력",
+    "EN": "ATK"
+  },
+  {
+    "Key": "UI.Equip.Health",
+    "KR": "체력",
+    "EN": "HP"
+  },
+  {
     "Key": "UI.Equip.StatSlots",
     "KR": "능력치 칸 {0}/{1}",
     "EN": "Stat Slots {0}/{1}"
@@ -5606,8 +5616,8 @@
   },
   {
     "Key": "UI.Tool.SkippedWrap",
-    "KR": "({0} 제외 — [제외]에서 체크를 풀면 함께 담깁니다)",
-    "EN": "(excluded: {0} — uncheck them in [Exclude] to include)"
+    "KR": "({0} 제외 — [판매 제외]에서 체크를 풀면 함께 담깁니다)",
+    "EN": "(excluded: {0} — uncheck them in [Don't Sell] to include)"
   },
   {
     "Key": "UI.Tool.UnlockHint",
@@ -5631,8 +5641,13 @@
   },
   {
     "Key": "UI.Tool.ExcludeCount",
-    "KR": "제외 {0}",
-    "EN": "Exclude {0}"
+    "KR": "판매 제외 {0}",
+    "EN": "Don't Sell {0}"
+  },
+  {
+    "Key": "UI.Tool.Exclude",
+    "KR": "판매 제외",
+    "EN": "Don't Sell"
   },
   {
     "Key": "UI.Inventory.TabResource",

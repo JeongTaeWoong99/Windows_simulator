@@ -743,7 +743,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
             cubeViews[i].Bind(GameDataLoader.GetItemName(tid),
                               VisualCatalog.ItemIconOf(tid),
-                              Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + UIRichText.Dot + what,
+                              Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + "\n" + what, // 두 줄 — 한 줄이면 영어가 8px까지 줄었다(2026-11-21)
                               owned > 0,
                               i == _cubeIndex,
                               EquipLabel.BuildCubeRuleTooltip);

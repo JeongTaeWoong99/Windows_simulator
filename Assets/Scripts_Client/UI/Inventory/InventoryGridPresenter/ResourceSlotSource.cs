@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using UnityEngine;
 
 // 자원 탭 — 인벤토리 아이템을 칸으로 내놓는다. 인벤토리의 기본 탭이다.
 //
@@ -92,6 +93,15 @@ public class ResourceSlotSource : InventorySlotSource
 
     // 분류 이름 — 산업 · 큐브 · 유물 · 소모품 · 기타 (툴팁 '분류' 줄과 같은 이름)
     public override string? GetCategoryLabel(long key) => GroupName(GroupOf((int)key));
+
+    // 산업 자원이면 산업 그림 (분류 ID가 'EIndustryType' 이름과 같다 — 'AuctionText.GetItemCategoryId')
+    public override Sprite? GetCategoryIcon(long key) => GroupIcon(GroupOf((int)key));
+
+    // 분류 ID가 산업이면 그 산업 그림, 아니면 null (가챠 결과 칸도 같이 쓴다)
+    public static Sprite? GroupIcon(string groupId)
+        => System.Enum.TryParse(groupId, out EIndustryType industry) && industry != EIndustryType.None
+            ? VisualCatalog.IndustryIconOf(industry)
+            : null;
 
     // 분류 ID의 지금 언어 이름.
     public static string GroupName(string groupId) => AuctionText.GetItemGroupName(groupId);

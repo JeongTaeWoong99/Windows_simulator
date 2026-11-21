@@ -191,6 +191,7 @@ public class InventoryToolPresenter : MonoBehaviour
         searchSuggestView.Picked += OnSuggestionPicked;
         industryDropdown.onValueChanged.AddListener(_ => ApplyFilter());
         rarityDropdown.onValueChanged.AddListener(_ => ApplyFilter());
+        bulkRarityDropdown.onValueChanged.AddListener(_ => ShowBulkRarityCaption());
         resetButton.onClick.AddListener(ResetFilter);
 
         RefreshArrow();
@@ -264,10 +265,12 @@ public class InventoryToolPresenter : MonoBehaviour
 
         bulkRarityDropdown.SetValueWithoutNotify(bulk);
         bulkRarityDropdown.RefreshShownValue();
+        ShowBulkRarityCaption();
         rarityDropdown.SetValueWithoutNotify(rarity);
         rarityDropdown.RefreshShownValue();
         industryDropdown.SetValueWithoutNotify(industry);
         industryDropdown.RefreshShownValue();
+        ShowFilterCaptions();
 
         ApplyExcludeOptions();
     }
@@ -294,6 +297,22 @@ public class InventoryToolPresenter : MonoBehaviour
         bulkRarityDropdown.AddOptions(options);
         bulkRarityDropdown.SetValueWithoutNotify(0); // 일반 이하 — 가장 안전한 쪽에서 시작한다
         bulkRarityDropdown.RefreshShownValue();
+        ShowBulkRarityCaption();
+    }
+
+    // 일괄 담기 등급 드롭다운의 닫힌 머리 — 등급색 점 + '↓' (2026-11-21 사용자 승인).
+    // ※ 펼친 목록은 '일반 이하'처럼 다 적는다. 닫힌 머리는 칸이 좁아 영어 'Common or lower'가 8px까지 줄었다.
+    //   'RefreshShownValue'·값 바꿈이 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
+    private void ShowBulkRarityCaption()
+    {
+        int index = bulkRarityDropdown.value;
+
+        if (bulkRarityDropdown.captionText == null || index < 0 || index >= SellRarities.Length)
+        {
+            return;
+        }
+
+        bulkRarityDropdown.captionText.text = $"{UIRichText.Paint("●", RarityPalette.OnLight(SellRarities[index]))} ↓";
     }
 
     // 등급 찾기 드롭다운의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
@@ -311,6 +330,42 @@ public class InventoryToolPresenter : MonoBehaviour
         rarityDropdown.AddOptions(rarities);
         rarityDropdown.SetValueWithoutNotify(0);
         rarityDropdown.RefreshShownValue();
+        ShowFilterCaptions();
+    }
+
+    // 찾기 드롭다운 둘의 닫힌 머리를 짧게 쓴다 (2026-11-21 사용자 "All Categories가 너무 작아진다").
+    // ■ 분류 — '전체'면 무엇을 거르는 칸인지만('분류' · 산업만 있는 탭은 '산업'). 고르면 고른 이름.
+    // ■ 등급 — '전체'면 등급색 점 줄(●●●●●●), 고르면 '● 희귀'. 옆 일괄 담기 '● ↓'와 같은 말을 쓴다.
+    // ※ 펼친 목록은 '분류 전체'·'등급 전체'처럼 다 적는다. 값 바꿈·'RefreshShownValue'가 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
+    private void ShowFilterCaptions()
+    {
+        if (rarityDropdown.captionText != null)
+        {
+            int index = rarityDropdown.value - 1; // 0번은 '등급 전체'
+
+            if (index >= 0 && index < SellRarities.Length)
+            {
+                GlobalRarity picked = SellRarities[index];
+
+                rarityDropdown.captionText.text = $"{UIRichText.Paint("●", RarityPalette.OnLight(picked))} {RarityLabel.Get(picked)}";
+            }
+            else
+            {
+                var dots = new System.Text.StringBuilder();
+
+                foreach (GlobalRarity rarity in SellRarities)
+                {
+                    dots.Append(UIRichText.Paint("●", RarityPalette.OnLight(rarity)));
+                }
+
+                rarityDropdown.captionText.text = dots.ToString();
+            }
+        }
+
+        if (industryDropdown.captionText != null && industryDropdown.value == 0)
+        {
+            industryDropdown.captionText.text = Lang.Get(grid.CurrentFilterGroups.Count > 0 ? "UI.Inventory.Group" : "UI.Auction.Industry");
+        }
     }
 
     #endregion
@@ -371,6 +426,7 @@ public class InventoryToolPresenter : MonoBehaviour
         industryDropdown.AddOptions(labels);
         industryDropdown.SetValueWithoutNotify(0);
         industryDropdown.RefreshShownValue();
+        ShowFilterCaptions();
     }
 
     // 이 탭이 쓸 수 있는 기준만 드롭다운에 세운다 (ApplyTab에서 호출).
@@ -592,10 +648,30 @@ public class InventoryToolPresenter : MonoBehaviour
         }
         else
         {
-            excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
+            excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked, ExcludeSections());
         }
 
         RefreshExcludeHead();
+    }
+
+    // [판매 제외] 목록의 묶음 — 분류(큐브 · 상자 …)와 산업(농사 · 채굴 …)에 머리 줄을 단다 (ApplyExcludeOptions에서 호출).
+    // ※ 순서표가 분류를 먼저, 산업을 뒤에 두므로('BuildExcludeOptions') 첫 산업이 두 번째 묶음의 시작이다.
+    private List<(int Start, string Title)> ExcludeSections()
+    {
+        var sections = new List<(int Start, string Title)> { (0, Lang.Get("UI.Inventory.Group")) };
+
+        int firstIndustry = _excludeGroups.FindIndex(id => ResourceSlotSource.GroupIcon(id) != null);
+
+        if (firstIndustry == 0)
+        {
+            sections[0] = (0, Lang.Get("UI.Auction.Industry")); // 분류가 하나도 없다
+        }
+        else if (firstIndustry > 0)
+        {
+            sections.Add((firstIndustry, Lang.Get("UI.Auction.Industry")));
+        }
+
+        return sections;
     }
 
     // [제외] 줄에 보일 이름 — 분류 ID를 지금 언어로 ('BuildExcludeOptions' · 언어 변경).
@@ -671,7 +747,8 @@ public class InventoryToolPresenter : MonoBehaviour
             }
         }
 
-        excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.ExcludeNone") : Lang.Format("UI.Tool.ExcludeCount", count));
+        // 닫힌 머리는 짧게 — 없으면 '판매 제외'만, 있으면 '판매 제외 2'(2026-11-21 — 영어 'No Exclusions'가 너무 작아졌다 · 무엇을 빼는지 '판매'를 붙인다 — 사용자).
+        excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.Exclude") : Lang.Format("UI.Tool.ExcludeCount", count));
     }
 
     // 캐릭터 — 고른 등급 이하 중 팔 수 있는 것만 (OnBulkSellClicked에서 호출).
@@ -905,6 +982,7 @@ public class InventoryToolPresenter : MonoBehaviour
             : ((byte)0, null);
 
         grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry, group));
+        ShowFilterCaptions();
     }
 
     // 검색창에 쳤다 — 거르고 후보를 띄운다 (searchInput.onValueChanged)
@@ -932,6 +1010,7 @@ public class InventoryToolPresenter : MonoBehaviour
         searchSuggestView.Hide();
         industryDropdown.SetValueWithoutNotify(0);
         rarityDropdown.SetValueWithoutNotify(0);
+        ShowFilterCaptions();
 
         grid.FilterCurrent(default);
     }

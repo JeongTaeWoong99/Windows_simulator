@@ -593,7 +593,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             }
 
             case 'E':
-                slot.SetLevelBadge(EquipCategoryOf(tid));
+                slot.SetLevelBadge(EquipCategoryOf(tid), EquipIndustryIconOf(tid)); // 인벤토리 장비 칸과 같게 — 산업은 그림
                 slot.SetSubText(showCount && count > 1 ? $"×{count:N0}" : "");
                 break;
 
@@ -606,7 +606,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             {
                 int boxLevel = GameDataLoader.GetBoxLevel(tid);
 
-                slot.SetLevelBadge(boxLevel > 0 ? $"LV.{boxLevel}" : ResourceSlotSource.GroupName(ResourceSlotSource.GroupOf(tid)));
+                string group = ResourceSlotSource.GroupOf(tid);
+
+                slot.SetLevelBadge(boxLevel > 0 ? $"LV.{boxLevel}" : ResourceSlotSource.GroupName(group),
+                                   boxLevel > 0 ? null : ResourceSlotSource.GroupIcon(group)); // 인벤토리 자원 칸과 같게 — 산업은 그림
                 slot.SetSubText(showCount ? Lang.Format("UI.Inventory.CountUnit", $"{count:N0}") : "");
                 break;
             }
@@ -624,6 +627,19 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         var industry = (EIndustryType)(byte)row.Industry;
 
         return industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry);
+    }
+
+    // 장비의 대상 산업 그림 — 공용이면 null ('EquipSlotSource.GetCategoryIcon'과 같은 규칙)
+    private static Sprite? EquipIndustryIconOf(int equipTid)
+    {
+        if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
+        {
+            return null;
+        }
+
+        var industry = (EIndustryType)(byte)row.Industry;
+
+        return industry == EIndustryType.None ? null : VisualCatalog.IndustryIconOf(industry);
     }
 
     // 칸을 만들 때 한 번 — 공개 연출('RewardRevealFx')을 붙이고 클릭을 스킵으로 구독한다.
