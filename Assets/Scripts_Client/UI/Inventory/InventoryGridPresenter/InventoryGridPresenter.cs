@@ -896,7 +896,7 @@ public class InventoryGridPresenter : MonoBehaviour
         view.SetEquipPips(null);
 
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
-        view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
+        view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : null);
         view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
     }
 

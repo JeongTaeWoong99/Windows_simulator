@@ -124,13 +124,19 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private EquipPipsView equipPips = null!;
 
     // ※ 글자가 아니라 그림이다 — 옛 폰트에 '★' 글리프가 없어 그림으로 정했다('Inventory 규칙.md').
-    // ※ 얻은 ★만 켠다. ★0이면 줄째 꺼져 대부분의 칸이 깨끗하게 남는다(T-130 목업).
+    // ※ 오른쪽 세로 줄 — 왼쪽 경험치 게이지와 짝이다. 검은 바탕(Overlay 0.6) 위에 최고 ★ 수만큼 그리고, 얻은 ★만 금색 · 나머지는 빈 ★(회색).
+    //   위 가운데 가로 줄로 두던 것을 옮겼다 — 초상화 머리 위에 묻혀 보이지 않았다(2026-11-21 사용자).
+    //   자리는 최고 적성 알약(위 끝 27) 위 ~ '배'·'판' 표시(아래 끝 71) 아래를 꽉 채운다 — 12×42 · ★ 10×10 4개(2026-11-22 사용자 "크게"). 왼쪽 경험치 게이지가 LV 배지·자물쇠 사이를 채우는 것과 짝.
+    // ※ 캐릭터 칸이면 ★0이어도 빈 ★ 4개를 그린다 — 응축으로 채울 자리가 보이게(2026-11-22 사용자). 캐릭터가 아닌 칸만 줄째 끈다.
     [CenterHeader("응축 ★ (캐릭터 탭)")]
-    [SerializeField, Tooltip("★ 줄 — 위 가운데(자물쇠와 '배' 사이). ★0이면 꺼진다")]
+    [SerializeField, Tooltip("★ 줄 — 오른쪽 세로 · 검은 바탕. 캐릭터 칸에서만 켜진다")]
     private GameObject starRow = null!;
 
-    [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 왼쪽부터 ★ 수만큼 켜진다")]
+    [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 아래부터 ★ 수만큼 금색, 나머지는 빈 ★")]
     private Image[] starImages = new Image[0];
+
+    // 빈 ★ 색 — 검은 바탕 위에서 "자리는 있는데 아직 못 얻음"으로 읽히는 어두운 회색.
+    private static readonly Color StarEmptyColor = new Color(0.36f, 0.36f, 0.36f, 1f);
 
     // ※ 응축 창이 열린 동안만 켜진다 — 대상은 파랑 테두리, 고른 재료는 노랑 테두리 + 체크.
     //   못 넣는 칸(다른 캐릭터 · 배치·착용 중)은 표시를 따로 두지 않고 흑백으로 그린다('SlotCondenseMark.Excluded').
@@ -164,7 +170,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("지금 쓰이고 있음을 알리는 표시 — 캐릭터는 작업 중, 장비는 장착 중. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
-    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시, 위 가운데는 ★ 줄이 쓴다(시안 2 · 2026-11-15). 잠금은 셋과 함께 켜질 수 있다(잠긴 채 장착 중).
+    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시가 쓴다(시안 2 · 2026-11-15 · ★ 줄은 2026-11-21 오른쪽 세로로 옮겼다). 잠금은 셋과 함께 켜질 수 있다(잠긴 채 장착 중).
     [SerializeField, Tooltip("잠금 표시 — 왼쪽 위 자물쇠(T-137). 평소에는 꺼져 있다")]
     private GameObject lockMark = null!;
 
@@ -793,14 +799,24 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         expGauge.SetValueWithoutNotify(progress!.Value);
     }
 
-    // 응축 ★을 그린다 — 왼쪽부터 ★ 수만큼 켜고, 0이면 줄을 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 0이 아니다).
-    public void SetStars(int star)
+    // 응축 ★을 그린다 — 최고 ★ 수만큼 자리를 두고 아래부터 ★ 수만큼 금색, 나머지는 빈 ★. null이면 줄을 끈다
+    // (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 있다. ★0이면 빈 ★만).
+    // ※ 색은 여기서 칠한다 — 'UIThemeColor'는 실행 중에 칠하지 않는다(상태색은 그리는 쪽이 칠한다).
+    public void SetStars(int? star)
     {
-        starRow.SetActive(star > 0);
+        starRow.SetActive(star != null);
+
+        if (star == null)
+        {
+            return;
+        }
+
+        var filled = UIThemePalette.Of(UIThemeRole.Highlight);
 
         for (int i = 0; i < starImages.Length; i++)
         {
-            starImages[i].gameObject.SetActive(i < star);
+            starImages[i].gameObject.SetActive(i < MaxStarImages);
+            starImages[i].color = i < star ? filled : StarEmptyColor;
         }
     }
 
@@ -1002,7 +1018,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         sellMark.SetActive(false);
         assignMark.SetActive(false);
         lockMark.SetActive(false);
-        SetStars(0);
+        SetStars(null);
         SetBestAptitude(null, 0);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);

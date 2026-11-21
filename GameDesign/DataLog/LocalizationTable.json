@@ -4901,8 +4901,8 @@
   },
   {
     "Key": "UI.Main.Outpost",
-    "KR": "거점",
-    "EN": "Outpost"
+    "KR": "마을",
+    "EN": "Village"
   },
   {
     "Key": "UI.Outpost.AccountLevel",
@@ -4911,8 +4911,8 @@
   },
   {
     "Key": "UI.Outpost.Hint",
-    "KR": "건물을 누르면 [업그레이드] · [특성] · ▲ 올릴 수 있음 · ● 남은 포인트",
-    "EN": "Click a building for [Upgrade] · [Traits] · ▲ can upgrade · ● points left"
+    "KR": "건물을 누르면 [업그레이드] · [특성] · 빨간 점 = 지금 할 수 있는 일",
+    "EN": "Click a building for [Upgrade] · [Traits] · Red dot = something to do"
   },
   {
     "Key": "UI.Outpost.CanUpgrade",
@@ -5026,8 +5026,8 @@
   },
   {
     "Key": "UI.Outpost.HelpTitle",
-    "KR": "거점",
-    "EN": "Outpost"
+    "KR": "마을",
+    "EN": "Village"
   },
   {
     "Key": "UI.Outpost.HelpUpgrade",
@@ -6346,8 +6346,8 @@
   },
   {
     "Key": "UI.Enchant.AlreadyMythic",
-    "KR": "이미 신화입니다. 노릴 옵션을 골라 주세요.",
-    "EN": "Already Mythic. Pick an option to aim for."
+    "KR": "이미 신화입니다. 칸 줄에서 노릴 옵션을 골라 주세요.",
+    "EN": "Already Mythic. Pick an option in a slot row."
   },
   {
     "Key": "UI.Enchant.NeedCombo",
@@ -6447,7 +6447,7 @@
   {
     "Key": "UI.Enchant.TargetGrade",
     "KR": "목표 등급",
-    "EN": "Target Grade"
+    "EN": "Goal"
   },
   {
     "Key": "UI.Enchant.FocusOption",
@@ -6465,9 +6465,109 @@
     "EN": "Limit"
   },
   {
+    "Key": "UI.Enchant.SlotRow",
+    "KR": "칸 {0}",
+    "EN": "Slot {0}"
+  },
+  {
     "Key": "UI.Enchant.Select",
     "KR": "선택",
     "EN": "Select"
+  },
+  {
+    "Key": "UI.Enchant.Options",
+    "KR": "편의",
+    "EN": "Options"
+  },
+  {
+    "Key": "UI.Enchant.StopMythic",
+    "KR": "신화에 도달하면 멈춤",
+    "EN": "Stop at Mythic"
+  },
+  {
+    "Key": "UI.Enchant.StopAbove",
+    "KR": "목표 등급보다 높으면 멈춤",
+    "EN": "Stop above Goal"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Uncommon",
+    "KR": "고급",
+    "EN": "Uncom."
+  },
+  {
+    "Key": "UI.Enchant.Chip.Rare",
+    "KR": "희귀",
+    "EN": "Rare"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Epic",
+    "KR": "영웅",
+    "EN": "Epic"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Legendary",
+    "KR": "전설",
+    "EN": "Legend"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Mythic",
+    "KR": "신화",
+    "EN": "Mythic"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Farming",
+    "KR": "농사",
+    "EN": "Farm"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Mining",
+    "KR": "채굴",
+    "EN": "Mine"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Logging",
+    "KR": "벌목",
+    "EN": "Wood"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Hunting",
+    "KR": "사냥",
+    "EN": "Hunt"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Excavation",
+    "KR": "발굴",
+    "EN": "Dig"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndMythic",
+    "KR": "신화가 나와 멈췄습니다",
+    "EN": "Stopped — Mythic"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndHigher",
+    "KR": "목표보다 높은 등급이 나와 멈췄습니다",
+    "EN": "Stopped — higher grade"
+  },
+  {
+    "Key": "UI.Enchant.ComboCount",
+    "KR": "나올 수 있는 조합 {0}가지",
+    "EN": "{0} possible combos"
+  },
+  {
+    "Key": "UI.Enchant.ComboTip",
+    "KR": "멈추는 조합 — 한 번에 나올 확률",
+    "EN": "Stopping combos — chance per roll"
+  },
+  {
+    "Key": "UI.Enchant.ComboMore",
+    "KR": "외 {0}가지",
+    "EN": "+{0} more"
+  },
+  {
+    "Key": "UI.Enchant.Other",
+    "KR": "기타",
+    "EN": "Other"
   },
   {
     "Key": "UI.Gacha.Times",
