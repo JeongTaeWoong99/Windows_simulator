@@ -278,5 +278,55 @@
     "EffectValue": 4,
     "BasePrice": 32000,
     "Description": "전설 유물 감정 보상 (#107)"
+  },
+  {
+    "ArtifactTID": 29,
+    "Name": "황금 이삭 부적",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Farming",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "농사 Lv.1 채취 보상"
+  },
+  {
+    "ArtifactTID": 30,
+    "Name": "나이테 문장",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Logging",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "벌목 Lv.1 채취 보상"
+  },
+  {
+    "ArtifactTID": 31,
+    "Name": "광맥의 심장",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Mining",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "채굴 Lv.1 채취 보상"
+  },
+  {
+    "ArtifactTID": 32,
+    "Name": "잊힌 발굴자의 붓",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Excavation",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "유적 발굴 Lv.1 채취 보상"
+  },
+  {
+    "ArtifactTID": 33,
+    "Name": "사냥꾼의 송곳니",
+    "GlobalRarity": "Uncommon",
+    "EffectType": "YieldAdd",
+    "Industry": "Hunting",
+    "EffectValue": 4,
+    "BasePrice": 1200,
+    "Description": "사냥 Lv.1 채취 보상"
   }
 ]

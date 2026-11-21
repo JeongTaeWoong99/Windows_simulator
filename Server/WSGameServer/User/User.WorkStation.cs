@@ -159,6 +159,7 @@ public partial class User
         var autoUseItems = new List<ItemChangeInfo>();
         foreach (var harvest in harvests)
         {
+            var inventoryFull = false;
             if (WorkStation.TryGet(harvest.SlotIndex, out var rolledSlot))
             {
                 // 소모품 버프(T-195) — 이번 판정 수만큼 깎고, 앞쪽 판정부터 붙인다. 속도 버프는 이미 판정 수에 들어 있다.
@@ -192,11 +193,12 @@ public partial class User
                         harvest.Gained[itemTid] = harvest.Gained.GetValueOrDefault(itemTid) + count;
                     }
                 }
+
+                inventoryFull = !GrantGatherArtifacts(rolledSlot, harvest.JudgeCount, now, notify);
             }
 
             // 아이템별로 한 번씩만 인벤토리를 갱신한다(판정 횟수만큼 UPSERT하지 않는다).
             var changes       = new List<ItemChangeInfo>(harvest.Gained.Count);
-            var inventoryFull = false;
             foreach (var (itemTid, count) in harvest.Gained)
             {
                 // 칸이 전부 차서 못 넣은 몫은 버린다 — 진행·경험치는 그대로 간다(T-085 기획 결정 가 · T-160).
@@ -259,6 +261,30 @@ public partial class User
         // 슬롯 자체는 저장하지 않는다. 진행도(LastTickAt·ProgressUnits)가 세션 지역 상태가 되면서
         // 정산으로 바뀌는 영속 상태가 없어졌다 — 지급된 아이템은 GainItem이 각자 저장한다.
         return harvests.Count;
+    }
+
+    private bool GrantGatherArtifacts(WorkStationSlot slot, int judgeCount, DateTime now, bool notify)
+    {
+        var (tid, count) = _commonRewards.RollGatherArtifacts(slot.Industry, slot.IndustryLevel, judgeCount, Random.Shared);
+        if (count == 0)
+        {
+            return true;
+        }
+
+        if (HasArtifactRoomFor([(tid, count)]))
+        {
+            GainArtifacts(new Dictionary<int, int> { [tid] = count }, notify);
+            return true;
+        }
+
+        if (HasMailboxRoom)
+        {
+            StoreOverflowMail(new MailAttachment(0, new(), new(), new(), ArtifactItems: [(tid, count)]), now);
+            return true;
+        }
+
+        ServerLog.Warn("채취", $"아티팩트 칸과 우편함이 가득 참. Uid={Uid} ArtifactTID={tid} 미지급 {count}");
+        return false;
     }
 
     /// <summary>기본 산업 레벨로 배치한다. 기본 레벨은 Constants.xlsx 값이라 기본 매개변수로 둘 수 없다.</summary>

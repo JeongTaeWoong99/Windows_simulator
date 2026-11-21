@@ -140,6 +140,31 @@
     "EN": "Pioneer's Crest"
   },
   {
+    "Key": "Artifact.29.Name",
+    "KR": "황금 이삭 부적",
+    "EN": "Golden Wheat Charm"
+  },
+  {
+    "Key": "Artifact.30.Name",
+    "KR": "나이테 문장",
+    "EN": "Tree Ring Crest"
+  },
+  {
+    "Key": "Artifact.31.Name",
+    "KR": "광맥의 심장",
+    "EN": "Heart of the Vein"
+  },
+  {
+    "Key": "Artifact.32.Name",
+    "KR": "잊힌 발굴자의 붓",
+    "EN": "Forgotten Excavator’s Brush"
+  },
+  {
+    "Key": "Artifact.33.Name",
+    "KR": "사냥꾼의 송곳니",
+    "EN": "Hunter’s Fang"
+  },
+  {
     "Key": "Building.1.Name",
     "KR": "관리소",
     "EN": "Office"
