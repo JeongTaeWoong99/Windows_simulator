@@ -162,7 +162,8 @@ namespace MikaProtocol
     [MemoryPackable, Packet(PacketId.C_LoginRequest)]
     public partial class C_LoginRequest : IPacket
     {
-        public string Id { get; set; } = "";
+        public string Id          { get; set; } = "";  // 개발용 로그인 — 서버 AllowDevLogin일 때만 받는다. SteamTicket이 있으면 무시한다
+        public string SteamTicket { get; set; } = "";  // GetAuthTicketForWebApi 티켓 바이트를 hex로 (T-207)
     }
 
     [MemoryPackable, Packet(PacketId.S_LoginResponse)]

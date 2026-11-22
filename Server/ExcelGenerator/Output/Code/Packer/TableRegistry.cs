@@ -26,6 +26,7 @@ namespace GameData
             ["ConstantsTable"] = new(ConstantsTablePacker.Pack, ConstantsTablePacker.Verify, ConstantsTablePacker.Preview, ConstantsTablePacker.Dump),
             ["CommonRewardTable"] = new(CommonRewardTablePacker.Pack, CommonRewardTablePacker.Verify, CommonRewardTablePacker.Preview, CommonRewardTablePacker.Dump),
             ["CommonRewardOverrideTable"] = new(CommonRewardOverrideTablePacker.Pack, CommonRewardOverrideTablePacker.Verify, CommonRewardOverrideTablePacker.Preview, CommonRewardOverrideTablePacker.Dump),
+            ["GatherArtifactTable"] = new(GatherArtifactTablePacker.Pack, GatherArtifactTablePacker.Verify, GatherArtifactTablePacker.Preview, GatherArtifactTablePacker.Dump),
             ["ExcavationBasicTable"] = new(ExcavationBasicTablePacker.Pack, ExcavationBasicTablePacker.Verify, ExcavationBasicTablePacker.Preview, ExcavationBasicTablePacker.Dump),
             ["FarmingBasicTable"] = new(FarmingBasicTablePacker.Pack, FarmingBasicTablePacker.Verify, FarmingBasicTablePacker.Preview, FarmingBasicTablePacker.Dump),
             ["HuntingBasicTable"] = new(HuntingBasicTablePacker.Pack, HuntingBasicTablePacker.Verify, HuntingBasicTablePacker.Preview, HuntingBasicTablePacker.Dump),

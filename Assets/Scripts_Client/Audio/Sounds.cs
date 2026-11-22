@@ -32,7 +32,7 @@ public static class Sounds
     // 보상 공개 — 뽑기·감정 결과 ('GachaResultPresenter')
     public static AudioClip? RewardChime => SoundCatalog.Of("reward_chime");
 
-    // 레벨 업 — 작업슬롯 캐릭터 ('LevelUpFx')
+    // 레벨 업 — 작업슬롯 캐릭터 ('LevelUpFx') · 건물 업그레이드 성공 ('OutpostUpgradePresenter')
     public static AudioClip? LevelUp => SoundCatalog.Of("level_up");
 
     // 응축 성공 (★ 그대로) · ★ 상승 / 큐브 등급 상승 ('CharacterCondensePresenter' · 'EnchantRevealFx')

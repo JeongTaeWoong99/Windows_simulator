@@ -140,6 +140,31 @@
     "EN": "Pioneer's Crest"
   },
   {
+    "Key": "Artifact.29.Name",
+    "KR": "황금 이삭 부적",
+    "EN": "Golden Wheat Charm"
+  },
+  {
+    "Key": "Artifact.30.Name",
+    "KR": "나이테 문장",
+    "EN": "Tree Ring Crest"
+  },
+  {
+    "Key": "Artifact.31.Name",
+    "KR": "광맥의 심장",
+    "EN": "Heart of the Vein"
+  },
+  {
+    "Key": "Artifact.32.Name",
+    "KR": "잊힌 발굴자의 붓",
+    "EN": "Forgotten Excavator’s Brush"
+  },
+  {
+    "Key": "Artifact.33.Name",
+    "KR": "사냥꾼의 송곳니",
+    "EN": "Hunter’s Fang"
+  },
+  {
     "Key": "Building.1.Name",
     "KR": "관리소",
     "EN": "Office"
@@ -1056,6 +1081,6606 @@
   },
   {
     "Key": "Equip.3506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101101.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101102.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101103.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101104.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101105.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101106.Name",
+    "KR": "청동 낫",
+    "EN": "Bronze Sickle"
+  },
+  {
+    "Key": "Equip.101106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101201.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101202.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101203.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101204.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101205.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101206.Name",
+    "KR": "청동 발굴삽",
+    "EN": "Bronze Dig Shovel"
+  },
+  {
+    "Key": "Equip.101206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101301.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101302.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101303.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101304.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101305.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101306.Name",
+    "KR": "청동 곡괭이",
+    "EN": "Bronze Pickaxe"
+  },
+  {
+    "Key": "Equip.101306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101401.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101402.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101403.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101404.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101405.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101406.Name",
+    "KR": "청동 도끼",
+    "EN": "Bronze Axe"
+  },
+  {
+    "Key": "Equip.101406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101501.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101502.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101503.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101504.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101505.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.101506.Name",
+    "KR": "청동촉 활",
+    "EN": "Bronze-Tipped Bow"
+  },
+  {
+    "Key": "Equip.101506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102001.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102002.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102003.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102004.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102005.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.102006.Name",
+    "KR": "청동 팔찌",
+    "EN": "Bronze Bracelet"
+  },
+  {
+    "Key": "Equip.102006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103101.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103102.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103103.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103104.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103105.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103106.Name",
+    "KR": "이삭 마노",
+    "EN": "Grain Agate"
+  },
+  {
+    "Key": "Equip.103106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103201.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103202.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103203.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103204.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103205.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103206.Name",
+    "KR": "유적 마노",
+    "EN": "Ruin Agate"
+  },
+  {
+    "Key": "Equip.103206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103301.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103302.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103303.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103304.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103305.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103306.Name",
+    "KR": "원광 마노",
+    "EN": "Ore Agate"
+  },
+  {
+    "Key": "Equip.103306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103401.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103402.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103403.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103404.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103405.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103406.Name",
+    "KR": "나이테 마노",
+    "EN": "Treering Agate"
+  },
+  {
+    "Key": "Equip.103406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103501.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103502.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103503.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103504.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103505.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.103506.Name",
+    "KR": "발자국 마노",
+    "EN": "Track Agate"
+  },
+  {
+    "Key": "Equip.103506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201101.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201102.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201103.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201104.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201105.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201106.Name",
+    "KR": "단철 괭이",
+    "EN": "Wrought Iron Hoe"
+  },
+  {
+    "Key": "Equip.201106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201201.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201202.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201203.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201204.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201205.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201206.Name",
+    "KR": "단철 발굴 망치",
+    "EN": "Wrought Iron Dig Hammer"
+  },
+  {
+    "Key": "Equip.201206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201301.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201302.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201303.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201304.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201305.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201306.Name",
+    "KR": "단철 곡괭이",
+    "EN": "Wrought Iron Pickaxe"
+  },
+  {
+    "Key": "Equip.201306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201401.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201402.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201403.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201404.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201405.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201406.Name",
+    "KR": "단철 톱",
+    "EN": "Wrought Iron Saw"
+  },
+  {
+    "Key": "Equip.201406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201501.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201502.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201503.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201504.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201505.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.201506.Name",
+    "KR": "단철 장궁",
+    "EN": "Wrought Iron Longbow"
+  },
+  {
+    "Key": "Equip.201506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202001.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202002.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202003.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202004.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202005.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.202006.Name",
+    "KR": "단철 고리",
+    "EN": "Wrought Iron Band"
+  },
+  {
+    "Key": "Equip.202006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203101.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203102.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203103.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203104.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203105.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203106.Name",
+    "KR": "이삭 벽옥",
+    "EN": "Grain Jasper"
+  },
+  {
+    "Key": "Equip.203106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203201.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203202.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203203.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203204.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203205.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203206.Name",
+    "KR": "유적 벽옥",
+    "EN": "Ruin Jasper"
+  },
+  {
+    "Key": "Equip.203206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203301.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203302.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203303.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203304.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203305.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203306.Name",
+    "KR": "원광 벽옥",
+    "EN": "Ore Jasper"
+  },
+  {
+    "Key": "Equip.203306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203401.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203402.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203403.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203404.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203405.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203406.Name",
+    "KR": "나이테 벽옥",
+    "EN": "Treering Jasper"
+  },
+  {
+    "Key": "Equip.203406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203501.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203502.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203503.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203504.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203505.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.203506.Name",
+    "KR": "발자국 벽옥",
+    "EN": "Track Jasper"
+  },
+  {
+    "Key": "Equip.203506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301101.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301102.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301103.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301104.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301105.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301106.Name",
+    "KR": "은날 쟁기",
+    "EN": "Silver-Edged Plow"
+  },
+  {
+    "Key": "Equip.301106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301201.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301202.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301203.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301204.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301205.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301206.Name",
+    "KR": "은 탐사 송곳",
+    "EN": "Silver Probe Awl"
+  },
+  {
+    "Key": "Equip.301206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301301.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301302.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301303.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301304.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301305.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301306.Name",
+    "KR": "은날 곡괭이",
+    "EN": "Silver-Edged Pickaxe"
+  },
+  {
+    "Key": "Equip.301306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301401.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301402.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301403.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301404.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301405.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301406.Name",
+    "KR": "은날 도끼",
+    "EN": "Silver-Edged Axe"
+  },
+  {
+    "Key": "Equip.301406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301501.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301502.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301503.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301504.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301505.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.301506.Name",
+    "KR": "은사 석궁",
+    "EN": "Silver-String Crossbow"
+  },
+  {
+    "Key": "Equip.301506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302001.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302002.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302003.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302004.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302005.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.302006.Name",
+    "KR": "은세공 목걸이",
+    "EN": "Silverwork Necklace"
+  },
+  {
+    "Key": "Equip.302006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303101.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303102.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303103.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303104.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303105.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303106.Name",
+    "KR": "이삭 월장석",
+    "EN": "Grain Moonstone"
+  },
+  {
+    "Key": "Equip.303106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303201.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303202.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303203.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303204.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303205.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303206.Name",
+    "KR": "유적 월장석",
+    "EN": "Ruin Moonstone"
+  },
+  {
+    "Key": "Equip.303206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303301.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303302.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303303.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303304.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303305.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303306.Name",
+    "KR": "원광 월장석",
+    "EN": "Ore Moonstone"
+  },
+  {
+    "Key": "Equip.303306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303401.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303402.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303403.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303404.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303405.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303406.Name",
+    "KR": "나이테 월장석",
+    "EN": "Treering Moonstone"
+  },
+  {
+    "Key": "Equip.303406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303501.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303502.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303503.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303504.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303505.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.303506.Name",
+    "KR": "발자국 월장석",
+    "EN": "Track Moonstone"
+  },
+  {
+    "Key": "Equip.303506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401101.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401102.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401103.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401104.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401105.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401106.Name",
+    "KR": "룬 새긴 낫",
+    "EN": "Rune-Carved Sickle"
+  },
+  {
+    "Key": "Equip.401106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401201.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401202.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401203.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401204.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401205.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401206.Name",
+    "KR": "룬 새긴 발굴삽",
+    "EN": "Rune-Carved Dig Shovel"
+  },
+  {
+    "Key": "Equip.401206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401301.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401302.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401303.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401304.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401305.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401306.Name",
+    "KR": "룬 새긴 곡괭이",
+    "EN": "Rune-Carved Pickaxe"
+  },
+  {
+    "Key": "Equip.401306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401401.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401402.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401403.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401404.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401405.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401406.Name",
+    "KR": "룬 새긴 도끼",
+    "EN": "Rune-Carved Axe"
+  },
+  {
+    "Key": "Equip.401406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401501.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401502.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401503.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401504.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401505.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.401506.Name",
+    "KR": "룬 새긴 활",
+    "EN": "Rune-Carved Bow"
+  },
+  {
+    "Key": "Equip.401506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402001.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402002.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402003.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402004.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402005.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.402006.Name",
+    "KR": "룬 반지",
+    "EN": "Rune Ring"
+  },
+  {
+    "Key": "Equip.402006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403101.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403102.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403103.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403104.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403105.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403106.Name",
+    "KR": "이삭 룬석",
+    "EN": "Grain Runestone"
+  },
+  {
+    "Key": "Equip.403106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403201.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403202.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403203.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403204.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403205.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403206.Name",
+    "KR": "유적 룬석",
+    "EN": "Ruin Runestone"
+  },
+  {
+    "Key": "Equip.403206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403301.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403302.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403303.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403304.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403305.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403306.Name",
+    "KR": "원광 룬석",
+    "EN": "Ore Runestone"
+  },
+  {
+    "Key": "Equip.403306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403401.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403402.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403403.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403404.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403405.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403406.Name",
+    "KR": "나이테 룬석",
+    "EN": "Treering Runestone"
+  },
+  {
+    "Key": "Equip.403406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403501.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403502.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403503.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403504.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403505.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.403506.Name",
+    "KR": "발자국 룬석",
+    "EN": "Track Runestone"
+  },
+  {
+    "Key": "Equip.403506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501101.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501102.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501103.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501104.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501105.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501106.Name",
+    "KR": "수정날 괭이",
+    "EN": "Crystal-Edged Hoe"
+  },
+  {
+    "Key": "Equip.501106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501201.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501202.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501203.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501204.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501205.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501206.Name",
+    "KR": "수정 탐침",
+    "EN": "Crystal Probe"
+  },
+  {
+    "Key": "Equip.501206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501301.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501302.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501303.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501304.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501305.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501306.Name",
+    "KR": "수정 곡괭이",
+    "EN": "Crystal Pickaxe"
+  },
+  {
+    "Key": "Equip.501306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501401.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501402.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501403.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501404.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501405.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501406.Name",
+    "KR": "수정날 도끼",
+    "EN": "Crystal-Edged Axe"
+  },
+  {
+    "Key": "Equip.501406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501501.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501502.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501503.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501504.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501505.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.501506.Name",
+    "KR": "수정 석궁",
+    "EN": "Crystal Crossbow"
+  },
+  {
+    "Key": "Equip.501506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502001.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502002.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502003.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502004.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502005.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.502006.Name",
+    "KR": "수정 펜던트",
+    "EN": "Crystal Pendant"
+  },
+  {
+    "Key": "Equip.502006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503101.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503102.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503103.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503104.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503105.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503106.Name",
+    "KR": "이삭 수정",
+    "EN": "Grain Crystal"
+  },
+  {
+    "Key": "Equip.503106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503201.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503202.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503203.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503204.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503205.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503206.Name",
+    "KR": "유적 수정",
+    "EN": "Ruin Crystal"
+  },
+  {
+    "Key": "Equip.503206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503301.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503302.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503303.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503304.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503305.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503306.Name",
+    "KR": "원광 수정",
+    "EN": "Ore Crystal"
+  },
+  {
+    "Key": "Equip.503306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503401.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503402.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503403.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503404.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503405.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503406.Name",
+    "KR": "나이테 수정",
+    "EN": "Treering Crystal"
+  },
+  {
+    "Key": "Equip.503406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503501.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503502.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503503.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503504.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503505.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.503506.Name",
+    "KR": "발자국 수정",
+    "EN": "Track Crystal"
+  },
+  {
+    "Key": "Equip.503506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601101.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601102.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601103.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601104.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601105.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601106.Name",
+    "KR": "비전 쟁기",
+    "EN": "Arcane Plow"
+  },
+  {
+    "Key": "Equip.601106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601201.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601202.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601203.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601204.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601205.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601206.Name",
+    "KR": "비전 발굴봉",
+    "EN": "Arcane Dig Rod"
+  },
+  {
+    "Key": "Equip.601206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601301.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601302.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601303.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601304.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601305.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601306.Name",
+    "KR": "비전 곡괭이",
+    "EN": "Arcane Pickaxe"
+  },
+  {
+    "Key": "Equip.601306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601401.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601402.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601403.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601404.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601405.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601406.Name",
+    "KR": "비전 도끼",
+    "EN": "Arcane Axe"
+  },
+  {
+    "Key": "Equip.601406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601501.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601502.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601503.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601504.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601505.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.601506.Name",
+    "KR": "비전 장궁",
+    "EN": "Arcane Longbow"
+  },
+  {
+    "Key": "Equip.601506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602001.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602002.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602003.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602004.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602005.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.602006.Name",
+    "KR": "비전 인장",
+    "EN": "Arcane Seal"
+  },
+  {
+    "Key": "Equip.602006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603101.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603102.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603103.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603104.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603105.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603106.Name",
+    "KR": "이삭 비전석",
+    "EN": "Grain Arcanite"
+  },
+  {
+    "Key": "Equip.603106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603201.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603202.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603203.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603204.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603205.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603206.Name",
+    "KR": "유적 비전석",
+    "EN": "Ruin Arcanite"
+  },
+  {
+    "Key": "Equip.603206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603301.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603302.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603303.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603304.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603305.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603306.Name",
+    "KR": "원광 비전석",
+    "EN": "Ore Arcanite"
+  },
+  {
+    "Key": "Equip.603306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603401.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603402.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603403.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603404.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603405.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603406.Name",
+    "KR": "나이테 비전석",
+    "EN": "Treering Arcanite"
+  },
+  {
+    "Key": "Equip.603406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603501.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603502.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603503.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603504.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603505.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.603506.Name",
+    "KR": "발자국 비전석",
+    "EN": "Track Arcanite"
+  },
+  {
+    "Key": "Equip.603506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701101.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701102.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701103.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701104.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701105.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701106.Name",
+    "KR": "마력 괭이",
+    "EN": "Mana Hoe"
+  },
+  {
+    "Key": "Equip.701106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701201.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701202.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701203.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701204.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701205.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701206.Name",
+    "KR": "마력 탐사봉",
+    "EN": "Mana Divining Rod"
+  },
+  {
+    "Key": "Equip.701206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701301.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701302.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701303.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701304.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701305.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701306.Name",
+    "KR": "마력 착암 곡괭이",
+    "EN": "Mana Rock-Drill Pickaxe"
+  },
+  {
+    "Key": "Equip.701306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701401.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701402.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701403.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701404.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701405.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701406.Name",
+    "KR": "마력 톱도끼",
+    "EN": "Mana Saw-Axe"
+  },
+  {
+    "Key": "Equip.701406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701501.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701502.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701503.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701504.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701505.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.701506.Name",
+    "KR": "마력 연노",
+    "EN": "Mana Repeating Crossbow"
+  },
+  {
+    "Key": "Equip.701506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702001.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702002.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702003.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702004.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702005.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.702006.Name",
+    "KR": "마력 부적",
+    "EN": "Mana Talisman"
+  },
+  {
+    "Key": "Equip.702006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703101.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703102.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703103.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703104.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703105.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703106.Name",
+    "KR": "이삭 마력석",
+    "EN": "Grain Manastone"
+  },
+  {
+    "Key": "Equip.703106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703201.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703202.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703203.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703204.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703205.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703206.Name",
+    "KR": "유적 마력석",
+    "EN": "Ruin Manastone"
+  },
+  {
+    "Key": "Equip.703206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703301.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703302.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703303.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703304.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703305.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703306.Name",
+    "KR": "원광 마력석",
+    "EN": "Ore Manastone"
+  },
+  {
+    "Key": "Equip.703306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703401.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703402.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703403.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703404.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703405.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703406.Name",
+    "KR": "나이테 마력석",
+    "EN": "Treering Manastone"
+  },
+  {
+    "Key": "Equip.703406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703501.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703502.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703503.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703504.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703505.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.703506.Name",
+    "KR": "발자국 마력석",
+    "EN": "Track Manastone"
+  },
+  {
+    "Key": "Equip.703506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801101.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801102.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801103.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801104.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801105.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801106.Name",
+    "KR": "태엽 수확기",
+    "EN": "Clockwork Harvester"
+  },
+  {
+    "Key": "Equip.801106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801201.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801202.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801203.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801204.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801205.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801206.Name",
+    "KR": "태엽 굴착삽",
+    "EN": "Clockwork Excavator Shovel"
+  },
+  {
+    "Key": "Equip.801206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801301.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801302.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801303.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801304.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801305.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801306.Name",
+    "KR": "태엽 착암기",
+    "EN": "Clockwork Rock Drill"
+  },
+  {
+    "Key": "Equip.801306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801401.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801402.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801403.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801404.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801405.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801406.Name",
+    "KR": "태엽 회전톱",
+    "EN": "Clockwork Circular Saw"
+  },
+  {
+    "Key": "Equip.801406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801501.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801502.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801503.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801504.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801505.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.801506.Name",
+    "KR": "태엽 연발 석궁",
+    "EN": "Clockwork Repeater Crossbow"
+  },
+  {
+    "Key": "Equip.801506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802001.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802002.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802003.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802004.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802005.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.802006.Name",
+    "KR": "태엽 회중시계",
+    "EN": "Clockwork Pocket Watch"
+  },
+  {
+    "Key": "Equip.802006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803101.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803102.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803103.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803104.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803105.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803106.Name",
+    "KR": "이삭 동력핵",
+    "EN": "Grain Power Core"
+  },
+  {
+    "Key": "Equip.803106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803201.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803202.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803203.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803204.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803205.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803206.Name",
+    "KR": "유적 동력핵",
+    "EN": "Ruin Power Core"
+  },
+  {
+    "Key": "Equip.803206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803301.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803302.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803303.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803304.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803305.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803306.Name",
+    "KR": "원광 동력핵",
+    "EN": "Ore Power Core"
+  },
+  {
+    "Key": "Equip.803306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803401.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803402.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803403.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803404.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803405.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803406.Name",
+    "KR": "나이테 동력핵",
+    "EN": "Treering Power Core"
+  },
+  {
+    "Key": "Equip.803406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803501.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803502.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803503.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803504.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803505.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.803506.Name",
+    "KR": "발자국 동력핵",
+    "EN": "Track Power Core"
+  },
+  {
+    "Key": "Equip.803506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901101.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901102.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901103.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901104.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901105.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901106.Name",
+    "KR": "증기 탈곡낫",
+    "EN": "Steam Threshing Scythe"
+  },
+  {
+    "Key": "Equip.901106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901201.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901202.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901203.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901204.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901205.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901206.Name",
+    "KR": "증기 굴착기",
+    "EN": "Steam Excavator"
+  },
+  {
+    "Key": "Equip.901206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901301.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901302.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901303.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901304.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901305.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901306.Name",
+    "KR": "증기 착암기",
+    "EN": "Steam Rock Drill"
+  },
+  {
+    "Key": "Equip.901306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901401.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901402.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901403.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901404.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901405.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901406.Name",
+    "KR": "증기 벌목톱",
+    "EN": "Steam Logging Saw"
+  },
+  {
+    "Key": "Equip.901406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901501.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901502.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901503.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901504.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901505.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.901506.Name",
+    "KR": "증기 석궁",
+    "EN": "Steam Crossbow"
+  },
+  {
+    "Key": "Equip.901506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902001.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902002.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902003.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902004.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902005.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.902006.Name",
+    "KR": "증기 톱니 훈장",
+    "EN": "Steam Cog Medal"
+  },
+  {
+    "Key": "Equip.902006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903101.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903102.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903103.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903104.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903105.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903106.Name",
+    "KR": "이삭 증기핵",
+    "EN": "Grain Steam Core"
+  },
+  {
+    "Key": "Equip.903106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903201.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903202.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903203.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903204.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903205.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903206.Name",
+    "KR": "유적 증기핵",
+    "EN": "Ruin Steam Core"
+  },
+  {
+    "Key": "Equip.903206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903301.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903302.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903303.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903304.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903305.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903306.Name",
+    "KR": "원광 증기핵",
+    "EN": "Ore Steam Core"
+  },
+  {
+    "Key": "Equip.903306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903401.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903402.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903403.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903404.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903405.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903406.Name",
+    "KR": "나이테 증기핵",
+    "EN": "Treering Steam Core"
+  },
+  {
+    "Key": "Equip.903406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903501.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903502.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903503.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903504.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903505.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.903506.Name",
+    "KR": "발자국 증기핵",
+    "EN": "Track Steam Core"
+  },
+  {
+    "Key": "Equip.903506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001101.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001102.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001103.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001104.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001105.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001106.Name",
+    "KR": "천공의 경작기",
+    "EN": "Skyforged Cultivator"
+  },
+  {
+    "Key": "Equip.1001106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001201.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001202.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001203.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001204.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001205.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001206.Name",
+    "KR": "천공의 탐사기",
+    "EN": "Skyforged Prospector"
+  },
+  {
+    "Key": "Equip.1001206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001301.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001302.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001303.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001304.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001305.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001306.Name",
+    "KR": "천공의 착암기",
+    "EN": "Skyforged Rock Drill"
+  },
+  {
+    "Key": "Equip.1001306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001401.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001402.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001403.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001404.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001405.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001406.Name",
+    "KR": "천공의 벌목톱",
+    "EN": "Skyforged Logging Saw"
+  },
+  {
+    "Key": "Equip.1001406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001501.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001502.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001503.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001504.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001505.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1001506.Name",
+    "KR": "천공의 성궁",
+    "EN": "Skyforged Holy Bow"
+  },
+  {
+    "Key": "Equip.1001506.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002001.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002001.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002002.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002002.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002003.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002003.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002004.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002004.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002005.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002005.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1002006.Name",
+    "KR": "천공의 톱니 고리",
+    "EN": "Skyforged Cog Ring"
+  },
+  {
+    "Key": "Equip.1002006.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003101.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003101.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003102.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003102.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003103.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003103.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003104.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003104.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003105.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003105.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003106.Name",
+    "KR": "이삭 천공핵",
+    "EN": "Grain Sky Core"
+  },
+  {
+    "Key": "Equip.1003106.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003201.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003201.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003202.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003202.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003203.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003203.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003204.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003204.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003205.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003205.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003206.Name",
+    "KR": "유적 천공핵",
+    "EN": "Ruin Sky Core"
+  },
+  {
+    "Key": "Equip.1003206.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003301.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003301.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003302.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003302.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003303.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003303.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003304.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003304.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003305.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003305.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003306.Name",
+    "KR": "원광 천공핵",
+    "EN": "Ore Sky Core"
+  },
+  {
+    "Key": "Equip.1003306.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003401.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003401.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003402.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003402.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003403.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003403.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003404.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003404.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003405.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003405.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003406.Name",
+    "KR": "나이테 천공핵",
+    "EN": "Treering Sky Core"
+  },
+  {
+    "Key": "Equip.1003406.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003501.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003501.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003502.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003502.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003503.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003503.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003504.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003504.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003505.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003505.Tooltip",
+    "KR": "",
+    "EN": ""
+  },
+  {
+    "Key": "Equip.1003506.Name",
+    "KR": "발자국 천공핵",
+    "EN": "Track Sky Core"
+  },
+  {
+    "Key": "Equip.1003506.Tooltip",
     "KR": "",
     "EN": ""
   },
@@ -4025,6 +10650,11 @@
     "EN": "That slot is already empty."
   },
   {
+    "Key": "UI.Result.EquipLevelTooLow",
+    "KR": "캐릭터 레벨이 장비 레벨보다 낮습니다.",
+    "EN": "This character's level is too low for that gear."
+  },
+  {
     "Key": "UI.Result.EnchantItemNotOwned",
     "KR": "큐브가 없습니다.",
     "EN": "You have no cubes."
@@ -4338,6 +10968,16 @@
     "Key": "UI.Equip.Exp",
     "KR": "경험치",
     "EN": "EXP"
+  },
+  {
+    "Key": "UI.Equip.Attack",
+    "KR": "공격력",
+    "EN": "ATK"
+  },
+  {
+    "Key": "UI.Equip.Health",
+    "KR": "체력",
+    "EN": "HP"
   },
   {
     "Key": "UI.Equip.StatSlots",
@@ -4941,8 +11581,8 @@
   },
   {
     "Key": "UI.Main.Outpost",
-    "KR": "거점",
-    "EN": "Outpost"
+    "KR": "마을",
+    "EN": "Village"
   },
   {
     "Key": "UI.Outpost.AccountLevel",
@@ -4951,8 +11591,8 @@
   },
   {
     "Key": "UI.Outpost.Hint",
-    "KR": "건물을 누르면 [업그레이드] · [특성] · ▲ 올릴 수 있음 · ● 남은 포인트",
-    "EN": "Click a building for [Upgrade] · [Traits] · ▲ can upgrade · ● points left"
+    "KR": "건물을 누르면 [업그레이드] · [특성] · 빨간 점 = 지금 할 수 있는 일",
+    "EN": "Click a building for [Upgrade] · [Traits] · Red dot = something to do"
   },
   {
     "Key": "UI.Outpost.CanUpgrade",
@@ -5066,8 +11706,8 @@
   },
   {
     "Key": "UI.Outpost.HelpTitle",
-    "KR": "거점",
-    "EN": "Outpost"
+    "KR": "마을",
+    "EN": "Village"
   },
   {
     "Key": "UI.Outpost.HelpUpgrade",
@@ -5168,6 +11808,66 @@
     "Key": "UI.ItemGroup.Etc",
     "KR": "기타",
     "EN": "Other"
+  },
+  {
+    "Key": "UI.SlotTag.Farming",
+    "KR": "농사",
+    "EN": "Farm"
+  },
+  {
+    "Key": "UI.SlotTag.Excavation",
+    "KR": "발굴",
+    "EN": "Dig"
+  },
+  {
+    "Key": "UI.SlotTag.Mining",
+    "KR": "채굴",
+    "EN": "Mine"
+  },
+  {
+    "Key": "UI.SlotTag.Logging",
+    "KR": "벌목",
+    "EN": "Wood"
+  },
+  {
+    "Key": "UI.SlotTag.Hunting",
+    "KR": "사냥",
+    "EN": "Hunt"
+  },
+  {
+    "Key": "UI.SlotTag.Cube",
+    "KR": "큐브",
+    "EN": "Cube"
+  },
+  {
+    "Key": "UI.SlotTag.Box",
+    "KR": "상자",
+    "EN": "Box"
+  },
+  {
+    "Key": "UI.SlotTag.Relic",
+    "KR": "유물",
+    "EN": "Relic"
+  },
+  {
+    "Key": "UI.SlotTag.Consumable",
+    "KR": "소모",
+    "EN": "Cons"
+  },
+  {
+    "Key": "UI.SlotTag.Etc",
+    "KR": "기타",
+    "EN": "Etc"
+  },
+  {
+    "Key": "UI.SlotTag.Artifact",
+    "KR": "아티",
+    "EN": "Arti"
+  },
+  {
+    "Key": "UI.SlotTag.Common",
+    "KR": "공통",
+    "EN": "All"
   },
   {
     "Key": "UI.Inventory.CountUnit",
@@ -5656,8 +12356,8 @@
   },
   {
     "Key": "UI.Tool.SkippedWrap",
-    "KR": "({0} 제외 — [제외]에서 체크를 풀면 함께 담깁니다)",
-    "EN": "(excluded: {0} — uncheck them in [Exclude] to include)"
+    "KR": "({0} 제외 — [판매 제외]에서 체크를 풀면 함께 담깁니다)",
+    "EN": "(excluded: {0} — uncheck them in [Don't Sell] to include)"
   },
   {
     "Key": "UI.Tool.UnlockHint",
@@ -5681,8 +12381,13 @@
   },
   {
     "Key": "UI.Tool.ExcludeCount",
-    "KR": "제외 {0}",
-    "EN": "Exclude {0}"
+    "KR": "판매 제외 {0}",
+    "EN": "Don't Sell {0}"
+  },
+  {
+    "Key": "UI.Tool.Exclude",
+    "KR": "판매 제외",
+    "EN": "Don't Sell"
   },
   {
     "Key": "UI.Inventory.TabResource",
@@ -5698,6 +12403,16 @@
     "Key": "UI.Tool.BulkAdd",
     "KR": "판매 등록",
     "EN": "Add to Sell"
+  },
+  {
+    "Key": "UI.Tool.SellMode",
+    "KR": "일괄 판매",
+    "EN": "Bulk Sell"
+  },
+  {
+    "Key": "UI.Tool.SellModeTip",
+    "KR": "판매 창을 엽니다. 칸을 눌러 담거나, 등급 · 분류로 한꺼번에 담아 팝니다.",
+    "EN": "Opens the sell window. Click items to add them, or add many at once by rarity and category."
   },
   {
     "Key": "UI.Tool.SearchName",
@@ -5731,13 +12446,18 @@
   },
   {
     "Key": "UI.Sell.Empty",
-    "KR": "자원을 우클릭해 담으세요 — 즉시 판매가로 바로 팝니다",
-    "EN": "Right-click items to add — they sell instantly at the instant sell price"
+    "KR": "위 칸을 눌러 담으세요 — 즉시 판매가로 바로 팝니다",
+    "EN": "Click items above to add — they sell instantly at the instant sell price"
   },
   {
     "Key": "UI.Sell.Clear",
     "KR": "비우기",
     "EN": "Clear"
+  },
+  {
+    "Key": "UI.Sell.Title",
+    "KR": "판매",
+    "EN": "Sell"
   },
   {
     "Key": "UI.Sell.HighRarity",
@@ -6306,8 +13026,8 @@
   },
   {
     "Key": "UI.Enchant.AlreadyMythic",
-    "KR": "이미 신화입니다. 노릴 옵션을 골라 주세요.",
-    "EN": "Already Mythic. Pick an option to aim for."
+    "KR": "이미 신화입니다. 칸 줄에서 노릴 옵션을 골라 주세요.",
+    "EN": "Already Mythic. Pick an option in a slot row."
   },
   {
     "Key": "UI.Enchant.NeedCombo",
@@ -6407,7 +13127,7 @@
   {
     "Key": "UI.Enchant.TargetGrade",
     "KR": "목표 등급",
-    "EN": "Target Grade"
+    "EN": "Goal"
   },
   {
     "Key": "UI.Enchant.FocusOption",
@@ -6425,9 +13145,109 @@
     "EN": "Limit"
   },
   {
+    "Key": "UI.Enchant.SlotRow",
+    "KR": "칸 {0}",
+    "EN": "Slot {0}"
+  },
+  {
     "Key": "UI.Enchant.Select",
     "KR": "선택",
     "EN": "Select"
+  },
+  {
+    "Key": "UI.Enchant.Options",
+    "KR": "편의",
+    "EN": "Options"
+  },
+  {
+    "Key": "UI.Enchant.StopMythic",
+    "KR": "신화에 도달하면 멈춤",
+    "EN": "Stop at Mythic"
+  },
+  {
+    "Key": "UI.Enchant.StopAbove",
+    "KR": "목표 등급보다 높으면 멈춤",
+    "EN": "Stop above Goal"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Uncommon",
+    "KR": "고급",
+    "EN": "Uncom."
+  },
+  {
+    "Key": "UI.Enchant.Chip.Rare",
+    "KR": "희귀",
+    "EN": "Rare"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Epic",
+    "KR": "영웅",
+    "EN": "Epic"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Legendary",
+    "KR": "전설",
+    "EN": "Legend"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Mythic",
+    "KR": "신화",
+    "EN": "Mythic"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Farming",
+    "KR": "농사",
+    "EN": "Farm"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Mining",
+    "KR": "채굴",
+    "EN": "Mine"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Logging",
+    "KR": "벌목",
+    "EN": "Wood"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Hunting",
+    "KR": "사냥",
+    "EN": "Hunt"
+  },
+  {
+    "Key": "UI.Enchant.Chip.Excavation",
+    "KR": "발굴",
+    "EN": "Dig"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndMythic",
+    "KR": "신화가 나와 멈췄습니다",
+    "EN": "Stopped — Mythic"
+  },
+  {
+    "Key": "UI.Enchant.AutoEndHigher",
+    "KR": "목표보다 높은 등급이 나와 멈췄습니다",
+    "EN": "Stopped — higher grade"
+  },
+  {
+    "Key": "UI.Enchant.ComboCount",
+    "KR": "나올 수 있는 조합 {0}가지",
+    "EN": "{0} possible combos"
+  },
+  {
+    "Key": "UI.Enchant.ComboTip",
+    "KR": "멈추는 조합 — 한 번에 나올 확률",
+    "EN": "Stopping combos — chance per roll"
+  },
+  {
+    "Key": "UI.Enchant.ComboMore",
+    "KR": "외 {0}가지",
+    "EN": "+{0} more"
+  },
+  {
+    "Key": "UI.Enchant.Other",
+    "KR": "기타",
+    "EN": "Other"
   },
   {
     "Key": "UI.Gacha.Times",

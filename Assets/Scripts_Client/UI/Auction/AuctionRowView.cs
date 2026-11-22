@@ -146,7 +146,7 @@ public class AuctionRowView : MonoBehaviour, IPointerClickHandler
 
         colors.normalColor      = target;
         colors.selectedColor    = target;
-        colors.highlightedColor = Color.Lerp(target, Color.white, 0.15f);
+        colors.highlightedColor = UIThemePalette.HoverOf(target);
         actionButton.colors     = colors;
     }
 

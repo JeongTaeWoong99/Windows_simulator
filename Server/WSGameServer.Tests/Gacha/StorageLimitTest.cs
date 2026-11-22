@@ -10,9 +10,9 @@ namespace WSGameServer;
 /// </summary>
 public class StorageLimitTest
 {
-    private const int CharacterPoolId = 4;        // 실제 캐릭터 풀(2)은 닫혀(T-184) 장신구 풀의 비용 메타를 빌린다
+    private const int CharacterPoolId = 1;        // 캐릭터(T-184)·장비(T-200) 골드 풀이 닫혀 골드로 뽑히는 유일한 풀(구슬 상자)의 비용 메타를 빌린다
     private const int CharacterTid    = 1002;
-    private const int EquipPoolId     = 3;
+    private const int EquipPoolId     = 1;
     private const int SwordTid        = 1101;     // 나무 호미 (Common 무기)
     private const int ItemPoolId      = 1;
     private const int FishTid         = 10001;    // 붕어

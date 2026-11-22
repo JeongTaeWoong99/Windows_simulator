@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using GameData;
 using MikaProtocol;
 using TMPro;
@@ -7,8 +9,12 @@ using UnityEngine.UI;
 using CharacterInfo = MikaProtocol.CharacterInfo;
 
 // 인벤토리 탭 줄 아래의 도구 줄 — 두 줄이다 (2026-09-29 · T-073 · T-069).
-//   1줄: 정렬 방향 화살표 · 정렬 기준 · [합치기](자원 탭만) · 일괄 담기([제외 ▾] + 범위 + 버튼)
-//   2줄: 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
+//   위 줄 : 찾기 — 이름 검색 · 분류(산업 · 상자 · 기타) · 등급 · [초기화]
+//   아래 줄: 정렬(화살표 · 기준 · [합치기]) + 오른쪽 [일괄 판매]
+//
+// ■ 판매는 판매 창으로 뗀다 (2026-11-21 사용자 — 응축 · 큐브 창과 같은 맥락)
+//   찾기 · 정렬 · 판매 위젯 열 개가 두 줄에 섞여 어느 것이 무슨 기능인지 헷갈렸다. [일괄 판매]는 판매 창('SellCartPresenter')을 열고,
+//   일괄 담기 위젯(제외 · 등급 · [담기])은 그 창 안에 있다 — 다루는 코드는 그대로 여기다(탭 · 격자를 아는 쪽).
 //
 // 탭 줄보다 낮은 별도 줄이다. 탭은 "무엇을 보는가", 이 줄은 "그것을 어떻게 다루는가"라
 // 같은 줄에 두면 탭 사이에 성격이 다른 버튼이 끼어든다.
@@ -106,6 +112,13 @@ public class InventoryToolPresenter : MonoBehaviour
     [SerializeField, Tooltip("찾기 조건을 모두 비우는 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button resetButton = null!;
 
+    [CenterHeader("판매 창")]
+    [SerializeField, Tooltip("[일괄 판매] — 판매 창을 연다. OnClick은 코드가 연결한다")]
+    private Button sellModeButton = null!;
+
+    [SerializeField, Tooltip("판매 창 — [일괄 판매]가 연다")]
+    private SellCartPresenter sellCart = null!;
+
     // 등급 높은 순으로 시작한다 — 값나가는 것이 위에 오는 쪽이 기본이다.
     private InventorySortOrder _order = InventorySortOrder.Descending;
 
@@ -167,6 +180,8 @@ public class InventoryToolPresenter : MonoBehaviour
         this.RequireRef(industryDropdown,   nameof(industryDropdown));
         this.RequireRef(rarityDropdown,     nameof(rarityDropdown));
         this.RequireRef(resetButton,        nameof(resetButton));
+        this.RequireRef(sellModeButton,      nameof(sellModeButton));
+        this.RequireRef(sellCart,            nameof(sellCart));
 
         _data = Services.Get<PlayerDataModel>();
         _cart = Services.Get<SellCartModel>();
@@ -191,7 +206,11 @@ public class InventoryToolPresenter : MonoBehaviour
         searchSuggestView.Picked += OnSuggestionPicked;
         industryDropdown.onValueChanged.AddListener(_ => ApplyFilter());
         rarityDropdown.onValueChanged.AddListener(_ => ApplyFilter());
+        bulkRarityDropdown.onValueChanged.AddListener(_ => ShowBulkRarityCaption());
         resetButton.onClick.AddListener(ResetFilter);
+        sellModeButton.onClick.AddListener(OnSellModeClicked);
+        sellCart.Shown += OnSellCartShown;
+        AttachSellModeTooltip();
 
         RefreshArrow();
 
@@ -217,6 +236,11 @@ public class InventoryToolPresenter : MonoBehaviour
     private void OnDestroy()
     {
         Unsubscribe();
+
+        if (sellCart != null)
+        {
+            sellCart.Shown -= OnSellCartShown;
+        }
     }
 
     #region 구독
@@ -264,10 +288,12 @@ public class InventoryToolPresenter : MonoBehaviour
 
         bulkRarityDropdown.SetValueWithoutNotify(bulk);
         bulkRarityDropdown.RefreshShownValue();
+        ShowBulkRarityCaption();
         rarityDropdown.SetValueWithoutNotify(rarity);
         rarityDropdown.RefreshShownValue();
         industryDropdown.SetValueWithoutNotify(industry);
         industryDropdown.RefreshShownValue();
+        ShowFilterCaptions();
 
         ApplyExcludeOptions();
     }
@@ -294,6 +320,22 @@ public class InventoryToolPresenter : MonoBehaviour
         bulkRarityDropdown.AddOptions(options);
         bulkRarityDropdown.SetValueWithoutNotify(0); // 일반 이하 — 가장 안전한 쪽에서 시작한다
         bulkRarityDropdown.RefreshShownValue();
+        ShowBulkRarityCaption();
+    }
+
+    // 일괄 담기 등급 드롭다운의 닫힌 머리 — 등급색 점 + '↓' (2026-11-21 사용자 승인).
+    // ※ 펼친 목록은 '일반 이하'처럼 다 적는다. 닫힌 머리는 칸이 좁아 영어 'Common or lower'가 8px까지 줄었다.
+    //   'RefreshShownValue'·값 바꿈이 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
+    private void ShowBulkRarityCaption()
+    {
+        int index = bulkRarityDropdown.value;
+
+        if (bulkRarityDropdown.captionText == null || index < 0 || index >= SellRarities.Length)
+        {
+            return;
+        }
+
+        bulkRarityDropdown.captionText.text = $"{UIRichText.Paint("●", RarityPalette.OnLight(SellRarities[index]))} ↓";
     }
 
     // 등급 찾기 드롭다운의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
@@ -311,6 +353,42 @@ public class InventoryToolPresenter : MonoBehaviour
         rarityDropdown.AddOptions(rarities);
         rarityDropdown.SetValueWithoutNotify(0);
         rarityDropdown.RefreshShownValue();
+        ShowFilterCaptions();
+    }
+
+    // 찾기 드롭다운 둘의 닫힌 머리를 짧게 쓴다 (2026-11-21 사용자 "All Categories가 너무 작아진다").
+    // ■ 분류 — '전체'면 무엇을 거르는 칸인지만('분류' · 산업만 있는 탭은 '산업'). 고르면 고른 이름.
+    // ■ 등급 — '전체'면 등급색 점 줄(●●●●●●), 고르면 '● 희귀'. 옆 일괄 담기 '● ↓'와 같은 말을 쓴다.
+    // ※ 펼친 목록은 '분류 전체'·'등급 전체'처럼 다 적는다. 값 바꿈·'RefreshShownValue'가 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
+    private void ShowFilterCaptions()
+    {
+        if (rarityDropdown.captionText != null)
+        {
+            int index = rarityDropdown.value - 1; // 0번은 '등급 전체'
+
+            if (index >= 0 && index < SellRarities.Length)
+            {
+                GlobalRarity picked = SellRarities[index];
+
+                rarityDropdown.captionText.text = $"{UIRichText.Paint("●", RarityPalette.OnLight(picked))} {RarityLabel.Get(picked)}";
+            }
+            else
+            {
+                var dots = new System.Text.StringBuilder();
+
+                foreach (GlobalRarity rarity in SellRarities)
+                {
+                    dots.Append(UIRichText.Paint("●", RarityPalette.OnLight(rarity)));
+                }
+
+                rarityDropdown.captionText.text = dots.ToString();
+            }
+        }
+
+        if (industryDropdown.captionText != null && industryDropdown.value == 0)
+        {
+            industryDropdown.captionText.text = Lang.Get(grid.CurrentFilterGroups.Count > 0 ? "UI.Inventory.Group" : "UI.Auction.Industry");
+        }
     }
 
     #endregion
@@ -371,6 +449,7 @@ public class InventoryToolPresenter : MonoBehaviour
         industryDropdown.AddOptions(labels);
         industryDropdown.SetValueWithoutNotify(0);
         industryDropdown.RefreshShownValue();
+        ShowFilterCaptions();
     }
 
     // 이 탭이 쓸 수 있는 기준만 드롭다운에 세운다 (ApplyTab에서 호출).
@@ -414,6 +493,14 @@ public class InventoryToolPresenter : MonoBehaviour
         var trigger = mergeButton.gameObject.AddComponent<TooltipTrigger>();
 
         trigger.SetProvider(() => new TooltipContent(Lang.Get("UI.Tool.Merge")).Row(Lang.Get("UI.Tool.MergeTip"), ""));
+    }
+
+    // [일괄 판매]에 무엇을 하는지 툴팁을 단다 (Start에서 한 번) — [합치기]와 같은 이유.
+    private void AttachSellModeTooltip()
+    {
+        var trigger = sellModeButton.gameObject.AddComponent<TooltipTrigger>();
+
+        trigger.SetProvider(() => new TooltipContent(Lang.Get("UI.Tool.SellMode")).Row(Lang.Get("UI.Tool.SellModeTip"), ""));
     }
 
     // 화살표를 지금 방향으로 맞춘다 (Start · 방향을 바꿀 때).
@@ -592,10 +679,30 @@ public class InventoryToolPresenter : MonoBehaviour
         }
         else
         {
-            excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked);
+            excludeDropdown.SetOptions(ExcludeGroupNames(), _excludeChecked, ExcludeSections());
         }
 
         RefreshExcludeHead();
+    }
+
+    // [판매 제외] 목록의 묶음 — 분류(큐브 · 상자 …)와 산업(농사 · 채굴 …)에 머리 줄을 단다 (ApplyExcludeOptions에서 호출).
+    // ※ 순서표가 분류를 먼저, 산업을 뒤에 두므로('BuildExcludeOptions') 첫 산업이 두 번째 묶음의 시작이다.
+    private List<(int Start, string Title)> ExcludeSections()
+    {
+        var sections = new List<(int Start, string Title)> { (0, Lang.Get("UI.Inventory.Group")) };
+
+        int firstIndustry = _excludeGroups.FindIndex(ResourceSlotSource.IsIndustryGroup);
+
+        if (firstIndustry == 0)
+        {
+            sections[0] = (0, Lang.Get("UI.Auction.Industry")); // 분류가 하나도 없다
+        }
+        else if (firstIndustry > 0)
+        {
+            sections.Add((firstIndustry, Lang.Get("UI.Auction.Industry")));
+        }
+
+        return sections;
     }
 
     // [제외] 줄에 보일 이름 — 분류 ID를 지금 언어로 ('BuildExcludeOptions' · 언어 변경).
@@ -671,7 +778,8 @@ public class InventoryToolPresenter : MonoBehaviour
             }
         }
 
-        excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.ExcludeNone") : Lang.Format("UI.Tool.ExcludeCount", count));
+        // 닫힌 머리는 짧게 — 없으면 '판매 제외'만, 있으면 '판매 제외 2'(2026-11-21 — 영어 'No Exclusions'가 너무 작아졌다 · 무엇을 빼는지 '판매'를 붙인다 — 사용자).
+        excludeDropdown.SetHeadText(count == 0 ? Lang.Get("UI.Tool.Exclude") : Lang.Format("UI.Tool.ExcludeCount", count));
     }
 
     // 캐릭터 — 고른 등급 이하 중 팔 수 있는 것만 (OnBulkSellClicked에서 호출).
@@ -905,6 +1013,7 @@ public class InventoryToolPresenter : MonoBehaviour
             : ((byte)0, null);
 
         grid.FilterCurrent(new InventoryFilter(searchInput.text, rarity, industry, group));
+        ShowFilterCaptions();
     }
 
     // 검색창에 쳤다 — 거르고 후보를 띄운다 (searchInput.onValueChanged)
@@ -932,6 +1041,7 @@ public class InventoryToolPresenter : MonoBehaviour
         searchSuggestView.Hide();
         industryDropdown.SetValueWithoutNotify(0);
         rarityDropdown.SetValueWithoutNotify(0);
+        ShowFilterCaptions();
 
         grid.FilterCurrent(default);
     }
@@ -951,9 +1061,7 @@ public class InventoryToolPresenter : MonoBehaviour
         // 산업 축이 없는 탭(캐릭터)은 드롭다운을 감춘다 — 골라도 아무 일이 없으면 고장처럼 보인다.
         industryDropdown.gameObject.SetActive(grid.CurrentSupportsIndustryFilter);
 
-        // 분류 제외는 자원 탭(분류) · 장비 탭(아티팩트)에서, 합치기는 자원 탭에서만 뜻이 있다.
-        excludeDropdown.gameObject.SetActive(tab == InventoryTab.Resource || tab == InventoryTab.Equipment);
-        mergeButton.gameObject.SetActive(tab == InventoryTab.Resource);
+        ApplySortSellRow();
 
         if (excludeDropdown.gameObject.activeSelf)
         {
@@ -961,6 +1069,40 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         ResetFilter();
+    }
+
+    // [일괄 판매] — 판매 창을 연다 (sellModeButton OnClick에 코드로 연결).
+    private void OnSellModeClicked()
+    {
+        sellCart.Open();
+    }
+
+    // 판매 창이 떴다 — 등급 드롭다운 머리를 다음 프레임에 다시 쓴다 (SellCartPresenter.Shown 구독).
+    // ※ 드롭다운은 판매 창 안이라 처음 뜰 때에야 'Start'가 돌고, 'Start'의 'RefreshShownValue'가 머리를 '일반 이하'로 되돌린다
+    //   (한글은 '일반 이하' · 영어는 '● ↓'로 달라 보였다 — 2026-11-21).
+    private void OnSellCartShown()
+    {
+        ShowBulkRarityCaptionNextFrameAsync(destroyCancellationToken).Forget();
+    }
+
+    private async UniTaskVoid ShowBulkRarityCaptionNextFrameAsync(CancellationToken ct)
+    {
+        if (await UniTask.NextFrame(ct).SuppressCancellationThrow())
+        {
+            return;
+        }
+
+        ShowBulkRarityCaption();
+    }
+
+    // 탭에 맞는 것만 켠다 (ApplyTab).
+    // ※ 분류 제외(판매 창 안)는 자원 탭(분류) · 장비 탭(아티팩트)에서, 합치기는 자원 탭에서만 뜻이 있다.
+    private void ApplySortSellRow()
+    {
+        InventoryTab tab = tabs.CurrentTab;
+
+        mergeButton.gameObject.SetActive(tab == InventoryTab.Resource);
+        excludeDropdown.gameObject.SetActive(tab == InventoryTab.Resource || tab == InventoryTab.Equipment);
     }
 
     #endregion

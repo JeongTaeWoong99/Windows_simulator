@@ -98,7 +98,7 @@ public partial class User
     /// 아티팩트를 아티팩트 칸(인벤토리 장비 탭)에 넣는다(감정 보상 · 우편 수령). 칸 검사는 부른 쪽이 <see cref="HasArtifactRoomFor"/>로 먼저 끝낸다.
     /// 인벤토리에 들어온 것만으로는 효과가 켜지지 않는다 — 도감 장착이 따로다.
     /// </summary>
-    public void GainArtifacts(IReadOnlyDictionary<int, int> gained)
+    public void GainArtifacts(IReadOnlyDictionary<int, int> gained, bool notify = true)
     {
         var changes = new List<ItemChangeInfo>();
         foreach (var (artifactTid, count) in gained)
@@ -123,7 +123,10 @@ public partial class User
         }
 
         PostDBTask(new SaveArtifactStacksRepository(this, changes));
-        SendArtifactInventory();
+        if (notify)
+        {
+            SendArtifactInventory();
+        }
     }
 
     /// <summary>

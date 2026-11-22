@@ -97,6 +97,11 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
     private CodexFilter _filter = CodexFilter.All;
 
+    private float _centeredWidth = -1f; // 마지막으로 가운데를 맞춘 격자 폭
+
+    // 격자 좌우 최소 여백(칸 좌표)
+    private const int GridSidePad = 5;
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -452,6 +457,42 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
     #endregion
 
+    #region 가운데 맞춤
+
+    // 격자를 가로 가운데로 — 폭이 바뀔 때만 (Unity 메시지).
+    private void LateUpdate()
+    {
+        CenterColumns();
+    }
+
+    // 한 줄에 들어가는 칸 수로 남는 폭을 좌우 여백에 나눠 준다 (2026-11-21 사용자 "아이콘이 가운데로 안 온다").
+    // ※ 격자 정렬을 가운데로 하면 칸이 적은 등급(1~2개)만 따로 가운데로 가 머리 글자와 어긋난다 — 묶음 전체의 여백으로 맞춘다.
+    private void CenterColumns()
+    {
+        var area = (RectTransform)groupParent;
+        float width = area.rect.width;
+
+        if (_groups.Count == 0 || Mathf.Approximately(width, _centeredWidth)
+            || !groupParent.TryGetComponent(out VerticalLayoutGroup layout)
+            || !_groups[0].SlotParent.TryGetComponent(out GridLayoutGroup grid))
+        {
+            return;
+        }
+
+        _centeredWidth = width;
+
+        float cell    = grid.cellSize.x;
+        float gap     = grid.spacing.x;
+        float inner   = width - GridSidePad * 2;
+        int   columns = Mathf.Max(1, Mathf.FloorToInt((inner + gap) / (cell + gap)));
+        float used    = columns * cell + (columns - 1) * gap;
+        int   side    = GridSidePad + Mathf.Max(0, Mathf.FloorToInt((inner - used) * 0.5f));
+
+        layout.padding = new RectOffset(side, side, layout.padding.top, layout.padding.bottom);
+    }
+
+    #endregion
+
     #region 필터
 
     // 필터를 바꾼다 — 맨 위로 올린다 (allButton · equippedButton OnClick)
@@ -483,6 +524,7 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
         ColorBlock colors = button.colors;
         colors.normalColor   = target;
+        colors.highlightedColor = UIThemePalette.HoverOf(target);
         colors.selectedColor = target;
         button.colors        = colors;
     }

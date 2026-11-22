@@ -18,26 +18,26 @@
   {
     "GachaInfoTID": 3,
     "Name": "무기 뽑기",
-    "CostCurrency": "Gold",
-    "CostSingle": 500,
-    "CostMulti": 5000,
-    "Description": "무기 31종"
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "무기 31종 — 닫음: 장비는 상자에서만(T-200 · #117)"
   },
   {
     "GachaInfoTID": 4,
     "Name": "장신구 뽑기",
-    "CostCurrency": "Gold",
-    "CostSingle": 300,
-    "CostMulti": 3000,
-    "Description": "장신구 7종"
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "장신구 7종 — 닫음: 장비는 상자에서만(T-200 · #117)"
   },
   {
     "GachaInfoTID": 5,
     "Name": "보석 뽑기",
-    "CostCurrency": "Gold",
-    "CostSingle": 200,
-    "CostMulti": 2000,
-    "Description": "보석 31종"
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "보석 31종 — 닫음: 장비는 상자에서만(T-200 · #117)"
   },
   {
     "GachaInfoTID": 9,

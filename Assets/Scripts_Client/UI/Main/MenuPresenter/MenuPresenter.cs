@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 작업슬롯 화면 하단의 메뉴 줄 — 좌우 열(인벤토리·길드)과 경매장 · 아티팩트 · 거점을 여는 버튼들. (기획 2.4)
+// 작업슬롯 화면 하단의 메뉴 줄 — 좌우 열(인벤토리·길드)과 경매장 · 아티팩트 · 마을을 여는 버튼들. (기획 2.4)
 // 'Title'과 함께 늘 켜져 있어, 가운데 세 화면이 무엇으로 바뀌든 그대로 남는다.
 //
 // ■ 이 줄이 특별 이벤트 자리다 (기획 2.4 · 2026-09-16 확정)
@@ -10,12 +10,13 @@ using UnityEngine.UI;
 //   ⚠️ 아직 없는 콘텐츠의 빈 칸·잠긴 버튼을 미리 두지 않는다 — "지금 못 하는 것"이 상시로 눈에 남는다.
 //      예외 — [레이드]는 맨 오른쪽에 비활성으로 먼저 둔다(2026-11-16 사용자 결정). 씬에서 'interactable'을 꺼 두어 코드 배선이 없다.
 //   ⚠️ 버튼에 배지·타이머·"오늘까지" 표시를 붙이지 않는다 — 상주 창이 재촉하는 물건이 된다(P1).
+//      예외 — [마을] 빨간 점(2026-11-22 사용자 요청). 시간이 아니라 **지금 할 수 있는 일**(건물 올리기 · 특성 찍기)이 있을 때만 켠다.
 //
 // ⚠️ 열지 않고 뒤집는다 — 여는 일만 하면 이미 열려 있을 때 눌러도 변화가 없어
 // 버튼이 고장 난 것처럼 보인다. 인벤토리·길드은 자리를 뺏지 않으므로 'MainScreen' 전환이 아니라
 // 각각의 열 토글('ToggleInventory'·'ToggleGuild')을 쓴다.
 //
-// ※ 경매장 · 아티팩트 · 거점은 토글이 아니라 열기다('ShowAuction' · 'ShowArtifact' · 'ShowOutpost') — 열리면 화면 전체를 덮어 이 줄이 가려진다.
+// ※ 경매장 · 아티팩트 · 마을(코드 이름 Outpost)은 토글이 아니라 열기다('ShowAuction' · 'ShowArtifact' · 'ShowOutpost') — 열리면 화면 전체를 덮어 이 줄이 가려진다.
 //   닫기는 그 화면 안 [X]다(T-147 · T-182).
 public class MenuPresenter : MonoBehaviour
 {
@@ -37,14 +38,30 @@ public class MenuPresenter : MonoBehaviour
     [SerializeField, Tooltip("아티팩트 화면(도감 · 보유 · 판매) 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button? artifactButton;
 
-    [SerializeField, Tooltip("거점 화면(건물 · 특성) 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [SerializeField, Tooltip("마을 화면(건물 · 특성) 열기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button? outpostButton;
 
-    // 참조 확보 → 배선 (클라 공통 규약. 구독할 이벤트가 없다)
+    [SerializeField, Tooltip("[마을] 빨간 점 — 올릴 건물이나 찍을 특성이 있을 때 켜진다")]
+    private GameObject? outpostNoticeDot;
+
+    private PlayerDataModel? _data;
+
+    // 참조 확보 → 구독 → 배선 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
     private void Start()
     {
         var ui = Services.Get<UIManager>();
+
+        if (outpostNoticeDot != null)
+        {
+            _data = Services.Get<PlayerDataModel>();
+            _data.BuildingsChanged    += RedrawNotice;
+            _data.TraitsChanged       += RedrawNotice;
+            _data.CurrencyChanged     += RedrawNotice;
+            _data.InventoryChanged    += RedrawNotice;
+            _data.AccountLevelChanged += RedrawNotice;
+            RedrawNotice();
+        }
 
         if (inventoryButton != null)
         {
@@ -69,6 +86,30 @@ public class MenuPresenter : MonoBehaviour
         if (outpostButton != null)
         {
             outpostButton.onClick.AddListener(() => ui.ShowOutpost(true));
+        }
+    }
+
+    // 늘 켜진 줄이라 끝날 때만 푼다 (Unity 메시지)
+    private void OnDestroy()
+    {
+        if (_data == null)
+        {
+            return;
+        }
+
+        _data.BuildingsChanged    -= RedrawNotice;
+        _data.TraitsChanged       -= RedrawNotice;
+        _data.CurrencyChanged     -= RedrawNotice;
+        _data.InventoryChanged    -= RedrawNotice;
+        _data.AccountLevelChanged -= RedrawNotice;
+    }
+
+    // [마을] 빨간 점 (구독 · Start)
+    private void RedrawNotice()
+    {
+        if (outpostNoticeDot != null && _data != null)
+        {
+            outpostNoticeDot.SetActive(_data.HasVillageNotice());
         }
     }
 }

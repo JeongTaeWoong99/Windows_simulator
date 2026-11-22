@@ -47,20 +47,24 @@ public static class EquipLabel
     public static int GetStatSlotCount(GlobalRarity rarity)
         => System.Math.Min(GameDataLoader.GetEnchantSlotCount(rarity), MaxStatSlotCount);
 
-    // 능력치 옵션 한 줄의 문구 — '발굴 +4%' · '전산업 +2%' · '경험치 +3%'. 모르는 종류면 빈 문자열.
+    // 능력치 옵션 한 줄의 문구 — '발굴 +4%' · '전산업 +2%' · '경험치 +3%' · '공격력 +2' · '체력 +4%'.
     //
-    // ※ 'Value'는 천분율이다(40 = 4%). 산업 'None'을 '전산업'으로 읽는 이유는 'GetEffectText'와 같다.
+    // ※ 'Value'는 천분율이다(40 = 4%). 고정 가산(공격력·체력 'Flat')만 그대로 더하는 수다. 산업 'None'을 '전산업'으로 읽는 이유는 'GetEffectText'와 같다.
     public static string GetOptionText(EnchantOptionTableRow option)
     {
         string percent = $"+{option.Value / 10f:0.#}%";
 
         return option.OptionType switch
         {
-            EnchantOptionType.Speed => option.Industry == IndustryType.None
+            EnchantOptionType.Speed         => option.Industry == IndustryType.None
                 ? $"{Lang.Get("UI.Industry.All")} {percent}"
                 : $"{IndustryLabel.Get((EIndustryType)(byte)option.Industry)} {percent}",
-            EnchantOptionType.CharacterExp => $"{Lang.Get("UI.Equip.Exp")} {percent}",
-            _                              => "",
+            EnchantOptionType.CharacterExp  => $"{Lang.Get("UI.Equip.Exp")} {percent}",
+            EnchantOptionType.AttackFlat    => $"{Lang.Get("UI.Equip.Attack")} +{option.Value}",
+            EnchantOptionType.AttackPercent => $"{Lang.Get("UI.Equip.Attack")} {percent}",
+            EnchantOptionType.HealthFlat    => $"{Lang.Get("UI.Equip.Health")} +{option.Value}",
+            EnchantOptionType.HealthPercent => $"{Lang.Get("UI.Equip.Health")} {percent}",
+            _                               => $"? +{option.Value}", // 새 종류 — 빈 줄로 사라지지 않게 (2026-11-21 레이드 옵션이 빈 줄로 보였다)
         };
     }
 
