@@ -56,6 +56,7 @@ namespace MikaProtocol
         InvalidEquipSlot   = 601, // None·범위 밖 칸
         EquipKindMismatch  = 602, // 종류가 칸에 맞지 않음 (무기를 보석 칸에 등)
         EquipSlotEmpty     = 603, // 해제할 장비가 없는 칸
+        EquipLevelTooLow   = 604, // 캐릭터 레벨이 아이템 레벨보다 낮다 (T-200)
 
         // ── 610~: 인챈트 ──
         EnchantItemNotOwned  = 610, // 큐브 미보유. 611~613은 옛 인챈트(부여·재롤·확장)의 퇴역 번호다

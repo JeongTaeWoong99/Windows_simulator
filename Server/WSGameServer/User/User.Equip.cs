@@ -84,7 +84,7 @@ public partial class User
     /// </summary>
     public void TryEquip(long characterId, long equipId, EquipSlot slot, DateTime now)
     {
-        if (!TryGetCharacter(characterId, out _))
+        if (!TryGetCharacter(characterId, out var character))
         {
             Reject(EResultCode.CharacterNotOwned, "미보유 캐릭터");
             return;
@@ -111,6 +111,12 @@ public partial class User
         if (!EquipCatalog.CanEquip(equip.Kind, slot))
         {
             Reject(EResultCode.EquipKindMismatch, $"{equip.Kind}는 {slot}에 못 낀다");
+            return;
+        }
+
+        if (character.Level < equip.ItemLevel)
+        {
+            Reject(EResultCode.EquipLevelTooLow, $"캐릭터 Lv{character.Level} < 아이템 Lv{equip.ItemLevel}");
             return;
         }
 
