@@ -1,7 +1,5 @@
 using System;
 using GameData;
-using MikaNetwork;
-using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,17 +51,13 @@ public class ArtifactEquipPresenter : MonoBehaviour
     [SerializeField, Tooltip("닫기 [X]. OnClick은 코드가 연결한다")]
     private Button closeButton = null!;
 
-    private PlayerDataModel   _data    = null!;
-    private ArtifactModel     _model   = null!;
-    private UIManager         _ui      = null!;
-    private NetworkManager    _network = null!;
-    private ServerWaitManager _wait    = null!;
+    private PlayerDataModel _data  = null!;
+    private ArtifactModel   _model = null!;
+    private UIManager       _ui    = null!;
+
+    private ArtifactEquipRequester _equip = null!; // 장착 요청 — 도감 상세와 같은 것을 쓴다
 
     private int _tid; // 창에 띄운 아티팩트 번호. 0이면 닫혀 있다
-
-    // 진행 중인 장착 요청 — 연타로 두 번 나가지 않게 버튼을 잠근다.
-    private ServerWaitHandle? _waitHandle;
-    private int               _equippingTid;
 
     private bool _isReady; // Start 완료 여부
 
@@ -87,17 +81,15 @@ public class ArtifactEquipPresenter : MonoBehaviour
         this.RequireRef(codexButton,     nameof(codexButton));
         this.RequireRef(closeButton,     nameof(closeButton));
 
-        _data    = Services.Get<PlayerDataModel>();
-        _model   = Services.Get<ArtifactModel>();
-        _ui      = Services.Get<UIManager>();
-        _network = NetworkManager.Instance;
-        _wait    = Services.Get<ServerWaitManager>();
+        _data  = Services.Get<PlayerDataModel>();
+        _model = Services.Get<ArtifactModel>();
+        _ui    = Services.Get<UIManager>();
+        _equip = new ArtifactEquipRequester(_data, Services.Get<ServerWaitManager>(), OnEquipSucceeded, OnWaitClosed);
 
         // ⚠️ 구독은 Start/OnDestroy에 건다 — 이 창은 자기 오브젝트를 끈다(큐브 창과 같다).
-        inventoryTabs.TabChanged     += OnTabChanged;
-        _data.ArtifactsChanged       += OnArtifactsChanged;
-        _data.ArtifactEquipCompleted += OnEquipCompleted;
-        Lang.Changed                 += Redraw;
+        inventoryTabs.TabChanged += OnTabChanged;
+        _data.ArtifactsChanged   += OnArtifactsChanged;
+        Lang.Changed             += Redraw;
 
         equipButton.onClick.AddListener(OnEquipClicked);
         codexButton.onClick.AddListener(OnCodexClicked);
@@ -124,10 +116,10 @@ public class ArtifactEquipPresenter : MonoBehaviour
             return;
         }
 
-        inventoryTabs.TabChanged     -= OnTabChanged;
-        _data.ArtifactsChanged       -= OnArtifactsChanged;
-        _data.ArtifactEquipCompleted -= OnEquipCompleted;
-        Lang.Changed                 -= Redraw;
+        inventoryTabs.TabChanged -= OnTabChanged;
+        _data.ArtifactsChanged   -= OnArtifactsChanged;
+        Lang.Changed             -= Redraw;
+        _equip.Dispose();
     }
 
     #region 열고 닫기
@@ -226,7 +218,7 @@ public class ArtifactEquipPresenter : MonoBehaviour
         hintText.text   = UIRichText.Label(Lang.Get(isEquipped ? "UI.Artifact.SellHint" : "UI.Artifact.EquipHint"));
 
         equipButtonText.text     = Lang.Get(isEquipped ? "UI.Artifact.AlreadyEquipped" : "UI.Artifact.Equip");
-        equipButton.interactable = !isEquipped && owned > 0 && _waitHandle == null;
+        equipButton.interactable = _equip.CanEquip(_tid);
     }
 
     #endregion
@@ -236,51 +228,26 @@ public class ArtifactEquipPresenter : MonoBehaviour
     // 도감에 장착 (equipButton OnClick).
     private void OnEquipClicked()
     {
-        if (_waitHandle != null || !IsOpen || _data.IsArtifactEquipped(_tid) || _data.GetArtifactCount(_tid) <= 0)
+        if (!IsOpen)
         {
             return;
         }
 
-        if (!_data.IsLoggedIn)
-        {
-            ClientLogger.Warn(ClientLogger.Send, "아티팩트 장착 요청을 보내지 않았다 — 로그인이 먼저다(서버가 응답 없이 버린다)");
-
-            return;
-        }
-
-        _equippingTid = _tid;
-        _network.Send(new C_ArtifactEquipRequest { ArtifactTid = _tid });
-        ClientLogger.Info(ClientLogger.Send, $"아티팩트 장착 요청 — 번호 {_tid}");
-
-        _waitHandle              = _wait.Begin(Lang.Get("UI.Artifact.WaitEquip"), onClosed: OnWaitClosed);
-        equipButton.interactable = false;
+        _equip.Send(_tid);
+        equipButton.interactable = _equip.CanEquip(_tid);
     }
 
-    // 장착 결과 (PlayerDataModel.ArtifactEquipCompleted 구독) — 성공이면 도감 화면을 열고 그 칸을 반짝인다.
-    // ※ 칸 · 도감은 뒤따르는 스냅샷이 바꾼다. 내가 보낸 장착이 아니면(다른 경로) 대기만 닫는다.
-    private void OnEquipCompleted(EResultCode code, int tid)
+    // 장착 성공 — 이 창을 닫고 도감 화면을 열어 그 칸을 반짝인다 (ArtifactEquipRequester의 onSucceeded)
+    // ※ 닫는다 — 이 창이 남으면 도감 화면을 가린다([도감 보기]와 같다).
+    private void OnEquipSucceeded(int tid)
     {
-        if (_waitHandle == null || tid != _equippingTid)
-        {
-            return;
-        }
-
-        _equippingTid = 0;
-
-        if (code != EResultCode.Ok)
-        {
-            _waitHandle.Fail(ResultMessages.ToText(code));
-
-            return;
-        }
-
-        _waitHandle.Succeed();
-
+        Close();
         _ui.ShowArtifact(true);
         _model.Highlight(tid);
     }
 
-    // [도감 보기] — 아티팩트 화면을 이 번호로 연다 (codexButton OnClick).
+    // [도감 보기] — 이 창을 닫고 아티팩트 화면을 이 번호로 연다 (codexButton OnClick).
+    // ※ 닫는다 — 창이 남아 있으면 도감 화면 위에 겹쳐 도감이 가려진다(2026-11-21 사용자).
     private void OnCodexClicked()
     {
         if (!IsOpen)
@@ -288,15 +255,16 @@ public class ArtifactEquipPresenter : MonoBehaviour
             return;
         }
 
+        int tid = _tid;
+
+        Close();
         _ui.ShowArtifact(true);
-        _model.Select(_tid);
+        _model.Select(tid);
     }
 
-    // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼을 다시 연다 (ServerWaitManager.Begin의 onClosed)
+    // 대기가 끝났다(성공·실패·타임아웃 공통) — 버튼을 다시 연다 (ArtifactEquipRequester의 onClosed)
     private void OnWaitClosed()
     {
-        _waitHandle = null;
-
         if (IsOpen)
         {
             Redraw();

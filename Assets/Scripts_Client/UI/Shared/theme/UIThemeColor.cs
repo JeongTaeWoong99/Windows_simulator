@@ -48,8 +48,8 @@ public class UIThemeColor : MonoBehaviour
         {
             var colors = selectable.colors;
             colors.normalColor      = color;
-            colors.highlightedColor = Color.Lerp(color, Color.white, 0.15f);
-            colors.pressedColor     = Color.Lerp(color, Color.black, 0.2f);
+            colors.highlightedColor = UIThemePalette.HoverOf(color);
+            colors.pressedColor     = UIThemePalette.PressedOf(color);
             colors.selectedColor    = color;
             // 밝은 버튼(Button)은 잠겨도 밝은 쪽에 둔다 — 진한 글씨가 그대로 읽히게. 그 밖(강조 버튼 등)은 팔레트 잠김색
             colors.disabledColor    = role == UIThemeRole.Button

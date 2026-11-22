@@ -1,4 +1,5 @@
 using GameData;
+using MikaProtocol;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -37,6 +38,12 @@ public class OutpostBuildingPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결한다")]
     private Button closeButton = null!;
+
+    [SerializeField, Tooltip("[업그레이드] 탭 빨간 점 — 지금 올릴 수 있을 때")]
+    private GameObject upgradeTabDot = null!;
+
+    [SerializeField, Tooltip("[특성] 탭 빨간 점 — 지금 찍을 수 있는 노드가 있을 때")]
+    private GameObject traitTabDot = null!;
 
     [CenterHeader("탭 화면")]
     [SerializeField, Tooltip("업그레이드 화면")]
@@ -94,6 +101,8 @@ public class OutpostBuildingPresenter : MonoBehaviour
         this.RequireRef(upgradeTabButton, nameof(upgradeTabButton));
         this.RequireRef(traitTabButton,   nameof(traitTabButton));
         this.RequireRef(closeButton,      nameof(closeButton));
+        this.RequireRef(upgradeTabDot,    nameof(upgradeTabDot));
+        this.RequireRef(traitTabDot,      nameof(traitTabDot));
         this.RequireRef(upgradePage,      nameof(upgradePage));
         this.RequireRef(traitPage,        nameof(traitPage));
 
@@ -113,8 +122,12 @@ public class OutpostBuildingPresenter : MonoBehaviour
             return;
         }
 
-        _data.BuildingsChanged += Redraw;
-        Lang.Changed           += Redraw;
+        _data.BuildingsChanged    += Redraw;
+        _data.TraitsChanged       += Redraw;
+        _data.CurrencyChanged     += Redraw;
+        _data.InventoryChanged    += Redraw;
+        _data.AccountLevelChanged += Redraw;
+        Lang.Changed              += Redraw;
     }
 
     // 구독 해제 (Unity 메시지)
@@ -125,8 +138,12 @@ public class OutpostBuildingPresenter : MonoBehaviour
             return;
         }
 
-        _data.BuildingsChanged -= Redraw;
-        Lang.Changed           -= Redraw;
+        _data.BuildingsChanged    -= Redraw;
+        _data.TraitsChanged       -= Redraw;
+        _data.CurrencyChanged     -= Redraw;
+        _data.InventoryChanged    -= Redraw;
+        _data.AccountLevelChanged -= Redraw;
+        Lang.Changed              -= Redraw;
     }
 
     public bool IsOpen => window.activeSelf;
@@ -169,6 +186,10 @@ public class OutpostBuildingPresenter : MonoBehaviour
         nameText.text     = Loc.Get(row.NameLocKey);
         levelText.text    = $"Lv{_data.GetBuildingLevel(_buildingTid)}";
         categoryText.text = Lang.Get($"UI.Outpost.Category.{_buildingTid}");
+
+        // 탭 빨간 점 — 지금 보고 있는 탭에도 띄운다(그 탭에서 할 일이 남았다는 뜻)
+        upgradeTabDot.SetActive(_data.CheckBuildingUpgrade(_buildingTid) == EResultCode.Ok);
+        traitTabDot.SetActive(_data.CanLearnAnyTrait(_buildingTid));
     }
 
     // 탭 버튼 색 — 'Selectable'이 'Image.color'를 덮으므로 'ColorBlock'을 칠한다('TraitNodeView.ApplyState'와 같은 이유).
