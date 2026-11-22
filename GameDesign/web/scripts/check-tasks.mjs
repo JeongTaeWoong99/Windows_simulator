@@ -4,6 +4,8 @@
 //   node GameDesign/web/scripts/check-tasks.mjs --no-issues  닫힌 이슈 검사를 건너뛴다 (gh 없이·오프라인)
 //   node GameDesign/web/scripts/check-tasks.mjs --pr         PR 검사 — INDEX 쪽 2·3번을 건너뛴다 (INDEX는 머지 뒤에 맞춘다 — 루트 CLAUDE.md)
 //
+//   node GameDesign/web/scripts/check-tasks.mjs --sync-index  INDEX의 상태와 보관 건수 갱신
+//
 // 검사 항목:
 //   1. 목록 → 파일   INDEX·art·later·archive 목록의 일감 링크가 그 폴더의 파일을 가리키는가 (보관된 일감이 INDEX에 남았나)
 //   2. 파일 → 목록   폴더의 일감 파일이 목록에 다 있는가 · 프론트매터 `상태`와 목록의 `상태` 칸이 같은가
@@ -125,6 +127,33 @@ const clean = (cell) => cell.replace(/\*/g, '').trim();
 // ── 1·2. 목록 ↔ 파일 ─────────────────────────────────────────────────────────
 
 const indexFile = path.join(TASKS_DIR, 'README.md');
+
+if (args.has('--sync-index')) {
+  const original = read(indexFile);
+  const lines = original.split('\n');
+
+  for (const row of parseRows(original)) {
+    const task = tasks.get(path.resolve(TASKS_DIR, row.target));
+    const status = row.cells['상태'];
+    if (task?.dir !== '' || !task.status || status === undefined || clean(status) === task.status) {
+      continue;
+    }
+
+    const cells = lines[row.line - 1].split(/(?<!\\)\|/);
+    const statusColumn = Object.keys(row.cells).indexOf('상태');
+    cells[statusColumn + 1] = ' ' + task.status + ' ';
+    lines[row.line - 1] = cells.join('|');
+  }
+
+  const updated = lines.join('\n').replace(
+    /^(> 끝난 일감 )\d+건/m,
+    (_, prefix) => prefix + taskFilesIn('archive').length + '건',
+  );
+  if (updated !== original) {
+    fs.writeFileSync(indexFile, updated);
+  }
+  process.exit(0);
+}
 
 for (const { dir, label } of LISTS) {
   const listFile = path.join(TASKS_DIR, dir, 'README.md');
