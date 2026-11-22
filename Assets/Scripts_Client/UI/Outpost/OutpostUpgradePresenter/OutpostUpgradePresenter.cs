@@ -253,8 +253,8 @@ public class OutpostUpgradePresenter : MonoBehaviour
         ColorBlock colors = upgradeButton.colors;
 
         colors.normalColor      = color;
-        colors.highlightedColor = Color.Lerp(color, Color.white, 0.15f);
-        colors.pressedColor     = Color.Lerp(color, Color.black, 0.2f);
+        colors.highlightedColor = UIThemePalette.HoverOf(color);
+        colors.pressedColor     = UIThemePalette.PressedOf(color);
         colors.selectedColor    = color;
 
         upgradeButton.colors = colors;
@@ -307,6 +307,7 @@ public class OutpostUpgradePresenter : MonoBehaviour
         if (code == EResultCode.Ok)
         {
             _upgradeWait.Succeed();
+            Services.Get<SoundManager>().PlaySfx(Sounds.LevelUp); // 캐릭터 레벨 업과 같은 소리 — 건물도 '레벨이 올랐다'(2026-11-22 사용자)
         }
         else
         {

@@ -132,7 +132,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: 0, y: 0, z: 0, w: 0}
+  m_margin: {x: 10, y: 8, z: 10, w: 8}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -243,7 +243,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
   m_Navigation:
-    m_Mode: 3
+    m_Mode: 0
     m_WrapAround: 0
     m_SelectOnUp: {fileID: 0}
     m_SelectOnDown: {fileID: 0}
@@ -252,7 +252,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
-    m_HighlightedColor: {r: 0.92333335, g: 0.86, b: 0.7033334, a: 1}
+    m_HighlightedColor: {r: 0.95490193, g: 0.91764706, b: 0.82549024, a: 1}
     m_PressedColor: {r: 0.72784317, g: 0.6682353, b: 0.5207843, a: 1}
     m_SelectedColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
     m_DisabledColor: {r: 0.7490196, g: 0.67647064, b: 0.5156863, a: 1}

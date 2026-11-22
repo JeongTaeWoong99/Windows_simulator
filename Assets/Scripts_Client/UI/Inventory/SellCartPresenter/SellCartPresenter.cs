@@ -8,10 +8,19 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
-// 인벤토리 아래의 판매 목록 — 담은 것들을 보여 주고 한 번에 판다(장비는 분해도 고른다).
+// 판매 창 — 담은 것들을 보여 주고 한 번에 판다(장비는 분해도 고른다).
 //
-// ■ 무엇을 보여 주나
-// 자원·캐릭터·장비 칸을 우클릭해 담은 것들('SellCartModel')의 머리(무엇을 파는지 · 개수) · 줄 목록 · 아래 버튼이다.
+// ■ 화면 가운데 팝업이다 (2026-11-21 사용자 — 응축 · 큐브 창과 같은 맥락)
+//   예전엔 인벤토리 아래에 붙어 격자를 반으로 줄였다. 이제 '!Overlay Canvas'에 어두운 바탕과 함께 뜬다.
+//   여는 길 둘 — 칸을 우클릭해 담으면(수량을 묻거나 1개면 바로) 그 물건이 담긴 채 열리고,
+//   도구 줄 [일괄 판매]를 누르면 빈 채로 열린다. 닫기 · 바탕 클릭이면 담은 것을 비우고 닫는다.
+//
+// ■ 무엇을 보여 주나 — 위에서부터
+//   제목 '판매' · [닫기] — 응축 · 큐브 창처럼 맨 위는 창 이름만 · 탭 줄([자원][캐릭터][장비]) · 일괄 담기 줄(제외 · 등급 · [담기] — 위젯은 'InventoryToolPresenter'가 다룬다)
+//   · **지금 탭의 칸 목록**(바탕이 격자를 덮으므로 창 안에서 고른다 — 눌러 담기/빼기 · 팔 수 없는 칸은 흐림)
+//   · 담은 목록 머리(무엇을 파는지 · 개수 · 빨간 주의 · [비우기]) · 담은 줄 목록 · 아래 버튼.
+//   ※ 개수·주의는 판매 버튼 바로 위 — 누르기 직전에 읽히는 자리다(2026-11-21 사용자: 맨 위에 있으면 창 제목처럼 보였다).
+//   ※ 정렬은 넣었다가 뺐다 — 버튼이 많아 예전 도구 줄처럼 다시 헷갈렸다. 칸 순서는 인벤토리 도구 줄의 정렬을 따른다. 칸 목록은 그 탭의 것만이라 장비 탭에서 열면 장비만 판다.
 //
 // ■ 한 종류만 · 탭을 바꾸면 비운다 (#83 · 2026-10-25 사용자 결정 · 목업 'GameDesign/design/ui/판매분해목업.html')
 //   목록은 지금 탭의 종류만 담는다. 인벤토리 탭을 다른 종류로 바꾸면 비우고 토스트로 알린다.
@@ -95,6 +104,40 @@ public class SellCartPresenter : MonoBehaviour
     [SerializeField, Tooltip("아티팩트 창(가운데 팝업) — 열려 있는 동안 판매 목록은 물러난다(비우지 않는다)")]
     private ArtifactEquipPresenter artifactWindow = null!;
 
+    [CenterHeader("창")]
+    [SerializeField, Tooltip("[닫기] — 담은 것을 비우고 창을 닫는다. OnClick은 코드가 연결한다")]
+    private Button closeButton = null!;
+
+    [SerializeField, Tooltip("칸 목록이 쌓이는 부모(GridLayoutGroup이 있는 스크롤 Content)")]
+    private RectTransform pickParent = null!;
+
+    [SerializeField, Tooltip("칸 프리팹 — 인벤토리와 같은 SlotView")]
+    private SlotView slotPrefab = null!;
+
+    [SerializeField, NonReorderable, Tooltip("창 안 탭 버튼 — 자원 · 캐릭터 · 장비 순. 누르면 인벤토리 탭을 바꾼다(격자 · 칸 목록이 따라온다)")]
+    private Button[] tabButtons = new Button[0];
+
+    [SerializeField, NonReorderable, Tooltip("칸을 늘어놓을 격자 — 첫째가 기본(인벤토리). 우클릭으로 담은 격자의 칸을 늘어놓는다(창고 격자)")]
+    private InventoryGridPresenter[] grids = new InventoryGridPresenter[0];
+
+    // 창 안 탭 버튼의 순서 — 'tabButtons'와 같다
+    private static readonly InventoryTab[] TabOrder = { InventoryTab.Resource, InventoryTab.Character, InventoryTab.Equipment };
+
+    // 창이 열려 있나 — 담은 것이 없어도 [일괄 판매]로 연 창은 남는다.
+    private bool _isOpen;
+
+    // 창이 떴다 ('InventoryToolPresenter'가 구독 — 창 안 일괄 담기 드롭다운의 머리를 다시 쓴다).
+    public event Action? Shown;
+
+    // 칸 목록을 가져올 격자 — 마지막으로 우클릭 담기를 한 격자. 기본은 인벤토리.
+    private InventoryGridPresenter _source = null!;
+
+    // 칸 목록 — 열 때마다 개수가 달라 꺼 두었다가 다시 쓴다
+    private UIRowList<SlotView> _pickSlots = null!;
+    private readonly List<SlotData>            _pickData    = new List<SlotData>();
+    private readonly List<int>                 _pickNumbers = new List<int>();
+    private readonly Dictionary<SlotView, int> _pickIndex   = new Dictionary<SlotView, int>();
+
     // 만들어 둔 줄. 담고 빼기를 반복하므로 파괴하지 않고 꺼 두었다가 다시 쓴다.
     private UIRowList<SellCartRowView> _rows = null!;
 
@@ -140,6 +183,28 @@ public class SellCartPresenter : MonoBehaviour
         this.RequireRef(equipEnchant,      nameof(equipEnchant));
         this.RequireRef(characterCondense, nameof(characterCondense));
         this.RequireRef(artifactWindow,    nameof(artifactWindow));
+        this.RequireRef(closeButton,       nameof(closeButton));
+        this.RequireRef(pickParent,        nameof(pickParent));
+        this.RequireRef(slotPrefab,        nameof(slotPrefab));
+
+        if (tabButtons.Length != TabOrder.Length)
+        {
+            throw new InvalidOperationException($"{name}: 'tabButtons'는 자원 · 캐릭터 · 장비 {TabOrder.Length}개여야 한다.");
+        }
+
+        for (int i = 0; i < tabButtons.Length; i++)
+        {
+            InventoryTab tab = TabOrder[i];
+
+            tabButtons[i].onClick.AddListener(() => OnPopupTabClicked(tab));
+        }
+
+        if (grids.Length == 0)
+        {
+            throw new InvalidOperationException($"{name}: 'grids'가 비어 있다 — 인벤토리 격자를 첫째로 넣을 것.");
+        }
+
+        _source = grids[0];
 
         _data    = Services.Get<PlayerDataModel>();
         _cart    = Services.Get<SellCartModel>();
@@ -158,6 +223,22 @@ public class SellCartPresenter : MonoBehaviour
 
         // 줄은 재사용하므로 만들 때 한 번만 구독한다 — 다시 걸면 중복으로 쌓인다.
         _rows = new UIRowList<SellCartRowView>(rowPrefab, rowParent, row => row.RemoveClicked += OnRowRemoveClicked, row => row.Clear());
+        _pickSlots = new UIRowList<SlotView>(slotPrefab, pickParent, onCreated: slot =>
+        {
+            slot.LeftClicked  += OnPickClicked;
+            slot.RightClicked += OnPickClicked;
+            slot.SetNameVisible(false); // 인벤토리 칸처럼 — 이름은 툴팁 제목
+            slot.gameObject.AddComponent<TooltipTrigger>().SetProvider(() => BuildPickTooltip(slot));
+        });
+
+        foreach (InventoryGridPresenter grid in grids)
+        {
+            grid.Redrawn     += OnGridRedrawn;
+            grid.SellToggled += OnGridSellToggled;
+        }
+
+        closeButton.onClick.AddListener(Close);
+        BackdropClose.Bind(gameObject, Close);
 
         Subscribe();
         sellButton.onClick.AddListener(OnSellClicked);
@@ -178,20 +259,58 @@ public class SellCartPresenter : MonoBehaviour
         characterCondense.OpenChanged -= OnEnchantOpenChanged;
         artifactWindow.OpenChanged    -= OnArtifactWindowOpenChanged;
         _cart.Changed             -= OnCartChanged;
+
+        foreach (InventoryGridPresenter grid in grids)
+        {
+            grid.Redrawn     -= OnGridRedrawn;
+            grid.SellToggled -= OnGridSellToggled;
+        }
     }
 
-    // 판매 목록을 보일지 정한다 (Start · TabChanged · 카트 변경 · 대기 종료).
+    // [일괄 판매]로 빈 창을 연다 ('InventoryToolPresenter') — 칸은 인벤토리 격자의 것.
+    public void Open()
+    {
+        _source = grids[0];
+        _isOpen = true;
+        ApplyTab(inventoryTabs.CurrentTab);
+    }
+
+    // 담은 것을 비우고 닫는다 ([닫기] · 바탕 클릭). 응답을 기다리는 중이면 닫지 않는다 — 응답이 목록을 비운다.
+    public void Close()
+    {
+        if (_isWaiting)
+        {
+            return;
+        }
+
+        _isOpen = false;
+        _cart.Clear();
+        ApplyTab(inventoryTabs.CurrentTab);
+    }
+
+    // 창을 보일지 정한다 (Start · TabChanged · 카트 변경 · 대기 종료 · 열기/닫기).
     //
-    // **담긴 것이 있을 때만 보인다(2026-10-09 사용자 결정)** — 비어 있는 목록이 자리를 차지하면
-    // 격자가 반으로 줄어든다. 꺼지면 격자(flexH 1)가 그 자리까지 넓힌다.
-    // 칸을 우클릭해 담는 순간 나타나고, 마지막 줄을 빼거나 [비우기]·판매를 마치면 사라진다.
+    // 칸을 우클릭해 담는 순간 열리고('OnCartChanged'가 '_isOpen'을 켠다), [닫기]·바탕 클릭이면 닫힌다.
+    // 다 팔아 비어도 열린 채 남는다 — 이어서 칸 목록에서 더 고를 수 있다.
     // ※ 판매 응답을 기다리는 동안은 비어도 남는다 — 응답 전에 카트가 먼저 비워진다.
-    // ※ 큐브 창·응축 창·아티팩트 창이 열려 있어도 물러난다 — 같은 자리를 빌려 쓴다(T-095 · T-130 · T-151).
+    // ※ 큐브 창·응축 창·아티팩트 창이 열려 있으면 물러난다.
     private void ApplyTab(InventoryTab tab)
     {
-        bool hasContent = _cart.Count > 0 || _isWaiting;
+        bool show    = (_isOpen || _cart.Count > 0 || _isWaiting) && !equipEnchant.IsOpen && !characterCondense.IsOpen && !artifactWindow.IsOpen;
+        bool wasShown = gameObject.activeSelf;
 
-        gameObject.SetActive(hasContent && !equipEnchant.IsOpen && !characterCondense.IsOpen && !artifactWindow.IsOpen);
+        gameObject.SetActive(show);
+
+        if (show && !wasShown)
+        {
+            Shown?.Invoke();
+        }
+
+        if (show && _isReady)
+        {
+            PaintTabs();
+            DrawPicks();
+        }
     }
 
     // 탭이 바뀌었다 — 담긴 종류와 다른 탭이면 목록을 비우고 알린다 (InventoryTabPresenter.TabChanged 구독 · Start/OnDestroy).
@@ -218,10 +337,100 @@ public class SellCartPresenter : MonoBehaviour
     // 카트가 바뀌었다 — 비었으면 물러나고, 처음 담겼으면 나타난다 (SellCartModel.Changed 구독 · Start/OnDestroy).
     private void OnCartChanged()
     {
+        if (_cart.Count > 0)
+        {
+            _isOpen = true; // 우클릭으로 담았다 — 비워도 창은 남는다
+        }
+
         ApplyTab(inventoryTabs.CurrentTab);
     }
 
-    // 담은 것을 모두 뺀다 — 비면 'OnCartChanged'가 패널을 닫는다 (clearButton OnClick에 코드로 연결).
+    // 격자가 다시 그렸다 — 칸 목록도 따라 그린다 (InventoryGridPresenter.Redrawn 구독).
+    private void OnGridRedrawn()
+    {
+        if (_isReady && isActiveAndEnabled)
+        {
+            DrawPicks();
+        }
+    }
+
+    // 그 격자에서 우클릭으로 담았다 — 칸 목록을 그 격자의 것으로 (InventoryGridPresenter.SellToggled 구독).
+    private void OnGridSellToggled(InventoryGridPresenter grid)
+    {
+        _source = grid;
+    }
+
+    // 칸 목록을 그린다 — 지금 탭의 칸 전부, 격자와 같은 표시 (ApplyTab · OnGridRedrawn).
+    private void DrawPicks()
+    {
+        _source.CollectSellSlots(_pickData, _pickNumbers);
+        _pickIndex.Clear();
+
+        for (int i = 0; i < _pickData.Count; i++)
+        {
+            SlotView slot = _pickSlots.Get(i);
+            SlotData data = _pickData[i];
+
+            slot.Bind(data);
+            _source.DrawSellSlot(slot, data);
+            _pickIndex[slot] = i;
+        }
+
+        _pickSlots.HideFrom(_pickData.Count);
+    }
+
+    // 창 안 탭을 눌렀다 — 인벤토리 탭을 바꾼다. 담긴 종류와 다르면 'OnTabChanged'가 목록을 비우고 알린다.
+    // ※ 응답을 기다리는 중이면 바꾸지 않는다 — 보낸 목록과 화면이 어긋난다.
+    private void OnPopupTabClicked(InventoryTab tab)
+    {
+        if (_isWaiting)
+        {
+            return;
+        }
+
+        inventoryTabs.RequestTab(tab);
+        PaintTabs(); // 떠나기가 막혔으면 눌린 버튼을 되돌린다
+    }
+
+    // 지금 탭의 버튼만 선택 색으로 — 인벤토리 탭 줄과 같은 칠하기(ColorBlock).
+    private void PaintTabs()
+    {
+        for (int i = 0; i < tabButtons.Length; i++)
+        {
+            Color      target = UIThemePalette.Of(TabOrder[i] == inventoryTabs.CurrentTab ? UIThemeRole.ButtonSelected : UIThemeRole.Button);
+            ColorBlock colors = tabButtons[i].colors;
+
+            colors.normalColor      = target;
+            colors.highlightedColor = UIThemePalette.HoverOf(target);
+            colors.pressedColor     = UIThemePalette.PressedOf(target);
+            colors.selectedColor    = target;
+            tabButtons[i].colors    = colors;
+        }
+    }
+
+    // 칸을 눌렀다 — 담거나 뺀다(수량은 격자 우클릭과 같게 묻는다) (SlotView.LeftClicked · RightClicked 구독).
+    private void OnPickClicked(SlotView slot)
+    {
+        if (_isWaiting || slot.IsEmpty)
+        {
+            return;
+        }
+
+        _source.ToggleSell(slot.Key, slot.transform);
+    }
+
+    // 칸 툴팁 — 격자 칸과 같다.
+    private TooltipContent? BuildPickTooltip(SlotView slot)
+    {
+        if (slot.IsEmpty || !_pickIndex.TryGetValue(slot, out int index) || index >= _pickNumbers.Count)
+        {
+            return null;
+        }
+
+        return _source.BuildSellTooltip(slot.Key, _pickNumbers[index]);
+    }
+
+    // 담은 것을 모두 뺀다 — 창은 남는다 (clearButton OnClick에 코드로 연결).
     private void OnClearClicked()
     {
         if (!_isWaiting)
@@ -240,6 +449,7 @@ public class SellCartPresenter : MonoBehaviour
     {
         if (open && !_isWaiting)
         {
+            _isOpen = false;
             _cart.Clear();
         }
 
@@ -527,6 +737,7 @@ public class SellCartPresenter : MonoBehaviour
         }
 
         warningText.text = string.Join("\n", lines);
+        warningText.color = UIThemePalette.OfFor(warningText, UIThemeRole.Negative); // 빨강 — 머리 글자(금색)와 갈려 주의로 읽힌다(2026-11-21 사용자)
         warningText.gameObject.SetActive(lines.Count > 0);
     }
 
@@ -567,10 +778,18 @@ public class SellCartPresenter : MonoBehaviour
     // 목록 머리 — '자원 판매 2종' · '캐릭터 판매 3명' · '장비 판매 / 분해 3개'.
     private string KindText(int count)
     {
-        string key = _cart.Kind switch
+        // 비어 있으면 지금 탭의 종류로 — [일괄 판매]로 빈 창을 열었다
+        SellCartKind kind = _cart.Kind ?? inventoryTabs.CurrentTab switch
+        {
+            InventoryTab.Character => SellCartKind.Character,
+            InventoryTab.Equipment => SellCartKind.Equip,
+            _                      => SellCartKind.Item,
+        };
+
+        string key = kind switch
         {
             SellCartKind.Character => "UI.Sell.KindCharacter",
-            SellCartKind.Equip     => _cart.EquipIds.Count > 0 ? "UI.Sell.KindEquip" : "UI.Sell.KindArtifact",
+            SellCartKind.Equip     => _cart.HasArtifacts && _cart.EquipIds.Count == 0 ? "UI.Sell.KindArtifact" : "UI.Sell.KindEquip",
             _                      => "UI.Sell.KindItem",
         };
 

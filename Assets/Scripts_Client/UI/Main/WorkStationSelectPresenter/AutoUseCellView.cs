@@ -61,7 +61,7 @@ public class AutoUseCellView : MonoBehaviour
         iconImage.sprite  = icon!;
         iconImage.enabled = icon != null;
         iconImage.color   = new Color(1f, 1f, 1f, isOn ? 1f : OffIconAlpha);
-        nameText.text     = $"{GameDataLoader.GetItemName(itemTid)} {UIRichText.Small($"×{owned:N0}")}";
+        nameText.text     = $"{GameDataLoader.GetItemName(itemTid)}\n{UIRichText.Small($"×{owned:N0}")}"; // 개수는 아랫줄 — 한 줄이면 영어 이름이 10px까지 줄었다(2026-11-21)
         togglePill.color  = isOn ? OnPillColor : OffPillColor;
         toggleText.text   = isOn ? "ON" : "OFF";
 

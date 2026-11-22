@@ -221,7 +221,6 @@ public class InventoryTabPresenter : MonoBehaviour
         Transform root = transform.parent != null ? transform.parent : transform;
 
         WakeScreen(root.GetComponentInChildren<InventoryToolPresenter>(true));
-        WakeScreen(root.GetComponentInChildren<SellCartPresenter>(true));
     }
 
     // 그 화면을 켠다 (WakeTabScreens에서 호출). 아직 없는 화면은 건너뛴다.
@@ -305,6 +304,7 @@ public class InventoryTabPresenter : MonoBehaviour
 
             ColorBlock colors = entry.button.colors;
             colors.normalColor   = target;
+            colors.highlightedColor = UIThemePalette.HoverOf(target);
             colors.selectedColor = target;
             entry.button.colors  = colors;
         }

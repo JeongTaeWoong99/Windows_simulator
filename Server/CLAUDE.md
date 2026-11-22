@@ -1,6 +1,6 @@
 # CLAUDE.md — 서버
 
-> 최종 업데이트: 2026-11-20 (게임 DB WAL — 끄고 커밋 · 로그 수준 설정 — T-192) · 2026-11-03 (부하 봇 `MikaLoadTest` · 서버 비용 문서 — T-192) · 2026-10-16 (`ExcelGenerator.Tests`에 번역 시트 — T-135) · 2026-10-11 (원격 Docker · 설정은 `appsettings.json` — T-109) · 2026-10-11 (DB는 기동 시 자동 마이그레이션 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
+> 최종 업데이트: 2026-11-21 (스팀 로그인 — 개발용 로그인·스팀 설정·키는 `.env` — T-207) · 2026-11-20 (게임 DB WAL — 끄고 커밋 · 로그 수준 설정 — T-192) · 2026-11-03 (부하 봇 `MikaLoadTest` · 서버 비용 문서 — T-192) · 2026-10-16 (`ExcelGenerator.Tests`에 번역 시트 — T-135) · 2026-10-11 (원격 Docker · 설정은 `appsettings.json` — T-109) · 2026-10-11 (DB는 기동 시 자동 마이그레이션 — T-146) · 2026-10-07 (DB는 `game.sqlite3`가 본체 · 마이그레이션 폐지 · 바뀌면 커밋) · 2026-10-07 (`ExcelGenerator.Tests` — T-093) · 2026-10-06 (게임 로직의 "지금"은 `GameClock` — T-128) · 2026-09-24 (경매장 서버 추가)
 
 `Server/` · `Assets/Scripts_Server/` 작업 시 참고하는 문서다.
 공통 규칙(환경·협업·이름 규칙)은 저장소 루트의 [`CLAUDE.md`](../CLAUDE.md)를 함께 본다.
@@ -114,7 +114,8 @@ powershell -File Server/run-coverage.ps1 -Html    # HTML 리포트(reportgenerat
     `-wal`이 남아 있으면 서버를 한 번 켰다 끄거나 `sqlite3 game.sqlite3 "PRAGMA wal_checkpoint(TRUNCATE);"` 뒤 커밋한다.
   - 데이터를 지우는 마이그레이션(`DELETE`·컬럼 삭제)은 원격 DB에 친구 데이터가 생기면 공지하고 돌린다.
   - 테스트의 `SqliteFixture.CreateSchema()`도 같은 파일로 테이블을 만든다 — DDL을 테스트에 베끼지 않는다.
-- **포트·DB 경로·경매장 주소·치트 하한·로그 수준(`LogLevel`)은 코드에 박지 않는다** — 게임 서버 `appsettings.json`의 `Game` 절(`GameSettings`). 원격(Docker)은 `docker-compose.yml`의 환경 변수로만 덮는다 → [`도커.md`](docs/도커.md)
+- **포트·DB 경로·경매장 주소·치트 하한·로그 수준(`LogLevel`)·개발용 로그인(`AllowDevLogin`)·스팀 설정(`Steam`)은 코드에 박지 않는다** — 게임 서버 `appsettings.json`의 `Game` 절(`GameSettings`). 원격(Docker)은 `docker-compose.yml`의 환경 변수로만 덮는다 → [`도커.md`](docs/도커.md)
+  **스팀 Web API 키는 커밋하지 않는다** — 원격은 `Server/.env`(git 제외)에서 넘긴다 (T-207)
 - 생성물(`Server/GameData`, `Server/Shared/Data`)은 직접 고치지 않는다.
   엑셀에서 고치고 파이프라인을 돌린다 — [`GameDesign/CLAUDE.md`](../GameDesign/CLAUDE.md) 참조.
 - 코드는 한글 주석을 사용한다.

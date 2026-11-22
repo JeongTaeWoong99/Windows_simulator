@@ -15,6 +15,7 @@ namespace GameData
         public GlobalRarity GlobalRarity     { get; set; }        // eGlobalRarity
         public EquipKind    EquipKind        { get; set; }        // eEquipKind
         public IndustryType Industry         { get; set; }        // eIndustryType
+        public int          ItemLevel        { get; set; }        // int [1..100]
         public int          SpeedAddPermille { get; set; }        // int [-999..-]
         public int          BasePrice        { get; set; }        // int [0..-]
         public string       Description      { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]

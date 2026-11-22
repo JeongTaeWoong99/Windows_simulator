@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
+using System.Threading.Tasks;
 using MikaProtocol;
 using UnityEditor;
 using Object = UnityEngine.Object;
@@ -26,7 +27,58 @@ namespace DesktopWindowControl.EditorTools
 
 		public const Step AllSteps = Step.Server | Step.Client | Step.Login;
 
-		// 지금 완료된 단계 (창의 상태 줄 · CanSend)
+		// 창의 상태 줄용 — 서버·클라 단계(OS 연결 목록 조회)는 백그라운드에서 'OsProbeInterval'마다 묻고, 마지막 답을 쓴다.
+		// ★ 2026-11-22 프로파일러 — 0.5초마다 메인 스레드에서 OS 연결 목록을 읽어 한 번에 4~7ms(가끔 GC가 겹쳐 20ms+)
+		//   프레임을 막고 있었다. 144프레임(6.9ms)에서는 그 프레임이 통째로 밀린다. 로그인 단계는 씬을 봐야 해서 여기서 바로 본다.
+		//   보내기 직전 검사('CanSend')는 정확해야 하므로 그대로 'GetCompletedSteps'를 쓴다.
+		private const double OsProbeInterval = 2.0;
+
+		private static Task<Step>? _osProbe;
+		private static Step        _osSteps;
+		private static double      _nextOsProbe;
+
+		public static Step GetCompletedStepsPolled()
+		{
+			if (_osProbe is { IsCompleted: true })
+			{
+				_osSteps = _osProbe.Status == TaskStatus.RanToCompletion ? _osProbe.Result : Step.None;
+				_osProbe = null;
+			}
+
+			if (_osProbe == null && EditorApplication.timeSinceStartup >= _nextOsProbe)
+			{
+				_nextOsProbe = EditorApplication.timeSinceStartup + OsProbeInterval;
+
+				bool isPlaying = EditorApplication.isPlaying; // 메인 스레드에서만 읽힌다
+
+				_osProbe = Task.Run(() => ProbeOs(isPlaying));
+			}
+
+			// 플레이를 막 끈 뒤 아직 옛 답이면 '클라'를 지운다
+			var steps = EditorApplication.isPlaying ? _osSteps : _osSteps & ~Step.Client;
+
+			return FindLoggedInModel() != null ? steps | Step.Login : steps;
+		}
+
+		// 서버·클라 단계만 — 다른 스레드에서 돈다(유니티 API를 부르지 않는다)
+		private static Step ProbeOs(bool isPlaying)
+		{
+			var steps = Step.None;
+
+			if (IsServerListening())
+			{
+				steps |= Step.Server;
+			}
+
+			if (isPlaying && IsClientConnected())
+			{
+				steps |= Step.Client;
+			}
+
+			return steps;
+		}
+
+		// 지금 완료된 단계 (CanSend — 보내기 직전이라 바로 묻는다)
 		public static Step GetCompletedSteps()
 		{
 			var steps = Step.None;

@@ -277,6 +277,18 @@ public class UserCheatTest
     }
 
     [Fact]
+    public void GiveEquip은_아이템_레벨_장비도_지급한다()
+    {
+        var (user, b) = Admin();
+
+        // 1003506 = Lv100 · 보석 · 사냥 · 신화 (T-200 TID = 레벨 × 10000 + 종류·산업·등급)
+        user.ExecuteCheat(Req(ECheatCommand.GiveEquip, 1003506), Base);
+
+        b.Channel.SentOf<S_CheatResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
+        b.DB.PostedOf<GrantEquipRepository>().ShouldHaveSingleItem();
+    }
+
+    [Fact]
     public void GiveEquip은_없는_TID를_거절한다()
     {
         var (user, b) = Admin();

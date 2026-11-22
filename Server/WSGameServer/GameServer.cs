@@ -1,5 +1,7 @@
 using GameData;
+using MikaNetwork;
 using MikaNetwork.Server;
+using MikaProtocol;
 
 namespace WSGameServer;
 
@@ -16,6 +18,9 @@ public class GameServer : IDisposable
     // 경매장 연결. 경매장이 꺼져 있어도 게임은 돈다 — 경매 요청만 AuctionUnavailable로 돌아가고 릴레이가 재시도한다.
     private GrpcAuctionClient? _auctionClient;
     private readonly CancellationTokenSource _auctionStop = new();
+
+    // 스팀 Web API 호출용. 하나를 계속 쓴다 — 요청마다 만들면 소켓이 고갈된다.
+    private readonly HttpClient _steamHttp = new();
     private bool _dbOpened;
 
     // 매니저, Executor 등 전역 싱글톤은 한번 생성하고 이후는 생성자 주입
@@ -68,6 +73,8 @@ public class GameServer : IDisposable
             User.CheatAdminLevel = _settings.CheatAdminLevel;
             ServerLog.Info("설정", $"포트 {_settings.ListenPort} · DB {_settings.DbPath} · 경매장 {_settings.Auction.Address} · 치트 레벨 {_settings.CheatAdminLevel} · 로그 {_settings.LogLevel}");
 
+            ConfigureLogin();
+
             // 스키마를 서버 판까지 올린 뒤에 연다 — 판이 더 높은 DB(더 새 서버가 쓰던 것)면 여기서 기동이 멈춘다.
             // 파일이 없으면(원격 첫 기동) 빈 DB를 만들고 마이그레이션이 스키마를 채운다.
             var dbPath = DBManager.ResolveDbPath(_settings.DbPath);
@@ -87,6 +94,33 @@ public class GameServer : IDisposable
     }
     
     
+    // 로그인 관문(T-207) — 스팀 티켓은 스팀 Web API로 확인하고, 개발용 Id는 AllowDevLogin일 때만 받는다.
+    private void ConfigureLogin()
+    {
+        var steam = _settings.Steam;
+        var gate = new LoginGate(
+            new SteamWebApi(_steamHttp, steam),
+            _settings.AllowDevLogin,
+            post: _logicExecutor.Post,
+            createUser: UserManager.Instance.CreateUser,
+            reject: RejectLogin);
+        LoginGate.Configure(gate);
+
+        // 키는 로그에 찍지 않는다 — 있는지만 남긴다.
+        var keyState = string.IsNullOrEmpty(steam.WebApiKey) ? "키 없음(스팀 로그인 불가)" : "키 있음";
+        ServerLog.Info("설정", $"스팀 AppID {steam.AppId} · {keyState} · identity {steam.Identity} · 개발용 로그인 {(_settings.AllowDevLogin ? "켬" : "끔")}");
+    }
+
+    // 응답부터 보낸다 — 조용히 두면 클라는 영원히 기다린다. 밴만 끊고, 나머지는 새 티켓으로 다시 시도할 수 있게 둔다.
+    private static void RejectLogin(ISession session, EResultCode code)
+    {
+        session.SendPacket(new S_LoginResponse { Result = code, SessionId = session.SessionId });
+        if (code == EResultCode.Banned)
+        {
+            session.Disconnect();
+        }
+    }
+
     private void StartAuction()
     {
         var settings = _settings.Auction;
@@ -104,6 +138,7 @@ public class GameServer : IDisposable
     {
         _auctionStop.Cancel();
         _auctionClient?.Dispose();
+        _steamHttp.Dispose();
 
         // 기동 도중 실패했으면 DB를 연 적이 없다
         if (!_dbOpened)

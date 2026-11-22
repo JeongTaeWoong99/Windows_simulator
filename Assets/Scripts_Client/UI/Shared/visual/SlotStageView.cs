@@ -42,6 +42,9 @@ public class SlotStageView : MonoBehaviour
     private const float FlinchSquash  = 0.14f; // 납작해지는 비율(세로 −, 가로 +)
     private const float ShakeSeconds  = 0.08f; // 맞은 순간 좌우 흔들림 길이
     private const float ShakePixels   = 1f;    // 흔들림 폭(그림 픽셀) — 프레임마다 방향이 바뀐다
+    // 타격 이펙트 자리 — 대상 가운데에서 캐릭터 쪽(오른쪽)으로 반폭의 이만큼. 가운데면 바위·짐승 속에 묻혀
+    // 무기와 닿는 자리가 아니었다(2026-11-20 사용자: 타격 이펙트를 캐릭터보다 앞으로)
+    private const float HitFront      = 0.45f;
     private const float HurtSeconds   = 0.24f; // 맞는 자세('TargetVisual.GetHit')를 보이는 시간 — 흰 번쩍(0.08초) 뒤에도 자세가 읽히게 움찔보다 길게
 
     // 대상은 땅선보다 이만큼(그림 픽셀) 아래에 선다 — 밑동이 땅 앞면에 가려 '땅에 박힌' 것처럼 보인다(2026-11-18 사용자: 뿌리가 바닥 앞에 있어 어색)
@@ -360,8 +363,8 @@ public class SlotStageView : MonoBehaviour
             HideTarget(_coming);
         }
 
-        // 타격 이펙트 — 맞은 대상(공격 중이면 다가온 대상, 아니면 쓰러진 대상)의 가운데에서 한 번
-        DrawHitEffect(now, now.HitsComing ? comingX : dyingX, sprite.rect.height * tk / 2f, settings, k);
+        // 타격 이펙트 — 맞은 대상(공격 중이면 다가온 대상, 아니면 쓰러진 대상)의 캐릭터 쪽 면에서 한 번
+        DrawHitEffect(now, (now.HitsComing ? comingX : dyingX) + halfWidth * HitFront, sprite.rect.height * tk / 2f, settings, k);
     }
 
     private void DrawHitEffect(SlotStageTimeline.Result now, float centerX, float halfHeight, SlotStageSettings settings, float k)
@@ -396,6 +399,13 @@ public class SlotStageView : MonoBehaviour
         if (effect != null)
         {
             _hitEffect.sprite = effect;
+
+            // 그리는 순서도 맨 앞 — 캐릭터·공격 이펙트보다 위(만들 때 마지막 자식이지만, 나중에 붙는 자식이 있어도 지킨다)
+            if (_hitEffect.transform.GetSiblingIndex() != transform.childCount - 1)
+            {
+                _hitEffect.transform.SetAsLastSibling();
+            }
+
             Place(_hitEffect.rectTransform, new Vector2(Mathf.Round(centerX), GroundY(k) + Mathf.Round(halfHeight)), Snap(effect.rect.size * k));
         }
     }

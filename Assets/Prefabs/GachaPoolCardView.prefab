@@ -268,9 +268,9 @@ MonoBehaviour:
   m_fontSize: 20
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -536,9 +536,9 @@ MonoBehaviour:
   m_fontSize: 20
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -773,9 +773,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 8
+  m_fontSizeMax: 16
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -979,7 +979,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
-    m_HighlightedColor: {r: 0.92333335, g: 0.86, b: 0.7033334, a: 1}
+    m_HighlightedColor: {r: 0.95490193, g: 0.91764706, b: 0.82549024, a: 1}
     m_PressedColor: {r: 0.72784317, g: 0.6682353, b: 0.5207843, a: 1}
     m_SelectedColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
     m_DisabledColor: {r: 0.7490196, g: 0.67647064, b: 0.5156863, a: 1}
@@ -1111,9 +1111,9 @@ MonoBehaviour:
   m_fontSize: 18
   m_fontSizeBase: 18
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 9
+  m_fontSizeMax: 18
   m_fontStyle: 1
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1359,9 +1359,9 @@ MonoBehaviour:
   m_fontSize: 16
   m_fontSizeBase: 16
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 8
+  m_fontSizeMax: 16
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1511,9 +1511,9 @@ MonoBehaviour:
   m_fontSize: 20
   m_fontSizeBase: 20
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 10
+  m_fontSizeMax: 20
   m_fontStyle: 0
   m_HorizontalAlignment: 2
   m_VerticalAlignment: 512
@@ -1717,7 +1717,7 @@ MonoBehaviour:
   m_Transition: 1
   m_Colors:
     m_NormalColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
-    m_HighlightedColor: {r: 0.92333335, g: 0.86, b: 0.7033334, a: 1}
+    m_HighlightedColor: {r: 0.95490193, g: 0.91764706, b: 0.82549024, a: 1}
     m_PressedColor: {r: 0.72784317, g: 0.6682353, b: 0.5207843, a: 1}
     m_SelectedColor: {r: 0.9098039, g: 0.8352941, b: 0.6509804, a: 1}
     m_DisabledColor: {r: 0.7490196, g: 0.67647064, b: 0.5156863, a: 1}

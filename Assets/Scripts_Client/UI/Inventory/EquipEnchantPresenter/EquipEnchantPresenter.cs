@@ -39,10 +39,10 @@ using UnityEngine.UI;
 //     게임 종료처럼 막을 수 없는 경우엔 보류가 남고, 장비 칸의 빨간 '선택 대기' 띠로 다시 연다('EquipSlotSource.NeedsAttention').
 //
 // ■ 자동 — 사람이 누르는 흐름을 그대로, 2배 빠르기로 (이슈 #53)
-// [자동]이 비교 상자 자리에 설정 칸('EnchantAutoPanelView' — 목표 등급 · 노릴 옵션 · 조합 · 상한)을 같은 높이로 갈아 끼우고,
+// [자동]이 비교 상자 자리에 설정 칸('EnchantAutoPanelView' — 목표 등급 · 칸 1~3 · 상한)을 같은 높이로 갈아 끼우고,
 // 규칙 줄은 예상 확률('EnchantForecast')을 보인다. [자동 시작]이면 **수동과 같은 요청**(큐브 사용 → 상급이면 고르기)을 차례로 보낸다.
 // 규칙 줄은 짙은 바탕(`Border`) 위다 — 강조색은 밝은 `Highlight`를 쓴다(2026-11-15 · 중갈 바탕 위 진황토가 안 읽혔다).
-//   - 목표 판정 · 상급 큐브의 남기기는 'EnchantAutoTarget'이 한다(오르면 새 값, 같으면 노린 칸이 많을 때만).
+//   - 목표 판정 · 상급 큐브의 남기기는 'EnchantAutoTarget'이 한다(오르면 새 값, 같으면 맞춘 줄이 많을 때만).
 //   - 멈춤: 목표 달성 · 상한 · 큐브 소진 · [■ 멈춤] · 창 닫기·탭 · 서버 거절. 상급 큐브가 목표에 닿으면 보류를 남기고 멈춘다 — 사람이 [선택]한다.
 //   - 착용 중 · 고르기 전 장비는 자동을 열지 않는다(먼저 벗기거나 고르게 알린다).
 //
@@ -102,6 +102,9 @@ public class EquipEnchantPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("규칙 줄 옆 도움말 아이콘(HelpIcon 프리팹)의 툴팁 트리거 — 큐브 규칙·확률 표")]
     private TooltipTrigger ruleTooltip = null!;
+
+    [SerializeField, Tooltip("규칙 줄 글씨 자체의 툴팁 트리거 — 자동 설정 · 도는 중에 '나올 수 있는 조합'을 펼친다")]
+    private TooltipTrigger comboTooltip = null!;
 
     [SerializeField, NonReorderable, Tooltip("큐브 버튼 — 'EnchantItemTable' 순서로 채운다. 남는 버튼은 꺼진다")]
     private EnchantCubeView[] cubeViews = new EnchantCubeView[0];
@@ -237,6 +240,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         this.RequireRef(beforeFx,          nameof(beforeFx));
         this.RequireRef(ruleText,          nameof(ruleText));
         this.RequireRef(ruleTooltip,       nameof(ruleTooltip));
+        this.RequireRef(comboTooltip,      nameof(comboTooltip));
         this.RequireRef(confirmButton,     nameof(confirmButton));
         this.RequireRef(confirmLabel,      nameof(confirmLabel));
         this.RequireRef(compareRow,        nameof(compareRow));
@@ -261,11 +265,12 @@ public class EquipEnchantPresenter : MonoBehaviour
         keepAfterButton.onClick.AddListener(() => OnKeepClicked(true));
         autoButton.onClick.AddListener(OnAutoClicked);
         ruleTooltip.SetProvider(EquipLabel.BuildCubeRuleTooltip);
+        comboTooltip.SetProvider(BuildComboTooltip);
 
-        autoPanel.GradeClicked += OnAutoGradeClicked;
-        autoPanel.FocusClicked += OnAutoFocusClicked;
-        autoPanel.ComboClicked += OnAutoComboClicked;
-        autoPanel.CapClicked   += OnAutoCapClicked;
+        autoPanel.GradeClicked  += OnAutoGradeClicked;
+        autoPanel.PickClicked   += OnAutoPickClicked;
+        autoPanel.CapClicked    += OnAutoCapClicked;
+        autoPanel.OptionClicked += OnAutoOptionClicked;
 
         for (int i = 0; i < cubeViews.Length; i++)
         {
@@ -360,7 +365,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _result      = null; // 다른 장비의 결과를 이 장비에 그리지 않는다
         _auto        = AutoState.Off;
         _autoSummary = null;
-        _autoTarget.ResetCombos(); // 칸 수가 다를 수 있다
+        _autoTarget.ResetPicks(); // 칸 수가 다를 수 있다
 
         gameObject.SetActive(true);
 
@@ -743,7 +748,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
             cubeViews[i].Bind(GameDataLoader.GetItemName(tid),
                               VisualCatalog.ItemIconOf(tid),
-                              Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + UIRichText.Dot + what,
+                              Lang.Format("UI.Enchant.CubeOwned", $"{owned:N0}") + "\n" + what, // 두 줄 — 한 줄이면 영어가 8px까지 줄었다(2026-11-21)
                               owned > 0,
                               i == _cubeIndex,
                               EquipLabel.BuildCubeRuleTooltip);
@@ -851,8 +856,8 @@ public class EquipEnchantPresenter : MonoBehaviour
         ColorBlock colors = button.colors;
 
         colors.normalColor      = color;
-        colors.highlightedColor = Color.Lerp(color, Color.white, 0.15f);
-        colors.pressedColor     = Color.Lerp(color, Color.black, 0.2f);
+        colors.highlightedColor = UIThemePalette.HoverOf(color);
+        colors.pressedColor     = UIThemePalette.PressedOf(color);
         colors.selectedColor    = color;
 
         button.colors = colors;
@@ -1282,21 +1287,32 @@ public class EquipEnchantPresenter : MonoBehaviour
         Redraw();
     }
 
-    private void OnAutoFocusClicked(EnchantAutoFocus focus)
+    private void OnAutoPickClicked(int row, EnchantAutoFocus focus)
     {
-        _autoTarget.Focus = focus;
-        Redraw();
-    }
-
-    private void OnAutoComboClicked(int allCount)
-    {
-        _autoTarget.ToggleCombo(allCount);
+        _autoTarget.TogglePick(row, focus);
         Redraw();
     }
 
     private void OnAutoCapClicked(int cap)
     {
         _autoTarget.Cap = cap;
+        Redraw();
+    }
+
+    // 편의 줄 — 토글 둘
+    private void OnAutoOptionClicked(int option)
+    {
+        switch (option)
+        {
+            case EnchantAutoPanelView.OptionStopMythic:
+                _autoTarget.StopOnMythic = !_autoTarget.StopOnMythic;
+                break;
+
+            case EnchantAutoPanelView.OptionStopAbove:
+                _autoTarget.StopAboveGoal = !_autoTarget.StopAboveGoal;
+                break;
+        }
+
         Redraw();
     }
 
@@ -1335,14 +1351,9 @@ public class EquipEnchantPresenter : MonoBehaviour
             return Lang.Format("UI.Enchant.NoCubeNotice", GameDataLoader.GetItemName(CurrentCubeTid()));
         }
 
-        if (grade >= GlobalRarity.Mythic && !_autoTarget.UsesSlots)
+        if (grade >= GlobalRarity.Mythic && !_autoTarget.UsesSlots(slotCount))
         {
             return Lang.Get("UI.Enchant.AlreadyMythic");
-        }
-
-        if (_autoTarget.HasNoCombo(slotCount))
-        {
-            return Lang.Get("UI.Enchant.NeedCombo");
         }
 
         return null;
@@ -1427,19 +1438,67 @@ public class EquipEnchantPresenter : MonoBehaviour
     // 목표 등급 — '목표 신화 이상' (규칙 줄 첫 줄 — 설정 중 · 도는 중).
     private string DescribeGoal() => Lang.Format("UI.Enchant.Goal", GradeText(_autoTarget.Grade));
 
-    // 칸 조건 한 줄 — '칸 [전체/발굴/발굴] [전체/전체/전체] · 한 번에 7.41%' (규칙 줄 둘째 줄 — 설정 중 · 도는 중).
-    // 켠 조합끼리 OR. 전부 켰으면 '칸마다 전체 또는 발굴'로 줄인다('EnchantAutoTarget.DescribeCombos').
+    // 칸 조건 한 줄 — '나올 수 있는 조합 43가지 · 한 번에 1.23%' (규칙 줄 둘째 줄 — 설정 중 · 도는 중).
+    // 조합을 다 늘어놓으면 줄을 넘친다(사용자 2026-11-22 '+53') — 개수만 적고, 글씨에 마우스를 올리면 툴팁으로 펼친다('BuildComboTooltip').
     //   chance : 한 번 굴려 칸 조건이 맞을 확률. null이면 쓰지 않는다
     private string DescribeSlotRule(int slotCount, double? chance)
     {
-        if (!_autoTarget.UsesSlots)
+        if (!_autoTarget.UsesSlots(slotCount))
         {
             return UIRichText.Paint(Lang.Get("UI.Enchant.NoSlotRule"), UIThemeRole.TextSub);
         }
 
-        string combos = Colorize(_autoTarget.DescribeCombos(slotCount), UIThemePalette.Of(UIThemeRole.Highlight));
+        int    count  = EnchantForecast.ListOutcomes(_autoTarget.Grade, slotCount, _autoTarget).Count;
+        string combos = Colorize(Lang.Format("UI.Enchant.ComboCount", $"{count:N0}"), UIThemePalette.Of(UIThemeRole.Highlight));
 
         return chance == null ? combos : combos + UIRichText.Dot + Lang.Format("UI.Enchant.PerRoll", Percent(chance.Value));
+    }
+
+    // 조합 툴팁 — 멈추는 칸 묶음을 확률 높은 순으로 'ComboTipRows'개 + '외 n가지' (규칙 줄 글씨에 마우스).
+    // 자동 설정 · 도는 중이고 칸 조건이 있을 때만 뜬다.
+    private TooltipContent? BuildComboTooltip()
+    {
+        const int ComboTipRows = 10;
+
+        int slotCount = CurrentSlotCount();
+
+        if (_auto == AutoState.Off || !_autoTarget.UsesSlots(slotCount))
+        {
+            return null;
+        }
+
+        var outcomes = EnchantForecast.ListOutcomes(_autoTarget.Grade, slotCount, _autoTarget);
+        var tip      = new TooltipContent(Lang.Get("UI.Enchant.ComboTip"));
+        var names    = new StringBuilder();
+
+        for (int i = 0; i < outcomes.Count && i < ComboTipRows; i++)
+        {
+            names.Clear();
+
+            foreach (EnchantAutoFocus kind in outcomes[i].Kinds)
+            {
+                string name = EnchantAutoTarget.GetKindName(kind);
+
+                names.Append(names.Length > 0 ? " · " : "")
+                     .Append(kind == EnchantAutoFocus.None ? UIRichText.Paint(name, UIThemeRole.TextSub) : name);
+            }
+
+            tip.Row(names.ToString(), Percent(outcomes[i].Chance));
+        }
+
+        if (outcomes.Count > ComboTipRows)
+        {
+            double rest = 0d;
+
+            for (int i = ComboTipRows; i < outcomes.Count; i++)
+            {
+                rest += outcomes[i].Chance;
+            }
+
+            tip.Row(UIRichText.Paint(Lang.Format("UI.Enchant.ComboMore", $"{outcomes.Count - ComboTipRows:N0}"), UIThemeRole.TextSub), Percent(rest));
+        }
+
+        return tip;
     }
 
     // 창에 띄운 장비의 칸 수 — 모르면 최대.
@@ -1497,7 +1556,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _result      = null;
         Redraw();
 
-        ClientLogger.Info(ClientLogger.UI, $"큐브 자동 시작 — 장비 #{equip.EquipId}, 큐브 {cubeTid}, 목표 {_autoTarget.Grade} 이상 · {_autoTarget.Focus}, 상한 {cap}");
+        ClientLogger.Info(ClientLogger.UI, $"큐브 자동 시작 — 장비 #{equip.EquipId}, 큐브 {cubeTid}, 목표 {_autoTarget.Grade} 이상 · {_autoTarget.DescribeOutcomes(CurrentSlotCount())}, 상한 {cap}");
 
         RunAutoAsync(equip.EquipId, cubeTid, _autoCts.Token).Forget();
     }
@@ -1587,12 +1646,20 @@ public class EquipEnchantPresenter : MonoBehaviour
                     break;
                 }
 
+                // 편의 토글 — 목표는 아니지만 등급이 신화 · 목표 위로 올랐다. 상급 큐브면 고르기는 사람에게 남긴다(목표 달성과 같다)
+                if (_autoTarget.StopsEarly(beforeGrade, afterGrade))
+                {
+                    summary = afterGrade >= GlobalRarity.Mythic && _autoTarget.StopOnMythic ? "UI.Enchant.AutoEndMythic" : "UI.Enchant.AutoEndHigher";
+
+                    break;
+                }
+
                 if (!res.AwaitingChoice)
                 {
                     continue;
                 }
 
-                // 상급 큐브 — 오르면 새 값, 같으면 노린 칸이 많을 때만 새 값
+                // 상급 큐브 — 오르면 새 값, 같으면 맞춘 줄이 많을 때만 새 값
                 bool keepNew = _autoTarget.PreferNew(beforeGrade, before, afterGrade, res.Options);
 
                 _lastChoose = null;

@@ -100,7 +100,7 @@ public class UIManager : MonoService<UIManager>
     private ArtifactCanvasView artifactCanvas = null!;
 
     // ※ 아티팩트 바로 다음 형제다 — 같은 넓이 · 같은 차단이고, 셋은 함께 열리지 않는다.
-    [SerializeField, Tooltip("거점 화면 — !Overlay Canvas 안의 #Outpost Canvas. 하단 메뉴 [거점]으로 열고 안쪽 [X]로 닫는다")]
+    [SerializeField, Tooltip("마을 화면 — !Overlay Canvas 안의 #Outpost Canvas. 하단 메뉴 [마을]로 열고 안쪽 [X]로 닫는다")]
     private OutpostCanvasView outpostCanvas = null!;
 
     [CenterHeader("사이드 2개 캔버스")]

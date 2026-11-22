@@ -554,6 +554,40 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return EResultCode.Ok;
     }
 
+    // 이 건물 트리에 지금 찍을 수 있는 노드가 있나 — 최대 아님 · 앞 노드 다 찍음 · 포인트 충분 (마을 빨간 점).
+    // 서버 'User.TryLearnTrait'의 판정을 그대로 따른다 — 포인트만 남고 찍을 곳이 없으면 점을 띄우지 않는다.
+    public bool CanLearnAnyTrait(int buildingTid)
+    {
+        int points = GetBuildingPoints(buildingTid);
+
+        foreach (var trait in GameDataLoader.UserTraits)
+        {
+            if (trait.BuildingTID == buildingTid
+                && GetTraitLevel(trait.UserTraitTID) < trait.MaxLevel
+                && points >= trait.TraitPoint
+                && !TryGetUnmetPrerequisite(trait, out _))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 마을에 할 일이 있나 — 어느 건물이든 지금 올릴 수 있거나 특성을 찍을 수 있다 (하단 메뉴 [마을] 빨간 점).
+    public bool HasVillageNotice()
+    {
+        foreach (var building in GameDataLoader.Buildings)
+        {
+            if (CheckBuildingUpgrade(building.BuildingTID) == EResultCode.Ok || CanLearnAnyTrait(building.BuildingTID))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     // 아직 최대 레벨이 아닌 앞 노드 — 없으면 false(이 노드는 열려 있다). 서버 'User.TryLearnTrait'의 앞 노드 판정과 같다.
     public bool TryGetUnmetPrerequisite(UserTraitTableRow trait, out UserTraitTableRow prerequisite)
     {

@@ -4,12 +4,15 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-// 거점 지도 — 건물 5채를 그리고, 건물을 누르면 옆에 작은 메뉴([업그레이드] · [특성])를 띄운다.
+// 마을 지도 — 건물 5채를 그리고, 건물을 누르면 옆에 작은 메뉴([업그레이드] · [특성])를 띄운다.
 // 메뉴의 버튼이 건물 창('OutpostBuildingPresenter')을 연다. 지도 바닥을 누르면 메뉴가 닫힌다.
 //
-// ■ 표시가 답하는 것 둘
-// ▲ = 지금 올릴 수 있다('PlayerDataModel.CheckBuildingUpgrade') · ● = 남은 포인트가 있다.
-// 트리 노드가 없는 건물은 포인트를 써 볼 곳이 없어 ●을 켜지 않는다 — 켜 두면 눌러도 할 일이 없는 재촉이 된다.
+// ■ 빨간 점 하나 — 지금 할 수 있는 일이 있다 (2026-11-22 사용자 — ▲ · ● 표시를 레드닷으로 통일)
+// 올릴 수 있다('PlayerDataModel.CheckBuildingUpgrade') 또는 찍을 수 있는 노드가 있다('CanLearnAnyTrait').
+// 포인트만 남고 찍을 노드가 없으면 켜지 않는다 — 눌러도 할 일이 없는 재촉이 된다.
+//
+// ■ 바탕은 건물 레벨 합으로 자란다 ('OutpostArtStage.VillageStage')
+// 지형(개울 · 숲)은 다섯 장이 같고 길 · 광장 · 울타리 · 소품만 달라진다 — 건물 자리가 고정이라 바탕만 갈아 끼운다.
 public class OutpostMapPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -18,6 +21,12 @@ public class OutpostMapPresenter : MonoBehaviour
 
     [SerializeField, Tooltip("지도 바닥 버튼 — 누르면 메뉴를 닫는다. OnClick은 코드가 연결한다")]
     private Button groundButton = null!;
+
+    [SerializeField, Tooltip("지도 바닥 그림 — 마을 단계 바탕을 갈아 끼운다")]
+    private Image groundImage = null!;
+
+    [SerializeField, NonReorderable, Tooltip("마을 단계 바탕 5장 — ground_1~5")]
+    private Sprite[] groundStages = new Sprite[0];
 
     [SerializeField, Tooltip("건물 창 — 메뉴의 버튼이 연다")]
     private OutpostBuildingPresenter buildingWindow = null!;
@@ -44,6 +53,12 @@ public class OutpostMapPresenter : MonoBehaviour
     [SerializeField, Tooltip("메뉴 — [특성] 글자. 남은 포인트를 붙인다")]
     private TMP_Text menuTraitLabel = null!;
 
+    [SerializeField, Tooltip("메뉴 — [업그레이드] 빨간 점. 지금 올릴 수 있을 때")]
+    private GameObject menuUpgradeDot = null!;
+
+    [SerializeField, Tooltip("메뉴 — [특성] 빨간 점. 지금 찍을 수 있는 노드가 있을 때")]
+    private GameObject menuTraitDot = null!;
+
     private PlayerDataModel _data = null!;
 
     private int  _selectedTid; // 메뉴를 띄운 건물. 0이면 메뉴가 닫혀 있다
@@ -54,10 +69,19 @@ public class OutpostMapPresenter : MonoBehaviour
     private void Start()
     {
         this.RequireRef(groundButton,      nameof(groundButton));
+        this.RequireRef(groundImage,       nameof(groundImage));
+
+        if (groundStages.Length != OutpostArtStage.StageCount)
+        {
+            throw new System.InvalidOperationException($"{name}: 'groundStages'에 그림 {OutpostArtStage.StageCount}장을 넣을 것 (지금 {groundStages.Length}장).");
+        }
+
         this.RequireRef(buildingWindow,    nameof(buildingWindow));
         this.RequireRef(menuPanel,         nameof(menuPanel));
         this.RequireRef(menuNameText,      nameof(menuNameText));
         this.RequireRef(menuLevelText,     nameof(menuLevelText));
+        this.RequireRef(menuUpgradeDot,    nameof(menuUpgradeDot));
+        this.RequireRef(menuTraitDot,      nameof(menuTraitDot));
         this.RequireRef(menuDescText,      nameof(menuDescText));
         this.RequireRef(menuUpgradeButton, nameof(menuUpgradeButton));
         this.RequireRef(menuTraitButton,   nameof(menuTraitButton));
@@ -144,9 +168,12 @@ public class OutpostMapPresenter : MonoBehaviour
     // 건물 칸과 열린 메뉴를 다시 그린다 (구독 · Start · OnEnable)
     private void Redraw()
     {
+        int totalLevel = 0;
+
         foreach (OutpostBuildingView building in buildings)
         {
             int tid = building.BuildingTid;
+            totalLevel += _data.GetBuildingLevel(tid);
 
             if (!GameDataLoader.TryGetBuilding(tid, out var row))
             {
@@ -154,8 +181,10 @@ public class OutpostMapPresenter : MonoBehaviour
             }
 
             building.Bind(Loc.Get(row.NameLocKey), Lang.Get($"UI.Outpost.Category.{tid}"), _data.GetBuildingLevel(tid),
-                          _data.CheckBuildingUpgrade(tid) == EResultCode.Ok, GetVisiblePoints(tid));
+                          _data.CheckBuildingUpgrade(tid) == EResultCode.Ok || _data.CanLearnAnyTrait(tid));
         }
+
+        groundImage.sprite = groundStages[OutpostArtStage.VillageStage(totalLevel)];
 
         RedrawMenu();
     }
@@ -182,6 +211,9 @@ public class OutpostMapPresenter : MonoBehaviour
         menuTraitLabel.text = points > 0
             ? $"{Lang.Get("UI.Outpost.Traits")} {Lang.Format("UI.Outpost.PointLeft", points)}"
             : Lang.Get("UI.Outpost.Traits");
+
+        menuUpgradeDot.SetActive(_data.CheckBuildingUpgrade(_selectedTid) == EResultCode.Ok);
+        menuTraitDot.SetActive(_data.CanLearnAnyTrait(_selectedTid));
 
         menuPanel.gameObject.SetActive(true);
     }
