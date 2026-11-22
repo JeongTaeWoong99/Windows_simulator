@@ -1,0 +1,42 @@
+[
+  {
+    "GatherArtifactTID": 1,
+    "IndustryType": "Farming",
+    "IndustryLevel": 1,
+    "ArtifactTID": 29,
+    "ChancePerMillion": 1,
+    "Description": "농사 Lv.1"
+  },
+  {
+    "GatherArtifactTID": 2,
+    "IndustryType": "Logging",
+    "IndustryLevel": 1,
+    "ArtifactTID": 30,
+    "ChancePerMillion": 1,
+    "Description": "벌목 Lv.1"
+  },
+  {
+    "GatherArtifactTID": 3,
+    "IndustryType": "Mining",
+    "IndustryLevel": 1,
+    "ArtifactTID": 31,
+    "ChancePerMillion": 1,
+    "Description": "채굴 Lv.1"
+  },
+  {
+    "GatherArtifactTID": 4,
+    "IndustryType": "Excavation",
+    "IndustryLevel": 1,
+    "ArtifactTID": 32,
+    "ChancePerMillion": 1,
+    "Description": "유적 발굴 Lv.1"
+  },
+  {
+    "GatherArtifactTID": 5,
+    "IndustryType": "Hunting",
+    "IndustryLevel": 1,
+    "ArtifactTID": 33,
+    "ChancePerMillion": 1,
+    "Description": "사냥 Lv.1"
+  }
+]

@@ -4,7 +4,7 @@ using MikaUtils;
 namespace WSGameServer;
 
 /// <summary>
-/// 채취 공통 보상(상자 · T-030) 보관소. 자원 롤과 따로, 판정 1회마다 행마다 따로 굴린다.
+/// 채취 추가 보상 보관소. 자원과 별도로 상자·미감정 유물과 아티팩트를 굴린다.
 /// 기본은 <c>CommonRewardTable</c>의 <b>레벨 행</b>(전 산업 공통)이고, <c>CommonRewardOverrideTable</c>에
 /// 그 (산업, 레벨) 행이 하나라도 있으면 공통 행을 <b>통째로</b> 대신한다.
 /// 확률은 백만분율이라 아주 낮은 값(0.01% = 100)도 정수로 적는다.
@@ -20,21 +20,27 @@ public sealed class CommonRewardCatalog : Singleton<CommonRewardCatalog>
     private readonly Dictionary<int, List<Reward>> _commonByLevel = new();
     private readonly Dictionary<(IndustryType, int), List<Reward>> _overrideByIndustryLevel = new();
 
+    private readonly Dictionary<(IndustryType, int), GatherArtifactTableRow> _artifactByIndustryLevel = new();
+
     public int Count => _commonByLevel.Values.Sum(rows => rows.Count) + _overrideByIndustryLevel.Values.Sum(rows => rows.Count);
 
     /// <summary>모든 행을 <c>GameTable</c>에서 읽어 등록한다. 반드시 <c>GameTable.LoadAll</c> 이후에 부른다.</summary>
     public void LoadAll()
     {
-        Load(GameTable.CommonRewardTable.All, GameTable.CommonRewardOverrideTable.All);
+        Load(GameTable.CommonRewardTable.All, GameTable.CommonRewardOverrideTable.All, GameTable.GatherArtifactTable.All);
     }
 
-    public void Load(IEnumerable<CommonRewardTableRow> commons, IEnumerable<CommonRewardOverrideTableRow> overrides)
+    public void Load(
+        IEnumerable<CommonRewardTableRow> commons,
+        IEnumerable<CommonRewardOverrideTableRow> overrides,
+        IEnumerable<GatherArtifactTableRow>? artifacts = null)
     {
         ArgumentNullException.ThrowIfNull(commons);
         ArgumentNullException.ThrowIfNull(overrides);
 
         _commonByLevel.Clear();
         _overrideByIndustryLevel.Clear();
+        _artifactByIndustryLevel.Clear();
 
         foreach (var row in commons)
         {
@@ -44,6 +50,11 @@ public sealed class CommonRewardCatalog : Singleton<CommonRewardCatalog>
         foreach (var row in overrides)
         {
             Add(_overrideByIndustryLevel, (row.IndustryType, row.IndustryLevel), new Reward(row.ItemTID, row.Count, row.ChancePerMillion));
+        }
+
+        foreach (var row in artifacts ?? [])
+        {
+            _artifactByIndustryLevel.Add((row.IndustryType, row.IndustryLevel), row);
         }
     }
 
@@ -71,6 +82,26 @@ public sealed class CommonRewardCatalog : Singleton<CommonRewardCatalog>
         }
 
         return gained;
+    }
+
+    /// <summary>산업·레벨에 지정된 아티팩트를 판정당 최대 1개 굴려 모은다. 자원·유물 보정은 적용하지 않는다.</summary>
+    public (int ArtifactTid, int Count) RollGatherArtifacts(IndustryType industry, int industryLevel, int judgeCount, Random random)
+    {
+        if (!_artifactByIndustryLevel.TryGetValue((industry, industryLevel), out var row))
+        {
+            return default;
+        }
+
+        var count = 0;
+        for (var i = 0; i < judgeCount; i++)
+        {
+            if (random.Next(ChanceScale) < row.ChancePerMillion)
+            {
+                count++;
+            }
+        }
+
+        return (row.ArtifactTID, count);
     }
 
     private static void Add<TKey>(Dictionary<TKey, List<Reward>> map, TKey key, Reward reward) where TKey : notnull
