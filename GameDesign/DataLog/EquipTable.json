@@ -1621,7 +1621,7 @@
   },
   {
     "EquipTID": 201101,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1633,7 +1633,7 @@
   },
   {
     "EquipTID": 201102,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1645,7 +1645,7 @@
   },
   {
     "EquipTID": 201103,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1657,7 +1657,7 @@
   },
   {
     "EquipTID": 201104,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1669,7 +1669,7 @@
   },
   {
     "EquipTID": 201105,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1681,7 +1681,7 @@
   },
   {
     "EquipTID": 201106,
-    "Name": "단철 괭이",
+    "Name": "무쇠 괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -1693,7 +1693,7 @@
   },
   {
     "EquipTID": 201201,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1705,7 +1705,7 @@
   },
   {
     "EquipTID": 201202,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1717,7 +1717,7 @@
   },
   {
     "EquipTID": 201203,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1729,7 +1729,7 @@
   },
   {
     "EquipTID": 201204,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1741,7 +1741,7 @@
   },
   {
     "EquipTID": 201205,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1753,7 +1753,7 @@
   },
   {
     "EquipTID": 201206,
-    "Name": "단철 발굴 망치",
+    "Name": "무쇠 발굴 망치",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -1765,7 +1765,7 @@
   },
   {
     "EquipTID": 201301,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1777,7 +1777,7 @@
   },
   {
     "EquipTID": 201302,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1789,7 +1789,7 @@
   },
   {
     "EquipTID": 201303,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1801,7 +1801,7 @@
   },
   {
     "EquipTID": 201304,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1813,7 +1813,7 @@
   },
   {
     "EquipTID": 201305,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1825,7 +1825,7 @@
   },
   {
     "EquipTID": 201306,
-    "Name": "단철 곡괭이",
+    "Name": "무쇠 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -1837,7 +1837,7 @@
   },
   {
     "EquipTID": 201401,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1849,7 +1849,7 @@
   },
   {
     "EquipTID": 201402,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1861,7 +1861,7 @@
   },
   {
     "EquipTID": 201403,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1873,7 +1873,7 @@
   },
   {
     "EquipTID": 201404,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1885,7 +1885,7 @@
   },
   {
     "EquipTID": 201405,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1897,7 +1897,7 @@
   },
   {
     "EquipTID": 201406,
-    "Name": "단철 톱",
+    "Name": "무쇠 톱",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -1909,7 +1909,7 @@
   },
   {
     "EquipTID": 201501,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1921,7 +1921,7 @@
   },
   {
     "EquipTID": 201502,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1933,7 +1933,7 @@
   },
   {
     "EquipTID": 201503,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1945,7 +1945,7 @@
   },
   {
     "EquipTID": 201504,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1957,7 +1957,7 @@
   },
   {
     "EquipTID": 201505,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1969,7 +1969,7 @@
   },
   {
     "EquipTID": 201506,
-    "Name": "단철 장궁",
+    "Name": "무쇠촉 장궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -1981,7 +1981,7 @@
   },
   {
     "EquipTID": 202001,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -1993,7 +1993,7 @@
   },
   {
     "EquipTID": 202002,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2005,7 +2005,7 @@
   },
   {
     "EquipTID": 202003,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2017,7 +2017,7 @@
   },
   {
     "EquipTID": 202004,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2029,7 +2029,7 @@
   },
   {
     "EquipTID": 202005,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2041,7 +2041,7 @@
   },
   {
     "EquipTID": 202006,
-    "Name": "단철 고리",
+    "Name": "무쇠 고리",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2413,7 +2413,7 @@
   },
   {
     "EquipTID": 301101,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2425,7 +2425,7 @@
   },
   {
     "EquipTID": 301102,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2437,7 +2437,7 @@
   },
   {
     "EquipTID": 301103,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2449,7 +2449,7 @@
   },
   {
     "EquipTID": 301104,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2461,7 +2461,7 @@
   },
   {
     "EquipTID": 301105,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2473,7 +2473,7 @@
   },
   {
     "EquipTID": 301106,
-    "Name": "은날 쟁기",
+    "Name": "단철 쟁기",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -2485,7 +2485,7 @@
   },
   {
     "EquipTID": 301201,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2497,7 +2497,7 @@
   },
   {
     "EquipTID": 301202,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2509,7 +2509,7 @@
   },
   {
     "EquipTID": 301203,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2521,7 +2521,7 @@
   },
   {
     "EquipTID": 301204,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2533,7 +2533,7 @@
   },
   {
     "EquipTID": 301205,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2545,7 +2545,7 @@
   },
   {
     "EquipTID": 301206,
-    "Name": "은 탐사 송곳",
+    "Name": "단철 탐사 송곳",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -2557,7 +2557,7 @@
   },
   {
     "EquipTID": 301301,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2569,7 +2569,7 @@
   },
   {
     "EquipTID": 301302,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2581,7 +2581,7 @@
   },
   {
     "EquipTID": 301303,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2593,7 +2593,7 @@
   },
   {
     "EquipTID": 301304,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2605,7 +2605,7 @@
   },
   {
     "EquipTID": 301305,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2617,7 +2617,7 @@
   },
   {
     "EquipTID": 301306,
-    "Name": "은날 곡괭이",
+    "Name": "단철 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -2629,7 +2629,7 @@
   },
   {
     "EquipTID": 301401,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2641,7 +2641,7 @@
   },
   {
     "EquipTID": 301402,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2653,7 +2653,7 @@
   },
   {
     "EquipTID": 301403,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2665,7 +2665,7 @@
   },
   {
     "EquipTID": 301404,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2677,7 +2677,7 @@
   },
   {
     "EquipTID": 301405,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2689,7 +2689,7 @@
   },
   {
     "EquipTID": 301406,
-    "Name": "은날 도끼",
+    "Name": "단철 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -2701,7 +2701,7 @@
   },
   {
     "EquipTID": 301501,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2713,7 +2713,7 @@
   },
   {
     "EquipTID": 301502,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2725,7 +2725,7 @@
   },
   {
     "EquipTID": 301503,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2737,7 +2737,7 @@
   },
   {
     "EquipTID": 301504,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2749,7 +2749,7 @@
   },
   {
     "EquipTID": 301505,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2761,7 +2761,7 @@
   },
   {
     "EquipTID": 301506,
-    "Name": "은사 석궁",
+    "Name": "단철 석궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -2773,7 +2773,7 @@
   },
   {
     "EquipTID": 302001,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2785,7 +2785,7 @@
   },
   {
     "EquipTID": 302002,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2797,7 +2797,7 @@
   },
   {
     "EquipTID": 302003,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2809,7 +2809,7 @@
   },
   {
     "EquipTID": 302004,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2821,7 +2821,7 @@
   },
   {
     "EquipTID": 302005,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2833,7 +2833,7 @@
   },
   {
     "EquipTID": 302006,
-    "Name": "은세공 목걸이",
+    "Name": "단철 목걸이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -2845,7 +2845,7 @@
   },
   {
     "EquipTID": 303101,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2857,7 +2857,7 @@
   },
   {
     "EquipTID": 303102,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2869,7 +2869,7 @@
   },
   {
     "EquipTID": 303103,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2881,7 +2881,7 @@
   },
   {
     "EquipTID": 303104,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2893,7 +2893,7 @@
   },
   {
     "EquipTID": 303105,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2905,7 +2905,7 @@
   },
   {
     "EquipTID": 303106,
-    "Name": "이삭 월장석",
+    "Name": "이삭 석류석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -2917,7 +2917,7 @@
   },
   {
     "EquipTID": 303201,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2929,7 +2929,7 @@
   },
   {
     "EquipTID": 303202,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2941,7 +2941,7 @@
   },
   {
     "EquipTID": 303203,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2953,7 +2953,7 @@
   },
   {
     "EquipTID": 303204,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2965,7 +2965,7 @@
   },
   {
     "EquipTID": 303205,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2977,7 +2977,7 @@
   },
   {
     "EquipTID": 303206,
-    "Name": "유적 월장석",
+    "Name": "유적 석류석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -2989,7 +2989,7 @@
   },
   {
     "EquipTID": 303301,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3001,7 +3001,7 @@
   },
   {
     "EquipTID": 303302,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3013,7 +3013,7 @@
   },
   {
     "EquipTID": 303303,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3025,7 +3025,7 @@
   },
   {
     "EquipTID": 303304,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3037,7 +3037,7 @@
   },
   {
     "EquipTID": 303305,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3049,7 +3049,7 @@
   },
   {
     "EquipTID": 303306,
-    "Name": "원광 월장석",
+    "Name": "원광 석류석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3061,7 +3061,7 @@
   },
   {
     "EquipTID": 303401,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3073,7 +3073,7 @@
   },
   {
     "EquipTID": 303402,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3085,7 +3085,7 @@
   },
   {
     "EquipTID": 303403,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3097,7 +3097,7 @@
   },
   {
     "EquipTID": 303404,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3109,7 +3109,7 @@
   },
   {
     "EquipTID": 303405,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3121,7 +3121,7 @@
   },
   {
     "EquipTID": 303406,
-    "Name": "나이테 월장석",
+    "Name": "나이테 석류석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3133,7 +3133,7 @@
   },
   {
     "EquipTID": 303501,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3145,7 +3145,7 @@
   },
   {
     "EquipTID": 303502,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3157,7 +3157,7 @@
   },
   {
     "EquipTID": 303503,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3169,7 +3169,7 @@
   },
   {
     "EquipTID": 303504,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3181,7 +3181,7 @@
   },
   {
     "EquipTID": 303505,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3193,7 +3193,7 @@
   },
   {
     "EquipTID": 303506,
-    "Name": "발자국 월장석",
+    "Name": "발자국 석류석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3205,7 +3205,7 @@
   },
   {
     "EquipTID": 401101,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3217,7 +3217,7 @@
   },
   {
     "EquipTID": 401102,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3229,7 +3229,7 @@
   },
   {
     "EquipTID": 401103,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3241,7 +3241,7 @@
   },
   {
     "EquipTID": 401104,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3253,7 +3253,7 @@
   },
   {
     "EquipTID": 401105,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3265,7 +3265,7 @@
   },
   {
     "EquipTID": 401106,
-    "Name": "룬 새긴 낫",
+    "Name": "강철 낫",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -3277,7 +3277,7 @@
   },
   {
     "EquipTID": 401201,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3289,7 +3289,7 @@
   },
   {
     "EquipTID": 401202,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3301,7 +3301,7 @@
   },
   {
     "EquipTID": 401203,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3313,7 +3313,7 @@
   },
   {
     "EquipTID": 401204,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3325,7 +3325,7 @@
   },
   {
     "EquipTID": 401205,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3337,7 +3337,7 @@
   },
   {
     "EquipTID": 401206,
-    "Name": "룬 새긴 발굴삽",
+    "Name": "강철 발굴삽",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -3349,7 +3349,7 @@
   },
   {
     "EquipTID": 401301,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3361,7 +3361,7 @@
   },
   {
     "EquipTID": 401302,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3373,7 +3373,7 @@
   },
   {
     "EquipTID": 401303,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3385,7 +3385,7 @@
   },
   {
     "EquipTID": 401304,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3397,7 +3397,7 @@
   },
   {
     "EquipTID": 401305,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3409,7 +3409,7 @@
   },
   {
     "EquipTID": 401306,
-    "Name": "룬 새긴 곡괭이",
+    "Name": "강철 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -3421,7 +3421,7 @@
   },
   {
     "EquipTID": 401401,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3433,7 +3433,7 @@
   },
   {
     "EquipTID": 401402,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3445,7 +3445,7 @@
   },
   {
     "EquipTID": 401403,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3457,7 +3457,7 @@
   },
   {
     "EquipTID": 401404,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3469,7 +3469,7 @@
   },
   {
     "EquipTID": 401405,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3481,7 +3481,7 @@
   },
   {
     "EquipTID": 401406,
-    "Name": "룬 새긴 도끼",
+    "Name": "강철 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -3493,7 +3493,7 @@
   },
   {
     "EquipTID": 401501,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3505,7 +3505,7 @@
   },
   {
     "EquipTID": 401502,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3517,7 +3517,7 @@
   },
   {
     "EquipTID": 401503,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3529,7 +3529,7 @@
   },
   {
     "EquipTID": 401504,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3541,7 +3541,7 @@
   },
   {
     "EquipTID": 401505,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3553,7 +3553,7 @@
   },
   {
     "EquipTID": 401506,
-    "Name": "룬 새긴 활",
+    "Name": "강철 활",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -3565,7 +3565,7 @@
   },
   {
     "EquipTID": 402001,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3577,7 +3577,7 @@
   },
   {
     "EquipTID": 402002,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3589,7 +3589,7 @@
   },
   {
     "EquipTID": 402003,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3601,7 +3601,7 @@
   },
   {
     "EquipTID": 402004,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3613,7 +3613,7 @@
   },
   {
     "EquipTID": 402005,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3625,7 +3625,7 @@
   },
   {
     "EquipTID": 402006,
-    "Name": "룬 반지",
+    "Name": "강철 반지",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -3637,7 +3637,7 @@
   },
   {
     "EquipTID": 403101,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3649,7 +3649,7 @@
   },
   {
     "EquipTID": 403102,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3661,7 +3661,7 @@
   },
   {
     "EquipTID": 403103,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3673,7 +3673,7 @@
   },
   {
     "EquipTID": 403104,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3685,7 +3685,7 @@
   },
   {
     "EquipTID": 403105,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3697,7 +3697,7 @@
   },
   {
     "EquipTID": 403106,
-    "Name": "이삭 룬석",
+    "Name": "이삭 월장석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -3709,7 +3709,7 @@
   },
   {
     "EquipTID": 403201,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3721,7 +3721,7 @@
   },
   {
     "EquipTID": 403202,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3733,7 +3733,7 @@
   },
   {
     "EquipTID": 403203,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3745,7 +3745,7 @@
   },
   {
     "EquipTID": 403204,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3757,7 +3757,7 @@
   },
   {
     "EquipTID": 403205,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3769,7 +3769,7 @@
   },
   {
     "EquipTID": 403206,
-    "Name": "유적 룬석",
+    "Name": "유적 월장석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -3781,7 +3781,7 @@
   },
   {
     "EquipTID": 403301,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3793,7 +3793,7 @@
   },
   {
     "EquipTID": 403302,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3805,7 +3805,7 @@
   },
   {
     "EquipTID": 403303,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3817,7 +3817,7 @@
   },
   {
     "EquipTID": 403304,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3829,7 +3829,7 @@
   },
   {
     "EquipTID": 403305,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3841,7 +3841,7 @@
   },
   {
     "EquipTID": 403306,
-    "Name": "원광 룬석",
+    "Name": "원광 월장석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -3853,7 +3853,7 @@
   },
   {
     "EquipTID": 403401,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3865,7 +3865,7 @@
   },
   {
     "EquipTID": 403402,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3877,7 +3877,7 @@
   },
   {
     "EquipTID": 403403,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3889,7 +3889,7 @@
   },
   {
     "EquipTID": 403404,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3901,7 +3901,7 @@
   },
   {
     "EquipTID": 403405,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3913,7 +3913,7 @@
   },
   {
     "EquipTID": 403406,
-    "Name": "나이테 룬석",
+    "Name": "나이테 월장석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -3925,7 +3925,7 @@
   },
   {
     "EquipTID": 403501,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3937,7 +3937,7 @@
   },
   {
     "EquipTID": 403502,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3949,7 +3949,7 @@
   },
   {
     "EquipTID": 403503,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3961,7 +3961,7 @@
   },
   {
     "EquipTID": 403504,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3973,7 +3973,7 @@
   },
   {
     "EquipTID": 403505,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3985,7 +3985,7 @@
   },
   {
     "EquipTID": 403506,
-    "Name": "발자국 룬석",
+    "Name": "발자국 월장석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -3997,7 +3997,7 @@
   },
   {
     "EquipTID": 501101,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4009,7 +4009,7 @@
   },
   {
     "EquipTID": 501102,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4021,7 +4021,7 @@
   },
   {
     "EquipTID": 501103,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4033,7 +4033,7 @@
   },
   {
     "EquipTID": 501104,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4045,7 +4045,7 @@
   },
   {
     "EquipTID": 501105,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4057,7 +4057,7 @@
   },
   {
     "EquipTID": 501106,
-    "Name": "수정날 괭이",
+    "Name": "은날 괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4069,7 +4069,7 @@
   },
   {
     "EquipTID": 501201,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4081,7 +4081,7 @@
   },
   {
     "EquipTID": 501202,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4093,7 +4093,7 @@
   },
   {
     "EquipTID": 501203,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4105,7 +4105,7 @@
   },
   {
     "EquipTID": 501204,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4117,7 +4117,7 @@
   },
   {
     "EquipTID": 501205,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4129,7 +4129,7 @@
   },
   {
     "EquipTID": 501206,
-    "Name": "수정 탐침",
+    "Name": "은 탐침",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4141,7 +4141,7 @@
   },
   {
     "EquipTID": 501301,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4153,7 +4153,7 @@
   },
   {
     "EquipTID": 501302,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4165,7 +4165,7 @@
   },
   {
     "EquipTID": 501303,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4177,7 +4177,7 @@
   },
   {
     "EquipTID": 501304,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4189,7 +4189,7 @@
   },
   {
     "EquipTID": 501305,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4201,7 +4201,7 @@
   },
   {
     "EquipTID": 501306,
-    "Name": "수정 곡괭이",
+    "Name": "은날 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4213,7 +4213,7 @@
   },
   {
     "EquipTID": 501401,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4225,7 +4225,7 @@
   },
   {
     "EquipTID": 501402,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4237,7 +4237,7 @@
   },
   {
     "EquipTID": 501403,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4249,7 +4249,7 @@
   },
   {
     "EquipTID": 501404,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4261,7 +4261,7 @@
   },
   {
     "EquipTID": 501405,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4273,7 +4273,7 @@
   },
   {
     "EquipTID": 501406,
-    "Name": "수정날 도끼",
+    "Name": "은날 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -4285,7 +4285,7 @@
   },
   {
     "EquipTID": 501501,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4297,7 +4297,7 @@
   },
   {
     "EquipTID": 501502,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4309,7 +4309,7 @@
   },
   {
     "EquipTID": 501503,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4321,7 +4321,7 @@
   },
   {
     "EquipTID": 501504,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4333,7 +4333,7 @@
   },
   {
     "EquipTID": 501505,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4345,7 +4345,7 @@
   },
   {
     "EquipTID": 501506,
-    "Name": "수정 석궁",
+    "Name": "은사 석궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -4357,7 +4357,7 @@
   },
   {
     "EquipTID": 502001,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4369,7 +4369,7 @@
   },
   {
     "EquipTID": 502002,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4381,7 +4381,7 @@
   },
   {
     "EquipTID": 502003,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4393,7 +4393,7 @@
   },
   {
     "EquipTID": 502004,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4405,7 +4405,7 @@
   },
   {
     "EquipTID": 502005,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4417,7 +4417,7 @@
   },
   {
     "EquipTID": 502006,
-    "Name": "수정 펜던트",
+    "Name": "은세공 펜던트",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -4429,7 +4429,7 @@
   },
   {
     "EquipTID": 503101,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4441,7 +4441,7 @@
   },
   {
     "EquipTID": 503102,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4453,7 +4453,7 @@
   },
   {
     "EquipTID": 503103,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4465,7 +4465,7 @@
   },
   {
     "EquipTID": 503104,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4477,7 +4477,7 @@
   },
   {
     "EquipTID": 503105,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4489,7 +4489,7 @@
   },
   {
     "EquipTID": 503106,
-    "Name": "이삭 수정",
+    "Name": "이삭 자수정",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -4501,7 +4501,7 @@
   },
   {
     "EquipTID": 503201,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4513,7 +4513,7 @@
   },
   {
     "EquipTID": 503202,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4525,7 +4525,7 @@
   },
   {
     "EquipTID": 503203,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4537,7 +4537,7 @@
   },
   {
     "EquipTID": 503204,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4549,7 +4549,7 @@
   },
   {
     "EquipTID": 503205,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4561,7 +4561,7 @@
   },
   {
     "EquipTID": 503206,
-    "Name": "유적 수정",
+    "Name": "유적 자수정",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -4573,7 +4573,7 @@
   },
   {
     "EquipTID": 503301,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4585,7 +4585,7 @@
   },
   {
     "EquipTID": 503302,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4597,7 +4597,7 @@
   },
   {
     "EquipTID": 503303,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4609,7 +4609,7 @@
   },
   {
     "EquipTID": 503304,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4621,7 +4621,7 @@
   },
   {
     "EquipTID": 503305,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4633,7 +4633,7 @@
   },
   {
     "EquipTID": 503306,
-    "Name": "원광 수정",
+    "Name": "원광 자수정",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -4645,7 +4645,7 @@
   },
   {
     "EquipTID": 503401,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4657,7 +4657,7 @@
   },
   {
     "EquipTID": 503402,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4669,7 +4669,7 @@
   },
   {
     "EquipTID": 503403,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4681,7 +4681,7 @@
   },
   {
     "EquipTID": 503404,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4693,7 +4693,7 @@
   },
   {
     "EquipTID": 503405,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4705,7 +4705,7 @@
   },
   {
     "EquipTID": 503406,
-    "Name": "나이테 수정",
+    "Name": "나이테 자수정",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -4717,7 +4717,7 @@
   },
   {
     "EquipTID": 503501,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4729,7 +4729,7 @@
   },
   {
     "EquipTID": 503502,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4741,7 +4741,7 @@
   },
   {
     "EquipTID": 503503,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4753,7 +4753,7 @@
   },
   {
     "EquipTID": 503504,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4765,7 +4765,7 @@
   },
   {
     "EquipTID": 503505,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4777,7 +4777,7 @@
   },
   {
     "EquipTID": 503506,
-    "Name": "발자국 수정",
+    "Name": "발자국 자수정",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -4789,7 +4789,7 @@
   },
   {
     "EquipTID": 601101,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4801,7 +4801,7 @@
   },
   {
     "EquipTID": 601102,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4813,7 +4813,7 @@
   },
   {
     "EquipTID": 601103,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4825,7 +4825,7 @@
   },
   {
     "EquipTID": 601104,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4837,7 +4837,7 @@
   },
   {
     "EquipTID": 601105,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4849,7 +4849,7 @@
   },
   {
     "EquipTID": 601106,
-    "Name": "비전 쟁기",
+    "Name": "기사의 쟁기",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -4861,7 +4861,7 @@
   },
   {
     "EquipTID": 601201,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4873,7 +4873,7 @@
   },
   {
     "EquipTID": 601202,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4885,7 +4885,7 @@
   },
   {
     "EquipTID": 601203,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4897,7 +4897,7 @@
   },
   {
     "EquipTID": 601204,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4909,7 +4909,7 @@
   },
   {
     "EquipTID": 601205,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4921,7 +4921,7 @@
   },
   {
     "EquipTID": 601206,
-    "Name": "비전 발굴봉",
+    "Name": "기사의 발굴봉",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -4933,7 +4933,7 @@
   },
   {
     "EquipTID": 601301,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4945,7 +4945,7 @@
   },
   {
     "EquipTID": 601302,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4957,7 +4957,7 @@
   },
   {
     "EquipTID": 601303,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4969,7 +4969,7 @@
   },
   {
     "EquipTID": 601304,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4981,7 +4981,7 @@
   },
   {
     "EquipTID": 601305,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -4993,7 +4993,7 @@
   },
   {
     "EquipTID": 601306,
-    "Name": "비전 곡괭이",
+    "Name": "기사의 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5005,7 +5005,7 @@
   },
   {
     "EquipTID": 601401,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5017,7 +5017,7 @@
   },
   {
     "EquipTID": 601402,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5029,7 +5029,7 @@
   },
   {
     "EquipTID": 601403,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5041,7 +5041,7 @@
   },
   {
     "EquipTID": 601404,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5053,7 +5053,7 @@
   },
   {
     "EquipTID": 601405,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5065,7 +5065,7 @@
   },
   {
     "EquipTID": 601406,
-    "Name": "비전 도끼",
+    "Name": "기사의 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5077,7 +5077,7 @@
   },
   {
     "EquipTID": 601501,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5089,7 +5089,7 @@
   },
   {
     "EquipTID": 601502,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5101,7 +5101,7 @@
   },
   {
     "EquipTID": 601503,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5113,7 +5113,7 @@
   },
   {
     "EquipTID": 601504,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5125,7 +5125,7 @@
   },
   {
     "EquipTID": 601505,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5137,7 +5137,7 @@
   },
   {
     "EquipTID": 601506,
-    "Name": "비전 장궁",
+    "Name": "기사의 장궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5149,7 +5149,7 @@
   },
   {
     "EquipTID": 602001,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5161,7 +5161,7 @@
   },
   {
     "EquipTID": 602002,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5173,7 +5173,7 @@
   },
   {
     "EquipTID": 602003,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5185,7 +5185,7 @@
   },
   {
     "EquipTID": 602004,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5197,7 +5197,7 @@
   },
   {
     "EquipTID": 602005,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5209,7 +5209,7 @@
   },
   {
     "EquipTID": 602006,
-    "Name": "비전 인장",
+    "Name": "기사의 인장",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5221,7 +5221,7 @@
   },
   {
     "EquipTID": 603101,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5233,7 +5233,7 @@
   },
   {
     "EquipTID": 603102,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5245,7 +5245,7 @@
   },
   {
     "EquipTID": 603103,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5257,7 +5257,7 @@
   },
   {
     "EquipTID": 603104,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5269,7 +5269,7 @@
   },
   {
     "EquipTID": 603105,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5281,7 +5281,7 @@
   },
   {
     "EquipTID": 603106,
-    "Name": "이삭 비전석",
+    "Name": "이삭 청옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -5293,7 +5293,7 @@
   },
   {
     "EquipTID": 603201,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5305,7 +5305,7 @@
   },
   {
     "EquipTID": 603202,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5317,7 +5317,7 @@
   },
   {
     "EquipTID": 603203,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5329,7 +5329,7 @@
   },
   {
     "EquipTID": 603204,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5341,7 +5341,7 @@
   },
   {
     "EquipTID": 603205,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5353,7 +5353,7 @@
   },
   {
     "EquipTID": 603206,
-    "Name": "유적 비전석",
+    "Name": "유적 청옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -5365,7 +5365,7 @@
   },
   {
     "EquipTID": 603301,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5377,7 +5377,7 @@
   },
   {
     "EquipTID": 603302,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5389,7 +5389,7 @@
   },
   {
     "EquipTID": 603303,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5401,7 +5401,7 @@
   },
   {
     "EquipTID": 603304,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5413,7 +5413,7 @@
   },
   {
     "EquipTID": 603305,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5425,7 +5425,7 @@
   },
   {
     "EquipTID": 603306,
-    "Name": "원광 비전석",
+    "Name": "원광 청옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -5437,7 +5437,7 @@
   },
   {
     "EquipTID": 603401,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5449,7 +5449,7 @@
   },
   {
     "EquipTID": 603402,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5461,7 +5461,7 @@
   },
   {
     "EquipTID": 603403,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5473,7 +5473,7 @@
   },
   {
     "EquipTID": 603404,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5485,7 +5485,7 @@
   },
   {
     "EquipTID": 603405,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5497,7 +5497,7 @@
   },
   {
     "EquipTID": 603406,
-    "Name": "나이테 비전석",
+    "Name": "나이테 청옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -5509,7 +5509,7 @@
   },
   {
     "EquipTID": 603501,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5521,7 +5521,7 @@
   },
   {
     "EquipTID": 603502,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5533,7 +5533,7 @@
   },
   {
     "EquipTID": 603503,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5545,7 +5545,7 @@
   },
   {
     "EquipTID": 603504,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5557,7 +5557,7 @@
   },
   {
     "EquipTID": 603505,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5569,7 +5569,7 @@
   },
   {
     "EquipTID": 603506,
-    "Name": "발자국 비전석",
+    "Name": "발자국 청옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -5581,7 +5581,7 @@
   },
   {
     "EquipTID": 701101,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5593,7 +5593,7 @@
   },
   {
     "EquipTID": 701102,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5605,7 +5605,7 @@
   },
   {
     "EquipTID": 701103,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5617,7 +5617,7 @@
   },
   {
     "EquipTID": 701104,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5629,7 +5629,7 @@
   },
   {
     "EquipTID": 701105,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5641,7 +5641,7 @@
   },
   {
     "EquipTID": 701106,
-    "Name": "마력 괭이",
+    "Name": "미스릴 괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -5653,7 +5653,7 @@
   },
   {
     "EquipTID": 701201,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5665,7 +5665,7 @@
   },
   {
     "EquipTID": 701202,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5677,7 +5677,7 @@
   },
   {
     "EquipTID": 701203,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5689,7 +5689,7 @@
   },
   {
     "EquipTID": 701204,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5701,7 +5701,7 @@
   },
   {
     "EquipTID": 701205,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5713,7 +5713,7 @@
   },
   {
     "EquipTID": 701206,
-    "Name": "마력 탐사봉",
+    "Name": "미스릴 탐사봉",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -5725,7 +5725,7 @@
   },
   {
     "EquipTID": 701301,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5737,7 +5737,7 @@
   },
   {
     "EquipTID": 701302,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5749,7 +5749,7 @@
   },
   {
     "EquipTID": 701303,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5761,7 +5761,7 @@
   },
   {
     "EquipTID": 701304,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5773,7 +5773,7 @@
   },
   {
     "EquipTID": 701305,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5785,7 +5785,7 @@
   },
   {
     "EquipTID": 701306,
-    "Name": "마력 착암 곡괭이",
+    "Name": "미스릴 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -5797,7 +5797,7 @@
   },
   {
     "EquipTID": 701401,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5809,7 +5809,7 @@
   },
   {
     "EquipTID": 701402,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5821,7 +5821,7 @@
   },
   {
     "EquipTID": 701403,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5833,7 +5833,7 @@
   },
   {
     "EquipTID": 701404,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5845,7 +5845,7 @@
   },
   {
     "EquipTID": 701405,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5857,7 +5857,7 @@
   },
   {
     "EquipTID": 701406,
-    "Name": "마력 톱도끼",
+    "Name": "미스릴 톱도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -5869,7 +5869,7 @@
   },
   {
     "EquipTID": 701501,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5881,7 +5881,7 @@
   },
   {
     "EquipTID": 701502,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5893,7 +5893,7 @@
   },
   {
     "EquipTID": 701503,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5905,7 +5905,7 @@
   },
   {
     "EquipTID": 701504,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5917,7 +5917,7 @@
   },
   {
     "EquipTID": 701505,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5929,7 +5929,7 @@
   },
   {
     "EquipTID": 701506,
-    "Name": "마력 연노",
+    "Name": "미스릴 연노",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -5941,7 +5941,7 @@
   },
   {
     "EquipTID": 702001,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5953,7 +5953,7 @@
   },
   {
     "EquipTID": 702002,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5965,7 +5965,7 @@
   },
   {
     "EquipTID": 702003,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5977,7 +5977,7 @@
   },
   {
     "EquipTID": 702004,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -5989,7 +5989,7 @@
   },
   {
     "EquipTID": 702005,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6001,7 +6001,7 @@
   },
   {
     "EquipTID": 702006,
-    "Name": "마력 부적",
+    "Name": "미스릴 브로치",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6013,7 +6013,7 @@
   },
   {
     "EquipTID": 703101,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6025,7 +6025,7 @@
   },
   {
     "EquipTID": 703102,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6037,7 +6037,7 @@
   },
   {
     "EquipTID": 703103,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6049,7 +6049,7 @@
   },
   {
     "EquipTID": 703104,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6061,7 +6061,7 @@
   },
   {
     "EquipTID": 703105,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6073,7 +6073,7 @@
   },
   {
     "EquipTID": 703106,
-    "Name": "이삭 마력석",
+    "Name": "이삭 홍옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6085,7 +6085,7 @@
   },
   {
     "EquipTID": 703201,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6097,7 +6097,7 @@
   },
   {
     "EquipTID": 703202,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6109,7 +6109,7 @@
   },
   {
     "EquipTID": 703203,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6121,7 +6121,7 @@
   },
   {
     "EquipTID": 703204,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6133,7 +6133,7 @@
   },
   {
     "EquipTID": 703205,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6145,7 +6145,7 @@
   },
   {
     "EquipTID": 703206,
-    "Name": "유적 마력석",
+    "Name": "유적 홍옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6157,7 +6157,7 @@
   },
   {
     "EquipTID": 703301,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6169,7 +6169,7 @@
   },
   {
     "EquipTID": 703302,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6181,7 +6181,7 @@
   },
   {
     "EquipTID": 703303,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6193,7 +6193,7 @@
   },
   {
     "EquipTID": 703304,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6205,7 +6205,7 @@
   },
   {
     "EquipTID": 703305,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6217,7 +6217,7 @@
   },
   {
     "EquipTID": 703306,
-    "Name": "원광 마력석",
+    "Name": "원광 홍옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6229,7 +6229,7 @@
   },
   {
     "EquipTID": 703401,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6241,7 +6241,7 @@
   },
   {
     "EquipTID": 703402,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6253,7 +6253,7 @@
   },
   {
     "EquipTID": 703403,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6265,7 +6265,7 @@
   },
   {
     "EquipTID": 703404,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6277,7 +6277,7 @@
   },
   {
     "EquipTID": 703405,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6289,7 +6289,7 @@
   },
   {
     "EquipTID": 703406,
-    "Name": "나이테 마력석",
+    "Name": "나이테 홍옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -6301,7 +6301,7 @@
   },
   {
     "EquipTID": 703501,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6313,7 +6313,7 @@
   },
   {
     "EquipTID": 703502,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6325,7 +6325,7 @@
   },
   {
     "EquipTID": 703503,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6337,7 +6337,7 @@
   },
   {
     "EquipTID": 703504,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6349,7 +6349,7 @@
   },
   {
     "EquipTID": 703505,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6361,7 +6361,7 @@
   },
   {
     "EquipTID": 703506,
-    "Name": "발자국 마력석",
+    "Name": "발자국 홍옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -6373,7 +6373,7 @@
   },
   {
     "EquipTID": 801101,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6385,7 +6385,7 @@
   },
   {
     "EquipTID": 801102,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6397,7 +6397,7 @@
   },
   {
     "EquipTID": 801103,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6409,7 +6409,7 @@
   },
   {
     "EquipTID": 801104,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6421,7 +6421,7 @@
   },
   {
     "EquipTID": 801105,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6433,7 +6433,7 @@
   },
   {
     "EquipTID": 801106,
-    "Name": "태엽 수확기",
+    "Name": "명장의 낫",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -6445,7 +6445,7 @@
   },
   {
     "EquipTID": 801201,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6457,7 +6457,7 @@
   },
   {
     "EquipTID": 801202,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6469,7 +6469,7 @@
   },
   {
     "EquipTID": 801203,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6481,7 +6481,7 @@
   },
   {
     "EquipTID": 801204,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6493,7 +6493,7 @@
   },
   {
     "EquipTID": 801205,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6505,7 +6505,7 @@
   },
   {
     "EquipTID": 801206,
-    "Name": "태엽 굴착삽",
+    "Name": "명장의 굴착삽",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -6517,7 +6517,7 @@
   },
   {
     "EquipTID": 801301,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6529,7 +6529,7 @@
   },
   {
     "EquipTID": 801302,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6541,7 +6541,7 @@
   },
   {
     "EquipTID": 801303,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6553,7 +6553,7 @@
   },
   {
     "EquipTID": 801304,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6565,7 +6565,7 @@
   },
   {
     "EquipTID": 801305,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6577,7 +6577,7 @@
   },
   {
     "EquipTID": 801306,
-    "Name": "태엽 착암기",
+    "Name": "명장의 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -6589,7 +6589,7 @@
   },
   {
     "EquipTID": 801401,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6601,7 +6601,7 @@
   },
   {
     "EquipTID": 801402,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6613,7 +6613,7 @@
   },
   {
     "EquipTID": 801403,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6625,7 +6625,7 @@
   },
   {
     "EquipTID": 801404,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6637,7 +6637,7 @@
   },
   {
     "EquipTID": 801405,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6649,7 +6649,7 @@
   },
   {
     "EquipTID": 801406,
-    "Name": "태엽 회전톱",
+    "Name": "명장의 큰톱",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -6661,7 +6661,7 @@
   },
   {
     "EquipTID": 801501,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6673,7 +6673,7 @@
   },
   {
     "EquipTID": 801502,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6685,7 +6685,7 @@
   },
   {
     "EquipTID": 801503,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6697,7 +6697,7 @@
   },
   {
     "EquipTID": 801504,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6709,7 +6709,7 @@
   },
   {
     "EquipTID": 801505,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6721,7 +6721,7 @@
   },
   {
     "EquipTID": 801506,
-    "Name": "태엽 연발 석궁",
+    "Name": "명장의 연발 석궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -6733,7 +6733,7 @@
   },
   {
     "EquipTID": 802001,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6745,7 +6745,7 @@
   },
   {
     "EquipTID": 802002,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6757,7 +6757,7 @@
   },
   {
     "EquipTID": 802003,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6769,7 +6769,7 @@
   },
   {
     "EquipTID": 802004,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6781,7 +6781,7 @@
   },
   {
     "EquipTID": 802005,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6793,7 +6793,7 @@
   },
   {
     "EquipTID": 802006,
-    "Name": "태엽 회중시계",
+    "Name": "명장의 회중시계",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -6805,7 +6805,7 @@
   },
   {
     "EquipTID": 803101,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6817,7 +6817,7 @@
   },
   {
     "EquipTID": 803102,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6829,7 +6829,7 @@
   },
   {
     "EquipTID": 803103,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6841,7 +6841,7 @@
   },
   {
     "EquipTID": 803104,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6853,7 +6853,7 @@
   },
   {
     "EquipTID": 803105,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6865,7 +6865,7 @@
   },
   {
     "EquipTID": 803106,
-    "Name": "이삭 동력핵",
+    "Name": "이삭 비취",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -6877,7 +6877,7 @@
   },
   {
     "EquipTID": 803201,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6889,7 +6889,7 @@
   },
   {
     "EquipTID": 803202,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6901,7 +6901,7 @@
   },
   {
     "EquipTID": 803203,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6913,7 +6913,7 @@
   },
   {
     "EquipTID": 803204,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6925,7 +6925,7 @@
   },
   {
     "EquipTID": 803205,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6937,7 +6937,7 @@
   },
   {
     "EquipTID": 803206,
-    "Name": "유적 동력핵",
+    "Name": "유적 비취",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -6949,7 +6949,7 @@
   },
   {
     "EquipTID": 803301,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6961,7 +6961,7 @@
   },
   {
     "EquipTID": 803302,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6973,7 +6973,7 @@
   },
   {
     "EquipTID": 803303,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6985,7 +6985,7 @@
   },
   {
     "EquipTID": 803304,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -6997,7 +6997,7 @@
   },
   {
     "EquipTID": 803305,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7009,7 +7009,7 @@
   },
   {
     "EquipTID": 803306,
-    "Name": "원광 동력핵",
+    "Name": "원광 비취",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7021,7 +7021,7 @@
   },
   {
     "EquipTID": 803401,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7033,7 +7033,7 @@
   },
   {
     "EquipTID": 803402,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7045,7 +7045,7 @@
   },
   {
     "EquipTID": 803403,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7057,7 +7057,7 @@
   },
   {
     "EquipTID": 803404,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7069,7 +7069,7 @@
   },
   {
     "EquipTID": 803405,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7081,7 +7081,7 @@
   },
   {
     "EquipTID": 803406,
-    "Name": "나이테 동력핵",
+    "Name": "나이테 비취",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7093,7 +7093,7 @@
   },
   {
     "EquipTID": 803501,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7105,7 +7105,7 @@
   },
   {
     "EquipTID": 803502,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7117,7 +7117,7 @@
   },
   {
     "EquipTID": 803503,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7129,7 +7129,7 @@
   },
   {
     "EquipTID": 803504,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7141,7 +7141,7 @@
   },
   {
     "EquipTID": 803505,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7153,7 +7153,7 @@
   },
   {
     "EquipTID": 803506,
-    "Name": "발자국 동력핵",
+    "Name": "발자국 비취",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7165,7 +7165,7 @@
   },
   {
     "EquipTID": 901101,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7177,7 +7177,7 @@
   },
   {
     "EquipTID": 901102,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7189,7 +7189,7 @@
   },
   {
     "EquipTID": 901103,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7201,7 +7201,7 @@
   },
   {
     "EquipTID": 901104,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7213,7 +7213,7 @@
   },
   {
     "EquipTID": 901105,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7225,7 +7225,7 @@
   },
   {
     "EquipTID": 901106,
-    "Name": "증기 탈곡낫",
+    "Name": "황금 낫",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7237,7 +7237,7 @@
   },
   {
     "EquipTID": 901201,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7249,7 +7249,7 @@
   },
   {
     "EquipTID": 901202,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7261,7 +7261,7 @@
   },
   {
     "EquipTID": 901203,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7273,7 +7273,7 @@
   },
   {
     "EquipTID": 901204,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7285,7 +7285,7 @@
   },
   {
     "EquipTID": 901205,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7297,7 +7297,7 @@
   },
   {
     "EquipTID": 901206,
-    "Name": "증기 굴착기",
+    "Name": "황금 발굴삽",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -7309,7 +7309,7 @@
   },
   {
     "EquipTID": 901301,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7321,7 +7321,7 @@
   },
   {
     "EquipTID": 901302,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7333,7 +7333,7 @@
   },
   {
     "EquipTID": 901303,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7345,7 +7345,7 @@
   },
   {
     "EquipTID": 901304,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7357,7 +7357,7 @@
   },
   {
     "EquipTID": 901305,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7369,7 +7369,7 @@
   },
   {
     "EquipTID": 901306,
-    "Name": "증기 착암기",
+    "Name": "황금 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -7381,7 +7381,7 @@
   },
   {
     "EquipTID": 901401,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7393,7 +7393,7 @@
   },
   {
     "EquipTID": 901402,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7405,7 +7405,7 @@
   },
   {
     "EquipTID": 901403,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7417,7 +7417,7 @@
   },
   {
     "EquipTID": 901404,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7429,7 +7429,7 @@
   },
   {
     "EquipTID": 901405,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7441,7 +7441,7 @@
   },
   {
     "EquipTID": 901406,
-    "Name": "증기 벌목톱",
+    "Name": "황금 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -7453,7 +7453,7 @@
   },
   {
     "EquipTID": 901501,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7465,7 +7465,7 @@
   },
   {
     "EquipTID": 901502,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7477,7 +7477,7 @@
   },
   {
     "EquipTID": 901503,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7489,7 +7489,7 @@
   },
   {
     "EquipTID": 901504,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7501,7 +7501,7 @@
   },
   {
     "EquipTID": 901505,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7513,7 +7513,7 @@
   },
   {
     "EquipTID": 901506,
-    "Name": "증기 석궁",
+    "Name": "황금 석궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -7525,7 +7525,7 @@
   },
   {
     "EquipTID": 902001,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7537,7 +7537,7 @@
   },
   {
     "EquipTID": 902002,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7549,7 +7549,7 @@
   },
   {
     "EquipTID": 902003,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7561,7 +7561,7 @@
   },
   {
     "EquipTID": 902004,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7573,7 +7573,7 @@
   },
   {
     "EquipTID": 902005,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7585,7 +7585,7 @@
   },
   {
     "EquipTID": 902006,
-    "Name": "증기 톱니 훈장",
+    "Name": "황금 훈장",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -7597,7 +7597,7 @@
   },
   {
     "EquipTID": 903101,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7609,7 +7609,7 @@
   },
   {
     "EquipTID": 903102,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7621,7 +7621,7 @@
   },
   {
     "EquipTID": 903103,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7633,7 +7633,7 @@
   },
   {
     "EquipTID": 903104,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7645,7 +7645,7 @@
   },
   {
     "EquipTID": 903105,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7657,7 +7657,7 @@
   },
   {
     "EquipTID": 903106,
-    "Name": "이삭 증기핵",
+    "Name": "이삭 황옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -7669,7 +7669,7 @@
   },
   {
     "EquipTID": 903201,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7681,7 +7681,7 @@
   },
   {
     "EquipTID": 903202,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7693,7 +7693,7 @@
   },
   {
     "EquipTID": 903203,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7705,7 +7705,7 @@
   },
   {
     "EquipTID": 903204,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7717,7 +7717,7 @@
   },
   {
     "EquipTID": 903205,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7729,7 +7729,7 @@
   },
   {
     "EquipTID": 903206,
-    "Name": "유적 증기핵",
+    "Name": "유적 황옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -7741,7 +7741,7 @@
   },
   {
     "EquipTID": 903301,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7753,7 +7753,7 @@
   },
   {
     "EquipTID": 903302,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7765,7 +7765,7 @@
   },
   {
     "EquipTID": 903303,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7777,7 +7777,7 @@
   },
   {
     "EquipTID": 903304,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7789,7 +7789,7 @@
   },
   {
     "EquipTID": 903305,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7801,7 +7801,7 @@
   },
   {
     "EquipTID": 903306,
-    "Name": "원광 증기핵",
+    "Name": "원광 황옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -7813,7 +7813,7 @@
   },
   {
     "EquipTID": 903401,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7825,7 +7825,7 @@
   },
   {
     "EquipTID": 903402,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7837,7 +7837,7 @@
   },
   {
     "EquipTID": 903403,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7849,7 +7849,7 @@
   },
   {
     "EquipTID": 903404,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7861,7 +7861,7 @@
   },
   {
     "EquipTID": 903405,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7873,7 +7873,7 @@
   },
   {
     "EquipTID": 903406,
-    "Name": "나이테 증기핵",
+    "Name": "나이테 황옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -7885,7 +7885,7 @@
   },
   {
     "EquipTID": 903501,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7897,7 +7897,7 @@
   },
   {
     "EquipTID": 903502,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7909,7 +7909,7 @@
   },
   {
     "EquipTID": 903503,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7921,7 +7921,7 @@
   },
   {
     "EquipTID": 903504,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7933,7 +7933,7 @@
   },
   {
     "EquipTID": 903505,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7945,7 +7945,7 @@
   },
   {
     "EquipTID": 903506,
-    "Name": "발자국 증기핵",
+    "Name": "발자국 황옥",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -7957,7 +7957,7 @@
   },
   {
     "EquipTID": 1001101,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7969,7 +7969,7 @@
   },
   {
     "EquipTID": 1001102,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7981,7 +7981,7 @@
   },
   {
     "EquipTID": 1001103,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -7993,7 +7993,7 @@
   },
   {
     "EquipTID": 1001104,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -8005,7 +8005,7 @@
   },
   {
     "EquipTID": 1001105,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -8017,7 +8017,7 @@
   },
   {
     "EquipTID": 1001106,
-    "Name": "천공의 경작기",
+    "Name": "왕가의 낫",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Farming",
@@ -8029,7 +8029,7 @@
   },
   {
     "EquipTID": 1001201,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8041,7 +8041,7 @@
   },
   {
     "EquipTID": 1001202,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8053,7 +8053,7 @@
   },
   {
     "EquipTID": 1001203,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8065,7 +8065,7 @@
   },
   {
     "EquipTID": 1001204,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8077,7 +8077,7 @@
   },
   {
     "EquipTID": 1001205,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8089,7 +8089,7 @@
   },
   {
     "EquipTID": 1001206,
-    "Name": "천공의 탐사기",
+    "Name": "왕가의 발굴삽",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Excavation",
@@ -8101,7 +8101,7 @@
   },
   {
     "EquipTID": 1001301,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8113,7 +8113,7 @@
   },
   {
     "EquipTID": 1001302,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8125,7 +8125,7 @@
   },
   {
     "EquipTID": 1001303,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8137,7 +8137,7 @@
   },
   {
     "EquipTID": 1001304,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8149,7 +8149,7 @@
   },
   {
     "EquipTID": 1001305,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8161,7 +8161,7 @@
   },
   {
     "EquipTID": 1001306,
-    "Name": "천공의 착암기",
+    "Name": "왕가의 곡괭이",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Mining",
@@ -8173,7 +8173,7 @@
   },
   {
     "EquipTID": 1001401,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8185,7 +8185,7 @@
   },
   {
     "EquipTID": 1001402,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8197,7 +8197,7 @@
   },
   {
     "EquipTID": 1001403,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8209,7 +8209,7 @@
   },
   {
     "EquipTID": 1001404,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8221,7 +8221,7 @@
   },
   {
     "EquipTID": 1001405,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8233,7 +8233,7 @@
   },
   {
     "EquipTID": 1001406,
-    "Name": "천공의 벌목톱",
+    "Name": "왕가의 도끼",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Logging",
@@ -8245,7 +8245,7 @@
   },
   {
     "EquipTID": 1001501,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Common",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8257,7 +8257,7 @@
   },
   {
     "EquipTID": 1001502,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8269,7 +8269,7 @@
   },
   {
     "EquipTID": 1001503,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Rare",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8281,7 +8281,7 @@
   },
   {
     "EquipTID": 1001504,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Epic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8293,7 +8293,7 @@
   },
   {
     "EquipTID": 1001505,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Legendary",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8305,7 +8305,7 @@
   },
   {
     "EquipTID": 1001506,
-    "Name": "천공의 성궁",
+    "Name": "왕가의 장궁",
     "GlobalRarity": "Mythic",
     "EquipKind": "Weapon",
     "Industry": "Hunting",
@@ -8317,7 +8317,7 @@
   },
   {
     "EquipTID": 1002001,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Common",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8329,7 +8329,7 @@
   },
   {
     "EquipTID": 1002002,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8341,7 +8341,7 @@
   },
   {
     "EquipTID": 1002003,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Rare",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8353,7 +8353,7 @@
   },
   {
     "EquipTID": 1002004,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Epic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8365,7 +8365,7 @@
   },
   {
     "EquipTID": 1002005,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Legendary",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8377,7 +8377,7 @@
   },
   {
     "EquipTID": 1002006,
-    "Name": "천공의 톱니 고리",
+    "Name": "왕가의 반지",
     "GlobalRarity": "Mythic",
     "EquipKind": "Accessory",
     "Industry": "None",
@@ -8389,7 +8389,7 @@
   },
   {
     "EquipTID": 1003101,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8401,7 +8401,7 @@
   },
   {
     "EquipTID": 1003102,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8413,7 +8413,7 @@
   },
   {
     "EquipTID": 1003103,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8425,7 +8425,7 @@
   },
   {
     "EquipTID": 1003104,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8437,7 +8437,7 @@
   },
   {
     "EquipTID": 1003105,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8449,7 +8449,7 @@
   },
   {
     "EquipTID": 1003106,
-    "Name": "이삭 천공핵",
+    "Name": "이삭 금강석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Farming",
@@ -8461,7 +8461,7 @@
   },
   {
     "EquipTID": 1003201,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8473,7 +8473,7 @@
   },
   {
     "EquipTID": 1003202,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8485,7 +8485,7 @@
   },
   {
     "EquipTID": 1003203,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8497,7 +8497,7 @@
   },
   {
     "EquipTID": 1003204,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8509,7 +8509,7 @@
   },
   {
     "EquipTID": 1003205,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8521,7 +8521,7 @@
   },
   {
     "EquipTID": 1003206,
-    "Name": "유적 천공핵",
+    "Name": "유적 금강석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Excavation",
@@ -8533,7 +8533,7 @@
   },
   {
     "EquipTID": 1003301,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8545,7 +8545,7 @@
   },
   {
     "EquipTID": 1003302,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8557,7 +8557,7 @@
   },
   {
     "EquipTID": 1003303,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8569,7 +8569,7 @@
   },
   {
     "EquipTID": 1003304,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8581,7 +8581,7 @@
   },
   {
     "EquipTID": 1003305,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8593,7 +8593,7 @@
   },
   {
     "EquipTID": 1003306,
-    "Name": "원광 천공핵",
+    "Name": "원광 금강석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Mining",
@@ -8605,7 +8605,7 @@
   },
   {
     "EquipTID": 1003401,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8617,7 +8617,7 @@
   },
   {
     "EquipTID": 1003402,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8629,7 +8629,7 @@
   },
   {
     "EquipTID": 1003403,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8641,7 +8641,7 @@
   },
   {
     "EquipTID": 1003404,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8653,7 +8653,7 @@
   },
   {
     "EquipTID": 1003405,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8665,7 +8665,7 @@
   },
   {
     "EquipTID": 1003406,
-    "Name": "나이테 천공핵",
+    "Name": "나이테 금강석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Logging",
@@ -8677,7 +8677,7 @@
   },
   {
     "EquipTID": 1003501,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Common",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -8689,7 +8689,7 @@
   },
   {
     "EquipTID": 1003502,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Uncommon",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -8701,7 +8701,7 @@
   },
   {
     "EquipTID": 1003503,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Rare",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -8713,7 +8713,7 @@
   },
   {
     "EquipTID": 1003504,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Epic",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -8725,7 +8725,7 @@
   },
   {
     "EquipTID": 1003505,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Legendary",
     "EquipKind": "Gem",
     "Industry": "Hunting",
@@ -8737,7 +8737,7 @@
   },
   {
     "EquipTID": 1003506,
-    "Name": "발자국 천공핵",
+    "Name": "발자국 금강석",
     "GlobalRarity": "Mythic",
     "EquipKind": "Gem",
     "Industry": "Hunting",

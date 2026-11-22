@@ -216,46 +216,6 @@
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
-    "GachaArtifactTID": 10325,
-    "GachaId": 10,
-    "ArtifactTID": 25,
-    "Count": 1,
-    "Weight": 9991,
-    "Description": "은 상자 · 은빛 수확패"
-  },
-  {
-    "GachaArtifactTID": 13325,
-    "GachaId": 13,
-    "ArtifactTID": 25,
-    "Count": 1,
-    "Weight": 10000,
-    "Description": "은 상자 · 은빛 수확패"
-  },
-  {
-    "GachaArtifactTID": 16325,
-    "GachaId": 16,
-    "ArtifactTID": 25,
-    "Count": 1,
-    "Weight": 9991,
-    "Description": "은 상자 · 은빛 수확패"
-  },
-  {
-    "GachaArtifactTID": 19325,
-    "GachaId": 19,
-    "ArtifactTID": 25,
-    "Count": 1,
-    "Weight": 9991,
-    "Description": "은 상자 · 은빛 수확패"
-  },
-  {
-    "GachaArtifactTID": 22325,
-    "GachaId": 22,
-    "ArtifactTID": 25,
-    "Count": 1,
-    "Weight": 9991,
-    "Description": "은 상자 · 은빛 수확패"
-  },
-  {
     "GachaArtifactTID": 27326,
     "GachaId": 27,
     "ArtifactTID": 26,

@@ -18,195 +18,237 @@
     "IndustryLevel": 1,
     "ItemTID": 50003,
     "Weight": 1000,
-    "Description": "늑대 가죽"
+    "Description": "꿩 깃털"
   },
   {
     "DropTID": 500104,
     "IndustryLevel": 1,
     "ItemTID": 50004,
     "Weight": 300,
-    "Description": "곰 모피"
+    "Description": "여우 가죽"
   },
   {
     "DropTID": 500105,
     "IndustryLevel": 1,
     "ItemTID": 50005,
     "Weight": 100,
-    "Description": "거대한 뿔"
+    "Description": "사슴 가죽"
   },
   {
     "DropTID": 500106,
     "IndustryLevel": 1,
     "ItemTID": 50006,
     "Weight": 10,
-    "Description": "마수의 심장"
+    "Description": "사슴뿔"
   },
   {
-    "DropTID": 500201,
-    "IndustryLevel": 2,
+    "DropTID": 502001,
+    "IndustryLevel": 20,
     "ItemTID": 50011,
     "Weight": 6590,
-    "Description": "여우 가죽"
+    "Description": "산양 가죽"
   },
   {
-    "DropTID": 500202,
-    "IndustryLevel": 2,
+    "DropTID": 502002,
+    "IndustryLevel": 20,
     "ItemTID": 50012,
     "Weight": 2000,
     "Description": "멧돼지 엄니"
   },
   {
-    "DropTID": 500203,
-    "IndustryLevel": 2,
+    "DropTID": 502003,
+    "IndustryLevel": 20,
     "ItemTID": 50013,
     "Weight": 1000,
-    "Description": "사슴뿔"
+    "Description": "늑대 가죽"
   },
   {
-    "DropTID": 500204,
-    "IndustryLevel": 2,
+    "DropTID": 502004,
+    "IndustryLevel": 20,
     "ItemTID": 50014,
     "Weight": 300,
-    "Description": "산군의 발톱"
-  },
-  {
-    "DropTID": 500205,
-    "IndustryLevel": 2,
-    "ItemTID": 50015,
-    "Weight": 100,
-    "Description": "백호의 털"
-  },
-  {
-    "DropTID": 500206,
-    "IndustryLevel": 2,
-    "ItemTID": 50016,
-    "Weight": 10,
-    "Description": "산신의 인장"
-  },
-  {
-    "DropTID": 500301,
-    "IndustryLevel": 3,
-    "ItemTID": 50021,
-    "Weight": 6590,
-    "Description": "표범 가죽"
-  },
-  {
-    "DropTID": 500302,
-    "IndustryLevel": 3,
-    "ItemTID": 50022,
-    "Weight": 2000,
     "Description": "큰뿔 사슴뿔"
   },
   {
-    "DropTID": 500303,
-    "IndustryLevel": 3,
+    "DropTID": 502005,
+    "IndustryLevel": 20,
+    "ItemTID": 50015,
+    "Weight": 100,
+    "Description": "곰 모피"
+  },
+  {
+    "DropTID": 502006,
+    "IndustryLevel": 20,
+    "ItemTID": 50016,
+    "Weight": 10,
+    "Description": "회색곰의 발톱"
+  },
+  {
+    "DropTID": 504001,
+    "IndustryLevel": 40,
+    "ItemTID": 50021,
+    "Weight": 6590,
+    "Description": "박쥐 날개"
+  },
+  {
+    "DropTID": 504002,
+    "IndustryLevel": 40,
+    "ItemTID": 50022,
+    "Weight": 2000,
+    "Description": "바위도마뱀 가죽"
+  },
+  {
+    "DropTID": 504003,
+    "IndustryLevel": 40,
     "ItemTID": 50023,
     "Weight": 1000,
-    "Description": "곰의 이빨"
+    "Description": "산고양이 가죽"
   },
   {
-    "DropTID": 500304,
-    "IndustryLevel": 3,
+    "DropTID": 504004,
+    "IndustryLevel": 40,
     "ItemTID": 50024,
     "Weight": 300,
-    "Description": "숲괴수의 발톱"
+    "Description": "독수리 깃털"
   },
   {
-    "DropTID": 500305,
-    "IndustryLevel": 3,
+    "DropTID": 504005,
+    "IndustryLevel": 40,
     "ItemTID": 50025,
     "Weight": 100,
-    "Description": "고대 짐승의 뼈"
+    "Description": "큰뿔 산양 뿔"
   },
   {
-    "DropTID": 500306,
-    "IndustryLevel": 3,
+    "DropTID": 504006,
+    "IndustryLevel": 40,
     "ItemTID": 50026,
     "Weight": 10,
-    "Description": "숲 지배자의 눈"
+    "Description": "바위산 표범 가죽"
   },
   {
-    "DropTID": 500401,
-    "IndustryLevel": 4,
+    "DropTID": 506001,
+    "IndustryLevel": 60,
     "ItemTID": 50031,
     "Weight": 6590,
-    "Description": "설표 가죽"
+    "Description": "들소 가죽"
   },
   {
-    "DropTID": 500402,
-    "IndustryLevel": 4,
+    "DropTID": 506002,
+    "IndustryLevel": 60,
     "ItemTID": 50032,
     "Weight": 2000,
-    "Description": "얼음늑대 송곳니"
+    "Description": "하이에나 이빨"
   },
   {
-    "DropTID": 500403,
-    "IndustryLevel": 4,
+    "DropTID": 506003,
+    "IndustryLevel": 60,
     "ItemTID": 50033,
     "Weight": 1000,
-    "Description": "서리곰 모피"
+    "Description": "황야 늑대 송곳니"
   },
   {
-    "DropTID": 500404,
-    "IndustryLevel": 4,
+    "DropTID": 506004,
+    "IndustryLevel": 60,
     "ItemTID": 50034,
     "Weight": 300,
-    "Description": "빙룡의 비늘"
+    "Description": "들소 뿔"
   },
   {
-    "DropTID": 500405,
-    "IndustryLevel": 4,
+    "DropTID": 506005,
+    "IndustryLevel": 60,
     "ItemTID": 50035,
     "Weight": 100,
-    "Description": "설산 주인의 뿔"
+    "Description": "사자 갈기"
   },
   {
-    "DropTID": 500406,
-    "IndustryLevel": 4,
+    "DropTID": 506006,
+    "IndustryLevel": 60,
     "ItemTID": 50036,
     "Weight": 10,
-    "Description": "영구동토의 심장"
+    "Description": "코뿔소 뿔"
   },
   {
-    "DropTID": 500501,
-    "IndustryLevel": 5,
+    "DropTID": 508001,
+    "IndustryLevel": 80,
     "ItemTID": 50041,
     "Weight": 6590,
-    "Description": "마수의 가죽"
+    "Description": "수사슴 가죽"
   },
   {
-    "DropTID": 500502,
-    "IndustryLevel": 5,
+    "DropTID": 508002,
+    "IndustryLevel": 80,
     "ItemTID": 50042,
     "Weight": 2000,
-    "Description": "마물의 뿔"
+    "Description": "매 깃털"
   },
   {
-    "DropTID": 500503,
-    "IndustryLevel": 5,
+    "DropTID": 508003,
+    "IndustryLevel": 80,
     "ItemTID": 50043,
     "Weight": 1000,
-    "Description": "흉수의 송곳니"
+    "Description": "흰여우 모피"
   },
   {
-    "DropTID": 500504,
-    "IndustryLevel": 5,
+    "DropTID": 508004,
+    "IndustryLevel": 80,
     "ItemTID": 50044,
     "Weight": 300,
-    "Description": "마수왕의 갈기"
+    "Description": "순록 뿔"
   },
   {
-    "DropTID": 500505,
-    "IndustryLevel": 5,
+    "DropTID": 508005,
+    "IndustryLevel": 80,
     "ItemTID": 50045,
     "Weight": 100,
-    "Description": "심연수의 눈"
+    "Description": "백곰 모피"
   },
   {
-    "DropTID": 500506,
-    "IndustryLevel": 5,
+    "DropTID": 508006,
+    "IndustryLevel": 80,
     "ItemTID": 50046,
     "Weight": 10,
-    "Description": "마신의 파편"
+    "Description": "백호의 털"
+  },
+  {
+    "DropTID": 510001,
+    "IndustryLevel": 100,
+    "ItemTID": 50051,
+    "Weight": 6590,
+    "Description": "담비 모피"
+  },
+  {
+    "DropTID": 510002,
+    "IndustryLevel": 100,
+    "ItemTID": 50052,
+    "Weight": 2000,
+    "Description": "공작 깃털"
+  },
+  {
+    "DropTID": 510003,
+    "IndustryLevel": 100,
+    "ItemTID": 50053,
+    "Weight": 1000,
+    "Description": "은여우 모피"
+  },
+  {
+    "DropTID": 510004,
+    "IndustryLevel": 100,
+    "ItemTID": 50054,
+    "Weight": 300,
+    "Description": "흰 수사슴 뿔"
+  },
+  {
+    "DropTID": 510005,
+    "IndustryLevel": 100,
+    "ItemTID": 50055,
+    "Weight": 100,
+    "Description": "흑표범 가죽"
+  },
+  {
+    "DropTID": 510006,
+    "IndustryLevel": 100,
+    "ItemTID": 50056,
+    "Weight": 10,
+    "Description": "백사자 갈기"
   }
 ]

@@ -12,7 +12,7 @@ namespace GameData
     {
         public int          CommonRewardOverrideTID { get; set; }        // int [1..-]
         public IndustryType IndustryType            { get; set; }        // eIndustryType
-        public int          IndustryLevel           { get; set; }        // int [1..5]
+        public int          IndustryLevel           { get; set; }        // int [1..100]
         public int          ItemTID                 { get; set; }        // int
         public int          Count                   { get; set; }        // int [1..-]
         public int          ChancePerMillion        { get; set; }        // int [1..1000000]

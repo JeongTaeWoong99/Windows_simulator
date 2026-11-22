@@ -11,7 +11,7 @@ namespace GameData
     public partial class CommonRewardTableRow
     {
         public int    CommonRewardTID  { get; set; }        // int [1..-]
-        public int    IndustryLevel    { get; set; }        // int [1..5]
+        public int    IndustryLevel    { get; set; }        // int [1..100]
         public int    ItemTID          { get; set; }        // int
         public int    Count            { get; set; }        // int [1..-]
         public int    ChancePerMillion { get; set; }        // int [1..1000000]

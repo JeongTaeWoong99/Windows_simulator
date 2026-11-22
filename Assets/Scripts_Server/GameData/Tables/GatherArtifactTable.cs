@@ -12,7 +12,7 @@ namespace GameData
     {
         public int          GatherArtifactTID { get; set; }        // int [1..-]
         public IndustryType IndustryType      { get; set; }        // eIndustryType
-        public int          IndustryLevel     { get; set; }        // int [1..5]
+        public int          IndustryLevel     { get; set; }        // int [1..100]
         public int          ArtifactTID       { get; set; }        // int
         public int          ChancePerMillion  { get; set; }        // int [1..10000]
         public string       Description       { get; set; } = "";  // string 기본="" [기획 메모 — 로직에서 읽지 않는다]
