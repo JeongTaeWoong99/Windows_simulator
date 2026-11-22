@@ -88,13 +88,21 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 캐릭터는_상점에서_파는_뽑기권에서만_나온다()
+    public void 캐릭터는_테마_상자와_캐릭터_뽑기권에서만_나온다()
     {
-        // 상자·열쇠·유물에서 캐릭터가 나오면 캐릭터를 얻는 길이 뽑기권 말고도 생긴다(#78 — 캐릭터는 뽑기권으로만).
-        var sold  = GameTable.ShopTable.All.Select(r => r.ItemTID).ToHashSet();
-        var pools = Openables.Where(r => !sold.Contains(r.ItemTID)).Select(r => r.OpenGachaId).ToHashSet();
+        // 테마 상자 캐릭터 칸(레벨테마 7.2)과 이미 가진 뽑기권(T-184 — 구매는 닫힘) 말고는 열쇠·유물에서 캐릭터가 나오지 않는다.
+        var allowed = ThemeBoxOfLevel.Values.Concat(GameTable.ShopTable.All.Select(r => r.ItemTID)).ToHashSet();
+        var pools   = Openables.Where(r => !allowed.Contains(r.ItemTID)).Select(r => r.OpenGachaId).ToHashSet();
 
         GameTable.GachaCharacterTable.All.Where(r => pools.Contains(r.GachaId)).ShouldBeEmpty();
+    }
+
+    [Fact]
+    public void 테마_상자는_저마다_다른_풀을_연다()
+    {
+        // 왕실 상자가 성주 풀 21을 임시로 쓰던 것을 새 풀 37로 옮겼다(T-209).
+        ThemeBoxOfLevel.Values.Select(tid => GameTable.ItemTable[tid].OpenGachaId)
+            .ShouldBe(new[] { 9, 12, 15, 18, 21, 37 });
     }
 
     [Fact]

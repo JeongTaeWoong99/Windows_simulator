@@ -7800,6 +7800,11 @@
     "EN": "Stonegate Guardian Chest"
   },
   {
+    "Key": "GachaInfo.37.Name",
+    "KR": "왕실 상자",
+    "EN": "Royal Chest"
+  },
+  {
     "Key": "IndustryLevel.101.Name",
     "KR": "마을 텃밭",
     "EN": "Village Garden"

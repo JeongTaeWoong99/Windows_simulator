@@ -2299,7 +2299,7 @@
     "MaxStack": 1000,
     "BasePrice": 54,
     "OpenGachaId": 9,
-    "Description": "테마 상자 — 채취 Lv1(개척 마을) 드롭 · 열기는 옛 나무 상자 Lv1 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv1(개척 마을) 드롭 · 열기 풀 9(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2311,7 +2311,7 @@
     "MaxStack": 1000,
     "BasePrice": 163,
     "OpenGachaId": 12,
-    "Description": "테마 상자 — 채취 Lv20(산기슭) 드롭 · 열기는 옛 나무 상자 Lv2 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv20(산기슭) 드롭 · 열기 풀 12(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2323,7 +2323,7 @@
     "MaxStack": 1000,
     "BasePrice": 488,
     "OpenGachaId": 15,
-    "Description": "테마 상자 — 채취 Lv40(광산 마을) 드롭 · 열기는 옛 나무 상자 Lv3 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv40(광산 마을) 드롭 · 열기 풀 15(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2335,7 +2335,7 @@
     "MaxStack": 1000,
     "BasePrice": 1463,
     "OpenGachaId": 18,
-    "Description": "테마 상자 — 채취 Lv60(변경 요새) 드롭 · 열기는 옛 나무 상자 Lv4 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv60(변경 요새) 드롭 · 열기 풀 18(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2347,7 +2347,7 @@
     "MaxStack": 1000,
     "BasePrice": 4389,
     "OpenGachaId": 21,
-    "Description": "테마 상자 — 채취 Lv80(성곽 도시) 드롭 · 열기는 옛 나무 상자 Lv5 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv80(성곽 도시) 드롭 · 열기 풀 21(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2358,8 +2358,8 @@
     "GlobalRarity": "Common",
     "MaxStack": 1000,
     "BasePrice": 4389,
-    "OpenGachaId": 21,
-    "Description": "테마 상자 — 채취 Lv100(왕실) 드롭 · 열기는 옛 나무 상자 Lv5 풀 임시(T-209)",
+    "OpenGachaId": 37,
+    "Description": "테마 상자 — 채취 Lv100(왕실) 드롭 · 열기 풀 37(레벨테마 7장 · T-209)",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2503,7 +2503,7 @@
     "MaxStack": 9999,
     "BasePrice": 500,
     "OpenGachaId": 32,
-    "Description": "골드 상점 품목(가격은 ShopTable) · 희귀 이하 캐릭터 1명 (#78)",
+    "Description": "상점 구매 폐기(2026-11-22 · 서버가 거절) — 보유분은 연다 · 희귀 이하 캐릭터 1명 (#78)",
     "Tooltip": "열면 희귀 이하 캐릭터 1명이 나온다",
     "OpenCostGold": 0
   },
@@ -2515,7 +2515,7 @@
     "MaxStack": 9999,
     "BasePrice": 1500,
     "OpenGachaId": 33,
-    "Description": "골드 상점 품목(가격은 ShopTable) · 영웅 이하 캐릭터 1명 (#78)",
+    "Description": "상점 구매 폐기(2026-11-22 · 서버가 거절) — 보유분은 연다 · 영웅 이하 캐릭터 1명 (#78)",
     "Tooltip": "열면 영웅 이하 캐릭터 1명이 나온다",
     "OpenCostGold": 0
   },
@@ -2527,7 +2527,7 @@
     "MaxStack": 9999,
     "BasePrice": 4000,
     "OpenGachaId": 34,
-    "Description": "골드 상점 품목(가격은 ShopTable) · 전설 이하 캐릭터 1명 (#78)",
+    "Description": "상점 구매 폐기(2026-11-22 · 서버가 거절) — 보유분은 연다 · 전설 이하 캐릭터 1명 (#78)",
     "Tooltip": "열면 전설 이하 캐릭터 1명이 나온다",
     "OpenCostGold": 0
   },
@@ -2539,7 +2539,7 @@
     "MaxStack": 9999,
     "BasePrice": 10000,
     "OpenGachaId": 35,
-    "Description": "골드 상점 품목(가격은 ShopTable) · 신화 이하 캐릭터 1명 (#78)",
+    "Description": "상점 구매 폐기(2026-11-22 · 서버가 거절) — 보유분은 연다 · 신화 이하 캐릭터 1명 (#78)",
     "Tooltip": "열면 신화 이하 캐릭터 1명이 나온다",
     "OpenCostGold": 0
   },

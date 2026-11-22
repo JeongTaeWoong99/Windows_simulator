@@ -180,40 +180,96 @@
     "GachaId": 9,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9997,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 9325,
+    "GachaId": 9,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
   },
   {
     "GachaArtifactTID": 12324,
     "GachaId": 12,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 12325,
+    "GachaId": 12,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
   },
   {
     "GachaArtifactTID": 15324,
     "GachaId": 15,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 2500,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 15325,
+    "GachaId": 15,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
   },
   {
     "GachaArtifactTID": 18324,
     "GachaId": 18,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 18325,
+    "GachaId": 18,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
   },
   {
     "GachaArtifactTID": 21324,
     "GachaId": 21,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 21325,
+    "GachaId": 21,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
+  },
+  {
+    "GachaArtifactTID": 37324,
+    "GachaId": 37,
+    "ArtifactTID": 24,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 장인의 나무 자"
+  },
+  {
+    "GachaArtifactTID": 37325,
+    "GachaId": 37,
+    "ArtifactTID": 25,
+    "Count": 1,
+    "Weight": 5050000,
+    "Description": "테마 상자 · 은빛 수확패"
   },
   {
     "GachaArtifactTID": 27326,

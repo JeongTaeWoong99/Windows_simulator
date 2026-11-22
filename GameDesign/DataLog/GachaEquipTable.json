@@ -552,468 +552,5836 @@
     "Description": "Mythic 월광 성석"
   },
   {
-    "GachaEquipTID": 9101,
+    "GachaEquipTID": 9501,
     "GachaId": 9,
     "EquipTID": 1001,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 목검"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 목검"
   },
   {
-    "GachaEquipTID": 9102,
-    "GachaId": 9,
-    "EquipTID": 2001,
-    "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 구리 반지"
-  },
-  {
-    "GachaEquipTID": 9103,
-    "GachaId": 9,
-    "EquipTID": 3001,
-    "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 원석"
-  },
-  {
-    "GachaEquipTID": 9104,
+    "GachaEquipTID": 9502,
     "GachaId": 9,
     "EquipTID": 1101,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 나무 호미"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 나무 호미"
   },
   {
-    "GachaEquipTID": 9105,
+    "GachaEquipTID": 9503,
     "GachaId": 9,
     "EquipTID": 1201,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 나무 모종삽"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 나무 모종삽"
   },
   {
-    "GachaEquipTID": 9106,
+    "GachaEquipTID": 9504,
     "GachaId": 9,
     "EquipTID": 1301,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 돌 곡괭이"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 돌 곡괭이"
   },
   {
-    "GachaEquipTID": 9107,
+    "GachaEquipTID": 9505,
     "GachaId": 9,
     "EquipTID": 1401,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 손도끼"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 손도끼"
   },
   {
-    "GachaEquipTID": 9108,
+    "GachaEquipTID": 9506,
     "GachaId": 9,
     "EquipTID": 1501,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 사냥용 활"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 사냥용 활"
   },
   {
-    "GachaEquipTID": 9109,
+    "GachaEquipTID": 9507,
+    "GachaId": 9,
+    "EquipTID": 3001,
+    "Count": 1,
+    "Weight": 7756750,
+    "Description": "Lv1 Common 원석"
+  },
+  {
+    "GachaEquipTID": 9508,
     "GachaId": 9,
     "EquipTID": 3101,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 풍년석"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 풍년석"
   },
   {
-    "GachaEquipTID": 9110,
+    "GachaEquipTID": 9509,
     "GachaId": 9,
     "EquipTID": 3201,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 흙빛 조각석"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 흙빛 조각석"
   },
   {
-    "GachaEquipTID": 9111,
+    "GachaEquipTID": 9510,
     "GachaId": 9,
     "EquipTID": 3301,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 철광석 조각"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 철광석 조각"
   },
   {
-    "GachaEquipTID": 9112,
+    "GachaEquipTID": 9511,
     "GachaId": 9,
     "EquipTID": 3401,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 나무옹이석"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 나무옹이석"
   },
   {
-    "GachaEquipTID": 9113,
+    "GachaEquipTID": 9512,
     "GachaId": 9,
     "EquipTID": 3501,
     "Count": 1,
-    "Weight": 8556,
-    "Description": "Common 짐승 이빨석"
+    "Weight": 7756750,
+    "Description": "Lv1 Common 짐승 이빨석"
   },
   {
-    "GachaEquipTID": 12101,
-    "GachaId": 12,
+    "GachaEquipTID": 9513,
+    "GachaId": 9,
     "EquipTID": 1002,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 무쇠 삽"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 무쇠 삽"
   },
   {
-    "GachaEquipTID": 12102,
-    "GachaId": 12,
+    "GachaEquipTID": 9514,
+    "GachaId": 9,
     "EquipTID": 1102,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 무쇠 호미"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 무쇠 호미"
   },
   {
-    "GachaEquipTID": 12103,
-    "GachaId": 12,
+    "GachaEquipTID": 9515,
+    "GachaId": 9,
     "EquipTID": 1302,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 무쇠 곡괭이"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 무쇠 곡괭이"
   },
   {
-    "GachaEquipTID": 12104,
-    "GachaId": 12,
+    "GachaEquipTID": 9516,
+    "GachaId": 9,
     "EquipTID": 1402,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 무쇠 도끼"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 무쇠 도끼"
   },
   {
-    "GachaEquipTID": 12105,
-    "GachaId": 12,
+    "GachaEquipTID": 9517,
+    "GachaId": 9,
     "EquipTID": 1502,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 참나무 활"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 참나무 활"
   },
   {
-    "GachaEquipTID": 12106,
-    "GachaId": 12,
-    "EquipTID": 2003,
-    "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 은 목걸이"
-  },
-  {
-    "GachaEquipTID": 12107,
-    "GachaId": 12,
+    "GachaEquipTID": 9518,
+    "GachaId": 9,
     "EquipTID": 3102,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 새싹 수정"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 새싹 수정"
   },
   {
-    "GachaEquipTID": 12108,
-    "GachaId": 12,
+    "GachaEquipTID": 9519,
+    "GachaId": 9,
     "EquipTID": 3202,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 지층 수정"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 지층 수정"
   },
   {
-    "GachaEquipTID": 12109,
-    "GachaId": 12,
+    "GachaEquipTID": 9520,
+    "GachaId": 9,
     "EquipTID": 3302,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 광맥 수정"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 광맥 수정"
   },
   {
-    "GachaEquipTID": 12110,
-    "GachaId": 12,
+    "GachaEquipTID": 9521,
+    "GachaId": 9,
     "EquipTID": 3402,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 수액 호박"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 수액 호박"
   },
   {
-    "GachaEquipTID": 12111,
-    "GachaId": 12,
+    "GachaEquipTID": 9522,
+    "GachaId": 9,
     "EquipTID": 3502,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Uncommon 추적자의 수정"
+    "Weight": 2939400,
+    "Description": "Lv1 Uncommon 추적자의 수정"
   },
   {
-    "GachaEquipTID": 15101,
-    "GachaId": 15,
-    "EquipTID": 2002,
-    "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 탐험가의 목걸이"
-  },
-  {
-    "GachaEquipTID": 15102,
-    "GachaId": 15,
+    "GachaEquipTID": 9523,
+    "GachaId": 9,
     "EquipTID": 1103,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 강철 낫"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 강철 낫"
   },
   {
-    "GachaEquipTID": 15103,
-    "GachaId": 15,
+    "GachaEquipTID": 9524,
+    "GachaId": 9,
     "EquipTID": 1203,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 강철 삽"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 강철 삽"
   },
   {
-    "GachaEquipTID": 15104,
-    "GachaId": 15,
+    "GachaEquipTID": 9525,
+    "GachaId": 9,
     "EquipTID": 1303,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 강철 곡괭이"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 강철 곡괭이"
   },
   {
-    "GachaEquipTID": 15105,
-    "GachaId": 15,
+    "GachaEquipTID": 9526,
+    "GachaId": 9,
     "EquipTID": 1403,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 양날 도끼"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 양날 도끼"
   },
   {
-    "GachaEquipTID": 15106,
-    "GachaId": 15,
+    "GachaEquipTID": 9527,
+    "GachaId": 9,
     "EquipTID": 1503,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 강철 석궁"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 강철 석궁"
   },
   {
-    "GachaEquipTID": 15107,
-    "GachaId": 15,
-    "EquipTID": 2004,
-    "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 노동자의 팔찌"
-  },
-  {
-    "GachaEquipTID": 15108,
-    "GachaId": 15,
+    "GachaEquipTID": 9528,
+    "GachaId": 9,
     "EquipTID": 3103,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 곡창의 비취"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 곡창의 비취"
   },
   {
-    "GachaEquipTID": 15109,
-    "GachaId": 15,
+    "GachaEquipTID": 9529,
+    "GachaId": 9,
     "EquipTID": 3203,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 유적의 호박"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 유적의 호박"
   },
   {
-    "GachaEquipTID": 15110,
-    "GachaId": 15,
+    "GachaEquipTID": 9530,
+    "GachaId": 9,
     "EquipTID": 3303,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 지맥의 흑옥"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 지맥의 흑옥"
   },
   {
-    "GachaEquipTID": 15111,
-    "GachaId": 15,
+    "GachaEquipTID": 9531,
+    "GachaId": 9,
     "EquipTID": 3403,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 고목의 녹옥"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 고목의 녹옥"
   },
   {
-    "GachaEquipTID": 15112,
-    "GachaId": 15,
+    "GachaEquipTID": 9532,
+    "GachaId": 9,
     "EquipTID": 3503,
     "Count": 1,
-    "Weight": 2325,
-    "Description": "Rare 맹수의 홍옥"
+    "Weight": 1633000,
+    "Description": "Lv1 Rare 맹수의 홍옥"
   },
   {
-    "GachaEquipTID": 18101,
-    "GachaId": 18,
+    "GachaEquipTID": 9533,
+    "GachaId": 9,
     "EquipTID": 1104,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 은빛 쟁기"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 은빛 쟁기"
   },
   {
-    "GachaEquipTID": 18102,
-    "GachaId": 18,
+    "GachaEquipTID": 9534,
+    "GachaId": 9,
     "EquipTID": 1204,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 고고학자의 붓"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 고고학자의 붓"
   },
   {
-    "GachaEquipTID": 18103,
-    "GachaId": 18,
+    "GachaEquipTID": 9535,
+    "GachaId": 9,
     "EquipTID": 1304,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 흑요석 곡괭이"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 흑요석 곡괭이"
   },
   {
-    "GachaEquipTID": 18104,
-    "GachaId": 18,
+    "GachaEquipTID": 9536,
+    "GachaId": 9,
     "EquipTID": 1404,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 백년목 도끼"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 백년목 도끼"
   },
   {
-    "GachaEquipTID": 18105,
-    "GachaId": 18,
+    "GachaEquipTID": 9537,
+    "GachaId": 9,
     "EquipTID": 1504,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 은빛 장궁"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 은빛 장궁"
   },
   {
-    "GachaEquipTID": 18106,
-    "GachaId": 18,
-    "EquipTID": 2005,
-    "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 장인의 인장"
-  },
-  {
-    "GachaEquipTID": 18107,
-    "GachaId": 18,
+    "GachaEquipTID": 9538,
+    "GachaId": 9,
     "EquipTID": 3104,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 황금 이삭석"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 황금 이삭석"
   },
   {
-    "GachaEquipTID": 18108,
-    "GachaId": 18,
+    "GachaEquipTID": 9539,
+    "GachaId": 9,
     "EquipTID": 3204,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 고대 문양석"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 고대 문양석"
   },
   {
-    "GachaEquipTID": 18109,
-    "GachaId": 18,
+    "GachaEquipTID": 9540,
+    "GachaId": 9,
     "EquipTID": 3304,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 용암 결정"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 용암 결정"
   },
   {
-    "GachaEquipTID": 18110,
-    "GachaId": 18,
+    "GachaEquipTID": 9541,
+    "GachaId": 9,
     "EquipTID": 3404,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 백년목 결정"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 백년목 결정"
   },
   {
-    "GachaEquipTID": 18111,
-    "GachaId": 18,
+    "GachaEquipTID": 9542,
+    "GachaId": 9,
     "EquipTID": 3504,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Epic 사냥꾼의 별"
+    "Weight": 1959600,
+    "Description": "Lv1 Epic 사냥꾼의 별"
   },
   {
-    "GachaEquipTID": 21101,
-    "GachaId": 21,
+    "GachaEquipTID": 9543,
+    "GachaId": 9,
     "EquipTID": 1105,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 풍년의 괭이"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 풍년의 괭이"
   },
   {
-    "GachaEquipTID": 21102,
-    "GachaId": 21,
+    "GachaEquipTID": 9544,
+    "GachaId": 9,
     "EquipTID": 1205,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 용린 발굴삽"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 용린 발굴삽"
   },
   {
-    "GachaEquipTID": 21103,
-    "GachaId": 21,
+    "GachaEquipTID": 9545,
+    "GachaId": 9,
     "EquipTID": 1305,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 미스릴 곡괭이"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 미스릴 곡괭이"
   },
   {
-    "GachaEquipTID": 21104,
-    "GachaId": 21,
+    "GachaEquipTID": 9546,
+    "GachaId": 9,
     "EquipTID": 1405,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 서리강철 도끼"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 서리강철 도끼"
   },
   {
-    "GachaEquipTID": 21105,
-    "GachaId": 21,
+    "GachaEquipTID": 9547,
+    "GachaId": 9,
     "EquipTID": 1505,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 폭풍의 장궁"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 폭풍의 장궁"
   },
   {
-    "GachaEquipTID": 21106,
-    "GachaId": 21,
-    "EquipTID": 2006,
-    "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 대장인의 훈장"
-  },
-  {
-    "GachaEquipTID": 21107,
-    "GachaId": 21,
+    "GachaEquipTID": 9548,
+    "GachaId": 9,
     "EquipTID": 3105,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 대지의 심장"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 대지의 심장"
   },
   {
-    "GachaEquipTID": 21108,
-    "GachaId": 21,
+    "GachaEquipTID": 9549,
+    "GachaId": 9,
     "EquipTID": 3205,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 왕도의 심장"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 왕도의 심장"
   },
   {
-    "GachaEquipTID": 21109,
-    "GachaId": 21,
+    "GachaEquipTID": 9550,
+    "GachaId": 9,
     "EquipTID": 3305,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 대지핵 결정"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 대지핵 결정"
   },
   {
-    "GachaEquipTID": 21110,
-    "GachaId": 21,
+    "GachaEquipTID": 9551,
+    "GachaId": 9,
     "EquipTID": 3405,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 숲의 심장"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 숲의 심장"
   },
   {
-    "GachaEquipTID": 21111,
-    "GachaId": 21,
+    "GachaEquipTID": 9552,
+    "GachaId": 9,
     "EquipTID": 3505,
     "Count": 1,
-    "Weight": 10044,
-    "Description": "Legendary 야수의 심장"
+    "Weight": 408250,
+    "Description": "Lv1 Legendary 야수의 심장"
+  },
+  {
+    "GachaEquipTID": 9553,
+    "GachaId": 9,
+    "EquipTID": 1106,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 대지모의 호미"
+  },
+  {
+    "GachaEquipTID": 9554,
+    "GachaId": 9,
+    "EquipTID": 1206,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 태초의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 9555,
+    "GachaId": 9,
+    "EquipTID": 1306,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 산신의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 9556,
+    "GachaId": 9,
+    "EquipTID": 1406,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 세계수의 도끼"
+  },
+  {
+    "GachaEquipTID": 9557,
+    "GachaId": 9,
+    "EquipTID": 1506,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 월신의 활"
+  },
+  {
+    "GachaEquipTID": 9558,
+    "GachaId": 9,
+    "EquipTID": 3106,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 풍요의 성석"
+  },
+  {
+    "GachaEquipTID": 9559,
+    "GachaId": 9,
+    "EquipTID": 3206,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 태고의 성석"
+  },
+  {
+    "GachaEquipTID": 9560,
+    "GachaId": 9,
+    "EquipTID": 3306,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 광신의 성석"
+  },
+  {
+    "GachaEquipTID": 9561,
+    "GachaId": 9,
+    "EquipTID": 3406,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 세계수 성석"
+  },
+  {
+    "GachaEquipTID": 9562,
+    "GachaId": 9,
+    "EquipTID": 3506,
+    "Count": 1,
+    "Weight": 81650,
+    "Description": "Lv1 Mythic 월광 성석"
+  },
+  {
+    "GachaEquipTID": 9563,
+    "GachaId": 9,
+    "EquipTID": 2001,
+    "Count": 1,
+    "Weight": 93081000,
+    "Description": "Lv1 Common 구리 반지"
+  },
+  {
+    "GachaEquipTID": 9564,
+    "GachaId": 9,
+    "EquipTID": 2003,
+    "Count": 1,
+    "Weight": 29394000,
+    "Description": "Lv1 Uncommon 은 목걸이"
+  },
+  {
+    "GachaEquipTID": 9565,
+    "GachaId": 9,
+    "EquipTID": 2002,
+    "Count": 1,
+    "Weight": 8165000,
+    "Description": "Lv1 Rare 탐험가의 목걸이"
+  },
+  {
+    "GachaEquipTID": 9566,
+    "GachaId": 9,
+    "EquipTID": 2004,
+    "Count": 1,
+    "Weight": 8165000,
+    "Description": "Lv1 Rare 노동자의 팔찌"
+  },
+  {
+    "GachaEquipTID": 9567,
+    "GachaId": 9,
+    "EquipTID": 2005,
+    "Count": 1,
+    "Weight": 19596000,
+    "Description": "Lv1 Epic 장인의 인장"
+  },
+  {
+    "GachaEquipTID": 9568,
+    "GachaId": 9,
+    "EquipTID": 2006,
+    "Count": 1,
+    "Weight": 4082500,
+    "Description": "Lv1 Legendary 대장인의 훈장"
+  },
+  {
+    "GachaEquipTID": 9569,
+    "GachaId": 9,
+    "EquipTID": 2007,
+    "Count": 1,
+    "Weight": 816500,
+    "Description": "Lv1 Mythic 창세의 고리"
+  },
+  {
+    "GachaEquipTID": 12501,
+    "GachaId": 12,
+    "EquipTID": 101101,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12502,
+    "GachaId": 12,
+    "EquipTID": 101201,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12503,
+    "GachaId": 12,
+    "EquipTID": 101301,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12504,
+    "GachaId": 12,
+    "EquipTID": 101401,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12505,
+    "GachaId": 12,
+    "EquipTID": 101501,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12506,
+    "GachaId": 12,
+    "EquipTID": 103101,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12507,
+    "GachaId": 12,
+    "EquipTID": 103201,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12508,
+    "GachaId": 12,
+    "EquipTID": 103301,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12509,
+    "GachaId": 12,
+    "EquipTID": 103401,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12510,
+    "GachaId": 12,
+    "EquipTID": 103501,
+    "Count": 1,
+    "Weight": 7144375,
+    "Description": "Lv10 Common 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12511,
+    "GachaId": 12,
+    "EquipTID": 101102,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12512,
+    "GachaId": 12,
+    "EquipTID": 101202,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12513,
+    "GachaId": 12,
+    "EquipTID": 101302,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12514,
+    "GachaId": 12,
+    "EquipTID": 101402,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12515,
+    "GachaId": 12,
+    "EquipTID": 101502,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12516,
+    "GachaId": 12,
+    "EquipTID": 103102,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12517,
+    "GachaId": 12,
+    "EquipTID": 103202,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12518,
+    "GachaId": 12,
+    "EquipTID": 103302,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12519,
+    "GachaId": 12,
+    "EquipTID": 103402,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12520,
+    "GachaId": 12,
+    "EquipTID": 103502,
+    "Count": 1,
+    "Weight": 2286200,
+    "Description": "Lv10 Uncommon 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12521,
+    "GachaId": 12,
+    "EquipTID": 101103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12522,
+    "GachaId": 12,
+    "EquipTID": 101203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12523,
+    "GachaId": 12,
+    "EquipTID": 101303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12524,
+    "GachaId": 12,
+    "EquipTID": 101403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12525,
+    "GachaId": 12,
+    "EquipTID": 101503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12526,
+    "GachaId": 12,
+    "EquipTID": 103103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12527,
+    "GachaId": 12,
+    "EquipTID": 103203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12528,
+    "GachaId": 12,
+    "EquipTID": 103303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12529,
+    "GachaId": 12,
+    "EquipTID": 103403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12530,
+    "GachaId": 12,
+    "EquipTID": 103503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv10 Rare 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12531,
+    "GachaId": 12,
+    "EquipTID": 101104,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12532,
+    "GachaId": 12,
+    "EquipTID": 101204,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12533,
+    "GachaId": 12,
+    "EquipTID": 101304,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12534,
+    "GachaId": 12,
+    "EquipTID": 101404,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12535,
+    "GachaId": 12,
+    "EquipTID": 101504,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12536,
+    "GachaId": 12,
+    "EquipTID": 103104,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12537,
+    "GachaId": 12,
+    "EquipTID": 103204,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12538,
+    "GachaId": 12,
+    "EquipTID": 103304,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12539,
+    "GachaId": 12,
+    "EquipTID": 103404,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12540,
+    "GachaId": 12,
+    "EquipTID": 103504,
+    "Count": 1,
+    "Weight": 685860,
+    "Description": "Lv10 Epic 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12541,
+    "GachaId": 12,
+    "EquipTID": 101105,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv10 Legendary 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12542,
+    "GachaId": 12,
+    "EquipTID": 101205,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv10 Legendary 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12543,
+    "GachaId": 12,
+    "EquipTID": 101305,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv10 Legendary 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12544,
+    "GachaId": 12,
+    "EquipTID": 101405,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv10 Legendary 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12545,
+    "GachaId": 12,
+    "EquipTID": 101505,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv10 Legendary 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12546,
+    "GachaId": 12,
+    "EquipTID": 103105,
+    "Count": 1,
+    "Weight": 142887,
+    "Description": "Lv10 Legendary 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12547,
+    "GachaId": 12,
+    "EquipTID": 103205,
+    "Count": 1,
+    "Weight": 142887,
+    "Description": "Lv10 Legendary 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12548,
+    "GachaId": 12,
+    "EquipTID": 103305,
+    "Count": 1,
+    "Weight": 142887,
+    "Description": "Lv10 Legendary 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12549,
+    "GachaId": 12,
+    "EquipTID": 103405,
+    "Count": 1,
+    "Weight": 142887,
+    "Description": "Lv10 Legendary 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12550,
+    "GachaId": 12,
+    "EquipTID": 103505,
+    "Count": 1,
+    "Weight": 142887,
+    "Description": "Lv10 Legendary 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12551,
+    "GachaId": 12,
+    "EquipTID": 101106,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv10 Mythic 청동 낫"
+  },
+  {
+    "GachaEquipTID": 12552,
+    "GachaId": 12,
+    "EquipTID": 101206,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv10 Mythic 청동 발굴삽"
+  },
+  {
+    "GachaEquipTID": 12553,
+    "GachaId": 12,
+    "EquipTID": 101306,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv10 Mythic 청동 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12554,
+    "GachaId": 12,
+    "EquipTID": 101406,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv10 Mythic 청동 도끼"
+  },
+  {
+    "GachaEquipTID": 12555,
+    "GachaId": 12,
+    "EquipTID": 101506,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv10 Mythic 청동촉 활"
+  },
+  {
+    "GachaEquipTID": 12556,
+    "GachaId": 12,
+    "EquipTID": 103106,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv10 Mythic 이삭 마노"
+  },
+  {
+    "GachaEquipTID": 12557,
+    "GachaId": 12,
+    "EquipTID": 103206,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv10 Mythic 유적 마노"
+  },
+  {
+    "GachaEquipTID": 12558,
+    "GachaId": 12,
+    "EquipTID": 103306,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv10 Mythic 원광 마노"
+  },
+  {
+    "GachaEquipTID": 12559,
+    "GachaId": 12,
+    "EquipTID": 103406,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv10 Mythic 나이테 마노"
+  },
+  {
+    "GachaEquipTID": 12560,
+    "GachaId": 12,
+    "EquipTID": 103506,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv10 Mythic 발자국 마노"
+  },
+  {
+    "GachaEquipTID": 12561,
+    "GachaId": 12,
+    "EquipTID": 201101,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12562,
+    "GachaId": 12,
+    "EquipTID": 201201,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12563,
+    "GachaId": 12,
+    "EquipTID": 201301,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12564,
+    "GachaId": 12,
+    "EquipTID": 201401,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12565,
+    "GachaId": 12,
+    "EquipTID": 201501,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12566,
+    "GachaId": 12,
+    "EquipTID": 203101,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12567,
+    "GachaId": 12,
+    "EquipTID": 203201,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12568,
+    "GachaId": 12,
+    "EquipTID": 203301,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12569,
+    "GachaId": 12,
+    "EquipTID": 203401,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12570,
+    "GachaId": 12,
+    "EquipTID": 203501,
+    "Count": 1,
+    "Weight": 3061875,
+    "Description": "Lv20 Common 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12571,
+    "GachaId": 12,
+    "EquipTID": 201102,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12572,
+    "GachaId": 12,
+    "EquipTID": 201202,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12573,
+    "GachaId": 12,
+    "EquipTID": 201302,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12574,
+    "GachaId": 12,
+    "EquipTID": 201402,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12575,
+    "GachaId": 12,
+    "EquipTID": 201502,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12576,
+    "GachaId": 12,
+    "EquipTID": 203102,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12577,
+    "GachaId": 12,
+    "EquipTID": 203202,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12578,
+    "GachaId": 12,
+    "EquipTID": 203302,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12579,
+    "GachaId": 12,
+    "EquipTID": 203402,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12580,
+    "GachaId": 12,
+    "EquipTID": 203502,
+    "Count": 1,
+    "Weight": 979800,
+    "Description": "Lv20 Uncommon 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12581,
+    "GachaId": 12,
+    "EquipTID": 201103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12582,
+    "GachaId": 12,
+    "EquipTID": 201203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12583,
+    "GachaId": 12,
+    "EquipTID": 201303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12584,
+    "GachaId": 12,
+    "EquipTID": 201403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12585,
+    "GachaId": 12,
+    "EquipTID": 201503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12586,
+    "GachaId": 12,
+    "EquipTID": 203103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12587,
+    "GachaId": 12,
+    "EquipTID": 203203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12588,
+    "GachaId": 12,
+    "EquipTID": 203303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12589,
+    "GachaId": 12,
+    "EquipTID": 203403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12590,
+    "GachaId": 12,
+    "EquipTID": 203503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv20 Rare 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12591,
+    "GachaId": 12,
+    "EquipTID": 201104,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12592,
+    "GachaId": 12,
+    "EquipTID": 201204,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12593,
+    "GachaId": 12,
+    "EquipTID": 201304,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12594,
+    "GachaId": 12,
+    "EquipTID": 201404,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12595,
+    "GachaId": 12,
+    "EquipTID": 201504,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12596,
+    "GachaId": 12,
+    "EquipTID": 203104,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12597,
+    "GachaId": 12,
+    "EquipTID": 203204,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12598,
+    "GachaId": 12,
+    "EquipTID": 203304,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12599,
+    "GachaId": 12,
+    "EquipTID": 203404,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12600,
+    "GachaId": 12,
+    "EquipTID": 203504,
+    "Count": 1,
+    "Weight": 293940,
+    "Description": "Lv20 Epic 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12601,
+    "GachaId": 12,
+    "EquipTID": 201105,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv20 Legendary 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12602,
+    "GachaId": 12,
+    "EquipTID": 201205,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv20 Legendary 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12603,
+    "GachaId": 12,
+    "EquipTID": 201305,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv20 Legendary 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12604,
+    "GachaId": 12,
+    "EquipTID": 201405,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv20 Legendary 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12605,
+    "GachaId": 12,
+    "EquipTID": 201505,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv20 Legendary 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12606,
+    "GachaId": 12,
+    "EquipTID": 203105,
+    "Count": 1,
+    "Weight": 61237,
+    "Description": "Lv20 Legendary 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12607,
+    "GachaId": 12,
+    "EquipTID": 203205,
+    "Count": 1,
+    "Weight": 61237,
+    "Description": "Lv20 Legendary 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12608,
+    "GachaId": 12,
+    "EquipTID": 203305,
+    "Count": 1,
+    "Weight": 61237,
+    "Description": "Lv20 Legendary 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12609,
+    "GachaId": 12,
+    "EquipTID": 203405,
+    "Count": 1,
+    "Weight": 61237,
+    "Description": "Lv20 Legendary 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12610,
+    "GachaId": 12,
+    "EquipTID": 203505,
+    "Count": 1,
+    "Weight": 61237,
+    "Description": "Lv20 Legendary 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12611,
+    "GachaId": 12,
+    "EquipTID": 201106,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv20 Mythic 무쇠 괭이"
+  },
+  {
+    "GachaEquipTID": 12612,
+    "GachaId": 12,
+    "EquipTID": 201206,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv20 Mythic 무쇠 발굴 망치"
+  },
+  {
+    "GachaEquipTID": 12613,
+    "GachaId": 12,
+    "EquipTID": 201306,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv20 Mythic 무쇠 곡괭이"
+  },
+  {
+    "GachaEquipTID": 12614,
+    "GachaId": 12,
+    "EquipTID": 201406,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv20 Mythic 무쇠 톱"
+  },
+  {
+    "GachaEquipTID": 12615,
+    "GachaId": 12,
+    "EquipTID": 201506,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv20 Mythic 무쇠촉 장궁"
+  },
+  {
+    "GachaEquipTID": 12616,
+    "GachaId": 12,
+    "EquipTID": 203106,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv20 Mythic 이삭 벽옥"
+  },
+  {
+    "GachaEquipTID": 12617,
+    "GachaId": 12,
+    "EquipTID": 203206,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv20 Mythic 유적 벽옥"
+  },
+  {
+    "GachaEquipTID": 12618,
+    "GachaId": 12,
+    "EquipTID": 203306,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv20 Mythic 원광 벽옥"
+  },
+  {
+    "GachaEquipTID": 12619,
+    "GachaId": 12,
+    "EquipTID": 203406,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv20 Mythic 나이테 벽옥"
+  },
+  {
+    "GachaEquipTID": 12620,
+    "GachaId": 12,
+    "EquipTID": 203506,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv20 Mythic 발자국 벽옥"
+  },
+  {
+    "GachaEquipTID": 12621,
+    "GachaId": 12,
+    "EquipTID": 102001,
+    "Count": 1,
+    "Weight": 71443750,
+    "Description": "Lv10 Common 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12622,
+    "GachaId": 12,
+    "EquipTID": 102002,
+    "Count": 1,
+    "Weight": 22862000,
+    "Description": "Lv10 Uncommon 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12623,
+    "GachaId": 12,
+    "EquipTID": 102003,
+    "Count": 1,
+    "Weight": 11431000,
+    "Description": "Lv10 Rare 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12624,
+    "GachaId": 12,
+    "EquipTID": 102004,
+    "Count": 1,
+    "Weight": 6858600,
+    "Description": "Lv10 Epic 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12625,
+    "GachaId": 12,
+    "EquipTID": 102005,
+    "Count": 1,
+    "Weight": 1428875,
+    "Description": "Lv10 Legendary 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12626,
+    "GachaId": 12,
+    "EquipTID": 102006,
+    "Count": 1,
+    "Weight": 285775,
+    "Description": "Lv10 Mythic 청동 팔찌"
+  },
+  {
+    "GachaEquipTID": 12627,
+    "GachaId": 12,
+    "EquipTID": 202001,
+    "Count": 1,
+    "Weight": 30618750,
+    "Description": "Lv20 Common 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 12628,
+    "GachaId": 12,
+    "EquipTID": 202002,
+    "Count": 1,
+    "Weight": 9798000,
+    "Description": "Lv20 Uncommon 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 12629,
+    "GachaId": 12,
+    "EquipTID": 202003,
+    "Count": 1,
+    "Weight": 4899000,
+    "Description": "Lv20 Rare 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 12630,
+    "GachaId": 12,
+    "EquipTID": 202004,
+    "Count": 1,
+    "Weight": 2939400,
+    "Description": "Lv20 Epic 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 12631,
+    "GachaId": 12,
+    "EquipTID": 202005,
+    "Count": 1,
+    "Weight": 612375,
+    "Description": "Lv20 Legendary 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 12632,
+    "GachaId": 12,
+    "EquipTID": 202006,
+    "Count": 1,
+    "Weight": 122475,
+    "Description": "Lv20 Mythic 무쇠 고리"
+  },
+  {
+    "GachaEquipTID": 15501,
+    "GachaId": 15,
+    "EquipTID": 301101,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15502,
+    "GachaId": 15,
+    "EquipTID": 301201,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15503,
+    "GachaId": 15,
+    "EquipTID": 301301,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15504,
+    "GachaId": 15,
+    "EquipTID": 301401,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15505,
+    "GachaId": 15,
+    "EquipTID": 301501,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15506,
+    "GachaId": 15,
+    "EquipTID": 303101,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15507,
+    "GachaId": 15,
+    "EquipTID": 303201,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15508,
+    "GachaId": 15,
+    "EquipTID": 303301,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15509,
+    "GachaId": 15,
+    "EquipTID": 303401,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15510,
+    "GachaId": 15,
+    "EquipTID": 303501,
+    "Count": 1,
+    "Weight": 7372995,
+    "Description": "Lv30 Common 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15511,
+    "GachaId": 15,
+    "EquipTID": 301102,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15512,
+    "GachaId": 15,
+    "EquipTID": 301202,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15513,
+    "GachaId": 15,
+    "EquipTID": 301302,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15514,
+    "GachaId": 15,
+    "EquipTID": 301402,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15515,
+    "GachaId": 15,
+    "EquipTID": 301502,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15516,
+    "GachaId": 15,
+    "EquipTID": 303102,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15517,
+    "GachaId": 15,
+    "EquipTID": 303202,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15518,
+    "GachaId": 15,
+    "EquipTID": 303302,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15519,
+    "GachaId": 15,
+    "EquipTID": 303402,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15520,
+    "GachaId": 15,
+    "EquipTID": 303502,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv30 Uncommon 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15521,
+    "GachaId": 15,
+    "EquipTID": 301103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15522,
+    "GachaId": 15,
+    "EquipTID": 301203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15523,
+    "GachaId": 15,
+    "EquipTID": 301303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15524,
+    "GachaId": 15,
+    "EquipTID": 301403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15525,
+    "GachaId": 15,
+    "EquipTID": 301503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15526,
+    "GachaId": 15,
+    "EquipTID": 303103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15527,
+    "GachaId": 15,
+    "EquipTID": 303203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15528,
+    "GachaId": 15,
+    "EquipTID": 303303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15529,
+    "GachaId": 15,
+    "EquipTID": 303403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15530,
+    "GachaId": 15,
+    "EquipTID": 303503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv30 Rare 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15531,
+    "GachaId": 15,
+    "EquipTID": 301104,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15532,
+    "GachaId": 15,
+    "EquipTID": 301204,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15533,
+    "GachaId": 15,
+    "EquipTID": 301304,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15534,
+    "GachaId": 15,
+    "EquipTID": 301404,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15535,
+    "GachaId": 15,
+    "EquipTID": 301504,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15536,
+    "GachaId": 15,
+    "EquipTID": 303104,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15537,
+    "GachaId": 15,
+    "EquipTID": 303204,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15538,
+    "GachaId": 15,
+    "EquipTID": 303304,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15539,
+    "GachaId": 15,
+    "EquipTID": 303404,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15540,
+    "GachaId": 15,
+    "EquipTID": 303504,
+    "Count": 1,
+    "Weight": 411516,
+    "Description": "Lv30 Epic 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15541,
+    "GachaId": 15,
+    "EquipTID": 301105,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv30 Legendary 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15542,
+    "GachaId": 15,
+    "EquipTID": 301205,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv30 Legendary 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15543,
+    "GachaId": 15,
+    "EquipTID": 301305,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv30 Legendary 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15544,
+    "GachaId": 15,
+    "EquipTID": 301405,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv30 Legendary 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15545,
+    "GachaId": 15,
+    "EquipTID": 301505,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv30 Legendary 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15546,
+    "GachaId": 15,
+    "EquipTID": 303105,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv30 Legendary 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15547,
+    "GachaId": 15,
+    "EquipTID": 303205,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv30 Legendary 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15548,
+    "GachaId": 15,
+    "EquipTID": 303305,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv30 Legendary 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15549,
+    "GachaId": 15,
+    "EquipTID": 303405,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv30 Legendary 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15550,
+    "GachaId": 15,
+    "EquipTID": 303505,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv30 Legendary 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15551,
+    "GachaId": 15,
+    "EquipTID": 301106,
+    "Count": 1,
+    "Weight": 17147,
+    "Description": "Lv30 Mythic 단철 쟁기"
+  },
+  {
+    "GachaEquipTID": 15552,
+    "GachaId": 15,
+    "EquipTID": 301206,
+    "Count": 1,
+    "Weight": 17147,
+    "Description": "Lv30 Mythic 단철 탐사 송곳"
+  },
+  {
+    "GachaEquipTID": 15553,
+    "GachaId": 15,
+    "EquipTID": 301306,
+    "Count": 1,
+    "Weight": 17147,
+    "Description": "Lv30 Mythic 단철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15554,
+    "GachaId": 15,
+    "EquipTID": 301406,
+    "Count": 1,
+    "Weight": 17147,
+    "Description": "Lv30 Mythic 단철 도끼"
+  },
+  {
+    "GachaEquipTID": 15555,
+    "GachaId": 15,
+    "EquipTID": 301506,
+    "Count": 1,
+    "Weight": 17147,
+    "Description": "Lv30 Mythic 단철 석궁"
+  },
+  {
+    "GachaEquipTID": 15556,
+    "GachaId": 15,
+    "EquipTID": 303106,
+    "Count": 1,
+    "Weight": 17146,
+    "Description": "Lv30 Mythic 이삭 석류석"
+  },
+  {
+    "GachaEquipTID": 15557,
+    "GachaId": 15,
+    "EquipTID": 303206,
+    "Count": 1,
+    "Weight": 17146,
+    "Description": "Lv30 Mythic 유적 석류석"
+  },
+  {
+    "GachaEquipTID": 15558,
+    "GachaId": 15,
+    "EquipTID": 303306,
+    "Count": 1,
+    "Weight": 17146,
+    "Description": "Lv30 Mythic 원광 석류석"
+  },
+  {
+    "GachaEquipTID": 15559,
+    "GachaId": 15,
+    "EquipTID": 303406,
+    "Count": 1,
+    "Weight": 17146,
+    "Description": "Lv30 Mythic 나이테 석류석"
+  },
+  {
+    "GachaEquipTID": 15560,
+    "GachaId": 15,
+    "EquipTID": 303506,
+    "Count": 1,
+    "Weight": 17146,
+    "Description": "Lv30 Mythic 발자국 석류석"
+  },
+  {
+    "GachaEquipTID": 15561,
+    "GachaId": 15,
+    "EquipTID": 401101,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15562,
+    "GachaId": 15,
+    "EquipTID": 401201,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15563,
+    "GachaId": 15,
+    "EquipTID": 401301,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15564,
+    "GachaId": 15,
+    "EquipTID": 401401,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15565,
+    "GachaId": 15,
+    "EquipTID": 401501,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 강철 활"
+  },
+  {
+    "GachaEquipTID": 15566,
+    "GachaId": 15,
+    "EquipTID": 403101,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15567,
+    "GachaId": 15,
+    "EquipTID": 403201,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15568,
+    "GachaId": 15,
+    "EquipTID": 403301,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15569,
+    "GachaId": 15,
+    "EquipTID": 403401,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15570,
+    "GachaId": 15,
+    "EquipTID": 403501,
+    "Count": 1,
+    "Weight": 3159855,
+    "Description": "Lv40 Common 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15571,
+    "GachaId": 15,
+    "EquipTID": 401102,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15572,
+    "GachaId": 15,
+    "EquipTID": 401202,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15573,
+    "GachaId": 15,
+    "EquipTID": 401302,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15574,
+    "GachaId": 15,
+    "EquipTID": 401402,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15575,
+    "GachaId": 15,
+    "EquipTID": 401502,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 강철 활"
+  },
+  {
+    "GachaEquipTID": 15576,
+    "GachaId": 15,
+    "EquipTID": 403102,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15577,
+    "GachaId": 15,
+    "EquipTID": 403202,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15578,
+    "GachaId": 15,
+    "EquipTID": 403302,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15579,
+    "GachaId": 15,
+    "EquipTID": 403402,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15580,
+    "GachaId": 15,
+    "EquipTID": 403502,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv40 Uncommon 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15581,
+    "GachaId": 15,
+    "EquipTID": 401103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15582,
+    "GachaId": 15,
+    "EquipTID": 401203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15583,
+    "GachaId": 15,
+    "EquipTID": 401303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15584,
+    "GachaId": 15,
+    "EquipTID": 401403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15585,
+    "GachaId": 15,
+    "EquipTID": 401503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 강철 활"
+  },
+  {
+    "GachaEquipTID": 15586,
+    "GachaId": 15,
+    "EquipTID": 403103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15587,
+    "GachaId": 15,
+    "EquipTID": 403203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15588,
+    "GachaId": 15,
+    "EquipTID": 403303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15589,
+    "GachaId": 15,
+    "EquipTID": 403403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15590,
+    "GachaId": 15,
+    "EquipTID": 403503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv40 Rare 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15591,
+    "GachaId": 15,
+    "EquipTID": 401104,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15592,
+    "GachaId": 15,
+    "EquipTID": 401204,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15593,
+    "GachaId": 15,
+    "EquipTID": 401304,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15594,
+    "GachaId": 15,
+    "EquipTID": 401404,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15595,
+    "GachaId": 15,
+    "EquipTID": 401504,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 강철 활"
+  },
+  {
+    "GachaEquipTID": 15596,
+    "GachaId": 15,
+    "EquipTID": 403104,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15597,
+    "GachaId": 15,
+    "EquipTID": 403204,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15598,
+    "GachaId": 15,
+    "EquipTID": 403304,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15599,
+    "GachaId": 15,
+    "EquipTID": 403404,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15600,
+    "GachaId": 15,
+    "EquipTID": 403504,
+    "Count": 1,
+    "Weight": 176364,
+    "Description": "Lv40 Epic 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15601,
+    "GachaId": 15,
+    "EquipTID": 401105,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv40 Legendary 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15602,
+    "GachaId": 15,
+    "EquipTID": 401205,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv40 Legendary 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15603,
+    "GachaId": 15,
+    "EquipTID": 401305,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv40 Legendary 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15604,
+    "GachaId": 15,
+    "EquipTID": 401405,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv40 Legendary 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15605,
+    "GachaId": 15,
+    "EquipTID": 401505,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv40 Legendary 강철 활"
+  },
+  {
+    "GachaEquipTID": 15606,
+    "GachaId": 15,
+    "EquipTID": 403105,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv40 Legendary 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15607,
+    "GachaId": 15,
+    "EquipTID": 403205,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv40 Legendary 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15608,
+    "GachaId": 15,
+    "EquipTID": 403305,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv40 Legendary 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15609,
+    "GachaId": 15,
+    "EquipTID": 403405,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv40 Legendary 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15610,
+    "GachaId": 15,
+    "EquipTID": 403505,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv40 Legendary 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15611,
+    "GachaId": 15,
+    "EquipTID": 401106,
+    "Count": 1,
+    "Weight": 7349,
+    "Description": "Lv40 Mythic 강철 낫"
+  },
+  {
+    "GachaEquipTID": 15612,
+    "GachaId": 15,
+    "EquipTID": 401206,
+    "Count": 1,
+    "Weight": 7349,
+    "Description": "Lv40 Mythic 강철 발굴삽"
+  },
+  {
+    "GachaEquipTID": 15613,
+    "GachaId": 15,
+    "EquipTID": 401306,
+    "Count": 1,
+    "Weight": 7349,
+    "Description": "Lv40 Mythic 강철 곡괭이"
+  },
+  {
+    "GachaEquipTID": 15614,
+    "GachaId": 15,
+    "EquipTID": 401406,
+    "Count": 1,
+    "Weight": 7349,
+    "Description": "Lv40 Mythic 강철 도끼"
+  },
+  {
+    "GachaEquipTID": 15615,
+    "GachaId": 15,
+    "EquipTID": 401506,
+    "Count": 1,
+    "Weight": 7349,
+    "Description": "Lv40 Mythic 강철 활"
+  },
+  {
+    "GachaEquipTID": 15616,
+    "GachaId": 15,
+    "EquipTID": 403106,
+    "Count": 1,
+    "Weight": 7348,
+    "Description": "Lv40 Mythic 이삭 월장석"
+  },
+  {
+    "GachaEquipTID": 15617,
+    "GachaId": 15,
+    "EquipTID": 403206,
+    "Count": 1,
+    "Weight": 7348,
+    "Description": "Lv40 Mythic 유적 월장석"
+  },
+  {
+    "GachaEquipTID": 15618,
+    "GachaId": 15,
+    "EquipTID": 403306,
+    "Count": 1,
+    "Weight": 7348,
+    "Description": "Lv40 Mythic 원광 월장석"
+  },
+  {
+    "GachaEquipTID": 15619,
+    "GachaId": 15,
+    "EquipTID": 403406,
+    "Count": 1,
+    "Weight": 7348,
+    "Description": "Lv40 Mythic 나이테 월장석"
+  },
+  {
+    "GachaEquipTID": 15620,
+    "GachaId": 15,
+    "EquipTID": 403506,
+    "Count": 1,
+    "Weight": 7348,
+    "Description": "Lv40 Mythic 발자국 월장석"
+  },
+  {
+    "GachaEquipTID": 15621,
+    "GachaId": 15,
+    "EquipTID": 302001,
+    "Count": 1,
+    "Weight": 73729950,
+    "Description": "Lv30 Common 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15622,
+    "GachaId": 15,
+    "EquipTID": 302002,
+    "Count": 1,
+    "Weight": 24005100,
+    "Description": "Lv30 Uncommon 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15623,
+    "GachaId": 15,
+    "EquipTID": 302003,
+    "Count": 1,
+    "Weight": 11431000,
+    "Description": "Lv30 Rare 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15624,
+    "GachaId": 15,
+    "EquipTID": 302004,
+    "Count": 1,
+    "Weight": 4115160,
+    "Description": "Lv30 Epic 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15625,
+    "GachaId": 15,
+    "EquipTID": 302005,
+    "Count": 1,
+    "Weight": 857325,
+    "Description": "Lv30 Legendary 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15626,
+    "GachaId": 15,
+    "EquipTID": 302006,
+    "Count": 1,
+    "Weight": 171465,
+    "Description": "Lv30 Mythic 단철 목걸이"
+  },
+  {
+    "GachaEquipTID": 15627,
+    "GachaId": 15,
+    "EquipTID": 402001,
+    "Count": 1,
+    "Weight": 31598550,
+    "Description": "Lv40 Common 강철 반지"
+  },
+  {
+    "GachaEquipTID": 15628,
+    "GachaId": 15,
+    "EquipTID": 402002,
+    "Count": 1,
+    "Weight": 10287900,
+    "Description": "Lv40 Uncommon 강철 반지"
+  },
+  {
+    "GachaEquipTID": 15629,
+    "GachaId": 15,
+    "EquipTID": 402003,
+    "Count": 1,
+    "Weight": 4899000,
+    "Description": "Lv40 Rare 강철 반지"
+  },
+  {
+    "GachaEquipTID": 15630,
+    "GachaId": 15,
+    "EquipTID": 402004,
+    "Count": 1,
+    "Weight": 1763640,
+    "Description": "Lv40 Epic 강철 반지"
+  },
+  {
+    "GachaEquipTID": 15631,
+    "GachaId": 15,
+    "EquipTID": 402005,
+    "Count": 1,
+    "Weight": 367425,
+    "Description": "Lv40 Legendary 강철 반지"
+  },
+  {
+    "GachaEquipTID": 15632,
+    "GachaId": 15,
+    "EquipTID": 402006,
+    "Count": 1,
+    "Weight": 73485,
+    "Description": "Lv40 Mythic 강철 반지"
+  },
+  {
+    "GachaEquipTID": 18501,
+    "GachaId": 18,
+    "EquipTID": 501101,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18502,
+    "GachaId": 18,
+    "EquipTID": 501201,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18503,
+    "GachaId": 18,
+    "EquipTID": 501301,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18504,
+    "GachaId": 18,
+    "EquipTID": 501401,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18505,
+    "GachaId": 18,
+    "EquipTID": 501501,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18506,
+    "GachaId": 18,
+    "EquipTID": 503101,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18507,
+    "GachaId": 18,
+    "EquipTID": 503201,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18508,
+    "GachaId": 18,
+    "EquipTID": 503301,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18509,
+    "GachaId": 18,
+    "EquipTID": 503401,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18510,
+    "GachaId": 18,
+    "EquipTID": 503501,
+    "Count": 1,
+    "Weight": 7544460,
+    "Description": "Lv50 Common 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18511,
+    "GachaId": 18,
+    "EquipTID": 501102,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18512,
+    "GachaId": 18,
+    "EquipTID": 501202,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18513,
+    "GachaId": 18,
+    "EquipTID": 501302,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18514,
+    "GachaId": 18,
+    "EquipTID": 501402,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18515,
+    "GachaId": 18,
+    "EquipTID": 501502,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18516,
+    "GachaId": 18,
+    "EquipTID": 503102,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18517,
+    "GachaId": 18,
+    "EquipTID": 503202,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18518,
+    "GachaId": 18,
+    "EquipTID": 503302,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18519,
+    "GachaId": 18,
+    "EquipTID": 503402,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18520,
+    "GachaId": 18,
+    "EquipTID": 503502,
+    "Count": 1,
+    "Weight": 2400510,
+    "Description": "Lv50 Uncommon 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18521,
+    "GachaId": 18,
+    "EquipTID": 501103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18522,
+    "GachaId": 18,
+    "EquipTID": 501203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18523,
+    "GachaId": 18,
+    "EquipTID": 501303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18524,
+    "GachaId": 18,
+    "EquipTID": 501403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18525,
+    "GachaId": 18,
+    "EquipTID": 501503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18526,
+    "GachaId": 18,
+    "EquipTID": 503103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18527,
+    "GachaId": 18,
+    "EquipTID": 503203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18528,
+    "GachaId": 18,
+    "EquipTID": 503303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18529,
+    "GachaId": 18,
+    "EquipTID": 503403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18530,
+    "GachaId": 18,
+    "EquipTID": 503503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv50 Rare 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18531,
+    "GachaId": 18,
+    "EquipTID": 501104,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18532,
+    "GachaId": 18,
+    "EquipTID": 501204,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18533,
+    "GachaId": 18,
+    "EquipTID": 501304,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18534,
+    "GachaId": 18,
+    "EquipTID": 501404,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18535,
+    "GachaId": 18,
+    "EquipTID": 501504,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18536,
+    "GachaId": 18,
+    "EquipTID": 503104,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18537,
+    "GachaId": 18,
+    "EquipTID": 503204,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18538,
+    "GachaId": 18,
+    "EquipTID": 503304,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18539,
+    "GachaId": 18,
+    "EquipTID": 503404,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18540,
+    "GachaId": 18,
+    "EquipTID": 503504,
+    "Count": 1,
+    "Weight": 274344,
+    "Description": "Lv50 Epic 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18541,
+    "GachaId": 18,
+    "EquipTID": 501105,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18542,
+    "GachaId": 18,
+    "EquipTID": 501205,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18543,
+    "GachaId": 18,
+    "EquipTID": 501305,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18544,
+    "GachaId": 18,
+    "EquipTID": 501405,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18545,
+    "GachaId": 18,
+    "EquipTID": 501505,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18546,
+    "GachaId": 18,
+    "EquipTID": 503105,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18547,
+    "GachaId": 18,
+    "EquipTID": 503205,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18548,
+    "GachaId": 18,
+    "EquipTID": 503305,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18549,
+    "GachaId": 18,
+    "EquipTID": 503405,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18550,
+    "GachaId": 18,
+    "EquipTID": 503505,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv50 Legendary 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18551,
+    "GachaId": 18,
+    "EquipTID": 501106,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 은날 괭이"
+  },
+  {
+    "GachaEquipTID": 18552,
+    "GachaId": 18,
+    "EquipTID": 501206,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 은 탐침"
+  },
+  {
+    "GachaEquipTID": 18553,
+    "GachaId": 18,
+    "EquipTID": 501306,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 은날 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18554,
+    "GachaId": 18,
+    "EquipTID": 501406,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 은날 도끼"
+  },
+  {
+    "GachaEquipTID": 18555,
+    "GachaId": 18,
+    "EquipTID": 501506,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 은사 석궁"
+  },
+  {
+    "GachaEquipTID": 18556,
+    "GachaId": 18,
+    "EquipTID": 503106,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 이삭 자수정"
+  },
+  {
+    "GachaEquipTID": 18557,
+    "GachaId": 18,
+    "EquipTID": 503206,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 유적 자수정"
+  },
+  {
+    "GachaEquipTID": 18558,
+    "GachaId": 18,
+    "EquipTID": 503306,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 원광 자수정"
+  },
+  {
+    "GachaEquipTID": 18559,
+    "GachaId": 18,
+    "EquipTID": 503406,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 나이테 자수정"
+  },
+  {
+    "GachaEquipTID": 18560,
+    "GachaId": 18,
+    "EquipTID": 503506,
+    "Count": 1,
+    "Weight": 11431,
+    "Description": "Lv50 Mythic 발자국 자수정"
+  },
+  {
+    "GachaEquipTID": 18561,
+    "GachaId": 18,
+    "EquipTID": 601101,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18562,
+    "GachaId": 18,
+    "EquipTID": 601201,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18563,
+    "GachaId": 18,
+    "EquipTID": 601301,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18564,
+    "GachaId": 18,
+    "EquipTID": 601401,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18565,
+    "GachaId": 18,
+    "EquipTID": 601501,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18566,
+    "GachaId": 18,
+    "EquipTID": 603101,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18567,
+    "GachaId": 18,
+    "EquipTID": 603201,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18568,
+    "GachaId": 18,
+    "EquipTID": 603301,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18569,
+    "GachaId": 18,
+    "EquipTID": 603401,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18570,
+    "GachaId": 18,
+    "EquipTID": 603501,
+    "Count": 1,
+    "Weight": 3233340,
+    "Description": "Lv60 Common 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18571,
+    "GachaId": 18,
+    "EquipTID": 601102,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18572,
+    "GachaId": 18,
+    "EquipTID": 601202,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18573,
+    "GachaId": 18,
+    "EquipTID": 601302,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18574,
+    "GachaId": 18,
+    "EquipTID": 601402,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18575,
+    "GachaId": 18,
+    "EquipTID": 601502,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18576,
+    "GachaId": 18,
+    "EquipTID": 603102,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18577,
+    "GachaId": 18,
+    "EquipTID": 603202,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18578,
+    "GachaId": 18,
+    "EquipTID": 603302,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18579,
+    "GachaId": 18,
+    "EquipTID": 603402,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18580,
+    "GachaId": 18,
+    "EquipTID": 603502,
+    "Count": 1,
+    "Weight": 1028790,
+    "Description": "Lv60 Uncommon 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18581,
+    "GachaId": 18,
+    "EquipTID": 601103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18582,
+    "GachaId": 18,
+    "EquipTID": 601203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18583,
+    "GachaId": 18,
+    "EquipTID": 601303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18584,
+    "GachaId": 18,
+    "EquipTID": 601403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18585,
+    "GachaId": 18,
+    "EquipTID": 601503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18586,
+    "GachaId": 18,
+    "EquipTID": 603103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18587,
+    "GachaId": 18,
+    "EquipTID": 603203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18588,
+    "GachaId": 18,
+    "EquipTID": 603303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18589,
+    "GachaId": 18,
+    "EquipTID": 603403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18590,
+    "GachaId": 18,
+    "EquipTID": 603503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv60 Rare 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18591,
+    "GachaId": 18,
+    "EquipTID": 601104,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18592,
+    "GachaId": 18,
+    "EquipTID": 601204,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18593,
+    "GachaId": 18,
+    "EquipTID": 601304,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18594,
+    "GachaId": 18,
+    "EquipTID": 601404,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18595,
+    "GachaId": 18,
+    "EquipTID": 601504,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18596,
+    "GachaId": 18,
+    "EquipTID": 603104,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18597,
+    "GachaId": 18,
+    "EquipTID": 603204,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18598,
+    "GachaId": 18,
+    "EquipTID": 603304,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18599,
+    "GachaId": 18,
+    "EquipTID": 603404,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18600,
+    "GachaId": 18,
+    "EquipTID": 603504,
+    "Count": 1,
+    "Weight": 117576,
+    "Description": "Lv60 Epic 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18601,
+    "GachaId": 18,
+    "EquipTID": 601105,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18602,
+    "GachaId": 18,
+    "EquipTID": 601205,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18603,
+    "GachaId": 18,
+    "EquipTID": 601305,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18604,
+    "GachaId": 18,
+    "EquipTID": 601405,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18605,
+    "GachaId": 18,
+    "EquipTID": 601505,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18606,
+    "GachaId": 18,
+    "EquipTID": 603105,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18607,
+    "GachaId": 18,
+    "EquipTID": 603205,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18608,
+    "GachaId": 18,
+    "EquipTID": 603305,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18609,
+    "GachaId": 18,
+    "EquipTID": 603405,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18610,
+    "GachaId": 18,
+    "EquipTID": 603505,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv60 Legendary 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18611,
+    "GachaId": 18,
+    "EquipTID": 601106,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 기사의 쟁기"
+  },
+  {
+    "GachaEquipTID": 18612,
+    "GachaId": 18,
+    "EquipTID": 601206,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 기사의 발굴봉"
+  },
+  {
+    "GachaEquipTID": 18613,
+    "GachaId": 18,
+    "EquipTID": 601306,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 기사의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 18614,
+    "GachaId": 18,
+    "EquipTID": 601406,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 기사의 도끼"
+  },
+  {
+    "GachaEquipTID": 18615,
+    "GachaId": 18,
+    "EquipTID": 601506,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 기사의 장궁"
+  },
+  {
+    "GachaEquipTID": 18616,
+    "GachaId": 18,
+    "EquipTID": 603106,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 이삭 청옥"
+  },
+  {
+    "GachaEquipTID": 18617,
+    "GachaId": 18,
+    "EquipTID": 603206,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 유적 청옥"
+  },
+  {
+    "GachaEquipTID": 18618,
+    "GachaId": 18,
+    "EquipTID": 603306,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 원광 청옥"
+  },
+  {
+    "GachaEquipTID": 18619,
+    "GachaId": 18,
+    "EquipTID": 603406,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 나이테 청옥"
+  },
+  {
+    "GachaEquipTID": 18620,
+    "GachaId": 18,
+    "EquipTID": 603506,
+    "Count": 1,
+    "Weight": 4899,
+    "Description": "Lv60 Mythic 발자국 청옥"
+  },
+  {
+    "GachaEquipTID": 18621,
+    "GachaId": 18,
+    "EquipTID": 502001,
+    "Count": 1,
+    "Weight": 75444600,
+    "Description": "Lv50 Common 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18622,
+    "GachaId": 18,
+    "EquipTID": 502002,
+    "Count": 1,
+    "Weight": 24005100,
+    "Description": "Lv50 Uncommon 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18623,
+    "GachaId": 18,
+    "EquipTID": 502003,
+    "Count": 1,
+    "Weight": 11431000,
+    "Description": "Lv50 Rare 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18624,
+    "GachaId": 18,
+    "EquipTID": 502004,
+    "Count": 1,
+    "Weight": 2743440,
+    "Description": "Lv50 Epic 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18625,
+    "GachaId": 18,
+    "EquipTID": 502005,
+    "Count": 1,
+    "Weight": 571550,
+    "Description": "Lv50 Legendary 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18626,
+    "GachaId": 18,
+    "EquipTID": 502006,
+    "Count": 1,
+    "Weight": 114310,
+    "Description": "Lv50 Mythic 은세공 펜던트"
+  },
+  {
+    "GachaEquipTID": 18627,
+    "GachaId": 18,
+    "EquipTID": 602001,
+    "Count": 1,
+    "Weight": 32333400,
+    "Description": "Lv60 Common 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 18628,
+    "GachaId": 18,
+    "EquipTID": 602002,
+    "Count": 1,
+    "Weight": 10287900,
+    "Description": "Lv60 Uncommon 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 18629,
+    "GachaId": 18,
+    "EquipTID": 602003,
+    "Count": 1,
+    "Weight": 4899000,
+    "Description": "Lv60 Rare 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 18630,
+    "GachaId": 18,
+    "EquipTID": 602004,
+    "Count": 1,
+    "Weight": 1175760,
+    "Description": "Lv60 Epic 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 18631,
+    "GachaId": 18,
+    "EquipTID": 602005,
+    "Count": 1,
+    "Weight": 244950,
+    "Description": "Lv60 Legendary 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 18632,
+    "GachaId": 18,
+    "EquipTID": 602006,
+    "Count": 1,
+    "Weight": 48990,
+    "Description": "Lv60 Mythic 기사의 인장"
+  },
+  {
+    "GachaEquipTID": 21501,
+    "GachaId": 21,
+    "EquipTID": 701101,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21502,
+    "GachaId": 21,
+    "EquipTID": 701201,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21503,
+    "GachaId": 21,
+    "EquipTID": 701301,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21504,
+    "GachaId": 21,
+    "EquipTID": 701401,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21505,
+    "GachaId": 21,
+    "EquipTID": 701501,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21506,
+    "GachaId": 21,
+    "EquipTID": 703101,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21507,
+    "GachaId": 21,
+    "EquipTID": 703201,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21508,
+    "GachaId": 21,
+    "EquipTID": 703301,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21509,
+    "GachaId": 21,
+    "EquipTID": 703401,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21510,
+    "GachaId": 21,
+    "EquipTID": 703501,
+    "Count": 1,
+    "Weight": 7658770,
+    "Description": "Lv70 Common 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21511,
+    "GachaId": 21,
+    "EquipTID": 701102,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21512,
+    "GachaId": 21,
+    "EquipTID": 701202,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21513,
+    "GachaId": 21,
+    "EquipTID": 701302,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21514,
+    "GachaId": 21,
+    "EquipTID": 701402,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21515,
+    "GachaId": 21,
+    "EquipTID": 701502,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21516,
+    "GachaId": 21,
+    "EquipTID": 703102,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21517,
+    "GachaId": 21,
+    "EquipTID": 703202,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21518,
+    "GachaId": 21,
+    "EquipTID": 703302,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21519,
+    "GachaId": 21,
+    "EquipTID": 703402,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21520,
+    "GachaId": 21,
+    "EquipTID": 703502,
+    "Count": 1,
+    "Weight": 2457665,
+    "Description": "Lv70 Uncommon 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21521,
+    "GachaId": 21,
+    "EquipTID": 701103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21522,
+    "GachaId": 21,
+    "EquipTID": 701203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21523,
+    "GachaId": 21,
+    "EquipTID": 701303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21524,
+    "GachaId": 21,
+    "EquipTID": 701403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21525,
+    "GachaId": 21,
+    "EquipTID": 701503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21526,
+    "GachaId": 21,
+    "EquipTID": 703103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21527,
+    "GachaId": 21,
+    "EquipTID": 703203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21528,
+    "GachaId": 21,
+    "EquipTID": 703303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21529,
+    "GachaId": 21,
+    "EquipTID": 703403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21530,
+    "GachaId": 21,
+    "EquipTID": 703503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv70 Rare 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21531,
+    "GachaId": 21,
+    "EquipTID": 701104,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21532,
+    "GachaId": 21,
+    "EquipTID": 701204,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21533,
+    "GachaId": 21,
+    "EquipTID": 701304,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21534,
+    "GachaId": 21,
+    "EquipTID": 701404,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21535,
+    "GachaId": 21,
+    "EquipTID": 701504,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21536,
+    "GachaId": 21,
+    "EquipTID": 703104,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21537,
+    "GachaId": 21,
+    "EquipTID": 703204,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21538,
+    "GachaId": 21,
+    "EquipTID": 703304,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21539,
+    "GachaId": 21,
+    "EquipTID": 703404,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21540,
+    "GachaId": 21,
+    "EquipTID": 703504,
+    "Count": 1,
+    "Weight": 137172,
+    "Description": "Lv70 Epic 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21541,
+    "GachaId": 21,
+    "EquipTID": 701105,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv70 Legendary 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21542,
+    "GachaId": 21,
+    "EquipTID": 701205,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv70 Legendary 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21543,
+    "GachaId": 21,
+    "EquipTID": 701305,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv70 Legendary 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21544,
+    "GachaId": 21,
+    "EquipTID": 701405,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv70 Legendary 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21545,
+    "GachaId": 21,
+    "EquipTID": 701505,
+    "Count": 1,
+    "Weight": 28578,
+    "Description": "Lv70 Legendary 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21546,
+    "GachaId": 21,
+    "EquipTID": 703105,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv70 Legendary 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21547,
+    "GachaId": 21,
+    "EquipTID": 703205,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv70 Legendary 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21548,
+    "GachaId": 21,
+    "EquipTID": 703305,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv70 Legendary 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21549,
+    "GachaId": 21,
+    "EquipTID": 703405,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv70 Legendary 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21550,
+    "GachaId": 21,
+    "EquipTID": 703505,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv70 Legendary 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21551,
+    "GachaId": 21,
+    "EquipTID": 701106,
+    "Count": 1,
+    "Weight": 5716,
+    "Description": "Lv70 Mythic 미스릴 괭이"
+  },
+  {
+    "GachaEquipTID": 21552,
+    "GachaId": 21,
+    "EquipTID": 701206,
+    "Count": 1,
+    "Weight": 5716,
+    "Description": "Lv70 Mythic 미스릴 탐사봉"
+  },
+  {
+    "GachaEquipTID": 21553,
+    "GachaId": 21,
+    "EquipTID": 701306,
+    "Count": 1,
+    "Weight": 5716,
+    "Description": "Lv70 Mythic 미스릴 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21554,
+    "GachaId": 21,
+    "EquipTID": 701406,
+    "Count": 1,
+    "Weight": 5716,
+    "Description": "Lv70 Mythic 미스릴 톱도끼"
+  },
+  {
+    "GachaEquipTID": 21555,
+    "GachaId": 21,
+    "EquipTID": 701506,
+    "Count": 1,
+    "Weight": 5716,
+    "Description": "Lv70 Mythic 미스릴 연노"
+  },
+  {
+    "GachaEquipTID": 21556,
+    "GachaId": 21,
+    "EquipTID": 703106,
+    "Count": 1,
+    "Weight": 5715,
+    "Description": "Lv70 Mythic 이삭 홍옥"
+  },
+  {
+    "GachaEquipTID": 21557,
+    "GachaId": 21,
+    "EquipTID": 703206,
+    "Count": 1,
+    "Weight": 5715,
+    "Description": "Lv70 Mythic 유적 홍옥"
+  },
+  {
+    "GachaEquipTID": 21558,
+    "GachaId": 21,
+    "EquipTID": 703306,
+    "Count": 1,
+    "Weight": 5715,
+    "Description": "Lv70 Mythic 원광 홍옥"
+  },
+  {
+    "GachaEquipTID": 21559,
+    "GachaId": 21,
+    "EquipTID": 703406,
+    "Count": 1,
+    "Weight": 5715,
+    "Description": "Lv70 Mythic 나이테 홍옥"
+  },
+  {
+    "GachaEquipTID": 21560,
+    "GachaId": 21,
+    "EquipTID": 703506,
+    "Count": 1,
+    "Weight": 5715,
+    "Description": "Lv70 Mythic 발자국 홍옥"
+  },
+  {
+    "GachaEquipTID": 21561,
+    "GachaId": 21,
+    "EquipTID": 801101,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21562,
+    "GachaId": 21,
+    "EquipTID": 801201,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21563,
+    "GachaId": 21,
+    "EquipTID": 801301,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21564,
+    "GachaId": 21,
+    "EquipTID": 801401,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21565,
+    "GachaId": 21,
+    "EquipTID": 801501,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21566,
+    "GachaId": 21,
+    "EquipTID": 803101,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21567,
+    "GachaId": 21,
+    "EquipTID": 803201,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21568,
+    "GachaId": 21,
+    "EquipTID": 803301,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21569,
+    "GachaId": 21,
+    "EquipTID": 803401,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21570,
+    "GachaId": 21,
+    "EquipTID": 803501,
+    "Count": 1,
+    "Weight": 3282330,
+    "Description": "Lv80 Common 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21571,
+    "GachaId": 21,
+    "EquipTID": 801102,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21572,
+    "GachaId": 21,
+    "EquipTID": 801202,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21573,
+    "GachaId": 21,
+    "EquipTID": 801302,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21574,
+    "GachaId": 21,
+    "EquipTID": 801402,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21575,
+    "GachaId": 21,
+    "EquipTID": 801502,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21576,
+    "GachaId": 21,
+    "EquipTID": 803102,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21577,
+    "GachaId": 21,
+    "EquipTID": 803202,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21578,
+    "GachaId": 21,
+    "EquipTID": 803302,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21579,
+    "GachaId": 21,
+    "EquipTID": 803402,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21580,
+    "GachaId": 21,
+    "EquipTID": 803502,
+    "Count": 1,
+    "Weight": 1053285,
+    "Description": "Lv80 Uncommon 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21581,
+    "GachaId": 21,
+    "EquipTID": 801103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21582,
+    "GachaId": 21,
+    "EquipTID": 801203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21583,
+    "GachaId": 21,
+    "EquipTID": 801303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21584,
+    "GachaId": 21,
+    "EquipTID": 801403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21585,
+    "GachaId": 21,
+    "EquipTID": 801503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21586,
+    "GachaId": 21,
+    "EquipTID": 803103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21587,
+    "GachaId": 21,
+    "EquipTID": 803203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21588,
+    "GachaId": 21,
+    "EquipTID": 803303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21589,
+    "GachaId": 21,
+    "EquipTID": 803403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21590,
+    "GachaId": 21,
+    "EquipTID": 803503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv80 Rare 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21591,
+    "GachaId": 21,
+    "EquipTID": 801104,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21592,
+    "GachaId": 21,
+    "EquipTID": 801204,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21593,
+    "GachaId": 21,
+    "EquipTID": 801304,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21594,
+    "GachaId": 21,
+    "EquipTID": 801404,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21595,
+    "GachaId": 21,
+    "EquipTID": 801504,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21596,
+    "GachaId": 21,
+    "EquipTID": 803104,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21597,
+    "GachaId": 21,
+    "EquipTID": 803204,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21598,
+    "GachaId": 21,
+    "EquipTID": 803304,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21599,
+    "GachaId": 21,
+    "EquipTID": 803404,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21600,
+    "GachaId": 21,
+    "EquipTID": 803504,
+    "Count": 1,
+    "Weight": 58788,
+    "Description": "Lv80 Epic 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21601,
+    "GachaId": 21,
+    "EquipTID": 801105,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv80 Legendary 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21602,
+    "GachaId": 21,
+    "EquipTID": 801205,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv80 Legendary 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21603,
+    "GachaId": 21,
+    "EquipTID": 801305,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv80 Legendary 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21604,
+    "GachaId": 21,
+    "EquipTID": 801405,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv80 Legendary 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21605,
+    "GachaId": 21,
+    "EquipTID": 801505,
+    "Count": 1,
+    "Weight": 12248,
+    "Description": "Lv80 Legendary 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21606,
+    "GachaId": 21,
+    "EquipTID": 803105,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv80 Legendary 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21607,
+    "GachaId": 21,
+    "EquipTID": 803205,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv80 Legendary 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21608,
+    "GachaId": 21,
+    "EquipTID": 803305,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv80 Legendary 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21609,
+    "GachaId": 21,
+    "EquipTID": 803405,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv80 Legendary 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21610,
+    "GachaId": 21,
+    "EquipTID": 803505,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv80 Legendary 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21611,
+    "GachaId": 21,
+    "EquipTID": 801106,
+    "Count": 1,
+    "Weight": 2450,
+    "Description": "Lv80 Mythic 명장의 낫"
+  },
+  {
+    "GachaEquipTID": 21612,
+    "GachaId": 21,
+    "EquipTID": 801206,
+    "Count": 1,
+    "Weight": 2450,
+    "Description": "Lv80 Mythic 명장의 굴착삽"
+  },
+  {
+    "GachaEquipTID": 21613,
+    "GachaId": 21,
+    "EquipTID": 801306,
+    "Count": 1,
+    "Weight": 2450,
+    "Description": "Lv80 Mythic 명장의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 21614,
+    "GachaId": 21,
+    "EquipTID": 801406,
+    "Count": 1,
+    "Weight": 2450,
+    "Description": "Lv80 Mythic 명장의 큰톱"
+  },
+  {
+    "GachaEquipTID": 21615,
+    "GachaId": 21,
+    "EquipTID": 801506,
+    "Count": 1,
+    "Weight": 2450,
+    "Description": "Lv80 Mythic 명장의 연발 석궁"
+  },
+  {
+    "GachaEquipTID": 21616,
+    "GachaId": 21,
+    "EquipTID": 803106,
+    "Count": 1,
+    "Weight": 2449,
+    "Description": "Lv80 Mythic 이삭 비취"
+  },
+  {
+    "GachaEquipTID": 21617,
+    "GachaId": 21,
+    "EquipTID": 803206,
+    "Count": 1,
+    "Weight": 2449,
+    "Description": "Lv80 Mythic 유적 비취"
+  },
+  {
+    "GachaEquipTID": 21618,
+    "GachaId": 21,
+    "EquipTID": 803306,
+    "Count": 1,
+    "Weight": 2449,
+    "Description": "Lv80 Mythic 원광 비취"
+  },
+  {
+    "GachaEquipTID": 21619,
+    "GachaId": 21,
+    "EquipTID": 803406,
+    "Count": 1,
+    "Weight": 2449,
+    "Description": "Lv80 Mythic 나이테 비취"
+  },
+  {
+    "GachaEquipTID": 21620,
+    "GachaId": 21,
+    "EquipTID": 803506,
+    "Count": 1,
+    "Weight": 2449,
+    "Description": "Lv80 Mythic 발자국 비취"
+  },
+  {
+    "GachaEquipTID": 21621,
+    "GachaId": 21,
+    "EquipTID": 702001,
+    "Count": 1,
+    "Weight": 76587700,
+    "Description": "Lv70 Common 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21622,
+    "GachaId": 21,
+    "EquipTID": 702002,
+    "Count": 1,
+    "Weight": 24576650,
+    "Description": "Lv70 Uncommon 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21623,
+    "GachaId": 21,
+    "EquipTID": 702003,
+    "Count": 1,
+    "Weight": 11431000,
+    "Description": "Lv70 Rare 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21624,
+    "GachaId": 21,
+    "EquipTID": 702004,
+    "Count": 1,
+    "Weight": 1371720,
+    "Description": "Lv70 Epic 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21625,
+    "GachaId": 21,
+    "EquipTID": 702005,
+    "Count": 1,
+    "Weight": 285775,
+    "Description": "Lv70 Legendary 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21626,
+    "GachaId": 21,
+    "EquipTID": 702006,
+    "Count": 1,
+    "Weight": 57155,
+    "Description": "Lv70 Mythic 미스릴 브로치"
+  },
+  {
+    "GachaEquipTID": 21627,
+    "GachaId": 21,
+    "EquipTID": 802001,
+    "Count": 1,
+    "Weight": 32823300,
+    "Description": "Lv80 Common 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 21628,
+    "GachaId": 21,
+    "EquipTID": 802002,
+    "Count": 1,
+    "Weight": 10532850,
+    "Description": "Lv80 Uncommon 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 21629,
+    "GachaId": 21,
+    "EquipTID": 802003,
+    "Count": 1,
+    "Weight": 4899000,
+    "Description": "Lv80 Rare 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 21630,
+    "GachaId": 21,
+    "EquipTID": 802004,
+    "Count": 1,
+    "Weight": 587880,
+    "Description": "Lv80 Epic 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 21631,
+    "GachaId": 21,
+    "EquipTID": 802005,
+    "Count": 1,
+    "Weight": 122475,
+    "Description": "Lv80 Legendary 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 21632,
+    "GachaId": 21,
+    "EquipTID": 802006,
+    "Count": 1,
+    "Weight": 24495,
+    "Description": "Lv80 Mythic 명장의 회중시계"
+  },
+  {
+    "GachaEquipTID": 37501,
+    "GachaId": 37,
+    "EquipTID": 901101,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37502,
+    "GachaId": 37,
+    "EquipTID": 901201,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37503,
+    "GachaId": 37,
+    "EquipTID": 901301,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37504,
+    "GachaId": 37,
+    "EquipTID": 901401,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37505,
+    "GachaId": 37,
+    "EquipTID": 901501,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37506,
+    "GachaId": 37,
+    "EquipTID": 903101,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37507,
+    "GachaId": 37,
+    "EquipTID": 903201,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37508,
+    "GachaId": 37,
+    "EquipTID": 903301,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37509,
+    "GachaId": 37,
+    "EquipTID": 903401,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37510,
+    "GachaId": 37,
+    "EquipTID": 903501,
+    "Count": 1,
+    "Weight": 7715925,
+    "Description": "Lv90 Common 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37511,
+    "GachaId": 37,
+    "EquipTID": 901102,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37512,
+    "GachaId": 37,
+    "EquipTID": 901202,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37513,
+    "GachaId": 37,
+    "EquipTID": 901302,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37514,
+    "GachaId": 37,
+    "EquipTID": 901402,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37515,
+    "GachaId": 37,
+    "EquipTID": 901502,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37516,
+    "GachaId": 37,
+    "EquipTID": 903102,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37517,
+    "GachaId": 37,
+    "EquipTID": 903202,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37518,
+    "GachaId": 37,
+    "EquipTID": 903302,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37519,
+    "GachaId": 37,
+    "EquipTID": 903402,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37520,
+    "GachaId": 37,
+    "EquipTID": 903502,
+    "Count": 1,
+    "Weight": 2469096,
+    "Description": "Lv90 Uncommon 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37521,
+    "GachaId": 37,
+    "EquipTID": 901103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37522,
+    "GachaId": 37,
+    "EquipTID": 901203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37523,
+    "GachaId": 37,
+    "EquipTID": 901303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37524,
+    "GachaId": 37,
+    "EquipTID": 901403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37525,
+    "GachaId": 37,
+    "EquipTID": 901503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37526,
+    "GachaId": 37,
+    "EquipTID": 903103,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37527,
+    "GachaId": 37,
+    "EquipTID": 903203,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37528,
+    "GachaId": 37,
+    "EquipTID": 903303,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37529,
+    "GachaId": 37,
+    "EquipTID": 903403,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37530,
+    "GachaId": 37,
+    "EquipTID": 903503,
+    "Count": 1,
+    "Weight": 1143100,
+    "Description": "Lv90 Rare 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37531,
+    "GachaId": 37,
+    "EquipTID": 901104,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv90 Epic 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37532,
+    "GachaId": 37,
+    "EquipTID": 901204,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv90 Epic 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37533,
+    "GachaId": 37,
+    "EquipTID": 901304,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv90 Epic 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37534,
+    "GachaId": 37,
+    "EquipTID": 901404,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv90 Epic 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37535,
+    "GachaId": 37,
+    "EquipTID": 901504,
+    "Count": 1,
+    "Weight": 85733,
+    "Description": "Lv90 Epic 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37536,
+    "GachaId": 37,
+    "EquipTID": 903104,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv90 Epic 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37537,
+    "GachaId": 37,
+    "EquipTID": 903204,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv90 Epic 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37538,
+    "GachaId": 37,
+    "EquipTID": 903304,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv90 Epic 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37539,
+    "GachaId": 37,
+    "EquipTID": 903404,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv90 Epic 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37540,
+    "GachaId": 37,
+    "EquipTID": 903504,
+    "Count": 1,
+    "Weight": 85732,
+    "Description": "Lv90 Epic 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37541,
+    "GachaId": 37,
+    "EquipTID": 901105,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37542,
+    "GachaId": 37,
+    "EquipTID": 901205,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37543,
+    "GachaId": 37,
+    "EquipTID": 901305,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37544,
+    "GachaId": 37,
+    "EquipTID": 901405,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37545,
+    "GachaId": 37,
+    "EquipTID": 901505,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37546,
+    "GachaId": 37,
+    "EquipTID": 903105,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37547,
+    "GachaId": 37,
+    "EquipTID": 903205,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37548,
+    "GachaId": 37,
+    "EquipTID": 903305,
+    "Count": 1,
+    "Weight": 14289,
+    "Description": "Lv90 Legendary 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37549,
+    "GachaId": 37,
+    "EquipTID": 903405,
+    "Count": 1,
+    "Weight": 14288,
+    "Description": "Lv90 Legendary 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37550,
+    "GachaId": 37,
+    "EquipTID": 903505,
+    "Count": 1,
+    "Weight": 14288,
+    "Description": "Lv90 Legendary 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37551,
+    "GachaId": 37,
+    "EquipTID": 901106,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 황금 낫"
+  },
+  {
+    "GachaEquipTID": 37552,
+    "GachaId": 37,
+    "EquipTID": 901206,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 황금 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37553,
+    "GachaId": 37,
+    "EquipTID": 901306,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 황금 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37554,
+    "GachaId": 37,
+    "EquipTID": 901406,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 황금 도끼"
+  },
+  {
+    "GachaEquipTID": 37555,
+    "GachaId": 37,
+    "EquipTID": 901506,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 황금 석궁"
+  },
+  {
+    "GachaEquipTID": 37556,
+    "GachaId": 37,
+    "EquipTID": 903106,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 이삭 황옥"
+  },
+  {
+    "GachaEquipTID": 37557,
+    "GachaId": 37,
+    "EquipTID": 903206,
+    "Count": 1,
+    "Weight": 2858,
+    "Description": "Lv90 Mythic 유적 황옥"
+  },
+  {
+    "GachaEquipTID": 37558,
+    "GachaId": 37,
+    "EquipTID": 903306,
+    "Count": 1,
+    "Weight": 2857,
+    "Description": "Lv90 Mythic 원광 황옥"
+  },
+  {
+    "GachaEquipTID": 37559,
+    "GachaId": 37,
+    "EquipTID": 903406,
+    "Count": 1,
+    "Weight": 2857,
+    "Description": "Lv90 Mythic 나이테 황옥"
+  },
+  {
+    "GachaEquipTID": 37560,
+    "GachaId": 37,
+    "EquipTID": 903506,
+    "Count": 1,
+    "Weight": 2857,
+    "Description": "Lv90 Mythic 발자국 황옥"
+  },
+  {
+    "GachaEquipTID": 37561,
+    "GachaId": 37,
+    "EquipTID": 1001101,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37562,
+    "GachaId": 37,
+    "EquipTID": 1001201,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37563,
+    "GachaId": 37,
+    "EquipTID": 1001301,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37564,
+    "GachaId": 37,
+    "EquipTID": 1001401,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37565,
+    "GachaId": 37,
+    "EquipTID": 1001501,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37566,
+    "GachaId": 37,
+    "EquipTID": 1003101,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37567,
+    "GachaId": 37,
+    "EquipTID": 1003201,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37568,
+    "GachaId": 37,
+    "EquipTID": 1003301,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37569,
+    "GachaId": 37,
+    "EquipTID": 1003401,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37570,
+    "GachaId": 37,
+    "EquipTID": 1003501,
+    "Count": 1,
+    "Weight": 3306825,
+    "Description": "Lv100 Common 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37571,
+    "GachaId": 37,
+    "EquipTID": 1001102,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37572,
+    "GachaId": 37,
+    "EquipTID": 1001202,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37573,
+    "GachaId": 37,
+    "EquipTID": 1001302,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37574,
+    "GachaId": 37,
+    "EquipTID": 1001402,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37575,
+    "GachaId": 37,
+    "EquipTID": 1001502,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37576,
+    "GachaId": 37,
+    "EquipTID": 1003102,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37577,
+    "GachaId": 37,
+    "EquipTID": 1003202,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37578,
+    "GachaId": 37,
+    "EquipTID": 1003302,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37579,
+    "GachaId": 37,
+    "EquipTID": 1003402,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37580,
+    "GachaId": 37,
+    "EquipTID": 1003502,
+    "Count": 1,
+    "Weight": 1058184,
+    "Description": "Lv100 Uncommon 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37581,
+    "GachaId": 37,
+    "EquipTID": 1001103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37582,
+    "GachaId": 37,
+    "EquipTID": 1001203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37583,
+    "GachaId": 37,
+    "EquipTID": 1001303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37584,
+    "GachaId": 37,
+    "EquipTID": 1001403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37585,
+    "GachaId": 37,
+    "EquipTID": 1001503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37586,
+    "GachaId": 37,
+    "EquipTID": 1003103,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37587,
+    "GachaId": 37,
+    "EquipTID": 1003203,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37588,
+    "GachaId": 37,
+    "EquipTID": 1003303,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37589,
+    "GachaId": 37,
+    "EquipTID": 1003403,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37590,
+    "GachaId": 37,
+    "EquipTID": 1003503,
+    "Count": 1,
+    "Weight": 489900,
+    "Description": "Lv100 Rare 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37591,
+    "GachaId": 37,
+    "EquipTID": 1001104,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv100 Epic 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37592,
+    "GachaId": 37,
+    "EquipTID": 1001204,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv100 Epic 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37593,
+    "GachaId": 37,
+    "EquipTID": 1001304,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv100 Epic 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37594,
+    "GachaId": 37,
+    "EquipTID": 1001404,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv100 Epic 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37595,
+    "GachaId": 37,
+    "EquipTID": 1001504,
+    "Count": 1,
+    "Weight": 36743,
+    "Description": "Lv100 Epic 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37596,
+    "GachaId": 37,
+    "EquipTID": 1003104,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv100 Epic 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37597,
+    "GachaId": 37,
+    "EquipTID": 1003204,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv100 Epic 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37598,
+    "GachaId": 37,
+    "EquipTID": 1003304,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv100 Epic 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37599,
+    "GachaId": 37,
+    "EquipTID": 1003404,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv100 Epic 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37600,
+    "GachaId": 37,
+    "EquipTID": 1003504,
+    "Count": 1,
+    "Weight": 36742,
+    "Description": "Lv100 Epic 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37601,
+    "GachaId": 37,
+    "EquipTID": 1001105,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37602,
+    "GachaId": 37,
+    "EquipTID": 1001205,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37603,
+    "GachaId": 37,
+    "EquipTID": 1001305,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37604,
+    "GachaId": 37,
+    "EquipTID": 1001405,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37605,
+    "GachaId": 37,
+    "EquipTID": 1001505,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37606,
+    "GachaId": 37,
+    "EquipTID": 1003105,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37607,
+    "GachaId": 37,
+    "EquipTID": 1003205,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37608,
+    "GachaId": 37,
+    "EquipTID": 1003305,
+    "Count": 1,
+    "Weight": 6124,
+    "Description": "Lv100 Legendary 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37609,
+    "GachaId": 37,
+    "EquipTID": 1003405,
+    "Count": 1,
+    "Weight": 6123,
+    "Description": "Lv100 Legendary 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37610,
+    "GachaId": 37,
+    "EquipTID": 1003505,
+    "Count": 1,
+    "Weight": 6123,
+    "Description": "Lv100 Legendary 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37611,
+    "GachaId": 37,
+    "EquipTID": 1001106,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 왕가의 낫"
+  },
+  {
+    "GachaEquipTID": 37612,
+    "GachaId": 37,
+    "EquipTID": 1001206,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 왕가의 발굴삽"
+  },
+  {
+    "GachaEquipTID": 37613,
+    "GachaId": 37,
+    "EquipTID": 1001306,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 왕가의 곡괭이"
+  },
+  {
+    "GachaEquipTID": 37614,
+    "GachaId": 37,
+    "EquipTID": 1001406,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 왕가의 도끼"
+  },
+  {
+    "GachaEquipTID": 37615,
+    "GachaId": 37,
+    "EquipTID": 1001506,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 왕가의 장궁"
+  },
+  {
+    "GachaEquipTID": 37616,
+    "GachaId": 37,
+    "EquipTID": 1003106,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 이삭 금강석"
+  },
+  {
+    "GachaEquipTID": 37617,
+    "GachaId": 37,
+    "EquipTID": 1003206,
+    "Count": 1,
+    "Weight": 1225,
+    "Description": "Lv100 Mythic 유적 금강석"
+  },
+  {
+    "GachaEquipTID": 37618,
+    "GachaId": 37,
+    "EquipTID": 1003306,
+    "Count": 1,
+    "Weight": 1224,
+    "Description": "Lv100 Mythic 원광 금강석"
+  },
+  {
+    "GachaEquipTID": 37619,
+    "GachaId": 37,
+    "EquipTID": 1003406,
+    "Count": 1,
+    "Weight": 1224,
+    "Description": "Lv100 Mythic 나이테 금강석"
+  },
+  {
+    "GachaEquipTID": 37620,
+    "GachaId": 37,
+    "EquipTID": 1003506,
+    "Count": 1,
+    "Weight": 1224,
+    "Description": "Lv100 Mythic 발자국 금강석"
+  },
+  {
+    "GachaEquipTID": 37621,
+    "GachaId": 37,
+    "EquipTID": 902001,
+    "Count": 1,
+    "Weight": 77159250,
+    "Description": "Lv90 Common 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37622,
+    "GachaId": 37,
+    "EquipTID": 902002,
+    "Count": 1,
+    "Weight": 24690960,
+    "Description": "Lv90 Uncommon 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37623,
+    "GachaId": 37,
+    "EquipTID": 902003,
+    "Count": 1,
+    "Weight": 11431000,
+    "Description": "Lv90 Rare 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37624,
+    "GachaId": 37,
+    "EquipTID": 902004,
+    "Count": 1,
+    "Weight": 857325,
+    "Description": "Lv90 Epic 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37625,
+    "GachaId": 37,
+    "EquipTID": 902005,
+    "Count": 1,
+    "Weight": 142888,
+    "Description": "Lv90 Legendary 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37626,
+    "GachaId": 37,
+    "EquipTID": 902006,
+    "Count": 1,
+    "Weight": 28577,
+    "Description": "Lv90 Mythic 황금 훈장"
+  },
+  {
+    "GachaEquipTID": 37627,
+    "GachaId": 37,
+    "EquipTID": 1002001,
+    "Count": 1,
+    "Weight": 33068250,
+    "Description": "Lv100 Common 왕가의 반지"
+  },
+  {
+    "GachaEquipTID": 37628,
+    "GachaId": 37,
+    "EquipTID": 1002002,
+    "Count": 1,
+    "Weight": 10581840,
+    "Description": "Lv100 Uncommon 왕가의 반지"
+  },
+  {
+    "GachaEquipTID": 37629,
+    "GachaId": 37,
+    "EquipTID": 1002003,
+    "Count": 1,
+    "Weight": 4899000,
+    "Description": "Lv100 Rare 왕가의 반지"
+  },
+  {
+    "GachaEquipTID": 37630,
+    "GachaId": 37,
+    "EquipTID": 1002004,
+    "Count": 1,
+    "Weight": 367425,
+    "Description": "Lv100 Epic 왕가의 반지"
+  },
+  {
+    "GachaEquipTID": 37631,
+    "GachaId": 37,
+    "EquipTID": 1002005,
+    "Count": 1,
+    "Weight": 61238,
+    "Description": "Lv100 Legendary 왕가의 반지"
+  },
+  {
+    "GachaEquipTID": 37632,
+    "GachaId": 37,
+    "EquipTID": 1002006,
+    "Count": 1,
+    "Weight": 12247,
+    "Description": "Lv100 Mythic 왕가의 반지"
   },
   {
     "GachaEquipTID": 24101,

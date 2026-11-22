@@ -45,7 +45,7 @@
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv1 풀을 임시로 씀(T-209)"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   },
   {
     "GachaInfoTID": 12,
@@ -53,7 +53,7 @@
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv2 풀을 임시로 씀(T-209)"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   },
   {
     "GachaInfoTID": 15,
@@ -61,7 +61,7 @@
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv3 풀을 임시로 씀(T-209)"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   },
   {
     "GachaInfoTID": 18,
@@ -69,7 +69,7 @@
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv4 풀을 임시로 씀(T-209)"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   },
   {
     "GachaInfoTID": 21,
@@ -77,7 +77,7 @@
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv5 풀을 임시로 씀(T-209) · 왕실 상자도 임시로 연다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   },
   {
     "GachaInfoTID": 24,
@@ -182,5 +182,13 @@
     "CostSingle": 0,
     "CostMulti": 0,
     "Description": "레이드 전용 상자 — 내용물은 RaidBossTable 참조"
+  },
+  {
+    "GachaInfoTID": 37,
+    "Name": "왕실 상자",
+    "CostCurrency": "None",
+    "CostSingle": 0,
+    "CostMulti": 0,
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 테마 상자 열기 보상(레벨테마 7장 · T-209)"
   }
 ]

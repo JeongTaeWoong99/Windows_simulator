@@ -4,7 +4,7 @@
     "GachaId": 9,
     "MinAmount": 135,
     "MaxAmount": 271,
-    "Weight": 279000,
+    "Weight": 150000000,
     "Description": "골드 135~271"
   },
   {
@@ -12,72 +12,88 @@
     "GachaId": 9,
     "MinAmount": 271,
     "MaxAmount": 677,
-    "Weight": 93000,
+    "Weight": 50000000,
     "Description": "골드 271~677"
   },
   {
     "GachaGoldTID": 12201,
     "GachaId": 12,
-    "MinAmount": 406,
+    "MinAmount": 405,
     "MaxAmount": 813,
-    "Weight": 279000,
-    "Description": "골드 406~813"
+    "Weight": 150000000,
+    "Description": "골드 405~813"
   },
   {
     "GachaGoldTID": 12202,
     "GachaId": 12,
     "MinAmount": 813,
-    "MaxAmount": 2032,
-    "Weight": 93000,
-    "Description": "골드 813~2032"
+    "MaxAmount": 2031,
+    "Weight": 50000000,
+    "Description": "골드 813~2031"
   },
   {
     "GachaGoldTID": 15201,
     "GachaId": 15,
-    "MinAmount": 1219,
-    "MaxAmount": 2438,
-    "Weight": 69750,
-    "Description": "골드 1219~2438"
+    "MinAmount": 1215,
+    "MaxAmount": 2439,
+    "Weight": 150000000,
+    "Description": "골드 1215~2439"
   },
   {
     "GachaGoldTID": 15202,
     "GachaId": 15,
-    "MinAmount": 2438,
-    "MaxAmount": 6095,
-    "Weight": 23250,
-    "Description": "골드 2438~6095"
+    "MinAmount": 2439,
+    "MaxAmount": 6093,
+    "Weight": 50000000,
+    "Description": "골드 2439~6093"
   },
   {
     "GachaGoldTID": 18201,
     "GachaId": 18,
-    "MinAmount": 3657,
-    "MaxAmount": 7314,
-    "Weight": 279000,
-    "Description": "골드 3657~7314"
+    "MinAmount": 3645,
+    "MaxAmount": 7317,
+    "Weight": 150000000,
+    "Description": "골드 3645~7317"
   },
   {
     "GachaGoldTID": 18202,
     "GachaId": 18,
-    "MinAmount": 7314,
-    "MaxAmount": 18286,
-    "Weight": 93000,
-    "Description": "골드 7314~18286"
+    "MinAmount": 7317,
+    "MaxAmount": 18279,
+    "Weight": 50000000,
+    "Description": "골드 7317~18279"
   },
   {
     "GachaGoldTID": 21201,
     "GachaId": 21,
-    "MinAmount": 10971,
-    "MaxAmount": 21943,
-    "Weight": 279000,
-    "Description": "골드 10971~21943"
+    "MinAmount": 10935,
+    "MaxAmount": 21951,
+    "Weight": 150000000,
+    "Description": "골드 10935~21951"
   },
   {
     "GachaGoldTID": 21202,
     "GachaId": 21,
-    "MinAmount": 21943,
-    "MaxAmount": 54857,
-    "Weight": 93000,
-    "Description": "골드 21943~54857"
+    "MinAmount": 21951,
+    "MaxAmount": 54837,
+    "Weight": 50000000,
+    "Description": "골드 21951~54837"
+  },
+  {
+    "GachaGoldTID": 37201,
+    "GachaId": 37,
+    "MinAmount": 32805,
+    "MaxAmount": 65853,
+    "Weight": 150000000,
+    "Description": "골드 32805~65853"
+  },
+  {
+    "GachaGoldTID": 37202,
+    "GachaId": 37,
+    "MinAmount": 65853,
+    "MaxAmount": 164511,
+    "Weight": 50000000,
+    "Description": "골드 65853~164511"
   },
   {
     "GachaGoldTID": 25201,
