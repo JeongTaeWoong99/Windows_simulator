@@ -14,7 +14,7 @@ namespace GameData
         /// <summary>셀 배열(파싱된 컬럼 순서)을 강타입 Row로 변환한다.</summary>
         public static IndustryTableRow Parse(string[] cells) => new()
         {
-            IndustryTID = PackerUtil.ParseInt(cells[0], Table, "IndustryTID", 1, 5),
+            IndustryTID = PackerUtil.ParseEnum<IndustryType>(cells[0], Table, "IndustryTID"),
             Name        = PackerUtil.RequireString(cells[1], Table, "Name"),
             Tooltip     = PackerUtil.RequireString(cells[2], Table, "Tooltip"),
             Description = cells[3].Length > 0 ? PackerUtil.RequireString(cells[3], Table, "Description") : "",

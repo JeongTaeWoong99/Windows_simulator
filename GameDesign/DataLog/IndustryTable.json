@@ -1,30 +1,30 @@
 [
   {
-    "IndustryTID": 1,
+    "IndustryTID": "Farming",
     "Name": "농사",
     "Tooltip": "거둔 작물로 새참을 지어 일꾼을 먹인다. 꾸준하고 흔들림이 없다.",
     "Description": "안정적인 수익 — 도시락(새참) 출구"
   },
   {
-    "IndustryTID": 2,
+    "IndustryTID": "Excavation",
     "Name": "유적 발굴",
     "Tooltip": "상자 대신 미감정 유물이 나온다. 골드를 내고 감정하면 무엇이 들었는지 알 수 있다.",
     "Description": "확실한 도파민 — 감정이 고유 출구 (T-150 · #135)"
   },
   {
-    "IndustryTID": 3,
+    "IndustryTID": "Mining",
     "Name": "채굴",
     "Tooltip": "캐낸 광물로 설비를 올린다. 목재와 함께 쓰면 한 번에 거두는 양이 영구히 늘어난다.",
     "Description": "확실한 스노우볼 — 슬롯 설비 개량 출구"
   },
   {
-    "IndustryTID": 4,
+    "IndustryTID": "Logging",
     "Name": "벌목",
     "Tooltip": "베어 낸 목재로 작업장을 넓힌다. 광물과 함께 쓰면 일하는 속도가 영구히 오른다.",
     "Description": "절제하면 지속되는 수익 — 슬롯 건축 개량 출구"
   },
   {
-    "IndustryTID": 5,
+    "IndustryTID": "Hunting",
     "Name": "사냥",
     "Tooltip": "사냥터마다 다른 것이 나온다. 무엇을 모을지 골라서 간다.",
     "Description": "도전 · 목표 지향 — 사냥터별 산출물"
