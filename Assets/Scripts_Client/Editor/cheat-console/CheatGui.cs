@@ -62,6 +62,10 @@ namespace DesktopWindowControl.EditorTools
 		#region 줄 부품
 
 		// 줄 맨 앞 고정 폭 라벨 — 모든 칸의 입력 열이 같은 선에서 시작한다.
+		// 고르기 목록의 산업 분류 이름 — 산업이 없는 장비·아티팩트는 '미지정' 대신 '공통'(전 산업에 붙는다)
+		public static string IndustryGroup(GameData.IndustryType industry)
+			=> industry == GameData.IndustryType.None ? "공통" : IndustryLabel.Get((MikaProtocol.EIndustryType)(int)industry);
+
 		public static void FieldLabel(string label)
 		{
 			EditorGUILayout.LabelField(label, GUILayout.Width(LabelWidth));

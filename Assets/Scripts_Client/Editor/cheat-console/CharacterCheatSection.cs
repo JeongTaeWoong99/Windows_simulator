@@ -26,7 +26,7 @@ namespace DesktopWindowControl.EditorTools
 		public override void Draw()
 		{
 			var rows = GameDataLoader.IsLoaded ? GameTable.CharacterTable.All : null;
-			_picker.Draw(rows, row => row.CharacterTID, row => row.Name);
+			_picker.Draw(rows, row => row.CharacterTID, row => row.Name, groupOf: row => RarityLabel.Get(row.GlobalRarity)); // 등급별
 
 			using (new EditorGUILayout.HorizontalScope())
 			{

@@ -22,7 +22,8 @@ namespace DesktopWindowControl.EditorTools
 		{
 			var rows = GameDataLoader.IsLoaded ? GameTable.EquipTable.All : null;
 
-			if (_picker.Draw(rows, row => row.EquipTID, row => row.Name, "지급"))
+			if (_picker.Draw(rows, row => row.EquipTID, row => $"{row.Name} Lv{row.ItemLevel}", "지급",
+			                 row => $"{EquipLabel.GetKindName(row.EquipKind)}/{CheatGui.IndustryGroup(row.Industry)}")) // 부위 → 산업 하위 메뉴
 			{
 				CheatGui.Request(ECheatCommand.GiveEquip, _picker.Tid);
 			}

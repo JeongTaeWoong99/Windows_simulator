@@ -162,6 +162,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _panelRestPosition = panel.anchoredPosition;
         _slots             = new UIRowList<SlotView>(slotPrefab, slotParent, OnSlotCreated, OnSlotHide);
 
+        BuildSections();
+
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
         drawAgainButton.gameObject.SetActive(false);
@@ -225,7 +227,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
         _cellKinds.Clear();
-        Show(ToSlots(rewards, _cellKinds), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards));
+        Show(ToSlots(rewards, _cellKinds), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards), grouped: false);
     }
 
     // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
@@ -252,7 +254,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _cellKinds.Clear();
-        Show(Summarize(rewards, _cellKinds), source, showCount: true, GoldOf(rewards));
+        Show(Summarize(rewards, _cellKinds), source, showCount: true, GoldOf(rewards), grouped: true);
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -264,7 +266,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
         _cellKinds.Clear();
-        Show(SummarizeMails(mails, _cellKinds), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold));
+        Show(SummarizeMails(mails, _cellKinds), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold), grouped: true);
     }
 
     // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
@@ -275,7 +277,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     //   showCount : 칸에 수량을 적는가. 가챠는 뽑힌 것을 한 건씩 늘어놓아 개수가 목록 길이로 드러나지만,
     //               종류별로 합친 상자·우편은 수량을 적지 않으면 "골드"만 보이고 얼마인지 모른다
     //   gold      : 받은 골드 합계 — 골드 칸이 공개되면 그 칸에서 동전이 날아간다(0이면 없음)
-    private void Show(List<SlotData> slots, string source, bool showCount, long gold)
+    //   grouped   : 자원 · 캐릭터 · 장비 목차로 나눠 늘어놓는가 — 상자·우편은 나눈다(2026-11-23 사용자). 가챠는 뽑힌 순서 그대로
+    private void Show(List<SlotData> slots, string source, bool showCount, long gold, bool grouped)
     {
         if (slots.Count == 0)
         {
@@ -287,6 +290,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         CancelReveal(); // 공개 중에 [n회 더 뽑기] 결과가 오면 앞의 공개를 끊고 새로 시작한다
         CancelAppraise();
         _revealRarities.Clear();
+
+        if (grouped)
+        {
+            SortByGroup(slots); // 칸 순서 = 목차 순서 — 공개도 자원 → 캐릭터 → 장비 순으로 흐른다
+        }
 
         for (int i = 0; i < slots.Count; i++)
         {
@@ -305,6 +313,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _slots.HideFrom(slots.Count);
+        PlaceInSections(slots.Count, grouped);
 
         // ※ 골드 칸은 'Key'가 0이다 — 골드는 TID가 없어 0으로 떨어뜨린다('TidOf' · 'SummarizeMails'). 0번 아이템·캐릭터는 없다
         _gold     = gold;
@@ -644,6 +653,201 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         slot.GetComponent<RewardRevealFx>().Hide();
         slot.Clear();
     }
+
+    #endregion
+
+    #region 목차 (자원 · 캐릭터 · 장비)
+
+    // 목차 하나 — 색 상자(바탕) 안에 색 띠 머리글 + 칸 격자. 결과 창 'Content'(격자)를 복제해 그 자리에 셋을 끼운다
+    private readonly struct Section
+    {
+        public readonly GameObject Root;
+        public readonly TMP_Text   Header;
+        public readonly Transform  Grid;
+
+        public Section(GameObject root, TMP_Text header, Transform grid)
+        {
+            Root   = root;
+            Header = header;
+            Grid   = grid;
+        }
+    }
+
+    private const int   SectionCount      = 3;   // 자원 · 캐릭터 · 장비 — 최대 3개 목차(2026-11-23 사용자)
+    private const float SectionHeaderSize = 24f; // 머리글 글자 — 갈무리는 12의 배수에서 획이 또렷하다
+    private const float SectionBandHeight = 34f; // 머리글 띠 높이
+    private const int   SectionPadding    = 6;   // 색 상자 안쪽 여백
+    private const float SectionBoxAlpha   = 0.16f; // 색 상자 바탕 = 띠 색을 이만큼 옅게 — 종이 위에서 목차가 갈려 보이게
+
+    private static readonly string[] SectionKeys = { "UI.Inventory.TabResource", "UI.Common.Character", "UI.Equip.Gear" };
+
+    // 목차마다 띠 색 — 낮은 채도의 재질색(자원 갈색 · 캐릭터 청회색 · 장비 적갈색). 원색은 "색깔 놀이"로 보인다(Art 규칙)
+    private static readonly Color[] SectionColors =
+    {
+        new Color32(0x6B, 0x4A, 0x2B, 0xFF),
+        new Color32(0x2F, 0x55, 0x66, 0xFF),
+        new Color32(0x6E, 0x2F, 0x2F, 0xFF),
+    };
+
+    private static readonly Color SectionHeaderText = new Color32(0xF2, 0xE2, 0xC0, 0xFF); // 띠 위 글자 — 종이색
+
+    private readonly Section[] _sections = new Section[SectionCount];
+
+    // 목차 셋을 만든다 (Start에서 한 번) — [색 상자 [색 띠 머리글] [칸 격자]].
+    //   머리글은 창 제목을 복제해 글꼴을 맞추고, 격자는 'Content'를 복제해 칸 크기·간격을 맞춘 뒤 **왼쪽 위 정렬**로 바꾼다(2026-11-23 사용자).
+    // 칸은 늘 'slotParent'에서 만들어지고('UIRowList'), 띄울 때 'PlaceInSections'가 목차 격자로 옮긴다.
+    private void BuildSections()
+    {
+        Transform panelBody = slotParent.parent;
+        int       at        = slotParent.GetSiblingIndex();
+
+        for (int i = 0; i < SectionCount; i++)
+        {
+            Color color = SectionColors[i];
+
+            // 색 상자 — 세로로 띠와 격자를 쌓는다
+            var root = new GameObject($"Section {i + 1}", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup));
+
+            root.transform.SetParent(panelBody, false);
+            root.transform.SetSiblingIndex(at + 1 + i);
+
+            var box = root.GetComponent<Image>();
+
+            box.color         = new Color(color.r, color.g, color.b, SectionBoxAlpha);
+            box.raycastTarget = false;
+
+            var column = root.GetComponent<VerticalLayoutGroup>();
+
+            column.padding                = new RectOffset(SectionPadding, SectionPadding, SectionPadding, SectionPadding);
+            column.spacing                = 4f;
+            column.childAlignment         = TextAnchor.UpperLeft;
+            column.childControlWidth      = true;
+            column.childControlHeight     = true;
+            column.childForceExpandWidth  = true;
+            column.childForceExpandHeight = false;
+
+            // 색 띠 머리글 — 띠(Image) 위에 글자를 왼쪽 여백 두고 깐다
+            var band = new GameObject("Header Band", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+
+            band.transform.SetParent(root.transform, false);
+
+            var bandImage = band.GetComponent<Image>();
+
+            bandImage.color         = color;
+            bandImage.raycastTarget = false;
+
+            band.GetComponent<LayoutElement>().minHeight       = SectionBandHeight;
+            band.GetComponent<LayoutElement>().preferredHeight = SectionBandHeight;
+
+            TMP_Text header = Instantiate(titleText, band.transform, false);
+
+            foreach (var layout in header.GetComponents<LayoutElement>())
+            {
+                Destroy(layout); // 띠가 크기를 정한다 — 제목에 붙은 높이 지정은 버린다
+            }
+
+            var headerRect = header.rectTransform;
+
+            headerRect.anchorMin = Vector2.zero;
+            headerRect.anchorMax = Vector2.one;
+            headerRect.offsetMin = new Vector2(10f, 0f);
+            headerRect.offsetMax = new Vector2(-10f, 0f);
+
+            header.name             = "Header Text (TMP)";
+            header.fontSize         = SectionHeaderSize;
+            header.enableAutoSizing = false;
+            header.alignment        = TextAlignmentOptions.MidlineLeft;
+            header.color            = SectionHeaderText;
+            header.raycastTarget    = false;
+
+            // 칸 격자 — 'Content' 복제 · 왼쪽 위 정렬
+            GameObject grid = Instantiate(slotParent.gameObject, root.transform, false);
+
+            grid.name = "Section Grid";
+
+            foreach (Transform child in grid.transform)
+            {
+                Destroy(child.gameObject); // 복제 순간 'Content'에 칸이 있었다면 — 칸은 'UIRowList'의 것만 쓴다
+            }
+
+            if (grid.TryGetComponent(out GridLayoutGroup gridLayout))
+            {
+                gridLayout.childAlignment = TextAnchor.UpperLeft;
+                gridLayout.padding        = new RectOffset(0, 0, 0, 0); // 여백은 색 상자가 갖는다
+            }
+
+            _sections[i] = new Section(root, header, grid.transform);
+
+            SetSectionVisible(i, false);
+        }
+    }
+
+    // 칸 종류 → 목차 번호 (자원 0 · 캐릭터 1 · 장비 2). 골드 · 아티팩트 · 아이템은 자원이다
+    private static int GroupOf(char kind) => kind switch
+    {
+        'C' => 1,
+        'E' => 2,
+        _   => 0,
+    };
+
+    // 칸 값과 '_cellKinds'를 목차 순서로 함께 정렬한다 — 같은 목차 안에서는 처음 나온 순서를 지킨다(안정 정렬)
+    private void SortByGroup(List<SlotData> slots)
+    {
+        var order = Enumerable.Range(0, slots.Count)
+                              .OrderBy(i => GroupOf(i < _cellKinds.Count ? _cellKinds[i].Kind : 'I'))
+                              .ThenBy(i => i)
+                              .ToList();
+
+        var sortedSlots = order.Select(i => slots[i]).ToList();
+        var sortedKinds = order.Where(i => i < _cellKinds.Count).Select(i => _cellKinds[i]).ToList();
+
+        slots.Clear();
+        slots.AddRange(sortedSlots);
+        _cellKinds.Clear();
+        _cellKinds.AddRange(sortedKinds);
+    }
+
+    // 쓰는 칸을 목차 격자로 옮기고, 빈 목차와 원래 격자를 끈다 (Show에서 호출).
+    // 나누지 않으면(가챠) 칸을 원래 격자로 되돌린다 — 같은 칸을 돌려쓰므로 전에 옮긴 것이 남아 있을 수 있다.
+    private void PlaceInSections(int count, bool grouped)
+    {
+        var counts = new int[SectionCount];
+
+        for (int i = 0; i < count; i++)
+        {
+            Transform cell   = _slots.Get(i).transform;
+            int       group  = grouped ? GroupOf(i < _cellKinds.Count ? _cellKinds[i].Kind : 'I') : -1;
+            Transform target = group >= 0 ? _sections[group].Grid : slotParent;
+
+            if (cell.parent != target)
+            {
+                cell.SetParent(target, false);
+            }
+
+            cell.SetAsLastSibling(); // 정렬된 순서대로 차곡차곡
+
+            if (group >= 0)
+            {
+                counts[group]++;
+            }
+        }
+
+        slotParent.gameObject.SetActive(!grouped);
+
+        for (int g = 0; g < SectionCount; g++)
+        {
+            bool on = grouped && counts[g] > 0;
+
+            SetSectionVisible(g, on);
+
+            if (on)
+            {
+                _sections[g].Header.text = Lang.Get(SectionKeys[g]);
+            }
+        }
+    }
+
+    private void SetSectionVisible(int index, bool on) => _sections[index].Root.SetActive(on);
 
     #endregion
 
