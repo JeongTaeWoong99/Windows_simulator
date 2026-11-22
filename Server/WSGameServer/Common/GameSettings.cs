@@ -19,6 +19,11 @@ public sealed class GameSettings
 
     public AuctionClientSettings Auction { get; set; } = new();
 
+    /// <summary>스팀 티켓 없이 Id만으로 들어오는 개발용 로그인을 받는가(T-207). 빠지면 false — 설정을 잊은 서버가 아무 Id나 받지 않게.</summary>
+    public bool AllowDevLogin { get; set; }
+
+    public SteamSettings Steam { get; set; } = new();
+
     /// <summary><paramref name="directory"/>의 appsettings.json → 환경 변수 → 명령줄 순으로 덮어 읽는다.</summary>
     public static GameSettings Load(string directory, string[] args)
     {

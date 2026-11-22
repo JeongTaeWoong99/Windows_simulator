@@ -95,6 +95,9 @@ obj
 # 경매장 서버 로컬 DB (서버 콘솔이 Server/AuctionServer/에 만든다 · -wal·-shm 포함)
 auction.sqlite3*
 
+# 원격 서버 비밀 값 (스팀 Web API 키 등 — docker compose가 읽는다 · T-207)
+Server/.env
+
 # 게임 DB WAL 보조 파일 (서버가 도는 동안 생기고, 끌 때 체크포인트로 본체에 합친다 — 본체 game.sqlite3만 커밋)
 game.sqlite3-wal
 game.sqlite3-shm
