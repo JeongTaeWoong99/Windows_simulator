@@ -16,7 +16,7 @@ public class StorageLimitTest
     private const int SwordTid        = 1101;     // 나무 호미 (Common 무기)
     private const int ItemPoolId      = 1;
     private const int FishTid         = 10001;    // 붕어
-    private const int WoodBoxTid      = 100019;   // 나무 상자 Lv1 → 풀 9
+    private const int WoodBoxTid      = 100081;   // 개척자의 상자 → 풀 9 (T-209 전 임시)
     private const int BoxPoolId       = 9;
 
     // 창고를 채우는 자리 채움 TID — 표에 없는 값이어도 된다. 칸은 종류 수만 본다.

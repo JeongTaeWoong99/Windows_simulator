@@ -16,7 +16,7 @@ namespace GameData
         {
             GatherArtifactTID = PackerUtil.ParseInt(cells[0], Table, "GatherArtifactTID", 1, null),
             IndustryType      = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
-            IndustryLevel     = PackerUtil.ParseInt(cells[2], Table, "IndustryLevel", 1, 5),
+            IndustryLevel     = PackerUtil.ParseInt(cells[2], Table, "IndustryLevel", 1, 100),
             ArtifactTID       = PackerUtil.ParseInt(cells[3], Table, "ArtifactTID"),
             ChancePerMillion  = PackerUtil.ParseInt(cells[4], Table, "ChancePerMillion", 1, 10000),
             Description       = cells[5].Length > 0 ? PackerUtil.RequireString(cells[5], Table, "Description") : "",

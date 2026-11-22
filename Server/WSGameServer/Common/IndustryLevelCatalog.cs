@@ -3,13 +3,13 @@ using MikaUtils;
 
 namespace WSGameServer;
 
-// IndustryLevelTable 보관소. 시트 키는 IndustryLevelTID(산업×100+레벨)지만 서버는 (산업, 레벨)로 묻는다.
+// IndustryLevelTable 보관소. 시트 키는 IndustryLevelTID(산업×100+단계 순번)지만 서버는 (산업, 레벨)로 묻는다.
 // GameTable.LoadAll 다음에 LoadAll 한 번, 이후 조회만(불변) → Server/docs/데이터-카탈로그.md 2장
 public sealed class IndustryLevelCatalog : Singleton<IndustryLevelCatalog>
 {
     private readonly Dictionary<(IndustryType Industry, int Level), IndustryLevelTableRow> _byIndustryLevel = new();
 
-    /// <summary>등록된 행 수. 산업 5 × 레벨 5 = 25가 정상이다.</summary>
+    /// <summary>등록된 행 수. 산업 5 × 단계 6 = 30이 정상이다.</summary>
     public int Count => _byIndustryLevel.Count;
 
     /// <summary>모든 행을 GameTable에서 읽어 등록한다. GameTable.LoadAll 이후에 부른다.</summary>
@@ -51,7 +51,7 @@ public sealed class IndustryLevelCatalog : Singleton<IndustryLevelCatalog>
     public bool TryGet(IndustryType industry, int level, out IndustryLevelTableRow row)
         => _byIndustryLevel.TryGetValue((industry, level), out row!);
 
-    /// <summary>판정 1회 비용(밀리초×천분율). ×1000은 단위 환산이며 반드시 서버 몫 — 엑셀에 넣으면 Lv5가 int를 넘긴다.</summary>
+    /// <summary>판정 1회 비용(밀리초×천분율). ×1000은 단위 환산이며 반드시 서버 몫 — 엑셀에 넣으면 Lv80부터 int를 넘긴다.</summary>
     public long GetJudgeCostUnits(IndustryType industry, int level)
         => Get(industry, level).RequiredScore * 1000L;
 }

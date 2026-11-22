@@ -195,7 +195,7 @@ public sealed class UserTraitCatalog : Singleton<UserTraitCatalog>
         return nodes;
     }
 
-    /// <summary>이 산업의 개척 특성. 특성 레벨이 곧 열린 산업 레벨이다.</summary>
+    /// <summary>이 산업의 개척 특성. 특성 Lv k가 k번째 단계(IndustryLevelTable.RequiredTraitLevel)를 연다.</summary>
     public bool TryGetIndustryUnlock(IndustryType industry, out UserTraitTableRow row)
         => _industryUnlocks.TryGetValue(industry, out row!);
 }

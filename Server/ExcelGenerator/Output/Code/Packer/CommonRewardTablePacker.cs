@@ -15,7 +15,7 @@ namespace GameData
         public static CommonRewardTableRow Parse(string[] cells) => new()
         {
             CommonRewardTID  = PackerUtil.ParseInt(cells[0], Table, "CommonRewardTID", 1, null),
-            IndustryLevel    = PackerUtil.ParseInt(cells[1], Table, "IndustryLevel", 1, 5),
+            IndustryLevel    = PackerUtil.ParseInt(cells[1], Table, "IndustryLevel", 1, 100),
             ItemTID          = PackerUtil.ParseInt(cells[2], Table, "ItemTID"),
             Count            = PackerUtil.ParseInt(cells[3], Table, "Count", 1, null),
             ChancePerMillion = PackerUtil.ParseInt(cells[4], Table, "ChancePerMillion", 1, 1000000),

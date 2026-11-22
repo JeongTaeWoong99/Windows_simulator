@@ -19,7 +19,7 @@ public class UserConsumableTest
     private const int  Map        = 100034;   // 은빛 보물 지도 — 판정 2번 · 슬롯 2개
     private const int  Compass    = 100036;   // 낡은 나침반 — 상자 +1000‰ · 3회 · 슬롯 1개
     private const int  GoldCompass = 100037;  // 황금 나침반 — 상자·유물 +1000‰ · 3회 · 슬롯 1개
-    private const int  BoxTid     = 100019;   // 공통 보상으로 나오는 상자
+    private const int  BoxTid     = 100081;   // 공통 보상으로 나오는 상자
     private const long CharacterId = 500;
     private const int  WorkingSlot = 0;
     private const int  IdleSlot    = 1;

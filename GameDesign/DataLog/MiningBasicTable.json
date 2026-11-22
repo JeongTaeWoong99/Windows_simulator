@@ -11,202 +11,244 @@
     "IndustryLevel": 1,
     "ItemTID": 40002,
     "Weight": 2000,
-    "Description": "구리 광석"
+    "Description": "자갈"
   },
   {
     "DropTID": 300103,
     "IndustryLevel": 1,
     "ItemTID": 40003,
     "Weight": 1000,
-    "Description": "은광석"
+    "Description": "점토"
   },
   {
     "DropTID": 300104,
     "IndustryLevel": 1,
     "ItemTID": 40004,
     "Weight": 300,
-    "Description": "금광석"
+    "Description": "석탄"
   },
   {
     "DropTID": 300105,
     "IndustryLevel": 1,
     "ItemTID": 40005,
     "Weight": 100,
-    "Description": "보석 원석"
+    "Description": "구리 광석"
   },
   {
     "DropTID": 300106,
     "IndustryLevel": 1,
     "ItemTID": 40006,
     "Weight": 10,
-    "Description": "심연의 원석"
+    "Description": "맑은 수정"
   },
   {
-    "DropTID": 300201,
-    "IndustryLevel": 2,
+    "DropTID": 302001,
+    "IndustryLevel": 20,
     "ItemTID": 40011,
     "Weight": 6590,
     "Description": "석회암"
   },
   {
-    "DropTID": 300202,
-    "IndustryLevel": 2,
+    "DropTID": 302002,
+    "IndustryLevel": 20,
     "ItemTID": 40012,
     "Weight": 2000,
-    "Description": "주석 광석"
-  },
-  {
-    "DropTID": 300203,
-    "IndustryLevel": 2,
-    "ItemTID": 40013,
-    "Weight": 1000,
     "Description": "철광석"
   },
   {
-    "DropTID": 300204,
-    "IndustryLevel": 2,
+    "DropTID": 302003,
+    "IndustryLevel": 20,
+    "ItemTID": 40013,
+    "Weight": 1000,
+    "Description": "주석 광석"
+  },
+  {
+    "DropTID": 302004,
+    "IndustryLevel": 20,
     "ItemTID": 40014,
     "Weight": 300,
-    "Description": "백금 광석"
+    "Description": "납 광석"
   },
   {
-    "DropTID": 300205,
-    "IndustryLevel": 2,
+    "DropTID": 302005,
+    "IndustryLevel": 20,
     "ItemTID": 40015,
     "Weight": 100,
-    "Description": "청옥 원석"
+    "Description": "마노 원석"
   },
   {
-    "DropTID": 300206,
-    "IndustryLevel": 2,
+    "DropTID": 302006,
+    "IndustryLevel": 20,
     "ItemTID": 40016,
     "Weight": 10,
-    "Description": "지맥의 결정"
+    "Description": "벽옥 원석"
   },
   {
-    "DropTID": 300301,
-    "IndustryLevel": 3,
+    "DropTID": 304001,
+    "IndustryLevel": 40,
     "ItemTID": 40021,
     "Weight": 6590,
-    "Description": "현무암"
+    "Description": "화강암"
   },
   {
-    "DropTID": 300302,
-    "IndustryLevel": 3,
+    "DropTID": 304002,
+    "IndustryLevel": 40,
     "ItemTID": 40022,
     "Weight": 2000,
     "Description": "아연 광석"
   },
   {
-    "DropTID": 300303,
-    "IndustryLevel": 3,
+    "DropTID": 304003,
+    "IndustryLevel": 40,
     "ItemTID": 40023,
     "Weight": 1000,
-    "Description": "미스릴 광석"
+    "Description": "은광석"
   },
   {
-    "DropTID": 300304,
-    "IndustryLevel": 3,
+    "DropTID": 304004,
+    "IndustryLevel": 40,
     "ItemTID": 40024,
     "Weight": 300,
-    "Description": "홍옥 원석"
+    "Description": "금광석"
   },
   {
-    "DropTID": 300305,
-    "IndustryLevel": 3,
+    "DropTID": 304005,
+    "IndustryLevel": 40,
     "ItemTID": 40025,
     "Weight": 100,
-    "Description": "흑요석 결정"
+    "Description": "석류석 원석"
   },
   {
-    "DropTID": 300306,
-    "IndustryLevel": 3,
+    "DropTID": 304006,
+    "IndustryLevel": 40,
     "ItemTID": 40026,
     "Weight": 10,
-    "Description": "대지의 핵"
+    "Description": "월장석 원석"
   },
   {
-    "DropTID": 300401,
-    "IndustryLevel": 4,
+    "DropTID": 306001,
+    "IndustryLevel": 60,
     "ItemTID": 40031,
     "Weight": 6590,
-    "Description": "수정 파편"
+    "Description": "현무암"
   },
   {
-    "DropTID": 300402,
-    "IndustryLevel": 4,
+    "DropTID": 306002,
+    "IndustryLevel": 60,
     "ItemTID": 40032,
     "Weight": 2000,
+    "Description": "니켈 광석"
+  },
+  {
+    "DropTID": 306003,
+    "IndustryLevel": 60,
+    "ItemTID": 40033,
+    "Weight": 1000,
     "Description": "코발트 광석"
   },
   {
-    "DropTID": 300403,
-    "IndustryLevel": 4,
-    "ItemTID": 40033,
-    "Weight": 1000,
-    "Description": "오리하르콘 광석"
-  },
-  {
-    "DropTID": 300404,
-    "IndustryLevel": 4,
+    "DropTID": 306004,
+    "IndustryLevel": 60,
     "ItemTID": 40034,
     "Weight": 300,
+    "Description": "백금 광석"
+  },
+  {
+    "DropTID": 306005,
+    "IndustryLevel": 60,
+    "ItemTID": 40035,
+    "Weight": 100,
     "Description": "자수정 원석"
   },
   {
-    "DropTID": 300405,
-    "IndustryLevel": 4,
-    "ItemTID": 40035,
-    "Weight": 100,
-    "Description": "별빛 광석"
-  },
-  {
-    "DropTID": 300406,
-    "IndustryLevel": 4,
+    "DropTID": 306006,
+    "IndustryLevel": 60,
     "ItemTID": 40036,
     "Weight": 10,
-    "Description": "공동의 심장"
+    "Description": "청옥 원석"
   },
   {
-    "DropTID": 300501,
-    "IndustryLevel": 5,
+    "DropTID": 308001,
+    "IndustryLevel": 80,
     "ItemTID": 40041,
     "Weight": 6590,
-    "Description": "심연의 파편"
+    "Description": "대리석"
   },
   {
-    "DropTID": 300502,
-    "IndustryLevel": 5,
+    "DropTID": 308002,
+    "IndustryLevel": 80,
     "ItemTID": 40042,
     "Weight": 2000,
-    "Description": "암흑 광석"
+    "Description": "흑요석"
   },
   {
-    "DropTID": 300503,
-    "IndustryLevel": 5,
+    "DropTID": 308003,
+    "IndustryLevel": 80,
     "ItemTID": 40043,
     "Weight": 1000,
-    "Description": "아다만트 광석"
+    "Description": "텅스텐 광석"
   },
   {
-    "DropTID": 300504,
-    "IndustryLevel": 5,
+    "DropTID": 308004,
+    "IndustryLevel": 80,
     "ItemTID": 40044,
     "Weight": 300,
-    "Description": "심연의 수정"
+    "Description": "미스릴 광석"
   },
   {
-    "DropTID": 300505,
-    "IndustryLevel": 5,
+    "DropTID": 308005,
+    "IndustryLevel": 80,
     "ItemTID": 40045,
     "Weight": 100,
-    "Description": "용해된 별의 조각"
+    "Description": "홍옥 원석"
   },
   {
-    "DropTID": 300506,
-    "IndustryLevel": 5,
+    "DropTID": 308006,
+    "IndustryLevel": 80,
     "ItemTID": 40046,
     "Weight": 10,
-    "Description": "세계의 축"
+    "Description": "비취 원석"
+  },
+  {
+    "DropTID": 310001,
+    "IndustryLevel": 100,
+    "ItemTID": 40051,
+    "Weight": 6590,
+    "Description": "백대리석"
+  },
+  {
+    "DropTID": 310002,
+    "IndustryLevel": 100,
+    "ItemTID": 40052,
+    "Weight": 2000,
+    "Description": "순금 덩어리"
+  },
+  {
+    "DropTID": 310003,
+    "IndustryLevel": 100,
+    "ItemTID": 40053,
+    "Weight": 1000,
+    "Description": "에메랄드 원석"
+  },
+  {
+    "DropTID": 310004,
+    "IndustryLevel": 100,
+    "ItemTID": 40054,
+    "Weight": 300,
+    "Description": "황옥 원석"
+  },
+  {
+    "DropTID": 310005,
+    "IndustryLevel": 100,
+    "ItemTID": 40055,
+    "Weight": 100,
+    "Description": "금강석 원석"
+  },
+  {
+    "DropTID": 310006,
+    "IndustryLevel": 100,
+    "ItemTID": 40056,
+    "Weight": 10,
+    "Description": "왕관 금강석"
   }
 ]

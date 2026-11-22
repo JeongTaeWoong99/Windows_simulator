@@ -9,7 +9,8 @@ public partial class User
     public WorkStation WorkStation { get; } = new();
 
     /// <summary>
-    /// 이 산업 레벨이 열려 있는가. 원본은 그 산업 개척 특성의 레벨이다 — 특성 레벨이 곧 열린 산업 레벨(T-108).
+    /// 이 산업 레벨이 열려 있는가. 원본은 그 산업 개척 특성의 레벨이다 — 특성 Lv k가 k번째 단계를 연다(T-208).
+    /// 레벨은 실제 값(1 · 20 · 40 …)이고 필요 특성 레벨은 표(<c>RequiredTraitLevel</c>)가 갖는다.
     /// 기본 레벨(Lv1)은 늘 열려 있고, 표에 없는 레벨은 닫혀 있다. <b>해금은 계정 단위·영구다</b>(산업레벨.md 3.2).
     /// </summary>
     public bool IsIndustryLevelUnlocked(IndustryType industry, int level)
@@ -20,9 +21,9 @@ public partial class User
         }
 
         return level > WorkStationSlot.DefaultIndustryLevel &&
-               _industryLevels.TryGet(industry, level, out _) &&
+               _industryLevels.TryGet(industry, level, out var row) &&
                _traitCatalog.TryGetIndustryUnlock(industry, out var pioneer) &&
-               GetTraitLevel(pioneer.UserTraitTID) >= level;
+               GetTraitLevel(pioneer.UserTraitTID) >= row.RequiredTraitLevel;
     }
 
     /// <summary>이 칸이 열려 있는가. <c>WorkSlotTable</c>에 없는 번호는 없는 칸이라 false다.</summary>

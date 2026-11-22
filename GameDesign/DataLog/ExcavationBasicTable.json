@@ -42,171 +42,213 @@
     "Description": "개척자의 일지"
   },
   {
-    "DropTID": 200201,
-    "IndustryLevel": 2,
+    "DropTID": 202001,
+    "IndustryLevel": 20,
     "ItemTID": 10011,
     "Weight": 6590,
     "Description": "부러진 화살촉"
   },
   {
-    "DropTID": 200202,
-    "IndustryLevel": 2,
+    "DropTID": 202002,
+    "IndustryLevel": 20,
     "ItemTID": 10012,
     "Weight": 2000,
     "Description": "녹슨 투구"
   },
   {
-    "DropTID": 200203,
-    "IndustryLevel": 2,
+    "DropTID": 202003,
+    "IndustryLevel": 20,
     "ItemTID": 10013,
     "Weight": 1000,
     "Description": "성벽 문장석"
   },
   {
-    "DropTID": 200204,
-    "IndustryLevel": 2,
+    "DropTID": 202004,
+    "IndustryLevel": 20,
     "ItemTID": 10014,
     "Weight": 300,
     "Description": "기사의 방패"
   },
   {
-    "DropTID": 200205,
-    "IndustryLevel": 2,
+    "DropTID": 202005,
+    "IndustryLevel": 20,
     "ItemTID": 10015,
     "Weight": 100,
     "Description": "성주의 인장"
   },
   {
-    "DropTID": 200206,
-    "IndustryLevel": 2,
+    "DropTID": 202006,
+    "IndustryLevel": 20,
     "ItemTID": 10016,
     "Weight": 10,
     "Description": "수호기사의 검"
   },
   {
-    "DropTID": 200301,
-    "IndustryLevel": 3,
+    "DropTID": 204001,
+    "IndustryLevel": 40,
     "ItemTID": 10021,
     "Weight": 6590,
-    "Description": "깨진 석판"
+    "Description": "녹슨 곡괭이"
   },
   {
-    "DropTID": 200302,
-    "IndustryLevel": 3,
+    "DropTID": 204002,
+    "IndustryLevel": 40,
     "ItemTID": 10022,
     "Weight": 2000,
-    "Description": "향로 조각"
+    "Description": "광부의 등잔"
   },
   {
-    "DropTID": 200303,
-    "IndustryLevel": 3,
+    "DropTID": 204003,
+    "IndustryLevel": 40,
     "ItemTID": 10023,
     "Weight": 1000,
-    "Description": "신전 촛대"
+    "Description": "옛 광산 지도"
   },
   {
-    "DropTID": 200304,
-    "IndustryLevel": 3,
+    "DropTID": 204004,
+    "IndustryLevel": 40,
     "ItemTID": 10024,
     "Weight": 300,
-    "Description": "사제의 홀"
+    "Description": "은 장식 함"
   },
   {
-    "DropTID": 200305,
-    "IndustryLevel": 3,
+    "DropTID": 204005,
+    "IndustryLevel": 40,
     "ItemTID": 10025,
     "Weight": 100,
-    "Description": "신탁의 석판"
+    "Description": "광산 조합 인장"
   },
   {
-    "DropTID": 200306,
-    "IndustryLevel": 3,
+    "DropTID": 204006,
+    "IndustryLevel": 40,
     "ItemTID": 10026,
     "Weight": 10,
-    "Description": "잊힌 신의 우상"
+    "Description": "첫 광맥의 금괴"
   },
   {
-    "DropTID": 200401,
-    "IndustryLevel": 4,
+    "DropTID": 206001,
+    "IndustryLevel": 60,
     "ItemTID": 10031,
+    "Weight": 6590,
+    "Description": "부러진 창"
+  },
+  {
+    "DropTID": 206002,
+    "IndustryLevel": 60,
+    "ItemTID": 10032,
+    "Weight": 2000,
+    "Description": "찌그러진 방패"
+  },
+  {
+    "DropTID": 206003,
+    "IndustryLevel": 60,
+    "ItemTID": 10033,
+    "Weight": 1000,
+    "Description": "군기 조각"
+  },
+  {
+    "DropTID": 206004,
+    "IndustryLevel": 60,
+    "ItemTID": 10034,
+    "Weight": 300,
+    "Description": "장군의 투구"
+  },
+  {
+    "DropTID": 206005,
+    "IndustryLevel": 60,
+    "ItemTID": 10035,
+    "Weight": 100,
+    "Description": "전공 훈장"
+  },
+  {
+    "DropTID": 206006,
+    "IndustryLevel": 60,
+    "ItemTID": 10036,
+    "Weight": 10,
+    "Description": "승전 깃발"
+  },
+  {
+    "DropTID": 208001,
+    "IndustryLevel": 80,
+    "ItemTID": 10041,
     "Weight": 6590,
     "Description": "오래된 뼈 조각"
   },
   {
-    "DropTID": 200402,
-    "IndustryLevel": 4,
-    "ItemTID": 10032,
+    "DropTID": 208002,
+    "IndustryLevel": 80,
+    "ItemTID": 10042,
     "Weight": 2000,
     "Description": "장신구 파편"
   },
   {
-    "DropTID": 200403,
-    "IndustryLevel": 4,
-    "ItemTID": 10033,
+    "DropTID": 208003,
+    "IndustryLevel": 80,
+    "ItemTID": 10043,
     "Weight": 1000,
     "Description": "묘실 등잔"
   },
   {
-    "DropTID": 200404,
-    "IndustryLevel": 4,
-    "ItemTID": 10034,
+    "DropTID": 208004,
+    "IndustryLevel": 80,
+    "ItemTID": 10044,
     "Weight": 300,
     "Description": "황금 가면"
   },
   {
-    "DropTID": 200405,
-    "IndustryLevel": 4,
-    "ItemTID": 10035,
+    "DropTID": 208005,
+    "IndustryLevel": 80,
+    "ItemTID": 10045,
     "Weight": 100,
-    "Description": "왕비의 왕관"
+    "Description": "귀부인의 보석함"
   },
   {
-    "DropTID": 200406,
-    "IndustryLevel": 4,
-    "ItemTID": 10036,
+    "DropTID": 208006,
+    "IndustryLevel": 80,
+    "ItemTID": 10046,
     "Weight": 10,
-    "Description": "불멸의 성배"
+    "Description": "옛 성주의 왕관"
   },
   {
-    "DropTID": 200501,
-    "IndustryLevel": 5,
-    "ItemTID": 10041,
+    "DropTID": 210001,
+    "IndustryLevel": 100,
+    "ItemTID": 10051,
     "Weight": 6590,
     "Description": "고대 주화"
   },
   {
-    "DropTID": 200502,
-    "IndustryLevel": 5,
-    "ItemTID": 10042,
+    "DropTID": 210002,
+    "IndustryLevel": 100,
+    "ItemTID": 10052,
     "Weight": 2000,
     "Description": "옥새 조각"
   },
   {
-    "DropTID": 200503,
-    "IndustryLevel": 5,
-    "ItemTID": 10043,
+    "DropTID": 210003,
+    "IndustryLevel": 100,
+    "ItemTID": 10053,
     "Weight": 1000,
     "Description": "왕실 문서"
   },
   {
-    "DropTID": 200504,
-    "IndustryLevel": 5,
-    "ItemTID": 10044,
+    "DropTID": 210004,
+    "IndustryLevel": 100,
+    "ItemTID": 10054,
     "Weight": 300,
     "Description": "고대 왕의 홀"
   },
   {
-    "DropTID": 200505,
-    "IndustryLevel": 5,
-    "ItemTID": 10045,
+    "DropTID": 210005,
+    "IndustryLevel": 100,
+    "ItemTID": 10055,
     "Weight": 100,
-    "Description": "왕도의 지도석"
+    "Description": "왕비의 왕관"
   },
   {
-    "DropTID": 200506,
-    "IndustryLevel": 5,
-    "ItemTID": 10046,
+    "DropTID": 210006,
+    "IndustryLevel": 100,
+    "ItemTID": 10056,
     "Weight": 10,
-    "Description": "태초의 유물"
+    "Description": "시조왕의 옥새"
   }
 ]

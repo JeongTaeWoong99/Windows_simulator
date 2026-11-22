@@ -4,7 +4,7 @@ namespace WSGameServer;
 
 /// <summary>
 /// 실제 상자 데이터 검증 — <c>Item.xlsx</c>의 상자와 <c>Gacha.xlsx</c>의 상자 풀이 맞물리는지 본다.
-/// <b>레벨 상자</b>는 채집에서 나오는 15종이고, <b>열 수 있는 아이템</b>은 <c>OpenGachaId</c>가 있는 것 전부다.
+/// <b>테마 상자</b>는 채취 단계마다 1종(6종 · T-208)이고, <b>열 수 있는 아이템</b>은 <c>OpenGachaId</c>가 있는 것 전부다.
 /// 깨지면: 열 수 없는 상자가 생기거나, 상자에서 상자가 나와 무한히 까지거나, 상자 풀을 골드로 사게 된다.
 /// </summary>
 public class BoxSheetTest
@@ -24,14 +24,28 @@ public class BoxSheetTest
 
     private static IEnumerable<ItemTableRow> Relics => GameTable.ItemTable.All.Where(r => r.ItemType == ItemType.Relic);
 
-    [Fact]
-    public void 상자는_산업_레벨마다_세_등급이고_최대_1000개다()
+    /// <summary>채취 단계 레벨 → 그 단계 테마 상자 (레벨테마.md 2장).</summary>
+    private static readonly Dictionary<int, int> ThemeBoxOfLevel = new()
     {
-        // 나무·은·황금 × Lv1~5 = 15종.
-        Boxes.Count().ShouldBe(15);
-        Boxes.GroupBy(r => r.GlobalRarity).Select(g => (g.Key, g.Count())).OrderBy(g => g.Key)
-            .ShouldBe(new[] { (GlobalRarity.Common, 5), (GlobalRarity.Uncommon, 5), (GlobalRarity.Rare, 5) });
+        [1] = 100081, [20] = 100082, [40] = 100083, [60] = 100084, [80] = 100085, [100] = 100086,
+    };
+
+    [Fact]
+    public void 상자는_채취_단계마다_한_종류이고_최대_1000개다()
+    {
+        // 개척자의 상자 ~ 왕실 상자 6종. 재질(나무·은·황금) 축은 없다(T-208).
+        Boxes.Select(r => r.ItemTID).OrderBy(t => t).ShouldBe(new[] { 100081, 100082, 100083, 100084, 100085, 100086 });
         Boxes.ShouldAllBe(r => r.OpenGachaId != 0 && r.MaxStack == 1000);
+    }
+
+    [Fact]
+    public void 옛_재질_상자_15종은_표에_없다()
+    {
+        // 지운 TID는 다시 쓰지 않는다 — 옛 DB 행이 다른 것으로 둔갑한다(excel-table-creator 규칙 2).
+        for (var tid = 100019; tid <= 100033; tid++)
+        {
+            GameTable.ItemTable.TryGet(tid, out _).ShouldBeFalse($"옛 상자 {tid}가 남아 있다");
+        }
     }
 
     [Fact]
@@ -84,20 +98,21 @@ public class BoxSheetTest
     }
 
     [Fact]
-    public void 산업_레벨마다_그_레벨_상자_세_종류가_있다()
+    public void 채취_단계마다_그_단계_테마_상자_한_행이_있다()
     {
-        // 공통 행이 레벨마다 있어야 한다 — 빠진 레벨은 덮어쓰기가 없는 산업에서 상자를 얻을 길이 없다.
+        // 공통 행이 단계마다 있어야 한다 — 빠진 단계는 덮어쓰기가 없는 산업에서 상자를 얻을 길이 없다.
         var common = GameTable.CommonRewardTable.All;
-        var boxOfLevel = Boxes.ToDictionary(r => r.ItemTID, r => (r.ItemTID - 100019) / 3 + 1);
 
-        common.Count.ShouldBe(15);
-        common.GroupBy(r => r.IndustryLevel).Select(g => g.Key).OrderBy(l => l).ShouldBe(new[] { 1, 2, 3, 4, 5 });
-        common.GroupBy(r => r.IndustryLevel).ShouldAllBe(g => g.Select(r => r.ItemTID).Distinct().Count() == 3);
-        common.ShouldAllBe(r => boxOfLevel[r.ItemTID] == r.IndustryLevel);
+        common.Select(r => (r.IndustryLevel, r.ItemTID)).OrderBy(x => x.IndustryLevel)
+            .ShouldBe(ThemeBoxOfLevel.Select(kv => (kv.Key, kv.Value)).OrderBy(x => x.Key));
+    }
 
-        // 덮어쓰기는 그 레벨 상자이거나, 레벨이 없는 유물이다(발굴 — T-150).
+    [Fact]
+    public void 덮어쓰기는_그_단계_테마_상자이거나_유물이다()
+    {
+        // 발굴은 상자 대신 미감정 유물을 굴린다(T-150). 다른 단계 상자가 섞이면 단계 구분이 무너진다.
         GameTable.CommonRewardOverrideTable.All.ShouldAllBe(r =>
-            (boxOfLevel.ContainsKey(r.ItemTID) && boxOfLevel[r.ItemTID] == r.IndustryLevel) ||
+            (ThemeBoxOfLevel.ContainsKey(r.IndustryLevel) && ThemeBoxOfLevel[r.IndustryLevel] == r.ItemTID) ||
             GameTable.ItemTable[r.ItemTID].ItemType == ItemType.Relic);
     }
 

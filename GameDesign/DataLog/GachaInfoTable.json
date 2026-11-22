@@ -41,123 +41,43 @@
   },
   {
     "GachaInfoTID": 9,
-    "Name": "나무 상자 Lv1",
+    "Name": "개척자의 상자",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 10,
-    "Name": "은 상자 Lv1",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 11,
-    "Name": "황금 상자 Lv1",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv1 풀을 임시로 씀(T-209)"
   },
   {
     "GachaInfoTID": 12,
-    "Name": "나무 상자 Lv2",
+    "Name": "산골 상자",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 13,
-    "Name": "은 상자 Lv2",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 14,
-    "Name": "황금 상자 Lv2",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv2 풀을 임시로 씀(T-209)"
   },
   {
     "GachaInfoTID": 15,
-    "Name": "나무 상자 Lv3",
+    "Name": "광부의 상자",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 16,
-    "Name": "은 상자 Lv3",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 17,
-    "Name": "황금 상자 Lv3",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv3 풀을 임시로 씀(T-209)"
   },
   {
     "GachaInfoTID": 18,
-    "Name": "나무 상자 Lv4",
+    "Name": "요새 보급 상자",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 19,
-    "Name": "은 상자 Lv4",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 20,
-    "Name": "황금 상자 Lv4",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv4 풀을 임시로 씀(T-209)"
   },
   {
     "GachaInfoTID": 21,
-    "Name": "나무 상자 Lv5",
+    "Name": "성주의 상자",
     "CostCurrency": "None",
     "CostSingle": 0,
     "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 22,
-    "Name": "은 상자 Lv5",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
-  },
-  {
-    "GachaInfoTID": 23,
-    "Name": "황금 상자 Lv5",
-    "CostCurrency": "None",
-    "CostSingle": 0,
-    "CostMulti": 0,
-    "Description": "상자 전용 — 골드로 뽑을 수 없다"
+    "Description": "상자 전용 — 골드로 뽑을 수 없다 · 옛 나무 상자 Lv5 풀을 임시로 씀(T-209) · 왕실 상자도 임시로 연다"
   },
   {
     "GachaInfoTID": 24,
