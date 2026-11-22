@@ -164,7 +164,7 @@ namespace MikaDummyClient
             }
 
             // 빈칸이면 0 — 서버가 기본 레벨(Lv1)로 본다. 상위 레벨은 특성으로 열어야 통과한다.
-            Console.Write("IndustryLevel (1~5, 기본 1) > ");
+            Console.Write("IndustryLevel (1 · 20 · 40 · 60 · 80 · 100, 기본 1) > ");
             byte.TryParse(Console.ReadLine(), out byte industryLevel);
 
             NetworkManager.Instance.Send(new C_WorkStationAssignRequest
