@@ -39,7 +39,7 @@ namespace MikaProtocol
         SellEquipWorn      = 304, // 착용 중인 장비 판매 — 벗겨야 판다
         SellCharacterBusy  = 305, // 슬롯에 배치됐거나 장비를 낀 캐릭터 판매 — 빼고·벗겨야 판다
         SellLastCharacter  = 306, // 캐릭터를 하나도 남기지 않는 판매
-        InvalidShopRequest = 307, // 상점 — ShopTable에 없는 품목 · 개수가 1~50 밖. 골드 부족은 NotEnoughCurrency · 칸 부족은 StorageFull
+        InvalidShopRequest = 307, // 상점 — 골드 상점 구매는 닫혀(T-209) 모든 구매 요청이 이 코드로 거절된다
 
         // ── 400~: 치트 ──
         NoPermission        = 400, // admin_level이 0인 유저의 치트 요청 — 아무것도 바꾸지 않는다
