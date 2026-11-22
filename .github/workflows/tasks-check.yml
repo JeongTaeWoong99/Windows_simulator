@@ -28,12 +28,58 @@ permissions:
   issues: read
 
 jobs:
+  sync-index:
+    name: INDEX 갱신
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.sync.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 상태와 보관 건수 갱신
+        id: sync
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          for attempt in 1 2 3; do
+            # 다른 머지나 회차 이월이 먼저 올라오면 최신 main에서 다시 계산한다.
+            git fetch origin main
+            git checkout --detach FETCH_HEAD
+            node GameDesign/web/scripts/check-tasks.mjs --sync-index
+            if git diff --quiet -- tasks/README.md; then
+              printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            git add tasks/README.md
+            git commit -m 'chore: 일감 INDEX 상태와 보관 건수를 맞춘다'
+            if git push origin HEAD:main; then
+              printf 'sha=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+          done
+          echo "::error::최신 main의 일감 INDEX를 푸시하지 못했습니다"
+          exit 1
+
   check:
     name: 검사
+    needs: sync-index
+    if: ${{ !cancelled() && (needs.sync-index.result == 'success' || needs.sync-index.result == 'skipped') }}
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.sync-index.outputs.sha || github.sha }}
 
       - uses: actions/setup-node@v4
         with:

@@ -10,8 +10,10 @@
 | `server-ci.yml` | `Server/**` 변경 시 push·PR | 빌드 → 테스트 → 커버리지 요약 |
 | `client-ci.yml` | `Assets/**`·`Packages/**`·`ProjectSettings/**` 변경 시 push·PR | Unity 빌드 |
 | `docs-deploy.yml` | `GameDesign/web/**`·`GameDesign/design/**`·`tasks/**` 변경 시 push | 문서 사이트 빌드 → Cloudflare Pages 배포 |
-| `tasks-check.yml` | `.md` 변경 시 push·PR · **이슈가 닫힐 때** | 일감 정합성 검사(`GameDesign/web/scripts/check-tasks.mjs`) — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · 옛 경로 링크. 로컬에서도 같은 명령으로 돈다. **PR에서는 `--pr`** — INDEX는 머지 뒤에 맞추므로 INDEX ↔ 파일 · 보관 건수를 건너뛴다 |
+| `tasks-check.yml` | `.md` 변경 시 push·PR · **이슈가 닫힐 때** | 일감 정합성 검사(`GameDesign/web/scripts/check-tasks.mjs`) — INDEX ↔ 일감 파일 · 보관 건수 · 끝난 선행·닫힌 이슈를 기다리는 ⏸ · 옛 경로 링크. main 푸시·수동 실행은 먼저 INDEX의 상태·보관 건수를 일감 파일과 맞춘다. **PR에서는 `--pr`** — INDEX는 머지 뒤에 맞추므로 INDEX ↔ 파일 · 보관 건수를 건너뛴다 |
 | `unity-activation.yml` | **수동만** | Unity 라이선스 활성화 파일(.alf) 요청 — 1회용 |
+
+로컬 INDEX 갱신은 `node GameDesign/web/scripts/check-tasks.mjs --sync-index`로 실행한다. 새 행과 대기 사유, 표 배치는 작업자가 갱신한다.
 
 **경로 필터로 갈라 뒀다.** 서버만 고쳤는데 Unity 빌드가 20분 도는 일은 없다.
 
