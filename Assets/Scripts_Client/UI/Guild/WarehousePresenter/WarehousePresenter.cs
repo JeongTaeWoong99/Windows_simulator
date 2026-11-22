@@ -208,6 +208,7 @@ public class WarehousePresenter : MonoBehaviour
 
             ColorBlock colors = entry.button.colors;
             colors.normalColor   = target;
+            colors.highlightedColor = UIThemePalette.HoverOf(target);
             colors.selectedColor = target;
             entry.button.colors  = colors;
         }

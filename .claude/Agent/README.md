@@ -23,7 +23,11 @@
 
 ## INDEX
 
+- [2026-11-22 건물 업그레이드 소리 · 큐브 편의 줄 · 영어 칩 짧게 · 크래시 원인 · 치트 창 프레임 튐](2026-11-22-building-upgrade-sound-enchant-options-cheat-poll-perf.md) — `#client` `#ui` `#art` `#editor` `#perf` `#data` 업그레이드 = 레벨 업 소리 · 편의 토글 둘(칸 초기화 뺌) · `UI.Enchant.Chip.*` · 크래시 = 프로파일러 UI 버퍼 · 치트 창 OS 조회 백그라운드 · 마을 4·5단계 다시(랜드마크 · 368×384 · 벽돌/석판 길)
+- [2026-11-22 마을 그림 단계 · 빨간 점 · 거점 → 마을 · 별 키우기](2026-11-22-village-stages-red-dots-bigger-stars.md) — `#client` `#art` `#ui` `#data` 건물 빈 터+5단계(1~3 건물마다 따로) · 바탕 5단계(지형 고정) · 빨간 점 통일 · 이름판 키움 · 큐브 자동 편의 줄 + 조합 툴팁
+- [2026-11-22 큐브 자동 칸마다 고르기 · 캐릭터 칸 빈 ★ · 버튼 글씨 다시 맞춤](2026-11-22-enchant-slot-rows-empty-stars-button-fonts.md) — `#client` `#ui` `#data` 칸 줄 3개(전체 = 아무거나) · ★0도 빈 ★ · 버튼 30개 높이 표대로
 - [2026-11-21 장비 아이템 레벨 데이터·서버 · 장비 골드 뽑기 닫기](2026-11-21-equip-item-level.md) — `#server` `#data` T-200 `ItemLevel` · 729종 · TID 레벨×10000 · `EquipLevelTooLow` 604 · 풀 3·4·5 닫음 · 상자 확률표는 다음(T-206 15종 유지)
+- [2026-11-21 캐릭터 칸 ★ 오른쪽 세로 줄 · 자동 인챈트 조합 시안 · 버튼 규격 점검](2026-11-21-slot-star-column-enchant-combo-plans.md) — `#client` `#ui` ★ 줄 옮김 · 시안 A/B/C · 버튼 점검 보고
 - [2026-11-20 게임 DB WAL · 로그 수준 설정](2026-11-20-sqlite-wal-loglevel.md) — `#server` `#infra` T-192 `DBManager` WAL·종료 체크포인트 · `Game:LogLevel`
 - [2026-11-20 레이드 목업 — 메인 UI → 보스 선택 → 프리셋 편성 → 전투 화면](2026-11-20-raid-mockup.md) — `#design` `#ui` T-114 `레이드목업.html` · 메인 UI는 플레이 화면 캡처(base64) · 가짜 서버는 `RaidBattleSimulator`와 같은 식 · 2.5D는 연출 · 스킬·프리셋 여러 개는 가정
 - [2026-11-18 거점 지도 재배치 · 건물 창 크기 · 산업 대상 25종](2026-11-18-outpost-layout-targets.md) — `#art` `#ui` `#client` 작업장 가운데·네 귀퉁이 · 창 1300×700 · 대상 25종 코드 그림 2차(때리는 것 = 자원 · 사냥=짐승) · 레벨 이름 15개 변경 · 맞으면 움찔 · 플레이 중 굽기 금지 · 4차 Unity AI 25종(`unity-ai-targets` · 48 크레딧) · 농사 Lv3~5 이름 · Lv 버튼 자동 축소 · 5차 유물 감정 소리 · 인벤토리 분류 표시·상자 LV · 사냥 짐승 다시(7 크레딧) · 발굴 흙 지움 · 크기 조정 · 6차 껍질 금 소리 · 분류 이름 글자 · 사냥 1.3배·맞는 그림 · 땅에 묻기 · 7차 분류 '아티팩트'·'공통' · 맞는 자세 codixel 뼈

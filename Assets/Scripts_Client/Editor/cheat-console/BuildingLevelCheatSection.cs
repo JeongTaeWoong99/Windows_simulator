@@ -22,7 +22,7 @@ namespace DesktopWindowControl.EditorTools
 		public override string         Title    => "건물 레벨";
 		public override Color          Accent   => BuildingAccent;
 		public override int            Order    => 2;
-		public override string         Keywords => "building 거점 outpost";
+		public override string         Keywords => "building 마을 거점 village outpost";
 		public override string         Hint     => "계정 레벨 상한·비용 없이 정한다 — 서버가 0~최대로 자른다\n건물 레벨이 곧 그 건물의 특성 포인트다";
 
 		public override void Draw()

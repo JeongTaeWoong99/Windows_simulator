@@ -82,6 +82,9 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("레벨 배지 안의 문구 — 'LV.19' · 만렙 'LV.MAX'")]
     private TMP_Text levelText = null!;
 
+    [SerializeField, Tooltip("(선택) 레벨 배지 안의 그림 — 분류가 산업일 때, 글자가 칸에 안 들어가면 글자 대신 산업 그림을 보인다")]
+    private Image? levelIcon;
+
     // ※ 오른쪽 아래 — 산업 그림 + 숫자 알약 하나(시안 2 · 2026-11-15 사용자). 다섯 산업 전부는 칸 툴팁이 말한다.
     //   글자('사냥 7')로 두던 보조 문구 자리를 그림으로 바꿨다 — 그림 위 맨 글자는 초상화 색에 묻혔다.
     [CenterHeader("최고 적성 알약 (캐릭터 탭)")]
@@ -121,13 +124,19 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private EquipPipsView equipPips = null!;
 
     // ※ 글자가 아니라 그림이다 — 옛 폰트에 '★' 글리프가 없어 그림으로 정했다('Inventory 규칙.md').
-    // ※ 얻은 ★만 켠다. ★0이면 줄째 꺼져 대부분의 칸이 깨끗하게 남는다(T-130 목업).
+    // ※ 오른쪽 세로 줄 — 왼쪽 경험치 게이지와 짝이다. 검은 바탕(Overlay 0.6) 위에 최고 ★ 수만큼 그리고, 얻은 ★만 금색 · 나머지는 빈 ★(회색).
+    //   위 가운데 가로 줄로 두던 것을 옮겼다 — 초상화 머리 위에 묻혀 보이지 않았다(2026-11-21 사용자).
+    //   자리는 최고 적성 알약(위 끝 27) 위 ~ '배'·'판' 표시(아래 끝 71) 아래를 꽉 채운다 — 12×42 · ★ 10×10 4개(2026-11-22 사용자 "크게"). 왼쪽 경험치 게이지가 LV 배지·자물쇠 사이를 채우는 것과 짝.
+    // ※ 캐릭터 칸이면 ★0이어도 빈 ★ 4개를 그린다 — 응축으로 채울 자리가 보이게(2026-11-22 사용자). 캐릭터가 아닌 칸만 줄째 끈다.
     [CenterHeader("응축 ★ (캐릭터 탭)")]
-    [SerializeField, Tooltip("★ 줄 — 위 가운데(자물쇠와 '배' 사이). ★0이면 꺼진다")]
+    [SerializeField, Tooltip("★ 줄 — 오른쪽 세로 · 검은 바탕. 캐릭터 칸에서만 켜진다")]
     private GameObject starRow = null!;
 
-    [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 왼쪽부터 ★ 수만큼 켜진다")]
+    [SerializeField, NonReorderable, Tooltip("★ 그림 — 최고 ★(4) 이상. 아래부터 ★ 수만큼 금색, 나머지는 빈 ★")]
     private Image[] starImages = new Image[0];
+
+    // 빈 ★ 색 — 검은 바탕 위에서 "자리는 있는데 아직 못 얻음"으로 읽히는 어두운 회색.
+    private static readonly Color StarEmptyColor = new Color(0.36f, 0.36f, 0.36f, 1f);
 
     // ※ 응축 창이 열린 동안만 켜진다 — 대상은 파랑 테두리, 고른 재료는 노랑 테두리 + 체크.
     //   못 넣는 칸(다른 캐릭터 · 배치·착용 중)은 표시를 따로 두지 않고 흑백으로 그린다('SlotCondenseMark.Excluded').
@@ -161,7 +170,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("지금 쓰이고 있음을 알리는 표시 — 캐릭터는 작업 중, 장비는 장착 중. 평소에는 꺼져 있다")]
     private GameObject assignMark = null!;
 
-    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시, 위 가운데는 ★ 줄이 쓴다(시안 2 · 2026-11-15). 잠금은 셋과 함께 켜질 수 있다(잠긴 채 장착 중).
+    // ※ 왼쪽 위 모서리 — 오른쪽 위는 '판'·'배' 표시가 쓴다(시안 2 · 2026-11-15 · ★ 줄은 2026-11-21 오른쪽 세로로 옮겼다). 잠금은 셋과 함께 켜질 수 있다(잠긴 채 장착 중).
     [SerializeField, Tooltip("잠금 표시 — 왼쪽 위 자물쇠(T-137). 평소에는 꺼져 있다")]
     private GameObject lockMark = null!;
 
@@ -412,10 +421,11 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
 
         // 글자로 — '농사 5'(2026-11-20 사용자). 16px 산업 그림 + 숫자는 초상화 위에서 너무 작아 읽히지 않았다.
-        // 그림 자리는 끄고 알약이 글자 폭으로 줄어든다(알약의 HorizontalLayoutGroup + ContentSizeFitter).
-        bestAptitudeIcon.enabled                 = false;
-        bestAptitudeIcon.gameObject.SetActive(false);
-        bestAptitudeText.text = $"{IndustryLabel.Get(industry!.Value)} {AptitudeLabel.GetText(value)}";
+        // → 2026-11-21 산업 그림 + 숫자로 바꿨다가, 같은 날 다시 글자로(사용자 — 칸 아래 줄이 그림·글자로 섞여 통일성이 없다).
+        //   산업 이름은 짧은 칸 표기('UI.SlotTag.*' — 농사 · Farm)를 쓴다. 왼쪽 분류 배지와 같은 표기다.
+        _aptitudeLabel  = $"{Lang.Get("UI.SlotTag." + industry!.Value)} {AptitudeLabel.GetText(value)}";
+        _aptitudeNumber = AptitudeLabel.GetText(value);
+        _aptitudeIcon   = null;
 
         FitBottomRow();
     }
@@ -435,7 +445,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private const float LabelFontSize = 12f; // 갈무리 1점 = 1px
     private const float LabelFontMin  = 8f;  // 이보다 작으면 읽히지 않는다
     private const int   BadgePadX     = 3;   // 배지 좌우 여백 — 정수라야 글자가 픽셀 경계에 남는다
-    private const int   CornerInset   = 7;   // 칸 모서리에서 배지까지 — 등급 테두리 안쪽 홈보다 1px 안(2026-11-21 사용자 "테두리와 겹친다")
+    private const int   CornerInset   = 9;   // 칸 모서리에서 배지까지 — 등급 테두리(8)보다 1px 안(2026-11-21 사용자 "테두리와 겹친다") · 프리팹 배지 자리와 같다
     private const int   BadgeGap      = 2;   // 왼쪽 배지와 오른쪽 글자 사이
 
     private void OnRectTransformDimensionsChange()
@@ -460,21 +470,31 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         _fitScale = scale;
 
-        TMP_Text? left  = levelBadge.activeSelf ? levelText : null;
-        TMP_Text? right = bestAptitudeChip.activeSelf ? bestAptitudeText
-                        : subText.gameObject.activeSelf && subText.text.Length > 0 ? subText
-                        : null;
+        bool hasLeft  = levelBadge.activeSelf;
+        bool hasApt   = bestAptitudeChip.activeSelf;
+        bool hasSub   = !hasApt && subText.gameObject.activeSelf && subText.text.Length > 0;
+        bool hasGem   = enchantGem.gameObject.activeSelf; // 장비 칸 — 오른쪽 아래를 인챈트 보석이 쓴다(분류 이름이 보석을 덮었다 · 2026-11-21)
+        bool hasRight = hasApt || hasSub || hasGem;
 
         // ■ 화면 픽셀로 잰다 — 캔버스 배율이 0.9면 글꼴 12가 10.8px로 그려져 획이 1px·2px로 섞인다(2026-11-21 사용자 "굵기가 다르다").
         //   그래서 글꼴·여백·배지 크기를 '화면 px ÷ 배율'로 넣어, 어느 창 크기에서도 화면에는 12px · 여백 3px · 높이 18px로 그려지게 한다.
-        float room   = (width - CornerInset * 2 - (left != null && right != null ? BadgeGap : 0)) * scale; // 화면 px
-        float sizePx = LabelFontSize;
+        // ■ 산업은 **언어와 상관없이 늘 그림**으로 — 적성: 그림 + 숫자 · 분류: 그림만(2026-11-21 사용자 "한글·영어를 다르게 보이면 안 된다").
+        //   예전에는 영어만 안 들어갈 때 그림으로 바꿔 한글 '사냥 5' · 영어 '🏹5'로 갈렸다. 산업이 아닌 분류(유물·소모품 …)와 LV는 글자다.
+        //   그래도 안 들어가면 둘을 함께 줄인다.
+        //   배지 폭은 글자 폭 + 좌우 3px에 딱 맞춘다 — 남는 폭이 한쪽에 몰려 '글자 옆 빈칸'으로 보였다(2026-11-21 사용자).
+        float room = (width - CornerInset * 2 - (hasLeft && hasRight ? BadgeGap : 0)) * scale; // 화면 px
+
+        bool  leftIcon = _levelIcon != null && levelIcon != null;
+        bool  aptIcon  = _aptitudeIcon != null;
+        float sizePx   = LabelFontSize;
         float leftPx, rightPx;
 
         while (true)
         {
-            leftPx  = left  != null ? BadgeWidthPx(left,  sizePx, scale) : 0f;
-            rightPx = right != null ? BadgeWidthPx(right, sizePx, scale) : 0f;
+            leftPx  = hasLeft ? MeasureLeft(sizePx, scale, leftIcon) : 0f;
+            rightPx = hasApt  ? MeasureAptitude(sizePx, scale, aptIcon)
+                    : hasSub  ? MeasureText(subText, subText.text, sizePx, scale, BadgePadX)
+                    : hasGem  ? GemPx * scale : 0f;
 
             if (leftPx + rightPx <= room || sizePx <= LabelFontMin)
             {
@@ -484,22 +504,21 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             sizePx -= 1f;
         }
 
-        // 배지 상자 — 글자 폭 + 좌우 여백. 셋 다 같은 어두운 상자라 바탕 밝기도 같다
-        if (left != null)
+        if (hasLeft)
         {
             SetBadgeSize(levelBadge, leftPx, scale);
         }
 
-        if (right == bestAptitudeText)
+        if (hasApt)
         {
             SetBadgeSize(bestAptitudeChip, rightPx, scale);
         }
 
         if (subBadge != null)
         {
-            subBadge.SetActive(right == subText);
+            subBadge.SetActive(hasSub);
 
-            if (right == subText)
+            if (hasSub)
             {
                 SetBadgeSize(subBadge, rightPx, scale);
             }
@@ -507,6 +526,15 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     }
 
     private float _fitScale; // 마지막으로 맞춘 캔버스 배율 — 창 크기가 바뀌면 다시 맞춘다
+
+    private string  _levelLabel     = string.Empty;
+    private Sprite? _levelIcon;                     // 분류가 산업일 때의 산업 그림 — 글자가 안 들어갈 때 쓴다
+    private string  _aptitudeLabel  = string.Empty; // '농사 5'
+    private string  _aptitudeNumber = string.Empty; // '5' — 그림과 함께 쓸 때
+    private Sprite? _aptitudeIcon;
+
+    private const float IconPx = 16f; // 배지 안 산업 그림(화면 px) — 위아래 1px 여백(배지 18)
+    private const float GemPx  = 20f; // 인챈트 보석이 차지하는 폭(칸 좌표) — 14px 네모를 45° 돌린 마름모
 
     private void LateUpdate()
     {
@@ -516,16 +544,70 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         }
     }
 
-    // 글자를 화면 sizePx 크기로 놓고 배지 폭을 화면 px로 돌려준다
-    private static float BadgeWidthPx(TMP_Text text, float sizePx, float scale)
+    // 왼쪽 배지 — 글자, 또는 산업 그림만
+    private float MeasureLeft(float sizePx, float scale, bool icon)
     {
-        float pad = BadgePadX / scale;
+        ShowIcon(levelIcon, icon ? _levelIcon : null, scale);
 
+        if (icon)
+        {
+            levelText.text = string.Empty;
+
+            return 1f + IconPx + 1f;
+        }
+
+        return MeasureText(levelText, _levelLabel, sizePx, scale, BadgePadX);
+    }
+
+    // 오른쪽 적성 배지 — '농사 5', 또는 산업 그림 + '5'
+    private float MeasureAptitude(float sizePx, float scale, bool icon)
+    {
+        ShowIcon(bestAptitudeIcon, icon ? _aptitudeIcon : null, scale);
+
+        return icon
+            ? MeasureText(bestAptitudeText, _aptitudeNumber, sizePx, scale, 1f + IconPx + 1f)
+            : MeasureText(bestAptitudeText, _aptitudeLabel,  sizePx, scale, BadgePadX);
+    }
+
+    // 글자를 화면 sizePx 크기로 놓고 배지 폭을 화면 px로 돌려준다.
+    // ※ TMP의 선호 폭에는 margin이 이미 들어 있다 — 여기에 여백을 또 더하면 배지가 한쪽으로 3px씩 남는다(2026-11-21).
+    private static float MeasureText(TMP_Text text, string value, float sizePx, float scale, float leftPadPx)
+    {
+        text.text             = value;
         text.enableAutoSizing = false;
         text.fontSize         = sizePx / scale;
-        text.margin           = new Vector4(pad, 0f, pad, 0f);
+        text.margin           = new Vector4(leftPadPx / scale, 0f, BadgePadX / scale, 0f);
 
-        return Mathf.Ceil(text.GetPreferredValues(text.text).x * scale) + BadgePadX * 2;
+        return Mathf.Ceil(text.GetPreferredValues(value).x * scale - 0.01f);
+    }
+
+    // 배지 안 산업 그림 — 왼쪽 1px · 세로 가운데 · 16px. sprite가 null이면 끈다
+    private static void ShowIcon(Image? image, Sprite? sprite, float scale)
+    {
+        if (image == null)
+        {
+            return;
+        }
+
+        bool on = sprite != null;
+
+        image.gameObject.SetActive(on);
+        image.enabled = on;
+
+        if (!on)
+        {
+            return;
+        }
+
+        image.sprite = sprite!;
+
+        var rect = image.rectTransform;
+
+        rect.anchorMin        = new Vector2(0f, 0.5f);
+        rect.anchorMax        = new Vector2(0f, 0.5f);
+        rect.pivot            = new Vector2(0f, 0.5f);
+        rect.anchoredPosition = new Vector2(1f / scale, 0f);
+        rect.sizeDelta        = new Vector2(IconPx / scale, IconPx / scale);
     }
 
     private static void SetBadgeSize(GameObject badge, float widthPx, float scale)
@@ -648,7 +730,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     // 레벨 배지를 그린다. 'null'이면 배지를 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 온다).
     // 문구('LV.19' · 'LV.MAX')는 격자가 짓는다 — 이 칸은 만렙이 몇인지 모른다.
-    public void SetLevelBadge(string? label)
+    public void SetLevelBadge(string? label, Sprite? icon = null)
     {
         bool on = label != null;
 
@@ -660,7 +742,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             return;
         }
 
-        levelText.text = label!;
+        _levelLabel = label!;
+        _levelIcon  = icon;
+
+        FitBottomRow();
     }
 
     // 크기 등급 배지를 그린다('소' · '중' · '대'). 'null'이면 끈다 (Bind에서 호출 — 캐릭터 칸만 'SlotData.SizeBadge'가 있다).
@@ -714,14 +799,24 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         expGauge.SetValueWithoutNotify(progress!.Value);
     }
 
-    // 응축 ★을 그린다 — 왼쪽부터 ★ 수만큼 켜고, 0이면 줄을 끈다 (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 0이 아니다).
-    public void SetStars(int star)
+    // 응축 ★을 그린다 — 최고 ★ 수만큼 자리를 두고 아래부터 ★ 수만큼 금색, 나머지는 빈 ★. null이면 줄을 끈다
+    // (인벤토리 격자가 매번 그릴 때 호출 — 캐릭터 탭에서만 값이 있다. ★0이면 빈 ★만).
+    // ※ 색은 여기서 칠한다 — 'UIThemeColor'는 실행 중에 칠하지 않는다(상태색은 그리는 쪽이 칠한다).
+    public void SetStars(int? star)
     {
-        starRow.SetActive(star > 0);
+        starRow.SetActive(star != null);
+
+        if (star == null)
+        {
+            return;
+        }
+
+        var filled = UIThemePalette.Of(UIThemeRole.Highlight);
 
         for (int i = 0; i < starImages.Length; i++)
         {
-            starImages[i].gameObject.SetActive(i < star);
+            starImages[i].gameObject.SetActive(i < MaxStarImages);
+            starImages[i].color = i < star ? filled : StarEmptyColor;
         }
     }
 
@@ -923,7 +1018,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         sellMark.SetActive(false);
         assignMark.SetActive(false);
         lockMark.SetActive(false);
-        SetStars(0);
+        SetStars(null);
         SetBestAptitude(null, 0);
         condenseTargetMark.SetActive(false);
         condensePickMark.SetActive(false);

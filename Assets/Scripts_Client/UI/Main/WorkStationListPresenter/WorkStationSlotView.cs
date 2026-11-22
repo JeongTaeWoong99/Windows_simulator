@@ -254,7 +254,7 @@ public class WorkStationSlotView : MonoBehaviour
     //   cycleSeconds  : 판정 1회의 초 — 무대가 진행도를 주기 안의 순간으로 바꾼다
     public void Tick(float progress, float remainSeconds, float cycleSeconds)
     {
-        progressSlider.value = progress;
+        progressSlider.SetSnapped(progress);
         SetRemainText(remainSeconds);
 
         if (stage != null)

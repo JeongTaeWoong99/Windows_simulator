@@ -64,7 +64,7 @@ namespace DesktopWindowControl.EditorTools
 			CheatSender.LogChanged   += OnLogChanged;
 			EditorApplication.update += OnUpdate;
 			_logScrollToBottom        = true;
-			_completedSteps           = CheatGuard.GetCompletedSteps();
+			_completedSteps           = CheatGuard.GetCompletedStepsPolled();
 		}
 
 		// 구독 해제 (Unity 메시지)
@@ -130,7 +130,7 @@ namespace DesktopWindowControl.EditorTools
 
 			_nextStatusPoll = EditorApplication.timeSinceStartup + StatusPollInterval;
 
-			var completedSteps = CheatGuard.GetCompletedSteps();
+			var completedSteps = CheatGuard.GetCompletedStepsPolled();
 			var isLoggedIn     = completedSteps.HasFlag(CheatGuard.Step.Login);
 
 			if (completedSteps == _completedSteps && !isLoggedIn)

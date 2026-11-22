@@ -75,6 +75,19 @@ public class UIThemePalette : ScriptableObject
     // 역할의 색 (Presenter가 상태 색을 칠할 때 호출)
     public static Color Of(UIThemeRole role) => Current.Get(role);
 
+    // 마우스를 올린 버튼 색 — 버튼 색을 칠하는 모든 곳이 이것을 쓴다('UIThemeColor' · 상태색을 칠하는 Presenter).
+    // ※ 흰색 쪽으로 15%만 섞던 때는 밝은 양피지 버튼이 거의 그대로라 어디에 올렸는지 안 보였다(2026-11-21 사용자: 경매장 분류 · 길드 상점).
+    //   밝은 버튼은 절반을 섞어 하얗게 뜨고, 어두운 버튼은 4분의 1을 섞는다 — 어두운 쪽은 조금만 섞어도 차이가 크다.
+    public static Color HoverOf(Color color)
+    {
+        float luma = color.r * 0.299f + color.g * 0.587f + color.b * 0.114f;
+
+        return Color.Lerp(color, Color.white, luma > 0.6f ? 0.5f : 0.25f);
+    }
+
+    // 누르는 동안의 버튼 색.
+    public static Color PressedOf(Color color) => Color.Lerp(color, Color.black, 0.2f);
+
     // 그 글씨의 바탕에 맞춘 역할 색 — 글씨 태그가 TextDark(밝은 바탕 위)면 글씨·금 역할을 밝은 바탕용으로 바꾼다 (양피지 · 2026-11-14).
     //   Presenter가 상태로 글씨색을 칠할 때('warnText.color = …') 바탕을 몰라도 묻히지 않게 한다.
     public static Color OfFor(Component text, UIThemeRole role)

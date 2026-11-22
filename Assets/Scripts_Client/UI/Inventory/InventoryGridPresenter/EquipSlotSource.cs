@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using GameData;
 using MikaProtocol;
+using UnityEngine;
 
 // 장비 탭 — 보유 장비를 칸으로 내놓는다. 인벤토리 격자에서는 **아티팩트도 함께** 내놓는다(T-151).
 //
@@ -139,20 +140,19 @@ public class EquipSlotSource : InventorySlotSource
     // 칸 왼쪽 아래 분류 이름 (격자가 호출 · 2026-11-18 사용자) — 아티팩트는 '아티팩트', 장비는 대상 산업 · 산업이 없으면 '공통'.
     // ※ 아티팩트에 올려 주는 산업을 적거나 산업 없음을 '미지정'으로 적지 않는다(사용자 반려 — 분류가 아니라 효과처럼 읽힌다)
     public override string? GetCategoryLabel(long key)
-    {
-        if (IsArtifactKey(key))
-        {
-            return Lang.Get("UI.Auction.KindArtifact");
-        }
+        => IsArtifactKey(key) ? ResourceSlotSource.GroupTag("Artifact") : CategoryTagOf(_data.GetEquipTid(key));
 
-        if (!GameDataLoader.TryGetEquip(_data.GetEquipTid(key), out EquipTableRow row))
+    // 장비 종류의 짧은 분류 이름 — 대상 산업, 공용이면 '공통' (이 칸 · 가챠 결과 칸이 함께 쓴다). 표에 없는 번호면 null.
+    public static string? CategoryTagOf(int equipTid)
+    {
+        if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
         {
             return null;
         }
 
         var industry = (EIndustryType)(byte)row.Industry;
 
-        return industry == EIndustryType.None ? Lang.Get("UI.Trait.Common") : IndustryLabel.Get(industry);
+        return ResourceSlotSource.GroupTag(industry == EIndustryType.None ? "Common" : industry.ToString());
     }
 
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).

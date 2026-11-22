@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using DG.Tweening;
 using GameData;
@@ -180,6 +181,15 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 지금 열린 탭. 우클릭을 판매로 읽어도 되는 탭인지 여기서 가른다.
     private InventoryTab _currentTab = InventoryTab.Resource;
+
+    // 판매 창이 칸을 모을 때 같은 것을 거르는 버퍼 — 모을 때마다 새로 만들지 않는다
+    private readonly HashSet<long> _sellSeen = new HashSet<long>();
+
+    // 칸을 다시 그렸다 — 판매 창이 자기 칸 목록을 따라 그린다('SellCartPresenter').
+    public event Action? Redrawn;
+
+    // 이 격자에서 우클릭으로 판매 목록에 담았다 — 판매 창이 이 격자의 칸을 늘어놓는다('SellCartPresenter').
+    public event Action<InventoryGridPresenter>? SellToggled;
 
     private PlayerDataModel   _data    = null!;
     private SellCartModel     _cart    = null!;
@@ -721,6 +731,8 @@ public class InventoryGridPresenter : MonoBehaviour
 
         // 찾기 결과 0건 — 안내 하나만 켜고 끈다. 프레임은 건드리지 않는다(레이아웃 리빌드 규칙).
         emptyNotice.SetActive(_current != null && _current.IsFiltering && _current.MatchCount == 0);
+
+        Redrawn?.Invoke();
     }
 
     // 스크롤·창 크기가 바뀌었다 — 새로 보이게 된 칸만 그리고, 벗어난 칸은 끈다 (ScrollRect.onValueChanged 구독).
@@ -829,7 +841,16 @@ public class InventoryGridPresenter : MonoBehaviour
 
         view.gameObject.SetActive(true);
         view.Bind(data);
+        DrawMarks(view, data, i, isGhost: false);
 
+        SyncShine(i, view, data);
+    }
+
+    // 칸 위의 표시들(담김 · 배치 · 잠금 · 배지 · 능력치 칸 · ★ …)을 그린다 (DrawCell · ShowGhost에서 호출).
+    // ※ 끌리는 그림도 이 함수로 그린다 — 따로 그리면 칸과 다르게 보인다(2026-11-21 사용자 "드래그할 때 다르게 보인다").
+    //   끌리는 그림은 흐림·흑백만 뺀다 — 집어 든 칸 자체를 보여 주는 것이라서다.
+    private void DrawMarks(SlotView view, in SlotData data, int frameIndex, bool isGhost)
+    {
         // 담김 표시의 주인은 카트다 — 탭마다 카트의 다른 목록을 본다.
         view.SetSellMark(IsInCart(data.Key));
 
@@ -839,17 +860,17 @@ public class InventoryGridPresenter : MonoBehaviour
         //
         // ★ 판정을 격자가 하지 않는다 — 뜻이 탭마다 달라서, 여기서 분기하면
         //   딤·마크 두 군데에 같은 분기가 흩어진다('InventorySlotSource.IsAway').
-        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(위 'cell' 판정)
+        bool isAway = _current!.IsAway(data.Key); // 칸이 있으면 공급자가 있다(DrawCell · BeginSlotDrag가 칸이 있을 때만 부른다)
 
         view.SetAssignMark(isAway);
         view.SetLockMark(_current.IsLocked(data.Key));
-        view.SetDimmed(isAway || i == _dragFrom); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
+        view.SetDimmed(!isGhost && (isAway || frameIndex == _dragFrom)); // 끌려 나간 칸은 놓을 때까지 흐리게 둔다('BeginSlotDrag')
 
         // 찾기 조건에 안 맞으면 흑백 — 빼지 않고 뒤로 모인 칸이다('InventorySlotSource' 주석).
         // 큐브 창이 열려 있으면 띄운 장비 말고는 같은 흑백으로 물린다 — 찾기 제외와 같은 표시를 쓴다.
         bool outOfEnchant = _currentTab == InventoryTab.Equipment && equipEnchant.IsOpen && equipEnchant.EquipId != data.Key;
 
-        view.SetFilteredOut(outOfEnchant || _current.IsFilteredOut(data.Key));
+        view.SetFilteredOut(!isGhost && (outOfEnchant || _current.IsFilteredOut(data.Key)));
 
         // 팰월드식(2026-11-14 사용자) — 칸은 그림 + 숫자 하나. 적성 5칸 스트립은 끄고 **가장 높은 적성 하나**만 보조 문구에 적는다.
         // 다섯 산업 전부 · 기본 속도는 칸 툴팁이 말한다('CharacterSlotSource.BuildTooltip').
@@ -875,10 +896,8 @@ public class InventoryGridPresenter : MonoBehaviour
         view.SetEquipPips(null);
 
         // 응축 ★ · 응축 창의 표시 — 캐릭터 탭에서만이다(T-130). 창이 닫혀 있으면 'GetMark'가 None이다.
-        view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : 0);
+        view.SetStars(IsCharacterTab ? _data.GetCharacterStar(data.Key) : null);
         view.SetCondenseMark(IsCharacterTab ? characterCondense.GetMark(data.Key) : SlotCondenseMark.None);
-
-        SyncShine(i, view, data);
     }
 
     // 방금 들어온 개체면 칸을 한 번 반짝이고, 칸이 다른 개체로 다시 묶였으면 이전 반짝임을 끊는다 (DrawCell에서 호출).
@@ -1063,16 +1082,71 @@ public class InventoryGridPresenter : MonoBehaviour
         artifactWindow.Close();
         RevealInventoryColumn();
 
+        SellToggled?.Invoke(this); // 판매 창이 이 격자의 칸을 늘어놓는다 — 창고 격자에서 담았으면 창고 칸
+        ToggleSell(view.Key, view.transform);
+    }
+
+    // 그 칸을 판매 목록에 담거나 뺀다 — 격자 우클릭 · 판매 창의 칸 클릭이 같이 쓴다.
+    public void ToggleSell(long key, Transform slot)
+    {
         switch (_currentTab)
         {
-            case InventoryTab.Resource:  ToggleItem((int)view.Key, view.transform); break;
-            case InventoryTab.Character: ToggleCharacter(view.Key, view.transform); break;
-            case InventoryTab.Equipment when EquipSlotSource.IsArtifactKey(view.Key):
-                ToggleArtifact(EquipSlotSource.ArtifactTidOf(view.Key), view.transform);
+            case InventoryTab.Resource:  ToggleItem((int)key, slot); break;
+            case InventoryTab.Character: ToggleCharacter(key, slot); break;
+            case InventoryTab.Equipment when EquipSlotSource.IsArtifactKey(key):
+                ToggleArtifact(EquipSlotSource.ArtifactTidOf(key), slot);
                 break;
-            case InventoryTab.Equipment: ToggleEquip(view.Key, view.transform);     break;
+            case InventoryTab.Equipment: ToggleEquip(key, slot);     break;
         }
     }
+
+    // 판매 창 — 지금 탭의 칸을 빈 칸 · 같은 것(여러 칸에 나뉜 자원) 겹침 없이 칸 순서대로 모은다.
+    // 'slotNumbers'는 툴팁이 어느 묶음인지 읽는 서버 칸 번호다('BuildSellTooltip').
+    public void CollectSellSlots(List<SlotData> into, List<int> slotNumbers)
+    {
+        into.Clear();
+        slotNumbers.Clear();
+        _sellSeen.Clear();
+
+        if (_current == null)
+        {
+            return;
+        }
+
+        for (int i = 0; i < _current.Count; i++)
+        {
+            SlotData? cell = _current.Get(i);
+
+            if (cell == null || !_sellSeen.Add(cell.Value.Key))
+            {
+                continue;
+            }
+
+            into.Add(cell.Value);
+            slotNumbers.Add(_current.SlotNumberAt(i));
+        }
+    }
+
+    // 판매 창의 칸 표시 — 격자 칸과 같게 그리고(배지 · 잠금 · 담김), 팔 수 없는 칸만 흐리게 한다.
+    // ※ 찾기 흑백은 끈다 — 판매 창은 찾기와 상관없이 전부 늘어놓는다.
+    public void DrawSellSlot(SlotView view, in SlotData data)
+    {
+        DrawMarks(view, data, -2, isGhost: false);
+        view.SetFilteredOut(false);
+        view.SetDimmed(!IsInCart(data.Key) && SellBlockReason(data.Key) != null);
+    }
+
+    // 판매 창 칸의 툴팁 — 격자 칸과 같다.
+    public TooltipContent? BuildSellTooltip(long key, int slotNumber) => _current?.BuildTooltip(key, slotNumber);
+
+    // 팔 수 없는 이유 — 팔 수 있으면 null (DrawSellSlot에서 호출). 담을 때 알리는 사유와 같다.
+    private string? SellBlockReason(long key) => _currentTab switch
+    {
+        InventoryTab.Resource  => EntityBlockText.ForItem(_data, (int)key),
+        InventoryTab.Character => EntityBlockText.ForCharacter(_data, key, _data.Characters.Count - _cart.CharacterIds.Count - 1),
+        InventoryTab.Equipment => EquipSlotSource.IsArtifactKey(key) ? EntityBlockText.ForArtifact(_data, EquipSlotSource.ArtifactTidOf(key)) : EntityBlockText.ForEquip(_data, key),
+        _                      => null,
+    };
 
     // 창고 격자에서 판매 담기·큐브·응축을 했으면 인벤토리 열을 연다 (OnSlotRightClicked · OnSlotLeftClicked에서 호출).
     //
@@ -1752,8 +1826,10 @@ public class InventoryGridPresenter : MonoBehaviour
         rect.sizeDelta = frame.rect.size * scale;
 
         _ghost.Clear();
+        _ghost.SetNameVisible(false); // 격자 칸과 같게 — 'GetOrCreateView'
         _ghost.Bind(data);
         _ghost.gameObject.SetActive(true);
+        DrawMarks(_ghost, data, frameIndex, isGhost: true);
 
         // ※ 켠 뒤에 건다 — 꺼진 채로 넣은 'overrideSorting'은 켤 때 풀리는 경우가 있다.
         var canvas = _ghost.GetComponent<Canvas>();

@@ -111,7 +111,7 @@ public class WidgetMiniSlotView : MonoBehaviour
     // 진행도를 갱신한다 (WidgetPresenter의 Update가 매 프레임 호출).
     public void Tick(float progress)
     {
-        progressSlider.value = progress;
+        progressSlider.SetSnapped(progress);
     }
 
     // 이 칸에서 수확이 났다 (WidgetPresenter의 GatherResultReceived 구독에서 호출).

@@ -101,8 +101,8 @@ public class EnchantCubeView : MonoBehaviour
         ColorBlock colors = button.colors;
 
         colors.normalColor      = target;
-        colors.highlightedColor = Color.Lerp(target, Color.white, 0.1f);
-        colors.pressedColor     = Color.Lerp(target, Color.black, 0.2f);
+        colors.highlightedColor = UIThemePalette.HoverOf(target);
+        colors.pressedColor     = UIThemePalette.PressedOf(target);
         colors.selectedColor    = target;
         colors.disabledColor    = Color.Lerp(target, Color.black, LockedDarken); // 공개 중 잠김
 
