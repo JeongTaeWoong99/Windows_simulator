@@ -26,6 +26,7 @@
 - [2026-11-22 건물 업그레이드 소리 · 큐브 편의 줄 · 영어 칩 짧게 · 크래시 원인 · 치트 창 프레임 튐](2026-11-22-building-upgrade-sound-enchant-options-cheat-poll-perf.md) — `#client` `#ui` `#art` `#editor` `#perf` `#data` 업그레이드 = 레벨 업 소리 · 편의 토글 둘(칸 초기화 뺌) · `UI.Enchant.Chip.*` · 크래시 = 프로파일러 UI 버퍼 · 치트 창 OS 조회 백그라운드 · 마을 4·5단계 다시(랜드마크 · 368×384 · 벽돌/석판 길)
 - [2026-11-22 마을 그림 단계 · 빨간 점 · 거점 → 마을 · 별 키우기](2026-11-22-village-stages-red-dots-bigger-stars.md) — `#client` `#art` `#ui` `#data` 건물 빈 터+5단계(1~3 건물마다 따로) · 바탕 5단계(지형 고정) · 빨간 점 통일 · 이름판 키움 · 큐브 자동 편의 줄 + 조합 툴팁
 - [2026-11-22 큐브 자동 칸마다 고르기 · 캐릭터 칸 빈 ★ · 버튼 글씨 다시 맞춤](2026-11-22-enchant-slot-rows-empty-stars-button-fonts.md) — `#client` `#ui` `#data` 칸 줄 3개(전체 = 아무거나) · ★0도 빈 ★ · 버튼 30개 높이 표대로
+- [2026-11-22 테마 상자 열기 보상 · 골드 상점 구매 폐기](2026-11-22-theme-box-open-rewards-shop-close.md) — `#data` `#server` `#design` 계층 확률을 행 가중치로(풀 합 10억 · `theme-box-pools.py --check`) · 왕실 상자 풀 37 · 상점 구매 거절 · 보유 뽑기권 사용 가능 (T-209)
 - [2026-11-21 장비 아이템 레벨 데이터·서버 · 장비 골드 뽑기 닫기](2026-11-21-equip-item-level.md) — `#server` `#data` T-200 `ItemLevel` · 729종 · TID 레벨×10000 · `EquipLevelTooLow` 604 · 풀 3·4·5 닫음 · 상자 확률표는 다음(T-206 15종 유지)
 - [2026-11-21 캐릭터 칸 ★ 오른쪽 세로 줄 · 자동 인챈트 조합 시안 · 버튼 규격 점검](2026-11-21-slot-star-column-enchant-combo-plans.md) — `#client` `#ui` ★ 줄 옮김 · 시안 A/B/C · 버튼 점검 보고
 - [2026-11-20 게임 DB WAL · 로그 수준 설정](2026-11-20-sqlite-wal-loglevel.md) — `#server` `#infra` T-192 `DBManager` WAL·종료 체크포인트 · `Game:LogLevel`
