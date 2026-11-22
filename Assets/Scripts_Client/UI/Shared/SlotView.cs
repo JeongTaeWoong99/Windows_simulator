@@ -461,7 +461,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private void FitBottomRow()
     {
         float width = ((RectTransform)transform).rect.width;
-        float scale = transform.lossyScale.x; // 오버레이 캔버스면 캔버스 배율 — 창 크기에 따라 1이 아니다(ScaleWithScreenSize)
+        float scale = LabelScale(); // 오버레이 캔버스면 캔버스 배율 — 창 크기에 따라 1이 아니다(ScaleWithScreenSize)
 
         if (width <= 0f || scale <= 0f)
         {
@@ -527,6 +527,27 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     private float _fitScale; // 마지막으로 맞춘 캔버스 배율 — 창 크기가 바뀌면 다시 맞춘다
 
+    // 아래 줄 글자를 칸과 함께 키우나 — 끄면(기본) 칸을 키워도 글자는 화면 12px 그대로다.
+    // 켜면 캔버스 배율만 보고 칸 자신의 확대(localScale)는 무시한다 — 감정 무대처럼 칸을 2배로 키운 자리에서
+    // 글자도 2배(24px · 12의 배수라 획이 또렷하다)로 그려진다(2026-11-23 사용자 "오른쪽 아래 글자가 너무 작다").
+    // ※ 커지는 트윈 중에도 글자 크기를 다시 재지 않는다 — 칸과 같이 자란다.
+    public bool ScaleLabelsWithSlot { get; set; }
+
+    private float LabelScale()
+    {
+        if (ScaleLabelsWithSlot)
+        {
+            Canvas? canvas = GetComponentInParent<Canvas>();
+
+            if (canvas != null)
+            {
+                return canvas.rootCanvas.scaleFactor;
+            }
+        }
+
+        return transform.lossyScale.x;
+    }
+
     private string  _levelLabel     = string.Empty;
     private Sprite? _levelIcon;                     // 분류가 산업일 때의 산업 그림 — 글자가 안 들어갈 때 쓴다
     private string  _aptitudeLabel  = string.Empty; // '농사 5'
@@ -538,7 +559,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
     private void LateUpdate()
     {
-        if (!Mathf.Approximately(transform.lossyScale.x, _fitScale) && levelBadge != null)
+        if (!Mathf.Approximately(LabelScale(), _fitScale) && levelBadge != null)
         {
             FitBottomRow();
         }

@@ -322,6 +322,7 @@ public class WorkStationListPresenter : MonoBehaviour
         {
             _unlockWait.Succeed();
             PlayUnlockFx(slotIndex);
+            Services.Get<SoundManager>().PlaySfx(Sounds.SlotUnlock);
         }
         else
         {

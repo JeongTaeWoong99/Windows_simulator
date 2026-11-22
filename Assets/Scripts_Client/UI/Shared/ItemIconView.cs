@@ -53,18 +53,32 @@ public class ItemIconView : MonoBehaviour
         FitIconInside();
     }
 
-    // 그림 자리를 등급 테 안쪽으로 맞춘다 — 크기에 비례(한 변의 IconInset)라 64·72·92 어느 칸이든 테를 덮지 않는다 (Awake에서 한 번).
-    //   그림이 칸 끝까지 그려진 것(하트·뽑기권)이 테 위로 '삐져' 보였다 — 고정 4px 여백은 큰 칸에서 테 두께보다 얇았다(2026-11-15 사용자).
+    // 그림 자리를 등급 테 안쪽으로 맞춘다 — 여백 = 테가 실제로 그려지는 두께 (Awake에서 한 번).
+    //   그림이 칸 끝까지 그려진 것(하트·뽑기권)이 테 위로 '삐져' 보였다(2026-11-15 사용자).
+    //   ⚠️ 칸 크기의 비율로 잡으면 안 된다 — 테는 9-slice라 칸이 작아도 두께가 같다(지금 8). 비율 9%는 48 칸(경매장)에서 4라
+    //   그림이 테 안쪽 선을 덮었다(2026-11-22 사용자). 테 스프라이트가 없을 때만 비율로 잡는다.
     //   남는 쪽은 자른다(RectMask2D) — 넘치면 넘쳐 보이지 말고 잘려야 한다.
     private void FitIconInside()
     {
-        var rect = (RectTransform)iconImage.transform;
+        var   rect  = (RectTransform)iconImage.transform;
+        float inset = FrameThickness();
 
-        rect.anchorMin        = new Vector2(IconInset, IconInset);
-        rect.anchorMax        = new Vector2(1f - IconInset, 1f - IconInset);
-        rect.offsetMin        = Vector2.zero;
-        rect.offsetMax        = Vector2.zero;
-        rect.localScale       = Vector3.one;
+        rect.localScale = Vector3.one;
+
+        if (inset > 0f)
+        {
+            rect.anchorMin = Vector2.zero;
+            rect.anchorMax = Vector2.one;
+            rect.offsetMin = new Vector2(inset, inset);
+            rect.offsetMax = new Vector2(-inset, -inset);
+        }
+        else
+        {
+            rect.anchorMin = new Vector2(IconInset, IconInset);
+            rect.anchorMax = new Vector2(1f - IconInset, 1f - IconInset);
+            rect.offsetMin = Vector2.zero;
+            rect.offsetMax = Vector2.zero;
+        }
 
         if (!TryGetComponent(out RectMask2D _))
         {
@@ -72,7 +86,22 @@ public class ItemIconView : MonoBehaviour
         }
     }
 
-    // 그림 여백 — 한 변의 비율. 등급 테(바깥 테 + 안쪽 어두운 선)가 칸의 약 7%라 그보다 조금 넓게
+    // 테 두께 — 9-slice 테두리가 화면에 그려지는 크기(스프라이트 테두리 ÷ 픽셀 배율). 테 스프라이트가 없으면 0
+    private float FrameThickness()
+    {
+        Sprite? plate = rarityImage.sprite;
+
+        if (plate == null || rarityImage.type != Image.Type.Sliced)
+        {
+            return 0f;
+        }
+
+        float scale = rarityImage.pixelsPerUnit * rarityImage.pixelsPerUnitMultiplier;
+
+        return scale > 0f ? Mathf.Max(plate.border.x, plate.border.y) / scale : 0f;
+    }
+
+    // 테 스프라이트가 없을 때의 그림 여백 — 한 변의 비율
     private const float IconInset = 0.09f;
 
     // 완성값을 그린다 (줄 View가 자기 Bind에서 호출).

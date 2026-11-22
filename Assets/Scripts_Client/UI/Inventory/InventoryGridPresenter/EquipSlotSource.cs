@@ -142,7 +142,8 @@ public class EquipSlotSource : InventorySlotSource
     public override string? GetCategoryLabel(long key)
         => IsArtifactKey(key) ? ResourceSlotSource.GroupTag("Artifact") : CategoryTagOf(_data.GetEquipTid(key));
 
-    // 장비 종류의 짧은 분류 이름 — 대상 산업, 공용이면 '공통' (이 칸 · 가챠 결과 칸이 함께 쓴다). 표에 없는 번호면 null.
+    // 장비 종류의 짧은 분류 이름 + 아이템 레벨 — '채굴 Lv10' (이 칸 · 결과 칸이 함께 쓴다). 표에 없는 번호면 null.
+    //   대상 산업, 공용이면 '공통'. 레벨은 장착 조건이라 칸에서 바로 보인다(캐릭터 레벨 < 아이템 레벨이면 장착 거절 · T-200 · 2026-11-22 사용자).
     public static string? CategoryTagOf(int equipTid)
     {
         if (!GameDataLoader.TryGetEquip(equipTid, out EquipTableRow row))
@@ -150,9 +151,10 @@ public class EquipSlotSource : InventorySlotSource
             return null;
         }
 
-        var industry = (EIndustryType)(byte)row.Industry;
+        var    industry = (EIndustryType)(byte)row.Industry;
+        string tag      = ResourceSlotSource.GroupTag(industry == EIndustryType.None ? "Common" : industry.ToString());
 
-        return ResourceSlotSource.GroupTag(industry == EIndustryType.None ? "Common" : industry.ToString());
+        return $"{tag} Lv{row.ItemLevel}";
     }
 
     // 이 장비를 지금 캐릭터가 끼고 있나 (딤·'배' 마크·[정렬] 맨 뒤 — 기반 클래스가 호출).

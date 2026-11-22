@@ -1,6 +1,6 @@
 using UnityEngine;
 
-// 길드 열 — 뽑기 · 창고 2탭이 들어간다('GuildTabPresenter'). 탭마다 화면이 따로다('GachaPresenter' · 'WarehousePresenter').
+// 길드 열 — 지금은 창고 탭 하나다('GuildTabPresenter' · 화면 'WarehousePresenter'). 옆의 빈 버튼 둘은 뒤에 들어올 탭 자리다.
 //
 // ※ 옛 이름은 거래 열(Market)이다. 경매장이 화면 전체를 쓰는 '#Auction Canvas'로 빠지며(T-147) 뽑기·창고만 남아
 //   거점(Hub)으로 바꿨고, 거점이 지도 화면 이름이 되며(T-183) 길드(Guild)로 다시 바꿨다(T-182) — 경매장은 'AuctionCanvasView'.

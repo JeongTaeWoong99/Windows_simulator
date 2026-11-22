@@ -479,14 +479,13 @@ public class TraitPresenter : MonoBehaviour
     //
     // ※ 효과 = 레벨당 값 × (지금 레벨 − 기본 레벨)이다(서버 'User.SumTraitEffect').
     //   개척은 수치가 아니라 **지금 열린 산업 레벨**을 적는다 — 그게 실제 결과다.
+    //   개척 Lv k = 그 산업의 k번째 단계(Lv1 · 20 · 40 …)까지 열림이다(2026-11-22 · T-208) — 특성 레벨을 산업 레벨로 적지 않는다.
     private static string DescribeEffect(UserTraitTableRow trait, int level)
     {
         switch (trait.EffectType)
         {
             case UserTraitEffect.IndustryUnlock:
-                return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, level, out var row)
-                    ? Lang.Format("UI.Trait.UpTo", $"Lv{level} {Loc.Get(row.NameLocKey)}")
-                    : Lang.Format("UI.Trait.UpTo", $"Lv{level}");
+                return Lang.Format("UI.Trait.UpTo", DescribeIndustryStep(trait, level));
 
             case UserTraitEffect.SpeedAdd:
                 return $"{Lang.Get("UI.Trait.Speed")} {FormatPermille(trait.EffectValue * (level - trait.BaseLevel))}";
@@ -504,12 +503,26 @@ public class TraitPresenter : MonoBehaviour
     {
         if (trait.EffectType == UserTraitEffect.IndustryUnlock)
         {
-            return GameDataLoader.TryGetIndustryLevel((EIndustryType)(byte)trait.Industry, next, out var row)
-                ? Lang.Format("UI.Trait.Opens", $"Lv{next} {Loc.Get(row.NameLocKey)}")
-                : Lang.Format("UI.Trait.Opens", $"Lv{next}");
+            return Lang.Format("UI.Trait.Opens", DescribeIndustryStep(trait, next));
         }
 
         return DescribeEffect(trait, next);
+    }
+
+    // 개척 특성 Lv k가 여는 산업 레벨 — 'Lv20 산기슭'. 표에 없는 단계면 'Lv k'만.
+    private static string DescribeIndustryStep(UserTraitTableRow trait, int traitLevel)
+    {
+        var industry = (EIndustryType)(byte)trait.Industry;
+        int level    = GameDataLoader.GetIndustryLevelAtStep(industry, traitLevel);
+
+        if (level == 0)
+        {
+            return $"Lv{traitLevel}";
+        }
+
+        return GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
+            ? $"Lv{level} {Loc.Get(row.NameLocKey)}"
+            : $"Lv{level}";
     }
 
     // 이 종류의 특성이 무엇을 좋게 하는지 (정보 영역 이름 아래).
@@ -658,6 +671,7 @@ public class TraitPresenter : MonoBehaviour
         {
             _learnWait.Succeed();
             FindNode(_learningTid)?.PlayLevelUp();
+            Services.Get<SoundManager>().PlaySfx(Sounds.LevelUp);
         }
         else
         {

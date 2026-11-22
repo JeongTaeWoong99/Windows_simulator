@@ -14813,5 +14813,30 @@
     "Key": "UI.WorkStation.Tip.Yield",
     "KR": "판정 1회에 같은 자원이 나오는 양입니다. 기본 100%이고 특성(공통 · 산업)으로 늘어납니다.",
     "EN": "How much of the same resource one roll gives. 100% by default, raised by traits (common · industry)."
+  },
+  {
+    "Key": "UI.Gacha.AppraiseAgain",
+    "KR": "1개 더 감정<br><size=80%>{0} 골드</size>",
+    "EN": "Appraise 1 More<br><size=80%>{0} Gold</size>"
+  },
+  {
+    "Key": "UI.ItemUse.ExpPreview",
+    "KR": "{0} {1} → {2}",
+    "EN": "{0} {1} → {2}"
+  },
+  {
+    "Key": "UI.ItemUse.LevelPercent",
+    "KR": "Lv{0} ({1}%)",
+    "EN": "Lv{0} ({1}%)"
+  },
+  {
+    "Key": "UI.ItemUse.LevelMax",
+    "KR": "Lv{0} (최대)",
+    "EN": "Lv{0} (MAX)"
+  },
+  {
+    "Key": "UI.ItemUse.UsedExp",
+    "KR": "{0}에게 {1} {2}개를 사용해 {3}가 되었습니다",
+    "EN": "Used {2} × {1} on {0} — now {3}"
   }
 ]

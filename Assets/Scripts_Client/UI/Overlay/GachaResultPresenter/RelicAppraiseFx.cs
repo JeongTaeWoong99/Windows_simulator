@@ -99,6 +99,9 @@ public class RelicAppraiseFx : MonoBehaviour
 
     // 소리 — 'Create'를 부르는 Presenter의 것(같은 서비스). 없으면 조용히 돈다
     private SoundManager? _sound;
+
+    // 이번 감정에서 공개 소리(띠링 · 팡파르)가 났나 — 건너뛰면 'ShowEnd'가 대신 울린다(Prepare에서 내린다)
+    private bool _revealSoundPlayed;
     private readonly List<Image> _shards = new List<Image>();
 
     // 'root'(팝업 몸통)을 꽉 채우는 층을 맨 앞에 만든다 ('GachaResultPresenter.Start'가 한 번 호출)
@@ -133,6 +136,9 @@ public class RelicAppraiseFx : MonoBehaviour
         fx._relic  = fx.CreateSlot("Relic", slotPrefab);
         fx._reward = fx.CreateSlot("Reward", slotPrefab);
 
+        fx._relic.ScaleLabelsWithSlot  = true; // 무대는 칸을 2배로 키운다 — 아래 줄 글자도 함께 키운다
+        fx._reward.ScaleLabelsWithSlot = true;
+
         for (int i = 0; i < CrackFills.Length; i++)
         {
             fx._cracks.Add(fx.CreateCrack(i));
@@ -152,6 +158,12 @@ public class RelicAppraiseFx : MonoBehaviour
 
     // 보상이 놓인 자리 — 골드 동전이 여기서 날아간다
     public Transform RewardTransform => _reward.transform;
+
+    // 보상 칸을 그린 직후 부른다 — 인벤토리 칸과 같은 아래 줄(분류 배지 · 'N 개')을 Presenter가 입힌다(2026-11-23 사용자)
+    public System.Action<SlotView>? DecorateReward { get; set; }
+
+    // 유물 칸을 그린 직후 부른다 — 보상 칸과 같은 이유
+    public System.Action<SlotView>? DecorateRelic { get; set; }
 
     // 무대를 한 번 돌린다 — 끝까지 가면 보상이 놓인 채로 돌아온다(층은 그대로 보인다 · 광선은 계속 돈다).
     //   relic  : 감정한 유물 칸 값
@@ -195,7 +207,7 @@ public class RelicAppraiseFx : MonoBehaviour
         // 띠가 내려올 보상(아티팩트 · Special 유물)은 띠와 함께 팡파르가 난다 — 여기서 평범한 공개 소리를 겹치지 않는다
         if (banner == null)
         {
-            PlaySfx(Sounds.RelicReveal);
+            PlayRevealSound(null);
         }
 
         await PopRewardAsync(ct);
@@ -203,7 +215,7 @@ public class RelicAppraiseFx : MonoBehaviour
         // ⑧ 아티팩트 · Special 유물 — 띠가 내려오고 한 번 더 빛난다
         if (banner != null)
         {
-            PlaySfx(Sounds.RelicArtifact);
+            PlayRevealSound(banner);
             await BannerAsync(banner, accent ?? Color.white, ct);
         }
     }
@@ -215,6 +227,12 @@ public class RelicAppraiseFx : MonoBehaviour
         bool isSpecial = relic.Rarity == GlobalRarity.Special || reward.Rarity == GlobalRarity.Special;
 
         DOTween.Kill(this);
+
+        // 건너뛰어도 공개 소리는 난다 — 빠르게 연달아 감정해도 매번 띠링이 겹쳐 울린다(2026-11-23 사용자)
+        if (!_revealSoundPlayed)
+        {
+            PlayRevealSound(banner);
+        }
 
         _group.alpha = 1f;
         _relic.gameObject.SetActive(false);
@@ -228,6 +246,7 @@ public class RelicAppraiseFx : MonoBehaviour
         _reward.gameObject.SetActive(true);
         _reward.Bind(reward);
         _reward.SetSubVisible(true);
+        DecorateReward?.Invoke(_reward);
         ResetTransform(_reward.transform, StageScale);
 
         SpinRays(accent ?? PlainRays, isSpecial);
@@ -269,16 +288,20 @@ public class RelicAppraiseFx : MonoBehaviour
     {
         DOTween.Kill(this);
 
+        _revealSoundPlayed = false;
+
         _group.alpha = 1f;
 
         _relic.gameObject.SetActive(true);
         _relic.Bind(relic);
         _relic.SetSubVisible(true);
+        DecorateRelic?.Invoke(_relic);
         ResetTransform(_relic.transform, StageScale);
 
         _reward.gameObject.SetActive(true);
         _reward.Bind(reward);
         _reward.SetSubVisible(true);
+        DecorateReward?.Invoke(_reward);
         ResetTransform(_reward.transform, 0f);
 
         foreach (Image crack in _cracks)
@@ -552,6 +575,14 @@ public class RelicAppraiseFx : MonoBehaviour
         tween.SetId(this).SetLink(gameObject, LinkBehaviour.KillOnDisable);
 
         return tween;
+    }
+
+    // 공개 소리 — 띠가 있으면 팡파르, 없으면 띠링. 한 감정에 한 번만 (PlayAsync · ShowEnd)
+    private void PlayRevealSound(string? banner)
+    {
+        _revealSoundPlayed = true;
+
+        PlaySfx(banner == null ? Sounds.RelicReveal : Sounds.RelicArtifact);
     }
 
     private void PlaySfx(AudioClip? clip)

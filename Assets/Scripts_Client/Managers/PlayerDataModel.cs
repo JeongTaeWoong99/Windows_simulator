@@ -604,18 +604,21 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         return false;
     }
 
-    // 이 산업 레벨이 열렸는가 — **그 산업 개척 특성의 레벨 ≥ 산업 레벨**이면 열린다 (2026-10-02 · T-108).
+    // 이 산업 레벨이 열렸는가 — **그 산업 개척 특성의 레벨 ≥ 그 레벨 행의 'RequiredTraitLevel'**이면 열린다 (2026-11-22 · T-208).
     //
-    // ※ 개척 특성이 없는 산업이면 Lv1만 연다 — 표가 비었을 때 상위 레벨을 열어 두면 서버 거절로만 드러난다.
+    // ⚠️ 서버 'User.IsIndustryLevelUnlocked'의 사본이다. 레벨이 실제 값(1 · 20 · 40 …)이라
+    //   특성 레벨과 산업 레벨을 바로 비교하면 Lv20을 열려고 특성을 20까지 찍어야 한다.
+    // ※ 개척 특성이 없는 산업·표에 없는 레벨이면 닫는다 — 열어 두면 서버 거절로만 드러난다.
     public bool IsIndustryLevelOpen(EIndustryType industry, int level)
     {
-        if (level <= 1)
+        if (level == (int)Constants.DefaultIndustryLevel)
         {
             return true;
         }
 
-        return GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait)
-            && GetTraitLevel(trait.UserTraitTID) >= level;
+        return GameDataLoader.TryGetIndustryLevel(industry, level, out var row)
+            && GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait)
+            && GetTraitLevel(trait.UserTraitTID) >= row.RequiredTraitLevel;
     }
 
     // 이 효과를 가진 특성 중 **이 산업에 붙는** 것의 가산 합(천분율).

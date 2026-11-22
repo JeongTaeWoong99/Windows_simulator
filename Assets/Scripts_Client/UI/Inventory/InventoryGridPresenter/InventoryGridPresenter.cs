@@ -203,6 +203,8 @@ public class InventoryGridPresenter : MonoBehaviour
 
     private bool _isOpeningBox;   // 개봉 응답을 기다리는 중인가 — 연타로 두 번 나가면 상자가 두 번 빠진다
 
+    private long _useTargetCharacterId; // 비약을 먹인 캐릭터 — 성공 알림에 '어떤 캐릭터가 몇 레벨이 됐나'를 적는다(0 = 캐릭터 대상 아님)
+
     // 잠금 응답을 기다리는 개체 — 같은 개체를 연타하면 응답 전에 같은 값을 두 번 보낸다(T-137).
     // ※ 대상 종류와 짝으로 둔다 — 자원 TID와 캐릭터·장비 번호는 서로 겹칠 수 있다(T-159).
     private readonly HashSet<(ELockTarget, long)> _lockPending = new HashSet<(ELockTarget, long)>();
@@ -275,6 +277,44 @@ public class InventoryGridPresenter : MonoBehaviour
         Grids.Clear();
         s_slotWaitHandle = null;
         s_landing        = null;
+        s_lastOpener     = null;
+    }
+
+    // 마지막으로 상자·유물을 연 격자 — 결과 창의 [1개 더 감정]이 같은 격자에 다시 맡긴다('AppraiseAgain')
+    private static InventoryGridPresenter? s_lastOpener;
+
+    // 유물 1개를 다시 감정한다 (결과 창 [1개 더 감정]에서 호출 · 2026-11-22 사용자 — 창을 나갔다 다시 누르기가 번거롭다).
+    //   from : 거절(골드 부족) 문구를 띄울 자리
+    // ※ 확인을 다시 묻지 않는다 — 버튼에 비용이 적혀 있고, 누른 것 자체가 다시 하겠다는 뜻이다.
+    //   첫 감정만 묻는 것은 인벤토리에서 잘못 누른 한 번을 막기 위해서다('OnSlotLeftClicked').
+    // 보낼 격자가 없거나 앞 요청을 기다리는 중이면 false.
+    public static bool AppraiseAgain(int itemId, Transform from)
+    {
+        InventoryGridPresenter? grid = s_lastOpener != null ? s_lastOpener : Grids.Find(g => g.IsInventory);
+
+        return grid != null && grid.TryAppraiseOne(itemId, from);
+    }
+
+    // 유물 1개 감정을 보낸다 — 보유·골드를 미리 보고, 모자라면 보내지 않는다 ('AppraiseAgain'에서 호출)
+    private bool TryAppraiseOne(int itemId, Transform from)
+    {
+        if (_isOpeningBox || _data.GetItemCount(itemId) <= 0)
+        {
+            return false;
+        }
+
+        long unitCost = _data.GetAppraiseCost(itemId);
+
+        if (_data.Gold < unitCost)
+        {
+            _wait.RaiseRefusal(Lang.Format("UI.Inventory.AppraiseNoGold", $"{unitCost:N0}"), from);
+
+            return false;
+        }
+
+        OpenBox(itemId, 1);
+
+        return true;
     }
 
     // 참조 확보 → 공급자 등록 (클라 공통 규약)
@@ -2169,6 +2209,8 @@ public class InventoryGridPresenter : MonoBehaviour
 
         ClientLogger.Info(ClientLogger.Send, $"상자 개봉 요청 — TID={itemId}, {count}개");
 
+        s_lastOpener = this;
+
         // 대기 시작 — 로딩 표시·무응답 감시·알림은 ServerWaitManager가 공통으로 처리한다.
         _isOpeningBox = true;
         _waitHandle   = _wait.Begin(Lang.Format(GameDataLoader.GetOpenCostGold(itemId) > 0L ? "UI.Inventory.WaitAppraise" : "UI.Inventory.WaitOpenBox", count),
@@ -2232,8 +2274,9 @@ public class InventoryGridPresenter : MonoBehaviour
 
         ClientLogger.Info(ClientLogger.Send, $"소모품 사용 요청 — TID={choice.ItemTid}, {choice.Count}개, 캐릭터={choice.TargetCharacterId}, 슬롯={(choice.TargetSlots != null ? string.Join(",", choice.TargetSlots) : "-")}");
 
-        _isOpeningBox = true;
-        _waitHandle   = _wait.Begin(Lang.Format("UI.ItemUse.Wait", GameDataLoader.GetItemName(choice.ItemTid)), onClosed: OnWaitClosed);
+        _isOpeningBox         = true;
+        _useTargetCharacterId = choice.TargetCharacterId;
+        _waitHandle           = _wait.Begin(Lang.Format("UI.ItemUse.Wait", GameDataLoader.GetItemName(choice.ItemTid)), onClosed: OnWaitClosed);
     }
 
     // 소모품 사용 성공 도착 — 대기를 닫고 몇 개를 썼는지 한 줄 알린다 (PlayerDataModel.ConsumableUsed 구독 · T-194).
@@ -2242,12 +2285,27 @@ public class InventoryGridPresenter : MonoBehaviour
     // ※ 대기 손잡이가 없으면 이 격자가 보낸 것이 아니다(인벤토리·창고 격자가 함께 받는다).
     private void OnConsumableUsed(int itemId, int usedCount)
     {
+        Services.Get<SoundManager>().PlaySfx(Sounds.ItemUse); // 대기 여부와 상관없이 — 내가 쓴 것만 이 응답이 온다
         if (_waitHandle == null)
         {
             return;
         }
 
         _waitHandle.Succeed();
+
+        // 비약 — '죽음의 사신에게 성장의 비약 (소) 10개를 사용해 Lv36 (45%)가 되었습니다'.
+        // ※ 캐릭터 갱신은 이 응답보다 먼저 온다(서버가 경험치를 주며 알린 뒤 응답한다) — 지금 값이 곧 결과다.
+        if (_useTargetCharacterId != 0 && _data.FindCharacter(_useTargetCharacterId) is { } character)
+        {
+            _wait.RaiseToast(Lang.Format("UI.ItemUse.UsedExp",
+                                         _data.GetCharacterName(character.CharacterId),
+                                         GameDataLoader.GetItemName(itemId),
+                                         usedCount,
+                                         ItemUseLabel.LevelWithPercent(character.Level, character.Exp)));
+
+            return;
+        }
+
         _wait.RaiseToast(Lang.Format("UI.ItemUse.Used", GameDataLoader.GetItemName(itemId), usedCount));
     }
 

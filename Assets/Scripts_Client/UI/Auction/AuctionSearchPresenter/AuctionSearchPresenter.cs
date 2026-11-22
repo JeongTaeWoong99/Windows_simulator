@@ -1036,6 +1036,7 @@ public class AuctionSearchPresenter : MonoBehaviour, IAuctionQueryTarget
             if (code == EResultCode.Ok)
             {
                 _wait.RaiseToast(Lang.Get("UI.Auction.Bought"));
+                Services.Get<SoundManager>().PlaySfx(Sounds.AuctionBuy);
             }
         }
 

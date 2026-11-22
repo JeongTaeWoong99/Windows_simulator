@@ -45,11 +45,15 @@ public class ItemUsePresenter : MonoBehaviour
     {
         public Button     Button  = null!;
         public TMP_Text   Label   = null!;
+        public ItemIconView? Icon;  // 줄 왼쪽 작은 아이콘 — 견본에 없으면 null
         public ColorBlock Normal;
         public long       Key;      // 슬롯 번호 또는 캐릭터 개체 번호
         public bool       Usable;
         public bool       Selected;
     }
+
+    // 대상 줄 견본에서 줄 글씨 오브젝트 이름 — 아이콘 칸에도 글씨(수량)가 있어 이름으로 찾는다
+    private const string RowLabelName = "Text (TMP)";
 
     private enum TargetKind
     {
@@ -68,6 +72,9 @@ public class ItemUsePresenter : MonoBehaviour
     [SerializeField, Tooltip("제목 — '신속의 영약 사용'")]
     private TMP_Text titleText = null!;
 
+    [SerializeField, Tooltip("머리줄 아이콘 — 쓰는 소모품 그림. 비우면 아이콘 없이 연다")]
+    private Image? itemIcon;
+
     [SerializeField, Tooltip("효과 한 줄 — '작업속도 +30% · 판정 20회'")]
     private TMP_Text effectText = null!;
 
@@ -80,7 +87,7 @@ public class ItemUsePresenter : MonoBehaviour
     [SerializeField, Tooltip("대상 줄이 쌓이는 곳 (스크롤 Content)")]
     private RectTransform targetContent = null!;
 
-    [SerializeField, Tooltip("대상 줄 견본 — targetContent 아래에 꺼 둔다. 자식의 TMP가 줄 글씨다")]
+    [SerializeField, Tooltip("대상 줄 견본 — targetContent 아래에 꺼 둔다. 자식 'Text (TMP)'가 줄 글씨, 자식 ItemIconView가 왼쪽 아이콘이다")]
     private Button rowTemplate = null!;
 
     [SerializeField, Tooltip("쓸 수 있는 대상이 하나도 없을 때만 보인다")]
@@ -95,6 +102,15 @@ public class ItemUsePresenter : MonoBehaviour
     [SerializeField, Tooltip("개수 입력칸. Content Type은 Integer Number로 둔다")]
     private TMP_InputField amountInput = null!;
 
+    [SerializeField, Tooltip("개수 ▲ — 1 올린다. 꾹 누르면 점점 빨리 오른다. 비우면 버튼 없이 연다")]
+    private HoldRepeatButton? amountUpButton;
+
+    [SerializeField, Tooltip("개수 ▼ — 1 내린다. 꾹 누르면 점점 빨리 내린다. 비우면 버튼 없이 연다")]
+    private HoldRepeatButton? amountDownButton;
+
+    [SerializeField, Tooltip("미리보기 한 줄 — '죽음의 사신 Lv34 (12%) → Lv36 (45%)'. 비약에서 캐릭터를 골랐을 때만 글씨가 찬다")]
+    private TMP_Text? previewText;
+
     [SerializeField, Tooltip("사용 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button useButton = null!;
 
@@ -106,6 +122,7 @@ public class ItemUsePresenter : MonoBehaviour
     private readonly List<Row> _rows = new List<Row>();
 
     private int                     _itemTid;
+    private int                     _expPerItem; // 비약 1개의 경험치 — 미리보기용 (비약이 아니면 0)
     private int                     _maxCount;
     private int                     _maxTargets;
     private TargetKind              _kind;
@@ -134,6 +151,15 @@ public class ItemUsePresenter : MonoBehaviour
         cancelButton.onClick.AddListener(Close);
         BackdropClose.Bind(gameObject, Close); // 차단막을 누르면 취소
         amountInput.onValueChanged.AddListener(_ => RefreshUseButton());
+        if (amountUpButton != null)
+        {
+            amountUpButton.Repeated += () => StepAmount(+1);
+        }
+
+        if (amountDownButton != null)
+        {
+            amountDownButton.Repeated += () => StepAmount(-1);
+        }
         rowTemplate.gameObject.SetActive(false);
 
         SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
@@ -153,8 +179,9 @@ public class ItemUsePresenter : MonoBehaviour
             return;
         }
 
-        _itemTid   = itemTid;
-        _onConfirm = onConfirm;
+        _itemTid    = itemTid;
+        _onConfirm  = onConfirm;
+        _expPerItem = use.UseEffect == ItemUseEffect.CharacterExp ? use.EffectValue : 0;
         _kind      = ItemUseLabel.TargetsSlots(use.UseEffect)     ? TargetKind.Slot
                    : ItemUseLabel.TargetsCharacter(use.UseEffect) ? TargetKind.Character
                    : TargetKind.None;
@@ -166,6 +193,15 @@ public class ItemUsePresenter : MonoBehaviour
         string name = GameDataLoader.GetItemName(itemTid);
 
         titleText.text  = Lang.Format("UI.ItemUse.Title", name);
+
+        if (itemIcon != null)
+        {
+            Sprite? sprite = VisualCatalog.ItemIconOf(itemTid);
+
+            itemIcon.sprite  = sprite!;
+            itemIcon.enabled = sprite != null; // 그림이 없는 소모품은 흰 네모 대신 비운다
+        }
+
         effectText.text = ItemUseLabel.Effect(use);
 
         BuildRows(use);
@@ -217,7 +253,10 @@ public class ItemUsePresenter : MonoBehaviour
                 // 지도(즉시 판정)는 도는 슬롯에만 — 버프는 쉬는 슬롯에도 걸린다(서버 'requireActive')
                 bool usable = running || use.UseEffect != ItemUseEffect.InstantJudge;
 
-                BindRow(shown++, slot.SlotIndex, SlotLabel(slot, running), usable);
+                // 아이콘은 슬롯에 앉은 캐릭터 — 비어 있으면 아이콘 없이
+                CharacterInfo? worker = running ? _data.FindCharacter(slot.CharacterId) : null;
+
+                BindRow(shown++, slot.SlotIndex, SlotLabel(slot, running), usable, worker != null ? ItemIconContent.ForCharacter(worker.CharacterTid) : null);
             }
         }
         else if (_kind == TargetKind.Character)
@@ -243,7 +282,7 @@ public class ItemUsePresenter : MonoBehaviour
                     label += UIRichText.Dot + Lang.Get("UI.ItemUse.MaxLevel");
                 }
 
-                BindRow(shown++, character.CharacterId, label, !max);
+                BindRow(shown++, character.CharacterId, label, !max, ItemIconContent.ForCharacter(character.CharacterTid));
             }
         }
 
@@ -264,7 +303,8 @@ public class ItemUsePresenter : MonoBehaviour
     }
 
     // 'index'번째 줄을 그린다 — 모자라면 견본을 복제한다 (BuildRows에서 호출)
-    private void BindRow(int index, long key, string label, bool usable)
+    //   icon : 줄 왼쪽 아이콘 — null이면 아이콘 칸을 끈다(쉬는 슬롯)
+    private void BindRow(int index, long key, string label, bool usable, ItemIconContent? icon)
     {
         while (_rows.Count <= index)
         {
@@ -272,7 +312,8 @@ public class ItemUsePresenter : MonoBehaviour
             var    row    = new Row
             {
                 Button = button,
-                Label  = button.GetComponentInChildren<TMP_Text>(true),
+                Label  = button.transform.Find(RowLabelName).GetComponent<TMP_Text>(),
+                Icon   = button.GetComponentInChildren<ItemIconView>(true),
                 Normal = button.colors,
             };
 
@@ -289,6 +330,17 @@ public class ItemUsePresenter : MonoBehaviour
         found.Label.text          = label;
         found.Button.interactable = usable;
         found.Button.gameObject.SetActive(true);
+
+        if (found.Icon != null)
+        {
+            found.Icon.gameObject.SetActive(icon.HasValue);
+
+            if (icon.HasValue)
+            {
+                found.Icon.Bind(icon.Value);
+            }
+        }
+
         PaintRow(found);
     }
 
@@ -393,6 +445,15 @@ public class ItemUsePresenter : MonoBehaviour
 
     #region 확인
 
+    // 개수 ▲▼ — 1씩 올리고 내린다. 1 ~ 상한에서 멈춘다 (amountUpButton · amountDownButton OnClick에 코드로 연결)
+    // ※ 입력칸 값을 바꾸면 'onValueChanged'가 [사용] 잠금을 다시 본다.
+    private void StepAmount(int delta)
+    {
+        int current = int.TryParse(amountInput.text, out int parsed) ? parsed : 1;
+
+        amountInput.text = Mathf.Clamp(current + delta, 1, _maxCount).ToString();
+    }
+
     // [사용]을 열지 정한다 — 대상이 필요하면 하나 이상 골라야 하고, 개수가 1 이상이어야 한다
     private void RefreshUseButton()
     {
@@ -400,6 +461,57 @@ public class ItemUsePresenter : MonoBehaviour
         bool targetOk = _kind == TargetKind.None || SelectedCount() > 0;
 
         useButton.interactable = amountOk && targetOk;
+
+        RefreshPreview();
+    }
+
+    // 미리보기 — 고른 캐릭터가 이 개수를 먹으면 몇 레벨 몇 %가 되나 (RefreshUseButton에서 함께 호출).
+    // 비약이 아니거나 캐릭터를 안 골랐으면 비운다. 만렙을 넘는 개수는 서버가 필요한 만큼만 빼므로 '최대'로 적는다.
+    private void RefreshPreview()
+    {
+        if (previewText == null)
+        {
+            return;
+        }
+
+        previewText.text = "";
+
+        if (_expPerItem <= 0 || !TryGetSelectedCharacter(out CharacterInfo character))
+        {
+            return;
+        }
+
+        int count = amountRow.activeSelf && int.TryParse(amountInput.text, out int parsed) ? Mathf.Clamp(parsed, 1, _maxCount) : 1;
+
+        (int level, int exp) = ItemUseLabel.ProjectExp(character.Level, character.Exp, (long)_expPerItem * count);
+
+        previewText.text = Lang.Format("UI.ItemUse.ExpPreview",
+                                       _data.GetCharacterName(character.CharacterId),
+                                       ItemUseLabel.LevelWithPercent(character.Level, character.Exp),
+                                       ItemUseLabel.LevelWithPercent(level, exp));
+    }
+
+    // 고른 캐릭터 한 명 — 비약은 하나만 고른다
+    private bool TryGetSelectedCharacter(out CharacterInfo character)
+    {
+        character = null!;
+
+        if (_kind != TargetKind.Character)
+        {
+            return false;
+        }
+
+        foreach (Row row in _rows)
+        {
+            if (row.Selected && row.Button.gameObject.activeSelf && _data.FindCharacter(row.Key) is { } found)
+            {
+                character = found;
+
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // 사용 — 고른 것을 돌려준다 (useButton.onClick에 코드로 연결).
