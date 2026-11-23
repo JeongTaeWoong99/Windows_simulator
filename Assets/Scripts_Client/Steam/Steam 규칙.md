@@ -18,5 +18,5 @@
 - **AppID** — 지금은 Valve 시험 앱 `480`. 에디터는 프로젝트 루트 `steam_appid.txt`를 읽는다. 우리 AppID가 나오면(T-210) 이 파일만 바꾼다.
 - **identity `"wsgame"`** 은 서버 설정 `Game:Steam:Identity`와 같아야 한다(#144).
 - **콜백은 `SteamAPI.RunCallbacks`로 온다** — 상주 매니저가 없어 티켓을 기다리는 동안만 `SteamAuth`가 돌린다. 업적·오버레이 등 상주 콜백이 생기면 그때 `Managers/`에 서비스를 둔다.
-- **에디터 시험** — 플레이 중 로그인 화면에서 메뉴 `Window/DesktopWindowControl/스팀 로그인 시험`. 스팀 클라이언트가 켜져 있고 로컬 서버에 Web API 키(사용자 환경 변수 `Game__Steam__WebApiKey`)가 있어야 한다.
+- **에디터 시험** — 절차는 [`docs/스팀 로그인 시험.md`](../../../docs/스팀%20로그인%20시험.md). 플레이 중 로그인 화면에서 메뉴 `Window/DesktopWindowControl/스팀 로그인 시험`. 스팀 클라이언트가 켜져 있고 로컬 서버에 Web API 키(사용자 환경 변수 `Game__Steam__WebApiKey`)가 있어야 한다.
 - **로그인 화면 두 모드**(`LoginPresenter`) — 빌드는 스팀 모드: Id 칸을 숨기고 [접속하기]·[종료]. 에디터는 Id 모드, 치트 창 도구 줄 [스팀 화면]을 켜면 다음 플레이부터 스팀 모드(EditorPrefs — 씬에 안 남는다). 자동 접속은 하지 않는다(2026-11-24 사용자).
