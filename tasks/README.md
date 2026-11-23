@@ -76,6 +76,7 @@
 |----|------|------|------|--------------------|----------|
 | [T-211](T-211-스팀로그인클라연동.md) | 클라 — **스팀 로그인 연동** · 에디터 Id 유지 · 빌드는 로그인 화면 없이 바로 게임 · 실행 경로별 환경 표 · 에디터 시험 환경 ✅ (480 실측 2026-11-23) · [이슈 #152](https://github.com/JeongTaeWoong99/Windows_simulator/issues/152) · [#144](https://github.com/JeongTaeWoong99/Windows_simulator/issues/144) | 태웅 | In Progress | 서버 설정 확인(#152 · T-207) · AppID(T-210) | 높음 |
 | [T-212](T-212-슬롯소모품자동사용확대.md) | 클라 — **나침반 · 보물 지도 슬롯 자동 사용 ON/OFF** · 인벤토리 클릭은 안내로 · [이슈 #153](https://github.com/JeongTaeWoong99/Windows_simulator/issues/153) | 태웅 | New | 기획·서버 결정(#153) | 보통 |
+| [T-214](T-214-스팀업적.md) | 클라 — **스팀 업적** · 게임 사건 → 업적 연결 구조 · 480(Spacewar) 업적으로 동작 시험 · 목록은 기획 · 등록은 AppID 뒤 | 태웅 | New | 업적 목록(기획) · 등록은 AppID(T-210) | 보통 |
 
 ### 🎨 뒤로 미뤘다
 
