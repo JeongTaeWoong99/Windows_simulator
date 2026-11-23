@@ -2,6 +2,7 @@
 
 ## INDEX
 
+- [2026-11-24 테마 상자 장비 레벨 보상 연결](2026-11-24-theme-box-equipment-levels.md) — `#data` `#server` 테마 상자별 장비 레벨과 왕실 보상 풀 연결
 - [2026-11-22 DB 실패 콜백 테스트 안정화](2026-11-22-db-callback-test.md) — `#server` `#test` 스레드 간 콜백 완료를 Task로 전달
 - [2026-11-22 산업 번역 키에 enum 이름 적용](2026-11-22-industry-localization-keys.md) — `#data` PR #145 산업명·툴팁 번역 키
 - [2026-11-22 일감 INDEX 자동 갱신](2026-11-22-task-index-sync.md) — `#infra` main 검사 전 상태와 보관 건수 갱신

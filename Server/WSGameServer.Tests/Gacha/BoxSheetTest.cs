@@ -38,6 +38,32 @@ public class BoxSheetTest
         Boxes.ShouldAllBe(r => r.OpenGachaId != 0 && r.MaxStack == 1000);
     }
 
+    [Theory]
+    [InlineData(100081, 1, 1)]
+    [InlineData(100082, 10, 20)]
+    [InlineData(100083, 30, 40)]
+    [InlineData(100084, 50, 60)]
+    [InlineData(100085, 70, 80)]
+    [InlineData(100086, 90, 100)]
+    public void 테마_상자의_장비는_해당_레벨_구간에서_낮은_레벨이_더_자주_나온다(
+        int boxTid, int lowerLevel, int upperLevel)
+    {
+        var poolId = GameTable.ItemTable[boxTid].OpenGachaId;
+        var weights = GameTable.GachaEquipTable.All
+            .Where(r => r.GachaId == poolId && r.Weight > 0)
+            .GroupBy(r => GameTable.EquipTable[r.EquipTID].ItemLevel)
+            .ToDictionary(group => group.Key, group => group.Sum(r => (long)r.Weight));
+
+        if (lowerLevel == upperLevel)
+        {
+            weights.Keys.ShouldBe(new[] { lowerLevel });
+            return;
+        }
+
+        weights.Keys.OrderBy(level => level).ShouldBe(new[] { lowerLevel, upperLevel });
+        (weights[lowerLevel] * 3).ShouldBe(weights[upperLevel] * 7);
+    }
+
     [Fact]
     public void 옛_재질_상자_15종은_표에_없다()
     {
