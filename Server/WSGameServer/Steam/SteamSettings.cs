@@ -1,12 +1,12 @@
 namespace WSGameServer;
 
-// 스팀 로그인 설정 — appsettings.json의 Game:Steam 절 (T-207). 키는 로컬 User Secrets 또는 Docker 환경 변수에서 받는다.
+// 스팀 로그인 설정 — appsettings.json의 Game:Steam 절 (T-207). 키는 저장소에 넣지 않는다 — 환경 변수 Game__Steam__WebApiKey로 준다.
 public sealed class SteamSettings
 {
     /// <summary>우리 게임의 AppID. 등록비를 내기 전까지는 테스트용 480(Spacewar).</summary>
     public uint AppId { get; set; } = 480;
 
-    /// <summary>스팀 Web API 키. 비어 있으면 스팀 로그인은 전부 SteamUnavailable로 거절된다.</summary>
+    /// <summary>퍼블리셔 Web API 키. 비어 있으면 스팀 로그인은 전부 SteamUnavailable로 거절된다.</summary>
     public string WebApiKey { get; set; } = "";
 
     /// <summary>클라 <c>GetAuthTicketForWebApi(identity)</c>와 같은 문자열이어야 티켓이 통과한다.</summary>
