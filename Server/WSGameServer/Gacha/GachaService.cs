@@ -22,6 +22,8 @@ public sealed class GachaService : Singleton<GachaService>
     /// <summary>유물은 한 번에 1개만 감정한다(T-186 · #88) — 상자의 <see cref="MaxOpenCount"/>와 따로 둔다.</summary>
     public const int RelicAppraiseCount = 1;
 
+    private const int MaxSimulatedBoxCount = 10_000;
+
     private readonly GachaPoolCatalog _pools;
     private readonly RaidCatalog _raids;
 
@@ -104,9 +106,7 @@ public sealed class GachaService : Singleton<GachaService>
             return;
         }
 
-        bool raidBox = _raids.TryGetBoxReward(itemTid, out var raidReward);
-        bool hasPool = _pools.TryGet(item.OpenGachaId, out var pool);
-        if (!raidBox && !hasPool)
+        if (!TryGetBoxRewards(item, out var raidReward, out var pool))
         {
             Reply(EResultCode.ItemNotUsable);
             return;
@@ -126,7 +126,7 @@ public sealed class GachaService : Singleton<GachaService>
         }
 
         // 연 상자가 먼저 빠진다 — 그 칸이 비면 빈 칸까지 보고 판정한다.
-        var rolled = raidBox ? RollRaidBoxes(raidReward, count) : Roll(pool.PickMany(count));
+        var rolled = RollBox(raidReward, pool, count);
         var fits   = HasStorageFor(user, rolled, new Dictionary<int, int> { [itemTid] = count }) && user.HasArtifactRoomFor(ArtifactsOf(rolled));
 
         // 창고에 안 들어가면 우편에 맡긴다(T-082). 우편함도 가득하면 원래대로 거절 — 우편함이 두 번째 창고가 되지 않게 한다.
@@ -276,6 +276,44 @@ public sealed class GachaService : Singleton<GachaService>
         var equips     = rolled.Where(r => r.Entry.RewardType == GachaRewardType.Equip).Sum(r => r.Count);
         return user.HasStorageFor(items, characters, equips, consumed);
     }
+
+    /// <summary>일반 상자와 레이드 상자를 실제와 같은 규칙으로 굴려 종류·TID별 지급 수량을 반환한다.</summary>
+    public (EResultCode Result, string Message) SimulateBoxOpen(long itemTid, long count)
+    {
+        if (count is < 1 or > MaxSimulatedBoxCount || itemTid is < 1 or > int.MaxValue)
+        {
+            return (EResultCode.InvalidCheatArgs, $"상자 TID 또는 개수 범위 오류 (1~{MaxSimulatedBoxCount})");
+        }
+
+        if (!GameTable.ItemTable.TryGet((int)itemTid, out var item) || item.ItemType != ItemType.Box ||
+            item.OpenGachaId == 0 || !TryGetBoxRewards(item, out var raidReward, out var pool))
+        {
+            return (EResultCode.ItemNotUsable, $"개봉 가능한 상자가 아님 ({itemTid})");
+        }
+
+        var results = RollBox(raidReward, pool, (int)count)
+            .GroupBy(roll => (roll.Entry.RewardType, roll.Entry.RewardTID))
+            .OrderBy(group => group.Key.RewardType)
+            .ThenBy(group => group.Key.RewardTID)
+            .Select(group => FormattableString.Invariant(
+                $"{(byte)group.Key.RewardType}:{group.Key.RewardTID}:{group.Sum(roll => (long)roll.Count)}"));
+        return (EResultCode.Ok, string.Join(",", results));
+    }
+
+    private bool TryGetBoxRewards(ItemTableRow item, out RaidBoxReward? raidReward, out WeightedPicker<GachaEntry>? pool)
+    {
+        if (_raids.TryGetBoxReward(item.ItemTID, out raidReward))
+        {
+            pool = null;
+            return true;
+        }
+
+        return _pools.TryGet(item.OpenGachaId, out pool);
+    }
+
+    private static List<(GachaEntry Entry, int Count)> RollBox(
+        RaidBoxReward? raidReward, WeightedPicker<GachaEntry>? pool, int count)
+        => raidReward is not null ? RollRaidBoxes(raidReward, count) : Roll(pool!.PickMany(count));
 
     private static int MaxCountOf(GachaEntry entry) => Math.Max(entry.Count, entry.MaxCount);
 

@@ -200,6 +200,9 @@ namespace MikaProtocol
         SetBuildingLevel = 17, // Arg1 = BuildingTID(0이면 전 건물) · Arg2 = 레벨 — 계정 상한·비용 없이 정한다. 0~최대로 자른다
         GiveAllCharacters = 18, // 인자 없음 — CharacterTable 전 종류 1장씩 · 창고 → 인벤토리 → 우편 (T-190)
         GiveArtifact     = 19, // Arg1 = ArtifactTID · Arg2 = 개수 (1~칸 하나 상한) — 아티팩트 칸, 없으면 우편 (T-198)
+        SimulateBoxOpen  = 20, // Arg1 = 상자 ItemTID · Arg2 = 개수 — 추첨만 하고 지급·차감하지 않는다
+        SetCharacterLevel = 21, // Arg1 = CharacterId(0이면 전체) · Arg2 = 레벨 — 해당 레벨의 경험치 0
+        ClearItems       = 22, // Arg1 = 0 전체·1 자원·2 장비·3 캐릭터 · Arg2 = 0 인벤토리·1 창고·2 둘 다
     }
 
     public enum EItemChangeKind : byte

@@ -28,14 +28,17 @@ public sealed class SaveCharacterGrowthRepository : IRepository
     public int Level => _level;
     public int Exp   => _exp;
 
-    public async Task ExecuteAsync(DbConnection connection)
+    public Task ExecuteAsync(DbConnection connection)
+        => WriteAsync(connection, User.Uid, _characterId, _level, _exp);
+
+    internal static Task WriteAsync(DbConnection connection, long userId, long characterId, int level, int exp)
     {
         // user_id를 함께 거는 이유 — 개체 PK가 새어도 남의 캐릭터를 갱신하지 못하게 한다.
-        await connection.ExecuteAsync(
+        return connection.ExecuteAsync(
             @"UPDATE t_character
               SET level = @level, exp = @exp
               WHERE character_id = @characterId AND user_id = @userId;",
-            new { level = _level, exp = _exp, characterId = _characterId, userId = User.Uid });
+            new { level, exp, characterId, userId });
     }
 
     public void Apply()

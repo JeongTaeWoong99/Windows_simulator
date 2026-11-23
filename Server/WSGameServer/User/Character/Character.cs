@@ -55,6 +55,13 @@ public sealed class Character
     /// <summary>치트 전용 — 재료 없이 누적을 정한다. 범위는 부른 쪽이 자른다.</summary>
     public void SetCondenseCount(int count) => CondenseCount = count;
 
+    /// <summary>지정한 레벨의 시작 상태로 맞춘다. 레벨 범위는 부른 쪽에서 검증한다.</summary>
+    internal void SetLevel(int level)
+    {
+        Level = level;
+        Exp = 0;
+    }
+
     public bool IsMaxLevel(CharacterLevelCatalog curve) => Level >= curve.MaxLevel;
 
     /// <summary>경험치를 더하고 필요치를 채운 만큼 레벨을 올린다. 만렙에서는 쌓지 않는다. 오른 레벨 수를 돌려준다.</summary>

@@ -3,6 +3,8 @@
 ## INDEX
 
 - [2026-11-24 스팀 로그인 개발·Docker 설정](2026-11-24-steam-server-config.md) — `#server` Docker AppID 설정과 .env 빌드 제외
+- [2026-11-24 개발 편의 치트 서버 명령 3종](2026-11-24-developer-cheat-commands.md) — `#server` `#test` #154 상자 시뮬레이션·레벨 설정·보관함 비우기
+
 - [2026-11-22 DB 실패 콜백 테스트 안정화](2026-11-22-db-callback-test.md) — `#server` `#test` 스레드 간 콜백 완료를 Task로 전달
 - [2026-11-22 산업 번역 키에 enum 이름 적용](2026-11-22-industry-localization-keys.md) — `#data` PR #145 산업명·툴팁 번역 키
 - [2026-11-22 일감 INDEX 자동 갱신](2026-11-22-task-index-sync.md) — `#infra` main 검사 전 상태와 보관 건수 갱신
