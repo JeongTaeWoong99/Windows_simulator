@@ -7,6 +7,7 @@
         <Nullable>enable</Nullable>
         <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
         <RootNamespace>WSGameServer</RootNamespace>
+        <UserSecretsId>WindowsSimulator.WSGameServer</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -34,6 +35,7 @@
       <PackageReference Include="Microsoft.Extensions.Configuration.CommandLine" Version="10.0.12" />
       <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.12" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="10.0.12" />
+      <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.12" />
       <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.3" />
     </ItemGroup>
 

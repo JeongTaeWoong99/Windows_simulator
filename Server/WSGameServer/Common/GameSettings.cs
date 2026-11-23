@@ -24,12 +24,13 @@ public sealed class GameSettings
 
     public SteamSettings Steam { get; set; } = new();
 
-    /// <summary><paramref name="directory"/>의 appsettings.json → 환경 변수 → 명령줄 순으로 덮어 읽는다.</summary>
+    /// <summary><paramref name="directory"/>의 appsettings.json → User Secrets → 환경 변수 → 명령줄 순으로 덮어 읽는다.</summary>
     public static GameSettings Load(string directory, string[] args)
     {
         var configuration = new ConfigurationBuilder()
             .SetBasePath(directory)
             .AddJsonFile("appsettings.json", optional: false)
+            .AddUserSecrets<GameSettings>(optional: true)
             .AddEnvironmentVariables()
             .AddCommandLine(args)
             .Build();
