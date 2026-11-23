@@ -14,6 +14,17 @@ public class LocalizedText : MonoBehaviour
 
     public string Key => key;
 
+    // 키를 바꾸고 바로 다시 채운다 — 같은 글씨가 모드에 따라 다른 문구를 쓸 때(로그인 ↔ 접속하기).
+    public void SetKey(string newKey)
+    {
+        key = newKey;
+
+        if (_text != null)
+        {
+            Apply();
+        }
+    }
+
     private void Awake()
     {
         _text = GetComponent<TMP_Text>();

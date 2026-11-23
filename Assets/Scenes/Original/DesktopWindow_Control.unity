@@ -57057,6 +57057,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::LoginPanelUI
   idInput: {fileID: 1922150349}
   loginButton: {fileID: 925102974}
+  loginButtonLabel: {fileID: 1480657567}
   quitButton: {fileID: 174295555}
 --- !u!114 &469540932
 MonoBehaviour:

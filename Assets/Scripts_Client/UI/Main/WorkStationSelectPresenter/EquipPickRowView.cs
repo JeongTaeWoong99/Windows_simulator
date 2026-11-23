@@ -54,6 +54,13 @@ public class EquipPickRowView : MonoBehaviour
     // 이 줄이 그리고 있는 장비 개체 번호. 미바인딩이면 0.
     public long EquipId { get; private set; }
 
+    // 버튼 잠금의 두 사정 — 응답 대기('SetPickable') · 레벨 모자람('SetLevelLocked'). 둘 다 풀려야 눌린다.
+    private bool _isPickable = true;
+    private bool _isLevelLocked;
+
+    private const float LockedAlpha = 0.45f;   // 레벨 모자람 줄의 흐림
+    private CanvasGroup? _dimGroup;              // 처음 잠길 때 붙인다 — 프리팹을 고치지 않으려고
+
     // 자기 버튼만 배선한다 — 서비스를 조회하지 않으므로 Awake로 충분하고,
     // 그래야 패널이 Bind를 부르기 전에 이미 연결돼 있다 (Unity 메시지)
     private void Awake()
@@ -107,11 +114,33 @@ public class EquipPickRowView : MonoBehaviour
         tooltipTrigger.SetProvider(tooltip);
     }
 
-    // 버튼을 잠그거나 푼다 — 응답을 기다리는 동안만 잠긴다.
+    // 캐릭터 레벨이 모자라 낄 수 없는 줄인가 ('WorkStationSelectPresenter'가 Bind 뒤에 호출 · T-200 · 이슈 #146).
+    // 참이면 대기와 상관없이 늘 잠기고 줄 전체가 흐려진다. 툴팁은 그대로 뜬다(알파만 낮추고 레이캐스트는 막지 않는다).
+    // ※ 버튼의 꺼진 색만으로는 등급 바탕이 그대로라 잠긴 줄이 구별되지 않았다(2026-11-23 화면 확인) — 'CanvasGroup' 알파로 흐린다.
+    public void SetLevelLocked(bool locked)
+    {
+        _isLevelLocked          = locked;
+        pickButton.interactable = _isPickable && !locked;
+
+        if (locked || _dimGroup != null)
+        {
+            // ※ '??'를 쓰지 않는다 — 에디터의 GetComponent는 없을 때 가짜 null을 돌려줘 '??'를 지나친다.
+            if (_dimGroup == null && !TryGetComponent(out _dimGroup))
+            {
+                _dimGroup = gameObject.AddComponent<CanvasGroup>();
+            }
+
+            _dimGroup!.alpha = locked ? LockedAlpha : 1f;
+        }
+    }
+
+    // 버튼을 잠그거나 푼다 — 응답을 기다리는 동안만 잠긴다. 레벨 잠금('SetLevelLocked')은 이 값과 따로 남는다.
     public void SetPickable(bool on)
     {
-        pickButton.interactable = on;
+        _isPickable             = on;
+        pickButton.interactable = on && !_isLevelLocked;
     }
+
 
     // 줄을 비운다. 오브젝트는 살려 두고 재사용 풀로 되돌린다.
     // 바탕색도 되돌린다 — 풀에서 다시 쓰일 때 이전 장비의 등급 색이 남지 않게.
@@ -123,6 +152,7 @@ public class EquipPickRowView : MonoBehaviour
         nameText.text         = "";
         effectText.text       = "";
         SetCompare("");
+        SetLevelLocked(false);
         RaritySkin.Set(backgroundImage, GlobalRarity.None);
     }
 }

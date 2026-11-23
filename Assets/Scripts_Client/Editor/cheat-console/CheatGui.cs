@@ -57,6 +57,24 @@ namespace DesktopWindowControl.EditorTools
 			};
 		}
 
+		// 서로 다른 명령 여러 개를 순서대로 한 번에 보낸다 (계정 상태 한 번에 · 장비 세트 — T-213).
+		// 가드는 'RequestAll'과 같이 먼저 한 번만 본다. 서버는 받은 순서대로 처리한다(한 연결 · 한 유저 큐).
+		public static void RequestSequence(List<(ECheatCommand Command, long Arg1, long Arg2)> requests)
+		{
+			EditorApplication.delayCall += () =>
+			{
+				if (!CheatGuard.CanSend())
+				{
+					return;
+				}
+
+				foreach (var (command, arg1, arg2) in requests)
+				{
+					CheatSender.Send(command, arg1, arg2);
+				}
+			};
+		}
+
 		#endregion
 
 		#region 줄 부품

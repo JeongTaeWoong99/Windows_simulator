@@ -289,6 +289,9 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // 목록에 낼 장비를 골라 담는 통. 정렬하려면 한 번 모아야 해서 둔다(매번 새로 만들지 않는다).
     private readonly List<EquipInfo> _pickCandidates = new List<EquipInfo>();
 
+    // 장비를 끼울 캐릭터의 레벨 — 목록을 그릴 때마다 읽는다('RefreshEquipPicker'). 레벨 모자람 잠금·정렬에 쓴다.
+    private int _pickCharacterLevel = int.MaxValue;
+
     // 지금 다루는 슬롯 번호. Open이 정한다 — 아직 안 열렸으면 -1.
     private int _slotIndex = -1;
 
@@ -1859,6 +1862,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //   서버는 남이 낀 장비도 옮겨 주지만, 그 동선을 목록에 두면 착용자를 적어 줘야 하고
     //   **같은 장비가 칸에도 목록에도 있어** 무엇이 인벤토리에 남았는지가 흐려진다.
     //   다른 캐릭터에게서 가져오려면 **그쪽에서 먼저 해제한다.**
+    //
+    // ■ 레벨이 모자란 장비는 **빼지 않고 잠가 맨 아래에 둔다** (T-200 · 이슈 #146)
+    //   캐릭터 레벨 < 아이템 레벨이면 서버가 'EquipLevelTooLow'로 거절한다. 목록에서 빼면 "왜 없지?"가 되므로
+    //   이름 뒤 'Lv10'을 경고색으로 칠하고 줄을 잠가, 누르기 전에 레벨이 모자란 것을 보인다.
     private void RefreshEquipPicker()
     {
         if (_pickingSlot == EEquipSlot.None)
@@ -1866,6 +1873,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
+        _pickCharacterLevel = TargetCharacterLevel();
         _pickCandidates.Clear();
 
         foreach (var equip in _data.Equips)
@@ -1895,9 +1903,16 @@ public class WorkStationSelectPresenter : MonoBehaviour
             _pickCandidates.Add(equip);
         }
 
-        // 이 산업에서 많이 오르는 것이 위 — 같으면 예전 순서(속도 · 전 산업 · 번호)
+        // 낄 수 있는 것이 위 → 이 산업에서 많이 오르는 것이 위 — 같으면 예전 순서(속도 · 전 산업 · 번호)
         _pickCandidates.Sort(_compareForSlot ??= (a, b) =>
         {
+            int byLevel = IsLevelTooLow(a.EquipTid).CompareTo(IsLevelTooLow(b.EquipTid));
+
+            if (byLevel != 0)
+            {
+                return byLevel;
+            }
+
             int byGain = SlotBonusPermille(b.EquipTid).CompareTo(SlotBonusPermille(a.EquipTid));
 
             return byGain != 0 ? byGain : CompareEquips(a, b);
@@ -1928,11 +1943,17 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 effect = UIRichText.Paint(effect, UIThemeRole.HighlightDark);
             }
 
-            view.Bind(equip.EquipId, Loc.Get(row.NameLocKey), effect);
-            view.SetCompare(FormatGain(SlotBonusPermille(equip.EquipTid) - current));
+            // 이름 뒤 아이템 레벨 — 모자라면 경고색(위 머리 주석)
+            bool   tooLow = IsLevelTooLow(equip.EquipTid);
+            string level  = $"Lv{row.ItemLevel}";
+            string name   = $"{Loc.Get(row.NameLocKey)} {(tooLow ? UIRichText.Paint(level, UIThemeRole.Negative) : UIRichText.Label(level))}";
+
+            view.Bind(equip.EquipId, name, effect);
+            view.SetCompare(tooLow ? "" : FormatGain(SlotBonusPermille(equip.EquipTid) - current));
             view.SetRarity(row.GlobalRarity);
             view.SetDetail(ItemIconContent.ForEquip(equip.EquipTid, equip.EnchantOptions).WithWarehouse(equip.Container == EContainer.Warehouse),
                            () => EquipLabel.BuildTooltip(equip.EquipTid, equip.EnchantOptions));
+            view.SetLevelLocked(tooLow);
             view.SetPickable(!IsWaiting);
         }
 
@@ -1946,6 +1967,23 @@ public class WorkStationSelectPresenter : MonoBehaviour
         // 방금 켠 줄은 이 프레임 끝까지 프리팹 크기 그대로다('RefreshRows' 끝 주석).
         LayoutRebuilder.ForceRebuildLayoutImmediate(equipRowParent);
     }
+
+    // 장비를 끼울 캐릭터의 레벨 (RefreshEquipPicker에서 호출). 모르면 'int.MaxValue' — 잠그지 않고 서버 판정에 맡긴다.
+    private int TargetCharacterLevel()
+    {
+        var slot = FindSlot();
+
+        if (slot == null || !IsAssigned(slot))
+        {
+            return int.MaxValue;
+        }
+
+        return _data.FindCharacter(slot.CharacterId)?.Level ?? int.MaxValue;
+    }
+
+    // 이 장비가 지금 캐릭터에게 레벨이 모자라나 — 서버 'EquipLevelTooLow'와 같은 조건(캐릭터 레벨 < 아이템 레벨).
+    private bool IsLevelTooLow(int equipTid)
+        => GameDataLoader.TryGetEquip(equipTid, out var row) && _pickCharacterLevel < row.ItemLevel;
 
     // 이 장비가 지금 걸린 산업 필터를 통과하나 (RefreshEquipPicker에서 호출).
     //
