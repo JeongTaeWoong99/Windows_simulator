@@ -301,8 +301,8 @@
   },
   {
     "Key": "Character.1023.Name",
-    "KR": "붉은 집게게",
-    "EN": "Red Crab"
+    "KR": "고목 골렘",
+    "EN": "Timber Golem"
   },
   {
     "Key": "Character.1024.Name",
@@ -14838,5 +14838,30 @@
     "Key": "UI.ItemUse.UsedExp",
     "KR": "{0}에게 {1} {2}개를 사용해 {3}가 되었습니다",
     "EN": "Used {2} × {1} on {0} — now {3}"
+  },
+  {
+    "Key": "UI.Login.Connect",
+    "KR": "접속하기",
+    "EN": "Connect"
+  },
+  {
+    "Key": "UI.Login.SteamNotRunning",
+    "KR": "스팀이 켜져 있지 않습니다. 스팀을 실행하고 로그인한 뒤 다시 시도해 주세요.",
+    "EN": "Steam is not running. Start Steam, sign in, and try again."
+  },
+  {
+    "Key": "UI.Result.SteamAuthFailed",
+    "KR": "스팀 인증에 실패했습니다. 다시 시도해 주세요.",
+    "EN": "Steam sign-in failed. Please try again."
+  },
+  {
+    "Key": "UI.Result.SteamUnavailable",
+    "KR": "스팀 확인 서버에 연결하지 못했습니다. 잠시 후 다시 시도해 주세요.",
+    "EN": "Could not reach Steam. Please try again in a moment."
+  },
+  {
+    "Key": "UI.Result.Banned",
+    "KR": "이용이 제한된 계정입니다.",
+    "EN": "This account has been suspended."
   }
 ]
