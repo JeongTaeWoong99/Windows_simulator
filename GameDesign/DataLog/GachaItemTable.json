@@ -52,7 +52,7 @@
     "GachaId": 9,
     "ItemTID": 10001,
     "Count": 27,
-    "Weight": 74400,
+    "Weight": 40920000,
     "Description": "자원 깨진 토기 조각 x27"
   },
   {
@@ -60,7 +60,7 @@
     "GachaId": 9,
     "ItemTID": 20001,
     "Count": 27,
-    "Weight": 74400,
+    "Weight": 40920000,
     "Description": "자원 밀 x27"
   },
   {
@@ -68,7 +68,7 @@
     "GachaId": 9,
     "ItemTID": 30001,
     "Count": 27,
-    "Weight": 74400,
+    "Weight": 40920000,
     "Description": "자원 잡목 x27"
   },
   {
@@ -76,7 +76,7 @@
     "GachaId": 9,
     "ItemTID": 40001,
     "Count": 27,
-    "Weight": 74400,
+    "Weight": 40920000,
     "Description": "자원 돌덩어리 x27"
   },
   {
@@ -84,7 +84,7 @@
     "GachaId": 9,
     "ItemTID": 50001,
     "Count": 27,
-    "Weight": 74400,
+    "Weight": 40920000,
     "Description": "자원 질긴 고기 x27"
   },
   {
@@ -92,7 +92,7 @@
     "GachaId": 9,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 13020,
+    "Weight": 7161000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -100,7 +100,7 @@
     "GachaId": 9,
     "ItemTID": 100015,
     "Count": 1,
-    "Weight": 62000,
+    "Weight": 34100000,
     "Description": "인챈트 큐브 x1"
   },
   {
@@ -108,7 +108,7 @@
     "GachaId": 12,
     "ItemTID": 10011,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 부러진 화살촉 x27"
   },
   {
@@ -116,7 +116,7 @@
     "GachaId": 12,
     "ItemTID": 20011,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 보리 x27"
   },
   {
@@ -124,7 +124,7 @@
     "GachaId": 12,
     "ItemTID": 30011,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 삼나무 목재 x27"
   },
   {
@@ -132,7 +132,7 @@
     "GachaId": 12,
     "ItemTID": 40011,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 석회암 x27"
   },
   {
@@ -140,7 +140,7 @@
     "GachaId": 12,
     "ItemTID": 50011,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 산양 가죽 x27"
   },
   {
@@ -148,7 +148,7 @@
     "GachaId": 12,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -156,7 +156,7 @@
     "GachaId": 12,
     "ItemTID": 100015,
     "Count": 2,
-    "Weight": 620000,
+    "Weight": 62000000,
     "Description": "인챈트 큐브 x2"
   },
   {
@@ -164,7 +164,7 @@
     "GachaId": 15,
     "ItemTID": 10021,
     "Count": 27,
-    "Weight": 186000,
+    "Weight": 40920000,
     "Description": "자원 녹슨 곡괭이 x27"
   },
   {
@@ -172,7 +172,7 @@
     "GachaId": 15,
     "ItemTID": 20021,
     "Count": 27,
-    "Weight": 186000,
+    "Weight": 40920000,
     "Description": "자원 콩 x27"
   },
   {
@@ -180,7 +180,7 @@
     "GachaId": 15,
     "ItemTID": 30021,
     "Count": 27,
-    "Weight": 186000,
+    "Weight": 40920000,
     "Description": "자원 갱목 x27"
   },
   {
@@ -188,7 +188,7 @@
     "GachaId": 15,
     "ItemTID": 40021,
     "Count": 27,
-    "Weight": 186000,
+    "Weight": 40920000,
     "Description": "자원 화강암 x27"
   },
   {
@@ -196,7 +196,7 @@
     "GachaId": 15,
     "ItemTID": 50021,
     "Count": 27,
-    "Weight": 186000,
+    "Weight": 40920000,
     "Description": "자원 박쥐 날개 x27"
   },
   {
@@ -204,7 +204,7 @@
     "GachaId": 15,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 32550,
+    "Weight": 7161000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -212,7 +212,7 @@
     "GachaId": 15,
     "ItemTID": 100015,
     "Count": 3,
-    "Weight": 155000,
+    "Weight": 34100000,
     "Description": "인챈트 큐브 x3"
   },
   {
@@ -220,7 +220,7 @@
     "GachaId": 18,
     "ItemTID": 10031,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 부러진 창 x27"
   },
   {
@@ -228,7 +228,7 @@
     "GachaId": 18,
     "ItemTID": 20031,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 귀리 x27"
   },
   {
@@ -236,7 +236,7 @@
     "GachaId": 18,
     "ItemTID": 30031,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 가문비나무 목재 x27"
   },
   {
@@ -244,7 +244,7 @@
     "GachaId": 18,
     "ItemTID": 40031,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 현무암 x27"
   },
   {
@@ -252,7 +252,7 @@
     "GachaId": 18,
     "ItemTID": 50031,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 들소 가죽 x27"
   },
   {
@@ -260,7 +260,7 @@
     "GachaId": 18,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -268,7 +268,7 @@
     "GachaId": 18,
     "ItemTID": 100015,
     "Count": 4,
-    "Weight": 620000,
+    "Weight": 62000000,
     "Description": "인챈트 큐브 x4"
   },
   {
@@ -276,7 +276,7 @@
     "GachaId": 21,
     "ItemTID": 10041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 오래된 뼈 조각 x27"
   },
   {
@@ -284,7 +284,7 @@
     "GachaId": 21,
     "ItemTID": 20041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 벼 x27"
   },
   {
@@ -292,7 +292,7 @@
     "GachaId": 21,
     "ItemTID": 30041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 벚나무 목재 x27"
   },
   {
@@ -300,7 +300,7 @@
     "GachaId": 21,
     "ItemTID": 40041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 대리석 x27"
   },
   {
@@ -308,7 +308,7 @@
     "GachaId": 21,
     "ItemTID": 50041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 수사슴 가죽 x27"
   },
   {
@@ -316,7 +316,7 @@
     "GachaId": 21,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -324,7 +324,7 @@
     "GachaId": 21,
     "ItemTID": 100015,
     "Count": 5,
-    "Weight": 620000,
+    "Weight": 62000000,
     "Description": "인챈트 큐브 x5"
   },
   {
@@ -332,7 +332,7 @@
     "GachaId": 9,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 248000,
+    "Weight": 136400000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -340,7 +340,7 @@
     "GachaId": 9,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 24180,
+    "Weight": 13299000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -348,7 +348,7 @@
     "GachaId": 9,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 24180,
+    "Weight": 13299000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -356,7 +356,7 @@
     "GachaId": 12,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 2480000,
+    "Weight": 248000000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -364,7 +364,7 @@
     "GachaId": 12,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -372,7 +372,7 @@
     "GachaId": 12,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -380,7 +380,7 @@
     "GachaId": 15,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 620000,
+    "Weight": 136400000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -388,7 +388,7 @@
     "GachaId": 15,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 60450,
+    "Weight": 13299000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -396,7 +396,7 @@
     "GachaId": 15,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 60450,
+    "Weight": 13299000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -404,7 +404,7 @@
     "GachaId": 18,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 2480000,
+    "Weight": 248000000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -412,7 +412,7 @@
     "GachaId": 18,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -420,7 +420,7 @@
     "GachaId": 18,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -428,7 +428,7 @@
     "GachaId": 21,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 2480000,
+    "Weight": 248000000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -436,7 +436,7 @@
     "GachaId": 21,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -444,7 +444,7 @@
     "GachaId": 21,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -1188,7 +1188,7 @@
     "GachaId": 9,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 13020,
+    "Weight": 7161000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   },
   {
@@ -1196,7 +1196,7 @@
     "GachaId": 12,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   },
   {
@@ -1204,7 +1204,7 @@
     "GachaId": 15,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 32550,
+    "Weight": 7161000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   },
   {
@@ -1212,7 +1212,7 @@
     "GachaId": 18,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   },
   {
@@ -1220,7 +1220,7 @@
     "GachaId": 21,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   },
   {
@@ -1244,7 +1244,7 @@
     "GachaId": 37,
     "ItemTID": 10041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 오래된 뼈 조각 x27"
   },
   {
@@ -1252,7 +1252,7 @@
     "GachaId": 37,
     "ItemTID": 20041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 벼 x27"
   },
   {
@@ -1260,7 +1260,7 @@
     "GachaId": 37,
     "ItemTID": 30041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 벚나무 목재 x27"
   },
   {
@@ -1268,7 +1268,7 @@
     "GachaId": 37,
     "ItemTID": 40041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 대리석 x27"
   },
   {
@@ -1276,7 +1276,7 @@
     "GachaId": 37,
     "ItemTID": 50041,
     "Count": 27,
-    "Weight": 744000,
+    "Weight": 74400000,
     "Description": "자원 수사슴 가죽 x27"
   },
   {
@@ -1284,7 +1284,7 @@
     "GachaId": 37,
     "ItemTID": 100010,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 보물 지도"
   },
   {
@@ -1292,7 +1292,7 @@
     "GachaId": 37,
     "ItemTID": 100015,
     "Count": 5,
-    "Weight": 620000,
+    "Weight": 62000000,
     "Description": "인챈트 큐브 x5"
   },
   {
@@ -1300,7 +1300,7 @@
     "GachaId": 37,
     "ItemTID": 100041,
     "Count": 1,
-    "Weight": 2480000,
+    "Weight": 248000000,
     "Description": "성장의 비약 (소) x1"
   },
   {
@@ -1308,7 +1308,7 @@
     "GachaId": 37,
     "ItemTID": 100044,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "신속의 영약 x20"
   },
   {
@@ -1316,7 +1316,7 @@
     "GachaId": 37,
     "ItemTID": 100045,
     "Count": 20,
-    "Weight": 241800,
+    "Weight": 24180000,
     "Description": "풍요의 영약 x20"
   },
   {
@@ -1324,7 +1324,7 @@
     "GachaId": 37,
     "ItemTID": 100036,
     "Count": 1,
-    "Weight": 130200,
+    "Weight": 13020000,
     "Description": "상자 전용 낡은 나침반 (#111)"
   }
 ]
