@@ -42,8 +42,12 @@ public class DBManagerTest
     {
         EnsureExecutorStarted();
 
-        var executor = new FakeLogicExecutor();
-        var manager  = new DBManager(executor);
+        // DB 스레드가 예약한 콜백을 테스트 스레드에서 받아 실행한다.
+        var posted = new TaskCompletionSource<Action>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var executor = new Mock<ILogicExecutor>();
+        executor.Setup(logic => logic.Post(It.IsAny<Action>()))
+            .Callback<Action>(job => posted.TrySetResult(job));
+        var manager = new DBManager(executor.Object);
 
         // 테이블이 하나도 없는 빈 DB — LoginRepository의 첫 SELECT부터 실패한다.
         manager.Initialize(() => new SqliteConnection("Data Source=:memory:"));
@@ -52,25 +56,10 @@ public class DBManagerTest
         var user    = builder.Build();
         manager.Post(new LoginRepository(user));
 
-        await WaitForPostAsync(executor);
-        executor.Drain();
+        var callback = await posted.Task.WaitAsync(TimeSpan.FromSeconds(15));
+        callback();
 
         builder.Channel.SentOf<S_LoginResponse>().ShouldHaveSingleItem().Result.ShouldBe(EResultCode.DbError);
         user.IsDestroyed.ShouldBeTrue();
-    }
-
-    // DB 스레드가 결과를 로직 큐에 넣을 때까지 기다린다. 5초면 :memory: 실패 한 번에는 넉넉하다.
-    private static async Task WaitForPostAsync(FakeLogicExecutor executor)
-    {
-        var deadline = DateTime.UtcNow.AddSeconds(5);
-        while (executor.Posted.Count == 0)
-        {
-            if (DateTime.UtcNow > deadline)
-            {
-                throw new TimeoutException("DB 스레드가 결과를 되돌리지 않았다");
-            }
-
-            await Task.Delay(10);
-        }
     }
 }

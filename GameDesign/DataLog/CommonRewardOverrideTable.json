@@ -6,7 +6,7 @@
     "ItemTID": 100061,
     "Count": 1,
     "ChancePerMillion": 10000,
-    "Description": "발굴 Lv1 흙 묻은 유물 — 판정당 1% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv1 흙 묻은 유물 — 판정당 1% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 200102,
@@ -15,7 +15,7 @@
     "ItemTID": 100062,
     "Count": 1,
     "ChancePerMillion": 1500,
-    "Description": "발굴 Lv1 조개 박힌 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv1 조개 박힌 유물 — 판정당 0.15% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 200103,
@@ -24,7 +24,7 @@
     "ItemTID": 100063,
     "Count": 1,
     "ChancePerMillion": 150,
-    "Description": "발굴 Lv1 산호 엉긴 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv1 산호 엉긴 유물 — 판정당 0.015% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 202001,
@@ -33,7 +33,7 @@
     "ItemTID": 100061,
     "Count": 1,
     "ChancePerMillion": 8000,
-    "Description": "발굴 Lv20 흙 묻은 유물 — 판정당 0.8% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv20 흙 묻은 유물 — 판정당 0.8% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 202002,
@@ -42,7 +42,7 @@
     "ItemTID": 100062,
     "Count": 1,
     "ChancePerMillion": 3000,
-    "Description": "발굴 Lv20 조개 박힌 유물 — 판정당 0.3% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv20 조개 박힌 유물 — 판정당 0.3% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 202003,
@@ -51,7 +51,7 @@
     "ItemTID": 100063,
     "Count": 1,
     "ChancePerMillion": 500,
-    "Description": "발굴 Lv20 산호 엉긴 유물 — 판정당 0.05% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv20 산호 엉긴 유물 — 판정당 0.05% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 202004,
@@ -60,7 +60,7 @@
     "ItemTID": 100064,
     "Count": 1,
     "ChancePerMillion": 50,
-    "Description": "발굴 Lv20 봉인된 유물 — 판정당 0.005% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv20 봉인된 유물 — 판정당 0.005% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 204001,
@@ -69,7 +69,7 @@
     "ItemTID": 100061,
     "Count": 1,
     "ChancePerMillion": 6000,
-    "Description": "발굴 Lv40 흙 묻은 유물 — 판정당 0.6% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv40 흙 묻은 유물 — 판정당 0.6% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 204002,
@@ -78,7 +78,7 @@
     "ItemTID": 100062,
     "Count": 1,
     "ChancePerMillion": 4000,
-    "Description": "발굴 Lv40 조개 박힌 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv40 조개 박힌 유물 — 판정당 0.4% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 204003,
@@ -87,7 +87,7 @@
     "ItemTID": 100063,
     "Count": 1,
     "ChancePerMillion": 1500,
-    "Description": "발굴 Lv40 산호 엉긴 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv40 산호 엉긴 유물 — 판정당 0.15% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 204004,
@@ -96,7 +96,7 @@
     "ItemTID": 100064,
     "Count": 1,
     "ChancePerMillion": 150,
-    "Description": "발굴 Lv40 봉인된 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv40 봉인된 유물 — 판정당 0.015% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 204005,
@@ -105,7 +105,7 @@
     "ItemTID": 100065,
     "Count": 1,
     "ChancePerMillion": 15,
-    "Description": "발굴 Lv40 황금 띠 유물 — 판정당 0.0015% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv40 황금 띠 유물 — 판정당 0.0015% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206001,
@@ -114,7 +114,7 @@
     "ItemTID": 100061,
     "Count": 1,
     "ChancePerMillion": 4000,
-    "Description": "발굴 Lv60 흙 묻은 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 흙 묻은 유물 — 판정당 0.4% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206002,
@@ -123,7 +123,7 @@
     "ItemTID": 100062,
     "Count": 1,
     "ChancePerMillion": 5000,
-    "Description": "발굴 Lv60 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206003,
@@ -132,7 +132,7 @@
     "ItemTID": 100063,
     "Count": 1,
     "ChancePerMillion": 2500,
-    "Description": "발굴 Lv60 산호 엉긴 유물 — 판정당 0.25% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 산호 엉긴 유물 — 판정당 0.25% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206004,
@@ -141,7 +141,7 @@
     "ItemTID": 100064,
     "Count": 1,
     "ChancePerMillion": 500,
-    "Description": "발굴 Lv60 봉인된 유물 — 판정당 0.05% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 봉인된 유물 — 판정당 0.05% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206005,
@@ -150,7 +150,7 @@
     "ItemTID": 100065,
     "Count": 1,
     "ChancePerMillion": 50,
-    "Description": "발굴 Lv60 황금 띠 유물 — 판정당 0.005% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 황금 띠 유물 — 판정당 0.005% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 206006,
@@ -159,7 +159,7 @@
     "ItemTID": 100066,
     "Count": 1,
     "ChancePerMillion": 5,
-    "Description": "발굴 Lv60 왕의 유물 — 판정당 0.0005% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv60 왕의 유물 — 판정당 0.0005% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208001,
@@ -168,7 +168,7 @@
     "ItemTID": 100061,
     "Count": 1,
     "ChancePerMillion": 2000,
-    "Description": "발굴 Lv80 흙 묻은 유물 — 판정당 0.2% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 흙 묻은 유물 — 판정당 0.2% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208002,
@@ -177,7 +177,7 @@
     "ItemTID": 100062,
     "Count": 1,
     "ChancePerMillion": 5000,
-    "Description": "발굴 Lv80 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 조개 박힌 유물 — 판정당 0.5% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208003,
@@ -186,7 +186,7 @@
     "ItemTID": 100063,
     "Count": 1,
     "ChancePerMillion": 4000,
-    "Description": "발굴 Lv80 산호 엉긴 유물 — 판정당 0.4% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 산호 엉긴 유물 — 판정당 0.4% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208004,
@@ -195,7 +195,7 @@
     "ItemTID": 100064,
     "Count": 1,
     "ChancePerMillion": 1500,
-    "Description": "발굴 Lv80 봉인된 유물 — 판정당 0.15% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 봉인된 유물 — 판정당 0.15% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208005,
@@ -204,7 +204,7 @@
     "ItemTID": 100065,
     "Count": 1,
     "ChancePerMillion": 150,
-    "Description": "발굴 Lv80 황금 띠 유물 — 판정당 0.015% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 황금 띠 유물 — 판정당 0.015% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 208006,
@@ -213,7 +213,7 @@
     "ItemTID": 100066,
     "Count": 1,
     "ChancePerMillion": 15,
-    "Description": "발굴 Lv80 왕의 유물 — 판정당 0.0015% · 상자 대신 (테스트값 — T-150)"
+    "Description": "발굴 Lv80 왕의 유물 — 판정당 0.0015% · 상자 대신 (확정 2026-11-21 · T-150)"
   },
   {
     "CommonRewardOverrideTID": 210001,

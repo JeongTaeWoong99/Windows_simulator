@@ -3,7 +3,7 @@
 > 상위 문서: [`게임기획코어.md`](../게임기획코어.md)
 > 상태: **첫 보스 서버 구현 · 클라 화면과 전투 재생 대기**
 > **바뀌면 갱신:** [`게임UI`](../ui/README.md) · [`게임기획코어`](../게임기획코어.md) · [`기획평가`](../기획평가.md) · [`사냥`](../gathering/hunting/README.md) · [`아이템`](../item/README.md) · [`진행 및 성장`](../progression/README.md)
->   [`해금`](../unlock/README.md)
+>   [`해금`](../unlock/README.md) · [`유물감정`](../gathering/excavation/유물감정.md)
 
 ## 입장과 편성
 
