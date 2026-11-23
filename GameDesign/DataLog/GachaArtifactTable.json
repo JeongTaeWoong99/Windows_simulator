@@ -180,7 +180,7 @@
     "GachaId": 9,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9997,
+    "Weight": 5498350,
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
@@ -188,7 +188,7 @@
     "GachaId": 12,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
+    "Weight": 9991000,
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
@@ -196,7 +196,7 @@
     "GachaId": 15,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 2500,
+    "Weight": 5500000,
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
@@ -204,7 +204,7 @@
     "GachaId": 18,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
+    "Weight": 9991000,
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
@@ -212,7 +212,7 @@
     "GachaId": 21,
     "ArtifactTID": 24,
     "Count": 1,
-    "Weight": 9991,
+    "Weight": 9991000,
     "Description": "나무 상자 · 장인의 나무 자"
   },
   {
@@ -238,5 +238,13 @@
     "Count": 1,
     "Weight": 24850,
     "Description": "전설 유물 감정 · 개척자의 문장"
+  },
+  {
+    "GachaArtifactTID": 37324,
+    "GachaId": 37,
+    "ArtifactTID": 24,
+    "Count": 1,
+    "Weight": 9991000,
+    "Description": "나무 상자 · 장인의 나무 자"
   }
 ]

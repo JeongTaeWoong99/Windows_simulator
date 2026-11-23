@@ -2311,7 +2311,7 @@
     "MaxStack": 1000,
     "BasePrice": 163,
     "OpenGachaId": 12,
-    "Description": "테마 상자 — 채취 Lv20(산기슭) 드롭 · 열기는 옛 나무 상자 Lv2 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv20(산기슭) 드롭",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2323,7 +2323,7 @@
     "MaxStack": 1000,
     "BasePrice": 488,
     "OpenGachaId": 15,
-    "Description": "테마 상자 — 채취 Lv40(광산 마을) 드롭 · 열기는 옛 나무 상자 Lv3 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv40(광산 마을) 드롭",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2335,7 +2335,7 @@
     "MaxStack": 1000,
     "BasePrice": 1463,
     "OpenGachaId": 18,
-    "Description": "테마 상자 — 채취 Lv60(변경 요새) 드롭 · 열기는 옛 나무 상자 Lv4 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv60(변경 요새) 드롭",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2347,7 +2347,7 @@
     "MaxStack": 1000,
     "BasePrice": 4389,
     "OpenGachaId": 21,
-    "Description": "테마 상자 — 채취 Lv80(성곽 도시) 드롭 · 열기는 옛 나무 상자 Lv5 풀 임시(T-209)",
+    "Description": "테마 상자 — 채취 Lv80(성곽 도시) 드롭",
     "Tooltip": "",
     "OpenCostGold": 0
   },
@@ -2358,8 +2358,8 @@
     "GlobalRarity": "Common",
     "MaxStack": 1000,
     "BasePrice": 4389,
-    "OpenGachaId": 21,
-    "Description": "테마 상자 — 채취 Lv100(왕실) 드롭 · 열기는 옛 나무 상자 Lv5 풀 임시(T-209)",
+    "OpenGachaId": 37,
+    "Description": "테마 상자 — 채취 Lv100(왕실) 드롭",
     "Tooltip": "",
     "OpenCostGold": 0
   },

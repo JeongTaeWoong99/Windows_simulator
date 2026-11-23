@@ -38,6 +38,77 @@ public class BoxSheetTest
         Boxes.ShouldAllBe(r => r.OpenGachaId != 0 && r.MaxStack == 1000);
     }
 
+    [Theory]
+    [InlineData(100081, 1, 1)]
+    [InlineData(100082, 10, 20)]
+    [InlineData(100083, 30, 40)]
+    [InlineData(100084, 50, 60)]
+    [InlineData(100085, 70, 80)]
+    [InlineData(100086, 90, 100)]
+    public void 테마_상자의_장비는_해당_레벨_구간에서_낮은_레벨이_더_자주_나온다(
+        int boxTid, int lowerLevel, int upperLevel)
+    {
+        var poolId = GameTable.ItemTable[boxTid].OpenGachaId;
+        var weights = GameTable.GachaEquipTable.All
+            .Where(r => r.GachaId == poolId && r.Weight > 0)
+            .GroupBy(r => GameTable.EquipTable[r.EquipTID].ItemLevel)
+            .ToDictionary(group => group.Key, group => group.Sum(r => (long)r.Weight));
+
+        if (lowerLevel == upperLevel)
+        {
+            weights.Keys.ShouldBe(new[] { lowerLevel });
+            return;
+        }
+
+        weights.Keys.OrderBy(level => level).ShouldBe(new[] { lowerLevel, upperLevel });
+        (weights[lowerLevel] * 3).ShouldBe(weights[upperLevel] * 7);
+    }
+
+    [Theory]
+    [InlineData(100081, new[] { 570000, 180000, 100000, 120000, 25000, 5000 })]
+    [InlineData(100082, new[] { 625000, 200000, 100000, 60000, 12500, 2500 })]
+    [InlineData(100083, new[] { 645000, 210000, 100000, 36000, 7500, 1500 })]
+    [InlineData(100084, new[] { 660000, 210000, 100000, 24000, 5000, 1000 })]
+    [InlineData(100085, new[] { 670000, 215000, 100000, 12000, 2500, 500 })]
+    [InlineData(100086, new[] { 675000, 216000, 100000, 7500, 1250, 250 })]
+    public void 테마_상자는_각_장비_레벨에서_정해진_등급_확률을_적용한다(int boxTid, int[] chancesPerMillion)
+    {
+        var poolId = GameTable.ItemTable[boxTid].OpenGachaId;
+        var entriesByLevel = GameTable.GachaEquipTable.All
+            .Where(row => row.GachaId == poolId && row.Weight > 0)
+            .GroupBy(row => GameTable.EquipTable[row.EquipTID].ItemLevel)
+            .ToArray();
+        entriesByLevel.Length.ShouldBeGreaterThan(0);
+
+        GlobalRarity[] rarities =
+        {
+            GlobalRarity.Common, GlobalRarity.Uncommon, GlobalRarity.Rare,
+            GlobalRarity.Epic, GlobalRarity.Legendary, GlobalRarity.Mythic,
+        };
+
+        foreach (var level in entriesByLevel)
+        {
+            var totalWeight = level.Sum(row => (long)row.Weight);
+            var weightsByRarity = level.ToLookup(row => GameTable.EquipTable[row.EquipTID].GlobalRarity);
+
+            for (var i = 0; i < rarities.Length; i++)
+            {
+                var rarity = rarities[i];
+                var entries = weightsByRarity[rarity].ToArray();
+                var expectedEquipTids = GameTable.EquipTable.All
+                    .Where(row => row.ItemLevel == level.Key && row.GlobalRarity == rarity)
+                    .Select(row => row.EquipTID);
+
+                entries.Select(row => row.EquipTID).ShouldBe(expectedEquipTids, ignoreOrder: true);
+                entries.Select(row => row.Weight).Distinct().Count().ShouldBe(1);
+
+                var actualChance = entries.Sum(row => (long)row.Weight) * 1_000_000m / totalWeight;
+                // 정수 가중치로 표현하는 등급별 확률의 허용 오차는 1 ppm이다.
+                Math.Abs(actualChance - chancesPerMillion[i]).ShouldBeLessThanOrEqualTo(1m);
+            }
+        }
+    }
+
     [Fact]
     public void 옛_재질_상자_15종은_표에_없다()
     {

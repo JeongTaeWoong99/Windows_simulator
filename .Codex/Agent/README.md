@@ -2,6 +2,7 @@
 
 ## INDEX
 
+- [2026-11-24 테마 상자 장비 레벨 보상 연결](2026-11-24-theme-box-equipment-levels.md) — `#data` `#server` 테마 상자별 장비 레벨과 왕실 보상 풀 연결
 - [2026-11-24 개발 편의 치트 서버 명령 3종](2026-11-24-developer-cheat-commands.md) — `#server` `#test` #154 상자 시뮬레이션·레벨 설정·보관함 비우기
 
 - [2026-11-22 DB 실패 콜백 테스트 안정화](2026-11-22-db-callback-test.md) — `#server` `#test` 스레드 간 콜백 완료를 Task로 전달
