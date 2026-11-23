@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-> 최종 업데이트: 2026-11-14 (`codixel` 스킬 — 정지 그림을 뼈로 움직이기 · PixelOE 경량판) · 2026-11-11 (`pixel-fx` 발동 조건 — 연출 이펙트 한 장은 `claude-fx/make_fx.py`) · 2026-11-08 (`pixel-fx` 스킬 — Claude가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
+> 최종 업데이트: 2026-11-24 (`docs/스팀 로그인 시험.md`) · 2026-11-14 (`codixel` 스킬 — 정지 그림을 뼈로 움직이기 · PixelOE 경량판) · 2026-11-11 (`pixel-fx` 발동 조건 — 연출 이펙트 한 장은 `claude-fx/make_fx.py`) · 2026-11-08 (`pixel-fx` 스킬 — Claude가 코드로 그리는 픽셀 이펙트 · `unity-ai-assets`에 리소스 길 고르기) · 2026-11-07 (`asset-compression` 스킬 — 저장소·빌드·메모리 용량) · 2026-11-02 (`unity-ai-assets` 스킬 — AI 리소스 크레딧 보고) · 2026-10-25 (서버 작업은 main 머지 대신 PR) · 2026-10-17 (규빈 이탈 — 담당은 태웅·진우 둘) · 2026-10-10 (`ugui-layout` 발동 조건에 UI 프레임 튐) · 2026-10-08 (클라 비동기·풀링 스킬 — `unitask` · `dotween` · `object-pool`)
 
 이 문서는 Claude Code로 작업할 때 공통으로 유의·협의해야 할 내용을 정리한 가이드다.
 데스크톱 위에서 동작하는 투명 창(데스크톱 윈도우 제어)과 네트워크 기능을 결합하는 프로젝트로,
@@ -39,7 +39,7 @@
 | `tasks/art/` | 공용 | **🎨 아트·연출만 남은 일감** — INDEX에서 뺐다. 아트 작업 때만 연다 |
 | `tasks/later/` | 공용 | **먼 훗날 할 일감**(배포 전 게이트 등) — INDEX에서 뺐다. 배포 준비 때 연다 |
 | `tasks/archive/` | 공용 | **끝난 일감** — 완료되면 여기로 내려간다. INDEX에는 굴러가는 것만 남는다. 평소 탐색하지 않는다 |
-| `docs/` | 공용 | **개발 인프라 문서** — 서버·클라 양쪽에 걸치는 것. 현재 [`CI.md`](docs/CI.md) |
+| `docs/` | 공용 | **개발 인프라 문서** — 서버·클라 양쪽에 걸치는 것. 현재 [`CI.md`](docs/CI.md) · [`스팀 로그인 시험.md`](docs/스팀%20로그인%20시험.md) |
 | `.github/workflows/` | 공용 | GitHub Actions — 서버 CI · 클라 CI · Unity 라이선스 활성화 |
 | `GameDesign/` | 공용 | **게임 기획·데이터 단일 진실** — 기획 문서(`design/`)·엑셀(`Excel/`)·파이프라인 스크립트·문서 사이트(`web/`). 상세는 [`GameDesign/CLAUDE.md`](GameDesign/CLAUDE.md) |
 | `Server/` | 서버 | **서버 단일 진실** — .NET 솔루션(MikaNetwork 모듈 + WSGameServer). 상세는 [`Server/CLAUDE.md`](Server/CLAUDE.md) |

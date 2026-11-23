@@ -153,6 +153,8 @@ namespace DesktopWindowControl.EditorTools
 					$"\"{dotnet}\" build \"{auction}\" -nologo -v q > \"{auctionLog}\" 2>&1 && " +
 					$"start \"\" /b /d \"{auctionDir}\" \"{dotnet}\" run --no-build --project \"{auction}\" >> \"{auctionLog}\" 2>&1";
 
+				CopyUserSecretsToProcess();
+
 				var psi = new ProcessStartInfo("cmd.exe")
 				{
 					Arguments        = $"/S /C \"chcp 65001>nul && {auctionPart} & \"{dotnet}\" run --project \"{csproj}\" > \"{log}\" 2>&1\"",
@@ -214,6 +216,30 @@ namespace DesktopWindowControl.EditorTools
 			{
 				Debug.LogError($"[서버 콘솔] 서버 종료 실패: {e.Message}");
 			}
+		}
+
+		// 사용자 환경 변수의 서버 비밀값(스팀 Web API 키)을 에디터 프로세스로 옮긴다 (T-211).
+		// 서버는 에디터의 환경을 물려받는데, 에디터가 키를 등록하기 전에 켜졌으면 키가 없어
+		// 스팀 로그인이 'SteamUnavailable — WebApiKey 미설정'으로 거절된다. 키 값은 로그에 남기지 않는다.
+		private static void CopyUserSecretsToProcess()
+		{
+			const string SteamKey = "Game__Steam__WebApiKey";
+
+			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(SteamKey)))
+			{
+				return;
+			}
+
+			var value = Environment.GetEnvironmentVariable(SteamKey, EnvironmentVariableTarget.User);
+
+			if (string.IsNullOrEmpty(value))
+			{
+				Debug.LogWarning($"[서버 콘솔] 사용자 환경 변수 {SteamKey}가 없다 — 스팀 로그인은 거절된다(Id 로그인은 된다).");
+
+				return;
+			}
+
+			Environment.SetEnvironmentVariable(SteamKey, value);
 		}
 
 		// 서버는 net10.0라 .NET 10 SDK가 필요하다. 그런데 .NET 10 SDK가 사용자 로컬(~/.dotnet)에만 깔려 있고

@@ -159,6 +159,7 @@ namespace DesktopWindowControl.EditorTools
 				DrawServerConsoleTool();
 				DrawToolGap();
 				DrawPeriodicLogTool();
+				DrawSteamModeTool();
 			}
 		}
 
@@ -228,6 +229,27 @@ namespace DesktopWindowControl.EditorTools
 			if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)))
 			{
 				PeriodicLogSettings.Enabled = !isOn;
+			}
+
+			GUI.contentColor = previous;
+		}
+
+		// '[●] 스팀 화면' — 켜면 에디터에서도 로그인 화면이 빌드처럼 [접속하기] · [종료]로 뜬다(T-211).
+		// 로그인 화면이 뜰 때 읽으므로 다음 플레이부터 적용된다. 스팀 클라이언트가 켜져 있어야 접속된다.
+		private static void DrawSteamModeTool()
+		{
+			var isOn = EditorPrefs.GetBool(LoginPresenter.SteamModePrefKey, false);
+			var content = new GUIContent
+				(isOn ? "[●] 스팀 화면" : "[○] 스팀 화면",
+				 isOn ? "로그인 화면을 빌드처럼 [접속하기]·[종료]로 띄우는 중 — 누르면 Id 로그인으로(다음 플레이부터)"
+				      : "Id 로그인 화면 — 누르면 빌드처럼 [접속하기]·[종료]로(다음 플레이부터 · 스팀 클라이언트 필요)");
+
+			var previous = GUI.contentColor;
+			GUI.contentColor = isOn ? CheatGui.DoneColor : previous;
+
+			if (GUILayout.Button(content, EditorStyles.toolbarButton, GUILayout.ExpandWidth(false)))
+			{
+				EditorPrefs.SetBool(LoginPresenter.SteamModePrefKey, !isOn);
 			}
 
 			GUI.contentColor = previous;

@@ -204,8 +204,31 @@ public class VisualCatalog : ScriptableObject
     public Sprite? GetItemIcon(int itemTid)
         => (_itemIconMap ??= ToMap(itemIcons)).TryGetValue(itemTid, out Sprite icon) ? icon : fallbackItemIcon;
 
+    // 장비 아이콘 — 제 TID → **같은 이름(레벨·종류·산업)의 아이콘** → 같은 꼴의 Lv1 아이콘 → 대체 아이콘 순.
+    // ※ 레벨 장비 TID는 '레벨 × 10000 + 종류·산업 × 100 + 등급'이다(T-200 · 장비레벨.md 1.1). 같은 레벨 안에서는
+    //   이름이 같고 등급만 달라 그림은 이름당 한 장이다 — 일반 등급(끝 두 자리 01) TID 이름으로 둔다(2026-11-24 · 110장).
+    //   Lv1은 등급마다 이름이 달라 제 TID로만 찾는다(끝 두 자리 규칙을 쓰지 않는다).
     public Sprite? GetEquipIcon(int equipTid)
-        => (_equipIconMap ??= ToMap(equipIcons)).TryGetValue(equipTid, out Sprite icon) ? icon : fallbackEquipIcon;
+    {
+        _equipIconMap ??= ToMap(equipIcons);
+
+        if (_equipIconMap.TryGetValue(equipTid, out Sprite icon))
+        {
+            return icon;
+        }
+
+        if (equipTid >= LevelTidUnit
+            && (_equipIconMap.TryGetValue(equipTid - equipTid % GradeTidUnit + 1, out icon)
+                || _equipIconMap.TryGetValue(equipTid % LevelTidUnit, out icon)))
+        {
+            return icon;
+        }
+
+        return fallbackEquipIcon;
+    }
+
+    private const int GradeTidUnit = 100;     // 장비 TID의 등급 자리(끝 두 자리) — 레벨 장비에서만
+    private const int LevelTidUnit = 10000;   // 장비 TID의 레벨 자리 — 'TID = 레벨 × 10000 + …'
 
     public Sprite? GetIndustryIcon(EIndustryType industry)
         => (_industryIconMap ??= ToMap(industryIcons)).TryGetValue((int)industry, out Sprite icon) ? icon : fallbackItemIcon;

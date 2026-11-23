@@ -53,6 +53,9 @@ public partial class User
             ECheatCommand.SeedAuctionListings => CheatSeedAuctionListings(req.Arg1, req.Arg2, now),
             ECheatCommand.GiveAllCharacters => CheatGiveAllCharacters(now),
             ECheatCommand.GiveArtifact     => CheatGiveArtifact(req.Arg1, req.Arg2, now),
+            ECheatCommand.SimulateBoxOpen  => GachaService.Instance.SimulateBoxOpen(req.Arg1, req.Arg2),
+            ECheatCommand.SetCharacterLevel => CheatSetCharacterLevel(req.Arg1, req.Arg2, now),
+            ECheatCommand.ClearItems       => CheatClearItems(req.Arg1, req.Arg2),
             _                              => (EResultCode.InvalidCheatCommand, "정의되지 않은 명령"),
         };
 
