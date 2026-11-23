@@ -7,12 +7,12 @@
     "Industry": "Farming",
     "EffectValue": 0,
     "BaseLevel": 1,
-    "MaxLevel": 5,
+    "MaxLevel": 6,
     "BuildingTID": 2,
     "Column": 1,
     "Row": 1,
     "RequiredTraitTIDs": [],
-    "Description": "농사 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "농사 산업 레벨 해금 — 특성 Lv k = k번째 단계(IndustryLevelTable.RequiredTraitLevel)"
   },
   {
     "UserTraitTID": 102,
@@ -22,12 +22,12 @@
     "Industry": "Excavation",
     "EffectValue": 0,
     "BaseLevel": 1,
-    "MaxLevel": 5,
+    "MaxLevel": 6,
     "BuildingTID": 2,
     "Column": 2,
     "Row": 1,
     "RequiredTraitTIDs": [],
-    "Description": "발굴 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "발굴 산업 레벨 해금 — 특성 Lv k = k번째 단계(IndustryLevelTable.RequiredTraitLevel)"
   },
   {
     "UserTraitTID": 103,
@@ -37,12 +37,12 @@
     "Industry": "Mining",
     "EffectValue": 0,
     "BaseLevel": 1,
-    "MaxLevel": 5,
+    "MaxLevel": 6,
     "BuildingTID": 2,
     "Column": 3,
     "Row": 1,
     "RequiredTraitTIDs": [],
-    "Description": "채굴 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "채굴 산업 레벨 해금 — 특성 Lv k = k번째 단계(IndustryLevelTable.RequiredTraitLevel)"
   },
   {
     "UserTraitTID": 104,
@@ -52,12 +52,12 @@
     "Industry": "Logging",
     "EffectValue": 0,
     "BaseLevel": 1,
-    "MaxLevel": 5,
+    "MaxLevel": 6,
     "BuildingTID": 2,
     "Column": 4,
     "Row": 1,
     "RequiredTraitTIDs": [],
-    "Description": "벌목 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "벌목 산업 레벨 해금 — 특성 Lv k = k번째 단계(IndustryLevelTable.RequiredTraitLevel)"
   },
   {
     "UserTraitTID": 105,
@@ -67,12 +67,12 @@
     "Industry": "Hunting",
     "EffectValue": 0,
     "BaseLevel": 1,
-    "MaxLevel": 5,
+    "MaxLevel": 6,
     "BuildingTID": 2,
     "Column": 5,
     "Row": 1,
     "RequiredTraitTIDs": [],
-    "Description": "사냥 산업 레벨 해금 — 특성 레벨 = 열린 산업 레벨"
+    "Description": "사냥 산업 레벨 해금 — 특성 Lv k = k번째 단계(IndustryLevelTable.RequiredTraitLevel)"
   },
   {
     "UserTraitTID": 201,

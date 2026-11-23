@@ -15,7 +15,7 @@ namespace GameData
         public static ExcavationBasicTableRow Parse(string[] cells) => new()
         {
             DropTID       = PackerUtil.ParseInt(cells[0], Table, "DropTID"),
-            IndustryLevel = PackerUtil.ParseInt(cells[1], Table, "IndustryLevel", 1, 5),
+            IndustryLevel = PackerUtil.ParseInt(cells[1], Table, "IndustryLevel", 1, 100),
             ItemTID       = PackerUtil.ParseInt(cells[2], Table, "ItemTID"),
             Weight        = PackerUtil.ParseInt(cells[3], Table, "Weight"),
             Description   = cells[4].Length > 0 ? PackerUtil.RequireString(cells[4], Table, "Description") : "",

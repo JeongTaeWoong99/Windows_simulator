@@ -74,9 +74,9 @@ public class RelicAppraiseTest
     {
         var b    = new TestUserBuilder();
         var user = b.Build();
-        user.GainItem(100019, 2);   // 나무 상자 Lv1 — OpenCostGold 0
+        user.GainItem(100081, 2);   // 개척자의 상자 — OpenCostGold 0
 
-        ServiceWith(new GachaEntry(9, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, 100019, 2, TestUserBuilder.Base);
+        ServiceWith(new GachaEntry(9, GachaRewardType.Item, ShardTid, 1, 100)).OpenBox(user, 100081, 2, TestUserBuilder.Base);
 
         Response(b).Result.ShouldBe(EResultCode.Ok);
         user.Gold.ShouldBe(0);

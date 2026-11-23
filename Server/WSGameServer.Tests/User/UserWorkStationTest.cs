@@ -29,27 +29,31 @@ public class UserWorkStationTest
 
     public UserWorkStationTest() => GameTableFixture.EnsureLoaded();
 
+    /// <summary>채취 단계의 실제 레벨 — 저장 값도 이 값이다(레벨테마.md 1장).</summary>
+    private static readonly int[] StageLevels = { 1, 20, 40, 60, 80, 100 };
+
     /// <summary>
-    /// 산업 레벨 1~5 행(판정 30초 고정)을 넣고 개척 특성을 <paramref name="upTo"/>레벨로 둔다.
+    /// 산업마다 6단계 행(판정 30초 고정 · k번째 단계 = 개척 특성 Lv k)을 넣고 개척 특성을 <paramref name="traitLevel"/>로 둔다.
     /// 산업 레벨은 개척 특성으로만 열린다 — 열렸는지의 원본은 <c>t_user_trait</c>다.
     /// </summary>
-    private static void OpenIndustryLevels(TestUserBuilder b, User user, IndustryType industry, int upTo)
+    private static void OpenIndustryLevels(TestUserBuilder b, User user, IndustryType industry, int traitLevel)
     {
         var rows = new List<IndustryLevelTableRow>();
         foreach (var ind in new[] { IndustryType.Farming, IndustryType.Excavation, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
         {
-            for (var level = 1; level <= 5; level++)
+            for (var stage = 1; stage <= StageLevels.Length; stage++)
             {
+                var level = StageLevels[stage - 1];
                 rows.Add(new IndustryLevelTableRow
                 {
-                    IndustryLevelTID = (int)ind * 100 + level, IndustryType = ind, Level = level,
-                    Name = $"{ind} Lv{level}", RequiredScore = 30_000,
+                    IndustryLevelTID = (int)ind * 100 + stage, IndustryType = ind, Level = level,
+                    Name = $"{ind} Lv{level}", RequiredScore = 30_000, RequiredTraitLevel = stage,
                 });
             }
         }
 
         b.Levels.Load(rows);
-        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = 100 + (int)industry, level = upTo } });
+        user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = 100 + (int)industry, level = traitLevel } });
     }
 
     /// <summary>캐릭터 1장을 보유한 유저를 만든다.</summary>
@@ -190,7 +194,7 @@ public class UserWorkStationTest
         GiveSlot(user, Base);
 
         // 해금 기록이 없으면 기본 레벨(Lv1)까지만 열려 있다.
-        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 3);
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 40);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.IndustryLevelLocked);
@@ -202,7 +206,7 @@ public class UserWorkStationTest
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base, industry: IndustryType.Mining);
 
-        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 3);
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 40);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
         slot.Industry.ShouldBe(IndustryType.Mining);
@@ -215,16 +219,41 @@ public class UserWorkStationTest
     {
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        OpenIndustryLevels(b, user, IndustryType.Excavation, upTo: 3);
+        OpenIndustryLevels(b, user, IndustryType.Excavation, traitLevel: 3);
 
-        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 3);
+        // 개척 특성 Lv3 = 세 번째 단계(Lv40)
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 40);
 
         var res = b.Channel.SentOf<S_WorkStationAssignResponse>().ShouldHaveSingleItem();
         res.Result.ShouldBe(EResultCode.Ok);
-        res.Slot!.IndustryLevel.ShouldBe((byte)3);
+        res.Slot!.IndustryLevel.ShouldBe((byte)40);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
-        slot.IndustryLevel.ShouldBe(3);
+        slot.IndustryLevel.ShouldBe(40);
+    }
+
+    [Fact]
+    public void 개척_특성_레벨은_그_순번의_단계까지만_연다()
+    {
+        // 특성 Lv2 → 두 번째 단계(Lv20)까지. 특성 레벨을 실제 레벨과 비교하면 Lv20이 닫힌다(T-208).
+        var (user, b) = UserWith(AllRounderTid);
+        OpenIndustryLevels(b, user, IndustryType.Excavation, traitLevel: 2);
+
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 20).ShouldBeTrue();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 40).ShouldBeFalse();
+    }
+
+    [Fact]
+    public void 단계_사이의_레벨은_표에_없어_닫혀_있다()
+    {
+        // 특성을 최대(Lv6)로 올려도 단계가 아닌 레벨(2 · 5 · 21)은 고를 수 없다.
+        var (user, b) = UserWith(AllRounderTid);
+        OpenIndustryLevels(b, user, IndustryType.Excavation, traitLevel: 6);
+
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 100).ShouldBeTrue();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 2).ShouldBeFalse();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 5).ShouldBeFalse();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 21).ShouldBeFalse();
     }
 
     [Fact]
@@ -233,9 +262,9 @@ public class UserWorkStationTest
         // 하향 선택 — 상위를 열어도 하위가 죽지 않는다(산업레벨.md 1장 #7).
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        OpenIndustryLevels(b, user, IndustryType.Excavation, upTo: 5);
+        OpenIndustryLevels(b, user, IndustryType.Excavation, traitLevel: 6);
 
-        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 2);
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base, industryLevel: 20);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.Ok);
@@ -244,12 +273,12 @@ public class UserWorkStationTest
     [Fact]
     public void 해금은_산업마다_따로다()
     {
-        // 발굴을 5까지 열어도 채굴은 여전히 Lv1이다 (산업레벨.md 1장 #1).
+        // 발굴을 Lv100까지 열어도 채굴은 여전히 Lv1이다 (산업레벨.md 1장 #1).
         var (user, b) = UserWith(AllRounderTid);
         GiveSlot(user, Base);
-        OpenIndustryLevels(b, user, IndustryType.Excavation, upTo: 5);
+        OpenIndustryLevels(b, user, IndustryType.Excavation, traitLevel: 6);
 
-        user.AssignWorkStation(0, IndustryType.Mining, CharacterId, Base, industryLevel: 5);
+        user.AssignWorkStation(0, IndustryType.Mining, CharacterId, Base, industryLevel: 20);
 
         b.Channel.SentOf<S_WorkStationAssignResponse>()
             .ShouldHaveSingleItem().Result.ShouldBe(EResultCode.IndustryLevelLocked);
@@ -279,19 +308,19 @@ public class UserWorkStationTest
             new IndustryLevelTableRow
             {
                 IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1,
-                Name = "개울", RequiredScore = 30_000,      // 30초
+                Name = "옛 집터", RequiredScore = 30_000, RequiredTraitLevel = 1,      // 30초
             },
             new IndustryLevelTableRow
             {
-                IndustryLevelTID = 202, IndustryType = IndustryType.Excavation, Level = 2,
-                Name = "저수지", RequiredScore = 90_000,     // 90초
+                IndustryLevelTID = 202, IndustryType = IndustryType.Excavation, Level = 20,
+                Name = "무너진 산성", RequiredScore = 90_000, RequiredTraitLevel = 2,  // 90초
             },
         });
         user.LoadTraits(new[] { new UserTraitRow { user_trait_tid = ExcavationPioneer, level = 2 } });
 
-        // 60초 경과 후 Lv2로 변경. Lv1 비용(30초)으로 정산하면 2회,
-        // 새 Lv2 비용(90초)으로 계산해 버리면 0회가 된다.
-        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base.AddSeconds(60), industryLevel: 2);
+        // 60초 경과 후 Lv20으로 변경. Lv1 비용(30초)으로 정산하면 2회,
+        // 새 Lv20 비용(90초)으로 계산해 버리면 0회가 된다.
+        user.AssignWorkStation(0, IndustryType.Excavation, CharacterId, Base.AddSeconds(60), industryLevel: 20);
 
         b.Channel.SentOf<S_GatherResultResponse>()
             .ShouldHaveSingleItem().JudgeCount.ShouldBe(2);
@@ -318,7 +347,7 @@ public class UserWorkStationTest
             },
             new List<WorkStationSlotRow>
             {
-                new() { slot_index = 0, industry = (int)IndustryType.Excavation, character_id = CharacterId, industry_level = 4 },
+                new() { slot_index = 0, industry = (int)IndustryType.Excavation, character_id = CharacterId, industry_level = 60 },
             },
             new List<UserUnlockRow>(),
             new List<UserEquipRow>(),
@@ -326,11 +355,12 @@ public class UserWorkStationTest
             TraitRows: new List<UserTraitRow> { new() { user_trait_tid = ExcavationPioneer, level = 4 } }), Base);
 
         user.WorkStation.TryGet(0, out var slot).ShouldBeTrue();
-        slot.IndustryLevel.ShouldBe(4);
-        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 4).ShouldBeTrue();
+        // 개척 특성 Lv4 = 네 번째 단계(Lv60)
+        slot.IndustryLevel.ShouldBe(60);
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 60).ShouldBeTrue();
 
         // 기록이 없는 산업은 기본 레벨까지만 열려 있다.
-        user.IsIndustryLevelUnlocked(IndustryType.Mining, 2).ShouldBeFalse();
+        user.IsIndustryLevelUnlocked(IndustryType.Mining, 20).ShouldBeFalse();
     }
 
     // ─────────────────────── 배치 성공 경로 ───────────────────────
@@ -540,8 +570,8 @@ public class UserWorkStationTest
 
     // ─────────────────────── 최대 수량 (상자 1000개) ───────────────────────
 
-    /// <summary>나무 상자 Lv1 — 실데이터 MaxStack 1000.</summary>
-    private const int WoodBoxLv1Tid = 100019;
+    /// <summary>개척자의 상자 — 실데이터 MaxStack 1000.</summary>
+    private const int WoodBoxLv1Tid = 100081;
 
     /// <summary>채굴 Lv1에서 상자만 나오는 유저. 발굴 드롭은 빌더가 이미 쥐고 있어 채굴 칸을 쓴다.</summary>
     private static (User User, TestUserBuilder B) UserWithBoxDrops()

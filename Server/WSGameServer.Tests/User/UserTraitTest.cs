@@ -54,9 +54,9 @@ public class UserTraitTest
             buildings, levels);
         b.Levels.Load(new[]
         {
-            new IndustryLevelTableRow { IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1, Name = "개울", RequiredScore = 30_000 },
-            new IndustryLevelTableRow { IndustryLevelTID = 202, IndustryType = IndustryType.Excavation, Level = 2, Name = "저수지", RequiredScore = 30_000 },
-            new IndustryLevelTableRow { IndustryLevelTID = 203, IndustryType = IndustryType.Excavation, Level = 3, Name = "강", RequiredScore = 30_000 },
+            new IndustryLevelTableRow { IndustryLevelTID = 201, IndustryType = IndustryType.Excavation, Level = 1, Name = "옛 집터", RequiredScore = 30_000, RequiredTraitLevel = 1 },
+            new IndustryLevelTableRow { IndustryLevelTID = 202, IndustryType = IndustryType.Excavation, Level = 20, Name = "무너진 산성", RequiredScore = 30_000, RequiredTraitLevel = 2 },
+            new IndustryLevelTableRow { IndustryLevelTID = 203, IndustryType = IndustryType.Excavation, Level = 40, Name = "폐광 유적", RequiredScore = 30_000, RequiredTraitLevel = 3 },
         });
 
         var user = b.Build();
@@ -144,19 +144,20 @@ public class UserTraitTest
         var (user, _) = UserWith(workshopLevel: 0);
 
         user.IsIndustryLevelUnlocked(IndustryType.Excavation, 1).ShouldBeTrue();
-        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 2).ShouldBeFalse();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 20).ShouldBeFalse();
     }
 
     [Fact]
-    public void 개척을_올리면_특성_레벨까지의_산업_레벨이_열린다()
+    public void 개척을_올리면_특성_레벨_순번까지의_단계가_열린다()
     {
         var (user, _) = UserWith(workshopLevel: 1);
 
         user.TryLearnTrait(ExcavationPioneer, Base);
 
         user.GetTraitLevel(ExcavationPioneer).ShouldBe(2);
-        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 2).ShouldBeTrue();
-        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 3).ShouldBeFalse();
+        // 특성 Lv2 = 두 번째 단계(Lv20)
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 20).ShouldBeTrue();
+        user.IsIndustryLevelUnlocked(IndustryType.Excavation, 40).ShouldBeFalse();
     }
 
     // ─────────────────────── 속도 ───────────────────────

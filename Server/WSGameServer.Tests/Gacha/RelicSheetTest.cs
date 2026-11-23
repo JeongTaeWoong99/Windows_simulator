@@ -32,11 +32,11 @@ public class RelicSheetTest
     }
 
     [Fact]
-    public void 발굴은_레벨마다_상자_대신_유물만_나오고_Special은_판정에서_나오지_않는다()
+    public void 발굴은_단계마다_상자_대신_유물만_나오고_Special은_판정에서_나오지_않는다()
     {
         var rows = GameTable.CommonRewardOverrideTable.All.Where(r => r.IndustryType == IndustryType.Excavation).ToList();
 
-        rows.Select(r => r.IndustryLevel).Distinct().OrderBy(l => l).ShouldBe(new[] { 1, 2, 3, 4, 5 });
+        rows.Select(r => r.IndustryLevel).Distinct().OrderBy(l => l).ShouldBe(new[] { 1, 20, 40, 60, 80, 100 });
         rows.ShouldAllBe(r => GameTable.ItemTable[r.ItemTID].ItemType == ItemType.Relic);
         rows.ShouldNotContain(r => r.ItemTID == SpecialRelicTid);
     }

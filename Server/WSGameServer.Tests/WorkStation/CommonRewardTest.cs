@@ -15,7 +15,7 @@ public class CommonRewardTest
 
     private const int  AllRounderTid = 1001;
     private const long CharacterId   = 500;
-    private const int  BoxTid        = 100019;   // 나무 상자 Lv1
+    private const int  BoxTid        = 100081;   // 개척자의 상자 (채취 Lv1 테마 상자)
 
     public CommonRewardTest() => GameTableFixture.EnsureLoaded();
 

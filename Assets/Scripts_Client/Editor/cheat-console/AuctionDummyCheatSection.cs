@@ -53,7 +53,7 @@ namespace DesktopWindowControl.EditorTools
 			if (isSingleItem)
 			{
 				var rows = GameDataLoader.IsLoaded ? GameTable.ItemTable.All : null;
-				_picker.Draw(rows, row => row.ItemTID, row => row.Name);
+				_picker.Draw(rows, row => row.ItemTID, row => row.Name, groupOf: row => ResourceSlotSource.GroupName(ResourceSlotSource.GroupOf(row.ItemTID)));
 			}
 
 			long kindArg = isSingleItem ? _picker.Tid : _kindIndex;   // 0 전체 · 1~4 (long)EAuctionKind · 그 밖 ItemTID

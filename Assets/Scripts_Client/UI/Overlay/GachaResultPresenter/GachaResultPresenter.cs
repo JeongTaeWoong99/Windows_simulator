@@ -21,11 +21,9 @@ using UnityEngine.UI;
 // 늘어놓는 방식만 갈린다 — 가챠는 뽑힌 순서 그대로, 상자는 종류별 합계다('OnItemUseCompleted').
 // 우편 수령도 여기로 온다 — 받은 우편의 첨부를 상자처럼 종류별로 합친다('OnMailRewardsClaimed').
 //
-// ■ [n회 더 뽑기] — 가챠 결과에서만 보인다 (2026-10-09)
-// 닫기 왼쪽에 둔다. 방금 뽑은 횟수 그대로(1회면 1회, 10회면 10회) 같은 풀을 다시 뽑는다.
-// 요청은 'GachaPresenter.DrawAgain'에 맡긴다 — 대기·연타 방지·실패 알림이 그쪽에 한 벌 있다.
-// 결과가 오면 이 팝업이 새 결과로 다시 그려진다(닫았다 열 필요 없다).
-// 상자·우편 결과에서는 숨긴다 — 다시 할 '뽑기'가 없다.
+// ■ 창 안의 [n회 더 뽑기]는 늘 숨는다 (2026-11-22 — 길드 뽑기 탭을 뺐다 · #117)
+// 버튼은 지우지 않았다 — 감정 무대의 [1개 더 감정] 줄이 이 버튼 줄을 복제해 만든다('CreateStageRow').
+// 가챠 결과 경로('OnGachaCompleted')는 남겨 둔다 — 서버가 뽑기 응답을 보내면 그대로 그린다.
 //
 // ■ 하나씩 공개한다 — 공개 연출 (T-031 · T-033, 2026-10-09 목업 A + D)
 // 창은 다 자란 채로 뜨고(칸은 자리를 지키되 투명), 칸이 받은 순서대로 하나씩 튀어나온다.
@@ -58,6 +56,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     // 공개가 끝나고 이만큼(초) 지나야 차단막으로 닫힌다 — 스킵하려고 연타하다 결과를 못 보고 닫히지 않게
     private const float BackdropCloseDelay = 0.4f;
 
+    // 감정 무대 아래 버튼 줄 자리·폭 — 무대 가운데(보상)보다 아래, 광선 끝 바깥
+    private static readonly Vector2 StageRowPosition = new Vector2(0f, -230f);
+    private const float             StageRowWidth    = 600f; // 창의 버튼 줄과 같은 폭 — 좁으면 비용 글자가 줄어든다
+    private const float             StageRowHeight   = 72f;  // 두 줄('1개 더 감정' / 비용)이 줄지 않고 들어가는 높이
+
     [CenterHeader("참조")]
     [SerializeField, Tooltip("팝업 몸통의 CanvasGroup. alpha·blocksRaycasts로 표시/숨김한다(오브젝트는 끄지 않는다)")]
     private CanvasGroup group = null!;
@@ -74,14 +77,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     [SerializeField, Tooltip("닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button closeButton = null!;
 
-    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 — 닫기 왼쪽. 가챠 결과에서만 보인다. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
+    [SerializeField, Tooltip("닫기 왼쪽 버튼 — 창 안에서는 늘 숨는다. 감정 무대의 [1개 더 감정]이 이 버튼 줄을 복제해 쓴다")]
     private Button drawAgainButton = null!;
-
-    [SerializeField, Tooltip("[n회 더 뽑기] 버튼 문구 — 방금 뽑은 횟수로 코드가 채운다")]
-    private TMP_Text drawAgainText = null!;
-
-    [SerializeField, Tooltip("다시 뽑기를 맡길 가챠 패널 (길드 열)")]
-    private GachaPresenter gacha = null!;
 
     [SerializeField, Tooltip("결과 창 상자(Panel) — 폭발 층을 이 위에 만들고, 전설↑ 공개 때 흔든다")]
     private RectTransform panel = null!;
@@ -116,6 +113,18 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private bool                     _isAppraising;      // 감정 무대가 도는 중인가 — 누르면 건너뛰고 끝 모습으로 간다
     private bool                     _isAppraiseHeld;    // 감정 무대가 끝 모습으로 머무는 중인가 — 누르면 닫는다
 
+    // 감정 무대에 지금 올린 두 칸의 값 — 무대가 칸을 그릴 때 'Decorate'가 읽는다
+    private SlotData _stageRelic;
+    private SlotData _stageReward;
+    private char     _stageRewardKind = 'I';
+
+    // 감정 무대 아래 버튼 줄 — [1개 더 감정] · [닫기] (2026-11-22 사용자 — 창을 나갔다 다시 누르기가 번거롭다).
+    // ※ 창의 버튼 줄('Button Row')을 복제한다 — 감정 중에는 창이 투명해 원래 버튼이 안 보인다. 모양·글꼴이 같다.
+    private GameObject? _stageRow;
+    private Button?     _stageAgainButton;
+    private TMP_Text?   _stageAgainText;
+    private int         _appraisedTid;
+
     // 이번 결과의 골드 칸 — 그 칸이 공개되면 동전이 상단 골드로 날아간다. 날렸거나 골드가 없으면 -1
     private int  _goldSlot = -1;
     private long _gold;
@@ -137,8 +146,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         this.RequireRef(slotPrefab,      nameof(slotPrefab));
         this.RequireRef(closeButton,     nameof(closeButton));
         this.RequireRef(drawAgainButton, nameof(drawAgainButton));
-        this.RequireRef(drawAgainText,   nameof(drawAgainText));
-        this.RequireRef(gacha,           nameof(gacha));
         this.RequireRef(panel,           nameof(panel));
 
         _data              = Services.Get<PlayerDataModel>();
@@ -146,13 +153,20 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _sound             = Services.Get<SoundManager>();
         _burst             = RewardBurstFx.Create(panel, reveal);
         _appraise          = RelicAppraiseFx.Create((RectTransform)group.transform, slotPrefab, titleText, _sound);
+
+        // 무대의 두 칸도 인벤토리 칸처럼 — 왼쪽 아래 분류 배지 · 오른쪽 아래 'N 개'(2026-11-23 사용자 "인벤토리와 다르게 보인다")
+        _appraise.DecorateRelic  = slot => Decorate(slot, _stageRelic, 'I', 1, showCount: true);
+        _appraise.DecorateReward = slot => Decorate(slot, _stageReward, _stageRewardKind, 1, showCount: true);
+        CreateStageRow();
         _panelGroup        = panel.TryGetComponent(out CanvasGroup existing) ? existing : panel.gameObject.AddComponent<CanvasGroup>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
         _panelRestPosition = panel.anchoredPosition;
         _slots             = new UIRowList<SlotView>(slotPrefab, slotParent, OnSlotCreated, OnSlotHide);
 
+        BuildSections();
+
         Subscribe();
         closeButton.onClick.AddListener(OnCloseClicked);
-        drawAgainButton.onClick.AddListener(OnDrawAgainClicked);
+        drawAgainButton.gameObject.SetActive(false);
 
         SetVisible(false); // 시작은 숨김 — 가챠·개봉 결과가 오면 켜진다
         _isReady = true;
@@ -189,7 +203,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _data.GachaCompleted     += OnGachaCompleted;
         _data.ItemUseCompleted   += OnItemUseCompleted;
         _data.MailRewardsClaimed += OnMailRewardsClaimed;
-        gacha.DrawStateChanged   += RefreshDrawAgain;
     }
 
     // 구독 해제 (OnDisable에서 호출)
@@ -204,7 +217,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _data.GachaCompleted     -= OnGachaCompleted;
         _data.ItemUseCompleted   -= OnItemUseCompleted;
         _data.MailRewardsClaimed -= OnMailRewardsClaimed;
-        gacha.DrawStateChanged   -= RefreshDrawAgain;
     }
 
     #endregion
@@ -215,8 +227,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private void OnGachaCompleted(List<GachaRewardInfo> rewards)
     {
         _cellKinds.Clear();
-        Show(ToSlots(rewards, _cellKinds), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards));
-        ShowDrawAgain(true);
+        Show(ToSlots(rewards, _cellKinds), Lang.Get("UI.Gacha.Source"), showCount: false, GoldOf(rewards), grouped: false);
     }
 
     // 상자 개봉 결과 도착 — 종류별로 합쳐서 늘어놓는다 (PlayerDataModel.ItemUseCompleted 구독)
@@ -235,8 +246,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
                           : GameDataLoader.GetItemType(itemId) == ItemType.Box ? Lang.Get("UI.Gacha.SourceBox")
                           : Lang.Format("UI.Gacha.SourceItem", GameDataLoader.GetItemName(itemId));
 
-        ShowDrawAgain(false);
-
         if (isAppraise && rewards.Count > 0)
         {
             AppraiseAsync(itemId, rewards, source).Forget();
@@ -245,7 +254,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _cellKinds.Clear();
-        Show(Summarize(rewards, _cellKinds), source, showCount: true, GoldOf(rewards));
+        Show(Summarize(rewards, _cellKinds), source, showCount: true, GoldOf(rewards), grouped: true);
     }
 
     // 우편 수령 도착 — 받은 우편들의 첨부를 종류별로 합쳐 늘어놓는다 (PlayerDataModel.MailRewardsClaimed 구독)
@@ -257,8 +266,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     private void OnMailRewardsClaimed(List<MailInfo> mails)
     {
         _cellKinds.Clear();
-        Show(SummarizeMails(mails, _cellKinds), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold));
-        ShowDrawAgain(false);
+        Show(SummarizeMails(mails, _cellKinds), Lang.Get("UI.Gacha.SourceMail"), showCount: true, mails.Sum(mail => mail.Gold), grouped: true);
     }
 
     // 칸 값들을 그리고 팝업을 띄운다 (가챠·상자 개봉 공통).
@@ -269,7 +277,8 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
     //   showCount : 칸에 수량을 적는가. 가챠는 뽑힌 것을 한 건씩 늘어놓아 개수가 목록 길이로 드러나지만,
     //               종류별로 합친 상자·우편은 수량을 적지 않으면 "골드"만 보이고 얼마인지 모른다
     //   gold      : 받은 골드 합계 — 골드 칸이 공개되면 그 칸에서 동전이 날아간다(0이면 없음)
-    private void Show(List<SlotData> slots, string source, bool showCount, long gold)
+    //   grouped   : 자원 · 캐릭터 · 장비 목차로 나눠 늘어놓는가 — 상자·우편은 나눈다(2026-11-23 사용자). 가챠는 뽑힌 순서 그대로
+    private void Show(List<SlotData> slots, string source, bool showCount, long gold, bool grouped)
     {
         if (slots.Count == 0)
         {
@@ -281,6 +290,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         CancelReveal(); // 공개 중에 [n회 더 뽑기] 결과가 오면 앞의 공개를 끊고 새로 시작한다
         CancelAppraise();
         _revealRarities.Clear();
+
+        if (grouped)
+        {
+            SortByGroup(slots); // 칸 순서 = 목차 순서 — 공개도 자원 → 캐릭터 → 장비 순으로 흐른다
+        }
 
         for (int i = 0; i < slots.Count; i++)
         {
@@ -299,6 +313,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         _slots.HideFrom(slots.Count);
+        PlaceInSections(slots.Count, grouped);
 
         // ※ 골드 칸은 'Key'가 0이다 — 골드는 TID가 없어 0으로 떨어뜨린다('TidOf' · 'SummarizeMails'). 0번 아이템·캐릭터는 없다
         _gold     = gold;
@@ -559,7 +574,7 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _                          => 'I',
     };
 
-    // 결과 칸을 인벤토리 칸처럼 꾸민다 — 왼쪽 아래 배지(분류 · 상자 LV · 캐릭터 LV) · 캐릭터 최고 적성 알약 · 수량 문구 (Show에서 호출).
+    // 결과 칸을 인벤토리 칸처럼 꾸민다 — 왼쪽 아래 배지(분류 · 캐릭터 LV) · 캐릭터 최고 적성 알약 · 수량 문구 (Show에서 호출).
     // ※ 인벤토리와 같은 함수를 쓴다('ResourceSlotSource.GroupName' · 'CharacterSlotSource.GetLevelLabel') — 두 곳이 같은 칸을 다르게 말하지 않게.
     // ※ 캐릭터 적성은 테이블 값이다 — 결과 창에는 개체 번호가 없다. 새로 받은 캐릭터라 서버 값과 같다.
     private static void Decorate(SlotView slot, in SlotData data, char kind, int level, bool showCount)
@@ -603,15 +618,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
                 break;
 
             case 'I':
-            {
-                int boxLevel = GameDataLoader.GetBoxLevel(tid);
-
-                string group = ResourceSlotSource.GroupOf(tid);
-
-                slot.SetLevelBadge(boxLevel > 0 ? $"LV.{boxLevel}" : ResourceSlotSource.GroupTag(group)); // 인벤토리 자원 칸과 같게 — 짧은 글자
+                // 상자도 분류 글자 — 테마 상자는 그림으로 갈려 레벨 배지를 뺐다(2026-11-22 · T-208)
+                slot.SetLevelBadge(ResourceSlotSource.GroupTag(ResourceSlotSource.GroupOf(tid))); // 인벤토리 자원 칸과 같게 — 짧은 글자
                 slot.SetSubText(showCount ? Lang.Format("UI.Inventory.CountUnit", $"{count:N0}") : "");
                 break;
-            }
         }
     }
 
@@ -643,6 +653,201 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         slot.GetComponent<RewardRevealFx>().Hide();
         slot.Clear();
     }
+
+    #endregion
+
+    #region 목차 (자원 · 캐릭터 · 장비)
+
+    // 목차 하나 — 색 상자(바탕) 안에 색 띠 머리글 + 칸 격자. 결과 창 'Content'(격자)를 복제해 그 자리에 셋을 끼운다
+    private readonly struct Section
+    {
+        public readonly GameObject Root;
+        public readonly TMP_Text   Header;
+        public readonly Transform  Grid;
+
+        public Section(GameObject root, TMP_Text header, Transform grid)
+        {
+            Root   = root;
+            Header = header;
+            Grid   = grid;
+        }
+    }
+
+    private const int   SectionCount      = 3;   // 자원 · 캐릭터 · 장비 — 최대 3개 목차(2026-11-23 사용자)
+    private const float SectionHeaderSize = 24f; // 머리글 글자 — 갈무리는 12의 배수에서 획이 또렷하다
+    private const float SectionBandHeight = 34f; // 머리글 띠 높이
+    private const int   SectionPadding    = 6;   // 색 상자 안쪽 여백
+    private const float SectionBoxAlpha   = 0.16f; // 색 상자 바탕 = 띠 색을 이만큼 옅게 — 종이 위에서 목차가 갈려 보이게
+
+    private static readonly string[] SectionKeys = { "UI.Inventory.TabResource", "UI.Common.Character", "UI.Equip.Gear" };
+
+    // 목차마다 띠 색 — 낮은 채도의 재질색(자원 갈색 · 캐릭터 청회색 · 장비 적갈색). 원색은 "색깔 놀이"로 보인다(Art 규칙)
+    private static readonly Color[] SectionColors =
+    {
+        new Color32(0x6B, 0x4A, 0x2B, 0xFF),
+        new Color32(0x2F, 0x55, 0x66, 0xFF),
+        new Color32(0x6E, 0x2F, 0x2F, 0xFF),
+    };
+
+    private static readonly Color SectionHeaderText = new Color32(0xF2, 0xE2, 0xC0, 0xFF); // 띠 위 글자 — 종이색
+
+    private readonly Section[] _sections = new Section[SectionCount];
+
+    // 목차 셋을 만든다 (Start에서 한 번) — [색 상자 [색 띠 머리글] [칸 격자]].
+    //   머리글은 창 제목을 복제해 글꼴을 맞추고, 격자는 'Content'를 복제해 칸 크기·간격을 맞춘 뒤 **왼쪽 위 정렬**로 바꾼다(2026-11-23 사용자).
+    // 칸은 늘 'slotParent'에서 만들어지고('UIRowList'), 띄울 때 'PlaceInSections'가 목차 격자로 옮긴다.
+    private void BuildSections()
+    {
+        Transform panelBody = slotParent.parent;
+        int       at        = slotParent.GetSiblingIndex();
+
+        for (int i = 0; i < SectionCount; i++)
+        {
+            Color color = SectionColors[i];
+
+            // 색 상자 — 세로로 띠와 격자를 쌓는다
+            var root = new GameObject($"Section {i + 1}", typeof(RectTransform), typeof(Image), typeof(VerticalLayoutGroup));
+
+            root.transform.SetParent(panelBody, false);
+            root.transform.SetSiblingIndex(at + 1 + i);
+
+            var box = root.GetComponent<Image>();
+
+            box.color         = new Color(color.r, color.g, color.b, SectionBoxAlpha);
+            box.raycastTarget = false;
+
+            var column = root.GetComponent<VerticalLayoutGroup>();
+
+            column.padding                = new RectOffset(SectionPadding, SectionPadding, SectionPadding, SectionPadding);
+            column.spacing                = 4f;
+            column.childAlignment         = TextAnchor.UpperLeft;
+            column.childControlWidth      = true;
+            column.childControlHeight     = true;
+            column.childForceExpandWidth  = true;
+            column.childForceExpandHeight = false;
+
+            // 색 띠 머리글 — 띠(Image) 위에 글자를 왼쪽 여백 두고 깐다
+            var band = new GameObject("Header Band", typeof(RectTransform), typeof(Image), typeof(LayoutElement));
+
+            band.transform.SetParent(root.transform, false);
+
+            var bandImage = band.GetComponent<Image>();
+
+            bandImage.color         = color;
+            bandImage.raycastTarget = false;
+
+            band.GetComponent<LayoutElement>().minHeight       = SectionBandHeight;
+            band.GetComponent<LayoutElement>().preferredHeight = SectionBandHeight;
+
+            TMP_Text header = Instantiate(titleText, band.transform, false);
+
+            foreach (var layout in header.GetComponents<LayoutElement>())
+            {
+                Destroy(layout); // 띠가 크기를 정한다 — 제목에 붙은 높이 지정은 버린다
+            }
+
+            var headerRect = header.rectTransform;
+
+            headerRect.anchorMin = Vector2.zero;
+            headerRect.anchorMax = Vector2.one;
+            headerRect.offsetMin = new Vector2(10f, 0f);
+            headerRect.offsetMax = new Vector2(-10f, 0f);
+
+            header.name             = "Header Text (TMP)";
+            header.fontSize         = SectionHeaderSize;
+            header.enableAutoSizing = false;
+            header.alignment        = TextAlignmentOptions.MidlineLeft;
+            header.color            = SectionHeaderText;
+            header.raycastTarget    = false;
+
+            // 칸 격자 — 'Content' 복제 · 왼쪽 위 정렬
+            GameObject grid = Instantiate(slotParent.gameObject, root.transform, false);
+
+            grid.name = "Section Grid";
+
+            foreach (Transform child in grid.transform)
+            {
+                Destroy(child.gameObject); // 복제 순간 'Content'에 칸이 있었다면 — 칸은 'UIRowList'의 것만 쓴다
+            }
+
+            if (grid.TryGetComponent(out GridLayoutGroup gridLayout))
+            {
+                gridLayout.childAlignment = TextAnchor.UpperLeft;
+                gridLayout.padding        = new RectOffset(0, 0, 0, 0); // 여백은 색 상자가 갖는다
+            }
+
+            _sections[i] = new Section(root, header, grid.transform);
+
+            SetSectionVisible(i, false);
+        }
+    }
+
+    // 칸 종류 → 목차 번호 (자원 0 · 캐릭터 1 · 장비 2). 골드 · 아티팩트 · 아이템은 자원이다
+    private static int GroupOf(char kind) => kind switch
+    {
+        'C' => 1,
+        'E' => 2,
+        _   => 0,
+    };
+
+    // 칸 값과 '_cellKinds'를 목차 순서로 함께 정렬한다 — 같은 목차 안에서는 처음 나온 순서를 지킨다(안정 정렬)
+    private void SortByGroup(List<SlotData> slots)
+    {
+        var order = Enumerable.Range(0, slots.Count)
+                              .OrderBy(i => GroupOf(i < _cellKinds.Count ? _cellKinds[i].Kind : 'I'))
+                              .ThenBy(i => i)
+                              .ToList();
+
+        var sortedSlots = order.Select(i => slots[i]).ToList();
+        var sortedKinds = order.Where(i => i < _cellKinds.Count).Select(i => _cellKinds[i]).ToList();
+
+        slots.Clear();
+        slots.AddRange(sortedSlots);
+        _cellKinds.Clear();
+        _cellKinds.AddRange(sortedKinds);
+    }
+
+    // 쓰는 칸을 목차 격자로 옮기고, 빈 목차와 원래 격자를 끈다 (Show에서 호출).
+    // 나누지 않으면(가챠) 칸을 원래 격자로 되돌린다 — 같은 칸을 돌려쓰므로 전에 옮긴 것이 남아 있을 수 있다.
+    private void PlaceInSections(int count, bool grouped)
+    {
+        var counts = new int[SectionCount];
+
+        for (int i = 0; i < count; i++)
+        {
+            Transform cell   = _slots.Get(i).transform;
+            int       group  = grouped ? GroupOf(i < _cellKinds.Count ? _cellKinds[i].Kind : 'I') : -1;
+            Transform target = group >= 0 ? _sections[group].Grid : slotParent;
+
+            if (cell.parent != target)
+            {
+                cell.SetParent(target, false);
+            }
+
+            cell.SetAsLastSibling(); // 정렬된 순서대로 차곡차곡
+
+            if (group >= 0)
+            {
+                counts[group]++;
+            }
+        }
+
+        slotParent.gameObject.SetActive(!grouped);
+
+        for (int g = 0; g < SectionCount; g++)
+        {
+            bool on = grouped && counts[g] > 0;
+
+            SetSectionVisible(g, on);
+
+            if (on)
+            {
+                _sections[g].Header.text = Lang.Get(SectionKeys[g]);
+            }
+        }
+    }
+
+    private void SetSectionVisible(int index, bool on) => _sections[index].Root.SetActive(on);
 
     #endregion
 
@@ -681,6 +886,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         SlotData reward = ToSlotData(headline, headline.Count);
 
+        _stageRelic      = relic;
+        _stageReward     = reward;
+        _stageRewardKind = KindOf(headline.RewardType);
+
         bool skipped = await _appraise!.PlayAsync(relic, reward, banner, accent, cts.Token)
                                        .SuppressCancellationThrow();
 
@@ -703,9 +912,10 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
             _appraise.ShowEnd(relic, reward, banner, accent);
         }
 
-        // 무대는 그대로 두고 감정 중만 내린다 — 다음 클릭이 닫기다('OnPointerClick')
+        // 무대는 그대로 두고 감정 중만 내린다 — 다음 클릭이 닫기다('OnPointerClick'). 아래에 [1개 더 감정] · [닫기]가 뜬다
         SetAppraising(false);
         _isAppraiseHeld = true;
+        ShowStageRow(relicTid);
 
         long gold = GoldOf(rewards);
 
@@ -757,6 +967,11 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
 
         _isAppraiseHeld = false;
 
+        if (_stageRow != null)
+        {
+            _stageRow.SetActive(false);
+        }
+
         _appraiseCts?.Cancel();
         _appraiseCts?.Dispose();
         _appraiseCts = null;
@@ -769,6 +984,74 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         _appraise.Stop();
         _panelGroup!.alpha          = 1f;
         _panelGroup.blocksRaycasts  = true;
+    }
+
+    // 감정 무대 아래 버튼 줄을 만든다 — 창의 버튼 줄을 복제해 무대 층 위에 놓는다 (Start에서 한 번 호출).
+    // ※ 복제는 'group'(팝업 몸통) 바로 아래다 — 투명해지는 창('panel') 밖이라 감정 중에도 보인다.
+    // ※ 버튼 클릭은 버튼이 받는다 — 바탕을 누르면 닫히는 'OnPointerClick'까지 올라가지 않는다.
+    private void CreateStageRow()
+    {
+        var source = (RectTransform)closeButton.transform.parent;
+        var row    = (RectTransform)Instantiate(source.gameObject, group.transform, false).transform;
+
+        row.name             = "Appraise Button Row";
+        row.anchorMin        = new Vector2(0.5f, 0.5f);
+        row.anchorMax        = new Vector2(0.5f, 0.5f);
+        row.pivot            = new Vector2(0.5f, 0.5f);
+        row.anchoredPosition = StageRowPosition;
+        row.sizeDelta        = new Vector2(StageRowWidth, StageRowHeight);
+        row.SetAsLastSibling();
+
+        LayoutElement layout = row.TryGetComponent(out LayoutElement existing) ? existing : row.gameObject.AddComponent<LayoutElement>(); // ⚠️ '??'는 Unity의 가짜 null을 못 거른다
+
+        layout.ignoreLayout = true;
+
+        Button again = row.Find(drawAgainButton.name).GetComponent<Button>();
+        Button close = row.Find(closeButton.name).GetComponent<Button>();
+
+        // 두 버튼 모두 줄 높이에 맞춘다 — 원래 줄은 한 줄 글씨 높이다
+        foreach (LayoutElement element in new[] { again.GetComponent<LayoutElement>(), close.GetComponent<LayoutElement>() })
+        {
+            if (element != null)
+            {
+                element.preferredHeight = StageRowHeight;
+                element.minHeight       = StageRowHeight;
+            }
+        }
+
+        again.gameObject.SetActive(true);
+        again.onClick.AddListener(OnAppraiseAgainClicked);
+        close.onClick.AddListener(OnCloseClicked);
+
+        _stageRow         = row.gameObject;
+        _stageAgainButton = again;
+        _stageAgainText   = again.GetComponentInChildren<TMP_Text>(true);
+        _stageRow.SetActive(false);
+    }
+
+    // 버튼 줄을 띄운다 — [1개 더 감정]에 비용을 적고, 남은 유물이 없으면 잠근다 (감정 무대가 끝 모습에 머물 때)
+    private void ShowStageRow(int relicTid)
+    {
+        if (_stageRow == null)
+        {
+            return;
+        }
+
+        _appraisedTid = relicTid;
+
+        _stageAgainText!.text          = Lang.Format("UI.Gacha.AppraiseAgain", $"{_data.GetAppraiseCost(relicTid):N0}");
+        _stageAgainButton!.interactable = _data.GetItemCount(relicTid) > 0;
+        _stageRow.SetActive(true);
+    }
+
+    // [1개 더 감정] — 같은 유물을 1개 더 감정한다. 결과가 오면 무대가 처음부터 다시 돈다 (버튼 OnClick에 코드로 연결)
+    // ※ 보냈으면 응답이 올 때까지 잠근다 — 연타로 두 번 나가지 않게. 골드가 모자라면 인벤토리 쪽이 거절 문구를 띄운다.
+    private void OnAppraiseAgainClicked()
+    {
+        if (InventoryGridPresenter.AppraiseAgain(_appraisedTid, _stageAgainButton!.transform))
+        {
+            _stageAgainButton.interactable = false;
+        }
     }
 
     // 건너뛰기 — 무대를 끊는다. 뒤이어 'AppraiseAsync'가 끝 모습으로 놓는다 (OnPointerClick에서 호출)
@@ -864,7 +1147,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         }
 
         closeButton.interactable = !on;
-        RefreshDrawAgain();
     }
 
     // 창을 흔든다 — 창 자리는 레이아웃이 아니라 이 Presenter 아래 고정 자리라 흔들어도 된다 (RevealBigAsync에서 호출)
@@ -973,35 +1255,6 @@ public class GachaResultPresenter : MonoBehaviour, IPointerClickHandler
         return seconds > 0f
             ? UniTask.Delay(TimeSpan.FromSeconds(seconds), cancellationToken: ct)
             : UniTask.CompletedTask;
-    }
-
-    #endregion
-
-    #region 다시 뽑기
-
-    // [n회 더 뽑기]를 보일지 정하고 문구·잠금을 맞춘다 (가챠·상자·우편 결과 도착 시).
-    private void ShowDrawAgain(bool on)
-    {
-        drawAgainButton.gameObject.SetActive(on);
-
-        if (on)
-        {
-            drawAgainText.text = Lang.Format("UI.Gacha.DrawAgain", gacha.LastDrawCount);
-            RefreshDrawAgain();
-        }
-    }
-
-    // 버튼 잠금을 가챠 패널 상태에 맞춘다 — 대기 중·골드 부족·패널이 꺼짐 · 공개 중이면 잠긴다
-    // (GachaPresenter.DrawStateChanged 구독 · SetRevealing에서 호출)
-    private void RefreshDrawAgain()
-    {
-        drawAgainButton.interactable = gacha.CanDrawAgain && !_isRevealing;
-    }
-
-    // [n회 더 뽑기] — 같은 풀을 같은 횟수로 다시 뽑는다. 팝업은 띄운 채로 두고 결과가 오면 새로 그린다 (drawAgainButton OnClick에 코드로 연결)
-    private void OnDrawAgainClicked()
-    {
-        gacha.DrawAgain();
     }
 
     #endregion

@@ -99,9 +99,10 @@ public class WorkStationSelectPresenter : MonoBehaviour
         public TooltipTrigger tooltip;
     }
 
-    // ※ 산업 버튼 줄 바로 아래의 'Industry Level Panel'이다. 순서가 곧 레벨(1~)이라
-    //   인덱스 + 1이 레벨이 된다 — 산업 버튼이 인덱스로 산업을 가리키는 것과 같은 축이다.
-    [SerializeField, NonReorderable, Tooltip("산업 레벨 버튼들. 인스펙터에 넣은 순서가 곧 레벨(Lv1부터)이다")]
+    // ※ 산업 버튼 줄 바로 아래의 'Industry Level Panel'이다. 순서가 곧 **단계**라
+    //   i번째 버튼 = 그 산업의 i번째 레벨('GameDataLoader.GetIndustryLevels' — 1 · 20 · 40 …)이다.
+    //   레벨 값은 연속 번호가 아니다(2026-11-22 · T-208) — 인덱스 + 1을 레벨로 쓰지 않는다.
+    [SerializeField, NonReorderable, Tooltip("산업 레벨 버튼들. 인스펙터에 넣은 순서가 곧 단계(1단계 = Lv1, 2단계 = Lv20 …)다")]
     private IndustryLevelButton[] industryLevelButtons = new IndustryLevelButton[0];
 
     [CenterHeader("1단계 캐릭터 할당 패널 (전환)")]
@@ -742,14 +743,23 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            int level = i + 1; // 순서가 곧 레벨
-            industryLevelButtons[i].button.onClick.AddListener(() => SelectIndustryLevel(level));
+            // 레벨은 누를 때 고른 산업에서 읽는다 — 산업마다 단계의 레벨이 다를 수 있다
+            int step = i;
+            industryLevelButtons[i].button.onClick.AddListener(() => SelectIndustryLevel(LevelAtButton(step)));
 
             if (industryLevelButtons[i].tooltip != null)
             {
-                industryLevelButtons[i].tooltip.SetProvider(() => BuildIndustryLevelTooltip(level));
+                industryLevelButtons[i].tooltip.SetProvider(() => BuildIndustryLevelTooltip(LevelAtButton(step)));
             }
         }
+    }
+
+    // i번째 레벨 버튼이 가리키는 레벨 — 지금 산업의 i번째 단계. 없으면 0.
+    private int LevelAtButton(int index)
+    {
+        EIndustryType industry = SelectedIndustry;
+
+        return industry == EIndustryType.None ? 0 : GameDataLoader.GetIndustryLevelAtStep(industry, index + 1);
     }
 
     // 산업 레벨을 고른다 (레벨 버튼 OnClick에 코드로 연결)
@@ -760,6 +770,11 @@ public class WorkStationSelectPresenter : MonoBehaviour
     // ※ 레벨 정보는 누르는 것과 무관하다 — 올리면 툴팁으로 뜬다('BuildIndustryLevelTooltip').
     private void SelectIndustryLevel(int level)
     {
+        if (level == 0)
+        {
+            return; // 이 산업에 없는 단계 — 버튼이 꺼져 있어 오지 않지만 막아 둔다
+        }
+
         if (settingPanel.activeSelf)
         {
             RequestIndustryLevelChange(level);
@@ -791,14 +806,13 @@ public class WorkStationSelectPresenter : MonoBehaviour
     //
     // ■ 잠긴 레벨도 보인다
     // 숨기면 "더 있다"는 사실이 사라져 특성 화면으로 갈 이유를 알 수 없다(해금 규칙과 같다).
-    // 열렸는지는 **그 산업 개척 특성의 레벨 ≥ 산업 레벨**로 판정한다('PlayerDataModel.IsIndustryLevelOpen'
-    // · 2026-10-02 T-116) — 특성 화면에서 개척을 올리면 여기 버튼이 켜진다.
+    // 열렸는지는 **그 산업 개척 특성의 레벨 ≥ 그 레벨의 'RequiredTraitLevel'**로 판정한다
+    // ('PlayerDataModel.IsIndustryLevelOpen' · 2026-11-22 T-208) — 특성 화면에서 개척을 올리면 여기 버튼이 켜진다.
     //
     // ※ 색 규칙은 산업 버튼과 같다(네 상태를 덮고, 잠김만 'disabledColor').
     private void RefreshIndustryLevelButtons()
     {
         EIndustryType industry = SelectedIndustry;
-        int           maxLevel = industry == EIndustryType.None ? 0 : GameDataLoader.GetMaxIndustryLevel(industry);
 
         for (int i = 0; i < industryLevelButtons.Length; i++)
         {
@@ -809,12 +823,12 @@ public class WorkStationSelectPresenter : MonoBehaviour
                 continue;
             }
 
-            int level = i + 1;
+            int level = LevelAtButton(i);
 
-            // 이 산업에 없는 레벨은 버튼째 치운다 — 산업마다 레벨 수가 달라질 수 있다.
-            entry.button.gameObject.SetActive(level <= maxLevel);
+            // 이 산업에 없는 단계는 버튼째 치운다 — 산업마다 단계 수가 달라질 수 있다.
+            entry.button.gameObject.SetActive(level > 0);
 
-            if (level > maxLevel)
+            if (level == 0)
             {
                 continue;
             }
@@ -880,7 +894,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
         if (!_data.IsIndustryLevelOpen(industry, level))
         {
-            content.Row(Lang.Format("UI.WorkStation.LevelLocked", GetIndustryUnlockTraitName(industry), level), "");
+            content.Row(Lang.Format("UI.WorkStation.LevelLocked", GetIndustryUnlockTraitName(industry), spec.RequiredTraitLevel), ""); // 필요한 건 특성 레벨이다 — 산업 레벨(20 …)이 아니다
         }
 
         // 줄이 두 묶음이라 제목을 끼워 가른다 — 앞은 이 레벨 자체의 제원, 뒤는 거기서 나오는 것이다.
@@ -963,7 +977,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
             return;
         }
 
-        if (_selectedIndustryLevel > GameDataLoader.GetMaxIndustryLevel(industry)
+        if (!GameDataLoader.TryGetIndustryLevel(industry, _selectedIndustryLevel, out _)
             || !_data.IsIndustryLevelOpen(industry, _selectedIndustryLevel))
         {
             _selectedIndustryLevel = DefaultIndustryLevel;
@@ -2189,6 +2203,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
         }
 
         _waitHandle?.Succeed();
+        Services.Get<SoundManager>().PlaySfx(Sounds.Equip);
 
         // 성공하면 고르기를 접는다 — 이제 볼 것은 바뀐 속도(효율 계산)다.
         CloseEquipPicker();

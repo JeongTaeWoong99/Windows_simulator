@@ -142,37 +142,6 @@ public static class GameDataLoader
         return GameTable.ItemTable.TryGet(itemId, out var row) && row.OpenGachaId != 0;
     }
 
-    // 상자의 레벨 — 이 상자를 떨어뜨리는 산업 레벨(공통 보상 · 산업별 대체 표 중 가장 낮은 것). 상자가 아니거나 어디서도 안 나오면 0.
-    // ※ 아이템 표에 레벨 컬럼이 없다 — 이름('나무 상자 Lv3')을 읽지 않고, 어디서 나오는지로 정한다(인벤토리 칸 레벨 배지 · 2026-11-18).
-    public static int GetBoxLevel(int itemId)
-    {
-        if (BoxLevels == null)
-        {
-            BoxLevels = new Dictionary<int, int>();
-
-            foreach (var row in GameTable.CommonRewardTable.All)
-            {
-                AddBoxLevel(row.ItemTID, row.IndustryLevel);
-            }
-
-            foreach (var row in GameTable.CommonRewardOverrideTable.All)
-            {
-                AddBoxLevel(row.ItemTID, row.IndustryLevel);
-            }
-        }
-
-        return GetItemType(itemId) == ItemType.Box && BoxLevels.TryGetValue(itemId, out int level) ? level : 0; // 유물·뽑기권도 'OpenGachaId'가 있어 'IsBox'로는 못 가른다
-    }
-
-    private static Dictionary<int, int>? BoxLevels;
-
-    private static void AddBoxLevel(int itemId, int level)
-    {
-        if (!BoxLevels!.TryGetValue(itemId, out int known) || level < known)
-        {
-            BoxLevels[itemId] = level;
-        }
-    }
 
     // 이 아이템이 **인챈트 큐브**인가 — 'EnchantItemTable'에 행이 있으면 큐브다. 큐브 창의 버튼 목록('EnchantCubes')과 같은 출처다.
     // ※ 없는 Id는 '큐브가 아니다'로 떨어진다 — 'IsBox'와 같은 이유로 경고를 내지 않는다.
@@ -184,7 +153,7 @@ public static class GameDataLoader
     // 가챠 풀의 메타(이름·비용)를 조회한다. 'GachaId'는 'GachaInfoTID'와 같은 값이다.
     //
     // ※ 여기만 이름·등급 조회와 달리 실패를 그대로 돌려준다 — 값이 없으면 대체할 표시가 없고,
-    //   버튼을 만들지 말지를 부르는 쪽이 정해야 하기 때문이다('GachaPresenter'가 배선 오류로 알린다).
+    //   버튼을 만들지 말지를 부르는 쪽이 정해야 하기 때문이다.
     public static bool TryGetGachaInfo(int gachaId, out GachaInfoTableRow row)
     {
         return GameTable.GachaInfoTable.TryGet(gachaId, out row);
@@ -584,7 +553,7 @@ public static class GameDataLoader
     // 이 산업의 개척 특성('IndustryUnlock')을 찾는다. 없으면 false.
     //
     // ■ 산업 레벨은 해금 행이 아니라 이 특성의 레벨로 열린다 (2026-10-02 · T-108)
-    // **특성 레벨 N = 그 산업 Lv N까지 열림** — 판정은 'PlayerDataModel.IsIndustryLevelOpen'.
+    // **특성 레벨 ≥ 그 레벨 행의 'RequiredTraitLevel'이면 열림** (2026-11-22 · T-208) — 판정은 'PlayerDataModel.IsIndustryLevelOpen'.
     public static bool TryGetIndustryUnlockTrait(EIndustryType industry, out UserTraitTableRow row)
     {
         foreach (var candidate in GameTable.UserTraitTable.All)
@@ -611,21 +580,54 @@ public static class GameDataLoader
         return IndustryLevels.TryGetValue(((byte)industry, level), out row!);
     }
 
-    // 이 산업에 존재하는 가장 높은 레벨 (버튼을 몇 개 그릴지). 행이 하나도 없으면 0.
-    public static int GetMaxIndustryLevel(EIndustryType industry)
+    // 이 산업의 레벨 단계 — 낮은 순 (레벨 버튼 하나 = 단계 하나). 행이 없으면 빈 목록.
+    //
+    // ■ 레벨은 연속 번호가 아니다 (2026-11-22 · T-208)
+    // 저장 값이 실제 레벨(1 · 20 · 40 …)이라 'i + 1'로 레벨을 만들면 표에 없는 Lv2를 찾는다.
+    // 단계 순번이 필요하면 이 목록의 위치를 쓴다('GetIndustryLevelStep').
+    public static IReadOnlyList<int> GetIndustryLevels(EIndustryType industry)
     {
-        int max = 0;
+        _industryLevelSteps ??= new Dictionary<byte, List<int>>();
+
+        if (_industryLevelSteps.TryGetValue((byte)industry, out var cached))
+        {
+            return cached;
+        }
+
+        var levels = new List<int>();
 
         foreach (var row in GameTable.IndustryLevelTable.All)
         {
-            if ((byte)row.IndustryType == (byte)industry && row.Level > max)
+            if ((byte)row.IndustryType == (byte)industry)
             {
-                max = row.Level;
+                levels.Add(row.Level);
             }
         }
 
-        return max;
+        levels.Sort();
+        _industryLevelSteps[(byte)industry] = levels;
+
+        return levels;
     }
+
+    // 이 레벨이 몇 번째 단계인가 (1부터). 표에 없는 레벨이면 0.
+    //   레벨 그림('TargetVisual')처럼 단계마다 하나씩 둔 것을 고를 때 쓴다.
+    public static int GetIndustryLevelStep(EIndustryType industry, int level)
+    {
+        int index = ((List<int>)GetIndustryLevels(industry)).IndexOf(level);
+
+        return index + 1;
+    }
+
+    // k번째 단계의 레벨 (k는 1부터). 범위 밖이면 0 — 개척 특성 Lv k가 여는 레벨을 적을 때 쓴다.
+    public static int GetIndustryLevelAtStep(EIndustryType industry, int step)
+    {
+        var levels = GetIndustryLevels(industry);
+
+        return step >= 1 && step <= levels.Count ? levels[step - 1] : 0;
+    }
+
+    private static Dictionary<byte, List<int>>? _industryLevelSteps;
 
     // (산업, 레벨) → 산업 레벨 행. 처음 물을 때 한 번 만든다 (테이블은 적재 후 불변이다).
     private static Dictionary<(byte Industry, int Level), IndustryLevelTableRow>? _industryLevels;

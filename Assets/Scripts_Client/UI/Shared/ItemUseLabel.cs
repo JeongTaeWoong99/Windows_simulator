@@ -47,4 +47,36 @@ public static class ItemUseLabel
 
     // 천분율 → 백분율 글자 — 300 → '30', 125 → '12.5'
     private static string Percent(int permille) => (permille / 10f).ToString("0.#");
+
+    // 비약을 먹인 뒤의 레벨 · 경험치 — 사용 창 미리보기와 사용 뒤 알림이 같은 계산을 쓴다.
+    //   level · exp : 지금 값('CharacterInfo.Level' · 'Exp' — 'Exp'는 지금 레벨 안에서 쌓인 몫)
+    //   addExp      : 더할 경험치
+    // 만렙에 닿으면 남는 경험치는 버린다(서버 'GrantCharacterExp'와 같다 — 만렙 'Exp'는 0).
+    // ※ 판정은 서버가 한다 — 여기는 보여 주기만 한다.
+    public static (int Level, int Exp) ProjectExp(int level, int exp, long addExp)
+    {
+        long total = exp + addExp;
+
+        while (GameDataLoader.TryGetRequiredExp(level + 1, out int required) && total >= required)
+        {
+            total -= required;
+            level++;
+        }
+
+        return GameDataLoader.TryGetRequiredExp(level + 1, out _) ? (level, (int)total) : (level, 0);
+    }
+
+    // 지금 레벨 안의 진행 % (0~99) — 만렙이면 -1
+    public static int ExpPercent(int level, int exp)
+        => GameDataLoader.TryGetRequiredExp(level + 1, out int required) && required > 0
+               ? (int)System.Math.Clamp(exp * 100L / required, 0L, 99L)
+               : -1;
+
+    // 'Lv36 (45%)' · 만렙이면 'Lv50 (최대)'
+    public static string LevelWithPercent(int level, int exp)
+    {
+        int percent = ExpPercent(level, exp);
+
+        return percent < 0 ? Lang.Format("UI.ItemUse.LevelMax", level) : Lang.Format("UI.ItemUse.LevelPercent", level, percent);
+    }
 }

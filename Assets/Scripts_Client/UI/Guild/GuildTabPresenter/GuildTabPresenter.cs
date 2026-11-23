@@ -7,22 +7,17 @@ using UnityEngine.UI;
 // ⚠️ 씬에는 이 enum이 int로 저장돼 있다 — 중간에 끼우거나 재정렬하면 씬 배선을 함께 고친다.
 //   늘리기만 할 때는 끝에 붙이면 씬을 안 건드려도 된다('InventoryTab'과 같은 규칙).
 //
-// ※ 순서를 상점 · 뽑기 · 창고로 바꿨다(2026-10-27 사용자 · T-182) — 씬의 탭 줄 값도 함께 고쳤다.
-//   경매장 탭(옛 값 1)은 빠졌다 — 화면 전체를 쓰는 '#Auction Canvas'로 옮겼다(T-147).
+// ※ 상점 · 뽑기 탭을 뺐다(2026-11-22 사용자 · #117 골드 뽑기 폐지) — 캐릭터·장비는 상자에서 나온다. 씬의 탭 줄 값도 함께 고쳤다.
+//   탭 줄에는 창고 버튼 오른쪽에 빈 비활성 버튼 둘을 남겼다 — 뒤에 들어올 탭 자리다(버튼만 있고 enum·page는 없다).
+//   경매장 탭은 그전에 빠졌다 — 화면 전체를 쓰는 '#Auction Canvas'로 옮겼다(T-147).
 public enum GuildTab
 {
-    // 상점 — 골드로 아이템을 산다. 지금 품목은 캐릭터 뽑기권 A~D뿐이다. 화면은 'ShopPresenter'(T-184 · #78). 기본 탭이다.
-    Shop,
-
-    // 뽑기 — 골드로 장비를 뽑는다('GachaPresenter').
-    Gacha,
-
     // 창고 — 자원·장비·캐릭터를 두고두고 맡겨 두는 곳(인벤토리는 얻은 것이 바로 들어오는 곳). 화면은 'WarehousePresenter'(T-126).
     // ※ 인벤토리(옛 이름 창고/Storage)와 헷갈리지 않게 코드 이름은 'Warehouse'다.
     Warehouse,
 }
 
-// 길드 열의 탭 줄 — 상점 · 뽑기 · 창고 3탭 (씬 왼쪽부터).
+// 길드 열의 탭 줄 — 지금은 창고 1탭 + 빈 자리 버튼 둘 (씬 왼쪽부터).
 //
 // 탭마다 화면(page)이 따로 있고, 지금 탭의 화면만 켠다. 인벤토리 탭과 달리 격자 하나를
 // 갈아 끼우는 구조가 아니다 — 화면마다 내용도 모양도 다르다.
@@ -32,11 +27,11 @@ public enum GuildTab
 //   기능을 붙일 때는 그 page 안에 Presenter를 넣고 표시 글씨를 지우면 된다 — 이 파일은 안 바뀐다.
 //
 // ⚠️ page는 꺼졌다 켜진다 — page 안의 Presenter는 'OnEnable'/'OnDisable'로 구독을 잇고 끊어야 한다
-//   ('GachaPresenter'가 이미 그렇게 한다). 요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Guild 규칙.md').
+//   ('WarehousePresenter'가 이미 그렇게 한다). 요청 중 탭을 바꾸는 일은 대기 차단이 막는다('Guild 규칙.md').
 public class GuildTabPresenter : MonoBehaviour
 {
     // 길드 열을 처음 열었을 때의 탭.
-    private const GuildTab DefaultTab = GuildTab.Shop;
+    private const GuildTab DefaultTab = GuildTab.Warehouse;
 
     // 탭 하나 — 버튼과 그 버튼이 여는 화면. 인스펙터에서 짝지어 넣는다.
     [Serializable]
@@ -45,7 +40,7 @@ public class GuildTabPresenter : MonoBehaviour
         [Tooltip("이 줄이 어느 탭인가")]
         public GuildTab tab;
 
-        [Tooltip("그 탭의 버튼 (씬 왼쪽부터 상점·뽑기·창고)")]
+        [Tooltip("그 탭의 버튼 (씬 왼쪽부터)")]
         public Button button;
 
         [Tooltip("그 탭을 누르면 켜지는 화면. 나머지 탭의 화면은 꺼진다")]

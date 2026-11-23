@@ -34,7 +34,7 @@ public class DropSheetTest
         };
     }
 
-    /// <summary>산업 5종 × 레벨 5개 = 25개 조합.</summary>
+    /// <summary>산업 5종 × 단계 6개(Lv1 · 20 · 40 · 60 · 80 · 100) = 30개 조합.</summary>
     public static TheoryData<IndustryType, int> AllIndustryLevels()
     {
         var data = new TheoryData<IndustryType, int>();
@@ -43,7 +43,7 @@ public class DropSheetTest
                      IndustryType.Farming, IndustryType.Excavation, IndustryType.Logging, IndustryType.Mining, IndustryType.Hunting,
                  })
         {
-            for (var level = 1; level <= 5; level++)
+            foreach (var level in new[] { 1, 20, 40, 60, 80, 100 })
             {
                 data.Add(industry, level);
             }
@@ -53,10 +53,10 @@ public class DropSheetTest
     }
 
     [Fact]
-    public void 산업_5종이_레벨_5개씩_테이블_25개로_등록된다()
+    public void 산업_5종이_단계_6개씩_테이블_30개로_등록된다()
     {
         // 시트가 레벨로 갈리지 않고 통째로 등록되면 5개가 되고, 이 테스트가 그 회귀를 잡는다.
-        Catalog.Value.Count.ShouldBe(25);
+        Catalog.Value.Count.ShouldBe(30);
     }
 
     [Theory]
@@ -72,7 +72,6 @@ public class DropSheetTest
             .ToHashSet();
 
         // 한 등급이라도 빠지면 그 (산업, 레벨)에서는 해당 등급이 영원히 드롭되지 않는다.
-        // Lv2~5의 하위 혼입(Common·Uncommon)은 자기 레벨 6종과 등급이 겹치므로 집합은 그대로 6종이다.
         rarities.ShouldBe(new[]
         {
             GlobalRarity.Common, GlobalRarity.Uncommon, GlobalRarity.Rare,

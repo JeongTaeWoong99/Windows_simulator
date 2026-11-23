@@ -66,13 +66,38 @@ public class IndustryLevelCatalogTest
     }
 
     [Fact]
-    public void 실데이터는_산업_5종_레벨_5개_행_25개가_등록된다()
+    public void 실데이터는_산업마다_6단계_Lv1부터_Lv100까지_있다()
+    {
+        GameTableFixture.EnsureLoaded();
+
+        // 저장 값 = 실제 레벨 · k번째 단계 = 개척 특성 Lv k (레벨테마.md 1장)
+        foreach (var industry in new[] { IndustryType.Farming, IndustryType.Excavation, IndustryType.Mining, IndustryType.Logging, IndustryType.Hunting })
+        {
+            GameTable.IndustryLevelTable.All.Where(r => r.IndustryType == industry)
+                .OrderBy(r => r.Level).Select(r => (r.Level, r.RequiredTraitLevel))
+                .ShouldBe(new[] { (1, 1), (20, 2), (40, 3), (60, 4), (80, 5), (100, 6) });
+        }
+    }
+
+    [Fact]
+    public void 실데이터_Lv100의_판정_비용은_Lv80의_세_배다()
     {
         GameTableFixture.EnsureLoaded();
         var catalog = new IndustryLevelCatalog();
         catalog.LoadAll();
 
-        catalog.Count.ShouldBe(25);
+        // 7,290,000점 × 1000 = 72억 9천만 (레벨테마.md 6장)
+        catalog.GetJudgeCostUnits(IndustryType.Hunting, 100).ShouldBe(7_290_000_000L);
+    }
+
+    [Fact]
+    public void 실데이터는_산업_5종_단계_6개_행_30개가_등록된다()
+    {
+        GameTableFixture.EnsureLoaded();
+        var catalog = new IndustryLevelCatalog();
+        catalog.LoadAll();
+
+        catalog.Count.ShouldBe(30);
 
         // Lv1의 판정 비용은 기존 전역 상수(30초)와 같다 — "30초 확정은 Lv1의 값으로 살아남았다".
         catalog.GetJudgeCostUnits(IndustryType.Excavation, 1).ShouldBe(WorkStationSlot.JudgeCost);

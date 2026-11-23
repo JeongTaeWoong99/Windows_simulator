@@ -2,121 +2,49 @@
   {
     "CommonRewardTID": 101,
     "IndustryLevel": 1,
-    "ItemTID": 100019,
+    "ItemTID": 100081,
     "Count": 1,
     "ChancePerMillion": 20000,
-    "Description": "나무 상자 Lv1 — 판정 1회당 2% (테스트값)"
+    "Description": "개척자의 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   },
   {
-    "CommonRewardTID": 102,
-    "IndustryLevel": 1,
-    "ItemTID": 100020,
-    "Count": 1,
-    "ChancePerMillion": 3000,
-    "Description": "은 상자 Lv1 — 판정 1회당 0.3% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 103,
-    "IndustryLevel": 1,
-    "ItemTID": 100021,
-    "Count": 1,
-    "ChancePerMillion": 300,
-    "Description": "황금 상자 Lv1 — 판정 1회당 0.03% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 201,
-    "IndustryLevel": 2,
-    "ItemTID": 100022,
+    "CommonRewardTID": 2001,
+    "IndustryLevel": 20,
+    "ItemTID": 100082,
     "Count": 1,
     "ChancePerMillion": 20000,
-    "Description": "나무 상자 Lv2 — 판정 1회당 2% (테스트값)"
+    "Description": "산골 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   },
   {
-    "CommonRewardTID": 202,
-    "IndustryLevel": 2,
-    "ItemTID": 100023,
-    "Count": 1,
-    "ChancePerMillion": 3000,
-    "Description": "은 상자 Lv2 — 판정 1회당 0.3% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 203,
-    "IndustryLevel": 2,
-    "ItemTID": 100024,
-    "Count": 1,
-    "ChancePerMillion": 300,
-    "Description": "황금 상자 Lv2 — 판정 1회당 0.03% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 301,
-    "IndustryLevel": 3,
-    "ItemTID": 100025,
+    "CommonRewardTID": 4001,
+    "IndustryLevel": 40,
+    "ItemTID": 100083,
     "Count": 1,
     "ChancePerMillion": 20000,
-    "Description": "나무 상자 Lv3 — 판정 1회당 2% (테스트값)"
+    "Description": "광부의 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   },
   {
-    "CommonRewardTID": 302,
-    "IndustryLevel": 3,
-    "ItemTID": 100026,
-    "Count": 1,
-    "ChancePerMillion": 3000,
-    "Description": "은 상자 Lv3 — 판정 1회당 0.3% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 303,
-    "IndustryLevel": 3,
-    "ItemTID": 100027,
-    "Count": 1,
-    "ChancePerMillion": 300,
-    "Description": "황금 상자 Lv3 — 판정 1회당 0.03% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 401,
-    "IndustryLevel": 4,
-    "ItemTID": 100028,
+    "CommonRewardTID": 6001,
+    "IndustryLevel": 60,
+    "ItemTID": 100084,
     "Count": 1,
     "ChancePerMillion": 20000,
-    "Description": "나무 상자 Lv4 — 판정 1회당 2% (테스트값)"
+    "Description": "요새 보급 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   },
   {
-    "CommonRewardTID": 402,
-    "IndustryLevel": 4,
-    "ItemTID": 100029,
-    "Count": 1,
-    "ChancePerMillion": 3000,
-    "Description": "은 상자 Lv4 — 판정 1회당 0.3% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 403,
-    "IndustryLevel": 4,
-    "ItemTID": 100030,
-    "Count": 1,
-    "ChancePerMillion": 300,
-    "Description": "황금 상자 Lv4 — 판정 1회당 0.03% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 501,
-    "IndustryLevel": 5,
-    "ItemTID": 100031,
+    "CommonRewardTID": 8001,
+    "IndustryLevel": 80,
+    "ItemTID": 100085,
     "Count": 1,
     "ChancePerMillion": 20000,
-    "Description": "나무 상자 Lv5 — 판정 1회당 2% (테스트값)"
+    "Description": "성주의 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   },
   {
-    "CommonRewardTID": 502,
-    "IndustryLevel": 5,
-    "ItemTID": 100032,
+    "CommonRewardTID": 10001,
+    "IndustryLevel": 100,
+    "ItemTID": 100086,
     "Count": 1,
-    "ChancePerMillion": 3000,
-    "Description": "은 상자 Lv5 — 판정 1회당 0.3% (테스트값)"
-  },
-  {
-    "CommonRewardTID": 503,
-    "IndustryLevel": 5,
-    "ItemTID": 100033,
-    "Count": 1,
-    "ChancePerMillion": 300,
-    "Description": "황금 상자 Lv5 — 판정 1회당 0.03% (테스트값)"
+    "ChancePerMillion": 20000,
+    "Description": "왕실 상자 — 판정 1회당 2% (테스트값 · 옛 나무 상자 확률)"
   }
 ]

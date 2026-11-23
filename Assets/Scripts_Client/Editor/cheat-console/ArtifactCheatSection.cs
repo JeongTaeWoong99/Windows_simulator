@@ -24,7 +24,8 @@ namespace DesktopWindowControl.EditorTools
 		public override void Draw()
 		{
 			var rows = GameDataLoader.IsLoaded ? GameTable.ArtifactTable.All : null;
-			_picker.Draw(rows, row => row.ArtifactTID, row => row.Name);
+			_picker.Draw(rows, row => row.ArtifactTID, row => row.Name,
+			             groupOf: row => CheatGui.IndustryGroup(row.Industry)); // 산업별(공통 포함)
 
 			using (new EditorGUILayout.HorizontalScope())
 			{

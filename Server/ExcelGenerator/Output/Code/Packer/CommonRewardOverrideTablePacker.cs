@@ -16,7 +16,7 @@ namespace GameData
         {
             CommonRewardOverrideTID = PackerUtil.ParseInt(cells[0], Table, "CommonRewardOverrideTID", 1, null),
             IndustryType            = PackerUtil.ParseEnum<IndustryType>(cells[1], Table, "IndustryType"),
-            IndustryLevel           = PackerUtil.ParseInt(cells[2], Table, "IndustryLevel", 1, 5),
+            IndustryLevel           = PackerUtil.ParseInt(cells[2], Table, "IndustryLevel", 1, 100),
             ItemTID                 = PackerUtil.ParseInt(cells[3], Table, "ItemTID"),
             Count                   = PackerUtil.ParseInt(cells[4], Table, "Count", 1, null),
             ChancePerMillion        = PackerUtil.ParseInt(cells[5], Table, "ChancePerMillion", 1, 1000000),

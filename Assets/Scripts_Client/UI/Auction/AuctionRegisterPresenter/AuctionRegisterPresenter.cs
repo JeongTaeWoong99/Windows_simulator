@@ -636,6 +636,7 @@ public class AuctionRegisterPresenter : MonoBehaviour
 
         _waitHandle?.Succeed();
         _wait.RaiseToast(Lang.Format("UI.Auction.Registered", fee.ToString("N0")));
+        Services.Get<SoundManager>().PlaySfx(Sounds.AuctionRegister);
 
         _selectedKey = 0L;
         Close();

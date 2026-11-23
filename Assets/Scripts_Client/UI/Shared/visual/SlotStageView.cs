@@ -111,7 +111,16 @@ public class SlotStageView : MonoBehaviour
         Show(empty ? null : catalog.GetCharacter(characterTid),
              empty ? catalog.GetEmptySlotBackground() : catalog.GetBackground(industry),
              empty ? null : catalog.GetTarget(industry),
-             industryLevel);
+             ToStep(industry, industryLevel));
+    }
+
+    // 산업 레벨(1 · 20 · 40 …) → 대상 그림 번호(1 · 2 · 3 …). 대상 그림은 단계마다 한 장이다(2026-11-22 · T-208).
+    //   표에 없는 레벨이면 1단계 그림.
+    private static int ToStep(EIndustryType industry, int industryLevel)
+    {
+        int step = GameDataLoader.GetIndustryLevelStep(industry, industryLevel);
+
+        return step > 0 ? step : 1;
     }
 
     // 그림을 직접 정한다 (미리보기 'SlotStagePreview'가 호출).

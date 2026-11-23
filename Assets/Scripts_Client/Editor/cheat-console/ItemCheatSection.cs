@@ -22,7 +22,7 @@ namespace DesktopWindowControl.EditorTools
 		public override void Draw()
 		{
 			var rows = GameDataLoader.IsLoaded ? GameTable.ItemTable.All : null;
-			_picker.Draw(rows, row => row.ItemTID, row => row.Name);
+			_picker.Draw(rows, row => row.ItemTID, row => row.Name, groupOf: row => ResourceSlotSource.GroupName(ResourceSlotSource.GroupOf(row.ItemTID))); // 분류(산업 · 유물 · 소모품 …)별 하위 메뉴
 
 			using (new EditorGUILayout.HorizontalScope())
 			{

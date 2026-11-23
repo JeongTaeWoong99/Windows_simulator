@@ -32,7 +32,7 @@ public static class Sounds
     // 보상 공개 — 뽑기·감정 결과 ('GachaResultPresenter')
     public static AudioClip? RewardChime => SoundCatalog.Of("reward_chime");
 
-    // 레벨 업 — 작업슬롯 캐릭터 ('LevelUpFx') · 건물 업그레이드 성공 ('OutpostUpgradePresenter')
+    // 레벨 업 — 작업슬롯 캐릭터 ('LevelUpFx') · 건물 업그레이드 성공 ('OutpostUpgradePresenter') · 특성 배우기 ('TraitPresenter')
     public static AudioClip? LevelUp => SoundCatalog.Of("level_up");
 
     // 응축 성공 (★ 그대로) · ★ 상승 / 큐브 등급 상승 ('CharacterCondensePresenter' · 'EnchantRevealFx')
@@ -67,6 +67,20 @@ public static class Sounds
 
     // 판매 완료 ('SellCartPresenter')
     public static AudioClip? Sell => SoundCatalog.Of("sell");
+
+    // 소모품 사용 — 비약·영약 (마개 '퐁' + 꼬르륵 + 종 · 'InventoryGridPresenter.OnConsumableUsed')
+    public static AudioClip? ItemUse => SoundCatalog.Of("item_use");
+
+    // 장비 장착·해제 — 끈 + '철컥' ('WorkStationSelectPresenter.OnEquipCompleted')
+    public static AudioClip? Equip => SoundCatalog.Of("equip");
+
+    // 작업 슬롯 해금 — 자물쇠 '딸깍' + 하프 ('WorkStationListPresenter.OnUnlockCompleted')
+    public static AudioClip? SlotUnlock => SoundCatalog.Of("slot_unlock");
+
+    // 경매 — 등록(양피지 + 도장) · 취소(양피지 걷기) · 구매(금화 + 종) ('AuctionRegisterPresenter' · 'AuctionMyListingPresenter' · 'AuctionSearchPresenter')
+    public static AudioClip? AuctionRegister => SoundCatalog.Of("auction_register");
+    public static AudioClip? AuctionCancel   => SoundCatalog.Of("auction_cancel");
+    public static AudioClip? AuctionBuy      => SoundCatalog.Of("auction_buy");
 
     private const int CoinVariants = 3;
 

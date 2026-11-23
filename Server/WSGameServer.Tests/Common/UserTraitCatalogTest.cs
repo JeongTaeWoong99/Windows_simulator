@@ -37,7 +37,7 @@ public class UserTraitCatalogTest
         {
             catalog.TryGetIndustryUnlock(industry, out var pioneer).ShouldBeTrue();
             pioneer.BaseLevel.ShouldBe(1);
-            pioneer.MaxLevel.ShouldBe(5);
+            pioneer.MaxLevel.ShouldBe(6);
         }
     }
 
