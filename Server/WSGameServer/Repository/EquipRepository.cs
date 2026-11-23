@@ -62,28 +62,28 @@ public sealed class SaveCharacterEquipRepository : IRepository
     public IReadOnlyList<EquipMappingChange> Changes => _changes;
 
     public Task ExecuteAsync(DbConnection connection)
+        => connection.InTransactionAsync(tx => WriteAsync(tx, _changes));
+
+    internal static async Task WriteAsync(DbConnection tx, IReadOnlyList<EquipMappingChange> changes)
     {
-        return connection.InTransactionAsync(async tx =>
+        foreach (var c in changes)
         {
-            foreach (var c in _changes)
+            await tx.ExecuteAsync(
+                "DELETE FROM t_character_equip WHERE character_id = @characterId AND slot = @slot",
+                new { characterId = c.CharacterId, slot = (int)c.Slot });
+        }
+
+        foreach (var c in changes)
+        {
+            if (c.EquipId == 0)
             {
-                await tx.ExecuteAsync(
-                    "DELETE FROM t_character_equip WHERE character_id = @characterId AND slot = @slot",
-                    new { characterId = c.CharacterId, slot = (int)c.Slot });
+                continue;
             }
 
-            foreach (var c in _changes)
-            {
-                if (c.EquipId == 0)
-                {
-                    continue;
-                }
-
-                await tx.ExecuteAsync(
-                    "INSERT INTO t_character_equip (character_id, slot, equip_id) VALUES (@characterId, @slot, @equipId)",
-                    new { characterId = c.CharacterId, slot = (int)c.Slot, equipId = c.EquipId });
-            }
-        });
+            await tx.ExecuteAsync(
+                "INSERT INTO t_character_equip (character_id, slot, equip_id) VALUES (@characterId, @slot, @equipId)",
+                new { characterId = c.CharacterId, slot = (int)c.Slot, equipId = c.EquipId });
+        }
     }
 
     public void Apply()
