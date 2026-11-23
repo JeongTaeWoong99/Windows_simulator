@@ -62,13 +62,7 @@ public sealed class SellEntitiesRepository(User user, List<long> characterIds, L
     {
         return connection.InTransactionAsync(async tx =>
         {
-            await tx.ExecuteAsync(
-                "DELETE FROM t_character WHERE user_id = @userId AND auction_trade_id = 0 AND character_id IN @characterIds",
-                new { userId = User.Uid, characterIds });
-
-            await tx.ExecuteAsync(
-                "DELETE FROM t_user_equip WHERE user_id = @userId AND auction_trade_id = 0 AND equip_id IN @equipIds",
-                new { userId = User.Uid, equipIds });
+            await DeleteOwnedAsync(tx, User.Uid, characterIds, equipIds);
 
             // 델타가 아니라 확정 잔액을 쓴다 — 재시도·중복 전송이 곧 재화 복제가 된다.
             await tx.ExecuteAsync(
@@ -81,5 +75,22 @@ public sealed class SellEntitiesRepository(User user, List<long> characterIds, L
 
     public void Apply()
     {
+    }
+
+    internal static async Task DeleteOwnedAsync(DbConnection tx, long userId, IReadOnlyList<long> characterIds, IReadOnlyList<long> equipIds)
+    {
+        if (characterIds.Count > 0)
+        {
+            await tx.ExecuteAsync(
+                "DELETE FROM t_character WHERE user_id = @userId AND auction_trade_id = 0 AND character_id IN @characterIds",
+                new { userId, characterIds });
+        }
+
+        if (equipIds.Count > 0)
+        {
+            await tx.ExecuteAsync(
+                "DELETE FROM t_user_equip WHERE user_id = @userId AND auction_trade_id = 0 AND equip_id IN @equipIds",
+                new { userId, equipIds });
+        }
     }
 }
