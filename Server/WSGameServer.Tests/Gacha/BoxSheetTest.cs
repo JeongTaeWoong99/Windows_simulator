@@ -171,6 +171,17 @@ public class BoxSheetTest
     }
 
     [Fact]
+    public void 테마_상자_골드는_단계가_오를수록_많다()
+    {
+        // 왕실 상자가 성주 상자 골드를 그대로 복사해 쓴 일이 있었다(#117). 7.4 — 단계마다 ×3.
+        var minGold = ThemeBoxOfLevel.OrderBy(kv => kv.Key)
+            .Select(kv => GameTable.GachaGoldTable.All.Where(r => r.GachaId == GameTable.ItemTable[kv.Value].OpenGachaId).Min(r => r.MinAmount))
+            .ToArray();
+
+        minGold.Zip(minGold.Skip(1)).ShouldAllBe(pair => pair.Second > pair.First);
+    }
+
+    [Fact]
     public void 테마_상자는_전부_캐릭터를_준다()
     {
         var characterPools = GameTable.GachaCharacterTable.All.Select(r => r.GachaId).ToHashSet();
