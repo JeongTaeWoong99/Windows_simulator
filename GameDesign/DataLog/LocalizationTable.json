@@ -7862,22 +7862,22 @@
   {
     "Key": "IndustryLevel.102.Name",
     "KR": "비탈 밭",
-    "EN": "Hillside Field"
+    "EN": "Hill Field"
   },
   {
     "Key": "IndustryLevel.103.Name",
     "KR": "광부촌 밭",
-    "EN": "Miners' Village Field"
+    "EN": "Miners' Field"
   },
   {
     "Key": "IndustryLevel.104.Name",
     "KR": "요새 둔전",
-    "EN": "Fort Farmland"
+    "EN": "Fort Farm"
   },
   {
     "Key": "IndustryLevel.105.Name",
     "KR": "성 밖 과수원",
-    "EN": "Orchard Beyond the Walls"
+    "EN": "Outer Orchard"
   },
   {
     "Key": "IndustryLevel.106.Name",
@@ -7887,32 +7887,32 @@
   {
     "Key": "IndustryLevel.201.Name",
     "KR": "옛 집터",
-    "EN": "Old Homestead"
+    "EN": "Old House"
   },
   {
     "Key": "IndustryLevel.202.Name",
     "KR": "무너진 산성",
-    "EN": "Ruined Mountain Fort"
+    "EN": "Ruined Fort"
   },
   {
     "Key": "IndustryLevel.203.Name",
     "KR": "폐광 유적",
-    "EN": "Abandoned Mine Ruins"
+    "EN": "Mine Ruins"
   },
   {
     "Key": "IndustryLevel.204.Name",
     "KR": "옛 격전지",
-    "EN": "Old Battleground"
+    "EN": "Battle Site"
   },
   {
     "Key": "IndustryLevel.205.Name",
     "KR": "옛 성터 지하",
-    "EN": "Old Castle Undercroft"
+    "EN": "Castle Vault"
   },
   {
     "Key": "IndustryLevel.206.Name",
     "KR": "옛 왕릉",
-    "EN": "Ancient Royal Tomb"
+    "EN": "Royal Tomb"
   },
   {
     "Key": "IndustryLevel.301.Name",
@@ -7922,17 +7922,17 @@
   {
     "Key": "IndustryLevel.302.Name",
     "KR": "산기슭 동굴",
-    "EN": "Foothill Cave"
+    "EN": "Hill Cave"
   },
   {
     "Key": "IndustryLevel.303.Name",
     "KR": "깊은 갱도",
-    "EN": "Deep Mine Shaft"
+    "EN": "Deep Shaft"
   },
   {
     "Key": "IndustryLevel.304.Name",
     "KR": "요새 철광맥",
-    "EN": "Fort Iron Vein"
+    "EN": "Iron Vein"
   },
   {
     "Key": "IndustryLevel.305.Name",
@@ -7942,22 +7942,22 @@
   {
     "Key": "IndustryLevel.306.Name",
     "KR": "왕실 보석 광산",
-    "EN": "Royal Gem Mine"
+    "EN": "Royal Mine"
   },
   {
     "Key": "IndustryLevel.401.Name",
     "KR": "마을 뒷숲",
-    "EN": "Woods Behind the Village"
+    "EN": "Village Woods"
   },
   {
     "Key": "IndustryLevel.402.Name",
     "KR": "산기슭 숲",
-    "EN": "Foothill Forest"
+    "EN": "Hill Forest"
   },
   {
     "Key": "IndustryLevel.403.Name",
     "KR": "갱목 숲",
-    "EN": "Pit-Prop Forest"
+    "EN": "Mine Woods"
   },
   {
     "Key": "IndustryLevel.404.Name",
@@ -7972,7 +7972,7 @@
   {
     "Key": "IndustryLevel.406.Name",
     "KR": "왕실 금림",
-    "EN": "Royal Forest Preserve"
+    "EN": "Royal Woods"
   },
   {
     "Key": "IndustryLevel.501.Name",
@@ -7982,12 +7982,12 @@
   {
     "Key": "IndustryLevel.502.Name",
     "KR": "산기슭 사냥터",
-    "EN": "Foothill Hunting Ground"
+    "EN": "Hill Grounds"
   },
   {
     "Key": "IndustryLevel.503.Name",
     "KR": "바위산",
-    "EN": "Rocky Mountain"
+    "EN": "Rocky Peak"
   },
   {
     "Key": "IndustryLevel.504.Name",
@@ -7997,12 +7997,12 @@
   {
     "Key": "IndustryLevel.505.Name",
     "KR": "영주의 사냥터",
-    "EN": "Lord's Hunting Ground"
+    "EN": "Lord's Chase"
   },
   {
     "Key": "IndustryLevel.506.Name",
     "KR": "왕실 사냥터",
-    "EN": "Royal Hunting Ground"
+    "EN": "Royal Chase"
   },
   {
     "Key": "Item.10001.Name",

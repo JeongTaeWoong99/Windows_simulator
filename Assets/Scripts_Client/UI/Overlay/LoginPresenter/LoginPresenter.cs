@@ -1,5 +1,6 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
+using DG.Tweening;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -25,6 +26,10 @@ using UnityEngine.UI;
 //   에디터는 지금처럼 Id 입력 · [로그인] · [종료]. 빌드는 Id 칸을 숨기고 [접속하기] · [종료] 둘만 둔다 —
 //   [접속하기]가 스팀 티켓으로 로그인한다. 같은 버튼을 쓰고 글씨 키만 바꾼다(프리팹을 늘리지 않는다).
 //   에디터에서 스팀 화면을 보려면 치트 창 도구 줄 [스팀 화면]을 켜고 플레이한다(에디터 설정 'SteamModePrefKey'). 계정은 서버가 'steam:<SteamID>'로 이어 준다.
+//
+// ■ 처음 뜰 때 검은 판 위로 상자가 서서히 나타난다 (2026-11-24 사용자)
+//   상자를 Awake에서 투명하게 두고 모드(Id 칸 숨김)를 먼저 정한 뒤 'FadeInPanel'로 연다 —
+//   스팀 모드에서 Id 칸 · [로그인]이 한 프레임 보였다가 바뀌던 깜빡임을 없앤다.
 //
 // ■ '!Overlay Canvas'의 첫 형제 — 이 오브젝트가 화면 전체를 덮는 어두운 판이고, 상자는 자식 'Panel'이다.
 // 오버레이의 다른 팝업과 달리 'CanvasGroup'이 아니라 'SetActive'로 여닫는다('Show') —
@@ -64,6 +69,11 @@ public class LoginPresenter : MonoBehaviour
 
     private const string ConnectKey = "UI.Login.Connect";
 
+    private const float PanelFadeDelay    = 0.25f; // 초 — 검은 화면을 잠깐 보여 준 뒤
+    private const float PanelFadeDuration = 0.4f;  // 초 — 상자가 나타나는 시간
+
+    private CanvasGroup _panelGroup = null!; // 상자('loginButton'의 부모 Panel) — 실행 중에 붙인다(씬을 고치지 않는다)
+
     // 티켓이 틀렸다('SteamAuthFailed')는 응답에 새 티켓으로 몇 번 더 해 보나 — 만료된 티켓은 새로 받으면 통과한다(#144).
     private const int SteamRetryCount = 1;
 
@@ -78,6 +88,24 @@ public class LoginPresenter : MonoBehaviour
 #else
     private static bool IsSteamMode => true;
 #endif
+
+    // 첫 그림 전에 상자를 숨기고 모드를 정한다 (Unity 메시지) — Start보다 먼저 돌아 깜빡임이 없다
+    private void Awake()
+    {
+        var panel = loginButton.transform.parent.gameObject;
+
+        if (!panel.TryGetComponent(out _panelGroup))
+        {
+            _panelGroup = panel.AddComponent<CanvasGroup>();
+        }
+
+        _panelGroup.alpha = 0f;
+
+        if (IsSteamMode)
+        {
+            idInput.gameObject.SetActive(false); // [접속하기] · [종료] 둘만 — Id 칸은 스팀 계정이 대신한다
+        }
+    }
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
@@ -99,9 +127,7 @@ public class LoginPresenter : MonoBehaviour
 
         if (IsSteamMode)
         {
-            // [접속하기] · [종료] 둘만 — Id 칸은 스팀 계정이 대신한다.
-            idInput.gameObject.SetActive(false);
-            loginButtonLabel.SetKey(ConnectKey);
+            loginButtonLabel.SetKey(ConnectKey); // Id 칸은 Awake에서 이미 숨겼다
             loginButton.onClick.AddListener(OnConnectButtonClicked);
         }
         else
@@ -118,7 +144,17 @@ public class LoginPresenter : MonoBehaviour
 
         RefreshButton();
 
+        FadeInPanel();
+
         _isReady = true;
+    }
+
+    // 검은 판을 잠깐 보인 뒤 상자를 서서히 띄운다 (Start · 다시 열 때)
+    private void FadeInPanel()
+    {
+        _panelGroup.DOKill();
+        _panelGroup.alpha = 0f;
+        _panelGroup.DOFade(1f, PanelFadeDuration).SetDelay(PanelFadeDelay).SetUpdate(true).SetLink(gameObject, LinkBehaviour.KillOnDisable);
     }
 
     // 보낼 수 있을 때만 버튼을 연다 (Start · 입력 변경 시 호출)
@@ -145,6 +181,7 @@ public class LoginPresenter : MonoBehaviour
 
         Subscribe();
         RefreshButton(); // 꺼져 있는 동안 감시가 끊겼을 수 있다 — 입력 상태로 다시 맞춘다
+        FadeInPanel();   // 로그아웃 등으로 다시 열 때도 같은 모습으로 나타난다
     }
 
     // 구독 해제 (Unity 메시지)
