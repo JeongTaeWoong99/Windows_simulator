@@ -223,6 +223,28 @@ public class InventoryToolPresenter : MonoBehaviour
         ShowCaptionsNextFrameAsync(destroyCancellationToken).Forget();
     }
 
+    // 찾기 드롭다운 머리가 목록 문구로 되돌아갔으면 다시 짧게 쓴다 (Unity 메시지)
+    // ※ 드롭다운은 처음 켜질 때(SetActive) 자기 'Start'에서 머리를 목록 문구('분류 전체')로 되돌린다 —
+    //   켜지는 때가 탭 · 창 · 판매 창마다 달라 부르는 쪽을 다 쫓을 수 없었다(2026-11-25 · 우편함을 연 뒤 되돌아감).
+    //   문자열 비교 두 번이라 매 프레임 봐도 싸다.
+    private void LateUpdate()
+    {
+        if (!_isReady)
+        {
+            return;
+        }
+
+        if (IsShowingListText(rarityDropdown) || (industryDropdown.value == 0 && IsShowingListText(industryDropdown)))
+        {
+            ShowFilterCaptions();
+        }
+    }
+
+    private static bool IsShowingListText(TMP_Dropdown dropdown)
+        => dropdown.captionText != null && dropdown.isActiveAndEnabled &&
+           dropdown.value >= 0 && dropdown.value < dropdown.options.Count &&
+           dropdown.captionText.text == dropdown.options[dropdown.value].text;
+
     // 다시 켜졌다 — 드롭다운 머리를 다음 프레임에 다시 쓴다 (Unity 메시지)
     private void OnEnable()
     {

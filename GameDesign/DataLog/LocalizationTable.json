@@ -7941,7 +7941,7 @@
   },
   {
     "Key": "IndustryLevel.306.Name",
-    "KR": "왕실 보석 광산",
+    "KR": "왕실 광산",
     "EN": "Royal Mine"
   },
   {
@@ -12457,17 +12457,17 @@
   {
     "Key": "UI.Tool.SortRarity",
     "KR": "등급순",
-    "EN": "By Rarity"
+    "EN": "Rarity"
   },
   {
     "Key": "UI.Tool.SortName",
     "KR": "이름순",
-    "EN": "By Name"
+    "EN": "Name"
   },
   {
     "Key": "UI.Tool.SortCount",
     "KR": "수량순",
-    "EN": "By Count"
+    "EN": "Count"
   },
   {
     "Key": "UI.Tool.RarityOrBelow",
@@ -12636,8 +12636,8 @@
   },
   {
     "Key": "UI.Sell.Empty",
-    "KR": "위 칸을 눌러 담으세요 — 즉시 판매가로 바로 팝니다",
-    "EN": "Click items above to add — they sell instantly at the instant sell price"
+    "KR": "위 칸을 누르면 담깁니다 — 2개 이상이면 수량을 묻습니다\r\n[일괄 담기]는 고른 등급 이하를 한 번에 담습니다\r\n더 비싸게 팔려면 경매장에 올리세요 (인벤토리 칸 Ctrl+우클릭)",
+    "EN": "Click items above to add — asks how many if 2 or more\r\n[Add All] adds everything up to the chosen rarity\r\nFor a better price, use the Auction (Ctrl+right-click an item)"
   },
   {
     "Key": "UI.Sell.Clear",
@@ -14247,7 +14247,7 @@
   {
     "Key": "UI.Auction.HistoryNote",
     "KR": "물건 · 대금 · 환급은 모두 우편으로 갑니다",
-    "EN": "Items, proceeds and refunds all go to the mailbox"
+    "EN": "All go to your mailbox"
   },
   {
     "Key": "UI.Auction.Fee",
@@ -14342,7 +14342,7 @@
   {
     "Key": "UI.Auction.MyNote",
     "KR": "팔리면 대금은 우편으로 옵니다",
-    "EN": "Proceeds arrive by mail when sold"
+    "EN": "Paid by mail when sold"
   },
   {
     "Key": "UI.Auction.NothingToList",
@@ -14973,5 +14973,20 @@
     "Key": "UI.Sell.PreviewEach",
     "KR": "개당 {0} G",
     "EN": "{0} G each"
+  },
+  {
+    "Key": "UI.Inventory.PreviewSlotLeft",
+    "KR": "옮기면 이 칸에 {0}개 남습니다",
+    "EN": "{0} left in this slot"
+  },
+  {
+    "Key": "UI.Inventory.PreviewOpenLeft",
+    "KR": "열고 나면 {0}개 남습니다",
+    "EN": "{0} left after opening"
+  },
+  {
+    "Key": "UI.Inventory.PreviewCost",
+    "KR": "비용",
+    "EN": "Cost"
   }
 ]

@@ -304,8 +304,9 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
         countText.text = Lang.Format("UI.Auction.HistoryCount", UIRichText.Paint(known.ToString("N0"), UIThemeRole.HighlightDark)) +
                          (_auction.HasMoreHistory ? " " + UIRichText.Label(Lang.Get("UI.Auction.OrMore")) : "");
 
-        sumText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldReceived"))} {UIRichText.Paint($"+{received:N0} G", UIThemeRole.Positive)}" +
-                       $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.GoldSpent"))} {UIRichText.Paint($"−{spent:N0} G", UIThemeRole.Negative)}";
+        // 0이면 부호·색 없이 흐리게 — '+0 G' · '−0 G'는 무언가 오간 것처럼 읽혔다(2026-11-25)
+        sumText.text = $"{UIRichText.Label(Lang.Get("UI.Auction.GoldReceived"))} {SignedGold(received, '+', UIThemeRole.Positive)}" +
+                       $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Auction.GoldSpent"))} {SignedGold(spent, '−', UIThemeRole.Negative)}";
 
         string ago = AuctionModel.FormatReceivedAgo(_auction.HistoryReceivedAt);
 
@@ -427,4 +428,8 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     }
 
     #endregion
+
+    // 합계 골드 한 칸 — 0이면 흐린 '0 G', 아니면 부호 + 색 (Refresh에서 호출)
+    private static string SignedGold(long amount, char sign, UIThemeRole role)
+        => amount == 0L ? UIRichText.Label("0 G") : UIRichText.Paint($"{sign}{amount:N0} G", role);
 }

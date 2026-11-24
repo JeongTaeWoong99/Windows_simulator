@@ -1772,7 +1772,8 @@ public class InventoryGridPresenter : MonoBehaviour
         string question = Lang.Get(IsInventory ? "UI.Inventory.AskStore" : "UI.Inventory.AskTakeOut");
 
         // ※ 팝업이 떠 있는 사이 칸이 바뀌어도 그대로 보낸다 — 어긋났으면 서버가 거절한다(클라가 다시 재지 않는다).
-        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(target, tab, fromSlot, toSlot, amount));
+        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(target, tab, fromSlot, toSlot, amount),
+                      amount => UIRichText.Label(Lang.Format("UI.Inventory.PreviewSlotLeft", $"{owned - amount:N0}")));
     }
 
     // 보관함 사이 이동 요청을 보낸다 (TransferTo · 수량 팝업 확인에서 호출).
@@ -2192,7 +2193,18 @@ public class InventoryGridPresenter : MonoBehaviour
             : Lang.Get("UI.Inventory.AskOpen");
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!Overlay Canvas').
-        _ui.AskAmount(itemId, maxOpen, question, amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, question, amount => OpenBox(itemId, amount),
+                      amount => OpenPreview(owned, unitCost, amount));
+    }
+
+    // 상자 개봉 수량 팝업의 미리보기 — "비용 1,500 G · 열고 나면 3개 남습니다" (비용은 감정 골드가 드는 상자만)
+    private static string OpenPreview(int owned, long unitCost, int amount)
+    {
+        string left = UIRichText.Label(Lang.Format("UI.Inventory.PreviewOpenLeft", $"{owned - amount:N0}"));
+
+        return unitCost > 0L
+            ? $"{UIRichText.Label(Lang.Get("UI.Inventory.PreviewCost"))} {UIRichText.Gold(unitCost * amount)}{UIRichText.Dot}{left}"
+            : left;
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).

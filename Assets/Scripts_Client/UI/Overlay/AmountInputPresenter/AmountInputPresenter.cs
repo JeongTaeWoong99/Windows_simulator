@@ -86,6 +86,9 @@ public class AmountInputPresenter : MonoBehaviour
         BuildQuickRow();
         BuildPreview();
 
+        // 제목은 한 줄 + 자동 축소 — 영어 'Potato — How many to sell?'가 두 줄로 접혔다(2026-11-25 · UI 규칙 §3)
+        titleText.textWrappingMode = TextWrappingModes.NoWrap;
+
         SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }
 

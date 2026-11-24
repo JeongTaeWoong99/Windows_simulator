@@ -485,6 +485,9 @@ public class WorkStationListPresenter : MonoBehaviour
         }
     }
 
+    // 잠긴 칸의 보조 조건 한 줄 — 75% 크기 (BuildLockedLabel에서 호출)
+    private static string SubLine(string text) => $"<size=75%>{text}</size>";
+
     // 잠긴 칸의 조건 문구 — "잠김 / 500 골드 / 슬롯 2 해금 필요"처럼 조건마다 한 줄.
     // 이미 충족한 선행은 적지 않는다.
     private string BuildLockedLabel(int unlockTid)
@@ -501,16 +504,18 @@ public class WorkStationListPresenter : MonoBehaviour
             sb.Append('\n').Append(Lang.Format("UI.Equip.Gold", $"{unlock.Gold:N0}"));
         }
 
+        // ※ 계정 레벨 · 선행 해금 줄은 작게(75%) — 자동 축소가 가장 긴 줄에 맞춰 글자 전체를 줄여,
+        //   옆 칸('잠김 / 3,000 골드')과 크기가 크게 달라 보였다(2026-11-25).
         if (unlock.AccountLevel > 0)
         {
-            sb.Append('\n').Append(Lang.Format("UI.WorkStation.AccountLevel", unlock.AccountLevel));
+            sb.Append('\n').Append(SubLine(Lang.Format("UI.WorkStation.AccountLevel", unlock.AccountLevel)));
         }
 
         foreach (int requiredTid in unlock.RequiredUnlockTIDs)
         {
             if (!_data.IsUnlocked(requiredTid))
             {
-                sb.Append('\n').Append(Lang.Format("UI.WorkStation.UnlockRequired", DescribeUnlock(requiredTid)));
+                sb.Append('\n').Append(SubLine(Lang.Format("UI.WorkStation.UnlockRequired", DescribeUnlock(requiredTid))));
             }
         }
 
