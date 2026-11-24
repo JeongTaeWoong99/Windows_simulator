@@ -15,13 +15,14 @@ namespace DesktopWindowControl.EditorTools
 		[SerializeField] private long _characterId;
 		[SerializeField] private int  _expAmount = 100;
 		[SerializeField] private int  _condenseCount;
+		[SerializeField] private int  _level = 10;
 
 		public override ECheatCategory Category => ECheatCategory.Growth;
-		public override string         Title    => "캐릭터 경험치 · 응축";
+		public override string         Title    => "캐릭터 경험치 · 레벨 · 응축";
 		public override Color          Accent   => new(0.70f, 0.50f, 0.95f);   // 보라
 		public override int            Order    => 0;
-		public override string         Keywords => "exp 레벨 condense 별 성";
-		public override string         Hint     => "캐릭터 종류가 아니라 보유 개체에 준다\n응축 누적은 서버가 0~최고 ★ 문턱으로 자른다 — 재료가 필요하면 '캐릭터 지급'";
+		public override string         Keywords => "exp 레벨 level 일괄 condense 별 성";
+		public override string         Hint     => "캐릭터 종류가 아니라 보유 개체에 준다\n레벨 정하기는 경험치를 0으로 맞추고 조건이 안 되는 장비는 착용만 푼다(내리기 가능)\n응축 누적은 서버가 0~최고 ★ 문턱으로 자른다 — 재료가 필요하면 '캐릭터 지급'";
 
 		public override void Draw()
 		{
@@ -51,6 +52,23 @@ namespace DesktopWindowControl.EditorTools
 				if (CheatGui.ActionButton("지급"))
 				{
 					CheatGui.Request(ECheatCommand.GiveCharacterExp, _characterId, _expAmount);
+				}
+			}
+
+			// 레벨 — 서버 'SetCharacterLevel'(Arg1 = CharacterId · 0이면 전체 · Arg2 = 레벨 · T-213)
+			using (new EditorGUILayout.HorizontalScope())
+			{
+				CheatGui.FieldLabel("레벨");
+				_level = Mathf.Max(1, EditorGUILayout.IntField(_level));
+
+				if (CheatGui.ActionButton("이 캐릭터"))
+				{
+					CheatGui.Request(ECheatCommand.SetCharacterLevel, _characterId, _level);
+				}
+
+				if (CheatGui.ActionButton("전체"))
+				{
+					CheatGui.Request(ECheatCommand.SetCharacterLevel, 0, _level);
 				}
 			}
 

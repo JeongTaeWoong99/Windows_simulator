@@ -427,15 +427,16 @@ public class UIManager : MonoService<UIManager>
     // ※ 로딩·알림·가챠 결과에는 이런 중개가 없다 — 매니저 이벤트를 스스로 구독해 뜨는 단방향이라서다.
     //   이 팝업만 **답을 돌려주는 왕복**이라 구독형으로 만들 수 없다('Overlay 규칙.md').
     // 'question'은 묻는 말이다("몇 개를 팔까?") — 팝업은 무엇에 쓰이는지 모른다.
-    public void AskAmount(int itemId, int maxCount, string question, Action<int> onConfirm)
+    //   preview : 수량 → 미리보기 한 줄(판매면 받을 골드). 없으면 숨긴다
+    public void AskAmount(int itemId, int maxCount, string question, Action<int> onConfirm, Func<int, string>? preview = null)
     {
-        amountInput.Open(itemId, maxCount, question, onConfirm);
+        amountInput.Open(itemId, maxCount, question, onConfirm, preview);
     }
 
     // 자원이 아닌 것(아티팩트)의 수량을 묻는다 — 이름을 직접 넘긴다.
-    public void AskAmount(string subject, int maxCount, string question, Action<int> onConfirm)
+    public void AskAmount(string subject, int maxCount, string question, Action<int> onConfirm, Func<int, string>? preview = null)
     {
-        amountInput.Open(subject, maxCount, question, onConfirm);
+        amountInput.Open(subject, maxCount, question, onConfirm, preview);
     }
 
     // 예/아니오를 묻고, 확인을 누르면 'onConfirm'을 부른다 (취소면 부르지 않는다).

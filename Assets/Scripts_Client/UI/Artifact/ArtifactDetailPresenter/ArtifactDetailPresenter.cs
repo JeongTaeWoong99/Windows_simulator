@@ -47,6 +47,8 @@ public class ArtifactDetailPresenter : MonoBehaviour
 
     private ArtifactEquipRequester _equip = null!; // 장착 요청 — 인벤토리 아티팩트 창과 같은 것을 쓴다
 
+    private TMP_Text _sourceText = null!; // 얻는 곳 · 확률 — 효과 칸을 복제해 바로 아래에 둔다(CreateSourceBox)
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -66,6 +68,8 @@ public class ArtifactDetailPresenter : MonoBehaviour
         _data  = Services.Get<PlayerDataModel>();
         _model = Services.Get<ArtifactModel>();
         _equip = new ArtifactEquipRequester(_data, Services.Get<ServerWaitManager>(), OnEquipSucceeded, Refresh);
+
+        _sourceText = CreateSourceBox();
 
         Subscribe();
 
@@ -157,6 +161,12 @@ public class ArtifactDetailPresenter : MonoBehaviour
         equipButtonText.text     = Lang.Get(isEquipped ? "UI.Artifact.AlreadyEquipped" : "UI.Artifact.Equip");
         equipButton.interactable = _equip.CanEquip(tid);
 
+        // 얻는 곳은 본 적 없어도 보여 준다 — 무엇을 노릴지 고르는 데 쓴다 (T-150)
+        string sources = ArtifactSources.Build(tid);
+
+        _sourceText.transform.parent.gameObject.SetActive(sources.Length > 0);
+        _sourceText.text = sources.Length > 0 ? $"{UIRichText.Label(Lang.Get("UI.Artifact.Sources"))}\n{sources}" : "";
+
         if (!isKnown)
         {
             iconView.Bind(new ItemIconContent(GlobalRarity.None, "?", "", null));
@@ -178,6 +188,40 @@ public class ArtifactDetailPresenter : MonoBehaviour
                           $"{UIRichText.Dot}{UIRichText.Label(Lang.Get("UI.Inventory.Owned"))} {Lang.Format("UI.Inventory.CountUnitShort", owned.ToString("N0"))}";
         effectText.text = ArtifactText.Effect(row);
         hintText.text   = UIRichText.Label(Lang.Get(isEquipped ? "UI.Artifact.SellHint" : "UI.Artifact.EquipHint"));
+    }
+
+    // 효과 칸(배경 상자 + 글자)을 복제해 바로 아래에 '얻는 곳' 칸을 만든다.
+    // ■ 씬을 고치지 않으려고 실행 중에 만든다 — 씬을 에디터로 저장하면 레이아웃 계산값이 수천 줄 바뀐다(2026-11-24).
+    //   같은 상자를 복제하므로 바탕 · 여백 · 글꼴이 효과 칸과 같다.
+    private TMP_Text CreateSourceBox()
+    {
+        var effectBox = effectText.transform.parent;
+        var box       = Instantiate(effectBox.gameObject, effectBox.parent);
+
+        box.name = "Source Box (runtime)";
+        box.transform.SetSiblingIndex(effectBox.GetSiblingIndex() + 1);
+
+        var text = box.GetComponentInChildren<TMP_Text>(true);
+
+        // 여러 줄이라 높이를 글자에 맡긴다 — 효과 칸은 한 줄 고정 높이(58) · 자동 축소 · 줄바꿈 없음이다.
+        // 자동 축소를 두면 줄 수만큼 글자가 작아진다 — 효과 칸의 최대 크기로 고정하고 상자가 늘어나게 한다.
+        if (box.TryGetComponent(out LayoutElement boxLayout))
+        {
+            boxLayout.preferredHeight = -1f;
+        }
+
+        // 상세 칸은 높이 300 고정(그 아래 오른쪽 패널은 비어 있다) — 최소 300은 두고 내용만큼 늘어나게 한다
+        if (TryGetComponent(out LayoutElement selfLayout))
+        {
+            selfLayout.preferredHeight = -1f;
+        }
+
+        text.enableAutoSizing = false;
+        text.fontSize         = effectText.fontSizeMax;
+        text.textWrappingMode = TextWrappingModes.Normal;
+        text.overflowMode     = TextOverflowModes.Overflow;
+
+        return text;
     }
 
     #endregion

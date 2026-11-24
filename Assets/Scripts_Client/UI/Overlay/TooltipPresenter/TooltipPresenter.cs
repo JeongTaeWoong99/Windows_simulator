@@ -421,7 +421,8 @@ public class TooltipPresenter : MonoBehaviour
         }
     }
 
-    // 툴팁을 대상 오른쪽 옆에 놓는다. 창 밖으로 넘치면 왼쪽으로 뒤집고, 세로는 창 안으로 밀어 넣는다.
+    // 툴팁을 대상 오른쪽 옆에 놓는다. 창 밖으로 넘치면 왼쪽으로 뒤집고, 양쪽 다 안 되면 대상 아래(또는 위)에 놓는다.
+    // 세로는 창 안으로 밀어 넣는다.
     //
     // 대상과 툴팁은 캔버스가 달라도 같은 루트 캔버스 아래라, 월드 좌표를 이 오브젝트의 로컬로 옮기면 비교할 수 있다.
     // 이 오브젝트는 화면 전체로 늘어나 있으므로 그 사각형이 곧 창이다.
@@ -438,15 +439,25 @@ public class TooltipPresenter : MonoBehaviour
 
         var size = panel.rect.size;
         var x    = targetMax.x + Gap;
+        var y    = targetMax.y;
 
-        if (x + size.x > bounds.xMax)
+        bool fitsRight = x + size.x <= bounds.xMax;
+        bool fitsLeft  = targetMin.x - Gap - size.x >= bounds.xMin;
+
+        if (!fitsRight && fitsLeft)
         {
             x = targetMin.x - Gap - size.x;
         }
+        else if (!fitsRight)
+        {
+            // 좌우 어디에도 안 들어가는 넓은 툴팁 — 옆에 두면 창 안으로 밀리며 대상을 덮는다(2026-11-24 발굴 버튼).
+            // 대상 아래(모자라면 위)에 놓고 가로는 대상 왼쪽 끝에 맞춘다.
+            x = targetMin.x;
+            y = targetMin.y - Gap >= bounds.yMin + size.y ? targetMin.y - Gap : targetMax.y + Gap + size.y;
+        }
 
         x = Mathf.Clamp(x, bounds.xMin, Mathf.Max(bounds.xMin, bounds.xMax - size.x));
-
-        var y = Mathf.Clamp(targetMax.y, Mathf.Min(bounds.yMax, bounds.yMin + size.y), bounds.yMax);
+        y = Mathf.Clamp(y, Mathf.Min(bounds.yMax, bounds.yMin + size.y), bounds.yMax);
 
         panel.localPosition = new Vector3(x, y, 0f);
     }

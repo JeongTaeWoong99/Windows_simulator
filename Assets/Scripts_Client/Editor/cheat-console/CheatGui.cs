@@ -90,9 +90,26 @@ namespace DesktopWindowControl.EditorTools
 		}
 
 		// 줄 맨 끝 고정 폭 버튼 — 모든 칸의 버튼 열이 같은 선에 선다.
+		// 글자가 폭보다 길면 그만큼 넓힌다 — 잘린 버튼('전 종류 1장씩')보다 열이 조금 어긋나는 편이 낫다.
 		public static bool ActionButton(string label)
 		{
-			return GUILayout.Button(label, GUILayout.Width(ButtonWidth));
+			var width = Mathf.Max(ButtonWidth, GUI.skin.button.CalcSize(new GUIContent(label)).x);
+
+			return GUILayout.Button(label, GUILayout.Width(width));
+		}
+
+		// 되돌릴 수 없는 버튼 — 빨간 바탕으로 칸 안의 다른 버튼과 구별한다 (인벤토리 비우기)
+		public static bool DangerButton(string label)
+		{
+			var previous = GUI.backgroundColor;
+			GUI.backgroundColor = ErrorColor;
+
+			var width   = Mathf.Max(GroupButtonWidth, GUI.skin.button.CalcSize(new GUIContent(label)).x);
+			var clicked = GUILayout.Button(label, GUILayout.Width(width));
+
+			GUI.backgroundColor = previous;
+
+			return clicked;
 		}
 
 		// 색 입힌 한 줄. 'width'를 주면 고정 폭으로 그린다 — 여러 줄의 다음 칸을 세로로 맞출 때 쓴다.
