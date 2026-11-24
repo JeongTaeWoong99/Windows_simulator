@@ -423,7 +423,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         // 글자로 — '농사 5'(2026-11-20 사용자). 16px 산업 그림 + 숫자는 초상화 위에서 너무 작아 읽히지 않았다.
         // → 2026-11-21 산업 그림 + 숫자로 바꿨다가, 같은 날 다시 글자로(사용자 — 칸 아래 줄이 그림·글자로 섞여 통일성이 없다).
         //   산업 이름은 짧은 칸 표기('UI.SlotTag.*' — 농사 · Farm)를 쓴다. 왼쪽 분류 배지와 같은 표기다.
-        _aptitudeLabel  = $"{Lang.Get("UI.SlotTag." + industry!.Value)} {AptitudeLabel.GetText(value)}";
+        _aptitudeLabel   = $"{Lang.Get("UI.SlotTag." + industry!.Value)} {AptitudeLabel.GetText(value)}";
+        _aptitudeCompact = $"{Lang.Get("UI.SlotTag." + industry!.Value)}{AptitudeLabel.GetText(value)}";
         _aptitudeNumber = AptitudeLabel.GetText(value);
         _aptitudeIcon   = null;
 
@@ -489,6 +490,10 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
         float sizePx   = LabelFontSize;
         float leftPx, rightPx;
 
+        // ■ 줄이기 전에 적성 글자의 띄어쓰기부터 뺀다('농사 1' → '농사1') — 캐릭터 칸은 'LV.MAX'와 나란히 12px에 안 들어가
+        //   둘 다 10~11px로 줄었다(2026-11-25). 띄어쓰기 한 칸이면 12px에 들어간다.
+        _aptitudeUseCompact = false;
+
         while (true)
         {
             leftPx  = hasLeft ? MeasureLeft(sizePx, scale, leftIcon) : 0f;
@@ -499,6 +504,13 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
             if (leftPx + rightPx <= room || sizePx <= LabelFontMin)
             {
                 break;
+            }
+
+            if (hasApt && !aptIcon && !_aptitudeUseCompact)
+            {
+                _aptitudeUseCompact = true;
+
+                continue;
             }
 
             sizePx -= 1f;
@@ -551,6 +563,8 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
     private string  _levelLabel     = string.Empty;
     private Sprite? _levelIcon;                     // 분류가 산업일 때의 산업 그림 — 글자가 안 들어갈 때 쓴다
     private string  _aptitudeLabel  = string.Empty; // '농사 5'
+    private string  _aptitudeCompact = string.Empty; // '농사5' — 12px에 안 들어갈 때 먼저 쓰는 띄어쓰기 없는 꼴(FitBottomRow)
+    private bool    _aptitudeUseCompact;
     private string  _aptitudeNumber = string.Empty; // '5' — 그림과 함께 쓸 때
     private Sprite? _aptitudeIcon;
 
@@ -587,7 +601,7 @@ public class SlotView : MonoBehaviour, IPointerClickHandler
 
         return icon
             ? MeasureText(bestAptitudeText, _aptitudeNumber, sizePx, scale, 1f + IconPx + 1f)
-            : MeasureText(bestAptitudeText, _aptitudeLabel,  sizePx, scale, BadgePadX);
+            : MeasureText(bestAptitudeText, _aptitudeUseCompact ? _aptitudeCompact : _aptitudeLabel, sizePx, scale, BadgePadX);
     }
 
     // 글자를 화면 sizePx 크기로 놓고 배지 폭을 화면 px로 돌려준다.

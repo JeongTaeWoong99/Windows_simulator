@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Text;
+using System.Threading;
+using Cysharp.Threading.Tasks;
 using GameData;
 using MikaNetwork;
 using MikaProtocol;
@@ -48,6 +50,8 @@ public class WorkStationListPresenter : MonoBehaviour
 
     // 칸 번호 → 프레임 라벨("비어있음." 자리). 잠긴 칸은 여기에 해금 조건을 적는다.
     private readonly Dictionary<int, TMP_Text> _frameLabels = new Dictionary<int, TMP_Text>();
+
+    private float _lockedFontMax = -1f; // 잠긴 칸 글자의 원래 최대 크기 — 맞추기 전에 되돌린다(EqualizeLockedSizesNextFrameAsync)
 
     // 칸 프레임 그림(빈 칸 · 잠긴 칸) — 프레임에 'WorkSlotFrameView'가 있으면 문구와 그림을 함께 바꾼다
     private readonly Dictionary<int, WorkSlotFrameView> _frameViews = new Dictionary<int, WorkSlotFrameView>();
@@ -483,10 +487,58 @@ public class WorkStationListPresenter : MonoBehaviour
                 pair.Value.text = text;
             }
         }
+
+        EqualizeLockedSizesNextFrameAsync(destroyCancellationToken).Forget();
     }
 
-    // 잠긴 칸의 보조 조건 한 줄 — 75% 크기 (BuildLockedLabel에서 호출)
-    private static string SubLine(string text) => $"<size=75%>{text}</size>";
+    // 잠긴 칸 글자를 같은 줄에서 가장 작은 칸의 크기로 맞춘다 — 다음 프레임(레이아웃으로 칸 크기가 정해진 뒤) (RefreshFrameLabels에서 호출).
+    // ※ 칸마다 자동 축소가 따로 돌아 '잠김 / 3,000 골드'(크게) 옆에 조건이 많은 칸이 작게 섰다(2026-11-25).
+    //   최대 크기를 원래 값으로 되돌려 다시 잰 뒤 가장 작은 값을 모두의 최대로 둔다 — 조건이 바뀌어도 다시 맞는다.
+    private async UniTaskVoid EqualizeLockedSizesNextFrameAsync(CancellationToken ct)
+    {
+        if (await UniTask.NextFrame(ct).SuppressCancellationThrow())
+        {
+            return;
+        }
+
+        // 같은 줄(나란한 두 칸)끼리만 맞춘다 — 전부를 가장 작은 칸에 맞추면 '40,000,000 골드' 한 칸 때문에 모두 작아졌다
+        var smallestByRow = new Dictionary<int, float>();
+
+        foreach (var label in _frameLabels.Values)
+        {
+            if (_lockedFontMax < 0f)
+            {
+                _lockedFontMax = label.fontSizeMax;
+            }
+
+            label.fontSizeMax = _lockedFontMax;
+
+            if (!label.isActiveAndEnabled || label.text == EmptyLabel || label.rectTransform.rect.width <= 0f)
+            {
+                continue;
+            }
+
+            label.ForceMeshUpdate();
+
+            int row = RowOf(label);
+
+            smallestByRow[row] = smallestByRow.TryGetValue(row, out float current) ? Mathf.Min(current, label.fontSize) : label.fontSize;
+        }
+
+        foreach (var label in _frameLabels.Values)
+        {
+            if (label.text != EmptyLabel && smallestByRow.TryGetValue(RowOf(label), out float size))
+            {
+                label.fontSizeMax = size;
+            }
+        }
+    }
+
+    // 칸의 줄 — 화면 높이로 묶는다(격자 한 줄의 칸은 높이가 같다) (EqualizeLockedSizesNextFrameAsync)
+    private static int RowOf(TMP_Text label) => Mathf.RoundToInt(label.rectTransform.position.y);
+
+    // 잠긴 칸의 보조 조건 한 줄 — 60% 크기 (BuildLockedLabel에서 호출)
+    private static string SubLine(string text) => $"<size=60%>{text}</size>";
 
     // 잠긴 칸의 조건 문구 — "잠김 / 500 골드 / 슬롯 2 해금 필요"처럼 조건마다 한 줄.
     // 이미 충족한 선행은 적지 않는다.
@@ -504,7 +556,7 @@ public class WorkStationListPresenter : MonoBehaviour
             sb.Append('\n').Append(Lang.Format("UI.Equip.Gold", $"{unlock.Gold:N0}"));
         }
 
-        // ※ 계정 레벨 · 선행 해금 줄은 작게(75%) — 자동 축소가 가장 긴 줄에 맞춰 글자 전체를 줄여,
+        // ※ 계정 레벨 · 선행 해금 줄은 작게(60%) — 자동 축소가 가장 긴 줄에 맞춰 글자 전체를 줄여,
         //   옆 칸('잠김 / 3,000 골드')과 크기가 크게 달라 보였다(2026-11-25).
         if (unlock.AccountLevel > 0)
         {

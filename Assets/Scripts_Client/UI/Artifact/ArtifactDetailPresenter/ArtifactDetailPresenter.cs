@@ -210,10 +210,12 @@ public class ArtifactDetailPresenter : MonoBehaviour
             boxLayout.preferredHeight = -1f;
         }
 
-        // 상세 칸은 높이 300 고정(그 아래 오른쪽 패널은 비어 있다) — 최소 300은 두고 내용만큼 늘어나게 한다
+        // 상세 칸은 높이 300 고정이었다 — 최소 300은 두고 오른쪽 열 바닥까지 채운다
+        // (2026-11-25 · 아래 절반이 빈 채로 남아 왼쪽 격자와 높이가 어긋나 보였다)
         if (TryGetComponent(out LayoutElement selfLayout))
         {
             selfLayout.preferredHeight = -1f;
+            selfLayout.flexibleHeight  = 1f;
         }
 
         text.enableAutoSizing = false;

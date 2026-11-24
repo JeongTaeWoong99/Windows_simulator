@@ -65,3 +65,16 @@ tags: [client, ui, editor]
 - 데이터: '왕실 보석 광산' → '왕실 광산'(Industry.xlsx · Loc_IndustryLevel · 기획 문서 2곳). 영어 정렬 'By Rarity' → 'Rarity' 등 · 경매 주석 영어 단축.
 - 남긴 것: 캐릭터 칸 최고 적성 배지(10~11px) — 아래 줄 배지가 겹치면 함께 줄이는 기존 결정(`FitBottomRow`). 작업슬롯 캐릭터 줄 영어 13.8px(이름 데이터).
 - 경매 '완료' 응답 5초 초과 알림은 탭을 빠르게 연달아 바꿀 때만 났다 — 한 번 열면 정상.
+
+## 갱신 (2026-11-25) — 폴리싱 3차 7건
+
+- **판매 팝업 고르기 칸**: 씬 `Pick Panel`의 flexibleHeight를 2로, `Sell Scroll View Panel`은 1로 바꿈 → 고르기 칸이 2/3를 차지
+- **판매 팝업 Ctrl+우클릭 → 경매 등록**: 인벤토리 칸과 같게 동작. `InventoryGridPresenter.TryQuickAuction` 추가, `OpenAuctionRegister`는 bool을 돌려줌
+- **경매 탭 빠른 전환 시 '5초 응답 없음'**: 탭을 끌 때 열려 있던 조회 대기를 `Succeed()`로 닫음. 취소·구매처럼 결과가 걸린 대기는 그대로 둠(`_waitIsQuery`)
+- **도감 상세 칸**: flexibleHeight를 1로 바꿔 오른쪽 열 바닥까지 채움
+- **적성 배지**: 칸이 좁으면 먼저 띄어쓰기 없는 '농사1'로 바꾼 뒤 줄임 → 12px
+- **잠긴 작업슬롯 글자**: 문구 칸이 높이 70 고정이라 세 줄이면 16px까지 줄었음
+  - `WorkSlotFrameView`에서 칸 바닥(여백 14)까지 늘림 → 모든 칸이 24px로 같아짐
+  - 크기 맞추기는 같은 줄의 두 칸끼리만 함
+  - 보조 조건 줄은 60%
+- **수량 팝업 제목**: 좌우 여백 12

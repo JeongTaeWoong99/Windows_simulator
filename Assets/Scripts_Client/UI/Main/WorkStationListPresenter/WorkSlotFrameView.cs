@@ -26,7 +26,24 @@ public class WorkSlotFrameView : MonoBehaviour
         this.RequireRef(art,       nameof(art));
         this.RequireRef(stateIcon, nameof(stateIcon));
         this.RequireRef(label,     nameof(label));
+
+        StretchLabelToBottom();
     }
+
+    // 문구 칸의 아래 끝을 칸 바닥(여백 LabelBottomMargin)까지 늘린다 — 위 끝은 그대로(가운데 아래) · 글자는 위 정렬이라 자리는 같다.
+    // ※ 높이 70 고정이라 조건이 세 줄인 잠긴 칸은 글자가 16px까지 줄었다 — 칸 아래 절반이 비어 있었다(2026-11-25).
+    private void StretchLabelToBottom()
+    {
+        var rect = label.rectTransform;
+        float top = rect.anchoredPosition.y; // 가운데 기준 위 끝(피벗이 위)
+
+        rect.anchorMin = new Vector2(rect.anchorMin.x, 0f);
+        rect.offsetMin = new Vector2(rect.offsetMin.x, LabelBottomMargin);
+        rect.offsetMax = new Vector2(rect.offsetMax.x, top);
+        rect.anchorMax = new Vector2(rect.anchorMax.x, 0.5f);
+    }
+
+    private const float LabelBottomMargin = 14f;
 
     // 열린 빈 칸이면 'unlocked' — 문구와 그림을 함께 바꾼다
     public void SetState(bool unlocked, string text)

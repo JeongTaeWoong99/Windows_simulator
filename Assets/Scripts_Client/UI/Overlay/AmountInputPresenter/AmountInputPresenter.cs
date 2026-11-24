@@ -62,6 +62,7 @@ public class AmountInputPresenter : MonoBehaviour
     //   씬을 고치지 않으려고 실행 중에 만든다 — [취소] 버튼 줄과 제목 글자를 복제한다(씬 저장 시 레이아웃 값 수천 줄 변경을 피함).
     private const float QuickRowHeight = 44f;
     private const float PreviewHeight  = 30f;
+    private const float TitleSideMargin = 12f;
 
     private TMP_Text _previewText = null!;
 
@@ -88,6 +89,7 @@ public class AmountInputPresenter : MonoBehaviour
 
         // 제목은 한 줄 + 자동 축소 — 영어 'Potato — How many to sell?'가 두 줄로 접혔다(2026-11-25 · UI 규칙 §3)
         titleText.textWrappingMode = TextWrappingModes.NoWrap;
+        titleText.margin           = new Vector4(TitleSideMargin, 0f, TitleSideMargin, 0f); // 긴 이름이 액자 테두리에 붙지 않게(2026-11-25)
 
         SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }

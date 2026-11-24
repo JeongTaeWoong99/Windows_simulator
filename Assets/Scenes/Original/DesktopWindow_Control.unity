@@ -33354,7 +33354,7 @@ MonoBehaviour:
   m_PreferredWidth: -1
   m_PreferredHeight: -1
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
+  m_FlexibleHeight: 2
   m_LayoutPriority: 1
 --- !u!114 &272096630
 MonoBehaviour:
@@ -147237,7 +147237,7 @@ MonoBehaviour:
   m_PreferredWidth: -1
   m_PreferredHeight: 200
   m_FlexibleWidth: -1
-  m_FlexibleHeight: 0
+  m_FlexibleHeight: 1
   m_LayoutPriority: 1
 --- !u!114 &1140117911
 MonoBehaviour:

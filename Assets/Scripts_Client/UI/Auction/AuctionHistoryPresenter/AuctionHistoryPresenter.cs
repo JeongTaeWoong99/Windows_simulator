@@ -164,6 +164,10 @@ public class AuctionHistoryPresenter : MonoBehaviour, IAuctionQueryTarget
     private void OnDisable()
     {
         Unsubscribe();
+
+        // 꺼질 때 조회 대기를 조용히 닫는다 — 꺼지면 응답 구독도 풀려, 남은 대기가 5초 뒤 "응답 없음" 알림으로 터졌다
+        // (2026-11-25 · 탭을 빠르게 바꿀 때). 다시 켜지면 새로 받는다. 구매·취소처럼 값을 바꾸는 요청은 결과를 알려야 해서 두지 않는다.
+        _waitHandle?.Succeed();
     }
 
     #region 구독
