@@ -584,9 +584,90 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
             industryButtons[i].onClick.AddListener(() => SelectIndustry(index));
+
+            if (index < _industries.Count)
+            {
+                EIndustryType industry = _industries[index];
+                IndustryTooltipOf(industryButtons[i]).SetProvider(() => BuildIndustryTooltip(industry));
+            }
         }
 
         ApplyIndustryIcons();
+    }
+
+    // 산업 버튼의 툴팁 트리거 — 버튼에 없으면 실행 중에 붙인다(프리팹·씬을 고치지 않으려고 · #135).
+    // ※ '??'를 쓰지 않는다 — 에디터의 GetComponent는 없을 때 가짜 null을 돌려줘 '??'를 지나친다.
+    private static TooltipTrigger IndustryTooltipOf(Button button)
+    {
+        if (!button.TryGetComponent(out TooltipTrigger trigger))
+        {
+            trigger = button.gameObject.AddComponent<TooltipTrigger>();
+        }
+
+        return trigger;
+    }
+
+    // 산업 버튼 툴팁 (T-150 · 이슈 #135) — 무엇을 얻고 · 어디에 쓰고 · 덤으로 무엇이 나오는지.
+    //   첫 줄: 'IndustryTable.Tooltip'(번역 키 'Industry.<산업 enum 이름>.Tooltip') — 얻는 자원
+    //   업그레이드 재료: 건물 비용표에서 이 산업 자원을 받는 건물을 모은다 — 표가 바뀌면 따라간다
+    //   확률 보상: 발굴만 미감정 유물, 나머지는 단계별 상자
+    private static TooltipContent BuildIndustryTooltip(EIndustryType industry)
+    {
+        var content = new TooltipContent(IndustryLabel.Get(industry))
+            .Row(Loc.Get("Industry." + industry + ".Tooltip"), "");
+
+        var buildings = UpgradeBuildingsOf(industry);
+
+        if (buildings.Length > 0)
+        {
+            content.Row(Lang.Get("UI.WorkStation.IndustryTip.Upgrade"), buildings);
+        }
+
+        var bonusKey = industry == EIndustryType.Excavation ? "UI.WorkStation.IndustryTip.Relic" : "UI.WorkStation.IndustryTip.Box";
+
+        return content.Row(Lang.Get("UI.WorkStation.IndustryTip.Bonus"), Lang.Get(bonusKey));
+    }
+
+    // 이 산업의 자원을 업그레이드 비용으로 받는 건물 이름 ("관리소 · 작업장")
+    // ※ 자원 종류(ItemType)와 산업(EIndustryType)은 값이 1:1이다 (게임기획코어 4장)
+    private static string UpgradeBuildingsOf(EIndustryType industry)
+    {
+        var names = new List<string>();
+
+        foreach (var building in GameTable.BuildingTable.All)
+        {
+            var uses = false;
+
+            foreach (var level in GameTable.BuildingLevelTable.All)
+            {
+                if (level.BuildingTID != building.BuildingTID)
+                {
+                    continue;
+                }
+
+                foreach (var itemTid in level.ItemTIDs)
+                {
+                    if (GameTable.ItemTable.TryGet(itemTid, out var item) && (int)item.ItemType == (int)industry)
+                    {
+                        uses = true;
+
+                        break;
+                    }
+                }
+
+                if (uses)
+                {
+                    break;
+                }
+            }
+
+            if (uses)
+            {
+                names.Add(Loc.Get(building.NameLocKey));
+            }
+        }
+
+        return string.Join(" · ", names);
     }
 
     // 산업 버튼에 산업 아이콘을 넣는다. 아이콘이 없는 산업은 자원 대체 아이콘(빈 자루)이다

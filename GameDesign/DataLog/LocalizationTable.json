@@ -7811,8 +7811,8 @@
   },
   {
     "Key": "Industry.Farming.Tooltip",
-    "KR": "거둔 작물로 새참을 지어 일꾼을 먹인다. 꾸준하고 흔들림이 없다.",
-    "EN": "Cook the harvest into meals for your workers. Steady, with no surprises."
+    "KR": "밭에서 밀 · 감자 · 보리 같은 작물을 거둔다.",
+    "EN": "Harvest crops such as wheat, potatoes and barley from the fields."
   },
   {
     "Key": "Industry.Excavation.Name",
@@ -7821,8 +7821,8 @@
   },
   {
     "Key": "Industry.Excavation.Tooltip",
-    "KR": "상자 대신 미감정 유물이 나온다. 골드를 내고 감정하면 무엇이 들었는지 알 수 있다.",
-    "EN": "Unappraised relics turn up instead of chests. Pay gold to appraise one and see what is inside."
+    "KR": "유적에서 토기 조각 · 동전 · 거울 같은 옛 물건을 캐낸다. 상자 대신 미감정 유물이 나오고, 골드를 내고 감정하면 아티팩트가 나온다.",
+    "EN": "Dig up old relics such as pottery shards, coins and mirrors. Unappraised relics turn up instead of chests — pay gold to appraise them for artifacts."
   },
   {
     "Key": "Industry.Mining.Name",
@@ -7831,8 +7831,8 @@
   },
   {
     "Key": "Industry.Mining.Tooltip",
-    "KR": "캐낸 광물로 설비를 올린다. 목재와 함께 쓰면 한 번에 거두는 양이 영구히 늘어난다.",
-    "EN": "Spend ore on equipment. Combined with timber it permanently raises how much each haul yields."
+    "KR": "채석장과 갱도에서 돌 · 석탄 · 철광석 같은 광석을 캔다.",
+    "EN": "Mine stone, coal, iron ore and more from quarries and tunnels."
   },
   {
     "Key": "Industry.Logging.Name",
@@ -7841,8 +7841,8 @@
   },
   {
     "Key": "Industry.Logging.Tooltip",
-    "KR": "베어 낸 목재로 작업장을 넓힌다. 광물과 함께 쓰면 일하는 속도가 영구히 오른다.",
-    "EN": "Spend timber on expanding the workshop. Combined with ore it permanently raises work speed."
+    "KR": "숲에서 잡목 · 소나무 · 삼나무 같은 목재를 벤다.",
+    "EN": "Cut timber such as brushwood, pine and cedar in the forests."
   },
   {
     "Key": "Industry.Hunting.Name",
@@ -7851,8 +7851,8 @@
   },
   {
     "Key": "Industry.Hunting.Tooltip",
-    "KR": "사냥터마다 다른 것이 나온다. 무엇을 모을지 골라서 간다.",
-    "EN": "Each hunting ground drops something different. Pick what you want to collect."
+    "KR": "사냥터에서 고기 · 가죽 · 뿔을 얻는다.",
+    "EN": "Gather meat, hides and horns at the hunting grounds."
   },
   {
     "Key": "IndustryLevel.101.Name",
@@ -13975,6 +13975,21 @@
     "EN": "Artifacts can't be stored in the warehouse"
   },
   {
+    "Key": "UI.Artifact.Sources",
+    "KR": "얻는 곳",
+    "EN": "Where to get"
+  },
+  {
+    "Key": "UI.Artifact.SourceAppraise",
+    "KR": "{0} 감정",
+    "EN": "Appraise {0}"
+  },
+  {
+    "Key": "UI.Artifact.SourceGather",
+    "KR": "{0} Lv{1} 채취 (판정당)",
+    "EN": "{0} Lv{1} gathering (per roll)"
+  },
+  {
     "Key": "UI.Sell.KindArtifact",
     "KR": "아티팩트 판매 {0}종",
     "EN": "Sell Artifacts ({0})"
@@ -14868,6 +14883,26 @@
     "Key": "UI.WorkStation.Tip.Yield",
     "KR": "판정 1회에 같은 자원이 나오는 양입니다. 기본 100%이고 특성(공통 · 산업)으로 늘어납니다.",
     "EN": "How much of the same resource one roll gives. 100% by default, raised by traits (common · industry)."
+  },
+  {
+    "Key": "UI.WorkStation.IndustryTip.Upgrade",
+    "KR": "업그레이드 재료",
+    "EN": "Upgrade material"
+  },
+  {
+    "Key": "UI.WorkStation.IndustryTip.Bonus",
+    "KR": "확률 보상",
+    "EN": "Bonus drop"
+  },
+  {
+    "Key": "UI.WorkStation.IndustryTip.Box",
+    "KR": "단계별 상자",
+    "EN": "Stage chest"
+  },
+  {
+    "Key": "UI.WorkStation.IndustryTip.Relic",
+    "KR": "미감정 유물",
+    "EN": "Unappraised relic"
   },
   {
     "Key": "UI.Gacha.AppraiseAgain",
