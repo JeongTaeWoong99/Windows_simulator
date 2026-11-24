@@ -11361,8 +11361,8 @@
   },
   {
     "Key": "UI.Common.AmountTitle",
-    "KR": "{0} — {1} (최대 {2}개)",
-    "EN": "{0} — {1} (max {2})"
+    "KR": "{0} — {1}",
+    "EN": "{0} — {1}"
   },
   {
     "Key": "UI.Login.Wait",
@@ -12472,7 +12472,7 @@
   {
     "Key": "UI.Tool.RarityOrBelow",
     "KR": "{0} 이하",
-    "EN": "{0} or lower"
+    "EN": "Up to {0}"
   },
   {
     "Key": "UI.Tool.AllRarities",
@@ -12591,8 +12591,8 @@
   },
   {
     "Key": "UI.Tool.BulkAdd",
-    "KR": "판매 등록",
-    "EN": "Add to Sell"
+    "KR": "일괄 담기",
+    "EN": "Add All"
   },
   {
     "Key": "UI.Tool.SellMode",
@@ -13572,12 +13572,12 @@
   {
     "Key": "UI.Warehouse.Hint",
     "KR": "칸을 끌어 인벤토리 ↔ 창고로 옮깁니다",
-    "EN": "Drag slots to move between inventory ↔ warehouse"
+    "EN": "Drag slots to move ↔ inventory"
   },
   {
     "Key": "UI.Warehouse.Stack",
     "KR": "창고에 쌓기",
-    "EN": "Stack in Warehouse"
+    "EN": "Fill Stacks"
   },
   {
     "Key": "UI.Warehouse.StackTip",
@@ -14002,12 +14002,12 @@
   {
     "Key": "UI.Auction.SortPriceAsc",
     "KR": "단가 낮은순",
-    "EN": "Price: Low to High"
+    "EN": "Lowest Price"
   },
   {
     "Key": "UI.Auction.SortPriceDesc",
     "KR": "단가 높은순",
-    "EN": "Price: High to Low"
+    "EN": "Highest Price"
   },
   {
     "Key": "UI.Auction.SortExpires",
@@ -14017,7 +14017,7 @@
   {
     "Key": "UI.Auction.SortRarity",
     "KR": "등급 높은순",
-    "EN": "Rarity: High to Low"
+    "EN": "Highest Rarity"
   },
   {
     "Key": "UI.Auction.SortSpeed",
@@ -14953,5 +14953,25 @@
     "Key": "UI.Result.Banned",
     "KR": "이용이 제한된 계정입니다.",
     "EN": "This account has been suspended."
+  },
+  {
+    "Key": "UI.Common.AmountOne",
+    "KR": "1개",
+    "EN": "1"
+  },
+  {
+    "Key": "UI.Common.AmountHalf",
+    "KR": "절반",
+    "EN": "Half"
+  },
+  {
+    "Key": "UI.Common.AmountMax",
+    "KR": "최대",
+    "EN": "Max"
+  },
+  {
+    "Key": "UI.Sell.PreviewEach",
+    "KR": "개당 {0} G",
+    "EN": "{0} G each"
   }
 ]

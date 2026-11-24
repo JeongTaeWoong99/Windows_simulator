@@ -1334,7 +1334,10 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        _ui.AskAmount(GameDataLoader.GetArtifactName(artifactTid), owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.AddArtifact(artifactTid, amount));
+        int artifactBase = GameDataLoader.TryGetArtifact(artifactTid, out var artifactRow) ? artifactRow.BasePrice : 0;
+
+        _ui.AskAmount(GameDataLoader.GetArtifactName(artifactTid), owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.AddArtifact(artifactTid, amount),
+                      amount => SellPreview(artifactBase, amount));
     }
 
     // 자원을 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
@@ -1375,7 +1378,19 @@ public class InventoryGridPresenter : MonoBehaviour
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!Overlay Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   인벤토리 안에 두면 다른 열이 그대로 눌린다('Overlay 규칙.md').
-        _ui.AskAmount(itemId, owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.Add(itemId, amount));
+        int itemBase = GameTable.ItemTable.TryGet(itemId, out var itemRow) ? itemRow.BasePrice : 0;
+
+        _ui.AskAmount(itemId, owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.Add(itemId, amount),
+                      amount => SellPreview(itemBase, amount));
+    }
+
+    // 판매 수량 팝업의 미리보기 — "받을 골드 1,250 G · 개당 50 G" (즉시 판매가 = 기준가 × 판매율 · 'AuctionModel')
+    private static string SellPreview(int basePrice, int amount)
+    {
+        string total = UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, amount));
+        string each  = UIRichText.Small(UIRichText.Label(Lang.Format("UI.Sell.PreviewEach", $"{AuctionModel.InstantSellPrice(basePrice):N0}")));
+
+        return $"{UIRichText.Label(Lang.Get("UI.Sell.GoldToGet"))} {total}  {each}";
     }
 
     #endregion

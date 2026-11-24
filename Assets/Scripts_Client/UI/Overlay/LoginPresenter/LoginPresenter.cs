@@ -1,6 +1,5 @@
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using MikaNetwork;
 using MikaProtocol;
 using TMPro;
@@ -69,8 +68,12 @@ public class LoginPresenter : MonoBehaviour
 
     private const string ConnectKey = "UI.Login.Connect";
 
-    private const float PanelFadeDelay    = 0.25f; // 초 — 검은 화면을 잠깐 보여 준 뒤
-    private const float PanelFadeDuration = 0.4f;  // 초 — 상자가 나타나는 시간
+    private const int   PanelFadeWaitFrames = 3;     // 첫 그림 · 레이아웃이 끝날 때까지 — 시작 직후 프레임은 길다
+    private const float PanelFadeDelay      = 0.3f;  // 초 — 완전히 검은 화면을 잠깐 보여 준 뒤
+    private const float PanelFadeDuration   = 0.5f;  // 초 — 상자가 나타나는 시간
+    private const float PanelFadeMaxStep    = 1f / 30f; // 한 프레임에 흐르는 시간 상한 — 멈칫한 프레임이 페이드를 건너뛰지 않게
+
+    private CancellationTokenSource? _fadeCts;
 
     private CanvasGroup _panelGroup = null!; // 상자('loginButton'의 부모 Panel) — 실행 중에 붙인다(씬을 고치지 않는다)
 
@@ -150,11 +153,41 @@ public class LoginPresenter : MonoBehaviour
     }
 
     // 검은 판을 잠깐 보인 뒤 상자를 서서히 띄운다 (Start · 다시 열 때)
+    // ※ 트윈(DOFade)을 쓰지 않는다 — 게임 시작 직후 프레임이 수백 ms씩 걸려, 실제 시간으로 흐르는 트윈은
+    //   첫 그림이 나올 때 이미 반쯤 밝아져 있었다(2026-11-24 사용자 화면). 프레임마다 흐르는 시간을 잘라 0부터 올린다.
     private void FadeInPanel()
     {
-        _panelGroup.DOKill();
+        _fadeCts?.Cancel();
+        _fadeCts?.Dispose();
+        _fadeCts = new CancellationTokenSource();
+
         _panelGroup.alpha = 0f;
-        _panelGroup.DOFade(1f, PanelFadeDuration).SetDelay(PanelFadeDelay).SetUpdate(true).SetLink(gameObject, LinkBehaviour.KillOnDisable);
+
+        FadeInPanelAsync(_fadeCts.Token).Forget();
+    }
+
+    private async UniTaskVoid FadeInPanelAsync(CancellationToken token)
+    {
+        await UniTask.DelayFrame(PanelFadeWaitFrames, cancellationToken: token);
+
+        float waited = 0f;
+
+        while (waited < PanelFadeDelay)
+        {
+            waited += Mathf.Min(Time.unscaledDeltaTime, PanelFadeMaxStep);
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        }
+
+        float elapsed = 0f;
+
+        while (elapsed < PanelFadeDuration)
+        {
+            elapsed           += Mathf.Min(Time.unscaledDeltaTime, PanelFadeMaxStep);
+            _panelGroup.alpha  = Mathf.SmoothStep(0f, 1f, elapsed / PanelFadeDuration);
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        }
+
+        _panelGroup.alpha = 1f;
     }
 
     // 보낼 수 있을 때만 버튼을 연다 (Start · 입력 변경 시 호출)
@@ -187,6 +220,7 @@ public class LoginPresenter : MonoBehaviour
     // 구독 해제 (Unity 메시지)
     private void OnDisable()
     {
+        _fadeCts?.Cancel(); // 닫히면 페이드를 멈춘다 — 다시 열 때 처음부터
         Unsubscribe();
     }
 

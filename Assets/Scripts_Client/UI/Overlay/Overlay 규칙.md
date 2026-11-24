@@ -13,7 +13,7 @@
 | `GachaResultPresenter/GachaResultPresenter.cs` | `PlayerDataModel.GachaCompleted`·`ItemUseCompleted`를 구독해 얻은 보상을 5열로 표시 (가챠·상자 개봉 공용) |
 | `GachaResultPresenter/RewardRevealFx.cs` · `RewardBurstFx.cs` · `RewardRevealSettings.cs` | 결과 칸을 **하나씩 공개**하는 연출 — 칸 하나의 팝·차오름·강조(칸에 코드로 붙인다) · 고등급 빛 폭발(창 위 층) · 조정값(Presenter 인스펙터 `reveal`) · 이펙트 그림은 `Shared/visual/FxSprites`의 `reveal_*`(그림 저장소 `Art/fx/reveal/` — 없으면 그 효과만 빠진다). 고등급 연출은 뒤 칸을 막지 않는다 · 공개 중 [n회 더 뽑기]·닫기 잠금 · 창·칸 클릭 = 스킵 |
 | `GachaResultPresenter/RelicAppraiseFx.cs` | **유물 감정 무대** — 감정 결과(골드를 낸 아이템 사용)만 칸 공개 앞에 한 번 돈다: 흔들림 → 금 3갈래 → 번쩍 → 조각 → 대표 보상 등장 · 아티팩트/Special 유물이면 띠. 코드로 만든 층(팝업 바탕 위) · 그동안 창(Panel)은 투명 · 클릭 = 건너뛰고 끝 모습으로. **무대가 결과 전부다**(#88 — 유물은 1개씩) — 끝나면 보상이 놓인 채 머물고, 한 번 더 누르면 닫힌다. 결과 칸 목록은 띄우지 않는다. 그림은 `appraise_*`(`Art/fx/appraise/`) + `reveal_glow`·`reveal_rays` |
-| `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가" |
+| `AmountInputPresenter/AmountInputPresenter.cs` | "몇 개?"를 묻고 확인한 수를 돌려준다. **넷 중 유일하게 구독형이 아니다** — 아래 "왜 이것만 `UIManager`를 거치는가". 입력칸 아래 **[1개] · [절반] · [최대 N]** 빠른 줄과, 부른 쪽이 `preview`를 넘기면 **미리보기 한 줄**(판매 = 받을 골드 · 개당)이 붙는다 — 둘 다 실행 중에 복제해 만든다(씬 저장 회피 · 2026-11-25). 최대치는 제목이 아니라 [최대] 버튼에 적는다(제목이 두 줄로 접혔다) |
 | `ItemUsePresenter/ItemUsePresenter.cs` | 소모품의 대상(슬롯·캐릭터)과 개수를 고르고 고른 것을 돌려준다(T-194). 요청은 부른 쪽(인벤토리 격자)이 보낸다 — `AmountInputPresenter`와 같은 왕복형, `UIManager.AskItemUse`가 중개 |
 | `ConfirmPresenter/ConfirmPresenter.cs` | 예/아니오를 묻고 확인이면 콜백을 부른다. `AmountInputPresenter`와 같은 왕복형 — `UIManager.AskConfirm`이 중개. 값이 여럿인 확인(경매 구매·등록)은 `detail`로 아래 **어두운 상자(`Detail Box`)** 에 표를 적는다 — 금액은 노랑(`GoldOnDark`), 줄은 `UIRichText.Row`(왼쪽 라벨 · 오른쪽 값). 글씨가 한 덩어리면 무엇이 값인지 안 보였다(2026-11-15 사용자) |
 | `FpsTextPresenter/FpsTextPresenter.cs` | 창 구석에 FPS를 띄운다. `DisplayManager.FpsTextPositionChanged` 구독. **오버레이가 아니다** — 차단막·`CanvasGroup` 없이 텍스트만 켜고 끄며, `raycastTarget`을 꺼 클릭스루를 막지 않는다 |
@@ -386,7 +386,7 @@ Presenter가 스스로 구독해 뜬다 — 그래서 `UIManager`는 이 층을 
 **3열 위에 겹쳐 뜨는 것**이라 이 층의 첫 형제로 접었다 — 루트 UI가 두 축(열 · 오버레이)으로 읽힌다.
 
 - **`UIManager`의 인스펙터에서 로그인이 맨 위에 온다.** 게임이 거기서 시작하기 때문이다 — 인스펙터 필드는 화면에 나오는 순서로 둔다.
-- **처음 뜰 때 검은 판 위로 상자가 서서히 나타난다** (2026-11-24) — `Awake`에서 상자(`loginButton`의 부모)에 `CanvasGroup`을 붙여 투명하게 두고 스팀 모드면 Id 칸을 먼저 숨긴다. `Start`·다시 열 때 0.25초 뒤 0.4초 페이드. 스팀 모드에서 Id 칸·[로그인]이 한순간 보이던 깜빡임을 막는다.
+- **처음 뜰 때 완전히 검은 화면에서 상자가 서서히 나타난다** (2026-11-24) — `Awake`에서 상자(`loginButton`의 부모)에 `CanvasGroup`을 붙여 투명하게 두고 스팀 모드면 Id 칸을 먼저 숨긴다. `Start`·다시 열 때 3프레임 + 0.3초 뒤 0.5초 페이드. ⚠️ 트윈을 쓰지 않는다 — 시작 직후 프레임이 길어 실제 시간 트윈은 첫 그림에서 이미 반쯤 밝았다. 프레임당 시간을 1/30초로 잘라 직접 올린다. 스팀 모드에서 Id 칸·[로그인]이 한순간 보이던 깜빡임을 막는다.
 - **닫는 시점은 성공 응답이 온 때다** — 누르자마자 닫으면 무응답(이슈 #10)일 때 빈 화면에 갇힌다(`LoginPresenter` 주석).
 - **종료 버튼이 여기에도 있다.** 로그인 화면이 떠 있는 동안은 상태 패널의 종료 버튼이
   가려져 손이 닿지 않고, 타이틀바를 끈 보더리스라 창 `X`도 없다. ESC 종료는 없앴으므로(2026-10-11)
