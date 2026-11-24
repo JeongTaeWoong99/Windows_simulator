@@ -584,9 +584,116 @@ public class WorkStationSelectPresenter : MonoBehaviour
             // 반복 변수를 그대로 넘기면 모든 콜백이 마지막 값을 본다. 복사본을 캡처한다.
             int index = i;
             industryButtons[i].onClick.AddListener(() => SelectIndustry(index));
+
+            if (index < _industries.Count)
+            {
+                EIndustryType industry = _industries[index];
+                IndustryTooltipOf(industryButtons[i]).SetProvider(() => BuildIndustryTooltip(industry));
+            }
         }
 
         ApplyIndustryIcons();
+    }
+
+    // 산업 버튼의 툴팁 트리거 — 버튼에 없으면 실행 중에 붙인다(프리팹·씬을 고치지 않으려고 · #135).
+    // ※ '??'를 쓰지 않는다 — 에디터의 GetComponent는 없을 때 가짜 null을 돌려줘 '??'를 지나친다.
+    private static TooltipTrigger IndustryTooltipOf(Button button)
+    {
+        if (!button.TryGetComponent(out TooltipTrigger trigger))
+        {
+            trigger = button.gameObject.AddComponent<TooltipTrigger>();
+        }
+
+        return trigger;
+    }
+
+    // 산업 버튼 툴팁 (T-150 · 이슈 #135) — 무엇을 얻고 · 어디에 쓰고 · 덤으로 무엇이 나오는지.
+    //   첫 줄: 'IndustryTable.Tooltip'(번역 키 'Industry.<산업 enum 이름>.Tooltip') — 얻는 자원
+    //   업그레이드 재료: 건물 비용표에서 이 산업 자원을 받는 건물을 모은다 — 표가 바뀌면 따라간다
+    //   확률 보상: 발굴만 미감정 유물, 나머지는 단계별 상자
+    private static TooltipContent BuildIndustryTooltip(EIndustryType industry)
+    {
+        var content = new TooltipContent(IndustryLabel.Get(industry));
+
+        // 문장마다 한 줄 — 한 줄로 두면 툴팁이 창 폭만큼 넓어진다(발굴 설명은 두 문장)
+        foreach (var sentence in SplitSentences(Loc.Get("Industry." + industry + ".Tooltip")))
+        {
+            content.Row(sentence, "");
+        }
+
+        var buildings = UpgradeBuildingsOf(industry);
+
+        if (buildings.Length > 0)
+        {
+            content.Row(Lang.Get("UI.WorkStation.IndustryTip.Upgrade"), buildings);
+        }
+
+        var bonusKey = industry == EIndustryType.Excavation ? "UI.WorkStation.IndustryTip.Relic" : "UI.WorkStation.IndustryTip.Box";
+
+        return content.Row(Lang.Get("UI.WorkStation.IndustryTip.Bonus"), Lang.Get(bonusKey));
+    }
+
+    // 문장 끝('. ' · '— ')에서 나눈다 — 마침표는 남긴다. 영어도 같은 규칙이다.
+    private static IEnumerable<string> SplitSentences(string text)
+    {
+        int start = 0;
+
+        for (int i = 0; i < text.Length - 1; i++)
+        {
+            if ((text[i] == '.' || text[i] == '—') && text[i + 1] == ' ')
+            {
+                yield return text.Substring(start, i + 1 - start).Trim();
+
+                start = i + 2;
+            }
+        }
+
+        if (start < text.Length)
+        {
+            yield return text.Substring(start).Trim();
+        }
+    }
+
+    // 이 산업의 자원을 업그레이드 비용으로 받는 건물 이름 ("관리소 · 작업장")
+    // ※ 자원 종류(ItemType)와 산업(EIndustryType)은 값이 1:1이다 (게임기획코어 4장)
+    private static string UpgradeBuildingsOf(EIndustryType industry)
+    {
+        var names = new List<string>();
+
+        foreach (var building in GameTable.BuildingTable.All)
+        {
+            var uses = false;
+
+            foreach (var level in GameTable.BuildingLevelTable.All)
+            {
+                if (level.BuildingTID != building.BuildingTID)
+                {
+                    continue;
+                }
+
+                foreach (var itemTid in level.ItemTIDs)
+                {
+                    if (GameTable.ItemTable.TryGet(itemTid, out var item) && (int)item.ItemType == (int)industry)
+                    {
+                        uses = true;
+
+                        break;
+                    }
+                }
+
+                if (uses)
+                {
+                    break;
+                }
+            }
+
+            if (uses)
+            {
+                names.Add(Loc.Get(building.NameLocKey));
+            }
+        }
+
+        return string.Join(" · ", names);
     }
 
     // 산업 버튼에 산업 아이콘을 넣는다. 아이콘이 없는 산업은 자원 대체 아이콘(빈 자루)이다
@@ -842,7 +949,7 @@ public class WorkStationSelectPresenter : MonoBehaviour
 
             if (entry.label != null)
             {
-                entry.label.text = GetIndustryLevelName(industry, level, "\n");
+                entry.label.text = GetIndustryLevelButtonText(industry, level);
             }
 
             var tint   = UIThemePalette.Of(level == _selectedIndustryLevel ? selectedIndustryRole : unselectedIndustryRole);
@@ -863,12 +970,63 @@ public class WorkStationSelectPresenter : MonoBehaviour
         => GameDataLoader.TryGetIndustryUnlockTrait(industry, out var trait) && trait.Name.Length > 0 ? Loc.Get(trait.NameLocKey) : Lang.Get("UI.WorkStation.PioneerFallback");
 
     // 레벨 이름 — 'Lv2 밭'. 이름이 비어 있으면 'Lv2'만.
-    //   separator : 'Lv2'와 이름 사이. 버튼은 줄바꿈(두 줄), 툴팁 제목은 빈칸
+    //   separator : 'Lv2'와 이름 사이 — 툴팁 제목은 빈칸. 버튼 글자는 'GetIndustryLevelButtonText'
     // ※ 버튼을 두 줄로 나눈다(2026-11-12) — 한 줄이면 버튼 폭(100)에 '무너진 성벽'까지 들어가지 않아 글자가 12까지 줄었다.
     private static string GetIndustryLevelName(EIndustryType industry, int level, string separator = " ")
         => GameDataLoader.TryGetIndustryLevel(industry, level, out var row) && row.Name.Length > 0
             ? $"Lv{level}{separator}{Loc.Get(row.NameLocKey)}"
             : $"Lv{level}";
+
+    // 레벨 버튼 글자 — 'Lv1' 아래에 이름을 낱말 단위로 짧게 끊어 쌓는다 (2026-11-24 사용자 — 글자가 너무 작았다).
+    //   한 줄에 한글 3자 · 영어 9자까지(빈칸 제외). 'Lv1 / 마을 / 텃밭' · 'Lv80 / 성 밖 / 과수원'.
+    //   두 줄(Lv · 이름)일 때는 폭 안에 이름을 한 줄로 넣느라 글자가 8까지 줄었다 —
+    //   줄을 늘리고 칸 높이를 키웠다(씬 'Industry Level Panel' 74 → 92).
+    private const int LevelNameLineKo = 3; // 4자면 "마을 텃밭"이 폭을 넘어 TMP가 다시 줄바꿈 · 축소했다(실측)
+    private const int LevelNameLineEn = 9;
+
+    private static string GetIndustryLevelButtonText(EIndustryType industry, int level)
+    {
+        if (!GameDataLoader.TryGetIndustryLevel(industry, level, out var row) || row.Name.Length == 0)
+        {
+            return $"Lv{level}";
+        }
+
+        string name  = Loc.Get(row.NameLocKey);
+        int    limit = ContainsHangul(name) ? LevelNameLineKo : LevelNameLineEn;
+
+        // 'Lv' 줄은 작게 — 남는 높이를 이름 줄에 준다
+        var text       = new System.Text.StringBuilder($"<size=75%>Lv{level}</size>");
+        int lineLength = -1; // -1 = 아직 이름 줄이 없다
+
+        foreach (var word in name.Split(' ', StringSplitOptions.RemoveEmptyEntries))
+        {
+            if (lineLength >= 0 && lineLength + word.Length <= limit)
+            {
+                text.Append(' ').Append(word);
+                lineLength += word.Length;
+            }
+            else
+            {
+                text.Append('\n').Append(word);
+                lineLength = word.Length;
+            }
+        }
+
+        return text.ToString();
+    }
+
+    private static bool ContainsHangul(string text)
+    {
+        foreach (char c in text)
+        {
+            if (c >= '가' && c <= '힣')
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
 
     // 레벨 버튼 툴팁 — 그 레벨의 스펙과 나오는 자원 (레벨 버튼의 'TooltipTrigger'가 띄울 때 호출).
     //
