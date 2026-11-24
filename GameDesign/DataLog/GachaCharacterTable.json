@@ -1358,5 +1358,1781 @@
     "Count": 1,
     "Weight": 3024,
     "Description": "Epic 얼음 골렘 (뽑기권 D)"
+  },
+  {
+    "GachaCharacterTID": 9001,
+    "GachaId": 9,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 떠돌이 전사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9002,
+    "GachaId": 9,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 들쥐 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9003,
+    "GachaId": 9,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 견습 발굴꾼 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9004,
+    "GachaId": 9,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 동굴 박쥐 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9005,
+    "GachaId": 9,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 견습 나무꾼 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9006,
+    "GachaId": 9,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 10731213,
+    "Description": "Common 흡혈 박쥐 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9007,
+    "GachaId": 9,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 숲 슬라임 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9008,
+    "GachaId": 9,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 뿔쥐 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9009,
+    "GachaId": 9,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 가시 슬라임 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9010,
+    "GachaId": 9,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 방랑 기사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9011,
+    "GachaId": 9,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 날개 눈알 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9012,
+    "GachaId": 9,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 망령 마법사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9013,
+    "GachaId": 9,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 화염 마법사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9014,
+    "GachaId": 9,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 나무꾼 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9015,
+    "GachaId": 9,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 숙련 채굴꾼 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9016,
+    "GachaId": 9,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 탐험가 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9017,
+    "GachaId": 9,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 5365606,
+    "Description": "Uncommon 독 슬라임 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9018,
+    "GachaId": 9,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 미믹 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9019,
+    "GachaId": 9,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 버섯 인간 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9020,
+    "GachaId": 9,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 고블린 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9021,
+    "GachaId": 9,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 은빛 기사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9022,
+    "GachaId": 9,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 그림자 마법사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9023,
+    "GachaId": 9,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 무예가 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9024,
+    "GachaId": 9,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 1341402,
+    "Description": "Rare 해골 병사 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 9025,
+    "GachaId": 9,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 1341466,
+    "Description": "Rare 숙련 벌목꾼 (개척자의 상자)"
+  },
+  {
+    "GachaCharacterTID": 12001,
+    "GachaId": 12,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 떠돌이 전사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12002,
+    "GachaId": 12,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 들쥐 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12003,
+    "GachaId": 12,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 견습 발굴꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12004,
+    "GachaId": 12,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 동굴 박쥐 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12005,
+    "GachaId": 12,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 견습 나무꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12006,
+    "GachaId": 12,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 10562275,
+    "Description": "Common 흡혈 박쥐 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12007,
+    "GachaId": 12,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 숲 슬라임 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12008,
+    "GachaId": 12,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 뿔쥐 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12009,
+    "GachaId": 12,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 가시 슬라임 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12010,
+    "GachaId": 12,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 방랑 기사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12011,
+    "GachaId": 12,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 날개 눈알 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12012,
+    "GachaId": 12,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 망령 마법사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12013,
+    "GachaId": 12,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 화염 마법사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12014,
+    "GachaId": 12,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 나무꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12015,
+    "GachaId": 12,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 숙련 채굴꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12016,
+    "GachaId": 12,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 탐험가 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12017,
+    "GachaId": 12,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 9528206,
+    "Description": "Uncommon 독 슬라임 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12018,
+    "GachaId": 12,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 미믹 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12019,
+    "GachaId": 12,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 버섯 인간 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12020,
+    "GachaId": 12,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 고블린 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12021,
+    "GachaId": 12,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 은빛 기사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12022,
+    "GachaId": 12,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 그림자 마법사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12023,
+    "GachaId": 12,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 무예가 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12024,
+    "GachaId": 12,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 해골 병사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12025,
+    "GachaId": 12,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 7617025,
+    "Description": "Rare 숙련 벌목꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12026,
+    "GachaId": 12,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 바위 골렘 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12027,
+    "GachaId": 12,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 고목 골렘 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12028,
+    "GachaId": 12,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 대검 전사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12029,
+    "GachaId": 12,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 검왕 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12030,
+    "GachaId": 12,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 영웅 기사 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12031,
+    "GachaId": 12,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 드워프 발굴꾼 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12032,
+    "GachaId": 12,
+    "CharacterTID": 1036,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 심연의 눈 사제 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12033,
+    "GachaId": 12,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 1624965,
+    "Description": "Epic 농부 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 12034,
+    "GachaId": 12,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 1624980,
+    "Description": "Epic 얼음 골렘 (산골 상자)"
+  },
+  {
+    "GachaCharacterTID": 15001,
+    "GachaId": 15,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 떠돌이 전사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15002,
+    "GachaId": 15,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 들쥐 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15003,
+    "GachaId": 15,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 견습 발굴꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15004,
+    "GachaId": 15,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 동굴 박쥐 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15005,
+    "GachaId": 15,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 견습 나무꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15006,
+    "GachaId": 15,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 3801778,
+    "Description": "Common 흡혈 박쥐 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15007,
+    "GachaId": 15,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 숲 슬라임 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15008,
+    "GachaId": 15,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 뿔쥐 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15009,
+    "GachaId": 15,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 가시 슬라임 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15010,
+    "GachaId": 15,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 방랑 기사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15011,
+    "GachaId": 15,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 날개 눈알 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15012,
+    "GachaId": 15,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 망령 마법사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15013,
+    "GachaId": 15,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 화염 마법사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15014,
+    "GachaId": 15,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 나무꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15015,
+    "GachaId": 15,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 숙련 채굴꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15016,
+    "GachaId": 15,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 탐험가 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15017,
+    "GachaId": 15,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 4147395,
+    "Description": "Uncommon 독 슬라임 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15018,
+    "GachaId": 15,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 미믹 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15019,
+    "GachaId": 15,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 버섯 인간 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15020,
+    "GachaId": 15,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 고블린 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15021,
+    "GachaId": 15,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 은빛 기사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15022,
+    "GachaId": 15,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 그림자 마법사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15023,
+    "GachaId": 15,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 무예가 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15024,
+    "GachaId": 15,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 해골 병사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15025,
+    "GachaId": 15,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 4444726,
+    "Description": "Rare 숙련 벌목꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15026,
+    "GachaId": 15,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 바위 골렘 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15027,
+    "GachaId": 15,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 고목 골렘 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15028,
+    "GachaId": 15,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 대검 전사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15029,
+    "GachaId": 15,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 검왕 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15030,
+    "GachaId": 15,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 영웅 기사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15031,
+    "GachaId": 15,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 드워프 발굴꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15032,
+    "GachaId": 15,
+    "CharacterTID": 1036,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 심연의 눈 사제 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15033,
+    "GachaId": 15,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 농부 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15034,
+    "GachaId": 15,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 2907242,
+    "Description": "Epic 얼음 골렘 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15035,
+    "GachaId": 15,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 670902,
+    "Description": "Legendary 죽음의 사신 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15036,
+    "GachaId": 15,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 670902,
+    "Description": "Legendary 흑기사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15037,
+    "GachaId": 15,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 670902,
+    "Description": "Legendary 흑요석골렘 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15038,
+    "GachaId": 15,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 670902,
+    "Description": "Legendary 보물 사냥꾼 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15039,
+    "GachaId": 15,
+    "CharacterTID": 1035,
+    "Count": 1,
+    "Weight": 670902,
+    "Description": "Legendary 화염 군주 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 15040,
+    "GachaId": 15,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 671015,
+    "Description": "Legendary 백기사 (광부의 상자)"
+  },
+  {
+    "GachaCharacterTID": 18001,
+    "GachaId": 18,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 떠돌이 전사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18002,
+    "GachaId": 18,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 들쥐 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18003,
+    "GachaId": 18,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 견습 발굴꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18004,
+    "GachaId": 18,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 동굴 박쥐 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18005,
+    "GachaId": 18,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 견습 나무꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18006,
+    "GachaId": 18,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 4874896,
+    "Description": "Common 흡혈 박쥐 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18007,
+    "GachaId": 18,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 숲 슬라임 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18008,
+    "GachaId": 18,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 뿔쥐 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18009,
+    "GachaId": 18,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 가시 슬라임 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18010,
+    "GachaId": 18,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 방랑 기사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18011,
+    "GachaId": 18,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 날개 눈알 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18012,
+    "GachaId": 18,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 망령 마법사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18013,
+    "GachaId": 18,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 화염 마법사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18014,
+    "GachaId": 18,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 나무꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18015,
+    "GachaId": 18,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 숙련 채굴꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18016,
+    "GachaId": 18,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 탐험가 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18017,
+    "GachaId": 18,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 5982827,
+    "Description": "Uncommon 독 슬라임 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18018,
+    "GachaId": 18,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 미믹 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18019,
+    "GachaId": 18,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 버섯 인간 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18020,
+    "GachaId": 18,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 고블린 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18021,
+    "GachaId": 18,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 은빛 기사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18022,
+    "GachaId": 18,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 그림자 마법사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18023,
+    "GachaId": 18,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 무예가 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18024,
+    "GachaId": 18,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 해골 병사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18025,
+    "GachaId": 18,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 숙련 벌목꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18026,
+    "GachaId": 18,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 바위 골렘 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18027,
+    "GachaId": 18,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 고목 골렘 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18028,
+    "GachaId": 18,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 대검 전사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18029,
+    "GachaId": 18,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 검왕 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18030,
+    "GachaId": 18,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 영웅 기사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18031,
+    "GachaId": 18,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 드워프 발굴꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18032,
+    "GachaId": 18,
+    "CharacterTID": 1036,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 심연의 눈 사제 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18033,
+    "GachaId": 18,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 농부 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18034,
+    "GachaId": 18,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Epic 얼음 골렘 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18035,
+    "GachaId": 18,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 죽음의 사신 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18036,
+    "GachaId": 18,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 흑기사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18037,
+    "GachaId": 18,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 흑요석골렘 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18038,
+    "GachaId": 18,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 보물 사냥꾼 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18039,
+    "GachaId": 18,
+    "CharacterTID": 1035,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 화염 군주 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18040,
+    "GachaId": 18,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 4306158,
+    "Description": "Legendary 백기사 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 18041,
+    "GachaId": 18,
+    "CharacterTID": 1030,
+    "Count": 1,
+    "Weight": 974981,
+    "Description": "Mythic 질풍 검호 (요새 보급 상자)"
+  },
+  {
+    "GachaCharacterTID": 21001,
+    "GachaId": 21,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 떠돌이 전사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21002,
+    "GachaId": 21,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 들쥐 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21003,
+    "GachaId": 21,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 견습 발굴꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21004,
+    "GachaId": 21,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 동굴 박쥐 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21005,
+    "GachaId": 21,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 견습 나무꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21006,
+    "GachaId": 21,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 3249931,
+    "Description": "Common 흡혈 박쥐 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21007,
+    "GachaId": 21,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 숲 슬라임 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21008,
+    "GachaId": 21,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 뿔쥐 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21009,
+    "GachaId": 21,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 가시 슬라임 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21010,
+    "GachaId": 21,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 방랑 기사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21011,
+    "GachaId": 21,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 날개 눈알 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21012,
+    "GachaId": 21,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 망령 마법사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21013,
+    "GachaId": 21,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 화염 마법사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21014,
+    "GachaId": 21,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 나무꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21015,
+    "GachaId": 21,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 숙련 채굴꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21016,
+    "GachaId": 21,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 탐험가 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21017,
+    "GachaId": 21,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 4431724,
+    "Description": "Uncommon 독 슬라임 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21018,
+    "GachaId": 21,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 미믹 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21019,
+    "GachaId": 21,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 버섯 인간 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21020,
+    "GachaId": 21,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 고블린 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21021,
+    "GachaId": 21,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 은빛 기사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21022,
+    "GachaId": 21,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 그림자 마법사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21023,
+    "GachaId": 21,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 무예가 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21024,
+    "GachaId": 21,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 해골 병사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21025,
+    "GachaId": 21,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 7921707,
+    "Description": "Rare 숙련 벌목꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21026,
+    "GachaId": 21,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 바위 골렘 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21027,
+    "GachaId": 21,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 고목 골렘 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21028,
+    "GachaId": 21,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 대검 전사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21029,
+    "GachaId": 21,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 검왕 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21030,
+    "GachaId": 21,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 영웅 기사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21031,
+    "GachaId": 21,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 드워프 발굴꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21032,
+    "GachaId": 21,
+    "CharacterTID": 1036,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 심연의 눈 사제 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21033,
+    "GachaId": 21,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 농부 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21034,
+    "GachaId": 21,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 7583172,
+    "Description": "Epic 얼음 골렘 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21035,
+    "GachaId": 21,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 죽음의 사신 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21036,
+    "GachaId": 21,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 흑기사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21037,
+    "GachaId": 21,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 흑요석골렘 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21038,
+    "GachaId": 21,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 보물 사냥꾼 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21039,
+    "GachaId": 21,
+    "CharacterTID": 1035,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 화염 군주 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21040,
+    "GachaId": 21,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 6499862,
+    "Description": "Legendary 백기사 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 21041,
+    "GachaId": 21,
+    "CharacterTID": 1030,
+    "Count": 1,
+    "Weight": 4875014,
+    "Description": "Mythic 질풍 검호 (성주의 상자)"
+  },
+  {
+    "GachaCharacterTID": 37001,
+    "GachaId": 37,
+    "CharacterTID": 1001,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 떠돌이 전사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37002,
+    "GachaId": 37,
+    "CharacterTID": 1007,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 들쥐 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37003,
+    "GachaId": 37,
+    "CharacterTID": 1008,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 견습 발굴꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37004,
+    "GachaId": 37,
+    "CharacterTID": 1009,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 동굴 박쥐 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37005,
+    "GachaId": 37,
+    "CharacterTID": 1010,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 견습 나무꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37006,
+    "GachaId": 37,
+    "CharacterTID": 1011,
+    "Count": 1,
+    "Weight": 2031207,
+    "Description": "Common 흡혈 박쥐 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37007,
+    "GachaId": 37,
+    "CharacterTID": 1002,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 숲 슬라임 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37008,
+    "GachaId": 37,
+    "CharacterTID": 1003,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 뿔쥐 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37009,
+    "GachaId": 37,
+    "CharacterTID": 1004,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 가시 슬라임 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37010,
+    "GachaId": 37,
+    "CharacterTID": 1005,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 방랑 기사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37011,
+    "GachaId": 37,
+    "CharacterTID": 1006,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 날개 눈알 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37012,
+    "GachaId": 37,
+    "CharacterTID": 1012,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 망령 마법사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37013,
+    "GachaId": 37,
+    "CharacterTID": 1013,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 화염 마법사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37014,
+    "GachaId": 37,
+    "CharacterTID": 1014,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 나무꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37015,
+    "GachaId": 37,
+    "CharacterTID": 1031,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 숙련 채굴꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37016,
+    "GachaId": 37,
+    "CharacterTID": 1032,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 탐험가 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37017,
+    "GachaId": 37,
+    "CharacterTID": 1040,
+    "Count": 1,
+    "Weight": 3323793,
+    "Description": "Uncommon 독 슬라임 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37018,
+    "GachaId": 37,
+    "CharacterTID": 1015,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 미믹 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37019,
+    "GachaId": 37,
+    "CharacterTID": 1016,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 버섯 인간 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37020,
+    "GachaId": 37,
+    "CharacterTID": 1017,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 고블린 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37021,
+    "GachaId": 37,
+    "CharacterTID": 1018,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 은빛 기사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37022,
+    "GachaId": 37,
+    "CharacterTID": 1019,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 그림자 마법사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37023,
+    "GachaId": 37,
+    "CharacterTID": 1020,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 무예가 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37024,
+    "GachaId": 37,
+    "CharacterTID": 1021,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 해골 병사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37025,
+    "GachaId": 37,
+    "CharacterTID": 1038,
+    "Count": 1,
+    "Weight": 7312344,
+    "Description": "Rare 숙련 벌목꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37026,
+    "GachaId": 37,
+    "CharacterTID": 1022,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 바위 골렘 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37027,
+    "GachaId": 37,
+    "CharacterTID": 1023,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 고목 골렘 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37028,
+    "GachaId": 37,
+    "CharacterTID": 1024,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 대검 전사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37029,
+    "GachaId": 37,
+    "CharacterTID": 1025,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 검왕 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37030,
+    "GachaId": 37,
+    "CharacterTID": 1026,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 영웅 기사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37031,
+    "GachaId": 37,
+    "CharacterTID": 1033,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 드워프 발굴꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37032,
+    "GachaId": 37,
+    "CharacterTID": 1036,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 심연의 눈 사제 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37033,
+    "GachaId": 37,
+    "CharacterTID": 1037,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 농부 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37034,
+    "GachaId": 37,
+    "CharacterTID": 1041,
+    "Count": 1,
+    "Weight": 8124827,
+    "Description": "Epic 얼음 골렘 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37035,
+    "GachaId": 37,
+    "CharacterTID": 1027,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 죽음의 사신 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37036,
+    "GachaId": 37,
+    "CharacterTID": 1028,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 흑기사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37037,
+    "GachaId": 37,
+    "CharacterTID": 1029,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 흑요석골렘 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37038,
+    "GachaId": 37,
+    "CharacterTID": 1034,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 보물 사냥꾼 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37039,
+    "GachaId": 37,
+    "CharacterTID": 1035,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 화염 군주 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37040,
+    "GachaId": 37,
+    "CharacterTID": 1039,
+    "Count": 1,
+    "Weight": 8937310,
+    "Description": "Legendary 백기사 (왕실 상자)"
+  },
+  {
+    "GachaCharacterTID": 37041,
+    "GachaId": 37,
+    "CharacterTID": 1030,
+    "Count": 1,
+    "Weight": 9749796,
+    "Description": "Mythic 질풍 검호 (왕실 상자)"
   }
 ]

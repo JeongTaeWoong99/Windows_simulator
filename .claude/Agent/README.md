@@ -23,6 +23,8 @@
 
 ## INDEX
 
+- [2026-11-25 테마 상자 6종에 캐릭터 보상 추가](2026-11-25-theme-box-characters.md) — `#data` `#server` 캐릭터 칸 16.33% · 등급은 레벨테마 7.2 · 아티팩트 0.8% 유지
+
 - [2026-11-23 장비 레벨 잠금 · 치트 2종 · 스팀 시험 환경](2026-11-23-equip-level-lock-cheat-preset-steam-test.md) — `#client` `#ui` `#editor` 장착 목록 레벨 잠금·계정 프리셋/장비 세트 치트·480 스팀 로그인 실측
 - [2026-11-22 채취 6단계 클라 대응 · 테마 상자 6종 그림 · 장비 칸 아이템 레벨](2026-11-22-level-step-client-theme-chests.md) — `#client` `#art` `#ui` 레벨 버튼 = 단계 순서 · 해금 = `RequiredTraitLevel` · 상자 LV 배지 뺌 · 테마 상자 Unity AI 14 크레딧 · 장비 칸 '채굴 Lv10' · 씬 diff 줄이기
 - [2026-11-22 건물 업그레이드 소리 · 큐브 편의 줄 · 영어 칩 짧게 · 크래시 원인 · 치트 창 프레임 튐](2026-11-22-building-upgrade-sound-enchant-options-cheat-poll-perf.md) — `#client` `#ui` `#art` `#editor` `#perf` `#data` 업그레이드 = 레벨 업 소리 · 편의 토글 둘(칸 초기화 뺌) · `UI.Enchant.Chip.*` · 크래시 = 프로파일러 UI 버퍼 · 치트 창 OS 조회 백그라운드 · 마을 4·5단계 다시(랜드마크 · 368×384 · 벽돌/석판 길)
