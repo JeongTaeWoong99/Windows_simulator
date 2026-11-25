@@ -23,6 +23,8 @@
 
 ## INDEX
 
+- [2026-11-25 테마 상자 6종에 캐릭터 보상 추가](2026-11-25-theme-box-characters.md) — `#data` `#server` 캐릭터 칸 16.33% · 등급은 레벨테마 7.2 · 아티팩트 0.8% 유지
+
 - [2026-11-24 산업 설명 툴팁 · 서버 치트 3종 연결 · 상자 분포 확인](2026-11-24-industry-tooltip-cheats-box-check.md) — `#client` `#ui` `#editor` 산업 버튼 툴팁·상자 미리 세기/레벨 일괄/비우기 치트·테마 상자 1만 회 분포(#117)
 - [2026-11-23 장비 레벨 잠금 · 치트 2종 · 스팀 시험 환경](2026-11-23-equip-level-lock-cheat-preset-steam-test.md) — `#client` `#ui` `#editor` 장착 목록 레벨 잠금·계정 프리셋/장비 세트 치트·480 스팀 로그인 실측
 - [2026-11-22 채취 6단계 클라 대응 · 테마 상자 6종 그림 · 장비 칸 아이템 레벨](2026-11-22-level-step-client-theme-chests.md) — `#client` `#art` `#ui` 레벨 버튼 = 단계 순서 · 해금 = `RequiredTraitLevel` · 상자 LV 배지 뺌 · 테마 상자 Unity AI 14 크레딧 · 장비 칸 '채굴 Lv10' · 씬 diff 줄이기

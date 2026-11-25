@@ -194,17 +194,17 @@
   {
     "GachaGoldTID": 37201,
     "GachaId": 37,
-    "MinAmount": 10971,
-    "MaxAmount": 21943,
+    "MinAmount": 32805,
+    "MaxAmount": 65853,
     "Weight": 279000000,
-    "Description": "골드 10971~21943"
+    "Description": "골드 32805~65853"
   },
   {
     "GachaGoldTID": 37202,
     "GachaId": 37,
-    "MinAmount": 21943,
-    "MaxAmount": 54857,
+    "MinAmount": 65853,
+    "MaxAmount": 164511,
     "Weight": 93000000,
-    "Description": "골드 21943~54857"
+    "Description": "골드 65853~164511"
   }
 ]
