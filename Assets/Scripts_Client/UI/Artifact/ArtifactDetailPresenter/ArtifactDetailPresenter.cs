@@ -218,6 +218,14 @@ public class ArtifactDetailPresenter : MonoBehaviour
             selfLayout.flexibleHeight  = 1f;
         }
 
+        // 안쪽 묶음의 위아래 여백(10)을 없앤다 — 상자 위 끝과 [도감에 장착] 아래 끝을 왼쪽 격자 칸의 위아래에 맞춘다
+        // (2026-11-26 사용자 — "위아래가 살짝 짧아서 세로 줄이 안 맞는다")
+        if (contentRoot.TryGetComponent(out VerticalLayoutGroup contentGroup))
+        {
+            contentGroup.padding.top    = 0;
+            contentGroup.padding.bottom = 0;
+        }
+
         text.enableAutoSizing = false;
         text.fontSize         = effectText.fontSizeMax;
         text.textWrappingMode = TextWrappingModes.Normal;
