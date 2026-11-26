@@ -40,5 +40,12 @@
     "ItemCount": 150,
     "ArtifactItemCount": 300,
     "Description": "신화 분해 → 마력의 파편 · 장비 150개 · 아티팩트 300개"
+  },
+  {
+    "Rarity": "Special",
+    "ItemTID": 100050,
+    "ItemCount": 180,
+    "ArtifactItemCount": 360,
+    "Description": "특수 분해 → 마력의 파편 · 장비 180개 · 아티팩트 360개"
   }
 ]

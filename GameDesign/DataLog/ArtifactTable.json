@@ -222,7 +222,7 @@
   {
     "ArtifactTID": 23,
     "Name": "돌문 수호자의 인장",
-    "GlobalRarity": "Rare",
+    "GlobalRarity": "Special",
     "EffectType": "SpeedAdd",
     "Industry": "None",
     "EffectValue": 3,
@@ -232,22 +232,22 @@
   {
     "ArtifactTID": 24,
     "Name": "장인의 나무 자",
-    "GlobalRarity": "Common",
+    "GlobalRarity": "Special",
     "EffectType": "SpeedAdd",
     "Industry": "None",
     "EffectValue": 1,
     "BasePrice": 400,
-    "Description": "나무 상자 보상 (#107)"
+    "Description": "개척자의 상자 전용"
   },
   {
     "ArtifactTID": 25,
     "Name": "은빛 수확패",
-    "GlobalRarity": "Uncommon",
+    "GlobalRarity": "Special",
     "EffectType": "YieldAdd",
     "Industry": "None",
     "EffectValue": 2,
     "BasePrice": 1200,
-    "Description": "은 상자 보상 (#107)"
+    "Description": "산골 상자 전용"
   },
   {
     "ArtifactTID": 26,
@@ -328,5 +328,45 @@
     "EffectValue": 4,
     "BasePrice": 1200,
     "Description": "사냥 Lv.1 채취 보상"
+  },
+  {
+    "ArtifactTID": 34,
+    "Name": "광부의 등불",
+    "GlobalRarity": "Special",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 3,
+    "BasePrice": 3600,
+    "Description": "광부의 상자 전용"
+  },
+  {
+    "ArtifactTID": 35,
+    "Name": "보급관의 인장",
+    "GlobalRarity": "Special",
+    "EffectType": "YieldAdd",
+    "Industry": "None",
+    "EffectValue": 4,
+    "BasePrice": 10800,
+    "Description": "요새 보급 상자 전용"
+  },
+  {
+    "ArtifactTID": 36,
+    "Name": "성주의 열쇠",
+    "GlobalRarity": "Special",
+    "EffectType": "SpeedAdd",
+    "Industry": "None",
+    "EffectValue": 5,
+    "BasePrice": 32000,
+    "Description": "성주의 상자 전용"
+  },
+  {
+    "ArtifactTID": 37,
+    "Name": "왕실의 홀",
+    "GlobalRarity": "Special",
+    "EffectType": "YieldAdd",
+    "Industry": "None",
+    "EffectValue": 6,
+    "BasePrice": 96000,
+    "Description": "왕실 상자 전용"
   }
 ]

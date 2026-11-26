@@ -21,10 +21,15 @@ public class ArtifactRewardSheetTest
     }
 
     [Theory]
-    [InlineData(24, 8, new[] { 9, 12, 15, 18, 21, 37 })]
+    [InlineData(24, 8, new[] { 9 })]
+    [InlineData(25, 8, new[] { 12 })]
     [InlineData(26, 8, new[] { 27 })]
     [InlineData(27, 8, new[] { 28 })]
     [InlineData(28, 8, new[] { 29 })]
+    [InlineData(34, 8, new[] { 15 })]
+    [InlineData(35, 8, new[] { 18 })]
+    [InlineData(36, 8, new[] { 21 })]
+    [InlineData(37, 8, new[] { 37 })]
     public void 신규_아티팩트는_정한_획득처에서_지정_확률로_나온다(int artifactTid, int chancePermille, int[] poolIds)
     {
         var entries = GameTable.GachaArtifactTable.All.Where(row => row.ArtifactTID == artifactTid).ToArray();
