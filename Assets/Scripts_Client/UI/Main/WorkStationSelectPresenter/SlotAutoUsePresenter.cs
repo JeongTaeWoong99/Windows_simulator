@@ -4,12 +4,14 @@ using MikaNetwork;
 using MikaProtocol;
 using UnityEngine;
 
-// 작업슬롯 설정의 **자동 사용 칸** — 슬롯마다 영약 종류별 한 칸 (이슈 #113 · #123 · T-194).
+// 작업슬롯 설정의 **자동 사용 칸** — 슬롯마다 영약 · 나침반 종류별 한 칸 (이슈 #113 · #123 · #153 · T-194 · T-212).
 //
 // ■ 무엇을 하나
 // 칸을 켜 두면, 그 영약의 버프가 없을 때 서버가 인벤토리 → 창고 보유분에서 1개씩 쓴다. 칸은 켜고 끄기만 한다.
 // 클릭 = 켜기·끄기(2026-11-15 사용자 결정 — 개수를 넣고 빼는 단계가 어색했다). 보유분이 0이어도 켜 둘 수 있다 — 다시 생기면 쓴다.
-// 넣을 수 있는 영약은 'ItemUseTable'에서 읽는다('ItemUseLabel.IsAutoUsable' — 지금은 신속·풍요). 종류가 늘면 칸도 는다.
+// 넣을 수 있는 소모품은 'ItemUseTable'에서 읽는다('ItemUseLabel.IsAutoUsable' — 신속·풍요 · 나침반 3종). 종류가 늘면 칸도 는다.
+// 인벤토리에서 이 소모품을 누르면 직접 쓰지 않고 여기서 켜라고 안내한다('InventoryGridPresenter.OnSlotLeftClicked').
+// 같은 슬롯에 나침반을 여럿 켜면 각자 소모되고 확률 가산은 합쳐진다(서버 #162).
 //
 // ■ 왜 'WorkStationSelectPresenter'에 넣지 않았나
 // 그 화면은 이미 산업·레벨·캐릭터·장비·효율을 다 들고 있다. 이 칸은 슬롯 번호 하나만 받으면 혼자 돈다 —
@@ -31,6 +33,9 @@ public class SlotAutoUsePresenter : MonoBehaviour
     private UIManager         _ui      = null!;
     private NetworkManager    _network = null!;
     private ServerWaitManager _wait    = null!;
+
+    // 한 줄에 놓는 칸 수 — 칸 이름이 줄지 않고 들어가는 수
+    private const int CellsPerLine = 2;
 
     private readonly List<AutoUseCellView> _cells = new List<AutoUseCellView>();
 
@@ -122,24 +127,47 @@ public class SlotAutoUsePresenter : MonoBehaviour
 
     #region 표시
 
-    // 넣을 수 있는 영약마다 칸을 만든다 (Start에서 한 번) — 표가 정하므로 실행 중에는 바뀌지 않는다
+    // 넣을 수 있는 소모품마다 칸을 만든다 (Start에서 한 번) — 표가 정하므로 실행 중에는 바뀌지 않는다
     private void BuildCells()
     {
-        var tids = new List<int>();
+        var rows = new List<ItemUseTableRow>();
 
         foreach (ItemUseTableRow row in GameTable.ItemUseTable.All)
         {
             if (ItemUseLabel.IsAutoUsable(row.UseEffect))
             {
-                tids.Add(row.ItemTID);
+                rows.Add(row);
             }
         }
 
-        tids.Sort(); // 신속 → 풍요 — TID 순이 엑셀 순이다
-
-        foreach (int tid in tids)
+        // 효과 순(신속 → 풍요 → 나침반 → 황금 나침반) · 같은 효과는 등급(슬롯 수) 순 — TID는 등급 순이 아니다(은빛 나침반이 낡은 것보다 앞 번호)
+        rows.Sort((a, b) =>
         {
-            AutoUseCellView cell = Instantiate(cellTemplate, cellTemplate.transform.parent);
+            int byEffect = a.UseEffect.CompareTo(b.UseEffect);
+
+            return byEffect != 0 ? byEffect : a.SlotCount.CompareTo(b.SlotCount);
+        });
+
+        // 한 줄에 2칸 · 갈래(영약 / 나침반)가 바뀌면 새 줄 — 3칸이면 이름이 들어갈 자리가 없다(2026-11-27 사용자 · T-212)
+        Transform line     = cellTemplate.transform.parent;
+        bool?     lastKind = null;
+        int       inLine   = 0;
+
+        foreach (ItemUseTableRow row in rows)
+        {
+            bool isCompass = IsCompass(row.UseEffect);
+
+            if (lastKind != null && (lastKind != isCompass || inLine == CellsPerLine))
+            {
+                line   = AddLine(line);
+                inLine = 0;
+            }
+
+            lastKind = isCompass;
+            inLine++;
+
+            int             tid  = row.ItemTID;
+            AutoUseCellView cell = Instantiate(cellTemplate, line);
 
             cell.name = $"Auto Use Cell {tid}";
             cell.gameObject.SetActive(true);
@@ -147,6 +175,26 @@ public class SlotAutoUsePresenter : MonoBehaviour
             cell.Bind(tid, false, 0, () => null);
             _cells.Add(cell);
         }
+    }
+
+    // 나침반 갈래인가 — 칸 줄을 나누는 기준 (BuildCells)
+    private static bool IsCompass(ItemUseEffect effect) => effect is ItemUseEffect.SlotBoxChance or ItemUseEffect.SlotBoxRelicChance;
+
+    // 앞 줄을 복제해 바로 아래에 새 줄을 둔다 — 복제에 딸려 온 견본은 지운다 (BuildCells)
+    private Transform AddLine(Transform previous)
+    {
+        Transform line = Instantiate(previous, previous.parent);
+
+        line.name = $"{cellTemplate.transform.parent.name} {previous.GetSiblingIndex() + 1}";
+        line.SetSiblingIndex(previous.GetSiblingIndex() + 1);
+
+        foreach (AutoUseCellView copied in line.GetComponentsInChildren<AutoUseCellView>(true))
+        {
+            copied.gameObject.SetActive(false); // Destroy는 프레임 끝이라 그 전에 레이아웃에서 뺀다
+            Destroy(copied.gameObject);
+        }
+
+        return line;
     }
 
     // 칸마다 켜짐·보유 개수를 다시 그린다 (슬롯·인벤토리 변경 · 열기 · 응답)

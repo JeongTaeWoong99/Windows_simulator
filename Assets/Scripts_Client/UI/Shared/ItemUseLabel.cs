@@ -26,8 +26,12 @@ public static class ItemUseLabel
     // 캐릭터를 대상으로 고르는 소모품인가 — 성장의 비약
     public static bool TargetsCharacter(ItemUseEffect effect) => effect == ItemUseEffect.CharacterExp;
 
-    // 자동 사용 칸에 넣을 수 있는가 — 신속·풍요의 영약뿐이다(이슈 #113). 서버 'NotAutoUsable'과 같은 기준
-    public static bool IsAutoUsable(ItemUseEffect effect) => effect is ItemUseEffect.SlotWorkSpeed or ItemUseEffect.SlotYield;
+    // 자동 사용 칸에 넣을 수 있는가 — 슬롯에 남는 버프(영약 · 나침반 — #113 · #153). 서버 'ItemUseCatalog.IsAutoUsable'과 같은 기준.
+    // 보물 지도(즉시 판정)는 빠진다 — 인벤토리에서 슬롯을 골라 직접 쓴다.
+    public static bool IsAutoUsable(ItemUseEffect effect) => effect is ItemUseEffect.SlotWorkSpeed
+                                                                    or ItemUseEffect.SlotYield
+                                                                    or ItemUseEffect.SlotBoxChance
+                                                                    or ItemUseEffect.SlotBoxRelicChance;
 
     // 효과 한 줄 — '작업속도 +30% · 판정 20회'. 모르는 효과면 빈 문자열(부르는 쪽이 줄을 뺀다)
     public static string Effect(ItemUseTableRow row) => row.UseEffect switch

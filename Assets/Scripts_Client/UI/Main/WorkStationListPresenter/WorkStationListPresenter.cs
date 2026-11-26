@@ -159,6 +159,8 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.EquipsChanged           += Rebuild; // 장착·해제로 칸의 장착 네모가 바뀐다(T-104)
         _data.UnlockCompleted         += OnUnlockCompleted;
         _data.GatherResultReceived    += OnGatherResultReceived;
+        _data.CurrencyChanged         += RefreshFrameNotices; // 골드가 모이면 잠긴 칸의 빨간 점이 켜진다
+        _data.AccountLevelChanged     += RefreshFrameNotices;
         Lang.Changed                  += Rebuild; // 칸 글자를 새 언어로 다시 쓴다
     }
 
@@ -178,6 +180,8 @@ public class WorkStationListPresenter : MonoBehaviour
         _data.EquipsChanged           -= Rebuild;
         _data.UnlockCompleted         -= OnUnlockCompleted;
         _data.GatherResultReceived    -= OnGatherResultReceived;
+        _data.CurrencyChanged         -= RefreshFrameNotices;
+        _data.AccountLevelChanged     -= RefreshFrameNotices;
         Lang.Changed                  -= Rebuild;
     }
 
@@ -488,7 +492,73 @@ public class WorkStationListPresenter : MonoBehaviour
             }
         }
 
+        RefreshFrameNotices();
         EqualizeLockedSizesNextFrameAsync(destroyCancellationToken).Forget();
+    }
+
+    // 칸 프레임의 점 (RefreshFrameLabels · 골드 · 계정 레벨 구독) — T-145 · 2026-11-26 · 27.
+    //   잠긴 칸 — 빨간 점: 지금 열 수 있다(선행 · 계정 레벨 · 골드가 다 된다). 'TryUnlock'과 같은 조건이다.
+    //   열린 칸 — 경고 점: 비어 있고 쉬는 캐릭터가 있다(놔두면 손해 — 위젯 알림 줄의 빈 작업슬롯과 같은 기준). 넣을 사람이 없으면 재촉하지 않는다.
+    private void RefreshFrameNotices()
+    {
+        bool   hasIdle = HasIdleCharacter();
+        string message = Lang.Get("UI.Widget.WarningIdleSlot");
+
+        foreach (var pair in _frameViews)
+        {
+            int  unlockTid = GameDataLoader.GetWorkSlotUnlockTid(pair.Key);
+            bool unlocked  = _data.IsUnlocked(unlockTid);
+
+            pair.Value.SetNotice(!unlocked && CanUnlockNow(unlockTid));
+            pair.Value.SetWarning(unlocked && hasIdle && IsEmptySlot(pair.Key), message);
+        }
+    }
+
+    // 열린 칸이 비어 있는가 — 스냅샷에 없으면(아직 안 옴) 비었다고 보지 않는다
+    private bool IsEmptySlot(int slotIndex)
+    {
+        foreach (var slot in _data.WorkStationSlots)
+        {
+            if (slot.SlotIndex == slotIndex)
+            {
+                return !WorkStationProgress.IsAssigned(slot);
+            }
+        }
+
+        return false;
+    }
+
+    // 어느 칸에도 배치되지 않은 캐릭터가 있는가
+    private bool HasIdleCharacter()
+    {
+        foreach (var character in _data.Characters)
+        {
+            if (_data.FindSlotIndexOf(character.CharacterId) < 0)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // 이 해금을 지금 누르면 열리는가 — 'TryUnlock'의 판정 순서와 같다(선행 → 계정 레벨 → 골드)
+    private bool CanUnlockNow(int unlockTid)
+    {
+        if (!GameDataLoader.TryGetUnlock(unlockTid, out var unlock))
+        {
+            return false;
+        }
+
+        foreach (int requiredTid in unlock.RequiredUnlockTIDs)
+        {
+            if (!_data.IsUnlocked(requiredTid))
+            {
+                return false;
+            }
+        }
+
+        return _data.AccountLevel >= unlock.AccountLevel && _data.Gold >= unlock.Gold;
     }
 
     // 잠긴 칸 글자를 같은 줄에서 가장 작은 칸의 크기로 맞춘다 — 다음 프레임(레이아웃으로 칸 크기가 정해진 뒤) (RefreshFrameLabels에서 호출).

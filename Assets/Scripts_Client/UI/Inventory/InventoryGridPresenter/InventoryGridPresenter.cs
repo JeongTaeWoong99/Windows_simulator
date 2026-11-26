@@ -2134,6 +2134,14 @@ public class InventoryGridPresenter : MonoBehaviour
 
         int itemId = (int)view.Key;
 
+        // 자동 사용 소모품(영약 · 나침반) — 직접 쓰지 않고 작업슬롯 설정에서 켜게 안내한다(T-212 · #153)
+        if (ItemUseLabel.TryGet(itemId, out var autoUse) && ItemUseLabel.IsAutoUsable(autoUse.UseEffect))
+        {
+            _wait.RaiseToast(Lang.Get("UI.ItemUse.TurnOnInSlot"));
+
+            return;
+        }
+
         // 소모품 — 사용 창에서 대상·개수를 고른다(T-194). 서버도 소모품을 상자보다 먼저 본다('TryUseConsumable')
         if (ItemUseLabel.IsUsable(itemId))
         {

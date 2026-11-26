@@ -40,10 +40,11 @@ public static class WindowSettings
     public const string PositionXKey           = Prefix + "PosX";
     public const string PositionYKey           = Prefix + "PosY";
 
-    // 프레임 제한 · FPS 텍스트 위치 — 창 모양이 아니라 표시 축이라 접두사를 따로 둔다('DisplayManager').
+    // 프레임 제한 · FPS 텍스트 보이기 — 창 모양이 아니라 표시 축이라 접두사를 따로 둔다('DisplayManager').
     // ⚠️ 이 둘은 에디터에서도 저장값을 읽는다(창 설정의 "에디터=인스펙터" 규칙의 예외 — 'Settings 규칙.md' 1장).
+    // ※ FPS 키 이름은 예전 "위치"(0=숨김 · 1~4=네 구석) 그대로다 — 0이면 숨김, 그 밖은 보이기로 읽어 옛 저장값이 이어진다(2026-11-27).
     public const string FrameRateKey           = "Display.FrameRate";
-    public const string FpsTextPositionKey     = "Display.FpsTextPosition";
+    public const string FpsTextShownKey        = "Display.FpsTextPosition";
 
     // UI 투명도(불투명도 %, 10~100) — 설정 슬라이더 값 그대로. 에디터도 저장값을 읽는다('DisplayManager').
     public const string OpacityKey             = "Display.Opacity";

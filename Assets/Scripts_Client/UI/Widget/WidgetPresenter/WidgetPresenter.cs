@@ -8,6 +8,8 @@ using UnityEngine.UI;
 //
 // ★ 위젯 말고는 바탕화면에 아무것도 안 떠 있으므로, 이 버튼이 3열을 여는 유일한 입구다.
 // 열려 있으면 위젯만 남기고 전부 접는다 → 'UIManager.ToggleAll'
+// 버튼 화살표가 누르면 일어날 일을 말한다 — 열려 있으면 ↓(접기), 닫혀 있으면 ↑(열기) (T-176 · 2026-11-26 사용자 요청).
+// 그림은 ↑ 하나를 180° 돌려 쓴다. 열림은 여닫는 경로가 여럿이라 Update에서 'UIManager.IsOpen'을 본다(bool 하나).
 //
 // ■ 두 축을 섞지 않는다
 // 데이터 갱신은 이벤트(옵저버) — 'WorkStationSlotsChanged' · 'GatherResultReceived' · 'GatherValueEarned'.
@@ -40,6 +42,9 @@ public class WidgetPresenter : MonoBehaviour
     [SerializeField, Tooltip("열기/닫기 버튼. OnClick은 코드가 연결하므로 인스펙터에서 비워 둔다")]
     private Button toggleButton = null!;
 
+    [SerializeField, Tooltip("열기/닫기 버튼의 화살표 그림 — ↑ 그림을 둔다. 열려 있으면 코드가 180° 돌린다")]
+    private RectTransform toggleIcon = null!;
+
     [SerializeField, Tooltip("수익 집계 초기화 버튼 — 누적·측정 시간을 0으로. OnClick은 코드가 연결한다")]
     private Button resetButton = null!;
 
@@ -67,6 +72,8 @@ public class WidgetPresenter : MonoBehaviour
     private readonly Dictionary<int, WidgetMiniSlotView> _views = new Dictionary<int, WidgetMiniSlotView>();
 
     private PlayerDataModel _data = null!;
+    private UIManager       _ui   = null!;
+    private bool?           _shownOpen; // 화살표가 마지막으로 그린 열림 — 바뀔 때만 돌린다
     private bool            _isSubscribed;
     private bool            _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -81,6 +88,7 @@ public class WidgetPresenter : MonoBehaviour
     private void Start()
     {
         this.RequireRef(toggleButton,   nameof(toggleButton));
+        this.RequireRef(toggleIcon,     nameof(toggleIcon));
         this.RequireRef(resetButton,    nameof(resetButton));
         this.RequireRef(activeSlotText, nameof(activeSlotText));
         this.RequireRef(totalText,      nameof(totalText));
@@ -90,7 +98,8 @@ public class WidgetPresenter : MonoBehaviour
         this.RequireRef(stripParent,    nameof(stripParent));
 
         _data = Services.Get<PlayerDataModel>();
-        toggleButton.onClick.AddListener(Services.Get<UIManager>().ToggleAll);
+        _ui   = Services.Get<UIManager>();
+        toggleButton.onClick.AddListener(_ui.ToggleAll);
         resetButton.onClick.AddListener(ResetEarnings);
 
         Subscribe();
@@ -131,6 +140,8 @@ public class WidgetPresenter : MonoBehaviour
         {
             return;
         }
+
+        RefreshToggleArrow();
 
         if (_earnings.IsStarted && (long)_earnings.ElapsedSeconds(Time.realtimeSinceStartupAsDouble) != _shownSecond)
         {
@@ -183,6 +194,20 @@ public class WidgetPresenter : MonoBehaviour
     #endregion
 
     #region 표시
+
+    // 열림이 바뀌었으면 화살표를 돌린다 (Update) — 열려 있으면 ↓(접기) · 닫혀 있으면 ↑(열기 · 그림 그대로)
+    private void RefreshToggleArrow()
+    {
+        bool open = _ui.IsOpen;
+
+        if (_shownOpen == open)
+        {
+            return;
+        }
+
+        _shownOpen                  = open;
+        toggleIcon.localEulerAngles = new Vector3(0f, 0f, open ? 180f : 0f);
+    }
 
     // 누적 · 시간당 · 측정 시간을 다시 쓴다 (Update에서 초가 바뀔 때 · 수확 · 초기화)
     private void RefreshEarnings()

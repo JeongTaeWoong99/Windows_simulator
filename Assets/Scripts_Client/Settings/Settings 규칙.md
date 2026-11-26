@@ -1,6 +1,6 @@
 # Settings 규칙
 
-> 최종 업데이트: 2026-10-31 (`Audio.*` — 채널 음량 · 에디터도 저장값 · 손을 뗄 때 저장) · 2026-10-17 (`Display.Language` — 화면 언어 · T-136) · 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
+> 최종 업데이트: 2026-11-27 (FPS 표시는 보이기 · 숨기기 토글 — 자리는 위젯을 피해 저절로 · 키 `Display.FpsTextPosition` 유지, 0=숨김 그 밖=보이기) · 2026-10-31 (`Audio.*` — 채널 음량 · 에디터도 저장값 · 손을 뗄 때 저장) · 2026-10-17 (`Display.Language` — 화면 언어 · T-136) · 2026-09-29 (`Display.Opacity` 추가 — 슬라이더 10~100% · 손을 뗄 때 저장 · T-070) · 2026-09-18 (`Display.FrameRate` · `Display.FpsTextPosition` 추가 — 에디터도 저장값 · §1 · §4) · 대상: `Assets/Scripts_Client/Settings/`
 
 **창·표시 설정을 `PlayerPrefs`에 저장하고 되읽는 곳.** 키 상수와 읽기·쓰기 헬퍼만 둔다 —
 설정을 **적용**하는 일은 [`Managers/`](<../Managers/Managers 규칙.md>)의 `WindowManager`(창)·`DisplayManager`(표시·성능)가 한다.
@@ -28,7 +28,7 @@ Topmost·Scale·Anchor의 진실은 **어디서 실행하느냐**로 갈린다.
   지속은 빌드에서만 일어난다. 에디터/빌드 `PlayerPrefs`는 저장 위치가 달라 서로 간섭하지 않는다.
 - 이 규칙은 창 앵커(`WindowManager`)와 위젯 위치(`WidgetPositionLayout`)가 **동일**하게 따른다.
 
-> ⚠️ **예외 — `Display.*`(프레임 제한 · FPS 텍스트 위치 · UI 투명도)는 에디터에서도 저장값이 진실이다.**
+> ⚠️ **예외 — `Display.*`(프레임 제한 · FPS 텍스트 보이기 · UI 투명도)는 에디터에서도 저장값이 진실이다.**
 > 창 모양은 에디터에서 실제로 안 움직여 인스펙터가 진실인 편이 낫지만, 프레임은 **에디터에서도 실제로 먹는다.**
 > 그래서 마지막 선택이 플레이를 멈췄다 켜도 유지되는 편이 테스트에 맞다. 인스펙터(`DisplayManager.setStart*`)는
 > **저장이 없을 때의 기본값**일 뿐이다(프레임 60 · FPS 텍스트 숨김). 설정 UI에서 고르면 즉시 저장·즉시 반영된다.
@@ -91,12 +91,12 @@ Unity는 **정상 종료 시에만** 자동 저장하는데, 상주 앱은 작�
 
 레거시 9분할 `Window.Anchor` 저장값은 `WindowManager.MigrateAnchor`가 6칸으로 접는다.
 
-### `Display.*` — 프레임 제한 · FPS 텍스트 위치 · UI 투명도
+### `Display.*` — 프레임 제한 · FPS 텍스트 보이기 · UI 투명도
 
 | 키 | 무엇 | 값 (int 인덱스) |
 |---|---|---|
 | `Display.FrameRate` | 프레임 제한 | `FrameRateOption` — 30 · 60 · 90 · 144 · 모니터 동기화 |
-| `Display.FpsTextPosition` | FPS 텍스트를 창 어느 구석에 띄우나 | `FpsTextPosition` — 숨김 · 좌상 · 우상 · 좌하 · 우하 |
+| `Display.FpsTextPosition` | FPS 텍스트를 보이나 — **토글**(2026-11-27). 자리는 고르지 않는다 — `FpsTextPresenter`가 위젯과 같은 가장자리 · 다른 열 구석에 둔다 | int — 0 = 숨김 · 그 밖 = 보이기 (키 이름은 옛 "위치" 드롭다운(0 숨김 · 1~4 구석) 그대로라 옛 저장값이 이어진다) |
 | `Display.Opacity` | UI 불투명도 | **% 값 그대로** — 10~100 (`DisplayManager.MinOpacityPercent`·`MaxOpacityPercent`) |
 | `Display.Language` | 화면 언어 | `GameData.Language` 값 — 적용은 매니저가 아니라 `Data/Lang`이 한다(씬보다 먼저 걸어야 해서) |
 

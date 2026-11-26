@@ -53,6 +53,14 @@ using UnityEngine.UI;
 // BEFORE 상자도 같은 컴포넌트를 쓴다 — 흐린 등급 테두리 · [선택] 뒤 금색 번쩍. 눈길은 AFTER로(진한 테두리 + 도는 빛 — 사용자 결정 2026-10-11).
 //   - 공개 중(줄이 다 멈추기 전)엔 큐브 · [사용] · [선택] · [자동]을 잠근다 — 뽑기처럼 결과를 보기 전에 다시 누르지 못한다.
 //   - 상급 큐브로 **등급이 오르면 새 값을 알아서 고른다**(수동·자동 모두) — 오른 등급을 버릴 까닭이 없다(사용자 결정 2026-10-11).
+//
+// ■ 내리기 — 자동을 걸어 두고 위젯만 남긴다 (T-145 · 2026-11-26 사용자 결정)
+// 자동이 도는 동안에만 머리에 [내리기]가 보인다. 누르면 3열을 다 닫고 이 창은 **투명 · 클릭 통과**로 숨는다 — 자동은 계속 돈다.
+// 팝업의 어두운 바탕(뒤를 막는 규칙)은 그대로다 — 예외를 두지 않고, "창 전체를 접는다"로 푼다.
+//   - 오브젝트를 끄지 않는다 — 끄면 공개 연출이 멈춰 루프가 'afterFx.IsPlaying'에서 서고, 응답 구독도 풀린다. 'CanvasGroup'만 내린다.
+//   - 숨어 있는 동안 굴림 소리를 내지 않는다 — 바탕화면에서 다른 일을 하는 중이다.
+//   - 위젯 [창 열기] · 위젯 알림 줄을 누르면('UIManager.Reopened') 3열이 열리고 이 창이 그 상태 그대로 다시 뜬다.
+//   - 진행 · 끝은 'AutoStatusChanged'로 알린다 — 위젯 알림 줄('WidgetAlertPresenter')이 띠로 보여 준다.
 public class EquipEnchantPresenter : MonoBehaviour
 {
     [CenterHeader("참조")]
@@ -128,6 +136,13 @@ public class EquipEnchantPresenter : MonoBehaviour
     [SerializeField, Tooltip("자동 버튼 글씨. 코드가 채운다")]
     private TMP_Text autoLabel = null!;
 
+    [CenterHeader("내리기 (T-145)")]
+    [SerializeField, Tooltip("[내리기] — 머리의 [닫기] 왼쪽. 자동이 도는 동안에만 켜진다. OnClick은 코드가 연결한다")]
+    private Button minimizeButton = null!;
+
+    [SerializeField, Tooltip("이 창 루트의 CanvasGroup — 내려 둔 동안 투명 · 클릭 통과. 오브젝트를 끄면 자동이 멈춰서 이것으로 숨긴다")]
+    private CanvasGroup windowGroup = null!;
+
     [CenterHeader("색")]
     [SerializeField, Tooltip("[큐브 사용] — 지금 쓸 수 있을 때")]
     private UIThemeRole confirmReadyRole = UIThemeRole.ButtonPrimary;
@@ -172,6 +187,25 @@ public class EquipEnchantPresenter : MonoBehaviour
 
     // 열림이 바뀌었다 ('SellCartPresenter'가 구독 — 열리면 카트를 비우고 물러난다).
     public event Action<bool>? OpenChanged;
+
+    // 내려 둔 중인가 — 3열을 닫고 위젯만 남긴 채 자동이 돈다(T-145).
+    public bool IsMinimized => _isMinimized;
+
+    // 자동이 도는 중인가 · 몇 개 썼나 · 상한 — 위젯 알림 줄의 진행 띠.
+    public bool IsAutoRunning => _auto == AutoState.Running;
+    public int  AutoUsed      => _autoUsed;
+    public int  AutoCap       => _autoCap;
+
+    // 자동이 끝났고 아직 결과를 안 봤는가 · 목표에 닿았는가 · 끝난 이유 한 줄(번역됨) — 위젯 알림 줄의 결과 띠.
+    public bool   HasAutoResult => _autoSummary != null;
+    public bool   AutoReached   => _autoSummaryReached;
+    public string AutoEndReason => Lang.Get(_autoSummaryKey);
+
+    // 목표 한 줄 — '목표 영웅 이상'
+    public string AutoGoalText => DescribeGoal();
+
+    // 자동의 시작 · 한 번 굴림 · 끝 · 내리기 · 다시 띄움 ('WidgetAlertPresenter'가 구독).
+    public event Action? AutoStatusChanged;
 
     // 창에 띄운 장비. 닫혀 있으면 0 — 격자가 이 장비만 색을 남기고 나머지를 흑백으로 그린다.
     public long EquipId => _equipId;
@@ -218,6 +252,8 @@ public class EquipEnchantPresenter : MonoBehaviour
     private S_EquipEnchantResponse?    _lastEnchant;   // 자동이 기다린 큐브 응답
     private EResultCode?               _lastChoose;    // 자동이 기다린 고르기 응답
 
+    private bool _isMinimized; // 내려 둔 중 — 'windowGroup'으로 숨겼다
+
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
@@ -247,6 +283,8 @@ public class EquipEnchantPresenter : MonoBehaviour
         this.RequireRef(autoPanel,         nameof(autoPanel));
         this.RequireRef(autoButton,        nameof(autoButton));
         this.RequireRef(autoLabel,         nameof(autoLabel));
+        this.RequireRef(minimizeButton,    nameof(minimizeButton));
+        this.RequireRef(windowGroup,       nameof(windowGroup));
 
         if (cubeViews.Length == 0)
         {
@@ -264,6 +302,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         keepBeforeButton.onClick.AddListener(() => OnKeepClicked(false));
         keepAfterButton.onClick.AddListener(() => OnKeepClicked(true));
         autoButton.onClick.AddListener(OnAutoClicked);
+        minimizeButton.onClick.AddListener(Minimize);
         ruleTooltip.SetProvider(EquipLabel.BuildCubeRuleTooltip);
         comboTooltip.SetProvider(BuildComboTooltip);
 
@@ -284,6 +323,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _data.EquipEnchantChooseCompleted += OnChooseCompleted;
         _data.EquipCompleted              += OnUnequipCompleted;
         afterFx.Revealed                  += Redraw; // 공개가 끝나면 버튼을 풀고, 오른 등급이면 고른다
+        _ui.Reopened                      += Restore; // 위젯만 남았다가 다시 열리면 내려 둔 창을 띄운다
         inventoryTabs.AddLeaveGuard(BlockLeave);
 
         _isReady = true;
@@ -314,6 +354,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _data.EquipEnchantChooseCompleted -= OnChooseCompleted;
         _data.EquipCompleted              -= OnUnequipCompleted;
         afterFx.Revealed                  -= Redraw;
+        _ui.Reopened                      -= Restore;
 
         StopAuto();
     }
@@ -440,6 +481,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         _auto          = AutoState.Off;
         _autoSummary   = null;
 
+        SetMinimized(false);
         gameObject.SetActive(false);
         OpenChanged?.Invoke(false);
         TargetChanged?.Invoke();
@@ -1056,7 +1098,11 @@ public class EquipEnchantPresenter : MonoBehaviour
             int        lineCount  = shown == null ? 0 : EquipLabel.GetStatSlotCount(GameDataLoader.GetEquipRarity(shown.EquipTid));
             var        afterGrade = (GlobalRarity)res.AfterGrade;
 
-            Services.Get<SoundManager>().PlaySfx(_auto == AutoState.Running ? Sounds.CubeRollAuto : Sounds.CubeRoll);
+            if (!_isMinimized)
+            {
+                Services.Get<SoundManager>().PlaySfx(_auto == AutoState.Running ? Sounds.CubeRollAuto : Sounds.CubeRoll);
+            }
+
             afterFx.Play(afterGrade,
                          res.AfterGrade > res.BeforeGrade,
                          Math.Max(lineCount, res.Options.Count),
@@ -1523,6 +1569,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         };
 
         PaintButton(autoButton, _auto == AutoState.Running ? UIThemeRole.Negative : UIThemeRole.Button);
+        minimizeButton.gameObject.SetActive(_auto == AutoState.Running);
     }
 
     // [자동 시작] — 막을 이유가 없으면 루프를 띄운다 (OnConfirmClicked에서 호출).
@@ -1559,6 +1606,7 @@ public class EquipEnchantPresenter : MonoBehaviour
         ClientLogger.Info(ClientLogger.UI, $"큐브 자동 시작 — 장비 #{equip.EquipId}, 큐브 {cubeTid}, 목표 {_autoTarget.Grade} 이상 · {_autoTarget.DescribeOutcomes(CurrentSlotCount())}, 상한 {cap}");
 
         RunAutoAsync(equip.EquipId, cubeTid, _autoCts.Token).Forget();
+        AutoStatusChanged?.Invoke();
     }
 
     // 자동을 멈춘다 — 도는 루프의 토큰을 끊는다. 정리(상태 · 안내 줄)는 루프의 finally가 한다.
@@ -1630,6 +1678,7 @@ public class EquipEnchantPresenter : MonoBehaviour
 
                 _autoUsed++;
                 Redraw();
+                AutoStatusChanged?.Invoke();
 
                 // 결과 보기 — 사람이 결과를 읽는 시간의 절반. 도장 연출이 더 길면 끝까지 본다
                 await UniTask.Delay(reveal, ignoreTimeScale: true, cancellationToken: ct);
@@ -1693,8 +1742,56 @@ public class EquipEnchantPresenter : MonoBehaviour
                 _autoSummaryReached = reached;
                 _autoSummary        = BuildAutoSummary();
                 Redraw();
+                AutoStatusChanged?.Invoke();
             }
         }
+    }
+
+    #endregion
+
+    #region 내리기
+
+    // [내리기] — 3열을 닫고 이 창을 숨긴다. 자동은 계속 돈다 (minimizeButton OnClick에 코드로 연결).
+    private void Minimize()
+    {
+        if (_auto != AutoState.Running)
+        {
+            return;
+        }
+
+        SetMinimized(true);
+        _ui.CloseAllExceptWidget();
+    }
+
+    // 내려 둔 창을 다시 띄운다 — 인벤토리 · 길드 열도 함께 연다 (UIManager.Reopened 구독 · 위젯 알림 줄).
+    // 내려 둔 적이 없으면 아무것도 하지 않는다.
+    public void Restore()
+    {
+        if (!_isMinimized)
+        {
+            return;
+        }
+
+        _ui.ShowInventory(true);
+        _ui.ShowGuild(true);
+        SetMinimized(false);
+        Redraw();
+    }
+
+    // 창을 숨기거나 보인다 — 오브젝트는 켜 둔 채 투명 · 클릭 통과로만 (Minimize · Restore · Close).
+    private void SetMinimized(bool on)
+    {
+        if (_isMinimized == on)
+        {
+            return;
+        }
+
+        _isMinimized              = on;
+        windowGroup.alpha          = on ? 0f : 1f;
+        windowGroup.blocksRaycasts = !on;
+        windowGroup.interactable   = !on;
+
+        AutoStatusChanged?.Invoke();
     }
 
     #endregion

@@ -51,6 +51,8 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
 
+    private readonly HashSet<int> _fullSlots = new HashSet<int>(); // 마지막 수확이 가득 차서 버린 슬롯 번호 — 'IsInventoryFull'
+
     public long SessionId  { get; private set; }
     public bool IsLoggedIn { get; private set; }
 
@@ -59,6 +61,11 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public string LoginId { get; private set; } = "";
 
     public IReadOnlyList<ItemInfo>            Inventory        => _inventory;
+
+    // 인벤토리가 가득 차 채취물을 버리고 있는가 — 슬롯마다 마지막 수확 응답의 'InventoryFull'(서버 T-157)을 남겨, 하나라도 그러면 가득 참.
+    // ※ 슬롯마다 따로 본다 — 한 칸의 자원은 들어가도 다른 칸의 자원은 버려질 수 있다.
+    // ※ 팔아서 자리가 나면 내린다 — 아직 가득이면 다음 수확이 다시 올린다. (위젯 알림 줄 · 하단 [인벤토리] 빨간 점 · T-145)
+    public bool IsInventoryFull => _fullSlots.Count > 0;
     public IReadOnlyList<WorkStationSlotInfo> WorkStationSlots => _workStationSlots;
 
     // 아이템 하나의 보유 수량. 없으면 0이다.
@@ -708,6 +715,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
     public event Action<bool, EResultCode>?      WorkStationAssignCompleted; // 슬롯 변경 완료 (성공 여부·결과 코드)
     public event Action?                         WorkStationSlotsChanged;    // 슬롯 캐시 갱신됨
     public event Action<S_GatherResultResponse>? GatherResultReceived;       // 채취 결과 푸시 도착
+    public event Action?                         InventoryFullChanged;       // 'IsInventoryFull'이 바뀜 (수확 · 판매)
     public event Action<long>?                   GatherValueEarned;          // 채취로 늘어난 아이템의 즉시 판매가 합 (0이면 오지 않는다 · 위젯 누적 집계)
     public event Action?                         CurrencyChanged;            // 재화 캐시 갱신됨
 
@@ -1264,12 +1272,45 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         WorkStationAssignCompleted?.Invoke(success, res.Result);
     }
 
+    // 이 슬롯의 마지막 수확이 가득 차서 버렸는가를 남긴다 — 가득 참이 바뀌면 알린다 (OnGatherResultReceived)
+    private void SetSlotFull(int slotIndex, bool full)
+    {
+        bool before = IsInventoryFull;
+
+        if (full)
+        {
+            _fullSlots.Add(slotIndex);
+        }
+        else
+        {
+            _fullSlots.Remove(slotIndex);
+        }
+
+        if (before != IsInventoryFull)
+        {
+            Notify(InventoryFullChanged);
+        }
+    }
+
+    // 가득 참을 내린다 (판매 성공)
+    private void ClearInventoryFull()
+    {
+        if (_fullSlots.Count == 0)
+        {
+            return;
+        }
+
+        _fullSlots.Clear();
+        Notify(InventoryFullChanged);
+    }
+
     // 채취 결과 푸시 — 판정이 완성될 때마다 요청 없이 도착한다(수확이 없으면 오지 않는다).
     private void OnGatherResultReceived(S_GatherResultResponse res)
     {
         long earned = SumGainedValue(res.ItemChanges); // 덮어쓰기 전에 센다 — 지나면 이전 수량이 사라진다
 
         ApplyItemChanges(res.ItemChanges);
+        SetSlotFull(res.SlotIndex, res.InventoryFull);
         Notify(GatherResultReceived, res);
 
         if (earned > 0)
@@ -1352,6 +1393,7 @@ public class PlayerDataModel : MonoService<PlayerDataModel>
         }
 
         ApplyItemChanges(res.ItemChangeInfos);
+        ClearInventoryFull(); // 자리가 났다 — 아직 가득이면 다음 수확이 다시 올린다
         ItemSellCompleted?.Invoke(res.GainedGold);
     }
 

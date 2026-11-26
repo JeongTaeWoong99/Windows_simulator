@@ -130,6 +130,9 @@ public class UIManager : MonoService<UIManager>
     public ArtifactCanvasView  Artifact  => artifactCanvas;
     public WidgetCanvasView    Widget    => widgetCanvas;
 
+    // 위젯만 남은 상태에서 다시 열렸다 ('OpenWorkStation') — 내려 둔 창(큐브 자동 · T-145)이 제자리로 돌아온다.
+    public event Action? Reopened;
+
     // 지금 '#Main Canvas'에 떠 있는 화면. 전부 닫힌 상태에서도 "다음에 열면 이것"을 뜻한다
     // — 그래서 'CloseAllExceptWidget'이 이 값을 기본으로 되돌린다.
     public MainScreen CurrentMainScreen { get; private set; } = DefaultMainScreen;
@@ -315,6 +318,17 @@ public class UIManager : MonoService<UIManager>
     {
         ShowMainScreen(DefaultMainScreen);
         stateCanvas.Show(true);
+
+        Reopened?.Invoke();
+    }
+
+    // 3열(작업슬롯 · 인벤토리 · 길드)을 전부 연다 — 위젯 알림 줄을 눌렀을 때(T-145).
+    // 사유에 맞는 화면(인벤토리 자원 탭 · 큐브 창)은 부른 쪽이 이어서 고른다.
+    public void OpenAllColumns()
+    {
+        OpenWorkStation();
+        inventoryCanvas.Show(true);
+        guildCanvas.Show(true);
     }
 
     // 위젯을 뺀 전부를 닫는다. 위젯은 상주가 존재 이유라 건드리지 않는다.

@@ -10516,7 +10516,7 @@
   },
   {
     "Key": "UI.Setting.FpsTextPosition",
-    "KR": "FPS 표시 위치",
+    "KR": "FPS 표시",
     "EN": "FPS Display"
   },
   {
@@ -10613,11 +10613,6 @@
     "Key": "UI.Setting.FrameRateVSync",
     "KR": "모니터 동기화",
     "EN": "VSync"
-  },
-  {
-    "Key": "UI.Setting.FpsHidden",
-    "KR": "숨김",
-    "EN": "Hidden"
   },
   {
     "Key": "UI.Setting.UpperLeft",
@@ -14841,8 +14836,8 @@
   },
   {
     "Key": "UI.WorkStation.AutoUseHint",
-    "KR": "켜 두면 효과가 끝날 때 인벤토리·창고의 영약을 1개씩 씁니다 · 클릭으로 켜고 끄기",
-    "EN": "When on, one elixir from inventory or warehouse is used when the effect ends · Click to toggle"
+    "KR": "켜 두면 효과가 끝날 때 인벤토리·창고에서 1개씩 씁니다 · 클릭으로 켜고 끄기",
+    "EN": "When on, one is used from inventory or warehouse when the effect ends · Click to toggle"
   },
   {
     "Key": "UI.WorkStation.AutoUseOff",
@@ -14988,5 +14983,45 @@
     "Key": "UI.Inventory.PreviewCost",
     "KR": "비용",
     "EN": "Cost"
+  },
+  {
+    "Key": "UI.Widget.AlertInventoryFull",
+    "KR": "인벤토리 가득 참 — 채취물이 버려지는 중",
+    "EN": "Inventory full — harvests are being lost"
+  },
+  {
+    "Key": "UI.Widget.AlertIdleSlot",
+    "KR": "빈 작업슬롯 {0}칸 — 쉬는 캐릭터를 넣어 주세요",
+    "EN": "{0} empty work slot(s) — assign an idle character"
+  },
+  {
+    "Key": "UI.Widget.AlertCubeRunning",
+    "KR": "큐브 자동 {0}/{1} · {2}",
+    "EN": "Auto cube {0}/{1} · {2}"
+  },
+  {
+    "Key": "UI.Widget.AlertCubeDone",
+    "KR": "큐브 자동 끝 — {0} ({1}개 사용)",
+    "EN": "Auto cube done — {0} ({1} used)"
+  },
+  {
+    "Key": "UI.Enchant.Minimize",
+    "KR": "내리기",
+    "EN": "Minimize"
+  },
+  {
+    "Key": "UI.ItemUse.TurnOnInSlot",
+    "KR": "작업슬롯 설정의 [자동 사용]에서 켜 주세요",
+    "EN": "Turn it on under [Auto Use] in work slot settings"
+  },
+  {
+    "Key": "UI.Widget.WarningTitle",
+    "KR": "경고",
+    "EN": "Warning"
+  },
+  {
+    "Key": "UI.Widget.WarningIdleSlot",
+    "KR": "빈 작업슬롯 — 쉬는 캐릭터를 넣어 주세요",
+    "EN": "Empty work slot — assign an idle character"
   }
 ]

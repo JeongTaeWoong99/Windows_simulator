@@ -8,6 +8,8 @@ using UnityEngine.UI;
 // ■ 그림 — 빈 칸은 돌바닥 벽돌 + 구리 꺾쇠('ui_slot_empty') + 영웅 실루엣, 잠긴 칸은 리벳 쇠판 빗금('ui_slot_locked') + 육각 자물쇠. 둘 다 Tiled.
 //   그림이 없으면(그림 저장소 없음) 씬에 둔 그림 그대로다.
 // ■ 버튼 색 반응은 그림('art')에 건다 — 프레임 바탕(테마 Button 색)은 그림 밑에 가려진다.
+// ■ 빨간 점 — 지금 할 수 있는 일이 있는 칸 (T-145 · 2026-11-26). 무엇이 할 일인지는 Presenter가 정한다.
+//   배치된 칸은 슬롯 뷰가 위를 덮어 가려진다 — Presenter도 끈다.
 public class WorkSlotFrameView : MonoBehaviour
 {
     [SerializeField, Tooltip("칸 그림 — 프레임을 꽉 채운다. 빈 칸·잠긴 칸에 따라 코드가 바꾼다")]
@@ -18,6 +20,12 @@ public class WorkSlotFrameView : MonoBehaviour
 
     [SerializeField, Tooltip("문구 — '비어있음.' · 해금 조건. 문구는 Presenter가 쓴다")]
     private TMP_Text label = null!;
+
+    [SerializeField, Tooltip("오른쪽 위 빨간 점 — 지금 열 수 있는 잠긴 칸. 비우면 점 없이 지나간다")]
+    private GameObject? noticeDot;
+
+    [SerializeField, Tooltip("오른쪽 위 경고 점 — 쉬는 캐릭터를 넣을 수 있는 빈 칸(놔두면 손해). 올리면 툴팁. 비우면 점 없이 지나간다")]
+    private WarningDotView? warningDot;
 
     public TMP_Text Label => label;
 
@@ -44,6 +52,24 @@ public class WorkSlotFrameView : MonoBehaviour
     }
 
     private const float LabelBottomMargin = 14f;
+
+    // 빨간 점을 켜고 끈다 (WorkStationListPresenter.RefreshFrameNotices)
+    public void SetNotice(bool on)
+    {
+        if (noticeDot != null && noticeDot.activeSelf != on)
+        {
+            noticeDot.SetActive(on);
+        }
+    }
+
+    // 경고 점을 켜고 끈다 — 켜면 빨간 점보다 이긴다 (WorkStationListPresenter.RefreshFrameNotices)
+    public void SetWarning(bool on, string message)
+    {
+        if (warningDot != null)
+        {
+            warningDot.Show(on, () => WarningDotView.Content(message));
+        }
+    }
 
     // 열린 빈 칸이면 'unlocked' — 문구와 그림을 함께 바꾼다
     public void SetState(bool unlocked, string text)
