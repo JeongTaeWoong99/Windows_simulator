@@ -62,6 +62,19 @@ public class UserArtifactDisassembleTest
     }
 
     [Fact]
+    public void 특수_아티팩트_하나를_분해하면_마력의_파편_360개를_받는다()
+    {
+        const int PioneerArtifactTid = 24;
+        var (user, b) = NewUser((PioneerArtifactTid, 1));
+
+        user.TryDisassemble(NoEquips, Art((PioneerArtifactTid, 1)));
+
+        Last(b).Result.ShouldBe(EResultCode.Ok);
+        user.GetItemCount(ShardTid).ShouldBe(360);
+        user.GetArtifactCount(PioneerArtifactTid).ShouldBe(0);
+    }
+
+    [Fact]
     public void 장비와_아티팩트를_한_번에_분해한다()
     {
         // 장비 일반 1 + 아티팩트 일반 2 = 3

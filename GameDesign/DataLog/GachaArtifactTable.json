@@ -181,39 +181,39 @@
     "ArtifactTID": 24,
     "Count": 1,
     "Weight": 6580126,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "개척자의 상자 · 장인의 나무 자"
   },
   {
-    "GachaArtifactTID": 12324,
+    "GachaArtifactTID": 12325,
     "GachaId": 12,
-    "ArtifactTID": 24,
+    "ArtifactTID": 25,
     "Count": 1,
     "Weight": 11956684,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "산골 상자 · 은빛 수확패"
   },
   {
-    "GachaArtifactTID": 15324,
+    "GachaArtifactTID": 15334,
     "GachaId": 15,
-    "ArtifactTID": 24,
+    "ArtifactTID": 34,
     "Count": 1,
     "Weight": 6582101,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "광부의 상자 · 광부의 등불"
   },
   {
-    "GachaArtifactTID": 18324,
+    "GachaArtifactTID": 18335,
     "GachaId": 18,
-    "ArtifactTID": 24,
+    "ArtifactTID": 35,
     "Count": 1,
     "Weight": 11956684,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "요새 보급 상자 · 보급관의 인장"
   },
   {
-    "GachaArtifactTID": 21324,
+    "GachaArtifactTID": 21336,
     "GachaId": 21,
-    "ArtifactTID": 24,
+    "ArtifactTID": 36,
     "Count": 1,
     "Weight": 11956685,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "성주의 상자 · 성주의 열쇠"
   },
   {
     "GachaArtifactTID": 27326,
@@ -240,11 +240,11 @@
     "Description": "전설 유물 감정 · 개척자의 문장"
   },
   {
-    "GachaArtifactTID": 37324,
+    "GachaArtifactTID": 37337,
     "GachaId": 37,
-    "ArtifactTID": 24,
+    "ArtifactTID": 37,
     "Count": 1,
     "Weight": 11956684,
-    "Description": "나무 상자 · 장인의 나무 자"
+    "Description": "왕실 상자 · 왕실의 홀"
   }
 ]

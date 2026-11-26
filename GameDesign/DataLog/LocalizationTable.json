@@ -165,6 +165,26 @@
     "EN": "Hunter’s Fang"
   },
   {
+    "Key": "Artifact.34.Name",
+    "KR": "광부의 등불",
+    "EN": "Miner's Lantern"
+  },
+  {
+    "Key": "Artifact.35.Name",
+    "KR": "보급관의 인장",
+    "EN": "Quartermaster's Seal"
+  },
+  {
+    "Key": "Artifact.36.Name",
+    "KR": "성주의 열쇠",
+    "EN": "Castellan's Key"
+  },
+  {
+    "Key": "Artifact.37.Name",
+    "KR": "왕실의 홀",
+    "EN": "Royal Scepter"
+  },
+  {
     "Key": "Building.1.Name",
     "KR": "관리소",
     "EN": "Office"
