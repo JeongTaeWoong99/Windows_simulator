@@ -428,9 +428,12 @@ public class SellCartPresenter : MonoBehaviour
             return;
         }
 
-        if (_source.TryQuickAuction(slot.Key, slot.transform))
+        if (_source.TryQuickAuction(slot.Key, slot.transform, out bool opened))
         {
-            Close();
+            if (opened)
+            {
+                Close();
+            }
 
             return;
         }

@@ -128,5 +128,10 @@
     "Name": "ArtifactMaxStack",
     "Value": 1000,
     "Description": "인벤토리 아티팩트 탭 칸 하나에 쌓이는 같은 번호의 상한"
+  },
+  {
+    "Name": "AuctionMinAccountLevel",
+    "Value": 30,
+    "Description": "경매장 개방 계정 레벨"
   }
 ]

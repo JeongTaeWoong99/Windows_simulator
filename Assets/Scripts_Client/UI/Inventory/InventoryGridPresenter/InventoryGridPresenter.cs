@@ -1205,6 +1205,11 @@ public class InventoryGridPresenter : MonoBehaviour
     // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
     private bool OpenAuctionRegister(long key, Transform slot)
     {
+        if (!_ui.CheckAuctionAccess())
+        {
+            return false;
+        }
+
         // 아티팩트 — 잠금만 막는다(착용이 없다 · T-188). 등록 창이 번호로 고른다.
         if (_currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(key))
         {
@@ -1256,9 +1261,19 @@ public class InventoryGridPresenter : MonoBehaviour
         return true;
     }
 
-    // 판매 창의 칸을 Ctrl+우클릭했다 — 격자 칸과 같게 경매 등록으로 간다. 열었으면 true (SellCartPresenter에서 호출).
-    // ※ Ctrl을 누르지 않았으면 false — 부른 쪽이 평소대로 담는다.
-    public bool TryQuickAuction(long key, Transform slot) => _keys.IsQuickAuctionHeld && OpenAuctionRegister(key, slot);
+    // Ctrl+우클릭을 처리한 경우, 경매 등록이 거절되어도 즉시 판매 담기로 이어가지 않는다.
+    public bool TryQuickAuction(long key, Transform slot, out bool opened)
+    {
+        opened = false;
+        if (!_keys.IsQuickAuctionHeld)
+        {
+            return false;
+        }
+
+        opened = OpenAuctionRegister(key, slot);
+
+        return true;
+    }
 
     // 캐릭터를 담거나 뺀다 — 팔 수 없으면 사유를 알린다 (OnSlotRightClicked에서 호출).
     // ※ 마지막 캐릭터 판정은 이미 담은 캐릭터를 빼고 센다 — 서버가 "판 뒤 0명"을 거절한다(SellLastCharacter).
