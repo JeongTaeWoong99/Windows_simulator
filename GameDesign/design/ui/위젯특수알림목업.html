@@ -1,0 +1,243 @@
+<title>위젯 특수 알림</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;600;800&family=Black+Han+Sans&display=swap">
+<style>
+/* 제안 목업 — 열을 다 접고 위젯만 띄워 둔 상태에서 '꼭 알아야 하는 일'(인벤토리 가득 참 · 큐브 자동 끝)을
+   레드닷과 다르게 보여 주는 세 안, 그리고 큐브 자동을 창 없이 돌리는 안. T-071 · T-145 */
+:root {
+  color-scheme: dark;
+  --page: #0D1117; --pageText: #C9D4E0; --panel: #14202E; --panelSub: #1F3044; --border: #3E5A78;
+  --textMain: #F2F6FA; --textSub: #9FB3C8; --highlight: #FFD447;
+  --parch: #E9D3A6; --parchDark: #C9A86E; --wood: #6B4A2B; --woodDark: #3B2716; --ink: #3A2814;
+  --danger: #E05A5A; --ok: #6DDB7A; --info: #4FC3FF;
+  --display: "Black Han Sans", "Noto Sans KR", "Malgun Gothic", sans-serif;
+  --body: "Noto Sans KR", "Malgun Gothic", sans-serif;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--pageText); font-family: var(--body); font-size: 15px; line-height: 1.6; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 28px 16px 64px; display: grid; gap: 36px; }
+h1 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 34px; color: var(--textMain); }
+h2 { margin: 0 0 6px; font-family: var(--display); font-weight: 400; font-size: 22px; color: var(--textMain); }
+.lede, .note { margin: 0; color: var(--textSub); max-width: 80ch; }
+.note { font-size: 14px; margin-bottom: 14px; }
+b { color: var(--textMain); }
+
+/* 사건 버튼 */
+.events { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+.ev { background: var(--panelSub); border: 2px solid var(--border); color: var(--textMain); border-radius: 10px; padding: 6px 14px; font: 600 14px var(--body); cursor: pointer; }
+.ev:hover { border-color: var(--highlight); }
+.ev.reset { color: var(--textSub); }
+.ev:focus-visible { outline: 2px solid var(--highlight); outline-offset: 2px; }
+
+/* 세 안 */
+.plans { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 960px) { .plans { grid-template-columns: minmax(0, 1fr); } }
+.plan { background: var(--panel); border: 2px solid var(--border); border-radius: 14px; padding: 14px; display: grid; gap: 10px; align-content: start; }
+.plan h3 { margin: 0; font-family: var(--display); font-weight: 400; font-size: 20px; color: var(--textMain); }
+.plan p { margin: 0; font-size: 13px; color: var(--textSub); }
+.desk { position: relative; height: 300px; border-radius: 10px; overflow: hidden;
+  background: linear-gradient(160deg, #2b4c6f, #1a2c44 60%, #0f1c2e); }
+.desk::before { content: "바탕화면"; position: absolute; left: 10px; top: 8px; font-size: 11px; color: #ffffff55; }
+
+/* 위젯 — 게임의 왼쪽 아래 위젯 모양 */
+.widget { position: absolute; left: 14px; bottom: 14px; width: 250px; background: var(--parch); border: 3px solid var(--wood);
+  border-radius: 6px; padding: 6px 8px; color: var(--ink); font-size: 13px; font-weight: 700; box-shadow: 0 3px 0 var(--woodDark); }
+.wrow { display: flex; justify-content: space-between; gap: 6px; font-variant-numeric: tabular-nums; }
+.wbot { display: flex; align-items: center; justify-content: space-between; margin-top: 4px; }
+.head { width: 38px; height: 38px; border-radius: 4px; background: #4b3a2a; display: grid; place-items: center; font-size: 22px; position: relative; }
+.btns { display: flex; gap: 4px; }
+.btns span { width: 26px; height: 26px; border: 2px solid var(--wood); border-radius: 4px; display: grid; place-items: center; background: var(--parchDark); font-size: 13px; }
+
+/* A — 캐릭터 말풍선 + 테두리 맥동 */
+.bubble { position: absolute; left: 10px; bottom: 62px; max-width: 230px; background: #fff; color: var(--ink); border: 3px solid var(--ink);
+  border-radius: 10px; padding: 6px 10px; font-size: 13px; font-weight: 800; line-height: 1.35; opacity: 0; transform: translateY(6px); transition: .25s; pointer-events: none; }
+.bubble::after { content: ""; position: absolute; left: 16px; bottom: -10px; border: 7px solid transparent; border-top-color: var(--ink); }
+.bubble.show { opacity: 1; transform: none; }
+.bubble.warn { border-color: var(--danger); } .bubble.warn::after { border-top-color: var(--danger); }
+.bubble.good { border-color: #2f9a45; } .bubble.good::after { border-top-color: #2f9a45; }
+.widget.pulse { animation: pulse 1.4s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 3px 0 var(--woodDark), 0 0 0 0 #e05a5a00; } 50% { box-shadow: 0 3px 0 var(--woodDark), 0 0 0 6px #e05a5aaa; } }
+.head.shake { animation: shake .5s ease-in-out 3; }
+@keyframes shake { 0%,100% { transform: none; } 25% { transform: rotate(-12deg); } 75% { transform: rotate(12deg); } }
+
+/* B — 위젯 위 띠 (작은 상태 줄) */
+.strip { position: absolute; left: 14px; bottom: 98px; width: 250px; display: grid; gap: 4px; }
+.chip { display: flex; align-items: center; gap: 6px; background: #1b1209ee; color: #fff; border-left: 5px solid var(--danger); border-radius: 4px;
+  padding: 3px 8px; font-size: 12px; font-weight: 700; opacity: 0; transform: translateX(-8px); transition: .25s; }
+.chip.show { opacity: 1; transform: none; }
+.chip.good { border-left-color: var(--ok); } .chip.info { border-left-color: var(--info); }
+.chip .x { margin-left: auto; color: #fff8; font-size: 11px; }
+
+/* C — 위젯 머리 아이콘 상태 */
+.state { position: absolute; right: -8px; top: -8px; width: 22px; height: 22px; border-radius: 50%; display: none; place-items: center; font-size: 13px;
+  border: 2px solid var(--ink); background: var(--danger); color: #fff; font-weight: 800; }
+.state.show { display: grid; animation: bob 1s ease-in-out infinite; }
+.state.good { background: var(--ok); color: var(--ink); }
+@keyframes bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+.tip { position: absolute; left: 60px; bottom: 70px; background: var(--parch); color: var(--ink); border: 2px solid var(--wood); border-radius: 6px; padding: 4px 8px;
+  font-size: 12px; font-weight: 700; display: none; }
+.tip.show { display: block; }
+
+/* 큐브 자동 칩 */
+.cube { display: none; align-items: center; gap: 6px; margin-top: 4px; background: #2a1d10; color: #ffe6a8; border-radius: 4px; padding: 2px 6px; font-size: 12px; }
+.cube.show { display: flex; }
+.bar { flex: 1; height: 6px; background: #ffffff22; border-radius: 3px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--highlight); transition: width .3s; }
+
+/* 표 · 목록 */
+.tbl-wrap { overflow-x: auto; background: var(--panel); border: 2px solid var(--border); border-radius: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid #263a50; vertical-align: top; }
+th { color: var(--textSub); font-size: 12px; background: var(--panelSub); white-space: nowrap; }
+tr:last-child td { border-bottom: 0; }
+.qs { margin: 0; padding-left: 20px; display: grid; gap: 8px; }
+.qs li small { display: block; color: var(--textSub); font-size: 13px; }
+.rec { color: var(--highlight); font-weight: 800; }
+@media (prefers-reduced-motion: reduce) { .widget.pulse, .head.shake, .state.show { animation: none; } }
+</style>
+
+<div class="wrap">
+  <header style="display:grid;gap:6px">
+    <h1>위젯 특수 알림 — 제안 목업</h1>
+    <p class="lede">열을 다 접고 <b>위젯만 띄워 둔 상태</b>에서 꼭 알아야 하는 일을 <b>레드닷과 다르게</b> 보여 준다. 레드닷은 "열면 볼 것이 있다"(조용한 표시)이고, 이건 "지금 손해를 보고 있다 · 기다리던 결과가 나왔다"(부르는 표시)다. 아래 버튼으로 사건을 일으켜 세 안을 나란히 비교한다. (T-071 · T-145)</p>
+  </header>
+
+  <section>
+    <h2>① 세 안 비교</h2>
+    <div class="events" role="group" aria-label="사건">
+      <button class="ev" data-ev="full">🎒 인벤토리 가득 참</button>
+      <button class="ev" data-ev="cube">💎 큐브 자동 시작 (창 내림)</button>
+      <button class="ev" data-ev="slot">⛏ 작업슬롯 빔 (캐릭터 빠짐)</button>
+      <button class="ev reset" data-ev="reset">↺ 처음으로</button>
+    </div>
+    <div class="plans">
+      <div class="plan">
+        <h3>A안 — 캐릭터가 말한다</h3>
+        <p>위젯 캐릭터 머리 위 <b>말풍선</b> + 경고면 위젯 테두리가 빨갛게 숨쉰다. 방치형다운 말투로 부른다. 말풍선은 5초 뒤 접히고, 경고 테두리는 풀릴 때까지 남는다.</p>
+        <div class="desk" id="deskA"></div>
+      </div>
+      <div class="plan">
+        <h3>B안 — 위젯 위 상태 줄</h3>
+        <p>위젯 바로 위에 <b>짧은 띠</b>가 쌓인다(색 = 경고 빨강 · 결과 초록 · 진행 파랑). 여러 개가 한눈에 보이고, 풀리면 띠가 사라진다.</p>
+        <div class="desk" id="deskB"></div>
+      </div>
+      <div class="plan">
+        <h3>C안 — 머리 아이콘만</h3>
+        <p>캐릭터 머리 귀퉁이에 <b>통통 튀는 아이콘</b>(! · ✓)만 붙는다. 가장 조용하다. 내용은 마우스를 올리면 나온다.</p>
+        <div class="desk" id="deskC"></div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>② 무엇을 이렇게 부를까 (안)</h2>
+    <p class="note">기준 — <b>놔두면 손해가 나는 것</b>과 <b>사용자가 일부러 걸어 둔 결과</b>만 부른다. 나머지(우편 · 경매 낙찰 · 올릴 건물)는 레드닷(T-145)이 맡는다. 같은 사유는 풀릴 때까지 한 번만 부른다(P1 — 주의를 뺏지 않는다).</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>사건</th><th>왜 부르나</th><th>종류</th><th>풀리는 때</th></tr></thead>
+      <tbody>
+        <tr><td>인벤토리 가득 참</td><td>채취 산출이 버려진다(T-085 (가) 규칙) — 놔두면 손해</td><td>경고</td><td>칸이 비면</td></tr>
+        <tr><td>큐브 자동 끝 (목표 달성 · 큐브 바닥 · 멈춤 조건)</td><td>사용자가 걸어 두고 기다린 결과</td><td>결과</td><td>결과를 열어 보면</td></tr>
+        <tr><td>작업슬롯이 빔</td><td>그 슬롯은 아무것도 안 번다 — 놔두면 손해</td><td>경고</td><td>다시 배치하면</td></tr>
+        <tr><td>(나중) 레이드 결과 · 자동 사용 소모품 바닥</td><td>콘텐츠가 서면 더한다</td><td>결과 · 경고</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>③ 큐브 자동을 창 없이 돌리기</h2>
+    <p class="note">지금 큐브 자동은 <b>가운데 팝업(큐브 창)이 떠 있어야</b> 돈다 — 클라가 매 회 요청을 보내고 공개 연출을 튼다. 그래서 창을 내리고 위젯만 남길 수가 없다.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>안</th><th>어떻게</th><th>좋은 점</th><th>걸리는 점</th></tr></thead>
+      <tbody>
+        <tr><td><span class="rec">①안 (추천)</span><br>창 내리기 = 백그라운드</td><td>큐브 창에 <b>[내리기]</b> — 창은 닫히고 자동은 계속 돈다. 위젯에 <b>진행 칩</b>(위 '큐브 자동 시작' 버튼). 끝나면 ① 의 결과 알림 → 칩을 누르면 큐브 창이 다시 열려 결과를 보여 준다</td><td>서버 변경 없음 — 요청은 지금과 같고 연출만 건너뛴다. 멈춤 조건 · 상한도 그대로</td><td>자동 루프를 큐브 창 밖(매니저)으로 옮겨야 한다. 게임을 끄면 멈춘다</td></tr>
+        <tr><td>②안<br>서버 일괄 자동</td><td>요청 한 번에 "목표까지 · 최대 n개"를 보내면 서버가 굴리고 결과만 돌려준다</td><td>게임을 꺼도 끝난다 · 요청 수가 준다</td><td>서버 작업(진우) · 중간 연출이 없다 · 멈춤 조건을 서버로 옮겨야 한다</td></tr>
+        <tr><td>③안<br>큐브 창 작게 접기</td><td>창이 작은 막대로 접혀 화면 귀퉁이에 남는다</td><td>구조 변경이 가장 적다</td><td>열이 다 접히면 막대가 둘 곳이 없다 — 위젯만 남기는 목적에 안 맞는다</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>④ 정할 것</h2>
+    <ol class="qs">
+      <li>표현 — A안(말풍선) / B안(상태 줄) / C안(머리 아이콘)<small>섞어도 된다 — 예: 경고는 A안, 결과는 C안</small></li>
+      <li>부를 사건 — ② 표 세 줄로 시작할지</li>
+      <li>큐브 자동 — ①안(창 내리기)으로 갈지<small>②안이면 서버 요청(진우)이 필요하다</small></li>
+      <li>설정에서 끄기 — 종류별로(경고 / 결과) 끌 수 있게 할지</li>
+    </ol>
+  </section>
+</div>
+
+<script>
+// 세 바탕화면에 같은 위젯을 하나씩 그린다
+const W = `
+  <div class="wrow"><span>⚙ 3/10</span><span>🎁 9</span><span>↗ 1,240/h</span><span>⏱ 1:12:05</span></div>
+  <div class="cube"><span>💎 큐브</span><span class="cn">0/100</span><div class="bar"><i></i></div></div>
+  <div class="wbot"><div class="head">🧔<span class="state">!</span></div><div class="btns"><span>⟳</span><span>⇧</span></div></div>`;
+const desks = { A: document.getElementById('deskA'), B: document.getElementById('deskB'), C: document.getElementById('deskC') };
+for (const [k, d] of Object.entries(desks)) {
+  d.innerHTML = (k === 'A' ? '<div class="bubble"></div>' : '') + (k === 'B' ? '<div class="strip"></div>' : '') + (k === 'C' ? '<div class="tip"></div>' : '') + `<div class="widget">${W}</div>`;
+}
+const q = (k, s) => desks[k].querySelector(s);
+const qa = s => Object.keys(desks).map(k => desks[k].querySelector(s));
+let timers = [];
+const later = (f, ms) => timers.push(setTimeout(f, ms));
+let warns = new Set();
+
+function bubble(text, kind) {
+  const b = q('A', '.bubble');
+  b.textContent = text; b.className = 'bubble show ' + kind;
+  later(() => b.classList.remove('show'), 5000);
+}
+function chip(id, text, kind) {
+  const s = q('B', '.strip');
+  let c = s.querySelector(`[data-id="${id}"]`);
+  if (!c) { c = document.createElement('div'); c.dataset.id = id; s.prepend(c); }
+  c.className = 'chip ' + kind; c.innerHTML = `${text}<span class="x">${kind === 'good' ? '눌러 보기' : ''}</span>`;
+  requestAnimationFrame(() => c.classList.add('show'));
+}
+function icon(kind, text) {
+  const st = q('C', '.state'), tip = q('C', '.tip');
+  st.textContent = kind === 'good' ? '✓' : '!'; st.className = 'state show' + (kind === 'good' ? ' good' : '');
+  tip.textContent = text;
+  const head = q('C', '.head');
+  head.onmouseenter = () => tip.classList.add('show'); head.onmouseleave = () => tip.classList.remove('show');
+}
+function warnOn() {
+  q('A', '.widget').classList.add('pulse');
+  q('A', '.head').classList.remove('shake'); void q('A', '.head').offsetWidth; q('A', '.head').classList.add('shake');
+}
+
+function run(ev) {
+  if (ev === 'reset') { location.reload(); return; }
+  if (ev === 'full') {
+    if (warns.has('full')) return; warns.add('full');
+    bubble('가방이 꽉 찼어요! 이대로면 캔 걸 버려요.', 'warn'); warnOn();
+    chip('full', '🎒 인벤토리 가득 참 — 채취 산출이 버려지는 중', 'warn');
+    icon('warn', '인벤토리 가득 참 — 채취 산출이 버려지는 중');
+  }
+  if (ev === 'slot') {
+    if (warns.has('slot')) return; warns.add('slot');
+    bubble('3번 슬롯이 비었어요. 일할 사람을 넣어 주세요.', 'warn'); warnOn();
+    chip('slot', '⛏ 작업슬롯 #3 비어 있음', 'warn');
+    icon('warn', '작업슬롯 #3 비어 있음');
+  }
+  if (ev === 'cube') {
+    qa('.cube').forEach(c => c.classList.add('show'));
+    chip('cube', '💎 큐브 자동 0/100 · 목표 영웅', 'info');
+    let n = 0; const goal = 37;
+    const tick = () => {
+      n += 3; if (n > goal) n = goal;
+      qa('.cube .cn').forEach(e => e.textContent = n + '/100');
+      qa('.cube .bar i').forEach(e => e.style.width = n + '%');
+      chip('cube', `💎 큐브 자동 ${n}/100 · 목표 영웅`, 'info');
+      if (n < goal) { later(tick, 250); return; }
+      bubble(`큐브 자동 끝 — ${goal}개 만에 영웅 달성!`, 'good');
+      chip('cube', `💎 큐브 자동 끝 — ${goal}개 · 영웅 달성`, 'good');
+      if (!warns.size) icon('good', `큐브 자동 끝 — ${goal}개 · 영웅 달성 (눌러 결과 보기)`);
+    };
+    later(tick, 300);
+  }
+}
+document.querySelectorAll('.ev').forEach(b => b.addEventListener('click', () => run(b.dataset.ev)));
+</script>
