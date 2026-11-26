@@ -68,7 +68,7 @@
 
 | `RarityPalette.cs` | 등급 → 표시 색(신화는 FF3D6E — 서버 enum 주석의 E6CC80은 옅은 금이라 양피지 바탕에 묻혀 클라만 바꿨다 · 2026-11-14) · 빈 네모 색(`EmptySocket` — 장착 칸 `EquipPipsView`가 쓴다) | Inventory · System |
 
-| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
+| `RarityLabel.cs` | 등급 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — `IndustryLabel`과 함께 [`T-085`](../../../../tasks/archive/T-085-공용상수소유권.md)가 끝나면 지운다 | Inventory(도구 줄 드롭다운 · 칸 툴팁) |
 
 | `RaceLabel.cs` | 캐릭터 종족 → 이름 · 칸 배지 한 글자 · 툴팁 줄. 표시 전용 | Inventory · Main · Auction · Overlay |
 
@@ -76,7 +76,7 @@
 
 | `AptitudeLabel.cs` | 적성 값 → 표기(`0`은 `X`)·색 | Inventory(칸 스트립) · Main(캐릭터 줄·카드) |
 
-| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
+| `IndustryLabel.cs` | 산업 → 한글 이름. ⚠️ **출처가 아니라 사본이다** — [`T-085`](../../../../tasks/archive/T-085-공용상수소유권.md)이 끝나면 **이 파일은 지운다** | Main |
 
 | `EquipLabel.cs` | 장비 → 효과 한 줄(`발굴 +30%`·`전산업 +5%`)·칸 이름·칸에 낄 수 있는 종류 · **능력치 칸 읽기**(`ReadStatOptions` — ⏸ 옛 인챈트 필드, 새 패킷이 오면 여기만) · **장비 개체 툴팁**(`BuildTooltip`) · **캐릭터의 장착 읽기**(`WornSlots` 순서 · `ReadWornGrades` · 툴팁 `AddWornRows` — T-104). ⚠️ **거르기는 표시용이고 거절은 서버가 한다** | Inventory(장비 탭) · Main(작업슬롯 장비 칸 · 장비 고르기) · Market(경매장) |
 

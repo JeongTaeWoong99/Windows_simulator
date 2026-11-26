@@ -7,7 +7,7 @@ tags: [server, design, data]
 # 아티팩트 인벤토리 · 도감 장착
 
 ## 목적 / 배경
-- 이슈 #81 · 결정과 이유는 → `tasks/T-181-아티팩트인벤토리도감장착.md` · `유물감정.md` 3장
+- 이슈 #81 · 결정과 이유는 → `tasks/archive/T-181-아티팩트인벤토리도감장착.md` · `유물감정.md` 3장
 
 ## 변경 내용
 - `User.Artifact.cs` 전면 교체 — `_codex`(번호 → 켜짐) + `Artifacts`(인벤토리 아티팩트 탭 · `Inventory` 클래스 재사용). 효과는 `_codex`의 켜진 번호만

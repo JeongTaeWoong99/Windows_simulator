@@ -111,7 +111,7 @@
 - **액티브 부스트:** 하루 2회 · 1시간 · 이월 없음 · 발동 조건 없음은 확정([특성](../../trait/README.md) 1장 #9 · 2.4). 미착수. 효과 4종 후보(골드·경험치·드랍률·작업속도)와 해금 계정 레벨 5·10·20·40은 미확정(특성 5장 Q1·Q2). **"하루 2회"가 액티브마다인지 전체인지 문서에 없다.**
 - **보스:** 시스템 전체 ❌([게임기획코어](../../게임기획코어.md) 5장). [사냥](../../gathering/hunting/README.md) 4.2에 지켜야 할 4원칙이 있고, 데이터는 6장 `BossTable` 제안 컬럼뿐이다. [해금](../../unlock/README.md) 4장의 "보스" 줄도 미정, 들어갈 화면 자리는 [게임 UI](../../ui/README.md) 2.4 하단 미정 칸이다.
 - **앞 회차 보스 안:** [토벌 슬롯](2026-10-18-00-clash-of-clans-raid-weekend.md)(방치로 체력을 깎는다) · [토벌 계약서](2026-10-18-00-hades-pact-of-punishment-bounty.md)(조항으로 위험도를 정한다). 이번 안은 **"어떻게 부르고 무엇이 남는가"** 를 맡고 전투 판정은 위 두 안을 끼울 층으로 비워 둔다.
-- **다시 쓸 수 있는 부품:** `UnlockTable`의 `ItemTIDs`·`ItemCounts` 짝과 `NotEnoughItem` 검사([T-166](../../../../tasks/T-166-섬건물서버.md)) · 서버 지급 경로 `GrantUnlock`(해금 2.4) · 비용 없는 풀과 `GachaRewardInfo` 연출([아이템](../../item/README.md) 4.1) · 효과 합성 자리 `TraitAddPermille`·산출량 항([건물](../../building/README.md) 3.3) · `UserTraitEffect` 재사용 선례(`ArtifactTable`) · 빈칸 실루엣 도감([유물 감정](../../gathering/excavation/유물감정.md) 3.1).
+- **다시 쓸 수 있는 부품:** `UnlockTable`의 `ItemTIDs`·`ItemCounts` 짝과 `NotEnoughItem` 검사([T-166](../../../../tasks/archive/T-166-섬건물서버.md)) · 서버 지급 경로 `GrantUnlock`(해금 2.4) · 비용 없는 풀과 `GachaRewardInfo` 연출([아이템](../../item/README.md) 4.1) · 효과 합성 자리 `TraitAddPermille`·산출량 항([건물](../../building/README.md) 3.3) · `UserTraitEffect` 재사용 선례(`ArtifactTable`) · 빈칸 실루엣 도감([유물 감정](../../gathering/excavation/유물감정.md) 3.1).
 
 **번역표** — 왼쪽은 레퍼런스 사실, 가운데는 우리 쪽 해석.
 
@@ -216,7 +216,7 @@
 - [사냥](../../gathering/hunting/README.md) 2장 · 3.2 C안 · 4.2 · 4.3 · 6장 `BossTable`
 - [게임기획코어](../../게임기획코어.md) 4장 · 5장(❌ 보스 시스템 전체 · ❌ 하위 레벨 수요처) · [산업 레벨](../../gathering/산업레벨.md) 4.2 · 4.3
 - [해금](../../unlock/README.md) 2.5 · 4장 · [아이템](../../item/README.md) 4.1 · [우편](../../mail/README.md) 1장 #13 · [건물](../../building/README.md) 4장 · [게임 UI](../../ui/README.md) 2.4 · [진행 및 성장](../../progression/README.md) 2.8
-- [T-114](../../../../tasks/T-114-레이드기획.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md) · [T-125](../../../../tasks/archive/T-125-산업특성화.md) · [T-166](../../../../tasks/T-166-섬건물서버.md)
+- [T-114](../../../../tasks/T-114-레이드기획.md) · [T-076](../../../../tasks/T-076-성장재료소비처.md) · [T-125](../../../../tasks/archive/T-125-산업특성화.md) · [T-166](../../../../tasks/archive/T-166-섬건물서버.md)
 
 **설계 원칙 체크**
 - **P1 ⚠️** — 능동 콘텐츠라 기획평가 R17(보스와 P1의 긴장)과 부딪친다. 큰 창 하단 칸에서만 열고 · 결과를 팝업으로 띄우지 않고 · 제단 버튼에 "봉헌 가능" 배지를 달지 않으면 지킨다(UI 2.4).
@@ -310,7 +310,7 @@
 **연계 시스템**
 - [건물](../../building/README.md) 1장 #8 · 3.1 · 3.2 · 4장 · [해금](../../unlock/README.md) 2.1 · 3장 `ItemTIDs`
 - [산업 레벨](../../gathering/산업레벨.md) 4.2 · [진행 및 성장](../../progression/README.md) 2.7(잠금 최소) · 2.8 · [거래](../../trade/README.md)
-- [T-105](../../../../tasks/T-105-자원사용처.md) · [T-166](../../../../tasks/T-166-섬건물서버.md)
+- [T-105](../../../../tasks/archive/T-105-자원사용처.md) · [T-166](../../../../tasks/archive/T-166-섬건물서버.md)
 
 **설계 원칙 체크**
 - **P1 ✅** — 건물 1장 #6 "대기 타이머 없음" 그대로.
