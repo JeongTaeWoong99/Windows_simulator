@@ -15,6 +15,7 @@ services:
       Game__DbPath: /data/game.sqlite3                  # 볼륨. 없으면 빈 DB를 만들고 마이그레이션이 채운다
       Game__Auction__Address: http://auction:30330      # 컨테이너 안의 127.0.0.1은 게임 컨테이너 자신이다
       Game__CheatAdminLevel: "1"                        # 원격은 admin_level 1 이상만 치트
+      Game__Steam__AppId: "${STEAM_APP_ID:-480}"         # Server/.env에서 지정한다. 비어 있으면 테스트용 480
       Game__Steam__WebApiKey: ${STEAM_WEB_API_KEY:-}    # 스팀 로그인 키 — Server/.env(git 제외)에서 읽는다. 여기에 키를 적지 않는다 (T-207)
       # Game__AllowDevLogin: "false"                    # 친구 빌드가 스팀 로그인으로 바뀌면 켠다 — 티켓 없는 Id 로그인 거절
       # Game__LogLevel: Info                            # 로그 하한(Trace·Debug·Info·Warn·Error·None). 빼면 appsettings의 Debug — 패킷마다 찍힌다

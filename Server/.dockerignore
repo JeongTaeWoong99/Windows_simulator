@@ -5,6 +5,7 @@
 **/.vs/
 **/*.user
 .claude/
+.env
 Shared/game.sqlite3
 Shared/game.sqlite3-wal
 Shared/game.sqlite3-shm
