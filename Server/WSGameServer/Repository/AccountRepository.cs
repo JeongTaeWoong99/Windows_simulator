@@ -1,9 +1,13 @@
+using GameData;
 using MikaProtocol;
 
 namespace WSGameServer;
 
 public class AccountRepository : IRepository
 {
+    private const int FirstWorkSlotIndex = 0;
+    private const int FirstInventorySlot = 0;
+
     private long _userId;
     private bool _isNewbie;
 
@@ -27,10 +31,7 @@ public class AccountRepository : IRepository
         // 2) 없으면 자동 가입
         if (row is null)
         {
-            _userId = await connection.ExecuteScalarAsync<long>(
-                "INSERT INTO t_user (provider_id, nickname) VALUES (@pid, @nickname) RETURNING user_id",
-                new { pid = User.Pid, nickname = User.NickName });
-
+            await CreateAccountAsync(connection);
             _isNewbie = true;
         }
         else
@@ -42,6 +43,33 @@ public class AccountRepository : IRepository
         _resultRow = await connection.QueryFirstOrDefaultAsync<AccountResultRow>(
             "SELECT user_id, nickname, admin_level, is_deleted, is_banned FROM t_user WHERE user_id = @userId",
             new {userId = _userId});
+    }
+
+    private Task CreateAccountAsync(DbConnection connection)
+    {
+        // 최초 로그인 적재 전에 계정·램볼·농사 배치를 한 번에 저장한다.
+        return connection.InTransactionAsync(async tx =>
+        {
+            var userId = await tx.ExecuteScalarAsync<long>(
+                "INSERT INTO t_user (provider_id, nickname) VALUES (@pid, @nickname) RETURNING user_id",
+                new { pid = User.Pid, nickname = User.NickName });
+            var characterId = await GrantCharacterRepository.InsertCharacterAsync(
+                tx, userId, WSGameServer.User.DefaultCharacterTid, EContainer.Inventory, FirstInventorySlot);
+
+            await tx.ExecuteAsync(
+                @"INSERT INTO t_user_workstation_slot (user_id, slot_index, industry, industry_level, character_id)
+                  VALUES (@userId, @slotIndex, @industry, @industryLevel, @characterId)",
+                new
+                {
+                    userId,
+                    slotIndex = FirstWorkSlotIndex,
+                    industry = (int)IndustryType.Farming,
+                    industryLevel = WorkStationSlot.DefaultIndustryLevel,
+                    characterId,
+                });
+
+            _userId = userId;
+        });
     }
 
     public void Apply()
