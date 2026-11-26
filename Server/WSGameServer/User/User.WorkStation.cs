@@ -237,7 +237,7 @@ public partial class User
             }
         }
 
-        // 영약 차감·버프를 함께 저장한다. 정산 보상이 차감한 인벤토리 칸을 다시 채울 수도 있다.
+        // 자동 사용 차감·버프를 함께 저장한다. 정산 보상이 차감한 인벤토리 칸을 다시 채울 수도 있다.
         if (autoUseItems.Count > 0)
         {
             var items = ItemChangeSnapshot(autoUseItems);
