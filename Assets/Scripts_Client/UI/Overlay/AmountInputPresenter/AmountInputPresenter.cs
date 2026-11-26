@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -53,6 +54,22 @@ public class AmountInputPresenter : MonoBehaviour
     // 확인을 눌렀을 때 부를 곳. 취소·닫힘이면 부르지 않는다.
     private Action<int>? _onConfirm;
 
+    // 수량 → 미리보기 한 줄 (판매면 "받을 골드 1,250 G"). 없으면 줄을 숨긴다.
+    private Func<int, string>? _preview;
+
+    // ■ 빠른 수량 · 미리보기 줄 (2026-11-24 사용자 — 즉시 판매 팝업 편의 개편)
+    //   숫자를 지우고 다시 치는 대신 [1] · [절반] · [최대]를 누르고, 판매면 받을 골드를 누르기 전에 본다.
+    //   씬을 고치지 않으려고 실행 중에 만든다 — [취소] 버튼 줄과 제목 글자를 복제한다(씬 저장 시 레이아웃 값 수천 줄 변경을 피함).
+    private const float QuickRowHeight = 44f;
+    private const float PreviewHeight  = 30f;
+    private const float TitleSideMargin = 12f;
+
+    private TMP_Text _previewText = null!;
+
+    // 빠른 버튼 글자 — [1개] · [절반] · [최대 25]. 최대치가 열 때마다 달라 코드가 쓴다(LocalizedText를 떼어 낸다).
+    private readonly List<(TMP_Text Label, string Key)> _quickLabels = new();
+    private TMP_Text _maxLabel = null!;
+
     // 참조 확보 → 배선 → 초기화 순서로 진행한다 (클라 공통 규약. 구독할 이벤트가 없다)
     private void Start()
     {
@@ -67,6 +84,13 @@ public class AmountInputPresenter : MonoBehaviour
         BackdropClose.Bind(gameObject, OnCancelClicked); // 차단막을 누르면 취소
         amountInput.onValueChanged.AddListener(OnAmountChanged);
 
+        BuildQuickRow();
+        BuildPreview();
+
+        // 제목은 한 줄 + 자동 축소 — 영어 'Potato — How many to sell?'가 두 줄로 접혔다(2026-11-25 · UI 규칙 §3)
+        titleText.textWrappingMode = TextWrappingModes.NoWrap;
+        titleText.margin           = new Vector4(TitleSideMargin, 0f, TitleSideMargin, 0f); // 긴 이름이 액자 테두리에 붙지 않게(2026-11-25)
+
         SetVisible(false, instant: true); // 시작은 닫힘 — 씬에 열린 채 저장됐어도 여기서 정리된다
     }
 
@@ -77,16 +101,28 @@ public class AmountInputPresenter : MonoBehaviour
     //   maxCount  : 보유량. 입력값은 1..maxCount로 클램프된다
     //   question  : 묻는 말 — "몇 개를 팔까?" · "몇 개를 열까?"
     //   onConfirm : 확인을 눌렀을 때 받을 곳. 취소면 불리지 않는다
-    public void Open(int itemId, int maxCount, string question, Action<int> onConfirm)
-        => Open(GameDataLoader.GetItemName(itemId), maxCount, question, onConfirm);
+    //   preview   : 수량 → 미리보기 한 줄(받을 골드 등). 없으면 줄을 숨긴다
+    public void Open(int itemId, int maxCount, string question, Action<int> onConfirm, Func<int, string>? preview = null)
+        => Open(GameDataLoader.GetItemName(itemId), maxCount, question, onConfirm, preview);
 
     // 자원이 아닌 것의 수량을 묻는다 — 이름을 직접 받는다(아티팩트 판매 담기).
-    public void Open(string subject, int maxCount, string question, Action<int> onConfirm)
+    public void Open(string subject, int maxCount, string question, Action<int> onConfirm, Func<int, string>? preview = null)
     {
         _maxCount  = Mathf.Max(1, maxCount);
         _onConfirm = onConfirm;
+        _preview   = preview;
 
+        _previewText.gameObject.SetActive(preview != null);
+
+        // 최대치는 제목 대신 [최대 25] 버튼에 적는다 — 제목에 '(최대 25개)'까지 넣으면 두 줄로 접혔다(2026-11-25)
         titleText.text   = Lang.Format("UI.Common.AmountTitle", subject, question, $"{_maxCount:N0}");
+
+        foreach (var (label, key) in _quickLabels)
+        {
+            label.text = Lang.Get(key);
+        }
+
+        _maxLabel.text = $"{Lang.Get("UI.Common.AmountMax")} {_maxCount:N0}";
         amountInput.text = _maxCount.ToString();
 
         SetVisible(true);
@@ -103,6 +139,7 @@ public class AmountInputPresenter : MonoBehaviour
     public void Close()
     {
         _onConfirm = null;
+        _preview   = null;
 
         SetVisible(false);
     }
@@ -127,7 +164,21 @@ public class AmountInputPresenter : MonoBehaviour
     //   글자에서 튀어 오른다. 클램프는 확인을 누른 순간에 한 번만 한다.
     private void OnAmountChanged(string text)
     {
-        confirmButton.interactable = int.TryParse(text, out int amount) && amount >= 1;
+        bool valid = int.TryParse(text, out int amount) && amount >= 1;
+
+        confirmButton.interactable = valid;
+
+        // 미리보기는 확인할 때와 같은 값(1..최대로 클램프)으로 보여 준다 — 999를 쳐도 받을 골드는 최대치만큼이다
+        if (_preview != null)
+        {
+            _previewText.text = valid ? _preview(Mathf.Clamp(amount, 1, _maxCount)) : "";
+        }
+    }
+
+    // 빠른 수량 — 입력칸을 그 값으로 채운다 (빠른 줄 버튼에 코드로 연결)
+    private void SetAmount(int amount)
+    {
+        amountInput.text = Mathf.Clamp(amount, 1, _maxCount).ToString();
     }
 
     // 확인 — 클램프한 수량을 넘긴다 (confirmButton OnClick에 코드로 연결)
@@ -153,6 +204,94 @@ public class AmountInputPresenter : MonoBehaviour
     private void OnCancelClicked()
     {
         Close();
+    }
+
+    #endregion
+
+    #region 빠른 수량 · 미리보기 (실행 중에 만든다)
+
+    // [1] · [절반] · [최대] 줄 — 확인/취소 줄을 복제해 입력칸 바로 아래에 둔다 (Start에서 한 번)
+    private void BuildQuickRow()
+    {
+        var buttonRow = cancelButton.transform.parent;
+        var row       = Instantiate(buttonRow.gameObject, buttonRow.parent);
+
+        row.name = "Quick Amount Panel (runtime)";
+        row.transform.SetSiblingIndex(amountInput.transform.GetSiblingIndex() + 1);
+
+        if (row.TryGetComponent(out LayoutElement rowLayout))
+        {
+            rowLayout.minHeight       = QuickRowHeight;
+            rowLayout.preferredHeight = QuickRowHeight;
+        }
+
+        // 복제한 줄의 확인 버튼은 지우고 취소 버튼 모양(밝은 바탕)을 셋으로 쓴다
+        var template = row.transform.GetChild(cancelButton.transform.GetSiblingIndex()).gameObject;
+
+        for (int i = row.transform.childCount - 1; i >= 0; i--)
+        {
+            if (row.transform.GetChild(i).gameObject != template)
+            {
+                DestroyImmediate(row.transform.GetChild(i).gameObject);
+            }
+        }
+
+        AddQuickButton(template, "UI.Common.AmountOne", () => SetAmount(1));
+        AddQuickButton(Instantiate(template, row.transform), "UI.Common.AmountHalf", () => SetAmount((_maxCount + 1) / 2));
+        _maxLabel = AddQuickButton(Instantiate(template, row.transform), "UI.Common.AmountMax", () => SetAmount(_maxCount));
+
+        GrowPanel(QuickRowHeight);
+    }
+
+    private TMP_Text AddQuickButton(GameObject buttonObject, string key, UnityEngine.Events.UnityAction onClick)
+    {
+        buttonObject.name = key + " (runtime)";
+
+        var button = buttonObject.GetComponent<Button>();
+
+        button.onClick.RemoveAllListeners();
+        button.onClick.AddListener(onClick);
+
+        if (buttonObject.GetComponentInChildren<LocalizedText>(true) is { } localized)
+        {
+            Destroy(localized); // 글자는 열 때 코드가 쓴다(Open)
+        }
+
+        var label = buttonObject.GetComponentInChildren<TMP_Text>(true);
+
+        _quickLabels.Add((label, key));
+
+        return label;
+    }
+
+    // 미리보기 한 줄 — 제목 글자를 복제해 빠른 줄 아래에 둔다 (Start에서 한 번)
+    private void BuildPreview()
+    {
+        var copy = Instantiate(titleText.gameObject, titleText.transform.parent);
+
+        copy.name = "Preview Text (runtime)";
+        copy.transform.SetSiblingIndex(amountInput.transform.GetSiblingIndex() + 2);
+
+        if (copy.TryGetComponent(out LayoutElement layout))
+        {
+            layout.minHeight       = PreviewHeight;
+            layout.preferredHeight = PreviewHeight;
+        }
+
+        _previewText             = copy.GetComponent<TMP_Text>();
+        _previewText.fontSizeMax = 22f;
+        _previewText.text        = "";
+
+        GrowPanel(PreviewHeight);
+    }
+
+    // 판 높이를 줄 하나만큼 키운다 — 판은 고정 크기(내용에 맞춰 늘지 않는다)
+    private void GrowPanel(float height)
+    {
+        var   target  = panel != null ? panel : (RectTransform)cancelButton.transform.parent.parent;
+        float spacing = target.TryGetComponent(out VerticalLayoutGroup group) ? group.spacing : 0f;
+
+        target.sizeDelta += new Vector2(0f, height + spacing);
     }
 
     #endregion

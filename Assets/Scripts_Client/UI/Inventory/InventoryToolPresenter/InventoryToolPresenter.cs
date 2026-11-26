@@ -219,6 +219,39 @@ public class InventoryToolPresenter : MonoBehaviour
         // ★ 탭 줄의 'Start'가 먼저 돌았으면 이벤트를 이미 놓쳤다 — 지금 값을 물어 맞춘다.
         //   유니티는 두 'Start'의 순서를 보장하지 않는다.
         ApplyTab(tabs.CurrentTab);
+
+        ShowCaptionsNextFrameAsync(destroyCancellationToken).Forget();
+    }
+
+    // 찾기 드롭다운 머리가 목록 문구로 되돌아갔으면 다시 짧게 쓴다 (Unity 메시지)
+    // ※ 드롭다운은 처음 켜질 때(SetActive) 자기 'Start'에서 머리를 목록 문구('분류 전체')로 되돌린다 —
+    //   켜지는 때가 탭 · 창 · 판매 창마다 달라 부르는 쪽을 다 쫓을 수 없었다(2026-11-25 · 우편함을 연 뒤 되돌아감).
+    //   문자열 비교 두 번이라 매 프레임 봐도 싸다.
+    private void LateUpdate()
+    {
+        if (!_isReady)
+        {
+            return;
+        }
+
+        if (IsShowingListText(rarityDropdown) || (industryDropdown.value == 0 && IsShowingListText(industryDropdown)))
+        {
+            ShowFilterCaptions();
+        }
+    }
+
+    private static bool IsShowingListText(TMP_Dropdown dropdown)
+        => dropdown.captionText != null && dropdown.isActiveAndEnabled &&
+           dropdown.value >= 0 && dropdown.value < dropdown.options.Count &&
+           dropdown.captionText.text == dropdown.options[dropdown.value].text;
+
+    // 다시 켜졌다 — 드롭다운 머리를 다음 프레임에 다시 쓴다 (Unity 메시지)
+    private void OnEnable()
+    {
+        if (_isReady)
+        {
+            ShowCaptionsNextFrameAsync(destroyCancellationToken).Forget();
+        }
     }
 
     // 찾기 조건을 비운다 (Unity 메시지) — 인벤토리를 닫으면 이 줄이 꺼진다.
@@ -314,7 +347,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
         foreach (GlobalRarity rarity in SellRarities)
         {
-            options.Add(Lang.Format("UI.Tool.RarityOrBelow", RarityLabel.Get(rarity)));
+            options.Add($"{UIRichText.Paint("●", RarityPalette.OnLight(rarity))} {Lang.Format("UI.Tool.RarityOrBelow", RarityLabel.Get(rarity))}");
         }
 
         bulkRarityDropdown.AddOptions(options);
@@ -323,9 +356,9 @@ public class InventoryToolPresenter : MonoBehaviour
         ShowBulkRarityCaption();
     }
 
-    // 일괄 담기 등급 드롭다운의 닫힌 머리 — 등급색 점 + '↓' (2026-11-21 사용자 승인).
-    // ※ 펼친 목록은 '일반 이하'처럼 다 적는다. 닫힌 머리는 칸이 좁아 영어 'Common or lower'가 8px까지 줄었다.
-    //   'RefreshShownValue'·값 바꿈이 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
+    // 일괄 담기 등급 드롭다운의 닫힌 머리 — 목록 문구 그대로 '● 일반 이하' (등급색 점은 목록 문구에 들어 있다).
+    // ※ 2026-11-21엔 도구 줄이 좁아 머리를 '● ↓'로 줄였다(영어가 8px까지 줄었다). 판매 창으로 옮긴 뒤 줄에 자리가 남아
+    //   칸을 200으로 넓히고 다 적는다(2026-11-25) — 드롭다운이 머리를 목록 문구로 되돌려도 같은 글자라 어긋나지 않는다.
     private void ShowBulkRarityCaption()
     {
         int index = bulkRarityDropdown.value;
@@ -335,7 +368,7 @@ public class InventoryToolPresenter : MonoBehaviour
             return;
         }
 
-        bulkRarityDropdown.captionText.text = $"{UIRichText.Paint("●", RarityPalette.OnLight(SellRarities[index]))} ↓";
+        bulkRarityDropdown.captionText.text = bulkRarityDropdown.options[index].text;
     }
 
     // 등급 찾기 드롭다운의 목록을 채운다 (Start에서 한 번). 0번은 늘 '전체'다.
@@ -358,7 +391,7 @@ public class InventoryToolPresenter : MonoBehaviour
 
     // 찾기 드롭다운 둘의 닫힌 머리를 짧게 쓴다 (2026-11-21 사용자 "All Categories가 너무 작아진다").
     // ■ 분류 — '전체'면 무엇을 거르는 칸인지만('분류' · 산업만 있는 탭은 '산업'). 고르면 고른 이름.
-    // ■ 등급 — '전체'면 등급색 점 줄(●●●●●●), 고르면 '● 희귀'. 옆 일괄 담기 '● ↓'와 같은 말을 쓴다.
+    // ■ 등급 — '전체'면 등급색 점 줄(●●●●●●), 고르면 '● 희귀'. 판매 창 일괄 담기 '● 일반 이하'와 같은 점을 쓴다.
     // ※ 펼친 목록은 '분류 전체'·'등급 전체'처럼 다 적는다. 값 바꿈·'RefreshShownValue'가 머리를 목록 문구로 되돌리므로 그 뒤마다 다시 쓴다.
     private void ShowFilterCaptions()
     {
@@ -1082,10 +1115,13 @@ public class InventoryToolPresenter : MonoBehaviour
     //   (한글은 '일반 이하' · 영어는 '● ↓'로 달라 보였다 — 2026-11-21).
     private void OnSellCartShown()
     {
-        ShowBulkRarityCaptionNextFrameAsync(destroyCancellationToken).Forget();
+        ShowCaptionsNextFrameAsync(destroyCancellationToken).Forget();
     }
 
-    private async UniTaskVoid ShowBulkRarityCaptionNextFrameAsync(CancellationToken ct)
+    // 드롭다운 머리 셋(일괄 담기 등급 · 찾기 분류 · 찾기 등급)을 다음 프레임에 다시 쓴다 (Start · OnEnable · 판매 창이 뜰 때).
+    // ※ 드롭다운은 처음 켜질 때 자기 'Start'에서 'RefreshShownValue'로 머리를 목록 문구로 되돌린다 —
+    //   인벤토리가 접속 뒤에 처음 켜지므로 찾기 머리가 '분류 전체'·'All Categories'(9px)로 남았다(2026-11-25).
+    private async UniTaskVoid ShowCaptionsNextFrameAsync(CancellationToken ct)
     {
         if (await UniTask.NextFrame(ct).SuppressCancellationThrow())
         {
@@ -1093,6 +1129,7 @@ public class InventoryToolPresenter : MonoBehaviour
         }
 
         ShowBulkRarityCaption();
+        ShowFilterCaptions();
     }
 
     // 탭에 맞는 것만 켠다 (ApplyTab).

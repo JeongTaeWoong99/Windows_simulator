@@ -59,6 +59,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
 
     // 진행 중인 대기의 손잡이 — 응답이 오면 결과를 보고한다.
     private ServerWaitHandle? _waitHandle;
+    private bool _waitIsQuery; // 지금 대기가 조회인가 — 꺼질 때 닫을지 (BeginWait · OnDisable)
 
     private bool _isSubscribed;
     private bool _isReady; // Start 완료 여부 — OnEnable 재구독 가드
@@ -141,6 +142,13 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     private void OnDisable()
     {
         Unsubscribe();
+
+        // 꺼질 때 조회 대기를 조용히 닫는다 — 꺼지면 응답 구독도 풀려, 남은 대기가 5초 뒤 "응답 없음" 알림으로 터졌다
+        // (2026-11-25 · 탭을 빠르게 바꿀 때). 다시 켜지면 새로 받는다. 구매·취소처럼 값을 바꾸는 요청은 결과를 알려야 해서 두지 않는다.
+        if (_waitIsQuery)
+        {
+            _waitHandle?.Succeed();
+        }
     }
 
     #region 구독
@@ -213,7 +221,7 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
         _ui.AskConfirm(Lang.Format("UI.Auction.ConfirmCancel", name), () =>
         {
             _auction.RequestCancel(listingId);
-            BeginWait(Lang.Get("UI.Auction.WaitCancel"));
+            BeginWait(Lang.Get("UI.Auction.WaitCancel"), isQuery: false);
         });
     }
 
@@ -253,8 +261,11 @@ public class AuctionMyListingPresenter : MonoBehaviour, IAuctionQueryTarget
     #region 대기
 
     // 요청 대기를 연다 — 버튼을 잠그고, 닫히면 다시 연다.
-    private void BeginWait(string label)
+    //   isQuery : 조회면 true — 화면이 꺼질 때 조용히 닫는다(OnDisable). 구매·취소는 false
+    private void BeginWait(string label, bool isQuery = true)
     {
+        _waitIsQuery = isQuery;
+
         _waitHandle = _wait.Begin(label, onClosed: OnWaitClosed);
         Refresh();
     }

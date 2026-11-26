@@ -51,6 +51,9 @@ namespace DesktopWindowControl.EditorTools
 		// 로그가 바뀌었다 (창이 다시 그린다)
 		public static event Action? LogChanged;
 
+		// 응답이 왔다 — 결과 'Message'를 읽어 칸에 그리는 치트가 구독한다(상자 결과 미리 세기 · T-213)
+		public static event Action<S_CheatResponse>? Responded;
+
 		static CheatSender()
 		{
 			// 도메인 리로드를 끈 프로젝트에서는 정적 생성자가 다시 불리지 않아도 구독이 살아 있다 — 빼고 다시 걸어 중복을 막는다.
@@ -95,13 +98,17 @@ namespace DesktopWindowControl.EditorTools
 			}
 
 			var isError = res.Result != EResultCode.Ok;
-			Append($"← {res.Command} {res.Result}  {res.Message}", isError);
+			Append($"← {res.Command} {res.Result}  {Shorten(res.Message)}", isError);
+			Responded?.Invoke(res);
 
 			if (res.Result == EResultCode.NoPermission)
 			{
 				CheatGuard.AlertNoPermission();
 			}
 		}
+
+		// 로그 한 줄로 쓰기엔 긴 'Message'(상자 미리 세기 집계)를 자른다 — 전체는 그 칸이 표로 그린다
+		private static string Shorten(string message) => message.Length <= 120 ? message : message[..120] + " …";
 
 		// 오래 기다린 요청이 있으면 한 번만 알리고 전부 버린다 (EditorApplication.update 구독)
 		// 연결이 끊기면 대기 중인 요청이 한꺼번에 초과되므로 팝업을 하나로 합친다.

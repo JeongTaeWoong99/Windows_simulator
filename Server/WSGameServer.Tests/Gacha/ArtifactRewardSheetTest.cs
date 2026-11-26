@@ -21,7 +21,7 @@ public class ArtifactRewardSheetTest
     }
 
     [Theory]
-    [InlineData(24, 8, new[] { 9, 12, 15, 18, 21 })]
+    [InlineData(24, 8, new[] { 9, 12, 15, 18, 21, 37 })]
     [InlineData(26, 8, new[] { 27 })]
     [InlineData(27, 8, new[] { 28 })]
     [InlineData(28, 8, new[] { 29 })]

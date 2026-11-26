@@ -26,6 +26,10 @@ using UnityEngine.UI;
 //   [접속하기]가 스팀 티켓으로 로그인한다. 같은 버튼을 쓰고 글씨 키만 바꾼다(프리팹을 늘리지 않는다).
 //   에디터에서 스팀 화면을 보려면 치트 창 도구 줄 [스팀 화면]을 켜고 플레이한다(에디터 설정 'SteamModePrefKey'). 계정은 서버가 'steam:<SteamID>'로 이어 준다.
 //
+// ■ 처음 뜰 때 검은 판 위로 상자가 서서히 나타난다 (2026-11-24 사용자)
+//   상자를 Awake에서 투명하게 두고 모드(Id 칸 숨김)를 먼저 정한 뒤 'FadeInPanel'로 연다 —
+//   스팀 모드에서 Id 칸 · [로그인]이 한 프레임 보였다가 바뀌던 깜빡임을 없앤다.
+//
 // ■ '!Overlay Canvas'의 첫 형제 — 이 오브젝트가 화면 전체를 덮는 어두운 판이고, 상자는 자식 'Panel'이다.
 // 오버레이의 다른 팝업과 달리 'CanvasGroup'이 아니라 'SetActive'로 여닫는다('Show') —
 // 스스로 이벤트를 받아 뜨는 팝업이 아니라 'UIManager'가 여닫는 화면이라서다('Overlay 규칙.md').
@@ -64,6 +68,15 @@ public class LoginPresenter : MonoBehaviour
 
     private const string ConnectKey = "UI.Login.Connect";
 
+    private const int   PanelFadeWaitFrames = 3;     // 첫 그림 · 레이아웃이 끝날 때까지 — 시작 직후 프레임은 길다
+    private const float PanelFadeDelay      = 0.3f;  // 초 — 완전히 검은 화면을 잠깐 보여 준 뒤
+    private const float PanelFadeDuration   = 0.5f;  // 초 — 상자가 나타나는 시간
+    private const float PanelFadeMaxStep    = 1f / 30f; // 한 프레임에 흐르는 시간 상한 — 멈칫한 프레임이 페이드를 건너뛰지 않게
+
+    private CancellationTokenSource? _fadeCts;
+
+    private CanvasGroup _panelGroup = null!; // 상자('loginButton'의 부모 Panel) — 실행 중에 붙인다(씬을 고치지 않는다)
+
     // 티켓이 틀렸다('SteamAuthFailed')는 응답에 새 티켓으로 몇 번 더 해 보나 — 만료된 티켓은 새로 받으면 통과한다(#144).
     private const int SteamRetryCount = 1;
 
@@ -78,6 +91,24 @@ public class LoginPresenter : MonoBehaviour
 #else
     private static bool IsSteamMode => true;
 #endif
+
+    // 첫 그림 전에 상자를 숨기고 모드를 정한다 (Unity 메시지) — Start보다 먼저 돌아 깜빡임이 없다
+    private void Awake()
+    {
+        var panel = loginButton.transform.parent.gameObject;
+
+        if (!panel.TryGetComponent(out _panelGroup))
+        {
+            _panelGroup = panel.AddComponent<CanvasGroup>();
+        }
+
+        _panelGroup.alpha = 0f;
+
+        if (IsSteamMode)
+        {
+            idInput.gameObject.SetActive(false); // [접속하기] · [종료] 둘만 — Id 칸은 스팀 계정이 대신한다
+        }
+    }
 
     // 참조 확보 → 구독 → 초기화 순서로 진행한다 (클라 공통 규약)
     // ※ 서비스 조회는 반드시 Start — Awake·OnEnable은 등록 순서가 보장되지 않는다(MonoService 주석).
@@ -99,9 +130,7 @@ public class LoginPresenter : MonoBehaviour
 
         if (IsSteamMode)
         {
-            // [접속하기] · [종료] 둘만 — Id 칸은 스팀 계정이 대신한다.
-            idInput.gameObject.SetActive(false);
-            loginButtonLabel.SetKey(ConnectKey);
+            loginButtonLabel.SetKey(ConnectKey); // Id 칸은 Awake에서 이미 숨겼다
             loginButton.onClick.AddListener(OnConnectButtonClicked);
         }
         else
@@ -118,7 +147,47 @@ public class LoginPresenter : MonoBehaviour
 
         RefreshButton();
 
+        FadeInPanel();
+
         _isReady = true;
+    }
+
+    // 검은 판을 잠깐 보인 뒤 상자를 서서히 띄운다 (Start · 다시 열 때)
+    // ※ 트윈(DOFade)을 쓰지 않는다 — 게임 시작 직후 프레임이 수백 ms씩 걸려, 실제 시간으로 흐르는 트윈은
+    //   첫 그림이 나올 때 이미 반쯤 밝아져 있었다(2026-11-24 사용자 화면). 프레임마다 흐르는 시간을 잘라 0부터 올린다.
+    private void FadeInPanel()
+    {
+        _fadeCts?.Cancel();
+        _fadeCts?.Dispose();
+        _fadeCts = new CancellationTokenSource();
+
+        _panelGroup.alpha = 0f;
+
+        FadeInPanelAsync(_fadeCts.Token).Forget();
+    }
+
+    private async UniTaskVoid FadeInPanelAsync(CancellationToken token)
+    {
+        await UniTask.DelayFrame(PanelFadeWaitFrames, cancellationToken: token);
+
+        float waited = 0f;
+
+        while (waited < PanelFadeDelay)
+        {
+            waited += Mathf.Min(Time.unscaledDeltaTime, PanelFadeMaxStep);
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        }
+
+        float elapsed = 0f;
+
+        while (elapsed < PanelFadeDuration)
+        {
+            elapsed           += Mathf.Min(Time.unscaledDeltaTime, PanelFadeMaxStep);
+            _panelGroup.alpha  = Mathf.SmoothStep(0f, 1f, elapsed / PanelFadeDuration);
+            await UniTask.Yield(PlayerLoopTiming.Update, token);
+        }
+
+        _panelGroup.alpha = 1f;
     }
 
     // 보낼 수 있을 때만 버튼을 연다 (Start · 입력 변경 시 호출)
@@ -145,11 +214,13 @@ public class LoginPresenter : MonoBehaviour
 
         Subscribe();
         RefreshButton(); // 꺼져 있는 동안 감시가 끊겼을 수 있다 — 입력 상태로 다시 맞춘다
+        FadeInPanel();   // 로그아웃 등으로 다시 열 때도 같은 모습으로 나타난다
     }
 
     // 구독 해제 (Unity 메시지)
     private void OnDisable()
     {
+        _fadeCts?.Cancel(); // 닫히면 페이드를 멈춘다 — 다시 열 때 처음부터
         Unsubscribe();
     }
 

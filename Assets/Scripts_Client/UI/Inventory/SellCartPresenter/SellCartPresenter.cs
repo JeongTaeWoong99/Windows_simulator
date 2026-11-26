@@ -226,7 +226,7 @@ public class SellCartPresenter : MonoBehaviour
         _pickSlots = new UIRowList<SlotView>(slotPrefab, pickParent, onCreated: slot =>
         {
             slot.LeftClicked  += OnPickClicked;
-            slot.RightClicked += OnPickClicked;
+            slot.RightClicked += OnPickRightClicked;
             slot.SetNameVisible(false); // 인벤토리 칸처럼 — 이름은 툴팁 제목
             slot.gameObject.AddComponent<TooltipTrigger>().SetProvider(() => BuildPickTooltip(slot));
         });
@@ -413,6 +413,25 @@ public class SellCartPresenter : MonoBehaviour
     {
         if (_isWaiting || slot.IsEmpty)
         {
+            return;
+        }
+
+        _source.ToggleSell(slot.Key, slot.transform);
+    }
+
+    // 칸을 우클릭했다 — Ctrl이면 경매 등록(창을 닫고 경매장으로), 아니면 담거나 뺀다 (SlotView.RightClicked 구독).
+    // ※ 인벤토리 칸과 같게 (2026-11-25) — 같은 칸인데 판매 창 안에서만 Ctrl+우클릭이 담기로 읽혔다.
+    private void OnPickRightClicked(SlotView slot)
+    {
+        if (_isWaiting || slot.IsEmpty)
+        {
+            return;
+        }
+
+        if (_source.TryQuickAuction(slot.Key, slot.transform))
+        {
+            Close();
+
             return;
         }
 

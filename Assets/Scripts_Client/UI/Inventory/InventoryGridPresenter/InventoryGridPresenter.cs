@@ -1203,7 +1203,7 @@ public class InventoryGridPresenter : MonoBehaviour
 
     // 그 물건을 경매 등록 화면에 골라 둔다 — 경매장을 연다 (OnSlotRightClicked에서 호출).
     // ※ 올릴 수 없는 개체(잠금·착용·배치·마지막 캐릭터)면 열지 않고 사유만 알린다 — 경매장을 띄운 위에 알림까지 겹치면 두 번 막힌 것처럼 보인다.
-    private void OpenAuctionRegister(long key, Transform slot)
+    private bool OpenAuctionRegister(long key, Transform slot)
     {
         // 아티팩트 — 잠금만 막는다(착용이 없다 · T-188). 등록 창이 번호로 고른다.
         if (_currentTab == InventoryTab.Equipment && EquipSlotSource.IsArtifactKey(key))
@@ -1215,12 +1215,12 @@ public class InventoryGridPresenter : MonoBehaviour
             {
                 _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", blocked), slot);
 
-                return;
+                return false;
             }
 
             _ui.Auction.OpenRegister(EAuctionKind.Artifact, artifactTid);
 
-            return;
+            return true;
         }
 
         string? reason = _currentTab switch
@@ -1235,7 +1235,7 @@ public class InventoryGridPresenter : MonoBehaviour
         {
             _wait.RaiseRefusal(Lang.Format("UI.Inventory.CantList", reason), slot);
 
-            return;
+            return false;
         }
 
         EAuctionKind kind = _currentTab switch
@@ -1248,11 +1248,17 @@ public class InventoryGridPresenter : MonoBehaviour
 
         if (kind == EAuctionKind.None)
         {
-            return;
+            return false;
         }
 
         _ui.Auction.OpenRegister(kind, key);
+
+        return true;
     }
+
+    // 판매 창의 칸을 Ctrl+우클릭했다 — 격자 칸과 같게 경매 등록으로 간다. 열었으면 true (SellCartPresenter에서 호출).
+    // ※ Ctrl을 누르지 않았으면 false — 부른 쪽이 평소대로 담는다.
+    public bool TryQuickAuction(long key, Transform slot) => _keys.IsQuickAuctionHeld && OpenAuctionRegister(key, slot);
 
     // 캐릭터를 담거나 뺀다 — 팔 수 없으면 사유를 알린다 (OnSlotRightClicked에서 호출).
     // ※ 마지막 캐릭터 판정은 이미 담은 캐릭터를 빼고 센다 — 서버가 "판 뒤 0명"을 거절한다(SellLastCharacter).
@@ -1334,7 +1340,10 @@ public class InventoryGridPresenter : MonoBehaviour
             return;
         }
 
-        _ui.AskAmount(GameDataLoader.GetArtifactName(artifactTid), owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.AddArtifact(artifactTid, amount));
+        int artifactBase = GameDataLoader.TryGetArtifact(artifactTid, out var artifactRow) ? artifactRow.BasePrice : 0;
+
+        _ui.AskAmount(GameDataLoader.GetArtifactName(artifactTid), owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.AddArtifact(artifactTid, amount),
+                      amount => SellPreview(artifactBase, amount));
     }
 
     // 자원을 담거나 뺀다 — 2개 이상이면 몇 개 팔지 묻는다 (OnSlotRightClicked에서 호출).
@@ -1375,7 +1384,19 @@ public class InventoryGridPresenter : MonoBehaviour
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거친다 — 팝업이 '!Overlay Canvas'에 살아서다.
         //   화면 전체를 막아야 하는데 열 캔버스는 Sorting Order가 전부 0인 형제라
         //   인벤토리 안에 두면 다른 열이 그대로 눌린다('Overlay 규칙.md').
-        _ui.AskAmount(itemId, owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.Add(itemId, amount));
+        int itemBase = GameTable.ItemTable.TryGet(itemId, out var itemRow) ? itemRow.BasePrice : 0;
+
+        _ui.AskAmount(itemId, owned, Lang.Get("UI.Inventory.AskSell"), amount => _cart.Add(itemId, amount),
+                      amount => SellPreview(itemBase, amount));
+    }
+
+    // 판매 수량 팝업의 미리보기 — "받을 골드 1,250 G · 개당 50 G" (즉시 판매가 = 기준가 × 판매율 · 'AuctionModel')
+    private static string SellPreview(int basePrice, int amount)
+    {
+        string total = UIRichText.Gold(AuctionModel.InstantSellTotal(basePrice, amount));
+        string each  = UIRichText.Small(UIRichText.Label(Lang.Format("UI.Sell.PreviewEach", $"{AuctionModel.InstantSellPrice(basePrice):N0}")));
+
+        return $"{UIRichText.Label(Lang.Get("UI.Sell.GoldToGet"))} {total}  {each}";
     }
 
     #endregion
@@ -1757,7 +1778,8 @@ public class InventoryGridPresenter : MonoBehaviour
         string question = Lang.Get(IsInventory ? "UI.Inventory.AskStore" : "UI.Inventory.AskTakeOut");
 
         // ※ 팝업이 떠 있는 사이 칸이 바뀌어도 그대로 보낸다 — 어긋났으면 서버가 거절한다(클라가 다시 재지 않는다).
-        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(target, tab, fromSlot, toSlot, amount));
+        _ui.AskAmount(itemId, owned, question, amount => SendTransfer(target, tab, fromSlot, toSlot, amount),
+                      amount => UIRichText.Label(Lang.Format("UI.Inventory.PreviewSlotLeft", $"{owned - amount:N0}")));
     }
 
     // 보관함 사이 이동 요청을 보낸다 (TransferTo · 수량 팝업 확인에서 호출).
@@ -2177,7 +2199,18 @@ public class InventoryGridPresenter : MonoBehaviour
             : Lang.Get("UI.Inventory.AskOpen");
 
         // ※ 팝업을 직접 들지 않고 'UIManager'를 거치는 이유는 판매 담기와 같다('!Overlay Canvas').
-        _ui.AskAmount(itemId, maxOpen, question, amount => OpenBox(itemId, amount));
+        _ui.AskAmount(itemId, maxOpen, question, amount => OpenBox(itemId, amount),
+                      amount => OpenPreview(owned, unitCost, amount));
+    }
+
+    // 상자 개봉 수량 팝업의 미리보기 — "비용 1,500 G · 열고 나면 3개 남습니다" (비용은 감정 골드가 드는 상자만)
+    private static string OpenPreview(int owned, long unitCost, int amount)
+    {
+        string left = UIRichText.Label(Lang.Format("UI.Inventory.PreviewOpenLeft", $"{owned - amount:N0}"));
+
+        return unitCost > 0L
+            ? $"{UIRichText.Label(Lang.Get("UI.Inventory.PreviewCost"))} {UIRichText.Gold(unitCost * amount)}{UIRichText.Dot}{left}"
+            : left;
     }
 
     // 상자를 'count'개 연다 (OnSlotLeftClicked · 수량 팝업 확인에서 호출).
