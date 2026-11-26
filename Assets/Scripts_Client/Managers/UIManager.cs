@@ -368,25 +368,8 @@ public class UIManager : MonoService<UIManager>
     // 경매장을 열고 닫는다 (하단 메뉴 [경매장] · 경매장 안 [X]).
     // ※ 토글이 아니다 — 열리면 하단 메뉴가 가려져 같은 버튼을 다시 누를 수 없다. 닫기는 경매장 안에서 한다.
     // ※ 아티팩트 · 거점 화면이 열려 있으면 닫는다 — 같은 자리를 덮는 화면이라 겹치면 아래 것이 가려진 채 남는다.
-    public bool CheckAuctionAccess()
-    {
-        if (Services.Get<PlayerDataModel>().AccountLevel >= GameData.Constants.AuctionMinAccountLevel)
-        {
-            return true;
-        }
-
-        Services.Get<ServerWaitManager>().RaiseToast(ResultMessages.ToText(MikaProtocol.EResultCode.AuctionAccountLevelLocked));
-
-        return false;
-    }
-
     public void ShowAuction(bool on)
     {
-        if (on && !CheckAuctionAccess())
-        {
-            return;
-        }
-
         if (on)
         {
             artifactCanvas.Show(false);

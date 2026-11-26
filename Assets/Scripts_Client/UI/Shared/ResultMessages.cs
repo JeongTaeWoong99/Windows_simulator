@@ -25,7 +25,3 @@ public static class ResultMessages
         return Lang.Has(key) ? Lang.Get(key) : Lang.Format(KeyPrefix + "Unknown", (ushort)code);
     }
 }
-        if (code == EResultCode.AuctionAccountLevelLocked)
-        {
-            return Lang.Format(KeyPrefix + code, GameData.Constants.AuctionMinAccountLevel);
-        }
