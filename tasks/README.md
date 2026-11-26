@@ -44,7 +44,7 @@
 | [T-113](T-113-특성다양화.md) | 기획 — **특성 다양화** · 콘텐츠 특화 · 특별한 특성 · 다른 종류 (레벨형 T-108 위에) | 진우 | New | 보통 | 261205 |
 | [T-197](T-197-전투시스템기획.md) | 기획 — **전투 시스템** · 서버 즉시 계산 · 공격력·체력 · 프리셋 편성 확정(2026-11-09) · 남은 것: 파티·보스·승패·보상 · [이슈 #118](https://github.com/JeongTaeWoong99/Windows_simulator/issues/118) · 레이드(T-114)의 선행 | 진우 | In Progress | 높음 | 261205 |
 | [T-114](T-114-레이드기획.md) | 기획 — **레이드 콘텐츠** · 보스 = 레이드 + 전투로 결정 (2026-11-07) · 허수아비형([#116](https://github.com/JeongTaeWoong99/Windows_simulator/issues/116)) 보류 · 선행 [T-197](T-197-전투시스템기획.md) | 진우 | New | 보통 | 261205 |
-| [T-019](T-019-온보딩.md) | 온보딩 1일차 시나리오 설계 — **결정 ✅ 2026-11-26**: 튜토리얼·가이드 퀘스트 없음 · 시작 캐릭터 슬롯 배치([#163](https://github.com/JeongTaeWoong99/Windows_simulator/issues/163)) · 거래소 = 계정 레벨 · 랭킹 = 마을 종합 레벨 · 섬 → 마을 컨셉 · 남은 것: 문서 반영([#164](https://github.com/JeongTaeWoong99/Windows_simulator/issues/164)) | 진우 | In Progress | 높음 | 261205 |
+| [T-019](T-019-온보딩.md) | 온보딩 1일차 시나리오 설계 — **결정 ✅ 2026-11-26**: 튜토리얼·가이드 퀘스트 없음 · 시작 캐릭터 슬롯 배치([#163](https://github.com/JeongTaeWoong99/Windows_simulator/issues/163)) · 거래소 = 계정 레벨 · 랭킹 = 마을 종합 레벨 · 섬 → 마을 컨셉 · 남은 것: 문서 반영([#164](https://github.com/JeongTaeWoong99/Windows_simulator/issues/164)) | 진우 | Resolve | 높음 | 261205 |
 | [T-076](T-076-성장재료소비처.md) | 기획 — 자원·캐릭터·장비를 성장 재료로 쓸지 (중복 개체의 출구) — ✅ 캐릭터 = **응축 ★** · 장비 = **분해 → 재료** (2026-10-07) · 남은 것: 자원 먹이기 · A안(산업 자원 → 장비 강화) 판단 — [T-125](archive/T-125-산업특성화.md) ✅ 끝남 · [이슈 #42](https://github.com/JeongTaeWoong99/Windows_simulator/issues/42) | 진우 | In Progress | 보통 | 261205 |
 | [T-150](T-150-발굴유물감정기획.md) | 기획 — **유적 발굴 고유 콘텐츠** · 미감정 유물 → 골드로 감정 → 보상 · 낮은 확률로 아티팩트(보유 = 계정 영구 효과) · 서버 구현까지 끝 | 진우 | In Progress | 보통 | 261205 |
 
