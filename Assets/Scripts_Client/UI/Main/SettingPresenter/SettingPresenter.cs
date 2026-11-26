@@ -91,7 +91,7 @@ public class SettingPresenter : MonoBehaviour
 
     [CenterHeader("그래픽")]
     [SerializeField] private TMP_Dropdown frameRateDropdown       = null!; // 최대 FPS (30·60·90·144·모니터 동기화)
-    [SerializeField] private Toggle       fpsTextToggle           = null!; // FPS 표시 (보이기 · 숨기기 — 자리는 위젯을 피해 저절로)
+    [SerializeField] private TMP_Dropdown fpsTextPositionDropdown = null!; // FPS 표시 위치 (숨김·네 구석)
     [SerializeField] private TMP_Dropdown sizeDropdown            = null!; // 창 크기 배율 프리셋
     // 위치 드롭다운 하나가 창의 데스크톱 위치(앵커)와 위젯의 창 안 위치(6칸)를 함께 정한다.
     // 둘은 같은 6칸 나열 순서라 인덱스가 1:1이다 — 짝이 맞는 모서리 조합만 유효.
@@ -130,7 +130,7 @@ public class SettingPresenter : MonoBehaviour
         this.RequireRef(topmostToggle,           nameof(topmostToggle));
         this.RequireRef(versionText,             nameof(versionText));
         this.RequireRef(frameRateDropdown,       nameof(frameRateDropdown));
-        this.RequireRef(fpsTextToggle,           nameof(fpsTextToggle));
+        this.RequireRef(fpsTextPositionDropdown, nameof(fpsTextPositionDropdown));
         this.RequireRef(sizeDropdown,            nameof(sizeDropdown));
         this.RequireRef(windowPositionDropdown,  nameof(windowPositionDropdown));
         this.RequireRef(opacitySlider,           nameof(opacitySlider));
@@ -164,7 +164,7 @@ public class SettingPresenter : MonoBehaviour
         // ─── 그래픽 · 표시 ───
         // 창 설정과 달리 에디터에서도 저장값이 시작값이고, 고르는 즉시 저장·반영된다('DisplayManager').
         BindDropdown(frameRateDropdown,       display.GetFrameRateLabels(),       display.FrameRateIndex,       display.SetFrameRateByIndex);
-        BindToggle(fpsTextToggle, display.FpsTextShown, display.SetFpsTextShown);
+        BindDropdown(fpsTextPositionDropdown, display.GetFpsTextPositionLabels(), display.FpsTextPositionIndex, display.SetFpsTextPositionByIndex);
         BindOpacitySlider(display);
 
         // ─── 그래픽 · 창 ───
@@ -233,6 +233,7 @@ public class SettingPresenter : MonoBehaviour
     private void RefreshLabels()
     {
         Refill(frameRateDropdown,       _display.GetFrameRateLabels());
+        Refill(fpsTextPositionDropdown, _display.GetFpsTextPositionLabels());
         Refill(sizeDropdown,            _window.GetSizeLabels());
         Refill(windowPositionDropdown,  _window.GetAnchorLabels());
     }

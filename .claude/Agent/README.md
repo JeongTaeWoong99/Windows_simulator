@@ -23,7 +23,7 @@
 
 ## INDEX
 
-- [2026-11-26 위젯 알림 줄 · 큐브 자동 [내리기] · 레드닷 4곳](2026-11-26-widget-alert-strip-red-dots.md) — `#client` 팝업 DIM 유지 · 큐브 창은 CanvasGroup으로 숨김(끄면 루프가 선다) · `UIManager.Reopened`로 복원 · 열리면 경고 점(툴팁) · FPS는 위젯 반대 구석 · FPS 설정은 토글
+- [2026-11-26 위젯 알림 줄 · 큐브 자동 [내리기] · 레드닷 4곳](2026-11-26-widget-alert-strip-red-dots.md) — `#client` 팝업 DIM 유지 · 큐브 창은 CanvasGroup으로 숨김(끄면 루프가 선다) · `UIManager.Reopened`로 복원 · 열리면 경고 점(툴팁)
 - [2026-11-25 테마 상자 6종에 캐릭터 보상 추가](2026-11-25-theme-box-characters.md) — `#data` `#server` 캐릭터 칸 16.33% · 등급은 레벨테마 7.2 · 아티팩트 0.8% 유지
 
 - [2026-11-24 산업 설명 툴팁 · 서버 치트 3종 연결 · 상자 분포 확인](2026-11-24-industry-tooltip-cheats-box-check.md) — `#client` `#ui` `#editor` 산업 버튼 툴팁·상자 미리 세기/레벨 일괄/비우기 치트·테마 상자 1만 회 분포(#117)

@@ -39,7 +39,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 > 뜨므로 참조가 없다. 근거는 [`Overlay 규칙.md`](<../UI/Overlay/Overlay 규칙.md>)의
 > "왜 이것만 `UIManager`를 거치는가".
 | **`WindowManager`** | 데스크톱 창 제어(투명·항상 위·클릭 스루·크기·위치) | Win32 **선언**은 갖지 않는다 → `DesktopWindow/Win32Native` |
-| **`DisplayManager`** | **표시·성능 설정의 주인.** 지금은 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 보이기를 정해 `FpsTextShownChanged` 발행(자리는 `FpsTextPresenter`가 위젯을 피해 정한다). **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/Overlay/FpsTextPresenter` |
+| **`DisplayManager`** | **표시·성능 설정의 주인.** 지금은 프레임 제한(30·60·90·144·모니터 동기화) 적용 · FPS 텍스트 위치를 정해 `FpsTextPositionChanged` 발행. **에디터에서도 저장값을 읽는다** ([`Settings 규칙.md`](<../Settings/Settings 규칙.md>) 1장) | FPS를 세거나 그리지 않는다 → `UI/Overlay/FpsTextPresenter` |
 | **`PingManager`** | 연결 생존 확인(5초 Ping / 15초 무응답 감지). **송신은 백그라운드 타이머, 판정은 `Update`** | **소켓을 끊지 않는다.** 알리고 앱을 내릴 뿐 — 세션 정리는 서버 폴더의 것 |
 | **`SellCartModel`** | **판매하려고 담아 둔 목록.** 담긴 자원 종류·수량 **또는** 캐릭터·장비 개체 번호(한 종류만 — 2026-10-25 · 이슈 #83 · 아티팩트 번호·수량은 장비 종류로 센다 — T-151), 합계 골드, 분해 재료 수, 상위 등급 포함 여부를 들고 `Changed`를 발행. 인벤토리 격자(담김 표시)와 `SellCartPresenter`(목록·합계)가 같은 것을 보게 하는 자리다 | **송신하지 않는다** — 판매 요청은 버튼을 누른 Presenter가 보낸다. **보유량의 주인도 아니다** — `PlayerDataModel.InventoryChanged`를 구독해 초과분만 깎고, 개체 목록 변경으로 사라졌거나 나가 있는 개체를 뺀다. 아티팩트는 `ArtifactsChanged`로 같은 일을 한다 |
 | **`ArtifactModel`** | **아티팩트 화면(도감)이 함께 보는 상태.** 고른 번호(`SelectionChanged`) · 방금 장착해 반짝일 번호(`Highlight` → `HighlightRequested` · 도감이 `TakeHighlight`로 한 번 꺼낸다) | **송신하지 않는다** — 장착·켜고 끄기 요청은 Presenter가 보낸다. 보유·장착의 주인은 `PlayerDataModel`. 판매 목록은 여기 없다 — 아티팩트도 `SellCartModel`에 담는다 |

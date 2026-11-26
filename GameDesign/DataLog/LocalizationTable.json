@@ -10516,7 +10516,7 @@
   },
   {
     "Key": "UI.Setting.FpsTextPosition",
-    "KR": "FPS 표시",
+    "KR": "FPS 표시 위치",
     "EN": "FPS Display"
   },
   {
@@ -10613,6 +10613,11 @@
     "Key": "UI.Setting.FrameRateVSync",
     "KR": "모니터 동기화",
     "EN": "VSync"
+  },
+  {
+    "Key": "UI.Setting.FpsHidden",
+    "KR": "숨김",
+    "EN": "Hidden"
   },
   {
     "Key": "UI.Setting.UpperLeft",

@@ -12,8 +12,17 @@ public enum FrameRateOption
     VSync,
 }
 
-// 표시·성능 설정의 주인 — 지금은 프레임 제한 · FPS 텍스트 보이기 · UI 투명도를 정하고 적용한다.
-// FPS 텍스트는 보이기 · 숨기기만 고른다 — 자리는 위젯을 피해 'FpsTextPresenter'가 정한다(2026-11-27 사용자).
+// FPS 텍스트를 창의 어느 구석에 띄우는가. 'Hidden'이면 띄우지 않는다.
+public enum FpsTextPosition
+{
+    Hidden,
+    UpperLeft,
+    UpperRight,
+    LowerLeft,
+    LowerRight,
+}
+
+// 표시·성능 설정의 주인 — 지금은 프레임 제한 · FPS 텍스트 위치 · UI 투명도를 정하고 적용한다.
 // 설정 화면이 고르고, 저장은 'WindowSettings'('Display.*' 키)가 한다.
 //
 // ■ 설정마다 매니저를 만들지 않는다
@@ -40,7 +49,7 @@ public class DisplayManager : MonoService<DisplayManager>
 
     [CenterHeader("첫 실행 기본값 (저장값이 있으면 그걸 따른다)")]
     [SerializeField] private FrameRateOption setStartFrameRate       = FrameRateOption.Fps60;
-    [SerializeField] private bool            setStartFpsTextShown    = false;
+    [SerializeField] private FpsTextPosition setStartFpsTextPosition = FpsTextPosition.Hidden;
     [SerializeField, Range(MinOpacityPercent, MaxOpacityPercent), Tooltip("불투명도 %")]
     private int setStartOpacity = MaxOpacityPercent;
 
@@ -49,15 +58,16 @@ public class DisplayManager : MonoService<DisplayManager>
     private CanvasGroup rootCanvasGroup = null!;
 
     private FrameRateOption _frameRate;
-    private bool            _fpsTextShown;
+    private FpsTextPosition _fpsTextPosition;
     private int             _opacityPercent;
 
-    // FPS 텍스트 보이기가 바뀌었다 — 'FpsTextPresenter'가 구독한다.
-    public event Action<bool>? FpsTextShownChanged;
+    // FPS 텍스트 위치가 바뀌었다 — 'FpsTextPresenter'가 구독한다.
+    public event Action<FpsTextPosition>? FpsTextPositionChanged;
 
-    public int  FrameRateIndex => (int)_frameRate;
-    public bool FpsTextShown   => _fpsTextShown;
-    public int  OpacityPercent => _opacityPercent;
+    public int             FrameRateIndex       => (int)_frameRate;
+    public int             FpsTextPositionIndex => (int)_fpsTextPosition;
+    public FpsTextPosition FpsTextPosition      => _fpsTextPosition;
+    public int             OpacityPercent       => _opacityPercent;
 
     // 저장값을 읽어 곧바로 프레임을 건다. 다른 서비스를 건드리지 않는 순수 값 로드라 Awake에서 안전하다.
     protected override void Awake()
@@ -66,10 +76,10 @@ public class DisplayManager : MonoService<DisplayManager>
 
         // 저장값이 열거형 범위를 벗어나면(버전이 바뀌어 항목이 줄었다면) 안쪽으로 당긴다.
         int frameRate = WindowSettings.LoadInt(WindowSettings.FrameRateKey,       (int)setStartFrameRate);
-        int fpsText   = WindowSettings.LoadInt(WindowSettings.FpsTextShownKey, setStartFpsTextShown ? 1 : 0);
+        int position  = WindowSettings.LoadInt(WindowSettings.FpsTextPositionKey, (int)setStartFpsTextPosition);
 
-        _frameRate    = (FrameRateOption)Mathf.Clamp(frameRate, 0, (int)FrameRateOption.VSync);
-        _fpsTextShown = fpsText != 0; // 옛 저장값(1~4 = 구석)도 보이기다
+        _frameRate       = (FrameRateOption)Mathf.Clamp(frameRate, 0, (int)FrameRateOption.VSync);
+        _fpsTextPosition = (FpsTextPosition)Mathf.Clamp(position,  0, (int)FpsTextPosition.LowerRight);
 
         // 범위 밖이면(범위가 바뀌었다면) 불투명으로 돌린다 — 흐린 쪽으로 틀리면 UI를 못 찾는다.
         int opacity = WindowSettings.LoadInt(WindowSettings.OpacityKey, setStartOpacity);
@@ -92,6 +102,14 @@ public class DisplayManager : MonoService<DisplayManager>
         "30", "60", "90", "144", Lang.Get("UI.Setting.FrameRateVSync"),
     };
 
+    // FPS 텍스트 위치 드롭다운 옵션 라벨을 'FpsTextPosition' 순서대로 만든다.
+    public List<string> GetFpsTextPositionLabels() => new List<string>
+    {
+        Lang.Get("UI.Setting.FpsHidden"),
+        Lang.Get("UI.Setting.UpperLeft"), Lang.Get("UI.Setting.UpperRight"),
+        Lang.Get("UI.Setting.LowerLeft"), Lang.Get("UI.Setting.LowerRight"),
+    };
+
     // 프레임 항목을 인덱스로 고른다 (설정 드롭다운 onValueChanged). 저장하고 즉시 건다.
     public void SetFrameRateByIndex(int index)
     {
@@ -100,12 +118,12 @@ public class DisplayManager : MonoService<DisplayManager>
         ApplyFrameRate();
     }
 
-    // FPS 텍스트를 보이거나 숨긴다 (설정 토글 onValueChanged). 저장하고 알린다.
-    public void SetFpsTextShown(bool shown)
+    // FPS 텍스트 위치를 인덱스로 고른다 (설정 드롭다운 onValueChanged). 저장하고 알린다.
+    public void SetFpsTextPositionByIndex(int index)
     {
-        _fpsTextShown = shown;
-        WindowSettings.SaveInt(WindowSettings.FpsTextShownKey, shown ? 1 : 0);
-        FpsTextShownChanged?.Invoke(shown);
+        _fpsTextPosition = (FpsTextPosition)Mathf.Clamp(index, 0, (int)FpsTextPosition.LowerRight);
+        WindowSettings.SaveInt(WindowSettings.FpsTextPositionKey, (int)_fpsTextPosition);
+        FpsTextPositionChanged?.Invoke(_fpsTextPosition);
     }
 
     // 불투명도를 바꿔 즉시 건다 (설정 슬라이더 onValueChanged). 저장은 하지 않는다 —

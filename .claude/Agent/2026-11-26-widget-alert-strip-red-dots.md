@@ -56,3 +56,6 @@ tags: [client, ui, widget, enchant]
 - **FPS가 위젯을 피한다** — 위·아래는 위젯을 따라가고(설정의 위·아래 무시), 좌·우가 위젯 열이면 반대 구석. `WidgetPositionLayout`에 위치 변경 이벤트가 없어 FPS · 알림 줄 둘 다 Update에서 위치를 비교한다.
 - `UI.Widget.AlertBadge*` 문구 2줄은 지웠다(접힌 줄 폐기). 새 키 `UI.Widget.WarningTitle` · `UI.Widget.WarningIdleSlot`.
 - **FPS 설정을 보이기 · 숨기기 토글로** (사용자) — 위치는 이제 저절로라 드롭다운의 구석 고르기가 안 먹었다. 자리 규칙은 "위젯이 오른쪽 열이면 왼쪽, 그 밖은 오른쪽"으로 단순화. 저장 키 `Display.FpsTextPosition`은 그대로 두고 0 = 숨김 · 그 밖 = 보이기로 읽어 옛 저장값이 이어진다. 씬의 설정 줄은 `Topmost Row` 토글을 복제해 드롭다운을 대신했다(`Fps Text Row`). 문구 `UI.Setting.FpsHidden` 삭제 · `FpsTextPosition` KR "FPS 표시".
+
+## 업데이트 (2026-11-27 · 4) — FPS 되돌림
+- 열렸을 때는 경고 점이 각 자리에 뜨므로 위젯 · 알림 줄 · FPS를 한 가장자리에 모을 이유가 없어졌다(사용자). **FPS 자리 피하기와 보이기 토글을 모두 되돌려** 원래의 숨김 · 네 구석 드롭다운으로 복구(코드 4파일은 2c001415 판, 씬 줄은 [최대 FPS] 드롭다운을 복제해 다시 만듦 · `UI.Setting.FpsHidden` 복구).
