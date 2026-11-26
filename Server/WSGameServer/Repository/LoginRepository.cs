@@ -64,7 +64,7 @@ public sealed class LoginRepository : IRepository
             "SELECT gold FROM t_user_currency WHERE user_id = @userId",
             new { userId = User.Uid });
 
-        // 3) 캐릭터. 하나도 없으면(신규 유저) 지급 판단은 로직 스레드가 한다.
+        // 3) 캐릭터. 신규 계정은 가입 시 지급된다. 보유 캐릭터가 없는 기존 계정의 지급 판단은 로직 스레드가 한다.
         _characterRows = await connection.QueryAsync<CharacterRow>(
             @"SELECT character_id, character_tid, level, exp, slot, condense_count, is_locked, container
               FROM t_character WHERE user_id = @userId AND auction_trade_id = 0",

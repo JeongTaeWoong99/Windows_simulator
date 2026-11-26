@@ -2,6 +2,7 @@
 
 ## INDEX
 
+- [2026-11-26 신규 계정 램볼 작업 배치](2026-11-26-starter-workslot.md) — `#server` `#test` 첫 로그인부터 1번 슬롯에서 농사
 - [2026-11-24 스팀 로그인 개발·Docker 설정](2026-11-24-steam-server-config.md) — `#server` Docker AppID 설정과 .env 빌드 제외
 - [2026-11-26 나침반 슬롯 자동 사용](2026-11-26-compass-auto-use.md) — `#server` `#test` 나침반 자동 충전과 지도 직접 사용
 - [2026-11-24 테마 상자 장비 레벨 보상 연결](2026-11-24-theme-box-equipment-levels.md) — `#data` `#server` 테마 상자별 장비 레벨과 왕실 보상 풀 연결
