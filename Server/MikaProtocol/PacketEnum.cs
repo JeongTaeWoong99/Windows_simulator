@@ -100,6 +100,7 @@ namespace MikaProtocol
         AuctionCharacterBusy   = 1014, // 슬롯에 배치됐거나 장비를 낀 캐릭터 — 빼고·벗겨야 올릴 수 있다
         AuctionLastCharacter   = 1015, // 캐릭터를 하나도 남기지 않는 등록
         AuctionSearchNoCondition = 1016, // 종류도 TID(이름)도 없는 검색 — 판매 중 전부를 훑는다. 종류를 고르거나 이름을 넣어야 한다
+        AuctionAccountLevelLocked = 1017, // 거래소 개방 계정 레벨에 아직 도달하지 않았다
 
         // ── 1100~: 인벤토리 칸 (T-058) ──
         StorageSlotOutOfRange = 1100, // 칸 번호가 격자 칸 수 밖

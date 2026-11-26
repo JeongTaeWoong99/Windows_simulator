@@ -14988,5 +14988,10 @@
     "Key": "UI.Inventory.PreviewCost",
     "KR": "비용",
     "EN": "Cost"
+  },
+  {
+    "Key": "UI.Result.AuctionAccountLevelLocked",
+    "KR": "경매장은 계정 Lv{0}에 열립니다.",
+    "EN": "The auction house unlocks at account level {0}."
   }
 ]

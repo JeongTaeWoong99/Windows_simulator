@@ -538,13 +538,35 @@ public static class ClientPacketHandler
 
         user.TryDeleteMail(req.MailId);
     }
+    internal static EResultCode CheckAuctionAccess(User? user)
+    {
+        if (user is null)
+        {
+            return EResultCode.NotLoggedIn;
+        }
+
+        if (user.AccountLevel < GameData.Constants.AuctionMinAccountLevel)
+        {
+            return EResultCode.AuctionAccountLevelLocked;
+        }
+
+        return EResultCode.Ok;
+    }
+
+    private static User? GetAuctionUser(ISession session, out EResultCode result)
+    {
+        var user = session.GetUser();
+        result = CheckAuctionAccess(user);
+        return result == EResultCode.Ok ? user : null;
+    }
+
     [PacketHandler]
     public static void Handle_C_AuctionSearchRequest(ISession session, C_AuctionSearchRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionSearchResponse { Result = EResultCode.NotLoggedIn });
+            session.SendPacket(new S_AuctionSearchResponse { Result = result });
             return;
         }
 
@@ -556,10 +578,10 @@ public static class ClientPacketHandler
     {
         ServerLog.Debug("경매", $"등록 요청 {req.Kind} TID {req.ItemTid}×{req.Count} 장비 {req.EquipId} 캐릭터 {req.CharacterId} 단가 {req.UnitPrice} sid={session.SessionId}");
 
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionRegisterResponse { Result = EResultCode.NotLoggedIn });
+            session.SendPacket(new S_AuctionRegisterResponse { Result = result });
             return;
         }
 
@@ -571,10 +593,10 @@ public static class ClientPacketHandler
     {
         ServerLog.Debug("경매", $"구매 요청 매물 {req.ListingId} 총액 {req.ExpectedTotalPrice} sid={session.SessionId}");
 
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionBuyResponse { Result = EResultCode.NotLoggedIn, ListingId = req.ListingId });
+            session.SendPacket(new S_AuctionBuyResponse { Result = result, ListingId = req.ListingId });
             return;
         }
 
@@ -584,10 +606,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_AuctionCancelRequest(ISession session, C_AuctionCancelRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionCancelResponse { Result = EResultCode.NotLoggedIn, ListingId = req.ListingId });
+            session.SendPacket(new S_AuctionCancelResponse { Result = result, ListingId = req.ListingId });
             return;
         }
 
@@ -597,10 +619,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_AuctionMyListingsRequest(ISession session, C_AuctionMyListingsRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionMyListingsResponse { Result = EResultCode.NotLoggedIn });
+            session.SendPacket(new S_AuctionMyListingsResponse { Result = result });
             return;
         }
 
@@ -609,10 +631,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_MarketItemsRequest(ISession session, C_MarketItemsRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_MarketItemsResponse { Result = EResultCode.NotLoggedIn });
+            session.SendPacket(new S_MarketItemsResponse { Result = result });
             return;
         }
 
@@ -622,10 +644,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_MarketPriceRequest(ISession session, C_MarketPriceRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_MarketPriceResponse { Result = EResultCode.NotLoggedIn, Tid = req.Tid });
+            session.SendPacket(new S_MarketPriceResponse { Result = result, Tid = req.Tid });
             return;
         }
 
@@ -636,10 +658,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_AuctionHistoryRequest(ISession session, C_AuctionHistoryRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_AuctionHistoryResponse { Result = EResultCode.NotLoggedIn });
+            session.SendPacket(new S_AuctionHistoryResponse { Result = result });
             return;
         }
 
@@ -650,10 +672,10 @@ public static class ClientPacketHandler
     [PacketHandler]
     public static void Handle_C_MarketPriceHistoryRequest(ISession session, C_MarketPriceHistoryRequest req)
     {
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_MarketPriceHistoryResponse { Result = EResultCode.NotLoggedIn, Kind = req.Kind, Tid = req.Tid });
+            session.SendPacket(new S_MarketPriceHistoryResponse { Result = result, Kind = req.Kind, Tid = req.Tid });
             return;
         }
 
@@ -665,10 +687,10 @@ public static class ClientPacketHandler
     {
         ServerLog.Debug("경매", $"거래소 구매 요청 TID {req.Tid}×{req.Count} 상한 {req.MaxUnitPrice} sid={session.SessionId}");
 
-        var user = session.GetUser();
+        var user = GetAuctionUser(session, out var result);
         if (user == null)
         {
-            session.SendPacket(new S_MarketBuyResponse { Result = EResultCode.NotLoggedIn, Tid = req.Tid, Count = req.Count });
+            session.SendPacket(new S_MarketBuyResponse { Result = result, Tid = req.Tid, Count = req.Count });
             return;
         }
 

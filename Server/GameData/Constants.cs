@@ -87,5 +87,8 @@ namespace GameData
 
         /// <summary>인벤토리 아티팩트 탭 칸 하나에 쌓이는 같은 번호의 상한</summary>
         public static long ArtifactMaxStack => GameTable.ConstantsTable["ArtifactMaxStack"].Value;
+
+        /// <summary>경매장 개방 계정 레벨</summary>
+        public static long AuctionMinAccountLevel => GameTable.ConstantsTable["AuctionMinAccountLevel"].Value;
     }
 }
