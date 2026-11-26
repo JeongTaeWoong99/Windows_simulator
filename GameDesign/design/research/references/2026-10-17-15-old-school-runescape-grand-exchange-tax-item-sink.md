@@ -105,7 +105,7 @@
 - **추구하는 재미:** 아무도 사지 않던 중복 아티팩트가 어느 날 거래 기록에 "섬 밖 수집상이 샀다"로 찍힌다. 길게 보면 내 신화 장비가 계속 귀하게 남는다.
 - **MVP:**
   - 판매 정산 트랜잭션(`Server/docs/경매장.md` 4.2·4.4)에서 수수료의 일정 비율을 전역 금고 한 행에 더한다(비율은 `Constants` 새 행 — 이름은 엑셀 작업 때 확인).
-  - 대상은 두 종류부터: 아티팩트 중복(`EAuctionKind.Artifact`, 즉시 판매 없음 — [T-152](../../../../tasks/T-152-아티팩트거래소.md)) · 전설/신화 장비.
+  - 대상은 두 종류부터: 아티팩트 중복(`EAuctionKind.Artifact`, 즉시 판매 없음 — [T-152](../../../../tasks/archive/T-152-아티팩트거래소.md)) · 전설/신화 장비.
   - 상한 단가는 **`BasePrice` × 배수**(시세는 자전거래로 끌어올릴 수 있어 쓰지 않는다). 금고 잔액이 남는 동안만 산다. 기존 수량 구매 경로(`ReserveQuantity`)를 재사용하고, 구매자 우편 대신 물건을 지운다.
   - 판매자는 평소대로 수수료를 뺀 대금을 우편으로 받는다. 거래 기록(`t_auction_history`)의 상대 이름은 "섬 밖 수집상".
   - 품목별 할당량은 두지 않는다 — 금고 잔액이 곧 한도라 "회당 산출"·"경제 총량" 확정을 기다리지 않는다.
@@ -185,7 +185,7 @@
 
 **추천: 아이디어 2 「구매 의뢰서」** (MVP — 거래소 한정, 판매자가 받아치는 방향만)
 
-1. 5장 "하위 레벨 아이템 수요처 ❌"를 막 구현된 건물 자원 비용([T-166](../../../../tasks/T-166-섬건물서버.md))과 시장으로 잇는 유일한 안이다.
+1. 5장 "하위 레벨 아이템 수요처 ❌"를 막 구현된 건물 자원 비용([T-166](../../../../tasks/archive/T-166-섬건물서버.md))과 시장으로 잇는 유일한 안이다.
 2. GE의 재미의 핵심(노동의 쓸모·비동기 체결)을 그대로 가져온다. 세금 재원 싱크·구매 한도는 우리 경제에서 재원이 작고 인구가 작아 효과가 약하다.
 3. 순서가 맞다 — 의뢰가 거래량을 만들어야 수수료 sink가 일하고, 그 다음에 아이디어 1(아티팩트 한정 수집상)이 의미를 갖는다.
 
@@ -237,4 +237,4 @@
 - [levvvel — RuneScape statistics](https://levvvel.com/statistics/runescape/)
 - [Game Wisdom — OSRS growing while MMOs shrink](https://game-wisdom.com/general/old-school-runescape-growing-mmos-shrink)
 - [r/2007scape — 2024-12-01 역대 최고 동접](https://www.reddit.com/r/2007scape/comments/1hhyk35/on_december_1_2024_runescape_hit_its_all_time/)
-- 우리 문서: [게임기획코어](../../게임기획코어.md) · [거래](../../trade/README.md) · [아이템](../../item/README.md) · [캐릭터](../../character/README.md) · [우편](../../mail/README.md) · [진행 및 성장](../../progression/README.md) · [건물](../../building/README.md) · [게임 UI](../../ui/README.md) · [산업 레벨](../../gathering/산업레벨.md) · [유물 감정](../../gathering/excavation/유물감정.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-152](../../../../tasks/T-152-아티팩트거래소.md) · [T-166](../../../../tasks/T-166-섬건물서버.md) · [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-018](../../../../tasks/later/T-018-BasePrice.md)
+- 우리 문서: [게임기획코어](../../게임기획코어.md) · [거래](../../trade/README.md) · [아이템](../../item/README.md) · [캐릭터](../../character/README.md) · [우편](../../mail/README.md) · [진행 및 성장](../../progression/README.md) · [건물](../../building/README.md) · [게임 UI](../../ui/README.md) · [산업 레벨](../../gathering/산업레벨.md) · [유물 감정](../../gathering/excavation/유물감정.md) · [T-131](../../../../tasks/archive/T-131-장비분해.md) · [T-152](../../../../tasks/archive/T-152-아티팩트거래소.md) · [T-166](../../../../tasks/archive/T-166-섬건물서버.md) · [T-169](../../../../tasks/archive/T-169-중복개체수용재검토.md) · [T-018](../../../../tasks/later/T-018-BasePrice.md)

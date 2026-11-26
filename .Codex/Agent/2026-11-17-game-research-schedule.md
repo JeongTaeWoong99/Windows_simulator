@@ -9,7 +9,7 @@ tags: [docs, research, automation]
 ## 목적 / 배경
 
 - 사용자가 해 보지 않은 방치형·Desktop Companion을 게임별로 공부한다. 이용자 동기·구체적 재미·불만·관찰 과제를 wsdocs 기획 (AI)에 쌓는다. 사용자 일정은 매일 KST 06·12·18시다.
-- 현재 운영 계약은 [게임연구예약](../../GameDesign/scripts/게임연구예약.md), 진행은 [T-203](../../tasks/T-203-게임별재미연구예약.md).
+- 현재 운영 계약은 [게임연구예약](../../GameDesign/scripts/게임연구예약.md), 진행은 [T-203](../../tasks/archive/T-203-게임별재미연구예약.md).
 
 ## 결정 / 근거
 

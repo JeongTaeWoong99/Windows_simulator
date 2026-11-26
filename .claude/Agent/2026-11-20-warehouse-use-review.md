@@ -7,7 +7,7 @@ tags: [server, warehouse, disassemble, review]
 # T-164 창고 물건 사용 푸시 검토 (T-165)
 
 ## 목적 / 배경
-- `383657d`(T-164) 뒤 main 코드 기준으로 창고 물건 사용을 다시 봤다. 항목별 결론 → `tasks/T-165-창고물건사용푸시검토.md`
+- `383657d`(T-164) 뒤 main 코드 기준으로 창고 물건 사용을 다시 봤다. 항목별 결론 → `tasks/archive/T-165-창고물건사용푸시검토.md`
 
 ## 변경 내용
 - `User.Disassemble.cs` — 재료 지급을 `Inventory.AddItem` → `Deposit(Warehouse, Inventory, …)`
