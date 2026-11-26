@@ -102,7 +102,7 @@ public sealed class WorkStationSlot
     }
 
     /// <summary>판정 <paramref name="judgeCount"/>회분 버프를 깎는다. 0이 된 버프는 빠진다.</summary>
-    /// <param name="effectCountOf">영약 1개를 소비하고 지속 판정 수를 반환한다. 재고가 없으면 0, null이면 자동 사용 안 함.</param>
+    /// <param name="effectCountOf">소모품 1개를 소비하고 지속 판정 수를 반환한다. 재고가 없으면 0, null이면 자동 사용 안 함.</param>
     /// <returns>아이템마다 이번 판정 중 앞에서부터 몇 번에 적용됐는가 — 남은 횟수가 판정 수보다 적으면 그 수만큼만.
     /// 버프가 다 되면 보유분에서 이어 쓰므로 적용 구간은 늘 앞에서부터 이어진다.</returns>
     public Dictionary<int, int> ConsumeBuffs(int judgeCount, Func<int, int>? effectCountOf = null, Func<int, bool>? shouldPreload = null)
@@ -158,7 +158,7 @@ public sealed class WorkStationSlot
     }
 
     /// <summary>
-    /// 돌고 있는 슬롯의 ON인 영약만 보유분에서 소비한다. 쉬는 슬롯은 쓰지 않는다.
+    /// 돌고 있는 슬롯에서 ON으로 설정한 소모품을 보유분에서 소비한다. 쉬는 슬롯은 쓰지 않는다.
     /// </summary>
     /// <returns>꺼낸 것이 있으면 true.</returns>
     public bool RefillAutoUse(Func<int, int>? effectCountOf, Func<int, bool>? shouldPreload = null)

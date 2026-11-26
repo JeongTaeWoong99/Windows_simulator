@@ -11,6 +11,9 @@ public class UserSlotAutoUseTest
     private const int YieldElix = 100045;
     private const int Potion = 100041;
     private const int Compass = 100036;
+    private const int SilverCompass = 100011;
+    private const int GoldCompass = 100037;
+    private const int TreasureMap = 100010;
     private const long CharacterId = 500;
     private const long SecondCharacterId = 501;
     private const int WorkingSlot = 0;
@@ -23,7 +26,10 @@ public class UserSlotAutoUseTest
         new() { ItemTID = Potion, UseEffect = ItemUseEffect.CharacterExp, EffectValue = 5 },
         new() { ItemTID = SpeedElix, UseEffect = ItemUseEffect.SlotWorkSpeed, EffectValue = 300, EffectCount = 3, SlotCount = 1 },
         new() { ItemTID = YieldElix, UseEffect = ItemUseEffect.SlotYield, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
-        new() { ItemTID = Compass, UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 1000, EffectCount = 3, SlotCount = 1 },
+        new() { ItemTID = Compass, UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 500, EffectCount = 20, SlotCount = 1 },
+        new() { ItemTID = SilverCompass, UseEffect = ItemUseEffect.SlotBoxChance, EffectValue = 1000, EffectCount = 20, SlotCount = 2 },
+        new() { ItemTID = GoldCompass, UseEffect = ItemUseEffect.SlotBoxRelicChance, EffectValue = 1000, EffectCount = 20, SlotCount = 3 },
+        new() { ItemTID = TreasureMap, UseEffect = ItemUseEffect.InstantJudge, EffectValue = 1, SlotCount = 1 },
     };
 
     private static (User User, TestUserBuilder B) NewUser(
@@ -37,7 +43,8 @@ public class UserSlotAutoUseTest
             ItemTID = use.ItemTID,
             UseEffect = use.UseEffect,
             EffectValue = use.EffectValue,
-            EffectCount = ItemUseCatalog.IsAutoUsable(use.UseEffect) ? elixirEffectCount : use.EffectCount,
+            EffectCount = use.UseEffect is ItemUseEffect.SlotWorkSpeed or ItemUseEffect.SlotYield
+                ? elixirEffectCount : use.EffectCount,
             SlotCount = use.SlotCount,
         }));
         var user = b.Build();
@@ -46,7 +53,7 @@ public class UserSlotAutoUseTest
             new CharacterRow { character_id = CharacterId, character_tid = 1001, level = 1 },
             new CharacterRow { character_id = SecondCharacterId, character_tid = 1001, level = 1 },
         });
-        user.LoadInventory(new[] { SpeedElix, YieldElix, Potion, Compass }
+        user.LoadInventory(Uses.Select(use => use.ItemTID)
             .Select((tid, i) => new InventoryRow { item_id = tid, count = 10, slot = i }).ToList());
         user.WorkStation.Load(new[]
         {
@@ -177,10 +184,42 @@ public class UserSlotAutoUseTest
     }
 
     [Theory]
-    [InlineData(Potion)]
     [InlineData(Compass)]
+    [InlineData(SilverCompass)]
+    [InlineData(GoldCompass)]
+    public void 나침반은_20회가_끝나면_한_개를_이어_쓴다(int tid)
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, tid).Result.ShouldBe(EResultCode.Ok);
+
+        var slot = Slot(user, WorkingSlot);
+        slot.AdvanceJudges(21);
+        user.SettleWorkStation(Base);
+
+        // 20회짜리 두 개에서 21회 차감 → 남은 19회.
+        user.GetItemCount(tid).ShouldBe(8);
+        slot.Buffs[tid].ShouldBe(19);
+    }
+
+    [Fact]
+    public void 여러_나침반을_켜면_같은_판정에서_각각_차감한다()
+    {
+        var (user, b) = NewUser();
+        Toggle(user, b, WorkingSlot, SilverCompass);
+        Toggle(user, b, WorkingSlot, GoldCompass);
+
+        var slot = Slot(user, WorkingSlot);
+        slot.AdvanceJudges(1);
+        user.SettleWorkStation(Base);
+
+        slot.Buffs.ShouldBe(new Dictionary<int, int> { [SilverCompass] = 19, [GoldCompass] = 19 });
+    }
+
+    [Theory]
+    [InlineData(Potion)]
+    [InlineData(TreasureMap)]
     [InlineData(999999)]
-    public void 영약이_아니면_자동_사용을_설정하지_못한다(int tid)
+    public void 슬롯_버프가_아니면_자동_사용을_설정하지_못한다(int tid)
     {
         var (user, b) = NewUser();
         Toggle(user, b, IdleSlot, tid).Result.ShouldBe(EResultCode.NotAutoUsable);

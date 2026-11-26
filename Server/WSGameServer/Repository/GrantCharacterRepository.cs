@@ -8,7 +8,7 @@ namespace WSGameServer;
 /// </summary>
 public enum CharacterGrantReason
 {
-    /// <summary>보유 캐릭터가 0명인 로그인. 지급 후 로그인을 마무리한다.</summary>
+    /// <summary>보유 캐릭터가 0명인 기존 계정의 로그인. 지급 후 로그인을 마무리한다.</summary>
     Login = 0,
 
     /// <summary>가챠 당첨. 지급 후 캐릭터 목록을 다시 내려보낸다.</summary>
@@ -61,13 +61,18 @@ public sealed class GrantCharacterRepository : IRepository
         {
             var tid  = _characterTids[i];
             var slot = _slots[i];
-            var characterId = await connection.ExecuteScalarAsync<long>(
-                @"INSERT INTO t_character (user_id, character_tid, container, slot)
-                  VALUES (@userId, @tid, @container, @slot) RETURNING character_id;",
-                new { userId = User.Uid, tid, container = (int)Container, slot });
+            var characterId = await InsertCharacterAsync(connection, User.Uid, tid, Container, slot);
 
             _granted.Add((characterId, tid, slot));
         }
+    }
+
+    internal static Task<long> InsertCharacterAsync(DbConnection connection, long userId, int tid, EContainer container, int slot)
+    {
+        return connection.ExecuteScalarAsync<long>(
+            @"INSERT INTO t_character (user_id, character_tid, container, slot)
+              VALUES (@userId, @tid, @container, @slot) RETURNING character_id;",
+            new { userId, tid, container = (int)container, slot });
     }
 
     // === 로직 스레드에서 실행 ===
