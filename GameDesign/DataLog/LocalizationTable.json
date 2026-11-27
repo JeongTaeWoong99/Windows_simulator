@@ -13840,6 +13840,16 @@
     "EN": "{0}   Collected {1} / {2}"
   },
   {
+    "Key": "UI.Artifact.GroupChest",
+    "KR": "상자",
+    "EN": "Chests"
+  },
+  {
+    "Key": "UI.Artifact.GroupRaid",
+    "KR": "레이드",
+    "EN": "Raid"
+  },
+  {
     "Key": "UI.Artifact.Unknown",
     "KR": "???",
     "EN": "???"

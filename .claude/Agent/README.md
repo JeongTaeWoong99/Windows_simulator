@@ -23,6 +23,7 @@
 
 ## INDEX
 
+- [2026-11-27 아티팩트 도감 특수 줄 · 창 크기 드롭다운](2026-11-27-codex-special-rows-dropdown-fix.md) — `#client` 상자·레이드 줄은 Special + 얻는 곳으로 표에서 가른다 · 드롭다운 Viewport 앵커 접힘 · eval 5초 제한
 - [2026-11-26 위젯 알림 줄 · 큐브 자동 [내리기] · 레드닷 4곳](2026-11-26-widget-alert-strip-red-dots.md) — `#client` 팝업 DIM 유지 · 큐브 창은 CanvasGroup으로 숨김(끄면 루프가 선다) · `UIManager.Reopened`로 복원 · 열리면 경고 점(툴팁)
 - [2026-11-25 테마 상자 6종에 캐릭터 보상 추가](2026-11-25-theme-box-characters.md) — `#data` `#server` 캐릭터 칸 16.33% · 등급은 레벨테마 7.2 · 아티팩트 0.8% 유지
 

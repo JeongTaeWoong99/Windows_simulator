@@ -1,6 +1,6 @@
 ﻿# Managers 규칙
 
-> 최종 업데이트: 2026-11-15 (`ServerWaitManager` 무응답 판정은 그 프레임 응답 처리 뒤 — 멈춘 뒤 오알림) · 2026-10-31 (`SoundManager`는 Common `sound/`로 — 게임을 모르는 서비스라 여기 두지 않는다) · 2026-10-25 (아티팩트 판매는 `SellCartModel`로 — `ArtifactModel`은 고른 번호·반짝일 번호만 · T-151) · 2026-10-25 (`ArtifactModel` — 아티팩트 화면의 고른 번호·판매 목록 · T-151) · 2026-10-25 (`SellCartModel`은 한 종류만 담는다 — 이슈 #83) · 2026-10-15 (경매 등록 키 Shift+우클릭 → Ctrl+우클릭 — 인게임 조합은 좌·우·Ctrl+좌·Ctrl+우 넷) · 2026-10-15 (인게임 Ctrl+좌클릭 — 캐릭터·장비 잠금 · T-137) · 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
+> 최종 업데이트: 2026-11-27 (`SteamAchievementManager` 추가 — 업적 창구 · T-214) · 2026-11-15 (`ServerWaitManager` 무응답 판정은 그 프레임 응답 처리 뒤 — 멈춘 뒤 오알림) · 2026-10-31 (`SoundManager`는 Common `sound/`로 — 게임을 모르는 서비스라 여기 두지 않는다) · 2026-10-25 (아티팩트 판매는 `SellCartModel`로 — `ArtifactModel`은 고른 번호·반짝일 번호만 · T-151) · 2026-10-25 (`ArtifactModel` — 아티팩트 화면의 고른 번호·판매 목록 · T-151) · 2026-10-25 (`SellCartModel`은 한 종류만 담는다 — 이슈 #83) · 2026-10-15 (경매 등록 키 Shift+우클릭 → Ctrl+우클릭 — 인게임 조합은 좌·우·Ctrl+좌·Ctrl+우 넷) · 2026-10-15 (인게임 Ctrl+좌클릭 — 캐릭터·장비 잠금 · T-137) · 2026-10-15 (인게임 Esc 삭제 — 키는 마우스와 함께 쓰는 것만) · 2026-10-14 (`AuctionModel` — 검색·거래 기록을 쪽으로(9줄) · 쪽마다 커서 기억) · 2026-10-14 (`AuctionModel` — 단일 검색·시세·거래 기록 · 거래소 수량 구매 제거 — T-147 2단계) · 2026-10-14 (인게임 키 Esc — 경매장 닫기 · T-147) · 2026-10-11 (`KeyInputManager` — 키 입력 단일 창구 · 아웃게임/인게임 키 표) · 2026-10-10 (`!System Canvas` → `!Overlay Canvas` · 로그인이 그 층의 Presenter — T-140) · 2026-10-08 (창 초기화·요청 타임아웃 대기를 코루틴에서 UniTask로) · 대상: `Assets/Scripts_Client/Managers/`
 
 **`MonoService<T>`를 상속해 서비스 로케이터에 등록되는 것들.** 그게 이 폴더의 정의다.
 `Services.Get<T>()`로 어디서나 꺼내 쓰는 전역 상태·기능이 여기 있다.
@@ -23,7 +23,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 
 ---
 
-## 2. 현재 매니저 9개
+## 2. 현재 매니저 10개
 
 > 소리(`SoundManager`)도 서비스지만 게임을 모르므로 Common [`sound/`](<../Common/sound/sound 규칙.md>)에 있다.
 
@@ -46,6 +46,7 @@ Services.Get<T>() 로 꺼내 쓸 전역 상태·기능인가?
 | **`AuctionModel`** | **경매장 창구.** 검색 결과(지금 쪽 · 쪽마다의 서버 커서 · 건수), 시세 요약 캐시(60초)·가격대·일별 시세, 거래 기록(지금 쪽 · 쪽마다의 커서 · 완료 탭 배지 수), 내 매물을 들고 응답마다 결과 코드와 함께 `…Completed`를 발행. 즉시 판매가·경매 단가 범위(즉시 판매가 ~ 1조)·한 번에 올리는 수량 상한(9,999)·등록비·판매 수수료 식의 표시용 사본과, 검색 결과에서 내 매물을 가리는 `IsMine`도 여기 있다 | **예외적으로 송신한다** — 검색은 응답이 준 커서로 다음 쪽을 받아서, 조건·쪽마다의 커서가 한 곳에 있어야 [◀][▶]가 같은 조건으로 오간다(서버 커서는 앞으로만 간다). 대기(`ServerWaitManager`)는 여전히 요청을 일으킨 Presenter가 건다. 배지 수는 로그인·경매 우편 도착 때 기록 없이 수만 묻는다. **인벤토리 반영은 하지 않는다** — 등록 응답은 `PlayerDataModel`이 같은 패킷을 구독해 뺀다 |
 | **`ServerWaitManager`** | **서버 왕복 한 건의 대기 창구.** 로딩 표시 on/off · 5초 무응답 감시 · 실패/치명 알림 발행 | **패킷을 받지 않는다.** 요청을 보낸 Presenter가 `Begin` 후 `Succeed`/`Fail`로 보고한다. `EResultCode`도 모른다 — 문구 변환은 Presenter가 `ResultMessages`로 마쳐 넘긴다 |
 | **`KeyInputManager`** | **키 입력의 단일 창구.** 게임이 받는 키를 모두 여기 적고, 쓰는 곳은 여기를 거쳐 묻는다. 아웃게임(로그인 화면)·인게임(로그인 뒤) 두 구역으로 나뉘고, 로그인 성공으로 인게임이 된다. 인게임에서는 EventSystem의 UI 키 이동을 끈다 | **키로 무엇을 할지는 모른다** — "Ctrl이 눌렸나"만 답하고 경매 등록은 인벤토리 격자가 한다. 다른 파일이 `Keyboard.current`를 직접 읽지 않는다 |
+| **`SteamAchievementManager`** | **스팀 업적의 단일 창구** — 게임 사건은 `Unlock(키)`만 부른다. 매 프레임 `SteamAPI.RunCallbacks` · 바뀐 업적이 있으면 프레임 끝에 `StoreStats` 한 번. 키는 `SteamAchievementKeys`(지금 480 시험 키) · T-214 | **스팀 초기화를 하지 않는다**(`Steam/SteamAuth`). 스팀이 없으면 조용히 지나간다 — 무엇을 언제 업적으로 할지는 모른다 |
 
 ### 키 표 (`KeyInputManager`) — 키를 늘리면 여기 한 줄
 

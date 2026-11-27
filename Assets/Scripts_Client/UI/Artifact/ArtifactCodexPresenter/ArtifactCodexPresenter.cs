@@ -10,6 +10,10 @@ using UnityEngine.UI;
 
 // 아티팩트 도감 — 번호 순 · 등급별 묶음으로 전 종류를 늘어놓는다. **보기만 한다** (#81 합의 · 목업 'GameDesign/design/ui/아티팩트도감장착목업.html').
 //
+// ■ 맨 위는 얻는 곳별 특수 줄 — 상자 줄 · 레이드 줄 (#161 · 2026-11-27 · 목업 '아티팩트도감특수줄목업.html' B안)
+//   등급이 Special이고 테마 상자 풀에만 있으면 상자 줄(상자 단계 순), 레이드 보상이면 레이드 줄이다. 그 아래는 지금처럼 등급별.
+//   표에서 가른다 — 보스가 늘면 레이드 줄만, 상자가 늘면 상자 줄만 길어진다. Special이 아니거나 어느 쪽도 아니면 등급 묶음으로 간다.
+//
 // ■ 칸 상태 둘 — 장착하면 효과가 항상 붙는다(켜고 끄기 없음 · #90)
 //   장착   : 그대로.
 //   미장착 : 흑백('SetFilteredOut'). 갖고 있으면 이름과 '보유 n'을, 본 적도 없으면 '???'를 적는다.
@@ -72,9 +76,18 @@ public class ArtifactCodexPresenter : MonoBehaviour
         }
     }
 
-    // 등급 묶음 — 등급 순서. 묶음마다 자기 칸을 '_groupCells'로 안다.
+    // 특수 줄 — 얻는 곳. 등급 묶음보다 위에 선다.
+    private enum SpecialSource
+    {
+        None,  // 등급 묶음으로
+        Chest, // 테마 상자 줄
+        Raid,  // 레이드 줄
+    }
+
+    // 묶음 — 특수 줄(상자 · 레이드) 다음 등급 순서. 묶음마다 자기 칸을 '_groupCells'로 안다.
     private readonly List<ArtifactCodexGroupView> _groups      = new List<ArtifactCodexGroupView>();
-    private readonly List<GlobalRarity>           _groupRarity = new List<GlobalRarity>();
+    private readonly List<GlobalRarity>           _groupRarity = new List<GlobalRarity>();  // 특수 줄도 Special — 머리 색
+    private readonly List<string?>                _groupTitle  = new List<string?>();       // 특수 줄 머리 문구 키 · 등급 묶음은 null
     private readonly List<List<CodexCell>>        _groupCells  = new List<List<CodexCell>>();
 
     private int _cellCount; // 전 종류 수 — '장착 n / 전체'의 뒤
@@ -191,26 +204,55 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
     #region 칸 만들기
 
-    // 등급 순 → 번호 순으로 묶음과 칸을 만든다 (Start에서 한 번).
+    // 특수 줄(상자 → 레이드) → 등급 순 → 번호 순으로 묶음과 칸을 만든다 (Start에서 한 번).
     private void BuildSlots()
     {
-        var rows = new List<ArtifactTableRow>(GameTable.ArtifactTable.All);
-
-        rows.Sort((a, b) => a.GlobalRarity != b.GlobalRarity ? a.GlobalRarity.CompareTo(b.GlobalRarity) : a.ArtifactTID.CompareTo(b.ArtifactTID));
+        var rows   = new List<ArtifactTableRow>(GameTable.ArtifactTable.All);
+        var source = new Dictionary<int, (SpecialSource kind, int order)>();
 
         foreach (ArtifactTableRow row in rows)
         {
-            int group = _groupRarity.IndexOf(row.GlobalRarity);
+            source[row.ArtifactTID] = SourceOf(row);
+        }
+
+        // 특수 줄이 먼저(상자 → 레이드) · 줄 안은 상자 단계(여는 상자 TID) 순 · 그 밖은 등급 → 번호 순
+        rows.Sort((a, b) =>
+        {
+            var sa = source[a.ArtifactTID];
+            var sb = source[b.ArtifactTID];
+
+            if (sa.kind != sb.kind)
+            {
+                return sa.kind == SpecialSource.None ? 1 : sb.kind == SpecialSource.None ? -1 : sa.kind.CompareTo(sb.kind);
+            }
+
+            if (sa.kind != SpecialSource.None && sa.order != sb.order)
+            {
+                return sa.order.CompareTo(sb.order);
+            }
+
+            return a.GlobalRarity != b.GlobalRarity ? a.GlobalRarity.CompareTo(b.GlobalRarity) : a.ArtifactTID.CompareTo(b.ArtifactTID);
+        });
+
+        foreach (ArtifactTableRow row in rows)
+        {
+            SpecialSource kind  = source[row.ArtifactTID].kind;
+            string?       title = kind == SpecialSource.Chest ? "UI.Artifact.GroupChest"
+                                : kind == SpecialSource.Raid  ? "UI.Artifact.GroupRaid"
+                                : null;
+
+            int group = FindGroup(title, row.GlobalRarity);
 
             if (group < 0)
             {
                 ArtifactCodexGroupView view = Instantiate(groupTemplate, groupParent, false);
 
-                view.name = $"Group ({row.GlobalRarity})";
+                view.name = title != null ? $"Group ({kind})" : $"Group ({row.GlobalRarity})";
                 view.gameObject.SetActive(true);
 
                 _groups.Add(view);
                 _groupRarity.Add(row.GlobalRarity);
+                _groupTitle.Add(title);
                 _groupCells.Add(new List<CodexCell>());
 
                 group = _groups.Count - 1;
@@ -229,6 +271,61 @@ public class ArtifactCodexPresenter : MonoBehaviour
             _groupCells[group].Add(new CodexCell(slot, tid));
             _cellCount++;
         }
+    }
+
+    // 묶음 찾기 — 특수 줄은 문구 키로, 등급 묶음은 등급으로. 없으면 -1.
+    private int FindGroup(string? title, GlobalRarity rarity)
+    {
+        for (int g = 0; g < _groups.Count; g++)
+        {
+            if (title != null ? _groupTitle[g] == title : _groupTitle[g] == null && _groupRarity[g] == rarity)
+            {
+                return g;
+            }
+        }
+
+        return -1;
+    }
+
+    // 특수 줄 판정 — 클래스 머리 주석. order는 줄 안 순서(여는 상자 TID · 보스 순서).
+    private static (SpecialSource kind, int order) SourceOf(ArtifactTableRow row)
+    {
+        if (row.GlobalRarity != GlobalRarity.Special)
+        {
+            return (SpecialSource.None, 0);
+        }
+
+        int bossOrder = 0;
+
+        foreach (var boss in GameTable.RaidBossTable.All)
+        {
+            bossOrder++;
+
+            if (boss.RewardArtifactTID == row.ArtifactTID)
+            {
+                return (SpecialSource.Raid, bossOrder);
+            }
+        }
+
+        int firstBox = int.MaxValue;
+
+        foreach (var gacha in GameTable.GachaArtifactTable.All)
+        {
+            if (gacha.ArtifactTID != row.ArtifactTID)
+            {
+                continue;
+            }
+
+            foreach (var item in GameTable.ItemTable.All)
+            {
+                if (item.ItemType == ItemType.Box && item.OpenGachaId == gacha.GachaId)
+                {
+                    firstBox = System.Math.Min(firstBox, item.ItemTID);
+                }
+            }
+        }
+
+        return firstBox != int.MaxValue ? (SpecialSource.Chest, firstBox) : (SpecialSource.None, 0);
     }
 
     #endregion
@@ -273,8 +370,10 @@ public class ArtifactCodexPresenter : MonoBehaviour
 
             equippedTotal += equipped;
 
+            string label = _groupTitle[g] is { } key ? Lang.Get(key) : RarityLabel.Get(_groupRarity[g]);
+
             _groups[g].SetHead(Lang.Format("UI.Artifact.GroupHead",
-                                           UIRichText.Paint(RarityLabel.Get(_groupRarity[g]), RarityPalette.OnDark(_groupRarity[g])),
+                                           UIRichText.Paint(label, RarityPalette.OnDark(_groupRarity[g])),
                                            equipped.ToString("N0"),
                                            _groupCells[g].Count.ToString("N0")));
 
